@@ -58,6 +58,14 @@ class=shaded>shaded</span> region. In the type theory, we can't really
 "see" this copy of $A$: we only see its _ghost_, as something keeping
 all the meridians from collapsing.
 
+By convention, we see the suspension as a [[pointed type]] with the *north*
+pole as the base point.
+
+```agda
+Susp∙ : ∀ {ℓ} (A : Type ℓ) → Type∙ ℓ
+Susp∙ A = Susp A , N
+```
+
 ```agda
 Susp-elim
   : ∀ {ℓ ℓ'} {A : Type ℓ} (P : Susp A → Type ℓ')

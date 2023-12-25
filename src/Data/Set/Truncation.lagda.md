@@ -143,5 +143,11 @@ module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
 instance
   H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
   H-Level-∥-∥₀ {n = n} = basic-instance 2 squash
+
+is-contr→∥-∥₀-is-contr : ∀ {ℓ} {A : Type ℓ} → is-contr A → is-contr ∥ A ∥₀
+is-contr→∥-∥₀-is-contr h = is-hlevel≃ 0 ((_ , ∥-∥₀-idempotent (is-contr→is-set h)) e⁻¹) h
+
+is-prop→∥-∥₀-is-prop : ∀ {ℓ} {A : Type ℓ} → is-prop A → is-prop ∥ A ∥₀
+is-prop→∥-∥₀-is-prop h = is-hlevel≃ 1 ((_ , ∥-∥₀-idempotent (is-prop→is-set h)) e⁻¹) h
 ```
 -->

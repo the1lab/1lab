@@ -45,6 +45,9 @@ module _ {ℓ} (G : Group ℓ) where
     path    : ⌞ G ⌟ → base ≡ base
     path-sq : (x y : ⌞ G ⌟) → Square refl (path x) (path (x ⋆ y)) (path y)
     squash  : is-groupoid Deloop
+
+  Deloop∙ : Type∙ ℓ
+  Deloop∙ = Deloop , base
 ```
 
 <!--
@@ -297,7 +300,7 @@ inverses, differences, etc.
 
 ```agda
   encode-is-group-hom
-    : is-group-hom (π₁Groupoid {T = Deloop} {base} squash) (G .snd) (encode base)
+    : is-group-hom (π₁Groupoid.on-Ω Deloop∙ squash) (G .snd) (encode base)
   encode-is-group-hom .is-group-hom.pres-⋆ x y = eqv.injective₂ (eqv.ε _) $
     path (encode base x ⋆ encode base y)          ≡⟨ path-∙ (encode base x) (encode base y) ⟩
     path (encode base x) ∙ path (encode base y)   ≡⟨ ap₂ _∙_ (eqv.ε _) (eqv.ε _) ⟩
@@ -326,7 +329,7 @@ module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
   open Group-on (G .snd)
   open is-group-hom
 
-  private opaque
+  opaque
 ```
 -->
 
@@ -449,7 +452,7 @@ $\rm{winding}_x$ is a group homomorphism $\Omega (\B G, x) \to G$.
       Equiv.inverse (G≃ΩB G) .snd
 
     winding-is-group-hom : ∀ x →
-      is-group-hom (π₁Groupoid {T = Deloop G} {x} (hlevel 3))
+      is-group-hom (π₁Groupoid.on-Ω (Deloop G , x) (hlevel 3))
         (G .snd) (winding {x})
     winding-is-group-hom = Deloop-elim-prop G _ (λ x → hlevel 1) λ where
       .pres-⋆ x y → encode.pres-⋆ G x y

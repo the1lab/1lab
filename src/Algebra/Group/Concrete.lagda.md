@@ -4,6 +4,7 @@ open import 1Lab.Path.Reasoning
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
+open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Functor.Equivalence
@@ -99,21 +100,28 @@ ConcreteGroup-path {G = G} {H} p = go prop! prop! where
 ```
 -->
 
-A central example of a concrete group is the [[circle]]: the delooping of the [[integers]].
+The [[delooping]] of a group is a concrete group. In fact, we will prove later that
+*all* concrete groups arise as deloopings.
 
 ```agda
-S¹-is-connected : is-connected∙ (S¹ , base)
-S¹-is-connected = S¹-elim (inc refl) prop!
+Concrete : ∀ {ℓ} → Group ℓ → ConcreteGroup ℓ
+Concrete G .B = Deloop∙ G
+Concrete G .has-is-connected = Deloop-is-connected
+Concrete G .has-is-groupoid = squash
+```
 
-S¹-is-groupoid : is-groupoid S¹
-S¹-is-groupoid = connected∙-elim-prop S¹-is-connected hlevel!
-               $ connected∙-elim-prop S¹-is-connected hlevel!
-               $ is-hlevel≃ 2 ΩS¹≃integers (hlevel 2)
+Another important example of a concrete group is the [[circle]]: the delooping of
+the [[integers]].
+
+```agda
+opaque
+  S¹-is-connected : is-connected∙ S¹∙
+  S¹-is-connected = S¹-elim (inc refl) prop!
 
 S¹-concrete : ConcreteGroup lzero
-S¹-concrete .B = S¹ , base
+S¹-concrete .B = S¹∙
 S¹-concrete .has-is-connected = S¹-is-connected
-S¹-concrete .has-is-groupoid = S¹-is-groupoid
+S¹-concrete .has-is-groupoid = hlevel 3
 ```
 
 ## The category of concrete groups
@@ -127,7 +135,7 @@ ConcreteGroups ℓ .Ob = ConcreteGroup ℓ
 ConcreteGroups _ .Hom G H = B G →∙ B H
 ```
 
-We immediately see one reason why the pointedness condition is needed: without it,
+We immediately see one reason for the pointedness condition: without it,
 the morphisms between concrete groups would not form a set.
 
 ```agda
@@ -147,13 +155,12 @@ ConcreteGroups _ .Hom-set G H (f , ptf) (g , ptg) p q =
 
 <details>
 <summary>
-The rest of the categorical structure is inherited from functions and paths in a
-straightforward way.
+The rest of the categorical structure is inherited from pointed functions.
 </summary>
 
 ```agda
-ConcreteGroups _ .id = (λ x → x) , refl
-ConcreteGroups _ ._∘_ (f , ptf) (g , ptg) = f ⊙ g , ap f ptg ∙ ptf
+ConcreteGroups _ .id = id∙
+ConcreteGroups _ ._∘_ = _∘∙_
 ConcreteGroups _ .idr f = Σ-pathp refl (∙-idl _)
 ConcreteGroups _ .idl f = Σ-pathp refl (∙-idr _)
 ConcreteGroups _ .assoc (f , ptf) (g , ptg) (h , pth) = Σ-pathp refl $
@@ -188,27 +195,14 @@ Our goal is now to prove that concrete groups and abstract groups are equivalent
 in the sense that there is an [[equivalence of categories]] between `ConcreteGroups`{.Agda}
 and `Groups`{.Agda}.
 
-To make the following developments easier, we define a version of
-`πₙ₊₁ 0`{.Agda ident=πₙ₊₁} that does not use the set truncation. Indeed, there's no
-need since we're dealing with groupoids: each loop space is already a set.
+Since we're dealing with groupoids, we can use the alternative definition of
+the fundamental group that avoids set truncations.
 
 ```agda
-π₁B : ConcreteGroup ℓ → Group ℓ
-π₁B G = to-group mk where
-  open make-group
-  mk : make-group (pt G ≡ pt G)
-  mk .group-is-set = G .has-is-groupoid _ _
-  mk .unit = refl
-  mk .mul = _∙_
-  mk .inv = sym
-  mk .assoc = ∙-assoc
-  mk .invl = ∙-invl
-  mk .idl = ∙-idl
-
-π₁≡π₀₊₁ : {G : ConcreteGroup ℓ} → π₁B G ≡ πₙ₊₁ 0 (B G)
-π₁≡π₀₊₁ {G = G} = ∫-Path Groups-equational
-  (total-hom inc (record { pres-⋆ = λ _ _ → refl }))
-  (∥-∥₀-idempotent (G .has-is-groupoid _ _))
+module _ (G : ConcreteGroup ℓ) where
+  open π₁Groupoid (B G) (G .has-is-groupoid)
+    renaming (π₁ to π₁B; π₁≡π₀₊₁ to π₁B≡π₀₊₁)
+    public
 ```
 
 We define a [[functor]] from concrete groups to abstract groups.
@@ -244,10 +238,16 @@ easy part: to build a concrete group out of an abstract group, we simply take it
 `Deloop`{.Agda}ing, and use the fact that the fundamental group of the delooping
 recovers the original group.
 
+<!--
+```agda
+_ = Deloop
+```
+-->
+
 ```agda
 Π₁-is-split-eso : is-split-eso (Π₁ {ℓ})
-Π₁-is-split-eso G .fst = concrete-group (Deloop G , base) Deloop-is-connected squash
-Π₁-is-split-eso G .snd = path→iso (π₁≡π₀₊₁ ∙ sym (G≡π₁B G))
+Π₁-is-split-eso G .fst = Concrete G
+Π₁-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
 ```
 
 We now tackle the hard part: to prove that `Π₁`{.Agda} is [[fully faithful]].
@@ -346,7 +346,7 @@ right inverse to $\Pi_1$:
     p (ω ∙ refl)           ≡⟨ f-p ω refl ⟩
     f # ω ∙ p refl         ∎
 
-  rinv : Π₁ .F₁ g ≡ f
+  rinv : Π₁ .F₁ {G} {H} g ≡ f
   rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
 ```
 
@@ -358,7 +358,7 @@ a family that asserts that $p_x$ agrees with $f$ *all the way*, not just on loop
 
 ```agda
 module Deloop-Hom-Π₁ {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
-  open Deloop-Hom {G = G} {H} (Π₁ .F₁ f) public
+  open Deloop-Hom {G = G} {H} (Π₁ .F₁ {G} {H} f) public
   open ConcreteGroup H using (H-Level-B)
 
   C' : ∀ x → Type _
@@ -414,14 +414,87 @@ need to bend the path into a `Square`{.Agda}:
 
 ```agda
 Π₁-is-ff : is-fully-faithful (Π₁ {ℓ})
-Π₁-is-ff {ℓ} {G} {H} = is-iso→is-equiv $
-  iso Deloop-Hom.g Deloop-Hom.rinv (Deloop-Hom-Π₁.linv {G = G} {H})
+Π₁-is-ff {ℓ} {G} {H} = is-iso→is-equiv $ iso
+  (Deloop-Hom.g {G = G} {H})
+  (Deloop-Hom.rinv {G = G} {H})
+  (Deloop-Hom-Π₁.linv {G = G} {H})
 ```
 
 We've shown that `Π₁`{.Agda} is fully faithful and essentially surjective;
 this lets us conclude with the desired equivalence.
 
 ```agda
-Concrete≃Abstract : is-equivalence (Π₁ {ℓ})
-Concrete≃Abstract = ff+split-eso→is-equivalence Π₁-is-ff Π₁-is-split-eso
+Π₁-is-equivalence : is-equivalence (Π₁ {ℓ})
+Π₁-is-equivalence = ff+split-eso→is-equivalence
+  (λ {G} {H} → Π₁-is-ff {_} {G} {H})
+  Π₁-is-split-eso
+
+π₁B-is-equiv : is-equiv (π₁B {ℓ})
+π₁B-is-equiv = is-cat-equivalence→equiv-on-objects
+  ConcreteGroups-is-category
+  Groups-is-category
+  Π₁-is-equivalence
+
+module Concrete≃Abstract {ℓ} = Equiv (_ , π₁B-is-equiv {ℓ})
+```
+
+## Concrete abelian groups
+
+A concrete [[abelian group]] is, unsurprisingly, a concrete group in which
+path concatenation is commutative.
+
+```agda
+module _ {ℓ} (G : ConcreteGroup ℓ) where
+  is-concrete-abelian : Type ℓ
+  is-concrete-abelian = ∀ (p q : pt G ≡ pt G) → p ∙ q ≡ q ∙ p
+```
+
+This is a property:
+
+```agda
+  open ConcreteGroup G using (H-Level-B)
+
+  is-concrete-abelian-is-prop : is-prop is-concrete-abelian
+  is-concrete-abelian-is-prop = hlevel 1
+```
+
+As an easy consequence, in an abelian group $\B{G}$, we can fill any square
+that has equal opposite sides.
+
+```agda
+  concrete-abelian→square
+    : is-concrete-abelian
+    → {x : ⌞ B G ⌟} → (p q : x ≡ x) → Square p q q p
+  concrete-abelian→square ab {x} = connected∙-elim-prop
+    {P = λ x → (p q : x ≡ x) → Square p q q p}
+    (G .has-is-connected)
+    (hlevel 1)
+    (λ p q → commutes→square (ab p q))
+    x
+```
+
+Still unsurprisingly, the delooping of an abelian group is abelian.
+
+```agda
+Deloop-abelian
+  : ∀ {ℓ} {G : Group ℓ}
+  → is-commutative-group G → is-concrete-abelian (Concrete G)
+Deloop-abelian G-ab = ∙-comm _ G-ab
+```
+
+The circle is another example, being the delooping of $\mathbb{Z}$.
+
+```agda
+π₁-abelian→abelian
+  : ∀ {ℓ} {G : ConcreteGroup ℓ}
+  → is-commutative-group (π₁B G) → is-concrete-abelian G
+π₁-abelian→abelian {G = G} π₁G-ab = subst is-concrete-abelian
+  (Concrete≃Abstract.η G)
+  (Deloop-abelian π₁G-ab)
+
+S¹-concrete-abelian : is-concrete-abelian S¹-concrete
+S¹-concrete-abelian = π₁-abelian→abelian {G = S¹-concrete}
+  (subst is-commutative-group
+    (sym π₁S¹≡ℤ)
+    (Abelian→Group-on-abelian (ℤ-ab .snd)))
 ```

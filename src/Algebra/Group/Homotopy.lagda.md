@@ -89,20 +89,6 @@ commutative, independent of $A$.
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
 ```
 
-<!--
-```agda
-π₁Groupoid : ∀ {ℓ} {T : Type ℓ} {t : T} → is-groupoid T → Group-on (t ≡ t)
-π₁Groupoid {t = t} hl = to-group-on λ where
-  .make-group.group-is-set → hl t t
-  .make-group.unit         → refl
-  .make-group.mul          → _∙_
-  .make-group.inv          → sym
-  .make-group.assoc        → ∙-assoc
-  .make-group.invl         → ∙-invl
-  .make-group.idl          → ∙-idl
-```
--->
-
 The proof can be visualized with the following diagram, where the
 vertices are in $\Omega^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
 q ∙ p`, which is filled by transporting the two inner squares using
@@ -156,4 +142,32 @@ $\pi_{n+2}$ is an [[Abelian group]]:
 πₙ₊₂-is-abelian-group {A = A} n =
   ∥-∥₀-elim₂ (λ x y → is-prop→is-set (squash _ _))
              (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
+```
+
+We can give an alternative construction of the fundamental group $\pi_1$ for types
+that are known to be [[groupoids]]: in that case, we can avoid using a set truncation
+since the loop space is already a set.
+
+```agda
+module π₁Groupoid {ℓ} ((T , t) : Type∙ ℓ) (grpd : is-groupoid T) where
+  private
+    mk : make-group (t ≡ t)
+    mk .make-group.group-is-set = grpd t t
+    mk .make-group.unit         = refl
+    mk .make-group.mul          = _∙_
+    mk .make-group.inv          = sym
+    mk .make-group.assoc        = ∙-assoc
+    mk .make-group.invl         = ∙-invl
+    mk .make-group.idl          = ∙-idl
+
+  on-Ω : Group-on (t ≡ t)
+  on-Ω = to-group-on mk
+
+  π₁ : Group ℓ
+  π₁ = to-group mk
+
+  π₁≡π₀₊₁ : π₁ ≡ πₙ₊₁ 0 (T , t)
+  π₁≡π₀₊₁ = ∫-Path Groups-equational
+    (total-hom inc (record { pres-⋆ = λ _ _ → refl }))
+    (∥-∥₀-idempotent (grpd _ _))
 ```

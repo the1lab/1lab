@@ -51,8 +51,10 @@ open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
 open import Homotopy.Space.Suspension.Properties
+open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
+open import Homotopy.Space.Sphere
 open import Homotopy.Space.Torus
 open import Homotopy.Truncation
 open import Homotopy.Wedge
@@ -230,6 +232,16 @@ _ = ⊎Path.Code≃Path
 -->
 
 * Theorem 2.12.5: `⊎Path.Code≃Path`{.Agda}
+
+### Exercises
+
+<!--
+```agda
+_ = Σ-assoc
+```
+-->
+
+* Exercise 2.10: `Σ-assoc`{.Agda}
 
 ## Chapter 3 Sets and Logic
 
@@ -556,10 +568,30 @@ This is the higher inductive type `[0,1]`{.Agda}, not the interval type
 <!--
 ```agda
 _ = refl≠loop
+_ = always-loop
+_ = ap-square
 ```
 -->
 
 * Lemma 6.4.1: `refl≠loop`{.Agda}
+* Lemma 6.4.2: `always-loop`{.Agda}
+* Lemma 6.4.4: `ap-square`{.Agda}
+
+### 6.5 Suspensions
+
+<!--
+```agda
+_ = Susp
+_ = SuspS⁰≡S¹
+_ = Sⁿ⁻¹
+_ = Σ-map∙≃map∙-Ω
+```
+-->
+
+* The suspension: `Susp`{.Agda}
+* Lemma 6.5.1: `SuspS⁰≡S¹`{.Agda}
+* Definition 6.5.2: `Sⁿ⁻¹`{.Agda}
+* Lemma 6.5.4: `Σ-map∙≃map∙-Ω`{.Agda}
 
 ### 6.6 Cell complexes
 
@@ -613,6 +645,16 @@ _ = Group.make-free-group
 * Lemma 6.11.5: `Monoid.Free⊣Forget`{.Agda}
 * Lemma 6.11.6: `Group.make-free-group`{.Agda}
 
+### Exercises
+
+<!--
+```agda
+_ = T²≃S¹×S¹
+```
+-->
+
+* Exercise 6.3: `T²≃S¹×S¹`{.Agda}
+
 ## Chapter 7 Homotopy n-types
 
 ### 7.1 Definition of n-types
@@ -659,6 +701,7 @@ _ = hlevel→hubs-and-spokes
 ```agda
 _ = n-Tr-is-hlevel
 _ = n-Tr-elim
+_ = n-Tr-path-equiv
 ```
 -->
 
@@ -685,6 +728,16 @@ _ = point-is-n-connected
 * Corollary 7.5.9: `is-n-connected→n-type-const`{.Agda}, `n-type-const→is-n-connected`{.Agda}
 * Lemma 7.5.11: `is-n-connected-point`{.Agda}, `point-is-n-connected`{.Agda}
 
+### Exercises
+
+<!--
+```agda
+_ = is-n-connected≃∥-∥
+```
+-->
+
+* Exercise 7.6: `is-n-connected≃∥-∥`{.Agda}
+
 # Part 2 Mathematics
 
 ## Chapter 8 Homotopy theory
@@ -702,6 +755,8 @@ _ = S¹Path.decode
 _ = S¹Path.encode-decode
 _ = S¹Path.encode-loopⁿ
 _ = ΩS¹≃integers
+_ = π₁S¹≡ℤ
+_ = πₙ₊₂S¹≡0
 ```
 -->
 
@@ -711,16 +766,19 @@ _ = ΩS¹≃integers
 * Lemma 8.1.7: `S¹Path.encode-decode`{.Agda}
 * Lemma 8.1.8: `S¹Path.encode-loopⁿ`{.Agda}
 * Corollary 8.1.10: `ΩS¹≃integers`{.Agda}
+* Corollary 8.1.11: `π₁S¹≡ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
 
 ### 8.2 Connectedness of suspensions
 
 <!--
 ```
 _ = Susp-is-connected
+_ = Sⁿ⁻¹-is-connected
 ```
 -->
 
 * Theorem 8.2.1: `Susp-is-connected`{.Agda}
+* Corollary 8.2.2: `Sⁿ⁻¹-is-connected`{.Agda}
 
 ### 8.6 The Freudenthal suspension theorem
 

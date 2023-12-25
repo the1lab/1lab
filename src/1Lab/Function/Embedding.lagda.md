@@ -192,6 +192,9 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
     (is-contr→is-equiv
       (contr (_ , refl) λ (y , p) i → p i , λ j → p (i ∧ j))
       (contr (_ , refl) (is-hlevel≃ 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
+
+  equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
+  equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
 ```
 
 <!--

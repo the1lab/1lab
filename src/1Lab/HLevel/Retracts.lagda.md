@@ -249,23 +249,24 @@ $A$ is an $n$-type in a universe $U$, then it's also an $n$-type in any
 successor universe:
 
 ```agda
-Lift-is-hlevel : ∀ {a b} {A : Type a}
-               → (n : Nat)
-               → is-hlevel A n
-               → is-hlevel (Lift b A) n
-Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
+opaque
+  Lift-is-hlevel : ∀ {a b} {A : Type a}
+                → (n : Nat)
+                → is-hlevel A n
+                → is-hlevel (Lift b A) n
+  Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
 ```
 
 Likewise, if the `Lift`{.Agda} of $A$ is an $n$-type, then $A$ must also
 be an n-type.
 
 ```agda
-Lift-is-hlevel'
-  : ∀ {a b} {A : Type a}
-  → (n : Nat)
-  → is-hlevel (Lift b A) n
-  → is-hlevel A n
-Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+  Lift-is-hlevel'
+    : ∀ {a b} {A : Type a}
+    → (n : Nat)
+    → is-hlevel (Lift b A) n
+    → is-hlevel A n
+  Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
 ```
 
 The `fibre`{.Agda}s of a function between $n$-types are $n$-types.

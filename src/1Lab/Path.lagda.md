@@ -214,9 +214,11 @@ faces.
 
 </div>
 
+:::{.definition #connection}
 The other thing we can do is use one of the binary operators on the
 interval to get squares called _connections_, where two adjacent faces
 are `p` and the other two are refl:
+:::
 
 ```agda
     ∧-conn : PathP (λ i → a ≡ p i) refl p
