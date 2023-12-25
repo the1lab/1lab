@@ -5,6 +5,11 @@ open import Cat.Prelude
 open import Order.Instances.Props
 open import Order.Displayed
 open import Order.Base
+open import Cat.Diagram.Product.Indexed
+open import 1Lab.Reflection.Marker
+
+open Indexed-product
+open is-indexed-product
 
 import Order.Reasoning as Pr
 ```
@@ -37,6 +42,14 @@ Pointwise I P = po where
   po .Poset.≤-refl x = ≤-refl
   po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
   po .Poset.≤-antisym f≤g g≤f = funext λ x → ≤-antisym (f≤g x) (g≤f x)
+
+Tupleᵖ : ∀ {ℓ ℓₐ ℓₐ' ℓᵣ ℓᵣ'} {I : Type ℓ} {P : I → Poset ℓₐ ℓᵣ} {R : Poset ℓₐ' ℓᵣ'} → (∀ i → Monotone R (P i)) → Monotone R (Pointwise I P)
+Tupleᵖ f .hom x i = f i # x
+Tupleᵖ f .pres-≤ x≤y i = f i .pres-≤ x≤y
+
+Prjᵖ : ∀ {ℓ ℓₐ ℓᵣ} {I : Type ℓ} {P : I → Poset ℓₐ ℓᵣ} (i : I) → Monotone (Pointwise I P) (P i)
+Prjᵖ i .hom = λ f → f i
+Prjᵖ i .pres-≤ f≤g = f≤g i
 ```
 
 A very important particular case of the pointwise ordering is the poset
@@ -66,4 +79,36 @@ Poset[_,_] P Q = po where
   po .Poset.≤-refl _ = ≤-refl
   po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
   po .Poset.≤-antisym f≤g g≤f = ext (λ x → ≤-antisym (f≤g x) (g≤f x))
+```
+
+Using `Pointwise`{.Agda} we can show that $\Pos$ has all indexed products:
+  
+```agda
+Posets-has-indexed-products : ∀ {o ℓ ℓ'} → has-indexed-products (Posets (o ⊔ ℓ') (ℓ ⊔ ℓ')) ℓ'
+Posets-has-indexed-products F .ΠF = Pointwise _ F
+Posets-has-indexed-products F .π = Prjᵖ
+Posets-has-indexed-products F .has-is-ip .tuple = Tupleᵖ
+Posets-has-indexed-products F .has-is-ip .commute = trivial!
+Posets-has-indexed-products F .has-is-ip .unique {h = h} f g = ext λ y i → happly (ap hom (g i)) y
+```
+
+## Binary products are a special case of indexed products
+
+```agda
+open import Data.Bool
+open import Order.Instances.Product
+open import Order.Univalent
+
+open import Cat.Morphism
+open Inverses
+
+×≡Pointwise-bool : ∀ {o ℓ} (P Q : Poset o ℓ) → P ×ᵖ Q ≡ Pointwise Bool (if_then P else Q)
+×≡Pointwise-bool P Q = Poset-path λ where
+  .to → Tupleᵖ (Bool-elim _ Fstᵖ Sndᵖ)
+  .from → Pairᵖ (Prjᵖ true) (Prjᵖ false)
+  .inverses .invl → ext λ where
+    x true → refl
+    x false → refl
+  .inverses .invr → ext λ _ → refl , refl
+
 ```
