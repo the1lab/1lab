@@ -12,7 +12,7 @@ import Order.Reasoning as Pr
 module Order.Displayed where
 ```
 
-# Displayed posets
+# Displayed posets {defines="displayed-order"}
 
 As a special case of [[displayed categories]], we can construct
 displayed [[_posets_]]: a poset $P$ displayed over $A$, written $P
@@ -69,7 +69,6 @@ make a new poset.
 ```agda
 ∫ : ∀ {ℓ ℓ' ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} → Displayed ℓ ℓ' P → Poset _ _
 ∫ {P = P} D = po where
--- to-poset (Σ ⌞ P ⌟ D.Ob[_]) mk-∫ where
   module D = Displayed D
   module P = Pr P
 

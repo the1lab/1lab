@@ -26,36 +26,73 @@ open Initial
 module Order.Instances.Coproduct where
 ```
 
-# Coproducts of posets
+# Coproducts of posets {defines="binary-coproduct-of-posets"}
 
-The coproduct of two [[partially ordered sets]] $P , Q$ is also a partially ordered set.
+If we're given two [[partially ordered sets]] $P, Q$, then there is a
+universal way of equipping their [[coproduct|sum type]] (at the level of
+sets) with a partial order, which results in the [[categorical
+coproduct|coproduct]] in the category $\Pos$.
 
-[partially ordered sets]: Order.Base.html
+<!--
+```agda
+module _ {o o' ℓ ℓ'} (P : Poset o ℓ) (Q : Poset o' ℓ') where
+  private
+    module P = Pr P
+    module Q = Pr Q
+```
+-->
 
+The ordering is defined by recursion, and it's uniquely specified by
+saying that it is the coproduct of orders, and that each coprojection is
+an order embedding. We compute:
 
 ```agda
-_⊎ᵖ_ : ∀ {o o' ℓ} → Poset o ℓ → Poset o' ℓ → Poset _ _
-P ⊎ᵖ Q = po module ⊎ᵖ where
-  module P = Pr P
-  module Q = Pr Q
-    
-  po : Poset _ _
-  po .Poset.Ob = P.Ob ⊎ Q.Ob
-  po .Poset._≤_ (inl x) (inl y) = x P.≤ y
-  po .Poset._≤_ (inr x) (inr y) = x Q.≤ y
-  po .Poset._≤_ (inl x) (inr y) = Lift _ ⊥
-  po .Poset._≤_ (inr x) (inl y) = Lift _ ⊥
-  po .Poset.≤-thin {inl x} {inl y} = hlevel!
-  po .Poset.≤-thin {inr x} {inr y} = hlevel!
-  po .Poset.≤-refl {inl x} = P.≤-refl
-  po .Poset.≤-refl {inr x} = Q.≤-refl
-  po .Poset.≤-trans {inl x} {inl y} {inl z} = P.≤-trans
-  po .Poset.≤-trans {inr x} {inr y} {inr z} = Q.≤-trans
-  po .Poset.≤-antisym {inl x} {inl y} x≤y y≤x = ap inl (P.≤-antisym x≤y y≤x)
-  po .Poset.≤-antisym {inr x} {inr y} x≤y y≤x = ap inr (Q.≤-antisym x≤y y≤x)
+    sum-≤ : ⌞ P ⌟ ⊎ ⌞ Q ⌟ → ⌞ P ⌟ ⊎ ⌞ Q ⌟ → Type (ℓ ⊔ ℓ')
+    sum-≤ (inl x) (inl y) = Lift ℓ' (x P.≤ y)
+    sum-≤ (inl x) (inr y) = Lift _ ⊥
+    sum-≤ (inr x) (inl y) = Lift _ ⊥
+    sum-≤ (inr x) (inr y) = Lift ℓ (x Q.≤ y)
+```
 
-{-# DISPLAY ⊎ᵖ.po a b = a ⊎ᵖ b #-}
-infixr 15 _⊎ᵖ_
+<details>
+<summary>
+A very straightforward case-bash shows that this is actually a partial
+order. After we've established that everything is in a particular
+summand, each obligation is something we inherit from the underlying
+orders $P$ and $Q$.
+</summary>
+
+```agda
+    abstract
+      sum-≤-thin : ∀ {x y} → is-prop (sum-≤ x y)
+      sum-≤-thin {inl x} {inl y} = hlevel!
+      sum-≤-thin {inr x} {inr y} = hlevel!
+
+      sum-≤-refl : ∀ {x} → sum-≤ x x
+      sum-≤-refl {inl x} = lift P.≤-refl
+      sum-≤-refl {inr x} = lift Q.≤-refl
+
+      sum-≤-trans : ∀ {x y z} → sum-≤ x y → sum-≤ y z → sum-≤ x z
+      sum-≤-trans {inl x} {inl y} {inl z} (lift p) (lift q) = lift (P.≤-trans p q)
+      sum-≤-trans {inr x} {inr y} {inr z} (lift p) (lift q) = lift (Q.≤-trans p q)
+
+      sum-≤-antisym : ∀ {x y} → sum-≤ x y → sum-≤ y x → x ≡ y
+      sum-≤-antisym {inl x} {inl y} (lift p) (lift q) = ap inl (P.≤-antisym p q)
+      sum-≤-antisym {inr x} {inr y} (lift p) (lift q) = ap inr (Q.≤-antisym p q)
+```
+
+</details>
+
+```agda
+  _⊎ᵖ_ : Poset (o ⊔ o') (ℓ ⊔ ℓ')
+  _⊎ᵖ_ .Poset.Ob        = P.Ob ⊎ Q.Ob
+  _⊎ᵖ_ .Poset._≤_       = sum-≤
+  _⊎ᵖ_ .Poset.≤-thin    = sum-≤-thin
+  _⊎ᵖ_ .Poset.≤-refl    = sum-≤-refl
+  _⊎ᵖ_ .Poset.≤-trans   = sum-≤-trans
+  _⊎ᵖ_ .Poset.≤-antisym = sum-≤-antisym
+
+  infixr 15 _⊎ᵖ_
 ```
 
 <!--
@@ -63,39 +100,50 @@ infixr 15 _⊎ᵖ_
 module _ {o o' ℓ} {P : Poset o ℓ} {Q : Poset o' ℓ} where
 ```
 -->
+
+As usual, we have two (monotone) coprojections $P \to P \uplus Q$ and $Q
+\to P \uplus Q$; and, if we have maps $P \to R$ and $Q \to R$, we can
+define a map out of the coproduct by cases:
+
 ```agda
-  Inlᵖ : Monotone P (P ⊎ᵖ Q)
-  Inlᵖ .hom = inl
-  Inlᵖ .pres-≤ x≤y = x≤y
+  inlᵖ : Monotone P (P ⊎ᵖ Q)
+  inlᵖ .hom        = inl
+  inlᵖ .pres-≤ x≤y = lift x≤y
 
-  Inrᵖ : Monotone Q (P ⊎ᵖ Q)
-  Inrᵖ .hom = inr
-  Inrᵖ .pres-≤ x≤y = x≤y
+  inrᵖ : Monotone Q (P ⊎ᵖ Q)
+  inrᵖ .hom        = inr
+  inrᵖ .pres-≤ x≤y = lift x≤y
 
-  Matchᵖ : ∀ {o ℓ} {R : Poset o ℓ} → Monotone P R → Monotone Q R → Monotone (P ⊎ᵖ Q) R
-  Matchᵖ f g .hom (inl x) = f # x
-  Matchᵖ f g .hom (inr x) = g # x
-  Matchᵖ f g .pres-≤ {inl x} {inl y} = f .pres-≤
-  Matchᵖ f g .pres-≤ {inr x} {inr y} = g .pres-≤
+  matchᵖ : ∀ {o ℓ} {R : Poset o ℓ} → Monotone P R → Monotone Q R → Monotone (P ⊎ᵖ Q) R
+  matchᵖ f g .hom (inl x) = f # x
+  matchᵖ f g .hom (inr x) = g # x
+  matchᵖ f g .pres-≤ {inl x} {inl y} (lift α) = f .pres-≤ α
+  matchᵖ f g .pres-≤ {inr x} {inr y} (lift β) = g .pres-≤ β
 ```
 
-We can show that this really is the coproduct in $\Pos$.
+A straightforward calculation shows that this really is the coproduct in
+$\Pos$.
 
 ```agda
 Posets-has-coproducts : ∀ {o ℓ} → has-coproducts (Posets o ℓ)
 Posets-has-coproducts P Q .coapex = P ⊎ᵖ Q
-Posets-has-coproducts P Q .in₀ = Inlᵖ
-Posets-has-coproducts P Q .in₁ = Inrᵖ
-Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = Matchᵖ
+Posets-has-coproducts P Q .in₀ = inlᵖ
+Posets-has-coproducts P Q .in₁ = inrᵖ
+Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = matchᵖ
 Posets-has-coproducts P Q .has-is-coproduct .in₀∘factor = trivial!
 Posets-has-coproducts P Q .has-is-coproduct .in₁∘factor = trivial!
 Posets-has-coproducts P Q .has-is-coproduct .unique other α β = ext λ where
-  (inl x) → happly (ap hom α) x
-  (inr x) → happly (ap hom β) x
+  (inl x) → α #ₚ x
+  (inr x) → β #ₚ x
+```
 
+As a related fact, we can show that the empty poset is the [[initial
+object]] in $\Pos$.
+
+```agda
 Posets-initial : ∀ {o ℓ} → Initial (Posets o ℓ)
 Posets-initial .bot = 𝟘ᵖ
-Posets-initial .has⊥ P .centre .hom ()
+Posets-initial .has⊥ P .centre .hom    ()
 Posets-initial .has⊥ P .centre .pres-≤ ()
 Posets-initial .has⊥ P .paths f = ext λ ()
 ```
