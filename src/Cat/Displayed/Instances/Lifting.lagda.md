@@ -214,7 +214,7 @@ module _
 ```
 -->
 
-Diagramatically, the situation is as follows:
+Diagrammatically, the situation is as follows:
 
 ~~~{.quiver}
 \begin{tikzcd}

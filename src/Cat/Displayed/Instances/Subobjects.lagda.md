@@ -202,7 +202,7 @@ To understand this result, we remind ourselves of the universal property
 of an image factorisation for $f : a \to b$: It is the initial subobject
 through with $f$ factors. That is to say, if $m : \Sub(b)$ is another
 subobject, and $f = me$ for some map $e : a \to m$, then $m \le \im f$.
-Summarised diagramatically, the universal property of an image
+Summarised diagrammatically, the universal property of an image
 factorisation looks like a kite:
 
 ~~~{.quiver}
