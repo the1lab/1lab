@@ -2,25 +2,23 @@
 
 <!--
 ```agda
-open import Cat.Prelude
-open import Order.Base
-open import Data.Id.Base
-open import Data.Set.Truncation
-
-import Order.Reasoning as Pr
+open import 1Lab.Type using (⊥)
 
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
+open import Cat.Prelude
 
+open import Data.Set.Truncation
+open import Data.Id.Base
 open import Data.Sum
-open import 1Lab.Type using (⊥)
 
+open import Order.Base
 
-open Coproduct
+import Order.Reasoning as Pr
+
 open is-coproduct
+open Coproduct
 open Initial
-
-
 ```
 -->
 

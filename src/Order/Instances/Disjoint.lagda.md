@@ -1,17 +1,24 @@
 <!--
 ```agda
+open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Morphism
 open import Cat.Prelude
 
-open import Order.Base
-open import Order.Displayed
-open import Order.Instances.Discrete
 open import Data.Id.Base
-open import Cat.Diagram.Coproduct.Indexed
+open import Data.Bool
+open import Data.Sum
+
+open import Order.Instances.Coproduct renaming (Matchᵖ to Match⊎ᵖ)
+open import Order.Instances.Discrete
+open import Order.Displayed
+open import Order.Univalent
+open import Order.Base
 
 import Order.Reasoning as Pr
-open Indexed-coproduct
-open is-indexed-coproduct
 
+open is-indexed-coproduct
+open Indexed-coproduct
+open Inverses
 ```
 -->
 
@@ -101,15 +108,6 @@ Posets-has-set-indexed-coproducts I F .has-is-ic .unique f p = ext λ where
 ## Binary coproducts are a special case of indexed coproducts
 
 ```agda
-
-open import Data.Bool
-open import Data.Sum
-open import Order.Instances.Coproduct renaming (Matchᵖ to Match⊎ᵖ)
-open import Order.Univalent
-
-open import Cat.Morphism
-open Inverses
-
 ⊎≡Disjoint-bool : ∀ {o ℓ} (P Q : Poset o ℓ) → P ⊎ᵖ Q ≡ Disjoint (el! Bool) (if_then P else Q)
 ⊎≡Disjoint-bool P Q = Poset-path λ where 
   .to → Match⊎ᵖ (Injᵖ true) (Injᵖ false)
