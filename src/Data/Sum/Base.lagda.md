@@ -13,7 +13,7 @@ open import Data.Dec.Base
 module Data.Sum.Base where
 ```
 
-# Sum types
+# Sum types {defines="sum-type"}
 
 Sum types are one of the fundamental ingredients of type theory. They
 play a dual role to the [[product type]]; if products allow us to state

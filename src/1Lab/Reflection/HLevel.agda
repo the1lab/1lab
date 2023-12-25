@@ -10,9 +10,8 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-
-open import Data.Id.Base
 open import Data.List.Base
+open import Data.Id.Base
 open import Data.Bool
 
 open import Meta.Foldable
@@ -631,6 +630,15 @@ macro hlevel! = hlevel-tactic-worker
 el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hlevel A n} → n-Type ℓ n
 ∣ el! A {hl = hl} ∣ = A
 el! A {hl = hl} .is-tr = hl
+
+
+biimp-is-equiv!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
+    {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
+  → (f : A → B) → (B → A)
+  → is-equiv f
+biimp-is-equiv! {aprop = aprop} {bprop = bprop} = biimp-is-equiv aprop bprop
 
 prop-ext!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
