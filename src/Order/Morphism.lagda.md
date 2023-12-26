@@ -46,7 +46,7 @@ module _ {o ℓ o' ℓ'} (P : Poset o ℓ) (Q : Poset o' ℓ') (f : ⌞ P ⌟ �
 
   ```agda
   is-antitone : Type _
-  is-antitone = ∀ {x y} → x P.≤ y → f x Q.≤ f y
+  is-antitone = ∀ {x y} → x P.≤ y → f y Q.≤ f x
   ```
 
 - :::{.definition #order-reflection}
