@@ -136,8 +136,8 @@ module connected∙-elim-set
         (λ p → subst P (sym p) pb)
         (λ p q i → subst P (sym (∙-filler'' (sym p) q i)) (loops (sym p ∙ q) i))
 
-  elim-β-pb : elim (X .snd) ≡ pb
-  elim-β-pb = subst (λ c → elim.work (X .snd) c ≡ pb)
+  elim-β-point : elim (X .snd) ≡ pb
+  elim-β-point = subst (λ c → elim.work (X .snd) c ≡ pb)
     (squash (inc refl) (conn (X .snd)))
     (transport-refl pb)
 ```

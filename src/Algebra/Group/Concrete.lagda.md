@@ -127,7 +127,7 @@ S¹-concrete .has-is-groupoid = hlevel 3
 ## The category of concrete groups
 
 Concrete groups naturally form a [[category]], where the morphisms are given by
-[[pointed maps]] $\B{G} \to \B{H}$.
+[[pointed maps]] $\B{G} \to^\bullet \B{H}$.
 
 ```agda
 ConcreteGroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
@@ -207,7 +207,7 @@ module _ (G : ConcreteGroup ℓ) where
 
 We define a [[functor]] from concrete groups to abstract groups.
 The object mapping is given by taking the `fundamental group`{.Agda ident=π₁B}.
-Given a pointed map $f : \B{G} \to \B{H}$, we can `ap`{.Agda}ply it to a loop
+Given a pointed map $f : \B{G} \to^\bullet \B{H}$, we can `ap`{.Agda}ply it to a loop
 on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
 is pointed to get a loop on $\point{H}$ by [[conjugation]].
 
@@ -253,7 +253,7 @@ _ = Deloop
 We now tackle the hard part: to prove that `Π₁`{.Agda} is [[fully faithful]].
 In order to show that the action on morphisms is an equivalence, we need a way
 of "delooping" a group homomorphism $f : \pi_1(\B{G}) \to \pi_1(\B{H})$ into a
-pointed map $\B{G} \to \B{H}$.
+pointed map $\B{G} \to^\bullet \B{H}$.
 
 ```agda
 module Deloop-Hom {G H : ConcreteGroup ℓ} (f : Groups ℓ .Hom (π₁B G) (π₁B H)) where
@@ -264,7 +264,7 @@ How can we build such a map? All we know about $\B{G}$ is that it is a pointed c
 groupoid, and thus that it comes with the elimination principle `B-elim-contr`{.Agda}.
 This suggests that we need to define a type family $C : \B{G} \to \ty$ such that
 $C(\point{G})$ is contractible, conclude that $\forall x. C(x)$ holds
-and extract a map $\B{G} \to \B{H}$ from that.
+and extract a map $\B{G} \to^\bullet \B{H}$ from that.
 The following construction is adapted from [@Symmetry, §4.10]:
 
 ```agda
@@ -497,4 +497,142 @@ S¹-concrete-abelian = π₁-abelian→abelian {G = S¹-concrete}
   (subst is-commutative-group
     (sym π₁S¹≡ℤ)
     (Abelian→Group-on-abelian (ℤ-ab .snd)))
+```
+
+## First abelian group cohomology
+
+When $H$ is a concrete abelian group, something interesting happens: for any
+other concrete group $G$, the set of pointed maps $\B{G} \to^\bullet \B{H}$ (i.e.
+group homomorphisms from $G$ to $H$) turns out to be equivalent to the
+[[set truncation]] of the type of *un*pointed maps, $\|\B{G} \to \B{H}\|_0$.
+
+This is a special case of a theorem that relates this set truncation with the set
+of orbits of the action of the *inner automorphism group* of $H$ on the set of group
+homomorphisms $\B{G} \to^\bullet \B{H}$. We do not prove this here, but see
+[@Symmetry, theorem 5.12.2]. In the special case that $H$ is abelian, its inner
+automorphism group is trivial, and we can avoid quotienting.
+
+In even fancier language, it is also a computation of the first *cohomology group*
+of $G$ with coefficients in $H$, hence we adopt the notation
+$H^1(G, H) = \|\B{G} \to \B{H}\|_0$.
+
+```agda
+H¹[_,_] : ∀ {ℓ ℓ'} → ConcreteGroup ℓ → ConcreteGroup ℓ' → Type (ℓ ⊔ ℓ')
+H¹[ G , H ] = ∥ (⌞ B G ⌟ → ⌞ B H ⌟) ∥₀
+```
+
+First, note that there is always a natural map $(\B{G} \to^\bullet \B{H}) \to
+H^1(G, H)$ that just forgets the pointing path.
+
+```agda
+class
+  : ∀ {ℓ ℓ'} {G : ConcreteGroup ℓ} {H : ConcreteGroup ℓ'}
+  → (B G →∙ B H) → H¹[ G , H ]
+class (f , _) = inc f
+```
+
+Now assume $H$ is abelian; we will show that the fibres of this map are contractible.
+Given a class representative $f$, we may first assume that $f(\point{G}) \equiv
+\point{H}$, since $H$ is connected and we're proving a proposition.
+Thus $f$ is a pointed map, which we can choose as the centre of contraction.
+
+<!--
+```agda
+module _ {ℓ ℓ'}
+  (G : ConcreteGroup ℓ)
+  (H : ConcreteGroup ℓ') (H-ab : is-concrete-abelian H)
+  where
+  open ConcreteGroup H using (H-Level-B)
+```
+-->
+
+```agda
+  work
+    : ∀ f → f (pt G) ≡ pt H
+    → is-contr (fibre (class {G = G} {H}) (inc f))
+  work f ptf .centre = (f , ptf) , refl
+```
+
+We now have to show that any other pointed map $g$ that is *merely* homotopic
+to $f$ is actually homotopic to $f$ *as pointed maps*.
+We proceed by induction: since $G$ is a pointed connected type, and there is only
+a *set* of homotopies $f \equiv g$, it suffices to show that $f(\point{G}) \equiv
+g(\point{G})$ (easy since both maps are pointed) and that each loop $p : \point{G}
+\equiv \point{G}$ respects this identification, which amounts to filling the
+following square:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {f(\point{G})} & {g(\point{G})} \\
+  {f(\point{G})} & {g(\point{G})}
+  \arrow["{\rm{pointed}}", from=1-1, to=1-2]
+  \arrow["{\rm{pointed}}"', from=2-1, to=2-2]
+  \arrow["{f(p)}"', from=1-1, to=2-1]
+  \arrow["{g(p)}", from=1-2, to=2-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+  work f ptf .paths ((g , ptg) , g≡f) = Σ-prop-path! $ Σ-pathp
+    (funext E.elim)
+    (transpose (symP (∙→square'' E.elim-β-point)))
+    where
+      pointed : f (pt G) ≡ g (pt G)
+      pointed = ptf ∙ sym ptg
+      coh : ∀ (p : pt G ≡ pt G) → Square (ap f p) pointed pointed (ap g p)
+```
+
+Since we are now proving a proposition, we can assume that $f$ and $g$ are
+definitionally equal by path induction; then, the square above has equal
+opposite sides, which means it must commute since $H$ is abelian!
+
+```agda
+      coh p = ∥-∥-rec!
+        (λ f≡g → J (λ g _ → ∀ ptg → Square (ap f p) _ _ (ap g p))
+          (λ ptg → concrete-abelian→square H H-ab (ap f p) (ptf ∙ sym ptg))
+          f≡g ptg)
+        (∥-∥₀-path.to (sym g≡f))
+      module E = connected∙-elim-set {P = λ x → f x ≡ g x}
+        (G .has-is-connected) (hlevel 2) pointed coh
+```
+
+We conclude that `class`{.Agda} is an equivalence.
+
+```agda
+  class-is-equiv : is-equiv (class {G = G} {H})
+  class-is-equiv .is-eqv = ∥-∥₀-elim
+    (λ _ → hlevel 2)
+    λ f → ∥-∥-rec! (work f) (H .has-is-connected (f (pt G)))
+
+  first-concrete-abelian-group-cohomology
+    : (B G →∙ B H) ≃ H¹[ G , H ]
+  first-concrete-abelian-group-cohomology
+    = class {G = G} {H} , class-is-equiv
+```
+
+Translating this across our equivalence of categories gives a similar statement
+for abstract groups.
+
+<!--
+```agda
+module _ {ℓ}
+  (G : Group ℓ)
+  (H : Group ℓ) (H-ab : is-commutative-group H)
+  where
+```
+-->
+
+```agda
+  Deloop-hom-equiv : (Deloop∙ G →∙ Deloop∙ H) ≃ Hom (Groups ℓ) G H
+  Deloop-hom-equiv = ff+split-eso→hom-equiv Π₁
+    (λ {G} {H} → Π₁-is-ff {_} {G} {H})
+    Π₁-is-split-eso
+    G H .snd .snd
+
+  first-abelian-group-cohomology
+    : H¹[ Concrete G , Concrete H ] ≃ Hom (Groups ℓ) G H
+  first-abelian-group-cohomology =
+    first-concrete-abelian-group-cohomology
+      (Concrete G) (Concrete H) (Deloop-abelian H-ab) e⁻¹
+    ∙e Deloop-hom-equiv
 ```
