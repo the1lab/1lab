@@ -948,9 +948,9 @@ structures: these are the lattices and related structures.
 open import Order.Frame
 open import Order.Lattice
 
-open import Order.Semilattice
+open import Order.Semilattice.Join
+open import Order.Semilattice.Meet
 open import Order.Semilattice.Free
-open import Order.Semilattice.Order
 ```
 
 Examples of actual orders:

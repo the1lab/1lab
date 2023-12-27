@@ -96,37 +96,15 @@ universal property of $K(A)$.
   singletonᵏ x = singleton x , singleton-is-K-finite (A .is-tr) x
 ```
 
-We can now prove the aforementioned reduction theorem: Every element $S : K(A)$
-can be expressed (in a noncanonical way) as the finite union of a
-diagram of singletons. This is _almost_ a pure restatement of the
-$K$-finiteness condition, but it will be very useful!
+Note that every K-finite subset is a least upper bound of all of the singleton
+sets it contains.
 
-```agda
-  K-reduce
-    : (x : K-finite-subset)
-    → ∃ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-lub KA.po (λ i → singletonᵏ (f i)) x
-  K-reduce (P , P-fin) = □-rec! (pure ⊙ reduce) P-fin where
-    open is-lub
-
-    reduce
-      : Finite-cover (∫ₚ P) 
-      → Σ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-lub KA.po (λ i → singletonᵏ (f i)) (P , P-fin)
-    reduce (cover {card} covers surj) = card , fst ⊙ covers , λ where
-      .fam≤lub i j i=j →
-       subst (λ ϕ → ∣ P ϕ ∣) (out! i=j) (covers i .snd)
-      .least ub wit i i∈P → ∥-∥-proj! do
-        (idx , path) ← surj (i , i∈P)
-        pure (wit idx i (inc (ap fst path)))
-```
-
-<!--
 ```agda
   K-singleton-lub
     : (P : K-finite-subset)
     → is-lub KA.po {I = ∫ₚ (P .fst)} (singletonᵏ ⊙ fst) P
   K-singleton-lub P = subposet-has-lub _ (P .snd) (subset-singleton-lub _)
 ```
--->
 
 In a similar vein, given a map $f : A \to B$ and a semilattice structure
 on $B$, we can extend this to a semilattice homomorphism^[Here we
