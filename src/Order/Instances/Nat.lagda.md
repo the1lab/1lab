@@ -58,13 +58,13 @@ Nat-meets : ∀ x y → Meet Nat-poset x y
 Nat-meets x y .glb                = min x y
 Nat-meets x y .has-meet .meet≤l   = min-≤l x y
 Nat-meets x y .has-meet .meet≤r   = min-≤r x y
-Nat-meets x y .has-meet .greatest = min-is-glb x y
+Nat-meets x y .has-meet .greatest = min-univ x y
 
 Nat-joins : ∀ x y → Join Nat-poset x y
 Nat-joins x y .lub              = max x y
-Nat-joins x y .has-join .least  = max-is-lub x y
 Nat-joins x y .has-join .l≤join = max-≤l x y
 Nat-joins x y .has-join .r≤join = max-≤r x y
+Nat-joins x y .has-join .least  = max-univ x y
 ```
 
 It's straightforward to show that this order is _bounded below_, since
