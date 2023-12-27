@@ -212,28 +212,28 @@ on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
 is pointed to get a loop on $\point{H}$ by [[conjugation]].
 
 ```agda
-Π₁ : Functor (ConcreteGroups ℓ) (Groups ℓ)
-Π₁ .F₀ = π₁B
-Π₁ .F₁ (f , ptf) .hom x = conj ptf (ap f x)
+π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)
+π₁F .F₀ = π₁B
+π₁F .F₁ (f , ptf) .hom x = conj ptf (ap f x)
 ```
 
 By some simple path yoga, this preserves multiplication, and the construction is
 functorial:
 
 ```agda
-Π₁ .F₁ (f , ptf) .preserves .pres-⋆ x y =
+π₁F .F₁ (f , ptf) .preserves .pres-⋆ x y =
   conj ptf ⌜ ap f (x ∙ y) ⌝             ≡⟨ ap! (ap-∙ f _ _) ⟩
   conj ptf (ap f x ∙ ap f y)            ≡⟨ conj-of-∙ _ _ _ ⟩
   conj ptf (ap f x) ∙ conj ptf (ap f y) ∎
 
-Π₁ .F-id = ext conj-refl
-Π₁ .F-∘ (f , ptf) (g , ptg) = ext λ x →
+π₁F .F-id = ext conj-refl
+π₁F .F-∘ (f , ptf) (g , ptg) = ext λ x →
   conj (ap f ptg ∙ ptf) (ap (f ⊙ g) x)        ≡˘⟨ conj-∙ _ _ _ ⟩
   conj ptf ⌜ conj (ap f ptg) (ap (f ⊙ g) x) ⌝ ≡˘⟨ ap¡ (ap-conj f _ _) ⟩
   conj ptf (ap f (conj ptg (ap g x)))         ∎
 ```
 
-We start by showing that `Π₁`{.Agda} is [[split essentially surjective]]. This is the
+We start by showing that `π₁F`{.Agda} is [[split essentially surjective]]. This is the
 easy part: to build a concrete group out of an abstract group, we simply take its
 `Deloop`{.Agda}ing, and use the fact that the fundamental group of the delooping
 recovers the original group.
@@ -245,12 +245,12 @@ _ = Deloop
 -->
 
 ```agda
-Π₁-is-split-eso : is-split-eso (Π₁ {ℓ})
-Π₁-is-split-eso G .fst = Concrete G
-Π₁-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
+π₁F-is-split-eso : is-split-eso (π₁F {ℓ})
+π₁F-is-split-eso G .fst = Concrete G
+π₁F-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
 ```
 
-We now tackle the hard part: to prove that `Π₁`{.Agda} is [[fully faithful]].
+We now tackle the hard part: to prove that `π₁F`{.Agda} is [[fully faithful]].
 In order to show that the action on morphisms is an equivalence, we need a way
 of "delooping" a group homomorphism $f : \pi_1(\B{G}) \to \pi_1(\B{H})$ into a
 pointed map $\B{G} \to^\bullet \B{H}$.
@@ -346,7 +346,7 @@ right inverse to $\Pi_1$:
     p (ω ∙ refl)           ≡⟨ f-p ω refl ⟩
     f # ω ∙ p refl         ∎
 
-  rinv : Π₁ .F₁ {G} {H} g ≡ f
+  rinv : π₁F .F₁ {G} {H} g ≡ f
   rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
 ```
 
@@ -357,8 +357,8 @@ We use the same trick, building upon what we've done before: start by defining
 a family that asserts that $p_x$ agrees with $f$ *all the way*, not just on loops:
 
 ```agda
-module Deloop-Hom-Π₁ {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
-  open Deloop-Hom {G = G} {H} (Π₁ .F₁ {G} {H} f) public
+module Deloop-Hom-π₁F {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
+  open Deloop-Hom {G = G} {H} (π₁F .F₁ {G} {H} f) public
   open ConcreteGroup H using (H-Level-B)
 
   C' : ∀ x → Type _
@@ -410,30 +410,30 @@ need to bend the path into a `Square`{.Agda}:
   linv = funext∙ g≡f ptg≡ptf
 ```
 
-*Phew*. At last, `Π₁`{.Agda} is fully faithful.
+*Phew*. At last, `π₁F`{.Agda} is fully faithful.
 
 ```agda
-Π₁-is-ff : is-fully-faithful (Π₁ {ℓ})
-Π₁-is-ff {ℓ} {G} {H} = is-iso→is-equiv $ iso
+π₁F-is-ff : is-fully-faithful (π₁F {ℓ})
+π₁F-is-ff {ℓ} {G} {H} = is-iso→is-equiv $ iso
   (Deloop-Hom.g {G = G} {H})
   (Deloop-Hom.rinv {G = G} {H})
-  (Deloop-Hom-Π₁.linv {G = G} {H})
+  (Deloop-Hom-π₁F.linv {G = G} {H})
 ```
 
-We've shown that `Π₁`{.Agda} is fully faithful and essentially surjective;
+We've shown that `π₁F`{.Agda} is fully faithful and essentially surjective;
 this lets us conclude with the desired equivalence.
 
 ```agda
-Π₁-is-equivalence : is-equivalence (Π₁ {ℓ})
-Π₁-is-equivalence = ff+split-eso→is-equivalence
-  (λ {G} {H} → Π₁-is-ff {_} {G} {H})
-  Π₁-is-split-eso
+π₁F-is-equivalence : is-equivalence (π₁F {ℓ})
+π₁F-is-equivalence = ff+split-eso→is-equivalence
+  (λ {G} {H} → π₁F-is-ff {_} {G} {H})
+  π₁F-is-split-eso
 
 π₁B-is-equiv : is-equiv (π₁B {ℓ})
 π₁B-is-equiv = is-cat-equivalence→equiv-on-objects
   ConcreteGroups-is-category
   Groups-is-category
-  Π₁-is-equivalence
+  π₁F-is-equivalence
 
 module Concrete≃Abstract {ℓ} = Equiv (_ , π₁B-is-equiv {ℓ})
 ```
@@ -624,9 +624,9 @@ module _ {ℓ}
 
 ```agda
   Deloop-hom-equiv : (Deloop∙ G →∙ Deloop∙ H) ≃ Hom (Groups ℓ) G H
-  Deloop-hom-equiv = ff+split-eso→hom-equiv Π₁
-    (λ {G} {H} → Π₁-is-ff {_} {G} {H})
-    Π₁-is-split-eso
+  Deloop-hom-equiv = ff+split-eso→hom-equiv π₁F
+    (λ {G} {H} → π₁F-is-ff {_} {G} {H})
+    π₁F-is-split-eso
     G H .snd .snd
 
   first-abelian-group-cohomology
