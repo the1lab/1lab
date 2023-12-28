@@ -66,6 +66,14 @@ Sⁿ⁻¹-is-connected zero = _
 Sⁿ⁻¹-is-connected (suc n) = Susp-is-connected n (Sⁿ⁻¹-is-connected n)
 ```
 
+<!--
+```agda
+instance
+  Connected-Susp : ∀ {ℓ} {A : Type ℓ} {n} → ⦃ Connected A n ⦄ → Connected (Susp A) (suc n)
+  Connected-Susp {n = n} ⦃ conn-instance c ⦄ = conn-instance (Susp-is-connected n c)
+```
+-->
+
 ## Truncatedness
 
 While there is no similarly pleasant characterisation of the [[truncatedness]]
