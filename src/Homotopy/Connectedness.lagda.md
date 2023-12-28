@@ -277,7 +277,7 @@ is-connected-+ n (suc k) w = is-connected-+ n k (is-connected-suc _ w)
 There is an alternative definition of connectedness that avoids talking about
 arbitrary truncations, and is thus sometimes easier to work with.
 Generalising the special cases for $n = -1$ (a type is $(-1)$-connected if and
-only if it is inhabited) and $n = 0$ (a type is $0$-connected is and only if
+only if it is inhabited) and $n = 0$ (a type is $0$-connected if and only if
 it is inhabited and all points are merely equal), we can prove that a type
 is $n$-connected if and only if it is inhabited and all its path spaces
 are $(n-1)$-connected.
@@ -613,16 +613,19 @@ simply-connected : ∀ {ℓ} {T : Type ℓ} → ⦃ Connected T 3 ⦄
 simply-connected ⦃ conn-instance c ⦄ {a} {b} p q =
   n-connected-∥-∥.to 3 c .snd a b .snd p q .fst
 
-is-contr→is-connected : ∀ {ℓ} {A : Type ℓ} → is-contr A → ∀ {n} → is-n-connected-∥-∥ A n
+is-contr→is-connected
+  : ∀ {ℓ} {A : Type ℓ} → is-contr A
+  → ∀ {n} → is-n-connected-∥-∥ A n
 is-contr→is-connected c {zero} = _
 is-contr→is-connected c {suc n} .fst = inc (c .centre)
-is-contr→is-connected c {suc n} .snd _ _ = is-contr→is-connected (Path-is-hlevel 0 c)
+is-contr→is-connected c {suc n} .snd _ _ =
+  is-contr→is-connected (Path-is-hlevel 0 c)
 
 instance
   -- Note that this overlaps with other instances, but Agda doesn't mind
   -- because all instances of Connected A 0 are equal!
   0-Connected : ∀ {ℓ} {A : Type ℓ} → Connected A 0
-  0-Connected = conn-instance _
+  0-Connected = _
 
   Connected-⊤ : ∀ {n} → Connected ⊤ n
   Connected-⊤ {n} = conn-instance (n-connected-∥-∥.from n
