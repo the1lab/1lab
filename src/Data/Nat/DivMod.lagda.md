@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Data.Nat.Properties
+open import Data.Nat.Divisible
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Dec.Base
@@ -122,4 +123,20 @@ is-divmod x (suc y) with divide-pos x (suc y)
 x%y<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x % y) < y
 x%y<y x (suc y) with divide-pos x (suc y)
 ... | divmod q r α β = recover β
+```
+
+With this, we can decide whether two numbers divide each other by
+checking whether the remainder is zero!
+
+```agda
+instance
+  Dec-∣ : ∀ {n m} → Dec (n ∣ m)
+  Dec-∣ {zero} {m} = m ≡? 0
+  Dec-∣ n@{suc _} {m} with divide-pos m n
+  ... | divmod q 0 α β = yes (q , sym (+-zeror _) ∙ sym (recover α))
+  ... | divmod q r@(suc _) α β = no λ (q' , p) →
+    let
+      n∣r : (q' - q) * n ≡ r
+      n∣r = monus-distribr q' q n ∙ sym (monus-swapl _ _ _ (sym (p ∙ recover α)))
+    in <-≤-asym (recover β) (m∣sn→m≤sn (q' - q , n∣r))
 ```
