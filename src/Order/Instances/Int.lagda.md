@@ -56,12 +56,12 @@ open minmax (Int-is-dec-total .is-decidable-total-order.has-is-total)
     ( min      to minℤ
     ; min-≤l   to minℤ-≤l
     ; min-≤r   to minℤ-≤r
-    ; min-univ to minℤ-is-meet
+    ; min-univ to minℤ-univ
 
     ; max      to maxℤ
     ; max-≤l   to maxℤ-≤l
     ; max-≤r   to maxℤ-≤r
-    ; max-univ to maxℤ-is-join)
+    ; max-univ to maxℤ-univ)
   using () public
 ```
 -->
