@@ -29,15 +29,10 @@ module Order.Frame.Free where
 
 # Free cocompletions
 
-A [frame] is, in particular, a [semilattice]: the semilattice of
-[meets]. Frame homomorphisms preserve finite meets, so they are also
-homomorphisms for the meet semilattice. Since equality of homomorphisms
-is defined by equality of the underlying functions, these remarks
-assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
-
-[frame]: Order.Frame.html
-[semilattice]: Order.Semilattice.html
-[meets]: Order.Diagram.Glb.html
+A [[frame]] is, in particular, a [[meet semilattice]]. Frame homomorphisms
+preserve finite meets, so they are also homomorphisms for the meet semilattice.
+Since equality of homomorphisms is defined by equality of the underlying
+functions, these remarks assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
 
 <!--
 ```agda

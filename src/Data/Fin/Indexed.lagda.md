@@ -131,7 +131,7 @@ T \to \Omega$ is finitely-indexed if its total space $\Sigma_{x : T} x
 \in P$ is. To disambiguate and keep names short, we refer to types as
 finitely-indexed, but to subsets as **K-finite**.
 
-The $K$-finite subsets of $T$ are a sub-join[[semilattice]] of the
+The $K$-finite subsets of $T$ are a sub-[[join semilattice]] of the
 [[power-set]] lattice of $T$. That is, the empty subset is $K$-finite,
 and any union is $K$-finite as well. Since the empty subset is _finite_,
 it's also $K$-finite, of course.

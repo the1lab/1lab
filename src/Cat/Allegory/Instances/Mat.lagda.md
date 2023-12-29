@@ -81,11 +81,9 @@ that this is, indeed, a category:
 ```
 
 Most of the structure of an allegory now follows directly from the fact
-that frames are also [semilattices]: the ordering, duals, and
+that frames are also [[meet semilattices]]: the ordering, duals, and
 intersections are all computed pointwise. The only thing which requires
 a bit more algebra is the verification of the modular law:
-
-[semilattices]: Order.Semilattice.html
 
 ```agda
   Matrices : Allegory (lsuc o) o (o ⊔ ℓ)

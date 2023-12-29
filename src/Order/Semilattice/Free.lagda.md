@@ -106,25 +106,6 @@ sets it contains.
   K-singleton-lub P = subposet-has-lub _ (P .snd) (subset-singleton-lub _)
 ```
 
-In a similar vein, given a map $f : A \to B$ and a semilattice structure
-on $B$, we can extend this to a semilattice homomorphism^[Here we
-construct the underlying map first, the proof that it's a semilattice
-homomorphism `follows`{.Agda ident=pres}] $K(A) \to B$ by first
-expressing $S : K(A)$ as $\bigcup_{i:[n]} \eta(a_i)$ for some $n$,
-$a_i$, then computing $\bigcup_{i:[n]} f(a_i)$.
-
-Normally this would only let us compute a map $K(A) \to \| B \|$ into
-the support of $B$, since we had to choose an expression for $S$, but it
-turns out that the diagram $\bigcup_{i:[n]} f(a_i)$ is not only a lub
-for the $f(a_i)$, but also for the family
-
-$$
-(\sum_{x : A} P(x)) \xto{\pi_1} A \xto{f} B\text{,}
-$$
-
-and since lubs are unique, we can get our computed value out from under
-the truncation.
-
 ```agda
   module _ {o ℓ'} (B : Join-semilattice o ℓ') where
     private module B = Order.Semilattice.Join.Reasoning B
@@ -195,7 +176,7 @@ using surjectivity of the first map.
             □x=y)
 ```
 
-```
+```agda
 open make-left-adjoint
 open Subcat-hom
 
