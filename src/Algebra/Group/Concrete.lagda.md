@@ -126,20 +126,17 @@ S¹-concrete .has-is-groupoid = hlevel 3
 
 ## The category of concrete groups
 
-Concrete groups naturally form a [[category]], where the morphisms are given by
-[[pointed maps]] $\B{G} \to^\bullet \B{H}$.
+The notion of group *homomorphism* between two groups $G$ and $H$ gets translated
+to, on the "concrete" side, [[*pointed* maps]] $\B{G} \to^\bullet \B{H}$.
+
+The pointedness condition ensures that these maps behave like abstract group
+homomorphisms; in particular, that they form a *set*.
 
 ```agda
-ConcreteGroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-ConcreteGroups ℓ .Ob = ConcreteGroup ℓ
-ConcreteGroups _ .Hom G H = B G →∙ B H
-```
-
-We immediately see one reason for the pointedness condition: without it,
-the morphisms between concrete groups would not form a set.
-
-```agda
-ConcreteGroups _ .Hom-set G H (f , ptf) (g , ptg) p q =
+ConcreteGroups-Hom-set
+  : (G : ConcreteGroup ℓ) (H : ConcreteGroup ℓ')
+  → is-set (B G →∙ B H)
+ConcreteGroups-Hom-set G H (f , ptf) (g , ptg) p q =
   Σ-set-square hlevel! (funext-square (B-elim-contr G square))
   where
     open ConcreteGroup H using (H-Level-B)
@@ -153,9 +150,19 @@ ConcreteGroups _ .Hom-set G H (f , ptf) (g , ptg) p q =
     square .paths _ = H .has-is-groupoid _ _ _ _ _ _
 ```
 
+These naturally assemble into a [[category]].
+
+```agda
+ConcreteGroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+ConcreteGroups ℓ .Ob = ConcreteGroup ℓ
+ConcreteGroups _ .Hom G H = B G →∙ B H
+ConcreteGroups _ .Hom-set = ConcreteGroups-Hom-set
+```
+
 <details>
 <summary>
-The rest of the categorical structure is inherited from pointed functions.
+The rest of the categorical structure is inherited from pointed functions, and
+univalence follows from the [[univalence]] of the universe of groupoids.
 </summary>
 
 ```agda
@@ -167,14 +174,7 @@ ConcreteGroups _ .assoc (f , ptf) (g , ptg) (h , pth) = Σ-pathp refl $
   ⌜ ap f (ap g pth ∙ ptg) ⌝ ∙ ptf   ≡⟨ ap! (ap-∙ f _ _) ⟩
   (ap (f ⊙ g) pth ∙ ap f ptg) ∙ ptf ≡⟨ sym (∙-assoc _ _ _) ⟩
   ap (f ⊙ g) pth ∙ ap f ptg ∙ ptf   ∎
-```
-</details>
 
-We can check that `ConcreteGroups`{.Agda} is a [[univalent category]]: this essentially
-follows from the [[univalence]] of the universe of groupoids.
-
-<!--
-```agda
 private
   iso→equiv : ∀ {a b} → Isomorphism (ConcreteGroups ℓ) a b → ⌞ a ⌟ ≃ ⌞ b ⌟
   iso→equiv im = Iso→Equiv (im .to .fst ,
@@ -187,7 +187,7 @@ ConcreteGroups-is-category {ℓ} .to-path-over im = ≅-pathp (ConcreteGroups �
   Σ-pathp (funextP λ _ → path→ua-pathp _ refl)
     (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
 ```
--->
+</details>
 
 ## Concrete vs. abstract
 
@@ -441,7 +441,7 @@ module Concrete≃Abstract {ℓ} = Equiv (_ , π₁B-is-equiv {ℓ})
 ## Concrete abelian groups
 
 A concrete [[abelian group]] is, unsurprisingly, a concrete group in which
-path concatenation is commutative.
+concatenation of loops at the base point is commutative.
 
 ```agda
 module _ {ℓ} (G : ConcreteGroup ℓ) where
@@ -526,15 +526,13 @@ H^1(G, H)$ that just forgets the pointing path.
 
 ```agda
 class
-  : ∀ {ℓ ℓ'} {G : ConcreteGroup ℓ} {H : ConcreteGroup ℓ'}
+  : ∀ {ℓ ℓ'} (G : ConcreteGroup ℓ) (H : ConcreteGroup ℓ')
   → (B G →∙ B H) → H¹[ G , H ]
-class (f , _) = inc f
+class G H (f , _) = inc f
 ```
 
-Now assume $H$ is abelian; we will show that the fibres of this map are contractible.
-Given a class representative $f$, we may first assume that $f(\point{G}) \equiv
-\point{H}$, since $H$ is connected and we're proving a proposition.
-Thus $f$ is a pointed map, which we can choose as the centre of contraction.
+Now assume $H$ is abelian; we will show that this map is injective and surjective,
+so that it is an equivalence of sets.
 
 <!--
 ```agda
@@ -546,68 +544,79 @@ module _ {ℓ ℓ'}
 ```
 -->
 
+Surjectivity is the easy part: since $H$ is connected, every map is merely
+homotopic to a pointed map.
+
 ```agda
-  work
-    : ∀ f → f (pt G) ≡ pt H
-    → is-contr (fibre (class {G = G} {H}) (inc f))
-  work f ptf .centre = (f , ptf) , refl
+  class-surjective : is-surjective (class G H)
+  class-surjective = ∥-∥₀-elim (λ _ → hlevel 2) λ f → do
+    ptf ← H .has-is-connected (f (pt G))
+    inc ((f , ptf) , refl)
 ```
 
-We now have to show that any other pointed map $g$ that is *merely* homotopic
-to $f$ is actually homotopic to $f$ *as pointed maps*.
-We proceed by induction: since $G$ is a pointed connected type, and there is only
-a *set* of homotopies $f \equiv g$, it suffices to show that $f(\point{G}) \equiv
-g(\point{G})$ (easy since both maps are pointed) and that each loop $p : \point{G}
-\equiv \point{G}$ respects this identification, which amounts to filling the
+For injectivity, we restrict our attention to the case of two pointed maps whose
+underlying maps are *definitionally* equal. In other words, we prove that any
+two pointings of $f$ (say $p, q : f(\point{G}) \equiv \point{H}$) yield
+equal *pointed* maps.
+
+In order to define our underlying homotopy, we proceed by induction: since
+$G$ is a pointed connected type, it suffices to give a path $\alpha :
+f(\point{G}) \equiv f(\point{G})$ and to show that every loop $l : \point{G}
+\equiv \point{G}$ respects this identification, in the sense of the
 following square:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {f(\point{G})} & {g(\point{G})} \\
-  {f(\point{G})} & {g(\point{G})}
-  \arrow["{\rm{pointed}}", from=1-1, to=1-2]
-  \arrow["{\rm{pointed}}"', from=2-1, to=2-2]
-  \arrow["{f(p)}"', from=1-1, to=2-1]
-  \arrow["{g(p)}", from=1-2, to=2-2]
+  {f(\point{G})} & {f(\point{G})} \\
+  {f(\point{G})} & {f(\point{G})}
+  \arrow["{\alpha}", from=1-1, to=1-2]
+  \arrow["{\alpha}"', from=2-1, to=2-2]
+  \arrow["{f(l)}"', from=1-1, to=2-1]
+  \arrow["{f(l)}", from=1-2, to=2-2]
 \end{tikzcd}\]
 ~~~
 
+Since our homotopy additionally has to be *pointed*, we know that we must have
+$\alpha = p \bullet q^{-1}$. This is where the fact that $H$ is abelian
+comes in: the above square has equal opposite sides, so it automatically commutes.
+
 ```agda
-  work f ptf .paths ((g , ptg) , g≡f) = Σ-prop-path! $ Σ-pathp
+  class-injective
+    : ∀ f → (p q : f (pt G) ≡ pt H)
+    → Path (B G →∙ B H) (f , p) (f , q)
+  class-injective f p q = Σ-pathp
     (funext E.elim)
     (transpose (symP (∙→square'' E.elim-β-point)))
     where
-      pointed : f (pt G) ≡ g (pt G)
-      pointed = ptf ∙ sym ptg
-      coh : ∀ (p : pt G ≡ pt G) → Square (ap f p) pointed pointed (ap g p)
+      α : f (pt G) ≡ f (pt G)
+      α = p ∙ sym q
+
+      coh : ∀ (l : pt G ≡ pt G) → Square (ap f l) α α (ap f l)
+      coh l = concrete-abelian→square H H-ab (ap f l) α
+
+      module E = connected∙-elim-set {P = λ g → f g ≡ f g}
+        (G .has-is-connected) (hlevel 2) α coh
 ```
 
-Since we are now proving a proposition, we can assume that $f$ and $g$ are
-definitionally equal by path induction; then, the square above has equal
-opposite sides, which means it must commute since $H$ is abelian!
+By a quick path induction, we can conclude that `class`{.Agda} is an equivalence
+between sets.
 
 ```agda
-      coh p = ∥-∥-rec!
-        (λ f≡g → J (λ g _ → ∀ ptg → Square (ap f p) _ _ (ap g p))
-          (λ ptg → concrete-abelian→square H H-ab (ap f p) (ptf ∙ sym ptg))
-          f≡g ptg)
-        (∥-∥₀-path.to (sym g≡f))
-      module E = connected∙-elim-set {P = λ x → f x ≡ g x}
-        (G .has-is-connected) (hlevel 2) pointed coh
-```
-
-We conclude that `class`{.Agda} is an equivalence.
-
-```agda
-  class-is-equiv : is-equiv (class {G = G} {H})
-  class-is-equiv .is-eqv = ∥-∥₀-elim
-    (λ _ → hlevel 2)
-    λ f → ∥-∥-rec! (work f) (H .has-is-connected (f (pt G)))
+  class-is-equiv : is-equiv (class G H)
+  class-is-equiv = injective-surjective→is-equiv! (inj _ _) class-surjective
+    where
+      inj : ∀ f g → class G H f ≡ class G H g → f ≡ g
+      inj (f , ptf) (g , ptg) f≡g = ∥-∥-rec
+        (ConcreteGroups-Hom-set G H _ _)
+        (λ f≡g → J (λ g _ → ∀ ptg → (f , ptf) ≡ (g , ptg))
+                   (class-injective f ptf)
+                   f≡g ptg)
+        (∥-∥₀-path.to f≡g)
 
   first-concrete-abelian-group-cohomology
     : (B G →∙ B H) ≃ H¹[ G , H ]
   first-concrete-abelian-group-cohomology
-    = class {G = G} {H} , class-is-equiv
+    = class G H , class-is-equiv
 ```
 
 Translating this across our equivalence of categories gives a similar statement
