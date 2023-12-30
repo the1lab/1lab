@@ -20,9 +20,9 @@ abstract
 
 # Properties of the order of integers
 
-This module establishes further arithmetic and algebraic properties
-of the integers that involve the order. All proofs are straightforward
-case bashes; there are no further comments.
+This module establishes further order-theoretic properties of the
+[[integers]]. All proofs are straightforward case bashes; there are no
+further comments.
 
 ```agda
   maxℤ-≤l : (x y : Int) → x ≤ maxℤ x y
