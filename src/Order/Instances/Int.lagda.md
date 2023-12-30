@@ -5,8 +5,6 @@ open import 1Lab.Prelude
 open import Data.Int.Order
 open import Data.Int
 
-open import Order.Diagram.Glb
-open import Order.Diagram.Lub
 open import Order.Total
 open import Order.Base
 ```
@@ -40,36 +38,8 @@ Int-poset .P.≤-antisym = ≤-antisym
 
 It's worth pointing out that the ordering on integers is a [[decidable
 total order]], essentially because the ordering on naturals also is.
-This lets us get the operations `minℤ`{.Agda} and `maxℤ`{.Agda} "for
-free", and they compute on points as expected:
 
 ```agda
 Int-is-dec-total : is-decidable-total-order Int-poset
 Int-is-dec-total = from-weakly-total (≤-is-weakly-total _ _)
-
-open minmax (Int-is-dec-total .is-decidable-total-order.has-is-total)
-```
-
-<!--
-```agda
-  renaming
-    ( min      to minℤ
-    ; min-≤l   to minℤ-≤l
-    ; min-≤r   to minℤ-≤r
-    ; min-univ to minℤ-univ
-
-    ; max      to maxℤ
-    ; max-≤l   to maxℤ-≤l
-    ; max-≤r   to maxℤ-≤r
-    ; max-univ to maxℤ-univ)
-  using () public
-```
--->
-
-```agda
-_ : maxℤ 10 -10 ≡ 10
-_ = refl
-
-_ : minℤ 10 -10 ≡ -10
-_ = refl
 ```

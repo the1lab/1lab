@@ -319,3 +319,22 @@ dotℤ (possuc x)       y = y +ℤ (dotℤ (pos x) y)
 dotℤ (negsuc zero)    y = negℤ y
 dotℤ (negsuc (suc x)) y = negℤ y +ℤ (dotℤ (negsuc x) y)
 ```
+
+## Additional operations
+
+It is also straightforward to define maximum and minimum operations
+for integers:
+
+```agda
+maxℤ : Int → Int → Int
+maxℤ (pos x)    (pos y)    = pos (max x y)
+maxℤ (pos x)    (negsuc _) = pos x
+maxℤ (negsuc _) (pos y)    = pos y
+maxℤ (negsuc x) (negsuc y) = negsuc (min x y)
+
+minℤ : Int → Int → Int
+minℤ (pos x)    (pos y)    = pos (min x y)
+minℤ (pos _)    (negsuc y) = negsuc y
+minℤ (negsuc x) (pos _)    = negsuc x
+minℤ (negsuc x) (negsuc y) = negsuc (max x y)
+```

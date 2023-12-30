@@ -239,11 +239,12 @@ open import Data.Fin.Properties -- Properties of finite sets
 Of similar importance is the type of integers:
 
 ```agda
-open import Data.Int.HIT        -- The integers (as a higher inductive type!)
-open import Data.Int.Base       -- Inductively-defined integers
-open import Data.Int.Order      -- ≤ on the integers
-open import Data.Int.Universal  -- A universal property of the integers
-open import Data.Int.Properties -- Algebra on the integers
+open import Data.Int.HIT              -- The integers (as a higher inductive type!)
+open import Data.Int.Base             -- Inductively-defined integers
+open import Data.Int.Order            -- ≤ on the integers
+open import Data.Int.Universal        -- A universal property of the integers
+open import Data.Int.Properties       -- Algebra on the integers
+open import Data.Int.Order.Properties -- Lemmas of ≤ on the integers
 ```
 
 General constructions on sets:

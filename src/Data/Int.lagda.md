@@ -12,5 +12,6 @@ module Data.Int where
 ```agda
 open import Data.Int.Properties public
 open import Data.Int.Order public
+open import Data.Int.Order.Properties public
 open import Data.Int.Base public
 ```
