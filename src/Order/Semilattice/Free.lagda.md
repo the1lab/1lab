@@ -8,9 +8,7 @@ open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-open import Data.Fin.Closure
 open import Data.Fin.Indexed
-open import Data.Fin.Finite
 open import Data.Fin.Base
 open import Data.Sum.Base
 open import Data.Power
@@ -139,67 +137,52 @@ using surjectivity of the first map.
       → (P Q : K-finite-subset)
       → P .fst ⊆ Q .fst
       → fold-K f P B.≤ fold-K f Q
-    fold-K-pres-≤ f P Q P⊆Q =
-      fold-K.ε'.least f (P .fst) (P .snd) (fold-K f Q) λ where
-        (x , x∈P) → fold-K.ε'.fam≤lub f (Q .fst) (Q .snd) (x , (P⊆Q x x∈P))
+    fold-K-pres-≤ f (P , Pf) Qqf@(Q , Qf) P⊆Q =
+      fold-K.ε'.least f P Pf (fold-K f Qqf) λ
+        (x , x∈P) → fold-K.ε'.fam≤lub f Q Qf (x , P⊆Q x x∈P)
 
     fold-K-∪-≤
-      : ∀ (f : ⌞ A ⌟ → ⌞ B ⌟)
-      → (P Q : K-finite-subset)
+      : (f : ⌞ A ⌟ → ⌞ B ⌟) (P Q : K-finite-subset)
       → fold-K f (P ∪ᵏ Q) B.≤ (fold-K f P B.∪ fold-K f Q)
-    fold-K-∪-≤ f P Q =
-      fold-K.ε'.least f (P .fst ∪ Q .fst) (union-is-K-finite (P .snd) (Q .snd))
-        (fold-K f P B.∪ fold-K f Q) λ where
-          (x , x∈P∪Q) →
-            ∥-∥-rec B.≤-thin
-              [ (λ x∈P →
-                B.≤-trans (fold-K.ε'.fam≤lub f (P .fst) (P .snd) (x , x∈P)) B.l≤∪)
-              , (λ x∈Q →
-                B.≤-trans (fold-K.ε'.fam≤lub f (Q .fst) (Q .snd) (x , x∈Q)) B.r≤∪)
-              ]
-              x∈P∪Q
+    fold-K-∪-≤ f Ppf@(P , Pf) Qqf@(Q , Qf) =
+      fold-K.ε'.least f (P ∪ Q) (union-is-K-finite Pf Qf) _ go where
+      go : (i : ∫ₚ (P ∪ Q)) → f (i .fst) B.≤ fold-K f Ppf B.∪ fold-K f Qqf
+      go (x , inc (inl p)) = B.≤-trans (fold-K.ε'.fam≤lub f P Pf (x , p)) B.l≤∪
+      go (x , inc (inr p)) = B.≤-trans (fold-K.ε'.fam≤lub f Q Qf (x , p)) B.r≤∪
+      go (x , squash p q i) = B.≤-thin (go (x , p)) (go (x , q)) i
 
-    fold-K-bot-≤
-      : ∀ (f : ⌞ A ⌟ → ⌞ B ⌟)
-      → fold-K f minimalᵏ B.≤ B.bot
-    fold-K-bot-≤ f =
-      fold-K.ε'.least f minimal minimal-is-K-finite B.bot λ ()
+    fold-K-bot-≤ : (f : ⌞ A ⌟ → ⌞ B ⌟) → fold-K f minimalᵏ B.≤ B.bot
+    fold-K-bot-≤ f = fold-K.ε'.least f minimal minimal-is-K-finite B.bot λ ()
 
     fold-K-singleton
-      : ∀ (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟)
-      → f x ≡ fold-K f (singletonᵏ x)
-    fold-K-singleton f x =
-      B.≤-antisym
-        (fold-K.ε'.fam≤lub f (singleton x) (singleton-is-K-finite (A .is-tr) x) (x , inc refl))
-        (fold-K.ε'.least f (singleton x) (singleton-is-K-finite (A .is-tr) x) (f x) λ where
-          (y , □x=y) → □-rec! {pa = B.≤-thin}
-            (λ x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl)
-            □x=y)
+      : (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟) → f x ≡ fold-K f (singletonᵏ x)
+    fold-K-singleton f x = B.≤-antisym
+      (ε'.fam≤lub (x , inc refl))
+      (ε'.least (f x) λ (y , □x=y) → □-rec!
+        (λ x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl) □x=y)
+      where open fold-K f (singleton x) (singleton-is-K-finite (A .is-tr) x)
 ```
 
 ```agda
 open make-left-adjoint
+open is-join-slat-hom
 open Subcat-hom
 
 make-free-join-slat : ∀ {ℓ} → make-left-adjoint (Forget-poset {ℓ} {ℓ} F∘ Forget-join-slat)
 make-free-join-slat .free A = K[ A ]
 make-free-join-slat .unit x = singletonᵏ x
-make-free-join-slat .universal {A} {B} f .hom .hom =
-  fold-K A B f
+make-free-join-slat .universal {A} {B} f .hom .hom = fold-K A B f
 make-free-join-slat .universal {A} {B} f .hom .pres-≤ {P} {Q} =
   fold-K-pres-≤ A B f P Q
-make-free-join-slat .universal {A} {B} f .witness .is-join-slat-hom.∪-≤ P Q =
+make-free-join-slat .universal {A} {B} f .witness .∪-≤ P Q =
   fold-K-∪-≤ A B f P Q
-make-free-join-slat .universal {A} {B} f .witness .is-join-slat-hom.bot-≤ =
+make-free-join-slat .universal {A} {B} f .witness .bot-≤ =
   fold-K-bot-≤ A B f
-make-free-join-slat .commutes {A} {B} f = ext λ x →
-  fold-K-singleton A B f x
-make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P →
-  lub-unique B.po
-    (fold-K.ε'.has-lub A B f (P .fst) (P .snd))
-    (cast-is-lubᶠ B.po (λ Q → sym (p #ₚ Q .fst)) $
+make-free-join-slat .commutes {A} {B} f = ext (fold-K-singleton A B f)
+make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P → lub-unique B.po
+  (fold-K.ε'.has-lub A B f (P .fst) (P .snd))
+  (cast-is-lubᶠ B.po (λ Q → sym (p #ₚ Q .fst)) $
     is-join-slat-hom.pres-finitely-indexed-lub (g .witness) (P .snd) _ _ $
     K-singleton-lub A _)
-  where
-    module B = Order.Semilattice.Join.Reasoning B
+  where module B = Order.Semilattice.Join.Reasoning B
 ```

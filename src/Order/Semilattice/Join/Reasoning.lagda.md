@@ -5,10 +5,7 @@ open import Algebra.Monoid
 open import Cat.Instances.Delooping
 open import Cat.Prelude
 
-open import Data.Fin.Base using (Fin; fzero; fsuc)
-
 open import Order.Semilattice.Join
-open import Order.Diagram.Lub
 open import Order.Base
 
 import Cat.Reasoning
@@ -18,15 +15,12 @@ import Order.Reasoning
 -->
 
 ```agda
-module Order.Semilattice.Join.Reasoning
-  {o ℓ}
-  (L : Join-semilattice o ℓ)
-  where
+module Order.Semilattice.Join.Reasoning {o ℓ} (L : Join-semilattice o ℓ) where
 ```
 
 ```agda
-open Order.Reasoning (L .fst) public
 open is-join-semilattice (L .snd) public
+open Order.Reasoning (L .fst) public
 
 po : Poset o ℓ
 po = L .fst

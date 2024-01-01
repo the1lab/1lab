@@ -54,18 +54,17 @@ lattice:
   : ∀ {I J : Type o} (F : I → ⌞ B ⌟) (G : J → ⌞ B ⌟)
   → ⋃ (λ i → ⋃ λ j → G i ∩ F j)
   ≡ ⋃ {I = I × J} (λ p → F (p .fst) ∩ G (p .snd))
-⋃-product {I} {J} F G =
-  ≤-antisym
-    (⋃-universal _ λ j → ⋃-universal _ λ i →
-      G j ∩ F i                                       =⟨ ∩-comm ⟩
-      F i ∩ G j                                       ≤⟨ ⋃-inj (i , j) ⟩
-      ⋃ {I = I × J} (λ v → F (v .fst) ∩ G (v .snd)) ≤∎)
-    (⋃-universal _ λ where
-      (i , j) →
-        F i ∩ G j                   ≤⟨ ⋃-inj i ⟩
-        ⋃ (λ i → F i ∩ G j)         ≤⟨ ⋃-inj j ⟩
-        ⋃ (λ i → ⋃ λ j → F j ∩ G i) =⟨ ap ⋃ (funext λ i → ap ⋃ $ funext λ j → ∩-comm) ⟩
-        ⋃ (λ i → ⋃ λ j → G i ∩ F j) ≤∎)
+⋃-product {I} {J} F G = ≤-antisym
+  (⋃-universal _ λ j → ⋃-universal _ λ i →
+    G j ∩ F i                                       =⟨ ∩-comm ⟩
+    F i ∩ G j                                       ≤⟨ ⋃-inj (i , j) ⟩
+    ⋃ {I = I × J} (λ v → F (v .fst) ∩ G (v .snd)) ≤∎)
+  (⋃-universal _ λ where
+    (i , j) →
+      F i ∩ G j                   ≤⟨ ⋃-inj i ⟩
+      ⋃ (λ i → F i ∩ G j)         ≤⟨ ⋃-inj j ⟩
+      ⋃ (λ i → ⋃ λ j → F j ∩ G i) =⟨ ap ⋃ (funext λ i → ap ⋃ $ funext λ j → ∩-comm) ⟩
+      ⋃ (λ i → ⋃ λ j → G i ∩ F j) ≤∎)
 ```
 
 But this result relies on the cocontinuity of meets.

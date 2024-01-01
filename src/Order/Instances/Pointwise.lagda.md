@@ -13,8 +13,12 @@ open import Order.Instances.Product
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
 open import Order.Instances.Props
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Univalent
 open import Order.Base
 
@@ -127,82 +131,98 @@ Posets-has-indexed-products F = mk where
 
 # Meets and Joins
 
+<!--
 ```agda
 module _ {o ℓ ℓ'} {A : Type ℓ'} {P : A → Poset o ℓ} where
+```
+-->
+
+```agda
+  open Top
 
   Pointwise-has-top : (∀ a → Top (P a)) → Top (Pointwise A P)
-  Pointwise-has-top P-top .Top.top a = Top.top (P-top a)
-  Pointwise-has-top P-top .Top.has-top f a = Top.has-top (P-top a) (f a)
+  Pointwise-has-top P-top .top a = P-top a .top
+  Pointwise-has-top P-top .has-top f a = P-top a .has-top (f a)
+
+  open Bottom
 
   Pointwise-has-bot : (∀ a → Bottom (P a)) → Bottom (Pointwise A P)
-  Pointwise-has-bot P-bot .Bottom.bot a = Bottom.bot (P-bot a)
-  Pointwise-has-bot P-bot .Bottom.has-bottom f a = Bottom.has-bottom (P-bot a) (f a)
+  Pointwise-has-bot P-bot .bot a = P-bot a .bot
+  Pointwise-has-bot P-bot .has-bottom f a = P-bot a .has-bottom (f a)
 
-  Pointwise-has-meets
-    : (∀ a x y → Meet (P a) x y)
-    → ∀ f g → Meet (Pointwise A P) f g
-  Pointwise-has-meets P-meet f g .Meet.glb a =
-    Meet.glb (P-meet a (f a) (g a))
-  Pointwise-has-meets P-meet f g .Meet.has-meet .is-meet.meet≤l a =
-    Meet.meet≤l (P-meet a (f a) (g a))
-  Pointwise-has-meets P-meet f g .Meet.has-meet .is-meet.meet≤r a =
-    Meet.meet≤r (P-meet a (f a) (g a))
-  Pointwise-has-meets P-meet f g .Meet.has-meet .is-meet.greatest lb lb≤f lb≤g a =
-    Meet.greatest (P-meet a (f a) (g a)) (lb a) (lb≤f a) (lb≤g a)
+  open is-meet
+  open Meet
 
-  Pointwise-has-joins
-    : (∀ a x y → Join (P a) x y)
-    → ∀ f g → Join (Pointwise A P) f g
-  Pointwise-has-joins P-join f g .Join.lub a =
-    Join.lub (P-join a (f a) (g a))
-  Pointwise-has-joins P-join f g .Join.has-join .is-join.l≤join a =
-    Join.l≤join (P-join a (f a) (g a))
-  Pointwise-has-joins P-join f g .Join.has-join .is-join.r≤join a =
-    Join.r≤join (P-join a (f a) (g a))
-  Pointwise-has-joins P-join f g .Join.has-join .is-join.least ub f≤ub g≤ub a =
-    Join.least (P-join a (f a) (g a)) (ub a) (f≤ub a) (g≤ub a)
+  Pointwise-has-meets : (∀ a → Has-meets (P a)) → Has-meets (Pointwise A P)
+  Pointwise-has-meets P-meet f g .glb a =
+    P-meet a (f a) (g a) .glb
+  Pointwise-has-meets P-meet f g .has-meet .meet≤l a =
+    P-meet a (f a) (g a) .Meet.meet≤l
+  Pointwise-has-meets P-meet f g .has-meet .meet≤r a =
+    P-meet a (f a) (g a) .Meet.meet≤r
+  Pointwise-has-meets P-meet f g .has-meet .greatest lb lb≤f lb≤g a =
+    P-meet a (f a) (g a) .Meet.greatest (lb a) (lb≤f a) (lb≤g a)
+
+  open is-join
+  open Join
+
+  Pointwise-has-joins : (∀ a → Has-joins (P a)) → Has-joins (Pointwise A P)
+  Pointwise-has-joins P-join f g .lub a = P-join a (f a) (g a) .lub
+  Pointwise-has-joins P-join f g .has-join .l≤join a =
+    P-join a (f a) (g a) .Join.l≤join
+  Pointwise-has-joins P-join f g .has-join .r≤join a =
+    P-join a (f a) (g a) .Join.r≤join
+  Pointwise-has-joins P-join f g .has-join .least ub f≤ub g≤ub a =
+    P-join a (f a) (g a) .Join.least (ub a) (f≤ub a) (g≤ub a)
+
+  open is-glb
+  open Glb
 
   Pointwise-has-glbs
     : ∀ {ℓ} {I : Type ℓ}
-    → (∀ a → (k : I → ⌞ P a ⌟) → Glb (P a) k)
-    → ∀ (k : I → (a : A) → ⌞ P a ⌟) → Glb (Pointwise A P) k
-  Pointwise-has-glbs P-glb k .Glb.glb a = Glb.glb (P-glb a λ i → k i a)
-  Pointwise-has-glbs P-glb k .Glb.has-glb .is-glb.glb≤fam i a =
-    Glb.glb≤fam (P-glb a λ j → k j a) i
-  Pointwise-has-glbs P-glb k .Glb.has-glb .is-glb.greatest lb lb≤k a =
-    Glb.greatest (P-glb a (λ i → k i a)) (lb a) (λ i → lb≤k i a)
+    → (∀ a (k : I → _) → Glb (P a) k)
+    → (k : (i : I) (a : A) → ⌞ P a ⌟) → Glb (Pointwise A P) k
+  Pointwise-has-glbs P-glb k .glb a = P-glb a (λ i → k i a) .glb
+  Pointwise-has-glbs P-glb k .has-glb .glb≤fam i a =
+    P-glb a (λ j → k j a) .Glb.glb≤fam i
+  Pointwise-has-glbs P-glb k .has-glb .greatest lb lb≤k a =
+    P-glb a (λ i → k i a) .Glb.greatest (lb a) λ i → lb≤k i a
+
+  open is-lub
+  open Lub
 
   Pointwise-has-lubs
     : ∀ {ℓ} {I : Type ℓ}
-    → (∀ a →  (k : I → ⌞ P a ⌟) → Lub (P a) k)
+    → (∀ a → (k : I → ⌞ P a ⌟) → Lub (P a) k)
     → ∀ (k : I → (a : A) → ⌞ P a ⌟) → Lub (Pointwise A P) k
-  Pointwise-has-lubs P-lub k .Lub.lub a = Lub.lub (P-lub a λ i → k i a)
-  Pointwise-has-lubs P-lub k .Lub.has-lub .is-lub.fam≤lub i a =
-    Lub.fam≤lub (P-lub a λ j → k j a) i
-  Pointwise-has-lubs P-lub k .Lub.has-lub .is-lub.least ub k≤ub a =
-    Lub.least (P-lub a (λ i → k i a)) (ub a) (λ i → k≤ub i a)
+  Pointwise-has-lubs P-lub k .lub a = P-lub a (λ i → k i a) .lub
+  Pointwise-has-lubs P-lub k .has-lub .fam≤lub i a =
+    P-lub a (λ j → k j a) .Lub.fam≤lub i
+  Pointwise-has-lubs P-lub k .has-lub .least ub k≤ub a =
+    P-lub a (λ i → k i a) .Lub.least (ub a) (λ i → k≤ub i a)
 ```
 
 <!--
 ```agda
   open is-meet-semilattice
-  open is-join-semilattice
 
   Pointwise-is-meet-slat
     : (∀ a → is-meet-semilattice (P a))
     → is-meet-semilattice (Pointwise A P)
   Pointwise-is-meet-slat meet-slat .has-meets x y =
-    Pointwise-has-meets (λ a → has-meets (meet-slat a)) x y
+    Pointwise-has-meets (λ a → meet-slat a .has-meets) x y
   Pointwise-is-meet-slat meet-slat .has-top =
-    Pointwise-has-top (λ a → has-top (meet-slat a))
+    Pointwise-has-top (λ a → meet-slat a .has-top)
+
+  open is-join-semilattice
 
   Pointwise-is-join-slat
     : (∀ a → is-join-semilattice (P a))
     → is-join-semilattice (Pointwise A P)
   Pointwise-is-join-slat join-slat .has-joins x y =
-    Pointwise-has-joins (λ a → has-joins (join-slat a)) x y
+    Pointwise-has-joins (λ a → join-slat a .has-joins) x y
   Pointwise-is-join-slat join-slat .has-bottom =
-    Pointwise-has-bot (λ a → has-bottom (join-slat a))
+    Pointwise-has-bot (λ a → join-slat a .has-bottom)
 
 Subsets-is-meet-slat : ∀ {ℓ} {A : Type ℓ} → is-meet-semilattice (Subsets A)
 Subsets-is-meet-slat = Pointwise-is-meet-slat (λ _ → Props-is-meet-slat)
@@ -216,8 +236,7 @@ Every subset is a least upper bound of singleton sets.
 
 ```agda
 subset-singleton-lub
-  : ∀ {ℓ} {A : Type ℓ}
-  → (P : A → Ω)
+  : ∀ {ℓ} {A : Type ℓ} (P : A → Ω)
   → is-lub (Subsets A) {I = ∫ₚ P} (singleton ⊙ fst) P
 subset-singleton-lub P .is-lub.fam≤lub (x , x∈P) y □x=y =
   □-rec! (λ x=y → subst (_∈ P) x=y x∈P) □x=y

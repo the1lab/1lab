@@ -3,18 +3,19 @@
 open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
-open import Order.Diagram.Glb.Reasoning
 open import Order.Diagram.Lub.Reasoning
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
 open import Order.Instances.Props
-open import Order.Diagram.Glb
+open import Order.Diagram.Meet
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Base
 
 import Cat.Reasoning
 
+import Order.Diagram.Meet.Reasoning as Meets
 import Order.Reasoning
 ```
 -->
@@ -30,18 +31,18 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   no-eta-equality
   open Order.Reasoning P
   field
-    has-meets : ∀ x y → Meet P x y
-    has-top : Top P
+    has-meets : Has-meets P
+    has-top  : Top P
     has-lubs : ∀ {I : Type o} (k : I → Ob) → Lub P k
 
   module has-lubs {I} {k : I → Ob} = Lub (has-lubs k)
 
-  open Meets P has-meets public
+  open Meets has-meets public
   open Top has-top using (top; !) public
   open Lubs P has-lubs public
 
   field
-    ⋃-distribl    : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
+    ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
   has-meet-slat : is-meet-semilattice P
   has-meet-slat .is-meet-semilattice.has-meets = has-meets
@@ -60,12 +61,11 @@ private
     P Q R : Poset o ℓ
 
 is-frame-is-prop : is-prop (is-frame P)
-is-frame-is-prop {P = P} =
-  Iso→is-hlevel 1 eqv hlevel!
-  where
-    open Order.Diagram.Lub P
-    open Order.Diagram.Glb P
-    unquoteDecl eqv = declare-record-iso eqv (quote is-frame)
+is-frame-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel! where
+  open Order.Diagram.Lub P using (H-Level-Lub)
+  open Order.Diagram.Meet P using (H-Level-Meet)
+  open Order.Diagram.Top P using (H-Level-Top)
+  unquoteDecl eqv = declare-record-iso eqv (quote is-frame)
 
 instance
   H-Level-is-frame : ∀ {n} → H-Level (is-frame P) (suc n)
@@ -116,8 +116,8 @@ record
     ub                 Q.≤∎
 
   opaque
-    unfolding Lubs.has-joins
-    unfolding Lubs.has-bottom
+    unfolding Lubs.has-joins Lubs.has-bottom
+
     has-join-slat-hom : is-join-slat-hom f Pᶠ.has-join-slat Qᶠ.has-join-slat
     has-join-slat-hom .is-join-slat-hom.∪-≤ x y =
       Q.≤-trans (⋃-≤ _) $ Qᶠ.⋃-universal _ λ where
@@ -134,14 +134,14 @@ open is-frame-hom
 <!--
 ```agda
 is-frame-hom-is-prop
-  : ∀ {f : Monotone P Q} {P-frame : is-frame P} {Q-frame : is-frame Q}
+  : ∀ {f : Monotone P Q} {P-frame Q-frame}
   → is-prop (is-frame-hom f P-frame Q-frame)
-is-frame-hom-is-prop = Iso→is-hlevel 1 eqv hlevel! 
+is-frame-hom-is-prop = Iso→is-hlevel 1 eqv hlevel!
   where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
 
 instance
   H-Level-is-frame-hom
-    : ∀ {f : Monotone P Q} {P-frame : is-frame P} {Q-frame : is-frame Q}
+    : ∀ {f : Monotone P Q} {P-frame Q-frame}
     → ∀ {n} → H-Level (is-frame-hom f P-frame Q-frame) (suc n)
   H-Level-is-frame-hom = prop-instance is-frame-hom-is-prop
 ```
@@ -159,19 +159,16 @@ id-frame-hom {P = P} Pᶠ .⋃-≤ k =
   Poset.≤-refl P
 
 ∘-frame-hom
-  : {Pₗ : is-frame P}
-  → {Qₗ : is-frame Q}
-  → {Rₗ : is-frame R}
-  → {f : Monotone Q R} {g : Monotone P Q}
+  : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}
   → is-frame-hom f Qₗ Rₗ
   → is-frame-hom g Pₗ Qₗ
   → is-frame-hom (f ∘ₘ g) Pₗ Rₗ
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .∩-≤ x y =
-  Poset.≤-trans R (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
+  R .Poset.≤-trans (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .top-≤ =
-  Poset.≤-trans R (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
+  R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .⋃-≤ k =
-  Poset.≤-trans R (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g # k i))
+  R .Poset.≤-trans (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g # k i))
 
 Frame-subcat : ∀ o ℓ → Subcat (Posets o ℓ) _ _
 Frame-subcat o ℓ .Subcat.is-ob = is-frame
@@ -199,65 +196,6 @@ module Frame {o ℓ} (F : Frame o ℓ) where
   po = F .fst
 ```
 -->
-
-## Joins of subsets
-
-Imagine you have a frame $A$ whose carrier has size $\kappa$, and thus
-has joins for $\kappa$-small families of elements. But imagine that you
-have a second universe $\lambda$, and you have a $\lambda$-small
-predicate $P : \bb{P}_{\lambda}(A)$. Normally, you'd be out of luck:
-there is no reason for $A$ to admit $(\kappa \sqcup \lambda)$-sized
-joins.
-
-But since we've assumed the existence of $\Omega$, we can resize
-(pointwise) $P$ to be valued in the universe $\kappa$; That way we can
-turn the total space $\int P$ into a $\kappa$-small type! By projecting
-the first component, we have a $\kappa$-small family of elements, which
-has a join. This is a good definition for the **join of the subset
-$P$**.
-
-```agda
-module _ {o ℓ} (F : Frame o ℓ) where
-  private module F = Frame F
-  subset-cup : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cup P = F.⋃
-    {I = Σ[ t ∈ ⌞ F ⌟ ] (□ ∣ P t ∣)}
-    λ { (x , _) → x }
-
-  subset-cup-colimiting
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
-    → ∣ P x ∣ → x F.≤ subset-cup P
-  subset-cup-colimiting P x =
-    F.⋃-inj (_ , (inc x))
-
-  subset-cup-universal
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
-    → (∀ i → ∣ P i ∣ → i F.≤ x)
-    → subset-cup P F.≤ x
-  subset-cup-universal P f =
-    F.⋃-universal _ λ where
-      (i , w) → f i (out! w)
-```
-
-Keep imagining that you have a subset $P \sube A$: Can we construct a
-meet for it? Yes! By taking the join of all possible upper bounds for
-$P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
-
-```agda
-  subset-cap : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cap P = subset-cup λ x → el! (∀ a → ∣ P a ∣ → x F.≤ a)
-
-  subset-cap-limiting
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x} → ∣ P x ∣ → subset-cap P F.≤ x
-  subset-cap-limiting P x∈P =
-    subset-cup-universal (λ x → el _ hlevel!) λ i a∈P→i≤a → a∈P→i≤a _ x∈P
-
-  subset-cap-universal
-    : ∀ {ℓ} (P : ⌞ F ⌟ → Prop ℓ) {x}
-    → (∀ i → ∣ P i ∣ → x F.≤ i)
-    → x F.≤ subset-cap P
-  subset-cap-universal P x∈P = subset-cup-colimiting (λ _ → el _ hlevel!) x∈P
-```
 
 # Power frames
 

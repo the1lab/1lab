@@ -3,6 +3,8 @@
 open import Cat.Prelude
 
 open import Order.Instances.Pointwise
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Base

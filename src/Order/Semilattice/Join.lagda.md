@@ -7,12 +7,14 @@ open import Data.Fin.Indexed
 open import Data.Fin.Finite
 open import Data.Fin.Base hiding (_≤_)
 
-open import Order.Diagram.Lub.Reasoning
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
 open import Order.Diagram.Lub
 open import Order.Base
 
 import Cat.Reasoning
 
+import Order.Diagram.Join.Reasoning as Joins
 import Order.Reasoning
 ```
 -->
@@ -27,15 +29,15 @@ module Order.Semilattice.Join where
 
 record is-join-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
-    has-joins : ∀ x y → Join P x y
+    has-joins  : Has-joins P
     has-bottom : Bottom P
 
   open Order.Reasoning P
-  open Joins P has-joins public
+  open Joins has-joins public
   open Bottom has-bottom using (bot; ¡) public
 
   ⋃ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
-  ⋃ᶠ {zero} f  = bot
+  ⋃ᶠ {zero}  f = bot
   ⋃ᶠ {suc n} f = f fzero ∪ ⋃ᶠ (λ i → f (fsuc i))
 
   ⋃ᶠ-inj : ∀ {n} {f : Fin n → Ob} → (i : Fin n) → f i ≤ ⋃ᶠ f
@@ -62,11 +64,10 @@ abstract
   is-join-semilattice-is-prop
     : ∀ {o ℓ} {P : Poset o ℓ}
     → is-prop (is-join-semilattice P)
-  is-join-semilattice-is-prop {P = P} =
-    Iso→is-hlevel 1 eqv hlevel!
-    where
-      open Order.Diagram.Lub P
-      unquoteDecl eqv = declare-record-iso eqv (quote is-join-semilattice)
+  is-join-semilattice-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel! where
+    open Order.Diagram.Join P using (H-Level-Join)
+    open Order.Diagram.Bottom P using (H-Level-Bottom)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-join-semilattice)
 ```
 
 <!--
@@ -134,7 +135,7 @@ record is-join-slat-hom
     Qₗ.bot     Q.≤⟨ Qₗ.¡ ⟩
     x          Q.≤∎
 
-  pres-⋃ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋃ᶠ k) ≡ Qₗ.⋃ᶠ (apply f ⊙ k) 
+  pres-⋃ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋃ᶠ k) ≡ Qₗ.⋃ᶠ (apply f ⊙ k)
   pres-⋃ᶠ {n = zero} k = pres-bot
   pres-⋃ᶠ {n = suc n} k =
     f # (k fzero Pₗ.∪ Pₗ.⋃ᶠ (k ⊙ fsuc))       ≡⟨ pres-∪ _ _ ⟩
@@ -154,7 +155,7 @@ record is-join-slat-hom
     ub'                 Q.≤∎
 
   pres-finite-lub
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} 
+    : ∀ {ℓᵢ} {I : Type ℓᵢ}
     → Finite I
     → (k : I → ⌞ P ⌟)
     → (x : ⌞ P ⌟)
@@ -188,12 +189,9 @@ open is-join-slat-hom
 
 <!--
 ```agda
-abstract 
+abstract
   is-join-slat-hom-is-prop
-    : {P : Poset o ℓ} {Q : Poset o' ℓ'}
-    → {f : Monotone P Q}
-    → {P-slat : is-join-semilattice P}
-    → {Q-slat : is-join-semilattice Q}
+    : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q} {P-slat Q-slat}
     → is-prop (is-join-slat-hom f P-slat Q-slat)
   is-join-slat-hom-is-prop =
     Iso→is-hlevel 1 eqv hlevel!
@@ -201,9 +199,8 @@ abstract
 
 instance
   H-Level-is-join-slat-hom
-    : ∀ {f : Monotone P Q}
-    → {P-slat : is-join-semilattice P} {Q-slat : is-join-semilattice Q}
-    → ∀ {n} → H-Level (is-join-slat-hom f P-slat Q-slat) (suc n)
+    : ∀ {f : Monotone P Q} {P-slat Q-slat n}
+    → H-Level (is-join-slat-hom f P-slat Q-slat) (suc n)
   H-Level-is-join-slat-hom = prop-instance is-join-slat-hom-is-prop
 ```
 -->
@@ -218,17 +215,14 @@ id-join-slat-hom {P = P} _ .∪-≤ _ _ = Poset.≤-refl P
 id-join-slat-hom {P = P} _ .bot-≤ = Poset.≤-refl P
 
 ∘-join-slat-hom
-  : {Pₗ : is-join-semilattice P}
-  → {Qₗ : is-join-semilattice Q}
-  → {Rₗ : is-join-semilattice R}
-  → {f : Monotone Q R} {g : Monotone P Q}
+  : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}
   → is-join-slat-hom f Qₗ Rₗ
   → is-join-slat-hom g Pₗ Qₗ
   → is-join-slat-hom (f ∘ₘ g) Pₗ Rₗ
 ∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∪-≤ x y =
-  Poset.≤-trans R (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g # x) (g # y))
+  R .Poset.≤-trans (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g # x) (g # y))
 ∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .bot-≤ =
-  Poset.≤-trans R (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
+  R .Poset.≤-trans (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
 ```
 
 ```agda

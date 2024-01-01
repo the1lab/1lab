@@ -7,6 +7,7 @@ open import Cat.Prelude
 open import Data.Maybe.Base
 
 open import Order.Diagram.Fixpoint
+open import Order.Diagram.Bottom
 open import Order.Diagram.Lub
 open import Order.Base
 open import Order.DCPO
@@ -220,7 +221,7 @@ All that remains is to package up the data.
     f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.fixed =
       ≤-antisym roll unroll
     f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.least y y-fix =
-      least-fix y (path→≤ y-fix)
+      least-fix y (≤-refl' y-fix)
 ```
 
 ## Strictly Scott-continuous maps

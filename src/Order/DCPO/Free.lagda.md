@@ -9,6 +9,7 @@ open import Cat.Prelude
 open import Data.Sum
 
 open import Order.Instances.Discrete
+open import Order.Diagram.Bottom
 open import Order.DCPO.Pointed
 open import Order.Diagram.Lub
 open import Order.Base
@@ -80,7 +81,7 @@ Free-DCPO⊣Forget-DCPO .unit .η _ x = x
 Free-DCPO⊣Forget-DCPO .unit .is-natural _ _ _ = refl
 Free-DCPO⊣Forget-DCPO .counit .η D =
   to-scott-directed (λ x → x) λ s dir x x-lub → λ where
-    .is-lub.fam≤lub i → path→≤ (disc-is-lub→const x-lub i)
+    .is-lub.fam≤lub i → ≤-refl' (disc-is-lub→const x-lub i)
     .is-lub.least y le →
       ∥-∥-rec ≤-thin
         (λ i →
@@ -461,7 +462,7 @@ If $x$ is defined, then the counit simply extracts the value of $x$.
   part-counit-elt : (x : Part Ob) → (p : is-defined x) → part-counit x ≡ x .elt p
   part-counit-elt x p =
     ≤-antisym
-      (⋃-prop-least _ _ _ λ (lift p') → path→≤ (ap (x .elt) (x .def .is-tr _ _)))
+      (⋃-prop-least _ _ _ λ (lift p') → ≤-refl' (ap (x .elt) (x .def .is-tr _ _)))
       (⋃-prop-le _ _ (lift p))
 ```
 

@@ -5,12 +5,14 @@ open import Cat.Prelude
 
 open import Data.Fin.Base hiding (_≤_)
 
-open import Order.Diagram.Glb.Reasoning
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
+open import Order.Diagram.Top
 open import Order.Base
 
 import Cat.Reasoning
 
+import Order.Diagram.Meet.Reasoning as Meets
 import Order.Reasoning
 ```
 -->
@@ -25,10 +27,10 @@ module Order.Semilattice.Meet where
 record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
     has-meets : ∀ x y → Meet P x y
-    has-top : Top P
+    has-top   : Top P
 
   open Order.Reasoning P
-  open Meets P has-meets public
+  open Meets has-meets public
   open Top has-top using (top; !) public
 
   ⋂ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
@@ -59,11 +61,10 @@ abstract
   is-meet-semilattice-is-prop
     : ∀ {o ℓ} {P : Poset o ℓ}
     → is-prop (is-meet-semilattice P)
-  is-meet-semilattice-is-prop {P = P} =
-    Iso→is-hlevel 1 eqv hlevel!
-    where
-      open Order.Diagram.Glb P
-      unquoteDecl eqv = declare-record-iso eqv (quote is-meet-semilattice)
+  is-meet-semilattice-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel!  where
+    open Order.Diagram.Meet P using (H-Level-Meet)
+    open Order.Diagram.Top P using (H-Level-Top)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-meet-semilattice)
 ```
 
 <!--
@@ -99,7 +100,7 @@ record is-meet-slat-hom
     ∩-≤ : ∀ x y → (f # x) Qₗ.∩ (f # y) Q.≤ f # (x Pₗ.∩ y)
     top-≤ : Qₗ.top Q.≤ f # Pₗ.top
 
-  pres-∩ : ∀ x y → f # (x Pₗ.∩ y) ≡ (f # x) Qₗ.∩ (f # y)
+  pres-∩ : ∀ x y → f # (x Pₗ.∩ y) ≡ f # x Qₗ.∩ f # y
   pres-∩ x y =
     Q.≤-antisym
       (Qₗ.∩-universal (f # (x Pₗ.∩ y))
@@ -135,9 +136,9 @@ record is-meet-slat-hom
   pres-⋂ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋂ᶠ k) ≡ Qₗ.⋂ᶠ (apply f ⊙ k)
   pres-⋂ᶠ {n = zero} k = pres-top
   pres-⋂ᶠ {n = suc n} k =
-    f # (k fzero Pₗ.∩ Pₗ.⋂ᶠ (k ⊙ fsuc))              ≡⟨ pres-∩ _ _ ⟩
-    f # (k fzero) Qₗ.∩ f # Pₗ.⋂ᶠ (k ⊙ fsuc)          ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
-    Qₗ.⋂ᶠ (apply f ⊙ k)                              ∎
+    f # (k fzero Pₗ.∩ Pₗ.⋂ᶠ (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
+    f # (k fzero) Qₗ.∩ f # Pₗ.⋂ᶠ (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
+    Qₗ.⋂ᶠ (apply f ⊙ k)                      ∎
 
 open is-meet-slat-hom
 ```
@@ -147,10 +148,8 @@ open is-meet-slat-hom
 ```agda
 abstract
   is-meet-slat-hom-is-prop
-    : {P : Poset o ℓ} {Q : Poset o' ℓ'}
-    → {f : Monotone P Q}
-    → {P-slat : is-meet-semilattice P}
-    → {Q-slat : is-meet-semilattice Q}
+    : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q}
+        {P-slat Q-slat}
     → is-prop (is-meet-slat-hom f P-slat Q-slat)
   is-meet-slat-hom-is-prop =
     Iso→is-hlevel 1 eqv hlevel!
@@ -158,9 +157,8 @@ abstract
 
 instance
   H-Level-is-meet-slat-hom
-    : ∀ {f : Monotone P Q}
-    → {P-slat : is-meet-semilattice P} {Q-slat : is-meet-semilattice Q}
-    → ∀ {n} → H-Level (is-meet-slat-hom f P-slat Q-slat) (suc n)
+    : ∀ {f : Monotone P Q} {P-slat Q-slat n}
+    → H-Level (is-meet-slat-hom f P-slat Q-slat) (suc n)
   H-Level-is-meet-slat-hom = prop-instance is-meet-slat-hom-is-prop
 ```
 -->
@@ -175,17 +173,14 @@ id-meet-slat-hom {P = P} _ .∩-≤ _ _ = Poset.≤-refl P
 id-meet-slat-hom {P = P} _ .top-≤ = Poset.≤-refl P
 
 ∘-meet-slat-hom
-  : {Pₗ : is-meet-semilattice P}
-  → {Qₗ : is-meet-semilattice Q}
-  → {Rₗ : is-meet-semilattice R}
-  → {f : Monotone Q R} {g : Monotone P Q}
+  : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}
   → is-meet-slat-hom f Qₗ Rₗ
   → is-meet-slat-hom g Pₗ Qₗ
   → is-meet-slat-hom (f ∘ₘ g) Pₗ Rₗ
 ∘-meet-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∩-≤ x y =
-  Poset.≤-trans R (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
+  R .Poset.≤-trans (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
 ∘-meet-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .top-≤ =
-  Poset.≤-trans R (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
+  R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ```
 
 ```agda

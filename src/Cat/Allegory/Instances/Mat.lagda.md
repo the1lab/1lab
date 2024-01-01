@@ -57,26 +57,26 @@ that this is, indeed, a category:
   Mat .id x y              = ⋃ λ (_ : x ≡ y) → top
   Mat ._∘_ {y = y} M N i j = ⋃ λ k → N i k ∩ M k j
 
-  Mat .idr M = funext² λ i j →
+  Mat .idr M = ext λ i j →
     ⋃ (λ k → ⋃ (λ _ → top) ∩ M k j) ≡⟨ ⋃-apᶠ (λ k → ∩-comm ∙ ⋃-distribl _ _) ⟩
-    ⋃ (λ k → ⋃ (λ _ → M k j ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ap ⋃ (funext λ i → ∩-idr)) ⟩
+    ⋃ (λ k → ⋃ (λ _ → M k j ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ i → ∩-idr) ⟩
     ⋃ (λ k → ⋃ (λ _ → M k j))       ≡⟨ ⋃-twice _ ⟩
     ⋃ (λ (k , _) → M k j)           ≡⟨ ⋃-singleton (contr _ Singleton-is-contr) ⟩
     M i j                           ∎
-  Mat .idl M = funext² λ i j →
+  Mat .idl M = ext λ i j →
     ⋃ (λ k → M i k ∩ ⋃ (λ _ → top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-distribl _ _) ⟩
     ⋃ (λ k → ⋃ (λ _ → M i k ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ j → ∩-idr) ⟩
     ⋃ (λ x → ⋃ (λ _ → M i x))       ≡⟨ ⋃-twice _ ⟩
     ⋃ (λ (k , _) → M i k)           ≡⟨ ⋃-singleton (contr _ (λ p i → p .snd (~ i) , λ j → p .snd (~ i ∨ j))) ⟩
     M i j                           ∎
 
-  Mat .assoc M N O = funext² λ i j →
-    ⋃ (λ k → ⋃ (λ l → O i l ∩ N l k) ∩ M k j)   ≡⟨ ⋃-apᶠ (λ k → (⋃-distribr _ _)) ⟩
+  Mat .assoc M N O = ext λ i j →
+    ⋃ (λ k → ⋃ (λ l → O i l ∩ N l k) ∩ M k j)   ≡⟨ ⋃-apᶠ (λ k → ⋃-distribr _ _) ⟩
     ⋃ (λ k → ⋃ (λ l → (O i l ∩ N l k) ∩ M k j)) ≡⟨ ⋃-twice _ ⟩
     ⋃ (λ (k , l) → (O i l ∩ N l k) ∩ M k j)     ≡⟨ ⋃-apᶠ (λ _ → sym ∩-assoc) ⟩
     ⋃ (λ (k , l) → O i l ∩ (N l k ∩ M k j))     ≡⟨ ⋃-apⁱ ×-swap ⟩
     ⋃ (λ (l , k) → O i l ∩ (N l k ∩ M k j))     ≡˘⟨ ⋃-twice _ ⟩
-    ⋃ (λ l → ⋃ (λ k → O i l ∩ (N l k ∩ M k j))) ≡⟨ ap ⋃ (funext λ k → sym (⋃-distribl _ _)) ⟩
+    ⋃ (λ l → ⋃ (λ k → O i l ∩ (N l k ∩ M k j))) ≡⟨ ⋃-apᶠ (λ k → sym (⋃-distribl _ _)) ⟩
     ⋃ (λ l → O i l ∩ ⋃ (λ k → N l k ∩ M k j))   ∎
 ```
 
@@ -93,13 +93,13 @@ a bit more algebra is the verification of the modular law:
   Matrices .A.≤-thin          = hlevel!
   Matrices .A.≤-refl i j      = ≤-refl
   Matrices .A.≤-trans p q i j = ≤-trans (p i j) (q i j)
-  Matrices .A.≤-antisym p q   = funext² λ i j → ≤-antisym (p i j) (q i j)
+  Matrices .A.≤-antisym p q   = ext λ i j → ≤-antisym (p i j) (q i j)
   Matrices .A._◆_ p q i j     = ⋃≤⋃ (λ k → ∩≤∩ (q i k) (p k j))
 
   Matrices .A._† M i j     = M j i
   Matrices .A.dual-≤ x i j = x j i
   Matrices .A.dual M       = refl
-  Matrices .A.dual-∘       = funext² λ i j → ⋃-apᶠ λ k → ∩-comm
+  Matrices .A.dual-∘       = ext λ i j → ⋃-apᶠ λ k → ∩-comm
 
   Matrices .A._∩_ M N i j    = M i j ∩ N i j
   Matrices .A.∩-le-l i j     = ∩≤l

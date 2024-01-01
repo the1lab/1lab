@@ -28,10 +28,11 @@ module Order.Frame.Free where
 
 # Free cocompletions
 
-A [[frame]] is, in particular, a [[meet semilattice]]. Frame homomorphisms
-preserve finite meets, so they are also homomorphisms for the meet semilattice.
-Since equality of homomorphisms is defined by equality of the underlying
-functions, these remarks assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
+A [[frame]] is, in particular, a [[meet semilattice]]. Frame
+homomorphisms preserve finite meets, so they are also homomorphisms for
+of the underlying meet semilattices. Since equality of homomorphisms is
+defined by equality of the underlying functions, these remarks assemble
+into a functor $\thecat{Frames} \to \thecat{SLat}$.
 
 <!--
 ```agda
@@ -48,7 +49,7 @@ Frame↪SLat .F₀ A = Frm.meets A
 
 Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .witness = has-meet-slat-hom (f .witness)
-Frame↪SLat .F-id = trivial!
+Frame↪SLat .F-id    = trivial!
 Frame↪SLat .F-∘ f g = trivial!
 ```
 
@@ -128,8 +129,7 @@ map $DA \to B$, because $B$, being a frame, is cocomplete.
 ```agda
     mkhom : Frames.Hom (Lower-sets-frame A) B
     mkhom .hom = Lan↓ (A .fst) (B .fst) B.has-lubs (f .hom)
-    mkhom .witness .⋃-≤ g =
-      B.path→≤ $
+    mkhom .witness .⋃-≤ g = B.≤-refl' $
       Lan↓-cocontinuous (A .fst) (B .fst) B.has-lubs (f .hom) g
 ```
 
@@ -141,9 +141,9 @@ equal $\top_B$:
 
 ```agda
     mkhom .witness .top-≤ =
-      B.top                     B.≤⟨ f.top-≤ ⟩
-      f # A.top                 B.≤⟨ B.⋃-inj (A.top , tt) ⟩
-      B.⋃ (λ i → f # fst i) B.≤∎
+      B.top                   B.≤⟨ f.top-≤ ⟩
+      f # A.top               B.≤⟨ B.⋃-inj (A.top , tt) ⟩
+      B.⋃ (λ i → f # fst i)   B.≤∎
 ```
 
 Slightly harder, but still a bit of algebra, is computing that binary
@@ -153,9 +153,9 @@ binary meets.
 
 ```agda
     mkhom .witness .∩-≤ S T =
-      B.⋃ (λ i → f # fst i) B.∩ B.⋃ (λ i → f # fst i) B.=⟨ B.⋃-∩-product (λ i → hom f # fst i) (λ i → hom f # fst i) ⟩
-      B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i)) B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
-      B.⋃ (λ i → f # fst i)                           B.≤∎
+      B.⋃ (λ i → f # fst i) B.∩ B.⋃ (λ i → f # fst i)   B.=⟨ B.⋃-∩-product (λ i → hom f # fst i) (λ i → hom f # fst i) ⟩
+      B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
+      B.⋃ (λ i → f # fst i)                             B.≤∎
       where
         meet-section
           : Σ[ x ∈ A.Ob ] (x ∈↓ S) × Σ[ y ∈ A.Ob ] (y ∈↓ T)

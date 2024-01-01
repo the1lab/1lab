@@ -2,8 +2,12 @@
 ```agda
 open import Cat.Prelude
 
-open import Order.Diagram.Glb
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
+open import Order.Morphism
 open import Order.Base
 
 import Order.Reasoning
@@ -29,17 +33,23 @@ module _ {o ℓ} (A : Poset o ℓ) where
   Subposet P .Poset.≤-antisym p q =
     Σ-prop-path hlevel! (≤-antisym p q)
 
-module _ {o ℓ} {A : Poset o ℓ} where
+module _ {o ℓ ℓ'} {A : Poset o ℓ} (P : ⌞ A ⌟ → Prop ℓ') where
   open Order.Reasoning A
 
-  subposet-inc : ∀ {ℓ'} (P : Ob → Prop ℓ') → Monotone (Subposet A P) A
-  subposet-inc P .hom = fst
-  subposet-inc P .pres-≤ p = p
+  subposet-inc : Monotone (Subposet A P) A
+  subposet-inc .hom = fst
+  subposet-inc .pres-≤ p = p
+
+  subposet-inc-is-order-embedding
+    : is-order-embedding (Subposet A P) A (apply subposet-inc)
+  subposet-inc-is-order-embedding = _ , id-equiv
+
+module _ {o ℓ ℓ'} {A : Poset o ℓ} {P : ⌞ A ⌟ → Prop ℓ'} where
+  open Order.Reasoning A
 
   subposet-inc-inj
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'}
-    → ∀ {x y : ∫ₚ P}
-    → subposet-inc P # x ≡ subposet-inc P # y
+    : {x y : ∫ₚ P}
+    → subposet-inc {A = A} P # x ≡ subposet-inc {A = A} P # y
     → x ≡ y
   subposet-inc-inj p = Σ-prop-path hlevel! p
 ```
@@ -52,39 +62,39 @@ module _ {o ℓ} {A : Poset o ℓ} where
   open is-lub
 
   subposet-has-top
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'} {x}
+    : ∀ {x}
     → (px : x ∈ P)
     → is-top A x
     → is-top (Subposet A P) (x , px)
   subposet-has-top px x-top (y , _) = x-top y
 
   subposet-has-bottom
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'} {x}
+    : ∀ {x}
     → (px : x ∈ P)
     → is-bottom A x
     → is-bottom (Subposet A P) (x , px)
   subposet-has-bottom px x-bottom (y , _) = x-bottom y
 
   subposet-has-meet
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'} {x y z}
+    : ∀ {x y z}
     → (px : x ∈ P) (py : y ∈ P) (pz : z ∈ P)
     → is-meet A x y z
-    → is-meet (Subposet A P) (x , px) (y , py) (z , pz) 
+    → is-meet (Subposet A P) (x , px) (y , py) (z , pz)
   subposet-has-meet px py pz z-meet .meet≤l = z-meet .meet≤l
   subposet-has-meet px py pz z-meet .meet≤r = z-meet .meet≤r
   subposet-has-meet px py pz z-meet .greatest (lb , _) = z-meet .greatest lb
 
   subposet-has-join
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'} {x y z}
+    : ∀ {x y z}
     → (px : x ∈ P) (py : y ∈ P) (pz : z ∈ P)
     → is-join A x y z
-    → is-join (Subposet A P) (x , px) (y , py) (z , pz) 
+    → is-join (Subposet A P) (x , px) (y , py) (z , pz)
   subposet-has-join px py pz z-join .l≤join = z-join .l≤join
   subposet-has-join px py pz z-join .r≤join = z-join .r≤join
   subposet-has-join px py pz z-join .least (lb , _) = z-join .least lb
 
   subposet-has-lub
-    : ∀ {ℓ' ℓᵢ} {P : Ob → Prop ℓ'} {I : Type ℓᵢ}
+    : ∀ {ℓᵢ} {I : Type ℓᵢ}
     → {k : I → Ob} {x : Ob}
     → (pk : ∀ i → k i ∈ P)
     → (px : x ∈ P)
@@ -99,28 +109,25 @@ module _ {o ℓ} {A : Poset o ℓ} where
 <!--
 ```agda
   subposet-top
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'}
-    → (has-top : Top A)
+    : (has-top : Top A)
     → Top.top has-top ∈ P
     → Top (Subposet A P)
   subposet-top has-top top∈P .Top.top =
     Top.top has-top , top∈P
-  subposet-top {P = P} has-top top∈P .Top.has-top =
-    subposet-has-top {P = P} top∈P (Top.has-top has-top)
+  subposet-top has-top top∈P .Top.has-top =
+    subposet-has-top  top∈P (Top.has-top has-top)
 
   subposet-bottom
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'}
-    → (has-bottom : Bottom A)
+    : (has-bottom : Bottom A)
     → Bottom.bot has-bottom ∈ P
     → Bottom (Subposet A P)
   subposet-bottom has-bottom bottom∈P .Bottom.bot =
     Bottom.bot has-bottom , bottom∈P
-  subposet-bottom {P = P} has-bottom bottom∈P .Bottom.has-bottom =
-    subposet-has-bottom {P = P} bottom∈P (Bottom.has-bottom has-bottom)
+  subposet-bottom has-bottom bottom∈P .Bottom.has-bottom =
+    subposet-has-bottom bottom∈P (Bottom.has-bottom has-bottom)
 
   subposet-meets
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'}
-    → (has-meets : ∀ x y → Meet A x y)
+    : (has-meets : Has-meets A)
     → (meet∈P : ∀ {x y} → x ∈ P → y ∈ P → Meet.glb (has-meets x y) ∈ P)
     → (∀ {x y} → (px : x ∈ P) → (py : y ∈ P) → Meet (Subposet A P) (x , px) (y , py))
   subposet-meets has-meets meet∈P {x} {y} x∈P y∈P .Meet.glb =
@@ -129,8 +136,7 @@ module _ {o ℓ} {A : Poset o ℓ} where
     subposet-has-meet x∈P y∈P (meet∈P x∈P y∈P) (Meet.has-meet (has-meets x y))
 
   subposet-joins
-    : ∀ {ℓ'} {P : Ob → Prop ℓ'}
-    → (has-joins : ∀ x y → Join A x y)
+    : (has-joins : Has-joins A)
     → (join∈P : ∀ {x y} → x ∈ P → y ∈ P → Join.lub (has-joins x y) ∈ P)
     → (∀ {x y} → (px : x ∈ P) → (py : y ∈ P) → Join (Subposet A P) (x , px) (y , py))
   subposet-joins has-joins join∈P {x} {y} x∈P y∈P .Join.lub =
@@ -139,4 +145,3 @@ module _ {o ℓ} {A : Poset o ℓ} where
     subposet-has-join x∈P y∈P (join∈P x∈P y∈P) (Join.has-join (has-joins x y))
 ```
 -->
-

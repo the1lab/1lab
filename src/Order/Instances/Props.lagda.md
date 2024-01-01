@@ -6,8 +6,12 @@ open import Data.Sum
 
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Base
 ```
 -->

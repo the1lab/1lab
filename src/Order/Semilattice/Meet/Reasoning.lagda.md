@@ -5,10 +5,7 @@ open import Algebra.Monoid
 open import Cat.Instances.Delooping
 open import Cat.Prelude
 
-open import Data.Fin.Base using (Fin; fzero; fsuc)
-
 open import Order.Semilattice.Meet
-open import Order.Diagram.Glb
 open import Order.Base
 
 import Cat.Reasoning
@@ -18,10 +15,7 @@ import Order.Reasoning
 -->
 
 ```agda
-module Order.Semilattice.Meet.Reasoning
-  {o ℓ}
-  (L : Meet-semilattice o ℓ)
-  where
+module Order.Semilattice.Meet.Reasoning {o ℓ} (L : Meet-semilattice o ℓ) where
 ```
 
 ```agda
@@ -49,4 +43,3 @@ po = L .fst
 
 module ∩ = Cat.Reasoning (B ∩-monoid) hiding (Ob)
 ```
-

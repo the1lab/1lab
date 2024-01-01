@@ -6,8 +6,12 @@ open import Data.Sum.Base
 
 open import Order.Instances.Pointwise
 open import Order.Instances.Props
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Base
 
 import Order.Reasoning as Pr

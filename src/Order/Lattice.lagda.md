@@ -5,8 +5,10 @@ open import Cat.Prelude
 
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
-open import Order.Diagram.Glb
-open import Order.Diagram.Lub
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
+open import Order.Diagram.Top
 open import Order.Base
 
 import Order.Reasoning
@@ -49,12 +51,12 @@ private
     P Q R : Poset o ℓ
 
 is-lattice-is-prop : is-prop (is-lattice P)
-is-lattice-is-prop {P = P} =
-  Iso→is-hlevel 1 eqv hlevel!
-  where
-    open Order.Diagram.Lub P
-    open Order.Diagram.Glb P
-    unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
+is-lattice-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel! where
+  open Order.Diagram.Meet P using (H-Level-Meet)
+  open Order.Diagram.Join P using (H-Level-Join)
+  open Order.Diagram.Top P using (H-Level-Top)
+  open Order.Diagram.Bottom P using (H-Level-Bottom)
+  unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
 
 instance
   H-Level-is-lattice
@@ -97,15 +99,15 @@ record
 <!--
 ```agda
 is-lattice-hom-is-prop
-  : ∀ {f : Monotone P Q} {P-lattice : is-lattice P} {Q-lattice : is-lattice Q}
+  : ∀ {f : Monotone P Q} {P-lattice Q-lattice}
   → is-prop (is-lattice-hom f P-lattice Q-lattice)
-is-lattice-hom-is-prop = Iso→is-hlevel 1 eqv hlevel! 
+is-lattice-hom-is-prop = Iso→is-hlevel 1 eqv hlevel!
   where unquoteDecl eqv = declare-record-iso eqv (quote is-lattice-hom)
 
 instance
   H-Level-is-lattice-hom
-    : ∀ {f : Monotone P Q} {P-lattice : is-lattice P} {Q-lattice : is-lattice Q}
-    → ∀ {n} → H-Level (is-lattice-hom f P-lattice Q-lattice) (suc n)
+    : ∀ {f : Monotone P Q} {P-lattice Q-lattice n}
+    → H-Level (is-lattice-hom f P-lattice Q-lattice) (suc n)
   H-Level-is-lattice-hom = prop-instance is-lattice-hom-is-prop
 
 open is-lattice-hom
@@ -126,21 +128,18 @@ id-lattice-hom {P = P} L .∪-≤ =
   Poset.≤-refl P
 
 ∘-lattice-hom
-  : ∀ {L : is-lattice P}
-  → {J : is-lattice Q}
-  → {K : is-lattice R}
-  → {f : Monotone Q R} {g : Monotone P Q}
+  : ∀ {L J K} {f : Monotone Q R} {g : Monotone P Q}
   → is-lattice-hom f J K
   → is-lattice-hom g L J
   → is-lattice-hom (f ∘ₘ g) L K
 ∘-lattice-hom {R = R} {f = f} f-pres g-pres .top-≤ =
-  Poset.≤-trans R (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
+  R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ∘-lattice-hom {R = R} {f = f} f-pres g-pres .bot-≤ =
-  Poset.≤-trans R (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
+  R .Poset.≤-trans (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
 ∘-lattice-hom {R = R} {f = f} f-pres g-pres .∩-≤ =
-  Poset.≤-trans R (f-pres .∩-≤) (f .pres-≤ (g-pres .∩-≤))
+  R .Poset.≤-trans (f-pres .∩-≤) (f .pres-≤ (g-pres .∩-≤))
 ∘-lattice-hom {R = R} {f = f} f-pres g-pres .∪-≤ =
-  Poset.≤-trans R (f .pres-≤ (g-pres .∪-≤)) (f-pres .∪-≤)
+  R .Poset.≤-trans (f .pres-≤ (g-pres .∪-≤)) (f-pres .∪-≤)
 ```
 
 ```agda

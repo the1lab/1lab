@@ -59,7 +59,7 @@ automatically semi-directed:
     : ∀ {Ix : Type o} → (s : Ix → Ob) → is-prop Ix
     → is-semidirected-family s
   prop-indexed→semidirected s prop i j =
-    inc (i , ≤-refl , path→≤ (ap s (prop j i)))
+    inc (i , ≤-refl , ≤-refl' (ap s (prop j i)))
 ```
 
 The poset $(P, \le)$ is a **directed-complete partial order**, or DCPO,
@@ -300,7 +300,7 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
     module E where
       open DCPO E public
       open Order.Diagram.Lub poset public
-  
+
   mono : Posets.Hom D.poset E.poset
   mono = Subcat-hom.hom f
 
@@ -341,7 +341,7 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
     module E where
       open DCPO E public
       open Order.Diagram.Lub poset public
-  
+
   open is-directed-family
   open Total-hom
 ```
@@ -389,4 +389,3 @@ is monotone, and thus Scott-continuous.
     dcpo+scott→monotone D.has-dcpo f pres
   to-scott-directed f pres .Subcat-hom.witness = pres
 ```
- 
