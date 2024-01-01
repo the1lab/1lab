@@ -34,20 +34,21 @@ record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   open Top has-top using (top; !) public
 
   ⋂ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
-  ⋂ᶠ {zero} f  = top
-  ⋂ᶠ {suc n} f = f fzero ∩ ⋂ᶠ (λ i → f (fsuc i))
+  ⋂ᶠ {0}           f = top
+  ⋂ᶠ {1}           f = f fzero
+  ⋂ᶠ {suc (suc n)} f = f fzero ∩ ⋂ᶠ (λ i → f (fsuc i))
 
-  ⋂ᶠ-proj : ∀ {n} {f : Fin n → Ob} → (i : Fin n) → ⋂ᶠ f ≤ f i
-  ⋂ᶠ-proj {n = suc n} fzero = ∩≤l
-  ⋂ᶠ-proj {n = suc n} (fsuc i) = ≤-trans ∩≤r (⋂ᶠ-proj i)
+  ⋂ᶠ-proj : ∀ {n} {f : Fin n → Ob} (i : Fin n) → ⋂ᶠ f ≤ f i
+  ⋂ᶠ-proj {1}           fzero    = ≤-refl
+  ⋂ᶠ-proj {suc (suc n)} fzero    = ∩≤l
+  ⋂ᶠ-proj {suc (suc n)} (fsuc i) = ≤-trans ∩≤r (⋂ᶠ-proj i)
 
   ⋂ᶠ-universal
-    : ∀ {n} {f : Fin n → Ob}
-    → (x : Ob)
-    → (∀ i → x ≤ f i)
-    → x ≤ ⋂ᶠ f
-  ⋂ᶠ-universal {n = zero} {f = f} x p = !
-  ⋂ᶠ-universal {n = suc n} {f = f} x p =
+    : ∀ {n} {f : Fin n → Ob} (x : Ob)
+    → (∀ i → x ≤ f i) → x ≤ ⋂ᶠ f
+  ⋂ᶠ-universal {n = 0} {f = f} x p = !
+  ⋂ᶠ-universal {n = 1} {f = f} x p = p fzero
+  ⋂ᶠ-universal {n = suc (suc n)} {f = f} x p =
     ∩-universal _ (p fzero) (⋂ᶠ-universal x (p ⊙ fsuc))
 
   Finite-glbs : ∀ {n} (f : Fin n → Ob) → Glb P f
@@ -134,8 +135,9 @@ record is-meet-slat-hom
     f # t      Q.≤∎
 
   pres-⋂ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋂ᶠ k) ≡ Qₗ.⋂ᶠ (apply f ⊙ k)
-  pres-⋂ᶠ {n = zero} k = pres-top
-  pres-⋂ᶠ {n = suc n} k =
+  pres-⋂ᶠ {n = 0} k = pres-top
+  pres-⋂ᶠ {n = 1} k = refl
+  pres-⋂ᶠ {n = suc (suc n)} k =
     f # (k fzero Pₗ.∩ Pₗ.⋂ᶠ (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
     f # (k fzero) Qₗ.∩ f # Pₗ.⋂ᶠ (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
     Qₗ.⋂ᶠ (apply f ⊙ k)                      ∎

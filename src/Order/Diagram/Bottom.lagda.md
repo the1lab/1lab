@@ -25,7 +25,7 @@ open Lub
 ```
 -->
 
-# Bottom elements
+# Bottom elements {defines="bottom-element"}
 
 A **bottom element** in a partial order $(P, \le)$ is an element $\bot :
 P$ that is smaller than any other element of $P$. This is the same as
@@ -89,7 +89,7 @@ Bottom≃Lub = prop-ext! _ Lub→Bottom .snd
 ```
 -->
 
-### As initial objects
+## As initial objects
 
 Bottoms are the decategorifcation of [[initial objects]]; we don't need to
 require the uniqueness of the universal morphism, as we've replaced our

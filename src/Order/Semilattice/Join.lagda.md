@@ -26,7 +26,6 @@ module Order.Semilattice.Join where
 # Join semilattices {defines=join-semilattice}
 
 ```agda
-
 record is-join-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
     has-joins  : Has-joins P
@@ -37,20 +36,21 @@ record is-join-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   open Bottom has-bottom using (bot; ¡) public
 
   ⋃ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
-  ⋃ᶠ {zero}  f = bot
+  ⋃ᶠ {0}     f = bot
+  ⋃ᶠ {1}     f = f fzero
   ⋃ᶠ {suc n} f = f fzero ∪ ⋃ᶠ (λ i → f (fsuc i))
 
   ⋃ᶠ-inj : ∀ {n} {f : Fin n → Ob} → (i : Fin n) → f i ≤ ⋃ᶠ f
-  ⋃ᶠ-inj {n = suc n} fzero = l≤∪
-  ⋃ᶠ-inj {n = suc n} (fsuc i) = ≤-trans (⋃ᶠ-inj i) r≤∪
+  ⋃ᶠ-inj {1}           fzero    = ≤-refl
+  ⋃ᶠ-inj {suc (suc n)} fzero    = l≤∪
+  ⋃ᶠ-inj {suc (suc n)} (fsuc i) = ≤-trans (⋃ᶠ-inj i) r≤∪
 
   ⋃ᶠ-universal
-    : ∀ {n} {f : Fin n → Ob}
-    → (x : Ob)
-    → (∀ i → f i ≤ x)
-    → ⋃ᶠ f ≤ x
-  ⋃ᶠ-universal {n = zero} {f = f} x p = ¡
-  ⋃ᶠ-universal {n = suc n} {f = f} x p =
+    : ∀ {n} {f : Fin n → Ob} (x : Ob)
+    → (∀ i → f i ≤ x) → ⋃ᶠ f ≤ x
+  ⋃ᶠ-universal {0} x p = ¡
+  ⋃ᶠ-universal {1} x p = p fzero
+  ⋃ᶠ-universal {suc (suc n)} x p =
     ∪-universal _ (p fzero) (⋃ᶠ-universal x (p ⊙ fsuc))
 
   Finite-lubs : ∀ {n} (f : Fin n → Ob) → Lub P f
@@ -136,8 +136,9 @@ record is-join-slat-hom
     x          Q.≤∎
 
   pres-⋃ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋃ᶠ k) ≡ Qₗ.⋃ᶠ (apply f ⊙ k)
-  pres-⋃ᶠ {n = zero} k = pres-bot
-  pres-⋃ᶠ {n = suc n} k =
+  pres-⋃ᶠ {n = 0} k = pres-bot
+  pres-⋃ᶠ {n = 1} k = refl
+  pres-⋃ᶠ {n = suc (suc n)} k =
     f # (k fzero Pₗ.∪ Pₗ.⋃ᶠ (k ⊙ fsuc))       ≡⟨ pres-∪ _ _ ⟩
     f # (k fzero) Qₗ.∪ f # (Pₗ.⋃ᶠ (k ⊙ fsuc)) ≡⟨ ap₂ Qₗ._∪_ refl (pres-⋃ᶠ (k ⊙ fsuc)) ⟩
     Qₗ.⋃ᶠ (apply f ⊙ k)                       ∎

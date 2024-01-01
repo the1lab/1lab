@@ -29,7 +29,7 @@ private variable
 ```
 -->
 
-# Directed-complete partial orders
+# Directed-complete partial orders {defines="dcpo semidirected-family"}
 
 Let $(P, \le)$ be a [[partial order]]. A family of elements $f : I \to P$ is
 a **semi-directed family** if for every $i, j$, there merely exists

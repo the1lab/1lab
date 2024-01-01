@@ -30,7 +30,7 @@ private variable
 ```
 -->
 
-# Pointed DCPOs
+# Pointed DCPOs {defines="pointed-dcpo"}
 
 A [DCPO] is **pointed** if it has a least element $\bot$. This is a
 property of a DCPO, as bottom elements are unique.
