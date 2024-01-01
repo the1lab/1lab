@@ -204,26 +204,4 @@ abstract
   negℤ-anti (negsuc _) posz       _                       = pos≤pos Nat.0≤x
   negℤ-anti (negsuc _) (possuc y) _                       = neg≤pos
   negℤ-anti (negsuc x) (negsuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
-
-  negℤ-maxℤ : ∀ x y → negℤ (maxℤ x y) ≡ minℤ (negℤ x) (negℤ y)
-  negℤ-maxℤ posz       posz       = refl
-  negℤ-maxℤ posz       (possuc y) = refl
-  negℤ-maxℤ posz       (negsuc y) = refl
-  negℤ-maxℤ (possuc x) posz       = refl
-  negℤ-maxℤ (possuc x) (possuc y) = refl
-  negℤ-maxℤ (possuc x) (negsuc y) = refl
-  negℤ-maxℤ (negsuc x) posz       = refl
-  negℤ-maxℤ (negsuc x) (possuc y) = refl
-  negℤ-maxℤ (negsuc x) (negsuc y) = refl
-
-  negℤ-minℤ : ∀ x y → negℤ (minℤ x y) ≡ maxℤ (negℤ x) (negℤ y)
-  negℤ-minℤ posz       posz       = refl
-  negℤ-minℤ posz       (possuc y) = refl
-  negℤ-minℤ posz       (negsuc y) = refl
-  negℤ-minℤ (possuc x) posz       = refl
-  negℤ-minℤ (possuc x) (possuc y) = refl
-  negℤ-minℤ (possuc x) (negsuc y) = refl
-  negℤ-minℤ (negsuc x) posz       = refl
-  negℤ-minℤ (negsuc x) (possuc y) = refl
-  negℤ-minℤ (negsuc x) (negsuc y) = refl
 ```

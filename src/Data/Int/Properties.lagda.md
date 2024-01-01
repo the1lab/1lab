@@ -54,6 +54,9 @@ no further comments.
   negℤ-negℤ (pos (suc x)) = refl
   negℤ-negℤ (negsuc x)    = refl
 
+  negℤ-injective : ∀ x y → negℤ x ≡ negℤ y → x ≡ y
+  negℤ-injective x y p = sym (negℤ-negℤ x) ·· ap negℤ p ·· negℤ-negℤ y
+
   negℤ-predℤ : ∀ x → negℤ (predℤ x) ≡ sucℤ (negℤ x)
   negℤ-predℤ posz             = refl
   negℤ-predℤ (possuc zero)    = refl
@@ -65,6 +68,28 @@ no further comments.
   negℤ-sucℤ (possuc x)       = refl
   negℤ-sucℤ (negsuc zero)    = refl
   negℤ-sucℤ (negsuc (suc x)) = refl
+
+  negℤ-distrib-max : ∀ x y → negℤ (maxℤ x y) ≡ minℤ (negℤ x) (negℤ y)
+  negℤ-distrib-max posz       posz       = refl
+  negℤ-distrib-max posz       (possuc y) = refl
+  negℤ-distrib-max posz       (negsuc y) = refl
+  negℤ-distrib-max (possuc x) posz       = refl
+  negℤ-distrib-max (possuc x) (possuc y) = refl
+  negℤ-distrib-max (possuc x) (negsuc y) = refl
+  negℤ-distrib-max (negsuc x) posz       = refl
+  negℤ-distrib-max (negsuc x) (possuc y) = refl
+  negℤ-distrib-max (negsuc x) (negsuc y) = refl
+
+  negℤ-distrib-min : ∀ x y → negℤ (minℤ x y) ≡ maxℤ (negℤ x) (negℤ y)
+  negℤ-distrib-min posz       posz       = refl
+  negℤ-distrib-min posz       (possuc y) = refl
+  negℤ-distrib-min posz       (negsuc y) = refl
+  negℤ-distrib-min (possuc x) posz       = refl
+  negℤ-distrib-min (possuc x) (possuc y) = refl
+  negℤ-distrib-min (possuc x) (negsuc y) = refl
+  negℤ-distrib-min (negsuc x) posz       = refl
+  negℤ-distrib-min (negsuc x) (possuc y) = refl
+  negℤ-distrib-min (negsuc x) (negsuc y) = refl
 ```
 
 ## Rotations
@@ -189,9 +214,6 @@ no further comments.
   +ℤ-injectivel : ∀ k x y → x +ℤ k ≡ y +ℤ k → x ≡ y
   +ℤ-injectivel k x y p = +ℤ-injectiver k x y $
     +ℤ-commutative k x ·· p ·· +ℤ-commutative y k
-
-  negℤ-injective : ∀ x y → negℤ x ≡ negℤ y → x ≡ y
-  negℤ-injective x y p = sym (negℤ-negℤ x) ·· ap negℤ p ·· negℤ-negℤ y
 
   negℤ-distrib : ∀ x y → negℤ (x +ℤ y) ≡ (negℤ x) +ℤ (negℤ y)
   negℤ-distrib x y =
