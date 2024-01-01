@@ -49,22 +49,22 @@ no further comments.
 ## Negations
 
 ```agda
-  negate-negate : ∀ x → negℤ (negℤ x) ≡ x
-  negate-negate (pos zero)    = refl
-  negate-negate (pos (suc x)) = refl
-  negate-negate (negsuc x)    = refl
+  negℤ-negℤ : ∀ x → negℤ (negℤ x) ≡ x
+  negℤ-negℤ (pos zero)    = refl
+  negℤ-negℤ (pos (suc x)) = refl
+  negℤ-negℤ (negsuc x)    = refl
 
-  negate-predℤ : ∀ x → negℤ (predℤ x) ≡ sucℤ (negℤ x)
-  negate-predℤ posz             = refl
-  negate-predℤ (possuc zero)    = refl
-  negate-predℤ (possuc (suc x)) = refl
-  negate-predℤ (negsuc x)       = refl
+  negℤ-predℤ : ∀ x → negℤ (predℤ x) ≡ sucℤ (negℤ x)
+  negℤ-predℤ posz             = refl
+  negℤ-predℤ (possuc zero)    = refl
+  negℤ-predℤ (possuc (suc x)) = refl
+  negℤ-predℤ (negsuc x)       = refl
 
-  negate-sucℤ : ∀ x → negℤ (sucℤ x) ≡ predℤ (negℤ x)
-  negate-sucℤ posz             = refl
-  negate-sucℤ (possuc x)       = refl
-  negate-sucℤ (negsuc zero)    = refl
-  negate-sucℤ (negsuc (suc x)) = refl
+  negℤ-sucℤ : ∀ x → negℤ (sucℤ x) ≡ predℤ (negℤ x)
+  negℤ-sucℤ posz             = refl
+  negℤ-sucℤ (possuc x)       = refl
+  negℤ-sucℤ (negsuc zero)    = refl
+  negℤ-sucℤ (negsuc (suc x)) = refl
 ```
 
 ## Rotations
@@ -98,25 +98,25 @@ no further comments.
   rot-predl (possuc x) y = sym (pred-sucℤ _)
   rot-predl (negsuc x) y = refl
 
-  negate-distrib-rot : ∀ x y → negℤ (rotℤ x y) ≡ rotℤ (negℤ x) (negℤ y)
-  negate-distrib-rot posz             y = refl
-  negate-distrib-rot (possuc zero)    y = negate-sucℤ y
-  negate-distrib-rot (possuc (suc x)) y =
-    negate-sucℤ (sucℤ (rotℤ (pos x) y)) ∙ ap predℤ (negate-distrib-rot (pos (suc x)) y)
-  negate-distrib-rot (negsuc zero)    y = negate-predℤ y
-  negate-distrib-rot (negsuc (suc x)) y =
-      negate-predℤ (rotℤ (negsuc x) y)
-    ∙ ap sucℤ (negate-distrib-rot (negsuc x) y)
+  negℤ-distrib-rot : ∀ x y → negℤ (rotℤ x y) ≡ rotℤ (negℤ x) (negℤ y)
+  negℤ-distrib-rot posz             y = refl
+  negℤ-distrib-rot (possuc zero)    y = negℤ-sucℤ y
+  negℤ-distrib-rot (possuc (suc x)) y =
+    negℤ-sucℤ (sucℤ (rotℤ (pos x) y)) ∙ ap predℤ (negℤ-distrib-rot (pos (suc x)) y)
+  negℤ-distrib-rot (negsuc zero)    y = negℤ-predℤ y
+  negℤ-distrib-rot (negsuc (suc x)) y =
+      negℤ-predℤ (rotℤ (negsuc x) y)
+    ∙ ap sucℤ (negℤ-distrib-rot (negsuc x) y)
 
-  rotℤ-associative : ∀ x y z → rotℤ x (rotℤ y z) ≡ rotℤ (rotℤ x y) z
-  rotℤ-associative (pos zero)    y z = refl
-  rotℤ-associative (pos (suc x)) y z =
-    sucℤ (rotℤ (pos x) (rotℤ y z)) ≡⟨ ap sucℤ (rotℤ-associative (pos x) y z) ⟩
+  rotℤ-assoc : ∀ x y z → rotℤ x (rotℤ y z) ≡ rotℤ (rotℤ x y) z
+  rotℤ-assoc (pos zero)    y z = refl
+  rotℤ-assoc (pos (suc x)) y z =
+    sucℤ (rotℤ (pos x) (rotℤ y z)) ≡⟨ ap sucℤ (rotℤ-assoc (pos x) y z) ⟩
     sucℤ (rotℤ (rotℤ (pos x) y) z) ≡˘⟨ rot-sucl (rotℤ (pos x) y) z ⟩
     rotℤ (sucℤ (rotℤ (pos x) y)) z  ∎
-  rotℤ-associative (negsuc zero) y z = sym (rot-predl y z)
-  rotℤ-associative (negsuc (suc x)) y z =
-    predℤ (rotℤ (negsuc x) (rotℤ y z)) ≡⟨ ap predℤ (rotℤ-associative (negsuc x) y z) ⟩
+  rotℤ-assoc (negsuc zero) y z = sym (rot-predl y z)
+  rotℤ-assoc (negsuc (suc x)) y z =
+    predℤ (rotℤ (negsuc x) (rotℤ y z)) ≡⟨ ap predℤ (rotℤ-assoc (negsuc x) y z) ⟩
     predℤ (rotℤ (rotℤ (negsuc x) y) z) ≡˘⟨ rot-predl (rotℤ (negsuc x) y) z ⟩
     rotℤ (predℤ (rotℤ (negsuc x) y)) z ∎
 ```
@@ -143,7 +143,7 @@ no further comments.
   +ℤ-assoc x y z =
     x +ℤ (y +ℤ z)     ≡⟨ ap (x +ℤ_) (rot-is-add y z) ⟩
     x +ℤ rotℤ y z     ≡⟨ rot-is-add x _ ⟩
-    rotℤ x (rotℤ y z) ≡⟨ rotℤ-associative x y z ⟩
+    rotℤ x (rotℤ y z) ≡⟨ rotℤ-assoc x y z ⟩
     rotℤ (rotℤ x y) z ≡˘⟨ ap₂ rotℤ (rot-is-add x y) refl ⟩
     rotℤ (x +ℤ y) z   ≡˘⟨ rot-is-add (x +ℤ y) z ⟩
     (x +ℤ y) +ℤ z     ∎
@@ -187,10 +187,17 @@ no further comments.
     ·· +ℤ-zerol y
 
   +ℤ-injectivel : ∀ k x y → x +ℤ k ≡ y +ℤ k → x ≡ y
-  +ℤ-injectivel k x y p = +ℤ-injectiver k x y (+ℤ-commutative k x ·· p ·· +ℤ-commutative y k)
+  +ℤ-injectivel k x y p = +ℤ-injectiver k x y $
+    +ℤ-commutative k x ·· p ·· +ℤ-commutative y k
 
-  negate-distrib : ∀ x y → negℤ (x +ℤ y) ≡ (negℤ x) +ℤ (negℤ y)
-  negate-distrib x y = ap negℤ (rot-is-add x y) ∙ negate-distrib-rot x y ∙ sym (rot-is-add (negℤ x) (negℤ y))
+  negℤ-injective : ∀ x y → negℤ x ≡ negℤ y → x ≡ y
+  negℤ-injective x y p = sym (negℤ-negℤ x) ·· ap negℤ p ·· negℤ-negℤ y
+
+  negℤ-distrib : ∀ x y → negℤ (x +ℤ y) ≡ (negℤ x) +ℤ (negℤ y)
+  negℤ-distrib x y =
+      ap negℤ (rot-is-add x y)
+    ·· negℤ-distrib-rot x y
+    ·· sym (rot-is-add (negℤ x) (negℤ y))
 ```
 
 ## Multiplication
@@ -291,9 +298,9 @@ no further comments.
   dot-distribr x y (possuc z) =
       ap ((x +ℤ y) +ℤ_) (dot-distribr x y (pos z))
     ∙ distrib-lemma x y (dotℤ (pos z) x) (dotℤ (pos z) y)
-  dot-distribr x y (negsuc zero)    = negate-distrib x y
+  dot-distribr x y (negsuc zero)    = negℤ-distrib x y
   dot-distribr x y (negsuc (suc z)) =
-      ap₂ _+ℤ_ (negate-distrib x y) (dot-distribr x y (negsuc z))
+      ap₂ _+ℤ_ (negℤ-distrib x y) (dot-distribr x y (negsuc z))
     ∙ distrib-lemma (negℤ x) (negℤ y) (dotℤ (negsuc z) x) (dotℤ (negsuc z) y)
 
   *ℤ-distribl : ∀ x y z → x *ℤ (y +ℤ z) ≡ (x *ℤ y) +ℤ (x *ℤ z)
