@@ -8,7 +8,7 @@ open import Algebra.Ring
 
 open import Cat.Diagram.Initial
 
-open import Data.Int
+open import Data.Int.HIT
 
 import Data.Nat as Nat
 
@@ -20,7 +20,7 @@ import Prim.Data.Nat as Nat
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
 
-# The initial ring
+# The initial ring {defines="initial-ring"}
 
 We have, in the introduction to rings, mentioned offhand that the ring
 $\ZZ$ is an initial object. This turns out to be a fairly nontrivial

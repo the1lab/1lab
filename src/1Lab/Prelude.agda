@@ -24,6 +24,7 @@ open import 1Lab.Equiv public
 open import 1Lab.Equiv.FromPath public
 open import 1Lab.Equiv.Fibrewise public
 open import 1Lab.Function.Embedding public
+open import 1Lab.Function.Reasoning public
 open import 1Lab.Equiv.HalfAdjoint public
 
 open import 1Lab.Function.Surjection public

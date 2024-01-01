@@ -321,7 +321,7 @@ equivalence:
 
 ```agda
 not-is-equiv : is-equiv not
-not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
+not-is-equiv = is-involutive→is-equiv not-involutive
 ```
 
 <!--

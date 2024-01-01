@@ -7,7 +7,8 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
 open import Cat.Prelude hiding (_*_ ; _+_)
 
-open import Data.Int
+open import Data.Int.Properties
+open import Data.Int.Base
 
 import Cat.Reasoning
 ```
@@ -152,7 +153,7 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
   to-ab .snd = to-abelian-group-on
 
 is-commutative-group : ∀ {ℓ} → Group ℓ → Type ℓ
-is-commutative-group G = ∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x
+is-commutative-group G = Group-on-is-abelian (G .snd)
 
 from-commutative-group
   : ∀ {ℓ} (G : Group ℓ)
@@ -191,10 +192,10 @@ must lift it.
   mk-ℤ : make-abelian-group (Lift _ Int)
   mk-ℤ .ab-is-set = hlevel 2
   mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
-  mk-ℤ .inv (lift x) = lift (negate x)
+  mk-ℤ .inv (lift x) = lift (negℤ x)
   mk-ℤ .1g = lift 0
   mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
-  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-associative x y z)
-  mk-ℤ .invl (lift x) = ap lift (+ℤ-inversel x)
+  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-assoc x y z)
+  mk-ℤ .invl (lift x) = ap lift (+ℤ-invl x)
   mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
 ```

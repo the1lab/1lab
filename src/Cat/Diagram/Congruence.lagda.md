@@ -320,7 +320,7 @@ We build the congruence in parts.
 
 For the reflexivity map, we take the unique map $f : A \to A \times_B A$
 which is characterised by $p_1 f = p_2 f = \mathrm{id}$; This expresses,
-diagramatically, that $f(x) = f(x)$.
+diagrammatically, that $f(x) = f(x)$.
 
 ```agda
     cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl

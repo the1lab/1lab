@@ -760,14 +760,11 @@ ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) �
   {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
   → ((a : A₀) → PathP B (f₀ a) (f₁ (e .fst a)))
   → PathP (λ i → ua e i → B i) f₀ f₁
-ua→ {e = e} {f₀ = f₀} {f₁} h i a =
-  hcomp (∂ i) λ where
-    j (i = i0) → f₀ a
-    j (i = i1) → f₁ (lem a j)
-    j (j = i0) → h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i
-  where
-  lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
-  lem a₁ = equiv→counit (e .snd) _ ∙ transport-refl _
+ua→ {B = B} {f₀ = f₀} {f₁} h i a =
+  comp (λ j → B (i ∨ ~ j)) (∂ i) λ where
+    j (j = i0) → f₁ (unglue (∂ i) a)
+    j (i = i0) → h a (~ j)
+    j (i = i1) → f₁ a
 
 ua→2 : ∀ {ℓ ℓ' ℓ''} {A₀ A₁ : Type ℓ} {e₁ : A₀ ≃ A₁}
   {B₀ B₁ : Type ℓ'} {e₂ : B₀ ≃ B₁}

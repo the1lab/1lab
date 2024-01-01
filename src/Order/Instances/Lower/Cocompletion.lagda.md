@@ -2,11 +2,11 @@
 ```agda
 open import Cat.Prelude
 
+open import Order.Diagram.Lub.Reasoning
 open import Order.Instances.Pointwise
 open import Order.Instances.Lower
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
-open import Order.Diagram.Lub.Reasoning
 open import Order.Base
 
 import Order.Reasoning

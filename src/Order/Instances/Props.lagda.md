@@ -4,10 +4,10 @@ open import Cat.Prelude
 
 open import Data.Sum
 
+open import Order.Semilattice.Join
+open import Order.Semilattice.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
-open import Order.Semilattice.Meet
-open import Order.Semilattice.Join
 open import Order.Base
 ```
 -->

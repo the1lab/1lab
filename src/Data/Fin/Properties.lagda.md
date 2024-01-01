@@ -192,7 +192,7 @@ _between_ finite sets) [[merely]] split:
 ```agda
 finite-surjection-split
   : ∀ {ℓ} {n} {B : Type ℓ}
-  → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
+  → (f : B → Fin n) → is-surjective f
   → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
 ```

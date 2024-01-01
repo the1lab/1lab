@@ -155,8 +155,8 @@ use `refl`{.Agda} and `merid`{.Agda}.
 ```agda
     decode : ∀ a b → Code a b → a ≡ b
     decode = Susp-prop-elim²
-      (λ _ → refl) merid
-      (λ a → sym (merid a)) (λ _ → refl)
+      (λ _ → refl)          (λ c → merid c)
+      (λ c → sym (merid c)) (λ _ → refl)
 ```
 
 This time, if $A$ holds, we have to fill a *cube* with the given four edges:

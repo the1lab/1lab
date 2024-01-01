@@ -338,7 +338,7 @@ is used. We want to construct a _line_, which we can do by exhibiting
 that line as the missing face in a _square_. We have equations $g\ y ≡
 g\ y$ (`refl`{.Agda}), $g\ (f\ x_0) ≡ g\ y$ (the action of `g` on `p0`),
 and $g\ (f\ x_0) = x_0$ by the assumption that $g$ is a right inverse to
-$f$.  Diagramatically, these fit together into a square:
+$f$.  Diagrammatically, these fit together into a square:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -607,6 +607,13 @@ is-empty→≃⊥ : ∀ {ℓ} {A : Type ℓ} → ¬ A → A ≃ ⊥
 is-empty→≃⊥ ¬a = _ , ¬-is-equiv ¬a
 ```
 
+Any involution is an equivalence:
+
+```agda
+is-involutive→is-equiv : ∀ {ℓ} {A : Type ℓ} {f : A → A} → (∀ a → f (f a) ≡ a) → is-equiv f
+is-involutive→is-equiv inv = is-iso→is-equiv (iso _ inv inv)
+```
+
 # Equivalence reasoning
 
 To make composing equivalences more intuitive, we implement operators to
@@ -699,20 +706,27 @@ infixr 2 _≃⟨⟩_ _≃⟨_⟩_
 infix  3 _≃∎
 ```
 
-# Propositional extensionality
+# Propositional extensionality (redux)
 
 The following observation is not very complex, but it is incredibly
 useful: Equivalence of propositions is the same as biimplication.
 
 ```agda
-prop-ext : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
-         → is-prop P → is-prop Q
-         → (P → Q) → (Q → P)
-         → P ≃ Q
-prop-ext pprop qprop p→q q→p .fst = p→q
-prop-ext pprop qprop p→q q→p .snd .is-eqv y .centre = q→p y , qprop _ _
-prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
-  Σ-path (pprop _ _) (is-prop→is-set qprop _ _ _ _)
+module
+  _ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
+    (pprop : is-prop P) (qprop : is-prop Q)
+  where
+
+  biimp-is-equiv : (f : P → Q) → (Q → P) → is-equiv f
+  biimp-is-equiv f g .is-eqv y .centre .fst = g y
+  biimp-is-equiv f g .is-eqv y .centre .snd = qprop (f (g y)) y
+  biimp-is-equiv f g .is-eqv y .paths (p' , path) = Σ-pathp
+    (pprop (g y) p')
+    (is-prop→squarep (λ _ _ → qprop) _ _ _ _)
+
+  prop-ext : (P → Q) → (Q → P) → P ≃ Q
+  prop-ext p→q q→p .fst = p→q
+  prop-ext p→q q→p .snd = biimp-is-equiv p→q q→p
 ```
 
 <!--

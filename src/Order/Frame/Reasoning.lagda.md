@@ -10,8 +10,8 @@ open import Order.Diagram.Lub
 open import Order.Frame
 open import Order.Base
 
-import Order.Semilattice.Meet.Reasoning
 import Order.Semilattice.Join.Reasoning
+import Order.Semilattice.Meet.Reasoning
 ```
 -->
 

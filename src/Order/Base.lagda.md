@@ -310,3 +310,25 @@ _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 (P ^opp) .Poset.≤-trans   x≥y y≥z = Poset.≤-trans P y≥z x≥y
 (P ^opp) .Poset.≤-antisym x≥y y≥x = Poset.≤-antisym P y≥x x≥y
 ```
+
+We can construct the trivial posets with one and zero (object(s), ordering(s)) respectively
+
+```agda
+
+𝟙ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟙ᵖ .Poset.Ob = Lift _ ⊤
+𝟙ᵖ .Poset._≤_ _ _ = Lift _ ⊤
+𝟙ᵖ .Poset.≤-thin = hlevel!
+𝟙ᵖ .Poset.≤-refl = lift tt
+𝟙ᵖ .Poset.≤-trans = λ _ _ → lift tt
+𝟙ᵖ .Poset.≤-antisym = λ _ _ → refl
+
+𝟘ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟘ᵖ .Poset.Ob = Lift _ ⊥
+𝟘ᵖ .Poset._≤_ _ _ = Lift _ ⊥
+𝟘ᵖ .Poset.≤-thin ()
+𝟘ᵖ .Poset.≤-refl {()}
+𝟘ᵖ .Poset.≤-trans ()
+𝟘ᵖ .Poset.≤-antisym ()
+
+```

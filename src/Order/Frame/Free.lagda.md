@@ -19,7 +19,6 @@ open import Order.Base
 import Order.Semilattice.Meet.Reasoning as Meet-slat
 import Order.Frame.Reasoning as Frm
 import Order.Reasoning
-
 ```
 -->
 

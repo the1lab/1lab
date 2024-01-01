@@ -1,9 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Function.Surjection
+
 open import Algebra.Monoid
 
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Subcategory
+open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.Fin.Closure
@@ -13,12 +15,12 @@ open import Data.Fin.Base
 open import Data.Sum.Base
 open import Data.Power
 
-open import Order.Base
-open import Order.Subposet
-open import Order.Diagram.Lub
-open import Order.Semilattice.Join
 open import Order.Semilattice.Join.Subsemilattice
 open import Order.Instances.Pointwise
+open import Order.Semilattice.Join
+open import Order.Diagram.Lub
+open import Order.Subposet
+open import Order.Base
 
 import Order.Semilattice.Join.Reasoning
 ```
@@ -112,7 +114,6 @@ sets it contains.
 
     fold-K : (∣ A ∣ → ⌞ B ⌟) → K-finite-subset → ⌞ B ⌟
     fold-K f (P , P-fin) = Lub.lub ε' module fold-K where
-
       fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → ⌞ B ⌟
       fam (x , _) = f x
 ```

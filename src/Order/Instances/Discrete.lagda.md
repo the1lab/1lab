@@ -16,7 +16,7 @@ import Order.Reasoning as Poset
 module Order.Instances.Discrete where
 ```
 
-# Discrete orders
+# Discrete orders {defines="discrete-partial-order"}
 
 Every set $A$ can be turned into a [[poset]] by defining $x \le y$ to
 be $x = y$.
@@ -29,6 +29,18 @@ Disc A .Poset.≤-thin = A .is-tr _ _
 Disc A .Poset.≤-refl = refl
 Disc A .Poset.≤-trans = _∙_
 Disc A .Poset.≤-antisym p _ = p
+```
+
+We can do that same thing using the inductive identity type.
+
+```agda
+Discᵢ : ∀ {ℓ} → Set ℓ → Poset ℓ ℓ
+Discᵢ A .Poset.Ob = ⌞ A ⌟
+Discᵢ A .Poset._≤_ = _≡ᵢ_
+Discᵢ A .Poset.≤-thin = hlevel!
+Discᵢ A .Poset.≤-refl = reflᵢ
+Discᵢ A .Poset.≤-trans = _∙ᵢ_
+Discᵢ A .Poset.≤-antisym reflᵢ _ = refl
 ```
 
 This extends to a functor from $\Sets$ into the category of posets.

@@ -11,6 +11,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Id.Base
 open import Data.Bool
 
 open import Meta.Foldable
@@ -630,6 +631,15 @@ el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hleve
 ∣ el! A {hl = hl} ∣ = A
 el! A {hl = hl} .is-tr = hl
 
+
+biimp-is-equiv!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
+    {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
+  → (f : A → B) → (B → A)
+  → is-equiv f
+biimp-is-equiv! {aprop = aprop} {bprop = bprop} = biimp-is-equiv aprop bprop
+
 prop-ext!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
@@ -736,6 +746,12 @@ instance
 
   decomp-path : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
   decomp-path = decomp (quote Path-is-hlevel) (`level ∷ `search ∷ [])
+
+  decomp-id : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ᵢ b)
+  decomp-id = decomp (quote Id-is-hlevel) (`level ∷ `search ∷ [])
+
+  decomp-id' : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ᵢ b)
+  decomp-id' = decomp (quote Id-is-hlevel') (`level ∷ `search ∷ [])
 
   decomp-univalence : ∀ {ℓ} {A B : Type ℓ} → hlevel-decomposition (A ≡ B)
   decomp-univalence = decomp (quote ≡-is-hlevel) (`level ∷ `search ∷ `search ∷ [] )

@@ -252,7 +252,12 @@ more than a handful of intermediate steps:
   double-connection
     : (p : x ≡ y) (q : y ≡ z)
     → Square p p q q
-  double-connection _ _ = commutes→square refl
+  double-connection {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → y
+    k (i = i0) → p (j ∨ ~ k)
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → p (i ∨ ~ k)
+    k (j = i1) → q (i ∧ k)
 
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}

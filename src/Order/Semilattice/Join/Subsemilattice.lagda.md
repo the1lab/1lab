@@ -2,13 +2,13 @@
 ```agda
 open import Cat.Prelude
 
-open import Order.Base
-open import Order.Subposet
 open import Order.Semilattice.Join
 open import Order.Diagram.Lub
+open import Order.Subposet
+open import Order.Base
 
-import Order.Reasoning
 import Order.Semilattice.Join.Reasoning
+import Order.Reasoning
 ```
 -->
 

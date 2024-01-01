@@ -53,7 +53,7 @@ sphere[^diamond]:
 ~~~
 
 We have the north and south poles $N$ and $S$ above and below a copy of
-the space $A$, which is diagramatically represented by the <span
+the space $A$, which is diagrammatically represented by the <span
 class=shaded>shaded</span> region. In the type theory, we can't really
 "see" this copy of $A$: we only see its _ghost_, as something keeping
 all the meridians from collapsing.
@@ -78,7 +78,7 @@ Every suspension admits a surjection from the booleans:
 2→Σ true = N
 2→Σ false = S
 
-2→Σ-surjective : ∀ {ℓ} {A : Type ℓ} (s : Susp A) → ∥ fibre 2→Σ s ∥
+2→Σ-surjective : ∀ {ℓ} {A : Type ℓ} → is-surjective (2→Σ {A = A})
 2→Σ-surjective = Susp-elim-prop (λ _ → hlevel 1)
   (inc (true , refl)) (inc (false , refl))
 ```
