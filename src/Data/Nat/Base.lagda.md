@@ -141,10 +141,10 @@ instance
 
 ::: warning
 **Heads up!** The arithmetic properties of operations on the natural
-numbers are in the module [`1Lab.Data.Nat.Properties`].
+numbers are in the module [`Data.Nat.Properties`].
 :::
 
-[`1Lab.Data.Nat.Properties`]: Data.Nat.Properties.html
+[`Data.Nat.Properties`]: Data.Nat.Properties.html
 
 Agda already comes with definitions for addition and multiplication of
 natural numbers. They are reproduced below, using different names, for

@@ -262,6 +262,12 @@ monus-commute m n k =
   m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
   m - (k + n) ≡⟨ monus-addl m k n ⟩
   m - k - n   ∎
+
+monus-swapl : ∀ x y z → x + y ≡ z → y ≡ z - x
+monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) ∙ ap (_- x) p
+
+monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
+monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 ```
 
 ### Maximum

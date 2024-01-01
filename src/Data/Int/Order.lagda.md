@@ -9,6 +9,7 @@ open import Data.Int.Properties
 open import Data.Int.Base
 open import Data.Dec
 
+import Data.Nat.Properties as Nat
 import Data.Nat.Order as Nat
 import Data.Nat.Base as Nat
 ```
@@ -101,12 +102,64 @@ instance
 ```
 -->
 
+## Universal properties of maximum and minimum
+
+This case bash shows that `maxℤ` and `minℤ` satisfy their
+universal properties.
+
+<!--
+```agda
+abstract
+```
+-->
+
+```agda
+  maxℤ-≤l : (x y : Int) → x ≤ maxℤ x y
+  maxℤ-≤l (pos x)    (pos y)    = pos≤pos (Nat.max-≤l x y)
+  maxℤ-≤l (pos _)    (negsuc _) = ≤-refl
+  maxℤ-≤l (negsuc _) (pos _)    = neg≤pos
+  maxℤ-≤l (negsuc x) (negsuc y) = neg≤neg (Nat.min-≤l x y)
+
+  maxℤ-≤r : (x y : Int) → y ≤ maxℤ x y
+  maxℤ-≤r (pos x)    (pos y)    = pos≤pos (Nat.max-≤r x y)
+  maxℤ-≤r (pos _)    (negsuc _) = neg≤pos
+  maxℤ-≤r (negsuc _) (pos _)    = ≤-refl
+  maxℤ-≤r (negsuc x) (negsuc y) = neg≤neg (Nat.min-≤r x y)
+
+  maxℤ-univ : (x y z : Int) → x ≤ z → y ≤ z → maxℤ x y ≤ z
+  maxℤ-univ _ _ _ (pos≤pos x≤z) (pos≤pos y≤z) = pos≤pos (Nat.max-univ _ _ _ x≤z y≤z)
+  maxℤ-univ _ _ _ (pos≤pos x≤z) neg≤pos       = pos≤pos x≤z
+  maxℤ-univ _ _ _ neg≤pos       (pos≤pos y≤z) = pos≤pos y≤z
+  maxℤ-univ _ _ _ neg≤pos       neg≤pos       = neg≤pos
+  maxℤ-univ _ _ _ (neg≤neg x≥z) (neg≤neg y≥z) = neg≤neg (Nat.min-univ _ _ _ x≥z y≥z)
+
+  minℤ-≤l : (x y : Int) → minℤ x y ≤ x
+  minℤ-≤l (pos x)    (pos y)    = pos≤pos (Nat.min-≤l x y)
+  minℤ-≤l (pos _)    (negsuc _) = neg≤pos
+  minℤ-≤l (negsuc _) (pos _)    = ≤-refl
+  minℤ-≤l (negsuc x) (negsuc y) = neg≤neg (Nat.max-≤l x y)
+
+  minℤ-≤r : (x y : Int) → minℤ x y ≤ y
+  minℤ-≤r (pos x)    (pos y)    = pos≤pos (Nat.min-≤r x y)
+  minℤ-≤r (pos _)    (negsuc _) = ≤-refl
+  minℤ-≤r (negsuc _) (pos _)    = neg≤pos
+  minℤ-≤r (negsuc x) (negsuc y) = neg≤neg (Nat.max-≤r x y)
+
+  minℤ-univ : (x y z : Int) → z ≤ x → z ≤ y → z ≤ minℤ x y
+  minℤ-univ _ _ _ (pos≤pos x≥z) (pos≤pos y≥z) = pos≤pos (Nat.min-univ _ _ _ x≥z y≥z)
+  minℤ-univ _ _ _ neg≤pos       neg≤pos       = neg≤pos
+  minℤ-univ _ _ _ neg≤pos       (neg≤neg y≤z) = neg≤neg y≤z
+  minℤ-univ _ _ _ (neg≤neg x≤z) neg≤pos       = neg≤neg x≤z
+  minℤ-univ _ _ _ (neg≤neg x≤z) (neg≤neg y≤z) = neg≤neg (Nat.max-univ _ _ _ x≤z y≤z)
+```
+
 ## Compatibility with the structure
 
 The last case bash in this module will establish that the ordering on
-natural numbers is compatible with the successor equivalence. Since
-addition is iterated application of this equivalence, we get as a
-corollary that addition also respects the order.
+integers is compatible with the successor, predecessor, and negation.
+Since addition is equivalent to iterated application of the successor
+and predecessor, we get as a corollary that addition also respects
+the order.
 
 ```agda
 suc-≤ : ∀ x y → x ≤ y → sucℤ x ≤ sucℤ y
@@ -143,4 +196,19 @@ abstract
   +ℤ-mono-r k x y p = transport
     (ap₂ _≤_ (+ℤ-commutative k x) (+ℤ-commutative k y))
     (+ℤ-mono-l k x y p)
+
+  negℤ-anti : ∀ x y → x ≤ y → negℤ y ≤ negℤ x
+  negℤ-anti posz       posz       x≤y                     = x≤y
+  negℤ-anti posz       (possuc y) _                       = neg≤pos
+  negℤ-anti (possuc x) (possuc y) (pos≤pos (Nat.s≤s x≤y)) = neg≤neg x≤y
+  negℤ-anti (negsuc _) posz       _                       = pos≤pos Nat.0≤x
+  negℤ-anti (negsuc _) (possuc y) _                       = neg≤pos
+  negℤ-anti (negsuc x) (negsuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
+
+  negℤ-anti-full : ∀ x y → negℤ y ≤ negℤ x → x ≤ y
+  negℤ-anti-full posz       (pos y)    _                       = pos≤pos Nat.0≤x
+  negℤ-anti-full posz       (negsuc y) (pos≤pos ())
+  negℤ-anti-full (possuc x) (possuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
+  negℤ-anti-full (negsuc x) (pos y)    _                       = neg≤pos
+  negℤ-anti-full (negsuc x) (negsuc y) (pos≤pos (Nat.s≤s y≤x)) = neg≤neg y≤x
 ```

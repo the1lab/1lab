@@ -244,7 +244,6 @@ open import Data.Int.Base             -- Inductively-defined integers
 open import Data.Int.Order            -- ≤ on the integers
 open import Data.Int.Universal        -- A universal property of the integers
 open import Data.Int.Properties       -- Algebra on the integers
-open import Data.Int.Order.Properties -- Lemmas of ≤ on the integers
 ```
 
 General constructions on sets:

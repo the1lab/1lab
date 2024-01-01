@@ -163,8 +163,9 @@ If they're mismatched, we have pre-existing refutations.
   Negative-Int .Negative.fromNeg zero = pos zero
   Negative-Int .Negative.fromNeg (suc x) = negsuc x
 
-  H-Level-Int : ∀ {n} → H-Level Int (2 + n)
-  H-Level-Int = basic-instance 2 (Discrete→is-set Discrete-Int)
+  opaque
+    H-Level-Int : ∀ {n} → H-Level Int (2 + n)
+    H-Level-Int = basic-instance 2 (Discrete→is-set Discrete-Int)
 ```
 -->
 

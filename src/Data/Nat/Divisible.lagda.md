@@ -4,7 +4,9 @@ open import 1Lab.Prelude
 
 open import Data.Nat.Properties
 open import Data.Nat.Order
+open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -137,3 +139,52 @@ expect a number to divide its multiples. Fortunately, this is the case:
 ∣-*r : ∀ {x y} → x ∣ y * x
 ∣-*r {y = y} = fibre→∣ (y , refl)
 ```
+
+If two numbers are multiples of $k$, then so is their sum.
+
+```agda
+∣-+ : ∀ {k n m} → k ∣ n → k ∣ m → k ∣ (n + m)
+∣-+ {zero} {n} {m} p q = ap (_+ m) p ∙ q
+∣-+ {suc k} (x , p) (y , q) = x + y , *-distrib-+r x y (suc k) ∙ ap₂ _+_ p q
+```
+
+## Even and odd numbers
+
+A number is **even** if it is divisible by 2, and **odd** otherwise.
+Note that a number is odd if and only if its successor is even; we take this
+as our definition because it's easier to compute with positive statements.
+
+```agda
+is-even : Nat → Type
+is-even n = 2 ∣ n
+
+is-odd : Nat → Type
+is-odd n = is-even (suc n)
+
+odd→not-even : ∀ n → is-odd n → ¬ is-even n
+odd→not-even n (x , p) (y , q) = 1≠2*n (x - y) $
+  monus-swapr 1 _ _ (ap suc q ∙ sym p) ∙ sym (monus-distribr x y 2)
+  where
+    1≠2*n : ∀ n → ¬ (1 ≡ n * 2)
+    1≠2*n zero = suc≠zero
+    1≠2*n (suc n) h = zero≠suc (suc-inj h)
+```
+
+We can easily decide whether a number is even or odd by induction.
+
+```agda
+even-or-odd : ∀ n → is-even n ⊎ is-odd n
+even-or-odd zero = inl ∣-zero
+even-or-odd (suc n) with even-or-odd n
+... | inl p = inr (∣-+ ∣-refl p)
+... | inr p = inl p
+
+even? : ∀ n → Dec (is-even n)
+even? n with even-or-odd n
+... | inl e = yes e
+... | inr o = no (odd→not-even n o)
+```
+
+See [`Data.Nat.DivMod`] for a general decision procedure for divisibility.
+
+[`Data.Nat.DivMod`]: Data.Nat.DivMod.html
