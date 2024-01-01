@@ -204,4 +204,11 @@ abstract
   negℤ-anti (negsuc _) posz       _                       = pos≤pos Nat.0≤x
   negℤ-anti (negsuc _) (possuc y) _                       = neg≤pos
   negℤ-anti (negsuc x) (negsuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
+
+  negℤ-anti-full : ∀ x y → negℤ y ≤ negℤ x → x ≤ y
+  negℤ-anti-full posz       (pos y)    _                       = pos≤pos Nat.0≤x
+  negℤ-anti-full posz       (negsuc y) (pos≤pos ())
+  negℤ-anti-full (possuc x) (possuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
+  negℤ-anti-full (negsuc x) (pos y)    _                       = neg≤pos
+  negℤ-anti-full (negsuc x) (negsuc y) (pos≤pos (Nat.s≤s y≤x)) = neg≤neg y≤x
 ```
