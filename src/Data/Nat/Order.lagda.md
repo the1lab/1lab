@@ -123,6 +123,9 @@ their strict ordering:
 ### Properties of the strict order
 
 ```agda
+<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+
 <-asym : ∀ {x y} → x < y → ¬ (y < x)
 <-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
 

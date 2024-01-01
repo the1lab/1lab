@@ -51,6 +51,16 @@ given two functions `A → C` and `B → C`, we can construct a function
 [ f , g ] (inr x) = g x
 ```
 
+<!--
+```agda
+infix 0 if⁺_then_else_
+
+if⁺_then_else_ : A ⊎ B → C → C → C
+if⁺ inl _ then y else n = y
+if⁺ inr _ then y else n = n
+```
+-->
+
 Furthermore, this function is "universal" in the following sense: if we
 have some function `h : A ⊎ B → C` that behaves like `f` when provided
 an `inl a`, and like `g` when provided `inr b`, then `h` _must_ be

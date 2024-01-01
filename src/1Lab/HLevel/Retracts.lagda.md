@@ -346,7 +346,7 @@ We then have a family of instances for solving compound types, e.g.
 function types, $\Sigma$-types, path types, lifts, etc.
 
 ```agda
-instance
+instance opaque
   H-Level-pi
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
