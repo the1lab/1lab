@@ -56,37 +56,39 @@ Props-has-bot : Bottom Props
 Props-has-bot .Bottom.bot = ⊥Ω
 Props-has-bot .Bottom.has-bottom _ ()
 
-Props-has-joins : ∀ P Q → Join Props P Q
-Props-has-joins P Q .Join.lub = P ∨Ω Q
-Props-has-joins P Q .Join.has-join .is-join.l≤join = pure ⊙ inl
-Props-has-joins P Q .Join.has-join .is-join.r≤join = pure ⊙ inr
-Props-has-joins P Q .Join.has-join .is-join.least R l r = ∥-∥-rec! [ l , r ]
+Props-has-joins : ∀ P Q → is-join Props P Q (P ∨Ω Q)
+Props-has-joins P Q .is-join.l≤join = pure ⊙ inl
+Props-has-joins P Q .is-join.r≤join = pure ⊙ inr
+Props-has-joins P Q .is-join.least R l r = ∥-∥-rec! [ l , r ]
 
-Props-has-meets : ∀ P Q → Meet Props P Q
-Props-has-meets P Q .Meet.glb = P ∧Ω Q
-Props-has-meets P Q .Meet.has-meet .is-meet.meet≤l = fst
-Props-has-meets P Q .Meet.has-meet .is-meet.meet≤r = snd
-Props-has-meets P Q .Meet.has-meet .is-meet.greatest R l r x = (l x) , (r x)
+Props-has-meets : ∀ P Q → is-meet Props P Q (P ∧Ω Q)
+Props-has-meets P Q .is-meet.meet≤l = fst
+Props-has-meets P Q .is-meet.meet≤r = snd
+Props-has-meets P Q .is-meet.greatest R l r x = (l x) , (r x)
 
-Props-has-glbs : ∀ {ℓ} {I : Type ℓ} → (Ps : I → Ω) → Glb Props Ps
-Props-has-glbs {I = I} Ps .Glb.glb = ∀Ω I Ps
-Props-has-glbs Ps .Glb.has-glb .is-glb.glb≤fam i f = (out! f) i
-Props-has-glbs Ps .Glb.has-glb .is-glb.greatest R k x = inc (λ i → k i x)
+module _ {ℓ} {I : Type ℓ} (Ps : I → Ω) where
+  Props-has-glbs : is-glb Props Ps (∀Ω I Ps)
+  Props-has-glbs .is-glb.glb≤fam i f = out! f i
+  Props-has-glbs .is-glb.greatest R k x = inc (λ i → k i x)
 
-Props-has-lubs : ∀ {ℓ} {I : Type ℓ} → (Ps : I → Ω) → Lub Props Ps
-Props-has-lubs {I = I} Ps .Lub.lub = ∃Ω I Ps
-Props-has-lubs Ps .Lub.has-lub .is-lub.fam≤lub i pi = inc (i , pi)
-Props-has-lubs Ps .Lub.has-lub .is-lub.least R k x = □-rec! (λ { (i , pi) → k i pi }) x
+  Props-has-lubs : is-lub Props Ps (∃Ω I Ps)
+  Props-has-lubs .is-lub.fam≤lub i pi = inc (i , pi)
+  Props-has-lubs .is-lub.least R k = □-rec! λ { (i , pi) → k i pi }
 ```
 
 <!--
 ```agda
+open is-meet-semilattice
+open is-join-semilattice
+
 Props-is-meet-slat : is-meet-semilattice Props
-Props-is-meet-slat .is-meet-semilattice.has-meets = Props-has-meets
-Props-is-meet-slat .is-meet-semilattice.has-top = Props-has-top
+Props-is-meet-slat ._∩_ x y = x ∧Ω y
+Props-is-meet-slat .∩-meets = Props-has-meets
+Props-is-meet-slat .has-top = Props-has-top
 
 Props-is-join-slat : is-join-semilattice Props
-Props-is-join-slat .is-join-semilattice.has-joins = Props-has-joins
-Props-is-join-slat .is-join-semilattice.has-bottom = Props-has-bot
+Props-is-join-slat ._∪_ x y    = x ∨Ω y
+Props-is-join-slat .∪-joins    = Props-has-joins
+Props-is-join-slat .has-bottom = Props-has-bot
 ```
 -->

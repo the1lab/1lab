@@ -11,6 +11,7 @@ open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Meet
 open import Order.Instances.Lower
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Frame
@@ -45,7 +46,7 @@ open is-frame-hom
 
 ```agda
 Frame↪SLat : ∀ {o ℓ} → Functor (Frames o ℓ) (Meet-slats o ℓ)
-Frame↪SLat .F₀ A = Frm.meets A
+Frame↪SLat .F₀ (_ , A) = Frm.meets A
 
 Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .witness = has-meet-slat-hom (f .witness)
@@ -74,9 +75,11 @@ Lower-sets-frame (P , L) = Lower-sets P , L↓-frame where
   module L↓ = Order.Reasoning (Lower-sets P)
 
   L↓-frame : is-frame (Lower-sets P)
-  L↓-frame .is-frame.has-meets = Lower-sets-meets P
+  L↓-frame .is-frame._∩_ a b = Lower-sets-meets P a b .Meet.glb
+  L↓-frame .is-frame.∩-meets a b = Lower-sets-meets P a b .Meet.has-meet
   L↓-frame .is-frame.has-top = Lower-sets-top P
-  L↓-frame .is-frame.has-lubs = Lower-sets-cocomplete P
+  L↓-frame .is-frame.⋃ k = Lower-sets-cocomplete P k .Lub.lub
+  L↓-frame .is-frame.⋃-lubs k = Lower-sets-cocomplete P k .Lub.has-lub
   L↓-frame .is-frame.⋃-distribl x f = ext λ arg →
     Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
          (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
@@ -114,11 +117,11 @@ semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
 
 ```agda
   module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
-            (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets B))
+            (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets (B .snd)))
     where
     module A  = Meet-slat A
-    module A↓ = Frm (Lower-sets-frame A)
-    module B  = Frm B
+    module A↓ = Frm (Lower-sets-frame A .snd)
+    module B  = Frm (B .snd)
     module f = is-meet-slat-hom (f .witness)
 ```
 
@@ -128,9 +131,9 @@ map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda
     mkhom : Frames.Hom (Lower-sets-frame A) B
-    mkhom .hom = Lan↓ (A .fst) (B .fst) B.has-lubs (f .hom)
+    mkhom .hom = Lan↓ B.⋃-lubs (f .hom)
     mkhom .witness .⋃-≤ g = B.≤-refl' $
-      Lan↓-cocontinuous (A .fst) (B .fst) B.has-lubs (f .hom) g
+      Lan↓-cocontinuous B.⋃-lubs (f .hom) g
 ```
 
 The harder part is showing that the cocontinuous extension of a
@@ -170,7 +173,7 @@ map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 ```agda
     mkcomm : ∀ x → f # x ≡ mkhom # (↓ A.po x)
     mkcomm x =
-      sym (Lan↓-commutes A.po B.po B.has-lubs (f .hom) x)
+      sym (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```
 
 Now we must define the unit map. We've already committed to defining
@@ -183,10 +186,10 @@ $\land$.
 ```agda
   the-unit
     : (S : Meet-semilattice ℓ ℓ)
-    → Meet-slats.Hom S (Frm.meets (Lower-sets-frame S))
+    → Meet-slats.Hom S (Frm.meets (Lower-sets-frame S .snd))
   the-unit S = go where
     module S = Meet-slat S
-    module S↓ = Frm (Lower-sets-frame S)
+    module S↓ = Frm (Lower-sets-frame S .snd)
     go : Meet-slats.Hom S S↓.meets
     go .hom = よₚ S.po
     go .witness .is-meet-slat-hom.∩-≤ x y z (p , q) = do
@@ -209,15 +212,14 @@ cocontinuous extensions to tie everything up:
   go .unique {A} {B} {f = f} {g} wit = ext q where
     open Mk A B f
 
-    gᵐ : Monotone (Lower-sets A.po) B.po
+    gᵐ : Monotone (Lower-sets A.po) (B .fst)
     gᵐ .hom x = g # x
     gᵐ .pres-≤ {x} {y} w = g .hom .pres-≤ w
 
-    p =
-      Lan↓-unique A.po B.po B.has-lubs (f .hom) gᵐ
-        (is-frame-hom.pres-⋃ (g .witness))
-        λ x → ap (_# x) (sym wit)
+    p = Lan↓-unique B.⋃-lubs (f .hom) gᵐ
+      (is-frame-hom.pres-⋃ (g .witness))
+      λ x → ap (_# x) (sym wit)
 
-    q : ∀ x → Lan↓ A.po B.po B.has-lubs (f .hom) # x ≡ g # x
+    q : ∀ x → Lan↓ B.⋃-lubs (f .hom) # x ≡ g # x
     q x = sym p #ₚ x
 ```

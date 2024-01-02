@@ -5,42 +5,40 @@ open import Algebra.Magma
 
 open import Cat.Prelude
 
+open import Order.Diagram.Meet
 open import Order.Base
 
-import Order.Diagram.Meet
 import Order.Reasoning
-
-open Order.Diagram.Meet using (Has-meets)
 ```
 -->
 
 ```agda
-module Order.Diagram.Meet.Reasoning {o ℓ} {P : Poset o ℓ} (meets : Has-meets P) where
+module Order.Diagram.Meet.Reasoning
+  {o ℓ} {P : Poset o ℓ} {_∩_ : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟}
+  (∩-meets : ∀ x y → is-meet P x y (x ∩ y))
+  where
 ```
 
 <!--
 ```agda
-open Order.Diagram.Meet P
 open Order.Reasoning P
+open Meet
 ```
 -->
 
 # Reasoning about meets
 
 ```agda
+meets : ∀ x y → Meet P x y
+meets x y .glb      = x ∩ y
+meets x y .has-meet = ∩-meets x y
+
 module meets {x} {y} = Meet (meets x y)
 open meets renaming
   ( meet≤l to ∩≤l
   ; meet≤r to ∩≤r
   ; greatest to ∩-universal)
   public
-```
-
-
-```agda
-infixr 25 _∩_
-_∩_ : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
-x ∩ y = meets.glb {x} {y}
 ```
 
 ```agda
@@ -81,10 +79,10 @@ abstract
 ```
 
 ```agda
-  ∩≤∩l : ∀ {x y x'} → x ≤ x' → x ∩ y ≤ x' ∩ y
+  ∩≤∩l : ∀ {x y x'} → x ≤ x' → (x ∩ y) ≤ (x' ∩ y)
   ∩≤∩l p = ∩≤∩ p ≤-refl
 
-  ∩≤∩r : ∀ {x y y'} → y ≤ y' → x ∩ y ≤ x ∩ y'
+  ∩≤∩r : ∀ {x y y'} → y ≤ y' → (x ∩ y) ≤ (x ∩ y')
   ∩≤∩r p = ∩≤∩ ≤-refl p
 ```
 

@@ -5,12 +5,12 @@ open import Algebra.Magma
 
 open import Cat.Prelude
 
-open import Order.Diagram.Join using (Has-joins ; Lub→Join)
+open import Order.Diagram.Join
 open import Order.Base
 
 import Order.Diagram.Join.Reasoning as Joins
 import Order.Diagram.Bottom
-import Order.Diagram.Lub
+open import Order.Diagram.Lub
 import Order.Reasoning
 ```
 -->
@@ -22,7 +22,6 @@ module Order.Diagram.Lub.Reasoning {o ℓ} (P : Poset o ℓ) where
 <!--
 ```agda
 open Order.Reasoning P
-open Order.Diagram.Lub P
 open Order.Diagram.Bottom P
 ```
 -->
@@ -34,12 +33,16 @@ open Order.Diagram.Bottom P
 ## Least upper bounds
 
 ```agda
-module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
-  module lubs {I} {f : I → Ob} = Lub (lubs f)
-  open lubs using () renaming (fam≤lub to ⋃-inj; least to ⋃-universal) public
+module Lubs
+  {⋃      : ∀ {I : Type o} (f : I → Ob) → Ob}
+  (⋃-lubs : ∀ {I : Type o} (f : I → Ob) → is-lub P f (⋃ f))
+  where
 
-  ⋃ : ∀ {I : Type o} → (I → Ob) → Ob
-  ⋃ f = lubs.lub {f = f}
+  lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f
+  lubs f = record { lub = ⋃ f ; has-lub = ⋃-lubs f }
+
+  module ⋃-lubs {I} {f : I → Ob} = is-lub (⋃-lubs f)
+  open ⋃-lubs using () renaming (fam≤lub to ⋃-inj; least to ⋃-universal) public
 ```
 
 ```agda
@@ -77,15 +80,23 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
 ```
 
 ```agda
-  opaque
-    has-joins : Has-joins P
-    has-joins x y = Lub→Join P (lower-lub (lubs _))
+  module _ (x y : Ob) where opaque
+    private
+      it : Join P x y
+      it = Lub→Join (lower-lub (lubs _))
+
+    infixr 24 _∪_
+    _∪_ : Ob
+    _∪_ = it .Join.lub
+
+    ∪-joins : is-join P x y _∪_
+    ∪-joins = it .Join.has-join
 
   opaque
     has-bottom : Bottom
     has-bottom = Lub→Bottom (lower-lub (lubs (λ ())))
 
-  open Joins has-joins public
+  open Joins ∪-joins public
   open Bottom has-bottom using (bot; ¡) public
 ```
 
@@ -126,15 +137,15 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
 
 ```agda
 is-cocomplete→is-large-cocomplete
-  : (lubs : ∀ {I : Type o} (f : I → Ob) → Lub f)
-  → ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Lub F
+  : (lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f)
+  → ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Lub P F
 is-cocomplete→is-large-cocomplete lubs {I = I} F = cover-preserves-lub
   (Ω-corestriction-is-surjective F)
   (lubs fst)
 ```
 
 ```agda
-module Large (lubs : ∀ {I : Type o} (f : I → Ob) → Lub f) where
+module Large (lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f) where
   opaque
     ⋃ᴸ : ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Ob
     ⋃ᴸ F = is-cocomplete→is-large-cocomplete lubs F .Lub.lub

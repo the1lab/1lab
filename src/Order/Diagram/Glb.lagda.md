@@ -14,12 +14,13 @@ import Order.Reasoning
 -->
 
 ```agda
-module Order.Diagram.Glb {o ℓ} (P : Poset o ℓ) where
+module Order.Diagram.Glb where
 ```
 
 <!--
 ```agda
-open Order.Reasoning P
+module _ {o ℓ} (P : Poset o ℓ) where
+  open Poset P
 ```
 -->
 
@@ -42,84 +43,86 @@ artificial, and it's just because we can't reuse the identifier
 us, a meet is a glb of two elements.
 
 ```agda
-record is-glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) (glb : Ob)
-        : Type (o ⊔ ℓ ⊔ ℓᵢ) where
-  no-eta-equality
-  field
-    glb≤fam  : ∀ i → glb ≤ F i
-    greatest : (lb' : Ob) → (∀ i → lb' ≤ F i) → lb' ≤ glb
+  record is-glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) (glb : Ob)
+          : Type (o ⊔ ℓ ⊔ ℓᵢ) where
+    no-eta-equality
+    field
+      glb≤fam  : ∀ i → glb ≤ F i
+      greatest : (lb' : Ob) → (∀ i → lb' ≤ F i) → lb' ≤ glb
 
-record Glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) : Type (o ⊔ ℓ ⊔ ℓᵢ) where
-  no-eta-equality
-  field
-    glb : Ob
-    has-glb : is-glb F glb
-  open is-glb has-glb public
+  record Glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) : Type (o ⊔ ℓ ⊔ ℓᵢ) where
+    no-eta-equality
+    field
+      glb : Ob
+      has-glb : is-glb F glb
+    open is-glb has-glb public
 ```
 
 <!--
 ```agda
-open is-glb
+module _ {o ℓ} {P : Poset o ℓ} where
+  open Poset P
+  open is-glb
 
-private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
+  private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
 
-is-glb-is-prop
-  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
-  → is-prop (is-glb F glb)
-is-glb-is-prop = Iso→is-hlevel 1 eqv hlevel!
+  is-glb-is-prop
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
+    → is-prop (is-glb P F glb)
+  is-glb-is-prop = Iso→is-hlevel 1 eqv hlevel!
 
-instance
-  H-Level-is-glb
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob} {n}
-    → H-Level (is-glb F glb) (suc n)
-  H-Level-is-glb = prop-instance is-glb-is-prop
+  instance
+    H-Level-is-glb
+      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob} {n}
+      → H-Level (is-glb P F glb) (suc n)
+    H-Level-is-glb = prop-instance is-glb-is-prop
 
-glb-unique
-  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
-  → is-glb F x → is-glb F y
-  → x ≡ y
-glb-unique is is' = ≤-antisym
-  (is' .greatest _ (is .glb≤fam))
-  (is .greatest _ (is' .glb≤fam))
+  glb-unique
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
+    → is-glb P F x → is-glb P F y
+    → x ≡ y
+  glb-unique is is' = ≤-antisym
+    (is' .greatest _ (is .glb≤fam))
+    (is .greatest _ (is' .glb≤fam))
 
-Glb-is-prop
-  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
-  → is-prop (Glb F)
-Glb-is-prop p q i .Glb.glb =
-  glb-unique (Glb.has-glb p) (Glb.has-glb q) i
-Glb-is-prop {F = F} p q i .Glb.has-glb =
-  is-prop→pathp {B = λ i → is-glb F (glb-unique (Glb.has-glb p) (Glb.has-glb q) i)}
-    (λ i → hlevel 1)
-    (Glb.has-glb p) (Glb.has-glb q) i
+  Glb-is-prop
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
+    → is-prop (Glb P F)
+  Glb-is-prop p q i .Glb.glb =
+    glb-unique (Glb.has-glb p) (Glb.has-glb q) i
+  Glb-is-prop {F = F} p q i .Glb.has-glb =
+    is-prop→pathp {B = λ i → is-glb P F (glb-unique (Glb.has-glb p) (Glb.has-glb q) i)}
+      (λ i → hlevel 1)
+      (Glb.has-glb p) (Glb.has-glb q) i
 
-instance
-  H-Level-Glb
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {n}
-    → H-Level (Glb F) (suc n)
-  H-Level-Glb = prop-instance Glb-is-prop
+  instance
+    H-Level-Glb
+      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {n}
+      → H-Level (Glb P F) (suc n)
+    H-Level-Glb = prop-instance Glb-is-prop
 
-lift-is-glb
-  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
-  → is-glb F glb → is-glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb
-lift-is-glb is .glb≤fam (lift ix) = is .glb≤fam ix
-lift-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ lift)
+  lift-is-glb
+    : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
+    → is-glb P F glb → is-glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb
+  lift-is-glb is .glb≤fam (lift ix) = is .glb≤fam ix
+  lift-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ lift)
 
-lift-glb
-  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-  → Glb F → Glb (F ⊙ Lift.lower {ℓ = ℓᵢ'})
-lift-glb glb .Glb.glb = Glb.glb glb
-lift-glb glb .Glb.has-glb = lift-is-glb (Glb.has-glb glb)
+  lift-glb
+    : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+    → Glb P F → Glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'})
+  lift-glb glb .Glb.glb = Glb.glb glb
+  lift-glb glb .Glb.has-glb = lift-is-glb (Glb.has-glb glb)
 
-lower-is-glb
-  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
-  → is-glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb → is-glb F glb
-lower-is-glb is .glb≤fam ix = is .glb≤fam (lift ix)
-lower-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ Lift.lower)
+  lower-is-glb
+    : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
+    → is-glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb → is-glb P F glb
+  lower-is-glb is .glb≤fam ix = is .glb≤fam (lift ix)
+  lower-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ Lift.lower)
 
-lower-glb
-  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-  → Glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Glb F
-lower-glb glb .Glb.glb = Glb.glb glb
-lower-glb glb .Glb.has-glb = lower-is-glb (Glb.has-glb glb)
+  lower-glb
+    : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+    → Glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Glb P F
+  lower-glb glb .Glb.glb = Glb.glb glb
+  lower-glb glb .Glb.has-glb = lower-is-glb (Glb.has-glb glb)
 ```
 -->

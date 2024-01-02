@@ -14,6 +14,8 @@ open import Data.Sum.Base
 open import Data.Power
 
 open import Order.Semilattice.Join.Subsemilattice
+open import Order.Instances.Pointwise.Diagrams
+open import Order.Semilattice.Join.NAry
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Join
 open import Order.Diagram.Lub
@@ -123,10 +125,10 @@ using surjectivity of the first map.
 ```agda
       ε : Finite-cover (∫ₚ P) → Lub B.po fam
       ε (cover {card} g surj) =
-        cover-reflects-lub B.po surj (B.Finite-lubs (fam ⊙ g))
+        cover-reflects-lub surj (Finite-lubs (B .snd) (fam ⊙ g))
 
       ε' : Lub B.po fam
-      ε' = □-rec! {pa = Lub-is-prop B.po} ε P-fin
+      ε' = □-rec! ε P-fin
 
       module ε' = Lub ε'
 ```
@@ -179,10 +181,10 @@ make-free-join-slat .universal {A} {B} f .witness .∪-≤ P Q =
 make-free-join-slat .universal {A} {B} f .witness .bot-≤ =
   fold-K-bot-≤ A B f
 make-free-join-slat .commutes {A} {B} f = ext (fold-K-singleton A B f)
-make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P → lub-unique B.po
+make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P → lub-unique
   (fold-K.ε'.has-lub A B f (P .fst) (P .snd))
-  (cast-is-lubᶠ B.po (λ Q → sym (p #ₚ Q .fst)) $
-    is-join-slat-hom.pres-finitely-indexed-lub (g .witness) (P .snd) _ _ $
+  (cast-is-lubᶠ (λ Q → sym (p #ₚ Q .fst)) $
+    pres-finitely-indexed-lub (g .witness) (P .snd) _ _ $
     K-singleton-lub A _)
   where module B = Order.Semilattice.Join.Reasoning B
 ```

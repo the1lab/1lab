@@ -27,7 +27,7 @@ are given by $A \times B$-matrices valued in $L$.
 <!--
 ```agda
 module _ {o ℓ : Level} (L : Frame o ℓ) where
-  open Order.Frame.Reasoning L
+  open Order.Frame.Reasoning (L .snd)
   open Precategory
   private module A = Allegory
 ```

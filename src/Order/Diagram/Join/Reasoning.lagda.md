@@ -5,23 +5,24 @@ open import Algebra.Magma
 
 open import Cat.Prelude
 
+open import Order.Diagram.Join
 open import Order.Base
 
-import Order.Diagram.Join
 import Order.Reasoning
-
-open Order.Diagram.Join using (Has-joins)
 ```
 -->
 
 ```agda
-module Order.Diagram.Join.Reasoning {o ℓ} {P : Poset o ℓ} (joins : Has-joins P) where
+module Order.Diagram.Join.Reasoning
+  {o ℓ} {P : Poset o ℓ} {_∪_ : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟}
+  (∪-joins : ∀ x y → is-join P x y (x ∪ y))
+  where
 ```
 
 <!--
 ```agda
-open Order.Diagram.Join P
 open Order.Reasoning P
+open Join
 ```
 -->
 
@@ -29,18 +30,16 @@ open Order.Reasoning P
 
 
 ```agda
+joins : ∀ x y → Join P x y
+joins x y .lub      = x ∪ y
+joins x y .has-join = ∪-joins x y
+
 module joins {x} {y} = Join (joins x y)
 open joins renaming
   ( l≤join to l≤∪
   ; r≤join to r≤∪
   ; least to ∪-universal)
   public
-```
-
-```agda
-infixr 24 _∪_
-_∪_ : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
-x ∪ y = joins.lub {x} {y}
 ```
 
 ```agda

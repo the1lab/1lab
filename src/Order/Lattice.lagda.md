@@ -24,23 +24,32 @@ module Order.Lattice where
 ```agda
 record is-lattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
-  open Order.Reasoning P
+
   field
-    has-meets : ∀ x y → Meet P x y
+    _∩_     : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
+    ∩-meets : ∀ x y → is-meet P x y (x ∩ y)
+
+    _∪_     : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
+    ∪-joins : ∀ x y → is-join P x y (x ∪ y)
+
     has-top : Top P
-    has-joins : ∀ x y → Join P x y
     has-bottom : Bottom P
 
+  infixr 24 _∪_
+  infixr 25 _∩_
+
   has-meet-slat : is-meet-semilattice P
-  has-meet-slat .is-meet-semilattice.has-meets = has-meets
+  has-meet-slat .is-meet-semilattice._∩_     = _∩_
+  has-meet-slat .is-meet-semilattice.∩-meets = ∩-meets
   has-meet-slat .is-meet-semilattice.has-top = has-top
 
   has-join-slat : is-join-semilattice P
-  has-join-slat .is-join-semilattice.has-joins = has-joins
+  has-join-slat .is-join-semilattice._∪_ = _∪_
+  has-join-slat .is-join-semilattice.∪-joins = ∪-joins
   has-join-slat .is-join-semilattice.has-bottom = has-bottom
 
-  open is-meet-semilattice has-meet-slat public
-  open is-join-semilattice has-join-slat public
+  open Top has-top using (top ; !) public
+  open Bottom has-bottom using (bot ; ¡) public
 ```
 
 <!--
@@ -51,12 +60,31 @@ private
     P Q R : Poset o ℓ
 
 is-lattice-is-prop : is-prop (is-lattice P)
-is-lattice-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel! where
-  open Order.Diagram.Meet P using (H-Level-Meet)
-  open Order.Diagram.Join P using (H-Level-Join)
+is-lattice-is-prop {P = P} p q = path where
   open Order.Diagram.Top P using (H-Level-Top)
   open Order.Diagram.Bottom P using (H-Level-Bottom)
-  unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
+
+  module p = is-lattice p
+  module q = is-lattice q
+  open is-lattice
+
+  joinp : ∀ x y → x p.∪ y ≡ x q.∪ y
+  joinp x y = join-unique (p.∪-joins x y) (q.∪-joins x y)
+
+  meetp : ∀ x y → x p.∩ y ≡ x q.∩ y
+  meetp x y = meet-unique (p.∩-meets x y) (q.∩-meets x y)
+
+  path : p ≡ q
+  path i ._∪_ x y = joinp x y i
+  path i ._∩_ x y = meetp x y i
+  path i .∪-joins x y = is-prop→pathp
+    (λ i → hlevel {T = is-join P x y (joinp x y i)} 1)
+    (p.∪-joins x y) (q.∪-joins x y) i
+  path i .∩-meets x y = is-prop→pathp
+    (λ i → hlevel {T = is-meet P x y (meetp x y i)} 1)
+    (p.∩-meets x y) (q.∩-meets x y) i
+  path i .has-top    = hlevel {T = Top P} 1 p.has-top q.has-top i
+  path i .has-bottom = hlevel {T = Bottom P} 1 p.has-bottom q.has-bottom i
 
 instance
   H-Level-is-lattice
@@ -101,8 +129,16 @@ record
 is-lattice-hom-is-prop
   : ∀ {f : Monotone P Q} {P-lattice Q-lattice}
   → is-prop (is-lattice-hom f P-lattice Q-lattice)
-is-lattice-hom-is-prop = Iso→is-hlevel 1 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote is-lattice-hom)
+is-lattice-hom-is-prop {Q = Q} =
+  -- The hlevel! tactic is *really slow* here, so define it by hand
+  Iso→is-hlevel 1 eqv $
+    ×-is-hlevel 1 Q.≤-thin $
+    ×-is-hlevel 1 Q.≤-thin $
+    ×-is-hlevel 1 (Π-is-hlevel²' 1 (λ _ _ → Q.≤-thin)) $
+    Π-is-hlevel²' 1 (λ _ _ → Q.≤-thin)
+  where
+    unquoteDecl eqv = declare-record-iso eqv (quote is-lattice-hom)
+    module Q = Poset Q
 
 instance
   H-Level-is-lattice-hom

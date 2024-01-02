@@ -6,7 +6,7 @@ open import Cat.Prelude
 open import Order.Base
 open import Order.Cat
 
-import Order.Diagram.Glb
+open import Order.Diagram.Glb
 import Order.Reasoning
 ```
 -->
@@ -17,7 +17,6 @@ module Order.Diagram.Top {o ℓ} (P : Poset o ℓ) where
 
 <!--
 ```agda
-open Order.Diagram.Glb P
 open Order.Reasoning P
 
 open is-glb
@@ -43,10 +42,10 @@ record Top : Type (o ⊔ ℓ) where
   ! : ∀ {x} → x ≤ top
   ! = has-top _
 
-is-top→is-glb : ∀ {glb} {f : ⊥ → _} → is-top glb → is-glb f glb
+is-top→is-glb : ∀ {glb} {f : ⊥ → _} → is-top glb → is-glb P f glb
 is-top→is-glb is-top .greatest x _ = is-top x
 
-is-glb→is-top : ∀ {glb} {f : ⊥ → _} → is-glb f glb → is-top glb
+is-glb→is-top : ∀ {glb} {f : ⊥ → _} → is-glb P f glb → is-top glb
 is-glb→is-top glb x = glb .greatest x λ ()
 ```
 
@@ -72,19 +71,19 @@ instance
     → H-Level Top (suc n)
   H-Level-Top = prop-instance Top-is-prop
 
-Top→Glb : ∀ {f : ⊥ → _} → Top → Glb f
+Top→Glb : ∀ {f : ⊥ → _} → Top → Glb P f
 Top→Glb top .Glb.glb = Top.top top
 Top→Glb top .Glb.has-glb = is-top→is-glb (Top.has-top top)
 
-Glb→Top : ∀ {f : ⊥ → _} → Glb f → Top
+Glb→Top : ∀ {f : ⊥ → _} → Glb P f → Top
 Glb→Top glb .Top.top = Glb.glb glb
 Glb→Top glb .Top.has-top = is-glb→is-top (Glb.has-glb glb)
 
 is-top≃is-glb : ∀ {glb} {f} → is-equiv (is-top→is-glb {glb} {f})
-is-top≃is-glb = prop-ext! _ is-glb→is-top .snd
+is-top≃is-glb = biimp-is-equiv! _ is-glb→is-top
 
 Top≃Glb : ∀ {f} → is-equiv (Top→Glb {f})
-Top≃Glb = prop-ext! _ Glb→Top .snd
+Top≃Glb = biimp-is-equiv! _ Glb→Top
 ```
 -->
 

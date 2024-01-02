@@ -7,11 +7,11 @@ open import Cat.Prelude
 
 open import Data.Bool
 
-open import Order.Diagram.Meet using (Has-meets ; Glb→Meet)
+open import Order.Diagram.Meet
 open import Order.Base
 
 import Order.Diagram.Meet.Reasoning as Meets
-import Order.Diagram.Glb
+open import Order.Diagram.Glb
 import Order.Diagram.Top
 import Order.Reasoning
 ```
@@ -23,7 +23,6 @@ module Order.Diagram.Glb.Reasoning {o ℓ} (P : Poset o ℓ) where
 
 <!--
 ```agda
-open Order.Diagram.Glb P
 open Order.Diagram.Top P
 open Order.Reasoning P
 ```
@@ -32,7 +31,7 @@ open Order.Reasoning P
 # Reasoning about greatest lower bounds
 
 ```agda
-module Glbs (glbs : ∀ {I : Type o} → (f : I → Ob) → Glb f) where
+module Glbs (glbs : ∀ {I : Type o} → (f : I → Ob) → Glb P f) where
   module glbs {I} {f : I → Ob} = Glb (glbs f)
   open glbs using () renaming (glb≤fam to ⋂-proj; greatest to ⋂-universal) public
 
@@ -68,15 +67,23 @@ module Glbs (glbs : ∀ {I : Type o} → (f : I → Ob) → Glb f) where
 ```
 
 ```agda
-  opaque
-    has-meets : Has-meets P
-    has-meets x y = Glb→Meet P (lower-glb (glbs _))
+  module _ (x y : Ob) where opaque
+    private
+      it : Meet P x y
+      it = Glb→Meet (lower-glb (glbs _))
+
+    infixr 25 _∩_
+    _∩_ : Ob
+    _∩_ = it .Meet.glb
+
+    ∩-meets : is-meet P x y _∩_
+    ∩-meets = it .Meet.has-meet
 
   opaque
     has-top : Top
     has-top = Glb→Top (lower-glb (glbs (λ ())))
 
-  open Meets has-meets public
+  open Meets ∩-meets public
   open Top has-top using (top; !) public
 ```
 

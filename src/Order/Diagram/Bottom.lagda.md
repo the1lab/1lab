@@ -6,7 +6,7 @@ open import Cat.Prelude
 open import Order.Base
 open import Order.Cat
 
-import Order.Diagram.Lub
+open import Order.Diagram.Lub
 import Order.Reasoning
 ```
 -->
@@ -17,7 +17,6 @@ module Order.Diagram.Bottom {o ℓ} (P : Poset o ℓ) where
 
 <!--
 ```agda
-open Order.Diagram.Lub P
 open Order.Reasoning P
 
 open is-lub
@@ -44,10 +43,10 @@ record Bottom : Type (o ⊔ ℓ) where
   ¡ : ∀ {x} → bot ≤ x
   ¡ = has-bottom _
 
-is-bottom→is-lub : ∀ {lub} {f : ⊥ → _} → is-bottom lub → is-lub f lub
+is-bottom→is-lub : ∀ {lub} {f : ⊥ → _} → is-bottom lub → is-lub P f lub
 is-bottom→is-lub is-bot .least x _ = is-bot x
 
-is-lub→is-bottom : ∀ {lub} {f : ⊥ → _} → is-lub f lub → is-bottom lub
+is-lub→is-bottom : ∀ {lub} {f : ⊥ → _} → is-lub P f lub → is-bottom lub
 is-lub→is-bottom lub x = lub .least x λ ()
 ```
 
@@ -73,19 +72,19 @@ instance
     → H-Level Bottom (suc n)
   H-Level-Bottom = prop-instance Bottom-is-prop
 
-Bottom→Lub : ∀ {f : ⊥ → _} → Bottom → Lub f
+Bottom→Lub : ∀ {f : ⊥ → _} → Bottom → Lub P f
 Bottom→Lub bottom .Lub.lub = Bottom.bot bottom
 Bottom→Lub bottom .Lub.has-lub = is-bottom→is-lub (Bottom.has-bottom bottom)
 
-Lub→Bottom : ∀ {f : ⊥ → _} → Lub f → Bottom
+Lub→Bottom : ∀ {f : ⊥ → _} → Lub P f → Bottom
 Lub→Bottom lub .Bottom.bot = Lub.lub lub
 Lub→Bottom lub .Bottom.has-bottom = is-lub→is-bottom (Lub.has-lub lub)
 
 is-bottom≃is-lub : ∀ {lub} {f} → is-equiv (is-bottom→is-lub {lub} {f})
-is-bottom≃is-lub = prop-ext! _ is-lub→is-bottom .snd
+is-bottom≃is-lub = biimp-is-equiv! _ is-lub→is-bottom
 
 Bottom≃Lub : ∀ {f} → is-equiv (Bottom→Lub {f})
-Bottom≃Lub = prop-ext! _ Lub→Bottom .snd
+Bottom≃Lub = biimp-is-equiv! _ Lub→Bottom
 ```
 -->
 

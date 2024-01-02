@@ -12,17 +12,18 @@ open import Order.Base
 
 import Order.Semilattice.Join.Reasoning
 import Order.Semilattice.Meet.Reasoning
+import Order.Reasoning
 ```
 -->
 
 ```agda
-module Order.Frame.Reasoning {o ℓ} (B : Frame o ℓ) where
+module Order.Frame.Reasoning {o ℓ} {P : Poset o ℓ} (frm : is-frame P) where
 ```
 
 ```agda
-open Frame B public
+open Order.Reasoning P public
+open is-frame frm hiding (meets ; joins) public
 ```
-
 
 # Reasoning about frames
 
@@ -33,10 +34,10 @@ frame $B$ iff $x = x \cap y$.
 
 ```agda
 meets : Meet-semilattice o ℓ
-meets = (B .fst) , has-meet-slat
+meets = P , has-meet-slat
 
 joins : Join-semilattice o ℓ
-joins = B .fst , has-join-slat
+joins = P , has-join-slat
 
 open Order.Semilattice.Meet.Reasoning meets using (∩-idl; ∩-idr; module ∩) public
 open Order.Semilattice.Join.Reasoning joins using (∪-idl; ∪-idr; module ∪) public
@@ -51,7 +52,7 @@ lattice:
 
 ```agda
 ⋃-product
-  : ∀ {I J : Type o} (F : I → ⌞ B ⌟) (G : J → ⌞ B ⌟)
+  : ∀ {I J : Type o} (F : I → ⌞ P ⌟) (G : J → ⌞ P ⌟)
   → ⋃ (λ i → ⋃ λ j → G i ∩ F j)
   ≡ ⋃ {I = I × J} (λ p → F (p .fst) ∩ G (p .snd))
 ⋃-product {I} {J} F G = ≤-antisym
@@ -71,7 +72,7 @@ But this result relies on the cocontinuity of meets.
 
 ```agda
 ⋃-∩-product
-  : ∀ {I J : Type o} (F : I → ⌞ B ⌟) (G : J → ⌞ B ⌟)
+  : ∀ {I J : Type o} (F : I → ⌞ P ⌟) (G : J → ⌞ P ⌟)
   → ⋃ F ∩ ⋃ G
   ≡ ⋃ {I = I × J} (λ i → F (i .fst) ∩ G (i .snd))
 ⋃-∩-product F G =
@@ -82,7 +83,7 @@ But this result relies on the cocontinuity of meets.
 ```
 
 ```agda
-⋃-distribr : ∀ {I} (f : I → Ob) x → (⋃ f) ∩ x ≡ ⋃ λ i → f i ∩ x
+⋃-distribr : ∀ {I} (f : I → Ob) x → ⋃ f ∩ x ≡ ⋃ λ i → f i ∩ x
 ⋃-distribr f x =
   ∩-comm
   ·· ⋃-distribl x f
@@ -90,7 +91,7 @@ But this result relies on the cocontinuity of meets.
 
 -- TODO: Move this into lattice reasoning
 opaque
-  unfolding Lubs.has-joins
+  unfolding Lubs._∪_
   ∪-distribl : ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
   ∪-distribl  =
     ⋃-distribl _ _

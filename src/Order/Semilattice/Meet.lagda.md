@@ -26,35 +26,15 @@ module Order.Semilattice.Meet where
 ```agda
 record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
-    has-meets : ∀ x y → Meet P x y
-    has-top   : Top P
+    _∩_     : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
+    ∩-meets : ∀ x y → is-meet P x y (x ∩ y)
+    has-top : Top P
+
+  infixr 25 _∩_
 
   open Order.Reasoning P
-  open Meets has-meets public
+  open Meets ∩-meets public
   open Top has-top using (top; !) public
-
-  ⋂ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
-  ⋂ᶠ {0}           f = top
-  ⋂ᶠ {1}           f = f fzero
-  ⋂ᶠ {suc (suc n)} f = f fzero ∩ ⋂ᶠ (λ i → f (fsuc i))
-
-  ⋂ᶠ-proj : ∀ {n} {f : Fin n → Ob} (i : Fin n) → ⋂ᶠ f ≤ f i
-  ⋂ᶠ-proj {1}           fzero    = ≤-refl
-  ⋂ᶠ-proj {suc (suc n)} fzero    = ∩≤l
-  ⋂ᶠ-proj {suc (suc n)} (fsuc i) = ≤-trans ∩≤r (⋂ᶠ-proj i)
-
-  ⋂ᶠ-universal
-    : ∀ {n} {f : Fin n → Ob} (x : Ob)
-    → (∀ i → x ≤ f i) → x ≤ ⋂ᶠ f
-  ⋂ᶠ-universal {n = 0} {f = f} x p = !
-  ⋂ᶠ-universal {n = 1} {f = f} x p = p fzero
-  ⋂ᶠ-universal {n = suc (suc n)} {f = f} x p =
-    ∩-universal _ (p fzero) (⋂ᶠ-universal x (p ⊙ fsuc))
-
-  Finite-glbs : ∀ {n} (f : Fin n → Ob) → Glb P f
-  Finite-glbs f .Glb.glb = ⋂ᶠ f
-  Finite-glbs f .Glb.has-glb .is-glb.glb≤fam = ⋂ᶠ-proj
-  Finite-glbs f .Glb.has-glb .is-glb.greatest = ⋂ᶠ-universal
 ```
 
 ```agda
@@ -62,10 +42,19 @@ abstract
   is-meet-semilattice-is-prop
     : ∀ {o ℓ} {P : Poset o ℓ}
     → is-prop (is-meet-semilattice P)
-  is-meet-semilattice-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel!  where
-    open Order.Diagram.Meet P using (H-Level-Meet)
+  is-meet-semilattice-is-prop {P = P} p q = path where
     open Order.Diagram.Top P using (H-Level-Top)
-    unquoteDecl eqv = declare-record-iso eqv (quote is-meet-semilattice)
+    open is-meet-semilattice
+    module p = is-meet-semilattice p
+    module q = is-meet-semilattice q
+
+    meetp : ∀ x y → x p.∩ y ≡ x q.∩ y
+    meetp x y = meet-unique (p.∩-meets x y) (q.∩-meets x y)
+
+    path : p ≡ q
+    path i ._∩_ x y     = meetp x y i
+    path i .∩-meets x y = is-prop→pathp (λ i → hlevel {T = is-meet P x y (meetp x y i)} 1) (p.∩-meets x y) (q.∩-meets x y) i
+    path i .has-top     = hlevel {T = Top P} 1 p.has-top q.has-top i
 ```
 
 <!--
@@ -133,14 +122,6 @@ record is-meet-slat-hom
     Qₗ.top     Q.≤⟨ top-≤ ⟩
     f # Pₗ.top Q.≤⟨ f .pres-≤ (t-top Pₗ.top) ⟩
     f # t      Q.≤∎
-
-  pres-⋂ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (Pₗ.⋂ᶠ k) ≡ Qₗ.⋂ᶠ (apply f ⊙ k)
-  pres-⋂ᶠ {n = 0} k = pres-top
-  pres-⋂ᶠ {n = 1} k = refl
-  pres-⋂ᶠ {n = suc (suc n)} k =
-    f # (k fzero Pₗ.∩ Pₗ.⋂ᶠ (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
-    f # (k fzero) Qₗ.∩ f # Pₗ.⋂ᶠ (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
-    Qₗ.⋂ᶠ (apply f ⊙ k)                      ∎
 
 open is-meet-slat-hom
 ```

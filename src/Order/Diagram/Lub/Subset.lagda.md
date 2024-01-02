@@ -31,12 +31,16 @@ has a join. This is a good definition for the **join of the subset
 $P$**.
 
 ```agda
-module _ {o ℓ} (F : Poset o ℓ) (cocompl : ∀ {I : Type o} (f : I → ⌞ F ⌟) → Lub F f) where
+module
+  _ {o ℓ} (F : Poset o ℓ)
+    {⋃ : {I : Type o} (f : I → ⌞ F ⌟) → ⌞ F ⌟}
+    (⋃-lubs : ∀ {I} f → is-lub F f (⋃ {I} f))
+  where
   open Order.Reasoning F
-  private module P = Lubs.Lubs F cocompl
+  private module P = Lubs.Lubs F ⋃-lubs
 
   subset-cup : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cup P = P.⋃ {I = Σ[ t ∈ ⌞ F ⌟ ] □ (t ∈ P)} fst
+  subset-cup P = ⋃ {I = Σ[ t ∈ ⌞ F ⌟ ] □ (t ∈ P)} fst
 
   subset-cup-colimiting
     : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}

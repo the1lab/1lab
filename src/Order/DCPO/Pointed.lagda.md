@@ -65,7 +65,7 @@ is trivially semidirected.
     : (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub poset s)
     → is-pointed-dcpo D
   semidirected-lub→pointed lub =
-    Lub→Bottom poset (lower-lub poset (lub (λ ()) (λ ())))
+    Lub→Bottom poset (lower-lub (lub (λ ()) (λ ())))
 ```
 
 Conversely, if $D$ has a bottom element $\bot$, then we can extend any semidirected
@@ -419,7 +419,7 @@ This allows us to reflect the truth value of a proposition into $D$.
       : ∀ (s : Ix → Ob) (p : is-prop Ix)
       → (i : Ix) → ⋃-prop s p ≡ s i
     ⋃-prop-true s p i =
-      sym $ lub-of-const-fam poset (λ i j → ap s (p i j)) (⋃-prop-lub s p) i
+      sym $ lub-of-const-fam (λ i j → ap s (p i j)) (⋃-prop-lub s p) i
 ```
 
 We define a similar module for strictly Scott-continuous maps.
@@ -473,7 +473,7 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
       : ∀ {Ix} (s : Ix → D.Ob) (p q : is-prop Ix)
       → f # (D.⋃-prop s p) ≡ E.⋃-prop (apply f ⊙ s) q
     pres-⋃-prop s p q =
-      lub-unique E.poset
+      lub-unique
         (pres-semidirected-lub _
           (prop-indexed→semidirected D.poset s p) (D.⋃-prop s p) (D.⋃-prop-lub s p))
         (E.⋃-prop-lub _ _)
@@ -520,8 +520,8 @@ Scott-continuous.
       pres-⋃ s dir .is-lub.fam≤lub i =
         monotone $ D.⋃.fam≤lub _ _ i
       pres-⋃ s dir .is-lub.least y le =
-        f (D.⋃ s dir)                      E.=⟨ ap f (lub-unique D.poset (D.⋃.has-lub _ _) (D.⋃-semi-lub s (dir .semidirected))) ⟩
-        f (D.⋃-semi s (dir .semidirected)) E.≤⟨ is-lub.least (pres-⋃-semi _ _) y le ⟩
+        f (D.⋃ s dir)                      E.=⟨ ap f (lub-unique (D.⋃.has-lub _ _) (D.⋃-semi-lub s (dir .semidirected))) ⟩
+        f (D.⋃-semi s (dir .semidirected)) E.≤⟨ pres-⋃-semi _ _ .is-lub.least y le ⟩
         y E.≤∎
 
       pres-bot : ∀ x → is-bottom D.poset x → is-bottom E.poset (f x)
@@ -564,6 +564,6 @@ families, then $f$ must be monotonic, and thus strictly Scott-continuous.
       (to-scott-directed f
         (λ s dir x lub → pres s (is-directed-family.semidirected dir) x lub))
       (λ x x-bot y → is-lub.least
-          (pres _ (λ x → absurd (x .Lift.lower)) x (lift-is-lub D.poset (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
+          (pres _ (λ x → absurd (x .Lift.lower)) x (lift-is-lub (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
           y (λ ()))
 ```

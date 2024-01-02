@@ -68,24 +68,23 @@ saying that presheaves are computed as certain [coends].
 
 ```agda
   lower-set-∫ : Ls ≡ Lub.lub (Lower-sets-cocomplete P diagram)
-  lower-set-∫ = lub-unique (Lower-sets P)
-    (lower-set-is-lub)
+  lower-set-∫ = lub-unique (lower-set-is-lub)
     (Lub.has-lub $ Lower-sets-cocomplete P diagram)
 ```
 
 <!--
 ```agda
 module
-  _ {o ℓ ℓ'} (A : Poset o ℓ) (B : Poset o ℓ')
-    (B-cocomplete
-      : ∀ {I : Type o} (F : I → ⌞ B ⌟) → Lub B F)
-    (f : ⌞ Monotone A B ⌟)
+  _ {o ℓ ℓ'} {A : Poset o ℓ} {B : Poset o ℓ'}
+    {⋃ : {I : Type o} (F : I → ⌞ B ⌟) → ⌞ B ⌟}
+    (⋃-lubs : ∀ {I : Type o} (F : I → ⌞ B ⌟) → is-lub B F (⋃ F))
+    (f : Monotone A B)
   where
   private
     module A  = Poset A
     module DA = Poset (Lower-sets A)
     module B  = Poset B
-    module B-cocomplete = Lubs B B-cocomplete
+    module B-cocomplete = Lubs B ⋃-lubs
 ```
 -->
 
@@ -102,7 +101,7 @@ It is readily computed that this procedure results in a monotone map.
 ```agda
   Lan↓ : Monotone (Lower-sets A) B
   Lan↓ .hom S =
-    B-cocomplete.⋃ {I = Σ ⌞ A ⌟ λ i → i ∈ (apply S)} λ i → f # (i .fst)
+    ⋃ {I = Σ ⌞ A ⌟ λ i → i ∈ (apply S)} λ i → f # (i .fst)
   Lan↓ .pres-≤ {S} {T} S⊆T =
     B-cocomplete.⋃-universal _ λ where
       (i , i∈S) → B-cocomplete.⋃-inj (i , S⊆T i i∈S)
@@ -125,7 +124,7 @@ establishes that the cocontinuous extension does live up to its name:
 ```agda
   Lan↓-cocontinuous
     : ∀ {I : Type o} (F : I → Lower-set A)
-    → Lan↓ # Lub.lub (Lower-sets-cocomplete A F) ≡ B-cocomplete.⋃ (λ i → Lan↓ # (F i))
+    → Lan↓ # Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → Lan↓ # (F i))
   Lan↓-cocontinuous F = B.≤-antisym
     (B-cocomplete.⋃-universal _ λ where
       (i , i∈⋃F) →
@@ -151,14 +150,14 @@ reveals that $f'$ must agree with $\widehat{f}$.
   Lan↓-unique
     : (f~ : ⌞ Monotone (Lower-sets A) B ⌟)
     → ( ∀ {I : Type o} (F : I → Lower-set A)
-      → f~ # Lub.lub (Lower-sets-cocomplete A F) ≡ B-cocomplete.⋃ (λ i → f~ # (F i)) )
+      → f~ # Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → f~ # (F i)) )
     → (∀ x → f~ # (↓ A x) ≡ f # x)
     → f~ ≡ Lan↓
   Lan↓-unique f~ f~-cocont f~-comm = ext λ i →
     f~ # i                                                           ≡⟨ ap# f~ (↓Coyoneda.lower-set-∫ A i) ⟩
     f~ # Lub.lub (Lower-sets-cocomplete A (↓Coyoneda.diagram A i))   ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
-    B-cocomplete.⋃ (λ j → f~ # (↓Coyoneda.diagram A i j))            ≡⟨ ap B-cocomplete.⋃ (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
-    B-cocomplete.⋃ (λ j → Lan↓ # (↓ A (j .fst)))                     ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
+    ⋃ (λ j → f~ # (↓Coyoneda.diagram A i j))                         ≡⟨ ap ⋃ (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
+    ⋃ (λ j → Lan↓ # (↓ A (j .fst)))                                  ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
     Lan↓ # Lub.lub (Lower-sets-cocomplete A (↓Coyoneda.diagram A i)) ≡˘⟨ ap# Lan↓ (↓Coyoneda.lower-set-∫ A i) ⟩
     Lan↓ # i                                                         ∎
 ```

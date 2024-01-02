@@ -3,6 +3,7 @@
 open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
+open import Order.Instances.Pointwise.Diagrams
 open import Order.Diagram.Lub.Reasoning
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Join
@@ -29,43 +30,68 @@ module Order.Frame where
 ```agda
 record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   no-eta-equality
-  open Order.Reasoning P
+  open Poset P
   field
-    has-meets : Has-meets P
-    has-top  : Top P
-    has-lubs : ∀ {I : Type o} (k : I → Ob) → Lub P k
+    _∩_     : Ob → Ob → Ob
+    ∩-meets : ∀ x y → is-meet P x y (x ∩ y)
+    has-top : Top P
+    ⋃       : ∀ {I : Type o} (k : I → Ob) → Ob
+    ⋃-lubs  : ∀ {I : Type o} (k : I → Ob) → is-lub P k (⋃ k)
 
-  module has-lubs {I} {k : I → Ob} = Lub (has-lubs k)
+  infixr 25 _∩_
 
-  open Meets has-meets public
+  module is-lubs {I} {k : I → Ob} = is-lub (⋃-lubs k)
+
+  open Meets ∩-meets public
   open Top has-top using (top; !) public
-  open Lubs P has-lubs public
+  open Lubs P ⋃-lubs public
 
   field
     ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
   has-meet-slat : is-meet-semilattice P
-  has-meet-slat .is-meet-semilattice.has-meets = has-meets
+  has-meet-slat .is-meet-semilattice._∩_ = _∩_
+  has-meet-slat .is-meet-semilattice.∩-meets = ∩-meets
   has-meet-slat .is-meet-semilattice.has-top = has-top
 
   has-join-slat : is-join-semilattice P
-  has-join-slat .is-join-semilattice.has-joins = has-joins
+  has-join-slat .is-join-semilattice._∪_ = _∪_
+  has-join-slat .is-join-semilattice.∪-joins = ∪-joins
   has-join-slat .is-join-semilattice.has-bottom = has-bottom
 ```
 
 <!--
 ```agda
-private
-  variable
-    o ℓ o' ℓ' : Level
-    P Q R : Poset o ℓ
+private variable
+  o ℓ o' ℓ' : Level
+  P Q R : Poset o ℓ
 
-is-frame-is-prop : is-prop (is-frame P)
-is-frame-is-prop {P = P} = Iso→is-hlevel 1 eqv hlevel! where
-  open Order.Diagram.Lub P using (H-Level-Lub)
-  open Order.Diagram.Meet P using (H-Level-Meet)
-  open Order.Diagram.Top P using (H-Level-Top)
-  unquoteDecl eqv = declare-record-iso eqv (quote is-frame)
+abstract
+  is-frame-is-prop : is-prop (is-frame P)
+  is-frame-is-prop {P = P} p q = path where
+    open Order.Diagram.Top P using (H-Level-Top)
+
+    module p = is-frame p
+    module q = is-frame q
+    open is-frame
+
+    meetp : ∀ x y → x p.∩ y ≡ x q.∩ y
+    meetp x y = meet-unique (p.∩-meets x y) (q.∩-meets x y)
+
+    lubp : ∀ {I} (k : I → ⌞ P ⌟) → p.⋃ k ≡ q.⋃ k
+    lubp k = lub-unique (p.⋃-lubs k) (q.⋃-lubs k)
+
+    path : p ≡ q
+    path i ._∩_     x y = meetp x y i
+    path i .∩-meets x y = is-prop→pathp (λ i → hlevel {T = is-meet P x y (meetp x y i)} 1) (p.∩-meets x y) (q.∩-meets x y) i
+    path i .has-top    = hlevel {T = Top P} 1 p.has-top q.has-top i
+    path i .⋃ k        = lubp k i
+    path i .⋃-lubs k = is-prop→pathp (λ i → hlevel {T = is-lub P k (lubp k i)} 1) (p.⋃-lubs k) (q.⋃-lubs k) i
+    path i .⋃-distribl x f j = is-set→squarep (λ _ _ → Poset.Ob-is-set P)
+      (λ i → meetp x (lubp f i) i)
+      (p.⋃-distribl x f) (q.⋃-distribl x f)
+      (λ i → lubp (λ e → meetp x (f e) i) i)
+      i j
 
 instance
   H-Level-is-frame : ∀ {n} → H-Level (is-frame P) (suc n)
@@ -81,12 +107,14 @@ record
     (P-frame : is-frame P)
     (Q-frame : is-frame Q)
     : Type (lsuc o ⊔ ℓ') where
+
   private
     module P = Poset P
     module Pᶠ = is-frame P-frame
     module Q = Order.Reasoning Q
     module Qᶠ = is-frame Q-frame
     open is-lub
+
   field
     ∩-≤ : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
     top-≤ : Qᶠ.top Q.≤ f # Pᶠ.top
@@ -116,7 +144,7 @@ record
     ub                 Q.≤∎
 
   opaque
-    unfolding Lubs.has-joins Lubs.has-bottom
+    unfolding Lubs.∪-joins Lubs.has-bottom
 
     has-join-slat-hom : is-join-slat-hom f Pᶠ.has-join-slat Qᶠ.has-join-slat
     has-join-slat-hom .is-join-slat-hom.∪-≤ x y =
@@ -133,11 +161,16 @@ open is-frame-hom
 
 <!--
 ```agda
-is-frame-hom-is-prop
-  : ∀ {f : Monotone P Q} {P-frame Q-frame}
-  → is-prop (is-frame-hom f P-frame Q-frame)
-is-frame-hom-is-prop = Iso→is-hlevel 1 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
+abstract
+  is-frame-hom-is-prop
+    : ∀ {f : Monotone P Q} {P-frame Q-frame}
+    → is-prop (is-frame-hom f P-frame Q-frame)
+  is-frame-hom-is-prop {Q = Q} = Iso→is-hlevel 1 eqv $
+    ×-is-hlevel 1 (Π-is-hlevel² 1 λ _ _ → Q.≤-thin) $
+    ×-is-hlevel 1 Q.≤-thin $
+    Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → Q.≤-thin
+    where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
+          module Q = Poset Q
 
 instance
   H-Level-is-frame-hom
@@ -186,17 +219,6 @@ Frame : ∀ o ℓ → Type _
 Frame o ℓ = Frames.Ob {o} {ℓ}
 ```
 
-<!--
-```agda
-module Frame {o ℓ} (F : Frame o ℓ) where
-  open Order.Reasoning (F .fst) public
-  open is-frame (F .snd) public
-
-  po : Poset o ℓ
-  po = F .fst
-```
--->
-
 # Power frames
 
 A canonical source of frames are power sets: The power set of any type
@@ -210,13 +232,15 @@ open is-meet-semilattice
 
 Power-frame : ∀ {ℓ} (A : Type ℓ) → Frame ℓ ℓ
 Power-frame {ℓ = ℓ} A .fst = Subsets A
-Power-frame A .snd .has-meets =
-  Pointwise-has-meets (λ _ → Props-has-meets)
+Power-frame A .snd ._∩_ P Q i = P i ∧Ω Q i
+Power-frame A .snd .∩-meets P Q =
+  is-meet-pointwise λ _ → Props-has-meets (P _) (Q _)
 Power-frame A .snd .has-top =
-  Pointwise-has-top (λ _ → Props-has-top)
-Power-frame A .snd .has-lubs =
-  Pointwise-has-lubs (λ _ → Props-has-lubs)
+  has-top-pointwise λ _ → Props-has-top
+Power-frame A .snd .⋃ k i = ∃Ω _ (λ j → k j i)
+Power-frame A .snd .⋃-lubs k = is-lub-pointwise _ _ λ _ →
+  Props-has-lubs λ i → k i _
 Power-frame A .snd .⋃-distribl x f = funext λ i → Ω-ua
-    (λ (x , i) → □-map (λ (y , z) → _ , x , z) i)
-    (λ r → □-rec! (λ { (x , y , z) → y , inc (_ , z) }) r)
+  (λ (x , i) → □-map (λ (y , z) → _ , x , z) i)
+  (λ r → □-rec! (λ { (x , y , z) → y , inc (_ , z) }) r)
 ```

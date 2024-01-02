@@ -51,7 +51,7 @@ Indexed-frame {o = o} {ℓ} {κ} F = idx where
 
 <!--
 ```agda
-  module F = Frm F
+  module F = Frm (F .snd)
 
   private opaque
     isp : ∀ {x : Type κ} {f g : x → ⌞ F ⌟} → is-prop (∀ x → f x F.≤ g x)
