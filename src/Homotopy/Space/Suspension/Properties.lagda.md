@@ -5,6 +5,7 @@ open import 1Lab.Prelude
 
 open import Data.Set.Truncation
 
+open import Homotopy.Connectedness.Automation
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Sphere

@@ -32,7 +32,7 @@ private variable
 ```
 -->
 
-The homotopy n-types have many closure properties. A trivial example is
+The homotopy [[n-types]] have many closure properties. A trivial example is
 that they are closed under equivalences, since any property of types is
 preserved by equivalence (This is the [[univalence axiom]]). More
 interesting is that they are closed under retractions:
