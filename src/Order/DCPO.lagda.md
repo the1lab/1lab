@@ -7,12 +7,12 @@ open import Cat.Prelude
 
 open import Data.Bool
 
+open import Order.Diagram.Lub
 open import Order.Univalent
 open import Order.Base
 
 import Cat.Reasoning
 
-open import Order.Diagram.Lub
 import Order.Reasoning
 ```
 -->

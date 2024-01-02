@@ -6,11 +6,11 @@ open import Algebra.Magma
 open import Cat.Prelude
 
 open import Order.Diagram.Join
+open import Order.Diagram.Lub
 open import Order.Base
 
 import Order.Diagram.Join.Reasoning as Joins
 import Order.Diagram.Bottom
-open import Order.Diagram.Lub
 import Order.Reasoning
 ```
 -->

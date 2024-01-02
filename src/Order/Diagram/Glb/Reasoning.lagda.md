@@ -8,10 +8,10 @@ open import Cat.Prelude
 open import Data.Bool
 
 open import Order.Diagram.Meet
+open import Order.Diagram.Glb
 open import Order.Base
 
 import Order.Diagram.Meet.Reasoning as Meets
-open import Order.Diagram.Glb
 import Order.Diagram.Top
 import Order.Reasoning
 ```

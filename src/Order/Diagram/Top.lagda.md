@@ -3,10 +3,10 @@
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
+open import Order.Diagram.Glb
 open import Order.Base
 open import Order.Cat
 
-open import Order.Diagram.Glb
 import Order.Reasoning
 ```
 -->
