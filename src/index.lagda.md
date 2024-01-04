@@ -1015,6 +1015,7 @@ open import Algebra.Group.Cat.Monadic -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Subgroup -- Subgroups, images and kernels
 open import Algebra.Group.Concrete -- Concrete groups (pointed connected groupoids)
+open import Algebra.Group.Concrete.Abelian -- Concrete abelian groups
 
 open import Algebra.Group.Homotopy -- Homotopy groups
 open import Algebra.Group.Homotopy.BAut
@@ -1049,6 +1050,7 @@ theory to computing homotopy invariants of spaces.
 ```agda
 open import Homotopy.Base -- Basic definitions
 open import Homotopy.Connectedness -- Connected types
+open import Homotopy.Connectedness.Automation -- Automation for connectedness
 
 open import Homotopy.Space.Suspension -- Suspensions
 open import Homotopy.Space.Circle -- The circle
