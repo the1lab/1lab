@@ -25,22 +25,29 @@ module Order.Semilattice.Join where
 
 # Join semilattices {defines=join-semilattice}
 
+A **join semilattice** is a [[partially ordered set]] which has all
+finite [[joins]]. This means, in particular, that it has a [[bottom
+element]], since that is the join of the empty family. Note that, even
+though join-semilattices are presented as _being equipped with_ a binary
+operation $a \cup b$, this is not actual *structure* on the
+partially-ordered set: joins are uniquely determined, so "being a
+join-semilattice" is always a [[proposition]].
+
 ```agda
 record is-join-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
     _∪_     : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
     ∪-joins : ∀ x y → is-join P x y (x ∪ y)
     has-bottom : Bottom P
+```
 
+<!--
+```agda
   infixr 24 _∪_
 
-  open Order.Reasoning P
   open Joins ∪-joins public
   open Bottom has-bottom using (bot; ¡) public
 
-```
-
-```agda
 abstract
   is-join-semilattice-is-prop
     : ∀ {o ℓ} {P : Poset o ℓ}
@@ -58,14 +65,10 @@ abstract
     path i ._∪_ x y     = joinp x y i
     path i .∪-joins x y = is-prop→pathp (λ i → hlevel {T = is-join P x y (joinp x y i)} 1) (p.∪-joins x y) (q.∪-joins x y) i
     path i .has-bottom  = hlevel {T = Bottom P} 1 p.has-bottom q.has-bottom i
-```
 
-<!--
-```agda
-private
-  variable
-    o ℓ o' ℓ' : Level
-    P Q R : Poset o ℓ
+private variable
+  o ℓ o' ℓ' : Level
+  P Q R : Poset o ℓ
 
 instance
   H-Level-is-join-semilattice : ∀ {n} → H-Level (is-join-semilattice P) (suc n)
@@ -73,14 +76,24 @@ instance
 ```
 -->
 
+Morphisms of join semilattices are [[monotone functions]] which
+additionally send joins to joins: we have $f(\bot) = \bot$, and $f(a
+\cup b) = f(a) \cup f(b)$. Note that, since $f$ was already assumed to
+be order-preserving, it suffices to have $f(a \cup b)$ *less than* $f(a)
+\cup f(b)$, with an *in*equality. This is because we always have the
+reverse direction by the universal property.
+
 ```agda
-record is-join-slat-hom
-  {P : Poset o ℓ} {Q : Poset o' ℓ'}
-  (f : Monotone P Q)
-  (P-slat : is-join-semilattice P)
-  (Q-slat : is-join-semilattice Q)
-  : Type (o ⊔ ℓ')
+record
+  is-join-slat-hom
+    {P : Poset o ℓ} {Q : Poset o' ℓ'} (f : Monotone P Q)
+    (P-slat : is-join-semilattice P)
+    (Q-slat : is-join-semilattice Q) : Type (o ⊔ ℓ')
   where
+```
+
+<!--
+```agda
   no-eta-equality
   private
     module P = Poset P
@@ -88,16 +101,21 @@ record is-join-slat-hom
     module Q = Order.Reasoning Q
     module Qₗ = is-join-semilattice Q-slat
     open is-join
-  field
-    ∪-≤ : ∀ x y → f # (x Pₗ.∪ y) Q.≤ (f # x) Qₗ.∪ (f # y)
-    bot-≤ : f # Pₗ.bot Q.≤ Qₗ.bot
+```
+-->
 
+```agda
+  field
+    ∪-≤   : ∀ x y → f # (x Pₗ.∪ y) Q.≤ (f # x) Qₗ.∪ (f # y)
+    bot-≤ : f # Pₗ.bot Q.≤ Qₗ.bot
+```
+
+<!--
+```agda
   pres-∪ : ∀ x y → f # (x Pₗ.∪ y) ≡ (f # x) Qₗ.∪ (f # y)
-  pres-∪ x y = Q.≤-antisym
-    (∪-≤ x y)
-    (Qₗ.∪-universal (f # (x Pₗ.∪ y))
-      (f .pres-≤ Pₗ.l≤∪)
-      (f .pres-≤ Pₗ.r≤∪))
+  pres-∪ x y = Q.≤-antisym (∪-≤ x y) $ Qₗ.∪-universal (f # (x Pₗ.∪ y))
+    (f .pres-≤ Pₗ.l≤∪)
+    (f .pres-≤ Pₗ.r≤∪)
 
   pres-bot : f # Pₗ.bot ≡ Qₗ.bot
   pres-bot = Q.≤-antisym bot-≤ Qₗ.¡
@@ -125,10 +143,7 @@ record is-join-slat-hom
     x          Q.≤∎
 
 open is-join-slat-hom
-```
 
-<!--
-```agda
 abstract
   is-join-slat-hom-is-prop
     : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q} {P-slat Q-slat}
@@ -142,42 +157,51 @@ instance
     : ∀ {f : Monotone P Q} {P-slat Q-slat n}
     → H-Level (is-join-slat-hom f P-slat Q-slat) (suc n)
   H-Level-is-join-slat-hom = prop-instance is-join-slat-hom-is-prop
+
+open Poset
 ```
 -->
 
 ## The category of join-semilattices
 
+It is clear from the definition that join semilatice homomorphisms are
+closed under identity and composition: therefore, we can define the
+category of join-semilattices as a [[subcategory]] of that of posets.
+However, this subcategory is *not* full: there are monotone functions
+between semilattices that do not preserve joins.
+
 ```agda
 id-join-slat-hom
-  : ∀ (Pₗ : is-join-semilattice P)
+  : (Pₗ : is-join-semilattice P)
   → is-join-slat-hom idₘ Pₗ Pₗ
-id-join-slat-hom {P = P} _ .∪-≤ _ _ = Poset.≤-refl P
-id-join-slat-hom {P = P} _ .bot-≤ = Poset.≤-refl P
 
 ∘-join-slat-hom
   : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}
   → is-join-slat-hom f Qₗ Rₗ
   → is-join-slat-hom g Pₗ Qₗ
   → is-join-slat-hom (f ∘ₘ g) Pₗ Rₗ
-∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∪-≤ x y =
-  R .Poset.≤-trans (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g # x) (g # y))
-∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .bot-≤ =
-  R .Poset.≤-trans (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
 ```
 
+<!--
 ```agda
+id-join-slat-hom {P = P} _ .∪-≤ _ _ = P .≤-refl
+id-join-slat-hom {P = P} _ .bot-≤   = P .≤-refl
+
+∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∪-≤ x y =
+  R .≤-trans (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g # x) (g # y))
+∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .bot-≤ =
+  R .≤-trans (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
+
 Join-slats-subcat : ∀ o ℓ → Subcat (Posets o ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
-Join-slats-subcat o ℓ .Subcat.is-ob = is-join-semilattice
-Join-slats-subcat o ℓ .Subcat.is-hom = is-join-slat-hom
+Join-slats-subcat o ℓ .Subcat.is-ob       = is-join-semilattice
+Join-slats-subcat o ℓ .Subcat.is-hom      = is-join-slat-hom
 Join-slats-subcat o ℓ .Subcat.is-hom-prop = hlevel!
-Join-slats-subcat o ℓ .Subcat.is-hom-id = id-join-slat-hom
-Join-slats-subcat o ℓ .Subcat.is-hom-∘ = ∘-join-slat-hom
+Join-slats-subcat o ℓ .Subcat.is-hom-id   = id-join-slat-hom
+Join-slats-subcat o ℓ .Subcat.is-hom-∘    = ∘-join-slat-hom
 
 Join-slats : ∀ o ℓ → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
 Join-slats o ℓ = Subcategory (Join-slats-subcat o ℓ)
-```
 
-```agda
 module Join-slats {o} {ℓ} = Cat.Reasoning (Join-slats o ℓ)
 
 Forget-join-slat : ∀ {o ℓ} → Functor (Join-slats o ℓ) (Posets o ℓ)
@@ -186,3 +210,4 @@ Forget-join-slat = Forget-subcat
 Join-semilattice : ∀ o ℓ → Type _
 Join-semilattice o ℓ = Join-slats.Ob {o} {ℓ}
 ```
+-->

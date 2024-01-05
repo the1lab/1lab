@@ -163,7 +163,7 @@ instance
 ```
 -->
 
-## Monotone maps {defines="monotone-map monotonicity"}
+## Monotone maps {defines="monotone-map monotone-function monotonicity"}
 
 Since we are considering posets to be categories satisfying a property,
 it follows that the _category_ of posets should be a full subcategory of

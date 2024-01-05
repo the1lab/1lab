@@ -29,7 +29,7 @@ module _ {o ℓ} {P : Poset o ℓ} (l : is-meet-semilattice P) where
 ```
 -->
 
-# header
+# n-Ary meets
 
 ```agda
   ⋂ᶠ : ∀ {n} (f : Fin n → Ob) → Ob

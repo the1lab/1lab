@@ -24,7 +24,7 @@ open Glb
 ```
 -->
 
-# Top elements
+# Top elements {defines="top-element"}
 
 A **top element** in a partial order $(P, \le)$ is an element $\top : P$
 that is larger than any other element in $P$. This is the same as being

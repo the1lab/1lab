@@ -145,7 +145,14 @@ is-cocomplete→is-large-cocomplete lubs {I = I} F = cover-preserves-lub
 ```
 
 ```agda
-module Large (lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f) where
+module
+  Large
+    {⋃ : {I : Type o} (F : I → Ob) → Ob}
+    (⋃-lubs : ∀ {I} f → is-lub P f (⋃ {I} f))
+  where
+
+  open Lubs ⋃-lubs using (lubs)
+
   opaque
     ⋃ᴸ : ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Ob
     ⋃ᴸ F = is-cocomplete→is-large-cocomplete lubs F .Lub.lub
@@ -162,8 +169,8 @@ module Large (lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f) where
     → (∀ i → f i ≡ g (e .fst i))
     → ⋃ᴸ f ≡ ⋃ᴸ g
   ⋃ᴸ-ap {g = g} e p = ≤-antisym
-    (⋃ᴸ-universal _ (λ i → ≤-trans (≤-refl' (p i)) (⋃ᴸ-inj _)))
-    (⋃ᴸ-universal _ (λ i → ≤-trans (≤-refl' (ap g (sym (Equiv.ε e i)) ∙ sym (p (Equiv.from e _)))) (⋃ᴸ-inj _)))
+    (⋃ᴸ-universal _ λ i → ≤-trans (≤-refl' (p i)) (⋃ᴸ-inj _))
+    (⋃ᴸ-universal _ λ i → ≤-trans (≤-refl' (ap g (sym (Equiv.ε e i)) ∙ sym (p (Equiv.from e _)))) (⋃ᴸ-inj _))
 
   -- raised i for "index", raised f for "family"
   ⋃ᴸ-apⁱ : ∀ {ℓ ℓ'} {I : Type ℓ} {I' : Type ℓ'} {f : I' → Ob} (e : I ≃ I') → ⋃ᴸ (λ i → f (e .fst i)) ≡ ⋃ᴸ f

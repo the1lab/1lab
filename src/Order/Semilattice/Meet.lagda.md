@@ -23,6 +23,14 @@ module Order.Semilattice.Meet where
 
 # Meet semilattices {defines=meet-semilattice}
 
+A **meet semilattice** is a [[partially ordered set]] which has all
+finite [[meets]]. This means, in particular, that it has a [[top
+element]], since that is the meet of the empty family. Note that, even
+though meet-semilattices are presented as _being equipped with_ a binary
+operation $a \cap b$, this is not actual *structure* on the
+partially-ordered set: meets are uniquely determined, so "being a
+meet-semilattice" is always a [[proposition]].
+
 ```agda
 record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   field
@@ -31,13 +39,14 @@ record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
     has-top : Top P
 
   infixr 25 _∩_
+```
 
+<!--
+```agda
   open Order.Reasoning P
   open Meets ∩-meets public
   open Top has-top using (top; !) public
-```
 
-```agda
 abstract
   is-meet-semilattice-is-prop
     : ∀ {o ℓ} {P : Poset o ℓ}
@@ -55,14 +64,10 @@ abstract
     path i ._∩_ x y     = meetp x y i
     path i .∩-meets x y = is-prop→pathp (λ i → hlevel {T = is-meet P x y (meetp x y i)} 1) (p.∩-meets x y) (q.∩-meets x y) i
     path i .has-top     = hlevel {T = Top P} 1 p.has-top q.has-top i
-```
 
-<!--
-```agda
-private
-  variable
-    o ℓ o' ℓ' : Level
-    P Q R : Poset o ℓ
+private variable
+  o ℓ o' ℓ' : Level
+  P Q R : Poset o ℓ
 
 instance
   H-Level-is-meet-semilattice : ∀ {n} → H-Level (is-meet-semilattice P) (suc n)
@@ -70,15 +75,28 @@ instance
 ```
 -->
 
+A homomorphism of meet-semilattices is a monotone function that sends
+finite meets to finite meets. In particular, it suffices to have $\top
+\le f(\top)$, and
+
+$$
+f(a) \cap f(b) \le f(a \cap b)\text{,}
+$$
+
+since the converse direction of these inequalities is guaranteed by the
+universal properties.
+
+```agda
+record
+  is-meet-slat-hom
+    {P : Poset o ℓ} {Q : Poset o' ℓ'} (f : Monotone P Q)
+    (P-slat : is-meet-semilattice P) (Q-slat : is-meet-semilattice Q)
+    : Type (o ⊔ ℓ')
+  where
+```
+
 <!--
 ```agda
-record is-meet-slat-hom
-  {P : Poset o ℓ} {Q : Poset o' ℓ'}
-  (f : Monotone P Q)
-  (P-slat : is-meet-semilattice P)
-  (Q-slat : is-meet-semilattice Q)
-  : Type (o ⊔ ℓ')
-  where
   no-eta-equality
   private
     module P = Poset P
@@ -86,10 +104,17 @@ record is-meet-slat-hom
     module Q = Order.Reasoning Q
     module Qₗ = is-meet-semilattice Q-slat
     open is-meet
-  field
-    ∩-≤ : ∀ x y → (f # x) Qₗ.∩ (f # y) Q.≤ f # (x Pₗ.∩ y)
-    top-≤ : Qₗ.top Q.≤ f # Pₗ.top
+```
+-->
 
+```agda
+  field
+    ∩-≤   : ∀ x y → (f # x) Qₗ.∩ (f # y) Q.≤ f # (x Pₗ.∩ y)
+    top-≤ : Qₗ.top Q.≤ f # Pₗ.top
+```
+
+<!--
+```agda
   pres-∩ : ∀ x y → f # (x Pₗ.∩ y) ≡ f # x Qₗ.∩ f # y
   pres-∩ x y =
     Q.≤-antisym
@@ -124,11 +149,7 @@ record is-meet-slat-hom
     f # t      Q.≤∎
 
 open is-meet-slat-hom
-```
--->
 
-<!--
-```agda
 abstract
   is-meet-slat-hom-is-prop
     : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q}

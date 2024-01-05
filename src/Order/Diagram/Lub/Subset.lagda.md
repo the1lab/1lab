@@ -30,28 +30,34 @@ the first component, we have a $\kappa$-small family of elements, which
 has a join. This is a good definition for the **join of the subset
 $P$**.
 
+<!--
 ```agda
 module
-  _ {o ℓ} (F : Poset o ℓ)
+  Join-subsets
+    {o ℓ} (F : Poset o ℓ)
     {⋃ : {I : Type o} (f : I → ⌞ F ⌟) → ⌞ F ⌟}
     (⋃-lubs : ∀ {I} f → is-lub F f (⋃ {I} f))
   where
   open Order.Reasoning F
   private module P = Lubs.Lubs F ⋃-lubs
+```
+-->
 
-  subset-cup : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cup P = ⋃ {I = Σ[ t ∈ ⌞ F ⌟ ] □ (t ∈ P)} fst
+```agda
+  opaque
+    ⋃ˢ : ∀ (P : ⌞ F ⌟ → Ω) → ⌞ F ⌟
+    ⋃ˢ P = ⋃ {I = Σ[ t ∈ ⌞ F ⌟ ] □ (t ∈ P)} fst
 
-  subset-cup-colimiting
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
-    → x ∈ P → x ≤ subset-cup P
-  subset-cup-colimiting P x = P.⋃-inj (_ , (inc x))
+    ⋃ˢ-inj
+      : ∀ {P : ⌞ F ⌟ → Ω} {x}
+      → x ∈ P → x ≤ ⋃ˢ P
+    ⋃ˢ-inj x = P.⋃-inj (_ , (inc x))
 
-  subset-cup-universal
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
-    → (∀ i → i ∈ P → i ≤ x)
-    → subset-cup P ≤ x
-  subset-cup-universal P f = P.⋃-universal _ λ (i , w) → f i (out! w)
+    ⋃ˢ-universal
+      : ∀ {P : ⌞ F ⌟ → Ω} {x}
+      → (∀ i → i ∈ P → i ≤ x)
+      → ⋃ˢ P ≤ x
+    ⋃ˢ-universal f = P.⋃-universal _ λ (i , w) → f i (out! w)
 ```
 
 Keep imagining that you have a subset $P \sube A$: Can we construct a
@@ -60,16 +66,16 @@ $P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
 
 ```agda
   subset-cap : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cap P = subset-cup λ x → el! (∀ a → ∣ P a ∣ → x ≤ a)
+  subset-cap P = ⋃ˢ λ x → elΩ (∀ a → ∣ P a ∣ → x ≤ a)
 
   subset-cap-limiting
     : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x} → x ∈ P → subset-cap P ≤ x
   subset-cap-limiting P x∈P =
-    subset-cup-universal (λ x → el _ hlevel!) λ i a∈P→i≤a → a∈P→i≤a _ x∈P
+    ⋃ˢ-universal λ i a∈P→i≤a → out! a∈P→i≤a _ x∈P
 
   subset-cap-universal
     : ∀ {ℓ} (P : ⌞ F ⌟ → Prop ℓ) {x}
     → (∀ i → i ∈ P → x ≤ i)
     → x ≤ subset-cap P
-  subset-cap-universal P x∈P = subset-cup-colimiting (λ _ → el _ hlevel!) x∈P
+  subset-cap-universal P x∈P = ⋃ˢ-inj (inc x∈P)
 ```
