@@ -2,9 +2,9 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Order.Suplattice
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Suplattice
 open import Order.Subposet
 open import Order.Base hiding (pres-≤)
 
