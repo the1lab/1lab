@@ -87,7 +87,7 @@ data Identifier = Identifier
   , idAnchor :: Ts.Text
   , idType   :: Ts.Text
   }
-  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON)
+  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON, NFData)
 
 
 highlightOnlyCode :: HtmlHighlight -> FileType -> Bool
@@ -184,14 +184,15 @@ defaultPageGen
   -> HtmlOptions
   -> HtmlInputSourceFile -> m ()
 defaultPageGen types opts srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
+  let
+    ext        = highlightedFileExt (htmlOptHighlight opts) ft
+    target     = htmlOptDir opts </> modToFile moduleName ext
+    typeTarget = htmlOptDir opts </> modToFile moduleName "json"
+    html       = renderSourceFile types opts srcFile
+
   logHtml $ render $ "Generating HTML for" <+> pretty moduleName
   writeRenderedHtml html target
   liftIO $ encodeFile typeTarget types
-  where
-    ext = highlightedFileExt (htmlOptHighlight opts) ft
-    target = htmlOptDir opts </> modToFile moduleName ext
-    typeTarget = htmlOptDir opts </> modToFile moduleName "json"
-    html = renderSourceFile types opts srcFile
 
 -- | Converts module names to the corresponding HTML file names.
 modToFile :: TopLevelModuleName -> String -> FilePath

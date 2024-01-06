@@ -365,7 +365,7 @@ renderMarkdown authors references modname baseUrl digest markdown = do
       [x] -> x
       _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
 
-    context = Context $ Map.fromList $
+    context = Context $ Map.fromList
       [ ("is-index",     toVal (modname == "index"))
       , ("authors",      toVal authors')
       , ("reference",    toVal references)
