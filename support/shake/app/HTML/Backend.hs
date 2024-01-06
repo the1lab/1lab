@@ -273,7 +273,7 @@ prettifyTerm =
   in I.traverseTermM step
 
 killQual :: Con.Expr -> Con.Expr
-killQual = Con.mapExpr wrap . Con.mapExpr forget where
+killQual = Con.mapExpr (wrap . forget) where
   work :: Con.QName -> Con.QName
   work (Con.Qual _ x) = work x
   work x = x
@@ -284,13 +284,9 @@ killQual = Con.mapExpr wrap . Con.mapExpr forget where
   forget x = x
 
   wrap :: Con.Expr -> Con.Expr
-  wrap (Con.Ident v)              = Con.Ident (work v)
-  wrap (Con.KnownIdent v w)       = Con.KnownIdent v (work w)
-  wrap (Con.OpApp v qual names args)
-    | [nm] <- toList names
-    , Con.numHoles nm == length args
-    = Con.OpApp v (work qual) names args
-    | otherwise = error $ "opapp " ++ show (pretty (Con.OpApp v qual names args))
+  wrap (Con.Ident v)                 = Con.Ident (work v)
+  wrap (Con.KnownIdent v w)          = Con.KnownIdent v (work w)
+  wrap (Con.OpApp v qual names args) = Con.OpApp v (work qual) names args
   wrap x = x
 
 getClass :: QName -> TCM (Set QName)
