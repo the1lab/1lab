@@ -160,7 +160,7 @@ instance
 <!--
 ```agda
 module _ {ℓ} {A : n-Type ℓ 2} where
-  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
+  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
   _ = hlevel!
 ```
 -->

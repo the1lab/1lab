@@ -515,7 +515,7 @@ tyᵖ⟨_⟩ {` x} p (n , q) .snd = q ∙ p
 
 subᵖ⟨_⟩ : ∀ {Γ Δ h h'} → h ≡ h' → Subᵖ Γ Δ h → Subᵖ Γ Δ h'
 subᵖ⟨_⟩ p ∅       = ∅
-subᵖ⟨_⟩ p (r , x) = subᵖ⟨ ap (π₁ ∘_) p ⟩ r , tyᵖ⟨ ap (π₂ ∘_) p ⟩ x
+subᵖ⟨_⟩ p (r , x) = subᵖ⟨ ap (π₁ ∘_) p ⟩ r , tyᵖ⟨ ap (π₂ ∘_) p ⟩ x
 ```
 -->
 

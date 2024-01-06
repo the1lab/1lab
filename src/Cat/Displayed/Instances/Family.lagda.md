@@ -37,7 +37,7 @@ displayed over `Sets`{.Agda}, regardless of the size of the object- and
 Hom-spaces of $\mathcal{C}$.
 
 In a neutral presentation of [[displayed category]] theory, the collection
-of objects over $S$ would given by the space of functors
+of objects over $S$ would be given by the space of functors
 $[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
 essentially an $S$-indexed family of objects of $C$, hence the name
 "family fibration". To reduce the noise, however, in HoTT we can (ab)use
