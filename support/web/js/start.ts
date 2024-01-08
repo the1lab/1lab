@@ -2,4 +2,6 @@
 // settings from localStorage. This file compiles to ~1KiB of JS; it's
 // totally fine to block on, unlike the ever-growing main.js.
 
-import "./lib/settings";
+import { firstLoad } from "./lib/settings";
+
+firstLoad();

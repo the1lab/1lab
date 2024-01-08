@@ -17,34 +17,36 @@ code, pre, .sourceCode {
   font-family: 'Julia Mono';
   font-size: var(--code-font-size);
   font-weight: 500;
+  clear: both;
 }
 
 div.sourceCode {
   @include material(var(--code-bg));
-}
-
-div.sourceCode > pre {
-  background-color: var(--code-bg);
-  color:            var(--code-fg);
-
-  flex-grow: 0;
-
-  overflow-x: auto;
-  line-height: 1.2;
-
-  code {
-    display: block;
-  }
 
   > pre {
-    padding: unset;
-    margin-top: unset;
-    margin-bottom: unset;
-    box-shadow: unset;
+    background-color: var(--code-bg);
+    color:            var(--code-fg);
 
-    margin: 0;
+    width: 100%;
+    flex-grow: 0;
 
-    overflow-y: clip;
+    overflow-x: auto;
+    line-height: 1.2;
+
+    code {
+      display: block;
+    }
+
+    > pre {
+      padding: unset;
+      margin-top: unset;
+      margin-bottom: unset;
+      box-shadow: unset;
+
+      margin: 0;
+
+      overflow-y: clip;
+    }
   }
 }
 

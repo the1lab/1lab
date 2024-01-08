@@ -47,10 +47,9 @@ html {
 
 body {
   font-family: var(--serif), var(--sans-serif);
+  font-size: var(--font-size);
 
   width: 100%;
-
-  font-size: var(--font-size);
 
   &.text-page {
     @include centered-contents;
@@ -80,47 +79,14 @@ main {
   box-sizing: border-box;
 
   div#post-toc-container {
-    aside {
-      display: none;
-      a[href].header-link {
-        span.header-link-emoji {
-          display: none;
-        }
+    aside#toc {
+    display: none;
+    a[href].header-link {
+      span.header-link-emoji {
+        display: none;
       }
     }
-
-    article {
-      line-height: 1.2;
-
-      a[href].header-link {
-        color: var(--text-fg);
-        cursor: default;
-
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: center;
-
-        &:hover {
-          text-decoration: none !important;
-          background-color: var(--text-bg) !important;
-          span.header-link-emoji {
-            display: inline-block;
-          }
-        }
-
-        &.hover-highlight {
-          background-color: var(--text-bg) !important;
-        }
-
-        span.header-link-emoji {
-          display: none;
-          font-size: 12pt;
-          margin-left: 1em;
-          cursor: pointer;
-        }
-      }
-    }
-
+  }
   }
 }
 
@@ -148,7 +114,6 @@ figure.wraparound {
 figure {
   overflow-x: auto;
   overflow-y: clip;
-  margin: auto;
 
   @include centered-contents;
 
@@ -236,8 +201,8 @@ blockquote, details.blockquote {
 }
 
 table {
-  margin: auto;
   border-collapse: collapse;
+  width: 100%;
 
   td, th {
     text-align: center;
@@ -245,127 +210,47 @@ table {
   }
 }
 
-@media only screen and (max-width: 450px) {
-  body > header {
-    div#logo {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
+span.sidenote {
+  counter-increment: footnote-counter;
+
+  .sidenote-content {
+    position: relative;
+    display: none;
+
+    &:before {
+      display: none;
+      content: counter(footnote-counter);
+      font-size: 1.0rem;
+      position: absolute;
+      left: -1.5ex;
     }
   }
-}
 
-@media only screen and (min-width: 95rem) {
-  .narrow-only {
-    display: none !important;
+  .sidenote-toggle { display: none; }
+
+  .sidenote-toggle:checked + .sidenote-content {
+    display: block;
+    float: left;
+    clear: both;
+    margin: 1em 2.5%;
+    width: 95%;
   }
 
-  main {
-    max-width: 100%;
+  .sidenote-number {
+    display:   inline-block;
 
-    div#post-toc-container {
-      display: grid;
+    &:after {
+      content: counter(footnote-counter);
+      font-size: 1.0rem;
 
-      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
-      grid-template-columns: 1fr minmax(0, 4fr) 1fr;
+      // Pretend to be a link
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
 
-      aside {
-        display: block !important;
-      }
-
-      aside {
-        margin-right: 1rem;
-
-        h3 { @include centered-contents; }
-
-        font-family: var(--sans-serif);
-        --font-size: 1.3rem;
-        --code-font-size: calc(0.92 * var(--font-size));
-
-        div#toc-container {
-          box-sizing: border-box;
-          overflow-x: hidden;
-          position: sticky;
-          top: $page-padding;
-
-          overflow-y: auto;
-          max-height: 90vh;
-
-          bottom: $page-padding;
-
-          padding-right: 1rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          width: 100%;
-
-          a[href]#logo.hover-highlight {
-            background-color: unset;
-          }
-
-          a[href].header-link {
-            &, &:visited {
-              color: var(--primary)
-            };
-
-            &.current-heading {
-              font-weight: bold;
-              color: var(--text-fg);
-            }
-          }
-
-          > hr {
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
-            width: 100%;
-            border: none;
-            border-bottom: 2px solid #94a3b8;
-          }
-
-          > svg {
-            font-family: 'Inria Sans';
-            min-height: 150px;
-            aspect-ratio: 1 / 1;
-            font-size: 14pt;
-          }
-
-          button {
-            display: none;
-          }
-
-          ul {
-            border-left: 2px solid $bluegray-400;
-            list-style-type: none;
-            padding-left: 1em;
-            margin-top: 0;
-            margin-bottom: 0;
-
-            a {
-              text-decoration: none;
-            }
-
-            a:hover {
-              text-decoration: underline;
-            }
-          }
-        }
-      }
-
-      article {
-        margin-top: -100px;
-        margin: auto;
-      }
+      position: relative;
+      top: -0.2em;
     }
-
-    div.columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1em;
-    }
-
-    padding: 0;
-    padding-bottom: 0.4em;
   }
 }
 
@@ -407,13 +292,13 @@ details {
     }
   }
 
-  >*:not(summary) {
-    margin-left: 1em;
-    margin-right: 1em;
-  }
+  // >*:not(summary) {
+  //   margin-left: 1em;
+  //   margin-right: 1em;
+  // }
 
-  > :nth-child(1) { margin-block-start: 0; }
-  > :nth-last-child(1) { margin-block-start: 0; }
+  :nth-child(2) { margin-block-start: 0; }
+  :last-child { margin-block-start: 0; }
 }
 
 .commented-out {
@@ -489,6 +374,7 @@ div.profile {
   white-space: initial;
   font-size: 0.8em;
   font-style: italic;
+  text-align: center;
 }
 
 .smallcaps {
@@ -555,10 +441,13 @@ div#return {
 }
 
 article {
-  padding-top: $page-padding;
-  padding-bottom: $page-padding;
+  padding-top:    $page-padding;
+  padding-bottom: $page-padding / 2;
   margin-top: 0 !important;
   max-width: 100%;
+  line-height: 1.2;
+
+  counter-reset: footnote-counter;
 
   > :nth-child(1), > pre.Agda:first-of-type {
     margin-top: 0;
@@ -580,6 +469,34 @@ article {
     text-align: center;
     font-style: italic;
   }
+
+  a[href].header-link {
+    color: var(--text-fg);
+    cursor: default;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    &:hover {
+      text-decoration: none !important;
+      background-color: var(--text-bg) !important;
+      span.header-link-emoji {
+        display: inline-block;
+      }
+    }
+
+    &.hover-highlight {
+      background-color: var(--text-bg) !important;
+    }
+
+    span.header-link-emoji {
+      display: none;
+      font-size: 12pt;
+      margin-left: 1em;
+      cursor: pointer;
+    }
+  }
 }
 
 hr {
@@ -587,6 +504,7 @@ hr {
   margin-top: 1em;
   margin-bottom: 1em;
 }
+
 
 span.qed {
   float: right;
@@ -623,3 +541,150 @@ input {
 }
 
 #post-toc-container { min-height: 90vh; }
+
+@media only screen and (max-width: 450px) {
+  body > header {
+    div#logo {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+}
+
+@media only screen and (min-width: 95rem) {
+  .narrow-only {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100%;
+
+    div#post-toc-container {
+      display: grid;
+
+      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
+      grid-template-columns: 1fr minmax(0, 5fr);
+
+      aside#toc {
+        h3 { @include centered-contents; }
+
+        font-family: var(--sans-serif);
+        --font-size: 1.3rem;
+        --code-font-size: calc(0.92 * var(--font-size));
+
+        position: sticky;
+
+        box-sizing: border-box;
+        top:    $page-padding;
+        bottom: $page-padding;
+
+        max-height: 90vh;
+
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+
+        margin-right: 1rem;
+        padding-right: 1rem;
+
+        div#toc-container {
+          box-sizing: border-box;
+          overflow-y: auto;
+          max-height: 80vh;
+
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          width: 100%;
+        }
+
+        a[href]#logo.hover-highlight {
+          background-color: unset;
+        }
+
+        a[href].header-link {
+          &, &:visited {
+            color: var(--primary)
+          };
+
+          &.current-heading {
+            font-weight: bold;
+            color: var(--text-fg);
+          }
+        }
+
+        hr {
+          margin-top: 0.25rem;
+          margin-bottom: 0.25rem;
+          width: 90%;
+          border: none;
+          border-bottom: 2px solid #94a3b8;
+        }
+
+        > svg {
+          font-family: 'Inria Sans';
+          min-height: 150px;
+          aspect-ratio: 1 / 1;
+          font-size: 14pt;
+        }
+
+        ul {
+          border-left: 2px solid $bluegray-400;
+          list-style-type: none;
+          padding-left: 1em;
+          margin-top: 0;
+          margin-bottom: 0;
+
+          a {
+            text-decoration: none;
+          }
+
+          a:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      article > :not(pre, div.sourceCode) {
+        max-width: 65%;
+      }
+    }
+
+    div.columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+    }
+
+    padding: 0;
+    padding-bottom: 0.4em;
+  }
+
+  span.sidenote {
+    .sidenote-content:before {
+      display: revert;
+    }
+
+    .sidenote-number:after {
+      color:  var(--text-color);
+      cursor: text;
+      text-decoration: none;
+    }
+
+    .sidenote-toggle:checked + .sidenote-content, .sidenote-toggle:not(:checked) + .sidenote-content {
+      display: block;
+
+      float: right;
+      clear: right;
+
+      margin: 0 -45% 1em 0;
+      width: 40%;
+
+      text-align: justify;
+      hyphens: auto;
+    }
+  }
+}
