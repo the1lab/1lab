@@ -1,5 +1,5 @@
 import { JSX, type Content } from "./lib/jsx";
-import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, serifFontSetting } from "./lib/settings";
+import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, serifFontSetting, justifiedSetting } from "./lib/settings";
 
 // This is pretty evil, but a loose <script> tag assigns these to the
 // window object in the HTML template.
@@ -63,25 +63,42 @@ function Toggle(props: { label: string, sync: Setting<boolean> }): HTMLElement {
   );
 }
 
+interface ToggleProps {
+  setting: Setting<boolean>;
+
+  trueLabel:  string;
+  falseLabel: string;
+
+  trueIcon:  string;
+  falseIcon: string;
+}
+
+function ToggleRow({setting, trueLabel, falseLabel, trueIcon, falseIcon }: ToggleProps): HTMLElement {
+  const
+    onfalse = <Button label={falseLabel} icon={falseIcon} class="button-large" click={() => setting.value = false} />,
+    ontrue  = <Button label={trueLabel}  icon={trueIcon}  class="button-large" click={() => setting.value = true} />;
+
+  const go = (v: boolean) => {
+    if (v) {
+      ontrue.classList.add("active");
+      onfalse.classList.remove("active");
+    } else {
+      onfalse.classList.add("active");
+      ontrue.classList.remove("active");
+    }
+  }
+
+  go(setting.value);
+  setting.onChange(go);
+
+  return <ButtonRow>
+    {onfalse} {ontrue}
+  </ButtonRow>;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const line = document.querySelector("aside#toc > hr");
   if (!line) return;
-
-  const
-    sans  = <Button label="Sans" icon="view-controls" class="button-large" click={() => serifFontSetting.value = false} />,
-    serif = <Button label="Serif" icon="serif" class="button-large" click={() => serifFontSetting.value = true} />;
-
-  function matchFont(v: boolean) {
-    if (v) {
-      serif.classList.add("active");
-      sans.classList.remove("active");
-    } else {
-      sans.classList.add("active");
-      serif.classList.remove("active");
-    }
-  }
-  matchFont(serifFontSetting.value);
-  serifFontSetting.onChange(matchFont);
 
   line.parentElement!.insertBefore(
     <div id="controls">
@@ -97,20 +114,21 @@ document.addEventListener("DOMContentLoaded", () => {
         </Button>
 
         <div class="dropdown-popup">
-          <ButtonRow>
-            {sans}
-            {serif}
-          </ButtonRow>
-
-          {/* <hr />
-
-          <ButtonRow>
-            <Button label="Left-aligned text" icon="raggedright" class="button-large" click={console.log} />
-            <Button label="Justified text"    icon="justified"   class="button-large" click={console.log} />
-            <Button label="Right-aligned text" icon="raggedleft" class="button-large" click={console.log} />
-          </ButtonRow> */}
+          <ToggleRow
+            setting={serifFontSetting}
+            trueLabel="Serif"
+            trueIcon="serif"
+            falseLabel="Sans"
+            falseIcon="view-controls" />
 
           <hr />
+
+          <ToggleRow
+            setting={justifiedSetting}
+            trueLabel="Justified"
+            trueIcon="justified"
+            falseLabel="Left-aligned text"
+            falseIcon="raggedright" />
 
           <Toggle label="Equations"        sync={equationSetting} />
           <Toggle label="Hidden code"      sync={hiddenCodeSetting} />

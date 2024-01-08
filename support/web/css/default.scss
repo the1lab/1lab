@@ -43,6 +43,11 @@ html {
   &.show-hidden-code .commented-out {
     display: revert;
   }
+
+  &.justified {
+    text-align: justify;
+    hyphens: auto;
+  }
 }
 
 body {
