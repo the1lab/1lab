@@ -653,8 +653,13 @@ input {
         }
       }
 
-      article > :not(pre, div.sourceCode) {
-        max-width: 65%;
+      article > {
+        :not(pre, div.sourceCode) {
+          width: 65%;
+        }
+        ul, ol, dl {
+          box-sizing: border-box;
+        }
       }
     }
 

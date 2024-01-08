@@ -1,5 +1,6 @@
 @mixin material($bg) {
   border-left: 5px solid $bg;
+  box-sizing: border-box;
 
   padding-bottom: 0.3em;
 
