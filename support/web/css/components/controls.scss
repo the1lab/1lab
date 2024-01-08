@@ -4,13 +4,11 @@ $dropdown-popup-width: 280px;
 $button-size:          32px;
 
 div#controls {
-  position: sticky;
-  top:      3rem;
-  margin-left: 1rem;
-
   display: flex;
-  flex-direction: column;
-  gap: 0.25em;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.33em;
+  width: 100%;
 
   --serif: "";
   --font-size: 1.3rem;
@@ -38,7 +36,7 @@ button.labelled-button {
 
   cursor: pointer;
 
-  direction: rtl;
+  // direction: rtl;
 
   .icon {
     position: absolute;
@@ -126,7 +124,7 @@ div.dropdown {
   div.dropdown-popup {
     position:           absolute;
     top:                0;
-    inset-inline-start: (-1 * ($dropdown-popup-width + 4px));
+    left:               ($button-size + 4px);
     visibility:         hidden;
 
     width:      $dropdown-popup-width;

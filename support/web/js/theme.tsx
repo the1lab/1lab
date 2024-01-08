@@ -1,5 +1,5 @@
 import { JSX, type Content } from "./lib/jsx";
-import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, footnoteSetting, serifFontSetting } from "./lib/settings";
+import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, serifFontSetting } from "./lib/settings";
 
 // This is pretty evil, but a loose <script> tag assigns these to the
 // window object in the HTML template.
@@ -64,14 +64,14 @@ function Toggle(props: { label: string, sync: Setting<boolean> }): HTMLElement {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const main = document.querySelector("div#post-toc-container");
-  if (!main) return;
+  const line = document.querySelector("aside#toc > hr");
+  if (!line) return;
 
   const
     sans  = <Button label="Sans" icon="view-controls" class="button-large" click={() => serifFontSetting.value = false} />,
     serif = <Button label="Serif" icon="serif" class="button-large" click={() => serifFontSetting.value = true} />;
 
-  serifFontSetting.onChange((v) => {
+  function matchFont(v: boolean) {
     if (v) {
       serif.classList.add("active");
       sans.classList.remove("active");
@@ -79,10 +79,14 @@ document.addEventListener("DOMContentLoaded", () => {
       sans.classList.add("active");
       serif.classList.remove("active");
     }
-  });
+  }
+  matchFont(serifFontSetting.value);
+  serifFontSetting.onChange(matchFont);
 
-  main.appendChild(<aside>
+  line.parentElement!.insertBefore(
     <div id="controls">
+      <Button icon="github" label="Link to source" click={`https://github.com/plt-amy/1lab/blob/${links.source}`} />
+      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
 
       <div class="dropdown">
         <Button icon="view-controls" label="View controls" click={(e) => {
@@ -110,7 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <Toggle label="Equations"        sync={equationSetting} />
           <Toggle label="Hidden code"      sync={hiddenCodeSetting} />
-          <Toggle label="Inline footnotes" sync={footnoteSetting} />
 
           <hr />
 
@@ -123,11 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       </div>
 
-      <Button icon="github" label="Link to source" click={`https://github.com/plt-amy/1lab/blob/${links.source}`} />
-      <Button icon="home" label="Return to index" click={`${links.baseURL}/index.html`} />
-      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
-    </div>
-  </aside>);
+    </div>, line
+  );
 
   document.addEventListener("click", (e) => {
     if (!(e.target instanceof HTMLElement)) return;
