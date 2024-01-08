@@ -25,6 +25,10 @@ html {
   --font-size: 1.4rem;
   --code-font-size: calc(0.85 * var(--font-size));
 
+  --content-width:       65%;
+  --sidenote-width:      25em;
+  --sidenote-separation: 3em;
+
   &.sans-serif {
     --serif: "";
     --font-size: 1.3rem;
@@ -261,7 +265,7 @@ span.sidenote {
 
 details {
   margin-block: 1em;
-  border-left: 5px solid var(--note-bg);
+  border-left:  5px solid var(--note-bg);
   padding-left: 1rem;
 
   @include contains-code();
@@ -655,9 +659,9 @@ input {
 
       article > {
         :not(pre, div.sourceCode) {
-          width: 65%;
+          width: var(--content-width);
         }
-        ul, ol, dl {
+        ul, ol, dl, details {
           box-sizing: border-box;
         }
       }
@@ -690,8 +694,10 @@ input {
       float: right;
       clear: right;
 
-      margin: 0 -45% 1em 0;
-      width: 40%;
+      // margin-right: -45%;
+      // transform: translateX(120%);
+      margin-right: calc(-1 * (var(--sidenote-width) + var(--sidenote-separation)));
+      width:        var(--sidenote-width);
 
       text-align: justify;
       hyphens: auto;
