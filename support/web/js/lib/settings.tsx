@@ -52,8 +52,11 @@ export type Theme = 'light' | 'dark' | 'system';
 export const equationSetting   = new Setting<boolean>("equations",   false)
   .onChange((v) => v ? clz.add("show-equations") : clz.remove("show-equations"));
 
-export const serifFontSetting  = new Setting<boolean>("sans_serif",  false)
+export const serifFontSetting  = new Setting<boolean>("sans_serif", false)
   .onChange((v) => v ? clz.remove("sans-serif") : clz.add("sans-serif"));
+
+export const justifiedSetting  = new Setting<boolean>("justify", false)
+  .onChange((v) => v ? clz.add("justified") : clz.remove("justified"));
 
 export const hiddenCodeSetting = new Setting<boolean>("hidden_code", false)
   .onChange((v) => v ? clz.add("show-hidden-code") : clz.remove("show-hidden-code"));
