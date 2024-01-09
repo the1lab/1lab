@@ -62,7 +62,7 @@
 
 <body class="text-page">
   <main>
-    <div id="post-toc-container" style="padding-left: 2rem; padding-right: 2rem;">
+    <div id="post-toc-container">
 
       <!-- Table of contents (only if the page has a table of contents) -->
       <aside id=toc>
@@ -138,7 +138,8 @@
           </span>
         </div>
 
-        $body$
+$body$
+
         $if(reference)$
         <hr />
         <section id="refs" role="doc-bibliography">
@@ -151,6 +152,10 @@
         </section>
         $endif$
       </article>
+
+      <aside id="sidenote-container" style="visibility: hidden;">
+
+      </aside>
     </div>
   </main>
 </body>
