@@ -1,5 +1,30 @@
 import { equationSetting, hiddenCodeSetting, serifFontSetting } from "./lib/settings";
 
+export function scrollToHash() {
+  if (window.location.hash === '') return;
+
+  const
+    id = window.location.hash.slice(1),
+    // #id doesn't work with numerical IDs
+    elem = document.querySelector(`[id="${id}"]`);
+
+  if (!(elem instanceof HTMLElement)) return;
+
+  // If the element is in a commented-out block or a <details> tag, unhide it
+  // and scroll to it.
+  const commentedOut = elem.closest('.commented-out') as HTMLElement | null;
+
+  if (commentedOut)
+    commentedOut.style.display = 'revert';
+
+  const details = elem.closest('details') as HTMLElement | null;
+  if (details)
+    details.setAttribute("open", "");
+
+  if (commentedOut || details)
+    elem.scrollIntoView();
+}
+
 window.addEventListener("DOMContentLoaded", () => {
 
   /* I tried really hard to do this with only CSS but :first-of-type is
@@ -60,24 +85,5 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("hashchange", scrollToHash);
-
-function scrollToHash() {
-  if (window.location.hash === '') return;
-
-  const id = window.location.hash.slice(1);
-  // #id doesn't work with numerical IDs
-  const elem = document.querySelector(`[id="${id}"]`);
-  if (!(elem instanceof HTMLElement)) return;
-  // If the element is in a commented-out block or a <details> tag, unhide it
-  // and scroll to it.
-  const commentedOut = elem.closest('.commented-out') as HTMLElement | null;
-  if (commentedOut)
-    commentedOut.style.display = 'revert';
-  const details = elem.closest('details') as HTMLElement | null;
-  if (details)
-    details.setAttribute("open", "");
-  if (commentedOut || details)
-    elem.scrollIntoView();
-}
 
 export { };

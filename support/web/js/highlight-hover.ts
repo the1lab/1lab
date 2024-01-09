@@ -64,7 +64,7 @@ document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) 
   });
 }) as EventListener);
 
-document.addEventListener("DOMContentLoaded", async () => {
+export function refreshLinks() {
   links = Array.from(document.getElementsByTagName("a"));
   links.forEach(link => {
     if (link.hasAttribute("href")) {
@@ -72,6 +72,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       link.onmouseout = () => document.dispatchEvent(new CustomEvent('highlight', { detail: { link, on: false } }))
     }
   });
-});
+}
+
+document.addEventListener("DOMContentLoaded", refreshLinks);
 
 export {};

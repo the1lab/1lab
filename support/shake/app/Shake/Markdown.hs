@@ -54,10 +54,6 @@ import Shake.Git
 import HTML.Emit
 
 import Definitions
-import Control.Exception (evaluate)
-import Control.DeepSeq
-import Text.Show.Pretty (ppShow)
-import Text.Printf
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -200,8 +196,6 @@ buildMarkdown modname input output = do
   let search = query (getHeaders (Text.pack modname)) markdown
 
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
-  markdown <- liftIO $ evaluate (let x = walk floatNotes markdown in rnf x `seq` x)
-  -- error $ ppShow markdown
   need dependencies
 
   baseUrl <- getBaseUrl
@@ -286,23 +280,6 @@ patchInline _ (Str s)
   = error ("possible broken link: " <> Text.unpack s)
 
 patchInline _ h = pure h
-
--- | Turn footnotes into sidenotes.
-floatNotes :: Pandoc -> Pandoc
-floatNotes = flip evalState 0 . walkM \case
-  Note blk -> do
-    this <- get
-    put (this + 1)
-    let
-      unwrap (Plain is) = is
-      unwrap (Para is)  = is
-      unwrap b = error $ "Unsupported block type in footnote: " <> ppShow b
-
-      rendered = either (error . show) id . runPure . writeHtml5String def $ Pandoc mempty [Plain (blk >>= unwrap)]
-
-      ref = "<label class=sidenote-number for=\"sn-" <> Text.pack (show this) <> "\"></label><input class=sidenote-toggle type=checkbox id=\"sn-" <> Text.pack (show this) <> "\" />"
-    pure $ Span ("", ["sidenote"], []) [htmlInl ref, Span ("", ["sidenote-content"], []) [htmlInl rendered]]
-  x -> pure x
 
 data MarkdownState = MarkdownState
   { mdReferences :: [Val Text] -- ^ List of references extracted from Pandoc's "reference" div.

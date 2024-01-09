@@ -10,13 +10,16 @@
 @import "code.scss";
 
 html {
-  min-height: 100%;
   height: 100%;
-  max-width: 100%;
   margin: 0;
 
   background-color: var(--text-bg);
   color:            var(--text-fg);
+}
+
+html, body, main, div#post-toc-container {
+  min-height: 100vh;
+  max-width: 100vw;
 }
 
 :root {
@@ -25,9 +28,8 @@ html {
   --font-size: 1.4rem;
   --code-font-size: calc(0.85 * var(--font-size));
 
-  --content-width:       65%;
-  --sidenote-width:      25em;
-  --sidenote-separation: 3em;
+  --content-width:       50vw;
+  --sidenote-separation: 2em;
 
   &.sans-serif {
     --serif: "";
@@ -219,56 +221,57 @@ table {
   }
 }
 
-span.sidenote {
-  counter-increment: footnote-counter;
-
-  .sidenote-content {
-    position: relative;
-    display: none;
-
-    &:before {
-      display: none;
-      content: counter(footnote-counter);
-      font-size: 1.0rem;
-      position: absolute;
-      left: -1.5ex;
-    }
-  }
-
-  .sidenote-toggle { display: none; }
-
-  .sidenote-toggle:checked + .sidenote-content {
-    display: block;
-    float: left;
-    clear: both;
-    margin: 1em 2.5%;
-    width: 95%;
-  }
-
-  .sidenote-number {
-    display:   inline-block;
-
-    &:after {
-      content: counter(footnote-counter);
-      font-size: 1.0rem;
-
-      // Pretend to be a link
-      color: var(--primary);
-      cursor: pointer;
-      text-decoration: underline;
-
-      position: relative;
-      top: -0.2em;
-    }
-  }
+span.sidenote-baseline-mark {
+  width: 0px;
+  vertical-align: baseline;
+  display: inline-block;
 }
 
-details {
-  margin-block: 1em;
-  border-left:  5px solid var(--note-bg);
-  padding-left: 1rem;
+div.sidenote {
+  position: absolute;
+  right: 0;
 
-  @include contains-code();
+  :nth-child(2) { margin-block-start: 0; }
+  :last-child   { margin-block-end: 0; }
+
+  font-size: smaller;
+  line-height: 1.1;
+
+  width: 100%;
+  text-align: justify;
+  hyphens: auto;
+
+  > span.sidenote-number {
+    position: absolute;
+    top: -1.5em;
+
+    text-align: right;
+    width: 100%;
+
+    border-bottom: 1px dotted black;
+  }
+
+  a.footnote-back { display: none; }
+}
+
+section.footnotes {
+  @include widescreen { display: none; }
+  display: block;
+}
+
+aside#sidenote-container {
+  @include widescreen { display: block; }
+
+  display: none;
+
+  position: relative;
+}
+
+// @include widescreen { aside#sidenote-container { display: block; } }
+
+details {
+  @include left-bordered(var(--note-bg));
+  // @include contains-code();
 
   > summary {
     list-style-type: none;
@@ -434,7 +437,7 @@ div.diagram-container {
   }
 }
 
-article a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
+main a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
   color: var(--primary);
   text-decoration: none;
   &:hover {
@@ -562,7 +565,7 @@ input {
   }
 }
 
-@media only screen and (min-width: 95rem) {
+@include widescreen {
   .narrow-only {
     display: none !important;
   }
@@ -573,10 +576,14 @@ input {
     div#post-toc-container {
       display: grid;
 
-      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
-      grid-template-columns: 1fr minmax(0, 5fr);
+      grid-template-areas: ". sidebar . content gutter .";
+
+      // The 0 minimum is required to avoid overflow, see
+      // https://css-tricks.com/preventing-a-grid-blowout/
+      grid-template-columns: 0.1fr 1fr 0.1fr minmax(0, 3fr) 1fr 0.2fr;
 
       aside#toc {
+        grid-column: sidebar;
         h3 { @include centered-contents; }
 
         font-family: var(--sans-serif);
@@ -587,17 +594,15 @@ input {
 
         box-sizing: border-box;
         top:    $page-padding;
-        bottom: $page-padding;
 
-        max-height: 90vh;
+        height: calc(100vh - (2 * #{$page-padding}));
 
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         width: 100%;
 
-        margin-right: 1rem;
-        padding-right: 1rem;
+        z-index: 1;
 
         div#toc-container {
           box-sizing: border-box;
@@ -657,13 +662,13 @@ input {
         }
       }
 
-      article > {
-        :not(pre, div.sourceCode) {
-          width: var(--content-width);
-        }
-        ul, ol, dl, details {
-          box-sizing: border-box;
-        }
+      article {
+        grid-column: content;
+      }
+
+      aside#sidenote-container {
+        grid-column: gutter;
+        margin-left: calc(var(--sidenote-separation));
       }
     }
 
@@ -671,36 +676,6 @@ input {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1em;
-    }
-
-    padding: 0;
-    padding-bottom: 0.4em;
-  }
-
-  span.sidenote {
-    .sidenote-content:before {
-      display: revert;
-    }
-
-    .sidenote-number:after {
-      color:  var(--text-color);
-      cursor: text;
-      text-decoration: none;
-    }
-
-    .sidenote-toggle:checked + .sidenote-content, .sidenote-toggle:not(:checked) + .sidenote-content {
-      display: block;
-
-      float: right;
-      clear: right;
-
-      // margin-right: -45%;
-      // transform: translateX(120%);
-      margin-right: calc(-1 * (var(--sidenote-width) + var(--sidenote-separation)));
-      width:        var(--sidenote-width);
-
-      text-align: justify;
-      hyphens: auto;
     }
   }
 }

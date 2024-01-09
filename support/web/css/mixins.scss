@@ -1,7 +1,20 @@
+@mixin left-bordered($bg) {
+  position: relative;
+
+  &:before {
+    content: " ";
+    background-color: $bg;
+
+    height: 100%;
+    width: 5px;
+
+    position: absolute;
+    left: calc(-1em - 5px);
+  }
+}
+
 @mixin material($bg) {
-  border-left: 5px solid $bg;
-  padding-left: 1rem;
-  padding-bottom: 0.3em;
+  @include left-bordered($bg);
   box-sizing: border-box;
 
   >:nth-child(2) { margin-block-start: 0; }
@@ -24,13 +37,8 @@
     }
   }
 
-  div.#{$name} {
+  div.#{$name}, details.#{$name} {
     @include material($bg);
-    @include contains-code();
-  }
-
-  details.#{$name} {
-    border-left: 5px solid $bg;
   }
 }
 
@@ -40,16 +48,13 @@
   align-items: center;
 }
 
-@mixin contains-code {
-  pre.Agda, div.sourceCode {
-    /* Undo the indentation so that code stays aligned. */
-    padding-left: 0;
-    border-left:  0;
-    margin-left:  0;
-  }
-}
-
 @mixin monospaced {
   font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
+}
+
+@mixin widescreen {
+  @media only screen and (min-width: $desktop-layout-width) {
+    @content;
+  }
 }
