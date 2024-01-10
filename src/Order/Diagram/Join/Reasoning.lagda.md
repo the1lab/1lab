@@ -28,6 +28,8 @@ open Join
 
 # Reasoning about joins
 
+This module provides syntax and reasoning combinators for working with
+[[partial orders]] that have all [[joins]].
 
 ```agda
 joins : ∀ x y → Join P x y
@@ -42,6 +44,8 @@ open joins renaming
   public
 ```
 
+Joins are idempotent and commutative.
+
 ```agda
 abstract
   ∪-idem : ∀ {x} → x ∪ x ≡ x
@@ -52,7 +56,11 @@ abstract
     ≤-antisym
       (∪-universal _ r≤∪ l≤∪)
       (∪-universal _ r≤∪ l≤∪)
+```
 
+Furthermore, joins are associative, and thus form a [[semigroup]].
+
+```agda
   ∪-assoc : ∀ {x y z} → x ∪ (y ∪ z) ≡ (x ∪ y) ∪ z
   ∪-assoc =
     ≤-antisym
@@ -62,13 +70,13 @@ abstract
       (∪-universal _
         (∪-universal _ l≤∪ (≤-trans l≤∪ r≤∪))
         (≤-trans r≤∪ r≤∪))
-```
 
-```agda
   ∪-is-semigroup : is-semigroup _∪_
   ∪-is-semigroup .has-is-magma .has-is-set = Ob-is-set
   ∪-is-semigroup .associative = ∪-assoc
 ```
+
+The join operation preserves the ordering on $P$.
 
 ```agda
   ∪≤∪
@@ -79,13 +87,28 @@ abstract
   ∪≤∪ p q = ∪-universal _ (≤-trans p l≤∪) (≤-trans q r≤∪)
 ```
 
+<!--
 ```agda
-  ∪-path→≤ : ∀ {x y} → x ∪ y ≡ y → x ≤ y
-  ∪-path→≤ {x} {y} p =
+  ∪≤∪l : ∀ {x y x'} → x ≤ x' → (x ∪ y) ≤ (x' ∪ y)
+  ∪≤∪l p = ∪≤∪ p ≤-refl
+
+  ∪≤∪r : ∀ {x y y'} → y ≤ y' → (x ∪ y) ≤ (x ∪ y')
+  ∪≤∪r p = ∪≤∪ ≤-refl p
+```
+-->
+
+Note that $x \cup y \equiv y$ is equivalent to $x \leq y$.
+
+```agda
+  ∪→order : ∀ {x y} → x ∪ y ≡ y → x ≤ y
+  ∪→order {x} {y} p =
     x       ≤⟨ l≤∪ ⟩
     (x ∪ y) =⟨ p ⟩
     y       ≤∎
 
-  ≤→∪-path : ∀ {x y} → x ≤ y → x ∪ y ≡ y
-  ≤→∪-path p = ≤-antisym (∪-universal _ p ≤-refl) r≤∪
+  order→∪ : ∀ {x y} → x ≤ y → x ∪ y ≡ y
+  order→∪ p = ≤-antisym (∪-universal _ p ≤-refl) r≤∪
+
+  ∪≃order : ∀ {x y} → (x ∪ y ≡ y) ≃ (x ≤ y)
+  ∪≃order = prop-ext! ∪→order order→∪
 ```

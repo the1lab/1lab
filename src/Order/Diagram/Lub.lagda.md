@@ -122,27 +122,36 @@ module _ {o ℓ} {P : Poset o ℓ} where
     → Lub P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Lub P F
   lower-lub lub .Lub.lub = Lub.lub lub
   lower-lub lub .Lub.has-lub = lower-is-lub (Lub.has-lub lub)
+```
+-->
 
-  module _ {ℓᵢ ℓᵢ'} {Ix : Type ℓᵢ} {Im : Type ℓᵢ'} {f : Ix → Im} {F : Im → Ob} (surj : is-surjective f) where
-    cover-preserves-is-lub : ∀ {lub} → is-lub P F lub → is-lub P (F ⊙ f) lub
-    cover-preserves-is-lub l .fam≤lub x = l .fam≤lub (f x)
-    cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-proj! do
-      (i' , p) ← surj i
-      pure (≤-trans (≤-refl' (ap F (sym p))) (le i'))
+<!--
+```agda
+  module _
+    {ℓᵢ ℓᵢ'} {Ix : Type ℓᵢ} {Im : Type ℓᵢ'}
+    {f : Ix → Im}
+    {F : Im → Ob}
+    (surj : is-surjective f)
+    where
+      cover-preserves-is-lub : ∀ {lub} → is-lub P F lub → is-lub P (F ⊙ f) lub
+      cover-preserves-is-lub l .fam≤lub x = l .fam≤lub (f x)
+      cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-proj! do
+        (i' , p) ← surj i
+        pure (≤-trans (≤-refl' (ap F (sym p))) (le i'))
 
-    cover-preserves-lub : Lub P F → Lub P (F ⊙ f)
-    cover-preserves-lub l .Lub.lub = _
-    cover-preserves-lub l .Lub.has-lub = cover-preserves-is-lub (l .Lub.has-lub)
+      cover-preserves-lub : Lub P F → Lub P (F ⊙ f)
+      cover-preserves-lub l .Lub.lub = _
+      cover-preserves-lub l .Lub.has-lub = cover-preserves-is-lub (l .Lub.has-lub)
 
-    cover-reflects-is-lub : ∀ {lub} → is-lub P (F ⊙ f) lub → is-lub P F lub
-    cover-reflects-is-lub l .fam≤lub x = ∥-∥-proj! do
-      (y , p) ← surj x
-      pure (≤-trans (≤-refl' (ap F (sym p))) (l .fam≤lub y))
-    cover-reflects-is-lub l .least ub' le = l .least ub' λ i → le (f i)
+      cover-reflects-is-lub : ∀ {lub} → is-lub P (F ⊙ f) lub → is-lub P F lub
+      cover-reflects-is-lub l .fam≤lub x = ∥-∥-proj! do
+        (y , p) ← surj x
+        pure (≤-trans (≤-refl' (ap F (sym p))) (l .fam≤lub y))
+      cover-reflects-is-lub l .least ub' le = l .least ub' λ i → le (f i)
 
-    cover-reflects-lub : Lub P (F ⊙ f) → Lub P F
-    cover-reflects-lub l .Lub.lub     = _
-    cover-reflects-lub l .Lub.has-lub = cover-reflects-is-lub (l .Lub.has-lub)
+      cover-reflects-lub : Lub P (F ⊙ f) → Lub P F
+      cover-reflects-lub l .Lub.lub     = _
+      cover-reflects-lub l .Lub.has-lub = cover-reflects-is-lub (l .Lub.has-lub)
 
   cast-is-lub
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {I' : Type ℓᵢ'} {F : I → Ob} {G : I' → Ob} {lub}

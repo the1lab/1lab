@@ -28,6 +28,9 @@ open Meet
 
 # Reasoning about meets
 
+This module provides syntax and reasoning combinators for working with
+[[partial orders]] that have all [[meets]].
+
 ```agda
 meets : ∀ x y → Meet P x y
 meets x y .glb      = x ∩ y
@@ -41,6 +44,8 @@ open meets renaming
   public
 ```
 
+Meets are idempotent and commutative.
+
 ```agda
 abstract
   ∩-idem : ∀ {x} → x ∩ x ≡ x
@@ -51,7 +56,11 @@ abstract
     ≤-antisym
       (∩-universal _ ∩≤r ∩≤l)
       (∩-universal _ ∩≤r ∩≤l)
+```
 
+Furthermore, meets are associative, and thus form a [[semigroup]].
+
+```agda
   ∩-assoc : ∀ {x y z} → x ∩ (y ∩ z) ≡ (x ∩ y) ∩ z
   ∩-assoc =
     ≤-antisym
@@ -61,13 +70,13 @@ abstract
       (∩-universal _
         (≤-trans ∩≤l ∩≤l)
         (∩-universal _ (≤-trans ∩≤l ∩≤r) ∩≤r))
-```
 
-```agda
   ∩-is-semigroup : is-semigroup _∩_
   ∩-is-semigroup .has-is-magma .has-is-set = Ob-is-set
   ∩-is-semigroup .associative = ∩-assoc
 ```
+
+The meet operation preserves the ordering on $P$.
 
 ```agda
   ∩≤∩
@@ -78,6 +87,7 @@ abstract
   ∩≤∩ p q = ∩-universal _ (≤-trans ∩≤l p) (≤-trans ∩≤r q)
 ```
 
+<!--
 ```agda
   ∩≤∩l : ∀ {x y x'} → x ≤ x' → (x ∩ y) ≤ (x' ∩ y)
   ∩≤∩l p = ∩≤∩ p ≤-refl
@@ -85,15 +95,20 @@ abstract
   ∩≤∩r : ∀ {x y y'} → y ≤ y' → (x ∩ y) ≤ (x ∩ y')
   ∩≤∩r p = ∩≤∩ ≤-refl p
 ```
+-->
 
+Note that $x \cap y \equiv x$ is equivalent to $x \leq y$.
 
 ```agda
-  ∩-path→≤ : ∀ {x y} → x ∩ y ≡ x → x ≤ y
-  ∩-path→≤ {x} {y} p =
+  ∩→order : ∀ {x y} → x ∩ y ≡ x → x ≤ y
+  ∩→order {x} {y} p =
     x       =˘⟨ p ⟩
     (x ∩ y) ≤⟨ ∩≤r ⟩
     y       ≤∎
 
-  ≤→∩-path : ∀ {x y} → x ≤ y → x ∩ y ≡ x
-  ≤→∩-path {x} {y} p = ≤-antisym ∩≤l (∩-universal _ ≤-refl p)
+  order→∩ : ∀ {x y} → x ≤ y → x ∩ y ≡ x
+  order→∩ {x} {y} p = ≤-antisym ∩≤l (∩-universal _ ≤-refl p)
+
+  ∩≃order : ∀ {x y} → (x ∩ y ≡ x) ≃ (x ≤ y)
+  ∩≃order = prop-ext! ∩→order order→∩
 ```

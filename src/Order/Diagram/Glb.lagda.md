@@ -126,3 +126,33 @@ module _ {o ℓ} {P : Poset o ℓ} where
   lower-glb glb .Glb.has-glb = lower-is-glb (Glb.has-glb glb)
 ```
 -->
+
+<!--
+```agda
+  module _
+    {ℓᵢ ℓᵢ'} {Ix : Type ℓᵢ} {Im : Type ℓᵢ'}
+    {f : Ix → Im}
+    {F : Im → Ob}
+    (surj : is-surjective f)
+    where
+      cover-preserves-is-glb : ∀ {glb} → is-glb P F glb → is-glb P (F ⊙ f) glb
+      cover-preserves-is-glb g .glb≤fam i = g .glb≤fam (f i)
+      cover-preserves-is-glb g .greatest lb' le = g .greatest lb' λ i → ∥-∥-proj! do
+        (i' , p) ← surj i
+        pure (≤-trans (le i') (≤-refl' (ap F p)))
+
+      cover-preserves-glb : Glb P F → Glb P (F ⊙ f)
+      cover-preserves-glb g .Glb.glb = _
+      cover-preserves-glb g .Glb.has-glb = cover-preserves-is-glb (g .Glb.has-glb)
+
+      cover-reflects-is-glb : ∀ {glb} → is-glb P (F ⊙ f) glb → is-glb P F glb
+      cover-reflects-is-glb g .glb≤fam i = ∥-∥-proj! do
+        (y , p) ← surj i
+        pure (≤-trans (g .glb≤fam y) (≤-refl' (ap F p)))
+      cover-reflects-is-glb g .greatest lb' le = g .greatest lb' λ i → le (f i)
+
+      cover-reflects-glb : Glb P (F ⊙ f) → Glb P F
+      cover-reflects-glb g .Glb.glb = _
+      cover-reflects-glb g .Glb.has-glb = cover-reflects-is-glb (g .Glb.has-glb)
+```
+-->

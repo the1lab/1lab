@@ -28,9 +28,8 @@ open Order.Diagram.Bottom P
 
 # Reasoning about least upper bounds
 
-## Joins
-
-## Least upper bounds
+This module provides syntax and reasoning combinators for working with
+[[partial orders]] that have all [[least upper bounds]].
 
 ```agda
 module Lubs
@@ -45,6 +44,9 @@ module Lubs
   open ⋃-lubs using () renaming (fam≤lub to ⋃-inj; least to ⋃-universal) public
 ```
 
+Performing two nested joins over $I$ and $J$ is the same as taking a
+single join over $\Sigma I J$.
+
 ```agda
   ⋃-twice
     : ∀ {I : Type o} {J : I → Type o} (F : (i : I) → J i → Ob)
@@ -55,6 +57,10 @@ module Lubs
     (⋃-universal _ λ (i , j) → ≤-trans (⋃-inj j) (⋃-inj i))
 ```
 
+Let $f : I \to P$ and $g : J \to P$ be a pair of families. If there is
+a map $t : I \to J$ such that $f_{i} \leq g_{t(i)}$, then the meet of $f$
+is smaller than the meet of $g$.
+
 ```agda
   ⋃≤⋃-over
     : ∀ {I J : Type o} {f : I → Ob} {g : J → Ob}
@@ -62,13 +68,23 @@ module Lubs
     → (∀ i → f i ≤ g (to i))
     → ⋃ f ≤ ⋃ g
   ⋃≤⋃-over to p = ⋃-universal _ λ i → ≤-trans (p i) (⋃-inj (to i))
+```
 
+As a corollary, if $f : I \to P$ is smaller than $g : I \to P$ for each
+$i : I$, then the join of $f$ is smaller than the join of $g$.
+
+```agda
   ⋃≤⋃
     : ∀ {I : Type o} {f g : I → Ob}
     → (∀ i → f i ≤ g i)
     → ⋃ f ≤ ⋃ g
   ⋃≤⋃ = ⋃≤⋃-over (λ i → i)
+```
 
+Taking the join over a [[contractible]] family is equal the unique value
+of the family.
+
+```agda
   ⋃-singleton
     : ∀ {I : Type o} {f : I → Ob}
     → (p : is-contr I)
@@ -78,6 +94,8 @@ module Lubs
     (⋃-inj _)
 
 ```
+
+We also provide syntax for binary joins and bottom elements.
 
 ```agda
   module _ (x y : Ob) where opaque
@@ -100,6 +118,8 @@ module Lubs
   open Bottom has-bottom using (bot; ¡) public
 ```
 
+There is a distributive law relating binary and infinitary joins.
+
 ```agda
   ∪-distrib-⋃-≤l
     : ∀ {I : Type o} {x : Ob} {f : I → Ob}
@@ -107,6 +127,9 @@ module Lubs
   ∪-distrib-⋃-≤l =
     ⋃-universal _ λ i → ∪-universal _ l≤∪ (≤-trans (⋃-inj i) r≤∪)
 ```
+
+If the infinitary join is taken over a non-empty family, then the previous
+distributive law can be extended to an equality.
 
 ```agda
   ∪-distrib-nonempty-⋃-l
@@ -119,6 +142,7 @@ module Lubs
       (∥-∥-rec! (λ i → ∪-universal _ (≤-trans l≤∪ (⋃-inj i)) (⋃≤⋃ λ _ → r≤∪)) i)
 ```
 
+<!--
 ```agda
   ⋃-ap
     : ∀ {I I' : Type o} {f : I → Ob} {g : I' → Ob}
@@ -134,15 +158,24 @@ module Lubs
   ⋃-apⁱ e = ⋃-ap e (λ i → refl)
   ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
 ```
+-->
+
+## Large joins
+
+Let $P$ be a $\kappa$-small poset. If $P$ has all joins of size $\kappa$,
+then it has all joins, regardless of size.
 
 ```agda
 is-cocomplete→is-large-cocomplete
   : (lubs : ∀ {I : Type o} (f : I → Ob) → Lub P f)
   → ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Lub P F
-is-cocomplete→is-large-cocomplete lubs {I = I} F = cover-preserves-lub
-  (Ω-corestriction-is-surjective F)
-  (lubs fst)
+is-cocomplete→is-large-cocomplete lubs {I = I} F =
+  cover-preserves-lub
+    (Ω-corestriction-is-surjective F)
+    (lubs fst)
 ```
+
+We also provide some notation for large joins.
 
 ```agda
 module
@@ -162,7 +195,10 @@ module
 
     ⋃ᴸ-universal : ∀ {ℓ} {I : Type ℓ} {F : I → Ob} (x : Ob) → (∀ i → F i ≤ x) → ⋃ᴸ F ≤ x
     ⋃ᴸ-universal = Lub.least (is-cocomplete→is-large-cocomplete lubs _)
+```
 
+<!--
+```agda
   ⋃ᴸ-ap
     : ∀ {ℓ ℓ'} {I : Type ℓ} {I' : Type ℓ'} {f : I → Ob} {g : I' → Ob}
     → (e : I ≃ I')
@@ -179,3 +215,4 @@ module
   ⋃ᴸ-apⁱ e = ⋃ᴸ-ap e (λ i → refl)
   ⋃ᴸ-apᶠ p = ⋃ᴸ-ap (_ , id-equiv) p
 ```
+-->
