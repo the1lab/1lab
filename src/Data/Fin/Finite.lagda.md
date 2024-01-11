@@ -17,7 +17,7 @@ open import Data.Sum
 module Data.Fin.Finite where
 ```
 
-# Finite types
+# Finite types {defines=finite}
 
 This module pieces together a couple of pre-existing constructions: In
 terms of the [[standard finite sets|standard finite set]] (which are
@@ -235,5 +235,12 @@ Finite-Bool = fin (inc (Iso→Equiv enum)) where
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
+```
+-->
+
+<!--
+```agda
+card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
+card-zero→empty ∥e∥ a = ∥-∥-rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->
