@@ -1,7 +1,12 @@
 <!--
 ```agda
+open import Cat.Instances.Elements.Covariant
+open import Cat.Functor.Equivalence.Path
+open import Cat.Functor.Equivalence
 open import Cat.Instances.Product
 open import Cat.Prelude
+
+import Cat.Functor.Hom
 ```
 -->
 
@@ -35,8 +40,10 @@ category** of $\cC$, written $\rm{Tw}(\cC)$. You can think of a morphism
 $f \to g$ in $\rm{Tw}(\cC)$ as a factorisation of $g$ through $f$.
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} where
+module _ {o ℓ} (C : Precategory o ℓ) where
   open Precategory C
+  open Cat.Functor.Hom C
+
   record Twist {a₀ a₁ b₀ b₁} (f : Hom a₀ a₁) (g : Hom b₀ b₁) : Type ℓ where
     constructor twist
     no-eta-equality
@@ -48,6 +55,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 <!--
 ```agda
+  open Twist
+
   Twist-path
     : ∀ {a₀ a₁ b₀ b₁} {f : Hom a₀ a₁} {g : Hom b₀ b₁} {h1 h2 : Twist f g}
     → Twist.before h1 ≡ Twist.before h2
@@ -93,6 +102,33 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
+Note that the twisted arrow category is equivalently the
+[[covariant category of elements]] of the [[Hom functor]]:
+
+```agda
+  Twisted≡∫Hom : Twisted ≡ ∫ (C ^op ×ᶜ C) Hom[-,-]
+  Twisted≡∫Hom = Precategory-path F F-precat-iso where
+    open Element
+    open Element-hom
+    open is-precat-iso
+
+    F : Functor Twisted (∫ _ Hom[-,-])
+    F .F₀ a = elem (a .fst) (a .snd)
+    F .F₁ f = elem-hom (f .before , f .after) (f .commutes)
+    F .F-id = Element-hom-path _ _ refl
+    F .F-∘ f g = Element-hom-path _ _ refl
+
+    F-precat-iso : is-precat-iso F
+    F-precat-iso .has-is-ff = injective-surjective→is-equiv
+      (Element-hom-is-set _ _ _ _)
+      (λ p → Twist-path (ap (fst ⊙ hom) p) (ap (snd ⊙ hom) p))
+      λ f → inc (twist (f .hom .fst) (f .hom .snd) (f .commute)
+          , Element-hom-path _ _ refl)
+    F-precat-iso .has-is-iso = is-iso→is-equiv (iso
+      (λ e → e .ob , e .section)
+      (λ e → refl) λ e → refl)
+```
+
 The twisted arrow category admits a forgetful functor $\rm{Tw}(\cC)
 \to \cC\op \times \cC$, which sends each arrow $a \xto{f} b$ to
 the pair $(a, b)$, and forgets the commutativity datum for the diagram.
@@ -107,7 +143,7 @@ this inclusion functor is faithful, though it is not full.
   πₜ .F-∘ f g = refl
 
 module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
-  twistᵒᵖ : Functor (C ^op ×ᶜ C) D → Functor (Twisted {C = C ^op} ^op) D
+  twistᵒᵖ : Functor (C ^op ×ᶜ C) D → Functor (Twisted (C ^op) ^op) D
   twistᵒᵖ F .Functor.F₀ ((a , b) , _) = F .Functor.F₀ (a , b)
   twistᵒᵖ F .Functor.F₁ arr = F .Functor.F₁ (Twist.before arr , Twist.after arr)
   twistᵒᵖ F .Functor.F-id = F .Functor.F-id
