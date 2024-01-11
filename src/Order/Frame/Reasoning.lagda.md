@@ -6,9 +6,9 @@ open import Order.Diagram.Lub.Reasoning
 open import Order.Lattice.Distributive
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
-open import Order.Lattice
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Lattice
 open import Order.Frame
 open import Order.Base
 
