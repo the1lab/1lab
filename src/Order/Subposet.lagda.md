@@ -18,7 +18,11 @@ import Order.Reasoning
 module Order.Subposet where
 ```
 
-# Subposets
+# Subposets {defines=subposet}
+
+Let $A$ be a poset, and $P : A \to \prop$ be a predicate on $A$. We
+can form a **subposet** of $A$ by restricting to the elements of $A$
+where $P$ holds.
 
 ```agda
 module _ {o ℓ} (A : Poset o ℓ) where
@@ -32,7 +36,12 @@ module _ {o ℓ} (A : Poset o ℓ) where
   Subposet P .Poset.≤-trans = ≤-trans
   Subposet P .Poset.≤-antisym p q =
     Σ-prop-path hlevel! (≤-antisym p q)
+```
 
+Every subposet includes into the original order it was constructed
+from, and this inclusion is an [[order embedding]].
+
+```agda
 module _ {o ℓ ℓ'} {A : Poset o ℓ} (P : ⌞ A ⌟ → Prop ℓ') where
   open Order.Reasoning A
 
@@ -55,6 +64,9 @@ module _ {o ℓ ℓ'} {A : Poset o ℓ} {P : ⌞ A ⌟ → Prop ℓ'} where
 ```
 
 ## Joins and Meets in Subposets
+
+If $A$ has joins or meets, and $P$ is closed under those joins and
+meets, then the subposet induced by $P$ also has those joins and meets.
 
 ```agda
   open is-meet

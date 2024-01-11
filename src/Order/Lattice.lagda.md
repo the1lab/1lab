@@ -11,6 +11,10 @@ open import Order.Diagram.Meet
 open import Order.Diagram.Top
 open import Order.Base
 
+import Cat.Reasoning
+
+import Order.Diagram.Join.Reasoning as Joins
+import Order.Diagram.Meet.Reasoning as Meets
 import Order.Reasoning
 ```
 -->
@@ -20,6 +24,9 @@ module Order.Lattice where
 ```
 
 # Lattices {defines=lattice}
+
+A **lattice** is a [[poset]] which is simultaneously a [[meet semilattice]]
+and a [[join semilattice]].
 
 ```agda
 record is-lattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
@@ -37,6 +44,9 @@ record is-lattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
 
   infixr 24 _∪_
   infixr 25 _∩_
+
+  open Joins {P = P} ∪-joins public
+  open Meets {P = P} ∩-meets public
 
   has-meet-slat : is-meet-semilattice P
   has-meet-slat .is-meet-semilattice._∩_     = _∩_
@@ -96,7 +106,7 @@ instance
 ## Category of lattices
 
 A **lattice homomorphism** is a function which is, at the same time, a
-homomorphism for both of the semilattice monoid structures: A function
+homomorphism for both of the semilattice structures: A function
 sending bottom to bottom, top to top, joins to joins, and meets to
 meets. Put more concisely, a function which preserves finite meets and
 finite joins.
@@ -150,6 +160,9 @@ open is-lattice-hom
 ```
 -->
 
+The identity function is clearly a lattice homomorphism, and lattice
+homomorphisms are closed under composition.
+
 ```agda
 id-lattice-hom
   : ∀ (L : is-lattice P)
@@ -178,6 +191,9 @@ id-lattice-hom {P = P} L .∪-≤ =
   R .Poset.≤-trans (f .pres-≤ (g-pres .∪-≤)) (f-pres .∪-≤)
 ```
 
+This allows us to carve out the category of lattices as a [[subcategory]]
+of the category of posets.
+
 ```agda
 Lattices-subcat : ∀ o ℓ → Subcat (Posets o ℓ) _ _
 Lattices-subcat o ℓ .Subcat.is-ob = is-lattice
@@ -188,4 +204,9 @@ Lattices-subcat o ℓ .Subcat.is-hom-∘ = ∘-lattice-hom
 
 Lattices : ∀ o ℓ → Precategory _ _
 Lattices o ℓ = Subcategory (Lattices-subcat o ℓ)
+
+module Lattices {o} {ℓ} = Cat.Reasoning (Lattices o ℓ)
+
+Lattice : ∀ o ℓ → Type _
+Lattice o ℓ = Lattices.Ob {o} {ℓ}
 ```

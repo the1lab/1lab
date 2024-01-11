@@ -6,6 +6,7 @@ open import Algebra.Magma
 open import Cat.Prelude
 
 open import Order.Diagram.Join
+open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Base
 
@@ -159,6 +160,8 @@ distributive law can be extended to an equality.
   ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
 ```
 -->
+
+
 
 ## Large joins
 

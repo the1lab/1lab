@@ -105,5 +105,5 @@ since the other direction _always_ holds in a lattice.
 distrib-le→∩-distribl
   : (∀ {x y z} → x ∩ (y ∪ z) ≤ (x ∩ y) ∪ (x ∩ z))
   → ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
-distrib-le→∩-distribl ∩-∪-distrib≤ = ≤-antisym ∩-∪-distrib≤ ∪-∩-distrib≤
+distrib-le→∩-distribl ∩-∪-distrib≤ = ≤-antisym ∩-∪-distrib≤ ∪-∩-distribl-≤
 ```

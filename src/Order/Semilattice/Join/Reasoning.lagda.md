@@ -15,28 +15,41 @@ import Order.Reasoning
 -->
 
 ```agda
-module Order.Semilattice.Join.Reasoning {o ℓ} (L : Join-semilattice o ℓ) where
+module Order.Semilattice.Join.Reasoning
+  {o ℓ} {P : Poset o ℓ} (slat : is-join-semilattice P)
+  where
 ```
 
+# Reasoning about join semilattices
+
+This module proves some basic facts about [[join semilattices]], and
+exposes reasoning combinators for working with them.
+
 ```agda
-open is-join-semilattice (L .snd) public
-open Order.Reasoning (L .fst) public
+open is-join-semilattice slat public
+open Order.Reasoning P public
+```
 
-po : Poset o ℓ
-po = L .fst
+The bottom element of a join semilattice is both a left and right
+identity element with respect to joins.
 
+```agda
 ∪-idl : ∀ {x} → bot ∪ x ≡ x
 ∪-idl = ≤-antisym (∪-universal _ ¡ ≤-refl) r≤∪
 
 ∪-idr : ∀ {x} → x ∪ bot ≡ x
 ∪-idr = ≤-antisym (∪-universal _ ≤-refl ¡) l≤∪
+```
 
+Therefore, every join semilattice is a monoid.
+
+```agda
 ∪-is-monoid : is-monoid bot _∪_
 ∪-is-monoid .has-is-semigroup = ∪-is-semigroup
 ∪-is-monoid .idl = ∪-idl
 ∪-is-monoid .idr = ∪-idr
 
-∪-monoid : Monoid-on ⌞ L ⌟
+∪-monoid : Monoid-on ⌞ P ⌟
 ∪-monoid .Monoid-on.identity = bot
 ∪-monoid .Monoid-on._⋆_ = _∪_
 ∪-monoid .Monoid-on.has-is-monoid = ∪-is-monoid

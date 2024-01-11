@@ -12,6 +12,7 @@ open import Order.Instances.Props
 open import Order.Diagram.Meet
 open import Order.Diagram.Lub
 open import Order.Diagram.Top
+open import Order.Lattice
 open import Order.Base
 
 import Cat.Reasoning
@@ -27,6 +28,19 @@ module Order.Frame where
 
 # Frames {defines="frame"}
 
+A **frame** is a [[lattice]] with finite [[meets]]^[So, in addition to the $x
+\cap y$ operation, we have a top element] and arbitrary [[joins]] satisfying
+the **infinite distributive law**
+
+$$
+x \cap \bigcup_i f(i) = \bigcup_i (x \cap f(i))\text{.}
+$$
+
+In the study of frames, for simplicity, we assume propositional
+`resizing`{.Agda}: that way, it suffices for a frame $A$ to have joins
+of $\cJ$-indexed families, for $\cJ$ an arbitrary type in the same
+universe as $A$, to have joins for arbitrary subsets of $A$.
+
 ```agda
 record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   no-eta-equality
@@ -37,6 +51,7 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
     has-top : Top P
     ⋃       : ∀ {I : Type o} (k : I → Ob) → Ob
     ⋃-lubs  : ∀ {I : Type o} (k : I → Ob) → is-lub P k (⋃ k)
+    ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
   infixr 25 _∩_
 
@@ -45,9 +60,6 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   open Meets ∩-meets public
   open Top has-top using (top; !) public
   open Lubs P ⋃-lubs public
-
-  field
-    ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
   has-meet-slat : is-meet-semilattice P
   has-meet-slat .is-meet-semilattice._∩_ = _∩_
@@ -58,6 +70,14 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   has-join-slat .is-join-semilattice._∪_ = _∪_
   has-join-slat .is-join-semilattice.∪-joins = ∪-joins
   has-join-slat .is-join-semilattice.has-bottom = has-bottom
+
+  has-lattice : is-lattice P
+  has-lattice .is-lattice._∩_ = _∩_
+  has-lattice .is-lattice.∩-meets = ∩-meets
+  has-lattice .is-lattice._∪_ = _∪_
+  has-lattice .is-lattice.∪-joins = ∪-joins
+  has-lattice .is-lattice.has-top = has-top
+  has-lattice .is-lattice.has-bottom = has-bottom
 ```
 
 <!--
@@ -99,6 +119,19 @@ instance
 ```
 -->
 
+Frames are, of course, complete lattices (and thus, also Heyting
+algebras). The difference in naming comes from the morphisms with which
+frames are considered: A frame homomorphism need only preserve the
+binary meets and arbitrary joins, and it does not need to preserve
+infinitary meets (or the Heyting implication).
+
+<!-- [TODO: Reed M, 10/01/2024] Prove that all joins => heyting algebras + link to proof here -->
+
+In fact, all we need to require is that:
+* For every $x, y : P$, $f x \cap f y \leq f (x \cap y)$
+* $\top \leq f(\top)$
+* For every family $k : I \to P$, $f (\bigcup k) \leq \bigcup (f \circ k)$
+
 ```agda
 record
   is-frame-hom
@@ -119,13 +152,22 @@ record
     ∩-≤ : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
     top-≤ : Qᶠ.top Q.≤ f # Pᶠ.top
     ⋃-≤ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
+```
 
+Clearly, if $f$ is a frame homomorphism, then it is also a homomorphism of
+[[meet semilattices]].
+
+```agda
   has-meet-slat-hom : is-meet-slat-hom f Pᶠ.has-meet-slat Qᶠ.has-meet-slat
   has-meet-slat-hom .is-meet-slat-hom.∩-≤ = ∩-≤
   has-meet-slat-hom .is-meet-slat-hom.top-≤ = top-≤
 
   open is-meet-slat-hom has-meet-slat-hom hiding (∩-≤; top-≤) public
+```
 
+Furthermore, $f$ preserves all joins.
+
+```agda
   pres-⋃ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) ≡ Qᶠ.⋃ (apply f ⊙ k)
   pres-⋃ k =
     Q.≤-antisym
@@ -142,7 +184,11 @@ record
     f # Pᶠ.⋃ k         Q.≤⟨ ⋃-≤ k ⟩
     Qᶠ.⋃ (apply f ⊙ k) Q.≤⟨ Qᶠ.⋃-universal ub p ⟩
     ub                 Q.≤∎
+```
 
+As a corollary, $f$ is a homomorphism of [[join semilattices]].
+
+```agda
   opaque
     unfolding Lubs.∪-joins Lubs.has-bottom
 
@@ -180,6 +226,8 @@ instance
 ```
 -->
 
+Clearly, the identity function is a frame homomorphism.
+
 ```agda
 id-frame-hom
   : ∀ (Pᶠ : is-frame P)
@@ -190,7 +238,11 @@ id-frame-hom {P = P} Pᶠ .top-≤ =
   Poset.≤-refl P
 id-frame-hom {P = P} Pᶠ .⋃-≤ k =
   Poset.≤-refl P
+```
 
+Furthermore, frame homomorphisms are closed under composition.
+
+```agda
 ∘-frame-hom
   : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}
   → is-frame-hom f Qₗ Rₗ
@@ -202,7 +254,12 @@ id-frame-hom {P = P} Pᶠ .⋃-≤ k =
   R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .⋃-≤ k =
   R .Poset.≤-trans (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g # k i))
+```
 
+This means that we can define the category of frames as a [[subcategory]]
+of the category of posets.
+
+```agda
 Frame-subcat : ∀ o ℓ → Subcat (Posets o ℓ) _ _
 Frame-subcat o ℓ .Subcat.is-ob = is-frame
 Frame-subcat o ℓ .Subcat.is-hom = is-frame-hom

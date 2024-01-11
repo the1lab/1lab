@@ -69,7 +69,6 @@ necessary to prove the universal property.
   minimalᵏ = minimal , minimal-is-K-finite
 ```
 
-
 Since $K(A)$ is closed under unions (and contains the least element), it
 follows that it's a semilattice, being a sub-semilattice of the power
 set of $A$. In fact, a different characterisation of $K(A)$ is as the
@@ -85,7 +84,7 @@ under union.
       (λ {P} {Q} pf qf → union-is-K-finite {P = P} {Q = Q} pf qf)
       minimal-is-K-finite
 
-  private module KA = Order.Semilattice.Join.Reasoning K[_]
+  private module KA = Order.Semilattice.Join.Reasoning (K[_] .snd)
 ```
 -->
 
@@ -104,13 +103,20 @@ sets it contains.
 ```agda
   K-singleton-lub
     : (P : K-finite-subset)
-    → is-lub KA.po {I = ∫ₚ (P .fst)} (singletonᵏ ⊙ fst) P
+    → is-lub (K[_] .fst) {I = ∫ₚ (P .fst)} (singletonᵏ ⊙ fst) P
   K-singleton-lub P = subposet-has-lub _ (P .snd) (subset-singleton-lub _)
 ```
 
+In a similar vein, given a map $f : A \to B$ and a semilattice structure
+on $B$, we can extend this to a semilattice homomorphism^[Here we
+construct the underlying map first, the proof that it's a semilattice
+homomorphism follows.] $f' : K(A) \to B$ by first
+expressing $S : K(A)$ as $\bigcup_{i:[n]} \eta(a_i)$ for some $n$,
+$a_i$, then computing $\bigcup_{i:[n]} f(a_i)$.
+
 ```agda
   module _ {o ℓ'} (B : Join-semilattice o ℓ') where
-    private module B = Order.Semilattice.Join.Reasoning B
+    private module B = Order.Semilattice.Join.Reasoning (B .snd)
 
     fold-K : (∣ A ∣ → ⌞ B ⌟) → K-finite-subset → ⌞ B ⌟
     fold-K f (P , P-fin) = Lub.lub ε' module fold-K where
@@ -123,15 +129,18 @@ speak, the join of our family $[n] \epi P \to B$ to a join of $P \to B$,
 using surjectivity of the first map.
 
 ```agda
-      ε : Finite-cover (∫ₚ P) → Lub B.po fam
-      ε (cover {card} g surj) =
+      ε : Finite-cover (∫ₚ P) → Lub (B .fst) fam
+      ε (covering {card} g surj) =
         cover-reflects-lub surj (Finite-lubs (B .snd) (fam ⊙ g))
 
-      ε' : Lub B.po fam
+      ε' : Lub (B .fst) fam
       ε' = □-rec! ε P-fin
 
       module ε' = Lub ε'
 ```
+
+This extension of $f : A \to B$ is monotonic: this follows from the fact
+that the extension of $f$ is computed by taking a join.
 
 ```agda
     fold-K-pres-≤
@@ -142,10 +151,23 @@ using surjectivity of the first map.
     fold-K-pres-≤ f (P , Pf) Qqf@(Q , Qf) P⊆Q =
       fold-K.ε'.least f P Pf (fold-K f Qqf) λ
         (x , x∈P) → fold-K.ε'.fam≤lub f Q Qf (x , P⊆Q x x∈P)
+```
 
+Likewise, the extension of $f$ also preserves joins and bottoms.
+
+```agda
     fold-K-∪-≤
       : (f : ⌞ A ⌟ → ⌞ B ⌟) (P Q : K-finite-subset)
       → fold-K f (P ∪ᵏ Q) B.≤ (fold-K f P B.∪ fold-K f Q)
+    fold-K-bot-≤ : (f : ⌞ A ⌟ → ⌞ B ⌟) → fold-K f minimalᵏ B.≤ B.bot
+```
+
+<details>
+<summary>The proofs follow the same pattern as the proof of monotonicity,
+so we omit them.
+</summary>
+
+```agda
     fold-K-∪-≤ f Ppf@(P , Pf) Qqf@(Q , Qf) =
       fold-K.ε'.least f (P ∪ Q) (union-is-K-finite Pf Qf) _ go where
       go : (i : ∫ₚ (P ∪ Q)) → f (i .fst) B.≤ fold-K f Ppf B.∪ fold-K f Qqf
@@ -153,9 +175,13 @@ using surjectivity of the first map.
       go (x , inc (inr p)) = B.≤-trans (fold-K.ε'.fam≤lub f Q Qf (x , p)) B.r≤∪
       go (x , squash p q i) = B.≤-thin (go (x , p)) (go (x , q)) i
 
-    fold-K-bot-≤ : (f : ⌞ A ⌟ → ⌞ B ⌟) → fold-K f minimalᵏ B.≤ B.bot
     fold-K-bot-≤ f = fold-K.ε'.least f minimal minimal-is-K-finite B.bot λ ()
+```
+</details>
 
+Crucicially, the extension of $f$ agrees with $f$ on singleton subsets.
+
+```agda
     fold-K-singleton
       : (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟) → f x ≡ fold-K f (singletonᵏ x)
     fold-K-singleton f x = B.≤-antisym
@@ -164,6 +190,11 @@ using surjectivity of the first map.
         (λ x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl) □x=y)
       where open fold-K f (singleton x) (singleton-is-K-finite (A .is-tr) x)
 ```
+
+We now have all the ingredients to show that $K$ is a left adjoint.
+The unit of the adjunction takes an element $x : A$ to the singleton
+set $\{ x \}$, and the universal extension of $f : A \to B$
+is the extension defined above.
 
 ```agda
 open make-left-adjoint
@@ -180,11 +211,31 @@ make-free-join-slat .universal {A} {B} f .witness .∪-≤ P Q =
   fold-K-∪-≤ A B f P Q
 make-free-join-slat .universal {A} {B} f .witness .bot-≤ =
   fold-K-bot-≤ A B f
+```
+
+As noted earlier, the extension of $f$ agrees with $f$ on singleton sets,
+so the universal extension commutes with the unit of the adjunction.
+
+```agda
 make-free-join-slat .commutes {A} {B} f = ext (fold-K-singleton A B f)
+```
+
+Finally, we shall show that the universal extension of $f$ is unique.
+Let $g : K(A) \to B$ such that $f = g \circ \{ - \}$, and
+let $P : K(A)$. To see that the $g(P) = f'(P)$, note that $f'$ is computed
+via taking a join, so it suffices to show that $g$ is *also* computed via
+a join over the same family.
+
+By our assumptions, $g$ agrees with $f$ on singleton sets. However, every
+K-finite subset $P$ can be described as a (finitely-indexed) join over
+the elements of $P$. Furthermore, $g$ preserves all finitely-indexed joins,
+so $g$ *must* be computed as a join over the elements of $P$, which is the
+same join used to compute the extension of $f$.
+
+```agda
 make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P → lub-unique
   (fold-K.ε'.has-lub A B f (P .fst) (P .snd))
   (cast-is-lubᶠ (λ Q → sym (p #ₚ Q .fst)) $
     pres-finitely-indexed-lub (g .witness) (P .snd) _ _ $
     K-singleton-lub A _)
-  where module B = Order.Semilattice.Join.Reasoning B
 ```

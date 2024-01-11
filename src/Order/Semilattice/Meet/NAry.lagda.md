@@ -31,6 +31,10 @@ module _ {o ℓ} {P : Poset o ℓ} (l : is-meet-semilattice P) where
 
 # n-Ary meets
 
+Let $P$ be a [[meet semilattice]], and let $f$ be a finite family of
+elements of $P$. We can compute meets of $f$ in $P$ via induction on the
+size of the family.
+
 ```agda
   ⋂ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
   ⋂ᶠ {0}           f = top
@@ -54,7 +58,32 @@ module _ {o ℓ} {P : Poset o ℓ} (l : is-meet-semilattice P) where
   Finite-glbs f .Glb.glb = ⋂ᶠ f
   Finite-glbs f .Glb.has-glb .is-glb.glb≤fam = ⋂ᶠ-proj
   Finite-glbs f .Glb.has-glb .is-glb.greatest = ⋂ᶠ-universal
+```
 
+Furthermore, $P$ must also have meets of [[finitely indexed sets]].
+Let $I$ be a finitely indexed set with enumeration $e$, and let $f : I \to P$
+be an $I$-indexed family in $P$. $f \circ e$ is a finite family in $P$, so it must
+have a meet. Furthermore, $e$ is surjective, so it must reflect the
+meet.
+
+```agda
+  opaque
+    Finitely-indexed-glbs
+      : ∀ {ℓᵢ} {I : Type ℓᵢ}
+      → is-finitely-indexed I
+      → (f : I → Ob)
+      → Glb P f
+    Finitely-indexed-glbs {I = I} fin-indexed f =
+      □-rec! (λ cov →
+          cover-reflects-glb (cov .is-cover) (Finite-glbs (f ⊙ cov .cover)))
+        fin-indexed
+      where open Finite-cover
+```
+
+Meet semilattice homomorphisms must also preserve finite meets. This follows
+from another induction on the size of the family we are taking a meet over.
+
+```agda
 module
   _ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q} {Pl Ql}
     (hom : is-meet-slat-hom f Pl Ql) where abstract
@@ -72,3 +101,4 @@ module
     f # (k fzero Pₗ.∩ ⋂ᶠ Pl (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
     f # (k fzero) Qₗ.∩ f # ⋂ᶠ Pl (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
     ⋂ᶠ Ql (apply f ⊙ k)                      ∎
+```

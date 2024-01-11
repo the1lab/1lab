@@ -6,8 +6,8 @@ open import Order.Diagram.Join
 open import Order.Lattice
 open import Order.Base
 
-import Order.Diagram.Join.Reasoning as Joins
-import Order.Diagram.Meet.Reasoning as Meets
+import Order.Semilattice.Join.Reasoning
+import Order.Semilattice.Meet.Reasoning
 import Order.Reasoning as Pos
 ```
 -->
@@ -18,23 +18,60 @@ module Order.Lattice.Reasoning {o ℓ} {P : Poset o ℓ} (lat : is-lattice P) wh
 
 <!--
 ```agda
-open is-lattice lat
+open is-lattice lat public
 open Pos P
 ```
 -->
 
 # Reasoning in lattices
 
-```agda
-open Joins {P = P} ∪-joins public
-open Meets {P = P} ∩-meets public
+This module provides some basic reasoning combinators for [[lattices]].
 
+<!--
+```agda
+open Order.Semilattice.Meet.Reasoning has-meet-slat using (∩-idl; ∩-idr; module ∩) public
+open Order.Semilattice.Join.Reasoning has-join-slat using (∪-idl; ∪-idr; module ∪) public
+```
+-->
+
+First, we show that we have half of a distributive law that states that
+meets distribute over joins. For the converse to hold, $P$ must be a
+[[distributive lattice]].
+
+```agda
 abstract
-  ∪-∩-distrib≤ : ∀ {x y z} → (x ∩ y) ∪ (x ∩ z) ≤ x ∩ (y ∪ z)
-  ∪-∩-distrib≤ = ∪-universal _
+  ∪-∩-distribl-≤ : ∀ {x y z} → (x ∩ y) ∪ (x ∩ z) ≤ x ∩ (y ∪ z)
+  ∪-∩-distribl-≤ = ∪-universal _
     (∩-universal _ ∩≤l (≤-trans ∩≤r l≤∪))
     (∩-universal _ ∩≤l (≤-trans ∩≤r r≤∪))
+```
 
+We can prove a dual result for joins distributing over meets.
+
+```agda
+  ∩-∪-distribl-≤ : ∀ {x y z} → x ∪ (y ∩ z) ≤ (x ∪ y) ∩ (x ∪ z)
+  ∩-∪-distribl-≤ = ∪-universal _
+    (∩-universal _ l≤∪ l≤∪)
+    (∩-universal _ (≤-trans ∩≤l r≤∪) (≤-trans ∩≤r r≤∪))
+```
+
+<!--
+```agda
+  ∪-∩-distribr-≤ : ∀ {x y z} → (x ∩ z) ∪ (y ∩ z) ≤ (x ∪ y) ∩ z
+  ∪-∩-distribr-≤ = ∪-universal _
+    (∩-universal _ (≤-trans ∩≤l l≤∪) ∩≤r)
+    (∩-universal _ (≤-trans ∩≤l r≤∪) ∩≤r)
+
+  ∩-∪-distribr-≤ : ∀ {x y z} → (x ∩ y) ∪ z ≤ (x ∪ z) ∩ (y ∪ z)
+  ∩-∪-distribr-≤ = ∪-universal _
+    (∩-universal _ (≤-trans ∩≤l l≤∪) (≤-trans ∩≤r l≤∪))
+    (∩-universal _ r≤∪ r≤∪)
+```
+-->
+
+We also have left and right absorption laws for meets and joins, resp.
+
+```agda
   ∩-absorbr : ∀ {x y} → (x ∪ y) ∩ x ≡ x
   ∩-absorbr = ≤-antisym ∩≤r (∩-universal _ l≤∪ ≤-refl)
 
@@ -48,8 +85,3 @@ abstract
   ∪-absorbl = ∪-comm ∙ ∪-absorbr
 ```
 
-<!--
-```agda
-open is-lattice lat using (_∩_ ; _∪_ ; top ; ! ; bot ; ¡) public
-```
--->

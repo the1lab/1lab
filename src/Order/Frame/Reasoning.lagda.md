@@ -3,8 +3,10 @@
 open import Cat.Prelude
 
 open import Order.Diagram.Lub.Reasoning
+open import Order.Lattice.Distributive
 open import Order.Semilattice.Join
 open import Order.Semilattice.Meet
+open import Order.Lattice
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Frame
@@ -12,6 +14,7 @@ open import Order.Base
 
 import Order.Semilattice.Join.Reasoning
 import Order.Semilattice.Meet.Reasoning
+import Order.Lattice.Reasoning
 import Order.Reasoning
 ```
 -->
@@ -27,10 +30,9 @@ open is-frame frm hiding (meets ; joins) public
 
 # Reasoning about frames
 
-This module exposes tools to think about frames as semilattices (their
-meet semilattices) and as posets. The poset which underlies a frame is
-given by the meet ordering of its finite meets, i.e. $x \le y$ in the
-frame $B$ iff $x = x \cap y$.
+This module exposes a large collection of reasoning combinators for
+working with frames, along with re-exporting tools for working with
+the underlying lattice.
 
 ```agda
 meets : Meet-semilattice o ℓ
@@ -39,12 +41,15 @@ meets = P , has-meet-slat
 joins : Join-semilattice o ℓ
 joins = P , has-join-slat
 
-open Order.Semilattice.Meet.Reasoning meets using (∩-idl; ∩-idr; module ∩) public
-open Order.Semilattice.Join.Reasoning joins using (∪-idl; ∪-idr; module ∪) public
-```
+lattice : Lattice o ℓ
+lattice = P , has-lattice
 
-Using this ordering, we can show that the underlying poset of a frame is
-indeed cocomplete:
+open Order.Lattice.Reasoning has-lattice using
+  (∩-idl; ∩-idr; module ∩
+  ; ∪-idl; ∪-idr; module ∪
+  ; ∩-absorbl; ∩-absorbr; ∪-absorbl; ∪-absorbr
+  ) public
+```
 
 This module also has further lemmas about the interplay between meets
 and arbitrary joins. The following result holds in any cocomplete
@@ -82,23 +87,26 @@ But this result relies on the cocontinuity of meets.
   ⋃ (λ i → F (i .fst) ∩ G (i .snd)) ∎
 ```
 
+<!--
 ```agda
 ⋃-distribr : ∀ {I} (f : I → Ob) x → ⋃ f ∩ x ≡ ⋃ λ i → f i ∩ x
 ⋃-distribr f x =
   ∩-comm
   ·· ⋃-distribl x f
   ·· ap ⋃ (funext λ _ → ∩-comm)
+```
+-->
 
--- TODO: Move this into lattice reasoning
+Meets distribute over binary joins, so every frame is a
+[[distributive lattice]].
+
+```agda
 opaque
   unfolding Lubs._∪_
-  ∪-distribl : ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
-  ∪-distribl  =
+  ∩-distribl : ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
+  ∩-distribl  =
     ⋃-distribl _ _
     ∙ ap ⋃ (funext (λ { (lift true) → refl ; (lift false) → refl }))
 
-  ∪-distribr : ∀ {x y z} → (x ∪ y) ∩ z ≡ (x ∩ z) ∪ (y ∩ z)
-  ∪-distribr =
-    ⋃-distribr _ _
-    ∙ ap ⋃ (funext (λ { (lift true) → refl ; (lift false) → refl }))
+open Distributive.from-∩ has-lattice ∩-distribl public
 ```

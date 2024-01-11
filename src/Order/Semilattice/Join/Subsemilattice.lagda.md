@@ -18,9 +18,13 @@ module Order.Semilattice.Join.Subsemilattice where
 
 # Subsets of Join Semilattices
 
+Let $P : A \to \prop$ be a predicate on a [[join semilattice]] $A$.
+If $P$ is closed under joins and the bottom element of $A$, then the
+[[subposet]] induced by $P$ is also a join semilattice.
+
 ```agda
 module _ {o ℓ} {A : Poset o ℓ} (A-slat : is-join-semilattice A) where
-  module A = Order.Semilattice.Join.Reasoning (A , A-slat)
+  module A = Order.Semilattice.Join.Reasoning A-slat
   open is-join-semilattice
   open Join
 

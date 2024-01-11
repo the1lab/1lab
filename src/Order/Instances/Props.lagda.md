@@ -47,6 +47,9 @@ Props .Poset.≤-trans g f x = f (g x)
 Props .Poset.≤-antisym = Ω-ua
 ```
 
+The poset of propositions a top and bottom element, as well as
+all meets and joins.
+
 ```agda
 Props-has-top : Top Props
 Props-has-top .Top.top = ⊤Ω

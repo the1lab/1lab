@@ -71,7 +71,7 @@ propositions], $\Omega$.
 ```agda
 Lower-sets-frame : ∀ {o ℓ} → Meet-semilattice o ℓ → Frame (o ⊔ ℓ) o
 Lower-sets-frame (P , L) = Lower-sets P , L↓-frame where
-  module L = Meet-slat (P , L)
+  module L = Meet-slat L
   module L↓ = Order.Reasoning (Lower-sets P)
 
   L↓-frame : is-frame (Lower-sets P)
@@ -119,7 +119,7 @@ semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
   module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
             (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets (B .snd)))
     where
-    module A  = Meet-slat A
+    module A  = Meet-slat (A .snd)
     module A↓ = Frm (Lower-sets-frame A .snd)
     module B  = Frm (B .snd)
     module f = is-meet-slat-hom (f .witness)
@@ -171,7 +171,7 @@ It's also free from the definition of cocompletions that the extended
 map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
-    mkcomm : ∀ x → f # x ≡ mkhom # (↓ A.po x)
+    mkcomm : ∀ x → f # x ≡ mkhom # (↓ (A .fst) x)
     mkcomm x =
       sym (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```
@@ -188,10 +188,10 @@ $\land$.
     : (S : Meet-semilattice ℓ ℓ)
     → Meet-slats.Hom S (Frm.meets (Lower-sets-frame S .snd))
   the-unit S = go where
-    module S = Meet-slat S
+    module S = Meet-slat (S .snd)
     module S↓ = Frm (Lower-sets-frame S .snd)
     go : Meet-slats.Hom S S↓.meets
-    go .hom = よₚ S.po
+    go .hom = よₚ (S .fst)
     go .witness .is-meet-slat-hom.∩-≤ x y z (p , q) = do
       z≤x ← p
       z≤y ← q
@@ -212,7 +212,7 @@ cocontinuous extensions to tie everything up:
   go .unique {A} {B} {f = f} {g} wit = ext q where
     open Mk A B f
 
-    gᵐ : Monotone (Lower-sets A.po) (B .fst)
+    gᵐ : Monotone (Lower-sets (A .fst)) (B .fst)
     gᵐ .hom x = g # x
     gᵐ .pres-≤ {x} {y} w = g .hom .pres-≤ w
 
