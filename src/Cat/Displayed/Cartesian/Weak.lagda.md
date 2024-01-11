@@ -38,7 +38,7 @@ private module Fib = FibR ℰ
 ```
 -->
 
-# Weak cartesian morphisms
+# Weak cartesian morphisms {defines="weak-cartesian-morphism weakly-cartesian-morphism weak-cartesian-map weakly-cartesian-map"}
 
 Some authors use a weaker notion of [[cartesian morphism]] when defining
 fibrations, referred to as a "weak cartesian" or "hypocartesian"

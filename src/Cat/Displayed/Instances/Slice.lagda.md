@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Cartesian.Weak
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
@@ -24,6 +25,7 @@ open Cartesian-fibration
 open Cartesian-lift
 open Displayed
 open is-cartesian
+open is-weak-cartesian
 open Functor
 open CR B
 open /-Obj
@@ -179,7 +181,7 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
 ## Cartesian maps
 
 A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
-cartesian if and only if it forms a pullback square as below:
+[[cartesian|cartesian map]] if and only if it forms a pullback square as below:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -227,6 +229,51 @@ pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
   cart .unique m' x = Slice-pathp refl $
     pb.unique (sym (m' .commute)) (ap to x)
 ```
+
+<!--
+```agda
+_ = weak-cartesian→cartesian
+```
+-->
+
+We can actually weaken the hypothesis of `cartesian→pullback`{.Agda}
+so that pullback squares also exactly characterise [[weakly cartesian morphisms]].
+While this is automatic if $\cB$ has all pullbacks (since then cartesian and
+weakly cartesian morphisms `coincide`{.Agda ident="weak-cartesian→cartesian"}),
+it is sometimes useful to have both characterisations if we do not want to
+make such an assumption.
+
+```agda
+weak-cartesian→pullback
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-weak-cartesian Slices f f'
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+
+pullback→weak-cartesian
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+  → is-weak-cartesian Slices f f'
+```
+
+<details>
+<summary>The computation is essentially the same.</summary>
+
+```agda
+weak-cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
+  pb .is-pullback.square = f' .commute
+  pb .is-pullback.universal p =
+    cart .universal (slice-hom _ p) .to
+  pb .is-pullback.p₁∘universal =
+    sym (cart .universal _ .commute) ∙ idl _
+  pb .is-pullback.p₂∘universal =
+    apd (λ _ → Slice-hom.to) (cart .commutes _)
+  pb .is-pullback.unique p q =
+    ap Slice-hom.to (cart .unique (slice-hom _ (idl _ ∙ sym p)) (Slice-pathp (idr _) q))
+
+pullback→weak-cartesian pb = cartesian→weak-cartesian _ (pullback→cartesian pb)
+```
+</details>
 
 ## As a fibration
 
