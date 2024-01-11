@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Morphism
 open import Cat.Prelude
 
 open import Data.Id.Base
@@ -47,6 +48,14 @@ Disc' : Set ℓ → Precategory ℓ ℓ
 Disc' A = Disc ∣ A ∣ h where abstract
   h : is-groupoid ∣ A ∣
   h = is-hlevel-suc 2 (A .is-tr)
+```
+
+Clearly this is a [[univalent category]]:
+
+```agda
+Disc-is-category : ∀ {A : Type ℓ} {A-grpd} → is-category (Disc A A-grpd)
+Disc-is-category .to-path is = is .to
+Disc-is-category .to-path-over is = ≅-pathp _ _ _ λ i j → is .to (i ∧ j)
 ```
 
 We can lift any function between the underlying types to a functor
