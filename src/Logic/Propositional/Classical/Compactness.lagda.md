@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Classical
 open import 1Lab.Prelude
 
 open import Data.Fin.Indexed
@@ -47,13 +48,12 @@ has-compactness =
 ```
 
 This property is quite powerful: in fact, it is *too* powerful, and implies
-weak excluded middle! The following argument is due to [Saving:2023].
+[[weak excluded middle]]! The following argument is due to [Saving:2023].
 
 ```agda
-compactness→weak-lem
-  : has-compactness
-  → ∀ (P : Prop ℓ) → ∥ ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣ ∥
-compactness→weak-lem compact P = ¬¬P∨¬P where
+compactness→wlem : has-compactness → WLEM
+compactness→wlem compact P =
+  ∥-∥-proj (disjoint-⊎-is-prop hlevel! hlevel! λ { (¬¬p , ¬p) → ¬¬p ¬p }) ∥¬¬P∨¬P∥ where
 ```
 
 Let $P$ be an arbitrary proposition (in Agda), and let $x$ be an atom
@@ -71,10 +71,11 @@ $\{ x \mid P \} \cup { \lnot x \mid \lnot P }$.
   [¬x∣¬P] ϕ = elΩ ((“¬” x ≡ ϕ) × (¬ ∣ P ∣))
 ```
 
-There are 3 possible finite subsets of $\{ x \mid P \} \cup { \lnot x \mid \lnot P }$:
-$\emptyset$, $\{ x \}$, and $\{ \lnot x \}$. All three of these are clearly
-satisfiable, but "Unfortunately, proof assistants": convincing Agda that
-those are the only 3 possible subsets involves quite a work.
+There are 3 possible finite subsets of
+$\{ x \mid P \} \cup { \lnot x \mid \lnot P }$: $\emptyset$, $\{ x \}$, and
+$\{ \lnot x \}$. All three of these are clearly satisfiable, but
+"Unfortunately, proof assistants": convincing Agda that those are the only
+3 possible subsets involves quite a work.
 
 ```agda
   finitely-consistent
@@ -188,8 +189,8 @@ Conversely, if $x$ gets assigned to false, then $\neg P$ must hold.
 If we put this all together, then we get weak excluded middle!
 
 ```agda
-  ¬¬P∨¬P : ∥ ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣ ∥
-  ¬¬P∨¬P = do
+  ∥¬¬P∨¬P∥ : ∥ ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣ ∥
+  ∥¬¬P∨¬P∥ = do
     (ρ , ρ-sat) ← compact ([x∣P] ∪ [¬x∣¬P]) finitely-consistent
     pure $
       Bool-elim (λ b → ρ 0 ≡ b → ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣)
