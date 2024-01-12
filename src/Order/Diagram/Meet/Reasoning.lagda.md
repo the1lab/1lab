@@ -44,7 +44,7 @@ open meets renaming
   public
 ```
 
-Meets are idempotent and commutative.
+The meet operation is idempotent and commutative.
 
 ```agda
 abstract
@@ -58,7 +58,7 @@ abstract
       (∩-universal _ ∩≤r ∩≤l)
 ```
 
-Furthermore, meets are associative, and thus form a [[semigroup]].
+Furthermore, it is associative, and thus forms a [[semigroup]].
 
 ```agda
   ∩-assoc : ∀ {x y z} → x ∩ (y ∩ z) ≡ (x ∩ y) ∩ z
@@ -76,7 +76,7 @@ Furthermore, meets are associative, and thus form a [[semigroup]].
   ∩-is-semigroup .associative = ∩-assoc
 ```
 
-The meet operation preserves the ordering on $P$.
+Additionally, it respects the ordering on $P$, in each variable.
 
 ```agda
   ∩≤∩
@@ -97,7 +97,8 @@ The meet operation preserves the ordering on $P$.
 ```
 -->
 
-Note that $x \cap y \equiv x$ is equivalent to $x \leq y$.
+Finally, we note that the meet operation *determines* the order on $P$,
+as witnessed by the following equivalence.
 
 ```agda
   ∩→order : ∀ {x y} → x ∩ y ≡ x → x ≤ y

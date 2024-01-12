@@ -59,23 +59,3 @@ module
       → ⋃ˢ P ≤ x
     ⋃ˢ-universal f = P.⋃-universal _ λ (i , w) → f i (out! w)
 ```
-
-Keep imagining that you have a subset $P \sube A$: Can we construct a
-meet for it? Yes! By taking the join of all possible upper bounds for
-$P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
-
-```agda
-  subset-cap : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
-  subset-cap P = ⋃ˢ λ x → elΩ (∀ a → ∣ P a ∣ → x ≤ a)
-
-  subset-cap-limiting
-    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x} → x ∈ P → subset-cap P ≤ x
-  subset-cap-limiting P x∈P =
-    ⋃ˢ-universal λ i a∈P→i≤a → out! a∈P→i≤a _ x∈P
-
-  subset-cap-universal
-    : ∀ {ℓ} (P : ⌞ F ⌟ → Prop ℓ) {x}
-    → (∀ i → i ∈ P → x ≤ i)
-    → x ≤ subset-cap P
-  subset-cap-universal P x∈P = ⋃ˢ-inj (inc x∈P)
-```

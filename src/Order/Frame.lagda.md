@@ -36,10 +36,10 @@ $$
 x \cap \bigcup_i f(i) = \bigcup_i (x \cap f(i))\text{.}
 $$
 
-In the study of frames, for simplicity, we assume propositional
-`resizing`{.Agda}: that way, it suffices for a frame $A$ to have joins
-of $\cJ$-indexed families, for $\cJ$ an arbitrary type in the same
-universe as $A$, to have joins for arbitrary subsets of $A$.
+In the study of frames, for simplicity, we assume [[propositional
+resizing]]: that way, it suffices for a frame $A$ to have joins of
+$\cJ$-indexed families, for $\cJ$ an arbitrary type in the same universe
+as $A$, to have joins for arbitrary subsets of $A$.
 
 ```agda
 record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
@@ -48,11 +48,23 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   field
     _∩_     : Ob → Ob → Ob
     ∩-meets : ∀ x y → is-meet P x y (x ∩ y)
+
     has-top : Top P
+
     ⋃       : ∀ {I : Type o} (k : I → Ob) → Ob
     ⋃-lubs  : ∀ {I : Type o} (k : I → Ob) → is-lub P k (⋃ k)
-    ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
+    ⋃-distribl : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
+```
+
+We have explicitly required that a frame be a [[meet-semilattice]], but
+it's worth explicitly pointing out that the infinitary join operation
+can also be used for more mundane purposes: By taking a join over the
+type of booleans (and over the empty type), we can show that all frames
+are also [[join-semilattices]].
+
+<!--
+```agda
   infixr 25 _∩_
 
   module is-lubs {I} {k : I → Ob} = is-lub (⋃-lubs k)
@@ -78,10 +90,7 @@ record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   has-lattice .is-lattice.∪-joins = ∪-joins
   has-lattice .is-lattice.has-top = has-top
   has-lattice .is-lattice.has-bottom = has-bottom
-```
 
-<!--
-```agda
 private variable
   o ℓ o' ℓ' : Level
   P Q R : Poset o ℓ
@@ -119,43 +128,53 @@ instance
 ```
 -->
 
-Frames are, of course, complete lattices (and thus, also Heyting
-algebras). The difference in naming comes from the morphisms with which
-frames are considered: A frame homomorphism need only preserve the
-binary meets and arbitrary joins, and it does not need to preserve
-infinitary meets (or the Heyting implication).
+Of course, a frame is not just a lattice, but a *complete* lattice.
+Since the infinite distributive law says exactly that "meet with $x$"
+preserves joins, this implies that it has a right adjoint, so frames are
+also complete [[Heyting algebras]]. Once again, the difference in naming
+reflects the morphisms we will consider these structures under: A
+**frame homomorphism** is a [[monotone map]] which preserves the finite
+meets and the infinitary joins, but not necessarily the infinitary meets
+(or the Heyting implication).
 
 <!-- [TODO: Reed M, 10/01/2024] Prove that all joins => heyting algebras + link to proof here -->
 
-In fact, all we need to require is that:
-* For every $x, y : P$, $f x \cap f y \leq f (x \cap y)$
-* $\top \leq f(\top)$
-* For every family $k : I \to P$, $f (\bigcup k) \leq \bigcup (f \circ k)$
+Since meets and joins are defined by a universal property, and we have
+assumed that homomorphisms are *a priori* monotone, it suffices to show
+the following inequalities:
+
+* For every $x, y : P$, we have $f x \cap f y \leq f (x \cap y)$;
+* $\top \leq f(\top)$;
+* and finally, for every family $k : I \to P$, we have $f (\bigcup k) \leq \bigcup (f \circ k)$
 
 ```agda
 record
   is-frame-hom
     {P : Poset o ℓ} {Q : Poset o ℓ'}
-    (f : Monotone P Q)
-    (P-frame : is-frame P)
-    (Q-frame : is-frame Q)
+    (f : Monotone P Q) (P-frame : is-frame P) (Q-frame : is-frame Q)
     : Type (lsuc o ⊔ ℓ') where
+```
 
+<!--
+```agda
   private
     module P = Poset P
     module Pᶠ = is-frame P-frame
     module Q = Order.Reasoning Q
     module Qᶠ = is-frame Q-frame
     open is-lub
+```
+-->
 
+```agda
   field
-    ∩-≤ : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
+    ∩-≤   : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
     top-≤ : Qᶠ.top Q.≤ f # Pᶠ.top
-    ⋃-≤ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
+    ⋃-≤   : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
 ```
 
-Clearly, if $f$ is a frame homomorphism, then it is also a homomorphism of
-[[meet semilattices]].
+If $f$ is a frame homomorphism, then it is also a homomorphism of [[meet
+semilattices]].
 
 ```agda
   has-meet-slat-hom : is-meet-slat-hom f Pᶠ.has-meet-slat Qᶠ.has-meet-slat
@@ -165,7 +184,8 @@ Clearly, if $f$ is a frame homomorphism, then it is also a homomorphism of
   open is-meet-slat-hom has-meet-slat-hom hiding (∩-≤; top-≤) public
 ```
 
-Furthermore, $f$ preserves all joins.
+Furthermore, we can actually show from the inequality required above
+that $f$ preserves all joins up to equality.
 
 ```agda
   pres-⋃ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) ≡ Qᶠ.⋃ (apply f ⊙ k)
@@ -186,7 +206,8 @@ Furthermore, $f$ preserves all joins.
     ub                 Q.≤∎
 ```
 
-As a corollary, $f$ is a homomorphism of [[join semilattices]].
+As a corollary, $f$ is also a homomorphism of the underlying [[*join*
+semilattices]].
 
 ```agda
   opaque
@@ -276,7 +297,7 @@ Frame : ∀ o ℓ → Type _
 Frame o ℓ = Frames.Ob {o} {ℓ}
 ```
 
-# Power frames
+## Power sets as frames
 
 A canonical source of frames are power sets: The power set of any type
 is a frame, because it is a complete lattice satisfying the infinite

@@ -69,7 +69,8 @@ We can prove a dual result for joins distributing over meets.
 ```
 -->
 
-We also have left and right absorption laws for meets and joins, resp.
+We also have *absorptive* laws for meets over joins (and joins over
+meets).
 
 ```agda
   ∩-absorbr : ∀ {x y} → (x ∪ y) ∩ x ≡ x
@@ -84,4 +85,3 @@ We also have left and right absorption laws for meets and joins, resp.
   ∪-absorbl : ∀ {x y} → x ∪ (x ∩ y) ≡ x
   ∪-absorbl = ∪-comm ∙ ∪-absorbr
 ```
-

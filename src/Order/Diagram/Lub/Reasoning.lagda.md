@@ -93,7 +93,6 @@ of the family.
   ⋃-singleton {f = f} p = ≤-antisym
     (⋃-universal _ λ i → ≤-refl' $ sym $ ap f (p .paths i))
     (⋃-inj _)
-
 ```
 
 We also provide syntax for binary joins and bottom elements.
@@ -160,8 +159,6 @@ distributive law can be extended to an equality.
   ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
 ```
 -->
-
-
 
 ## Large joins
 

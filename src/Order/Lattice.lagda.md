@@ -115,18 +115,21 @@ finite joins.
 record
   is-lattice-hom
     {P : Poset o ℓ} {Q : Poset o' ℓ'}
-    (f : Monotone P Q)
-    (S : is-lattice P)
-    (T : is-lattice Q)
-    : Type (o ⊔ ℓ')
+    (f : Monotone P Q) (S : is-lattice P) (T : is-lattice Q) : Type (o ⊔ ℓ')
   where
+```
 
+<!--
+```agda
   private
     module P = Poset P
     module Q = Order.Reasoning Q
     module S = is-lattice S
     module T = is-lattice T
+```
+-->
 
+```agda
   field
     top-≤ : T.top Q.≤ f # S.top
     bot-≤ : f # S.bot Q.≤ T.bot
