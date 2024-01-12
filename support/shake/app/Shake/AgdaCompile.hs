@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments, ScopedTypeVariables, TupleSections #-}
+{-# LANGUAGE BlockArguments, ScopedTypeVariables #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies #-}
 module Shake.AgdaCompile (agdaRules) where
 
