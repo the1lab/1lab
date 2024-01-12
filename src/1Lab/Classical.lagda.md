@@ -61,7 +61,7 @@ LEM≃DNE : LEM ≃ DNE
 LEM≃DNE = prop-ext LEM-is-prop DNE-is-prop LEM→DNE DNE→LEM
 ```
 
-## Weak excluded middle {defines="weak excluded middle"}
+## Weak excluded middle {defines="weak-excluded-middle"}
 
 The **weak law of excluded middle** (WLEM) is a slightly weaker variant
 of excluded middle that introduces an extra double negation.

@@ -17,7 +17,7 @@ open import Data.Sum
 module Data.Fin.Finite where
 ```
 
-# Finite types {defines=finite}
+# Finite types
 
 This module pieces together a couple of pre-existing constructions: In
 terms of the [[standard finite sets|standard finite set]] (which are

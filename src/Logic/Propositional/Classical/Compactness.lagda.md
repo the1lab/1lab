@@ -48,7 +48,7 @@ has-compactness =
 ```
 
 This property is quite powerful: in fact, it is *too* powerful, and implies
-[[weak excluded middle]]! The following argument is due to [Saving:2023].
+[[weak excluded middle]]! The following argument is due to [@Saving:2023].
 
 ```agda
 compactness→wlem : has-compactness → WLEM
