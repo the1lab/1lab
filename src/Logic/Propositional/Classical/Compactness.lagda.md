@@ -57,8 +57,8 @@ compactness→wlem compact P =
 ```
 
 Let $P$ be an arbitrary proposition (in Agda), and let $x$ be an atom
-of in propositional logic. Consider the set of formulae
-$\{ x \mid P \} \cup { \lnot x \mid \lnot P }$.
+of propositional logic. Consider the set of formulae
+$\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$.
 
 ```agda
   x : Proposition 1
@@ -72,8 +72,12 @@ $\{ x \mid P \} \cup { \lnot x \mid \lnot P }$.
 ```
 
 There are 3 possible finite subsets of
-$\{ x \mid P \} \cup { \lnot x \mid \lnot P }$: $\emptyset$, $\{ x \}$, and
-$\{ \lnot x \}$. All three of these are clearly satisfiable, but
+$\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$.
+* $\emptyset$
+* $\{ x \}$
+* $\{ \lnot x \}$
+
+All three of these are clearly satisfiable, but
 "Unfortunately, proof assistants": convincing Agda that those are the only
 3 possible subsets involves quite a work.
 
@@ -153,8 +157,8 @@ $\{ \lnot x \}$. All three of these are clearly satisfiable, but
 ```
 </details>
 
-Every finite subset of $\{ x \mid P \} \cup { \lnot x \mid \lnot P }$
-is satisfiable, so $\{ x \mid P \} \cup { \lnot x \mid \lnot P }$ must
+Every finite subset of $\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$
+is satisfiable, so $\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$ must
 be satisfiable by compactness. If $x$ gets assigned to true, then
 $\neg \neg P$ must hold.
 
