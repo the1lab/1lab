@@ -73,6 +73,7 @@ $\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$.
 
 There are 3 possible finite subsets of
 $\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$.
+
 * $\emptyset$
 * $\{ x \}$
 * $\{ \lnot x \}$
