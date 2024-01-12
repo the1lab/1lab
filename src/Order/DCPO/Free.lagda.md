@@ -6,9 +6,12 @@ open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
+open import Data.Partial.Properties
+open import Data.Partial.Base
 open import Data.Sum
 
 open import Order.Instances.Discrete
+open import Order.Diagram.Bottom
 open import Order.DCPO.Pointed
 open import Order.Diagram.Lub
 open import Order.Base
@@ -46,7 +49,7 @@ Furthermore, $f$ is directed, so it is merely inhabited.
 ```agda
 Disc-is-dcpo : ∀ {ℓ} {A : Set ℓ} → is-dcpo (Disc A)
 Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
-  const-inhabited-fam→lub (Disc A) disc-fam-const (dir .elt)
+  const-inhabited-fam→lub disc-fam-const (dir .elt)
   where
     disc-fam-const : ∀ i j → f i ≡ f j
     disc-fam-const i j =
@@ -64,7 +67,7 @@ Free-DCPO : ∀ {ℓ} → Functor (Sets ℓ) (DCPOs ℓ ℓ)
 Free-DCPO .F₀ = Disc-dcpo
 Free-DCPO .F₁ f =
   to-scott-directed f λ s dir x x-lub →
-  const-inhabited-fam→is-lub (Disc _)
+  const-inhabited-fam→is-lub
     (λ ix → ap f (disc-is-lub→const x-lub ix))
     (dir .elt)
 Free-DCPO .F-id = trivial!
@@ -80,7 +83,7 @@ Free-DCPO⊣Forget-DCPO .unit .η _ x = x
 Free-DCPO⊣Forget-DCPO .unit .is-natural _ _ _ = refl
 Free-DCPO⊣Forget-DCPO .counit .η D =
   to-scott-directed (λ x → x) λ s dir x x-lub → λ where
-    .is-lub.fam≤lub i → path→≤ (disc-is-lub→const x-lub i)
+    .is-lub.fam≤lub i → ≤-refl' (disc-is-lub→const x-lub i)
     .is-lub.least y le →
       ∥-∥-rec ≤-thin
         (λ i →
@@ -94,351 +97,173 @@ Free-DCPO⊣Forget-DCPO .zig = trivial!
 Free-DCPO⊣Forget-DCPO .zag = refl
 ```
 
-# Free pointed DCPOs
+# Free pointed DCPOs {defines="free-pointed-DCPO"}
 
-We construct the free [pointed DCPO] on a set $A$; IE a pointed
-DCPO $A_{\bot}$ with the property that for all pointed DCPOs $B$,
-functions $A \to B$ correspond with strictly Scott-continuous maps
-$A_{\bot} \to B$.
+The purpose of this section is to establish that the free [[pointed
+DCPO]] on a [[set]] $A$ is given by its [[partial elements]] $\zap A$.
+We have already constructed the order we will use, the [[information
+ordering]], and established some of its [basic order-theoretic
+properties], so that we immediately get a [[poset]] of partial elements:
 
-[pointed DCPO]: Order.DCPO.Pointed.html
-
-To start, we define a type of **partial elements** of $A$ as a pair
-of a proposition $\varphi$, along with a function $\varphi \to A$.
+[basic order-theoretic properties]: Data.Partial.Properties.html
 
 ```agda
-record Part {ℓ} (A : Type ℓ) : Type ℓ where
-  no-eta-equality
-  field
-    def : Ω
-    elt : ∣ def ∣ → A
-
-open Part
-```
-
-We say that a partial element $x$ is **defined** when the associated
-proposition is true, and write $x \downarrow y$ to denote that $x$
-is defined, and it's value is $y$.
-
-```agda
-is-defined : Part A → Type
-is-defined x? = ∣ x? .def ∣
-
-_↓_ : Part A → A → Type _
-x ↓ y = Σ[ d ∈ is-defined x ] (x .elt d ≡ y)
-```
-
-
-Paths between partial elements are given by bi-implications of their
-propositions, along with a path between their values, assuming that both
-elements are defined.
-
-```agda
-Part-pathp
-  : {x : Part A} {y : Part B}
-  → (p : A ≡ B)
-  → (q : x .def ≡ y .def)
-  → PathP (λ i → ∣ q i ∣ → p i) (x .elt) (y .elt)
-  → PathP (λ i → Part (p i)) x y
-Part-pathp {x = x} {y = y} p q r i .def = q i
-Part-pathp {x = x} {y = y} p q r i .elt = r i
-
-part-ext
-  : ∀ {x y : Part A}
-  → (to : is-defined x → is-defined y)
-  → (from : is-defined y → is-defined x)
-  → (∀ (x-def : is-defined x) (y-def : is-defined y) → x .elt x-def ≡ y .elt y-def)
-  → x ≡ y
-part-ext to from p =
-  Part-pathp refl
-    (Ω-ua to from)
-    (funext-dep (λ _ → p _ _))
-```
-
-<!--
-```agda
-Part-is-hlevel : ∀ {A : Type ℓ} → ∀ n → is-hlevel A (2 + n) → is-hlevel (Part A) (2 + n)
-Part-is-hlevel n hl = Iso→is-hlevel (2 + n) eqv $
-  Σ-is-hlevel (2 + n) hlevel! λ _  →
-  Π-is-hlevel (2 + n) λ _ → hl
-  where unquoteDecl eqv = declare-record-iso eqv (quote Part)
-
-Part-is-set : is-set A → is-set (Part A)
-Part-is-set = Part-is-hlevel 0
-
-```
--->
-
-We say that a partial element $y$ **refines** $x$ if $y$ is defined
-whenever $x$ is, and their values are equal whenever $x$ is defined.
-
-```agda
-record _⊑_ {ℓ} {A : Type ℓ} (x y : Part A) : Type ℓ where
-  no-eta-equality
-  field
-    implies : is-defined x → is-defined y
-    refines : (x-def : is-defined x) → (y .elt (implies x-def) ≡ x .elt x-def)
-
-open _⊑_
-```
-
-<!--
-```agda
-⊑-is-hlevel : ∀ {x y : Part A} → ∀ n → is-hlevel A (2 + n) → is-hlevel (x ⊑ y) (suc n)
-⊑-is-hlevel {x = x} {y = y} n hl = Iso→is-hlevel (suc n) eqv $
-  Σ-is-hlevel (suc n) (Π-is-hlevel (suc n) λ _ → is-prop→is-hlevel-suc (y .def .is-tr)) λ _ →
-  Π-is-hlevel (suc n) λ _ → hl _ _
-  where unquoteDecl eqv = declare-record-iso eqv (quote _⊑_)
-```
--->
-
-This ordering is reflexive, transitive, and anti-symmetric, so the type
-of partial elements forms a poset whenever $A$ is a set.
-
-```agda
-⊑-refl : ∀ {x : Part A} → x ⊑ x
-⊑-refl .implies x-def = x-def
-⊑-refl .refines _ = refl
-
-⊑-thin : ∀ {x y : Part A} → is-set A → is-prop (x ⊑ y)
-⊑-thin A-set = ⊑-is-hlevel 0 A-set
-
-⊑-trans : ∀ {x y z : Part A} → x ⊑ y → y ⊑ z → x ⊑ z
-⊑-trans p q .implies x-def = q .implies (p .implies x-def)
-⊑-trans p q .refines x-def = q .refines (p .implies x-def) ∙ p .refines x-def
-
-⊑-antisym : ∀ {x y : Part A} → x ⊑ y → y ⊑ x → x ≡ y
-⊑-antisym {x = x} {y = y} p q = part-ext (p .implies) (q .implies) λ x-def y-def →
-  ap (x .elt) (x .def .is-tr _ _) ∙ q .refines y-def
-
 Parts : (A : Set ℓ) → Poset ℓ ℓ
-Parts A .Poset.Ob = Part ∣ A ∣
-Parts A .Poset._≤_ = _⊑_
-Parts A .Poset.≤-thin = ⊑-thin (A .is-tr)
-Parts A .Poset.≤-refl = ⊑-refl
-Parts A .Poset.≤-trans = ⊑-trans
+Parts A .Poset.Ob        = ↯ ∣ A ∣
+Parts A .Poset._≤_       = _⊑_
+Parts A .Poset.≤-thin    = ⊑-thin (A .is-tr)
+Parts A .Poset.≤-refl    = ⊑-refl
+Parts A .Poset.≤-trans   = ⊑-trans
 Parts A .Poset.≤-antisym = ⊑-antisym
 ```
 
-Furthermore, the poset of partial elements has [least upper bounds] of all
-[semidirected families].
+Unfortunately, the hardest two parts of the construction remain:
 
-[least upper bounds]: Order.Diagram.Lub.html
-[semidirected families]: Order.DCPO.html
+a. We must show that $\zap A$ has [[least upper bounds]] for all
+[[semidirected families]], i.e., that it is actually a [[DCPO]];
+
+b. We must show that this construction is actually free, meaning that
+every map $A \to B$ to a pointed DCPO extends uniquely to a strictly
+Scott-continuous $\zap A \to B$.
+
+We will proceed in this order.
+
+## Directed joins of partial elements
 
 ```agda
 ⊑-lub
-  : ∀ {Ix : Type ℓ}
-  → is-set A
-  → (s : Ix → Part A)
-  → (∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k))
-  → Part A
+  : {Ix : Type ℓ} (aset : is-set A) (s : Ix → ↯ A)
+  → (semi : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k))
+  → ↯ A
 ```
 
-Let $s : I \to A$ be a semidirected family, IE: for every $i, j : I$, there
-merely exists some $k : I$ such that $s(i) \lsq s(k)$ and $s(j) \lsq s(k)$.
-The least upper bound of $s$ shall be defined whenever there merely exists
-some $i : I$ such that $s(i)$ is defined.
+Suppose that $s_i : \zap A$ is a semidirected family of partial elements
+--- which, recall, means that for each $i, j : I$, we can [[merely]]
+find $k : I$ satisfying $s_i \lsq s_k$ and $s_j \lsq s_k$. We decree
+that the join $\bigsqcup_i s_i$ is defined whenever there exists $i : I$
+such that $s_i$ is defined.
 
 ```agda
-⊑-lub {Ix = Ix} set s dir .def = elΩ (Σ[ i ∈ Ix ] is-defined (s i))
+⊑-lub {Ix = Ix} set s dir .def = elΩ (Σ[ i ∈ Ix ] ⌞ s i ⌟)
 ```
 
-Next, we need to construct an element of $A$ under the assumption that
-there exists such an $i$. The obvious move is to use the value of $s(i)$,
-though this is hindered by the fact that there only _merely_ exists an
-$i$. However, as $A$ is a set, it suffices to show that the map
-$(i , \varphi_i) \mapsto s(i)(\varphi_i)$ is constant.
+Next, we need to construct an element of $A$, under the assumption that
+there exists such an $i$. The obvious move is to use the value $s_i$
+itself. However, we only _[[merely]]_ have such an $i$, and we're not
+mapping into a proposition --- we're mapping into a [[_set_]]. But
+that's not a major impediment: we're allowed to make this choice, as
+long as we show that the function $s_{-}$ is _constant_.
 
 ```agda
 ⊑-lub {Ix = Ix} set s dir .elt =
-  □-rec-set
-    (λ pi → s (fst pi) .elt (snd pi))
-    (λ p q i →
-      is-const p q i .elt $
-      is-prop→pathp (λ i → (is-const p q i) .def .is-tr) (p .snd) (q .snd) i)
-    set
+  □-rec-set (λ (ix , def) → s ix .elt def) (λ p q i →
+    is-const p q i .elt $
+    is-prop→pathp (λ i → is-const p q i .def .is-tr) (p .snd) (q .snd) i) set
   where abstract
 ```
 
-To see this, we use the fact that $s$ is semidirected to obtain a $k$
-such that $s(i), s(j) \lsq s(k)$. We can then use the fact that $s(k)$
-refines both $s(i)$ and $s(j)$ to obtain the desired path.
+So imagine that we have two indices $i, j$ with $s_i$ and $s_j$ both
+defined. We must show that $s_i = s_j$. Since $s$ is semidirected, and
+we're showing a proposition, we may assume that there is some $s_k$
+satisfying $s_i \lsq s_k$ and $s_j \lsq s_k$. We then compute:
 
 ```agda
     is-const
-      : ∀ (p q : Σ[ i ∈ Ix ] is-defined (s i))
+      : ∀ (p q : Σ[ i ∈ Ix ] ⌞ s i ⌟)
       → s (p .fst) ≡ s (q .fst)
-    is-const (i , si) (j , sj) = ∥-∥-proj (Part-is-set set _ _) $ do
+    is-const (i , si) (j , sj) = ∥-∥-proj (↯-is-hlevel 0 set _ _) $ do
       (k , p , q) ← dir i j
       pure $ part-ext (λ _ → sj) (λ _ → si) λ si sj →
-        s i .elt si              ≡˘⟨ p .refines si ⟩
-        s k .elt (p .implies si) ≡⟨ ap (s k .elt) (s k .def .is-tr _ _) ⟩
-        s k .elt (q .implies sj) ≡⟨ q .refines sj ⟩
-        s j .elt sj              ∎
+        s i .elt _   ≡˘⟨ p .refines si ⟩
+        s k .elt _   ≡⟨ ↯-indep (s k) ⟩
+        s k .elt _   ≡⟨ q .refines sj ⟩
+        s j .elt _   ∎
 ```
 
-Next, we show that this actually defines a least upper bound. This is
-pretty straightforward, so we do not dwell on it too deeply.
+After having constructed the element, we're still left with proving that
+this is actually a least upper bound. This turns out to be pretty
+straightforward, so we present the solution without further comments:
+
+<!--
+```agda
+module
+  _ {Ix : Type ℓ} {set : is-set A} {s : Ix → ↯ A}
+    {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
+  where
+```
+-->
 
 ```agda
-⊑-lub-le
-  : ∀ {Ix : Type ℓ}
-  → {set : is-set A}
-  → {s : Ix → Part A}
-  → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
-  → ∀ i → s i ⊑ ⊑-lub set s dir
-⊑-lub-le i .implies si = inc (i , si)
-⊑-lub-le i .refines si = refl
+  ⊑-lub-le : ∀ i → s i ⊑ ⊑-lub set s dir
+  ⊑-lub-le i .implies si = inc (i , si)
+  ⊑-lub-le i .refines si = refl
 
-⊑-lub-least
-  : ∀ {Ix : Type ℓ}
-  → {set : is-set A}
-  → {s : Ix → Part A}
-  → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
-  → ∀ x → (∀ i → s i ⊑ x) → ⊑-lub set s dir ⊑ x
-⊑-lub-least {Ix = Ix} {set = set} {s = s} {dir = dir} x le .implies =
-  □-rec! λ si → le (si .fst) .implies (si .snd)
-⊑-lub-least {Ix = Ix} {set = set} {s = s} {dir = dir} x le .refines =
- □-elim (λ _ → set _ _) λ (i , si) → le i .refines si
+  ⊑-lub-least
+    : ∀ x → (∀ i → s i ⊑ x) → ⊑-lub set s dir ⊑ x
+  ⊑-lub-least x le .implies = □-rec! λ (i , si) →
+    le i .implies si
+  ⊑-lub-least x le .refines = □-elim (λ _ → set _ _) λ (i , si) →
+    le i .refines si
 ```
 
-
-Therefore, the type of partial elements forms a DCPO.
+<!--
+```agda
+open is-dcpo
+open is-lub
+open Bottom
+open Lub
+```
+-->
 
 ```agda
 Parts-is-dcpo : ∀ {A : Set ℓ} → is-dcpo (Parts A)
-Parts-is-dcpo {A = A} .is-dcpo.directed-lubs s dir .Lub.lub =
+Parts-is-dcpo {A = A} .directed-lubs s dir .lub =
   ⊑-lub (A .is-tr) s (dir .semidirected)
-Parts-is-dcpo {A = A} .is-dcpo.directed-lubs s dir .Lub.has-lub .is-lub.fam≤lub =
-  ⊑-lub-le
-Parts-is-dcpo {A = A} .is-dcpo.directed-lubs s dir .Lub.has-lub .is-lub.least =
-  ⊑-lub-least
+Parts-is-dcpo {A = A} .directed-lubs s dir .has-lub .fam≤lub = ⊑-lub-le
+Parts-is-dcpo {A = A} .directed-lubs s dir .has-lub .least = ⊑-lub-least
 
 Parts-dcpo : (A : Set ℓ) → DCPO ℓ ℓ
 Parts-dcpo A = Parts A , Parts-is-dcpo
 ```
 
-Furthermore, it forms a pointed DCPO, as it has least upper bounds of
-all semidirected families. However, we opt to explicitly construct a
-bottom for computational reasons.
+Furthermore, it's a *pointed* DCPO, since we additionally have a bottom
+element.
 
 ```agda
-never : Part A
-never .def = ⊥Ω
-
-never-⊑ : ∀ {x : Part A} → never ⊑ x
-never-⊑ .implies ()
-never-⊑ .refines ()
-
 Parts-is-pointed-dcpo : ∀ {A : Set ℓ} → is-pointed-dcpo (Parts-dcpo A)
-Parts-is-pointed-dcpo .Bottom.bot = never
-Parts-is-pointed-dcpo .Bottom.has-bottom _ = never-⊑
+Parts-is-pointed-dcpo .bot          = never
+Parts-is-pointed-dcpo .has-bottom _ = never-⊑
 
 Parts-pointed-dcpo : ∀ (A : Set ℓ) → Pointed-dcpo ℓ ℓ
 Parts-pointed-dcpo A = Parts-dcpo A , Parts-is-pointed-dcpo
 ```
 
-Next, we shall construct a functor from $\Sets$ to the category of pointed
-DCPOs that maps a set $A$ to the pointed DCPO of partial elements of $A$.
-
-```agda
-part-map : (A → B) → Part A → Part B
-part-map f x .def = x .def
-part-map f x .elt px = f (x .elt px)
-
-part-map-⊑
-  : ∀ {f : A → B} {x y : Part A}
-  → x ⊑ y → part-map f x ⊑ part-map f y
-part-map-⊑ p .implies = p .implies
-part-map-⊑ {f = f} p .refines d = ap f (p .refines d)
-
-part-map-id : ∀ (x : Part A) → part-map (λ a → a) x ≡ x
-part-map-id x =
-  part-ext (λ p → p) (λ p → p)
-    (λ _ _ → ap (x .elt) (x .def .is-tr _ _))
-
-part-map-∘
-  : ∀ (f : B → C) (g : A → B)
-  → ∀ (x : Part A) → part-map (f ⊙ g) x ≡ part-map f (part-map g x)
-part-map-∘ f g x =
-  part-ext (λ p → p) (λ p → p)
-    (λ _ _ → ap (f ⊙ g ⊙ x .elt) (x .def .is-tr _ _))
-```
-
-The mapping we just defined also preserves least upper bounds and
-bottom elements, and thus defines a functor.
+Finally, we note that the functorial action of the partiality monad
+preserves these directed joins. Since it's valued in strict
+Scott-continuous maps, this action extends to a proper functor from the
+category $\Sets$ to the category of pointed dcpos.
 
 ```agda
 part-map-lub
-  : ∀ {Ix : Type ℓ}
-  → {A : Set o} {B : Set o'}
-  → {s : Ix → Part ∣ A ∣}
+  : {Ix : Type ℓ} {A : Set o} {B : Set o'} {s : Ix → ↯ ∣ A ∣}
   → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
   → (f : ∣ A ∣ → ∣ B ∣)
   → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub (A .is-tr) s dir))
-part-map-lub f .is-lub.fam≤lub i = part-map-⊑ (⊑-lub-le i)
-part-map-lub f .is-lub.least y le .implies =
-  □-rec! λ si → le (si .fst) .implies (si .snd)
-part-map-lub {B = B} f .is-lub.least y le .refines =
-  □-elim (λ _ → B .is-tr _ _) λ si → le (si .fst) .refines (si .snd)
-
-part-map-never : ∀ {f : A → B} {x} → part-map f never ⊑ x
-part-map-never .implies ()
-part-map-never .refines ()
+part-map-lub f .fam≤lub i = part-map-⊑ (⊑-lub-le i)
+part-map-lub f .least y le .implies =
+  □-rec! λ (i , si) → le i .implies si
+part-map-lub {B = B} f .least y le .refines =
+  □-elim (λ _ → B .is-tr _ _) λ (i , si) → le i .refines si
 
 Free-Pointed-dcpo : Functor (Sets ℓ) (Pointed-DCPOs ℓ ℓ)
-Free-Pointed-dcpo .F₀ A =
-  Parts-pointed-dcpo A
-Free-Pointed-dcpo .F₁ {x = A} f =
-  to-strict-scott-bottom (part-map f)
-    (part-map-⊑)
-    (λ _ _ → part-map-lub {A = A} f)
-    (λ _ → part-map-never)
+Free-Pointed-dcpo .F₀ A = Parts-pointed-dcpo A
+Free-Pointed-dcpo .F₁ {x = A} f = to-strict-scott-bottom
+  (part-map f) (part-map-⊑)
+  (λ _ _ → part-map-lub {A = A} f)
+  (λ _ → part-map-never)
 Free-Pointed-dcpo .F-id = ext (part-map-id $_)
 Free-Pointed-dcpo .F-∘ f g = ext (part-map-∘ f g $_)
 ```
-
-Finally, we shall show that this functor is left-adjoint to the
-forgetful functor into $\Sets$. We start by constructing the unit
-of the adjunction, which takes an element $a : A$ to $\top, \lambda tt. a$.
-
-```agda
-always : A → Part A
-always a .def = ⊤Ω
-always a .elt _ = a
-
-always-inj : ∀ {x y : Type ℓ} → always x ≡ always y → x ≡ y
-always-inj {x = x} p =
-  J (λ y p → (d : is-defined y) → x ≡ y .elt d) (λ _ → refl) p tt
-```
-
-Next, we characterize refinements of `always`{.Agda}, and note that
-it is natural.
-
-```agda
-always-⊑
-  : ∀ {x : Part A} {y : A}
-  → (∀ (d : is-defined x) → x .elt d ≡ y) → x ⊑ always y
-always-⊑ p .implies _ = tt
-always-⊑ p .refines d = sym (p d)
-
-always-⊒
-  : ∀ {x : A} {y : Part A}
-  → (p : is-defined y) → x ≡ y .elt p
-  → always x ⊑ y
-always-⊒ p q .implies _ = p
-always-⊒ p q .refines _ = sym q
-
-always-natural
-  : ∀ {x : A} → (f : A → B) → part-map f (always x) ≡ always (f x)
-always-natural f = part-ext (λ _ → tt) (λ _ → tt) λ _ _ → refl
-```
-
-With that out of the way, we proceed to define the counit of the
-adjunction. Let $x$ be a partial element of a pointed DCPO $D$.
-We can define an element of $D$ that approximates $x$ by taking a
-directed join over the proposition associated with $x$.
 
 <!--
 ```agda
@@ -447,66 +272,79 @@ module _ (D : Pointed-dcpo o ℓ) where
 ```
 -->
 
+## The universal property
+
+It remains to show that this functor is actually a [[left adjoint]]. We
+have already constructed the adjunction unit: it is the map
+`always`{.Agda} which embeds $A$ into $\zap A$. We turn to defining the
+counit. Since every pointed dcpo admits joins indexed by
+[[propositions]], given a $x : \zap D$, we can define $\eta x : D$ to be
+the join
+
+$$
+\bigsqcup_{x\ \text{is defined}} x(-)\text{.}
+$$
+
 ```agda
-  part-counit : Part Ob → Ob
-  part-counit x = ⋃-prop (x .elt ⊙ Lift.lower) def-prop
-    where abstract
-      def-prop : is-prop (Lift o (is-defined x))
-      def-prop = hlevel!
+  part-counit : ↯ Ob → Ob
+  part-counit x = ⋃-prop (x .elt ⊙ Lift.lower) def-prop where abstract
+    def-prop : is-prop (Lift o ⌞ x ⌟)
+    def-prop = hlevel!
 ```
 
-If $x$ is defined, then the counit simply extracts the value of $x$.
+We can characterise the behaviour of this definition as though it were
+defined by cases: if $x$ is defined, then this simply yields its value.
+And if $x$ is undefined, then this is the bottom element.
 
 ```agda
-  part-counit-elt : (x : Part Ob) → (p : is-defined x) → part-counit x ≡ x .elt p
-  part-counit-elt x p =
-    ≤-antisym
-      (⋃-prop-least _ _ _ λ (lift p') → path→≤ (ap (x .elt) (x .def .is-tr _ _)))
-      (⋃-prop-le _ _ (lift p))
+  part-counit-elt : (x : ↯ Ob) (p : ⌞ x ⌟) → part-counit x ≡ x .elt p
+  part-counit-elt x p = ≤-antisym
+    (⋃-prop-least _ _ _ λ (lift p') → ≤-refl' (↯-indep x))
+    (⋃-prop-le _ _ (lift p))
+
+  part-counit-¬elt : (x : ↯ Ob) → (⌞ x ⌟ → ⊥) → part-counit x ≡ bottom
+  part-counit-¬elt x ¬def = ≤-antisym
+    (⋃-prop-least _ _ _ (λ p → absurd (¬def (Lift.lower p))))
+    (bottom≤x _)
 ```
 
-Furthermore, if $x$ is not defined, then the counit return the bottom element.
+The following three properties are fundamental: the counit
+
+1. preserves the information order; and
+2. preserves directed joins; and
+3. preserves the bottom element.
 
 ```agda
-  part-counit-¬elt : (x : Part Ob) → (is-defined x → ⊥) → part-counit x ≡ bottom
-  part-counit-¬elt x ¬def =
-    ≤-antisym
-      (⋃-prop-least _ _ _ (λ p → absurd (¬def (Lift.lower p))))
-      (bottom≤x _)
-```
-
-We also note that the counit preserves refinements, least upper bounds, and
-bottom elements.
-
-```agda
-  part-counit-⊑ : {x y : Part Ob} → x ⊑ y → part-counit x ≤ part-counit y
-  part-counit-⊑ {x = x} {y = y} p =
-    ⋃-prop-least _ _ (part-counit y) λ (lift i) →
-      x .elt i                       =˘⟨ p .refines i ⟩
-      y .elt (p .implies i)          ≤⟨ ⋃-prop-le _ _ (lift (p .implies i)) ⟩
-      ⋃-prop (y .elt ⊙ Lift.lower) _ ≤∎
-
+  part-counit-⊑ : ∀ {x y} → x ⊑ y → part-counit x ≤ part-counit y
   part-counit-lub
-    : {Ix : Type o}
-    → (s : Ix → Part Ob)
-    → (sdir : is-semidirected-family (Parts set) s)
+    : ∀ {Ix} s (sdir : is-semidirected-family (Parts set) {Ix} s)
     → is-lub poset (part-counit ⊙ s) (part-counit (⊑-lub (set .is-tr) s sdir))
+  part-counit-never : ∀ x → part-counit never ≤ x
+```
+
+<details>
+<summary>The proofs here are simply calculations. We leave them for the
+curious reader.</details>
+
+```agda
+  part-counit-⊑ {x = x} {y = y} p = ⋃-prop-least _ _ (part-counit y) λ (lift i) →
+    x .elt i                       =˘⟨ p .refines i ⟩
+    y .elt (p .implies i)          ≤⟨ ⋃-prop-le _ _ (lift (p .implies i)) ⟩
+    ⋃-prop (y .elt ⊙ Lift.lower) _ ≤∎
+
   part-counit-lub s sdir .is-lub.fam≤lub i =
     ⋃-prop-least _ _ _ λ (lift p) →
     ⋃-prop-le _ _ (lift (inc (i , p)))
-  part-counit-lub {Ix = Ix} s sdir .is-lub.least y le =
-    ⋃-prop-least _ _ _ $ λ (lift p) →
-    □-elim (λ p → ≤-thin {x = ⊑-lub _ s sdir .elt p}) (λ where
-      (i , si) →
-        s i .elt si ≤⟨ ⋃-prop-le _ _ (lift si) ⟩
-        ⋃-prop _ _  ≤⟨ le i ⟩
-        y           ≤∎)
-      p
+  part-counit-lub {Ix = Ix} s sdir .is-lub.least y le = ⋃-prop-least _ _ _ $
+    λ (lift p) → □-elim (λ p → ≤-thin {x = ⊑-lub _ s sdir .elt p}) (λ (i , si) →
+      s i .elt si ≤⟨ ⋃-prop-le _ _ (lift si) ⟩
+      ⋃-prop _ _  ≤⟨ le i ⟩
+      y           ≤∎) p
 
-  part-counit-never
-    : ∀ x → part-counit never ≤ x
   part-counit-never x = ⋃-prop-least _ _ x (λ ())
 ```
+
+</details>
 
 We can tie this all together to obtain the desired adjunction.
 
@@ -514,60 +352,26 @@ We can tie this all together to obtain the desired adjunction.
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo
   : ∀ {ℓ} → Free-Pointed-dcpo {ℓ} ⊣ Forget-Pointed-dcpo
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .η A x = always x
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f =
-  funext λ _ → sym (always-natural f)
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D =
-  to-strict-scott-bottom (part-counit D)
-    (part-counit-⊑ D)
-    (λ s dir → part-counit-lub D s (dir .semidirected))
-    (part-counit-never D)
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f =
-  ext λ x → sym $ Strict-scott.pres-⋃-prop f _ _ _
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
-  ext λ x →
-    part-ext
-      (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p) refl) .implies)
-      (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)
-      (λ p q →
-        sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p) refl) .refines p)
-        ∙ ap (x .elt) (x .def .is-tr _ _))
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = ext λ _ →
+  sym (always-natural f)
+
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D = to-strict-scott-bottom
+  (part-counit D)
+  (part-counit-⊑ D)
+  (λ s dir → part-counit-lub D s (dir .semidirected))
+  (part-counit-never D)
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f = ext λ x →
+  sym $ Strict-scott.pres-⋃-prop f _ _ _
+
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} = ext λ x → part-ext
+  (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p , refl)) .implies)
+  (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)
+  (λ p q →
+    sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p , refl)) .refines p)
+    ∙ ↯-indep x)
   where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
-   funext λ x →
-     sym $ lub-of-const-fam B.poset (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
-    where module B = Pointed-dcpo B
+
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} = ext λ x →
+  sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
+  where module B = Pointed-dcpo B
 ```
-
-## Monad structure
-
-The adjunction from the previous section yields a monad on the category of sets,
-but we opt to define it by hand to get better computational behaviour.
-
-```agda
-part-ap : Part (A → B) → Part A → Part B
-part-ap f x .def = el (is-defined f × is-defined x) hlevel!
-part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
-
-part-bind : Part A → (A → Part B) → Part B
-part-bind x f .def =
-  el (Σ[ px ∈ is-defined x ] is-defined (f (x .elt px))) hlevel!
-part-bind x f .elt (px , pfx) =
-  f (x .elt px) .elt pfx
-```
-
-<!--
-```agda
-instance
-  Part-Map : Map (eff Part)
-  Part-Map .Map.map = part-map
-
-  Part-Idiom : Idiom (eff Part)
-  Part-Idiom .Idiom.Map-idiom = Part-Map
-  Part-Idiom .Idiom.pure = always
-  Part-Idiom .Idiom._<*>_ = part-ap
-
-  Part-Bind : Bind (eff Part)
-  Part-Bind .Bind._>>=_ = part-bind
-  Part-Bind .Bind.Idiom-bind = Part-Idiom
-```
--->

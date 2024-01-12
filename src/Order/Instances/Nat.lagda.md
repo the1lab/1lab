@@ -8,8 +8,10 @@ open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
 
-open import Order.Diagram.Glb
-open import Order.Diagram.Lub
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
+open import Order.Diagram.Top
 open import Order.Total
 open import Order.Base
 ```

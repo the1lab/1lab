@@ -6,11 +6,19 @@ open import Cat.Diagram.Product.Indexed
 open import Cat.Morphism
 open import Cat.Prelude
 
+open import Data.Power
 open import Data.Bool
 
 open import Order.Instances.Product
+open import Order.Semilattice.Join
+open import Order.Semilattice.Meet
 open import Order.Instances.Props
-open import Order.Displayed
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
+open import Order.Diagram.Glb
+open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Univalent
 open import Order.Base
 

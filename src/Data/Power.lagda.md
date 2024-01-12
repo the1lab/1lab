@@ -79,23 +79,39 @@ minimal : ℙ X
 minimal _ = ⊥Ω
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!
+(A ∩ B) x = A x ∧Ω B x
 ```
 
 <!--
 ```agda
 _ = ∥_∥
+_ = _⊎_
 ```
 -->
 
+```agda
+singleton : X → ℙ X
+singleton x y = elΩ (x ≡ y)
+```
+
 Note that in the definition of `union`{.Agda ident=_∪_}, we must
-`truncate`{.Agda ident=∥_∥} the `coproduct`{.Agda ident=⊎}, since there
+`truncate`{.Agda ident=∥_∥} the `coproduct`{.Agda ident=_⊎_}, since there
 is nothing which guarantees that A and B are disjoint subsets.
 
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
-(A ∪ B) x = elΩ (x ∈ A ⊎ x ∈ B)
+(A ∪ B) x = A x ∨Ω B x
 
 infixr 22 _∩_
 infixr 21 _∪_
+```
+
+## Images
+
+```agda
+image-of
+  : ∀ {a b} {A : Type a} {B : Type b} {@(tactic hlevel-tactic-worker) b-set : is-set B}
+  → (f : A → B) → ℙ A → ℙ B
+∣ image-of {b-set = b-set} f s b ∣ = □ (Σ[ a ∈ _ ] ((a ∈ s) × (f a ≡ b)))
+image-of {b-set = b-set} f s b .is-tr = squash
 ```

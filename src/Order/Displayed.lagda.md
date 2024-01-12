@@ -83,25 +83,3 @@ make a new poset.
 
 open Displayed
 ```
-
-A special case of displayed posets are sub-partial orders, or, (ab)using
-categorical terminology, _full subposets_: These are (the total spaces)
-that result from attaching a proposition to the objects, and leaving the
-order relation alone.
-
-```agda
-Full-subposet'
-  : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)
-  → Displayed ℓ lzero P
-Full-subposet' P S .Ob[_] x = ∣ S x ∣
-Full-subposet' P S .Rel[_] f x y = ⊤
-Full-subposet' P S .≤-refl' = tt
-Full-subposet' P S .≤-thin' f x y = refl
-Full-subposet' P S .≤-trans' _ _ = tt
-Full-subposet' P S .≤-antisym' _ _ = is-prop→pathp (λ i → S _ .is-tr) _ _
-
-Full-subposet
-  : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)
-  → Poset (ℓₒ ⊔ ℓ) ℓᵣ
-Full-subposet P S = ∫ (Full-subposet' P S)
-```

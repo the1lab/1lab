@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Semigroups
+# Semigroups {defines=semigroup}
 
 ```agda
 record is-semigroup {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where

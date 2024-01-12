@@ -70,7 +70,7 @@ notions of "order" in mathematics:
   This poset will inherit order-theoretic structure from the logical
   structure of $\bT$: For example, if $\bT$ is expressed in a fragment
   of logic which has conjunction, then $\cL(\bT)$ will be a
-  meet-[[semilattice]]; if it also has infinitary disjunction, then its
+  [[meet-semilattice]]; if it also has infinitary disjunction, then its
   Lindenbaum-Tarski algebra is a [[frame]].
 
 - As mentioned in the opening paragraph, the notion of poset
@@ -163,7 +163,7 @@ instance
 ```
 -->
 
-## Monotone maps {defines="monotone-map monotonicity"}
+## Monotone maps {defines="monotone-map monotone-function monotonicity"}
 
 Since we are considering posets to be categories satisfying a property,
 it follows that the _category_ of posets should be a full subcategory of

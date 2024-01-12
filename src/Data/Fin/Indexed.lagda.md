@@ -65,7 +65,7 @@ of $X$.
 
 ```agda
 record Finite-cover {ℓ} (A : Type ℓ) : Type ℓ where
-  constructor cover
+  constructor covering
   field
     {cardinality} : Nat
     cover    : Fin cardinality → A
@@ -80,7 +80,7 @@ is-K-finite P = is-finitely-indexed (∫ₚ P)
 
 <!--
 ```agda
-{-# INLINE cover #-}
+{-# INLINE covering #-}
 ```
 -->
 
@@ -106,8 +106,8 @@ surjection→finite-cover
   : S ↠ T
   → Finite-cover S
   → Finite-cover T
-surjection→finite-cover (f , surj) (cover g surj') =
-  cover (f ∘ g) (∘-is-surjective surj surj')
+surjection→finite-cover (f , surj) (covering g surj') =
+  covering (f ∘ g) (∘-is-surjective surj surj')
 
 surjection→is-finitely-indexed
   : S ↠ T → is-finitely-indexed S → is-finitely-indexed T
@@ -121,7 +121,7 @@ Moreover, since any $f : [n] \equiv T$ can be weakened to a $f : [n]
 Finite→is-finitely-indexed : ⦃ _ : Finite T ⦄ → is-finitely-indexed T
 Finite→is-finitely-indexed ⦃ fin eqv ⦄ = do
   eqv ← tr-□ eqv
-  pure (cover _ (is-equiv→is-surjective (Equiv.inverse eqv .snd)))
+  pure (covering _ (is-equiv→is-surjective (Equiv.inverse eqv .snd)))
 ```
 
 ## Finitely-indexed subsets
@@ -131,7 +131,7 @@ T \to \Omega$ is finitely-indexed if its total space $\Sigma_{x : T} x
 \in P$ is. To disambiguate and keep names short, we refer to types as
 finitely-indexed, but to subsets as **K-finite**.
 
-The $K$-finite subsets of $T$ are a sub-join[[semilattice]] of the
+The $K$-finite subsets of $T$ are a sub-[[join semilattice]] of the
 [[power-set]] lattice of $T$. That is, the empty subset is $K$-finite,
 and any union is $K$-finite as well. Since the empty subset is _finite_,
 it's also $K$-finite, of course.
@@ -139,7 +139,7 @@ it's also $K$-finite, of course.
 ```agda
 opaque
   minimal-is-K-finite : is-K-finite (minimal {X = T})
-  minimal-is-K-finite = inc (cover {cardinality = 0} (λ ()) λ ())
+  minimal-is-K-finite = inc (covering {cardinality = 0} (λ ()) λ ())
 ```
 
 But the case of unions is slightly different. Unless $A$ is assumed to
@@ -165,8 +165,8 @@ not an issue here.
 ```agda
   union-is-K-finite : is-K-finite P → is-K-finite Q → is-K-finite (P ∪ Q)
   union-is-K-finite {P = P} {Q = Q} p-fin q-fin = do
-    cover {Pn} f f-surj ← p-fin
-    cover {Qn} g g-surj ← q-fin
+    covering {Pn} f f-surj ← p-fin
+    covering {Qn} g g-surj ← q-fin
 
     let
       cover' : (Fin Pn ⊎ Fin Qn) → ∫ₚ (P ∪ Q)
@@ -175,7 +175,7 @@ not an issue here.
         (inr x) → g x .fst , inc (inr (g x .snd))
 
       surj' : ∀ x → ∥ fibre cover' x ∥
-      surj' xf = □-tr (xf .snd) >>= λ where
+      surj' xf = (xf .snd) >>= λ where
         (inl p) → do
           (ix , p) ← f-surj (xf .fst , p)
           pure (inl ix , Σ-prop-path! (ap fst p))
@@ -189,7 +189,7 @@ not an issue here.
 Moreover, we have that a singleton set is $K$-finite, as well.
 
 ```agda
-  singleton-is-K-finite : is-set T → (x : T) → is-K-finite (λ y → elΩ (x ≡ y))
-  singleton-is-K-finite t-set x = inc (cover {cardinality = 1} (λ _ → x , inc refl)
+  singleton-is-K-finite : is-set T → (x : T) → is-K-finite (singleton x)
+  singleton-is-K-finite t-set x = inc (covering {cardinality = 1} (λ _ → x , inc refl)
     λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! {pa = t-set _ _} p)))
 ```
