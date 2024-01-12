@@ -64,11 +64,12 @@ LEM≃DNE = prop-ext LEM-is-prop DNE-is-prop LEM→DNE DNE→LEM
 ## Weak excluded middle {defines="weak-excluded-middle"}
 
 The **weak law of excluded middle** (WLEM) is a slightly weaker variant
-of excluded middle that introduces an extra double negation.
+of excluded middle which asserts that every proposition is either false
+or not false.
 
 ```agda
 WLEM : Type
-WLEM = ∀ (P : Ω) → ¬ ¬ ∣ P ∣ ⊎ ¬ ∣ P ∣
+WLEM = ∀ (P : Ω) → Dec (¬ ∣ P ∣)
 ```
 
 As the name suggests, the law of excluded middle implies the weak law
@@ -76,18 +77,14 @@ of excluded middle.
 
 ```agda
 LEM→WLEM : LEM → WLEM
-LEM→WLEM lem P with lem P
-... | yes p = inl λ ¬p → ¬p p
-... | no ¬p = inr ¬p
+LEM→WLEM lem P = lem (P →Ω ⊥Ω)
 ```
 
 The weak law of excluded middle is also a proposition.
 
 ```agda
 WLEM-is-prop : is-prop WLEM
-WLEM-is-prop =
-  Π-is-hlevel 1 λ P →
-  disjoint-⊎-is-prop hlevel! hlevel! λ { (¬¬p , ¬p) → ¬¬p ¬p }
+WLEM-is-prop = hlevel!
 ```
 
 ## The axiom of choice {defines="axiom-of-choice"}

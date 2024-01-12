@@ -6,6 +6,7 @@ open import 1Lab.Prelude
 open import Data.Fin.Indexed
 open import Data.Power
 open import Data.Bool
+open import Data.Dec
 open import Data.Fin
 open import Data.Nat
 open import Data.Sum
@@ -52,8 +53,7 @@ This property is quite powerful: in fact, it is *too* powerful, and implies
 
 ```agda
 compactness→wlem : has-compactness → WLEM
-compactness→wlem compact P =
-  ∥-∥-proj (disjoint-⊎-is-prop hlevel! hlevel! λ { (¬¬p , ¬p) → ¬¬p ¬p }) ∥¬¬P∨¬P∥ where
+compactness→wlem compact P = ¬P∨¬¬P where
 ```
 
 Let $P$ be an arbitrary proposition (in Agda), and let $x$ be an atom
@@ -191,15 +191,15 @@ Conversely, if $x$ gets assigned to false, then $\neg P$ must hold.
     not (⟦ x ⟧ ρ) ∎
 ```
 
-If we put this all together, then we get weak excluded middle!
+If we put this all together, then we can decide $\neg P$!
 
 ```agda
-  ∥¬¬P∨¬P∥ : ∥ ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣ ∥
-  ∥¬¬P∨¬P∥ = do
+  ¬P∨¬¬P : Dec (¬ ∣ P ∣)
+  ¬P∨¬¬P = ∥-∥-proj! do
     (ρ , ρ-sat) ← compact ([x∣P] ∪ [¬x∣¬P]) finitely-consistent
     pure $
-      Bool-elim (λ b → ρ 0 ≡ b → ¬ (¬ ∣ P ∣) ⊎ ¬ ∣ P ∣)
-        (λ x-true → inl (x-true→¬¬P ρ ρ-sat x-true))
-        (λ x-false → inr (x-false→¬P ρ ρ-sat x-false))
+      Bool-elim (λ b → ρ 0 ≡ b → Dec (¬ ∣ P ∣))
+        (λ x-true → no (x-true→¬¬P ρ ρ-sat x-true))
+        (λ x-false → yes (x-false→¬P ρ ρ-sat x-false))
         (ρ 0) refl
 ```
