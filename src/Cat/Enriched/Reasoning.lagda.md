@@ -34,6 +34,10 @@ private variable
 
 # Reasoning for Enriched Categories
 
+This module contains enriched versions of the [category reasoning combinators].
+
+[category reasoning combinators]: Cat.Reasoning.html
+
 ## Identity Morphisms
 
 ```agda

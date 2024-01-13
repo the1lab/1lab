@@ -16,6 +16,13 @@ module Cat.Instances.EnrichedFunctor
   where
 ```
 
+# Enriched functor precategories
+
+Let $\cV$ be a [[monoidal category]], and fix a pair of
+$\cV$-[[enriched categories]] $\cC$ and $\cD$. The collection of
+$\cV$-[[enriched functors]] can be formed into a category whose morphisms
+are $\cV$-[[enriched natural transformations]].
+
 <!--
 ```agda
 open Monoidal-category V-monoidal
@@ -32,6 +39,11 @@ private
 ```
 -->
 
+First, we need to prove some basic facts about enriched natural
+transformations. Let $F : \cC \to \cD$ be a $\cV$-enriched functor.
+We can construct the identity enriched natural transformation $F \to F$
+by taking every component to be the identity morphism in $\cC$.
+
 ```agda
 idntv : ∀ {F : Enriched-functor C D} → F =>v F
 idntv {D = D} {F = F} = nat
@@ -42,9 +54,11 @@ idntv {D = D} {F = F} = nat
   nat .ηv Γ x = D.idv
   nat .is-naturalv f = D.id-comm-symv
   nat .ηv-natural σ = D.idv-natural σ
+```
 
-{-# DISPLAY idntv.nat = idntv #-}
+Likewise, enriched natural transformations can be composed vertically.
 
+```agda
 _∘ntv_ : ∀ {F G H : Enriched-functor C D} → G =>v H → F =>v G → F =>v H
 _∘ntv_ {D = D} {F} {G} {H} α β = nat
   module ∘ntv where
@@ -62,6 +76,16 @@ _∘ntv_ {D = D} {F} {G} {H} α β = nat
     ((σ ◀ _) V.∘ α .ηv _ _) D.∘v β .ηv _ _ ≡˘⟨ D.∘v-naturall σ (α .ηv _ _) (β .ηv _ _) ⟩
     (σ ◀ _) V.∘ (α .ηv _ _ D.∘v β .ηv _ _) ∎
 ```
+
+<!--
+```agda
+{-# DISPLAY idntv.nat = idntv #-}
+{-# DISPLAY ∘ntv.nat = _∘ntv_ #-}
+```
+-->
+
+This gives us enough structure to form the category of $[\cC,\cD]$ of
+$\cV$-enriched functors.
 
 ```agda
 module _

@@ -37,13 +37,37 @@ open Enriched-functor
 
 # The bicategory of V-enriched categories
 
+Let $\cV$ be a [[monoidal category]]. $\cV$-[[enriched categories]],
+$\cV$-[[enriched functors]] and $\cV$-[[enriched natural transformations]]
+assemble into a [[bicategory]].
+
 ```agda
 Enriched-cats : ∀ o → Prebicategory (ov ⊔ ℓv ⊔ lsuc o) (ov ⊔ ℓv ⊔ o) (ov ⊔ ℓv ⊔ o ⊔ o)
 Enriched-cats o = vcats where
   open make-natural-iso
+```
 
+Unfortunately, the unitors and associators are not quite in the form
+we require, so some repackaging is required.
+
+```agda
   ƛ : ∀ {A B : Enriched-precategory V-monoidal o}
     → Id ≅ⁿ (Right (Fv∘-functor A B B) Idv)
+
+  ρ : ∀ {A B : Enriched-precategory V-monoidal o}
+    → Id ≅ⁿ (Left (Fv∘-functor A A B) Idv)
+
+  α : ∀ {A B C D : Enriched-precategory V-monoidal o}
+    → _≅ⁿ_ {C = VCat[ C , D ] ×ᶜ VCat[ B , C ] ×ᶜ VCat[ A , B ]}
+        (compose-assocˡ (λ {A} {B} {C} → Fv∘-functor A B C))
+        (compose-assocʳ (λ {A} {B} {C} → Fv∘-functor A B C))
+```
+
+<details>
+<summary>However, we omit the (tedious) details of the repackaging.
+</summary>
+
+```agda
   ƛ {B = B} = to-natural-iso ni where
     open Cat.Enriched.Reasoning B
     ni : make-natural-iso _ _
@@ -62,8 +86,6 @@ Enriched-cats o = vcats where
     ni .natural F G α = Enriched-nat-path λ Γ x →
       idrv _ ∙ id-commv
 
-  ρ : ∀ {A B : Enriched-precategory V-monoidal o}
-    → Id ≅ⁿ (Left (Fv∘-functor A A B) Idv)
   ρ {B = B} = to-natural-iso ni where
     open Cat.Enriched.Reasoning B
     ni : make-natural-iso _ _
@@ -82,10 +104,6 @@ Enriched-cats o = vcats where
     ni .natural F G α = Enriched-nat-path λ Γ x →
       idrv _ ∙ ap (_∘v _) (G .Fv-id)
 
-  α : ∀ {A B C D : Enriched-precategory V-monoidal o}
-    → _≅ⁿ_ {C = VCat[ C , D ] ×ᶜ VCat[ B , C ] ×ᶜ VCat[ A , B ]}
-        (compose-assocˡ (λ {A} {B} {C} → Fv∘-functor A B C))
-        (compose-assocʳ (λ {A} {B} {C} → Fv∘-functor A B C))
   α {D = D} = to-natural-iso ni where
     open Cat.Enriched.Reasoning D
     ni : make-natural-iso _ _
@@ -103,7 +121,12 @@ Enriched-cats o = vcats where
     ni .inv∘eta F = Enriched-nat-path λ Γ x → idlv _
     ni .natural (F , G , H) (J , K , L) α = Enriched-nat-path λ Γ x →
       idrv _ ·· pushlv (J .Fv-∘ _ _) ·· sym (idlv _)
+```
+</details>
 
+Luckily, the rest of the construction is straightforward.
+
+```agda
   vcats : Prebicategory _ _ _
   vcats .Ob = Enriched-precategory V-monoidal o
   vcats .Hom C D = VCat[ C , D ]

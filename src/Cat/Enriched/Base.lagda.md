@@ -14,7 +14,7 @@ import Cat.Monoidal.Reasoning
 module Cat.Enriched.Base where
 ```
 
-# Enriched Categories
+# Enriched Categories {defines="enriched-category enriched-categories"}
 
 One of the most useful tools of category theory is the notion of
 **internal language**, which allows us to interpret definitions and
@@ -282,7 +282,7 @@ common situation where categories don't just have hom-sets, but rather
 generalize this situation, you arrive at the category-theorists
 definition of enriched category that was presented earlier.
 
-## Enriched Functors
+## Enriched Functors {defines="enriched-functor"}
 
 Let $(\cV, I, \otimes)$ be a monoidal category, and $\cC$, $\cD$ be
 $\cV$-enriched categories. An **$\cV$-enriched functor**
@@ -384,7 +384,7 @@ functors can be composed.
   infixr 30 _Fv∘_
 ```
 
-## Enriched Natural Transformations
+## Enriched Natural Transformations {defines="enriched-natural-transformation"}
 
 We also have a notion of natural transformation between enriched functors, known
 as an **enriched natural transformation**. This follows our normal recipe for
