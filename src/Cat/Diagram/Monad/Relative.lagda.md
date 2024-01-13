@@ -27,13 +27,13 @@ $T$ with $A$-many variables, the unit constructs a term from a variable,
 and the join performs substitution. If we wish to give a more refined
 treatment of variables^[for instance, if a term can only have finitely
 many variables], then we immediately run into an issue: $T$ can no
-longer an endofunctor $\Sets \to \Sets$, and restricting $T$ to
+longer be an endofunctor $\Sets \to \Sets$, and restricting $T$ to
 $\FinSets \to \FinSets$ is also out of the question, as the collection
 of syntax trees will not be finite.
 
 If we wish to capture such situations, then we will need to generalize
 the notion of monad. The fundamental problem with doing so is that we
-cannot iterate a functor $M : \cJ \to \cC$, so themost natural starting
+cannot iterate a functor $M : \cJ \to \cC$, so the most natural starting
 point are [[extension systems]], which replace the join of a monad with
 an extension operation $(-)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
 This lets us avoid any iteration in the first place, which lets the
@@ -92,7 +92,7 @@ $\eta \circ f$.
 ```
 
 Furthermore, the latter two equations ensure naturality of the unit and
-extension, resp.
+extension, respectively.
 
 ```agda
     unit-natural

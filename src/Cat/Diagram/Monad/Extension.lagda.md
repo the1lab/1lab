@@ -52,11 +52,11 @@ of the extension system
 Note that we do not require the mapping of objects to be functorial, nor
 the do we require the unit to be natural.
 
-We impose 3 additional equations atop this structure[^contrast this with
+We impose 3 additional equations atop this structure^[contrast this with
 the 7 equations required for a monad: 2 for functoriality, 2 for naturality,
 and 3 for unitality/associativity]:
 
-1. For every $X : \cC$, $(\eta_X)^M = id_{M(X)}$
+1. For every $X : \cC$, $(\eta_X)^M = \id{M(X)}$
 2. For every $f : \cC(X, M(Y))$, $f^M \circ \eta_X = f$
 3. For every $f : \cC(Y, M(X))$ and $g : \cC(X, M(Y))$, $f^M \circ g^M = (f^M \circ g)^M$
 
@@ -76,7 +76,7 @@ module Extension-system {o ℓ} {C : Precategory o ℓ} (E : Extension-system C)
 
 
 We can recover the join of the monad by extending the identity morphism
-$id_{M(X)} : \cC(M(X), M(X))$.
+$\id{M(X)} : \cC(M(X), M(X))$.
 
 ```agda
   join : ∀ {x} → Hom (M₀ (M₀ x)) (M₀ x)
@@ -187,7 +187,7 @@ The monad laws follow from another short series of computations.
 
 Moreover, these two functions constitute an equivalence between monads and
 extension systems. In light of this fact, we will silently identify monads
-and extension algebras whenever it is convenient.
+and extension systems whenever it is convenient.
 
 ```agda
   Monad≃Extension-system : Monad C ≃ Extension-system C
@@ -318,7 +318,7 @@ that we shall omit.
 
 Conversely, a monad algebra over $E$ can be derived from an extension
 algebra $\nu : \cC(A, X) \to \cC(M(A), X)$ over $E$ by restricting to
-$\nu(id_{X}) : \cC(M(X), X)$.
+$\nu(\id{X}) : \cC(M(X), X)$.
 
 ```agda
   Extension-algebra-on→Algebra-on
