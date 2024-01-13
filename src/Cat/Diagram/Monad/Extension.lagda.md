@@ -1,8 +1,7 @@
 <!--
 ```agda
-open import 1Lab.Path.Cartesian
-
 open import Cat.Diagram.Monad
+open import Cat.Diagram.Monad.Relative
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -19,7 +18,6 @@ module Cat.Diagram.Monad.Extension where
 <!--
 ```
 module _ {o ℓ} (C : Precategory o ℓ) where
-  open Cat.Reasoning C
 ```
 -->
 
@@ -38,7 +36,8 @@ enough data to implement both the join of a monad *and* the functorial
 action, which reduces the amount of data required.
 3. It is not immediately clear how to generalize monads beyond endofunctors.
 In constrast, extension systems can be readily generalized to
-[[relative extension systems]].
+[[relative extension systems]]. [^ In fact, we will *define* extension systems
+as a special case of relative extension systems!].
 
 With that bit of motivation out of the way, we shall proceed to define
 extension systems. An extension system consists of:
@@ -53,15 +52,6 @@ of the extension system
 Note that we do not require the mapping of objects to be functorial, nor
 the do we require the unit to be natural.
 
-```agda
-  record Extension-system : Type (o ⊔ ℓ) where
-    no-eta-equality
-    field
-      M₀ : Ob → Ob
-      unit : ∀ {x} → Hom x (M₀ x)
-      bind : ∀ {x y} → Hom x (M₀ y) → Hom (M₀ x) (M₀ y)
-```
-
 We impose 3 additional equations atop this structure[^contrast this with
 the 7 equations required for a monad: 2 for functoriality, 2 for naturality,
 and 3 for unitality/associativity]:
@@ -70,147 +60,41 @@ and 3 for unitality/associativity]:
 2. For every $f : \cC(X, M(Y))$, $f^M \circ \eta_X = f$
 3. For every $f : \cC(Y, M(X))$ and $g : \cC(X, M(Y))$, $f^M \circ g^M = (f^M \circ g)^M$
 
+For reasons of generality, we shall define extension systems as
+[[relative extension systems]] along the identity functor.
+Even though we use a more general definition, the data contained in
+an extension system is precisely the data listed above.
+
 ```agda
-      bind-unit-id : ∀ {x} → bind (unit {x}) ≡ id
-      bind-unit-∘ : ∀ {x y} → (f : Hom x (M₀ y)) → bind f ∘ unit ≡ f
-      bind-∘
-        : ∀ {x y z}
-        → (f : Hom y (M₀ z)) (g : Hom x (M₀ y))
-        → bind f ∘ bind g ≡ bind (bind f ∘ g)
+Extension-system : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)
+Extension-system C = Relative-extension-system (Id {C = C})
+
+module Extension-system {o ℓ} {C : Precategory o ℓ} (E : Extension-system C) where
+  open Cat.Reasoning C
+  open Relative-extension-system E public
 ```
+
 
 We can recover the join of the monad by extending the identity morphism
 $id_{M(X)} : \cC(M(X), M(X))$.
 
 ```agda
-    join : ∀ {x} → Hom (M₀ (M₀ x)) (M₀ x)
-    join {x} = bind (id {M₀ x})
-```
-
-Furthermore, we can recover the functorial action of $M$ on $f : \cC(X,Y)$
-by extending $\eta_{Y} \circ f : \cC(X, M(Y))$.
-
-```agda
-    M₁ : ∀ {x y} → Hom x y → Hom (M₀ x) (M₀ y)
-    M₁ f = bind (unit ∘ f)
-```
-
-The extension system equations are strong enough to ensure functoriality.
-In fact, the first equation **precisely** states that $M(id) = id$.
-
-```agda
-    M-id : ∀ {x} → M₁ (id {x}) ≡ id
-    M-id =
-      bind (unit ∘ id) ≡⟨ ap bind (idr _) ⟩
-      bind unit        ≡⟨ bind-unit-id ⟩
-      id               ∎
-```
-
-However, the second functoriality condition is less enlightening.
-
-```agda
-    M-∘ : ∀ {x y z} (f : Hom y z) (g : Hom x y) → M₁ (f ∘ g) ≡ M₁ f ∘ M₁ g
-    M-∘ f g =
-      bind (unit ∘ f ∘ g)                 ≡⟨ ap bind (extendl (sym (bind-unit-∘ (unit ∘ f)))) ⟩
-      bind (bind (unit ∘ f) ∘ unit ∘ g)   ≡˘⟨ bind-∘ (unit ∘ f) (unit ∘ g) ⟩
-      (bind (unit ∘ f) ∘ bind (unit ∘ g)) ∎
-```
-
-<!--
-```agda
-    M : Functor C C
-    M .F₀ = M₀
-    M .F₁ = M₁
-    M .F-id = M-id
-    M .F-∘ = M-∘
-```
--->
-
-Now that we have a functor, we can start to decipher the meaning of
-the latter two equations. The second equation directly gives us naturality
-of the unit, and the third gives us naturality of extension.
-
-```agda
-    unit-natural
-      : ∀ {x y} (f : Hom x y)
-      → unit ∘ f ≡ M₁ f ∘ unit
-    unit-natural f =
-      unit ∘ f               ≡˘⟨ bind-unit-∘ (unit ∘ f) ⟩
-      bind (unit ∘ f) ∘ unit ∎
-
-    bind-natural
-      : ∀ {x y z} (f : Hom y z) (g : Hom x (M₀ y))
-      → M₁ f ∘ bind g ≡ bind (M₁ f ∘ g)
-    bind-natural f g =
-      bind (unit ∘ f) ∘ bind g ≡⟨ bind-∘ (unit ∘ f) g ⟩
-      bind (M₁ f ∘ g)          ∎
+  join : ∀ {x} → Hom (M₀ (M₀ x)) (M₀ x)
+  join {x} = bind (id {M₀ x})
 ```
 
 Naturality of join also follows, though is a bit more involved.
 
 ```agda
-    join-natural
-      : ∀ {x y} (f : Hom x y)
-      → join ∘ M₁ (M₁ f) ≡ M₁ f ∘ join
-    join-natural f =
-      bind id ∘ bind (unit ∘ bind (unit ∘ f)) ≡⟨ bind-∘ id (unit ∘ bind (unit ∘ f)) ⟩
-      bind (bind id ∘ unit ∘ bind (unit ∘ f)) ≡⟨ ap bind (cancell (bind-unit-∘ id) ∙ sym (idr _)) ⟩
-      bind (bind (unit ∘ f) ∘ id)             ≡˘⟨ bind-∘ (unit ∘ f) id ⟩
-      bind (unit ∘ f) ∘ bind id               ∎
+  join-natural
+    : ∀ {x y} (f : Hom x y)
+    → join ∘ M₁ (M₁ f) ≡ M₁ f ∘ join
+  join-natural f =
+    bind id ∘ bind (unit ∘ bind (unit ∘ f)) ≡⟨ bind-∘ id (unit ∘ bind (unit ∘ f)) ⟩
+    bind (bind id ∘ unit ∘ bind (unit ∘ f)) ≡⟨ ap bind (cancell (bind-unit-∘ id) ∙ sym (idr _)) ⟩
+    bind (bind (unit ∘ f) ∘ id)             ≡˘⟨ bind-∘ (unit ∘ f) id ⟩
+    bind (unit ∘ f) ∘ bind id               ∎
 ```
-
-<!--
-```agda
-module _ {o ℓ} {C : Precategory o ℓ} {E E' : Extension-system C} where
-  open Cat.Reasoning C
-  private
-    module E = Extension-system E
-    module E' = Extension-system E'
-    open Extension-system
-
-  Extension-system-path
-    : (p0 : ∀ x → E.M₀ x ≡ E'.M₀ x)
-    → (∀ x → PathP (λ i → Hom x (p0 x i)) E.unit E'.unit)
-    → (∀ {x y} (f : ∀ i → Hom x (p0 y i)) → PathP (λ i → Hom (p0 x i) (p0 y i)) (E.bind (f i0)) (E'.bind (f i1)))
-    → E ≡ E'
-  Extension-system-path p0 punit pbind = sys where
-    coe-pbind
-      : ∀ i
-      → {x y : Ob}
-      → (f : Hom x (p0 y i))
-      → Hom (p0 x i) (p0 y i)
-    coe-pbind i {x} {y} f = pbind (λ j → coe (λ i → Hom x (p0 y i)) i j f) i
-
-    sys : E ≡ E'
-    sys i .M₀ x = p0 x i
-    sys i .unit {x} = punit x i
-    sys i .bind f = coe-pbind i f
-    sys i .bind-unit-id {x} =
-      is-prop→pathp (λ i → Hom-set (p0 x i) (p0 x i) (coe-pbind i (punit x i)) id)
-        E.bind-unit-id
-        E'.bind-unit-id i
-    sys i .bind-unit-∘ {x} {y} f =
-      hcomp (∂ i) λ where
-        j (i = i0) → Hom-set _ _ _ _ base (E.bind-unit-∘ f) j
-        j (i = i1) → Hom-set _ _ _ _ base (E'.bind-unit-∘ f) j
-        j (j = i0) → base
-      where
-        base =
-          coe0→i (λ i → (f : Hom x (p0 y i)) → coe-pbind i f ∘ punit x i ≡ f)
-            i
-            (λ f → E.bind-unit-∘ {x} {y} f) f
-    sys i .bind-∘ {x} {y} {z} f g =
-      hcomp (∂ i) λ where
-        j (i = i0) → Hom-set _ _ _ _ base (E.bind-∘ f g) j
-        j (i = i1) → Hom-set _ _ _ _ base (E'.bind-∘ f g) j
-        j (j = i0) → base
-      where
-        base =
-          coe0→i (λ i → (f : Hom y (p0 z i)) (g : Hom x (p0 y i)) → coe-pbind i f ∘ coe-pbind i g ≡ coe-pbind i (coe-pbind i f ∘ g))
-            i
-            (λ f g → E.bind-∘ {x} {y} f g) f g
-```
--->
 
 ## Equivalence with monads
 
@@ -312,7 +196,7 @@ and extension algebras whenever it is convenient.
     iso Extension-system→Monad
       (λ E →
         let module E = Extension-system E in
-        Extension-system-path
+        Relative-extension-system-path
           (λ _ → refl)
           (λ _ → refl)
           (λ f →
@@ -341,43 +225,46 @@ $\nu : \cC(A, X) \to \cC(M(A), X)$. Intuitively, this operation
 lets us "evaluate" any $M$, so long as the codomain of the evaluation
 is $X$.
 
-<!--
-```agda
-module _ {o ℓ} (C : Precategory o ℓ)  where
-  open Cat.Reasoning C
-```
--->
-
-```agda
-  record Extension-algebra-on (E : Extension-system C) (x : Ob) : Type (o ⊔ ℓ) where
-    no-eta-equality
-    open Extension-system E
-    field
-      ν : ∀ {a} (f : Hom a x) → Hom (M₀ a) x
-```
-
 This operation must satisfy a pair of equations:
 
 1. For every $f : \cC(A, X)$, $\nu(f) \circ \eta_{A} = f$
-2. For every $f : \cC(B, X)$ and $g : \cC(A, M(b))$, $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
+2. For every $f : \cC(B, X)$ and $g : \cC(A, M(B))$, $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
+
+As with extension systems, we define extension algebras in terms of
+[[relative extension algebras]].
 
 ```agda
-      ν-unit : ∀ {a} (f : Hom a x) → ν f ∘ unit ≡ f
-      ν-bind : ∀ {a b} (f : Hom b x) (g : Hom a (M₀ b)) → ν f ∘ bind g ≡ ν (ν f ∘ g)
+Extension-algebra-on
+  : ∀ {o ℓ} {C : Precategory o ℓ}
+  → (open Precategory C)
+  → Extension-system C
+  → Ob
+  → Type (o ⊔ ℓ)
+Extension-algebra-on = Relative-algebra-on
+
+module Extension-algebra-on
+  {o ℓ} {C : Precategory o ℓ}
+  (open Cat.Reasoning C)
+  {E : Extension-system C}
+  {x : Ob}
+  (α : Extension-algebra-on E x)
+  where
+  open Extension-system E
+  open Relative-algebra-on α public
 ```
 
-From these, we can deduce a sort of naturality principle for $\nu$:
+The evaluation map also interacts well with join.
 
 ```agda
-    ν-natural
-      : ∀ {a b} (f : Hom b x) (g : Hom a b)
-      → ν f ∘ M₁ g ≡ ν (f ∘ g)
-    ν-natural f g =
-      ν f ∘ bind (unit ∘ g) ≡⟨ ν-bind f (unit ∘ g) ⟩
-      ν (ν f ∘ unit ∘ g)    ≡⟨ ap ν (pulll (ν-unit f)) ⟩
-      ν (f ∘ g)  ∎
-
+  ν-join : ∀ {a} (f : Hom a x) → ν f ∘ join ≡ ν (ν f)
+  ν-join f =
+    ν f ∘ bind id ≡⟨ ν-bind f id ⟩
+    ν (ν f ∘ id)  ≡⟨ ap ν (idr _) ⟩
+    ν (ν f)       ∎
 ```
+
+
+## Equivalence with monad algebras
 
 <!--
 ```agda
@@ -387,46 +274,6 @@ module _ {o ℓ} {C : Precategory o ℓ} {E : Extension-system C} where
   open Extension-algebra-on
 ```
 -->
-
-<!--
-```agda
-  Extension-algebra-on-pathp
-    : ∀ {x y}
-    → (p : x ≡ y)
-    → {α : Extension-algebra-on C E x} {β : Extension-algebra-on C E y}
-    → (∀ {a} → (f : ∀ i → Hom a (p i)) → PathP (λ i → Hom (M₀ a) (p i)) (α .ν (f i0)) (β .ν (f i1)))
-    → PathP (λ i → Extension-algebra-on C E (p i)) α β
-  Extension-algebra-on-pathp {x} {y} p {α} {β} pν = sys where
-    coe-ν : ∀ i → {a : Ob} → (f : Hom a (p i)) → Hom (M₀ a) (p i)
-    coe-ν i {a} f = pν (λ j → coe (λ i → Hom a (p i)) i j f) i
-
-    sys : PathP (λ i → Extension-algebra-on C E (p i)) α β
-    sys i .ν f = coe-ν i f
-    sys i .ν-unit {a} f =
-      hcomp (∂ i) λ where
-        j (i = i0) → Hom-set _ _ _ _ base (α .ν-unit f) j
-        j (i = i1) → Hom-set _ _ _ _ base (β .ν-unit f) j
-        j (j = i0) → base
-      where
-        base =
-          coe0→i (λ i → (f : Hom a (p i)) → coe-ν i f ∘ unit ≡ f)
-            i
-            (α .ν-unit) f
-    sys i .ν-bind {a} {b} f g =
-      hcomp (∂ i) λ where
-        j (i = i0) → Hom-set _ _ _ _ base (α .ν-bind f g) j
-        j (i = i1) → Hom-set _ _ _ _ base (β .ν-bind f g) j
-        j (j = i0) → base
-      where
-        base =
-          coe0→i (λ i → (f : Hom b (p i)) → coe-ν i f ∘ bind g ≡ coe-ν i (coe-ν i f ∘ g))
-            i
-            (λ f → α .ν-bind f g) f
-```
--->
-
-
-## Equivalence with monad algebras
 
 As the name suggests, extension algebras over $E$ are equivalent to
 monad algebras over the canonical monad associated with $E$.
@@ -439,12 +286,12 @@ $f : \cC(A, X)$ to $\alpha \circ M(f)$.
   Algebra-on→Extension-algebra-on
     : ∀ {x}
     → Algebra-on C (Extension-system→Monad E) x
-    → Extension-algebra-on C E x
+    → Extension-algebra-on E x
   Algebra-on→Extension-algebra-on {x = x} α = ext-alg where
     module α = Algebra-on α
     open Extension-algebra-on
 
-    ext-alg : Extension-algebra-on C E x
+    ext-alg : Extension-algebra-on E x
     ext-alg .ν f = α.ν ∘ M₁ f
 ```
 
@@ -476,7 +323,7 @@ $\nu(id_{X}) : \cC(M(X), X)$.
 ```agda
   Extension-algebra-on→Algebra-on
     : ∀ {x}
-    → Extension-algebra-on C E x
+    → Extension-algebra-on E x
     → Algebra-on C (Extension-system→Monad E) x
   Extension-algebra-on→Algebra-on {x = x} α = alg where
     module α = Extension-algebra-on α
@@ -492,8 +339,8 @@ The proofs of the monad algebra laws are mercifully short.
     alg .ν-unit = α.ν-unit id
     alg .ν-mult =
       α.ν id ∘ M₁ (α.ν id) ≡⟨ α.ν-natural _ _ ⟩
-      α.ν (id ∘ α.ν id)    ≡⟨ ap α.ν id-comm-sym ⟩
-      α.ν (α.ν id ∘ id)    ≡˘⟨ α.ν-bind id id ⟩
+      α.ν (id ∘ α.ν id)    ≡⟨ ap α.ν (idl _) ⟩
+      α.ν (α.ν id)         ≡˘⟨ α.ν-join id ⟩
       α.ν id ∘ join ∎
 ```
 
@@ -503,13 +350,13 @@ algebras and extension algebras.
 ```agda
   Algebra-on≃Extension-algebra-on
     : ∀ {x}
-    → Algebra-on C (Extension-system→Monad E) x ≃ Extension-algebra-on C E x
+    → Algebra-on C (Extension-system→Monad E) x ≃ Extension-algebra-on E x
   Algebra-on≃Extension-algebra-on {x} = Iso→Equiv $
     Algebra-on→Extension-algebra-on ,
     iso Extension-algebra-on→Algebra-on
       (λ α →
         let module α = Extension-algebra-on α in
-        Extension-algebra-on-pathp refl λ f →
+        Relative-algebra-on-pathp refl λ f →
           α.ν id ∘ M₁ (f i0) ≡⟨ α.ν-natural _ _ ⟩
           α.ν (id ∘ f i0)    ≡⟨ ap α.ν (idl _) ⟩
           α.ν (f i0)         ≡⟨ ap α.ν (coe0→1 (λ i → f i0 ≡ f i) refl) ⟩
