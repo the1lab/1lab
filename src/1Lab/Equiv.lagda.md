@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Path.Groupoid
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -620,6 +621,9 @@ To make composing equivalences more intuitive, we implement operators to
 do equivalence reasoning in the same style as equational reasoning.
 
 ```agda
+id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
+id≃ = id , id-equiv
+
 _∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
 
@@ -700,7 +704,7 @@ _≃⟨⟩_ : ∀ {ℓ ℓ₁} (A : Type ℓ) {B : Type ℓ₁} → A ≃ B → 
 x ≃⟨⟩ x≡y = x≡y
 
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
-x ≃∎ = _ , id-equiv
+x ≃∎ = id≃
 
 infixr 2 _≃⟨⟩_ _≃⟨_⟩_
 infix  3 _≃∎
@@ -733,6 +737,16 @@ module
 ```agda
 sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
 sym-equiv = sym , is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+
+∙-pre-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → (y ≡ z) ≃ (x ≡ z)
+∙-pre-equiv p = Iso→Equiv $ (p ∙_) , iso (sym p ∙_)
+  (λ q → ∙-assoc p _ _ ·· ap (_∙ q) (∙-invr p) ·· ∙-idl q)
+  (λ q → ∙-assoc (sym p) _ _ ·· ap (_∙ q) (∙-invl p) ·· ∙-idl q)
+
+∙-post-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → y ≡ z → (x ≡ y) ≃ (x ≡ z)
+∙-post-equiv p = Iso→Equiv $ (_∙ p) , iso (_∙ sym p)
+  (λ q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invl p) ·· ∙-idr q)
+  (λ q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invr p) ·· ∙-idr q)
 
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A }

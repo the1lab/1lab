@@ -5,8 +5,10 @@ open import 1Lab.Prelude
 
 open import Data.Set.Truncation
 
+open import Homotopy.Connectedness.Automation
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
+open import Homotopy.Space.Sphere
 open import Homotopy.Truncation
 open import Homotopy.Base
 ```
@@ -55,6 +57,23 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
     rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
     rem₂ = _ , λ x → sym (rem₁ .is-eqv _ .centre .snd) $ₚ x
 ```
+
+As a direct corollary, the $n$-sphere is $(n-1)$-connected (remember that our
+indices are offset by 2).
+
+```agda
+Sⁿ⁻¹-is-connected : ∀ n → is-n-connected (Sⁿ⁻¹ n) n
+Sⁿ⁻¹-is-connected zero = _
+Sⁿ⁻¹-is-connected (suc n) = Susp-is-connected n (Sⁿ⁻¹-is-connected n)
+```
+
+<!--
+```agda
+instance
+  Connected-Susp : ∀ {ℓ} {A : Type ℓ} {n} → ⦃ Connected A n ⦄ → Connected (Susp A) (suc n)
+  Connected-Susp {n = n} ⦃ conn-instance c ⦄ = conn-instance (Susp-is-connected n c)
+```
+-->
 
 ## Truncatedness
 
