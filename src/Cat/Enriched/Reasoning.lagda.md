@@ -27,7 +27,7 @@ open Enriched-precategory C public
 private variable
   Γ Δ Ψ Θ : V.Ob
   w x y z : Obv
-  a b c d f g h i : V.Hom Γ (Homv x y ⊗ Δ)
+  a b c d f g h i : V.Hom Γ (Δ ⊗ Hom-ob x y)
   σ : V.Hom Γ Δ
 ```
 -->
@@ -39,16 +39,16 @@ private variable
 ```agda
 abstract
   id-commv
-    : ∀ {Γ Δ x y} {f : V.Hom Γ (Homv x y ⊗ Δ)}
+    : ∀ {Γ Δ x y} {f : V.Hom Γ (Δ ⊗ Hom-ob x y)}
     → f ∘v idv ≡ idv ∘v f
   id-commv = idrv _ ∙ sym (idlv _)
 
   id-comm-symv
-    : ∀ {Γ Δ x y} {f : V.Hom Γ (Homv x y ⊗ Δ)}
+    : ∀ {Γ Δ x y} {f : V.Hom Γ (Δ ⊗ Hom-ob x y)}
     → idv ∘v f ≡ f ∘v idv
   id-comm-symv = idlv _ ∙ sym (idrv _)
 
-module _ {a : V.Hom Γ (Homv x x ⊗ Γ)} (p : a ≡ idv) where abstract
+module _ (p : a ≡ idv) where abstract
   elimlv : a ∘v f ≡ f 
   elimlv {f = f} = ap (_∘v f) p ∙ idlv f
 

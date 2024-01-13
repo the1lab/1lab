@@ -57,12 +57,11 @@ _∘ntv_ {D = D} {F} {G} {H} α β = nat
   nat .ηv-natural σ =
     (α .ηv _ _ D.∘v β .ηv _ _) V.∘ σ       ≡⟨ D.∘v-naturalr (α .ηv _ _) (β .ηv _ _) σ ⟩
     α .ηv _ _ D.∘v (β .ηv _ _ V.∘ σ)       ≡⟨ ap₂ D._∘v_ refl (β .ηv-natural σ) ⟩
-    α .ηv _ _ D.∘v ((_ ▶ σ) V.∘ β .ηv _ _) ≡⟨ D.∘v-natural-inner (α .ηv _ _) σ (β .ηv _ _) ⟩
+    α .ηv _ _ D.∘v ((σ ◀ _) V.∘ β .ηv _ _) ≡⟨ D.∘v-natural-inner (α .ηv _ _) σ (β .ηv _ _) ⟩
     (α .ηv _ _ V.∘ σ) D.∘v β .ηv _ _       ≡⟨ ap₂ D._∘v_ (α .ηv-natural σ) refl ⟩
-    ((_ ▶ σ) V.∘ α .ηv _ _) D.∘v β .ηv _ _ ≡˘⟨ D.∘v-naturall σ (α .ηv _ _) (β .ηv _ _) ⟩
-    (_ ▶ σ) V.∘ (α .ηv _ _ D.∘v β .ηv _ _) ∎
+    ((σ ◀ _) V.∘ α .ηv _ _) D.∘v β .ηv _ _ ≡˘⟨ D.∘v-naturall σ (α .ηv _ _) (β .ηv _ _) ⟩
+    (σ ◀ _) V.∘ (α .ηv _ _ D.∘v β .ηv _ _) ∎
 ```
-
 
 ```agda
 module _

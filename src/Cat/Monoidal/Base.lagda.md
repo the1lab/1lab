@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Bi.Base
@@ -83,19 +84,19 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
 
 ```agda
   field
-    unitor-l : natural-iso Id (-⊗-.Right Unit)
-    unitor-r : natural-iso Id (-⊗-.Left Unit)
+    unitor-l : Id ≅ⁿ (-⊗-.Right Unit)
+    unitor-r : Id ≅ⁿ (-⊗-.Left Unit)
 
-    associator : natural-iso
+    associator :
       (compose-assocˡ {O = ⊤} {H = λ _ _ → C} -⊗-)
-      (compose-assocʳ {O = ⊤} {H = λ _ _ → C} -⊗-)
+      ≅ⁿ (compose-assocʳ {O = ⊤} {H = λ _ _ → C} -⊗-)
 ```
 
 <!--
 ```agda
-  module unitor-l = natural-iso unitor-l
-  module unitor-r = natural-iso unitor-r
-  module associator = natural-iso associator
+  module unitor-l = Isoⁿ unitor-l
+  module unitor-r = Isoⁿ unitor-r
+  module associator = Isoⁿ associator
 
   λ← : ∀ {X} → Hom (Unit ⊗ X) X
   λ← = unitor-l.from .η _
@@ -104,7 +105,7 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   λ→ = unitor-l.to .η _
 
   λ≅ : ∀ {X} → X ≅ (Unit ⊗ X)
-  λ≅ = natural-iso→iso unitor-l _
+  λ≅ = isoⁿ→iso unitor-l _
 
   ρ← : ∀ {X} → Hom (X ⊗ Unit) X
   ρ← = unitor-r.from .η _
@@ -113,7 +114,7 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   ρ→ = unitor-r.to .η _
 
   ρ≅ : ∀ {X} → X ≅ (X ⊗ Unit)
-  ρ≅ = natural-iso→iso unitor-r _
+  ρ≅ = isoⁿ→iso unitor-r _
 
   α← : ∀ A B C → Hom (A ⊗ (B ⊗ C)) ((A ⊗ B) ⊗ C)
   α← _ _ _ = associator.from .η _
@@ -122,7 +123,7 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   α→ _ _ _ = associator.to .η _
 
   α≅ : ∀ A B C → ((A ⊗ B) ⊗ C) ≅ (A ⊗ (B ⊗ C))
-  α≅ A B C = natural-iso→iso associator (A , B , C)
+  α≅ A B C = isoⁿ→iso associator (A , B , C)
 
   -- whiskering on the right
   _▶_ : ∀ A {B C} (g : Hom B C) → Hom (A ⊗ B) (A ⊗ C)

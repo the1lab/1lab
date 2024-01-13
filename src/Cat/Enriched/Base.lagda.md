@@ -223,9 +223,10 @@ no coherence in sight!
   field
     idlv : ∀ {Γ Δ x y} → (f : Homv Γ Δ x y) → idv ∘v f ≡ f
     idrv : ∀ {Γ Δ x y} → (f : Homv Γ Δ x y) → f ∘v idv ≡ f
-    assocv : ∀ {Γ Δ Ψ Θ w x y z}
-           → (f : Homv Ψ Θ y z) → (g : Homv Δ Ψ x y) → (h : Homv Γ Δ w x)
-           → f ∘v (g ∘v h) ≡ (f ∘v g) ∘v h
+    assocv
+      : ∀ {Γ Δ Ψ Θ w x y z}
+      → (f : Homv Ψ Θ y z) → (g : Homv Δ Ψ x y) → (h : Homv Γ Δ w x)
+      → f ∘v (g ∘v h) ≡ (f ∘v g) ∘v h
 ```
 
 Unfortunately, these type theoretic methods are not free, and the price
@@ -235,20 +236,26 @@ and right hand side of generalized objects. However, naturality is
 much less annoying than coherence, so it's a price we gladly pay.
 
 ```agda
-    idv-natural : ∀ {Γ Δ x} → (σ : V.Hom Γ Δ) → idv V.∘ σ ≡ (σ ◀ Hom-ob x x) V.∘ idv
-    ∘v-naturall : ∀ {Γ Δ Ψ Θ x y z}
-                → (σ : V.Hom Ψ Θ)
-                → (f : Homv Δ Ψ y z) → (g : Homv Γ Δ x y)
-                → (σ ◀ Hom-ob x z) V.∘ (f ∘v g) ≡ ((σ ◀ Hom-ob y z) V.∘ f) ∘v g
-    ∘v-natural-inner : ∀ {Γ Δ Ψ Θ x y z}
-                → (f : Homv Ψ Θ y z)
-                → (σ : V.Hom Δ Ψ)
-                → (g : Homv Γ Δ x y)
-                → f ∘v ((σ ◀ Hom-ob x y) V.∘ g) ≡ (f V.∘ σ) ∘v g
-    ∘v-naturalr : ∀ {Γ Δ Ψ Θ x y z}
-                → (f : Homv Ψ Θ y z) → (g : Homv Δ Ψ x y)
-                → (σ : V.Hom Γ Δ)
-                → (f ∘v g) V.∘ σ ≡ (f ∘v (g V.∘ σ))
+    idv-natural
+      : ∀ {Γ Δ x}
+      → (σ : V.Hom Γ Δ)
+      → idv V.∘ σ ≡ (σ ◀ Hom-ob x x) V.∘ idv
+    ∘v-naturall
+      : ∀ {Γ Δ Ψ Θ x y z}
+      → (σ : V.Hom Ψ Θ)
+      → (f : Homv Δ Ψ y z) → (g : Homv Γ Δ x y)
+      → (σ ◀ Hom-ob x z) V.∘ (f ∘v g) ≡ ((σ ◀ Hom-ob y z) V.∘ f) ∘v g
+    ∘v-natural-inner
+      : ∀ {Γ Δ Ψ Θ x y z}
+      → (f : Homv Ψ Θ y z)
+      → (σ : V.Hom Δ Ψ)
+      → (g : Homv Γ Δ x y)
+      → f ∘v ((σ ◀ Hom-ob x y) V.∘ g) ≡ (f V.∘ σ) ∘v g
+    ∘v-naturalr
+      : ∀ {Γ Δ Ψ Θ x y z}
+      → (f : Homv Ψ Θ y z) → (g : Homv Δ Ψ x y)
+      → (σ : V.Hom Γ Δ)
+      → (f ∘v g) V.∘ σ ≡ (f ∘v (g V.∘ σ))
 ```
 
 ### Enriched vs. Internal Categories
@@ -444,9 +451,9 @@ module _
   Enriched-nat-is-set = Iso→is-hlevel 2 eqv $
     Σ-is-hlevel 2 (Π-is-hlevel 2 (λ _ → Π-is-hlevel 2 λ _ → V.Hom-set _ _))
     λ _ → Σ-is-hlevel 2
-      (Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ →
+      (Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ →
        Π-is-hlevel 2 λ _ → Path-is-hlevel 2 (V.Hom-set _ _))
-    λ _ → (Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ →
+    λ _ → (Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ →
       Π-is-hlevel 2 λ _ → Path-is-hlevel 2 (V.Hom-set _ _))
 ```
 -->

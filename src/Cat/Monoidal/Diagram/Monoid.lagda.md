@@ -180,7 +180,8 @@ laws, a great simplification.
   private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
 
   is-monoid-hom-is-prop : ∀ {m n} {f : C.Hom m n} {mo no} → is-prop (is-monoid-hom f mo no)
-  is-monoid-hom-is-prop = is-hlevel≃ 1 (Iso→Equiv eqv) hlevel!
+  is-monoid-hom-is-prop = is-hlevel≃ 1 (Iso→Equiv eqv) $
+    ×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)
 
   open Displayed
   open Functor

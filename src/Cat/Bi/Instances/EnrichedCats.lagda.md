@@ -43,7 +43,7 @@ Enriched-cats o = vcats where
   open make-natural-iso
 
   ƛ : ∀ {A B : Enriched-precategory V-monoidal o}
-    → natural-iso Id (Right (Fv∘-functor A B B) Idv)
+    → Id ≅ⁿ (Right (Fv∘-functor A B B) Idv)
   ƛ {B = B} = to-natural-iso ni where
     open Cat.Enriched.Reasoning B
     ni : make-natural-iso _ _
@@ -63,7 +63,7 @@ Enriched-cats o = vcats where
       idrv _ ∙ id-commv
 
   ρ : ∀ {A B : Enriched-precategory V-monoidal o}
-    → natural-iso Id (Left (Fv∘-functor A A B) Idv)
+    → Id ≅ⁿ (Left (Fv∘-functor A A B) Idv)
   ρ {B = B} = to-natural-iso ni where
     open Cat.Enriched.Reasoning B
     ni : make-natural-iso _ _
@@ -83,7 +83,7 @@ Enriched-cats o = vcats where
       idrv _ ∙ ap (_∘v _) (G .Fv-id)
 
   α : ∀ {A B C D : Enriched-precategory V-monoidal o}
-    → natural-iso {C = VCat[ C , D ] ×ᶜ VCat[ B , C ] ×ᶜ VCat[ A , B ]}
+    → _≅ⁿ_ {C = VCat[ C , D ] ×ᶜ VCat[ B , C ] ×ᶜ VCat[ A , B ]}
         (compose-assocˡ (λ {A} {B} {C} → Fv∘-functor A B C))
         (compose-assocʳ (λ {A} {B} {C} → Fv∘-functor A B C))
   α {D = D} = to-natural-iso ni where

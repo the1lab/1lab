@@ -85,12 +85,12 @@ module _
   _◆v_ {F} {G} {H} {K} α β .ηv-natural σ =
     (G .Fv₁ (β .ηv _ _) E.∘v α .ηv _ _) V.∘ σ         ≡⟨ E.∘v-naturalr _ _ σ ⟩
     G .Fv₁ (β .ηv _ _) E.∘v ⌜ α .ηv _ _ V.∘ σ ⌝       ≡⟨ ap! (α .ηv-natural σ) ⟩
-    G .Fv₁ (β .ηv _ _) E.∘v ((_ ▶ σ) V.∘ α .ηv _ _)   ≡⟨ E.∘v-natural-inner _ σ _ ⟩
+    G .Fv₁ (β .ηv _ _) E.∘v ((σ ◀ _) V.∘ α .ηv _ _)   ≡⟨ E.∘v-natural-inner _ σ _ ⟩
     ⌜ G .Fv₁ (β .ηv _ _) V.∘ σ ⌝ E.∘v α .ηv _ _       ≡⟨ ap! (G .Fv-naturalr (β .ηv _ _) σ) ⟩
     G .Fv₁ ⌜ β .ηv _ _ V.∘ σ ⌝ E.∘v α .ηv _ _         ≡⟨ ap! (β .ηv-natural σ) ⟩
-    ⌜ G .Fv₁ ((_ ▶ σ) V.∘ β .ηv _ _) ⌝ E.∘v α .ηv _ _ ≡˘⟨ ap¡ (G .Fv-naturall σ (β .ηv _ _)) ⟩
-    ((_ ▶ σ) V.∘ G .Fv₁ (β .ηv _ _)) E.∘v α .ηv _ _   ≡˘⟨ E.∘v-naturall σ _ _ ⟩
-    (_ ▶ σ) V.∘ (G .Fv₁ (β .ηv _ _) E.∘v α .ηv _ _)   ∎
+    ⌜ G .Fv₁ ((σ ◀ _) V.∘ β .ηv _ _) ⌝ E.∘v α .ηv _ _ ≡˘⟨ ap¡ (G .Fv-naturall σ (β .ηv _ _)) ⟩
+    ((σ ◀ _) V.∘ G .Fv₁ (β .ηv _ _)) E.∘v α .ηv _ _   ≡˘⟨ E.∘v-naturall σ _ _ ⟩
+    (σ ◀ _) V.∘ (G .Fv₁ (β .ηv _ _) E.∘v α .ηv _ _)   ∎
 ```
 
 ```agda

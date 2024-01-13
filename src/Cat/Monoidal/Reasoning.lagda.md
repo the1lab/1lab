@@ -169,7 +169,7 @@ this means that $ \otimes -$ is faithful. From here, it's a matter
 of applying the long pentagon identity, and then cleaning up
 with the triangle identity and naturality.
 
-```
+```agda
 assoc-unitor-l : α→ Unit A B ∘ (λ→ ◀ B) ≡ λ→
 assoc-unitor-l =
   is-equivalence→is-faithful (Unit ▶F) ▶-is-equivalence $
