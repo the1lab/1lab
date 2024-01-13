@@ -10,7 +10,7 @@ import Cat.Enriched.Reasoning
 -->
 
 ```agda
-module Cat.Instances.EnrichedFunctor
+module Cat.Enriched.Functor.Base
   {ov ℓv} {V : Precategory ov ℓv}
   {V-monoidal : Monoidal-category V}
   where

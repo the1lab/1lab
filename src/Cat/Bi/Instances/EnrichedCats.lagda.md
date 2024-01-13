@@ -4,12 +4,13 @@ open import Cat.Bi.Base
 
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
-open import Cat.Instances.EnrichedFunctor
-open import Cat.Instances.EnrichedFunctor.Compose
 open import Cat.Instances.Product
 open import Cat.Prelude
 
 open import Cat.Monoidal.Base
+
+open import Cat.Enriched.Functor.Compose
+open import Cat.Enriched.Functor.Base
 open import Cat.Enriched.Base
 
 import Cat.Reasoning

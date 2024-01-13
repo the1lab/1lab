@@ -1,10 +1,10 @@
 <!--
 ```agda
 open import Cat.Monoidal.Base
-open import Cat.Instances.EnrichedFunctor
 open import Cat.Instances.Product
 open import Cat.Prelude
 
+open import Cat.Enriched.Functor.Base
 open import Cat.Enriched.Base
 
 import Cat.Reasoning
@@ -13,7 +13,7 @@ import Cat.Enriched.Reasoning
 -->
 
 ```agda
-module Cat.Instances.EnrichedFunctor.Compose
+module Cat.Enriched.Functor.Compose
   {ov ℓv} {V : Precategory ov ℓv}
   {V-monoidal : Monoidal-category V}
   where
@@ -27,7 +27,10 @@ open Monoidal-category V-monoidal
 ```
 -->
 
-# Functoriality of Enriched functor composition
+# Functoriality of enriched functor composition
+
+As in the non-enriched case, composition of $\cV$-[[enriched functors]]
+is itself functorial.
 
 ```agda
 module _
@@ -44,6 +47,8 @@ module _
     open _=>v_
 ```
 
+First, we define whiskerings of enriched natural transformations.
+
 ```agda
   _◂v_
     : {F G : Enriched-functor D E}
@@ -55,11 +60,9 @@ module _
     → (H : Enriched-functor D E) → F =>v G
     → H Fv∘ F =>v H Fv∘ G
 
-  _◆v_
-    : {F G : Enriched-functor D E} {H K : Enriched-functor C D}
-    → F =>v G → H =>v K
-    → F Fv∘ H =>v G Fv∘ K
 ```
+
+These are defined in a similar manner to their non-enriched counterparts.
 
 ```agda
   (α ◂v H) .ηv Γ x = α .ηv Γ (H .Fv₀ x)
@@ -75,7 +78,15 @@ module _
     H .Fv-naturalr (α .ηv _ _) σ
     ∙ ap (H .Fv₁) (α .ηv-natural σ)
     ∙ sym (H .Fv-naturall σ (α .ηv _ _))
+```
 
+Next, we define horizontal composition of enriched natural transformations.
+
+```agda
+  _◆v_
+    : {F G : Enriched-functor D E} {H K : Enriched-functor C D}
+    → F =>v G → H =>v K
+    → F Fv∘ H =>v G Fv∘ K
   _◆v_ {F} {G} {H} {K} α β .ηv Γ x =
     G .Fv₁ (β .ηv Γ x) E.∘v α .ηv Γ (H .Fv₀ x)
   _◆v_ {F} {G} {H} {K} α β .is-naturalv f =
@@ -92,6 +103,9 @@ module _
     ((σ ◀ _) V.∘ G .Fv₁ (β .ηv _ _)) E.∘v α .ηv _ _   ≡˘⟨ E.∘v-naturall σ _ _ ⟩
     (σ ◀ _) V.∘ (G .Fv₁ (β .ηv _ _) E.∘v α .ηv _ _)   ∎
 ```
+
+Armed with these operations, we can extend composition into a functor
+on enriched functor categories.
 
 ```agda
 module _
