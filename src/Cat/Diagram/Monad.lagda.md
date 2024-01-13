@@ -23,7 +23,7 @@ module _ {o h : _} (C : Precategory o h) where
 ```
 -->
 
-# Monads
+# Monads {defines=monad}
 
 A **monad on a category** $\cC$ is one way of categorifying the
 concept of [monoid]. Specifically, rather than living in a monoidal
@@ -66,7 +66,7 @@ associativity laws exactly analogous to those of a monoid.
       mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
 ```
 
-# Algebras over a monad {defines=monad-algebra algebra-over-a-monad}
+# Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the

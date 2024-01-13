@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Diagram.Monad
 open import Cat.Diagram.Monad.Relative
+open import Cat.Diagram.Monad
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -36,7 +36,7 @@ enough data to implement both the join of a monad *and* the functorial
 action, which reduces the amount of data required.
 3. It is not immediately clear how to generalize monads beyond endofunctors.
 In constrast, extension systems can be readily generalized to
-[[relative extension systems]]. [^ In fact, we will *define* extension systems
+[[relative extension systems]]^[In fact, we will *define* extension systems
 as a special case of relative extension systems!].
 
 With that bit of motivation out of the way, we shall proceed to define
@@ -45,7 +45,7 @@ extension systems. An extension system consists of:
 1. A mapping of objects $M : \cC \to \cC$.
 2. A family of morphisms $\eta_X : \cC(X, M(X))$, called the **unit**
 of the extension system
-3. An extension operation $\(-\)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
+3. An extension operation $(-)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
   Gesturing towards the "monads" found in functional programming, we shall
   call this operation `bind`.
 
@@ -306,11 +306,11 @@ that we shall omit.
       α.ν ∘ unit ∘ f      ≡⟨ cancell α.ν-unit ⟩
       f ∎
     ext-alg .ν-bind f g =
-      (α.ν ∘ M₁ f) ∘ bind g                    ≡⟨ pullr (bind-natural _ _) ⟩
+      (α.ν ∘ M₁ f) ∘ bind g                    ≡⟨ pullr (bind-naturall _ _) ⟩
       α.ν ∘ bind ⌜ M₁ f ∘ g ⌝                  ≡⟨ ap! (insertl (bind-unit-∘ id)) ⟩
       α.ν ∘ bind (join ∘ unit ∘ M₁ f ∘ g)      ≡⟨ pushr (sym (bind-∘ _ _)) ⟩
       (α.ν ∘ join) ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ pushl (sym $ α.ν-mult) ⟩
-      α.ν ∘ M₁ α.ν ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ ap (α.ν ∘_) (bind-natural _ _) ⟩
+      α.ν ∘ M₁ α.ν ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ ap (α.ν ∘_) (bind-naturall _ _) ⟩
       α.ν ∘ bind ⌜ M₁ α.ν ∘ unit ∘ M₁ f ∘ g ⌝  ≡⟨ ap! (centralizel (sym $ unit-natural _)) ⟩
       α.ν ∘ bind (unit ∘ (α.ν ∘ M₁ f) ∘ g)     ∎
 ```

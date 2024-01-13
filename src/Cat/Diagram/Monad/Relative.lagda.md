@@ -2,13 +2,11 @@
 ```agda
 open import 1Lab.Path.Cartesian
 
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-open import Cat.Displayed.Base
-
-import Cat.Reasoning
 import Cat.Functor.Reasoning
-
+import Cat.Reasoning
 
 open Functor
 open _=>_
@@ -27,24 +25,24 @@ restriction can become problematic. For simplicity, let $T$ be a monad
 on set interpreted as an algebraic theory, where $T(A)$ is the syntax of
 $T$ with $A$-many variables, the unit constructs a term from a variable,
 and the join performs substitution. If we wish to give a more refined
-treatment of variables[^ for instance, if a term can only have finitely
+treatment of variables^[for instance, if a term can only have finitely
 many variables], then we immediately run into an issue: $T$ can no
 longer an endofunctor $\Sets \to \Sets$, and restricting $T$ to
-$\Finsets \to \Finsets$ is also out of the question, as the collection
+$\FinSets \to \FinSets$ is also out of the question, as the collection
 of syntax trees will not be finite.
 
 If we wish to capture such situations, then we will need to generalize
 the notion of monad. The fundamental problem with doing so is that we
 cannot iterate a functor $M : \cJ \to \cC$, so themost natural starting
 point are [[extension systems]], which replace the join of a monad with
-an extension operation $\(-\)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
+an extension operation $(-)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
 This lets us avoid any iteration in the first place, which lets the
 construction proceed. Following [@Altenkirch-Chapman-Uustalu:2015], we
 define a **relative extension system** for a functor $F : \cJ \to \cC$ as:
 
 1. A mapping of objects $M : J \to C$
 2. A family of morphisms $\eta_X : \cC(F(X), M(X))$, called the **unit**
-3. An extension operation $\(-\)^{M} : \cC(F(X),M(y)) \to \cC(M(X), M(Y))$.
+3. An extension operation $(-)^{M} : \cC(F(X),M(y)) \to \cC(M(X), M(Y))$.
 
 Like their non-relative counterparts, we do not require any functoriality
 or naturality.
@@ -104,12 +102,20 @@ extension, resp.
       unit C.∘ F.₁ f                 ≡˘⟨ bind-unit-∘ (unit C.∘ F.₁ f) ⟩
       bind (unit C.∘ F.₁ f) C.∘ unit ∎
 
-    bind-natural
+    bind-naturall
       : ∀ {x y z} (f : J.Hom y z) (g : C.Hom (F.₀ x) (M₀ y))
       → M₁ f C.∘ bind g ≡ bind (M₁ f C.∘ g)
-    bind-natural f g =
+    bind-naturall f g =
       bind (unit C.∘ F.₁ f) C.∘ bind g   ≡⟨ bind-∘ (unit C.∘ (F.₁ f)) g ⟩
       bind (bind (unit C.∘ F.₁ f) C.∘ g) ∎
+
+    bind-naturalr
+      : ∀ {x y z} (f : C.Hom (F.₀ y) (M₀ z)) (g : J.Hom x y)
+      → bind f C.∘ M₁ g ≡ bind (f C.∘ F.₁ g)
+    bind-naturalr f g =
+      bind f C.∘ bind (unit C.∘ F.₁ g)   ≡⟨ bind-∘ f (unit C.∘ F.₁ g) ⟩
+      bind (bind f C.∘ unit C.∘ (F.₁ g)) ≡⟨ ap bind (C.pulll (bind-unit-∘ f)) ⟩
+      bind (f C.∘ F.₁ g) ∎
 ```
 
 Functoriality also follows.
@@ -204,7 +210,7 @@ module _
 # Algebras over a relative extension system {defines=relative-extension-algebra}
 
 A **relative extension algebra** over $E$ is the relative extension system
-analog of a [[algebra over a monad]]. Following the general theme of
+analog of an [[algebra over a monad]]. Following the general theme of
 extension operations, a relative extension algebra on $X : \cC$ is given
 by an operation $\nu : \cC(F(A), X) \to \cC(M(A), X)$. Intuitively, this
 operation lets us "evaluate" any $M$, so long as the codomain of the
@@ -370,11 +376,11 @@ are closed under identities and composites.
 ```agda
   Relative-Eilenberg-Moore .Hom[_]-set = hlevel!
   Relative-Eilenberg-Moore .idr' _ =
-    is-prop→pathp (λ i → hlevel!) _ _
+    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
   Relative-Eilenberg-Moore .idl' _ =
-    is-prop→pathp (λ i → hlevel!) _ _
+    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
   Relative-Eilenberg-Moore .assoc' _ _ _ =
-    is-prop→pathp (λ i → hlevel!) _ _
+    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
 ```
 </details>
 
