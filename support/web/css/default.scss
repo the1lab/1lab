@@ -1,8 +1,11 @@
 @import "vars.scss";
 @import "mixins.scss";
+@import "theme.scss";
+
 @import "components/modal.scss";
 @import "components/search.scss";
 @import "components/unfolded-footnote.scss";
+@import "components/controls.scss";
 
 @import "code.scss";
 
@@ -12,46 +15,46 @@ html {
   max-width: 100%;
   margin: 0;
 
-  overflow-x: clip;
-
   background-color: var(--text-bg);
   color:            var(--text-fg);
 }
 
 :root {
   --serif: "EB Garamond", "Times New Roman", "serif";
-  --font-size: 22pt;
-  --code-font-size: 18pt;
-}
-
-body {
-  font-family: var(--serif), "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --sans-serif: "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-size: 1.4rem;
+  --code-font-size: calc(0.85 * var(--font-size));
 
   &.sans-serif {
     --serif: "";
-    --font-size: 18pt;
-    --code-font-size: calc(0.95 * var(--font-size));
+    --font-size: 1.3rem;
+    --code-font-size: calc(0.92 * var(--font-size));
   }
+
+  &.show-equations span.reasoning-step {
+    .as-written {
+      display: inline;
+    }
+    .alternate {
+      display: none;
+    }
+  }
+
+  &.show-hidden-code .commented-out {
+    display: revert;
+  }
+}
+
+body {
+  font-family: var(--serif), var(--sans-serif);
 
   width: 100%;
 
   font-size: var(--font-size);
-  overflow-x: clip;
 
   &.text-page {
     @include centered-contents;
     margin: 0;
-  }
-
-  &.show-equations {
-    span.reasoning-step {
-      .as-written {
-        display: inline;
-      }
-      .alternate {
-        display: none;
-      }
-    }
   }
 
   span.reasoning-step {
@@ -77,15 +80,16 @@ main {
   box-sizing: border-box;
 
   div#post-toc-container {
-    aside#toc {
+    aside {
       display: none;
-      a[href].header-link span {
-        display: none;
+      a[href].header-link {
+        span.header-link-emoji {
+          display: none;
+        }
       }
     }
 
     article {
-      grid-column: 2;
       line-height: 1.2;
 
       a[href].header-link {
@@ -99,7 +103,7 @@ main {
         &:hover {
           text-decoration: none !important;
           background-color: var(--text-bg) !important;
-          span {
+          span.header-link-emoji {
             display: inline-block;
           }
         }
@@ -108,7 +112,7 @@ main {
           background-color: var(--text-bg) !important;
         }
 
-        span {
+        span.header-link-emoji {
           display: none;
           font-size: 12pt;
           margin-left: 1em;
@@ -120,10 +124,9 @@ main {
   }
 }
 
-div.warning {
-  @include material;
-  background-color: var(--warning-bg);
-}
+@include highlight(warning,        var(--warning-bg),     var(--warning-icon));
+@include highlight(note,           var(--note-bg),        var(--note-icon));
+@include highlight(terminology,    var(--terminology-bg), var(--terminology-icon));
 
 div.asides {
   * {
@@ -222,9 +225,7 @@ p > code, summary > code {
 }
 
 blockquote, details.blockquote {
-  @include material;
-
-  background-color: var(--blockquote-bg);
+  @include material(var(--blockquote-bg));
 
   margin-left: 0;
   margin-right: 0;
@@ -265,13 +266,22 @@ table {
 
     div#post-toc-container {
       display: grid;
-      grid-template-columns: 0.5fr 2fr 0.5fr;
 
-      aside#toc {
+      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
+      grid-template-columns: 1fr minmax(0, 4fr) 1fr;
+
+      aside {
         display: block !important;
+      }
+
+      aside {
         margin-right: 1rem;
 
         h3 { @include centered-contents; }
+
+        font-family: var(--sans-serif);
+        --font-size: 1.3rem;
+        --code-font-size: calc(0.92 * var(--font-size));
 
         div#toc-container {
           box-sizing: border-box;
@@ -292,6 +302,17 @@ table {
 
           a[href]#logo.hover-highlight {
             background-color: unset;
+          }
+
+          a[href].header-link {
+            &, &:visited {
+              color: var(--primary)
+            };
+
+            &.current-heading {
+              font-weight: bold;
+              color: var(--text-fg);
+            }
           }
 
           > hr {
@@ -332,7 +353,6 @@ table {
       }
 
       article {
-        max-width: 80rem;
         margin-top: -100px;
         margin: auto;
       }
@@ -350,30 +370,15 @@ table {
 }
 
 details {
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-block: 1em;
+  border-left: 5px solid var(--note-bg);
+  padding-left: 1rem;
 
-}
-
-details:not(.text) {
-  border-left: 5px solid $cyan-500;
-  padding-left: 1em;
-}
-
-details.text {
-  border: 3px solid var(--details-summary);
-  transition: border 0.3s ease-in-out;
+  @include contains-code();
 
   > summary {
     list-style-type: none;
-    background-color: var(--details-summary);
-
-    border-left: 1em solid var(--details-summary);
-    padding-top: 0.25em;
-    padding-bottom: 0.25em;
-    padding-right: 1em;
-
-    transition: background-color 0.3s ease-in-out, border-left 0.3s ease-in-out;
+    padding: 0.25em 0em 0.25em 0em;
 
     cursor: pointer;
 
@@ -394,27 +399,11 @@ details.text {
   }
 
   &[open] {
-    border: 3px solid var(--details-open);
     summary {
-      border-left: 1em solid var(--details-open);
-      background-color: var(--details-open);
       &::after {
         content: 'read less';
       }
-    }
-  }
-
-  &:not([open]) {
-    &:hover {
-      border: 3px solid var(--details-open);
-    }
-    summary:hover {
-      border-left: 1em solid var(--details-open);
-      background-color: var(--details-open);
-
-      &::after {
-        text-decoration: underline;
-      }
+      margin-bottom: 0.3em;
     }
   }
 
@@ -422,6 +411,9 @@ details.text {
     margin-left: 1em;
     margin-right: 1em;
   }
+
+  > :nth-child(1) { margin-block-start: 0; }
+  > :nth-last-child(1) { margin-block-start: 0; }
 }
 
 .commented-out {
@@ -430,14 +422,13 @@ details.text {
 }
 
 .commented-out > pre.Agda {
-  margin-top: 1em;
+  margin-top:    1em;
   margin-bottom: 1em;
 }
 
-body.show-hidden-code .commented-out {
-  display: revert;
+.commented-out.first-comment > pre.Agda {
+  margin-top: 0;
 }
-
 
 div.profile {
   &.pfp-left {
@@ -601,21 +592,34 @@ span.qed {
   float: right;
 }
 
+span.shaded {
+  background-color: var(--diagram-shaded-bg);
+}
+
 /* The \liesover{} macro: It's awful and I hate it. The \liesover{} arrow
  * is just hspace --- KaTeX needs to know the actual size of the thing,
  * so we let *it* control the sizing --- and here, we draw an arrow over
  * it; An arrow with #000 stroke in light theme and #ABB2BF stroke in
  * dark theme. */
 span.enclosing.liesover {
-  background: url('/static/lies-over-light.svg') no-repeat;
+  background: url('../static/lies-over-light.svg') no-repeat;
   background-size: contain;
   background-position: center center;
 }
 
 @media (prefers-color-scheme: dark) {
   span.enclosing.liesover {
-    background: url('/static/lies-over-dark.svg') no-repeat;
+    background: url('../static/lies-over-dark.svg') no-repeat;
     background-size: contain;
     background-position: center center;
   }
 }
+
+input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color:  var(--text-fg);
+  border-radius: 3px;
+}
+
+#post-toc-container { min-height: 90vh; }

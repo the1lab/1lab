@@ -88,7 +88,7 @@ set-coequalisers already includes a truncation.
 
 ```agda
 Sets-is-cocomplete : ∀ {ι κ o} → is-cocomplete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-cocomplete {ι} {κ} {o} {D = D} F = to-colimit (to-is-colimit colim) where
+Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) where
   module D = Precategory D
   module F = Functor F
   open _=>_
@@ -157,7 +157,7 @@ We already know that the coproduct is a coproduct (who would have
 guessed, honestly) --- so it remains to show that the `injections are
 monic`{.Agda ident=injections-are-monic}, the `summands intersect`{.Agda
 ident=summands-intersect}, and the intersections of different summands
-are empty. The intersections are cheap: Sets is finitely complete, so
+are empty. The intersections are cheap: Sets is [[finitely complete]], so
 all pullbacks exist, in particular the pullback of $F_i \to \sum F \ot
 F_j$.
 
@@ -174,16 +174,16 @@ coproduct.
 
 ```agda
     coprod .injections-are-monic _ g h path = funext go where abstract
-      path′ : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
-      path′ i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
+      path' : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
+      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
         (λ x → x) (path i c)
 
-      q : ∀ {c} → ap fst (happly path′ c) ≡ refl
+      q : ∀ {c} → ap fst (happly path' c) ≡ refl
       q = I .is-tr _ _ _ _
 
       go : ∀ c → g c ≡ h c
       go c = subst (λ e → PathP (λ i → ∣ F (e i) ∣) (g c) (h c)) q
-        (ap snd (happly path′ c))
+        (ap snd (happly path' c))
 ```
 
 The same thing happens in proving that different injections have
@@ -200,3 +200,13 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
       uniq _ = funext λ where
         (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```
+<!--
+```agda
+Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
+Sets-initial .Initial.bot = el! (Lift _ ⊥)
+Sets-initial .Initial.has⊥ x .centre () 
+Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
+
+```
+
+-->

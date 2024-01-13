@@ -1,12 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Indexing
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
 ```
 -->
 
@@ -20,14 +20,14 @@ module Cat.Displayed.GenericObject
 <!--
 ```agda
 open Precategory B
-open Displayed E
 open Cat.Displayed.Morphism E
 open Cat.Displayed.Reasoning E
+open Displayed E
 open Functor
 ```
 -->
 
-# Generic Objects
+# Generic objects
 
 There are 2 perspectives one can take on generic objects. The first is a
 purely logical one: generic objects provide us a tool for giving
@@ -50,15 +50,15 @@ have a (not necessarily unique) cartesian map $X' \to T$. Note that this
 means that generic objects are a **structure** in a fibration!
 
 ```agda
-record Generic-object {t} (t′ : Ob[ t ]) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+record Generic-object {t} (t' : Ob[ t ]) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   no-eta-equality
   field
-    classify  : ∀ {x} → (x′ : Ob[ x ]) → Hom x t
-    classify′ : ∀ {x} → (x′ : Ob[ x ]) → Hom[ classify x′ ] x′ t′
-    classify-cartesian : ∀ {x} (x′ : Ob[ x ])
-                       → is-cartesian E (classify x′) (classify′ x′)
+    classify  : ∀ {x} → (x' : Ob[ x ]) → Hom x t
+    classify' : ∀ {x} → (x' : Ob[ x ]) → Hom[ classify x' ] x' t'
+    classify-cartesian : ∀ {x} (x' : Ob[ x ])
+                       → is-cartesian E (classify x') (classify' x')
 
-  module classify-cartesian {x} (x′ : Ob[ x ]) = is-cartesian (classify-cartesian x′)
+  module classify-cartesian {x} (x' : Ob[ x ]) = is-cartesian (classify-cartesian x')
 ```
 
 The intuition for this definition is that if $\cE$ has a generic object,
@@ -85,8 +85,8 @@ and size condition.
 
 [fam-generic]: Cat.Displayed.Instances.Family.html#generic-objects
 
-With this size based perspective in mind, we say that a displayed
-category is **globally small** if it has a generic object.
+With this size-based perspective in mind, we say that a [[displayed
+category]] is **globally small** if it has a generic object.
 
 ```agda
 record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
@@ -114,42 +114,42 @@ complexity of this sentence is a bit high, so please refer to the code:
 
 ```agda
   vertical-iso→Generic-object
-    : ∀ {t} (t′ : Ob[ t ])
-    → (∀ {x} (x′ : Ob[ x ])
+    : ∀ {t} (t' : Ob[ t ])
+    → (∀ {x} (x' : Ob[ x ])
       → Σ[ u ∈ Hom x t ]
-         (base-change E fib u .F₀ t′ ≅↓ x′))
-    → Generic-object t′
+         (base-change E fib u .F₀ t' ≅↓ x'))
+    → Generic-object t'
 
 ```
 
 <!--
 ```agda
-  vertical-iso→Generic-object {t} t′ viso = gobj where
+  vertical-iso→Generic-object {t} t' viso = gobj where
     open Generic-object
     open has-lift
 
-    module viso {x} (x′ : Ob[ x ]) = _≅[_]_ (viso x′ .snd)
+    module viso {x} (x' : Ob[ x ]) = _≅[_]_ (viso x' .snd)
 
-    gobj : Generic-object t′
-    gobj .classify x′ = viso x′ .fst
-    gobj .classify′ x′ =
-      hom[ idr _ ] (has-lift.lifting _ t′ ∘′ viso.from′ x′)
-    gobj .classify-cartesian x′ .is-cartesian.universal m h′ =
-      hom[ idl _ ] (viso.to′ x′ ∘′ universal (viso x′ .fst) t′ m h′)
-    gobj .classify-cartesian x′ .is-cartesian.commutes m h′ =
-      hom[] (lifting _ _ ∘′ viso.from′ x′) ∘′ hom[] (viso.to′ x′ ∘′ universal _ _ _ _) ≡˘⟨ split _ _ ⟩
-      hom[] ((lifting _ _ ∘′ viso.from′ x′) ∘′ (viso.to′ x′ ∘′ universal _ _ _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr′ x′)) ⟩
-      hom[] (lifting _ _ ∘′ universal _ _ _ _)                                         ≡⟨ shiftl _ (has-lift.commutes _ _ _ _) ⟩
-      h′ ∎
-    gobj .classify-cartesian x′ .is-cartesian.unique {m = m} {h′ = h′} m′ p =
-      m′                                                            ≡⟨ shiftr (sym (idl _) ∙ sym (idl _)) (insertl′ _ (viso.invl′ x′)) ⟩
-      hom[] (viso.to′ x′ ∘′ viso.from′ x′ ∘′ m′)                    ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (idl _) (idl _))  ∙ ap hom[] (unwhisker-r (idl _) (idl _)) ⟩
-      hom[] (viso.to′ x′ ∘′ ⌜ hom[ idl _ ] (viso.from′ x′ ∘′ m′) ⌝) ≡⟨ ap! (unique _ _ _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
-      hom[] (viso.to′ x′ ∘′ universal _ _ _ h′) ∎
+    gobj : Generic-object t'
+    gobj .classify x' = viso x' .fst
+    gobj .classify' x' =
+      hom[ idr _ ] (has-lift.lifting _ t' ∘' viso.from' x')
+    gobj .classify-cartesian x' .is-cartesian.universal m h' =
+      hom[ idl _ ] (viso.to' x' ∘' universal (viso x' .fst) t' m h')
+    gobj .classify-cartesian x' .is-cartesian.commutes m h' =
+      hom[] (lifting _ _ ∘' viso.from' x') ∘' hom[] (viso.to' x' ∘' universal _ _ _ _) ≡˘⟨ split _ _ ⟩
+      hom[] ((lifting _ _ ∘' viso.from' x') ∘' (viso.to' x' ∘' universal _ _ _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr' x')) ⟩
+      hom[] (lifting _ _ ∘' universal _ _ _ _)                                         ≡⟨ shiftl _ (has-lift.commutes _ _ _ _) ⟩
+      h' ∎
+    gobj .classify-cartesian x' .is-cartesian.unique {m = m} {h' = h'} m' p =
+      m'                                                            ≡⟨ shiftr (sym (idl _) ∙ sym (idl _)) (insertl' _ (viso.invl' x')) ⟩
+      hom[] (viso.to' x' ∘' viso.from' x' ∘' m')                    ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (idl _) (idl _))  ∙ ap hom[] (unwhisker-r (idl _) (idl _)) ⟩
+      hom[] (viso.to' x' ∘' ⌜ hom[ idl _ ] (viso.from' x' ∘' m') ⌝) ≡⟨ ap! (unique _ _ _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
+      hom[] (viso.to' x' ∘' universal _ _ _ h') ∎
 ```
 -->
 
-## Skeletal Generic Objects
+## Skeletal generic objects
 
 We say that a generic object $t'$ is **skeletal** if the classifying map
 in the base category is unique: if $u : x \to t$ underlies a Cartesian
@@ -157,17 +157,17 @@ map $x' \to_u t'$, then it must be the map coming from the generic object
 structure of $t'$.
 
 This condition is quite strong: for instance, the family fibration of a
-strict category $\cC$ has a skeletal generic object if and only if $\cC$
-is [skeletal] (See [here] for a proof).
+[[strict category]] $\cC$ has a skeletal generic object if and only if
+$\cC$ is [skeletal].^[See [here][skeletal-generic-object] for a proof.]
 
+[skeletal-generic-object]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
 [skeletal]: Cat.Skeletal.html
-[here]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
 
 ```agda
-is-skeletal-generic-object : ∀ {t} {t′ : Ob[ t ]} → Generic-object t′ → Type _
-is-skeletal-generic-object {t} {t′} gobj =
-  ∀ {x} {x′ : Ob[ x ]} {u : Hom x t} {f′ : Hom[ u ] x′ t′}
-  → is-cartesian E u f′ → u ≡ classify x′
+is-skeletal-generic-object : ∀ {t} {t' : Ob[ t ]} → Generic-object t' → Type _
+is-skeletal-generic-object {t} {t'} gobj =
+  ∀ {x} {x' : Ob[ x ]} {u : Hom x t} {f' : Hom[ u ] x' t'}
+  → is-cartesian E u f' → u ≡ classify x'
   where open Generic-object gobj
 ```
 
@@ -178,13 +178,13 @@ is-skeletal-generic-object {t} {t′} gobj =
 <!--
 ```agda
 is-skeletal-generic-object-is-prop
-  : ∀ {t} {t′ : Ob[ t ]} {gobj : Generic-object t′}
+  : ∀ {t} {t' : Ob[ t ]} {gobj : Generic-object t'}
   → is-prop (is-skeletal-generic-object gobj)
 is-skeletal-generic-object-is-prop = hlevel!
 ```
 -->
 
-## Gaunt Generic Objects
+## Gaunt generic objects
 
 A generic object is **gaunt** if the classifying maps _themselves_ are
 unique. This condition expands on that of skeletality: if $u' : x' \to_u
@@ -194,16 +194,16 @@ must, as well.
 
 We can also expand on what this means for the family fibration:
 $\rm{Fam}({\cC})$ has a gaunt generic object if and only if $\cC$ is itself
-[gaunt] (See [here] for the proof).
+[gaunt] (See [here](Cat.Displayed.Instances.Family.html#gaunt-generic-objects)
+for the proof).
 
 [gaunt]: Cat.Gaunt.html
-[here]: Cat.Displayed.Instances.Family.html#gaunt-generic-objects
 
 <!--
 ```agda
 record is-gaunt-generic-object
-  {t} {t′ : Ob[ t ]}
-  (gobj : Generic-object t′)
+  {t} {t' : Ob[ t ]}
+  (gobj : Generic-object t')
   : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   no-eta-equality
   open Generic-object gobj
@@ -213,16 +213,16 @@ record is-gaunt-generic-object
 ```agda
   field
     classify-unique : is-skeletal-generic-object gobj
-    classify-unique′
-      : ∀ {x} {x′ : Ob[ x ]} {u : Hom x t} {f′ : Hom[ u ] x′ t′}
-      → (cart : is-cartesian E u f′)
-      →  f′ ≡[ classify-unique cart ] classify′ x′
+    classify-unique'
+      : ∀ {x} {x' : Ob[ x ]} {u : Hom x t} {f' : Hom[ u ] x' t'}
+      → (cart : is-cartesian E u f')
+      →  f' ≡[ classify-unique cart ] classify' x'
 ```
 
 <!--
 ```agda
 gaunt-generic-object→skeletal-generic-object
-  : ∀ {t} {t′ : Ob[ t ]} {gobj : Generic-object t′}
+  : ∀ {t} {t' : Ob[ t ]} {gobj : Generic-object t'}
   → is-gaunt-generic-object gobj → is-skeletal-generic-object gobj
 gaunt-generic-object→skeletal-generic-object =
   is-gaunt-generic-object.classify-unique
@@ -236,11 +236,11 @@ gaunt-generic-object→skeletal-generic-object =
 <!--
 ```agda
 is-gaunt-generic-object-is-prop
-  : ∀ {t} {t′ : Ob[ t ]} {gobj : Generic-object t′}
+  : ∀ {t} {t' : Ob[ t ]} {gobj : Generic-object t'}
   → is-prop (is-gaunt-generic-object gobj)
 is-gaunt-generic-object-is-prop = Iso→is-hlevel 1 eqv $
   Σ-is-hlevel 1 hlevel! λ _ →
-  Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ →
+  Π-is-hlevel' 1 λ _ → Π-is-hlevel³' 1 λ _ _ _ →
   Π-is-hlevel 1 λ _ →
   PathP-is-hlevel' 1 (Hom[ _ ]-set _ _) _ _
   where unquoteDecl eqv = declare-record-iso eqv (quote is-gaunt-generic-object)

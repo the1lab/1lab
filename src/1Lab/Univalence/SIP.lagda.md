@@ -8,7 +8,6 @@ description: |
 
 <!--
 ```agda
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi
@@ -45,14 +44,11 @@ in Homotopy Type Theory, which generically say that "paths on a
 structure are isomorphisms of that structure".
 
 For instance, the version in the HoTT Book says that if a structure `S`
-on the objects of a univalent category `S` can be described in a certain
+on the objects of a [[univalent category]] `S` can be described in a certain
 way, then the category of `S`-structured objects of `C` is univalent. As
 a benefit, the Book version of the SIP characterises the _homomorphisms_
 of `S`-structures, not just the _isomorphisms_. As a downside, it only
-applies to [set-level] structures.
-
-[set-level]: agda://1Lab.HLevel#is-set
-
+applies to [[set-level|set]] structures.
 
 ```agda
 record
@@ -108,7 +104,7 @@ private variable
 
 A structure is said to be **univalent** if a homomorphic equivalence of
 structures `A`, `B` induces a path of the structures, over the
-univalence axiom --- that is, if `is-hom`{.Agda} agrees with what it
+[[univalence axiom]] --- that is, if `is-hom`{.Agda} agrees with what it
 means for "S X" and "S Y" to be identified, where this identification is
 dependent on one induced by univalence.
 
@@ -160,7 +156,7 @@ sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ 
 sip σ = SIP σ .fst
 ```
 
-# Structure Combinators
+# Structure combinators
 
 Univalent structures can be built up in an algebraic manner through the
 use of _structure combinators_. These express closure of structures
@@ -242,17 +238,14 @@ Str-function-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
   Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funext-dep≃
 ```
 
-## Example: $\infty$-magmas
+## Example: magmas
 
 We provide an example of applying the SIP, and the structure
-combinators: **$\infty$-magmas**. Recall that a [magma] is a [Set]
+combinators: **$\infty$-magmas**. Recall that a [[magma]] is a [[set]]
 equipped with a binary operation, with no further conditions imposed. In
 HoTT, we can relax this even further: An $\infty$-magma is a
 `Type`{.Agda} - that is, an $\infty$-groupoid - equipped with a binary
 operation.
-
-[magma]: https://ncatlab.org/nlab/show/magma
-[Set]: agda://1Lab.HLevel.Universe#Set
 
 ```agda
 private
@@ -395,7 +388,7 @@ We have a similar phenomenon that happens with NAND and NOR:
     true true → refl
 ```
 
-# Transport Structures
+# Transport structures
 
 As an alternative to equipping a type family `S : Type → Type` with a
 notion of S-homomorphism, we can equip it with a notion of _action_.
@@ -536,11 +529,11 @@ Let's rewrite `∞-Magma`{.Agda} using `Function-str`{.Agda} to see how it
 compares:
 
 ```agda
-  ∞-Magma′ : Structure lzero binop
-  ∞-Magma′ = Function-str id (Function-str id Pointed-str)
+  ∞-Magma' : Structure lzero binop
+  ∞-Magma' = Function-str id (Function-str id Pointed-str)
 
   _ : {A B : Type-with ∞-Magma} {f : A .fst ≃ B .fst}
-    → ∞-Magma′ .is-hom A B f
+    → ∞-Magma' .is-hom A B f
     ≡ ( (x y : A .fst) → f .fst (A .snd x y) ≡ B .snd (f .fst x) (f .fst y))
   _ = refl
 ```
@@ -593,7 +586,7 @@ Function-action-is-transport {S = S} {α = α} {β = β} α-tr β-tr eqv f =
 ```
 </details>
 
-# Adding Axioms
+# Adding axioms
 
 Most mathematical objects of interest aren't merely sets with structure.
 More often, the objects we're interested in have _stuff_ (the underlying
@@ -611,9 +604,7 @@ and c) the point acts as a left- and right- identity for the operation.
 Fortunately, the SIP again applies here: If you augment a standard
 notion of structure with _axioms_, then identification of structures
 with axioms is still isomorphism of the underlying structures. For this,
-we require that the axioms be [valued in propositions].
-
-[valued in propositions]: agda://1Lab.HLevel#is-prop
+we require that the axioms are valued in [[propositions]].
 
 ```agda
 module _
@@ -675,7 +666,7 @@ transfer-axioms {univ = univ} {axioms = axioms} A B eqv =
   subst (λ { (x , y) → axioms x y }) (sip univ eqv) (A .snd .snd)
 ```
 
-# A Language for Structures
+# A language for structures
 
 The structure combinators can be abstracted away into a _language_ for
 defining structures. A `Str-term`{.Agda} describes a structure, that may be
@@ -770,7 +761,7 @@ Term→action-is-transport (s s× s₁) =
     (Term→action-is-transport s) (Term→action-is-transport s₁)
 ```
 
-## Descriptions of Structures
+## Descriptions of structures
 
 To make convenient descriptions of structures-with-axioms, we introduce
 a record type, `Str-desc`{.Agda}, which packages together the structure

@@ -1,9 +1,9 @@
 <!--
 ```agda
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.Properties
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -64,14 +64,16 @@ map $Y \ortho f$.
   o⊥m {A} {B} Y f = (c : C.Hom Y B) → is-contr (Σ[ d ∈ C.Hom Y A ] (f C.∘ d ≡ c))
 ```
 
-**Note**: In the formalisation, we don't write $\bot$ infix, since it
+:::{.note}
+In the formalisation, we don't write $\bot$ infix, since it
 must be explicitly applied to the category in which the morphisms live.
 Thus, we define three distinct predicates expressing orthogonality:
 `m⊥m`{.Agda} ("map-map"), `m⊥o`{.Agda} ("map-object"), and `o⊥m`
 ("object-map"). If the ambient category $\cC$ has enough co/limits,
 being orthogonal to an object is equivalent to being orthogonal to an
 object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
-$!_X : X \to 1$ is the unique map from $X$ into the terminal object.
+$!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
+:::
 
 <!--
 ```agda
@@ -114,14 +116,14 @@ holds in the generality of precategories.
 ```agda
   m⊥-iso f x≅y f⊥X a =
     contr
-      ( g.to C.∘ contr′ .centre .fst
-      , C.pullr (contr′ .centre .snd) ∙ C.cancell g.invl )
+      ( g.to C.∘ contr' .centre .fst
+      , C.pullr (contr' .centre .snd) ∙ C.cancell g.invl )
       λ x → Σ-prop-path (λ _ → hlevel 1) $
-        ap₂ C._∘_ refl (ap fst (contr′ .paths (g.from C.∘ x .fst , C.pullr (x .snd))))
+        ap₂ C._∘_ refl (ap fst (contr' .paths (g.from C.∘ x .fst , C.pullr (x .snd))))
         ∙ C.cancell g.invl
     where
       module g = C._≅_ x≅y
-      contr′ = f⊥X (g.from C.∘ a)
+      contr' = f⊥X (g.from C.∘ a)
 ```
 -->
 
@@ -141,7 +143,7 @@ itself, then it is an isomorphism:
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     {r : Functor C D} {ι : Functor D C}
     (r⊣ι : r ⊣ ι) (ι-ff : is-fully-faithful ι)
   where
@@ -156,11 +158,11 @@ module
 ```
 -->
 
-Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary
-\r{reflective subcategory}. Speaking abstractly, there is a "universal"
-choice of test for whether an object is "in" the subcategory: Whether
-the adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.
-The theory of orthogonality gives a second way to detect this situation.
+Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary [[reflective
+subcategory]]. Speaking abstractly, there is a "universal" choice of
+test for whether an object is "in" the subcategory: Whether the
+adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.  The
+theory of orthogonality gives a second way to detect this situation.
 The proof here is from [@Borceux:vol1, §5.4].
 
 The first thing we observe is that any map $f$ such that $r(f)$ is an
@@ -172,8 +174,8 @@ the object. Given a map $a : a \to \iota X$,
   in-subcategory→orthogonal-to-inverted
     : ∀ {X} {a b} {f : C.Hom a b} → D.is-invertible (r.₁ f) → m⊥o C f (ι.₀ X)
   in-subcategory→orthogonal-to-inverted {X} {A} {B} {f} rf-inv a→x =
-    contr (fact , factors) λ { (g , factors′) →
-      Σ-prop-path (λ _ → hlevel 1) (h≡k factors factors′) }
+    contr (fact , factors) λ { (g , factors') →
+      Σ-prop-path (λ _ → hlevel 1) (h≡k factors factors') }
     where
       module rf = D.is-invertible rf-inv
       module η⁻¹ {a} = C.is-invertible (is-reflective→unit-G-is-iso r⊣ι ι-ff {a})

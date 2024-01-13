@@ -11,8 +11,8 @@ import Cat.Functor.Morphism
 
 ```agda
 module Cat.Functor.Reasoning
-  {o ℓ o′ ℓ′}
-  {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'}
+  {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
   (F : Functor 𝒞 𝒟) where
 
 module 𝒞 = Cat.Reasoning 𝒞
@@ -31,7 +31,7 @@ private variable
 -->
 
 
-# Reasoning Combinators for Functors
+# Reasoning combinators for functors
 
 The combinators exposed in [category reasoning] abstract out a lot of common
 algebraic manipulations, and make proofs much more concise. However, once functors
@@ -41,7 +41,7 @@ This module is meant to be imported qualified.
 
 [category reasoning]: Cat.Reasoning.html
 
-## Identity Morphisms
+## Identity morphisms
 
 ```agda
 module _ (a≡id : a ≡ 𝒞.id) where

@@ -2,13 +2,12 @@
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Properties
 open import Cat.Functor.Kan.Nerve
 open import Cat.Instances.Comma
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -18,18 +17,17 @@ module Cat.Functor.Dense where
 
 # Dense subcategories
 
-A $\kappa$-small subcategory $\cC \sube \cD$ of a locally
-$\kappa$-small category $\cD$ (hence a \r{fully faithful} functor $F
-: \cC \mono \cD$) is called **dense** if objects of $\cD$ are
-generated under \r{colimits} by those of $\cC$, in a certain
-canonical way. In particular, any functor $F$ and object $d : \cD$
-can be put into a diagram
+A $\kappa$-small subcategory $\cC \sube \cD$ of a locally $\kappa$-small
+category $\cD$ (hence a [[fully faithful functor]] $F : \cC \mono \cD$)
+is called **dense** if objects of $\cD$ are generated under [[colimits]]
+by those of $\cC$, in a certain canonical way. In particular, any
+functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
-J : (F \searrow d) \xto{\mathrm{pr}} C \xto{\iota} D\text{,}
+J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D\text{,}
 $$
 
-where $(\iota \searrow d) \to C$ is the projection functor from the
+where $(F \searrow d) \to C$ is the projection functor from the
 corresponding [comma category], in such a way that the object $d$ is the
 nadir of a cocone over $J$.
 
@@ -46,8 +44,8 @@ module
   open _=>_
 
   private
-    module C = Cr C
-    module D = Cr D
+    module C = Precategory C
+    module D = Precategory D
     module F = Fr F
 ```
 -->
@@ -62,7 +60,7 @@ module
 ```
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
-$d : \cD$. The important of density is that, for a dense functor $F$,
+$d : \cD$. The importance of density is that, for a dense functor $F$,
 the induced [nerve] functor is fully faithful.
 
 [nerve]: Cat.Functor.Kan.Nerve.html
@@ -79,8 +77,7 @@ the induced [nerve] functor is fully faithful.
         λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .sq ∙ D.idl _)
 
     invr : ∀ {x y} (f : Nerve F .F₀ x => Nerve F .F₀ y) → Nerve F .F₁ (inv f) ≡ f
-    invr f = Nat-path λ x → funext λ i →
-      is-dense.factors _ {j = ↓obj i} _ _
+    invr f = ext λ x i → is-dense.factors _ {j = ↓obj i} _ _
 
     invl : ∀ {x y} (f : D.Hom x y) → inv (Nerve F .F₁ f) ≡ f
     invl f = sym $ is-dense.unique _ _ _ f (λ _ → refl)
@@ -97,5 +94,5 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     → f ≡ g
   dense→separating dense h =
     fully-faithful→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
-      Nat-path λ x → funext λ g → h g
+      ext λ x g → h g
 ```

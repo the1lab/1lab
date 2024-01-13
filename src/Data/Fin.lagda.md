@@ -6,7 +6,7 @@ open import Data.Fin.Finite public
 open import Data.Fin.Base public
 ```
 
-# Finite Sets - Index
+# Finite sets - index
 
 The natural numbers are constructed in the module
 [`Data.Fin.Base`]. Their arithmetical properties are proved in

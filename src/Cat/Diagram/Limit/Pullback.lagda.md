@@ -3,12 +3,9 @@
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
-open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
-
-open import Data.Bool
 ```
 -->
 
@@ -89,15 +86,11 @@ Terminal-cone→Pullback {F = F} lim = pb where
         lim.top .ψ cs-c ∘ lim'                         ≡˘⟨ pulll (lim.top .commutes _) ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (_ ∘_) a ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ p₁'                    ∎
-```
 
-<!--
-```agda
 Limit→Pullback
-  : ∀ {x y}
-  → {F : Functor (·→·←· {x} {y}) Cat}
-  → Limit F
-  → Pullback Cat (F .F₁ {cs-a} {cs-c} _) (F .F₁ {cs-b} {cs-c} _)
+  : ∀ {x y} {a b c} → {f : Hom a c} {g : Hom b c}
+  → Limit (cospan→cospan-diagram x y f g)
+  → Pullback Cat f g
 Limit→Pullback x = Terminal-cone→Pullback (Limit→Terminal-cone _ x)
 
 Pullback→Limit
@@ -106,4 +99,3 @@ Pullback→Limit
   → Limit (cospan→cospan-diagram x y {C = Cat} f g)
 Pullback→Limit x = Terminal-cone→Limit _ (Pullback→Terminal-cone x)
 ```
--->

@@ -1,6 +1,10 @@
 <!--
 ```agda
 open import Cat.Prelude
+open import Cat.Finite
+
+open import Data.Fin.Finite
+open import Data.Fin
 ```
 -->
 
@@ -12,20 +16,19 @@ module Cat.Instances.Shape.Cospan where
 
 A _cospan_ in a category $\cC$ is a pair of morphisms $a \xto{f} c
 \xot{g} b$ with a common codomain. A [limit] over a diagram with cospan
-shape is called a [pullback]. Correspondingly, to encode such diagrams,
-we have a "cospan category" $\bull \to \bull \ot \bull$. The dual of
-this category, which looks like $\bull \ot \bull \to \bull$, is the
-"span" category. Colimits over a span are called [pushouts].
+shape is called a [[pullback]]. Correspondingly, to encode such
+diagrams, we have a "cospan category" $\bull \to \bull \ot \bull$. The
+dual of this category, which looks like $\bull \ot \bull \to \bull$, is
+the "span" category. Colimits over a span are called [pushouts].
 
 [limit]: Cat.Diagram.Limit.Base.html
-[pullback]: Cat.Diagram.Pullback.html
 [pushouts]: Cat.Diagram.Pushout.html
 
 ```agda
 data Cospan-ob ℓ : Type ℓ where
   cs-a cs-b cs-c : Cospan-ob ℓ
 
-Cospan-hom : ∀ {ℓ ℓ′} → Cospan-ob ℓ → Cospan-ob ℓ → Type ℓ′
+Cospan-hom : ∀ {ℓ ℓ'} → Cospan-ob ℓ → Cospan-ob ℓ → Type ℓ'
 Cospan-hom cs-a cs-a = Lift _ ⊤ -- identity on a
 Cospan-hom cs-a cs-b = Lift _ ⊥ -- no maps a → b
 Cospan-hom cs-a cs-c = Lift _ ⊤ -- one map a → c
@@ -86,6 +89,35 @@ Cospan-hom cs-c cs-c = Lift _ ⊤ -- identity on c
   precat .assoc {cs-c} {cs-c} {cs-c} {cs-c} _ _ _ i = lift tt
 
 ·←·→· = ·→·←· ^op
+
+instance
+  Finite-Cospan-ob : ∀ {ℓ} → Finite (Cospan-ob ℓ)
+  Finite-Cospan-ob = fin {cardinality = 3} (inc (Iso→Equiv i)) where
+    i : Iso _ _
+    i .fst cs-a = 0
+    i .fst cs-b = 1
+    i .fst cs-c = 2
+    i .snd .is-iso.inv fzero = cs-a
+    i .snd .is-iso.inv (fsuc fzero) = cs-b
+    i .snd .is-iso.inv (fsuc (fsuc fzero)) = cs-c
+    i .snd .is-iso.rinv fzero = refl
+    i .snd .is-iso.rinv (fsuc fzero) = refl
+    i .snd .is-iso.rinv (fsuc (fsuc fzero)) = refl
+    i .snd .is-iso.linv cs-a = refl
+    i .snd .is-iso.linv cs-b = refl
+    i .snd .is-iso.linv cs-c = refl
+
+·→·←·-finite : ∀ {a b} → is-finite-precategory (·→·←· {a} {b})
+·→·←·-finite = finite-cat-hom λ where
+  cs-a cs-a → auto
+  cs-a cs-b → auto
+  cs-a cs-c → auto
+  cs-b cs-a → auto
+  cs-b cs-b → auto
+  cs-b cs-c → auto
+  cs-c cs-a → auto
+  cs-c cs-b → auto
+  cs-c cs-c → auto
 ```
 -->
 

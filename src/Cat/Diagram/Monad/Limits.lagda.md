@@ -100,13 +100,13 @@ $\cC$ later.
     em-lim : make-is-limit F _
     em-lim .ψ j .morphism = lim.ψ j
     em-lim .ψ j .commutes = comm j
-    em-lim .commutes f    = Algebra-hom-path C (lim.commutes f)
+    em-lim .commutes f    = ext (lim.commutes f)
     em-lim .universal eta p .morphism =
       lim.universal (λ j → eta j .morphism) (λ f i → p f i .morphism)
     em-lim .factors eta p =
-      Algebra-hom-path C (lim.factors _ _)
+      ext (lim.factors _ _)
     em-lim .unique eta p other q =
-      Algebra-hom-path C (lim.unique _ _ _ λ j i → q j i .morphism)
+      ext (lim.unique _ _ _ λ j i → q j i .morphism)
     em-lim .universal eta p .commutes = lim.unique₂ _
       (λ f → C.pulll (F.F₁ f .commutes)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap morphism (p f))))
@@ -124,7 +124,7 @@ functor $U$ reflects limits: We already had an algebra structure
   Forget-reflects-limits : reflects-limit (Forget C M) F
   Forget-reflects-limits {K} {eps} lim = to-is-limitp
     (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .commutes))
-    (Algebra-hom-path C refl)
+    trivial!
 ```
 
 Having shown that $U$ reflects the property of _being a limit_, we now

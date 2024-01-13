@@ -10,7 +10,7 @@ import Cat.Reasoning as Cat
 module Cat.Functor.Solver where
 
 
-module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
+module NbE {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
   private
     module 𝒞 = Cat 𝒞
     module 𝒟 = Cat 𝒟
@@ -25,7 +25,7 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     ‶id‶  : CExpr A A
     _↑    : 𝒞.Hom A B → CExpr A B
 
-  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     ‶F₁‶  : CExpr A B → DExpr (F₀ A) (F₀ B)
     _‶∘‶_ : DExpr Y Z → DExpr X Y → DExpr X Z
     ‶id‶  : DExpr X X
@@ -49,11 +49,11 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     vid : CValue A A
     vcomp : 𝒞.Hom B C → CValue A B → CValue A C
 
-  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     vhom : 𝒟.Hom X Y → Frame X Y
     vfmap : 𝒞.Hom A B → Frame (F₀ A) (F₀ B)
 
-  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     vid   : DValue X X
     vcomp : Frame Y Z → DValue X Y → DValue X Z
 
@@ -168,26 +168,26 @@ module Reflection where
 
   build-dexpr : Term → Term → TC Term
   build-dexpr functor “id” =
-    returnTC $ con (quote NbE.DExpr.‶id‶) []
+    pure $ con (quote NbE.DExpr.‶id‶) []
   build-dexpr functor (“∘” f g) = do
     f ← build-dexpr functor f
     g ← build-dexpr functor g
-    returnTC $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
+    pure $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
   build-dexpr functor (“F₁” functor' f) = do
     unify functor functor'
-    returnTC $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
+    pure $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
   build-dexpr functor f =
-    returnTC $ con (quote NbE.DExpr._↑) (f v∷ [])
+    pure $ con (quote NbE.DExpr._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
 
-  solve-macro : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
+  solve-macro : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
   solve-macro functor hole =
    withNormalisation false $
    withReduceDefs (false , dont-reduce) $ do
      functor-tm ← quoteTC functor
-     goal ← inferType hole >>= reduce
+     goal ← infer-type hole >>= reduce
      just (lhs , rhs) ← get-boundary goal
        where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                    termErr goal ∷ []
@@ -196,10 +196,10 @@ module Reflection where
      noConstraints $ unify hole (“solve” functor-tm elhs erhs)
 
 macro
-  functor! : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
+  functor! : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
   functor! functor = Reflection.solve-macro functor
 
-private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
+private module Test {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
   module 𝒞 = Cat 𝒞
   module 𝒟 = Cat 𝒟
   open Functor F

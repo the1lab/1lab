@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Elements
-open import Cat.Instances.Functor
 open import Cat.Instances.Slice
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
@@ -85,12 +85,12 @@ module _ {P : Functor (C ^op) (Sets κ)} where
   private abstract
     lemma
       : ∀ (y : Functor (∫ C P ^op) (Sets κ))
-          {o o′} {s} {s′} {el : ∣ y .F₀ (elem o s) ∣}
-          {f : C .Hom o′ o} (p : F₁ P f s ≡ s′)
-      → subst (λ e → ∣ y .F₀ (elem o′ e) ∣) p (y .F₁ (elem-hom f refl) el)
+          {o o'} {s} {s'} {el : ∣ y .F₀ (elem o s) ∣}
+          {f : C .Hom o' o} (p : F₁ P f s ≡ s')
+      → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) el)
       ≡ y .F₁ (elem-hom f p) el
-    lemma y {o = o} {o′ = o′} {el = it} {f = f} =
-      J (λ s′ p → subst (λ e → ∣ y .F₀ (elem o′ e) ∣) p (y .F₁ (elem-hom f refl) it)
+    lemma y {o = o} {o' = o'} {el = it} {f = f} =
+      J (λ s' p → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) it)
                 ≡ y .F₁ (elem-hom f p) it)
         (transport-refl _)
 ```
@@ -148,16 +148,16 @@ without comment.
       ∙ ap fst (happly (nt .is-natural _ _
           (elem-hom f (happly (sym (x .map .is-natural _ _ _)) _))) _)
 
-    inv nt .commutes = Nat-path λ z → funext λ w →
+    inv nt .commutes = ext λ z w →
       nt .η (elem _ (x .map .η _ _)) (w , refl) .snd
 
     rinv : is-right-inverse inv (F₁ slice→total)
-    rinv nt = Nat-path λ o → funext λ where
-      (z , p) → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
+    rinv nt = ext λ where
+      o (z , p) → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
         (λ i → nt .η (elem (o .ob) (p i)) (z , (λ j → p (i ∧ j))) .fst)
 
     linv : is-left-inverse inv (F₁ slice→total)
-    linv sh = /-Hom-path (Nat-path (λ z → refl))
+    linv sh = trivial!
 
   open is-precat-iso
   slice→total-is-iso : is-precat-iso slice→total
@@ -177,16 +177,16 @@ algebra, so we omit the proof.
     isom .rinv x =
       Functor-path
         (λ i → n-ua (Fibre-equiv (λ a → ∣ x .F₀ (elem (i .ob) a) ∣) (i .section)))
-        λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma′ _ _ _) }
+        λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma' _ _ _) }
       where abstract
-        lemma′
-          : ∀ {o o′} {sect : ∣ P.₀ (o .ob) ∣}
-              (f : Hom (∫ C P ^op) o o′)
+        lemma'
+          : ∀ {o o'} {sect : ∣ P.₀ (o .ob) ∣}
+              (f : Hom (∫ C P ^op) o o')
               (b : ∣ x .F₀ (elem (o .ob) sect) ∣)
               (p : sect ≡ o .section)
           → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
           ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b)
-        lemma′ {o = o} {o′ = o′} f b p =
+        lemma' {o = o} {o' = o'} f b p =
           J (λ _ p → ∀ f b → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
                            ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b))
             (λ f b → ap₂ (x .F₁) (Element-hom-path _ _ refl) (sym (transport-refl b)))

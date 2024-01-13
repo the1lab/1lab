@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->
@@ -15,7 +14,7 @@ open import Cat.Morphism C
 ```
 -->
 
-# Initial objects
+# Initial objects {defines="initial-object"}
 
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
 if there exists a _unique_ map to any other object:
@@ -72,21 +71,49 @@ One important fact about initial objects is that they are **unique** up
 to isomorphism:
 
 ```agda
-⊥-unique : (i i′ : Initial) → bot i ≅ bot i′
-⊥-unique i i′ = make-iso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
+⊥-unique : (i i' : Initial) → bot i ≅ bot i'
+⊥-unique i i' = make-iso (¡ i) (¡ i') (¡-unique₂ i' _ _) (¡-unique₂ i _ _)
 ```
 
 Additionally, if $C$ is a category, then the space of initial objects is
 a proposition:
 
 ```agda
-⊥-contractible : is-category C → is-prop Initial
-⊥-contractible ccat x1 x2 i .bot =
+⊥-is-prop : is-category C → is-prop Initial
+⊥-is-prop ccat x1 x2 i .bot =
   Univalent.iso→path ccat (⊥-unique x1 x2) i
 
-⊥-contractible ccat x1 x2 i .has⊥ ob =
+⊥-is-prop ccat x1 x2 i .has⊥ ob =
   is-prop→pathp
     (λ i → is-contr-is-prop
       {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
     (x1 .has⊥ ob) (x2 .has⊥ ob) i
+```
+
+## Strictness
+
+An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
+This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
+
+This is an instance of the more general notion of [van Kampen colimits].
+
+[strict]: https://ncatlab.org/nlab/show/strict+initial+object
+[van Kampen colimits]: https://ncatlab.org/nlab/show/van+Kampen+colimit
+
+
+```agda
+is-strict-initial : Initial → Type _
+is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
+
+record Strict-initial : Type (o ⊔ h) where
+  field
+    initial : Initial
+    has-is-strict : is-strict-initial initial
+```
+
+Strictness is a property of, not structure on, an initial object.
+
+```agda
+is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
+is-strict-initial-is-prop i = hlevel!
 ```

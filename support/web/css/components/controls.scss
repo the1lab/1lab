@@ -1,0 +1,221 @@
+@import "../vars.scss";
+
+$dropdown-popup-width: 280px;
+$button-size:          32px;
+
+div#controls {
+  position: sticky;
+  top:      3rem;
+  margin-left: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+
+  --serif: "";
+  --font-size: 1.3rem;
+
+  hr {
+    margin: 0.75em 0em;
+  }
+}
+
+button.labelled-button.button-large {
+  --button-size: 48px;
+}
+
+button.labelled-button {
+  position: relative;
+
+  --button-size: #{$button-size};
+  width:  var(--button-size);
+  height: var(--button-size);
+
+  background-color:    var(--text-bg);
+
+  border-style:  none;
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  direction: rtl;
+
+  .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+
+    width:  100%;
+    height: 100%;
+
+    background-position: center;
+    background-size:     calc(var(--button-size) * 3/4) calc(var(--button-size) * 3/4);
+    background-repeat:   no-repeat;
+
+    filter: var(--icon-filter);
+  }
+
+  .hover-label {
+    position:           relative;
+    inset-inline-start: var(--button-size);
+    padding: 4px 8px;
+
+    visibility: hidden;
+    z-index: 101;
+
+    white-space: pre;
+
+    background-color: var(--button-hover-bg);
+    color:            var(--text-fg);
+  }
+
+  &:hover {
+    background-color: var(--button-hover-bg);
+    > .hover-label {
+      visibility: visible;
+    }
+  }
+}
+
+button.theme-button, button.labelled-button {
+  &.active {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--active) !important;
+  }
+}
+
+button.theme-button {
+  padding: 6px;
+
+  border-style:  2px solid;
+  border-radius: 5px;
+
+  position:     relative;
+
+  &.theme-button-light, &.theme-button-system {
+    background-color: $light-text-bg;
+    border-color:     darken($light-text-bg, 10%);
+    color:            $light-text-fg;
+  }
+
+  &.theme-button-dark {
+    background-color: $dark-text-bg;
+    border-color:     $dark-text-bg;
+    color:            $dark-text-fg;
+  }
+
+  &:hover::after {
+    content: "";
+    display: block;
+    border-bottom: 3px solid var(--primary);
+    position: absolute;
+    bottom: -8px;
+    inset-inline-start: -1px;
+    width: calc(100% + 2px);
+  }
+}
+
+div.dropdown {
+  position: relative;
+  margin: 0;
+  border: 0;
+  list-style: none;
+
+  div.dropdown-popup {
+    position:           absolute;
+    top:                0;
+    inset-inline-start: (-1 * ($dropdown-popup-width + 4px));
+    visibility:         hidden;
+
+    width:      $dropdown-popup-width;
+    min-height: $button-size;
+
+    padding: 0.75em 0;
+
+    z-index: 100;
+
+    background-color:       var(--popup-bg);
+    color:                  var(--text-fg);
+    box-shadow: 2px 2px 2px var(--shadow);
+
+    font-family: var(--sans-serif);
+    font-size:   13pt;
+  }
+
+  &.open {
+    .hover-label    { visibility: hidden; }
+    .dropdown-popup { visibility: visible; }
+  }
+}
+
+div.button-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap: 1em;
+
+  padding: 0.25em 1em;
+}
+
+div.setting-switch {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap: 1em;
+
+  padding: 0.25em 1em;
+}
+
+
+label.switch {
+  position: relative;
+  display:  inline-block;
+
+  height: 24px;
+  width:  48px;
+
+  input {
+    opacity: 0;
+    width:   0;
+    height:  0;
+  }
+
+  .switch-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    border-radius: $button-size;
+
+    transition: .3s;
+    transition-property: transform;
+  }
+
+  .switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width:  16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+
+    transition: .3s;
+    transition-property: transform;
+  }
+
+  input:checked + .switch-slider {
+    background-color: var(--active);
+  }
+
+  input:focus + .switch-slider {
+    box-shadow: 0 0 1px var(--active);
+  }
+
+  input:checked + .switch-slider:before {
+    transform: translateX(24px);
+  }
+}

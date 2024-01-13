@@ -9,6 +9,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+open import Data.Sum.Base
 
 open is-equiv
 open is-contr
@@ -22,7 +23,7 @@ module Data.Bool where
 open import Prim.Data.Bool public
 ```
 
-# The Booleans
+# The booleans
 
 The type of booleans is interesting in homotopy type theory because it
 is the simplest type where its automorphisms in `Type`{.Agda} are
@@ -132,7 +133,50 @@ and-idempotent true = refl
 or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
+
+and-distrib-orr : (x y z : Bool) → and (or x y) z ≡ or (and x z) (and y z)
+and-distrib-orr true y z =
+  sym (or-absorbs-andr z y) ∙ ap (or z) (and-commutative z y)
+and-distrib-orr false y z = refl
+
+or-distrib-andr : (x y z : Bool) → or (and x y) z ≡ and (or x z) (or y z)
+or-distrib-andr true y z = refl
+or-distrib-andr false y z =
+  sym (and-absorbs-orr z y) ∙ ap (and z) (or-commutative z y)
 ```
+
+<!--
+```agda
+and-reflect-true-l : ∀ {x y} → and x y ≡ true → x ≡ true
+and-reflect-true-l {x = true} p = refl
+and-reflect-true-l {x = false} p = p
+
+and-reflect-true-r : ∀ {x y} → and x y ≡ true → y ≡ true
+and-reflect-true-r {x = true} {y = true} p = refl
+and-reflect-true-r {x = false} {y = true} p = refl
+and-reflect-true-r {x = true} {y = false} p = p
+and-reflect-true-r {x = false} {y = false} p = p
+
+or-reflect-true : ∀ {x y} → or x y ≡ true → x ≡ true ⊎ y ≡ true
+or-reflect-true {x = true} {y = y} p = inl refl
+or-reflect-true {x = false} {y = true} p = inr refl
+or-reflect-true {x = false} {y = false} p = absurd (true≠false (sym p))
+
+or-reflect-false-l : ∀ {x y} → or x y ≡ false → x ≡ false
+or-reflect-false-l {x = true} p = absurd (true≠false p)
+or-reflect-false-l {x = false} p = refl
+
+or-reflect-false-r : ∀ {x y} → or x y ≡ false → y ≡ false
+or-reflect-false-r {x = true} {y = true} p = absurd (true≠false p)
+or-reflect-false-r {x = true} {y = false} p = refl
+or-reflect-false-r {x = false} {y = true} p = absurd (true≠false p)
+or-reflect-false-r {x = false} {y = false} p = refl
+
+and-reflect-false : ∀ {x y} → and x y ≡ false → x ≡ false ⊎ y ≡ false
+and-reflect-false {x = true} {y = y} p = inr p
+and-reflect-false {x = false} {y = y} p = inl refl
+```
+-->
 
 All the properties above hold both in classical and constructive mathematics, even in
 *[minimal logic][2]* that fails to validate both the law of the excluded middle as well
@@ -162,6 +206,14 @@ and-complementl true = refl
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
 [2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
+
+Furthermore, note that `not` has no fixed points.
+
+```agda
+not-no-fixed : ∀ {x} → x ≡ not x → ⊥
+not-no-fixed {x = true} p = absurd (true≠false p)
+not-no-fixed {x = false} p = absurd (true≠false (sym p))
+```
 
 Exclusive disjunction (usually known as *XOR*) also yields additional structure -
 in particular, it can be viewed as an addition operator in a ring whose multiplication
@@ -213,6 +265,13 @@ imp-truer false = refl
 imp-truer true = refl
 ```
 
+Furthermore, material implication is equivalent to the classical definition.
+
+```agda
+imp-not-or : ∀ x y → or (not x) y ≡ imp x y
+imp-not-or false y = refl
+imp-not-or true y = refl
+```
 
 ## Discreteness
 
@@ -221,14 +280,18 @@ ident=true≠false}, one can write an algorithm to tell whether or not two
 booleans are the same:
 
 ```agda
-Discrete-Bool : Discrete Bool
-Discrete-Bool false false = yes refl
-Discrete-Bool false true = no (λ p → true≠false (sym p))
-Discrete-Bool true false = no true≠false
-Discrete-Bool true true = yes refl
+instance
+  Discrete-Bool : Discrete Bool
+  Discrete-Bool {false} {false} = yes refl
+  Discrete-Bool {false} {true}  = no (λ p → true≠false (sym p))
+  Discrete-Bool {true}  {false} = no true≠false
+  Discrete-Bool {true}  {true}  = yes refl
+```
 
-Bool-is-set : is-set Bool
-Bool-is-set = Discrete→is-set Discrete-Bool
+```agda
+opaque
+  Bool-is-set : is-set Bool
+  Bool-is-set = Discrete→is-set Discrete-Bool
 
 instance
   H-Level-Bool : ∀ {n} → H-Level Bool (2 + n)
@@ -258,8 +321,18 @@ equivalence:
 
 ```agda
 not-is-equiv : is-equiv not
-not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
+not-is-equiv = is-involutive→is-equiv not-involutive
 ```
+
+<!--
+```agda
+not-inj : ∀ {x y} → not x ≡ not y → x ≡ y
+not-inj {x = true}  {y = true}  p = refl
+not-inj {x = true}  {y = false} p = sym p
+not-inj {x = false} {y = true}  p = sym p
+not-inj {x = false} {y = false} p = refl
+```
+-->
 
 ## Aut(Bool)
 
@@ -305,13 +378,12 @@ Bool` _doesn't_ map `f x ≡ x`, then it maps `f x ≡ not x`.
 Bool-aut≡2 : (Bool ≡ Bool) ≡ Lift _ Bool
 Bool-aut≡2 = Iso→Path the-iso where
   lemma : (f : Bool → Bool) {x : Bool} → ¬ f x ≡ x → f x ≡ not x
-  lemma f {false} x with Discrete-Bool (f false) true
-  lemma f {false} x | yes p = p
-  lemma f {false} x | no ¬p = absurd (¬p (x≠false→x≡true _ x))
-
-  lemma f {true} x with Discrete-Bool (f true) false
-  lemma f {true} x | yes p = p
-  lemma f {true} x | no ¬p = absurd (¬p (x≠true→x≡false _ x))
+  lemma f {false} x = caseᵈ (f false ≡ true) of λ where
+    (yes p) → p
+    (no ¬p) → absurd (¬p (x≠false→x≡true _ x))
+  lemma f {true} x = caseᵈ (f true ≡ false) of λ where
+    (yes p) → p
+    (no ¬p) → absurd (¬p (x≠true→x≡false _ x))
 ```
 
 This lemma is slightly annoying to prove, but it's not too complicated.
@@ -322,9 +394,9 @@ are the `yes p = p` cases) - otherwise that contradicts what we've been told.
 ```agda
   the-iso : Iso (Bool ≡ Bool) (Lift _ Bool)
 
-  fst the-iso path with Discrete-Bool (transport path true) true
-  ... | yes path = lift false
-  ... | no ¬path = lift true
+  fst the-iso path = caseᵈ (transport path true ≡ true) of λ where
+    (yes path) → lift false
+    (no ¬path) → lift true
 ```
 
 Now we classify the isomorphism by looking at what it does to
@@ -342,15 +414,15 @@ function being a `right inverse`{.Agda ident=is-iso.rinv} on the nose.
 
 ```agda
   the-iso .snd .is-iso.rinv (lift false) = refl
-  the-iso .snd .is-iso.rinv (lift true) = refl
+  the-iso .snd .is-iso.rinv (lift true)  = refl
 ```
 
 The left inverse is a lot more complicated to prove. We examine how the
 path acts on both `true` and `false`. There are four cases:
 
 ```agda
-  the-iso .snd .is-iso.linv path with Discrete-Bool (transport path true) true
-                                     | Discrete-Bool (transport path false) false
+  the-iso .snd .is-iso.linv path with transport path true  ≡? true
+                                    | transport path false ≡? false
   ... | yes true→true | yes false→false =
     refl                  ≡⟨ sym (Path≃Equiv .snd .linv _) ⟩
     ua (path→equiv refl) ≡⟨ ap ua path→equiv-refl ⟩
@@ -360,7 +432,7 @@ path acts on both `true` and `false`. There are four cases:
 ```
 
 In the case where the path quacks like reflexivity, we use the
-univalence axiom to show that we must be looking at the reflexivity
+[[univalence axiom]] to show that we must be looking at the reflexivity
 path. For this, we use `idLemma` to show that `path→equiv path` must be
 the identity equivalence.
 
@@ -369,7 +441,7 @@ the identity equivalence.
     let
       false→true = lemma (transport path) false→true'
       fibres = is-contr→is-prop (path→equiv path .snd .is-eqv true)
-                              (true , true→true) (false , false→true)
+        (true , true→true) (false , false→true)
     in absurd (true≠false (ap fst fibres))
 ```
 
@@ -391,10 +463,11 @@ The other case is analogous.
 
 ```agda
   ... | no true→false' | no false→true' =
-    ua (not , not-is-equiv) ≡⟨ ap ua (sym (notLemma _
-                                            (lemma (transport path) true→false')
-                                            (lemma (transport path) false→true')))
-                            ⟩
+    ua (not , not-is-equiv)
+      ≡⟨ ap ua (sym (notLemma _
+        (lemma (transport path) true→false')
+        (lemma (transport path) false→true')))
+      ⟩
     ua (path→equiv path)  ≡⟨ Path≃Equiv .snd .linv _ ⟩
     path                   ∎
 ```
@@ -408,6 +481,8 @@ univalence axiom finishes the job.
 if : ∀ {ℓ} {A : Type ℓ} → A → A → Bool → A
 if x y false = y
 if x y true = x
+
+infix 0 if_then_else_
 
 if_then_else_ : ∀ {ℓ} {A : Type ℓ} → Bool → A → A → A
 if false then t else f = f

@@ -60,3 +60,16 @@ _≡_ {A = A} = Path A
 
 {-# BUILTIN PATH _≡_ #-}
 ```
+
+<!--
+```agda
+caseⁱ_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (x : A) → ((y : A) → x ≡ y → B) → B
+caseⁱ x of f = f x (λ i → x)
+
+caseⁱ_return_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} (x : A) (P : A → Type ℓ') → ((y : A) → x ≡ y → P y) → P x
+caseⁱ x return P of f = f x (λ i → x)
+
+{-# INLINE caseⁱ_of_ #-}
+{-# INLINE caseⁱ_return_of_ #-}
+```
+-->

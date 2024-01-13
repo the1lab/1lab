@@ -8,7 +8,7 @@ open import 1Lab.Type
 module 1Lab.Path where
 ```
 
-# The Interval
+# The interval
 
 In HoTT, the inductively-defined identity type gets a new meaning
 explanation: continuous paths, in a topological sense. The "key idea" of
@@ -19,7 +19,7 @@ type_.
 
 <details>
 <summary>
-**Aside**: A brief comment on the meanings of "equal", "identical" and
+A brief comment on the meanings of "equal", "identical" and
 "identified", and how we refer to inhabitants of path types.
 </summary>
 
@@ -66,6 +66,7 @@ the reals breaks down: There's no such thing as `i0.5` (much less
 `i1/π`). In reality, the interval type internalises an abstract interval
 _object_.
 
+:::{.definition #path}
 Regardless, since all functions definable in type theory are
 automatically continuous, we can take a path to be any value in the
 function type `I → A`. When working with paths, though, it's useful to
@@ -73,6 +74,7 @@ mention the endpoints of a path in its type --- that is, the values the
 function takes when applied to `i0` and to `i1`. We can "upgrade" any
 function `f : I → A` to a `Path`{.Agda}, using a definition that looks
 suspiciously like the identity function:
+:::
 
 ```agda
 private
@@ -131,7 +133,7 @@ familiar description, a De Morgan algebra is a Boolean algebra that does
 not (necessarily) satisfy the law of excluded middle. This is necessary
 to maintain type safety.
 
-## Raising Dimension
+## Raising dimension
 
 To wit: In cubical type theory, a term in a context with $n$ interval
 variables expresses a way of mapping an $n$-cube into that type. One
@@ -268,6 +270,21 @@ Square : ∀ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
 Square p q s r = PathP (λ i → p i ≡ r i) q s
 ```
 
+<!--
+```
+SquareP : ∀ {ℓ}
+  (A : I → I → Type ℓ)
+  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
+  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
+  (p : PathP (λ i → A i i0) a₀₀ a₁₀)
+  (q : PathP (λ j → A i0 j) a₀₀ a₀₁)
+  (s : PathP (λ j → A i1 j) a₁₀ a₁₁)
+  (r : PathP (λ i → A i i1) a₀₁ a₁₁)
+  → Type ℓ
+SquareP A p q s r = PathP (λ i → PathP (λ j → A i j) (p i) (r i)) q s
+```
+-->
+
 The arguments to `Square`{.Agda} are as in the following diagram, listed
 in the order “PQSR”. This order is a bit unusual (it's one off from
 being alphabetical, for instance) but it does have a significant
@@ -316,6 +333,27 @@ module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
   private
     sym-invol : sym (sym p) ≡ p
     sym-invol i = p
+```
+
+Given a `Square`{.Agda}, we can "flip" it along either dimension, or along the main diagonal:
+
+```agda
+module _ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
+  {p : a00 ≡ a01}
+  {q : a00 ≡ a10}
+  {s : a01 ≡ a11}
+  {r : a10 ≡ a11}
+  (α : Square p q s r)
+  where
+
+  flip₁ : Square (sym p) s q (sym r)
+  flip₁ = symP α
+
+  flip₂ : Square r (sym q) (sym s) p
+  flip₂ i j = α i (~ j)
+
+  transpose : Square q p r s
+  transpose i j = α j i
 ```
 
 # Paths
@@ -528,7 +566,7 @@ type-correct, and b) get something with the right endpoints. `(λ i → B i
 The case for dependent products (i.e. general `Σ`{.Agda} types) is
 analogous, but without any inverse transports.
 
-## Path Induction
+## Path induction {defines="path-induction contractibility-of-singletons"}
 
 The path induction principle, also known as "axiom J", essentially
 breaks down as the following two statements:
@@ -586,6 +624,21 @@ J-refl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~
 ```agda
 inspect : ∀ {a} {A : Type a} (x : A) → Singleton x
 inspect x = x , refl
+
+record Recall
+  {a b} {A : Type a} {B : A → Type b}
+  (f : (x : A) → B x) (x : A) (y : B x)
+  : Type (a ⊔ b)
+  where
+    constructor ⟪_⟫
+    field
+      eq : f x ≡ y
+
+recall
+  : ∀ {a b} {A : Type a} {B : A → Type b}
+  → (f : (x : A) → B x) (x : A)
+  → Recall f x (f x)
+recall f x = ⟪ refl ⟫
 ```
 -->
 
@@ -645,7 +698,7 @@ The interpretation of types as _Kan_ cubical sets guarantees that the
 open box above extends to a complete square, and thus the line $w \equiv
 z$ exists.
 
-## Partial Elements
+## Partial elements
 
 The definition of Kan cubical sets as those having fillers for all open
 boxes is all well and good, but to use this from within type theory we
@@ -709,7 +762,7 @@ contradiction, since any `I → Partial i1 T` extends to a path:
 A partial element in a context with $n$-variables gives us a way of
 mapping some subobject of the $n$-cube into a type. A natural question
 to ask, then, is: Given a partial element $e$ of $A$, can we extend that
-to a honest-to-god _element_ of $A$, which agrees with $e$ where it is
+to an honest-to-god _element_ of $A$, which agrees with $e$ where it is
 defined?
 
 Specifically, when this is the case, we say that $x : A$ _extends_ $e :
@@ -913,32 +966,18 @@ hfill φ i u =
     j (j = i0) → u i0 1=1
 ```
 
-**Note**: While every inhabitant of `Type`{.Agda} has a composition
-operation, not every _type_ (something that can be on the right of type
-signature `e : T`) does. We call the types that _do_ have a composition
-operation “fibrant”, since these are semantically the cubical sets
-which are Kan complices. Examples of types which are _not_ fibrant
-include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
-and the extensions `_[_↦_]`[^notfibrant].
-
-::: {#fibrant}
-> **Definition**: A type is _fibrant_ if it supports
-`hcomp`{.Agda}. This word comes up a lot when discussing not only the
-semantics of Cubical type theory, but also its practice! For instance,
-the fibrancy of `Type`{.Agda} is what powers [univalence].
+:::{.note}
+While every inhabitant of `Type`{.Agda} has a composition operation, not
+every _type_ (something that can be on the right of a type signature `e
+: T`) does. We call the types that _do_ have a composition operation
+“fibrant”, since these are semantically the cubical sets which are Kan
+complices. Examples of types which are _not_ fibrant include the
+interval `I`{.Agda}, the partial elements `Partial`{.Agda}, and the
+extensions `_[_↦_]`.
 :::
 
-[univalence]: 1Lab.Univalence.html
-
-[^notfibrant]: In Agda 2.6.2, function types `I → A` are _not_ fibrant,
-even though they correspond to paths with “unmarked” endpoints. In Agda
-2.6.3 (in development at the time of writing), `I` was moved to its own
-universe, `IUniv`, with a typing rule for functions saying that `A → B`
-is fibrant whenever `B : Type` and `A : Type` _or_ `A : IUniv` - i.e.
-function types `I → A` were made fibrant whenever `A` is.
-
-Agda also provides a _heterogeneous_ version of composition (sometimes
-referred to as "CCHM composition"), called `comp`{.Agda}. It too has a
+Agda also provides a _heterogeneous_ version of composition (which we
+sometimes call "CCHM composition"), called `comp`{.Agda}. It too has a
 corresponding filling operation, called `fill`{.Agda}. The idea behind
 CCHM composition is --- by analogy with `hcomp`{.Agda} expressing that
 "paths preserve extensibility" --- that `PathP`{.Agda}s preserve
@@ -1009,6 +1048,8 @@ be reflexivity. For definiteness, we chose the left face:
 _∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
     → x ≡ y → y ≡ z → x ≡ z
 p ∙ q = refl ·· p ·· q
+
+infixr 30 _∙_
 ```
 
 The ordinary, “single composite” of $p$ and $q$ is the dashed face in
@@ -1042,17 +1083,29 @@ setting the _right_ face to `refl`{.Agda}.
 ```
 
 We can use the filler and heterogeneous composition to define composition of `PathP`{.Agda}s
-in a given type family:
+and `Square`{.Agda}s:
 
 ```agda
-_∙P_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z : A} {x′ : B x} {y′ : B y} {z′ : B z} {p : x ≡ y} {q : y ≡ z}
-     → PathP (λ i → B (p i)) x′ y′ → PathP (λ i → B (q i)) y′ z′
-     → PathP (λ i → B ((p ∙ q) i)) x′ z′
-_∙P_ {B = B} {x′ = x′} {p = p} {q = q} p′ q′ i =
+_∙P_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y z : A} {x' : B x} {y' : B y} {z' : B z} {p : x ≡ y} {q : y ≡ z}
+     → PathP (λ i → B (p i)) x' y'
+     → PathP (λ i → B (q i)) y' z'
+     → PathP (λ i → B ((p ∙ q) i)) x' z'
+_∙P_ {B = B} {x' = x'} {p = p} {q = q} p' q' i =
   comp (λ j → B (∙-filler p q j i)) (∂ i) λ where
-    j (i = i0) → x′
-    j (i = i1) → q′ j
-    j (j = i0) → p′ i
+    j (i = i0) → x'
+    j (i = i1) → q' j
+    j (j = i0) → p' i
+
+_∙₂_ : ∀ {ℓ} {A : Type ℓ} {a00 a01 a02 a10 a11 a12 : A}
+       {p : a00 ≡ a01} {p' : a01 ≡ a02}
+       {q : a00 ≡ a10} {s : a01 ≡ a11} {t : a02 ≡ a12}
+       {r : a10 ≡ a11} {r' : a11 ≡ a12}
+     → Square p q s r
+     → Square p' s t r'
+     → Square (p ∙ p') q t (r ∙ r')
+(α ∙₂ β) i j = ((λ i → α i j) ∙ (λ i → β i j)) i
+
+infixr 30 _∙P_ _∙₂_
 ```
 
 ## Uniqueness
@@ -1177,10 +1230,16 @@ its filler), it is contractible:
   → r ≡ p ∙ q
 ∙-unique {p = p} {q} r square i =
   ··-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
+
+··-unique' : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+           → {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} {s : w ≡ z}
+           → (β : Square (sym p) q s r)
+           → s ≡ p ·· q ·· r
+··-unique' β i = ··-contract _ _ _ (_ , β) (~ i) .fst
 ```
 -->
 
-# Functorial Action
+# Functorial action
 
 This composition structure on paths makes every type into an
 $\infty$-groupoid, which is discussed in [a different module].
@@ -1227,6 +1286,18 @@ apd : ∀ {a b} {A : I → Type a} {B : (i : I) → A i → Type b}
     → (p : PathP A x y)
     → PathP (λ i → B i (p i)) (f i0 x) (f i1 y)
 apd f p i = f i (p i)
+
+ap-square
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+      {a00 a01 a10 a11 : A}
+      {p : a00 ≡ a01}
+      {q : a00 ≡ a10}
+      {s : a01 ≡ a11}
+      {r : a10 ≡ a11}
+  → (f : (a : A) → B a)
+  → (α : Square p q s r)
+  → SquareP (λ i j → B (α i j)) (ap f p) (ap f q) (ap f s) (ap f r)
+ap-square f α i j = f (α i j)
 ```
 -->
 
@@ -1242,9 +1313,9 @@ module _ where
     f : A → B
     g : B → C
 
-  ap-comp : {x y : A} {p : x ≡ y}
-          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
-  ap-comp = refl
+  ap-∘ : {x y : A} {p : x ≡ y}
+       → ap (λ x → g (f x)) p ≡ ap g (ap f p)
+  ap-∘ = refl
 
   ap-id : {x y : A} {p : x ≡ y}
         → ap (λ x → x) p ≡ p
@@ -1265,15 +1336,16 @@ for the open box with sides `refl`, `ap f p` and `ap f q`, so they must be equal
 [uniqueness]: 1Lab.Path.html#uniqueness
 
 ```agda
-  ap-comp-path : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
-               → ap f (p ∙ q) ≡ ap f p ∙ ap f q
-  ap-comp-path f p q i = ··-unique refl (ap f p) (ap f q)
-    (ap f (p ∙ q)    , λ k j → f (∙-filler p q k j))
-    (ap f p ∙ ap f q , ∙-filler _ _)
-    i .fst
+  ap-·· : (f : A → B) {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
+        → ap f (p ·· q ·· r) ≡ ap f p ·· ap f q ·· ap f r
+  ap-·· f p q r = ··-unique' (ap-square f (··-filler p q r))
+
+  ap-∙ : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
+       → ap f (p ∙ q) ≡ ap f p ∙ ap f q
+  ap-∙ f p q = ap-·· f refl p q
 ```
 
-# Syntax Sugar
+# Syntax sugar
 
 When constructing long chains of identifications, it's rather helpful to
 be able to visualise _what_ is being identified with more "priority"
@@ -1304,7 +1376,6 @@ x ≡⟨⟩ x≡y = x≡y
 _∎ : ∀ {ℓ} {A : Type ℓ} (x : A) → x ≡ x
 x ∎ = refl
 
-infixr 30 _∙_ _∙P_
 infixr 2 _≡⟨⟩_ _≡˘⟨_⟩_
 infix  3 _∎
 
@@ -1340,22 +1411,7 @@ your convenience, it's here too:
 
 Try pressing it!
 
-<!--
-```
-SquareP : ∀ {ℓ}
-  (A : I → I → Type ℓ)
-  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
-  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
-  (p : PathP (λ i → A i i0) a₀₀ a₁₀)
-  (q : PathP (λ j → A i0 j) a₀₀ a₀₁)
-  (s : PathP (λ j → A i1 j) a₁₀ a₁₁)
-  (r : PathP (λ i → A i i1) a₀₁ a₁₁)
-  → Type ℓ
-SquareP A p q s r = PathP (λ i → PathP (λ j → A i j) (p i) (r i)) q s
-```
--->
-
-# Dependent Paths
+# Dependent paths
 
 Surprisingly often, we want to compare inhabitants $a : A$ and $b : B$
 where the types $A$ and $B$ are not _definitionally_ equal, but only
@@ -1541,7 +1597,7 @@ from-to-pathp {A = A} {x} {y} p i j =
 
 </details>
 
-# Path Spaces
+# Path spaces
 
 A large part of the study of HoTT is the _characterisation of path
 spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
@@ -1556,17 +1612,18 @@ Most of these characterisations need machinery that is not in this
 module to be properly stated. Even then, we can begin to outline a few
 simple cases:
 
-## Σ Types
+## Σ types
 
 For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
 path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
-Σ-pathp : ∀ {a b} {A : Type a} {B : A → Type b}
-        → {x y : Σ A B}
-        → (p : x .fst ≡ y .fst)
-        → PathP (λ i → B (p i)) (x .snd) (y .snd)
-        → x ≡ y
+Σ-pathp
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
+  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
+  → (p : PathP A (x .fst) (y .fst))
+  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
+  → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp p q i = p i , q i
 ```
 
@@ -1583,7 +1640,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
 Σ-path {A = A} {B} {x} {y} p q = Σ-pathp p (to-pathp q)
 ```
 
-## Π types
+## Π types {defines="funext function-extensionality homotopy"}
 
 For dependent functions, the paths are _homotopies_, in the topological
 sense: `Path ((x : A) → B x) f g` is the same thing as a function `I →
@@ -1754,12 +1811,12 @@ Square≡double-composite-path {p = p} {q} {s} {r} k =
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
     (··-filler (sym p) q r k) s
 
-J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
+J' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
      (P : (x y : A) → x ≡ y → Type ℓ₂)
    → (∀ x → P x x refl)
    → {x y : A} (p : x ≡ y)
    → P x y p
-J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
+J' P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
 
 J₂
   : ∀ {ℓa ℓb ℓp} {A : Type ℓa} {B : Type ℓb} {xa : A} {xb : B}

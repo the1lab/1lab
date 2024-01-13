@@ -25,9 +25,7 @@ private variable
 
 # Properties of pullbacks
 
-This module chronicles some general properties of [pullbacks].
-
-[pullbacks]: Cat.Diagram.Pullback.html
+This module chronicles some general properties of [[pullbacks]].
 
 ## Pasting law
 
@@ -238,38 +236,38 @@ rotate-pullback pb .p₂∘universal = pb .p₁∘universal
 rotate-pullback pb .unique p q = pb .unique q p
 
 is-pullback-iso
-  : ∀ {p p′ x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
-  → (i : p ≅ p′)
+  : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+  → (i : p ≅ p')
   → is-pullback p1 f p2 g
   → is-pullback (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
-is-pullback-iso {f = f} {g} {p1} {p2} i pb = pb′ where
+is-pullback-iso {f = f} {g} {p1} {p2} i pb = pb' where
   module i = _≅_ i
-  pb′ : is-pullback _ _ _ _
-  pb′ .square = extendl (pb .square)
-  pb′ .universal p = i.to ∘ pb .universal p
-  pb′ .p₁∘universal = cancel-inner i.invr ∙ pb .p₁∘universal
-  pb′ .p₂∘universal = cancel-inner i.invr ∙ pb .p₂∘universal
-  pb′ .unique p q = invertible→monic (iso→invertible (i Iso⁻¹)) _ _ $ sym $
+  pb' : is-pullback _ _ _ _
+  pb' .square = extendl (pb .square)
+  pb' .universal p = i.to ∘ pb .universal p
+  pb' .p₁∘universal = cancel-inner i.invr ∙ pb .p₁∘universal
+  pb' .p₂∘universal = cancel-inner i.invr ∙ pb .p₂∘universal
+  pb' .unique p q = invertible→monic (iso→invertible (i Iso⁻¹)) _ _ $ sym $
     cancell i.invr ∙ sym (pb .unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
 
 pullback-unique
-  : ∀ {p p′ x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
-      {p1′ : Hom p′ x} {p2′ : Hom p′ y}
+  : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+      {p1' : Hom p' x} {p2' : Hom p' y}
   → is-pullback p1 f p2 g
-  → is-pullback p1′ f p2′ g
-  → p ≅ p′
-pullback-unique {f = f} {g} {p1} {p2} {p1′} {p2′} pb pb′
-  = make-iso pb→pb′ pb′→pb il ir
+  → is-pullback p1' f p2' g
+  → p ≅ p'
+pullback-unique {f = f} {g} {p1} {p2} {p1'} {p2'} pb pb'
+  = make-iso pb→pb' pb'→pb il ir
   where
-    pb→pb′ = pb′ .universal (pb .square)
-    pb′→pb = pb .universal (pb′ .square)
-    il = unique₂ pb′ {p = pb′ .square}
-      (pulll (pb′ .p₁∘universal) ∙ pb .p₁∘universal)
-      (pulll (pb′ .p₂∘universal) ∙ pb .p₂∘universal)
+    pb→pb' = pb' .universal (pb .square)
+    pb'→pb = pb .universal (pb' .square)
+    il = unique₂ pb' {p = pb' .square}
+      (pulll (pb' .p₁∘universal) ∙ pb .p₁∘universal)
+      (pulll (pb' .p₂∘universal) ∙ pb .p₂∘universal)
       (idr _) (idr _)
     ir = unique₂ pb {p = pb .square}
-      (pulll (pb .p₁∘universal) ∙ pb′ .p₁∘universal)
-      (pulll (pb .p₂∘universal) ∙ pb′ .p₂∘universal)
+      (pulll (pb .p₁∘universal) ∙ pb' .p₁∘universal)
+      (pulll (pb .p₂∘universal) ∙ pb' .p₂∘universal)
       (idr _) (idr _)
 
 Pullback-unique
@@ -290,8 +288,8 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
     p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘universal)
 
     lims
-      : ∀ {P′} {p1′ : Hom P′ X} {p2′ : Hom P′ Y} (p : f ∘ p1′ ≡ g ∘ p2′)
-      → PathP (λ i → Hom P′ (apices i)) (x.universal p) (y.universal p)
+      : ∀ {P'} {p1' : Hom P' X} {p2' : Hom P' Y} (p : f ∘ p1' ≡ g ∘ p2')
+      → PathP (λ i → Hom P' (apices i)) (x.universal p) (y.universal p)
     lims p = Univalent.Hom-pathp-reflr-iso c-cat $
       y.unique (pulll y.p₁∘universal ∙ x.p₁∘universal)
               (pulll y.p₂∘universal ∙ x.p₂∘universal)
@@ -310,28 +308,28 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
   p i .has-is-pb .p₂∘universal {p = p} =
     is-prop→pathp (λ i → Hom-set _ _ (p2s i ∘ lims p i) _)
       x.p₂∘universal y.p₂∘universal i
-  p i .has-is-pb .unique {P′ = P′} {p₁' = p₁′} {p₂' = p₂′} {p = p′} {lim' = lim′} =
+  p i .has-is-pb .unique {P' = P'} {p₁' = p₁'} {p₂' = p₂'} {p = p'} {lim' = lim'} =
     is-prop→pathp
-      (λ i   → Π-is-hlevel {A = Hom P′ (apices i)} 1
-       λ lim → Π-is-hlevel {A = p1s i ∘ lim ≡ p₁′} 1
-       λ p   → Π-is-hlevel {A = p2s i ∘ lim ≡ p₂′} 1
-       λ q   → Hom-set P′ (apices i) lim (lims p′ i))
+      (λ i   → Π-is-hlevel {A = Hom P' (apices i)} 1
+       λ lim → Π-is-hlevel {A = p1s i ∘ lim ≡ p₁'} 1
+       λ p   → Π-is-hlevel {A = p2s i ∘ lim ≡ p₂'} 1
+       λ q   → Hom-set P' (apices i) lim (lims p' i))
       (λ lim → x.unique {lim' = lim})
       (λ lim → y.unique {lim' = lim})
-      i lim′
+      i lim'
 
 canonically-stable
-  : ∀ {ℓ′} (P : ∀ {a b} → Hom a b → Type ℓ′)
+  : ∀ {ℓ'} (P : ∀ {a b} → Hom a b → Type ℓ')
   → is-category C
   → (pb : ∀ {a b c} (f : Hom a c) (g : Hom b c) → Pullback f g)
   → ( ∀ {A B X} (f : Hom A B) (g : Hom X B)
     → P f → P (pb g f .Pullback.p₁) )
   → is-pullback-stable P
 canonically-stable P C-cat pbs stab f g Pf pb =
-  transport (λ i → P (Pullback-unique C-cat (pbs g f) pb′ i .Pullback.p₁))
+  transport (λ i → P (Pullback-unique C-cat (pbs g f) pb' i .Pullback.p₁))
     (stab f g Pf)
   where
-    pb′ : Pullback _ _
-    pb′ = record { has-is-pb = pb }
+    pb' : Pullback _ _
+    pb' = record { has-is-pb = pb }
 ```
 -->

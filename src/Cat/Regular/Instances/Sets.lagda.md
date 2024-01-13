@@ -5,8 +5,8 @@ open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Sets
-open import Cat.Regular
 open import Cat.Prelude
+open import Cat.Regular
 
 open import Data.Set.Surjection
 
@@ -25,7 +25,7 @@ open is-regular
 We can prove that the category of $\Sets$ is regular by investigating
 the relationship between [surjections], regular epimorphisms, and
 arbitrary epimorphisms. Fortunately, they _all_ coincide, and we already
-[know] that $\Sets$ is finitely complete, so it only remains to show
+[know] that $\Sets$ is [[finitely complete]], so it only remains to show
 that morphisms have an epi-mono factorisation, and that epimorphy is
 stable under pullbacks.
 
@@ -66,7 +66,7 @@ Sets-regular .stable =
     (λ {a} {b} → is-strong-epi (Sets _) {a} {b}) Sets-is-category Sets-pullbacks
     λ {a} {b} {c} f g (f-epi , _) →
     let
-      rem₁ : ∀ x → ∥ fibre f x ∥
+      rem₁ : is-surjective f
       rem₁ = epi→surjective a b f λ {c} → f-epi {c}
 
       T : Set _
@@ -75,7 +75,7 @@ Sets-regular .stable =
       pb : ∣ T ∣ → ∣ c ∣
       pb = Sets-pullbacks {A = c} {a} {b} g f .Pullback.p₁
 
-      rem₂ : ∀ x → ∥ fibre pb x ∥
+      rem₂ : is-surjective pb
       rem₂ x = do
         (f^*fx , p) ← rem₁ (g x)
         pure ((x , f^*fx , sym p) , refl)

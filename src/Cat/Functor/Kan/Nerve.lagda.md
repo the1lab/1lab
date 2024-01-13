@@ -8,7 +8,6 @@ description: |
 <!--
 ```agda
 {-# OPTIONS -vtc.decl:5 -WnoEmptyWhere #-}
-open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
@@ -16,6 +15,7 @@ open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
@@ -43,14 +43,13 @@ open is-lan
 # Nerve and realisation
 
 Let $F : \cC \to \cD$ be a functor from a [$\kappa$-small] category
-$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
-$\cD$. $F$ induces a pair of [adjoint functors], as in the diagram
-below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
+$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category $\cD$.
+$F$ induces a pair of [[adjoint functors]], as in the diagram below,
+where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 "realization", and the right adjoint is called "nerve".
 
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
-[adjoint functors]: Cat.Functor.Adjoint.html
 
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
@@ -62,24 +61,20 @@ below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 ~~~
 
 An example to keep in mind is the inclusion $F : \Delta \mono \strcat$
-from the simplex category to [strict categories], which sends the
-$n$-simplex to the finite [poset] $[n]$. In this case, the left adjoint
-is the ordinary realisation of a simplicial set $[\Delta\op,\Sets]$ as a
-strict category, and the right adjoint gives the simplicial nerve of a
-strict category.
-
-[strict categories]: Cat.Instances.StrictCat.html
-[poset]: Order.Base.html
+from the simplex category to the [[category of strict categories]],
+which sends the $n$-simplex to the finite [[poset]] $[n]$. In this case,
+the left adjoint is the ordinary realisation of a simplicial set
+$[\Delta\op,\Sets]$ as a [[strict category]], and the right adjoint gives
+the simplicial nerve of a strict category.
 
 Since these adjunctions come for very cheap ($\kappa$-cocompleteness of
 the codomain category is all we need), they are built out of very thin
-abstract nonsense: The "realisation" left adjoint is given by the [left
-Kan extension] of $F$ along the [Yoneda embedding] $\yo$, which can be
+abstract nonsense: The "realisation" left adjoint is given by the [[left
+Kan extension]] of $F$ along the [Yoneda embedding] $\yo$, which can be
 [computed] as a particular colimit, and the "nerve" right adjoint is
 given by the _restricted_ Yoneda embedding functor $X \mapsto \hom(F(-),
 X)$.
 
-[left Kan extension]: Cat.Functor.Kan.Base.html
 [Yoneda embedding]: Cat.Functor.Hom.html
 [computed]: Cat.Functor.Kan.Pointwise.html
 
@@ -106,7 +101,7 @@ module _
 
 The action of $F$ on morphisms assembles into a natural transformation
 $\yo_\cC \To \rm{Nerve}(F)F$, which is universal in the following sense:
-the nerve functor associated to $F$ is the [left Kan extension] of $\cC$'s
+the nerve functor associated to $F$ is the [[left Kan extension]] of $\cC$'s
 [yoneda embedding] along $F$.
 
 ```agda
@@ -147,33 +142,30 @@ computations using naturality. It's not very enlightening.
 </summary>
 
 ```agda
-    Nerve-is-lan .σ {M = M} α .η d .is-natural x y f =
-      funext λ g →
-        M.₁ (g D.∘ F.₁ f) .η y (α .η y .η y C.id)          ≡⟨ M.F-∘ g (F .F₁ f) ηₚ _ $ₚ _ ⟩
-        M.₁ g .η y (M .F₁ (F.₁ f) .η y (α .η y .η y C.id)) ≡˘⟨ ap (M.F₁ g .η y) (α .is-natural _ _ _ ηₚ _ $ₚ _) ⟩
-        M.₁ g .η y (α .η x .η y ⌜ f C.∘ C.id ⌝)            ≡⟨ ap! C.id-comm ⟩
-        M.₁ g .η y (α .η x .η y (C.id C.∘ f))              ≡⟨ ap (M.₁ g .η y) (α .η _ .is-natural _ _ _ $ₚ _) ⟩
-        M.₁ g .η y (M.₀ (F.₀ x) .F₁ f (α .η x .η x C.id))  ≡⟨ M.₁ g .is-natural _ _ _ $ₚ _ ⟩
-        M.₀ d .F₁ f (M.₁ g .η x (α .η x .η x C.id))        ∎
+    Nerve-is-lan .σ {M = M} α .η d .is-natural x y f = funext λ g →
+      M.₁ (g D.∘ F.₁ f) .η y (α .η y .η y C.id)          ≡⟨ M.F-∘ g (F .F₁ f) ηₚ _ $ₚ _ ⟩
+      M.₁ g .η y (M .F₁ (F.₁ f) .η y (α .η y .η y C.id)) ≡˘⟨ ap (M.F₁ g .η y) (α .is-natural _ _ _ ηₚ _ $ₚ _) ⟩
+      M.₁ g .η y (α .η x .η y ⌜ f C.∘ C.id ⌝)            ≡⟨ ap! C.id-comm ⟩
+      M.₁ g .η y (α .η x .η y (C.id C.∘ f))              ≡⟨ ap (M.₁ g .η y) (α .η _ .is-natural _ _ _ $ₚ _) ⟩
+      M.₁ g .η y (M.₀ (F.₀ x) .F₁ f (α .η x .η x C.id))  ≡⟨ M.₁ g .is-natural _ _ _ $ₚ _ ⟩
+      M.₀ d .F₁ f (M.₁ g .η x (α .η x .η x C.id))        ∎
       where module M = Functor M
 
-    Nerve-is-lan .σ {M = M} α .is-natural x y f =
-      Nat-path λ z → funext λ g → M .F-∘ f g ηₚ _ $ₚ _
+    Nerve-is-lan .σ {M = M} α .is-natural x y f = ext λ z g →
+      M .F-∘ f g ηₚ _ $ₚ _
 
-    Nerve-is-lan .σ-comm {M = M} {α = α} =
-      Nat-path λ x → Nat-path λ y → funext λ f →
-        M.₁ (F.₁ f) .η y (α .η y .η y C.id) ≡˘⟨ α .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
-        α .η x .η y (f C.∘ C.id)            ≡⟨ ap (α .η x .η y) (C.idr _) ⟩
-        α .η x .η y f                       ∎
+    Nerve-is-lan .σ-comm {M = M} {α = α} = ext λ x y f →
+      M.₁ (F.₁ f) .η y (α .η y .η y C.id) ≡˘⟨ α .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
+      α .η x .η y (f C.∘ C.id)            ≡⟨ ap (α .η x .η y) (C.idr _) ⟩
+      α .η x .η y f                       ∎
       where module M = Functor M
 
-    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p =
-      Nat-path λ x → Nat-path λ y → funext λ f →
-        M.₁ f .η y (α .η y .η y C.id)          ≡⟨ ap (M.₁ f .η y) (p ηₚ _ ηₚ _ $ₚ _) ⟩
-        M.₁ f .η y (σ′ .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
-        M.₁ f .η y (σ′ .η _ .η y D.id)         ≡˘⟨ σ′ .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
-        σ′ .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ′ .η x .η y) (D.idr _) ⟩
-        σ′ .η x .η y f                         ∎
+    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ x y f →
+      M.₁ f .η y (α .η y .η y C.id)          ≡⟨ ap (M.₁ f .η y) (p ηₚ _ ηₚ _ $ₚ _) ⟩
+      M.₁ f .η y (σ' .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
+      M.₁ f .η y (σ' .η _ .η y D.id)         ≡˘⟨ σ' .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
+      σ' .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ' .η x .η y) (D.idr _) ⟩
+      σ' .η x .η y f                         ∎
       where module M = Functor M
 ```
 </summary>
@@ -182,7 +174,7 @@ computations using naturality. It's not very enlightening.
 <!--
 ```agda
 module _
-  {o κ κ′} {C : Precategory κ κ} {D : Precategory o κ′}
+  {o κ κ'} {C : Precategory κ κ} {D : Precategory o κ'}
   (F : Functor C D)
   (cocompl : is-cocomplete κ κ D)
   where

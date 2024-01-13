@@ -10,10 +10,10 @@ description: |
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -28,7 +28,7 @@ module Cat.Functor.Adjoint.Reflective where
 <!--
 ```agda
 private variable
-  o o′ ℓ ℓ′ : Level
+  o o' ℓ ℓ' : Level
   C D : Precategory o ℓ
   F G : Functor C D
 open Functor
@@ -38,13 +38,12 @@ open _=>_
 
 # Reflective subcategories
 
-Occasionally, [full subcategory] inclusions (hence [fully faithful
-functors] --- like the inclusion of abelian groups into the category of
-all groups, or the inclusion $\Props \mono \Sets$) participate in an
+Occasionally, [full subcategory] inclusions (hence [[fully faithful
+functors]] --- like the inclusion of [[abelian groups]] into the category of
+all [[groups]], or the inclusion $\Props \mono \Sets$) participate in an
 adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
-[fully faithful functors]: Cat.Functor.Base.html#ff-functors
 
 ~~~{.quiver .short-15}
 \[\begin{tikzcd}
@@ -55,12 +54,14 @@ adjunction
 \end{tikzcd}\]
 ~~~
 
-When this is the case, we refer to the left adjoint functor $L$ as the
+:::{.definition #reflective-subcategory}
+When this is the case, we refer to the [[left adjoint]] functor $L$ as the
 **reflector**, and $\iota$ exhibits $\cC$ as a **reflective
 subcategory** of $\cD$. Reflective subcategory inclusions are of
 particular importance because they are [monadic functors]: They exhibit
 $\cC$ as the category of algebras for an (idempotent) monad on
 $\cD$.
+:::
 
 [monadic functors]: Cat.Functor.Adjoint.Monadic.html
 
@@ -77,7 +78,7 @@ inverse to $\eps$ applying the triangle identities.
 
 ```agda
 module
-  _ {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
+  _ {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D} {G : Functor D C}
     (adj : F ⊣ G) (g-ff : is-reflective adj)
   where
   private
@@ -112,7 +113,7 @@ module
 
   is-reflective→counit-iso : (F F∘ G) DD.≅ Id
   is-reflective→counit-iso = DD.invertible→iso counit invs where
-    invs = componentwise-invertible→invertible counit λ x →
+    invs = invertible→invertibleⁿ counit λ x →
       D.iso→invertible (is-reflective→counit-is-iso {o = x})
 ```
 
@@ -164,7 +165,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
 -->
 
 It suffices to show that the comparison functor $D \to C^GF$ is fully
-faithful and split essentially surjective. For full faithfulness,
+faithful and [[split essentially surjective]]. For full faithfulness,
 observe that it's always faithful; The fullness comes from the
 assumption that $G$ is ff.
 

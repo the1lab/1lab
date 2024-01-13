@@ -1,14 +1,13 @@
 <!--
 ```agda
 open import Cat.Displayed.Cocartesian
-open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Displayed.Fibre
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as CR
@@ -31,19 +30,18 @@ open /-Obj
 ```
 -->
 
-# The canonical self-indexing
+# The canonical self-indexing {defines="canonical-self-indexing fundamental-fibration codomain-fibration"}
 
-There is a canonical way of viewing any category $\cB$ as displayed
-over _itself_, given [fibrewise] by taking [slice categories]. Following
-[@relativect], we refer to this construction as the **canonical-self
-indexing** of $\cB$ and denote it $\underline{\cB}$. Recall that
-the objects in the slice over $y$ are pairs consisting of an object $x$
-and a map $f : x \to y$. The core idea is that _any morphism_ lets us
-view an object $x$ as being "structure over" an object $y$; the
-collection of all possible such structures, then, is the set of
-morphisms $x \to y$, with domain allowed to vary.
+There is a canonical way of viewing any category $\cB$ as displayed over
+_itself_, given [[fibrewise|fibre categories]] by taking [slice
+categories]. Following [@relativect], we refer to this construction as
+the **canonical self-indexing** of $\cB$ and denote it
+$\underline{\cB}$. Recall that the objects in the slice over $y$ are
+pairs consisting of an object $x$ and a map $f : x \to y$. The core idea
+is that _any morphism_ lets us view an object $x$ as being "structure
+over" an object $y$; the collection of all possible such structures,
+then, is the set of morphisms $x \to y$, with domain allowed to vary.
 
-[fibrewise]: Cat.Displayed.Fibre.html
 [slice categories]: Cat.Instances.Slice.html
 
 Contrary to the maps in the slice category, the maps in the canonical
@@ -92,7 +90,7 @@ obtained by considering the canonical self-indexing of $\Sets_\kappa$.
 First, recall that an object $f : \Sets/X$ is equivalently a $X$-indexed
 family of sets, with the value of the family at each point $x : X$ being
 the fibre $f^*(x)$. A function $X \to Y$ of sets then corresponds to a
-_reindexing_, which takes an $X$-family of sets to a $Y$-family of sets
+_reindexing_, which takes an $Y$-family of sets to a $X$-family of sets
 ([in a functorial way]). A morphism $X' \to Y'$ in the canonical
 self-indexing of $\Sets$ lying over a map $f : X \to Y$ is then a
 function between the families $X' \to Y'$ which commutes with the
@@ -103,22 +101,22 @@ reindexing given by $f$.
 <!--
 ```agda
 module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
-         {f′ : Slice-hom f px py} {g′ : Slice-hom g px py} where
+         {f' : Slice-hom f px py} {g' : Slice-hom g px py} where
 
-  Slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
-  Slice-pathp p p′ i .to = p′ i
-  Slice-pathp p p′ i .commute =
+  Slice-pathp : (p : f ≡ g) → (f' .to ≡ g' .to) → PathP (λ i → Slice-hom (p i) px py) f' g'
+  Slice-pathp p p' i .to = p' i
+  Slice-pathp p p' i .commute =
     is-prop→pathp
-      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p′ i)))
-      (f′ .commute)
-      (g′ .commute)
+      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p' i)))
+      (f' .commute)
+      (g' .commute)
       i
 
 Slice-path
   : ∀ {x y} {f : Hom x y} {px : /-Obj x} {py : /-Obj y}
-  → {f′ g′ : Slice-hom f px py}
-  → (f′ .to ≡ g′ .to)
-  → f′ ≡ g′
+  → {f' g' : Slice-hom f px py}
+  → (f' .to ≡ g' .to)
+  → f' ≡ g'
 Slice-path = Slice-pathp refl
 
 module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
@@ -137,16 +135,16 @@ Slices : Displayed B (o ⊔ ℓ) ℓ
 Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
 Slices .Hom[_]-set = Slice-is-set
-Slices .id′ = slice-hom id id-comm-sym
-Slices ._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
+Slices .id' = slice-hom id id-comm-sym
+Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $
     (f ∘ g) ∘ x .map           ≡⟨ pullr (py .commute) ⟩
     f ∘ (y .map ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
     z .map ∘ (px .to ∘ py .to) ∎
-Slices .idr′ {f = f} f′ = Slice-pathp (idr f) (idr (f′ .to))
-Slices .idl′ {f = f} f′ = Slice-pathp (idl f) (idl (f′ .to))
-Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
-  Slice-pathp (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
+Slices .idr' {f = f} f' = Slice-pathp (idr f) (idr (f' .to))
+Slices .idl' {f = f} f' = Slice-pathp (idl f) (idl (f' .to))
+Slices .assoc' {f = f} {g = g} {h = h} f' g' h' =
+  Slice-pathp (assoc f g h) (assoc (f' .to) (g' .to) (h' .to))
 ```
 
 It's only slightly more annoying to show that a vertical map in the
@@ -160,15 +158,15 @@ Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
 Fibre→slice .F₀ x = x
 Fibre→slice .F₁ f ./-Hom.map = f .to
 Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
-Fibre→slice .F-id = /-Hom-path refl
-Fibre→slice .F-∘ f g = /-Hom-path (transport-refl _)
+Fibre→slice .F-id = trivial!
+Fibre→slice .F-∘ f g = ext (transport-refl _)
 
 Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
 Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv isom where
   isom : is-iso (Fibre→slice .F₁)
   isom .is-iso.inv hom =
     slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
-  isom .is-iso.rinv x = /-Hom-path refl
+  isom .is-iso.rinv x = ext refl
   isom .is-iso.linv x = Slice-pathp refl refl
 
 Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
@@ -178,7 +176,7 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
          }
 ```
 
-## Cartesian Maps
+## Cartesian maps
 
 A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
 cartesian if and only if it forms a pullback square as below:
@@ -200,12 +198,12 @@ we do not comment too heavily on the proof.
 
 ```agda
 cartesian→pullback
-  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
-  → is-cartesian Slices f f′
-  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-cartesian→pullback {x} {y} {x′} {y′} {f} {f′} cart = pb where
-  pb : is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-  pb .is-pullback.square = f′ .commute
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-cartesian Slices f f'
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
+  pb .is-pullback.square = f' .commute
   pb .is-pullback.universal p =
     cart .universal _ (slice-hom _ (idr _ ∙ p)) .to
   pb .is-pullback.p₁∘universal =
@@ -216,42 +214,41 @@ cartesian→pullback {x} {y} {x′} {y′} {f} {f′} cart = pb where
     ap Slice-hom.to (cart .unique (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q))
 
 pullback→cartesian
-  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
-  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-  → is-cartesian Slices f f′
-pullback→cartesian {x} {y} {x′} {y′} {f} {f′} pb = cart where
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+  → is-cartesian Slices f f'
+pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
   module pb = is-pullback pb
 
-  cart : is-cartesian Slices f f′
-  cart .universal m h′ .to = pb.universal (assoc _ _ _ ∙ h′ .commute)
-  cart .universal m h′ .commute = sym pb.p₁∘universal
-  cart .commutes m h′ = Slice-pathp refl pb.p₂∘universal
-  cart .unique m′ x = Slice-pathp refl $
-    pb.unique (sym (m′ .commute)) (ap to x)
+  cart : is-cartesian Slices f f'
+  cart .universal m h' .to = pb.universal (assoc _ _ _ ∙ h' .commute)
+  cart .universal m h' .commute = sym pb.p₁∘universal
+  cart .commutes m h' = Slice-pathp refl pb.p₂∘universal
+  cart .unique m' x = Slice-pathp refl $
+    pb.unique (sym (m' .commute)) (ap to x)
 ```
 
 ## As a fibration
 
-
-If (and only if) $\cB$ has all [pullbacks], then the self-indexing
-$\cB$ is a [Cartesian fibration]. This is almost by definition, and
-is in fact where the "Cartesian" in "Cartesian fibration" (recall that
-another term for "pullback square" is "cartesian square"). Since the
-total space $\int \underline{\cB}$ is equivalently the arrow category
-of $\cB$, with the projection functor $\pi : \int \underline{\cB}
-\to \cB$ corresponding under this equivalence to the codomain
-functor, we refer to $\underline{ca{B}}$ regarded as a Cartesian
-fibration as the **codomain fibration**.
+If (and only if) $\cB$ has all [[pullbacks]], then its self-indexing is
+a [[Cartesian fibration]]. This is almost by definition, and is in fact
+where the "Cartesian" in "Cartesian fibration" comes from (recall that another term
+for "pullback square" is "cartesian square"). Since the total space
+$\int \underline{\cB}$ is equivalently the arrow category of $\cB$, with
+the projection functor $\pi : \int \underline{\cB} \to \cB$
+corresponding under this equivalence to the codomain functor, we refer
+to $\underline{\cB}$ regarded as a Cartesian fibration as the
+**codomain fibration**.
 
 ```agda
 Codomain-fibration
   : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
   → Cartesian-fibration Slices
-Codomain-fibration pullbacks .has-lift f y′ = lift-f where
-  module pb = Pullback (pullbacks f (y′ .map))
+Codomain-fibration pullbacks .has-lift f y' = lift-f where
+  module pb = Pullback (pullbacks f (y' .map))
 
-  lift-f : Cartesian-lift Slices f y′
-  lift-f .x′ = cut pb.p₁
+  lift-f : Cartesian-lift Slices f y'
+  lift-f .x' = cut pb.p₁
   lift-f .lifting .to = pb.p₂
   lift-f .lifting .commute = pb.square
   lift-f .cartesian = pullback→cartesian pb.has-is-pb
@@ -276,12 +273,12 @@ Codomain-fibration→pullbacks f g lifts = pb where
   module the-lift = Cartesian-lift (lifts .has-lift f (cut g))
 
   pb : Pullback B f g
-  pb .apex = the-lift.x′ .domain
-  pb .p₁ = the-lift.x′ .map
+  pb .apex = the-lift.x' .domain
+  pb .p₁ = the-lift.x' .map
   pb .p₂ = the-lift.lifting .to
   pb .has-is-pb .square = the-lift.lifting .commute
   pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
-    the-lift.cartesian .universal {u′ = cut id}
+    the-lift.cartesian .universal {u' = cut id}
       p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
   pb .has-is-pb .p₁∘universal =
     sym (the-lift.universal _ _ .commute) ∙ idr _
@@ -292,13 +289,11 @@ Codomain-fibration→pullbacks f g lifts = pb where
 
 Since the fibres of the codomain fibration are given by slice
 categories, then the interpretation of Cartesian fibrations as
-"displayed categories whose fibres vary functorially" leads us to
-reinterpret the above results as, essentially, giving the [pullback
-functors] between slice categories.
+"[[displayed categories]] whose fibres vary functorially" leads us to
+reinterpret the above results as, essentially, giving the [[pullback
+functors]] between slice categories.
 
-[pullback functors]: Cat.Functor.Pullback.html
-
-## As an Opfibration
+## As an opfibration
 
 The canonical self-indexing is *always* an opfibration, where
 opreindexing is given by postcomposition. If we think about slices as
@@ -308,15 +303,15 @@ that do not lie in the image of $f$.
 
 ```agda
 Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration .Cocartesian-fibration.has-lift f x′ = lift-f where
+Codomain-opfibration .Cocartesian-fibration.has-lift f x' = lift-f where
 
-  lift-f : Cocartesian-lift Slices f x′
-  lift-f .Cocartesian-lift.y′ = cut (f ∘ x′ .map)
+  lift-f : Cocartesian-lift Slices f x'
+  lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)
   lift-f .Cocartesian-lift.lifting = slice-hom id (sym (idr _))
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h′ =
-    slice-hom (h′ .to) (assoc _ _ _ ∙ h′ .commute)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h′ =
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h' =
+    slice-hom (h' .to) (assoc _ _ _ ∙ h' .commute)
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h' =
     Slice-pathp refl (idr _)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m′ p =
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m' p =
     Slice-pathp refl (sym (idr _) ∙ ap to p)
 ```

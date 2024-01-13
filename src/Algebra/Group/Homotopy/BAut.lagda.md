@@ -1,10 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Prelude
-
-open import Algebra.Group
-
-open import Data.Set.Truncation
 ```
 -->
 
@@ -16,16 +12,14 @@ module Algebra.Group.Homotopy.BAut where
 
 Recall that any set $X$ generates a group [$\rm{Sym}(X)$][symg], given
 by the automorphisms $X \simeq X$. We also have a generic construction
-of [deloopings]: special spaces $K(G,1)$ (for a group $G$), where the
+of [[deloopings]]: special spaces $K(G,1)$ (for a group $G$), where the
 [fundamental group] $\pi_1(K(G,1))$ recovers $G$. For the specific case
 of deloping automorphism groups, we can give an alternative
-construction: The type of small types [merely] equivalent to $X$ has a
+construction: The type of small types [[merely]] equivalent to $X$ has a
 fundamental group of $\rm{Sym}(X)$.
 
 [symg]: Algebra.Group.html#symmetric-groups
-[deloopings]: Algebra.Group.Homotopy.html#deloopings
 [fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups
-[merely]: 1Lab.HIT.Truncation.html
 
 ```agda
 module _ {ℓ} (T : Type ℓ) where
@@ -36,12 +30,12 @@ module _ {ℓ} (T : Type ℓ) where
   base = T , inc (id , id-equiv)
 ```
 
-The first thing we note is that `BAut`{.Agda} is a _connected_ type,
+The first thing we note is that `BAut`{.Agda} is a _[[connected]]_ type,
 meaning that it only has "a single point", or, more precisely, that all
 of its interesting information is in its (higher) path spaces:
 
 ```agda
-  connected : ∀ b → ∥ b ≡ base ∥
+  connected : (x : BAut) → ∥ x ≡ base ∥
   connected (b , x) =
     ∥-∥-elim {P = λ x → ∥ (b , x) ≡ base ∥} (λ _ → squash) (λ e → inc (p _ _)) x
     where
@@ -121,7 +115,7 @@ proceed exactly by using connectedness.
 ```agda
   BAut-is-hlevel : ∀ n → is-hlevel T n → is-hlevel BAut (1 + n)
   BAut-is-hlevel zero hl (x , f) (y , g) =
-    Σ-prop-path (λ _ → squash) (sym (ua f′) ∙ ua g′)
+    Σ-prop-path (λ _ → squash) (sym (ua f') ∙ ua g')
     where
       extract : ∀ {X} → is-prop (T ≃ X)
       extract f g = Σ-prop-path is-equiv-is-prop $ funext λ x →
@@ -129,8 +123,8 @@ proceed exactly by using connectedness.
           (f .fst x , is-contr→is-prop hl _ _)
           (g .fst x , is-contr→is-prop hl _ _))
 
-      f′ = ∥-∥-rec extract (λ x → x) f
-      g′ = ∥-∥-rec extract (λ x → x) g
+      f' = ∥-∥-rec extract (λ x → x) f
+      g' = ∥-∥-rec extract (λ x → x) g
   BAut-is-hlevel (suc n) hl x y =
     ∥-∥-elim₂ {P = λ _ _ → is-hlevel (x ≡ y) (1 + n)}
       (λ _ _ → is-hlevel-is-prop _)

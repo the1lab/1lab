@@ -5,39 +5,37 @@ open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr
 import Cat.Displayed.Solver as Ds
-import Cat.Reasoning as Cr
 ```
 -->
 
 ```agda
 module Cat.Displayed.Fibre
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
   where
 
+open Precategory B
 open Displayed E
 open Ds
 open Dr E
-open Cr B
 ```
 
-## Fibre categories
+## Fibre categories {defines="fibre-category fibre-categories"}
 
-A displayed category can be thought of as representing data of a "family
-of categories"^[Though note that unless the displayed category is a
-[Cartesian fibration], this "family" might not be functorially-indexed].
-Given an object $x : \cB$ of the base category, the morphisms in the
-fibre over x, or **vertical morphisms**, are those in the set
-$\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on $x$).
-
-[Cartesian fibration]: Cat.Displayed.Cartesian.html
+A [[displayed category]] can be thought of as representing data of a
+"family of categories"^[Though note that unless the displayed category
+is a [[Cartesian fibration]], this "family" might not be
+functorially-indexed].  Given an object $x : \cB$ of the base category,
+the morphisms in the fibre over x, or **vertical morphisms**, are those
+in the set $\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on
+$x$).
 
 The intuition from the term _vertical_ comes from _literally_ thinking
 of a category $E$ displayed over $\cB$ as being a like a grab-bag of
-categories, admitting a map into $\cB$ (the [total space]
+categories, admitting a map into $\cB$ (the [[total category]]
 perspective), a situation examplified by the diagram below. Here, $\int
-E$ is the total space of a category $E$ displayed over $\cB$, and
-$\pi$ is the corresponding projection functor.
+E$ is the total space of a category $E$ displayed over $\cB$, and $\pi$
+is the corresponding projection functor.
 
 ~~~{.quiver .tall-2}
 \begin{tikzpicture}
@@ -76,22 +74,20 @@ $\id\circ\id=\id$ from the base category, implies that the
 set of vertical arrows over an object $x$ contain identities and are
 closed under composition, the **fibre (pre)category over $x$**.
 
-[total space]: Cat.Displayed.Total.html
-
 ```agda
-Fibre′
+Fibre'
   : (X : Ob)
   → (fix : {x y : Ob[ X ]} → Hom[ id ∘ id ] x y → Hom[ id ] x y)
   → (coh : ∀ {x y} (f : Hom[ id ∘ id ] x y) → fix f ≡ hom[ idl id ] f)
   → Precategory _ _
-Fibre′ X fix coh .Precategory.Ob = Ob[ X ]
-Fibre′ X fix coh .Precategory.Hom = Hom[ id ]
-Fibre′ X fix coh .Precategory.Hom-set = Hom[ id ]-set
-Fibre′ X fix coh .Precategory.id = id′
-Fibre′ X fix coh .Precategory._∘_ f g = fix (f ∘′ g)
+Fibre' X fix coh .Precategory.Ob = Ob[ X ]
+Fibre' X fix coh .Precategory.Hom = Hom[ id ]
+Fibre' X fix coh .Precategory.Hom-set = Hom[ id ]-set
+Fibre' X fix coh .Precategory.id = id'
+Fibre' X fix coh .Precategory._∘_ f g = fix (f ∘' g)
 ```
 
-The definition of `Fibre′`{.Agda} has an extra degree of freedom: it is
+The definition of `Fibre'`{.Agda} has an extra degree of freedom: it is
 parametrised over how to reindex a morphism from lying over $\id
 \circ \id$ to lying over $\id$. You don't get _that_ much
 freedom, however: there is a canonical way of doing this reindexing,
@@ -109,23 +105,23 @@ would still pile up.
 
 <!--
 ```agda
-Fibre′ X fix coh .Precategory.idr f =
-  fix (f ∘′ id′)           ≡⟨ coh (f ∘′ id′) ⟩
-  hom[ idl id ] (f ∘′ id′) ≡⟨ Ds.disp! E ⟩
+Fibre' X fix coh .Precategory.idr f =
+  fix (f ∘' id')           ≡⟨ coh (f ∘' id') ⟩
+  hom[ idl id ] (f ∘' id') ≡⟨ Ds.disp! E ⟩
   f                        ∎
-Fibre′ X fix coh .Precategory.idl f =
-  fix (id′ ∘′ f)           ≡⟨ coh (id′ ∘′ f) ⟩
-  hom[ idl id ] (id′ ∘′ f) ≡⟨ from-pathp (idl′ f) ⟩
+Fibre' X fix coh .Precategory.idl f =
+  fix (id' ∘' f)           ≡⟨ coh (id' ∘' f) ⟩
+  hom[ idl id ] (id' ∘' f) ≡⟨ from-pathp (idl' f) ⟩
   f                        ∎
-Fibre′ X fix coh .Precategory.assoc f g h =
-  fix (f ∘′ fix (g ∘′ h))                     ≡⟨ ap (λ e → fix (f ∘′ e)) (coh _) ∙ coh _ ⟩
-  hom[ idl id ] (f ∘′ hom[ idl id ] (g ∘′ h)) ≡⟨ Ds.disp! E ⟩
-  hom[ idl id ] (hom[ idl id ] (f ∘′ g) ∘′ h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘′ h)) (sym (coh _)) ⟩
-  fix (fix (f ∘′ g) ∘′ h)                     ∎
+Fibre' X fix coh .Precategory.assoc f g h =
+  fix (f ∘' fix (g ∘' h))                     ≡⟨ ap (λ e → fix (f ∘' e)) (coh _) ∙ coh _ ⟩
+  hom[ idl id ] (f ∘' hom[ idl id ] (g ∘' h)) ≡⟨ Ds.disp! E ⟩
+  hom[ idl id ] (hom[ idl id ] (f ∘' g) ∘' h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘' h)) (sym (coh _)) ⟩
+  fix (fix (f ∘' g) ∘' h)                     ∎
 ```
 -->
 
 ```agda
 Fibre : Ob → Precategory _ _
-Fibre X = Fibre′ X _ (λ f → refl)
+Fibre X = Fibre' X _ (λ f → refl)
 ```

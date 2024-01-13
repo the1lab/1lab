@@ -8,7 +8,7 @@ import Control.Exception
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
-import Data.Aeson
+import Data.Aeson hiding (Options, defaultOptions)
 import Data.Bifunctor
 import Data.Foldable
 import Data.Either
@@ -28,17 +28,17 @@ import System.Exit
 
 import Shake.Options
 import Shake.AgdaCompile
-import Shake.AgdaRefs (getAgdaRefs)
 import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Modules
 import Shake.Diagram
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
-import Macros
+import Definitions
 import Timer
 
 {-
@@ -49,11 +49,12 @@ import Timer
 rules :: Rules ()
 rules = do
   agdaRules
-  agdaRefs <- getAgdaRefs
+  digestRules
   gitRules
   katexRules
   moduleRules
   linksRules
+  glossaryRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -80,7 +81,6 @@ rules = do
     let modName = dropExtension (takeFileName out)
 
     modKind <- Map.lookup modName <$> getOurModules
-    agdaRefs <- agdaRefs
 
     skipAgda <- getSkipAgda
     if skipAgda
@@ -91,12 +91,12 @@ rules = do
           _ -> "src" </> map (\c -> if c == '.' then '/' else c) modName
       in
       case modKind of
-        Just WithText -> buildMarkdown agdaRefs modName (input <.> ".lagda.md") out
+        Just WithText -> buildMarkdown modName (input <.> ".lagda.md") out
         _ -> copyFile' (input <.> ".agda") out -- Wrong, but eh!
     else
       let input = "_build/html0" </> modName in
       case modKind of
-        Just WithText -> do buildMarkdown agdaRefs modName (input <.> ".md") out
+        Just WithText -> do buildMarkdown modName (input <.> ".md") out
         _ -> copyFile' (input <.> ".html") out
 
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
@@ -107,7 +107,7 @@ rules = do
     let searchFiles = (if skipAgda then [] else ["_build/all-types.json"])
                     ++ map (\(x, _) -> "_build/search" </> x <.> "json") modules
     searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
-    liftIO $ encodeFile out (concat searchData)
+    traced "Writing search data" $ encodeFile out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/light-*.svg" %> \out -> do
@@ -164,6 +164,7 @@ rules = do
         , "_build/html/static/search.json"
         , "_build/html/css/default.css"
         , "_build/html/main.js"
+        , "_build/html/start.js"
         , "_build/html/code-only.js"
         ]
 
@@ -182,11 +183,6 @@ rules = do
 
   -- Profit!
 
-data ArgOption
-  = AFlag Option
-  | AWatching (Maybe String)
-  deriving (Eq, Show)
-
 main :: IO ()
 main = do
   args <- getArgs
@@ -195,10 +191,13 @@ main = do
     exitFailure
 
   let (opts, extra, errs) = getOpt Permute optDescrs args
-      (shakeOpts, ourOpts) = partitionEithers opts
+      (shakeOpts, ourOpts_) = partitionEithers opts
       (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
-      (watchingCmd, ourOpts') = parseOptions ourOpts
-      rules' = setOptions ourOpts' >> rules
+      ourOpts = foldr (.) id ourOpts_ defaultOptions
+
+      rules' = do
+        setOptions ourOpts
+        rules
 
       shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
       (shakeRules, wanted) = case extra of
@@ -209,12 +208,10 @@ main = do
     for_ errs' $ putStrLn . ("1lab-shake: " ++)
     exitFailure
 
-  let watching = Watching `elem` ourOpts'
-
   (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
-    case watching of
-      False -> buildOnce db wanted
-      True -> buildMany db wanted watchingCmd
+    case _optWatching ourOpts of
+      Nothing  -> buildOnce db wanted
+      Just cmd -> buildMany db wanted cmd
   shakeRunAfter shakeOptions' after
 
   reportTimes
@@ -222,25 +219,8 @@ main = do
   unless ok exitFailure
 
   where
-    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) ArgOption)]
-    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) ourOptsDescrs
-
-    ourOptsDescrs =
-      [ Option "w" ["watch"] (OptArg AWatching "COMMAND")
-          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for \
-          \interactive editing. Implies --skip-types.\nOptionally takes a command to run after the build has finished."
-      , Option [] ["skip-types"] (NoArg (AFlag SkipTypes))
-          "Skip generating type tooltips when compiling Agda to HTML."
-      , Option [] ["skip-agda"] (NoArg (AFlag SkipAgda))
-          "Skip typechecking Agda. Markdown files are read from src/ directly."
-      ]
-
-    parseOptions :: [ArgOption] -> (Maybe String, [Option])
-    parseOptions [] = (Nothing, [])
-    parseOptions (AFlag f:xs) = (f:) <$> parseOptions xs
-    parseOptions (AWatching watching:xs) =
-      let (_, xs') = parseOptions xs
-      in (watching, Watching:xs')
+    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) (Options -> Options))]
+    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) _1LabOptDescrs
 
     buildOnce :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
     buildOnce db wanted = do
@@ -260,15 +240,18 @@ main = do
 
     -- | Watch config with 10ms (0.01 / 1e-12)
     watchConfig :: Watch.WatchConfig
-    watchConfig = Watch.defaultConfig { Watch.confDebounce = Watch.Debounce 1e-10 }
+    watchConfig = Watch.defaultConfig
+
+    isFile Watch.IsFile      = True
+    isFile Watch.IsDirectory = False
 
     buildMany :: ShakeDatabase -> [Action ()] -> Maybe String -> IO (Bool, [IO ()])
     buildMany db wanted cmd = Watch.withManagerConf watchConfig \mgr -> do
       (_, clean) <- buildOnce db wanted
 
       toRebuild <- atomically $ newTVar Set.empty
-      _ <- Watch.watchTree mgr "src" (not . Watch.eventIsDirectory) (logEvent toRebuild)
-      _ <- Watch.watchTree mgr "support" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "src" (isFile . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "support" (isFile . Watch.eventIsDirectory) (logEvent toRebuild)
 
       root <- Dir.canonicalizePath "."
 

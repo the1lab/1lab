@@ -10,20 +10,24 @@
   font-weight: 400;
   font-stretch: normal;
   font-style: normal;
-  src: url('/static/ttf/julia-mono.ttf') format('truetype');
+  src: url('../static/ttf/julia-mono.ttf') format('truetype');
 }
 
 code, pre, .sourceCode {
   font-family: 'Julia Mono';
+  font-size: var(--code-font-size);
   font-weight: 500;
 }
 
-div.sourceCode, pre {
+div.sourceCode {
+  @include material(var(--code-bg));
+}
+
+div.sourceCode > pre {
   background-color: var(--code-bg);
   color:            var(--code-fg);
-  flex-grow: 0;
 
-  @include material;
+  flex-grow: 0;
 
   overflow-x: auto;
   line-height: 1.2;
@@ -45,14 +49,13 @@ div.sourceCode, pre {
 }
 
 pre.Agda {
-  border-radius: 0;
   box-shadow: none;
+  overflow-x: auto;
   overflow-y: clip;
 
-  margin:           0;
-  padding:          1em;
-  padding-top:      0.25em;
-  padding-bottom:   0.25em;
+  // The margin should be 1rem (the width of the padding for paragraphs
+  // with borders) *plus* 5px. This was measured empirically.
+  margin: 0.25rem calc(1rem + 5px) 0.25rem calc(1rem + 5px);
 
   background-color: var(--code-bg);
   color:            var(--code-fg);
@@ -120,7 +123,7 @@ a[href].hover-highlight {
   }
 
   // background-color: $code-bg;
-  font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  @include monospaced;
   font-weight: 400;
 
   font-size: initial;
@@ -156,11 +159,18 @@ code.do, span.do { color: var(--code-string); } /* Documentation */
 code.an, span.an { color: var(--code-string); } /* Annotation */
 code.cv, span.cv { color: var(--code-string); } /* CommentVar */
 
-.typeTooltip {
+.type-tooltip {
   position: absolute;
   z-index: 100;
 
   font-size: 0.8em;
   color: var(--code-fg);
   background: var(--code-bg);
+
+  &.sourceCode {
+    padding: 0.3em;
+    border:  0;
+  };
+
+  box-shadow: 2px 2px 6px var(--shadow);
 }

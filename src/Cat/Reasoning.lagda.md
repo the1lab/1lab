@@ -13,7 +13,7 @@ module Cat.Reasoning {o ℓ} (C : Precategory o ℓ) where
 open import Cat.Morphism C public
 ```
 
-# Reasoning Combinators for Categories
+# Reasoning combinators for categories
 
 When doing category theory, we often have to perform many "trivial"
 algebraic manipulations like reassociation, insertion of identity morphisms, etc.
@@ -28,20 +28,22 @@ Most of these helpers were taken from `agda-categories`.
 ```agda
 private variable
   u v w x y z : Ob
-  a a′ a″ b b′ b″ c c′ c″ : Hom x y
+  a a' a'' b b' b'' c c' c'' : Hom x y
   f g h i : Hom x y
 ```
 -->
 
-## Identity Morphisms
+## Identity morphisms
 
 ```agda
-abstract
-  id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
-  id-comm {f = f} = idr f ∙ sym (idl f)
+id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
+id-comm {f = f} = idr f ∙ sym (idl f)
 
-  id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
-  id-comm-sym {f = f} = idl f ∙ sym (idr f)
+id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
+id-comm-sym {f = f} = idl f ∙ sym (idr f)
+
+idr2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → f ∘ g ∘ id ≡ f ∘ g
+idr2 f g = ap (f ∘_) (idr g)
 
 module _ (a≡id : a ≡ id) where abstract
   eliml : a ∘ f ≡ f
@@ -159,8 +161,8 @@ module _ (inv : h ∘ i ≡ id) where abstract
   deletel = pulll cancell
 ```
 
-We also have a combinator which combines expanding on the right with a
-cancellation on the left:
+We also have combinators which combine expanding on one side with a
+cancellation on the other side:
 
 ```agda
 lswizzle : g ≡ h ∘ i → f ∘ h ≡ id → f ∘ g ≡ i
@@ -168,6 +170,12 @@ lswizzle {g = g} {h = h} {i = i} {f = f} p q =
   f ∘ g     ≡⟨ ap₂ _∘_ refl p ⟩
   f ∘ h ∘ i ≡⟨ cancell q ⟩
   i         ∎
+
+rswizzle : g ≡ i ∘ h → h ∘ f ≡ id → g ∘ f ≡ i
+rswizzle {g = g} {i = i} {h = h} {f = f} p q =
+  g ∘ f       ≡⟨ ap₂ _∘_ p refl ⟩
+  (i ∘ h) ∘ f ≡⟨ cancelr q ⟩
+  i           ∎
 ```
 
 ## Isomorphisms
@@ -282,7 +290,7 @@ Iso-prism {a = a} {b} {c} {d} {e} {f} {g} {h} {i} top left right front =
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
-`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we steal
 some cute mixfix notation from `agda-categories` which allows us to write
 `≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
 

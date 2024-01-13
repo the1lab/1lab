@@ -5,7 +5,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -27,27 +26,25 @@ open /-Hom
 
 private variable
   a b : Ob
-  ℓ′ : Level
+  ℓ' : Level
 ```
 -->
 
-# Images
+# Images {defines="image image-factorisation"}
 
 Let $f : A \to B$ be an ordinary function between sets (or, indeed,
 arbitrary types). Its **image** $\im f$ can be computed as the subset
 $\{ b \in B : (\exists a)\ b = f(a) \}$, but this description does not
 carry over to more general categories: More abstractly, we can say that
-the image [embeds into] $B$, and admits a map from $A$ (in material set
-theory, this is $f$ itself --- structurally, it is called the
+the image [[embeds into|embedding]] $B$, and admits a map from $A$ (in
+material set theory, this is $f$ itself --- structurally, it is called
+the
 **corestriction** of $f$). Furthermore, these two maps _factor_ $f$, in
 that:
 
 $$
 (A \xto{e} \im f \xmono{m} B) = (A \xto{f} B)
 $$
-
-
-[embeds into]: 1Lab.Equiv.Embedding.html
 
 While these are indeed two necessary properties of an _image_, they fail
 to accurately represent the set-theoretic construction: Observe that,
@@ -63,15 +60,13 @@ of $f = m' \circ e'$, we must have $m \sube m'$ in the proset of
 subobjects of $B$, i.e. there exists some $k$ such that $m = m' \circ
 k$.
 
-In general categories, [monomorphisms] of $\cC$ may be the wrong notion
+In general categories, [[monomorphisms]] of $\cC$ may be the wrong notion
 of "subobject" to use. For example, in topology, we'd rather talk about
 the image which admits a _subspace inclusion_ onto $B$. We may expand
 the definition above to work for an arbitrary subclass $M \sube
 \rm{Mono}(\cC)$ of the monomorphisms of $C$, by requiring that the
 $M$-image of $f$ be the smallest $M$-subobject through which $f$
 factors.
-
-[monomorphisms]: Cat.Morphism.html#monos
 
 Since keeping track of all the factorisations by hand would be fiddly,
 we formalise the idea of image here using [comma categories], namely the
@@ -85,10 +80,8 @@ category] $\cC/b$.
 
 For a given subclass of monomorphisms $M$, there is a full subcategory
 of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
---- admitting an evident [ff] inclusion $F : M/b \mono \cC/b$. An
+--- admitting an evident [[fully faithful]] inclusion $F : M/b \mono \cC/b$. An
 **$M$-image of $f$** is a universal morphism from $f$ to $F$.
-
-[ff]: Cat.Functor.Base.html#ff-functors
 
 ```agda
 Class-of-monos : ∀ ℓ → Type _
@@ -96,7 +89,7 @@ Class-of-monos ℓ =
   Σ[ M ∈ (∀ {a b} → Hom a b → Type ℓ) ]
     (∀ {a b} {f : Hom a b} → M f → is-monic f)
 
-M-image : ∀ {a b} → Class-of-monos ℓ′ → Hom a b → Type _
+M-image : ∀ {a b} → Class-of-monos ℓ' → Hom a b → Type _
 M-image {a = a} {b} M f = Universal-morphism (cut f)
   (Forget-full-subcat
     {C = Slice C b}
@@ -118,7 +111,7 @@ very thin wrapper module over `M-image`{.Agda} which unpacks the
 definition into friendlier terms.
 
 ```agda
-module M-Image {a b} {M : Class-of-monos ℓ′} {f : Hom a b} (im : M-image M f) where
+module M-Image {a b} {M : Class-of-monos ℓ'} {f : Hom a b} (im : M-image M f) where
 ```
 
 The first thing to notice is that, being an initial object in the comma

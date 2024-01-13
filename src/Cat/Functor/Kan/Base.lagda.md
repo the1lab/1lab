@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
@@ -20,16 +19,16 @@ module Cat.Functor.Kan.Base where
 private
   variable
     o ℓ : Level
-    C C′ D E : Precategory o ℓ
-  kan-lvl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′} {C : Precategory o ℓ} {C′ : Precategory o′ ℓ′} {D : Precategory o′′ ℓ′′}
-          → Functor C D → Functor C C′ → Level
+    C C' D E : Precategory o ℓ
+  kan-lvl : ∀ {o ℓ o' ℓ' o'' ℓ''} {C : Precategory o ℓ} {C' : Precategory o' ℓ'} {D : Precategory o'' ℓ''}
+          → Functor C D → Functor C C' → Level
   kan-lvl {a} {b} {c} {d} {e} {f} _ _ = a ⊔ b ⊔ c ⊔ d ⊔ e ⊔ f
 
 open _=>_
 ```
 -->
 
-# Left Kan extensions
+# Left Kan extensions {defines="left-kan-extension kan-extension"}
 
 Suppose we have a functor $F : \cC \to \cD$, and a functor $p :
 \cC \to \cC'$ --- perhaps to be thought of as a [full subcategory]
@@ -68,10 +67,8 @@ _universal_ such extension (we'll define what "universal" means in just
 a second), we call it the **left Kan extension** of $F$ along $p$, and
 denote it $\Lan_p F$. Such extensions do not come for free (in a sense
 they're pretty hard to come by), but concept of Kan extension can be
-used to rephrase the definition of both [limit] and [adjoint functor].
-
-[limit]: Cat.Diagram.Limit.Base.html
-[adjoint functor]: Cat.Functor.Adjoint.html
+used to rephrase the definition of both [[limit]] and [[adjoint
+functor]].
 
 A left Kan extension $\Lan_p F$ is equipped with a natural
 transformation $\eta : F \To \Lan_p F \circ p$ witnessing the
@@ -82,15 +79,16 @@ $\alpha : F \To M \circ p$, there is a unique natural transformation
 $\sigma : \Lan_p F \To M$ which commutes with $\alpha$.
 
 Note that in general the triangle commutes "weakly", but when $p$ is
-[fully faithful] and $\cD$ is [cocomplete], $\Lan_p F$ genuinely extends
-$p$, in that $\eta$ is a natural isomorphism.
+[[fully faithful|fully faithful functor]] and $\cD$ is [cocomplete],
+$\Lan_p F$ genuinely extends $p$, in that $\eta$ is a natural
+isomorphism.
 
-[fully faithful]: Cat.Functor.Base.html#ff-functors
+[fully faithful]: Cat.Functor.Properties.html#ff-functors
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 ```agda
 record
-  is-lan (p : Functor C C′) (F : Functor C D) (L : Functor C′ D) (eta : F => L F∘ p)
+  is-lan (p : Functor C C') (F : Functor C D) (L : Functor C' D) (eta : F => L F∘ p)
     : Type (kan-lvl p F) where
   field
 ```
@@ -114,21 +112,21 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 ~~~
 
 ```agda
-    σ : {M : Functor C′ D} (α : F => M F∘ p) → L => M
-    σ-comm : {M : Functor C′ D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
-    σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : L => M}
-           → α ≡ (σ′ ◂ p) ∘nt eta
-           → σ α ≡ σ′
+    σ : {M : Functor C' D} (α : F => M F∘ p) → L => M
+    σ-comm : {M : Functor C' D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
+    σ-uniq : {M : Functor C' D} {α : F => M F∘ p} {σ' : L => M}
+           → α ≡ (σ' ◂ p) ∘nt eta
+           → σ α ≡ σ'
 
   σ-uniq₂
-    : {M : Functor C′ D} (α : F => M F∘ p) {σ₁′ σ₂′ : L => M}
-    → α ≡ (σ₁′ ◂ p) ∘nt eta
-    → α ≡ (σ₂′ ◂ p) ∘nt eta
-    → σ₁′ ≡ σ₂′
+    : {M : Functor C' D} (α : F => M F∘ p) {σ₁' σ₂' : L => M}
+    → α ≡ (σ₁' ◂ p) ∘nt eta
+    → α ≡ (σ₂' ◂ p) ∘nt eta
+    → σ₁' ≡ σ₂'
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 
   σ-uniqp
-    : ∀ {M₁ M₂ : Functor C′ D}
+    : ∀ {M₁ M₂ : Functor C' D}
     → {α₁ : F => M₁ F∘ p} {α₂ : F => M₂ F∘ p}
     → (q : M₁ ≡ M₂)
     → PathP (λ i → F => q i F∘ p) α₁ α₂
@@ -142,9 +140,9 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 We also provide a bundled form of this data.
 
 ```agda
-record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+record Lan (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
   field
-    Ext     : Functor C′ D
+    Ext     : Functor C' D
     eta     : F => Ext F∘ p
     has-lan : is-lan p F Ext eta
 
@@ -152,12 +150,12 @@ record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   open is-lan has-lan public
 ```
 
-# Right Kan extensions
+# Right Kan extensions {defines=right-kan-extension}
 
 Our choice of universal property in the section above isn't the only
-choice; we could instead require a [terminal] solution to the lifting
-problem, instead of an [initial] one. We can picture the terminal
-situation using the following diagram.
+choice; we could instead require a [[terminal|terminal object]] solution
+to the lifting problem, instead of an [initial] one. We can picture the
+terminal situation using the following diagram.
 
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html
@@ -182,31 +180,31 @@ their commutativity.
 
 ```agda
 record is-ran
-  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D)
+  (p : Functor C C') (F : Functor C D) (Ext : Functor C' D)
   (eps : Ext F∘ p => F)
   : Type (kan-lvl p F) where
   no-eta-equality
 
   field
-    σ : {M : Functor C′ D} (α : M F∘ p => F) → M => Ext
-    σ-comm : {M : Functor C′ D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
-    σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
-           → β ≡ eps ∘nt (σ′ ◂ p)
-           → σ β ≡ σ′
+    σ : {M : Functor C' D} (α : M F∘ p => F) → M => Ext
+    σ-comm : {M : Functor C' D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
+    σ-uniq : {M : Functor C' D} {β : M F∘ p => F} {σ' : M => Ext}
+           → β ≡ eps ∘nt (σ' ◂ p)
+           → σ β ≡ σ'
 
   open _=>_ eps renaming (η to ε)
 
   σ-uniq₂
-    : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
-    → β ≡ eps ∘nt (σ₁′ ◂ p)
-    → β ≡ eps ∘nt (σ₂′ ◂ p)
-    → σ₁′ ≡ σ₂′
+    : {M : Functor C' D} (β : M F∘ p => F) {σ₁' σ₂' : M => Ext}
+    → β ≡ eps ∘nt (σ₁' ◂ p)
+    → β ≡ eps ∘nt (σ₂' ◂ p)
+    → σ₁' ≡ σ₂'
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 
-record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+record Ran (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
   no-eta-equality
   field
-    Ext     : Functor C′ D
+    Ext     : Functor C' D
     eps     : Ext F∘ p => F
     has-ran : is-ran p F Ext eps
 
@@ -217,7 +215,7 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
 <!--
 ```agda
 is-lan-is-prop
-  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eta : F => G F∘ p}
+  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p}
   → is-prop (is-lan p F G eta)
 is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
   private
@@ -240,7 +238,7 @@ is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
       i
 
 is-ran-is-prop
-  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eps : G F∘ p => F}
+  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F}
   → is-prop (is-ran p F G eps)
 is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
   private
@@ -290,7 +288,7 @@ universal! If this diagram _is_ a left Kan extension, we say that $H$
 <!--
 ```agda
 module _
-  {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eta : F => G F∘ p} where
+  {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p} where
 ```
 -->
 
@@ -305,10 +303,8 @@ Unfortunately, proof assistants; our definition of whiskering lands in
 $H(Gp)$, but we requires a natural transformation to $(HG)p$.
 
 We say that a Kan extension is **absolute** if it is preserved by *all*
-functors out of $D$.  An important example of this is given by [adjoint
-functors].
-
-[adjoint functors]: Cat.Functor.Kan.Adjoint.html
+functors out of $D$. An important class of examples given by [[adjoint
+functors]].
 
 ```agda
   is-absolute-lan : is-lan p F G eta → Typeω
@@ -332,7 +328,7 @@ if $G, \eta$ is a also a left extension of $F$ along $p$.
 <!--
 ```agda
 module _
-  {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eps : G F∘ p => F} where
+  {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F} where
 ```
 -->
 
@@ -358,7 +354,7 @@ We can define dual notions for right Kan extensions as well.
 <!--
 ```agda
 to-lan
-  : ∀ {p : Functor C C′} {F : Functor C D} {L : Functor C′ D} {eta : F => L F∘ p}
+  : ∀ {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eta : F => L F∘ p}
   → is-lan p F L eta
   → Lan p F
 to-lan {L = L} lan .Lan.Ext = L

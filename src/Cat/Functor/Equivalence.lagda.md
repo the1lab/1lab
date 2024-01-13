@@ -1,8 +1,9 @@
 ```agda
-open import Cat.Instances.Functor
+open import Cat.Functor.Adjoint.Compose
+open import Cat.Functor.Naturality
+open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -15,22 +16,21 @@ module Cat.Functor.Equivalence where
 ```agda
 private variable
   o h : Level
-  C D : Precategory o h
+  C D E : Precategory o h
 open Functor hiding (op)
 open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences
+# Equivalences {defines="equivalence-of-categories"}
 
 A functor $F : \cC \to \cD$ is an **equivalence of categories**
-when it has a [right adjoint] $G : \cD \to \cD$, with the unit and
+when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and
 counit natural transformations being [natural isomorphisms]. This
 immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
 
-[right adjoint]: Cat.Functor.Adjoint.html
-[natural isomorphisms]: Cat.Instances.Functor.html#functor-categories
+[natural isomorphisms]: Cat.Functor.Naturality.html
 
 ```agda
 record is-equivalence (F : Functor C D) : Type (adj-level C D) where
@@ -58,12 +58,12 @@ morphisms gives isomorphisms in the respective functor categories:
   F∘F⁻¹≅Id : (F F∘ F⁻¹) [D,D].≅ Id
   F∘F⁻¹≅Id =
     [D,D].invertible→iso counit
-      (componentwise-invertible→invertible _ counit-iso)
+      (invertible→invertibleⁿ _ counit-iso)
 
   Id≅F⁻¹∘F : Id [C,C].≅ (F⁻¹ F∘ F)
   Id≅F⁻¹∘F =
     [C,C].invertible→iso unit
-      (componentwise-invertible→invertible _ unit-iso)
+      (invertible→invertibleⁿ _ unit-iso)
 
   unit⁻¹ = [C,C]._≅_.from Id≅F⁻¹∘F
   counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
@@ -72,33 +72,33 @@ morphisms gives isomorphisms in the respective functor categories:
 <!--
 ```agda
   F⁻¹⊣F : F⁻¹ ⊣ F
-  F⁻¹⊣F = adj′ where
+  F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
     open _⊣_
-    adj′ : F⁻¹ ⊣ F
-    adj′ .unit   = counit⁻¹
-    adj′ .counit = unit⁻¹
-    adj′ .zig {a} = zig′ where abstract
+    adj' : F⁻¹ ⊣ F
+    adj' .unit   = counit⁻¹
+    adj' .counit = unit⁻¹
+    adj' .zig {a} = zig' where abstract
       p : η unit⁻¹ (F₀ F⁻¹ a) ≡ F₁ F⁻¹ (adj.counit.ε _)
       p =
         η unit⁻¹ (F₀ F⁻¹ a)                                                ≡⟨ C.introl adj.zag ⟩
         (F₁ F⁻¹ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ η unit⁻¹ (F₀ F⁻¹ a) ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
         F₁ F⁻¹ (adj.counit.ε _)                                            ∎
 
-      zig′ : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
-      zig′ = ap₂ C._∘_ p refl
+      zig' : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
+      zig' = ap₂ C._∘_ p refl
         ·· sym (F-∘ F⁻¹ _ _)
         ·· ap (F₁ F⁻¹) (counit-iso _ .D.is-invertible.invl) ∙ F-id F⁻¹
 
-    adj′ .zag {b} = zag′ where abstract
+    adj' .zag {b} = zag' where abstract
       p : counit⁻¹ .η (F₀ F b) ≡ F .F₁ (adj.unit.η b)
       p =
         counit⁻¹ .η _                                                     ≡⟨ D.intror adj.zig ⟩
         counit⁻¹ .η _ D.∘ adj.counit.ε (F₀ F b) D.∘ (F₁ F (adj.unit.η b)) ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
         F .F₁ (adj.unit.η b)                                              ∎
 
-      zag′ : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
-      zag′ = ap₂ D._∘_ refl p
+      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
+      zag' = ap₂ D._∘_ refl p
         ·· sym (F .F-∘ _ _)
         ·· (ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id)
 
@@ -119,15 +119,12 @@ though, so we provide some alternatives:
 
 ## Fully faithful, essentially surjective
 
-Any [fully faithful][ff] and [(split!) essentially surjective][eso]
-functor determines an equivalence of precategories. Recall that "split
-essentially surjective" means we have some determined _procedure_ for
-picking out an essential fibre over any object $d : \cD$: an object
-$F^*(d) : \cC$ together with a specified isomorphism $F^*(d) \cong
-d$.
-
-[ff]: Cat.Functor.Base.html#ff-functors
-[eso]: Cat.Functor.Base.html#essential-fibres
+Any [[fully faithful]] and [[(split!) essentially surjective|eso
+functor]] functor determines an equivalence of precategories. Recall
+that "split essentially surjective" means we have some determined
+_procedure_ for picking out an essential fibre over any object $d :
+\cD$: an object $F^*(d) : \cC$ together with a specified isomorphism
+$F^*(d) \cong d$.
 
 ```agda
 module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) where
@@ -385,23 +382,19 @@ needs an appeal to faithfulness (two, actually):
 
 ### Between categories
 
-Above, we made an equivalence out of any fully faithful and _split_
+Above, we made an equivalence out of any [[fully faithful]] and _split_
 essentially surjective functor. In set-theoretic mathematics (and indeed
-between [strict categories]), the splitting condition can not be lifted
-constructively: the statement "every (ff, eso) functor between strict
-categories is an equivalence" is equivalent to the axiom of choice.
+between [[strict categories]]), the splitting condition can not be
+lifted constructively: the statement "every (ff, eso) functor between
+strict categories is an equivalence" is equivalent to the axiom of
+choice.
 
-[univalent categories]: Cat.Univalent.html
-[strict categories]: Cat.Instances.StrictCat.html
-
-However, between [univalent categories], the situation is different: Any
-essentially surjective functor splits. In particular, any functor
-between univalent categories has propositional [essential fibres], so a
+However, between [[univalent categories]], the situation is different: Any
+essentially surjective [[fully faithful]] functor splits. In particular, any [[ff]] functor
+between univalent categories has propositional [[essential fibres]], so a
 "mere" essential surjection is automatically split. However, note that
 _both_ the domain _and_ codomain have to be categories for the argument
 to go through.
-
-[essential fibres]: Cat.Functor.Base.html#essential-fibres
 
 ```agda
 module
@@ -444,7 +437,7 @@ Furthermore, since we're working with categories, these isomorphisms
 restrict to _paths_ $x \equiv y$ and $F(x) \equiv F(y)$. We're
 half-done: we've shown that some $p : x \equiv y$ exists, and it remains to
 show that over this path we have $i \equiv j$. More specifically, we
-must give a path $i \equiv j$ laying over $\rm{ap}(F)(p)$.
+must give a path $i \equiv j$ laying over $\ap(F)(p)$.
 
 ```agda
     x≡y : x ≡ y
@@ -460,25 +453,25 @@ because we can use the helper `Hom-pathp-reflr-iso`{.Agda} to establish
 the result with far less computation:
 
 ```agda
-    over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
-    over′ = D.≅-pathp Fx≡Fy refl
+    over' : PathP (λ i → Fx≡Fy i D.≅ z) i j
+    over' = D.≅-pathp Fx≡Fy refl
       (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
-We must then connect $\rm{ap}(F)(p)$ with this path $F(x) \cong
-F(y)$. But since we originally got $p$ by full faithfulness of $F$, they
-_are_ indeed the same path:
+We must then connect $\ap(F)(p)$ with this path $F(x) \cong F(y)$. But
+since we originally got $p$ by full faithfulness of $F$, they _are_
+indeed the same path:
 
 ```agda
     abstract
       square : ap (F₀ F) x≡y ≡ Fx≡Fy
       square =
-        ap (F₀ F) x≡y                     ≡⟨ F-map-path F x≅y ccat dcat ⟩
+        ap (F₀ F) x≡y                     ≡⟨ F-map-path ccat dcat F x≅y ⟩
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
     over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
-    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over′
+    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over'
 ```
 
 Hence --- blink and you'll miss it --- the essential fibres of $F$ over
@@ -502,6 +495,32 @@ surjective functor between categories is an equivalence:
   ff+eso→is-equivalence : is-eso F → is-equivalence F
   ff+eso→is-equivalence eso = ff+split-eso→is-equivalence ff (Theorem-of-choice eso)
 ```
+
+Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
+then it's an equivalence-on-objects functor. The inverse functor
+$F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
+into objects of $\cC$, and unit/counit of the equivalence ensure
+that $c \cong F^{-1}(F(c))$ and $d \cong F(F^{-1}(d))$, so all that remains
+is to use the fact that $\cC$ and $\cD$ are categories to get the
+requisite paths.
+
+```agda
+is-cat-equivalence→equiv-on-objects
+  : ∀ {F : Functor C D}
+  → (ccat : is-category C) (dcat : is-category D)
+  → is-equivalence F → is-equiv-on-objects F
+is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
+  is-iso→is-equiv $
+    iso (e.F⁻¹ .F₀)
+      (λ d → dcat .to-path (D.invertible→iso _ (e.counit-iso d)))
+      (λ c → sym $ ccat .to-path (C.invertible→iso _ (e.unit-iso c)))
+  where
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module e = is-equivalence eqv
+```
+
+
 
 ## Isomorphisms
 
@@ -565,13 +584,13 @@ Id-is-equivalence {C = C} .counit-iso x =
 private unquoteDecl eqv = declare-record-iso eqv (quote is-precat-iso)
 instance
   H-Level-is-precat-iso
-    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    : ∀ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'}
         {F : Functor C D} {n}
     → H-Level (is-precat-iso F) (suc n)
   H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
 
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (F : Functor C D) (eqv : is-equivalence F)
   where
   private
@@ -596,30 +615,33 @@ module
 
   is-equivalence→is-split-eso : is-split-eso F
   is-equivalence→is-split-eso y =
-    (F⁻¹.F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y)
+    (e.F⁻¹ .F₀ y) ,
+    D.invertible→iso (e.counit .η y) (e.counit-iso y)
 
   is-equivalence→is-faithful : is-faithful F
   is-equivalence→is-faithful = fully-faithful→faithful {F = F} is-equivalence→is-ff
+
+  is-equivalence→is-eso : is-eso F
+  is-equivalence→is-eso y =
+    inc ((e.F⁻¹ .F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y))
 
   open is-precat-iso
   open is-iso
 
   is-equivalence→is-precat-iso
     : is-category C → is-category D → is-precat-iso F
-  is-equivalence→is-precat-iso c-cat d-cat = λ where
-    .has-is-ff → is-equivalence→is-ff
-    .has-is-iso → is-iso→is-equiv λ where
-      .inv → e.F⁻¹ .F₀
-      .rinv x → d-cat .to-path (D.invertible→iso _ (e.counit-iso x))
-      .linv x → sym $ c-cat .to-path (C.invertible→iso _ (e.unit-iso x))
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-ff =
+    is-equivalence→is-ff
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-iso =
+    is-cat-equivalence→equiv-on-objects c-cat d-cat eqv
 ```
 -->
 
 <!--
 ```agda
 record Equivalence
-  {o ℓ o′ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′)
-  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+  {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ')
+  : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
   where
   no-eta-equality
   field
@@ -630,11 +652,136 @@ record Equivalence
 ```
 -->
 
+## Properties of equivalences
+
+If $F : \cC \to \cD$ is fully-faithfuly and essentially surjective, then
+for every hom-set $\cD(d,d')$ there (merely) exists an equivalent hom-set
+$\cC(c,c')$.
+
 <!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+```
+-->
+
+```agda
+  ff+split-eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → ∀ (d d' : D.Ob) → Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d')
+  ff+split-eso→hom-equiv F ff split-eso d d' =
+    d-fib .fst , d'-fib .fst ,
+    (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
+    where
+      d-fib = split-eso d
+      d'-fib = split-eso d'
+
+  ff+eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d') ∥
+  ff+eso→hom-equiv F ff eso d d' = do
+      (c , Fc≅d) ← eso d
+      (c' , Fc'≅d') ← eso d'
+      pure (c , c' , (F .F₁ , ff) ∙e D.iso→hom-equiv Fc≅d Fc'≅d')
+```
+
+This allows us to prove a very useful little lemma: if $F : \cC \to \cD$ is a
+fully-faithful, essentially surjective functor, then any property of hom-sets
+of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
+
+```agda
+  ff+eso→preserves-hom-props
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ A → is-prop (P A))
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
+    ∥-∥-proj (prop (Lift ℓc (D.Hom d d'))) $ do
+      (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
+      pure (transport (ap P (ua (Lift-ap eqv))) (P-hom c c'))
+```
+
+As a corollary, we note that if $F : \cC \to \cD$ is a fully-faithful, essentially
+surjective functor, then if the hom-sets of $\cC$ are all $n$-types, then the hom-sets
+of $\cD$ must also be $n$-types.
+
+```agda
+  ff+eso→hom-hlevel
+    : ∀ {n} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  ff+eso→hom-hlevel {n = n} F ff eso C-hlevel d d' =
+    Lift-is-hlevel' _ $
+    ff+eso→preserves-hom-props F ff eso
+      (λ A → is-hlevel A n) (λ _ → is-hlevel-is-prop n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
+```
+
+Note that if $F$ is fully faithful and **split** essentially surjective, then
+we can drop the requirement that $P$ must be a prop.
+
+```agda
+  ff+split-eso→preserves-hom-fams
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+split-eso→preserves-hom-fams F ff split-eso P P-hom d d' =
+    transport
+      (ap P (ua (Lift-ap (ff+split-eso→hom-equiv F ff split-eso d d' .snd .snd))))
+      (P-hom _ _)
+```
+
+As a corollary, equivalences preserve all families over hom sets.
+
+```agda
+  equivalence→preserves-hom-fams
+    : ∀ {ℓ} (E : Equivalence C D)
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  equivalence→preserves-hom-fams E =
+    ff+split-eso→preserves-hom-fams (Equivalence.To E)
+      (is-equivalence→is-ff _ (Equivalence.To-equiv E))
+      (is-equivalence→is-split-eso _ (Equivalence.To-equiv E))
+```
+
+<!--
+```agda
+  equivalence→hom-hlevel
+    : ∀ {n} (E : Equivalence C D)
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  equivalence→hom-hlevel {n = n} E C-hlevel d d' =
+    Lift-is-hlevel' n $
+    equivalence→preserves-hom-fams E (λ A → is-hlevel A n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
+```
+-->
+
+Being an equivalence is also invariant under natural isomorphism.
+
 ```agda
 is-equivalence-natural-iso
   : ∀ {F G : Functor C D}
-  → natural-iso F G
+  → F ≅ⁿ G
   → is-equivalence F → is-equivalence G
 is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv where
   open is-equivalence
@@ -647,14 +794,56 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
   G-eqv .unit-iso x =
     C.invertible-∘
       (C.invertible-∘
-        (Fr.F-invertible (F-eqv .F⁻¹) (natural-iso→invertible α x))
+        (F-map-invertible (F-eqv .F⁻¹) (isoⁿ→is-invertible α x))
         C.id-invertible)
       (F-eqv .unit-iso x)
   G-eqv .counit-iso x =
     D.invertible-∘
       (F-eqv .counit-iso x)
       (D.invertible-∘
-        (Fr.F-invertible F C.id-invertible)
-        (natural-iso→invertible α _ D.invertible⁻¹))
+        (F-map-invertible F C.id-invertible)
+        (isoⁿ→is-invertible α _ D.invertible⁻¹))
 ```
--->
+
+Equivalences are invertible.
+
+```agda
+_Equivalence⁻¹
+  : Equivalence C D → Equivalence D C
+(E Equivalence⁻¹) .Equivalence.To = Equivalence.From E
+(E Equivalence⁻¹) .Equivalence.To-equiv = Equivalence.inverse-equivalence E
+```
+
+Equivalences are also composable, as [adjoints compose].
+
+[adjoints compose]: Cat.Functor.Adjoint.Compose.html
+
+```agda
+is-equivalence-∘
+  : ∀ {F : Functor D E} {G : Functor C D}
+  → is-equivalence F → is-equivalence G
+  → is-equivalence (F F∘ G)
+is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
+  module F-eqv = is-equivalence F-eqv
+  module G-eqv = is-equivalence G-eqv
+  module C = Cat.Reasoning C
+  module E = Cat.Reasoning E
+
+  FG-eqv : is-equivalence (F F∘ G)
+  FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
+  FG-eqv .F⊣F⁻¹ = LF⊣GR G-eqv.F⊣F⁻¹ F-eqv.F⊣F⁻¹
+  FG-eqv .unit-iso x =
+    C.invertible-∘
+      (F-map-invertible G-eqv.F⁻¹ (F-eqv.unit-iso (G .F₀ x)))
+      (G-eqv.unit-iso x)
+  FG-eqv .counit-iso x =
+    E.invertible-∘
+      (F-eqv.counit-iso x)
+      (F-map-invertible F (G-eqv.counit-iso (F-eqv .F⁻¹ .F₀ x)))
+
+_∘Equivalence_ : Equivalence C D → Equivalence D E → Equivalence C E
+(F ∘Equivalence G) .Equivalence.To =
+  Equivalence.To G F∘ Equivalence.To F
+(F ∘Equivalence G) .Equivalence.To-equiv =
+  is-equivalence-∘ (Equivalence.To-equiv G) (Equivalence.To-equiv F)
+```

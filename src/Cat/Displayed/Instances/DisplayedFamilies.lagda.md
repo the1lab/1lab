@@ -35,7 +35,7 @@ open Slice-hom
 ```
 -->
 
-# The Displayed Family Fibration
+# The displayed family fibration
 
 The [family fibration] is a critical part of the theory of fibrations,
 as it acts as a stepping off point for generalizing structure found
@@ -50,7 +50,7 @@ a version of the family fibration that represents families
 **internal** to a fibration, where objects should be $\cB$-indexed
 families of $\cE$ objects. To construct such a fibration, we recall
 that every family $P : X \to \ty$ is equivalent to the total space
-of it's fibres (see [here] for more details). It's quite rare for
+of its fibres (see [here] for more details). It's quite rare for
 $\cB$ to have something that looks like a universe, but it **does**
 have enough structure to talk about fibres! We can consider a morphism
 $\cB(a, x)$ to be a sort of "generalized family" over $x$, where $a$ is
@@ -82,13 +82,12 @@ $(a : \cB) \times \cB(a, x) \times \cE_{a}$, and morphisms
 $f : (a, f, a') \to (b, g, b')$ over $u : x \to y$ are given by triples
 $(k : \cB(a, b)) \times (u \circ f = g \circ k) \times \cE_{k}(a', b')$.
 The first portion of this data can be obtained by using the
-[codomain fibration] over $\cB$. The remaining data involving $\cE$ is
+[[codomain fibration]] over $\cB$. The remaining data involving $\cE$ is
 then added by composing the codomain fibration with the [base change]
-of $\cE$ along the functor $\mathrm{Dom} : \int B^{\to} \to B$ that takes
-the domain of a morphism in the arrow category (which **is** the total
-category of the codomain fibration).
+of $\cE$ along the functor $\mathrm{Dom} : \int B^{\to} \to B$ that
+takes the domain of a morphism in the arrow category (which **is** the
+[[total category]] of the codomain fibration).
 
-[codomain fibration]: Cat.Displayed.Instances.Slice.html
 [base change]: Cat.Displayed.Instances.Pullback.html
 
 ```agda
@@ -124,8 +123,8 @@ module Fam-over {x} (P : Disp-family.Ob[ x ]) where
   fam : Hom tot x
   fam = P .fst .map
 
-  tot′ : Ob[ tot ]
-  tot′ = P .snd
+  tot' : Ob[ tot ]
+  tot' = P .snd
 
 open Fam-over
 ```
@@ -148,8 +147,8 @@ module Fam-over-hom
   fam-square : u ∘ fam P ≡ fam Q ∘ map-tot
   fam-square = fᵢ .fst .commute
 
-  map-tot′ : Hom[ map-tot ] (tot′ P) (tot′ Q)
-  map-tot′ = fᵢ .snd
+  map-tot' : Hom[ map-tot ] (tot' P) (tot' Q)
+  map-tot' = fᵢ .snd
 
 open Fam-over-hom
 
@@ -157,7 +156,7 @@ fam-over-hom
   : ∀ {x y} {u : Hom x y} {P : Disp-family.Ob[ x ]} {Q : Disp-family.Ob[ y ]}
   → (f : Hom (tot P) (tot Q))
   → u ∘ fam P ≡ fam Q ∘ f
-  → Hom[ f ] (tot′ P) (tot′ Q)
+  → Hom[ f ] (tot' P) (tot' Q)
   → Disp-family.Hom[ u ] P Q
 fam-over-hom f p f' .fst .to = f
 fam-over-hom f p f' .fst .commute = p
@@ -181,20 +180,20 @@ module _
     fibration-∘ (Codomain-fibration B pb) (Change-of-base-fibration Dom E fib)
 ```
 
-## Constant Families
+## Constant families
 
 There is a vertical functor from $\cE$ to the category of $\cE$-valued
 families that takes each $\cE_{x}$ to the constant family.
 
 ```agda
 ConstDispFam : Vertical-functor E Disp-family
-ConstDispFam .Vertical-functor.F₀′ {x = x} x' =
+ConstDispFam .Vertical-functor.F₀' {x = x} x' =
   fam-over x id x'
-ConstDispFam .Vertical-functor.F₁′ {f = f} f' =
+ConstDispFam .Vertical-functor.F₁' {f = f} f' =
   fam-over-hom f id-comm f'
-ConstDispFam .Vertical-functor.F-id′ =
+ConstDispFam .Vertical-functor.F-id' =
   Slice-pathp B refl refl ,ₚ sym (transport-refl _)
-ConstDispFam .Vertical-functor.F-∘′ =
+ConstDispFam .Vertical-functor.F-∘' =
   Slice-pathp B refl refl ,ₚ sym (transport-refl _)
 ```
 
@@ -202,60 +201,60 @@ This functor is in fact fibred, though the proof is somewhat involved!
 
 ```agda
 ConstDispFam-fibred : is-vertical-fibred ConstDispFam
-ConstDispFam-fibred {a = a} {b} {a′} {b′} {f = f} f′ f′-cart = cart where
+ConstDispFam-fibred {a = a} {b} {a'} {b'} {f = f} f' f'-cart = cart where
   open Vertical-functor ConstDispFam
-  module f′ = is-cartesian f′-cart
+  module f' = is-cartesian f'-cart
   open is-cartesian
 ```
 
-We begin by fixing some notation for the constant family on `b′`.
+We begin by fixing some notation for the constant family on `b'`.
 
 ```agda
-  Δb′ : Disp-family.Ob[ b ]
-  Δb′ = fam-over b id b′
+  Δb' : Disp-family.Ob[ b ]
+  Δb' = fam-over b id b'
 ```
 
 Next, a short yet crucial lemma: if we have a displayed family
 over $x$, a map $m : \cB(x, a)$, and a morphism of displayed families
 from $P$ to the constant family on $b'$, then we can construct a map
 from the displayed total space of $P$ to $a'$. This is constructed via
-the universal map of the cartesian morphism $f'$.
+the universal map of the [[cartesian morphism]] $f'$.
 
 ```agda
   coh : ∀ {x : Ob} {P : Disp-family.Ob[ x ]}
-      → (m : Hom x a) (h′ : Disp-family.Hom[ f ∘ m ] P Δb′)
-      → f ∘ (m ∘ fam P) ≡ map-tot h′
-  coh m h′ = assoc _ _ _ ∙ fam-square h′ ∙ idl _
+      → (m : Hom x a) (h' : Disp-family.Hom[ f ∘ m ] P Δb')
+      → f ∘ (m ∘ fam P) ≡ map-tot h'
+  coh m h' = assoc _ _ _ ∙ fam-square h' ∙ idl _
 
   tot-univ : {x : Ob} {P : Disp-family.Ob[ x ]} (m : Hom x a)
-    → (h′ : Disp-family.Hom[ f ∘ m ] P Δb′)
-    → Hom[ m ∘ fam P ] (tot′ P) a′
-  tot-univ {P = P} m h′ =
-    f′.universal (m ∘ fam P) $ hom[ coh m h′ ]⁻ (map-tot′ h′)
+    → (h' : Disp-family.Hom[ f ∘ m ] P Δb')
+    → Hom[ m ∘ fam P ] (tot' P) a'
+  tot-univ {P = P} m h' =
+    f'.universal (m ∘ fam P) $ hom[ coh m h' ]⁻ (map-tot' h')
 ```
 
 We can use this lemma to construct a universal map in $\cE$.
 
 ```agda
-  cart : is-cartesian Disp-family f (F₁′ f′)
-  cart .universal {u′ = u′} m h′ =
-    fam-over-hom (m ∘ fam u′) (sym (idl _)) (tot-univ m h′)
+  cart : is-cartesian Disp-family f (F₁' f')
+  cart .universal {u' = u'} m h' =
+    fam-over-hom (m ∘ fam u') (sym (idl _)) (tot-univ m h')
 ```
 
 Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
 
 ```agda
-  cart .commutes {x} {P} m h′ =
-    Σ-path (Slice-pathp B _ (coh m h′)) $ from-pathp $ cast[] $
-      hom[] (f′ ∘′ map-tot′ (cart .universal m h′)) ≡[]⟨ ap hom[] (f′.commutes _ _) ⟩
-      hom[] (hom[] (map-tot′ h′))                   ≡[ coh m h′ ]⟨ to-pathp⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
-      map-tot′ h′ ∎
-  cart .unique {x} {P} {m = m} {h′ = h′} m′ p =
-    Σ-path (Slice-pathp B refl (sym (fam-square m′ ∙ idl _)))
-    $ f′.unique _ $ from-pathp⁻ $ cast[] {q = coh m h′} $
-      f′ ∘′ hom[] (map-tot′ m′) ≡[]⟨ to-pathp (smashr _ (ap (f ∘_) (fam-square m′ ∙ idl _)) ∙ reindex _ _) ⟩
-      hom[] (f′ ∘′ map-tot′ m′) ≡[]⟨ ap map-tot′ p ⟩
-      map-tot′ h′               ∎
+  cart .commutes {x} {P} m h' =
+    Σ-path (Slice-pathp B _ (coh m h')) $ from-pathp $ cast[] $
+      hom[] (f' ∘' map-tot' (cart .universal m h')) ≡[]⟨ ap hom[] (f'.commutes _ _) ⟩
+      hom[] (hom[] (map-tot' h'))                   ≡[ coh m h' ]⟨ to-pathp⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
+      map-tot' h' ∎
+  cart .unique {x} {P} {m = m} {h' = h'} m' p =
+    Σ-path (Slice-pathp B refl (sym (fam-square m' ∙ idl _)))
+    $ f'.unique _ $ from-pathp⁻ $ cast[] {q = coh m h'} $
+      f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
+      hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
+      map-tot' h'               ∎
 ```
 
 We also provide a bundled version of this functor.

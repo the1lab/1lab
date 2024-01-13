@@ -13,21 +13,20 @@ import Cat.Reasoning as Cr
 
 ```agda
 module Cat.Displayed.Univalence.Reasoning
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′)
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')
   where
 ```
 
 # Remarks about displayed univalence
 
-Note that, over a univalent base, [univalence of a displayed
-category][du] is equivalent to each fibre being univalent; Over a
-precategorical base, displayed univalence is a stronger condition, but
-it still implies that each fibre is univalent. Moreover, since
-isomorphisms in fibres are equivalent to [vertical isomorphisms], if
-$\cE$ is a displayed univalent category, then vertical isomorphism is
-an identity system on each type of objects-over.
+Note that, over a univalent base, [[univalence of displayed categories]]
+is equivalent to _fibrewise_ univalence; Over a precategorical base,
+displayed univalence is a stronger condition, but it still implies that
+each fibre is univalent. Moreover, since isomorphisms in fibres are
+equivalent to [vertical isomorphisms], if $\cE$ is a [[displayed
+univalent category]], then vertical isomorphism is an [[identity
+system]] on each type of objects-over.
 
-[du]: Cat.Displayed.Univalence.html
 [vertical isomorphisms]: Cat.Displayed.Morphism.html#isos
 
 <!--
@@ -72,19 +71,18 @@ vertical-iso→path e = ≅↓-identity-system e .to-path
 ```
 
 The transport and dependent path lemmas are straightforward
-generalisations of [their non-displayed counterparts][univ]. Note that
-while we only need to talk about vertical isomorphisms, the proofs work
-over an arbitrary morphism in the base. They are also generalised over
-an arbitrary identification between e.g. $f = 1f1$ in the base.
-
-[univ]: agda://Cat.Univalent#Hom-transport
+generalisations of [[their non-displayed counterparts|transport in
+Hom]]. Note that while we only need to talk about vertical isomorphisms,
+the proofs work over an arbitrary morphism in the base. They are also
+generalised over an arbitrary identification between e.g. $f = 1f1$ in
+the base.
 
 <!--
 ```agda
 private variable
   x y : B.Ob
   f : B.Hom x y
-  x₁ x₂ y₁ y₂ x′ y′ : Ob[ x ]
+  x₁ x₂ y₁ y₂ x' y' : Ob[ x ]
 ```
 -->
 
@@ -92,24 +90,24 @@ private variable
 abstract
   Hom[]-transport
     : (α : f ≡ B.id B.∘ f B.∘ B.id) (p : x₁ ≡ x₂) (q : y₁ ≡ y₂)
-    → (f′ : Hom[ f ] x₁ y₁)
-    → transport (λ i → Hom[ f ] (p i) (q i)) f′ ≡[ α ]
-      path→vertical-iso q .to′ ∘′ f′ ∘′ path→vertical-iso p .from′
+    → (f' : Hom[ f ] x₁ y₁)
+    → transport (λ i → Hom[ f ] (p i) (q i)) f' ≡[ α ]
+      path→vertical-iso q .to' ∘' f' ∘' path→vertical-iso p .from'
 
   Hom[]-pathp-iso
     : (e-cat : is-category-displayed)
     → (α : B.id B.∘ f B.∘ B.id ≡ f)
-    → (p : x₁ ≅↓ x₂) (q : y₁ ≅↓ y₂) (f′ : Hom[ f ] x₁ y₁) (g′ : Hom[ f ] x₂ y₂)
-    → q .to′ ∘′ f′ ∘′ p .from′ ≡[ α ] g′
+    → (p : x₁ ≅↓ x₂) (q : y₁ ≅↓ y₂) (f' : Hom[ f ] x₁ y₁) (g' : Hom[ f ] x₂ y₂)
+    → q .to' ∘' f' ∘' p .from' ≡[ α ] g'
     → PathP (λ i → Hom[ f ] (vertical-iso→path e-cat p i)
                             (vertical-iso→path e-cat q i))
-        f′ g′
+        f' g'
 
   Hom[]-pathp-refll-iso
     : (e-cat : is-category-displayed) (α : f B.∘ B.id ≡ f)
-    → (p : x₁ ≅↓ x₂) (f′ : Hom[ f ] x₁ y′) (g′ : Hom[ f ] x₂ y′)
-    → f′ ∘′ p .from′ ≡[ α ] g′
-    → PathP (λ i → Hom[ f ] (vertical-iso→path e-cat p i) y′) f′ g′
+    → (p : x₁ ≅↓ x₂) (f' : Hom[ f ] x₁ y') (g' : Hom[ f ] x₂ y')
+    → f' ∘' p .from' ≡[ α ] g'
+    → PathP (λ i → Hom[ f ] (vertical-iso→path e-cat p i) y') f' g'
 ```
 
 <details>
@@ -117,30 +115,30 @@ abstract
 proofs. Therefore, they're hidden away down here.</summary>
 
 ```agda
-  Hom[]-transport {f = f} {x₁ = x₁} {y₁ = y₁} α p q f′ =
-    J₂ (λ x₂ y₂ p q → transport (λ i → Hom[ f ] (p i) (q i)) f′
-               ≡[ α ] path→vertical-iso q .to′ ∘′ f′ ∘′ path→vertical-iso p .from′)
+  Hom[]-transport {f = f} {x₁ = x₁} {y₁ = y₁} α p q f' =
+    J₂ (λ x₂ y₂ p q → transport (λ i → Hom[ f ] (p i) (q i)) f'
+               ≡[ α ] path→vertical-iso q .to' ∘' f' ∘' path→vertical-iso p .from')
       (to-pathp⁻ (sym
-        (ap hom[] (from-pathp⁻ (eliml′ refl (transport-refl _) {q = B.idl _})
-                ·· ap hom[] (from-pathp⁻ (elimr′ refl (transport-refl _) {q = B.idr f}))
+        (ap hom[] (from-pathp⁻ (eliml' refl (transport-refl _) {q = B.idl _})
+                ·· ap hom[] (from-pathp⁻ (elimr' refl (transport-refl _) {q = B.idr f}))
                 ·· hom[]-∙ _ _)
         ·· hom[]-∙ _ _
         ·· reindex _ _)))
       p q
 
-  Hom[]-pathp-refll-iso e-cat α p f′ g′ β = to-pathp $
-       from-pathp⁻ (Hom[]-transport (sym (B.idl _ ∙ α)) (vertical-iso→path e-cat p) refl f′)
+  Hom[]-pathp-refll-iso e-cat α p f' g' β = to-pathp $
+       from-pathp⁻ (Hom[]-transport (sym (B.idl _ ∙ α)) (vertical-iso→path e-cat p) refl f')
     ·· ap hom[] (
-        ap₂ (λ a b → a ∘′ f′ ∘′ b) (transport-refl _)
-          (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from′))
-        ∙ from-pathp⁻ (idl′ (f′ ∘′ p .from′)))
+        ap₂ (λ a b → a ∘' f' ∘' b) (transport-refl _)
+          (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from'))
+        ∙ from-pathp⁻ (idl' (f' ∘' p .from')))
     ·· (hom[]-∙ _ _ ·· reindex _ _ ·· from-pathp β)
 
-  Hom[]-pathp-iso e-cat α p q f′ g′ β = to-pathp $
-       from-pathp⁻ (Hom[]-transport (sym α) (vertical-iso→path e-cat p) (vertical-iso→path e-cat q) f′)
-    ·· ap hom[] (ap₂ (λ a b → a ∘′ f′ ∘′ b)
-        (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over q i .to′))
-        (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from′)))
+  Hom[]-pathp-iso e-cat α p q f' g' β = to-pathp $
+       from-pathp⁻ (Hom[]-transport (sym α) (vertical-iso→path e-cat p) (vertical-iso→path e-cat q) f')
+    ·· ap hom[] (ap₂ (λ a b → a ∘' f' ∘' b)
+        (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over q i .to'))
+        (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from')))
     ·· from-pathp β
 ```
 </details>

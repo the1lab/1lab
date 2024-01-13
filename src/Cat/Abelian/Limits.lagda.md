@@ -26,17 +26,15 @@ module Cat.Abelian.Limits {o ℓ} {C : Precategory o ℓ} where
 Recall that every [pre-abelian] category admits [kernels] and cokernels,
 and is also [additive], so it additionally has products and
 coproducts^[We'll see in this very same module that they're actually the
-same thing!]. It sounds like we're missing some [finite limits] (dually,
+same thing!]. It sounds like we're missing some [[finite limits]] (dually,
 missing some finite colimits), but it turns out that this is enough: We
-can construct the [equaliser] of $f, g : A \to B$ as $\ker(f - g)$ ---
+can construct the [[equaliser]] of $f, g : A \to B$ as $\ker(f - g)$ ---
 whence the name **difference kernel**!
 
 [abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [pre-abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [kernels]: Cat.Diagram.Equaliser.Kernel.html
 [additive]: Cat.Abelian.Base.html#additive-categories
-[equaliser]: Cat.Diagram.Equaliser.html
-[finite limits]: Cat.Diagram.Limit.Finite.html
 
 The calculation is straightforward: To map out of $\ker f$, we must have
 $(fe' - ge') = 0$, but this is immediate assuming that $fe' = ge'$ ---
@@ -61,12 +59,12 @@ module _ (A : is-pre-abelian C) where
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
       ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
       0m                                                  ∎
-    equ .universal {e′ = e′} p = Ker.universal (f - g) {e′ = e′} $
-      (f - g) ∘ e′         ≡˘⟨ ∘-minus-l _ _ _ ⟩
-      f ∘ e′ - g ∘ e′      ≡⟨ ap (f ∘ e′ -_) (sym p) ⟩
-      f ∘ e′ - f ∘ e′      ≡⟨ Hom.inverser ⟩
+    equ .universal {e' = e'} p = Ker.universal (f - g) {e' = e'} $
+      (f - g) ∘ e'         ≡˘⟨ ∘-minus-l _ _ _ ⟩
+      f ∘ e' - g ∘ e'      ≡⟨ ap (f ∘ e' -_) (sym p) ⟩
+      f ∘ e' - f ∘ e'      ≡⟨ Hom.inverser ⟩
       0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-      Zero.zero→ ∅ ∘ e′    ∎
+      Zero.zero→ ∅ ∘ e'    ∎
     equ .factors = Ker.factors _
     equ .unique = Ker.unique (f - g)
 ```
@@ -135,19 +133,14 @@ identity on the diagonal.
 
 ```agda
   private
-    δ′ : (i j : Fin I) → Dec (i ≡ᵢ j) → A.Hom (F i) (F j)
-    δ′ i j (yes reflᵢ) = A.id
-    δ′ i j (no x) = A.0m
+    δ' : (i j : Fin I) → Dec (i ≡ᵢ j) → A.Hom (F i) (F j)
+    δ' i j (yes reflᵢ) = A.id
+    δ' i j (no x) = A.0m
 
     δ : ∀ i j → A.Hom (F i) (F j)
-    δ i j = δ′ i j (Discreteᵢ-Fin i j)
+    δ i j = δ' i j (i ≡ᵢ? j)
 
-    δᵢᵢ : ∀ i d → δ′ i i d ≡ A.id
-    δᵢᵢ i (yes x) = ap (δ′ i i) $
-      ap yes (is-set→is-setᵢ Fin-is-set i i x reflᵢ)
-    δᵢᵢ i (no ¬x=x) = absurd (¬x=x reflᵢ)
-
-    δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ′ i j d ≡ A.0m
+    δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ' i j d ≡ A.0m
     δᵢⱼ i j i≠j (yes i=j) = absurd (i≠j (Id≃path.to i=j))
     δᵢⱼ i j i≠j (no _)    = refl
 ```
@@ -172,11 +165,8 @@ $$
     split-remark = ip.unique ip.π (λ _ → A.idr _) ∙ sym (ip.unique _ πΣδπ) where
       sum-δ-π : ∀ i → ∑ {I} _ (λ j → δ j i A.∘ ip.π j) ≡ ip.π i
       sum-δ-π i = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
-        (A.eliml (δᵢᵢ i (Discreteᵢ-Fin i i)))
-        λ j i≠j →
-            ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (Discreteᵢ-Fin j i))
-                      refl
-          ∙ A.∘-zero-l
+        (A.eliml refl) λ j i≠j →
+          ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (j ≡ᵢ? i)) refl ∙ A.∘-zero-l
 
       πΣδπ : ∀ i → ip.π i A.∘ split ≡ ip.π i
       πΣδπ i =
@@ -233,9 +223,10 @@ f\pi_i$, then we certainly have $(\sum_i f'_i) \iota_j$ = $f$!
 <!--
 ```agda
       where
-        remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
-          (A.cancelr (ip.commute ∙ δᵢᵢ i (Discreteᵢ-Fin i i)))
-          λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (Discreteᵢ-Fin i j))
+        remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i
+          (λ j → (f j A.∘ ip.π j) A.∘ ip.tuple (λ v → δ i v))
+          (A.cancelr ip.commute)
+          λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (i ≡ᵢ? j))
                   ∙ A.∘-zero-r
 ```
 -->

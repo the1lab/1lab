@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Cat.Strict
 open import Cat.Instances.Discrete
 open import Cat.Prelude
+open import Cat.Strict
 
 import Cat.Reasoning
 
@@ -15,20 +15,21 @@ open Precategory using (Ob)
 module Cat.Skeletal where
 ```
 
-# Skeletal Precategories
+# Skeletal precategories
 
 A precategory $\cC$ is **skeletal** if objects having _the property of
 being isomorphic_ are identical. The clunky rephrasing is proposital: if
 we had merely said "isomorphic objects are identical", then skeletality
-sounds too much like [univalence], from which it is distinct. Instead,
-skeletality is defined as (equivalent to) the existence of a map
+sounds too much like [[univalence|univalent categories]], from which it
+is distinct. Instead, skeletality is defined as (equivalent to) the
+existence of a map
 
 $$
 \| a \cong b \| \to a \equiv b\text{,}
 $$
 
 which we can more concisely summarise as "$(\| - \cong - \|, \| \id \|)$
-is an identity system".
+is an [[identity system]]".
 
 [identity system]: 1Lab.Path.IdentitySystem.html
 
@@ -44,14 +45,12 @@ path-from-has-iso→is-skeletal
 path-from-has-iso→is-skeletal C sk = set-identity-system (λ _ _ → squash) sk
 ```
 
-Skeletality is much rarer than [univalence] in practice, and univalence
-is the more useful condition, since it allows facts about isomorphism to
-transfer to identity^[Indeed, it also allows general facts about
-identity to transfer to isomorphism!]. Skeletality, in our sense, serves
-as a point of comparison for _other_ properties: if a property implies
-skeletality, we can safely regard it as unnatural.
-
-[univalence]: Cat.Univalent.html
+Skeletality is much rarer than [[univalence|univalent categories]] in
+practice, and univalence is the more useful condition, since it allows
+facts about isomorphism to transfer to identity^[Indeed, it also allows
+general facts about identity to transfer to isomorphism!]. Skeletality,
+in our sense, serves as a point of comparison for _other_ properties: if
+a property implies skeletality, we can safely regard it as unnatural.
 
 <!--
 ```agda

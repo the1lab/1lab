@@ -1,9 +1,10 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Instances.Sets
-open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -27,18 +28,18 @@ open Functor
 ```
 -->
 
-# The Rezk completion
+# The Rezk completion {defines="rezk-completion"}
 
 In the same way that we can [freely] complete a proset into a poset, it
-is possible to, in a universal way, replace any precategory $\cA$ by
-a category $\widehat{\cA}$, such that there is a weak equivalence (a
-[fully faithful], [essentially surjective] functor) $\cA \to
-\widehat{\cA}$, such that any map from $\cA$ to a [univalent
-category] $\cC$ factors uniquely through $\widehat{\cA}$.
+is possible to, in a universal way, replace any precategory $\cA$ by a
+category $\widehat{\cA}$, such that there is a weak equivalence (a
+[[fully faithful]], [[essentially surjective]] functor) $\cA \to
+\widehat{\cA}$, such that any map from $\cA$ to a [[univalent category]]
+$\cC$ factors uniquely through $\widehat{\cA}$.
 
 [freely]: Cat.Functor.Adjoint.html
-[fully faithful]: Cat.Functor.Base.html#ff-functors
-[essentially surjective]: Cat.Functor.Base.html#essential-fibres
+[fully faithful]: Cat.Functor.Properties.html#ff-functors
+[essentially surjective]: Cat.Functor.Properties.html#essential-fibres
 [univalent category]: Cat.Univalent.html
 
 The construction is essentially piecing together a handful of
@@ -51,7 +52,7 @@ are univalent][fullu] --- so, like Grothendieck cracking the nut, the
 sea of theory has risen to the point where our result is trivial:
 
 [setu]: Cat.Instances.Sets.html
-[funcu]: Cat.Instances.Functor.html#functor-categories
+[funcu]: Cat.Functor.Univalence.html
 [Yoneda lemma]: Cat.Functor.Hom.html#the-yoneda-embedding
 [full inclusion]: Cat.Functor.FullSubcategory.html#from-full-inclusions
 [fullu]: Cat.Functor.FullSubcategory.html#Restrict-is-category
@@ -87,13 +88,12 @@ universe $\widehat{o}$ satisfying $(o \sqcup h) \le \widehat{o}$, since
 we want their identity type to be equivalent to something living in $h$,
 but going up a level is unfortunate. However, it's also avoidable!
 
-Since $\psh(\cA)$ is a category, isomorphism is an [identity system]
+Since $\psh(\cA)$ is a category, isomorphism is an [[identity system]]
 on its objects, which lives at the level of its morphisms --- $o \sqcup h$
 --- rather than of its objects, $o \sqcup (1 + h)$. Therefore, using the
 construction of [small images], we may take $\im \yo_{\cA}$ to be a
 $o \sqcup h$-type!
 
-[identity system]: 1Lab.Path.IdentitySystem.html
 [small images]: Data.Image.html
 
 ```agda
@@ -161,9 +161,9 @@ functor is fully faithful, that's equivalent to what we want.
     Rezk-completion-is-category =
       transfer-identity-system
         (pullback-identity-system
-          PSh[A]-is-cat
-          (_ , よim.embed-is-embedding))
-        (λ _ _ → Rezk↪PSh.iso-equiv e⁻¹)
+          (Functor-is-category Sets-is-category)
+          (よim.embed , よim.embed-is-embedding))
+        (λ x y → Rezk↪PSh.iso-equiv e⁻¹)
         λ x → Cr.≅-pathp Rezk-completion refl refl refl
 ```
 

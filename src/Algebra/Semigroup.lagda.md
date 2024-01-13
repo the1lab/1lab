@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Semigroups
+# Semigroups {defines=semigroup}
 
 ```agda
 record is-semigroup {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
@@ -37,7 +37,7 @@ equipped with a choice of _associative_ binary operation `⋆`.
 open is-semigroup public
 ```
 
-To see why the set truncation is really necessary, it helps to
+To see why the [[set truncation]] is really necessary, it helps to
 explicitly describe the expected structure of a "∞-semigroup" in terms
 of the language of higher categories:
 

@@ -4,11 +4,8 @@ open import Cat.Instances.Shape.Parallel
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
-open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
-
-open import Data.Bool
 ```
 -->
 
@@ -72,14 +69,14 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   parallel
     : ∀ {x} → Hom x (F .F₀ false)
     → (j : Bool) → Hom x (F .F₀ j)
-  parallel e′ true = forkl F ∘ e′
-  parallel e′ false = e′
+  parallel e' true = forkl F ∘ e'
+  parallel e' false = e'
 
   parallel-commutes
-    : ∀ {x} {e′ : Hom x (F .F₀ false)}
-    → forkl F ∘ e′ ≡ forkr F ∘ e′
+    : ∀ {x} {e' : Hom x (F .F₀ false)}
+    → forkl F ∘ e' ≡ forkr F ∘ e'
     → ∀ i j → (h : Precategory.Hom ·⇉· i j)
-    → F .F₁ {i} {j} h ∘ parallel e′ i ≡ parallel e′ j
+    → F .F₁ {i} {j} h ∘ parallel e' i ≡ parallel e' j
   parallel-commutes p true true tt = eliml (F .F-id)
   parallel-commutes p false true true = sym p
   parallel-commutes p false true false = refl
@@ -88,8 +85,8 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   eq : is-equaliser C (forkl F) (forkr F) (eta .η false)
   eq .equal =
     sym (eta .is-natural false true false) ∙ eta .is-natural false true true
-  eq .universal {e′ = e′} p =
-    lim.universal (parallel e′) (λ {i} {j} h → parallel-commutes p i j h)
+  eq .universal {e' = e'} p =
+    lim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   eq .factors = lim.factors {j = false} _ _
   eq .unique {p = p} {other = other} q =
     lim.unique _ _ _ λ where
@@ -102,9 +99,9 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
 Equaliser→Limit : ∀ {F : Functor ·⇉· C} → Equaliser C (forkl F) (forkr F) → Limit F
 Equaliser→Limit {F = F} eq = to-limit (is-equaliser→is-limit F (has-is-eq eq))
 
-Limit→Equaliser : ∀ {F : Functor ·⇉· C} → Limit F → Equaliser C (forkl F) (forkr F)
+Limit→Equaliser : ∀ {a b} {f g : Hom a b} → Limit {C = C} (Fork f g) → Equaliser C f g
 Limit→Equaliser lim .apex = _
 Limit→Equaliser lim .equ = _
-Limit→Equaliser {F = F} lim .has-is-eq =
-  is-limit→is-equaliser F (Limit.has-limit lim)
+Limit→Equaliser {f = f} {g} lim .has-is-eq =
+  is-limit→is-equaliser (Fork f g) (Limit.has-limit lim)
 ```

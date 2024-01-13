@@ -18,7 +18,7 @@ import Cat.Reasoning
 module Algebra.Group where
 ```
 
-# Groups
+# Groups {defines=group}
 
 A **group** is a [monoid] that has inverses for every element. The
 inverse for an element is [necessarily, unique]; Thus, to say that "$(G,
@@ -134,7 +134,7 @@ instance
   H-Level-is-group = prop-instance is-group-is-prop
 ```
 
-# Group Homomorphisms
+# Group homomorphisms
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
@@ -165,11 +165,11 @@ it `preserves the multiplication`{.Agda ident=pres-⋆}.
 ```agda
 record
   is-group-hom
-    {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
-    (G : Group-on A) (G′ : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ′) where
+    {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    (G : Group-on A) (G' : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ') where
   private
     module A = Group-on G
-    module B = Group-on G′
+    module B = Group-on G'
 
   field
     pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
@@ -208,7 +208,7 @@ identity:
 <!--
 ```agda
 is-group-hom-is-prop
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       {G : Group-on A} {H : Group-on B} {f}
   → is-prop (is-group-hom G H f)
 is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
@@ -216,7 +216,7 @@ is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
 
 instance
   H-Level-group-hom
-    : ∀ {n} {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    : ∀ {n} {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       {G : Group-on A} {H : Group-on B} {f}
     → H-Level (is-group-hom G H f) (suc n)
   H-Level-group-hom = prop-instance is-group-hom-is-prop
@@ -287,7 +287,7 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
 open make-group using (to-group-on) public
 ```
 
-# Symmetric Groups
+# Symmetric groups
 
 If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
 set, and it forms the carrier for a group: The _symmetric group_ on $X$.

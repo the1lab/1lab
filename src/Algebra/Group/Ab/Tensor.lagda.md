@@ -24,19 +24,17 @@ module Algebra.Group.Ab.Tensor where
 <!--
 ```agda
 private variable
-  ℓ ℓ′ ℓ′′ : Level
+  ℓ ℓ' ℓ'' : Level
 ```
 -->
 
 A function $f : F \to G \to H$, where all types involved are equipped
-with [abelian group] structures, is called **bilinear** when it
+with [[abelian group]] structures, is called **bilinear** when it
 satisfies $f(x + y, z) = f(x, z) + f(y, z)$ and $f(x, y + z) = f(x, y) +
 f(x, z)$: it is a group homomorphism in each of its arguments.
 
-[abelian group]: Algebra.Group.Ab.html
-
 ```agda
-record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-group ℓ′′) : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
+record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-group ℓ'') : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -77,7 +75,7 @@ record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-
     public
 
 Bilinear-path
-  : ∀ {A : Abelian-group ℓ} {B : Abelian-group ℓ′} {C : Abelian-group ℓ′′}
+  : ∀ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ''}
   → {ba bb : Bilinear A B C}
   → (∀ x y → Bilinear.map ba x y ≡ Bilinear.map bb x y)
   → ba ≡ bb
@@ -115,14 +113,14 @@ homomorphisms $A \to [B,C]$.
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
     morp : is-iso curry-bilinear
-    morp .is-iso.inv uc .Bilinear.map x y = uc .hom x .hom y
+    morp .is-iso.inv uc .Bilinear.map x y = uc # x # y
     morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_# _) (uc .preserves .is-group-hom.pres-⋆ _ _)
-    morp .is-iso.inv uc .Bilinear.pres-*r x y z = uc .hom _ .preserves .is-group-hom.pres-⋆ _ _
-    morp .is-iso.rinv uc = Homomorphism-path λ x → Homomorphism-path λ y → refl
+    morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc # _) .preserves .is-group-hom.pres-⋆ _ _
+    morp .is-iso.rinv uc = trivial!
     morp .is-iso.linv uc = Bilinear-path λ x y → refl
 ```
 
-## The tensor product
+## The tensor product {defines="tensor-product-of-abelian-groups"}
 
 Thinking about the currying isomorphism $A \to (B \to C) \simeq (A
 \times B) \to C$, we set out to search for an abelian group which lets
@@ -134,7 +132,7 @@ such that $P(A, B) \to C$ is _also_ the type of bilinear maps $A \to B
 
 <!--
 ```agda
-module _ {ℓ ℓ′} (A : Abelian-group ℓ) (B : Abelian-group ℓ′) where
+module _ {ℓ ℓ'} (A : Abelian-group ℓ) (B : Abelian-group ℓ') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -150,7 +148,7 @@ operation we want, and for the equations these should satisfy: $A
 map $A \to B \to A \otimes B$.
 
 ```agda
-  data Tensor : Type (ℓ ⊔ ℓ′) where
+  data Tensor : Type (ℓ ⊔ ℓ') where
     :1       : Tensor
     _:*_     : Tensor → Tensor → Tensor
     :inv     : Tensor → Tensor
@@ -182,7 +180,7 @@ it's the initial object equipped with these data.
   make-abelian-tensor .invl x      = t-invl
   make-abelian-tensor .comm x y    = t-comm
 
-  _⊗_ : Abelian-group (ℓ ⊔ ℓ′)
+  _⊗_ : Abelian-group (ℓ ⊔ ℓ')
   _⊗_ = to-ab make-abelian-tensor
 
   to-tensor : Bilinear A B _⊗_
@@ -194,7 +192,7 @@ it's the initial object equipped with these data.
 <!--
 ```agda
   Tensor-elim-prop
-    : ∀ {ℓ′} {P : Tensor → Type ℓ′}
+    : ∀ {ℓ'} {P : Tensor → Type ℓ'}
     → (∀ x → is-prop (P x))
     → (∀ x y → P (x , y))
     → (∀ {x y} → P x → P y → P (x :* y))
@@ -221,7 +219,7 @@ it's the initial object equipped with these data.
     go (t-pres-*r {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-pres-*r i)) (ppair x (y B.* z)) (padd (ppair x y) (ppair x z)) i
     go (t-pres-*l {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-pres-*l i)) (ppair (x A.* y) z) (padd (ppair x z) (ppair y z)) i
 
-module _ {ℓ ℓ′ ℓ′′} (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-group ℓ′′) where
+module _ {ℓ ℓ' ℓ''} (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-group ℓ'') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -279,11 +277,11 @@ an equivalence requires appealing to an induction principle of
 
 ```agda
   to-bilinear-map : Ab.Hom (A ⊗ B) C → Bilinear A B C
-  to-bilinear-map gh .Bilinear.map x y = gh .hom (x , y)
+  to-bilinear-map gh .Bilinear.map x y = gh # (x , y)
   to-bilinear-map gh .Bilinear.pres-*l x y z =
-    ap (gh .hom) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
   to-bilinear-map gh .Bilinear.pres-*r x y z =
-    ap (gh .hom) t-pres-*r ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*r ∙ gh .preserves .is-group-hom.pres-⋆ _ _
 
   from-bilinear-map-is-equiv : is-equiv from-bilinear-map
   from-bilinear-map-is-equiv = is-iso→is-equiv morp where
@@ -319,9 +317,7 @@ open Functor
 Since we have a construction $(A \otimes B)$ satisfying $(A \otimes B)
 \to C \simeq A \to [B, C]$, we're driven, being category theorists, to
 question its naturality: Is the tensor product a functor, and is this
-equivalence of Hom-sets an [adjunction]?
-
-[adjunction]: Cat.Functor.Adjoint.html
+equivalence of Hom-sets an [[adjunction]]?
 
 The answer is yes, and the proofs are essentially plugging together
 existing definitions, other than the construction of the functorial
@@ -332,9 +328,9 @@ Ab-tensor-functor : Functor (Ab ℓ ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-tensor-functor .F₀ (A , B) = A ⊗ B
 Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin : Bilinear _ _ _
-  bilin .Bilinear.map x y       = f .hom x , g .hom y
-  bilin .Bilinear.pres-*l x y z = ap (_, g .hom z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
-  bilin .Bilinear.pres-*r x y z = ap (f .hom x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
+  bilin .Bilinear.map x y       = f # x , g # y
+  bilin .Bilinear.pres-*l x y z = ap (_, g # z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
+  bilin .Bilinear.pres-*r x y z = ap (f # x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
 Ab-tensor-functor .F-id    = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
 Ab-tensor-functor .F-∘ f g = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
 
@@ -349,5 +345,5 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
     (curry-bilinear-is-equiv _ _ _)
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
-  nat f g h = Homomorphism-path λ x → Homomorphism-path λ y → refl
+  nat f g h = trivial!
 ```

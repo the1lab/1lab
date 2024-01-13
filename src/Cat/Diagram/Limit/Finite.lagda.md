@@ -1,8 +1,11 @@
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
+open import Cat.Instances.Shape.Parallel
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Pullback
+open import Cat.Diagram.Limit.Terminal
+open import Cat.Diagram.Product.Finite
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
@@ -14,10 +17,14 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Lift
 open import Cat.Prelude
+open import Cat.Finite
 
+open import Data.Fin.Finite
 open import Data.Bool
 
 import Cat.Reasoning as Cat
+
+open is-finite-precategory
 ```
 -->
 
@@ -32,22 +39,24 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Complete Categories
+# Finitely complete categories {defines="finite-limit finitely-complete finitely-complete-category"}
 
 A category is said to be **finitely complete** if it admits limits for
-every diagram with a finite shape. While this condition might sound very
-strong, and thus that it would be hard to come by, it turns out we can
-get away with only the following common shapes of limits:
+every diagram with a [[finite|finite category]] shape.
 
-* A [terminal object] (limit over the empty diagram)
-* Binary [products] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
-* Binary [equalisers] (limits over diagrams of the form $\bullet\tto\bullet$)
-* Binary [pullbacks] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
+```agda
+  is-finitely-complete : Typeω
+  is-finitely-complete = ∀ {o ℓ} {D : Precategory o ℓ} → is-finite-precategory D
+                       → (F : Functor D C) → Limit F
+```
 
-[terminal object]: Cat.Diagram.Terminal.html
-[Products]: Cat.Diagram.Product.html
-[Equalisers]: Cat.Diagram.Equaliser.html
-[Pullbacks]: Cat.Diagram.Pullback.html
+Similarly to the case with [[arbitrary limits|complete category]], we can get away with
+only the following common shapes of limits:
+
+* A [[terminal object]] (limit over the empty diagram)
+* Binary [[products]] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
+* Binary [[equalisers]] (limits over diagrams of the form $\bullet\tto\bullet$)
+* Binary [[pullbacks]] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
 
 In reality, the list above has some redundancy. Since we can build
 products out of pullbacks and a terminal object, and conversely we can
@@ -81,6 +90,30 @@ to give a terminal object and binary products.
     open Products using (_⊗₀_) public
 
   open Finitely-complete
+```
+
+As promised, the two definitions imply each other, assuming that $\cC$ is a
+[[univalent category]] (which is required to go from binary products to *finite*
+products).
+
+```agda
+  Finitely-complete→is-finitely-complete
+    : is-category C
+    → Finitely-complete → is-finitely-complete
+  Finitely-complete→is-finitely-complete cat Flim finite =
+    limit-as-equaliser-of-product
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Ob))
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Mor))
+      (Flim .equalisers)
+
+  is-finitely-complete→Finitely-complete
+    : is-finitely-complete → Finitely-complete
+  is-finitely-complete→Finitely-complete flim = Flim where
+    Flim : Finitely-complete
+    Flim .terminal = Limit→Terminal C (flim finite-cat _)
+    Flim .products a b = Limit→Product C (flim Disc-finite _)
+    Flim .equalisers f g = Limit→Equaliser C (flim ·⇉·-finite _)
+    Flim .pullbacks f g = Limit→Pullback C {lzero} {lzero} (flim ·→·←·-finite _)
 ```
 
 ## With equalisers
@@ -159,7 +192,7 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 
 ```agda
     pb .universal {p₁' = p₁'} {p₂' = p₂'} p =
-      eq.universal {e′ = pr.⟨ p₁' , p₂' ⟩} (
+      eq.universal {e' = pr.⟨ p₁' , p₂' ⟩} (
         (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘factor ⟩
         f ∘ p₁'                     ≡⟨ p ⟩
         g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘factor ⟩
@@ -258,8 +291,8 @@ object $*$.
   with-pullbacks top pb = fc where
     module top = Terminal top
     mkprod : ∀ A B → Product C A B
-    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb′ }
-      where pb′ = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
+    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb' }
+      where pb' = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
 
     mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     mkeq {A = A} {B} f g = eq where
@@ -353,33 +386,33 @@ top face $\rm{equ} : \rm{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
-      eq .has-is-eq .universal {e′ = e′} p =
+      eq .has-is-eq .universal {e' = e'} p =
         Pb.universal (Bb.unique₂ refl refl (sym p1) (sym p2))
         where
-          p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
+          p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e'
           p1 =
-            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₁∘factor ⟩
-            f ∘ e′                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′         ∎
+            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₁∘factor ⟩
+            f ∘ e'                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'         ∎
 
-          p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e′
+          p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e'
           p2 =
-            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₂∘factor ⟩
-            f ∘ e′                     ≡⟨ p ⟩
-            g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
-            Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
+            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₂∘factor ⟩
+            f ∘ e'                     ≡⟨ p ⟩
+            g ∘ e'                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
+            Bb.π₂ ∘ ⟨f,g⟩ ∘ e'         ∎
 
       eq .has-is-eq .factors = Pb.p₂∘universal
-      eq .has-is-eq .unique {F} {e′ = e′} {other = other} p₂∘l=e′ =
-        Pb.unique path p₂∘l=e′
+      eq .has-is-eq .unique {F} {e' = e'} {other = other} p₂∘l=e' =
+        Pb.unique path p₂∘l=e'
         where
-          path : Pb.p₁ ∘ other ≡ f ∘ e′
+          path : Pb.p₁ ∘ other ≡ f ∘ e'
           path =
             Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘factor ⟩
             Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ other ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e′) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′              ≡⟨ pulll Bb.π₁∘factor ⟩
-            f ∘ e′                          ∎
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e') ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'              ≡⟨ pulll Bb.π₁∘factor ⟩
+            f ∘ e'                          ∎
 ```
 
 Putting it all together into a record we get our proof of finite completeness:
@@ -408,7 +441,7 @@ Putting it all together into a record we get our proof of finite completeness:
 
   is-complete→finitely
     : ∀ {a b} → is-complete a b C → Finitely-complete
-  is-complete→finitely {a} {b} compl = with-pullbacks term′ pb
+  is-complete→finitely {a} {b} compl = with-pullbacks term' pb
     where
       pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
       pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
@@ -428,8 +461,8 @@ Putting it all together into a record we get our proof of finite completeness:
       open Cone-hom
       open Cone
 
-      term′ : Terminal C
-      term′ = record { top = Limit.apex limF ; has⊤ = limiting } where
+      term' : Terminal C
+      term' = record { top = Limit.apex limF ; has⊤ = limiting } where
         limiting : ∀ x → is-contr _
         limiting x =
           contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
@@ -437,7 +470,7 @@ Putting it all together into a record we get our proof of finite completeness:
 ```
 -->
 
-# Lex functors
+# Lex functors {defines="left-exact-functor lex-functor"}
 
 A functor is said to be **left exact**, abbreviated **lex**, when it
 preserves finite limits. These functors aren't called
@@ -447,14 +480,14 @@ preserve the terminal object and pullbacks.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   private module C = Cat C
   private module D = Cat D
 ```
 -->
 
 ```agda
-  record is-lex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record is-lex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     private module F = Functor F
 
     field
@@ -495,11 +528,11 @@ being pullbacks, a lex functor $F : \cC \to \cD$ preserves monomorphisms.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   open is-lex
 
   F∘-is-lex
-    : ∀ {o′′ ℓ′′} {E : Precategory o′′ ℓ′′}
+    : ∀ {o'' ℓ''} {E : Precategory o'' ℓ''}
         {F : Functor D E} {G : Functor C D}
     → is-lex F → is-lex G → is-lex (F F∘ G)
   F∘-is-lex f g .pres-⊤ = f .pres-⊤ ⊙ g .pres-⊤

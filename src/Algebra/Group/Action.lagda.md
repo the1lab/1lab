@@ -26,7 +26,7 @@ A useful way to think about [groups] is to think of their elements as
 encoding "symmetries" of a particular object. For a concrete example,
 consider the group $(\bb{R}, +, 0)$ of real numbers under addition, and
 consider the unit circle^[this is _not_ the higher inductive type [$S^1$],
-but rather the usual definition of the circle as a subset of $\cC$.]
+but rather the usual definition of the circle as a subset of $\bb{C}$.]
 sitting in $\bb{C}$. Given a real number $x : \bb{R}$, we can consider
 the "action" on the circle defined by
 
@@ -41,7 +41,7 @@ which "visually" has the effect of rotating the point $a$ so it lands
 $x$ radians around the circle, in the counterclockwise direction. Each
 $x$-radian rotation has an inverse, given by rotation $x$ radians in the
 clockwise direction; but observe that this is the same as rotating $-x$
-degrees counterclockwise. Addiitonally, observe that rotating by zero
+degrees counterclockwise. Additionally, observe that rotating by zero
 radians does nothing to the circle.
 
 We say that $\bb{R}$ _acts_ on the circle by counterclockwise rotation;
@@ -69,7 +69,7 @@ we want a group $G$ to act on an object $X$ of a more general
 The answer is that, for an object $X$ of some category $\cC$, the
 collection of all [isomorphisms] $X \cong X$ forms a group under
 composition, generalising the construction of $\rm{Sym}(X)$ to objects
-beyond sets! We give refer to a "self-isomorphism" as an
+beyond sets! We refer to a "self-isomorphism" as an
 **automorphism**, and denote their group by $\rm{Aut}(X)$.
 
 [isomorphisms]: Cat.Morphism.html#isos

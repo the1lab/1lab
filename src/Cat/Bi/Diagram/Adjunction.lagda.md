@@ -2,21 +2,18 @@
 ```agda
 open import Cat.Bi.Base
 open import Cat.Prelude
-
-import Cat.Diagram.Monad as Cat
-import Cat.Reasoning as Cr
 ```
 -->
 
 ```agda
-module Cat.Bi.Diagram.Adjunction  where
+module Cat.Bi.Diagram.Adjunction where
 ```
 
 <!--
 ```agda
 open _=>_
 
-module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
+module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
   private module B = Prebicategory B
 ```
 -->
@@ -61,7 +58,7 @@ called the **triangle identities** (because of their shape) or **zigzag
 identities** (because it sounds cool).
 
 ```agda
-  record _⊣_ {a b : B.Ob} (f : a B.↦ b) (g : b B.↦ a) : Type ℓ′ where
+  record _⊣_ {a b : B.Ob} (f : a B.↦ b) (g : b B.↦ a) : Type ℓ' where
     field
       η : B.id B.⇒ (g B.⊗ f)
       ε : (f B.⊗ g) B.⇒ B.id
@@ -72,7 +69,7 @@ identities** (because it sounds cool).
 
 Working in a fully weak bicategory means the triangle identities, rather
 than simply expressing a compatibility relation between $\eta$ and
-$\eps$ as is the case for adjoint functors, instead exhibit a
+$\eps$ as is the case for [[adjoint functors]], instead exhibit a
 complicated compatibility relation between $\eta$, $\eps$, and the
 structural isomorphisms (the unitors and associator) of the ambient
 bicategory.

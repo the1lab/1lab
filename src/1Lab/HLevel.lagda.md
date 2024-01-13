@@ -9,7 +9,7 @@ open import 1Lab.Type
 module 1Lab.HLevel where
 ```
 
-# h-Levels
+# h-Levels {defines="h-level n-type truncated truncatedness"}
 
 The "homotopy level" (h-level for short) of a type is a measure of how
 [truncated] it is, where the numbering is offset by 2. Specifically, a
@@ -25,17 +25,17 @@ inhabited.
 * The interesting information about a set is the collection of its inhabitants.
 
 * The interesting information about a groupoid includes, in addition to
-its inhabitants, the way those are related by paths. As an extreme
-example, the delooping groupoid of a group -- for instance, [the circle] --
-has uninteresting points (there's only one), but interesting _loops_.
-
-[the circle]: agda://Homotopy.Space.Circle
+  its inhabitants, the way those are related by paths. As an extreme
+  example, the delooping groupoid of a group -- for instance, the
+  [[circle]] -- has uninteresting points (there's only one), but
+  interesting _loops_.
 
 For convenience, we refer to the collection of types of h-level $n$ as
 _homotopy $(n-2)$-types_. For instance: "The sets are the homotopy
 0-types". The use of the $-2$ offset is so the naming here matches that
 of the HoTT book.
 
+:::{.definition #contractible}
 The h-levels are defined by induction, where the base case are the
 _contractible types_.
 
@@ -47,8 +47,15 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
   field
     centre : A
     paths : (x : A) → centre ≡ x
+```
+:::
 
+```agda
 open is-contr public
+
+⊤-is-contr : is-contr ⊤
+⊤-is-contr .centre = tt
+⊤-is-contr .paths _ = refl
 ```
 
 A contractible type is one for which the unique map `X → ⊤` is an
@@ -77,11 +84,13 @@ type.
   interval-contractible .paths (seg i) j = seg (i ∧ j)
 ```
 
+:::{.definition #proposition alias="property"}
 A type is (n+1)-truncated if its path types are all n-truncated.
 However, if we directly take this as the definition, the types we end up
 with are very inconvenient! That's why we introduce this immediate step:
 An **h-proposition**, or **proposition** for short, is a type where any
 two elements are connected by a path.
+:::
 
 ```agda
 is-prop : ∀ {ℓ} → Type ℓ → Type _
@@ -98,19 +107,23 @@ is-hlevel A 1 = is-prop A
 is-hlevel A (suc n) = (x y : A) → is-hlevel (Path A x y) n
 ```
 
+:::{.definition #set}
 Since types of h-level 2 are very common, they get a special name:
 **h-sets**, or just **sets** for short. This is justified because we can
 think of classical sets as being equipped with an equality _proposition_
 $x = y$ - having propositional paths is exactly the definition of
 `is-set`{.Agda}.  The universe of all types that are sets, is,
 correspondingly, called **Set**.
+:::
 
 ```agda
 is-set : ∀ {ℓ} → Type ℓ → Type ℓ
 is-set A = is-hlevel A 2
 ```
 
+:::{.definition #groupoid}
 Similarly, the types of h-level 3 are called **groupoids**.
+:::
 
 ```agda
 is-groupoid : ∀ {ℓ} → Type ℓ → Type ℓ
@@ -151,6 +164,9 @@ is-contr→extend C φ p = inS (hcomp φ
 extend→is-contr : (∀ φ (p : Partial φ A) → A [ φ ↦ p ]) → is-contr A
 extend→is-contr ext = contr (outS (ext i0 λ ())) λ x i → outS (ext i λ _ → x)
 
+subst-prop : ∀ {ℓ ℓ'} {A : Type ℓ} {P : A → Type ℓ'} → is-prop A → ∀ a → P a → ∀ b → P b
+subst-prop {P = P} prop a pa b = subst P (prop a b) pa
+
 is-contr→is-set : is-contr A → is-set A
 is-contr→is-set C x y p q i j = outS (is-contr→extend C (∂ i ∨ ∂ j) λ where
   (i = i0) → p j
@@ -178,8 +194,12 @@ which is that the propositions are precisely the types which are
 contractible when they are inhabited:
 
 ```agda
-contractible-if-inhabited : ∀ {ℓ} {A : Type ℓ} → (A → is-contr A) → is-prop A
-contractible-if-inhabited cont x y = is-contr→is-prop (cont x) x y
+is-contr-if-inhabited→is-prop : ∀ {ℓ} {A : Type ℓ} → (A → is-contr A) → is-prop A
+is-contr-if-inhabited→is-prop cont x y = is-contr→is-prop (cont x) x y
+
+is-prop∙→is-contr : ∀ {ℓ} {A : Type ℓ} → is-prop A → A → is-contr A
+is-prop∙→is-contr prop x .centre = x
+is-prop∙→is-contr prop x .paths y = prop x y
 ```
 
 The proof that any contractible type is a proposition is not too
@@ -281,6 +301,18 @@ is-prop→is-hlevel-suc {n = suc n} aprop =
   is-hlevel-suc (suc n) (is-prop→is-hlevel-suc aprop)
 ```
 
+<!--
+```agda
+is-contr→is-hlevel : ∀ {ℓ} {A : Type ℓ} n → is-contr A → is-hlevel A n
+is-contr→is-hlevel zero c = c
+is-contr→is-hlevel (suc n) c = is-prop→is-hlevel-suc (is-contr→is-prop c)
+
+is-set→is-hlevel+2
+  : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-set A → is-hlevel A (2 + n)
+is-set→is-hlevel+2 aset x y = is-prop→is-hlevel-suc (aset x y)
+```
+-->
+
 Furthermore, by the upwards closure of h-levels, we have that if $A$ is
 an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which
@@ -316,6 +348,13 @@ PathP-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                   → is-hlevel (PathP A x y) n
 PathP-is-hlevel' {A = A} n ahl x y =
   subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
+
+Path-is-hlevel→is-hlevel
+  : ∀ {ℓ} {A : Type ℓ} n
+  → (p : (x y : A) → is-hlevel (x ≡ y) n)
+  → is-hlevel A (suc n)
+Path-is-hlevel→is-hlevel zero wit x y = wit x y .centre
+Path-is-hlevel→is-hlevel (suc n) wit = wit
 ```
 -->
 
@@ -368,7 +407,14 @@ is-hlevel-is-prop (suc (suc n)) x y i a b =
   is-hlevel-is-prop (suc n) (x a b) (y a b) i
 ```
 
-# Dependent h-Levels
+<!--
+```agda
+is-hlevel-is-hlevel-suc : ∀ {ℓ} {A : Type ℓ} (k n : Nat) → is-hlevel (is-hlevel A n) (suc k)
+is-hlevel-is-hlevel-suc k n = is-prop→is-hlevel-suc (is-hlevel-is-prop n)
+```
+-->
+
+# Dependent h-levels
 
 In cubical type theory, it's natural to consider a notion of _dependent_
 h-level for a _family_ of types, where, rather than having (e.g.)
@@ -465,7 +511,7 @@ _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : 
 _ = λ _ _ _ _ → refl
 
 is-set→cast-pathp
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {x y : A} {p q : x ≡ y} (P : A → Type ℓ′) {px : P x} {py : P y}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {x y : A} {p q : x ≡ y} (P : A → Type ℓ') {px : P x} {py : P y}
   → is-set A
   → PathP (λ i → P (p i)) px py
   → PathP (λ i → P (q i)) px py

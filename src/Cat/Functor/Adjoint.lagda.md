@@ -7,10 +7,11 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Diagram.Initial
+open import Cat.Functor.Compose
 open import Cat.Instances.Comma
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -47,6 +48,7 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
+:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
@@ -54,11 +56,12 @@ isomorphism at the 0-level, and what's generally referred to as
 relations, by making some components directed: This starts at the level
 of categories, where "directing" an equivalence gives us the concept of
 **adjunction**.
+:::
 
 An _equivalence of categories_ between $\cC$ and $\cD$ is given by
 a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
-with natural _isomorphisms_ $\eta : \rm{Id} \cong (R \circ L)$ (the
-"unit") and $\eps : (L \circ R) \cong \rm{Id}$ (the "counit"). We
+with natural _isomorphisms_ $\eta : \Id \cong (R \circ L)$ (the
+"unit") and $\eps : (L \circ R) \cong \Id$ (the "counit"). We
 still want the correspondence to be bidirectional, so we can't change
 the types of $R$, $L$; What we _can_ do is weaken the natural
 isomorphisms to natural _transformations_. The data of an **adjunction**
@@ -121,7 +124,7 @@ commutative diagrams:
 
 </div>
 
-# Universal morphisms
+# Universal morphisms {defines="universal-morphism"}
 
 <!--
 ```agda
@@ -139,26 +142,21 @@ module _
 
 Another perspective on adjoint functors is given by finding "most
 efficient solutions" to the "problem" posed by a functor. For instance,
-the ([ff]) inclusion of [posets] into [strict precategories] poses the
-problem of turning a precategory into a posets. While this can't be done
-in a 1:1 way (precategories are strictly more general than posets), we
-_can_ still ponder whether there is some "most efficient" way to turn a
-category into a posets.
-
-[ff]: Cat.Functor.Base.html#ff-functors
-[posets]: Order.Base.html
-[strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
+the ([[fully faithful]]) inclusion of [[posets]] into [[strict
+(pre)categories|strict category]] poses the problem of turning a
+precategory into a poset. While this can't be done in a 1:1 way
+(precategories are strictly more general than posets), we _can_ still
+ponder whether there is some "most efficient" way to turn a category
+into a poset.
 
 While we can't directly consider maps from precategories to posets, we
 _can_ consider maps from precategories to the inclusion of a poset; Let
-us write $\cC$ for a generic precategory, $\cP$ for a generic
-poset, and $U(\cP)$ for $\cP$ considered as a precategory. Any
-functor $\cC \to U(\cP)$ can be seen as "a way to turn $\cC$
-into a poset", but not all of these can be the "most efficient" way. In
-fact, there is a vast sea of uninteresting ways to turn a precategory
-into a poset: turn them all into the [terminal] poset!
-
-[terminal]: Cat.Diagram.Terminal.html
+us write $\cC$ for a generic precategory, $\cP$ for a generic poset, and
+$U(\cP)$ for $\cP$ considered as a precategory. Any functor $\cC \to
+U(\cP)$ can be seen as "a way to turn $\cC$ into a poset", but not all
+of these can be the "most efficient" way. In fact, there is a vast sea
+of uninteresting ways to turn a precategory into a poset: turn them all
+into the [[terminal|terminal object]] poset!
 
 A "most efficient" solution, then, would be one through which all others
 factor. A "universal" way of turning a strict precategory into a poset:
@@ -214,8 +212,8 @@ $L_0(x)$ to be the codomain of the universal morphism:
   L₀ : C.Ob → D.Ob
   L₀ x = universal-map-for x .bot .↓Obj.y
 
-  L₀′ : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
-  L₀′ x = universal-map-for x .bot .map
+  L₀' : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
+  L₀' x = universal-map-for x .bot .map
 ```
 
 Given an arrow $a \to b$ in $\cC$, we can send it to a
@@ -228,7 +226,7 @@ object in $a \swarrow R$ (see `lift↓`{.Agda} below).
 ```agda
   private
     to-ob : ∀ {a b} → C.Hom a b → (a ↙ R) .Precategory.Ob
-    to-ob {a} {b} h = record { map = L₀′ b C.∘ h }
+    to-ob {a} {b} h = record { map = L₀' b C.∘ h }
 
     lift↓ : ∀ {x y} (g : C.Hom x y)
           → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (to-ob g)
@@ -254,13 +252,13 @@ object.
                                   ·· sym (C.eliml R.F-id) }))
 
     lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
-          → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
+          → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀' x)
           ≡ to-ob (f C.∘ g) .map C.∘ C.id
     lemma {x} {y} {z} f g =
-      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
-      R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀′ x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
-      R.₁ (lift↓ f .β) C.∘ L₀′ y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
-      L₀′ z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
+      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀' x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
+      R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀' x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
+      R.₁ (lift↓ f .β) C.∘ L₀' y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
+      L₀' z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
       to-ob (f C.∘ g) .map C.∘ C.id                     ∎
 
     L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
@@ -290,8 +288,8 @@ it defines a left adjoint to the $R$ we started with.
 ## Building the adjunction
 
 We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \rm{Id} \To (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \To \rm{Id}$ (the
+transformations $\eta : \Id \To (R F\circ L)$ (the
+_adjunction unit_) and $\eps : (L \circ R) \To \Id$ (the
 _adjunction counit_). We begin with the counit, since that's more
 involved.
 
@@ -404,7 +402,7 @@ object:
         })
         (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
     )
-    where α = L₀′ x
+    where α = L₀' x
           L = universal-maps→L
 ```
 
@@ -518,12 +516,15 @@ universal arrows into $R$:
   L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x
 ```
 
-<!-- TODO [Amy 2022-03-02]
-prove that we recover L by going L⊣R → universal maps → L⊣R. this is
-straightforward but I'm tired
--->
+By going from the adjunction to universal maps and then back to an adjunction, we
+recover $L$:
 
-# Adjuncts
+```agda
+  L→universal-maps→L : universal-maps→L R L⊣R→universal-maps ≡ L
+  L→universal-maps→L = Functor-path (λ _ → refl) λ f → L.pushr refl ∙ D.eliml adj.zig
+```
+
+# Adjuncts {defines=adjuncts}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any
@@ -668,10 +669,9 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 As well as adjunctions $L \circ - \dashv R \circ -$ and $- \circ R \dashv - \circ L$
 between [postcomposition and precomposition functors], respectively:
 
-[postcomposition and precomposition functors]: Cat.Instances.Functor.Compose.html
+[postcomposition and precomposition functors]: Cat.Functor.Compose.html
 
 ```agda
-  open import Cat.Instances.Functor.Compose
   open import Cat.Functor.Coherence
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
@@ -742,13 +742,11 @@ module Ml = make-left-adjoint
 ```agda
 adjoint-natural-iso
   : ∀ {L L' : Functor C D} {R R' : Functor D C}
-  → natural-iso L L' → natural-iso R R'
-  → L ⊣ R
-  → L' ⊣ R'
+  → L ≅ⁿ L' → R ≅ⁿ R' → L ⊣ R → L' ⊣ R'
 adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' where
   open _⊣_ L⊣R
-  module α = natural-iso α
-  module β = natural-iso β
+  module α = Isoⁿ α
+  module β = Isoⁿ β
   open _=>_
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
@@ -794,16 +792,12 @@ adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' wher
 
 adjoint-natural-isol
   : ∀ {L L' : Functor C D} {R : Functor D C}
-  → natural-iso L L'
-  → L ⊣ R
-  → L' ⊣ R
+  → L ≅ⁿ L' → L ⊣ R → L' ⊣ R
 adjoint-natural-isol α = adjoint-natural-iso α idni
 
 adjoint-natural-isor
   : ∀ {L : Functor C D} {R R' : Functor D C}
-  → natural-iso R R'
-  → L ⊣ R
-  → L ⊣ R'
+  → R ≅ⁿ R' → L ⊣ R → L ⊣ R'
 adjoint-natural-isor β = adjoint-natural-iso idni β
 ```
 -->

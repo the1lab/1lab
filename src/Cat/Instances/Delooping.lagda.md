@@ -3,8 +3,6 @@
 open import Algebra.Monoid
 
 open import Cat.Prelude
-
-open import Data.List
 ```
 -->
 
@@ -19,7 +17,7 @@ private variable
 ```
 -->
 
-Given a monoid $M$, we build a pointed precategory $B(M)$, where the
+Given a monoid $M$, we build a pointed precategory $\B{M}$, where the
 endomorphism monoid of the point recovers $M$.
 
 ```agda

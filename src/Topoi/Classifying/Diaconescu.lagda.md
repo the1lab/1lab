@@ -2,9 +2,10 @@
 ```agda
 open import Algebra.Prelude
 
+open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
-open import Cat.Functor.Everything
+open import Cat.Functor.Kan.Nerve
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 
@@ -19,7 +20,7 @@ import Cat.Reasoning
 module Topoi.Classifying.Diaconescu where
 ```
 
-# Diaconescu's theorem
+# Diaconescu's theorem {defines="Diaconescu's-theorem"}
 
 Let $\Sigma$ be a **signature** consisting of sorts $A, B, C\dots$,
 function symbols $f, \dots : A \to B$, and  relation symbols $~, \dots$.
@@ -82,20 +83,16 @@ sense. If we relax the requirement that specialisation be a preorder and
 allow a _set_ of model homomorphisms, the structure we get is a category
 satisfying certain completeness and exactness properties:
 
-The meets our frame used to have are now [finite limits], and the
-infinitary disjunctions are [colimits]; The infinite distributive law
-corresponds to the statement that the [pullback functors] preserve
-colimits, which follows from the pullback functors having right adjoints
-(i.e. the category is [locally cartesian closed]). Up to a couple of
-small omissions[^1], a category satisfying these assumptions is exactly
-a **[Grothendieck topos]**, and every topos classifies a particular
-theory, in the sense that, letting $G$ and $\cE$ be topoi, a
-geometric morphism $G \to \cE$ is equivalent to an $\cE$-model in
-$G$.
+The meets our frame used to have are now [[finite limits]], and the
+infinitary disjunctions are [[colimits]]; The infinite distributive law
+corresponds to the statement that the [[pullback functors]] preserve
+[[colimits]], which follows from the pullback functors having [[right
+adjoints]] (i.e. the category is [locally cartesian closed]). Up to a
+couple of small omissions[^1], a category satisfying these assumptions
+is exactly a **[Grothendieck topos]**, and every topos classifies a
+particular theory, in the sense that, letting $G$ and $\cE$ be topoi, a
+geometric morphism $G \to \cE$ is equivalent to an $\cE$-model in $G$.
 
-[finite limits]: Cat.Diagram.Limit.Finite.html
-[colimits]: Cat.Diagram.Colimit.Base.html
-[pullback functors]: Cat.Functor.Pullback.html
 [locally cartesian closed]: Cat.CartesianClosed.Locally.html
 [Grothendieck topos]: Topoi.Base.html#grothendieck-topoi
 
@@ -112,16 +109,15 @@ objects! The answer is given by **Diaconescu's theorem**:
 
 > A presheaf topos classifies the flat functors on its site.
 
-A **flat functor** $F : \cC \to \cE$ is one whose [left Kan
-extension] along the Yoneda embedding $\yo$ (i.e. its [realisation]) is
-[left exact]. The theorem is almost tautological then: Letting $F$ be a
-functor, the nerve-realisation adjunction $\Lan_\yo(F) \dashv \hom(F(-),
--)$ is 75% of the way to being a [geometric morphism], with flatness
-_definitionally_ guaranteeing that the left adjoint is lex.
+A **flat functor** $F : \cC \to \cE$ is one whose [[left Kan extension]]
+along the Yoneda embedding $\yo$ (i.e. its [realisation]) is [[left
+exact|left exact functor]]. The theorem is almost tautological then:
+Letting $F$ be a functor, the nerve-realisation adjunction $\Lan_\yo(F)
+\dashv \hom(F(-), -)$ is 75% of the way to being a [geometric morphism],
+with flatness _definitionally_ guaranteeing that the [[left adjoint]] is
+lex.
 
-[left Kan extension]: Cat.Functor.Kan.Base.html
 [realisation]: Cat.Functor.Kan.Nerve.html
-[left exact]: Cat.Diagram.Limit.Finite.html#lex-functors
 [geometric morphism]: Topoi.Base.html#geometric-morphisms
 
 <!--
@@ -162,7 +158,7 @@ embedding:
 A standard fact about the computation of left Kan extensions as colimits
 tells us that any functor (flat or not) $F : \cD \to \cC$ can be
 recovered as the composite $\Lan_\yo(F) \circ \yo$, because $\yo$ is a
-fully faithful functor.
+[[fully faithful]] functor.
 
 <!--
 ```

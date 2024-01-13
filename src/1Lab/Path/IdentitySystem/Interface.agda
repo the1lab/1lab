@@ -9,7 +9,7 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Path using (_≡_)
 
 module
-  Ids {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {refl : ∀ a → R a a}
+  Ids {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {refl : ∀ a → R a a}
       (rr : is-identity-system R refl)
   where
 

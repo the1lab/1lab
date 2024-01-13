@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -13,7 +12,7 @@ open import 1Lab.Type
 module 1Lab.Univalence where
 ```
 
-# Univalence
+# Univalence {defines=univalence}
 
 In Homotopy Type Theory, **univalence** is the principle stating that
 [equivalent] types can be [identified]. When [the book] first came out,
@@ -47,16 +46,14 @@ interpretations, i.e., make them definable in the theory, in terms of
 constructions that have computational behaviour. Let's see how this is
 done.
 
-## Glue
+## Glue {defines="glueing glue-type"}
 
 To even _state_ univalence, we first have to make sure that the concept
 of “paths between types” makes sense in the first place. In “Book HoTT”,
 paths between types are a well-formed concept because the path type is
 uniformly inductively defined for _everything_ --- including universes.
 This is not the case in Cubical type theory, where for paths in $T$ to
-be well-behaved, $T$ must [be _fibrant_].
-
-[be _fibrant_]: 1Lab.Path.html#fibrant
+be well-behaved, $T$ must be _fibrant_.
 
 Since there's no obvious choice for how to interpret `hcomp`{.Agda} in
 `Type`{.Agda}, a fine solution is to make `hcomp`{.Agda} its own type
@@ -384,7 +381,7 @@ ua-pathp≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-pathp→path eqv)
 ua-pathp≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-pathp→path eqv) y .snd
 ```
 
-# The “axiom”
+# The “axiom” {defines=univalence-axiom}
 
 The actual “univalence axiom”, as stated in the HoTT book, says that the
 canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
@@ -492,7 +489,7 @@ univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
   morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
 
-## Equivalence Induction
+## Equivalence induction {defines="equivalence-induction"}
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
 the type of _equivalences_ satisfies [the same induction principle] as
@@ -533,32 +530,32 @@ EquivJ P pid eqv =
 
 Equivalence induction simplifies the proofs of many properties about
 equivalences. For example, if $f$ is an equivalence, then so is its
-`action on paths`{.Agda ident=ap} $\rm{ap}(f)$.
+`action on paths`{.Agda ident=ap} $\ap(f)$.
 
 ```agda
-is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
-                      → (f : A → B) → is-equiv f
-                      → {x y : A}
-                      → is-equiv (ap f {x = x} {y = y})
-is-equiv→is-embedding f eqv =
-  EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
+private
+  is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
+                        → (f : A → B) → is-equiv f
+                        → {x y : A}
+                        → is-equiv (ap f {x = x} {y = y})
+  is-equiv→is-embedding f eqv =
+    EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
 ```
 
 The proof can be rendered in English roughly as follows:
 
 > Suppose $f : A \to B$ `is an equivalence`{.Agda ident=is-equiv}. We
 want to show that, for any choice of $x, y : A$, the map
-$\rm{ap}(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
+$\ap(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 >
 > By `induction`{.Agda ident=EquivJ}, it suffices to cover the case
 where $B$ is $A$, and $f$ is the identity function.
 >
-> But then, we have that $\rm{ap}(\id)$ is [definitionally
-equal](agda://1Lab.Path#ap-id) to $\id$, which is known to be `an
-equivalence`{.Agda ident=id-equiv}. <span
-class=qed>$\blacksquare$</span>
+> But then, we have that $\ap(\id)$ is definitionally equal to
+$\id$, which is known to be `an equivalence`{.Agda ident=id-equiv}.
+<span class=qed>$\blacksquare$</span>
 
-## Object Classifiers
+## Object classifiers {defines="object-classifier"}
 
 In category theory, the idea of _classifiers_ (or _classifying objects_)
 often comes up when categories applied to the study of logic. For
@@ -671,6 +668,7 @@ _ = is-prop
 ```
 -->
 
+:::{.definition #map-classifier}
 Since the type of "maps into B with variable domain and P fibres" has a
 very unwieldy description --- both in words or in Agda syntax --- we
 abbreviate it by $\ell /_{[P]} B$. The notation is meant to evoke the
@@ -679,6 +677,7 @@ category $C$ equipped with choices of maps into $c$. Similarly, the
 objects of $\ell/_{[P]}B$ are objects of the universe $\ty\
 \ell$, with a choice of map $f$ into $B$, such that $P$ holds for all
 the fibres of $f$.
+:::
 
 ```agda
 _/[_]_ : ∀ {ℓ' ℓ''} (ℓ : Level) → (Type (ℓ ⊔ ℓ') → Type ℓ'') → Type ℓ' → Type _
@@ -712,8 +711,8 @@ Map-classifier {ℓ = ℓ} {B = B} P =
 module ua {ℓ} {A B : Type ℓ} = Equiv (ua {A = A} {B} , univalence⁻¹)
 
 unglue-is-equiv
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (φ : I)
-  → {B : Partial φ (Σ (Type ℓ′) (_≃ A))}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (φ : I)
+  → {B : Partial φ (Σ (Type ℓ') (_≃ A))}
   → is-equiv {A = Glue A B} (unglue φ)
 unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr
   where module _ (ψ : I) (par : Partial ψ (fibre (unglue φ) y)) where
@@ -761,14 +760,11 @@ ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) �
   {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
   → ((a : A₀) → PathP B (f₀ a) (f₁ (e .fst a)))
   → PathP (λ i → ua e i → B i) f₀ f₁
-ua→ {e = e} {f₀ = f₀} {f₁} h i a =
-  hcomp (∂ i) λ where
-    j (i = i0) → f₀ a
-    j (i = i1) → f₁ (lem a j)
-    j (j = i0) → h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i
-  where
-  lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
-  lem a₁ = equiv→counit (e .snd) _ ∙ transport-refl _
+ua→ {B = B} {f₀ = f₀} {f₁} h i a =
+  comp (λ j → B (i ∨ ~ j)) (∂ i) λ where
+    j (j = i0) → f₁ (unglue (∂ i) a)
+    j (i = i0) → h a (~ j)
+    j (i = i1) → f₁ a
 
 ua→2 : ∀ {ℓ ℓ' ℓ''} {A₀ A₁ : Type ℓ} {e₁ : A₀ ≃ A₁}
   {B₀ B₁ : Type ℓ'} {e₂ : B₀ ≃ B₁}
@@ -784,7 +780,7 @@ transport-∙ : ∀ {ℓ} {A B C : Type ℓ}
 transport-∙ p q x i =
   transport (∙-filler' p q (~ i)) (transport-filler-ext p i x)
 
-subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
+subst-∙ : ∀ {ℓ ℓ'} {A : Type ℓ} → (B : A → Type ℓ')
         → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
         → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =

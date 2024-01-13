@@ -14,23 +14,15 @@ module Macros
   where
 
 import Control.Monad.Writer.Strict
-import Control.Monad.Trans.Maybe
 import Control.Applicative
 import Control.DeepSeq
-import Control.Monad
 
-import qualified Data.Text.IO as T
 import qualified Data.Text as T
-import qualified Data.Set as Set
-import Data.Char (isDigit, isLetter, isSpace)
-import Data.Foldable
+import Data.Char (isDigit, isLetter)
 import Data.Function (on)
-import Data.Set (Set)
-import Data.Functor.Identity
 import Data.Hashable
 import Data.Binary
 import Data.Maybe
-import Data.Either
 
 import Text.Parsec hiding ((<|>), many, optional)
 
@@ -38,8 +30,6 @@ type ParsecK = forall st m s. Stream s m Char => ParsecT s st m T.Text
 
 data Macro = Macro
   { macroDefinition :: {-# UNPACK #-} !T.Text
-  , macroName       :: {-# UNPACK #-} !T.Text
-  , macroArity      :: {-# UNPACK #-} !Int
   , macroKatexOnly  :: Bool
   , macroParser     :: ParsecK
   }
@@ -74,7 +64,7 @@ instance Binary Macro where
       Left e -> error $ "Binary Macro: failed to parse serialized Macro?\n" ++ show e
 
 instance NFData Macro where
-  rnf (Macro a b d k _) = rnf (a,b,d,k)
+  rnf (Macro a k _) = rnf (a,k)
 
 instance Show Macro where
   show m = "Macro " ++ show (macroDefinition m)
@@ -110,7 +100,7 @@ pSkipSpaceComments = many space <* skipMany (comment >> spaces)
 pMacroDefinitions :: (Monad m, Stream s m Char)
                   => ParsecT s st m ([Macro], s)
 pMacroDefinitions = do
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   defs <- sepEndBy pMacroDefinition pSkipSpaceComments
   rest <- getInput
   return (reverse defs, rest)  -- reversed so later macros shadow earlier
@@ -122,7 +112,7 @@ parseMacroMacro s =
       "\nFailed to parse input:" <> T.unpack s <> "\n"
       <> show e
     Right (m@(_:_), r) -> (m ++) <$> parseMacroMacro (applyMacros m r)
-    Right ([], r)      -> pure []
+    Right ([], _)      -> pure []
 
 pMacroDefinition
   :: (Monad m, Stream s m Char)
@@ -133,11 +123,6 @@ pMacroDefinition =
   <|> newenvironment
   <|> newalphabet
   <|> try (char '{') *> pMacroDefinition <* char '}'
-
-instance MonadWriter w m => MonadWriter w (ParsecT s u m) where
-  tell = lift . tell
-  pass = error "MonadWriter ParsecT: pass"
-  listen = error "MonadWriter ParsecT: listen"
 
 iterateToFixedPoint :: (Eq a, MonadFail m) => Int -> (a -> m a) -> a -> m a
 iterateToFixedPoint 0 _ _ = fail "Macro application did not terminate"
@@ -166,7 +151,7 @@ applyMacrosOnce ms s = do
 
 csname :: (Monad m, Stream s m Char) => ParsecT s st m T.Text -> ParsecT s st m T.Text
 csname tok = do
-  try $ string "\\csname"
+  _ <- try $ string "\\csname"
   spaces
   t <- manyTill tok $ try (string "\\endcsname")
   pure $ T.cons '\\' $ T.concat t
@@ -174,14 +159,14 @@ csname tok = do
 ctrlseq :: (Monad m, Stream s m Char)
         => ParsecT s st m String
 ctrlseq = do
-  char '\\'
+  _ <- char '\\'
   res <- many1 letter <|> count 1 anyChar
   return $ '\\' : res
 
 newalphabet :: (Monad m, Stream s m Char)
             => ParsecT s st m Macro
 newalphabet = try $ do
-  string "\\definealphabet"
+  _ <- string "\\definealphabet"
   startc <- char '{' *> letter <* char '}'
   cseq <- char '{' *> ctrlseq <* char '}'
   start <- char '{' *> letter <* char '}'
@@ -193,29 +178,29 @@ newalphabet = try $ do
 
     parsec :: ParsecK
     parsec = try $ do
-      string ['\\', startc]
+      _ <- string ['\\', startc]
       t <- letter
       guard (t >= start && t <= end)
       pure (T.pack (cseq ++ ['{', t, '}']))
 
-  pure $ Macro def (T.pack cseq) 0 False parsec
+  pure $ Macro def False parsec
 
 newcommand :: (Monad m, Stream s m Char)
            => ParsecT s st m Macro
 newcommand = try $ do
-  char '\\'
+  _ <- char '\\'
   -- we ignore differences between these so far:
   cmd <- try (string "newcommand")
     <|> try (string "renewcommand")
     <|> string "providecommand"
-  optional (char '*')
+  _ <- optional (char '*')
 
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   name <- inbraces <|> ctrlseq
   guard (take 1 name == "\\")
   let name' = drop 1 name
   numargs <- numArgs
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
 
   optarg <- if numargs > 0
     then optArg
@@ -226,7 +211,7 @@ newcommand = try $ do
       Just _  -> numargs - 1
       Nothing -> numargs
 
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   kao <- isJust <$> optionMaybe (try (string "\\katex"))
   body <- inbraces <|> ctrlseq
   let
@@ -237,8 +222,8 @@ newcommand = try $ do
 
     parsec :: ParsecK
     parsec = fmap T.pack $ try $ do
-      char '\\'
-      string name'
+      _ <- char '\\'
+      _ <- string name'
       when (all isLetter name') $
         notFollowedBy letter
       spc <- pSkipSpaceComments
@@ -252,20 +237,20 @@ newcommand = try $ do
                       Nothing -> args
       return $ apply args' $ body ++ spc
 
-  return $ Macro (T.pack defn) (T.pack name) numargs kao parsec
+  return $ Macro (T.pack defn) kao parsec
 
 newenvironment :: (Monad m, Stream s m Char)
                => ParsecT s st m Macro
 newenvironment = try $ do
-  char '\\'
+  _ <- char '\\'
   -- we ignore differences between these so far:
-  optional (string "re")
-  string "newenvironment"
-  optional (char '*')
-  pSkipSpaceComments
+  _ <- optional (string "re")
+  _ <- string "newenvironment"
+  _ <- optional (char '*')
+  _ <- pSkipSpaceComments
   name <- inbraces <|> ctrlseq
   numargs <- numArgs
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
 
   optarg <- if numargs > 0
     then optArg <* pSkipSpaceComments
@@ -278,7 +263,7 @@ newenvironment = try $ do
         Nothing -> numargs
 
   opener <- inbraces <|> ctrlseq
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   closer <- inbraces <|> ctrlseq
   let
     defn = "\\newenvironment{" ++ name ++ "}" ++
@@ -288,44 +273,45 @@ newenvironment = try $ do
 
     parsec :: ParsecK
     parsec = fmap T.pack $ try $ do
-      string "\\begin"
-      pSkipSpaceComments
-      char '{'
-      string name
-      pSkipSpaceComments
-      char '}'
+      _ <- string "\\begin"
+      _ <- pSkipSpaceComments
+      _ <- char '{'
+      _ <- string name
+      _ <- pSkipSpaceComments
+      _ <- char '}'
       opt <- case optarg of
-                  Nothing  -> return Nothing
-                  Just _   -> liftM (`mplus` optarg) optArg
+        Nothing  -> return Nothing
+        Just _   -> liftM (`mplus` optarg) optArg
       args <- count numargs' (pSkipSpaceComments >>
                     (inbraces <|> ctrlseq <|> count 1 anyChar))
-      let args' = case opt of
-                      Just x  -> x : args
-                      Nothing -> args
-      let ender = try $ do
-                        string "\\end"
-                        pSkipSpaceComments
-                        char '{'
-                        string name
-                        char '}'
+      let
+        args' = case opt of
+          Just x  -> x : args
+          Nothing -> args
+        ender = try $ do
+          _ <- string "\\end"
+          _ <- pSkipSpaceComments
+          _ <- char '{'
+          _ <- string name
+          char '}'
       body <- manyTill anyChar ender
       return $ apply args'
              $ opener ++ body ++ closer
 
-  return $ Macro (T.pack defn) (T.pack name) numargs' False parsec
+  return $ Macro (T.pack defn) False parsec
 
 -- | Parser for \DeclareMathOperator(*) command.
 declareMathOperator :: (Monad m, Stream s m Char)
                     => ParsecT s st m Macro
 declareMathOperator = try $ do
-  string "\\DeclareMathOperator"
-  pSkipSpaceComments
+  _ <- string "\\DeclareMathOperator"
+  _ <- pSkipSpaceComments
   star <- option "" (string "*")
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   name <- inbraces <|> ctrlseq
   guard (take 1 name == "\\")
   let name' = drop 1 name
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
   body <- inbraces <|> ctrlseq
   let
     defn = "\\DeclareMathOperator" ++ star ++ "{" ++ name ++ "}" ++
@@ -333,14 +319,14 @@ declareMathOperator = try $ do
 
     parsec :: ParsecK
     parsec = fmap T.pack $ try $ do
-      char '\\'
-      string name'
+      _ <- char '\\'
+      _ <- string name'
       when (all isLetter name') $
         notFollowedBy letter
-      pSkipSpaceComments
+      _ <- pSkipSpaceComments
       return $ "\\operatorname" ++ star ++ "{" ++ body ++ "}"
 
-  return $ Macro (T.pack defn) (T.pack name) 0 False parsec
+  return $ Macro (T.pack defn) False parsec
 
 apply :: [String] -> String -> String
 apply args ('#':d:xs) | isDigit d, d /= '0' =
@@ -359,20 +345,20 @@ skipComment = skipMany comment
 comment :: (Monad m, Stream s m Char)
         => ParsecT s st m ()
 comment = do
-  char '%'
+  _ <- char '%'
   skipMany (notFollowedBy newline >> anyChar)
-  newline
+  _ <- newline
   return ()
 
 numArgs :: (Monad m, Stream s m Char)
         => ParsecT s st m Int
 numArgs = option 0 $ try $ do
-  pSkipSpaceComments
-  char '['
-  pSkipSpaceComments
+  _ <- pSkipSpaceComments
+  _ <- char '['
+  _ <- pSkipSpaceComments
   n <- digit
-  pSkipSpaceComments
-  char ']'
+  _ <- pSkipSpaceComments
+  _ <- char ']'
   return $ read [n]
 
 optArg :: (Monad m, Stream s m Char)
@@ -386,8 +372,8 @@ escaped xs = try $ char '\\' >> oneOf xs >>= \x -> return ['\\',x]
 inBrackets :: (Monad m, Stream s m Char)
            => ParsecT s st m String
 inBrackets = try $ do
-  char '['
-  pSkipSpaceComments
+  _ <- char '['
+  _ <- pSkipSpaceComments
   res <- manyTill (skipComment >> (escaped "[]" <|> count 1 anyChar))
           (try $ pSkipSpaceComments >> char ']')
   return $ concat res
@@ -395,7 +381,7 @@ inBrackets = try $ do
 inbraces :: (Monad m, Stream s m Char)
          => ParsecT s st m String
 inbraces = try $ do
-  char '{'
+  _ <- char '{'
   res <- manyTill (skipComment >>
             (inbraces' <|> count 1 anyChar <|> escaped "{}"))
     (try $ skipComment >> char '}')

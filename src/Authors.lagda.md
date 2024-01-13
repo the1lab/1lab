@@ -2,7 +2,7 @@
 module Authors where
 ```
 
-# About the Authors
+# About the authors
 
 This is a page where everyone who adds to the 1lab can write a little
 bit about themselves. I mean it: everyone can write a bit about
@@ -28,7 +28,7 @@ pronouns.
 
 <div class="profile pfp-left">
 <div class="profile-pfp">
-<img alt="Amélia's profile picture" src="/static/pfps/amelia.png" />
+<img alt="Amélia's profile picture" src="static/pfps/amelia.png" />
 <span class="profile-name">Amélia</span>
 <span class="profile-pronouns">they/them</span>
 <span><a href="https://twitter.com/plt_amy">\@plt_amy</a></span>
@@ -59,7 +59,7 @@ about type theory and the implementation of programming languages, and
 
 <div class="profile pfp-right">
 <div class="profile-pfp">
-<img alt="Astra's profile picture" src="/static/pfps/astra.png" />
+<img alt="Astra's profile picture" src="static/pfps/astra.png" />
 <span class="profile-name">Astra</span>
 <span class="profile-pronouns">she/her</span>
 <span><a href="https://twitter.com/astradiol">\@astradiol</a></span>
@@ -78,7 +78,7 @@ A cool project that I recently completed was formalising a
 </div>
 </div>
 
-<div class="profile pfp-right">
+<div class="profile pfp-left">
 <div class="profile-pfp">
 <span class="profile-name">Reed</span>
 <span class="profile-pronouns">he/him</span>
@@ -91,5 +91,20 @@ Hey! I'm Reed! I develop proof assistants for a living, and write a _lot_ of Agd
 I'm interested in how we can make our tools more human friendly. In that vein,
 I like writing various forms of automation, especially those with a more
 semantic flavor.
+</div>
+</div>
+
+<div class="profile pfp-right">
+<div class="profile-pfp">
+<img alt="Naïm's profile picture" src="https://www.gravatar.com/avatar/1fea7494d69948ab0a50d9ee9318ae50?s=128&r=g" />
+<span class="profile-name">Naïm</span>
+<span class="profile-pronouns">any</span>
+<span><a href="https://monade.li">monade.li</a></span>
+<span><a href="https://github.com/ncfavier">ncfavier</a></span>
+</div>
+
+<div class="profile-profile">
+I'm Naïm. I like the [computational trilogy](https://ncatlab.org/nlab/show/computational+trilogy)
+and arguing with Agda. I hate broken links and writing about myself.
 </div>
 </div>

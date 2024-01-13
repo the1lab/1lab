@@ -2,7 +2,8 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Base
 open import Cat.Base
 
 import Cat.Reasoning
@@ -19,8 +20,10 @@ open Precategory
 ```
 -->
 
+:::{.definition #terminal-category}
 The **terminal category** is the category with a single object, and only
 trivial morphisms.
+:::
 
 ```agda
 ⊤Cat : Precategory lzero lzero
@@ -71,22 +74,13 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} {F G : Functor ⊤Cat 𝒞} where
   hom→⊤-natural-trans f .η _ = f
   hom→⊤-natural-trans f .is-natural _ _ _ = 𝒞.elimr (F .F-id) ∙ 𝒞.introl (G .F-id)
 
-  iso→⊤-natural-iso : F .F₀ tt 𝒞.≅ G .F₀ tt → natural-iso F G
-  iso→⊤-natural-iso i = to-natural-iso mi where
-    open make-natural-iso
-    open 𝒞._≅_
-
-    mi : make-natural-iso F G
-    mi .eta _ = i .to
-    mi .inv _ = i .from
-    mi .eta∘inv _ = i .invl
-    mi .inv∘eta _ = i .invr
-    mi .natural _ _ _ = 𝒞.eliml (G .F-id) ∙ 𝒞.intror (F .F-id)
+  iso→⊤-natural-iso : F .F₀ tt 𝒞.≅ G .F₀ tt → F ≅ⁿ G
+  iso→⊤-natural-iso i = iso→isoⁿ (λ _ → i) λ _ → 𝒞.eliml (G .F-id) ∙ 𝒞.intror (F .F-id)
 ```
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'} where
   private
     module 𝒟 = Precategory 𝒟
     open Functor

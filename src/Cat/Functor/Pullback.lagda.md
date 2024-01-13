@@ -1,12 +1,12 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -31,14 +31,12 @@ open /-Hom
 ```
 -->
 
-# Base change
+# Base change {defines="pullback-functor"}
 
-Let $\cC$ be a category with all [pullbacks], and $f : Y \to X$ a
-morphism in $\cC$. Then we have a functor $f* : \cC/X \to
-\cC/Y$, called the **base change**, where the action on objects is
-given by pulling back along $f$.
-
-[pullbacks]: Cat.Diagram.Pullback.html
+Let $\cC$ be a category with all [[pullbacks]], and $f : Y \to X$ a
+morphism in $\cC$. Then we have a functor $f* : \cC/X \to \cC/Y$, called
+the **base change**, where the action on objects is given by pulling
+back along $f$.
 
 On objects, the functor maps as in the diagram below. It's a bit busy,
 so look at it in parts: On the left we have the object $K \xto{g} X$ of
@@ -85,13 +83,13 @@ diagram below is a cone over $K' \to X \ot Y$.
 ~~~
 
 ```agda
-  Base-change .F₁ {x} {y} dh = dh′ where
+  Base-change .F₁ {x} {y} dh = dh' where
     module ypb = Pullback (pullbacks (y .map) f)
     module xpb = Pullback (pullbacks (x .map) f)
-    dh′ : /-Hom _ _
-    dh′ .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
+    dh' : /-Hom _ _
+    dh' .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
       (pulll (dh .commutes) ∙ xpb.square)
-    dh′ .commutes = ypb.p₂∘universal
+    dh' .commutes = ypb.p₂∘universal
 ```
 
 <details>
@@ -99,11 +97,11 @@ diagram below is a cone over $K' \to X \ot Y$.
 functorial, but the details are not particularly enlightening.</summary>
 
 ```agda
-  Base-change .F-id {x} = /-Hom-path (sym (xpb.unique id-comm (idr _)))
+  Base-change .F-id {x} = ext (sym (xpb.unique id-comm (idr _)))
     where module xpb = Pullback (pullbacks (x .map) f)
 
   Base-change .F-∘ {x} {y} {z} am bm =
-    /-Hom-path (sym (zpb.unique
+    ext (sym (zpb.unique
       (pulll zpb.p₁∘universal ∙ pullr ypb.p₁∘universal ∙ assoc _ _ _)
       (pulll zpb.p₂∘universal ∙ ypb.p₂∘universal)))
     where
@@ -119,7 +117,7 @@ The base change functor is a right adjoint. We construct the left
 adjoint directly, then give the unit and counit, and finally prove the
 triangle identities.
 
-The left adjoint, called _dependent sum_ and written $\sum_f$, is given
+The [[left adjoint]], called _dependent sum_ and written $\sum_f$, is given
 on objects by precomposition with $f$, and on morphisms by what is
 essentially the identity function --- only the witness of commutativity
 must change.
@@ -129,8 +127,8 @@ module _ {X Y : Ob} (f : Hom Y X) where
   Σf : Functor (Slice C Y) (Slice C X)
   Σf .F₀ o = cut (f ∘ o .map)
   Σf .F₁ dh = record { map = dh .map ; commutes = pullr (dh .commutes) }
-  Σf .F-id = /-Hom-path refl
-  Σf .F-∘ f g = /-Hom-path refl
+  Σf .F-id = trivial!
+  Σf .F-∘ f g = trivial!
 
   open _⊣_
   open _=>_
@@ -148,22 +146,22 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   func = Σf f
   Σ-ff : ∀ {x y} → is-equiv (func .F₁ {x} {y})
-  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → /-Hom-path refl) λ x →  /-Hom-path refl) where
+  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → trivial!) λ x → trivial!) where
     ∘inv : /-Hom _ _ → /-Hom _ _
     ∘inv o .map = o .map
     ∘inv o .commutes = invertible→monic isom _ _ (assoc _ _ _ ∙ o .commutes)
 
   Σ-seso : is-split-eso func
   Σ-seso y = cut (isom.inv ∘ y .map)
-           , Sl.make-iso into from′ (/-Hom-path (eliml refl)) (/-Hom-path (eliml refl))
+           , Sl.make-iso into from' (ext (eliml refl)) (ext (eliml refl))
     where
     into : /-Hom _ _
     into .map = id
     into .commutes = id-comm ∙ sym (pulll isom.invl)
 
-    from′ : /-Hom _ _
-    from′ .map = id
-    from′ .commutes = elimr refl ∙ cancell isom.invl
+    from' : /-Hom _ _
+    from' .map = id
+    from' .commutes = elimr refl ∙ cancell isom.invl
 ```
 -->
 
@@ -186,32 +184,32 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     dh .map = pb.universal {p₁' = id} {p₂' = obj .map} (idr _)
     dh .commutes = pb.p₂∘universal
   Σf⊣f* .unit .is-natural x y g =
-    /-Hom-path (pb.unique₂
+    ext (pb.unique₂
       {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ cat! C ⟩ f ∘ y .map ∘ g .map ∎}
       (pulll pb.p₁∘universal)
       (pulll pb.p₂∘universal)
-      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ id-comm)
-      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal ∙ sym (g .commutes)))
+      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ id-comm)
+      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal ∙ sym (g .commutes)))
     where
       module pb = Pullback (pullbacks (f ∘ y .map) f)
-      module pb′ = Pullback (pullbacks (f ∘ x .map) f)
+      module pb' = Pullback (pullbacks (f ∘ x .map) f)
 
   Σf⊣f* .counit .η obj = dh where
     module pb = Pullback (pullbacks (obj .map) f)
     dh : /-Hom _ _
     dh .map = pb.p₁
     dh .commutes = pb.square
-  Σf⊣f* .counit .is-natural x y g = /-Hom-path pb.p₁∘universal
+  Σf⊣f* .counit .is-natural x y g = ext pb.p₁∘universal
     where module pb = Pullback (pullbacks (y .map) f)
 
-  Σf⊣f* .zig {A} = /-Hom-path pb.p₁∘universal
+  Σf⊣f* .zig {A} = ext pb.p₁∘universal
     where module pb = Pullback (pullbacks (f ∘ A .map) f)
 
-  Σf⊣f* .zag {B} = /-Hom-path
+  Σf⊣f* .zag {B} = ext
     (sym (pb.unique₂ {p = pb.square}
       (idr _) (idr _)
-      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ idr _)
-      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal))) where
+      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ idr _)
+      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal))) where
     module pb = Pullback (pullbacks (B .map) f)
-    module pb′ = Pullback (pullbacks (f ∘ pb.p₂) f)
+    module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
 ```

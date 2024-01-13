@@ -1,9 +1,9 @@
 <!--
 ```agda
-open import Data.Bool
-
-open import Cat.Prelude
 open import Cat.Skeletal
+open import Cat.Prelude
+
+open import Data.Bool
 
 import Cat.Reasoning
 ```

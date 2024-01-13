@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Terminal
-open import Cat.Functor.Base
 open import Cat.Morphism
 open import Cat.Prelude hiding (J)
 
@@ -25,7 +23,7 @@ open Functor
 ```
 -->
 
-# Conservative Functors
+# Conservative functors
 
 We say a functor is _conservative_ if it reflects isomorphisms. More concretely,
 if $f : A \to B$ is some morphism $\cC$, and if $F(f)$ is an iso in $\cD$,

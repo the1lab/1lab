@@ -3,11 +3,8 @@
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
-open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import Data.Dec.Base
 ```
 -->
 
@@ -18,24 +15,21 @@ module 1Lab.Path.IdentitySystem.Strict where
 <!--
 ```agda
 private variable
-  ℓ ℓ′ ℓ′′ : Level
-  A : Type ℓ′
-  R : A → A → Type ℓ′
+  ℓ ℓ' ℓ'' : Level
+  A : Type ℓ'
+  R : A → A → Type ℓ'
   r : ∀ a → R a a
 ```
 -->
 
-# Strict Identity Systems
+# Strict identity systems
 
-Since [identity systems] are a tool for classifying identity _types_,
+Since [[identity systems]] are a tool for classifying identity _types_,
 the relation underlying an identity system enjoys any additional
 property that the type's own identity type enjoys. As a prominent
-example, if $(R, r)$ is an identity system on a [set], then $R$
+example, if $(R, r)$ is an identity system on a [[set]], then $R$
 satisfies not only J, but also K: any property $P(x)$ for $x : R(a,a)$,
 for _fixed_ $a$, follows from $P(r)$.
-
-[identity systems]: 1Lab.Path.IdentitySystem.html
-[set]: 1Lab.HLevel.html#is-set
 
 Since $(R, r)$ is equivalent to $(\equiv_A, \refl)$, if $A$ is a set,
 then $R$ must be a proposition as well.
@@ -60,7 +54,7 @@ IdsK
   : {r : (a : A) → R a a} {a : A}
   → is-identity-system R r
   → is-set A
-  → (P : R a a → Type ℓ′′) → P (r a) → ∀ s → P s
+  → (P : R a a → Type ℓ'') → P (r a) → ∀ s → P s
 IdsK {r = r} {a = a} ids set P pr s =
   transport (λ i → P (set-identity-is-prop ids set (r a) s i)) pr
 ```
@@ -68,10 +62,10 @@ IdsK {r = r} {a = a} ids set P pr s =
 <!--
 ```agda
 IdsK-refl
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
   → (ids : is-identity-system R r)
   → (set : is-set A)
-  → (P : R a a → Type ℓ′′)
+  → (P : R a a → Type ℓ'')
   → (x : P (r a))
   → IdsK ids set P x (r a) ≡ x
 IdsK-refl {R = R} {r = r} {a = a} ids set P x =
@@ -88,15 +82,15 @@ IdsK-refl {R = R} {r = r} {a = a} ids set P x =
 <!--
 ```agda
 module StrictIds
-  {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   (ids : is-identity-system R r)
   (set : is-set A)
   where
 
-  K : ∀ {ℓ′′} {a} → (P : R a a → Type ℓ′′) → P (r a) → ∀ s → P s
+  K : ∀ {ℓ''} {a} → (P : R a a → Type ℓ'') → P (r a) → ∀ s → P s
   K = IdsK ids set
 
-  K-refl : ∀ {ℓ′′} {a} → (P : R a a → Type ℓ′′) → (x : P (r a)) → K P x (r a) ≡ x
+  K-refl : ∀ {ℓ''} {a} → (P : R a a → Type ℓ'') → (x : P (r a)) → K P x (r a) ≡ x
   K-refl = IdsK-refl ids set
 
   instance

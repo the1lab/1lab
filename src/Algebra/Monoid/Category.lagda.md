@@ -7,12 +7,13 @@ open import Algebra.Magma
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
-open import Cat.Instances.Delooping
+open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.List
+
+import Meta.Idiom
 ```
 -->
 
@@ -30,6 +31,10 @@ open Monoid-on
 open Functor
 open _=>_
 open _⊣_
+
+private
+  map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → List A → List B
+  map = Meta.Idiom.map
 ```
 -->
 
@@ -51,7 +56,7 @@ raise the [h-level] of the Hom-sets.
 ```agda
 instance
   H-Level-Monoid-hom
-    : ∀ {ℓ ℓ′} {s : Type ℓ} {t : Type ℓ′}
+    : ∀ {ℓ ℓ'} {s : Type ℓ} {t : Type ℓ'}
     → ∀ {x : Monoid-on s} {y : Monoid-on t} {f} {n}
     → H-Level (Monoid-hom x y f) (suc n)
   H-Level-Monoid-hom {y = M} = prop-instance λ x y i →
@@ -64,7 +69,7 @@ It's routine to check that the identity is a monoid homomorphism and
 that composites of homomorphisms are again homomorphisms; This means
 that `Monoid-on`{.Agda} assembles into a structure thinly displayed over
 the category of sets, so that we may appeal to general results about
-displayed categories to reason about the category of monoids.
+[[displayed categories]] to reason about the category of monoids.
 
 ```agda
 Monoid-structure : ∀ ℓ → Thin-structure ℓ Monoid-on
@@ -94,15 +99,15 @@ Monoids-is-category : ∀ {ℓ} → is-category (Monoids ℓ)
 Monoids-is-category = Structured-objects-is-category (Monoid-structure _)
 ```
 
-By standard nonsense, then, the category of monoids admits a faithful
-functor into the category of sets.
+By standard nonsense, then, the category of monoids admits a [[faithful
+functor]] into the category of sets.
 
 ```agda
 Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
 Forget = Forget-structure (Monoid-structure _)
 ```
 
-## Free objects
+## Free objects {defines=free-monoid}
 
 We piece together some properties of `lists`{.Agda ident=List} to show
 that, if $A$ is a set, then $\rm{List}(A)$ is an object of
@@ -123,22 +128,11 @@ List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} =
 ```
 
 We prove that the assignment $X \mapsto \rm{List}(X)$ is functorial;
-We call this functor `Free`{.Agda}, since it is a [left adjoint] to the
+We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 `Forget`{.Agda} functor defined above: it solves the problem of turning
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
-[left adjoint]: Cat.Functor.Adjoint.html
-
-
 ```agda
-map-id : ∀ {ℓ} {A : Type ℓ} (xs : List A) → map (λ x → x) xs ≡ xs
-map-id [] = refl
-map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
-
-map-++ : ∀ {ℓ} {x y : Type ℓ} (f : x → y) xs ys → map f (xs ++ ys) ≡ map f xs ++ map f ys
-map-++ f [] ys = refl
-map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
-
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
 Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```
@@ -149,8 +143,8 @@ concatenation, identity and composition by induction on the list.
 
 ```agda
 Free .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = Homomorphism-path map-id
-Free .F-∘ f g = Homomorphism-path map-∘ where
+Free .F-id = ext map-id
+Free .F-∘ f g = ext map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -213,9 +207,9 @@ Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
 Free⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y th =
-  Homomorphism-path $ fold-natural (th .hom) (th .preserves)
+  ext $ fold-natural (th .hom) (th .preserves)
 Free⊣Forget .zig {A = A} =
-  Homomorphism-path $ fold-pure {X = A}
+  ext $ fold-pure {X = A}
 Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
@@ -223,13 +217,11 @@ This concludes the proof that `Monoids`{.Agda} has free objects. We now
 prove that monoids are equivalently algebras for the `List`{.Agda}
 monad, i.e. that the `Free⊣Forget`{.Agda} adjunction is [monadic]. More
 specifically, we show that the canonically-defined `comparison`{.Agda
-ident=Comparison} functor is [fully faithful][ff] (list algebra homomoprhisms
-are equivalent to monoid homomorphisms) and that it is [split
-essentially surjective][eso].
+ident=Comparison} functor is [[fully faithful]] (list algebra homomoprhisms
+are equivalent to monoid homomorphisms) and that it is [[split
+essentially surjective]].
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
-[ff]: Cat.Functor.Base.html#ff-functors
-[eso]: Cat.Functor.Base.html#essential-fibres
 
 ```agda
 Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})
@@ -269,10 +261,10 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = Algebra-hom-path _ refl
+    from∘to x = trivial!
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = Homomorphism-path λ _ → refl
+    to∘from x = trivial!
 ```
 
 Showing that the functor is essentially surjective is significantly more

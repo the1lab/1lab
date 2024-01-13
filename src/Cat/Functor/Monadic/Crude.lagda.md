@@ -23,7 +23,7 @@ import Cat.Reasoning as C-r
 ```agda
 module
   Cat.Functor.Monadic.Crude
-  {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   {F : Functor C D} {U : Functor D C}
   (F⊣U : F ⊣ U)
   where
@@ -64,14 +64,13 @@ elementary topoi, but carried out in full generality.
 [Beck's coequaliser]: Cat.Functor.Monadic.Beck.html#becks-coequaliser
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 
-Recall our setup. We have a [left adjoint][ladj] functor $F : \cC \to
+Recall our setup. We have a [[left adjoint]] functor $F : \cC \to
 \cD$ (call its right adjoint $U$), and we're interested in
 characterising exactly when the [comparison functor][comp] $K : \cD
 \to \cC^{UF}$ into the [Eilenberg-Moore category][emc] of the [monad
 from the adjunction][madj] is an equivalence. Our refinement here gives
 a _sufficient_ condition.
 
-[ladj]: Cat.Functor.Adjoint.html
 [comp]: Cat.Functor.Adjoint.Monadic.html#Comparison
 [emc]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [madj]: Cat.Functor.Adjoint.Monad.html
@@ -138,7 +137,7 @@ module _
   -- by "prcoeq".
   prcoeq→unit-is-iso : ∀ {o} → C^T.is-invertible (adj.unit.η o)
   prcoeq→unit-is-iso {o} = C^T.make-invertible inverse
-    (Algebra-hom-path C η⁻¹η) (Algebra-hom-path C ηη⁻¹) where
+    (ext η⁻¹η) (ext ηη⁻¹) where
 ```
 
 The first thing we note is that Beck's coequaliser is reflexive: The
@@ -183,10 +182,10 @@ we're seeking.
     η⁻¹η : adj.unit.η _ .morphism C.∘ η⁻¹ ≡ C.id
     ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .morphism ≡ C.id
 
-    η⁻¹ = preserved .universal {e′ = o .snd .ν} (o .snd .ν-mult)
+    η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
 
     η⁻¹η = is-coequaliser.unique₂ preserved
-      {e′ = U.₁ (has-coeq o .coeq)}
+      {e' = U.₁ (has-coeq o .coeq)}
       (preserved .coequal)
       (C.pullr (preserved .factors)
        ∙ C.pullr (unit.is-natural _ _ _)
@@ -265,7 +264,7 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
 
     inversel =
       is-coequaliser.unique₂ preserved
-        {e′ = U.₁ (coequ .coeq)}
+        {e' = U.₁ (coequ .coeq)}
         (preserved .coequal)
         (C.pullr (U.collapse (coequ .factors))
             ∙ C.pullr (unit.is-natural _ _ _)
@@ -284,12 +283,12 @@ crude-monadicity
     (U-pres : U-preserves-reflexive-coeqs)
     (U-conservative : is-conservative U)
   → is-monadic F⊣U
-crude-monadicity coeq pres cons = eqv′ where
+crude-monadicity coeq pres cons = eqv' where
   open is-equivalence
   eqv : is-equivalence (Comparison⁻¹ F⊣U coeq)
   eqv .F⁻¹          = Comparison F⊣U
   eqv .F⊣F⁻¹        = Comparison⁻¹⊣Comparison F⊣U coeq
   eqv .unit-iso _   = prcoeq→unit-is-iso coeq pres
   eqv .counit-iso _ = conservative-prcoeq→counit-is-iso coeq pres cons
-  eqv′ = inverse-equivalence eqv
+  eqv' = inverse-equivalence eqv
 ```

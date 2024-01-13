@@ -23,9 +23,9 @@ module _ {ℓ} (G H : Abelian-group ℓ) where
 ```
 -->
 
-# Direct sum of abelian groups
+# Direct sum of abelian groups {defines="direct-sum-abelian-groups"}
 
-Let $G, H : \Ab$ be two [abelian groups]; We construct their [coproduct]
+Let $G, H : \Ab$ be two [[abelian groups]]; We construct their [coproduct]
 in the category of abelian groups by equipping the set $G_0 \times H_0$
 with the "pointwise" group structure. While this might seem like an odd
 way of constructing a coproduct --- after all, $G_0 \times H_0$ is
@@ -33,17 +33,14 @@ literally a product --- remember that in [$\Ab$-categories] (like $\Ab$
 itself, in this case), finite [products and coproducts coincide][additive].
 
 So, despite the name "direct sum", _and_ despite the preceding
-paragraph, the structure we build is actually the [_product_] in $\Ab$ of
-$G$ and $H$. However, we do not refer to this limit as a product ---
+paragraph, the structure we build is actually the _[[product]]_ in $\Ab$
+of $G$ and $H$. However, we do not refer to this limit as a product ---
 opting to use "direct sum" instead --- because the more important notion
-of product in $\Ab$ is the [tensor product of abelian groups][tensor].
+of product in $\Ab$ is the [[tensor product of abelian groups]].
 
 [coproduct]: Cat.Diagram.Coproduct.html
-[abelian groups]: Algebra.Group.Ab.html#abelian-groups
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 [additive]: Cat.Abelian.Base.html#additive-categories
-[_product_]: Cat.Diagram.Product.html
-[tensor]: Algebra.Group.Ab.Tensor.html
 
 ```agda
   _⊕_ : Abelian-group ℓ
@@ -63,13 +60,12 @@ module _ {ℓ} {G H : Abelian-group ℓ} where
 -->
 
 The construction of the projection homomorphisms and the "limiting"
-homomorphism is as in $\Sets$: The existence of a [left adjoint] free
+homomorphism is as in $\Sets$: The existence of a [[left adjoint]] free
 abelian group functor $\Sets \to \Ab$ implies that limits in $\Ab$ are
 computed as in $\Sets$ (namely, because the _forgetful_ functor $U : \Ab
 \to \Sets$ is a _right_ adjoint, and [right adjoints preserve
 limits][rapl]).
 
-[left adjoint]: Cat.Functor.Adjoint.html
 [rapl]: Cat.Functor.Adjoint.Continuous.html
 
 ```agda
@@ -87,8 +83,7 @@ limits][rapl]).
   Direct-sum-is-product .⟨_,_⟩ f g .preserves .pres-⋆ x y =
     Σ-pathp (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y)
 
-  Direct-sum-is-product .π₁∘factor = Homomorphism-path λ _ → refl
-  Direct-sum-is-product .π₂∘factor = Homomorphism-path λ _ → refl
-  Direct-sum-is-product .unique other p q = Homomorphism-path λ x →
-    Σ-pathp (p #ₚ x) (q #ₚ x)
+  Direct-sum-is-product .π₁∘factor = trivial!
+  Direct-sum-is-product .π₂∘factor = trivial!
+  Direct-sum-is-product .unique other p q = ext λ x → p #ₚ x , q #ₚ x
 ```

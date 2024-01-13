@@ -27,26 +27,26 @@ open Total-hom
 ```
 -->
 
-# The Trivial Bifibration
+# The trivial bifibration
 
 Any category $\ca{C}$ can be regarded as being displayed over the
-terminal category $\top$.
+[[terminal category]] $\top$.
 
 ```agda
 Trivial : Displayed ⊤Cat o ℓ
 Trivial .Displayed.Ob[_] _ = Ob
 Trivial .Displayed.Hom[_] _ = Hom
 Trivial .Displayed.Hom[_]-set _ _ _ = Hom-set _ _
-Trivial .Displayed.id′ = id
-Trivial .Displayed._∘′_ = _∘_
-Trivial .Displayed.idr′ = idr
-Trivial .Displayed.idl′ = idl
-Trivial .Displayed.assoc′ = assoc
+Trivial .Displayed.id' = id
+Trivial .Displayed._∘'_ = _∘_
+Trivial .Displayed.idr' = idr
+Trivial .Displayed.idl' = idl
+Trivial .Displayed.assoc' = assoc
 ```
 
-All morphisms in the trivial displayed category are vertical over the same object,
-so producing cartesian lifts is extremely easy: just use the identity
-morphism!
+All morphisms in the trivial [[displayed category]] are vertical over
+the same object, so producing cartesian lifts is extremely easy: just
+use the identity morphism!
 
 ```agda
 open Cartesian-fibration
@@ -55,19 +55,19 @@ open Cartesian-lift
 open Cocartesian-lift
 
 Trivial-fibration : Cartesian-fibration Trivial
-Trivial-fibration .has-lift f y′ .x′ = y′
-Trivial-fibration .has-lift f y′ .lifting = id
-Trivial-fibration .has-lift f y′ .cartesian = cartesian-id Trivial
+Trivial-fibration .has-lift f y' .x' = y'
+Trivial-fibration .has-lift f y' .lifting = id
+Trivial-fibration .has-lift f y' .cartesian = cartesian-id Trivial
 ```
 
 We can use a similar line of argument to deduce that it is also an opfibration.
 
 ```agda
 Trivial-opfibration : Cocartesian-fibration Trivial
-Trivial-opfibration .has-lift f x′ .y′ =
-  x′
-Trivial-opfibration .has-lift f x′ .lifting = id
-Trivial-opfibration .has-lift f x′ .cocartesian = cocartesian-id Trivial
+Trivial-opfibration .has-lift f x' .y' =
+  x'
+Trivial-opfibration .has-lift f x' .lifting = id
+Trivial-opfibration .has-lift f x' .cocartesian = cocartesian-id Trivial
 ```
 
 Therefore, it is also a bifibration.
@@ -78,7 +78,7 @@ Trivial-bifibration .is-bifibration.fibration = Trivial-fibration
 Trivial-bifibration .is-bifibration.opfibration = Trivial-opfibration
 ```
 
-Furthermore, the total category of the trivial bifibration is *isomorphic*
+Furthermore, the [[total category]] of the trivial bifibration is *isomorphic*
 to the category we started with.
 
 ```agda

@@ -1,6 +1,8 @@
 <!--
 ```agda
+open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
@@ -19,27 +21,25 @@ module Cat.Diagram.Colimit.Base where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
 ```
 -->
 
-# Idea
+# Colimits {defines=colimit}
 
-Colimits are dual to limits [limit]; much like their cousins, they
-generalize constructions in several settings to arbitrary categories.  A
-colimit (if it exists), is the "best solution" to an "identification
-problem". This is in contrast to the limit, which acts as a solution to
-an "equational problem".
+## Idea
 
-[limit]: Cat.Diagram.Limit.Base.html
+Colimits are dual to [[limits]]; much like their duals, they generalize
+constructions in several settings to arbitrary categories. A colimit (if
+it exists), is the "best solution" to an "identification problem".  This
+is in contrast to the limit, which acts as a solution to an "equational
+problem".
 
-We define colimits in a similar way to limits; the only difference being
-that we define a colimits of a diagram $F$ as left [Kan extensions]
-instead of right [Kan extensions]. This gives us the expected "mapping
-out" universal property, as opposed to the "mapping in" property
-associated to limits.
-
-[Kan extensions]: Cat.Functor.Kan.Base.html
+Therefore, we define colimits in a similar way to limits. the only
+difference being that we define the colimit of a diagram $F$ as a
+[[left Kan extension]] instead of a [[right Kan extension]]. This
+gives us the expected "mapping out" universal property, as opposed to
+the "mapping in" property associated to limits.
 
 Note that approach to colimits is not what normally presented in
 introductory material. Instead, most books opt to define colimits via
@@ -187,8 +187,8 @@ the rest of the data.
        C.idr _ ∙ C.introl (M .F-id)
     colim .σ-comm {α = α} = Nat-path λ j →
       factors (α .η) _
-    colim .σ-uniq {α = α} {σ′ = σ′} p = Nat-path λ _ →
-      sym $ unique (α .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
+    colim .σ-uniq {α = α} {σ' = σ'} p = Nat-path λ _ →
+      sym $ unique (α .η) _ (σ' .η _) (λ j → sym (p ηₚ j))
 ```
 
 <!--
@@ -214,8 +214,8 @@ the rest of the data.
     lan' .σ-comm {M} {α} = Nat-path λ j →
       ap (_ C.∘_) (sym q)
       ∙ lan.σ-comm {α = α} ηₚ _
-    lan' .σ-uniq {M} {α} {σ′} r = Nat-path λ j →
-      lan.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+    lan' .σ-uniq {M} {α} {σ'} r = Nat-path λ j →
+      lan.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
         (Nat-path (λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q))) ηₚ j
 
   to-is-colimitp
@@ -262,7 +262,7 @@ function which **un**makes a colimit.
     mc .universal = hom
     mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      sym $ σ-uniq {σ' = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
       where
         other-nt : F => const! x
         other-nt .η _ = other
@@ -344,12 +344,12 @@ computation.
     ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
   has-colimit .is-lan.σ-comm =
     Nat-path (λ _ → σ-comm ηₚ _)
-  has-colimit .is-lan.σ-uniq {M = M} {σ′ = σ′} p =
-    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
+  has-colimit .is-lan.σ-uniq {M = M} {σ' = σ'} p =
+    Nat-path (λ _ → σ-uniq {σ' = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
     where
       nt : Ext => M
-      nt .η = σ′ .η
-      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ′ .is-natural x y f
+      nt .η = σ' .η
+      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ' .is-natural x y f
 
   open is-colimit has-colimit public
 ```
@@ -405,7 +405,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 <!--
 ```agda
   colimits→inversesp {f = f} {g = g} f-factor g-factor =
-    natural-inverses→inverses
+    inversesⁿ→inverses
       {α = hom→⊤-natural-trans f}
       {β = hom→⊤-natural-trans g}
       (Lan-unique.σ-inversesp Cx Cy
@@ -414,7 +414,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       tt
 
   colimits→invertiblep {f = f} f-factor =
-    is-natural-invertible→invertible
+    is-invertibleⁿ→is-invertible
       {α = hom→⊤-natural-trans f}
       (Lan-unique.σ-is-invertiblep
         Cx
@@ -428,8 +428,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
   colimits→invertible =
     colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
 
-  colimits-unique =
-    Nat-iso→Iso (Lan-unique.unique Cx Cy) tt
+  colimits-unique = isoⁿ→iso (Lan-unique.unique Cx Cy) tt
 ```
 -->
 
@@ -477,7 +476,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → is-lan !F D K' eta
   is-invertible→is-colimitp {K' = K'} {eta = eta} eps p q invert =
     generalize-colimitp
-      (is-invertible→is-lan Cy $ componentwise-invertible→invertible _ λ _ → invert)
+      (is-invertible→is-lan Cy $ invertible→invertibleⁿ _ λ _ → invert)
       q
 ```
 
@@ -487,11 +486,11 @@ coapex of $C$ is also a colimit of $Dia'$.
 
 ```agda
   natural-iso-diagram→is-colimitp
-    : ∀ {D′ : Functor J C} {eta : D′ => K F∘ !F}
-    → (isos : natural-iso D D′)
-    → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
-    → is-lan !F D′ K eta
-  natural-iso-diagram→is-colimitp {D′ = D′} isos q = generalize-colimitp
+    : ∀ {D' : Functor J C} {eta : D' => K F∘ !F}
+    → (isos : D ≅ⁿ D')
+    → (∀ {j} →  Cy.ψ j C.∘ Isoⁿ.from isos .η j ≡ eta .η j)
+    → is-lan !F D' K eta
+  natural-iso-diagram→is-colimitp {D' = D'} isos q = generalize-colimitp
     (natural-iso-of→is-lan Cy isos)
     q
 ```
@@ -499,13 +498,11 @@ coapex of $C$ is also a colimit of $Dia'$.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {D D′ : Functor J C} where
+         {D D' : Functor J C} where
   natural-iso→colimit
-    : natural-iso D D′
-    → Colimit D
-    → Colimit D′
+    : D ≅ⁿ D' → Colimit D → Colimit D'
   natural-iso→colimit isos C .Lan.Ext = Lan.Ext C
-  natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt natural-iso.from isos
+  natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt Isoⁿ.from isos
   natural-iso→colimit isos C .Lan.has-lan = natural-iso-of→is-lan (Lan.has-lan C) isos
 ```
 -->
@@ -529,8 +526,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 -->
 
 Since `is-colimit`{.Agda} is a proposition, and the colimiting cocones
-are all unique (“up to isomorphism”), if we're talking about univalent
-categories, then `Colimit`{.Agda} _itself_ is a proposition.  This is
+are all unique (“up to isomorphism”), if we're talking about [[univalent
+categories]], then `Colimit`{.Agda} _itself_ is a proposition.  This is
 also an instance of the more general [uniqueness of Kan extensions].
 
 [uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
@@ -549,7 +546,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of Colimits
+# Preservation of colimits
 
 The definitions here are the same idea as [preservation of limits], just
 dualized.
@@ -618,7 +615,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     open _=>_
 
   natural-iso→preserves-colimits
-    : natural-iso F F'
+    : F ≅ⁿ F'
     → preserves-colimit F Dia
     → preserves-colimit F' Dia
   natural-iso→preserves-colimits α F-preserves {K = K} {eps} colim =
@@ -631,7 +628,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
         F' .F₁ (eps .η j) ∎)
       (F-preserves colim)
     where
-      module α = natural-iso α
+      module α = Isoⁿ α
 ```
 -->
 
@@ -655,13 +652,15 @@ is-cocontinuous oshape hshape {C = C} F =
   → preserves-colimit F Diagram
 ```
 
-## Cocompleteness
+# Cocompleteness
 
-A category is **cocomplete** if admits for limits of arbitrary shape.
+A category is **cocomplete** if it admits colimits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
 coproducts indexed by its class of morphisms, then it is automatically
 [thin]. Since excluded middle is independent of type theory, we can not
 prove that any non-thin categories have arbitrary colimits.
+
+[thin]: Order.Base.html
 
 Instead, categories are cocomplete _with respect to_ a pair of
 universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
@@ -670,5 +669,133 @@ morphisms in $\ty\ \ell$.
 
 ```agda
 is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
-is-cocomplete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Colimit F
+is-cocomplete oj ℓj C = ∀ {J : Precategory oj ℓj} (F : Functor J C) → Colimit F
+```
+
+While this condition might sound very strong, and thus that it would be hard to come
+by, it turns out we can get away with only two fundamental types of colimits:
+[[coproducts]] and [[coequalisers]]. In order to construct the colimit for a diagram
+of shape $\cJ$, we will require coproducts [[indexed|indexed coproduct]] by $\cJ$'s type
+of objects *and* by its type of morphisms.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open Indexed-coproduct
+    open make-is-colimit
+    open Coequaliser
+```
+-->
+
+```agda
+  colimit-as-coequaliser-of-coproduct
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → has-coproducts-indexed-by C (Precategory.Ob J)
+    → has-coproducts-indexed-by C (Precategory.Mor J)
+    → has-coequalisers C
+    → (F : Functor J C) → Colimit F
+  colimit-as-coequaliser-of-coproduct {oj} {ℓj} {J} has-Ob-cop has-Mor-cop has-coeq F =
+    to-colimit (to-is-colimit colim) where
+```
+
+<!--
+```agda
+    module J = Cat.Reasoning J
+    open Functor F
+```
+-->
+
+Given a diagram $F : \ca{J} \to \ca{C}$, we start by building the coproduct of all
+the objects appearing in the diagram.
+
+```agda
+    Obs : Indexed-coproduct C λ o → F₀ o
+    Obs = has-Ob-cop _
+```
+
+Our colimit will arise as a *quotient object* of this coproduct-of-objects,
+namely the [[coequaliser]] of two carefully chosen morphisms.
+
+As a guiding example, the [[pushout]] of $f : C \to A$ and $g : C \to B$ should be
+the quotient of $A + B + C$ by the equivalence relation generated by
+$\iota_A(f(c)) = \iota_C(c) = \iota_B(g(c))$. In full generality, for
+each arrow $f : C \to A$ in our diagram, we should have that injecting
+into the $C$th component of our coproduct should give the same
+result as precomposing with $f$ and injecting into the $A$th component.
+
+This suggests to build another indexed coproduct of all the *domains* of arrows in
+the diagram, taking the first morphism to be the injection into the domain component
+and the second morphism to be the injection into the codomain component precomposed with $f$:
+
+~~~{.quiver .short-1}
+\[\begin{tikzcd}
+	{\displaystyle \coprod_{(f : a \to b) : \text{Mor}(\mathcal J)} F(a)} & {\displaystyle \coprod_{o : \text{Ob}(\mathcal J)} F(o)}
+	\arrow["{\iota_a}", shift left, from=1-1, to=1-2]
+	\arrow["{\iota_b \circ F(f)}"', shift right, from=1-1, to=1-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+    Dom : Indexed-coproduct C {Idx = J.Mor} λ (a , b , f) → F₀ a
+    Dom = has-Mor-cop _
+
+    s t : C.Hom (Dom .ΣF) (Obs .ΣF)
+    s = Dom .match λ (a , b , f) → Obs .ι b C.∘ F₁ f
+    t = Dom .match λ (a , b , f) → Obs .ι a
+
+    coequ : Coequaliser C s t
+    coequ = has-coeq _ _
+
+    colim : make-is-colimit F (coequ .coapex)
+```
+
+<details>
+<summary>
+The rest of the proof amounts to repackaging the data of the coequaliser and coproducts
+as the data for a colimit.
+</summary>
+
+```agda
+    colim .ψ c = coequ .coeq C.∘ Obs .ι c
+    colim .commutes {a} {b} f =
+      (coequ .coeq C.∘ Obs .ι b) C.∘ F₁ f          ≡˘⟨ C.extendr (Dom .commute) ⟩
+      ⌜ coequ .coeq C.∘ s ⌝ C.∘ Dom .ι (a , b , f) ≡⟨ ap! (coequ .coequal) ⟩
+      (coequ .coeq C.∘ t) C.∘ Dom .ι (a , b , f)   ≡⟨ C.pullr (Dom .commute) ⟩
+      coequ .coeq C.∘ Obs .ι a                     ∎
+    colim .universal {x} e comm = coequ .universal comm' where
+      e' : C.Hom (Obs .ΣF) x
+      e' = Obs .match e
+      comm' : e' C.∘ s ≡ e' C.∘ t
+      comm' = Indexed-coproduct.unique₂ Dom λ i@(a , b , f) →
+        (e' C.∘ s) C.∘ Dom .ι i      ≡⟨ C.extendr (Dom .commute) ⟩
+        ⌜ e' C.∘ Obs .ι b ⌝ C.∘ F₁ f ≡⟨ ap! (Obs .commute) ⟩
+        e b C.∘ F₁ f                 ≡⟨ comm f ⟩
+        e a                          ≡˘⟨ Obs .commute ⟩
+        e' C.∘ Obs .ι a              ≡˘⟨ C.pullr (Dom .commute) ⟩
+        (e' C.∘ t) C.∘ Dom .ι i      ∎
+    colim .factors {j} e comm =
+      colim .universal e comm C.∘ (coequ .coeq C.∘ Obs .ι j) ≡⟨ C.pulll (coequ .factors) ⟩
+      Obs .match e C.∘ Obs .ι j                              ≡⟨ Obs .commute ⟩
+      e j                                                    ∎
+    colim .unique e comm u' fac = coequ .unique $ Obs .unique _
+      λ i → sym (C.assoc _ _ _) ∙ fac i
+```
+</details>
+
+This implies that a category with coequalisers and large enough indexed coproducts has
+all colimits.
+
+```agda
+  coproducts+coequalisers→cocomplete
+    : ∀ {oj ℓj}
+    → has-indexed-coproducts C (oj ⊔ ℓj)
+    → has-coequalisers C
+    → is-cocomplete oj ℓj C
+  coproducts+coequalisers→cocomplete {oj} {ℓj} has-cop has-coeq =
+    colimit-as-coequaliser-of-coproduct
+      (λ _ → Lift-Indexed-coproduct C ℓj (has-cop _))
+      (λ _ → has-cop _)
+      has-coeq
 ```

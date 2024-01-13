@@ -11,7 +11,8 @@ open import Algebra.Group
 open import Cat.Instances.Delooping
 open import Cat.Abelian.Base
 
-open import Data.Int
+open import Data.Int.Properties
+open import Data.Int.Base
 
 import Cat.Reasoning
 ```
@@ -21,7 +22,7 @@ import Cat.Reasoning
 module Algebra.Ring where
 ```
 
-# Rings
+# Rings {defines=ring}
 
 The **ring** is one of the basic objects of study in algebra, which
 abstracts the best bits of the common algebraic structures: The integers
@@ -32,14 +33,12 @@ include square matrices (with values in a ring) and the integral
 cohomology ring of a topological space: that these are so far from being
 "number-like" indicates the incredible generality of rings.
 
-A **ring** is an [abelian group] $R$ (which we call the **additive
+A **ring** is an [[abelian group]] $R$ (which we call the **additive
 group** of $R$), together with the data of a monoid on $R$ (the
 **multiplicative monoid**), where the multiplication of the monoid
 _distributes over_ the addition. We'll see why this compatibility
 condition is required afterwards. Check out what it means for a triple
 $(1, *, +)$ to be a ring structure on a type:
-
-[abelian group]: Algebra.Group.Ab.html
 
 ```agda
 record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type ℓ where
@@ -142,9 +141,9 @@ with a monoid structure".
 
 ```agda
 record is-ring-hom
-  {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (R : Ring-on A) (S : Ring-on B)
+  {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (R : Ring-on A) (S : Ring-on B)
   (f : A → B)
-  : Type (ℓ ⊔ ℓ′) where
+  : Type (ℓ ⊔ ℓ') where
   private
     module A = Ring-on R
     module B = Ring-on S
@@ -165,7 +164,7 @@ record is-ring-hom
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
 
-module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {R : Ring-on A} {S : Ring-on B} where
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {R : Ring-on A} {S : Ring-on B} where
   open Ring-on R using (magma-hlevel)
   open Ring-on S using (magma-hlevel)
 
@@ -285,14 +284,13 @@ the **zero ring**, which has carrier set the `unit`{.Agda ident=⊤} ---
 the type with one object.
 
 Despite the name, the zero ring is not the [zero object] in the category
-of rings: it is the [terminal object]. In the category of rings, the
+of rings: it is the [[terminal object]]. In the category of rings, the
 initial object is the ring $\bb{Z}$, which is very far (infinitely far!)
 from having a single element. It's called the "zero ring" because it has
 one element $x$, which must be the additive identity, hence we call it
 $0$. But it's also the multiplicative identity, so we might also call
 the ring $\{*\}$ the _One Ring_, which would be objectively cooler.
 
-[terminal object]: Cat.Diagram.Terminal.html
 [zero object]: Cat.Diagram.Zero.html
 
 ```agda
@@ -333,16 +331,16 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
   .make-ring.ring-is-set → hlevel 2
   .make-ring.0R → 0
   .make-ring._+_ → _+ℤ_
-  .make-ring.-_ → negate
-  .make-ring.+-idl → +ℤ-zerol _
-  .make-ring.+-invr {x} → +ℤ-inverser x
-  .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
+  .make-ring.-_ → negℤ
+  .make-ring.+-idl      → +ℤ-zerol _
+  .make-ring.+-invr {x} → +ℤ-invr x
+  .make-ring.+-assoc {x} {y} {z} → +ℤ-assoc x y z
   .make-ring.+-comm {x} {y} → +ℤ-commutative x y
-  .make-ring.1R → 1
+  .make-ring.1R    → 1
   .make-ring._*_   → _*ℤ_
-  .make-ring.*-idl → *ℤ-idl _
-  .make-ring.*-idr → *ℤ-idr _
-  .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
-  .make-ring.*-distribl {x} {y} {z} → *ℤ-distrib-+ℤ-l x y z
-  .make-ring.*-distribr {x} {y} {z} → *ℤ-distrib-+ℤ-r x y z
+  .make-ring.*-idl → *ℤ-onel _
+  .make-ring.*-idr → *ℤ-oner _
+  .make-ring.*-assoc    {x} {y} {z} → *ℤ-associative x y z
+  .make-ring.*-distribl {x} {y} {z} → *ℤ-distribl x y z
+  .make-ring.*-distribr {x} {y} {z} → *ℤ-distribr x y z
 ```

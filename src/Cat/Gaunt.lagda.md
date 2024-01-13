@@ -2,12 +2,12 @@
 ```agda
 open import 1Lab.Path.IdentitySystem.Strict
 
-open import Cat.Strict
 open import Cat.Skeletal
-open import Cat.Univalent
 open import Cat.Prelude
+open import Cat.Strict
 
 import Cat.Reasoning
+
 open Cat.Reasoning using (Isomorphism; id-iso)
 ```
 -->
@@ -18,12 +18,12 @@ module Cat.Gaunt where
 
 # Gaunt (pre)categories
 
-A precategory $\cC$ is **gaunt** if it is [univalent] and [strict]: its
-type of objects $\rm{Ob}(\cC)$ is a set, and identity in $\rm{Ob}$ is
-equivalent to isomorphism in $\cC$. This is a truncation condition on
-the isomorphisms $a \cong b : \cC$, which must all be trivial.
+A precategory $\cC$ is **gaunt** if it is [[univalent|univalent
+category]] and [strict]: its type of objects $\rm{Ob}(\cC)$ is a set,
+and identity in $\rm{Ob}$ is equivalent to isomorphism in $\cC$. This is
+a truncation condition on the isomorphisms $a \cong b : \cC$, which must
+all be trivial.
 
-[univalent]: Cat.Univalent.html
 [strict]: Cat.Strict.html
 
 ```agda
@@ -137,7 +137,7 @@ skeletal+trivial-automorphisms→gaunt {C = C} skel trivial-aut =
 ```
 
 To see that this is a left inverse, we can use the fact that truncated
-isomorphisms form an identity system to contract the iso down into an
+isomorphisms form an [[identity system]] to contract the iso down into an
 automorphism. However, all automorphisms are trivial, which allows us to
 finish off the proof.
 

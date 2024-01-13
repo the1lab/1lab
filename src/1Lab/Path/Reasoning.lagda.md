@@ -18,7 +18,7 @@ private variable
   ℓ : Level
   A : Type ℓ
   x y : A
-  p p′ q q′ r r′ s s′ t u v : x ≡ y
+  p p' q q' r r' s s' t u v : x ≡ y
 
 ∙-filler''
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
@@ -31,15 +31,15 @@ private variable
     k (k = i0) → p (i ∨ ~ j)
 
 pasteP
-  : ∀ {ℓ} {A : Type ℓ} {w w′ x x′ y y′ z z′ : A}
-    {p p′ q q′ r r′ s s′}
+  : ∀ {ℓ} {A : Type ℓ} {w w' x x' y y' z z' : A}
+    {p p' q q' r r' s s'}
     {α β γ δ}
-  → Square α p p′ β
-  → Square α q q′ γ
-  → Square β r r′ δ
-  → Square γ s s′ δ
+  → Square α p p' β
+  → Square α q q' γ
+  → Square β r r' δ
+  → Square γ s s' δ
   → Square {a00 = w}  {x}  {y}  {z}  p  q  r  s
-  → Square {a00 = w′} {x′} {y′} {z′} p′ q′ r′ s′
+  → Square {a00 = w'} {x'} {y'} {z'} p' q' r' s'
 pasteP top left right bottom square i j = hcomp (∂ i ∨ ∂ j) λ where
   k (i = i0) → left k j
   k (i = i1) → right k j
@@ -48,9 +48,9 @@ pasteP top left right bottom square i j = hcomp (∂ i ∨ ∂ j) λ where
   k (k = i0) → square i j
 
 paste
-  : p ≡ p′ → q ≡ q′ → r ≡ r′ → s ≡ s′
+  : p ≡ p' → q ≡ q' → r ≡ r' → s ≡ s'
   → Square p q r s
-  → Square p′ q′ r′ s′
+  → Square p' q' r' s'
 paste p q r s = pasteP p q r s
 ```
 -->
@@ -67,7 +67,7 @@ paste p q r s = pasteP p q r s
     k (j = i1) → p (~ i ∨ k)
     k (k = i0) → (p (~ i ∧ j))
 
-module _ (p≡refl : p ≡ refl) where
+module _ (p≡refl : p ≡ refl) where opaque
   ∙-eliml : p ∙ q ≡ q
   ∙-eliml {q = q} = sym $ paste (ap sym p≡refl) refl refl refl (∙-filler' p q)
 
@@ -98,6 +98,12 @@ module _ (pq≡s : p ∙ q ≡ s) where
   ∙-pullr : (r ∙ p) ∙ q ≡ r ∙ s
   ∙-pullr {r = r} = sym (∙-assoc r p q) ∙ ap (r ∙_) pq≡s
 
+  ∙-swapl : q ≡ sym p ∙ s
+  ∙-swapl = ∙-introl (∙-invl p) ∙ ∙-pullr
+
+  ∙-swapr : p ≡ s ∙ sym q
+  ∙-swapr = ∙-intror (∙-invr q) ∙ ∙-pulll
+
 module _ (s≡pq : s ≡ p ∙ q) where
   ∙-pushl : s ∙ r ≡ p ∙ q ∙ r
   ∙-pushl = sym (∙-pulll (sym s≡pq))
@@ -105,12 +111,39 @@ module _ (s≡pq : s ≡ p ∙ q) where
   ∙-pushr : r ∙ s ≡ (r ∙ p) ∙ q
   ∙-pushr = sym (∙-pullr (sym s≡pq))
 
+  ∙→square : Square refl p s q
+  ∙→square = ∙-filler p q ▷ sym s≡pq
+
+  ∙→square' : Square (sym p) q s refl
+  ∙→square' = ∙-filler' p q ▷ sym s≡pq
+
 module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
   ∙-extendl : p ∙ (q ∙ t) ≡ r ∙ (s ∙ t)
   ∙-extendl {t = t} = ∙-assoc _ _ _ ·· ap (_∙ t) pq≡rs ·· sym (∙-assoc _ _ _)
 
   ∙-extendr : (t ∙ p) ∙ q ≡ (t ∙ r) ∙ s
   ∙-extendr {t = t} = sym (∙-assoc _ _ _) ·· ap (t ∙_) pq≡rs ·· ∙-assoc _ _ _
+
+··-stack : (sym p' ·· (sym p ·· q ·· r) ·· r') ≡ (sym (p ∙ p') ·· q ·· (r ∙ r'))
+··-stack = ··-unique' (··-filler _ _ _ ∙₂ ··-filler _ _ _)
+
+··-chain : (sym p ·· q ·· r) ∙ (sym r ·· q' ·· s) ≡ sym p ·· (q ∙ q') ·· s
+··-chain {p = p} {q = q} {r = r} {q' = q'} {s = s} = sym (∙-unique _ square) where
+  square : Square refl (sym p ·· q ·· r) (sym p ·· (q ∙ q') ·· s) (sym r ·· q' ·· s)
+  square i j = hcomp (~ j ∨ (j ∧ (i ∨ ~ i))) λ where
+    k (k = i0) → ∙-filler q q' i j
+    k (j = i0) → p k
+    k (j = i1) (i = i0) → r k
+    k (j = i1) (i = i1) → s k
+
+··-∙-assoc : p ·· q ·· (r ∙ s) ≡ (p ·· q ·· r) ∙ s
+··-∙-assoc {p = p} {q = q} {r = r} {s = s} = sym (··-unique' square) where
+  square : Square (sym p) q ((p ·· q ·· r) ∙ s) (r ∙ s)
+  square i j = hcomp (~ i ∨ ~ j ∨ (i ∧ j)) λ where
+    k (k = i0) → ··-filler p q r i j
+    k (i = i0) → q j
+    k (j = i0) → p (~ i)
+    k (i = i1) (j = i1) → s k
 ```
 
 ## Cancellation
@@ -120,25 +153,25 @@ things that are equal to `id`.
 
 ```agda
 module _ (inv : p ∙ q ≡ refl) where abstract
-  ∙-cancell : p ∙ (q ∙ r) ≡ r
-  ∙-cancell = ∙-pulll inv ∙ ∙-id-l _
+  ∙-cancelsl : p ∙ (q ∙ r) ≡ r
+  ∙-cancelsl = ∙-pulll inv ∙ ∙-idl _
 
-  ∙-cancelr : (r ∙ p) ∙ q ≡ r
-  ∙-cancelr = ∙-pullr inv ∙ ∙-id-r _
+  ∙-cancelsr : (r ∙ p) ∙ q ≡ r
+  ∙-cancelsr = ∙-pullr inv ∙ ∙-idr _
 
   ∙-insertl : r ≡ p ∙ (q ∙ r)
-  ∙-insertl = sym ∙-cancell
+  ∙-insertl = sym ∙-cancelsl
 
   ∙-insertr : r ≡ (r ∙ p) ∙ q
-  ∙-insertr = sym ∙-cancelr
+  ∙-insertr = sym ∙-cancelsr
 ```
 
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
-`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+`ap (f ∙_) p` when proving that `f ∙ g ≡ f ∙ h`. To fix this, we steal
 some cute mixfix notation from `agda-categories` which allows us to write
-`≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
+`≡⟨ refl⟩∙⟨ p ⟩` instead, which is much more aesthetically pleasing!
 
 ```agda
 _⟩∙⟨_ : p ≡ q → r ≡ s → p ∙ r ≡ q ∙ s

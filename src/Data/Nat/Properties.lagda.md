@@ -1,12 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Rewrite
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
-open import Data.Sum
+open import Data.Bool
 ```
 -->
 
@@ -14,7 +15,7 @@ open import Data.Sum
 module Data.Nat.Properties where
 ```
 
-# Natural Numbers - Properties
+# Natural numbers - properties
 
 This module contains proofs of arithmetic identities for [the natural
 numbers]. Since they're mostly simple inductive arguments written in
@@ -113,11 +114,11 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj : ∀ k x y → x * suc k ≡ y * suc k → x ≡ y
 *-suc-inj k zero zero p = refl
 *-suc-inj k zero (suc y) p = absurd (zero≠suc p)
-*-suc-inj k (suc x) zero p = absurd (zero≠suc (sym p))
+*-suc-inj k (suc x) zero p = absurd (suc≠zero p)
 *-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
 
-*-suc-inj′ : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
-*-suc-inj′ k x y p = *-suc-inj k x y (*-commutative x (suc k) ·· p ·· *-commutative (suc k) y)
+*-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
+*-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ·· p ·· *-commutative (suc k) y)
 ```
 
 ## Exponentiation
@@ -225,7 +226,7 @@ arithmetic operators:
 difference→≤ : ∀ {x z} y → x + y ≡ z → x ≤ z
 difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙ p) ≤-refl
 difference→≤ {zero}  {z}     (suc y) p = 0≤x
-difference→≤ {suc x} {zero}  (suc y) p = absurd (zero≠suc (sym p))
+difference→≤ {suc x} {zero}  (suc y) p = absurd (suc≠zero p)
 difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
 ```
 
@@ -261,6 +262,12 @@ monus-commute m n k =
   m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
   m - (k + n) ≡⟨ monus-addl m k n ⟩
   m - k - n   ∎
+
+monus-swapl : ∀ x y z → x + y ≡ z → y ≡ z - x
+monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) ∙ ap (_- x) p
+
+monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
+monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 ```
 
 ### Maximum
@@ -287,6 +294,20 @@ max-≤r zero zero = 0≤x
 max-≤r zero (suc y) = ≤-refl
 max-≤r (suc x) zero = 0≤x
 max-≤r (suc x) (suc y) = s≤s (max-≤r x y)
+
+max-univ : (x y z : Nat) → x ≤ z → y ≤ z → max x y ≤ z
+max-univ zero zero z 0≤x 0≤x = 0≤x
+max-univ zero (suc y) (suc z) 0≤x (s≤s q) = s≤s q
+max-univ (suc x) zero (suc z) (s≤s p) 0≤x = s≤s p
+max-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (max-univ x y z p q)
+
+max-zerol : (x : Nat) → max 0 x ≡ x
+max-zerol zero = refl
+max-zerol (suc x) = refl
+
+max-zeror : (x : Nat) → max x 0 ≡ x
+max-zeror zero = refl
+max-zeror (suc x) = refl
 ```
 
 ### Minimum
@@ -313,4 +334,16 @@ min-≤r zero zero = 0≤x
 min-≤r zero (suc y) = 0≤x
 min-≤r (suc x) zero = 0≤x
 min-≤r (suc x) (suc y) = s≤s (min-≤r x y)
+
+min-univ : (x y z : Nat) → z ≤ x → z ≤ y → z ≤ min x y
+min-univ x y zero 0≤x 0≤x = 0≤x
+min-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (min-univ x y z p q)
+
+min-zerol : (x : Nat) → min 0 x ≡ 0
+min-zerol zero = refl
+min-zerol (suc x) = refl
+
+min-zeror : (x : Nat) → min x 0 ≡ 0
+min-zeror zero = refl
+min-zeror (suc x) = refl
 ```

@@ -1,5 +1,5 @@
 [![Discord](https://img.shields.io/discord/914172963157323776?label=Discord&logo=discord)](https://discord.gg/Zp2e8hYsuX)
-[![Build 1Lab](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml)
+[![Build 1Lab](https://github.com/plt-amy/1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/1lab/actions/workflows/build.yml)
 
 # [1Lab](https://1lab.dev)
 
@@ -10,61 +10,28 @@ indicating dependencies.
 
 # Building
 
-Here's how you can build --- and work on --- the web parts of the 1lab.
+Building the 1Lab is a rather complicated task, which has led to a lot
+of homebrew infrastructure being developed for it. We build against a
+specific build of Agda (see the `rev` field in
+`support/nix/dep/Agda/github.json`), and there are also quite a few
+external dependencies (e.g. pdftocairo, katex). The recommended way of
+building the 1Lab is using Nix.
 
-## Using Docker
-
-A Docker container is provided which contains all the
-dependencies necessary for building the 1lab, including the font files
-required for a complete deployment. Since this container is on the
-registry, we can do a one-line build of the 1Lab as follows:
-
-```bash
-% docker run -it -v $PWD:/workspace docker.io/pltamy/1lab:latest /bin/sh -i
-$ 1lab-shake all -j    # build everything
-$ support/make-site.sh # copy everything into place
-```
-
-After this, the directory `_build/site` will have everything in place
-for use as the HTTP root of a static site to serve the 1Lab, for example
-using the Python distribution that the container ships with:
-
-```bash
-$ python -m http.server --directory _build/site
-```
-
-## Using Nix
-
-If you run NixOS, or have the Nix package manager installed, you can use
-the provided `default.nix` file to build a complete, reproducible
-deployment of the 1Lab. This has the benefit of also providing
-`nix-shell` support for immediately setting up an environment for
-development which supports compilation of the HTML and SVG files, in
-addition to the Agda.
-
-To speed things up (for example, to avoid building Agda), you can use the
-1Lab's binary cache. If you have the Cachix CLI installed, simply run
-`cachix use 1lab`. Otherwise, add the following to your Nix configuration:
-
-```
-substituters = https://1lab.cachix.org
-trusted-public-keys = 1lab.cachix.org-1:eYjd9F9RfibulS4OSFBYeaTMxWojPYLyMqgJHDvG1fs=
-```
-
-You can then use Nix to compile the project as usual. As a quick point
-of reference, `nix-build` will type-check and compile the entire thing,
-and copy the necessary assets (TeX Gyre Pagella and KaTeX css/fonts) to
-the right locations. The result will be linked as `./result`, which can
-then be used to serve a website:
+As a quick point of reference, `nix-build` will type-check and compile
+the entire thing, and copy the necessary assets (TeX Gyre Pagella and
+KaTeX's CSS and fonts) to the right locations. The result will be linked
+as `./result`, which can then be used to serve a website:
 
 ```bash
 $ nix-build
 $ python -m http.server --directory result
 ```
 
+Note that using Nix to build the website takes around ~20-30 minutes,
+since it will type-check the entire codebase from scratch every time.
 For interactive development, `nix-shell` will give you a shell with
-everything you need to hack on the 1Lab, including Agda and the pre-built
-Shakefile as `1lab-shake`:
+everything you need to hack on the 1Lab, including Agda and the
+pre-built Shakefile as `1lab-shake`:
 
 ```bash
 $ 1lab-shake all -j
@@ -79,12 +46,34 @@ $ eval "${installPhase}"
 $ python -m http.server --directory _build/site
 ```
 
+To hack on a file continuously, you can use "watch mode", which will
+attempt to only check and build the changed file.
+
+```
+$ 1lab-shake all -w
+```
+
+Additionally, since the validity of the Agda code is generally upheld by
+`agda-mode`, you can use `--skip-agda` to only build the prose. Note
+that this will disable checking the integrity of link targets, the
+translation of `` `ref`{.Agda} `` spans, and the code blocks will be
+right ugly.
+
+Our build tools are routinely built for x86_64-linux and uploaded to
+Cachix. If you have the Cachix CLI installed, simply run `cachix use
+1lab`. Otherwise, add the following to your Nix configuration:
+
+```
+substituters = https://1lab.cachix.org
+trusted-public-keys = 1lab.cachix.org-1:eYjd9F9RfibulS4OSFBYeaTMxWojPYLyMqgJHDvG1fs=
+```
+
 ## Directly
 
 If you're feeling brave, you can try to replicate one of the build
 environments above. You will need:
 
-- A Haskell package manager (either cabal or stack);
+- The `cabal-install` package manager. Using `stack` is no longer supported.
 
 - A working LaTeX installation (TeXLive, etc) with the packages
 `tikz-cd` (depends on `pgf`), `mathpazo`, `xcolor`, `preview`, and
@@ -94,20 +83,18 @@ environments above. You will need:
 - [`libsass`] (for `sassc`);
 - [Node] + required Node modules. Run `npm ci` to install those.
 
-- If you're using Stack, that's all. If using cabal-install, you're
-going to need the packages list `support/shake/1lab-shake.cabal`.
-
 [Poppler]: https://poppler.freedesktop.org/
 [Node]: https://nodejs.org/en/
 [`libsass`]: https://github.com/sass/sassc
 
-If everything is set up properly, the following command should work to
-produce the compiled HTML, SVG and CSS files in `_build/html`. You can
-then follow either the `support/make-site.sh` script or the
-`installPhase` in `default.nix` to work out how to acquire & set up the
-rest of the static assets.
+You can then use cabal-install to build and run our specific version of
+Agda and our Shakefile:
 
 ```bash
-$ stack run -- shake -j all    # (using stack)
-$ runghc ./Shakefile.hs all -j # (using cabal-install)
+$ cabal install Agda
+# This will take quite a while!
+
+$ cabal v2-run shake -- -j --skip-agda
+# the double dash separates cabal-install's arguments from our
+# shakefile's.
 ```

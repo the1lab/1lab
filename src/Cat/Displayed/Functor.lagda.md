@@ -13,13 +13,12 @@ import Cat.Reasoning as CR
 module Cat.Displayed.Functor where
 ```
 
-# Displayed and fibred functors
+# Displayed and fibred functors {defines=displayed-functor}
 
-If you have a pair of categories $\cE, \cF$ \r{displayed over} a
-common base \r{category} $\cB$, it makes immediate sense to talk
-about \r{functors} $F : \cE \to \cF$: you'd have an assignment of
-objects $F_x : \cE^*(x) \to \cF^*(x)$ and an assignment of
-morphisms
+If you have a pair of categories $\cE, \cF$ [[displayed over|displayed
+category]] a common base [[category]] $\cB$, it makes immediate sense to
+talk about [[functors]] $F : \cE \to \cF$: you'd have an assignment of
+objects $F_x : \cE^*(x) \to \cF^*(x)$ and an assignment of morphisms
 
 $$
 F_{a,b,f} : (a' \to_f b') \to (F_a(a') \to_f F_b(b'))\text{,}
@@ -49,11 +48,11 @@ ordinary functor $F : \cA \to \cB$ to mediate between the bases.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o₂ ℓ₂ o₂′ ℓ₂′}
+  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
     {A : Precategory o ℓ}
     {B : Precategory o₂ ℓ₂}
-    (ℰ : Displayed A o′ ℓ′)
-    (ℱ : Displayed B o₂′ ℓ₂′)
+    (ℰ : Displayed A o' ℓ')
+    (ℱ : Displayed B o₂' ℓ₂')
     (F : Functor A B)
   where
   private
@@ -63,7 +62,7 @@ module
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     lvl : Level
-    lvl = o ⊔ o′ ⊔ o₂′ ⊔ ℓ ⊔ ℓ′ ⊔ ℓ₂′
+    lvl = o ⊔ o' ⊔ o₂' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
 ```
 -->
 
@@ -71,9 +70,9 @@ module
   record Displayed-functor : Type lvl where
     no-eta-equality
     field
-      F₀′ : ∀ {x} (o : ℰ.Ob[ x ]) → ℱ.Ob[ F.₀ x ]
-      F₁′ : ∀ {a b} {f : A.Hom a b} {a′ b′}
-          → ℰ.Hom[ f ] a′ b′ → ℱ.Hom[ F.₁ f ] (F₀′ a′) (F₀′ b′)
+      F₀' : ∀ {x} (o : ℰ.Ob[ x ]) → ℱ.Ob[ F.₀ x ]
+      F₁' : ∀ {a b} {f : A.Hom a b} {a' b'}
+          → ℰ.Hom[ f ] a' b' → ℱ.Hom[ F.₁ f ] (F₀' a') (F₀' b')
 ```
 
 In order to state the displayed functoriality laws, we require
@@ -82,31 +81,33 @@ displayed over the same base can be recovered as the "vertical displayed
 functors", i.e., those lying over the identity functor.
 
 ```agda
-      F-id′ : ∀ {x} {o : ℰ.Ob[ x ]}
-            → PathP (λ i → ℱ.Hom[ F.F-id i ] (F₀′ o) (F₀′ o))
-                    (F₁′ ℰ.id′) ℱ.id′
-      F-∘′ : ∀ {a b c} {f : A.Hom b c} {g : A.Hom a b} {a′ b′ c′}
-               {f′ : ℰ.Hom[ f ] b′ c′} {g′ : ℰ.Hom[ g ] a′ b′}
-           → PathP (λ i → ℱ.Hom[ F.F-∘ f g i ] (F₀′ a′) (F₀′ c′))
-                   (F₁′ (f′ ℰ.∘′ g′))
-                   (F₁′ f′ ℱ.∘′ F₁′ g′)
-    ₀′ = F₀′
-    ₁′ = F₁′
+      F-id' : ∀ {x} {o : ℰ.Ob[ x ]}
+            → PathP (λ i → ℱ.Hom[ F.F-id i ] (F₀' o) (F₀' o))
+                    (F₁' ℰ.id') ℱ.id'
+      F-∘' : ∀ {a b c} {f : A.Hom b c} {g : A.Hom a b} {a' b' c'}
+               {f' : ℰ.Hom[ f ] b' c'} {g' : ℰ.Hom[ g ] a' b'}
+           → PathP (λ i → ℱ.Hom[ F.F-∘ f g i ] (F₀' a') (F₀' c'))
+                   (F₁' (f' ℰ.∘' g'))
+                   (F₁' f' ℱ.∘' F₁' g')
+    ₀' = F₀'
+    ₁' = F₁'
 ```
 
-Note that, if $\cE$ and $\cF$ are \r{fibred categories} over their
-bases (rather than just _displayed_ categories), then the appropriate
-notion of 1-cell are displayed functors that take Cartesian morphisms to
+:::{.definition #fibred-functor}
+Note that, if $\cE$ and $\cF$ are [[fibred categories]] over their bases
+(rather than just _displayed_ categories), then the appropriate notion
+of 1-cell are displayed functors that take [[Cartesian morphisms]] to
 Cartesian morphisms:
+:::
 
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o₂ ℓ₂ o₂′ ℓ₂′}
+  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
     {A : Precategory o ℓ}
     {B : Precategory o₂ ℓ₂}
-    {ℰ : Displayed A o′ ℓ′}
-    {ℱ : Displayed B o₂′ ℓ₂′}
+    {ℰ : Displayed A o' ℓ'}
+    {ℱ : Displayed B o₂' ℓ₂'}
     {F : Functor A B}
   where
   private
@@ -116,26 +117,26 @@ module
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     lvl : Level
-    lvl = o ⊔ o′ ⊔ o₂′ ⊔ ℓ ⊔ ℓ′ ⊔ ℓ₂′
+    lvl = o ⊔ o' ⊔ o₂' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
 ```
 -->
 
 ```agda
   is-fibred-functor : Displayed-functor ℰ ℱ F → Type _
-  is-fibred-functor F′ = 
-    ∀ {a b a′ b′} {f : A.Hom a b} (f′ : ℰ.Hom[ f ] a′ b′)
-    → is-cartesian ℰ f f′ → is-cartesian ℱ (F.₁ f) (F₁′ f′)
-    where open Displayed-functor F′
+  is-fibred-functor F' =
+    ∀ {a b a' b'} {f : A.Hom a b} (f' : ℰ.Hom[ f ] a' b')
+    → is-cartesian ℰ f f' → is-cartesian ℱ (F.₁ f) (F₁' f')
+    where open Displayed-functor F'
 ```
 
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o₂ ℓ₂ o₂′ ℓ₂′}
+  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
     {A : Precategory o ℓ}
     {B : Precategory o₂ ℓ₂}
-    (ℰ : Displayed A o′ ℓ′)
-    (ℱ : Displayed B o₂′ ℓ₂′)
+    (ℰ : Displayed A o' ℓ')
+    (ℱ : Displayed B o₂' ℓ₂')
     (F : Functor A B)
   where
   private
@@ -145,7 +146,7 @@ module
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     lvl : Level
-    lvl = o ⊔ o′ ⊔ o₂′ ⊔ ℓ ⊔ ℓ′ ⊔ ℓ₂′
+    lvl = o ⊔ o' ⊔ o₂' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
 ```
 -->
 
@@ -186,27 +187,27 @@ module
     open DR ℋ
     open Displayed-functor
 
-  infixr 30 _F∘′_
+  infixr 30 _F∘'_
 ```
 -->
 
 ```agda
-  _F∘′_
+  _F∘'_
     : Displayed-functor ℱ ℋ F
     → Displayed-functor ℰ ℱ G
     → Displayed-functor ℰ ℋ (F F∘ G)
-  (F′ F∘′ G′) .F₀′ x = F′ .F₀′ (G′ .F₀′ x)
-  (F′ F∘′ G′) .F₁′ f = F′ .F₁′ (G′ .F₁′ f)
-  (F′ F∘′ G′) .F-id′ = to-pathp $
-    hom[] (F′ .F₁′ (G′ .F₁′ ℰ.id′))         ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (ap F.F₁ G.F-id) F.F-id) ⟩
-    hom[] (hom[] (F′ .F₁′ (G′ .F₁′ ℰ.id′))) ≡⟨ ap hom[] (shiftl _ λ i → F′ .F₁′ (G′ .F-id′ i)) ⟩
-    hom[] (F′ .F₁′ ℱ.id′)                   ≡⟨ from-pathp (F′ .F-id′) ⟩
-    ℋ.id′                                   ∎
-  (F′ F∘′ G′) .F-∘′ {f = f} {g = g} {f′ = f′} {g′ = g′} = to-pathp $
-    hom[] (F′ .F₁′ (G′ .F₁′ (f′ ℰ.∘′ g′)))           ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (ap F.F₁ (G.F-∘ f g)) (F.F-∘ (G.₁ f) (G.₁ g))) ⟩
-    hom[] (hom[] (F′ .F₁′ (G′ .F₁′ (f′ ℰ.∘′ g′))))   ≡⟨ ap hom[] (shiftl _ λ i → F′ .F₁′ (G′ .F-∘′ {f′ = f′} {g′ = g′} i)) ⟩
-    hom[] (F′ .F₁′ ((G′ .F₁′ f′) ℱ.∘′ (G′ .F₁′ g′))) ≡⟨ from-pathp (F′ .F-∘′) ⟩
-    F′ .F₁′ (G′ .F₁′ f′) ℋ.∘′ F′ .F₁′ (G′ .F₁′ g′)   ∎
+  (F' F∘' G') .F₀' x = F' .F₀' (G' .F₀' x)
+  (F' F∘' G') .F₁' f = F' .F₁' (G' .F₁' f)
+  (F' F∘' G') .F-id' = to-pathp $
+    hom[] (F' .F₁' (G' .F₁' ℰ.id'))         ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (ap F.F₁ G.F-id) F.F-id) ⟩
+    hom[] (hom[] (F' .F₁' (G' .F₁' ℰ.id'))) ≡⟨ ap hom[] (shiftl _ λ i → F' .F₁' (G' .F-id' i)) ⟩
+    hom[] (F' .F₁' ℱ.id')                   ≡⟨ from-pathp (F' .F-id') ⟩
+    ℋ.id'                                   ∎
+  (F' F∘' G') .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} = to-pathp $
+    hom[] (F' .F₁' (G' .F₁' (f' ℰ.∘' g')))           ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (ap F.F₁ (G.F-∘ f g)) (F.F-∘ (G.₁ f) (G.₁ g))) ⟩
+    hom[] (hom[] (F' .F₁' (G' .F₁' (f' ℰ.∘' g'))))   ≡⟨ ap hom[] (shiftl _ λ i → F' .F₁' (G' .F-∘' {f' = f'} {g' = g'} i)) ⟩
+    hom[] (F' .F₁' ((G' .F₁' f') ℱ.∘' (G' .F₁' g'))) ≡⟨ from-pathp (F' .F-∘') ⟩
+    F' .F₁' (G' .F₁' f') ℋ.∘' F' .F₁' (G' .F₁' g')   ∎
 ```
 
 Furthermore, there is a displayed identity functor that lies over
@@ -224,26 +225,26 @@ module _
 -->
 
 ```agda
-  Id′ : Displayed-functor ℰ ℰ Id
-  Id′ .F₀′ x = x
-  Id′ .F₁′ f = f
-  Id′ .F-id′ = refl
-  Id′ .F-∘′  = refl
+  Id' : Displayed-functor ℰ ℰ Id
+  Id' .F₀' x = x
+  Id' .F₁' f = f
+  Id' .F-id' = refl
+  Id' .F-∘'  = refl
 ```
 
 The identity functor is obviously fibred.
 
 ```agda
-  Id′-fibred : is-fibred-functor Id′
-  Id′-fibred f cart = cart
+  Id'-fibred : is-fibred-functor Id'
+  Id'-fibred f cart = cart
 
-  Idf′ : Fibred-functor ℰ ℰ Id
-  Idf′ .Fibred-functor.disp = Id′
-  Idf′ .Fibred-functor.F-cartesian = Id′-fibred
+  Idf' : Fibred-functor ℰ ℰ Id
+  Idf' .Fibred-functor.disp = Id'
+  Idf' .Fibred-functor.F-cartesian = Id'-fibred
 ```
 
 
-## Vertical Functors
+## Vertical functors
 
 Functors displayed over the identity functor are of particular interest.
 Such functors are known as **vertical functors**, and are commonly used
@@ -252,33 +253,37 @@ work with if we define them directly as such, as the composite of two
 identity functors is not **definitionally** equal to the identity functor!
 To avoid this problem, we provide the following specialized definition.
 
+<!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+  _ {o ℓ o' ℓ' o'' ℓ''}
     {B : Precategory o ℓ}
-    (ℰ : Displayed B o′ ℓ′)
-    (ℱ : Displayed B o′′ ℓ′′)
+    (ℰ : Displayed B o' ℓ')
+    (ℱ : Displayed B o'' ℓ'')
   where
   private
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
+```
+-->
 
-  record Vertical-functor : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+```agda
+  record Vertical-functor : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ' ⊔ o'' ⊔ ℓ'') where
     no-eta-equality
     field
-      F₀′ : ∀ {x} (o : ℰ.Ob[ x ]) → ℱ.Ob[ x ]
-      F₁′ : ∀ {a b} {f : B.Hom a b} {a′ b′}
-          → ℰ.Hom[ f ] a′ b′ → ℱ.Hom[ f ] (F₀′ a′) (F₀′ b′)
-      F-id′ : ∀ {x} {o : ℰ.Ob[ x ]}
-            → PathP ( λ _ →  ℱ.Hom[ B.id ] (F₀′ o) (F₀′ o))
-                         (F₁′ ℰ.id′) ℱ.id′ 
-      F-∘′ : ∀ {a b c} {f : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
-                 {f′ : ℰ.Hom[ f ] b′ c′} {g′ : ℰ.Hom[ g ] a′ b′} 
-            → PathP (λ _ → ℱ.Hom[ f B.∘ g ] (F₀′ a′) (F₀′ c′)) (F₁′ (f′ ℰ.∘′ g′))
-                         (F₁′ f′ ℱ.∘′ F₁′ g′)
-    ₀′ = F₀′
-    ₁′ = F₁′
+      F₀' : ∀ {x} (o : ℰ.Ob[ x ]) → ℱ.Ob[ x ]
+      F₁' : ∀ {a b} {f : B.Hom a b} {a' b'}
+          → ℰ.Hom[ f ] a' b' → ℱ.Hom[ f ] (F₀' a') (F₀' b')
+      F-id' : ∀ {x} {o : ℰ.Ob[ x ]}
+            → PathP ( λ _ →  ℱ.Hom[ B.id ] (F₀' o) (F₀' o))
+                         (F₁' ℰ.id') ℱ.id'
+      F-∘' : ∀ {a b c} {f : B.Hom b c} {g : B.Hom a b} {a' b' c'}
+                 {f' : ℰ.Hom[ f ] b' c'} {g' : ℰ.Hom[ g ] a' b'}
+            → PathP (λ _ → ℱ.Hom[ f B.∘ g ] (F₀' a') (F₀' c')) (F₁' (f' ℰ.∘' g'))
+                         (F₁' f' ℱ.∘' F₁' g')
+    ₀' = F₀'
+    ₁' = F₁'
 ```
 
 
@@ -288,10 +293,10 @@ functor.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+  _ {o ℓ o' ℓ' o'' ℓ''}
     {B : Precategory o ℓ}
-    {ℰ : Displayed B o′ ℓ′}
-    {ℱ : Displayed B o′′ ℓ′′}
+    {ℰ : Displayed B o' ℓ'}
+    {ℱ : Displayed B o'' ℓ''}
   where
   private
     module B = Precategory B
@@ -303,37 +308,37 @@ module
 ```agda
   Displayed-functor→Vertical-functor
     : Displayed-functor ℰ ℱ Id → Vertical-functor ℰ ℱ
-  Displayed-functor→Vertical-functor F′ = V where
-    module F′ = Displayed-functor F′
+  Displayed-functor→Vertical-functor F' = V where
+    module F' = Displayed-functor F'
     open Vertical-functor
 
     V : Vertical-functor ℰ ℱ
-    V .F₀′ = F′.₀′
-    V .F₁′ = F′.₁′
-    V .F-id′ = F′.F-id′
-    V .F-∘′ = F′.F-∘′
+    V .F₀' = F'.₀'
+    V .F₁' = F'.₁'
+    V .F-id' = F'.F-id'
+    V .F-∘' = F'.F-∘'
 
   Vertical-functor→Displayed-functor
     : Vertical-functor ℰ ℱ → Displayed-functor ℰ ℱ Id
-  Vertical-functor→Displayed-functor V = F′ where
+  Vertical-functor→Displayed-functor V = F' where
     module V = Vertical-functor V
     open Displayed-functor
 
-    F′ : Displayed-functor ℰ ℱ Id
-    F′ .F₀′ = V.₀′
-    F′ .F₁′ = V.₁′
-    F′ .F-id′ = V.F-id′
-    F′ .F-∘′ = V.F-∘′
+    F' : Displayed-functor ℰ ℱ Id
+    F' .F₀' = V.₀'
+    F' .F₁' = V.₁'
+    F' .F-id' = V.F-id'
+    F' .F-∘' = V.F-∘'
 ```
 
 We also provide a specialized definition for vertical fibred functors.
 
 ```agda
   is-vertical-fibred : Vertical-functor ℰ ℱ → Type _
-  is-vertical-fibred F′ =
-    ∀ {a b a′ b′} {f : B.Hom a b} (f′ : ℰ.Hom[ f ] a′ b′)
-    → is-cartesian ℰ f f′ → is-cartesian ℱ f (F₁′ f′)
-    where open Vertical-functor F′
+  is-vertical-fibred F' =
+    ∀ {a b a' b'} {f : B.Hom a b} (f' : ℰ.Hom[ f ] a' b')
+    → is-cartesian ℰ f f' → is-cartesian ℱ f (F₁' f')
+    where open Vertical-functor F'
 ```
 
 
@@ -343,38 +348,38 @@ We also provide a specialized definition for vertical fibred functors.
 
   Vertical-functor-path
     : {F G : Vertical-functor ℰ ℱ}
-    → (p0 : ∀ {x} → (x′ : ℰ.Ob[ x ]) → F .F₀′ x′ ≡ G .F₀′ x′)
-    → (p1 : ∀ {x y x′ y′} {f : B.Hom x y} → (f′ : ℰ.Hom[ f ] x′ y′)
-            → PathP (λ i → ℱ.Hom[ f ] (p0 x′ i) (p0 y′ i)) (F .F₁′ f′) (G .F₁′ f′))
+    → (p0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → F .F₀' x' ≡ G .F₀' x')
+    → (p1 : ∀ {x y x' y'} {f : B.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
+            → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
     → F ≡ G
-  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₀′ x′ = p0 x′ i
-  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₁′ f′ = p1 f′ i
-  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-id′ =
-    is-prop→pathp (λ i → ℱ.Hom[ B.id ]-set _ _ (p1 ℰ.id′ i) ℱ.id′)
-      (F .F-id′)
-      (G .F-id′) i
-  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-∘′ {f′ = f′} {g′ = g′} =
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₀' x' = p0 x' i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₁' f' = p1 f' i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-id' =
+    is-prop→pathp (λ i → ℱ.Hom[ B.id ]-set _ _ (p1 ℰ.id' i) ℱ.id')
+      (F .F-id')
+      (G .F-id') i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-∘' {f' = f'} {g' = g'} =
     is-prop→pathp
-      (λ i → ℱ.Hom[ _ ]-set _ _ (p1 (f′ ℰ.∘′ g′) i) (p1 f′ i ℱ.∘′ p1 g′ i))
-      (F .F-∘′ {f′ = f′} {g′ = g′})
-      (G .F-∘′ {f′ = f′} {g′ = g′}) i
+      (λ i → ℱ.Hom[ _ ]-set _ _ (p1 (f' ℰ.∘' g') i) (p1 f' i ℱ.∘' p1 g' i))
+      (F .F-∘' {f' = f'} {g' = g'})
+      (G .F-∘' {f' = f'} {g' = g'}) i
 ```
 -->
 
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+  _ {o ℓ o' ℓ' o'' ℓ''}
     {B : Precategory o ℓ}
-    (ℰ : Displayed B o′ ℓ′)
-    (ℱ : Displayed B o′′ ℓ′′)
+    (ℰ : Displayed B o' ℓ')
+    (ℱ : Displayed B o'' ℓ'')
   where
   private
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     lvl : Level
-    lvl = o ⊔ ℓ ⊔ o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′
+    lvl = o ⊔ ℓ ⊔ o' ⊔ ℓ' ⊔ o'' ⊔ ℓ''
 ```
 -->
 
@@ -390,10 +395,10 @@ module
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+  _ {o ℓ o' ℓ' o'' ℓ''}
     {B : Precategory o ℓ}
-    {ℰ : Displayed B o′ ℓ′}
-    {ℱ : Displayed B o′′ ℓ′′}
+    {ℰ : Displayed B o' ℓ'}
+    {ℱ : Displayed B o'' ℓ''}
   where
   private
     module B = Precategory B
@@ -444,16 +449,16 @@ it is a vertical fibred functor.
 
   Vertical-fibred-functor-path
     : {F G : Vertical-fibred-functor ℰ ℱ}
-    → (p0 : ∀ {x} → (x′ : ℰ.Ob[ x ]) → F .F₀′ x′ ≡ G .F₀′ x′)
-    → (p1 : ∀ {x y x′ y′} {f : B.Hom x y} → (f′ : ℰ.Hom[ f ] x′ y′)
-            → PathP (λ i → ℱ.Hom[ f ] (p0 x′ i) (p0 y′ i)) (F .F₁′ f′) (G .F₁′ f′))
+    → (p0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → F .F₀' x' ≡ G .F₀' x')
+    → (p1 : ∀ {x y x' y'} {f : B.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
+            → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
     → F ≡ G
   Vertical-fibred-functor-path {F = F} {G = G} p0 p1 i .vert =
     Vertical-functor-path {F = F .vert} {G = G .vert} p0 p1 i
-  Vertical-fibred-functor-path {F = F} {G = G} p0 p1 i .F-cartesian f′ cart =
-    is-prop→pathp (λ i → is-cartesian-is-prop ℱ {f′ = p1 f′ i})
-      (F .F-cartesian f′ cart)
-      (G .F-cartesian f′ cart) i
+  Vertical-fibred-functor-path {F = F} {G = G} p0 p1 i .F-cartesian f' cart =
+    is-prop→pathp (λ i → is-cartesian-is-prop ℱ {f' = p1 f' i})
+      (F .F-cartesian f' cart)
+      (G .F-cartesian f' cart) i
 ```
 -->
 
@@ -477,32 +482,32 @@ module _
 
 ```agda
   _V∘_ : Vertical-functor ℱ ℋ → Vertical-functor ℰ ℱ → Vertical-functor ℰ ℋ
-  (F′ V∘ G′) .F₀′ x′ = F′ .F₀′ (G′ .F₀′ x′)
-  (F′ V∘ G′) .F₁′ f′ = F′ .F₁′ (G′ .F₁′ f′)
-  (F′ V∘ G′) .F-id′ = ap (F′ .F₁′) (G′ .F-id′) ∙ F′ .F-id′
-  (F′ V∘ G′) .F-∘′ = ap (F′ .F₁′) (G′ .F-∘′) ∙ (F′ .F-∘′)
+  (F' V∘ G') .F₀' x' = F' .F₀' (G' .F₀' x')
+  (F' V∘ G') .F₁' f' = F' .F₁' (G' .F₁' f')
+  (F' V∘ G') .F-id' = ap (F' .F₁') (G' .F-id') ∙ F' .F-id'
+  (F' V∘ G') .F-∘' = ap (F' .F₁') (G' .F-∘') ∙ (F' .F-∘')
 ```
 
 Furthermore, the composite of vertical fibred functors is also fibred.
 
 ```agda
   V∘-fibred
-    : ∀ (F′ : Vertical-functor ℱ ℋ) (G′ : Vertical-functor ℰ ℱ)
-    → is-vertical-fibred F′ → is-vertical-fibred G′ → is-vertical-fibred (F′ V∘ G′)
-  V∘-fibred F′ G′ F′-fib G′-fib f′ cart = F′-fib (G′ .F₁′ f′) (G′-fib f′ cart)
+    : ∀ (F' : Vertical-functor ℱ ℋ) (G' : Vertical-functor ℰ ℱ)
+    → is-vertical-fibred F' → is-vertical-fibred G' → is-vertical-fibred (F' V∘ G')
+  V∘-fibred F' G' F'-fib G'-fib f' cart = F'-fib (G' .F₁' f') (G'-fib f' cart)
 
   _Vf∘_
     : Vertical-fibred-functor ℱ ℋ
     → Vertical-fibred-functor ℰ ℱ
     → Vertical-fibred-functor ℰ ℋ
-  (F′ Vf∘ G′) .Vertical-fibred-functor.vert =
-    Vertical-fibred-functor.vert F′ V∘ Vertical-fibred-functor.vert G′
-  (F′ Vf∘ G′) .Vertical-fibred-functor.F-cartesian =
+  (F' Vf∘ G') .Vertical-fibred-functor.vert =
+    Vertical-fibred-functor.vert F' V∘ Vertical-fibred-functor.vert G'
+  (F' Vf∘ G') .Vertical-fibred-functor.F-cartesian =
     V∘-fibred
-      (Vertical-fibred-functor.vert F′)
-      (Vertical-fibred-functor.vert G′)
-      (Vertical-fibred-functor.F-cartesian F′)
-      (Vertical-fibred-functor.F-cartesian G′)
+      (Vertical-fibred-functor.vert F')
+      (Vertical-fibred-functor.vert G')
+      (Vertical-fibred-functor.F-cartesian F')
+      (Vertical-fibred-functor.F-cartesian G')
 ```
 
 The identity functor is obviously fibred vertical.
@@ -519,16 +524,16 @@ module _
 
 ```agda
   IdV : Vertical-functor ℰ ℰ
-  IdV = Displayed-functor→Vertical-functor Id′
+  IdV = Displayed-functor→Vertical-functor Id'
 
   IdV-fibred : is-vertical-fibred IdV
-  IdV-fibred = is-fibred→is-vertical-fibred Id′ Id′-fibred
+  IdV-fibred = is-fibred→is-vertical-fibred Id' Id'-fibred
 
   IdVf : Vertical-fibred-functor ℰ ℰ
-  IdVf = Fibred→Vertical-fibred Idf′
+  IdVf = Fibred→Vertical-fibred Idf'
 ```
 
-## Displayed Natural Transformations
+## Displayed natural transformations
 
 Just like we have defined a [displayed functor][disfct]
 $\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$
@@ -559,11 +564,11 @@ lying over $\eta$.
 
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o₂ ℓ₂ o₂′ ℓ₂′}
+  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
     {A : Precategory o ℓ}
     {B : Precategory o₂ ℓ₂}
-    {ℰ : Displayed A o′ ℓ′}
-    {ℱ : Displayed B o₂′ ℓ₂′} 
+    {ℰ : Displayed A o' ℓ'}
+    {ℱ : Displayed B o₂' ℓ₂'}
   where
   private
     module ℰ = Displayed ℰ
@@ -572,19 +577,19 @@ module
     open _=>_
 
     lvl : Level
-    lvl = o ⊔ o′ ⊔ ℓ ⊔ ℓ′ ⊔ ℓ₂′
+    lvl = o ⊔ o' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
   infix 20 _=[_]=>_
 
-  record _=[_]=>_ {F : Functor A B} {G : Functor A B} (F′ : Displayed-functor ℰ ℱ F)
-                          (α : F => G) (G′ : Displayed-functor ℰ ℱ G)
+  record _=[_]=>_ {F : Functor A B} {G : Functor A B} (F' : Displayed-functor ℰ ℱ F)
+                          (α : F => G) (G' : Displayed-functor ℰ ℱ G)
             : Type lvl where
     no-eta-equality
 
     field
-      η′ : ∀ {x} (x′ : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (F′ .F₀′ x′) (G′ .F₀′ x′)
-      is-natural′
-        : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
-        → η′ y′ ℱ.∘′ F′ .F₁′ f′ ℱ.≡[ α .is-natural x y f ] G′ .F₁′ f′ ℱ.∘′ η′ x′
+      η' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (F' .F₀' x') (G' .F₀' x')
+      is-natural'
+        : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
+        → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
 Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural transformation
@@ -614,13 +619,13 @@ module _
 -->
 
 ```agda
-  record _=>↓_ (F′ G′ : Vertical-functor ℰ ℱ) : Type lvl where
+  record _=>↓_ (F' G' : Vertical-functor ℰ ℱ) : Type lvl where
     no-eta-equality
     field
-      η′ : ∀ {x} (x′ : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F′ .F₀′ x′) (G′ .F₀′ x′)
-      is-natural′
-        : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
-        → η′ y′ ℱ.∘′ F′ .F₁′ f′ ℱ.≡[ id-comm-sym ] G′ .F₁′ f′ ℱ.∘′ η′ x′
+      η' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F' .F₀' x') (G' .F₀' x')
+      is-natural'
+        : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
+        → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ id-comm-sym ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
 This notion of natural transformation is also the correct one for
@@ -628,7 +633,7 @@ fibred vertical functors, as there is no higher structure that needs
 to be preserved.
 
 ```agda
-  _=>f↓_ : (F′ G′ : Vertical-fibred-functor ℰ ℱ) → Type _
-  F′ =>f↓ G′ = F′ .vert =>↓ G′ .vert
+  _=>f↓_ : (F' G' : Vertical-fibred-functor ℰ ℱ) → Type _
+  F' =>f↓ G' = F' .vert =>↓ G' .vert
     where open Vertical-fibred-functor
 ```

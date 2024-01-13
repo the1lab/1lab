@@ -16,17 +16,17 @@ module Cat.Diagram.Coend where
 ```agda
 private
   variable
-    o ℓ o′ ℓ′ : Level
-    C D : Precategory o′ ℓ′
+    o ℓ o' ℓ' : Level
+    C D : Precategory o' ℓ'
   coend-level
-    : {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    : {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     → Functor (C ^op ×ᶜ C) D
     → Level
-  coend-level {o = o} {ℓ} {o′} {ℓ′} _ = o ⊔ o′ ⊔ ℓ ⊔ ℓ′
+  coend-level {o = o} {ℓ} {o'} {ℓ'} _ = o ⊔ o' ⊔ ℓ ⊔ ℓ'
 ```
 -->
 
-# Coends
+# Coends {defines=coend}
 
 Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the
 general yoga of [bifunctors] we think of as combining a contravariant
@@ -114,13 +114,13 @@ and contravariant in the other.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  w && {F(c',c')} \\
+  {F(c',c)} && {F(c',c')} \\
   \\
-  {F(c,c)} && {F(c',c)}
-  \arrow["{\psi_{c'}}", from=1-1, to=1-3]
-  \arrow["{F(\mathrm{id}_{c'},f)}", from=1-3, to=3-3]
-  \arrow["{F(f,\mathrm{id}_{c})}"', from=3-1, to=3-3]
-  \arrow["{\psi_c}"', from=1-1, to=3-1]
+  {F(c,c)} && w
+  \arrow["{F(\mathrm{id}_{c'},f)}", from=1-1, to=1-3]
+  \arrow["{\psi_{c'}}", from=1-3, to=3-3]
+  \arrow["{\psi_c}"', from=3-1, to=3-3]
+  \arrow["{F(f,\mathrm{id}_{c})}"', from=1-1, to=3-1]
 \end{tikzcd}\]
 ~~~
 
@@ -128,8 +128,8 @@ and contravariant in the other.
 
 ```agda
     extranatural
-      : ∀ {c c′} (f : C.Hom c c′)
-      → ψ c′ D.∘ F.second f ≡ ψ c D.∘ F.first f
+      : ∀ {c c'} (f : C.Hom c c')
+      → ψ c' D.∘ F.second f ≡ ψ c D.∘ F.first f
 ```
 
 A coend, then, is a universal cowedge. In particular, we say that

@@ -12,6 +12,7 @@ open import Algebra.Ring
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Abelian.Instances.Ab
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Abelian.Base
 open import Cat.Prelude hiding (_+_ ; _*_)
 ```
@@ -24,8 +25,8 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 private module R = Ring-on (R .snd)
-open Ab-category hiding (_+_ ; Terminal)
-open is-additive hiding (_+_ ; Terminal)
+open Ab-category hiding (_+_ ; Terminal ; Product ; is-product)
+open is-additive hiding (_+_ ; Terminal ; Product ; is-product)
 open make-abelian-group
 open Total-hom
 
@@ -150,12 +151,12 @@ module _ (cring : is-commutative-ring R) {ℓm ℓn} (M : Module R ℓm) (N : Mo
 -->
 
 Since we've essentially equipped the set of linear maps $M \to N$ with
-an $R$-module structure, which certainly includes an abelian group
+an $R$-module structure, which certainly includes an [[abelian group]]
 structure, we can conclude that $\Mod[R]$ is not only a category, but an
 $\Ab$-category to boot!
 
 ```agda
-R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod R ℓ′)
+R-Mod-ab-category : ∀ {ℓ'} → Ab-category (R-Mod R ℓ')
 ```
 
 <!--
@@ -179,7 +180,7 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp .invl f      = Homomorphism-path λ x → +-invl
   grp .comm f g    = Homomorphism-path λ x → +-comm _ _
 
-R-Mod-ab-category .∘-linear-l f g h = Homomorphism-path λ x → refl
+R-Mod-ab-category .∘-linear-l f g h = trivial!
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = Homomorphism-path λ x → sym (is-linear-map.pres-+ (f .preserves) _ _)
 ```
 -->
@@ -197,7 +198,7 @@ The zero object is simple, because the unit type is so well-behaved^[and
 constantly the unit, including the paths, which are _all_ reflexivity.
 
 ```agda
-R-Mod-is-additive : is-additive (R-Mod R _)
+R-Mod-is-additive : ∀ {ℓ} → is-additive (R-Mod R ℓ)
 R-Mod-is-additive .has-ab = R-Mod-ab-category
 R-Mod-is-additive .has-terminal = term where
   act : Ring-action R _
@@ -250,10 +251,10 @@ Proving that this cone is actually universal involves a bit of
 path-mangling, but it's nothing _too_ bad:
 
 ```agda
-  open Ab-category.Product
-  open Ab-category.is-product
+  open Product
+  open is-product
 
-  prod : Ab-category.Product R-Mod-ab-category M N
+  prod : Product (R-Mod _ _) M N
   prod .apex = M⊕ᵣN
   prod .π₁ .hom = fst
   prod .π₁ .preserves .linear r s t = refl
@@ -262,10 +263,9 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
   prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
-  prod .has-is-product .π₁∘factor = Homomorphism-path λ _ → refl
-  prod .has-is-product .π₂∘factor = Homomorphism-path λ _ → refl
-  prod .has-is-product .unique other p q = Homomorphism-path {ℓ = lzero} λ x →
-    Σ-pathp (ap hom p $ₚ x) (ap hom q $ₚ x)
+  prod .has-is-product .π₁∘factor = trivial!
+  prod .has-is-product .π₂∘factor = trivial!
+  prod .has-is-product .unique other p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 
 <!-- TODO [Amy 2022-09-15]

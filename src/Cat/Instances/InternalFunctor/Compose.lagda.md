@@ -3,10 +3,9 @@
 open import Cat.Instances.Product
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Internal.Base as Internal
 import Cat.Instances.InternalFunctor
 import Cat.Internal.Reasoning
+import Cat.Internal.Base as Internal
 ```
 -->
 
@@ -20,7 +19,8 @@ Internal functor composition is functorial, when viewed as an operation
 on [internal functor categories]. This mirrors [the similar results] for
 composition of ordinary functors.
 
-[the similar results]: Cat.Instances.Functor.Compose.html
+[internal functor categories]: Cat.Instances.InternalFunctor.html
+[the similar results]: Cat.Functor.Compose.html
 
 To show this, we will need to define whiskering and horizontal
 composition of internal natural transformations.
@@ -28,7 +28,7 @@ composition of internal natural transformations.
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} {𝔸 𝔹 ℂ : Internal.Internal-cat C} where
-  open Cat.Reasoning C
+  open Precategory C
   open Internal C
   open Internal-functor
   open _=>i_
@@ -58,7 +58,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {𝔸 𝔹 ℂ : Internal.Internal-cat 
 counterparts], so we omit their definitions.
 </summary>
 
-[1-categorical counterparts]: Cat.Instances.Functor.Compose.html
+[1-categorical counterparts]: Cat.Functor.Compose.html
 
 ```agda
   (α ◂i H) .ηi x = α .ηi (H .Fi₀ x)
@@ -94,7 +94,7 @@ With that out of the way, we can prove the main result.
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (𝔸 𝔹 ℂ : Internal.Internal-cat C) where
-  open Cat.Reasoning C
+  open Precategory C
   open Internal C
   open Cat.Instances.InternalFunctor C
   open Functor
@@ -120,7 +120,7 @@ difference is the addition of extra naturality conditions, which are
 easy to prove.
 </summary>
 
-[functor composition]: Cat.Instances.Functor.Compose.html
+[functor composition]: Cat.Functor.Compose.html
 
 ```agda
   Fi∘-functor .F₁ {F , G} {H , K} (α , β) = α ◆i β

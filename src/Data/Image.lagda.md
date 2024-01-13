@@ -15,7 +15,7 @@ module Data.Image where
 # Images and replacement
 
 The [image] of a function $f : A \to B$ is the subtype of $B$ where points
-are [merely] equipped with a fibre of $f$. This has the expected
+are [[merely]] equipped with a fibre of $f$. This has the expected
 universal property: we can factor any $f$ into
 
 $$
@@ -26,7 +26,6 @@ and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
 
 [image]: 1Lab.HIT.Truncation.html#maps-into-sets
-[merely]: 1Lab.HIT.Truncation.html
 
 In general, we can consider images of arbitrary functions $f : A \to B$,
 where $A$ is a $\ell_1$-small type, and $B$ is a $\ell_2$-small type;
@@ -39,7 +38,7 @@ of $A$".
 Can we do better? It turns out that we can! This generally goes by the
 name of **type-theoretic replacement**, after Rijke [@Rijke:2017 §5]; in
 turn, the name _replacement_ comes from the axiom of material set theory
-sayings the image of a set under a function is again set.^[Keep in mind
+saying the image of a set under a function is again set.^[Keep in mind
 that material set theory says "is a set" in a very different way than we
 do; They mean it about size.] Here we implement a slight generalization
 of [Evan Cavallo's construction] in terms of higher induction-recursion.
@@ -123,10 +122,9 @@ of the image is similar in spirit.
 But if we have _recursive_ higher inductive types, where the type being
 defined can appear in the _arguments_ to its own path constructors, we
 can sometimes do these constructions in a single big, recursive step.
-That's [the usual propositional truncation](1Lab.HIT.Truncation.html). A
-guiding, heuristic principle would be to avoid "green slime": do not
-mention the constructors of the type in the _endpoints_ of the path
-constructor.
+That's the usual [[propositional truncation]]. A guiding, heuristic
+principle would be to avoid "green slime": do not mention the
+constructors of the type in the _endpoints_ of the path constructor.
 
 Types without green slime are much more merciful than the judges of
 coherence hell, because you don't have to match to apply the path
@@ -144,20 +142,18 @@ the construction and _actually work with it_, which is also important.
 3. So that points from $a$ are identified in $\im f$ exactly how they
 would be identified in $b$ under $f$.
 
-If we _had_ such a type, we could define an [embedding] $f' : \im f
+If we _had_ such a type, we could define an [[embedding]] $f' : \im f
 \mono B$, which tells us how to compute the path spaces in $\im f$: $(x
 \equiv y) \simeq (f'(x) \equiv f'(y))$. In fact, since images are almost
 entirely characterised by having such an embedding, we can use our
 hypothetical $f'$ to rewrite the third bullet point:
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 3. With a constructor coherently mapping proofs of $f'(x) \equiv f'(y)$
 to $x \equiv y$.
 
 Also, note that, since we were trying to get a _smaller_ image, we can't
 just use $B$'s path types: those live at the same universe as $B$. What
-we can do instead is parametrise over an [identity system] on $B$, a
+we can do instead is parametrise over an [[identity system]] on $B$, a
 reflexive family of types $x \sim y$ which is equivalent to $x \equiv y$
 but which might be smaller. So, our requirement on identifications
 should be
@@ -194,37 +190,40 @@ module Replacement
 
   data Image where
     inc  : A → Image
-    quot : ∀ {r r′} → embed r ∼ embed r′ → r ≡ r′
-    coh  : ∀ r → quot (rr (embed r)) ≡ refl
+    quot : ∀ {r r'} → embed r ∼ embed r' → r ≡ r'
 
   embed (inc a)     = f a
   embed (quot p i)  = locally-small .to-path p i
-  embed (coh r i j) =
-    to-path-refl {a = embed r} locally-small i j
 ```
 
-Well, there's still a minor coherence quibble. To show that
-`image-embedding` is an embedding, we need `quot`{.Agda} to send the
-reflexivity of the identity system to the actual reflexivity path. But
-that's a single coherence constructor, not infinitely many, and it's
-satisfied by our projection function. We'll show that it's an embedding
-by showing that it's coherently cancellable, i.e. that we have an
-equivalence $(f'(x) \equiv f'(y)) \simeq (x \equiv y)$.
+And, having used inductive-recursion to tie the dependency knot, we're
+actually done: the construction above is coherent enough, _even if_ it
+looks like the `quot`{.Agda} constructor only says that `embed`{.Agda}
+is an injection. We can use the algebraic properties of identity systems
+to show that it's actually a proper embedding:
 
 ```agda
+  embed-is-embedding' : ∀ x → is-contr (fibre embed (embed x))
+  embed-is-embedding' x .centre = x , refl
+  embed-is-embedding' x .paths (y , q) =
+    Σ-pathp (quot (ls.from (sym q))) (commutes→square coh)
+    where abstract
+      coh : ls.to (ls.from (sym q)) ∙ q ≡ refl ∙ refl
+      coh = ap (_∙ q) (ls.ε (sym q)) ·· ∙-invl q ·· sym (∙-idl refl)
+
   embed-is-embedding : is-embedding embed
-  embed-is-embedding = cancellable→embedding λ {x y} →
-    Iso→Equiv (from , iso (ap embed) invr (invl {x} {y})) where
+  embed-is-embedding = embedding-lemma embed-is-embedding'
+```
 
-    from : ∀ {x y} → embed x ≡ embed y → x ≡ y
-    from path = quot (ls.from path)
+And it's possible to pull back the identity system on $b$ to one on $\im
+f$, to really drive home the point that points in the image are
+identified precisely through their identification, under $f$, in the
+codomain.
 
-    invr : ∀ {x y} → is-right-inverse (ap embed {x} {y}) from
-    invr = J (λ y p → from (ap embed p) ≡ p)
-             (ap quot (transport-refl _) ∙ coh _)
-
-    invl : ∀ {x y} → is-left-inverse (ap embed {x} {y}) from
-    invl p = ls.ε _
+```agda
+  Image-identity-system : is-identity-system (λ x y → embed x ∼ embed y) (λ _ → rr _)
+  Image-identity-system = pullback-identity-system locally-small
+    (embed , embed-is-embedding)
 ```
 
 <!--
@@ -239,7 +238,7 @@ As usual with these things, we can establish properties of
 
 ```agda
   Image-elim-prop
-    : ∀ {ℓ′} {P : Image → Type ℓ′}
+    : ∀ {ℓ'} {P : Image → Type ℓ'}
     → (∀ x → is-prop (P x))
     → (∀ x → P (inc x))
     → ∀ x → P x
@@ -248,18 +247,12 @@ As usual with these things, we can establish properties of
     is-prop→pathp (λ i → pprop (quot p i))
       (Image-elim-prop pprop pinc x)
       (Image-elim-prop pprop pinc y) i
-  Image-elim-prop pprop pinc (coh r i j) =
-    is-prop→squarep (λ i j → pprop (coh r i j))
-      (λ _ → Image-elim-prop pprop pinc r)
-      (is-prop→pathp (λ i → pprop _) _ _)
-      (λ _ → Image-elim-prop pprop pinc r)
-      (λ _ → Image-elim-prop pprop pinc r) i j
 ```
 
 From which surjectivity follows immediately:
 
 ```agda
-  inc-is-surjective : ∀ a → ∥ fibre inc a ∥
+  inc-is-surjective : is-surjective inc
   inc-is-surjective = Image-elim-prop (λ _ → squash) (λ x → inc (x , refl))
 ```
 
@@ -292,11 +285,11 @@ first step, and deal only with untruncated data from then on.
       (λ _ → is-contr-is-prop)
       (λ { (i , p) → J
         (λ x p → is-contr (fibre Image→image (x , inc (i , p))))
-        (work′ i) p })
+        (work' i) p })
       p
     where
-      work′ : (f⁻¹x : A) → is-contr (fibre Image→image (f f⁻¹x , inc (_ , refl)))
-      work′ f⁻¹x .centre = inc f⁻¹x , refl -- inc f⁻¹x , refl
+      work' : (f⁻¹x : A) → is-contr (fibre Image→image (f f⁻¹x , inc (_ , refl)))
+      work' f⁻¹x .centre = inc f⁻¹x , refl -- inc f⁻¹x , refl
 ```
 
 Contracting the fibres is where we get some mileage out of having gotten
@@ -306,7 +299,7 @@ $\mathrm{embed}(i) = ff^{-1}(x)$, which, under `quot`{.agda}, is exactly
 what we need.
 
 ```agda
-      work′ f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
+      work' f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
         Σ-prop-square (λ _ → squash) $ commutes→square $
-          (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-inv-l _ ∙ sym (∙-id-l _))
+          (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-invl _ ∙ sym (∙-idl _))
 ```

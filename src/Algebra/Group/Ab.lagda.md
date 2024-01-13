@@ -7,7 +7,8 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
 open import Cat.Prelude hiding (_*_ ; _+_)
 
-open import Data.Int
+open import Data.Int.Properties
+open import Data.Int.Base
 
 import Cat.Reasoning
 ```
@@ -17,9 +18,9 @@ import Cat.Reasoning
 module Algebra.Group.Ab where
 ```
 
-# Abelian groups
+# Abelian groups {defines=abelian-group}
 
-A very important class of [groups] (which includes most familiar
+A very important class of [[groups]] (which includes most familiar
 examples of groups: the integers, all finite cyclic groups, etc) are
 those with a _commutative_ group operation, that is, those for which $xy
 = yx$.  Accordingly, these have a name reflecting their importance and
@@ -28,7 +29,6 @@ named **abelian groups**, named after [a person], because nothing can
 have self-explicative names in mathematics. It's the law.
 
 [a person]: https://en.wikipedia.org/wiki/Niels_Henrik_Abel
-[groups]: Algebra.Group.html
 
 <!--
 ```agda
@@ -60,7 +60,7 @@ instance
   H-Level-is-abelian-group
     : ∀ {n} {* : G → G → G} → H-Level (is-abelian-group *) (suc n)
   H-Level-is-abelian-group = prop-instance $ Iso→is-hlevel 1 eqv $
-    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ →
+    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ →
       is-group.has-is-set x _ _
 ```
 -->
@@ -152,9 +152,12 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
   to-ab .fst .is-tr = ab-is-set
   to-ab .snd = to-abelian-group-on
 
+is-commutative-group : ∀ {ℓ} → Group ℓ → Type ℓ
+is-commutative-group G = Group-on-is-abelian (G .snd)
+
 from-commutative-group
   : ∀ {ℓ} (G : Group ℓ)
-  → (∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x)
+  → is-commutative-group G
   → Abelian-group ℓ
 from-commutative-group G comm .fst = G .fst
 from-commutative-group G comm .snd .Abelian-group-on._*_ =
@@ -172,8 +175,8 @@ Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
 Ab↪Grp .F₀ (X , A) = X , Abelian→Group-on A
 Ab↪Grp .F₁ f .hom = f .hom
 Ab↪Grp .F₁ f .preserves = f .preserves
-Ab↪Grp .F-id = total-hom-path _ refl refl
-Ab↪Grp .F-∘ f g = total-hom-path _ refl refl
+Ab↪Grp .F-id = trivial!
+Ab↪Grp .F-∘ f g = trivial!
 ```
 -->
 
@@ -189,10 +192,10 @@ must lift it.
   mk-ℤ : make-abelian-group (Lift _ Int)
   mk-ℤ .ab-is-set = hlevel 2
   mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
-  mk-ℤ .inv (lift x) = lift (negate x)
+  mk-ℤ .inv (lift x) = lift (negℤ x)
   mk-ℤ .1g = lift 0
   mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
-  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-associative x y z)
-  mk-ℤ .invl (lift x) = ap lift (+ℤ-inversel x)
+  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-assoc x y z)
+  mk-ℤ .invl (lift x) = ap lift (+ℤ-invl x)
   mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
 ```

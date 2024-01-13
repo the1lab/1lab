@@ -28,27 +28,27 @@ open Displayed
 open Total-hom
 ```
 
-# The Chaotic Bifibration
+# The chaotic bifibration
 
 Let $\cB$ and $\cJ$ be precategories. We define the
-**chaotic bifibration** of $\cJ$ over $\cB$ to be the displayed category
-where trivially fibre $\cJ$ over $\cB$, disregarding the structure of
-$\cB$ entirely.
+**chaotic bifibration** of $\cJ$ over $\cB$ to be the [[displayed
+category]] where we trivially fibre $\cJ$ over $\cB$, disregarding the
+structure of $\cB$ entirely.
 
 ```agda
 Chaotic : Displayed B o' ℓ'
 Chaotic. Ob[_] _ = J.Ob
 Chaotic .Hom[_] _ = J.Hom
 Chaotic .Hom[_]-set _ = J.Hom-set
-Chaotic .id′ = J.id
-Chaotic ._∘′_ = J._∘_
-Chaotic .idr′ = J.idr
-Chaotic .idl′ = J.idl
-Chaotic .assoc′ = J.assoc
+Chaotic .id' = J.id
+Chaotic ._∘'_ = J._∘_
+Chaotic .idr' = J.idr
+Chaotic .idl' = J.idl
+Chaotic .assoc' = J.assoc
 ```
 
-Note that the only cartesian morphisms in the chaotic bifibration are
-the isomorphisms in $\cJ$
+Note that the only [[cartesian morphisms]] in the chaotic bifibration are
+the isomorphisms in $\cJ$:
 
 ```agda
 chaotic-cartesian→is-iso
@@ -73,7 +73,7 @@ is-iso→chaotic-cartesian {f = f} {g = g} is-inv = cart
     cart : is-cartesian Chaotic f g
     cart .universal _ h = inv J.∘ h
     cart .commutes _ h = J.cancell invl
-    cart .unique {h′ = h} m p =
+    cart .unique {h' = h} m p =
       m                     ≡⟨ J.introl invr ⟩
       (inv J.∘ g) J.∘ m     ≡⟨ J.pullr p ⟩
       inv J.∘ h             ∎
@@ -91,7 +91,7 @@ Chaotic-fibration .Cartesian-fibration.has-lift f y = cart-lift where
   open is-cartesian
 
   cart-lift : Cartesian-lift Chaotic f y
-  cart-lift .x′ = y
+  cart-lift .x' = y
   cart-lift .lifting = J.id
   cart-lift .cartesian .universal _ g = g
   cart-lift .cartesian .commutes _ g = J.idl g
@@ -123,7 +123,7 @@ is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart
     cocart : is-cocartesian Chaotic f g
     cocart .universal _ h = h J.∘ inv
     cocart .commutes _ h = J.cancelr invr
-    cocart .unique {h′ = h} m p =
+    cocart .unique {h' = h} m p =
       m               ≡⟨ J.intror invl ⟩
       m J.∘ g J.∘ inv ≡⟨ J.pulll p ⟩
       h J.∘ inv       ∎
@@ -134,7 +134,7 @@ Chaotic-opfibration .Cocartesian-fibration.has-lift f x' = cocart-lift where
   open is-cocartesian
 
   cocart-lift : Cocartesian-lift Chaotic f x'
-  cocart-lift .y′ = x'
+  cocart-lift .y' = x'
   cocart-lift .lifting = J.id
   cocart-lift .cocartesian .universal _ g = g
   cocart-lift .cocartesian .commutes _ g = J.idr g
@@ -149,9 +149,9 @@ Chaotic-bifibration .is-bifibration.fibration = Chaotic-fibration
 Chaotic-bifibration .is-bifibration.opfibration = Chaotic-opfibration
 ```
 
-## Fibre Categories
+## Fibre categories
 
-Unsurprisingly, the fibre categories of the chaotic bifibration are
+Unsurprisingly, the [[fibre categories]] of the chaotic bifibration are
 isomorphic to $\cJ$.
 
 ```agda
@@ -166,9 +166,9 @@ ChaoticFib-is-iso x .is-precat-iso.has-is-ff = id-equiv
 ChaoticFib-is-iso x .is-precat-iso.has-is-iso = id-equiv
 ```
 
-## Total Category
+## Total category
 
-The total category of the chaotic bifibration is isomorphic to the
+The [[total category]] of the chaotic bifibration is isomorphic to the
 product of $\cB$ and $\cJ$.
 
 ```agda

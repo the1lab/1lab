@@ -23,13 +23,13 @@ build a limit for it!
 
 ```agda
 Sets-is-complete : ∀ {ι κ o} → is-complete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-complete {D = D} F = to-limit (to-is-limit lim) module Sets-is-complete where
+Sets-is-complete {J = D} F = to-limit (to-is-limit lim) module Sets-is-complete where
   module D = Precategory D
   module F = Functor F
   open make-is-limit
 ```
 
-Since `Set`{.Agda} is closed under (arbitrary) products, we can build
+Since `Set`{.Agda} is closed under (arbitrary) [[products]], we can build
 the limit of an arbitrary diagram $F$ --- which we will write $\lim F$
 --- by first taking the product $\prod_{j : \cD} F(j)$ (which is a
 set of dependent functions), then restricting ourselves to the subset of
@@ -75,11 +75,11 @@ module _ {ℓ} where
   open import Cat.Diagram.Equaliser (Sets ℓ)
   open import Cat.Diagram.Pullback (Sets ℓ)
   open import Cat.Diagram.Product (Sets ℓ)
-  open import Cat.Reasoning (Sets ℓ)
+  open Precategory (Sets ℓ)
 
   private variable
     A B : Set ℓ
-    f g : Hom A B
+    f g : ⌞ A ⌟ → ⌞ B ⌟
 
   open Terminal
   open is-product
@@ -94,10 +94,10 @@ module _ {ℓ} where
 ## Finite set-limits
 
 For expository reasons, we present the computation of the most famous
-shapes of finite limit (terminal objects, products, pullbacks, and
-equalisers) in the category of sets. All the definitions below are
-redundant, since finite limits are always small, and thus the category
-of sets of _any_ level $\ell$ admits them.
+shapes of [[finite limit]] ([[terminal objects]], products, [[pullbacks]],
+and [[equalisers]]) in the category of sets. All the definitions below
+are redundant, since finite limits are always small, and thus the
+category of sets of _any_ level $\ell$ admits them.
 
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
@@ -128,7 +128,7 @@ using $\Sigma$:
     eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
-    eq .has-is-eq .universal {e′ = e′} p x = e′ x , p $ₚ x
+    eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
     eq .has-is-eq .factors = refl
     eq .has-is-eq .unique {p = p} q =
       funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly q x)

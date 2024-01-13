@@ -20,7 +20,7 @@ import Cat.Reasoning as C-r
 ```agda
 module
   Cat.Functor.Monadic.Beck
-  {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   {F : Functor C D} {G : Functor D C}
   (F⊣G : F ⊣ G)
   where
@@ -49,7 +49,7 @@ open Algebra-on
 
 # Beck's coequaliser
 
-Let $F : \cC \to \cD$ be a functor admitting a [right adjoint]
+Let $F : \cC \to \cD$ be a functor admitting a [[right adjoint]]
 $U : \cD \to \cC$. Recall that every adjunction [induces] a
 [monad] $UF$ (which we will call $T$ for short) on the category
 $\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
@@ -60,7 +60,6 @@ the presentation of $T$-[algebras] by "generators and relations".
 
 [monad]: Cat.Diagram.Monad.html
 [induces]: Cat.Functor.Adjoint.Monad.html
-[right adjoint]: Cat.Functor.Adjoint.html
 [comparison]: Cat.Functor.Adjoint.Monadic.html
 [algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
@@ -172,16 +171,15 @@ from the algebra laws.
     (e' .morphism C.∘ T.mult .η A) C.∘ T.M₁ (unit.η A)    ≡⟨ C.pushl (e' .commutes) ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism) C.∘ T.M₁ (unit.η A) ≡˘⟨ C.refl⟩∘⟨ T.M-∘ _ _ ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism C.∘ unit.η A)        ∎
-  algebra-is-coequaliser .factors {F = F} {e'} {p} = Algebra-hom-path C $
+  algebra-is-coequaliser .factors {F = F} {e'} {p} = ext $
     (e' .morphism C.∘ unit.η _) C.∘ A.ν          ≡⟨ C.extendr (unit.is-natural _ _ _) ⟩
     (e' .morphism C.∘ T.M₁ A.ν) C.∘ unit.η  _    ≡˘⟨ ap morphism p C.⟩∘⟨refl ⟩
     (e' .morphism C.∘ T.mult .η _) C.∘ unit.η  _ ≡⟨ C.cancelr T.right-ident ⟩
     e' .morphism                                 ∎
-  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q =
-    Algebra-hom-path C $ sym $
-      e' .morphism C.∘ unit.η A              ≡⟨ ap morphism (sym q) C.⟩∘⟨refl ⟩
-      (colim .morphism C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
-      colim .morphism                        ∎
+  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q = ext $ sym $
+    e' .morphism C.∘ unit.η A              ≡⟨ ap morphism (sym q) C.⟩∘⟨refl ⟩
+    (colim .morphism C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
+    colim .morphism                        ∎
 ```
 
 # Presented algebras
@@ -222,14 +220,14 @@ far $\cD$ is from being the category of $T$-algebras.
   Comparison⁻¹ : Functor (Eilenberg-Moore C T) D
   Comparison⁻¹ .F₀ = coapex ⊙ has-coeq
   Comparison⁻¹ .F₁ {X} {Y} alg-map =
-    has-coeq X .universal {e′ = e′} path where
-      e′ : D.Hom (F.F₀ (X .fst)) (Comparison⁻¹ .F₀ Y)
-      e′ = has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)
+    has-coeq X .universal {e' = e'} path where
+      e' : D.Hom (F.F₀ (X .fst)) (Comparison⁻¹ .F₀ Y)
+      e' = has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)
 ```
 <!--
 ```agda
       abstract
-        path : e′ D.∘ F.₁ (X .snd .ν) ≡ e′ D.∘ counit.ε (F.₀ (X .fst))
+        path : e' D.∘ F.₁ (X .snd .ν) ≡ e' D.∘ counit.ε (F.₀ (X .fst))
         path =
           (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ F.₁ (X .snd .ν)      ≡⟨ D.pullr (F.weave (alg-map .commutes)) ⟩
           has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .morphism)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
@@ -269,7 +267,7 @@ readers.
     ∙ C.elimr (F⊣G .zag)
     ∙ G.intror (F⊣G .zig)
     ∙ G.weave (D.pulll (sym (F⊣G .counit.is-natural _ _ _)) ∙ D.pullr (sym (F.F-∘ _ _)))
-  Comparison⁻¹⊣Comparison .unit .is-natural x y f = Algebra-hom-path C $
+  Comparison⁻¹⊣Comparison .unit .is-natural x y f = ext $
     (G.₁ (has-coeq y .coeq) C.∘ T.unit.η _) C.∘ f .morphism                    ≡⟨ C.pullr (T.unit.is-natural _ _ _) ⟩
     G.₁ (has-coeq y .coeq) C.∘ T.M₁ (f .morphism) C.∘ T.unit .η (x .fst)       ≡⟨ C.pulll (sym (G.F-∘ _ _)) ⟩
     G.₁ (has-coeq y .coeq D.∘ F.₁ (f .morphism)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .factors)) C.⟩∘⟨refl ⟩
@@ -291,7 +289,7 @@ readers.
       ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
       ∙ D.cancelr (F⊣G .zig))
       (D.idl _)
-  Comparison⁻¹⊣Comparison .zag = Algebra-hom-path C $
+  Comparison⁻¹⊣Comparison .zag = ext $
     G.pulll (has-coeq _ .factors) ∙ F⊣G .zag
 ```
 

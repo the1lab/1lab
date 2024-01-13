@@ -22,9 +22,9 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Data.Fin.Base
-open import Data.List
+open import Data.Int.HIT
+open import Data.List hiding (lookup)
 open import Data.Dec
-open import Data.Int
 open import Data.Nat
 
 module Algebra.Ring.Solver where
@@ -69,25 +69,6 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   1n {zero} = con 1
   1n {suc n} = poly 1h
 
-  -- Nasty and evil decidable equality procedure for the higher
-  -- inductive integers based on the fast equality predicate for natural
-  -- numbers, using rewrite rules to make the postulate compute away.
-  private
-    postulate
-      believe-me : ∀ {ℓ} {A : Type ℓ} (x y : A) → x ≡ y
-      believe-me-refl : ∀ {ℓ} {A : Type ℓ} {x : A} → believe-me x x ≡rw refl
-
-    {-# REWRITE believe-me-refl #-}
-
-    evil-discrete-int : (x y : Int) → Dec (x ≡ y)
-    evil-discrete-int = Int-elim₂-prop (λ _ _ → hlevel 1) go
-      where
-        go : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
-        go a b x y with a + y == b + x
-        ... | true = yes (believe-me (diff a b) (diff x y))
-        ... | false = no λ _ → nah
-          where postulate nah : ⊥
-
   -- The more cases that we can approximate here, the more powerful the
   -- solver becomes.
   _==ₕ_ : ∀ {n} (x y : Poly n) → Maybe (x ≡ y)
@@ -102,7 +83,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   ... | nothing  | just _  = nothing
   ... | nothing  | nothing = nothing
 
-  con c ==ₙ con d with evil-discrete-int c d
+  con c ==ₙ con d with c ≡? d
   ... | yes c=d = just (ap con c=d)
   ... | no ¬c=d = nothing
   poly x ==ₙ poly y with x ==ₕ y
@@ -110,7 +91,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   ... | nothing  = nothing
 
   _*x+ₙ_ : ∀ {n} → Poly (suc n) → Normal n → Poly (suc n)
-  (p *x+ c′) *x+ₙ c = (p *x+ c′) *x+ c
+  (p *x+ c') *x+ₙ c = (p *x+ c') *x+ c
   ∅          *x+ₙ c with c ==ₙ 0n
   ... | just c≈0 = ∅
   ... | nothing  = ∅ *x+ c
@@ -320,14 +301,14 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
       a R.* x R.* (c R.* x R.+ d) R.+ b R.* (c R.* x R.+ d)                       ≡˘⟨ R.*-distribr ⟩
       (a R.* x R.+ b) R.* (c R.* x R.+ d)                                         ∎
       where
-      lem₁′ =
+      lem₁' =
         a R.* c R.* x     ≡˘⟨ R.*-associative ⟩
         a R.* ⌜ c R.* x ⌝ ≡⟨ ap! R.*-commutes ⟩
         a R.* (x R.* c)   ≡⟨ R.*-associative ⟩
         a R.* x R.* c     ∎
 
       lem₁ =
-        a R.* c R.* x R.* x    ≡⟨ ap₂ R._*_ lem₁′ refl ⟩
+        a R.* c R.* x R.* x    ≡⟨ ap₂ R._*_ lem₁' refl ⟩
         a R.* x R.* c R.* x    ≡˘⟨ R.*-associative ⟩
         a R.* x R.* (c R.* x)  ∎
 
@@ -437,28 +418,28 @@ module Reflection where
   build-expr cring vs (“0” cring') = do
     unify cring cring'
     z ← quoteTC (diff 0 0)
-    returnTC $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
   build-expr cring vs (“1” cring') = do
     unify cring cring'
     o ← quoteTC (diff 1 0)
-    returnTC $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
   build-expr cring vs (“*” cring' t1 t2) = do
     unify cring cring'
     e1 , vs ← build-expr cring vs t1
     e2 , vs ← build-expr cring vs t2
-    returnTC $ def (quote Impl._:*_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+    pure $ def (quote Impl._:*_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
   build-expr cring vs (“+” cring' t1 t2) = do
     unify cring cring'
     e1 , vs ← build-expr cring vs t1
     e2 , vs ← build-expr cring vs t2
-    returnTC $ def (quote Impl._:+_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+    pure $ def (quote Impl._:+_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
   build-expr cring vs (“-” cring' tm) = do
     unify cring cring'
     e , vs ← build-expr cring vs tm
-    returnTC $ con (quote Impl.Polynomial.:-_) (e v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.:-_) (e v∷ []) , vs
   build-expr cring vs tm = do
     (v , vs) ← bind-var vs tm
-    returnTC $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
 
   dont-reduce : List Name
   dont-reduce =
@@ -473,7 +454,7 @@ module Reflection where
   cring-solver : ∀ {ℓ} {A : Type ℓ} → CRing-on A → TC (VariableSolver A)
   cring-solver {A = A} cring = do
     cring-tm ← quoteTC cring
-    returnTC $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)
+    pure $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)
 
   repr-macro : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → Term → TC ⊤
   repr-macro cring tm hole = do

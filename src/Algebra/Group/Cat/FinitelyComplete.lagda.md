@@ -24,19 +24,17 @@ private variable
 
 # Finite limits of groups
 
-We present explicit computations of [finite limits] in the category of
-groups, though do note that the [terminal] group is also [initial] (i.e.
-it is a [zero object]). Knowing that the category of groups admits a
-[right adjoint] functor into the category of sets (the [underlying set]
-functor) drives us in computing limits of groups as limits of sets,
-and equipping those with a group structure: we are _forced_ to do this
-since [right adjoints preserve limits].
+We present explicit computations of [[finite limits]] in the category of
+groups, though do note that the [[terminal|terminal object]] group is
+also [initial] (i.e.  it is a [zero object]). Knowing that the category
+of groups admits a [[right adjoint]] functor into the category of sets
+(the [underlying set] functor) drives us in computing limits of groups
+as limits of sets, and equipping those with a group structure: we are
+_forced_ to do this since [right adjoints preserve limits].
 
-[finite limits]: Cat.Diagram.Limit.Finite.html
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html
 [zero object]: Cat.Diagram.Zero.html
-[right adjoint]: Cat.Functor.Adjoint.html
 [underlying set]: Algebra.Group.Cat.Base.html#the-underlying-set
 [right adjoints preserve limits]: Cat.Functor.Adjoint.Continuous.html
 
@@ -72,12 +70,12 @@ Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
     G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
 Zero-group-is-initial (_ , G) .paths x =
-  Homomorphism-path λ _ → sym (is-group-hom.pres-id (x .preserves))
+  ext λ _ → sym (is-group-hom.pres-id (x .preserves))
 
 Zero-group-is-terminal : is-terminal Zero-group
 Zero-group-is-terminal _ .centre =
   total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
-Zero-group-is-terminal _ .paths x = Homomorphism-path λ _ → refl
+Zero-group-is-terminal _ .paths x = trivial!
 
 Zero-group-is-zero : is-zero Zero-group
 Zero-group-is-zero = record
@@ -129,7 +127,7 @@ proj₂ .hom = snd
 proj₂ .preserves .pres-⋆ x y = refl
 
 factor : Groups.Hom G H → Groups.Hom G K → Groups.Hom G (Direct-product H K)
-factor f g .hom x = f .hom x , g .hom x
+factor f g .hom x = f # x , g # x
 factor f g .preserves .pres-⋆ x y = ap₂ _,_ (f .preserves .pres-⋆ _ _) (g .preserves .pres-⋆ _ _)
 
 Direct-product-is-product : is-product {G} {H} proj₁ proj₂
@@ -153,12 +151,12 @@ a coproduct.
 inj₁ : G Groups.↪ Direct-product G H
 inj₁ {G} {H} .mor .hom x = x , H .snd .unit
 inj₁ {G} {H} .mor .preserves .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
-inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .fst)
+inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .fst)
 
 inj₂ : H Groups.↪ Direct-product G H
 inj₂ {H} {G} .mor .hom x = G .snd .unit , x
 inj₂ {H} {G} .mor .preserves .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
-inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .snd)
+inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .snd)
 ```
 
 ## Equalisers
@@ -199,16 +197,16 @@ follows from $f$ and $g$ being group homomorphisms:
   Equaliser-group = to-group equ-group where
     equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
-      r : f .hom (G .snd ._⋆_ a b) ≡ g .hom (G .snd ._⋆_ a b)
+      r : f # (G .snd ._⋆_ a b) ≡ g # (G .snd ._⋆_ a b)
       r = f.pres-⋆ a b ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
 
     equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-inv (x , p) = x G.⁻¹ , q where abstract
-      q : f .hom (G.inverse x) ≡ g .hom (G.inverse x)
+      q : f # (G.inverse x) ≡ g # (G.inverse x)
       q = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
 
     abstract
-      invs : f .hom G.unit ≡ g .hom G.unit
+      invs : f # G.unit ≡ g # G.unit
       invs = f.pres-id ∙ sym g.pres-id
 ```
 
@@ -238,11 +236,11 @@ $g$.
   Groups-equalisers .apex = Equaliser-group
   Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
   Groups-equalisers .has-is-eq .equal = Forget-is-faithful seq.equal
-  Groups-equalisers .has-is-eq .universal {F = F} {e′} p = total-hom map lim-gh where
-    map = seq.universal {F = underlying-set (F .snd)} (ap hom p)
+  Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom go lim-gh where
+    go = seq.universal {F = underlying-set (F .snd)} (ap hom p)
 
-    lim-gh : is-group-hom _ _ map
-    lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e′ .preserves .pres-⋆ _ _)
+    lim-gh : is-group-hom _ _ go
+    lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e' .preserves .pres-⋆ _ _)
 
   Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Forget-is-faithful
     (seq.factors {F = underlying-set (F .snd)} {p = ap hom p})

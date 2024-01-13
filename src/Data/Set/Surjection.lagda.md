@@ -4,6 +4,8 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
 
+open import Homotopy.Connectedness
+
 import Cat.Reasoning as Cr
 ```
 -->
@@ -19,6 +21,8 @@ open is-regular-epi
 open Coequaliser
 ```
 -->
+
+# Surjections between sets {defines="surjection-between-sets"}
 
 Here we prove that surjective maps are exactly the [regular epimorphisms]
 in the category of sets: Really, we prove that surjections are regular
@@ -39,7 +43,7 @@ any morphisms, it certainly coequalises its kernel pair.
 ```agda
 surjective→regular-epi
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
-  → (∀ x → ∥ fibre f x ∥)
+  → is-surjective f
   → is-regular-epi (Sets ℓ) {c} {d} f
 surjective→regular-epi c _ f x .r = el! (Σ ∣ c ∣ λ x → Σ ∣ c ∣ λ y → f x ≡ f y)
 surjective→regular-epi _ _ f x .arr₁ = λ (y , _ , _) → y
@@ -55,11 +59,10 @@ elimination principle for $\| f^*x \| \to F$, since $F$ is a set.
 
 ```agda
 surjective→regular-epi c d f surj .has-is-coeq = coeqs where
-  go : ∀ {F} (e′ : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
-  go e′ p x =
-    ∥-∥-rec-set (λ x → e′ (x .fst))
+  go : ∀ {F} (e' : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
+  go e' p x =
+    ∥-∥-rec-set hlevel! (λ x → e' (x .fst))
       (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
-      hlevel!
 ```
 
 After a small amount of computation to move the witnesses of
@@ -68,12 +71,12 @@ surjectivity out of the way, we get what we wanted.
 ```agda
   coeqs : is-coequaliser (Sets _) _ _ _
   coeqs .coequal i (x , y , p) = p i
-  coeqs .universal {F} {e′} p x = go {F = F} e′ p x (surj x)
-  coeqs .factors {F} {e′} {p = p} = funext λ x →
-    ∥-∥-elim {P = λ e → go {F} e′ p (f x) e ≡ e′ x}
+  coeqs .universal {F} {e'} p x = go {F = F} e' p x (surj x)
+  coeqs .factors {F} {e'} {p = p} = funext λ x →
+    ∥-∥-elim {P = λ e → go {F} e' p (f x) e ≡ e' x}
       (λ x → hlevel!) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
-  coeqs .unique {F} {e′} {p} {colim} comm = funext λ a →
-    ∥-∥-elim {P = λ e → colim a ≡ go {F} e′ p a e} (λ x → hlevel!)
+  coeqs .unique {F} {e'} {p} {colim} comm = funext λ a →
+    ∥-∥-elim {P = λ e → colim a ≡ go {F} e' p a e} (λ x → hlevel!)
       (λ x → ap colim (sym (x .snd)) ∙ comm $ₚ x .fst)
       (surj a)
 ```
@@ -106,22 +109,22 @@ the `base`{.Agda} is the circle, and the `cone`{.Agda} is the triangular
 side which we have rotated around the vertical axis.
 
 ```agda
-data Cofibre {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B) : Type (ℓ ⊔ ℓ′) where
+data Cofibre {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) : Type (ℓ ⊔ ℓ') where
   tip  : Cofibre f
   base : B → Cofibre f
   cone : ∀ a → tip ≡ base (f a)
 ```
 
-What's important here is that if a map $f$ has connected cofibre, then
+What's important here is that if a map $f$ has [[connected]] cofibre, then
 it is a surjection --- so our proof that epis are surjective will factor
 through showing that epis have connected cofibres^[note that all of
 these types are propositions, so we have a bunch of equivalences].
 
 ```agda
 connected-cofibre→surjective
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B)
-  → is-contr ∥ Cofibre f ∥₀
-  → ∀ x → ∥ fibre f x ∥
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
+  → is-connected (Cofibre f)
+  → is-surjective f
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
 
@@ -138,8 +141,8 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
     n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
       (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
-  P′ : ∥ Cofibre f ∥₀ → Prop _
-  P′ = ∥-∥₀-elim (λ _ → hlevel!) P
+  P' : ∥ Cofibre f ∥₀ → Prop _
+  P' = ∥-∥₀-elim (λ _ → hlevel!) P
 ```
 
 Letting $x$ be an element of the codomain, and since by assumption $f$'s
@@ -154,7 +157,7 @@ over $x$: $f$ is surjective.
 
 ```agda
   cen : Lift _ ⊤ ≡ ∥ fibre f x ∥
-  cen = ap ∣_∣ (ap P′ (is-contr→is-prop conn (inc tip) (inc (base x))))
+  cen = ap ∣_∣ (ap P' (is-contr→is-prop conn (inc tip) (inc (base x))))
 ```
 
 ## Epis have connected cofibre
@@ -169,7 +172,7 @@ inhabited), so it remains to show that any two points are merely equal.
 epi→connected-cofibre
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → is-contr ∥ Cofibre f ∥₀
+  → is-connected (Cofibre f)
 epi→connected-cofibre c d f epic = contr (inc tip) $
   ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ w →
     ∥-∥₀-path.from (hom w)
@@ -181,8 +184,8 @@ where we $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
 \rm{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
 write its left-hand-side as the composition of $f$ with a constant
 function, $f$ gives us a path $| \rm{tip} | = | \rm{base}_x |$ ---
-which, by the characterisation of paths in the set truncation, means we
-merely have $\| \rm{tip} = \rm{base}_x \|$.
+which, by the characterisation of paths in the [[set truncation]], means
+we merely have $\| \rm{tip} = \rm{base}_x \|$.
 
 ```agda
     go : ∀ x → ∥ tip ≡ base x ∥
@@ -213,7 +216,7 @@ all surjections!
 epi→surjective
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 epi→surjective {ℓ} c d f epi x =
   connected-cofibre→surjective f (epi→connected-cofibre c d f (λ {x} → epi {x})) x
 ```

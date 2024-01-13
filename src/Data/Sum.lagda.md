@@ -2,7 +2,7 @@
 module Data.Sum where
 ```
 
-# Sum Types
+# Sum types
 
 ```agda
 open import Data.Sum.Properties public

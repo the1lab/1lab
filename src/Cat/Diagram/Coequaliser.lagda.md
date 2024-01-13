@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Coequalisers
+# Coequalisers {defines="coequaliser"}
 
 The **coequaliser** of two maps $f, g : A \to B$ (if it exists),
 represents the largest quotient object of $B$ that identifies $f$
@@ -40,19 +40,19 @@ and $g$.
 record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
   field
     coequal    : coeq ∘ f ≡ coeq ∘ g
-    universal  : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
-    factors    : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g}
-               → universal p ∘ coeq ≡ e′
+    universal  : ∀ {F} {e' : Hom B F} (p : e' ∘ f ≡ e' ∘ g) → Hom E F
+    factors    : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
+               → universal p ∘ coeq ≡ e'
 
-    unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
-               → colim ∘ coeq ≡ e′
+    unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
+               → colim ∘ coeq ≡ e'
                → colim ≡ universal p
 
   unique₂
-    : ∀ {F} {e′ : Hom B F}  {o1 o2 : Hom E F}
-    → (e′ ∘ f ≡ e′ ∘ g)
-    → o1 ∘ coeq ≡ e′
-    → o2 ∘ coeq ≡ e′
+    : ∀ {F} {e' : Hom B F}  {o1 o2 : Hom E F}
+    → (e' ∘ f ≡ e' ∘ g)
+    → o1 ∘ coeq ≡ e'
+    → o2 ∘ coeq ≡ e'
     → o1 ≡ o2
   unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 
@@ -75,10 +75,8 @@ record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
 
 ## Coequalisers are epic
 
-Dually to the situation with [equalisers], coequaliser arrows are always
-
-[equalisers]: Cat.Diagram.Equaliser.html
-[epic]: Cat.Morphism.html#epis
+Dually to the situation with [[equalisers]], coequaliser arrows are
+always [[epic]].
 
 ```agda
 is-coequaliser→is-epic
@@ -92,15 +90,31 @@ is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
   where open is-coequaliser equalises
 
 coequaliser-unique
-  : ∀ {E E′} {c1 : Hom A E} {c2 : Hom A E′}
+  : ∀ {E E'} {c1 : Hom A E} {c2 : Hom A E'}
   → is-coequaliser f g c1
   → is-coequaliser f g c2
-  → E ≅ E′
+  → E ≅ E'
 coequaliser-unique {c1 = c1} {c2} co1 co2 =
   make-iso
-    (co1 .universal {e′ = c2} (co2 .coequal))
-    (co2 .universal {e′ = c1} (co1 .coequal))
+    (co1 .universal {e' = c2} (co2 .coequal))
+    (co2 .universal {e' = c1} (co1 .coequal))
     (unique₂ co2 (co2 .coequal) (pullr (co2 .factors) ∙ co1 .factors) (idl _))
     (unique₂ co1 (co1 .coequal) (pullr (co1 .factors) ∙ co2 .factors) (idl _))
   where open is-coequaliser
+```
+
+# Categories with all coequalisers
+
+We also define a helper module for working with categories that have
+coequalisers of all parallel pairs of morphisms.
+
+```agda
+has-coequalisers : Type _
+has-coequalisers = ∀ {a b} (f g : Hom a b) → Coequaliser f g
+
+module Coequalisers (all-coequalisers : has-coequalisers) where
+  module coequaliser {a b} (f g : Hom a b) = Coequaliser (all-coequalisers f g)
+
+  Coequ : ∀ {a b} (f g : Hom a b) → Ob
+  Coequ = coequaliser.coapex
 ```

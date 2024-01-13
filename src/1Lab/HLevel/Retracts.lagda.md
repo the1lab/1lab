@@ -34,10 +34,8 @@ private variable
 
 The homotopy n-types have many closure properties. A trivial example is
 that they are closed under equivalences, since any property of types is
-preserved by equivalence (This is the [univalence axiom]). More
+preserved by equivalence (This is the [[univalence axiom]]). More
 interesting is that they are closed under retractions:
-
-[univalence axiom]: 1Lab.Univalence.html#the-axiom
 
 ## Retractions
 
@@ -106,21 +104,20 @@ homotopy.
 ```agda
     inv : is-left-inverse sect (ap g)
     inv path =
-      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-id-r (h _)) ⟩
+      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-idr (h _)) ⟩
       sym (h x) ∙ ap f (ap g path) ∙ h y        ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural h _)) ⟩
       sym (h x) ∙ h x ∙ path                    ≡⟨ ∙-assoc _ _ _ ⟩
-      (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-inv-l (h x)) refl ⟩
-      refl ∙ path                               ≡⟨ ∙-id-l path ⟩
+      (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-invl (h x)) refl ⟩
+      refl ∙ path                               ≡⟨ ∙-idl path ⟩
       path                                      ∎
 ```
 
 The proof that this function _does_ invert `ap g` on the left is boring,
 but it consists mostly of symbol pushing. The only non-trivial step, and
-the key to the proof, is the theorem that [homotopies are natural
-transformations]: We can flip `ap f (ap g path)` and `h y` to get a pair
-of paths that annihilates on the left, and `path` on the right.
-
-[homotopies are natural transformations]: agda://1Lab.Path#homotopy-natural
+the key to the proof, is the theorem that `homotopies behave like
+natural transformations`{.Agda ident=homotopy-natural}: We can flip `ap
+f (ap g path)` and `h y` to get a pair of paths that annihilates on the
+left, and `path` on the right.
 
 ### Equivalences
 
@@ -137,7 +134,7 @@ equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n →
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
 
 is-hlevel≃ : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
-is-hlevel≃ n f = iso→is-hlevel n (Equiv.from f) (iso (Equiv.to f) (Equiv.η f) (Equiv.ε f))
+is-hlevel≃ n f = iso→is-hlevel n (equiv→inverse (f .snd)) (iso (f .fst) (equiv→unit (f .snd)) (equiv→counit (f .snd)))
 
 Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
 Iso→is-hlevel n (f , isic) = iso→is-hlevel n (isic .is-iso.inv) $
@@ -162,11 +159,11 @@ homotopy n-type is itself a homotopy n-type.
 
 <!--
 ```agda
-Π-is-hlevel′
+Π-is-hlevel'
   : ∀ {a b} {A : Type a} {B : A → Type b}
   → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
   → is-hlevel ({x : A} → B x) n
-Π-is-hlevel′ n bhl = retract→is-hlevel n
+Π-is-hlevel' n bhl = retract→is-hlevel n
   (λ f {x} → f x) (λ f x → f) (λ _ → refl)
   (Π-is-hlevel n bhl)
 
@@ -176,12 +173,25 @@ homotopy n-type is itself a homotopy n-type.
   → is-hlevel (∀ x y → C x y) n
 Π-is-hlevel² n w = Π-is-hlevel n λ _ → Π-is-hlevel n (w _)
 
+Π-is-hlevel²'
+  : ∀ {a b c} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
+  → (n : Nat) (Bhl : (x : A) (y : B x) → is-hlevel (C x y) n)
+  → is-hlevel (∀ {x y} → C x y) n
+Π-is-hlevel²' n w = Π-is-hlevel' n λ _ → Π-is-hlevel' n (w _)
+
 Π-is-hlevel³
   : ∀ {a b c d} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
       {D : ∀ a b → C a b → Type d}
   → (n : Nat) (Bhl : (x : A) (y : B x) (z : C x y) → is-hlevel (D x y z) n)
   → is-hlevel (∀ x y z → D x y z) n
 Π-is-hlevel³ n w = Π-is-hlevel n λ _ → Π-is-hlevel² n (w _)
+
+Π-is-hlevel³'
+  : ∀ {a b c d} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
+      {D : ∀ a b → C a b → Type d}
+  → (n : Nat) (Bhl : (x : A) (y : B x) (z : C x y) → is-hlevel (D x y z) n)
+  → is-hlevel (∀ {x y z} → D x y z) n
+Π-is-hlevel³' n w = Π-is-hlevel' n λ _ → Π-is-hlevel²' n (w _)
 ```
 -->
 
@@ -198,10 +208,9 @@ fun-is-hlevel n hl = Π-is-hlevel n (λ _ → hl)
 
 ## Sums of n-types
 
-A similar argument, using the fact that [paths of pairs are pairs of
-paths], shows that dependent sums are also closed under h-levels.
-
-[paths of pairs are pairs of paths]: agda://1Lab.Type.Sigma#Σ-path-iso
+A similar argument, using the fact that `paths between pairs are pairs
+of paths`{.Agda ident=Σ-path-iso}, shows that dependent sums are also
+closed under h-levels.
 
 ```agda
 Σ-is-hlevel : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
@@ -247,6 +256,30 @@ Lift-is-hlevel : ∀ {a b} {A : Type a}
 Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
 ```
 
+Likewise, if the `Lift`{.Agda} of $A$ is an $n$-type, then $A$ must also
+be an n-type.
+
+```agda
+Lift-is-hlevel'
+  : ∀ {a b} {A : Type a}
+  → (n : Nat)
+  → is-hlevel (Lift b A) n
+  → is-hlevel A n
+Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+```
+
+The `fibre`{.Agda}s of a function between $n$-types are $n$-types.
+
+```agda
+fibre-is-hlevel
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (n : Nat)
+  → is-hlevel A n → is-hlevel B n
+  → (f : A → B)
+  → ∀ b → is-hlevel (fibre f b) n
+fibre-is-hlevel n Ah Bh f b = Σ-is-hlevel n Ah λ _ → Path-is-hlevel n Bh
+```
+
 # Automation
 
 For the common case of proving that a composite type built out of pieces
@@ -275,7 +308,6 @@ hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
 hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
 
 private variable
-  ℓ′ : Level
   S T : Type ℓ
 
 module _ where
@@ -314,7 +346,7 @@ We then have a family of instances for solving compound types, e.g.
 function types, $\Sigma$-types, path types, lifts, etc.
 
 ```agda
-instance
+instance opaque
   H-Level-pi
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
@@ -328,11 +360,11 @@ instance
   H-Level-⊥ : ∀ {n} → H-Level ⊥ (suc n)
   H-Level-⊥ {n = n} = prop-instance λ x y → absurd x
 
-  H-Level-pi′
+  H-Level-pi'
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
     → H-Level (∀ {x} → S x) n
-  H-Level-pi′ {n = n} .H-Level.has-hlevel = Π-is-hlevel′ n λ _ → hlevel n
+  H-Level-pi' {n = n} .H-Level.has-hlevel = Π-is-hlevel' n λ _ → hlevel n
 
   H-Level-sigma
     : ∀ {n} {S : T → Type ℓ}
@@ -341,9 +373,10 @@ instance
   H-Level-sigma {n = n} .H-Level.has-hlevel =
     Σ-is-hlevel n (hlevel n) λ _ → hlevel n
 
-  H-Level-path′
-    : ∀ {n} ⦃ s : H-Level S (suc n) ⦄ {x y} → H-Level (Path S x y) n
-  H-Level-path′ {n = n} .H-Level.has-hlevel = Path-is-hlevel' n (hlevel (suc n)) _ _
+  H-Level-PathP
+    : ∀ {n} {S : I → Type ℓ} ⦃ s : H-Level (S i1) (suc n) ⦄ {x y}
+    → H-Level (PathP S x y) n
+  H-Level-PathP {n = n} .H-Level.has-hlevel = PathP-is-hlevel' n (hlevel (suc n)) _ _
 
   H-Level-Lift
     : ∀ {n} ⦃ s : H-Level T n ⦄ → H-Level (Lift ℓ T) n

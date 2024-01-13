@@ -4,10 +4,6 @@ open import 1Lab.Prelude
 
 open import Data.Fin.Base
 open import Data.Sum
-
-open import Prim.Data.Maybe
-
-import Data.Nat as Nat
 ```
 -->
 
@@ -37,7 +33,7 @@ etc.
 ## Zero, one, successors
 
 The finite set $[0]$ is an initial object, and the finite set $[1]$ is a
-terminal object:
+[[terminal object]]:
 
 ```agda
 Finite-zero-is-initial : Fin 0 ≃ ⊥
@@ -50,7 +46,7 @@ Finite-one-is-contr .paths fzero = refl
 ```
 
 The successor operation on indices corresponds to taking coproducts with
-the unit set, which is concisely phrased using the `Maybe` type:
+the unit set.
 
 ```agda
 Finite-successor : Fin (suc n) ≃ (⊤ ⊎ Fin n)

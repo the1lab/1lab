@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_ ; module Extensionality)
 
 open import Cat.Solver
 open import Cat.Base
@@ -26,7 +26,7 @@ This module defines the three most important classes of morphisms that
 can be found in a category: **monomorphisms**, **epimorphisms**, and
 **isomorphisms**.
 
-## Monos
+## Monos {defines="monomorphism monic"}
 
 A morphism is said to be **monic** when it is left-cancellable. A
 **monomorphism** from $A$ to $B$, written $A \mono B$, is a monic
@@ -47,11 +47,23 @@ record _↪_ (a b : Ob) : Type (o ⊔ h) where
 open _↪_ public
 ```
 
+<!--
+```agda
+↪-is-set : ∀ {a b} → is-set (a ↪ b)
+↪-is-set = Iso→is-hlevel 2 eqv hlevel!
+  where unquoteDecl eqv = declare-record-iso eqv (quote _↪_)
+
+instance
+  H-Level-↪ : ∀ {a b} {n} → H-Level (a ↪ b) (suc (suc n))
+  H-Level-↪ = basic-instance 2 ↪-is-set
+```
+-->
+
 Conversely, a morphism is said to be **epic** when it is
 right-cancellable.  An **epimorphism** from $A$ to $B$, written $A \epi
 B$, is an epic morphism.
 
-## Epis
+## Epis {defines="epimorphism epic"}
 
 ```agda
 is-epic : Hom a b → Type _
@@ -66,6 +78,98 @@ record _↠_ (a b : Ob) : Type (o ⊔ h) where
     epic : is-epic mor
 
 open _↠_ public
+```
+
+<!--
+```agda
+↠-is-set : ∀ {a b} → is-set (a ↠ b)
+↠-is-set = Iso→is-hlevel 2 eqv hlevel!
+  where unquoteDecl eqv = declare-record-iso eqv (quote _↠_)
+
+instance
+  H-Level-↠ : ∀ {a b} {n} → H-Level (a ↠ b) (suc (suc n))
+  H-Level-↠ = basic-instance 2 ↠-is-set
+```
+-->
+
+The identity morphism is monic and epic.
+
+```agda
+id-monic : ∀ {a} → is-monic (id {a})
+id-monic g h p = sym (idl _) ·· p ·· idl _
+
+id-epic : ∀ {a} → is-epic (id {a})
+id-epic g h p = sym (idr _) ·· p ·· idr _
+```
+
+Both monos and epis are closed under composition.
+
+```agda
+monic-∘
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → is-monic f
+  → is-monic g
+  → is-monic (f ∘ g)
+monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ·· α ·· sym (assoc _ _ _)))
+
+epic-∘
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → is-epic f
+  → is-epic g
+  → is-epic (f ∘ g)
+epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ·· α ·· (assoc _ _ _)))
+
+_∘Mono_ : ∀ {a b c} → b ↪ c → a ↪ b → a ↪ c
+(f ∘Mono g) .mor = f .mor ∘ g .mor
+(f ∘Mono g) .monic = monic-∘ (f .monic) (g .monic)
+
+_∘Epi_ : ∀ {a b c} → b ↠ c → a ↠ b → a ↠ c
+(f ∘Epi g) .mor = f .mor ∘ g .mor
+(f ∘Epi g) .epic = epic-∘ (f .epic) (g .epic)
+```
+
+If $f \circ g$ is monic, then $g$ must also be monic.
+
+```agda
+monic-cancell
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → is-monic (f ∘ g)
+  → is-monic g
+monic-cancell {f = f} fg-monic h h' p = fg-monic h h' $
+  sym (assoc _ _ _) ·· ap (f ∘_) p ·· assoc _ _ _
+```
+
+Dually, if $f \circ g$ is epic, then $f$ must also be epic.
+
+```agda
+epic-cancelr
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → is-epic (f ∘ g)
+  → is-epic f
+epic-cancelr {g = g} fg-epic h h' p = fg-epic h h' $
+  assoc _ _ _ ·· ap (_∘ g) p ·· sym (assoc _ _ _)
+```
+
+Postcomposition with a mono is an embedding.
+
+```agda
+monic-postcomp-embedding
+  : ∀ {a b c} {f : Hom b c}
+  → is-monic f
+  → is-embedding {A = Hom a b} (f ∘_)
+monic-postcomp-embedding monic =
+  injective→is-embedding (Hom-set _ _) _ (monic _ _)
+```
+
+Likewise, precomposition with an epi is an embedding.
+
+```agda
+epic-precomp-embedding
+  : ∀ {a b c} {f : Hom a b}
+  → is-epic f
+  → is-embedding {A = Hom b c} (_∘ f)
+epic-precomp-embedding epic =
+  injective→is-embedding (Hom-set _ _) _ (epic _ _)
 ```
 
 ## Sections
@@ -96,14 +200,64 @@ open has-section public
 id-has-section : ∀ {a} → has-section (id {a})
 id-has-section .section = id
 id-has-section .is-section = idl _
+
+section-of-∘
+  : ∀ {a b c} {f : Hom c b} {g : Hom b c} {h : Hom b a} {i : Hom a b}
+  → f section-of g → h section-of i
+  → (h ∘ f) section-of (g ∘ i)
+section-of-∘ {f = f} {g = g} {h = h} {i = i} fg-sect hi-sect =
+  (g ∘ i) ∘ h ∘ f ≡⟨ cat! C ⟩
+  g ∘ (i ∘ h) ∘ f ≡⟨ ap (λ ϕ → g ∘ ϕ ∘ f) hi-sect ⟩
+  g ∘ id ∘ f      ≡⟨ ap (g ∘_) (idl _) ⟩
+  g ∘ f           ≡⟨ fg-sect ⟩
+  id ∎
+
+section-∘
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-section f → has-section g → has-section (f ∘ g)
+section-∘ f-sect g-sect .section = g-sect .section ∘ f-sect .section
+section-∘ {f = f} {g = g} f-sect g-sect .is-section =
+  section-of-∘ (f-sect .is-section) (g-sect .is-section)
 ```
+
+If $f$ has a section, then $f$ is epic.
+
+```agda
+has-section→epic
+  : ∀ {a b} {f : Hom a b}
+  → has-section f
+  → is-epic f
+has-section→epic {f = f} f-sect g h p =
+  g                         ≡˘⟨ idr _ ⟩
+  g ∘ id                    ≡˘⟨ ap (g ∘_) (f-sect .is-section) ⟩
+  g ∘ f ∘ f-sect .section   ≡⟨ assoc _ _ _ ⟩
+  (g ∘ f) ∘ f-sect .section ≡⟨ ap (_∘ f-sect .section) p ⟩
+  (h ∘ f) ∘ f-sect .section ≡˘⟨ assoc _ _ _ ⟩
+  h ∘ f ∘ f-sect .section   ≡⟨ ap (h ∘_) (f-sect .is-section) ⟩
+  h ∘ id                    ≡⟨ idr _ ⟩
+  h ∎
+```
+
+<!--
+```agda
+has-section-is-set : ∀ {a b} {f : Hom a b} → is-set (has-section f)
+has-section-is-set = Iso→is-hlevel 2 eqv hlevel!
+  where unquoteDecl eqv = declare-record-iso eqv (quote has-section)
+
+instance
+  H-Level-has-section
+    : ∀ {a b} {f : Hom a b} {n}
+    → H-Level (has-section f) (suc (suc n))
+  H-Level-has-section = basic-instance 2 has-section-is-set
+```
+-->
 
 ## Retracts
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
 when $r \cdot s = id$. Note that this is the same equation involved
 in the definition of a section; retracts and sections always come in
-pairs. If sections solve a sort of "curration problem" where we are
+pairs. If sections solve a sort of "curation problem" where we are
 asked to pick out canonical representatives, then retracts solve a
 sort of "classification problem".
 
@@ -127,7 +281,110 @@ open has-retract public
 id-has-retract : ∀ {a} → has-retract (id {a})
 id-has-retract .retract = id
 id-has-retract .is-retract = idl _
+
+retract-of-∘
+  : ∀ {a b c} {f : Hom c b} {g : Hom b c} {h : Hom b a} {i : Hom a b}
+  → f retract-of g → h retract-of i
+  → (h ∘ f) retract-of (g ∘ i)
+retract-of-∘ fg-ret hi-ret = section-of-∘ hi-ret fg-ret
+
+retract-∘
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-retract f → has-retract g
+  → has-retract (f ∘ g)
+retract-∘ f-ret g-ret .retract = g-ret .retract ∘ f-ret .retract
+retract-∘ f-ret g-ret .is-retract =
+  retract-of-∘ (f-ret .is-retract) (g-ret .is-retract)
 ```
+
+<!--
+```agda
+has-retract-is-set : ∀ {a b} {f : Hom a b} → is-set (has-retract f)
+has-retract-is-set = Iso→is-hlevel 2 eqv hlevel!
+  where unquoteDecl eqv = declare-record-iso eqv (quote has-retract)
+
+instance
+  H-Level-has-retract
+    : ∀ {a b} {f : Hom a b} {n}
+    → H-Level (has-retract f) (suc (suc n))
+  H-Level-has-retract = basic-instance 2 has-retract-is-set
+```
+-->
+
+If $f$ has a retract, then $f$ is monic.
+
+```agda
+has-retract→monic
+  : ∀ {a b} {f : Hom a b}
+  → has-retract f
+  → is-monic f
+has-retract→monic {f = f} f-ret g h p =
+  g                        ≡˘⟨ idl _ ⟩
+  id ∘ g                   ≡˘⟨ ap (_∘ g) (f-ret .is-retract) ⟩
+  (f-ret .retract ∘ f) ∘ g ≡˘⟨ assoc _ _ _ ⟩
+  f-ret .retract ∘ (f ∘ g) ≡⟨ ap (f-ret .retract ∘_) p ⟩
+  f-ret .retract ∘ f ∘ h   ≡⟨ assoc _ _ _ ⟩
+  (f-ret .retract ∘ f) ∘ h ≡⟨ ap (_∘ h) (f-ret .is-retract) ⟩
+  id ∘ h                   ≡⟨ idl _ ⟩
+  h                        ∎
+```
+
+A section that is also epic is a retract.
+
+```agda
+section-of+epic→retract-of
+  : ∀ {a b} {s : Hom b a} {r : Hom a b}
+  → s section-of r
+  → is-epic s
+  → s retract-of r
+section-of+epic→retract-of {s = s} {r = r} sect epic =
+  epic (s ∘ r) id $
+    (s ∘ r) ∘ s ≡˘⟨ assoc s r s ⟩
+    s ∘ (r ∘ s) ≡⟨ ap (s ∘_) sect ⟩
+    s ∘ id      ≡⟨ idr _ ⟩
+    s           ≡˘⟨ idl _ ⟩
+    id ∘ s      ∎
+```
+
+Dually, a retract that is also monic is a section.
+
+```agda
+retract-of+monic→section-of
+  : ∀ {a b} {s : Hom b a} {r : Hom a b}
+  → r retract-of s
+  → is-monic r
+  → r section-of s
+retract-of+monic→section-of {s = s} {r = r} ret monic =
+  monic (s ∘ r) id $
+    r ∘ s ∘ r   ≡⟨ assoc r s r ⟩
+    (r ∘ s) ∘ r ≡⟨ ap (_∘ r) ret ⟩
+    id ∘ r      ≡⟨ idl _ ⟩
+    r           ≡˘⟨ idr _ ⟩
+    r ∘ id      ∎
+```
+
+<!--
+```agda
+has-retract+epic→has-section
+  : ∀ {a b} {f : Hom a b}
+  → has-retract f
+  → is-epic f
+  → has-section f
+has-retract+epic→has-section ret epic .section = ret .retract
+has-retract+epic→has-section ret epic .is-section =
+  section-of+epic→retract-of (ret .is-retract) epic
+
+has-section+monic→has-retract
+  : ∀ {a b} {f : Hom a b}
+  → has-section f
+  → is-monic f
+  → has-retract f
+has-section+monic→has-retract sect monic .retract = sect .section
+has-section+monic→has-retract sect monic .is-retract =
+  retract-of+monic→section-of (sect .is-section) monic
+```
+-->
+
 
 ## Isos
 
@@ -322,6 +579,10 @@ iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses
                                  {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
       (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
 
+instance
+  H-Level-≅ : ∀ {a b} {n} → H-Level (a ≅ b) (suc (suc n))
+  H-Level-≅ = basic-instance 2 ≅-is-set
+
 private
   ≅-pathp-internal
     : (p : a ≡ c) (q : b ≡ d)
@@ -341,10 +602,10 @@ abstract
     → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
   inverse-unique =
-    J′ (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+    J' (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
       → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
       → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from))
-      λ x → J′ (λ b d q → {f : x ≅ b} {g : x ≅ d}
+      λ x → J' (λ b d q → {f : x ≅ b} {g : x ≅ d}
                 → PathP (λ i → Hom x (q i)) (f .to) (g .to)
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
             λ y {f} {g} p →
@@ -488,13 +749,142 @@ iso→from-has-retract f .retract = f .to
 iso→from-has-retract f .is-retract = f .invl
 ```
 
+Using our lemmas about section/retraction pairs from before, we
+can show that if $f$ is a monic retract, then $f$ is an
+iso.
+
+```agda
+retract-of+monic→inverses
+  : ∀ {a b} {s : Hom b a} {r : Hom a b}
+  → r retract-of s
+  → is-monic r
+  → Inverses r s
+retract-of+monic→inverses ret monic .invl = ret
+retract-of+monic→inverses ret monic .invr =
+  retract-of+monic→section-of ret monic
+```
+
+We also have a dual result for sections and epis.
+
+```agda
+section-of+epic→inverses
+  : ∀ {a b} {s : Hom b a} {r : Hom a b}
+  → s retract-of r
+  → is-epic r
+  → Inverses r s
+section-of+epic→inverses sect epic .invl =
+  section-of+epic→retract-of sect epic
+section-of+epic→inverses sect epic .invr = sect
+```
+
 <!--
 ```agda
-∘-is-monic
-  : ∀ {a b c} {f : Hom a b} {g : Hom b c}
+has-retract+epic→invertible
+  : ∀ {a b} {f : Hom a b}
+  → has-retract f
+  → is-epic f
+  → is-invertible f
+has-retract+epic→invertible f-ret epic .is-invertible.inv =
+  f-ret .retract
+has-retract+epic→invertible f-ret epic .is-invertible.inverses =
+  section-of+epic→inverses (f-ret .is-retract) epic
+
+has-section+monic→invertible
+  : ∀ {a b} {f : Hom a b}
+  → has-section f
   → is-monic f
-  → is-monic g
-  → is-monic (g ∘ f)
-∘-is-monic fm gm a b α = fm _ _ (gm _ _ (assoc _ _ _ ·· α ·· sym (assoc _ _ _)))
+  → is-invertible f
+has-section+monic→invertible f-sect monic .is-invertible.inv =
+  f-sect .section
+has-section+monic→invertible f-sect monic .is-invertible.inverses =
+  retract-of+monic→inverses (f-sect .is-section) monic
 ```
 -->
+
+Hom-sets between isomorphic objects are equivalent. Crucially, this
+allows us to use [[univalence]] to transport properties between
+hom-sets.
+
+```agda
+iso→hom-equiv
+  : ∀ {a a' b b'} → a ≅ a' → b ≅ b'
+  → Hom a b ≃ Hom a' b'
+iso→hom-equiv f g = Iso→Equiv $
+  (λ h → g .to ∘ h ∘ f .from) ,
+  iso (λ h → g .from ∘ h ∘ f .to )
+    (λ h →
+      g .to ∘ (g .from ∘ h ∘ f .to) ∘ f .from   ≡⟨ cat! C ⟩
+      (g .to ∘ g .from) ∘ h ∘ (f .to ∘ f .from) ≡⟨ ap₂ (λ l r → l ∘ h ∘ r) (g .invl) (f .invl) ⟩
+      id ∘ h ∘ id                               ≡⟨ cat! C ⟩
+      h ∎)
+    (λ h →
+      g .from ∘ (g .to ∘ h ∘ f .from) ∘ f .to   ≡⟨ cat! C ⟩
+      (g .from ∘ g .to) ∘ h ∘ (f .from ∘ f .to) ≡⟨ ap₂ (λ l r → l ∘ h ∘ r) (g .invr) (f .invr) ⟩
+      id ∘ h ∘ id                               ≡⟨ cat! C ⟩
+      h ∎)
+```
+
+<!--
+```agda
+-- Optimized versions of Iso→Hom-equiv which yield nicer results
+-- if only one isomorphism is needed.
+dom-iso→hom-equiv
+  : ∀ {a a' b} → a ≅ a'
+  → Hom a b ≃ Hom a' b
+dom-iso→hom-equiv f = Iso→Equiv $
+  (λ h → h ∘ f .from) ,
+  iso (λ h → h ∘ f .to )
+    (λ h →
+      (h ∘ f .to) ∘ f .from ≡⟨ sym (assoc _ _ _) ⟩
+      h ∘ (f .to ∘ f .from) ≡⟨ ap (h ∘_) (f .invl) ⟩
+      h ∘ id                ≡⟨ idr _ ⟩
+      h ∎)
+    (λ h →
+      (h ∘ f .from) ∘ f .to ≡⟨ sym (assoc _ _ _) ⟩
+      h ∘ (f .from ∘ f .to) ≡⟨ ap (h ∘_) (f .invr) ⟩
+      h ∘ id                ≡⟨ idr _ ⟩
+      h ∎)
+
+cod-iso→Hom-equiv
+  : ∀ {a b b'} → b ≅ b'
+  → Hom a b ≃ Hom a b'
+cod-iso→Hom-equiv f = Iso→Equiv $
+  (λ h → f .to ∘ h) ,
+  iso (λ h → f .from ∘ h)
+    (λ h →
+      f .to ∘ f .from ∘ h   ≡⟨ assoc _ _ _ ⟩
+      (f .to ∘ f .from) ∘ h ≡⟨ ap (_∘ h) (f .invl) ⟩
+      id ∘ h                ≡⟨ idl _ ⟩
+      h ∎)
+    (λ h →
+      f .from ∘ f .to ∘ h   ≡⟨ assoc _ _ _ ⟩
+      (f .from ∘ f .to) ∘ h ≡⟨ ap (_∘ h) (f .invr) ⟩
+      id ∘ h                ≡⟨ idl _ ⟩
+      h ∎)
+```
+-->
+
+If $f$ is invertible, then both pre and post-composition with $f$ are
+equivalences.
+
+```agda
+invertible-precomp-equiv
+  : ∀ {a b c} {f : Hom a b}
+  → is-invertible f
+  → is-equiv {A = Hom b c} (_∘ f)
+invertible-precomp-equiv {f = f} f-inv = is-iso→is-equiv $
+  iso (λ h → h ∘ f-inv.inv)
+    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invr ·· idr h)
+    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invl ·· idr h)
+  where module f-inv = is-invertible f-inv
+
+invertible-postcomp-equiv
+  : ∀ {a b c} {f : Hom b c}
+  → is-invertible f
+  → is-equiv {A = Hom a b} (f ∘_)
+invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
+  iso (λ h → f-inv.inv ∘ h)
+    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invl ·· idl h)
+    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invr ·· idl h)
+  where module f-inv = is-invertible f-inv
+```

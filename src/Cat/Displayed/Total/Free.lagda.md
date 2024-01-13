@@ -14,17 +14,17 @@ import Cat.Reasoning as Cr
 
 ```agda
 module Cat.Displayed.Total.Free
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′) where
+  {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ') where
 ```
 
 # Free objects in total categories
 
-When the \r{total category} of a \r{displayed category} $\cE
+When the [[total category]] of a [[displayed category]] $\cE
 \liesover \cB$ is being regarded as a _category of structured
 $\cB$-objects_, a natural question to consider is whether any object
 $x : \cB$ can be equipped with a _free_ $\cE$ structure --- in the
-sense of having a \r{left adjoint} to the projection functor $\pi^f :
+sense of having a [[left adjoint]] to the projection functor $\pi^f :
 \int\cE \to \cB$.
 
 The displayed formulation admits a particularly nice phrasing of the
@@ -50,8 +50,8 @@ open ↓Hom
 ```agda
 module
   _ (system : ∀ x → E.Ob[ x ])
-    (is-free : ∀ {x y} (f : B.Hom x y) (y′ : E.Ob[ y ])
-             → is-contr (E.Hom[ f ] (system x) y′))
+    (is-free : ∀ {x y} (f : B.Hom x y) (y' : E.Ob[ y ])
+             → is-contr (E.Hom[ f ] (system x) y'))
   where
 ```
 
@@ -67,10 +67,10 @@ initial objects.
   private
     universal : ∀ x → Universal-morphism x (πᶠ E)
     universal x .bot = record { y = x , system x ; map = B.id }
-    universal x .has⊥ m′ = contr the-map unique where
-      the-map : Precategory.Hom (x ↙ πᶠ E) (universal x .bot) m′
+    universal x .has⊥ m' = contr the-map unique where
+      the-map : Precategory.Hom (x ↙ πᶠ E) (universal x .bot) m'
       the-map .α = tt
-      the-map .β = total-hom (m′ .map) (is-free (m′ .map) (y m′ .snd) .centre)
+      the-map .β = total-hom (m' .map) (is-free (m' .map) (y m' .snd) .centre)
       the-map .sq = refl
 
       unique : ∀ x → the-map ≡ x
@@ -97,13 +97,13 @@ map on the left.
 
 ```agda
   private
-    Free′ : Functor B (∫ E)
-    Free′ .F₀ o = o , system o
-    Free′ .F₁ h = total-hom h (is-free _ _ .centre)
-    Free′ .F-id = total-hom-path E refl (is-free _ _ .paths _)
-    Free′ .F-∘ f g = total-hom-path E refl (is-free _ _ .paths _)
+    Free' : Functor B (∫ E)
+    Free' .F₀ o = o , system o
+    Free' .F₁ h = total-hom h (is-free _ _ .centre)
+    Free' .F-id = total-hom-path E refl (is-free _ _ .paths _)
+    Free' .F-∘ f g = total-hom-path E refl (is-free _ _ .paths _)
 
-    Free≡Free′ : Free ≡ Free′
-    Free≡Free′ = Functor-path (λ _ → refl) λ f → total-hom-path E (B.idl _) λ i →
+    Free≡Free' : Free ≡ Free'
+    Free≡Free' = Functor-path (λ _ → refl) λ f → total-hom-path E (B.idl _) λ i →
       is-free (B.idl f i) (system _) .centre
 ```

@@ -13,12 +13,12 @@ open import Data.Dec.Base
 module Data.Sum.Base where
 ```
 
-# Sum Types
+# Sum types {defines="sum-type"}
 
-Sum types are one of the fundamental ingredients of type theory.
-They play a dual role to the [product type](agda://1Lab.Type#_×_);
-if products allow us to state that we have elements of two types simultaneously,
-sum types allow us to state that we have an element of _one_ of two types.
+Sum types are one of the fundamental ingredients of type theory. They
+play a dual role to the [[product type]]; if products allow us to state
+that we have elements of two types simultaneously, sum types allow us to
+state that we have an element of _one_ of two types.
 
 We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
@@ -39,7 +39,7 @@ private variable
 -->
 
 
-## Universal Properties
+## Universal properties
 
 One of the most important things about sum types is the following property:
 given two functions `A → C` and `B → C`, we can construct a function
@@ -50,6 +50,16 @@ given two functions `A → C` and `B → C`, we can construct a function
 [ f , g ] (inl x) = f x
 [ f , g ] (inr x) = g x
 ```
+
+<!--
+```agda
+infix 0 if⁺_then_else_
+
+if⁺_then_else_ : A ⊎ B → C → C → C
+if⁺ inl _ then y else n = y
+if⁺ inr _ then y else n = n
+```
+-->
 
 Furthermore, this function is "universal" in the following sense: if we
 have some function `h : A ⊎ B → C` that behaves like `f` when provided
@@ -127,7 +137,7 @@ types.
 
 ## Decidablity
 
-This type has a very similar structure to [Dec](agda://Data.Dec.Base#Dec), so
+This type has a very similar structure to [[Dec|type of decisions]], so
 we provide some helpers to convert between the two.
 
 ```agda
@@ -147,12 +157,12 @@ and thus it can be shown they are equivalences:
 from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
 from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   p : _
-  p (inl x) = refl
-  p (inr x) = refl
+  p (inl x)  = refl
+  p (inr ¬x) = refl
 
   q : _
   q (yes x) = refl
-  q (no x) = refl
+  q (no x)  = refl
 ```
 
 

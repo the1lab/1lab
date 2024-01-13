@@ -15,15 +15,10 @@ module Meta.Alt where
 record Alt (M : Effect) : Typeω where
   private module M = Effect M
   field
-    fail′ : ∀ {ℓ} {A : Type ℓ} → String → M.₀ A
+    fail  : ∀ {ℓ} {A : Type ℓ} → M.₀ A
     _<|>_ : ∀ {ℓ} {A : Type ℓ} → M.₀ A → M.₀ A → M.₀ A
+
   infixl 3 _<|>_
-
-  fail : ∀ {ℓ} {A : Type ℓ} → M.₀ A
-  fail = fail′ "Alt: empty error message"
-
-  _<?>_ : ∀ {ℓ} {A : Type ℓ} → M.₀ A → String → M.₀ A
-  what <?> why = what <|> fail′ why
 
 open Alt ⦃ ... ⦄ public
 

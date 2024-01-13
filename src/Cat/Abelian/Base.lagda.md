@@ -1,13 +1,11 @@
 <!--
 ```agda
 open import Algebra.Group.Ab.Tensor
-open import Algebra.Magma.Unital
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Equaliser.Kernel
 
 import Algebra.Group.Cat.Base as Grp
@@ -29,22 +27,20 @@ the last by adding a new categorical property on top of a precategory.
 ## Ab-enriched categories
 
 An $\Ab$-enriched category is one where each $\hom$ set carries the
-structure of an [Abelian group], such that the composition map is
+structure of an [[Abelian group]], such that the composition map is
 _bilinear_, hence extending to an Abelian group homomorphism
 
 $$
 \hom(b, c) \otimes \hom(a, b) \to \hom(a, c)\text{,}
 $$
 
-where the term on the left is the [tensor product] of the corresponding
-$\hom$-groups. As the name implies, every such category has a canonical
-$\Ab$-enrichment (made monoidal using $- \otimes -$), but we do not use
-the language of enriched category theory in our development of Abelian
-categories.
+where the term on the left is the [[tensor product|tensor product of
+abelian groups]] of the corresponding $\hom$-groups. As the name
+implies, every such category has a canonical $\Ab$-enrichment (made
+monoidal using $- \otimes -$), but we do not use the language of
+enriched category theory in our development of Abelian categories.
 
 [zero object]: Cat.Diagram.Zero.html
-[Abelian group]: Algebra.Group.Ab.html
-[tensor product]: Algebra.Group.Ab.Tensor.html
 
 ```agda
 record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
@@ -175,7 +171,7 @@ module _ where
   open Ab-category
   Ab-ab-category : ∀ {ℓ} → Ab-category (Ab ℓ)
   Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
-  Ab-ab-category .∘-linear-l f g h = Homomorphism-path (λ _ → refl)
+  Ab-ab-category .∘-linear-l f g h = trivial!
   Ab-ab-category .∘-linear-r f g h =
     Homomorphism-path (λ _ → sym (f .preserves .is-group-hom.pres-⋆ _ _))
 ```
@@ -183,9 +179,9 @@ module _ where
 # Additive categories
 
 An $\Ab$-category is **additive** when its underlying category has a
-terminal object and finite products; By the yoga above, this implies
-that the terminal object is also a zero object, and the finite products
-coincide with finite coproducts.
+[[terminal object]] and finite [[products]]; By the yoga above, this
+implies that the terminal object is also a zero object, and the finite
+products coincide with finite coproducts.
 
 ```agda
 record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
@@ -279,11 +275,10 @@ desired equation. Check it out:
 # Pre-abelian & abelian categories
 
 An additive category is **pre-abelian** when it additionally has
-[kernels] and cokernels, hence binary [equalisers] and [coequalisers]
+[kernels] and cokernels, hence binary [[equalisers]] and [coequalisers]
 where one of the maps is zero.
 
 [kernels]: Cat.Diagram.Equaliser.Kernel.html
-[equalisers]: Cat.Diagram.Equaliser.html
 [coequalisers]: Cat.Diagram.Coequaliser.html
 
 ```agda
@@ -315,12 +310,12 @@ monomorphism].
 ```agda
   decompose
     : ∀ {A B} (f : Hom A B)
-    → Σ[ f′ ∈ Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f)) ]
-       (f ≡ Ker.kernel (Coker.coeq f) ∘ f′ ∘ Coker.coeq (Ker.kernel f))
+    → Σ[ f' ∈ Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f)) ]
+       (f ≡ Ker.kernel (Coker.coeq f) ∘ f' ∘ Coker.coeq (Ker.kernel f))
   decompose {A} {B} f = map , sym path
     where
-      proj′ : Hom (Coker.coapex (Ker.kernel f)) B
-      proj′ = Coker.universal (Ker.kernel f) {e′ = f} $ sym path
+      proj' : Hom (Coker.coapex (Ker.kernel f)) B
+      proj' = Coker.universal (Ker.kernel f) {e' = f} $ sym path
 ```
 
 <!--
@@ -336,7 +331,7 @@ monomorphism].
 
 ```agda
       map : Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f))
-      map = Ker.universal (Coker.coeq f) {e′ = proj′} $ sym path
+      map = Ker.universal (Coker.coeq f) {e' = proj'} $ sym path
 ```
 
 The existence of the map $f'$, and indeed of the maps $p$ and $i$,
@@ -347,9 +342,9 @@ the canonical subobject inclusion $\ker(f) \to B$.
 <!--
 ```agda
         where abstract
-          path : ∅.zero→ ∘ proj′ ≡ Coker.coeq f ∘ proj′
+          path : ∅.zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
           path = Coker.unique₂ (Ker.kernel f)
-            {e′ = 0m} (∘-zero-r ∙ sym ∘-zero-l)
+            {e' = 0m} (∘-zero-r ∙ sym ∘-zero-l)
             (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
                                                ∙ ∘-zero-r)
                  ∙ ∘-zero-l)
@@ -358,7 +353,7 @@ the canonical subobject inclusion $\ker(f) \to B$.
 
       path =
         Ker.kernel (Coker.coeq f) ∘ map ∘ Coker.coeq (Ker.kernel f) ≡⟨ pulll (Ker.factors _) ⟩
-        proj′ ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.factors _ ⟩
+        proj' ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.factors _ ⟩
         f                                                           ∎
 ```
 -->
@@ -414,7 +409,7 @@ $f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
 ```agda
       kercoker→f : m.Hom (cut (Ker.kernel (Coker.coeq f))) (cut f)
       kercoker→f ./-Hom.map =
-        Coker.universal (Ker.kernel f) {e′ = id} (monic _ _ path) ∘
+        Coker.universal (Ker.kernel f) {e' = id} (monic _ _ path) ∘
           coker-ker≃ker-coker f .is-invertible.inv
         where abstract
           path : f ∘ id ∘ 0m ≡ f ∘ id ∘ Ker.kernel f
@@ -453,20 +448,20 @@ $\cA$, thus assemble into an isomorphism in the slice.
     mono→kernel : cut f m.≅ cut (Ker.kernel (Coker.coeq f))
     mono→kernel = m.make-iso f→kercoker kercoker→f f→kc→f kc→f→kc where
       f→kc→f : f→kercoker m.∘ kercoker→f ≡ m.id
-      f→kc→f = /-Hom-path $
+      f→kc→f = ext $
         (decompose f .fst ∘ Coker.coeq _) ∘ Coker.universal _ _ ∘ _  ≡⟨ cancel-inner lemma ⟩
         decompose f .fst ∘ _                                         ≡⟨ coker-ker≃ker-coker f .is-invertible.invl ⟩
         id                                                           ∎
         where
           lemma = Coker.unique₂ _
-            {e′ = Coker.coeq (Ker.kernel f)}
+            {e' = Coker.coeq (Ker.kernel f)}
             (∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r))
             (pullr (Coker.factors (Ker.kernel f)) ∙ elimr refl)
             (eliml refl)
 
       kc→f→kc : kercoker→f m.∘ f→kercoker ≡ m.id
-      kc→f→kc = /-Hom-path $
+      kc→f→kc = ext $
         (Coker.universal _ _ ∘ _) ∘ decompose f .fst ∘ Coker.coeq _ ≡⟨ cancel-inner (coker-ker≃ker-coker f .is-invertible.invr) ⟩
         Coker.universal _ _ ∘ Coker.coeq _                          ≡⟨ Coker.factors _ ⟩
-        id                                                           ∎
+        id                                                          ∎
 ```

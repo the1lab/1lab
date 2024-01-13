@@ -57,7 +57,7 @@ module _ (∅ : Zero) where
 ```
 
 **Lemma**: Let $\cC$ be a category with equalisers and a zero object.
-In $\cC, the kernel of a kernel is zero. First, note that if a
+In $\cC$, the kernel of a kernel is zero. First, note that if a
 category has a choice of zero object and a choice of equaliser for any
 pair of morphisms, then it has canonically-defined choices of kernels:
 

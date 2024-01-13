@@ -14,16 +14,14 @@ open import 1Lab.Type
 module Data.Set.Truncation where
 ```
 
-# Set truncation
+# Set truncation {defines=set-truncation}
 
-Exactly analogously to the construction of [propositional truncations],
+Exactly analogously to the construction of [[propositional truncations]],
 we can construct the **set truncation** of a type, reflecting it onto
 the subcategory of sets. Just like the propositional truncation is
 constructed by attaching enough lines to a type to hide away all
 information other than "is the type inhabited", the set truncation is
 constructed by attaching enough square to kill off all homotopy groups.
-
-[propositional truncations]: 1Lab.HIT.Truncation.html
 
 ```agda
 data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
@@ -54,15 +52,15 @@ map into must be a set, as required by the `squash`{.Agda} constructor.
   where go = ∥-∥₀-rec bset f
 ```
 
-The most interesting result is that, since the sets form a reflective
-subcategory of types, it generates an idempotent monad. Indeed, as
-required, the counit `inc`{.Agda} is an equivalence:
+The most interesting result is that, since the sets form a [[reflective
+subcategory]] of types, the set-truncation is an idempotent monad.
+Indeed, as required, the counit `inc`{.Agda} is an equivalence:
 
 ```agda
 ∥-∥₀-idempotent : ∀ {ℓ} {A : Type ℓ} → is-set A
                 → is-equiv (inc {A = A})
 ∥-∥₀-idempotent {A = A} aset = is-iso→is-equiv (iso proj inc∘proj λ _ → refl)
-  where
+  module ∥-∥₀-idempotent where
     proj : ∥ A ∥₀ → A
     proj (inc x) = x
     proj (squash x y p q i j) =
@@ -139,3 +137,11 @@ using `is-set→squarep`{.Agda}.
 module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
   = Equiv (∥-∥₀-path-equiv {A = A} {x} {y})
 ```
+
+<!--
+```agda
+instance
+  H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
+  H-Level-∥-∥₀ {n = n} = basic-instance 2 squash
+```
+-->

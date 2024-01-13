@@ -68,7 +68,7 @@ Sets-effective-congruences {A = A} R = epi where
 
   open Congruence hiding (quotient)
   undo : ∀ {x y} → inc x ≡ inc y → rel x y
-  undo = equiv→inverse $ effective λ where
+  undo = effective λ where
     ._∼_ → rel
     .has-is-prop x y → rel-prop x y
     .reflᶜ → rel-refl
@@ -84,11 +84,11 @@ Sets-effective-congruences {A = A} R = epi where
 
   epi .has-quotient .coequal = funext λ { x → quot (x , refl) }
 
-  epi .has-quotient .universal {F = F} {e′ = e′} path =
-    Quot-elim (λ _ → F .is-tr) e′
-      λ { x y (r , q) → ap e′ (ap fst (sym q))
+  epi .has-quotient .universal {F = F} {e' = e'} path =
+    Quot-elim (λ _ → F .is-tr) e'
+      λ { x y (r , q) → ap e' (ap fst (sym q))
                      ·· happly path r
-                     ·· ap e′ (ap snd q)
+                     ·· ap e' (ap snd q)
         }
 
   epi .has-quotient .factors = refl

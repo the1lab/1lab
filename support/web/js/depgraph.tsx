@@ -146,7 +146,7 @@ function render(nodes: d3.Selection<SVGCircleElement | d3.BaseType, Node, any, a
         // Show edges to/from a hovered node, and always show primary
         // edges
         if (d.primary || d.source.hover || d.target.hover) {
-          return '';
+          return 'visible';
         }
         return 'hidden';
       })
@@ -162,7 +162,7 @@ function render(nodes: d3.Selection<SVGCircleElement | d3.BaseType, Node, any, a
       .attr('transform', d => d === undefined ? "" : `translate(${d.x as number + d.radius}, ${d.y as number - 5})`)
       .attr('visibility', d => {
         if (d.id === page || d.hover) {
-          return '';
+          return 'visible';
         }
         return 'hidden';
       });
@@ -237,7 +237,7 @@ const modal = (close = () => { }) => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const data = (await fetch("/static/links.json").then(r => r.json())).slice(0, -1);
+  const data = (await fetch("static/links.json").then(r => r.json())).slice(0, -1);
   const { nodes, edges } = nbhoodSubgraph(page, data);
   makeColours(nodes);
 

@@ -19,12 +19,12 @@ module 1Lab.Path.Groupoid where
 _ = Path
 _ = hfill
 _ = ap-refl
-_ = ap-comp-path
+_ = ap-∙
 _ = ap-sym
 ```
 -->
 
-# Types are Groupoids
+# Types are groupoids
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
 an _$\infty$-groupoid_. The higher structure of a type begins with its
@@ -70,8 +70,8 @@ First we define path composition. Then, we can prove that the identity
 path - `refl`{.Agda} - acts as an identity for path composition.
 
 ```agda
-  ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
-  ∙-id-r {x = x} {y = y} p =
+  ∙-idr : (p : x ≡ y) → p ∙ refl ≡ p
+  ∙-idr {x = x} {y = y} p =
     J (λ _ p → p ∙ refl ≡ p)
       (happly (J-refl (λ y _ → y ≡ y → x ≡ y) (λ x → x)) _)
       p
@@ -82,8 +82,8 @@ remember - `J`{.Agda} doesn't compute definitionally, only up to the path
 `J-refl`{.Agda}.  Now the other identity law:
 
 ```agda
-  ∙-id-l : (p : y ≡ z) → refl ∙ p ≡ p
-  ∙-id-l {y = y} {z = z} p = happly (J-refl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
+  ∙-idl : (p : y ≡ z) → refl ∙ p ≡ p
+  ∙-idl {y = y} {z = z} p = happly (J-refl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
 ```
 
 This case we get for less since it's essentially the computation rule for `J`{.Agda}.
@@ -97,8 +97,8 @@ This case we get for less since it's essentially the computation rule for `J`{.A
       lemma : (q : w ≡ y) (r : y ≡ z)
             → (refl ∙ (q ∙ r)) ≡ ((refl ∙ q) ∙ r)
       lemma q r =
-        (refl ∙ (q ∙ r)) ≡⟨ ∙-id-l (q ∙ r) ⟩
-        q ∙ r            ≡⟨ sym (ap (λ e → e ∙ r) (∙-id-l q)) ⟩
+        (refl ∙ (q ∙ r)) ≡⟨ ∙-idl (q ∙ r) ⟩
+        q ∙ r            ≡⟨ sym (ap (λ e → e ∙ r) (∙-idl q)) ⟩
         (refl ∙ q) ∙ r   ∎
 ```
 
@@ -130,13 +130,13 @@ from two computations.
 And we have to prove that composing with an inverse gives the reflexivity path.
 
 ```agda
-  ∙-inv-r : (p : x ≡ y) → p ∙ inv p ≡ refl
-  ∙-inv-r {x = x} = J (λ y p → p ∙ inv p ≡ refl)
-                      (∙-id-l (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
+  ∙-invr : (p : x ≡ y) → p ∙ inv p ≡ refl
+  ∙-invr {x = x} = J (λ y p → p ∙ inv p ≡ refl)
+                     (∙-idl (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 
-  ∙-inv-l : (p : x ≡ y) → inv p ∙ p ≡ refl
-  ∙-inv-l {x = x} = J (λ y p → inv p ∙ p ≡ refl)
-                      (∙-id-r (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
+  ∙-invl : (p : x ≡ y) → inv p ∙ p ≡ refl
+  ∙-invl {x = x} = J (λ y p → inv p ∙ p ≡ refl)
+                     (∙-idr (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 ```
 
 ## Cubically
@@ -169,11 +169,11 @@ The left and right identity laws follow directly from the two fillers
 for the composition operation.
 
 ```agda
-  ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
-  ∙-id-r p = sym (∙-filler p refl)
+  ∙-idr : (p : x ≡ y) → p ∙ refl ≡ p
+  ∙-idr p = sym (∙-filler p refl)
 
-  ∙-id-l : (p : x ≡ y) → refl ∙ p ≡ p
-  ∙-id-l p = sym (∙-filler' refl p)
+  ∙-idl : (p : x ≡ y) → refl ∙ p ≡ p
+  ∙-idl p = sym (∙-filler' refl p)
 ```
 
 For associativity, we use both:
@@ -189,8 +189,8 @@ square expresses the equation we're looking for. Thankfully, we only
 have to do this once!
 
 ```agda
-  ∙-inv-r : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
-  ∙-inv-r {x = x} p i j = hcomp (∂ j ∨ i) λ where
+  ∙-invr : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
+  ∙-invr {x = x} p i j = hcomp (∂ j ∨ i) λ where
     k (k = i0) → p (j ∧ ~ i)
     k (i = i1) → x
     k (j = i0) → x
@@ -202,13 +202,13 @@ equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 ≡ refl` - which computes to the thing we want!
 
 ```agda
-  ∙-inv-l : (p : x ≡ y) → sym p ∙ p ≡ refl
-  ∙-inv-l p = ∙-inv-r (sym p)
+  ∙-invl : (p : x ≡ y) → sym p ∙ p ≡ refl
+  ∙-invl p = ∙-invr (sym p)
 ```
 
 In addition to the groupoid identities for paths in a type, it has been
 established that functions behave like functors: These are the lemmas
-`ap-refl`{.Agda}, `ap-comp-path`{.Agda} and `ap-sym`{.Agda} in the
+`ap-refl`{.Agda}, `ap-∙`{.Agda} and `ap-sym`{.Agda} in the
 [1Lab.Path] module.
 
 [1Lab.Path]: 1Lab.Path.html#functorial-action
@@ -221,20 +221,20 @@ For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
 more than a handful of intermediate steps:
 
 ```agda
-  ∙-cancel-l
+  ∙-cancell
     : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
     → (sym p ∙ p ∙ q) ≡ q
-  ∙-cancel-l {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+  ∙-cancell {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
     k (k = i0) → p (i ∨ ~ j)
     k (i = i0) → ∙-filler (sym p) (p ∙ q) k j
     k (i = i1) → q (j ∧ k)
     k (j = i0) → y
     k (j = i1) → ∙-filler₂ p q i k
 
-  ∙-cancel-r
+  ∙-cancelr
     : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : z ≡ y)
     → ((p ∙ sym q) ∙ q) ≡ p
-  ∙-cancel-r {x = x} {y = y} q p = sym $ ∙-unique _ λ i j →
+  ∙-cancelr {x = x} {y = y} q p = sym $ ∙-unique _ λ i j →
     ∙-filler q (sym p) (~ i) j
 
   commutes→square
@@ -249,6 +249,16 @@ more than a handful of intermediate steps:
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
 
+  double-connection
+    : (p : x ≡ y) (q : y ≡ z)
+    → Square p p q q
+  double-connection {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → y
+    k (i = i0) → p (j ∨ ~ k)
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → p (i ∨ ~ k)
+    k (j = i1) → q (i ∧ k)
+
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
     → Square p q s r → p ∙ s ≡ q ∙ r
@@ -261,14 +271,14 @@ more than a handful of intermediate steps:
 
   ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
               → p ∙ q ≡ p ∙ r → q ≡ r
-  ∙-cancel'-l p q r sq = sym (∙-cancel-l p q) ·· ap (sym p ∙_) sq ·· ∙-cancel-l p r
+  ∙-cancel'-l p q r sq = sym (∙-cancell p q) ·· ap (sym p ∙_) sq ·· ∙-cancell p r
 
   ∙-cancel'-r : {x y z : A} (p : y ≡ z) (q r : x ≡ y)
               → q ∙ p ≡ r ∙ p → q ≡ r
   ∙-cancel'-r p q r sq =
-       sym (∙-cancel-r q (sym p))
+       sym (∙-cancelr q (sym p))
     ·· ap (_∙ sym p) sq
-    ·· ∙-cancel-r r (sym p)
+    ·· ∙-cancelr r (sym p)
 ```
 
 # Groupoid structure of types (cont.)

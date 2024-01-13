@@ -18,11 +18,11 @@ We establish the basic properties of ordering on the natural numbers.
 These are properties of the order itself, and not how it interacts with
 the semiring structure. For that, see
 [`Data.Nat.Properties`](Data.Nat.Properties.html). The first thing we
-establish is that $x \le y$ is a partial order, so it deserves the name
-$\le$: It is reflexive, transitive, antisymmetric, and takes values in
-propositions. In all cases, save for reflexivity, the induction happens
-on the witnesses of ordering, and Agda handles inducting on the naturals
-automatically.
+establish is that $x \le y$ is a [[partial order]], so it deserves the
+name $\le$: It is reflexive, transitive, antisymmetric, and takes values
+in propositions. In all cases, save for reflexivity, the induction
+happens on the witnesses of ordering, and Agda handles inducting on the
+naturals automatically.
 
 ```agda
 ≤-refl : ∀ {x : Nat} → x ≤ x
@@ -66,7 +66,7 @@ instance
 ```
 -->
 
-Furthermore, `_≤_`{.Agda} is decidable:
+Furthermore, `_≤_`{.Agda} is decidable, and weakly total:
 
 ```agda
 ≤-dec : (x y : Nat) → Dec (x ≤ y)
@@ -76,7 +76,22 @@ Furthermore, `_≤_`{.Agda} is decidable:
 ≤-dec (suc x) (suc y) with ≤-dec x y
 ... | yes x≤y = yes (s≤s x≤y)
 ... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
+
+≤-is-weakly-total : ∀ x y → ¬ (x ≤ y) → y ≤ x
+≤-is-weakly-total zero    zero    _    = 0≤x
+≤-is-weakly-total zero    (suc y) ¬0≤s = absurd (¬0≤s 0≤x)
+≤-is-weakly-total (suc x) zero    _    = 0≤x
+≤-is-weakly-total (suc x) (suc y) ¬s≤s = s≤s $
+  ≤-is-weakly-total x y λ z → ¬s≤s (s≤s z)
 ```
+
+<!--
+```agda
+instance
+  Dec-≤ : ∀ {x y} → Dec (x ≤ y)
+  Dec-≤ = ≤-dec _ _
+```
+-->
 
 We also have that a successor is never smaller than the number it
 succeeds:
@@ -108,6 +123,9 @@ their strict ordering:
 ### Properties of the strict order
 
 ```agda
+<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+
 <-asym : ∀ {x y} → x < y → ¬ (y < x)
 <-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
 
@@ -116,7 +134,7 @@ their strict ordering:
 <-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
 
 <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (zero≠suc (sym p))
+<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 
@@ -152,12 +170,11 @@ In classical mathematics, the well-ordering principle states that every
 nonempty subset of the natural numbers has a minimal element. In
 constructive mathematics, there are subsets of $\bb{N}$ which only have
 a minimal elements if excluded middle holds. The LEM-agnostic statement
-is that every [inhabited] [_complemented_] subset of the natural numbers
-has a minimal element. Note that for a complemented subset, inhabitation
-is the same as nonemptiness, but we prefer the stronger phrasing since
-it makes the proof one step shorter.
+is that every [[inhabited|propositional truncation]] [_complemented_]
+subset of the natural numbers has a minimal element. Note that for a
+complemented subset, inhabitation is the same as nonemptiness, but we
+prefer the stronger phrasing since it makes the proof one step shorter.
 
-[inhabited]: 1Lab.HIT.Truncation.html
 [_complemented_]: Data.Power.Complemented.html
 
 The "subset" part only comes in at the start: To get out from under the
@@ -191,21 +208,17 @@ an inhabited subset.
     min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
     min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
 
-    wo-suc
-      : ∀ {P : Nat → Type ℓ} n
-      → P (suc n) → Dec (P 0) → minimal-solution (λ n → P (suc n))
-      → minimal-solution P
-    wo-suc n psn (yes p0) (a , pa , x) = 0 , p0 , λ k _ → 0≤x
-    wo-suc {P} n psn (no ¬p0) (a , pa , x) = suc a , pa , min-suc {P} a ¬p0 x
-
   ℕ-minimal-solution
-    : ∀ (P : Nat → Type _)
+    : ∀ (P : Nat → Type ℓ)
     → (∀ n → Dec (P n))
     → (n : Nat) → P n
     → minimal-solution P
   ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
-  ℕ-minimal-solution P decp (suc n) p = wo-suc n p (decp zero)
-    (ℕ-minimal-solution (λ x → P (suc x)) (λ x → decp (suc x)) n p)
+  ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
+    (yes p0) → 0 , p0 , λ k _ → 0≤x
+    (no ¬p0) →
+      let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
+       in suc a , pa , min-suc {P} a ¬p0 x
 
   ℕ-well-ordered
     : (∀ n → Dec ∣ P n ∣)

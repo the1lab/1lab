@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
-open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -62,12 +61,10 @@ open is-regular-epi using (is-regular-epi→is-epic) public
 ## Effective epis
 
 Again by duality, we have a pair of canonical choices of maps which $f$
-may coequalise: Its _kernel pair_, that is, the [pullback] of $f$ along
+may coequalise: Its _kernel pair_, that is, the [[pullback]] of $f$ along
 itself. An epimorphism which coequalises its kernel pair is called an
 **effective epi**, and effective epis are immediately seen to be regular
 epis:
-
-[pullback]: Cat.Diagram.Pullback.html
 
 ```agda
 record is-effective-epi (f : Hom a b) : Type (o ⊔ ℓ) where
@@ -110,13 +107,13 @@ is-regular-epi→is-effective-epi {f = f} kp reg = epi where
   epi .p₂ = kp.p₂
   epi .is-kernel-pair = kp.has-is-pb
   epi .has-is-coeq .coequal = kp.square
-  epi .has-is-coeq .universal {F = F} {e′} p = reg.universal q where
-    q : e′ ∘ reg.arr₁ ≡ e′ ∘ reg.arr₂
+  epi .has-is-coeq .universal {F = F} {e'} p = reg.universal q where
+    q : e' ∘ reg.arr₁ ≡ e' ∘ reg.arr₂
     q =
-      e′ ∘ reg.arr₁                               ≡⟨ ap (e′ ∘_) (sym kp.p₂∘universal) ⟩
-      e′ ∘ kp.p₂ ∘ kp.universal (sym reg.coequal)  ≡⟨ pulll (sym p) ⟩
-      (e′ ∘ kp.p₁) ∘ kp.universal _                ≡⟨ pullr kp.p₁∘universal ⟩
-      e′ ∘ reg.arr₂                               ∎
+      e' ∘ reg.arr₁                               ≡⟨ ap (e' ∘_) (sym kp.p₂∘universal) ⟩
+      e' ∘ kp.p₂ ∘ kp.universal (sym reg.coequal)  ≡⟨ pulll (sym p) ⟩
+      (e' ∘ kp.p₁) ∘ kp.universal _                ≡⟨ pullr kp.p₁∘universal ⟩
+      e' ∘ reg.arr₂                               ∎
   epi .has-is-coeq .factors = reg.factors
   epi .has-is-coeq .unique = reg.unique
 ```

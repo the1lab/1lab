@@ -4,6 +4,7 @@ open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Properties
 open import Cat.Prelude
 ```
 -->
@@ -22,7 +23,7 @@ import Cat.Reasoning as CR
 ```
 -->
 
-# The category of Groups
+# The category of groups
 
 The category of groups, as the name implies, has its objects the
 `Groups`{.Agda ident=Group}, with the morphisms between them the `group
@@ -33,7 +34,7 @@ open Group-on
 open is-group-hom
 
 Group-structure : ∀ ℓ → Thin-structure ℓ Group-on
-Group-structure ℓ .is-hom f G G′ = el! (is-group-hom G G′ f)
+Group-structure ℓ .is-hom f G G' = el! (is-group-hom G G' f)
 
 Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
 Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =

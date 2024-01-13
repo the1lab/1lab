@@ -2,9 +2,10 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Data.Int
+open import Data.Int hiding (pos ; neg)
 
-import Data.Int.Inductive as Ind
+import Data.Int.Base as Ind
+import Data.Int.HIT as HIT
 ```
 -->
 
@@ -76,8 +77,8 @@ join me.
 ```agda
 open Integers
 
-Int-integers : Integers Int
-Int-integers = r where
+HIT-Int-integers : Integers HIT.Int
+HIT-Int-integers = r where
   module map-out {ℓ} {X : Type ℓ} (l : X ≃ X) where
 ```
 
@@ -98,9 +99,9 @@ difference of naturals $x - y$, then we can compute the power $f^n : X
         ≡ (n-power n e⁻¹) .fst (Equiv.from (l) (l .fst (n-power m .fst x)))
       lemma m n x = ap ((n-power n e⁻¹) .fst) (sym (Equiv.η l _))
 
-    map : Int → X ≃ X
-    map (diff x y) = n-power x ∙e (n-power y e⁻¹)
-    map (quot m n i) = Σ-prop-path is-equiv-is-prop
+    go : HIT.Int → X ≃ X
+    go (HIT.diff x y) = n-power x ∙e (n-power y e⁻¹)
+    go (HIT.quot m n i) = Σ-prop-path is-equiv-is-prop
       {x = n-power m ∙e (n-power n e⁻¹)}
       {y = n-power (suc m) ∙e (n-power (suc n) e⁻¹)}
       (funext (lemma m n)) i
@@ -125,9 +126,9 @@ cancelling the $f^{-1}f$ critical pair in the middle.
     negatives⁻¹ (suc k) x = negatives⁻¹ k _
 
     abstract
-      map-suc : ∀ i x → map (sucℤ i) .fst x ≡ l .fst (map i .fst x)
-      map-suc = Int-elim-by-sign
-        (λ i → ∀ x → map (sucℤ i) .fst x ≡ l .fst (map i .fst x))
+      map-suc : ∀ i x → go (HIT.sucℤ i) .fst x ≡ l .fst (go i .fst x)
+      map-suc = HIT.Int-elim-by-sign
+        (λ i → ∀ x → go (HIT.sucℤ i) .fst x ≡ l .fst (go i .fst x))
         (λ _ _ → refl)
         negatives
         (λ _ → refl)
@@ -135,11 +136,11 @@ cancelling the $f^{-1}f$ critical pair in the middle.
 -->
 
 ```agda
-  r : Integers Int
+  r : Integers HIT.Int
   r .ℤ-is-set = hlevel 2
   r .point = 0
-  r .rotate = sucℤ , sucℤ-is-equiv
-  r .map-out point rot int = map-out.map rot int .fst point
+  r .rotate = HIT.sucℤ , HIT.sucℤ-is-equiv
+  r .map-out point rot int = map-out.go rot int .fst point
   r .map-out-point p _ = refl
   r .map-out-rotate p rot i = map-out.map-suc rot i _
 ```
@@ -151,19 +152,19 @@ assumptions, the other cases follow by induction (on naturals).
 
 ```agda
   r .map-out-unique {X = X} f {point} {rot} path htpy =
-    Int-elim-by-sign (λ z → f z ≡ r .map-out _ _ z) unique-pos unique-neg path
+    HIT.Int-elim-by-sign (λ z → f z ≡ r .map-out _ _ z) unique-pos unique-neg path
     where abstract
-      unique-pos : ∀ k → f (diff k 0) ≡ map-out.n-power rot k .fst point
+      unique-pos : ∀ k → f (HIT.diff k 0) ≡ map-out.n-power rot k .fst point
       unique-pos zero = path
-      unique-pos (suc k) = htpy (diff k 0) ∙ ap (rot .fst) (unique-pos k)
+      unique-pos (suc k) = htpy (HIT.diff k 0) ∙ ap (rot .fst) (unique-pos k)
 
-      unique-neg : ∀ k → f (diff 0 k) ≡ Equiv.from (map-out.n-power rot k) point
+      unique-neg : ∀ k → f (HIT.diff 0 k) ≡ Equiv.from (map-out.n-power rot k) point
       unique-neg zero = path
       unique-neg (suc k) =
            sym (Equiv.η rot _)
         ·· ap (Equiv.from rot) (
-               sym (htpy (diff 0 (suc k)))
-            ·· ap f (sym (quot 0 k))
+               sym (htpy (HIT.diff 0 (suc k)))
+            ·· ap f (sym (HIT.quot 0 k))
             ·· unique-neg k)
         ·· sym (map-out.negatives⁻¹ rot k _)
 ```
@@ -182,8 +183,8 @@ We have already proven that the inductive integers have a successor
 equivalence: What we now do is prove this equivalence is universal.
 
 ```agda
-Inductive-integers : Integers Ind.Int
-Inductive-integers = r where
+Int-integers : Integers Ind.Int
+Int-integers = r where
   module map-out {ℓ} {X : Type ℓ} (l : X ≃ X) where
     pos : Nat → X ≃ X
     pos zero    = _ , id-equiv
@@ -214,10 +215,10 @@ Inductive-integers = r where
     pos zero = fz
     pos (suc n) = fr (Ind.pos n) ∙ ap (rot .fst) (pos n)
 
-    map-pred : ∀ n → f (Ind.pred-int n) ≡ Equiv.from rot (f n)
+    map-pred : ∀ n → f (Ind.predℤ n) ≡ Equiv.from rot (f n)
     map-pred n = sym (Equiv.η rot _)
               ·· ap (Equiv.from rot) (sym (fr _))
-              ·· ap (Equiv.from rot ∘ f) (Ind.suc-pred n)
+              ·· ap (Equiv.from rot ∘ f) (Ind.suc-predℤ n)
 
     neg : ∀ n → f (Ind.negsuc n) ≡ map-out.neg rot n .fst p
     neg zero = map-pred (Ind.pos 0) ∙ ap (Equiv.from rot) fz

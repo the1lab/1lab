@@ -5,7 +5,6 @@ open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -19,17 +18,14 @@ module Cat.Functor.Adjoint.Kan where
 
 # Adjoints preserve Kan extensions
 
-Let $L \adj R$ be a pair of [adjoint functors]. It's well-known that
+Let $L \adj R$ be a pair of [[adjoint functors]]. It's well-known that
 right adjoints preserve limits[^rapl], and dually that left adjoints
 preserve colimits, but it turns out that this theorem can be made a bit
-more general: If $G$ is a [left] (resp. [right]) extension of $F$ along
-$p$, then $LG$ is a left extension of $LF$ along $p$: left adjoints
-preserve left extensions. This dualises to right adjoints preserving
-_right_ extensions.
-
-[adjoint functors]: Cat.Functor.Adjoint.html
-[left]: Cat.Functor.Kan.Base.html#left-kan-extensions
-[right]: Cat.Functor.Kan.Base.html#right-kan-extensions
+more general: If $G$ is a [[left|left Kan extension]] (resp.
+[[right|right Kan extension]]) extension of $F$ along $p$, then $LG$ is
+a left extension of $LF$ along $p$: left adjoints preserve left
+extensions. This dualises to right adjoints preserving _right_
+extensions.
 
 [^rapl]: Here on the 1Lab, we derive the proof that right (resp. left)
 adjoints preserve limits (resp. colimits) from _this proof_ that
@@ -64,12 +60,12 @@ to "grow" the original extension diagram.
 <!--
 ```agda
 module
-  _ {oc ℓc oc′ ℓc′ od ℓd oa ℓa}
-    {C : Precategory oc ℓc} {C′ : Precategory oc′ ℓc′} {D : Precategory od ℓd}
+  _ {oc ℓc oc' ℓc' od ℓd oa ℓa}
+    {C : Precategory oc ℓc} {C' : Precategory oc' ℓc'} {D : Precategory od ℓd}
     {A : Precategory oa ℓa}
-    {p : Functor C C′}
+    {p : Functor C C'}
     {F : Functor C D}
-    {G : Functor C′ D}
+    {G : Functor C' D}
     {eta : F => G F∘ p}
     (lan : is-lan p F G eta)
     {L : Functor D A} {R : Functor A D}
@@ -104,7 +100,7 @@ module
 
 <!--
 ```agda
-    fixup : ∀ {M : Functor C′ A} → (LF => M F∘ p) → F => (R F∘ M) F∘ p
+    fixup : ∀ {M : Functor C' A} → (LF => M F∘ p) → F => (R F∘ M) F∘ p
     fixup α .η x = L-adjunct adj (α .η x)
     fixup {M = M} α .is-natural x y f =
       (R.₁ (α .η y) D.∘ unit.η _) D.∘ F.₁ f            ≡⟨ D.pullr (unit.is-natural _ _ _) ⟩
@@ -156,25 +152,25 @@ reader but they will not be elaborated on.
       R-adjunct adj (L-adjunct adj (α .η x))                  ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (α .η x) ⟩
       α .η x                                                  ∎
 
-    pres .σ-uniq {M = M} {α = α} {σ′ = σ′} wit = Nat-path λ x →
+    pres .σ-uniq {M = M} {α = α} {σ' = σ'} wit = Nat-path λ x →
       R-adjunct adj (l.σ (fixup α) .η x)      ≡⟨ A.refl⟩∘⟨ ap L.₁ (l.σ-uniq lemma ηₚ x) ⟩
-      R-adjunct adj (L-adjunct adj (σ′ .η x)) ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (σ′ .η x) ⟩
-      σ′ .η x                                 ∎
+      R-adjunct adj (L-adjunct adj (σ' .η x)) ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (σ' .η x) ⟩
+      σ' .η x                                 ∎
       where
         module M = Functor M
 
-        σ′′ : G => R F∘ M
-        σ′′ .η x = L-adjunct adj (σ′ .η x)
-        σ′′ .is-natural x y f =
-          (R.₁ (σ′ .η _) D.∘ unit.η _) D.∘ G.₁ f          ≡⟨ D.pullr (unit.is-natural _ _ _) ⟩
-          (R.₁ (σ′ .η _) D.∘ (RL.₁ (G.₁ f)) D.∘ unit.η _) ≡⟨ D.extendl (R.weave (σ′ .is-natural _ _ _)) ⟩
-          R.₁ (M.₁ f) D.∘ R.₁ (σ′ .η x) D.∘ unit.η _      ∎
+        σ'' : G => R F∘ M
+        σ'' .η x = L-adjunct adj (σ' .η x)
+        σ'' .is-natural x y f =
+          (R.₁ (σ' .η _) D.∘ unit.η _) D.∘ G.₁ f          ≡⟨ D.pullr (unit.is-natural _ _ _) ⟩
+          (R.₁ (σ' .η _) D.∘ (RL.₁ (G.₁ f)) D.∘ unit.η _) ≡⟨ D.extendl (R.weave (σ' .is-natural _ _ _)) ⟩
+          R.₁ (M.₁ f) D.∘ R.₁ (σ' .η x) D.∘ unit.η _      ∎
 
-        lemma : fixup α ≡ ((σ′′ ◂ p) ∘nt eta)
+        lemma : fixup α ≡ ((σ'' ◂ p) ∘nt eta)
         lemma = Nat-path λ x →
           R.₁ (α .η x) D.∘ unit.η _                     ≡⟨ ap R.₁ (wit ηₚ _) D.⟩∘⟨refl ⟩
-          R.₁ (σ′ .η _ A.∘ L.₁ (eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
-          (R.₁ (σ′ .η _) D.∘ unit.η _) D.∘ eta .η x     ∎
+          R.₁ (σ' .η _ A.∘ L.₁ (eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
+          (R.₁ (σ' .η _) D.∘ unit.η _) D.∘ eta .η x     ∎
 ```
 
 </details>
@@ -186,12 +182,12 @@ By duality, right adjoints preserve right extensions.
 <!--
 ```agda
 module
-  _ {oc ℓc oc′ ℓc′ od ℓd oa ℓa}
-    {C : Precategory oc ℓc} {C′ : Precategory oc′ ℓc′} {D : Precategory od ℓd}
+  _ {oc ℓc oc' ℓc' od ℓd oa ℓa}
+    {C : Precategory oc ℓc} {C' : Precategory oc' ℓc'} {D : Precategory od ℓd}
     {A : Precategory oa ℓa}
-    {p : Functor C C′}
+    {p : Functor C C'}
     {F : Functor C D}
-    {G : Functor C′ D}
+    {G : Functor C' D}
     {eps : G F∘ p => F}
     (ran : is-ran p F G eps)
     {L : Functor A D} {R : Functor D A}
@@ -212,13 +208,13 @@ module
     open _=>_
 
     fixed : is-ran p (R F∘ F) (R F∘ G) (nat-assoc-from (R ▸ eps))
-    fixed .is-ran.σ {M = M} α = σ′ where
-      unquoteDecl α′ = dualise-into α′
+    fixed .is-ran.σ {M = M} α = σ' where
+      unquoteDecl α' = dualise-into α'
         (Functor.op R F∘ Functor.op F => Functor.op M F∘ Functor.op p)
         α
-      unquoteDecl σ′ = dualise-into σ′ (M => R F∘ G) (p.σ α′)
+      unquoteDecl σ' = dualise-into σ' (M => R F∘ G) (p.σ α')
 
     fixed .is-ran.σ-comm = Nat-path λ x → p.σ-comm ηₚ _
-    fixed .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → p.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
+    fixed .is-ran.σ-uniq {M = M} {σ' = σ'} p =
+      Nat-path λ x → p.σ-uniq {σ' = dualise! σ'} (Nat-path λ x → p ηₚ x) ηₚ x
 ```

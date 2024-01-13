@@ -79,7 +79,4 @@ katexRules = versioned 2 do
   pure ()
 
 darkSettings :: Text
-darkSettings = Text.pack "\
-  \\\pagecolor[HTML]{282C34}\n\
-  \\\definecolor{diagrambg}{HTML}{282C34}\n\
-  \\\color[HTML]{ABB2BF}"
+darkSettings = Text.pack "\\newcommand{\\labdark}{yes!}"

@@ -5,7 +5,6 @@ open import Cat.Instances.Discrete hiding (Disc)
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->
@@ -42,18 +41,20 @@ and right- adjoints to $\rm{Ob}$ equip sets with the "discrete" and
 "codiscrete" spatial structures, where nothing is stuck together, or
 everything is stuck together.
 
-The extra right adjoint to $\rm{Ob}$ assigns a category to its set
+The extra [[right adjoint]] to $\rm{Ob}$ assigns a category to its set
 of connected components, which can be thought of as the "pieces" of the
 category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
 
-**Note**: Generally, the term "cohesive" is applied to Grothendieck
+:::{.note}
+Generally, the term "cohesive" is applied to Grothendieck
 topoi, which `Strict-cats`{.Agda} is _very far_ from being. We're using it
 here by analogy: There's an adjoint quadruple, where the functor
 $\Gamma$ sends each category to its set of points: see [the last
-section]. Strictly speaking, the left adjoint to $\Gamma$ isn't defined
+section]. Strictly speaking, the [[left adjoint]] to $\Gamma$ isn't defined
 by tensoring with `Sets`{.Agda}, but it _does_ have the effect of
 sending $S$ to the coproduct of $S$-many copies of the point category.
+:::
 
 [the last section]: #object-set-vs-global-sections
 
@@ -69,14 +70,14 @@ We begin by defining the object set functor.
 Γ .F-∘ _ _ = refl
 ```
 
-We must then prove that the assignment `Disc′`{.Agda} extends to a
+We must then prove that the assignment `Disc'`{.Agda} extends to a
 functor from `Sets`{.Agda}, and prove that it's left adjoint to the
 functor `Γ`{.Agda} we defined above. Then we define the adjunction
 `Disc⊣Γ`{.Agda}.
 
 ```agda
 Disc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
-Disc .F₀ S = Disc′ S , S .is-tr
+Disc .F₀ S = Disc' S , S .is-tr
 Disc .F₁ = lift-disc
 Disc .F-id = Functor-path (λ x → refl) λ f → refl
 Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
@@ -95,7 +96,7 @@ Disc⊣Γ = adj where
             (subst (A .fst .Precategory.Hom _) f (A .fst .Precategory.id))
             (subst (A .fst .Precategory.Hom _) g (A .fst .Precategory.id))
     lemma {A = A} {x = x} =
-      J′ (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
+      J' (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
                   ≡ subst (X.Hom _) f X.id X.∘ subst (X.Hom _) g X.id)
         λ x g → (subst-∙ (X.Hom _) g refl _ ·· transport-refl _ ·· sym (X.idl _))
               ∙ ap₂ X._∘_ (sym (transport-refl _)) refl
@@ -122,7 +123,7 @@ identity map suffices.
 ```agda
   adj .counit = NT (λ x → F x) nat where
     F : (x : Precategory.Ob (Strict-cats ℓ ℓ))
-      → Functor (Disc′ (el _ (x .snd))) _
+      → Functor (Disc' (el _ (x .snd))) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
     F X .F-id = transport-refl _
@@ -137,7 +138,7 @@ identity map suffices.
           → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
       nat x y f =
         Functor-path (λ x → refl)
-           (J′ (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
+           (J' (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
                         ≡ F₁ f (subst (X.Hom _) p X.id))
                λ _ → transport-refl _
                   ·· sym (F-id f)
@@ -157,7 +158,7 @@ Fortunately the triangle identities are straightforwardly checked.
 
 # Γ ⊣ Codisc
 
-The _codiscrete_ category on a set $X$ is the strict category with
+The _codiscrete_ category on a set $X$ is the [[strict category]] with
 object space $X$, and _all_ hom-spaces contractible. The assignment of
 codiscrete categories extends to a functor $\Sets \to \strcat$, where we
 lift functions to act on object parts and the action on morphisms is
@@ -165,7 +166,7 @@ trivial.
 
 ```agda
 Codisc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
-Codisc .F₀ S = Codisc′ ∣ S ∣ , S .is-tr
+Codisc .F₀ S = Codisc' ∣ S ∣ , S .is-tr
 
 Codisc .F₁ f .F₀ = f
 Codisc .F₁ f .F₁ = λ _ → lift tt
@@ -198,11 +199,11 @@ both directions:
 Above, we defined the functor $\Gamma$ by directly projecting the
 underlying set of each category. Normally in the definition of a
 cohesion structure, we use the _global sections_ functor which maps
-$x \mapsto \hom(*,x)$ (where $*$ is the terminal object). Here we prove
+$x \mapsto \hom(*,x)$ (where $*$ is the [[terminal object]]). Here we prove
 that these functors are naturally isomorphic, so our abbreviation above
 is harmless.
 
-Below, we represent the terminal category $*$ as the codiscrete category
+Below, we represent the [[terminal category]] $*$ as the codiscrete category
 on the terminal set. Using the codiscrete category here is equivalent to
 using the discrete category, but it is more convenient since the
 $\hom$-sets are definitionally contractible.
@@ -213,7 +214,7 @@ module _ {ℓ} where
 
   GlobalSections : Functor (Strict-cats ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C =
-    el (Functor (Codisc′ (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
+    el (Functor (Codisc' (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
   GlobalSections .F₁ G F = G F∘ F
   GlobalSections .F-id = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
   GlobalSections .F-∘ f g = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
@@ -254,10 +255,10 @@ using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
-    f∘g = Nat-path λ c → funext λ x → Functor-path (λ x → refl) λ f → sym (F-id x)
+    f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (F-id x)
 
     g∘f : g ∘nt f ≡ idnt
-    g∘f = Nat-path λ _ i x → x
+    g∘f = trivial!
 ```
 
 # Connected components
@@ -387,6 +388,6 @@ Points→Pieces : Γ {ℓ} {ℓ} => Π₀
 Points→Pieces .η _ x = inc x
 Points→Pieces .is-natural x y f i o = inc (F₀ f o)
 
-pieces-have-points : ∀ {x} y → ∥ fibre (Points→Pieces {ℓ} .η x) y ∥
+pieces-have-points : ∀ {x} → is-surjective (Points→Pieces {ℓ} .η x)
 pieces-have-points = Coeq-elim-prop (λ _ → squash) λ x → inc (x , refl)
 ```

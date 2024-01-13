@@ -1,9 +1,8 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor
+open import Cat.Functor.Properties
 open import Cat.Instances.Product
-open import Cat.Diagram.Initial
+open import Cat.Functor.Closed
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -52,7 +51,7 @@ Hom[ x ,-] .F-id = funext (λ f → idl f)
 Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
 ```
 
-## The Yoneda embedding
+## The Yoneda embedding {defines="yoneda-embedding"}
 
 Abstractly and nonsensically, one could say that the Yoneda embedding
 `よ`{.Agda} is the [exponential transpose] of `flipping`{.Agda
@@ -60,7 +59,7 @@ ident=Flip} the `Hom[-,-]`{.Agda} [bifunctor]. However, this
 construction generates _awful_ terms, so in the interest of
 computational efficiency we build up the functor explicitly.
 
-[exponential transpose]: Cat.Instances.Functor.html#currying
+[exponential transpose]: Cat.Functor.Closed.html
 [bifunctor]: Cat.Functor.Bifunctor.html
 
 ```agda
@@ -127,7 +126,7 @@ natural transformations is indeed functorial:
 
 The morphism mapping `よ₁`{.Agda} has an inverse, given by evaluating the
 natural transformation with the identity map; Hence, the Yoneda
-embedding functor is fully faithful.
+embedding functor is [[fully faithful]].
 
 ```agda
 よ-is-fully-faithful : is-fully-faithful よ
@@ -136,7 +135,7 @@ embedding functor is fully faithful.
 
   isom : is-iso よ₁
   isom .inv nt = nt .η _ id
-  isom .rinv nt = Nat-path λ c → funext λ g →
+  isom .rinv nt = ext λ c g →
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
 ```
@@ -158,8 +157,8 @@ though we define it anyways for posterity.
 よcov : Functor (C ^op) Cat[ C , Sets h ]
 よcov .F₀ = Hom-from
 よcov .F₁ = よcov₁
-よcov .F-id = Nat-path λ _ → funext λ g → idr g
-よcov .F-∘ f g = Nat-path λ _ → funext λ h → (assoc h g f)
+よcov .F-id = ext λ _ g → idr g
+よcov .F-∘ f g = ext λ _ h → (assoc h g f)
 ```
 
 As expected, the covariant yoneda embedding is also fully faithful.
@@ -171,7 +170,7 @@ As expected, the covariant yoneda embedding is also fully faithful.
 
   isom : is-iso よcov₁
   isom .inv nt = nt .η _ id
-  isom .rinv nt = Nat-path λ c → funext λ g →
+  isom .rinv nt = ext λ c g →
     sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
   isom .linv _ = idl _
 ```

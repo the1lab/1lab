@@ -4,6 +4,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.List.Base hiding (lookup ; tabulate)
 open import Data.Fin.Base
 open import Data.Nat.Base
 ```
@@ -17,8 +18,8 @@ module Data.Vec.Base where
 
 The type `Vec`{.Agda} is a representation of n-ary tuples with
 coordinates drawn from A. Therefore, it is equivalent to the type
-$\rm{Fin}(n) \to A$, i.e., the functions from the \r{standard finite
-set} with $n$ elements to the type $A$. The halves of this equivalence
+$\rm{Fin}(n) \to A$, i.e., the functions from the [[standard finite
+set]] with $n$ elements to the type $A$. The halves of this equivalence
 are called `lookup`{.Agda} and `tabulate`{.Agda}.
 
 ```agda
@@ -27,7 +28,7 @@ data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
   _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
 
 Vec-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ')
   → P []
   → (∀ {n} x (xs : Vec A n) → P xs → P (x ∷ xs))
   → ∀ {n} (xs : Vec A n) → P xs
@@ -38,7 +39,7 @@ infixr 20 _∷_
 
 private variable
   ℓ : Level
-  A B : Type ℓ
+  A B C : Type ℓ
   n k : Nat
 
 lookup : Vec A n → Fin n → A
@@ -54,7 +55,7 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
     (λ { zero _ → []
        ; (suc x) p → absurd (zero≠suc p)
        })
-    (λ { {n} head tail cast-tail zero 1+n=len → absurd (zero≠suc (sym 1+n=len))
+    (λ { {n} head tail cast-tail zero 1+n=len → absurd (suc≠zero 1+n=len)
        ; {n} head tail cast-tail (suc len) 1+n=len →
           head ∷ cast-tail len (suc-inj 1+n=len)
        })
@@ -64,12 +65,12 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
 lookup-safe : Vec A n → Fin n → A
 lookup-safe {A = A} xs n =
   Fin-elim (λ {n} _ → Vec A n → A)
-    (λ {k} xs → Vec-elim (λ {k′} _ → suc k ≡ k′ → A)
-      (λ p → absurd (zero≠suc (sym p)))
+    (λ {k} xs → Vec-elim (λ {k'} _ → suc k ≡ k' → A)
+      (λ p → absurd (suc≠zero p))
       (λ x _ _ _ → x) xs refl)
     (λ {i} j cont vec →
-      Vec-elim (λ {k′} xs → suc i ≡ k′ → A)
-        (λ p → absurd (zero≠suc (sym p)))
+      Vec-elim (λ {k'} xs → suc i ≡ k' → A)
+        (λ p → absurd (suc≠zero p))
         (λ {n} head tail _ si=sn → cont (Vec-cast (suc-inj (sym si=sn)) tail)) vec refl)
     n xs
 ```
@@ -83,6 +84,14 @@ tabulate {suc n} f = f fzero ∷ tabulate (λ x → f (fsuc x))
 map : (A → B) → Vec A n → Vec B n
 map f [] = []
 map f (x ∷ xs) = f x ∷ map f xs
+
+zip-with : (A → B → C) → Vec A n → Vec B n → Vec C n
+zip-with f [] [] = []
+zip-with f (x ∷ xs) (y ∷ ys) = f x y ∷ zip-with f xs ys
+
+replicate : (n : Nat) → A → Vec A n
+replicate zero a = []
+replicate (suc n) a = a ∷ replicate n a
 
 instance
   From-prod-Vec : From-product A (Vec A)

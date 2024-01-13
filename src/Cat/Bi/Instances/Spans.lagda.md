@@ -36,7 +36,7 @@ category where $\hom(a,b)$ is the collection of spans from $a$ to $b$.
 
 However, we can make spans in $\cC$ the _objects_ of a category, and
 the hom-sets are the maps in $\cC$ between the vertices which
-"commute with the legs". Diagramatically, a map between spans is the
+"commute with the legs". Diagrammatically, a map between spans is the
 dashed line in
 
 ~~~{.quiver}
@@ -90,10 +90,10 @@ Span-hom-path {x = x} {y} {f} {g} p i .right j =
 ```
 -->
 
-The category $\rm{Spans}_\cC(A, B)$ of spans between $A$ and $B$
-admits a faithful functor to $\cC$ (projecting the vertex and the
-"middle map", respectively), so that equality of maps of spans can be
-compared at the level of maps in $\cC$.
+The category $\Spans_\cC(A, B)$ of spans between $A$ and $B$ admits a
+[[faithful functor]] to $\cC$ (projecting the vertex and the "middle
+map", respectively), so that equality of maps of spans can be compared
+at the level of maps in $\cC$.
 
 ```agda
 Spans : Ob → Ob → Precategory _ _
@@ -172,12 +172,11 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
 
 What we'll show in the rest of this module is that `Span-∘`{.Agda} lets
 us make `Spans`{.Agda} into the categories of 1-cells of a
-_prebicategory_, the **(pre)bicategory of spans** (of $\cC$)
-$\rm{Span}(\cC)$. As mentioned before, this prebicategory has (a
-priori) no upper bound on the h-levels of its 1-cells, so it is not
-locally strict. We remark that when $\cC$ is univalent, then
-$\rm{Span}(\cC)$ is locally so, and when $\cC$ is gaunt, then
-$\rm{Span}(\cC)$ is strict.
+_prebicategory_, the **(pre)bicategory of spans** (of $\cC$),
+$\Spans(\cC)$. As mentioned before, this prebicategory has (a priori) no
+upper bound on the h-levels of its 1-cells, so it is not locally strict.
+We remark that when $\cC$ is univalent, then $\Spans(\cC)$ is locally
+so, and when $\cC$ is gaunt, then $\Spans(\cC)$ is strict.
 
 Since the details of the full construction are _grueling_, we will
 present only an overview of the unitors and the associator. For the left
@@ -227,7 +226,7 @@ S \To S$. The right unitor is analogous.
 ```
 
 For the associator, while doing the construction in elementary terms is
-quite complicated, we observe that, diagramatically, the composite of
+quite complicated, we observe that, diagrammatically, the composite of
 three morphisms fits into a diagram like
 
 ~~~{.quiver}
@@ -262,7 +261,7 @@ variables and) satisfy the triangle and pentagon identities.
 ```agda
     sα← : ∀ {A B C D} ((f , g , h) : Span C D × Span B C × Span A B)
         → Span-hom ((f ¤ g) ¤ h) (f ¤ (g ¤ h))
-    sα← (f , g , h) .map = pb _ _ .universal resp′ where
+    sα← (f , g , h) .map = pb _ _ .universal resp' where
       abstract
         resp : g .left C.∘ pb (f .left) (g .right) .p₂
            C.∘ pb ((f ¤ g) .left) (h .right) .p₁
@@ -272,17 +271,17 @@ variables and) satisfy the triangle and pentagon identities.
       shuffle = pb _ _ .universal {p₁' = pb _ _ .p₂ C.∘ pb _ _ .p₁} {p₂' = pb _ _ .p₂} resp
 
       abstract
-        resp′ : f .left C.∘ pb (f .left) (g .right) .p₁
+        resp' : f .left C.∘ pb (f .left) (g .right) .p₁
             C.∘ pb ((f ¤ g) .left) (h .right) .p₁
               ≡ (g ¤ h) .right C.∘ shuffle
-        resp′ = sym $ pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))
+        resp' = sym $ pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))
 
     sα← (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal)
     sα← (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ assoc _ _ _
 
     sα→ : ∀ {A B C D} ((f , g , h) : Span C D × Span B C × Span A B)
         → Span-hom (f ¤ (g ¤ h)) ((f ¤ g) ¤ h)
-    sα→ (f , g , h) .map = pb _ _ .universal resp′ where
+    sα→ (f , g , h) .map = pb _ _ .universal resp' where
       abstract
         resp : f .left C.∘ pb (f .left) ((g ¤ h) .right) .p₁
              ≡ g .right C.∘ pb (g .left) (h .right) .p₁
@@ -292,10 +291,10 @@ variables and) satisfy the triangle and pentagon identities.
       shuffle = pb _ _ .universal {p₁' = pb _ _ .p₁} {p₂' = pb _ _ .p₁ C.∘ pb _ _ .p₂} resp
 
       abstract
-        resp′ : (f ¤ g) .left C.∘ shuffle
+        resp' : (f ¤ g) .left C.∘ shuffle
               ≡ h .right C.∘ pb (g .left) (h .right) .p₂
             C.∘ pb (f .left) ((g ¤ h) .right) .p₂
-        resp′ = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square)
+        resp' = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square)
 
     sα→ (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ assoc _ _ _
     sα→ (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal)

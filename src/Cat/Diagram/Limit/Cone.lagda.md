@@ -7,7 +7,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 ```
 -->
@@ -16,7 +15,7 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Cone where
 ```
 
-# Limits via Cones
+# Limits via cones
 
 As noted in the main page on [limits], most introductory material defines
 limits via a mathematical widget called a **cone**.
@@ -166,13 +165,13 @@ again preserve _all_ the commutativities.
 ```
 -->
 
-## Terminal Cones as Limits
+## Terminal cones as limits
 
 Note that cones over some diagram $F$ contain the exact same data as
-natural transformations from a constant functor to $F$.
-To obtain a limit, all we need is a way of stating that a given cone is
-universal. In particular, the [terminal object] in the category of cones
-over a diagram $F$ (if it exists!) is the limit of $F$.
+natural transformations from a constant functor to $F$.  To obtain a
+limit, all we need is a way of stating that a given cone is universal.
+In particular, the [[terminal object]] in the category of cones over a
+diagram $F$ (if it exists!) is the limit of $F$.
 
 [terminal object]: Cat.Diagram.Terminal.html
 
@@ -196,17 +195,17 @@ differently.
 
     isl : is-ran _ F _ (cone→counit F (Cone→cone K))
     isl .σ {M = M} α = nt where
-      α′ : Cone
-      α′ .apex = M .Functor.F₀ tt
-      α′ .ψ x = α .η x
-      α′ .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
+      α' : Cone
+      α' .apex = M .Functor.F₀ tt
+      α' .ψ x = α .η x
+      α' .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
 
       nt : M => const! (K .apex)
-      nt .η x = term α′ .centre .hom
+      nt .η x = term α' .centre .hom
       nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
     isl .σ-comm = Nat-path λ x → term _ .centre .commutes _
-    isl .σ-uniq {σ′ = σ′} x = Nat-path λ _ → ap hom $ term _ .paths λ where
-      .hom        → σ′ .η _
+    isl .σ-uniq {σ' = σ'} x = Nat-path λ _ → ap hom $ term _ .paths λ where
+      .hom        → σ' .η _
       .commutes _ → sym (x ηₚ _)
 ```
 

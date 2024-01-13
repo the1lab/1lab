@@ -1,9 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Orthogonal
-open import Cat.Diagram.Terminal
-open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.Power
@@ -15,6 +12,8 @@ import Cat.Reasoning
 ```agda
 module Cat.Morphism.Factorisation where
 ```
+
+# Orthogonal factorisation systems {defines="orthogonal-factorisation-system"}
 
 Suppose you have some category $\cC$ and you, inspired by the wisdom
 of King Solomon, want to chop every morphism in half. A **factorisation
@@ -114,7 +113,7 @@ morphism. We reproduce the proof from [@Borceux:vol1, §5.5].
         ( (f .C.to C.∘ fa1 .mediate ≡ fa2 .mediate)
         × (fa1 .forget C.∘ f .C.from ≡ fa2 .forget))
   factorisation-essentially-unique f fa1 fa2 =
-    C.make-iso (upq .fst) (vp′q′ .fst) vu=id uv=id , upq .snd .fst , vp′q′ .snd .snd
+    C.make-iso (upq .fst) (vp'q' .fst) vu=id uv=id , upq .snd .fst , vp'q' .snd .snd
     where
 ```
 
@@ -130,7 +129,7 @@ e'$, and $e'v = e$.
       upq = E⊥M fa1.mediate fa2.forget fa1.mediate∈E fa2.forget∈M
         (sym fa1.factors ∙ fa2.factors) .centre
 
-      vp′q′ = E⊥M fa2.mediate fa1.forget fa2.mediate∈E fa1.forget∈M
+      vp'q' = E⊥M fa2.mediate fa1.forget fa2.mediate∈E fa1.forget∈M
         (sym fa2.factors ∙ fa1.factors) .centre
 ```
 
@@ -155,12 +154,12 @@ and since both $vu$ and the identity are in that diagonal, $uv =
 ~~~
 
 ```agda
-      vu=id : upq .fst C.∘ vp′q′ .fst ≡ C.id
+      vu=id : upq .fst C.∘ vp'q' .fst ≡ C.id
       vu=id = ap fst $ is-contr→is-prop
         (E⊥M fa2.mediate fa2.forget fa2.mediate∈E fa2.forget∈M refl)
-        ( upq .fst C.∘ vp′q′ .fst
-        , C.pullr (vp′q′ .snd .fst) ∙ upq .snd .fst
-        , C.pulll (upq .snd .snd) ∙ vp′q′ .snd .snd
+        ( upq .fst C.∘ vp'q' .fst
+        , C.pullr (vp'q' .snd .fst) ∙ upq .snd .fst
+        , C.pulll (upq .snd .snd) ∙ vp'q' .snd .snd
         ) (C.id , C.idl _ , C.idr _)
 ```
 
@@ -171,12 +170,12 @@ morphism are a proposition.
 
 <!--
 ```agda
-      uv=id : vp′q′ .fst C.∘ upq .fst ≡ C.id
+      uv=id : vp'q' .fst C.∘ upq .fst ≡ C.id
       uv=id = ap fst $ is-contr→is-prop
         (E⊥M fa1.mediate fa1.forget fa1.mediate∈E fa1.forget∈M refl)
-        ( vp′q′ .fst C.∘ upq .fst
-        , C.pullr (upq .snd .fst) ∙ vp′q′ .snd .fst
-        , C.pulll (vp′q′ .snd .snd) ∙ upq .snd .snd
+        ( vp'q' .fst C.∘ upq .fst
+        , C.pullr (upq .snd .fst) ∙ vp'q' .snd .fst
+        , C.pulll (vp'q' .snd .snd) ∙ upq .snd .snd
         ) (C.id , C.idl _ , C.idr _)
 ```
 -->

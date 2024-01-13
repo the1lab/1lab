@@ -1,9 +1,8 @@
 open import 1Lab.Reflection hiding (reverse)
 open import 1Lab.Type
 
+open import Data.Dec.Base
 open import Data.Fin.Base
-open import Data.Nat.Base
-open import Data.List hiding (reverse)
 
 module 1Lab.Reflection.Variables where
 
@@ -62,10 +61,10 @@ empty-vars = mk-variables [] (λ _ → nothing)
 
 private
   bind : Term → Term → (Term → Maybe Term) → Term → Maybe Term
-  bind tm tm-var lookup tm′ with lookup tm′ | tm term=? tm′
-  ... | just tm′-var | _ = just tm′-var
-  ... | nothing      | true = just tm-var
-  ... | nothing      | false = nothing
+  bind tm tm-var lookup tm' with lookup tm' | tm ≡? tm'
+  ... | just tm'-var | _     = just tm'-var
+  ... | nothing      | yes _ = just tm-var
+  ... | nothing      | no _  = nothing
 
   fin-term : Nat → Term
   fin-term zero = con (quote fzero) (unknown h∷ [])
@@ -89,16 +88,16 @@ private
 bind-var : Variables A → Term → TC (Term × Variables A)
 bind-var vs tm with variables vs tm
 ... | just v = do
-  returnTC (v , vs)
+  pure (v , vs)
 ... | nothing = do
   a ← unquoteTC tm
   let v = fin-term (nvars vs)
-  let vs′ = mk-variables (bound vs ▷ a)
+  let vs' = mk-variables (bound vs ▷ a)
                          (bind tm v (variables vs))
-  returnTC (v , vs′)
+  pure (v , vs')
 
 environment : Variables A → TC (Term × Term)
 environment vs = do
   env ← quoteTC (reverse (bound vs))
   size ← quoteTC (nvars vs)
-  returnTC (size , env)
+  pure (size , env)

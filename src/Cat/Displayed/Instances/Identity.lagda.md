@@ -24,22 +24,22 @@ open Functor
 open Total-hom
 ```
 
-## The Identity Bifibration
+## The identity bifibration
 
-Let $\cB$ be a precategory. We can define a displayed category
-$\mathrm{Id}(\cB)$ over $B$ whose total category is isomorphic to $B$,
-called the **identity bifibration**.
+Let $\cB$ be a precategory. We can define a [[displayed category]]
+$\mathrm{Id}(\cB)$ over $B$ whose [[total category]] is isomorphic to
+$B$, called the **identity bifibration**.
 
 ```agda
 IdD : Displayed B lzero lzero
 IdD .Ob[_] _ = ⊤
 IdD .Hom[_] _ _ _ = ⊤
 IdD .Hom[_]-set _ _ _ = hlevel!
-IdD .id′ = tt
-IdD ._∘′_ _ _ = tt
-IdD .idr′ _ = refl
-IdD .idl′ _ = refl
-IdD .assoc′ _ _ _ = refl
+IdD .id' = tt
+IdD ._∘'_ _ _ = tt
+IdD .idr' _ = refl
+IdD .idl' _ = refl
+IdD .assoc' _ _ _ = refl
 ```
 
 This fibration is obviously a discrete fibration; in fact, it's about as
@@ -80,14 +80,14 @@ IdD-bifibration : is-bifibration IdD
 ```
 <!--
 ```agda
-IdD-fibration .Cartesian-fibration.has-lift f y′ .Cartesian-lift.x′ = tt
-IdD-fibration .Cartesian-fibration.has-lift f y′ .Cartesian-lift.lifting = tt
-IdD-fibration .Cartesian-fibration.has-lift f y′ .Cartesian-lift.cartesian =
+IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.x' = tt
+IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.lifting = tt
+IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.cartesian =
   idd-is-cartesian
 
-IdD-opfibration .Cocartesian-fibration.has-lift f x′ .Cocartesian-lift.y′ = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x′ .Cocartesian-lift.lifting = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x′ .Cocartesian-lift.cocartesian =
+IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.y' = tt
+IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.lifting = tt
+IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.cocartesian =
   idd-is-cocartesian
 
 IdD-bifibration .is-bifibration.fibration = IdD-fibration
@@ -95,10 +95,10 @@ IdD-bifibration .is-bifibration.opfibration = IdD-opfibration
 ```
 -->
 
-## Fibre Categories
+## Fibre categories
 
-The fibre categories of the identity bifibration are isomorphic to
-the terminal category.
+The [[fibre categories]] of the identity bifibration are isomorphic to
+the [[terminal category]].
 
 ```agda
 IdDFib : ∀ x → Functor ⊤Cat (Fibre IdD x)
@@ -112,7 +112,7 @@ IdD-is-iso x .is-precat-iso.has-is-ff = id-equiv
 IdD-is-iso x .is-precat-iso.has-is-iso = id-equiv
 ```
 
-## Total Category
+## Total category
 
 The total category of the identity bifibration is isomorphic to $\cB$
 itself.

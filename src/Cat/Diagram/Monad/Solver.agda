@@ -1,6 +1,6 @@
 module Cat.Diagram.Monad.Solver where
 
-open import 1Lab.Prelude hiding (id; _∘_)
+open import 1Lab.Prelude hiding (id; _∘_; refl⟩∘⟨_; _⟩∘⟨refl)
 open import 1Lab.Reflection hiding (_++_)
 
 open import Cat.Base
@@ -18,7 +18,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
 
   --------------------------------------------------------------------------------
   -- NOTE: Object Expressions
-  -- We can′t index everything by 'Ob', as Agda will (rightfully) assume that M₀ is not injective,
+  -- We can't index everything by 'Ob', as Agda will (rightfully) assume that M₀ is not injective,
   -- which then inhibits on our ability to pattern match on things.
   -- Therefore, we introduce a reflected type of object expressions,
   -- which solves the injectivity issue.
@@ -263,31 +263,31 @@ module Reflection where
   build-object-expr monad (“M₀” monad' x) = do
     unify monad monad'
     x ← build-object-expr monad x
-    returnTC $ con (quote NbE.‶M₀‶) (x v∷ [])
+    pure $ con (quote NbE.‶M₀‶) (x v∷ [])
   build-object-expr monad x =
-    returnTC $ con (quote NbE.‶_‶) (x v∷ [])
+    pure $ con (quote NbE.‶_‶) (x v∷ [])
 
   build-hom-expr : Term → Term → TC Term
   build-hom-expr monad “id” =
-    returnTC $ con (quote NbE.‶id‶) []
+    pure $ con (quote NbE.‶id‶) []
   build-hom-expr monad (“∘” f g) = do
     f ← build-hom-expr monad f
     g ← build-hom-expr monad g
-    returnTC $ con (quote NbE._‶∘‶_) (f v∷ g v∷ [])
+    pure $ con (quote NbE._‶∘‶_) (f v∷ g v∷ [])
   build-hom-expr monad (“M₁” monad' f) = do
     unify monad monad'
     f ← build-hom-expr monad f
-    returnTC $ con (quote NbE.‶M₁‶) (f v∷ [])
+    pure $ con (quote NbE.‶M₁‶) (f v∷ [])
   build-hom-expr monad (“η” monad' x) = do
     unify monad monad'
     x ← build-object-expr monad x
-    returnTC $ con (quote NbE.‶η‶) (x v∷ [])
+    pure $ con (quote NbE.‶η‶) (x v∷ [])
   build-hom-expr monad (“μ” monad' x) = do
     x ← build-object-expr monad x
     unify monad monad'
-    returnTC $ con (quote NbE.‶μ‶) (x v∷ [])
+    pure $ con (quote NbE.‶μ‶) (x v∷ [])
   build-hom-expr monad f =
-    returnTC $ con (quote NbE._↑) (f v∷ [])
+    pure $ con (quote NbE._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce =
@@ -301,7 +301,7 @@ module Reflection where
     withNormalisation false $
     withReduceDefs (false , dont-reduce) $ do
       monad-tm ← quoteTC monad
-      goal ← inferType hole >>= reduce
+      goal ← infer-type hole >>= reduce
       just (lhs , rhs) ← get-boundary goal
         where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                     termErr goal ∷ []

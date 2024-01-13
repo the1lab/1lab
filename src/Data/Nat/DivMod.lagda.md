@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Data.Nat.Properties
+open import Data.Nat.Divisible
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Dec.Base
@@ -57,7 +58,7 @@ $(1 + r') < b$.
 
 ```agda
 divide-pos (suc a) b with divide-pos a b
-divide-pos (suc a) b | divmod q′ r′ p s with ≤-split (suc r′) b
+divide-pos (suc a) b | divmod q' r' p s with ≤-split (suc r') b
 ```
 
 First, suppose that $1 + r' < b$, i.e., $1 + r'$ _can_ serve as a
@@ -69,8 +70,8 @@ $$
 $$
 
 ```agda
-divide-pos (suc a) b | divmod q′ r′ p s | inl r′+1<b =
-  divmod q′ (suc r′) (ap suc p ∙ sym (+-sucr (q′ * b) r′)) r′+1<b
+divide-pos (suc a) b | divmod q' r' p s | inl r'+1<b =
+  divmod q' (suc r') (ap suc p ∙ sym (+-sucr (q' * b) r')) r'+1<b
 ```
 
 The other case --- that in which $1 + r' = b$ --- is more interesting.
@@ -80,13 +81,13 @@ in this case, $q = 1 + q'$ and $r = 0$, which works out because ($0 < b$
 and) of some arithmetic. See for yourself:
 
 ```agda
-divide-pos (suc a) (suc b′) | divmod q′ r′ p s | inr (inr r′+1=b) =
-  divmod (suc q′) 0
+divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inr r'+1=b) =
+  divmod (suc q') 0
     ( suc a                           ≡⟨ ap suc p ⟩
-      suc (q′ * (suc b′) + r′)        ≡˘⟨ ap (λ e → suc (q′ * e + r′)) r′+1=b ⟩
-      suc (q′ * (suc r′) + r′)        ≡⟨ nat! ⟩
-      suc (r′ + q′ * (suc r′) + zero) ≡⟨ ap (λ e → e + q′ * e + 0) r′+1=b ⟩
-      (suc b′) + q′ * (suc b′) + 0    ∎ )
+      suc (q' * (suc b') + r')        ≡˘⟨ ap (λ e → suc (q' * e + r')) r'+1=b ⟩
+      suc (q' * (suc r') + r')        ≡⟨ nat! ⟩
+      suc (r' + q' * (suc r') + zero) ≡⟨ ap (λ e → e + q' * e + 0) r'+1=b ⟩
+      (suc b') + q' * (suc b') + 0    ∎ )
     (s≤s 0≤x)
 ```
 
@@ -95,9 +96,9 @@ discard -- that in which $b < 1 + r'$. It's impossible because, by the
 definition of division, we have $r' < b$, meaning $(1 + r') \le b$.
 
 ```agda
-divide-pos (suc a) (suc b′) | divmod q′ r′ p s | inr (inl b<r′+1) =
-  absurd $ <-not-equal b<r′+1
-    (≤-antisym (≤-sucr (≤-peel b<r′+1)) (recover (≤-dec _ _) s))
+divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inl b<r'+1) =
+  absurd (<-not-equal b<r'+1
+    (≤-antisym (≤-sucr (≤-peel b<r'+1)) (recover s)))
 ```
 
 As a finishing touch, we define short operators to produce the result of
@@ -117,9 +118,25 @@ a /ₙ suc b = divide-pos a (suc b) .DivMod.quot
 
 is-divmod : ∀ x y → .⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
 is-divmod x (suc y) with divide-pos x (suc y)
-... | divmod q r α β = recover (Discrete-Nat _ _) α
+... | divmod q r α β = recover α
 
 x%y<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x % y) < y
 x%y<y x (suc y) with divide-pos x (suc y)
-... | divmod q r α β = recover (≤-dec _ _) β
+... | divmod q r α β = recover β
+```
+
+With this, we can decide whether two numbers divide each other by
+checking whether the remainder is zero!
+
+```agda
+instance
+  Dec-∣ : ∀ {n m} → Dec (n ∣ m)
+  Dec-∣ {zero} {m} = m ≡? 0
+  Dec-∣ n@{suc _} {m} with divide-pos m n
+  ... | divmod q 0 α β = yes (q , sym (+-zeror _) ∙ sym (recover α))
+  ... | divmod q r@(suc _) α β = no λ (q' , p) →
+    let
+      n∣r : (q' - q) * n ≡ r
+      n∣r = monus-distribr q' q n ∙ sym (monus-swapl _ _ _ (sym (p ∙ recover α)))
+    in <-≤-asym (recover β) (m∣sn→m≤sn (q' - q , n∣r))
 ```

@@ -7,9 +7,7 @@ open import 1Lab.Type
 
 open import Data.Nat.Properties
 open import Data.Fin.Base
-open import Data.Nat.Base
-open import Data.Bool
-open import Data.List
+open import Data.List hiding (lookup)
 ```
 -->
 
@@ -17,7 +15,7 @@ open import Data.List
 module Data.Nat.Solver where
 ```
 
-# The Nat Solver
+# The Nat solver
 
 This module defines a solver for equations in the commutative semiring
 of [natural numbers]. Our approach splits cleanly into 3 distinct parts:
@@ -28,7 +26,7 @@ of [natural numbers]. Our approach splits cleanly into 3 distinct parts:
 - Evaluation of reflected terms into polynomials
 - The reflection interface
 
-## Horner Normal Forms
+## Horner normal forms
 
 If we ignore the `suc`{.Agda} and `zero`{.Agda} constructors, and their
 respective equations, the core problem at hand is trying to compute
@@ -131,7 +129,7 @@ decidedly more difficult. As the solver is not expected to deal with
 polynomials with large degrees, this term blow-up will not be a problem
 in practice.
 
-### Operations on Horner Normal Forms
+### Operations on Horner normal forms
 
 Now, let's define a handful of functions for constructing and combining
 polynomials.  The naming here can get a bit confusing, so let's stick
@@ -197,7 +195,7 @@ We predeclare their types to make Agda happy:
 
 ```agda
 _*ₚ_ : Poly Nat n → Poly Nat n → Poly Nat n
-_*ₚ′_ : Poly Nat n → Poly Nat (suc n) → Poly Nat (suc n)
+_*ₚ'_ : Poly Nat n → Poly Nat (suc n) → Poly Nat (suc n)
 ```
 
 First, the homogeneous multiplication. The first two cases are pretty
@@ -212,18 +210,18 @@ $X_0$). When multiplying `p` and `r`, we need to add on a `0ₚ` under the
 ```agda
 const c₁  *ₚ const c₂ = const (c₁ * c₂)
 zerop     *ₚ q        = zerop
-(p *X+ q) *ₚ r        = ((p *ₚ r) *X+ 0ₚ) +ₚ (q *ₚ′ r)
+(p *X+ q) *ₚ r        = ((p *ₚ r) *X+ 0ₚ) +ₚ (q *ₚ' r)
 ```
 
 For the heterogeneous case, the call graph is simpler, as we can fall
 back to the homogeneous operator.
 
 ```agda
-r *ₚ′ zerop     = zerop
-r *ₚ′ (p *X+ q) = (r *ₚ′ p) *X+ (r *ₚ q)
+r *ₚ' zerop     = zerop
+r *ₚ' (p *X+ q) = (r *ₚ' p) *X+ (r *ₚ q)
 ```
 
-### Evaluation of Horner Normal Forms
+### Evaluation of Horner normal forms
 
 Multivariate polynomials represent functions $A^n \to A$, so we should
 be able to interpret them as such. Luckily, Horner Normal Forms are
@@ -245,7 +243,7 @@ block x = x
 ⟦ p *X+ q ⟧ₚ (x₀ ∷ env) = ⟦ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ q ⟧ₚ env
 ```
 
-### Soundness of the Operations
+### Soundness of the operations
 
 Now, it's important that the operations we defined actually denote the
 correct operations on natural numbers. As a warm up, let's show that the
@@ -319,9 +317,9 @@ of soundness as well.
 sound-*ₚ
   : ∀ p q → (env : Vec Nat n)
   → ⟦ p *ₚ q ⟧ₚ env ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ env
-sound-*ₚ′
+sound-*ₚ'
   : ∀ p q → (x₀ : Nat) → (env : Vec Nat n)
-  → ⟦ p *ₚ′ q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
+  → ⟦ p *ₚ' q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
 ```
 
 The first couple of cases of homogeneous multiplication don't look so
@@ -350,8 +348,8 @@ on.
 sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ⟦ 0ₚ +ₚ (r *ₚ s) ⟧ₚ env                ≡⟨ ap (λ ϕ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ϕ) (sound-+ₚ 0ₚ (r *ₚ s) env) ⟩
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦ 0ₚ ⟧ₚ env + ⟦ r *ₚ s ⟧ₚ env)        ≡⟨ ap₂ (λ ϕ ψ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (ϕ + ψ)) (sound-0ₚ env) (sound-*ₚ r s env) ⟩
-  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ′ q) (x₀ ∷ env)) ⟩
-  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ′ r q x₀ env) ⟩
+  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ' q) (x₀ ∷ env)) ⟩
+  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ' r q x₀ env) ⟩
   (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * ⟦q⟧) * x₀ + ⟦r⟧ * ⟦s⟧        ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦s⟧) (*-distrib-+r (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (⟦r⟧ * ⟦q⟧) x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡˘⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
@@ -360,9 +358,9 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p⟧ * x₀ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡˘⟨ *-distrib-+r (⟦p⟧ * x₀) ⟦r⟧ (⟦q⟧ * x₀ + ⟦s⟧) ⟩
   (⟦p⟧ * x₀ + ⟦r⟧) * (⟦q⟧ * x₀ + ⟦s⟧)                          ∎
   where
-    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ′ q) ⟧ₚ (x₀ ∷ env)
+    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ' q) ⟧ₚ (x₀ ∷ env)
     ⟦p*⟨qx+s⟩⟧ = ⟦ p *ₚ (q *X+ s) ⟧ₚ (x₀ ∷ env)
-    ⟦r*q⟧ = ⟦ r *ₚ′ q ⟧ₚ (x₀ ∷ env)
+    ⟦r*q⟧ = ⟦ r *ₚ' q ⟧ₚ (x₀ ∷ env)
     ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
     ⟦r⟧ = ⟦ r ⟧ₚ env
     ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷ env)
@@ -373,9 +371,9 @@ As a nice palate cleanser, the proofs for heterogeneous multiplication
 are nowhere near as bad.
 
 ```agda
-sound-*ₚ′ p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
-sound-*ₚ′ r (p *X+ q) x₀ env =
-  ⟦ r *ₚ′ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ′ r p x₀ env) (sound-*ₚ r q env) ⟩
+sound-*ₚ' p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
+sound-*ₚ' r (p *X+ q) x₀ env =
+  ⟦ r *ₚ' p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ' r p x₀ env) (sound-*ₚ r q env) ⟩
   ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
   ⟦r⟧ * (⟦p⟧ * x₀) + ⟦r⟧ * ⟦q⟧                   ≡˘⟨ *-distrib-+l  (⟦p⟧ * x₀) ⟦q⟧ ⟦r⟧ ⟩
   ⟦r⟧ * (⟦p⟧ * x₀ + ⟦q⟧)                         ∎
@@ -387,7 +385,7 @@ sound-*ₚ′ r (p *X+ q) x₀ env =
 
 This concludes phase one of the solver.
 
-## Evaluation into Polynomials
+## Evaluation into polynomials
 
 Now that we've gotten the first phase of the solver done, let's move on
 to expressions in the language of natural numbers. Our first move shall
@@ -445,7 +443,7 @@ handle literals separately.
 ↓ (e₁ ‵* e₂) = (↓ e₁) *ₚ (↓ e₂)
 ```
 
-### Soundness of Evaluation
+### Soundness of evaluation
 
 With all of that machinery in place, our final proof shall be to show
 that evaluating an expression into a polynomial has the same semantics
@@ -505,13 +503,13 @@ into our `Expr`{.Agda} type.
 private
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ (lit (nat n)) v∷ _)
-  pattern ″zero″ =
+  pattern “zero” =
     con (quote zero) []
-  pattern ″suc″ x =
+  pattern “suc” x =
     con (quote suc) (x v∷ [])
-  pattern _″+″_ x y =
+  pattern _“+”_ x y =
     def (quote _+_) (x v∷ y v∷ _)
-  pattern _″*″_ x y =
+  pattern _“*”_ x y =
     def (quote _*_) (x v∷ y v∷ _)
 ```
 
@@ -526,23 +524,23 @@ private
   build-expr : Variables Nat → Term → TC (Term × Variables Nat)
   build-expr vs (nat-lit n) = do
     ‵n ← quoteTC n
-    returnTC $ con (quote ‵lit) (‵n v∷ []) , vs
-  build-expr vs ″zero″ = do
-    returnTC $ con (quote ‵0) (unknown h∷ []) , vs
-  build-expr vs (″suc″ t) = do
+    pure $ con (quote ‵lit) (‵n v∷ []) , vs
+  build-expr vs “zero” = do
+    pure $ con (quote ‵0) (unknown h∷ []) , vs
+  build-expr vs (“suc” t) = do
     e , vs ← build-expr vs t
-    returnTC $ con (quote ‵1+_) (unknown h∷ e v∷ []) , vs
-  build-expr vs (t₁ ″+″ t₂) = do
+    pure $ con (quote ‵1+_) (unknown h∷ e v∷ []) , vs
+  build-expr vs (t₁ “+” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
-    returnTC $ con (quote _‵+_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
-  build-expr vs (t₁ ″*″ t₂) = do
+    pure $ con (quote _‵+_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
+  build-expr vs (t₁ “*” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
-    returnTC $ con (quote _‵*_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
+    pure $ con (quote _‵*_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
   build-expr vs tm = do
-    (v , vs′) ← bind-var vs tm
-    returnTC $ con (quote ‵_) (v v∷ []) , vs′
+    (v , vs') ← bind-var vs tm
+    pure $ con (quote ‵_) (v v∷ []) , vs'
 ```
 
 Next, let's define the quoted forms of some terms that we will use to
@@ -550,16 +548,16 @@ interface with the solver.
 
 ```agda
 private
-  ″expand″ : Term → Term → Term
-  ″expand″ e env = def (quote expand) (unknown h∷ e v∷ env v∷ [])
+  “expand” : Term → Term → Term
+  “expand” e env = def (quote expand) (unknown h∷ e v∷ env v∷ [])
 
-  ″solve″ : Term → Term → Term → Term
-  ″solve″ lhs rhs env =
+  “solve” : Term → Term → Term → Term
+  “solve” lhs rhs env =
     def (quote solve)
         (unknown h∷ lhs v∷ rhs v∷ env v∷ def (quote refl) [] v∷ [])
 ```
 
-### The Actual Macros
+### The actual macros
 
 Now, the actual reflection API calls. In order to keep drawing this file
 out, we start by defining some useful debugging macros. As we noted a
@@ -611,7 +609,7 @@ expand-macro n hole =
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
-  expanded ← reduce (″expand″ e env)
+  expanded ← reduce (“expand” e env)
   unify hole expanded
 
 macro
@@ -627,7 +625,7 @@ solve-macro : Term → TC ⊤
 solve-macro hole =
   withNormalisation false $
   withReduceDefs (false , don't-reduce) $ do
-  goal ← inferType hole >>= reduce
+  goal ← infer-type hole >>= reduce
 
   just (lhs , rhs) ← get-boundary goal
     where nothing → typeError $ strErr "Can't determine boundary: " ∷
@@ -635,9 +633,9 @@ solve-macro hole =
   elhs , vs ← build-expr empty-vars lhs
   erhs , vs ← build-expr vs rhs
   size , env ← environment vs
-  (noConstraints $ unify hole (″solve″ elhs erhs env)) <|> do
-    nf-lhs ← normalise (″expand″ elhs env)
-    nf-rhs ← normalise (″expand″ erhs env)
+  (noConstraints $ unify hole (“solve” elhs erhs env)) <|> do
+    nf-lhs ← normalise (“expand” elhs env)
+    nf-rhs ← normalise (“expand” erhs env)
     typeError (strErr "Could not solve the following goal:\n  " ∷
                  termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
                strErr "\nComputed normal forms:\n  LHS: " ∷

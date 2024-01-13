@@ -17,7 +17,7 @@ open import Data.Sum.Base
 module Data.Nat.Divisible.GCD where
 ```
 
-# Greatest common divisors
+# Greatest common divisors {defines="greatest-common-divisor gcd"}
 
 The **greatest common divisor** $\gcd(a,b)$ of a pair of natural numbers
 is the largest number which [divides] them both. The definition we use
@@ -37,7 +37,7 @@ record is-gcd (x y : Nat) (gcd : Nat) : Type where
   field
     gcd-∣l : gcd ∣ x
     gcd-∣r : gcd ∣ y
-    greatest : ∀ {g′} → g′ ∣ x → g′ ∣ y → g′ ∣ gcd
+    greatest : ∀ {g'} → g' ∣ x → g' ∣ y → g' ∣ gcd
 
 open is-gcd
 
@@ -60,8 +60,8 @@ GCD-is-prop (_ , p) (_ , q) = Σ-prop-path! $
 GCD-magnitude
   : ∀ {x y g : Nat}
   → is-gcd x y (suc g)
-  → ∀ {g′} → g′ ∣ x → g′ ∣ y
-  → g′ ≤ suc g
+  → ∀ {g'} → g' ∣ x → g' ∣ y
+  → g' ≤ suc g
 GCD-magnitude gcd α β = m∣sn→m≤sn (gcd .greatest α β)
 ```
 
@@ -75,13 +75,13 @@ divides→GCD {x} {y} w = x , gcd where
   gcd : is-gcd x y x
   gcd .gcd-∣l = ∣-refl
   gcd .gcd-∣r = w
-  gcd .greatest g′∣x g′∣y = g′∣x
+  gcd .greatest g'∣x g'∣y = g'∣x
 
 GCD-sym : ∀ {x y} → GCD x y → GCD y x
 GCD-sym w .fst = w .fst
 GCD-sym w .snd .gcd-∣l = w .snd .gcd-∣r
 GCD-sym w .snd .gcd-∣r = w .snd .gcd-∣l
-GCD-sym w .snd .greatest g′∣y g′∣x = w .snd .greatest g′∣x g′∣y
+GCD-sym w .snd .greatest g'∣y g'∣x = w .snd .greatest g'∣x g'∣y
 ```
 
 ## Euclid's algorithm
@@ -95,7 +95,7 @@ but also to show that they are greatest common divisors.
 ```agda
 module Euclid where
   private variable
-    n m k d d′ : Nat
+    n m k d d' : Nat
 ```
 
 The base case can be established using our existing functions:
@@ -104,7 +104,7 @@ The base case can be established using our existing functions:
   is-gcd-0 : is-gcd n 0 n
   is-gcd-0 .gcd-∣l = ∣-refl
   is-gcd-0 .gcd-∣r = ∣-zero
-  is-gcd-0 .greatest g′∣n g∣n = g′∣n
+  is-gcd-0 .greatest g'∣n g∣n = g'∣n
 ```
 
 The inductive step is a bit more complicated. We first have to establish
@@ -149,8 +149,8 @@ suffice to compute the former if we want the latter.
   is-gcd-step : is-gcd (suc n) (m % suc n) d → is-gcd m (suc n) d
   is-gcd-step x .gcd-∣l = fibre→∣ (lem₁ (∣→fibre (x .gcd-∣l)) (∣→fibre (x .gcd-∣r)))
   is-gcd-step x .gcd-∣r = x .gcd-∣l
-  is-gcd-step x .greatest g′∣m g′∣sucn =
-    x .greatest g′∣sucn (fibre→∣ (lem₂ (∣→fibre g′∣sucn) (∣→fibre g′∣m)))
+  is-gcd-step x .greatest g'∣m g'∣sucn =
+    x .greatest g'∣sucn (fibre→∣ (lem₂ (∣→fibre g'∣sucn) (∣→fibre g'∣m)))
 ```
 
 Actually putting this together is a bit indirect, since we are not

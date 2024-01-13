@@ -32,17 +32,13 @@ private variable a b : Ob
 # Regular monomorphisms
 
 A **regular monomorphism** is a morphism that behaves like an
-_embedding_, i.e. it is an isomorphism onto its [image]. Since images of
-arbitrary morphisms do not exist in every category, we must find a
-definition which implies this property but only speaks diagramatically
+_embedding_, i.e. it is an isomorphism onto its [[image]]. Since images
+of arbitrary morphisms do not exist in every category, we must find a
+definition which implies this property but only speaks diagrammatically
 about objects directly involved in the definition.
 
-[image]: Cat.Diagram.Image.html
-
 The definition is as follows: A **regular monomorphism** $f : a \mono b$
-is an [equaliser] of some pair of arrows $g, h : b \to c$.
-
-[equaliser]: Cat.Diagram.Equaliser.html
+is an [[equaliser]] of some pair of arrows $g, h : b \to c$.
 
 ```agda
 record is-regular-mono (f : Hom a b) : Type (o ⊔ ℓ) where
@@ -147,13 +143,13 @@ universal map $E \to a$ which commutes with "everything in sight":
     open is-equaliser
     eq : is-equaliser _ _ _ _
     eq .equal     = f⊔f.square
-    eq .universal {F = F} {e′ = e′} p = reg.universal p′ where
-      p′ : reg.arr₁ ∘ e′ ≡ reg.arr₂ ∘ e′
-      p′ =
-        reg.arr₁ ∘ e′       ≡˘⟨ ap (_∘ e′) f⊔f.i₁∘universal ⟩
-        (phi ∘ f⊔f.i₁) ∘ e′ ≡⟨ extendr p ⟩
-        (phi ∘ f⊔f.i₂) ∘ e′ ≡⟨ ap (_∘ e′) f⊔f.i₂∘universal ⟩
-        reg.arr₂ ∘ e′       ∎
+    eq .universal {F = F} {e' = e'} p = reg.universal p' where
+      p' : reg.arr₁ ∘ e' ≡ reg.arr₂ ∘ e'
+      p' =
+        reg.arr₁ ∘ e'       ≡˘⟨ ap (_∘ e') f⊔f.i₁∘universal ⟩
+        (phi ∘ f⊔f.i₁) ∘ e' ≡⟨ extendr p ⟩
+        (phi ∘ f⊔f.i₂) ∘ e' ≡⟨ ap (_∘ e') f⊔f.i₂∘universal ⟩
+        reg.arr₂ ∘ e'       ∎
     eq .factors = reg.factors
     eq .unique = reg.unique
 ```
@@ -181,7 +177,7 @@ equalises-cokernel-pair→is-effective-mono P eq = em where
 ## Images of regular monos
 
 Let $f : A \mono B$ be an effective mono, or, in a category with
-pushouts, a regular mono. We show that $f$ admits an [image] relative to
+pushouts, a regular mono. We show that $f$ admits an [[image]] relative to
 the class of regular monomorphisms. The construction of the image is as
 follows: We let $\im f = A$ and factor $f$ as
 
@@ -189,8 +185,6 @@ $$ A \xto{\id} A \xmono{f} B $$
 
 This factorisation is very straightforwardly shown to be universal, as
 the code below demonstrates.
-
-[image]: Cat.Diagram.Image.html
 
 ```agda
 is-effective-mono→image
@@ -211,11 +205,11 @@ is-effective-mono→image {f = f} mon = im where
     hom : ↓Hom _ _ itself other
     hom .α = tt
     hom .β = other .map
-    hom .sq = /-Hom-path refl
+    hom .sq = trivial!
 
     unique : ∀ x → hom ≡ x
     unique x = ↓Hom-path _ _ refl
-      (/-Hom-path (intror refl ∙ ap map (x .sq) ∙ elimr refl))
+      (ext (intror refl ∙ ap map (x .sq) ∙ elimr refl))
 ```
 
 Hence the characterisation of regular monomorphisms given in the

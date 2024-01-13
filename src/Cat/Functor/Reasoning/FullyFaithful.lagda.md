@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 
@@ -11,19 +12,19 @@ import Cat.Reasoning
 ```agda
 module
   Cat.Functor.Reasoning.FullyFaithful
-  {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   (F : Functor C D) (ff : is-fully-faithful F)
   where
 ```
 
-# Reasoning for ff Functors
+# Reasoning for ff functors
 
 <!-- TODO [Amy 2022-12-14]
 Write something informative here
 -->
 
 This module contains a few short combinators for reasoning about the
-actions of fully faithful functors on morphisms and isomorphisms.
+actions of [[fully faithful functors]] on morphisms and isomorphisms.
 
 <!--
 ```agda
@@ -35,8 +36,8 @@ private
 private variable
   a b c d : C.Ob
   α β γ δ : D.Ob
-  f g g′ h i : C.Hom a b
-  w x x′ y z : D.Hom α β
+  f g g' h i : C.Hom a b
+  w x x' y z : D.Hom α β
 
 module _ {a} {b} where
   open Equiv (F₁ {a} {b} , ff) public
@@ -56,7 +57,7 @@ from-id p = injective₂ (ε _ ∙ p) F-id
 from-∘ : from (w D.∘ x) ≡ from w C.∘ from x
 from-∘ = injective (ε _ ∙ sym (F-∘ _ _ ∙ ap₂ D._∘_ (ε _) (ε _)))
 
-ipushr : x D.∘ F₁ g ≡ x′ → from (w D.∘ x) C.∘ g ≡ from (w D.∘ x′)
+ipushr : x D.∘ F₁ g ≡ x' → from (w D.∘ x) C.∘ g ≡ from (w D.∘ x')
 ipushr p = injective (F-∘ _ _ ·· ap₂ D._∘_ (ε _) refl ·· D.pullr p ∙ sym (ε _))
 
 ε-lswizzle : w D.∘ x ≡ D.id → w D.∘ F₁ (from (x D.∘ y)) ≡ y

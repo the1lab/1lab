@@ -14,22 +14,22 @@ open import Cat.Prelude
 module Cat.Abelian.Functor where
 ```
 
-# Ab-enriched Functors
+# Ab-enriched functors
 
 Since [$\Ab$-categories] are additionally equipped with the structure of
-abelian groups on their $\hom$-sets, it's natural that we ask that
+[[abelian groups]] on their $\hom$-sets, it's natural that we ask that
 functors between $\Ab$-categories preserve this structure. In
-particular, since every functor $F : \cC \to \cD$ has an action
-$F(-) : \hom(a,b) \to \hom(Fa,Fb)$ which is a map of sets, when $\cC$
-and $\cD$ are considered to be abelian groups, we should require that
-the action $F(-)$ be a group homomorphism.
+particular, since every functor $F : \cC \to \cD$ has an action $F(-) :
+\hom(a,b) \to \hom(Fa,Fb)$ which is a map of sets, when $\cC$ and $\cD$
+are considered to be abelian groups, we should require that the action
+$F(-)$ be a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (A : Ab-category C) (B : Ab-category D)
   where
   private
@@ -39,7 +39,7 @@ module
 -->
 
 ```agda
-  record Ab-functor : Type (o ⊔ o′ ⊔ ℓ ⊔ ℓ′) where
+  record Ab-functor : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
     field
       functor : Functor C D
 
@@ -79,7 +79,7 @@ We say that the zero object, considered as a colimit, is
 
 ```agda
 Ab-functor-pres-∅
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     {A : Ab-category C} {B : Ab-category D}
   → (F : Ab-functor A B) (∅A : Zero C)
   → is-zero D (Ab-functor.F₀ F (Zero.∅ ∅A))

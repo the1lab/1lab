@@ -1,7 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.Base
-open import Cat.Univalent
+open import Cat.Functor.Properties
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -73,6 +72,18 @@ Wide-hom-path {f = f} {g = g} p i .hom = p i
 Wide-hom-path {sub = sub} {f = f} {g = g} p i .witness =
   is-prop→pathp (λ i → sub .P-prop (p i)) (f .witness) (g .witness) i
 
+Extensional-wide-hom
+  : ∀ {ℓ ℓr} {sub : Wide-subcat ℓ} {x y : C.Ob}
+  → ⦃ sa : Extensional (C.Hom x y) ℓr ⦄
+  → Extensional (Wide-hom sub x y) ℓr
+Extensional-wide-hom ⦃ sa ⦄ = injection→extensional!
+  Wide-hom-path sa
+
+instance
+  extensionality-wide-hom
+    : ∀ {ℓ} {sub : Wide-subcat ℓ} {x y : C.Ob} → Extensionality (Wide-hom sub x y)
+  extensionality-wide-hom = record { lemma = quote Extensional-wide-hom }
+
 Wide-hom-is-set
   : {sub : Wide-subcat ℓ}
   → {x y : C.Ob}
@@ -97,18 +108,15 @@ Wide sub .id .witness = sub .P-id
 Wide sub ._∘_ f g .hom     = f .hom C.∘ g .hom
 Wide sub ._∘_ f g .witness = sub .P-∘ (f .witness) (g .witness)
 
-Wide sub .idr _ = Wide-hom-path $ C.idr _
-Wide sub .idl _ = Wide-hom-path $ C.idl _
-Wide sub .assoc _ _ _ = Wide-hom-path $ C.assoc _ _ _
+Wide sub .idr _ = ext $ C.idr _
+Wide sub .idl _ = ext $ C.idl _
+Wide sub .assoc _ _ _ = ext $ C.assoc _ _ _
 ```
 
 ## From split essentially surjective inclusions
 
 There is another way of representing wide subcategories: By giving a
-[pseudomonic] [split essentially surjection] $F : \cD \epi \cC$.
-
-[pseudomonic]: Cat.Functor.Base.html#pseudomonic-functors
-[split essentially surjection]: Cat.Functor.Base.html#essential-fibres
+[[pseudomonic]] [[split essential surjection]] $F : \cD \epi \cC$.
 
 <!--
 ```agda
@@ -124,7 +132,7 @@ module _ {o' h'} {D : Precategory o' h'} {F : Functor D C}
 -->
 
 We construct the wide subcategory by restricting to the morphisms in
-$\cC$ that lie in the image of $F$. Since $F$ is a faithful functor,
+$\cC$ that lie in the image of $F$. Since $F$ is a [[faithful functor]],
 this is indeed a proposition.
 
 ```agda
@@ -162,7 +170,7 @@ This canonical wide subcategory is equivalent to $\cD$.
   is-fully-faithful-Wide-subcat→domain = is-iso→is-equiv $ iso
     (λ f → wide (eso.to _ C.∘ F₁ f C.∘ eso.from _) (f , refl))
     (λ _ → refl)
-    (λ f → Wide-hom-path (f .witness .snd))
+    (λ f → ext (f .witness .snd))
 
   is-eso-Wide-subcat→domain : is-split-eso Wide-subcat→Split-eso-domain
   is-eso-Wide-subcat→domain x =
@@ -208,8 +216,8 @@ module _ {sub : Wide-subcat ℓ} where
       Wide.make-iso
         (wide f.to (P-invert (C.iso→invertible f)))
         (wide f.from (P-invert (C.iso→invertible (f C.Iso⁻¹))))
-        (Wide-hom-path f.invl)
-        (Wide-hom-path f.invr) ,
+        (ext f.invl)
+        (ext f.invr) ,
       C.≅-pathp refl refl refl
     where module f = C._≅_ f
 

@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
@@ -10,27 +9,23 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Data.Power
-
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
 ```
 -->
 
-```
+```agda
 module Cat.Regular where
 ```
 
-# Regular categories
+# Regular categories {defines="regular-category"}
 
-A **regular category** is a category with [pullback]-stable [image]
-factorizations. To define regular categories, we use the theory of
+A **regular category** is a category with [[pullback]]-stable [[image
+factorisations]]. To define regular categories, we use the theory of
 [orthogonal morphisms], specifically [strong epimorphisms]: A regular
 category is one where every morphism factors as a strong epimorphism
 followed by a monomorphism, and strong epimorphisms are stable under
 pullback.
 
-[pullback]: Cat.Diagram.Pullback.html
 [image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [orthogonal morphisms]: Cat.Morphism.Orthogonal.html
@@ -123,7 +118,7 @@ pullback.
 We've already seen that, in a category with pullbacks, arbitrary
 morphisms $f : a \to b$ induce [an adjunction] $f_! \dashv f^*$ between
 $\cC/b \adj \cC/a$: the right adjoint models the substitution (base
-change) along $f$, and the left adjoint models the _dependent sum_ over
+change) along $f$, and the [[left adjoint]] models the _dependent sum_ over
 $f$. Between subobject categories, though, pullbacks are not enough
 structure: this can be seen type-theoretically by noting that, even if
 $P : A \to \Omega$ is a family of propositions, the sum $\Sigma_(x : A)
@@ -184,7 +179,7 @@ preserved by slicing].
 This section formalises the proof of A1.3.4 from [@Elephant], which says
 that every strong epimorphism^[Note: Johnstone prefers to work with
 "covers" instead, which in our lingo are _extremal_ epimorphisms. In a
-finitely complete category, strong and extremal epimorphisms coincide]
+[[finitely complete]] category, strong and extremal epimorphisms coincide]
 in a regular category is regular. Actually, we'll show that every strong
 epimorphism in a regular category is **effective**: it's the coequaliser
 of its kernel pair.
@@ -268,15 +263,15 @@ obtaining
 
 ```agda
       g-monic : C.is-monic g
-      g-monic {e} k l w′ = out! dgh.forget∈M _ _ rem₈ where
+      g-monic {e} k l w' = out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
         module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
-          renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq′-)
-        open pb using (p ; P ; mn ; sq′-)
+          renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
+        open pb using (p ; P ; mn ; sq'-)
         m = π₁ C.∘ mn
         n = π₂ C.∘ mn
-        sq′ : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
-        sq′ = sym (⟨⟩∘ _) ∙ sq′- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
+        sq' : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
+        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
                                                (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
 ```
 
@@ -288,19 +283,19 @@ hlp$ (`rem₁`{.Agda}).
         q : C.Hom P R
         q = kp.universal $
           f ∘ m         ≡⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
-          g ∘ d ∘ m     ≡˘⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
-          g ∘ k ∘ p     ≡⟨ C.extendl w′ ⟩
-          g ∘ l ∘ p     ≡⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
+          g ∘ d ∘ m     ≡˘⟨ refl⟩∘⟨ by-π₁ sq' ⟩
+          g ∘ k ∘ p     ≡⟨ C.extendl w' ⟩
+          g ∘ l ∘ p     ≡⟨ refl⟩∘⟨ by-π₂ sq' ⟩
           g ∘ d ∘ n     ≡˘⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
           f ∘ n         ∎
 
-        rem₁ = h ∘ k ∘ p     ≡⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
+        rem₁ = h ∘ k ∘ p     ≡⟨ refl⟩∘⟨ by-π₁ sq' ⟩
                h ∘ d ∘ m     ≡⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
                c ∘ m         ≡˘⟨ refl⟩∘⟨ kp.p₁∘universal ⟩
                c ∘ a ∘ q     ≡⟨ extendl w ⟩
                c ∘ b ∘ q     ≡⟨ refl⟩∘⟨ kp.p₂∘universal ⟩
                c ∘ n         ≡˘⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
-               h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
+               h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq' ⟩
                h ∘ l ∘ p     ∎
 ```
 
@@ -308,7 +303,7 @@ We want to show that $hl = hk$, for which it will suffice for $p$ to be
 an epimorphism. Since we're working in a regular category, we can show
 that $p$ is a _strong_ epimorphism by showing that $d \times d$ is a
 composite of strong epis. But $d \times d$ is the composite $(d \times
-\rm{id})(\rm{id} \times d)$, and both of those maps are pullbacks of
+\id)(\id \times d)$, and both of those maps are pullbacks of
 $d$, which _is_ a strong epimorphism since it arises from an image
 factorisation.
 
@@ -372,7 +367,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
         rem₈ =
           gh ∘ k              ≡⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
           ⟨ g , h ⟩ ∘ k       ≡⟨ ⟨⟩∘ _ ⟩
-          ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w′ rem₇ ⟩
+          ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w' rem₇ ⟩
           ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
           ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
@@ -425,9 +420,9 @@ coequalises _some_ pair of maps.
       go .arr₂ = kp.b
       go .has-is-coeq .coequal = kp.square
       go .has-is-coeq .universal w = Make.h w ∘ Make.g.from w
-      go .has-is-coeq .factors {e′ = e′} {p = w} = Make.compute w
-      go .has-is-coeq .unique {e′ = e′} {p = p} {colim} q = is-s .fst _ _ $
+      go .has-is-coeq .factors {e' = e'} {p = w} = Make.compute w
+      go .has-is-coeq .unique {e' = e'} {p = p} {colim} q = is-s .fst _ _ $
         colim ∘ f                      ≡⟨ q ⟩
-        e′                             ≡˘⟨ Make.compute p ⟩
+        e'                             ≡˘⟨ Make.compute p ⟩
         (Make.h p ∘ Make.g.from p) ∘ f ∎
 ```

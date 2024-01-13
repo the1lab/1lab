@@ -1,9 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -12,6 +14,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Sum.Base
 
 open import Meta.Idiom
 open import Meta.Bind
@@ -22,12 +25,12 @@ open import Meta.Bind
 module 1Lab.Resizing where
 ```
 
-# Propositional Resizing
+# Propositional resizing {defines="propositional-resizing"}
 
 Ordinarily, the collection of all $\kappa$-small predicates on
 $\kappa$-small types lives in the next universe up, $\kappa^+$. This is
 because _predicates_ are not special in type theory: they are ordinary
-type families, that just so happen to be valued in \r{propositions}. For
+type families, that just so happen to be valued in [[propositions]]. For
 most purposes we can work with this limitation: this is called
 **predicative mathematics**. But, for a few classes of theorems,
 predicativity is too restrictive: Even if we don't have a single
@@ -57,7 +60,7 @@ open Ω public
 This type, a priori, only contains the propositions whose underlying
 type lives in the first universe. However, we can populate it using a
 `NO_UNIVERSE_CHECK`-powered higher inductive type, the "small
-propositional truncation":
+[[propositional truncation]]":
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}
@@ -110,13 +113,13 @@ supports a "map" operation), and can be projected from into propositions
 of any universe. These functions compute on `inc`{.Agda}s, as usual.
 
 ```agda
-□-map : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+□-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       → (A → B) → □ A → □ B
 □-map f (inc x) = inc (f x)
 □-map f (squash x y i) = squash (□-map f x) (□-map f y) i
 
 □-rec!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → {@(tactic hlevel-tactic-worker) pa : is-prop B}
   → (A → B) → □ A → B
 □-rec! {pa = pa} f (inc x) = f x
@@ -136,7 +139,7 @@ elΩ T .is-tr = squash
 <!--
 ```agda
 □-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {P : □ A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : □ A → Type ℓ'}
   → (∀ x → is-prop (P x))
   → (∀ x → P (inc x))
   → ∀ x → P x
@@ -144,25 +147,37 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
+□-rec-set
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → (∀ x y → f x ≡ f y)
+  → is-set B
+  → □ A → B
+□-rec-set f f-const B-set a =
+  fst $ □-elim
+    (λ _ → is-constant→image-is-prop B-set f f-const)
+    (λ a → f a , inc (a , refl))
+    a
+
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
 □-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
 
 □-ap
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → □ (A → B) → □ A → □ B
 □-ap (inc f) (inc g) = inc (f g)
-□-ap (inc f) (squash g g′ i) = squash (□-ap (inc f) g) (□-ap (inc f) g′) i
-□-ap (squash f f′ i) g = squash (□-ap f g) (□-ap f′ g) i
+□-ap (inc f) (squash g g' i) = squash (□-ap (inc f) g) (□-ap (inc f) g') i
+□-ap (squash f f' i) g = squash (□-ap f g) (□-ap f' g) i
 
 □-bind
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → □ A → (A → □ B) → □ B
 □-bind (inc x) f = f x
-□-bind (squash x x′ i) f = squash (□-bind x f) (□-bind x′ f) i
+□-bind (squash x x' i) f = squash (□-bind x f) (□-bind x' f) i
 
 instance
   Map-□ : Map (eff □)
-  Map-□ .Map._<$>_ = □-map
+  Map-□ .Map.map = □-map
 
   Idiom-□ : Idiom (eff □)
   Idiom-□ .Idiom.pure = inc
@@ -171,14 +186,99 @@ instance
   Bind-□ : Bind (eff □)
   Bind-□ .Bind._>>=_ = □-bind
 
-_∈_ : ∀ {ℓ} {A : Type ℓ} → A → (A → Ω) → Type
-x ∈ P = ∣ P x ∣
-
 is-set→locally-small
   : ∀ {ℓ} {A : Type ℓ}
   → is-set A
   → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
 is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
 is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
+
+to-is-true
+  : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
+  → ∣ P ∣
+  → P ≡ Q
+to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+
+tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
+tr-□ (inc x) = inc x
+tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
+
+□-tr : ∀ {ℓ} {A : Type ℓ} → □ A → ∥ A ∥
+□-tr (inc x) = inc x
+□-tr (squash x y i) = squash (□-tr x) (□-tr y) i
+```
+-->
+
+## Connectives
+
+The universe of small propositions contains true, false, conjunctions,
+disjunctions, and implications.
+
+<!--
+```agda
+infixr 6 _∧Ω_
+infixr 5 _∨Ω_
+infixr 4 _→Ω_
+```
+-->
+
+```agda
+⊤Ω : Ω
+∣ ⊤Ω ∣ = ⊤
+⊤Ω .is-tr = hlevel!
+
+⊥Ω : Ω
+∣ ⊥Ω ∣ = ⊥
+⊥Ω .is-tr = hlevel!
+
+_∧Ω_ : Ω → Ω → Ω
+∣ P ∧Ω Q ∣ = ∣ P ∣ × ∣ Q ∣
+(P ∧Ω Q) .is-tr = hlevel!
+
+_∨Ω_ : Ω → Ω → Ω
+∣ P ∨Ω Q ∣ = ∥ ∣ P ∣ ⊎ ∣ Q ∣ ∥
+(P ∨Ω Q) .is-tr = hlevel!
+
+_→Ω_ : Ω → Ω → Ω
+∣ P →Ω Q ∣ = ∣ P ∣ → ∣ Q ∣
+(P →Ω Q) .is-tr = hlevel!
+
+¬Ω_ : Ω → Ω
+¬Ω P = P →Ω ⊥Ω
+```
+
+Furthermore, we can quantify over types of arbitrary size and still
+land in `Ω`.
+
+```agda
+∃Ω : ∀ {ℓ} (A : Type ℓ) → (A → Ω) → Ω
+∣ ∃Ω A P ∣ = □ (Σ[ x ∈ A ] ∣ P x ∣)
+∃Ω A P .is-tr = squash
+
+∀Ω : ∀ {ℓ} (A : Type ℓ) → (A → Ω) → Ω
+∣ ∀Ω A P ∣ = □ (∀ (x : A) → ∣ P x ∣)
+∀Ω A P .is-tr = squash
+
+syntax ∃Ω A (λ x → B) = ∃Ω[ x ∈ A ] B
+syntax ∀Ω A (λ x → B) = ∀Ω[ x ∈ A ] B
+```
+
+These connectives and quantifiers are only provided for completeness;
+if you find yourself building nested propositions, it is generally a good
+idea to construct the large proposition by hand, and then use truncation
+to turn it into a small proposition.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) where
+  Ω-image : Type ℓ'
+  Ω-image = Σ[ b ∈ B ] □ (fibre f b)
+
+  Ω-corestriction : A → Ω-image
+  Ω-corestriction a = f a , inc (a , refl)
+
+  opaque
+    Ω-corestriction-is-surjective : is-surjective Ω-corestriction
+    Ω-corestriction-is-surjective (b , p) = □-rec! (λ (a , p) → inc (a , Σ-prop-path! p)) p
 ```
 -->

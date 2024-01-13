@@ -2,7 +2,6 @@
 ```
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
-open import Cat.Solver
 open import Cat.Base
 
 import Cat.Reasoning
@@ -16,18 +15,17 @@ open Precategory using (Ob)
 module Cat.Univalent where
 ```
 
-# (Univalent) Categories
+# (Univalent) categories {defines="univalent-categories univalent-category"}
 
-In much the same way that a partial order is a preorder where $x \le y
-\land y \le x \to x = y$, a **category** is a precategory where
+In much the same way that a [[partial order]] is a preorder where $x \le
+y \land y \le x \to x = y$, a **category** is a precategory where
 isomorphic objects are identified. This is a generalisation of the
-univalence axiom to arbitrary categories, and, indeed, it's phrased in
-the same way: asking for a canonically defined map to be an equivalence.
+[[univalence axiom]] to arbitrary categories, and, indeed, it's phrased
+in the same way: asking for a canonically defined map to be an
+equivalence.
 
 We define a precategory to be univalent when it can be equipped when its
-family of isomorphisms is an [identity system].
-
-[identity system]: 1Lab.Path.IdentitySystem.html
+family of isomorphisms is an [[identity system]].
 
 ```agda
 is-category : ∀ {o h} (C : Precategory o h) → Type (o ⊔ h)
@@ -46,7 +44,7 @@ path→iso
   → A ≡ B → Isomorphism C A B
 path→iso {C = C} {A} p = transport (λ i → Isomorphism C A (p i)) (id-iso C)
 
-module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
+module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
   module path→iso = Ids r
     renaming ( to            to iso→path
              ; J             to J-iso
@@ -62,24 +60,21 @@ module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
     public
 ```
 
-Furthermore, we have that this function is an equivalence, and so the
-type of objects in a univalent category is at most a [groupoid]. We use
-the fact that [h-levels are closed under equivalences] and that
-[dependent sums preserve h-levels].
-
-[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#equiv→is-hlevel
-[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#Σ-is-hlevel
-[groupoid]: agda://1Lab.HLevel#is-groupoid
+Furthermore, since the h-level of the relation behind an identity system
+determines the h-level of the type it applies to, we have that the space
+of objects in any univalent category is a proposition:
 
 ```agda
   Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
   Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
 ```
 
+:::{.definition #transport-in-hom}
 We can characterise transport in the Hom-sets of categories using the
 `path→iso`{.Agda} equivalence. Transporting in $\hom(p\ i, q\ i)$ is
 equivalent to turning the paths into isomorphisms and
 pre/post-composing:
+:::
 
 ```agda
 module _ {o h} (C : Precategory o h) where
@@ -93,14 +88,14 @@ module _ {o h} (C : Precategory o h) where
       j (i = i1) → path→iso q .to ∘ h ∘ path→iso p .from
       j (j = i0) → hcomp (∂ i) λ where
         j (i = i0) → idl (idr h j) j
-        j (i = i1) → q′ i1 ∘ h ∘ p′ i1
-        j (j = i0) → q′ i ∘ h ∘ p′ i
+        j (i = i1) → q' i1 ∘ h ∘ p' i1
+        j (j = i0) → q' i ∘ h ∘ p' i
     where
-      p′ : PathP _ id (path→iso p .from)
-      p′ i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id
+      p' : PathP _ id (path→iso p .from)
+      p' i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id
 
-      q′ : PathP _ id (path→iso q .to)
-      q′ i = coe0→i (λ j → Hom B (q (i ∧ j))) i id
+      q' : PathP _ id (path→iso q .to)
+      q' i = coe0→i (λ j → Hom B (q (i ∧ j))) i id
 ```
 
 This lets us quickly turn paths between compositions into dependent
@@ -152,7 +147,7 @@ paths in `Hom`{.Agda}-sets.
     → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
     → path→iso q .to ∘ path→iso p .from ≡ h'
   Hom-pathp-id {p = p} {q} {h} prf =
-    J′ (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
+    J' (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
                 → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
                 → path→iso q .to ∘ path→iso p .from ≡ h')
       (λ x q prf → ap₂ _∘_ refl (transport-refl _) ·· idr _ ·· from-pathp prf)
@@ -200,19 +195,19 @@ paths in `Hom`{.Agda}-sets.
                               ∙ from-pathp-to p q
 
 module Univalent {o h} {C : Precategory o h} (r : is-category C) where
-  open Univalent′ r public
+  open Univalent' r public
 
   Hom-pathp-refll-iso :
-    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h′ : Hom C B}
-    → h ∘ p .from ≡ h′
-    → PathP (λ i → Hom (iso→path p i) B) h h′
+    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
+    → h ∘ p .from ≡ h'
+    → PathP (λ i → Hom (iso→path p i) B) h h'
   Hom-pathp-refll-iso prf =
     Hom-pathp-refll C (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
 
   Hom-pathp-reflr-iso
-    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h′ : Hom A D}
-    → q .to ∘ h ≡ h′
-    → PathP (λ i → Hom A (iso→path q i)) h h′
+    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
+    → q .to ∘ h ≡ h'
+    → PathP (λ i → Hom A (iso→path q i)) h h'
   Hom-pathp-reflr-iso prf =
     Hom-pathp-reflr C (ap₂ _∘_ (ap to (iso→path→iso _)) refl ∙ prf)
 

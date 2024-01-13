@@ -15,7 +15,7 @@ open import 1Lab.Type
 module 1Lab.Counterexamples.Russell where
 ```
 
-# Russell's Paradox
+# Russell's paradox {defines="russell's-paradox"}
 
 This page reproduces [Russell's paradox] from naïve set theory using an
 inductive type of `Type`{.Agda}-indexed trees. By default, Agda places
@@ -38,9 +38,7 @@ one where the branching factor of a node is given by a type `A`.
 [cumulative hierarchy]: https://en.wikipedia.org/wiki/Von_Neumann_universe
 
 We define the membership predicate `_∈_`{.Agda} by pattern matching,
-using the [path type] `_≡_`{.Agda}:
-
-[path type]: agda://1Lab.Path
+using the [[path type|path]] `_≡_`{.Agda}:
 
 ```agda
 _∈_ : V → V → Type
@@ -53,7 +51,7 @@ we have the empty set:
 
 ```agda
 Ø : V
-Ø = set ⊥ absurd
+Ø = set ⊥ λ ()
 
 X∉Ø : {X : V} → ¬ X ∈ Ø
 X∉Ø ()

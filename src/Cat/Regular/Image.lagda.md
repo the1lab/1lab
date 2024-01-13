@@ -1,14 +1,12 @@
 <!--
 ```agda
 -- {-# OPTIONS --lossy-unification #-}
-open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
-open import Cat.Diagram.Image
 open import Cat.Prelude
 open import Cat.Regular
 
@@ -39,12 +37,11 @@ open Cr C
 
 # Images in regular categories
 
-This module provides tools for working with the [image factorisation] of
+This module provides tools for working with the [[image factorisation]] of
 morphisms in [regular categories], regarded as [subobjects] of the map's
 codomain. We start by defining a `Subobject`{.Agda} of $y$ standing for
 $\im f$ whenever $f : x \to y$.
 
-[image factorisation]: Cat.Diagram.Image.html
 [regular categories]: Cat.Regular.html
 [subobjects]: Cat.Displayed.Instances.Subobjects.html
 

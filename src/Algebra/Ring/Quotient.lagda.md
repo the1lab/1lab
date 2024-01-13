@@ -25,8 +25,8 @@ private module R = Ring-on (R .snd)
 
 # Quotient rings
 
-Let $R$ be a ring and $I \sube R$ be an ideal. Because rings have an
-underlying abelian group, the ideal $I \sube R$ determines a normal
+Let $R$ be a [[ring]] and $I \sube R$ be an ideal. Because rings have an
+underlying [[abelian group]], the ideal $I \sube R$ determines a normal
 subgroup $I$ of $R$'s additive group, so that we may form the quotient
 group $R/I$. And since ideals are closed under multiplication^[recall
 that all our rings are commutative, so they're closed under
@@ -137,9 +137,8 @@ also discrete. This is a specialisation of a general result about
 decidable quotient sets, but we mention it here regardless:
 
 ```agda
-  Discrete-ring-quotient : Discrete ⌞ R ⌟ → (∀ x → Dec (x ∈ I)) → Discrete ⌞ R/I ⌟
-  Discrete-ring-quotient rdisc dec∈I = Discrete-quotient
+  Discrete-ring-quotient : (∀ x → Dec (x ∈ I)) → Discrete ⌞ R/I ⌟
+  Discrete-ring-quotient dec∈I = Discrete-quotient
     (normal-subgroup→congruence R.additive-group I.ideal→normal)
-    rdisc
     (λ x y → dec∈I (x R.- y))
 ```

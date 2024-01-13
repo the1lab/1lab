@@ -1,8 +1,6 @@
 <!--
 ```agda
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -17,37 +15,35 @@ module Cat.Displayed.Cartesian.Street where
 
 <!--
 ```agda
-open Cartesian-fibration
-open Cartesian-lift
-open is-cartesian
 open Displayed
 ```
 -->
 
 # Street fibrations
 
-In classical category theory, a fibration is defined to be a certain
-functor $P : \cE \to \cB$, the idea being that $\cE$ is really
-the total space of a certain displayed category, and $P$ is really the
-first projection functor $\pi^f$, which sends each displayed object to
-the object it is displayed over. But can we go the other way? If we have
-a functor $P : \cE \to \cB$, can we create a category displayed
-$\cE'$ over $\cB$, such that $\int \cE' \cong \cE$?
+In classical category theory, a [[fibration|cartesian fibration]] is
+defined to be a certain functor $P : \cE \to \cB$, the idea being that
+$\cE$ is really the [[total category]] of a certain [[displayed
+category]], and $P$ is really the first projection functor $\pi^f$,
+which sends each displayed object to the object it is displayed over.
+But can we go the other way? If we have a functor $P : \cE \to \cB$, can
+we create a category displayed $\cE'$ over $\cB$, such that $\int \cE'
+\cong \cE$?
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {E : Precategory o ℓ} {B : Precategory o′ ℓ′} (P : Functor E B) where
+module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : Functor E B) where
   private
     module E = Cat.Reasoning E
     module B = Cat.Reasoning B
-    module P = Cat.Functor.Reasoning P
+    module P = Functor P
   open B.HLevel-instance
   open E.HLevel-instance
 ```
 -->
 
 ```agda
-  functor→displayed : Displayed B (o ⊔ ℓ′) (ℓ ⊔ ℓ′)
+  functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
   functor→displayed .Ob[_] x = Σ[ u ∈ E.Ob ] (P.₀ u B.≅ x)
 ```
 
@@ -97,14 +93,14 @@ property (rather than data).
 
 ```agda
   functor→displayed .Hom[_]-set f a b = hlevel 2
-  functor→displayed .id′ = E.id , B.elimr P.F-id ∙ B.introl refl
-  functor→displayed ._∘′_ (f , φ) (g , ψ) = f E.∘ g ,
+  functor→displayed .id' = E.id , B.elimr P.F-id ∙ B.introl refl
+  functor→displayed ._∘'_ (f , φ) (g , ψ) = f E.∘ g ,
     ap₂ B._∘_ refl (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
-  functor→displayed .idr′ f′ = Σ-pathp-dep (E.idr _) $
+  functor→displayed .idr' f' = Σ-pathp (E.idr _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .idl′ f′ = Σ-pathp-dep (E.idl _) $
+  functor→displayed .idl' f' = Σ-pathp (E.idl _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .assoc′ f′ g′ h′ = Σ-pathp-dep (E.assoc _ _ _) $
+  functor→displayed .assoc' f' g' h' = Σ-pathp (E.assoc _ _ _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
 ```
 

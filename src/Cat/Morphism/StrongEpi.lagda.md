@@ -3,7 +3,6 @@
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
-open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
 open import Cat.Diagram.Equaliser
@@ -188,7 +187,7 @@ epimorphism", we'd certainly like regular epis to be strong epis!
 
 This is fortunately the case. Suppose that $f : a \to b$ is the
 coequaliser of some maps $s, t : r \to a$^[If you care, $r$ is for
-"relation" --- the intution is that $r$ specifies the _relations_
+"relation" --- the intuition is that $r$ specifies the _relations_
 imposed on $a$ to get $b$], and that $z : c \mono b$ is a monomorphism
 we want to lift against.
 
@@ -237,7 +236,7 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
     module _ {c} {d} (z : c ↪ d) {u} {v} (vf=zu : v ∘ f ≡ z .mor ∘ u) where
       module z = _↪_ z
       map : Hom b c
-      map = r.universal {e′ = u} $ z.monic _ _ $
+      map = r.universal {e' = u} $ z.monic _ _ $
         z .mor ∘ u ∘ r.s ≡⟨ extendl (sym vf=zu) ⟩
         v ∘ f ∘ r.s      ≡⟨ refl⟩∘⟨ r.coequal ⟩
         v ∘ f ∘ r.t      ≡˘⟨ extendl (sym vf=zu) ⟩
@@ -248,13 +247,11 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
 
 # Images
 
-Now we come to the _raison d'être_ for strong epimorphisms: [Images].
+Now we come to the _raison d'être_ for strong epimorphisms: [[Images]].
 The definition of image we use is very complicated, and the
 justification is already present there, but the short of it is that the
 image of a morphism $f : a \to b$ is a monomorphism $\im(f) \mono b$ which is
 universal amongst those through which $f$ factors.
-
-[Images]: Cat.Diagram.Image.html
 
 Since images have a universal property, and one involving [comma
 categories] of [slice categories] at that, they are tricky to come by.
@@ -311,10 +308,10 @@ in the relevant comma categories.
     dh .α = tt
     dh .β .map = the-lifting .centre .fst
     dh .β .commutes = the-lifting .centre .snd .snd
-    dh .sq = /-Hom-path (idr _ ∙ sym (the-lifting .centre .snd .fst))
+    dh .sq = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
 
     unique : ∀ om → dh ≡ om
-    unique om = ↓Hom-path _ _ refl $ /-Hom-path $ ap fst $ the-lifting .paths $
+    unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
       om .β .map , sym (ap map (om .sq)) ∙ idr _ , om .β .commutes
 ```
 
@@ -403,7 +400,7 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
 Another well-behaved subclass of epimorphism are the **extremal**
 epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a
 factorisation $e = mg$ through a monomorphism $m : C \mono B$, then $m$
-is an isomorphism. In a finitely complete category, every extremal
+is an isomorphism. In a [[finitely complete category]], every extremal
 epimorphism is strong; the converse is immediate.
 
 ```agda
@@ -437,6 +434,7 @@ along $m$ to obtain the square
   \arrow["e", curve={height=-12pt}, from=1-1, to=3-5]
   \arrow["u", curve={height=12pt}, from=1-1, to=5-3]
 \end{tikzcd}\]
+~~~
 
 and obtain the unique factorisation $A \to A \times_D B$. Note that the
 map $u : A \times_D B \mono B$ is a monomorphism since it results from
@@ -485,9 +483,9 @@ is-strong-epi→is-extremal-epi
   → is-strong-epi e
   → ∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor)
 is-strong-epi→is-extremal-epi (s , ortho) m g p =
-  make-invertible (inv′ .centre .fst) (inv′ .centre .snd .snd)
-    (m .monic _ _ (pulll (inv′ .centre .snd .snd) ∙ id-comm-sym))
+  make-invertible (inv' .centre .fst) (inv' .centre .snd .snd)
+    (m .monic _ _ (pulll (inv' .centre .snd .snd) ∙ id-comm-sym))
   where
-  inv′ = ortho m (idl _ ∙ p)
+  inv' = ortho m (idl _ ∙ p)
 ```
 -->

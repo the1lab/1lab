@@ -4,7 +4,6 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 ```
@@ -14,7 +13,7 @@ open import Cat.Prelude
 module Algebra.Group.Ab.Abelianisation where
 ```
 
-# Abelianisations
+# Abelianisations {defines=abelianisation}
 
 <!--
 ```agda
@@ -183,7 +182,7 @@ inherited from $G$!
 
 ## Universal property
 
-This finishes the construction of _an_ abelian group from a group. To
+This finishes the construction of _an_ [[abelian group]] from a [[group]]. To
 show that this construction is correct, we'll show that it satisfies a
 universal property: The inclusion map $G \xto{i} G^{ab}$ from a group to
 its abelianisation is universal among maps from groups to abelian
@@ -198,9 +197,9 @@ for some $\hat f : G^{ab} \to H$ derived from $f$.
 
 ```agda
 make-free-abelian : ∀ {ℓ} → make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-make-free-abelian = go where
+make-free-abelian {ℓ} = go where
   open make-left-adjoint
-  go : make-left-adjoint Ab↪Grp
+  go : make-left-adjoint (Ab↪Grp {ℓ = ℓ})
   go .free G = Abelianise G
 
   go .unit G .hom = inc^ab G
@@ -222,6 +221,6 @@ make-free-abelian = go where
         f # (a G.⋆ (c G.⋆ b))       ∎
   go .universal f .preserves .is-group-hom.pres-⋆ =
     Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
-  go .commutes f = Homomorphism-path (λ _ → refl)
-  go .unique p = Homomorphism-path (Coeq-elim-prop (λ _ → hlevel!) (λ x → p #ₚ x))
+  go .commutes f = trivial!
+  go .unique p = ext (Coeq-elim-prop (λ _ → hlevel!) (λ x → p #ₚ x))
 ```

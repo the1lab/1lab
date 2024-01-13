@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Cartesian
@@ -12,7 +11,6 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Reasoning
 ```
 -->
 
@@ -23,18 +21,18 @@ module Cat.Displayed.Instances.Diagrams
   (E : Displayed B o' ℓ')
   where
 
-open Cat.Reasoning B
+open Precategory B
 open Displayed E
 open Cat.Displayed.Reasoning E
 open Functor
 open _=>_
 ```
 
-# The Diagram Fibration
+# The diagram fibration
 
-The appropriate notion of structure for a displayed category $\cE
-\liesover \cB$ is fibrewise structure: structure found in each [fibre
-category], preserved by the reindexing functors when $\cE$ is an
+The appropriate notion of structure for a [[displayed category]] $\cE
+\liesover \cB$ is fibrewise structure: structure found in each [[fibre
+category]], preserved by the reindexing functors when $\cE$ is an
 (op)fibration.
 
 For instance, the correct notion of $\cJ$-shaped limit in $\cE$ are the
@@ -42,8 +40,6 @@ For instance, the correct notion of $\cJ$-shaped limit in $\cE$ are the
 and these are preserved by reindexing. Unfortunately, proof assistants:
 since none of the commutativity conditions for limits are definitional,
 this definition condemns the formaliser to transport hell.
-
-[fibre category]: Cat.Displayed.Fibre.html
 
 Instead, we opt for a more abstract approach, which starts with a
 reorganization of what a fibrewise diagram in $\cE$ is. Recall that the
@@ -95,17 +91,17 @@ transformations between them.
 
 ```agda
   ConstL : ∀ {x} → Ob[ x ] → Lifting {J = J} E (Const x)
-  ConstL x' .F₀′ _ = x'
-  ConstL x' .F₁′ _ = id′
-  ConstL x' .F-id′ = refl
-  ConstL x' .F-∘′ _ _ = symP (idr′ _)
+  ConstL x' .F₀' _ = x'
+  ConstL x' .F₁' _ = id'
+  ConstL x' .F-id' = refl
+  ConstL x' .F-∘' _ _ = symP (idr' _)
 
   const-ntl
     : ∀ {x y x' y'} {f : Hom x y} → Hom[ f ] x' y'
     → (ConstL x') =[ const-nt f ]=>l (ConstL y')
-  const-ntl f' .η′ _ = f'
-  const-ntl f' .is-natural′ _ _ _ =
-    idr′ _ ∙[] symP (idl′ _)
+  const-ntl f' .η' _ = f'
+  const-ntl f' .is-natural' _ _ _ =
+    idr' _ ∙[] symP (idl' _)
 ```
 
 We also have a vertical functor from $\cE$ to the fibration of diagrams
@@ -113,11 +109,11 @@ of shape $\cJ$, which takes an $x'$ to the constant diagram.
 
 ```agda
   ConstFibD : Vertical-functor E (Diagrams J)
-  ConstFibD .Vertical-functor.F₀′ = ConstL
-  ConstFibD .Vertical-functor.F₁′ = const-ntl
-  ConstFibD .Vertical-functor.F-id′ =
+  ConstFibD .Vertical-functor.F₀' = ConstL
+  ConstFibD .Vertical-functor.F₁' = const-ntl
+  ConstFibD .Vertical-functor.F-id' =
     Nat-lift-pathp (λ x → sym (transport-refl _))
-  ConstFibD .Vertical-functor.F-∘′ =
+  ConstFibD .Vertical-functor.F-∘' =
     Nat-lift-pathp (λ x → sym (transport-refl _))
 ```
 
@@ -133,16 +129,16 @@ diagrams in fibre categories.
 
 <!--
 ```agda
-  ConstL→Diagram F' .F₀ = F' .F₀′
-  ConstL→Diagram F' .F₁ = F' .F₁′
-  ConstL→Diagram F' .F-id = F' .F-id′
+  ConstL→Diagram F' .F₀ = F' .F₀'
+  ConstL→Diagram F' .F₁ = F' .F₁'
+  ConstL→Diagram F' .F-id = F' .F-id'
   ConstL→Diagram F' .F-∘ f g =
-    from-pathp⁻ $ cast[] {q = sym (idl _)} (F' .F-∘′ f g)
+    from-pathp⁻ $ cast[] {q = sym (idl _)} (F' .F-∘' f g)
 
-  Diagram→ConstL F .F₀′ = F .F₀
-  Diagram→ConstL F .F₁′ = F .F₁
-  Diagram→ConstL F .F-id′ = F .F-id
-  Diagram→ConstL F .F-∘′ f g =
+  Diagram→ConstL F .F₀' = F .F₀
+  Diagram→ConstL F .F₁' = F .F₁
+  Diagram→ConstL F .F-id' = F .F-id
+  Diagram→ConstL F .F-∘' f g =
     cast[] {p = sym (idl _)} $ to-pathp⁻ (F .F-∘ f g)
 ```
 -->
@@ -165,19 +161,19 @@ functor.
 
 <!--
 ```agda
-  ConstL-natl→Diagram-nat α' .η = α' .η′
+  ConstL-natl→Diagram-nat α' .η = α' .η'
   ConstL-natl→Diagram-nat α' .is-natural x y f =
-    ap hom[] (cast[] $ α' .is-natural′ x y f)
+    ap hom[] (cast[] $ α' .is-natural' x y f)
 
-  Diagram-nat→ConstL-natl α .η′ = α .η
-  Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural′ x y f =
+  Diagram-nat→ConstL-natl α .η' = α .η
+  Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural' x y f =
     cast[] $
       to-pathp (α .is-natural x y f)
-      ∙[] symP (transport-filler (λ i → Hom[ idl id i ] _ _) (F₁ G f ∘′ α .η x))
+      ∙[] symP (transport-filler (λ i → Hom[ idl id i ] _ _) (F₁ G f ∘' α .η x))
 ```
 -->
 
-## Fibre Categories
+## Fibre categories
 
 The fibre category of the fibration of diagrams are equivalent to
 functor categories $[\cJ, \cE_x]$.

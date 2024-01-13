@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -22,7 +21,7 @@ private variable
 ```
 -->
 
-# Product categories
+# Product categories {defines="product-category"}
 
 Let $\cC$ and $\cD$ be two precategories; we put no restrictions
 on their relative sizes. Their _product category_ $\cC \times^c
@@ -35,11 +34,12 @@ $$
 \cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD\text{,}
 $$
 
-satisfying a universal property analogous to those of [product diagrams]
-_in_ categories. Namely, given a setup like in the diagram below, there
-is a unique^[When $\cC$ and $\cD$ are precategories, this functor
-is only unique up to a natural isomorphism] functor which fits into the
-dashed line and makes the whole diagram commute.
+satisfying a universal property analogous to those of [[product
+diagrams|product]] _in_ categories. Namely, given a setup like in the
+diagram below, there is a unique^[When $\cC$ and $\cD$ are
+precategories, this functor is only unique up to a natural isomorphism]
+functor which fits into the dashed line and makes the whole diagram
+commute.
 
 [product diagrams]: Cat.Diagram.Product.html
 
@@ -129,12 +129,12 @@ _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
 Isomorphisms in functor categories admit a short description, too: They
 are maps which are componentwise isomorphisms. It follows, since paths
 in product types are products of paths in the component types, that the
-product of univalent categories is itself a univalent category.
+product of [[univalent categories]] is itself a univalent category.
 
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (c-cat : is-category C) (d-cat : is-category D) where
     private
       module C   = Univalent c-cat
@@ -148,7 +148,7 @@ module
     ×ᶜ-is-category .to-path im =
       Σ-pathp (C.iso→path (F-map-iso Fst im)) (D.iso→path (F-map-iso Snd im))
     ×ᶜ-is-category .to-path-over p = C*D.≅-pathp _ _ $
-      Σ-pathp-dep (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
+      Σ-pathp (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
                   (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 

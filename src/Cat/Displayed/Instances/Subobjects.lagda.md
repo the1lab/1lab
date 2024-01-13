@@ -2,16 +2,16 @@
 ```agda
 {-# OPTIONS -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Product
-open import Cat.Instances.Functor
-open import Cat.Diagram.Image
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Univalence
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Base
+open import Cat.Instances.Functor
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Product
 open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Diagram.Image
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
@@ -31,15 +31,12 @@ open Displayed
 ```
 -->
 
-# The fibration of subobjects
+# The fibration of subobjects {defines="poset-of-subobjects"}
 
-Given a base category $\cB$, we can define the [displayed category] of
+Given a base category $\cB$, we can define the [[displayed category]] of
 _subobjects_ over $\cB$. This is, in essence, a restriction of the
-[fundamental self-indexing] of $\cB$, but with our attention restricted
-to the monomorphisms $a \mono b$ rather than arbitrary maps $a \to b$.
-
-[displayed category]: Cat.Displayed.Base.html
-[fundamental self-indexing]: Cat.Displayed.Instances.Slice.html
+[[codomain fibration]] of $\cB$, but with our attention restricted to
+the monomorphisms $a \mono b$ rather than arbitrary maps $a \to b$.
 
 ```agda
 record Subobject (y : Ob) : Type (o ⊔ ℓ) where
@@ -106,18 +103,18 @@ Subobjects .Ob[_] y = Subobject y
 Subobjects .Hom[_]  = ≤-over
 Subobjects .Hom[_]-set f a b = is-prop→is-set ≤-over-is-prop
 
-Subobjects .id′ .map = id
-Subobjects .id′ .sq  = id-comm-sym
+Subobjects .id' .map = id
+Subobjects .id' .sq  = id-comm-sym
 
-Subobjects ._∘′_ α β .map = α .map ∘ β .map
-Subobjects ._∘′_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
+Subobjects ._∘'_ α β .map = α .map ∘ β .map
+Subobjects ._∘'_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
 ```
 
 <!--
 ```agda
-Subobjects .idr′ _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .idl′ _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .assoc′ _ _ _ = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .idr' _       = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .idl' _       = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .assoc' _ _ _ = is-prop→pathp (λ i → hlevel 1) _ _
 
 open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
@@ -166,20 +163,21 @@ is enough for its uniqueness.
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y′ = l where
-  it = pb (y′ .map) f
-  l : Cartesian-lift Subobjects f y′
+Subobject-fibration pb .has-lift f y' = l where
+  it : Pullback _ _ _
+  it = pb (y' .map) f
+  l : Cartesian-lift Subobjects f y'
 
   -- The blue square:
-  l .x′ .domain = it .apex
-  l .x′ .map    = it .p₂
-  l .x′ .monic  = is-monic→pullback-is-monic (y′ .monic) (it .has-is-pb)
+  l .x' .domain = it .apex
+  l .x' .map    = it .p₂
+  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
   l .lifting .map = it .p₁
   l .lifting .sq  = sym (it .square)
 
   -- The dashed red arrow:
-  l .cartesian .universal {u′ = u′} m h′ = λ where
-    .map → it .universal (sym (h′ .sq) ∙ sym (assoc f m (u′ .map)))
+  l .cartesian .universal {u' = u'} m h' = λ where
+    .map → it .Pullback.universal (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
     .sq  → sym (it .p₂∘universal)
   l .cartesian .commutes _ _ = ≤-over-is-prop _ _
   l .cartesian .unique _ _   = ≤-over-is-prop _ _
@@ -187,26 +185,24 @@ Subobject-fibration pb .has-lift f y′ = l where
 
 ## As a (weak) cocartesian fibration
 
-If $\cB$ has an [image factorisation] for every morphism, then its
+If $\cB$ has an [[image factorisation]] for every morphism, then its
 fibration of subobjects is a weak cocartesian fibration. By a general
 fact, if $\cB$ also has pullbacks, then $\Sub(-)$ is a cocartesian
 fibration.
-
-[image factorisation]: Cat.Diagram.Image.html
 
 ```agda
 Subobject-weak-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
   → is-weak-cocartesian-fibration Subobjects
-Subobject-weak-opfibration ims .weak-lift f x′ = l where
-  module im = Image B (ims (f ∘ x′ .map))
+Subobject-weak-opfibration ims .weak-lift f x' = l where
+  module im = Image B (ims (f ∘ x' .map))
 ```
 
 To understand this result, we remind ourselves of the universal property
 of an image factorisation for $f : a \to b$: It is the initial subobject
 through with $f$ factors. That is to say, if $m : \Sub(b)$ is another
 subobject, and $f = me$ for some map $e : a \to m$, then $m \le \im f$.
-Summarised diagramatically, the universal property of an image
+Summarised diagrammatically, the universal property of an image
 factorisation looks like a kite:
 
 ~~~{.quiver}
@@ -245,18 +241,18 @@ $x'$ and $f$), we see that this is exactly the kite-shaped universal
 property of $\im fx'$.
 
 ```agda
-  l : Weak-cocartesian-lift Subobjects f x′
-  l .y′ .domain = im.Im
-  l .y′ .map    = im.Im→codomain
-  l .y′ .monic  = im.Im→codomain-is-M
+  l : Weak-cocartesian-lift Subobjects f x'
+  l .y' .domain = im.Im
+  l .y' .map    = im.Im→codomain
+  l .y' .monic  = im.Im→codomain-is-M
 
   l .lifting .map = im.corestrict
   l .lifting .sq  = sym im.image-factors
 
-  l .weak-cocartesian .universal {x′ = y′} h .map = im.universal _ (y′ .monic) (h .map) (sym (h .sq))
+  l .weak-cocartesian .universal {x' = y'} h .map = im.universal _ (y' .monic) (h .map) (sym (h .sq))
   l .weak-cocartesian .universal h .sq = idl _ ∙ sym im.universal-factors
 
-  l .weak-cocartesian .commutes g′ = is-prop→pathp (λ _ → hlevel 1) _ _
+  l .weak-cocartesian .commutes g' = is-prop→pathp (λ _ → hlevel 1) _ _
   l .weak-cocartesian .unique _ _  = hlevel 1 _ _
 ```
 
@@ -282,7 +278,7 @@ $\Sub(y)$ at use-sites.
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = Fibre′ Subobjects y re coh where
+Sub y = Fibre' Subobjects y re coh where
   re : ∀ {a b} → ≤-over (id ∘ id) a b → ≤-over id a b
   re x .map = x .map
   re x .sq  = ap₂ _∘_ (introl refl) refl ∙ x .sq
@@ -349,9 +345,9 @@ Sub-products {y} pb a b = prod where
   prod : Product (Sub y) a b
   prod .Product.apex .domain = it .apex
   prod .Product.apex .map = a .map ∘ it .p₁
-  prod .Product.apex .monic = ∘-is-monic
-    (is-monic→pullback-is-monic (b .monic) (rotate-pullback (it .has-is-pb)))
+  prod .Product.apex .monic = monic-∘
     (a .monic)
+    (is-monic→pullback-is-monic (b .monic) (rotate-pullback (it .has-is-pb)))
 
   prod .Product.π₁ .map = it .p₁
   prod .Product.π₁ .sq  = idl _
@@ -360,7 +356,7 @@ Sub-products {y} pb a b = prod where
   prod .Product.π₂ .sq  = idl _ ∙ it .square
 
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .map =
-    it .universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
+    it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
     idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
   prod .Product.has-is-product .is-product.π₁∘factor = hlevel 1 _ _
@@ -374,7 +370,7 @@ Since identity of $m, n : \Sub(y)$ is given by identity of they
 underlying objects and identity-over of the corresponding morphisms, if
 $\cB$ is univalent, we can conclude that $\Sub(y)$ is, too. Since
 $\Sub(y)$ is always thin, we can summarise the situation by saying that
-$\Sub(y)$ is a partial order if $\cB$ is univalent.
+$\Sub(y)$ is a [[partial order]] if $\cB$ is univalent.
 
 ```agda
 Sub-is-category : ∀ {y} → is-category B → is-category (Sub y)

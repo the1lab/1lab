@@ -8,7 +8,7 @@ open import Algebra.Ring
 
 open import Cat.Diagram.Initial
 
-open import Data.Int
+open import Data.Int.HIT
 
 import Data.Nat as Nat
 
@@ -20,7 +20,7 @@ import Prim.Data.Nat as Nat
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
 
-# The initial ring
+# The initial ring {defines="initial-ring"}
 
 We have, in the introduction to rings, mentioned offhand that the ring
 $\ZZ$ is an initial object. This turns out to be a fairly nontrivial
@@ -262,11 +262,11 @@ evaluates to on $n$. So we're done!
 
 ## Abelian groups as Z-modules
 
-A fun consequence of $\ZZ$ being the initial ring is that every abelian
-group admits a unique $\ZZ$-module structure. This is, if you ask me,
-rather amazing! The correspondence is as follows: Because of the
-delooping-endomorphism ring adjunction, we have a correspondence between
-"$R$-module structures on G" and "ring homomorphisms $R \to
+A fun consequence of $\ZZ$ being the initial ring is that every
+[[abelian group]] admits a unique $\ZZ$-module structure. This is, if
+you ask me, rather amazing! The correspondence is as follows: Because of
+the delooping-endomorphism ring adjunction, we have a correspondence
+between "$R$-module structures on G" and "ring homomorphisms $R \to
 \rm{Endo}(G)$" --- and since the latter is contractible, so is the
 former!
 

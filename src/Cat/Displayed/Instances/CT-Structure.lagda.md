@@ -3,6 +3,7 @@
 open import Cat.Displayed.Cartesian.Discrete
 open import Cat.Diagram.Product.Solver
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Adjoint
 open import Cat.Displayed.Functor
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
@@ -24,7 +25,7 @@ open Binary-products B has-prods
 open Simple B has-prods
 ```
 
-# CT Structures
+# CT structures
 
 CT-Structures are a refinement of [simple fibrations], which allow us
 to model type theories where the contexts aren't necessarily
@@ -49,7 +50,7 @@ record CT-Structure (s : Level) : Type (o ⊔ lsuc s) where
 open CT-Structure
 ```
 
-We can construct a displayed category over our category of contexts in
+We can construct a [[displayed category]] over our category of contexts in
 much the same manner as the [simple fibration]; the only difference
 is that we restrict the displayed object to objects that the
 CT-structure distinguishes as types.
@@ -60,20 +61,42 @@ Simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
 Simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
 Simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X .fst) (Y .fst)
 Simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) (Y .fst)
-Simple-ct ct .Displayed.id′ = π₂
-Simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
-Simple-ct ct .Displayed.idr′ {f = u} f =
+Simple-ct ct .Displayed.id' = π₂
+Simple-ct ct .Displayed._∘'_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
+Simple-ct ct .Displayed.idr' {f = u} f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
-Simple-ct ct .Displayed.idl′ {f = u} f =
+Simple-ct ct .Displayed.idl' {f = u} f =
   π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
   f                   ∎
-Simple-ct ct .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
+Simple-ct ct .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
 
-# Fibration Structure
+# Cartesian maps
+
+If a map is cartesian in the simple fibration, then it is cartesian
+in a simple CT fibration.
+
+```agda
+Simple-cartesian→Simple-ct-cartesian
+  : ∀ {s} {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom (Γ ⊗₀ x) y}
+  → (ct : CT-Structure s)
+  → (x-tp : ∣ is-tp ct x ∣) → (y-tp : ∣ is-tp ct y ∣)
+  → is-cartesian Simple σ f
+  → is-cartesian (Simple-ct ct) {a' = x , x-tp} {b' = y , y-tp} σ f
+Simple-cartesian→Simple-ct-cartesian ct x-tp y-tp cart = ct-cart where
+  open is-cartesian
+
+  ct-cart : is-cartesian (Simple-ct ct) _ _
+  ct-cart .universal = cart .universal
+  ct-cart .commutes = cart .commutes
+  ct-cart .unique = cart .unique
+```
+
+
+# Fibration structure
 
 Much like the simple fibration, the simple fibration associated to a
 CT-structure also deserves its name.
@@ -84,11 +107,11 @@ open Cartesian-lift
 open is-cartesian
 
 Simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (Simple-ct ct)
-Simple-ct-fibration ct .has-lift u Y .x′ = Y
+Simple-ct-fibration ct .has-lift u Y .x' = Y
 Simple-ct-fibration ct .has-lift u Y .lifting = π₂
 Simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
 Simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h′ = h} h' p =
+Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -102,29 +125,24 @@ CT-structure into the simple fibration.
 ```agda
 Simple-ct→Simple
   : ∀ {s} → (ct : CT-Structure s)
-  → Displayed-functor (Simple-ct ct) Simple Id
-Simple-ct→Simple ct .Displayed-functor.F₀′ = fst
-Simple-ct→Simple ct .Displayed-functor.F₁′ f = f
-Simple-ct→Simple ct .Displayed-functor.F-id′ = refl
-Simple-ct→Simple ct .Displayed-functor.F-∘′ = refl
+  → Vertical-functor (Simple-ct ct) Simple
+Simple-ct→Simple ct .Vertical-functor.F₀' = fst
+Simple-ct→Simple ct .Vertical-functor.F₁' f = f
+Simple-ct→Simple ct .Vertical-functor.F-id' = refl
+Simple-ct→Simple ct .Vertical-functor.F-∘' = refl
 ```
 
-Furthermore, if $\cB$ is inhabited, then we can construct a
+Furthermore, if $\cB$ is (merely) inhabited, then we can construct a
 CT-Structure that considers every context a type.
 
-<!--
-  [TODO: Reed M, 18/10/2022]
-  When we have displayed adjoints, show that this gives an adjunction.
--->
-
 ```agda
-All-types : Ob → CT-Structure lzero
+All-types : ∥ Ob ∥ → CT-Structure lzero
 All-types X .is-tp _ = el ⊤ (hlevel 1)
-All-types X .∃-tp = inc (X , tt)
+All-types X .∃-tp = ∥-∥-map (λ x → x , tt) X
 
-Simple→Simple-ct : ∀ {X} → Displayed-functor Simple (Simple-ct (All-types X)) Id
-Simple→Simple-ct .Displayed-functor.F₀′ X = X , tt
-Simple→Simple-ct .Displayed-functor.F₁′ f = f
-Simple→Simple-ct .Displayed-functor.F-id′ = refl
-Simple→Simple-ct .Displayed-functor.F-∘′ = refl
+Simple→Simple-ct : ∀ {X} → Vertical-functor Simple (Simple-ct (All-types X))
+Simple→Simple-ct .Vertical-functor.F₀' X = X , tt
+Simple→Simple-ct .Vertical-functor.F₁' f = f
+Simple→Simple-ct .Vertical-functor.F-id' = refl
+Simple→Simple-ct .Vertical-functor.F-∘' = refl
 ```

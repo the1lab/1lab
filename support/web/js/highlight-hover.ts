@@ -29,7 +29,7 @@ document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) 
       if (on) {
         currentHover = document.createElement("div");
         currentHover.innerText = type;
-        currentHover.classList.add("typeTooltip", "sourceCode");
+        currentHover.classList.add("type-tooltip", "sourceCode");
         document.body.appendChild(currentHover);
 
         const selfRect = link.getBoundingClientRect();
@@ -38,9 +38,9 @@ document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) 
         // The constant here is arbitrary, because trying to convert em to px in JS is a fool's errand.
         if (selfRect.bottom + hoverRect.height + 30 > window.innerHeight) {
           // 2em from the material mixin. I'm sorry
-          currentHover.style.top = `calc(${link.offsetTop - hoverRect.height}px - 2em`;
+          currentHover.style.top = `calc(${link.offsetTop - hoverRect.height}px - 1em`;
         } else {
-          currentHover.style.top = `${link.offsetTop + link.offsetHeight}px`;
+          currentHover.style.top = `${link.offsetTop + (link.offsetHeight / 2)}px`;
         }
         currentHover.style.left = `${link.offsetLeft}px`;
       }

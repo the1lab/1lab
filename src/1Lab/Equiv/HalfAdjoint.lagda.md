@@ -11,7 +11,6 @@ description: |
 open import 1Lab.Reflection.Marker
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
-open import 1Lab.Equiv.Biinv
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -25,19 +24,18 @@ open import 1Lab.Type
 module 1Lab.Equiv.HalfAdjoint where
 ```
 
-# Adjoint Equivalences
+# Adjoint equivalences
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
-[triangle identities], thus witnessing $f$ and $g$ as [adjoint
-functors]. In Homotopy Type Theory, we can use a _half_ adjoint
+[triangle identities], thus witnessing $f$ and $g$ as [[adjoint
+functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
 equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
 [isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
 [homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
-[adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```agda
@@ -82,7 +80,7 @@ Drawn as a diagram, the path above factors like:
   {f(g(y))} && y \\
   {f(g(f(g(y))))} && {f(g(y))}
   \arrow["{\rm{sym}\ (\varepsilon(f(g(y))))}"', from=1-1, to=2-1]
-  \arrow["{\rm{ap}\ f\ (\eta(g(y)))}"', from=2-1, to=2-3]
+  \arrow["{\ap f\ (\eta(g(y)))}"', from=2-1, to=2-3]
   \arrow["{\varepsilon \ y}"', from=2-3, to=1-3]
   \arrow["{\varepsilon'\ y}", dashed, from=1-1, to=1-3]
 \end{tikzcd}\]
@@ -101,7 +99,7 @@ cancel:
       ε' (f x)                                                    ≡⟨⟩
       sym (ε (f (g (f x))))  ∙ ap f ⌜ (η (g (f x))) ⌝ ∙ ε (f x)   ≡⟨ ap (λ e → sym (ε _) ∙ ap f e ∙ ε _) (homotopy-invert η) ⟩
       sym (ε (f (g (f x))))  ∙ ⌜ ap (f ∘ g ∘ f) (η x) ∙ ε (f x) ⌝ ≡˘⟨ ap¡ (homotopy-natural ε _) ⟩
-      sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
+      sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancell (ε (f (g (f x)))) (ap f (η x)) ⟩
       ap f (η x)                                                  ∎
 ```
 
@@ -140,7 +138,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
     helper p' =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
       (f1 .snd) ≡ p'                            ≡⟨ Iso→Path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
-      ⌜ p' ⌝ ≡ f1 .snd                          ≡˘⟨ ap¡ (∙-id-l _) ⟩
+      ⌜ p' ⌝ ≡ f1 .snd                          ≡˘⟨ ap¡ (∙-idl _) ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
 
@@ -177,7 +175,7 @@ another $(x, p)$ using a very boring calculation:
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
-      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
+      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-∙ f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
       ap (λ x → f (g x)) (sym p) ∙ ⌜ ap f (η x) ⌝ ∙ p ≡⟨ ap! (zig _) ⟩ -- by the triangle identity
       ap (f ∘ g) (sym p) ∙ ⌜ ε (f x) ∙ p ⌝            ≡⟨ ap! (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
@@ -185,15 +183,15 @@ another $(x, p)$ using a very boring calculation:
 The calculation of `path`{.Agda} factors as a bunch of boring
 adjustments to paths using the groupoid structure of types, and the two
 interesting steps above: The triangle identity says that
-$\rm{ap}(f)(\eta x) = \varepsilon(f x)$, and naturality of
+$\ap(f)(\eta x) = \varepsilon(f x)$, and naturality of
 $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
-      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-comp-path (f ∘ g) (sym p) p) ⟩
-      ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-inv-r _) ⟩
+      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-∙ (f ∘ g) (sym p) p) ⟩
+      ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-invr _) ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
-      refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩
+      refl ∙ ε y                                  ≡⟨ ∙-idl (ε y) ⟩
       ε y                                         ∎
 ```
 

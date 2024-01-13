@@ -1,7 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import 1Lab.Prelude
+open import 1Lab.Prelude hiding (ext)
 
 open import Data.Sum.Base
 open import Data.Image
@@ -46,8 +46,8 @@ in $\ell$'s successor universe.
 [W-type]: Data.Wellfounded.W.html
 [Russell's paradox]: 1Lab.Counterexamples.Russell.html
 
-The [truncated] fibres in the extensionality constructor, as we'll see
-in a bit, are exactly the normal forms of the propositions $f(a) \in
+The [[mere]] fibres in the extensionality constructor, as we'll see in a
+bit, are exactly the normal forms of the propositions $f(a) \in
 \rm{set}(B,g)$ and $g(b) \in \rm{set}(A,f)$. You should think of
 `ext`{.Agda} as an instance of the axiom of extensionality, specialised
 for values which are "explicit" sets: If every element $f(a)$ is
@@ -59,11 +59,9 @@ into families of propositions, which allows us to ignore all the higher
 constructors. If $P$ holds of $\rm{set}(A, f)$, assuming that it holds
 for every value of $f$, then it holds for any set.
 
-[truncated]: 1Lab.HIT.Truncation.html
-
 ```agda
 V-elim-prop
-  : ∀ {ℓ ℓ′} (P : V ℓ → Type ℓ′)
+  : ∀ {ℓ ℓ'} (P : V ℓ → Type ℓ')
   → (∀ x → is-prop (P x))
   → (∀ {A} (f : A → V ℓ) → (∀ x → P (f x)) → P (set A f))
   → ∀ x → P x
@@ -90,14 +88,14 @@ V-elim-prop P p-prop p-set (squash x y p q i j) =
 
 <!--
 ```agda
-V-elim-prop′
-  : ∀ {ℓ ℓ′} (P : V ℓ → Type ℓ′)
+V-elim-prop'
+  : ∀ {ℓ ℓ'} (P : V ℓ → Type ℓ')
   → (∀ {A} (f : A → V ℓ) → is-prop (P (set A f)))
   → (∀ {A} (f : A → V ℓ) → (∀ x → P (f x)) → P (set A f))
   → ∀ x → P x
-V-elim-prop′ P pprop pset = V-elim-prop P pprop′ pset where abstract
-  pprop′ : ∀ x → is-prop (P x)
-  pprop′ = V-elim-prop _ (λ _ → is-prop-is-prop) (λ f _ → pprop f)
+V-elim-prop' P pprop pset = V-elim-prop P pprop' pset where abstract
+  pprop' : ∀ x → is-prop (P x)
+  pprop' = V-elim-prop _ (λ _ → is-prop-is-prop) (λ f _ → pprop f)
 ```
 -->
 
@@ -218,7 +216,7 @@ $i = a$!
     V-elim-prop _ (λ A → Π-is-hlevel³ 1 λ _ _ _ → squash _ _) λ {A} f ext B a<b b<a →
       V-elim-prop (λ B → set A f ⊆ B → B ⊆ set A f → (set A f) ≡ B)
       (λ _ → Π-is-hlevel² 1 λ _ _ → squash _ _)
-      (λ g ext′ a<b b<a → worker f g a<b b<a)
+      (λ g ext' a<b b<a → worker f g a<b b<a)
       B a<b b<a
 
 V-identity-system
@@ -233,19 +231,17 @@ V-identity-system = set-identity-system (λ x y → hlevel!)
 
 Above, we have referred to an inhabitant $\rm{set}(A, f) : V$ as a
 _literal set_. Using our eliminator into propositions, we can establish
-that every set is _merely_ equal to one of the form $\rm{set}(A, f)$. In
-this section, we'll show that every set is a literal set, without the
-propositional truncation, by defining a notion of **presentation**, and
+that every set is [[merely]] equal to one of the form $\rm{set}(A, f)$.
+In this section, we'll show that every set is a literal set, without the
+[[propositional truncation]], by defining a notion of **presentation**, and
 showing that each set has exactly one presentation.
 
 Whereas any pair $(A, f)$ could be said to "present" a set --- the
 literal $\rm{set}(A, f)$ ---, we shall only say "presentation" when $f :
-A \mono V$ is an [embedding] into the universe of material sets. Note
+A \mono V$ is an [[embedding]] into the universe of material sets. Note
 that any presentation has an underlying _set_ $A$, which we call the
 **type of members** of the associated set. Put explicitly, a
 presentation for a set $X$ consists of the following data:
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 record Presentation {ℓ} (X : V ℓ) : Type (lsuc ℓ) where
@@ -285,8 +281,8 @@ Presentation-is-prop {ℓ} {A} f P1 P2 = done where
 
   eqv : ∀ x → fibre g x ≃ fibre h x
   eqv x = prop-ext (gm x) (hm x)
-    (λ fib → ∥-∥-proj {ap = hm x} (v' .fst x (u' .snd x (inc fib))))
-    (λ fib → ∥-∥-proj {ap = gm x} (u' .fst x (v' .snd x (inc fib))))
+    (λ fib → ∥-∥-proj (hm x) (v' .fst x (u' .snd x (inc fib))))
+    (λ fib → ∥-∥-proj (gm x) (u' .fst x (v' .snd x (inc fib))))
 ```
 
 This pointwise equivalence between fibres extends to an equivalence
@@ -326,7 +322,7 @@ uniqueness of presentations.
 
 We now construct a presentation for any given material set. We're free to
 assume $X = \rm{set}(A, f)$ is a literal set. Factor $f$ through its
-image as
+[[image]] as
 
 $$
 A \epi \im f \mono V\text{,}
@@ -344,7 +340,7 @@ members of a set.
 ```agda
 presentation : ∀ {ℓ} (X : V ℓ) → Presentation X
 presentation {ℓ} =
-  V-elim-prop′ Presentation Presentation-is-prop λ f _ → present f
+  V-elim-prop' Presentation Presentation-is-prop λ f _ → present f
   where
 ```
 
@@ -386,7 +382,7 @@ module Members {ℓ} (X : V ℓ) where
 
   memb : ∀ {x} → x ∈ₛ X ≃ fibre elem x
   memb {x = x} = prop-ext (is-member _ X .is-tr) (embeds _)
-    (λ a → ∥-∥-proj {ap = embeds _} (subst (x ∈ₛ_) presents a))
+    (λ a → ∥-∥-proj (embeds _) (subst (x ∈ₛ_) presents a))
     (λ a → subst (x ∈ₛ_) (sym presents) (inc a))
 
   module memb {x} = Equiv (memb {x})
@@ -394,8 +390,8 @@ module Members {ℓ} (X : V ℓ) where
   contains : ∀ {i} → elem i ∈ₛ X
   contains = memb.from (_ , refl)
 
-  contains′ : ∀ {i x} → x ≡ elem i → x ∈ₛ X
-  contains′ p = subst (_∈ₛ X) (sym p) contains
+  contains' : ∀ {i x} → x ≡ elem i → x ∈ₛ X
+  contains' p = subst (_∈ₛ X) (sym p) contains
 ```
 
 # Modelling IZF
@@ -479,7 +475,7 @@ F \simeq m_F^*(x)$.
   union {x} {F} = prop-ext hlevel! squash
     (∥-∥-map λ { ((i , j) , p) →
         Members.elem F i
-      , Members.contains′ (Members.elem F i) (sym p)
+      , Members.contains' (Members.elem F i) (sym p)
       , Members.contains F
       })
 ```
@@ -500,11 +496,11 @@ which we can transport to a fibre $m_{m_{F(i)}}^*(x)$, i.e. an index $j
 ```agda
     (∥-∥-map λ { (u , x-u , u-F) →
       let
-        s′ : fibre _ x
-        s′ = subst (λ e → fibre (Members.elem e) x)
+        s' : fibre _ x
+        s' = subst (λ e → fibre (Members.elem e) x)
               (sym (Members.memb.to F u-F .snd))
               (Members.memb.to u x-u)
-      in (Members.memb.to F u-F .fst , s′ .fst) , s′ .snd })
+      in (Members.memb.to F u-F .fst , s' .fst) , s' .snd })
 ```
 
 ## Infinity & the natural numbers
@@ -631,7 +627,7 @@ $p$, a proof that $C$ holds of $x$.
   separation : ∀ a C x → (x ∈ₛ subset a C) ≃ (x ∈ₛ a × x ∈ C)
   separation a C x = prop-ext squash hlevel!
     (∥-∥-rec hlevel! λ { ((j , w) , p) →
-      Members.contains′ a (sym p) , subst (λ e → ∣ C e ∣) p w })
+      Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w })
     (λ { (i∈a , Ci) → inc (
       ( Members.memb.to a i∈a .fst
       , subst (λ e → ∣ C e ∣) (sym (Members.memb.to a i∈a .snd)) Ci)
@@ -645,8 +641,8 @@ The axiom of power sets also relies on propositional resizing in the
 ambient type theory. Let $a$ be a material set with $m_a : [a] \mono V$ its
 presentation --- I promise that's the last time I'll say this.
 
-To every predicate $p : [a] \to \Omega$, we can associate the class $p'
-: V \to \Omega$ given by
+To every predicate $p : [a] \to \Omega$, we can associate the class
+$p' : V \to \Omega$ given by
 
 $$
 x \mapsto \sum_{(i, _) : m_a^*(x)} p(i)\text{,}
@@ -760,7 +756,7 @@ as it holds for every $x \in a$, then $P$ holds of any material set.
 
 ```agda
   ∈-induction
-    : ∀ {ℓ′} (P : V ℓ → Prop ℓ′)
+    : ∀ {ℓ'} (P : V ℓ → Prop ℓ')
     → (∀ {a} → (∀ {x} → x ∈ₛ a → ∣ P x ∣) → ∣ P a ∣)
     → ∀ x → ∣ P x ∣
   ∈-induction P ps = V-elim-prop (λ z → ∣ P z ∣) (λ _ → P _ .is-tr) $ λ f i →

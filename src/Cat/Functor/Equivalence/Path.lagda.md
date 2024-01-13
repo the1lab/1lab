@@ -3,9 +3,6 @@
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -21,12 +18,12 @@ module Cat.Functor.Equivalence.Path where
 
 # Paths between categories
 
-We know that, _in_ a univalent category, paths between objects are the
-same thing as isomorphisms. A natural question to follow up is: what are
-the paths _between_ univalent categories? We prove that the space of
-functors $F : \cC \to \cD$ whose mappings on objects and on
-morphisms are both equivalences ("isomorphisms of precategories") is an
-\r{identity system} on the space of precategories.
+We know that, _in_ a [[univalent category]], paths between objects are
+the same thing as isomorphisms. A natural question to follow up is: what
+are the paths _between_ univalent categories? We prove that the space of
+functors $F : \cC \to \cD$ whose mappings on objects and on morphisms
+are both equivalences ("isomorphisms of precategories") is an [[identity
+system]] on the space of precategories.
 
 The first thing we need to establish is that an isomorphism of
 precategories induces a path between its domain and codomain categories.
@@ -50,14 +47,14 @@ univalence it induces an equivalence $\cC_0 \equiv \cD_0$. The
 path between `Hom`{.Agda}-sets is slightly more complicated. It is,
 essentially, the dashed line in the diagram
 
-~~~{.quiver}
+~~~{.quiver .tall-1}
 \[\begin{tikzcd}
-  {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} \\
+  {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(x,y)} \\
   \\
-  {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} && {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)}
+  {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} && {\mathbf{Hom}_\mathcal{D}(x,y)}
   \arrow["{\mathrm{id}}", from=1-3, to=3-3]
   \arrow["{F_1}"', from=1-1, to=3-1]
-  \arrow["{\mathrm{Hom}_\mathcal{D}(x, y)}"', from=3-1, to=3-3]
+  \arrow["{\mathrm{Hom}_\mathcal{D}(\unglue x, \unglue y)}"', from=3-1, to=3-3, outer sep=0.5em]
   \arrow[dashed, from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
@@ -74,13 +71,14 @@ essentially, the dashed line in the diagram
   hom i x y = Glue (D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)) (sys i x y)
 ```
 
-Note that $\rm{unglue}_{i \lor \neg i}(x)$ is a term in $\cD_0$ which
-evaluates to $F_0(x)$ when $i = i1$ or $i = i0$, so that the system
+Note that $\unglue_{i \lor \neg i}x$ is a term in $\cD_0$ which
+evaluates to $F_0(x)$ when $i = i0$ (and thus $x$ has type $\cC_0$) and $x$
+when $i = i1$ (and thus $x$ has type $\cD_0$), so that the system
 described above can indeed be built. The introduction rule for
 `hom`{.Agda} is `hom-glue`{.Agda}: If we have a partial element $\neg i
-\vdash f : \hom_\mathcal{C} x y$ together with an element $g$ of base
+\vdash f : \hom_\cC(x, y)$ together with an element $g$ of base
 type satisfying definitionally $\neg i \vdash F_1(f) = g$, we may glue
-$f$ along $g$ to get an element of $\rm{hom}_i(x, y)$.
+$f$ along $g$ to get an element of $\hom_i(x, y)$.
 
 ```agda
   hom-glue
@@ -116,7 +114,7 @@ preserves identity_.
 ```
 
 The last trick is extending a proposition $P$ along the line
-$\rm{hom}_i$, in a way that agrees with the original categories. We do
+$\hom_i$, in a way that agrees with the original categories. We do
 this by piecing together a square whose sides are the witness that $P$
 is a proposition, and where the base is given by spreading
 (`coe0→i`{.Agda}) the proposition from $\cC$ throughout the line. We
@@ -252,7 +250,7 @@ Category-identity-system-pre =
 <!--
 ```agda
 module
-  _ {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (F : Functor C D)
     (eqv : is-equivalence F)
   where
@@ -261,7 +259,7 @@ module
     open is-equivalence eqv
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
-    module F = Fr F
+    module F = Functor F
   open _=>_
 
 ```
@@ -307,16 +305,16 @@ proposition), and the functor is definitionally preserved.
 ```
 -->
 
-And now the aforementioned tiny result: All equivalences are fully
-faithful, and if both categories are univalent, the natural isomorphisms
-$F^{-1}F \cong \rm{Id}$ and $FF^{-1} \cong \rm{Id}$ provide the
-necessary paths for showing that $F_0$ is an equivalence of types.
+And now the aforementioned tiny result: All equivalences are [[fully
+faithful]], and if both categories are univalent, the natural
+isomorphisms $F^{-1}F \cong \Id$ and $FF^{-1} \cong \Id$ provide
+the necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda
       eqv→iso : is-precat-iso F
       eqv→iso .has-is-ff = is-equivalence→is-ff F eqv
       eqv→iso .has-is-iso = is-iso→is-equiv λ where
         .is-iso.inv    → eqv .F⁻¹ .F₀
-        .is-iso.rinv x → dcat .to-path       $ Nat-iso→Iso (F∘F⁻¹≅Id eqv) _
-        .is-iso.linv x → sym $ ccat .to-path $ Nat-iso→Iso (Id≅F⁻¹∘F eqv) _
+        .is-iso.rinv x → dcat .to-path       $ isoⁿ→iso (F∘F⁻¹≅Id eqv) _
+        .is-iso.linv x → sym $ ccat .to-path $ isoⁿ→iso (Id≅F⁻¹∘F eqv) _
 ```

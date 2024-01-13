@@ -28,12 +28,8 @@ It is a commonly held misunderstanding that when translating such a
 definition into type theory, both subsets and existential quantifiers
 should be read as specific cases of the dependent sum, `Σ`{.Agda} -
 perhaps using "subset" to mean "`Σ` for which the type family is
-[propositional]". Indeed, the first projection out of these is [a
-(generalised) subset inclusion], so this translation is accurate **for
-subsets**.
-
-[propositional]: agda://1Lab.HLevel#is-prop
-[a (generalised) subset inclusion]: agda://1Lab.Equiv.Embedding#Subset-proj-embedding
+valued in [[propositions]]". Indeed, the first projection out of these
+is an [[embedding]], so this translation is accurate **for subsets**.
 
 However, let's see what happens when we naïvely translate the definition
 of image above:
@@ -82,7 +78,5 @@ woops = image≃domain
 ```
 
 [^2]: In fact, note that if we reorder `p i, x, λ j → p (i ∧ j)` we get
-`x, p i, λ j → p (i ∧ j)`, which is exactly how it is shown that
-[singletons are contractible].
-
-[singletons are contractible]: agda://1Lab.Path#Singleton-is-contr
+`x, p i, λ j → p (i ∧ j)`, which is exactly the proof term which
+establishes [[contractibility of singletons|path induction]].

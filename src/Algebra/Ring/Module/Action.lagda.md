@@ -7,7 +7,6 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Abelian.Instances.Ab
 open import Cat.Abelian.Base
 open import Cat.Abelian.Endo
 open import Cat.Prelude hiding (_+_)
@@ -22,9 +21,9 @@ module Algebra.Ring.Module.Action where
 
 While the record `Module-on`{.Agda} expresses the possible $R$-module
 structures on a _type_ $T$, including the scalar multiplication _and_
-the addition making $T$ into an abelian group, it's sometimes fruitful
-to consider the $R$-module structures on an _abelian group_ $G$, which
-is then regarded as an indivisible unit.
+the addition making $T$ into an [[abelian group]], it's sometimes
+fruitful to consider the $R$-module structures on an _abelian group_
+$G$, which is then regarded as an indivisible unit.
 
 The difference is in the quantification: the latter perspective,
 developed in this module, allows us to "fix" the addition, and let only
@@ -95,7 +94,7 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
 
 ```agda
   Hom→Action G rhom .Ring-action._⋆_ x y = rhom # x # y
-  Hom→Action G rhom .Ring-action.⋆-distribl r x y = rhom .hom r .preserves .is-group-hom.pres-⋆ _ _
+  Hom→Action G rhom .Ring-action.⋆-distribl r x y = (rhom # r) .preserves .is-group-hom.pres-⋆ _ _
   Hom→Action G rhom .Ring-action.⋆-distribr r s x = rhom .preserves .is-ring-hom.pres-+ r s #ₚ x
   Hom→Action G rhom .Ring-action.⋆-assoc r s x    = sym (rhom .preserves .is-ring-hom.pres-* r s #ₚ x)
   Hom→Action G rhom .Ring-action.⋆-id x           = rhom .preserves .is-ring-hom.pres-id #ₚ x
@@ -110,6 +109,6 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
     : (G : Abelian-group ℓ)
     → Ring-action (G .snd) ≃ Rings.Hom R (Endo Ab-ab-category G)
   Action≃Hom G = Iso→Equiv $ Action→Hom G , iso (Hom→Action G)
-    (λ x → Homomorphism-path λ _ → refl)
+    (λ x → trivial!)
     (λ x → refl)
 ```

@@ -6,7 +6,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
-
 ```agda
 module 1Lab.Type.Sigma where
 ```
@@ -15,7 +14,7 @@ module 1Lab.Type.Sigma where
 ```
 private variable
   ℓ ℓ₁ : Level
-  A A' : Type ℓ
+  A A' X X' Y Y' Z Z' : Type ℓ
   B P Q : A → Type ℓ
 ```
 -->
@@ -193,11 +192,9 @@ aforementioned cubical argument:
                              refl refl j i
 ```
 
-Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its inverse,
-`ap fst`{.Agda}, is also an equivalence; This is precisely what it means
-for `fst`{.Agda} to be an [embedding].
-
-[embedding]: agda://1Lab.Equiv.Embedding
+Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its
+inverse, `ap fst`{.Agda}, is also an equivalence; This is precisely what
+it means for `fst`{.Agda} to be an [[embedding]].
 
 There is also a convenient packaging of the previous two definitions
 into an equivalence:
@@ -208,7 +205,10 @@ into an equivalence:
              → {x y : Σ _ B}
              → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ-prop-path≃ bp = Σ-prop-path bp , Σ-prop-path-is-equiv bp
+```
 
+<!--
+```agda
 Σ-prop-square
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → {w x y z : Σ _ B}
@@ -220,7 +220,20 @@ into an equivalence:
 Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd =
   is-prop→squarep (λ i j → Bprop (sq i j))
     (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
+
+Σ-set-square
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → {w x y z : Σ _ B}
+  → (∀ x → is-set (B x))
+  → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
+  → Square (ap fst p) (ap fst q) (ap fst s) (ap fst r)
+  → Square p q s r
+Σ-set-square Bset sq i j .fst = sq i j
+Σ-set-square Bset {p} {q} {s} {r} sq i j .snd =
+  is-set→squarep (λ i j → Bset (sq i j))
+    (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
+-->
 
 ## Dependent sums of contractibles
 
@@ -236,26 +249,34 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   the-iso .snd .is-iso.linv (a , b) i = a , bcontr a .paths b i
 ```
 
+<!--
 ```agda
+Σ-map
+  : (f : A → A')
+  → ({x : A} → P x → Q (f x)) → Σ _ P → Σ _ Q
+Σ-map f g (x , y) = f x , g y
+
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
+
+×-map : (A → A') → (X → X') → A × X → A' × X'
+×-map f g (x , y) = (f x , g y)
+
+×-map₁ : (A → A') → A × X → A' × X
+×-map₁ f = ×-map f id
+
+×-map₂ : (X → X') → A × X → A × X'
+×-map₂ f = ×-map id f
 ```
+-->
 
 <!--
 ```agda
-Σ-pathp-dep
-  : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
-  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
-  → (p : PathP A (x .fst) (y .fst))
-  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
-  → PathP (λ i → Σ (A i) (B i)) x y
-Σ-pathp-dep p q i = p i , q i
-
-_,ₚ_ = Σ-pathp-dep
+_,ₚ_ = Σ-pathp
 infixr 4 _,ₚ_
 
 Σ-prop-pathp
-  : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
   → (∀ i x → is-prop (B i x))
   → {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
   → PathP A (x .fst) (y .fst)
@@ -264,7 +285,7 @@ infixr 4 _,ₚ_
   p i , is-prop→pathp (λ i → bp i (p i)) (x .snd) (y .snd) i
 
 Σ-inj-set
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y z}
   → is-set A
   → Path (Σ A B) (x , y) (x , z)
   → y ≡ z
@@ -273,11 +294,39 @@ infixr 4 _,ₚ_
     (from-pathp (ap snd path))
 
 Σ-swap₂
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {C : A → B → Type ℓ′′}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → (Σ[ x ∈ A ] Σ[ y ∈ B ] (C x y)) ≃ (Σ[ y ∈ B ] Σ[ x ∈ A ] (C x y))
 Σ-swap₂ .fst (x , y , f) = y , x , f
 Σ-swap₂ .snd .is-eqv y = contr (f .fst) (f .snd) where
   f = strict-fibres _ y
   -- agda can actually infer the inverse here, which is neat
+
+×-swap
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (A × B) ≃ (B × A)
+×-swap .fst (x , y) = y , x
+×-swap .snd .is-eqv y = contr (f .fst) (f .snd) where
+  f = strict-fibres _ y
+
+Σ-contr-eqv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → (c : is-contr A)
+  → (Σ A B) ≃ B (c .centre)
+Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
+Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+  .is-iso.inv x → _ , x
+  .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
+  .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+```
+-->
+
+<!--
+```agda
+module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → Y x → Type ℓ''} where
+  curry : ((p : Σ X Y) → Z (p .fst) (p .snd)) → (x : X) → (y : Y x) → Z x y
+  curry f a b = f (a , b)
+
+  uncurry : ((x : X) → (y : Y x) → Z x y) → (p : Σ X Y) → Z (p .fst) (p .snd)
+  uncurry f (a , b) = f a b
 ```
 -->

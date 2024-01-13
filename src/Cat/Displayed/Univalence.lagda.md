@@ -3,7 +3,6 @@
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
@@ -14,9 +13,9 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Displayed.Univalence
-  {o ℓ o′ ℓ′}
+  {o ℓ o' ℓ'}
   {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  (E : Displayed B o' ℓ')
   where
 ```
 
@@ -24,21 +23,20 @@ module Cat.Displayed.Univalence
 ```agda
 private
   module B = Cat.Reasoning B
-  module E = Cat.Displayed.Reasoning E
   module ∫E = Cat.Reasoning (∫ E)
-open Displayed E
 open Cat.Displayed.Morphism E
+open Displayed E
 open Total-hom
 ```
 -->
 
-# Univalence for displayed categories
+# Univalence for displayed categories {defines="univalence-of-displayed-categories displayed-univalent-category"}
 
 We provide equivalent characterisations of univalence for categories
-$\cE$ which are displayed over a univalent category $\cB$.
+$\cE$ which are displayed over a [[univalent category]] $\cB$.
 
-We say a displayed category $\cE$ is **univalent** when, for any $f :
-x \cong y$ in $\cB$ and object $A$ over $x$, the space of "objects
+We say a [[displayed category]] $\cE$ is **univalent** when, for any
+$f : x \cong y$ in $\cB$ and object $A$ over $x$, the space of "objects
 over $y$ isomorphic to $A$ over $f$" is a proposition.
 
 ```agda
@@ -47,9 +45,9 @@ is-category-displayed =
   ∀ {x y} (f : x B.≅ y) (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ y ] ] (A ≅[ f ] B))
 ```
 
-This condition is sufficient for the total category $\int E$ to be
-univalent, if $\cB$ is, too. The proof of this is a bit nasty, so
-we'll break it down into parts. Initially, observe that the type of
+This condition is sufficient for the [[total category]] $\int E$ to be
+univalent, if $\cB$ is, too. The proof of this is a bit nasty, so we'll
+break it down into parts. Initially, observe that the type of
 isomorphisms $(x, A) \cong (y, B)$ in $\int E$ is equivalent to the type
 
 $$
@@ -66,16 +64,16 @@ module _ (base-c : is-category B) (disp-c : is-category-displayed) where
       : ∀ {x y} (p : x B.≅ y) {A : Ob[ x ]} {B : Ob[ y ]} (f : A ≅[ p ] B)
       → (x , A) ∫E.≅ (y , B)
     piece-together p f =
-      ∫E.make-iso (total-hom (p .B.to) (f .to′)) (total-hom (p .B.from) (f .from′))
-        (total-hom-path E (p .B.invl) (f .invl′))
-        (total-hom-path E (p .B.invr) (f .invr′))
+      ∫E.make-iso (total-hom (p .B.to) (f .to')) (total-hom (p .B.from) (f .from'))
+        (total-hom-path E (p .B.invl) (f .invl'))
+        (total-hom-path E (p .B.invr) (f .invr'))
 ```
 
 We first tackle the case where $f : A \cong B$ is vertical, i.e. $A$ and
-$B$ are in the same fibre category. But then, observe that our displayed
-univalence condition, when applied to the identity morphism, gives us
-exactly an identification $p : A \equiv B$ s.t. over $p$, $f$ looks like
-the identity (vertical) isomorphism.
+$B$ are in the same [[fibre category]]. But then, observe that our
+displayed univalence condition, when applied to the identity morphism,
+gives us exactly an identification $p : A \equiv B$ s.t. over $p$, $f$
+looks like the identity (vertical) isomorphism.
 
 ```agda
     contract-vertical-iso
@@ -84,18 +82,20 @@ the identity (vertical) isomorphism.
           ((x , B) , piece-together B.id-iso f)
     contract-vertical-iso {x} {A} B f =
       Σ-pathp (λ i → x , pair i .fst)
-        (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to′))
+        (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to'))
       where
         pair = disp-c B.id-iso A
           (A , id-iso↓)
           (B , f)
 ```
 
+:::{.definition #univalence-of-total-categories}
 We can now use _isomorphism induction_ in the base category to reduce
 the general case to `contract-vertical-iso`{.Agda} above. To wit: If $p
 : x \cong y$ is an arbitrary isomorphism (in $\cB$), it suffices to
 consider the case where $y = x$ and $p$ is the identity. Here, $p$ is
 the isomorphism of first components coming from the isomorphism in $\int E$.
+:::
 
 ```agda
   is-category-total : is-category (∫ E)
@@ -139,21 +139,21 @@ since a vertical isomorphism is no more than an isomorphism in a
 particular fibre category.
 
 ```agda
-is-category-fibrewise′
+is-category-fibrewise'
   : is-category B
   → (∀ x → is-category (Fibre E x))
   → is-category-displayed
-is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
-  wit′ : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
-  wit′ {x} A =
+is-category-fibrewise' b wit = is-category-fibrewise b wit' where
+  wit' : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
+  wit' {x} A =
     is-contr→is-prop $ retract→is-contr
       (λ (x , i) → x , make-iso[ B.id-iso ]
         (i .F.to)
         (i .F.from)
         (to-pathp (i .F.invl))
         (to-pathp (i .F.invr)))
-      (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
-        (from-pathp (i .invl′)) (from-pathp (i .invr′)))
+      (λ (x , i) → x , F.make-iso (i .to') (i .from')
+        (from-pathp (i .invl')) (from-pathp (i .invr')))
       (λ (x , i) → Σ-pathp refl (≅[]-path refl))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)

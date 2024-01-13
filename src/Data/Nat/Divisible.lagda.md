@@ -4,7 +4,9 @@ open import 1Lab.Prelude
 
 open import Data.Nat.Properties
 open import Data.Nat.Order
+open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -12,7 +14,7 @@ open import Data.Nat.Base
 module Data.Nat.Divisible where
 ```
 
-# Divisibility
+# Divisibility {defines="divisibility"}
 
 In the natural numbers, **divisibility**[^divide] is the property
 expressing that a given number can be expressed as a multiple of
@@ -43,14 +45,14 @@ this indirection, we can prove that divisibility is a mere property:
 ```agda
 ∣-is-prop : ∀ x y → is-prop (x ∣ y)
 ∣-is-prop zero y n k = prop!
-∣-is-prop (suc x) y (n , p) (n′ , q) = Σ-prop-path! (*-suc-inj x n n′ (p ∙ sym q))
+∣-is-prop (suc x) y (n , p) (n' , q) = Σ-prop-path! (*-suc-inj x n n' (p ∙ sym q))
 
 instance
   H-Level-∣ : ∀ {x y} {n} → H-Level (x ∣ y) (suc n)
   H-Level-∣ = prop-instance (∣-is-prop _ _)
 ```
 
-The type $x | y$ is, in fact, the propositional truncation of $(*
+The type $x | y$ is, in fact, the [[propositional truncation]] of $(*
 x)^{-1}(y)$ --- and it is logically equivalent to that type, too!
 
 ```agda
@@ -75,8 +77,8 @@ divides x p = fibre→∣ (x , p)
 ## As an ordering
 
 The notion of divisibility equips the type $\NN$ with yet another
-partial order, i.e., the relation $x | y$ is reflexive, transitive, and
-antisymmetric. We can establish the former two directly, but
+[[partial order]], i.e., the relation $x | y$ is reflexive, transitive,
+and antisymmetric. We can establish the former two directly, but
 antisymmetry will take a bit of working up to:
 
 ```agda
@@ -85,12 +87,12 @@ antisymmetry will take a bit of working up to:
 
 ∣-trans : ∀ {x y z} → x ∣ y → y ∣ z → x ∣ z
 ∣-trans {zero} {zero} p q = q
-∣-trans {zero} {suc y} p q = absurd (zero≠suc (sym p))
+∣-trans {zero} {suc y} p q = absurd (suc≠zero p)
 ∣-trans {suc x} {zero} p q = 0 , sym q
-∣-trans {suc x} {suc y} {z} (k , p) (k′ , q) = k′ * k , (
-  k′ * k * suc x   ≡⟨ *-associative k′ k (suc x) ⟩
-  k′ * (k * suc x) ≡⟨ ap (k′ *_) p ⟩
-  k′ * suc y       ≡⟨ q ⟩
+∣-trans {suc x} {suc y} {z} (k , p) (k' , q) = k' * k , (
+  k' * k * suc x   ≡⟨ *-associative k' k (suc x) ⟩
+  k' * (k * suc x) ≡⟨ ap (k' *_) p ⟩
+  k' * suc y       ≡⟨ q ⟩
   z                ∎)
 ```
 
@@ -121,7 +123,7 @@ This will let us establish the antisymmetry we were looking for:
 ```agda
 ∣-antisym : ∀ {x y} → x ∣ y → y ∣ x → x ≡ y
 ∣-antisym {zero}  {y}     p q = sym p
-∣-antisym {suc x} {zero}  p q = absurd (zero≠suc (sym q))
+∣-antisym {suc x} {zero}  p q = absurd (suc≠zero q)
 ∣-antisym {suc x} {suc y} p q = ≤-antisym (m∣sn→m≤sn p) (m∣sn→m≤sn q)
 ```
 
@@ -137,3 +139,52 @@ expect a number to divide its multiples. Fortunately, this is the case:
 ∣-*r : ∀ {x y} → x ∣ y * x
 ∣-*r {y = y} = fibre→∣ (y , refl)
 ```
+
+If two numbers are multiples of $k$, then so is their sum.
+
+```agda
+∣-+ : ∀ {k n m} → k ∣ n → k ∣ m → k ∣ (n + m)
+∣-+ {zero} {n} {m} p q = ap (_+ m) p ∙ q
+∣-+ {suc k} (x , p) (y , q) = x + y , *-distrib-+r x y (suc k) ∙ ap₂ _+_ p q
+```
+
+## Even and odd numbers
+
+A number is **even** if it is divisible by 2, and **odd** otherwise.
+Note that a number is odd if and only if its successor is even; we take this
+as our definition because it's easier to compute with positive statements.
+
+```agda
+is-even : Nat → Type
+is-even n = 2 ∣ n
+
+is-odd : Nat → Type
+is-odd n = is-even (suc n)
+
+odd→not-even : ∀ n → is-odd n → ¬ is-even n
+odd→not-even n (x , p) (y , q) = 1≠2*n (x - y) $
+  monus-swapr 1 _ _ (ap suc q ∙ sym p) ∙ sym (monus-distribr x y 2)
+  where
+    1≠2*n : ∀ n → ¬ (1 ≡ n * 2)
+    1≠2*n zero = suc≠zero
+    1≠2*n (suc n) h = zero≠suc (suc-inj h)
+```
+
+We can easily decide whether a number is even or odd by induction.
+
+```agda
+even-or-odd : ∀ n → is-even n ⊎ is-odd n
+even-or-odd zero = inl ∣-zero
+even-or-odd (suc n) with even-or-odd n
+... | inl p = inr (∣-+ ∣-refl p)
+... | inr p = inl p
+
+even? : ∀ n → Dec (is-even n)
+even? n with even-or-odd n
+... | inl e = yes e
+... | inr o = no (odd→not-even n o)
+```
+
+See [`Data.Nat.DivMod`] for a general decision procedure for divisibility.
+
+[`Data.Nat.DivMod`]: Data.Nat.DivMod.html
