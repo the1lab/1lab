@@ -120,6 +120,13 @@ For convenience, we also introduce displayed analogues for equational chain reas
                → g' ≡[ q ] h' → f' ≡[ p ] g' → f' ≡[ p ∙ q ] h'
   ≡[-]⟨⟩-syntax f' p q' p' = p' ∙[] q'
 
+  ≡[]˘_ : ∀ {x} {y} {f} {g}
+    {p : f ≡ g} { x' : Ob[ x ] } { y' : Ob[ y ] }
+    {f' : Hom[ f ] x' y' } {g' : Hom[ g ] x' y' }
+      ( q :  ( f' ≡[ p ] g' )) → (g' ≡[ (sym p) ]  f')
+
+  ≡[]˘ q = symP q
+
   _≡[]˘⟨_⟩_ : ∀ {a b x y} {f g h : Hom a b} {p : g ≡ f} {q : g ≡ h}
             → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
             → g' ≡[ p ] f' → g' ≡[ q ] h' → f' ≡[ sym p ∙ q ] h'

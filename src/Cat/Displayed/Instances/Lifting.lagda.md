@@ -3,16 +3,19 @@
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import 1Lab.Path
+
 import Cat.Displayed.Reasoning
+import Cat.Functor.Bifunctor as Bi
 import Cat.Reasoning
 ```
 -->
-
 ```agda
 module Cat.Displayed.Instances.Lifting where
 ```
@@ -22,6 +25,7 @@ module Cat.Displayed.Instances.Lifting where
 open Functor
 open _=>_
 open Total-hom
+
 ```
 -->
 
@@ -140,6 +144,73 @@ higher level of strictness than usual.
     ni .eta∘inv _ = idl _
     ni .inv∘eta _ = idl _
     ni .natural _ _ _ = id-comm
+```
+
+The distinguished projection `πᶠ` has a canonical choice of lifting.
+```agda
+module _ {o ℓ o' ℓ'}
+  {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
+  where
+  open Cat.Reasoning B
+  open Displayed E
+  open Cat.Displayed.Reasoning E
+
+  πᶠ-lifting : Lifting E (πᶠ E)
+  πᶠ-lifting .Lifting.F₀' (_ , a)= a
+  πᶠ-lifting .Lifting.F₁' f = preserves f
+  πᶠ-lifting .Lifting.F-id' = refl
+  πᶠ-lifting .Lifting.F-∘' f g = refl
+```
+
+```agda
+module Bifunctor {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
+  {B : Precategory o₁ ℓ₁}
+  (E : Displayed B o₂ ℓ₂)
+  (C : Precategory o₃ ℓ₃)
+  (D : Precategory o₄ ℓ₄)
+  (F : Functor (C ×ᶜ D) B)
+  (F' : Lifting E F)
+  where
+  private
+    module C = Precategory C
+    module D = Precategory D
+    module E = Displayed E
+    module F' = Lifting F'
+
+  sym_lemma_dep : ∀ {x} {y} {f} {g}
+    {p : f ≡ g} { x' : E.Ob[ x ] } { y' : E.Ob[ y ] }
+    {f' : E.Hom[ f ] x' y' } {g' : E.Hom[ g ] x' y' }
+      ( q :  ( f' E.≡[ p ] g' )) → (g' E.≡[ (sym p) ]  f')
+
+  sym_lemma_dep q = symP q
+
+
+  Left : ∀ (d : D.Ob) → Lifting E (Bi.Left F d)
+  Left d .Lifting.F₀' c = Lifting.F₀' F' (c , d)
+  Left d .Lifting.F₁' f = Lifting.F₁' F' ( f , D.id )
+  Left d .Lifting.F-id' = Lifting.F-id' F'
+
+  Left d .Lifting.F-∘' f g = E.≡[]˘
+                   ((F'.F₁' (f , D.id) E.∘'
+                     F'.F₁' (g , D.id))
+                     E.≡[]˘⟨ F'.F-∘' (f , D.id) (g , D.id) ⟩
+                      (ap (F' .Lifting.F₁')
+                        (λ i → C._∘_ f g , D.idl (D.id) i)
+                           E.∙[] refl))
+
+  Right : ∀ (c : C.Ob) → Lifting E (Bi.Right F c)
+  Right c .Lifting.F₀' d = Lifting.F₀' F' (c , d)
+  Right c .Lifting.F₁' f = Lifting.F₁' F' (C.id , f)
+  Right c .Lifting.F-id' = Lifting.F-id' F'
+  Right c .Lifting.F-∘' f g = E.≡[]˘
+                   ((F'.F₁' (C.id , f) E.∘' F'.F₁' (C.id , g))
+                   E.≡[]˘⟨ F'.F-∘' (C.id , f) (C.id , g) ⟩
+                      (ap (F' .Lifting.F₁')
+                        (λ i → (C.idl (C.id) i , D._∘_ f g ))
+                        E.∙[] refl
+                        )
+                   )
 ```
 
 ## Natural transformations between liftings
