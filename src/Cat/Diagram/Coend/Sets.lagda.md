@@ -75,7 +75,6 @@ taken the right coequaliser.
 ```agda
   Set-coend : Coend F
   Set-coend = coend where
-
     universal-cowedge : Cowedge F
     universal-cowedge .nadir = el! (Coeq dimapl dimapr)
     universal-cowedge .ψ X Fxx = inc (X , Fxx)
@@ -88,15 +87,16 @@ project out the bundled up object from the coend and feed that
 to the family associated to the cowedge `W`.
 
 ```agda
+    factoring : (W : Cowedge F) → Coeq dimapl dimapr → ⌞ W .nadir ⌟
+    factoring W (inc (o , x)) = W .ψ o x
+    factoring W (glue (X , Y , f , Fxy) i) = W .extranatural f i Fxy
+    factoring W (squash x y p q i j) = W .nadir .is-tr (factoring W x) (factoring W y) (λ i → factoring W (p i)) (λ i → factoring W (q i)) i j
+
     coend : Coend F
     coend .cowedge = universal-cowedge
-    coend .factor W =
-      Coeq-rec hlevel! (λ ∫F → W .ψ (∫F .fst) (∫F .snd)) λ where
-        (X , Y , f , Fxy) → happly (W .extranatural f) Fxy
+    coend .factor W = factoring W
     coend .commutes = refl
-    coend .unique {W = W} p =
-      funext $ Coeq-elim hlevel! (λ ∫F → happly p (∫F .snd)) λ where
-        (X , Y , f , Fxy) → is-set→squarep (λ _ _ → is-tr (W .nadir)) _ _ _ _
+    coend .unique {W = W} p = ext λ X x → p #ₚ x
 ```
 
 This construction is actually functorial! Given any functor
@@ -118,14 +118,6 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
         (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ··
         glue (X , Y , f , α .η (X , Y) Fxy) ··
         (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
-  Coends .F-id =
-    funext $ Coeq-elim
-      (λ _ → hlevel!)
-      (λ _ → refl)
-      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
-  Coends .F-∘ f g =
-    funext $ Coeq-elim
-      (λ _ → hlevel!)
-      (λ _ → refl)
-      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
+  Coends .F-id = trivial!
+  Coends .F-∘ f g = trivial!
 ```

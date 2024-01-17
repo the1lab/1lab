@@ -127,3 +127,10 @@ instance
   Funlike-Fun = record
     { _#_ = _$_
     }
+
+-- Generalised "sections" (e.g. of a presheaf) notation.
+_ʻ_
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄ {a : A} {b : B} ⦃ _ : Underlying ⌞ b ⌟ ⦄
+  → F a b → ⌞ a ⌟ → Type _
+F ʻ x = ⌞ F # x ⌟

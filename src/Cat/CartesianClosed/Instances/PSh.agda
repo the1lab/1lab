@@ -78,7 +78,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .p₁ .is-natural _ _ _ = refl
     pb .p₂ .η x (a , b , _) = b
     pb .p₂ .is-natural _ _ _ = refl
-    pb .has-is-pb .square = ext λ _ (_ , _ , p) → p
+    pb .has-is-pb .square = ext λ _ _ _ p → p
     pb .has-is-pb .universal path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
     pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
@@ -197,9 +197,9 @@ module _ {κ} {C : Precategory κ κ} where
         F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
         F .F₁ f nt .is-natural x y g = funext λ o →
           ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
-        F .F-id = ext λ f i (g , x) →
+        F .F-id = ext λ f i g x →
           ap (f .η i) (Σ-pathp (C.idl _) refl)
-        F .F-∘ f g = ext λ h i (j , x) →
+        F .F-∘ f g = ext λ h i j x →
           ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
 
       func : Functor (PSh κ C) (PSh κ C)
@@ -217,13 +217,13 @@ module _ {κ} {C : Precategory κ κ} where
           funext λ _ → Σ-pathp (happly (x .F-∘ _ _) _) refl
       adj .unit .η x .is-natural _ _ _ = funext λ _ → Nat-path λ _ → funext λ _ →
         Σ-pathp (sym (happly (x .F-∘ _ _) _)) refl
-      adj .unit .is-natural x y f = ext λ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) , refl
+      adj .unit .is-natural x y f = ext λ _ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) , refl
       adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
       adj .counit .η _ .is-natural x y f = funext λ h →
         ap (h .fst .η _) (Σ-pathp C.id-comm refl) ∙ happly (h .fst .is-natural _ _ _) _
       adj .counit .is-natural x y f = Nat-path λ x → refl
-      adj .zig {A} = ext λ x _ → happly (F-id A) _ , refl
-      adj .zag {A} = ext λ _ x i (f , g) j → x .η i (C.idr f j , g)
+      adj .zig {A} = ext λ x _ _ → happly (F-id A) _ , refl
+      adj .zag {A} = ext λ _ x i f g j → x .η i (C.idr f j , g)
 
     cc : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
     cc = product-adjoint→cartesian-closed (PSh κ C)

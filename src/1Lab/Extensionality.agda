@@ -149,11 +149,29 @@ Extensional-Π ⦃ sb ⦄ .reflᵉ f x = reflᵉ sb (f x)
 Extensional-Π ⦃ sb ⦄ .idsᵉ .to-path h = funext λ i → sb .idsᵉ .to-path (h i)
 Extensional-Π ⦃ sb ⦄ .idsᵉ .to-path-over h = funextP λ i → sb .idsᵉ .to-path-over (h i)
 
+Extensional-Π'
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+  → ⦃ sb : ∀ {x} → Extensional (B x) ℓr ⦄
+  → Extensional ({x : A} → B x) (ℓ ⊔ ℓr)
+Extensional-Π' ⦃ sb ⦄ .Pathᵉ f g = ∀ {x} → Pathᵉ sb (f {x}) (g {x})
+Extensional-Π' ⦃ sb ⦄ .reflᵉ f = reflᵉ sb f
+Extensional-Π' ⦃ sb ⦄ .idsᵉ .to-path h i {x} = sb .idsᵉ .to-path (h {x}) i
+Extensional-Π' ⦃ sb ⦄ .idsᵉ .to-path-over h i {x} = sb .idsᵉ .to-path-over (h {x}) i
+
 Extensional-→
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → ⦃ sb : Extensional B ℓr ⦄
   → Extensional (A → B) (ℓ ⊔ ℓr)
 Extensional-→ ⦃ sb ⦄ = Extensional-Π ⦃ λ {_} → sb ⦄
+
+Extensional-uncurry
+  : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
+  → ⦃ sb : Extensional ((x : A) → B x → C) ℓr ⦄
+  → Extensional (Σ A B → C) ℓr
+Extensional-uncurry ⦃ sb ⦄ .Pathᵉ f g = sb .Pathᵉ (curry f) (curry g)
+Extensional-uncurry ⦃ sb ⦄ .reflᵉ f = sb .reflᵉ (curry f)
+Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path h i (a , b) = sb .idsᵉ .to-path h i a b
+Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path-over h = sb .idsᵉ .to-path-over h
 
 Extensional-×
   : ∀ {ℓ ℓ' ℓr ℓs} {A : Type ℓ} {B : Type ℓ'}
@@ -175,10 +193,20 @@ instance
     → Extensionality (A → B)
   extensionality-fun = record { lemma = quote Extensional-→ }
 
+  extensionality-uncurry
+    : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
+    → Extensionality (Σ A B → C)
+  extensionality-uncurry = record { lemma = quote Extensional-uncurry }
+
   extensionality-Π
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
     → Extensionality ((x : A) → B x)
   extensionality-Π = record { lemma = quote Extensional-Π }
+
+  extensionality-Π'
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+    → Extensionality ({x : A} → B x)
+  extensionality-Π' = record { lemma = quote Extensional-Π' }
 
   extensionality-×
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
