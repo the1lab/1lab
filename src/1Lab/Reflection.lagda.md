@@ -238,25 +238,29 @@ infer-tel tel = (λ (_ , arg ai _) → arg ai unknown) <$> tel
 resetting : ∀ {ℓ} {A : Type ℓ} → TC A → TC A
 resetting k = run-speculative ((_, false) <$> k)
 
-wait-for-args : List (Arg Term) → TC (List (Arg Term))
+all-metas-in : Term → List Blocker
+all-metas-in tm = go tm [] where
+  go  : Term → List Blocker → List Blocker
+  go* : List (Arg Term) → List Blocker → List Blocker
+
+  go (var _ args)             acc = go* args acc
+  go (con _ args)             acc = go* args acc
+  go (def _ args)             acc = go* args acc
+  go (lam _ (abs _ t))        acc = go t acc
+  go (pat-lam cs args)        acc = acc
+  go (pi (arg _ a) (abs _ b)) acc = go a (go b acc)
+  go (agda-sort s)            acc = acc
+  go (lit l)                  acc = acc
+  go (meta x args)            acc = go* args (blocker-meta x ∷ acc)
+  go unknown                  acc = acc
+
+  go* []             acc = acc
+  go* (arg _ x ∷ xs) acc = go x (go* xs acc)
+
 wait-for-type : Term → TC Term
-
-wait-for-type (var x args) = var x <$> wait-for-args args
-wait-for-type (con c args) = con c <$> wait-for-args args
-wait-for-type (def f args) = def f <$> wait-for-args args
-wait-for-type (lam v (abs x t)) = pure (lam v (abs x t))
-wait-for-type (pat-lam cs args) = pure (pat-lam cs args)
-wait-for-type (pi (arg i a) (abs x b)) = do
-  a ← wait-for-type a
-  b ← wait-for-type b
-  pure (pi (arg i a) (abs x b))
-wait-for-type (agda-sort s) = pure (agda-sort s)
-wait-for-type (lit l) = pure (lit l)
-wait-for-type (meta x _) = block-on-meta x
-wait-for-type unknown = pure unknown
-
-wait-for-args [] = pure []
-wait-for-args (arg i a ∷ xs) = ⦇ ⦇ (arg i) (wait-for-type a) ⦈ ∷ wait-for-args xs ⦈
+wait-for-type tm with all-metas-in tm
+... | [] = pure tm
+... | it = blockTC (blocker-all it)
 
 wait-just-a-bit : Term → TC Term
 wait-just-a-bit (meta m _) = block-on-meta m

@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Monoids
+# Monoids {defines="monoid"}
 
 A **monoid** is a semigroup equipped with a _two-sided identity_
 element: An element $e \in M$ such that $e \star x = x = x \star e$. For

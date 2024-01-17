@@ -18,7 +18,7 @@ import Algebra.Ring.Module.Multilinear
 module Algebra.Ring.Module.Free {ℓ} (R : Ring ℓ) where
 ```
 
-# Free modules
+# Free modules {defines="free-module"}
 
 For a [finite set] of generators, we can define free [modules] very
 directly: for example, using [vectors]. For infinite sets, this

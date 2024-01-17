@@ -59,19 +59,20 @@ find-extensionality tm = do
   -- We have to block on the full type being available to prevent a
   -- situation where the default instance (or an incorrect instance!) is
   -- picked because the type is meta-headed.
+  debugPrint "tactic.extensionality.top" 10 "entering extensionality tactic"
+  debugPrint "tactic.extensionality" 10 ("  find-extensionality type:\n  " ∷ termErr tm ∷ [])
   tm ← reduce =<< wait-for-type tm
   let search = it Extensionality ##ₙ tm
-  debugPrint "tactic.extensionality" 10 ("find-extensionality goal:\n  " ∷ termErr search ∷ [])
 
   resetting $ do
     (mv , _) ← new-meta' search
     get-instances mv >>= λ where
       (x ∷ _) → do
         it ← unquoteTC {A = Name} =<< normalise (it Extensionality.lemma ##ₙ x)
-        debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ nameErr it ∷ [])
+        debugPrint "tactic.extensionality" 10 ("    ⇒ found lemma " ∷ nameErr it ∷ [])
         pure (def it [])
       [] → do
-        debugPrint "tactic.extensionality" 10 " ⇒ using default"
+        debugPrint "tactic.extensionality" 10 "    ⇒ using default"
         pure (it Extensional-default)
 
 -- Entry point for getting hold of an 'Extensional' instance:

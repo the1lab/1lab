@@ -13,7 +13,7 @@ open import Data.Set.Coequaliser
 module Cat.Diagram.Coend.Sets where
 ```
 
-# Coends in Sets
+# Coends in Sets {defines="coends-in-sets"}
 
 We can give an explicit construction of [coends] in the category of sets
 by taking a [coequaliser]. Intuitively, the coend should be the
@@ -34,7 +34,7 @@ the coequaliser of the following pair of functions:
 
 [coequaliser]: Data.Set.Coequaliser.html
 
-~~~{.quiver}
+~~~{.quiver .short-2}
 \begin{tikzcd}
 	{F(X,Y)} && {F(X,X)}
 	\arrow["{F(f,id)}"', shift right=2, from=1-1, to=1-3]
