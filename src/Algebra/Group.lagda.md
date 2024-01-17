@@ -93,10 +93,27 @@ give the unit, both on the left and on the right:
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
   open Cat.Reasoning (B (underlying-monoid .snd))
-    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
+    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_ ; module HLevel-instance)
     public
 ```
 -->
+
+Note that any element $x$ of $G$ determines two
+bijections on the underlying set of $G$, by multiplication with $x$ on
+the left and on the right.
+The inverse of this bijection is given by multiplication with
+$x^{-1}$, and the proof that these are in fact inverse functions are
+given by the group laws:
+
+```agda
+  ⋆-equivl : ∀ x → is-equiv (x *_)
+  ⋆-equivl x = is-iso→is-equiv (iso (inverse x *_)
+    (λ _ → cancell inverser) λ _ → cancell inversel)
+
+  ⋆-equivr : ∀ y → is-equiv (_* y)
+  ⋆-equivr y = is-iso→is-equiv (iso (_* inverse y)
+    (λ _ → cancelr inversel) λ _ → cancelr inverser)
+```
 
 ## is-group is propositional
 
@@ -120,7 +137,7 @@ is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
   ,ₚ prop!
   where
     module x = is-group x
-    module y = is-group y hiding (magma-hlevel ; module HLevel-instance)
+    module y = is-group y hiding (magma-hlevel)
     A-hl : ∀ {n} → H-Level A (2 + n)
     A-hl = basic-instance {T = A} 2 (x .is-group.has-is-set)
     1x=1y = identities-equal _ _

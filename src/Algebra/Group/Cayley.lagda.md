@@ -21,24 +21,12 @@ on the underlying set of $G$.
 
 [symmetric group]: Algebra.Group.html#symmetric-groups
 
-To start with, we note that any element $x$ of $G$ determines a
-bijection on the underlying set of $G$, by multiplication with $x$ on
-the left. The inverse of this bijection is given by multiplication with
-$x^{-1}$, and the proof that these are in fact inverse functions are
-given by the group laws:
+First, recall that we get a family of equivalences $G \simeq G$ by multiplication
+on the left:
 
 ```agda
 Cayley : ⌞ G ⌟ → ⌞ G ⌟ ≃ ⌞ G ⌟
-Cayley x = Iso→Equiv bij where
-  bij : Iso _ _
-  bij .fst y = x ⋆ y
-  bij .snd .is-iso.inv y = x ⁻¹ ⋆ y
-  bij .snd .is-iso.rinv y =
-    x ⋆ (x ⁻¹ ⋆ y) ≡⟨ cancell inverser ⟩
-    y              ∎
-  bij .snd .is-iso.linv y =
-    x ⁻¹ ⋆ (x ⋆ y) ≡⟨ cancell inversel ⟩
-    y              ∎
+Cayley x = (λ y → x ⋆ y) , ⋆-equivl x
 ```
 
 We then show that this map is a group homomorphism from $G$ to
