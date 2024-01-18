@@ -69,13 +69,13 @@ Finite-successor {n} = Iso→Equiv (f , iso g rinv linv) where
 ```
 
 We can also phrase this equivalence in a particularly strong way, which
-applies to dependent products over finite successor types:
+applies to dependent types over finite successor types:
 
 ```agda
-Fin-suc-universal
+Fin-suc-Π
   : ∀ {ℓ} {n} {A : Fin (suc n) → Type ℓ}
   → (∀ x → A x) ≃ (A fzero × (∀ x → A (fsuc x)))
-Fin-suc-universal = Iso→Equiv λ where
+Fin-suc-Π = Iso→Equiv λ where
   .fst f → f fzero , (λ x → f (fsuc x))
 
   .snd .is-iso.inv (z , f) fzero    → z
@@ -85,6 +85,22 @@ Fin-suc-universal = Iso→Equiv λ where
 
   .snd .is-iso.linv k i fzero    → k fzero
   .snd .is-iso.linv k i (fsuc n) → k (fsuc n)
+
+Fin-suc-Σ
+  : ∀ {ℓ} {n} {A : Fin (suc n) → Type ℓ}
+  → Σ (Fin (suc n)) A ≃ (A fzero ⊎ Σ (Fin n) (A ∘ fsuc))
+Fin-suc-Σ = Iso→Equiv λ where
+  .fst (fzero , a) → inl a
+  .fst (fsuc x , a) → inr (x , a)
+
+  .snd .is-iso.inv (inl a) → fzero , a
+  .snd .is-iso.inv (inr (x , a)) → fsuc x , a
+
+  .snd .is-iso.rinv (inl _) → refl
+  .snd .is-iso.rinv (inr _) → refl
+
+  .snd .is-iso.linv (fzero , a) → refl
+  .snd .is-iso.linv (fsuc x , a) → refl
 ```
 
 ## Addition
@@ -117,36 +133,15 @@ equivalent to the iterated binary `sum`{.Agda} of the cardinalities:
 sum : ∀ n → (Fin n → Nat) → Nat
 sum zero f = zero
 sum (suc n) f = f fzero + sum n (f ∘ fsuc)
-```
 
-In this case, the isomorphism is constructed directly:
-
-```agda
 Finite-sum : (B : Fin n → Nat) → Σ (Fin _) (Fin ∘ B) ≃ Fin (sum n B)
 Finite-sum {zero} B .fst ()
 Finite-sum {zero} B .snd .is-eqv ()
 Finite-sum {suc n} B =
-  Finite-coproduct .fst ∘ f ,
-  ∙-is-equiv (is-iso→is-equiv f-iso) (Finite-coproduct .snd)
-    where
-      rec = Finite-sum (B ∘ fsuc)
-      module rec = Equiv rec
-
-      f : Σ _ (Fin ∘ B) → Fin (B fzero) ⊎ Fin (sum n (B ∘ fsuc))
-      f (fzero , x) = inl x
-      f (fsuc x , y) = inr (rec .fst (x , y))
-
-      f-iso : is-iso f
-      f-iso .is-iso.inv (inl x) = fzero , x
-      f-iso .is-iso.inv (inr x) with rec.from x
-      ... | x , y = fsuc x , y
-
-      f-iso .is-iso.rinv (inl x) = refl
-      f-iso .is-iso.rinv (inr x) = ap inr (rec.ε _)
-
-      f-iso .is-iso.linv (fzero , x) = refl
-      f-iso .is-iso.linv (fsuc x , y) =
-        Σ-pathp (ap (fsuc ∘ fst) (rec.η _)) (ap snd (rec.η _))
+  Σ (Fin (suc n)) (Fin ∘ B)              ≃⟨ Fin-suc-Σ ⟩
+  Fin (B 0) ⊎ Σ (Fin n) (Fin ∘ B ∘ fsuc) ≃⟨ ⊎-apr (Finite-sum (B ∘ fsuc)) ⟩
+  Fin (B 0) ⊎ Fin (sum n (B ∘ fsuc))     ≃⟨ Finite-coproduct ⟩
+  Fin (sum (suc n) B)                    ≃∎
 ```
 
 ## Multiplication
@@ -157,8 +152,8 @@ we can use the theorem above for general sums to establish the case of
 binary products:
 
 ```agda
-Finite-product : (Fin n × Fin m) ≃ Fin (n * m)
-Finite-product {n} {m} =
+Finite-multiply : (Fin n × Fin m) ≃ Fin (n * m)
+Finite-multiply {n} {m} =
   (Fin n × Fin m)       ≃⟨ Finite-sum (λ _ → m) ⟩
   Fin (sum n (λ _ → m)) ≃⟨ cast (sum≡* n m) , cast-is-equiv _ ⟩
   Fin (n * m)           ≃∎
@@ -166,4 +161,27 @@ Finite-product {n} {m} =
     sum≡* : ∀ n m → sum n (λ _ → m) ≡ n * m
     sum≡* zero m = refl
     sum≡* (suc n) m = ap (m +_) (sum≡* n m)
+```
+
+## Products
+
+Similarly to the case for sums, the cardinality of a dependent *product* of
+finite sets is the `product`{.Agda} of the cardinalities:
+
+```agda
+product : ∀ n → (Fin n → Nat) → Nat
+product zero f = 1
+product (suc n) f = f fzero * product n (f ∘ fsuc)
+
+Finite-product : (B : Fin n → Nat) → (∀ x → Fin (B x)) ≃ Fin (product n B)
+Finite-product {zero} B .fst _ = fzero
+Finite-product {zero} B .snd = is-iso→is-equiv λ where
+  .is-iso.inv _ ()
+  .is-iso.rinv fzero → refl
+  .is-iso.linv _ → funext λ ()
+Finite-product {suc n} B =
+  (∀ x → Fin (B x))                          ≃⟨ Fin-suc-Π ⟩
+  Fin (B fzero) × (∀ x → Fin (B (fsuc x)))   ≃⟨ Σ-ap-snd (λ _ → Finite-product (B ∘ fsuc)) ⟩
+  Fin (B fzero) × Fin (product n (B ∘ fsuc)) ≃⟨ Finite-multiply ⟩
+  Fin (B fzero * product n (B ∘ fsuc))       ≃∎
 ```

@@ -24,7 +24,7 @@ We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
 
 ```agda
-infixr 1 _⊎_
+infixr 3 _⊎_
 
 data _⊎_ {a b} (A : Type a) (B : Type b) : Type (a ⊔ b) where
   inl : A → A ⊎ B
