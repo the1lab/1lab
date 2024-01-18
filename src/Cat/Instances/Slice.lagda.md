@@ -567,11 +567,7 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = ext λ y → Σ-path (sym (happly (x .commutes) _))
-      ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
-                    (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
-      ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
-      ·· transport-refl _)
+    linv x = ext λ y s → Σ-pathp (sym (x .commutes $ₚ _)) (to-pathp⁻ refl)
 ```
 -->
 

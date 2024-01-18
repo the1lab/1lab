@@ -633,7 +633,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 ```
 -->
 
-## Cocontinuity
+## Cocontinuity {defines="cocontinuous"}
 
 ```agda
 is-cocontinuous

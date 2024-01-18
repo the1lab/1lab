@@ -153,7 +153,7 @@ without comment.
 
     rinv : is-right-inverse inv (F₁ slice→total)
     rinv nt = ext λ where
-      o (z , p) → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
+      o z p → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
         (λ i → nt .η (elem (o .ob) (p i)) (z , (λ j → p (i ∧ j))) .fst)
 
     linv : is-left-inverse inv (F₁ slice→total)

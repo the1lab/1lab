@@ -5,6 +5,7 @@ open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
+open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -605,5 +606,11 @@ instance
     → Extensionality (F => G)
   extensionality-natural-transformation = record
     { lemma = quote Extensional-natural-transformation }
+
+  Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
+  Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
+
+  Funlike-Functor : ∀ {o ℓ o' ℓ'} → Funlike (Functor {o} {ℓ} {o'} {ℓ'})
+  Funlike-Functor = record { _#_ = Functor.F₀ }
 ```
 -->

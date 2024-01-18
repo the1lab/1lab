@@ -231,9 +231,9 @@ elements of $P$, which is the same join used to compute the extension of
 $f$.
 
 ```agda
-make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P → lub-unique
-  (fold-K.ε'.has-lub A B f (P .fst) (P .snd))
+make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P pfin → lub-unique
+  (fold-K.ε'.has-lub A B f P pfin)
   (cast-is-lubᶠ (λ Q → sym (p #ₚ Q .fst)) $
-    pres-finitely-indexed-lub (g .witness) (P .snd) _ _ $
+    pres-finitely-indexed-lub (g .witness) pfin _ _ $
     K-singleton-lub A _)
 ```

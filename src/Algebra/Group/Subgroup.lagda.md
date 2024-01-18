@@ -578,8 +578,8 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
     from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
     from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
 
-    il = ext λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
-    ir = ext λ x → Σ-prop-path (λ _ → squash _ _) refl
+    il = ext λ x x∈H → Σ-prop-path! refl
+    ir = ext λ x x∈H → Σ-prop-path! refl
 ```
 
 To show that these are equal as subgroups of $G$, we must show that the
