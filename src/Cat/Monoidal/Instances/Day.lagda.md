@@ -290,6 +290,21 @@ $f(\day{h,x,y})$, in a way compatible with the relation above.
 
   {-# REWRITE factor-day #-}
 
+  -- To have better type inference we define the Day-coend and its
+  -- associated projections as opaque symbols. Agda will treat them as
+  -- injective so e.g. an equation between `Day.nadir F G i = Day.nadir
+  -- ? ? ?` will actually solve those three metas.
+  --
+  -- But, of course, opaque symbols don't compute, and we'd really
+  -- really like to have `factor W (day h x y) = W .ψ h x y`. One
+  -- approach would be to lift everything that needs this definitional
+  -- equality into an opaque block, but that would massively bloat the
+  -- file with mandatory type signatures.
+  --
+  -- Rewrite rules to the rescue: `factor-day` allows us to "export" the
+  -- computation rule for `factor W (day ...)` without exposing the
+  -- computational behaviour of any other of the symbols here.
+
   Extensional-day-map
     : ∀ {i ℓ' ℓr} {C : Type ℓ'} {@(tactic hlevel-tactic-worker) c-set : is-set C}
     → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
