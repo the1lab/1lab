@@ -23,47 +23,53 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 # Extension Systems {defines=extension-system}
 
-An **extension system** on a category $\cC$ is a way of presenting a
-[[monad]] on $\cC$. As the name suggests, extension systems are built
-around an extension operation $\cC(X,M(Y)) \to \cC(M(X), M(Y))$ instead
-of the $\cC(M(M(X)), M(X))$ of a monad. This has a couple of immediate
-benefits:
+An **extension system** on a category $\cC$ is an alternative way of
+presenting a [[monad]] on $\cC$. As the name suggests, extension systems
+are built around an *extension* operation, of type $\cC(X,MY) \to
+\cC(MX, MY)$, in place of the *multiplication* operation $\cC(MMX, MX)$
+that characterises a monad. This has a couple of immediate benefits:
 
-1. Using an extension operation lets us avoid repeated iterations of $M$,
-which tends to not be particularly ergonomic.
-2. The extension operation $\cC(X,M(Y)) \to \cC(M(X), M(Y))$ provides
-enough data to implement both the join of a monad *and* the functorial
-action, which reduces the amount of data required.
-3. It is not immediately clear how to generalize monads beyond endofunctors.
-In constrast, extension systems can be readily generalized to
-[[relative extension systems]]^[In fact, we will *define* extension systems
-as a special case of relative extension systems!].
+1. The extension operation avoids nested applications of $M$, which
+   tends to improve ergonomics.
+
+2. The extension operation $\cC(X,MY) \to \cC(MX, MY)$ simultaneously
+   encodes both $M$'s multiplication *and* its underlying functorial
+   action, which reduces the amount of data that needs to be given
+   explicitly.
+
+3. It is not immediately clear how to generalize monads beyond
+   endofunctors.
+   In constrast, extension systems can be readily generalized to
+   [[relative extension systems]]^[In fact, we will *define* extension
+   systems as a special case of relative extension systems!].
 
 With that bit of motivation out of the way, we shall proceed to define
 extension systems. An extension system consists of:
 
-1. A mapping of objects $M : \cC \to \cC$.
-2. A family of morphisms $\eta_X : \cC(X, M(X))$, called the **unit**
-of the extension system
-3. An extension operation $(-)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
-  Gesturing towards the "monads" found in functional programming, we shall
-  call this operation `bind`.
+1. A mapping of objects, $M : \cC \to \cC$; and
+
+2. A family of morphisms $\eta_X : \cC(X, MX)$, called the **unit**
+   of the extension system; and
+
+3. The extension operation, $(-)^{M} : \cC(X,MY) \to \cC(MX, MY)$.
+Gesturing towards the "monads" found in functional programming, we will
+call this operation `bind`.
 
 Note that we do not require the mapping of objects to be functorial, nor
-the do we require the unit to be natural.
+the do we require the unit to be natural. Instead, we impose 3 equations
+on this structure:^[contrast this with the 7 equations required for a
+monad: 2 for functoriality, 2 for naturality, and 3 for
+unitality/associativity]
 
-We impose 3 additional equations atop this structure^[contrast this with
-the 7 equations required for a monad: 2 for functoriality, 2 for naturality,
-and 3 for unitality/associativity]:
-
-1. For every $X : \cC$, $(\eta_X)^M = \id{M(X)}$
-2. For every $f : \cC(X, M(Y))$, $f^M \circ \eta_X = f$
-3. For every $f : \cC(Y, M(X))$ and $g : \cC(X, M(Y))$, $f^M \circ g^M = (f^M \circ g)^M$
+1. For every $X : \cC$, we must have $(\eta_X)^M = \id[MX]$;
+2. For every $f : \cC(X, MY)$, we must have $f^M \circ \eta_X = f$; and
+3. For every $f : \cC(Y, MX)$, and $g : \cC(X, MY)$, we must have
+   $f^M \circ g^M = (f^M \circ g)^M$.
 
 For reasons of generality, we shall define extension systems as
-[[relative extension systems]] along the identity functor.
-Even though we use a more general definition, the data contained in
-an extension system is precisely the data listed above.
+[[relative extension systems]], along the identity functor. Even though
+we use a more general definition, the data contained in an extension
+system is precisely the data listed above.
 
 ```agda
 Extension-system : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)
@@ -74,9 +80,8 @@ module Extension-system {o ℓ} {C : Precategory o ℓ} (E : Extension-system C)
   open Relative-extension-system E public
 ```
 
-
-We can recover the join of the monad by extending the identity morphism
-$\id{M(X)} : \cC(M(X), M(X))$.
+We can recover the monad's multiplication by extending the identity
+morphism $\id{MX} : \cC(MX, MX)$.
 
 ```agda
   join : ∀ {x} → Hom (M₀ (M₀ x)) (M₀ x)
@@ -105,10 +110,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-We shall now prove that monads on $\cC$ are equivalent to extension systems
-on $\cC$. We shall begin with the forward direction. Let $M$ be some monad
-on $\cC$.
-
+It remains to show that monads on $\cC$ are equivalent to extension
+systems on $\cC$. We'll start with the forward direction. Throughout,
+let $M$ be a fixed monad on $\cC$.
 
 ```agda
   Monad→Extension-system : Monad C → Extension-system C
@@ -117,9 +121,8 @@ on $\cC$.
     open Extension-system
 ```
 
-The mapping of objects and unit are directly given by the functorial
-action of $M$ and the unit of $M$.
-
+The mapping of objects, and the unit, are directly given by (the object
+part of) $M$-qua-endofunctor, and by the unit natural transformation.
 
 ```agda
     system : Extension-system C
@@ -127,18 +130,24 @@ action of $M$ and the unit of $M$.
     system .unit = M.unit.η _
 ```
 
-Extension of a map $f : \cC(X, M(Y))$ is defined as $\mu_{Y} \circ M(f)$.
+Defining the extension operation is slightly trickier, but not by much.
+If we have a morphism $f : \cC(X, MY)$, then its extension is defined to
+be composite
+
+$$
+MX \xto{Mf} MMY \xto{\mu} MY\text{.}
+$$
 
 ```agda
     system .bind f = M.mult.η _ ∘ M.M₁ f
 ```
 
-The extension system equations follow from some short computations.
+Finally, a few short computations show that this definition is lawful.
 
 ```agda
     system .bind-unit-id =
       M.mult.η _ ∘ F₁ M.M (M.unit.η _) ≡⟨ M.left-ident ⟩
-      id ∎
+      id                               ∎
     system .bind-unit-∘ f =
       (M.mult.η _ ∘ M.M₁ f) ∘ M.unit.η _ ≡⟨ pullr (sym $ M.unit.is-natural _ _ _) ⟩
       M.mult.η _ ∘ M.unit.η _ ∘ f        ≡⟨ cancell M.right-ident ⟩
@@ -147,7 +156,7 @@ The extension system equations follow from some short computations.
       (M.mult.η _ ∘ M.M₁ f) ∘ (M.mult.η _ ∘ M.M₁ g)             ≡⟨ pullr (extendl (sym $ M.mult.is-natural _ _ _)) ⟩
       M.mult.η _ ∘ M.mult.η _ ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g)        ≡⟨ extendl (sym $ M.mult-assoc) ⟩
       M.mult.η _ ∘ M.M₁ (M.mult.η _) ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g) ≡⟨ ap₂ _∘_ refl (pulll (sym (M.M-∘ _ _)) ∙ sym (M.M-∘ _ _)) ⟩
-      M.mult.η _ ∘ M.M₁ ((M.mult.η _ ∘ M.M₁ f) ∘ g) ∎
+      M.mult.η _ ∘ M.M₁ ((M.mult.η _ ∘ M.M₁ f) ∘ g)             ∎
 ```
 
 Constructing a monad from an extension system is simply a matter of
@@ -185,9 +194,10 @@ The monad laws follow from another short series of computations.
       E.bind id ∘ E.bind id                   ∎
 ```
 
-Moreover, these two functions constitute an equivalence between monads and
-extension systems. In light of this fact, we will silently identify monads
-and extension systems whenever it is convenient.
+Moreover, these two functions constitute an equivalence between monads
+on $\cC$ and extension systems on $\cC$. In light of this fact, we will
+silently identify monads and extension systems, whenever it is
+convenient.
 
 ```agda
   Monad≃Extension-system : Monad C ≃ Extension-system C
@@ -221,14 +231,13 @@ and extension systems whenever it is convenient.
 An **extension algebra** over $E$ is the extension system analog of a
 [[algebra over a monad]]. Following the general theme of extension
 operations, an extension algebra on $X : \cC$ is given by an operation
-$\nu : \cC(A, X) \to \cC(M(A), X)$. Intuitively, this operation
-lets us "evaluate" any $M$, so long as the codomain of the evaluation
-is $X$.
+$\nu : \cC(A, X) \to \cC(MA, X)$. Intuitively, this operation lets us
+"evaluate" any $M$, so long as the codomain of the evaluation is $X$.
 
 This operation must satisfy a pair of equations:
 
-1. For every $f : \cC(A, X)$, $\nu(f) \circ \eta_{A} = f$
-2. For every $f : \cC(B, X)$ and $g : \cC(A, M(B))$, $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
+1. For every $f : \cC(A, X)$, we have $\nu(f) \circ \eta_{A} = f$; and
+2. For every $f : \cC(B, X)$, and $g : \cC(A, MB)$, we have $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
 
 As with extension systems, we define extension algebras in terms of
 [[relative extension algebras]].
@@ -243,17 +252,14 @@ Extension-algebra-on
 Extension-algebra-on = Relative-algebra-on
 
 module Extension-algebra-on
-  {o ℓ} {C : Precategory o ℓ}
-  (open Cat.Reasoning C)
-  {E : Extension-system C}
-  {x : Ob}
-  (α : Extension-algebra-on E x)
+  {o ℓ} {C : Precategory o ℓ} (open Cat.Reasoning C)
+  {E : Extension-system C} {x : Ob} (α : Extension-algebra-on E x)
   where
   open Extension-system E
   open Relative-algebra-on α public
 ```
 
-The evaluation map also interacts well with join.
+The evaluation map also interacts well with the multiplication.
 
 ```agda
   ν-join : ∀ {a} (f : Hom a x) → ν f ∘ join ≡ ν (ν f)
@@ -262,7 +268,6 @@ The evaluation map also interacts well with join.
     ν (ν f ∘ id)  ≡⟨ ap ν (idr _) ⟩
     ν (ν f)       ∎
 ```
-
 
 ## Equivalence with monad algebras
 
@@ -278,9 +283,13 @@ module _ {o ℓ} {C : Precategory o ℓ} {E : Extension-system C} where
 As the name suggests, extension algebras over $E$ are equivalent to
 monad algebras over the canonical monad associated with $E$.
 
-For the forward direction, let $\alpha : M(X) \to X$ be a monad algebra
-over $E$. We can obtain the required extension operation $\nu$ by taking
-$f : \cC(A, X)$ to $\alpha \circ M(f)$.
+For the forward direction, let $\alpha : MX \to X$ be a monad algebra
+over $E$. We can obtain the required extension operation $\nu$ by
+sending each $f : \cC(A, X)$ to the composite
+
+$$
+MA \xto{Mf} MX \xto{\alpha} X\text{.}
+$$
 
 ```agda
   Algebra-on→Extension-algebra-on
@@ -317,8 +326,8 @@ that we shall omit.
 </details>
 
 Conversely, a monad algebra over $E$ can be derived from an extension
-algebra $\nu : \cC(A, X) \to \cC(M(A), X)$ over $E$ by restricting to
-$\nu(\id{X}) : \cC(M(X), X)$.
+algebra $\nu : \cC(A, X) \to \cC(MA, X)$ over $E$ by restricting to
+$\nu(\id{X}) : \cC(MX, X)$.
 
 ```agda
   Extension-algebra-on→Algebra-on

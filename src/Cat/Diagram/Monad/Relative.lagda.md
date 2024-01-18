@@ -19,33 +19,44 @@ module Cat.Diagram.Monad.Relative where
 
 # Relative extension systems {defines=relative-extension-system}
 
-By definition, [[monads]] must be endofunctors. For most applications, this
-is not relevant, and the theory of monads is quite rich. However, this
-restriction can become problematic. For simplicity, let $T$ be a monad
-on set interpreted as an algebraic theory, where $T(A)$ is the syntax of
-$T$ with $A$-many variables, the unit constructs a term from a variable,
-and the join performs substitution. If we wish to give a more refined
-treatment of variables^[for instance, if a term can only have finitely
-many variables], then we immediately run into an issue: $T$ can no
-longer be an endofunctor $\Sets \to \Sets$, and restricting $T$ to
-$\FinSets \to \FinSets$ is also out of the question, as the collection
-of syntax trees will not be finite.
+By definition, [[monads]] must be endofunctors. For most applications,
+this is sufficient, and the theory of monads is quite rich. However,
+this restriction can become problematic. As an example, let $T$ be a
+monad on $\Sets$, interpreted as an *algebraic theory*, where each fibre
+$T(A)$ is interpreted as *the syntax of $T$ with $A$-many variables*. In
+this situation, the unit interprets a variable as a term, and the
+multiplication performs *substitution*.
 
-If we wish to capture such situations, then we will need to generalize
-the notion of monad. The fundamental problem with doing so is that we
-cannot iterate a functor $M : \cJ \to \cC$, so the most natural starting
-point are [[extension systems]], which replace the join of a monad with
-an extension operation $(-)^{M} : \cC(X,M(y)) \to \cC(M(X), M(Y))$.
-This lets us avoid any iteration in the first place, which lets the
-construction proceed. Following [@Altenkirch-Chapman-Uustalu:2015], we
-define a **relative extension system** for a functor $F : \cJ \to \cC$ as:
+However, we might wish to give a more refined treatment of
+variables^[For instance, if we want to model a syntax where terms can
+only have finitely many variables.], then we immediately run into issues:
+We *want* to restrict $T$'s domain away from being an endofunctor $\Sets
+\to \Sets$, but we can't make it into an endofunctor on $\FinSets$,
+either! In all but the most trivial situations, the collection of syntax
+trees on even a single variable is infinite.
 
-1. A mapping of objects $M : J \to C$
-2. A family of morphisms $\eta_X : \cC(F(X), M(X))$, called the **unit**
-3. An extension operation $(-)^{M} : \cC(F(X),M(y)) \to \cC(M(X), M(Y))$.
+So, if we want to work in a scenario like this, we will need to
+generalise the notion of monad. The fundamental impediment is that we
+can not take iterated composites of a functor $M : \cJ \to \cC$, so the
+unit-and-multiplication presentation of monads will not do. However, we
+can consider an alternative starting point: [[extension systems]], where
+the problematic multiplication is replaced with an *extension*
+operation, written $(-)^{M} : \cC(X,MY) \to \cC(MX, MY)$.
 
-Like their non-relative counterparts, we do not require any functoriality
-or naturality.
+Since the type of the extension operation does not mention iterated
+composites of $M$, we have cleared the main obstruction. It remains to
+see that we can actually achieve something. Following
+[@Altenkirch-Chapman-Uustalu:2015], we define a **relative extension
+system**, over a functor $F : \cJ \to \cC$, as:
+
+1. A mapping of objects, $M : J \to C$; and
+
+2. A family of *unit* morphisms, $\eta_X : \cC(FX, MX)$; and
+
+3. An *extension* operation, $(-)^{M} : \cC(FX,MY) \to \cC(MX, MY)$.
+
+Like their non-relative counterparts, we do not require any
+functoriality or naturality.
 
 <!--
 ```agda
@@ -58,7 +69,7 @@ module _
   private
     module J = Cat.Reasoning J
     module C = Cat.Reasoning C
-    module F = Cat.Functor.Reasoning F 
+    module F = Cat.Functor.Reasoning F
 ```
 -->
 
@@ -144,8 +155,8 @@ Functoriality also follows.
 ```
 -->
 
-However, note that we do **not** have a join operation, as we cannot
-iterate $M$!
+However, note that we do **not** have a multiplication operation, as we
+cannot iterate $M$!
 
 <!--
 ```agda
@@ -158,7 +169,7 @@ module _
   private
     module J = Cat.Reasoning J
     module C = Cat.Reasoning C
-    module F = Cat.Functor.Reasoning F 
+    module F = Cat.Functor.Reasoning F
     module E = Relative-extension-system E
     module E' = Relative-extension-system E'
     open Relative-extension-system
@@ -209,12 +220,12 @@ module _
 
 # Algebras over a relative extension system {defines=relative-extension-algebra}
 
-A **relative extension algebra** over $E$ is the relative extension system
-analog of an [[algebra over a monad]]. Following the general theme of
-extension operations, a relative extension algebra on $X : \cC$ is given
-by an operation $\nu : \cC(F(A), X) \to \cC(M(A), X)$. Intuitively, this
-operation lets us "evaluate" any $M$, so long as the codomain of the
-evaluation is $X$.
+A **relative extension algebra** over $E$ is the relative extension
+system analog of an [[algebra over a monad]]. Following the general
+theme of extension operations, a relative extension algebra on $X : \cC$
+is given by an operation $\nu : \cC(FA, X) \to \cC(MA, X)$.
+Intuitively, this operation lets us "evaluate" any $M$, so long as the
+codomain of the evaluation is $X$.
 
 <!--
 ```agda
@@ -242,8 +253,10 @@ module _
 
 This operation must satisfy a pair of equations:
 
-1. For every $f : \cC(F(A), X)$, $\nu(f) \circ \eta_{A} = f$
-2. For every $f : \cC(F(B), X)$ and $g : \cC(F(A), M(B))$, $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
+1. For every $f : \cC(FA, X)$, we must have $\nu(f) \circ \eta_{A} = f$;
+
+2. For every $f : \cC(FB, X)$, and $g : \cC(FA, MB)$, we must have
+   $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
 
 ```agda
       ν-unit : ∀ {a} (f : C.Hom (F.₀ a) x) → ν f C.∘ unit ≡ f
@@ -347,7 +360,7 @@ module _
 Objects over $x : \cC$ are given by relative extension algebras over $x$,
 and maps over $f : \cC(x, y)$ between algebras $\alpha$ and $\beta$ are
 relative extension algebra morphisms when, for every $g : \cC(F(a), x)$,
-$f \circ \alpha(g) = \beta(f \circ g)$.
+we have $f \circ \alpha(g) = \beta(f \circ g)$.
 
 ```agda
   Relative-Eilenberg-Moore .Ob[_] = Relative-algebra-on E
@@ -383,5 +396,3 @@ are closed under identities and composites.
     is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
 ```
 </details>
-
-
