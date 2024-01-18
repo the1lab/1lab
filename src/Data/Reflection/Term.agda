@@ -360,6 +360,12 @@ pi-view (pi a (abs n b)) with pi-view b
 ... | tele , t = ((n , a) ∷ tele) , t
 pi-view t = [] , t
 
+pi-impl-view : Term → Telescope × Term
+pi-impl-view t@(pi (arg (arginfo visible _) _) _) = [] , t
+pi-impl-view (pi a (abs n b)) with pi-impl-view b
+... | tele , t = ((n , a) ∷ tele) , t
+pi-impl-view t = [] , t
+
 unpi-view : Telescope → Term → Term
 unpi-view []            k = k
 unpi-view ((n , a) ∷ t) k = pi a (abs n (unpi-view t k))
@@ -368,11 +374,24 @@ tel→lam : Telescope → Term → Term
 tel→lam []                               t = t
 tel→lam ((n , arg (arginfo v _) _) ∷ ts) t = lam v (abs n (tel→lam ts t))
 
+{-
+Turn a telescope into a list of arguments, with arguments of implicit Π types
+recursively η-expanded to avoid Agda inserting implicit arguments.
+Example:
+  tel→args (a : {b : {c : C} → B} → A) = (λ {b} → a {λ {c} → b {c}})
+-}
+{-# TERMINATING #-}
 tel→args : Nat → Telescope → List (Arg Term)
-tel→args skip tel = map-up (λ i (_ , arg ai _) → arg ai (var (skip + length tel - i) [])) 1 tel
+tel→args skip [] = []
+tel→args skip ((_ , arg ai t) ∷ tel) = arg ai
+  (tel→lam impl (var (skip + length tel + length impl) (tel→args 0 impl)))
+  ∷ tel→args skip tel
+  where
+    impl = pi-impl-view t .fst
 
 tel→pats : Nat → Telescope → List (Arg Pattern)
-tel→pats skip tel = map-up (λ i (_ , arg ai _) → arg ai (var (skip + length tel - i))) 1 tel
+tel→pats skip [] = []
+tel→pats skip ((_ , arg ai _) ∷ tel) = arg ai (var (skip + length tel)) ∷ tel→pats skip tel
 
 list-term : List Term → Term
 list-term []       = con (quote List.[]) []
