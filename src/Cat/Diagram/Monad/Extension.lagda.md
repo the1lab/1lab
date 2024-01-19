@@ -21,7 +21,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-# Extension Systems {defines=extension-system}
+# Extension systems {defines=extension-system}
 
 An **extension system** on a category $\cC$ is an alternative way of
 presenting a [[monad]] on $\cC$. As the name suggests, extension systems
