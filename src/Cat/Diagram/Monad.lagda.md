@@ -375,7 +375,7 @@ $\cC^M$.
 ```
 
 <!--
-```
+```agda
 module _ {o h : _} {C : Precategory o h} {M N : Monad C} where
   private
     module C = Cat.Reasoning C

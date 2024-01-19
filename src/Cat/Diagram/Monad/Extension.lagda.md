@@ -16,7 +16,7 @@ module Cat.Diagram.Monad.Extension where
 ```
 
 <!--
-```
+```agda
 module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
