@@ -6,6 +6,8 @@
 @import "components/search.scss";
 @import "components/unfolded-footnote.scss";
 @import "components/controls.scss";
+@import "components/profile.scss";
+@import "components/commit.scss";
 
 @import "code.scss";
 
@@ -87,17 +89,21 @@ main {
   margin: 0px auto 0px auto;
   flex: 1 0 auto;
 
+  padding: 0px 0.75em 0px 0.75em;
+  @include widescreen { padding: 0; }
+
   box-sizing: border-box;
 
   div#post-toc-container {
     aside#toc {
-    display: none;
-    a[href].header-link {
-      span.header-link-emoji {
-        display: none;
+      display: none;
+
+      a[href].header-link {
+        span.header-link-emoji {
+          display: none;
+        }
       }
     }
-  }
   }
 }
 
@@ -160,6 +166,8 @@ span.abbrev {
 }
 
 .katex-display {
+  overflow-y: scroll;
+
   > span.katex {
     white-space: normal;
   }
@@ -186,10 +194,8 @@ div.mathpar {
 
 div.columns {
   blockquote, details.blockquote {
-    padding-right:  1em;
-    padding-left:   1em;
-    padding-top:    0.2em;
-    padding-bottom: 0.2em;
+    padding-inline:  1em;
+    padding-block:   0.2em;
 
     border: 0;
   }
@@ -325,68 +331,6 @@ details {
 
 .commented-out.first-comment > pre.Agda {
   margin-top: 0;
-}
-
-div.profile {
-  &.pfp-left {
-    flex-direction: row;
-  }
-  &.pfp-right {
-    flex-direction: row-reverse;
-  }
-
-  border-top: 2px solid #444;
-
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-
-  gap: 1em;
-
-  .profile-pfp {
-    width: 20%;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .profile-pfp p {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-    width: 20%;
-
-    img {
-      width: 128px;
-      height: 128px;
-      clip-path: url(#squircle);
-      margin-bottom: 0.25em;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    .profile-name {
-      font-size: 19pt;
-    }
-    .profile-pronouns {
-      font-style: italic;
-    }
-  }
-}
-
-.author-list {
-  margin-top: 0.5em;
-  white-space: initial;
-  font-size: 0.8em;
-  font-style: italic;
-  text-align: center;
 }
 
 .smallcaps {
@@ -552,6 +496,17 @@ input {
   border-radius: 3px;
 }
 
+kbd {
+  border:  1px solid var(--input-border);
+  padding: 2px;
+  border-radius: 5px;
+
+  background-color: var(--input-bg);
+  font-size: calc(0.75 * var(--code-font-size));
+
+  vertical-align: middle;
+}
+
 #post-toc-container { min-height: 90vh; }
 
 @media only screen and (max-width: 450px) {
@@ -600,7 +555,8 @@ input {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        width: 100%;
+        max-width: 30ch;
+        margin-inline-start: auto;
 
         z-index: 1;
 

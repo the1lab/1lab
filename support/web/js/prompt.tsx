@@ -294,6 +294,9 @@ searchWrapper.addEventListener("click", e => {
   if (!inside && !fake) { closeSearch(); return; }
 });
 
+const isShortcut = (e: KeyboardEvent) =>
+  (e.ctrlKey && !e.altKey) || e.metaKey;
+
 document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(searchWrapper);
 
@@ -318,14 +321,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       case "Left":
       case "ArrowLeft":
-        if (!e.ctrlKey) return;
+        if (!isShortcut(e)) return;
         e.preventDefault();
         movePreviousSection();
         break;
 
       case "Right":
       case "ArrowRight":
-        if (!e.ctrlKey) return;
+        if (!isShortcut(e)) return;
         e.preventDefault();
         moveNextSection();
         break;
@@ -346,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("keydown", e => {
-    if (e.key == "k" && e.ctrlKey && !e.altKey) {
+    if (e.key == "k" && isShortcut(e)) {
       e.preventDefault();
       if (isSearching()) {
         closeSearch();

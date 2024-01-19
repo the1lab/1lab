@@ -17,16 +17,20 @@ code, pre, .sourceCode {
   font-family: 'Julia Mono';
   font-size: var(--code-font-size);
   font-weight: 500;
+  font-variant-ligatures: none;
 }
+
+code, pre { width: min-content; }
 
 div.sourceCode {
   @include material(var(--code-bg));
+
+  overflow-y: scroll;
 
   > pre {
     background-color: var(--code-bg);
     color:            var(--code-fg);
 
-    width: 100%;
     flex-grow: 0;
 
     overflow-x: auto;
@@ -49,14 +53,16 @@ div.sourceCode {
   }
 }
 
-pre.Agda {
+:root { --code-margin: calc(1rem + 5px); }
+
+pre.Agda, div.sourceCode > pre {
   box-shadow: none;
   overflow-x: auto;
   overflow-y: clip;
 
   // The margin should be 1rem (the width of the padding for paragraphs
   // with borders) *plus* 5px. This was measured empirically.
-  margin: 0.25rem calc(1rem + 5px) 0.25rem calc(1rem + 5px);
+  margin: 0.25rem var(--code-margin);
 
   background-color: var(--code-bg);
   color:            var(--code-fg);

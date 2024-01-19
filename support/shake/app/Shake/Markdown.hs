@@ -54,6 +54,7 @@ import Shake.Git
 import HTML.Emit
 
 import Definitions
+import Shake.Recent (recentAdditions, renderCommit)
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -195,10 +196,11 @@ buildMarkdown modname input output = do
   -- maths through KaTeX but before adding the emoji to headers.
   let search = query (getHeaders (Text.pack modname)) markdown
 
-  (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
+  baseUrl <- getBaseUrl
+
+  (markdown, MarkdownState references dependencies) <- runWriterT (walkM (patchBlock baseUrl) markdown)
   need dependencies
 
-  baseUrl <- getBaseUrl
   digest <- do
     cssDigest <- getFileDigest "_build/html/css/default.css"
     startJsDigest <- getFileDigest "_build/html/start.js"
@@ -295,17 +297,18 @@ instance Monoid MarkdownState where
 
 -- | Patch a Pandoc block element.
 patchBlock
-  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f)
-  => Block
+  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f, MonadTrans t, f ~ t Action)
+  => String
+  -> Block
   -> f Block
 -- Make all headers links, and add an anchor emoji.
-patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
+patchBlock _ (Header i a@(ident, _, _) inl) = pure $ Header i a
   $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
   : inl
   ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
 
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
-patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
+patchBlock _ (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
     digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
     title = fromMaybe "commutative diagram" (lookup "title" attrs)
@@ -322,9 +325,12 @@ patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes =
     , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
     ]
 
+patchBlock base (Div attr@("recent-additions", _, _) []) =
+  Div attr . map (renderCommit base) <$> lift recentAdditions
+
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
-patchBlock (Div ("refs", _, _) body) = do
+patchBlock _ (Div ("refs", _, _) body) = do
   for_ body \ref -> case ref of
     (Div (id, _, _) body) -> do
       -- If our citation is a single paragraph, don't wrap it in <p>.
@@ -344,7 +350,7 @@ patchBlock (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock h = pure h
+patchBlock _ h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.

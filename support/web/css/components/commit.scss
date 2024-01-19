@@ -1,0 +1,43 @@
+#recent-additions {
+  margin-block: 1em;
+
+  :first-child { padding-block-start: 0; }
+  :last-child  {
+    border-block-end: 0;
+    padding-block-end: 0;
+  }
+}
+
+div.commit {
+  @include left-bordered(#ABB2BF);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5ex;
+
+  margin-block: 0.75em;
+
+  .commit-subject {
+    font-weight: bold;
+    font-size: 1.1em;
+    width: fit-content;
+
+    &, &:visited, &.hover-highlight {
+      color: var(--text-fg);
+      background-color: var(--text-bg);
+    }
+  }
+
+  .commit-author-date {
+    font-style: italic;
+    font-size: 0.8em;
+
+    span {
+      font-weight: bold;
+      font-style: normal;
+    }
+  }
+
+  .commit-changes {
+  }
+}
