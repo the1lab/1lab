@@ -6,11 +6,12 @@ module index where
 
 This website is an experiment in **discoverable formalisation**: an
 extensive library of formalised mathematics, presented as an explorable
-reference resource. The implementation of a mathematical library as
-*literate source code* enables a dual approach to the explanation of
-mathematical concepts: the code and the prose are complementary, and
-each reader is presented with the opportunity to choose their own
-balance of rigid formalisation vs. intuitive explanation.
+reference resource. Our implementation of a mathematical library, using
+*literate source code*, has allowed us a dual approach to the
+explanation of mathematical concepts: the code and the prose are
+complementary, and each reader is presented with the opportunity to
+choose their own balance of rigid formalisation vs. intuitive
+explanation.
 
 <!--
 ```agda
@@ -25,12 +26,11 @@ _ = Precategory
 -->
 
 Making the formalisation explorable requires taking the Web-native
-nature of such a document seriously: the reader must be able to quickly
-jump to a definition if they have not encountered it before, regardless
-of whether it is an identifier in the library itself (like
-`univalence`{.Agda}), whether it is a _big idea_ mathematical concept
-(like a [[monoidal category]]), or whether it is a _punctual_ notion (like
-[[surjections are quotient maps]]).
+nature of such a document seriously. Every mention of a mathematical
+entity mentioned in the 1Lab *knows its own definition*, and links to it
+--- regardless of whether it's a specific theorem (like
+`univalence`{.Agda}), a big idea (like [[monoidal categories]]), or a
+punctual observation (like [[surjections are quotient maps]]).
 
 ::: mathpar
 
@@ -42,10 +42,11 @@ _ = univalence
 :::
 
 The source code snippet above, a re-statement of the [[univalence
-principle|univalence]], exemplifies the **web of concepts** perfectly.
-Each reader is invited to explore the statement, which leads one to
-uncover [[type universes|universe]], [[equivalences]], and
-[[path types|path]].
+principle|univalence]], exemplifies the hypertext nature of our
+presentation. Each reader is allowed to explore the statement, which
+might lead them directly to [[type universes|universe]],
+[[equivalences]], and [[path types|path]] --- and to further discoveries
+from there.
 
 Since the library's size may make jumping into a particular topic feel
 daunting, we have done our best to make entry points discoverable as

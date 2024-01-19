@@ -167,6 +167,7 @@ span.abbrev {
 
 .katex-display {
   overflow-x: auto;
+  overflow-y: clip;
 
   > span.katex {
     white-space: normal;
