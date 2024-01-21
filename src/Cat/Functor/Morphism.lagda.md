@@ -157,8 +157,8 @@ As mentioned earlier, a similar result holds for epis.
 
 If $F$ is a [[right adjoint]], then $F$ preserves monos. Let $a : \cC(A,B)$,
 and let $f, g : \cD(X, F(A))$ such that $F(a) \circ f = F(a) \circ g$.
-$L \dashv F$, it suffices to show that $\varepsilon \circ L(f) = \varepsilon \circ L(g)$.
-Furthermore, $a$ is a mono, so it suffices to show that $a \circ \varepsilon \circ L(f) = a \circ \varepsilon \circ L(g)$.
+$L \dashv F$, it suffices to show that $\eps \circ L(f) = \eps \circ L(g)$.
+Furthermore, $a$ is a mono, so it suffices to show that $a \circ \eps \circ L(f) = a \circ \eps \circ L(g)$.
 This follows by a quick calculation.
 
 ```agda
