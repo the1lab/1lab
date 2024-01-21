@@ -64,7 +64,7 @@ module _ (faithful : is-faithful F) where
     faithful (F[a]-epic (F₁ b) (F₁ c) (weave p))
 ```
 
-Likewise, faithful functors reflect any diagrams: this means that if $F(a)$ and $F(b)$
+Likewise, faithful functors reflect all diagrams: this means that if $F(a)$ and $F(b)$
 either form a section/retract pair or form an iso, then $a$ and $b$ do too.
 
 ```agda
@@ -105,7 +105,7 @@ module _ (ff : is-fully-faithful F) (eso : is-eso F) where
     (g* , r) ← fully-faithful→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
 ```
 
-Next, note that $a \circ f' = a \circ g'$: this follows faithfulness
+Next, note that $a \circ f' = a \circ g'$: this follows from faithfulness
 of $F$ and our hypothesis that $F(a) \circ f = F(a) \circ g$.
 
 ```agda
@@ -157,7 +157,7 @@ As mentioned earlier, a similar result holds for epis.
 
 If $F$ is a [[right adjoint]], then $F$ preserves monos. Let $a : \cC(A,B)$,
 and let $f, g : \cD(X, F(A))$ such that $F(a) \circ f = F(a) \circ g$.
-$L \dashv F$, it suffices to show that $\eps \circ L(f) = \eps \circ L(g)$.
+$L$ is a left adjoint to $F$, so it suffices to show that $\eps \circ L(f) = \eps \circ L(g)$.
 Furthermore, $a$ is a mono, so it suffices to show that $a \circ \eps \circ L(f) = a \circ \eps \circ L(g)$.
 This follows by a quick calculation.
 
