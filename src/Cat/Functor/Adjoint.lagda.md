@@ -37,7 +37,7 @@ adj-level {o₁ = o₁} {h₁} {o₂} {h₂} _ _ = o₁ ⊔ o₂ ⊔ h₁ ⊔ h�
 ```
 -->
 
-# Adjoint functors {defines="adjunction"}
+# Adjoint functors
 
 Category theory is, in general, the study of how things can be related.
 For instance, structures at the level of sets (e.g. the collection of
