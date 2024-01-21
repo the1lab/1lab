@@ -12,10 +12,12 @@ import Cat.Reasoning
 module Cat.Functor.Reasoning
   {o ℓ o' ℓ'}
   {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
-  (F : Functor 𝒞 𝒟) where
+  (F : Functor 𝒞 𝒟)
+  where
 
-module 𝒞 = Cat.Reasoning 𝒞
-module 𝒟 = Cat.Reasoning 𝒟
+private
+  module 𝒞 = Cat.Reasoning 𝒞
+  module 𝒟 = Cat.Reasoning 𝒟
 open Functor F public
 ```
 
