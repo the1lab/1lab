@@ -73,7 +73,7 @@ listing→finite-cover l = record
   }
 
 finite-cover→listing : Finite-cover A → Listing A
-finite-cover→listing (cover f has) = record
+finite-cover→listing (covering f has) = record
   { members    = tabulate f
   ; has-member = λ a → Equiv.from (member-tabulate f a) <$> has a
   }

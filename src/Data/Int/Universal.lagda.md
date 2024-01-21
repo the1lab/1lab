@@ -55,6 +55,33 @@ unique among functions with these properties.
       → ∀ x → f x ≡ map-out p r x
 ```
 
+By a standard categorical argument, existence and uniqueness together give us an
+*induction principle* for the integers: to construct a section of a type family
+$P : \bb{Z} \to \ty$, it is enough to give an element of $P(0)$ and a family of
+equivalences $P(n) \simeq P(n + 1)$.
+
+```agda
+  ℤ-η : ∀ z → map-out point rotate z ≡ z
+  ℤ-η z = sym (map-out-unique id refl (λ _ → refl) z)
+
+  induction
+    : ∀ {ℓ} {P : ℤ → Type ℓ}
+    → P point
+    → (∀ z → P z ≃ P (rotate .fst z))
+    → ∀ z → P z
+  induction {P = P} pp pr = section where
+    tot : ℤ → Σ ℤ P
+    tot = map-out (point , pp) (Σ-ap rotate pr)
+
+    is-section : ∀ z → tot z .fst ≡ map-out point rotate z
+    is-section = map-out-unique (fst ∘ tot)
+      (ap fst (map-out-point _ _))
+      (λ z → ap fst (map-out-rotate _ _ z))
+
+    section : ∀ z → P z
+    section z = subst P (is-section z ∙ ℤ-η z) (tot z .snd)
+```
+
 <!--
 ```agda
   map-out-rotate-inv

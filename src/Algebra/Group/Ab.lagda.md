@@ -80,9 +80,12 @@ record Abelian-group-on (T : Type ℓ) : Type ℓ where
   Abelian→Group-on .Group-on._⋆_ = _*_
   Abelian→Group-on .Group-on.has-is-group = has-is-group
 
+  Abelian→Group-on-abelian : Group-on-is-abelian Abelian→Group-on
+  Abelian→Group-on-abelian _ _ = commutes
+
   infixr 20 _*_
 
-open Abelian-group-on using (Abelian→Group-on) public
+open Abelian-group-on using (Abelian→Group-on; Abelian→Group-on-abelian) public
 ```
 -->
 
@@ -113,6 +116,9 @@ module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
 ```agda
 Abelian-group : (ℓ : Level) → Type (lsuc ℓ)
 Abelian-group _ = Ab.Ob
+
+Abelian→Group : ∀ {ℓ} → Abelian-group ℓ → Group ℓ
+Abelian→Group G = G .fst , Abelian→Group-on (G .snd)
 
 record make-abelian-group (T : Type ℓ) : Type ℓ where
   no-eta-equality
@@ -172,7 +178,7 @@ open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab 
 open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
-Ab↪Grp .F₀ (X , A) = X , Abelian→Group-on A
+Ab↪Grp .F₀ = Abelian→Group
 Ab↪Grp .F₁ f .hom = f .hom
 Ab↪Grp .F₁ f .preserves = f .preserves
 Ab↪Grp .F-id = trivial!
@@ -198,4 +204,7 @@ must lift it.
   mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-assoc x y z)
   mk-ℤ .invl (lift x) = ap lift (+ℤ-invl x)
   mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
+
+ℤ : ∀ {ℓ} → Group ℓ
+ℤ = Abelian→Group ℤ-ab
 ```

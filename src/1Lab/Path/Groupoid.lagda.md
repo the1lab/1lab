@@ -149,6 +149,7 @@ module _ where
     ℓ : Level
     A B : Type ℓ
     w x y z : A
+    a b c d : A
 
   open 1Lab.Path
 ```
@@ -249,16 +250,6 @@ more than a handful of intermediate steps:
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
 
-  double-connection
-    : (p : x ≡ y) (q : y ≡ z)
-    → Square p p q q
-  double-connection {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → y
-    k (i = i0) → p (j ∨ ~ k)
-    k (i = i1) → q (j ∧ k)
-    k (j = i0) → p (i ∨ ~ k)
-    k (j = i1) → q (i ∧ k)
-
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
     → Square p q s r → p ∙ s ≡ q ∙ r
@@ -280,6 +271,37 @@ more than a handful of intermediate steps:
     ·· ap (_∙ sym p) sq
     ·· ∙-cancelr r (sym p)
 ```
+
+While [[connections]] give us degenerate squares where two adjacent faces are
+some path and the other two are `refl`{.Agda}, it is sometimes also useful to
+have a degenerate square with two pairs of equal adjacent faces.
+We can build this using `hcomp`{.Agda} and more connections:
+
+```agda
+  double-connection
+    : (p : a ≡ b) (q : b ≡ c)
+    → Square p p q q
+  double-connection {b = b} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → b
+    k (i = i0) → p (j ∨ ~ k)
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → p (i ∨ ~ k)
+    k (j = i1) → q (i ∧ k)
+```
+
+This corresponds to the following diagram, which expresses the trivial equation
+$p \bullet q \equiv p \bullet q$:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+	a & b \\
+	b & c
+	\arrow["p", from=1-1, to=1-2]
+	\arrow["p"', from=1-1, to=2-1]
+	\arrow["q"', from=2-1, to=2-2]
+	\arrow["q", from=1-2, to=2-2]
+\end{tikzcd}\]
+~~~
 
 # Groupoid structure of types (cont.)
 

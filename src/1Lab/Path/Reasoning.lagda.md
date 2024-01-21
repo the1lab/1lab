@@ -117,6 +117,9 @@ module _ (s≡pq : s ≡ p ∙ q) where
   ∙→square' : Square (sym p) q s refl
   ∙→square' = ∙-filler' p q ▷ sym s≡pq
 
+  ∙→square'' : Square (sym p) refl s q
+  ∙→square'' = transpose (∙-filler'' p q) ▷ sym s≡pq
+
 module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
   ∙-extendl : p ∙ (q ∙ t) ≡ r ∙ (s ∙ t)
   ∙-extendl {t = t} = ∙-assoc _ _ _ ·· ap (_∙ t) pq≡rs ·· sym (∙-assoc _ _ _)

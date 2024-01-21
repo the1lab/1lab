@@ -236,7 +236,7 @@ is a pullback.
 
 That concludes the definition of regular hyperdoctrine. Said snappily, a
 **regular hyperdoctrine** $\bP \liesover \cB$ is a [[bifibration]] into
-[[(meet-)semilattices|semilattice]] satisfying Frobenius reciprocity and
+[[(meet-)semilattices|meet-semilattice]] satisfying Frobenius reciprocity and
 the Beck-Chevalley condition.
 
 <!--

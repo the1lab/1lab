@@ -57,3 +57,12 @@ _ : {ℓ : Level} {A : Type ℓ} {ℓ₁ : Level} {P : (z : ∥ A ∥₀) → Ty
     (Pinc : (z : A) → P (inc z))
     (x : ∥ A ∥₀) → P x
 _ = ∥-∥₀-elim
+
+-- Test case: this should not generate unsolved metavariables.
+unquoteDecl Nat-rec = make-elim-with (record default-rec { hide-cons-args = true }) Nat-rec (quote Nat)
+
+_ : {ℓ : Level} {P : Type ℓ}
+  → P
+  → ({n : Nat} → P → P)
+  → Nat → P
+_ = Nat-rec

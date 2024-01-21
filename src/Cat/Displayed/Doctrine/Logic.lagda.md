@@ -6,7 +6,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
-open import Cat.Prelude
+open import Cat.Prelude hiding (_ʻ_)
 
 import Cat.Displayed.Reasoning as Disp
 import Cat.Reasoning as Cat

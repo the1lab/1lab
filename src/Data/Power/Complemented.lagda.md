@@ -73,7 +73,7 @@ intersection $(p \cap p^{-1})$ is empty.
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
 is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
-  □-rec!  (λ { (inl x∈p)   → yes x∈p
+  ∥-∥-rec!  (λ { (inl x∈p)   → yes x∈p
              ; (inr x∈p⁻¹) → no λ x∈p → intersection elt (x∈p , x∈p⁻¹)
              })
     (union elt tt)

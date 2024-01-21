@@ -355,6 +355,8 @@ open import Cat.Diagram.Equaliser.RegularMono -- Regular monomorphisms
 open import Cat.Diagram.Monad -- Monads
 open import Cat.Diagram.Monad.Limits -- Limits in Eilenberg-Moore categories
 open import Cat.Diagram.Monad.Codensity -- Codensity monads
+open import Cat.Diagram.Monad.Extension -- Extension systems
+open import Cat.Diagram.Monad.Relative -- Relative extension systems
 
 open import Cat.Diagram.Zero -- Zero objects
 ```
@@ -949,9 +951,9 @@ structures: these are the lattices and related structures.
 open import Order.Frame
 open import Order.Lattice
 
-open import Order.Semilattice
+open import Order.Semilattice.Join
+open import Order.Semilattice.Meet
 open import Order.Semilattice.Free
-open import Order.Semilattice.Order
 ```
 
 Examples of actual orders:
@@ -1017,6 +1019,7 @@ open import Algebra.Group.Cat.Monadic -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Subgroup -- Subgroups, images and kernels
 open import Algebra.Group.Concrete -- Concrete groups (pointed connected groupoids)
+open import Algebra.Group.Concrete.Abelian -- Concrete abelian groups
 
 open import Algebra.Group.Homotopy -- Homotopy groups
 open import Algebra.Group.Homotopy.BAut
@@ -1051,6 +1054,7 @@ theory to computing homotopy invariants of spaces.
 ```agda
 open import Homotopy.Base -- Basic definitions
 open import Homotopy.Connectedness -- Connected types
+open import Homotopy.Connectedness.Automation -- Automation for connectedness
 
 open import Homotopy.Space.Suspension -- Suspensions
 open import Homotopy.Space.Circle -- The circle

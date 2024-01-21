@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
@@ -106,10 +107,38 @@ connected∙-elim-prop
   → P (X .snd)
   → ∀ x → P x
 connected∙-elim-prop {X = X} {P} conn prop pb x =
-  ∥-∥-rec (P-is-prop x) (λ e → subst P (sym e) pb) (conn x)
+  ∥-∥-rec propx (λ e → subst P (sym e) pb) (conn x)
   where abstract
-    P-is-prop : ∀ x → is-prop (P x)
-    P-is-prop x = ∥-∥-rec is-prop-is-prop (λ e → subst (is-prop ∘ P) (sym e) prop) (conn x)
+    propx : is-prop (P x)
+    propx = ∥-∥-rec is-prop-is-prop (λ e → subst (is-prop ∘ P) (sym e) prop) (conn x)
+```
+
+We can similarly define an elimination principle into sets.
+
+```agda
+module connected∙-elim-set
+  {ℓ ℓ'} {X : Type∙ ℓ} {P : ⌞ X ⌟ → Type ℓ'}
+  (conn : is-connected∙ X)
+  (set : is-set (P (X .snd)))
+  (pb : P (X .snd))
+  (loops : ∀ (p : X .snd ≡ X .snd) → PathP (λ i → P (p i)) pb pb)
+  where opaque
+
+  elim : ∀ x → P x
+  elim x = work (conn x)
+    module elim where
+      setx : is-set (P x)
+      setx = ∥-∥-rec (is-hlevel-is-prop 2) (λ e → subst (is-set ∘ P) (sym e) set) (conn x)
+
+      work : ∥ x ≡ X .snd ∥ → P x
+      work = ∥-∥-rec-set setx
+        (λ p → subst P (sym p) pb)
+        (λ p q i → subst P (sym (∙-filler'' (sym p) q i)) (loops (sym p ∙ q) i))
+
+  elim-β-point : elim (X .snd) ≡ pb
+  elim-β-point = subst (λ c → elim.work (X .snd) c ≡ pb)
+    (squash (inc refl) (conn (X .snd)))
+    (transport-refl pb)
 ```
 
 Examples of pointed connected types include the [[circle]] and the
@@ -222,8 +251,10 @@ Path-is-connected {x = x} (suc n) conn = n-connected.from n (contr (ps _ _) $
     ps x y = Equiv.to n-Tr-path-equiv (is-contr→is-prop (is-n-connected-Tr _ conn) _ _)
 
 is-connected-suc
-  : ∀ {ℓ} {A : Type ℓ} n → is-n-connected A (2 + n) → is-n-connected A (suc n)
-is-connected-suc {A = A} n w = n-connected.from n $ n-Tr-elim! _
+  : ∀ {ℓ} {A : Type ℓ} n
+  → is-n-connected A (suc n) → is-n-connected A n
+is-connected-suc {A = A} zero _ = _
+is-connected-suc {A = A} (suc n) w = n-connected.from n $ n-Tr-elim! _
     (λ x → contr (inc x) (n-Tr-elim _ (λ _ → hlevel!) (rem₁ n w x)))
     (is-n-connected-Tr (suc n) w .centre)
   where
@@ -232,6 +263,78 @@ is-connected-suc {A = A} n w = n-connected.from n $ n-Tr-elim! _
     rem₁ (suc n) a-conn x y = Equiv.from n-Tr-path-equiv
       (n-Tr-rec (is-hlevel-suc _ (n-Tr-is-hlevel n)) inc
         (is-n-connected-Tr _ (Path-is-connected (2 + n) a-conn) .centre))
+
+is-connected-+
+  : ∀ {ℓ} {A : Type ℓ} (n k : Nat)
+  → is-n-connected A (k + n) → is-n-connected A n
+is-connected-+ n zero w = w
+is-connected-+ n (suc k) w = is-connected-+ n k (is-connected-suc _ w)
+```
+
+## In terms of propositional truncations
+
+There is an alternative definition of connectedness that avoids talking about
+arbitrary truncations, and is thus sometimes easier to work with.
+Generalising the special cases for $n = -1$ (a type is $(-1)$-connected if and
+only if it is inhabited) and $n = 0$ (a type is $0$-connected if and only if
+it is inhabited and all points are merely equal), we can prove that a type
+is $n$-connected if and only if it is inhabited and all its path spaces
+are $(n-1)$-connected.
+
+We can use this to give a definition of connectedness that only makes use
+of *propositional* truncations, with the base case being that all types are
+$(n-2)$-connected:
+
+```agda
+is-n-connected-∥-∥ : ∀ {ℓ} → Type ℓ → Nat → Type ℓ
+is-n-connected-∥-∥ A zero = Lift _ ⊤
+is-n-connected-∥-∥ A (suc n) =
+  ∥ A ∥ × ∀ (a b : A) → is-n-connected-∥-∥ (a ≡ b) n
+
+is-n-connected-∥-∥-is-prop : ∀ n → is-prop (is-n-connected-∥-∥ A n)
+is-n-connected-∥-∥-is-prop zero = hlevel 1
+is-n-connected-∥-∥-is-prop (suc n) = ×-is-hlevel 1 (hlevel 1)
+  (Π-is-hlevel² 1 λ _ _ → is-n-connected-∥-∥-is-prop n)
+```
+
+We show that this is equivalent to the $n$-truncation of a type being contractible,
+hence in turn to our first definition.
+
+```agda
+is-contr-n-Tr→∥-∥
+  : ∀ n → is-contr (n-Tr A (suc n)) → is-n-connected-∥-∥ A (suc n)
+is-contr-n-Tr→∥-∥ zero h .fst = n-Tr-rec! inc (h .centre)
+is-contr-n-Tr→∥-∥ zero h .snd = _
+is-contr-n-Tr→∥-∥ (suc n) h .fst = n-Tr-rec! inc (h .centre)
+is-contr-n-Tr→∥-∥ (suc n) h .snd a b = is-contr-n-Tr→∥-∥ n
+  (is-hlevel≃ 0 (n-Tr-path-equiv e⁻¹) (Path-is-hlevel 0 h))
+
+∥-∥→is-contr-n-Tr
+  : ∀ n → is-n-connected-∥-∥ A (suc n) → is-contr (n-Tr A (suc n))
+∥-∥→is-contr-n-Tr zero (a , _) = is-prop∙→is-contr hlevel! (∥-∥-rec! inc a)
+∥-∥→is-contr-n-Tr (suc n) (a , h) = ∥-∥-rec! (λ a → is-prop∙→is-contr
+  (n-Tr-elim! _ λ a → n-Tr-elim! _ λ b →
+    Equiv.from n-Tr-path-equiv (∥-∥→is-contr-n-Tr n (h a b) .centre))
+  (inc a)) a
+
+is-n-connected→∥-∥
+  : ∀ n → is-n-connected A n → is-n-connected-∥-∥ A n
+is-n-connected→∥-∥ zero _ = _
+is-n-connected→∥-∥ (suc n) h = is-contr-n-Tr→∥-∥ n (n-connected.to n h)
+
+∥-∥→is-n-connected
+  : ∀ n → is-n-connected-∥-∥ A n → is-n-connected A n
+∥-∥→is-n-connected zero _ = _
+∥-∥→is-n-connected (suc n) h = n-connected.from n (∥-∥→is-contr-n-Tr n h)
+
+is-n-connected≃∥-∥
+  : ∀ n → is-n-connected A n ≃ is-n-connected-∥-∥ A n
+is-n-connected≃∥-∥ {A = A} n = prop-ext
+  (is-n-connected-is-prop {A = A} n) (is-n-connected-∥-∥-is-prop n)
+  (is-n-connected→∥-∥ n) (∥-∥→is-n-connected n)
+
+module n-connected-∥-∥ {ℓ} {A : Type ℓ} (n : Nat) =
+  Equiv (is-n-connected≃∥-∥ {A = A} n)
 ```
 
 ## In relation to truncatedness

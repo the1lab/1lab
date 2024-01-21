@@ -1,9 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification -vtc.decl:5 -vtactic.hlevel:30 #-}
-open import Algebra.Monoid
-
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -11,14 +9,15 @@ open import Data.Bool
 
 open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
-open import Order.Semilattice.Order
+open import Order.Semilattice.Meet
 open import Order.Instances.Lower
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
-open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
 
+import Order.Semilattice.Meet.Reasoning as Meet-slat
 import Order.Frame.Reasoning as Frm
 import Order.Reasoning
 ```
@@ -30,33 +29,28 @@ module Order.Frame.Free where
 
 # Free cocompletions
 
-A [frame] is, in particular, a [semilattice]: the semilattice of
-[meets]. Frame homomorphisms preserve finite meets, so they are also
-homomorphisms for the meet semilattice. Since equality of homomorphisms
-is defined by equality of the underlying functions, these remarks
+A [[frame]] is, in particular, a [[meet semilattice]]. Frame
+homomorphisms preserve finite meets, so they are also homomorphisms of
+the underlying meet semilattices. Since equality of homomorphisms is
+determined by equality of the underlying functions, these remarks
 assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
-
-[frame]: Order.Frame.html
-[semilattice]: Order.Semilattice.html
-[meets]: Order.Diagram.Glb.html
 
 <!--
 ```agda
 open Functor
+open Subcat-hom
 open make-left-adjoint
-open Monoid-hom
+open is-frame-hom
 ```
 -->
 
 ```agda
-Frame↪SLat : ∀ {ℓ} → Functor (Frames ℓ) (Semilattices ℓ)
-Frame↪SLat .F₀ A = Frm.meets A
+Frame↪SLat : ∀ {o ℓ} → Functor (Frames o ℓ) (Meet-slats o ℓ)
+Frame↪SLat .F₀ (_ , A) = Frm.meets A
 
 Frame↪SLat .F₁ f .hom = f .hom
-Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-id = f .preserves .is-frame-hom.pres-⊤
-Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-⋆ = f .preserves .is-frame-hom.pres-∩
-
-Frame↪SLat .F-id = trivial!
+Frame↪SLat .F₁ f .witness = has-meet-slat-hom (f .witness)
+Frame↪SLat .F-id    = trivial!
 Frame↪SLat .F-∘ f g = trivial!
 ```
 
@@ -75,41 +69,18 @@ propositions], $\Omega$.
 [low]: Order.Instances.Lower.html
 
 ```agda
-Lower-sets-frame : ∀ {ℓ} → Semilattice ℓ → Frame ℓ
-Lower-sets-frame A = el! ⌞ Lower-sets A.po ⌟ , to-frame-on mk↓A where
-  module A = Semilattice A
-  module DA = Order.Reasoning (Lower-sets A.po)
+Lower-sets-frame : ∀ {o ℓ} → Meet-semilattice o ℓ → Frame (o ⊔ ℓ) o
+Lower-sets-frame (P , L) = Lower-sets P , L↓-frame where
+  module L = Meet-slat L
+  module L↓ = Order.Reasoning (Lower-sets P)
 
-  module fcp = Finitely-complete-poset
-  DA-meets : Finitely-complete-poset _ _
-  DA-meets .fcp.poset = Lower-sets A.po
-  DA-meets .fcp._∩_ x y             = Lower-sets-meets A.po x y .fst
-  DA-meets .fcp.has-is-meet {x} {y} = Lower-sets-meets A.po x y .snd
-  DA-meets .fcp.top = Lower-sets-complete A.po (λ x → absurd x) .fst
-  DA-meets .fcp.has-is-top {x} =
-    Lower-sets-complete A.po (λ j → absurd j) .snd .is-glb.greatest x λ x → absurd x
-  DAm = fc-poset→semilattice DA-meets
-  module DAm = Semilattice DAm hiding (module HLevel-instance)
-
-  mk↓A : make-frame (Lower-set A.po)
-  mk↓A .make-frame.has-is-set  = hlevel 2
-  mk↓A .make-frame.top         = DAm.top
-  mk↓A .make-frame._cap_       = DAm._∩_
-  mk↓A .make-frame.cup {I} f   = Lower-sets-cocomplete A.po f .fst
-  mk↓A .make-frame.identity    = DAm.∩-idl
-  mk↓A .make-frame.idempotent  = DAm.∩-idempotent
-  mk↓A .make-frame.commutative = DAm.∩-commutative
-  mk↓A .make-frame.associative {x} {y} {z} = DAm.∩-assoc {x} {y} {z}
-
-  mk↓A .make-frame.universal {x = x} f p =
-    fcp.le→meet DA-meets {y = x} $ Lower-sets-cocomplete A.po f .snd .is-lub.least x
-      λ i → fcp.meet→le DA-meets {y = x} (p i)
-
-  mk↓A .make-frame.colimiting i f =
-    fcp.le→meet DA-meets {y = Lower-sets-cocomplete A.po f .fst} $
-      Lower-sets-cocomplete A.po f .snd .is-lub.fam≤lub i
-
-  mk↓A .make-frame.distrib x f = ext λ arg →
+  L↓-frame : is-frame (Lower-sets P)
+  L↓-frame .is-frame._∩_ a b = Lower-sets-meets P a b .Meet.glb
+  L↓-frame .is-frame.∩-meets a b = Lower-sets-meets P a b .Meet.has-meet
+  L↓-frame .is-frame.has-top = Lower-sets-top P
+  L↓-frame .is-frame.⋃ k = Lower-sets-cocomplete P k .Lub.lub
+  L↓-frame .is-frame.⋃-lubs k = Lower-sets-cocomplete P k .Lub.has-lub
+  L↓-frame .is-frame.⋃-distribl x f = ext λ arg →
     Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
          (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
 ```
@@ -135,7 +106,7 @@ functor $A \to B$”.
 
 
 ```agda
-make-free-cocompletion : ∀ {ℓ} → make-left-adjoint (Frame↪SLat {ℓ})
+make-free-cocompletion : ∀ {ℓ} → make-left-adjoint (Frame↪SLat {ℓ} {ℓ})
 make-free-cocompletion {ℓ} = go where
 ```
 
@@ -145,21 +116,13 @@ encounter it. We start by packaging together the extension of a
 semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
 
 ```agda
-  module Mk (A : Semilattice ℓ) (B : Frame ℓ)
-            (f : Precategory.Hom (Semilattices ℓ) A (Frm.meets B))
+  module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
+            (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets (B .snd)))
     where
-    module A  = Semilattice A
-    module B  = Frm B
-```
-
-We've already seen that every semilattice homomorphism is a monotone
-map, but we'll need to refer to "f-as-a-monotone-map" while we're
-performing this construction. Let's abbreviate it:
-
-```agda
-    f-monotone : ⌞ Monotone A.po B.po ⌟
-    f-monotone .hom x = f # x
-    f-monotone .pres-≤ = Meet-semi-lattice .F₁ f .pres-≤
+    module A  = Meet-slat (A .snd)
+    module A↓ = Frm (Lower-sets-frame A .snd)
+    module B  = Frm (B .snd)
+    module f = is-meet-slat-hom (f .witness)
 ```
 
 The easy part is an appeal to the existing machinery for free
@@ -167,10 +130,10 @@ cocompletions: Any monotone map $A \to B$ extends to a _cocontinuous_
 map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda
-    mkhom : Frames.Hom ℓ (Lower-sets-frame A) B
-    mkhom .hom = apply (Lan↓ A.po B.po B.cocomplete f-monotone)
-    mkhom .preserves .is-frame-hom.pres-⋃ g =
-      Lan↓-cocontinuous A.po B.po B.cocomplete f-monotone g
+    mkhom : Frames.Hom (Lower-sets-frame A) B
+    mkhom .hom = Lan↓ B.⋃-lubs (f .hom)
+    mkhom .witness .⋃-≤ g = B.≤-refl' $
+      Lan↓-cocontinuous B.⋃-lubs (f .hom) g
 ```
 
 The harder part is showing that the cocontinuous extension of a
@@ -180,55 +143,37 @@ $\top_A$ to $\int_{B} \top_A$, which is readily calculated to
 equal $\top_B$:
 
 ```agda
-    mkhom .preserves .is-frame-hom.pres-⊤ = B.≤-antisym
-      (B.⋃-universal _ λ { i → sym B.∩-idr })
-      (  sym (f .preserves .pres-id)
-      ·· B.⋃-colimiting (A.top , inc λ j → absurd j) (λ i → f .hom (i .fst))
-      ·· ap₂ B._∩_ (f .preserves .pres-id) refl)
+    mkhom .witness .top-≤ =
+      B.top                   B.≤⟨ f.top-≤ ⟩
+      f # A.top               B.≤⟨ B.⋃-inj (A.top , tt) ⟩
+      B.⋃ (λ i → f # fst i)   B.≤∎
 ```
 
 Slightly harder, but still a bit of algebra, is computing that binary
-meets are preserved as well. Note that the second step is because $f$
-preserves meets, and the third step follows from the infinite
-distributive law in $B$.
+meets are preserved as well. The first step follows from the infinite
+distributive law in $B$, and the second from the fact that $f$ preserves
+binary meets.
 
 ```agda
-    mkhom .preserves .is-frame-hom.pres-∩ S T =
-      B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
-      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))                     ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
-      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)                   ≡˘⟨ B.⋃-∩-product _ _ ⟩
-      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)                 ∎
-```
-
-<details>
-<summary>This calculation relies on a lemma about computing the join of
-an intersection of two lower sets as a join of their intersection.
-</summary>
-
-```agda
+    mkhom .witness .∩-≤ S T =
+      B.⋃ (λ i → f # fst i) B.∩ B.⋃ (λ i → f # fst i)   B.=⟨ B.⋃-∩-product (λ i → hom f # fst i) (λ i → hom f # fst i) ⟩
+      B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
+      B.⋃ (λ i → f # fst i)                             B.≤∎
       where
-        lemma : B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)
-              ≡ B.⋃ {I = (Σ _ (_∈ apply S)) × (Σ _ (_∈ apply T))}
-                    (λ i → f # (i .fst .fst A.∩ i .snd .fst))
-        lemma = B.≤-antisym
-          (B.⋃-universal _ (λ { (i , i∈S , i∈T) →
-            f # i                                          B.=˘⟨ ap (f #_) A.∩-idempotent ⟩
-            f # (i A.∩ i)                                  B.≤⟨ B.⋃-colimiting ((i , i∈S) , i , i∈T) _ ⟩
-            B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))  B.≤∎}))
-          (B.⋃-universal _ (λ { ((i , i∈S) , j , i∈T) →
-            B.⋃-colimiting (i A.∩ j , S .pres-≤ A.∩≤l i∈S , T .pres-≤ A.∩≤r i∈T) _
-            }))
+        meet-section
+          : Σ[ x ∈ A.Ob ] (x ∈↓ S) × Σ[ y ∈ A.Ob ] (y ∈↓ T)
+          → Σ[ x ∈ A.Ob ] ((x ∈↓ S) × (x ∈↓ T))
+        meet-section ((x , p) , (y , q)) =
+          (x A.∩ y) , (S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q)
 ```
-
-</details>
 
 It's also free from the definition of cocompletions that the extended
 map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
-    mkcomm : ∀ x → f .hom x ≡ mkhom .hom (↓ A.po x)
+    mkcomm : ∀ x → f # x ≡ mkhom # (↓ (A .fst) x)
     mkcomm x =
-      sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
+      sym (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```
 
 Now we must define the unit map. We've already committed to defining
@@ -240,25 +185,18 @@ $\land$.
 
 ```agda
   the-unit
-    : (S : Semilattice ℓ)
-    → Precategory.Hom (Semilattices ℓ) S (Frame↪SLat .F₀ (Lower-sets-frame S))
+    : (S : Meet-semilattice ℓ ℓ)
+    → Meet-slats.Hom S (Frm.meets (Lower-sets-frame S .snd))
   the-unit S = go where
-    module S = Semilattice S
-    go : Precategory.Hom (Semilattices ℓ) S (Frame↪SLat .F₀ (Lower-sets-frame S))
-    go .hom = ↓ (Semilattice.po S)
-
-    go .preserves .pres-id = ext λ b →
-      Ω-ua (λ _ → inc λ j → absurd j)
-           (λ _ → inc (sym S.∩-idr))
-
-    go .preserves .pres-⋆ x y = ext λ b → Ω-ua
-      (□-rec! {pa = Σ-is-hlevel 1 squash λ _ → squash} λ b≤x∩y →
-          inc (S.≤-trans b≤x∩y S.∩≤l)
-        , inc (S.≤-trans b≤x∩y S.∩≤r))
-      λ { (□b≤x , □b≤y) → inc (
-        S.∩-univ b (out! {pa = S.≤-thin} □b≤x)
-                   (out! {pa = S.≤-thin} □b≤y))
-        }
+    module S = Meet-slat (S .snd)
+    module S↓ = Frm (Lower-sets-frame S .snd)
+    go : Meet-slats.Hom S S↓.meets
+    go .hom = よₚ (S .fst)
+    go .witness .is-meet-slat-hom.∩-≤ x y z (p , q) = do
+      z≤x ← p
+      z≤y ← q
+      pure $ S.∩-universal z z≤x z≤y
+    go .witness .is-meet-slat-hom.top-≤ x _ = pure S.!
 ```
 
 We're already 80% done with the adjunction. The final thing to do is to
@@ -270,20 +208,18 @@ cocontinuous extensions to tie everything up:
   go .free = Lower-sets-frame
   go .unit = the-unit
   go .universal {A} {B} f = Mk.mkhom A B f
-  go .commutes {A} {B} f = Homomorphism-path (Mk.mkcomm A B f)
-  go .unique {A} {B} {f = f} {g} wit = Homomorphism-path q where
+  go .commutes {A} {B} f = ext (Mk.mkcomm A B f)
+  go .unique {A} {B} {f = f} {g} wit = ext q where
     open Mk A B f
 
-    gᵐ : Monotone (Lower-sets A.po) B.po
+    gᵐ : Monotone (Lower-sets (A .fst)) (B .fst)
     gᵐ .hom x = g # x
-    gᵐ .pres-≤ {x} {y} w =
-      Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .pres-≤ $
-        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd))
+    gᵐ .pres-≤ {x} {y} w = g .hom .pres-≤ w
 
-    p = Lan↓-unique A.po B.po B.cocomplete f-monotone gᵐ
-      (g .preserves .is-frame-hom.pres-⋃)
+    p = Lan↓-unique B.⋃-lubs (f .hom) gᵐ
+      (is-frame-hom.pres-⋃ (g .witness))
       λ x → ap (_# x) (sym wit)
 
-    q : ∀ x → Lan↓ A.po B.po B.cocomplete f-monotone # x ≡ g .hom x
+    q : ∀ x → Lan↓ B.⋃-lubs (f .hom) # x ≡ g # x
     q x = sym p #ₚ x
 ```

@@ -30,7 +30,7 @@ be found in an allegory.
 
 # Reflexive morphisms
 
-A morphism $f : X \to X$ in an allegory is **reflexive** if $id \le f$.
+A morphism $f : X \to X$ in an allegory is **reflexive** if $\id \le f$.
 
 ```agda
 is-reflexive : Hom x x → Type _
@@ -76,7 +76,7 @@ reflexive-≤ : f ≤ g → is-reflexive f → is-reflexive g
 reflexive-≤ w f-refl = ≤-trans f-refl w
 ```
 
-If $f$ is reflexive, then $id \le f \cap f^o$.
+If $f$ is reflexive, then $\id \le f \cap f^o$.
 
 ```agda
 reflexive→diagonal
@@ -405,7 +405,7 @@ coreflexive-comm f-corefl g-corefl =
 
 # Functional morphisms
 
-A morphism $$ is **functional** when $ff^o \le id$. In $\Rel$, these
+A morphism $f$ is **functional** when $ff^o \le \id$. In $\Rel$, these
 are the relations $R \mono X \times Y$ such that every $x$ is related to
 at most one $y$. To see this, note that $RR^o(y,y')$ is defined as
 $\exists (x : X). R(x,y) \times R(x,y')$. Therefore,
@@ -454,7 +454,7 @@ functional-∩ {f = f} {g = g} f-func g-func =
 
 # Entire morphisms
 
-A morphism is **entire** when $id \le f^of$. In $\Rel$, these are the
+A morphism is **entire** when $\id \le f^of$. In $\Rel$, these are the
 relations $R \mono X \times Y$ where each $x$ must be related to at least
 one $y$. To see this, recall that $R^oR(x,x')$ is defined as
 $\exists (y : Y). R(x,y) \times R(x',y)$. If $x = x' \subseteq R^oR(x,x')$,
@@ -495,7 +495,7 @@ entire-∘ {f = f} {g = g} f-entire g-entire =
 # Domains
 
 The domain of a morphism $f : X \to Y$ is defined as
-$id \cap (f^of)$, denoted $\rm{dom}(f)$.
+$\id \cap (f^of)$, denoted $\rm{dom}(f)$.
 In $\Rel$, the domain of a relation $R : X \times Y \to \Omega$ is a
 relation $X \times X \to \Omega$ that relates two elements $x, x' : X$
 whenever $x = x'$, and $R(x,y)$ for some $y$.
@@ -716,7 +716,7 @@ domain-entire f-entire =
 
 # Antisymmetric morphisms
 
-A morphism is **anti-symmetric** if $f \cap f^o \le id$.
+A morphism is **anti-symmetric** if $f \cap f^o \le \id$.
 
 ```agda
 is-antisymmetric : Hom x x → Type _
@@ -745,7 +745,7 @@ antisymmetric-≤ {f = f} {g = g} w g-antisym =
   id      ≤∎
 ```
 
-If $f$ is anti-symmetric and reflexive, then $f \cap f^o = id$.
+If $f$ is anti-symmetric and reflexive, then $f \cap f^o = \id$.
 
 ```agda
 reflexive+antisymmetric→diagonal

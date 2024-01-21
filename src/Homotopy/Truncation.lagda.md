@@ -15,7 +15,8 @@ module Homotopy.Truncation where
 
 # General truncations
 
-Inspired by the equivalence built above, although _not_ using it
+Inspired by the [equivalence] between loop spaces and maps out of spheres,
+although _not_ using it
 directly, we can characterise [h-levels] in terms of maps of spheres,
 too. The idea is that, since a map $f : S^n \to A$ is equivalently
 _some_ loop in $A$[^someloop], we can characterise the _trivial_ loops as
@@ -23,6 +24,7 @@ the constant functions $S^n \to A$. Correspondingly, if every function
 $S^n \to A$ is trivial, this means that all $n$-loops in $A$ are
 trivial, so that $A$ is $(n+1)$-truncated!
 
+[equivalence]: Homotopy.Base.html#loop-spaces-are-equivalently-based-maps-out-of-spheres
 [h-levels]: 1Lab.HLevel.html
 [^someloop]: Any map $f : S^n \to A$ can be made basepoint-preserving by
 letting $A$ be based at $f(N)$.
@@ -206,7 +208,7 @@ $$
 
 so we will, for every $x : A$, define a type family $\mathrm{code}(x) :
 \|A\|_{2+n} \to \ty$, where the fibre of $\mathrm{code}(x)$ over
-$\rm{inc}(y)$ should be $\|x \equiv y\|_{1+n}$. However, induction
+$\rm{inc}(y)$ should be $\|x \equiv y\|_{1+n}$. However, the induction
 principle for $\|A\|_{2+n}$ only allows us to map into $(2+n)$-types,
 while $\ty$ itself is not an $n$-type for any $n$. We salvage our
 definition by instead mapping into $(1+n)\text{-}\ty$, which _is_ a

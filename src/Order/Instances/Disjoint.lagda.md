@@ -157,7 +157,7 @@ Posets-has-set-indexed-coproducts I F = mk where
   mk .ι  = injᵖ
   mk .has-is-ic .match      = matchᵖ
   mk .has-is-ic .commute    = trivial!
-  mk .has-is-ic .unique f p = ext λ (i , x) → p i #ₚ x
+  mk .has-is-ic .unique f p = ext λ i x → p i #ₚ x
 ```
 
 ## Binary coproducts are a special case of indexed coproducts
@@ -168,8 +168,8 @@ Posets-has-set-indexed-coproducts I F = mk where
   .to   → match⊎ᵖ (injᵖ true) (injᵖ false)
   .from → matchᵖ (Bool-elim _ inlᵖ inrᵖ)
   .inverses .invl → ext λ where
-    (true  , x) → refl
-    (false , x) → refl
+    true  x → refl
+    false x → refl
   .inverses .invr → ext λ where
     (inl x) → refl
     (inr x) → refl

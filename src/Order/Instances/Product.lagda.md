@@ -25,6 +25,7 @@ open Product
 ```agda
 module Order.Instances.Product where
 ```
+
 # Products of posets
 
 Specialising the construction of [[pointwise orderings]], we can show

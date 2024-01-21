@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Path.Reasoning
+open import 1Lab.Path.Groupoid
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -614,14 +616,99 @@ is-involutive→is-equiv : ∀ {ℓ} {A : Type ℓ} {f : A → A} → (∀ a →
 is-involutive→is-equiv inv = is-iso→is-equiv (iso _ inv inv)
 ```
 
+# Closure properties
+
+We can prove a **2-out-of-3** property for equivalences: given two functions
+$f : A \to B$, $g : B \to C$, if any two of $f$, $g$ and $g \circ f$ is an
+equivalence, then so is the third.
+
+```agda
+module _
+  {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
+  {f : A → B} {g : B → C}
+  where
+
+  ∙-is-equiv
+    : is-equiv f → is-equiv g
+    → is-equiv (λ x → g (f x))
+
+  equiv-cancell
+    : is-equiv g → is-equiv (λ x → g (f x))
+    → is-equiv f
+
+  equiv-cancelr
+    : is-equiv f → is-equiv (λ x → g (f x))
+    → is-equiv g
+```
+
+<!--
+```agda
+  ∙-is-equiv ef eg = is-iso→is-equiv (iso inv right left) where
+    inv : C → A
+    inv x = equiv→inverse ef (equiv→inverse eg x)
+    opaque
+      right : is-right-inverse inv (λ x → g (f x))
+      right x = ap g (equiv→counit ef _) ∙ equiv→counit eg x
+      left : is-left-inverse inv (λ x → g (f x))
+      left x = ap (equiv→inverse ef) (equiv→unit eg _) ∙ equiv→unit ef x
+
+  equiv-cancell eg egf = is-iso→is-equiv (iso inv right left) where
+    inv : B → A
+    inv x = equiv→inverse egf (g x)
+    opaque
+      right : is-right-inverse inv f
+      right x =
+        f (equiv→inverse egf (g x))                        ≡˘⟨ equiv→unit eg _ ⟩
+        equiv→inverse eg (g (f (equiv→inverse egf (g x)))) ≡⟨ ap (equiv→inverse eg) (equiv→counit egf _) ⟩
+        equiv→inverse eg (g x)                             ≡⟨ equiv→unit eg _ ⟩
+        x                                                  ∎
+      left : is-left-inverse inv f
+      left x = equiv→unit egf x
+
+  equiv-cancelr ef egf = is-iso→is-equiv (iso inv right left) where
+    inv : C → B
+    inv x = f (equiv→inverse egf x)
+    right : is-right-inverse inv g
+    right x = equiv→counit egf x
+    left : is-left-inverse inv g
+    left x =
+      f (equiv→inverse egf (g x))                        ≡˘⟨ ap (f ∘ equiv→inverse egf ∘ g) (equiv→counit ef _) ⟩
+      f (equiv→inverse egf (g (f (equiv→inverse ef x)))) ≡⟨ ap f (equiv→unit egf _) ⟩
+      f (equiv→inverse ef x)                             ≡⟨ equiv→counit ef _ ⟩
+      x                                                  ∎
+```
+-->
+
+In particular, any left or right inverse of an equivalence is an equivalence:
+
+```agda
+left-inverse→equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {g : B → A}
+  → is-left-inverse g f
+  → is-equiv f → is-equiv g
+left-inverse→equiv linv ef = equiv-cancelr ef
+  (subst is-equiv (sym (funext linv)) id-equiv)
+
+right-inverse→equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {g : B → A}
+  → is-right-inverse g f
+  → is-equiv f → is-equiv g
+right-inverse→equiv rinv ef = equiv-cancell ef
+  (subst is-equiv (sym (funext rinv)) id-equiv)
+```
+
 # Equivalence reasoning
 
 To make composing equivalences more intuitive, we implement operators to
 do equivalence reasoning in the same style as equational reasoning.
 
 ```agda
+id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
+id≃ = id , id-equiv
+
 _∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
+_∙e_ (f , ef) (g , eg) = (λ x → g (f x)) , ∙-is-equiv ef eg
 
 _e⁻¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
      → A ≃ B → B ≃ A
@@ -631,42 +718,11 @@ _e⁻¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
                               ; linv = equiv→counit (eqv .snd)
                               })
 ```
+
 <!--
-```
-_∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
-  g⁻¹ : is-iso g
-  g⁻¹ = is-equiv→is-iso e'
-
-  f⁻¹ : is-iso f
-  f⁻¹ = is-equiv→is-iso e
-
-  inv : _ → _
-  inv x = f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)
-
-  abstract
-    right : is-right-inverse inv (λ x → g (f x))
-    right z =
-      g (f (f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv z))) ≡⟨ ap g (f⁻¹ .is-iso.rinv _) ⟩
-      g (g⁻¹ .is-iso.inv z)                       ≡⟨ g⁻¹ .is-iso.rinv _ ⟩
-      z                                           ∎
-
-    left : is-left-inverse inv (λ x → g (f x))
-    left z =
-      f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv (g (f z))) ≡⟨ ap (f⁻¹ .is-iso.inv) (g⁻¹ .is-iso.linv _) ⟩
-      f⁻¹ .is-iso.inv (f z)                       ≡⟨ f⁻¹ .is-iso.linv _ ⟩
-      z                                           ∎
-  eqv : is-equiv (λ x → g (f x))
-  eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
-
+```agda
 infixr 30 _∙e_
 infix 31 _e⁻¹
-
-∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
-           → {f : A → B} {g : B → C}
-           → is-equiv f
-           → is-equiv g
-           → is-equiv (λ x → g (f x))
-∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 
 module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
   to = f .fst
@@ -685,6 +741,20 @@ module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
 
   inverse : B ≃ A
   inverse = f e⁻¹
+
+  adjunctl : ∀ {x y} → to x ≡ y → x ≡ from y
+  adjunctl p = sym (η _) ∙ ap from p
+
+  adjunctr : ∀ {x y} → x ≡ from y → to x ≡ y
+  adjunctr p = ap to p ∙ ε _
+
+  adjunct : ∀ {x y} → (to x ≡ y) ≃ (x ≡ from y)
+  adjunct {x} {y} = Iso→Equiv (adjunctl , iso adjunctr
+    (λ p → J (λ _ p → sym (η _) ∙ ap from (ap to (sym p) ∙ ε _) ≡ sym p)
+      (sym (∙-swapl (∙-idr _ ∙ sym (zag _) ∙ sym (∙-idl _) ∙ sym (ap-∙ from _ _))))
+      (sym p))
+    (J (λ _ p → ap to (sym (η _) ∙ ap from p) ∙ ε _ ≡ p)
+      (sym (∙-swapr (∙-idl _ ∙ ap sym (sym (zig _)) ∙ sym (∙-idr _) ∙ sym (ap-∙ to _ _))))))
 ```
 -->
 
@@ -692,17 +762,24 @@ The proofs that equivalences are closed under composition assemble
 nicely into transitivity operators resembling equational reasoning:
 
 ```agda
-_≃⟨_⟩_ : ∀ {ℓ ℓ₁ ℓ₂} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
-       → A ≃ B → B ≃ C → A ≃ C
-A ≃⟨ f ⟩ g = f ∙e g
+≃⟨⟩-syntax : ∀ {ℓ ℓ₁ ℓ₂} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
+           → B ≃ C → A ≃ B → A ≃ C
+≃⟨⟩-syntax A g f = f ∙e g
+
+infixr 2 ≃⟨⟩-syntax
+syntax ≃⟨⟩-syntax x q p = x ≃⟨ p ⟩ q
+
+_≃˘⟨_⟩_ : ∀ {ℓ ℓ₁ ℓ₂} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
+        → B ≃ A → B ≃ C → A ≃ C
+A ≃˘⟨ f ⟩ g = f e⁻¹ ∙e g
 
 _≃⟨⟩_ : ∀ {ℓ ℓ₁} (A : Type ℓ) {B : Type ℓ₁} → A ≃ B → A ≃ B
 x ≃⟨⟩ x≡y = x≡y
 
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
-x ≃∎ = _ , id-equiv
+x ≃∎ = id≃
 
-infixr 2 _≃⟨⟩_ _≃⟨_⟩_
+infixr 2 _≃⟨⟩_ _≃˘⟨_⟩_
 infix  3 _≃∎
 ```
 
@@ -733,6 +810,16 @@ module
 ```agda
 sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
 sym-equiv = sym , is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+
+∙-pre-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → (y ≡ z) ≃ (x ≡ z)
+∙-pre-equiv p = Iso→Equiv $ (p ∙_) , iso (sym p ∙_)
+  (λ q → ∙-assoc p _ _ ·· ap (_∙ q) (∙-invr p) ·· ∙-idl q)
+  (λ q → ∙-assoc (sym p) _ _ ·· ap (_∙ q) (∙-invl p) ·· ∙-idl q)
+
+∙-post-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → y ≡ z → (x ≡ y) ≃ (x ≡ z)
+∙-post-equiv p = Iso→Equiv $ (_∙ p) , iso (_∙ sym p)
+  (λ q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invl p) ·· ∙-idr q)
+  (λ q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invr p) ·· ∙-idr q)
 
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A }

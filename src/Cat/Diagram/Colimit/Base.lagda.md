@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Kan.Unique
@@ -632,7 +633,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 ```
 -->
 
-## Cocontinuity
+## Cocontinuity {defines="cocontinuous"}
 
 ```agda
 is-cocontinuous
@@ -693,10 +694,10 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   colimit-as-coequaliser-of-coproduct
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
     → has-coproducts-indexed-by C (Precategory.Ob J)
-    → has-coproducts-indexed-by C (Precategory.Mor J)
+    → has-coproducts-indexed-by C (Arrows J)
     → has-coequalisers C
     → (F : Functor J C) → Colimit F
-  colimit-as-coequaliser-of-coproduct {oj} {ℓj} {J} has-Ob-cop has-Mor-cop has-coeq F =
+  colimit-as-coequaliser-of-coproduct {oj} {ℓj} {J} has-Ob-cop has-Arrows-cop has-coeq F =
     to-colimit (to-is-colimit colim) where
 ```
 
@@ -731,15 +732,15 @@ and the second morphism to be the injection into the codomain component precompo
 
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
-	{\displaystyle \coprod_{(f : a \to b) : \text{Mor}(\mathcal J)} F(a)} & {\displaystyle \coprod_{o : \text{Ob}(\mathcal J)} F(o)}
+	{\displaystyle \coprod_{(f : a \to b) : \text{Arrows}(\mathcal J)} F(a)} & {\displaystyle \coprod_{o : \text{Ob}(\mathcal J)} F(o)}
 	\arrow["{\iota_a}", shift left, from=1-1, to=1-2]
 	\arrow["{\iota_b \circ F(f)}"', shift right, from=1-1, to=1-2]
 \end{tikzcd}\]
 ~~~
 
 ```agda
-    Dom : Indexed-coproduct C {Idx = J.Mor} λ (a , b , f) → F₀ a
-    Dom = has-Mor-cop _
+    Dom : Indexed-coproduct C {Idx = Arrows J} λ (a , b , f) → F₀ a
+    Dom = has-Arrows-cop _
 
     s t : C.Hom (Dom .ΣF) (Obs .ΣF)
     s = Dom .match λ (a , b , f) → Obs .ι b C.∘ F₁ f

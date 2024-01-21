@@ -3,7 +3,7 @@
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
-open import Algebra.Group.Ab
+open import Algebra.Group.Ab hiding (ℤ)
 open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group

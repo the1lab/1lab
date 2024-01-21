@@ -14,7 +14,7 @@ import Cat.Reasoning
 module Cat.Functor.Hom {o h} (C : Precategory o h) where
 ```
 
-# The Hom functor
+# The Hom functor {defines="hom-functor"}
 
 We prove that the assignment of $\hom$-sets in a `Precategory`{.Agda}
 $\cC$ is a `functor`{.Agda}, specifically a bifunctor from $\cC\op

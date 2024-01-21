@@ -272,8 +272,7 @@ split-+ {m = suc m} fzero = inl fzero
 split-+ {m = suc m} (fsuc i) = ⊎-map fsuc id (split-+ i)
 
 avoid : ∀ {n} (i j : Fin (suc n)) → (¬ i ≡ j) → Fin n
-avoid {n = zero} fzero fzero i≠j = absurd (i≠j refl)
-avoid {n = suc n} fzero fzero i≠j = absurd (i≠j refl)
+avoid fzero fzero i≠j = absurd (i≠j refl)
 avoid {n = suc n} fzero (fsuc j) i≠j = j
 avoid {n = suc n} (fsuc i) fzero i≠j = fzero
 avoid {n = suc n} (fsuc i) (fsuc j) i≠j = fsuc (avoid i j (i≠j ∘ ap fsuc))

@@ -5,6 +5,7 @@ open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
+open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -115,28 +116,6 @@ g) \circ h = f \circ (g \circ h)$.
     assoc : ∀ {w x y z} (f : Hom y z) (g : Hom x y) (h : Hom w x)
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```
-
-We can define the type of *all* morphisms in a precategory as the total space of
-`Hom`{.Agda}:
-
-```agda
-  Mor : Type (o ⊔ h)
-  Mor = Σ[ a ∈ Ob ] Σ[ b ∈ Ob ] Hom a b
-```
-
-<!--
-```agda
-  Hom→Mor : {a b : Ob} → Hom a b → Mor
-  Hom→Mor f = _ , _ , f
-
-  Mor-path : {a b : Mor}
-           → (p : a .fst ≡ b .fst)
-           → (q : a .snd .fst ≡ b .snd .fst)
-           → PathP (λ i → Hom (p i) (q i)) (a .snd .snd) (b .snd .snd)
-           → a ≡ b
-  Mor-path p q r i = p i , q i , r i
-```
--->
 
 <!--
 ```agda
@@ -627,5 +606,11 @@ instance
     → Extensionality (F => G)
   extensionality-natural-transformation = record
     { lemma = quote Extensional-natural-transformation }
+
+  Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
+  Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
+
+  Funlike-Functor : ∀ {o ℓ o' ℓ'} → Funlike (Functor {o} {ℓ} {o'} {ℓ'})
+  Funlike-Functor = record { _#_ = Functor.F₀ }
 ```
 -->

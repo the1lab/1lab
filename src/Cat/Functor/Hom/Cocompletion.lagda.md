@@ -28,7 +28,7 @@ open _=>_
 ```
 -->
 
-# Free cocompletions
+# Free cocompletions {defines="free-cocompletion"}
 
 Let $\cC$ be a [$\kappa$-small] precategory. It, broadly speaking,
 will not be cocomplete. Suppose that we're interested in passing from

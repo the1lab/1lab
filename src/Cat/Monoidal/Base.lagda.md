@@ -20,7 +20,7 @@ open _=>_
 ```
 -->
 
-# Monoidal categories
+# Monoidal categories {defines="monoidal-category"}
 
 ```agda
 record Monoidal-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where

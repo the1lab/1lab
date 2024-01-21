@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -22,7 +23,7 @@ module _ {o h : _} (C : Precategory o h) where
 ```
 -->
 
-# Monads
+# Monads {defines=monad}
 
 A **monad on a category** $\cC$ is one way of categorifying the
 concept of [monoid]. Specifically, rather than living in a monoidal
@@ -65,7 +66,7 @@ associativity laws exactly analogous to those of a monoid.
       mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
 ```
 
-# Algebras over a monad
+# Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the
@@ -118,7 +119,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 ```
 -->
 
-# Eilenberg-Moore category
+# Eilenberg-Moore category {defines=eilenberg-moore-category}
 
 If we take a monad $M$ as the signature of an (algebraic) theory, and
 $M$-algebras as giving _models_ of that theory, then we can ask (like
@@ -372,3 +373,42 @@ $\cC^M$.
     Free⊣Forget .zig = ext left-ident
     Free⊣Forget .zag {x} = x .snd .ν-unit
 ```
+
+<!--
+```agda
+module _ {o h : _} {C : Precategory o h} {M N : Monad C} where
+  private
+    module C = Cat.Reasoning C
+    module M = Monad M
+    module N = Monad N
+
+  Monad-path
+    : (p0 : ∀ x → M.M₀ x ≡ N.M₀ x)
+    → (p1 : ∀ {x y} (f : C.Hom x y) → PathP (λ i → C.Hom (p0 x i) (p0 y i)) (M.M₁ f) (N.M₁ f))
+    → (∀ x → PathP (λ i → C.Hom x (p0 x i)) (M.unit.η x) (N.unit.η x))
+    → (∀ x → PathP (λ i → C.Hom (p0 (p0 x i) i) (p0 x i)) (M.mult.η x) (N.mult.η x))
+    → M ≡ N
+  Monad-path p0 p1 punit pmult = path where
+    M=N : M.M ≡ N.M
+    M=N = Functor-path p0 p1
+
+    path : M ≡ N
+    path i .Monad.M = M=N i
+    path i .Monad.unit =
+      Nat-pathp refl M=N {a = M.unit} {b = N.unit} punit i
+    path i .Monad.mult =
+      Nat-pathp (ap₂ _F∘_ M=N M=N) M=N {a = M.mult} {b = N.mult} pmult i
+    path i .Monad.left-ident {x = x} =
+      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (pmult x i C.∘ p1 (punit x i) i) C.id)
+        M.left-ident
+        N.left-ident i
+    path i .Monad.right-ident {x = x} =
+      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (pmult x i C.∘ punit (p0 x i) i) C.id)
+        M.right-ident
+        N.right-ident i
+    path i .Monad.mult-assoc {x} =
+      is-prop→pathp (λ i → C.Hom-set (p0 (p0 (p0 x i) i) i) (p0 x i) (pmult x i C.∘ p1 (pmult x i) i) (pmult x i C.∘ pmult (p0 x i) i))
+        M.mult-assoc
+        N.mult-assoc i
+```
+-->

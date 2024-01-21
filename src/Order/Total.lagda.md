@@ -5,8 +5,8 @@ open import 1Lab.Prelude
 open import Data.Dec
 open import Data.Sum
 
-open import Order.Diagram.Glb
-open import Order.Diagram.Lub
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Base
 ```
 -->

@@ -80,7 +80,7 @@ unpack the definition here and talk about **cowedges** instead.
 [colimit]: Cat.Diagram.Colimit.Base.html
 [initial objects]: Cat.Diagram.Initial.html
 
-## Formalisation
+## Formalisation {defines="cowedge"}
 
 ```agda
 record Cowedge (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
