@@ -171,7 +171,7 @@ the domain category to serve as an inverse for $f$:
     im' .inverses .Cm.Inverses.invr = invr
 ```
 
-## Essential fibres {defines="essential-fibre essentially-surjective"}
+## Essential fibres {defines="essential-fibre"}
 
 The **essential fibre** of a functor $F : C \to D$ over an object $y :
 D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
