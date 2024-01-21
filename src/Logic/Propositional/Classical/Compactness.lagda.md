@@ -97,40 +97,39 @@ All three of these are clearly satisfiable, but
 ```agda
   finitely-consistent ϕs' sub (fin {zero} ∥enum∥) =
     pure $ (λ _ → true) , λ ϕ ϕ∈ϕs' → absurd (card-zero→empty ∥enum∥ (ϕ , ϕ∈ϕs'))
-  finitely-consistent ϕs' sub (fin {suc zero} ∥enum∥) = □-tr do
-    enum ← tr-□ ∥enum∥
+  finitely-consistent ϕs' sub (fin {suc zero} ∥enum∥) = do
+    enum ← ∥enum∥
     let module enum = Equiv enum
     let (ϕ , ϕ∈ϕs') = enum.from 0
     sub ϕ ϕ∈ϕs' <&> λ where
       (inl xp) →
-        (λ _ → true) , λ ϕ' ϕ'∈ϕs' → out! do
+        (λ _ → true) , λ ϕ' ϕ'∈ϕs' → ∥-∥-proj! do
           sub ϕ' ϕ'∈ϕs' >>= λ where
-            (inl xp') → do
+            (inl xp') → □-tr do
               (x=ϕ' , _) ← xp'
               pure (subst (λ e → ⟦ e ⟧ (λ _ → true) ≡ true) x=ϕ' refl)
-            (inr ¬xp') → do
+            (inr ¬xp') → □-tr do
               (_ , p) ← xp
               (_ , ¬p) ← ¬xp'
               absurd (¬p p)
       (inr ¬xp) →
-        (λ _ → false) , λ ϕ' ϕ'∈ϕs' → out! do
+        (λ _ → false) , λ ϕ' ϕ'∈ϕs' → ∥-∥-proj! do
           sub ϕ' ϕ'∈ϕs' >>= λ where
-            (inl xp') → do
+            (inl xp') → □-tr do
               (_ , ¬p) ← ¬xp
               (_ , p) ← xp'
               absurd (¬p p)
-            (inr ¬xp') → do
+            (inr ¬xp') → □-tr do
               (¬x=ϕ' , _) ← ¬xp'
               pure (subst (λ e → ⟦ e ⟧ (λ _ → false) ≡ true) ¬x=ϕ' refl)
-  finitely-consistent ϕs' sub (fin {suc (suc n)} ∥enum∥) = 
-    absurd (out! do
-      enum ← tr-□ ∥enum∥
+  finitely-consistent ϕs' sub (fin {suc (suc n)} ∥enum∥) = do
+      enum ← ∥enum∥
       let module enum = Equiv enum
       let (ϕ , ϕ∈ϕs') = enum.from 0
       let (ϕ' , ϕ'∈ϕs') = enum.from 1
       sub ϕ ϕ∈ϕs' >>= λ where
         (inl xp) → sub ϕ' ϕ'∈ϕs' >>= λ where
-          (inl xp') → do
+          (inl xp') → □-tr do
             (x=ϕ , _) ← xp
             (x=ϕ' , _) ← xp'
             absurd
@@ -138,23 +137,23 @@ All three of these are clearly satisfiable, but
                 sym (enum.ε 0)
                 ∙ ap enum.to (Σ-prop-path! (sym x=ϕ ∙ x=ϕ'))
                 ∙ enum.ε 1)
-          (inr ¬xp') → do
+          (inr ¬xp') → □-tr do
             (_ , p) ← xp
             (_ , ¬p) ← ¬xp'
             absurd (¬p p)
         (inr ¬xp) → sub ϕ' ϕ'∈ϕs' >>= λ where
-          (inl xp') → do
+          (inl xp') → □-tr do
             (_ , ¬p) ← ¬xp
             (_ , p) ← xp'
             absurd (¬p p)
-          (inr ¬xp') → do
+          (inr ¬xp') → □-tr do
             (x=ϕ , _) ← ¬xp
             (x=ϕ' , _) ← ¬xp'
             absurd
               (fzero≠fsuc $
                 sym (enum.ε 0)
                 ∙ ap enum.to (Σ-prop-path! (sym x=ϕ ∙ x=ϕ'))
-                ∙ enum.ε 1))
+                ∙ enum.ε 1)
 ```
 </details>
 
