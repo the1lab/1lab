@@ -1,12 +1,16 @@
+---
+description: |
+  We prove various properties of hom functors and the yoneda embedding.
+---
 <!--
 ```agda
-open import Cat.Prelude
 open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
+open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Morphism
+import Cat.Reasoning
 ```
 -->
 
@@ -15,6 +19,9 @@ module Cat.Functor.Hom.Properties where
 ```
 
 # Properties of hom functors
+
+This module contains a collection of useful facts about [[hom functors]] and the
+[[Yoneda embedding]].
 
 <!--
 ```agda

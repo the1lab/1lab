@@ -1,3 +1,8 @@
+---
+description: |
+  We prove some basic facts about what classes of functors preserve epis,
+  monos, etc.
+---
 <!--
 ```agda
 open import Cat.Functor.Properties
@@ -5,8 +10,8 @@ open import Cat.Morphism.Duality
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 
