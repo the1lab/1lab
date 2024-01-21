@@ -150,8 +150,8 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   vmap-sound [] = sym M-id
   vmap-sound (k ∷ v) =
     M₁ ⟦ k ⟧ₖ ∘ ⟦ do-vmap v ⟧ᵥ ≡⟨ refl⟩∘⟨ vmap-sound v ⟩
-    M₁ ⟦ k ⟧ₖ M.𝒟.∘ M₁ ⟦ v ⟧ᵥ  ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
-    M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ) ∎
+    M₁ ⟦ k ⟧ₖ ∘ M₁ ⟦ v ⟧ᵥ      ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
+    M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ)       ∎
 
   vconcat-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ v1 ++ v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
   vconcat-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
@@ -164,9 +164,9 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   enact-laws-sound (kmap k1) (kmap k2) v =
     ⟦ do-vmap (enact-laws k1 k2 []) ++ v ⟧ᵥ     ≡⟨ vconcat-sound (do-vmap (enact-laws k1 k2 [])) v ⟩
     ⟦ do-vmap (enact-laws k1 k2 []) ⟧ᵥ ∘ ⟦ v ⟧ᵥ ≡⟨ vmap-sound (enact-laws k1 k2 []) ⟩∘⟨refl ⟩
-    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ M.𝒟.∘ ⟦ v ⟧ᵥ    ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
-    M₁ ⟦ k1 ⟧ₖ ∘ M₁ (⟦ k2 ⟧ₖ ∘ id) ∘ ⟦ v ⟧ᵥ     ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ₖ ⟩ ⟩∘⟨refl) ⟩
-    M₁ ⟦ k1 ⟧ₖ ∘ M₁ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ            ∎
+    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ ∘ ⟦ v ⟧ᵥ    ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
+    M₁ ⟦ k1 ⟧ₖ ∘ M₁ (⟦ k2 ⟧ₖ ∘ id) ∘ ⟦ v ⟧ᵥ ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ₖ ⟩ ⟩∘⟨refl) ⟩
+    M₁ ⟦ k1 ⟧ₖ ∘ M₁ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ        ∎
   enact-laws-sound (kmap {Y = Y} k1) (kunit X) v =
     unit.η ⟦ Y ⟧ₒ ∘ ⟦ push-frm k1 v ⟧ᵥ    ≡⟨ refl⟩∘⟨ push-frm-sound k1 v ⟩
     unit.η ⟦ Y ⟧ₒ ∘ ⟦ k1 ⟧ₖ ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (unit.is-natural ⟦ X ⟧ₒ ⟦ Y ⟧ₒ ⟦ k1 ⟧ₖ) ⟩
