@@ -300,6 +300,8 @@ open import Cat.Solver -- Automatic solver for associativity problems
 open import Cat.Morphism  -- Important classes of morphisms
 open import Cat.Reasoning -- Categorical reasoning combinators
 open import Cat.Groupoid -- Groupoids
+open import Cat.Connected -- Connected categories
+open import Cat.Finite -- Finite categories
 ```
 
 ### Diagrams
@@ -529,8 +531,11 @@ open import Cat.Instances.Lift
 
 open import Cat.Instances.Product -- Product categories
 
+open import Cat.Instances.FreeGroupoid
+-- The free groupoid on a category
+
 open import Cat.Instances.Core
--- The core of a category.
+-- The core of a category
 ```
 
 The construction and properties of functor categories:
