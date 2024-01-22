@@ -2,7 +2,12 @@
 ```agda
 open import Algebra.Monoid
 
+open import Cat.Instances.FreeGroupoid
+open import Cat.Connected
 open import Cat.Prelude
+
+open is-connected-cat
+open Precategory
 ```
 -->
 
@@ -17,22 +22,24 @@ private variable
 ```
 -->
 
-Given a monoid $M$, we build a pointed precategory $\B{M}$, where the
-endomorphism monoid of the point recovers $M$.
+Given a monoid $M$, we build a pointed, [[connected|connected category]]
+precategory $\B{M}$, where the endomorphism monoid of the point recovers $M$.
 
 ```agda
-B : ∀ {ℓ} {M : Type ℓ} → Monoid-on M → Precategory lzero ℓ
-B {M = M} mm = r where
+module _ {ℓ} {M : Type ℓ} (mm : Monoid-on M) where
   module mm = Monoid-on mm
-  open Precategory
 
-  r : Precategory _ _
-  r .Ob = ⊤
-  r .Hom _ _ = M
-  r .Hom-set _ _ = mm.has-is-set
-  r .Precategory.id = mm.identity
-  r .Precategory._∘_ = mm._⋆_
-  r .idr _ = mm.idr
-  r .idl _ = mm.idl
-  r .assoc _ _ _ = mm.associative
+  B : Precategory lzero ℓ
+  B .Ob = ⊤
+  B .Hom _ _ = M
+  B .Hom-set _ _ = mm.has-is-set
+  B .Precategory.id = mm.identity
+  B .Precategory._∘_ = mm._⋆_
+  B .idr _ = mm.idr
+  B .idl _ = mm.idl
+  B .assoc _ _ _ = mm.associative
+
+  B-is-connected : is-connected-cat B
+  B-is-connected .point = inc tt
+  B-is-connected .zigzag _ _ = inc nil
 ```

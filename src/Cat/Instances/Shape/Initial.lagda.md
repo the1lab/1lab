@@ -16,7 +16,9 @@ open Precategory
 ```
 -->
 
+:::{.definition #initial-category}
 The **initial category** is the category with no objects.
+:::
 
 ```agda
 ⊥Cat : Precategory lzero lzero
@@ -43,4 +45,3 @@ module _ {o h} {A : Precategory o h} where
   ¡nt ._=>_.η ()
   ¡nt ._=>_.is-natural ()
 ```
-
