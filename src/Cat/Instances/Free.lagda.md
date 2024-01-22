@@ -11,7 +11,7 @@ import Cat.Reasoning
 module Cat.Instances.Free where
 ```
 
-# Graphs and free categories
+# Graphs and free categories {defines="graph free-category"}
 
 A **graph** (really, an $(o, \ell)$-graph^[and, even more pedantically,
 a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \Sets_o$ of
@@ -60,7 +60,7 @@ We have a couple of options here:
 - We can _construct_ paths _by recursion_, on their length: Defining a
 "path from $x$ to $y$ of length $n$" by recursion on $n$, and then
 defining a path from $x$ to $y$ as being a pair $(n, xs)$ where $n :
-\N$$ and $xs$ is a path of length $n$;
+\N$ and $xs$ is a path of length $n$;
 
 - We can _define_ paths _by induction_, as is done above.
 

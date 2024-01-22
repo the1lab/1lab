@@ -10,7 +10,7 @@ import Cat.Reasoning
 module Cat.Groupoid where
 ```
 
-# Groupoids
+# Groupoids {defines="pregroupoid"}
 
 A category $\cC$ is a (pre)**groupoid** if every morphism of $\cC$ is
 invertible.
