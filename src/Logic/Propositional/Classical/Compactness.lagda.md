@@ -78,9 +78,9 @@ $\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$.
 * $\{ x \}$
 * $\{ \lnot x \}$
 
-All three of these are clearly satisfiable, but
-"Unfortunately, proof assistants": convincing Agda that those are the only
-3 possible subsets involves quite a work.
+All three of these are clearly satisfiable, but "Unfortunately, proof
+assistants": convincing Agda that those are the only 3 possible subsets
+involves quite a bit work.
 
 ```agda
   finitely-consistent
