@@ -82,7 +82,7 @@ module _
 ```
 
 This is dual to the [[free groupoid]] on a category, in the sense that
-there is a biadjoint triple $\rm{FreeGroupoid} \dashv U \dashv \rm{Core}$,
+there is a biadjoint triple $\rm{Free} \dashv U \dashv \rm{Core}$,
 where $U$ is the forgetful functor from the bicategory of groupoids to the
 bicategory of categories.
 

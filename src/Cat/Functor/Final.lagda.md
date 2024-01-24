@@ -316,7 +316,7 @@ morphism $z : x \to y$ such that $Fz = f$.
     final→full+eso : is-final → is-full F × is-eso F
     final→full+eso fin .fst {x} {y} f = do
       zs ← fin (F.₀ x) .zigzag (↓obj 𝒟.id) (↓obj f)
-      let z = FreeGroupoid-counit
+      let z = Free-groupoid-counit
             (↓-is-pregroupoid _ _ ⊤Cat-is-pregroupoid 𝒞-grpd)
             .F₁ zs
       pure (z .β , sym (𝒟.idr _) ∙ sym (z .sq) ∙ 𝒟.idr _)
@@ -430,7 +430,7 @@ That this is a congruence is easily checked using the finality of $F$.
 
 ```agda
       R .reflᶜ {f} f' g' =
-        FreeGroupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
+        Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
       R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
         g' ← ff.point (g .y)
         ∥-∥-map₂ _++_ (fg f' g') (gh g' h')
@@ -447,7 +447,7 @@ which again involves the connectedness of $x \swarrow F$.
         z ← ff.zigzag (f .y) f' (↓obj (g' .map 𝒟.∘ h .β))
         let
           z' : Zigzag (c ↙ G F∘ F) _ _
-          z' = FreeGroupoid-map (↙-compose f) .F₁ z
+          z' = Free-groupoid-map (↙-compose f) .F₁ z
           fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
           fixup = ↓Obj-path _ _ refl refl $
             G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)

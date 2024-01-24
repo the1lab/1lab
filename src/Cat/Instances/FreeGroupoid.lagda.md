@@ -123,28 +123,28 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 module _ {o ℓ} (C : Precategory o ℓ) where
   open Precategory
 
-  FreeGroupoid : Precategory o (o ⊔ ℓ)
-  FreeGroupoid .Ob = Ob C
-  FreeGroupoid .Hom = Zigzag C
-  FreeGroupoid .Hom-set _ _ = squash
-  FreeGroupoid .id = nil
-  FreeGroupoid ._∘_ f g = g ++ f
-  FreeGroupoid .idr _ = refl
-  FreeGroupoid .idl = ++-nil
-  FreeGroupoid .assoc f g h = ++-assoc h g f
+  Free-groupoid : Precategory o (o ⊔ ℓ)
+  Free-groupoid .Ob = Ob C
+  Free-groupoid .Hom = Zigzag C
+  Free-groupoid .Hom-set _ _ = squash
+  Free-groupoid .id = nil
+  Free-groupoid ._∘_ f g = g ++ f
+  Free-groupoid .idr _ = refl
+  Free-groupoid .idl = ++-nil
+  Free-groupoid .assoc f g h = ++-assoc h g f
 ```
 
 There is a canonical inclusion of $\cC$ into its free groupoid:
 
 ```agda
-  FreeGroupoid-unit : Functor C FreeGroupoid
-  FreeGroupoid-unit .F₀ a = a
-  FreeGroupoid-unit .F₁ f = cons f nil
-  FreeGroupoid-unit .F-id = cons-id
-  FreeGroupoid-unit .F-∘ _ _ = cons-∘
+  Free-groupoid-unit : Functor C Free-groupoid
+  Free-groupoid-unit .F₀ a = a
+  Free-groupoid-unit .F₁ f = cons f nil
+  Free-groupoid-unit .F-id = cons-id
+  Free-groupoid-unit .F-∘ _ _ = cons-∘
 ```
 
-We now prove that `FreeGroupoid`{.Agda} is indeed a [[pregroupoid]].
+We now prove that `Free-groupoid`{.Agda} is indeed a [[pregroupoid]].
 To do this, we need a way to reverse a zigzag of morphisms while turning
 "forwards" morphisms into "backwards" morphisms and vice versa.
 
@@ -233,10 +233,10 @@ right inverse.
   reverse-invr fs = ap (_++ reverse fs) (sym (reverse-invo fs))
                   ∙ reverse-invl (reverse fs)
 
-  FreeGroupoid-is-groupoid : is-pregroupoid (FreeGroupoid C)
-  FreeGroupoid-is-groupoid f .inv = reverse f
-  FreeGroupoid-is-groupoid f .inverses .invl = reverse-invl f
-  FreeGroupoid-is-groupoid f .inverses .invr = reverse-invr f
+  Free-groupoid-is-groupoid : is-pregroupoid (Free-groupoid C)
+  Free-groupoid-is-groupoid f .inv = reverse f
+  Free-groupoid-is-groupoid f .inverses .invl = reverse-invl f
+  Free-groupoid-is-groupoid f .inverses .invr = reverse-invr f
 ```
 
 The free groupoid is characterised by the following universal property:
@@ -252,9 +252,9 @@ $\cC$.
     private
       module D = Cat.Reasoning D
 
-    FreeGroupoid-universal : Functor (FreeGroupoid C) D
-    FreeGroupoid-universal .F₀ = F .F₀
-    FreeGroupoid-universal .F₁ = Zigzag-elim
+    Free-groupoid-universal : Functor (Free-groupoid C) D
+    Free-groupoid-universal .F₀ = F .F₀
+    Free-groupoid-universal .F₁ = Zigzag-elim
       {P = λ {a} {b} _ → D.Hom (F .F₀ a) (F .F₀ b)}
       (λ {a} {b} _ → D.Hom-set (F .F₀ a) (F .F₀ b))
       D.id
@@ -264,23 +264,23 @@ $\cC$.
       (λ _ → D.pushr (F .F-∘ _ _))
       (λ _ → D.cancelr (D-grpd (F .F₁ _) .invr))
       (λ _ → D.cancelr (D-grpd (F .F₁ _) .invl))
-    FreeGroupoid-universal .F-id = refl
-    FreeGroupoid-universal .F-∘ fs gs = Zigzag-elim-prop
+    Free-groupoid-universal .F-id = refl
+    Free-groupoid-universal .F-∘ fs gs = Zigzag-elim-prop
       {P = λ gs → ∀ fs
-         → FreeGroupoid-universal .F₁ (gs ++ fs)
-         ≡ FreeGroupoid-universal .F₁ fs D.∘ FreeGroupoid-universal .F₁ gs}
+         → Free-groupoid-universal .F₁ (gs ++ fs)
+         ≡ Free-groupoid-universal .F₁ fs D.∘ Free-groupoid-universal .F₁ gs}
       (λ _ → hlevel 1)
       (λ _ → sym (D.idr _))
       (λ f fs rec _ → D.pushl (rec _))
       (λ f fs rec _ → D.pushl (rec _))
       gs fs
 
-    FreeGroupoid-factor : F ≡ FreeGroupoid-universal F∘ FreeGroupoid-unit C
-    FreeGroupoid-factor = Functor-path (λ _ → refl) (λ _ → sym (D.idl _))
+    Free-groupoid-factor : F ≡ Free-groupoid-universal F∘ Free-groupoid-unit C
+    Free-groupoid-factor = Functor-path (λ _ → refl) (λ _ → sym (D.idl _))
 
   module _ (C-grpd : is-pregroupoid C) where
-    FreeGroupoid-counit : Functor (FreeGroupoid C) C
-    FreeGroupoid-counit = FreeGroupoid-universal C-grpd Id
+    Free-groupoid-counit : Functor (Free-groupoid C) C
+    Free-groupoid-counit = Free-groupoid-universal C-grpd Id
 ```
 
 Specialising the universal property to [[thin|thin category]] groupoids (i.e.
@@ -292,7 +292,7 @@ for showing that objects connected by zigzags are related.
     : ∀ {ℓ'} (R : Congruence Ob ℓ') (open Congruence R)
     → (∀ {a b} → Hom a b → a ∼ b)
     → ∀ {x y} → Zigzag C x y → x ∼ y
-  Zigzag-rec-congruence R h = FreeGroupoid-universal (congruence→groupoid R)
+  Zigzag-rec-congruence R h = Free-groupoid-universal (congruence→groupoid R)
     (congruence-functor R (λ x → x) h) .F₁
 
   Zigzag-rec-≡
@@ -308,9 +308,9 @@ on *morphisms*: this takes a functor between categories $\cC$ and $\cD$ to a
 functor between their free groupoids.
 
 ```agda
-FreeGroupoid-map
+Free-groupoid-map
   : ∀ {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
-  → Functor C D → Functor (FreeGroupoid C) (FreeGroupoid D)
-FreeGroupoid-map F = FreeGroupoid-universal FreeGroupoid-is-groupoid
-  (FreeGroupoid-unit _ F∘ F)
+  → Functor C D → Functor (Free-groupoid C) (Free-groupoid D)
+Free-groupoid-map F = Free-groupoid-universal Free-groupoid-is-groupoid
+  (Free-groupoid-unit _ F∘ F)
 ```
