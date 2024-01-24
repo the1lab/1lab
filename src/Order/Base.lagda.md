@@ -12,12 +12,12 @@ import Cat.Reasoning
 module Order.Base where
 ```
 
-# Partially ordered sets {defines="poset partial-order partially-ordered-set"}
+# Partially ordered sets {defines="poset partial-order partially-ordered-set thin-category"}
 
 A **poset** is a [[set]] equipped with a relation $x \le y$, called a
 **partial order**, which is reflexive, transitive, and _antisymmetric_.
 Put another way, a poset is a [[univalent category]] which has _at most
-one_ morphism between each pair of its objects.
+one_ morphism between each pair of its objects: a **thin** category.
 
 Posets are a simultaneous generalisation of many naturally occurring
 notions of "order" in mathematics:

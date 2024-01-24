@@ -262,16 +262,19 @@ module ↙-compose
   open ↓Obj
   open ↓Hom
 
-  _↙∘_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .y ↙ F) → Ob (d ↙ G F∘ F)
-  g ↙∘ f = ↓obj (G.₁ (f .map) ℰ.∘ g .map)
+  _↙>_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .y ↙ F) → Ob (d ↙ G F∘ F)
+  g ↙> f = ↓obj (G.₁ (f .map) ℰ.∘ g .map)
 
   ↙-compose : ∀ {d} (g : Ob (d ↙ G)) → Functor (g .y ↙ F) (d ↙ G F∘ F)
-  ↙-compose g .F₀ f = g ↙∘ f
+  ↙-compose g .F₀ f = g ↙> f
   ↙-compose g .F₁ {f} {f'} h = ↓hom {β = h .β} $
     (G.₁ (f' .map) ℰ.∘ g .map) ℰ.∘ ℰ.id          ≡⟨ ℰ.idr _ ⟩
     G.₁ (f' .map) ℰ.∘ g .map                     ≡⟨ G.pushl (sym (𝒟.idr _) ∙ h .sq) ⟩
     G.₁ (F.₁ (h .β)) ℰ.∘ G.₁ (f .map) ℰ.∘ g .map ∎
   ↙-compose g .F-id = ↓Hom-path _ _ refl refl
   ↙-compose g .F-∘ _ _ = ↓Hom-path _ _ refl refl
+
+  ↙>-id : ∀ {c} {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙> ↓obj 𝒟.id ≡ f
+  ↙>-id = ↓Obj-path _ _ refl refl (G.eliml refl)
 ```
 -->

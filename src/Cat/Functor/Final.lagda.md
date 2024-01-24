@@ -18,6 +18,7 @@ import Cat.Reasoning as Cr
 
 open is-connected-cat
 open Precategory
+open Congruence
 open Functor
 open _=>_
 open ↓Obj
@@ -150,7 +151,7 @@ as expressed by the commutativity of the following diagram:
           : ∀ d (f g : Ob (d ↙ F))
           → extend d f ≡ extend d g
         extend-const d f g = ∥-∥-rec!
-          (Zigzag-elim-set (el! _) (extend d) (extend-const1 d))
+          (Zigzag-rec-≡ (el! _) (extend d) (extend-const1 d))
           (fin.zigzag d f g)
 ```
 
@@ -374,8 +375,8 @@ module
 
 We now prove that final functors are closed under composition.
 
-First, given an object $c : \cC$ we get a map $g : c \to Gc_0$ using finality
-of $G$ and a map $f : c_0 \to Fc_1$ using finality of $F$, which we can
+First, given an object $c : \cC$ we get a map $g : c \to Gc_0$ using the finality
+of $G$ and a map $f : c_0 \to Fc_1$ using the finality of $F$, which we can
 compose into an object of $c \swarrow G \circ F$.
 
 ```agda
@@ -383,63 +384,75 @@ compose into an object of $c \swarrow G \circ F$.
   F∘-is-final c .point = do
     g ← gf.point c
     f ← ff.point (g .y)
-    pure (g ↙∘ f)
+    pure (g ↙> f)
 ```
 
 Now, given a span $GFx \leftarrow c \rightarrow GFy$, finality of $G$ gives us
 a zigzag between $Fx$ and $Fy$ in $c \swarrow G$, but we need a zigzag
 between $x$ and $y$ in $c \swarrow G \circ F$.
-Thus we refine our zigzag step by step, using the finality of $F$.
+Thus we have to `refine`{.Agda} our zigzag step by step, using the finality of $F$.
 
 ```agda
   F∘-is-final c .zigzag f g = do
     gz ← gf.zigzag c (↓obj (f .map)) (↓obj (g .map))
     fz ← refine gz (↓obj 𝒟.id) (↓obj 𝒟.id)
-    pure (subst₂ (Zigzag (c ↙ G F∘ F)) ↙∘-id ↙∘-id fz)
+    pure (subst₂ (Zigzag (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
 ```
 
-<details>
-<summary>We leave the details of the proof to the curious reader, but be
-warned that it is not particularly insightful.</summary>
+We start by defining a [[congruence]] on the objects of $c \swarrow G$, whereby
+$f : c \to Gx$ and $g : c \to Gy$ are related if, for any extensions
+$f' : x \swarrow F$ and $g' : y \swarrow F$, there merely exists a zigzag
+between the corresponding objects of $c \swarrow G \circ F$:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  & c \\
+  Gx && Gy \\
+  {GFx'} && {GFy'}
+  \arrow["f", from=1-2, to=2-1]
+  \arrow["g"', from=1-2, to=2-3]
+  \arrow[from=2-1, to=3-1]
+  \arrow[from=2-3, to=3-3]
+  \arrow[squiggly, tail reversed, from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
 
 ```agda
     where
-      refine1
-        : ∀ {f g} → Hom (c ↙ G) f g
-        → (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
-        → ∥ Zigzag (c ↙ G F∘ F) (f ↙∘ f') (g ↙∘ g') ∥
+      R : Congruence (Ob (c ↙ G)) _
+      R ._∼_ f g =
+        ∀ (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
+        → ∥ Zigzag (c ↙ G F∘ F) (f ↙> f') (g ↙> g') ∥
+      R .has-is-prop _ _ = hlevel 1
+```
+
+That this is a congruence is easily checked using the finality of $F$.
+
+```agda
+      R .reflᶜ {f} f' g' =
+        FreeGroupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
+      R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
+        g' ← ff.point (g .y)
+        ∥-∥-map₂ _++_ (fg f' g') (gh g' h')
+      R .symᶜ fg g' f' = ∥-∥-map reverse (fg f' g')
+```
+
+Using the universal mapping property of the free groupoid into congruences, we
+conclude by showing that any two arrows connected by a morphism are related,
+which again involves the connectedness of $x \swarrow F$.
+
+```agda
+      refine1 : ∀ {f g} → Hom (c ↙ G) f g → R ._∼_ f g
       refine1 {f} {g} h f' g' = do
         z ← ff.zigzag (f .y) f' (↓obj (g' .map 𝒟.∘ h .β))
         let
           z' : Zigzag (c ↙ G F∘ F) _ _
           z' = FreeGroupoid-map (↙-compose f) .F₁ z
-          fixup : f ↙∘ ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙∘ g'
+          fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
           fixup = ↓Obj-path _ _ refl refl $
             G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
-        pure (subst (Zigzag (c ↙ G F∘ F) (f ↙∘ f')) fixup z')
+        pure (subst (Zigzag (c ↙ G F∘ F) (f ↙> f')) fixup z')
 
-      refine
-        : ∀ {f g} → Zigzag (c ↙ G) f g
-        → (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
-        → ∥ Zigzag (c ↙ G F∘ F) (f ↙∘ f') (g ↙∘ g') ∥
-      refine = Zigzag-elim-prop
-        {P = λ {f} {g} _ → ∀ f' g'
-           → ∥ Zigzag (c ↙ G F∘ F) (f ↙∘ f') (g ↙∘ g') ∥}
-        (λ _ → hlevel 1)
-        (λ {f} f' g' →
-          FreeGroupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g')
-        (λ {_} {b} h _ rec f' g' → do
-          b' ← ff.point (b .y)
-          fb ← refine1 h f' b'
-          bg ← rec b' g'
-          pure (fb ++ bg))
-        (λ {_} {b} h _ rec f' g' → do
-          b' ← ff.point (b .y)
-          bf ← refine1 h b' f'
-          bg ← rec b' g'
-          pure (reverse bf ++ bg))
-
-      ↙∘-id : ∀ {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙∘ ↓obj 𝒟.id ≡ f
-      ↙∘-id = ↓Obj-path _ _ refl refl (G.eliml refl)
+      refine : ∀ {f g} → Zigzag (c ↙ G) f g → R ._∼_ f g
+      refine = Zigzag-rec-congruence R refine1
 ```
-</details>

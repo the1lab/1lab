@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Reflection.Induction
 
+open import Cat.Instances.Congruence
 open import Cat.Instances.Discrete
 open import Cat.Functor.Base
 open import Cat.Groupoid
@@ -92,8 +93,6 @@ prove that it is associative and unital.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Precategory C
-
   _++_ : ∀ {a b c} → Zigzag C a b → Zigzag C b c → Zigzag C a c
   nil ++ gs = gs
   cons f fs ++ gs = cons f (fs ++ gs)
@@ -284,7 +283,27 @@ $\cC$.
     FreeGroupoid-counit = FreeGroupoid-universal C-grpd Id
 ```
 
-With some adjunction yoga, we get the action of the free groupoid functor
+Specialising the universal property to [[thin|thin category]] groupoids (i.e.
+[[congruences|congruences as groupoids]]), we obtain useful recursion principles
+for showing that objects connected by zigzags are related.
+
+```agda
+  Zigzag-rec-congruence
+    : ∀ {ℓ'} (R : Congruence Ob ℓ') (open Congruence R)
+    → (∀ {a b} → Hom a b → a ∼ b)
+    → ∀ {x y} → Zigzag C x y → x ∼ y
+  Zigzag-rec-congruence R h = FreeGroupoid-universal (congruence→groupoid R)
+    (congruence-functor R (λ x → x) h) .F₁
+
+  Zigzag-rec-≡
+    : ∀ {ℓ'} (D : Set ℓ')
+    → (f : Ob → ∣ D ∣)
+    → (∀ {x y} → Hom x y → f x ≡ f y)
+    → ∀ {x y} → Zigzag C x y → f x ≡ f y
+  Zigzag-rec-≡ D f = Zigzag-rec-congruence (Kernel-pair (D .is-tr) f)
+```
+
+With some adjunction yoga, we also get the action of the free groupoid functor
 on *morphisms*: this takes a functor between categories $\cC$ and $\cD$ to a
 functor between their free groupoids.
 
@@ -294,20 +313,4 @@ FreeGroupoid-map
   → Functor C D → Functor (FreeGroupoid C) (FreeGroupoid D)
 FreeGroupoid-map F = FreeGroupoid-universal FreeGroupoid-is-groupoid
   (FreeGroupoid-unit _ F∘ F)
-```
-
-We also derive a useful induction principle for sets, i.e. [[discrete categories]]:
-any function from the objects of $\cC$ into a set that turns morphisms into
-equalities also turns zigzags into equalities.
-
-```agda
-module _ {o ℓ ℓd} {C : Precategory o ℓ} (D : Set ℓd) where
-  open Precategory
-
-  Zigzag-elim-set
-    : (f : Ob C → ∣ D ∣)
-    → (∀ {x y} → Hom C x y → f x ≡ f y)
-    → ∀ {x y} → Zigzag C x y → f x ≡ f y
-  Zigzag-elim-set f f-const = FreeGroupoid-universal Disc-is-groupoid
-    (Disc-into D f f-const) .F₁
 ```

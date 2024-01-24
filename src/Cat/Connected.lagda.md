@@ -82,7 +82,7 @@ zigzags into sets:
   connected→π₀-is-contr conn = ∥-∥-rec!
     (λ x → contr (inc x)
       (Coeq-elim-prop (λ _ → hlevel 1)
-        λ y → ∥-∥-rec! (Zigzag-elim-set (π₀ C) inc quot)
+        λ y → ∥-∥-rec! (Zigzag-rec-≡ (π₀ C) inc quot)
           (conn .zigzag x y)))
     (conn .point)
 ```
@@ -111,7 +111,7 @@ $\pi_0(\cC)$, allowing us to conclude.
 
     is : Iso (quotient R) ∣ π₀ C ∣
     is .fst = Coeq-rec squash inc λ (x , y , fs) →
-      ∥-∥-rec (squash _ _) (Zigzag-elim-set (π₀ C) inc quot) fs
+      ∥-∥-rec (squash _ _) (Zigzag-rec-≡ (π₀ C) inc quot) fs
     is .snd .is-iso.inv = Coeq-rec squash inc λ (x , y , f) →
       quot (inc (cons f nil))
     is .snd .is-iso.rinv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
