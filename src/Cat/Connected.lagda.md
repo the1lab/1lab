@@ -31,6 +31,17 @@ record is-connected-cat {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     zigzag : ∀ x y → ∥ Zigzag C x y ∥
 ```
 
+Notice the similarity with the notion of [[connectedness]] in homotopy type
+theory, particularly its formulation [[in terms of propositional
+truncations|connectedness-via-propositional-truncation]]: this definition is
+essentially saying that the category has a connected *homotopy type*. In
+particular, the propositional truncations are important: without them, we
+could not prove that the [[delooping|delooping category]] of the group of
+[[integers]], seen as a [[univalent category]]^[either via the [[Rezk completion]]
+or directly as the [[discrete category]] on the groupoid $S^1$], is connected,
+for the same reason that there is no function of type $(x\,y : S^1) \to x \equiv
+y$ in the [[circle]].
+
 <!--
 ```agda
 open is-connected-cat

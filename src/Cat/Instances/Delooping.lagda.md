@@ -15,6 +15,8 @@ open Precategory
 module Cat.Instances.Delooping where
 ```
 
+# The delooping of a monoid {defines="delooping-category delooping-of-a-monoid"}
+
 <!--
 ```agda
 private variable

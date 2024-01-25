@@ -271,7 +271,7 @@ is-connected-+ n zero w = w
 is-connected-+ n (suc k) w = is-connected-+ n k (is-connected-suc _ w)
 ```
 
-## In terms of propositional truncations
+## In terms of propositional truncations {defines="connectedness-via-propositional-truncation"}
 
 There is an alternative definition of connectedness that avoids talking about
 arbitrary truncations, and is thus sometimes easier to work with.
