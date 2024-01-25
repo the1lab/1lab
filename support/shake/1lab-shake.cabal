@@ -52,7 +52,7 @@ common common
     Macros,
     Timer,
     Definitions
-  default-language: Haskell2010
+  default-language: GHC2021
   ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
   default-extensions: BlockArguments, LambdaCase
 
