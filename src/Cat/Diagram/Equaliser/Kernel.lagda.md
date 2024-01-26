@@ -27,7 +27,7 @@ morphism $f : a \to b$ is an equaliser of $f$ and the zero morphism $0 :
 a \to b$, hence a subobject $\mathrm{ker}(f) \mono a$ of the domain of
 $f$.
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\ker(f)} & a & b
   \arrow["0", shift left=1, from=1-2, to=1-3]

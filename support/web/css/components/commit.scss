@@ -9,7 +9,7 @@
 }
 
 div.commit {
-  @include left-bordered(#ABB2BF);
+  @include left-bordered(theme(--commit-bg));
 
   display: flex;
   flex-direction: column;
@@ -23,8 +23,8 @@ div.commit {
     width: fit-content;
 
     &, &:visited, &.hover-highlight {
-      color: var(--text-fg);
-      background-color: var(--text-bg);
+      color: theme(--text-fg);
+      background-color: theme(--text-bg);
     }
   }
 
@@ -36,5 +36,9 @@ div.commit {
       font-weight: bold;
       font-style: normal;
     }
+  }
+
+  .commit-changes {
+    hyphenate-character: '';
   }
 }

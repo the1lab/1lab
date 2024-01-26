@@ -29,7 +29,7 @@ button.labelled-button {
   width:  var(--button-size);
   height: var(--button-size);
 
-  background-color:    var(--text-bg);
+  background-color: theme(--text-bg);
 
   border-style:  none;
   border-radius: 5px;
@@ -64,15 +64,19 @@ button.labelled-button {
 
     white-space: pre;
 
-    background-color: var(--button-hover-bg);
-    color:            var(--text-fg);
+    background-color: theme(--button-hover-bg);
+    color:            theme(--text-fg);
   }
 
   &:hover {
-    background-color: var(--button-hover-bg);
+    background-color: theme(--button-hover-bg);
     > .hover-label {
       visibility: visible;
     }
+  }
+
+  a[href]:hover.hover-highlight {
+    background-color: theme(--text-bg);
   }
 }
 
@@ -80,7 +84,7 @@ button.theme-button, button.labelled-button {
   &.active {
     border-style: solid;
     border-width: 2px;
-    border-color: var(--active) !important;
+    border-color: theme(--active) !important;
   }
 }
 
@@ -108,7 +112,7 @@ button.theme-button {
   &:hover::after {
     content: "";
     display: block;
-    border-bottom: 3px solid var(--primary);
+    border-bottom: 3px solid theme(--primary);
     position: absolute;
     bottom: -8px;
     inset-inline-start: -1px;
@@ -135,9 +139,9 @@ div.dropdown {
 
     z-index: 100;
 
-    background-color:       var(--popup-bg);
-    color:                  var(--text-fg);
-    box-shadow: 2px 2px 2px var(--shadow);
+    background-color:       theme(--popup-bg);
+    color:                  theme(--text-fg);
+    box-shadow: 2px 2px 2px theme(--shadow);
 
     font-family: var(--sans-serif);
     font-size:   13pt;
@@ -207,11 +211,11 @@ label.switch {
   }
 
   input:checked + .switch-slider {
-    background-color: var(--active);
+    background-color: theme(--active);
   }
 
   input:focus + .switch-slider {
-    box-shadow: 0 0 1px var(--active);
+    box-shadow: 0 0 1px theme(--active);
   }
 
   input:checked + .switch-slider:before {

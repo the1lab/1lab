@@ -34,7 +34,7 @@ the coequaliser of the following pair of functions:
 
 [coequaliser]: Data.Set.Coequaliser.html
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \begin{tikzcd}
 	{F(X,Y)} && {F(X,X)}
 	\arrow["{F(f,id)}"', shift right=2, from=1-1, to=1-3]

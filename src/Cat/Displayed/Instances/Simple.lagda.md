@@ -149,7 +149,7 @@ $f' : \Gamma \times X \to Y$ form a cartesian map in the simple fibration.
 We can construct an inverse to $\langle \pi_1 , f' \rangle$ by factorizing
 the map $\pi_2 : \Gamma \times Y \to Y$, as in the following diagram:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   Y \\
   & X && Y \\
@@ -196,7 +196,7 @@ involved. The key lemma is that
 $i \circ \langle \pi_1 , f' \rangle : \Gamma \times X \to X$ is equal
 to $\pi_2$. To see this, consider the following diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   X \\
   & Y \\

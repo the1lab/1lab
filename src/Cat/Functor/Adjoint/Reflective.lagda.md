@@ -45,7 +45,7 @@ adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   \mathcal{C} & \mathcal{D}
   \arrow[""{name=0, anchor=center, inner sep=0}, "\iota"', shift right=2, hook, from=1-1, to=1-2]

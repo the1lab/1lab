@@ -41,7 +41,7 @@ adjunction provides a bunch of isomorphisms between natural
 transformations, e.g. $(LF \to Mp) \cong (F \to RMp)$, which we can use
 to "grow" the original extension diagram.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{C}} && D && A \\
   \\

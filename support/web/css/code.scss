@@ -3,7 +3,6 @@
 @import "vars.scss";
 @import "mixins.scss";
 
-
 @font-face {
   font-family: 'Julia Mono';
   font-display: swap;
@@ -13,23 +12,18 @@
   src: url('../static/ttf/julia-mono.ttf') format('truetype');
 }
 
-code, pre, .sourceCode {
-  font-family: 'Julia Mono';
-  font-size: var(--code-font-size);
-  font-weight: 500;
-  font-variant-ligatures: none;
-}
+code, pre, .sourceCode { @include monospaced; }
 
 code, pre { width: min-content; }
 
 div.sourceCode {
-  @include material(var(--code-bg));
+  @include material(theme(--code-bg));
 
   overflow-x: auto;
 
   > pre {
-    background-color: var(--code-bg);
-    color:            var(--code-fg);
+    background-color: theme(--code-bg);
+    color:            theme(--code-fg);
 
     flex-grow: 0;
 
@@ -64,66 +58,69 @@ pre.Agda, div.sourceCode > pre {
   // with borders) *plus* 5px. This was measured empirically.
   margin: 0.25rem var(--code-margin);
 
-  background-color: var(--code-bg);
-  color:            var(--code-fg);
+  background-color: theme(--text-bg);
+  color:            theme(--text-fg);
 }
 
 @keyframes highlight {
   0% {
-    background-color: var(--code-highlight);
+    background-color: theme(--code-highlight);
   }
   100% {
-    background-color: var(--code-bg);
+    background-color: theme(--code-bg);
   }
 }
 
 a[href].hover-highlight {
-  background-color: var(--code-highlight);
+  background-color: theme(--code-highlight);
   isolation: isolate;
 }
 
 /* Aspects. */
 .Agda {
-  .Comment       { color: var(--code-fg); font-style: italic; }
-  .Background    { background-color: var(--code-bg); }
-  .Markup        { color: var(--code-fg); }
-  .Keyword       { color: var(--code-keyword); }
-  .String        { color: var(--code-string); }
-  .Number        { color: var(--code-number); }
-  .Symbol        { color: var(--code-fg); }
-  .PrimitiveType { color: var(--primary); }
-  .Pragma        { color: var(--code-fg); }
+  .Background    { background-color: theme(--code-bg); }
+
+  .Comment       { color: theme(--code-fg); font-style: italic; }
+  .Markup        { color: theme(--code-fg); }
+  .Keyword       { color: theme(--code-keyword); }
+  .String        { color: theme(--code-string); }
+  .Number        { color: theme(--code-number); }
+  .Symbol        { color: theme(--code-fg); }
+  .PrimitiveType { color: theme(--primary); }
+  .Pragma        { color: theme(--code-fg); }
 
 /* NameKinds. */
-  .Bound                  { color: var(--code-fg) !important;      }
-  .Generalizable          { color: var(--code-fg) !important;      }
-  .InductiveConstructor   { color: var(--code-constructor) !important;   }
-  .CoinductiveConstructor { color: var(--code-constructor) !important;   }
-  .Datatype               { color: var(--primary) !important;    }
-  .Field                  { color: var(--code-field) !important;  }
-  .Function               { color: var(--primary) !important;    }
-  .Module                 { color: var(--code-module) !important;    }
-  .Postulate              { color: var(--primary) !important;    }
-  .Primitive              { color: var(--primary) !important;    }
-  .Record                 { color: var(--primary) !important;    }
+  .Bound                  { color: theme(--code-fg)          !important; }
+  .Generalizable          { color: theme(--code-fg)          !important; }
+  .InductiveConstructor   { color: theme(--code-constructor) !important; }
+  .CoinductiveConstructor { color: theme(--code-constructor) !important; }
+  .Field                  { color: theme(--code-field)       !important; }
+  .Module                 { color: theme(--code-module)      !important; }
+
+  .Datatype               { color: theme(--primary) !important; }
+  .Function               { color: theme(--primary) !important; }
+  .Postulate              { color: theme(--primary) !important; }
+  .Primitive              { color: theme(--primary) !important; }
+  .Record                 { color: theme(--primary) !important; }
 
 /* OtherAspects. */
-  .UnsolvedMeta         { color: var(--code-fg); background: yellow         }
-  .UnsolvedConstraint   { color: var(--code-fg); background: yellow         }
-  .TerminationProblem   { color: var(--code-fg); background: #FFA07A        }
-  .IncompletePattern    { color: var(--code-fg); background: #F5DEB3        }
+  .UnsolvedMeta         { color: theme(--code-fg); background: yellow   }
+  .UnsolvedConstraint   { color: theme(--code-fg); background: yellow   }
+  .TerminationProblem   { color: theme(--code-fg); background: #FFA07A  }
+  .IncompletePattern    { color: theme(--code-fg); background: #F5DEB3  }
   .Error                { color: red;   text-decoration: underline }
-  .TypeChecks           { color: var(--code-fg); background: #ADD8E6        }
-  .ShadowingInTelescope { color: var(--code-fg); background: #808080        }
-  .Deadcode             {
-    color: var(--code-keyword);
+  .TypeChecks           { color: theme(--code-fg); background: #ADD8E6  }
+  .ShadowingInTelescope { color: theme(--code-fg); background: #808080  }
+
+  .Deadcode {
+    color: theme(--code-keyword);
     font-weight: bold;
   }
 
   /* Standard attributes. */
   a { text-decoration: none }
   a[href]:hover {
-    text-decoration: 2px var(--primary) underline;
+    text-decoration: 2px theme(--primary) underline;
   }
   a[href]:target {
     animation: highlight 2.5s;
@@ -140,44 +137,44 @@ a[href].hover-highlight {
 }
 
 // Styles for code
-code.kw, span.kw { color: var(--code-keyword); } /* Keyword */
-code.dt, span.dt { color: var(--primary); } /* DataType */
-code.dv, span.dv { color: var(--code-number); } /* DecVal */
-code.bn, span.bn { color: var(--code-number); } /* BaseN */
-code.fl, span.fl { color: var(--code-number); } /* Float */
-code.ch, span.ch { color: var(--code-string); } /* Char */
-code.st, span.st { color: var(--code-string); } /* String */
-code.co, span.co { color: var(--code-fg); font-style: italic; } /* Comment */
-code.ot, span.ot { color: var(--code-constructor); } /* Other */
+code.kw, span.kw { color: theme(--code-keyword); } /* Keyword */
+code.dt, span.dt { color: theme(--primary); } /* DataType */
+code.dv, span.dv { color: theme(--code-number); } /* DecVal */
+code.bn, span.bn { color: theme(--code-number); } /* BaseN */
+code.fl, span.fl { color: theme(--code-number); } /* Float */
+code.ch, span.ch { color: theme(--code-string); } /* Char */
+code.st, span.st { color: theme(--code-string); } /* String */
+code.co, span.co { color: theme(--code-fg); font-style: italic; } /* Comment */
+code.ot, span.ot { color: theme(--code-constructor); } /* Other */
 code.al, span.al { color: #ff0000; } /* Alert */
-code.fu, span.fu { color: var(--code-fg); } /* Function */
+code.fu, span.fu { color: theme(--code-fg); } /* Function */
 code.er, span.er { color: #ff0000; } /* Error */
 code.wa, span.wa { color: #60a0b0; } /* Warning */
-code.cn, span.cn { color: var(--code-keyword); } /* Constant */
-code.sc, span.sc { color: var(--coded-keyword); } /* SpecialChar */
-code.vs, span.vs { color: var(--primary); } /* VerbatimString */
-code.ss, span.ss { color: var(--code-string); } /* SpecialString */
-code.va, span.va { color: var(--code-fg); } /* Variable */
-code.cf, span.cf { color: var(--code-keyword); } /* ControlFlow */
-code.op, span.op { color: var(--code-constructor); } /* Operator */
-code.pp, span.pp { color: var(--code-constructor); } /* Preprocessor */
-code.at, span.at { color: var(--code-constructor); } /* Attribute */
-code.do, span.do { color: var(--code-string); } /* Documentation */
-code.an, span.an { color: var(--code-string); } /* Annotation */
-code.cv, span.cv { color: var(--code-string); } /* CommentVar */
+code.cn, span.cn { color: theme(--code-keyword); } /* Constant */
+code.sc, span.sc { color: theme(--code-keyword); } /* SpecialChar */
+code.vs, span.vs { color: theme(--primary); } /* VerbatimString */
+code.ss, span.ss { color: theme(--code-string); } /* SpecialString */
+code.va, span.va { color: theme(--code-fg); } /* Variable */
+code.cf, span.cf { color: theme(--code-keyword); } /* ControlFlow */
+code.op, span.op { color: theme(--code-constructor); } /* Operator */
+code.pp, span.pp { color: theme(--code-constructor); } /* Preprocessor */
+code.at, span.at { color: theme(--code-constructor); } /* Attribute */
+code.do, span.do { color: theme(--code-string); } /* Documentation */
+code.an, span.an { color: theme(--code-string); } /* Annotation */
+code.cv, span.cv { color: theme(--code-string); } /* CommentVar */
 
-.type-tooltip {
+.type-tooltip, div.sourceCode.type-tooltip {
   position: absolute;
   z-index: 100;
 
   font-size: 0.8em;
-  color: var(--code-fg);
-  background: var(--code-bg);
+  color:      theme(--code-fg);
+  background: theme(--code-bg);
 
   &.sourceCode {
     padding: 0.3em;
     border:  0;
   };
 
-  box-shadow: 2px 2px 6px var(--shadow);
+  box-shadow: 2px 2px 6px theme(--shadow);
 }

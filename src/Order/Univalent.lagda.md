@@ -73,7 +73,7 @@ Q$. Moreover, these unglued values reduce to $f(x)$ on $i = i0$ and $x$
 on $i = i1$. We can arrange the data at hand and the data we want as the
 top and bottom faces in a square:
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   {x \le_P y} \&\& {x\le_Q y} \\
   \\
@@ -96,7 +96,7 @@ statement "$f$ is an order-embedding", we can:
 
 The definition above corresponds to the top face in the square
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   {x \le_P y} \&\& {x\le_Q y} \\
   \\

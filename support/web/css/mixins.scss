@@ -20,8 +20,7 @@
   >:nth-child(1) { margin-block-start: 0; }
   >:nth-last-child(1) { margin-block-end: 0; }
 
-  margin-block-start: 1em;
-  margin-block-end: 1em;
+  margin-block: 1em;
 }
 
 @mixin highlight($name, $bg, $icon) {
@@ -50,7 +49,10 @@
 
 @mixin monospaced {
   font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
-  font-weight: 400;
+  font-weight: 500;
+  font-size:   var(--code-font-size);
+
+  font-variant-ligatures: none;
 }
 
 @mixin widescreen {

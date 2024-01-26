@@ -86,8 +86,9 @@ blazeCommit baseUrl (Commit author subject hash date changes) = do
   let
     base = Text.pack baseUrl
     link f = H.preEscapedTextValue $ base <> f <> ".html"
+    split = Text.intercalate ".&shy;" . Text.split (== '.')
     change f = H.span ! A.class_ "Agda" $
-      H.a ! A.href (link f) ! A.class_ "Module" $ H.text f
+      H.a ! A.href (link f) ! A.class_ "Module" $ H.preEscapedText (split f)
 
     sep [x] = x
     sep [x, y] = x <> " and " <> y

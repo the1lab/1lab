@@ -10,6 +10,10 @@ const searchInput = <input id="search-box" type="text" placeholder="Search..." a
 // results;
 const searchResults = <ul> </ul>;
 
+searchResults.addEventListener("mousedown", (e) => {
+  if (e.button == 1) { e.preventDefault(); }
+});
+
 // The actual search popup itself, to use for clipping later;
 const searchContents =
   <div class="modal-contents search-form" role="form">
@@ -160,8 +164,8 @@ const renderItem = ({ item, original, match }: PromptItemResult) => {
     addActive(li);
   });
 
-  li.onclick = () => {
-    if (item.activate() === 'close') {
+  li.addEventListener("click", (e) => {
+    if (item.activate(e.metaKey || e.ctrlKey) === 'close') {
       closeSearch()
     } else {
       li.replaceChildren(
@@ -169,7 +173,11 @@ const renderItem = ({ item, original, match }: PromptItemResult) => {
           {item.render(original, match)}
         </a>);
     };
-  };
+  });
+
+  li.addEventListener("auxclick", (e: MouseEvent) => {
+    if (e.button == 1) item.activate(true); // Middle mouse button
+  });
 
   return li;
 };

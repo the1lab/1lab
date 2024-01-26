@@ -56,7 +56,7 @@ $\langle\rangle : A \to_{\pi} \coprod_{X} A$;
 $\cE$, $g$ and $h$ are cartesian in $\cD$, and $s$ is cocartesian in
 $\cD$, then $r$ is cocartesian in $\cD$.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
 	A &&& B \\
 	&& {A'} &&& {B'} \\

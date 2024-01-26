@@ -180,7 +180,7 @@ use `refl`{.Agda} and `merid`{.Agda}.
 
 This time, if $A$ holds, we have to fill a *cube* with the given four edges:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
 	N &&& S \\
 	& N & N \\

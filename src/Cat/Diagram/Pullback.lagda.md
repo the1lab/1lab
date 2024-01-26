@@ -93,7 +93,7 @@ factorisation that passes through $P$; We can draw the whole situation
 as in the diagram below. Note the little corner on $P$, indicating that
 the square is a pullback.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {P'} \\
   & P && Y \\

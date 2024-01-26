@@ -730,7 +730,7 @@ This suggests to build another indexed coproduct of all the *domains* of arrows 
 the diagram, taking the first morphism to be the injection into the domain component
 and the second morphism to be the injection into the codomain component precomposed with $f$:
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
 	{\displaystyle \coprod_{(f : a \to b) : \text{Arrows}(\mathcal J)} F(a)} & {\displaystyle \coprod_{o : \text{Ob}(\mathcal J)} F(o)}
 	\arrow["{\iota_a}", shift left, from=1-1, to=1-2]

@@ -122,7 +122,7 @@ rules = do
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
     getDirectoryFiles "support/web/css" ["**/*.scss"] >>= \files -> need ["support/web/css" </> f | f <- files]
-    command_ [] "sassc" [inp, out]
+    command_ [] "sass" [inp, out]
 
   "_build/html/favicon.ico" %> \out -> do
     need ["support/favicon.ico"]

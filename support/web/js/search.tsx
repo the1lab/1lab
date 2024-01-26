@@ -36,12 +36,23 @@ const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
     desc = <span class="search-desc">{parts.slice(0, -1).join(" > ")}</span>;
   };
 
+  const clickTarget = <a href={e.idAnchor} />;
+
   return {
     selectors: sel,
-    activate: () => {
-      window.location.href = e.idAnchor;
-      return 'close';
+    activate: (aux) => {
+      if (aux) {
+        clickTarget.dispatchEvent(new MouseEvent('click', {
+          ctrlKey: true, // for Windows or Linux
+          metaKey: true, // for MacOS
+        }));
+        return 'keep';
+      } else {
+        window.location.href = e.idAnchor;
+        return 'close';
+      }
     },
+
     onlySearch: !thisp && (`${e.idIdent}.html` !== e.idAnchor),
     priority: e.idType ? -1 : 1,
 

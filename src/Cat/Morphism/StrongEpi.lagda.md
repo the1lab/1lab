@@ -30,7 +30,7 @@ any mono, and $u$, $v$ arbitrarily fit into a commutative diagram like
 
 [orthogonal]: Cat.Morphism.Orthogonal.html
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   \\
@@ -75,7 +75,7 @@ To see that the uniqueness needed for orthogonality against a
 monomorphism is redundant, suppose you'd had two fillers $\alpha$,
 $\beta$, as in
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   \\
@@ -99,7 +99,7 @@ epimorphisms are closed under composition, for suppose that $f$ and $g$
 are strong epics, and $m$ is the monomorphism to lift against. Fit them
 in a skewed commutative _rectangle_ like
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b && c \\
   \\
@@ -191,7 +191,7 @@ coequaliser of some maps $s, t : r \to a$^[If you care, $r$ is for
 imposed on $a$ to get $b$], and that $z : c \mono b$ is a monomorphism
 we want to lift against.
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   r & a && b \\
   \\
@@ -342,7 +342,7 @@ strong epi, so let's assume that lifts exist --- we'll have no need for
 uniqueness, here. Given $u, v$ and $uf = vf$ to lift against, form their
 equaliser $Eq(u,v)$ and arrange them like
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b && x \\
   \\

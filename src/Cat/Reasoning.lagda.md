@@ -28,7 +28,7 @@ Most of these helpers were taken from `agda-categories`.
 ```agda
 private variable
   u v w x y z : Ob
-  a a' a'' b b' b'' c c' c'' : Hom x y
+  a a' a'' b b' b'' c c' c'' d d' d'' : Hom x y
   f g h i : Hom x y
 ```
 -->
@@ -121,6 +121,30 @@ module _ (p : f ∘ h ≡ g ∘ i) where abstract
 
   extend-inner : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b
   extend-inner {a = a} = ap (a ∘_) extendl
+```
+
+We also define some useful combinators for performing repeated pulls/pushes.
+
+```agda
+abstract
+  centralize
+    : f ∘ g ≡ a ∘ b
+    → h ∘ i ≡ c ∘ d
+    → f ∘ g ∘ h ∘ i ≡ a ∘ (b ∘ c) ∘ d
+  centralize {f = f} {g = g} {a = a} {b = b} {h = h} {i = i} {c = c} {d = d} p q =
+    f ∘ g ∘ h ∘ i   ≡⟨ pulll p ⟩
+    (a ∘ b) ∘ h ∘ i ≡⟨ pullr (pushr q) ⟩
+    a ∘ (b ∘ c) ∘ d ∎
+  
+  centralizel
+    : f ∘ g ≡ a ∘ b
+    → f ∘ g ∘ h ∘ i ≡ a ∘ (b ∘ h) ∘ i
+  centralizel p = centralize p refl
+  
+  centralizer
+    : h ∘ i ≡ c ∘ d
+    → f ∘ g ∘ h ∘ i ≡ f ∘ (g ∘ c) ∘ d
+  centralizer p = centralize refl p
 ```
 
 ## Cancellation

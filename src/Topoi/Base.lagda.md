@@ -65,7 +65,7 @@ that the inclusion functor $\iota : \cT \mono [\cC\op,\Sets]$ admits a
 summarise this situation in the diagram below, where "lex" (standing for
 "**l**eft **ex**act") is old-timey speak for "finite limit preserving".
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{T}} & {[\mathcal{C}^{\mathrm{op}},\mathbf{Sets}]}
   \arrow[shift right=2, hook, from=1-1, to=1-2]

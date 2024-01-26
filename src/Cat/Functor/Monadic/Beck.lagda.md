@@ -88,7 +88,7 @@ lacking in quotients! In particular, we have the following theorem:
 
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {T^2A} & {TA} & {A,}
   \arrow["\mu", shift left=1, from=1-1, to=1-2]

@@ -205,7 +205,7 @@ We can provide such a square as sketching out an open _cube_ whose
 missing face has the boundary above. Here's such a cube: the missing
 face has a dotted boundary.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\rm{base}} &&&& {\rm{base}} \\
   & {\rm{base}} && {\rm{base}} \\

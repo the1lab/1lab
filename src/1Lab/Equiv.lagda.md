@@ -468,7 +468,7 @@ j))` in the code. Similarly, the $j = \rm{i1}$ (bottom) face is `g y`,
 the $j = \rm{i0}$ (top) face is `t (π i) (~ k)`, and similarly for $i =
 \rm{i0}$ (left) and $i = \rm{i1}$ (right).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{g\ (f\ (g\ x_0))} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{g\ (f\ (g\ x_1))} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x_0} && \textcolor{rgb,255:red,92;green,92;blue,214}{x_1} \\
@@ -516,7 +516,7 @@ The composition above can be visualised as the front (red) face in the
 cubical diagram below. Once more, left is $i = \rm{i0}$, right is $i =
 \rm{i1}$, up is $j = \rm{i0}$, and down is $j = \rm{i1}$.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \small
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_0)} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_1)} \\

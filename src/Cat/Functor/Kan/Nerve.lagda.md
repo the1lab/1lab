@@ -51,7 +51,7 @@ where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathrm{PSh}(\mathcal{C})} && {\mathcal{D}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathbf{N}}"', shift right=2, from=1-3, to=1-1]
