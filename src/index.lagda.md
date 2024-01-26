@@ -25,7 +25,7 @@ _ = Precategory
 ```
 -->
 
-Making the formalisation explorable requires taking the Web-native
+Making the formalisation explorable requires taking the web-native
 nature of such a document seriously. Every mention of a mathematical
 entity mentioned in the 1Lab *knows its own definition*, and links to it
 --- regardless of whether it's a specific theorem (like
@@ -76,16 +76,16 @@ for:
 While it is infeasible to maintain a list of everything noteworthy, we
 do maintain an association between definitions in the 1Lab and in the
 HoTT book: the [HoTT](HoTT.html) page. It's worth mentioning explicitly
-that this page is also indexed for search, so you can find definitions
-by searching for their name in the book.
+that this page is also indexed for search, so you can find a definition
+by the name of the section it appears under.
 
 ## Getting involved
 
 Even though the 1Lab is maintained primarily by [the authors][authors],
-it is first and foremost a community project. The literal work takes
-place on [GitHub], but ongoing discussion happens on [Discord]. We
-welcome all contributions, though we would kindly ask that anyone
-submitting a substantial change discuss it on Discord first.
+it is first and foremost a community project. The actual formalisation
+work takes place on [GitHub], but ongoing discussion happens on
+[Discord]. We welcome all contributions, though we would kindly ask that
+anyone submitting a substantial change discuss it on Discord first.
 
 [GitHub]: https://github.com/plt-amy/1lab
 [Discord]: https://discord.gg/eQDNM26uKP
@@ -93,9 +93,9 @@ submitting a substantial change discuss it on Discord first.
 
 Our purpose is to make univalent mathematics accessible to everyone who
 is interested, regardless of cultural background, age, educational
-background, ethnicity, gender identity, or gender expression. **We
-believe HoTT is for everyone and are committed to fostering a kind,
-welcoming environment**.
+background, ethnicity, gender identity, or gender expression. **HoTT is
+for everyone, and we are committed to fostering a kind, welcoming
+environment**.
 
 ## Open-source software
 
