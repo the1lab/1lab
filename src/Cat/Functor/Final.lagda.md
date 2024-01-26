@@ -45,7 +45,7 @@ and connected. That is, unpacking, the following data: For every object
 $d : \cD$, an object $d_0$ and a map $d_! : d \to F(d_0)$, and for
 every span
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   & x \\
   Fa && Fb\text{,}
@@ -56,7 +56,7 @@ every span
 
 a map $f : a \to b$, such that the triangle
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   & x \\
   Fa && Fb

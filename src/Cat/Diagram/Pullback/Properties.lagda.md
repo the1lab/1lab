@@ -67,7 +67,7 @@ then so is the left square. Assume, then, that we have some other object
 $x$, which fits into a cone, like in the diagram below. I've coloured
 the two arrows we assume commutative.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   x \\
   & a && b && c \\

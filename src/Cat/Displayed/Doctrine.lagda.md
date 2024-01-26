@@ -212,7 +212,7 @@ $$
 
 provided that the square
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   d \&\& a \\
   \\

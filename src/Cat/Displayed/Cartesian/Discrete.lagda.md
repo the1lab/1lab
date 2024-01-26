@@ -96,7 +96,7 @@ Cartesian.
 
 So suppose we have an open diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {u'} \\
   & {a'} && {b'} \\

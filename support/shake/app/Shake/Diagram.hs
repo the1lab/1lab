@@ -1,11 +1,13 @@
 {-# LANGUAGE TemplateHaskellQuotes, OverloadedStrings, ScopedTypeVariables #-}
 
-module Shake.Diagram (buildDiagram) where
+module Shake.Diagram (buildDiagram, diagramHeight) where
 
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
+
+import Text.HTML.TagSoup
 
 import Development.Shake.FilePath
 import Development.Shake
@@ -42,6 +44,26 @@ buildDiagram preamble input output isdark = do
   -- nice to spit out warnings/errors, but also a lot of work.
   Stdout (_ :: ByteString) <- command [] "pdflatex" ["-output-directory", takeDirectory input, "-synctex=1", "-interaction=nonstopmode", texPath]
   command_ [] "pdftocairo" ["-svg", texPath -<.> "pdf", output]
+
+-- | Compute the scaled height of a diagram (given in SVG), to use as a
+-- @style@ tag.
+diagramHeight :: FilePath -> Action Double
+diagramHeight fp = do
+  contents <- readFile' fp
+  let
+    height (TagOpen "svg" attrs:xs) | Just h <- lookup "height" attrs = h
+    height (_:t) = height t
+    height [] = error $ "Diagram SVG has no height: " <> fp
+
+    -- This height was obtained by staring really hard at a very small
+    -- diagram, then measuring the height of a capital letter in the
+    -- diagram vs. in the text around it. In GIMP.
+    it :: Double
+    it = read (height (parseTags contents)) * (22 / 12)
+    -- It's a magic number in the purest sense of the word. I obtained
+    -- it through divination.
+
+  pure $! it
 
 maybeDarken :: Bool -> Text -> Text
 maybeDarken False = id

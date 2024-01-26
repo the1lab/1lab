@@ -22,18 +22,18 @@ $modal-width: 820px;
     display: flex;
     opacity: 1;
     transition-delay: 0s;
-    background-color: var(--modal-bg);
+    background-color: theme(--modal-bg);
     backdrop-filter: blur(5px);
   }
 
   &-contents {
     width: $modal-width;
-    height: ($modal-width * 9 / 16);
+    height: calc($modal-width * 9 / 16);
     max-width: 80%;
 
-    background-color: var(--text-bg);
+    background-color: theme(--text-bg);
     padding: 0em;
-    box-shadow: 2px 2px 6px var(--shadow);
+    box-shadow: 2px 2px 6px theme(--shadow);
 
     text-align: center;
     display: flex;

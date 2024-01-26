@@ -71,7 +71,7 @@ composition**, will be written $\alpha \otimes \beta$. As for why it's
 called _vertical_ composition, note that it reduces pasting diagrams of
 the form
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {B\text{.}}
   \arrow[""{name=0, anchor=center, inner sep=0}, curve={height=-18pt}, from=1-1, to=1-3]
@@ -115,7 +115,7 @@ classes of maps and all the composition operations. Observe that the
 action of the composition functor on homotopies reduces "horizontal"
 pasting diagrams like
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A & B & {C\text{,}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{g_1}", curve={height=-12pt}, from=1-1, to=1-2]
@@ -245,7 +245,7 @@ one for reducing sequences of associators, the **pentagon identity**. As
 for where the name "pentagon" comes from, the path `pentagon`{.Agda}
 witnesses commutativity of the diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   && {f(g(hi))} \\
   \\
@@ -450,7 +450,7 @@ witnesses commutativity for, but leave the `right-unit`{.Agda} and
 `left-unit`{.Agda} diagrams undrawn (they're boring commutative
 squares).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {F(hg)Ff} && {F((hg)f)} \\
   \\

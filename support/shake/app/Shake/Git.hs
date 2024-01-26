@@ -5,6 +5,7 @@ module Shake.Git
   , gitCommit
   , gitAuthors
   , gitRules
+  , gitCommand
   ) where
 
 import qualified Data.Text.Encoding as Text

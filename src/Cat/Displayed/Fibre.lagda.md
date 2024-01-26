@@ -37,7 +37,7 @@ perspective), a situation examplified by the diagram below. Here, $\int
 E$ is the total space of a category $E$ displayed over $\cB$, and $\pi$
 is the corresponding projection functor.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzpicture}
 \node (basex) at (-1.5, -2) {$x$};
 \node (basey) at (0, -2)  {$y$};
