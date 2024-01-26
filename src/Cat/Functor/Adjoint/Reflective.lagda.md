@@ -222,3 +222,112 @@ is.
   eqv : is-equivalence Comp
   eqv = ff+split-eso→is-equivalence comp-ff comp-seso
 ```
+
+## Constructing reflective subcategories
+
+Earlier, we saw that any reflective subcategory has an invertible counit.
+We will now prove the converse: if the counit of an adjuction is
+invertible, then the left adjoint is a reflector.
+
+<!--
+```agda
+module _
+  {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  {F : Functor C D} {G : Functor D C}
+  (adj : F ⊣ G)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module [D,D] = Cat.Reasoning Cat[ D , D ]
+    module F = Func F
+    module G = Func G
+    module GF = Func (G F∘ F)
+    module FG = Func (F F∘ G)
+    open _⊣_ adj
+```
+-->
+
+Let $\eps^{-1}$ be the (natural) inverse to the counit, and let
+$f : \cC(G(X), G(Y))$. We can obtain a map $\cD(X,Y)$ by conjugating
+with $\eps$ and its inverse.
+
+```agda
+  is-counit-iso→is-reflective : is-invertibleⁿ counit → is-reflective adj
+  is-counit-iso→is-reflective counit-iso =
+    is-iso→is-equiv $
+      iso (λ f → counit.ε _ D.∘ F.₁ f D.∘ ε⁻¹ _)
+```
+
+Proving that this conjugation forms an equivalence involves the usual
+adjoint yoga. For the forward direction, we need to show that
+$G(\eps \circ F(f) \circ \eps^{-1}) = f$; if we take the right adjunct,
+this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps^{-1})) = \eps \circ F(f)$.
+
+From here, it we can repeatedly apply naturality to commute the $\eps$
+all the way to the end of the chain of morphisms. This yields
+$\eps \circ F(f) \circ \eps^{-1} \circ \eps$, which is equal to
+$\eps \circ F(f)$, as $\eps^{-1}$ is an inverse.
+
+```agda
+        (λ f → Equiv.injective (_ , R-adjunct-is-equiv adj) $
+          counit.ε _ D.∘ F.₁ (G.₁ (counit.ε _ D.∘ F.₁ f D.∘ ε⁻¹ _))   ≡⟨ FG.popl (counit .is-natural _ _ _) ⟩
+          (counit.ε _ D.∘ counit.ε _) D.∘ F.₁ (G.₁ (F.₁ f D.∘ ε⁻¹ _)) ≡⟨ D.extendr (FG.shufflel (counit .is-natural _ _ _)) ⟩
+          (counit.ε _ D.∘ F.₁ f) D.∘ counit.ε _ D.∘ F.₁ (G.₁ (ε⁻¹ _)) ≡⟨ D.elimr (counit .is-natural _ _ _ ∙ counit-iso.invr ηₚ _) ⟩
+          counit.ε _ D.∘ F.₁ f ∎)
+```
+
+The reverse direction follows from a quick application of naturality.
+
+```agda
+        (λ f →
+          counit.ε _ D.∘ F.₁ (G.₁ f) D.∘ ε⁻¹ _ ≡⟨ D.pulll (counit.is-natural _ _ _) ⟩
+          (f D.∘ counit.ε _) D.∘ ε⁻¹ _         ≡⟨ D.cancelr (counit-iso.invl ηₚ _) ⟩
+          f ∎)
+    where
+      module counit-iso = is-invertibleⁿ counit-iso
+      ε⁻¹ = counit-iso.inv .η
+```
+
+Furthermore, if we have *any* natural isomorphism $\alpha : FG \iso Id$, then
+the left adjoint is a reflector! To show this, we will construct an
+inverse to the counit; our previous result will then ensure that $F$
+is fully faithful.
+
+To begin, recall that isos have the 2-out-of-3 property, so it suffices
+to show that $\eps \circ \alpha$ is invertible. Next, note that we can
+transfer the comonad structure on $FG$ onto a comonad structure on $Id$
+by repeatedly composing with $\alpha$; this yields a natural transformation
+$\delta : Id \to Id$ that is a right inverse to $\eps \circ \alpha$.
+
+Finally, all natural transformations $Id \to Id$ commute with one another,
+so $\delta$ is also a right inverse, and $\eps \circ \alpha$ is invertible.
+
+```agda
+  FG-iso→is-reflective : (F F∘ G) ≅ⁿ Id → is-reflective adj
+  FG-iso→is-reflective α =
+    is-counit-iso→is-reflective $
+    [D,D].invertible-cancell
+      ([D,D].iso→invertible (α [D,D].Iso⁻¹))
+      ([D,D].make-invertible δ right-ident right-ident⁻¹)
+    where
+      module α = Isoⁿ α
+
+      δ : Id {C = D} => Id
+      δ .η x = α.to .η x D.∘ α.to .η (F.F₀ (G.₀ x)) D.∘ F.₁ (unit.η (G.₀ x)) D.∘ α.from .η x
+      δ .is-natural x y f =
+        D.extendr (D.extendr (D.extendr (α.from .is-natural _ _ _)))
+        ∙ D.pushl (D.pushr (D.pushr (F.weave (unit .is-natural _ _ _))))
+        ∙ D.pushl (D.pushr (α.to .is-natural _ _ _))
+        ∙ D.pushl (α.to .is-natural _ _ _)
+
+      right-ident : (counit ∘nt α.from) ∘nt δ ≡ idnt
+      right-ident = Nat-path λ x →
+        D.cancel-inner (α.invr ηₚ _)
+        ∙ D.pulll (sym $ α.to .is-natural _ _ _)
+        ∙ D.cancel-inner (F.annihilate zag)
+        ∙ α.invl ηₚ _
+
+      right-ident⁻¹ : δ ∘nt (counit ∘nt α.from) ≡ idnt
+      right-ident⁻¹ = id-nat-commute δ (counit ∘nt α.from) ∙ right-ident
+```
