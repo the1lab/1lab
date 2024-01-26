@@ -108,15 +108,16 @@ $a \rightarrow a_0 \leftarrow b$:
 
 The utility of this definition comes, as mentioned, from the ability to
 move (colimiting) cocones back and forth between a diagram $D$ and its
-restriction $D_{|F}$ to the domain category $\cC$. If we have a
-cocone $\kappa : \{DF(d) \to K\}$, then precomposition with the map $D(d_!) :
-D(d) \to DF(d_0)$ (where $d_! : d \to F(d_0)$ comes from the finality of $F$)
-defines a cocone $\{D(d) \to K\}$.
+restriction $D_{|F}$ to the domain category $\cC$. If we have a cocone
+$\kappa : \{DF(d) \to K\}$, then precomposition with the map $D(d_!) :
+D(d) \to DF(d_0)$ (where $d_! : d \to F(d_0)$ comes from the finality of
+$F$) defines a cocone $\{D(d) \to K\}$.
 
-However, since the comma category $d \swarrow F$ is *merely* inhabited, we need
-to make sure that this extension is independent of the choice of $d_0$ and $d_!$.
-This follows from naturality of the cocone and by connectedness of $d \swarrow F$,
-as expressed by the commutativity of the following diagram:
+However, since the comma category $d \swarrow F$ is *merely* inhabited,
+we need to make sure that this extension is independent of the choice of
+$d_0$ and $d_!$.  This follows from naturality of the cocone and by
+connectedness of $d \swarrow F$, as expressed by the commutativity of
+the following diagram:
 
 ~~~{.quiver .tall-1}
 \[\begin{tikzcd}
@@ -155,8 +156,8 @@ as expressed by the commutativity of the following diagram:
           (fin.zigzag d f g)
 ```
 
-In order to make reasoning easier, we define the extended cocone simultaneously
-with an elimination principle for its components.
+In order to make reasoning easier, we define the extended cocone
+simultaneously with an elimination principle for its components.
 
 ```agda
       interleaved mutual
@@ -274,16 +275,16 @@ it in this `<details>`{.html} tag for the curious reader only.
 
 ## Examples
 
-Final functors between [[pregroupoids]] have a very simple characterisation:
-they are the [[full|full functor]], [[essentially surjective]] functors.
-In this case, there is a direct connection with homotopy type theory:
-groupoids are 1-types, comma categories $d \swarrow F$ are [[fibres]]
-of $F$ over $d$, and so finality says that $F$ is a [[connected map]].
+Final functors between [[pregroupoids]] have a very simple
+characterisation: they are the [[full|full functor]], [[essentially
+surjective]] functors.  In this case, there is a direct connection with
+homotopy type theory: groupoids are 1-types, comma categories $d
+\swarrow F$ are [[fibres]] of $F$ over $d$, and so finality says that
+$F$ is a [[connected map]].
 
-Essential surjectivity on objects pretty much exactly says that each comma
-category $d \swarrow F$ is inhabited.
-To see that fullness implies the existence of zigzags, meditate on the following
-diagram:
+Essential surjectivity on objects pretty much exactly says that each
+comma category $d \swarrow F$ is inhabited.  To see that fullness
+implies the existence of zigzags, meditate on the following diagram:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -307,10 +308,10 @@ diagram:
       ∥-∥-map (λ e → ↓obj (𝒟.from (e .snd))) (eso d)
 ```
 
-For the other direction, given $f : Fx \to Fy$, observe that connectedness
-of the comma category $Fx \swarrow F$ gives us a zigzag between $x$ and $y$,
-but since $\cC$ is a pregroupoid we can evaluate this zigzag to a single
-morphism $z : x \to y$ such that $Fz = f$.
+For the other direction, given $f : Fx \to Fy$, observe that
+connectedness of the comma category $Fx \swarrow F$ gives us a zigzag
+between $x$ and $y$, but since $\cC$ is a pregroupoid we can evaluate
+this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
 
 ```agda
     final→full+eso : is-final → is-full F × is-eso F
@@ -325,10 +326,10 @@ morphism $z : x \to y$ such that $Fz = f$.
       pure (fd .y , 𝒟.invertible→iso (fd .map) (𝒟-grpd _) 𝒟.Iso⁻¹)
 ```
 
-Another general class of final functors is given by [[right adjoint]] functors.
-This follows directly from the characterisation of right adjoints in terms
-of [[universal morphisms]]: since the comma categories $c \swarrow R$ have
-initial objects, they are connected.
+Another general class of final functors is given by [[right adjoint]]
+functors.  This follows directly from the characterisation of right
+adjoints in terms of [[universal morphisms]]: since the comma categories
+$c \swarrow R$ have initial objects, they are connected.
 
 ```agda
 right-adjoint-is-final
@@ -339,9 +340,10 @@ right-adjoint-is-final L⊣R c =
   initial→connected (L⊣R→universal-maps L⊣R c)
 ```
 
-In particular, the inclusion of a [[terminal object]] into a category is a
-final functor. This means that the colimit of any diagram over a shape category
-with a terminal object is simply the value of the diagram on the terminal object.
+In particular, the inclusion of a [[terminal object]] into a category is
+a final functor. This means that the colimit of any diagram over a shape
+category with a terminal object is simply the value of the diagram on
+the terminal object.
 
 ```agda
 terminal→inclusion-is-final
@@ -375,9 +377,9 @@ module
 
 We now prove that final functors are closed under composition.
 
-First, given an object $c : \cC$ we get a map $g : c \to Gc_0$ using the finality
-of $G$ and a map $f : c_0 \to Fc_1$ using the finality of $F$, which we can
-compose into an object of $c \swarrow G \circ F$.
+First, given an object $c : \cC$ we get a map $g : c \to Gc_0$ using the
+finality of $G$ and a map $f : c_0 \to Fc_1$ using the finality of $F$,
+which we can compose into an object of $c \swarrow G \circ F$.
 
 ```agda
   F∘-is-final : is-final (G F∘ F)
@@ -387,10 +389,10 @@ compose into an object of $c \swarrow G \circ F$.
     pure (g ↙> f)
 ```
 
-Now, given a span $GFx \leftarrow c \rightarrow GFy$, finality of $G$ gives us
-a zigzag between $Fx$ and $Fy$ in $c \swarrow G$, but we need a zigzag
-between $x$ and $y$ in $c \swarrow G \circ F$.
-Thus we have to `refine`{.Agda} our zigzag step by step, using the finality of $F$.
+Now, given a span $GFx \leftarrow c \rightarrow GFy$, finality of $G$
+gives us a zigzag between $Fx$ and $Fy$ in $c \swarrow G$, but we need a
+zigzag between $x$ and $y$ in $c \swarrow G \circ F$.  Thus we have to
+`refine`{.Agda} our zigzag step by step, using the finality of $F$.
 
 ```agda
   F∘-is-final c .zigzag f g = do
@@ -399,10 +401,11 @@ Thus we have to `refine`{.Agda} our zigzag step by step, using the finality of $
     pure (subst₂ (Zigzag (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
 ```
 
-We start by defining a [[congruence]] on the objects of $c \swarrow G$, whereby
-$f : c \to Gx$ and $g : c \to Gy$ are related if, for any extensions
-$f' : x \swarrow F$ and $g' : y \swarrow F$, there merely exists a zigzag
-between the corresponding objects of $c \swarrow G \circ F$:
+We start by defining a [[congruence]] on the objects of $c \swarrow G$,
+whereby $f : c \to Gx$ and $g : c \to Gy$ are related if, for any
+extensions $f' : x \swarrow F$ and $g' : y \swarrow F$, there merely
+exists a zigzag between the corresponding objects of $c \swarrow G \circ
+F$:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -437,9 +440,10 @@ That this is a congruence is easily checked using the finality of $F$.
       R .symᶜ fg g' f' = ∥-∥-map reverse (fg f' g')
 ```
 
-Using the universal mapping property of the free groupoid into congruences, we
-conclude by showing that any two arrows connected by a morphism are related,
-which again involves the connectedness of $x \swarrow F$.
+Using the universal mapping property of the free groupoid into
+congruences, we conclude by showing that any two arrows connected by a
+morphism are related, which again involves the connectedness of $x
+\swarrow F$.
 
 ```agda
       refine1 : ∀ {f g} → Hom (c ↙ G) f g → R ._∼_ f g

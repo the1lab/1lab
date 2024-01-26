@@ -23,9 +23,10 @@ module Cat.Instances.FreeGroupoid where
 
 # The free groupoid on a category {defines="free-groupoid zigzag"}
 
-Recall the construction of the [[free category]] on a graph; by a similar
-construction, we can define the **free groupoid** on a graph, having as objects
-the vertices of the graph and as morphisms *finite zigzags* of edges of the graph.
+Recall the construction of the [[free category]] on a graph; by a
+similar construction, we can define the **free groupoid** on a graph,
+having as objects the vertices of the graph and as morphisms *finite
+zigzags* of edges of the graph.
 
 ~~~{.quiver .short-05}
 \[\begin{tikzcd}
