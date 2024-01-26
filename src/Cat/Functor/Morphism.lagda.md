@@ -40,18 +40,18 @@ private variable
 
 # Actions of functors on morphisms
 
-This module describes how various classes of functors act
-on designated collections of morphisms.
+This module describes how various classes of functors act on designated
+collections of morphisms.
 
 ## Faithful functors
 
 [[Faithful functors]] reflect [[monomorphisms]] and [[epimorphisms]].
-We shall only prove this for monomorphisms, as the proof for epis is
-identical. Let $F(a)$ be monic in $\cD$, and let $b, c$ be a pair of
-morphisms in $\cC$ such that $a \circ b = a \circ c$. $F$ preserves
-all commutative diagrams, so $F(a) \circ F(b) = F(a) \circ F(c)$.
-$F(a)$ is monic, so $F(b) = F(c)$. Finally, $F$ is faithful, so we
-can deduce $b = c$.
+We will only comment on the proof regarding monomorphisms, since the
+argument for epimorphisms is formally dual. Let $F(a)$ be monic in
+$\cD$, and let $b, c$ be a pair of morphisms in $\cC$ such that $a \circ
+b = a \circ c$. Because $F$ preserves all commutative diagrams, $F(a)
+\circ F(b) = F(a) \circ F(c)$.  $F(a)$ is monic, so $F(b) = F(c)$.
+Finally, $F$ is faithful, so we can deduce $b = c$.
 
 ```agda
 module _ (faithful : is-faithful F) where
@@ -64,8 +64,10 @@ module _ (faithful : is-faithful F) where
     faithful (F[a]-epic (F₁ b) (F₁ c) (weave p))
 ```
 
-Likewise, faithful functors reflect all diagrams: this means that if $F(a)$ and $F(b)$
-either form a section/retract pair or form an iso, then $a$ and $b$ do too.
+Likewise, faithful functors reflect all diagrams: this means that if
+$F(a)$ and $F(b)$ either form a section/retraction pair or an
+isomorphism, then it must have been the case that $a$ and $b$ already
+did.
 
 ```agda
   faithful→reflects-section-of : (F₁ a) 𝒟.section-of (F₁ b) → a 𝒞.section-of b
@@ -83,18 +85,18 @@ either form a section/retract pair or form an iso, then $a$ and $b$ do too.
 
 ## Fully faithful, essentially surjective functors
 
-If a functor $F$ is [[fully faithful]] and [[essentially surjective]], then
-it preserves all mono and epimorphisms. Recall that this is a slightly
-weaker condition on $F$ than being an [[equivalence of categories]] as both
-the domain and codomain categories are only precategories.
+If a functor $F$ is [[fully faithful]] and [[essentially surjective]],
+then it preserves all mono- and epimorphisms. Keep in mind that, since
+we have not assumed that the categories involved are
+[[univalent|univalent category]], this condition is slightly *weaker*
+than being an [[equivalence of categories]].
 
-Let $a : \cC(A,B)$ be a mono, and let $f, g : \cD(X,F(A))$ be a pair
-of morphisms in $\cD$ such that $F(a) \circ f = F(a) \circ g$.
-$F$ is eso, so there merely exists a $C : \cC$ with $i : F(C) \iso X$.
-Furthermore, $F$ is full: this means that there must merely exist
-a pair of morphisms $f', g' : \cC(C,A)$ such that $F(f') = f \circ i$
-and $F(g') = g \circ i$.
-
+Let $a : \cC(A,B)$ be a mono, and let $f, g : \cD(X,F(A))$ be a pair of
+morphisms in $\cD$, satisfying that $F(a) \circ f = F(a) \circ g$. Since
+$F$ is eso, there merely exists a $C : \cC$ with $i : F(C) \iso X$.
+Because $F$ is also full, there must [[merely]] exist a pair of
+morphisms $f', g' : \cC(C,A)$, satisfying $F(f') = f \circ i$, and
+$F(g') = g \circ i$.
 
 ```agda
 module _ (ff : is-fully-faithful F) (eso : is-eso F) where
@@ -105,22 +107,25 @@ module _ (ff : is-fully-faithful F) (eso : is-eso F) where
     (g* , r) ← fully-faithful→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
 ```
 
-Next, note that $a \circ f' = a \circ g'$: this follows from faithfulness
-of $F$ and our hypothesis that $F(a) \circ f = F(a) \circ g$.
+Next, note that $a \circ f' = a \circ g'$: this follows from
+faithfulness of $F$, and our hypothesis that $F(a) \circ f = F(a) \circ
+g$.
 
 ```agda
-    let s =
-          fully-faithful→faithful {F = F} ff $
-          F₁ (a 𝒞.∘ f*)           ≡⟨ F-∘ _ _ ∙ 𝒟.pushr q ⟩
-          (F₁ a 𝒟.∘ f) 𝒟.∘ 𝒟.to i ≡⟨ ap₂ 𝒟._∘_ p refl ⟩
-          (F₁ a 𝒟.∘ g) 𝒟.∘ 𝒟.to i ≡⟨ 𝒟.pullr (sym r) ∙ sym (F-∘ _ _) ⟩
-          F₁ (a 𝒞.∘ g*)           ∎
+    let
+      s =
+        fully-faithful→faithful {F = F} ff $
+        F₁ (a 𝒞.∘ f*)           ≡⟨ F-∘ _ _ ∙ 𝒟.pushr q ⟩
+        (F₁ a 𝒟.∘ f) 𝒟.∘ 𝒟.to i ≡⟨ ap₂ 𝒟._∘_ p refl ⟩
+        (F₁ a 𝒟.∘ g) 𝒟.∘ 𝒟.to i ≡⟨ 𝒟.pullr (sym r) ∙ sym (F-∘ _ _) ⟩
+        F₁ (a 𝒞.∘ g*)           ∎
 ```
 
-To wrap things up, recall $a$ is monic, so $f' = g'$, and $F(f') = F(g')$.
-However, $F(f') = f \circ i$ and $F(g') = g \circ i$ by definition, so we
-can deduce that $f \circ i = g \circ i$. Finally, isomorphisms are epis,
-so we can left-cancel to conclude that $f = g$.
+To wrap things up, recall that $a$ is monic, so $f' = g'$, and $F(f') =
+F(g')$.  However, $F(f') = f \circ i$ and $F(g') = g \circ i$ by
+definition, so we can deduce that $f \circ i = g \circ i$. Finally,
+isomorphisms are epic, so we can cancel $i$ on the left, concluding that
+$f = g$.
 
 ```agda
     pure $ 𝒟.iso→epic i f g $
@@ -130,17 +135,14 @@ so we can left-cancel to conclude that $f = g$.
       g 𝒟.∘ 𝒟.to i ∎
 ```
 
-As mentioned earlier, a similar result holds for epis.
-
-```agda
-  ff+eso→preserves-epi : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
-```
-
 <details>
-<summary>The proof is dual to the one for monos, so we omit it.
+<summary>
+As mentioned above, the same holds for epimorphisms. Since the proof is
+formally dual to the case above, we will not dwell on it.
 </summary>
 
 ```agda
+  ff+eso→preserves-epi : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
   ff+eso→preserves-epi {a = a} a-epic {x} f g p = ∥-∥-proj! do
     (x* , i) ← eso x
     (f* , q) ← fully-faithful→full {F = F} ff (𝒟.from i 𝒟.∘ f)
@@ -151,22 +153,33 @@ As mentioned earlier, a similar result holds for epis.
       ·· ap F₁ (a-epic f* g* (fully-faithful→faithful {F = F} ff s))
       ·· r
 ```
+
 </details>
 
 ## Left and right adjoints
 
-If $F$ is a [[right adjoint]], then $F$ preserves monos. Let $a : \cC(A,B)$,
-and let $f, g : \cD(X, F(A))$ such that $F(a) \circ f = F(a) \circ g$.
-$L$ is a left adjoint to $F$, so it suffices to show that $\eps \circ L(f) = \eps \circ L(g)$.
-Furthermore, $a$ is a mono, so it suffices to show that $a \circ \eps \circ L(f) = a \circ \eps \circ L(g)$.
-This follows by a quick calculation.
+If we are given an [[adjunction]] $L \dashv F$, then the right adjoint
+$F$ preserves monomorphisms. Fix a mono $a : \cC(A,B)$, and let $f, g :
+\cD(X, FA)$ satisfy $F(a)f = F(a)g$. We want to show $f = g$, and, by
+the adjunction, it will suffice to show that $\eps L(f) = \eps L(g)$.
+Since $a$ is a monomorphism, we can again reduce this to showing
 
+$$
+a \eps L(f) = a \eps L(g)\text{,}
+$$
+
+which follows by a quick calculation.
+
+<!--
 ```agda
 module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
   private
     module L = Cat.Functor.Reasoning L
   open _⊣_ L⊣F
+```
+-->
 
+```agda
   right-adjoint→preserves-monos : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
   right-adjoint→preserves-monos {a = a} a-monic f g p =
     Equiv.injective (_ , R-adjunct-is-equiv L⊣F) $
@@ -177,7 +190,11 @@ module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
     a 𝒞.∘ counit.ε _ 𝒞.∘ L.₁ g            ∎
 ```
 
-A similar result holds for epis when $F$ is a [[left adjoint]].
+<details>
+<summary>
+Dualizing this argument, we can show that left adjoints preserve
+epimorphisms.
+</summary>
 
 ```agda
 module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
@@ -186,12 +203,6 @@ module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
   open _⊣_ F⊣R
 
   left-adjoint→preserves-epis : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
-```
-
-<details>
-<summary>The proof is dual to the right adjoint case, so we omit it.
-</summary>
-```agda
   left-adjoint→preserves-epis {a = a} a-epic f g p =
     Equiv.injective (_ , L-adjunct-is-equiv F⊣R) $
     a-epic _ _ $
@@ -199,4 +210,5 @@ module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
     ∙ R.extendl p
     ∙ 𝒞.pushr (sym (unit.is-natural _ _ _))
 ```
+
 </details>

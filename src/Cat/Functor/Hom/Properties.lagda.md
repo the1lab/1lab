@@ -20,8 +20,8 @@ module Cat.Functor.Hom.Properties where
 
 # Properties of hom functors
 
-This module contains a collection of useful facts about [[hom functors]] and the
-[[Yoneda embedding]].
+This module contains a collection of useful facts about [[Hom
+functors]], and the [[Yoneda embedding]].
 
 <!--
 ```agda
@@ -44,12 +44,13 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 ## Monos and epis
 
-The Yoneda embedding preserves monomorphisms. Let $f : \cC(A,B)$ be a mono,
-and let $\alpha, \beta : P \to \yo(A)$ be a pair of natural transformations
-such that $\yo(f) \circ \alpha = \yo(f) \circ \beta$. Equality of natural
-transformations is defined componentwise, so for every $X : \cC$ and
-$p_x : P(x)$, we have $f \circ \alpha_x(p_x) = f \circ \beta_x(p_x)$.
-$f$ is a mono, so we can immediately deduce that $\alpha = \beta$.
+The Yoneda embedding preserves [[monomorphisms]]. Let $f : \cC(A,B)$ be
+a mono, and let $\alpha, \beta : P \to \yo(A)$ be a pair of natural
+transformations such that $\yo(f) \circ \alpha = \yo(f) \circ \beta$.
+Equality of [[natural transformations]] is defined componentwise, so for
+every $X : \cC$ and $p_x : P(x)$, we have $f \circ \alpha_x(p_x) = f
+\circ \beta_x(p_x)$. Since $f$ is a mono, we can immediately deduce that
+$\alpha = \beta$.
 
 ```agda
   よ-preserves-mono : is-monic f → PSh[C].is-monic (よ₁ C f)
@@ -57,8 +58,8 @@ $f$ is a mono, so we can immediately deduce that $\alpha = \beta$.
     f-mono (α .η x px) (β .η x px) (p ηₚ x $ₚ px)
 ```
 
-Furthermore, the Yoneda embedding is fully faithful, so it reflects
-both monos and epis.
+Furthermore, the Yoneda embedding is [[fully faithful]], so it reflects
+both monos and [[epis|epimorphism]].
 
 ```agda
   よ-reflects-mono : PSh[C].is-monic (よ₁ C f) → is-monic f
@@ -68,8 +69,8 @@ both monos and epis.
   よ-reflects-epi = よ.faithful→reflects-epi (よ-is-faithful C)
 ```
 
-Likewise, the covariant yoneda embedding takes epis to monos, and
-reflects monos to epis and vice versa.
+Likewise, the covariant Yoneda embedding takes epis to monos, reflects
+monos to epis, and vice versa.
 
 ```agda
   よcov-reverses-epi : is-epic f → CoPSh[C].is-monic (よcov₁ C f)
