@@ -55,13 +55,10 @@ diagramHeight fp = do
     height (_:t) = height t
     height [] = error $ "Diagram SVG has no height: " <> fp
 
-    -- This height was obtained by staring really hard at a very small
-    -- diagram, then measuring the height of a capital letter in the
-    -- diagram vs. in the text around it. In GIMP.
+    -- The ratio between heights is a magic number in the purest sense
+    -- of the word. @ncfavier obtained it through divination.
     it :: Double
-    it = read (height (parseTags contents)) * (22 / 12)
-    -- It's a magic number in the purest sense of the word. I obtained
-    -- it through divination.
+    it = read (height (parseTags contents)) * (25 / 12)
 
   pure $! it
 
