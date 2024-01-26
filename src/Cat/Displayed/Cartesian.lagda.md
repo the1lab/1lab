@@ -68,7 +68,7 @@ that we have a map $m : u \to a$ (below, in violet), and a map $h' : u'
 of a Cartesian map says that we have a universal factorisation of $h'$
 through a map $u' \to a'$ (in green, marked $\exists!$).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,124;green,50;blue,189}{u'} \\
   & {a'} && {b'} \\
@@ -362,7 +362,7 @@ morphisms must have their domains related by a vertical isomorphism.
 Suppose they're called $f_1$ and $f_2$, and fit into a diagram like the
 one below.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {a_2'} \\
   & {a_1'} && {b'} \\

@@ -237,7 +237,7 @@ Since the desired homotopy `p ≡ q` is a square, we need to describe a
 _cube_ where the missing face is the square we need. I have
 painstakingly illustrated it here:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{x} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x} && \textcolor{rgb,255:red,92;green,92;blue,214}{x} \\

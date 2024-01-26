@@ -140,7 +140,7 @@ makes the following two identity proofs equal:
 
 [proposition]: 1Lab.HLevel.html#is-prop
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
 	{P\,W} && {P\,C} & {P\,W} && {P\,C} \\
 	\\

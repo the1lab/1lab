@@ -60,7 +60,7 @@ Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
 $i : \ker (\coker f) \mono B$. We can take the map $i$ as the "image"
 subobject. We must provide a map filling the dotted line in
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {\mathrm{im}(f)} \\
   & B
@@ -95,7 +95,7 @@ and we wish to construct a map $g : i' \le i$^[this is an inequality in
 the poset of subobjects of $B$, which is a map $i' \to i$ in the slice
 over $B$.], hence a map $\im f \to X$ such that the triangle
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathrm{im}(f)} & X \\
   B

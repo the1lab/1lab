@@ -64,7 +64,7 @@ These non-trivial composites consist of following the left leg of the
 diagram below, followed by the bottom leg. For it to commute, that path
 has to be the same as following the right leg.
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {\operatorname{apex}} \\
   {F(x)} && {F(y)}

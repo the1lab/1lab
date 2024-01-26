@@ -30,7 +30,7 @@ of $F$ along $p$".
 
 [universal constructions]: Cat.Functor.Hom.Representable.html
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   C && D \\
   \\

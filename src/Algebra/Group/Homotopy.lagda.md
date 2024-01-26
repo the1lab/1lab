@@ -98,7 +98,7 @@ inner squares, `p j` and `q j` are on different sides of the path
 composition, so we can use the De Morgan structure on the interval to
 have `p` and `q` slip by each other.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
 	{\refl} &&& {\refl} &&& {\refl} \\
 	& {\refl \cdot \refl} && {\refl \cdot \refl} && {\refl \cdot \refl} \\

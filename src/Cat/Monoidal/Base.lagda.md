@@ -123,7 +123,7 @@ adjunctions), and one for reducing sequences of associators, the
 **pentagon identity**. As for where the name "pentagon" comes from, the
 path `pentagon`{.Agda} witnesses commutativity of the diagram
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {A\otimes(B\otimes(C\otimes D))} \\
   {(A\otimes B)\otimes(C\otimes D)} && {A \otimes ((B \otimes C) \otimes D)} \\
