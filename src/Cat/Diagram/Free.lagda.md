@@ -191,7 +191,7 @@ initial objects give us the universal property of "syntax without generators":
 there is a unique structure-preserving map out of the syntax into each model.
 
 We can somewhat reconcile these views by recalling that
-[[lapc|left adjoints preserve colimits]]. The initial object is a colimit,
+[[left adjoints preserve colimits|lapc]]. The initial object is a colimit,
 so the initial object in the category $\bT$-models is $F(\bot)$. In other
 words: "syntax without generators" and "syntax on 0 generators" coincide.
 This correspondence remains intact even when we lack a full left adjoint.
