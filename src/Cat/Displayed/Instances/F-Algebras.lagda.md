@@ -43,13 +43,13 @@ module _ {o ℓ} {C : Precategory o ℓ} (F : Functor C C) where
 Let $F : \cC \to \cC$ be an arbitrary endofunctor on $\cC$. We can view
 $F$ as a means of embellishing an object with extra structure: for
 instance, the functor $X \mapsto X + 1$ endows $X$ with an additional
-point, the functor $X \mapsto A \times X + 1$ adds an extra point and a
-copy of $A$, etc. Consequently, a map $\cC(F(A), A)$ picks out a suitably
-structured $A$; e.g. writing a map $\cC(A + 1, A)$ requires $A$ to be
-equipped with a global element. In analogy to [[monad algebras]],
-a map $\cC(F(A),A)$ is called an **F-algebra** on $A$.[^Alternatively,
-we can view $F$-algebras as monad algebras over functors that lack
-algebraic structure.]
+point and an endomap $X \to X$, the functor $X \mapsto A \times X + 1$
+adds an extra point and a copy of $A$, etc. Consequently, a map $\cC(F(A), A)$
+picks out a suitably structured $A$; e.g. writing a map $\cC(A + 1, A)$
+requires $A$ to be equipped with a global element and an endomap $\cC(A,A)$.
+In analogy to [[monad algebras]], a map $\cC(F(A),A)$ is called an
+**F-algebra** on $A$.[^Alternatively, we can view $F$-algebras as monad
+algebras over functors that lack algebraic structure.]
 
 Likewise, a map $f : \cC(A,B)$ between two $F$-algebras $\alpha : \cC(F(A),A)$
 and $\beta : \cC(F(B), B)$ is an **F-algebra homomorphism** if it commutes
@@ -67,11 +67,11 @@ with the algebras on $A$ and $B$, as in the following digram.
 \end{tikzcd}
 ~~~
 
-Intuitively, $F$-algebra morphisms are morphisms that preserve the
-structure encoded by $F$; going back to our previous example, an
-$F$-algebra homomorphism between $\alpha : A + 1 \to A$ and
-$\beta : B + 1 \to B$ is a map $f : A \to B$ that preserves the designated
-global elements of $A$ and $B$.
+Intuitively, $F$-algebra morphisms are morphisms that preserve the structure
+encoded by $F$; going back to our previous example, an $F$-algebra homomorphism
+between $\alpha : A + 1 \to A$ and $\beta : B + 1 \to B$ is a map
+$f : A \to B$ that preserves the designated global elements of $A$ and $B$
+and commutes with the chosen endomaps.
 
 $F$-algebras and their homomorphisms assemble into a displayed category
 over $\cC$: the type of objects over $A$ consists of all possible algebra
@@ -107,7 +107,7 @@ the more traditional category of $F$-algebras.
 
 As noted above, $F$-algebras are a tool for picking out objects equipped
 with a semantics for a "signature" described by $F$. This leads to a very
-natural question: can we characterize the **syntax** generated from the
+natural question: can we characterize the syntax generated from the
 signature of $F$?
 
 To answer this question, we must pin down exactly what we mean by "syntax".
@@ -116,13 +116,12 @@ Categorically, we have two options: [[initial objects]], and
 respectively. We will focus initial $F$-algebras for now: free objects are
 much harder to come by, and initial $F$-algebras have a nice characterization:
 they are the *least fixpoints* of functors. This result is known as Lambek's
-lemma.
+lemma, and we shall prove it now.
 
 First, a tiny lemma. Let $(A, \alpha)$ be an $F$-algebra, and note that
 $(F(A), F(\alpha))$ is also an $F$-algebra. If $\alpha$ has a section
 $f : (A, \alpha) \to (F(A), F(\alpha))$, then $f$ and $\alpha$ are
 inverses.
-
 
 ```agda
   algebra-section→inverses

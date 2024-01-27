@@ -87,7 +87,7 @@ proprety:
 Intuitively, a free object on $X$ is an approximation of a
 (potentially non-existent) left adjoint at $X$.
 
-A free object $A : \cc$ on $X : \cd$ induces an equivalence between
+A free object $A : \cC$ on $X : \cd$ induces an equivalence between
 $\cD(X, U(B))$ and $\cC(A, B)$. in other words, free objects are
 representing objects for the functor $\cD(X,U(-))$.
 
