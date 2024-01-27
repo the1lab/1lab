@@ -226,7 +226,7 @@ is.
 ## Constructing reflective subcategories
 
 Earlier, we saw that any reflective subcategory has an invertible counit.
-We will now prove the converse: if the counit of an adjuction is
+We will now prove the converse: if the counit of an adjunction is
 invertible, then the left adjoint is a reflector.
 
 <!--
@@ -264,7 +264,7 @@ adjoint yoga. For the forward direction, we need to show that
 $G(\eps \circ F(f) \circ \eps^{-1}) = f$; if we take the right adjunct,
 this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps^{-1})) = \eps \circ F(f)$.
 
-From here, it we can repeatedly apply naturality to commute the $\eps$
+From here, we can repeatedly apply naturality to commute the $\eps$
 all the way to the end of the chain of morphisms. This yields
 $\eps \circ F(f) \circ \eps^{-1} \circ \eps$, which is equal to
 $\eps \circ F(f)$, as $\eps^{-1}$ is an inverse.
@@ -289,18 +289,18 @@ The reverse direction follows from a quick application of naturality.
       ε⁻¹ = counit-iso.inv .η
 ```
 
-Furthermore, if we have *any* natural isomorphism $\alpha : FG \iso Id$, then
+Furthermore, if we have *any* natural isomorphism $\alpha : FG \iso \Id$, then
 the left adjoint is a reflector! To show this, we will construct an
 inverse to the counit; our previous result will then ensure that $F$
 is fully faithful.
 
 To begin, recall that isos have the 2-out-of-3 property, so it suffices
 to show that $\eps \circ \alpha$ is invertible. Next, note that we can
-transfer the comonad structure on $FG$ onto a comonad structure on $Id$
+transfer the comonad structure on $FG$ onto a comonad structure on $\Id$
 by repeatedly composing with $\alpha$; this yields a natural transformation
-$\delta : Id \to Id$ that is a right inverse to $\eps \circ \alpha$.
+$\delta : \Id \to \Id$ that is a right inverse to $\eps \circ \alpha$.
 
-Finally, all natural transformations $Id \to Id$ commute with one another,
+Finally, all natural transformations $\Id \to \Id$ commute with one another,
 so $\delta$ is also a right inverse, and $\eps \circ \alpha$ is invertible.
 
 ```agda
