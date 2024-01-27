@@ -86,9 +86,9 @@ _ = is-congruence
 
 <!--
 ```agda
-- = exponentiable→constant-family⊣product
-- = dependent-product→lcc
-- = lcc→dependent-product
+_ = exponentiable→constant-family⊣product
+_ = dependent-product→lcc
+_ = lcc→dependent-product
 ```
 -->
 
