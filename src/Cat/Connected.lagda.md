@@ -113,7 +113,8 @@ objects are related by this congruence if there merely exists a zigzag
 between them^[Thinking of `Zigzag`{.Agda}, vaguely, as the reflexive,
 transitive and symmetric closure of `Hom`{.Agda}.]. We can then show
 that the [[quotient]] of this congruence is equivalent to $\pi_0(\cC)$,
-allowing us to conclude.
+so we can conclude that it is contractible and apply effectivity to get
+a zigzag.
 
 ```agda
   π₀-is-contr→connected : is-contr ∣ π₀ C ∣ → is-connected-cat C
