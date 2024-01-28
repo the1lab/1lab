@@ -9,8 +9,6 @@ open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import 1Lab.Path
-
 import Cat.Displayed.Reasoning
 import Cat.Functor.Bifunctor as Bi
 import Cat.Reasoning
@@ -147,6 +145,11 @@ higher level of strictness than usual.
 ```
 
 The distinguished projection `πᶠ` has a canonical choice of lifting.
+Later, we will prove that for any functor $F$ valued in
+$\cE$, $\pi^f$ has a canonical choice of lifting; however, this later
+theorem cannot be applied here, as $\pi^f \circ \operatorname{id}_{\cE}$
+is not definitionally equal to $\pi^f$.
+
 ```agda
 module _ {o ℓ o' ℓ'}
   {B : Precategory o ℓ}
@@ -157,11 +160,13 @@ module _ {o ℓ o' ℓ'}
   open Cat.Displayed.Reasoning E
 
   πᶠ-lifting : Lifting E (πᶠ E)
-  πᶠ-lifting .Lifting.F₀' (_ , a)= a
+  πᶠ-lifting .Lifting.F₀' (_ , a) = a
   πᶠ-lifting .Lifting.F₁' f = preserves f
   πᶠ-lifting .Lifting.F-id' = refl
   πᶠ-lifting .Lifting.F-∘' f g = refl
 ```
+
+Let $F: \cC\times \cD\to \cB$ be a functor and $\cE\liesover\cB$ a displayed category. Let $F' : \cC\times \cD\to \cE$ be a lift of  $F$ along $F'$. We show that $F'(c-,)$ is a lift of $F(c,-)$ for any $c$, similarly $F'(-,d)$ is a lift of $F(-,d)$ for any $d$.
 
 ```agda
 module Bifunctor {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
@@ -178,20 +183,12 @@ module Bifunctor {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
     module E = Displayed E
     module F' = Lifting F'
 
-  sym_lemma_dep : ∀ {x} {y} {f} {g}
-    {p : f ≡ g} { x' : E.Ob[ x ] } { y' : E.Ob[ y ] }
-    {f' : E.Hom[ f ] x' y' } {g' : E.Hom[ g ] x' y' }
-      ( q :  ( f' E.≡[ p ] g' )) → (g' E.≡[ (sym p) ]  f')
+  Left' : ∀ (d : D.Ob) → Lifting E (Bi.Left F d)
+  Left' d .Lifting.F₀' c = Lifting.F₀' F' (c , d)
+  Left' d .Lifting.F₁' f = Lifting.F₁' F' ( f , D.id )
+  Left' d .Lifting.F-id' = Lifting.F-id' F'
 
-  sym_lemma_dep q = symP q
-
-
-  Left : ∀ (d : D.Ob) → Lifting E (Bi.Left F d)
-  Left d .Lifting.F₀' c = Lifting.F₀' F' (c , d)
-  Left d .Lifting.F₁' f = Lifting.F₁' F' ( f , D.id )
-  Left d .Lifting.F-id' = Lifting.F-id' F'
-
-  Left d .Lifting.F-∘' f g = E.≡[]˘
+  Left' d .Lifting.F-∘' f g = symP
                    ((F'.F₁' (f , D.id) E.∘'
                      F'.F₁' (g , D.id))
                      E.≡[]˘⟨ F'.F-∘' (f , D.id) (g , D.id) ⟩
@@ -199,18 +196,16 @@ module Bifunctor {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
                         (λ i → C._∘_ f g , D.idl (D.id) i)
                            E.∙[] refl))
 
-  Right : ∀ (c : C.Ob) → Lifting E (Bi.Right F c)
-  Right c .Lifting.F₀' d = Lifting.F₀' F' (c , d)
-  Right c .Lifting.F₁' f = Lifting.F₁' F' (C.id , f)
-  Right c .Lifting.F-id' = Lifting.F-id' F'
-  Right c .Lifting.F-∘' f g = E.≡[]˘
+  Right' : ∀ (c : C.Ob) → Lifting E (Bi.Right F c)
+  Right' c .Lifting.F₀' d = Lifting.F₀' F' (c , d)
+  Right' c .Lifting.F₁' f = Lifting.F₁' F' (C.id , f)
+  Right' c .Lifting.F-id' = Lifting.F-id' F'
+  Right' c .Lifting.F-∘' f g = symP
                    ((F'.F₁' (C.id , f) E.∘' F'.F₁' (C.id , g))
                    E.≡[]˘⟨ F'.F-∘' (C.id , f) (C.id , g) ⟩
                       (ap (F' .Lifting.F₁')
                         (λ i → (C.idl (C.id) i , D._∘_ f g ))
-                        E.∙[] refl
-                        )
-                   )
+                        E.∙[] refl))
 ```
 
 ## Natural transformations between liftings
