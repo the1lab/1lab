@@ -350,7 +350,7 @@ is an initial $F$-algebra.
         total-hom-path F-Algebras (fold-unique (f .hom) (f .preserves)) prop!
 ```
 
-## Free $F$-algebras and free monads
+## Free algebras and free monads
 
 In the previous section, we dismissed free $F$-algebras as somewhat rare
 objects. It is now time to see *why* this is the case. Suppose that
@@ -581,7 +581,7 @@ on $F$. Put more succinctly, the free monad on $F$ is **algebraically free**.
 ```
 
 
-### Free $F$-algebras and free relative monads
+### Free algebras and free relative monads
 
 The previous construction of the free monad on $F$ only works if
 we have *all* free $F$-algebras. This is a rather strong condition
