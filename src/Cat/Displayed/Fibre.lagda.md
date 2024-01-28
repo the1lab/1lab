@@ -27,7 +27,7 @@ A [[displayed category]] can be thought of as representing data of a
 is a [[Cartesian fibration]], this "family" might not be
 functorially-indexed].  Given an object $x : \cB$ of the base category,
 the morphisms in the fibre over x, or **vertical morphisms**, are those
-in the set $\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on
+in the set $\hom_{\id[x]}(x', y')$ of morphisms over the identity map (on
 $x$).
 
 The intuition from the term _vertical_ comes from _literally_ thinking

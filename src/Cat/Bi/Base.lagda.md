@@ -305,7 +305,7 @@ module _ (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-## The bicategory of categories
+## The bicategory of categories {defines="Cat"}
 
 Just like the prototypal example of categories is the category of sets,
 the prototypal example of bicategory is the bicategory of categories. We
@@ -381,7 +381,7 @@ directly:
     where module E = Cr E
 ```
 
-# Lax functors
+# Lax functors {defines="lax-functor"}
 
 In the same way that the definition of bicategory is obtained by
 starting with the definition of category and replacing the $\hom$-sets
@@ -482,7 +482,7 @@ squares).
       → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
-## Pseudofunctors
+## Pseudofunctors {defines="pseudofunctor"}
 
 As mentioned above, a lax functor with invertible unitors and compositor
 is called a **pseudofunctor**. Every pseudofunctor has an underlying
@@ -518,7 +518,7 @@ record
   υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
 ```
 
-# Lax transformations
+# Lax transformations {defines="lax-transformation"}
 
 By dropping the invertibility requirement when generalising natural
 transformations to lax functors, we obtain the type of **lax
@@ -621,7 +621,7 @@ We abbreviate the types of lax- and pseudonatural transformations by
   _=>ₚ_ = Pseudonatural
 ```
 
-# Modifications
+# Modifications {defines="modification"}
 
 When dealing with 1-categorical data (categories, functors, and natural
 transformations), the commutativity in 2-cells is witnessed by equations
