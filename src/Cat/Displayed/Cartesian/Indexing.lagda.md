@@ -10,12 +10,14 @@ open import Cat.Displayed.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
-open import Data.Id.Base
-
 import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 import Cat.Morphism as Mor
+
+open Pseudofunctor
+open Lax-functor
+open _=>_
 ```
 -->
 
@@ -44,14 +46,13 @@ private
 # Reindexing for cartesian fibrations
 
 A [[cartesian fibration]] can be thought of as a [[displayed category]]
-$\cE$ whose [[fibre categories]] $\cE^*(b)$ depend ([pseudo])functorially
+$\cE$ whose [[fibre categories]] $\cE^*(b)$ depend
+([[pseudo|pseudofunctor]])functorially
 on the object $b : \cB$ from the base category. A canonical example is
 the [[canonical self-indexing]]: If $\cC$ is a
 category with [[pullbacks]], then each $b \xto{f} a : \cC$ gives rise to
 [[a functor|pullback functor]] $\cC/a \to \cC/b$, the _change of base_
 along $f$.
-
-[pseudo]: Cat.Bi.Base.html#pseudofunctors
 
 ```agda
 module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
@@ -155,6 +156,201 @@ properties and I recommend that nobody look at it, ever. </summary>.
           (pulll[] _ (has-lift.commutes _ _ _ _)
            ∙[] has-lift.commutesp _ _ id-comm _)
         ∙[] pushl[] _ (symP (has-lift.commutesv g _ _))
+```
+</details>
+
+In order to assemble this into a [[pseudofunctor]] out of $\cB\op$
+(seen as a [[locally discrete bicategory]]) into $\Cat$, we start by
+bundling up all the base changes into a functor between $\hom$ categories.
+We also prove a lemma that will be useful later, relating base changes
+along equal morphisms.
+
+```agda
+base-changes : ∀ {a b}
+  → Functor (Locally-discrete (B ^op) .Prebicategory.Hom a b)
+            Cat[ Fibre E a , Fibre E b ]
+base-changes = Disc-adjunct base-change
+
+base-change-coherence
+  : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ g)
+  → has-lift.lifting g b' ∘' base-changes .F₁ p .η b'
+  ≡[ idr _ ∙ sym p ] has-lift.lifting f b'
+base-change-coherence {b' = b'} {f} = J
+  (λ g p → has-lift.lifting g b' ∘' base-changes .F₁ p .η b'
+         ≡[ idr _ ∙ sym p ] has-lift.lifting f b')
+  (elimr' refl Regularity.reduce!)
+```
+
+We have enough data to start defining our pseudofunctor:
+
+<!--
+```agda
+private
+  module FC {a} {b} = Cat.Reasoning (Cat[ Fibre E a , Fibre E b ])
+```
+-->
+
+```agda
+Fibres : Pseudofunctor (Locally-discrete (B ^op)) (Cat o' ℓ')
+Fibres .lax .P₀ = Fibre E
+Fibres .lax .P₁ = base-changes
+Fibres .lax .compositor = Disc-natural₂
+  λ (f , g) → base-change-comp g f .Mor.from
+Fibres .lax .unitor = base-change-id .Mor.from
+Fibres .unitor-inv = FC.iso→invertible (base-change-id FC.Iso⁻¹)
+Fibres .compositor-inv f g =
+  FC.iso→invertible (base-change-comp g f FC.Iso⁻¹)
+```
+
+It remains to verify that this data is *coherent*, which is so tedious
+that it serves as a decent self-contained motivation for displayed
+categories.
+
+<details>
+<summary>You've been warned.</summary>
+
+We start with the `left-unit`{.Agda}. In the diagram below, we have
+to show that the composite vertical morphism over $b$ is equal to
+the identity over $b$. By the uniqueness property of cartesian lifts,
+it suffices to show that the composites with the lift of $f$ are equal,
+which is witnessed by the commutativity of the whole diagram.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {f^*a'} \\
+  {\id^*f^*a'} & {f^*a'} \\
+  {(\id \circ f)^*a'} \\
+  {f^*a'} && {a'} \\
+  b && a
+  \arrow["f", from=5-1, to=5-3]
+  \arrow["{\rm{lift}(f)}"', from=4-1, to=4-3]
+  \arrow[maps to, from=4-3, to=5-3]
+  \arrow[maps to, from=4-1, to=5-1]
+  \arrow["{\lambda^*a'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=4-1]
+  \arrow["{\rm{lift}(\id \circ f)}"{pos=0.4}, from=3-1, to=4-3]
+  \arrow["\gamma"', color={rgb,255:red,214;green,92;blue,92}, from=2-1, to=3-1]
+  \arrow["\upsilon"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=2-1]
+  \arrow["{\rm{lift}(f)}", from=2-2, to=4-3]
+  \arrow["{\rm{lift}(\id)}"', from=2-1, to=2-2]
+  \arrow["\id", from=1-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+The bottom triangle is our `base-change-coherence`{.Agda} lemma, the
+middle square is by definition of the compositor and the top triangle
+is by definition of the unitor.
+
+```agda
+Fibres .lax .left-unit f = Nat-path λ a' →
+  has-lift.uniquep₂ f a' _ refl refl _ _
+    (Fib.pulllf (base-change-coherence (idr f))
+    ∙[] Fib.pulllf (has-lift.commutesv (f ∘ id) a' _)
+    ∙[] (refl⟩∘'⟨ Fib.eliml (base-change id .F-id))
+    ∙[] pullr[] _ (has-lift.commutesv id _ id'))
+    refl
+```
+
+For the `right-unit`{.Agda}, we proceed similarly. The diagram below
+shows that the composite on the left, composed with the lift of $f$,
+is equal to the lift of $f$.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {f^*a'} && {a'} \\
+  {f^*\id^*a'} && {\id^*a'} \\
+  {(f \circ \id)^*a'} \\
+  {f^*a'} && {a'} \\
+  b && a
+  \arrow["f", from=5-1, to=5-3]
+  \arrow["{\rm{lift}(f)}"', from=4-1, to=4-3]
+  \arrow[maps to, from=4-3, to=5-3]
+  \arrow[maps to, from=4-1, to=5-1]
+  \arrow["{\rho^*a'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=4-1]
+  \arrow["{\rm{lift}(f \circ \id)}"{pos=0.2}, from=3-1, to=4-3]
+  \arrow["\gamma"', color={rgb,255:red,214;green,92;blue,92}, from=2-1, to=3-1]
+  \arrow["{f^*\upsilon}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=2-1]
+  \arrow["{\rm{lift}(\id)}"{description}, from=2-3, to=4-3]
+  \arrow["{\rm{lift}(f)}"', from=2-1, to=2-3]
+  \arrow["{\rm{lift}(f)}", from=1-1, to=1-3]
+  \arrow["\upsilon"', from=1-3, to=2-3]
+  \arrow["\id", curve={height=-30pt}, from=1-3, to=4-3]
+\end{tikzcd}\]
+~~~
+
+The bottom triangle is `base-change-coherence`{.Agda}, the middle square
+is by definition of the compositor, the outer triangle is by definition
+of the unitor, and the top square is by definition of `rebase`{.Agda}
+(the action of $f^*$ on morphisms).
+
+```agda
+Fibres .lax .right-unit f = Nat-path λ a' →
+  has-lift.uniquep₂ f a' _ refl _ _ _
+    (Fib.pulllf (base-change-coherence (idl f))
+    ∙[] Fib.pulllf (has-lift.commutesv (id ∘ f) a' _)
+    ∙[] (refl⟩∘'⟨ Fib.idr _)
+    ∙[] extendr[] id-comm (has-lift.commutesp f _ _ _)
+    ∙[] (has-lift.commutesv id _ id' ⟩∘'⟨refl))
+    (idr' _ ∙[] symP (idl' _))
+```
+
+Last but definitely not least, the `hexagon`{.Agda} witnessing the
+coherence of associativity follows again by uniqueness of cartesian
+lifts, by the commutativity of the following diagram.
+
+~~~{.quiver style="height: 375px !important;"}
+\[\begin{tikzcd}
+  {f^*g^*h^*a'} &&&&&& {f^*g^*h^*a'} \\
+  {f^*g^*h^*a'} & {g^*h^*a'} &&&& {g^*h^*a'} & {(gf)^*h^*a'} \\
+  {f^*(hg)^*a'} & {(hg)^*a'} & {h^*a'} && {h^*a'} && {(h(gf))^*a'} \\
+  {((hg)f)^*a'} &&& {a'} &&& {((hg)f)^*a'} \\
+  d & c & b & a & b & c & d
+  \arrow["f", from=5-1, to=5-2]
+  \arrow["g", from=5-2, to=5-3]
+  \arrow["h", from=5-3, to=5-4]
+  \arrow[maps to, from=4-4, to=5-4]
+  \arrow[maps to, from=4-1, to=5-1]
+  \arrow["{\rm{lift}((hg)f)}"', from=4-1, to=4-4]
+  \arrow[""{name=0, anchor=center, inner sep=0}, from=3-3, to=4-4]
+  \arrow["{\rm{lift}(g)}", from=2-2, to=3-3]
+  \arrow["{\rm{lift}(f)}", from=1-1, to=2-2]
+  \arrow["\gamma", color={rgb,255:red,214;green,92;blue,92}, from=2-7, to=3-7]
+  \arrow["\id"', color={rgb,255:red,92;green,92;blue,214}, from=1-1, to=2-1]
+  \arrow["{f^*\gamma}"', color={rgb,255:red,92;green,92;blue,214}, from=2-1, to=3-1]
+  \arrow["\gamma"', color={rgb,255:red,92;green,92;blue,214}, from=3-1, to=4-1]
+  \arrow["{\rm{lift}(hg)}"'{pos=0.1}, from=3-2, to=4-4]
+  \arrow["{\rm{lift}(f)}"', from=3-1, to=3-2]
+  \arrow["{\rm{lift}(f)}"', from=2-1, to=2-2]
+  \arrow["\gamma"', from=2-2, to=3-2]
+  \arrow["{\alpha^*a'}", color={rgb,255:red,214;green,92;blue,92}, from=3-7, to=4-7]
+  \arrow["\gamma", color={rgb,255:red,214;green,92;blue,92}, from=1-7, to=2-7]
+  \arrow["h"', from=5-5, to=5-4]
+  \arrow["g"', from=5-6, to=5-5]
+  \arrow["f"', from=5-7, to=5-6]
+  \arrow[maps to, from=4-7, to=5-7]
+  \arrow["{\rm{lift}((hg)f)}", from=4-7, to=4-4]
+  \arrow[""{name=1, anchor=center, inner sep=0}, from=3-5, to=4-4]
+  \arrow["{\rm{lift}(g)}"', from=2-6, to=3-5]
+  \arrow["{\rm{lift}(f)}"', from=1-7, to=2-6]
+  \arrow["{\rm{lift}(h(gf))}"{pos=0.2}, from=3-7, to=4-4]
+  \arrow["{\rm{lift}(gf)}"{pos=0.3}, from=2-7, to=3-5]
+  \arrow[Rightarrow, no head, from=1-1, to=1-7]
+  \arrow[Rightarrow, no head, from=2-2, to=2-6]
+  \arrow[Rightarrow, no head, from=3-3, to=3-5]
+  \arrow["{\rm{lift}(h)}"{description}, shift left=2, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+```agda
+Fibres .lax .hexagon f g h = Nat-path λ a' →
+  has-lift.uniquep₂ ((h ∘ g) ∘ f) a' _ refl _ _ _
+    (Fib.pulllf (base-change-coherence (assoc h g f))
+    ∙[] Fib.pulllf (has-lift.commutesv (h ∘ (g ∘ f)) a' _)
+    ∙[] (refl⟩∘'⟨ Fib.eliml (base-change (g ∘ f) .F-id))
+    ∙[] extendr[] _ (has-lift.commutesv (g ∘ f) _ _))
+    (Fib.pulllf (has-lift.commutesv ((h ∘ g) ∘ f) a' _)
+    ∙[] (refl⟩∘'⟨ Fib.idr _) ∙[] (refl⟩∘'⟨ Fib.idr _)
+    ∙[] extendr[] id-comm (has-lift.commutesp f _ _ _)
+    ∙[] (has-lift.commutesv (h ∘ g) a' _ ⟩∘'⟨refl))
 ```
 </details>
 
