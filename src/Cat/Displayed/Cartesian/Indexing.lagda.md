@@ -219,7 +219,7 @@ which is witnessed by the commutativity of the whole diagram.
 \[\begin{tikzcd}
   {f^*a'} \\
   {\id^*f^*a'} & {f^*a'} \\
-  {(\id \circ f)^*a'} \\
+  {(f \circ \id)^*a'} \\
   {f^*a'} && {a'} \\
   b && a
   \arrow["f", from=5-1, to=5-3]
@@ -227,7 +227,7 @@ which is witnessed by the commutativity of the whole diagram.
   \arrow[maps to, from=4-3, to=5-3]
   \arrow[maps to, from=4-1, to=5-1]
   \arrow["{\lambda^*a'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=4-1]
-  \arrow["{\rm{lift}(\id \circ f)}"{pos=0.4}, from=3-1, to=4-3]
+  \arrow["{\rm{lift}(f \circ \id)}"{pos=0.4}, from=3-1, to=4-3]
   \arrow["\gamma"', color={rgb,255:red,214;green,92;blue,92}, from=2-1, to=3-1]
   \arrow["\upsilon"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=2-1]
   \arrow["{\rm{lift}(f)}", from=2-2, to=4-3]
@@ -258,7 +258,7 @@ is equal to the lift of $f$.
 \[\begin{tikzcd}
   {f^*a'} && {a'} \\
   {f^*\id^*a'} && {\id^*a'} \\
-  {(f \circ \id)^*a'} \\
+  {(\id \circ f)^*a'} \\
   {f^*a'} && {a'} \\
   b && a
   \arrow["f", from=5-1, to=5-3]
@@ -266,7 +266,7 @@ is equal to the lift of $f$.
   \arrow[maps to, from=4-3, to=5-3]
   \arrow[maps to, from=4-1, to=5-1]
   \arrow["{\rho^*a'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=4-1]
-  \arrow["{\rm{lift}(f \circ \id)}"{pos=0.2}, from=3-1, to=4-3]
+  \arrow["{\rm{lift}(\id \circ f)}"{pos=0.2}, from=3-1, to=4-3]
   \arrow["\gamma"', color={rgb,255:red,214;green,92;blue,92}, from=2-1, to=3-1]
   \arrow["{f^*\upsilon}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=2-1]
   \arrow["{\rm{lift}(\id)}"{description}, from=2-3, to=4-3]
