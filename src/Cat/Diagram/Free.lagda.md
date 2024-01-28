@@ -10,8 +10,8 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 ```agda

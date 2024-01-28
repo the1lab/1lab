@@ -5,27 +5,26 @@ description: |
 ---
 <!--
 ```agda
-open import Data.Nat
-
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Monad.Relative
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Initial
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Base
 open import Cat.Diagram.Monad
 open import Cat.Diagram.Free
 open import Cat.Prelude
 
-open import Cat.Displayed.Base
-open import Cat.Displayed.Total
+open import Data.Nat
 
 open import Order.Instances.Nat
 open import Order.Cat
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 ```agda
