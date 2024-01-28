@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Discrete
 open import Cat.Prelude
 
@@ -23,7 +24,7 @@ record is-finite-precategory {o ℓ} (D : Precategory o ℓ) : Type (o ⊔ ℓ) 
   constructor finite-cat
   field
     ⦃ has-finite-Ob ⦄ : Finite (Ob D)
-    ⦃ has-finite-Mor ⦄ : Finite (Mor D)
+    ⦃ has-finite-Arrows ⦄ : Finite (Arrows D)
 
 open is-finite-precategory
 ```

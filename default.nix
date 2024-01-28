@@ -48,7 +48,7 @@ let
     shakefile
 
     # For building the text and maths:
-    gitMinimal sassc
+    gitMinimal nodePackages.sass
 
     # For building diagrams:
     poppler_utils our-texlive

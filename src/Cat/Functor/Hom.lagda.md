@@ -14,7 +14,7 @@ import Cat.Reasoning
 module Cat.Functor.Hom {o h} (C : Precategory o h) where
 ```
 
-# The Hom functor
+# The Hom functor {defines="hom-functor"}
 
 We prove that the assignment of $\hom$-sets in a `Precategory`{.Agda}
 $\cC$ is a `functor`{.Agda}, specifically a bifunctor from $\cC\op
@@ -140,6 +140,13 @@ embedding functor is [[fully faithful]].
   isom .linv _ = idr _
 ```
 
+<!--
+```agda
+よ-is-faithful : is-faithful よ
+よ-is-faithful = fully-faithful→faithful {F = よ} (よ-is-fully-faithful)
+```
+-->
+
 ## The covariant yoneda embedding
 
 One common point of confusion is why category theorists prefer
@@ -174,3 +181,10 @@ As expected, the covariant yoneda embedding is also fully faithful.
     sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
   isom .linv _ = idl _
 ```
+
+<!--
+```agda
+よcov-is-faithful : is-faithful よcov
+よcov-is-faithful = fully-faithful→faithful {F = よcov} (よcov-is-fully-faithful)
+```
+-->

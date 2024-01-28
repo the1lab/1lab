@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -188,6 +187,22 @@ Arrows : Precategory o ℓ → Type (o ⊔ ℓ)
 Arrows C = Σ[ A ∈ C.Ob ] Σ[ B ∈ C.Ob ] (C.Hom A B)
   where module C = Precategory C
 ```
+
+<!--
+```agda
+module _ (C : Precategory o ℓ) where
+  Hom→Arrow : {a b : Ob C} → Hom C a b → Arrows C
+  Hom→Arrow f = _ , _ , f
+
+  Arrows-path
+    : {a b : Arrows C}
+    → (p : a .fst ≡ b .fst)
+    → (q : a .snd .fst ≡ b .snd .fst)
+    → PathP (λ i → Hom C (p i) (q i)) (a .snd .snd) (b .snd .snd)
+    → a ≡ b
+  Arrows-path p q r i = p i , q i , r i
+```
+-->
 
 We now fix a category and prove the correspondence between the space of
 arrows $\Arr{\cC}$, as defined above, and the space of functors $[

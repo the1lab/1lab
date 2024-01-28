@@ -72,7 +72,7 @@ maps $u \to_f v$ which commute with the mediating isomorphisms:
 This fits in a diagram like the one below. Note that the commutativity
 condition is for the lower shape, which is a distorted square.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & u && v \\
   & {P(u)} && {P(v)} \\

@@ -213,7 +213,7 @@ fibration+weak-cocartesian→cocartesian {x} {y} {x'} {y'} {f} {f'} fib weak = c
 To see show this, we need to construct a unique factorisation of some
 morphism $h' : x' \to_{mf} u'$, as depicted in the following diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {} && {u'} \\
   {x'} && {y'} \\
@@ -233,7 +233,7 @@ morphism $h' : x' \to_{mf} u'$, as depicted in the following diagram
 We start by taking the cartesian lift of $m$ to obtain the map $m^{*}$,
 which we have highlighted in red.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && \textcolor{rgb,255:red,214;green,92;blue,92}{y^{*}} && {u'} \\
   {x'} && {y'} \\
@@ -265,7 +265,7 @@ which we have highlighted in red.
 Next, we can construct the morphism $h^{*}$ (highlighted in red) as the
 universal factorisation of $h'$ through $m^{*}$.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {y^{*}} && {u'} \\
   {x'} && {y'} \\
@@ -297,7 +297,7 @@ as $f'$ is weakly cartesian.
       h** = weak.universal h*
 ```
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {y^{*}} && {u'} \\
   {x'} && {y'} \\
@@ -342,7 +342,7 @@ commute.
 Uniqueness is somewhat more delicate. We need to show that the blue cell
 in the following diagram commutes.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {y^{*}} && {u'} \\
   {x'} && {y'} \\
@@ -367,7 +367,7 @@ a composite of a cartesian and vertical morphism, obtained by taking
 the universal factorisation of $m' : y' \to{m \cdot i} u'$. We shall
 denote this morphism as $id*$.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {y^{*}} && {u'} \\
   {x'} && {y'} \\
@@ -392,7 +392,7 @@ However, $h^{**}$ is the *unique* vertical map that factorises $f'$
 through $h^{*}$, so it suffices to show that the cell highlighted in
 blue commutes.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   && {y^{*}} && {u'} \\
   {x'} && {y'} \\

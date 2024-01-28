@@ -222,5 +222,5 @@ make-free-abelian {ℓ} = go where
   go .universal f .preserves .is-group-hom.pres-⋆ =
     Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
   go .commutes f = trivial!
-  go .unique p = ext (Coeq-elim-prop (λ _ → hlevel!) (λ x → p #ₚ x))
+  go .unique p = ext (p #ₚ_)
 ```

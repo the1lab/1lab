@@ -12,10 +12,12 @@ import Cat.Reasoning
 module Cat.Functor.Reasoning
   {o ℓ o' ℓ'}
   {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
-  (F : Functor 𝒞 𝒟) where
+  (F : Functor 𝒞 𝒟)
+  where
 
-module 𝒞 = Cat.Reasoning 𝒞
-module 𝒟 = Cat.Reasoning 𝒟
+private
+  module 𝒞 = Cat.Reasoning 𝒞
+  module 𝒟 = Cat.Reasoning 𝒟
 open Functor F public
 ```
 
@@ -100,6 +102,18 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
 module _ (p : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d) where
   swap : F₁ (a 𝒞.∘ c) ≡ F₁ (b 𝒞.∘ d)
   swap = F-∘ a c ·· p ·· sym (F-∘  b d)
+
+popl : f 𝒟.∘ F₁ a ≡ g → f 𝒟.∘ F₁ (a 𝒞.∘ b) ≡ g 𝒟.∘ F₁ b
+popl p = 𝒟.pushr (F-∘ _ _) ∙ ap₂ 𝒟._∘_ p refl
+
+popr : F₁ b 𝒟.∘ f ≡ g → F₁ (a 𝒞.∘ b) 𝒟.∘ f ≡ F₁ a 𝒟.∘ g
+popr p = 𝒟.pushl (F-∘ _ _) ∙ ap₂ 𝒟._∘_ refl p
+
+shufflel : f 𝒟.∘ F₁ a ≡ g 𝒟.∘ h → f 𝒟.∘ F₁ (a 𝒞.∘ b) ≡ g 𝒟.∘ h 𝒟.∘ F₁ b
+shufflel p = popl p ∙ sym (𝒟.assoc _ _ _)
+
+shuffler : F₁ b 𝒟.∘ f ≡ g 𝒟.∘ h → F₁ (a 𝒞.∘ b) 𝒟.∘ f ≡ (F₁ a 𝒟.∘ g) 𝒟.∘ h
+shuffler p = popr p ∙ (𝒟.assoc _ _ _)
 ```
 
 ## Cancellation

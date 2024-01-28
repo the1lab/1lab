@@ -235,7 +235,7 @@ The full cube is right after the definition:
       i (k = i1) → θ₁ j (~ i)
 ```
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,171;green,43;blue,43}{y} &&&& \textcolor{rgb,255:red,171;green,43;blue,43}{y} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} && \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} \\

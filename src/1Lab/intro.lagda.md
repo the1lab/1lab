@@ -186,7 +186,6 @@ are identified with certain types as in the table below. Note that up to
 a first approximation, we can read each type former as denoting a
 specific _set_, or as denoting a specific _space_.
 
-<div class="overflow-x: auto; overflow-y: hidden; width: 100%">
 | Types                 | Logic                  | Sets                            | Spaces                    |
 |-----------------------|------------------------|---------------------------------|---------------------------|
 | $A$                   | proposition            | set                             | space                     |
@@ -200,7 +199,6 @@ specific _set_, or as denoting a specific _space_.
 | $\prod_{(x : A)}B(x)$ | $\forall{(x : A)}B(x)$ | n-ary product                   | space of sections         |
 | $\sum_{(x : A)}B(x)$  | $\exists{(x : A)}B(x)$ | n-ary disjoint union            | total space               |
 | $x \equiv_A y$        | equality $x = y$       | diagonal $\{ (x,x) : x \in A\}$ | path space $A^\bb{I}$     |
-</div>
 
 This segues nicely into another difference between type theory and set
 theory, which concerns the setup of their deductive systems. A deductive
@@ -840,7 +838,7 @@ discuss the fundamentals of paths, so that the categorical/homotopical
 connections can be made clear. Before we even get started, though, there
 is something that needs to be made very clear:
 
-<div style="display: flex; flex-direction: column; align-items: center;">
+<div class="mathpar">
 <span style="font-size: 20pt">
 _**Paths are not equality!**_
 </span>

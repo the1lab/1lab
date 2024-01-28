@@ -5,6 +5,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Instances.Shape.Interval
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -48,7 +49,7 @@ An isomorphism $f : a \cong b$ **is an identity** if it is an identity
 in the total space of `Hom`{.Agda}, i.e. if there is an object $c : \cC$
 s.t. $(c, c, \id) = (a, b, f)$ in the type $\Sigma_a \Sigma_b (a \to b)$.
 Every isomorphism in a [[univalent category]] is an identity, since we can
-take $c = a$, and the identification in `Mor`{.Agda} follows from
+take $c = a$, and the identification in `Arrows`{.Agda} follows from
 univalence.
 
 <!--
@@ -70,10 +71,10 @@ an equivalence.
 
 ```agda
   action : ∀ {a b : C.Ob} (f : C.Hom a b)
-          → Σ[ c ∈ C.Ob ] (Hom→Mor C (C.id {x = c}) ≡ Hom→Mor C f)
-          → Σ[ c ∈ D.Ob ] (Hom→Mor D (D.id {x = c}) ≡ Hom→Mor D (F.₁ f))
+          → Σ[ c ∈ C.Ob ] (Hom→Arrow C (C.id {x = c}) ≡ Hom→Arrow C f)
+          → Σ[ c ∈ D.Ob ] (Hom→Arrow D (D.id {x = c}) ≡ Hom→Arrow D (F.₁ f))
   action f (c , p) = F.₀ c , q where
-    q : Hom→Mor D D.id ≡ Hom→Mor D (F.₁ f)
+    q : Hom→Arrow D D.id ≡ Hom→Arrow D (F.₁ f)
     q i .fst = F.₀ (p i .fst)
     q i .snd .fst = F.₀ (p i .snd .fst)
     q i .snd .snd = hcomp (∂ i) λ where
@@ -106,9 +107,9 @@ now in $\cD$. But because $\cD$ is a univalent category, $Fi$ is
 an identity, and by $F$'s amnesia, so is $i$.
 
 ```agda
-      p : Σ[ c ∈ C.Ob ] Path (Mor C) (c , c , C.id) (A , B , isom .C.to)
+      p : Σ[ c ∈ C.Ob ] Path (Arrows C) (c , c , C.id) (A , B , isom .C.to)
       p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $
-            F.₀ A , Mor-path D refl (d-cat .to-path isom')
+            F.₀ A , Arrows-path D refl (d-cat .to-path isom')
                       (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 

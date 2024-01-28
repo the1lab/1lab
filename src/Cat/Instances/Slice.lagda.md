@@ -77,7 +77,7 @@ $f$ and $g$ as _families indexed by $c$_, commutativity of the triangle
 says that the map $h$ "respects reindexing", or less obliquely
 "preserves fibres".
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   & c
@@ -173,7 +173,7 @@ commutativity condition for $f$) and the rhombus (the commutativity
 condition for $g$) both commute, then so does the larger triangle (the
 commutativity for $g \circ f$).
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   x && y && z \\
   & c \\
@@ -313,7 +313,7 @@ f$ and $q : p \to g$ over $c$ is given precisely by evidence that $fq =
 gp$, meaning that they fit neatly around our pullback diagram, as shown
 in the square below.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   Q \\
   \& {a\times_bc} \&\& a \\
@@ -567,11 +567,7 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = ext λ y → Σ-path (sym (happly (x .commutes) _))
-      ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
-                    (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
-      ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
-      ·· transport-refl _)
+    linv x = ext λ y s → Σ-pathp (sym (x .commutes $ₚ _)) (to-pathp⁻ refl)
 ```
 -->
 

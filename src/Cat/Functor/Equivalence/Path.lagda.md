@@ -47,7 +47,7 @@ univalence it induces an equivalence $\cC_0 \equiv \cD_0$. The
 path between `Hom`{.Agda}-sets is slightly more complicated. It is,
 essentially, the dashed line in the diagram
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(x,y)} \\
   \\

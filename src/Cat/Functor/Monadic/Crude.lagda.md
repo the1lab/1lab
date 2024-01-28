@@ -230,7 +230,7 @@ unique dotted map which fits into
 
 But observe that the diagram
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   UFUFUA && UFUA & {UA,}
   \arrow[two heads, from=1-3, to=1-4]

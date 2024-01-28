@@ -394,7 +394,7 @@ dependent functions, the above is equivalent to showing that
 `deg`{.Agda} produces identical results given an element $b : G$ and
 loops $x_0$, $x_1$ fiting into a commutative square
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   {\rm{base}} \&\& {\rm{base}} \\
   \\

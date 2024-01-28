@@ -11,7 +11,7 @@ export interface PromptItem {
   readonly onlySearch?: boolean;
 
   render(key: string, matched?: MatchedSpan): Content;
-  activate(): ActionAfter;
+  activate(aux?: boolean): ActionAfter;
 }
 
 export const highlight = (original: string, match?: MatchedSpan): Content => {

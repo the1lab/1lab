@@ -68,7 +68,7 @@ module _
 -->
 
 ```agda
-  record Lifting (F : Functor J B) : Type (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) where
+  record Lifting (F : Functor J B) : Type (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) where
     no-eta-equality
     field
       F₀'   : (j : J.Ob) → Ob[ F .F₀ j ]

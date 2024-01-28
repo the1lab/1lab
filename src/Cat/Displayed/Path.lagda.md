@@ -208,7 +208,7 @@ _against the ungluing_ of the paths in the underlying category, in the
 right endpoint category $\cF$. Diagrammatically, this looks something
 like
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{E}[x]} && {\mathcal{F}[x]} \\
   \\

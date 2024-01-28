@@ -71,7 +71,7 @@ composition**, will be written $\alpha \otimes \beta$. As for why it's
 called _vertical_ composition, note that it reduces pasting diagrams of
 the form
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {B\text{.}}
   \arrow[""{name=0, anchor=center, inner sep=0}, curve={height=-18pt}, from=1-1, to=1-3]
@@ -115,7 +115,7 @@ classes of maps and all the composition operations. Observe that the
 action of the composition functor on homotopies reduces "horizontal"
 pasting diagrams like
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A & B & {C\text{,}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{g_1}", curve={height=-12pt}, from=1-1, to=1-2]
@@ -245,7 +245,7 @@ one for reducing sequences of associators, the **pentagon identity**. As
 for where the name "pentagon" comes from, the path `pentagon`{.Agda}
 witnesses commutativity of the diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   && {f(g(hi))} \\
   \\
@@ -305,7 +305,7 @@ module _ (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-## The bicategory of categories
+## The bicategory of categories {defines="Cat"}
 
 Just like the prototypal example of categories is the category of sets,
 the prototypal example of bicategory is the bicategory of categories. We
@@ -381,7 +381,7 @@ directly:
     where module E = Cr E
 ```
 
-# Lax functors
+# Lax functors {defines="lax-functor"}
 
 In the same way that the definition of bicategory is obtained by
 starting with the definition of category and replacing the $\hom$-sets
@@ -450,7 +450,7 @@ witnesses commutativity for, but leave the `right-unit`{.Agda} and
 `left-unit`{.Agda} diagrams undrawn (they're boring commutative
 squares).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {F(hg)Ff} && {F((hg)f)} \\
   \\
@@ -482,7 +482,7 @@ squares).
       → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
-## Pseudofunctors
+## Pseudofunctors {defines="pseudofunctor"}
 
 As mentioned above, a lax functor with invertible unitors and compositor
 is called a **pseudofunctor**. Every pseudofunctor has an underlying
@@ -518,7 +518,7 @@ record
   υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
 ```
 
-# Lax transformations
+# Lax transformations {defines="lax-transformation"}
 
 By dropping the invertibility requirement when generalising natural
 transformations to lax functors, we obtain the type of **lax
@@ -621,7 +621,7 @@ We abbreviate the types of lax- and pseudonatural transformations by
   _=>ₚ_ = Pseudonatural
 ```
 
-# Modifications
+# Modifications {defines="modification"}
 
 When dealing with 1-categorical data (categories, functors, and natural
 transformations), the commutativity in 2-cells is witnessed by equations

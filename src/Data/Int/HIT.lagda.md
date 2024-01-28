@@ -369,7 +369,7 @@ and imposes no further structure on $X$[^1]:
 
 [^1]: In the diagram, we write $\rm{S}x$ for `suc x`.
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {f(a,b,x,y)} && {f(a,b,\rm{S}x,\rm{S}y)} \\
   \\

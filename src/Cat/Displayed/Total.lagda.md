@@ -144,7 +144,7 @@ total-iso→iso[] f = make-iso[ total-iso→iso f ]
 [[Pullbacks]] in the total category of $\cE$ have a particularly nice
 characterization. Consider the following pair of commuting squares.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   & {P'} && {Y'} \\
   {X'} && {X'} \\

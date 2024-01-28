@@ -355,6 +355,8 @@ open import Cat.Diagram.Equaliser.RegularMono -- Regular monomorphisms
 open import Cat.Diagram.Monad -- Monads
 open import Cat.Diagram.Monad.Limits -- Limits in Eilenberg-Moore categories
 open import Cat.Diagram.Monad.Codensity -- Codensity monads
+open import Cat.Diagram.Monad.Extension -- Extension systems
+open import Cat.Diagram.Monad.Relative -- Relative extension systems
 
 open import Cat.Diagram.Zero -- Zero objects
 ```
