@@ -1,15 +1,26 @@
+@mixin left-bordered($bg) {
+  position: relative;
+
+  &:before {
+    content: " ";
+    background-color: $bg;
+
+    height: 100%;
+    width: $left-border-width;
+
+    position: absolute;
+    left: calc(-1 * #{$left-border-distance} - #{$left-border-width});
+  }
+}
+
 @mixin material($bg) {
-  border-left: 5px solid $bg;
+  @include left-bordered($bg);
+  box-sizing: border-box;
 
-  padding-bottom: 0.3em;
-
-  >:nth-child(2) { margin-block-start: 0; }
+  >:nth-child(1) { margin-block-start: 0; }
   >:nth-last-child(1) { margin-block-end: 0; }
 
-  padding-left: 1rem;
-
-  margin-block-start: 1em;
-  margin-block-end: 1em;
+  margin-block: 1em;
 }
 
 @mixin highlight($name, $bg, $icon) {
@@ -25,13 +36,8 @@
     }
   }
 
-  div.#{$name} {
+  div.#{$name}, details.#{$name} {
     @include material($bg);
-    @include contains-code();
-  }
-
-  details.#{$name} {
-    border-left: 5px solid $bg;
   }
 }
 
@@ -41,17 +47,16 @@
   align-items: center;
 }
 
-@mixin contains-code {
-  pre.Agda, div.sourceCode {
-    /* Undo the indentation so that code stays aligned. */
-    padding-left: 0;
-    border-left:  0;
-    margin-left:  0;
-  }
-
-}
-
 @mixin monospaced {
   font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
-  font-weight: 400;
+  font-weight: 500;
+  font-size:   var(--code-font-size);
+
+  font-variant-ligatures: none;
+}
+
+@mixin widescreen {
+  @media only screen and (min-width: $desktop-layout-width) {
+    @content;
+  }
 }

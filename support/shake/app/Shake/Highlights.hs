@@ -59,7 +59,7 @@ renderHighlights stream = do
       = do
       icon <- iconSpan icn
       children <- traverse go children
-      pure $ TagBranch "div" attr $ icon:children
+      pure $ TagBranch "div" (("class", "highlighted " <> clz):attr) $ icon:children
 
     go t@(TagBranch "details" attr children)
       | Just (sattr, schild, rest) <- summary children

@@ -115,7 +115,7 @@ Relational composition is slightly more intricate. Given relations $(s,
 t) : R \mono B \times C$, $(s', t') : S \mono A \times B$, we may
 compose them at the level of spans by taking the pullback
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   && {R \times_BS} \\
   & S && R \\
@@ -233,7 +233,7 @@ quotients of a larger, "unbiased" composition.
 
 Put all your maps in order and form the huge pullback
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   &&& X \\
   && {T \times_B S} && {S \times_C R} \\
@@ -314,7 +314,7 @@ $\xi_2\beta = qx_2$.
 Now, both squares in the diagram below are pullbacks, so the large
 rectangle is a pullback, too.
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   X && {T \times_CS} && T \\
   \\
@@ -343,7 +343,7 @@ Now, by definition, we have $\xi_1\alpha = u_1x_1$, and $s_1v_1$ is also
 the source map $\pi_1iq : I \to B$ in the composite $\phi\psi$, so we
 may rewrite the pullback rectangle as
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   X && {I \times_C T} && I \\
   \\

@@ -52,7 +52,7 @@ of the language of higher categories:
 the "pentagonator") witnessing commutativity of the diagram below, where
 all the faces are `α`:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {(a \star b) \star (c\star d)} \\
   {((a \star b) \star c)\star d} && {a\star(b\star(c\star d)))} \\

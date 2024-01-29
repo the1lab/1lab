@@ -136,7 +136,7 @@ remind ourselves of the universal property:
 
 [codomain]: Cat.Displayed.Instances.Slice.html#as-a-fibration
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{u'} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x \times_y y'} && {y'} \\
@@ -222,7 +222,7 @@ factorisation looks like a kite:
 Now compare this with the universal property required of a weak
 co-cartesian lift:
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {x'} && {f_!x'} && {u'} \\
   \\

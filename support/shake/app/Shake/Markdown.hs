@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, LambdaCase #-}
+{-# LANGUAGE DerivingStrategies #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -46,7 +47,9 @@ import Text.Pandoc
 import Shake.LinkReferences
 import Shake.SearchData
 import Shake.Highlights
+import Shake.Diagram (diagramHeight)
 import Shake.Options
+import Shake.Recent (recentAdditions, renderCommit)
 import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
@@ -54,6 +57,8 @@ import Shake.Git
 import HTML.Emit
 
 import Definitions
+
+import System.IO.Unsafe
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -185,7 +190,7 @@ buildMarkdown modname input output = do
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
-  markdown <-
+  Pandoc meta blocks <-
       walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
     . walk uncommentAgda
@@ -195,14 +200,17 @@ buildMarkdown modname input output = do
   -- maths through KaTeX but before adding the emoji to headers.
   let search = query (getHeaders (Text.pack modname)) markdown
 
-  (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
-  need dependencies
-
   baseUrl <- getBaseUrl
+
+  filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl)) blocks
+  let (bs, mss) = unzip filtered
+      MarkdownState references = fold mss
+      markdown = Pandoc meta bs
+
   digest <- do
-    cssDigest <- getFileDigest "_build/html/css/default.css"
+    cssDigest     <- getFileDigest "_build/html/css/default.css"
     startJsDigest <- getFileDigest "_build/html/start.js"
-    mainJsDigest <- getFileDigest "_build/html/main.js"
+    mainJsDigest  <- getFileDigest "_build/html/main.js"
     pure . Context . Map.fromList $
       [ ("css",       toVal (Text.pack cssDigest))
       , ("start-js",  toVal (Text.pack startJsDigest))
@@ -281,51 +289,62 @@ patchInline _ (Str s)
 
 patchInline _ h = pure h
 
-
-data MarkdownState = MarkdownState
+newtype MarkdownState = MarkdownState
   { mdReferences :: [Val Text] -- ^ List of references extracted from Pandoc's "reference" div.
-  , mdDependencies :: [String] -- ^ Additional files this markdown file depends on.
   }
+  deriving newtype (Semigroup, Monoid)
 
-instance Semigroup MarkdownState where
-  (MarkdownState r s) <> (MarkdownState r' s') = MarkdownState (r <> r') (s <> s')
-
-instance Monoid MarkdownState where
-  mempty = MarkdownState mempty mempty
-
+diagramResource :: Resource
+diagramResource = unsafePerformIO $ newResourceIO "diagram" 1
+{-# NOINLINE diagramResource #-}
 
 -- | Patch a Pandoc block element.
 patchBlock
-  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f)
-  => Block
+  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f, MonadTrans t, f ~ t Action)
+  => String
+  -> Block
   -> f Block
 -- Make all headers links, and add an anchor emoji.
-patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
+patchBlock _ (Header i a@(ident, _, _) inl) = pure $ Header i a
   $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
   : inl
   ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
 
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
-patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
+patchBlock _ (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
     digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
     title = fromMaybe "commutative diagram" (lookup "title" attrs)
-  liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-  tell mempty {
-    mdDependencies =
-      [ "_build/html/light-" <> digest <.> "svg"
-      , "_build/html/dark-" <> digest <.> "svg"
-      ]
-    }
+
+    light = "_build/html/light-" <> digest <.> "svg"
+    dark  = "_build/html/dark-" <> digest <.> "svg"
+
+  height <- lift do
+    -- We have to lock the diagram directory to prevent race conditions
+    -- between two Markdown tasks that are trying to write the same
+    -- diagram.
+    -- This isn't the best in terms of atomicity, but it does preserve
+    -- the nice property that diagrams are globally shared by their
+    -- contents.
+    withResource diagramResource 1 $ liftIO $
+      Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
+
+    need [ light, dark ]
+    diagramHeight light
+
+  let attrs' = ("style", "height: " <> Text.pack (show height) <> "px;"):attrs
 
   pure $ Div ("", ["diagram-container"], [])
-    [ Plain [ Image (id, "diagram diagram-light":classes, attrs) [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
-    , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
+    [ Plain [ Image (id, "diagram diagram-light":classes, attrs') [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
+    , Plain [ Image (id, "diagram diagram-dark":classes, attrs')  [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
     ]
+
+patchBlock base (Div attr@("recent-additions", _, _) []) =
+  Div attr . map (renderCommit base) <$> lift recentAdditions
 
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
-patchBlock (Div ("refs", _, _) body) = do
+patchBlock _ (Div ("refs", _, _) body) = do
   for_ body \ref -> case ref of
     (Div (id, _, _) body) -> do
       -- If our citation is a single paragraph, don't wrap it in <p>.
@@ -345,7 +364,7 @@ patchBlock (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock h = pure h
+patchBlock _ h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.

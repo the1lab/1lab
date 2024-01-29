@@ -219,7 +219,7 @@ called $\psi$. Moreover, if $f : x \to y$ is a morphism in the "shape"
 category $\cJ$, then $F(f)\psi_x = \psi_y$, i.e., the $\psi$ maps fit into
 triangles
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {\mathrm{apex}} \\
   \\
@@ -867,7 +867,7 @@ This suggests to build another indexed product of all the *codomains* of arrows 
 the diagram, taking the first morphism to be the projection of the codomain
 and the second morphism to be the projection of the domain postcomposed with $f$:
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
 	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Arrows}(\mathcal J)} F(b)}
 	\arrow["{\pi_b}", shift left, from=1-1, to=1-2]

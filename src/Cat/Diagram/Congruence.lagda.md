@@ -380,7 +380,7 @@ coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
 A$, then we call $q$ the **quotient map**, and we call $A/R$ the
 **quotient** of $R$.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   R & {A \times A} & A & {A/R}
   \arrow["m", hook, from=1-1, to=1-2]

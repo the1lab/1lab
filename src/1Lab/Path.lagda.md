@@ -152,7 +152,7 @@ operations on the interval, give a way of extending from $n$-dimensional
 cubes to $n+k$-dimensional cubes. For instance, if we have a path like
 the one below, we can extend it to any of a bunch of different squares:
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b
   \arrow[from=1-1, to=1-3]
@@ -733,7 +733,7 @@ private
 This represents the following shape: Two disconnected points, with
 completely unrelated values at each endpoint of the interval.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\rm{true}} && {\rm{false}}
 \end{tikzcd}\]
@@ -781,7 +781,7 @@ path is a line in `Bool`, which is `true`{.Agda} on the left endpoint of
 the interval (in fact, it is `true`{.Agda} everywhere), so we say that
 `refl`{.Agda} _extends_ the partial element.
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{\rm{true}} && {\rm{true}}
   \arrow["{\refl}", from=1-1, to=1-3]
@@ -1152,7 +1152,7 @@ The term `cube` above has the following cube as a boundary. Since it is
 a filler, there is a missing face at the bottom which has no name, so we
 denote it by `hcomp...` in the diagram.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,153;green,92;blue,214}{x} &&&& \textcolor{rgb,255:red,153;green,92;blue,214}{x} \\
   & \textcolor{rgb,255:red,214;green,92;blue,92}{y} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\

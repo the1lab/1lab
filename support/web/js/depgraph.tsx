@@ -431,9 +431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addExpand = () => {
     ruler.style.display = "block";
 
-    const expand = <button style="display: inline-block">
-      Maximise network
-    </button>
+    const expand = <button style="">Maximise network</button>;
 
     expand.addEventListener("click", () => {
       ruler.style.display = "none";
@@ -443,7 +441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     reset();
-    container.appendChild(expand);
+    container.appendChild(<div class="mathpar">{expand}</div>);
   };
 
   addExpand();

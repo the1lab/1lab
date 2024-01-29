@@ -60,7 +60,7 @@ associativity condition is given by the square below, and we trust that
 the reader will understand why will not attempt to draw the identity
 constraints.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   {C_1 \times_{C_0} (C_1 \times_{C_0} C_1)} &&& {C_1 \times_{C_0} C_1} \\
   \\
@@ -109,7 +109,7 @@ as before. We will define **internal morphisms** between _generalised
 objects_ $x, y : \Gamma \to \bC_0$ to be morphisms $f : \Gamma \to C_1$
 making the following diagram commute.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   & \Gamma \\
   \\

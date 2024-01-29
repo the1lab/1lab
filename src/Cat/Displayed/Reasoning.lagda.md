@@ -256,27 +256,27 @@ _⟩∘'⟨_
       {f₁' : E.Hom[ f ] b' c'} {f₂' : E.Hom[ f' ] b' c'}
       {g₁' : E.Hom[ g ] a' b'} {g₂' : E.Hom[ g' ] a' b'}
       {p : f ≡ f'} {q : g ≡ g'}
-  → PathP (λ i → E.Hom[ p i ] b' c') f₁' f₂'
-  → PathP (λ i → E.Hom[ q i ] a' b') g₁' g₂'
-  → hom[ p ] f₁' E.∘' hom[ q ] g₁' ≡ f₂' E.∘' g₂'
-p ⟩∘'⟨ q = ap₂ E._∘'_ (from-pathp p) (from-pathp q)
+  → f₁' E.≡[ p ] f₂'
+  → g₁' E.≡[ q ] g₂'
+  → f₁' E.∘' g₁' E.≡[ ap₂ B._∘_ p q ] f₂' E.∘' g₂'
+(p ⟩∘'⟨ q) i = p i E.∘' q i
 
 _⟩∘'⟨refl
   : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a' b' c'}
       {f₁' : E.Hom[ f ] b' c'} {f₂' : E.Hom[ f' ] b' c'} {g' : E.Hom[ g ] a' b'}
       {p : f ≡ f'}
-  → PathP (λ i → E.Hom[ p i ] b' c') f₁' f₂'
-  → hom[ p ] f₁' E.∘' g' ≡ f₂' E.∘' g'
-p ⟩∘'⟨refl = ap₂ E._∘'_ (from-pathp p) refl
+  → f₁' E.≡[ p ] f₂'
+  → f₁' E.∘' g' E.≡[ p B.⟩∘⟨refl ] f₂' E.∘' g'
+_⟩∘'⟨refl {g' = g'} p = apd (λ _ → E._∘' g') p
 
 refl⟩∘'⟨_
   : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {a' b' c'}
       {f' : E.Hom[ f ] b' c'}
       {g₁' : E.Hom[ g ] a' b'} {g₂' : E.Hom[ g' ] a' b'}
       {q : g ≡ g'}
-  → PathP (λ i → E.Hom[ q i ] a' b') g₁' g₂'
-  → f' E.∘' hom[ q ] g₁' ≡ f' E.∘' g₂'
-refl⟩∘'⟨ p = ap₂ E._∘'_ refl (from-pathp p)
+  → g₁' E.≡[ q ] g₂'
+  → f' E.∘' g₁' E.≡[ B.refl⟩∘⟨ q ] f' E.∘' g₂'
+refl⟩∘'⟨_ {f' = f'} p = apd (λ _ → f' E.∘'_) p
 
 split⟩⟨_
   : ∀ {a b c} {f f' : B.Hom b c} {g g' : B.Hom a b} {a' b' c'}

@@ -77,7 +77,7 @@ $f$ and $g$ as _families indexed by $c$_, commutativity of the triangle
 says that the map $h$ "respects reindexing", or less obliquely
 "preserves fibres".
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   & c
@@ -173,7 +173,7 @@ commutativity condition for $f$) and the rhombus (the commutativity
 condition for $g$) both commute, then so does the larger triangle (the
 commutativity for $g \circ f$).
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   x && y && z \\
   & c \\
@@ -313,7 +313,7 @@ f$ and $q : p \to g$ over $c$ is given precisely by evidence that $fq =
 gp$, meaning that they fit neatly around our pullback diagram, as shown
 in the square below.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   Q \\
   \& {a\times_bc} \&\& a \\

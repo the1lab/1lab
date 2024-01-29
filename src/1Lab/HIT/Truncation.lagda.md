@@ -387,7 +387,7 @@ we sketch the details of the next level for the curious reader.
 The next coherence involves a tetrahedron all of whose faces are $\rm{coh}$,
 or, since we're doing cubical type theory, a "cubical tetrahedron":
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
 	a &&& a \\
 	& b & b \\
