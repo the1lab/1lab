@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∈_)
+open import 1Lab.Prelude
 
 open import Data.Bool
 open import Data.List hiding (_++_)

@@ -203,3 +203,16 @@ to an invertible natural transformation, resp. natural isomorphism.
     ate .is-natural = inverse-is-natural eta _ (λ x → D.is-invertible.invl (i x)) (λ x → D.is-invertible.invr (i x))
 ```
 -->
+
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open _=>_
+
+  id-nat-commute : ∀ (α β : Id {C = C} => Id) → α ∘nt β ≡ β ∘nt α
+  id-nat-commute α β = Nat-path λ x → α .is-natural _ _ _
+```
+-->

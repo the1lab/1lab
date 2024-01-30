@@ -22,7 +22,7 @@ open Functor
 ```
 -->
 
-# Locally discrete bicategories
+# Locally discrete bicategories {defines="locally-discrete-bicategory"}
 
 Let $\cC$ be a precategory. We can define a prebicategory $\bf{C}$ by
 letting the hom-1-categories of $\bf{C}$ be the [discrete categories] on

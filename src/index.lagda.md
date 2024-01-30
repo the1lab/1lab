@@ -994,6 +994,8 @@ open import Logic.Propositional.Classical.CNF
 -- Conjunctive normal forms
 open import Logic.Propositional.Classical.SAT
 -- DPLL SAT solver
+open import Logic.Propositional.Classical.Compactness
+-- Compactness of classical propositional logic is a constructive taboo
 ```
 
 # Algebra
