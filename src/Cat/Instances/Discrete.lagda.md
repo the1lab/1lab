@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Instances.Product
 open import Cat.Morphism
 open import Cat.Prelude
 
@@ -169,9 +170,23 @@ Disc-natural
   → F => G
 Disc-natural fam .η = fam
 Disc-natural {C = C} {F = F} {G = G} fam .is-natural x y f =
-  J (λ y p → fam y C.∘ F .F₁ p ≡ (G .F₁ p C.∘ fam x))
+  J (λ y p → fam y C.∘ F .F₁ p ≡ G .F₁ p C.∘ fam x)
     (C.elimr (F .F-id) ∙ C.introl (G .F-id))
     f
+  where module C = Cat.Reasoning C
+
+Disc-natural₂
+  : ∀ {X : Type ℓ} {Y : Type ℓ'}
+  → {issx : is-groupoid X} {issy : is-groupoid Y}
+  → {F G : Functor (Disc X issx ×ᶜ Disc Y issy) C}
+  → ((x : X × Y) → C .Hom (F .F₀ x) (G .F₀ x))
+  → F => G
+Disc-natural₂ fam .η = fam
+Disc-natural₂ {C = C} {F = F} {G = G} fam .is-natural x y (p , q) =
+  J (λ y' p' → fam y' C.∘ F .F₁ (ap fst p' , ap snd p')
+             ≡ G .F₁ (ap fst p' , ap snd p') C.∘ fam x)
+    (C.elimr (F .F-id) ∙ C.introl (G .F-id))
+    (Σ-pathp p q)
   where module C = Cat.Reasoning C
 ```
 -->

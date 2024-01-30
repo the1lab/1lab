@@ -114,7 +114,7 @@ your diagram with Quiver, copy the LaTeX export, sans the permalink
 comment, and paste it — maths delimiters and all — into a code block.
 The indentation **should** be changed from tabs to two spaces.
 
-    ~~~{.quiver .short-2}
+    ~~~{.quiver}
     \[\begin{tikzcd}
       a && b
       \arrow[from=1-1, to=1-3]

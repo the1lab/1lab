@@ -256,3 +256,10 @@ Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Fin
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
 ```
 -->
+
+<!--
+```agda
+card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
+card-zero→empty ∥e∥ a = ∥-∥-rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
+```
+-->

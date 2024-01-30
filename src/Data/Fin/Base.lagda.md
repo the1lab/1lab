@@ -186,6 +186,9 @@ Fin-elim
   → ∀ {n} (i : Fin n) → P i
 Fin-elim P pfzero pfsuc fzero = pfzero
 Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
+
+fin-absurd : Fin 0 → ⊥
+fin-absurd ()
 ```
 -->
 
