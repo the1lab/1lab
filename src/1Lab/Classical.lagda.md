@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Bool
 open import Data.Dec
+open import Data.Sum
 
 open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Space.Suspension
@@ -58,6 +59,32 @@ DNE→LEM dne P = dne (el (Dec ∣ P ∣) hlevel!) λ k → k (no λ p → k (ye
 
 LEM≃DNE : LEM ≃ DNE
 LEM≃DNE = prop-ext LEM-is-prop DNE-is-prop LEM→DNE DNE→LEM
+```
+
+## Weak excluded middle {defines="weak-excluded-middle"}
+
+The **weak law of excluded middle** (WLEM) is a slightly weaker variant
+of excluded middle which asserts that every proposition is either false
+or not false.
+
+```agda
+WLEM : Type
+WLEM = ∀ (P : Ω) → Dec (¬ ∣ P ∣)
+```
+
+As the name suggests, the law of excluded middle implies the weak law
+of excluded middle.
+
+```agda
+LEM→WLEM : LEM → WLEM
+LEM→WLEM lem P = lem (P →Ω ⊥Ω)
+```
+
+The weak law of excluded middle is also a proposition.
+
+```agda
+WLEM-is-prop : is-prop WLEM
+WLEM-is-prop = hlevel!
 ```
 
 ## The axiom of choice {defines="axiom-of-choice"}

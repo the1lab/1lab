@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∈_)
+open import 1Lab.Prelude
 
 open import Data.Bool
 open import Data.List hiding (_++_ ; drop ; tabulate)
@@ -52,9 +52,9 @@ _++_ : ∀ {Γ} → Ctx Γ → Ctx Γ → Ctx Γ
 We also define a membership relation for contexts.
 
 ```agda
-data _∈_ {Γ : Nat} (P : Proposition Γ) : Ctx Γ → Type where
-  here  : ∀ {ψ} → P ∈ (ψ ⨾ P)
-  there : ∀ {ψ Q} → P ∈ ψ → P ∈ (ψ ⨾ Q)
+data _∈ᶜ_ {Γ : Nat} (P : Proposition Γ) : Ctx Γ → Type where
+  here  : ∀ {ψ} → P ∈ᶜ (ψ ⨾ P)
+  there : ∀ {ψ Q} → P ∈ᶜ ψ → P ∈ᶜ (ψ ⨾ Q)
 ```
 
 <!--
@@ -80,7 +80,7 @@ Our first rule is pretty intuitive: If `P` is in our hypotheses `ψ`,
 then we can deduce `P` from `ψ`.
 
 ```agda
-  hyp : ∀ {P} → P ∈ ψ → ψ ⊢ P
+  hyp : ∀ {P} → P ∈ᶜ ψ → ψ ⊢ P
 ```
 
 Next, we give an introduction rule for "true" and an elimination rule
@@ -170,7 +170,7 @@ inc-ctx : Ctx Γ → Ctx (suc Γ)
 inc-ctx []      = []
 inc-ctx (ψ ⨾ P) = inc-ctx ψ ⨾ inc-prop P
 
-inc-atom : P ∈ ψ → inc-prop P ∈ inc-ctx ψ
+inc-atom : P ∈ᶜ ψ → inc-prop P ∈ᶜ inc-ctx ψ
 inc-atom here      = here
 inc-atom (there x) = there (inc-atom x)
 
@@ -200,7 +200,7 @@ bump-ctx : Ctx Γ → Ctx (suc Γ)
 bump-ctx []      = []
 bump-ctx (ψ ⨾ P) = bump-ctx ψ ⨾ bump-prop P
 
-bump-atom : P ∈ ψ → bump-prop P ∈ bump-ctx ψ
+bump-atom : P ∈ᶜ ψ → bump-prop P ∈ᶜ bump-ctx ψ
 bump-atom here      = here
 bump-atom (there p) = there (bump-atom p)
 
@@ -323,7 +323,7 @@ In categorical terms, this induces a presheaf on the category of
 contexts.
 
 ```agda
-rename-hyp : Rename ψ θ → P ∈ θ → P ∈ ψ
+rename-hyp : Rename ψ θ → P ∈ᶜ θ → P ∈ᶜ ψ
 rename-hyp (drop rn) mem         = there (rename-hyp rn mem)
 rename-hyp (keep rn) here        = here
 rename-hyp (keep rn) (there mem) = there (rename-hyp rn mem)
@@ -431,11 +431,11 @@ propositions.
 “⋀” []      = “⊤”
 “⋀” (ψ ⨾ P) = “⋀” ψ “∧” P
 
-⋀-intro : (∀ {P} → P ∈ ψ → θ ⊢ P) → θ ⊢ “⋀” ψ
+⋀-intro : (∀ {P} → P ∈ᶜ ψ → θ ⊢ P) → θ ⊢ “⋀” ψ
 ⋀-intro {ψ = []}    pfs = ⊤-intro
 ⋀-intro {ψ = ψ ⨾ P} pfs = ∧-intro (⋀-intro (pfs ∘ there)) (pfs here)
 
-⋀-elim : P ∈ ψ → θ ⊢ “⋀” ψ → θ ⊢ P
+⋀-elim : P ∈ᶜ ψ → θ ⊢ “⋀” ψ → θ ⊢ P
 ⋀-elim here      p = ∧-elim-r p
 ⋀-elim (there x) p = ⋀-elim x (∧-elim-l p)
 ```
@@ -529,7 +529,7 @@ following: if `ψ ⊢ P` is provable, then we have the semantic entailment
 mechanical.
 
 ```agda
-hyp-sound : ∀ {Γ} {ψ : Ctx Γ} {P : Proposition Γ} → P ∈ ψ → ψ ⊨ P
+hyp-sound : ∀ {Γ} {ψ : Ctx Γ} {P : Proposition Γ} → P ∈ᶜ ψ → ψ ⊨ P
 hyp-sound here      ρ hyps-true = and-reflect-true-r hyps-true
 hyp-sound (there m) ρ hyps-true = hyp-sound m ρ (and-reflect-true-l hyps-true)
 
