@@ -525,7 +525,7 @@ categorical *inverse* in the total localisation $\cC\loc{\cC}$.
 As we put together the construction of the `Free-groupoid`{.Agda}, we
 should note the following rephrasing of its universal property: it is
 the [[left adjoint]] to the inclusion of groupoids into
-categories,[^biadjunction] which fits into an adjoint *cylinder*
+categories,[^biadjunction] which fits into an adjoint *triple*
 
 $$
 \operatorname{Free} \dashv U \dashv \operatorname{Core}
