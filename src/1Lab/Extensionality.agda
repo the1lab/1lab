@@ -350,7 +350,19 @@ Extensional-tr-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path h = funext $
 Extensional-tr-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path-over p =
   is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (fun-is-hlevel 2 c-set)) _ _
 
+Extensional-Σ-∥∥
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'} ⦃ ext : Extensional A ℓr ⦄
+  → Extensional (Σ[ a ∈ A ] ∥ B a ∥) ℓr
+Extensional-Σ-∥∥ ⦃ sa ⦄ .Pathᵉ (x , _) (y , _) = sa .Pathᵉ x y
+Extensional-Σ-∥∥ ⦃ sa ⦄ .reflᵉ (x , _) = sa .reflᵉ x
+Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path p = Σ-prop-path! (sa .idsᵉ .to-path p)
+Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path-over p = sa .idsᵉ .to-path-over p
+
 instance
+  extensionality-Σ-∥∥
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Extensionality (Σ[ a ∈ A ] ∥ B a ∥)
+  extensionality-Σ-∥∥ = record { lemma = quote Extensional-Σ-∥∥ }
+
   extensionality-tr-map
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     → Extensionality (∥ A ∥ → B)

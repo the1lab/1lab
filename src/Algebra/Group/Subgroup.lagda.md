@@ -126,19 +126,6 @@ giving the element $xy$ in the fibre over $ab$.
 
 <!--
 ```agda
-Extensional-Σ-∥∥
-  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'} ⦃ ext : Extensional A ℓr ⦄
-  → Extensional (Σ[ a ∈ A ] ∥ B a ∥) ℓr
-Extensional-Σ-∥∥ ⦃ sa ⦄ .Pathᵉ (x , _) (y , _) = sa .Pathᵉ x y
-Extensional-Σ-∥∥ ⦃ sa ⦄ .reflᵉ (x , _) = sa .reflᵉ x
-Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path p = Σ-prop-path! (sa .idsᵉ .to-path p)
-Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path-over p = sa .idsᵉ .to-path-over p
-
-instance
-  Extensionality-Σ-∥∥
-    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Extensionality (Σ[ a ∈ A ] ∥ B a ∥)
-  Extensionality-Σ-∥∥ = record { lemma = quote Extensional-Σ-∥∥ }
-
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   private
     module A = Group-on (A .snd)
