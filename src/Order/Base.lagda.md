@@ -219,6 +219,11 @@ instance
   Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
   Funlike-Monotone = record { _#_ = hom }
 
+  Membership-Monotone
+    : ∀ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'} ⦃ u : Underlying ⌞ Q ⌟ ⦄
+    → Membership ⌞ P ⌟ (Monotone P Q) _
+  Membership-Monotone = Funlike→membership
+
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
   → {f : Monotone (P i0) (Q i0)} {g : Monotone (P i1) (Q i1)}

@@ -184,6 +184,8 @@ record
   is-group-hom
     {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     (G : Group-on A) (G' : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ') where
+  no-eta-equality
+
   private
     module A = Group-on G
     module B = Group-on G'

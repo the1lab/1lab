@@ -49,8 +49,8 @@ The **subset** relation is defined as is done traditionally: If $x \in
 X$ implies $x \in Y$, for $X, Y : \bb{P}(T)$, then $X \subseteq Y$.
 
 ```agda
-_⊆_ : ℙ X → ℙ X → Type _
-X ⊆ Y = ∀ x → x ∈ X → x ∈ Y
+_ : ∀ {X : Type ℓ} {x : X} {P Q : ℙ X} → (P ⊆ Q) ≡ (∀ x → x ∈ P → x ∈ Q)
+_ = refl
 ```
 
 By function and propositional extensionality, two subsets of $X$ are
@@ -67,7 +67,7 @@ propositions to each inhabitant of $X$.
 ## Lattice structure
 
 The type $\bb{P}(X)$ has a lattice structure, with the order given
-by `subset inclusion`{.Agda ident=_⊆_}. We call the meets
+by `subset inclusion`{.Agda ident=⊆}. We call the meets
 **`intersections`{.Agda ident=_∩_}** and the joins **`unions`{.Agda
 ident=_∪_}**.
 
@@ -102,8 +102,8 @@ is nothing which guarantees that A and B are disjoint subsets.
 _∪_ : ℙ X → ℙ X → ℙ X
 (A ∪ B) x = A x ∨Ω B x
 
-infixr 22 _∩_
-infixr 21 _∪_
+infixr 27 _∩_
+infixr 26 _∪_
 ```
 
 ## Images

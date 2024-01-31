@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.instance:15 --no-lossy-instance-fields #-}
 open import Cat.Instances.Product
 open import Cat.Groupoid
 open import Cat.Morphism

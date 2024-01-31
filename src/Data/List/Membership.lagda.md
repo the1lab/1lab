@@ -44,6 +44,14 @@ data _∈ₗ_ {ℓ} {A : Type ℓ} (x : A) : List A → Type ℓ where
   there : (p : x ∈ₗ xs)       → x ∈ₗ (y ∷ xs)
 ```
 
+<!--
+```agda
+instance
+  Membership-List : ∀ {ℓ} {A : Type ℓ} → Membership A (List A) ℓ
+  Membership-List = record { _∈_ = _∈ₗ_ }
+```
+-->
+
 There is a more (homotopically) straightforward characterisation of
 membership in lists: the [[fibres]] of the lookup function `xs !
 i`{.Agda ident=!_}. These are given by an index $i :
@@ -56,14 +64,14 @@ proof that they are _are_ inverses is a straightforward induction in
 both cases, so it's omitted for space.
 
 ```agda
-element→!-fibre : ∀ {x : A} {xs} → x ∈ₗ xs → fibre (xs !_) x
+element→!-fibre : ∀ {x : A} {xs} → x ∈ xs → fibre (xs !_) x
 element→!-fibre (here p) = fzero , sym p
 element→!-fibre (there prf) with element→!-fibre prf
 ... | ix , p = fsuc ix , p
 
-!-fibre→element : ∀ {x : A} {xs} → fibre (xs !_) x → x ∈ₗ xs
+!-fibre→element : ∀ {x : A} {xs} → fibre (xs !_) x → x ∈ xs
 !-fibre→element {A = A} {x = x} = λ (ix , p) → go ix p module !-fibre→element where
-  go : ∀ {xs} (ix : Fin (length xs)) → xs ! ix ≡ x → x ∈ₗ xs
+  go : ∀ {xs} (ix : Fin (length xs)) → xs ! ix ≡ x → x ∈ xs
   go {xs = x ∷ xs} fzero p     = here  (sym p)
   go {xs = x ∷ xs} (fsuc ix) p = there (go ix p)
 ```
@@ -86,7 +94,7 @@ element→!-fibre→element : ∀ {x : A} {xs} (p : x ∈ₗ xs) → p ≡ !-fib
 element→!-fibre→element (here p)  = refl
 element→!-fibre→element (there p) = ap there (element→!-fibre→element p)
 
-element≃!-fibre : ∀ {x : A} {xs} → (x ∈ₗ xs) ≃ fibre (xs !_) x
+element≃!-fibre : ∀ {x : A} {xs} → (x ∈ xs) ≃ fibre (xs !_) x
 element≃!-fibre .fst = element→!-fibre
 element≃!-fibre .snd = is-iso→is-equiv λ where
   .is-iso.inv  p → !-fibre→element p
@@ -100,7 +108,7 @@ is a [[set]], then all that matters is the index; If $A$ is moreover
 [[discrete]], then $a \in_l as$ is [[decidable]].
 
 ```agda
-elem? : ⦃ _ : Discrete A ⦄ (x : A) (xs : List A) → Dec (x ∈ₗ xs)
+elem? : ⦃ _ : Discrete A ⦄ (x : A) (xs : List A) → Dec (x ∈ xs)
 elem? x [] = no λ ()
 elem? x (y ∷ xs) with x ≡ᵢ? y
 ... | yes reflᵢ = yes (here refl)
@@ -112,7 +120,7 @@ elem? x (y ∷ xs) with x ≡ᵢ? y
 <!--
 ```agda
 instance
-  Dec-∈ₗ : ⦃ _ : Discrete A ⦄ {x : A} {xs : List A} → Dec (x ∈ₗ xs)
+  Dec-∈ₗ : ⦃ _ : Discrete A ⦄ {x : A} {xs : List A} → Dec (x ∈ xs)
   Dec-∈ₗ {x = x} {xs} = elem? x xs
 ```
 -->
@@ -127,7 +135,7 @@ the terrible time complexity $O(n^2)$, but it works for an arbitrary
 discrete type, which is the best possible generality.
 
 ```agda
-nub-cons : (x : A) (xs : List A) → Dec (x ∈ₗ xs) → List A
+nub-cons : (x : A) (xs : List A) → Dec (x ∈ xs) → List A
 nub-cons x xs (yes _) = xs
 nub-cons x xs (no _)  = x ∷ xs
 
@@ -145,9 +153,9 @@ will be mapped to the same (first) occurrence in the deduplicated list.
 
 ```agda
 member-nub-is-prop
-  : ∀ ⦃ _ : Discrete A ⦄ {x : A} (xs : List A) → is-prop (x ∈ₗ nub xs)
+  : ∀ ⦃ _ : Discrete A ⦄ {x : A} xs → is-prop (x ∈ nub xs)
 member→member-nub
-  : ∀ ⦃ _ : Discrete A ⦄ {x : A} {xs : List A} → x ∈ₗ xs → x ∈ₗ nub xs
+  : ∀ ⦃ _ : Discrete A ⦄ {x : A} {xs} → x ∈ xs → x ∈ nub xs
 ```
 
 <details>
@@ -181,7 +189,7 @@ member→member-nub {xs = x ∷ xs} (there α) with elem? x (nub xs)
 !-tabulate-fibre f x = Σ-ap (cast (length-tabulate f) , cast-is-equiv _) λ i →
   path→equiv (ap (_≡ x) (!-tabulate f i))
 
-member-tabulate : ∀ {n} (f : Fin n → A) x → (x ∈ₗ tabulate f) ≃ fibre f x
+member-tabulate : ∀ {n} (f : Fin n → A) x → (x ∈ tabulate f) ≃ fibre f x
 member-tabulate f x = element≃!-fibre ∙e !-tabulate-fibre f x
 ```
 -->
@@ -190,15 +198,15 @@ member-tabulate f x = element≃!-fibre ∙e !-tabulate-fibre f x
 ```agda
 map-member
   : ∀ {A : Type ℓ} {B : Type ℓ'} (f : A → B) {x : A} {xs : List A}
-  → x ∈ₗ xs → f x ∈ₗ map f xs
+  → x ∈ xs → f x ∈ map f xs
 map-member f (here p)  = here (ap f p)
 map-member f (there x) = there (map-member f x)
 
-++-memberₗ : x ∈ₗ xs → x ∈ₗ (xs ++ ys)
+++-memberₗ : x ∈ xs → x ∈ (xs ++ ys)
 ++-memberₗ (here p)  = here p
 ++-memberₗ (there p) = there (++-memberₗ p)
 
-++-memberᵣ : x ∈ₗ ys → x ∈ₗ (xs ++ ys)
+++-memberᵣ : x ∈ ys → x ∈ (xs ++ ys)
 ++-memberᵣ {xs = []}     p = p
 ++-memberᵣ {xs = x ∷ xs} p = there (++-memberᵣ p)
 ```
@@ -210,7 +218,7 @@ any-one-of
   : ∀ {ℓ} {A : Type ℓ}
   → (f : A → Bool)
   → (x : A) (xs : List A)
-  → x ∈ₗ xs → f x ≡ true
+  → x ∈ xs → f x ≡ true
   → any-of f xs ≡ true
 any-one-of f x (y ∷ xs) (here x=y) x-true =
   ap₂ or (subst (λ e → f e ≡ true) x=y x-true) refl

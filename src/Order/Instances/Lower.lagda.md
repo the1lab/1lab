@@ -47,9 +47,6 @@ Lower-set P = ⌞ Lower-sets P ⌟
 ```agda
 module _ {ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} where
   private module P = Pr P
-
-  _∈↓_ : P.Ob → Lower-set P → Type _
-  a ∈↓ S = a ∈ apply S
 ```
 -->
 
@@ -87,7 +84,7 @@ by arbitrarily large types:
   Lower-sets-complete
     : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Glb (Lower-sets P) F
   Lower-sets-complete F .Glb.glb .hom i =
-    elΩ (∀ j → i ∈ apply (F j))
+    elΩ (∀ j → i ∈ F j)
   Lower-sets-complete F .Glb.glb .pres-≤ j≤i =
     □-map λ x∈Fj j → F j .pres-≤ j≤i (x∈Fj j)
   Lower-sets-complete F .Glb.has-glb .is-glb.glb≤fam i x x∈Fj = (out! x∈Fj) i
@@ -103,7 +100,7 @@ operator automatically propositionally truncates.
   Lower-sets-cocomplete
     : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Lub (Lower-sets P) F
   Lower-sets-cocomplete F .Lub.lub .hom i =
-    elΩ (Σ _ λ j → i ∈ apply (F j))
+    elΩ (Σ _ λ j → i ∈ F j)
   Lower-sets-cocomplete F .Lub.lub .pres-≤ j≤i =
     □-map λ { (i , x∈Fi) → i , F i .pres-≤ j≤i x∈Fi }
   Lower-sets-cocomplete F .Lub.has-lub .is-lub.fam≤lub i x x∈Fi =

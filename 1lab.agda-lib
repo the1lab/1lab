@@ -11,4 +11,5 @@ flags:
   --rewriting
   --guardedness
   --two-level
+  --lossy-instance-fields
   -W noUnsupportedIndexedMatch

@@ -612,5 +612,10 @@ instance
 
   Funlike-Functor : ∀ {o ℓ o' ℓ'} → Funlike (Functor {o} {ℓ} {o'} {ℓ'})
   Funlike-Functor = record { _#_ = Functor.F₀ }
+
+  Membership-Functor
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} ⦃ ud : Underlying ⌞ D ⌟ ⦄
+    → Membership ⌞ C ⌟ (Functor C D) _
+  Membership-Functor = Funlike→membership
 ```
 -->

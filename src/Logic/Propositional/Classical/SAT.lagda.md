@@ -136,7 +136,7 @@ This is not hard to show, just tedious.
 ```agda
 delete-literal-sound
   : (x : Literal (suc Γ)) (ϕ : Clause (suc Γ))
-  → ¬ (x ∈ₗ ϕ)
+  → x ∉ ϕ
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literal (lit-var x) ϕ ⟧ ρ
 

@@ -8,15 +8,16 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Functor.WideSubcategory {o h} {C : Precategory o h} where
+module Cat.Functor.WideSubcategory where
 ```
 
 <!--
 ```agda
-private module C = Cat.Reasoning C
-open Precategory
-private variable
-  ℓ : Level
+module _ {o h} (C : Precategory o h) where
+  private module C = Cat.Reasoning C
+  open Precategory
+  private variable
+    ℓ : Level
 ```
 -->
 
@@ -33,84 +34,103 @@ To start, we package up all the data required to define a wide
 subcategory up into a record.
 
 ```agda
-record Wide-subcat (ℓ : Level) : Type (o ⊔ h ⊔ lsuc ℓ) where
-  no-eta-equality
-  field
-    P      : ∀ {x y} → C.Hom x y → Type ℓ
-    P-prop : ∀ {x y} (f : C.Hom x y) → is-prop (P f)
+  record Wide-subcat (ℓ : Level) : Type (o ⊔ h ⊔ lsuc ℓ) where
+    no-eta-equality
+    field
+      P      : ∀ {x y} → C.Hom x y → Type ℓ
+      P-prop : ∀ {x y} (f : C.Hom x y) → is-prop (P f)
 
-    P-id : ∀ {x} → P (C.id {x})
-    P-∘  : ∀ {x y z} {f : C.Hom y z} {g : C.Hom x y}
-         → P f → P g → P (f C.∘ g)
-
-open Wide-subcat
+      P-id : ∀ {x} → P (C.id {x})
+      P-∘  : ∀ {x y z} {f : C.Hom y z} {g : C.Hom x y}
+          → P f → P g → P (f C.∘ g)
 ```
 
 Morphisms of wide subcategories are defined as morphisms in $\cC$ where
 $P$ holds.
 
+<!--
 ```agda
-record Wide-hom (sub : Wide-subcat ℓ) (x y : C.Ob) : Type (h ⊔ ℓ) where
-  no-eta-equality
-  constructor wide
-  field
-    hom : C.Hom x y
-    witness : sub .P hom
+instance
+  Membership-Wide-subcat
+    : ∀ {o ℓ w} {C : Precategory o ℓ} {a b}
+    → Membership (Precategory.Hom C a b) (Wide-subcat C w) w
+  Membership-Wide-subcat = record { _∈_ = λ f W → Wide-subcat.P W f }
+
+module _ {o h} {C : Precategory o h} where
+  private
+    module C = Precategory C
+    variable ℓ : Level
+  open Wide-subcat
+```
+-->
+
+```agda
+  record Wide-hom (W : Wide-subcat C ℓ) (x y : C.Ob) : Type (h ⊔ ℓ) where
+    no-eta-equality
+    constructor wide
+    field
+      hom     : C.Hom x y
+      witness : hom ∈ W
 ```
 
 <!--
 ```agda
-open Wide-hom public
+  open Wide-hom public
 
-Wide-hom-path
-  : {sub : Wide-subcat ℓ}
-  → {x y : C.Ob}
-  → {f g : Wide-hom sub x y}
-  → f .hom ≡ g .hom
-  → f ≡ g
-Wide-hom-path {f = f} {g = g} p i .hom = p i
-Wide-hom-path {sub = sub} {f = f} {g = g} p i .witness =
-  is-prop→pathp (λ i → sub .P-prop (p i)) (f .witness) (g .witness) i
+  Wide-hom-path
+    : {sub : Wide-subcat C ℓ}
+    → {x y : C.Ob}
+    → {f g : Wide-hom sub x y}
+    → f .hom ≡ g .hom
+    → f ≡ g
+  Wide-hom-path {f = f} {g = g} p i .hom = p i
+  Wide-hom-path {sub = sub} {f = f} {g = g} p i .witness =
+    is-prop→pathp (λ i → sub .P-prop (p i)) (f .witness) (g .witness) i
 
-Extensional-wide-hom
-  : ∀ {ℓ ℓr} {sub : Wide-subcat ℓ} {x y : C.Ob}
-  → ⦃ sa : Extensional (C.Hom x y) ℓr ⦄
-  → Extensional (Wide-hom sub x y) ℓr
-Extensional-wide-hom ⦃ sa ⦄ = injection→extensional!
-  Wide-hom-path sa
+  Extensional-wide-hom
+    : ∀ {ℓ ℓr} {sub : Wide-subcat C ℓ} {x y : ⌞ C ⌟}
+    → ⦃ sa : Extensional (C.Hom x y) ℓr ⦄
+    → Extensional (Wide-hom sub x y) ℓr
+  Extensional-wide-hom ⦃ sa ⦄ = injection→extensional!
+    Wide-hom-path sa
 
-instance
-  extensionality-wide-hom
-    : ∀ {ℓ} {sub : Wide-subcat ℓ} {x y : C.Ob} → Extensionality (Wide-hom sub x y)
-  extensionality-wide-hom = record { lemma = quote Extensional-wide-hom }
+  instance
+    extensionality-wide-hom
+      : ∀ {ℓ} {sub : Wide-subcat C ℓ} {x y : C.Ob} → Extensionality (Wide-hom sub x y)
+    extensionality-wide-hom = record { lemma = quote Extensional-wide-hom }
 
-Wide-hom-is-set
-  : {sub : Wide-subcat ℓ}
-  → {x y : C.Ob}
-  → is-set (Wide-hom sub x y)
-Wide-hom-is-set {sub = sub} = Iso→is-hlevel 2 eqv $
-  Σ-is-hlevel 2 (C.Hom-set _ _) λ f → is-hlevel-suc 1 (sub .P-prop f)
-  where unquoteDecl eqv = declare-record-iso eqv (quote Wide-hom)
+    H-Level-Wide-Hom
+      : ∀ {ℓ} {sub : Wide-subcat C ℓ} {x y : C.Ob} {n}
+      → H-Level (Wide-hom sub x y) (2 + n)
+    H-Level-Wide-Hom {sub = sub} = basic-instance 2 $ Iso→is-hlevel 2 eqv $
+      Σ-is-hlevel 2 (C.Hom-set _ _) λ f → is-hlevel-suc 1 (sub .P-prop f)
+      where unquoteDecl eqv = declare-record-iso eqv (quote Wide-hom)
+
+module _ {o h} (C : Precategory o h) where
+  private module C = Cat.Reasoning C
+
+  open Precategory
+  open Wide-subcat
 ```
 -->
 
 We can then use this data to construct a category.
 
 ```agda
-Wide : Wide-subcat ℓ → Precategory o (h ⊔ ℓ)
-Wide sub .Ob = C.Ob
-Wide sub .Hom         = Wide-hom sub
-Wide sub .Hom-set _ _ = Wide-hom-is-set
+  Wide : ∀ {ℓ} → Wide-subcat C ℓ → Precategory o (h ⊔ ℓ)
+  Wide sub .Ob = C.Ob
+  Wide sub .Hom         = Wide-hom sub
+  Wide sub .Hom-set _ _ = hlevel 2
 
-Wide sub .id .hom     = C.id
-Wide sub .id .witness = sub .P-id
+  Wide sub .id .hom     = C.id
+  Wide sub .id .witness = sub .P-id
 
-Wide sub ._∘_ f g .hom     = f .hom C.∘ g .hom
-Wide sub ._∘_ f g .witness = sub .P-∘ (f .witness) (g .witness)
+  Wide sub ._∘_ f g .hom     = f .hom C.∘ g .hom
+  Wide sub ._∘_ f g .witness = sub .P-∘ (f .witness) (g .witness)
 
-Wide sub .idr _ = ext $ C.idr _
-Wide sub .idl _ = ext $ C.idl _
-Wide sub .assoc _ _ _ = ext $ C.assoc _ _ _
+  Wide sub .idr _ = ext $ C.idr _
+  Wide sub .idl _ = ext $ C.idl _
+  Wide sub .assoc _ _ _ = ext $ C.assoc _ _ _
 ```
 
 ## From split essentially surjective inclusions
@@ -120,14 +140,14 @@ There is another way of representing wide subcategories: By giving a
 
 <!--
 ```agda
-module _ {o' h'} {D : Precategory o' h'} {F : Functor D C}
-  (pseudomonic : is-pseudomonic F)
-  (eso : is-split-eso F)
-  where
-  open Functor F
-  private
-    module D = Cat.Reasoning D
-    module eso x =  C._≅_ (eso x .snd)
+  module _ {o' h'} {D : Precategory o' h'} {F : Functor D C}
+    (pseudomonic : is-pseudomonic F)
+    (eso : is-split-eso F)
+    where
+    open Functor F
+    private
+      module D = Cat.Reasoning D
+      module eso x = C._≅_ (eso x .snd)
 ```
 -->
 
@@ -136,45 +156,45 @@ $\cC$ that lie in the image of $F$. Since $F$ is a [[faithful functor]],
 this is indeed a proposition.
 
 ```agda
-  Split-eso-inclusion→Wide-subcat : Precategory _ _
-  Split-eso-inclusion→Wide-subcat = Wide sub where
-    sub : Wide-subcat (h ⊔ h')
-    sub .P {x = x} {y = y} f =
-      Σ[ g ∈ D.Hom (eso x .fst) (eso y .fst) ]
-      (eso.to y C.∘ F₁ g C.∘ eso.from x ≡ f)
-    sub .P-prop {x} {y} f (g , p) (g' , q) =
-      Σ-prop-path (λ _ → C.Hom-set _ _ _ _) $
-      is-pseudomonic.faithful pseudomonic   $
-      C.iso→epic (eso x .snd C.Iso⁻¹) _ _   $
-      C.iso→monic (eso y .snd) _ _ (p ∙ sym q)
-    sub .P-id {x} =
-      (D.id , ap₂ C._∘_ refl (C.eliml F-id) ∙ C.invl (eso x .snd))
-    sub .P-∘ {x} {y} {z} {f} {g} (f' , p) (g' , q) =
-      f' D.∘ g' , (
-        eso.to z C.∘ F₁ (f' D.∘ g') C.∘ eso.from x                                    ≡⟨ C.push-inner (F-∘ f' g') ⟩
-        (eso.to z C.∘ F₁ f') C.∘ (F₁ g' C.∘ eso.from x)                               ≡⟨ C.insert-inner (eso.invr y) ⟩
-        ((eso.to z C.∘ F₁ f') C.∘ eso.from y) C.∘ (eso.to y C.∘ F₁ g' C.∘ eso.from x) ≡⟨ ap₂ C._∘_ (sym (C.assoc _ _ _) ∙ p) q ⟩
-        f C.∘ g ∎)
+    Split-eso-inclusion→Wide-subcat : Precategory _ _
+    Split-eso-inclusion→Wide-subcat = Wide sub where
+      sub : Wide-subcat C (h ⊔ h')
+      sub .P {x = x} {y = y} f =
+        Σ[ g ∈ D.Hom (eso x .fst) (eso y .fst) ]
+        (eso.to y C.∘ F₁ g C.∘ eso.from x ≡ f)
+      sub .P-prop {x} {y} f (g , p) (g' , q) =
+        Σ-prop-path (λ _ → C.Hom-set _ _ _ _) $
+        is-pseudomonic.faithful pseudomonic   $
+        C.iso→epic (eso x .snd C.Iso⁻¹) _ _   $
+        C.iso→monic (eso y .snd) _ _ (p ∙ sym q)
+      sub .P-id {x} =
+        (D.id , ap₂ C._∘_ refl (C.eliml F-id) ∙ C.invl (eso x .snd))
+      sub .P-∘ {x} {y} {z} {f} {g} (f' , p) (g' , q) =
+        f' D.∘ g' , (
+          eso.to z C.∘ F₁ (f' D.∘ g') C.∘ eso.from x                                    ≡⟨ C.push-inner (F-∘ f' g') ⟩
+          (eso.to z C.∘ F₁ f') C.∘ (F₁ g' C.∘ eso.from x)                               ≡⟨ C.insert-inner (eso.invr y) ⟩
+          ((eso.to z C.∘ F₁ f') C.∘ eso.from y) C.∘ (eso.to y C.∘ F₁ g' C.∘ eso.from x) ≡⟨ ap₂ C._∘_ (sym (C.assoc _ _ _) ∙ p) q ⟩
+          f C.∘ g ∎)
 ```
 
 This canonical wide subcategory is equivalent to $\cD$.
 
 ```agda
-  Wide-subcat→Split-eso-domain : Functor (Split-eso-inclusion→Wide-subcat) D
-  Wide-subcat→Split-eso-domain .Functor.F₀ x = eso x .fst
-  Wide-subcat→Split-eso-domain .Functor.F₁ f = f .witness .fst
-  Wide-subcat→Split-eso-domain .Functor.F-id = refl
-  Wide-subcat→Split-eso-domain .Functor.F-∘ _ _ = refl
+    Wide-subcat→Split-eso-domain : Functor (Split-eso-inclusion→Wide-subcat) D
+    Wide-subcat→Split-eso-domain .Functor.F₀ x = eso x .fst
+    Wide-subcat→Split-eso-domain .Functor.F₁ f = f .witness .fst
+    Wide-subcat→Split-eso-domain .Functor.F-id = refl
+    Wide-subcat→Split-eso-domain .Functor.F-∘ _ _ = refl
 
-  is-fully-faithful-Wide-subcat→domain : is-fully-faithful Wide-subcat→Split-eso-domain
-  is-fully-faithful-Wide-subcat→domain = is-iso→is-equiv $ iso
-    (λ f → wide (eso.to _ C.∘ F₁ f C.∘ eso.from _) (f , refl))
-    (λ _ → refl)
-    (λ f → ext (f .witness .snd))
+    is-fully-faithful-Wide-subcat→domain : is-fully-faithful Wide-subcat→Split-eso-domain
+    is-fully-faithful-Wide-subcat→domain = is-iso→is-equiv $ iso
+      (λ f → wide (eso.to _ C.∘ F₁ f C.∘ eso.from _) (f , refl))
+      (λ _ → refl)
+      (λ f → ext (f .witness .snd))
 
-  is-eso-Wide-subcat→domain : is-split-eso Wide-subcat→Split-eso-domain
-  is-eso-Wide-subcat→domain x =
-    F₀ x , pseudomonic→essentially-injective pseudomonic (eso (F₀ x) .snd)
+    is-eso-Wide-subcat→domain : is-split-eso Wide-subcat→Split-eso-domain
+    is-eso-Wide-subcat→domain x =
+      F₀ x , pseudomonic→essentially-injective pseudomonic (eso (F₀ x) .snd)
 ```
 
 We did cheat a bit earlier when defining wide subcategories: our
@@ -191,13 +211,16 @@ should be part of the definition of a wide subcategory, but it isn't
 
 <!--
 ```agda
-module _ {sub : Wide-subcat ℓ} where
-  private module Wide = Cat.Reasoning (Wide sub)
+module _ {o h ℓ} {C : Precategory o h} {sub : Wide-subcat C ℓ} where
+  open Wide-subcat
+  private
+    module Wide = Cat.Reasoning (Wide C sub)
+    module C = Cat.Reasoning C
 ```
 -->
 
 ```agda
-  Forget-wide-subcat : Functor (Wide sub) C
+  Forget-wide-subcat : Functor (Wide C sub) C
   Forget-wide-subcat .Functor.F₀ x = x
   Forget-wide-subcat .Functor.F₁ f = f .hom
   Forget-wide-subcat .Functor.F-id = refl
@@ -207,7 +230,7 @@ module _ {sub : Wide-subcat ℓ} where
   is-faithful-Forget-wide-subcat = Wide-hom-path
 
   is-pseudomonic-Forget-wide-subcat
-    : (P-invert : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → sub .P f)
+    : (P-invert : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → f ∈ sub)
     → is-pseudomonic Forget-wide-subcat
   is-pseudomonic-Forget-wide-subcat P-invert .is-pseudomonic.faithful =
     is-faithful-Forget-wide-subcat

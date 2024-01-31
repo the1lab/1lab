@@ -544,7 +544,7 @@ _ = Ωⁿ≃Sⁿ-map
 -->
 
 * Remark 6.2.3: `to-pathp`{.Agda}, `from-pathp`{.Agda}
-* _Induction principle for $\bb{S}^1$: by pattern matching.
+* _Induction principle for $\bb{S}^1$_: by pattern matching.
 * Lemma 6.2.5: `S¹-rec`{.Agda}
 * Lemma 6.2.9: `Ωⁿ≃Sⁿ-map`{.Agda} for `n = 1`{.Agda}
 

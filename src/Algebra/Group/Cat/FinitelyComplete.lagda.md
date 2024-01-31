@@ -63,18 +63,14 @@ Zero-group = to-group zg where
   zg .make-group.idl x = refl
 
 Zero-group-is-initial : is-initial Zero-group
-Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
-  module G = Group-on G
-  gh : is-group-hom _ _ (λ x → G.unit)
-  gh .pres-⋆ x y =
-    G.unit            ≡˘⟨ G.idl ⟩
-    G.unit G.⋆ G.unit ∎
+Zero-group-is-initial (_ , G) .centre .hom _ = Group-on.unit G
+Zero-group-is-initial (_ , G) .centre .preserves .pres-⋆ _ _ = sym (Group-on.idl G)
 Zero-group-is-initial (_ , G) .paths x =
   ext λ _ → sym (is-group-hom.pres-id (x .preserves))
 
 Zero-group-is-terminal : is-terminal Zero-group
-Zero-group-is-terminal _ .centre =
-  total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
+Zero-group-is-terminal _ .centre .hom _ = lift tt
+Zero-group-is-terminal _ .centre .preserves .pres-⋆ x y = refl
 Zero-group-is-terminal _ .paths x = trivial!
 
 Zero-group-is-zero : is-zero Zero-group
@@ -234,7 +230,8 @@ $g$.
 ```agda
   Groups-equalisers : Equaliser (Groups ℓ) f g
   Groups-equalisers .apex = Equaliser-group
-  Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
+  Groups-equalisers .equ .hom (x , _) = x
+  Groups-equalisers .equ .preserves .pres-⋆ _ _ = refl
   Groups-equalisers .has-is-eq .equal = Forget-is-faithful seq.equal
   Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom go lim-gh where
     go = seq.universal {F = underlying-set (F .snd)} (ap hom p)

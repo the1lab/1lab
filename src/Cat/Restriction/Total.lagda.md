@@ -30,14 +30,14 @@ module _ {o ℓ} {C : Precategory o ℓ} (C↓ : Restriction-category C) where
 -->
 
 ```agda
-  Total-wide-subcat : Wide-subcat {C = C} ℓ
+  Total-wide-subcat : Wide-subcat C ℓ
   Total-wide-subcat .Wide-subcat.P = is-total
   Total-wide-subcat .Wide-subcat.P-prop = is-total-is-prop
   Total-wide-subcat .Wide-subcat.P-id = id-total
   Total-wide-subcat .Wide-subcat.P-∘ = total-∘
 
   Total-maps : Precategory o ℓ
-  Total-maps = Wide Total-wide-subcat
+  Total-maps = Wide C Total-wide-subcat
 ```
 
 <!--
@@ -53,7 +53,6 @@ Furthermore, the injection from $\thecat{Total}(\cC)$ into $\cC$ is
 [pseudomonic]: Cat.Functor.Properties.html#pseudomonic-functors
 
 ```agda
-
   Forget-total : Functor (Total-maps C↓) C
   Forget-total = Forget-wide-subcat
 

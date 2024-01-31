@@ -161,8 +161,8 @@ binary meets.
       B.⋃ (λ i → f # fst i)                             B.≤∎
       where
         meet-section
-          : Σ[ x ∈ A.Ob ] (x ∈↓ S) × Σ[ y ∈ A.Ob ] (y ∈↓ T)
-          → Σ[ x ∈ A.Ob ] ((x ∈↓ S) × (x ∈↓ T))
+          : ∫ₚ S × ∫ₚ T
+          → Σ[ x ∈ A.Ob ] (x ∈ S × x ∈ T)
         meet-section ((x , p) , (y , q)) =
           (x A.∩ y) , (S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q)
 ```

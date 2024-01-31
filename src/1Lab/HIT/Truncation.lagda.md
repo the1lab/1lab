@@ -215,8 +215,9 @@ definition of image, or more properly of $(-1)$-image:
 [1Lab.Counterexamples.Sigma]: 1Lab.Counterexamples.Sigma.html
 
 ```agda
-image : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _
-image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
+private
+  image : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _
+  image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
 ```
 
 To see that the `image`{.Agda} indeed implements the concept of image,

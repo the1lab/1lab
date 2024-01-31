@@ -36,7 +36,7 @@ module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
 -->
 
 ```agda
-  Partial-maps-subcat : Wide-subcat {C = cat} ℓ'
+  Partial-maps-subcat : Wide-subcat cat ℓ'
   Partial-maps-subcat .Wide-subcat.P = is-functional
   Partial-maps-subcat .Wide-subcat.P-prop f = ≤-thin
   Partial-maps-subcat .Wide-subcat.P-id =
@@ -45,7 +45,7 @@ module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
     functional-∘ f-partial g-partial
 
   Partial-maps : Precategory o (ℓ ⊔ ℓ')
-  Partial-maps = Wide Partial-maps-subcat
+  Partial-maps = Wide cat Partial-maps-subcat
 ```
 
 This category can be equipped with a restriction structure, defining

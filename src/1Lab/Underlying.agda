@@ -1,5 +1,6 @@
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -64,16 +65,6 @@ from-is-true
   → ⌞ P ⌟
 from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
 
--- Generalised "membership" notation.
-_∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
-    → A → (A → P) → Type (u .ℓ-underlying)
-x ∈ P = ⌞ P x ⌟
-
--- Generalised "total space" notation.
-∫ₚ
-  : ∀ {ℓ ℓ'} {X : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
-  → (X → P) → Type _
-∫ₚ P = Σ _ (_∈ P)
 
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
@@ -134,3 +125,48 @@ _ʻ_
   → ⦃ _ : Funlike F ⦄ {a : A} {b : B} ⦃ _ : Underlying ⌞ b ⌟ ⦄
   → F a b → ⌞ a ⌟ → Type _
 F ʻ x = ⌞ F # x ⌟
+
+record Membership {ℓ ℓ'} (A : Type ℓ) (ℙA : Type ℓ') ℓ'' : Type (ℓ ⊔ ℓ' ⊔ lsuc ℓ'') where
+  field
+    _∈_ : A → ℙA → Type ℓ''
+
+  infix 25 _∈_
+
+open Membership ⦃ ... ⦄ public
+
+_∉_ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {ℙA : Type ℓ'} ⦃ m : Membership A ℙA ℓ'' ⦄
+    → A → ℙA → Type ℓ''
+x ∉ y = ¬ (x ∈ y)
+
+_⊆_ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {ℙA : Type ℓ'} ⦃ m : Membership A ℙA ℓ'' ⦄
+    → ℙA → ℙA → Type (ℓ ⊔ ℓ'')
+s ⊆ t = ∀ a → a ∈ s → a ∈ t
+
+infix 25 _⊆_ _∉_
+
+-- Having this as an instance is girlbossing too close to the sun:
+-- instance search doesn't consider superclasses before discarding
+-- candidates, so this instance overlaps with *literally* everything
+Funlike→membership
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄ {a : A} {b : B} ⦃ _ : Underlying ⌞ b ⌟ ⦄
+  → Membership ⌞ a ⌟ (F a b) _
+Funlike→membership = record { _∈_ = λ x f → ⌞ f # x ⌟ }
+
+instance
+  Membership-pow
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
+    → Membership A (A → P) _
+  Membership-pow = Funlike→membership
+
+-- Generalised "total space" notation.
+∫ₚ
+  : ∀ {ℓ ℓ' ℓ''} {X : Type ℓ} {ℙX : Type ℓ'} ⦃ m : Membership X ℙX ℓ'' ⦄
+  → ℙX → Type _
+∫ₚ {X = X} P = Σ X (_∈ P)
+
+image
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄ {a : A} {b : B}
+  → (f : F a b) → Type _
+image {a = a} {b} f = Σ[ b ∈ ⌞ b ⌟ ] ∃[ a ∈ ⌞ a ⌟ ] (f # a ≡ b)

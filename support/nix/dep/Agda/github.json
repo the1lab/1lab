@@ -1,8 +1,8 @@
 {
   "owner": "agda",
   "repo": "agda",
-  "branch": "master",
+  "branch": "aliao/lossy-instance-fields",
   "private": false,
-  "rev": "8ede3561ae32257eb7a102b8301c61fae1debb23",
-  "sha256": "0iwif4ix47974j5mnq24a2afhgc03y0gp977bn0vsb3ics8dg6bz"
+  "rev": "ba971387549aab39b287620d087132f9ac604e72",
+  "sha256": "0q5ydsnjg2agrgrky0mk80b9fdgkyl1111h1hl98npxa8jys3ira"
 }

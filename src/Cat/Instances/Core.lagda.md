@@ -31,10 +31,10 @@ under composition, we can construct this as a [wide subcategory] of $\cC$.
 
 ```agda
 Core : ∀ {o ℓ} → Precategory o ℓ → Precategory o ℓ
-Core C = Wide sub where
+Core C = Wide C sub where
   open Cat.Reasoning C
 
-  sub : Wide-subcat {C = C} _
+  sub : Wide-subcat C _
   sub .Wide-subcat.P = is-invertible
   sub .Wide-subcat.P-prop _ = is-invertible-is-prop
   sub .Wide-subcat.P-id = id-invertible

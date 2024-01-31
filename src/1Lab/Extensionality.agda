@@ -4,6 +4,7 @@ open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HIT.Truncation
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
 open import 1Lab.Type.Pi
@@ -337,3 +338,20 @@ injection→extensional!
   → Extensional B ℓr
   → Extensional A ℓr
 injection→extensional! {sb = b-set} = injection→extensional b-set
+
+Extensional-tr-map
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+  → ⦃ sf : Extensional (A → B) ℓr ⦄ {@(tactic hlevel-tactic-worker) b-set : is-set B}
+  → Extensional (∥ A ∥ → B) ℓr
+Extensional-tr-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
+Extensional-tr-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
+Extensional-tr-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path h = funext $
+  ∥-∥-elim (λ x → c-set _ _) (happly (sf .idsᵉ .to-path h))
+Extensional-tr-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path-over p =
+  is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (fun-is-hlevel 2 c-set)) _ _
+
+instance
+  extensionality-tr-map
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    → Extensionality (∥ A ∥ → B)
+  extensionality-tr-map = record { lemma = quote Extensional-tr-map }

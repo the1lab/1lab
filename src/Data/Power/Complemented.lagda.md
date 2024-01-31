@@ -53,7 +53,7 @@ is-decidable p = ∀ a → Dec (a ∈ p)
 is-decidable→is-complemented : (p : ℙ A) → is-decidable p → is-complemented p
 is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
   inv : ℙ A
-  inv x = el (¬ (x ∈ p)) hlevel!
+  inv x = el (x ∉ p) hlevel!
 
   intersection : (p ∩ inv) ⊆ minimal
   intersection x (x∈p , x∉p) = x∉p x∈p

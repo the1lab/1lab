@@ -60,7 +60,9 @@ group homormophism.
 
 ```agda
 rep-subgroup→group-on
-  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
+  : {G : Group ℓ} (H : ℙ ⌞ G ⌟)
+  → represents-subgroup G H
+  → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
 rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
@@ -73,7 +75,10 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   sg' .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
   sg' .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
-predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
+predicate→subgroup
+  : {G : Group ℓ} (H : ℙ ⌞ G ⌟)
+  → represents-subgroup G H
+  → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   it : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
   it .hom = fst
@@ -121,18 +126,24 @@ giving the element $xy$ in the fibre over $ab$.
 
 <!--
 ```agda
+Extensional-Σ-∥∥
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'} ⦃ ext : Extensional A ℓr ⦄
+  → Extensional (Σ[ a ∈ A ] ∥ B a ∥) ℓr
+Extensional-Σ-∥∥ ⦃ sa ⦄ .Pathᵉ (x , _) (y , _) = sa .Pathᵉ x y
+Extensional-Σ-∥∥ ⦃ sa ⦄ .reflᵉ (x , _) = sa .reflᵉ x
+Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path p = Σ-prop-path! (sa .idsᵉ .to-path p)
+Extensional-Σ-∥∥ ⦃ sa ⦄ .idsᵉ .to-path-over p = sa .idsᵉ .to-path-over p
+
+instance
+  Extensionality-Σ-∥∥
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Extensionality (Σ[ a ∈ A ] ∥ B a ∥)
+  Extensionality-Σ-∥∥ = record { lemma = quote Extensional-Σ-∥∥ }
+
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   private
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
     module f = is-group-hom (f .preserves)
-
-    Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
-    Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
-
-    abstract
-      Tset : is-set (image (apply f))
-      Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
 ```
@@ -149,7 +160,7 @@ reader.</summary>
 
 ```agda
     T : Type ℓ
-    T = image (apply f)
+    T = image f
 
   A/ker[_] : Group ℓ
   A/ker[_] = to-group grp where
@@ -157,24 +168,24 @@ reader.</summary>
     unit = B.unit , inc (A.unit , f.pres-id)
 
     inv : T → T
-    inv (x , p) = x B.⁻¹ ,
-      ∥-∥-map (λ { (y , p) → y A.⁻¹ , f.pres-inv ∙ ap B._⁻¹ p }) p
+    inv (x , p) = x B.⁻¹ , do
+      (y , p) ← p
+      pure $ y A.⁻¹ , f.pres-inv ∙ ap B._⁻¹ p
 
     mul : T → T → T
-    mul (x , xp) (y , yp) = x B.⋆ y ,
-      ∥-∥-elim₂ (λ _ _ → squash)
-        (λ { (x* , xp) (y* , yp)
-           → inc (x* A.⋆ y* , f.pres-⋆ _ _ ∙ ap₂ B._⋆_ xp yp) })
-        xp yp
+    mul (x , xp) (y , yp) = x B.⋆ y , do
+      (x* , xp) ← xp
+      (y* , yp) ← yp
+      pure $ x* A.⋆ y* , f.pres-⋆ _ _ ∙ ap₂ B._⋆_ xp yp
 
     grp : make-group T
-    grp .make-group.group-is-set = Tset
+    grp .make-group.group-is-set = hlevel 2
     grp .make-group.unit = unit
     grp .make-group.mul = mul
     grp .make-group.inv = inv
-    grp .make-group.assoc = λ x y z → Tpath B.associative
-    grp .make-group.invl = λ x → Tpath B.inversel
-    grp .make-group.idl = λ x → Tpath B.idl
+    grp .make-group.assoc x y z = ext B.associative
+    grp .make-group.invl x = ext B.inversel
+    grp .make-group.idl x = ext B.idl
 ```
 
 </details>
@@ -190,7 +201,7 @@ $$
 ```agda
   A→im : Groups.Hom A A/ker[_]
   A→im .hom x = f # x , inc (x , refl)
-  A→im .preserves .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
+  A→im .preserves .is-group-hom.pres-⋆ x y = ext (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
   im→B .hom (b , _) = b
@@ -204,7 +215,7 @@ $\im f$.
   Im[_] : Subgroup B
   Im[_] = record { map = im→B ; monic = im↪B } where
     im↪B : Groups.is-monic im→B
-    im↪B = Homomorphism-monic im→B Tpath
+    im↪B = Homomorphism-monic im→B ext
 ```
 
 #### The first isomorphism theorem
@@ -313,7 +324,7 @@ will compute.
     coeq : is-coequaliser _ _ A→im
     coeq .coequal = Forget-is-faithful (funext path) where
       path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
-      path (x* , p) = Tpath (f.pres-id ∙ sym p)
+      path (x* , p) = ext (f.pres-id ∙ sym p)
 
     coeq .universal {F = F} {e' = e'} p = gh where
       module F = Group-on (F .snd)
@@ -326,19 +337,10 @@ will compute.
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
 
-    coeq .factors = Forget-is-faithful refl
+    coeq .factors = trivial!
 
-    coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
-      where
-        module F = Group-on (F .snd)
-        path : ∀ (x : image (apply f)) → colim # x ≡ elim p (x .snd)
-        path (x , t) =
-          ∥-∥-elim
-            {P = λ q → colim # (x , q) ≡ elim p q}
-            (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (apply colim) (Σ-prop-path (λ _ → squash) (sym fp))
-                          ∙ (happly (ap hom prf) f) })
-            t
+    coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
+      ap# colim (ext (sym p)) ∙ (prf #ₚ y)
 ```
 
 ## Representing kernels
@@ -387,12 +389,12 @@ f(yy^{-1}) = f(1) = 1$$.
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
   has-conjugate {x} {y} ((a , p) , q) = (_ , path) , refl where
     path =
-      f # (y A.⋆ (x A.— y))         ≡⟨ ap (f #_) A.associative ⟩
+      f # (y A.⋆ (x A.— y))         ≡⟨ ap# f A.associative ⟩
       f # ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
       ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
       ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) refl ⟩
       f # y B.— f # y               ≡˘⟨ f.pres-diff ⟩
-      f # (y A.— y)                 ≡⟨ ap (f #_) A.inverser ∙ f.pres-id ⟩
+      f # (y A.— y)                 ≡⟨ ap# f A.inverser ∙ f.pres-id ⟩
       B.unit                        ∎
 ```
 
@@ -416,7 +418,7 @@ record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
   has-conjugatel yin = subst (_∈ H) associative (has-conjugate yin)
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ H → (y ⋆ x) ∈ H
-  has-comm {x = x} {y} ∈ = subst (_∈ H) p (has-conjugate ∈) where
+  has-comm {x = x} {y} w = subst (_∈ H) p (has-conjugate w) where
     p = x ⁻¹ ⋆ ⌜ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ⌝ ≡˘⟨ ap¡ associative ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ ⌜ x ⁻¹ ⁻¹ ⌝   ≡⟨ ap! inv-inv ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ x             ≡⟨ associative ⟩
@@ -594,11 +596,11 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
     ker≤H : Ker-sg ≤ₘ H-sg
     ker≤H .map = to
-    ker≤H .sq = Forget-is-faithful refl
+    ker≤H .sq = trivial!
 
     H≤ker : H-sg ≤ₘ Ker-sg
     H≤ker .map = from
-    H≤ker .sq = Forget-is-faithful refl
+    H≤ker .sq = trivial!
 
     done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

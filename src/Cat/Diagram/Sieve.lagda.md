@@ -76,7 +76,8 @@ action is given by composition, as with the $\hom$ functor.
 
 ```agda
 to-presheaf : Sieve → PSh.Ob
-to-presheaf sieve .F₀ d = el! (Σ[ f ∈ C.Hom d c ] (f ∈ sieve .arrows))
+to-presheaf sieve .F₀ d .∣_∣   = Σ[ f ∈ C.Hom d c ] (f ∈ sieve .arrows)
+to-presheaf sieve .F₀ d .is-tr = hlevel!
 to-presheaf sieve .F₁ f (g , s) = g C.∘ f , sieve .closed _ s
 ```
 
