@@ -159,18 +159,17 @@ is-member e (squash x y p q i j) =
 ```
 -->
 
-As a type, we will write the membership relation as `_∈_`{.Agda}, since
-`_∈_`{.Agda} already stands for the fibres of families of propositions.
-There's nothing surprising about the subset relation $s \sube t$: it
-means every element of $s$ is an element of $t$.
+Having constructed the membership proposition, we can declare an
+instance of the `Membership`{.Agda} for `V`{.Agda}. This will allow us
+to use not only the notation `x ∈ X`{.Agda ident=_∈_}, with the meaning
+above, but also the subset notation, `X ⊆ Y`{.Agda ident=⊆}, with its
+usual meaning.
 
-<!--
 ```agda
 instance
   Membership-V : ∀ {ℓ} → Membership (V ℓ) (V ℓ) (lsuc ℓ)
   Membership-V = record { _∈_ = λ x y → ⌞ is-member x y ⌟ }
 ```
--->
 
 ## Extensionality
 
