@@ -531,8 +531,8 @@ open import Cat.Instances.Lift
 
 open import Cat.Instances.Product -- Product categories
 
-open import Cat.Instances.FreeGroupoid
--- The free groupoid on a category
+open import Cat.Instances.Localisation
+-- Freely inverting morphisms a class of morphisms in a category.
 
 open import Cat.Instances.Core
 -- The core of a category

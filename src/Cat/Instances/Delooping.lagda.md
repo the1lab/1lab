@@ -2,7 +2,7 @@
 ```agda
 open import Algebra.Monoid
 
-open import Cat.Instances.FreeGroupoid
+open import Cat.Instances.Localisation
 open import Cat.Connected
 open import Cat.Prelude
 
@@ -42,6 +42,6 @@ module _ {ℓ} {M : Type ℓ} (mm : Monoid-on M) where
   B .assoc _ _ _ = mm.associative
 
   B-is-connected : is-connected-cat B
-  B-is-connected .point = inc tt
-  B-is-connected .zigzag _ _ = inc nil
+  B-is-connected .point      = inc tt
+  B-is-connected .zigzag _ _ = inc []
 ```

@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.FreeGroupoid
+open import Cat.Instances.Localisation
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Properties
@@ -152,7 +152,7 @@ the following diagram:
           : ∀ d (f g : Ob (d ↙ F))
           → extend d f ≡ extend d g
         extend-const d f g = ∥-∥-rec!
-          (Zigzag-rec-≡ (el! _) (extend d) (extend-const1 d))
+          (Meander-rec-≡ (el! _) (extend d) (extend-const1 d))
           (fin.zigzag d f g)
 ```
 
@@ -301,8 +301,10 @@ implies the existence of zigzags, meditate on the following diagram:
     full+eso→final : is-full F → is-eso F → is-final
     full+eso→final full eso d .zigzag f g = do
       z , p ← full (g .map 𝒟.∘ 𝒟-grpd (f .map) .inv)
-      pure (cons (↓hom {β = z}
-        (𝒟.idr _ ∙ sym (𝒟.rswizzle p (𝒟-grpd (f .map) .invr)))) nil)
+      pure $ zig
+        (↓hom {β = z}
+          (𝒟.idr _ ∙ sym (𝒟.rswizzle p (𝒟-grpd (f .map) .invr))))
+        []
       where open 𝒟.is-invertible
     full+eso→final full eso d .point =
       ∥-∥-map (λ e → ↓obj (𝒟.from (e .snd))) (eso d)
@@ -398,7 +400,7 @@ zigzag between $x$ and $y$ in $c \swarrow G \circ F$.  Thus we have to
   F∘-is-final c .zigzag f g = do
     gz ← gf.zigzag c (↓obj (f .map)) (↓obj (g .map))
     fz ← refine gz (↓obj 𝒟.id) (↓obj 𝒟.id)
-    pure (subst₂ (Zigzag (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
+    pure (subst₂ (Meander (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
 ```
 
 We start by defining a [[congruence]] on the objects of $c \swarrow G$,
@@ -425,7 +427,7 @@ F$:
       R : Congruence (Ob (c ↙ G)) _
       R ._∼_ f g =
         ∀ (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
-        → ∥ Zigzag (c ↙ G F∘ F) (f ↙> f') (g ↙> g') ∥
+        → ∥ Meander (c ↙ G F∘ F) (f ↙> f') (g ↙> g') ∥
       R .has-is-prop _ _ = hlevel 1
 ```
 
@@ -436,8 +438,8 @@ That this is a congruence is easily checked using the finality of $F$.
         Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
       R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
         g' ← ff.point (g .y)
-        ∥-∥-map₂ _++_ (fg f' g') (gh g' h')
-      R .symᶜ fg g' f' = ∥-∥-map reverse (fg f' g')
+        ∥-∥-map₂ _++_ (gh g' h') (fg f' g')
+      R .symᶜ fg g' f' = ∥-∥-map (reverse _) (fg f' g')
 ```
 
 Using the universal mapping property of the free groupoid into
@@ -450,13 +452,13 @@ morphism are related, which again involves the connectedness of $x
       refine1 {f} {g} h f' g' = do
         z ← ff.zigzag (f .y) f' (↓obj (g' .map 𝒟.∘ h .β))
         let
-          z' : Zigzag (c ↙ G F∘ F) _ _
+          z' : Meander (c ↙ G F∘ F) _ _
           z' = Free-groupoid-map (↙-compose f) .F₁ z
           fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
           fixup = ↓Obj-path _ _ refl refl $
             G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
-        pure (subst (Zigzag (c ↙ G F∘ F) (f ↙> f')) fixup z')
+        pure (subst (Meander (c ↙ G F∘ F) (f ↙> f')) fixup z')
 
-      refine : ∀ {f g} → Zigzag (c ↙ G) f g → R ._∼_ f g
-      refine = Zigzag-rec-congruence R refine1
+      refine : ∀ {f g} → Meander (c ↙ G) f g → R ._∼_ f g
+      refine = Meander-rec-congruence R refine1
 ```

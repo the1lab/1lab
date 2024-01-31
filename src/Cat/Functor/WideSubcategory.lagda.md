@@ -20,7 +20,7 @@ private variable
 ```
 -->
 
-# Wide subcategories
+# Wide subcategories {defines="wide-subcategory"}
 
 A **wide subcategory** $\cD \mono \cC$ is specified by a [predicate] $P$
 on the morphisms of $\cC$, rather than one on the objects. Since $P$ is

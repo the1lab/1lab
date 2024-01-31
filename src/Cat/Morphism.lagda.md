@@ -386,7 +386,7 @@ has-section+monic→has-retract sect monic .is-retract =
 -->
 
 
-## Isos
+## Isos {defines="isomorphism"}
 
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
 \circ g$ and $g \circ f$ both equal to the identity. A map $f : A \to B$

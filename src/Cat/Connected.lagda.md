@@ -2,7 +2,7 @@
 ```agda
 open import Cat.Instances.StrictCat.Cohesive
 open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.FreeGroupoid
+open import Cat.Instances.Localisation
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
 open import Cat.Prelude
@@ -29,7 +29,7 @@ record is-connected-cat {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
   field
     point : ∥ Ob C ∥
-    zigzag : ∀ x y → ∥ Zigzag C x y ∥
+    zigzag : ∀ x y → ∥ Meander C x y ∥
 ```
 
 Notice the similarity with the notion of [[connectedness]] in homotopy
@@ -65,8 +65,8 @@ points *would* be connected by a zigzag, there are no such points.]
 
 ```agda
 ⊤Cat-is-connected : is-connected-cat ⊤Cat
-⊤Cat-is-connected .point = inc tt
-⊤Cat-is-connected .zigzag _ _ = inc nil
+⊤Cat-is-connected .point      = inc tt
+⊤Cat-is-connected .zigzag _ _ = inc []
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
@@ -76,14 +76,14 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     open Initial init
     conn : is-connected-cat C
     conn .point = inc bot
-    conn .zigzag x y = inc (cons⁻¹ ¡ (cons ¡ nil))
+    conn .zigzag x y = inc (zig ¡ (zag ¡ tt []))
 
   terminal→connected : Terminal C → is-connected-cat C
   terminal→connected term = conn where
     open Terminal term
     conn : is-connected-cat C
     conn .point = inc top
-    conn .zigzag x y = inc (cons ! (cons⁻¹ ! nil))
+    conn .zigzag x y = inc (zag ! tt (zig ! []))
 ```
 
 We now show that this definition is equivalent to asking for the set of
@@ -96,7 +96,7 @@ zigzags into sets:
   connected→π₀-is-contr conn = ∥-∥-rec!
     (λ x → contr (inc x)
       (Coeq-elim-prop (λ _ → hlevel 1)
-        λ y → ∥-∥-rec! (Zigzag-rec-≡ (π₀ C) inc quot)
+        λ y → ∥-∥-rec! (Meander-rec-≡ (π₀ C) inc quot)
           (conn .zigzag x y)))
     (conn .point)
 ```
@@ -120,17 +120,17 @@ a zigzag.
   π₀-is-contr→connected : is-contr ∣ π₀ C ∣ → is-connected-cat C
   π₀-is-contr→connected π₀-contr = conn where
     R : Congruence (Ob C) (o ⊔ ℓ)
-    R ._∼_ x y = ∥ Zigzag C x y ∥
+    R ._∼_ x y = ∥ Meander C x y ∥
     R .has-is-prop _ _ = squash
-    R .reflᶜ = inc nil
-    R ._∙ᶜ_ = ∥-∥-map₂ _++_
-    R .symᶜ = ∥-∥-map reverse
+    R .reflᶜ = inc []
+    R ._∙ᶜ_ p q = ∥-∥-map₂ _++_ q p
+    R .symᶜ = ∥-∥-map (reverse C)
 
     is : Iso (quotient R) ∣ π₀ C ∣
     is .fst = Coeq-rec squash inc λ (x , y , fs) →
-      ∥-∥-rec (squash _ _) (Zigzag-rec-≡ (π₀ C) inc quot) fs
+      ∥-∥-rec (squash _ _) (Meander-rec-≡ (π₀ C) inc quot) fs
     is .snd .is-iso.inv = Coeq-rec squash inc λ (x , y , f) →
-      quot (inc (cons f nil))
+      quot (inc (zig f []))
     is .snd .is-iso.rinv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
     is .snd .is-iso.linv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
 
