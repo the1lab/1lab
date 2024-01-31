@@ -6,9 +6,6 @@ open import Cat.Functor.Base
 open import Cat.Groupoid
 open import Cat.Prelude
 
-open import 1Lab.Reflection.Induction
-open import 1Lab.Reflection hiding (_++_ ; reverse)
-
 import Cat.Reasoning
 ```
 -->
