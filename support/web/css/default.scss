@@ -211,7 +211,7 @@ details {
     }
 
     &::after {
-      content: 'read more';
+      content: 'read\A0more';
       font-style: italic;
       margin-left: 0.223em;
       color: theme(--text-fg);
@@ -225,7 +225,7 @@ details {
   &[open] {
     summary {
       &::after {
-        content: 'read less';
+        content: 'read\A0less';
       }
       margin-bottom: 0.3em;
     }

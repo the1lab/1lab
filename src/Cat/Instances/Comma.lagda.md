@@ -1,7 +1,12 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Groupoid
+open import Cat.Morphism
 open import Cat.Prelude
+
+import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 
@@ -58,7 +63,9 @@ module
   private
     module A = Precategory A
     module B = Precategory B
-    import Cat.Reasoning C as C
+    module C = Cat.Reasoning C
+    module F = Cat.Functor.Reasoning F
+    module G = Cat.Functor.Reasoning G
 
   open A.HLevel-instance
   open B.HLevel-instance
@@ -218,6 +225,20 @@ square.
 
 <!--
 ```agda
+  module _ (A-grpd : is-pregroupoid A) (B-grpd : is-pregroupoid B) where
+    open ↓Hom
+    open is-invertible
+    open Inverses
+
+    ↓-is-pregroupoid : is-pregroupoid _↓_
+    ↓-is-pregroupoid f .inv .α = A-grpd (f .α) .inv
+    ↓-is-pregroupoid f .inv .β = B-grpd (f .β) .inv
+    ↓-is-pregroupoid f .inv .sq = C.rswizzle
+      (sym (C.lswizzle (f .sq) (G.annihilate (B-grpd (f .β) .invr))) ∙ C.assoc _ _ _)
+      (F.annihilate (A-grpd (f .α) .invl))
+    ↓-is-pregroupoid f .inverses .invl = ↓Hom-path (A-grpd (f .α) .invl) (B-grpd (f .β) .invl)
+    ↓-is-pregroupoid f .inverses .invr = ↓Hom-path (A-grpd (f .α) .invr) (B-grpd (f .β) .invr)
+
 module _ {A : Precategory ao ah} {B : Precategory bo bh} where
   private module A = Precategory A
 
@@ -227,5 +248,33 @@ module _ {A : Precategory ao ah} {B : Precategory bo bh} where
 
   _↘_ : Functor B A → A.Ob → Precategory _ _
   S ↘ X = S ↓ const! X
+
+module ↙-compose
+    {oc ℓc od ℓd oe ℓe}
+    {𝒞 : Precategory oc ℓc} {𝒟 : Precategory od ℓd} {ℰ : Precategory oe ℓe}
+    (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ)
+  where
+  private
+    module 𝒟 = Precategory 𝒟
+    module ℰ = Precategory ℰ
+    module F = Functor F
+    module G = Cat.Functor.Reasoning G
+  open ↓Obj
+  open ↓Hom
+
+  _↙>_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .y ↙ F) → Ob (d ↙ G F∘ F)
+  g ↙> f = ↓obj (G.₁ (f .map) ℰ.∘ g .map)
+
+  ↙-compose : ∀ {d} (g : Ob (d ↙ G)) → Functor (g .y ↙ F) (d ↙ G F∘ F)
+  ↙-compose g .F₀ f = g ↙> f
+  ↙-compose g .F₁ {f} {f'} h = ↓hom {β = h .β} $
+    (G.₁ (f' .map) ℰ.∘ g .map) ℰ.∘ ℰ.id          ≡⟨ ℰ.idr _ ⟩
+    G.₁ (f' .map) ℰ.∘ g .map                     ≡⟨ G.pushl (sym (𝒟.idr _) ∙ h .sq) ⟩
+    G.₁ (F.₁ (h .β)) ℰ.∘ G.₁ (f .map) ℰ.∘ g .map ∎
+  ↙-compose g .F-id = ↓Hom-path _ _ refl refl
+  ↙-compose g .F-∘ _ _ = ↓Hom-path _ _ refl refl
+
+  ↙>-id : ∀ {c} {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙> ↓obj 𝒟.id ≡ f
+  ↙>-id = ↓Obj-path _ _ refl refl (G.eliml refl)
 ```
 -->

@@ -81,6 +81,11 @@ module _
   Core-factor F = Functor-path (λ _ → refl) λ _ → refl
 ```
 
+This is dual to the [[free groupoid]] on a category, in the sense that
+there is a biadjoint triple $\rm{Free} \dashv U \dashv \rm{Core}$,
+where $U$ is the forgetful functor from the bicategory of groupoids to the
+bicategory of categories.
+
 <!-- [TODO: Reed M, 05/05/2023] This is really part of a biadjunction
 between Cat and Grpd (in particular it's the right biadjoint to the
 inclusion Grpd ↪ Cat).

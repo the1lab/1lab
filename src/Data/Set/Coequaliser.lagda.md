@@ -338,7 +338,7 @@ inc-is-surjective (squash x y p q i j) = is-prop→squarep
 ```
 -->
 
-## Effectivity {defines="congruence quotients-are-effective"}
+## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
 The most well-behaved case of quotients is when $R : A \to A \to \ty$
 takes values in propositions, is reflexive, transitive and symmetric (an

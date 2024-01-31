@@ -7,6 +7,8 @@ open import Cat.Prelude
 open import Order.Base
 
 import Order.Reasoning
+
+open Precategory
 ```
 -->
 
@@ -14,9 +16,16 @@ import Order.Reasoning
 module Order.Cat where
 ```
 
-# Posets as categories
+# Posets as categories {defines="posets-as-categories"}
 
-We have already remarked a [[poset]] is a special kind of [[category]].
+We have already remarked a [[poset]] is a special kind of [[category]]: a
+*thin* category, i.e. one that has propositional $\hom$ sets.
+
+```agda
+is-thin : ∀ {ℓ ℓ'} → Precategory ℓ ℓ' → Type (ℓ ⊔ ℓ')
+is-thin C = ∀ x y → is-prop (C .Hom x y)
+```
+
 This module actually formalises that connection by constructing a
 [[fully faithful functor]] from the category of posets into the
 [[category of strict categories]]. The construction of a category from a
@@ -24,10 +33,9 @@ poset is entirely unsurprising, but it is lengthy, thus ending up in
 this module.
 
 ```agda
-poset→category : ∀ {ℓ ℓ'} → Posets.Ob → Precategory ℓ ℓ'
+poset→category : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Precategory ℓ ℓ'
 poset→category P = cat module poset-to-category where
   module P = Poset P
-  open Precategory
 
   cat : Precategory _ _
   cat .Ob      = P.Ob
@@ -40,6 +48,9 @@ poset→category P = cat module poset-to-category where
   cat .Hom-set x y = is-prop→is-set P.≤-thin
 
 {-# DISPLAY poset-to-category.cat P = poset→category P #-}
+
+poset→thin : ∀ {ℓ ℓ'} (P : Poset ℓ ℓ') → is-thin (poset→category P)
+poset→thin P _ _ = P.≤-thin where module P = Poset P
 ```
 
 Our functor into $\strcat$ is similarly easy to describe: Monotonicity
@@ -58,4 +69,23 @@ Posets↪Strict-cats .F₁ {y = y} f .F-∘ g h = Poset.≤-thin y _ _
 
 Posets↪Strict-cats .F-id    = Functor-path (λ _ → refl) λ _ → refl
 Posets↪Strict-cats .F-∘ f g = Functor-path (λ _ → refl) λ _ → refl
+```
+
+More generally, to give a functor into a thin category, it suffices to give the
+action on objects and morphisms: the laws hold automatically.
+
+```agda
+module
+  _ {oc od ℓc ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
+    (D-thin : is-thin D)
+  where
+
+  thin-functor
+    : (f : C .Ob → D .Ob)
+    → (f₁ : ∀ {x y} → C .Hom x y → D .Hom (f x) (f y))
+    → Functor C D
+  thin-functor f f₁ .F₀ = f
+  thin-functor f f₁ .F₁ = f₁
+  thin-functor f f₁ .F-id = D-thin _ _ _ _
+  thin-functor f f₁ .F-∘ _ _ = D-thin _ _ _ _
 ```
