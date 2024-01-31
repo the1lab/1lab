@@ -160,31 +160,34 @@ In order to make reasoning easier, we define the extended cocone
 simultaneously with an elimination principle for its components.
 
 ```agda
-      interleaved mutual
-        extend-cocone : D => Const coapex
-        extend-cocone-elim
-          : ∀ d {ℓ} (P : ℰ.Hom (D.₀ d) coapex → Type ℓ)
-          → (∀ f → is-prop (P f))
-          → (∀ f → P (extend d f))
-          → P (extend-cocone .η d)
+      extend-cocone : D => Const coapex
+      extend-cocone-elim
+        : ∀ d {ℓ} (P : ℰ.Hom (D.₀ d) coapex → Type ℓ)
+        → (∀ f → is-prop (P f))
+        → (∀ f → P (extend d f))
+        → P (extend-cocone .η d)
 
-        extend-cocone .η d = ∥-∥-rec-set (hlevel 2)
-          (extend d) (extend-const d) (fin.point d)
+      extend-cocone .η d = ∥-∥-rec-set (hlevel 2)
+        (extend d) (extend-const d) (fin.point d)
 
-        extend-cocone-elim d P prop h = ∥-∥-elim
-          {P = λ f → P (∥-∥-rec-set (hlevel 2) (extend d) (extend-const d) f)}
-          (λ _ → prop _) h (fin.point d)
-
-        extend-cocone .is-natural x y f = extend-cocone-elim x
-          (λ ex → extend-cocone .η y ℰ.∘ D.₁ f ≡ ex)
+      extend-cocone .is-natural x y f = extend-cocone-elim x
+        (λ ex → extend-cocone .η y ℰ.∘ D.₁ f ≡ ex)
+        (λ _ → hlevel 1)
+        (λ ex → extend-cocone-elim y
+          (λ ey → ey ℰ.∘ D.₁ f ≡ extend x ex)
           (λ _ → hlevel 1)
-          (λ ex → extend-cocone-elim y
-            (λ ey → ey ℰ.∘ D.₁ f ≡ extend x ex)
-            (λ _ → hlevel 1)
-            λ ey → ℰ.pullr (sym (D.F-∘ _ _))
-                 ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
-          ∙ sym (ℰ.idl _)
+          λ ey → ℰ.pullr (sym (D.F-∘ _ _))
+                ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
+        ∙ sym (ℰ.idl _)
 ```
+
+<!--
+```agda
+      extend-cocone-elim d P prop h = ∥-∥-elim
+        {P = λ f → P (∥-∥-rec-set (hlevel 2) (extend d) (extend-const d) f)}
+        (λ _ → prop _) h (fin.point d)
+```
+-->
 
 In the other direction, suppose that we have a cocone $\{D(x) \to K\}$
 --- inserting $F$ in the appropriate places makes a cocone $\{DF(x) \to
