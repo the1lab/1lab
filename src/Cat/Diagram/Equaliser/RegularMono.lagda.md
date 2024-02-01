@@ -61,7 +61,7 @@ are in fact monomorphisms:
 open is-regular-mono using (is-regular-mono→is-mono) public
 ```
 
-## Effective epimorphisms
+## Effective monomorphisms
 
 Proving that a map $f$ is a regular monomorphism involves finding two
 maps which it equalises, but if $\cC$ is a category with [pushouts],
