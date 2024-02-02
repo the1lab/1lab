@@ -177,7 +177,7 @@ simultaneously with an elimination principle for its components.
           (λ ey → ey ℰ.∘ D.₁ f ≡ extend x ex)
           (λ _ → hlevel 1)
           λ ey → ℰ.pullr (sym (D.F-∘ _ _))
-                ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
+               ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
         ∙ sym (ℰ.idl _)
 ```
 
