@@ -26,7 +26,7 @@ private
 ```
 -->
 
-# Adjoints are Kan extensions
+# Adjoints are Kan extensions {defines="adjoints-are-kan-extensions"}
 
 One way to think about [[Kan extensions]] is that, when they exist, they
 allow us to "compose" two functors when one of them is going the wrong

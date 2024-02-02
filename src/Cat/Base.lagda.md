@@ -447,7 +447,7 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
                → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
 ```
 
-Natural transformations also dualize. The opposite of $\eta : F
+Natural transformations also dualise. The opposite of $\eta : F
 \To G$ is $\eta\op : G\op \To F\op$.
 
 ```agda
