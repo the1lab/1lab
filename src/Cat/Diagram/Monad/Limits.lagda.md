@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
@@ -70,6 +71,14 @@ module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore C M
   open _=>_
 ```
 -->
+
+That $U$ preserves limits follows immediately from the fact that it is a
+right adjoint: the non-trivial part is showing that it reflects them.
+
+```agda
+  Forget-preserves-limits : preserves-limit (Forget C M) F
+  Forget-preserves-limits = right-adjoint-is-continuous (Free⊣Forget C M)
+```
 
 We begin with the following key lemma: Write $K : \cC$ for the limit of
 a diagram $\cJ \xto{F} \cC^M \xto{U} \cC$. If $K$ carries an $M$-algebra
