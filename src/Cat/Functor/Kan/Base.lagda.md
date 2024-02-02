@@ -300,11 +300,11 @@ module _
 
 In the diagram above, the 2-cell is simply the whiskering $H\eta$.
 Unfortunately, proof assistants; our definition of whiskering lands in
-$H(Gp)$, but we requires a natural transformation to $(HG)p$.
+$H(Gp)$, but we require a natural transformation to $(HG)p$.
 
 We say that a Kan extension is **absolute** if it is preserved by *all*
-functors out of $D$. An important class of examples given by [[adjoint
-functors]].
+functors out of $D$. An important class of examples is given by [[adjoint
+functors|adjoints are kan extensions]].
 
 ```agda
   is-absolute-lan : is-lan p F G eta → Typeω

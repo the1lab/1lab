@@ -550,7 +550,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 # Preservation of colimits
 
 The definitions here are the same idea as [preservation of limits], just
-dualized.
+dualised.
 
 [preservation of limits]: Cat.Diagram.Limit.Base.html#preservation-of-limits
 

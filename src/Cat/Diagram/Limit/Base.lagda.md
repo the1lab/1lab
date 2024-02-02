@@ -686,6 +686,8 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 
 Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
 **preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+More precisely, we say a functor preserves limits of $\rm{Dia}$ if it
+takes limiting *cones* "upstairs" to limiting cones "downstairs".
 
 This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
@@ -693,9 +695,6 @@ there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
 compare $F(L)$ to. However, since limits are described by a universal
 property (in particular, being terminal), we don't _need_ such an
 object! Any limit is as good as any other.
-
-In more concise terms, we say a functor preserves limits if it takes
-limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
   preserves-limit : Type _
@@ -708,10 +707,11 @@ limiting cones "upstairs" to limiting cones "downstairs".
 ## Reflection of limits
 
 Using the terminology from before, we say a functor **reflects limits**
-if it takes limiting cones "downstairs" to limiting cones "upstairs".
-More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
-apex $F(a)$, then $F$ reflects this limit means that $a$ _was already_
-the limit of $\rm{Dia}$!
+if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":
+this is the converse implication from preservation of limits.
+More concretely, if we have a cone over $\rm{Dia}$ whose image under $F$
+is a limiting cone over $F \circ \rm{Dia}$, then $F$ reflects this limit
+if we _already_ had a limiting cone to begin with!
 
 ```agda
   reflects-limit : Type _
