@@ -78,9 +78,9 @@ module _ {P : Functor (C ^op) (Sets κ)} where
 <!--
 ```
   slice-ob→presheaf sl .F-id =
-    funext λ x → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) (happly (sl .domain .F-id) _)
+    funext λ x → Σ-prop-path! (happly (sl .domain .F-id) _)
   slice-ob→presheaf sl .F-∘ f g =
-    funext λ x → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) (happly (sl .domain .F-∘ _ _) _)
+    funext λ x → Σ-prop-path! (happly (sl .domain .F-∘ _ _) _)
 
   private abstract
     lemma
@@ -132,10 +132,10 @@ without comment.
     func .F₁ {x} {y} h .η i arg =
       h .map .η (i .ob) (arg .fst) , h .commutes ηₚ _ $ₚ arg .fst ∙ arg .snd
     func .F₁ {x} {y} h .is-natural _ _ _ = funext λ i →
-      Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) (happly (h .map .is-natural _ _ _) _)
+      Σ-prop-path! (happly (h .map .is-natural _ _ _) _)
 
-    func .F-id    = Nat-path (λ x → funext λ y → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) refl)
-    func .F-∘ f g = Nat-path (λ x → funext λ y → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) refl)
+    func .F-id    = ext λ x y p → Σ-prop-path! refl
+    func .F-∘ f g = ext λ x y p → Σ-prop-path! refl
 
   slice→total-is-ff : is-fully-faithful slice→total
   slice→total-is-ff {x} {y} = is-iso→is-equiv (iso inv rinv linv) where
@@ -144,7 +144,7 @@ without comment.
     inv nt .map .η i o = nt .η (elem _ (x .map .η i o)) (o , refl) .fst
 
     inv nt .map .is-natural _ _ f = funext λ z →
-        ap (λ e → nt .η _ e .fst) (Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) refl)
+        ap (λ e → nt .η _ e .fst) (Σ-prop-path! refl)
       ∙ ap fst (happly (nt .is-natural _ _
           (elem-hom f (happly (sym (x .map .is-natural _ _ _)) _))) _)
 
@@ -153,8 +153,8 @@ without comment.
 
     rinv : is-right-inverse inv (F₁ slice→total)
     rinv nt = ext λ where
-      o z p → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
-        (λ i → nt .η (elem (o .ob) (p i)) (z , (λ j → p (i ∧ j))) .fst)
+      o z p → Σ-prop-path! λ i →
+        nt .η (elem (o .ob) (p i)) (z , λ j → p (i ∧ j)) .fst
 
     linv : is-left-inverse inv (F₁ slice→total)
     linv sh = trivial!

@@ -66,7 +66,7 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
     (λ j → eta j x) , λ x y f → p f $ₚ _
   lim .factors _ _ = refl
   lim .unique eta p other q = funext λ x →
-    Σ-prop-path hlevel! (funext λ j → q j $ₚ x)
+    Σ-prop-path! (funext λ j → q j $ₚ x)
 ```
 
 <!--
@@ -131,7 +131,7 @@ using $\Sigma$:
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
     eq .has-is-eq .factors = refl
     eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly q x)
+      funext λ x → Σ-prop-path! (happly q x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.

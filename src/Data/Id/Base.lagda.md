@@ -161,7 +161,7 @@ substᵢ-filler-set : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
                 → is-set A
                 → {a : A}
                 → (p : a ≡ᵢ a)
-                → ∀ x → x ≡ substᵢ P p x 
+                → ∀ x → x ≡ substᵢ P p x
 substᵢ-filler-set P is-set-A p x = subst (λ q → x ≡ substᵢ P q x) (is-set→is-setᵢ is-set-A _ _ reflᵢ p) refl
 
 record Recallᵢ
@@ -186,6 +186,11 @@ symᵢ reflᵢ = reflᵢ
 _∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
 reflᵢ ∙ᵢ q = q
 
-
+Jᵢ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {x : A} (P : (y : A) → x ≡ᵢ y → Type ℓ')
+  → P x reflᵢ
+  → ∀ {y} (p : x ≡ᵢ y)
+  → P y p
+Jᵢ P prefl reflᵢ = prefl
 ```
 -->

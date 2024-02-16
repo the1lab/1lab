@@ -93,15 +93,13 @@ The proof is mostly a calculation, so we present it without a lot of comment.
       to : m⊥o f X → m⊥m f (! T)
       to f⊥X {u} {v} sq =
         contr (f⊥X u .centre .fst , f⊥X u .centre .snd , !-unique₂ T _ _) λ m →
-          Σ-prop-path (λ _ → hlevel 1)
-            (ap fst (f⊥X u .paths (m .fst , m .snd .fst)))
+          Σ-prop-path! (ap fst (f⊥X u .paths (m .fst , m .snd .fst)))
 
       from : m⊥m f (! T) → m⊥o f X
       from f⊥! a = contr
         ( f⊥! {v = ! T} (!-unique₂ T _ _) .centre .fst
-        , f⊥! (!-unique₂ T _ _) .centre .snd .fst ) λ x →
-          Σ-prop-path (λ _ → hlevel 1)
-            (ap fst (f⊥! _ .paths (x .fst , x .snd , !-unique₂ T _ _)))
+        , f⊥! (!-unique₂ T _ _) .centre .snd .fst ) λ x → Σ-prop-path!
+          (ap fst (f⊥! _ .paths (x .fst , x .snd , !-unique₂ T _ _)))
 ```
 
 As a passing observation we note that if $f \ortho X$ and $X \cong Y$,
@@ -118,7 +116,7 @@ holds in the generality of precategories.
     contr
       ( g.to C.∘ contr' .centre .fst
       , C.pullr (contr' .centre .snd) ∙ C.cancell g.invl )
-      λ x → Σ-prop-path (λ _ → hlevel 1) $
+      λ x → Σ-prop-path! $
         ap₂ C._∘_ refl (ap fst (contr' .paths (g.from C.∘ x .fst , C.pullr (x .snd))))
         ∙ C.cancell g.invl
     where
@@ -175,7 +173,7 @@ the object. Given a map $a : a \to \iota X$,
     : ∀ {X} {a b} {f : C.Hom a b} → D.is-invertible (r.₁ f) → m⊥o C f (ι.₀ X)
   in-subcategory→orthogonal-to-inverted {X} {A} {B} {f} rf-inv a→x =
     contr (fact , factors) λ { (g , factors') →
-      Σ-prop-path (λ _ → hlevel 1) (h≡k factors factors') }
+      Σ-prop-path! (h≡k factors factors') }
     where
       module rf = D.is-invertible rf-inv
       module η⁻¹ {a} = C.is-invertible (is-reflective→unit-G-is-iso r⊣ι ι-ff {a})

@@ -432,23 +432,23 @@ the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 ```agda
     η*-idl : ∀ {x} → (f : Hom x m) → μ* (η* x) f ≡ f
     η*-idl {x} f =
-      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (identity ⋆ elt f)               ≡⟨ ap gen PMon.idl ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     η*-idr : ∀ {x} → (f : Hom x m) → μ* f (η* x) ≡ f
     η*-idr {x} f =
-      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ identity)               ≡⟨ ap gen PMon.idr ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     μ*-assoc : ∀ {x} → (f g h : Hom x m) → μ* f (μ* g h) ≡ μ* (μ* f g) h
     μ*-assoc {x} f g h =
-      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ (elt g ⋆ elt h))               ≡⟨ ap gen PMon.associative ⟩
-      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ unext repr.invr _ _) ⟩
       gen (elt (gen (elt f ⋆ elt g)) ⋆ elt h)     ∎
 ```
 </details>
@@ -517,23 +517,23 @@ expand this `<details>` element.</summary>
 
     ni .eta x .preserves .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
-      elt (η* x)                 ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
       identity                   ∎
     ni .eta x .preserves .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
-      elt (μ* f g)                               ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
       (elt f ⋆ elt g)                            ∎
 
     ni .inv x .preserves .pres-id = sym (η*-nat _)
     ni .inv x .preserves .pres-⋆ f g =
-      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.invr ηₚ _ $ₚ _) (repr.invr ηₚ _ $ₚ _)) ⟩
+      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
       μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
 
-    ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
-    ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
+    ni .eta∘inv x = ext (unext repr.invr x)
+    ni .inv∘eta x = ext (unext repr.invl x)
     ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
 ```
 </details>

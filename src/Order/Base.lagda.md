@@ -216,7 +216,7 @@ instance
   H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
   H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
 
-  Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
+  Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
   Funlike-Monotone = record { _#_ = hom }
 
 Monotone-pathp

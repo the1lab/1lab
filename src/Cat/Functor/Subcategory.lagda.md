@@ -96,12 +96,10 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
       : ∀ {x y : Σ[ ob ∈ Ob ] (is-ob ob)} → Extensionality (Subcat-hom subcat x y)
     extensionality-subcat-hom = record { lemma = quote Extensional-subcat-hom }
 
-    Funlike-Subcat-hom : ⦃ _ : Funlike Hom ⦄ → Funlike (Subcat-hom subcat)
-    Funlike-Subcat-hom ⦃ i ⦄ = record
-      { au = Underlying-Σ ⦃ i .Funlike.au ⦄
-      ; bu = Underlying-Σ ⦃ i .Funlike.bu ⦄
-      ; _#_ = λ f x → apply (f .hom) x
-      }
+    Funlike-Subcat-hom
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y}
+      → ⦃ _ : Funlike (Hom (x .fst) (y .fst)) A B ⦄ → Funlike (Subcat-hom subcat x y) A B
+    Funlike-Subcat-hom ⦃ i ⦄ = record { _#_ = λ f x → apply (f .hom) x }
 
   Subcat-hom-is-set
     : {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
@@ -170,7 +168,7 @@ to those that lie in the image of $F$.
   Faithful-subcat .Subcat.is-hom f (y , y-es) (z , z-es) =
     Σ[ g ∈ C.Hom y z ] (D.to z-es D.∘ F₁ g D.∘ D.from y-es ≡ f)
   Faithful-subcat .Subcat.is-hom-prop f (y , y-es) (z , z-es) (g , p) (h , q) =
-    Σ-prop-path (λ _ → D.Hom-set _ _ _ _) $
+    Σ-prop-path! $
     faithful $
     D.iso→epic (y-es D.Iso⁻¹) _ _ $
     D.iso→monic z-es _ _ $

@@ -70,7 +70,7 @@ Rel-map→function
   → ∣ x ∣ → ∣ y ∣
 Rel-map→function {x = x} {y} {rel} map elt =
   ∥-∥-rec {P = Σ ∣ y ∣ λ b → ∣ rel elt b ∣}
-    (λ { (x , p) (y , q) → Σ-prop-path (λ _ → hlevel!) (functional' p q) })
+    (λ { (x , p) (y , q) → Σ-prop-path! (functional' p q) })
     (λ x → x)
     (entire' elt) .fst
   where
@@ -116,7 +116,7 @@ using those words.
     f A.∘ g , mapping
       (A.functional-∘ (m .functional) (m' .functional))
       (A.entire-∘ (m .entire) (m' .entire))
-  Maps[_] .idr f = Σ-prop-path (λ _ → hlevel 1) (A.idr _)
-  Maps[_] .idl f = Σ-prop-path (λ _ → hlevel 1) (A.idl _)
-  Maps[_] .assoc f g h = Σ-prop-path (λ _ → hlevel 1) (A.assoc _ _ _)
+  Maps[_] .idr f = Σ-prop-path! (A.idr _)
+  Maps[_] .idl f = Σ-prop-path! (A.idl _)
+  Maps[_] .assoc f g h = Σ-prop-path! (A.assoc _ _ _)
 ```

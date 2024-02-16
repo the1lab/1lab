@@ -191,5 +191,5 @@ Moreover, we have that a singleton set is $K$-finite, as well.
 ```agda
   singleton-is-K-finite : is-set T → (x : T) → is-K-finite (singleton x)
   singleton-is-K-finite t-set x = inc (covering {cardinality = 1} (λ _ → x , inc refl)
-    λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! {pa = t-set _ _} p)))
+    λ (y , p) → inc (fzero , Σ-prop-path! (out! {pa = t-set _ _} p)))
 ```

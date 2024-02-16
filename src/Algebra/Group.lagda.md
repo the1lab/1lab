@@ -335,8 +335,8 @@ ident=is-equiv-is-prop}.
 The associativity and identity laws hold definitionally.
 
 ```agda
-  group-str .assoc _ _ _ = Σ-prop-path is-equiv-is-prop refl
-  group-str .idl _ = Σ-prop-path is-equiv-is-prop refl
+  group-str .assoc _ _ _ = trivial!
+  group-str .idl _ = trivial!
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
@@ -345,6 +345,5 @@ equivalence is both a section and a retraction.
 
 ```agda
   group-str .inv = _e⁻¹
-  group-str .invl (f , eqv) =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
+  group-str .invl (f , eqv) = ext (equiv→unit eqv)
 ```

@@ -143,7 +143,7 @@ this is indeed a proposition.
       Σ[ g ∈ D.Hom (eso x .fst) (eso y .fst) ]
       (eso.to y C.∘ F₁ g C.∘ eso.from x ≡ f)
     sub .P-prop {x} {y} f (g , p) (g' , q) =
-      Σ-prop-path (λ _ → C.Hom-set _ _ _ _) $
+      Σ-prop-path!                          $
       is-pseudomonic.faithful pseudomonic   $
       C.iso→epic (eso x .snd C.Iso⁻¹) _ _   $
       C.iso→monic (eso y .snd) _ _ (p ∙ sym q)

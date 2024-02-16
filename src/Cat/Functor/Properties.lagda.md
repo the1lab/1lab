@@ -62,8 +62,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → ∀ {x y} → (f : F₀ F x D.≅ F₀ F y)
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
-    Σ-prop-path (λ _ → D.≅-is-set _ _) $
-    ext (faithful (ap D.to (p ∙ sym q)))
+    Σ-prop-path! $ ext (faithful (ap D.to (p ∙ sym q)))
 ```
 -->
 

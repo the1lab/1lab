@@ -152,8 +152,8 @@ module
              → F DE.≅ F' → (F F∘ G) CE.≅ (F' F∘ G)
     F∘-iso-l {F} {F'} {G} isom =
       CE.make-iso (isom.to ◂ G) (isom.from ◂ G)
-        (Nat-path λ x → isom.invl ηₚ _)
-        (Nat-path λ x → isom.invr ηₚ _)
+        (ext λ x → isom.invl #ₚ _)
+        (ext λ x → isom.invr #ₚ _)
       where
         module isom = DE._≅_ isom
 
@@ -161,8 +161,8 @@ module
              → G CD.≅ G' → (F F∘ G) CE.≅ (F F∘ G')
     F∘-iso-r {F} {G} {G'} isom =
       CE.make-iso (F ▸ isom.to) (F ▸ isom.from)
-        (Nat-path λ x → F.annihilate (isom.invl ηₚ _))
-        (Nat-path λ x → F.annihilate (isom.invr ηₚ _))
+        (ext λ x → F.annihilate (isom.invl ηₚ _))
+        (ext λ x → F.annihilate (isom.invr ηₚ _))
       where
         module isom = CD._≅_ isom
         module F = Cat.Functor.Reasoning F
