@@ -610,7 +610,14 @@ instance
   Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
   Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
 
-  Funlike-Functor : ∀ {o ℓ o' ℓ'} → Funlike (Functor {o} {ℓ} {o'} {ℓ'})
+  Funlike-Functor
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    → Funlike (Functor C D) ⌞ C ⌟ (λ x → ⌞ D ⌟)
   Funlike-Functor = record { _#_ = Functor.F₀ }
+
+  Funlike-natural-transformation
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D}
+    → Funlike (F => G) ⌞ C ⌟ (λ x → Precategory.Hom D (F # x) (G # x))
+  Funlike-natural-transformation = record { _#_ = _=>_.η }
 ```
 -->

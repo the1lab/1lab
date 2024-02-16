@@ -213,13 +213,11 @@ over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
-    T-prop b (g , coh) (g' , coh') =
-      Σ-prop-path (λ x → Π-is-hlevel² 1 λ _ _ → C.Hom-set _ _ _ _) $
-        ∥-∥-proj (C.Hom-set _ _ _ _) do
-        (a₀ , h) ← H-eso b
-        pure $ C.iso→epic (F-map-iso F h) _ _
-          (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
-            (sym (coh a₀ h) ∙ coh' a₀ h))
+    T-prop b (g , coh) (g' , coh') = Σ-prop-path! $ ∥-∥-proj! do
+      (a₀ , h) ← H-eso b
+      pure $ C.iso→epic (F-map-iso F h) _ _
+        (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
+          (sym (coh a₀ h) ∙ coh' a₀ h))
 ```
 
 Given any $b$, $H$ being eso means that we [[merely]] have an essential

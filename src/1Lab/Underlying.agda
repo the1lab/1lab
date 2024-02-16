@@ -78,18 +78,10 @@ x ∈ P = ⌞ P x ⌟
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
 -- categories.
-record
-  Funlike {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} (F : A → B → Type ℓ'') : Typeω where
-  infixl 999 _#_
-
+record Funlike {ℓ ℓ' ℓ''} (A : Type ℓ) (arg : Type ℓ') (out : arg → Type ℓ'') : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where
   field
-    -- The domain and codomain of F must both support an underlying-type
-    -- projection, which is determined by the F.
-    overlap ⦃ au ⦄ : Underlying A
-    overlap ⦃ bu ⦄ : Underlying B
-
-    -- The underlying function (infix).
-    _#_ : ∀ {A B} → F A B → ⌞ A ⌟ → ⌞ B ⌟
+    _#_ : A → (x : arg) → out x
+  infixl 999 _#_
 
 open Funlike ⦃ ... ⦄ using (_#_) public
 {-# DISPLAY Funlike._#_ p f x = f # x #-}
@@ -99,38 +91,33 @@ open Funlike ⦃ ... ⦄ using (_#_) public
 -- "mutually blocks" the Funlike instance meta. Use the prefix version
 -- instead.
 apply
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
-  → ⦃ _ : Funlike F ⦄
-  → ∀ {a b} → F a b → ⌞ a ⌟ → ⌞ b ⌟
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
+  → ⦃ _ : Funlike F A B ⦄
+  → F → (x : A) → B x
 apply = _#_
 
 -- Shortcut for ap (apply ...)
 ap#
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
-  → ⦃ _ : Funlike F ⦄
-  → ∀ {a : A} {b : B} (f : F a b) → ∀ {x y : ⌞ a ⌟} → x ≡ y → f # x ≡ f # y
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
+  → ⦃ _ : Funlike F A B ⦄
+  → (f : F) {x y : A} (p : x ≡ y) → PathP (λ i → B (p i)) (f # x) (f # y)
 ap# f = ap (apply f)
 
 -- Generalised happly.
 _#ₚ_
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
-  → ⦃ _ : Funlike F ⦄
-  → {a : A} {b : B} {f g : F a b} → f ≡ g → ∀ (x : ⌞ a ⌟) → f # x ≡ g # x
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
+  → ⦃ _ : Funlike F A B ⦄
+  → {f g : F} → f ≡ g → (x : A) → f # x ≡ g # x
 f #ₚ x = ap₂ _#_ f refl
 
-
 instance
-  -- Agda really dislikes inferring the level parameters here.
-  Funlike-Fun
-    : ∀ {ℓ ℓ'}
-    → Funlike {lsuc ℓ} {lsuc ℓ'} {ℓ ⊔ ℓ'} {Type ℓ} {Type ℓ'} λ x y → x → y
-  Funlike-Fun = record
-    { _#_ = _$_
-    }
+  Funlike-Π : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Funlike ((x : A) → B x) A B
+  Funlike-Π = record { _#_ = id }
 
 -- Generalised "sections" (e.g. of a presheaf) notation.
 _ʻ_
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
-  → ⦃ _ : Funlike F ⦄ {a : A} {b : B} ⦃ _ : Underlying ⌞ b ⌟ ⦄
-  → F a b → ⌞ a ⌟ → Type _
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
+  → ⦃ _ : Funlike F A B ⦄
+  → F → (x : A) → ⦃ _ : Underlying (B x) ⦄
+  → Type _
 F ʻ x = ⌞ F # x ⌟

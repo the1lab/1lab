@@ -198,21 +198,21 @@ extensional type theory, but the tradeoff for decidable type-checking is
 having to munge paths sometimes. This is one of those times:
 
 ```agda
-  precat .idr {x} {y} f = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path (λ _ → C .is-tr _ _) refl))
+  precat .idr {x} {y} f = Σ-prop-path!
+    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path! refl))
     ∙ happly (ap map μ-unitr) (f .fst , x , f .snd .fst))
-  precat .idl {x} {y} f = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (η .map y ,_) (Σ-prop-path (λ _ → C .is-tr _ _) refl))
+  precat .idl {x} {y} f = Σ-prop-path!
+    ( ap (μ .map) (ap (η .map y ,_) (Σ-prop-path! refl))
     ∙ happly (ap map μ-unitl) (y , f .fst , sym (f .snd .snd)))
-  precat .assoc f g h = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path (λ _ → hlevel 1)
+  precat .assoc f g h = Σ-prop-path!
+    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path!
         (ap (μ .map) (ap (g .fst ,_)
-          (Σ-prop-path (λ _ → hlevel 1) (refl {x = h .fst}))))))
+          (Σ-prop-path! (refl {x = h .fst}))))))
     ·· happly (ap map μ-assoc)
         ( f .fst , (g .fst , h .fst , g .snd .fst ∙ sym (h .snd .snd))
         , f .snd .fst ∙ sym (g .snd .snd)
         )
     ·· ap (μ .map) (Σ-pathp (ap (μ .map) (ap (f .fst ,_)
-        (Σ-prop-path (λ _ → hlevel 1) refl)))
+        (Σ-prop-path! refl)))
            (Σ-pathp refl (is-prop→pathp (λ _ → hlevel 1) _ _))))
 ```

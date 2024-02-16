@@ -114,14 +114,13 @@ proceed exactly by using connectedness.
 
 ```agda
   BAut-is-hlevel : ∀ n → is-hlevel T n → is-hlevel BAut (1 + n)
-  BAut-is-hlevel zero hl (x , f) (y , g) =
-    Σ-prop-path (λ _ → squash) (sym (ua f') ∙ ua g')
+  BAut-is-hlevel zero hl (x , f) (y , g) = Σ-prop-path! (sym (ua f') ∙ ua g')
     where
       extract : ∀ {X} → is-prop (T ≃ X)
-      extract f g = Σ-prop-path is-equiv-is-prop $ funext λ x →
-        ap fst (is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
+      extract f g = ext λ x → ap fst $
+        is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
           (f .fst x , is-contr→is-prop hl _ _)
-          (g .fst x , is-contr→is-prop hl _ _))
+          (g .fst x , is-contr→is-prop hl _ _)
 
       f' = ∥-∥-rec extract (λ x → x) f
       g' = ∥-∥-rec extract (λ x → x) g

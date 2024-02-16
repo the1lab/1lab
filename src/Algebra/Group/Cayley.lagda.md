@@ -34,9 +34,7 @@ $\rm{Sym}(G)$:
 
 ```agda
 Cayley-is-hom : is-group-hom (G .snd) (Sym G-set) Cayley
-Cayley-is-hom .is-group-hom.pres-⋆ x y = Σ-prop-path is-equiv-is-prop (funext lemma) where
-  lemma : (e : ⌞ G ⌟) → (x ⋆ y) ⋆ e ≡ x ⋆ (y ⋆ e)
-  lemma e = sym associative
+Cayley-is-hom .is-group-hom.pres-⋆ x y = ext λ e → sym associative
 ```
 
 Finally, we show that this map is injective; Thus, $G$ embeds as a

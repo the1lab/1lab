@@ -35,7 +35,7 @@ module _ {o ℓ} (A : Poset o ℓ) where
   Subposet P .Poset.≤-refl = ≤-refl
   Subposet P .Poset.≤-trans = ≤-trans
   Subposet P .Poset.≤-antisym p q =
-    Σ-prop-path hlevel! (≤-antisym p q)
+    Σ-prop-path! (≤-antisym p q)
 ```
 
 Every subposet includes into the original order it was constructed
@@ -60,7 +60,7 @@ module _ {o ℓ ℓ'} {A : Poset o ℓ} {P : ⌞ A ⌟ → Prop ℓ'} where
     : {x y : ∫ₚ P}
     → subposet-inc {A = A} P # x ≡ subposet-inc {A = A} P # y
     → x ≡ y
-  subposet-inc-inj p = Σ-prop-path hlevel! p
+  subposet-inc-inj p = Σ-prop-path! p
 ```
 
 ## Joins and Meets in Subposets

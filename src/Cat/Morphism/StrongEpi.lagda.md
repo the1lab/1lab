@@ -58,7 +58,7 @@ lifts→is-strong-epi
     → Σ[ w ∈ Hom b c ] ((w ∘ f ≡ u) × (m .mor ∘ w ≡ v)))
   → is-strong-epi f
 lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
-  contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path (λ _ → hlevel 1)
+  contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path!
     (mm .monic _ _ (sym (q ∙ sym (lift-it mm sq .snd .snd)))) }
 ```
 

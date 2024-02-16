@@ -69,9 +69,9 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   sg' .make-group.unit = unit , has-unit
   sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg' .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
-  sg' .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) associative
-  sg' .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
-  sg' .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
+  sg' .make-group.assoc x y z = Σ-prop-path! associative
+  sg' .make-group.invl x = Σ-prop-path! inversel
+  sg' .make-group.idl x = Σ-prop-path! idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
@@ -80,7 +80,7 @@ predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   it .preserves .is-group-hom.pres-⋆ x y = refl
 
   ism : Groups.is-monic it
-  ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
+  ism = Homomorphism-monic it λ p → Σ-prop-path! p
 ```
 
 # Kernels and images
@@ -128,7 +128,7 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module f = is-group-hom (f .preserves)
 
     Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
-    Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
+    Tpath {x} {y} p = Σ-prop-path! p
 
     abstract
       Tset : is-set (image (apply f))
@@ -336,7 +336,7 @@ will compute.
           ∥-∥-elim
             {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (apply colim) (Σ-prop-path (λ _ → squash) (sym fp))
+            (λ { (f , fp) → ap (apply colim) (Σ-prop-path! (sym fp))
                           ∙ (happly (ap hom prf) f) })
             t
 ```
@@ -572,11 +572,11 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
     to : Groups.Hom _ _
     to .hom (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
       x-0∈H = /ᴳ-effective p
-    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
+    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
     from : Groups.Hom _ _
     from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
-    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
+    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
     il = ext λ x x∈H → Σ-prop-path! refl
     ir = ext λ x x∈H → Σ-prop-path! refl

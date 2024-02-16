@@ -82,10 +82,8 @@ to-presheaf sieve .F₁ f (g , s) = g C.∘ f , sieve .closed _ s
 
 <!--
 ```agda
-to-presheaf sieve .F-id = funext λ _ →
-  Σ-prop-path (λ _ → hlevel!) (C.idr _)
-to-presheaf sieve .F-∘ f g = funext λ _ →
-  Σ-prop-path (λ _ → hlevel!) (C.assoc _ _ _)
+to-presheaf sieve .F-id = funext λ _ → Σ-prop-path! (C.idr _)
+to-presheaf sieve .F-∘ f g = funext λ _ → Σ-prop-path! (C.assoc _ _ _)
 ```
 -->
 

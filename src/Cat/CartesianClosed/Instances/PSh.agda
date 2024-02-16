@@ -39,7 +39,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     uniq : is-terminal (PSh κ C) top
     uniq x .centre .η _ _ = lift tt
     uniq x .centre .is-natural _ _ _ = refl
-    uniq x .paths f = Nat-path λ _ → refl
+    uniq x .paths f = trivial!
 
   PSh-pullbacks
     : ∀ {X Y Z} (f : PSh.Hom X Z) (g : PSh.Hom Y Z)
@@ -79,13 +79,13 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .p₂ .η x (a , b , _) = b
     pb .p₂ .is-natural _ _ _ = refl
     pb .has-is-pb .square = ext λ _ _ _ p → p
-    pb .has-is-pb .universal path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
+    pb .has-is-pb .universal path .η idx arg = _ , _ , unext path _ _
     pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
     pb .has-is-pb .p₁∘universal = trivial!
     pb .has-is-pb .p₂∘universal = trivial!
     pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
-      pb-path (p ηₚ _ $ₚ _) (q ηₚ _ $ₚ _)
+      pb-path (unext p _ _) (unext q _ _)
 
   PSh-products : (A B : PSh.Ob) → Product (PSh κ C) A B
   PSh-products A B = prod where
@@ -138,8 +138,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coprod .has-is-coproduct .in₀∘factor = trivial!
     coprod .has-is-coproduct .in₁∘factor = trivial!
     coprod .has-is-coproduct .unique other p q = ext λ where
-      a (inl x) → p ηₚ a $ₚ x
-      a (inr x) → q ηₚ a $ₚ x
+      a (inl x) → unext p a x
+      a (inr x) → unext q a x
 
   PSh-coequaliser
     : ∀ {X Y} (f g : PSh.Hom X Y)
@@ -166,14 +166,13 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
       ap incq (happly (Y.F-∘ f g) _)
     coequ .coeq .η i = incq
     coequ .coeq .is-natural x y f = refl
-    coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
+    coequ .has-is-coeq .coequal = ext λ i x → glue x
     coequ .has-is-coeq .universal {F = F} {e' = e'} p .η x =
-      Coeq-rec (F .F₀  x .is-tr) (e' .η x) (p ηₚ x $ₚ_)
-    coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e' .is-natural _ _ _) _
-    coequ .has-is-coeq .factors = Nat-path λ _ → refl
-    coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → p ηₚ i $ₚ x
+      Coeq-rec (F .F₀ x .is-tr) (e' .η x) (p ηₚ x $ₚ_)
+    coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = ext λ x →
+      e' .is-natural _ _ _ $ₚ _
+    coequ .has-is-coeq .factors = trivial!
+    coequ .has-is-coeq .unique {F = F} p = reext! p
 
 module _ {κ} {C : Precategory κ κ} where
   private

@@ -216,9 +216,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
     extensionality-algebra-hom = record { lemma = quote Extensional-Algebra-Hom }
 
   instance
-    Funlike-Algebra-hom : ⦃ i : Funlike C.Hom ⦄ → Funlike (Algebra-hom C M)
-    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.au = Underlying-Σ ⦃ ua = Funlike.au i ⦄
-    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.bu = Underlying-Σ ⦃ ua = Funlike.bu i ⦄
+    Funlike-Algebra-hom
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {X Y}
+      → ⦃ i : Funlike (C.Hom (X .fst) (Y .fst)) A B ⦄
+      → Funlike (Algebra-hom C M X Y) A B
     Funlike-Algebra-hom ⦃ i ⦄ .Funlike._#_ f x = f .morphism # x
 
 module _ {o ℓ} (C : Precategory o ℓ) where
