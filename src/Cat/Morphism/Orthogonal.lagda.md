@@ -184,7 +184,7 @@ unit morphism $\eta_{\iota X}$ is an isomorphism; We define a morphism
 $b : \iota r(A) \to \iota X$ as the composite
 
 $$
-\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta^{-1}} \iota(X)\text{,}
+\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta\inv} \iota(X)\text{,}
 $$
 
 ```agda
@@ -204,7 +204,7 @@ $B \to \iota(X)$.
 We define _that_ using the map $b$ we just constructed. It's the composite
 
 $$
-B \xto{\eta} \iota r(B) \xto{\iota(r(f)^{-1})} \iota r(A) \xto{b} \iota(X)\text{,}
+B \xto{\eta} \iota r(B) \xto{\iota(r(f)\inv)} \iota r(A) \xto{b} \iota(X)\text{,}
 $$
 
 and a calculation shows us that this map is indeed a factorisation of

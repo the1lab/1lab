@@ -234,7 +234,7 @@ $$
 ```
 
 Following Johnstone, we show that $g$ is an isomorphism, so that
-$hg^{-1}$ is the factorisation we're looking for.^[Johnstone says it's
+$hg\inv$ is the factorisation we're looking for.^[Johnstone says it's
 _clearly_ unique, but the tiny calculation is included at the end of the
 proof since it wasn't clear to me] Since $f$ is an extremal epimorphism,
 any monomorphism through which it factors must be an iso. And since we have
@@ -375,7 +375,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
 Having shown that $g$ is monic, and knowing that $f$ --- a strong (thus
 extremal) epimorphism --- factors through it, we conclude that $g$ is an
-isomorphism. It remains to `compute`{.Agda} that $hg^{-1}f = c$, which
+isomorphism. It remains to `compute`{.Agda} that $hg\inv f = c$, which
 we do below.
 
 <!--

@@ -53,7 +53,7 @@ Id-identity-system .to-path-over reflᵢ = refl
 ```
 
 Paths are, in many ways, more convenient than the inductive identity
-type: as a (silly) example, for paths, we have $(p^{-1})^{-1}$
+type: as a (silly) example, for paths, we have $(p\inv)\inv$
 definitionally. But the inductive identity type has _one_ property which
 sets it apart from paths: **regularity.** Transport along the
 reflexivity path is definitionally the identity:

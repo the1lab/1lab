@@ -330,7 +330,7 @@ Strict→Family-generic-object ob-set = gobj where
   gobj .classify-cartesian _ .universal _ h' = h'
   gobj .classify-cartesian _ .commutes _ h' = funext λ _ → idl _
   gobj .classify-cartesian _ .unique m' p = funext λ x →
-    sym (idl _) ∙ p $ₚ x
+    sym (idl _) ∙ p # x
 ```
 
 ### Skeletal generic objects

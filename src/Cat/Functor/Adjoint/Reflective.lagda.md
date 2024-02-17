@@ -248,7 +248,7 @@ module _
 ```
 -->
 
-Let $\eps^{-1}$ be the (natural) inverse to the counit, and let
+Let $\eps\inv$ be the (natural) inverse to the counit, and let
 $f : \cC(G(X), G(Y))$. We can obtain a map $\cD(X,Y)$ by conjugating
 with $\eps$ and its inverse.
 
@@ -261,13 +261,13 @@ with $\eps$ and its inverse.
 
 Proving that this conjugation forms an equivalence involves the usual
 adjoint yoga. For the forward direction, we need to show that
-$G(\eps \circ F(f) \circ \eps^{-1}) = f$; if we take the right adjunct,
-this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps^{-1})) = \eps \circ F(f)$.
+$G(\eps \circ F(f) \circ \eps\inv) = f$; if we take the right adjunct,
+this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps\inv)) = \eps \circ F(f)$.
 
 From here, we can repeatedly apply naturality to commute the $\eps$
 all the way to the end of the chain of morphisms. This yields
-$\eps \circ F(f) \circ \eps^{-1} \circ \eps$, which is equal to
-$\eps \circ F(f)$, as $\eps^{-1}$ is an inverse.
+$\eps \circ F(f) \circ \eps\inv \circ \eps$, which is equal to
+$\eps \circ F(f)$, as $\eps\inv$ is an inverse.
 
 ```agda
         (λ f → Equiv.injective (_ , R-adjunct-is-equiv adj) $

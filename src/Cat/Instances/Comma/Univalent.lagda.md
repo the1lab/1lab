@@ -77,8 +77,8 @@ have
 
 $$
 \begin{split}
-G_1(f_\beta) o_m F_1(f_\alpha^{-1}) &= o'_m F_1(f_\alpha) F_1(f_\alpha^{-1}) \\
-  &= o'_m F_1(f_\alpha f_\alpha^{-1}) \\
+G_1(f_\beta) o_m F_1(f_\alpha\inv) &= o'_m F_1(f_\alpha) F_1(f_\alpha\inv) \\
+  &= o'_m F_1(f_\alpha f_\alpha\inv) \\
   &= o'_m\text{,}
 \end{split}
 $$

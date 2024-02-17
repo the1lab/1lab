@@ -32,7 +32,7 @@ will _not_ typecheck as a `Fin 1`!
 ```agda
 data Fin : Nat → Type where
   fzero : ∀ {n} → Fin (suc n)
-  fsuc : ∀ {n} → Fin n → Fin (suc n)
+  fsuc  : ∀ {n} → Fin n → Fin (suc n)
 ```
 
 Keeping with the perspective of `Fin`{.Agda} as a type of bounded

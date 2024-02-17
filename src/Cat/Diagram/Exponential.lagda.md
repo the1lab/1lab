@@ -401,7 +401,7 @@ $$
 is equivalent to asking for
 
 $$
-f \circ \lambda^{-1}(q) = \pi_2\text{,}
+f \circ \lambda\inv(q) = \pi_2\text{,}
 $$
 
 which is in turn equivalent to asking that $q$ be a map $\Delta_B(X) \to
@@ -438,7 +438,7 @@ f)$, and even though it factors through the rather complicated path
 displayed below, it definitionally sends $h : \hom_\cC(X, \Pi_B(f))$ to
 
 $$
-\lambda^{-1}(p_1\circ h)\text{.}
+\lambda\inv(p_1\circ h)\text{.}
 $$
 
 Having this very simple computational description will greatly simplify

@@ -295,7 +295,7 @@ implies the existence of zigzags, meditate on the following diagram:
   Fx && Fy
   \arrow["f"', from=1-2, to=2-1]
   \arrow["g", from=1-2, to=2-3]
-  \arrow["{g \circ f^{-1} = F(z)}"', from=2-1, to=2-3]
+  \arrow["{g \circ f\inv = F(z)}"', from=2-1, to=2-3]
 \end{tikzcd}\]
 ~~~
 

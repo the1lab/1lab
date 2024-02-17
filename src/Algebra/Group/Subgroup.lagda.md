@@ -379,9 +379,9 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
 
 It turns out that $\ker f$ is also closed under _conjugation_ by
 elements of the enveloping group, in that if $f(x) = 1$ (quickly
-switching to "multiplicative" notation for the unit), then $f(yxy^{-1})$
-must be $1$ as well: for we have $$f(y)f(x)f(y^{-1}) = f(y)1f(y^{-1}) =
-f(yy^{-1}) = f(1) = 1$$.
+switching to "multiplicative" notation for the unit), then $f(yxy\inv)$
+must be $1$ as well: for we have $$f(y)f(x)f(y\inv) = f(y)1f(y\inv) =
+f(yy\inv) = f(1) = 1$$.
 
 ```agda
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
@@ -478,7 +478,7 @@ a tedious but straightforward calculation:
 ```
 
 To define inverses on the quotient, it suffices to show that whenever
-$(x - y) \in H$, we also have $(x^{-1} - y) \in H$.
+$(x - y) \in H$, we also have $(x\inv - y) \in H$.
 
 ```agda
     inverse : G/H → G/H

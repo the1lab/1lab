@@ -451,7 +451,7 @@ c \xto{h} c_1 \otimes c_2 \xto{\id \otimes y} c_1 \otimes I \xto{\rho} c_1
 $$
 
 acts on $x : X$ to give us precisely the element we want. In the other
-direction, we can send $x : X(c)$ to $\day{\rho^{-1}, x, \id}$. We can
+direction, we can send $x : X(c)$ to $\day{\rho\inv, x, \id}$. We can
 then perform the extremely annoying calculations to show that (a) this
 map extends to the coend, (b) the resulting map is a natural
 transformation, and (c) the inverse construction we sketched is actually

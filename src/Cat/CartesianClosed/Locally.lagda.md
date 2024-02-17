@@ -85,7 +85,7 @@ along the substitution $\sigma : \Delta \to \Gamma$.
 
 [^sets]: Indeed, even for the category $\Sets$, showing local Cartesian
 closure is not at all straightforward: the local exponential $f^g$ over
-$B$ is the set $\sum_{b : B} f^{-1}(b) \to g^{-1}(b)$, though this
+$B$ is the set $\sum_{b : B} f\inv(b) \to g\inv(b)$, though this
 computation is best understood in terms of [slices of
 sets](Cat.Instances.Slice.html#slices-of-sets).
 

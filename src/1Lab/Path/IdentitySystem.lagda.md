@@ -120,7 +120,7 @@ If we have a relation $R$ together with reflexivity witness $r$, then
 any equivalence $f : R(a, b) \simeq (a \equiv b)$ which maps $f(r) =
 \refl$ equips $(R, r)$ with the structure of an identity system. Of
 course if we do not particularly care about the specific reflexivity
-witness, we can simply define $r$ as $f^{-1}(\refl)$.
+witness, we can simply define $r$ as $f\inv(\refl)$.
 
 ```agda
 equiv-path→identity-system

@@ -619,7 +619,7 @@ category can have non-trivial isomorphisms, but there's no such notion
 between elements in a set! Let's suppose that we had such an
 equivalence, in the context $\cE = \Sets$, setting aside the _size_
 issues for now: we have an object $U$ equipped with an isomorphism $r :
-\hom(*, U) \cong \Sets/* \cong \Sets$. There's an element $b = r^{-1}(2)
+\hom(*, U) \cong \Sets/* \cong \Sets$. There's an element $b = r\inv(2)
 : U$ classifying the type of booleans, which should have a non-trivial
 identification $b = b$ corresponding to the involution on $2$. However,
 this is not possible, since a set ([[by definition|set]]) only has
@@ -1061,10 +1061,10 @@ and referred to (for historical reasons) as `refl`{.Agda}, since for the
 types that are sets, it expresses *refl*exivity of equality. In the
 interpretation of types as $\infty$-groupoids, `refl`{.Agda} is the
 identity morphism. The rest of the groupoid structure is here too! Any
-path $p : x \equiv y$ has an inverse $p^{-1} : y \equiv x$, and for any
+path $p : x \equiv y$ has an inverse $p\inv : y \equiv x$, and for any
 $p : x \equiv_A y$ and $q : y \equiv_A z$, there is a composite path $p
 \bullet q : x \equiv_A z$. There are paths between paths which express
-the groupoid identities (e.g. $p \bullet p^{-1} \equiv \refl$),
+the groupoid identities (e.g. $p \bullet p\inv \equiv \refl$),
 and those paths satisfy their own identities (up to a path between paths
 between paths), and so on.
 

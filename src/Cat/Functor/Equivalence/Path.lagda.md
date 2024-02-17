@@ -307,7 +307,7 @@ proposition), and the functor is definitionally preserved.
 
 And now the aforementioned tiny result: All equivalences are [[fully
 faithful]], and if both categories are univalent, the natural
-isomorphisms $F^{-1}F \cong \Id$ and $FF^{-1} \cong \Id$ provide
+isomorphisms $F\inv F \cong \Id$ and $FF\inv \cong \Id$ provide
 the necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda

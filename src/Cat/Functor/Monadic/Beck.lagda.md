@@ -55,7 +55,7 @@ $U : \cD \to \cC$. Recall that every adjunction [induces] a
 $\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
 the [Eilenberg-Moore category] of $T$. In this module we will lay out a
 sufficient condition for the functor $K$ to have a left adjoint, which
-we call $K^{-1}$ (`Comparison⁻¹`). Let us first establish a result about
+we call $K\inv$ (`Comparison⁻¹`). Let us first establish a result about
 the presentation of $T$-[algebras] by "generators and relations".
 
 [monad]: Cat.Diagram.Monad.html

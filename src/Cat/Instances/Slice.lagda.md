@@ -512,7 +512,7 @@ depart, and write down an outline of the proof.
   `Total-space`{.Agda}, so that it is [[fully faithful]].
 
 - Finally, we show that, given $p : X \to I$, the assignment $i \mapsto
-  p^{-1}(i)$, sending an index to the fibre of $p$ over it, gives a
+  p\inv(i)$, sending an index to the fibre of $p$ over it, gives a
   functor $P$; and that $\int P \cong p$ over $I$, so that
   `Total-space`{.Agda} is a [[split essential surjection]], hence an
   equivalence of categories.
@@ -576,7 +576,7 @@ its family of fibres gets us all the way back around to $p$.
 Fortunately, our proof that universes are [[object classifiers]]
 grappled with many of the same concerns, so we have a reusable
 equivalence `Total-equiv`{.Agda} which slots right in. By univalence, we
-can finish in style: not only is $\Sigma (x \mapsto p^{-1}(x))$
+can finish in style: not only is $\Sigma (x \mapsto p\inv(x))$
 _isomorphic_ to $p$ in $\Sets/I$, it's actually _identical_ to $p$!
 
 ```agda

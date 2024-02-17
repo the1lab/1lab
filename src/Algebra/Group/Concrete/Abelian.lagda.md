@@ -163,7 +163,7 @@ following square:
 ~~~
 
 Since our homotopy additionally has to be *pointed*, we know that we must have
-$\alpha = p \bullet q^{-1}$. This is where the fact that $H$ is abelian
+$\alpha = p \bullet q\inv$. This is where the fact that $H$ is abelian
 comes in: the above square has equal opposite sides, so it automatically commutes.
 
 ```agda
