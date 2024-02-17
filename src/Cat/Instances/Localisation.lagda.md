@@ -18,9 +18,9 @@ module Cat.Instances.Localisation where
 
 <!--
 ```agda
-module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat {C = C} w) where
+module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat C w) where
   open Precategory C
-  open Wide-subcat W renaming (P to W?)
+  open Wide-subcat W
 
   private variable
     a b c d : Ob
@@ -77,7 +77,7 @@ with!
   data Zigzag : Ob → Ob → Type (o ⊔ ℓ ⊔ w) where
     []  : Zigzag a a
     zig : Hom b c → Zigzag a b → Zigzag a c
-    zag : (f : Hom c b) → f ∈ W? → Zigzag a b → Zigzag a c
+    zag : (f : Hom c b) → f ∈ W → Zigzag a b → Zigzag a c
 ```
 
 However, if we treat zigzags as plain *data*, things go wrong. We must
@@ -119,10 +119,10 @@ zag-zig could appear will respect this identity.
 
 ```agda
     zig-zag
-      : (f : Hom c b) (w : f ∈ W?) (h : Zigzag a b)
+      : (f : Hom c b) (w : f ∈ W) (h : Zigzag a b)
       → zig f (zag f w h) ≡ h
     zag-zig
-      : (f : Hom b c) (w : f ∈ W?) (h : Zigzag a b)
+      : (f : Hom b c) (w : f ∈ W) (h : Zigzag a b)
       → zag f w (zig f h) ≡ h
 ```
 
@@ -161,7 +161,7 @@ over them for time.
 
     zag-∘
       : ∀ {a b c d} {f : Hom c d} {g : Hom b c} (hs : Zigzag a d)
-      → (hf : f ∈ W?) (hg : g ∈ W?)
+      → (hf : f ∈ W) (hg : g ∈ W)
       → zag (f ∘ g) (P-∘ hf hg) hs ≡ zag g hg (zag f hf hs)
     zag-∘ {f = f} {g} hs hf hg =
       zag (f ∘ g) (P-∘ hf hg) ⌜ hs ⌝                                      ≡˘⟨ ap¡ (ap (zig f) (zig-zag _ _ _) ∙ zig-zag _ _ _) ⟩
@@ -174,8 +174,8 @@ over them for time.
 
 <!--
 ```agda
-module _ {o ℓ w} {C : Precategory o ℓ} {W : Wide-subcat {C = C} w} where
-  open Wide-subcat W renaming (P to W?)
+module _ {o ℓ w} {C : Precategory o ℓ} {W : Wide-subcat C w} where
+  open Wide-subcat W
   instance
     H-Level-Zigzag : ∀ {a b n} → H-Level (Zigzag C W a b) (2 + n)
     H-Level-Zigzag = basic-instance 2 squash
@@ -187,13 +187,13 @@ module _ {o ℓ w} {C : Precategory o ℓ} {W : Wide-subcat {C = C} w} where
     → (∀ {a b} (h : Zigzag C W a b) → is-set (P h))
     → (hnil : ∀ {a} → P {a} [])
     → (hzig : ∀ {a b c} (f : Hom b c) (h : Zigzag C W a b) → P h → P (zig f h))
-    → (hzag : ∀ {a b c} (f : Hom c b) (hf : f ∈ W?) (h : Zigzag C W a b) → P h → P (zag f hf h))
+    → (hzag : ∀ {a b c} (f : Hom c b) (hf : f ∈ W) (h : Zigzag C W a b) → P h → P (zag f hf h))
     → (∀ {a b} {h : Zigzag C W a b} (ph : P h) → PathP (λ i → P (zig-id h i)) (hzig id h ph) ph)
     → (∀ {a b c d} {f : Hom c d} {g : Hom b c} {h : Zigzag C W a b} (ph : P h)
       → PathP (λ i → P (zig-∘ f g h i)) (hzig f (zig g h) (hzig g h ph)) (hzig (f ∘ g) h ph))
-    → (∀ {a b c} {f : Hom c b} {w : f ∈ W?} {h : Zigzag C W a b} (ph : P h)
+    → (∀ {a b c} {f : Hom c b} {w : f ∈ W} {h : Zigzag C W a b} (ph : P h)
       → PathP (λ i → P (zig-zag f w h i)) (hzig f (zag f w h) (hzag f w h ph)) ph)
-    → (∀ {a b c} {f : Hom b c} {w : f ∈ W?} {h : Zigzag C W a b} (ph : P h)
+    → (∀ {a b c} {f : Hom b c} {w : f ∈ W} {h : Zigzag C W a b} (ph : P h)
       → PathP (λ i → P (zag-zig f w h i)) (hzag f w (zig f h) (hzig f h ph)) ph)
     → ∀ {a b} (h : Zigzag C W a b) → P h
   Zigzag-elim P pset pnil pzig pzag pzid pzo pia pai = go where
@@ -213,7 +213,7 @@ module _ {o ℓ w} {C : Precategory o ℓ} {W : Wide-subcat {C = C} w} where
       → (∀ {a b} (h : Zigzag C W a b) → is-prop (P h))
       → (hnil : ∀ {a} → P {a} [])
       → (hzig : ∀ {a b c} (f : Hom b c) (h : Zigzag C W a b) → P h → P (zig f h))
-      → (hzag : ∀ {a b c} (f : Hom c b) (hf : f ∈ W?) (h : Zigzag C W a b) → P h → P (zag f hf h))
+      → (hzag : ∀ {a b c} (f : Hom c b) (hf : f ∈ W) (h : Zigzag C W a b) → P h → P (zag f hf h))
       → ∀ {a b} (h : Zigzag C W a b) → P h
     Zigzag-elim-prop P pprop hnil hzig hzag =
       Zigzag-elim P
@@ -270,9 +270,9 @@ again mirror precisely the proofs for lists, or simple paths.
 
 <!--
 ```agda
-module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat {C = C} w) where
+module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat C w) where
   private module C = Cat.Reasoning C
-  open Wide-subcat W renaming (P to W?)
+  open Wide-subcat W
   open Precategory
   open Functor
 ```
@@ -306,7 +306,7 @@ bit of code with not much more we could say:
   Localise .F-id    = zig-id []
   Localise .F-∘ f g = sym (zig-∘ f g [])
 
-  inverted : ∀ {a b} (f : C.Hom a b) → f ∈ W? → Localisation.is-invertible (zig f [])
+  inverted : ∀ {a b} (f : C.Hom a b) → f ∈ W → Localisation.is-invertible (zig f [])
   inverted f hf = record
     { inv      = zag f hf []
     ; inverses = record
@@ -321,7 +321,7 @@ bit of code with not much more we could say:
     _ {o' ℓ'} {D : Precategory o' ℓ'} (F : Functor C D)
       (let module D = Cat.Reasoning D)
       (let module F = Functor F)
-      (f-invs : ∀ {a b} (f : C.Hom a b) → f ∈ W? → D.is-invertible (F.₁ f))
+      (f-invs : ∀ {a b} (f : C.Hom a b) → f ∈ W → D.is-invertible (F.₁ f))
     where
 ```
 -->
@@ -334,7 +334,7 @@ gives us exactly what we need to handle each of the constructors:
 
 ```agda
     private
-      F⁻¹ : ∀ {a b} (f : C.Hom a b) (hf : f ∈ W?) → D.Hom (F.₀ b) (F.₀ a)
+      F⁻¹ : ∀ {a b} (f : C.Hom a b) (hf : f ∈ W) → D.Hom (F.₀ b) (F.₀ a)
       F⁻¹ f hf = D.is-invertible.inv (f-invs f hf)
 
     Zigzag-univ : ∀ {a b} → Zigzag C W a b → D.Hom (F.₀ a) (F.₀ b)
@@ -412,7 +412,7 @@ localisation back to $\cC$:
 
 ```agda
   Localisation-fold
-    : (∀ {a b} (f : C.Hom a b) → f ∈ W? → C.is-invertible f)
+    : (∀ {a b} (f : C.Hom a b) → f ∈ W → C.is-invertible f)
     → Functor Localisation C
   Localisation-fold invs = Localisation-univ Id invs
 ```
@@ -424,7 +424,7 @@ localisation back to $\cC$:
 module _ {o ℓ} (C : Precategory o ℓ) where
   open Precategory C
 
-  Total : Wide-subcat {C = C} lzero
+  Total : Wide-subcat C lzero
   Total .Wide-subcat.P      _ = ⊤
   Total .Wide-subcat.P-prop f = hlevel 1
   Total .Wide-subcat.P-id     = _
@@ -563,7 +563,7 @@ to map from $\cC\loc{W}$, instead.
 
 ```agda
 Localisation-univ-groupoid
-  : ∀ {o ℓ w o' ℓ'} {C : Precategory o ℓ} {W : Wide-subcat {C = C} w}
+  : ∀ {o ℓ w o' ℓ'} {C : Precategory o ℓ} {W : Wide-subcat C w}
   → {D : Precategory o' ℓ'} (d-grpd : is-pregroupoid D)
   → Functor C D
   → Functor (Localisation C W) D

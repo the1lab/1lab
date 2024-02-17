@@ -1,5 +1,6 @@
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation hiding (∃-syntax)
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -64,17 +65,6 @@ from-is-true
   → ⌞ P ⌟
 from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
 
--- Generalised "membership" notation.
-_∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
-    → A → (A → P) → Type (u .ℓ-underlying)
-x ∈ P = ⌞ P x ⌟
-
--- Generalised "total space" notation.
-∫ₚ
-  : ∀ {ℓ ℓ'} {X : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
-  → (X → P) → Type _
-∫ₚ P = Σ _ (_∈ P)
-
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
 -- categories.
@@ -129,10 +119,24 @@ F ʻ x = ⌞ F # x ⌟
 
 infix 999 _ʻ_
 
+-- Generalisations of the syntax for Σ and ∃ which allow the domain to
+-- be something with an Underlying instance rather than a literal type.
+-- E.g. if
+--
+--   C : Precategory o ℓ
+--
+-- then `Σ[ x ∈ C ] P x` means `Σ (C .Ob) P`.
+
 Σ-syntax
   : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ _ : Underlying A ⦄ (X : A) (F : ⌞ X ⌟ → Type ℓ')
   → Type _
 Σ-syntax X F = Σ ⌞ X ⌟ F
 
+∃-syntax
+  : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ _ : Underlying A ⦄ (X : A) (F : ⌞ X ⌟ → Type ℓ')
+  → Type _
+∃-syntax X F = ∥ Σ ⌞ X ⌟ F ∥
+
 syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
-infix 5 Σ-syntax
+syntax ∃-syntax X (λ x → F) = ∃[ x ∈ X ] F
+infix 5 Σ-syntax ∃-syntax

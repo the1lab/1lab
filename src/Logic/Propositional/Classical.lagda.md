@@ -59,6 +59,10 @@ data _∈ᶜ_ {Γ : Nat} (P : Proposition Γ) : Ctx Γ → Type where
 
 <!--
 ```agda
+instance
+  Membership-Ctx : ∀ {Γ} → Membership (Proposition Γ) (Ctx Γ) lzero
+  Membership-Ctx = record { _∈_ = _∈ᶜ_ }
+
 infixr 12 _“⇒”_
 infixr 11 _“∧”_
 infixr 10 _“∨”_
@@ -80,7 +84,7 @@ Our first rule is pretty intuitive: If `P` is in our hypotheses `ψ`,
 then we can deduce `P` from `ψ`.
 
 ```agda
-  hyp : ∀ {P} → P ∈ᶜ ψ → ψ ⊢ P
+  hyp : ∀ {P} → P ∈ ψ → ψ ⊢ P
 ```
 
 Next, we give an introduction rule for "true" and an elimination rule
@@ -170,7 +174,7 @@ inc-ctx : Ctx Γ → Ctx (suc Γ)
 inc-ctx []      = []
 inc-ctx (ψ ⨾ P) = inc-ctx ψ ⨾ inc-prop P
 
-inc-atom : P ∈ᶜ ψ → inc-prop P ∈ᶜ inc-ctx ψ
+inc-atom : P ∈ ψ → inc-prop P ∈ᶜ inc-ctx ψ
 inc-atom here      = here
 inc-atom (there x) = there (inc-atom x)
 
@@ -200,7 +204,7 @@ bump-ctx : Ctx Γ → Ctx (suc Γ)
 bump-ctx []      = []
 bump-ctx (ψ ⨾ P) = bump-ctx ψ ⨾ bump-prop P
 
-bump-atom : P ∈ᶜ ψ → bump-prop P ∈ᶜ bump-ctx ψ
+bump-atom : P ∈ ψ → bump-prop P ∈ᶜ bump-ctx ψ
 bump-atom here      = here
 bump-atom (there p) = there (bump-atom p)
 
@@ -431,11 +435,11 @@ propositions.
 “⋀” []      = “⊤”
 “⋀” (ψ ⨾ P) = “⋀” ψ “∧” P
 
-⋀-intro : (∀ {P} → P ∈ᶜ ψ → θ ⊢ P) → θ ⊢ “⋀” ψ
+⋀-intro : (∀ {P} → P ∈ ψ → θ ⊢ P) → θ ⊢ “⋀” ψ
 ⋀-intro {ψ = []}    pfs = ⊤-intro
 ⋀-intro {ψ = ψ ⨾ P} pfs = ∧-intro (⋀-intro (pfs ∘ there)) (pfs here)
 
-⋀-elim : P ∈ᶜ ψ → θ ⊢ “⋀” ψ → θ ⊢ P
+⋀-elim : P ∈ ψ → θ ⊢ “⋀” ψ → θ ⊢ P
 ⋀-elim here      p = ∧-elim-r p
 ⋀-elim (there x) p = ⋀-elim x (∧-elim-l p)
 ```
@@ -529,7 +533,7 @@ following: if `ψ ⊢ P` is provable, then we have the semantic entailment
 mechanical.
 
 ```agda
-hyp-sound : ∀ {Γ} {ψ : Ctx Γ} {P : Proposition Γ} → P ∈ᶜ ψ → ψ ⊨ P
+hyp-sound : ∀ {Γ} {ψ : Ctx Γ} {P : Proposition Γ} → P ∈ ψ → ψ ⊨ P
 hyp-sound here      ρ hyps-true = and-reflect-true-r hyps-true
 hyp-sound (there m) ρ hyps-true = hyp-sound m ρ (and-reflect-true-l hyps-true)
 

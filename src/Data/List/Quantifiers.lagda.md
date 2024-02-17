@@ -155,7 +155,7 @@ instance
 
 
 ```agda
-all-∈ : All P xs → x ∈ₗ xs → P x
+all-∈ : All P xs → x ∈ xs → P x
 all-∈ {P = P} (px ∷ pxs) (here p) = subst P (sym p) px
 all-∈ (px ∷ pxs) (there x∈xs) = all-∈ pxs x∈xs
 ```

@@ -237,7 +237,7 @@ convolution. First, we note that we can write the elements of the coend
 b)$, $x : X(a)$, and $y : Y(b)$.
 
 ```agda
-    day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → ⌞ Day.nadir i ⌟
+    day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → Day.nadir ʻ i
     day h x y = inc ((_ , _) , h , x , y)
 ```
 
@@ -277,7 +277,7 @@ function $f : (F \otimes^D G)(i) \to W$ whenever we can define
 $f(\day{h,x,y})$, in a way compatible with the relation above.
 
 ```agda
-    factor : ∀ {i} (W : Cowedge (Day-diagram i)) → ⌞ Day.nadir i ⌟ → ⌞ W .nadir ⌟
+    factor : ∀ {i} (W : Cowedge (Day-diagram i)) → Day.nadir ʻ i → ⌞ W .nadir ⌟
     factor W = Day.factor _ W
 ```
 
