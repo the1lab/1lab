@@ -198,7 +198,7 @@ forward direction.
 Family-generic-object→Strict-equiv
   : Globally-small (Family {h})
   → Σ[ Strict ∈ Precategory h h ]
-    (is-set (Precategory.Ob Strict) × Equivalence Strict C)
+    (is-set ⌞ Strict ⌟ × Equivalence Strict C)
 Family-generic-object→Strict-equiv small =
   Strict , hlevel! , eqv module Family-generic-object-strict where
   open Globally-small small

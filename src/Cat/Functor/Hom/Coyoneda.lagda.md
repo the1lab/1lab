@@ -101,7 +101,7 @@ that $K$ is a cocone, and the components of $K$ are natural.
       eps (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce C P f px) i .η y id) ⟩
       eps (elem x px) .η y (f ∘ id)           ≡⟨ ap (eps (elem x px) .η y) id-comm ⟩
       eps (elem x px) .η y (id ∘ f)           ≡⟨ happly (eps (elem x px) .is-natural x y f) id ⟩
-      F₁ Q f (eps (elem x px) .η x id) ∎
+      Q .F₁ f (eps (elem x px) .η x id)       ∎
 ```
 
 Next, we need to show that this morphism factors each of the components
@@ -112,7 +112,7 @@ of $K$. The tricky bit of the proof here is that we need to use
     colim .factors {o} eps comm = ext λ x f →
       eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .section)) i .η x id) ⟩
       eps o .η x (f ∘ id)                        ≡⟨ ap (eps o .η x) (idr f) ⟩
-      eps o .η x f ∎
+      eps o .η x f                               ∎
 ```
 
 Finally, uniqueness: This just follows by the commuting conditions on
@@ -120,9 +120,9 @@ Finally, uniqueness: This just follows by the commuting conditions on
 
 ```agda
     colim .unique eps comm α p = ext λ x px →
-       α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
-       α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
-       eps (elem x px) .η x id ∎
+      α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
+      α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
+      eps (elem x px) .η x id ∎
 ```
 
 And that's it! The important takeaway here is not the shuffling around

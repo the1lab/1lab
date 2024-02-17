@@ -387,7 +387,7 @@ definitionally isomorphisms.
   uncurry-ml-is-iso : is-iso uncurry-multilinear-map
   uncurry-ml-is-iso = λ where
     .is-iso.inv    → curry-multilinear-map
-    .is-iso.rinv x → Linear-map-path λ x → Multilinear-map-path refl
+    .is-iso.rinv x → ext λ x → Multilinear-map-path refl
     .is-iso.linv x → Multilinear-map-path $ funextᶠ λ as → refl
 
   module

@@ -102,7 +102,7 @@ preserved by *all* functors.
 module _
   {o o' ℓ ℓ'}
   {J : Precategory o' ℓ'} {C : Precategory o ℓ}
-  {Dia : Functor J C} {x : Precategory.Ob C}
+  {Dia : Functor J C} {x : ⌞ C ⌟}
   where
 
   private
@@ -244,7 +244,7 @@ what we wanted: a map $G(c) \to F'(F(c))$.
 
 ```agda
       eta .is-natural x y f =
-        ↓colim.commutes (F₀ F y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
+        ↓colim.commutes (F .F₀ y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
         ∙ sym (↓colim.factors _ _ _)
 ```
 

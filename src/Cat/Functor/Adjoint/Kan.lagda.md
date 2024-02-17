@@ -129,9 +129,9 @@ cell $\sigma' : G \to RM$, and let $\sigma : LG \to M$ be its adjunct.
 ```agda
     pres .σ α .η x = R-adjunct adj (l.σ (fixup α) .η x)
     pres .σ {M = M} α .is-natural x y f =
-      (counit.ε _ A.∘ L.₁ (l.σ (fixup α) .η y)) A.∘ LG.₁ f        ≡⟨ A.pullr (L.weave (l.σ (fixup α) .is-natural x y f)) ⟩
-      counit.ε _ A.∘ (L.₁ (RM.₁ f) A.∘ L.₁ (l.σ (fixup α) .η x))  ≡⟨ A.extendl (counit.is-natural _ _ _) ⟩
-      M.₁ f A.∘ pres .σ α .η x                                    ∎
+      (ε _ A.∘ L.₁ (l.σ (fixup α) .η y)) A.∘ LG.₁ f        ≡⟨ A.pullr (L.weave (l.σ (fixup α) .is-natural x y f)) ⟩
+      ε _ A.∘ (L.₁ (RM.₁ f) A.∘ L.₁ (l.σ (fixup α) .η x))  ≡⟨ A.extendl (counit.is-natural _ _ _) ⟩
+      M.₁ f A.∘ pres .σ α .η x                             ∎
       where module M = Functor M
             module RM = Functor (R F∘ M)
 ```

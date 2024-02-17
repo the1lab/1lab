@@ -153,7 +153,7 @@ The slice category $\cC/c$ is given by the `/-Obj`{.Agda} and
 `/-Hom`{.Agda}s.
 
 ```agda
-Slice : (C : Precategory o ℓ) → Precategory.Ob C → Precategory _ _
+Slice : (C : Precategory o ℓ) → ⌞ C ⌟ → Precategory _ _
 Slice C c = precat where
   import Cat.Reasoning C as C
   open Precategory
@@ -209,7 +209,7 @@ First, every slice category has a [[terminal object]], given by the
 identity map $\id : c \to c$.
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   open /-Hom
@@ -228,7 +228,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   private variable
@@ -390,7 +390,7 @@ to the slice category (see the calculation marked `{- * -}`{.Agda}).
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
          {P A B c} {p1 f p2 g}
   where
   open Cat.Reasoning C
@@ -603,7 +603,7 @@ that this latter condition reduces to showing $p \circ f = g$.
 
 <!--
 ```agda
-module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where
+module _ {C : Precategory o ℓ} {o : ⌞ C ⌟} (isc : is-category C) where
   private
     module C   = Cat.Reasoning C
     module C/o = Cat.Reasoning (Slice C o)

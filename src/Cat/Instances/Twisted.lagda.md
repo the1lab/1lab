@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.instance.candidates:20 #-}
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence

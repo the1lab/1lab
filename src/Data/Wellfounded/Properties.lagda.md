@@ -12,9 +12,9 @@ open import Data.Nat.Base
 module Data.Wellfounded.Properties where
 ```
 
-It was mentioned in the definition of `Acc`{.Agda} that that being
-accessible is a proposition, but this has not yet been established. We
-can do so using, as usual, induction:
+It was mentioned in the definition of `Acc`{.Agda} that being accessible
+is a proposition, but this has not yet been established. We can do so
+using, as usual, induction:
 
 <!--
 ```agda

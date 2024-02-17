@@ -122,7 +122,7 @@ identity map suffices.
 
 ```agda
   adj .counit = NT (λ x → F x) nat where
-    F : (x : Precategory.Ob (Strict-cats ℓ ℓ))
+    F : (x : ⌞ Strict-cats ℓ ℓ ⌟)
       → Functor (Disc' (el _ (x .snd))) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
@@ -133,16 +133,16 @@ identity map suffices.
 <!--
 ```agda
     abstract
-      nat : (x y : Precategory.Ob (Strict-cats ℓ ℓ))
-            (f : Precategory.Hom (Strict-cats ℓ ℓ) x y)
-          → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
+      nat : (x y : ⌞ Strict-cats ℓ ℓ ⌟)
+            (f : Strict-cats ℓ ℓ .Precategory.Hom x y)
+          → (F y F∘ (Disc F∘ Γ) .F₁ f) ≡ (f F∘ F x)
       nat x y f =
         Functor-path (λ x → refl)
-           (J' (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
-                        ≡ F₁ f (subst (X.Hom _) p X.id))
+           (J' (λ x y p → subst (Y.Hom _) (ap (f .F₀) p) Y.id
+                        ≡ f .F₁ (subst (X.Hom _) p X.id))
                λ _ → transport-refl _
-                  ·· sym (F-id f)
-                  ·· ap (F₁ f) (sym (transport-refl _)))
+                  ·· sym (f .F-id)
+                  ·· ap (f .F₁) (sym (transport-refl _)))
          where
            module X = Precategory (x .fst)
            module Y = Precategory (y .fst)
@@ -242,7 +242,7 @@ essentially independent of the coordinate.
       ; F-id = refl
       ; F-∘ = λ _ _ → sym (x .fst .idl _)
       }
-    f .is-natural x y f = funext λ _ → Functor-path (λ _ → refl) λ _ → sym (F-id f)
+    f .is-natural x y f = funext λ _ → Functor-path (λ _ → refl) λ _ → sym (f .F-id)
 ```
 
 In the opposite direction, the natural transformation is defined by
@@ -256,7 +256,7 @@ using our path helpers, `Functor-path`{.Agda} and `trivial!`{.Agda}.
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
-    f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (F-id x)
+    f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (x .F-id)
 
     g∘f : g ∘nt f ≡ idnt
     g∘f = trivial!
@@ -285,8 +285,8 @@ component it inhabits.
 Π₀ : Functor (Strict-cats o h) (Sets (o ⊔ h))
 Π₀ .F₀ (C , _) = π₀ C
 Π₀ .F₁ F =
-  Quot-elim (λ _ → squash) (λ x → inc (F₀ F x))
-    λ x y r → glue (_ , _ , F₁ F r)
+  Quot-elim (λ _ → squash) (λ x → inc (F .F₀ x))
+    λ x y r → glue (_ , _ , F .F₁ r)
 ```
 
 We must prove that this assignment respects the quotient, which is where
@@ -384,7 +384,7 @@ surjective, i.e. _each piece has at least one point_.
 ```agda
 Points→Pieces : Γ {ℓ} {ℓ} => Π₀
 Points→Pieces .η _ x = inc x
-Points→Pieces .is-natural x y f i o = inc (F₀ f o)
+Points→Pieces .is-natural x y f i o = inc (f .F₀ o)
 
 pieces-have-points : ∀ {x} → is-surjective (Points→Pieces {ℓ} .η x)
 pieces-have-points = Coeq-elim-prop (λ _ → squash) λ x → inc (x , refl)

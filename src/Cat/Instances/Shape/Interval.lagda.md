@@ -245,7 +245,7 @@ inferred by Agda.
 
 ```agda
   functor→arrow : Functor 0≤1 C → Arrows C
-  functor→arrow F = _ , _ , F₁ F {false} {true} tt
+  functor→arrow F = _ , _ , F .F₁ {false} {true} tt
 ```
 
 That this function is an equivalence is also straightforward: The only

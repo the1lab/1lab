@@ -138,11 +138,11 @@ categories_: The opposite of $C$, written $C\op$, has the same
 ```agda
 infixl 60 _^op
 _^op : ∀ {o₁ h₁} → Precategory o₁ h₁ → Precategory o₁ h₁
-(C ^op) .Precategory.Ob = Precategory.Ob C
-(C ^op) .Precategory.Hom x y = Precategory.Hom C y x
-(C ^op) .Precategory.Hom-set x y = Precategory.Hom-set C y x
-(C ^op) .Precategory.id = Precategory.id C
-(C ^op) .Precategory._∘_ f g = Precategory._∘_ C g f
+(C ^op) .Precategory.Ob = C .Precategory.Ob
+(C ^op) .Precategory.Hom     x y = C .Precategory.Hom y x
+(C ^op) .Precategory.Hom-set x y = C .Precategory.Hom-set y x
+(C ^op) .Precategory.id      = C .Precategory.id
+(C ^op) .Precategory._∘_ f g = C .Precategory._∘_ g f
 ```
 
 Composition in the opposite precategory $C\op$ is "backwards" with
@@ -162,7 +162,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \circ_{op}{f} = f$. The case for `idl`{.Agda} is symmetric.
 
 ```agda
-(C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
+(C ^op) .Precategory.assoc f g h i = C .Precategory.assoc h g f (~ i)
 ```
 
 For associativity, consider the case of `assoc`{.Agda} for the
@@ -287,10 +287,10 @@ C\op \to D\op$.
 
 ```agda
   op : Functor (C ^op) (D ^op)
-  F₀ op      = F₀
-  F₁ op      = F₁
-  F-id op    = F-id
-  F-∘ op f g = F-∘ g f
+  op .F₀      = F₀
+  op .F₁      = F₁
+  op .F-id    = F-id
+  op .F-∘ f g = F-∘ g f
 ```
 
 <!--
@@ -386,10 +386,10 @@ have a set of objects.
 
 ```agda
 Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C
-Functor.F₀ Id x = x
-Functor.F₁ Id f = f
-Functor.F-id Id = refl
-Functor.F-∘ Id f g = refl
+Id .Functor.F₀ x = x
+Id .Functor.F₁ f = f
+Id .Functor.F-id    = refl
+Id .Functor.F-∘ f g = refl
 ```
 
 # Natural transformations {defines="natural-transformation"}
@@ -557,6 +557,20 @@ is a proposition:
 open Precategory
 open _=>_
 
+instance
+  Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
+  Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
+
+  Funlike-Functor
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    → Funlike (Functor C D) ⌞ C ⌟ (λ x → ⌞ D ⌟)
+  Funlike-Functor = record { _#_ = Functor.F₀ }
+
+  Funlike-natural-transformation
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D}
+    → Funlike (F => G) ⌞ C ⌟ (λ x → D .Precategory.Hom (F # x) (G # x))
+  Funlike-natural-transformation = record { _#_ = _=>_.η }
+
 {-
 Set-up for using natural transformations with the extensionality tactic;
 See the docs in 1Lab.Extensionality for a more detailed explanation of
@@ -576,9 +590,9 @@ match funext *and* product extensionality.
 Extensional-natural-transformation
   : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → {F G : Functor C D}
-  → {@(tactic extensionalᶠ {A = Precategory.Ob C → Type _}
-        (λ x → D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)))
-      sa : ∀ x → Extensional (D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)) ℓr}
+  → {@(tactic extensionalᶠ {A = ⌞ C ⌟ → Type _}
+        (λ x → D .Hom (F # x) (G # x)))
+      sa : ∀ x → Extensional (D .Hom (F # x) (G # x)) ℓr}
   → Extensional (F => G) (o ⊔ ℓr)
 Extensional-natural-transformation {sa = sa} .Pathᵉ f g = ∀ i → Pathᵉ (sa i) (f .η i) (g .η i)
 Extensional-natural-transformation {sa = sa} .reflᵉ x i = reflᵉ (sa i) (x .η i)
@@ -601,18 +615,5 @@ instance
     → Extensionality (F => G)
   extensionality-natural-transformation = record
     { lemma = quote Extensional-natural-transformation }
-
-  Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
-  Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
-
-  Funlike-Functor
-    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-    → Funlike (Functor C D) ⌞ C ⌟ (λ x → ⌞ D ⌟)
-  Funlike-Functor = record { _#_ = Functor.F₀ }
-
-  Funlike-natural-transformation
-    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D}
-    → Funlike (F => G) ⌞ C ⌟ (λ x → Precategory.Hom D (F # x) (G # x))
-  Funlike-natural-transformation = record { _#_ = _=>_.η }
 ```
 -->

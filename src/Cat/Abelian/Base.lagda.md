@@ -172,8 +172,8 @@ module _ where
   Ab-ab-category : ∀ {ℓ} → Ab-category (Ab ℓ)
   Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
   Ab-ab-category .∘-linear-l f g h = trivial!
-  Ab-ab-category .∘-linear-r f g h =
-    Homomorphism-path (λ _ → sym (f .preserves .is-group-hom.pres-⋆ _ _))
+  Ab-ab-category .∘-linear-r f g h = ext λ _ →
+    sym (f .preserves .is-group-hom.pres-⋆ _ _)
 ```
 
 # Additive categories

@@ -117,7 +117,7 @@ semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
 
 ```agda
   module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
-            (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets (B .snd)))
+            (f : Meet-slats ℓ ℓ .Precategory.Hom A (Frm.meets (B .snd)))
     where
     module A  = Meet-slat (A .snd)
     module A↓ = Frm (Lower-sets-frame A .snd)
