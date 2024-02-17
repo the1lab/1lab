@@ -46,7 +46,7 @@ module
 ```agda
   opaque
     ⋃ˢ : ∀ (P : ⌞ F ⌟ → Ω) → ⌞ F ⌟
-    ⋃ˢ P = ⋃ {I = Σ[ t ∈ ⌞ F ⌟ ] □ (t ∈ P)} fst
+    ⋃ˢ P = ⋃ {I = Σ[ t ∈ F ] □ (t ∈ P)} fst
 
     ⋃ˢ-inj
       : ∀ {P : ⌞ F ⌟ → Ω} {x}

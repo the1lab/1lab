@@ -112,6 +112,6 @@ infixr 21 _∪_
 image-of
   : ∀ {a b} {A : Type a} {B : Type b} {@(tactic hlevel-tactic-worker) b-set : is-set B}
   → (f : A → B) → ℙ A → ℙ B
-∣ image-of {b-set = b-set} f s b ∣ = □ (Σ[ a ∈ _ ] ((a ∈ s) × (f a ≡ b)))
-image-of {b-set = b-set} f s b .is-tr = squash
+image-of {A = A} {b-set = b-set} f s b .∣_∣ = □ (Σ[ a ∈ A ] ((a ∈ s) × (f a ≡ b)))
+image-of _ _ _ .is-tr = squash
 ```

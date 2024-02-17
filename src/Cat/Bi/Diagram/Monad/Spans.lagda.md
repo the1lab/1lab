@@ -19,6 +19,8 @@ module Cat.Bi.Diagram.Monad.Spans {ℓ} where
 open Precategory
 open Span-hom
 open Span
+open Cat.Bi.Instances.Spans (Sets ℓ) using (Underlying-Span)
+
 private module Sb = Prebicategory (Spanᵇ (Sets ℓ) Sets-pullbacks)
 ```
 -->
@@ -96,7 +98,7 @@ strict-category→span-monad C cset = m where
   module C = Precategory C
 
   homs : Span (Sets ℓ) (el _ cset) (el _ cset)
-  homs .apex = el (Σ[ x ∈ C .Ob ] Σ[ y ∈ C .Ob ] (C .Hom x y)) (hlevel 2)
+  homs .apex = el (Σ[ x ∈ C ] Σ[ y ∈ C ] (C .Hom x y)) (hlevel 2)
   homs .left (x , _ , _) = x
   homs .right (_ , y , _) = y
 
@@ -177,7 +179,7 @@ span-monad→strict-category C monad = precat where
 
   precat : Precategory _ _
   precat .Ob = ∣ C ∣
-  precat .Hom a b = Σ[ s ∈ ∣ M .apex ∣ ] ((M .left s ≡ a) × (M .right s ≡ b))
+  precat .Hom a b = Σ[ s ∈ M ] ((M .left s ≡ a) × (M .right s ≡ b))
   precat .Hom-set x y = hlevel 2
   precat .id {x} = η .map x , sym (happly (η .left) x) , sym (happly (η .right) x)
   precat ._∘_ (f , fs , ft) (g , gs , gt) =

@@ -544,7 +544,7 @@ _ = Ωⁿ≃Sⁿ-map
 -->
 
 * Remark 6.2.3: `to-pathp`{.Agda}, `from-pathp`{.Agda}
-* _Induction principle for $\bb{S}^1$: by pattern matching.
+* *Induction principle for $\bb{S}^1$*: by pattern matching.
 * Lemma 6.2.5: `S¹-rec`{.Agda}
 * Lemma 6.2.9: `Ωⁿ≃Sⁿ-map`{.Agda} for `n = 1`{.Agda}
 
@@ -848,7 +848,6 @@ for categories. It is shown equivalent to the usual formulation by
 ```agda
 _ = Functor
 _ = _=>_
-_ = Nat-path
 _ = Nat-is-set
 _ = Functor-path
 _ = invertible→invertibleⁿ
@@ -866,7 +865,7 @@ _ = Cat
 
 * Definition 9.2.1: `Functor`{.Agda}
 * Definition 9.2.2: `_=>_`{.Agda}
-  * The paragraph immediately after 9.2.2 is `Nat-path`{.Agda} and
+  * The paragraph immediately after 9.2.2 is `Nat-pathp`{.Agda} and
     `Nat-is-set`{.Agda}
   * The one after that is `Functor-path`{.Agda}.
 * Definition 9.2.3: `Cat[_,_]`{.Agda}

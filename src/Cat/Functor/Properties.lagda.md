@@ -178,7 +178,7 @@ $y$.
 
 ```agda
 Essential-fibre : Functor C D → D .Ob → Type _
-Essential-fibre {D = D} F y = Σ[ x ∈ _ ] (F₀ F x ≅ y)
+Essential-fibre {C = C} {D = D} F y = Σ[ x ∈ C ] (F # x ≅ y)
   where open import Cat.Morphism D
 ```
 

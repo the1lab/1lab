@@ -3,7 +3,7 @@
 
 module 1Lab.Prelude where
 
-open import 1Lab.Type public
+open import 1Lab.Type hiding (Σ-syntax) public
 
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public

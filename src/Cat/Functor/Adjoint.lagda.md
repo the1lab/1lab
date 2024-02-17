@@ -676,19 +676,19 @@ between [postcomposition and precomposition functors], respectively:
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
   postcomposite-adjunction .unit .η F = cohere! (adj.unit ◂ F)
-  postcomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → adj.unit.is-natural _ _ _
+  postcomposite-adjunction .unit .is-natural F G α = ext λ _ → adj.unit.is-natural _ _ _
   postcomposite-adjunction .counit .η F = cohere! (adj.counit ◂ F)
-  postcomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → adj.counit.is-natural _ _ _
-  postcomposite-adjunction .zig = Nat-path λ _ → adj.zig
-  postcomposite-adjunction .zag = Nat-path λ _ → adj.zag
+  postcomposite-adjunction .counit .is-natural F G α = ext λ _ → adj.counit.is-natural _ _ _
+  postcomposite-adjunction .zig = ext λ _ → adj.zig
+  postcomposite-adjunction .zag = ext λ _ → adj.zag
 
   precomposite-adjunction : precompose R {D = E} ⊣ precompose L
   precomposite-adjunction .unit .η F = cohere! (F ▸ adj.unit)
-  precomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .unit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
   precomposite-adjunction .counit .η F = cohere! (F ▸ adj.counit)
-  precomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
-  precomposite-adjunction .zig {F} = Nat-path λ _ → Func.annihilate F adj.zag
-  precomposite-adjunction .zag {F} = Nat-path λ _ → Func.annihilate F adj.zig
+  precomposite-adjunction .counit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .zig {F} = ext λ _ → Func.annihilate F adj.zag
+  precomposite-adjunction .zag {F} = ext λ _ → Func.annihilate F adj.zig
 ```
 
 <!--
@@ -718,15 +718,14 @@ record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
 
     go : Initial _
     go .Initial.bot = start
-    go .Initial.has⊥ oth = contr dh uniq
-      where
-        dh : ↓Hom (Const x) R _ oth
-        dh .↓Hom.α = tt
-        dh .↓Hom.β = universal (oth .↓Obj.map)
-        dh .↓Hom.sq = C.idr (oth .↓Obj.map) ∙ commutes (↓Obj.map oth)
+    go .Initial.has⊥ oth = contr dh uniq where
+      dh : ↓Hom (Const x) R _ oth
+      dh .↓Hom.α = tt
+      dh .↓Hom.β = universal (oth .↓Obj.map)
+      dh .↓Hom.sq = C.idr (oth .↓Obj.map) ∙ commutes (↓Obj.map oth)
 
-        uniq : ∀ y → dh ≡ y
-        uniq y = ↓Hom-path _ _ refl (unique (sym (C.idr _) ∙ y .↓Hom.sq))
+      uniq : ∀ y → dh ≡ y
+      uniq y = ↓Hom-path _ _ refl (unique (sym (C.idr _) ∙ y .↓Hom.sq))
 
   to-functor : Functor C D
   to-functor = universal-maps→L R to-universal-arrows

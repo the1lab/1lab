@@ -98,7 +98,7 @@ module _ {o'} {D : Precategory o' ℓ}
 
 ```agda
   private
-    ↙≡∫ : ∀ d → d ↙ R ≡ ∫ C (Hom-from D d F∘ R)
+    ↙≡∫ : ∀ d → d ↙ R ≡ ∫ (Hom-from D d F∘ R)
 ```
 
 <details>
@@ -108,11 +108,11 @@ module _ {o'} {D : Precategory o' ℓ}
     ↙≡∫ d = Precategory-path F F-is-precat-iso where
       open is-precat-iso
 
-      F : Functor (d ↙ R) (∫ C (Hom-from D d F∘ R))
+      F : Functor (d ↙ R) (∫ (Hom-from D d F∘ R))
       F .F₀ m = elem (m .↓Obj.y) (m .↓Obj.map)
       F .F₁ f = elem-hom (f .↓Hom.β) (sym (f .↓Hom.sq) ∙ D.idr _)
-      F .F-id = Element-hom-path _ _ refl
-      F .F-∘ f g = Element-hom-path _ _ refl
+      F .F-id = ext refl
+      F .F-∘ f g = ext refl
 
       F-is-precat-iso : is-precat-iso F
       F-is-precat-iso .has-is-iso = is-iso→is-equiv is where
@@ -123,7 +123,7 @@ module _ {o'} {D : Precategory o' ℓ}
       F-is-precat-iso .has-is-ff = is-iso→is-equiv is where
         is : is-iso (F .F₁)
         is .is-iso.inv h = ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
-        is .is-iso.rinv h = Element-hom-path _ _ refl
+        is .is-iso.rinv h = ext refl
         is .is-iso.linv h = ↓Hom-path _ _ refl refl
 ```
 </details>

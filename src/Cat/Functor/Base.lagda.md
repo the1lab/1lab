@@ -233,7 +233,7 @@ already coherent enough to ensure that these actions agree:
     pr =
       ap (F₀ F) (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap (F₀ F)) (Univalent.iso→path-id ccat) ⟩
       ap (F₀ F) refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
-      dcat .to-path D.id-iso                       ≡⟨ ap (dcat .to-path) (D.≅-path (sym (F .F-id))) ⟩
+      dcat .to-path D.id-iso                       ≡⟨ ap (dcat .to-path) (ext (sym (F .F-id))) ⟩
       dcat .to-path (F-map-iso F C.id-iso)         ∎
 ```
 

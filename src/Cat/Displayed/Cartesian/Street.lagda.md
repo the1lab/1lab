@@ -44,7 +44,7 @@ module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : 
 
 ```agda
   functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
-  functor→displayed .Ob[_] x = Σ[ u ∈ E.Ob ] (P.₀ u B.≅ x)
+  functor→displayed .Ob[_] x = Σ[ u ∈ E ] (P.₀ u B.≅ x)
 ```
 
 Following [@relativect], we define such a category by defining the space

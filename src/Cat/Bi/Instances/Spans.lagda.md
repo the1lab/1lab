@@ -77,6 +77,10 @@ record Span-hom {a b : Ob} (x y : Span a b) : Type ℓ where
 open Span-hom
 private unquoteDecl eqv = declare-record-iso eqv (quote Span-hom)
 
+instance
+  Underlying-Span : ∀ {a b} ⦃ _ : Underlying Ob ⦄ → Underlying (Span a b)
+  Underlying-Span = record { ⌞_⌟ = λ S → ⌞ S .apex ⌟ }
+
 Span-hom-path
   : {a b : Ob} {x y : Span a b} {f g : Span-hom x y}
   → f .map ≡ g .map → f ≡ g

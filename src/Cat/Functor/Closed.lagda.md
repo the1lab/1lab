@@ -54,9 +54,9 @@ Curry {C = C} {D = D} {E = E} F = curried where
        sym (F-∘ F _ _)
     ·· ap (F₁ F) (Σ-pathp (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
     ·· F-∘ F _ _
-  curried .F-id = Nat-path λ x → F-id F
-  curried .F-∘ f g = Nat-path λ x →
-    ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
+  curried .F-id = ext λ x → F .F-id
+  curried .F-∘ f g = ext λ x →
+    ap (λ x → F .F₁ (_ , x)) (sym (D .idl _)) ∙ F .F-∘ _ _
 
 Uncurry : Functor C Cat[ D , E ] → Functor (C ×ᶜ D) E
 Uncurry {C = C} {D = D} {E = E} F = uncurried where

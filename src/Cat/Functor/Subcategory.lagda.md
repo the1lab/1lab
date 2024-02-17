@@ -75,7 +75,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
   open Subcat subcat
 
   Subcat-hom-pathp
-    : {x x' y y' : Σ[ ob ∈ Ob ] (is-ob ob)}
+    : {x x' y y' : Σ[ ob ∈ C ] (is-ob ob)}
     → {f : Subcat-hom subcat x y} {g : Subcat-hom subcat x' y'}
     → (p : x ≡ x') (q : y ≡ y')
     → PathP (λ i → Hom (p i .fst) (q i .fst)) (f .hom) (g .hom)
@@ -85,7 +85,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
     is-prop→pathp (λ i → is-hom-prop (r i) (p i .snd) (q i .snd)) (f .witness) (g .witness) i
 
   Extensional-subcat-hom
-    : ∀ {ℓr} {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
+    : ∀ {ℓr} {x y : Σ[ ob ∈ C ] (is-ob ob)}
     → ⦃ sa : Extensional (Hom (x .fst) (y .fst)) ℓr ⦄
     → Extensional (Subcat-hom subcat x y) ℓr
   Extensional-subcat-hom ⦃ sa ⦄ = injection→extensional!
@@ -93,7 +93,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
 
   instance
     extensionality-subcat-hom
-      : ∀ {x y : Σ[ ob ∈ Ob ] (is-ob ob)} → Extensionality (Subcat-hom subcat x y)
+      : ∀ {x y : Σ[ ob ∈ C ] (is-ob ob)} → Extensionality (Subcat-hom subcat x y)
     extensionality-subcat-hom = record { lemma = quote Extensional-subcat-hom }
 
     Funlike-Subcat-hom
@@ -102,7 +102,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
     Funlike-Subcat-hom ⦃ i ⦄ = record { _#_ = λ f x → apply (f .hom) x }
 
   Subcat-hom-is-set
-    : {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
+    : {x y : Σ[ ob ∈ C ] (is-ob ob)}
     → is-set (Subcat-hom subcat x y)
   Subcat-hom-is-set = Iso→is-hlevel 2 eqv $
     Σ-is-hlevel 2 (Hom-set _ _) λ _ →
@@ -123,7 +123,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} (subcat : Subcat C o' ℓ') whe
 
 ```agda
   Subcategory : Precategory (o ⊔ o') (ℓ ⊔ ℓ')
-  Subcategory .Precategory.Ob = Σ[ ob ∈ Ob ] is-ob ob
+  Subcategory .Precategory.Ob = ∫ₚ is-ob
   Subcategory .Precategory.Hom = Subcat-hom subcat
   Subcategory .Precategory.Hom-set _ _ = Subcat-hom-is-set
   Subcategory .Precategory.id .hom = id
@@ -238,13 +238,11 @@ the forgetful functor is pseudomonic.
   is-pseudomonic-Forget-subcat invert .is-pseudomonic.faithful =
     is-faithful-Forget-subcat
   is-pseudomonic-Forget-subcat invert .is-pseudomonic.isos-full f =
-    pure $
-      Sub.make-iso
-        (sub-hom (f .to) (invert (iso→invertible f)))
-        (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
-        (ext (f .invl))
-        (ext (f .invr))
-      , ≅-path refl
+    pure $ Sub.make-iso
+      (sub-hom (f .to)   (invert (iso→invertible f)))
+      (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
+      (ext (f .invl))
+      (ext (f .invr)) , trivial!
 ```
 
 ## Univalent subcategories
@@ -255,10 +253,9 @@ when the predicate on objects is a proposition.
 [univalent]: Cat.Univalent.html
 
 ```agda
-  subcat-iso→iso : ∀ {x y : Σ[ x ∈ Ob ] is-ob x} → x Sub.≅ y → x .fst ≅ y .fst
-  subcat-iso→iso f =
-    make-iso (Sub.to f .hom) (Sub.from f .hom)
-      (ap hom (Sub.invl f)) (ap hom (Sub.invr f))
+  subcat-iso→iso : ∀ {x y : Σ[ x ∈ Ob ] (x ∈ is-ob)} → x Sub.≅ y → x .fst ≅ y .fst
+  subcat-iso→iso f = make-iso (Sub.to f .hom) (Sub.from f .hom)
+    (ap hom (Sub.invl f)) (ap hom (Sub.invr f))
 
   subcat-is-category
     : is-category C

@@ -89,33 +89,30 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
         ∙ C.pulll (sym (F'.Right _ .F-∘ _ _))
 
   functor-limit : Limit F
-  functor-limit = to-limit $ to-is-limit ml
-    where
-      open make-is-limit
+  functor-limit = to-limit $ to-is-limit ml where
+    open make-is-limit
 
-      ml : make-is-limit F functor-apex
-      ml .ψ j .η x = D-lim.ψ x j
-      ml .ψ j .is-natural x y f =
-        D-lim.factors _ _ _ ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
-      ml .commutes f = Nat-path λ j →
-        C.pushr (C.introl (F.₀ _ .F-id)) ∙ D-lim.commutes j f
-      ml .universal eta p .η x =
-        D-lim.universal x
-          (λ j → eta j .η x)
-          (λ f → ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p f ηₚ x)
-      ml .universal eta p .is-natural x y f =
-        D-lim.unique₂ y _
-          (λ g → C.pulll (ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p g ηₚ y))
-          (λ j → C.pulll (D-lim.factors _ _ _))
-          (λ j →
-            C.pulll (D-lim.factors _ _ _)
-            ∙ C.pullr (D-lim.factors _ _ _)
-            ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
-            ∙ sym (eta j .is-natural x y f))
-      ml .factors eta p = Nat-path λ j →
-        D-lim.factors j _ _
-      ml .unique eta p other q = Nat-path λ x →
-        D-lim.unique _ _ _ _ λ j → q j ηₚ x
+    ml : make-is-limit F functor-apex
+    ml .ψ j .η x = D-lim.ψ x j
+    ml .ψ j .is-natural x y f =
+      D-lim.factors _ _ _ ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
+    ml .commutes f = ext λ j →
+      C.pushr (C.introl (F.₀ _ .F-id)) ∙ D-lim.commutes j f
+    ml .universal eta p .η x = D-lim.universal x
+      (λ j → eta j .η x)
+      (λ f → ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p f ηₚ x)
+    ml .universal eta p .is-natural x y f = D-lim.unique₂ y _
+      (λ g → C.pulll (ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p g ηₚ y))
+      (λ j → C.pulll (D-lim.factors _ _ _))
+      (λ j →
+          C.pulll (D-lim.factors _ _ _)
+        ∙ C.pullr (D-lim.factors _ _ _)
+        ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
+        ∙ sym (eta j .is-natural x y f))
+    ml .factors eta p = ext λ j →
+      D-lim.factors j _ _
+    ml .unique eta p other q = ext λ x →
+      D-lim.unique _ _ _ _ λ j → q j ηₚ x
 ```
 
 As a corollary, if $\cD$ is an $(o,\ell)$-complete category, then so

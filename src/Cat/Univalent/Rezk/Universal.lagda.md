@@ -84,8 +84,8 @@ eso→pre-faithful
   : (H : Functor A B) {F G : Functor B C}
   → is-eso H → (γ δ : F => G)
   → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
-eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
-  Nat-path λ b → ∥-∥-proj (C.Hom-set _ _ _ _) do
+eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p = ext λ b →
+  ∥-∥-proj (C.Hom-set _ _ _ _) do
   (b' , m) ← h-eso b
   ∥_∥.inc $
     γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
@@ -213,7 +213,7 @@ over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
-    T-prop b (g , coh) (g' , coh') = Σ-prop-path! $ ∥-∥-proj! do
+    T-prop b (g , coh) (g' , coh') = Σ-prop-path (λ x → hlevel 1) $ ∥-∥-proj (hlevel 1) do
       (a₀ , h) ← H-eso b
       pure $ C.iso→epic (F-map-iso F h) _ _
         (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
@@ -284,7 +284,7 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
       (λ (a' , h') (a , h) → naturality f a a' h h') (H-eso b') (H-eso b)
 
   full : is-full (precompose H)
-  full {x = x} {y = y} γ = pure (δ _ _ γ , Nat-path p) where
+  full {x = x} {y = y} γ = pure (δ _ _ γ , ext p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
       (λ e → ∥-∥-proj (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst

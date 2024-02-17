@@ -95,7 +95,7 @@ Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) wh
   open make-is-colimit
 
   sum : Type _
-  sum = Σ[ d ∈ D.Ob ] ∣ F.₀ d ∣
+  sum = Σ[ d ∈ D ] F ʻ d
 
   rel : sum → sum → Type _
   rel (X , x) (Y , y) = Σ[ f ∈ D.Hom X Y ] (F.₁ f x ≡ y)
@@ -115,7 +115,7 @@ definition.
 
 ```agda
   univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
-       → (eps : ∀ j → ∣ F.F₀ j ∣ → ∣ A ∣)
+       → (eps : ∀ j → F ʻ j → ∣ A ∣)
        → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eps y (F.F₁ f Fx) ≡ eps x Fx)
        → sum / rel
        → ∣ A ∣
@@ -193,7 +193,7 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 
 ```agda
     coprod .different-images-are-disjoint i j i≠j os = contr map uniq where
-      map : Σ[ i ∈ ∣ F i ∣ ] Σ _ (λ x → _) → ∣ os ∣
+      map : Σ[ x ∈ F i ] Σ[ y ∈ F j ] (coprod.ι i x ≡ coprod.ι j y) → ∣ os ∣
       map (i , j , p) = absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 
       uniq : ∀ x → map ≡ x
@@ -204,7 +204,7 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 ```agda
 Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
 Sets-initial .Initial.bot = el! (Lift _ ⊥)
-Sets-initial .Initial.has⊥ x .centre () 
+Sets-initial .Initial.has⊥ x .centre ()
 Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
 
 ```

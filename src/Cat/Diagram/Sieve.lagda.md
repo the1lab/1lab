@@ -82,7 +82,7 @@ to-presheaf sieve .F₁ f (g , s) = g C.∘ f , sieve .closed _ s
 
 <!--
 ```agda
-to-presheaf sieve .F-id = funext λ _ → Σ-prop-path! (C.idr _)
+to-presheaf sieve .F-id    = funext λ _ → Σ-prop-path! (C.idr _)
 to-presheaf sieve .F-∘ f g = funext λ _ → Σ-prop-path! (C.assoc _ _ _)
 ```
 -->
@@ -97,7 +97,5 @@ componentwise monic, and embeddings are monic, the result follows.
 to-presheaf↪よ : {S : Sieve} → to-presheaf S PSh.↪ よ₀ C c
 to-presheaf↪よ {S} .mor .η x (f , _) = f
 to-presheaf↪よ {S} .mor .is-natural x y f = refl
-to-presheaf↪よ {S} .monic g h path = Nat-path λ x →
-  embedding→monic (Subset-proj-embedding (λ _ → S .arrows _ .is-tr))
-    (g .η x) (h .η x) (path ηₚ x)
+to-presheaf↪よ {S} .monic g h path = ext λ i x → Σ-prop-path! (unext path i x)
 ```

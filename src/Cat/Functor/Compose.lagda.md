@@ -98,8 +98,8 @@ F∘-functor {C = C} = go module F∘-f where
   go .F₀ (F , G) = F F∘ G
   go .F₁ (α , β) = α ◆ β
 
-  go .F-id {x} = Nat-path λ _ → C.idr _ ∙ x .fst .F-id
-  go .F-∘ {x} {y , _} {z , _} (f , _) (g , _) = Nat-path λ _ →
+  go .F-id {x} = ext λ _ → C.idr _ ∙ x .fst .F-id
+  go .F-∘ {x} {y , _} {z , _} (f , _) (g , _) = ext λ _ →
     z .F₁ _ C.∘ f .η _ C.∘ g .η _                 ≡⟨ C.pushl (z .F-∘ _ _) ⟩
     z .F₁ _ C.∘ z .F₁ _ C.∘ f .η _ C.∘ g .η _     ≡⟨ C.extend-inner (sym (f .is-natural _ _ _)) ⟩
     z .F₁ _ C.∘ f .η _ C.∘ y .F₁ _ C.∘ g .η _     ≡⟨ C.pulll refl ⟩
@@ -135,14 +135,14 @@ module _ (p : Functor C C') where
   precompose : Functor Cat[ C' , D ] Cat[ C , D ]
   precompose .F₀ G    = G F∘ p
   precompose .F₁ θ    = θ ◂ p
-  precompose .F-id    = Nat-path λ _ → refl
-  precompose .F-∘ f g = Nat-path λ _ → refl
+  precompose .F-id    = trivial!
+  precompose .F-∘ f g = trivial!
 
   postcompose : Functor Cat[ D , C ] Cat[ D , C' ]
   postcompose .F₀ G    = p F∘ G
   postcompose .F₁ θ    = p ▸ θ
-  postcompose .F-id    = Nat-path λ _ → p .F-id
-  postcompose .F-∘ f g = Nat-path λ _ → p .F-∘ _ _
+  postcompose .F-id    = ext λ _ → p .F-id
+  postcompose .F-∘ f g = ext λ _ → p .F-∘ _ _
 ```
 
 <!--
@@ -157,23 +157,23 @@ module _ {F G : Functor C D} where
 
   _◂ni_ : F ≅ⁿ G → (H : Functor B C) → (F F∘ H) ≅ⁿ (G F∘ H)
   (α ◂ni H) = make-iso _ (α .to ◂ H) (α .from ◂ H)
-    (Nat-path λ _ → α .invl ηₚ _)
-    (Nat-path λ _ → α .invr ηₚ _)
+    (ext λ _ → α .invl ηₚ _)
+    (ext λ _ → α .invr ηₚ _)
 
   _▸ni_ : (H : Functor D E) → F ≅ⁿ G → (H F∘ F) ≅ⁿ (H F∘ G)
   (H ▸ni α) = make-iso _ (H ▸ α .to) (H ▸ α .from)
-    (Nat-path λ _ → annihilate H (α .invl ηₚ _))
-    (Nat-path λ _ → annihilate H (α .invr ηₚ _))
+    (ext λ _ → annihilate H (α .invl ηₚ _))
+    (ext λ _ → annihilate H (α .invr ηₚ _))
 ```
 -->
 
 <!--
 ```agda
 ◂-distribl : (α ∘nt β) ◂ H ≡ (α ◂ H) ∘nt (β ◂ H)
-◂-distribl = Nat-path λ _ → refl
+◂-distribl = trivial!
 
 ▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
-▸-distribr {F = F} = Nat-path λ _ → F .F-∘ _ _
+▸-distribr {F = F} = ext λ _ → F .F-∘ _ _
 
 module _ where
   open Cat.Reasoning

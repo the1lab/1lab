@@ -161,10 +161,10 @@ binary meets.
       B.⋃ (λ i → f # fst i)                             B.≤∎
       where
         meet-section
-          : Σ[ x ∈ A.Ob ] (x ∈↓ S) × Σ[ y ∈ A.Ob ] (y ∈↓ T)
-          → Σ[ x ∈ A.Ob ] ((x ∈↓ S) × (x ∈↓ T))
+          : Σ A.Ob (_∈↓ S) × Σ A.Ob (_∈↓ T)
+          → Σ A.Ob (λ x → (x ∈↓ S) × (x ∈↓ T))
         meet-section ((x , p) , (y , q)) =
-          (x A.∩ y) , (S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q)
+          x A.∩ y , S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q
 ```
 
 It's also free from the definition of cocompletions that the extended

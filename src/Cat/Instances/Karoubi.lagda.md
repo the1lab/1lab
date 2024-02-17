@@ -49,7 +49,7 @@ from the right: $\phi \circ f = \phi = g \circ \phi$.
 ```agda
 private
   KOb : Type (o ⊔ h)
-  KOb = Σ[ c ∈ C.Ob ] Σ[ f ∈ C.Hom c c ] (is-idempotent f)
+  KOb = Σ[ c ∈ C ] Σ[ f ∈ C.Hom c c ] (is-idempotent f)
 
   KHom : KOb → KOb → Type h
   KHom (c , f , _) (d , g , _) = Σ[ φ ∈ C.Hom c d ] ((φ C.∘ f ≡ φ) × (g C.∘ φ ≡ φ))

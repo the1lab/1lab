@@ -236,22 +236,23 @@ essentially independent of the coordinate.
 
 ```agda
     f : Γ => GlobalSections
-    f .η x ob =
-      record { F₀ = λ _ → ob ; F₁ = λ _ → x .fst .id
-             ; F-id = refl ; F-∘ = λ _ _ → sym (x .fst .idl _)
-             }
+    f .η x ob = record
+      { F₀ = λ _ → ob
+      ; F₁ = λ _ → x .fst .id
+      ; F-id = refl
+      ; F-∘ = λ _ _ → sym (x .fst .idl _)
+      }
     f .is-natural x y f = funext λ _ → Functor-path (λ _ → refl) λ _ → sym (F-id f)
 ```
 
 In the opposite direction, the natural transformation is defined by
 evaluating at the point. These natural transformations compose to the
 identity almost definitionally, but Agda does need some convincing,
-using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
-`Functor-path`{.Agda}.
+using our path helpers, `Functor-path`{.Agda} and `trivial!`{.Agda}.
 
 ```agda
     g : GlobalSections => Γ
-    g .η x f = F₀ f (lift tt)
+    g .η x f = f # lift tt
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
@@ -338,7 +339,7 @@ category are product sets of connected components.
 
 ```agda
 Π₀-preserve-prods
-  : ∀ {C D : Precategory o h} → ∣ π₀ (C ×ᶜ D) ∣ ≡ (∣ π₀ C ∣ × ∣ π₀ D ∣)
+  : ∀ {C D : Precategory o h} → π₀ ʻ (C ×ᶜ D) ≡ π₀ ʻ C × π₀ ʻ D
 Π₀-preserve-prods {C = C} {D = D} = Iso→Path (f , isom) where
   open is-iso
 ```
@@ -348,7 +349,7 @@ each factor. This maps respect the quotient because we can also split
 the morphisms.
 
 ```agda
-  f : ∣ π₀ (C ×ᶜ D) ∣ → ∣ π₀ C ∣ × ∣ π₀ D ∣
+  f : π₀ ʻ (C ×ᶜ D) → π₀ ʻ C × π₀ ʻ D
   f = Quot-elim
     (λ _ → hlevel!)
     (λ (a , b) → inc a , inc b)

@@ -88,7 +88,7 @@ be derived from `is-unital-magma-is-prop`{.Agda}
 
 ```agda
 has-identity-is-prop
-  : {⋆ : A → A → A}
+  : {A : Type ℓ} {⋆ : A → A → A}
   → is-magma ⋆ → is-prop (Σ[ u ∈ A ] (is-unital-magma u ⋆))
 has-identity-is-prop mgm x y = Σ-prop-path (λ x → is-unital-magma-is-prop)
  (identities-equal (x .fst) (y .fst) (x .snd) (y .snd))

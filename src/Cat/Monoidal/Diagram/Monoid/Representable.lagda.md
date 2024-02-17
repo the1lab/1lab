@@ -262,12 +262,10 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
   Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
   Mon→RepPShMon .F₁ f .η x .preserves =
     internal-mon-hom→hom-mon-hom (f .preserves)
-  Mon→RepPShMon .F₁ f .is-natural x y g =
-    Homomorphism-path λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .hom) h g
 
-  Mon→RepPShMon .F-id = Nat-path λ x → Homomorphism-path λ f → idl f
-  Mon→RepPShMon .F-∘ f g = Nat-path λ x → Homomorphism-path λ h →
-    sym (assoc (f .hom) (g .hom) h)
+  Mon→RepPShMon .F-id = ext λ x f → idl f
+  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .hom) (g .hom) h)
 ```
 
 This functor is a simultaneous restriction and corestriction of the
@@ -302,15 +300,13 @@ functor is also [[fully faithful]].
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
     .inv α .hom       → α .η _ # id
     .inv α .preserves → Nat→internal-mon-hom α
-    .rinv α → Nat-path λ _ → Homomorphism-path λ f →
+    .rinv α → ext λ _ f →
       α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
       α .η _ # f        ∎
     .linv h → total-hom-path _
-      (idr _)
-      (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
+      (idr _) (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
 ```
-
 
 # Internalizing presheaves of monoids
 
