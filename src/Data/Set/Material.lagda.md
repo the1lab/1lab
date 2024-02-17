@@ -159,24 +159,17 @@ is-member e (squash x y p q i j) =
 ```
 -->
 
-As a type, we will write the membership relation as `_∈ₛ_`{.Agda}, since
-`_∈_`{.Agda} already stands for the fibres of families of propositions.
-There's nothing surprising about the subset relation $s \sube t$: it
-means every element of $s$ is an element of $t$.
+Having completed the construction of the membership proposition, we
+define an instance of `Membership`{.Agda} for the set-theoretic
+universe. This will allow us to use the overloaded membership operator
+to mean membership of material sets, and similarly for non-membership
+(`∉`) and subset (`⊆`).
 
 ```agda
-_∈ₛ_ : ∀ {ℓ} → V ℓ → V ℓ → Type (lsuc ℓ)
-x ∈ₛ y = ∣ is-member x y ∣
-
-_⊆_ : ∀ {ℓ} → V ℓ → V ℓ → Type (lsuc ℓ)
-s ⊆ t = ∀ a → a ∈ₛ s → a ∈ₛ t
+instance
+  Membership-V : ∀ {ℓ} → Membership (V ℓ) (V ℓ) (lsuc ℓ)
+  Membership-V = record { _∈_ = λ x y → ⌞ is-member x y ⌟ }
 ```
-
-<!--
-```agda
-infix 30 _∈ₛ_ _⊆_
-```
--->
 
 ## Extensionality
 
@@ -197,8 +190,8 @@ condition on $f$.
 ```agda
   worker
     : ∀ {A B} (f : A → V _) (g : B → V _)
-    → ((a : V _) → a ∈ₛ set A f → a ∈ₛ set B g)
-    → ((a : V _) → a ∈ₛ set B g → a ∈ₛ set A f)
+    → ((a : V _) → a ∈ set A f → a ∈ set B g)
+    → ((a : V _) → a ∈ set B g → a ∈ set A f)
     → set A f ≡ set B g
   worker f g f<g g<f = ext f g
     (λ a → f<g (f a) (inc (a , refl)))
@@ -380,18 +373,18 @@ of $X$'s presentation.
 module Members {ℓ} (X : V ℓ) where
   open Presentation (presentation X) public
 
-  memb : ∀ {x} → x ∈ₛ X ≃ fibre elem x
+  memb : ∀ {x} → x ∈ X ≃ fibre elem x
   memb {x = x} = prop-ext (is-member _ X .is-tr) (embeds _)
-    (λ a → ∥-∥-proj (embeds _) (subst (x ∈ₛ_) presents a))
-    (λ a → subst (x ∈ₛ_) (sym presents) (inc a))
+    (λ a → ∥-∥-proj (embeds _) (subst (x ∈_) presents a))
+    (λ a → subst (x ∈_) (sym presents) (inc a))
 
   module memb {x} = Equiv (memb {x})
 
-  contains : ∀ {i} → elem i ∈ₛ X
+  contains : ∀ {i} → elem i ∈ X
   contains = memb.from (_ , refl)
 
-  contains' : ∀ {i x} → x ≡ elem i → x ∈ₛ X
-  contains' p = subst (_∈ₛ X) (sym p) contains
+  contains' : ∀ {i x} → x ≡ elem i → x ∈ X
+  contains' p = subst (_∈ X) (sym p) contains
 ```
 
 # Modelling IZF
@@ -419,7 +412,7 @@ module _ {ℓ} where
   ∅V : V ℓ
   ∅V = set (Lift ℓ ⊥) (λ ())
 
-  empty-set : ∀ x → ¬ (x ∈ₛ ∅V)
+  empty-set : (x : V ℓ) → x ∉ ∅V
   empty-set x = ∥-∥-rec (hlevel 1) (λ ())
 ```
 
@@ -439,7 +432,7 @@ The proof that $x \in \{A, B\} \simeq (x = A \lor x = B)$ is essentially
 the implementation of binary coproducts in terms of arbitrary sum types.
 
 ```agda
-  pairing : ∀ {a b x} → x ∈ₛ pair a b ≃ ∥ (x ≡ a) ⊎ (x ≡ b) ∥
+  pairing : ∀ {a b x} → x ∈ pair a b ≃ ∥ (x ≡ a) ⊎ (x ≡ b) ∥
   pairing = prop-ext squash squash
     (∥-∥-rec squash λ where
       (lift true , p) → inc (inl (sym p))
@@ -471,7 +464,7 @@ of $u$. This is essentially reassociation modulo the equivalence $x \in
 F \simeq m_F^*(x)$.
 
 ```agda
-  union : ∀ {x F} → x ∈ₛ ⋃V F ≃ ∃ (V ℓ) λ u → x ∈ₛ u × u ∈ₛ F
+  union : ∀ {x F} → x ∈ ⋃V F ≃ ∃ (V ℓ) λ u → x ∈ u × u ∈ F
   union {x} {F} = prop-ext hlevel! squash
     (∥-∥-map λ { ((i , j) , p) →
         Members.elem F i
@@ -532,7 +525,7 @@ constructor to the successor set.
     go zero    = ∅V
     go (suc x) = suc-V (go x)
 
-  zero∈ℕ : ∅V ∈ₛ ℕV
+  zero∈ℕ : ∅V ∈ ℕV
   zero∈ℕ = inc (lift zero , refl)
 ```
 
@@ -542,7 +535,7 @@ contains the empty set and is closed under successor, for if $x \in
 $\rm{suc}^{i + 1}(\varnothing) = \rm{suc}_V(x)$.
 
 ```agda
-  suc∈ℕ : ∀ {X} → X ∈ₛ ℕV → suc-V X ∈ₛ ℕV
+  suc∈ℕ : ∀ {X} → X ∈ ℕV → suc-V X ∈ ℕV
   suc∈ℕ = ∥-∥-map λ (lift i , x) → lift (suc i) , ap₂ _∪V_ x (ap singleton x)
 ```
 
@@ -555,7 +548,7 @@ set.
 
 ```agda
   ℕ-induction
-    : ∀ x → x ∈ₛ ℕV ≃ ∥ (x ≡ ∅V) ⊎ (∃ (V ℓ) λ y → y ∈ₛ ℕV × (x ≡ suc-V y)) ∥
+    : ∀ x → x ∈ ℕV ≃ ∥ (x ≡ ∅V) ⊎ (∃ (V ℓ) λ y → y ∈ ℕV × (x ≡ suc-V y)) ∥
   ℕ-induction x = prop-ext squash squash
     (∥-∥-map λ where
       (lift zero , w)    → inl (sym w)
@@ -589,8 +582,8 @@ This is a straightforward computation.
 ```agda
   replacement
     : ∀ (r : V ℓ → V ℓ) x i
-    → i ∈ₛ V-image r x
-    ≃ ∃ (V ℓ) λ z → z ∈ₛ x × (i ≡ r z)
+    → i ∈ V-image r x
+    ≃ ∃ (V ℓ) λ z → z ∈ x × (i ≡ r z)
   replacement r x i = prop-ext squash squash
     (∥-∥-map λ { (i , p) → _ , Members.contains x , sym p })
     (∥-∥-map λ { (z , z∈x , i=rz) →
@@ -624,7 +617,7 @@ corresponds to a proof of $x \in a$, and transporting the latter along
 $p$, a proof that $C$ holds of $x$.
 
 ```agda
-  separation : ∀ a C x → (x ∈ₛ subset a C) ≃ (x ∈ₛ a × x ∈ C)
+  separation : ∀ a C (x : V ℓ) → (x ∈ subset a C) ≃ (x ∈ a × x ∈ C)
   separation a C x = prop-ext squash hlevel!
     (∥-∥-rec hlevel! λ { ((j , w) , p) →
       Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w })
@@ -661,25 +654,23 @@ construction of power set.
 
   subset-separation
     : ∀ {a} (p : Members.members a → Ω) x
-    → x ∈ₛ subset a (predicate→class p)
+    → x ∈ subset a (predicate→class p)
     ≃ (Σ (fibre (Members.elem a) x) λ f → f .fst ∈ p)
 ```
 
 <!--
 ```agda
   subset-separation {a} p x =
-    x ∈ₛ subset a (predicate→class p)               ≃⟨ separation _ (predicate→class p) x ⟩
-    x ∈ₛ a × (x ∈ predicate→class p)                ≃⟨ deduplicate ⟩
+    x ∈ subset a (predicate→class p)                ≃⟨ separation _ (predicate→class p) x ⟩
+    x ∈ a × (x ∈ predicate→class p)                 ≃⟨ deduplicate ⟩
     Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p) ≃∎
     where
       hp = Σ-is-hlevel 1 (Members.embeds a x) λ f → p (f .fst) .is-tr
 
       deduplicate
-        : (x ∈ₛ a × (x ∈ predicate→class p))
+        : (x ∈ a × x ∈ predicate→class p)
         ≃ Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p)
-      deduplicate = prop-ext
-        (×-is-hlevel 1 (is-member x a .is-tr) (predicate→class p x .is-tr))
-        hp
+      deduplicate = prop-ext hlevel! hp
         (λ { (_ , pcx) → out! {pa = hp} pcx })
         λ { (f , p) → Members.memb.from a f , inc (f , p) }
 ```
@@ -689,7 +680,7 @@ construction of power set.
   power : V ℓ → V ℓ
   power a = set (Members.members a → Ω) λ p → subset a (predicate→class p)
 
-  power-set : ∀ a i → i ∈ₛ power a ≃ (i ⊆ a)
+  power-set : ∀ a i → i ∈ power a ≃ (i ⊆ a)
   power-set a i = done where
 ```
 
@@ -718,7 +709,7 @@ $(x \in B) \simeq (\sum_{(k, _)} : m_a^*(x)) m_a(k) \in i$.
     p2 : i ⊆ a → ∥ fibre (subset a ∘ predicate→class) i ∥
     p2 i⊆a = inc (belongs , extensionality _ _ to fro) where
       belongs : Members.members a → Ω
-      belongs m = elΩ (Members.elem a m ∈ₛ i)
+      belongs m = elΩ (Members.elem a m ∈ i)
 ```
 
 Given $x \in B$, split it into $k : [a]$, $m_a(i) = x$, $m_a(k) \in i$.
@@ -727,7 +718,7 @@ By transporting this last proof along the middle path, we conclude $x
 
 ```agda
       to : subset a (predicate→class belongs) ⊆ i
-      to e e∈sub = subst (_∈ₛ i)
+      to e e∈sub = subst (_∈ i)
         (Equiv.to (subset-separation belongs e) e∈sub .fst .snd)
         (out! {pa = is-member _ i .is-tr}
           (Equiv.to (subset-separation belongs e) e∈sub .snd))
@@ -742,7 +733,7 @@ m_a^*(x)$. It remains to show $m_a(k) \in i$; but this is equal to $x
       fro : i ⊆ subset a (predicate→class belongs)
       fro e e∈i = Equiv.from (subset-separation belongs _)
         ( Members.memb.to a (i⊆a _ e∈i)
-        , inc (subst (_∈ₛ i) (sym (Members.memb.to a (i⊆a _ e∈i) .snd)) e∈i))
+        , inc (subst (_∈ i) (sym (Members.memb.to a (i⊆a _ e∈i) .snd)) e∈i))
 
     done = prop-ext squash hlevel! (∥-∥-rec hlevel! p1) p2
 ```
@@ -757,9 +748,8 @@ as it holds for every $x \in a$, then $P$ holds of any material set.
 ```agda
   ∈-induction
     : ∀ {ℓ'} (P : V ℓ → Prop ℓ')
-    → (∀ {a} → (∀ {x} → x ∈ₛ a → ∣ P x ∣) → ∣ P a ∣)
-    → ∀ x → ∣ P x ∣
-  ∈-induction P ps = V-elim-prop (λ z → ∣ P z ∣) (λ _ → P _ .is-tr) $ λ f i →
-    ps λ {x} → ∥-∥-rec (P _ .is-tr) λ (a , p) →
-      subst (λ z → ∣ P z ∣) p (i a)
+    → ({a : V ℓ} → ({x : V ℓ} → x ∈ a → x ∈ P) → a ∈ P)
+    → (x : V ℓ) → x ∈ P
+  ∈-induction P ps = V-elim-prop (λ z → z ∈ P) (λ _ → P _ .is-tr) $ λ f i →
+    ps λ {x} → ∥-∥-rec! λ (a , p) → subst (_∈ P) p (i a)
 ```

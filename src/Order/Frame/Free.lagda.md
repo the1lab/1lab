@@ -160,9 +160,7 @@ binary meets.
       B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
       B.⋃ (λ i → f # fst i)                             B.≤∎
       where
-        meet-section
-          : Σ A.Ob (_∈↓ S) × Σ A.Ob (_∈↓ T)
-          → Σ A.Ob (λ x → (x ∈↓ S) × (x ∈↓ T))
+        meet-section : ∫ₚ S × ∫ₚ T → ∫ₚ (λ x → x ∈ S × x ∈ T)
         meet-section ((x , p) , (y , q)) =
           x A.∩ y , S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q
 ```

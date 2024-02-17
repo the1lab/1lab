@@ -32,8 +32,7 @@ A functor is **full** when its action on hom-sets is surjective:
 
 ```agda
 is-full : Functor C D → Type _
-is-full {C = C} {D = D} F =
-  ∀ {x y} (g : D .Hom (F₀ F x) (F₀ F y)) → ∃[ f ∈ C .Hom x y ] (F₁ F f ≡ g)
+is-full {C = C} {D = D} F = ∀ {x y} → is-surjective (F .F₁ {x = x} {y})
 ```
 :::
 
@@ -42,7 +41,7 @@ A functor is **faithful** when its action on hom-sets is injective:
 
 ```agda
 is-faithful : Functor C D → Type _
-is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
+is-faithful F = ∀ {x y} → injective (F .F₁ {x = x} {y})
 ```
 :::
 

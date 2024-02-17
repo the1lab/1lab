@@ -416,7 +416,7 @@ record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
   has-conjugatel yin = subst (_∈ H) associative (has-conjugate yin)
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ H → (y ⋆ x) ∈ H
-  has-comm {x = x} {y} ∈ = subst (_∈ H) p (has-conjugate ∈) where
+  has-comm {x = x} {y} mem = subst (_∈ H) p (has-conjugate mem) where
     p = x ⁻¹ ⋆ ⌜ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ⌝ ≡˘⟨ ap¡ associative ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ ⌜ x ⁻¹ ⁻¹ ⌝   ≡⟨ ap! inv-inv ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ x             ≡⟨ associative ⟩

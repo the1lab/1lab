@@ -103,6 +103,14 @@ x ↓ y = Σ[ d ∈ x ] (x .elt d ≡ y)
 
 <!--
 ```agda
+instance
+  Membership-↯ : Membership A (↯ A) _
+  Membership-↯ = record { _∈_ = λ x p → p ↓ x }
+```
+-->
+
+<!--
+```agda
 abstract
   ↯-is-hlevel : ∀ {A : Type ℓ} n → is-hlevel A (2 + n) → is-hlevel (↯ A) (2 + n)
   ↯-is-hlevel n hl = Iso→is-hlevel (2 + n) eqv $

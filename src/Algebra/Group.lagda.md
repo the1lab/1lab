@@ -168,7 +168,7 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
     has-is-group : is-group _⋆_
 
   infixr 20 _⋆_
-  infixl 30 _⁻¹
+  infixl 35 _⁻¹
 
   _⁻¹ : A → A
   x ⁻¹ = has-is-group .is-group.inverse x
