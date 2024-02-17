@@ -410,6 +410,8 @@ open Mod
     ; to-module-on
     ; Module-on→Group-on
     ; Module-on→Abelian-group-on
+    ; H-Level-is-linear-map
+    ; H-Level-is-module
     )
   public
 
@@ -424,8 +426,20 @@ module _ {ℓ} {R : Ring ℓ} where
       ; to-module-on
       ; Module-on→Group-on
       ; Module-on→Abelian-group-on
+      ; H-Level-is-linear-map
+      ; H-Level-is-module
       )
     public
+
+  Extensional-linear-map
+    : ∀ {ℓr} {M : Module R ℓm} {N : Module R ℓn}
+    → ⦃ ext : Extensional (⌞ M ⌟ → ⌞ N ⌟) ℓr ⦄
+    → Extensional (Linear-map M N) ℓr
+  Extensional-linear-map ⦃ ext ⦄ = injection→extensional! (λ p → Linear-map-path (happly p)) ext
+
+  instance
+    extensionality-linear-map : {M : Module R ℓm} {N : Module R ℓn} → Extensionality (Linear-map M N)
+    extensionality-linear-map = record { lemma = quote Extensional-linear-map }
 
 module R-Mod {ℓ ℓm} {R : Ring ℓ} = Cat.Reasoning (R-Mod R ℓm)
 

@@ -37,10 +37,10 @@ Lift-functor-l
 Lift-functor-l bo bℓ G = F where
   open Functor
   F : Functor _ _
-  F .F₀ (lift x) = F₀ G x
-  F .F₁ (lift f) = F₁ G f
-  F .F-id = F-id G
-  F .F-∘ (lift f) (lift g) = F-∘ G f g
+  F .F₀ (lift x) = G .F₀ x
+  F .F₁ (lift f) = G .F₁ f
+  F .F-id = G .F-id
+  F .F-∘ (lift f) (lift g) = G .F-∘ f g
 
 Lift-functor-r
   : ∀ {so sℓ} bo bℓ {o ℓ} {C : Precategory so sℓ} {D : Precategory o ℓ}
@@ -49,8 +49,8 @@ Lift-functor-r
 Lift-functor-r bo bℓ G = F where
   open Functor
   F : Functor _ _
-  F .F₀ x = lift $ F₀ G x
-  F .F₁ f = lift $ F₁ G f
-  F .F-id = ap lift $ F-id G
-  F .F-∘ f g = ap lift $ F-∘ G f g
+  F .F₀ x = lift $ G .F₀ x
+  F .F₁ f = lift $ G .F₁ f
+  F .F-id = ap lift $ G .F-id
+  F .F-∘ f g = ap lift $ G .F-∘ f g
 ```

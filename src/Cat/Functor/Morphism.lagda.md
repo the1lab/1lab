@@ -184,10 +184,10 @@ module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
   right-adjoint→preserves-monos {a = a} a-monic f g p =
     Equiv.injective (_ , R-adjunct-is-equiv L⊣F) $
     a-monic _ _ $
-    a 𝒞.∘ counit.ε _ 𝒞.∘ L.₁ f            ≡⟨ 𝒞.pulll (sym (counit.is-natural _ _ _)) ⟩
-    (counit.ε _ 𝒞.∘ L.₁ (F₁ a)) 𝒞.∘ L.₁ f ≡⟨ L.extendr p ⟩
-    (counit.ε _ 𝒞.∘ L.₁ (F₁ a)) 𝒞.∘ L.₁ g ≡⟨ 𝒞.pushl (counit.is-natural _ _ _) ⟩
-    a 𝒞.∘ counit.ε _ 𝒞.∘ L.₁ g            ∎
+    a 𝒞.∘ ε _ 𝒞.∘ L.₁ f            ≡⟨ 𝒞.pulll (sym (counit.is-natural _ _ _)) ⟩
+    (ε _ 𝒞.∘ L.₁ (F₁ a)) 𝒞.∘ L.₁ f ≡⟨ L.extendr p ⟩
+    (ε _ 𝒞.∘ L.₁ (F₁ a)) 𝒞.∘ L.₁ g ≡⟨ 𝒞.pushl (counit.is-natural _ _ _) ⟩
+    a 𝒞.∘ ε _ 𝒞.∘ L.₁ g            ∎
 ```
 
 <details>

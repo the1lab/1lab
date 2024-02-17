@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtactic.extensionality:30 -vtc.instance.candidates:20 #-}
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -238,7 +237,7 @@ equal-on-basis
   → ((x : T) → f .map (inc x) ≡ g .map (inc x))
   → f ≡ g
 equal-on-basis M {f} {g} p =
-  Linear-map-path $ Free-elim-prop.elim λ where
+  ext $ Free-elim-prop.elim λ where
     .has-is-prop x → M .fst .is-tr _ _
     .P-0m        → f.pres-0 ∙ sym g.pres-0
     .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
@@ -261,12 +260,12 @@ Extensional-hom-free
   : ∀ {ℓ' ℓr} {T : Type ℓ'} {M : Module R (ℓ ⊔ ℓ')}
   → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
   → Extensional (R-Mod.Hom (Free-Mod T) M) ℓr
-Extensional-hom-free {M = M} ⦃ ext ⦄ =
+Extensional-hom-free {M = M} ⦃ ef ⦄ =
   injection→extensional! {f = λ m x → m # (inc x)}
     (λ {f} {g} p →
       let it = equal-on-basis M {hom→linear-map f} {hom→linear-map g} (happly p)
-       in Homomorphism-path (happly (ap map it)))
-    ext
+       in ext (happly (ap map it)))
+    ef
 
 instance
   extensionality-linear-map-free

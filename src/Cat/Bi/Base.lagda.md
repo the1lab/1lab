@@ -103,7 +103,7 @@ sets for maps of precategories, i.e., functors.
 
 ```agda
   field
-    id      : ∀ {A} → Precategory.Ob (Hom A A)
+    id      : ∀ {A} → ⌞ Hom A A ⌟
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
   module compose {a} {b} {c} = Fr (compose {a} {b} {c})
@@ -131,14 +131,14 @@ whence the name **horizontal composition**.
 
 ```agda
   _↦_ : Ob → Ob → Type ℓ
-  A ↦ B = Precategory.Ob (Hom A B)
+  A ↦ B = ⌞ Hom A B ⌟
 
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ⊗ g = compose .Functor.F₀ (f , g)
+  f ⊗ g = compose # (f , g)
 
   -- vertical 2-cell composition
   _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h

@@ -101,20 +101,20 @@ Snd .F-∘ _ _ = refl
 Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×ᶜ D)
 Cat⟨ F , G ⟩ = f where
   f : Functor _ _
-  f .F₀ x = F₀ F x , F₀ G x
-  f .F₁ f = F₁ F f , F₁ G f
-  f .F-id i = F-id F i , F-id G i
-  f .F-∘ f g i = F-∘ F f g i , F-∘ G f g i
+  f .F₀ x = F .F₀ x , G .F₀ x
+  f .F₁ f = F .F₁ f , G .F₁ f
+  f .F-id i = F .F-id i , G .F-id i
+  f .F-∘ f g i = F .F-∘ f g i , G .F-∘ f g i
 
 _F×_ : Functor B D → Functor C E → Functor (B ×ᶜ C) (D ×ᶜ E)
 _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
   module F× where
 
   func : Functor (B ×ᶜ C) (D ×ᶜ E)
-  func .F₀ (x , y) = (G .F₀ x) , (H .F₀ y)
-  func .F₁ (f , g) = (G .F₁ f) , (H .F₁ g)
-  func .F-id = (G .F-id) ,ₚ (H .F-id)
-  func .F-∘ (f , g) (f' , g') = (G .F-∘ f f') ,ₚ H .F-∘ g g'
+  func .F₀ (x , y) = G .F₀ x , H .F₀ y
+  func .F₁ (f , g) = G .F₁ f , H .F₁ g
+  func .F-id = G .F-id ,ₚ H .F-id
+  func .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
 ```
 
 <!--

@@ -173,8 +173,8 @@ we can get it out from under the truncation in the definition of
 coproduct.
 
 ```agda
-    coprod .injections-are-monic _ g h path = funext go where abstract
-      path' : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
+    coprod .injections-are-monic ix g h path = funext go where abstract
+      path' : Path (∀ c → Σ[ i ∈ I ] (F ʻ i)) (λ c → _ , g c) (λ c → _ , h c)
       path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
         (λ x → x) (path i c)
 
@@ -182,7 +182,7 @@ coproduct.
       q = I .is-tr _ _ _ _
 
       go : ∀ c → g c ≡ h c
-      go c = subst (λ e → PathP (λ i → ∣ F (e i) ∣) (g c) (h c)) q
+      go c = subst (λ e → PathP (λ i → F ʻ e i) (g c) (h c)) q
         (ap snd (happly path' c))
 ```
 

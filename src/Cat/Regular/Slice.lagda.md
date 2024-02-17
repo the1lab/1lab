@@ -15,9 +15,7 @@ import Cat.Reasoning as Cr
 
 ```agda
 module Cat.Regular.Slice
-  {o ℓ} {C : Precategory o ℓ} (y : Precategory.Ob C)
-  (reg : is-regular C)
-  where
+  {o ℓ} {C : Precategory o ℓ} (y : ⌞ C ⌟) (reg : is-regular C) where
 ```
 
 # Regular categories are stable under slicing

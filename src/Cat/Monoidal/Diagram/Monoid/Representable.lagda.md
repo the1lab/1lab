@@ -165,8 +165,8 @@ is to show functoriality, which follows immediately:
   Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
   Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
 
-  Mon→PshMon {m} mon .F-id    = Homomorphism-path idr
-  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
+  Mon→PshMon {m} mon .F-id    = ext idr
+  Mon→PshMon {m} mon .F-∘ f g = ext λ h → assoc h g f
 ```
 
 And, since this presheaf is _by definition_ given by the set of maps
@@ -304,8 +304,7 @@ functor is also [[fully faithful]].
       α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
       α .η _ # f        ∎
-    .linv h → total-hom-path _
-      (idr _) (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
+    .linv h → total-hom-path _ (idr _) prop!
 ```
 
 # Internalizing presheaves of monoids
@@ -530,7 +529,7 @@ expand this `<details>` element.</summary>
 
     ni .eta∘inv x = ext (unext repr.invr x)
     ni .inv∘eta x = ext (unext repr.invl x)
-    ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
+    ni .natural x y f = ext (sym (repr.from .is-natural _ _ _) $ₚ_)
 ```
 </details>
 

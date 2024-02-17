@@ -17,7 +17,7 @@ module Cat.Diagram.Sieve where
 
 <!--
 ```agda
-module _ {o κ : _} (C : Precategory o κ) (c : Precategory.Ob C) where
+module _ {o κ : _} (C : Precategory o κ) (c : ⌞ C ⌟) where
   private module C = Precategory C
 ```
 -->
@@ -60,7 +60,7 @@ subobjects.
 
 <!--
 ```agda
-module _ {o κ : _} (C : Precategory o κ) (c : Precategory.Ob C) where
+module _ {o κ : _} (C : Precategory o κ) (c : ⌞ C ⌟) where
   private
     module C   = Cat.Reasoning C
     module PSh = Cat.Reasoning (PSh κ C)

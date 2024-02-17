@@ -1,10 +1,7 @@
 ```agda
 open import Cat.Prelude
 
-module Cat.Strict.Reasoning
-  {o ℓ} (C : Precategory o ℓ)
-  (ob-set : is-set (Precategory.Ob C))
-  where
+module Cat.Strict.Reasoning {o ℓ} (C : Precategory o ℓ) (ob-set : is-set ⌞ C ⌟) where
 
 open Precategory C
 ```

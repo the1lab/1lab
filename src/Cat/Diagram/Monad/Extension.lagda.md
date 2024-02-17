@@ -127,7 +127,7 @@ part of) $M$-qua-endofunctor, and by the unit natural transformation.
 ```agda
     system : Extension-system C
     system .M₀ = M.M₀
-    system .unit = M.unit.η _
+    system .unit = M.η _
 ```
 
 Defining the extension operation is slightly trickier, but not by much.
@@ -139,24 +139,24 @@ MX \xto{Mf} MMY \xto{\mu} MY\text{.}
 $$
 
 ```agda
-    system .bind f = M.mult.η _ ∘ M.M₁ f
+    system .bind f = M.μ _ ∘ M.M₁ f
 ```
 
 Finally, a few short computations show that this definition is lawful.
 
 ```agda
     system .bind-unit-id =
-      M.mult.η _ ∘ F₁ M.M (M.unit.η _) ≡⟨ M.left-ident ⟩
-      id                               ∎
+      M.μ _ ∘ M.M₁ (M.η _) ≡⟨ M.left-ident ⟩
+      id                             ∎
     system .bind-unit-∘ f =
-      (M.mult.η _ ∘ M.M₁ f) ∘ M.unit.η _ ≡⟨ pullr (sym $ M.unit.is-natural _ _ _) ⟩
-      M.mult.η _ ∘ M.unit.η _ ∘ f        ≡⟨ cancell M.right-ident ⟩
-      f                                  ∎
+      (M.μ _ ∘ M.M₁ f) ∘ M.η _ ≡⟨ pullr (sym $ M.unit.is-natural _ _ _) ⟩
+      M.μ _ ∘ M.η _ ∘ f        ≡⟨ cancell M.right-ident ⟩
+      f                        ∎
     system .bind-∘ f g =
-      (M.mult.η _ ∘ M.M₁ f) ∘ (M.mult.η _ ∘ M.M₁ g)             ≡⟨ pullr (extendl (sym $ M.mult.is-natural _ _ _)) ⟩
-      M.mult.η _ ∘ M.mult.η _ ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g)        ≡⟨ extendl (sym $ M.mult-assoc) ⟩
-      M.mult.η _ ∘ M.M₁ (M.mult.η _) ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g) ≡⟨ ap₂ _∘_ refl (pulll (sym (M.M-∘ _ _)) ∙ sym (M.M-∘ _ _)) ⟩
-      M.mult.η _ ∘ M.M₁ ((M.mult.η _ ∘ M.M₁ f) ∘ g)             ∎
+      (M.μ _ ∘ M.M₁ f) ∘ (M.μ _ ∘ M.M₁ g)             ≡⟨ pullr (extendl (sym $ M.mult.is-natural _ _ _)) ⟩
+      M.μ _ ∘ M.μ _ ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g)        ≡⟨ extendl (sym M.mult-assoc) ⟩
+      M.μ _ ∘ M.M₁ (M.μ _) ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g) ≡⟨ ap₂ _∘_ refl (pulll (sym (M.M-∘ _ _)) ∙ sym (M.M-∘ _ _)) ⟩
+      M.μ _ ∘ M.M₁ ((M.μ _ ∘ M.M₁ f) ∘ g)             ∎
 ```
 
 Constructing a monad from an extension system is simply a matter of
@@ -219,8 +219,8 @@ convenient.
         Monad-path
           (λ _ → refl)
           (λ f →
-            M.mult.η _ ∘ M.M₁ (M.unit.η _ ∘ f)        ≡⟨ pushr (M.M-∘ _ _) ⟩
-            (M.mult.η _ ∘ M.M₁ (M.unit.η _)) ∘ M.M₁ f ≡⟨ eliml M.left-ident ⟩
+            M.μ _ ∘ M.M₁ (M.η _ ∘ f)        ≡⟨ pushr (M.M-∘ _ _) ⟩
+            (M.μ _ ∘ M.M₁ (M.η _)) ∘ M.M₁ f ≡⟨ eliml M.left-ident ⟩
             M.M₁ f ∎)
           (λ _ → refl)
           (λ _ → elimr M.M-id))

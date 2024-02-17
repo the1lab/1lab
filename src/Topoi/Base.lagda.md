@@ -543,7 +543,7 @@ inclusion, the counit is an isomorphism.
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C) where
+module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : ⌞ C ⌟) where
   private
     module C = Cat.Reasoning C
     module Co = Cat.Reasoning (Slice C X)

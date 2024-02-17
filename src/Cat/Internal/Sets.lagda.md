@@ -42,7 +42,8 @@ annoying.
 ```agda
 Strict-cat→Internal-cat
   : ∀ {o ℓ}
-  → (C : Precategory o ℓ) → is-set (Precategory.Ob C)
+  → (C : Precategory o ℓ)
+  → is-set ⌞ C ⌟
   → Internal-cat (Sets (o ⊔ ℓ))
 Strict-cat→Internal-cat {o} {ℓ} C ob-set = icat where
 ```

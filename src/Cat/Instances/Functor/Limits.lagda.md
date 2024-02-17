@@ -7,6 +7,7 @@ open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Functor.Closed
 open import Cat.Diagram.Duals
 open import Cat.Prelude
 ```
@@ -28,7 +29,7 @@ module _
   {o₁ ℓ₁} {C : Precategory o₁ ℓ₁}
   {o₂ ℓ₂} {D : Precategory o₂ ℓ₂}
   {o₃ ℓ₃} {E : Precategory o₃ ℓ₃}
-  (has-D-lims : ∀ (F : Functor D C) → Limit F)
+  (has-D-lims : (F : Functor D C) → Limit F)
   (F : Functor D Cat[ E , C ])
   where
 ```

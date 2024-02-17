@@ -257,7 +257,7 @@ function which **un**makes a colimit.
 
     mc : make-is-colimit D coapex
     mc .ψ = eta.η
-    mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (Functor.F-id F)
+    mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (F .Functor.F-id)
     mc .universal = hom
     mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
@@ -265,7 +265,7 @@ function which **un**makes a colimit.
       where
         other-nt : F => const! x
         other-nt .η _ = other
-        other-nt .is-natural _ _ _ = C.elimr (Functor.F-id F) ∙ sym (C.idl _)
+        other-nt .is-natural _ _ _ = C.elimr (F .Functor.F-id) ∙ sym (C.idl _)
 ```
 
 <!--
@@ -684,7 +684,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
   colimit-as-coequaliser-of-coproduct
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
-    → has-coproducts-indexed-by C (Precategory.Ob J)
+    → has-coproducts-indexed-by C ⌞ J ⌟
     → has-coproducts-indexed-by C (Arrows J)
     → has-coequalisers C
     → (F : Functor J C) → Colimit F

@@ -68,8 +68,7 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemma x i }
-  where
+Int-is-initial R = contr z→r λ x → ext (lemma x) where
   module R = Ring-on (R .snd)
 ```
 

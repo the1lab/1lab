@@ -75,7 +75,7 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   parallel-commutes
     : ∀ {x} {e' : Hom x (F .F₀ false)}
     → forkl F ∘ e' ≡ forkr F ∘ e'
-    → ∀ i j → (h : Precategory.Hom ·⇉· i j)
+    → ∀ i j → (h : ·⇉· .Precategory.Hom i j)
     → F .F₁ {i} {j} h ∘ parallel e' i ≡ parallel e' j
   parallel-commutes p true true tt = eliml (F .F-id)
   parallel-commutes p false true true = sym p

@@ -283,7 +283,7 @@ product-adjoint→cartesian-closed A→ adj = cc where
 
   exp : ∀ A B → Exponential A B
   exp A B .B^A = A→ A .F₀ B
-  exp A B .ev = adj A .counit.ε B
+  exp A B .ev = adj A .ε B
   exp A B .has-is-exp .ƛ          = L-adjunct (adj A)
   exp A B .has-is-exp .commutes m = R-L-adjunct (adj A) m
   exp A B .has-is-exp .unique m' x = sym $

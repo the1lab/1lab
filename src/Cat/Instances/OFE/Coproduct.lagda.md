@@ -192,7 +192,7 @@ unique: but it suffices to reason at the level of sets.
   mk .has-is-coproduct .is-coproduct.[_,_] {Q = Q} f g = disj f g
   mk .has-is-coproduct .in₀∘factor = trivial!
   mk .has-is-coproduct .in₁∘factor = trivial!
-  mk .has-is-coproduct .unique other p q = Homomorphism-path λ where
+  mk .has-is-coproduct .unique other p q = ext λ where
     (inl x) → p #ₚ x
     (inr x) → q #ₚ x
 ```

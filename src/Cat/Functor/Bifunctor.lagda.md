@@ -85,20 +85,20 @@ varies in the other category.
 
 ```agda
 Left : D.Ob → Functor C E
-Functor.F₀ (Left y) x    = F₀ (x , y)
-Functor.F₁ (Left y) f    = first f
-Functor.F-id (Left y)    = F-id
-Functor.F-∘ (Left y) f g = first∘first
+Left y .Functor.F₀ x = F₀ (x , y)
+Left y .Functor.F₁ f = first f
+Left y .Functor.F-id = F-id
+Left y .Functor.F-∘ f g = first∘first
 
 Right : C.Ob → Functor D E
-Functor.F₀ (Right x) y = F₀ (x , y)
-Functor.F₁ (Right x) f = second f
-Functor.F-id (Right x) = F-id
-Functor.F-∘ (Right x) f g = second∘second
+Right x .Functor.F₀ y = F₀ (x , y)
+Right x .Functor.F₁ f = second f
+Right x .Functor.F-id = F-id
+Right x .Functor.F-∘ f g = second∘second
 
 Flip : Functor (D ×ᶜ C) E
-Functor.F₀ Flip (fst , snd) = F₀ (snd , fst)
-Functor.F₁ Flip (fst , snd) = F₁ (snd , fst)
-Functor.F-id Flip    = F-id
-Functor.F-∘ Flip f g = F-∘ _ _
+Flip .Functor.F₀ (x , y) = F₀ (y , x)
+Flip .Functor.F₁ (x , y) = F₁ (y , x)
+Flip .Functor.F-id    = F-id
+Flip .Functor.F-∘ f g = F-∘ _ _
 ```

@@ -351,13 +351,13 @@ limit:
   unmake-limit
     : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
     → is-ran !F D F eps
-    → make-is-limit D (Functor.F₀ F tt)
+    → make-is-limit D (F # tt)
 ```
 
 <!--
 ```agda
   unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
-    a = Functor.F₀ F tt
+    a = F # tt
     module eps = _=>_ eps
     open is-ran lim
     open Functor D
@@ -377,7 +377,7 @@ limit:
 
     ml : make-is-limit D a
     ml .ψ j        = eps.η j
-    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (Functor.F-id F)
+    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (F .Functor.F-id)
 
     ml .universal   = hom
     ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
@@ -386,7 +386,7 @@ limit:
       where
         other-nt : const! x => F
         other-nt .η _ = other
-        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
+        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (F .Functor.F-id)
 
   to-limit
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
@@ -824,7 +824,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
   limit-as-equaliser-of-product
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
-    → has-products-indexed-by C (Precategory.Ob J)
+    → has-products-indexed-by C ⌞ J ⌟
     → has-products-indexed-by C (Arrows J)
     → has-equalisers C
     → (F : Functor J C) → Limit F

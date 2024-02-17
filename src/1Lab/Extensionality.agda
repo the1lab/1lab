@@ -190,6 +190,15 @@ Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp
   (sa .idsᵉ .to-path-over p)
   (sb .idsᵉ .to-path-over q)
 
+Extensional-lift-map
+  : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ''}
+  → ⦃ sa : Extensional (A → B) ℓr ⦄
+  → Extensional (Lift ℓ' A → B) ℓr
+Extensional-lift-map ⦃ sa = sa ⦄ .Pathᵉ f g = sa .Pathᵉ (f ∘ lift) (g ∘ lift)
+Extensional-lift-map ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (x ∘ lift)
+Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path h i (lift x) = sa .idsᵉ .to-path h i x
+Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path-over h = sa .idsᵉ  .to-path-over h
+
 instance
   extensionality-fun
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -200,6 +209,11 @@ instance
     : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
     → Extensionality (Σ A B → C)
   extensionality-uncurry = record { lemma = quote Extensional-uncurry }
+
+  extensionality-lift-map
+    : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
+    → Extensionality (Lift ℓ'' A → B)
+  extensionality-lift-map = record { lemma = quote Extensional-lift-map }
 
   extensionality-Π
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}

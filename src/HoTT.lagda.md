@@ -31,6 +31,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
 open import Cat.Instances.Sets
 open import Cat.Univalent.Rezk
 open import Cat.Allegory.Base

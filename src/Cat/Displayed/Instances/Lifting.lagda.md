@@ -84,9 +84,9 @@ module _
   Lifting-pathp
     : {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
     → (p : F ≡ G)
-    → (q : ∀ x → PathP (λ i → Ob[ F₀ (p i) x ]) (F' .F₀' x) (G' .F₀' x))
+    → (q : ∀ x → PathP (λ i → Ob[ p i .F₀ x ]) (F' .F₀' x) (G' .F₀' x))
     → (∀ {x y} → (f : J.Hom x y)
-       → PathP (λ i → Hom[ (F₁ (p i) f) ] (q x i) (q y i)) (F' .F₁' f) (G' .F₁' f))
+       → PathP (λ i → Hom[ p i .F₁ f ] (q x i) (q y i)) (F' .F₁' f) (G' .F₁' f))
     → PathP (λ i → Lifting (p i)) F' G'
   Lifting-pathp p q r i .F₀' x = q x i
   Lifting-pathp p q r i .F₁' f = r f i

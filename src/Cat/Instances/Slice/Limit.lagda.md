@@ -64,7 +64,7 @@ $\{*,*\}$ --- the [_join_] of these categories.
 <!--
 ```agda
 module
-  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} {o : Precategory.Ob C}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} {o : ⌞ C ⌟}
     (F : Functor J (Slice C o))
     where
 
@@ -152,7 +152,7 @@ In particular, if a category $\cC$ is complete, then so are its slices:
 
 ```agda
 is-complete→slice-is-complete
-  : ∀ {ℓ o o' ℓ'} {C : Precategory o ℓ} {c : Precategory.Ob C}
+  : ∀ {ℓ o o' ℓ'} {C : Precategory o ℓ} {c : ⌞ C ⌟}
   → is-complete o' ℓ' C
   → is-complete o' ℓ' (Slice C c)
 is-complete→slice-is-complete lims F = limit-above→limit-in-slice F (lims _)

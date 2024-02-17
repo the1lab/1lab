@@ -139,7 +139,7 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
   P (base x) = el ∥ fibre f x ∥ hlevel!
   P (cone a i) =
     n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
-      (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
+      (prop-ext! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
   P' : ∥ Cofibre f ∥₀ → Prop _
   P' = ∥-∥₀-elim (λ _ → hlevel!) P
