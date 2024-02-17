@@ -20,7 +20,7 @@ open Functor
 open Total-hom
 ```
 
-# Total opposites
+# Total opposites {defines="total-opposite"}
 
 Opposites of [[displayed categories]] are somewhat subtle, as there are
 multiple constructions that one could reasonably call the "opposite".
