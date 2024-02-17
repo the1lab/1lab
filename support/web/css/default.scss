@@ -372,13 +372,6 @@ span.enclosing.liesover {
   background-position: center center;
 }
 
-@media (prefers-color-scheme: dark) {
-  span.enclosing.liesover {
-    background: url('../static/lies-over-dark.svg') no-repeat;
-    background-size: contain;
-    background-position: center center;
-  }
-}
 
 input {
   background-color: theme(--input-bg);

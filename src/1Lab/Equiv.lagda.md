@@ -29,8 +29,8 @@ The key issue is that any [[identity system]] is equipped with a [[path
 induction]] principle, which, if extended to the type of isomorphisms,
 would let us conclude that *being an isomorphism* is a [[proposition]]:
 but this is [provably not the case]. The result of formulating
-univalence using isomorphisms is sometimes caled [[isovalence]] --- that
-page has a formalisation of its failure.
+univalence using isomorphisms is sometimes called [[isovalence]] ---
+that page has a formalisation of its failure.
 
 [provably not the case]: 1Lab.Counterexamples.IsIso.html
 

@@ -158,6 +158,12 @@ $-allowed-keys: -flatten-theme($theme);
     display: none !important;
   }
 
+  span.enclosing.liesover {
+    background: url('../static/lies-over-dark.svg') no-repeat;
+    background-size: contain;
+    background-position: center center;
+  }
+
   div.warning {
     --shadow: #{$red-900};
   }
