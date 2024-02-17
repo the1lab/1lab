@@ -154,7 +154,7 @@ FG(a)$, we've claimed to have a $Fb \to Gb$, and someone has just handed
 us a $H(a) \cong b$, then it darn well better be the case that $\gamma$ is
 
 $$
-FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf^{-1}} FG(a)\text{.}
+FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf\inv} FG(a)\text{.}
 $$
 
 ```agda
@@ -204,10 +204,10 @@ this file in Agda and poke around the proof.
 
 Anyway, because of how we've phrased the coherence condition, if $g$,
 $g'$ both satisfy it, then we have $\gamma$ equal to both
-$G(h)gF(h^{-1})$ and $G(h)g'F(h^{-1})$.^[I've implicitly used that $H$
+$G(h)gF(h\inv)$ and $G(h)g'F(h\inv)$.^[I've implicitly used that $H$
 is eso to cough up an $(a,h)$ over $b$, since we're proving a
 proposition] Since isomorphisms are both monic and epic, we can cancel
-$G(h)$ and $F(h^{-1})$ from these equations to conclude $g = g'$.  Since
+$G(h)$ and $F(h\inv)$ from these equations to conclude $g = g'$.  Since
 the coherence condition is a proposition, the type of component data
 over $b$ is a proposition.
 

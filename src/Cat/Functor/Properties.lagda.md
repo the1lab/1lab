@@ -118,7 +118,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     open Cm.Inverses
 ```
 
-Since the functor is ff, we can find a map "$F_1^{-1}(f) : y \to x$" in
+Since the functor is ff, we can find a map "$F_1\inv(f) : y \to x$" in
 the domain category to serve as an inverse for $f$:
 
 ```agda

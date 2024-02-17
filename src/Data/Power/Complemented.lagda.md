@@ -66,9 +66,9 @@ is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
 
 For the converse, since _decidability_ of a proposition is itself a
 proposition, it suffices to assume we have an inhabitant of $(x \in p)
-\coprod (x \in p^{-1})$. Assuming that $x \in p^{-1}$, we must show that
+\coprod (x \in p\inv)$. Assuming that $x \in p\inv$, we must show that
 $x \notin p$: But by the definition of complemented subobject, the
-intersection $(p \cap p^{-1})$ is empty.
+intersection $(p \cap p\inv)$ is empty.
 
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p

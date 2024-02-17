@@ -27,7 +27,7 @@ private variable
 ```
 -->
 
-# Bi-invertible maps
+# Bi-invertible maps {defines="biinvertible-map"}
 
 Recall the three conditions that make up the notion of [equivalence].
 
@@ -83,8 +83,8 @@ $f$. This can be proven using [[equivalence induction]], but a more
 elementary argument --- directly constructing quasi-inverses ---
 suffices, and doesn't use the sledgehammer that is univalence.
 
-The proof is as follows: If $f : A \to B$ has inverse $f^{-1} : B → A$,
-then $(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ
+The proof is as follows: If $f : A \to B$ has inverse $f\inv : B → A$,
+then $(f\inv \circ -)$ and $(- \circ f\inv)$ are inverses to $(f \circ
 -)$ and $(- \circ f)$.
 
 ```agda

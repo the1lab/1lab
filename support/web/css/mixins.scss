@@ -1,15 +1,23 @@
 @mixin left-bordered($bg) {
-  position: relative;
+  border-inline-start:  $left-border-width solid $bg;
+  padding-inline-start: $left-border-distance;
 
-  &:before {
-    content: " ";
-    background-color: $bg;
+  @include widescreen {
+    position: relative;
 
-    height: 100%;
-    width: $left-border-width;
+    border-inline-start:  unset;
+    padding-inline-start: unset;
 
-    position: absolute;
-    left: calc(-1 * #{$left-border-distance} - #{$left-border-width});
+    &:before {
+      content: " ";
+      background-color: $bg;
+
+      height: 100%;
+      width: $left-border-width;
+
+      position: absolute;
+      left: calc(-1 * #{$left-border-distance} - #{$left-border-width});
+    }
   }
 }
 

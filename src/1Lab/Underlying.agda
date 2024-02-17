@@ -114,6 +114,11 @@ instance
   Funlike-Π : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Funlike ((x : A) → B x) A B
   Funlike-Π = record { _#_ = id }
 
+  Funlike-Homotopy
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {f g : ∀ x → B x}
+    → Funlike (f ≡ g) A (λ x → f x ≡ g x)
+  Funlike-Homotopy = record { _#_ = happly }
+
 -- Generalised "sections" (e.g. of a presheaf) notation.
 _ʻ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
@@ -121,3 +126,5 @@ _ʻ_
   → F → (x : A) → ⦃ _ : Underlying (B x) ⦄
   → Type _
 F ʻ x = ⌞ F # x ⌟
+
+infix 999 _ʻ_

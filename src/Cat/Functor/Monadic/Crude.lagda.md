@@ -80,7 +80,7 @@ paragraph above, and abbreviate the resulting monad by $T$; Denote the
 comparison functor by $K$.
 
 1. If $\cD$ has [Beck's coequalisers] for any $T$-algebra, then $K$
-has a left adjoint $K^{-1} \dashv K$;
+has a left adjoint $K\inv \dashv K$;
 
 2. If, in addition, $U$ preserves coequalisers for any pair which has a
 common right inverse, then the unit of the adjunction $\eta$ is a
@@ -160,7 +160,7 @@ It follows, since $U$ preserves coequalisers, that both rows of the diagram
 ~~~{.quiver}
 \[\begin{tikzcd}
   {T^2o} & UFo & o \\
-  {T^2o} & UFo & {UK^{-1}(o)}
+  {T^2o} & UFo & {UK\inv(o)}
   \arrow[shift left=1, from=1-1, to=1-2]
   \arrow[shift right=1, from=1-1, to=1-2]
   \arrow[shift left=1, from=2-1, to=2-2]
@@ -169,11 +169,11 @@ It follows, since $U$ preserves coequalisers, that both rows of the diagram
   \arrow[Rightarrow, from=1-2, to=2-2]
   \arrow["e", from=1-2, to=1-3]
   \arrow["Ue"', from=2-2, to=2-3]
-  \arrow["{\eta_o^{-1}}", dashed, from=1-3, to=2-3]
+  \arrow["{\eta_o\inv}", dashed, from=1-3, to=2-3]
 \end{tikzcd}\]
 ~~~
 
-are coequalisers, hence there is a unique isomorphism $\eta_o^{-1}$
+are coequalisers, hence there is a unique isomorphism $\eta_o\inv$
 making the diagram commute. This is precisely the inverse to $\eta_o$
 we're seeking.
 
@@ -196,8 +196,8 @@ we're seeking.
     ηη⁻¹ = C.pulll (preserved .factors) ∙ o .snd .ν-unit
 ```
 
-It remains to show that $\eta^{-1}$ is a homomorphism of algebras. This
-is a calculation reusing the established proof that $\eta^{-1}\eta =
+It remains to show that $\eta\inv$ is a homomorphism of algebras. This
+is a calculation reusing the established proof that $\eta\inv\eta =
 \id$ established using the universal property of coequalisers above.
 
 ```agda
@@ -213,18 +213,18 @@ is a calculation reusing the established proof that $\eta^{-1}\eta =
 ```
 
 For (3), suppose additionally that $U$ is conservative. Recall that the
-counit $\epsilon$ for the $K^{-1} \dashv K$ adjunction is defined as the
+counit $\epsilon$ for the $K\inv \dashv K$ adjunction is defined as the
 unique dotted map which fits into
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  FUFUA & FUA & {K^{-1}KA} \\
+  FUFUA & FUA & {K\inv KA} \\
   && {A.}
   \arrow[two heads, from=1-2, to=1-3]
-  \arrow["{\varepsilon'_{FUA}}"', shift right=1, from=1-1, to=1-2]
-  \arrow["{\varepsilon'}"', from=1-2, to=2-3]
+  \arrow["{\eps'_{FUA}}"', shift right=1, from=1-1, to=1-2]
+  \arrow["{\eps'}"', from=1-2, to=2-3]
   \arrow["\epsilon", from=1-3, to=2-3]
-  \arrow["{FU\varepsilon_A'}", shift left=1, from=1-1, to=1-2]
+  \arrow["{FU\eps_A'}", shift left=1, from=1-1, to=1-2]
 \end{tikzcd}\]
 ~~~
 
@@ -234,13 +234,13 @@ But observe that the diagram
 \[\begin{tikzcd}
   UFUFUA && UFUA & {UA,}
   \arrow[two heads, from=1-3, to=1-4]
-  \arrow["{U\varepsilon'_{FUA}}"', shift right=1, from=1-1, to=1-3]
-  \arrow["{UFU\varepsilon_A'}", shift left=1, from=1-1, to=1-3]
+  \arrow["{U\eps'_{FUA}}"', shift right=1, from=1-1, to=1-3]
+  \arrow["{UFU\eps_A'}", shift left=1, from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
 
 is _also_ a coequaliser; Hence, since $U$ preserves the coequaliser $FUA
-\epi K^{-1}KA$, the map $U\eps : UK^{-1}KA \cong UA$; But by assumption
+\epi K\inv KA$, the map $U\eps : UK\inv KA \cong UA$; But by assumption
 $U$ is conservative, so $\eps$ is an isomorphism, as desired.
 
 ```agda

@@ -423,7 +423,7 @@ objects $x, y : \cC$ and isomorphisms $i : F(x) \cong z$ and $j :
 F(y) \cong z$. We must show that $x \equiv y$, and that over this path,
 $i = j$. Since $F$ is fully faithful, we can `find an isomorphism`{.Agda
 ident=is-ff→essentially-injective} $x \cong y$ in $\cC$, which $F$
-sends back to $i \circ j^{-1}$.
+sends back to $i \circ j\inv$.
 
 ```agda
     Fx≅Fy : F₀ F x D.≅ F₀ F y
@@ -498,9 +498,9 @@ surjective functor between categories is an equivalence:
 
 Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
 then it's an equivalence-on-objects functor. The inverse functor
-$F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
+$F\inv : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
 into objects of $\cC$, and unit/counit of the equivalence ensure
-that $c \cong F^{-1}(F(c))$ and $d \cong F(F^{-1}(d))$, so all that remains
+that $c \cong F\inv(F(c))$ and $d \cong F(F\inv(d))$, so all that remains
 is to use the fact that $\cC$ and $\cD$ are categories to get the
 requisite paths.
 
@@ -540,8 +540,8 @@ record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
 
 Such a functor is (immediately) fully faithful, and the inverse
 `has-is-iso`{.Agda} means that it is split essentially surjective; For
-given $y : D$, the inverse of $F_0$ gives us an object $F^{-1}(y)$; We must
-then provide an isomorphism $F(F^{-1}(y)) \cong y$, but those are
+given $y : D$, the inverse of $F_0$ gives us an object $F\inv(y)$; We must
+then provide an isomorphism $F(F\inv(y)) \cong y$, but those are
 identical, hence isomorphic.
 
 ```agda

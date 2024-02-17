@@ -141,14 +141,14 @@ commutes.
   \\
   {X_0} && {A_0}
   \arrow["{X_m}"', from=1-1, to=3-1]
-  \arrow["{M_1(f^{-1})}", from=1-1, to=1-3]
+  \arrow["{M_1(f\inv)}", from=1-1, to=1-3]
   \arrow["{A_m}", from=1-3, to=3-3]
   \arrow["f", from=3-3, to=3-1]
 \end{tikzcd}\]
 ~~~
 
 Since we have assumed that $f$ is an $M$-algebra isomorphism, we can
-simultaneously turn the square above into one which has $f$ and $f^{-1}$
+simultaneously turn the square above into one which has $f$ and $f\inv$
 in adjacent faces and swap $A_m$ for $X_m$; A straightforward
 calculation then shows that the square above commutes.
 

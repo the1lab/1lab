@@ -200,9 +200,10 @@ table {
 details {
   @include left-bordered(theme(--note-bg));
 
+  margin-block: 1em;
+
   > summary {
     list-style-type: none;
-    padding-block: 0.25em;
 
     cursor: pointer;
 

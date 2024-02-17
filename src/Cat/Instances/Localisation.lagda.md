@@ -345,7 +345,7 @@ gives us exactly what we need to handle each of the constructors:
 
 Composing in the forwards direction uses the normal action of the
 functor $F$; Composing _backwards_ uses the proof that $F$ sends $f : a
-\to b \in W$ to an isomorphism, so we have a choice of inverse $f^{-1} :
+\to b \in W$ to an isomorphism, so we have a choice of inverse $f\inv :
 b \to a$. The relations need a bit of re-arranging, to deal with
 associativity, but they are also very pleasant:
 

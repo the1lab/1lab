@@ -564,7 +564,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C
 
 We build the geometric embedding presenting $\cT/X$ as a topos by
 composing the adjunctions $\epsilon_!(L/\iota(X)) \dashv \iota/X$
-and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\cC)/X
+and $F \dashv F\inv$ --- where $F$ is the equivalence $\psh(\cC)/X
 \to \psh(\int X)$. The right adjoint is [[fully faithful]] because it
 composes two fully faithful functors (a slice of $\iota$ and an
 equivalence), the left adjoint preserves finite limits because it is a

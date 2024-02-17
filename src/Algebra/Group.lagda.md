@@ -44,7 +44,7 @@ record is-group {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
 ```
 
 There is also a map which assigns to each element $x$ its _`inverse`{.Agda
-ident=inverse}_ $x^{-1}$, and this inverse must multiply with $x$ to
+ident=inverse}_ $x\inv$, and this inverse must multiply with $x$ to
 give the unit, both on the left and on the right:
 
 ```agda
@@ -102,7 +102,7 @@ Note that any element $x$ of $G$ determines two
 bijections on the underlying set of $G$, by multiplication with $x$ on
 the left and on the right.
 The inverse of this bijection is given by multiplication with
-$x^{-1}$, and the proof that these are in fact inverse functions are
+$x\inv$, and the proof that these are in fact inverse functions are
 given by the group laws:
 
 ```agda

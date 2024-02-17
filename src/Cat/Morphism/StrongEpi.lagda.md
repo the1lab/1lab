@@ -454,7 +454,7 @@ pulling back a monomorphism.
 
 We thus have a factorisation $e = qr$ of $e$ through a monomorphism $q$,
 which since $e$ was assumed extremal, must be an isomorphism. We define
-the diagonal map $b \to c$ to be $pq^{-1}$ and compute that it commutes
+the diagonal map $b \to c$ to be $pq\inv$ and compute that it commutes
 appropriately:
 
 ```agda

@@ -59,12 +59,12 @@ record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
 
   module rep = Isoⁿ represents
 
-  equiv : ∀ {a} → C.Hom a rep ≃ ∣ F .F₀ a ∣
+  equiv : ∀ {a} → C.Hom a rep ≃ F ʻ a
   equiv = Iso→Equiv λ where
-    .fst                → rep.from .η _
-    .snd .is-iso.inv    → rep.to .η _
-    .snd .is-iso.rinv x → rep.invr ηₚ _ $ₚ x
-    .snd .is-iso.linv x → rep.invl ηₚ _ $ₚ x
+    .fst              → rep.from # _
+    .snd .is-iso.inv  → rep.to # _
+    .snd .is-iso.rinv → unext rep.invr _
+    .snd .is-iso.linv → unext rep.invl _
 
   module Rep {a} = Equiv (equiv {a})
 
