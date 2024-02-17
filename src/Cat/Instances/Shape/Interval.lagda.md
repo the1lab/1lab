@@ -184,7 +184,7 @@ private variable
 
 ```agda
 Arrows : Precategory o ℓ → Type (o ⊔ ℓ)
-Arrows C = Σ[ A ∈ C.Ob ] Σ[ B ∈ C.Ob ] (C.Hom A B)
+Arrows C = Σ[ A ∈ C ] Σ[ B ∈ C ] (C.Hom A B)
   where module C = Precategory C
 ```
 

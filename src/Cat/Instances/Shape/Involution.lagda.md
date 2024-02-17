@@ -49,11 +49,7 @@ Bool≃∙⤮∙-isos =
     Iso→Bool i = i .to
 
     right-inv : is-right-inverse Iso→Bool Bool→Iso
-    right-inv f =
-      Bool-elim (λ b → b ≡ f .to → Bool→Iso b ≡ f)
-        (≅-pathp refl refl)
-        (≅-pathp refl refl)
-        (f .to) refl
+    right-inv f = Bool-elim (λ b → b ≡ f .to → Bool→Iso b ≡ f) ext ext (f .to) refl
 
     left-inv : is-left-inverse Iso→Bool Bool→Iso
     left-inv true = refl

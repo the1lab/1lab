@@ -147,12 +147,12 @@ reader but they will not be elaborated on.
 </summary>
 
 ```agda
-    pres .σ-comm {α = α} = Nat-path λ x →
+    pres .σ-comm {α = α} = ext λ x →
       (R-adjunct adj (l.σ (fixup α) .η _)) A.∘ L.₁ (eta .η _) ≡⟨ L.pullr (l.σ-comm {α = fixup α} ηₚ _) ⟩
       R-adjunct adj (L-adjunct adj (α .η x))                  ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (α .η x) ⟩
       α .η x                                                  ∎
 
-    pres .σ-uniq {M = M} {α = α} {σ' = σ'} wit = Nat-path λ x →
+    pres .σ-uniq {M = M} {α = α} {σ' = σ'} wit = ext λ x →
       R-adjunct adj (l.σ (fixup α) .η x)      ≡⟨ A.refl⟩∘⟨ ap L.₁ (l.σ-uniq lemma ηₚ x) ⟩
       R-adjunct adj (L-adjunct adj (σ' .η x)) ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (σ' .η x) ⟩
       σ' .η x                                 ∎
@@ -167,7 +167,7 @@ reader but they will not be elaborated on.
           R.₁ (M.₁ f) D.∘ R.₁ (σ' .η x) D.∘ unit.η _      ∎
 
         lemma : fixup α ≡ ((σ'' ◂ p) ∘nt eta)
-        lemma = Nat-path λ x →
+        lemma = ext λ x →
           R.₁ (α .η x) D.∘ unit.η _                     ≡⟨ ap R.₁ (wit ηₚ _) D.⟩∘⟨refl ⟩
           R.₁ (σ' .η _ A.∘ L.₁ (eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
           (R.₁ (σ' .η _) D.∘ unit.η _) D.∘ eta .η x     ∎
@@ -184,13 +184,8 @@ By duality, right adjoints preserve right extensions.
 module
   _ {oc ℓc oc' ℓc' od ℓd oa ℓa}
     {C : Precategory oc ℓc} {C' : Precategory oc' ℓc'} {D : Precategory od ℓd}
-    {A : Precategory oa ℓa}
-    {p : Functor C C'}
-    {F : Functor C D}
-    {G : Functor C' D}
-    {eps : G F∘ p => F}
-    (ran : is-ran p F G eps)
-    {L : Functor A D} {R : Functor D A}
+    {A : Precategory oa ℓa} {p : Functor C C'} {F : Functor C D} {G : Functor C' D}
+    {eps : G F∘ p => F} (ran : is-ran p F G eps) {L : Functor A D} {R : Functor D A}
     (adj : L ⊣ R)
   where
 ```
@@ -214,7 +209,7 @@ module
         α
       unquoteDecl σ' = dualise-into σ' (M => R F∘ G) (p.σ α')
 
-    fixed .is-ran.σ-comm = Nat-path λ x → p.σ-comm ηₚ _
+    fixed .is-ran.σ-comm = ext λ x → p.σ-comm ηₚ _
     fixed .is-ran.σ-uniq {M = M} {σ' = σ'} p =
-      Nat-path λ x → p.σ-uniq {σ' = dualise! σ'} (Nat-path λ x → p ηₚ x) ηₚ x
+      ext λ x → p.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
 ```

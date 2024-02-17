@@ -349,35 +349,34 @@ directly:
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
     ni .make-natural-iso.natural x y f =
-      Nat-path λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+      ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
 
   pb .unitor-l {B = B} = to-natural-iso ni where
     module B = Cr B
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ → B.idr _ ∙ B.id-comm
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
 
   pb .associator {A} {B} {C} {D} = to-natural-iso ni where
     module D = Cr D
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ →
+    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ →
       D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
 
-  pb .triangle {C = C} f g = Nat-path (λ _ → Cr.idr C _)
-  pb .pentagon {E = E} f g h i =
-    Nat-path λ _ → ap₂ E._∘_
-      (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
-      (E.elimr (E.eliml (f .F-id)))
+  pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
+  pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
+    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
+    (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
 ```
 

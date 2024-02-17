@@ -85,9 +85,9 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg .make-group.unit = C.id-iso
     mg .make-group.mul g f = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹
-    mg .make-group.assoc x y z = C.≅-pathp refl refl (sym (C.assoc _ _ _))
-    mg .make-group.invl x = C.≅-pathp refl refl (x .C.invl)
-    mg .make-group.idl x = C.≅-pathp refl refl (C.idr _)
+    mg .make-group.assoc x y z = ext (sym (C.assoc _ _ _))
+    mg .make-group.invl x = ext (x .C.invl)
+    mg .make-group.idl x = ext (C.idr _)
 ```
 
 Suppose we have a category $\cC$, an object $X : \cC$, and a group
@@ -125,7 +125,7 @@ of $G$ on the object $F(\bull)$!
       where
         open Group-on (G .snd)
         module F = Functor-kit F
-    Functor→action F .preserves .is-group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
+    Functor→action F .preserves .is-group-hom.pres-⋆ x y = ext (F .F-∘ _ _)
 
     Action→functor : {X : C.Ob} (A : Action G X) → Functor BG C
     Action→functor {X = X} A .F₀ _ = X

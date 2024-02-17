@@ -85,12 +85,12 @@ module _ {P : Functor (C ^op) (Sets κ)} where
   private abstract
     lemma
       : ∀ (y : Functor (∫ C P ^op) (Sets κ))
-          {o o'} {s} {s'} {el : ∣ y .F₀ (elem o s) ∣}
-          {f : C .Hom o' o} (p : F₁ P f s ≡ s')
-      → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) el)
+          {o o'} {s} {s'} {el : y ʻ (elem o s)}
+          {f : C .Hom o' o} (p : P .F₁ f s ≡ s')
+      → subst (λ e → y ʻ elem o' e) p (y .F₁ (elem-hom f refl) el)
       ≡ y .F₁ (elem-hom f p) el
     lemma y {o = o} {o' = o'} {el = it} {f = f} =
-      J (λ s' p → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) it)
+      J (λ s' p → subst (λ e → y ʻ (elem o' e)) p (y .F₁ (elem-hom f refl) it)
                 ≡ y .F₁ (elem-hom f p) it)
         (transport-refl _)
 ```
@@ -104,7 +104,8 @@ projection `fst`{.Agda}:
   presheaf→slice-ob : Functor (∫ C P ^op) (Sets κ) → Ob (Slice Cat[ C ^op , Sets κ ] P)
   presheaf→slice-ob y = obj where
     obj : /-Obj {C = Cat[ _ , _ ]} P
-    obj .domain .F₀ c = el! (Σ[ sect ∈ ∣ P.₀ c ∣ ] ∣ y .F₀ (elem c sect) ∣)
+    obj .domain .F₀ c .∣_∣   = Σ[ sect ∈ P ʻ c ] y ʻ elem c sect
+    obj .domain .F₀ c .is-tr = hlevel!
     obj .domain .F₁ f (x , p) = P.₁ f x , y .F₁ (elem-hom f refl) p
     obj .map .η x = fst
 ```
@@ -176,20 +177,20 @@ algebra, so we omit the proof.
 ```agda
     isom .rinv x =
       Functor-path
-        (λ i → n-ua (Fibre-equiv (λ a → ∣ x .F₀ (elem (i .ob) a) ∣) (i .section)))
+        (λ i → n-ua (Fibre-equiv (λ a → x ʻ elem (i .ob) a) (i .section)))
         λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma' _ _ _) }
       where abstract
         lemma'
-          : ∀ {o o'} {sect : ∣ P.₀ (o .ob) ∣}
+          : ∀ {o o'} {sect : P ʻ o .ob}
               (f : Hom (∫ C P ^op) o o')
-              (b : ∣ x .F₀ (elem (o .ob) sect) ∣)
+              (b : x ʻ elem (o .ob) sect)
               (p : sect ≡ o .section)
           → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
-          ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b)
+          ≡ x .F₁ f (subst (λ e → x ʻ elem (o .ob) e) p b)
         lemma' {o = o} {o' = o'} f b p =
           J (λ _ p → ∀ f b → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
-                           ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b))
-            (λ f b → ap₂ (x .F₁) (Element-hom-path _ _ refl) (sym (transport-refl b)))
+                           ≡ x .F₁ f (subst (λ e → x ʻ elem (o .ob) e) p b))
+            (λ f b → ap₂ (x .F₁) (ext refl) (sym (transport-refl b)))
             p f b
 
     isom .linv x =

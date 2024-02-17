@@ -272,7 +272,7 @@ make this induction acceptable.
       go : ∀ {y} (im : Pc.Isomorphism x y) (j' : Path-in x y) → j' ≡ im .Pc.to
          → path-codep (λ _ → x) (j' ++ im .Pc.from) nil
          → Σ (x ≡ y) λ p → PathP (λ i → Pc.Isomorphism x (p i)) Pc.id-iso im
-      go im nil p q = refl , Pc.≅-pathp refl refl p
+      go im nil p q = refl , ext p
 
     r : is-category Path-category
     r .to-path i      = rem₁ i .fst

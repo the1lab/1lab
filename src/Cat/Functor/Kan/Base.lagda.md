@@ -223,7 +223,7 @@ is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
     module b = is-lan b
 
   σ≡ : {M : Functor _ _} (α : F => M F∘ p) → a.σ α ≡ b.σ α
-  σ≡ α = Nat-path λ x → a.σ-uniq (sym b.σ-comm) ηₚ x
+  σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
 
   open is-lan
   path : a ≡ b
@@ -246,7 +246,7 @@ is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
     module b = is-ran b
 
   σ≡ : {M : Functor _ _} (α : M F∘ p => F) → a.σ α ≡ b.σ α
-  σ≡ α = Nat-path λ x → a.σ-uniq (sym b.σ-comm) ηₚ x
+  σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
 
   open is-ran
   path : a ≡ b

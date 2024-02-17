@@ -92,7 +92,7 @@ forward implication easily follows from the elimination principle of
 zigzags into sets:
 
 ```agda
-  connected→π₀-is-contr : is-connected-cat C → is-contr ∣ π₀ C ∣
+  connected→π₀-is-contr : is-connected-cat C → is-contr (π₀ ʻ C)
   connected→π₀-is-contr conn = ∥-∥-rec!
     (λ x → contr (inc x)
       (Coeq-elim-prop (λ _ → hlevel 1)
@@ -117,16 +117,16 @@ so we can conclude that it is contractible and apply effectivity to get
 a zigzag.
 
 ```agda
-  π₀-is-contr→connected : is-contr ∣ π₀ C ∣ → is-connected-cat C
+  π₀-is-contr→connected : is-contr (π₀ ʻ C) → is-connected-cat C
   π₀-is-contr→connected π₀-contr = conn where
-    R : Congruence (Ob C) (o ⊔ ℓ)
-    R ._∼_ x y = ∥ Meander C x y ∥
+    R : Congruence ⌞ C ⌟ (o ⊔ ℓ)
+    R ._∼_ x y         = ∥ Meander C x y ∥
     R .has-is-prop _ _ = squash
-    R .reflᶜ = inc []
+    R .reflᶜ    = inc []
     R ._∙ᶜ_ p q = ∥-∥-map₂ _++_ q p
-    R .symᶜ = ∥-∥-map (reverse C)
+    R .symᶜ     = ∥-∥-map (reverse C)
 
-    is : Iso (quotient R) ∣ π₀ C ∣
+    is : Iso (quotient R) (π₀ ʻ C)
     is .fst = Coeq-rec squash inc λ (x , y , fs) →
       ∥-∥-rec (squash _ _) (Meander-rec-≡ (π₀ C) inc quot) fs
     is .snd .is-iso.inv = Coeq-rec squash inc λ (x , y , f) →
@@ -139,7 +139,7 @@ a zigzag.
     conn .zigzag x y = effective R
       (is-contr→is-prop (Iso→is-hlevel 0 is π₀-contr) (inc x) (inc y))
 
-  connected≃π₀-is-contr : is-connected-cat C ≃ is-contr ∣ π₀ C ∣
+  connected≃π₀-is-contr : is-connected-cat C ≃ is-contr (π₀ ʻ C)
   connected≃π₀-is-contr = prop-ext (hlevel 1) (hlevel 1)
     connected→π₀-is-contr π₀-is-contr→connected
 ```

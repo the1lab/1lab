@@ -214,11 +214,11 @@ module _ {sub : Wide-subcat ℓ} where
   is-pseudomonic-Forget-wide-subcat P-invert .is-pseudomonic.isos-full f =
     pure $
       Wide.make-iso
-        (wide f.to (P-invert (C.iso→invertible f)))
+        (wide f.to   (P-invert (C.iso→invertible f)))
         (wide f.from (P-invert (C.iso→invertible (f C.Iso⁻¹))))
         (ext f.invl)
         (ext f.invr) ,
-      C.≅-pathp refl refl refl
+      trivial!
     where module f = C._≅_ f
 
   is-split-eso-Forget-wide-subcat : is-split-eso Forget-wide-subcat

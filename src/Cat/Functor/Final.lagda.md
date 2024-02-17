@@ -206,13 +206,13 @@ these formulae are mutually inverse:
     open is-iso
     extend-cocone-is-iso : ∀ {coapex} → is-iso (extend-cocone {coapex})
     extend-cocone-is-iso .inv = restrict-cocone
-    extend-cocone-is-iso .rinv K =
-      Nat-path λ o → extend-cocone-elim (restrict-cocone K) o
+    extend-cocone-is-iso .rinv K = ext λ o →
+      extend-cocone-elim (restrict-cocone K) o
         (λ ex → ex ≡ K .η o)
         (λ _ → hlevel 1)
         λ _ → K .is-natural _ _ _ ∙ ℰ.idl _
-    extend-cocone-is-iso .linv K =
-      Nat-path λ o → extend-cocone-elim K (F.₀ o)
+    extend-cocone-is-iso .linv K = ext λ o →
+      extend-cocone-elim K (F.₀ o)
         (λ ex → ex ≡ K .η o)
         (λ _ → hlevel 1)
         λ f → extend-const K (F.₀ o) f (↓obj 𝒟.id) ∙ D.elimr refl

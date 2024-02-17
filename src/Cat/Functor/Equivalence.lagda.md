@@ -672,7 +672,7 @@ module _
     : (F : Functor C D)
     → is-fully-faithful F
     → is-split-eso F
-    → ∀ (d d' : D.Ob) → Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d')
+    → ∀ (d d' : D.Ob) → Σ[ c ∈ C ] Σ[ c' ∈ C ] (C.Hom c c' ≃ D.Hom d d')
   ff+split-eso→hom-equiv F ff split-eso d d' =
     d-fib .fst , d'-fib .fst ,
     (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
@@ -684,7 +684,7 @@ module _
     : (F : Functor C D)
     → is-fully-faithful F
     → is-eso F
-    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d') ∥
+    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C ] Σ[ c' ∈ C ] (C.Hom c c' ≃ D.Hom d d') ∥
   ff+eso→hom-equiv F ff eso d d' = do
       (c , Fc≅d) ← eso d
       (c' , Fc'≅d') ← eso d'

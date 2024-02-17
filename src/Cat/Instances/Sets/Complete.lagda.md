@@ -125,7 +125,7 @@ using $\Sigma$:
   Sets-equalisers : (f g : Hom A B) → Equaliser {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
     eq : Equaliser f g
-    eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
+    eq .apex = el! (Σ[ x ∈ A ] (f x ≡ g x))
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
@@ -141,7 +141,8 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
                  → Pullback {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback f g
-    pb .apex = el! $ Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)
+    pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
+    pb .apex .is-tr = hlevel!
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

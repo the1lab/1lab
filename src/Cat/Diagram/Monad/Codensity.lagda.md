@@ -133,10 +133,10 @@ maps we want to compute with.</summary>
     abstract
       path : nat₁ ≡ idnt
       path = σ-uniq₂ eps
-        (Nat-path λ x →
-          sym (B.pulll (σ-comm ηₚ x)
-             ∙ Ext.cancelr (σ-comm ηₚ x)))
-        (Nat-path λ _ → B.intror refl)
+        (ext λ x → sym
+          ( B.pulll (σ-comm ηₚ x)
+          ∙ Ext.cancelr (σ-comm ηₚ x)))
+        (ext λ _ → B.intror refl)
 
   Codensity .right-ident {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
@@ -147,10 +147,11 @@ maps we want to compute with.</summary>
     abstract
       path : nat₁ ≡ idnt
       path = σ-uniq₂ eps
-        (Nat-path λ x → sym $ B.pulll (σ-comm ηₚ x)
-                            ∙ B.pullr (sym (σ unit-nt .is-natural _ _ _))
-                            ∙ B.cancell (σ-comm ηₚ x))
-        (Nat-path λ _ → B.intror refl)
+        (ext λ x → sym $
+            B.pulll (σ-comm ηₚ x)
+          ·· B.pullr (sym (σ unit-nt .is-natural _ _ _))
+          ·· B.cancell (σ-comm ηₚ x))
+        (ext λ _ → B.intror refl)
 
   Codensity .mult-assoc {x = x} = path ηₚ x where
     mult' : (Ext F∘ Ext F∘ Ext) F∘ F => F
@@ -171,12 +172,14 @@ maps we want to compute with.</summary>
     abstract
       path : sig₁ ≡ sig₂
       path = σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult'
-        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
-                           ∙ Ext.pullr (σ-comm ηₚ x)))
-        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
-                          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
-                          ·· B.pulll (σ-comm ηₚ x)
-                           ∙ Ext.pullr refl))
+        (ext λ x → sym $
+            B.pulll (σ-comm ηₚ x)
+          ∙ Ext.pullr (σ-comm ηₚ x))
+        (ext λ x → sym $
+             B.pulll (σ-comm ηₚ x)
+          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
+          ·· B.pulll (σ-comm ηₚ x)
+           ∙ Ext.pullr refl)
 ```
 </details>
 

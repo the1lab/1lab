@@ -60,11 +60,11 @@ group homormophism.
 
 ```agda
 rep-subgroup→group-on
-  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
+  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ G ] x ∈ H)
 rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
-  sg' : make-group (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
+  sg' : make-group (Σ[ x ∈ G ] x ∈ H)
   sg' .make-group.group-is-set = hlevel!
   sg' .make-group.unit = unit , has-unit
   sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈

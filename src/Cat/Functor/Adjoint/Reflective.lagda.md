@@ -316,14 +316,14 @@ so $\delta$ is also a right inverse, and $\eps \circ \alpha$ is invertible.
       δ : Id {C = D} => Id
       δ .η x = α.to .η x D.∘ α.to .η (F.F₀ (G.₀ x)) D.∘ F.₁ (unit.η (G.₀ x)) D.∘ α.from .η x
       δ .is-natural x y f =
-        D.extendr (D.extendr (D.extendr (α.from .is-natural _ _ _)))
+          D.extendr (D.extendr (D.extendr (α.from .is-natural _ _ _)))
         ∙ D.pushl (D.pushr (D.pushr (F.weave (unit .is-natural _ _ _))))
         ∙ D.pushl (D.pushr (α.to .is-natural _ _ _))
         ∙ D.pushl (α.to .is-natural _ _ _)
 
       right-ident : (counit ∘nt α.from) ∘nt δ ≡ idnt
-      right-ident = Nat-path λ x →
-        D.cancel-inner (α.invr ηₚ _)
+      right-ident = ext λ x →
+          D.cancel-inner (α.invr ηₚ _)
         ∙ D.pulll (sym $ α.to .is-natural _ _ _)
         ∙ D.cancel-inner (F.annihilate zag)
         ∙ α.invl ηₚ _

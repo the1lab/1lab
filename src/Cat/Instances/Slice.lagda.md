@@ -548,13 +548,12 @@ dependent function is automatically a natural transformation.
 ```agda
   Total-space-is-ff : is-fully-faithful Total-space
   Total-space-is-ff {F} {G} = is-iso→is-equiv $
-    iso from linv (λ x → Nat-path λ x → funext (λ _ → transport-refl _)) where
+    iso from linv (λ x → ext λ _ _ → transport-refl _) where
 
     from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
     from mp = nt where
-      eta : ∀ i → ⌞ F .F₀ i ⌟ → ⌞ G .F₀ i ⌟
-      eta i j =
-        subst (∣_∣ ⊙ G .F₀) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+      eta : ∀ i → F ʻ i → G ʻ i
+      eta i j = subst (G ʻ_) (mp .commutes # _) (mp .map (i , j) .snd)
 
       nt : F => G
       nt .η = eta

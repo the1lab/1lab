@@ -241,7 +241,7 @@ middle square is by definition of the compositor and the top triangle
 is by definition of the unitor.
 
 ```agda
-Fibres .lax .left-unit f = Nat-path λ a' →
+Fibres .lax .left-unit f = ext λ a' →
   has-lift.uniquep₂ f a' _ refl refl _ _
     (Fib.pulllf (base-change-coherence (idr f))
     ∙[] Fib.pulllf (has-lift.commutesv (f ∘ id) a' _)
@@ -283,7 +283,7 @@ of the unitor, and the top square is by definition of `rebase`{.Agda}
 (the action of $f^*$ on morphisms).
 
 ```agda
-Fibres .lax .right-unit f = Nat-path λ a' →
+Fibres .lax .right-unit f = ext λ a' →
   has-lift.uniquep₂ f a' _ refl _ _ _
     (Fib.pulllf (base-change-coherence (idl f))
     ∙[] Fib.pulllf (has-lift.commutesv (id ∘ f) a' _)
@@ -341,7 +341,7 @@ lifts, by the commutativity of the following diagram.
 ~~~
 
 ```agda
-Fibres .lax .hexagon f g h = Nat-path λ a' →
+Fibres .lax .hexagon f g h = ext λ a' →
   has-lift.uniquep₂ ((h ∘ g) ∘ f) a' _ refl _ _ _
     (Fib.pulllf (base-change-coherence (assoc h g f))
     ∙[] Fib.pulllf (has-lift.commutesv (h ∘ (g ∘ f)) a' _)

@@ -266,7 +266,7 @@ their bases.
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → (α' : F' =[ α ]=>l G')
     → πᶠ E ▸ Nat-lift→Nat α' ≡ Nat→Nat-lift F' G' α
-  Nat-lift-is-lifting α' = Nat-path (λ _ → refl)
+  Nat-lift-is-lifting α' = ext λ _ → refl
 ```
 
 The identity natural transformation is easy to define, as is vertical
@@ -485,11 +485,9 @@ Using these repackagings, we can define the promised functor from $[\cJ,
   Functors→Liftings .F₁ α .hom       = ∫Nat→Nat α
   Functors→Liftings .F₁ α .preserves = ∫Nat→Nat-lift α
 
-  Functors→Liftings .F-id = total-hom-path Liftings
-    (Nat-path (λ _ → refl))
+  Functors→Liftings .F-id = total-hom-path Liftings (ext λ _ → refl)
     (Nat-lift-pathp (λ _ → refl))
-  Functors→Liftings .F-∘ f g = total-hom-path Liftings
-    (Nat-path (λ _ → refl))
+  Functors→Liftings .F-∘ f g = total-hom-path Liftings (ext (λ _ → refl))
     (Nat-lift-pathp (λ _ → refl))
 ```
 
@@ -500,17 +498,15 @@ appeal to some extensionality lemmas.
 
 ```agda
   Functors→Liftings-is-iso : is-precat-iso Functors→Liftings
-  Functors→Liftings-is-iso .is-precat-iso.has-is-ff =
-    is-iso→is-equiv $
-      iso (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
-      (λ _ → total-hom-path Liftings
-        (Nat-path       λ _ → refl)
-        (Nat-lift-pathp λ _ → refl))
-      (λ _ → Nat-path (λ _ → total-hom-path E refl refl))
-  Functors→Liftings-is-iso .is-precat-iso.has-is-iso =
-    is-iso→is-equiv $
-      iso (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
-        (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
-               Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
-        (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
+  Functors→Liftings-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
+    (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
+    (λ _ → total-hom-path Liftings
+      (ext            λ _ → refl)
+      (Nat-lift-pathp λ _ → refl))
+    (λ _ → ext λ _ → total-hom-path E refl refl)
+  Functors→Liftings-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
+    (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
+    (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
+      Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
+    (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
 ```

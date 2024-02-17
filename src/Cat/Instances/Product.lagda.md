@@ -149,5 +149,5 @@ module
       Σ-pathp (C.iso→path (F-map-iso Fst im)) (D.iso→path (F-map-iso Snd im))
     ×ᶜ-is-category .to-path-over p = C*D.≅-pathp _ _ $
       Σ-pathp (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
-                  (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
+              (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```

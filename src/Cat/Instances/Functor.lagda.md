@@ -59,9 +59,9 @@ Curry {C = C} {D = D} {E = E} F = curried where
        sym (F-∘ F _ _)
     ·· ap (F₁ F) (Σ-pathp (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
     ·· F-∘ F _ _
-  curried .F-id = Nat-path λ x → F-id F
-  curried .F-∘ f g = Nat-path λ x →
-    ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
+  curried .F-id = ext λ x → F .F-id
+  curried .F-∘ f g = ext λ x →
+    ap (λ x → F .F₁ (_ , x)) (sym (D .idl _)) ∙ F .F-∘ _ _
 
 Uncurry : Functor C Cat[ D , E ] → Functor (C ×ᶜ D) E
 Uncurry {C = C} {D = D} {E = E} F = uncurried where
@@ -71,13 +71,13 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
   module F = Functor F
 
   uncurried : Functor (C ×ᶜ D) E
-  uncurried .F₀ (c , d) = F₀ (F.₀ c) d
-  uncurried .F₁ (f , g) = F.₁ f .η _ E.∘ F₁ (F.₀ _) g
+  uncurried .F₀ (c , d) = F.₀ c # d
+  uncurried .F₁ (f , g) = F.₁ f .η _ E.∘ F.₀ _ .F₁ g
 
   uncurried .F-id {x = x , y} = path where abstract
-    path : E ._∘_ (F.₁ (C .id) .η y) (F₁ (F.₀ x) (D .id)) ≡ E .id
+    path : E ._∘_ (F.₁ (C .id) .η y) (F.₀ x .F₁ (D .id)) ≡ E .id
     path =
-      F.₁ C.id .η y E.∘ F₁ (F.₀ x) D.id ≡⟨ E.elimr (F-id (F.₀ x)) ⟩
+      F.₁ C.id .η y E.∘ F₁ (F.₀ x) D.id ≡⟨ E.elimr (F.₀ x .F-id) ⟩
       F.₁ C.id .η y                     ≡⟨ (λ i → F.F-id i .η y) ⟩
       E.id                              ∎
 
@@ -86,7 +86,7 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
          ≡ uncurried .F₁ (f , g) E.∘ uncurried .F₁ (f' , g')
     path =
       F.₁ (f C.∘ f') .η _ E.∘ F₁ (F.₀ _) (g D.∘ g')                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f' (~ i) .η _) ⟩
-      F.₁ f .η _ E.∘ F.₁ f' .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g') ⌝            ≡⟨ ap! (F-∘ (F.₀ _) _ _) ⟩
+      F.₁ f .η _ E.∘ F.₁ f' .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g') ⌝            ≡⟨ ap! (F.₀ _ .F-∘ _ _) ⟩
       F.₁ f .η _ E.∘ F.₁ f' .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g'       ≡⟨ cat! E ⟩
       F.₁ f .η _ E.∘ ⌜ F.₁ f' .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g'   ≡⟨ ap! (F.₁ f' .is-natural _ _ _) ⟩
       F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f' .η _) E.∘ F₁ (F.₀ _) g'     ≡⟨ cat! E ⟩
@@ -110,14 +110,13 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} where
   ConstD : Functor C Cat[ J , C ]
   ConstD .F₀ x = Const x
   ConstD .F₁ f = const-nt f
-  ConstD .F-id = Nat-path (λ _ → refl)
-  ConstD .F-∘ f g = Nat-path (λ _ → refl)
+  ConstD .F-id = ext λ _ → refl
+  ConstD .F-∘ f g = ext λ _ → refl
 ```
 
 
 <!--
 ```agda
-
 F∘-assoc
   : ∀ {o ℓ o' ℓ' o'' ℓ'' o₃ ℓ₃}
       {C : Precategory o ℓ} {D : Precategory o' ℓ'} {E : Precategory o'' ℓ''} {F : Precategory o₃ ℓ₃}
@@ -188,12 +187,9 @@ module
 open _=>_
 
 _ni^op : F ≅ⁿ G → Functor.op F ≅ⁿ Functor.op G
-_ni^op α =
-  Cat.Reasoning.make-iso _
-    (_=>_.op (Isoⁿ.from α))
-    (_=>_.op (Isoⁿ.to α))
-    (Nat-path λ j → Isoⁿ.invl α ηₚ _)
-    (Nat-path λ j → Isoⁿ.invr α ηₚ _)
+_ni^op α = Cat.Reasoning.make-iso _
+  (_=>_.op (Isoⁿ.from α)) (_=>_.op (Isoⁿ.to α))
+  (reext! (Isoⁿ.invl α)) (reext! (Isoⁿ.invr α))
 
 module _ {o ℓ κ} {C : Precategory o ℓ} where
   open Functor
@@ -203,26 +199,24 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     : {F G : Functor C (Sets κ)}
     → (eta : F ≅ⁿ G)
     → ∀ x → is-equiv (Isoⁿ.to eta .η x)
-  natural-iso-to-is-equiv eta x =
-    is-iso→is-equiv $
-      iso (Isoⁿ.from eta .η x)
-          (λ x i → Isoⁿ.invl eta i .η _ x)
-          (λ x i → Isoⁿ.invr eta i .η _ x)
+  natural-iso-to-is-equiv eta x = is-iso→is-equiv $ iso
+    (Isoⁿ.from eta .η x)
+    (λ x i → Isoⁿ.invl eta i .η _ x)
+    (λ x i → Isoⁿ.invr eta i .η _ x)
 
   natural-iso-from-is-equiv
     : {F G : Functor C (Sets κ)}
     → (eta : F ≅ⁿ G)
     → ∀ x → is-equiv (Isoⁿ.from eta .η x)
-  natural-iso-from-is-equiv eta x =
-    is-iso→is-equiv $
-      iso (Isoⁿ.to eta .η x)
-          (λ x i → Isoⁿ.invr eta i .η _ x)
-          (λ x i → Isoⁿ.invl eta i .η _ x)
+  natural-iso-from-is-equiv eta x = is-iso→is-equiv $ iso
+    (Isoⁿ.to eta .η x)
+    (λ x i → Isoⁿ.invr eta i .η _ x)
+    (λ x i → Isoⁿ.invl eta i .η _ x)
 
   natural-iso→equiv
     : {F G : Functor C (Sets κ)}
     → (eta : F ≅ⁿ G)
-    → ∀ x → ∣ F .F₀ x ∣ ≃ ∣ G .F₀ x ∣
+    → ∀ x → F ʻ x ≃ G ʻ x
   natural-iso→equiv eta x =
     Isoⁿ.to eta .η x ,
     natural-iso-to-is-equiv eta x

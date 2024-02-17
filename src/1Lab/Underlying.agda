@@ -3,7 +3,7 @@ open import 1Lab.HLevel.Universe
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Type hiding (Σ-syntax)
 
 module 1Lab.Underlying where
 
@@ -128,3 +128,11 @@ _ʻ_
 F ʻ x = ⌞ F # x ⌟
 
 infix 999 _ʻ_
+
+Σ-syntax
+  : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ _ : Underlying A ⦄ (X : A) (F : ⌞ X ⌟ → Type ℓ')
+  → Type _
+Σ-syntax X F = Σ ⌞ X ⌟ F
+
+syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
+infix 5 Σ-syntax
