@@ -54,6 +54,16 @@ private
 ```
 -->
 
+::: source
+The construction formalised here, defined in terms of an *operation*
+which assigns [[Cartesian lifts]], is due to Sterling [-@relativect];
+there it is introduced as a simplification of a construction to Bénabou
+as relayed by Streicher [-@Streicher:fibred-cats]. In the univalent
+setting, the extra generality afforded by Bénabou's construction would
+only be relevant in the setting of uncloven fibrations *of
+precategories*; we have thus decided to avoid its complexity.
+:::
+
 Since the theory of [[fibrations]] over $\cB$ behaves like ordinary
 category theory over $\Sets$, we expect to find $\cB$-indexed analogues
 of basic constructions such as functor categories, product categories,
@@ -67,12 +77,14 @@ $$,
 
 [^catcore]:
     Note that, strictly speaking, the construction of opposite
-    categories can not be extended to a pseudofunctor $\Cat \to \Cat$: While
-    the opposite of a functor goes in the same direction as the original
-    (i.e.  $F : \cC \to \cD$ is taken to $F\op : \cC\op \to \cD$), the
-    opposite of a *natural transformation* has reversed direction.
-    Therefore, the "opposite category functor" would be typed $\Cat \to
-    \Cat^{\rm{co}}$, landing instead in the *2-cell dual* of $\Cat$.
+    categories can not be extended to a pseudofunctor $\Cat \to \Cat$:
+    While the opposite of a functor goes in the same direction as the
+    original (i.e.  $F : \cC \to \cD$ is taken to $F\op : \cC\op \to
+    \cD\op$), the opposite of a *natural transformation* has reversed
+    direction --- the dual of $\eta : F \to G$ is $\eta\op : G\op \to
+    F\op$. To capture this, the "opposite category functor" would need
+    to be typed $\Cat \to \Cat^{\rm{co}}$ instead, indicating that it
+    reverses 2-cells.
 
     However, because the domain $\cB\op$ is [[locally discrete|locally
     discrete bicategory]], all of its 2-cells are isomorphisms.
