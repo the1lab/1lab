@@ -172,8 +172,8 @@ Note that, if we have a decidable order, then the requirement of
 totality can be weakened to the property that, for any $x, y$, we have
 
 $$
-(x \not\le y) \to (y \le x)\text{,}
-$$
+(x \not\le y) \to (y \le x)
+$$,
 
 which we refer to as **weak totality**.
 

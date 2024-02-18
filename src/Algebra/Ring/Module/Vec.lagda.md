@@ -63,8 +63,8 @@ property: If $v = (s_0, ... s_n)$ is an $n$-ary vector with entries $s_i
 $f$ to
 
 $$
-\sum_{i < n} f_iv_i\text{.}
-$$
+\sum_{i < n} f_iv_i
+$$.
 
 <!--
 ```agda

@@ -41,7 +41,7 @@ preambleToLatex :: Preamble -> T.Text
 preambleToLatex (Preamble ms) = T.unlines $ map macroDefinition $ filter (not . macroKatexOnly) ms
 
 applyPreamble :: Preamble -> T.Text -> T.Text
-applyPreamble (Preamble pre) m = applyMacros pre m
+applyPreamble (Preamble pre) = applyMacros pre
 
 instance Eq Macro where
   (==) = (==) `on` macroDefinition
@@ -84,12 +84,8 @@ parsePreamble = (Preamble <$>) . either (const Nothing) Just . parseMacroMacro
 -- same name, earlier ones will shadow later ones.
 applyMacros :: [Macro] -> T.Text -> T.Text
 applyMacros [] s = s
-applyMacros ms s =
-  case go of
-    Just s -> s
-    Nothing -> s
-  where
-    go = iterateToFixedPoint ((2 * length ms) + 1) (applyMacrosOnce ms) s
+applyMacros ms s = fromMaybe s $
+  iterateToFixedPoint ((2 * length ms) + 1) (applyMacrosOnce ms) s
 
 ------------------------------------------------------------------------------
 
@@ -216,7 +212,7 @@ newcommand = try $ do
   body <- inbraces <|> ctrlseq
   let
     defn = '\\':cmd ++ "{" ++ name ++ "}" ++
-      (if numargs > 0 then ("[" ++ show numargs ++ "]") else "") ++
+      (if numargs > 0 then "[" ++ show numargs ++ "]" else "") ++
       case optarg of { Nothing -> ""; Just x -> "[" ++ x ++ "]"} ++
       "{" ++ body ++ "}"
 
@@ -229,7 +225,7 @@ newcommand = try $ do
       spc <- pSkipSpaceComments
       opt <- case optarg of
                   Nothing  -> return Nothing
-                  Just _   -> liftM (`mplus` optarg) optArg
+                  Just _   -> (`mplus` optarg) <$> optArg
       args <- count numargs' (pSkipSpaceComments >>
                     (inbraces <|> ctrlseq <|> count 1 anyChar))
       let args' = case opt of
@@ -267,7 +263,7 @@ newenvironment = try $ do
   closer <- inbraces <|> ctrlseq
   let
     defn = "\\newenvironment{" ++ name ++ "}" ++
-      (if numargs > 0 then ("[" ++ show numargs ++ "]") else "") ++
+      (if numargs > 0 then "[" ++ show numargs ++ "]" else "") ++
       case optarg of { Nothing -> ""; Just x -> "[" ++ x ++ "]"} ++
       "%\n{" ++ opener ++ "}%\n" ++ "{" ++ closer ++ "}"
 
@@ -281,7 +277,7 @@ newenvironment = try $ do
       _ <- char '}'
       opt <- case optarg of
         Nothing  -> return Nothing
-        Just _   -> liftM (`mplus` optarg) optArg
+        Just _   -> (`mplus` optarg) <$> optArg
       args <- count numargs' (pSkipSpaceComments >>
                     (inbraces <|> ctrlseq <|> count 1 anyChar))
       let
@@ -363,7 +359,7 @@ numArgs = option 0 $ try $ do
 
 optArg :: (Monad m, Stream s m Char)
        => ParsecT s st m (Maybe String)
-optArg = option Nothing $ (liftM Just $ inBrackets)
+optArg = option Nothing (Just <$> inBrackets)
 
 escaped :: (Monad m, Stream s m Char)
          => String -> ParsecT s st m String

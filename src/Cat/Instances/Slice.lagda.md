@@ -335,8 +335,8 @@ can obtain the dashed map $l : Q \to a \times_c b$, which we can
 calculate satisfies
 
 $$
-f\pi_1l = fp = Q\text{,}
-$$
+f\pi_1l = fp = Q
+$$,
 
 so that it is indeed a map $Q \to f \times g$ over $c$, as required.
 Reading out the rest of $(a \times_c b)$'s universal property, we see

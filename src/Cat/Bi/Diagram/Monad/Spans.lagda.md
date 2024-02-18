@@ -35,8 +35,8 @@ We know that families are equivalently [fibrations], so that we may define
 [fibrations]: 1Lab.Univalence.html#object-classifiers
 
 $$
-\cC_1 = \sum_{x, y : \cC_0} \cC(x, y)\text{,}
-$$
+\cC_1 = \sum_{x, y : \cC_0} \cC(x, y)
+$$,
 
 and, since the family is valued in $\Sets$ and indexed by a set, so is
 $\cC_1$. We can picture $\cC_1$ together with the components of

@@ -227,8 +227,8 @@ Recall that $\Lan_{\yo}(F)(P)$ is defined pointwise as the colimit under
 the diagram
 
 $$
-(\yo_\cC \downarrow P) \to C \xto{F} D\text{,}
-$$
+(\yo_\cC \downarrow P) \to C \xto{F} D
+$$,
 
 where we can identify $\yo_\cC \downarrow P$ with the [category of
 elements] of the presheaf $P$. Any object $i : \cC$ with
@@ -264,8 +264,8 @@ compatible maps $F(j) \to o$, where $j$ is an object in the comma
 category
 
 $$
-\yo_\cC \downarrow (\yo_\cD(o) \circ F)\text{.}
-$$
+\yo_\cC \downarrow (\yo_\cD(o) \circ F)
+$$.
 
 These, by definition, come with (natural) functions $\hom_\cC(-, j) \to
 \hom_\cD(F-, o)$, which we can evaluate at the identity morphism to get

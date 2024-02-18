@@ -27,8 +27,8 @@ Let $f : A \to B$ be a morphism in an [abelian category] $\cA$, which
 (by definition) admits a canonical decomposition as
 
 $$
-A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B\text{,}
-$$
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B
+$$,
 
 where the map $p$ is [epic], $i$ is [[monic]], and the indicated
 isomorphism arises from $f$ in a canonical way, using the universal
@@ -75,8 +75,8 @@ it's the epimorphism $p$ followed by the isomorphism $f'$ in the
 decomposition
 
 $$
-A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B\text{.}
-$$
+A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B
+$$.
 
 ```agda
   the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _

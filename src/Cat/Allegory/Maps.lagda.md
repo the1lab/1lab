@@ -29,8 +29,8 @@ all $x, y$,
 [functional]: Cat.Allegory.Morphism.html#functional-morphisms
 
 $$
-(\exists z, R(z, x) \land R(z, y)) \to (x = y)\text{.}
-$$
+(\exists z, R(z, x) \land R(z, y)) \to (x = y)
+$$.
 
 It must also be an [entire] relation: Every $x$ must at least one $y$ it
 is related to, and by functionality, _exactly_ one $y$ it is related to.

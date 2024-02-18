@@ -96,8 +96,8 @@ As a further weakening of the preconditions, it turns out that it
 suffices for distributivity to hold as an *in*equality, in the direction
 
 $$
-x \cap (y \cup z) \le (x \cap y) \cup (x \cap z)\text{,}
-$$
+x \cap (y \cup z) \le (x \cap y) \cup (x \cap z)
+$$,
 
 since the other direction _always_ holds in a lattice.
 

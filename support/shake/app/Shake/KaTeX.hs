@@ -70,7 +70,7 @@ katexRules = versioned 2 do
   _ <- addOracleCache \(LatexEquation (display, tex)) -> do
     pre <- askOracle (ParsedPreamble ())
 
-    let args = ["-T"] ++ ["-d" | display]
+    let args = ["-T", "-F", "html"] ++ ["-d" | display]
         stdin = LazyBS.fromStrict $ Text.encodeUtf8 $ applyPreamble pre tex
 
     Stdout out <- nodeCommand [StdinBS stdin] "katex" args

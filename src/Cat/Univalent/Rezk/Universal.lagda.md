@@ -154,8 +154,8 @@ FG(a)$, we've claimed to have a $Fb \to Gb$, and someone has just handed
 us a $H(a) \cong b$, then it darn well better be the case that $\gamma$ is
 
 $$
-FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf\inv} FG(a)\text{.}
-$$
+FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf\inv} FG(a)
+$$.
 
 ```agda
     T : B.Ob → Type _

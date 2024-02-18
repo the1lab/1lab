@@ -38,7 +38,7 @@ data _≡ᵢ_ {ℓ} {A : Type ℓ} (x : A) : A → Type ℓ where
 {-# BUILTIN EQUALITY _≡ᵢ_ #-}
 ```
 
-To show that $\Id[A](x,y)$ is equivalent to $x \equiv y$ for every
+To show that $\Id_{A}(x,y)$ is equivalent to $x \equiv y$ for every
 type $A$, we'll show that `_≡ᵢ_`{.Agda} and `reflᵢ`{.Agda} form an
 [[identity system]] regardless of the underlying type. Since `Id`{.Agda}
 is an inductive type, we can do so by pattern matching, which results in

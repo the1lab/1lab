@@ -31,8 +31,8 @@ morphism in $\cC$ and a morphism in $\cD$. The product category
 admits two projection functors
 
 $$
-\cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD\text{,}
-$$
+\cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD
+$$,
 
 satisfying a universal property analogous to those of [[product
 diagrams|product]] _in_ categories. Namely, given a setup like in the

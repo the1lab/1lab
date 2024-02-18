@@ -184,8 +184,8 @@ unit morphism $\eta_{\iota X}$ is an isomorphism; We define a morphism
 $b : \iota r(A) \to \iota X$ as the composite
 
 $$
-\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta\inv} \iota(X)\text{,}
-$$
+\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta\inv} \iota(X)
+$$,
 
 ```agda
       b : C.Hom (ι.₀ (r.₀ A)) (ι.₀ X)
@@ -204,8 +204,8 @@ $B \to \iota(X)$.
 We define _that_ using the map $b$ we just constructed. It's the composite
 
 $$
-B \xto{\eta} \iota r(B) \xto{\iota(r(f)\inv)} \iota r(A) \xto{b} \iota(X)\text{,}
-$$
+B \xto{\eta} \iota r(B) \xto{\iota(r(f)\inv)} \iota r(A) \xto{b} \iota(X)
+$$,
 
 and a calculation shows us that this map is indeed a factorisation of
 $a$ through $f$.
@@ -227,8 +227,8 @@ note that we must have $r(h) = r(k)$ (since $r(f)$ is invertible, it is
 epic); But then we have
 
 $$
-\eta_{\iota X} h = \iota r(h) \eta = \iota r(k) \eta = \eta_{\iota X} k\text{,}
-$$
+\eta_{\iota X} h = \iota r(h) \eta = \iota r(k) \eta = \eta_{\iota X} k
+$$,
 
 and since $\eta_{\iota X}$ is an isomorphism, thus monic, we have $h =
 k$.

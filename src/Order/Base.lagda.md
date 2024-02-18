@@ -118,8 +118,8 @@ However, since the "symmetric part" of $\le$, the relation
 iff.
 
 $$
-x \sim y = (x \le y) \land (y \le x)\text{,}
-$$
+x \sim y = (x \le y) \land (y \le x)
+$$,
 
 is a reflexive mere relation which implies identity, the type of objects
 is automatically a set.

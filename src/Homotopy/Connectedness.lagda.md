@@ -375,8 +375,8 @@ equivalence. From the constructor $\operatorname{inc} : A \to \| A \|_n$
 we obtain a point $p : \| A \|_n$, and, for all $a$, we have
 
 $$
-p = \operatorname{const}(p)(a) = \operatorname{inc}(a)\text{.}
-$$
+p = \operatorname{const}(p)(a) = \operatorname{inc}(a)
+$$.
 
 But by induction on truncation, this says precisely that any $a : \| A
 \|_n$ is equal to $p$; so $p$ is a centre of contraction, and $A$ is
@@ -398,8 +398,8 @@ B$ and a family $P$ of $n$-types over $B$: in this setting,
 precomposition with $f$ is an equivalence
 
 $$
-(\Pi_{a : A} P(fa)) \to (\Pi_{b : B} P(b))\text{.}
-$$
+(\Pi_{a : A} P(fa)) \to (\Pi_{b : B} P(b))
+$$.
 
 This is somewhat analogous to generalising from a recursion principle to
 an elimination principle. When we were limited to talking about types,

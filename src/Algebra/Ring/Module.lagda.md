@@ -182,8 +182,8 @@ Any map which satisfies this equation must preserve addition, since we
 have
 
 $$
-f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)\text{,}
-$$
+f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)
+$$.
 
 and standard lemmas about [group homomorphisms] ensure that $f$ will
 also preserve negation, and, more importantly, zero. We can then derive
@@ -192,8 +192,8 @@ that $f$ preserves the scalar multiplication, by calculating
 [group homomorphisms]: Algebra.Group.html#group-homomorphisms
 
 $$
-f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)\text{.}
-$$
+f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)
+$$.
 
 <!--
 ```agda

@@ -18,8 +18,8 @@ The **wedge connectivity** lemma gives a set of sufficient conditions
 for constructing a section
 
 $$
-e : (x : A)\ (y : B) \to P(x, y)\text{,}
-$$
+e : (x : A)\ (y : B) \to P(x, y)
+$$,
 
 of a type family $P$ over pointed, [[connected]] types $A$ and $B$.
 While the actual statement and the proof are highly technical, it

@@ -95,8 +95,8 @@ For the multiplication map, observe that we can piece together a natural
 transformation
 
 $$
-(\Lan_F(F))^2Fx \to \Lan_F(F)Fx \to Fx\text{,}
-$$
+(\Lan_F(F))^2Fx \to \Lan_F(F)Fx \to Fx
+$$,
 
 using the canonical natural transformation $\eps : \Lan_F(F)F \To F$.
 Extending _this_ map, then, gives us a natural transformation
