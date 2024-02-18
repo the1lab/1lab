@@ -151,8 +151,8 @@ which admits a map $e' : (TA, \mu) \to (F, \nu')$ is given by the
 composite
 
 $$
-A \xto{\eta} TA \xto{e'} F\text{,}
-$$
+A \xto{\eta} TA \xto{e'} F
+$$,
 
 which is a map of algebras by a long computation, and satisfies the
 properties of a coequalising map by slightly shorter computations, which

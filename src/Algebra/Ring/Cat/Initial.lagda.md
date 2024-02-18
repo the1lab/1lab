@@ -225,8 +225,8 @@ the number 1. This is actually precisely what we need to establish the
 result! That's because we have
 
 $$
-f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1\text{,}
-$$
+f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1
+$$,
 
 and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!

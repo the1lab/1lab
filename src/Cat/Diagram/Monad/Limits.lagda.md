@@ -183,8 +183,8 @@ componentwise, too: we must show that $\nu(\eta_a, \eta_b, ...)$ is
 the identity map: but we can compute
 
 $$
-\nu(\eta_a, \eta_b, ...) = (\nu_a\eta_a, \nu_b\eta_b, ...) = (\id, \id, ...) = \id\text{!}
-$$
+\nu(\eta_a, \eta_b, ...) = (\nu_a\eta_a, \nu_b\eta_b, ...) = (\id, \id, ...) = \id
+$$!
 
 <details>
 <summary>

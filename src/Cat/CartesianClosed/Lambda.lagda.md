@@ -472,8 +472,8 @@ $a$, it must return a value which tracks the application of $h$ to $a$,
 relative to the renaming $\rho$.  In a CCC, that's given by
 
 $$
-\operatorname{ev} \langle h \circ \rho , a \rangle \text{,}
-$$
+\operatorname{ev} \langle h \circ \rho , a \rangle
+$$,
 
 which is precisely what we require.
 

@@ -135,8 +135,8 @@ enough to guarantee they behave type-theoretically. In a regular
 category, since images are stable under pullback, the equation
 
 $$
-\exists_k h^*\phi \cong f^* \exists_g \phi\text{,}
-$$
+\exists_k h^*\phi \cong f^* \exists_g \phi
+$$,
 
 holds as long as $f$, $g$, $h$ and $k$ fit into a pullback square,
 expressing that existential quantification commutes with substitution.
@@ -152,8 +152,8 @@ relational composition,
 [bicategory of spans]: Cat.Bi.Instances.Spans.html
 
 $$
-(R \circ S)(a, b) = \exists_{c : C} R(a, c) \land R(c, s)\text{,}
-$$
+(R \circ S)(a, b) = \exists_{c : C} R(a, c) \land R(c, s)
+$$,
 
 internally to an arbitrary category. Regularity comes in when we want to
 show that composition of relations is _associative_: indeed,
@@ -215,8 +215,8 @@ We start by calculating the image factorisation of $(f,c) : A \to B
 \times C$,
 
 $$
-A \xepi{d} D \xmono {(g, h)} B \times C \text{.}
-$$
+A \xepi{d} D \xmono {(g, h)} B \times C
+$$.
 
 
 ```agda
@@ -240,8 +240,8 @@ proof since it wasn't clear to me] Since $f$ is an extremal epimorphism,
 any monomorphism through which it factors must be an iso. And since we have
 
 $$
-f = \pi_1(f,c) = \pi_1(g,h)d = gd\text{,}
-$$
+f = \pi_1(f,c) = \pi_1(g,h)d = gd
+$$,
 
 it will suffice to show that $g$ is a monomorphism. So assume you're
 given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$. Start by

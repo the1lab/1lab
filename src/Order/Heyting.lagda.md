@@ -94,14 +94,14 @@ The first thing we note about Heyting algebras is that they are
 reduce the problem of showing
 
 $$
-x \cap (y \cup z) \le P \text{,}
-$$
+x \cap (y \cup z) \le P
+$$,
 
 by adjointness, to showing
 
 $$
-(y \cup z) \le x \heyt P \text{,}
-$$
+(y \cup z) \le x \heyt P
+$$,
 
 where the universal property of the join is actually applicable ---
 allowing us further reductions to showing showing $(y \land x) \le P$

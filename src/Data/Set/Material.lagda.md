@@ -133,8 +133,8 @@ $f(a)$, i.e., a pair $(b, \beta)$, where $\beta : g(b) = f(a)$. We
 wanted to construct a fibre of $g$ over $e$: we have $b : B$ and
 
 $$
-g(b) \xlongequal{\beta} f(a) \xlongequal{\alpha} e\text{.}
-$$
+g(b) \xlongequal{\beta} f(a) \xlongequal{\alpha} e
+$$.
 
 The other half of the equivalence is symmetric.
 
@@ -318,8 +318,8 @@ assume $X = \rm{set}(A, f)$ is a literal set. Factor $f$ through its
 [[image]] as
 
 $$
-A \epi \im f \mono V\text{,}
-$$
+A \epi \im f \mono V
+$$,
 
 using [image resizing] to work around the following slight size issue:
 the traditional construction of images lives in the largest universe
@@ -638,8 +638,8 @@ To every predicate $p : [a] \to \Omega$, we can associate the class
 $p' : V \to \Omega$ given by
 
 $$
-x \mapsto \sum_{(i, _) : m_a^*(x)} p(i)\text{,}
-$$
+x \mapsto \sum_{(i, _) : m_a^*(x)} p(i)
+$$,
 
 which we've already established is separable. The reason for this dance
 is that $V \to \Omega$ is much too large to use as the branching factor

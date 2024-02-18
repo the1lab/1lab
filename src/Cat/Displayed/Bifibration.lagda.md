@@ -108,8 +108,8 @@ universal property of [[cartesian lifts]]. If $u^{*}$ additionally has a
 left adjoint $L_{u}$, we have natural isomorphisms
 
 $$
-\cE_{u}(x',-) \simeq \cE_{x}(x',u^{*}(-)) \simeq \cE_{y}(L_{u}(x')-)\text{,}
-$$
+\cE_{u}(x',-) \simeq \cE_{x}(x',u^{*}(-)) \simeq \cE_{y}(L_{u}(x')-)
+$$,
 
 which implies $\cE$ `is a weak opfibration`{.Agda
 id=`hom-iso→weak-opfibration}; and any weak opfibration that's also a

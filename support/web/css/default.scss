@@ -128,18 +128,41 @@ ol, ul {
 span.katex {
   font-size: inherit;
   line-height: inherit;
+
+  span.mord.text > span.mord.textrm {
+    font-family: var(--serif), var(--sans-serif);
+  }
 }
 
 span.abbrev {
   text-decoration: 2px dotted underline;
 }
 
-.katex-display {
+span.katex-display {
   overflow-x: auto;
   overflow-y: clip;
 
+  // KaTeX is really bad at coming up with a bounding box for the entire
+  // span which includes all the superscripts. For example, try rendering
+  //
+  //    \mathcal{C} \xrightarrow{X} \mathrm{PSh}(\mathcal{C})
+  //
+  // in the demo on katex.org, then inspect the enclosing
+  // span.katex-display and add overflow-x: auto; to the element styles
+  // At the time of writing (2024-02-17), the top serifs of the X get
+  // basically entirely clipped.
+  //
+  // The solution is to position display maths closer to the elements
+  // around it on the block axis, and to make up with *padding* instead.
+  // Padding the bounding box by 0.5em; is slightly absurd, but it does
+  // guarantee that we won't have clipping issues unless KaTeX well and
+  // truly screws up the character metrics.
+
+  margin-block: -0.25em;
+
   > span.katex {
     white-space: normal;
+    padding-block: 0.5em;
   }
 }
 

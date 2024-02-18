@@ -42,8 +42,8 @@ assign a cardinality to arbitrary subsets. They are not closed under
 [[quotients]] either: we may quotient the set ${0,1}$ by the relation
 
 $$
-(0 \sim 1) := \phi\text{,}
-$$
+(0 \sim 1) := \phi
+$$,
 
 and this quotient has cardinality $2$ iff. $\neg \phi$.
 
@@ -154,8 +154,8 @@ magical cardinality function $n(-) : (T \to \Omega) \to \bN$, then we
 would have the familiar formula
 
 $$
-n(A \cup B) = (n(A) + n(B)) - n(A \cap B)\text{.}
-$$
+n(A \cup B) = (n(A) + n(B)) - n(A \cap B)
+$$.
 
 Even though we don't, if $a$ and $b$ are upper bounds for the size of
 $A$ and $B$ (i.e. $n(A) \le a$ and $n(B) \le B$), then we certainly have

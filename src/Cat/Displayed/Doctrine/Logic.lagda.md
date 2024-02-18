@@ -275,8 +275,8 @@ Each fibre has a top element and conjunction. We single out the
 existential quantification along the latest variable
 
 $$
-\exists_\pi : \bP(\Gamma,x) \to \bP(\Gamma)\text{.}
-$$
+\exists_\pi : \bP(\Gamma,x) \to \bP(\Gamma)
+$$.
 
 Moreover, we can define equality $t = s$ of terms $t, s : \Gamma \vdash
 \tau$ in terms of existential quantification, though not along a
@@ -302,8 +302,8 @@ inclusion of semantic predicates is interpreted into substitution, and
 the equality predicate is interpreted by the formula
 
 $$
-(\exists_\delta \top)[\langle t, s \rangle]\text{.}
-$$
+(\exists_\delta \top)[\langle t, s \rangle]
+$$.
 
 ```agda
 ⟦_⟧ᵖ : Formula Γ → ℙ.Ob[ ⟦ Γ ⟧ᶜ ]

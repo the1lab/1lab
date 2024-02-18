@@ -165,8 +165,8 @@ the adjunction, it will suffice to show that $\eps L(f) = \eps L(g)$.
 Since $a$ is a monomorphism, we can again reduce this to showing
 
 $$
-a \eps L(f) = a \eps L(g)\text{,}
-$$
+a \eps L(f) = a \eps L(g)
+$$,
 
 which follows by a quick calculation.
 

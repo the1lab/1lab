@@ -495,8 +495,8 @@ defines an element $[a] : A/\ker f$; If we have another fibre $(b, q)$,
 then $[a] = [b]$ because
 
 $$
-f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b) \text{,}
-$$
+f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b)
+$$,
 
 so the function $f^*x \to A/\ker f$ is constant, and factors through the
 [[propositional truncation]] $\| f^*x \|$.

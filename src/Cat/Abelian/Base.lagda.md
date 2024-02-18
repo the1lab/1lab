@@ -31,8 +31,8 @@ structure of an [[Abelian group]], such that the composition map is
 _bilinear_, hence extending to an Abelian group homomorphism
 
 $$
-\hom(b, c) \otimes \hom(a, b) \to \hom(a, c)\text{,}
-$$
+\hom(b, c) \otimes \hom(a, b) \to \hom(a, c)
+$$,
 
 where the term on the left is the [[tensor product|tensor product of
 abelian groups]] of the corresponding $\hom$-groups. As the name
@@ -140,7 +140,7 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
 </details>
 
 Before moving on, we note the following property of $\Ab$-categories: If
-$A$ is an object s.t. $\id[A] = 0$, then $A$ is a zero object.
+$A$ is an object s.t. $\id_A = 0$, then $A$ is a zero object.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
@@ -297,8 +297,8 @@ Every morphism $A \xto{f} B$ in a preabelian category admits a canonical
 decomposition as
 
 $$
-A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B\text{,}
-$$
+A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B
+$$,
 
 where, as indicated, the map $p$ is an epimorphism (indeed a [regular
 epimorphism], since it is a cokernel) and the map $i$ is a [regular
@@ -385,8 +385,8 @@ category $\cA/B$.
 The map $A \to \ker (\coker f)$ is obtained as the composite
 
 $$
-A \xepi{p} \coker (\ker f) \cong \ker (\coker f)\text{,}
-$$
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f)
+$$,
 
 where the isomorphism is our canonical map from before.
 
@@ -399,8 +399,8 @@ where the isomorphism is our canonical map from before.
 Conversely, map $\ker (\coker f) \to A$ is the composite
 
 $$
-\ker (\coker f) \cong \coker (\ker f) \to A\text{,}
-$$
+\ker (\coker f) \cong \coker (\ker f) \to A
+$$,
 
 where the second map arises from the universal property of the cokernel:
 We can map out of it with the map $\ker f \mono A$, since (using that

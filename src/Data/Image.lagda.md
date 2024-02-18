@@ -19,8 +19,8 @@ are [[merely]] equipped with a fibre of $f$. This has the expected
 universal property: we can factor any $f$ into
 
 $$
-A \epi \im(f) \mono B\text{,}
-$$
+A \epi \im(f) \mono B
+$$,
 
 and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.

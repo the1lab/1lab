@@ -141,8 +141,8 @@ language, that is a [[right adjoint]] to the [[base change
 functor|pullback functor]], fitting into an adjoint triple
 
 $$
-\Sigma_f \dashv f^* \dashv \textstyle\Pi_f\text{.}
-$$
+\Sigma_f \dashv f^* \dashv \textstyle\Pi_f
+$$.
 
 ## From dependent products
 
@@ -153,8 +153,8 @@ theory. First, observe that, for $f : X \to A$, the product functor $-
 \times f : \cC/A \to \cC/A$ is isomorphically given by
 
 $$
-\cC/A \xto{f^*} \cC/X \xto{\Sigma_f} \cC/A \text{,}
-$$
+\cC/A \xto{f^*} \cC/X \xto{\Sigma_f} \cC/A
+$$,
 
 since [[products in a slice]] are implemented by pullbacks in $\cC$; We
 can chase a $g : Y \to A$ along the above diagram to see that it first

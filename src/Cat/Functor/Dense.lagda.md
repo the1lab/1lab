@@ -24,8 +24,8 @@ by those of $\cC$, in a certain canonical way. In particular, any
 functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
-J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D\text{,}
-$$
+J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D
+$$,
 
 where $(F \searrow d) \to C$ is the projection functor from the
 corresponding [comma category], in such a way that the object $d$ is the

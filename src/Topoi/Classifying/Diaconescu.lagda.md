@@ -28,8 +28,8 @@ We can build a **logical theory** on top of this signature by imposing
 **axioms** of the form
 
 $$
-P \vdash_{x} Q\text{,}
-$$
+P \vdash_{x} Q
+$$,
 
 where $P$ and $Q$ are formulae, and $x$ is a context consisting of
 variables typed with sorts from the signature. Depending on the

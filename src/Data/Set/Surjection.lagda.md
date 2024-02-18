@@ -149,8 +149,8 @@ Letting $x$ be an element of the codomain, and since by assumption $f$'s
 cofibre is connected, we have a path
 
 $$
-\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|\text{,}
-$$
+\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|
+$$,
 
 so since the unit type is trivially inhabited, so is the fibre of $f$
 over $x$: $f$ is surjective.

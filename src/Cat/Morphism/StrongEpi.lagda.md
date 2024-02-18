@@ -261,8 +261,8 @@ However, in the case where we factor $f : a \to b$ as
 [slice categories]: Cat.Instances.Slice.html
 
 $$
-a \xepi{\~f} \im(f) \mono b\text{,}
-$$
+a \xepi{\~f} \im(f) \mono b
+$$,
 
 and the epimorphism is _strong_, then we automatically have an image
 factorisation of $f$ on our hands!

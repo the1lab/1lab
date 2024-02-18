@@ -25,8 +25,8 @@ is distinct. Instead, skeletality is defined as (equivalent to) the
 existence of a map
 
 $$
-\| a \cong b \| \to a \equiv b\text{,}
-$$
+\| a \cong b \| \to a \equiv b
+$$,
 
 which we can more concisely summarise as "$(\| - \cong - \|, \| \id \|)$
 is an [[identity system]]".

@@ -174,8 +174,8 @@ To finish the construction, we take our diagram in $\cC$ and
 post-compose with $G$ to obtain a diagram
 
 $$
-F \swarrow c' \to \cC \xto{G} \cD\text{.}
-$$
+F \swarrow c' \to \cC \xto{G} \cD
+$$.
 
 Since $F \swarrow c'$ is put together out of objects in $\cC$ and
 morphisms in $\cC'$, it is also a $\kappa$-small category, so these

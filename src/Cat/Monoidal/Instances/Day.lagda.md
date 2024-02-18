@@ -59,8 +59,8 @@ examples, before we get started:
   expressed as a predicate, has value
 
   $$
-  (L \cdot M)(x) = \exists l,\ \exists m,\ (x = l \cdot m) \land L(l) \land M(m)\text{.}
-  $$
+  (L \cdot M)(x) = \exists l,\ \exists m,\ (x = l \cdot m) \land L(l) \land M(m)
+  $$.
 
   That is, the words belonging to $L_1 \cdot L_2$ are precisely those
   which decompose as a concatenation of a word from $L_1$ followed by a
@@ -132,8 +132,8 @@ Writing $\int^x f(x)$ for this aggregation operation, the product $f
 \star g$ is given pointwise by
 
 $$
-(f \star g)(x) = \int^{x_1, x_2} (x = x_1 \cdot x_2) \diamond f(x_1) \diamond g(x_2)\text{.}
-$$
+(f \star g)(x) = \int^{x_1, x_2} (x = x_1 \cdot x_2) \diamond f(x_1) \diamond g(x_2)
+$$.
 
 This operation is generally referred to as the **convolution product**
 of $f$ and $g$, and it can be seen as the special case of the Day

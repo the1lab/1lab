@@ -66,14 +66,14 @@ elements_ $X \to M$ also carries the structure of a monoid. The unit
 element is given by
 
 $$
-X \xto{!} 1 \xto{\eta} M\text{,}
-$$
+X \xto{!} 1 \xto{\eta} M
+$$,
 
 and the multiplication map is given by
 
 $$
-(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M\text{.}
-$$
+(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M
+$$.
 
 [monoid object]: Cat.Monoidal.Diagram.Monoid.html
 
@@ -192,9 +192,11 @@ Now, suppose we have a pair of monoid objects, $M$ and $N$, together
 with a homomorphism $f : M \to N$. We can now consider the
 *post*composition with $f$, a function of sets which maps between the
 relativizations of $M$ and $N$ to arbitrary contexts: it has type
+
 $$
-\hom(X, M) \to \hom(X, N)\text{.}
-$$
+\hom(X, M) \to \hom(X, N)
+$$.
+
 Since we've equipped these sets with monoid structures using the
 internal structures on $M$ and $N$, and $f$ is a homomorphism between
 those, we would like for postcomposition with $f$ to _also_ be a monoid

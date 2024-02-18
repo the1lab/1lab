@@ -33,8 +33,8 @@ have $\| f^*b \|$: that is, all of its [[fibres]] are inhabited. Using
 the notation for [[mere existence|merely]], we may write this as
 
 $$
-\forall (b : B),\ \exists (a : A),\ f(a) = b\text{,}
-$$
+\forall (b : B),\ \exists (a : A),\ f(a) = b
+$$.
 
 which is evidently the familiar notion of surjection.
 

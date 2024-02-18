@@ -59,11 +59,11 @@ category theory over $\Sets$, we expect to find $\cB$-indexed analogues
 of basic constructions such as functor categories, product categories,
 and, what concerns us here, *opposite* categories. Working at the level
 of [[displayed categories]], fix a fibration $\cE \liesover \cB$; we
-want to construct the fibration classifies[^catcore]
+want to construct the fibration which classifies[^catcore]
 
 $$
-\cB\op \xto{\cE^*(-)} \Cat \xto{(-)\op} \Cat\text{,}
-$$
+\cB\op \xto{\cE^*(-)} \Cat \xto{(-)\op} \Cat
+$$,
 
 [^catcore]:
     Note that, strictly speaking, the construction of opposite
@@ -110,12 +110,12 @@ At the level of vertical maps, this says that a morphism $x \to\op y$ is
 determined by a morphism $\id^*y \to x$, hence by a morphism $y \to x$;
 this correspondence trivially extends to an [[isomorphism of
 precategories]] between $\cE^*(x)\op$ and $\cE^*_{\rm{op}}(x)$. If we
-have maps $h : f^*z \to y$ and $h': g^*y \to x$, then their composite
-$fg^*z \to x$ is computed as the composite
+have maps $h : f^*z \to y$ and $h': g^*y \to x$, we can obtain a map
+$fg^*z \to x$ to stand for their opposite in $\cE\op$ by calculating
 
 $$
-fg^*z \xto{\gamma} g^*f^*z \xto{f^*h} g^*y \xto{h'} x\text{,}
-$$
+fg^*z \xto{\gamma} g^*f^*z \xto{f^*h} g^*y \xto{h'} x
+$$,
 
 where the map $\gamma$ is one of the structural morphisms expressing
 [[pseudofunctoriality|pseudofunctor]] of $\cE^*(-)$.
@@ -143,8 +143,8 @@ concreteness, let's focus on the right identity law. We want to
 construct a path between some $h : f^*y \to x$ and the composite
 
 $$
-(f\id)^*y \xto{\gamma} {\id}^*f^*y \xto{{\id}^*h} {\id}^*x \xto{\pi} x\text{,}
-$$
+(f\id)^*y \xto{\gamma} {\id}^*f^*y \xto{{\id}^*h} {\id}^*x \xto{\pi} x
+$$,
 
 but note that, while these are both vertical maps, they have different
 *domains*! While the path we're trying to construct *is* allowed to

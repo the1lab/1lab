@@ -34,8 +34,8 @@ the "action" on the circle defined by
 [$S^1$]: Homotopy.Space.Circle.html
 
 $$
-a \mapsto e^{ix}a\text{,}
-$$
+a \mapsto e^{ix}a
+$$,
 
 which "visually" has the effect of rotating the point $a$ so it lands
 $x$ radians around the circle, in the counterclockwise direction. Each
@@ -53,8 +53,8 @@ identity function. Note that since $\bb{C}$ is a set, this is
 equivalently a [group homomorphism]
 
 $$
-\bb{R} \to \rm{Sym}(\bb{C})\text{,}
-$$
+\bb{R} \to \rm{Sym}(\bb{C})
+$$,
 
 where the codomain is the [group of symmetries] of $\bb{C}$. But what if
 we want a group $G$ to act on an object $X$ of a more general
