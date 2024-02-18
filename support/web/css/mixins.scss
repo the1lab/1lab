@@ -46,6 +46,9 @@
 
   div.#{$name}, details.#{$name} {
     @include material($bg);
+    > :nth-child(2) {
+      margin-block-start: 0.25em;
+    }
   }
 }
 

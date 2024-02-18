@@ -90,8 +90,8 @@ $B$) of $\{ f i | i \in S \}$, which is expressed familially as the
 composition
 
 $$
-(\sum_{i : A} i \in S) \xto{\pi_1} A \to B\text{.}
-$$
+(\sum_{i : A} i \in S) \xto{\pi_1} A \to B
+$$.
 
 It is readily computed that this procedure results in a monotone map.
 
