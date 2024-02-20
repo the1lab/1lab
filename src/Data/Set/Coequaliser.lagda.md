@@ -338,7 +338,7 @@ inc-is-surjective (squash x y p q i j) = is-prop→squarep
 ```
 -->
 
-## Effectivity {defines="congruence quotients-are-effective"}
+## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
 The most well-behaved case of quotients is when $R : A \to A \to \ty$
 takes values in propositions, is reflexive, transitive and symmetric (an
@@ -495,8 +495,8 @@ defines an element $[a] : A/\ker f$; If we have another fibre $(b, q)$,
 then $[a] = [b]$ because
 
 $$
-f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b) \text{,}
-$$
+f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b)
+$$,
 
 so the function $f^*x \to A/\ker f$ is constant, and factors through the
 [[propositional truncation]] $\| f^*x \|$.

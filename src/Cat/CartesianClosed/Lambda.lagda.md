@@ -293,7 +293,6 @@ brackets. These lemmas essentially say that $\sem{f[\rho]} =
 \sem{f}\sem{\rho}$, so that it doesn't matter whether we first pass to
 the semantics in $\cC$ or apply a renaming.
 
-<!--
 ```agda
 ⟦⟧-∘ʳ   : (ρ : Ren Γ Δ) (σ : Ren Δ Θ) → ⟦ ρ ∘ʳ σ ⟧ʳ ≡ ⟦ σ ⟧ʳ ∘ ⟦ ρ ⟧ʳ
 
@@ -340,7 +339,7 @@ ren-⟦⟧ₙ ρ (lam t) =
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
 ```
--->
+</details>
 
 ## Normalization
 
@@ -473,8 +472,8 @@ $a$, it must return a value which tracks the application of $h$ to $a$,
 relative to the renaming $\rho$.  In a CCC, that's given by
 
 $$
-\operatorname{ev} \langle h \circ \rho , a \rangle \text{,}
-$$
+\operatorname{ev} \langle h \circ \rho , a \rangle
+$$,
 
 which is precisely what we require.
 

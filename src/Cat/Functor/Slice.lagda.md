@@ -37,8 +37,7 @@ open _⊣_
 
 ```agda
 Sliced : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-       → (F : Functor C D)
-       → (X : Precategory.Ob C)
+       → (F : Functor C D) (X : ⌞ C ⌟)
        → Functor (Slice C X) (Slice D (F .F₀ X))
 Sliced F X .F₀ ob = cut (F .F₁ (ob .map))
 Sliced F X .F₁ sh = sh' where
@@ -60,7 +59,7 @@ is faithful.
 
 ```agda
 module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-         {F : Functor C D} {X : Precategory.Ob C} where
+         {F : Functor C D} {X : ⌞ C ⌟} where
   private
     module D = Cat.Reasoning D
 ```
@@ -97,7 +96,7 @@ pullback iff it is a pullback in $\cC$.
 ```agda
 Sliced-lex
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-  → {F : Functor C D} {X : Precategory.Ob C}
+  → {F : Functor C D} {X : ⌞ C ⌟}
   → is-lex F
   → is-lex (Sliced F X)
 Sliced-lex {C = C} {D = D} {F = F} {X = X} flex = lex where
@@ -139,7 +138,7 @@ counit $\eps : LR(x) \to x$A to get a functor left adjoint to $R/X$.
 ```agda
 Sliced-adjoints
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-  → {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) {X : Precategory.Ob D}
+  → {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) {X : ⌞ D ⌟}
   → (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
 Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj' where
   module adj = _⊣_ adj
@@ -149,10 +148,10 @@ Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj' where
   module D = Cat.Reasoning D
 
   adj' : (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
-  adj' .unit .η x .map         = adj.unit.η _
+  adj' .unit .η x .map         = adj.η _
   adj' .unit .is-natural x y f = ext (adj.unit.is-natural _ _ _)
 
-  adj' .counit .η x .map         = adj.counit.ε _
+  adj' .counit .η x .map         = adj.ε _
   adj' .counit .η x .commutes    = sym (adj.counit.is-natural _ _ _)
   adj' .counit .is-natural x y f = ext (adj.counit.is-natural _ _ _)
 
@@ -167,8 +166,8 @@ slice categories, which we can compute:
 
 ```agda
   adj' .unit .η x .commutes =
-    R.₁ (adj.counit.ε _ D.∘ L.₁ (x .map)) C.∘ adj.unit.η _         ≡⟨ C.pushl (R.F-∘ _ _) ⟩
-    R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (x .map)) C.∘ adj.unit.η _   ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
-    R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ x .map               ≡⟨ C.cancell adj.zag ⟩
-    x .map                                                         ∎
+    R.₁ (adj.ε _ D.∘ L.₁ (x .map)) C.∘ adj.η _         ≡⟨ C.pushl (R.F-∘ _ _) ⟩
+    R.₁ (adj.ε _) C.∘ R.₁ (L.₁ (x .map)) C.∘ adj.η _   ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
+    R.₁ (adj.ε _) C.∘ adj.η _ C.∘ x .map               ≡⟨ C.cancell adj.zag ⟩
+    x .map                                             ∎
 ```

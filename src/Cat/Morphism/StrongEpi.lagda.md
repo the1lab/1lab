@@ -58,7 +58,7 @@ lifts→is-strong-epi
     → Σ[ w ∈ Hom b c ] ((w ∘ f ≡ u) × (m .mor ∘ w ≡ v)))
   → is-strong-epi f
 lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
-  contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path (λ _ → hlevel 1)
+  contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path!
     (mm .monic _ _ (sym (q ∙ sym (lift-it mm sq .snd .snd)))) }
 ```
 
@@ -261,8 +261,8 @@ However, in the case where we factor $f : a \to b$ as
 [slice categories]: Cat.Instances.Slice.html
 
 $$
-a \xepi{\~f} \im(f) \mono b\text{,}
-$$
+a \xepi{\~f} \im(f) \mono b
+$$,
 
 and the epimorphism is _strong_, then we automatically have an image
 factorisation of $f$ on our hands!
@@ -454,7 +454,7 @@ pulling back a monomorphism.
 
 We thus have a factorisation $e = qr$ of $e$ through a monomorphism $q$,
 which since $e$ was assumed extremal, must be an isomorphism. We define
-the diagonal map $b \to c$ to be $pq^{-1}$ and compute that it commutes
+the diagonal map $b \to c$ to be $pq\inv$ and compute that it commutes
 appropriately:
 
 ```agda

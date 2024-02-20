@@ -63,8 +63,8 @@ property: If $v = (s_0, ... s_n)$ is an $n$-ary vector with entries $s_i
 $f$ to
 
 $$
-\sum_{i < n} f_iv_i\text{.}
-$$
+\sum_{i < n} f_iv_i
+$$.
 
 <!--
 ```agda
@@ -89,7 +89,7 @@ module _ {ℓ'} (S : Module R ℓ') where
                    → Linear-map (Fin-vec-module n) S
   linear-extension fun .map x = ∑ G' λ i → x i S.⋆ fun i
   linear-extension fun .lin .linear r m n =
-    ∑ G' (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G')  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
+    ∑ G' (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G') (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
     ∑ G' (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
     ⌜ ∑ G' (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G' (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G') (funext λ i → sym (S.⋆-assoc r (m i) _))) ⟩
     ⌜ ∑ G' (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G' (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩

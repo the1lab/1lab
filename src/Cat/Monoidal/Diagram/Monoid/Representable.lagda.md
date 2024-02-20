@@ -66,14 +66,14 @@ elements_ $X \to M$ also carries the structure of a monoid. The unit
 element is given by
 
 $$
-X \xto{!} 1 \xto{\eta} M\text{,}
-$$
+X \xto{!} 1 \xto{\eta} M
+$$,
 
 and the multiplication map is given by
 
 $$
-(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M\text{.}
-$$
+(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M
+$$.
 
 [monoid object]: Cat.Monoidal.Diagram.Monoid.html
 
@@ -165,8 +165,8 @@ is to show functoriality, which follows immediately:
   Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
   Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
 
-  Mon→PshMon {m} mon .F-id    = Homomorphism-path idr
-  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
+  Mon→PshMon {m} mon .F-id    = ext idr
+  Mon→PshMon {m} mon .F-∘ f g = ext λ h → assoc h g f
 ```
 
 And, since this presheaf is _by definition_ given by the set of maps
@@ -192,9 +192,11 @@ Now, suppose we have a pair of monoid objects, $M$ and $N$, together
 with a homomorphism $f : M \to N$. We can now consider the
 *post*composition with $f$, a function of sets which maps between the
 relativizations of $M$ and $N$ to arbitrary contexts: it has type
+
 $$
-\hom(X, M) \to \hom(X, N)\text{.}
-$$
+\hom(X, M) \to \hom(X, N)
+$$.
+
 Since we've equipped these sets with monoid structures using the
 internal structures on $M$ and $N$, and $f$ is a homomorphism between
 those, we would like for postcomposition with $f$ to _also_ be a monoid
@@ -262,12 +264,10 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
   Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
   Mon→RepPShMon .F₁ f .η x .preserves =
     internal-mon-hom→hom-mon-hom (f .preserves)
-  Mon→RepPShMon .F₁ f .is-natural x y g =
-    Homomorphism-path λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .hom) h g
 
-  Mon→RepPShMon .F-id = Nat-path λ x → Homomorphism-path λ f → idl f
-  Mon→RepPShMon .F-∘ f g = Nat-path λ x → Homomorphism-path λ h →
-    sym (assoc (f .hom) (g .hom) h)
+  Mon→RepPShMon .F-id = ext λ x f → idl f
+  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .hom) (g .hom) h)
 ```
 
 This functor is a simultaneous restriction and corestriction of the
@@ -302,15 +302,12 @@ functor is also [[fully faithful]].
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
     .inv α .hom       → α .η _ # id
     .inv α .preserves → Nat→internal-mon-hom α
-    .rinv α → Nat-path λ _ → Homomorphism-path λ f →
+    .rinv α → ext λ _ f →
       α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
       α .η _ # f        ∎
-    .linv h → total-hom-path _
-      (idr _)
-      (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
+    .linv h → total-hom-path _ (idr _) prop!
 ```
-
 
 # Internalizing presheaves of monoids
 
@@ -432,23 +429,23 @@ the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 ```agda
     η*-idl : ∀ {x} → (f : Hom x m) → μ* (η* x) f ≡ f
     η*-idl {x} f =
-      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (identity ⋆ elt f)               ≡⟨ ap gen PMon.idl ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     η*-idr : ∀ {x} → (f : Hom x m) → μ* f (η* x) ≡ f
     η*-idr {x} f =
-      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ identity)               ≡⟨ ap gen PMon.idr ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     μ*-assoc : ∀ {x} → (f g h : Hom x m) → μ* f (μ* g h) ≡ μ* (μ* f g) h
     μ*-assoc {x} f g h =
-      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ (elt g ⋆ elt h))               ≡⟨ ap gen PMon.associative ⟩
-      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ unext repr.invr _ _) ⟩
       gen (elt (gen (elt f ⋆ elt g)) ⋆ elt h)     ∎
 ```
 </details>
@@ -517,24 +514,24 @@ expand this `<details>` element.</summary>
 
     ni .eta x .preserves .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
-      elt (η* x)                 ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
       identity                   ∎
     ni .eta x .preserves .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
-      elt (μ* f g)                               ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
       (elt f ⋆ elt g)                            ∎
 
     ni .inv x .preserves .pres-id = sym (η*-nat _)
     ni .inv x .preserves .pres-⋆ f g =
-      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.invr ηₚ _ $ₚ _) (repr.invr ηₚ _ $ₚ _)) ⟩
+      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
       μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
 
-    ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
-    ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
-    ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
+    ni .eta∘inv x = ext (unext repr.invr x)
+    ni .inv∘eta x = ext (unext repr.invl x)
+    ni .natural x y f = ext (sym (repr.from .is-natural _ _ _) $ₚ_)
 ```
 </details>
 

@@ -12,12 +12,12 @@ import Cat.Reasoning
 module Order.Base where
 ```
 
-# Partially ordered sets {defines="poset partial-order partially-ordered-set"}
+# Partially ordered sets {defines="poset partial-order partially-ordered-set thin-category"}
 
 A **poset** is a [[set]] equipped with a relation $x \le y$, called a
 **partial order**, which is reflexive, transitive, and _antisymmetric_.
 Put another way, a poset is a [[univalent category]] which has _at most
-one_ morphism between each pair of its objects.
+one_ morphism between each pair of its objects: a **thin** category.
 
 Posets are a simultaneous generalisation of many naturally occurring
 notions of "order" in mathematics:
@@ -118,8 +118,8 @@ However, since the "symmetric part" of $\le$, the relation
 iff.
 
 $$
-x \sim y = (x \le y) \land (y \le x)\text{,}
-$$
+x \sim y = (x \le y) \land (y \le x)
+$$,
 
 is a reflexive mere relation which implies identity, the type of objects
 is automatically a set.
@@ -216,8 +216,11 @@ instance
   H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
   H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
 
-  Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
+  Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
   Funlike-Monotone = record { _#_ = hom }
+
+  Membership-Monotone : ⦃ _ : Underlying ⌞ Q ⌟ ⦄ → Membership ⌞ P ⌟ (Monotone P Q) _
+  Membership-Monotone = record { _∈_ = λ x S → ⌞ S # x ⌟ }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}

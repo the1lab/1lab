@@ -19,8 +19,8 @@ are [[merely]] equipped with a fibre of $f$. This has the expected
 universal property: we can factor any $f$ into
 
 $$
-A \epi \im(f) \mono B\text{,}
-$$
+A \epi \im(f) \mono B
+$$,
 
 and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
@@ -293,9 +293,9 @@ first step, and deal only with untruncated data from then on.
 ```
 
 Contracting the fibres is where we get some mileage out of having gotten
-the green slime out of `quot`{.Agda}. We have to show $f^{-1}(x) = i$,
+the green slime out of `quot`{.Agda}. We have to show $f\inv(x) = i$,
 as elements of the image, but we have an assumption that
-$\mathrm{embed}(i) = ff^{-1}(x)$, which, under `quot`{.agda}, is exactly
+$\mathrm{embed}(i) = ff\inv(x)$, which, under `quot`{.agda}, is exactly
 what we need.
 
 ```agda

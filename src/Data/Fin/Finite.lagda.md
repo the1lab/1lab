@@ -44,13 +44,17 @@ naïve-fin-is-set = is-hlevel≃ 2 Σ-swap₂ $
 
 That's because, as the proof above shows, it's equivalent to the type of
 natural numbers: The type
+
 $$
 \sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
 $$
+
 is equivalent to the type
+
 $$
-\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X\text{,}
-$$
+\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X
+$$,
+
 and univalence says (rather directly) that the sum of $[n] \simeq X$ as
 $X$ ranges over a universe is contractible, so we're left with the type
 of natural numbers.
@@ -254,5 +258,12 @@ Finite-Bool = fin (inc (Iso→Equiv enum)) where
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
+```
+-->
+
+<!--
+```agda
+card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
+card-zero→empty ∥e∥ a = ∥-∥-rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

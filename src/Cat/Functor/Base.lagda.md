@@ -93,7 +93,7 @@ construct a path $F \equiv G$.
 ```agda
 Functor-path
   : {F G : Functor C D}
-  → (p0 : ∀ x → F₀ F x ≡ F₀ G x)
+  → (p0 : ∀ x → F .F₀ x ≡ G .F₀ x)
   → (p1 : ∀ {x y} (f : C .Pc.Hom x y)
         → PathP (λ i → D .Pc.Hom (p0 x i) (p0 y i)) (F .F₁ f) (G .F₁ f))
   → F ≡ G
@@ -112,11 +112,11 @@ categories].
 Functor-pathp
   : {C : I → Precategory o ℓ} {D : I → Precategory o₁ ℓ₁}
     {F : Functor (C i0) (D i0)} {G : Functor (C i1) (D i1)}
-  → (p0 : ∀ (p : ∀ i → C i .Pc.Ob) → PathP (λ i → D i .Pc.Ob) (F₀ F (p i0)) (F₀ G (p i1)))
+  → (p0 : ∀ (p : ∀ i → C i .Pc.Ob) → PathP (λ i → D i .Pc.Ob) (F .F₀ (p i0)) (G .F₀ (p i1)))
   → (p1 : ∀ {x y : ∀ i → _}
         → (r : ∀ i → C i .Pc.Hom (x i) (y i))
         → PathP (λ i → D i .Pc.Hom (p0 x i) (p0 y i))
-                (F₁ F (r i0)) (F₁ G (r i1)))
+                (F .F₁ (r i0)) (G .F₁ (r i1)))
   → PathP (λ i → Functor (C i) (D i)) F G
 Functor-pathp {C = C} {D} {F} {G} p0 p1 = fn where
   open Pc
@@ -170,10 +170,10 @@ Functor-path p0 p1 i .F₀ x = p0 x i
 Functor-path p0 p1 i .F₁ f = p1 f i
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id =
   is-prop→pathp (λ j → D .Pc.Hom-set _ _ (p1 (C .Pc.id) j) (D .Pc.id))
-    (F-id F) (F-id G) i
+    (F .F-id) (G .F-id) i
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g =
   is-prop→pathp (λ i → D .Pc.Hom-set _ _ (p1 (C .Pc._∘_ f g) i) (D .Pc._∘_ (p1 f i) (p1 g i)))
-    (F-∘ F f g) (F-∘ G f g) i
+    (F .F-∘ f g) (G .F-∘ f g) i
 ```
 -->
 
@@ -195,7 +195,7 @@ We have also to make note of the following fact: absolutely all functors
 preserve isomorphisms, and, more generally, preserve invertibility.
 
 ```agda
-  F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
+  F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F # x D.≅ F # y
   F-map-iso F x .to       = F .F₁ (x .to)
   F-map-iso F x .from     = F .F₁ (x .from)
   F-map-iso F x .inverses =
@@ -204,11 +204,11 @@ preserve isomorphisms, and, more generally, preserve invertibility.
            }
     where module x = C._≅_ x
 
-  F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F₁ F f)
+  F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F .F₁ f)
   F-map-invertible F inv =
-    D.make-invertible (F₁ F _)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
+    D.make-invertible (F .F₁ _)
+      (sym (F .F-∘ _ _) ·· ap (F .F₁) x.invl ·· F .F-id)
+      (sym (F .F-∘ _ _) ·· ap (F .F₁) x.invr ·· F .F-id)
     where module x = C.is-invertible inv
 ```
 
@@ -223,33 +223,33 @@ already coherent enough to ensure that these actions agree:
   F-map-path
     : (ccat : is-category C) (dcat : is-category D)
     → ∀ (F : Functor C D) {x y} (i : x C.≅ y)
-    → ap (F₀ F) (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso F i)
+    → ap# F (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso F i)
   F-map-path ccat dcat F {x} = Univalent.J-iso ccat P pr where
     P : (b : C.Ob) → C.Isomorphism x b → Type _
-    P b im = ap (F₀ F) (Univalent.iso→path ccat im)
+    P b im = ap# F (Univalent.iso→path ccat im)
            ≡ Univalent.iso→path dcat (F-map-iso F im)
 
     pr : P x C.id-iso
     pr =
-      ap (F₀ F) (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap (F₀ F)) (Univalent.iso→path-id ccat) ⟩
-      ap (F₀ F) refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
-      dcat .to-path D.id-iso                       ≡⟨ ap (dcat .to-path) (D.≅-path (sym (F .F-id))) ⟩
-      dcat .to-path (F-map-iso F C.id-iso)         ∎
+      ap# F (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap# F) (Univalent.iso→path-id ccat) ⟩
+      ap# F refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
+      dcat .to-path D.id-iso                   ≡⟨ ap (dcat .to-path) (ext (sym (F .F-id))) ⟩
+      dcat .to-path (F-map-iso F C.id-iso)     ∎
 ```
 
 <!--
 ```agda
   ap-F₀-to-iso
     : ∀ (F : Functor C D) {y z}
-    → (p : y ≡ z) → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p)
+    → (p : y ≡ z) → path→iso (ap# F p) ≡ F-map-iso F (path→iso p)
   ap-F₀-to-iso F {y} =
-    J (λ _ p → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p))
+    J (λ _ p → path→iso (ap# F p) ≡ F-map-iso F (path→iso p))
       (D.≅-pathp (λ _ → F .F₀ y) (λ _ → F .F₀ y)
         (Regularity.fast! (sym (F .F-id))))
 
   ap-F₀-iso
     : ∀ (cc : is-category C) (F : Functor C D) {y z : C.Ob}
-    → (p : y C.≅ z) → path→iso (ap (F .F₀) (cc .to-path p)) ≡ F-map-iso F p
+    → (p : y C.≅ z) → path→iso (ap# F (cc .to-path p)) ≡ F-map-iso F p
   ap-F₀-iso cc F p = ap-F₀-to-iso F (cc .to-path p)
                    ∙ ap (F-map-iso F) (Univalent.iso→path→iso cc p)
 ```

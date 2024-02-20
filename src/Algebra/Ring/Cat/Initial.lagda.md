@@ -68,8 +68,7 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemma x i }
-  where
+Int-is-initial R = contr z→r λ x → ext (lemma x) where
   module R = Ring-on (R .snd)
 ```
 
@@ -226,8 +225,8 @@ the number 1. This is actually precisely what we need to establish the
 result! That's because we have
 
 $$
-f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1\text{,}
-$$
+f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1
+$$,
 
 and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!

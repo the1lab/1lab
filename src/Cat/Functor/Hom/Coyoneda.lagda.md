@@ -3,12 +3,12 @@
 open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Properties
+open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
-import Cat.Instances.Elements as El
 import Cat.Functor.Hom
 import Cat.Reasoning
 ```
@@ -39,7 +39,6 @@ gluing together a bunch of (things isomorphic to) hom functors!
 module _ (P : Functor (C ^op) (Sets h)) where
   private
     module P = Functor P
-  open El C P
   open Element
   open Element-hom
 ```
@@ -54,7 +53,7 @@ we construct will then glue all those points back together into $P$.
 [category of elements]: Cat.Instances.Elements.html
 
 ```agda
-  coyoneda : is-colimit (よ F∘ πₚ) P _
+  coyoneda : is-colimit (よ F∘ πₚ C P) P _
   coyoneda = to-is-colimit colim where
 ```
 
@@ -70,9 +69,9 @@ $px : P(X)$. Then, to construct the injection map, we can just use the
 
 ```agda
     open make-is-colimit
-    module ∫ = Precategory ∫
+    module ∫ = Precategory (∫ C P)
 
-    colim : make-is-colimit (よ F∘ πₚ) P
+    colim : make-is-colimit (よ F∘ πₚ C P) P
     colim .ψ x .η y f = P.F₁ f (x .section)
     colim .ψ x .is-natural y z f =
       funext (λ g → happly (P.F-∘ f g) (x .section))
@@ -99,10 +98,10 @@ that $K$ is a cocone, and the components of $K$ are natural.
 ```agda
     colim .universal eps _ .η x px =  eps (elem x px) .η x id
     colim .universal {Q} eps comm .is-natural x y f = funext λ px →
-      eps (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce f px) i .η y id) ⟩
+      eps (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce C P f px) i .η y id) ⟩
       eps (elem x px) .η y (f ∘ id)           ≡⟨ ap (eps (elem x px) .η y) id-comm ⟩
       eps (elem x px) .η y (id ∘ f)           ≡⟨ happly (eps (elem x px) .is-natural x y f) id ⟩
-      F₁ Q f (eps (elem x px) .η x id) ∎
+      Q .F₁ f (eps (elem x px) .η x id)       ∎
 ```
 
 Next, we need to show that this morphism factors each of the components
@@ -111,9 +110,9 @@ of $K$. The tricky bit of the proof here is that we need to use
 
 ```agda
     colim .factors {o} eps comm = ext λ x f →
-      eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce f (o .section)) i .η x id) ⟩
+      eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .section)) i .η x id) ⟩
       eps o .η x (f ∘ id)                        ≡⟨ ap (eps o .η x) (idr f) ⟩
-      eps o .η x f ∎
+      eps o .η x f                               ∎
 ```
 
 Finally, uniqueness: This just follows by the commuting conditions on
@@ -121,9 +120,9 @@ Finally, uniqueness: This just follows by the commuting conditions on
 
 ```agda
     colim .unique eps comm α p = ext λ x px →
-       α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
-       α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
-       eps (elem x px) .η x id ∎
+      α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
+      α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
+      eps (elem x px) .η x id ∎
 ```
 
 And that's it! The important takeaway here is not the shuffling around
@@ -150,7 +149,7 @@ whence we see that `coyoneda`{.Agda} is essentially a restatement of the
 fact that $\id$ is initial the coslice category under $P$.
 
 ```agda
-    Map→cocone-under : Cocone (よ F∘ πₚ)
+    Map→cocone-under : Cocone (よ F∘ πₚ C P)
     Map→cocone-under .coapex = Y
 
     Map→cocone-under .ψ (elem ob sect) .η x i = f .η x (P.₁ i sect)
@@ -160,7 +159,7 @@ fact that $\id$ is initial the coslice category under $P$.
       Y.₁ h (Y.₁ a (f .η _ sect)) ≡˘⟨ ap (Y .F₁ h) (happly (f .is-natural _ _ _) _) ⟩
       Y.₁ h (f .η _ (P.₁ a sect)) ∎
 
-    Map→cocone-under .commutes {x} {y} o = Nat-path λ i → funext λ a → ap (f .η _) $
+    Map→cocone-under .commutes {x} {y} o = ext λ i a → ap (f .η _) $
       P.₁ (o .hom ∘ a) (y .section)     ≡⟨ happly (P.F-∘ _ _) _ ⟩
       P.₁ a (P.₁ (o .hom) (y .section)) ≡⟨ ap (P.F₁ _) (o .commute) ⟩
       P.₁ a (x .section)                ∎
@@ -174,7 +173,7 @@ module _ {X Y : Functor (C ^op) (Sets h)} where
     module P = Functor X
     module Y = Functor Y
     open Cocone-hom
-    open El.Element
+    open Element
     open Initial
     open Cocone
 ```
@@ -210,15 +209,15 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
       (is-colimit→is-initial-cocone _ (coyoneda X) (Map→cocone-under X f))
       f' g'
     where
-      f' : Cocone-hom (よ F∘ El.πₚ C X) _ (Map→cocone-under X f)
+      f' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
       f' .hom = f
-      f' .commutes o = Nat-path (λ _ → refl)
+      f' .commutes o = trivial!
 
-      g' : Cocone-hom (よ F∘ El.πₚ C X) _ (Map→cocone-under X f)
+      g' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
       g' .hom = g
-      g' .commutes o = Nat-path λ x → sym (sep $
-        NT (λ i a → P.₁ a (o .section)) λ x y h →
-          funext λ a → P.F-∘ _ _ $ₚ o .section) ηₚ x
+      g' .commutes o = sym $ ext $ unext $ sep $ NT
+        (λ i a → P.₁ a (o .section))
+        (λ x y h → ext λ a → P.F-∘ _ _ # o .section)
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to

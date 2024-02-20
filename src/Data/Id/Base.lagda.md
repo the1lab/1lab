@@ -38,7 +38,7 @@ data _≡ᵢ_ {ℓ} {A : Type ℓ} (x : A) : A → Type ℓ where
 {-# BUILTIN EQUALITY _≡ᵢ_ #-}
 ```
 
-To show that $\Id[A](x,y)$ is equivalent to $x \equiv y$ for every
+To show that $\Id_{A}(x,y)$ is equivalent to $x \equiv y$ for every
 type $A$, we'll show that `_≡ᵢ_`{.Agda} and `reflᵢ`{.Agda} form an
 [[identity system]] regardless of the underlying type. Since `Id`{.Agda}
 is an inductive type, we can do so by pattern matching, which results in
@@ -53,7 +53,7 @@ Id-identity-system .to-path-over reflᵢ = refl
 ```
 
 Paths are, in many ways, more convenient than the inductive identity
-type: as a (silly) example, for paths, we have $(p^{-1})^{-1}$
+type: as a (silly) example, for paths, we have $(p\inv)\inv$
 definitionally. But the inductive identity type has _one_ property which
 sets it apart from paths: **regularity.** Transport along the
 reflexivity path is definitionally the identity:
@@ -161,7 +161,7 @@ substᵢ-filler-set : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
                 → is-set A
                 → {a : A}
                 → (p : a ≡ᵢ a)
-                → ∀ x → x ≡ substᵢ P p x 
+                → ∀ x → x ≡ substᵢ P p x
 substᵢ-filler-set P is-set-A p x = subst (λ q → x ≡ substᵢ P q x) (is-set→is-setᵢ is-set-A _ _ reflᵢ p) refl
 
 record Recallᵢ
@@ -186,6 +186,11 @@ symᵢ reflᵢ = reflᵢ
 _∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
 reflᵢ ∙ᵢ q = q
 
-
+Jᵢ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {x : A} (P : (y : A) → x ≡ᵢ y → Type ℓ')
+  → P x reflᵢ
+  → ∀ {y} (p : x ≡ᵢ y)
+  → P y p
+Jᵢ P prefl reflᵢ = prefl
 ```
 -->

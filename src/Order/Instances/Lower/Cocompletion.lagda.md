@@ -39,10 +39,7 @@ module ↓Coyoneda {o ℓ} (P : Poset o ℓ) (Ls : Lower-set P) where
     module P  = Order.Reasoning P
     module P↓ = Order.Reasoning (Lower-sets P)
 
-  shape : Type o
-  shape = Σ ⌞ P ⌟ λ i → i ∈ (apply Ls)
-
-  diagram : shape → Lower-set P
+  diagram : ∫ₚ Ls → Lower-set P
   diagram (i , i∈P) = ↓ P i
 ```
 
@@ -93,18 +90,16 @@ $B$) of $\{ f i | i \in S \}$, which is expressed familially as the
 composition
 
 $$
-(\sum_{i : A} i \in S) \xto{\pi_1} A \to B\text{.}
-$$
+(\sum_{i : A} i \in S) \xto{\pi_1} A \to B
+$$.
 
 It is readily computed that this procedure results in a monotone map.
 
 ```agda
   Lan↓ : Monotone (Lower-sets A) B
-  Lan↓ .hom S =
-    ⋃ {I = Σ ⌞ A ⌟ λ i → i ∈ (apply S)} λ i → f # (i .fst)
-  Lan↓ .pres-≤ {S} {T} S⊆T =
-    B-cocomplete.⋃-universal _ λ where
-      (i , i∈S) → B-cocomplete.⋃-inj (i , S⊆T i i∈S)
+  Lan↓ .hom S = ⋃ {I = Σ[ i ∈ A ] (i ∈ S)} (λ i → f # (i .fst))
+  Lan↓ .pres-≤ {S} {T} S⊆T = B-cocomplete.⋃-universal _ λ where
+    (i , i∈S) → B-cocomplete.⋃-inj (i , S⊆T i i∈S)
 ```
 
 A further short computation reveals that the least upper bound of all

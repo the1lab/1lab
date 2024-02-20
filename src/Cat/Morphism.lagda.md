@@ -386,7 +386,7 @@ has-section+monic→has-retract sect monic .is-retract =
 -->
 
 
-## Isos
+## Isos {defines="isomorphism"}
 
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
 \circ g$ and $g \circ f$ both equal to the identity. A map $f : A \to B$
@@ -668,6 +668,77 @@ abstract
 ```
 -->
 
+Isomorphisms enjoy a **2-out-of-3** property: if any 2 of $f$, $g$, and
+$f \circ g$ are isomorphisms, then so is the third.
+
+```agda
+inverses-cancell
+  : ∀ {f : Hom b c} {g : Hom a b} {g⁻¹ : Hom b a} {fg⁻¹ : Hom c a}
+  → Inverses g g⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses f (g ∘ fg⁻¹)
+
+inverses-cancelr
+  : ∀ {f : Hom b c} {f⁻¹ : Hom c b} {g : Hom a b} {fg⁻¹ : Hom c a}
+  → Inverses f f⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses g (fg⁻¹ ∘ f)
+
+invertible-cancell
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible g → is-invertible (f ∘ g)
+  → is-invertible f
+
+invertible-cancelr
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible f → is-invertible (f ∘ g)
+  → is-invertible g
+```
+
+<details>
+<summary>We are early into our bootstrapping process for category theory,
+so the proofs of these lemmas are quite low-level, and thus omitted.
+</summary>
+
+```agda
+inverses-cancell g-inv fg-inv .invl =
+  assoc _ _ _ ∙ fg-inv .invl
+inverses-cancell g-inv fg-inv .invr =
+  sym (idr _)
+  ∙ ap₂ _∘_ refl (sym (g-inv .invl))
+  ∙ assoc _ _ _
+  ∙ ap₂ _∘_
+    (sym (assoc _ _ _)
+    ∙ sym (assoc _ _ _)
+    ∙ ap₂ _∘_ refl (fg-inv .invr)
+    ∙ idr _)
+    refl
+  ∙ g-inv .invl
+
+inverses-cancelr f-inv fg-inv .invl =
+  sym (idl _)
+  ∙ ap₂ _∘_ (sym (f-inv .invr)) refl
+  ∙ sym (assoc _ _ _)
+  ∙ ap₂ _∘_ refl
+    (assoc _ _ _
+    ∙ assoc _ _ _
+    ∙ ap₂ _∘_ (fg-inv .invl) refl
+    ∙ idl _)
+  ∙ f-inv .invr
+inverses-cancelr f-inv fg-inv .invr =
+  sym (assoc _ _ _) ∙ fg-inv .invr
+
+invertible-cancell g-inv fg-inv =
+  inverses→invertible $
+  inverses-cancell
+    (g-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+
+invertible-cancelr f-inv fg-inv =
+  inverses→invertible $
+  inverses-cancelr
+    (f-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+```
+</details>
 
 We also note that invertible morphisms are both epic and monic.
 

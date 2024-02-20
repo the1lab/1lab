@@ -282,8 +282,8 @@ counit. Since every pointed dcpo admits joins indexed by
 the join
 
 $$
-\bigsqcup_{x\ \text{is defined}} x(-)\text{.}
-$$
+\bigsqcup_{x\ \text{is defined}} x(-)
+$$.
 
 ```agda
   part-counit : ↯ Ob → Ob

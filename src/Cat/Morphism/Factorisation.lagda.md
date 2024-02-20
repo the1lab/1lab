@@ -25,8 +25,8 @@ M)$-factorisation of a morphism $f : a \to b$.
 <!--
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ)
-         (E : ∀ {a b} → Precategory.Hom C a b → Ω)
-         (M : ∀ {a b} → Precategory.Hom C a b → Ω) where
+         (E : ∀ {a b} → C .Precategory.Hom a b → Ω)
+         (M : ∀ {a b} → C .Precategory.Hom a b → Ω) where
   private module C = Cat.Reasoning C
 ```
 -->

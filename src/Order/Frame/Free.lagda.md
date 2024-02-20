@@ -117,7 +117,7 @@ semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
 
 ```agda
   module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
-            (f : Precategory.Hom (Meet-slats ℓ ℓ) A (Frm.meets (B .snd)))
+            (f : Meet-slats ℓ ℓ .Precategory.Hom A (Frm.meets (B .snd)))
     where
     module A  = Meet-slat (A .snd)
     module A↓ = Frm (Lower-sets-frame A .snd)
@@ -160,11 +160,9 @@ binary meets.
       B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
       B.⋃ (λ i → f # fst i)                             B.≤∎
       where
-        meet-section
-          : Σ[ x ∈ A.Ob ] (x ∈↓ S) × Σ[ y ∈ A.Ob ] (y ∈↓ T)
-          → Σ[ x ∈ A.Ob ] ((x ∈↓ S) × (x ∈↓ T))
+        meet-section : ∫ₚ S × ∫ₚ T → ∫ₚ (λ x → x ∈ S × x ∈ T)
         meet-section ((x , p) , (y , q)) =
-          (x A.∩ y) , (S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q)
+          x A.∩ y , S .pres-≤ A.∩≤l p , T .pres-≤ A.∩≤r q
 ```
 
 It's also free from the definition of cocompletions that the extended

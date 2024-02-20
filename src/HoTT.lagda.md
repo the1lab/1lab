@@ -31,6 +31,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
 open import Cat.Instances.Sets
 open import Cat.Univalent.Rezk
 open import Cat.Allegory.Base
@@ -848,7 +849,6 @@ for categories. It is shown equivalent to the usual formulation by
 ```agda
 _ = Functor
 _ = _=>_
-_ = Nat-path
 _ = Nat-is-set
 _ = Functor-path
 _ = invertible→invertibleⁿ
@@ -866,7 +866,7 @@ _ = Cat
 
 * Definition 9.2.1: `Functor`{.Agda}
 * Definition 9.2.2: `_=>_`{.Agda}
-  * The paragraph immediately after 9.2.2 is `Nat-path`{.Agda} and
+  * The paragraph immediately after 9.2.2 is `Nat-pathp`{.Agda} and
     `Nat-is-set`{.Agda}
   * The one after that is `Functor-path`{.Agda}.
 * Definition 9.2.3: `Cat[_,_]`{.Agda}

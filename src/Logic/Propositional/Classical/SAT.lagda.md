@@ -32,7 +32,7 @@ private variable
 ```
 -->
 
-# SAT solving {defines="SAT-solving SAT"}
+# SAT solving {defines="SAT-solving SAT satisfiable"}
 
 SAT solving is the process of determining if we can find some assignment
 of variables $\rho$ that makes a given formula $\phi$ in classical
@@ -136,7 +136,7 @@ This is not hard to show, just tedious.
 ```agda
 delete-literal-sound
   : (x : Literal (suc Γ)) (ϕ : Clause (suc Γ))
-  → ¬ (x ∈ₗ ϕ)
+  → ¬ (x ∈ ϕ)
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literal (lit-var x) ϕ ⟧ ρ
 
@@ -195,7 +195,7 @@ which traverses a list of clauses and picks a clause consisting of a
 literal, if one exists.
 
 ```agda
-has-unit-clause? : (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ₗ ϕs))
+has-unit-clause? : (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ ϕs))
 has-unit-clause? [] = no λ ()
 
 has-unit-clause? ([] ∷ ϕs) with has-unit-clause? ϕs
@@ -220,7 +220,7 @@ true.
 ```agda
 unit-clause-sat
   : (x : Literal Γ) (ϕs : CNF Γ)
-  → (x ∷ []) ∈ₗ ϕs
+  → (x ∷ []) ∈ ϕs
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕs ⟧ ρ ≡ true → ⟦ x ⟧ ρ ≡ true
 unit-clause-sat x (ϕ ∷ ϕs) (here [x]=ϕ) ρ ϕs-sat =

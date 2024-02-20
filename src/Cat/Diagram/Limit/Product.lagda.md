@@ -143,7 +143,7 @@ defined above.
 ```agda
 canonical-functors
   : ∀ (F : Functor 2-object-category C)
-  → F ≡ 2-object-diagram (F₀ F true) (F₀ F false)
+  → F ≡ 2-object-diagram (F # true) (F # false)
 canonical-functors F = Functor-path p q where
   p : ∀ x → _
   p false = refl
@@ -151,12 +151,12 @@ canonical-functors F = Functor-path p q where
 
   q : ∀ {x y} (f : x ≡ y) → _
   q {false} {false} p =
-    F₁ F p            ≡⟨ ap (F₁ F) (Bool-is-set _ _ _ _) ⟩
-    F₁ F refl         ≡⟨ F-id F ⟩
+    F .F₁ p           ≡⟨ ap (F .F₁) (Bool-is-set _ _ _ _) ⟩
+    F .F₁ refl        ≡⟨ F .F-id ⟩
     id                ∎
   q {true} {true} p =
-    F₁ F p            ≡⟨ ap (F₁ F) (Bool-is-set _ _ _ _) ⟩
-    F₁ F refl         ≡⟨ F-id F ⟩
+    F .F₁ p           ≡⟨ ap (F .F₁) (Bool-is-set _ _ _ _) ⟩
+    F .F₁ refl        ≡⟨ F .F-id ⟩
     id                ∎
   q {false} {true} p = absurd (true≠false (sym p))
   q {true} {false} p = absurd (true≠false p)

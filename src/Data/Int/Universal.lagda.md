@@ -113,7 +113,7 @@ We start by making a simple observation: Exponentiation commutes with
 difference, where by exponentiation we mean iterated composition of
 equivalences. That is: if $n$ is an integer expressed as a formal
 difference of naturals $x - y$, then we can compute the power $f^n : X
-\simeq X$ as the difference of equivalences $(f^y)^{-1} \circ f^x$.
+\simeq X$ as the difference of equivalences $(f^y)\inv \circ f^x$.
 
 ```agda
     n-power : Nat → X ≃ X
@@ -128,16 +128,16 @@ difference of naturals $x - y$, then we can compute the power $f^n : X
 
     go : HIT.Int → X ≃ X
     go (HIT.diff x y) = n-power x ∙e (n-power y e⁻¹)
-    go (HIT.quot m n i) = Σ-prop-path is-equiv-is-prop
+    go (HIT.quot m n i) = Σ-prop-path!
       {x = n-power m ∙e (n-power n e⁻¹)}
       {y = n-power (suc m) ∙e (n-power (suc n) e⁻¹)}
       (funext (lemma m n)) i
 ```
 
 To show that this computation respects the quotient, we must calculate
-that $(f^y)^{-1} \circ f^{-1}f \circ f^x$ is $(f^y)^{-1} \circ f^x$,
-which follows almost immediately from the properties of equivalences,
-cancelling the $f^{-1}f$ critical pair in the middle.
+that $(f^y)\inv \circ f\inv f \circ f^x$ is $(f^y)\inv \circ f^x$, which
+follows almost immediately from the properties of equivalences,
+cancelling the $f\inv f$ critical pair in the middle.
 
 <!--
 ```agda

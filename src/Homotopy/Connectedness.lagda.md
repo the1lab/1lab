@@ -3,9 +3,6 @@
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
-open import Algebra.Group.Cat.Base
-open import Algebra.Group.Homotopy
-
 open import Data.Set.Truncation
 
 open import Homotopy.Truncation
@@ -68,6 +65,16 @@ is-connected A = is-n-connected A 2
 is-simply-connected : ∀ {ℓ} → Type ℓ → Type _
 is-simply-connected A = is-n-connected A 3
 ```
+
+:::{.definition #connected-map}
+Furthermore, we say that a map is $n$-connected if all of its [[fibres]] are
+$n$-connected.
+
+```agda
+is-n-connected-map : (A → B) → Nat → Type _
+is-n-connected-map f n = ∀ x → is-n-connected (fibre f x) n
+```
+:::
 
 ## Pointed connected types
 
@@ -143,13 +150,6 @@ module connected∙-elim-set
 
 Examples of pointed connected types include the [[circle]] and the
 [[delooping]] of a group.
-
-<!--
-```agda
-is-n-connected-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Nat → Type _
-is-n-connected-map f n = ∀ x → is-n-connected (fibre f x) n
-```
--->
 
 ## Closure properties
 
@@ -271,7 +271,7 @@ is-connected-+ n zero w = w
 is-connected-+ n (suc k) w = is-connected-+ n k (is-connected-suc _ w)
 ```
 
-## In terms of propositional truncations
+## In terms of propositional truncations {defines="connectedness-via-propositional-truncation"}
 
 There is an alternative definition of connectedness that avoids talking about
 arbitrary truncations, and is thus sometimes easier to work with.
@@ -375,8 +375,8 @@ equivalence. From the constructor $\operatorname{inc} : A \to \| A \|_n$
 we obtain a point $p : \| A \|_n$, and, for all $a$, we have
 
 $$
-p = \operatorname{const}(p)(a) = \operatorname{inc}(a)\text{.}
-$$
+p = \operatorname{const}(p)(a) = \operatorname{inc}(a)
+$$.
 
 But by induction on truncation, this says precisely that any $a : \| A
 \|_n$ is equal to $p$; so $p$ is a centre of contraction, and $A$ is
@@ -398,8 +398,8 @@ B$ and a family $P$ of $n$-types over $B$: in this setting,
 precomposition with $f$ is an equivalence
 
 $$
-(\Pi_{a : A} P(fa)) \to (\Pi_{b : B} P(b))\text{.}
-$$
+(\Pi_{a : A} P(fa)) \to (\Pi_{b : B} P(b))
+$$.
 
 This is somewhat analogous to generalising from a recursion principle to
 an elimination principle. When we were limited to talking about types,

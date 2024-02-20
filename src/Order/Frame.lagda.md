@@ -33,8 +33,8 @@ A **frame** is a [[lattice]] with finite [[meets]]^[So, in addition to the $x
 the **infinite distributive law**
 
 $$
-x \cap \bigcup_i f(i) = \bigcup_i (x \cap f(i))\text{.}
-$$
+x \cap \bigcup_i f(i) = \bigcup_i (x \cap f(i))
+$$.
 
 In the study of frames, for simplicity, we assume [[propositional
 resizing]]: that way, it suffices for a frame $A$ to have joins of

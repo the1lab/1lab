@@ -56,7 +56,7 @@ as the weak cartesian map. This situation is best understood graphically.
 	\arrow[lies over, from=2-2, to=4-2]
 	\arrow[lies over, from=2-4, to=4-4]
 	\arrow["{f'}"', from=2-2, to=2-4]
-	\arrow["id"', from=3-1, to=4-2]
+	\arrow["\id"', from=3-1, to=4-2]
 	\arrow[dashed, from=1-1, to=2-2]
 	\arrow[lies over, from=1-1, to=3-1]
 	\arrow["{g'}"', curve={height=-12pt}, from=1-1, to=2-4]

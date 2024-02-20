@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
+{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Sets.Complete
@@ -177,10 +177,12 @@ laws, a great simplification.
 
 <!--
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
+  private
+    unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
 
-  is-monoid-hom-is-prop : ∀ {m n} {f : C.Hom m n} {mo no} → is-prop (is-monoid-hom f mo no)
-  is-monoid-hom-is-prop = is-hlevel≃ 1 (Iso→Equiv eqv) hlevel!
+    instance
+      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom f mo no) (suc k)
+      H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
 
   open Displayed
   open Functor
@@ -192,7 +194,7 @@ laws, a great simplification.
   Mon[_] : Displayed C ℓ ℓ
   Mon[_] .Ob[_]  = Monoid-on M
   Mon[_] .Hom[_] = is-monoid-hom
-  Mon[_] .Hom[_]-set f x y = is-prop→is-set is-monoid-hom-is-prop
+  Mon[_] .Hom[_]-set f x y = hlevel 2
 ```
 
 The most complicated step of putting together the displayed category of
@@ -201,8 +203,8 @@ composition. However, even in the point-free setting of an arbitrary
 category $\cC$, the reasoning isn't _that_ painful:
 
 ```agda
-  Mon[ .id' ] .pres-η = C.idl _
-  Mon[ .id' ] .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
+  Mon[_] .id' .pres-η = C.idl _
+  Mon[_] .id' .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
 
   Mon[_] ._∘'_ fh gh .pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
   Mon[_] ._∘'_ {x = x} {y} {z} {f} {g} fh gh .pres-μ =
@@ -211,16 +213,27 @@ category $\cC$, the reasoning isn't _that_ painful:
     Monoid-on.μ z C.∘ (f C.⊗₁ f) C.∘ (g C.⊗₁ g) ≡˘⟨ C.refl⟩∘⟨ C.-⊗- .F-∘ _ _ ⟩
     Monoid-on.μ z C.∘ (f C.∘ g C.⊗₁ f C.∘ g)    ∎
 
-  Mon[_] .idr' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .idl' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .assoc' f g h = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
+  Mon[_] .idr' f = prop!
+  Mon[_] .idl' f = prop!
+  Mon[_] .assoc' f g h = prop!
 ```
 
 <!--
 ```agda
+module _ {o ℓ} {C : Precategory o ℓ} {M : Monoidal-category C} where
+  private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
+
+  open Precategory C using (Hom ; module HLevel-instance)
+  open HLevel-instance
+
+  instance
+    H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom M f mo no) (suc k)
+    H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
+
 private
   Setsₓ : ∀ {ℓ} → Monoidal-category (Sets ℓ)
   Setsₓ = Cartesian-monoidal Sets-products Sets-terminal
+
   Mon : ∀ {ℓ} → Displayed (Sets ℓ) _ _
   Mon = Thin-structure-over (Mon.Monoid-structure _)
 ```
@@ -282,12 +295,8 @@ into an identification.
 
   ff : ∀ {a b : Set _} {f : ∣ a ∣ → ∣ b ∣} {a' b'}
      → is-equiv (F₁' F {a} {b} {f} {a'} {b'})
-  ff {a} {b} {f} {a'} {b'} =
-    prop-ext (is-monoid-hom-is-prop Setsₓ) (hlevel 1)
-             (λ z → F₁' F z) invs .snd
-    where
-      invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f
-           → is-monoid-hom Setsₓ f a' b'
-      invs m .pres-η = funext λ _ → m .pres-id
-      invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
+  ff {a} {b} {f} {a'} {b'} = biimp-is-equiv! (λ z → F₁' F z) invs where
+    invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f → is-monoid-hom Setsₓ f a' b'
+    invs m .pres-η = funext λ _ → m .pres-id
+    invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
 ```

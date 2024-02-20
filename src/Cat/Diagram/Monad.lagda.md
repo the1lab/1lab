@@ -7,8 +7,8 @@ open import Cat.Prelude
 
 import Cat.Reasoning
 
+open _=>_ using (is-natural)
 open Functor
-open _=>_
 ```
 -->
 
@@ -49,10 +49,12 @@ ident=mult} $(M \circ M) \To M$.
     module unit = _=>_ unit
     module mult = _=>_ mult
 
-    M₀ = F₀ M
-    M₁ = F₁ M
-    M-id = F-id M
-    M-∘ = F-∘ M
+    M₀   = M .F₀
+    M₁   = M .F₁
+    M-id = M .F-id
+    M-∘  = M .F-∘
+    open unit using (η) public
+    open mult renaming (η to μ) using () public
 ```
 -->
 
@@ -61,9 +63,9 @@ associativity laws exactly analogous to those of a monoid.
 
 ```agda
     field
-      left-ident  : ∀ {x} → mult.η x C.∘ M₁ (unit.η x) ≡ C.id
-      right-ident : ∀ {x} → mult.η x C.∘ unit.η (M₀ x) ≡ C.id
-      mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
+      left-ident  : ∀ {x} → μ x C.∘ M₁ (η x) ≡ C.id
+      right-ident : ∀ {x} → μ x C.∘ η (M₀ x) ≡ C.id
+      mult-assoc  : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
 ```
 
 # Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
@@ -94,8 +96,8 @@ effects, and `v-mult`{.Agda} says that, given two layers $M(M(A))$, it
 doesn't matter whether you first join then evaluate, or evaluate twice.
 
 ```agda
-      ν-unit : ν C.∘ unit.η ob ≡ C.id
-      ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
+      ν-unit : ν C.∘ η ob ≡ C.id
+      ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ μ ob
 
   Algebra : Monad → Type (o ⊔ h)
   Algebra M = Σ _ (Algebra-on M)
@@ -109,11 +111,11 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
     → PathP (λ i → Algebra-on M (p i)) A B
   Algebra-on-pathp over mults i .Algebra-on.ν = mults i
   Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit =
-    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i}))
+    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.η _) (C.id {x = over i}))
       (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
     where module M = Monad M
   Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult =
-    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _))
+    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.μ _))
       (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
     where module M = Monad M
 ```
@@ -199,6 +201,8 @@ equality of their underlying morphisms.
 ```agda
 open Algebra-hom public
 
+open _=>_ using (η)
+
 module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
   private module C = Cat.Reasoning C
 
@@ -216,9 +220,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
     extensionality-algebra-hom = record { lemma = quote Extensional-Algebra-Hom }
 
   instance
-    Funlike-Algebra-hom : ⦃ i : Funlike C.Hom ⦄ → Funlike (Algebra-hom C M)
-    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.au = Underlying-Σ ⦃ ua = Funlike.au i ⦄
-    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.bu = Underlying-Σ ⦃ ua = Funlike.bu i ⦄
+    Funlike-Algebra-hom
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {X Y}
+      → ⦃ i : Funlike (C.Hom (X .fst) (Y .fst)) A B ⦄
+      → Funlike (Algebra-hom C M X Y) A B
     Funlike-Algebra-hom ⦃ i ⦄ .Funlike._#_ f x = f .morphism # x
 
 module _ {o ℓ} (C : Precategory o ℓ) where
@@ -363,7 +368,7 @@ $\cC^M$.
     open _⊣_
 
     Free⊣Forget : Free ⊣ Forget
-    Free⊣Forget .unit = NT M.unit.η M.unit.is-natural
+    Free⊣Forget .unit = NT M.η M.unit.is-natural
     Free⊣Forget .counit .η x =
       record { morphism = x .snd .ν
              ; commutes = sym (x .snd .ν-mult)
@@ -385,8 +390,8 @@ module _ {o h : _} {C : Precategory o h} {M N : Monad C} where
   Monad-path
     : (p0 : ∀ x → M.M₀ x ≡ N.M₀ x)
     → (p1 : ∀ {x y} (f : C.Hom x y) → PathP (λ i → C.Hom (p0 x i) (p0 y i)) (M.M₁ f) (N.M₁ f))
-    → (∀ x → PathP (λ i → C.Hom x (p0 x i)) (M.unit.η x) (N.unit.η x))
-    → (∀ x → PathP (λ i → C.Hom (p0 (p0 x i) i) (p0 x i)) (M.mult.η x) (N.mult.η x))
+    → (∀ x → PathP (λ i → C.Hom x (p0 x i)) (M.η x) (N.η x))
+    → (∀ x → PathP (λ i → C.Hom (p0 (p0 x i) i) (p0 x i)) (M.μ x) (N.μ x))
     → M ≡ N
   Monad-path p0 p1 punit pmult = path where
     M=N : M.M ≡ N.M

@@ -37,6 +37,11 @@ $theme: (
     icon: (light: $cyan-900, dark: $cyan-700),
   ),
 
+  source: (
+    bg:   (light: $cyan-600, dark: $cyan-600),
+    icon: (light: $cyan-900, dark: $cyan-700),
+  ),
+
   commit: (
     bg: (light: $violet-500, dark: $violet-400),
   ),
@@ -156,6 +161,12 @@ $-allowed-keys: -flatten-theme($theme);
 
   .diagram-light {
     display: none !important;
+  }
+
+  span.enclosing.liesover {
+    background: url('../static/lies-over-dark.svg') no-repeat;
+    background-size: contain;
+    background-position: center center;
   }
 
   div.warning {

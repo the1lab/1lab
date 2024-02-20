@@ -39,7 +39,7 @@ functor]] $f^* : \Sets/B \to \Sets/A$.
 module _ {A B : Set ℓ} (func : ∣ A ∣ → ∣ B ∣) where
   Sets-Π : Functor (Slice (Sets ℓ) A) (Slice (Sets ℓ) B)
   Sets-Π .F₀ ob .domain =
-    el! (Σ[ y ∈ ∣ B ∣ ] ((f : fibre func y) → fibre (ob .map) (f .fst)))
+    el! (Σ[ y ∈ B ] ((f : fibre func y) → fibre (ob .map) (f .fst)))
 
   Sets-Π .F₀ ob .map g = g .fst
 

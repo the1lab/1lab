@@ -14,7 +14,7 @@
 
 code, pre, .sourceCode { @include monospaced; }
 
-code, pre { width: min-content; }
+code, pre { max-width: 100%; }
 
 div.sourceCode {
   @include material(theme(--code-bg));

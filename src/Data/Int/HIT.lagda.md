@@ -206,7 +206,7 @@ their `difference`{.Agda}.
 
 ```agda
 private
-  difference-surjection : ∀ x → ∃[ (a , b) ∈ Nat × Nat ] (diff a b ≡ x)
+  difference-surjection : ∀ x → ∃ (Nat × Nat) (λ (a , b) → (diff a b ≡ x))
   difference-surjection (diff x y) = inc ((x , y) , refl)
   difference-surjection (quot m n i) =
     is-prop→pathp

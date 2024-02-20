@@ -59,8 +59,8 @@ examples, before we get started:
   expressed as a predicate, has value
 
   $$
-  (L \cdot M)(x) = \exists l,\ \exists m,\ (x = l \cdot m) \land L(l) \land M(m)\text{.}
-  $$
+  (L \cdot M)(x) = \exists l,\ \exists m,\ (x = l \cdot m) \land L(l) \land M(m)
+  $$.
 
   That is, the words belonging to $L_1 \cdot L_2$ are precisely those
   which decompose as a concatenation of a word from $L_1$ followed by a
@@ -132,8 +132,8 @@ Writing $\int^x f(x)$ for this aggregation operation, the product $f
 \star g$ is given pointwise by
 
 $$
-(f \star g)(x) = \int^{x_1, x_2} (x = x_1 \cdot x_2) \diamond f(x_1) \diamond g(x_2)\text{.}
-$$
+(f \star g)(x) = \int^{x_1, x_2} (x = x_1 \cdot x_2) \diamond f(x_1) \diamond g(x_2)
+$$.
 
 This operation is generally referred to as the **convolution product**
 of $f$ and $g$, and it can be seen as the special case of the Day
@@ -237,7 +237,7 @@ convolution. First, we note that we can write the elements of the coend
 b)$, $x : X(a)$, and $y : Y(b)$.
 
 ```agda
-    day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → ⌞ Day.nadir i ⌟
+    day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → Day.nadir ʻ i
     day h x y = inc ((_ , _) , h , x , y)
 ```
 
@@ -277,7 +277,7 @@ function $f : (F \otimes^D G)(i) \to W$ whenever we can define
 $f(\day{h,x,y})$, in a way compatible with the relation above.
 
 ```agda
-    factor : ∀ {i} (W : Cowedge (Day-diagram i)) → ⌞ Day.nadir i ⌟ → ⌞ W .nadir ⌟
+    factor : ∀ {i} (W : Cowedge (Day-diagram i)) → Day.nadir ʻ i → ⌞ W .nadir ⌟
     factor W = Day.factor _ W
 ```
 
@@ -451,7 +451,7 @@ c \xto{h} c_1 \otimes c_2 \xto{\id \otimes y} c_1 \otimes I \xto{\rho} c_1
 $$
 
 acts on $x : X$ to give us precisely the element we want. In the other
-direction, we can send $x : X(c)$ to $\day{\rho^{-1}, x, \id}$. We can
+direction, we can send $x : X(c)$ to $\day{\rho\inv, x, \id}$. We can
 then perform the extremely annoying calculations to show that (a) this
 map extends to the coend, (b) the resulting map is a natural
 transformation, and (c) the inverse construction we sketched is actually

@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
+{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
 open import 1Lab.Function.Embedding
 
 open import Cat.Displayed.Univalence
@@ -138,7 +138,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     extensionality-hom : ∀ {a b} → Extensionality (So.Hom a b)
     extensionality-hom = record { lemma = quote Extensional-Hom }
 
-    Funlike-Hom : Funlike So.Hom
+    Funlike-Hom : ∀ {x y} → Funlike (So.Hom x y) ⌞ x ⌟ λ _ → ⌞ y ⌟
     Funlike-Hom = record
       { _#_ = Total-hom.hom
       }

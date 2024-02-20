@@ -34,11 +34,11 @@ Core : ∀ {o ℓ} → Precategory o ℓ → Precategory o ℓ
 Core C = Wide sub where
   open Cat.Reasoning C
 
-  sub : Wide-subcat {C = C} _
-  sub .Wide-subcat.P = is-invertible
+  sub : Wide-subcat C _
+  sub .Wide-subcat.P        = is-invertible
   sub .Wide-subcat.P-prop _ = is-invertible-is-prop
-  sub .Wide-subcat.P-id = id-invertible
-  sub .Wide-subcat.P-∘ = invertible-∘
+  sub .Wide-subcat.P-id     = id-invertible
+  sub .Wide-subcat.P-∘      = invertible-∘
 ```
 
 <!--
@@ -80,6 +80,11 @@ module _
   Core-factor : (F : Functor C D) → F ≡ Forget-wide-subcat F∘ Core-universal F
   Core-factor F = Functor-path (λ _ → refl) λ _ → refl
 ```
+
+This is dual to the [[free groupoid]] on a category, in the sense that
+there is a biadjoint triple $\rm{Free} \dashv U \dashv \rm{Core}$,
+where $U$ is the forgetful functor from the bicategory of groupoids to the
+bicategory of categories.
 
 <!-- [TODO: Reed M, 05/05/2023] This is really part of a biadjunction
 between Cat and Grpd (in particular it's the right biadjoint to the

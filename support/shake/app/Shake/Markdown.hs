@@ -59,39 +59,58 @@ import HTML.Emit
 import Definitions
 
 import System.IO.Unsafe
+import Text.Show.Pretty (ppShow)
+
+labReaderOptions :: ReaderOptions
+labReaderOptions =
+  let
+    good = [ Ext_wikilinks_title_before_pipe ]
+    bad  = [Ext_definition_lists, Ext_compact_definition_lists]
+    exts = foldr disableExtension
+      (foldr enableExtension (getDefaultExtensions "markdown") good)
+      bad
+  in def { readerExtensions = exts }
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
-  ourExts :: [Extension]
-  ourExts = [ Ext_wikilinks_title_before_pipe ]
 
-  badExts :: [Extension]
-  badExts = [Ext_definition_lists, Ext_compact_definition_lists]
-
-  theExts :: Extensions
-  theExts =
-    foldr disableExtension
-      (foldr enableExtension (getDefaultExtensions "markdown") ourExts)
-      badExts
+  unParaMath :: Block -> Block
+  unParaMath (Para [Math DisplayMath m]) = Plain [Math DisplayMath m]
+  unParaMath x = x
 
   cont :: IO Pandoc
   cont = do
     contents <- mangleMarkdown <$> Text.readFile fp
     either (fail . show) pure =<< runIO do
-      doc <- readMarkdown def { readerExtensions = theExts } [(fp, contents)]
-      pure $ walk postParseInlines doc
+      doc <- readMarkdown labReaderOptions [(fp, contents)]
+      pure $ walk unParaMath $ walk postParseInlines doc
 
 -- | Patch a sequence of inline elements. `patchInline' should be preferred
 -- where possible, this is only useful when you cannot modify inlines in
 -- isolation.
 postParseInlines :: [Inline] -> [Inline]
 
--- Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
--- the equation is not split when word wrapping.
-postParseInlines (m@Math{}:s@(Str txt):xs)
+-- Float text that occurs directly after a mathematics span *inside* the
+-- span. This allows the entire expression to reflow but preserves the
+-- intended semantics of having e.g. `$n$-connected` be a single logical
+-- unit (which should be line-wrapped together).
+--
+-- The text is attached naïvely, so if the entire expression is a single
+-- group (i.e. something like `${foo}$`), it will probably not work.
+-- However, the naïve solution does have the benefit of automatically
+-- attaching the non-wrapping text to the last "horizontal unit" in the
+-- span.
+--
+-- However, note that the glue between the original mathematics and the
+-- attached text is treated as an opening delimiter. This is to have
+-- correct spacing in case the maths ends with an operatorname, e.g. id.
+postParseInlines (Math ty mtext:s@(Str txt):xs)
   | not (Text.isPrefixOf " " txt)
-  = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
-  : postParseInlines xs
+  =
+    let
+      glue   = "\\mathopen{\\nobreak}\\textnormal{" <> txt <> "}"
+      mtext' = Text.stripEnd mtext <> glue
+    in postParseInlines (Math ty mtext':xs)
 
 -- Parse the contents of wikilinks as markdown. While Pandoc doesn't
 -- read the title part of a wikilink, it will always consist of a single
@@ -109,7 +128,7 @@ postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
     -- of inlines. Pandoc doesn't let us parse a list of inlines, but we
     -- can still parse it as a document and ensure that (a) everything
     -- got bunched in the same paragraph and (b) there was no metadata.
-    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown def contents)
+    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown labReaderOptions contents)
     guard (null m) -- I don't foresee this ever failing.
 
     -- Rendering the contents as plain text will strip all the

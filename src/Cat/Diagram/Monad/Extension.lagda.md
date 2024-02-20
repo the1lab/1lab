@@ -61,7 +61,7 @@ on this structure:^[contrast this with the 7 equations required for a
 monad: 2 for functoriality, 2 for naturality, and 3 for
 unitality/associativity]
 
-1. For every $X : \cC$, we must have $(\eta_X)^M = \id[MX]$;
+1. For every $X : \cC$, we must have $(\eta_X)^M = \id_{MX}$;
 2. For every $f : \cC(X, MY)$, we must have $f^M \circ \eta_X = f$; and
 3. For every $f : \cC(Y, MX)$, and $g : \cC(X, MY)$, we must have
    $f^M \circ g^M = (f^M \circ g)^M$.
@@ -81,7 +81,7 @@ module Extension-system {o ℓ} {C : Precategory o ℓ} (E : Extension-system C)
 ```
 
 We can recover the monad's multiplication by extending the identity
-morphism $\id{MX} : \cC(MX, MX)$.
+morphism $\id_{MX} : \cC(MX, MX)$.
 
 ```agda
   join : ∀ {x} → Hom (M₀ (M₀ x)) (M₀ x)
@@ -127,7 +127,7 @@ part of) $M$-qua-endofunctor, and by the unit natural transformation.
 ```agda
     system : Extension-system C
     system .M₀ = M.M₀
-    system .unit = M.unit.η _
+    system .unit = M.η _
 ```
 
 Defining the extension operation is slightly trickier, but not by much.
@@ -135,28 +135,28 @@ If we have a morphism $f : \cC(X, MY)$, then its extension is defined to
 be composite
 
 $$
-MX \xto{Mf} MMY \xto{\mu} MY\text{.}
-$$
+MX \xto{Mf} MMY \xto{\mu} MY
+$$.
 
 ```agda
-    system .bind f = M.mult.η _ ∘ M.M₁ f
+    system .bind f = M.μ _ ∘ M.M₁ f
 ```
 
 Finally, a few short computations show that this definition is lawful.
 
 ```agda
     system .bind-unit-id =
-      M.mult.η _ ∘ F₁ M.M (M.unit.η _) ≡⟨ M.left-ident ⟩
-      id                               ∎
+      M.μ _ ∘ M.M₁ (M.η _) ≡⟨ M.left-ident ⟩
+      id                             ∎
     system .bind-unit-∘ f =
-      (M.mult.η _ ∘ M.M₁ f) ∘ M.unit.η _ ≡⟨ pullr (sym $ M.unit.is-natural _ _ _) ⟩
-      M.mult.η _ ∘ M.unit.η _ ∘ f        ≡⟨ cancell M.right-ident ⟩
-      f                                  ∎
+      (M.μ _ ∘ M.M₁ f) ∘ M.η _ ≡⟨ pullr (sym $ M.unit.is-natural _ _ _) ⟩
+      M.μ _ ∘ M.η _ ∘ f        ≡⟨ cancell M.right-ident ⟩
+      f                        ∎
     system .bind-∘ f g =
-      (M.mult.η _ ∘ M.M₁ f) ∘ (M.mult.η _ ∘ M.M₁ g)             ≡⟨ pullr (extendl (sym $ M.mult.is-natural _ _ _)) ⟩
-      M.mult.η _ ∘ M.mult.η _ ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g)        ≡⟨ extendl (sym $ M.mult-assoc) ⟩
-      M.mult.η _ ∘ M.M₁ (M.mult.η _) ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g) ≡⟨ ap₂ _∘_ refl (pulll (sym (M.M-∘ _ _)) ∙ sym (M.M-∘ _ _)) ⟩
-      M.mult.η _ ∘ M.M₁ ((M.mult.η _ ∘ M.M₁ f) ∘ g)             ∎
+      (M.μ _ ∘ M.M₁ f) ∘ (M.μ _ ∘ M.M₁ g)             ≡⟨ pullr (extendl (sym $ M.mult.is-natural _ _ _)) ⟩
+      M.μ _ ∘ M.μ _ ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g)        ≡⟨ extendl (sym M.mult-assoc) ⟩
+      M.μ _ ∘ M.M₁ (M.μ _) ∘ (M.M₁ (M.M₁ f) ∘ M.M₁ g) ≡⟨ ap₂ _∘_ refl (pulll (sym (M.M-∘ _ _)) ∙ sym (M.M-∘ _ _)) ⟩
+      M.μ _ ∘ M.M₁ ((M.μ _ ∘ M.M₁ f) ∘ g)             ∎
 ```
 
 Constructing a monad from an extension system is simply a matter of
@@ -219,8 +219,8 @@ convenient.
         Monad-path
           (λ _ → refl)
           (λ f →
-            M.mult.η _ ∘ M.M₁ (M.unit.η _ ∘ f)        ≡⟨ pushr (M.M-∘ _ _) ⟩
-            (M.mult.η _ ∘ M.M₁ (M.unit.η _)) ∘ M.M₁ f ≡⟨ eliml M.left-ident ⟩
+            M.μ _ ∘ M.M₁ (M.η _ ∘ f)        ≡⟨ pushr (M.M-∘ _ _) ⟩
+            (M.μ _ ∘ M.M₁ (M.η _)) ∘ M.M₁ f ≡⟨ eliml M.left-ident ⟩
             M.M₁ f ∎)
           (λ _ → refl)
           (λ _ → elimr M.M-id))
@@ -288,8 +288,8 @@ over $E$. We can obtain the required extension operation $\nu$ by
 sending each $f : \cC(A, X)$ to the composite
 
 $$
-MA \xto{Mf} MX \xto{\alpha} X\text{.}
-$$
+MA \xto{Mf} MX \xto{\alpha} X
+$$.
 
 ```agda
   Algebra-on→Extension-algebra-on
@@ -327,7 +327,7 @@ that we shall omit.
 
 Conversely, a monad algebra over $E$ can be derived from an extension
 algebra $\nu : \cC(A, X) \to \cC(MA, X)$ over $E$ by restricting to
-$\nu(\id{X}) : \cC(MX, X)$.
+$\nu(\id_{X}) : \cC(MX, X)$.
 
 ```agda
   Extension-algebra-on→Algebra-on

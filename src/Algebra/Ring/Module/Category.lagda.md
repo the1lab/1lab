@@ -121,10 +121,10 @@ closed under pointwise scalar multiplication:
     grp .1g .map x = 0g
     grp .1g .lin = 0-is-linear-map
 
-    grp .idl f       = Linear-map-path λ x → +-idl
-    grp .assoc f g h = Linear-map-path λ x → +-assoc
-    grp .invl f      = Linear-map-path λ x → +-invl
-    grp .comm f g    = Linear-map-path λ x → +-comm _ _
+    grp .idl f       = ext λ x → +-idl
+    grp .assoc f g h = ext λ x → +-assoc
+    grp .invl f      = ext λ x → +-invl
+    grp .comm f g    = ext λ x → +-comm _ _
 
 module _ (cring : is-commutative-ring R) {ℓm ℓn} (M : Module R ℓm) (N : Module R ℓn) where
   private instance
@@ -133,16 +133,11 @@ module _ (cring : is-commutative-ring R) {ℓm ℓn} (M : Module R ℓm) (N : Mo
 
   Action-on-hom : Ring-action R (Linear-map-group M N .snd)
   Action-on-hom .Ring-action._⋆_ r f .map z = r ⋆ f .map z
-  Action-on-hom .Ring-action._⋆_ r f .lin =
-    ⋆-is-linear-map M N cring (f .lin)
-  Action-on-hom .Ring-action.⋆-distribl f g h =
-    Linear-map-path λ x → ⋆-distribl _ _ _
-  Action-on-hom .Ring-action.⋆-distribr f g h =
-    Linear-map-path λ x → ⋆-distribr _ _ _
-  Action-on-hom .Ring-action.⋆-assoc f g h =
-    Linear-map-path λ x → ⋆-assoc _ _ _
-  Action-on-hom .Ring-action.⋆-id f =
-    Linear-map-path λ x → ⋆-id _
+  Action-on-hom .Ring-action._⋆_ r f .lin = ⋆-is-linear-map M N cring (f .lin)
+  Action-on-hom .Ring-action.⋆-distribl f g h = ext λ x → ⋆-distribl _ _ _
+  Action-on-hom .Ring-action.⋆-distribr f g h = ext λ x → ⋆-distribr _ _ _
+  Action-on-hom .Ring-action.⋆-assoc f g h = ext λ x → ⋆-assoc _ _ _
+  Action-on-hom .Ring-action.⋆-id f = ext λ x → ⋆-id _
 
   Hom-Mod : Module R (level-of ⌞ R ⌟ ⊔ ℓm ⊔ ℓn)
   Hom-Mod .fst = Action→Module R (Linear-map-group M N) Action-on-hom .fst
@@ -175,13 +170,14 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp .1g .hom x = 0g
   grp .1g .preserves = 0-is-linear-map A B
 
-  grp .idl f       = Homomorphism-path λ x → +-idl
-  grp .assoc f g h = Homomorphism-path λ x → +-assoc
-  grp .invl f      = Homomorphism-path λ x → +-invl
-  grp .comm f g    = Homomorphism-path λ x → +-comm _ _
+  grp .idl f       = ext λ x → +-idl
+  grp .assoc f g h = ext λ x → +-assoc
+  grp .invl f      = ext λ x → +-invl
+  grp .comm f g    = ext λ x → +-comm _ _
 
 R-Mod-ab-category .∘-linear-l f g h = trivial!
-R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = Homomorphism-path λ x → sym (is-linear-map.pres-+ (f .preserves) _ _)
+R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = ext λ x →
+  sym (is-linear-map.pres-+ (f .preserves) _ _)
 ```
 -->
 
@@ -215,7 +211,7 @@ R-Mod-is-additive .has-terminal = term where
   term .Terminal.top = ∅ᴹ
   term .Terminal.has⊤ x .centre .hom _ = lift tt
   term .Terminal.has⊤ x .centre .preserves .linear r s t = refl
-  term .Terminal.has⊤ x .paths r = Homomorphism-path λ _ → refl
+  term .Terminal.has⊤ x .paths r = trivial!
 ```
 
 For the direct products, on the other hand, we have to do a bit more

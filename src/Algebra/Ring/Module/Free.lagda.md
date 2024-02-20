@@ -227,6 +227,59 @@ write, is definitionally a linear map --- saving us a bit of effort.
 {-# DISPLAY fold-free-mod.go-linear = fold-free-mod #-}
 ```
 
+<!--
+```agda
+open Free-elim-prop
+
+equal-on-basis
+  : ∀ {ℓb ℓg} {T : Type ℓb} (M : Module R ℓg)
+  → {f g : Linear-map (Free-Mod T) M}
+  → ((x : T) → f .map (inc x) ≡ g .map (inc x))
+  → f ≡ g
+equal-on-basis M {f} {g} p =
+  ext $ Free-elim-prop.elim λ where
+    .has-is-prop x → M .fst .is-tr _ _
+    .P-0m        → f.pres-0 ∙ sym g.pres-0
+    .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
+    .P-inc       → p
+    .P-· x y α   → f.pres-⋆ _ _ ·· ap (x M.⋆_) α ·· sym (g.pres-⋆ _ _)
+    .P-+ x y α β → f.pres-+ _ _ ·· ap₂ M._+_ α β ·· sym (g.pres-+ _ _)
+  where
+    module f = Linear-map f
+    module g = Linear-map g
+    module M = Module-on (M .snd)
+
+Extensional-linear-map-free
+  : ∀ {ℓb ℓg ℓr} {T : Type ℓb} {M : Module R ℓg}
+  → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
+  → Extensional (Linear-map (Free-Mod T) M) ℓr
+Extensional-linear-map-free {M = M} ⦃ ext ⦄ =
+  injection→extensional! {f = λ m x → m .map (inc x)} (λ p → equal-on-basis M (happly p)) ext
+
+Extensional-hom-free
+  : ∀ {ℓ' ℓr} {T : Type ℓ'} {M : Module R (ℓ ⊔ ℓ')}
+  → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
+  → Extensional (R-Mod.Hom (Free-Mod T) M) ℓr
+Extensional-hom-free {M = M} ⦃ ef ⦄ =
+  injection→extensional! {f = λ m x → m # (inc x)}
+    (λ {f} {g} p →
+      let it = equal-on-basis M {hom→linear-map f} {hom→linear-map g} (happly p)
+       in ext (happly (ap map it)))
+    ef
+
+instance
+  extensionality-linear-map-free
+    : ∀ {ℓb ℓg} {T : Type ℓb} {M : Module R ℓg}
+    → Extensionality (Linear-map (Free-Mod T) M)
+  extensionality-linear-map-free = record { lemma = quote Extensional-linear-map-free }
+
+  extensionality-hom-free
+    : ∀ {ℓ'} {T : Type ℓ'} {M : Module R (ℓ ⊔ ℓ')}
+    → Extensionality (R-Mod.Hom {ℓm = ℓ ⊔ ℓ'} (Free-Mod T) M)
+  extensionality-hom-free = record { lemma = quote Extensional-hom-free }
+```
+-->
+
 To prove that free modules have the expected universal property, it
 remains to show that if $f = g\circ\rm{inc}$, then $\rm{fold}(f) = g$.
 Since we're eliminating into a proposition, all we have to handle are
@@ -242,27 +295,7 @@ make-free-module {ℓ'} = go where
   go .unit x = Free-mod.inc
   go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ'} y f)
   go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ'} (Free-elim-prop.elim m) where
-    open Free-elim-prop
-    module g = Linear-map (hom→linear-map g)
-    module y = Module-on (y .snd)
-    fold = fold-free-mod y f .map
-    m : Free-elim-prop (λ a → fold-free-mod y f .map a ≡ g.map a)
-    m .has-is-prop x = hlevel!
-    m .P-· x y p =
-      x y.⋆ fold y   ≡⟨ ap (x y.⋆_) p ⟩
-      x y.⋆ g.map y  ≡˘⟨ g.pres-⋆ _ _ ⟩
-      g.map (x · y)  ∎
-    m .P-0m = sym g.pres-0
-    m .P-+ x y p q =
-      fold x y.+ fold y   ≡⟨ ap₂ y._+_ p q ⟩
-      g.map x y.+ g.map y ≡˘⟨ g.pres-+ _ _ ⟩
-      g.map (x + y)       ∎
-    m .P-neg x p =
-      y.- (fold x)  ≡⟨ ap y.-_ p ⟩
-      y.- (g.map x) ≡˘⟨ g.pres-neg ⟩
-      g.map (neg x) ∎
-    m .P-inc x = p $ₚ x
+  go .unique {y = y} {f = f} {g = g} p = reext! p
 ```
 
 After that calculation, we can ✨ just ✨ conclude that
@@ -281,25 +314,6 @@ Free⊣Forget {ℓ'} = make-left-adjoint.to-left-adjoint
 
 <!--
 ```agda
-open Free-elim-prop
-
-equal-on-basis
-  : ∀ {ℓb ℓg} {T : Type ℓb} (M : Module R ℓg)
-  → {f g : Linear-map (Free-Mod T) M}
-  → ((x : T) → f .map (inc x) ≡ g .map (inc x))
-  → f ≡ g
-equal-on-basis M {f} {g} p =
-  Linear-map-path $ Free-elim-prop.elim λ where
-    .has-is-prop x → M .fst .is-tr _ _
-    .P-0m        → f.pres-0 ∙ sym g.pres-0
-    .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
-    .P-inc       → p
-    .P-· x y α   → f.pres-⋆ _ _ ·· ap (x M.⋆_) α ·· sym (g.pres-⋆ _ _)
-    .P-+ x y α β → f.pres-+ _ _ ·· ap₂ M._+_ α β ·· sym (g.pres-+ _ _)
-  where
-    module f = Linear-map f
-    module g = Linear-map g
-    module M = Module-on (M .snd)
 
 equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)

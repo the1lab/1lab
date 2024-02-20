@@ -108,7 +108,7 @@ module _
     → strong-comprehension-coproducts
   to-strong-comprehension-coproducts mk x a b {u = u} {v = v} p =
     contr (∐-strong-elim _ _ p , ∐-strong-β p , ∐-strong-sub p) λ w →
-       Σ-prop-path (λ _ → ×-is-hlevel 1 (Hom-set _ _ _ _) (Hom-set _ _ _ _)) $
+       Σ-prop-path! $
        sym (∐-strong-η p (w .fst) (w .snd .fst) (w .snd .snd))
     where open make-strong-comprehension-coproducts mk
 ```

@@ -29,9 +29,9 @@ module
 ```
 
 This is a very short theorem: If $\cC$ admits $\cJ$-shaped limits, then
-for any diagram $K : \cJ \to \cD$, the composite $F^{-1}K$ has a limit.
+for any diagram $K : \cJ \to \cD$, the composite $F\inv K$ has a limit.
 But since equivalences are [[right adjoints]], $F$ preserves this limit,
-so $FF^{-1}K$ has a limit in $\cD$; But that composite is naturally
+so $FF\inv K$ has a limit in $\cD$; But that composite is naturally
 isomorphic to $K$, so $K$ also has a limit.
 
 ```agda

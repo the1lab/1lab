@@ -42,10 +42,10 @@ record Comonad : Type (o ⊔ ℓ) where
   module counit = _=>_ counit renaming (η to ε)
   module comult = _=>_ comult
 
-  W₀ = F₀ W
-  W₁ = F₁ W
-  W-id = F-id W
-  W-∘ = F-∘ W
+  W₀ = W .F₀
+  W₁ = W .F₁
+  W-id = W .F-id
+  W-∘ = W .F-∘
 ```
 -->
 

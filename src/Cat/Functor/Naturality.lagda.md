@@ -115,8 +115,8 @@ following data:
   to-natural-iso {F = F} {G} mk .Isoⁿ.from .is-natural =
     inverse-is-natural {F} {G} (NT _ (λ x y f → sym (mk .natural x y f)))
       (mk .inv) (mk .eta∘inv) (mk .inv∘eta)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invl = Nat-path (mk .eta∘inv)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invr = Nat-path (mk .inv∘eta)
+  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invl = ext (mk .eta∘inv)
+  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invr = ext (mk .inv∘eta)
 ```
 
 Moreover, the following family of functions project out the
@@ -170,8 +170,7 @@ to an invertible natural transformation, resp. natural isomorphism.
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
     → (∀ x → β .η x D.∘ α .η x ≡ D.id)
     → Inversesⁿ α β
-  to-inversesⁿ p q =
-    CD.make-inverses (Nat-path p) (Nat-path q)
+  to-inversesⁿ p q = CD.make-inverses (ext p) (ext q)
 
   to-is-invertibleⁿ
     : {F G : Functor C D} {α : F => G}
@@ -179,7 +178,7 @@ to an invertible natural transformation, resp. natural isomorphism.
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
     → (∀ x → β .η x D.∘ α .η x ≡ D.id)
     → is-invertibleⁿ α
-  to-is-invertibleⁿ β p q = CD.make-invertible β (Nat-path p) (Nat-path q)
+  to-is-invertibleⁿ β p q = CD.make-invertible β (ext p) (ext q)
 
   inversesⁿ→inverses
     : ∀ {F G} {α : F => G} {β : G => F}
@@ -201,5 +200,18 @@ to an invertible natural transformation, resp. natural isomorphism.
     ate : _ => _
     ate .η x = D.is-invertible.inv (i x)
     ate .is-natural = inverse-is-natural eta _ (λ x → D.is-invertible.invl (i x)) (λ x → D.is-invertible.invr (i x))
+```
+-->
+
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open _=>_
+
+  id-nat-commute : ∀ (α β : Id {C = C} => Id) → α ∘nt β ≡ β ∘nt α
+  id-nat-commute α β = ext λ x → α .is-natural _ _ _
 ```
 -->

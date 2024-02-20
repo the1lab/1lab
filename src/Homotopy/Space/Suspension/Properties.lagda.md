@@ -196,7 +196,7 @@ This time, if $A$ holds, we have to fill a *cube* with the given four edges:
 	\arrow[Rightarrow, no head, from=1-4, to=4-4]
 	\arrow["{\mathrm{merid}\ a}"', color={rgb,255:red,153;green,92;blue,214}, from=4-1, to=4-4]
 	\arrow[Rightarrow, no head, from=3-3, to=4-4]
-	\arrow["{\mathrm{merid}^{-1}\ c}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-2, to=4-1]
+	\arrow["{\mathrm{merid}\inv\ c}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-2, to=4-1]
 	\arrow[Rightarrow, no head, from=1-1, to=4-1]
 \end{tikzcd}\]
 ~~~

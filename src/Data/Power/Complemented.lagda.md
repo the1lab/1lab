@@ -48,7 +48,7 @@ their union is all of $A$.
 
 ```agda
 is-decidable : ∀ {ℓ} {A : Type ℓ} (p : ℙ A) → Type _
-is-decidable p = ∀ a → Dec (a ∈ p)
+is-decidable {A = A} p = (a : A) → Dec (a ∈ p)
 
 is-decidable→is-complemented : (p : ℙ A) → is-decidable p → is-complemented p
 is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
@@ -66,9 +66,9 @@ is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
 
 For the converse, since _decidability_ of a proposition is itself a
 proposition, it suffices to assume we have an inhabitant of $(x \in p)
-\coprod (x \in p^{-1})$. Assuming that $x \in p^{-1}$, we must show that
+\coprod (x \in p\inv)$. Assuming that $x \in p\inv$, we must show that
 $x \notin p$: But by the definition of complemented subobject, the
-intersection $(p \cap p^{-1})$ is empty.
+intersection $(p \cap p\inv)$ is empty.
 
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
@@ -91,8 +91,8 @@ and so they are classified by the "classical subobject classifier" $2 :=
 
 ```agda
 decidable-subobject-classifier
-  : (A → Bool) ≃ (Σ[ p ∈ ℙ A ] (is-decidable p))
-decidable-subobject-classifier = eqv where
+  : {A : Type ℓ} → (A → Bool) ≃ (Σ[ p ∈ ℙ A ] (is-decidable p))
+decidable-subobject-classifier {A = A} = eqv where
 ```
 
 In much the same way that the subobject represented by a map $A \to

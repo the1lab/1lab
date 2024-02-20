@@ -55,7 +55,7 @@ $U : \cD \to \cC$. Recall that every adjunction [induces] a
 $\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
 the [Eilenberg-Moore category] of $T$. In this module we will lay out a
 sufficient condition for the functor $K$ to have a left adjoint, which
-we call $K^{-1}$ (`Comparison⁻¹`). Let us first establish a result about
+we call $K\inv$ (`Comparison⁻¹`). Let us first establish a result about
 the presentation of $T$-[algebras] by "generators and relations".
 
 [monad]: Cat.Diagram.Monad.html
@@ -151,8 +151,8 @@ which admits a map $e' : (TA, \mu) \to (F, \nu')$ is given by the
 composite
 
 $$
-A \xto{\eta} TA \xto{e'} F\text{,}
-$$
+A \xto{\eta} TA \xto{e'} F
+$$,
 
 which is a map of algebras by a long computation, and satisfies the
 properties of a coequalising map by slightly shorter computations, which
@@ -195,7 +195,7 @@ a coequaliser _in $\cD$_, then the comparison functor $\cD \to
 <!--
 ```agda
 module _
-  (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
+  (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (ε _))
   where
 
   open Coequaliser
@@ -227,12 +227,12 @@ far $\cD$ is from being the category of $T$-algebras.
 <!--
 ```agda
       abstract
-        path : e' D.∘ F.₁ (X .snd .ν) ≡ e' D.∘ counit.ε (F.₀ (X .fst))
+        path : e' D.∘ F.₁ (X .snd .ν) ≡ e' D.∘ ε (F.₀ (X .fst))
         path =
           (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ F.₁ (X .snd .ν)      ≡⟨ D.pullr (F.weave (alg-map .commutes)) ⟩
           has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .morphism)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
-          has-coeq Y .coeq D.∘ counit.ε _ D.∘ F.₁ (T.M₁ (alg-map .morphism))      ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
-          (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ counit.ε _           ∎
+          has-coeq Y .coeq D.∘ ε _ D.∘ F.₁ (T.M₁ (alg-map .morphism))             ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
+          (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ ε _                  ∎
   Comparison⁻¹ .F-id {X} = sym $ has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
   Comparison⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $
        D.pullr (has-coeq X .factors)

@@ -42,8 +42,8 @@ an assumption we _have_ to map out of $\rm{eq}(f,g)$.  Similarly, to
 show that $f\ker(f-g) = g\ker(f-g)$, we calculate
 
 $$
-f\ker(f-g) - g\ker(f-g) = (f-g)\ker(f-g) = 0\text{.}
-$$
+f\ker(f-g) - g\ker(f-g) = (f-g)\ker(f-g) = 0
+$$.
 
 ```agda
 module _ (A : is-pre-abelian C) where
@@ -154,8 +154,8 @@ component _except_ for the one corresponding to their index in the sum.
 In the binary case, we're showing that
 
 $$
-(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \id\text{.}
-$$
+(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \id
+$$.
 
 ```agda
   split = ∑ₕ I λ j → ip.tuple λ i → δ j i A.∘ ip.π j
