@@ -3,8 +3,8 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
 open import 1Lab.Resizing
@@ -327,7 +327,7 @@ Pathᵉ-is-hlevel
   → ∀ {x y}
   → is-hlevel (Pathᵉ sa x y) n
 Pathᵉ-is-hlevel n sa hl =
-  is-hlevel≃ _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
+  Equiv→is-hlevel _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
 
 embedding→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}

@@ -88,6 +88,5 @@ coe-path A p i j k = transp
   (λ l → A (I-interp k (I-interp l i j) j))
   (I-interp k (I-eq i j) i1)
   (p (I-interp k i j))
-
 ```
 -->

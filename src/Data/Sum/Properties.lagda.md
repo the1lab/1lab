@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -149,7 +149,7 @@ also at the same h-level as `A` and `B`. Thus, we have:
             → is-hlevel B (2 + n)
             → is-hlevel (A ⊎ B) (2 + n)
 ⊎-is-hlevel n ahl bhl x y =
-  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+  Equiv→is-hlevel (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 
 instance
   hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)

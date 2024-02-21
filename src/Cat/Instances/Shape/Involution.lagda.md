@@ -82,5 +82,5 @@ walking involution would mean that there are two paths $\tt{tt} \equiv
   Bool≃Ob-path = Bool≃∙⤮∙-isos ∙e identity-system-gives-path is-cat
 
   Bool-is-prop : is-prop Bool
-  Bool-is-prop = is-hlevel≃ 1 Bool≃Ob-path hlevel!
+  Bool-is-prop = Equiv→is-hlevel 1 Bool≃Ob-path hlevel!
 ```

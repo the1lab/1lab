@@ -223,7 +223,7 @@ then so is $A \times B$ is.
 ×-is-n-connected
   : ∀ n → is-n-connected A n → is-n-connected B n → is-n-connected (A × B) n
 ×-is-n-connected 0 = _
-×-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ is-hlevel≃ 0
+×-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ Equiv→is-hlevel 0
   n-Tr-product (×-is-hlevel 0 (n-connected.to n a-conn) (n-connected.to n b-conn))
 ```
 
@@ -307,7 +307,7 @@ is-contr-n-Tr→∥-∥ zero h .fst = n-Tr-rec! inc (h .centre)
 is-contr-n-Tr→∥-∥ zero h .snd = _
 is-contr-n-Tr→∥-∥ (suc n) h .fst = n-Tr-rec! inc (h .centre)
 is-contr-n-Tr→∥-∥ (suc n) h .snd a b = is-contr-n-Tr→∥-∥ n
-  (is-hlevel≃ 0 (n-Tr-path-equiv e⁻¹) (Path-is-hlevel 0 h))
+  (Equiv→is-hlevel 0 (n-Tr-path-equiv e⁻¹) (Path-is-hlevel 0 h))
 
 ∥-∥→is-contr-n-Tr
   : ∀ n → is-n-connected-∥-∥ A (suc n) → is-contr (n-Tr A (suc n))

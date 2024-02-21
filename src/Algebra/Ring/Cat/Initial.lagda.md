@@ -271,5 +271,5 @@ former!
 
 ```agda
 ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Ring-action Liftℤ (G .snd))
-ℤ-module-unique G = is-hlevel≃ 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
+ℤ-module-unique G = Equiv→is-hlevel 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
 ```

@@ -19,7 +19,7 @@ open import Meta.Bind public
 open import Meta.Alt public
 
 open import 1Lab.HLevel public
-open import 1Lab.HLevel.Retracts public
+open import 1Lab.HLevel.Closure public
 open import 1Lab.HLevel.Universe public
 
 open import 1Lab.Equiv public

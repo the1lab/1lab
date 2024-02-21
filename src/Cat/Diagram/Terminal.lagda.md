@@ -104,7 +104,7 @@ module _ (x : Ob) (term : is-terminal x) where
 
 module _ (x : Ob) (adj : !F ⊣ const! {A = C} x) where
   inclusion-is-right-adjoint→terminal : is-terminal x
-  inclusion-is-right-adjoint→terminal y = is-hlevel≃ 0
+  inclusion-is-right-adjoint→terminal y = Equiv→is-hlevel 0
     (Σ-contract (λ _ → hlevel 0) e⁻¹)
     (R-adjunct-is-equiv adj .is-eqv _)
 ```
