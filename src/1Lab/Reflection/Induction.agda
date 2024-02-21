@@ -14,7 +14,7 @@ open import Meta.Append
 module 1Lab.Reflection.Induction where
 
 -- H-Level instances must be in scope for the macro to work properly
-open import 1Lab.HLevel.Retracts public
+open import 1Lab.HLevel.Closure public
 
 open import Data.Maybe.Base using (nothing; just) public
 
