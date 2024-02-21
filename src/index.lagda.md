@@ -1063,6 +1063,7 @@ open import Homotopy.Connectedness.Automation -- Automation for connectedness
 
 open import Homotopy.Space.Suspension -- Suspensions
 open import Homotopy.Space.Circle -- The circle
+open import Homotopy.Space.Circle.TwoPoint -- The circle with two named points
 open import Homotopy.Space.Sphere -- The n-spheres
 open import Homotopy.Space.Sinfty -- The ∞-sphere
 open import Homotopy.Space.Torus -- The torus
