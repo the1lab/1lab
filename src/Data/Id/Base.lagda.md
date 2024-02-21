@@ -3,7 +3,7 @@
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
 open import 1Lab.Path.IdentitySystem.Interface
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Rewrite
@@ -148,14 +148,14 @@ abstract
     → is-hlevel A n
     → ∀ {a b : A}
     → is-hlevel (a ≡ᵢ b) n
-  Id-is-hlevel n p = is-hlevel≃ n Id≃path (Path-is-hlevel n p)
+  Id-is-hlevel n p = Equiv→is-hlevel n Id≃path (Path-is-hlevel n p)
 
   Id-is-hlevel'
     : ∀ {ℓ} {A : Type ℓ} (n : Nat)
      → is-hlevel A (suc n)
     → ∀ {a b : A}
     → is-hlevel (a ≡ᵢ b) n
-  Id-is-hlevel' n p = is-hlevel≃ n Id≃path (Path-is-hlevel' n p _ _)
+  Id-is-hlevel' n p = Equiv→is-hlevel n Id≃path (Path-is-hlevel' n p _ _)
 
 substᵢ-filler-set : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
                 → is-set A

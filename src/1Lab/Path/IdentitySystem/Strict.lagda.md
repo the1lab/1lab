@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -41,7 +41,7 @@ set-identity-is-prop
   → is-set A
   → is-prop (R a b)
 set-identity-is-prop {R = R} {a = a} {b = b} ids set =
-  is-hlevel≃ 1 (identity-system-gives-path ids) (set a b)
+  Equiv→is-hlevel 1 (identity-system-gives-path ids) (set a b)
 ```
 
 This immediately gives us the K eliminator for an identity system over a

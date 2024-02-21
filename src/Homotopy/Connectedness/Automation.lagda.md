@@ -19,7 +19,7 @@ proving things about $n$-[[connected]] types easier.
 The only difference is that the offsetting goes the other way, since
 connectedness is *downwards*-closed.
 
-[h-levels]: 1Lab.HLevel.Retracts.html#automation
+[h-levels]: 1Lab.HLevel.Closure.html#automation
 
 ```agda
 record Connected {ℓ} (T : Type ℓ) (n : Nat) : Type ℓ where

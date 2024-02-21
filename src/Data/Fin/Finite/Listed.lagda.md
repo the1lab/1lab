@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HIT.Truncation
 open import 1Lab.Resizing
 open import 1Lab.HLevel
@@ -114,13 +114,13 @@ A$, an enumeration corresponds to an _equivalence_ $[n] \to A$.
 ```agda
 enumeration→fin-equiv : (l : Enumeration A) → Fin (length (l .members)) ≃ A
 enumeration→fin-equiv l .fst         a = l .members ! a
-enumeration→fin-equiv l .snd .is-eqv a = is-hlevel≃ 0
+enumeration→fin-equiv l .snd .is-eqv a = Equiv→is-hlevel 0
   (Equiv.inverse element≃!-fibre) (l .has-member a)
 
 fin-equiv→enumeration : ∀ {n} → Fin n ≃ A → Enumeration A
 fin-equiv→enumeration (fn , eqv) = record
   { members    = tabulate fn
-  ; has-member = λ a → is-hlevel≃ 0 (member-tabulate fn a) (eqv .is-eqv a)
+  ; has-member = λ a → Equiv→is-hlevel 0 (member-tabulate fn a) (eqv .is-eqv a)
   }
 ```
 

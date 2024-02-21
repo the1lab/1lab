@@ -3,7 +3,7 @@ description: Using univalence, we compute the h-level of the universe of n types
 ---
 <!--
 ```
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -114,6 +114,10 @@ record n-Type ℓ n : Type (lsuc ℓ) where
   field
     ∣_∣   : Type ℓ
     is-tr : is-hlevel ∣_∣ n
+```
+
+<!--
+```agda
   infix 100 ∣_∣
   instance
     H-Level-n-type : ∀ {k} → H-Level ∣_∣ (n + k)
@@ -121,6 +125,7 @@ record n-Type ℓ n : Type (lsuc ℓ) where
 
 open n-Type using (∣_∣ ; is-tr ; H-Level-n-type) public
 ```
+-->
 
 Like mentioned in the introduction, the main theorem of this section is
 that `n-Type` is a type of h-level $n+1$. We take a detour first and
@@ -170,7 +175,7 @@ n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
 n-Type-is-hlevel zero x y = n-ua
   ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))
 n-Type-is-hlevel (suc n) x y =
-  is-hlevel≃ (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
+  Equiv→is-hlevel (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
 ```
 
 For 1-categorical mathematics, the important h-levels are the
@@ -205,6 +210,5 @@ instance
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {n}
     → H-Level (is-equiv f) (suc n)
   H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
-
 ```
 -->

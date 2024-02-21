@@ -3,7 +3,7 @@
 open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
 open import 1Lab.Reflection using (arg ; typeError)

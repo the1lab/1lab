@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel.Universe
 open import 1Lab.Type.Sigma
 
@@ -37,7 +37,7 @@ If displayed categories are regarded as functors, then the product of
 displayed categories can be regarded as the usual product of functors.
 ```agda
   _×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
-   EC.Ob[ p₁ ]  × ED.Ob[ p₂ ] 
+   EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
   _×ᵀᴰ_ .Displayed.Hom[_] (f₁ , f₂) (c₁ , c₂) (d₁ , d₂) =
     EC.Hom[ f₁ ] c₁ d₁ ×
     ED.Hom[ f₂ ] c₂ d₂
