@@ -43,12 +43,14 @@ _ = univalence
 
 :::
 
-The source code snippet above, a re-statement of the [[univalence
-principle|univalence]], is a perfect demonstration of how we're taking
-the hyperlink seriously. The type-theoretic formalisation is brought to
-life by linking to all of its components: on the surface, you'll find
-[[type universes|universe]], [[equivalences]], and [[path types|path]]
---- and exploring those, even more connections reveal themselves.
+The code snippet above, a re-statement of `univalence`{.Agda},
+demonstrates how to explore the formalisation. Every mention of a
+non-local name in the code above is a link to its definition (try
+clicking on `path→equiv`{.Agda}!) --- on hover, you're presented with a
+pop-up of their types. Everything we have formalised is accompanied by
+prose, just like this --- which will contain links to the higher-level
+concepts involved in the proof, such as [[universes]], [[path]] types,
+and [[equivalences]].
 
 We have developed a sizeable library of formalised mathematics, centered
 around category theory and "adjacent" fields: abstract algebra, order
