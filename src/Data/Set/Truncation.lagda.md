@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path

@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 
 open import Cat.Instances.Sets.Complete

@@ -8,8 +8,8 @@ description: |
 <!--
 ```agda
 open import 1Lab.Equiv.Fibrewise
-open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
