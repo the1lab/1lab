@@ -2,9 +2,9 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.Record
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
+open import 1Lab.HLevel.Closure
 open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
@@ -601,7 +601,7 @@ Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-pathp _ _ 
 Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
   is-prop→pathp
     (λ i → Π-is-hlevel 1
-      (λ _ → is-hlevel≃ 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
+      (λ _ → Equiv→is-hlevel 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
     _ _
 
 -- Actually define the loop-breaker instance which tells the

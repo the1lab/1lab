@@ -7,7 +7,7 @@ definition: |
 ```agda
 open import 1Lab.Reflection.Induction
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel

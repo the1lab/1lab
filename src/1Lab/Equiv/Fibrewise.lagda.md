@@ -5,7 +5,7 @@ description: |
 ---
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type

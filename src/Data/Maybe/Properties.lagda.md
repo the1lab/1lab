@@ -102,7 +102,7 @@ Maybe-is-hlevel
   → is-hlevel A (2 + n)
   → is-hlevel (Maybe A) (2 + n)
 Maybe-is-hlevel n ahl x y =
-  is-hlevel≃ (1 + n) (MaybePath.Path≃Code x y) (MaybePath.Code-is-hlevel n ahl)
+  Equiv→is-hlevel (1 + n) (MaybePath.Path≃Code x y) (MaybePath.Code-is-hlevel n ahl)
 ```
 
 <!--

@@ -9,7 +9,7 @@ description: |
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import 1Lab.Reflection.Marker
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence

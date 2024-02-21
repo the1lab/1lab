@@ -2,7 +2,7 @@
 ```agda
 open import 1Lab.Function.Embedding
 open import 1Lab.Equiv.Fibrewise
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi
@@ -130,7 +130,7 @@ equiv-path→identity-system
   → is-identity-system R r
 equiv-path→identity-system {R = R} {r = r} eqv pres' = ids where
   contract : ∀ {a} → is-contr (Σ _ (R a))
-  contract = is-hlevel≃ 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
+  contract = Equiv→is-hlevel 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
     (contr _ Singleton-is-contr)
 
   pres : ∀ {a} → eqv .fst (r a) ≡ refl
@@ -313,7 +313,7 @@ identity-system→hlevel
   → is-hlevel A (suc n)
 identity-system→hlevel zero ids hl x y = ids .to-path (hl _ _ .centre)
 identity-system→hlevel (suc n) ids hl x y =
-  is-hlevel≃ (suc n) (identity-system-gives-path ids e⁻¹) (hl x y)
+  Equiv→is-hlevel (suc n) (identity-system-gives-path ids e⁻¹) (hl x y)
 ```
 -->
 

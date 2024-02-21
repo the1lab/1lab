@@ -182,7 +182,7 @@ open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
 open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
 open import 1Lab.HLevel -- h-levels
-open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
+open import 1Lab.HLevel.Closure -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
 open import 1Lab.Univalence -- Equivalence is equivalent to identification

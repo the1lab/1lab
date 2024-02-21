@@ -271,7 +271,7 @@ loop space is a set.
 opaque
   S¹-is-groupoid : is-groupoid S¹
   S¹-is-groupoid = S¹-elim (S¹-elim
-    (is-hlevel≃ 2 ΩS¹≃integers (hlevel 2)) prop!) prop!
+    (Equiv→is-hlevel 2 ΩS¹≃integers (hlevel 2)) prop!) prop!
 ```
 
 <!--
