@@ -127,7 +127,7 @@ that, given a point $s : T$, yields a path $t \equiv s$. We will show
 below that every proposition is a set, which means that, since the
 identity types of a proposition are all pointed, they are all
 *contractible*. Thus, the contractible types naturally fit into the
-*hierarchy of h-levels.
+hierarchy of h-levels.
 :::
 
 ```agda
@@ -178,9 +178,9 @@ be the types underlying ([[univalent|univalent category]])
 
 We will, therefore, sometimes use the historical numbering in prose. To
 clarify the distinction, we will say that a type $T$ is **of h-level
-$n$** if `is-hlevel`{.Agda} holds of $T$, and, when using the
-traditional numbering, we will say that $T$ is an **$(n-2)$-type**, or
-is **$(n-2)$-truncated**. For example, sets are *of h-level $2$,* but
+$n$** if `is-hlevel T n`{.Agda ident=is-hlevel} holds and, when using
+the traditional numbering, we will say that $T$ is an **$(n-2)$-type**,
+or is **$(n-2)$-truncated**. For example, sets are *of h-level $2$,* but
 are $0$-types, or $0$-truncated.
 :::
 
@@ -260,7 +260,7 @@ dimension, say $i$.
   \arrow[dashed, "{p(j)}"', from=1-1, to=3-1]
   \arrow[dashed, "{q(j)}", from=1-3, to=3-3]
   \arrow[dashed, "x", from=1-1, to=1-3]
-  \arrow[dashed, "x"', from=3-1, to=3-3]
+  \arrow[dashed, "y"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -611,7 +611,7 @@ is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
         (λ _ → hl _ _ _) p b1
 ```
 
-## Contractiblity, geometrically
+## Contractibility, geometrically
 
 In cubical type theory, rather than reasoning algebraically about
 iterated identity types, we often prefer the more direct option of
@@ -624,8 +624,8 @@ Suppose we have a partial element $\phi \vdash p : A$ defined on some
 cofibration $\phi$. Does $p$ extend to a total element? If $A$ is
 contractible, yes! We have a base point $c : A$, the centre of
 contraction, and, taking $\phi$ as the shape of a lifting problem, we
-can certainly find a system of partial paths $\phi \vdash c \equiv p$---
-$A$ is a proposition, after all!
+can certainly find a system of partial paths $\phi \vdash c \equiv p$
+--- $A$ is a proposition, after all!
 
 ```agda
 is-contr→extend : is-contr A → (φ : I) (p : Partial φ A) → A [ φ ↦ p ]
