@@ -59,9 +59,8 @@ resources] listed below, the 1Lab takes an opinionated stance on its
 type-theoretic foundations: we use **cubical type theory** (in the style
 of @CCHM), and freely assume [[**propositional resizing**]].
 
-Despite the slightly narrow focus, we have written down a plethora of
-results, which may make jumping into a particular topic a bit daunting!
-Therefore, we have put a lot of effort into making entry points
+Since the size of the library may make jumping into a particular topic
+slightly daunting, we have put a lot of effort into making entry points
 accessible as well. The simplest way to find something is by searching
 for it. You can hit <kbd>Ctrl+K</kbd>/<kbd>Cmd+K</kbd> to bring up the
 search prompt, as long as you have JavaScript enabled. Anything that has
