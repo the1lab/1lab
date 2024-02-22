@@ -211,6 +211,11 @@ blockquote, details.blockquote {
   }
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin-block-start: 1em;
+  margin-block-end: -0.25em;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

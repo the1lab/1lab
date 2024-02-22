@@ -17,7 +17,7 @@ open Cat.Reasoning C
 ```
 -->
 
-# Internal categories
+# Internal categories {defines="internal-category"}
 
 We often think of categories as _places where we can do mathematics_.
 This is done by translating definitions into the internal language of

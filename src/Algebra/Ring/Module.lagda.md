@@ -30,7 +30,7 @@ private module Mod {ℓ} (R : Ring ℓ) where
 ```
 -->
 
-# Modules
+# Modules {defines="module"}
 
 A **module** over a [[ring]] $R$ is an [[abelian group]] $G$ equipped
 with an [action by $R$]. Modules generalise the idea of vector spaces,

@@ -8,7 +8,7 @@ open import Cat.Prelude
 module Cat.Allegory.Base where
 ```
 
-# Allegories
+# Allegories {defines="allegory"}
 
 In the same way that a category abstracts over the commonalities of sets
 and functions (and thus allows us to study several other mathematical
