@@ -207,7 +207,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → is-equiv (F-map-iso {x = X} {Y} F)
+    → ∀ {X Y} → is-equiv (F-map-iso F {x = X} {Y})
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv    = is-ff→essentially-injective {F = F} ff

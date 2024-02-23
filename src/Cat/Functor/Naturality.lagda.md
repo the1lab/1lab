@@ -200,6 +200,15 @@ to an invertible natural transformation, resp. natural isomorphism.
     ate : _ => _
     ate .η x = D.is-invertible.inv (i x)
     ate .is-natural = inverse-is-natural eta _ (λ x → D.is-invertible.invl (i x)) (λ x → D.is-invertible.invr (i x))
+
+  push-eqⁿ : ∀ {F G} (α : F ≅ⁿ G) {a b} {f g : C.Hom a b} → F .F₁ f ≡ F .F₁ g → G .F₁ f ≡ G .F₁ g
+  push-eqⁿ {F = F} {G = G} α {f = f} {g} p =
+    G .F₁ f                                           ≡⟨ D.insertl (α .Isoⁿ.invl ηₚ _) ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ f ≡⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ f D.∘ α .Isoⁿ.from .η _ ≡⟨ D.refl⟩∘⟨ p D.⟩∘⟨refl ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ g D.∘ α .Isoⁿ.from .η _ ≡˘⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ g ≡⟨ D.cancell (α .Isoⁿ.invl ηₚ _) ⟩
+    G .F₁ g                                           ∎
 ```
 -->
 

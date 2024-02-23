@@ -462,7 +462,7 @@ indeed the same path:
     abstract
       square : ap# F x≡y ≡ Fx≡Fy
       square =
-        ap# F x≡y                         ≡⟨ F-map-path ccat dcat F x≅y ⟩
+        ap# F x≡y                         ≡⟨ F-map-path F ccat dcat x≅y ⟩
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 

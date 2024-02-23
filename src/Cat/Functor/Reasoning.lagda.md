@@ -4,6 +4,7 @@ open import 1Lab.Path
 
 open import Cat.Base
 
+import Cat.Functor.Base
 import Cat.Reasoning
 ```
 -->
@@ -19,13 +20,14 @@ private
   module 𝒞 = Cat.Reasoning 𝒞
   module 𝒟 = Cat.Reasoning 𝒟
 open Functor F public
+open Cat.Functor.Base.F-iso F public
 ```
 
 <!--
 ```agda
 private variable
   A B C : 𝒞.Ob
-  a b c d : 𝒞.Hom A B
+  a a' b b' c c' d : 𝒞.Hom A B
   X Y Z : 𝒟.Ob
   f g h i : 𝒟.Hom X Y
 ```
@@ -75,6 +77,13 @@ module _ (ab≡c : a 𝒞.∘ b ≡ c) where
   pullr : (f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b ≡ f 𝒟.∘ F₁ c
   pullr = 𝒟.pullr collapse
 
+module _ (abc≡d : a 𝒞.∘ b 𝒞.∘ c ≡ d) where
+  collapse3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ F₁ d
+  collapse3 = ap (F₁ a 𝒟.∘_) (sym (F-∘ b c)) ∙ collapse abc≡d
+
+  pulll3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ F₁ d 𝒟.∘ f
+  pulll3 = 𝒟.pulll3 collapse3
+
 module _ (c≡ab : c ≡ a 𝒞.∘ b) where
   expand : F₁ c ≡ F₁ a 𝒟.∘ F₁ b
   expand = sym (collapse (sym c≡ab))
@@ -98,6 +107,13 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
   extend-inner :
     f 𝒟.∘ F₁ a 𝒟.∘ F₁ c 𝒟.∘ g ≡ f 𝒟.∘ F₁ b 𝒟.∘ F₁ d 𝒟.∘ g
   extend-inner = 𝒟.extend-inner weave
+
+module _ (p : a 𝒞.∘ b 𝒞.∘ c ≡ a' 𝒞.∘ b' 𝒞.∘ c') where
+  weave3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ F₁ a' 𝒟.∘ F₁ b' 𝒟.∘ F₁ c'
+  weave3 = ap (_ 𝒟.∘_) (sym (F-∘ b c)) ·· weave p ·· ap (_ 𝒟.∘_) (F-∘ b' c')
+
+  extendl3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ F₁ a' 𝒟.∘ (F₁ b' 𝒟.∘ (F₁ c' 𝒟.∘ f))
+  extendl3 = 𝒟.extendl3 weave3
 
 module _ (p : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d) where
   swap : F₁ (a 𝒞.∘ c) ≡ F₁ (b 𝒞.∘ d)

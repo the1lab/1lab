@@ -6,6 +6,7 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 ```
 -->
@@ -59,6 +60,8 @@ respectively.
 
   _⊗₁_ : ∀ {w x y z} → Hom w x → Hom y z → Hom (w ⊗ y) (x ⊗ z)
   f ⊗₁ g = -⊗- .Functor.F₁ (f , g)
+
+  infixr 25 _⊗_
 ```
 -->
 
@@ -101,11 +104,18 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   ρ→ : ∀ {X} → Hom X (X ⊗ Unit)
   ρ→ = unitor-r .Cr._≅_.to .η _
 
+  α≅ : ∀ {A B C} → (A ⊗ B) ⊗ C ≅ A ⊗ (B ⊗ C)
+  α≅ = isoⁿ→iso associator _
+
   α→ : ∀ A B C → Hom ((A ⊗ B) ⊗ C) (A ⊗ (B ⊗ C))
   α→ _ _ _ = associator .Cr._≅_.to .η _
 
   α← : ∀ A B C → Hom (A ⊗ (B ⊗ C)) ((A ⊗ B) ⊗ C)
   α← _ _ _ = associator .Cr._≅_.from .η _
+
+  module ⊗ = Fr -⊗-
+  module ▶ {A} = Fr (-⊗-.Right A)
+  module ◀ {A} = Fr (-⊗-.Left A)
 
   -- whiskering on the right
   _▶_ : ∀ A {B C} (g : Hom B C) → Hom (A ⊗ B) (A ⊗ C)
