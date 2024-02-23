@@ -11,7 +11,7 @@ import Cat.Reasoning
 module Cat.Functor.Naturality where
 ```
 
-# Working with natural transformations
+# Working with natural transformations {defines="natural-isomorphism"}
 
 Working with natural transformations can often be more cumbersome than
 working directly with the underlying families of morphisms; moreover, we
@@ -33,7 +33,8 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
 -->
 
 We'll refer to the natural-transformation versions of predicates on
-morphisms by a superscript `ⁿ`:
+morphisms by a superscript `ⁿ`. A **natural isomorphism** is simply an
+isomorphism in a functor category.
 
 ```agda
   Inversesⁿ : {F G : Functor C D} → F => G → G => F → Type _

@@ -42,7 +42,7 @@ out.
 
 We start with a category $\cC$ together with a chosen functor, the
 **tensor product**, $\otimes : \cC \times \cC \to \cC$, and a
-distinguished object $I : \cC$, the **tensor unit**. These take the
+distinguished object $1 : \cC$, the **tensor unit**. These take the
 place of the multiplication operation and identity element,
 respectively.
 
@@ -92,11 +92,17 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
 
 <!--
 ```agda
+  λ≅ : ∀ {X} → X ≅ Unit ⊗ X
+  λ≅ = isoⁿ→iso unitor-l _
+
   λ← : ∀ {X} → Hom (Unit ⊗ X) X
   λ← = unitor-l .Cr._≅_.from .η _
 
   λ→ : ∀ {X} → Hom X (Unit ⊗ X)
   λ→ = unitor-l .Cr._≅_.to .η _
+
+  ρ≅ : ∀ {X} → X ≅ X ⊗ Unit
+  ρ≅ = isoⁿ→iso unitor-r _
 
   ρ← : ∀ {X} → Hom (X ⊗ Unit) X
   ρ← = unitor-r .Cr._≅_.from .η _
@@ -159,6 +165,22 @@ children's drawing of a house, so that it fits on the page horizontally.
       → (α← A B C ◀ D) ∘ α← A (B ⊗ C) D ∘ (A ▶ α← B C D)
       ≡ α← (A ⊗ B) C D ∘ α← A B (C ⊗ D)
 ```
+
+<!--
+```agda
+  triangle-α→ : ∀ {A B} → (A ▶ λ←) ∘ α→ _ _ _ ≡ ρ← ◀ B
+  triangle-α→ = rswizzle (sym triangle) (α≅ .invr)
+
+  pentagon-α→
+    : ∀ {A B C D}
+    → (A ▶ α→ B C D) ∘ α→ A (B ⊗ C) D ∘ (α→ A B C ◀ D)
+    ≡ α→ A B (C ⊗ D) ∘ α→ (A ⊗ B) C D
+  pentagon-α→ = inverse-unique refl refl
+    (▶.F-map-iso (α≅ Iso⁻¹) ∘Iso α≅ Iso⁻¹ ∘Iso ◀.F-map-iso (α≅ Iso⁻¹))
+    (α≅ Iso⁻¹ ∘Iso α≅ Iso⁻¹)
+    (sym (assoc _ _ _) ∙ pentagon)
+```
+-->
 
 ## Deloopings
 
@@ -224,4 +246,83 @@ Endomorphisms B a = mon where
     ni .natural x y f = sym $ Cr.to B.associator .is-natural _ _ _
   mon .triangle = B.triangle _ _
   mon .pentagon = B.pentagon _ _ _ _
+```
+
+## Properties
+
+<!--
+```agda
+module Monoidal {o ℓ} {C : Precategory o ℓ} (M : Monoidal-category C) where
+  open Cr C
+  open Monoidal-category M public
+```
+-->
+
+While the `triangle`{.Agda} and `pentagon`{.Agda} identities turn out
+to be sufficient to derive all the desired coherence in a monoidal
+category, this is not exactly trivial. We prove a few basic identities
+that follow from the axioms.
+
+First, we will show that the two ways of going $1 \otimes A \otimes B
+\to A \otimes B$ (using the unitor on $A$ or on $A \otimes B$) are coherent.
+We do this by pasting isomorphisms together to form a triangular prism
+with given sides and lid, as in the following diagram:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  & {((1 \otimes 1) \otimes A)\otimes B} \\
+  {(1 \otimes (1 \otimes A))\otimes B} & {(1 \otimes 1)\otimes (A \otimes B)} & {(1 \otimes A)\otimes B} \\
+  & {1 \otimes (1 \otimes (A\otimes B))} \\
+  {1\otimes((1\otimes A)\otimes B)} && {1\otimes (A\otimes B)}
+  \arrow["{1 \otimes (\lambda \otimes B)}"', from=4-1, to=4-3]
+  \arrow["\alpha", from=2-1, to=4-1]
+  \arrow["\alpha"', from=2-3, to=4-3]
+  \arrow["{(1 \otimes \lambda)\otimes B}"'{pos=0.2}, curve={height=6pt}, from=2-1, to=2-3]
+  \arrow["{1 \otimes \alpha}"', dashed, from=4-1, to=3-2]
+  \arrow["{1 \otimes \lambda}"', dashed, from=3-2, to=4-3]
+  \arrow["{\alpha^{-1}\otimes B}", from=2-1, to=1-2]
+  \arrow["{(\rho\otimes A)\otimes B}", from=1-2, to=2-3]
+  \arrow["\alpha", dashed, from=1-2, to=2-2]
+  \arrow["\alpha", dashed, from=2-2, to=3-2]
+\end{tikzcd}\]
+~~~
+
+We obtain the commutativity of the bottom triangle, which yields the
+desired equation since $1 \otimes -$ is an equivalence.
+
+```agda
+  triangle-λ← : ∀ {A B} → λ← ∘ α→ Unit A B ≡ λ← ⊗₁ id
+  triangle-λ← {A} {B} = push-eqⁿ (unitor-l ni⁻¹) $
+    ▶.F-∘ _ _ ∙ ap to (Iso-prism base sq1 sq2 sq3)
+    where
+      base : ◀.F-map-iso (α≅ Iso⁻¹) ∘Iso ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹))
+           ≡ ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹))
+      base = ≅-path (◀.collapse triangle)
+
+      sq1 : ◀.F-map-iso (α≅ Iso⁻¹) ∘Iso α≅ ∘Iso α≅ ≡ α≅ ∘Iso ▶.F-map-iso α≅
+      sq1 = ≅-path (rswizzle (sym pentagon-α→ ∙ assoc _ _ _)
+        (◀.annihilate (α≅ .invl)))
+
+      sq2 : ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∘Iso α≅
+          ≡ (α≅ ∘Iso α≅) ∘Iso ▶.F-map-iso (λ≅ Iso⁻¹)
+      sq2 = ≅-path $
+        α→ _ _ _ ∘ ((ρ← ⊗₁ id) ⊗₁ id)    ≡⟨ associator .Isoⁿ.to .is-natural _ _ _ ⟩
+        (ρ← ⊗₁ ⌜ id ⊗₁ id ⌝) ∘ α→ _ _ _  ≡⟨ ap! ⊗.F-id ⟩
+        (ρ← ⊗₁ id) ∘ α→ _ _ _            ≡˘⟨ pulll triangle-α→ ⟩
+        (id ⊗₁ λ←) ∘ α→ _ _ _ ∘ α→ _ _ _ ∎
+
+      sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∘Iso α≅
+          ≡ α≅ ∘Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
+      sq3 = ≅-path (associator .Isoⁿ.to .is-natural _ _ _)
+```
+
+As a consequence, we get that the two unitors $1 \otimes 1 \to 1$ agree:
+
+```agda
+  λ≡ρ : λ← {Unit} ≡ ρ← {Unit}
+  λ≡ρ = push-eqⁿ (unitor-r ni⁻¹) $
+    (λ← ⊗₁ id)            ≡˘⟨ triangle-λ← ⟩
+    λ← ∘ α→ _ _ _         ≡⟨ (insertl (λ≅ .invl) ·· refl⟩∘⟨ sym (unitor-l .Isoⁿ.from .is-natural _ _ _) ·· cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
+    (id ⊗₁ λ←) ∘ α→ _ _ _ ≡⟨ triangle-α→ ⟩
+    (ρ← ⊗₁ id)            ∎
 ```
