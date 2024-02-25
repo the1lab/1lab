@@ -1,8 +1,8 @@
 {
   "owner": "agda",
   "repo": "agda",
-  "branch": "master",
+  "branch": "aliao/instance-discrim-tree",
   "private": false,
-  "rev": "a445e3b555bd978200f7d7ca93e9ba445ed639c0",
-  "sha256": "1j50qcvjpzy5fpms3msfymfmaacc2fyaljqx7liy0vp23hbaq2a7"
+  "rev": "7bf14e3971b9aa7b637baba71c0ec84ee5cab345",
+  "sha256": "01arsimz447v0i47fgdk3xa30ycsh7s593gmvf1hb3gmbzsja9hw"
 }
