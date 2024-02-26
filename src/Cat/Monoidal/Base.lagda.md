@@ -263,6 +263,12 @@ to be sufficient to derive all the desired coherence in a monoidal
 category, this is not exactly trivial. We prove a few basic identities
 that follow from the axioms.
 
+::: source
+The proofs in this section are from Kelly [-@Kelly:coherence], but the
+visualisation as a triangular prism takes inspiration from the previous
+formalisation in [`agda-categories`](https://agda.github.io/agda-categories/Categories.Category.Monoidal.Properties.html).
+:::
+
 First, we will show that the two ways of going $1 \otimes A \otimes B
 \to A \otimes B$ (using the unitor on $A$ or on $A \otimes B$) are coherent.
 We do this by pasting isomorphisms together to form a triangular prism
