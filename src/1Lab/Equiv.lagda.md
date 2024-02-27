@@ -771,6 +771,15 @@ module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
       (sym p)
     .linv → J (λ _ p → ap to (sym (η _) ∙ ap from p) ∙ ε _ ≡ p)
       (sym (∙-swapr (∙-idl _ ∙ ap sym (sym (zig _)) ∙ sym (∙-idr _) ∙ sym (ap-∙ to _ _))))
+
+module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) where
+  open is-iso f-iso renaming (inverse to inverse-iso)
+
+  injective : ∀ {x y} → f x ≡ f y → x ≡ y
+  injective p = sym (linv _) ·· ap inv p ·· linv _
+
+  inverse : Iso B A
+  inverse = inv , inverse-iso
 ```
 -->
 

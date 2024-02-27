@@ -293,6 +293,7 @@ div.diagram-container {
   img.diagram {
     margin: auto;
     display: block;
+    max-width: 100%;
 
     overflow-x: auto;
   }

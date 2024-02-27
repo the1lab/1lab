@@ -29,11 +29,11 @@ module Cat.Monoidal.Strength where
 ```agda
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (C-monoidal : Monoidal-category C)
+  (Cᵐ : Monoidal-category C)
   (F : Functor C C)
   where
   open Cat.Reasoning C
-  open Monoidal-category C-monoidal
+  open Monoidal-category Cᵐ
   open Functor F
   private module F = Cat.Functor.Reasoning F
 ```
@@ -139,13 +139,13 @@ A functor equipped with a strength is called a **strong functor**.
   Left-strength-path
     : ∀ {a b} → a .Left-strength.left-strength ≡ b .Left-strength.left-strength
     → a ≡ b
-  Left-strength-path p = Equiv.injective (Iso→Equiv left-eqv) (Σ-prop-path (λ _ → hlevel 1) p)
+  Left-strength-path p = Iso.injective left-eqv (Σ-prop-path (λ _ → hlevel 1) p)
 
   private unquoteDecl right-eqv = declare-record-iso right-eqv (quote Right-strength)
   Right-strength-path
     : ∀ {a b} → a .Right-strength.right-strength ≡ b .Right-strength.right-strength
     → a ≡ b
-  Right-strength-path p = Equiv.injective (Iso→Equiv right-eqv) (Σ-prop-path (λ _ → hlevel 1) p)
+  Right-strength-path p = Iso.injective right-eqv (Σ-prop-path (λ _ → hlevel 1) p)
 ```
 -->
 
@@ -153,8 +153,8 @@ A functor equipped with a strength is called a **strong functor**.
 
 <!--
 ```agda
-  module _ (C-braided : Braided-monoidal C-monoidal) where
-    open Braided C-monoidal C-braided
+  module _ (Cᵇ : Braided-monoidal Cᵐ) where
+    open Braided Cᵐ Cᵇ
     open is-iso
 ```
 -->
@@ -180,7 +180,9 @@ Therefore, the literature usually speaks of "strength" in a symmetric
 monoidal category to mean either a left or a right strength, but note
 that this is not quite the same as a `Strength`{.Agda} as defined above,
 which has left and right strengths *not necessarily related* by the
-braiding. If they are, we will say that the strength is *symmetric*.
+braiding. If they are, we will say that the strength is *symmetric*;
+such a strength contains exactly the information of a left (or right)
+strength.
 
 ```agda
     is-symmetric-strength : Strength → Type (o ⊔ ℓ)
@@ -282,8 +284,8 @@ module _ {o ℓ} {C : Precategory o ℓ}
 -->
 
 ```agda
-  left^rev≃right : Left-strength (M ^rev) F ≃ Right-strength M F
-  left^rev≃right = Iso→Equiv is where
+  strength^rev : Left-strength (M ^rev) F ≃ Right-strength M F
+  strength^rev = Iso→Equiv is where
     is : Iso _ _
     is .fst l = record
       { right-strength = NT (λ _ → σ) λ _ _ _ → σ.is-natural _ _ _
@@ -299,7 +301,7 @@ module _ {o ℓ} {C : Precategory o ℓ}
     is .snd .linv _ = Left-strength-path _ _ trivial!
 ```
 
-## Sets-endofunctors are strong
+## Sets-endofunctors are strong {defines="sets-endofunctors-are-strong"}
 
 <!--
 ```agda

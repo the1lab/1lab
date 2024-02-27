@@ -29,6 +29,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
     module C = Cat.Reasoning C
   open Functor
   open _=>_
+  open CD using (H-Level-is-invertible) public
 ```
 -->
 

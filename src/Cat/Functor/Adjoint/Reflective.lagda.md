@@ -59,8 +59,8 @@ When this is the case, we refer to the [[left adjoint]] functor $L$ as the
 **reflector**, and $\iota$ exhibits $\cC$ as a **reflective
 subcategory** of $\cD$. Reflective subcategory inclusions are of
 particular importance because they are [monadic functors]: They exhibit
-$\cC$ as the category of algebras for an (idempotent) monad on
-$\cD$.
+$\cC$ as the category of algebras for an ([[idempotent|idempotent monad]])
+monad on $\cD$.
 :::
 
 [monadic functors]: Cat.Functor.Adjoint.Monadic.html

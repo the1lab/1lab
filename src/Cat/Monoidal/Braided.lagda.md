@@ -15,7 +15,7 @@ open _=>_
 
 ```agda
 module Cat.Monoidal.Braided {o ℓ}
-  {C : Precategory o ℓ} (C-monoidal : Monoidal-category C)
+  {C : Precategory o ℓ} (Cᵐ : Monoidal-category C)
   where
 ```
 
@@ -24,7 +24,7 @@ module Cat.Monoidal.Braided {o ℓ}
 <!--
 ```agda
 open Cat.Reasoning C
-open Monoidal C-monoidal
+open Monoidal Cᵐ
 ```
 -->
 
@@ -139,9 +139,9 @@ is-symmetric-braiding braiding = ∀ {A B} → β→ ∘ β→ {A} {B} ≡ id
 
 record Symmetric-monoidal : Type (o ⊔ ℓ) where
   field
-    has-is-braided : Braided-monoidal
+    Cᵇ : Braided-monoidal
 
-  open Braided-monoidal has-is-braided hiding (β≅) public
+  open Braided-monoidal Cᵇ hiding (β≅) public
 
   field
     has-is-symmetric : is-symmetric-braiding braiding
@@ -185,9 +185,9 @@ record make-symmetric-monoidal : Type (o ⊔ ℓ) where
       → (id ⊗₁ β→) ∘ α→ B A C ∘ (β→ ⊗₁ id) ≡ α→ B C A ∘ β→ ∘ α→ A B C
 
   to-symmetric-monoidal : Symmetric-monoidal
-  to-symmetric-monoidal .has-is-braided .braiding = has-braiding
-  to-symmetric-monoidal .has-is-braided .braiding-α→ = has-braiding-α→
-  to-symmetric-monoidal .has-is-braided .unbraiding-α→ {A} {B} {C} =
+  to-symmetric-monoidal .Cᵇ .braiding = has-braiding
+  to-symmetric-monoidal .Cᵇ .braiding-α→ = has-braiding-α→
+  to-symmetric-monoidal .Cᵇ .unbraiding-α→ {A} {B} {C} =
     subst (λ β → (id ⊗₁ β {_} {_}) ∘ α→ B A C ∘ (β {_} {_} ⊗₁ id) ≡ α→ _ _ _ ∘ β {_} {_} ∘ α→ _ _ _)
       β→≡β← has-braiding-α→
   to-symmetric-monoidal .has-is-symmetric = symmetric
@@ -199,8 +199,8 @@ open make-symmetric-monoidal using (to-symmetric-monoidal) public
 
 <!--
 ```agda
-module Braided (C-braided : Braided-monoidal) where
-  open Braided-monoidal C-braided public
+module Braided (Cᵇ : Braided-monoidal) where
+  open Braided-monoidal Cᵇ public
 ```
 -->
 

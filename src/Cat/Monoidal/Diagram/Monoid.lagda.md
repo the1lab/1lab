@@ -364,13 +364,13 @@ The unit laws are witnessed by the commutativity of this diagram:
 
 ```agda
   Mon₁[_] .F₀' m .μ-unitl =
-    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ⊗₁ id)          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp refl (F.introl refl))) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ⊗₁ id)          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (refl ,ₚ F.introl refl)) ⟩
     F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ⊗₁ F₁ C.id) ∘ (ε ⊗₁ id) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
     F₁ (m .μ) ∘ F₁ (m .η C.⊗₁ C.id) ∘ φ ∘ (ε ⊗₁ id)    ≡⟨ F.pulll (m .μ-unitl) ⟩
     F₁ C.λ← ∘ φ ∘ (ε ⊗₁ id)                            ≡⟨ F-λ← ⟩
     λ←                                                 ∎
   Mon₁[_] .F₀' m .μ-unitr =
-    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .η) ∘ ε))          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp (F.introl refl) refl)) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .η) ∘ ε))          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (F.introl refl ,ₚ refl)) ⟩
     F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .η)) ∘ (id ⊗₁ ε) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
     F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .η) ∘ φ ∘ (id ⊗₁ ε)    ≡⟨ F.pulll (m .μ-unitr) ⟩
     F₁ C.ρ← ∘ φ ∘ (id ⊗₁ ε)                            ≡⟨ F-ρ← ⟩
@@ -405,12 +405,12 @@ The unit laws are witnessed by the commutativity of this diagram:
 
 ```agda
   Mon₁[_] .F₀' m .μ-assoc =
-    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .μ) ∘ φ))                       ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp (F.introl refl) refl)) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .μ) ∘ φ))                       ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (F.introl refl ,ₚ refl)) ⟩
     F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .μ)) ∘ (id ⊗₁ φ)              ≡⟨ (refl⟩∘⟨ extendl (φ.is-natural _ _ _)) ⟩
     F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .μ) ∘ φ ∘ (id ⊗₁ φ)                 ≡⟨ F.pulll (m .μ-assoc) ⟩
     F₁ (m .μ C.∘ (m .μ C.⊗₁ C.id) C.∘ C.α← _ _ _) ∘ φ ∘ (id ⊗₁ φ)   ≡⟨ F.popr (F.popr F-α←) ⟩
     F₁ (m .μ) ∘ F₁ (m .μ C.⊗₁ C.id) ∘ φ ∘ (φ ⊗₁ id) ∘ α← _ _ _      ≡˘⟨ pullr (extendl (φ.is-natural _ _ _)) ⟩
-    (F₁ (m .μ) ∘ φ) ∘ (F₁ (m .μ) ⊗₁ F₁ C.id) ∘ (φ ⊗₁ id) ∘ α← _ _ _ ≡⟨ refl⟩∘⟨ ⊗.pulll (Σ-pathp refl (F.eliml refl)) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ (F₁ (m .μ) ⊗₁ F₁ C.id) ∘ (φ ⊗₁ id) ∘ α← _ _ _ ≡⟨ refl⟩∘⟨ ⊗.pulll (refl ,ₚ F.eliml refl) ⟩
     (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ⊗₁ id) ∘ α← _ _ _            ∎
 ```
 

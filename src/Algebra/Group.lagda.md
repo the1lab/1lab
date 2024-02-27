@@ -128,7 +128,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-group)
 
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
-is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
+is-group-is-prop {A = A} x y = Iso.injective eqv $
      1x=1y
   ,ₚ funext (λ a →
       monoid-inverse-unique x.has-is-monoid a _ _
