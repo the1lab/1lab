@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Semigroups
+# Semigroups {defines=semigroup}
 
 ```agda
 record is-semigroup {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
@@ -52,7 +52,7 @@ of the language of higher categories:
 the "pentagonator") witnessing commutativity of the diagram below, where
 all the faces are `α`:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {(a \star b) \star (c\star d)} \\
   {((a \star b) \star c)\star d} && {a\star(b\star(c\star d)))} \\

@@ -37,7 +37,7 @@ displayed over `Sets`{.Agda}, regardless of the size of the object- and
 Hom-spaces of $\mathcal{C}$.
 
 In a neutral presentation of [[displayed category]] theory, the collection
-of objects over $S$ would given by the space of functors
+of objects over $S$ would be given by the space of functors
 $[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
 essentially an $S$-indexed family of objects of $C$, hence the name
 "family fibration". To reduce the noise, however, in HoTT we can (ab)use
@@ -162,23 +162,22 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors .F₁ {X} {Y} f .is-natural x y =
     J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)
       (ap (f x ∘_) (lift-f X .F-id) ·· id-comm ·· ap (_∘ f x) (sym (lift-f Y .F-id)))
-  Families→functors .F-id = Nat-path λ x → refl
+  Families→functors .F-id = trivial!
   Families→functors .F-∘ f g =
-    ap (Families→functors .F₁) (transport-refl _) ∙ Nat-path λ x → refl
+    ap (Families→functors .F₁) (transport-refl _) ∙ trivial!
 
   Families→functors-is-ff : is-fully-faithful Families→functors
   Families→functors-is-ff = is-iso→is-equiv
-    (iso η (λ x → Nat-path λ _ → refl) λ x → refl)
+    (iso η (λ x → trivial!) λ x → refl)
 
   open is-precat-iso
   Families→functors-is-iso : is-precat-iso Families→functors
   Families→functors-is-iso .has-is-ff = Families→functors-is-ff
-  Families→functors-is-iso .has-is-iso =
-    is-iso→is-equiv (iso F₀
-      (λ x → Functor-path (λ _ → refl)
-        (J (λ _ p → lift-f (x .F₀) .F₁ p ≡ x .F₁ p)
-           (lift-f (x .F₀) .F-id ∙ sym (x .F-id))))
-      (λ x → refl))
+  Families→functors-is-iso .has-is-iso = is-iso→is-equiv $ iso F₀
+    (λ x → Functor-path (λ _ → refl)
+      (J (λ _ p → lift-f (x .F₀) .F₁ p ≡ x .F₁ p)
+          (lift-f (x .F₀) .F-id ∙ sym (x .F-id))))
+    (λ x → refl)
 
   Families-are-categories : is-category C → is-category (Fibre Family X)
   Families-are-categories isc .to-path im = funext λ x →
@@ -199,7 +198,7 @@ forward direction.
 Family-generic-object→Strict-equiv
   : Globally-small (Family {h})
   → Σ[ Strict ∈ Precategory h h ]
-    (is-set (Precategory.Ob Strict) × Equivalence Strict C)
+    (is-set ⌞ Strict ⌟ × Equivalence Strict C)
 Family-generic-object→Strict-equiv small =
   Strict , hlevel! , eqv module Family-generic-object-strict where
   open Globally-small small
@@ -330,7 +329,7 @@ Strict→Family-generic-object ob-set = gobj where
   gobj .classify-cartesian _ .universal _ h' = h'
   gobj .classify-cartesian _ .commutes _ h' = funext λ _ → idl _
   gobj .classify-cartesian _ .unique m' p = funext λ x →
-    sym (idl _) ∙ p $ₚ x
+    sym (idl _) ∙ p # x
 ```
 
 ### Skeletal generic objects

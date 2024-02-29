@@ -24,7 +24,7 @@ _ = ap-sym
 ```
 -->
 
-# Types are groupoids
+# Types are groupoids {defines="types-are-higher-groupoids"}
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
 an _$\infty$-groupoid_. The higher structure of a type begins with its
@@ -149,6 +149,7 @@ module _ where
     ℓ : Level
     A B : Type ℓ
     w x y z : A
+    a b c d : A
 
   open 1Lab.Path
 ```
@@ -217,7 +218,7 @@ established that functions behave like functors: These are the lemmas
 
 Since a _lot_ of Homotopy Type Theory is dealing with paths, this
 section introduces useful helpers for dealing with $n$-ary compositions.
-For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
+For instance, we know that $p\inv ∙ p ∙ q$ is $q$, but this involves
 more than a handful of intermediate steps:
 
 ```agda
@@ -270,6 +271,37 @@ more than a handful of intermediate steps:
     ·· ap (_∙ sym p) sq
     ·· ∙-cancelr r (sym p)
 ```
+
+While [[connections]] give us degenerate squares where two adjacent faces are
+some path and the other two are `refl`{.Agda}, it is sometimes also useful to
+have a degenerate square with two pairs of equal adjacent faces.
+We can build this using `hcomp`{.Agda} and more connections:
+
+```agda
+  double-connection
+    : (p : a ≡ b) (q : b ≡ c)
+    → Square p p q q
+  double-connection {b = b} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → b
+    k (i = i0) → p (j ∨ ~ k)
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → p (i ∨ ~ k)
+    k (j = i1) → q (i ∧ k)
+```
+
+This corresponds to the following diagram, which expresses the trivial equation
+$p \bullet q \equiv p \bullet q$:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+	a & b \\
+	b & c
+	\arrow["p", from=1-1, to=1-2]
+	\arrow["p"', from=1-1, to=2-1]
+	\arrow["q"', from=2-1, to=2-2]
+	\arrow["q", from=1-2, to=2-2]
+\end{tikzcd}\]
+~~~
 
 # Groupoid structure of types (cont.)
 

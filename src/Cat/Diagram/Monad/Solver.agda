@@ -1,6 +1,6 @@
 module Cat.Diagram.Monad.Solver where
 
-open import 1Lab.Prelude hiding (id; _∘_)
+open import 1Lab.Prelude hiding (id; _∘_; refl⟩∘⟨_; _⟩∘⟨refl)
 open import 1Lab.Reflection hiding (_++_)
 
 open import Cat.Base
@@ -150,8 +150,8 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   vmap-sound [] = sym M-id
   vmap-sound (k ∷ v) =
     M₁ ⟦ k ⟧ₖ ∘ ⟦ do-vmap v ⟧ᵥ ≡⟨ refl⟩∘⟨ vmap-sound v ⟩
-    M₁ ⟦ k ⟧ₖ M.𝒟.∘ M₁ ⟦ v ⟧ᵥ  ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
-    M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ) ∎
+    M₁ ⟦ k ⟧ₖ ∘ M₁ ⟦ v ⟧ᵥ      ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
+    M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ)       ∎
 
   vconcat-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ v1 ++ v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
   vconcat-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
@@ -164,7 +164,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   enact-laws-sound (kmap k1) (kmap k2) v =
     ⟦ do-vmap (enact-laws k1 k2 []) ++ v ⟧ᵥ     ≡⟨ vconcat-sound (do-vmap (enact-laws k1 k2 [])) v ⟩
     ⟦ do-vmap (enact-laws k1 k2 []) ⟧ᵥ ∘ ⟦ v ⟧ᵥ ≡⟨ vmap-sound (enact-laws k1 k2 []) ⟩∘⟨refl ⟩
-    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ M.𝒟.∘ ⟦ v ⟧ᵥ    ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
+    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ ∘ ⟦ v ⟧ᵥ        ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
     M₁ ⟦ k1 ⟧ₖ ∘ M₁ (⟦ k2 ⟧ₖ ∘ id) ∘ ⟦ v ⟧ᵥ     ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ₖ ⟩ ⟩∘⟨refl) ⟩
     M₁ ⟦ k1 ⟧ₖ ∘ M₁ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ            ∎
   enact-laws-sound (kmap {Y = Y} k1) (kunit X) v =
@@ -181,7 +181,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   enact-laws-sound (kmult X) (kmap (kmult .X)) v =
     mult.η ⟦ X ⟧ₒ ∘ ⟦ push-frm (kmult (‶M₀‶ X)) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-frm-sound (kmult (‶M₀‶ X)) v ⟩
     mult.η ⟦ X ⟧ₒ ∘ mult.η (M₀ ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (sym mult-assoc) ⟩
-    mult.η ⟦ X ⟧ₒ ∘ M₁ (mult.η ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ ∎
+    mult.η ⟦ X ⟧ₒ ∘ M₁ (mult.η ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ      ∎
   enact-laws-sound (kmult X) (kunit _) v = insertl right-ident
   enact-laws-sound (kmult X) (kmult _) v = refl
 
@@ -192,8 +192,8 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   vcomp-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
   vcomp-sound (k ∷ v1) v2 =
     ⟦ push-frm k (do-vcomp v1 v2) ⟧ᵥ ≡⟨ push-frm-sound k (do-vcomp v1 v2) ⟩
-    ⟦ k ⟧ₖ ∘ ⟦ do-vcomp v1 v2 ⟧ᵥ ≡⟨ pushr (vcomp-sound v1 v2) ⟩
-    (⟦ k ⟧ₖ ∘ ⟦ v1 ⟧ᵥ) ∘ ⟦ v2 ⟧ᵥ ∎
+    ⟦ k ⟧ₖ ∘ ⟦ do-vcomp v1 v2 ⟧ᵥ     ≡⟨ pushr (vcomp-sound v1 v2) ⟩
+    (⟦ k ⟧ₖ ∘ ⟦ v1 ⟧ᵥ) ∘ ⟦ v2 ⟧ᵥ     ∎
 
   eval-sound : ∀ (e : ‶Hom‶ X Y) → ⟦ eval e ⟧ᵥ ≡ ⟦ e ⟧ₕ
   eval-sound (‶M₁‶ e) =
@@ -211,7 +211,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
 
   abstract
     solve : ∀ (e1 e2 : ‶Hom‶ X Y) → ⟦ eval e1 ⟧ᵥ ≡ ⟦ eval e2 ⟧ᵥ → ⟦ e1 ⟧ₕ ≡ ⟦ e2 ⟧ₕ
-    solve e1 e2 p = sym (eval-sound e1) ·· p ·· (eval-sound e2)
+    solve e1 e2 p = sym (eval-sound e1) ·· p ·· eval-sound e2
 
 module Reflection where
 

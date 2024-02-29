@@ -27,11 +27,18 @@ open Σ public
 
 {-# BUILTIN SIGMA Σ #-}
 
-syntax Σ A (λ x → B) = Σ[ x ∈ A ] B
-
 infixr 4 _,_
-infix 5 Σ
 ```
+
+<!--
+```agda
+Σ-syntax : ∀ {ℓ ℓ'} (A : Type ℓ) (F : A → Type ℓ') → Type _
+Σ-syntax X F = Σ X F
+
+syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
+infix 5 Σ-syntax
+```
+-->
 
 Similarly, for the unit type:
 

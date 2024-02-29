@@ -20,7 +20,7 @@ import Cat.Reasoning
 module Topoi.Classifying.Diaconescu where
 ```
 
-# Diaconescu's theorem
+# Diaconescu's theorem {defines="Diaconescu's-theorem"}
 
 Let $\Sigma$ be a **signature** consisting of sorts $A, B, C\dots$,
 function symbols $f, \dots : A \to B$, and  relation symbols $~, \dots$.
@@ -28,8 +28,8 @@ We can build a **logical theory** on top of this signature by imposing
 **axioms** of the form
 
 $$
-P \vdash_{x} Q\text{,}
-$$
+P \vdash_{x} Q
+$$,
 
 where $P$ and $Q$ are formulae, and $x$ is a context consisting of
 variables typed with sorts from the signature. Depending on the
@@ -66,13 +66,13 @@ $$
 x \land \bigvee_i F(i) = \bigvee_i (x \land F(i))
 $$
 
-holds. We call such a structure a _frame_, and we can see that that a
-frame determines a topological space $X$, by letting the opens of the
-topology be the elements of the frame (the points come for free as
-filters satisfying a certain condition). This space $X$ can be called
-the **classifying space** of the theory $T$, since points of $X$
-correspond to models of $T$, and the specialisation preorder on $X$
-corresponds to homomorphism of models.
+holds. We call such a structure a _frame_, and we can see that a frame
+determines a topological space $X$, by letting the opens of the topology
+be the elements of the frame (the points come for free as filters
+satisfying a certain condition). This space $X$ can be called the
+**classifying space** of the theory $T$, since points of $X$ correspond
+to models of $T$, and the specialisation preorder on $X$ corresponds to
+homomorphism of models.
 
 If our theory is _not_ propositional, however, a topological space won't
 cut it, since there can be more than one homomorphism between two given

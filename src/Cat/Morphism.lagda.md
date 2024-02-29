@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; module Extensionality)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_ ; module Extensionality)
 
 open import Cat.Solver
 open import Cat.Base
@@ -386,7 +386,7 @@ has-section+monic→has-retract sect monic .is-retract =
 -->
 
 
-## Isos
+## Isos {defines="isomorphism invertible"}
 
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
 \circ g$ and $g \circ f$ both equal to the identity. A map $f : A \to B$
@@ -494,6 +494,7 @@ _∘Iso_ : a ≅ b → b ≅ c → a ≅ c
 (f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
 
 infixr 40 _∘Iso_
+infixr 41 _Iso⁻¹
 
 invertible-∘
   : ∀ {f : Hom b c} {g : Hom a b}
@@ -598,17 +599,17 @@ private
 
 abstract
   inverse-unique
-    : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) {f : x ≅ b} {g : y ≅ d}
+    : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) (f : x ≅ b) (g : y ≅ d)
     → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
   inverse-unique =
-    J' (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+    J' (λ a c p → ∀ {b d} (q : b ≡ d) (f : a ≅ b) (g : c ≅ d)
       → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
       → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from))
-      λ x → J' (λ b d q → {f : x ≅ b} {g : x ≅ d}
+      λ x → J' (λ b d q → (f : x ≅ b) (g : x ≅ d)
                 → PathP (λ i → Hom x (q i)) (f .to) (g .to)
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
-            λ y {f} {g} p →
+            λ y f g p →
               f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩
               f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
               (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym p) ∙ f .invr) ∙ idl _ ⟩
@@ -618,13 +619,13 @@ abstract
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
   → PathP (λ i → p i ≅ q i) f g
-≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q {f = f} {g = g} r)
+≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q f g r)
 
 ≅-pathp-from
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
   → PathP (λ i → p i ≅ q i) f g
-≅-pathp-from p q {f = f} {g = g} r = ≅-pathp-internal p q (inverse-unique q p {f = f Iso⁻¹} {g = g Iso⁻¹} r) r
+≅-pathp-from p q {f = f} {g = g} r = ≅-pathp-internal p q (inverse-unique q p (f Iso⁻¹) (g Iso⁻¹) r) r
 
 ≅-path : {f g : a ≅ b} → f ._≅_.to ≡ g ._≅_.to → f ≡ g
 ≅-path = ≅-pathp refl refl
@@ -668,6 +669,77 @@ abstract
 ```
 -->
 
+Isomorphisms enjoy a **2-out-of-3** property: if any 2 of $f$, $g$, and
+$f \circ g$ are isomorphisms, then so is the third.
+
+```agda
+inverses-cancell
+  : ∀ {f : Hom b c} {g : Hom a b} {g⁻¹ : Hom b a} {fg⁻¹ : Hom c a}
+  → Inverses g g⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses f (g ∘ fg⁻¹)
+
+inverses-cancelr
+  : ∀ {f : Hom b c} {f⁻¹ : Hom c b} {g : Hom a b} {fg⁻¹ : Hom c a}
+  → Inverses f f⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses g (fg⁻¹ ∘ f)
+
+invertible-cancell
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible g → is-invertible (f ∘ g)
+  → is-invertible f
+
+invertible-cancelr
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible f → is-invertible (f ∘ g)
+  → is-invertible g
+```
+
+<details>
+<summary>We are early into our bootstrapping process for category theory,
+so the proofs of these lemmas are quite low-level, and thus omitted.
+</summary>
+
+```agda
+inverses-cancell g-inv fg-inv .invl =
+  assoc _ _ _ ∙ fg-inv .invl
+inverses-cancell g-inv fg-inv .invr =
+  sym (idr _)
+  ∙ ap₂ _∘_ refl (sym (g-inv .invl))
+  ∙ assoc _ _ _
+  ∙ ap₂ _∘_
+    (sym (assoc _ _ _)
+    ∙ sym (assoc _ _ _)
+    ∙ ap₂ _∘_ refl (fg-inv .invr)
+    ∙ idr _)
+    refl
+  ∙ g-inv .invl
+
+inverses-cancelr f-inv fg-inv .invl =
+  sym (idl _)
+  ∙ ap₂ _∘_ (sym (f-inv .invr)) refl
+  ∙ sym (assoc _ _ _)
+  ∙ ap₂ _∘_ refl
+    (assoc _ _ _
+    ∙ assoc _ _ _
+    ∙ ap₂ _∘_ (fg-inv .invl) refl
+    ∙ idl _)
+  ∙ f-inv .invr
+inverses-cancelr f-inv fg-inv .invr =
+  sym (assoc _ _ _) ∙ fg-inv .invr
+
+invertible-cancell g-inv fg-inv =
+  inverses→invertible $
+  inverses-cancell
+    (g-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+
+invertible-cancelr f-inv fg-inv =
+  inverses→invertible $
+  inverses-cancelr
+    (f-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+```
+</details>
 
 We also note that invertible morphisms are both epic and monic.
 

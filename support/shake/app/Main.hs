@@ -33,12 +33,14 @@ import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Modules
 import Shake.Diagram
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
 import Definitions
 import Timer
+import Shake.Recent (recentAdditions)
 
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
@@ -48,6 +50,7 @@ import Timer
 rules :: Rules ()
 rules = do
   agdaRules
+  digestRules
   gitRules
   katexRules
   moduleRules
@@ -119,7 +122,7 @@ rules = do
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
     getDirectoryFiles "support/web/css" ["**/*.scss"] >>= \files -> need ["support/web/css" </> f | f <- files]
-    command_ [] "sassc" [inp, out]
+    command_ [] "sass" [inp, out]
 
   "_build/html/favicon.ico" %> \out -> do
     need ["support/favicon.ico"]
@@ -178,6 +181,8 @@ rules = do
   phony "typecheck-ts" do
     getDirectoryFiles "support/web/js" ["**/*.ts", "**/*.tsx"] >>= \files -> need ["support/web/js" </> f | f <- files]
     nodeCommand [] "tsc" ["--noEmit", "-p", "tsconfig.json"]
+
+  phony "recent" do liftIO . print =<< recentAdditions
 
   -- Profit!
 

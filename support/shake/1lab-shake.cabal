@@ -52,7 +52,7 @@ common common
     Macros,
     Timer,
     Definitions
-  default-language: Haskell2010
+  default-language: GHC2021
   ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
   default-extensions: BlockArguments, LambdaCase
 
@@ -77,6 +77,7 @@ executable shake
       HTML.Emit
     , Shake.AgdaCompile
     , Shake.Diagram
+    , Shake.Digest
     , Shake.Git
     , Shake.KaTeX
     , Shake.LinkGraph

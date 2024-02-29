@@ -46,7 +46,7 @@ module _ {o ℓ o' ℓ'} (P : Poset o ℓ) (Q : Poset o' ℓ') (f : ⌞ P ⌟ �
 
   ```agda
   is-antitone : Type _
-  is-antitone = ∀ {x y} → x P.≤ y → f x Q.≤ f y
+  is-antitone = ∀ {x y} → x P.≤ y → f y Q.≤ f x
   ```
 
 - :::{.definition #order-reflection}
@@ -89,7 +89,7 @@ module _ {o ℓ o' ℓ'} (P : Poset o ℓ) (Q : Poset o' ℓ') (f : ⌞ P ⌟ �
   monotone-reflection→is-order-embedding
     : is-monotone → is-order-reflection → is-order-embedding
   monotone-reflection→is-order-embedding p q .fst = p
-  monotone-reflection→is-order-embedding p q .snd = prop-ext! p q .snd
+  monotone-reflection→is-order-embedding p q .snd = biimp-is-equiv! p q
   ```
 
 <!--

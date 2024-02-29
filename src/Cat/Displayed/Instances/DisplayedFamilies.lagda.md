@@ -71,10 +71,10 @@ We can embed each $X(i) : E_{P(i)}$ into $\cE_{\Sigma (i : I) P(i)}$
 by reindexing along the second projection $\Sigma (i : I) P(i) \to P(i)$
 
 To show the reverse direction, suppose we have some function $f : A \to I$,
-along with an object $\cE_{A}$. We can obtain a family of sets $f^{-1} : I \to \set$
+along with an object $\cE_{A}$. We can obtain a family of sets $f\inv : I \to \set$
 by taking the fibres of $f$. Furthermore, note that for each $i : I$, we
-have a map $f^{-1}(i) \to A$ from the fibre of $f$ at $A$ to $A$; reindexing
-along this map yields an object $\cE_{f^{-1}(i)}$ as desired.
+have a map $f\inv(i) \to A$ from the fibre of $f$ at $A$ to $A$; reindexing
+along this map yields an object $\cE_{f\inv(i)}$ as desired.
 
 Now that we are armed with the intuition, on with the construction!
 Recall that the object objects over $x : \cB$ shall be triples

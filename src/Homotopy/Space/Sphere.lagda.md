@@ -54,7 +54,7 @@ SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
   iso-pf .linv S = refl
 ```
 
-# n-Spheres
+# n-Spheres {defines="sphere"}
 
 The spheres of higher dimension can be defined inductively:
 $S^{n + 1} = \Sigma S^n$, that is, suspending the $n$-sphere constructs
@@ -74,13 +74,13 @@ A slightly less trivial example of definitions lining up is the verification
 that `Sⁿ⁻¹ 2` is equivalent to our previous definition of `S¹`:
 
 ```agda
-SuspS⁰≃S¹ : Sⁿ⁻¹ 2 ≡ S¹
-SuspS⁰≃S¹ = ua (SuspS⁰→S¹ , is-iso→is-equiv iso-pf) where
+SuspS⁰≡S¹ : Sⁿ⁻¹ 2 ≡ S¹
+SuspS⁰≡S¹ = ua (SuspS⁰→S¹ , is-iso→is-equiv iso-pf) where
 ```
 
 In `Sⁿ⁻¹ 2`, we have two point constructors joined by two paths, while in
 `S¹` we have a single point constructor and a loop. Geometrically, we
-can picture a morphing `Sⁿ⁻¹ 2` into ` S¹` by squashing one of the meridians
+can picture morphing `Sⁿ⁻¹ 2` into `S¹` by squashing one of the meridians
 down to a point, thus bringing `N` and `S` together. This intuition leads
 to a definition:
 
@@ -88,8 +88,8 @@ to a definition:
   SuspS⁰→S¹ : Sⁿ⁻¹ 2 → S¹
   SuspS⁰→S¹ N = base
   SuspS⁰→S¹ S = base
-  SuspS⁰→S¹ (merid N i) = loop i
-  SuspS⁰→S¹ (merid S i) = base
+  SuspS⁰→S¹ (merid N i) = base
+  SuspS⁰→S¹ (merid S i) = loop i
 ```
 
 In the other direction, we send `base` to `N`, and then need to send
@@ -100,7 +100,7 @@ both meridians.
 ```agda
   S¹→SuspS⁰ : S¹ → Sⁿ⁻¹ 2
   S¹→SuspS⁰ base = N
-  S¹→SuspS⁰ (loop i) = (merid N ∙ sym (merid S)) i
+  S¹→SuspS⁰ (loop i) = (merid S ∙ sym (merid N)) i
 ```
 
 <details> <summary> We then verify that these maps are inverse equivalences.
@@ -114,18 +114,24 @@ using lemmas on transport in pathspaces. </summary>
   iso-pf .rinv base = refl
   iso-pf .rinv (loop i) =
     ap (λ p → p i)
-      (ap SuspS⁰→S¹ (merid N ∙ sym (merid S))  ≡⟨ ap-∙ SuspS⁰→S¹ (merid N) (sym (merid S))⟩
-      loop ∙ refl                              ≡⟨ ∙-idr loop ⟩
-      loop                                     ∎)
+      (ap SuspS⁰→S¹ (merid S ∙ sym (merid N)) ≡⟨ ap-∙ SuspS⁰→S¹ (merid S) (sym (merid N))⟩
+      loop ∙ refl                             ≡⟨ ∙-idr _ ⟩
+      loop                                    ∎)
   iso-pf .linv N = refl
-  iso-pf .linv S = merid S
-  iso-pf .linv (merid N i) j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → merid N i
+  iso-pf .linv S = merid N
+  iso-pf .linv (merid N i) j = merid N (i ∧ j)
+  iso-pf .linv (merid S i) j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → merid S i
     k (i = i0) → N
-    k (i = i1) → merid S (j ∨ ~ k)
-    k (j = i0) → ∙-filler (merid N) (sym (merid S)) k i
-    k (j = i1) → merid N i
-  iso-pf .linv (merid S i) j =
-    merid S (i ∧ j)
+    k (i = i1) → merid N (j ∨ ~ k)
+    k (j = i0) → ∙-filler (merid S) (sym (merid N)) k i
+    k (j = i1) → merid S i
 ```
 </details>
+
+<!--
+```agda
+Sⁿ : Nat → Type∙ lzero
+Sⁿ n = Sⁿ⁻¹ (suc n) , N
+```
+-->

@@ -64,7 +64,7 @@ These non-trivial composites consist of following the left leg of the
 diagram below, followed by the bottom leg. For it to commute, that path
 has to be the same as following the right leg.
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {\operatorname{apex}} \\
   {F(x)} && {F(y)}
@@ -203,8 +203,8 @@ differently.
       nt : M => const! (K .apex)
       nt .η x = term α' .centre .hom
       nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
-    isl .σ-comm = Nat-path λ x → term _ .centre .commutes _
-    isl .σ-uniq {σ' = σ'} x = Nat-path λ _ → ap hom $ term _ .paths λ where
+    isl .σ-comm = ext λ x → term _ .centre .commutes _
+    isl .σ-uniq {σ' = σ'} x = ext λ _ → ap hom $ term _ .paths λ where
       .hom        → σ' .η _
       .commutes _ → sym (x ηₚ _)
 ```

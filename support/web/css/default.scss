@@ -2,21 +2,27 @@
 @import "mixins.scss";
 @import "theme.scss";
 
-@import "components/modal.scss";
-@import "components/search.scss";
-@import "components/unfolded-footnote.scss";
+@import "components/sidenotes.scss";
 @import "components/controls.scss";
+@import "components/profile.scss";
+@import "components/commit.scss";
+@import "components/search.scss";
+@import "components/modal.scss";
+@import "components/toc.scss";
 
 @import "code.scss";
 
 html {
-  min-height: 100%;
   height: 100%;
-  max-width: 100%;
   margin: 0;
 
-  background-color: var(--text-bg);
-  color:            var(--text-fg);
+  background-color: theme(--text-bg);
+  color:            theme(--text-fg);
+}
+
+html, body, main, div#post-toc-container {
+  min-height: 100vh;
+  max-width: 100vw;
 }
 
 :root {
@@ -24,6 +30,8 @@ html {
   --sans-serif: "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --font-size: 1.4rem;
   --code-font-size: calc(0.85 * var(--font-size));
+
+  --sidenote-separation: 2em;
 
   &.sans-serif {
     --serif: "";
@@ -43,14 +51,18 @@ html {
   &.show-hidden-code .commented-out {
     display: revert;
   }
+
+  &.justified {
+    text-align: justify;
+    hyphens: auto;
+  }
 }
 
 body {
   font-family: var(--serif), var(--sans-serif);
+  font-size: var(--font-size);
 
   width: 100%;
-
-  font-size: var(--font-size);
 
   &.text-page {
     @include centered-contents;
@@ -77,78 +89,20 @@ main {
   margin: 0px auto 0px auto;
   flex: 1 0 auto;
 
+  padding-inline: 0.75em;
+  @include widescreen { padding: 0; }
+
   box-sizing: border-box;
-
-  div#post-toc-container {
-    aside {
-      display: none;
-      a[href].header-link {
-        span.header-link-emoji {
-          display: none;
-        }
-      }
-    }
-
-    article {
-      line-height: 1.2;
-
-      a[href].header-link {
-        color: var(--text-fg);
-        cursor: default;
-
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: center;
-
-        &:hover {
-          text-decoration: none !important;
-          background-color: var(--text-bg) !important;
-          span.header-link-emoji {
-            display: inline-block;
-          }
-        }
-
-        &.hover-highlight {
-          background-color: var(--text-bg) !important;
-        }
-
-        span.header-link-emoji {
-          display: none;
-          font-size: 12pt;
-          margin-left: 1em;
-          cursor: pointer;
-        }
-      }
-    }
-
-  }
 }
 
-@include highlight(warning,        var(--warning-bg),     var(--warning-icon));
-@include highlight(note,           var(--note-bg),        var(--note-icon));
-@include highlight(terminology,    var(--terminology-bg), var(--terminology-icon));
-
-div.asides {
-  * {
-    margin: 0;
-  }
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  align-items: center;
-}
-
-figure.wraparound {
-  float: right;
-  width: auto;
-
-  margin-left: 2em;
-}
+@include highlight(warning,     theme(--warning-bg),     theme(--warning-icon));
+@include highlight(note,        theme(--note-bg),        theme(--note-icon));
+@include highlight(terminology, theme(--terminology-bg), theme(--terminology-icon));
+@include highlight(source,      theme(--source-bg),      theme(--source-icon));
 
 figure {
   overflow-x: auto;
   overflow-y: clip;
-  margin: auto;
 
   @include centered-contents;
 
@@ -165,11 +119,9 @@ figure {
 ol, ul {
   padding-left: 1.2em;
   li {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-block: 5px;
     p {
-      margin-top: 10px;
-      margin-bottom: 10px;
+      margin-block: 10px;
     }
   }
 }
@@ -177,15 +129,41 @@ ol, ul {
 span.katex {
   font-size: inherit;
   line-height: inherit;
+
+  span.mord.text > span.mord.textrm {
+    font-family: var(--serif), var(--sans-serif);
+  }
 }
 
 span.abbrev {
   text-decoration: 2px dotted underline;
 }
 
-.katex-display {
+span.katex-display {
+  overflow-x: auto;
+  overflow-y: clip;
+
+  // KaTeX is really bad at coming up with a bounding box for the entire
+  // span which includes all the superscripts. For example, try rendering
+  //
+  //    \mathcal{C} \xrightarrow{X} \mathrm{PSh}(\mathcal{C})
+  //
+  // in the demo on katex.org, then inspect the enclosing
+  // span.katex-display and add overflow-x: auto; to the element styles
+  // At the time of writing (2024-02-17), the top serifs of the X get
+  // basically entirely clipped.
+  //
+  // The solution is to position display maths closer to the elements
+  // around it on the block axis, and to make up with *padding* instead.
+  // Padding the bounding box by 0.5em; is slightly absurd, but it does
+  // guarantee that we won't have clipping issues unless KaTeX well and
+  // truly screws up the character metrics.
+
+  margin-block: -0.25em;
+
   > span.katex {
     white-space: normal;
+    padding-block: 0.5em;
   }
 }
 
@@ -210,10 +188,8 @@ div.mathpar {
 
 div.columns {
   blockquote, details.blockquote {
-    padding-right:  1em;
-    padding-left:   1em;
-    padding-top:    0.2em;
-    padding-bottom: 0.2em;
+    padding-inline: 1em;
+    padding-block:  0.2em;
 
     border: 0;
   }
@@ -225,7 +201,7 @@ p > code, summary > code {
 }
 
 blockquote, details.blockquote {
-  @include material(var(--blockquote-bg));
+  @include material(theme(--blockquote-bg));
 
   margin-left: 0;
   margin-right: 0;
@@ -235,150 +211,28 @@ blockquote, details.blockquote {
   }
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin-block-start: 1em;
+  margin-block-end: -0.25em;
+}
+
 table {
-  margin: auto;
   border-collapse: collapse;
+  width: 100%;
 
   td, th {
     text-align: center;
-    padding: 0px 1em 0px 1em;
-  }
-}
-
-@media only screen and (max-width: 450px) {
-  body > header {
-    div#logo {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-    }
-  }
-}
-
-@media only screen and (min-width: 95rem) {
-  .narrow-only {
-    display: none !important;
-  }
-
-  main {
-    max-width: 100%;
-
-    div#post-toc-container {
-      display: grid;
-
-      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
-      grid-template-columns: 1fr minmax(0, 4fr) 1fr;
-
-      aside {
-        display: block !important;
-      }
-
-      aside {
-        margin-right: 1rem;
-
-        h3 { @include centered-contents; }
-
-        font-family: var(--sans-serif);
-        --font-size: 1.3rem;
-        --code-font-size: calc(0.92 * var(--font-size));
-
-        div#toc-container {
-          box-sizing: border-box;
-          overflow-x: hidden;
-          position: sticky;
-          top: $page-padding;
-
-          overflow-y: auto;
-          max-height: 90vh;
-
-          bottom: $page-padding;
-
-          padding-right: 1rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          width: 100%;
-
-          a[href]#logo.hover-highlight {
-            background-color: unset;
-          }
-
-          a[href].header-link {
-            &, &:visited {
-              color: var(--primary)
-            };
-
-            &.current-heading {
-              font-weight: bold;
-              color: var(--text-fg);
-            }
-          }
-
-          > hr {
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
-            width: 100%;
-            border: none;
-            border-bottom: 2px solid #94a3b8;
-          }
-
-          > svg {
-            font-family: 'Inria Sans';
-            min-height: 150px;
-            aspect-ratio: 1 / 1;
-            font-size: 14pt;
-          }
-
-          button {
-            display: none;
-          }
-
-          ul {
-            border-left: 2px solid $bluegray-400;
-            list-style-type: none;
-            padding-left: 1em;
-            margin-top: 0;
-            margin-bottom: 0;
-
-            a {
-              text-decoration: none;
-            }
-
-            a:hover {
-              text-decoration: underline;
-            }
-          }
-        }
-      }
-
-      article {
-        margin-top: -100px;
-        margin: auto;
-      }
-    }
-
-    div.columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1em;
-    }
-
-    padding: 0;
-    padding-bottom: 0.4em;
+    padding-inline: 1em;
   }
 }
 
 details {
-  margin-block: 1em;
-  border-left: 5px solid var(--note-bg);
-  padding-left: 1rem;
+  @include left-bordered(theme(--note-bg));
 
-  @include contains-code();
+  margin-block: 1em;
 
   > summary {
     list-style-type: none;
-    padding: 0.25em 0em 0.25em 0em;
 
     cursor: pointer;
 
@@ -387,10 +241,10 @@ details {
     }
 
     &::after {
-      content: 'read more';
+      content: 'read\A0more';
       font-style: italic;
       margin-left: 0.223em;
-      color: var(--text-fg);
+      color: theme(--text-fg);
     }
 
     > :nth-child(1) {
@@ -401,19 +255,14 @@ details {
   &[open] {
     summary {
       &::after {
-        content: 'read less';
+        content: 'read\A0less';
       }
       margin-bottom: 0.3em;
     }
   }
 
-  >*:not(summary) {
-    margin-left: 1em;
-    margin-right: 1em;
-  }
-
-  > :nth-child(1) { margin-block-start: 0; }
-  > :nth-last-child(1) { margin-block-start: 0; }
+  :nth-child(2) { margin-block-start: 0; }
+  :last-child { margin-block-start: 0; }
 }
 
 .commented-out {
@@ -422,73 +271,11 @@ details {
 }
 
 .commented-out > pre.Agda {
-  margin-top:    1em;
-  margin-bottom: 1em;
+  margin-block: 1em;
 }
 
 .commented-out.first-comment > pre.Agda {
   margin-top: 0;
-}
-
-div.profile {
-  &.pfp-left {
-    flex-direction: row;
-  }
-  &.pfp-right {
-    flex-direction: row-reverse;
-  }
-
-  border-top: 2px solid #444;
-
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-
-  gap: 1em;
-
-  .profile-pfp {
-    width: 20%;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .profile-pfp p {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-    width: 20%;
-
-    img {
-      width: 128px;
-      height: 128px;
-      clip-path: url(#squircle);
-      margin-bottom: 0.25em;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    .profile-name {
-      font-size: 19pt;
-    }
-    .profile-pronouns {
-      font-style: italic;
-    }
-  }
-}
-
-.author-list {
-  margin-top: 0.5em;
-  white-space: initial;
-  font-size: 0.8em;
-  font-style: italic;
 }
 
 .smallcaps {
@@ -499,55 +286,25 @@ div.diagram-container {
   width: 100%;
   overflow-x: auto;
 
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-block: 1em;
 
   img.diagram {
-    height: 200px;
     margin: auto;
     display: block;
 
     overflow-x: auto;
-
-    &.short-05 {
-      height: 150px;
-    }
-
-    &.short-1 {
-      height: 105px;
-    }
-
-    &.short-15 {
-      height: 80px;
-    }
-
-    &.short-2 {
-      height: 55px;
-    }
-
-    &.tall-1 {
-      height: 250px;
-    }
-
-    &.tall-15 {
-      height: 300px;
-    }
-
-    &.tall-2 {
-      height: 350px;
-    }
   }
 }
 
-article a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
-  color: var(--primary);
+main a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
+  color: theme(--primary);
   text-decoration: none;
+
   &:hover {
     text-decoration: 2px currentColor underline !important;
   }
-  &:visited {
-    color: var(--secondary);
-  }
+
+  &:visited { color: theme(--secondary); }
 }
 
 div#return {
@@ -555,10 +312,13 @@ div#return {
 }
 
 article {
-  padding-top: $page-padding;
-  padding-bottom: $page-padding;
+  padding-top:    $page-padding;
+  padding-bottom: calc($page-padding / 2);
   margin-top: 0 !important;
   max-width: 100%;
+  line-height: 1.2;
+
+  counter-reset: footnote-counter;
 
   > :nth-child(1), > pre.Agda:first-of-type {
     margin-top: 0;
@@ -580,16 +340,54 @@ article {
     text-align: center;
     font-style: italic;
   }
+
+  a[href].header-link {
+    color: theme(--text-fg);
+    cursor: default;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    &:hover {
+      text-decoration: none !important;
+      background-color: theme(--text-bg) !important;
+      span.header-link-emoji {
+        display: inline-block;
+      }
+    }
+
+    &.hover-highlight {
+      background-color: theme(--text-bg) !important;
+    }
+
+    span.header-link-emoji {
+      display: none;
+      font-size: 12pt;
+      margin-left: 1em;
+      cursor: pointer;
+    }
+  }
 }
 
 hr {
-  color: #ABB2BF;
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border: none;
+
+  content: ' ';
+  width: 100%;
+
+  height: $ruler-size;
+  background-color: theme(--ruler);
 }
 
 span.qed {
   float: right;
+}
+
+span.shaded {
+  background-color: theme(--diagram-shaded-bg);
 }
 
 /* The \liesover{} macro: It's awful and I hate it. The \liesover{} arrow
@@ -603,19 +401,70 @@ span.enclosing.liesover {
   background-position: center center;
 }
 
-@media (prefers-color-scheme: dark) {
-  span.enclosing.liesover {
-    background: url('../static/lies-over-dark.svg') no-repeat;
-    background-size: contain;
-    background-position: center center;
-  }
-}
 
 input {
-  background-color: var(--input-bg);
-  border: 1px solid var(--input-border);
-  color:  var(--text-fg);
+  background-color: theme(--input-bg);
+  border: 1px solid theme(--input-border);
+  color:  theme(--text-fg);
   border-radius: 3px;
 }
 
+kbd {
+  border:  1px solid theme(--input-border);
+  padding: 2px;
+  border-radius: 5px;
+
+  background-color: theme(--input-bg);
+  font-size: calc(0.75 * var(--code-font-size));
+
+  vertical-align: middle;
+}
+
 #post-toc-container { min-height: 90vh; }
+
+@media only screen and (max-width: 450px) {
+  body > header {
+    div#logo {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+}
+
+
+@include widescreen {
+  .narrow-only {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100%;
+
+    div#post-toc-container {
+      display: grid;
+
+      grid-template-areas: ". sidebar . content gutter .";
+
+      // The 0 minimum is required to avoid overflow, see
+      // https://css-tricks.com/preventing-a-grid-blowout/
+      grid-template-columns: 0.1fr 1fr 0.1fr minmax(0, 3fr) 1fr 0.2fr;
+
+      article {
+        grid-column: content;
+      }
+
+      aside#sidenote-container {
+        grid-column: gutter;
+        margin-left: var(--sidenote-separation);
+      }
+    }
+
+    div.columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+    }
+  }
+}

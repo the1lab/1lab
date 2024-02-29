@@ -51,7 +51,7 @@ where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathrm{PSh}(\mathcal{C})} && {\mathcal{D}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathbf{N}}"', shift right=2, from=1-3, to=1-1]
@@ -95,8 +95,8 @@ module _
     Nerve : Functor D (PSh κ C)
     Nerve .F₀ c = Hom-into D c F∘ Functor.op F
     Nerve .F₁ f = よ₁ D f ◂ (Functor.op F)
-    Nerve .F-id = Nat-path (λ _ → funext λ _ → D.idl _)
-    Nerve .F-∘ _ _ = Nat-path (λ _ → funext λ _ → sym (D.assoc _ _ _))
+    Nerve .F-id = ext λ _ _ → D.idl _
+    Nerve .F-∘ _ _ = ext λ _ _ → sym (D.assoc _ _ _)
 ```
 
 The action of $F$ on morphisms assembles into a natural transformation
@@ -107,8 +107,8 @@ the nerve functor associated to $F$ is the [[left Kan extension]] of $\cC$'s
 ```agda
     coapprox : よ C => Nerve F∘ F
     coapprox .η x .η y f            = F.₁ f
-    coapprox .η x .is-natural _ _ _ = funext λ _ → F.F-∘ _ _
-    coapprox .is-natural _ _ _      = Nat-path λ _ → funext λ _ → F.F-∘ _ _
+    coapprox .η x .is-natural _ _ _ = ext λ _   → F.F-∘ _ _
+    coapprox .is-natural _ _ _      = ext λ _ _ → F.F-∘ _ _
 ```
 
 ~~~{.quiver}
@@ -227,8 +227,8 @@ Recall that $\Lan_{\yo}(F)(P)$ is defined pointwise as the colimit under
 the diagram
 
 $$
-(\yo_\cC \downarrow P) \to C \xto{F} D\text{,}
-$$
+(\yo_\cC \downarrow P) \to C \xto{F} D
+$$,
 
 where we can identify $\yo_\cC \downarrow P$ with the [category of
 elements] of the presheaf $P$. Any object $i : \cC$ with
@@ -239,12 +239,11 @@ below we denote `elem`{.Agda}.
 
 ```agda
     elem : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
-         → (arg : ∣ P .F₀ i ∣)
-         → ↓Obj (よ C) (const! P)
+         → (arg : P ʻ i) → ↓Obj (よ C) (const! P)
     elem P i arg .x = i
     elem P i arg .y = tt
     elem P i arg .map .η j h = P .F₁ h arg
-    elem P i arg .map .is-natural _ _ f = funext λ _ → happly (P .F-∘ _ _) _
+    elem P i arg .map .is-natural _ _ f = ext λ _ → P .F-∘ _ _ $ₚ _
 ```
 
 The adjunction unit is easiest to describe: we must come up with a map
@@ -265,8 +264,8 @@ compatible maps $F(j) \to o$, where $j$ is an object in the comma
 category
 
 $$
-\yo_\cC \downarrow (\yo_\cD(o) \circ F)\text{.}
-$$
+\yo_\cC \downarrow (\yo_\cD(o) \circ F)
+$$.
 
 These, by definition, come with (natural) functions $\hom_\cC(-, j) \to
 \hom_\cD(F-, o)$, which we can evaluate at the identity morphism to get
@@ -296,39 +295,34 @@ This proof is hateful.
 
 ```agda
     adj .unit .η P .is-natural x y f =
-      funext λ _ → sym $ ↓colim.commutes P $ ↓hom (Nat-path λ _ → funext λ _ → P .F-∘ _ _ $ₚ _)
-    adj .unit .is-natural x y f =
-      Nat-path λ i → funext λ arg →
-        sym $ ↓colim.factors _ {j = elem x i arg} _ _
-        ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl
-                             (Nat-path λ _ → funext λ _ → f .is-natural _ _ _ $ₚ _))
+      funext λ _ → sym $ ↓colim.commutes P $ ↓hom (ext λ _ _ → P .F-∘ _ _ $ₚ _)
+    adj .unit .is-natural x y f = ext λ i arg → sym $
+        ↓colim.factors _ {j = elem x i arg} _ _
+      ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl
+          (ext λ _ _ → f .is-natural _ _ _ $ₚ _))
 
-    adj .counit .is-natural x y f =
-      ↓colim.unique₂ _ _
-        (λ {x'} {y'} f →
-          D.pullr (sym (y' .map .is-natural _ _ _ $ₚ _)
-                   ∙ ap (y' .map .η _) C.id-comm-sym)
-          ∙ ap (_ D.∘_) (f .sq ηₚ _ $ₚ C.id))
-        (λ j →
-          D.pullr (↓colim.factors _ _ _)
-          ∙ ↓colim.factors _ _ _)
-        (λ j → D.pullr (↓colim.factors _ _ _))
+    adj .counit .is-natural x y f = ↓colim.unique₂ _ _
+      (λ {x'} {y'} f →
+        D.pullr (sym (y' .map .is-natural _ _ _ $ₚ _)
+                  ∙ ap (y' .map .η _) C.id-comm-sym)
+        ∙ ap (_ D.∘_) (f .sq ηₚ _ $ₚ C.id))
+      (λ j →
+        D.pullr (↓colim.factors _ _ _)
+        ∙ ↓colim.factors _ _ _)
+      (λ j → D.pullr (↓colim.factors _ _ _))
 
-    adj .zig {A} =
-      ↓colim.unique₂ A _
-      (λ f → ↓colim.commutes _ f)
-        (λ j →
+    adj .zig {A} = ↓colim.unique₂ A _ (λ f → ↓colim.commutes _ f)
+      (λ j →
           D.pullr (↓colim.factors _ _ _)
-          ∙ ↓colim.factors _ _ _
-          ∙ ap (↓colim.ψ _)
-              (↓Obj-path _ _ refl refl
-                (Nat-path λ _ → funext λ _ →
-                   sym (j .map .is-natural _ _ _ $ₚ _)
-                   ∙ ap (j .map .η _) (C.idl _))))
-        (λ j → D.idl _)
-    adj .zag {d} =
-      Nat-path λ c → funext λ f →
-        ↓colim.factors (Nerve F .F₀ d) {j = elem _ c f} _ _
-        ∙ F.elimr refl
+        ∙ ↓colim.factors _ _ _
+        ∙ ap (↓colim.ψ _)
+            (↓Obj-path _ _ refl refl
+              (ext λ _ _ →
+                  sym (j .map .is-natural _ _ _ $ₚ _)
+                ∙ ap (j .map .η _) (C.idl _))))
+      (λ j → D.idl _)
+    adj .zag {d} = ext λ c f →
+      ↓colim.factors (Nerve F .F₀ d) {j = elem _ c f} _ _
+      ∙ F.elimr refl
 ```
 -->

@@ -93,15 +93,13 @@ The proof is mostly a calculation, so we present it without a lot of comment.
       to : m⊥o f X → m⊥m f (! T)
       to f⊥X {u} {v} sq =
         contr (f⊥X u .centre .fst , f⊥X u .centre .snd , !-unique₂ T _ _) λ m →
-          Σ-prop-path (λ _ → hlevel 1)
-            (ap fst (f⊥X u .paths (m .fst , m .snd .fst)))
+          Σ-prop-path! (ap fst (f⊥X u .paths (m .fst , m .snd .fst)))
 
       from : m⊥m f (! T) → m⊥o f X
       from f⊥! a = contr
         ( f⊥! {v = ! T} (!-unique₂ T _ _) .centre .fst
-        , f⊥! (!-unique₂ T _ _) .centre .snd .fst ) λ x →
-          Σ-prop-path (λ _ → hlevel 1)
-            (ap fst (f⊥! _ .paths (x .fst , x .snd , !-unique₂ T _ _)))
+        , f⊥! (!-unique₂ T _ _) .centre .snd .fst ) λ x → Σ-prop-path!
+          (ap fst (f⊥! _ .paths (x .fst , x .snd , !-unique₂ T _ _)))
 ```
 
 As a passing observation we note that if $f \ortho X$ and $X \cong Y$,
@@ -118,7 +116,7 @@ holds in the generality of precategories.
     contr
       ( g.to C.∘ contr' .centre .fst
       , C.pullr (contr' .centre .snd) ∙ C.cancell g.invl )
-      λ x → Σ-prop-path (λ _ → hlevel 1) $
+      λ x → Σ-prop-path! $
         ap₂ C._∘_ refl (ap fst (contr' .paths (g.from C.∘ x .fst , C.pullr (x .snd))))
         ∙ C.cancell g.invl
     where
@@ -175,7 +173,7 @@ the object. Given a map $a : a \to \iota X$,
     : ∀ {X} {a b} {f : C.Hom a b} → D.is-invertible (r.₁ f) → m⊥o C f (ι.₀ X)
   in-subcategory→orthogonal-to-inverted {X} {A} {B} {f} rf-inv a→x =
     contr (fact , factors) λ { (g , factors') →
-      Σ-prop-path (λ _ → hlevel 1) (h≡k factors factors') }
+      Σ-prop-path! (h≡k factors factors') }
     where
       module rf = D.is-invertible rf-inv
       module η⁻¹ {a} = C.is-invertible (is-reflective→unit-G-is-iso r⊣ι ι-ff {a})
@@ -186,8 +184,8 @@ unit morphism $\eta_{\iota X}$ is an isomorphism; We define a morphism
 $b : \iota r(A) \to \iota X$ as the composite
 
 $$
-\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta^{-1}} \iota(X)\text{,}
-$$
+\iota r(A) \xto{\iota r(a)} \iota r \iota(X) \xto{\eta\inv} \iota(X)
+$$,
 
 ```agda
       b : C.Hom (ι.₀ (r.₀ A)) (ι.₀ X)
@@ -206,8 +204,8 @@ $B \to \iota(X)$.
 We define _that_ using the map $b$ we just constructed. It's the composite
 
 $$
-B \xto{\eta} \iota r(B) \xto{\iota(r(f)^{-1})} \iota r(A) \xto{b} \iota(X)\text{,}
-$$
+B \xto{\eta} \iota r(B) \xto{\iota(r(f)\inv)} \iota r(A) \xto{b} \iota(X)
+$$,
 
 and a calculation shows us that this map is indeed a factorisation of
 $a$ through $f$.
@@ -229,8 +227,8 @@ note that we must have $r(h) = r(k)$ (since $r(f)$ is invertible, it is
 epic); But then we have
 
 $$
-\eta_{\iota X} h = \iota r(h) \eta = \iota r(k) \eta = \eta_{\iota X} k\text{,}
-$$
+\eta_{\iota X} h = \iota r(h) \eta = \iota r(k) \eta = \eta_{\iota X} k
+$$,
 
 and since $\eta_{\iota X}$ is an isomorphism, thus monic, we have $h =
 k$.

@@ -1,10 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -197,6 +198,14 @@ to-is-true
   → ∣ P ∣
   → P ≡ Q
 to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+
+tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
+tr-□ (inc x) = inc x
+tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
+
+□-tr : ∀ {ℓ} {A : Type ℓ} → □ A → ∥ A ∥
+□-tr (inc x) = inc x
+□-tr (squash x y i) = squash (□-tr x) (□-tr y) i
 ```
 -->
 
@@ -258,3 +267,18 @@ These connectives and quantifiers are only provided for completeness;
 if you find yourself building nested propositions, it is generally a good
 idea to construct the large proposition by hand, and then use truncation
 to turn it into a small proposition.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) where
+  Ω-image : Type ℓ'
+  Ω-image = Σ[ b ∈ B ] □ (fibre f b)
+
+  Ω-corestriction : A → Ω-image
+  Ω-corestriction a = f a , inc (a , refl)
+
+  opaque
+    Ω-corestriction-is-surjective : is-surjective Ω-corestriction
+    Ω-corestriction-is-surjective (b , p) = □-rec! (λ (a , p) → inc (a , Σ-prop-path! p)) p
+```
+-->

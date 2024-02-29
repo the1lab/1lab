@@ -169,7 +169,7 @@ functor.
   Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural' x y f =
     cast[] $
       to-pathp (α .is-natural x y f)
-      ∙[] symP (transport-filler (λ i → Hom[ idl id i ] _ _) (F₁ G f ∘' α .η x))
+      ∙[] symP (transport-filler (λ i → Hom[ idl id i ] _ _) (G .F₁ f ∘' α .η x))
 ```
 -->
 
@@ -190,14 +190,12 @@ Again, this isomorphism is *almost* definitional.
 
 ```agda
   Fibrewise-diagram-is-iso : ∀ {x} → is-precat-iso (Fibrewise-diagram {x})
-  Fibrewise-diagram-is-iso .is-precat-iso.has-is-ff =
-    is-iso→is-equiv $ iso
-      (ConstL-natl→Diagram-nat)
-      (λ α' → Nat-lift-pathp (λ _ → refl))
-      (λ α → Nat-path (λ _ → refl))
-  Fibrewise-diagram-is-iso .is-precat-iso.has-is-iso =
-    is-iso→is-equiv $ iso
-      ConstL→Diagram
-      (λ F' → Lifting-pathp E refl (λ _ → refl) (λ _ → refl))
-      (λ F → Functor-path (λ _ → refl) (λ _ → refl))
+  Fibrewise-diagram-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
+    (ConstL-natl→Diagram-nat)
+    (λ α' → Nat-lift-pathp (λ _ → refl))
+    (λ α → trivial!)
+  Fibrewise-diagram-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
+    ConstL→Diagram
+    (λ F' → Lifting-pathp E refl (λ _ → refl) (λ _ → refl))
+    (λ F → Functor-path (λ _ → refl) (λ _ → refl))
 ```

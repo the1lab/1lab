@@ -2,9 +2,10 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.Record
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
+open import 1Lab.HLevel.Closure
+open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -116,28 +117,6 @@ g) \circ h = f \circ (g \circ h)$.
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```
 
-We can define the type of *all* morphisms in a precategory as the total space of
-`Hom`{.Agda}:
-
-```agda
-  Mor : Type (o ⊔ h)
-  Mor = Σ[ a ∈ Ob ] Σ[ b ∈ Ob ] Hom a b
-```
-
-<!--
-```agda
-  Hom→Mor : {a b : Ob} → Hom a b → Mor
-  Hom→Mor f = _ , _ , f
-
-  Mor-path : {a b : Mor}
-           → (p : a .fst ≡ b .fst)
-           → (q : a .snd .fst ≡ b .snd .fst)
-           → PathP (λ i → Hom (p i) (q i)) (a .snd .snd) (b .snd .snd)
-           → a ≡ b
-  Mor-path p q r i = p i , q i , r i
-```
--->
-
 <!--
 ```agda
   module HLevel-instance where
@@ -159,11 +138,11 @@ categories_: The opposite of $C$, written $C\op$, has the same
 ```agda
 infixl 60 _^op
 _^op : ∀ {o₁ h₁} → Precategory o₁ h₁ → Precategory o₁ h₁
-(C ^op) .Precategory.Ob = Precategory.Ob C
-(C ^op) .Precategory.Hom x y = Precategory.Hom C y x
-(C ^op) .Precategory.Hom-set x y = Precategory.Hom-set C y x
-(C ^op) .Precategory.id = Precategory.id C
-(C ^op) .Precategory._∘_ f g = Precategory._∘_ C g f
+(C ^op) .Precategory.Ob = C .Precategory.Ob
+(C ^op) .Precategory.Hom     x y = C .Precategory.Hom y x
+(C ^op) .Precategory.Hom-set x y = C .Precategory.Hom-set y x
+(C ^op) .Precategory.id      = C .Precategory.id
+(C ^op) .Precategory._∘_ f g = C .Precategory._∘_ g f
 ```
 
 Composition in the opposite precategory $C\op$ is "backwards" with
@@ -183,7 +162,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \circ_{op}{f} = f$. The case for `idl`{.Agda} is symmetric.
 
 ```agda
-(C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
+(C ^op) .Precategory.assoc f g h i = C .Precategory.assoc h g f (~ i)
 ```
 
 For associativity, consider the case of `assoc`{.Agda} for the
@@ -308,10 +287,10 @@ C\op \to D\op$.
 
 ```agda
   op : Functor (C ^op) (D ^op)
-  F₀ op      = F₀
-  F₁ op      = F₁
-  F-id op    = F-id
-  F-∘ op f g = F-∘ g f
+  op .F₀      = F₀
+  op .F₁      = F₁
+  op .F-id    = F-id
+  op .F-∘ f g = F-∘ g f
 ```
 
 <!--
@@ -407,10 +386,10 @@ have a set of objects.
 
 ```agda
 Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C
-Functor.F₀ Id x = x
-Functor.F₁ Id f = f
-Functor.F-id Id = refl
-Functor.F-∘ Id f g = refl
+Id .Functor.F₀ x = x
+Id .Functor.F₁ f = f
+Id .Functor.F-id    = refl
+Id .Functor.F-∘ f g = refl
 ```
 
 # Natural transformations {defines="natural-transformation"}
@@ -468,7 +447,7 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
                → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
 ```
 
-Natural transformations also dualize. The opposite of $\eta : F
+Natural transformations also dualise. The opposite of $\eta : F
 \To G$ is $\eta\op : G\op \To F\op$.
 
 ```agda
@@ -561,11 +540,6 @@ is a proposition:
       (a .is-natural x y f)
       (b .is-natural x y f) i
 
-  Nat-path : {a b : F => G}
-           → ((x : _) → a .η x ≡ b .η x)
-           → a ≡ b
-  Nat-path = Nat-pathp refl refl
-
   _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
   p ηₚ x = ap (λ e → e .η x) p
 
@@ -582,6 +556,20 @@ is a proposition:
 ```agda
 open Precategory
 open _=>_
+
+instance
+  Underlying-Precategory : ∀ {o ℓ} → Underlying (Precategory o ℓ)
+  Underlying-Precategory = record { ⌞_⌟ = Precategory.Ob }
+
+  Funlike-Functor
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    → Funlike (Functor C D) ⌞ C ⌟ (λ x → ⌞ D ⌟)
+  Funlike-Functor = record { _#_ = Functor.F₀ }
+
+  Funlike-natural-transformation
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D}
+    → Funlike (F => G) ⌞ C ⌟ (λ x → D .Precategory.Hom (F # x) (G # x))
+  Funlike-natural-transformation = record { _#_ = _=>_.η }
 
 {-
 Set-up for using natural transformations with the extensionality tactic;
@@ -602,18 +590,18 @@ match funext *and* product extensionality.
 Extensional-natural-transformation
   : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → {F G : Functor C D}
-  → {@(tactic extensionalᶠ {A = Precategory.Ob C → Type _}
-        (λ x → D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)))
-      sa : ∀ x → Extensional (D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)) ℓr}
+  → {@(tactic extensionalᶠ {A = ⌞ C ⌟ → Type _}
+        (λ x → D .Hom (F # x) (G # x)))
+      sa : ∀ x → Extensional (D .Hom (F # x) (G # x)) ℓr}
   → Extensional (F => G) (o ⊔ ℓr)
 Extensional-natural-transformation {sa = sa} .Pathᵉ f g = ∀ i → Pathᵉ (sa i) (f .η i) (g .η i)
 Extensional-natural-transformation {sa = sa} .reflᵉ x i = reflᵉ (sa i) (x .η i)
-Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-path λ i →
+Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-pathp _ _ λ i →
   sa _ .idsᵉ .to-path (x i)
 Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
   is-prop→pathp
     (λ i → Π-is-hlevel 1
-      (λ _ → is-hlevel≃ 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
+      (λ _ → Equiv→is-hlevel 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
     _ _
 
 -- Actually define the loop-breaker instance which tells the

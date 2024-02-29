@@ -19,8 +19,8 @@ are [[merely]] equipped with a fibre of $f$. This has the expected
 universal property: we can factor any $f$ into
 
 $$
-A \epi \im(f) \mono B\text{,}
-$$
+A \epi \im(f) \mono B
+$$,
 
 and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
@@ -142,13 +142,11 @@ the construction and _actually work with it_, which is also important.
 3. So that points from $a$ are identified in $\im f$ exactly how they
 would be identified in $b$ under $f$.
 
-If we _had_ such a type, we could define an [embedding] $f' : \im f
+If we _had_ such a type, we could define an [[embedding]] $f' : \im f
 \mono B$, which tells us how to compute the path spaces in $\im f$: $(x
 \equiv y) \simeq (f'(x) \equiv f'(y))$. In fact, since images are almost
 entirely characterised by having such an embedding, we can use our
 hypothetical $f'$ to rewrite the third bullet point:
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 3. With a constructor coherently mapping proofs of $f'(x) \equiv f'(y)$
 to $x \equiv y$.
@@ -193,36 +191,39 @@ module Replacement
   data Image where
     inc  : A → Image
     quot : ∀ {r r'} → embed r ∼ embed r' → r ≡ r'
-    coh  : ∀ r → quot (rr (embed r)) ≡ refl
 
   embed (inc a)     = f a
   embed (quot p i)  = locally-small .to-path p i
-  embed (coh r i j) =
-    to-path-refl {a = embed r} locally-small i j
 ```
 
-Well, there's still a minor coherence quibble. To show that
-`image-embedding` is an embedding, we need `quot`{.Agda} to send the
-reflexivity of the identity system to the actual reflexivity path. But
-that's a single coherence constructor, not infinitely many, and it's
-satisfied by our projection function. We'll show that it's an embedding
-by showing that it's coherently cancellable, i.e. that we have an
-equivalence $(f'(x) \equiv f'(y)) \simeq (x \equiv y)$.
+And, having used inductive-recursion to tie the dependency knot, we're
+actually done: the construction above is coherent enough, _even if_ it
+looks like the `quot`{.Agda} constructor only says that `embed`{.Agda}
+is an injection. We can use the algebraic properties of identity systems
+to show that it's actually a proper embedding:
 
 ```agda
+  embed-is-embedding' : ∀ x → is-contr (fibre embed (embed x))
+  embed-is-embedding' x .centre = x , refl
+  embed-is-embedding' x .paths (y , q) =
+    Σ-pathp (quot (ls.from (sym q))) (commutes→square coh)
+    where abstract
+      coh : ls.to (ls.from (sym q)) ∙ q ≡ refl ∙ refl
+      coh = ap (_∙ q) (ls.ε (sym q)) ·· ∙-invl q ·· sym (∙-idl refl)
+
   embed-is-embedding : is-embedding embed
-  embed-is-embedding = cancellable→embedding λ {x y} →
-    Iso→Equiv (from , iso (ap embed) invr (invl {x} {y})) where
+  embed-is-embedding = embedding-lemma embed-is-embedding'
+```
 
-    from : ∀ {x y} → embed x ≡ embed y → x ≡ y
-    from path = quot (ls.from path)
+And it's possible to pull back the identity system on $b$ to one on $\im
+f$, to really drive home the point that points in the image are
+identified precisely through their identification, under $f$, in the
+codomain.
 
-    invr : ∀ {x y} → is-right-inverse (ap embed {x} {y}) from
-    invr = J (λ y p → from (ap embed p) ≡ p)
-             (ap quot (transport-refl _) ∙ coh _)
-
-    invl : ∀ {x y} → is-left-inverse (ap embed {x} {y}) from
-    invl p = ls.ε _
+```agda
+  Image-identity-system : is-identity-system (λ x y → embed x ∼ embed y) (λ _ → rr _)
+  Image-identity-system = pullback-identity-system locally-small
+    (embed , embed-is-embedding)
 ```
 
 <!--
@@ -246,18 +247,12 @@ As usual with these things, we can establish properties of
     is-prop→pathp (λ i → pprop (quot p i))
       (Image-elim-prop pprop pinc x)
       (Image-elim-prop pprop pinc y) i
-  Image-elim-prop pprop pinc (coh r i j) =
-    is-prop→squarep (λ i j → pprop (coh r i j))
-      (λ _ → Image-elim-prop pprop pinc r)
-      (is-prop→pathp (λ i → pprop _) _ _)
-      (λ _ → Image-elim-prop pprop pinc r)
-      (λ _ → Image-elim-prop pprop pinc r) i j
 ```
 
 From which surjectivity follows immediately:
 
 ```agda
-  inc-is-surjective : ∀ a → ∥ fibre inc a ∥
+  inc-is-surjective : is-surjective inc
   inc-is-surjective = Image-elim-prop (λ _ → squash) (λ x → inc (x , refl))
 ```
 
@@ -298,9 +293,9 @@ first step, and deal only with untruncated data from then on.
 ```
 
 Contracting the fibres is where we get some mileage out of having gotten
-the green slime out of `quot`{.Agda}. We have to show $f^{-1}(x) = i$,
+the green slime out of `quot`{.Agda}. We have to show $f\inv(x) = i$,
 as elements of the image, but we have an assumption that
-$\mathrm{embed}(i) = ff^{-1}(x)$, which, under `quot`{.agda}, is exactly
+$\mathrm{embed}(i) = ff\inv(x)$, which, under `quot`{.agda}, is exactly
 what we need.
 
 ```agda

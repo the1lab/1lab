@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Equiv.Embedding
+open import 1Lab.Function.Embedding
 
 open import Algebra.Prelude
 open import Algebra.Ring

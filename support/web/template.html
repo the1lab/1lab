@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,7 @@
 
   <title>$pagetitle$ - 1Lab</title>
 
-  <link rel="stylesheet" href="$base-url$/css/default.css" />
+  <link rel="stylesheet" href="$base-url$/css/default.css?v=$digest.css$" />
   <link rel="stylesheet" href="$base-url$/css/katex.min.css" />
 
   <meta name="twitter:card" content="summary" />
@@ -29,8 +30,8 @@
   <meta name="description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   $endif$
 
-  <script src="$base-url$/start.js"></script>
-  <script defer src="$base-url$/main.js"></script>
+  <script src="$base-url$/start.js?v=$digest.start-js$"></script>
+  <script defer src="$base-url$/main.js?v=$digest.main-js$"></script>
 
   <noscript>
     <style>
@@ -47,7 +48,9 @@
   <!-- Google font embeds -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
 
   <script>
     Object.assign(window, {
@@ -58,96 +61,103 @@
 </head>
 
 <body class="text-page">
-<main>
-<div id="post-toc-container" style="padding-left: 2rem; padding-right: 2rem;">
+  <main>
+    <div id="post-toc-container">
 
-  <!-- Table of contents (only if the page has a table of contents) -->
-  <aside id=toc>
-    <div id=toc-container style="min-width: 10rem; font-size: 15pt;">
-      <!-- Title for the page -->
-      <h3 class="Agda" style="margin-top: 0; margin-bottom: 0; white-space: pre;">
-        $if(customtitle)$
-        <a class="Module">$customtitle$</a>
-        $else$
-        <a class="Module">$title$</a>
-        $endif$
-      </h3>
+      <!-- Table of contents (only if the page has a table of contents) -->
+      <aside id=toc>
+        <!-- Title for the page -->
+        <h3 class="Agda" style="margin-top: 0; margin-bottom: 0; white-space: pre;">
+          $if(customtitle)$
+          <a class="Module">$customtitle$</a>
+          $else$
+          <a class="Module">$title$</a>
+          $endif$
+        </h3>
 
-      <!-- Cube logo -->
-      <a id=logo href="$base-url$/">
-        <img alt="1Lab"
-            src="$base-url$/static/cube-72x.png"
-            style="display: block; margin-bottom: 1em; margin: auto;"
-            width="32px"
-            height="32px"
-          />
-      </a>
-
-      <!-- Actual table of contents (separated from the rest by
-      horizontal rules) -->
-      <hr />
-      $if(toc)$
-      $table-of-contents$
-      <hr />
-      $endif$
-
-      <!-- Navbar navigation (lol) -->
-      <div id="return" style="white-space: nowrap;">
-        <div class="search-form search-form-proxy" role="form">
-          <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+        <!-- Cube logo -->
+        <div class="mathpar">
+          <a id=logo href="$base-url$/">
+            <img alt="1Lab" src="$base-url$/static/cube-72x.png" style="display: block; margin-bottom: 1em; margin: auto;"
+              width="32px" height="32px" />
+          </a>
         </div>
 
-      $if(is-index)$
-      $else$
-        <a href="$base-url$/">back to index</a> <br />
-      $endif$
-        <a href="all-pages.html">view all pages</a> <br />
-        <a href="https://github.com/plt-amy/1lab/blob/$source$">link to source</a> <br />
-        $if(authors)$
-        <hr /> <div class="author-list">This page was written by $authors$</div> <br />
-        $endif$
-      </div>
-    </div>
-  </aside>
+        <!-- Actual table of contents (separated from the rest by horizontal rules) -->
+        <hr />
+        <div id=toc-container style="min-width: 10rem; font-size: 15pt;">
+          $if(toc)$
+          $table-of-contents$
+          <hr />
+          $endif$
 
-  <article>
-    <!-- Article navigation (narrow screens only) -->
-    <div class="narrow-only" id="article-nav">
-      <!-- Index return anchor (only if the page is not the index) -->
-      $if(is-index)$
-      $else$
-      <div id=return>
-        <a href="$base-url$/">back to index</a>
-      </div>
-      $endif$
+          <!-- Navbar navigation (lol) -->
+          <div class="search-form search-form-proxy mathpar" role="form">
+            <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+          </div>
 
-      <!-- Navbar equations control -->
-      <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
-        <input name=navbar-eqns type="checkbox" class="equations" id=navbar-eqns>
-        <label for=navbar-eqns>Equations</label>
-      </span>
+          <noscript>
+            <div id="return" style="white-space: nowrap;">
+              $if(is-index)$
+              $else$
+              <a href="$base-url$/">back to index</a> <br />
+              $endif$
+              <a href="all-pages.html">view all pages</a> <br />
+              <a href="https://github.com/plt-amy/1lab/blob/$source$">link to source</a> <br />
+            </div>
+          </noscript>
 
-      <!-- Navbar footnotes control -->
-      <span class="inline-footnotes" style="display: none; gap: 0.25em; flex-wrap: nowrap;">
-        <input name=navbar-fns type="checkbox" class="inline-footnotes" id=navbar-fns>
-        <label for=navbar-fns>Inline Footnotes</label>
-      </span>
-    </div>
+          $if(authors)$
+          <hr />
+          <div class="author-list">This page was written by $authors$</div> <br />
+          $endif$
+        </div>
+      </aside>
+
+      <article>
+        <!-- Article navigation (narrow screens only) -->
+        <div class="narrow-only" id="article-nav">
+          <!-- Index return anchor (only if the page is not the index) -->
+          $if(is-index)$
+          $else$
+          <div id=return>
+            <a href="$base-url$/">back to index</a>
+          </div>
+          $endif$
+
+          <!-- Navbar equations control -->
+          <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+            <input name=navbar-eqns type="checkbox" class="equations" id=navbar-eqns>
+            <label for=navbar-eqns>Equations</label>
+          </span>
+
+          <!-- Navbar footnotes control -->
+          <span class="inline-footnotes" style="display: none; gap: 0.25em; flex-wrap: nowrap;">
+            <input name=navbar-fns type="checkbox" class="inline-footnotes" id=navbar-fns>
+            <label for=navbar-fns>Inline Footnotes</label>
+          </span>
+        </div>
 
 $body$
-$if(reference)$
-<hr />
-<section id="refs" role="doc-bibliography">
-<h2>References</h2>
-<ul>
-$for(reference)$
-<li id="$reference.id$" role="doc-biblioentry">$reference.body$</li>
-$endfor$
-</ul>
-</section>
-$endif$
-  </article>
-</div>
-</main>
+
+        $if(reference)$
+        <hr />
+        <section id="refs" role="doc-bibliography">
+          <h2>References</h2>
+          <ul>
+            $for(reference)$
+            <li id="$reference.id$" role="doc-biblioentry">$reference.body$</li>
+            $endfor$
+          </ul>
+        </section>
+        $endif$
+      </article>
+
+      <aside id="sidenote-container" style="visibility: hidden;">
+
+      </aside>
+    </div>
+  </main>
 </body>
+
 </html>

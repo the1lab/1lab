@@ -8,7 +8,7 @@ open import Algebra.Ring
 
 open import Cat.Diagram.Initial
 
-open import Data.Int
+open import Data.Int.HIT
 
 import Data.Nat as Nat
 
@@ -20,7 +20,7 @@ import Prim.Data.Nat as Nat
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
 
-# The initial ring
+# The initial ring {defines="initial-ring"}
 
 We have, in the introduction to rings, mentioned offhand that the ring
 $\ZZ$ is an initial object. This turns out to be a fairly nontrivial
@@ -68,8 +68,7 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemma x i }
-  where
+Int-is-initial R = contr z→r λ x → ext (lemma x) where
   module R = Ring-on (R .snd)
 ```
 
@@ -226,8 +225,8 @@ the number 1. This is actually precisely what we need to establish the
 result! That's because we have
 
 $$
-f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1\text{,}
-$$
+f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1
+$$,
 
 and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!
@@ -272,5 +271,5 @@ former!
 
 ```agda
 ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Ring-action Liftℤ (G .snd))
-ℤ-module-unique G = is-hlevel≃ 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
+ℤ-module-unique G = Equiv→is-hlevel 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
 ```

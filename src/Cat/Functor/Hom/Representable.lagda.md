@@ -59,12 +59,8 @@ record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
 
   module rep = Isoⁿ represents
 
-  equiv : ∀ {a} → C.Hom a rep ≃ ∣ F .F₀ a ∣
-  equiv = Iso→Equiv λ where
-    .fst                → rep.from .η _
-    .snd .is-iso.inv    → rep.to .η _
-    .snd .is-iso.rinv x → rep.invr ηₚ _ $ₚ x
-    .snd .is-iso.linv x → rep.invl ηₚ _ $ₚ x
+  equiv : ∀ {a} → C.Hom a rep ≃ F ʻ a
+  equiv = Equiv.inverse (natural-iso→equiv represents _)
 
   module Rep {a} = Equiv (equiv {a})
 
@@ -122,7 +118,7 @@ Representation-is-prop {F = F} c-cat x y = path where
       (Nat-pathp _ _ λ a → Hom-pathp-reflr (Sets _)
         {A = F .F₀ a} {q = λ i → el! (C.Hom a (objs i))}
         (funext λ x →
-           ap (λ e → e .Sets.to) (ap-F₀-iso c-cat (Hom-from C a) _) $ₚ _
+           ap (λ e → e .Sets.to) (ap-F₀-iso (Hom-from C a) c-cat _) $ₚ _
         ·· sym (Y.rep.to .is-natural _ _ _) $ₚ _
         ·· ap Y.Rep.from (sym (X.rep.from .is-natural _ _ _ $ₚ _)
                        ·· ap X.Rep.to (C.idl _)
@@ -194,11 +190,11 @@ representation→terminal-element {F} F-rep = term where
   term .has⊤ (elem o s) .centre .commute =
     F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
     R.from .η _ ⌜ C.id C.∘ R.to .η o s ⌝ ≡⟨ ap! (C.idl _) ⟩
-    R.from .η _ (R.to .η o s)            ≡⟨ R.invr ηₚ o $ₚ s ⟩
+    R.from .η _ (R.to .η o s)            ≡⟨ unext R.invr o s ⟩
     s                                    ∎
-  term .has⊤ (elem o s) .paths h = Element-hom-path _ _ $
+  term .has⊤ (elem o s) .paths h = ext $
     R.to .η o ⌜ s ⌝                  ≡˘⟨ ap¡ comm ⟩
-    R.to .η o (R.from .η _ (h .hom)) ≡⟨ R.invl ηₚ o $ₚ _ ⟩
+    R.to .η o (R.from .η _ (h .hom)) ≡⟨ unext R.invl o _ ⟩
     h .hom                           ∎
     where
       comm =
@@ -249,12 +245,8 @@ record Corepresentation (F : Functor C (Sets κ)) : Type (o ⊔ κ) where
 
   module corep = Isoⁿ corepresents
 
-  coequiv : ∀ {a} → C.Hom corep a ≃ ∣ F .F₀ a ∣
-  coequiv = Iso→Equiv λ where
-    .fst → corep.from .η _
-    .snd .is-iso.inv → corep.to .η _
-    .snd .is-iso.rinv x → corep.invr ηₚ _ $ₚ x
-    .snd .is-iso.linv x → corep.invl ηₚ _ $ₚ x
+  coequiv : ∀ {a} → C.Hom corep a ≃ F ʻ a
+  coequiv = Equiv.inverse (natural-iso→equiv corepresents _)
 
   module Corep {a} = Equiv (coequiv {a})
 
@@ -313,7 +305,7 @@ Corepresentation-is-prop {F = F} c-cat X Y = path where
        (Nat-pathp _ _ λ a → Hom-pathp-reflr (Sets _)
          {A = F .F₀ a} {q = λ i → el! (C.Hom (objs i) a)}
          (funext λ x →
-           ap (λ e → e .Sets.to) (ap-F₀-iso (opposite-is-category c-cat) (Hom-into C a) _) $ₚ _
+           ap (λ e → e .Sets.to) (ap-F₀-iso (Hom-into C a) (opposite-is-category c-cat) _) $ₚ _
            ·· sym (corep.to Y .is-natural _ _ _ $ₚ _)
            ·· ap (Corep.from Y) (sym (corep.from X .is-natural _ _ _ $ₚ _)
                                  ·· ap (Corep.to X) (C.idr _)
@@ -329,11 +321,11 @@ corepresentable if and only if its [[covariant category of elements]] has an
 ```agda
 initial-element→corepresentation
   : {F : Functor C (Sets κ)}
-  → Initial (Co.∫ C F) → Corepresentation F
+  → Initial (Co.∫ F) → Corepresentation F
 
 corepresentation→initial-element
   : {F : Functor C (Sets κ)}
-  → Corepresentation F → Initial (Co.∫ C F)
+  → Corepresentation F → Initial (Co.∫ F)
 ```
 
 <details>
@@ -370,18 +362,18 @@ corepresentation→initial-element {F} F-corep = init where
   open Co.Element
   open Co.Element-hom
 
-  init : Initial (Co.∫ C F)
+  init : Initial (Co.∫ F)
   init .bot .ob = F-corep .corep
   init .bot .section = R.from .η _ C.id
   init .has⊥ (Co.elem o s) .centre .hom = R.to .η _ s
   init .has⊥ (Co.elem o s) .centre .commute =
     F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
     R.from .η _ ⌜ R.to .η o s C.∘ C.id ⌝ ≡⟨ ap! (C.idr _) ⟩
-    R.from .η _ (R.to .η o s)            ≡⟨ R.invr ηₚ o $ₚ s ⟩
+    R.from .η _ (R.to .η o s)            ≡⟨ unext R.invr o s ⟩
     s                                    ∎
-  init .has⊥ (Co.elem o s) .paths h = Co.Element-hom-path _ _ $
+  init .has⊥ (Co.elem o s) .paths h = ext $
     R.to .η o ⌜ s ⌝                  ≡˘⟨ ap¡ comm ⟩
-    R.to .η o (R.from .η _ (h .hom)) ≡⟨ R.invl ηₚ o $ₚ _ ⟩
+    R.to .η o (R.from .η _ (h .hom)) ≡⟨ unext R.invl o _ ⟩
     h .hom                           ∎
     where
       comm =

@@ -13,7 +13,7 @@ open import Data.Set.Coequaliser
 module Cat.Diagram.Coend.Sets where
 ```
 
-# Coends in Sets
+# Coends in Sets {defines="coends-in-sets"}
 
 We can give an explicit construction of [coends] in the category of sets
 by taking a [coequaliser]. Intuitively, the coend should be the
@@ -48,7 +48,6 @@ continue with the construction!
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (F : Functor (C ^op ×ᶜ C) (Sets (o ⊔ ℓ))) where
-
   open Precategory C
   open Functor F
   open Coend
@@ -60,13 +59,13 @@ bit of bundling is required to make things well typed, but this is
 exactly the same pair of maps in the diagram above.
 
 ```agda
-  dimapl : Σ[ X ∈ Ob ] Σ[ Y ∈ Ob ] Σ[ f ∈ Hom Y X ] ∣ F₀ (X , Y) ∣
-         → Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣
-  dimapl (X , Y , f , Fxy) = X , (F₁ (id , f) Fxy)
+  dimapl : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
+         → Σ[ X ∈ C ] F ʻ (X , X)
+  dimapl (X , Y , f , Fxy) = X , F₁ (id , f) Fxy
 
-  dimapr : Σ[ X ∈ Ob ] Σ[ Y ∈ Ob ] Σ[ f ∈ Hom Y X ] ∣ F₀ (X , Y) ∣
-         → Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣
-  dimapr (X , Y , f , Fxy) = Y , (F₁ (f , id) Fxy)
+  dimapr : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
+         → Σ[ X ∈ C ] F ʻ (X , X)
+  dimapr (X , Y , f , Fxy) = Y , F₁ (f , id) Fxy
 ```
 
 Constructing the universal `Cowedge`{.Agda} is easy now that we've
@@ -75,7 +74,6 @@ taken the right coequaliser.
 ```agda
   Set-coend : Coend F
   Set-coend = coend where
-
     universal-cowedge : Cowedge F
     universal-cowedge .nadir = el! (Coeq dimapl dimapr)
     universal-cowedge .ψ X Fxx = inc (X , Fxx)
@@ -88,15 +86,16 @@ project out the bundled up object from the coend and feed that
 to the family associated to the cowedge `W`.
 
 ```agda
+    factoring : (W : Cowedge F) → Coeq dimapl dimapr → ⌞ W .nadir ⌟
+    factoring W (inc (o , x)) = W .ψ o x
+    factoring W (glue (X , Y , f , Fxy) i) = W .extranatural f i Fxy
+    factoring W (squash x y p q i j) = W .nadir .is-tr (factoring W x) (factoring W y) (λ i → factoring W (p i)) (λ i → factoring W (q i)) i j
+
     coend : Coend F
     coend .cowedge = universal-cowedge
-    coend .factor W =
-      Coeq-rec hlevel! (λ ∫F → W .ψ (∫F .fst) (∫F .snd)) λ where
-        (X , Y , f , Fxy) → happly (W .extranatural f) Fxy
+    coend .factor W = factoring W
     coend .commutes = refl
-    coend .unique {W = W} p =
-      funext $ Coeq-elim hlevel! (λ ∫F → happly p (∫F .snd)) λ where
-        (X , Y , f , Fxy) → is-set→squarep (λ _ _ → is-tr (W .nadir)) _ _ _ _
+    coend .unique {W = W} p = ext λ X x → p #ₚ x
 ```
 
 This construction is actually functorial! Given any functor
@@ -118,14 +117,6 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
         (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ··
         glue (X , Y , f , α .η (X , Y) Fxy) ··
         (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
-  Coends .F-id =
-    funext $ Coeq-elim
-      (λ _ → hlevel!)
-      (λ _ → refl)
-      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
-  Coends .F-∘ f g =
-    funext $ Coeq-elim
-      (λ _ → hlevel!)
-      (λ _ → refl)
-      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
+  Coends .F-id = trivial!
+  Coends .F-∘ f g = trivial!
 ```

@@ -1,11 +1,28 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Localisation
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Properties
+open import Cat.Instances.Discrete
+open import Cat.Diagram.Terminal
+open import Cat.Functor.Adjoint
+open import Cat.Instances.Comma
+open import Cat.Connected
+open import Cat.Groupoid
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
+
+open is-connected-cat
+open Precategory
+open Congruence
+open Functor
+open _=>_
+open ↓Obj
+open ↓Hom
 ```
 -->
 
@@ -13,12 +30,12 @@ import Cat.Reasoning as Cr
 module Cat.Functor.Final where
 ```
 
-# Final functors
+# Final functors {defines="final-functor"}
 
 A **final functor** expresses an equivalence of diagram schemata for the
-purposes of computing colimits: If $F : \cC \to \cD$ is final,
-then colimits for $D : \cD \to \cE$ are equivalents to colimits
-for $D\circ F : \cC \to \cE$. A terminological warning: In older
+purposes of computing colimits: if $F : \cC \to \cD$ is final,
+then colimits for $D : \cD \to \cE$ are equivalent to colimits
+for $D\circ F : \cC \to \cE$. A terminological warning: in older
 literature (e.g. [@Borceux:vol1] and [@AdamekRosicky]), these functors
 are called **cofinal**, but we stick with terminology from the nLab
 here.
@@ -39,50 +56,46 @@ module
 ```
 -->
 
-Finality has an elementary characterisation: We define a functor $F$ to
-be final if, for every $d$, the comma category $d \swarrow F$ is pointed
-and connected. That is, unpacking, the following data: For every object
-$d : \cD$, an object $d_0$ and a map $d_! : d \to F(d_0)$, and for
-every span
+Finality has an elementary characterisation: we define a functor $F$ to
+be final if, for every $d$, the comma category $d \swarrow F$ is
+[[connected|connected category]]. That is, unpacking, the following data:
+for every object $d : \cD$, an object $d_0$ and a map $d_! : d \to F(d_0)$,
+and for every span
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
-  & x \\
+  & d \\
   Fa && Fb\text{,}
   \arrow["f", from=1-2, to=2-1]
   \arrow["g"', from=1-2, to=2-3]
 \end{tikzcd}\]
 ~~~
 
-a map $f : a \to b$, such that the triangle
+a finite [[zigzag]] of morphisms from $a$ to $b$, inducing a chain of commuting
+triangles from $f$ to $g$. For example, in the case of a "cospan" zigzag
+$a \rightarrow a_0 \leftarrow b$:
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
-  & x \\
-  Fa && Fb
-  \arrow["f", from=1-2, to=2-1]
-  \arrow["g"', from=1-2, to=2-3]
-  \arrow["{F(f)}"', from=2-1, to=2-3]
+  & d \\
+  Fa & {Fa_0} & Fb
+  \arrow["f"', from=1-2, to=2-1]
+  \arrow[from=2-1, to=2-2]
+  \arrow[from=2-3, to=2-2]
+  \arrow["g", from=1-2, to=2-3]
+  \arrow["{f_0}"{description}, from=1-2, to=2-2]
 \end{tikzcd}\]
 ~~~
 
-commutes.
-
 ```agda
-  record is-final : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-    field
-      point : 𝒟.Ob → 𝒞.Ob
-      map   : ∀ d → 𝒟.Hom d (F.₀ (point d))
-      extend
-        : ∀ {a b x} (f : 𝒟.Hom x (F.₀ a)) (g : 𝒟.Hom x (F.₀ b))
-        → 𝒞.Hom a b
-      extend-commutes
-        : ∀ {a b x} (f : 𝒟.Hom x (F.₀ a)) (g : 𝒟.Hom x (F.₀ b))
-        → g ≡ F.₁ (extend f g) 𝒟.∘ f
+  is-final : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
+  is-final = ∀ d → is-connected-cat (d ↙ F)
 ```
 
 <!--
 ```agda
+  module is-final (fin : is-final) (d : 𝒟.Ob) = is-connected-cat (fin d)
+
   module
     _ {o'' ℓ''} {ℰ : Precategory o'' ℓ''} {D : Functor 𝒟 ℰ} (final : is-final)
     where
@@ -90,26 +103,91 @@ commutes.
       module fin = is-final final
       module D = Func D
       module ℰ = Cr ℰ
-      open _=>_
 ```
 -->
 
 The utility of this definition comes, as mentioned, from the ability to
 move (colimiting) cocones back and forth between a diagram $D$ and its
-restriction $D_{|F}$ to the domain category $\cC$. If we have a
-cocone $\{DF(x) \to K\}$, then precomposition with the map $D(x_!) :
-D(x) \to DF(x_0)$ (where $x_!$ comes from the finality of $F$) defines a
-cocone $\{D(x) \to K\}$.
+restriction $D_{|F}$ to the domain category $\cC$. If we have a cocone
+$\kappa : \{DF(d) \to K\}$, then precomposition with the map $D(d_!) :
+D(d) \to DF(d_0)$ (where $d_! : d \to F(d_0)$ comes from the finality of
+$F$) defines a cocone $\{D(d) \to K\}$.
+
+However, since the comma category $d \swarrow F$ is *merely* inhabited,
+we need to make sure that this extension is independent of the choice of
+$d_0$ and $d_!$.  This follows from naturality of the cocone and by
+connectedness of $d \swarrow F$, as expressed by the commutativity of
+the following diagram:
+
+~~~{.quiver .tall-1}
+\[\begin{tikzcd}
+  & DFa \\
+  Dd && K \\
+  & DFb
+  \arrow["Df", from=2-1, to=1-2]
+  \arrow["{\kappa_a}", from=1-2, to=2-3]
+  \arrow["Dg"', from=2-1, to=3-2]
+  \arrow["{\kappa_b}"', from=3-2, to=2-3]
+  \arrow["DFh"{description}, from=1-2, to=3-2]
+\end{tikzcd}\]
+~~~
 
 ```agda
-    extend-cocone : ∀ {coapex} → D F∘ F => Const coapex → D => Const coapex
-    extend-cocone cone .η x = cone .η _ ℰ.∘ D.₁ (fin.map x)
-    extend-cocone cone .is-natural x y f =
-      ℰ.pullr (sym (D.F-∘ _ _))
-      ·· ℰ.pushl (sym (cone .is-natural _ _ _ ∙ ℰ.idl _))
-      ·· (ℰ.refl⟩∘⟨ D.collapse (sym (fin.extend-commutes _ _)))
-      ∙ sym (ℰ.idl _)
+    module _ {coapex} (cone : D F∘ F => Const coapex) where
+      extend : ∀ d → Ob (d ↙ F) → ℰ.Hom (D.₀ d) coapex
+      extend d f = cone .η (f .y) ℰ.∘ D.₁ (f .map)
+
+      opaque
+        extend-const1
+          : ∀ d {f g : Ob (d ↙ F)} (h : ↓Hom _ _ f g)
+          → extend d f ≡ extend d g
+        extend-const1 d {f} {g} h =
+          cone .η _ ℰ.∘ D.₁ (f .map)                        ≡˘⟨ cone .is-natural _ _ _ ∙ ℰ.idl _ ℰ.⟩∘⟨refl ⟩
+          (cone .η _ ℰ.∘ D.₁ (F.₁ (h .β))) ℰ.∘ D.₁ (f .map) ≡⟨ D.pullr refl ⟩
+          cone .η _ ℰ.∘ D.₁ ⌜ F.₁ (h .β) 𝒟.∘ f .map ⌝       ≡⟨ ap! (sym (h .sq) ∙ 𝒟.idr _) ⟩
+          cone .η _ ℰ.∘ D.₁ (g .map)                        ∎
+
+      opaque
+        extend-const
+          : ∀ d (f g : Ob (d ↙ F))
+          → extend d f ≡ extend d g
+        extend-const d f g = ∥-∥-rec!
+          (Meander-rec-≡ (el! _) (extend d) (extend-const1 d))
+          (fin.zigzag d f g)
 ```
+
+In order to make reasoning easier, we define the extended cocone
+simultaneously with an elimination principle for its components.
+
+```agda
+      extend-cocone : D => Const coapex
+      extend-cocone-elim
+        : ∀ d {ℓ} (P : ℰ.Hom (D.₀ d) coapex → Type ℓ)
+        → (∀ f → is-prop (P f))
+        → (∀ f → P (extend d f))
+        → P (extend-cocone .η d)
+
+      extend-cocone .η d = ∥-∥-rec-set (hlevel 2)
+        (extend d) (extend-const d) (fin.point d)
+
+      extend-cocone .is-natural x y f = extend-cocone-elim x
+        (λ ex → extend-cocone .η y ℰ.∘ D.₁ f ≡ ex)
+        (λ _ → hlevel 1)
+        (λ ex → extend-cocone-elim y
+          (λ ey → ey ℰ.∘ D.₁ f ≡ extend x ex)
+          (λ _ → hlevel 1)
+          λ ey → ℰ.pullr (sym (D.F-∘ _ _))
+               ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
+        ∙ sym (ℰ.idl _)
+```
+
+<!--
+```agda
+      extend-cocone-elim d P prop h = ∥-∥-elim
+        {P = λ f → P (∥-∥-rec-set (hlevel 2) (extend d) (extend-const d) f)}
+        (λ _ → prop _) h (fin.point d)
+```
+-->
 
 In the other direction, suppose that we have a cocone $\{D(x) \to K\}$
 --- inserting $F$ in the appropriate places makes a cocone $\{DF(x) \to
@@ -117,8 +195,8 @@ K\}$.
 
 ```agda
     restrict-cocone : ∀ {coapex} → D => Const coapex → D F∘ F => Const coapex
-    restrict-cocone K .η x = K .η (F.F₀ x)
-    restrict-cocone K .is-natural x y f = K .is-natural (F.F₀ x) (F.F₀ y) (F.F₁ f)
+    restrict-cocone K .η x = K .η (F.₀ x)
+    restrict-cocone K .is-natural x y f = K .is-natural (F.₀ x) (F.₀ y) (F.₁ f)
 ```
 
 A computation using connectedness of the comma categories shows that
@@ -128,20 +206,21 @@ these formulae are mutually inverse:
     open is-iso
     extend-cocone-is-iso : ∀ {coapex} → is-iso (extend-cocone {coapex})
     extend-cocone-is-iso .inv = restrict-cocone
-    extend-cocone-is-iso .rinv x =
-      Nat-path λ o →
-        x .is-natural _ _ _ ∙ ℰ.idl _
-    extend-cocone-is-iso .linv x =
-      Nat-path λ o →
-        (sym (ℰ.idl _) ∙ sym (x .is-natural _ _ (fin.extend (fin.map (F.F₀ o)) 𝒟.id)) ℰ.⟩∘⟨refl)
-        ·· ℰ.pullr (D.collapse (fin.extend-commutes _ _ ∙ 𝒟.idr _))
-        ·· x .is-natural _ _ _
-        ∙ ℰ.idl _
+    extend-cocone-is-iso .rinv K = ext λ o →
+      extend-cocone-elim (restrict-cocone K) o
+        (λ ex → ex ≡ K .η o)
+        (λ _ → hlevel 1)
+        λ _ → K .is-natural _ _ _ ∙ ℰ.idl _
+    extend-cocone-is-iso .linv K = ext λ o →
+      extend-cocone-elim K (F.₀ o)
+        (λ ex → ex ≡ K .η o)
+        (λ _ → hlevel 1)
+        λ f → extend-const K (F.₀ o) f (↓obj 𝒟.id) ∙ D.elimr refl
 ```
 
 The most important conclusion that we get is the following: If you can
 show that the restricted cocone is a colimit, then the original cocone
-was a colimit, too! We'll do this in two steps: First, show that the
+was a colimit, too! We'll do this in two steps: first, show that the
 _extension_ of a colimiting cocone is a colimit. Then, using the fact
 that `restrict-cocone`{.Agda} is an equivalence, we'll be able to fix up
 the polarity mismatch.
@@ -155,7 +234,7 @@ the polarity mismatch.
 
 <details>
 <summary>
-The proof of the auxiliary lemma is a direct computation, so I'll leave
+The proof of the auxiliary lemma is a direct computation, so we'll leave
 it in this `<details>`{.html} tag for the curious reader only.
 </summary>
 
@@ -170,16 +249,16 @@ it in this `<details>`{.html} tag for the curious reader only.
         mc .ψ x = extend-cocone K .η x
         mc .commutes f = extend-cocone K .is-natural _ _ _ ∙ ℰ.idl _
         mc .universal eps p =
-          colim.universal (λ j → eps (F.F₀ j)) λ f → p (F.F₁ f)
-        mc .factors eps p =
-          ℰ.pulll (colim.factors _ _)
-          ∙ p (fin.map _)
+          colim.universal (λ j → eps (F.₀ j)) λ f → p (F.₁ f)
+        mc .factors {j} eps p =
+          extend-cocone-elim K j
+            (λ ex → mc .universal eps p ℰ.∘ ex ≡ eps j)
+            (λ _ → hlevel 1)
+            λ f → ℰ.pulll (colim.factors _ _) ∙ p (f .map)
         mc .unique eps p other q =
           colim.unique _ _ _ λ j →
-            other ℰ.∘ K .η j                                  ≡⟨ ℰ.refl⟩∘⟨ (sym (ℰ.idl _) ∙ sym (K .is-natural _ _ _)) ⟩
-            other ℰ.∘ K .η _ ℰ.∘ D.F₁ (F.F₁ (fin.extend _ _)) ≡⟨ ℰ.refl⟩∘⟨ ℰ.refl⟩∘⟨ ap D.₁ (sym (𝒟.idr _) ∙ sym (fin.extend-commutes _ _)) ⟩
-            other ℰ.∘ K .η _ ℰ.∘ D.F₁ (fin.map _)             ≡⟨ q (F.F₀ j) ⟩
-            eps (F.F₀ j)                                      ∎
+            sym (ℰ.refl⟩∘⟨ extend-cocone-is-iso .linv K ηₚ j)
+            ∙ q (F.₀ j)
 ```
 
 </details>
@@ -197,6 +276,91 @@ it in this `<details>`{.html} tag for the curious reader only.
         where open is-iso
 ```
 
+## Examples
+
+Final functors between [[pregroupoids]] have a very simple
+characterisation: they are the [[full|full functor]], [[essentially
+surjective]] functors.  In this case, there is a direct connection with
+homotopy type theory: groupoids are 1-types, comma categories $d
+\swarrow F$ are [[fibres]] of $F$ over $d$, and so finality says that
+$F$ is a [[connected map]].
+
+Essential surjectivity on objects pretty much exactly says that each
+comma category $d \swarrow F$ is inhabited.  To see that fullness
+implies the existence of zigzags, meditate on the following diagram:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  & d \\
+  Fx && Fy
+  \arrow["f"', from=1-2, to=2-1]
+  \arrow["g", from=1-2, to=2-3]
+  \arrow["{g \circ f\inv = F(z)}"', from=2-1, to=2-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  module _ (𝒞-grpd : is-pregroupoid 𝒞) (𝒟-grpd : is-pregroupoid 𝒟) where
+    full+eso→final : is-full F → is-eso F → is-final
+    full+eso→final full eso d .zigzag f g = do
+      z , p ← full (g .map 𝒟.∘ 𝒟-grpd (f .map) .inv)
+      pure $ zig
+        (↓hom {β = z}
+          (𝒟.idr _ ∙ sym (𝒟.rswizzle p (𝒟-grpd (f .map) .invr))))
+        []
+      where open 𝒟.is-invertible
+    full+eso→final full eso d .point =
+      ∥-∥-map (λ e → ↓obj (𝒟.from (e .snd))) (eso d)
+```
+
+For the other direction, given $f : Fx \to Fy$, observe that
+connectedness of the comma category $Fx \swarrow F$ gives us a zigzag
+between $x$ and $y$, but since $\cC$ is a pregroupoid we can evaluate
+this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
+
+```agda
+    final→full+eso : is-final → is-full F × is-eso F
+    final→full+eso fin .fst {x} {y} f = do
+      zs ← fin (F.₀ x) .zigzag (↓obj 𝒟.id) (↓obj f)
+      let z = Free-groupoid-counit
+            (↓-is-pregroupoid _ _ ⊤Cat-is-pregroupoid 𝒞-grpd)
+            .F₁ zs
+      pure (z .β , sym (𝒟.idr _) ∙ sym (z .sq) ∙ 𝒟.idr _)
+    final→full+eso fin .snd d = do
+      fd ← fin d .point
+      pure (fd .y , 𝒟.invertible→iso (fd .map) (𝒟-grpd _) 𝒟.Iso⁻¹)
+```
+
+Another general class of final functors is given by [[right adjoint]]
+functors.  This follows directly from the characterisation of right
+adjoints in terms of [[universal morphisms]]: since the comma categories
+$c \swarrow R$ have initial objects, they are connected.
+
+```agda
+right-adjoint-is-final
+  : ∀ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
+  → {L : Functor 𝒞 𝒟} {R : Functor 𝒟 𝒞} (L⊣R : L ⊣ R)
+  → is-final R
+right-adjoint-is-final L⊣R c =
+  initial→connected (L⊣R→universal-maps L⊣R c)
+```
+
+In particular, the inclusion of a [[terminal object]] into a category is
+a final functor. This means that the colimit of any diagram over a shape
+category with a terminal object is simply the value of the diagram on
+the terminal object.
+
+```agda
+terminal→inclusion-is-final
+  : ∀ {o ℓ} {𝒞 : Precategory o ℓ}
+  → (top : 𝒞 .Ob) (term : is-terminal 𝒞 top)
+  → is-final (const! {A = 𝒞} top)
+terminal→inclusion-is-final top term = right-adjoint-is-final
+  (terminal→inclusion-is-right-adjoint _ top term)
+```
+
+## Closure under composition
+
 <!--
 ```agda
 module
@@ -208,24 +372,96 @@ module
   private
     module 𝒟 = Cr 𝒟
     module ℰ = Cr ℰ
-    module G = Functor G
+    module G = Func G
     module F = Functor F
-    module ff = is-final f-fin
-    module gf = is-final g-fin
-    open is-final
+    module ff = is-final F f-fin
+    module gf = is-final G g-fin
+  open ↙-compose F G
 ```
 -->
 
-Another short computation shows us that final functors are closed under
-composition.
+We now prove that final functors are closed under composition.
+
+First, given an object $c : \cC$ we get a map $g : c \to Gc_0$ using the
+finality of $G$ and a map $f : c_0 \to Fc_1$ using the finality of $F$,
+which we can compose into an object of $c \swarrow G \circ F$.
 
 ```agda
   F∘-is-final : is-final (G F∘ F)
-  F∘-is-final .point e    = ff.point (gf.point e)
-  F∘-is-final .map d      = G.₁ (ff.map _) ℰ.∘ gf.map _
-  F∘-is-final .extend f g = ff.extend 𝒟.id (gf.extend f g)
-  F∘-is-final .extend-commutes f g =
-    g                                                ≡⟨ gf.extend-commutes _ _ ⟩
-    G.₁ ⌜ g-fin .extend f g ⌝ ℰ.∘ f                  ≡⟨ ap! (ff.extend-commutes _ _ ∙ 𝒟.elimr refl) ⟩
-    G.₁ (F.₁ (ff.extend 𝒟.id (gf.extend f g))) ℰ.∘ f ∎
+  F∘-is-final c .point = do
+    g ← gf.point c
+    f ← ff.point (g .y)
+    pure (g ↙> f)
+```
+
+Now, given a span $GFx \leftarrow c \rightarrow GFy$, finality of $G$
+gives us a zigzag between $Fx$ and $Fy$ in $c \swarrow G$, but we need a
+zigzag between $x$ and $y$ in $c \swarrow G \circ F$.  Thus we have to
+`refine`{.Agda} our zigzag step by step, using the finality of $F$.
+
+```agda
+  F∘-is-final c .zigzag f g = do
+    gz ← gf.zigzag c (↓obj (f .map)) (↓obj (g .map))
+    fz ← refine gz (↓obj 𝒟.id) (↓obj 𝒟.id)
+    pure (subst₂ (Meander (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
+```
+
+We start by defining a [[congruence]] on the objects of $c \swarrow G$,
+whereby $f : c \to Gx$ and $g : c \to Gy$ are related if, for any
+extensions $f' : x \swarrow F$ and $g' : y \swarrow F$, there merely
+exists a zigzag between the corresponding objects of $c \swarrow G \circ
+F$:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  & c \\
+  Gx && Gy \\
+  {GFx'} && {GFy'}
+  \arrow["f", from=1-2, to=2-1]
+  \arrow["g"', from=1-2, to=2-3]
+  \arrow[from=2-1, to=3-1]
+  \arrow[from=2-3, to=3-3]
+  \arrow[squiggly, tail reversed, from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+    where
+      R : Congruence (Ob (c ↙ G)) _
+      R ._∼_ f g =
+        ∀ (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
+        → ∥ Meander (c ↙ G F∘ F) (f ↙> f') (g ↙> g') ∥
+      R .has-is-prop _ _ = hlevel 1
+```
+
+That this is a congruence is easily checked using the finality of $F$.
+
+```agda
+      R .reflᶜ {f} f' g' =
+        Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
+      R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
+        g' ← ff.point (g .y)
+        ∥-∥-map₂ _++_ (gh g' h') (fg f' g')
+      R .symᶜ fg g' f' = ∥-∥-map (reverse _) (fg f' g')
+```
+
+Using the universal mapping property of the free groupoid into
+congruences, we conclude by showing that any two arrows connected by a
+morphism are related, which again involves the connectedness of $x
+\swarrow F$.
+
+```agda
+      refine1 : ∀ {f g} → Hom (c ↙ G) f g → R ._∼_ f g
+      refine1 {f} {g} h f' g' = do
+        z ← ff.zigzag (f .y) f' (↓obj (g' .map 𝒟.∘ h .β))
+        let
+          z' : Meander (c ↙ G F∘ F) _ _
+          z' = Free-groupoid-map (↙-compose f) .F₁ z
+          fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
+          fixup = ↓Obj-path _ _ refl refl $
+            G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
+        pure (subst (Meander (c ↙ G F∘ F) (f ↙> f')) fixup z')
+
+      refine : ∀ {f g} → Meander (c ↙ G) f g → R ._∼_ f g
+      refine = Meander-rec-congruence R refine1
 ```

@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -149,7 +149,7 @@ also at the same h-level as `A` and `B`. Thus, we have:
             → is-hlevel B (2 + n)
             → is-hlevel (A ⊎ B) (2 + n)
 ⊎-is-hlevel n ahl bhl x y =
-  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+  Equiv→is-hlevel (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 
 instance
   hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)
@@ -160,7 +160,7 @@ instance
 <!--
 ```agda
 module _ {ℓ} {A : n-Type ℓ 2} where
-  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
+  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
   _ = hlevel!
 ```
 -->
@@ -168,7 +168,7 @@ module _ {ℓ} {A : n-Type ℓ 2} where
 Note that, in general, being a [[proposition]] and [[contractible]]
 are not preserved under coproducts. Consider the case where `(A, a)` and
 `(B, b)` are both contractible (this generalises to propositions): Then
-their coproduct has two distinct points, `in­l a` and `inr b`. However,
+their coproduct has two distinct points, `inl a` and `inr b`. However,
 the coproduct of _disjoint_ propositions is a proposition:
 
 ```agda

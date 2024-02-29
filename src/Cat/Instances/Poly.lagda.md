@@ -66,7 +66,7 @@ on the families. It is _so_ mechanical that we can do it automatically:
 ```agda
 poly-maps : ∀ {ℓ} {A B} → Iso
   (Poly.Hom {ℓ} A B)
-  (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] ∀ x → ∣ B .snd (f x) ∣ → ∣ A .snd x ∣)
+  (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] (∀ x → B .snd ʻ f x → A .snd ʻ x))
 unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
 ```
 
@@ -77,7 +77,7 @@ using regularity:
 poly-map-path
   : ∀ {ℓ A B} {f g : Poly.Hom {ℓ} A B}
   → (hom≡ : f .hom ≡ g .hom)
-  → (pre≡ : ∀ a b → f .preserves a (subst (λ hom → ∣ B .snd (hom a) ∣) (sym hom≡) b)
+  → (pre≡ : ∀ a b → f .preserves a (subst (λ hom → B .snd ʻ hom a) (sym hom≡) b)
                   ≡ g .preserves a b)
   → f ≡ g
 poly-map-path hom≡ pre≡ = total-hom-path _ hom≡
@@ -94,7 +94,8 @@ interpretation above _literally_:
 
 ```agda
 Polynomial-functor : ∀ {ℓ} → Poly.Ob {ℓ} → Functor (Sets ℓ) (Sets ℓ)
-Polynomial-functor (I , A) .F₀ X = el! (Σ[ i ∈ ∣ I ∣ ] (∣ A i ∣ → ∣ X ∣))
+Polynomial-functor (I , A) .F₀ X .∣_∣   = Σ[ i ∈ I ] (A ʻ i → ⌞ X ⌟)
+Polynomial-functor (I , A) .F₀ X .is-tr = hlevel!
 Polynomial-functor (I , A) .F₁ f (a , g) = a , λ z → f (g z)
 Polynomial-functor (I , A) .F-id = refl
 Polynomial-functor (I , A) .F-∘ f g = refl

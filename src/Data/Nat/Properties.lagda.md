@@ -262,6 +262,12 @@ monus-commute m n k =
   m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
   m - (k + n) ≡⟨ monus-addl m k n ⟩
   m - k - n   ∎
+
+monus-swapl : ∀ x y z → x + y ≡ z → y ≡ z - x
+monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) ∙ ap (_- x) p
+
+monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
+monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 ```
 
 ### Maximum
@@ -289,11 +295,11 @@ max-≤r zero (suc y) = ≤-refl
 max-≤r (suc x) zero = 0≤x
 max-≤r (suc x) (suc y) = s≤s (max-≤r x y)
 
-max-is-lub : (x y z : Nat) → x ≤ z → y ≤ z → max x y ≤ z
-max-is-lub zero zero z 0≤x 0≤x = 0≤x
-max-is-lub zero (suc y) (suc z) 0≤x (s≤s q) = s≤s q
-max-is-lub (suc x) zero (suc z) (s≤s p) 0≤x = s≤s p
-max-is-lub (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (max-is-lub x y z p q)
+max-univ : (x y z : Nat) → x ≤ z → y ≤ z → max x y ≤ z
+max-univ zero zero z 0≤x 0≤x = 0≤x
+max-univ zero (suc y) (suc z) 0≤x (s≤s q) = s≤s q
+max-univ (suc x) zero (suc z) (s≤s p) 0≤x = s≤s p
+max-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (max-univ x y z p q)
 
 max-zerol : (x : Nat) → max 0 x ≡ x
 max-zerol zero = refl
@@ -329,9 +335,9 @@ min-≤r zero (suc y) = 0≤x
 min-≤r (suc x) zero = 0≤x
 min-≤r (suc x) (suc y) = s≤s (min-≤r x y)
 
-min-is-glb : (x y z : Nat) → z ≤ x → z ≤ y → z ≤ min x y
-min-is-glb x y zero 0≤x 0≤x = 0≤x
-min-is-glb (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (min-is-glb x y z p q)
+min-univ : (x y z : Nat) → z ≤ x → z ≤ y → z ≤ min x y
+min-univ x y zero 0≤x 0≤x = 0≤x
+min-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (min-univ x y z p q)
 
 min-zerol : (x : Nat) → min 0 x ≡ 0
 min-zerol zero = refl

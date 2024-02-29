@@ -68,7 +68,7 @@ initial objects.
     universal : ∀ x → Universal-morphism x (πᶠ E)
     universal x .bot = record { y = x , system x ; map = B.id }
     universal x .has⊥ m' = contr the-map unique where
-      the-map : Precategory.Hom (x ↙ πᶠ E) (universal x .bot) m'
+      the-map : (x ↙ πᶠ E) .Precategory.Hom (universal x .bot) m'
       the-map .α = tt
       the-map .β = total-hom (m' .map) (is-free (m' .map) (y m' .snd) .centre)
       the-map .sq = refl

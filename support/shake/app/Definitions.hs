@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TypeFamilies #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving, DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
 {-# LANGUAGE ViewPatterns, BlockArguments, LambdaCase #-}
 module Definitions
   ( glossaryRules
@@ -29,6 +29,7 @@ import Data.Monoid ( Endo(..) )
 import Data.Binary ( Binary )
 import Data.List (intersperse, sortOn, groupBy)
 import Data.Text (Text)
+import Data.Char
 import Data.Ord (Down(..))
 
 import Development.Shake.FilePath
@@ -58,8 +59,7 @@ mangleLink = doit where
 
   wordChar '-' = True
   wordChar '[' = True
-  wordChar c = ('a' <= c && c <= 'z')
-            || ('0' <= c && c <= '9')
+  wordChar c = isAsciiLower c || isDigit c
 
 parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
 parseDefinitions anchor input = liftIO do
@@ -106,8 +106,10 @@ newtype Glossary = Glossary { getEntries :: Map Mangled Definition }
   deriving anyclass (Binary, NFData, Hashable)
 
 data GlossaryQ       = GlossaryQ deriving (Eq, Show, Generic, NFData, Binary, Hashable)
-data ModuleGlossaryQ = ModuleGlossaryQ FilePath deriving (Eq, Show, Generic, NFData, Binary, Hashable)
-data LinkTargetQ     = LinkTargetQ Text deriving (Eq, Show, Generic, NFData, Binary, Hashable)
+newtype ModuleGlossaryQ = ModuleGlossaryQ FilePath
+  deriving newtype (Eq, Show, NFData, Binary, Hashable)
+newtype LinkTargetQ     = LinkTargetQ Text
+  deriving newtype (Eq, Show, NFData, Binary, Hashable)
 
 type instance RuleResult GlossaryQ       = Glossary
 type instance RuleResult ModuleGlossaryQ = Glossary

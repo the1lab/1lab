@@ -44,10 +44,10 @@ record Comonad : Type (o ⊔ ℓ) where
   module comult = _=>_ comult
   module W = Cat.Functor.Reasoning W
 
-  W₀ = F₀ W
-  W₁ = F₁ W
-  W-id = F-id W
-  W-∘ = F-∘ W
+  W₀ = W .F₀
+  W₁ = W .F₁
+  W-id = W .F-id
+  W-∘ = W .F-∘
 ```
 -->
 

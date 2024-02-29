@@ -131,14 +131,14 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' .M = M.M
     monad' .μ = M.mult
     monad' .η = M.unit
-    monad' .μ-assoc = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.elimr refl)
+    monad' .μ-assoc = ext λ _ →
+        ap (M.μ _ C.∘_) (C.elimr refl)
      ·· M.mult-assoc
-     ·· ap (M.mult .η _ C.∘_) (C.introl (M.M .Functor.F-id) ∙ C.intror refl)
-    monad' .μ-unitr = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.elimr refl)
+     ·· ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
+    monad' .μ-unitr = ext λ _ →
+        ap (M.μ _ C.∘_) (C.elimr refl)
       ∙ M.left-ident
-    monad' .μ-unitl = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.eliml (M.M .Functor.F-id))
+    monad' .μ-unitl = ext λ _ →
+        ap (M.μ _ C.∘_) (C.eliml M.M-id)
       ∙ M.right-ident
 ```

@@ -1,11 +1,11 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
+{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Instances.Sets.Complete
 open import Cat.Displayed.Functor
 open import Cat.Bi.Diagram.Monad
+open import Cat.Monoidal.Functor
 open import Cat.Displayed.Base
 open import Cat.Displayed.Path
 open import Cat.Monoidal.Base
@@ -15,6 +15,7 @@ open import Cat.Prelude
 import Algebra.Monoid.Category as Mon
 import Algebra.Monoid as Mon
 
+import Cat.Functor.Reasoning
 import Cat.Diagram.Monad as Mo
 import Cat.Reasoning
 ```
@@ -177,10 +178,12 @@ laws, a great simplification.
 
 <!--
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
+  private
+    unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
 
-  is-monoid-hom-is-prop : ∀ {m n} {f : C.Hom m n} {mo no} → is-prop (is-monoid-hom f mo no)
-  is-monoid-hom-is-prop = is-hlevel≃ 1 (Iso→Equiv eqv) hlevel!
+    instance
+      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom f mo no) (suc k)
+      H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
 
   open Displayed
   open Functor
@@ -192,7 +195,7 @@ laws, a great simplification.
   Mon[_] : Displayed C ℓ ℓ
   Mon[_] .Ob[_]  = Monoid-on M
   Mon[_] .Hom[_] = is-monoid-hom
-  Mon[_] .Hom[_]-set f x y = is-prop→is-set is-monoid-hom-is-prop
+  Mon[_] .Hom[_]-set f x y = hlevel 2
 ```
 
 The most complicated step of putting together the displayed category of
@@ -201,8 +204,8 @@ composition. However, even in the point-free setting of an arbitrary
 category $\cC$, the reasoning isn't _that_ painful:
 
 ```agda
-  Mon[ .id' ] .pres-η = C.idl _
-  Mon[ .id' ] .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
+  Mon[_] .id' .pres-η = C.idl _
+  Mon[_] .id' .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
 
   Mon[_] ._∘'_ fh gh .pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
   Mon[_] ._∘'_ {x = x} {y} {z} {f} {g} fh gh .pres-μ =
@@ -211,16 +214,24 @@ category $\cC$, the reasoning isn't _that_ painful:
     Monoid-on.μ z C.∘ (f C.⊗₁ f) C.∘ (g C.⊗₁ g) ≡˘⟨ C.refl⟩∘⟨ C.-⊗- .F-∘ _ _ ⟩
     Monoid-on.μ z C.∘ (f C.∘ g C.⊗₁ f C.∘ g)    ∎
 
-  Mon[_] .idr' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .idl' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .assoc' f g h = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
+  Mon[_] .idr' f = prop!
+  Mon[_] .idl' f = prop!
+  Mon[_] .assoc' f g h = prop!
 ```
 
 <!--
 ```agda
+module _ {o ℓ} {C : Precategory o ℓ} {M : Monoidal-category C} where
+  private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
+
+  open Precategory C using (Hom ; module HLevel-instance)
+  open HLevel-instance
+
+  instance
+    H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom M f mo no) (suc k)
+    H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
+
 private
-  Setsₓ : ∀ {ℓ} → Monoidal-category (Sets ℓ)
-  Setsₓ = Cartesian-monoidal Sets-products Sets-terminal
   Mon : ∀ {ℓ} → Displayed (Sets ℓ) _ _
   Mon = Thin-structure-over (Mon.Monoid-structure _)
 ```
@@ -246,7 +257,8 @@ Mon[Sets]≡Mon {ℓ} = Displayed-path F (λ a → is-iso→is-equiv (fiso a)) f
 ```
 
 The construction proceeds in three steps: First, put together a functor
-(displayed over the identity) $\rm{Mon}(\cC) \to \thecat{Mon}$; Then,
+([[displayed over|displayed functor]] the identity) $\rm{Mon}(\cC) \to
+\thecat{Mon}$; Then,
 prove that its action on objects ("step 2") and action on morphisms
 ("step 3") are independently equivalences of types. The characterisation
 of paths of displayed categories will take care of turning this data
@@ -282,12 +294,133 @@ into an identification.
 
   ff : ∀ {a b : Set _} {f : ∣ a ∣ → ∣ b ∣} {a' b'}
      → is-equiv (F₁' F {a} {b} {f} {a'} {b'})
-  ff {a} {b} {f} {a'} {b'} =
-    prop-ext (is-monoid-hom-is-prop Setsₓ) (hlevel 1)
-             (λ z → F₁' F z) invs .snd
-    where
-      invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f
-           → is-monoid-hom Setsₓ f a' b'
-      invs m .pres-η = funext λ _ → m .pres-id
-      invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
+  ff {a} {b} {f} {a'} {b'} = biimp-is-equiv! (λ z → F₁' F z) invs where
+    invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f → is-monoid-hom Setsₓ f a' b'
+    invs m .pres-η = funext λ _ → m .pres-id
+    invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
+```
+
+## Monoidal functors preserve monoids
+
+<!--
+```agda
+module _ {oc ℓc od ℓd}
+  {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  {MC : Monoidal-category C} {MD : Monoidal-category D}
+  ((F , MF) : Lax-monoidal-functor MC MD)
+  where
+  private module C where
+    open Cat.Reasoning C public
+    open Monoidal-category MC public
+  open Cat.Reasoning D
+  open Monoidal-category MD
+
+  open Functor F
+  private module F = Cat.Functor.Reasoning F
+  open Lax-monoidal-functor-on MF
+
+  open Displayed-functor
+  open Monoid-on
+  open is-monoid-hom
+```
+-->
+
+If $F$ is a [[lax monoidal functor]] between monoidal categories $\cC$
+and $\cD$, and $M$ is a monoid in $\cC$, then $FM$ can be equipped with
+the structure of a monoid in $\cC$.
+
+We can phrase this nicely as a [[displayed functor]] $\rm{Mon}_1(F) :
+\rm{Mon}(\cC) \to \rm{Mon}(\cD)$ over $F$:
+
+```agda
+  Mon₁[_] : Displayed-functor Mon[ MC ] Mon[ MD ] F
+  Mon₁[_] .F₀' m .η = F₁ (m .η) ∘ ε
+  Mon₁[_] .F₀' m .μ = F₁ (m .μ) ∘ φ
+```
+
+The unit laws are witnessed by the commutativity of this diagram:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {1\otimes FX} && FX && {FX \otimes 1} \\
+  & {F(1\otimes X)} & {F(X\otimes X)} & {F(X \otimes 1)} \\
+  {F1\otimes FX} && {FX \otimes FX} && {FX \otimes F1}
+  \arrow["{\epsilon\otimes FX}"', from=1-1, to=3-1]
+  \arrow["\lambda", from=1-1, to=1-3]
+  \arrow["{F\eta\otimes FX}"', from=3-1, to=3-3]
+  \arrow["\varphi"{description}, from=3-3, to=2-3]
+  \arrow["F\mu"{description}, from=2-3, to=1-3]
+  \arrow["\varphi", from=3-1, to=2-2]
+  \arrow["{F(\eta\otimes X)}"', from=2-2, to=2-3]
+  \arrow["F\lambda", from=2-2, to=1-3]
+  \arrow["F\rho"', from=2-4, to=1-3]
+  \arrow["{F(X \otimes \eta)}", from=2-4, to=2-3]
+  \arrow["{FX \otimes F\eta}", from=3-5, to=3-3]
+  \arrow["\varphi"', from=3-5, to=2-4]
+  \arrow["{FX \otimes \epsilon}", from=1-5, to=3-5]
+  \arrow["\rho"', from=1-5, to=1-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  Mon₁[_] .F₀' m .μ-unitl =
+    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ⊗₁ id)          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp refl (F.introl refl))) ⟩
+    F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ⊗₁ F₁ C.id) ∘ (ε ⊗₁ id) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ F₁ (m .η C.⊗₁ C.id) ∘ φ ∘ (ε ⊗₁ id)    ≡⟨ F.pulll (m .μ-unitl) ⟩
+    F₁ C.λ← ∘ φ ∘ (ε ⊗₁ id)                            ≡⟨ F-λ← ⟩
+    λ←                                                 ∎
+  Mon₁[_] .F₀' m .μ-unitr =
+    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .η) ∘ ε))          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp (F.introl refl) refl)) ⟩
+    F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .η)) ∘ (id ⊗₁ ε) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .η) ∘ φ ∘ (id ⊗₁ ε)    ≡⟨ F.pulll (m .μ-unitr) ⟩
+    F₁ C.ρ← ∘ φ ∘ (id ⊗₁ ε)                            ≡⟨ F-ρ← ⟩
+    ρ←                                                 ∎
+```
+
+... and the associativity by this one.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {FX \otimes (FX \otimes FX)} & {FX \otimes F(X \otimes X)} & {FX \otimes FX} \\
+  & {F(X \otimes (X \otimes X))} & {F(X \otimes X)} \\
+  && FX \\
+  & {F((X \otimes X) \otimes X)} & {F(X \otimes X)} \\
+  {(FX \otimes FX) \otimes FX} & {F(X \otimes X) \otimes FX} & {FX \otimes FX}
+  \arrow["{FX \otimes \varphi}", from=1-1, to=1-2]
+  \arrow["{FX \otimes F\mu}", from=1-2, to=1-3]
+  \arrow["\varphi", from=1-3, to=2-3]
+  \arrow["F\mu", from=2-3, to=3-3]
+  \arrow["{\alpha^{-1}}"', from=1-1, to=5-1]
+  \arrow["{\varphi\otimes FX}"', from=5-1, to=5-2]
+  \arrow["{F\mu \otimes FX}"', from=5-2, to=5-3]
+  \arrow["\varphi"', from=5-3, to=4-3]
+  \arrow["F\mu"', from=4-3, to=3-3]
+  \arrow["\varphi"', from=1-2, to=2-2]
+  \arrow["\varphi", from=5-2, to=4-2]
+  \arrow["{F\alpha^{-1}}"', from=2-2, to=4-2]
+  \arrow["{F(X \otimes \mu)}", from=2-2, to=2-3]
+  \arrow["{F(\mu \otimes X)}"', from=4-2, to=4-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  Mon₁[_] .F₀' m .μ-assoc =
+    (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .μ) ∘ φ))                       ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (Σ-pathp (F.introl refl) refl)) ⟩
+    F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .μ)) ∘ (id ⊗₁ φ)              ≡⟨ (refl⟩∘⟨ extendl (φ.is-natural _ _ _)) ⟩
+    F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .μ) ∘ φ ∘ (id ⊗₁ φ)                 ≡⟨ F.pulll (m .μ-assoc) ⟩
+    F₁ (m .μ C.∘ (m .μ C.⊗₁ C.id) C.∘ C.α← _ _ _) ∘ φ ∘ (id ⊗₁ φ)   ≡⟨ F.popr (F.popr F-α←) ⟩
+    F₁ (m .μ) ∘ F₁ (m .μ C.⊗₁ C.id) ∘ φ ∘ (φ ⊗₁ id) ∘ α← _ _ _      ≡˘⟨ pullr (extendl (φ.is-natural _ _ _)) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ (F₁ (m .μ) ⊗₁ F₁ C.id) ∘ (φ ⊗₁ id) ∘ α← _ _ _ ≡⟨ refl⟩∘⟨ ⊗.pulll (Σ-pathp refl (F.eliml refl)) ⟩
+    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ⊗₁ id) ∘ α← _ _ _            ∎
+```
+
+Functoriality for $\rm{Mon}_1(-)$ means that, given a monoid homomorphism
+$f : M \to N$, the map $Ff : FM \to FN$ is a monoid homomorphism
+between the induced monoids on $FM$ and $FN$.
+
+```agda
+  Mon₁[_] .F₁' h .pres-η = F.pulll (h .pres-η)
+  Mon₁[_] .F₁' h .pres-μ = F.extendl (h .pres-μ) ∙ pushr (sym (φ.is-natural _ _ _))
+  Mon₁[_] .F-id' = prop!
+  Mon₁[_] .F-∘' = prop!
 ```

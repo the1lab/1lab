@@ -30,7 +30,7 @@ private module Mod {ℓ} (R : Ring ℓ) where
 ```
 -->
 
-# Modules
+# Modules {defines="module"}
 
 A **module** over a [[ring]] $R$ is an [[abelian group]] $G$ equipped
 with an [action by $R$]. Modules generalise the idea of vector spaces,
@@ -182,8 +182,8 @@ Any map which satisfies this equation must preserve addition, since we
 have
 
 $$
-f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)\text{,}
-$$
+f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)
+$$.
 
 and standard lemmas about [group homomorphisms] ensure that $f$ will
 also preserve negation, and, more importantly, zero. We can then derive
@@ -192,8 +192,8 @@ that $f$ preserves the scalar multiplication, by calculating
 [group homomorphisms]: Algebra.Group.html#group-homomorphisms
 
 $$
-f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)\text{.}
-$$
+f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)
+$$.
 
 <!--
 ```agda
@@ -410,6 +410,8 @@ open Mod
     ; to-module-on
     ; Module-on→Group-on
     ; Module-on→Abelian-group-on
+    ; H-Level-is-linear-map
+    ; H-Level-is-module
     )
   public
 
@@ -424,8 +426,20 @@ module _ {ℓ} {R : Ring ℓ} where
       ; to-module-on
       ; Module-on→Group-on
       ; Module-on→Abelian-group-on
+      ; H-Level-is-linear-map
+      ; H-Level-is-module
       )
     public
+
+  Extensional-linear-map
+    : ∀ {ℓr} {M : Module R ℓm} {N : Module R ℓn}
+    → ⦃ ext : Extensional (⌞ M ⌟ → ⌞ N ⌟) ℓr ⦄
+    → Extensional (Linear-map M N) ℓr
+  Extensional-linear-map ⦃ ext ⦄ = injection→extensional! (λ p → Linear-map-path (happly p)) ext
+
+  instance
+    extensionality-linear-map : {M : Module R ℓm} {N : Module R ℓn} → Extensionality (Linear-map M N)
+    extensionality-linear-map = record { lemma = quote Extensional-linear-map }
 
 module R-Mod {ℓ ℓm} {R : Ring ℓ} = Cat.Reasoning (R-Mod R ℓm)
 

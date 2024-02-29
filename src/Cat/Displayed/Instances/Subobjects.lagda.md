@@ -136,7 +136,7 @@ remind ourselves of the universal property:
 
 [codomain]: Cat.Displayed.Instances.Slice.html#as-a-fibration
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{u'} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x \times_y y'} && {y'} \\
@@ -214,7 +214,7 @@ To understand this result, we remind ourselves of the universal property
 of an image factorisation for $f : a \to b$: It is the initial subobject
 through with $f$ factors. That is to say, if $m : \Sub(b)$ is another
 subobject, and $f = me$ for some map $e : a \to m$, then $m \le \im f$.
-Summarised diagramatically, the universal property of an image
+Summarised diagrammatically, the universal property of an image
 factorisation looks like a kite:
 
 ~~~{.quiver}
@@ -234,7 +234,7 @@ factorisation looks like a kite:
 Now compare this with the universal property required of a weak
 co-cartesian lift:
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {x'} && {f_!x'} && {u'} \\
   \\

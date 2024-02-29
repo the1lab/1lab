@@ -95,7 +95,7 @@ Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) wh
   open make-is-colimit
 
   sum : Type _
-  sum = Σ[ d ∈ D.Ob ] ∣ F.₀ d ∣
+  sum = Σ[ d ∈ D ] F ʻ d
 
   rel : sum → sum → Type _
   rel (X , x) (Y , y) = Σ[ f ∈ D.Hom X Y ] (F.₁ f x ≡ y)
@@ -115,7 +115,7 @@ definition.
 
 ```agda
   univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
-       → (eps : ∀ j → ∣ F.F₀ j ∣ → ∣ A ∣)
+       → (eps : ∀ j → F ʻ j → ∣ A ∣)
        → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eps y (F.F₁ f Fx) ≡ eps x Fx)
        → sum / rel
        → ∣ A ∣
@@ -173,8 +173,8 @@ we can get it out from under the truncation in the definition of
 coproduct.
 
 ```agda
-    coprod .injections-are-monic _ g h path = funext go where abstract
-      path' : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
+    coprod .injections-are-monic ix g h path = funext go where abstract
+      path' : Path (∀ c → Σ[ i ∈ I ] (F ʻ i)) (λ c → _ , g c) (λ c → _ , h c)
       path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
         (λ x → x) (path i c)
 
@@ -182,7 +182,7 @@ coproduct.
       q = I .is-tr _ _ _ _
 
       go : ∀ c → g c ≡ h c
-      go c = subst (λ e → PathP (λ i → ∣ F (e i) ∣) (g c) (h c)) q
+      go c = subst (λ e → PathP (λ i → F ʻ e i) (g c) (h c)) q
         (ap snd (happly path' c))
 ```
 
@@ -193,10 +193,20 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 
 ```agda
     coprod .different-images-are-disjoint i j i≠j os = contr map uniq where
-      map : Σ[ i ∈ ∣ F i ∣ ] Σ _ (λ x → _) → ∣ os ∣
+      map : Σ[ x ∈ F i ] Σ[ y ∈ F j ] (coprod.ι i x ≡ coprod.ι j y) → ∣ os ∣
       map (i , j , p) = absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 
       uniq : ∀ x → map ≡ x
       uniq _ = funext λ where
         (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```
+<!--
+```agda
+Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
+Sets-initial .Initial.bot = el! (Lift _ ⊥)
+Sets-initial .Initial.has⊥ x .centre ()
+Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
+
+```
+
+-->

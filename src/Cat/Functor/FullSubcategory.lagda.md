@@ -38,13 +38,12 @@ record Restrict-ob (P : C.Ob → Type ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
   constructor restrict
   field
-    object : C.Ob
+    object  : C.Ob
     witness : P object
 
 open Restrict-ob public
 
-Restrict : (P : C.Ob → Type ℓ)
-         → Precategory (o ⊔ ℓ) h
+Restrict : (P : C.Ob → Type ℓ) → Precategory (o ⊔ ℓ) h
 Restrict P .Ob = Restrict-ob P
 Restrict P .Hom A B = C.Hom (A .object) (B .object)
 Restrict P .Hom-set _ _ = C.Hom-set _ _

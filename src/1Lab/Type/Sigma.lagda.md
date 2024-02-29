@@ -322,10 +322,11 @@ infixr 4 _,ₚ_
 
 <!--
 ```agda
-curry : ((X × Y) → Z) → X → Y → Z
-curry f a b = f (a , b)
+module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → Y x → Type ℓ''} where
+  curry : ((p : Σ X Y) → Z (p .fst) (p .snd)) → (x : X) → (y : Y x) → Z x y
+  curry f a b = f (a , b)
 
-uncurry : (X → Y → Z) → (X × Y) → Z
-uncurry f (a , b) = f a b
+  uncurry : ((x : X) → (y : Y x) → Z x y) → (p : Σ X Y) → Z (p .fst) (p .snd)
+  uncurry f (a , b) = f a b
 ```
 -->

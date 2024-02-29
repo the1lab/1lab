@@ -169,8 +169,7 @@ inverse equivalences.
 
 ```agda
   mate-invl : ∀ (α : (F' F∘ X) => (Y F∘ F)) → mate (mate-inv α) ≡ α
-  mate-invl α =
-    Nat-path λ _ →
+  mate-invl α = ext λ _ →
     ε' B'.∘ ⌜ F'.₁ (U'.₁ (Y.₁ ε) A'.∘ U'.₁ (α.η _) A'.∘ η') ⌝ B'.∘ F'.₁ (X.₁ η)           ≡⟨ ap! (F'.F-∘ _ _ ∙ (ap₂ B'._∘_ refl (F'.F-∘ _ _))) ⟩
     ε' B'.∘ (F'.₁ (U'.₁ (Y.₁ ε)) B'.∘ F'.₁ (U'.₁ (α.η _)) B'.∘ F'.₁ η') B'.∘ F'.₁ (X.₁ η) ≡⟨ B'.extendl (B'.pulll (F'⊣U'.counit.is-natural _ _ _)) ⟩
     (Y.₁ ε B'.∘ ε') B'.∘ (F'.₁ (U'.₁ (α.η _)) B'.∘ F'.₁ η') B'.∘ F'.₁ (X.₁ η)             ≡⟨ B'.extendl (B'.pulll (B'.pullr (F'⊣U'.counit.is-natural _ _ _))) ⟩
@@ -181,8 +180,7 @@ inverse equivalences.
     where module α = _=>_ α
 
   mate-invr : ∀ (α : (X F∘ U) => (U' F∘ Y)) → mate-inv (mate α) ≡ α
-  mate-invr α =
-    Nat-path λ _ →
+  mate-invr α = ext λ _ →
     U'.₁ (Y.₁ ε) A'.∘ ⌜ U'.₁ (ε' B'.∘ F'.₁ (α.η _) B'.∘ F'.₁ (X.₁ η)) ⌝ A'.∘ η'           ≡⟨ ap! (U'.F-∘ _ _ ∙ (ap₂ A'._∘_ refl (U'.F-∘ _ _))) ⟩
     U'.₁ (Y.₁ ε) A'.∘ (U'.₁ ε' A'.∘ U'.₁ (F'.₁ (α.η _)) A'.∘ U'.₁ (F'.₁ (X.₁ η))) A'.∘ η' ≡⟨ ap₂ A'._∘_ refl (A'.extendr (A'.pullr (sym (F'⊣U'.unit.is-natural _ _ _)))) ⟩
     U'.₁ (Y.₁ ε) A'.∘ (U'.₁ ε' A'.∘ U'.₁ (F'.₁ (α.η _))) A'.∘ η' A'.∘ X.₁ η               ≡⟨ ap₂ A'._∘_ refl (A'.pullr (A'.extendl (sym (F'⊣U'.unit.is-natural _ _ _)))) ⟩

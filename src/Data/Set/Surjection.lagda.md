@@ -22,6 +22,8 @@ open Coequaliser
 ```
 -->
 
+# Surjections between sets {defines="surjection-between-sets"}
+
 Here we prove that surjective maps are exactly the [regular epimorphisms]
 in the category of sets: Really, we prove that surjections are regular
 epimorphisms (this is straightforward), then we prove that every
@@ -41,7 +43,7 @@ any morphisms, it certainly coequalises its kernel pair.
 ```agda
 surjective→regular-epi
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
-  → (∀ x → ∥ fibre f x ∥)
+  → is-surjective f
   → is-regular-epi (Sets ℓ) {c} {d} f
 surjective→regular-epi c _ f x .r = el! (Σ ∣ c ∣ λ x → Σ ∣ c ∣ λ y → f x ≡ f y)
 surjective→regular-epi _ _ f x .arr₁ = λ (y , _ , _) → y
@@ -122,7 +124,7 @@ these types are propositions, so we have a bunch of equivalences].
 connected-cofibre→surjective
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
   → is-connected (Cofibre f)
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
 
@@ -137,7 +139,7 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
   P (base x) = el ∥ fibre f x ∥ hlevel!
   P (cone a i) =
     n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
-      (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
+      (prop-ext! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
   P' : ∥ Cofibre f ∥₀ → Prop _
   P' = ∥-∥₀-elim (λ _ → hlevel!) P
@@ -147,8 +149,8 @@ Letting $x$ be an element of the codomain, and since by assumption $f$'s
 cofibre is connected, we have a path
 
 $$
-\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|\text{,}
-$$
+\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|
+$$,
 
 so since the unit type is trivially inhabited, so is the fibre of $f$
 over $x$: $f$ is surjective.
@@ -214,7 +216,7 @@ all surjections!
 epi→surjective
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 epi→surjective {ℓ} c d f epi x =
   connected-cofibre→surjective f (epi→connected-cofibre c d f (λ {x} → epi {x})) x
 ```

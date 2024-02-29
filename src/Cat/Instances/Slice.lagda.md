@@ -77,7 +77,7 @@ $f$ and $g$ as _families indexed by $c$_, commutativity of the triangle
 says that the map $h$ "respects reindexing", or less obliquely
 "preserves fibres".
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   & c
@@ -153,7 +153,7 @@ The slice category $\cC/c$ is given by the `/-Obj`{.Agda} and
 `/-Hom`{.Agda}s.
 
 ```agda
-Slice : (C : Precategory o ℓ) → Precategory.Ob C → Precategory _ _
+Slice : (C : Precategory o ℓ) → ⌞ C ⌟ → Precategory _ _
 Slice C c = precat where
   import Cat.Reasoning C as C
   open Precategory
@@ -173,7 +173,7 @@ commutativity condition for $f$) and the rhombus (the commutativity
 condition for $g$) both commute, then so does the larger triangle (the
 commutativity for $g \circ f$).
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   x && y && z \\
   & c \\
@@ -209,7 +209,7 @@ First, every slice category has a [[terminal object]], given by the
 identity map $\id : c \to c$.
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   open /-Hom
@@ -228,7 +228,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   private variable
@@ -313,7 +313,7 @@ f$ and $q : p \to g$ over $c$ is given precisely by evidence that $fq =
 gp$, meaning that they fit neatly around our pullback diagram, as shown
 in the square below.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   Q \\
   \& {a\times_bc} \&\& a \\
@@ -335,8 +335,8 @@ can obtain the dashed map $l : Q \to a \times_c b$, which we can
 calculate satisfies
 
 $$
-f\pi_1l = fp = Q\text{,}
-$$
+f\pi_1l = fp = Q
+$$,
 
 so that it is indeed a map $Q \to f \times g$ over $c$, as required.
 Reading out the rest of $(a \times_c b)$'s universal property, we see
@@ -390,7 +390,7 @@ to the slice category (see the calculation marked `{- * -}`{.Agda}).
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
          {P A B c} {p1 f p2 g}
   where
   open Cat.Reasoning C
@@ -512,7 +512,7 @@ depart, and write down an outline of the proof.
   `Total-space`{.Agda}, so that it is [[fully faithful]].
 
 - Finally, we show that, given $p : X \to I$, the assignment $i \mapsto
-  p^{-1}(i)$, sending an index to the fibre of $p$ over it, gives a
+  p\inv(i)$, sending an index to the fibre of $p$ over it, gives a
   functor $P$; and that $\int P \cong p$ over $I$, so that
   `Total-space`{.Agda} is a [[split essential surjection]], hence an
   equivalence of categories.
@@ -548,13 +548,12 @@ dependent function is automatically a natural transformation.
 ```agda
   Total-space-is-ff : is-fully-faithful Total-space
   Total-space-is-ff {F} {G} = is-iso→is-equiv $
-    iso from linv (λ x → Nat-path λ x → funext (λ _ → transport-refl _)) where
+    iso from linv (λ x → ext λ _ _ → transport-refl _) where
 
     from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
     from mp = nt where
-      eta : ∀ i → ⌞ F .F₀ i ⌟ → ⌞ G .F₀ i ⌟
-      eta i j =
-        subst (∣_∣ ⊙ G .F₀) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+      eta : ∀ i → F ʻ i → G ʻ i
+      eta i j = subst (G ʻ_) (mp .commutes # _) (mp .map (i , j) .snd)
 
       nt : F => G
       nt .η = eta
@@ -567,11 +566,7 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = ext λ y → Σ-path (sym (happly (x .commutes) _))
-      ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
-                    (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
-      ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
-      ·· transport-refl _)
+    linv x = ext λ y s → Σ-pathp (sym (x .commutes $ₚ _)) (to-pathp⁻ refl)
 ```
 -->
 
@@ -580,7 +575,7 @@ its family of fibres gets us all the way back around to $p$.
 Fortunately, our proof that universes are [[object classifiers]]
 grappled with many of the same concerns, so we have a reusable
 equivalence `Total-equiv`{.Agda} which slots right in. By univalence, we
-can finish in style: not only is $\Sigma (x \mapsto p^{-1}(x))$
+can finish in style: not only is $\Sigma (x \mapsto p\inv(x))$
 _isomorphic_ to $p$ in $\Sets/I$, it's actually _identical_ to $p$!
 
 ```agda
@@ -608,7 +603,7 @@ that this latter condition reduces to showing $p \circ f = g$.
 
 <!--
 ```agda
-module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where
+module _ {C : Precategory o ℓ} {o : ⌞ C ⌟} (isc : is-category C) where
   private
     module C   = Cat.Reasoning C
     module C/o = Cat.Reasoning (Slice C o)

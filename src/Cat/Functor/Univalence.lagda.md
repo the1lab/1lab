@@ -68,12 +68,12 @@ module _
         (ecat : is-category de)
     → (p : G ≅ⁿ G') → ∀ {x}
     → path→iso {C = E} (λ i → (Univalent.iso→path ecat p i F∘ F) .F₀ x) .to
-    ≡ p .to .η (F₀ F x)
+    ≡ p .to .η (F .F₀ x)
   whisker-path-left {G} {G'} {F} p =
     de.J-iso
-      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ (de.iso→path isom i F∘ F) x) .to ≡ isom .to .η (F₀ F x))
+      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ (de.iso→path isom i F∘ F) x) .to ≡ isom .to .η (F .F₀ x))
       λ {x} → ap (λ e → path→iso {C = E} e .to)
-        (λ i j → de.iso→path-id {a = G} i j .F₀ (F₀ F x))
+        (λ i j → de.iso→path-id {a = G} i j .F₀ (F .F₀ x))
         ∙ transport-refl _
     where module de = Univalent p
 
@@ -81,11 +81,11 @@ module _
     : ∀ {G : Functor D E} {F F' : Functor C D}
         (cdcat : is-category cd)
     → (p : F ≅ⁿ F') → ∀ {x}
-    → path→iso {C = E} (λ i → F₀ G (Univalent.iso→path cdcat p i .F₀ x)) .from
+    → path→iso {C = E} (λ i → G .F₀ (Univalent.iso→path cdcat p i .F₀ x)) .from
     ≡ G .F₁ (p .from .η x)
   whisker-path-right {G} {G'} {F} cdcat =
     cd.J-iso
-      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ G (cd.iso→path isom i .F₀ x)) .from ≡ G .F₁ (isom .from .η x))
+      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → G .F₀ (cd.iso→path isom i .F₀ x)) .from ≡ G .F₁ (isom .from .η x))
       λ {x} → ap (λ e → path→iso {C = E} e .from)
         (λ i j → G .F₀ (cd.iso→path-id {a = G'} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)

@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Prelude
 
+open import Order.Diagram.Lub.Reasoning
 open import Order.Instances.Pointwise
 open import Order.Instances.Lower
 open import Order.Diagram.Glb
@@ -38,10 +39,7 @@ module ↓Coyoneda {o ℓ} (P : Poset o ℓ) (Ls : Lower-set P) where
     module P  = Order.Reasoning P
     module P↓ = Order.Reasoning (Lower-sets P)
 
-  shape : Type o
-  shape = Σ ⌞ P ⌟ λ i → i ∈ (apply Ls)
-
-  diagram : shape → Lower-set P
+  diagram : ∫ₚ Ls → Lower-set P
   diagram (i , i∈P) = ↓ P i
 ```
 
@@ -66,24 +64,24 @@ saying that presheaves are computed as certain [coends].
 [coends]: Cat.Diagram.Coend.html
 
 ```agda
-  lower-set-∫ : Ls ≡ Lower-sets-cocomplete P diagram .fst
-  lower-set-∫ = lub-unique (Lower-sets P)
-    (lower-set-is-lub)
-    (snd $ Lower-sets-cocomplete P diagram)
+  lower-set-∫ : Ls ≡ Lub.lub (Lower-sets-cocomplete P diagram)
+  lower-set-∫ = lub-unique (lower-set-is-lub)
+    (Lub.has-lub $ Lower-sets-cocomplete P diagram)
 ```
 
 <!--
 ```agda
 module
-  _ {o ℓ ℓ'} (A : Poset o ℓ) (B : Poset o ℓ')
-    (B-cocomplete
-      : ∀ {I : Type o} (F : I → ⌞ B ⌟) → Σ _ (is-lub B F))
-    (f : ⌞ Monotone A B ⌟)
+  _ {o ℓ ℓ'} {A : Poset o ℓ} {B : Poset o ℓ'}
+    {⋃ : {I : Type o} (F : I → ⌞ B ⌟) → ⌞ B ⌟}
+    (⋃-lubs : ∀ {I : Type o} (F : I → ⌞ B ⌟) → is-lub B F (⋃ F))
+    (f : Monotone A B)
   where
   private
     module A  = Poset A
     module DA = Poset (Lower-sets A)
     module B  = Poset B
+    module B-cocomplete = Lubs B ⋃-lubs
 ```
 -->
 
@@ -92,18 +90,16 @@ $B$) of $\{ f i | i \in S \}$, which is expressed familially as the
 composition
 
 $$
-(\sum_{i : A} i \in S) \xto{\pi_1} A \to B\text{.}
-$$
+(\sum_{i : A} i \in S) \xto{\pi_1} A \to B
+$$.
 
 It is readily computed that this procedure results in a monotone map.
 
 ```agda
   Lan↓ : Monotone (Lower-sets A) B
-  Lan↓ .hom S =
-    B-cocomplete {I = Σ ⌞ A ⌟ λ i → i ∈ (apply S)} (λ i → f # (i .fst)) .fst
-  Lan↓ .pres-≤ {S} {T} S⊆T =
-    B-cocomplete _ .snd .is-lub.least _ λ where
-      (i , i∈S) → B-cocomplete _ .snd .is-lub.fam≤lub (i , S⊆T i i∈S)
+  Lan↓ .hom S = ⋃ {I = Σ[ i ∈ A ] (i ∈ S)} (λ i → f # (i .fst))
+  Lan↓ .pres-≤ {S} {T} S⊆T = B-cocomplete.⋃-universal _ λ where
+    (i , i∈S) → B-cocomplete.⋃-inj (i , S⊆T i i∈S)
 ```
 
 A further short computation reveals that the least upper bound of all
@@ -113,8 +109,8 @@ that our cocontinuous extension commutes with the "unit map" $A \to DA$.
 ```agda
   Lan↓-commutes : ∀ x → Lan↓ # (↓ A x) ≡ f # x
   Lan↓-commutes x = B.≤-antisym
-    (B-cocomplete _ .snd .is-lub.least _ λ { (i , □i≤x) → f .pres-≤ (out! □i≤x) })
-    (B-cocomplete _ .snd .is-lub.fam≤lub (x , inc A.≤-refl))
+    (B-cocomplete.⋃-universal _ (λ { (i , □i≤x) → f .pres-≤ (out! □i≤x) }))
+    (B-cocomplete.⋃-inj (x , inc A.≤-refl))
 ```
 
 A short argument whose essence is the commutativity of joins with joins
@@ -123,14 +119,16 @@ establishes that the cocontinuous extension does live up to its name:
 ```agda
   Lan↓-cocontinuous
     : ∀ {I : Type o} (F : I → Lower-set A)
-    → Lan↓ # (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → Lan↓ # (F i)) .fst
+    → Lan↓ # Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → Lan↓ # (F i))
   Lan↓-cocontinuous F = B.≤-antisym
-    (B-cocomplete _ .snd .is-lub.least _ λ { (i , i∈⋃F) → □-rec! (λ { (j , i∈Fj) →
-      B.≤-trans (B-cocomplete _ .snd .is-lub.fam≤lub (i , i∈Fj))
-                (B-cocomplete _ .snd .is-lub.fam≤lub j) })
-      i∈⋃F })
-    (B-cocomplete _ .snd .is-lub.least _ λ i → B-cocomplete _ .snd .is-lub.least _ λ { (j , j∈Fi) →
-      B-cocomplete _ .snd .is-lub.fam≤lub (j , inc (i , j∈Fi)) })
+    (B-cocomplete.⋃-universal _ λ where
+      (i , i∈⋃F) →
+        □-rec! (λ { (j , i∈Fj) →
+          B.≤-trans (B-cocomplete.⋃-inj (i , i∈Fj)) (B-cocomplete.⋃-inj j)
+        }) i∈⋃F)
+    (B-cocomplete.⋃-universal _ λ i →
+     B-cocomplete.⋃-universal _ λ where
+       (j , j∈Fi) → B-cocomplete.⋃-inj (j , inc (i , j∈Fi)))
 ```
 
 And the coyoneda lemma comes in to show that the cocontinuous extension
@@ -147,15 +145,14 @@ reveals that $f'$ must agree with $\widehat{f}$.
   Lan↓-unique
     : (f~ : ⌞ Monotone (Lower-sets A) B ⌟)
     → ( ∀ {I : Type o} (F : I → Lower-set A)
-      → f~ # (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → f~ # (F i)) .fst )
+      → f~ # Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → f~ # (F i)) )
     → (∀ x → f~ # (↓ A x) ≡ f # x)
     → f~ ≡ Lan↓
-    -- (Lan↓₀ , Lan↓₁)
   Lan↓-unique f~ f~-cocont f~-comm = ext λ i →
-    f~ # i                                                        ≡⟨ ap# f~ (↓Coyoneda.lower-set-∫ A i) ⟩
-    f~ # (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst)   ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
-    B-cocomplete (λ j → f~ # (↓Coyoneda.diagram A i j)) .fst      ≡⟨ ap (λ e → B-cocomplete e .fst) (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
-    B-cocomplete (λ j → Lan↓ # (↓ A (j .fst))) .fst               ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
-    Lan↓ # (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst) ≡˘⟨ ap# Lan↓ (↓Coyoneda.lower-set-∫ A i) ⟩
-    Lan↓ # i                                                      ∎
+    f~ # i                                                           ≡⟨ ap# f~ (↓Coyoneda.lower-set-∫ A i) ⟩
+    f~ # Lub.lub (Lower-sets-cocomplete A (↓Coyoneda.diagram A i))   ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
+    ⋃ (λ j → f~ # (↓Coyoneda.diagram A i j))                         ≡⟨ ap ⋃ (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
+    ⋃ (λ j → Lan↓ # (↓ A (j .fst)))                                  ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
+    Lan↓ # Lub.lub (Lower-sets-cocomplete A (↓Coyoneda.diagram A i)) ≡˘⟨ ap# Lan↓ (↓Coyoneda.lower-set-∫ A i) ⟩
+    Lan↓ # i                                                         ∎
 ```

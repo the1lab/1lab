@@ -6,8 +6,13 @@ module Cat.Prelude where
 open import 1Lab.Prelude
   renaming ( _↪_ to _↣_
            ; _∘_ to _⊙_ -- \o.
+           ; _⟩∘⟨_ to _⟩⊙⟨_
+           ; refl⟩∘⟨_ to refl⟩⊙⟨_
+           ; _⟩∘⟨refl to _⟩⊙⟨refl
+           ; _∘⟨_ to _⊙⟨_
+           ; _⟩∘_ to _⟩⊙_
            )
-  hiding (id ; map)
+  hiding (id ; map ; _↠_)
   public
 
 open import Data.Set.Truncation public

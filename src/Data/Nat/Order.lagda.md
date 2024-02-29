@@ -66,7 +66,7 @@ instance
 ```
 -->
 
-Furthermore, `_≤_`{.Agda} is decidable:
+Furthermore, `_≤_`{.Agda} is decidable, and weakly total:
 
 ```agda
 ≤-dec : (x y : Nat) → Dec (x ≤ y)
@@ -76,6 +76,13 @@ Furthermore, `_≤_`{.Agda} is decidable:
 ≤-dec (suc x) (suc y) with ≤-dec x y
 ... | yes x≤y = yes (s≤s x≤y)
 ... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
+
+≤-is-weakly-total : ∀ x y → ¬ (x ≤ y) → y ≤ x
+≤-is-weakly-total zero    zero    _    = 0≤x
+≤-is-weakly-total zero    (suc y) ¬0≤s = absurd (¬0≤s 0≤x)
+≤-is-weakly-total (suc x) zero    _    = 0≤x
+≤-is-weakly-total (suc x) (suc y) ¬s≤s = s≤s $
+  ≤-is-weakly-total x y λ z → ¬s≤s (s≤s z)
 ```
 
 <!--
@@ -116,6 +123,9 @@ their strict ordering:
 ### Properties of the strict order
 
 ```agda
+<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+
 <-asym : ∀ {x y} → x < y → ¬ (y < x)
 <-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
 
@@ -182,7 +192,7 @@ module _ {ℓ} {P : Nat → Prop ℓ} where
 
     minimal-solution-unique : is-prop (minimal-solution λ x → ∣ P x ∣)
     minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
-      Σ-prop-path (λ y → hlevel!) (≤-antisym (n-min _ pk) (k-min _ pn))
+      Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
 ```
 
 The step of the code that actually finds a minimal solution does not

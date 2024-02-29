@@ -1,3 +1,5 @@
+const settings: Setting<any>[] = [];
+
 export class Setting<T> {
   private readonly key: string;
   private _value: T;
@@ -8,7 +10,6 @@ export class Setting<T> {
   constructor (name: string, def: T) {
     this.name = name;
     this.key = name.toLowerCase().replace(/[^a-z]/g, '_');
-    console.log(this.key);
 
     let it = window.localStorage.getItem(this.key);
     if (!it) {
@@ -18,6 +19,7 @@ export class Setting<T> {
     };
 
     this._onChange = [];
+    settings.push(this);
   }
 
   get value(): T {
@@ -39,7 +41,6 @@ export class Setting<T> {
 
   public onChange(listener: (value: T) => void) {
     this._onChange.push(listener);
-    listener(this.value);
     return this;
   }
 }
@@ -51,8 +52,11 @@ export type Theme = 'light' | 'dark' | 'system';
 export const equationSetting   = new Setting<boolean>("equations",   false)
   .onChange((v) => v ? clz.add("show-equations") : clz.remove("show-equations"));
 
-export const serifFontSetting  = new Setting<boolean>("sans_serif",  false)
+export const serifFontSetting  = new Setting<boolean>("sans_serif", false)
   .onChange((v) => v ? clz.remove("sans-serif") : clz.add("sans-serif"));
+
+export const justifiedSetting  = new Setting<boolean>("justify", false)
+  .onChange((v) => v ? clz.add("justified") : clz.remove("justified"));
 
 export const hiddenCodeSetting = new Setting<boolean>("hidden_code", false)
   .onChange((v) => v ? clz.add("show-hidden-code") : clz.remove("show-hidden-code"));
@@ -74,3 +78,12 @@ export const themeSetting = new Setting<Theme>("prefer_theme", 'system').onChang
       break;
   }
 });
+
+export function firstLoad() {
+  for (const setting of settings) {
+    const v = setting.value;
+    for (const l of (setting as any)._onChange) {
+      l(v);
+    }
+  }
+}

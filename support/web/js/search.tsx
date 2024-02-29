@@ -9,31 +9,65 @@ type SearchItem = {
   idDefines: string[] | null,
 };
 
-const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
-  const sel: string[] = [ e.idIdent, ...e.idDefines ?? [] ];
-  const original = e.idIdent;
+const showSearchItem = (e: SearchItem) => {
+  const
+    parts          = e.idIdent.split(" > "),
+    isHidden       = e.idIdent.startsWith("."),
+    isSection      = parts.length > 1,
+    isBibliography = parts[parts.length - 1].startsWith("ref")
+    ;
+  return !isHidden && (!isSection || !isBibliography);
+};
 
-  const desc: Content[] = [];
+const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
+  const parts = e.idIdent.split(" > ");
+
+  let selector = e.idIdent;
+  if (!e.idType && parts.length > 1) {
+    selector = parts[parts.length - 1];
+  }
+
+  const sel: string[] = [ selector, e.idIdent, ...e.idDefines ?? [] ];
+
+  let desc: Content | undefined;
   if (e.idType) {
-    desc.push(<p class="search-type sourceCode">{e.idType}</p>)
+    desc = <span class="search-type sourceCode">{e.idType}</span>;
+  } else if (parts.length > 1) {
+    desc = <span class="search-desc">{parts.slice(0, -1).join(" > ")}</span>;
   };
+
+  const clickTarget = <a href={e.idAnchor} />;
 
   return {
     selectors: sel,
-    activate: () => {
-      window.location.href = e.idAnchor;
-      return 'close';
+    activate: (aux) => {
+      if (aux) {
+        clickTarget.dispatchEvent(new MouseEvent('click', {
+          ctrlKey: true, // for Windows or Linux
+          metaKey: true, // for MacOS
+        }));
+        return 'keep';
+      } else {
+        window.location.href = e.idAnchor;
+        return 'close';
+      }
     },
+
     onlySearch: !thisp && (`${e.idIdent}.html` !== e.idAnchor),
     priority: e.idType ? -1 : 1,
 
     render(key: string, matched?: MatchedSpan) {
       let title;
-      if (original === key) {
-        title = highlight(original, matched)
+      if (selector === key) {
+        title = highlight(selector, matched);
+      } else if (e.idIdent === key && parts.length > 1) {
+        title = <span>{selector}</span>;
+        desc = <span class="search-desc">
+          {highlight(key, matched)}
+        </span>;
       } else {
         title = <span class="search-nontrivial-key">
-          <span class="search-original-name">{original}</span>
+          <span class="search-original-name">{selector}</span>
           <span class="search-match-key">
             {highlight(key, matched)}
           </span>
@@ -45,7 +79,7 @@ const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
           {spanMaybe(title)}
           <span class="search-module">{e.idAnchor.replace(/.html(#.+)?$/, "")}</span>
         </h3>,
-        ...desc
+        desc
       ];
     },
   };
@@ -60,7 +94,7 @@ let thisp = 0, done = false;
 fetch("static/search.json")
   .then(r => r.json())
   .then(entries => {
-    entries.filter((e: SearchItem) => !e.idIdent.startsWith(".")).forEach((e: SearchItem) => {
+    entries.filter(showSearchItem).forEach((e: SearchItem) => {
       if (e.idAnchor.startsWith(page)) {
         if (e.idAnchor !== page) {
           InThisPage.pushPromptItems(makeSearch(e, true));

@@ -11,7 +11,7 @@ import Cat.Reasoning
 module Cat.Functor.Naturality where
 ```
 
-# Working with natural transformations
+# Working with natural transformations {defines="natural-isomorphism"}
 
 Working with natural transformations can often be more cumbersome than
 working directly with the underlying families of morphisms; moreover, we
@@ -33,7 +33,8 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
 -->
 
 We'll refer to the natural-transformation versions of predicates on
-morphisms by a superscript `ⁿ`:
+morphisms by a superscript `ⁿ`. A **natural isomorphism** is simply an
+isomorphism in a functor category.
 
 ```agda
   Inversesⁿ : {F G : Functor C D} → F => G → G => F → Type _
@@ -115,8 +116,8 @@ following data:
   to-natural-iso {F = F} {G} mk .Isoⁿ.from .is-natural =
     inverse-is-natural {F} {G} (NT _ (λ x y f → sym (mk .natural x y f)))
       (mk .inv) (mk .eta∘inv) (mk .inv∘eta)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invl = Nat-path (mk .eta∘inv)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invr = Nat-path (mk .inv∘eta)
+  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invl = ext (mk .eta∘inv)
+  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invr = ext (mk .inv∘eta)
 ```
 
 Moreover, the following family of functions project out the
@@ -170,8 +171,7 @@ to an invertible natural transformation, resp. natural isomorphism.
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
     → (∀ x → β .η x D.∘ α .η x ≡ D.id)
     → Inversesⁿ α β
-  to-inversesⁿ p q =
-    CD.make-inverses (Nat-path p) (Nat-path q)
+  to-inversesⁿ p q = CD.make-inverses (ext p) (ext q)
 
   to-is-invertibleⁿ
     : {F G : Functor C D} {α : F => G}
@@ -179,7 +179,7 @@ to an invertible natural transformation, resp. natural isomorphism.
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
     → (∀ x → β .η x D.∘ α .η x ≡ D.id)
     → is-invertibleⁿ α
-  to-is-invertibleⁿ β p q = CD.make-invertible β (Nat-path p) (Nat-path q)
+  to-is-invertibleⁿ β p q = CD.make-invertible β (ext p) (ext q)
 
   inversesⁿ→inverses
     : ∀ {F G} {α : F => G} {β : G => F}
@@ -201,5 +201,27 @@ to an invertible natural transformation, resp. natural isomorphism.
     ate : _ => _
     ate .η x = D.is-invertible.inv (i x)
     ate .is-natural = inverse-is-natural eta _ (λ x → D.is-invertible.invl (i x)) (λ x → D.is-invertible.invr (i x))
+
+  push-eqⁿ : ∀ {F G} (α : F ≅ⁿ G) {a b} {f g : C.Hom a b} → F .F₁ f ≡ F .F₁ g → G .F₁ f ≡ G .F₁ g
+  push-eqⁿ {F = F} {G = G} α {f = f} {g} p =
+    G .F₁ f                                           ≡⟨ D.insertl (α .Isoⁿ.invl ηₚ _) ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ f ≡⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ f D.∘ α .Isoⁿ.from .η _ ≡⟨ D.refl⟩∘⟨ p D.⟩∘⟨refl ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ g D.∘ α .Isoⁿ.from .η _ ≡˘⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ g ≡⟨ D.cancell (α .Isoⁿ.invl ηₚ _) ⟩
+    G .F₁ g                                           ∎
+```
+-->
+
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open _=>_
+
+  id-nat-commute : ∀ (α β : Id {C = C} => Id) → α ∘nt β ≡ β ∘nt α
+  id-nat-commute α β = ext λ x → α .is-natural _ _ _
 ```
 -->

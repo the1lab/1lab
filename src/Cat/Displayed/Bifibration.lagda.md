@@ -108,8 +108,8 @@ universal property of [[cartesian lifts]]. If $u^{*}$ additionally has a
 left adjoint $L_{u}$, we have natural isomorphisms
 
 $$
-\cE_{u}(x',-) \simeq \cE_{x}(x',u^{*}(-)) \simeq \cE_{y}(L_{u}(x')-)\text{,}
-$$
+\cE_{u}(x',-) \simeq \cE_{x}(x',u^{*}(-)) \simeq \cE_{y}(L_{u}(x')-)
+$$,
 
 which implies $\cE$ `is a weak opfibration`{.Agda
 id=`hom-iso→weak-opfibration}; and any weak opfibration that's also a
@@ -199,7 +199,7 @@ equivalence.
 
       precompose-equiv
         : ∀ {x' : Ob[ x ]} {y' : Ob[ y ]}
-        → is-equiv {A = Hom[ id ] (F₀ L x') y'} (λ v → f*.₁ v Fib.∘ L-unit .η x')
+        → is-equiv {A = Hom[ id ] (L .F₀ x') y'} (λ v → f*.₁ v Fib.∘ L-unit .η x')
       precompose-equiv {x'} {y'} = is-iso→is-equiv $ iso
         (λ v → cocart.universalv _ (has-lift.lifting f _ ∘' v))
         (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _

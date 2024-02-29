@@ -1,7 +1,7 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
-open import 1Lab.Equiv.Embedding
+{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
+open import 1Lab.Function.Embedding
 
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Properties
@@ -138,7 +138,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     extensionality-hom : ∀ {a b} → Extensionality (So.Hom a b)
     extensionality-hom = record { lemma = quote Extensional-Hom }
 
-    Funlike-Hom : Funlike So.Hom
+    Funlike-Hom : ∀ {x y} → Funlike (So.Hom x y) ⌞ x ⌟ λ _ → ⌞ y ⌟
     Funlike-Hom = record
       { _#_ = Total-hom.hom
       }
@@ -162,6 +162,15 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
   private
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
+
+  equiv-hom→inverse-hom
+    : ∀ {a b : So.Ob}
+    → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
+    → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
+    → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
+  equiv-hom→inverse-hom {a = a} {b = b} f e =
+    EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
+      (λ _ → invert-id-hom) f (b .snd) e
 
   ∫-Path
     : ∀ {a b : So.Ob}

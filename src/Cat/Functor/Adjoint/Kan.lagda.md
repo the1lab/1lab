@@ -41,7 +41,7 @@ adjunction provides a bunch of isomorphisms between natural
 transformations, e.g. $(LF \to Mp) \cong (F \to RMp)$, which we can use
 to "grow" the original extension diagram.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{C}} && D && A \\
   \\
@@ -129,9 +129,9 @@ cell $\sigma' : G \to RM$, and let $\sigma : LG \to M$ be its adjunct.
 ```agda
     pres .σ α .η x = R-adjunct adj (l.σ (fixup α) .η x)
     pres .σ {M = M} α .is-natural x y f =
-      (counit.ε _ A.∘ L.₁ (l.σ (fixup α) .η y)) A.∘ LG.₁ f        ≡⟨ A.pullr (L.weave (l.σ (fixup α) .is-natural x y f)) ⟩
-      counit.ε _ A.∘ (L.₁ (RM.₁ f) A.∘ L.₁ (l.σ (fixup α) .η x))  ≡⟨ A.extendl (counit.is-natural _ _ _) ⟩
-      M.₁ f A.∘ pres .σ α .η x                                    ∎
+      (ε _ A.∘ L.₁ (l.σ (fixup α) .η y)) A.∘ LG.₁ f        ≡⟨ A.pullr (L.weave (l.σ (fixup α) .is-natural x y f)) ⟩
+      ε _ A.∘ (L.₁ (RM.₁ f) A.∘ L.₁ (l.σ (fixup α) .η x))  ≡⟨ A.extendl (counit.is-natural _ _ _) ⟩
+      M.₁ f A.∘ pres .σ α .η x                             ∎
       where module M = Functor M
             module RM = Functor (R F∘ M)
 ```
@@ -147,12 +147,12 @@ reader but they will not be elaborated on.
 </summary>
 
 ```agda
-    pres .σ-comm {α = α} = Nat-path λ x →
+    pres .σ-comm {α = α} = ext λ x →
       (R-adjunct adj (l.σ (fixup α) .η _)) A.∘ L.₁ (eta .η _) ≡⟨ L.pullr (l.σ-comm {α = fixup α} ηₚ _) ⟩
       R-adjunct adj (L-adjunct adj (α .η x))                  ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (α .η x) ⟩
       α .η x                                                  ∎
 
-    pres .σ-uniq {M = M} {α = α} {σ' = σ'} wit = Nat-path λ x →
+    pres .σ-uniq {M = M} {α = α} {σ' = σ'} wit = ext λ x →
       R-adjunct adj (l.σ (fixup α) .η x)      ≡⟨ A.refl⟩∘⟨ ap L.₁ (l.σ-uniq lemma ηₚ x) ⟩
       R-adjunct adj (L-adjunct adj (σ' .η x)) ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (σ' .η x) ⟩
       σ' .η x                                 ∎
@@ -167,7 +167,7 @@ reader but they will not be elaborated on.
           R.₁ (M.₁ f) D.∘ R.₁ (σ' .η x) D.∘ unit.η _      ∎
 
         lemma : fixup α ≡ ((σ'' ◂ p) ∘nt eta)
-        lemma = Nat-path λ x →
+        lemma = ext λ x →
           R.₁ (α .η x) D.∘ unit.η _                     ≡⟨ ap R.₁ (wit ηₚ _) D.⟩∘⟨refl ⟩
           R.₁ (σ' .η _ A.∘ L.₁ (eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
           (R.₁ (σ' .η _) D.∘ unit.η _) D.∘ eta .η x     ∎
@@ -184,13 +184,8 @@ By duality, right adjoints preserve right extensions.
 module
   _ {oc ℓc oc' ℓc' od ℓd oa ℓa}
     {C : Precategory oc ℓc} {C' : Precategory oc' ℓc'} {D : Precategory od ℓd}
-    {A : Precategory oa ℓa}
-    {p : Functor C C'}
-    {F : Functor C D}
-    {G : Functor C' D}
-    {eps : G F∘ p => F}
-    (ran : is-ran p F G eps)
-    {L : Functor A D} {R : Functor D A}
+    {A : Precategory oa ℓa} {p : Functor C C'} {F : Functor C D} {G : Functor C' D}
+    {eps : G F∘ p => F} (ran : is-ran p F G eps) {L : Functor A D} {R : Functor D A}
     (adj : L ⊣ R)
   where
 ```
@@ -214,7 +209,7 @@ module
         α
       unquoteDecl σ' = dualise-into σ' (M => R F∘ G) (p.σ α')
 
-    fixed .is-ran.σ-comm = Nat-path λ x → p.σ-comm ηₚ _
+    fixed .is-ran.σ-comm = ext λ x → p.σ-comm ηₚ _
     fixed .is-ran.σ-uniq {M = M} {σ' = σ'} p =
-      Nat-path λ x → p.σ-uniq {σ' = dualise! σ'} (Nat-path λ x → p ηₚ x) ηₚ x
+      ext λ x → p.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
 ```

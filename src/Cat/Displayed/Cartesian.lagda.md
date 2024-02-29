@@ -68,7 +68,7 @@ that we have a map $m : u \to a$ (below, in violet), and a map $h' : u'
 of a Cartesian map says that we have a universal factorisation of $h'$
 through a map $u' \to a'$ (in green, marked $\exists!$).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,124;green,50;blue,189}{u'} \\
   & {a'} && {b'} \\
@@ -362,7 +362,7 @@ morphisms must have their domains related by a vertical isomorphism.
 Suppose they're called $f_1$ and $f_2$, and fit into a diagram like the
 one below.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {a_2'} \\
   & {a_1'} && {b'} \\
@@ -577,8 +577,8 @@ cartesian→postcompose-equiv cart =
 
 ## Cartesian lifts {defines="cartesian-lift"}
 
-We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
-\to b'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
+We call an object $y'$ over $y$ together with a Cartesian arrow $f' : x'
+\to y'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
 property as they are, are unique when they exist, so that "having
 Cartesian lifts" is a _property_, not a structure.
 

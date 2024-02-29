@@ -61,7 +61,7 @@ the dependent sum type:
 _×_ : ∀ {a b} → Type a → Type b → Type _
 A × B = Σ[ _ ∈ A ] B
 
-infixr 4 _×_
+infixr 5 _×_
 ```
 
 ## Lifting

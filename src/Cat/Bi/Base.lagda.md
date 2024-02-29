@@ -71,7 +71,7 @@ composition**, will be written $\alpha \otimes \beta$. As for why it's
 called _vertical_ composition, note that it reduces pasting diagrams of
 the form
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {B\text{.}}
   \arrow[""{name=0, anchor=center, inner sep=0}, curve={height=-18pt}, from=1-1, to=1-3]
@@ -103,7 +103,7 @@ sets for maps of precategories, i.e., functors.
 
 ```agda
   field
-    id      : ∀ {A} → Precategory.Ob (Hom A A)
+    id      : ∀ {A} → ⌞ Hom A A ⌟
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
   module compose {a} {b} {c} = Fr (compose {a} {b} {c})
@@ -115,7 +115,7 @@ classes of maps and all the composition operations. Observe that the
 action of the composition functor on homotopies reduces "horizontal"
 pasting diagrams like
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A & B & {C\text{,}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{g_1}", curve={height=-12pt}, from=1-1, to=1-2]
@@ -131,14 +131,14 @@ whence the name **horizontal composition**.
 
 ```agda
   _↦_ : Ob → Ob → Type ℓ
-  A ↦ B = Precategory.Ob (Hom A B)
+  A ↦ B = ⌞ Hom A B ⌟
 
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ⊗ g = compose .Functor.F₀ (f , g)
+  f ⊗ g = compose # (f , g)
 
   -- vertical 2-cell composition
   _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
@@ -245,7 +245,7 @@ one for reducing sequences of associators, the **pentagon identity**. As
 for where the name "pentagon" comes from, the path `pentagon`{.Agda}
 witnesses commutativity of the diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   && {f(g(hi))} \\
   \\
@@ -305,7 +305,7 @@ module _ (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-## The bicategory of categories
+## The bicategory of categories {defines="Cat"}
 
 Just like the prototypal example of categories is the category of sets,
 the prototypal example of bicategory is the bicategory of categories. We
@@ -349,39 +349,38 @@ directly:
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
     ni .make-natural-iso.natural x y f =
-      Nat-path λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+      ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
 
   pb .unitor-l {B = B} = to-natural-iso ni where
     module B = Cr B
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ → B.idr _ ∙ B.id-comm
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
 
   pb .associator {A} {B} {C} {D} = to-natural-iso ni where
     module D = Cr D
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ →
+    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ →
       D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
 
-  pb .triangle {C = C} f g = Nat-path (λ _ → Cr.idr C _)
-  pb .pentagon {E = E} f g h i =
-    Nat-path λ _ → ap₂ E._∘_
-      (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
-      (E.elimr (E.eliml (f .F-id)))
+  pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
+  pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
+    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
+    (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
 ```
 
-# Lax functors
+# Lax functors {defines="lax-functor"}
 
 In the same way that the definition of bicategory is obtained by
 starting with the definition of category and replacing the $\hom$-sets
@@ -394,7 +393,7 @@ However, when talking about general bicategories, we are faced with a
 choice: We could generalise the functoriality axioms to natural
 isomorphisms, keeping with the fact that equations are invertible, but
 we could also drop this invertibility requirement, and work only with
-natural _transformations_ $P(\id[A]) \to \id[PA]$. When these
+natural _transformations_ $P(\id_A) \to \id_{PA}$. When these
 are not invertible, the resulting structure is called a **lax functor**;
 When they _are_, we talk about **pseudofunctors** instead.
 
@@ -419,7 +418,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 ```agda
     compositor
       : ∀ {A B C}
-      → C.compose F∘ Cat⟨ P₁ {B} {C} F∘ Fst , P₁ {A} {B} F∘ Snd ⟩ => P₁ F∘ B.compose
+      → C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ B.compose
 
     unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```
@@ -450,7 +449,7 @@ witnesses commutativity for, but leave the `right-unit`{.Agda} and
 `left-unit`{.Agda} diagrams undrawn (they're boring commutative
 squares).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {F(hg)Ff} && {F((hg)f)} \\
   \\
@@ -482,7 +481,7 @@ squares).
       → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
-## Pseudofunctors
+## Pseudofunctors {defines="pseudofunctor"}
 
 As mentioned above, a lax functor with invertible unitors and compositor
 is called a **pseudofunctor**. Every pseudofunctor has an underlying
@@ -518,7 +517,7 @@ record
   υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
 ```
 
-# Lax transformations
+# Lax transformations {defines="lax-transformation"}
 
 By dropping the invertibility requirement when generalising natural
 transformations to lax functors, we obtain the type of **lax
@@ -621,7 +620,7 @@ We abbreviate the types of lax- and pseudonatural transformations by
   _=>ₚ_ = Pseudonatural
 ```
 
-# Modifications
+# Modifications {defines="modification"}
 
 When dealing with 1-categorical data (categories, functors, and natural
 transformations), the commutativity in 2-cells is witnessed by equations

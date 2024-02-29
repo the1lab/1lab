@@ -27,8 +27,8 @@ Let $f : A \to B$ be a morphism in an [abelian category] $\cA$, which
 (by definition) admits a canonical decomposition as
 
 $$
-A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B\text{,}
-$$
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B
+$$,
 
 where the map $p$ is [epic], $i$ is [[monic]], and the indicated
 isomorphism arises from $f$ in a canonical way, using the universal
@@ -60,7 +60,7 @@ Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
 $i : \ker (\coker f) \mono B$. We can take the map $i$ as the "image"
 subobject. We must provide a map filling the dotted line in
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {\mathrm{im}(f)} \\
   & B
@@ -75,8 +75,8 @@ it's the epimorphism $p$ followed by the isomorphism $f'$ in the
 decomposition
 
 $$
-A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B\text{.}
-$$
+A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B
+$$.
 
 ```agda
   the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _
@@ -95,7 +95,7 @@ and we wish to construct a map $g : i' \le i$^[this is an inequality in
 the poset of subobjects of $B$, which is a map $i' \to i$ in the slice
 over $B$.], hence a map $\im f \to X$ such that the triangle
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathrm{im}(f)} & X \\
   B

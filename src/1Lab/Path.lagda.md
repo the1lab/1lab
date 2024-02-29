@@ -152,7 +152,7 @@ operations on the interval, give a way of extending from $n$-dimensional
 cubes to $n+k$-dimensional cubes. For instance, if we have a path like
 the one below, we can extend it to any of a bunch of different squares:
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b
   \arrow[from=1-1, to=1-3]
@@ -214,9 +214,11 @@ faces.
 
 </div>
 
+:::{.definition #connection}
 The other thing we can do is use one of the binary operators on the
 interval to get squares called _connections_, where two adjacent faces
 are `p` and the other two are refl:
+:::
 
 ```agda
     ∧-conn : PathP (λ i → a ≡ p i) refl p
@@ -473,6 +475,14 @@ subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
       → x ≡ y → P x → P y
 subst P p x = transp (λ i → P (p i)) i0 x
 ```
+
+<!--
+```agda
+subst₂ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : Type ℓ₂} (P : A → B → Type ℓ₃) {a a' : A} {b b' : B}
+       → a ≡ a' → b ≡ b' → P a b → P a' b'
+subst₂ P p q x = transp (λ i → P (p i) (q i)) i0 x
+```
+-->
 
 ### Computation
 
@@ -731,7 +741,7 @@ private
 This represents the following shape: Two disconnected points, with
 completely unrelated values at each endpoint of the interval.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\rm{true}} && {\rm{false}}
 \end{tikzcd}\]
@@ -757,7 +767,7 @@ contradiction, since any `I → Partial i1 T` extends to a path:
   _ = λ f i → f i 1=1
 ```
 
-## Extensibility
+## Extensibility {defines="extensibility extension-type"}
 
 A partial element in a context with $n$-variables gives us a way of
 mapping some subobject of the $n$-cube into a type. A natural question
@@ -779,7 +789,7 @@ path is a line in `Bool`, which is `true`{.Agda} on the left endpoint of
 the interval (in fact, it is `true`{.Agda} everywhere), so we say that
 `refl`{.Agda} _extends_ the partial element.
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{\rm{true}} && {\rm{true}}
   \arrow["{\refl}", from=1-1, to=1-3]
@@ -922,11 +932,13 @@ module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} wher
   double-comp-tube i j (j = i0) = q i
 ```
 
+:::{.definition #fibrancy alias="homogeneous-composition"}
 The Kan condition on types says that, whenever we have some formula
 $\phi$ and a partial element $u$ defined along $\phi \lor \neg j$ (for
 $j$ disjoint from $\phi$; we call it the "direction of composition",
 sometimes), then we can extend it to a totally-defined element, which
 agrees with $u$ along $\phi$.
+:::
 
 The idea is that the $\neg j$, being in some sense "orthogonal to" the
 dimensions in $\phi$, will "connect" the tube given by $\phi$. This is a
@@ -1150,7 +1162,7 @@ The term `cube` above has the following cube as a boundary. Since it is
 a filler, there is a missing face at the bottom which has no name, so we
 denote it by `hcomp...` in the diagram.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,153;green,92;blue,214}{x} &&&& \textcolor{rgb,255:red,153;green,92;blue,214}{x} \\
   & \textcolor{rgb,255:red,214;green,92;blue,92}{y} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\

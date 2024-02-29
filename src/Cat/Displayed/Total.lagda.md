@@ -40,7 +40,7 @@ reasons: this makes it simpler to work with algebraic structures.
 
 ```agda
 Total : Type (o ⊔ o')
-Total = Σ[ Carrier ∈ Ob ] Ob[ Carrier ]
+Total = Σ[ Carrier ∈ B ] Ob[ Carrier ]
 ```
 
 The situation is similar for morphisms: we bundle up a morphism from the
@@ -144,7 +144,7 @@ total-iso→iso[] f = make-iso[ total-iso→iso f ]
 [[Pullbacks]] in the total category of $\cE$ have a particularly nice
 characterization. Consider the following pair of commuting squares.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
   & {P'} && {Y'} \\
   {X'} && {X'} \\

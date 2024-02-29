@@ -37,20 +37,24 @@ _is a set_!
 
 ```agda
 naïve-fin-is-set : is-set (Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X)
-naïve-fin-is-set = is-hlevel≃ 2 Σ-swap₂ $
+naïve-fin-is-set = Equiv→is-hlevel 2 Σ-swap₂ $
   Σ-is-hlevel 2 (hlevel 2) λ x → is-prop→is-hlevel-suc {n = 1} $
     is-contr→is-prop $ Equiv-is-contr (Fin x)
 ```
 
 That's because, as the proof above shows, it's equivalent to the type of
 natural numbers: The type
+
 $$
 \sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
 $$
+
 is equivalent to the type
+
 $$
-\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X\text{,}
-$$
+\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X
+$$,
+
 and univalence says (rather directly) that the sum of $[n] \simeq X$ as
 $X$ ranges over a universe is contractible, so we're left with the type
 of natural numbers.
@@ -91,7 +95,7 @@ record Finite {ℓ} (T : Type ℓ) : Type ℓ where
 ```agda
   Finite→is-set : is-set T
   Finite→is-set =
-    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → is-hlevel≃ 2 e (hlevel 2)) enumeration
+    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → Equiv→is-hlevel 2 e (hlevel 2)) enumeration
 
   instance
     Finite→H-Level : H-Level T 2
@@ -100,7 +104,7 @@ record Finite {ℓ} (T : Type ℓ) : Type ℓ where
 open Finite ⦃ ... ⦄ using (cardinality; enumeration) public
 open Finite using (Finite→is-set) public
 
-instance
+instance opaque
   H-Level-Finite : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level (Finite A) (suc n)
   H-Level-Finite = prop-instance {T = Finite _} λ where
     x y i .Finite.cardinality → ∥-∥-proj!
@@ -139,6 +143,48 @@ Finite-choice {B = B} ⦃ fin {sz} e ⦄ k = do
 Finite-≃ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Finite A ⦄ → A ≃ B → Finite B
 Finite-≃ ⦃ fin {n} e ⦄ e' = fin (∥-∥-map (e' e⁻¹ ∙e_) e)
 
+equiv→same-cardinality
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fa : Finite A ⦄ ⦃ fb : Finite B ⦄
+  → ∥ A ≃ B ∥ → fa .Finite.cardinality ≡ fb .Finite.cardinality
+equiv→same-cardinality ⦃ fa ⦄ ⦃ fb ⦄ e = ∥-∥-proj! do
+  e ← e
+  ea ← fa .Finite.enumeration
+  eb ← fb .Finite.enumeration
+  pure (Fin-injective (ea e⁻¹ ∙e e ∙e eb))
+
+same-cardinality→equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fa : Finite A ⦄ ⦃ fb : Finite B ⦄
+  → fa .Finite.cardinality ≡ fb .Finite.cardinality → ∥ A ≃ B ∥
+same-cardinality→equiv ⦃ fa ⦄ ⦃ fb ⦄ p = do
+  ea ← fa .Finite.enumeration
+  eb ← fb .Finite.enumeration
+  pure (ea ∙e (_ , cast-is-equiv p) ∙e eb e⁻¹)
+
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
+  (e : ∥ A ≃ B ∥) (f : A → B) where
+
+  Finite-injection→equiv : injective f → is-equiv f
+  Finite-injection→equiv inj = ∥-∥-proj! do
+    e ← e
+    eb ← fb .Finite.enumeration
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-injection→equiv _
+      $ Equiv.injective (eb e⁻¹ ∙e e e⁻¹) ∘ inj ∘ Equiv.injective eb
+
+  Finite-surjection→equiv : is-surjective f → is-equiv f
+  Finite-surjection→equiv surj = ∥-∥-proj! do
+    e ← e
+    eb ← fb .Finite.enumeration
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-surjection→equiv _
+      $ ∘-is-surjective (is-equiv→is-surjective (eb .snd))
+      $ ∘-is-surjective surj
+      $ is-equiv→is-surjective ((eb e⁻¹ ∙e e e⁻¹) .snd)
+
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -169,27 +215,6 @@ instance
 
 <!--
 ```agda
-private
-  finite-pi-fin
-    : ∀ {ℓ'} n {B : Fin n → Type ℓ'}
-    → (∀ x → Finite (B x))
-    → Finite ((x : Fin n) → B x)
-  finite-pi-fin zero fam = fin {cardinality = 1} $ pure $ Iso→Equiv λ where
-    .fst x → fzero
-    .snd .is-iso.inv x ()
-    .snd .is-iso.rinv fzero → refl
-    .snd .is-iso.linv x → funext λ { () }
-
-  finite-pi-fin (suc sz) {B} fam = ∥-∥-proj! $ do
-    e ← finite-choice (suc sz) λ x → fam x .enumeration
-    let rest = finite-pi-fin sz (λ x → fam (fsuc x))
-    cont ← rest .Finite.enumeration
-    let
-      work = Fin-suc-universal {n = sz} {A = B}
-        ∙e Σ-ap (e fzero) (λ x → cont)
-        ∙e Finite-sum λ _ → rest .Finite.cardinality
-    pure $ fin $ pure work
-
 Finite-Fin = fin (inc (_ , id-equiv))
 
 Finite-⊎ {A = A} {B = B} = fin $ do
@@ -197,27 +222,25 @@ Finite-⊎ {A = A} {B = B} = fin $ do
   beq ← enumeration {T = B}
   pure (⊎-ap aeq beq ∙e Finite-coproduct)
 
-Finite-Π {A = A} {P = P} ⦃ fin {sz} en ⦄ ⦃ fam ⦄ = ∥-∥-proj! $ do
-  eqv ← en
-  let count = finite-pi-fin sz λ x → fam {equiv→inverse (eqv .snd) x}
-  eqv' ← count .Finite.enumeration
-  pure $ fin $ pure $ Π-dom≃ (eqv e⁻¹) ∙e eqv'
-
-Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ fam ⦄ = ∥-∥-proj! $ do
+Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-proj! do
   aeq ← afin .Finite.enumeration
   let
     module aeq = Equiv aeq
-    bc : (x : Fin (afin .Finite.cardinality)) → Nat
-    bc x = fam {aeq.from x} .Finite.cardinality
+    bc : Fin (afin .Finite.cardinality) → Nat
+    bc x = pfin {aeq.from x} .Finite.cardinality
+  pure $ fin do
+    t ← Finite-choice λ x → pfin {x} .Finite.enumeration
+    pure (Π-cod≃ t ∙e Π-dom≃ aeq.inverse ∙e Finite-product bc)
 
-    fs : (Σ _ λ x → Fin (bc x)) ≃ Fin (sum (afin .Finite.cardinality) bc)
-    fs = Finite-sum bc
-    work = do
-      t ← Finite-choice λ x → fam {x} .Finite.enumeration
-      pure $ Σ-ap aeq λ x → t x
-          ∙e (_ , cast-is-equiv (ap (λ e → fam {e} .cardinality)
-                    (sym (aeq.η x))))
-  pure $ fin ⦇ work ∙e pure fs ⦈
+Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-proj! do
+  aeq ← afin .Finite.enumeration
+  let
+    module aeq = Equiv aeq
+    bc : Fin (afin .Finite.cardinality) → Nat
+    bc x = pfin {aeq.from x} .Finite.cardinality
+  pure $ fin do
+    t ← Finite-choice λ x → pfin {x} .Finite.enumeration
+    pure (Σ-ap-snd t ∙e Σ-ap-fst aeq.inverse e⁻¹ ∙e Finite-sum bc)
 
 Finite-⊥ = fin (inc (Finite-zero-is-initial e⁻¹))
 Finite-⊤ = fin (inc (is-contr→≃⊤ Finite-one-is-contr e⁻¹))
@@ -235,5 +258,12 @@ Finite-Bool = fin (inc (Iso→Equiv enum)) where
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
+```
+-->
+
+<!--
+```agda
+card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
+card-zero→empty ∥e∥ a = ∥-∥-rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

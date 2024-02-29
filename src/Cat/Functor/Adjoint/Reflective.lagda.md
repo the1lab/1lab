@@ -45,7 +45,7 @@ adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   \mathcal{C} & \mathcal{D}
   \arrow[""{name=0, anchor=center, inner sep=0}, "\iota"', shift right=2, hook, from=1-1, to=1-2]
@@ -95,21 +95,21 @@ module
   is-reflective→counit-is-iso : ∀ {o} → FG.₀ o D.≅ o
   is-reflective→counit-is-iso {o} = morp where
     morp : F.₀ (G.₀ o) D.≅ o
-    morp = D.make-iso (counit.ε _) (g-ff.from (unit.η _)) invl invr
+    morp = D.make-iso (ε _) (g-ff.from (unit.η _)) invl invr
       where abstract
-      invl : counit.ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
+      invl : ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
       invl = fully-faithful→faithful {F = G} g-ff (
-        G.₁ (counit.ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
-        G.₁ (counit.ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
-        G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
-        G.₁ D.id                               ∎)
+        G.₁ (ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
+        G.₁ (ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
+        G.₁ (ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
+        G.₁ D.id                        ∎)
 
-      invr : g-ff.from (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
+      invr : g-ff.from (unit.η (G.₀ o)) D.∘ ε o ≡ D.id
       invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
-        g-ff.from _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-        counit.ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
-        counit.ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
-        D.id                                   ∎))
+        g-ff.from _ D.∘ ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
+        ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
+        ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
+        D.id                            ∎))
 
   is-reflective→counit-iso : (F F∘ G) DD.≅ Id
   is-reflective→counit-iso = DD.invertible→iso counit invs where
@@ -126,13 +126,13 @@ module
     (sym (G.F-∘ _ _) ∙ ap G.₁ zig ∙ G.F-id)
 
   is-reflective→unit-G-is-iso : ∀ {o} → C.is-invertible (unit.η (G.₀ o))
-  is-reflective→unit-G-is-iso {o} = C.make-invertible (g-ff.to (counit.ε _))
+  is-reflective→unit-G-is-iso {o} = C.make-invertible (g-ff.to (ε _))
     (unit.is-natural _ _ _ ·· ap₂ C._∘_ refl η-comonad-commute ·· GF.annihilate zag)
     zag
 
   is-reflective→F-unit-is-iso : ∀ {o} → D.is-invertible (F.₁ (unit.η o))
   is-reflective→F-unit-is-iso {o} = D.make-invertible
-    (counit.ε _)
+    (ε _)
     (sym (counit.is-natural _ _ _) ∙ ap₂ D._∘_ refl (ap F.₁ (sym η-comonad-commute)) ∙ zig)
     zig
 ```
@@ -221,4 +221,113 @@ is.
 
   eqv : is-equivalence Comp
   eqv = ff+split-eso→is-equivalence comp-ff comp-seso
+```
+
+## Constructing reflective subcategories
+
+Earlier, we saw that any reflective subcategory has an invertible counit.
+We will now prove the converse: if the counit of an adjunction is
+invertible, then the left adjoint is a reflector.
+
+<!--
+```agda
+module _
+  {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  {F : Functor C D} {G : Functor D C}
+  (adj : F ⊣ G)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module [D,D] = Cat.Reasoning Cat[ D , D ]
+    module F = Func F
+    module G = Func G
+    module GF = Func (G F∘ F)
+    module FG = Func (F F∘ G)
+    open _⊣_ adj
+```
+-->
+
+Let $\eps\inv$ be the (natural) inverse to the counit, and let
+$f : \cC(G(X), G(Y))$. We can obtain a map $\cD(X,Y)$ by conjugating
+with $\eps$ and its inverse.
+
+```agda
+  is-counit-iso→is-reflective : is-invertibleⁿ counit → is-reflective adj
+  is-counit-iso→is-reflective counit-iso =
+    is-iso→is-equiv $
+      iso (λ f → ε _ D.∘ F.₁ f D.∘ ε⁻¹ _)
+```
+
+Proving that this conjugation forms an equivalence involves the usual
+adjoint yoga. For the forward direction, we need to show that
+$G(\eps \circ F(f) \circ \eps\inv) = f$; if we take the right adjunct,
+this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps\inv)) = \eps \circ F(f)$.
+
+From here, we can repeatedly apply naturality to commute the $\eps$
+all the way to the end of the chain of morphisms. This yields
+$\eps \circ F(f) \circ \eps\inv \circ \eps$, which is equal to
+$\eps \circ F(f)$, as $\eps\inv$ is an inverse.
+
+```agda
+        (λ f → Equiv.injective (_ , R-adjunct-is-equiv adj) $
+          ε _ D.∘ F.₁ (G.₁ (ε _ D.∘ F.₁ f D.∘ ε⁻¹ _))   ≡⟨ FG.popl (counit .is-natural _ _ _) ⟩
+          (ε _ D.∘ ε _) D.∘ F.₁ (G.₁ (F.₁ f D.∘ ε⁻¹ _)) ≡⟨ D.extendr (FG.shufflel (counit .is-natural _ _ _)) ⟩
+          (ε _ D.∘ F.₁ f) D.∘ ε _ D.∘ F.₁ (G.₁ (ε⁻¹ _)) ≡⟨ D.elimr (counit .is-natural _ _ _ ∙ counit-iso.invr ηₚ _) ⟩
+          ε _ D.∘ F.₁ f                                 ∎)
+```
+
+The reverse direction follows from a quick application of naturality.
+
+```agda
+        (λ f →
+          ε _ D.∘ F.₁ (G.₁ f) D.∘ ε⁻¹ _ ≡⟨ D.pulll (counit.is-natural _ _ _) ⟩
+          (f D.∘ ε _) D.∘ ε⁻¹ _         ≡⟨ D.cancelr (counit-iso.invl ηₚ _) ⟩
+          f                             ∎)
+    where
+      module counit-iso = is-invertibleⁿ counit-iso
+      ε⁻¹ = counit-iso.inv .η
+```
+
+Furthermore, if we have *any* natural isomorphism $\alpha : FG \iso \Id$, then
+the left adjoint is a reflector! To show this, we will construct an
+inverse to the counit; our previous result will then ensure that $F$
+is fully faithful.
+
+To begin, recall that isos have the 2-out-of-3 property, so it suffices
+to show that $\eps \circ \alpha$ is invertible. Next, note that we can
+transfer the comonad structure on $FG$ onto a comonad structure on $\Id$
+by repeatedly composing with $\alpha$; this yields a natural transformation
+$\delta : \Id \to \Id$ that is a right inverse to $\eps \circ \alpha$.
+
+Finally, all natural transformations $\Id \to \Id$ commute with one another,
+so $\delta$ is also a right inverse, and $\eps \circ \alpha$ is invertible.
+
+```agda
+  FG-iso→is-reflective : (F F∘ G) ≅ⁿ Id → is-reflective adj
+  FG-iso→is-reflective α =
+    is-counit-iso→is-reflective $
+    [D,D].invertible-cancell
+      ([D,D].iso→invertible (α [D,D].Iso⁻¹))
+      ([D,D].make-invertible δ right-ident right-ident⁻¹)
+    where
+      module α = Isoⁿ α
+
+      δ : Id {C = D} => Id
+      δ .η x = α.to .η x D.∘ α.to .η (F.F₀ (G.₀ x)) D.∘ F.₁ (unit.η (G.₀ x)) D.∘ α.from .η x
+      δ .is-natural x y f =
+          D.extendr (D.extendr (D.extendr (α.from .is-natural _ _ _)))
+        ∙ D.pushl (D.pushr (D.pushr (F.weave (unit .is-natural _ _ _))))
+        ∙ D.pushl (D.pushr (α.to .is-natural _ _ _))
+        ∙ D.pushl (α.to .is-natural _ _ _)
+
+      right-ident : (counit ∘nt α.from) ∘nt δ ≡ idnt
+      right-ident = ext λ x →
+          D.cancel-inner (α.invr ηₚ _)
+        ∙ D.pulll (sym $ α.to .is-natural _ _ _)
+        ∙ D.cancel-inner (F.annihilate zag)
+        ∙ α.invl ηₚ _
+
+      right-ident⁻¹ : δ ∘nt (counit ∘nt α.from) ≡ idnt
+      right-ident⁻¹ = id-nat-commute δ (counit ∘nt α.from) ∙ right-ident
 ```

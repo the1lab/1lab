@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -321,7 +321,7 @@ equivalence:
 
 ```agda
 not-is-equiv : is-equiv not
-not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
+not-is-equiv = is-involutive→is-equiv not-involutive
 ```
 
 <!--

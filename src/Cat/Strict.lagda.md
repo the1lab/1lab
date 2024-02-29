@@ -15,7 +15,7 @@ ident=is-set}.
 
 ```agda
 is-strict : ∀ {o ℓ} → Precategory o ℓ → Type o
-is-strict C = is-set (Precategory.Ob C)
+is-strict C = is-set ⌞ C ⌟
 ```
 
 Strictness is a very strong condition to impose on categories, since it

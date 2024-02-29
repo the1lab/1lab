@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -32,7 +32,7 @@ will _not_ typecheck as a `Fin 1`!
 ```agda
 data Fin : Nat → Type where
   fzero : ∀ {n} → Fin (suc n)
-  fsuc : ∀ {n} → Fin n → Fin (suc n)
+  fsuc  : ∀ {n} → Fin n → Fin (suc n)
 ```
 
 Keeping with the perspective of `Fin`{.Agda} as a type of bounded
@@ -186,6 +186,9 @@ Fin-elim
   → ∀ {n} (i : Fin n) → P i
 Fin-elim P pfzero pfsuc fzero = pfzero
 Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
+
+fin-absurd : Fin 0 → ⊥
+fin-absurd ()
 ```
 -->
 
@@ -269,8 +272,7 @@ split-+ {m = suc m} fzero = inl fzero
 split-+ {m = suc m} (fsuc i) = ⊎-map fsuc id (split-+ i)
 
 avoid : ∀ {n} (i j : Fin (suc n)) → (¬ i ≡ j) → Fin n
-avoid {n = zero} fzero fzero i≠j = absurd (i≠j refl)
-avoid {n = suc n} fzero fzero i≠j = absurd (i≠j refl)
+avoid fzero fzero i≠j = absurd (i≠j refl)
 avoid {n = suc n} fzero (fsuc j) i≠j = j
 avoid {n = suc n} (fsuc i) fzero i≠j = fzero
 avoid {n = suc n} (fsuc i) (fsuc j) i≠j = fsuc (avoid i j (i≠j ∘ ap fsuc))

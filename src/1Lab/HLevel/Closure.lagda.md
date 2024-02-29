@@ -18,7 +18,7 @@ open import 1Lab.Type
 -->
 
 ```agda
-module 1Lab.HLevel.Retracts where
+module 1Lab.HLevel.Closure where
 ```
 
 # Closure of h-levels
@@ -32,23 +32,45 @@ private variable
 ```
 -->
 
-The homotopy n-types have many closure properties. A trivial example is
-that they are closed under equivalences, since any property of types is
-preserved by equivalence (This is the [[univalence axiom]]). More
-interesting is that they are closed under retractions:
+When showing that a given type $T$ is a [[homotopy $n$-type]], it's
+often possible to reason *syntactically* about the type formers which
+were used in the construction of $T$. This is fundamentally because the
+$n$-types are *closed under* a variety of type-forming operations, and
+*that* fact boils down to the fact that, in a homotopy type theory, the
+structure of identity types tends to be "self-similar" --- for example,
+paths between pairs are pairs of paths.
 
-## Retractions
+## Split surjections and retractions
 
-The first base case is to show that **retracts** of contractible types
-are contractible. We say that $A$ is a retract of $B$ if there is a map
-$f : A \to B$ admitting a `right-inverse`{.Agda}. This means that $f$ is
-the retraction (the left inverse). The proof is a calculation:
+The fundamental result that we will piggy-back to derive the closure of
+$n$-types under various operations is that [[contractible]] types are
+closed under *split surjections*. Unfolding this, it says that if we
+have a map $f : A \to B$ and a section $\forall_{b : B} f^*(b)$
+assigning [[fibres]] of $f$ over each $b : B$, then $B$ is contractible
+whenever $A$ is.
+
+The proof is a short calculation:
 
 ```agda
-retract→is-contr : (f : A → B) (g : B → A)
-                 → is-left-inverse f g
-                 → is-contr A
-                 → is-contr B
+split-surjection→is-contr
+  : (f : A → B) (s : (b : B) → fibre f b)
+  → is-contr A → is-contr B
+split-surjection→is-contr f s c .centre  = f (c .centre)
+split-surjection→is-contr f s c .paths x =
+  f (c .centre) ≡⟨ ap f (c .paths _) ⟩
+  f (s x .fst)  ≡⟨ s x .snd ⟩
+  x             ∎
+```
+
+Usually, the data of a split surjection is unpacked to talk about
+*retractions* instead. That is, instead of talking about a section of
+$f$'s fibres, we unpack the components to mention the inverse map $g : B
+\to A$ and the proof that $f(gx) = x$.
+
+```agda
+retract→is-contr
+  : (f : A → B) (g : B → A)
+  → is-left-inverse f g → is-contr A → is-contr B
 retract→is-contr f g h isC .centre = f (isC .centre)
 retract→is-contr f g h isC .paths x =
   f (isC .centre) ≡⟨ ap f (isC .paths _) ⟩
@@ -56,40 +78,36 @@ retract→is-contr f g h isC .paths x =
   x               ∎
 ```
 
-We must also show that retracts of _propositions_ are propositions:
+Recalling that our hierarchy of $n$-types has two base cases, if we are
+to show that *all* h-levels are closed under retractions, we should also
+repeat the argument above for propositions. This turns out to be no
+biggie, so that there is no impediment to starting the inductive proof.
 
 ```agda
-retract→is-prop : (f : A → B) (g : B → A)
-                → is-left-inverse f g
-                → is-prop A
-                → is-prop B
+retract→is-prop
+  : (f : A → B) (g : B → A) → is-left-inverse f g
+  → is-prop A → is-prop B
 retract→is-prop f g h propA x y =
   x       ≡⟨ sym (h _) ⟩
   f (g x) ≡⟨ ap f (propA _ _) ⟩
   f (g y) ≡⟨ h _ ⟩
   y       ∎
-```
 
-Now we can extend this to all h-levels by induction:
-
-```agda
-retract→is-hlevel : (n : Nat) (f : A → B) (g : B → A)
-                 → is-left-inverse f g
-                 → is-hlevel A n
-                 → is-hlevel B n
+retract→is-hlevel
+  : (n : Nat) (f : A → B) (g : B → A)
+  → is-left-inverse f g → is-hlevel A n → is-hlevel B n
 retract→is-hlevel 0 = retract→is-contr
 retract→is-hlevel 1 = retract→is-prop
 ```
 
-For the base case, we already have the proofs we're after. For the
-inductive case, a function `g x ≡ g y → x ≡ y` is constructed, which is
-a left inverse to the function `ap g`. Then, since `(g x) ≡ (g y)` is a
-homotopy (n+1)-type, we conclude that so is `x ≡ y`.
+In the inductive case, we show that a retraction *induces* retractions
+between path spaces: the map $\ap_g : x \equiv y \to g(x) \equiv y$ is a
+split surjection. The construction simply whiskers the proof $\ap_f(p) :
+fg(x) = fg(y)$ with paths that cancel $fg$:
 
 ```agda
 retract→is-hlevel (suc (suc n)) f g h hlevel x y =
-  retract→is-hlevel (suc n) sect (ap g) inv (hlevel (g x) (g y))
-  where
+  retract→is-hlevel (suc n) sect (ap g) inv (hlevel (g x) (g y)) where
     sect : g x ≡ g y → x ≡ y
     sect path =
       x       ≡⟨ sym (h _) ⟩
@@ -98,8 +116,12 @@ retract→is-hlevel (suc (suc n)) f g h hlevel x y =
       y       ∎
 ```
 
-The left inverse is constructed out of `ap`{.Agda} and the given
-homotopy.
+The proof that this function _does_ invert `ap g` on the left is boring,
+but it consists mostly of symbol pushing. The only non-trivial step, and
+the key to the proof, is the theorem that `homotopies behave like
+natural transformations`{.Agda ident=homotopy-natural}: We can flip `ap
+f (ap g path)` and `h y` to get a pair of paths that annihilates on the
+left, and `path` on the right.
 
 ```agda
     inv : is-left-inverse sect (ap g)
@@ -112,49 +134,48 @@ homotopy.
       path                                      ∎
 ```
 
-The proof that this function _does_ invert `ap g` on the left is boring,
-but it consists mostly of symbol pushing. The only non-trivial step, and
-the key to the proof, is the theorem that `homotopies behave like
-natural transformations`{.Agda ident=homotopy-natural}: We can flip `ap
-f (ap g path)` and `h y` to get a pair of paths that annihilates on the
-left, and `path` on the right.
+### Isomorphisms and equivalences
 
-### Equivalences
-
-It follows, without a use of univalence, that h-levels are closed under
-isomorphisms and equivalences:
+Even though we know that [[univalence]] implies that $n$-types are
+closed under equivalences, this does not apply to types in different
+universe levels. However, the construction above *does*, since every
+equivalence, having a two-sided inverse, is a split surjection.
 
 ```agda
 iso→is-hlevel : (n : Nat) (f : A → B) → is-iso f → is-hlevel A n → is-hlevel B n
-iso→is-hlevel n f is-iso =
-  retract→is-hlevel n f (is-iso .is-iso.inv)
-                       (is-iso .is-iso.rinv)
+iso→is-hlevel n f im = retract→is-hlevel n f g h
+  where open is-iso im renaming (inv to g ; rinv to h)
+
+Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
+Iso→is-hlevel n (f , im) = retract→is-hlevel n g f h
+  where open is-iso im renaming (inv to g ; linv to h)
 
 equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n → is-hlevel B n
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
 
-is-hlevel≃ : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
-is-hlevel≃ n f = iso→is-hlevel n (Equiv.from f) (iso (Equiv.to f) (Equiv.η f) (Equiv.ε f))
-
-Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
-Iso→is-hlevel n (f , isic) = iso→is-hlevel n (isic .is-iso.inv) $
-  iso f (isic .is-iso.linv) (isic .is-iso.rinv)
+Equiv→is-hlevel : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
+Equiv→is-hlevel n f = equiv→is-hlevel n _ (Equiv.inverse f .snd)
 ```
 
 ## Functions into n-types
 
-Since h-levels are closed under retracts, The type of functions into a
-homotopy n-type is itself a homotopy n-type.
+We can now prove that the $n$-types are closed under all type formers
+whose identity types are "self-similar". While we have to handle the
+base cases ourselves, closure under retracts can take care of the
+inductive cases. Function extensionality implies that an identity
+between functions is a function into identities:
 
 ```agda
 Π-is-hlevel : ∀ {a b} {A : Type a} {B : A → Type b}
             → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
             → is-hlevel ((x : A) → B x) n
-Π-is-hlevel 0 bhl = contr (λ x → bhl _ .centre) λ x i a → bhl _ .paths (x a) i
+Π-is-hlevel 0 bhl = record
+  { paths = λ x i a → bhl _ .paths (x a) i
+  }
 Π-is-hlevel 1 bhl f g i a = bhl a (f a) (g a) i
-Π-is-hlevel (suc (suc n)) bhl f g =
-  retract→is-hlevel (suc n) funext happly (λ x → refl)
-    (Π-is-hlevel (suc n) λ x → bhl x (f x) (g x))
+Π-is-hlevel (suc (suc n)) bhl f g = retract→is-hlevel (suc n)
+  funext happly (λ x → refl)
+  (Π-is-hlevel (suc n) λ x → bhl x (f x) (g x))
 ```
 
 <!--
@@ -195,15 +216,13 @@ homotopy n-type is itself a homotopy n-type.
 ```
 -->
 
-By taking `B` to be a type rather than a family, we get that `A → B`
-also inherits the h-level of B.
+By taking the codomain to be a constant family, we obtain that the
+$n$-types are an *exponential ideal*: $A \to B$ is an $n$-type if $B$
+is.
 
 ```agda
-fun-is-hlevel
-  : ∀ {a b} {A : Type a} {B : Type b}
-  → (n : Nat) → is-hlevel B n
-  → is-hlevel (A → B) n
-fun-is-hlevel n hl = Π-is-hlevel n (λ _ → hl)
+fun-is-hlevel : ∀ n → is-hlevel B n → is-hlevel (A → B) n
+fun-is-hlevel n hl = Π-is-hlevel n λ _ → hl
 ```
 
 ## Sums of n-types
@@ -213,34 +232,30 @@ of paths`{.Agda ident=Σ-path-iso}, shows that dependent sums are also
 closed under h-levels.
 
 ```agda
-Σ-is-hlevel : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
-            → is-hlevel A n
-            → ((x : A) → is-hlevel (B x) n)
-            → is-hlevel (Σ A B) n
-Σ-is-hlevel 0 acontr bcontr =
-  contr (acontr .centre , bcontr _ .centre)
-    λ x → Σ-pathp (acontr .paths _)
-                  (is-prop→pathp (λ _ → is-contr→is-prop (bcontr _)) _ _)
+Σ-is-hlevel
+  : {B : A → Type ℓ'} (n : Nat)
+  → is-hlevel A n → (∀ x → is-hlevel (B x) n)
+  → is-hlevel (Σ A B) n
+Σ-is-hlevel 0 acontr bcontr = record
+  { centre = acontr .centre , bcontr _ .centre
+  ; paths  = λ x → Σ-pathp
+    (acontr .paths _)
+    (is-prop→pathp (λ _ → is-contr→is-prop (bcontr _)) _ _)
+  }
 
 Σ-is-hlevel 1 aprop bprop (a , b) (a' , b') i =
-  (aprop a a' i) , (is-prop→pathp (λ i → bprop (aprop a a' i)) b b' i)
+  aprop a a' i , is-prop→pathp (λ i → bprop (aprop a a' i)) b b' i
 
-Σ-is-hlevel {B = B} (suc (suc n)) h1 h2 x y =
-  iso→is-hlevel (suc n)
-    (is-iso.inverse (Σ-path-iso .snd) .is-iso.inv)
-    (Σ-path-iso .snd)
-    (Σ-is-hlevel (suc n) (h1 (fst x) (fst y)) λ x → h2 _ _ _)
+Σ-is-hlevel {B = B} (suc (suc n)) h1 h2 (x , p) (y , q) =
+  iso→is-hlevel (suc n) _ (Σ-path-iso .snd) $
+    Σ-is-hlevel (suc n) (h1 x y) λ x → h2 y (subst B x p) q
 ```
 
-Similarly for dependent products and functions, there is a non-dependent
-version of `Σ-is-hlevel`{.Agda} that expresses closure of h-levels under
-`_×_`{.Agda}.
+Analogous to the case of dependent products and functions, a
+non-dependent sum is a product.
 
 ```agda
-×-is-hlevel : ∀ {a b} {A : Type a} {B : Type b}
-            → (n : Nat)
-            → is-hlevel A n → is-hlevel B n
-            → is-hlevel (A × B) n
+×-is-hlevel : ∀ n → is-hlevel A n → is-hlevel B n → is-hlevel (A × B) n
 ×-is-hlevel n ahl bhl = Σ-is-hlevel n ahl (λ _ → bhl)
 ```
 
@@ -249,27 +264,29 @@ $A$ is an $n$-type in a universe $U$, then it's also an $n$-type in any
 successor universe:
 
 ```agda
-Lift-is-hlevel : ∀ {a b} {A : Type a}
-               → (n : Nat)
-               → is-hlevel A n
-               → is-hlevel (Lift b A) n
-Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
+opaque
+  Lift-is-hlevel : ∀ n → is-hlevel A n → is-hlevel (Lift ℓ' A) n
+  Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
 ```
 
-Likewise, if the `Lift`{.Agda} of $A$ is an $n$-type, then $A$ must also
-be an n-type.
+<!--
+```agda
+  Lift-is-hlevel' : ∀ n → is-hlevel (Lift ℓ' A) n → is-hlevel A n
+  Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+```
+-->
+
+Finally, we'll show that the `fibre`{.Agda}s of a function between
+$n$-types are themselves $n$-types.
 
 ```agda
-Lift-is-hlevel'
-  : ∀ {a b} {A : Type a}
-  → (n : Nat)
-  → is-hlevel (Lift b A) n
-  → is-hlevel A n
-Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+fibre-is-hlevel
+  : ∀ n → is-hlevel A n → is-hlevel B n
+  → (f : A → B) → ∀ b → is-hlevel (fibre f b) n
+fibre-is-hlevel n Ah Bh f b = Σ-is-hlevel n Ah λ _ → Path-is-hlevel n Bh
 ```
 
-
-# Automation
+## Automation
 
 For the common case of proving that a composite type built out of pieces
 with a known h-level has that same h-level, we can apply the helpers
@@ -295,7 +312,10 @@ recover $n$ from the expected type of the application.
 ```agda
 hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
 hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
+```
 
+<!--
+```agda
 private variable
   S T : Type ℓ
 
@@ -305,6 +325,7 @@ module _ where
   H-Level-is-prop {n = n} x y i .has-hlevel =
     is-hlevel-is-prop n (x .has-hlevel) (y .has-hlevel) i
 ```
+-->
 
 Because of the way we set up our search, the "leaves" in the instance
 search must support _offsetting_ the index by any positive number:
@@ -335,7 +356,7 @@ We then have a family of instances for solving compound types, e.g.
 function types, $\Sigma$-types, path types, lifts, etc.
 
 ```agda
-instance
+instance opaque
   H-Level-pi
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄

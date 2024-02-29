@@ -17,7 +17,7 @@ open Cat.Reasoning C
 ```
 -->
 
-# Internal categories
+# Internal categories {defines="internal-category"}
 
 We often think of categories as _places where we can do mathematics_.
 This is done by translating definitions into the internal language of
@@ -60,7 +60,7 @@ associativity condition is given by the square below, and we trust that
 the reader will understand why will not attempt to draw the identity
 constraints.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   {C_1 \times_{C_0} (C_1 \times_{C_0} C_1)} &&& {C_1 \times_{C_0} C_1} \\
   \\
@@ -81,7 +81,7 @@ identity constraints because they are trivial. Rather, speaking
 euphemistically, they are *highly nontrivial*.]
 
 To solve the problem, we look to a simpler case: [internal monoids] in
-$\cC$. These are straightforward to define in diagramatic language, but
+$\cC$. These are straightforward to define in diagrammatic language, but
 can also be defined [in terms of representability]! The core idea is
 that we can define internal structure in the category of presheaves on
 $\cC$, rather than directly in $\cC$, letting us us use the structure of
@@ -109,7 +109,7 @@ as before. We will define **internal morphisms** between _generalised
 objects_ $x, y : \Gamma \to \bC_0$ to be morphisms $f : \Gamma \to C_1$
 making the following diagram commute.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   & \Gamma \\
   \\
@@ -404,7 +404,7 @@ have a pair of internal morphisms that can be composed.
 
 We will now start our project of relativisng category theory to
 arbitrary bases. Suppose $\ica{C}, \ica{D}$ are internal categories:
-what are the maps between them? Reasoning diagramatically, they are the
+what are the maps between them? Reasoning diagrammatically, they are the
 morphisms between object-objects and morphism-objects that preserve
 source, target, commute with identity, and commute with composition.
 

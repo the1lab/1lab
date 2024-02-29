@@ -30,8 +30,9 @@
 \newcommand{\set}{\rm{Set}}
 \newcommand{\prop}{\rm{Prop}}
 \newcommand{\psh}{\rm{PSh}}
-\newcommand{\id}[1][]{\operatorname{id}_{#1}}
-\newcommand{\Id}[1][]{\operatorname{Id}_{#1}}
+
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
 
 \knowncat{Sets}
 \knowncat{Ab}
@@ -51,8 +52,12 @@
 \newcommand{\igpd}{\text{$\infty$-\textbf{Grpd}}}
 \newcommand{\io}{(\infty,1)}
 
-\newcommand{\ot}{\leftarrow}
+% "Postfix" operators that have a subscript and are annoying to write
+% out:
+\newcommand{\inv}{^{-1}}
 \newcommand{\op}{^{\rm{op}}}
+
+\newcommand{\ot}{\leftarrow}
 \renewcommand{\epsilon}{\varepsilon}
 \newcommand{\eps}{\varepsilon}
 
@@ -61,8 +66,10 @@
 \newcommand{\adj}{\rightleftarrows}
 \newcommand{\epi}{\twoheadrightarrow}
 \newcommand{\mono}{\hookrightarrow}
+\newcommand{\iso}{\cong}
 \newcommand{\tto}{\rightrightarrows}
 \newcommand{\rel}{\mathrel{\looparrowright}}
+\newcommand{\heyt}{\mathrel{\scriptsize{⇨}}} % Heyting implication
 
 \newcommand{\xadj}[2]{\xrightleftarrows[#2]{#1}}
 \newcommand{\xto}[1]{\xrightarrow{#1}}
@@ -78,6 +85,7 @@
 \DeclareMathOperator*{\baut}{\mathbf{B}}
 \newcommand{\B}[1]{\mathbf{B} #1}
 \newcommand{\point}[1]{\bullet_{#1}}
+\newcommand{\List}[1]{\operatorname{List}(#1)}
 
 \DeclareMathOperator{\Lan}{Lan}
 \DeclareMathOperator{\Ran}{Ran}
@@ -113,6 +121,13 @@
 \DeclareMathOperator{\reify}{reify}
 \DeclareMathOperator{\reflect}{reflect}
 
+\DeclareMathOperator{\Susp}{\Sigma}
+\DeclareMathOperator{\merid}{merid}
+
 \DeclareMathOperator{\Glue}{Glue}
 \DeclareMathOperator{\glue}{glue}
 \DeclareMathOperator{\unglue}{unglue}
+
+\renewcommand{\day}[1]{\operatorname{day}(#1)}
+
+\newcommand{\loc}[1]{[{#1}\inv]}

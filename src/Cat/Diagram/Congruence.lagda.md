@@ -5,7 +5,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
-open import Cat.Prelude
+open import Cat.Prelude hiding (Kernel-pair)
 
 import Cat.Reasoning
 ```
@@ -23,12 +23,9 @@ _equivalence relation_. Recall that an equivalence relation on a [[set]]
 is a family of [[propositions]] $R : A \times A \to \prop$ satisfying
 _reflexivity_ ($R(x,x)$ for all $x$), _transitivity_ ($R(x,y) \land
 R(y,z) \to R(x,z)$), and _symmetry_ ($R(x,y) \to R(y,x)$). Knowing that
-$\prop$ classifies [embeddings], we can equivalently talk about an
+$\prop$ classifies [[embeddings]], we can equivalently talk about an
 equivalence relation $R$ as being _just some set_, equipped with a
 [[monomorphism]] $m : R \mono A \times A$.
-
-[embeddings]: 1Lab.Equiv.Embedding.html
-[mono]: Cat.Morphism.html#monos
 
 We must now identify what properties of the mono $m$ identify $R$ as
 being the total space of an equivalence relation. Let us work in the
@@ -323,7 +320,7 @@ We build the congruence in parts.
 
 For the reflexivity map, we take the unique map $f : A \to A \times_B A$
 which is characterised by $p_1 f = p_2 f = \mathrm{id}$; This expresses,
-diagramatically, that $f(x) = f(x)$.
+diagrammatically, that $f(x) = f(x)$.
 
 ```agda
     cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl
@@ -383,7 +380,7 @@ coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
 A$, then we call $q$ the **quotient map**, and we call $A/R$ the
 **quotient** of $R$.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   R & {A \times A} & A & {A/R}
   \arrow["m", hook, from=1-1, to=1-2]

@@ -30,7 +30,7 @@ of $F$ along $p$".
 
 [universal constructions]: Cat.Functor.Hom.Representable.html
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   C && D \\
   \\
@@ -108,11 +108,11 @@ isomorphism.
     → Inversesⁿ α β
   σ-inversesp α-factor β-factor = C'D.make-inverses
     (l₂.σ-uniq₂ η₂
-      (Nat-path λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
-      (Nat-path λ j → sym (D.idl _)))
+      (ext λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
+      (ext λ j → sym (D.idl _)))
     (l₁.σ-uniq₂ η₁
-      (Nat-path λ j → sym (D.pullr (α-factor ηₚ j) ∙ β-factor ηₚ j))
-      (Nat-path λ j → sym (D.idl _)))
+      (ext λ j → sym (D.pullr (α-factor ηₚ j) ∙ β-factor ηₚ j))
+      (ext λ j → sym (D.idl _)))
 ```
 
 <!--
@@ -176,13 +176,13 @@ left extension of $F$ along $p$.
 
     lan' : is-lan p F G' eta'
     lan' .σ α = lan.σ α ∘nt inv
-    lan' .σ-comm {M} {α} = Nat-path λ j →
+    lan' .σ-comm {M} {α} = ext λ j →
       (lan.σ α .η _ D.∘ inv .η _) D.∘ eta' .η j                      ≡˘⟨ D.refl⟩∘⟨ (lan.σ-comm ηₚ _) ⟩
       (lan.σ α .η _ D.∘ inv .η _) D.∘ (lan.σ eta' .η _ D.∘ eta .η j) ≡⟨ D.cancel-inner (invr ηₚ _) ⟩
       lan.σ α .η _ D.∘ eta .η j                                      ≡⟨ lan.σ-comm ηₚ _ ⟩
       α .η j                                                         ∎
-    lan' .σ-uniq {M} {α} {σ'} p = Nat-path λ j →
-      lan.σ α .η j D.∘ inv .η j                  ≡⟨ (lan.σ-uniq {σ' = σ' ∘nt lan.σ eta'} (Nat-path λ j → p ηₚ j ∙ D.pushr (sym (lan.σ-comm ηₚ j))) ηₚ j) D.⟩∘⟨refl ⟩
+    lan' .σ-uniq {M} {α} {σ'} p = ext λ j →
+      lan.σ α .η j D.∘ inv .η j                  ≡⟨ (lan.σ-uniq {σ' = σ' ∘nt lan.σ eta'} (ext λ j → p ηₚ j ∙ D.pushr (sym (lan.σ-comm ηₚ j))) ηₚ j) D.⟩∘⟨refl ⟩
       (σ' .η j D.∘ lan.σ eta' .η j) D.∘ inv .η _ ≡⟨ D.cancelr (invl ηₚ _) ⟩
       σ' .η j                                    ∎
 ```
@@ -199,12 +199,12 @@ left extension of $F$ along $p$.
 
     lan' : is-lan p F' G (eta ∘nt isos.from)
     lan' .σ α = lan.σ (α ∘nt isos.to)
-    lan' .σ-comm {M} {α} = Nat-path λ j →
+    lan' .σ-comm {M} {α} = ext λ j →
       lan.σ (α ∘nt isos.to) .η _ D.∘ eta .η j D.∘ isos.from .η j ≡⟨ D.pulll (lan.σ-comm ηₚ j) ⟩
       (α .η j D.∘ isos.to .η j) D.∘ isos.from .η j               ≡⟨ D.cancelr (isos.invl ηₚ _) ⟩
       α .η j ∎
     lan' .σ-uniq {M} {α} {σ'} p =
-      lan.σ-uniq $ Nat-path λ j →
+      lan.σ-uniq $ ext λ j →
         α .η j D.∘ isos.to .η j                                    ≡⟨ (p ηₚ j) D.⟩∘⟨refl ⟩
         (σ' .η _ D.∘ eta .η j D.∘ isos.from .η j) D.∘ isos.to .η j ≡⟨ D.deleter (isos.invr ηₚ _) ⟩
         σ' .η _ D.∘ eta .η j ∎
@@ -219,12 +219,12 @@ left extension of $F$ along $p$.
 
     lan' : is-lan p F G' ((isos.to ◂ p) ∘nt eta)
     lan' .σ α = lan.σ α ∘nt isos.from
-    lan' .σ-comm {M} {α} = Nat-path λ j →
+    lan' .σ-comm {M} {α} = ext λ j →
       (lan.σ α .η _ D.∘ isos.from .η _) D.∘ isos.to .η _ D.∘ eta .η j ≡⟨ D.cancel-inner (isos.invr ηₚ _) ⟩
       lan.σ α .η _ D.∘ eta .η j                                       ≡⟨ lan.σ-comm ηₚ _ ⟩
       α .η j                                                          ∎
-    lan' .σ-uniq {M} {α} {σ'} p = Nat-path λ j →
-      lan.σ α .η j D.∘ isos.from .η j             ≡⟨ D.pushl (lan.σ-uniq {σ' = σ' ∘nt isos.to} (Nat-path λ j → p ηₚ j ∙ D.assoc _ _ _) ηₚ j) ⟩
+    lan' .σ-uniq {M} {α} {σ'} p = ext λ j →
+      lan.σ α .η j D.∘ isos.from .η j             ≡⟨ D.pushl (lan.σ-uniq {σ' = σ' ∘nt isos.to} (ext λ j → p ηₚ j ∙ D.assoc _ _ _) ηₚ j) ⟩
       σ' .η j D.∘ isos.to .η j D.∘ isos.from .η j ≡⟨ D.elimr (isos.invl ηₚ _) ⟩
       σ' .η j                                     ∎
 
@@ -239,16 +239,14 @@ left extension of $F$ along $p$.
 
     lan' : is-lan p' F G ((G ▸ Isoⁿ.to isos) ∘nt eta)
     lan' .σ {M} α = lan.σ ((M ▸ isos.from) ∘nt α)
-    lan' .σ-comm {M = M} = Nat-path λ j →
+    lan' .σ-comm {M = M} = ext λ j →
       D.pulll ((lan.σ _ .is-natural _ _ _))
       ∙ D.pullr (lan.σ-comm ηₚ _)
       ∙ cancell M (isos.invl ηₚ _)
-    lan' .σ-uniq {M = M} {α = α} {σ' = σ'} q = Nat-path λ c' →
+    lan' .σ-uniq {M = M} {α = α} {σ' = σ'} q = ext λ c' →
       lan.σ-uniq {α = (M ▸ isos.from) ∘nt α} {σ' = σ'}
-        (Nat-path λ j →
-          D.pushr (q ηₚ _)
-          ∙ D.pulll (D.pullr (σ' .is-natural _ _ _)
-                     ∙ cancell M (isos.invr ηₚ _))) ηₚ c'
+        (ext λ j → D.pushr (q ηₚ _) ∙ D.pulll (
+          D.pullr (σ' .is-natural _ _ _) ∙ cancell M (isos.invr ηₚ _))) ηₚ c'
 
   universal-path→is-lan : ∀ {eta'} → eta ≡ eta' → is-lan p F G eta'
   universal-path→is-lan {eta'} q = lan' where
@@ -292,9 +290,7 @@ which is propositionally equal to the whiskering:
       (natural-iso-ext→is-lan
         (natural-iso-of→is-lan (natural-iso-along→is-lan lan p-iso) F-iso)
         G-iso)
-      (Nat-path λ x →
-        D.extendl (D.pulll (G-iso .to .is-natural _ _ _))
-        ∙ q ηₚ _)
+      (ext λ x → D.extendl (D.pulll (G-iso .to .is-natural _ _ _)) ∙ q ηₚ _)
     where open Isoⁿ
 ```
 -->
@@ -382,11 +378,11 @@ module
   σ-inversesp α-factor β-factor =
     C'D.make-inverses
       (r₁.σ-uniq₂ ε₁
-        (Nat-path λ j → sym (D.pulll (α-factor ηₚ j) ∙ β-factor ηₚ j))
-        (Nat-path λ j → sym (D.idr _)))
+        (ext λ j → sym (D.pulll (α-factor ηₚ j) ∙ β-factor ηₚ j))
+        (ext λ j → sym (D.idr _)))
       (r₂.σ-uniq₂ ε₂
-        (Nat-path λ j → sym (D.pulll (β-factor ηₚ j) ∙ α-factor ηₚ j))
-        (Nat-path λ j → sym (D.idr _)))
+        (ext λ j → sym (D.pulll (β-factor ηₚ j) ∙ α-factor ηₚ j))
+        (ext λ j → sym (D.idr _)))
 
   σ-is-invertiblep
     : ∀ {α : G₂ => G₁}
@@ -431,12 +427,12 @@ module _
 
     ran' : is-ran p F G' eps'
     ran' .σ β = inv ∘nt ran.σ β
-    ran' .σ-comm {M} {β} = Nat-path λ j →
+    ran' .σ-comm {M} {β} = ext λ j →
       sym ((ran.σ-comm ηₚ _) D.⟩∘⟨refl)
       ·· D.cancel-inner (invl ηₚ _)
       ·· (ran.σ-comm ηₚ _)
-    ran' .σ-uniq {M} {β} {σ'} p = Nat-path λ j →
-      (D.refl⟩∘⟨ ran.σ-uniq {σ' = ran.σ eps' ∘nt σ'} (Nat-path λ j → p ηₚ j ∙ D.pushl (sym (ran.σ-comm ηₚ j))) ηₚ _)
+    ran' .σ-uniq {M} {β} {σ'} p = ext λ j →
+      (D.refl⟩∘⟨ ran.σ-uniq {σ' = ran.σ eps' ∘nt σ'} (ext λ j → p ηₚ j ∙ D.pushl (sym (ran.σ-comm ηₚ j))) ηₚ _)
       ∙ D.cancell (invr ηₚ _)
 
   natural-iso-of→is-ran
@@ -449,11 +445,11 @@ module _
 
     ran' : is-ran p F' G (isos.to ∘nt eps)
     ran' .σ β = ran.σ (isos.from ∘nt β)
-    ran' .σ-comm {M} {β} = Nat-path λ j →
+    ran' .σ-comm {M} {β} = ext λ j →
       D.pullr (ran.σ-comm ηₚ j)
       ∙ D.cancell (isos.invl ηₚ _)
     ran' .σ-uniq {M} {β} {σ'} p =
-      ran.σ-uniq $ Nat-path λ j →
+      ran.σ-uniq $ ext λ j →
         (D.refl⟩∘⟨ p ηₚ j)
         ∙ D.deletel (isos.invr ηₚ _)
 
@@ -467,11 +463,11 @@ module _
 
     ran' : is-ran p F G' (eps ∘nt (isos.from ◂ p))
     ran' .σ β = isos.to ∘nt ran.σ β
-    ran' .σ-comm {M} {β} = Nat-path λ j →
+    ran' .σ-comm {M} {β} = ext λ j →
       D.cancel-inner (isos.invr ηₚ _)
       ∙ ran.σ-comm ηₚ _
-    ran' .σ-uniq {M} {β} {σ'} p = Nat-path λ j →
-      D.pushr (ran.σ-uniq {σ' = isos.from ∘nt σ'} (Nat-path λ j → p ηₚ j ∙ sym (D.assoc _ _ _)) ηₚ j)
+    ran' .σ-uniq {M} {β} {σ'} p = ext λ j →
+      D.pushr (ran.σ-uniq {σ' = isos.from ∘nt σ'} (ext λ j → p ηₚ j ∙ sym (D.assoc _ _ _)) ηₚ j)
       ∙ D.eliml (isos.invl ηₚ _)
 
   natural-iso-along→is-ran
@@ -485,16 +481,14 @@ module _
 
     ran' : is-ran p' F G (eps ∘nt (G ▸ Isoⁿ.from isos))
     ran' .σ {M} β = ran.σ (β ∘nt (M ▸ Isoⁿ.to isos))
-    ran' .σ-comm {M = M} = Nat-path λ j →
+    ran' .σ-comm {M = M} = ext λ j →
       D.pullr (sym (ran.σ _ .is-natural _ _ _))
       ∙ D.pulll (ran.σ-comm ηₚ _)
       ∙ cancelr M (isos.invl ηₚ _)
-    ran' .σ-uniq {M = M} {β = β} {σ' = σ'} q = Nat-path λ c' →
+    ran' .σ-uniq {M = M} {β = β} {σ' = σ'} q = ext λ c' →
       ran.σ-uniq {β = β ∘nt (M ▸ isos.to)} {σ' = σ'}
-        (Nat-path λ j →
-          D.pushl (q ηₚ _)
-          ∙ D.pullr (D.pulll (sym (σ' .is-natural _ _ _))
-                     ∙ cancelr M (isos.invr ηₚ _))) ηₚ c'
+        (ext λ j → D.pushl (q ηₚ _) ∙ D.pullr (
+          D.pulll (sym (σ' .is-natural _ _ _)) ∙ cancelr M (isos.invr ηₚ _))) ηₚ c'
 
   universal-path→is-ran : ∀ {eps'} → eps ≡ eps' → is-ran p F G eps'
   universal-path→is-ran {eps'} q = ran' where
@@ -526,10 +520,7 @@ module _
         (natural-iso-of→is-ran (natural-iso-along→is-ran ran p-iso)
         F-iso)
       G-iso)
-    (Nat-path λ c →
-      sym (D.assoc _ _ _)
-      ·· ap₂ D._∘_ refl (sym $ D.assoc _ _ _)
-      ·· p ηₚ _)
+    (ext λ c → sym (D.assoc _ _ _) ·· ap₂ D._∘_ refl (sym $ D.assoc _ _ _) ·· p ηₚ _)
 
 Ran-is-prop
   : ∀ {p : Functor C C'} {F : Functor C D} → is-category D → is-prop (Ran p F)

@@ -12,6 +12,7 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 open import Order.Frame
+open import Order.Base
 
 import Cat.Reasoning as Cat
 
@@ -44,16 +45,16 @@ the Grothendieck construction to $\hom(-,X)$. We will construct this in
 very explicit stages.
 
 ```agda
-Indexed-frame : ∀ {o ℓ} → Frame o → Regular-hyperdoctrine (Sets ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
-Indexed-frame {o = o} {ℓ} F = idx where
+Indexed-frame : ∀ {o ℓ κ} → Frame o ℓ → Regular-hyperdoctrine (Sets κ) (o ⊔ κ) (ℓ ⊔ κ)
+Indexed-frame {o = o} {ℓ} {κ} F = idx where
 ```
 
 <!--
 ```agda
-  module F = Frm F
+  module F = Frm (F .snd)
 
   private opaque
-    isp : ∀ {x : Type ℓ} {f g : x → ⌞ F ⌟} → is-prop (∀ x → f x F.≤ g x)
+    isp : ∀ {x : Type κ} {f g : x → ⌞ F ⌟} → is-prop (∀ x → f x F.≤ g x)
     isp = Π-is-hlevel 1 λ _ → F.≤-thin
 ```
 -->
@@ -69,7 +70,7 @@ the equivalence $(x \le_f y) \equiv (x \le_{\id} f^*y)$ of maps into a
 [[Cartesian lift]] of the codomain.
 
 ```agda
-  disp : Displayed (Sets ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
+  disp : Displayed (Sets κ) (o ⊔ κ) (ℓ ⊔ κ)
   disp .Ob[_] S          = ⌞ S ⌟ → ⌞ F ⌟
   disp .Hom[_]     f g h = ∀ x → g x F.≤ h (f x)
   disp .Hom[_]-set f g h = is-prop→is-set isp
@@ -92,11 +93,11 @@ function $x \mapsto f(x) \cap g(x)$, and the terminal object is the
 function which is constantly the top element.
 
 ```agda
-  prod : ∀ {S : Set ℓ} (f g : ⌞ S ⌟ → ⌞ F ⌟) → Product (Fibre disp S) f g
+  prod : ∀ {S : Set κ} (f g : ⌞ S ⌟ → ⌞ F ⌟) → Product (Fibre disp S) f g
   prod f g .apex x = f x F.∩ g x
   prod f g .π₁ i   = F.∩≤l
   prod f g .π₂ i   = F.∩≤r
-  prod f g .has-is-product .⟨_,_⟩ α β i = F.∩-univ _ (α i) (β i)
+  prod f g .has-is-product .⟨_,_⟩ α β i = F.∩-universal _ (α i) (β i)
 ```
 
 <!--
@@ -110,7 +111,7 @@ function which is constantly the top element.
 ```agda
   term : ∀ S → Terminal (Fibre disp S)
   term S .top  _ = F.top
-  term S .has⊤ f = is-prop∙→is-contr isp (λ i → sym F.∩-idr)
+  term S .has⊤ f = is-prop∙→is-contr isp (λ i → F.!)
 ```
 
 ## As a fibration
@@ -168,7 +169,7 @@ which is the image of $g$ as a function $f^*(y) \to F$.
 
 ```agda
     img : ⌞ Y ⌟ → Type _
-    img y = Σ[ e ∈ ⌞ F ⌟ ] □ (Σ[ x ∈ ⌞ X ⌟ ] ((f x ≡ y) × (g x ≡ e)))
+    img y = Σ[ e ∈ F ] □ (Σ[ x ∈ X ] ((f x ≡ y) × (g x ≡ e)))
 
     exist : ⌞ Y ⌟ → ⌞ F ⌟
     exist y = F.⋃ {I = img y} fst
@@ -180,8 +181,8 @@ a calculation:
 ```agda
     lifted : Cocartesian-lift disp f g
     lifted .y' y      = exist y
-    lifted .lifting i = F.⋃-colimiting (g i , inc (i , refl , refl)) fst
-    lifted .cocartesian .universal {u' = u'} m h' i = F.⋃-universal fst λ (e , b) →
+    lifted .lifting i = F.⋃-inj (g i , inc (i , refl , refl))
+    lifted .cocartesian .universal {u' = u'} m h' i = F.⋃-universal _ λ (e , b) →
       □-rec! (λ { (x , p , q) →
         e            F.=⟨ sym q ⟩
         g x          F.≤⟨ h' x ⟩
@@ -197,9 +198,9 @@ We're ready to put everything together. By construction, we have a
 "category displayed in posets",
 
 ```agda
-  idx : Regular-hyperdoctrine (Sets ℓ) _ _
+  idx : Regular-hyperdoctrine (Sets κ) _ _
   idx .ℙ                = disp
-  idx .has-is-set  x    = Π-is-hlevel 2 λ _ → F .fst .is-tr
+  idx .has-is-set  x    = Π-is-hlevel 2 λ _ → F.Ob-is-set
   idx .has-is-thin f g  = isp
   idx .has-univalence S = set-identity-system
     (λ _ _ _ _ → Cat.≅-path (Fibre disp _) (isp _ _))
@@ -228,22 +229,21 @@ distributive law in $F$:
 
 ```agda
   idx .frobenius {X} {Y} f {α} {β} = funext λ i → F.≤-antisym
-    ( exist α i F.∩ β i                         F.=⟨ F.⋃-distribʳ ⟩
+    ( exist α i F.∩ β i                         F.=⟨ F.⋃-distribr _ _ ⟩
       F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤⟨
-        F.⋃-universal _ (λ img → F.⋃-colimiting
+        F.⋃-universal _ (λ img → F.⋃-inj
           ( img .fst F.∩ β i
-          , □-map (λ { (x , p , q) → x , p , ap₂ F._∩_ q (ap β p) }) (img .snd))
-          fst)
+          , □-map (λ { (x , p , q) → x , p , ap₂ F._∩_ q (ap β p) }) (img .snd)))
       ⟩
       exist (λ x → α x F.∩ β (f x)) i           F.≤∎ )
     ( exist (λ x → α x F.∩ β (f x)) i           F.≤⟨
         F.⋃-universal _ (λ (e , p) → □-rec! (λ { (x , p , q) →
           e                                         F.=⟨ sym q ⟩
           α x F.∩ β (f x)                           F.=⟨ ap (α x F.∩_) (ap β p) ⟩
-          α x F.∩ β i                               F.≤⟨ F.⋃-colimiting (α x , inc (x , p , refl)) _ ⟩
+          α x F.∩ β i                               F.≤⟨ F.⋃-inj (α x , inc (x , p , refl)) ⟩
           F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤∎ }) p)
       ⟩
-      F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.=⟨ sym F.⋃-distribʳ ⟩
+      F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.=⟨ sym (F.⋃-distribr _ _) ⟩
       exist α i F.∩ β i                         F.≤∎)
     where open cocart {X} {Y} f
 ```

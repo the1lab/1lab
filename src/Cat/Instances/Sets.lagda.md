@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Marker
+
 open import Cat.Prelude
 ```
 -->
@@ -64,19 +66,18 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
 
 ```agda
   equiv→iso : {A B : Set ℓ} → ∣ A ∣ ≃ ∣ B ∣ → A Sets.≅ B
-  equiv→iso (f , f-eqv) =
-    Sets.make-iso f (equiv→inverse f-eqv)
-      (funext (equiv→counit f-eqv))
-      (funext (equiv→unit f-eqv))
+  equiv→iso (f , f-eqv) = Sets.make-iso f
+    (equiv→inverse f-eqv)
+    (funext (equiv→counit f-eqv))
+    (funext (equiv→unit f-eqv))
 
   equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (∣ A ∣ ≃ ∣ B ∣)
-  equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q)
-    where
-      p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
-      p x = Σ-prop-path is-equiv-is-prop refl
+  equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q) where
+    p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
+    p x = trivial!
 
-      q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
-      q x = Sets.≅-pathp refl refl refl
+    q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
+    q x = trivial!
 ```
 
 We then use [univalence for $n$-types] to directly establish that $(A
@@ -88,4 +89,44 @@ We then use [univalence for $n$-types] to directly establish that $(A
     (A ≡ B)         ≃⟨ n-univalence e⁻¹ ⟩
     (∣ A ∣ ≃ ∣ B ∣) ≃⟨ equiv≃iso e⁻¹ ⟩
     (A Sets.≅ B)    ≃∎
+```
+
+## Sets^op is also a category
+
+```agda
+  import Cat.Reasoning (Sets ℓ ^op) as Sets^op
+```
+
+First we show that isomorphism is invariant under `^op`{.Agda}.
+
+```agda
+  iso-op-invariant : ∀ {A B : Set ℓ} → (A Sets^op.≅ B) ≃ (A Sets.≅ B)
+  iso-op-invariant {A} {B} = Iso→Equiv the-iso
+    where
+      open import Cat.Morphism
+      open Inverses
+      the-iso : Iso (A Sets^op.≅ B) (A Sets.≅ B)
+      the-iso .fst i .to = i .from
+      the-iso .fst i .from = i .to
+      the-iso .fst i .inverses .invl = i .invl
+      the-iso .fst i .inverses .invr = i .invr
+      the-iso .snd .is-iso.inv i .to = i .from
+      the-iso .snd .is-iso.inv i .from = i .to
+      the-iso .snd .is-iso.inv i .inverses .invl = i .invl
+      the-iso .snd .is-iso.inv i .inverses .invr = i .invr
+      the-iso .snd .is-iso.rinv _ = refl
+      the-iso .snd .is-iso.linv _ = refl
+```
+
+This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.Agda}. Some calculation gives us `to-path-over`{.Agda}.
+
+```agda
+  Sets^op-is-category : is-category (Sets ℓ ^op)
+  Sets^op-is-category .to-path = Sets-is-category .to-path ⊙ transport (ua iso-op-invariant)
+  Sets^op-is-category .to-path-over {a} {b} p = Sets^op.≅-pathp refl _ $ funext-dep λ {x₀} {x₁} q →
+    x₀                                                    ≡˘⟨ ap (_$ x₀) p.invr ⟩
+    p.to ⌜ p.from x₀ ⌝                                    ≡˘⟨ ap¡ Regularity.reduce! ⟩
+    p.to ⌜ transport refl $ p.from $ transport refl x₀ ⌝  ≡⟨ ap! (λ i → unglue (∂ i) (q i)) ⟩
+    p.to x₁                                               ∎
+    where module p = Sets^op._≅_ p
 ```

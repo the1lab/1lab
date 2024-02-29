@@ -13,7 +13,7 @@ open import Data.Dec.Base
 module Data.Sum.Base where
 ```
 
-# Sum types
+# Sum types {defines="sum-type"}
 
 Sum types are one of the fundamental ingredients of type theory. They
 play a dual role to the [[product type]]; if products allow us to state
@@ -24,7 +24,7 @@ We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
 
 ```agda
-infixr 1 _⊎_
+infixr 3 _⊎_
 
 data _⊎_ {a b} (A : Type a) (B : Type b) : Type (a ⊔ b) where
   inl : A → A ⊎ B
@@ -50,6 +50,16 @@ given two functions `A → C` and `B → C`, we can construct a function
 [ f , g ] (inl x) = f x
 [ f , g ] (inr x) = g x
 ```
+
+<!--
+```agda
+infix 0 if⁺_then_else_
+
+if⁺_then_else_ : A ⊎ B → C → C → C
+if⁺ inl _ then y else n = y
+if⁺ inr _ then y else n = n
+```
+-->
 
 Furthermore, this function is "universal" in the following sense: if we
 have some function `h : A ⊎ B → C` that behaves like `f` when provided

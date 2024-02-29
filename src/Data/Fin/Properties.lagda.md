@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Dec.Base
 open import Data.Fin.Base
 
 import Data.Nat.Order as Nat
@@ -11,7 +12,6 @@ import Data.Nat.Base as Nat
 
 ```agda
 module Data.Fin.Properties where
-
 ```
 
 # Finite sets - properties
@@ -151,7 +151,7 @@ Fin-injective {suc l} {zero} l≃k with l≃k .fst fzero
 Fin-injective {suc l} {suc k} sl≃sk = ap suc $ Fin-injective (Fin-peel sl≃sk)
 
 to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
-to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-is-prop) (to-from-ℕ {n = suc n} x) where
+to-from-ℕ< {n = suc n} x = Σ-prop-path! (to-from-ℕ {n = suc n} x) where
   to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
   to-from-ℕ {n = suc n} (zero , p) = refl
   to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
@@ -162,9 +162,21 @@ from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
 
 Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
 Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) from-to-ℕ<)
+
+avoid-injective
+  : ∀ {n} (i : Fin (suc n)) {j k : Fin (suc n)} {i≠j : ¬ i ≡ j} {i≠k : ¬ i ≡ k}
+  → avoid i j i≠j ≡ avoid i k i≠k → j ≡ k
+avoid-injective fzero {fzero} {k} {i≠j} p = absurd (i≠j refl)
+avoid-injective fzero {fsuc j} {fzero} {i≠k = i≠k} p = absurd (i≠k refl)
+avoid-injective {suc n} fzero {fsuc j} {fsuc k} p = ap fsuc p
+avoid-injective {suc n} (fsuc i) {fzero} {fzero} p = refl
+avoid-injective {suc n} (fsuc i) {fzero} {fsuc k} p = absurd (fzero≠fsuc p)
+avoid-injective {suc n} (fsuc i) {fsuc j} {fzero} p = absurd (fzero≠fsuc (sym p))
+avoid-injective {suc n} (fsuc i) {fsuc j} {fsuc k} p =
+  ap fsuc (avoid-injective {n} i {j} {k} (fsuc-inj p))
 ```
 
-# Finite choice
+## Finite choice {defines="finite-choice"}
 
 An important fact about the [[(standard) finite sets|standard finite
 sets]] in constructive mathematics is that they _always_ support choice,
@@ -192,9 +204,51 @@ _between_ finite sets) [[merely]] split:
 ```agda
 finite-surjection-split
   : ∀ {ℓ} {n} {B : Type ℓ}
-  → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
+  → (f : B → Fin n) → is-surjective f
   → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
+```
+
+## Injections and surjections
+
+The standard finite sets are **Dedekind-finite**, which means that every
+injection $[n] \mono [n]$ is a bijection. We prove this by a straightforward
+but annoying induction on $n$.
+
+```agda
+Fin-injection→equiv
+  : ∀ {n} (f : Fin n → Fin n)
+  → injective f → is-equiv f
+Fin-injection→equiv {zero} f inj .is-eqv ()
+Fin-injection→equiv {suc n} f inj .is-eqv i with f 0 ≡? i
+... | yes p = contr (0 , p) λ (j , p') → Σ-prop-path! (inj (p ∙ sym p'))
+... | no ¬p = contr
+  (fsuc (rec .centre .fst) , avoid-injective (f 0) (rec .centre .snd))
+  λ where
+    (fzero , p) → absurd (¬p p)
+    (fsuc j , p) → Σ-prop-path! (ap (fsuc ∘ fst)
+      (rec .paths (j , ap₂ (avoid (f 0)) p prop!)))
+  where
+    rec = Fin-injection→equiv {n}
+      (λ x → avoid (f 0) (f (fsuc x)) (fzero≠fsuc ∘ inj))
+      (λ p → fsuc-inj (inj (avoid-injective (f 0) p)))
+      .is-eqv (avoid (f 0) i ¬p)
+```
+
+Since [[every surjection between finite sets splits|finite choice]], any
+surjection $f : [n] \epi [n]$ has an injective right inverse, which is thus
+a bijection; by general properties of equivalences, this implies that $f$ is
+also a bijection.
+
+```agda
+Fin-surjection→equiv
+  : ∀ {n} (f : Fin n → Fin n)
+  → is-surjective f → is-equiv f
+Fin-surjection→equiv f surj = ∥-∥-rec!
+  (λ split → left-inverse→equiv (snd ∘ split)
+    (Fin-injection→equiv (fst ∘ split)
+      (right-inverse→injective f (snd ∘ split))))
+  (finite-surjection-split f surj)
 ```
 
 ## Vector operations

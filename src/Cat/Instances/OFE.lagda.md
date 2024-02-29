@@ -6,7 +6,7 @@ open import Cat.Prelude
 open import Data.Nat.Properties
 open import Data.Nat.Order
 open import Data.Nat.Base
-open import Data.List hiding (map)
+open import Data.List
 ```
 -->
 
@@ -133,8 +133,8 @@ to be the definition of morphism of OFEs: the type of OFEs is equivalent
 to a $\Sigma$-type that starts
 
 $$
-\Sigma (X : \ty) \Sigma (R : X \to \bN \to X \to \ty) \Sigma ...\text{,}
-$$
+\Sigma (X : \ty) \Sigma (R : X \to \bN \to X \to \ty) \Sigma ...
+$$,
 
 where all the components in $...$ are propositional. Its identity type
 can be _computed_ to consist of equivalences between the underlying
@@ -244,8 +244,8 @@ informally before looking at the formalisation:
   we have
 
   $$
-  x = \rm{take}(l,x) = \rm{take}(l,y) = y\text{,}
-  $$
+  x = \rm{take}(l,x) = \rm{take}(l,y) = y
+  $$,
 
   where the middle step is $x \within{l} y$.
 

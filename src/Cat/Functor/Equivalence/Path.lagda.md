@@ -47,7 +47,7 @@ univalence it induces an equivalence $\cC_0 \equiv \cD_0$. The
 path between `Hom`{.Agda}-sets is slightly more complicated. It is,
 essentially, the dashed line in the diagram
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(x,y)} \\
   \\
@@ -61,10 +61,10 @@ essentially, the dashed line in the diagram
 
 ```agda
   obl : ∀ i → Type o
-  obl i = ua (F₀ F , ob≃) i
+  obl i = ua (F .F₀ , ob≃) i
 
   sys : ∀ i (x y : obl i) → Partial (i ∨ ~ i) _
-  sys i x y (i = i0) = C.Hom x y , F₁ F , hom≃
+  sys i x y (i = i0) = C.Hom x y , F .F₁ , hom≃
   sys i x y (i = i1) = D.Hom x y , (λ x → x) , id-equiv
 
   hom : PathP (λ i → obl i → obl i → Type ℓ) C.Hom D.Hom
@@ -85,7 +85,7 @@ $f$ along $g$ to get an element of $\hom_i(x, y)$.
     : ∀ i (x y : obl i)
     → (f : PartialP {a = ℓ} (~ i) λ { (i = i0) → C.Hom x y })
     → (g : D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)
-        [ (~ i) ↦ (λ { (i = i0) → F₁ F (f 1=1) }) ])
+        [ (~ i) ↦ (λ { (i = i0) → F .F₁ (f 1=1) }) ])
     → hom i x y
   hom-glue i x y f g = glue-inc _ {Tf = sys i x y}
     (λ { (i = i0) → f 1=1 ; (i = i1) → outS g })
@@ -94,8 +94,8 @@ $f$ along $g$ to get an element of $\hom_i(x, y)$.
 
 To obtain these definitional extensions of a morphism in C, we use
 homogeneous composition, together with the functor laws. For example,
-below, we obtain a line which definitionally extends $\id[\cC]$ on
-the left and $\id[\cD]$ by gluing $\id[\cC]$ _against the proof that $F$
+below, we obtain a line which definitionally extends $\id_{\cC}$ on the
+left and $\id_{\cD}$ by gluing $\id_{\cC}$ _against the proof that $F$
 preserves identity_.
 
 ```agda
@@ -307,7 +307,7 @@ proposition), and the functor is definitionally preserved.
 
 And now the aforementioned tiny result: All equivalences are [[fully
 faithful]], and if both categories are univalent, the natural
-isomorphisms $F^{-1}F \cong \Id$ and $FF^{-1} \cong \Id$ provide
+isomorphisms $F\inv F \cong \Id$ and $FF\inv \cong \Id$ provide
 the necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda

@@ -1,8 +1,8 @@
 {-# OPTIONS -vtactic.hlevel:20 -vtc.def:10 #-}
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.Record
-open import 1Lab.Equiv.Embedding
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
@@ -10,8 +10,9 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.List.Base
+open import Data.Id.Base
 open import Data.Bool
-open import Data.List
 
 open import Meta.Foldable
 
@@ -214,7 +215,8 @@ private
     go (def d ds) = go* ds
     go t          = pure tt
 
-    go* (arg (arginfo visible _) t ∷ as) = go t
+    go* (arg (arginfo visible _) t ∷ as)   = go t
+    go* (arg (arginfo instance' _) t ∷ as) = go t
     go* (_ ∷ as)                         = go* as
     go* []                               = pure tt
 
@@ -629,6 +631,15 @@ el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hleve
 ∣ el! A {hl = hl} ∣ = A
 el! A {hl = hl} .is-tr = hl
 
+
+biimp-is-equiv!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
+    {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
+  → (f : A → B) → (B → A)
+  → is-equiv f
+biimp-is-equiv! {aprop = aprop} {bprop = bprop} = biimp-is-equiv aprop bprop
+
 prop-ext!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
@@ -736,6 +747,12 @@ instance
   decomp-path : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
   decomp-path = decomp (quote Path-is-hlevel) (`level ∷ `search ∷ [])
 
+  decomp-id : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ᵢ b)
+  decomp-id = decomp (quote Id-is-hlevel) (`level ∷ `search ∷ [])
+
+  decomp-id' : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ᵢ b)
+  decomp-id' = decomp (quote Id-is-hlevel') (`level ∷ `search ∷ [])
+
   decomp-univalence : ∀ {ℓ} {A B : Type ℓ} → hlevel-decomposition (A ≡ B)
   decomp-univalence = decomp (quote ≡-is-hlevel) (`level ∷ `search ∷ `search ∷ [] )
 
@@ -744,9 +761,6 @@ instance
   -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
-
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr

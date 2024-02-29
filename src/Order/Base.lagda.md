@@ -12,12 +12,12 @@ import Cat.Reasoning
 module Order.Base where
 ```
 
-# Partially ordered sets {defines="poset partial-order partially-ordered-set"}
+# Partially ordered sets {defines="poset partial-order partially-ordered-set thin-category"}
 
 A **poset** is a [[set]] equipped with a relation $x \le y$, called a
 **partial order**, which is reflexive, transitive, and _antisymmetric_.
 Put another way, a poset is a [[univalent category]] which has _at most
-one_ morphism between each pair of its objects.
+one_ morphism between each pair of its objects: a **thin** category.
 
 Posets are a simultaneous generalisation of many naturally occurring
 notions of "order" in mathematics:
@@ -70,7 +70,7 @@ notions of "order" in mathematics:
   This poset will inherit order-theoretic structure from the logical
   structure of $\bT$: For example, if $\bT$ is expressed in a fragment
   of logic which has conjunction, then $\cL(\bT)$ will be a
-  meet-[[semilattice]]; if it also has infinitary disjunction, then its
+  [[meet-semilattice]]; if it also has infinitary disjunction, then its
   Lindenbaum-Tarski algebra is a [[frame]].
 
 - As mentioned in the opening paragraph, the notion of poset
@@ -118,8 +118,8 @@ However, since the "symmetric part" of $\le$, the relation
 iff.
 
 $$
-x \sim y = (x \le y) \land (y \le x)\text{,}
-$$
+x \sim y = (x \le y) \land (y \le x)
+$$,
 
 is a reflexive mere relation which implies identity, the type of objects
 is automatically a set.
@@ -163,7 +163,7 @@ instance
 ```
 -->
 
-## Monotone maps {defines="monotone-map monotonicity"}
+## Monotone maps {defines="monotone-map monotone-function monotonicity"}
 
 Since we are considering posets to be categories satisfying a property,
 it follows that the _category_ of posets should be a full subcategory of
@@ -216,8 +216,11 @@ instance
   H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
   H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
 
-  Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
+  Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
   Funlike-Monotone = record { _#_ = hom }
+
+  Membership-Monotone : ⦃ _ : Underlying ⌞ Q ⌟ ⦄ → Membership ⌞ P ⌟ (Monotone P Q) _
+  Membership-Monotone = record { _∈_ = λ x S → ⌞ S # x ⌟ }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
@@ -309,4 +312,26 @@ _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 (P ^opp) .Poset.≤-refl = Poset.≤-refl P
 (P ^opp) .Poset.≤-trans   x≥y y≥z = Poset.≤-trans P y≥z x≥y
 (P ^opp) .Poset.≤-antisym x≥y y≥x = Poset.≤-antisym P y≥x x≥y
+```
+
+We can construct the trivial posets with one and zero (object(s), ordering(s)) respectively
+
+```agda
+
+𝟙ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟙ᵖ .Poset.Ob = Lift _ ⊤
+𝟙ᵖ .Poset._≤_ _ _ = Lift _ ⊤
+𝟙ᵖ .Poset.≤-thin = hlevel!
+𝟙ᵖ .Poset.≤-refl = lift tt
+𝟙ᵖ .Poset.≤-trans = λ _ _ → lift tt
+𝟙ᵖ .Poset.≤-antisym = λ _ _ → refl
+
+𝟘ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟘ᵖ .Poset.Ob = Lift _ ⊥
+𝟘ᵖ .Poset._≤_ _ _ = Lift _ ⊥
+𝟘ᵖ .Poset.≤-thin ()
+𝟘ᵖ .Poset.≤-refl {()}
+𝟘ᵖ .Poset.≤-trans ()
+𝟘ᵖ .Poset.≤-antisym ()
+
 ```

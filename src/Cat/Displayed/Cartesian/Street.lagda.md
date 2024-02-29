@@ -44,7 +44,7 @@ module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : 
 
 ```agda
   functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
-  functor→displayed .Ob[_] x = Σ[ u ∈ E.Ob ] (P.₀ u B.≅ x)
+  functor→displayed .Ob[_] x = Σ[ u ∈ E ] (P.₀ u B.≅ x)
 ```
 
 Following [@relativect], we define such a category by defining the space
@@ -72,7 +72,7 @@ maps $u \to_f v$ which commute with the mediating isomorphisms:
 This fits in a diagram like the one below. Note that the commutativity
 condition is for the lower shape, which is a distorted square.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & u && v \\
   & {P(u)} && {P(v)} \\
