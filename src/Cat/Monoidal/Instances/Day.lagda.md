@@ -26,7 +26,6 @@ module Cat.Monoidal.Instances.Day
 <!--
 ```agda
 open Monoidal-category cmon
-private module ⊗ = Fr -⊗-
 
 open make-natural-iso
 open Cowedge

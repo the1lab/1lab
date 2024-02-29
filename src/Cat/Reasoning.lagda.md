@@ -29,7 +29,7 @@ Most of these helpers were taken from `agda-categories`.
 private variable
   u v w x y z : Ob
   a a' a'' b b' b'' c c' c'' d d' d'' : Hom x y
-  f g h i : Hom x y
+  f g g' h h' i : Hom x y
 ```
 -->
 
@@ -94,6 +94,14 @@ module _ (ab≡c : a ∘ b ≡ c) where abstract
   pull-inner : (f ∘ a) ∘ (b ∘ g) ≡ f ∘ c ∘ g
   pull-inner {f = f} = sym (assoc _ _ _) ∙ ap (f ∘_) pulll
 
+module _ (abc≡d : a ∘ b ∘ c ≡ d) where abstract
+  pulll3 : a ∘ (b ∘ (c ∘ f)) ≡ d ∘ f
+  pulll3 {f = f} =
+    a ∘ b ∘ c ∘ f   ≡⟨ ap (a ∘_) (assoc _ _ _) ⟩
+    a ∘ (b ∘ c) ∘ f ≡⟨ assoc _ _ _ ⟩
+    (a ∘ b ∘ c) ∘ f ≡⟨ ap (_∘ f) abc≡d ⟩
+    d ∘ f           ∎
+
 module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
   pushl = sym (pulll (sym c≡ab))
@@ -103,6 +111,10 @@ module _ (c≡ab : c ≡ a ∘ b) where abstract
 
   push-inner : f ∘ c ∘ g ≡ (f ∘ a) ∘ (b ∘ g)
   push-inner {f = f} = ap (f ∘_) pushl ∙ assoc _ _ _
+
+module _ (d≡abc : d ≡ a ∘ b ∘ c) where abstract
+  pushl3 : d ∘ f ≡ a ∘ (b ∘ (c ∘ f))
+  pushl3 = sym (pulll3 (sym d≡abc))
 
 module _ (p : f ∘ h ≡ g ∘ i) where abstract
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
@@ -121,6 +133,10 @@ module _ (p : f ∘ h ≡ g ∘ i) where abstract
 
   extend-inner : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b
   extend-inner {a = a} = ap (a ∘_) extendl
+
+module _ (p : a ∘ b ∘ c ≡ d ∘ f ∘ g) where abstract
+  extendl3 : a ∘ (b ∘ (c ∘ h)) ≡ d ∘ (f ∘ (g ∘ h))
+  extendl3 = pulll3 p ∙ sym (pulll3 refl)
 ```
 
 We also define some useful combinators for performing repeated pulls/pushes.
@@ -135,12 +151,12 @@ abstract
     f ∘ g ∘ h ∘ i   ≡⟨ pulll p ⟩
     (a ∘ b) ∘ h ∘ i ≡⟨ pullr (pushr q) ⟩
     a ∘ (b ∘ c) ∘ d ∎
-  
+
   centralizel
     : f ∘ g ≡ a ∘ b
     → f ∘ g ∘ h ∘ i ≡ a ∘ (b ∘ h) ∘ i
   centralizel p = centralize p refl
-  
+
   centralizer
     : h ∘ i ≡ c ∘ d
     → f ∘ g ∘ h ∘ i ≡ f ∘ (g ∘ c) ∘ d
@@ -200,6 +216,16 @@ rswizzle {g = g} {i = i} {h = h} {f = f} p q =
   g ∘ f       ≡⟨ ap₂ _∘_ p refl ⟩
   (i ∘ h) ∘ f ≡⟨ cancelr q ⟩
   i           ∎
+```
+
+The following "swizzle" operation can be pictured as flipping a
+commutative square along an axis, provided the morphisms on that axis
+are invertible.
+
+```agda
+swizzle : f ∘ g ≡ h ∘ i → g ∘ g' ≡ id → h' ∘ h ≡ id → h' ∘ f ≡ i ∘ g'
+swizzle {f = f} {g = g} {h = h} {i = i} {g' = g'} {h' = h'} p q r =
+  lswizzle (sym (assoc _ _ _ ∙ rswizzle (sym p) q)) r
 ```
 
 ## Isomorphisms
@@ -322,11 +348,14 @@ some cute mixfix notation from `agda-categories` which allows us to write
 _⟩∘⟨_ : f ≡ h → g ≡ i → f ∘ g ≡ h ∘ i
 _⟩∘⟨_ = ap₂ _∘_
 
-infixr 40 _⟩∘⟨_
+infixr 20 _⟩∘⟨_
 
 refl⟩∘⟨_ : g ≡ h → f ∘ g ≡ f ∘ h
 refl⟩∘⟨_ {f = f} p = ap (f ∘_) p
 
 _⟩∘⟨refl : f ≡ h → f ∘ g ≡ h ∘ g
 _⟩∘⟨refl {g = g} p = ap (_∘ g) p
+
+infix 21 refl⟩∘⟨_
+infix 22 _⟩∘⟨refl
 ```

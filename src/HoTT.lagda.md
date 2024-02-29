@@ -310,8 +310,8 @@ _ = Discrete
 * Definition 3.4.1: `LEM`{.Agda}
 * Definition 3.4.2: `DNE`{.Agda}
 * Definition 3.4.3:
-  i. `Dec`{.Agda}
-  iii. `Discrete`{.Agda}
+  * (i) `Dec`{.Agda}
+  * (iii) `Discrete`{.Agda}
 
 ### 3.5: Subsets and propositional resizing
 
@@ -1067,11 +1067,11 @@ _ = separation
 * Lemma 10.5.6: `presentation`{.Agda}
 * Definition 10.5.7: `Presentation.members`{.Agda}
 * Theorem 10.5.8:
-  i. `extensionality`{.Agda}
-  ii. `empty-set`{.Agda}
-  iii. `pairing`{.Agda}
-  iv. `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
-  v. `union`{.Agda}
-  vii. `∈-induction`{.Agda}
-  viii. `replacement`{.Agda}
-  ix. `separation`{.Agda}
+  * (i) `extensionality`{.Agda}
+  * (ii) `empty-set`{.Agda}
+  * (iii) `pairing`{.Agda}
+  * (iv) `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
+  * (v) `union`{.Agda}
+  * (vii) `∈-induction`{.Agda}
+  * (viii) `replacement`{.Agda}
+  * (ix) `separation`{.Agda}

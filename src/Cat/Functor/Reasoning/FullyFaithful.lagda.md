@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Functor.Properties
-open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 
 import Cat.Functor.Reasoning as Fr
@@ -43,10 +42,10 @@ module _ {a} {b} where
   open Equiv (F₁ {a} {b} , ff) public
 
 iso-equiv : ∀ {a b} → (a C.≅ b) ≃ (F₀ a D.≅ F₀ b)
-iso-equiv {a} {b} = (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
+iso-equiv {a} {b} = (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
 
 module iso {a} {b} =
-  Equiv (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
+  Equiv (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
 ```
 -->
 

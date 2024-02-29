@@ -11,7 +11,7 @@ import Cat.Reasoning
 module Cat.Functor.Naturality where
 ```
 
-# Working with natural transformations
+# Working with natural transformations {defines="natural-isomorphism"}
 
 Working with natural transformations can often be more cumbersome than
 working directly with the underlying families of morphisms; moreover, we
@@ -33,7 +33,8 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
 -->
 
 We'll refer to the natural-transformation versions of predicates on
-morphisms by a superscript `ⁿ`:
+morphisms by a superscript `ⁿ`. A **natural isomorphism** is simply an
+isomorphism in a functor category.
 
 ```agda
   Inversesⁿ : {F G : Functor C D} → F => G → G => F → Type _
@@ -200,6 +201,15 @@ to an invertible natural transformation, resp. natural isomorphism.
     ate : _ => _
     ate .η x = D.is-invertible.inv (i x)
     ate .is-natural = inverse-is-natural eta _ (λ x → D.is-invertible.invl (i x)) (λ x → D.is-invertible.invr (i x))
+
+  push-eqⁿ : ∀ {F G} (α : F ≅ⁿ G) {a b} {f g : C.Hom a b} → F .F₁ f ≡ F .F₁ g → G .F₁ f ≡ G .F₁ g
+  push-eqⁿ {F = F} {G = G} α {f = f} {g} p =
+    G .F₁ f                                           ≡⟨ D.insertl (α .Isoⁿ.invl ηₚ _) ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ f ≡⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ f D.∘ α .Isoⁿ.from .η _ ≡⟨ D.refl⟩∘⟨ p D.⟩∘⟨refl ⟩
+    α .Isoⁿ.to .η _ D.∘ F .F₁ g D.∘ α .Isoⁿ.from .η _ ≡˘⟨ D.refl⟩∘⟨ α .Isoⁿ.from .is-natural _ _ _ ⟩
+    α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ g ≡⟨ D.cancell (α .Isoⁿ.invl ηₚ _) ⟩
+    G .F₁ g                                           ∎
 ```
 -->
 

@@ -418,7 +418,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 ```agda
     compositor
       : ∀ {A B C}
-      → C.compose F∘ Cat⟨ P₁ {B} {C} F∘ Fst , P₁ {A} {B} F∘ Snd ⟩ => P₁ F∘ B.compose
+      → C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ B.compose
 
     unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```
