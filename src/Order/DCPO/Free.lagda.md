@@ -278,7 +278,7 @@ It remains to show that this functor is actually a [[left adjoint]]. We
 have already constructed the adjunction unit: it is the map
 `always`{.Agda} which embeds $A$ into $\zap A$. We turn to defining the
 counit. Since every pointed dcpo admits joins indexed by
-[[propositions]], given a $x : \zap D$, we can define $\eta x : D$ to be
+[[propositions]], given a $x : \zap D$, we can define $\epsilon x : D$ to be
 the join
 
 $$
@@ -324,7 +324,7 @@ The following three properties are fundamental: the counit
 
 <details>
 <summary>The proofs here are simply calculations. We leave them for the
-curious reader.</details>
+curious reader.</summary>
 
 ```agda
   part-counit-⊑ {x = x} {y = y} p = ⋃-prop-least _ _ (part-counit y) λ (lift i) →
