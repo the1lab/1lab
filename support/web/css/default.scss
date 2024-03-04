@@ -53,8 +53,10 @@ html, body, main, div#post-toc-container {
   }
 
   &.justified {
-    text-align: justify;
-    hyphens: auto;
+    p, li, summary, blockquote {
+      text-align: justify;
+      hyphens: auto;
+    }
   }
 }
 
