@@ -21,7 +21,8 @@ module Cat.Instances.Slice.Limit where
 
 # Arbitrary limits in slices
 
-Suppose we have some really weird diagram $F : \cJ \to \cC/c$, like the
+Suppose we have some really weird diagram $F : \cJ \to \cC/c$ in a
+[[slice category]], like the
 one below. Well, alright, it's not that weird, but it's not a pullback
 or a terminal object, so we don't _a priori_ know how to compute its
 limit in the slice.
@@ -37,7 +38,7 @@ limit in the slice.
 ~~~
 
 The observation that will let us compute a limit for this diagram is
-inspecting the computation of products in slice categories, above. To
+inspecting the computation of [[products in a slice]]. To
 compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
 _pullback_ of $a \xto{f} c \xot{b}$ in $\cC$ --- which we had assumed
 exists. But! Take a look at what that diagram _looks like_:
