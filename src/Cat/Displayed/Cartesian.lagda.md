@@ -387,7 +387,7 @@ $h$.
 ~~~{.quiver}
 \[\begin{tikzcd}
   {a_2'} \\
-  {a_1'} & b
+  {a_1'} & b'
   \arrow["g"', shift right=2, dashed, from=1-1, to=2-1]
   \arrow["h"', shift right=2, dashed, from=2-1, to=1-1]
   \arrow["{f_1}"', from=2-1, to=2-2]
@@ -403,7 +403,7 @@ of $f_2$ being Cartesian. Consider the following diagram:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {a_2'} & b \\
+  {a_2'} & b' \\
   {a_1'} & {a_2'}
   \arrow["g"', shift right=2, dashed, from=1-1, to=2-1]
   \arrow["{f_1}"', from=2-1, to=1-2]
