@@ -14,20 +14,20 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Monoidal.Functor {oc ℓc od ℓd}
-  {C : Precategory oc ℓc} (C-monoidal : Monoidal-category C)
-  {D : Precategory od ℓd} (D-monoidal : Monoidal-category D)
+  {C : Precategory oc ℓc} (Cᵐ : Monoidal-category C)
+  {D : Precategory od ℓd} (Dᵐ : Monoidal-category D)
   where
 ```
 
-# Monoidal functors {defines="monoidal-functor lax-monoidal-functor oplax-monoidal-functor"}
+# Monoidal functors {defines="monoidal-functor lax-monoidal-functor oplax-monoidal-functor strong-monoidal-functor"}
 
 <!--
 ```agda
 open Cat.Reasoning D
 
 private
-  module C = Monoidal-category C-monoidal
-  module D = Monoidal-category D-monoidal
+  module C = Monoidal-category Cᵐ
+  module D = Monoidal-category Dᵐ
 ```
 -->
 
@@ -81,6 +81,15 @@ record Lax-monoidal-functor-on (F : Functor C D) : Type (oc ⊔ ℓc ⊔ od ⊔ 
     → F.₁ (C.α← A B C) ∘ φ ∘ (id D.⊗₁ φ) ≡ φ ∘ (φ D.⊗₁ id) ∘ D.α← _ _ _
   F-α← = swizzle (sym (F-α→ ∙ assoc _ _ _)) (D.α≅ .invl) (F.F-map-iso C.α≅ .invr)
     ∙ sym (assoc _ _ _)
+
+private unquoteDecl eqv = declare-record-iso eqv (quote Lax-monoidal-functor-on)
+Lax-monoidal-functor-on-path
+  : ∀ {F} {l l' : Lax-monoidal-functor-on F}
+  → l .Lax-monoidal-functor-on.ε ≡ l' .Lax-monoidal-functor-on.ε
+  → l .Lax-monoidal-functor-on.F-mult ≡ l' .Lax-monoidal-functor-on.F-mult
+  → l ≡ l'
+Lax-monoidal-functor-on-path p q = Iso.injective eqv
+  (Σ-pathp p (Σ-prop-pathp (λ _ _ → hlevel 1) q))
 ```
 -->
 
@@ -131,17 +140,17 @@ yielding the notion of a **braided monoidal functor**.
 <!--
 ```agda
 module _
-  (C-braided : Braided-monoidal C-monoidal)
-  (D-braided : Braided-monoidal D-monoidal)
+  (Cᵇ : Braided-monoidal Cᵐ)
+  (Dᵇ : Braided-monoidal Dᵐ)
   where
-  module CB = Braided-monoidal C-braided
-  module DB = Braided-monoidal D-braided
+  module Cᵇ = Braided-monoidal Cᵇ
+  module Dᵇ = Braided-monoidal Dᵇ
 ```
 -->
 
 ```agda
   is-braided-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-braided-functor (F , lax) = ∀ {A B} → φ ∘ DB.β→ ≡ F.₁ CB.β→ ∘ φ {A} {B}
+  is-braided-functor (F , lax) = ∀ {A B} → φ ∘ Dᵇ.β→ ≡ F.₁ Cᵇ.β→ ∘ φ {A} {B}
     where
       module F = Functor F
       open Lax-monoidal-functor-on lax
@@ -154,17 +163,17 @@ preserve.
 <!--
 ```agda
 module _
-  (C-symmetric : Symmetric-monoidal C-monoidal)
-  (D-symmetric : Symmetric-monoidal D-monoidal)
+  (Cˢ : Symmetric-monoidal Cᵐ)
+  (Dˢ : Symmetric-monoidal Dᵐ)
   where
-  module CS = Symmetric-monoidal C-symmetric
-  module DS = Symmetric-monoidal D-symmetric
+  open Symmetric-monoidal Cˢ using (Cᵇ)
+  open Symmetric-monoidal Dˢ using () renaming (Cᵇ to Dᵇ)
 ```
 -->
 
 ```agda
   is-symmetric-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-symmetric-functor = is-braided-functor CS.has-is-braided DS.has-is-braided
+  is-symmetric-functor = is-braided-functor Cᵇ Dᵇ
 ```
 
 ## Diagonal monoidal functors {defines="diagonal-monoidal-functor idempotent-monoidal-functor"}
@@ -187,17 +196,17 @@ functor that makes the following diagram commute:
 <!--
 ```agda
 module _
-  (C-diagonal : Diagonals C-monoidal)
-  (D-diagonal : Diagonals D-monoidal)
+  (Cᵈ : Diagonals Cᵐ)
+  (Dᵈ : Diagonals Dᵐ)
   where
-  module CD = Diagonals C-diagonal
-  module DD = Diagonals D-diagonal
+  module Cᵈ = Diagonals Cᵈ
+  module Dᵈ = Diagonals Dᵈ
 ```
 -->
 
 ```agda
   is-diagonal-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-diagonal-functor (F , lax) = ∀ {A} → φ ∘ DD.δ ≡ F.₁ (CD.δ {A})
+  is-diagonal-functor (F , lax) = ∀ {A} → φ ∘ Dᵈ.δ ≡ F.₁ (Cᵈ.δ {A})
     where
       module F = Functor F
       open Lax-monoidal-functor-on lax

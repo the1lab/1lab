@@ -516,11 +516,20 @@ be shown to be a set using the standard `hlevel`{.Agda} machinery.
 
 ```agda
   private unquoteDecl eqv = declare-record-iso eqv (quote _=>_)
-  Nat-is-set : is-set (F => G)
-  Nat-is-set = Iso→is-hlevel 2 eqv (hlevel 2) where
-    open C.HLevel-instance
-    open D.HLevel-instance
+  opaque
+    Nat-is-set : is-set (F => G)
+    Nat-is-set = Iso→is-hlevel 2 eqv (hlevel 2) where
+      open C.HLevel-instance
+      open D.HLevel-instance
 ```
+
+<!--
+```agda
+  instance
+    H-Level-Nat : H-Level (F => G) 2
+    H-Level-Nat = basic-instance 2 Nat-is-set
+```
+-->
 
 Another fundamental lemma is that equality of natural transformations
 depends only on equality of the family of morphisms, since being natural

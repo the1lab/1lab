@@ -102,6 +102,13 @@ module _ (abc≡d : a ∘ b ∘ c ≡ d) where abstract
     (a ∘ b ∘ c) ∘ f ≡⟨ ap (_∘ f) abc≡d ⟩
     d ∘ f           ∎
 
+  pullr3 : ((f ∘ a) ∘ b) ∘ c ≡ f ∘ d
+  pullr3 {f = f} =
+    ((f ∘ a) ∘ b) ∘ c ≡˘⟨ assoc _ _ _ ⟩
+    (f ∘ a) ∘ b ∘ c   ≡˘⟨ assoc _ _ _ ⟩
+    f ∘ a ∘ b ∘ c     ≡⟨ ap (f ∘_) abc≡d ⟩
+    f ∘ d ∎
+
 module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
   pushl = sym (pulll (sym c≡ab))
@@ -115,6 +122,9 @@ module _ (c≡ab : c ≡ a ∘ b) where abstract
 module _ (d≡abc : d ≡ a ∘ b ∘ c) where abstract
   pushl3 : d ∘ f ≡ a ∘ (b ∘ (c ∘ f))
   pushl3 = sym (pulll3 (sym d≡abc))
+
+  pushr3 : f ∘ d ≡ ((f ∘ a) ∘ b) ∘ c
+  pushr3 = sym (pullr3 (sym d≡abc))
 
 module _ (p : f ∘ h ≡ g ∘ i) where abstract
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
@@ -137,6 +147,9 @@ module _ (p : f ∘ h ≡ g ∘ i) where abstract
 module _ (p : a ∘ b ∘ c ≡ d ∘ f ∘ g) where abstract
   extendl3 : a ∘ (b ∘ (c ∘ h)) ≡ d ∘ (f ∘ (g ∘ h))
   extendl3 = pulll3 p ∙ sym (pulll3 refl)
+
+  extendr3 : ((h ∘ a) ∘ b) ∘ c ≡ ((h ∘ d) ∘ f) ∘ g
+  extendr3 = pullr3 p ∙ sym (pullr3 refl)
 ```
 
 We also define some useful combinators for performing repeated pulls/pushes.
@@ -199,6 +212,19 @@ module _ (inv : h ∘ i ≡ id) where abstract
 
   deletel : h ∘ (i ∘ f) ∘ g ≡ f ∘ g
   deletel = pulll cancell
+
+module _ (inv : g ∘ h ∘ i ≡ id) where abstract
+  cancell3 : g ∘ (h ∘ (i ∘ f)) ≡ f
+  cancell3 {f = f} = pulll3 inv ∙ idl f
+
+  cancelr3 : ((f ∘ g) ∘ h) ∘ i ≡ f
+  cancelr3 {f = f} = pullr3 inv ∙ idr f
+
+  insertl3 : f ≡ g ∘ (h ∘ (i ∘ f))
+  insertl3 = sym cancell3
+
+  insertr3 : f ≡ ((f ∘ g) ∘ h) ∘ i
+  insertr3 = sym cancelr3
 ```
 
 We also have combinators which combine expanding on one side with a

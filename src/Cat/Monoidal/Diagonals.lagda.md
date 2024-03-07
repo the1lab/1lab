@@ -10,7 +10,7 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Monoidal.Diagonals {o ℓ}
-  {C : Precategory o ℓ} (C-monoidal : Monoidal-category C)
+  {C : Precategory o ℓ} (Cᵐ : Monoidal-category C)
   where
 ```
 
@@ -19,7 +19,7 @@ module Cat.Monoidal.Diagonals {o ℓ}
 <!--
 ```agda
 open Cat.Reasoning C
-open Monoidal C-monoidal
+open Monoidal Cᵐ
 
 _ = λ≡ρ
 ```

@@ -325,7 +325,7 @@ Last but definitely not least, the `hexagon`{.Agda} witnessing the
 coherence of associativity follows again by uniqueness of cartesian
 lifts, by the commutativity of the following diagram.
 
-~~~{.quiver style="height: 375px !important;"}
+~~~{.quiver}
 \[\begin{tikzcd}
   {f^*g^*h^*a'} &&&&&& {f^*g^*h^*a'} \\
   {f^*g^*h^*a'} & {g^*h^*a'} &&&& {g^*h^*a'} & {(gf)^*h^*a'} \\

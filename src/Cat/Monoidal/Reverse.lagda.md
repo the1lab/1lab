@@ -15,14 +15,14 @@ open Monoidal-category
 
 ```agda
 module Cat.Monoidal.Reverse {o ℓ}
-  {C : Precategory o ℓ} (C-monoidal : Monoidal-category C)
+  {C : Precategory o ℓ} (Cᵐ : Monoidal-category C)
   where
 ```
 
 <!--
 ```agda
 open Cat.Reasoning C
-private module C = Monoidal-category C-monoidal
+private module C = Monoidal-category Cᵐ
 open _=>_
 ```
 -->

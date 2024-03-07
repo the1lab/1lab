@@ -15,6 +15,7 @@ module Cat.Instances.Product where
 ```agda
 open Precategory
 open Functor
+open _=>_
 private variable
   o₁ h₁ o₂ h₂ : Level
   B C D E : Precategory o₁ h₁
@@ -115,6 +116,14 @@ _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
   func .F₁ (f , g) = G .F₁ f , H .F₁ g
   func .F-id = G .F-id ,ₚ H .F-id
   func .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
+
+_nt×_
+  : {F G : Functor B D} {H K : Functor C E}
+  → F => G → H => K → (F F× H) => (G F× K)
+_nt×_ α β .η (c , d) = α .η c , β .η d
+_nt×_ α β .is-natural (c , d) (c' , d') (f , g) = Σ-pathp
+  (α .is-natural c c' f)
+  (β .is-natural d d' g)
 ```
 
 <!--

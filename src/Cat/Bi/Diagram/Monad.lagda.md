@@ -21,7 +21,7 @@ module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-# Monads in a bicategory
+# Monads in a bicategory {defines="monad-in"}
 
 Recall that a [monad] _on_ a category $\cC$ consists of a functor $M :
 \cC \to \cC$ and natural transformations $\mu : MM \To M$, $\eta : \id

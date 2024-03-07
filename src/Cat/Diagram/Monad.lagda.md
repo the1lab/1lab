@@ -133,6 +133,7 @@ objects which "commutes with the algebras".
 ```agda
   record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
     no-eta-equality
+    constructor algebra-hom
     private
       module X = Algebra-on (X .snd)
       module Y = Algebra-on (Y .snd)
@@ -306,7 +307,7 @@ faithful.
     Forget-is-faithful = ext
 ```
 
-## Free algebras
+## Free algebras {defines="free-algebra"}
 
 In exactly the same way that we may construct a _[free group]_ by taking
 the inhabitants of some set $X$ as generating the "words" of a group, we
