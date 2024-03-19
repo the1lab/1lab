@@ -592,5 +592,12 @@ instance
     sa .idsᵉ .to-path (x i)
   Extensional-natural-transformation {D = D} ⦃ sa ⦄ .idsᵉ .to-path-over h =
     is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
+
+_⟪_⟫_
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  → (F : Functor C D) {U V : ⌞ C ⌟}
+  → C .Precategory.Hom U V
+  → D .Precategory.Hom (F # U) (F # V)
+_⟪_⟫_ F f = Functor.F₁ F f
 ```
 -->
