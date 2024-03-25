@@ -294,7 +294,7 @@ objects and left adjoints.
 
 ```agda
   free-objects≃left-adjoint
-    : (∀ x → Free-object-on U x) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)a
+    : (∀ x → Free-object-on U x) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
 ```
 
 <details>

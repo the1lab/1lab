@@ -79,10 +79,10 @@ between $\alpha : A + 1 \to A$ and $\beta : B + 1 \to B$ is a map
 $f : A \to B$ that preserves the designated global elements of $A$ and $B$
 and commutes with the chosen endomaps.
 
-$F$-algebras and their homomorphisms assemble into a displayed category
-over $\cC$: the type of objects over $A$ consists of all possible algebra
-structures on $A$, and the type of morphisms over $f : \cC(A,B)$ are
-proofs that $f$ is an $F$-algebra.
+We can assemble $F$-algebras into a displayed category over $\cC$: the
+type of objects over $A$ consists of all possible algebra structures on
+$A$, and the type of morphisms over $f : \cC(A,B)$ are proofs that $f$ is an
+$F$-algebra homomorphism.
 
 ```agda
   F-Algebras : Displayed C ℓ ℓ
@@ -416,10 +416,10 @@ homomorphism $F^{*}(f)$, as in the following diagram:
       map*-roll f = Free.₁ f .preserves
 ```
 
-Furthermore, the counit of the adjunction lets us extend any $F$-algebra
-$\alpha : \cC(F(A),A)$ to an $F$-algebra $\mathrm{fold}(\alpha) : \cC(F^{*}(A),A)$.
-Intuitively, this operation lets us eliminate out of the fixpoint by
-describing how to eliminate out of each layer.
+The counit of our adjunction lets us extend any $F$-algebra $\alpha : \cC(F(A),A)$
+to an $F$-algebra $\mathrm{fold}(\alpha) : \cC(F^{*}(A),A)$. Intuitively,
+this operation lets us eliminate out of the fixpoint by describing how to
+eliminate out of each layer.
 
 ```agda
       fold : ∀ {a} → Hom (F.₀ a) a → Hom (F* a) a
