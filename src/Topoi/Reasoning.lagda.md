@@ -102,7 +102,7 @@ do it by hand for the [[terminal object]], binary [[products]], and binary
           L-lex.pres-product
             (PSh-terminal {C = site} .has⊤)
             (product-presheaf .has-is-product)
-      in is-product-iso 𝒯 (Lι-iso _) (Lι-iso _) prod
+      in is-product-iso (Lι-iso _) (Lι-iso _) prod
 
   open Binary-products 𝒯 product-sheaf public
 ```

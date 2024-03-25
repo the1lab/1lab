@@ -15,6 +15,7 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Sets
+open import Cat.Diagram.Free
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -134,10 +135,12 @@ module _ {o'} {D : Precategory o' ℓ}
     (corepresentation→initial-element (corep d))
 
   objectwise-rep→L : Functor D C
-  objectwise-rep→L = universal-maps→L R objectwise-rep→universal-maps
+  objectwise-rep→L =
+    Equiv.to (universal-morphisms≃left-adjoint R) objectwise-rep→universal-maps .fst
 
   objectwise-rep→L⊣R : objectwise-rep→L ⊣ R
-  objectwise-rep→L⊣R = universal-maps→L⊣R R objectwise-rep→universal-maps
+  objectwise-rep→L⊣R =
+    Equiv.to (universal-morphisms≃left-adjoint R) objectwise-rep→universal-maps .snd
 ```
 
 ## Right adjoints into Sets are representable

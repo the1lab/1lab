@@ -25,8 +25,8 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 private module R = Ring-on (R .snd)
-open Ab-category hiding (_+_ ; Terminal ; Product ; is-product)
-open is-additive hiding (_+_ ; Terminal ; Product ; is-product)
+open Ab-category hiding (_+_)
+open is-additive hiding (_+_)
 open make-abelian-group
 open Total-hom
 
@@ -226,7 +226,7 @@ defined pointwise using the $R$-module structures of $M$ and $N$:
 
 ```agda
 R-Mod-is-additive .has-prods M N = prod where
-  module P = is-additive.Product Ab-is-additive (Ab-is-additive .has-prods
+  module P = Product (Ab-is-additive .has-prods
     (M .fst , Module-on→Abelian-group-on (M .snd))
     (N .fst , Module-on→Abelian-group-on (N .snd)))
 

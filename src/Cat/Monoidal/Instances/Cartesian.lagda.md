@@ -3,10 +3,10 @@
 open import Cat.Diagram.Product.Solver
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
-import Cat.Diagram.Product
 import Cat.Reasoning as Cr
 ```
 -->
@@ -30,7 +30,6 @@ categories_, also known as _finite-products categories_.
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Cat.Diagram.Product C
   open Monoidal-category
   open make-natural-iso
   open Cr C
@@ -38,9 +37,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 -->
 
 ```agda
-  Cartesian-monoidal : (∀ A B → Product A B) → Terminal C → Monoidal-category C
+  Cartesian-monoidal : has-products C → Terminal C → Monoidal-category C
   Cartesian-monoidal prods term = mon where
-    open Binary-products prods
+    open Binary-products C prods
     open Terminal term
     mon : Monoidal-category C
     mon .-⊗- = ×-functor

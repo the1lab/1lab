@@ -6,6 +6,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Diagram.Image
 open import Cat.Abelian.Base
 open import Cat.Prelude
 
@@ -48,7 +49,7 @@ epi] followed by a [regular mono].
 ## The image
 
 ```agda
-images : ∀ {A B} (f : Hom A B) → Image f
+images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
   the-img : ↓Obj (const! (cut f)) Forget-full-subcat
   the-img .x = tt
@@ -108,7 +109,7 @@ over $B$.], hence a map $\im f \to X$ such that the triangle
 commutes.
 
 ```agda
-  im : Image f
+  im : Image C f
   im .Initial.bot = the-img
   im .Initial.has⊥ other = contr factor unique where
     factor : ↓Hom (const! (cut f)) Forget-full-subcat the-img other

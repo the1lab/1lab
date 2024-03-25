@@ -380,7 +380,7 @@ $ew = \mathrm{id}$ --- so that $e$, being a retract, is an epimorphism.
       module ker = Equaliser (eqs u v)
       k = ker.universal uf=vf
       (w , p , q) = ls
-        (record { monic = is-equaliser→is-monic C _ ker.has-is-eq })
+        (record { monic = is-equaliser→is-monic _ ker.has-is-eq })
         {u = k} {v = id}
         (idl _ ∙ sym ker.factors)
       e-epi : is-epic ker.equ

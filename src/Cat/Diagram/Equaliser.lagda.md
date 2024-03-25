@@ -1,19 +1,22 @@
 <!--
 ```agda
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Equaliser {ℓ ℓ'} (C : Precategory ℓ ℓ') where
+module Cat.Diagram.Equaliser where
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
-private variable
-  A B : Ob
-  f g h : Hom A B
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
+  private variable
+    A B : Ob
+    f g h : Hom A B
 ```
 -->
 
@@ -27,28 +30,28 @@ of the domain (i.e. what the variable ranges over) where the left- and
 right-hand-sides agree.
 
 ```agda
-record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ') where
-  field
-    equal     : f ∘ equ ≡ g ∘ equ
-    universal : ∀ {F} {e' : Hom F A} (p : f ∘ e' ≡ g ∘ e') → Hom F E
-    factors   : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} → equ ∘ universal p ≡ e'
-    unique
-      : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} {other : Hom F E}
-      → equ ∘ other ≡ e'
-      → other ≡ universal p
-
-  equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
-  equal-∘ {h = h} =
-    f ∘ equ ∘ h ≡⟨ extendl equal ⟩
-    g ∘ equ ∘ h ∎
-
-  unique₂
-    : ∀ {F} {e' : Hom F A}  {o1 o2 : Hom F E}
-    → f ∘ e' ≡ g ∘ e'
-    → equ ∘ o1 ≡ e'
-    → equ ∘ o2 ≡ e'
-    → o1 ≡ o2
-  unique₂ p q r = unique {p = p} q ∙ sym (unique r)
+  record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (o ⊔ ℓ) where
+    field
+      equal     : f ∘ equ ≡ g ∘ equ
+      universal : ∀ {F} {e' : Hom F A} (p : f ∘ e' ≡ g ∘ e') → Hom F E
+      factors   : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} → equ ∘ universal p ≡ e'
+      unique
+        : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} {other : Hom F E}
+        → equ ∘ other ≡ e'
+        → other ≡ universal p
+  
+    equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
+    equal-∘ {h = h} =
+      f ∘ equ ∘ h ≡⟨ extendl equal ⟩
+      g ∘ equ ∘ h ∎
+  
+    unique₂
+      : ∀ {F} {e' : Hom F A}  {o1 o2 : Hom F E}
+      → f ∘ e' ≡ g ∘ e'
+      → equ ∘ o1 ≡ e'
+      → equ ∘ o2 ≡ e'
+      → o1 ≡ o2
+    unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 ```
 
 We can visualise the situation using the commutative diagram below:
@@ -69,13 +72,13 @@ There is also a convenient bundling of an equalising arrow together with
 its domain:
 
 ```agda
-record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ') where
-  field
-    {apex}  : Ob
-    equ     : Hom apex A
-    has-is-eq : is-equaliser f g equ
-
-  open is-equaliser has-is-eq public
+  record Equaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
+    field
+      {apex}  : Ob
+      equ     : Hom apex A
+      has-is-eq : is-equaliser f g equ
+  
+    open is-equaliser has-is-eq public
 ```
 
 ## Equalisers are monic
@@ -83,14 +86,24 @@ record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ') where
 As a small initial application, we prove that equaliser arrows are
 always [[monic]]:
 
+<!--
 ```agda
-is-equaliser→is-monic
-  : ∀ {E} (equ : Hom E A)
-  → is-equaliser f g equ
-  → is-monic equ
-is-equaliser→is-monic equ equalises g h p =
-  unique₂ (extendl equal) p refl
-  where open is-equaliser equalises
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  private variable
+    A B : Ob
+    f g h : Hom A B
+```
+-->
+
+```agda
+  is-equaliser→is-monic
+    : ∀ {E} (equ : Hom E A)
+    → is-equaliser C f g equ
+    → is-monic equ
+  is-equaliser→is-monic equ equalises g h p =
+    unique₂ (extendl equal) p refl
+    where open is-equaliser equalises
 ```
 
 # Categories with all equalisers
@@ -98,11 +111,18 @@ is-equaliser→is-monic equ equalises g h p =
 We also define a helper module for working with categories that have
 equalisers of all parallel pairs of morphisms.
 
-```agda
-has-equalisers : Type _
-has-equalisers = ∀ {a b} (f g : Hom a b) → Equaliser f g
 
-module Equalisers (all-equalisers : has-equalisers) where
+```agda
+has-equalisers : ∀ {o ℓ} → Precategory o ℓ → Type _
+has-equalisers C = ∀ {a b} (f g : Hom a b) → Equaliser C f g
+  where open Precategory C
+
+module Equalisers
+  {o ℓ}
+  (C : Precategory o ℓ)
+  (all-equalisers : has-equalisers C)
+  where
+  open Cat.Reasoning C
   module equaliser {a b} (f g : Hom a b) = Equaliser (all-equalisers f g)
 
   Equ : ∀ {a b} (f g : Hom a b) → Ob

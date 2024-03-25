@@ -2,18 +2,19 @@
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Product {o h} (C : Precategory o h) where
+module Cat.Diagram.Product where
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
-private variable
-  A B a b c d : Ob
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
 ```
 -->
 
@@ -61,53 +62,55 @@ the pairing $\langle f, g \rangle$ is a global element of the product $A
 [terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
-record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) where
-  field
-    ⟨_,_⟩     : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
-    π₁∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
-    π₂∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
-
-    unique : ∀ {Q} {p1 : Hom Q A} {p2}
-           → (other : Hom Q P)
-           → π₁ ∘ other ≡ p1
-           → π₂ ∘ other ≡ p2
-           → other ≡ ⟨ p1 , p2 ⟩
-
-  unique₂ : ∀ {Q} {pr1 : Hom Q A} {pr2}
-          → ∀ {o1} (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
-          → ∀ {o2} (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
-          → o1 ≡ o2
-  unique₂ p1 q1 p2 q2 = unique _ p1 q1 ∙ sym (unique _ p2 q2)
-
-  ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
-      → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
-  ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
-
-  ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
-  ⟨⟩-η = sym $ unique id (idr _) (idr _)
+  record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ ℓ) where
+    field
+      ⟨_,_⟩     : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
+      π₁∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
+      π₂∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
+  
+      unique : ∀ {Q} {p1 : Hom Q A} {p2}
+             → (other : Hom Q P)
+             → π₁ ∘ other ≡ p1
+             → π₂ ∘ other ≡ p2
+             → other ≡ ⟨ p1 , p2 ⟩
+  
+    unique₂ : ∀ {Q} {pr1 : Hom Q A} {pr2}
+            → ∀ {o1} (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
+            → ∀ {o2} (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
+            → o1 ≡ o2
+    unique₂ p1 q1 p2 q2 = unique _ p1 q1 ∙ sym (unique _ p2 q2)
+  
+    ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
+        → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
+    ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
+  
+    ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
+    ⟨⟩-η = sym $ unique id (idr _) (idr _)
 ```
 
 A product of $A$ and $B$ is an explicit choice of product diagram:
 
 ```agda
-record Product (A B : Ob) : Type (o ⊔ h) where
-  no-eta-equality
-  field
-    apex : Ob
-    π₁ : Hom apex A
-    π₂ : Hom apex B
-    has-is-product : is-product π₁ π₂
-
-  open is-product has-is-product public
-
+  record Product (A B : Ob) : Type (o ⊔ ℓ) where
+    no-eta-equality
+    field
+      apex : Ob
+      π₁ : Hom apex A
+      π₂ : Hom apex B
+      has-is-product : is-product π₁ π₂
+  
+    open is-product has-is-product public
 ```
 
 ## Uniqueness {defines="uniqueness-of-products"}
 
 <!--
 ```agda
-module _ where
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
   open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
+  private variable
+    A B a b c d : Ob
 ```
 -->
 
@@ -150,7 +153,7 @@ We construct the map $P \to P'$ as the pairing of the projections from
 $P$, and symmetrically for $P' \to P$.
 
 ```agda
-  ×-Unique : (p1 p2 : Product A B) → apex p1 ≅ apex p2
+  ×-Unique : (p1 p2 : Product C A B) → apex p1 ≅ apex p2
   ×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
     where
       module p1 = Product p1
@@ -186,14 +189,14 @@ the projections.
         {f : Hom A A'} {g : Hom B B'}
     → is-invertible f
     → is-invertible g
-    → is-product π₁ π₂
-    → is-product (f ∘ π₁) (g ∘ π₂)
+    → is-product C π₁ π₂
+    → is-product C (f ∘ π₁) (g ∘ π₂)
   is-product-iso f-iso g-iso prod = prod' where
     module fi = is-invertible f-iso
     module gi = is-invertible g-iso
 
     open is-product
-    prod' : is-product _ _
+    prod' : is-product _ _ _
     prod' .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
     prod' .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
     prod' .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
@@ -208,10 +211,17 @@ Categories with all binary products are quite common, so we define
 a module for working with them.
 
 ```agda
-has-products : Type _
-has-products = ∀ a b → Product a b
+has-products : ∀ {o ℓ} → Precategory o ℓ → Type _
+has-products C = ∀ a b → Product C a b
 
-module Binary-products (all-products : has-products) where
+module Binary-products
+  {o ℓ}
+  (C : Precategory o ℓ)
+  (all-products : has-products C)
+  where
+  open Cat.Reasoning C
+  private variable
+    A B a b c d : Ob
 
   module product {a} {b} = Product (all-products a b)
 
@@ -292,6 +302,13 @@ We also define a handful of common morphisms.
 ```
 -->
 
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+```
+-->
+
 ## Representability of products
 
 The collection of maps into a product $a \times b$ is equivalent to
@@ -300,15 +317,15 @@ of the equivalence is given by postcomposition of the projections, and
 the reverse direction by the universal property of products.
 
 ```agda
-product-repr
-  : ∀ {a b}
-  → (prod : Product a b)
-  → (x : Ob)
-  → Hom x (Product.apex prod) ≃ (Hom x a × Hom x b)
-product-repr prod x = Iso→Equiv λ where
-    .fst f → π₁ ∘ f , π₂ ∘ f
-    .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
-    .snd .is-iso.rinv (f , g) → π₁∘factor ,ₚ π₂∘factor
-    .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
-  where open Product prod
+  product-repr
+    : ∀ {a b}
+    → (prod : Product C a b)
+    → (x : Ob)
+    → Hom x (Product.apex prod) ≃ (Hom x a × Hom x b)
+  product-repr prod x = Iso→Equiv λ where
+      .fst f → π₁ ∘ f , π₂ ∘ f
+      .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
+      .snd .is-iso.rinv (f , g) → π₁∘factor ,ₚ π₂∘factor
+      .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
+    where open Product prod
 ```

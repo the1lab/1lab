@@ -6,7 +6,9 @@ open import Algebra.Group.Subgroup
 open import Algebra.Group.Ab.Sum
 open import Algebra.Group.Ab
 
+open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Abelian.Base
 open import Cat.Prelude
@@ -19,10 +21,11 @@ module Cat.Abelian.Instances.Ab {ℓ} where
 
 <!--
 ```agda
-open is-additive.Coequaliser
-open is-additive.Terminal
 open is-pre-abelian
 open is-additive
+
+open Terminal
+open Product
 ```
 -->
 
@@ -50,8 +53,8 @@ Ab-is-additive .has-terminal .has⊤ x =
   contr (total-hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
     λ x → trivial!
 
-Ab-is-additive .has-prods A B .Product.apex = A ⊕ B
-Ab-is-additive .has-prods A B .Product.π₁ = _
-Ab-is-additive .has-prods A B .Product.π₂ = _
-Ab-is-additive .has-prods A B .Product.has-is-product = Direct-sum-is-product
+Ab-is-additive .has-prods A B .apex = A ⊕ B
+Ab-is-additive .has-prods A B .π₁ = _
+Ab-is-additive .has-prods A B .π₂ = _
+Ab-is-additive .has-prods A B .has-is-product = Direct-sum-is-product
 ```
