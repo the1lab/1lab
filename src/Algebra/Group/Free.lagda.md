@@ -174,7 +174,7 @@ open is-free-object-on
 -->
 
 ```agda
-make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object-on Forget S
+make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object-on Grp↪Sets S
 make-free-group S .free = Free-Group ⌞ S ⌟
 make-free-group S .eta = inc
 make-free-group S .has-is-free .eps = fold-free-group

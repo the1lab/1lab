@@ -234,12 +234,12 @@ the operation constructors, which is.. inductive, but manageable. I'll
 leave the computation here if you're interested:
 
 ```agda
-make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object-on (Forget-module R (ℓ ⊔ ℓ')) S
+make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object-on (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
 make-free-module {ℓ' = ℓ'} S = go where
   open Free-object-on
   open is-free-object-on
 
-  go : Free-object-on (Forget-module R (ℓ ⊔ ℓ')) S
+  go : Free-object-on (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
   go .free = Free-Mod ⌞ S ⌟
   go .eta = inc
   go .has-is-free .eps {b} f = linear-map→hom (fold-free-mod b f)
@@ -276,7 +276,7 @@ rearrange the proof above into the form of a functor and an adjunction.
 Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
 Free-module {ℓ' = ℓ'} = free-objects→functor (make-free-module {ℓ' = ℓ'})
 
-Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ Forget-module R (ℓ ⊔ ℓ')
+Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ R-Mod↪Sets R (ℓ ⊔ ℓ')
 Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ'})
 ```
 

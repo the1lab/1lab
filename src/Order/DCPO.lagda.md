@@ -245,8 +245,11 @@ module DCPOs {o ℓ : Level} = Cat.Reasoning (DCPOs o ℓ)
 DCPO : (o ℓ : Level) → Type _
 DCPO o ℓ = DCPOs.Ob {o} {ℓ}
 
-Forget-DCPO : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
-Forget-DCPO = Forget-poset F∘ Forget-subcat
+DCPOs↪Posets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Posets o ℓ) 
+DCPOs↪Posets = Forget-subcat
+
+DCPOs↪Sets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
+DCPOs↪Sets = Posets↪Sets F∘ DCPOs↪Posets
 ```
 -->
 

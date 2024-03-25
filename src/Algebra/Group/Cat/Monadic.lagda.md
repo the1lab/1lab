@@ -153,7 +153,7 @@ Group-is-monadic = is-precat-iso→is-equivalence
 
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
-                                   (λ x → Grp.Forget-is-faithful refl)
+                                   (λ x → Grp.Grp↪Sets-is-faithful refl)
 ```
 
 To show that the object mapping of the comparison functor is invertible,

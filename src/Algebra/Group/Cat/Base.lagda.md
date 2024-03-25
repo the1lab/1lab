@@ -79,9 +79,9 @@ homomorphisms can be tested by comparing the underlying morphisms of
 sets.
 
 ```agda
-Forget : Functor (Groups ℓ) (Sets ℓ)
-Forget = Forget-structure (Group-structure _)
+Grp↪Sets : Functor (Groups ℓ) (Sets ℓ)
+Grp↪Sets = Forget-structure (Group-structure _)
 
-Forget-is-faithful : is-faithful (Forget {ℓ})
-Forget-is-faithful = Structured-hom-path (Group-structure _)
+Grp↪Sets-is-faithful : is-faithful (Grp↪Sets {ℓ})
+Grp↪Sets-is-faithful = Structured-hom-path (Group-structure _)
 ```

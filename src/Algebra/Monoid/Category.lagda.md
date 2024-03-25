@@ -103,8 +103,8 @@ By standard nonsense, then, the category of monoids admits a [[faithful
 functor]] into the category of sets.
 
 ```agda
-Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
-Forget = Forget-structure (Monoid-structure _)
+Mon↪Sets : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
+Mon↪Sets = Forget-structure (Monoid-structure _)
 ```
 
 ## Free objects {defines=free-monoid}
@@ -133,8 +133,8 @@ We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 ```agda
-Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
-Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
+Free-monoid : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
+Free-monoid .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```
 
 The action on morphisms is given by `map`{.Agda}, which preserves the
@@ -142,9 +142,9 @@ monoid identity definitionally; We must prove that it preserves
 concatenation, identity and composition by induction on the list.
 
 ```agda
-Free .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = ext map-id
-Free .F-∘ f g = ext map-∘ where
+Free-monoid .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
+Free-monoid .F-id = ext map-id
+Free-monoid .F-∘ f g = ext map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -202,20 +202,20 @@ fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List ∣ X ∣)
 fold-pure [] = refl
 fold-pure {X = X} (x ∷ xs) = ap (x ∷_) (fold-pure {X = X} xs)
 
-Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
-Free⊣Forget .unit .η _ x = x ∷ []
-Free⊣Forget .unit .is-natural x y f = refl
-Free⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
-Free⊣Forget .counit .is-natural x y th =
+Free-monoid⊣Forget : ∀ {ℓ} → Free-monoid {ℓ} ⊣ Mon↪Sets
+Free-monoid⊣Forget .unit .η _ x = x ∷ []
+Free-monoid⊣Forget .unit .is-natural x y f = refl
+Free-monoid⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
+Free-monoid⊣Forget .counit .is-natural x y th =
   ext $ fold-natural (th .hom) (th .preserves)
-Free⊣Forget .zig {A = A} =
+Free-monoid⊣Forget .zig {A = A} =
   ext $ fold-pure {X = A}
-Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
+Free-monoid⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
 This concludes the proof that `Monoids`{.Agda} has free objects. We now
 prove that monoids are equivalently algebras for the `List`{.Agda}
-monad, i.e. that the `Free⊣Forget`{.Agda} adjunction is [monadic]. More
+monad, i.e. that the `Free-monoid⊣Forget`{.Agda} adjunction is [monadic]. More
 specifically, we show that the canonically-defined `comparison`{.Agda
 ident=Comparison} functor is [[fully faithful]] (list algebra homomoprhisms
 are equivalent to monoid homomorphisms) and that it is [[split
@@ -224,11 +224,11 @@ essentially surjective]].
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 
 ```agda
-Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})
+Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free-monoid⊣Forget {ℓ})
 Monoid-is-monadic {ℓ} = ff+split-eso→is-equivalence it's-ff it's-eso where
-  open import Cat.Diagram.Monad hiding (Free⊣Forget)
+  open import Cat.Diagram.Monad
 
-  comparison = Comparison (Free⊣Forget {ℓ})
+  comparison = Comparison (Free-monoid⊣Forget {ℓ})
   module comparison = Functor comparison
 
   it's-ff : is-fully-faithful comparison
@@ -278,7 +278,7 @@ $[x,y]$.
   it's-eso (A , alg) = monoid , the-iso where
     open Algebra-on
     open Algebra-hom
-    import Cat.Reasoning (Eilenberg-Moore _ (L∘R (Free⊣Forget {ℓ}))) as R
+    import Cat.Reasoning (Eilenberg-Moore _ (L∘R (Free-monoid⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
     monoid .fst = A

@@ -635,14 +635,14 @@ We define the quotient `_/_`{.Agda} in terms of coequalisers
 _ = Monoid-on
 _ = Group-on
 _ = πₙ₊₁
-_ = Monoid.Free⊣Forget
+_ = Monoid.Free-monoid⊣Forget
 _ = Group.make-free-group
 ```
 -->
 
 * Definition 6.11.1: `Monoid-on`{.Agda}, `Group-on`{.Agda}
 * Definition 6.11.4: `πₙ₊₁`{.Agda}
-* Lemma 6.11.5: `Monoid.Free⊣Forget`{.Agda}
+* Lemma 6.11.5: `Monoid.Free-monoid⊣Forget`{.Agda}
 * Lemma 6.11.6: `Group.make-free-group`{.Agda}
 
 ### Exercises
