@@ -39,7 +39,7 @@ module _
 
 One common perspective on [[adjunctions]] describe free constructions:
 the right adjoint forgets structure, and the left adjoint freely adds it.
-These sorts of adjunctions are so common that we be tempted to *define*
+These sorts of adjunctions are so common that we may be tempted to *define*
 free constructions as left adjoints. However, this doesn't quite capture
 the whole story: there are many situations where a left adjoint does not
 exist, yet we can perform a free constructions on *some* objects.
@@ -400,7 +400,7 @@ module _
 In categorical semantics, syntax for a theory $\bT$ is often
 presented in 2 seemingly unconnected ways:
 
-1. Via a left adjoints to the forgetful functor that forgets the structure
+1. Via a left adjoint to the forgetful functor that forgets the structure
   of a $\bT$-model; or
 2. As an [[initial object]] in the category of $\bT$-models.
 
