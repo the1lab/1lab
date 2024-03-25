@@ -16,15 +16,15 @@ jobs:
 
     steps:
       - name: Checkout ⬇️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # we need the commit history for authors
 
       - name: Install Nix ❄️
-        uses: cachix/install-nix-action@v20
+        uses: cachix/install-nix-action@v26
 
       - name: Set up Cachix ♻️
-        uses: cachix/cachix-action@v12
+        uses: cachix/cachix-action@v14
         with:
           name: 1lab
           skipPush: true
@@ -36,7 +36,7 @@ jobs:
           echo "shake_version=$hash" >> "$GITHUB_ENV"
 
       - name: Cache _build ♻️
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: _build
           key: prose-4-${{ env.shake_version }}-${{ github.run_id }}
@@ -56,7 +56,7 @@ jobs:
             # cp -rv _build/site pr-${{ github.event.number }}
 
       - name: Archive 📦
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pr-preview
           path: _build/site
