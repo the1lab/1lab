@@ -465,6 +465,11 @@ is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 
 <!--
 ```agda
+is-contr→pathp : ∀ {B : I → Type ℓ} → ((i : I) → is-contr (B i))
+              → (b0 : B i0) (b1 : B i1)
+              → PathP (λ i → B i) b0 b1
+is-contr→pathp {B = B} hB b0 b1 = is-prop→pathp (λ i → is-contr→is-prop (hB i)) b0 b1
+
 is-prop→squarep
   : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
   → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
