@@ -293,6 +293,20 @@ opaque
     → x ≡ y
   trivial! ⦃ r ⦄ {p = p} = r .idsᵉ .to-path p
 
+-- Helper for constructing isomorphisms where both equations hold
+-- via 'trivial!'
+trivial-iso!
+  : ∀ {ℓ ℓ' ℓr ℓs} {A : Type ℓ} {B : Type ℓ'}
+  → ⦃ r : Extensional (A → A) ℓr ⦄
+  → ⦃ s : Extensional (B → B) ℓs ⦄
+  → (f : A → B)
+  → (g : B → A)
+  → {@(tactic trivial-worker r (g ∘ f) id) p : Pathᵉ r (g ∘ f) id}
+  → {@(tactic trivial-worker s (f ∘ g) id) q : Pathᵉ s (f ∘ g) id}
+  → Iso A B
+trivial-iso! ⦃ r ⦄ ⦃ s ⦄ f g {p = p} {q = q} =
+  f , iso g (happly (s .idsᵉ .to-path q)) (happly (r .idsᵉ .to-path p))
+
 Pathᵉ-is-hlevel
   : ∀ {ℓ ℓr} {A : Type ℓ} n (sa : Extensional A ℓr)
   → is-hlevel A (suc n)
