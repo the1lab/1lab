@@ -8,6 +8,8 @@ open import Cat.Functor.Subcategory
 open import Cat.Functor.Properties
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
+open import Cat.Instances.Comma
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
@@ -29,9 +31,9 @@ module _
   (U : Functor C D)
   where
   private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module U = Cat.Functor.Reasoning U
+    module C = Precategory C
+    module D = Precategory D
+    module U = Functor U
 ```
 -->
 
@@ -80,9 +82,24 @@ proprety:
       has-is-free : is-free-object-on eta
 
     open is-free-object-on has-is-free public
+```
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  {U : Functor C D}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module U = Cat.Functor.Reasoning U
 
   open Free-object-on
 ```
+-->
 
 Intuitively, a free object on $X$ is an approximation of a
 (potentially non-existent) left adjoint at $X$.
@@ -93,7 +110,7 @@ representing objects for the functor $\cD(X,U(-))$.
 
 ```agda
   free-object-eps-equiv
-    : ∀ {x} (a : Free-object-on x)
+    : ∀ {x} (a : Free-object-on U x)
     → ∀ b → is-equiv (a .eps {b})
   free-object-eps-equiv a b .is-eqv f .centre .fst = U.₁ f D.∘ a .eta
   free-object-eps-equiv a b .is-eqv f .centre .snd = sym $ a .unique f refl
@@ -102,31 +119,88 @@ representing objects for the functor $\cD(X,U(-))$.
     ∙ a .commute
 ```
 
-Note that free objects are unique up to isomorphism.
+Free objects have all the usual hallmarks of universal constructions:
+the universal property of free objects is a proposition, and they are
+unique up to isomorphism.
 
 ```agda
-  free-object-unique : ∀ {x} (a b : Free-object-on x) → a .free C.≅ b .free
+  is-free-object-on-is-prop
+    : ∀ {x a} {eta : D.Hom x (U.₀ a)}
+    → is-prop (is-free-object-on U eta)
+
+  free-object-unique : ∀ {x} (a b : Free-object-on U x) → a .free C.≅ b .free
+```
+
+<details>
+<summary>The proofs follow the usual script for universal constructions,
+so we will omit the details.</summary>
+
+```agda
   free-object-unique a b =
     C.make-iso (a .eps (b .eta)) (b .eps (a .eta))
       (unique₂ b _ _ (U.popr (b .commute) ∙ a .commute) (D.eliml U.F-id))
       (unique₂ a _ _ (U.popr (a .commute) ∙ b .commute) (D.eliml U.F-id))
+
+  is-free-object-on-is-prop {x = x} {a = a} {eta = eta} fo fo' = path where
+    module fo = is-free-object-on fo
+    module fo' = is-free-object-on fo'
+
+    eps-path : ∀ {b} (f : D.Hom x (U.₀ b)) → fo.eps f ≡ fo'.eps f
+    eps-path f = fo'.unique (fo.eps f) fo.commute
+
+    path : fo ≡ fo' 
+    path i .is-free-object-on.eps f = eps-path f i
+    path i .is-free-object-on.commute {f = f} =
+      is-prop→pathp (λ i → D.Hom-set _ _ (U.₁ (eps-path f i) D.∘ eta) f)
+        fo.commute fo'.commute i
+    path i .is-free-object-on.unique {f = f} o p =
+      is-prop→pathp (λ i → C.Hom-set _ _ o (eps-path f i))
+        (fo.unique o p) (fo'.unique o p) i
 ```
+</details>
 
+<!--
+```agda
+  private unquoteDecl free-obj-eqv = declare-record-iso free-obj-eqv (quote Free-object-on) 
 
-If $U$ does in fact have a left adjoint, then every $X : \cD$ has a free object.
+  -- This lets us ignore 'is-free-object-on' when proving equality.
+  Extensional-Free-object-on
+    : ∀ {x ℓr}
+    → ⦃ sa : Extensional (Σ[ a ∈ C.Ob ] (D.Hom x (U.₀ a))) ℓr ⦄
+    → Extensional (Free-object-on U x) ℓr
+  Extensional-Free-object-on ⦃ sa ⦄ =
+    embedding→extensional
+      (Iso→Embedding free-obj-eqv
+      ∙emb Equiv→Embedding Σ-assoc
+      ∙emb (fst , Subset-proj-embedding λ _ → is-free-object-on-is-prop))
+      sa
+
+  instance
+    Extensionality-Free-object-on
+      : ∀ {X}
+      → Extensionality (Free-object-on U X)
+    Extensionality-Free-object-on = record { lemma = quote Extensional-Free-object-on }
+```
+-->
+
+## Free objects and adjoints
+
+If $U$ has a left adjoint $F$, then every $X : \cD$ has a corresponding
+free object given by $(F(X), \eta)$, where $\eta$ is the unit of the
+adjunction.
 
 ```agda
-  module _ (F : Functor D C) (F⊣U : F ⊣ U) where
+  module _ {F : Functor D C} (F⊣U : F ⊣ U) where
     open is-free-object-on
     open _⊣_ F⊣U
 
-    left-adjoint→unit-is-free : ∀ x → is-free-object-on (unit.η x)
+    left-adjoint→unit-is-free : ∀ x → is-free-object-on U (unit.η x)
     left-adjoint→unit-is-free x .eps f = R-adjunct F⊣U f
     left-adjoint→unit-is-free x .commute = L-R-adjunct F⊣U _
     left-adjoint→unit-is-free x .unique other p =
       Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (p ∙ sym (L-R-adjunct F⊣U _))
 
-    left-adjoint→free-objects : ∀ x → Free-object-on x
+    left-adjoint→free-objects : ∀ x → Free-object-on U x
     left-adjoint→free-objects x .free = Functor.F₀ F x
     left-adjoint→free-objects x .eta = unit.η x
     left-adjoint→free-objects x .has-is-free = left-adjoint→unit-is-free x
@@ -138,7 +212,7 @@ object to its free counterpart; functoriality is given by the universal
 property.
 
 ```agda
-  module _ (free-objects : ∀ x → Free-object-on x) where
+  module _ (free-objects : ∀ x → Free-object-on U x) where
     private
       module free x = Free-object-on (free-objects x)
       open Functor
@@ -175,7 +249,153 @@ of free objects.
       free.commute _
 ```
 
+If we round-trip a left adjoint through these two constructions, then
+we obtain the same functor we started with. Moreover, we also obtain
+the same unit/counit!
+
+
+```agda
+  left-adjoint→free-objects→left-adjoint
+    : ∀ {F : Functor D C}
+    → (F⊣U : F ⊣ U)
+    → free-objects→functor (left-adjoint→free-objects F⊣U) ≡ F
+  left-adjoint→free-objects→left-adjoint {F = F} F⊣U =
+    Functor-path (λ _ → refl) λ f →
+      ap (R-adjunct F⊣U) (unit.is-natural _ _ f)
+      ∙ R-L-adjunct F⊣U (F.₁ f)
+    where
+      module F = Functor F
+      open _⊣_ F⊣U
+
+  adjoint-pair→free-objects→adjoint-pair
+    : ∀ {F : Functor D C}
+    → (F⊣U : F ⊣ U)
+    → PathP (λ i → left-adjoint→free-objects→left-adjoint F⊣U i ⊣ U)
+      (free-objects→left-adjoint (left-adjoint→free-objects F⊣U))
+      F⊣U
+  adjoint-pair→free-objects→adjoint-pair {F = F} F⊣U =
+    adjoint-pathp _ _
+      (Nat-pathp _ _ λ _ → refl)
+      (Nat-pathp _ _ λ x → C.elimr F.F-id)
+    where module F = Functor F
+```
+
+A similar result holds for a system of free objects.
+
+```agda
+  free-objects→left-adjoint→free-objects
+    : ∀ (free-objects : ∀ x → Free-object-on U x)
+    → left-adjoint→free-objects (free-objects→left-adjoint free-objects) ≡ free-objects
+  free-objects→left-adjoint→free-objects free-objects = trivial!
+```
+
+We can assemble these pieces into an equivalence between systems of free
+objects and left adjoints.
+
+```agda
+  free-objects≃left-adjoint
+    : (∀ x → Free-object-on U x) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)a
+```
+
+<details>
+<summary>Constructing the equivalence is straightforward, as we
+already have all the pieces laying about!
+</summary>
+
+```agda
+  free-objects≃left-adjoint = Iso→Equiv $
+    (λ free-objects →
+      free-objects→functor free-objects ,
+      free-objects→left-adjoint free-objects) ,
+    iso (λ left-adj → left-adjoint→free-objects (left-adj .snd))
+      (λ left-adj →
+        left-adjoint→free-objects→left-adjoint (left-adj .snd) ,ₚ
+        adjoint-pair→free-objects→adjoint-pair (left-adj .snd))
+      free-objects→left-adjoint→free-objects
+```
+</details>
+
+## Free objects and universal morphisms
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  (U : Functor C D)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module U = Cat.Functor.Reasoning U
+
+  open Free-object-on
+```
+-->
+
+Up to a reorganization of data, free objects and [[universal morphisms]]
+are identical: both encode the data of a universal pair $(A, \cD(X, U(A)))$.
+
+```agda
+  free-object≃universal-morphism : ∀ x → Free-object-on U x ≃ Universal-morphism x U
+```
+
+<details>
+<summary>The proof really is just shuffling data around.
+</summary>
+
+```agda
+  free-object≃universal-morphism x =
+   Iso→Equiv (trivial-iso! free→univ univ→free)
+    where
+      open Initial
+
+      free→univ : Free-object-on U x → Universal-morphism x U
+      free→univ f .bot = ↓obj (f .eta)
+      free→univ f .has⊥ x .centre = ↓hom (D.idr _ ∙ sym (f .commute))
+      free→univ f .has⊥ x .paths g↓ = ext (sym (f .unique _ (sym (↓Hom.sq g↓) ∙ D.idr _)))
+
+      univ→free : Universal-morphism x U → Free-object-on U x
+      univ→free i .free = ↓Obj.y (i .bot)
+      univ→free i .eta = ↓Obj.map (i .bot)
+      univ→free i .has-is-free .is-free-object-on.eps f =
+        ↓Hom.β (i .has⊥ (↓obj f) .centre)
+      univ→free i .has-is-free .is-free-object-on.commute {f = f} =
+        sym (↓Hom.sq (i .has⊥ (↓obj f) .centre)) ∙ D.idr _
+      univ→free i .has-is-free .is-free-object-on.unique {f = f} g p =
+        sym $ ap ↓Hom.β (i .has⊥ (↓obj f) .paths (↓hom (D.idr _ ∙ sym p)))
+```
+</details>
+
+This lets us easily deduce that systems of universal morphisms are equivalent
+to left adjoints.
+
+```agda
+  universal-morphisms≃left-adjoint
+    : (∀ x → Universal-morphism x U) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
+  universal-morphisms≃left-adjoint =
+    Π-cod≃ free-object≃universal-morphism e⁻¹ ∙e free-objects≃left-adjoint
+```
+
 ## Free objects and initiality
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  {U : Functor C D}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module U = Cat.Functor.Reasoning U
+
+  open Free-object-on
+```
+-->
 
 In categorical semantics, syntax for a theory $\bT$ is often
 presented in 2 seemingly unconnected ways:
@@ -206,7 +426,7 @@ $A$ is an initial object in $\cC$.
     open is-free-object-on
 
     free-on-initial→initial
-      : (F[⊥] : Free-object-on bot)
+      : (F[⊥] : Free-object-on U bot)
       → is-initial C (F[⊥] .free)
     free-on-initial→initial F[⊥] x .centre = F[⊥] .eps ¡
     free-on-initial→initial F[⊥] x .paths f =
@@ -219,7 +439,7 @@ is a free object for $\bot_{\cC}$.
 ```agda
     is-initial→free-on-initial
       : (c-initial : Initial C)
-      → is-free-object-on {a = Initial.bot c-initial} ¡ 
+      → is-free-object-on U {a = Initial.bot c-initial} ¡ 
     is-initial→free-on-initial c-initial .eps _ =
       Initial.¡ c-initial
     is-initial→free-on-initial c-initial .commute =
