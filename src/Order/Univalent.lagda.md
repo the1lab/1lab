@@ -35,7 +35,7 @@ Poset-path {P = P} {Q} f = path where
 ```
 -->
 
-Since the `forgetful functor`{.Agda ident=Forget-poset} maps
+Since the `forgetful functor`{.Agda ident=Posets↪Sets} maps
 isomorphisms of posets onto isomorphisms of their underlying sets, the
 first thing to observe is that an isomorphism of posets has an
 underlying equivalence of types, from which we can construct a path, by
@@ -43,7 +43,7 @@ univalence.
 
 ```agda
   P≃Q : ⌞ P ⌟ ≃ ⌞ Q ⌟
-  P≃Q = iso→equiv (F-map-iso Forget-poset f)
+  P≃Q = iso→equiv (F-map-iso Posets↪Sets f)
 
   ob : ∀ i → Type _
   ob i = ua P≃Q i
