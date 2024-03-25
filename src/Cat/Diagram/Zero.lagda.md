@@ -1,19 +1,22 @@
 <!--
 ```agda
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Zero {o h} (C : Precategory o h) where
+module Cat.Diagram.Zero where
 
-open import Cat.Diagram.Initial C
-open import Cat.Diagram.Terminal C
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
+module _ {o h} (C : Precategory o h) where
+  open Cat.Reasoning C
 ```
 -->
 
@@ -23,46 +26,46 @@ In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
 coincide. When this occurs, we call the object a **zero object**.
 
 ```agda
-record is-zero (ob : Ob) : Type (o ⊔ h) where
-  field
-    has-is-initial  : is-initial ob
-    has-is-terminal : is-terminal ob
-
-record Zero : Type (o ⊔ h) where
-  field
-    ∅       : Ob
-    has-is-zero : is-zero ∅
-
-  open is-zero has-is-zero public
-
-  terminal : Terminal
-  terminal = record { top = ∅ ; has⊤ = has-is-terminal }
-
-  initial : Initial
-  initial = record { bot = ∅ ; has⊥ = has-is-initial }
-
-  open Terminal terminal public hiding (top)
-  open Initial initial public hiding (bot)
+  record is-zero (ob : Ob) : Type (o ⊔ h) where
+    field
+      has-is-initial  : is-initial C ob
+      has-is-terminal : is-terminal C ob
+  
+  record Zero : Type (o ⊔ h) where
+    field
+      ∅       : Ob
+      has-is-zero : is-zero ∅
+  
+    open is-zero has-is-zero public
+  
+    terminal : Terminal C
+    terminal = record { top = ∅ ; has⊤ = has-is-terminal }
+  
+    initial : Initial C
+    initial = record { bot = ∅ ; has⊥ = has-is-initial }
+  
+    open Terminal terminal public hiding (top)
+    open Initial initial public hiding (bot)
 ```
 
 A curious fact about zero objects is that their existence implies that
 every hom set is inhabited!
 
 ```agda
-  zero→ : ∀ {x y} → Hom x y
-  zero→ = ¡ ∘ !
-
-  zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
-  zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
-
-  zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
-  zero-∘r f = pullr (sym (!-unique (! ∘ f)))
-
-  zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→  ≡ zero→ ∘ g
-  zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)
-
-  zero-comm-sym : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → zero→ ∘ f  ≡ g ∘ zero→
-  zero-comm-sym f g = zero-∘r f ∙ sym (zero-∘l g)
+    zero→ : ∀ {x y} → Hom x y
+    zero→ = ¡ ∘ !
+  
+    zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
+    zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
+  
+    zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
+    zero-∘r f = pullr (sym (!-unique (! ∘ f)))
+  
+    zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→  ≡ zero→ ∘ g
+    zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)
+  
+    zero-comm-sym : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → zero→ ∘ f  ≡ g ∘ zero→
+    zero-comm-sym f g = zero-∘r f ∙ sym (zero-∘l g)
 ```
 
 ## Intuition
@@ -79,3 +82,32 @@ the initial object to have any more structure.
 Another point of interest is that any category with zero objects is
 canonically enriched in pointed sets: the `zero→`{.Agda} morphism from
 earlier acts as the designated basepoint for each of the hom sets.
+
+<!--
+```agda
+module _ {o h} {C : Precategory o h} where
+  open Cat.Reasoning C
+  private unquoteDecl is-zero-eqv = declare-record-iso is-zero-eqv (quote is-zero)
+  private unquoteDecl zero-eqv = declare-record-iso zero-eqv (quote Zero)
+
+  is-zero-is-prop : ∀ {x} → is-prop (is-zero C x)
+  is-zero-is-prop = Iso→is-hlevel 1 is-zero-eqv hlevel!
+
+  instance
+    HLevel-is-zero : ∀ {x} {n} → H-Level (is-zero C x) (1 + n)
+    HLevel-is-zero = prop-instance is-zero-is-prop
+
+  Extensional-Zero
+    : ∀ {ℓr}
+    → ⦃ sa : Extensional Ob ℓr ⦄
+    → Extensional (Zero C) ℓr
+  Extensional-Zero ⦃ sa ⦄ =
+    embedding→extensional
+      (Iso→Embedding zero-eqv ∙emb (fst , Subset-proj-embedding hlevel!))
+      sa
+
+  instance
+    Extensionality-Zero : Extensionality (Zero C)
+    Extensionality-Zero = record { lemma = quote Extensional-Zero }
+```
+-->
