@@ -1,11 +1,10 @@
 <!--
 ```agda
 open import Cat.Instances.Functor
-open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
-open import Cat.Instances.Comma
 open import Cat.Displayed.Base
+open import Cat.Diagram.Free
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
@@ -40,10 +39,9 @@ are "initial" among displayed maps:
 private
   module B = Cr B
   module E = Displayed E
-open Initial
+open is-free-object-on
+open Free-object-on
 open Functor
-open ↓Obj
-open ↓Hom
 ```
 -->
 
@@ -65,18 +63,16 @@ initial objects.
 
 ```agda
   private
-    universal : ∀ x → Universal-morphism x (πᶠ E)
-    universal x .bot = record { y = x , system x ; map = B.id }
-    universal x .has⊥ m' = contr the-map unique where
-      the-map : Precategory.Hom (x ↙ πᶠ E) (universal x .bot) m'
-      the-map .α = tt
-      the-map .β = total-hom (m' .map) (is-free (m' .map) (y m' .snd) .centre)
-      the-map .sq = refl
-
-      unique : ∀ x → the-map ≡ x
-      unique h = ↓Hom-path _ _ refl $
-        total-hom-path E (B.intror refl ·· h .sq ·· B.elimr refl)
-          (is-prop→pathp (λ i → is-contr→is-prop (is-free _ _)) _ _)
+    free-objects : ∀ x → Free-object-on (πᶠ E) x
+    free-objects x .free = x , system x
+    free-objects x .eta = B.id
+    free-objects x .has-is-free .eps {y , y'} f =
+      total-hom f (is-free f y' .centre)
+    free-objects x .has-is-free .commute = B.idr _ 
+    free-objects x .has-is-free .unique g p =
+      total-hom-path E
+        (sym (B.idr _) ∙ p)
+        (is-contr→pathp (λ i → is-free _ _) _ _)
 ```
 
 Since a system of free objects gives a system of universal morphisms, we
@@ -84,10 +80,10 @@ have a left adjoint to the projection functor.
 
 ```agda
   Free : Functor B (∫ E)
-  Free = universal-maps→L (πᶠ E) universal
+  Free = free-objects→functor free-objects
 
   Free⊣πᶠ : Free ⊣ πᶠ E
-  Free⊣πᶠ = universal-maps→L⊣R (πᶠ E) universal
+  Free⊣πᶠ = free-objects→left-adjoint free-objects
 ```
 
 Even though the `Free` functor is produced by general abstract nonsense,
@@ -104,6 +100,8 @@ map on the left.
     Free' .F-∘ f g = total-hom-path E refl (is-free _ _ .paths _)
 
     Free≡Free' : Free ≡ Free'
-    Free≡Free' = Functor-path (λ _ → refl) λ f → total-hom-path E (B.idl _) λ i →
-      is-free (B.idl f i) (system _) .centre
+    Free≡Free' =
+      Functor-path (λ _ → refl)
+        (λ f → total-hom-path E (B.idl _)
+          (λ i → is-free (B.idl f i) (system _) .centre))
 ```

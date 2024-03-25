@@ -234,35 +234,38 @@ the operation constructors, which is.. inductive, but manageable. I'll
 leave the computation here if you're interested:
 
 ```agda
-open make-left-adjoint
-make-free-module : ∀ {ℓ'} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ'))
-make-free-module {ℓ'} = go where
-  go : make-left-adjoint (Forget-structure (R-Mod-structure R))
-  go .free x = Free-Mod ∣ x ∣
-  go .unit x = Free-mod.inc
-  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ'} y f)
-  go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ'} (Free-elim-prop.elim m) where
+make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object-on (Forget-module R (ℓ ⊔ ℓ')) S
+make-free-module {ℓ' = ℓ'} S = go where
+  open Free-object-on
+  open is-free-object-on
+
+  go : Free-object-on (Forget-module R (ℓ ⊔ ℓ')) S
+  go .free = Free-Mod ⌞ S ⌟
+  go .eta = inc
+  go .has-is-free .eps {b} f = linear-map→hom (fold-free-mod b f)
+  go .has-is-free .commute = refl
+  go .has-is-free .unique {M} {f} g p = ext (Free-elim-prop.elim m) where
     open Free-elim-prop
     module g = Linear-map (hom→linear-map g)
-    module y = Module-on (y .snd)
-    fold = fold-free-mod y f .map
-    m : Free-elim-prop (λ a → fold-free-mod y f .map a ≡ g.map a)
-    m .has-is-prop x = hlevel!
-    m .P-· x y p =
-      x y.⋆ fold y   ≡⟨ ap (x y.⋆_) p ⟩
-      x y.⋆ g.map y  ≡˘⟨ g.pres-⋆ _ _ ⟩
-      g.map (x · y)  ∎
-    m .P-0m = sym g.pres-0
-    m .P-+ x y p q =
-      fold x y.+ fold y   ≡⟨ ap₂ y._+_ p q ⟩
-      g.map x y.+ g.map y ≡˘⟨ g.pres-+ _ _ ⟩
-      g.map (x + y)       ∎
+    module M = Module-on (M .snd)
+    fold = fold-free-mod M f .map
+
+    m : Free-elim-prop (λ a → g.map a ≡ fold a)
+    m .has-is-prop = hlevel!
+    m .P-0m = g.pres-0
     m .P-neg x p =
-      y.- (fold x)  ≡⟨ ap y.-_ p ⟩
-      y.- (g.map x) ≡˘⟨ g.pres-neg ⟩
-      g.map (neg x) ∎
-    m .P-inc x = p $ₚ x
+      g.map (neg x) ≡⟨ g.pres-neg ⟩
+      M.- (g.map x) ≡⟨ ap M.-_ p ⟩
+      M.- fold x ∎
+    m .P-+ x y p q =
+      g.map (x + y)       ≡⟨ g.pres-+ x y ⟩
+      g.map x M.+ g.map y ≡⟨ ap₂ M._+_ p q ⟩
+      fold x M.+ fold y   ∎
+    m .P-· x y p =
+      g.map (x · y) ≡⟨ g.pres-⋆ x y ⟩
+      x M.⋆ g.map y ≡⟨ ap (x M.⋆_) p ⟩
+      x M.⋆ fold y  ∎
+    m .P-inc = p #ₚ_
 ```
 
 After that calculation, we can ✨ just ✨ conclude that
@@ -271,12 +274,10 @@ rearrange the proof above into the form of a functor and an adjunction.
 
 ```agda
 Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
-Free-module {ℓ' = ℓ'} =
-  make-left-adjoint.to-functor (make-free-module {ℓ' = ℓ'})
+Free-module {ℓ' = ℓ'} = free-objects→functor (make-free-module {ℓ' = ℓ'})
 
 Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ Forget-module R (ℓ ⊔ ℓ')
-Free⊣Forget {ℓ'} = make-left-adjoint.to-left-adjoint
-  (make-free-module {ℓ' = ℓ'})
+Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ'})
 ```
 
 <!--

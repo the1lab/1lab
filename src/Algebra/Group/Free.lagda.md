@@ -7,7 +7,7 @@ open import Algebra.Group
 
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Instances.Comma
+open import Cat.Diagram.Free
 open import Cat.Prelude
 ```
 -->
@@ -24,8 +24,6 @@ private variable
 open is-group-hom
 open Group-on
 open Initial
-open ↓Obj
-open ↓Hom
 ```
 -->
 
@@ -168,18 +166,28 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 [underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set
 
+<!--
 ```agda
-make-free-group : make-left-adjoint (Forget {ℓ})
-make-free-group .Ml.free S = Free-Group ∣ S ∣
-make-free-group .Ml.unit _ = inc
-make-free-group .Ml.universal f = fold-free-group f
-make-free-group .Ml.commutes f = refl
-make-free-group .Ml.unique {y = y} {g = g} p =
-  ext $ Free-elim-prop _ (λ _ → hlevel!)
-    (p $ₚ_)
-    (λ a p b q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
-    (λ a p → ap y.inverse p ∙ sym (is-group-hom.pres-inv (g .preserves)))
-    (sym (is-group-hom.pres-id (g .preserves)))
-  where module y = Group-on (y .snd)
-module Free-groups {ℓ} = make-left-adjoint (make-free-group {ℓ = ℓ})
+open Free-object-on
+open is-free-object-on
+```
+-->
+
+```agda
+make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object-on Forget S
+make-free-group S .free = Free-Group ⌞ S ⌟
+make-free-group S .eta = inc
+make-free-group S .has-is-free .eps = fold-free-group
+make-free-group S .has-is-free .commute = refl
+make-free-group S .has-is-free .unique {b = H} g p =
+  ext $ Free-elim-prop _ hlevel!
+    (p #ₚ_)
+    (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
+    (λ a p → g.pres-inv ∙ ap H.inverse p)
+    g.pres-id
+  where
+    module H = Group-on (H .snd)
+    module g = is-group-hom (g .preserves)
+
+module Free-groups {ℓ} (S : Set ℓ) = Free-object-on (make-free-group S)
 ```

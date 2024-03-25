@@ -8,6 +8,7 @@ open import Algebra.Group
 
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint
+open import Cat.Diagram.Free
 open import Cat.Prelude
 ```
 -->
@@ -43,8 +44,8 @@ mutual
   Free-abelian⊣Forget
     : ∀ {ℓ} → Free-abelian-functor {ℓ} ⊣ Forget-structure (Group-structure ℓ) F∘ Ab↪Grp
   Free-abelian⊣Forget = LF⊣GR
-    (Ml.to-left-adjoint make-free-group)
-    (Ml.to-left-adjoint make-free-abelian)
+    (free-objects→left-adjoint make-free-group)
+    (free-objects→left-adjoint make-free-abelian)
 ```
 
 <!--

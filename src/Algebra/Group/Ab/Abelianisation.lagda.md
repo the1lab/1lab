@@ -5,6 +5,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Functor.Adjoint
+open import Cat.Diagram.Free
 open import Cat.Prelude
 ```
 -->
@@ -195,32 +196,34 @@ $$
 
 for some $\hat f : G^{ab} \to H$ derived from $f$.
 
+<!--
 ```agda
-make-free-abelian : ∀ {ℓ} → make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-make-free-abelian {ℓ} = go where
-  open make-left-adjoint
-  go : make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-  go .free G = Abelianise G
+open Free-object-on
+open is-free-object-on
+```
+-->
 
-  go .unit G .hom = inc^ab G
-  go .unit G .preserves .is-group-hom.pres-⋆ x y = refl
-
-  go .universal {x = G} {y = H} f .hom =
-    Coeq-elim (λ _ → H.has-is-set) (f #_) (λ (a , b , c) → resp a b c) where
-    module G = Group-on (G .snd)
-    module H = Abelian-group-on (H .snd)
-    open is-group-hom (f .preserves)
-    abstract
-      resp : ∀ a b c → f # (a G.⋆ (b G.⋆ c)) ≡ f # (a G.⋆ (c G.⋆ b))
-      resp a b c =
-        f # (a G.⋆ (b G.⋆ c))       ≡⟨ pres-⋆ _ _ ⟩
-        f # a H.* f # (b G.⋆ c)     ≡⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
-        f # a H.* (f # b H.* f # c) ≡⟨ ap (f # a H.*_) H.commutes ⟩
-        f # a H.* (f # c H.* f # b) ≡˘⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
-        f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
-        f # (a G.⋆ (c G.⋆ b))       ∎
-  go .universal f .preserves .is-group-hom.pres-⋆ =
-    Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
-  go .commutes f = trivial!
-  go .unique p = ext (p #ₚ_)
+```agda
+make-free-abelian : ∀ {ℓ} (G : Group ℓ) → Free-object-on Ab↪Grp G
+make-free-abelian G .free = Abelianise G
+make-free-abelian G .eta .hom =  inc^ab G
+make-free-abelian G .eta .preserves .is-group-hom.pres-⋆ x y = refl
+make-free-abelian G .has-is-free .eps {b = H} f .hom =
+  Coeq-elim (λ _ → H.has-is-set) (f #_) (λ (a , b , c) → resp a b c) where
+  module G = Group-on (G .snd)
+  module H = Abelian-group-on (H .snd)
+  open is-group-hom (f .preserves)
+  abstract
+    resp : ∀ a b c → f # (a G.⋆ (b G.⋆ c)) ≡ f # (a G.⋆ (c G.⋆ b))
+    resp a b c =
+      f # (a G.⋆ (b G.⋆ c))       ≡⟨ pres-⋆ _ _ ⟩
+      f # a H.* f # (b G.⋆ c)     ≡⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
+      f # a H.* (f # b H.* f # c) ≡⟨ ap (f # a H.*_) H.commutes ⟩
+      f # a H.* (f # c H.* f # b) ≡˘⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
+      f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
+      f # (a G.⋆ (c G.⋆ b))       ∎
+make-free-abelian G .has-is-free .eps {b = H} f .preserves .is-group-hom.pres-⋆ =
+  Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+make-free-abelian G .has-is-free .commute = trivial!
+make-free-abelian G .has-is-free .unique f p = ext (p #ₚ_)
 ```

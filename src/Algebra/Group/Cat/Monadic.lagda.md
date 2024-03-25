@@ -11,6 +11,7 @@ open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Diagram.Monad
+open import Cat.Diagram.Free
 
 import Algebra.Group.Cat.Base as Grp
 
@@ -26,10 +27,10 @@ module Algebra.Group.Cat.Monadic {ℓ} where
 ```agda
 private
   F : Functor (Sets ℓ) (Groups ℓ)
-  F = Free-groups.to-functor
+  F = free-objects→functor make-free-group
 
   F⊣U : F ⊣ _
-  F⊣U = Free-groups.to-left-adjoint
+  F⊣U = free-objects→left-adjoint make-free-group
 
   K = Comparison F⊣U
 
