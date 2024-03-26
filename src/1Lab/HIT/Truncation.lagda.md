@@ -7,7 +7,7 @@ definition: |
 ```agda
 open import 1Lab.Reflection.Induction
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
@@ -159,9 +159,17 @@ quantifier** as a truncated `Σ`{.Agda}.
 ```agda
 ∃ : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
 ∃ A B = ∥ Σ A B ∥
-
-syntax ∃ A (λ x → B) = ∃[ x ∈ A ] B
 ```
+
+<!--
+```agda
+∃-syntax : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
+∃-syntax = ∃
+
+syntax ∃-syntax A (λ x → B) = ∃[ x ∈ A ] B
+infix 5 ∃-syntax
+```
+-->
 
 Note that if $P$ is already a proposition, then truncating it does
 nothing:

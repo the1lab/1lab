@@ -35,7 +35,7 @@ pronouns.
 </div>
 
 <div class="profile-profile">
-Hi! I'm Amélia, a non-binary programmer/mathematician. I'm 19, but I've
+Hi! I'm Amélia, a non-binary programmer/mathematician. I'm 21, but I've
 been programming since age 7, and doing dependently-typed programming
 since 14. Last year, I implemented [my own cubical type theory], to
 figure out what it was all about.
@@ -59,27 +59,6 @@ about type theory and the implementation of programming languages, and
 
 <div class="profile pfp-right">
 <div class="profile-pfp">
-<img alt="Astra's profile picture" src="static/pfps/astra.png" />
-<span class="profile-name">Astra</span>
-<span class="profile-pronouns">she/her</span>
-<span><a href="https://twitter.com/astradiol">\@astradiol</a></span>
-</div>
-
-<div class="profile-profile">
-Hey! I'm Astra, a Canadian trans graduate student in mathematics.
-Lately, my time has been equally spent divided between _"real math"_
-(e.g. thinking about category theory), _"not-actual-math"_ (i.e.
-operating Agda in autopilot mode), and hanging out with my friends.
-
-A cool project that I recently completed was formalising a
-[categorical glueing argument] for STLC.
-
-[categorical glueing argument]: https://github.com/FrozenWinters/stlc/blob/main/README.md
-</div>
-</div>
-
-<div class="profile pfp-left">
-<div class="profile-pfp">
 <span class="profile-name">Reed</span>
 <span class="profile-pronouns">he/him</span>
 <span><a href="https://twitter.com/totbwf">\@totbwf</a></span>
@@ -94,7 +73,7 @@ semantic flavor.
 </div>
 </div>
 
-<div class="profile pfp-right">
+<div class="profile pfp-left">
 <div class="profile-pfp">
 <img alt="Naïm's profile picture" src="https://www.gravatar.com/avatar/1fea7494d69948ab0a50d9ee9318ae50?s=128&r=g" />
 <span class="profile-name">Naïm</span>

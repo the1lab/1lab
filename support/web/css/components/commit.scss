@@ -1,4 +1,4 @@
-#recent-additions {
+div#recent-additions {
   margin-block: 1em;
 
   :first-child { padding-block-start: 0; }
@@ -9,7 +9,8 @@
 }
 
 div.commit {
-  @include left-bordered(theme(--commit-bg));
+  border-inline-start:  $left-border-width solid theme(--commit-bg);
+  padding-inline-start: $left-border-distance;
 
   display: flex;
   flex-direction: column;
@@ -19,7 +20,6 @@ div.commit {
 
   .commit-subject {
     font-weight: bold;
-    font-size: 1.1em;
     width: fit-content;
 
     &, &:visited, &.hover-highlight {
@@ -31,6 +31,7 @@ div.commit {
   .commit-author-date {
     font-style: italic;
     font-size: 0.8em;
+    margin-block-start: -0.75ex;
 
     span {
       font-weight: bold;
@@ -39,6 +40,8 @@ div.commit {
   }
 
   .commit-changes {
+    font-size: 0.8em;
+    --code-font-size: 0.9em;
     hyphenate-character: '';
   }
 }

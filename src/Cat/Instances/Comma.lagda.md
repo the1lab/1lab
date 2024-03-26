@@ -1,7 +1,12 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Groupoid
+open import Cat.Morphism
 open import Cat.Prelude
+
+import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 
@@ -58,7 +63,9 @@ module
   private
     module A = Precategory A
     module B = Precategory B
-    import Cat.Reasoning C as C
+    module C = Cat.Reasoning C
+    module F = Cat.Functor.Reasoning F
+    module G = Cat.Functor.Reasoning G
 
   open A.HLevel-instance
   open B.HLevel-instance
@@ -76,7 +83,7 @@ $x : \cA$, $y : \cB$, and $f : F(x) \to G(y)$.
     field
       {x} : Ob A
       {y} : Ob B
-      map : Hom C (F₀ F x) (F₀ G y)
+      map : Hom C (F .F₀ x) (G .F₀ y)
 ```
 
 A morphism from $(x_a, y_a, f_a) \to (x_b, y_b, f_b)$ is given by a pair
@@ -109,7 +116,7 @@ component of a [naturality square].
     field
       {α} : Hom A a.x b.x
       {β} : Hom B a.y b.y
-      sq : b.map C.∘ F₁ F α ≡ F₁ G β C.∘ a.map
+      sq : b.map C.∘ F .F₁ α ≡ G .F₁ β C.∘ a.map
 ```
 
 We omit routine characterisations of equality in `↓Hom`{.Agda} from the
@@ -125,8 +132,8 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-pathp p q i .↓Hom.α = p i
   ↓Hom-pathp p q i .↓Hom.β = q i
   ↓Hom-pathp {p = p} {q} {f} {g} r s i .↓Hom.sq =
-    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map (q i) C.∘ F₁ F (r i))
-                                       (F₁ G (s i) C.∘ ↓Obj.map (p i)))
+    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map (q i) C.∘ F .F₁ (r i))
+                                       (G .F₁ (s i) C.∘ ↓Obj.map (p i)))
       (f .↓Hom.sq) (g .↓Hom.sq) i
 
   ↓Hom-path : ∀ {x y} {f g : ↓Hom x y}
@@ -137,7 +144,7 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 
   ↓Obj-path : {a b : ↓Obj}
             → (p : a .↓Obj.x ≡ b .↓Obj.x) (q : a .↓Obj.y ≡ b .↓Obj.y)
-            → PathP (λ i → Hom C (F₀ F (p i)) (F₀ G (q i))) (a .↓Obj.map) (b .↓Obj.map)
+            → PathP (λ i → Hom C (F .F₀ (p i)) (G .F₀ (q i))) (a .↓Obj.map) (b .↓Obj.map)
             → a ≡ b
   ↓Obj-path p q r i .↓Obj.x = p i
   ↓Obj-path p q r i .↓Obj.y = q i
@@ -159,7 +166,7 @@ Identities and compositions are given componentwise:
   ↓id : ∀ {a} → ↓Hom a a
   ↓id .↓Hom.α = A.id
   ↓id .↓Hom.β = B.id
-  ↓id .↓Hom.sq = ap (_ C.∘_) (F-id F) ·· C.id-comm ·· ap (C._∘ _) (sym (F-id G))
+  ↓id .↓Hom.sq = ap (_ C.∘_) (F .F-id) ·· C.id-comm ·· ap (C._∘ _) (sym (G .F-id))
 
   ↓∘ : ∀ {a b c} → ↓Hom b c → ↓Hom a b → ↓Hom a c
   ↓∘ {a} {b} {c} g f = composite where
@@ -175,11 +182,11 @@ Identities and compositions are given componentwise:
     composite .α = g.α A.∘ f.α
     composite .β = g.β B.∘ f.β
     composite .sq =
-      c.map C.∘ F₁ F (g.α A.∘ f.α)    ≡⟨ ap (_ C.∘_) (F-∘ F _ _) ⟩
-      c.map C.∘ F₁ F g.α C.∘ F₁ F f.α ≡⟨ C.extendl g.sq ⟩
-      F₁ G g.β C.∘ b.map C.∘ F₁ F f.α ≡⟨ ap (_ C.∘_) f.sq ⟩
-      F₁ G g.β C.∘ F₁ G f.β C.∘ a.map ≡⟨ C.pulll (sym (F-∘ G _ _)) ⟩
-      F₁ G (g.β B.∘ f.β) C.∘ a.map    ∎
+      c.map C.∘ F .F₁ (g.α A.∘ f.α)      ≡⟨ ap (_ C.∘_) (F .F-∘ _ _) ⟩
+      c.map C.∘ F .F₁ g.α C.∘ F .F₁ f.α  ≡⟨ C.extendl g.sq ⟩
+      G .F₁ g.β C.∘ b.map C.∘ F .F₁ f.α  ≡⟨ ap (_ C.∘_) f.sq ⟩
+      G .F₁ g.β C.∘ G .F₁ f.β C.∘ a.map  ≡⟨ C.pulll (sym (G .F-∘ _ _)) ⟩
+      G .F₁ (g.β B.∘ f.β) C.∘ a.map      ∎
 ```
 
 This assembles into a precategory.
@@ -219,6 +226,20 @@ square.
 
 <!--
 ```agda
+  module _ (A-grpd : is-pregroupoid A) (B-grpd : is-pregroupoid B) where
+    open ↓Hom
+    open is-invertible
+    open Inverses
+
+    ↓-is-pregroupoid : is-pregroupoid _↓_
+    ↓-is-pregroupoid f .inv .α = A-grpd (f .α) .inv
+    ↓-is-pregroupoid f .inv .β = B-grpd (f .β) .inv
+    ↓-is-pregroupoid f .inv .sq = C.rswizzle
+      (sym (C.lswizzle (f .sq) (G.annihilate (B-grpd (f .β) .invr))) ∙ C.assoc _ _ _)
+      (F.annihilate (A-grpd (f .α) .invl))
+    ↓-is-pregroupoid f .inverses .invl = ↓Hom-path (A-grpd (f .α) .invl) (B-grpd (f .β) .invl)
+    ↓-is-pregroupoid f .inverses .invr = ↓Hom-path (A-grpd (f .α) .invr) (B-grpd (f .β) .invr)
+
 module _ {A : Precategory ao ah} {B : Precategory bo bh} where
   private module A = Precategory A
 
@@ -228,6 +249,34 @@ module _ {A : Precategory ao ah} {B : Precategory bo bh} where
 
   _↘_ : Functor B A → A.Ob → Precategory _ _
   S ↘ X = S ↓ const! X
+
+module ↙-compose
+    {oc ℓc od ℓd oe ℓe}
+    {𝒞 : Precategory oc ℓc} {𝒟 : Precategory od ℓd} {ℰ : Precategory oe ℓe}
+    (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ)
+  where
+  private
+    module 𝒟 = Precategory 𝒟
+    module ℰ = Precategory ℰ
+    module F = Functor F
+    module G = Cat.Functor.Reasoning G
+  open ↓Obj
+  open ↓Hom
+
+  _↙>_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .y ↙ F) → Ob (d ↙ G F∘ F)
+  g ↙> f = ↓obj (G.₁ (f .map) ℰ.∘ g .map)
+
+  ↙-compose : ∀ {d} (g : Ob (d ↙ G)) → Functor (g .y ↙ F) (d ↙ G F∘ F)
+  ↙-compose g .F₀ f = g ↙> f
+  ↙-compose g .F₁ {f} {f'} h = ↓hom {β = h .β} $
+    (G.₁ (f' .map) ℰ.∘ g .map) ℰ.∘ ℰ.id          ≡⟨ ℰ.idr _ ⟩
+    G.₁ (f' .map) ℰ.∘ g .map                     ≡⟨ G.pushl (sym (𝒟.idr _) ∙ h .sq) ⟩
+    G.₁ (F.₁ (h .β)) ℰ.∘ G.₁ (f .map) ℰ.∘ g .map ∎
+  ↙-compose g .F-id = ↓Hom-path _ _ refl refl
+  ↙-compose g .F-∘ _ _ = ↓Hom-path _ _ refl refl
+
+  ↙>-id : ∀ {c} {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙> ↓obj 𝒟.id ≡ f
+  ↙>-id = ↓Obj-path _ _ refl refl (G.eliml refl)
 
 -- Outside the main module to make instance search work.
 module _ where
@@ -336,6 +385,5 @@ module _ where
       : ∀ {T : Functor A B} {Y : B .Ob}
       → Extensionality (↓Obj T (const! Y))
     Extensionality-↘Obj = record { lemma = quote Extensional-↘Obj }
-      
 ```
 -->

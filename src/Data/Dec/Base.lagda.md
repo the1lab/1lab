@@ -13,7 +13,7 @@ module Data.Dec.Base where
 # Decidable types {defines="decidable type-of-decisions discrete"}
 
 The type `Dec`{.Agda}, of **decisions** for a type `A`, is a renaming of
-the coproduct `A + ¬ A`. A value of `Dec A` witnesses not that `A`
+the coproduct `A ⊎ ¬ A`. A value of `Dec A` witnesses not that `A`
 is decidable, but that it _has been decided_; A witness of decidability,
 then, is a proof assigning decisions to values of a certain type.
 
@@ -131,7 +131,7 @@ private variable
 
 We then have the following basic instances for combining decisions,
 expressing that the class of decidable types is closed under products
-and negation, and contains the empty type.
+and functions, and contains the unit type and the empty type.
 
 ```agda
 instance
@@ -140,15 +140,16 @@ instance
   Dec-× {Q = _} ⦃ yes p ⦄ ⦃ no ¬q ⦄ = no λ z → ¬q (snd z)
   Dec-× {Q = _} ⦃ no ¬p ⦄ ⦃ _ ⦄     = no λ z → ¬p (fst z)
 
+  Dec-→ : ⦃ _ : Dec P ⦄ ⦃ _ : Dec Q ⦄ → Dec (P → Q)
+  Dec-→ {Q = _} ⦃ yes p ⦄ ⦃ yes q ⦄ = yes λ _ → q
+  Dec-→ {Q = _} ⦃ yes p ⦄ ⦃ no ¬q ⦄ = no λ pq → ¬q (pq p)
+  Dec-→ {Q = _} ⦃ no ¬p ⦄ ⦃ q ⦄ = yes λ p → absurd (¬p p)
+
   Dec-⊤ : Dec ⊤
   Dec-⊤ = yes tt
 
   Dec-⊥ : Dec ⊥
   Dec-⊥ = no id
-
-  Dec-¬ : ⦃ _ : Dec A ⦄ → Dec (A → ⊥)
-  Dec-¬ {A = _} ⦃ yes a ⦄ = no λ ¬a → ¬a a
-  Dec-¬ {A = _} ⦃ no ¬a ⦄ = yes ¬a
 ```
 
 <!--

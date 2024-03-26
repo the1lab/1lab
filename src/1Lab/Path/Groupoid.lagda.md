@@ -24,7 +24,7 @@ _ = ap-sym
 ```
 -->
 
-# Types are groupoids
+# Types are groupoids {defines="types-are-higher-groupoids"}
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
 an _$\infty$-groupoid_. The higher structure of a type begins with its
@@ -218,7 +218,7 @@ established that functions behave like functors: These are the lemmas
 
 Since a _lot_ of Homotopy Type Theory is dealing with paths, this
 section introduces useful helpers for dealing with $n$-ary compositions.
-For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
+For instance, we know that $p\inv ∙ p ∙ q$ is $q$, but this involves
 more than a handful of intermediate steps:
 
 ```agda

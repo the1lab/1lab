@@ -40,10 +40,12 @@ open is-cartesian
 open Functor
 private
   module Fib = Cat.Displayed.Fibre.Reasoning E
+  _^*_ : ∀ {a b} (f : Hom a b) → Ob[ b ] → Ob[ a ]
+  f ^* x = has-lift.x' f x
 ```
 -->
 
-# Reindexing for cartesian fibrations
+# Reindexing for cartesian fibrations {defines="base-change"}
 
 A [[cartesian fibration]] can be thought of as a [[displayed category]]
 $\cE$ whose [[fibre categories]] $\cE^*(b)$ depend
@@ -97,10 +99,9 @@ of heart. </summary>
     mi .eta x = has-lift.lifting id x
     mi .inv x = has-lift.universalv id x id'
     mi .eta∘inv x = cancel _ _ (has-lift.commutesv _ _ _)
-    mi .inv∘eta x = sym $
-      has-lift.uniquep₂ id x _ _ _ _ _
-        (idr' _)
-        (Fib.cancellf (has-lift.commutesv _ _ _))
+    mi .inv∘eta x = sym $ has-lift.uniquep₂ id x _ _ _ _ _
+      (idr' _)
+      (Fib.cancellf (has-lift.commutesv _ _ _))
     mi .natural x y f =
       sym $ from-pathp $ cast[] $
         has-lift.commutesp id y id-comm _
@@ -110,6 +111,56 @@ of heart. </summary>
 
 And similarly, composing changes of base is the same thing as changing
 base along a composite.
+
+<!--
+```agda
+  ^*-id-to : ∀ {x} → Hom[ id {𝒶} ] (id ^* x) x
+  ^*-id-to = has-lift.lifting id _
+
+  ^*-id-from : ∀ {x} → Hom[ id {𝒶} ] x (id ^* x)
+  ^*-id-from = has-lift.universalv id _ id'
+
+^*-comp-from
+  : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
+  → Hom[ id ] (g ^* (f ^* z)) ((f ∘ g) ^* z)
+^*-comp-from = has-lift.universalv _ _ (has-lift.lifting _ _ ∘' has-lift.lifting _ _)
+
+^*-comp-to
+  : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
+  → Hom[ id ] ((f ∘ g) ^* z) (g ^* (f ^* z))
+^*-comp-to = has-lift.universalv _ _ (has-lift.universal _ _ _ (has-lift.lifting _ _))
+
+^*-comp
+  : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
+  → ((f ∘ g) ^* z) Fib.≅ (g ^* (f ^* z))
+^*-comp = Fib.make-iso ^*-comp-to ^*-comp-from
+  (has-lift.uniquep₂ _ _ _ _ _ _ _
+    (Fib.pulllf (has-lift.commutesv _ _ _) ∙[]
+      has-lift.uniquep₂ _ _ _ (idr _) refl _ _
+        (pulll[] _ (has-lift.commutes _ _ _ _) ∙[]
+          has-lift.commutesv _ _ _) refl)
+    (idr' _))
+  (has-lift.uniquep₂ _ _ _ _ _ _ _
+    (Fib.pulllf (has-lift.commutesv _ _ _)
+      ∙[] pullr[] _ (has-lift.commutesv _ _ _)
+      ∙[] has-lift.commutes _ _ _ _)
+    (idr' _))
+
+^*-comp-to-natural
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b} {x y : Ob[ c ]} (f' : Hom[ id ] x y)
+  → rebase g (rebase f f') Fib.∘ ^*-comp-to ≡ ^*-comp-to Fib.∘ rebase (f ∘ g) f'
+^*-comp-to-natural {f = f} {g = g} f' =
+  ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $ cast[] $
+    pulll[] _ (has-lift.commutesp g _ id-comm _)
+    ∙[] pullr[] _ (has-lift.commutesv g _ _)
+    ∙[] has-lift.uniquep₂ _ _ _ id-comm-sym _ _ _
+      (pulll[] _ (has-lift.commutesp _ _ id-comm _)
+        ∙[] pullr[] _ (has-lift.commutes _ _ _ _))
+      (pulll[] _ (has-lift.commutes _ _ _ _)
+        ∙[] has-lift.commutesp _ _ id-comm _)
+    ∙[] pushl[] _ (symP (has-lift.commutesv g _ _))
+```
+-->
 
 ```agda
 module _ {𝒶} {𝒷} {𝒸} (f : Hom 𝒷 𝒸) (g : Hom 𝒶 𝒷) where
@@ -128,34 +179,11 @@ properties and I recommend that nobody look at it, ever. </summary>.
   base-change-comp = to-natural-iso mi where
     open make-natural-iso
     mi : make-natural-iso (base-change (f ∘ g)) (base-change g F∘ base-change f)
-    mi .eta x =
-      has-lift.universalv g _ $ has-lift.universal f x g (has-lift.lifting (f ∘ g) x)
-    mi .inv x =
-      has-lift.universalv (f ∘ g) x (has-lift.lifting f _ ∘' has-lift.lifting g _)
-    mi .eta∘inv x =
-      has-lift.uniquep₂ _ _ _ _ _ _ _
-        (Fib.pulllf (has-lift.commutesv g _ _)
-         ∙[] has-lift.uniquep₂ _ _ _ (idr _) refl _ _
-           (pulll[] _ (has-lift.commutes _ _ _ _)
-            ∙[] has-lift.commutesv _ _ _)
-           refl)
-        (idr' _)
-    mi .inv∘eta x =
-      has-lift.uniquep₂ _ _ _ _ _ _ _
-        (Fib.pulllf (has-lift.commutesv _ _ _)
-         ∙[] pullr[] _ (has-lift.commutesv _ _ _)
-         ∙[] has-lift.commutes _ _ _ _)
-        (idr' _)
-    mi .natural x y f' =
-      ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $ cast[] $
-        pulll[] _ (has-lift.commutesp g _ id-comm _)
-        ∙[] pullr[] _ (has-lift.commutesv g _ _)
-        ∙[] has-lift.uniquep₂ _ _ _ id-comm-sym _ _ _
-          (pulll[] _ (has-lift.commutesp _ _ id-comm _)
-           ∙[] pullr[] _ (has-lift.commutes _ _ _ _))
-          (pulll[] _ (has-lift.commutes _ _ _ _)
-           ∙[] has-lift.commutesp _ _ id-comm _)
-        ∙[] pushl[] _ (symP (has-lift.commutesv g _ _))
+    mi .eta x = ^*-comp-to
+    mi .inv x = ^*-comp-from
+    mi .eta∘inv x = ^*-comp .Fib.invl
+    mi .inv∘eta x = ^*-comp .Fib.invr
+    mi .natural x y f' = ^*-comp-to-natural f'
 ```
 </details>
 
@@ -241,7 +269,7 @@ middle square is by definition of the compositor and the top triangle
 is by definition of the unitor.
 
 ```agda
-Fibres .lax .left-unit f = Nat-path λ a' →
+Fibres .lax .left-unit f = ext λ a' →
   has-lift.uniquep₂ f a' _ refl refl _ _
     (Fib.pulllf (base-change-coherence (idr f))
     ∙[] Fib.pulllf (has-lift.commutesv (f ∘ id) a' _)
@@ -283,7 +311,7 @@ of the unitor, and the top square is by definition of `rebase`{.Agda}
 (the action of $f^*$ on morphisms).
 
 ```agda
-Fibres .lax .right-unit f = Nat-path λ a' →
+Fibres .lax .right-unit f = ext λ a' →
   has-lift.uniquep₂ f a' _ refl _ _ _
     (Fib.pulllf (base-change-coherence (idl f))
     ∙[] Fib.pulllf (has-lift.commutesv (id ∘ f) a' _)
@@ -297,7 +325,7 @@ Last but definitely not least, the `hexagon`{.Agda} witnessing the
 coherence of associativity follows again by uniqueness of cartesian
 lifts, by the commutativity of the following diagram.
 
-~~~{.quiver style="height: 375px !important;"}
+~~~{.quiver}
 \[\begin{tikzcd}
   {f^*g^*h^*a'} &&&&&& {f^*g^*h^*a'} \\
   {f^*g^*h^*a'} & {g^*h^*a'} &&&& {g^*h^*a'} & {(gf)^*h^*a'} \\
@@ -341,7 +369,7 @@ lifts, by the commutativity of the following diagram.
 ~~~
 
 ```agda
-Fibres .lax .hexagon f g h = Nat-path λ a' →
+Fibres .lax .hexagon f g h = ext λ a' →
   has-lift.uniquep₂ ((h ∘ g) ∘ f) a' _ refl _ _ _
     (Fib.pulllf (base-change-coherence (assoc h g f))
     ∙[] Fib.pulllf (has-lift.commutesv (h ∘ (g ∘ f)) a' _)

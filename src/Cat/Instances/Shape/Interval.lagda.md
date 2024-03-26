@@ -184,7 +184,7 @@ private variable
 
 ```agda
 Arrows : Precategory o ℓ → Type (o ⊔ ℓ)
-Arrows C = Σ[ A ∈ C.Ob ] Σ[ B ∈ C.Ob ] (C.Hom A B)
+Arrows C = Σ[ A ∈ C ] Σ[ B ∈ C ] (C.Hom A B)
   where module C = Precategory C
 ```
 
@@ -245,7 +245,7 @@ inferred by Agda.
 
 ```agda
   functor→arrow : Functor 0≤1 C → Arrows C
-  functor→arrow F = _ , _ , F₁ F {false} {true} tt
+  functor→arrow F = _ , _ , F .F₁ {false} {true} tt
 ```
 
 That this function is an equivalence is also straightforward: The only

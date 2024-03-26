@@ -4,6 +4,8 @@ open import 1Lab.Prelude
 
 open import Cat.Functor.Naturality
 open import Cat.Functor.Base
+open import Cat.Groupoid
+open import Cat.Morphism
 open import Cat.Base
 
 import Cat.Reasoning
@@ -35,6 +37,9 @@ trivial morphisms.
 ⊤Cat .idr _ _ = tt
 ⊤Cat .idl _ _ = tt
 ⊤Cat .assoc _ _ _ _ = tt
+
+⊤Cat-is-pregroupoid : is-pregroupoid ⊤Cat
+⊤Cat-is-pregroupoid _ = id-invertible ⊤Cat
 
 module _ {o h} {A : Precategory o h} where
   private module A = Precategory A

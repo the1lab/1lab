@@ -2,8 +2,8 @@
 ```agda
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -33,8 +33,8 @@ have $\| f^*b \|$: that is, all of its [[fibres]] are inhabited. Using
 the notation for [[mere existence|merely]], we may write this as
 
 $$
-\forall (b : B),\ \exists (a : A),\ f(a) = b\text{,}
-$$
+\forall (b : B),\ \exists (a : A),\ f(a) = b
+$$.
 
 which is evidently the familiar notion of surjection.
 

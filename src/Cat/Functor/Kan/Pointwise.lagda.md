@@ -102,7 +102,7 @@ preserved by *all* functors.
 module _
   {o o' ℓ ℓ'}
   {J : Precategory o' ℓ'} {C : Precategory o ℓ}
-  {Dia : Functor J C} {x : Precategory.Ob C}
+  {Dia : Functor J C} {x : ⌞ C ⌟}
   where
 
   private
@@ -174,8 +174,8 @@ To finish the construction, we take our diagram in $\cC$ and
 post-compose with $G$ to obtain a diagram
 
 $$
-F \swarrow c' \to \cC \xto{G} \cD\text{.}
-$$
+F \swarrow c' \to \cC \xto{G} \cD
+$$.
 
 Since $F \swarrow c'$ is put together out of objects in $\cC$ and
 morphisms in $\cC'$, it is also a $\kappa$-small category, so these
@@ -244,7 +244,7 @@ what we wanted: a map $G(c) \to F'(F(c))$.
 
 ```agda
       eta .is-natural x y f =
-        ↓colim.commutes (F₀ F y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
+        ↓colim.commutes (F .F₀ y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
         ∙ sym (↓colim.factors _ _ _)
 ```
 
@@ -274,15 +274,15 @@ Finally, commutativity and uniqueness follow from the corresponding
 properties of colimits.
 
 ```agda
-      has-lan .σ-comm {M = M} = Nat-path λ c →
+      has-lan .σ-comm {M = M} = ext λ c →
         ↓colim.factors _ _ _ ∙ D.eliml (M .F-id)
-      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = Nat-path λ c' →
-        sym $ ↓colim.unique _ _ _ _ λ j →
-          σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
-          (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
-          (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
-          M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
-          M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
+      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ c' → sym $
+        ↓colim.unique _ _ _ _ λ j →
+        σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
+        (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
+        (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
+        M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
+        M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
 ```
 
 All that remains is to bundle up the data!
@@ -392,12 +392,12 @@ up not being very interesting.
 
       abstract
         fixup : (HF'-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
-        fixup = Nat-path λ j →
-          (H .F₁ (↓colim.universal _ _ _)  E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
-          H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                        ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
-          H .F₁ (↓colim.ψ _ _) E.∘ E.id                                            ≡⟨ E.idr _ ⟩
-          H .F₁ (↓colim.ψ _ (↓obj ⌜ C'.id C'.∘ C'.id ⌝))                           ≡⟨ ap! (C'.idl _) ⟩
-          H .F₁ (↓colim.ψ _ (↓obj (C'.id)))                                        ∎
+        fixup = ext λ j →
+          (H .F₁ (↓colim.universal _ _ _) E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
+          H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                       ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
+          H .F₁ (↓colim.ψ _ _) E.∘ E.id                                           ≡⟨ E.idr _ ⟩
+          H .F₁ (↓colim.ψ _ (↓obj ⌜ C'.id C'.∘ C'.id ⌝))                          ≡⟨ ap! (C'.idl _) ⟩
+          H .F₁ (↓colim.ψ _ (↓obj (C'.id)))                                       ∎
 ```
 </details>
 
@@ -534,9 +534,9 @@ _pointwise_, and remember that we're working with a Kan extension.
         funext λ g → D.pullr (sym (L .F-∘ _ _))
 
       invr : inv ∘nt Hom-into-inj (↓cocone c') ≡ idnt
-      invr = Nat-path λ d → funext λ α →
-        pointwise.σ-uniq d {σ' = vaguely-yoneda α}
-          (ext λ c f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
+      invr = ext λ d α →
+        unext (pointwise.σ-uniq d {σ' = vaguely-yoneda α}
+          (ext λ c f → D.assoc _ _ _)) c' C'.id
         ∙ D.elimr (L .F-id)
 ```
 </details>

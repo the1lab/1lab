@@ -97,7 +97,7 @@ terms.
 We do not require an explicit naturality witness for the inverse of $f$,
 since if a natural transformation is componentwise invertible, then its
 inverse is natural as well. It remains to use our "binaturality" to
-compute that $f(\id)$ and $f^{-1}(\id)$ do indeed give a system
+compute that $f(\id)$ and $f\inv(\id)$ do indeed give a system
 of adjunction units and co-units.
 
 ```agda

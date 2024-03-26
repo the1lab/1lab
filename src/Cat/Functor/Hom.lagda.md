@@ -119,8 +119,8 @@ natural transformations is indeed functorial:
 よ : Functor C Cat[ C ^op , Sets h ]
 よ .F₀      = よ₀
 よ .F₁      = よ₁
-よ .F-id    = Nat-path λ _ i g → idl g i
-よ .F-∘ f g = Nat-path λ _ i h → assoc f g h (~ i)
+よ .F-id    = ext λ _ g → idl g
+よ .F-∘ f g = ext λ _ h → sym (assoc f g h)
 ```
 
 

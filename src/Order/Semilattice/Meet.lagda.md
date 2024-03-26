@@ -80,8 +80,8 @@ finite meets to finite meets. In particular, it suffices to have $\top
 \le f(\top)$, and
 
 $$
-f(a) \cap f(b) \le f(a \cap b)\text{,}
-$$
+f(a) \cap f(b) \le f(a \cap b)
+$$,
 
 since the converse direction of these inequalities is guaranteed by the
 universal properties.

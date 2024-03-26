@@ -89,6 +89,7 @@ getInternalLinks mod = foldMap go where
                    | otherwise -> Just target
           [] | "/" `isPrefixOf` uriPath uri -> Just "index.html"
              | not ("#fn" `isPrefixOf` uriFragment uri)
+             , not ("#cb" `isPrefixOf` uriFragment uri)
              , not ("#ref-" `isPrefixOf` uriFragment uri) -> Just (mod <.> "html")
           _ -> Nothing
   go _ = mempty

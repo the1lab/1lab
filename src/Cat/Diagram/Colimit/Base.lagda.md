@@ -184,11 +184,9 @@ the rest of the data.
     colim : is-colimit Diagram coapex (to-cocone mkcolim)
     colim .σ {M = M} α .η _ =
       universal (α .η) (λ f → α .is-natural _ _ f ∙ C.eliml (M .F-id))
-    colim .σ {M = M} α .is-natural _ _ _ =
-       C.idr _ ∙ C.introl (M .F-id)
-    colim .σ-comm {α = α} = Nat-path λ j →
-      factors (α .η) _
-    colim .σ-uniq {α = α} {σ' = σ'} p = Nat-path λ _ →
+    colim .σ {M = M} α .is-natural _ _ _ = C.idr _ ∙ C.introl (M .F-id)
+    colim .σ-comm {α = α} = ext λ j → factors (α .η) _
+    colim .σ-uniq {α = α} {σ' = σ'} p = ext λ _ →
       sym $ unique (α .η) _ (σ' .η _) (λ j → sym (p ηₚ j))
 ```
 
@@ -212,16 +210,16 @@ the rest of the data.
 
     lan' : is-lan !F D K eta'
     lan' .σ α = hom→⊤-natural-trans (lan.σ α .η tt)
-    lan' .σ-comm {M} {α} = Nat-path λ j →
-      ap (_ C.∘_) (sym q)
+    lan' .σ-comm {M} {α} = ext λ j →
+        ap (_ C.∘_) (sym q)
       ∙ lan.σ-comm {α = α} ηₚ _
-    lan' .σ-uniq {M} {α} {σ'} r = Nat-path λ j →
+    lan' .σ-uniq {M} {α} {σ'} r = ext λ j →
       lan.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
-        (Nat-path (λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q))) ηₚ j
+        (ext λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q)) ηₚ j
 
   to-is-colimitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eta : D => K F∘ !F}
-    → (mk : make-is-colimit D (Functor.F₀ K tt))
+    → (mk : make-is-colimit D (K # tt))
     → (∀ {j} → to-cocone mk .η j ≡ eta .η j)
     → is-lan !F D K eta
   to-is-colimitp {D} {K} {eta} mkcolim p =
@@ -259,15 +257,15 @@ function which **un**makes a colimit.
 
     mc : make-is-colimit D coapex
     mc .ψ = eta.η
-    mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (Functor.F-id F)
+    mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (F .Functor.F-id)
     mc .universal = hom
     mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ' = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
         other-nt : F => const! x
         other-nt .η _ = other
-        other-nt .is-natural _ _ _ = C.elimr (Functor.F-id F) ∙ sym (C.idl _)
+        other-nt .is-natural _ _ _ = C.elimr (F .Functor.F-id) ∙ sym (C.idl _)
 ```
 
 <!--
@@ -343,10 +341,9 @@ computation.
   has-colimit .is-lan.σ α .η = σ α .η
   has-colimit .is-lan.σ α .is-natural x y f =
     ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
-  has-colimit .is-lan.σ-comm =
-    Nat-path (λ _ → σ-comm ηₚ _)
+  has-colimit .is-lan.σ-comm = ext (σ-comm ηₚ_)
   has-colimit .is-lan.σ-uniq {M = M} {σ' = σ'} p =
-    Nat-path (λ _ → σ-uniq {σ' = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
+    ext (λ _ → σ-uniq {σ' = nt} (reext! p) ηₚ _)
     where
       nt : Ext => M
       nt .η = σ' .η
@@ -406,21 +403,16 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 <!--
 ```agda
   colimits→inversesp {f = f} {g = g} f-factor g-factor =
-    inversesⁿ→inverses
-      {α = hom→⊤-natural-trans f}
-      {β = hom→⊤-natural-trans g}
+    inversesⁿ→inverses {α = hom→⊤-natural-trans f} {β = hom→⊤-natural-trans g}
       (Lan-unique.σ-inversesp Cx Cy
-        (Nat-path λ j → f-factor {j})
-        (Nat-path λ j → g-factor {j}))
+        (ext λ j → f-factor {j})
+        (ext λ j → g-factor {j}))
       tt
 
   colimits→invertiblep {f = f} f-factor =
-    is-invertibleⁿ→is-invertible
-      {α = hom→⊤-natural-trans f}
+    is-invertibleⁿ→is-invertible {α = hom→⊤-natural-trans f}
       (Lan-unique.σ-is-invertiblep
-        Cx
-        Cy
-        (Nat-path λ j → f-factor {j}))
+        Cx Cy (ext λ j → f-factor {j}))
       tt
 
   colimits→inverses =
@@ -550,7 +542,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 # Preservation of colimits
 
 The definitions here are the same idea as [preservation of limits], just
-dualized.
+dualised.
 
 [preservation of limits]: Cat.Diagram.Limit.Base.html#preservation-of-limits
 
@@ -622,9 +614,8 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     → preserves-colimit F Dia
     → preserves-colimit F' Dia
   natural-iso→preserves-colimits α F-preserves {K = K} {eps} colim =
-    natural-isos→is-lan
-      idni (α ◂ni Dia) (α ◂ni K)
-      (Nat-path λ j →
+    natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
+      (ext λ j →
         ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
         α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
         ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
@@ -695,7 +686,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
   colimit-as-coequaliser-of-coproduct
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
-    → has-coproducts-indexed-by C (Precategory.Ob J)
+    → has-coproducts-indexed-by C ⌞ J ⌟
     → has-coproducts-indexed-by C (Arrows J)
     → has-coequalisers C
     → (F : Functor J C) → Colimit F

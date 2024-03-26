@@ -222,7 +222,7 @@ face has a dotted boundary.
   \arrow["{\rm{loop}^n}", dashed, from=1-5, to=5-5]
   \arrow["{\rm{refl}}"{pos=0.2}, from=2-2, to=1-1]
   \arrow["{\rm{refl}}"'{pos=0.3}, from=2-4, to=1-5]
-  \arrow["{\rm{loop}^{-1}}"'{pos=0.1}, from=4-2, to=5-1]
+  \arrow["{\rm{loop}\inv}"'{pos=0.1}, from=4-2, to=5-1]
   \arrow["{\rm{refl}}"{pos=0.2}, from=4-4, to=5-5]
   \arrow["{\rm{loop}^{\rm{unglue}(n)}}"{marking, allow upside down}, draw=none, from=0, to=1]
 \end{tikzcd}\]
@@ -271,7 +271,7 @@ loop space is a set.
 opaque
   S¹-is-groupoid : is-groupoid S¹
   S¹-is-groupoid = S¹-elim (S¹-elim
-    (is-hlevel≃ 2 ΩS¹≃integers (hlevel 2)) prop!) prop!
+    (Equiv→is-hlevel 2 ΩS¹≃integers (hlevel 2)) prop!) prop!
 ```
 
 <!--

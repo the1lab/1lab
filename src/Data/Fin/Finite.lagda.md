@@ -37,20 +37,24 @@ _is a set_!
 
 ```agda
 naïve-fin-is-set : is-set (Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X)
-naïve-fin-is-set = is-hlevel≃ 2 Σ-swap₂ $
+naïve-fin-is-set = Equiv→is-hlevel 2 Σ-swap₂ $
   Σ-is-hlevel 2 (hlevel 2) λ x → is-prop→is-hlevel-suc {n = 1} $
     is-contr→is-prop $ Equiv-is-contr (Fin x)
 ```
 
 That's because, as the proof above shows, it's equivalent to the type of
 natural numbers: The type
+
 $$
 \sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
 $$
+
 is equivalent to the type
+
 $$
-\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X\text{,}
-$$
+\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X
+$$,
+
 and univalence says (rather directly) that the sum of $[n] \simeq X$ as
 $X$ ranges over a universe is contractible, so we're left with the type
 of natural numbers.
@@ -91,7 +95,7 @@ record Finite {ℓ} (T : Type ℓ) : Type ℓ where
 ```agda
   Finite→is-set : is-set T
   Finite→is-set =
-    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → is-hlevel≃ 2 e (hlevel 2)) enumeration
+    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → Equiv→is-hlevel 2 e (hlevel 2)) enumeration
 
   instance
     Finite→H-Level : H-Level T 2

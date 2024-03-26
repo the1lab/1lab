@@ -55,7 +55,7 @@ $\alpha = \beta$.
 ```agda
   よ-preserves-mono : is-monic f → PSh[C].is-monic (よ₁ C f)
   よ-preserves-mono f-mono α β p = ext λ x px →
-    f-mono (α .η x px) (β .η x px) (p ηₚ x $ₚ px)
+    f-mono (α .η x px) (β .η x px) (unext p x px)
 ```
 
 Furthermore, the Yoneda embedding is [[fully faithful]], so it reflects
@@ -75,7 +75,7 @@ monos to epis, and vice versa.
 ```agda
   よcov-reverses-epi : is-epic f → CoPSh[C].is-monic (よcov₁ C f)
   よcov-reverses-epi {f = f} f-epic α β p = ext λ x px →
-    f-epic (α .η x px) (β .η x px) (p ηₚ x $ₚ px)
+    f-epic (α .η x px) (β .η x px) (unext p x px)
 
   よcov-reflects-mono-to-epi : CoPSh[C].is-monic (よcov₁ C f) → is-epic f
   よcov-reflects-mono-to-epi = よcov.faithful→reflects-mono (よcov-is-faithful C)

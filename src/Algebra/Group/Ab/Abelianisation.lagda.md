@@ -119,9 +119,9 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
       inc^ab (y ⋆ x)        ∎
 ```
 
-Now we can define the inverse map. We prove that $x \mapsto x^{-1}$
+Now we can define the inverse map. We prove that $x \mapsto x\inv$
 extends from a map $G_0 \to G_0$ to a map $G^{ab}_0 \to G^{ab}_0$. To
-show this, we must prove that $(xyz)^{-1}$ and $(xzy)^{-1}$ are equal in
+show this, we must prove that $(xyz)\inv$ and $(xzy)\inv$ are equal in
 $G^{ab}_0$. This is why we showed commutativity of `_ab*_`{.Agda} before
 defining the inverse map. Here, check out the cute trick embedded in the
 tedious algebra:
@@ -138,8 +138,8 @@ tedious algebra:
 ```
 
 We get to something that is definitionally equal to our `_ab*_`{.Agda}
-multiplication, which _we know is commutative_, so we can swap $y^{-1}$
-and $z^{-1}$ around!
+multiplication, which _we know is commutative_, so we can swap $y\inv$
+and $z\inv$ around!
 
 ```agda
       (inc^ab (z ⁻¹) ab* inc^ab (y ⁻¹)) ab* inc^ab (x ⁻¹) ≡⟨ ap₂ _ab*_ (ab*-comm (inc^ab (z ⁻¹)) (inc^ab (y ⁻¹))) (λ i → inc^ab (x ⁻¹)) ⟩

@@ -3,7 +3,9 @@
 
 module 1Lab.Prelude where
 
-open import 1Lab.Type public
+open import 1Lab.Type
+  hiding (Σ-syntax)
+  public
 
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
@@ -17,7 +19,7 @@ open import Meta.Bind public
 open import Meta.Alt public
 
 open import 1Lab.HLevel public
-open import 1Lab.HLevel.Retracts public
+open import 1Lab.HLevel.Closure public
 open import 1Lab.HLevel.Universe public
 
 open import 1Lab.Equiv public
@@ -36,17 +38,21 @@ open import 1Lab.Type.Pi public
 open import 1Lab.Type.Sigma public
 open import 1Lab.Type.Pointed public
 
-open import 1Lab.HIT.Truncation public
+open import 1Lab.HIT.Truncation
+  hiding (∃-syntax)
+  public
 
 open import 1Lab.Reflection.Marker public
 open import 1Lab.Reflection.Record
-  using ( declare-record-iso ) public
+  using (declare-record-iso)
+  public
 open import 1Lab.Reflection.HLevel public
 open import 1Lab.Reflection.Regularity public
 
 open import 1Lab.Resizing public
 
 open import 1Lab.Underlying public
+open import 1Lab.Membership public
 open import 1Lab.Extensionality public
 
 open import Data.Id.Base public

@@ -169,7 +169,7 @@ which is the image of $g$ as a function $f^*(y) \to F$.
 
 ```agda
     img : ⌞ Y ⌟ → Type _
-    img y = Σ[ e ∈ ⌞ F ⌟ ] □ (Σ[ x ∈ ⌞ X ⌟ ] ((f x ≡ y) × (g x ≡ e)))
+    img y = Σ[ e ∈ F ] □ (Σ[ x ∈ X ] ((f x ≡ y) × (g x ≡ e)))
 
     exist : ⌞ Y ⌟ → ⌞ F ⌟
     exist y = F.⋃ {I = img y} fst

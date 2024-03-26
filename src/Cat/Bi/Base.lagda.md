@@ -103,7 +103,7 @@ sets for maps of precategories, i.e., functors.
 
 ```agda
   field
-    id      : ∀ {A} → Precategory.Ob (Hom A A)
+    id      : ∀ {A} → ⌞ Hom A A ⌟
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
   module compose {a} {b} {c} = Fr (compose {a} {b} {c})
@@ -131,14 +131,14 @@ whence the name **horizontal composition**.
 
 ```agda
   _↦_ : Ob → Ob → Type ℓ
-  A ↦ B = Precategory.Ob (Hom A B)
+  A ↦ B = ⌞ Hom A B ⌟
 
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ⊗ g = compose .Functor.F₀ (f , g)
+  f ⊗ g = compose # (f , g)
 
   -- vertical 2-cell composition
   _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
@@ -349,35 +349,34 @@ directly:
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
     ni .make-natural-iso.natural x y f =
-      Nat-path λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+      ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
 
   pb .unitor-l {B = B} = to-natural-iso ni where
     module B = Cr B
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ → B.idr _ ∙ B.id-comm
+    ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
 
   pb .associator {A} {B} {C} {D} = to-natural-iso ni where
     module D = Cr D
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = Nat-path λ _ →
+    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ →
       D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
 
-  pb .triangle {C = C} f g = Nat-path (λ _ → Cr.idr C _)
-  pb .pentagon {E = E} f g h i =
-    Nat-path λ _ → ap₂ E._∘_
-      (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
-      (E.elimr (E.eliml (f .F-id)))
+  pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
+  pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
+    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
+    (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
 ```
 
@@ -394,7 +393,7 @@ However, when talking about general bicategories, we are faced with a
 choice: We could generalise the functoriality axioms to natural
 isomorphisms, keeping with the fact that equations are invertible, but
 we could also drop this invertibility requirement, and work only with
-natural _transformations_ $P(\id[A]) \to \id[PA]$. When these
+natural _transformations_ $P(\id_A) \to \id_{PA}$. When these
 are not invertible, the resulting structure is called a **lax functor**;
 When they _are_, we talk about **pseudofunctors** instead.
 
@@ -419,7 +418,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 ```agda
     compositor
       : ∀ {A B C}
-      → C.compose F∘ Cat⟨ P₁ {B} {C} F∘ Fst , P₁ {A} {B} F∘ Snd ⟩ => P₁ F∘ B.compose
+      → C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ B.compose
 
     unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```

@@ -98,8 +98,16 @@ _$x$ is defined and $x(-) = y$_:
 
 ```agda
 _↓_ : ↯ A → A → Type _
-x ↓ y = Σ[ d ∈ ⌞ x ⌟ ] (x .elt d ≡ y)
+x ↓ y = Σ[ d ∈ x ] (x .elt d ≡ y)
 ```
+
+<!--
+```agda
+instance
+  Membership-↯ : Membership A (↯ A) _
+  Membership-↯ = record { _∈_ = λ x p → p ↓ x }
+```
+-->
 
 <!--
 ```agda
@@ -191,7 +199,7 @@ always a .def   = ⊤Ω
 always a .elt _ = a
 
 part-bind : ↯ A → (A → ↯ B) → ↯ B
-part-bind x f .def .∣_∣   = Σ[ px ∈ ⌞ x ⌟ ] ⌞ f (x .elt px) ⌟
+part-bind x f .def .∣_∣   = Σ[ px ∈ x ] (f ʻ x .elt px)
 part-bind x f .def .is-tr = hlevel!
 part-bind x f .elt (px , pfx) = f (x .elt px) .elt pfx
 ```

@@ -48,7 +48,6 @@ continue with the construction!
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (F : Functor (C ^op ×ᶜ C) (Sets (o ⊔ ℓ))) where
-
   open Precategory C
   open Functor F
   open Coend
@@ -60,13 +59,13 @@ bit of bundling is required to make things well typed, but this is
 exactly the same pair of maps in the diagram above.
 
 ```agda
-  dimapl : Σ[ X ∈ Ob ] Σ[ Y ∈ Ob ] Σ[ f ∈ Hom Y X ] ∣ F₀ (X , Y) ∣
-         → Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣
-  dimapl (X , Y , f , Fxy) = X , (F₁ (id , f) Fxy)
+  dimapl : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
+         → Σ[ X ∈ C ] F ʻ (X , X)
+  dimapl (X , Y , f , Fxy) = X , F₁ (id , f) Fxy
 
-  dimapr : Σ[ X ∈ Ob ] Σ[ Y ∈ Ob ] Σ[ f ∈ Hom Y X ] ∣ F₀ (X , Y) ∣
-         → Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣
-  dimapr (X , Y , f , Fxy) = Y , (F₁ (f , id) Fxy)
+  dimapr : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
+         → Σ[ X ∈ C ] F ʻ (X , X)
+  dimapr (X , Y , f , Fxy) = Y , F₁ (f , id) Fxy
 ```
 
 Constructing the universal `Cowedge`{.Agda} is easy now that we've

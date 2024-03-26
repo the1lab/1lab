@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Path
 
+open import Cat.Functor.Base using (module F-iso)
 open import Cat.Base
 
 import Cat.Reasoning
@@ -19,13 +20,14 @@ private
   module 𝒞 = Cat.Reasoning 𝒞
   module 𝒟 = Cat.Reasoning 𝒟
 open Functor F public
+open F-iso F public
 ```
 
 <!--
 ```agda
 private variable
   A B C : 𝒞.Ob
-  a b c d : 𝒞.Hom A B
+  a a' b b' c c' d : 𝒞.Hom A B
   X Y Z : 𝒟.Ob
   f g h i : 𝒟.Hom X Y
 ```
@@ -75,6 +77,16 @@ module _ (ab≡c : a 𝒞.∘ b ≡ c) where
   pullr : (f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b ≡ f 𝒟.∘ F₁ c
   pullr = 𝒟.pullr collapse
 
+module _ (abc≡d : a 𝒞.∘ b 𝒞.∘ c ≡ d) where
+  collapse3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ F₁ d
+  collapse3 = ap (F₁ a 𝒟.∘_) (sym (F-∘ b c)) ∙ collapse abc≡d
+
+  pulll3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ F₁ d 𝒟.∘ f
+  pulll3 = 𝒟.pulll3 collapse3
+
+  pullr3 : ((f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b) 𝒟.∘ F₁ c ≡ f 𝒟.∘ F₁ d
+  pullr3 = 𝒟.pullr3 collapse3
+
 module _ (c≡ab : c ≡ a 𝒞.∘ b) where
   expand : F₁ c ≡ F₁ a 𝒟.∘ F₁ b
   expand = sym (collapse (sym c≡ab))
@@ -99,6 +111,16 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
     f 𝒟.∘ F₁ a 𝒟.∘ F₁ c 𝒟.∘ g ≡ f 𝒟.∘ F₁ b 𝒟.∘ F₁ d 𝒟.∘ g
   extend-inner = 𝒟.extend-inner weave
 
+module _ (p : a 𝒞.∘ b 𝒞.∘ c ≡ a' 𝒞.∘ b' 𝒞.∘ c') where
+  weave3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ F₁ a' 𝒟.∘ F₁ b' 𝒟.∘ F₁ c'
+  weave3 = ap (_ 𝒟.∘_) (sym (F-∘ b c)) ·· weave p ·· ap (_ 𝒟.∘_) (F-∘ b' c')
+
+  extendl3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ F₁ a' 𝒟.∘ (F₁ b' 𝒟.∘ (F₁ c' 𝒟.∘ f))
+  extendl3 = 𝒟.extendl3 weave3
+
+  extendr3 : ((f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b) 𝒟.∘ F₁ c ≡ ((f 𝒟.∘ F₁ a') 𝒟.∘ F₁ b') 𝒟.∘ F₁ c'
+  extendr3 = 𝒟.extendr3 weave3
+
 module _ (p : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d) where
   swap : F₁ (a 𝒞.∘ c) ≡ F₁ (b 𝒞.∘ d)
   swap = F-∘ a c ·· p ·· sym (F-∘  b d)
@@ -121,7 +143,7 @@ shuffler p = popr p ∙ (𝒟.assoc _ _ _)
 ```agda
 module _ (inv : a 𝒞.∘ b ≡ 𝒞.id) where
   annihilate : F₁ a 𝒟.∘ F₁ b ≡ 𝒟.id
-  annihilate = sym (F-∘ a b) ∙ ap F₁ inv ∙ F-id
+  annihilate = collapse inv ∙ F-id
 
   cancell : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ f) ≡ f
   cancell = 𝒟.cancell annihilate
@@ -137,6 +159,22 @@ module _ (inv : a 𝒞.∘ b ≡ 𝒞.id) where
 
   cancel-inner : (f 𝒟.∘ F₁ a) 𝒟.∘ (F₁ b 𝒟.∘ g) ≡ f 𝒟.∘ g
   cancel-inner = 𝒟.cancel-inner annihilate
+
+module _ (inv : a 𝒞.∘ b 𝒞.∘ c ≡ 𝒞.id) where
+  annihilate3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ 𝒟.id
+  annihilate3 = collapse3 inv ∙ F-id
+
+  cancell3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ f
+  cancell3 = 𝒟.cancell3 annihilate3
+
+  cancelr3 : ((f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b) 𝒟.∘ F₁ c ≡ f
+  cancelr3 = 𝒟.cancelr3 annihilate3
+
+  insertl3 : f ≡ F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f))
+  insertl3 = 𝒟.insertl3 annihilate3
+
+  insertr3 : f ≡ ((f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b) 𝒟.∘ F₁ c
+  insertr3 = 𝒟.insertr3 annihilate3
 ```
 
 ## Notation

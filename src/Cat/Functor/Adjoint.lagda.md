@@ -7,6 +7,7 @@ description: |
 ---
 <!--
 ```agda
+{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Initial
 open import Cat.Functor.Compose
@@ -80,6 +81,9 @@ record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level C D) where
 
   module unit = _=>_ unit
   module counit = _=>_ counit renaming (η to ε)
+
+  open unit using (η) public
+  open counit using (ε) public
 ```
 
 Unfortunately, the data that we have here is not particularly coherent.
@@ -92,8 +96,8 @@ transformations to make sure these match:
 
 ```agda
   field
-    zig : ∀ {A} → counit.ε (F₀ L A) D.∘ F₁ L (unit.η A) ≡ D.id
-    zag : ∀ {B} → F₁ R (counit.ε B) C.∘ unit.η (F₀ R B) ≡ C.id
+    zig : ∀ {A} → ε (L .F₀ A) D.∘ L .F₁ (η A) ≡ D.id
+    zag : ∀ {B} → R .F₁ (ε B) C.∘ η (R .F₀ B) ≡ C.id
 
 infixr 15 _⊣_
 ```
@@ -204,10 +208,10 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 
 ```agda
   L-adjunct : ∀ {a b} → D.Hom (L.₀ a) b → C.Hom a (R.₀ b)
-  L-adjunct f = R.₁ f C.∘ adj.unit.η _
+  L-adjunct f = R.₁ f C.∘ adj.η _
 
   R-adjunct : ∀ {a b} → C.Hom a (R.₀ b) → D.Hom (L.₀ a) b
-  R-adjunct f = adj.counit.ε _ D.∘ L.₁ f
+  R-adjunct f = adj.ε _ D.∘ L.₁ f
 ```
 
 The important part that the actual data of an adjunction gets you is
@@ -217,17 +221,17 @@ $\hom(La,b) \cong \hom(a,Rb)$.
 ```agda
   L-R-adjunct : ∀ {a b} → is-right-inverse (R-adjunct {a} {b}) L-adjunct
   L-R-adjunct f =
-    R.₁ (adj.counit.ε _ D.∘ L.₁ f) C.∘ adj.unit.η _        ≡⟨ R.pushl refl ⟩
-    R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.unit.η _  ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
-    R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
-    f                                                      ∎
+    R.₁ (adj.ε _ D.∘ L.₁ f) C.∘ adj.η _        ≡⟨ R.pushl refl ⟩
+    R.₁ (adj.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.η _  ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
+    R.₁ (adj.ε _) C.∘ adj.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
+    f                                          ∎
 
   R-L-adjunct : ∀ {a b} → is-left-inverse (R-adjunct {a} {b}) L-adjunct
   R-L-adjunct f =
-    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.unit.η _)       ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
-    adj.counit.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.unit.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
-    f D.∘ adj.counit.ε _ D.∘ L.₁ (adj.unit.η _)           ≡⟨ D.elimr adj.zig ⟩
-    f                                                     ∎
+    adj.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.η _)       ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
+    adj.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
+    f D.∘ adj.ε _ D.∘ L.₁ (adj.η _)           ≡⟨ D.elimr adj.zig ⟩
+    f                                         ∎
 
   L-adjunct-is-equiv : ∀ {a b} → is-equiv (L-adjunct {a} {b})
   L-adjunct-is-equiv = is-iso→is-equiv
@@ -252,9 +256,9 @@ Furthermore, these equivalences are natural.
     : ∀ {a b c} (f : D.Hom (L.₀ b) c) (g : C.Hom a b)
     → L-adjunct (f D.∘ L.₁ g) ≡ L-adjunct f C.∘ g
   L-adjunct-naturall f g =
-    R.₁ (f D.∘ L.₁ g) C.∘ adj.unit.η _       ≡⟨ R.F-∘ _ _ C.⟩∘⟨refl ⟩
-    (R.₁ f C.∘ R.₁ (L.₁ g)) C.∘ adj.unit.η _ ≡⟨ C.extendr (sym $ adj.unit.is-natural _ _ _) ⟩
-    (R.₁ f C.∘ adj.unit.η _) C.∘ g           ∎
+    R.₁ (f D.∘ L.₁ g) C.∘ adj.η _       ≡⟨ R.F-∘ _ _ C.⟩∘⟨refl ⟩
+    (R.₁ f C.∘ R.₁ (L.₁ g)) C.∘ adj.η _ ≡⟨ C.extendr (sym $ adj.unit.is-natural _ _ _) ⟩
+    (R.₁ f C.∘ adj.η _) C.∘ g           ∎
 
   L-adjunct-naturalr
       : ∀ {a b c} (f : D.Hom b c) (g : D.Hom (L.₀ a) b)
@@ -276,9 +280,9 @@ Furthermore, these equivalences are natural.
     : ∀ {a b c} (f : D.Hom b c) (g : C.Hom a (R.₀ b))
     → R-adjunct (R.₁ f C.∘ g) ≡ f D.∘ R-adjunct g
   R-adjunct-naturalr f g =
-    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ g)     ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
-    adj.counit.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ g ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
-    f D.∘ (adj.counit.ε _ D.∘ L.₁ g) ∎
+    adj.ε _ D.∘ L.₁ (R.₁ f C.∘ g)     ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
+    adj.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ g ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
+    f D.∘ (adj.ε _ D.∘ L.₁ g)         ∎
 
   R-adjunct-natural₂
     : ∀ {a b c d} (f : D.Hom a b) (g : C.Hom c d) (x : C.Hom d (R.F₀ a))
@@ -322,9 +326,9 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   open _=>_
 
   opposite-adjunction : R.op ⊣ L.op
-  opposite-adjunction .unit .η _ = adj.counit.ε _
+  opposite-adjunction .unit .η _ = adj.ε _
   opposite-adjunction .unit .is-natural x y f = sym (adj.counit.is-natural _ _ _)
-  opposite-adjunction .counit .η _ = adj.unit.η _
+  opposite-adjunction .counit .η _ = adj.η _
   opposite-adjunction .counit .is-natural x y f = sym (adj.unit.is-natural _ _ _)
   opposite-adjunction .zig = adj.zag
   opposite-adjunction .zag = adj.zig
@@ -340,19 +344,19 @@ between [postcomposition and precomposition functors], respectively:
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
   postcomposite-adjunction .unit .η F = cohere! (adj.unit ◂ F)
-  postcomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → adj.unit.is-natural _ _ _
+  postcomposite-adjunction .unit .is-natural F G α = ext λ _ → adj.unit.is-natural _ _ _
   postcomposite-adjunction .counit .η F = cohere! (adj.counit ◂ F)
-  postcomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → adj.counit.is-natural _ _ _
-  postcomposite-adjunction .zig = Nat-path λ _ → adj.zig
-  postcomposite-adjunction .zag = Nat-path λ _ → adj.zag
+  postcomposite-adjunction .counit .is-natural F G α = ext λ _ → adj.counit.is-natural _ _ _
+  postcomposite-adjunction .zig = ext λ _ → adj.zig
+  postcomposite-adjunction .zag = ext λ _ → adj.zag
 
   precomposite-adjunction : precompose R {D = E} ⊣ precompose L
   precomposite-adjunction .unit .η F = cohere! (F ▸ adj.unit)
-  precomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .unit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
   precomposite-adjunction .counit .η F = cohere! (F ▸ adj.counit)
-  precomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
-  precomposite-adjunction .zig {F} = Nat-path λ _ → Func.annihilate F adj.zag
-  precomposite-adjunction .zag {F} = Nat-path λ _ → Func.annihilate F adj.zig
+  precomposite-adjunction .counit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .zig {F} = ext λ _ → Func.annihilate F adj.zag
+  precomposite-adjunction .zag {F} = ext λ _ → Func.annihilate F adj.zig
 ```
 
 <!--
@@ -364,7 +368,7 @@ adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' wher
   open _⊣_ L⊣R
   module α = Isoⁿ α
   module β = Isoⁿ β
-  open _=>_
+  open _=>_ using (is-natural)
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
   module L = Func L
@@ -374,37 +378,37 @@ adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' wher
 
   -- Abbreviations for equational reasoning
   α→ : ∀ {x} → D.Hom (L.₀ x) (L'.₀ x)
-  α→ {x} = α.to .η x
+  α→ {x} = α.to ._=>_.η x
 
   α← : ∀ {x} → D.Hom (L'.₀ x) (L.₀ x)
-  α← {x} = α.from .η x
+  α← {x} = α.from ._=>_.η x
 
   β→ : ∀ {x} → C.Hom (R.₀ x) (R'.₀ x)
-  β→ {x} = β.to .η x
+  β→ {x} = β.to ._=>_.η x
 
   β← : ∀ {x} → C.Hom (R'.₀ x) (R.₀ x)
-  β← {x} = β.from .η x
+  β← {x} = β.from ._=>_.η x
 
   L'⊣R' : L' ⊣ R'
   L'⊣R' ._⊣_.unit =  (β.to ◆ α.to) ∘nt unit
   L'⊣R' ._⊣_.counit = counit ∘nt (α.from ◆ β.from)
   L'⊣R' ._⊣_.zig =
-    (counit.ε _ D.∘ (L.₁ β← D.∘ α←)) D.∘ L'.₁ (⌜ R'.₁ α→ C.∘ β→ ⌝ C.∘ unit.η _) ≡⟨ ap! (sym $ β.to .is-natural _ _ _) ⟩
-    (counit.ε _ D.∘ ⌜ L.₁ β← D.∘ α← ⌝) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ unit.η _)  ≡⟨ ap! (sym $ α.from .is-natural _ _ _) ⟩
-    (counit.ε _ D.∘ α← D.∘ L'.₁ β←) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ unit.η _)     ≡⟨ D.pullr (D.pullr (L'.collapse (C.pulll (C.cancell (β.invr ηₚ _))))) ⟩
-    counit.ε _ D.∘ α← D.∘ L'.₁ (R.₁ α→ C.∘ unit.η _)                            ≡⟨ ap (counit.ε _ D.∘_) (α.from .is-natural _ _ _) ⟩
-    counit.ε _ D.∘ L.₁ (R.₁ α→ C.∘ unit.η _) D.∘ α←                             ≡⟨ D.push-inner (L.F-∘ _ _) ⟩
-    (counit.ε _ D.∘ L.₁ (R.₁ α→)) D.∘ (L.₁ (unit.η _) D.∘ α←)                   ≡⟨ D.pushl (counit.is-natural _ _ _) ⟩
-    α→ D.∘ counit.ε _ D.∘ L.₁ (unit.η _) D.∘ α←                                 ≡⟨ ap (α→ D.∘_) (D.cancell zig) ⟩
-    α→ D.∘ α←                                                                   ≡⟨ α.invl ηₚ _ ⟩
+    (ε _ D.∘ (L.₁ β← D.∘ α←)) D.∘ L'.₁ (⌜ R'.₁ α→ C.∘ β→ ⌝ C.∘ η _) ≡⟨ ap! (sym $ β.to .is-natural _ _ _) ⟩
+    (ε _ D.∘ ⌜ L.₁ β← D.∘ α← ⌝) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ η _)  ≡⟨ ap! (sym $ α.from .is-natural _ _ _) ⟩
+    (ε _ D.∘ α← D.∘ L'.₁ β←) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ η _)     ≡⟨ D.pullr (D.pullr (L'.collapse (C.pulll (C.cancell (β.invr ηₚ _))))) ⟩
+    ε _ D.∘ α← D.∘ L'.₁ (R.₁ α→ C.∘ η _)                            ≡⟨ ap (ε _ D.∘_) (α.from .is-natural _ _ _) ⟩
+    ε _ D.∘ L.₁ (R.₁ α→ C.∘ η _) D.∘ α←                             ≡⟨ D.push-inner (L.F-∘ _ _) ⟩
+    (ε _ D.∘ L.₁ (R.₁ α→)) D.∘ (L.₁ (η _) D.∘ α←)                   ≡⟨ D.pushl (counit.is-natural _ _ _) ⟩
+    α→ D.∘ ε _ D.∘ L.₁ (η _) D.∘ α←                                 ≡⟨ ap (α→ D.∘_) (D.cancell zig) ⟩
+    α→ D.∘ α←                                                       ≡⟨ α.invl ηₚ _ ⟩
     D.id ∎
   L'⊣R' ._⊣_.zag =
-    R'.₁ (counit.ε _ D.∘ L.₁ β← D.∘ α←) C.∘ ((R'.₁ α→ C.∘ β→) C.∘ unit.η _) ≡⟨ C.extendl (C.pulll (R'.collapse (D.pullr (D.cancelr (α.invr ηₚ _))))) ⟩
-    R'.₁ (counit.ε _ D.∘ L.₁ β←) C.∘ β→ C.∘ unit.η _                        ≡⟨ C.extendl (sym (β.to .is-natural _ _ _)) ⟩
-    β→ C.∘ R.₁ (counit.ε _ D.∘ L.₁ β←) C.∘ unit.η _                         ≡⟨ C.push-inner (R.F-∘ _ _) ⟩
-    ((β→ C.∘ R.₁ (counit.ε _)) C.∘ (R.₁ (L.₁ β←) C.∘ unit.η _))             ≡⟨ ap₂ C._∘_ refl (sym $ unit.is-natural _ _ _) ⟩
-    (β→ C.∘ R.₁ (counit.ε _)) C.∘ (unit.η _ C.∘ β←)                         ≡⟨ C.cancel-inner zag ⟩
-    β→ C.∘ β←                                                               ≡⟨ β.invl ηₚ _ ⟩
+    R'.₁ (ε _ D.∘ L.₁ β← D.∘ α←) C.∘ ((R'.₁ α→ C.∘ β→) C.∘ η _) ≡⟨ C.extendl (C.pulll (R'.collapse (D.pullr (D.cancelr (α.invr ηₚ _))))) ⟩
+    R'.₁ (ε _ D.∘ L.₁ β←) C.∘ β→ C.∘ η _                        ≡⟨ C.extendl (sym (β.to .is-natural _ _ _)) ⟩
+    β→ C.∘ R.₁ (ε _ D.∘ L.₁ β←) C.∘ η _                         ≡⟨ C.push-inner (R.F-∘ _ _) ⟩
+    ((β→ C.∘ R.₁ (ε _)) C.∘ (R.₁ (L.₁ β←) C.∘ η _))             ≡⟨ ap₂ C._∘_ refl (sym $ unit.is-natural _ _ _) ⟩
+    (β→ C.∘ R.₁ (ε _)) C.∘ (η _ C.∘ β←)                         ≡⟨ C.cancel-inner zag ⟩
+    β→ C.∘ β←                                                   ≡⟨ β.invl ηₚ _ ⟩
     C.id ∎
 
 adjoint-natural-isol

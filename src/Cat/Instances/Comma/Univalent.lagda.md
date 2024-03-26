@@ -77,8 +77,8 @@ have
 
 $$
 \begin{split}
-G_1(f_\beta) o_m F_1(f_\alpha^{-1}) &= o'_m F_1(f_\alpha) F_1(f_\alpha^{-1}) \\
-  &= o'_m F_1(f_\alpha f_\alpha^{-1}) \\
+G_1(f_\beta) o_m F_1(f_\alpha\inv) &= o'_m F_1(f_\alpha) F_1(f_\alpha\inv) \\
+  &= o'_m F_1(f_\alpha f_\alpha\inv) \\
   &= o'_m\text{,}
 \end{split}
 $$
@@ -94,8 +94,8 @@ an identification $o \equiv o'$.
       lemma' : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
                 (ob .map) (ob' .map)
       lemma' = transport
-        (λ i → PathP (λ j → X.Hom (F-map-path yuniv xuniv F x-is-x (~ i) j)
-                                  (F-map-path zuniv xuniv G y-is-y (~ i) j))
+        (λ i → PathP (λ j → X.Hom (F-map-path F yuniv xuniv x-is-x (~ i) j)
+                                  (F-map-path G zuniv xuniv y-is-y (~ i) j))
                     (ob .map) (ob' .map)) $
         Univalent.Hom-pathp-iso xuniv $
           X.pulll   (sym (isom.to .sq)) ∙

@@ -227,6 +227,59 @@ write, is definitionally a linear map --- saving us a bit of effort.
 {-# DISPLAY fold-free-mod.go-linear = fold-free-mod #-}
 ```
 
+<!--
+```agda
+open Free-elim-prop
+
+equal-on-basis
+  : ∀ {ℓb ℓg} {T : Type ℓb} (M : Module R ℓg)
+  → {f g : Linear-map (Free-Mod T) M}
+  → ((x : T) → f .map (inc x) ≡ g .map (inc x))
+  → f ≡ g
+equal-on-basis M {f} {g} p =
+  ext $ Free-elim-prop.elim λ where
+    .has-is-prop x → M .fst .is-tr _ _
+    .P-0m        → f.pres-0 ∙ sym g.pres-0
+    .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
+    .P-inc       → p
+    .P-· x y α   → f.pres-⋆ _ _ ·· ap (x M.⋆_) α ·· sym (g.pres-⋆ _ _)
+    .P-+ x y α β → f.pres-+ _ _ ·· ap₂ M._+_ α β ·· sym (g.pres-+ _ _)
+  where
+    module f = Linear-map f
+    module g = Linear-map g
+    module M = Module-on (M .snd)
+
+Extensional-linear-map-free
+  : ∀ {ℓb ℓg ℓr} {T : Type ℓb} {M : Module R ℓg}
+  → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
+  → Extensional (Linear-map (Free-Mod T) M) ℓr
+Extensional-linear-map-free {M = M} ⦃ ext ⦄ =
+  injection→extensional! {f = λ m x → m .map (inc x)} (λ p → equal-on-basis M (happly p)) ext
+
+Extensional-hom-free
+  : ∀ {ℓ' ℓr} {T : Type ℓ'} {M : Module R (ℓ ⊔ ℓ')}
+  → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
+  → Extensional (R-Mod.Hom (Free-Mod T) M) ℓr
+Extensional-hom-free {M = M} ⦃ ef ⦄ =
+  injection→extensional! {f = λ m x → m # (inc x)}
+    (λ {f} {g} p →
+      let it = equal-on-basis M {hom→linear-map f} {hom→linear-map g} (happly p)
+       in ext (happly (ap map it)))
+    ef
+
+instance
+  extensionality-linear-map-free
+    : ∀ {ℓb ℓg} {T : Type ℓb} {M : Module R ℓg}
+    → Extensionality (Linear-map (Free-Mod T) M)
+  extensionality-linear-map-free = record { lemma = quote Extensional-linear-map-free }
+
+  extensionality-hom-free
+    : ∀ {ℓ'} {T : Type ℓ'} {M : Module R (ℓ ⊔ ℓ')}
+    → Extensionality (R-Mod.Hom {ℓm = ℓ ⊔ ℓ'} (Free-Mod T) M)
+  extensionality-hom-free = record { lemma = quote Extensional-hom-free }
+```
+-->
+
 To prove that free modules have the expected universal property, it
 remains to show that if $f = g\circ\rm{inc}$, then $\rm{fold}(f) = g$.
 Since we're eliminating into a proposition, all we have to handle are
@@ -234,6 +287,7 @@ the operation constructors, which is.. inductive, but manageable. I'll
 leave the computation here if you're interested:
 
 ```agda
+-- <<<<<<< HEAD
 make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object-on (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
 make-free-module {ℓ' = ℓ'} S = go where
   open Free-object-on
@@ -244,28 +298,7 @@ make-free-module {ℓ' = ℓ'} S = go where
   go .eta = inc
   go .has-is-free .eps {b} f = linear-map→hom (fold-free-mod b f)
   go .has-is-free .commute = refl
-  go .has-is-free .unique {M} {f} g p = ext (Free-elim-prop.elim m) where
-    open Free-elim-prop
-    module g = Linear-map (hom→linear-map g)
-    module M = Module-on (M .snd)
-    fold = fold-free-mod M f .map
-
-    m : Free-elim-prop (λ a → g.map a ≡ fold a)
-    m .has-is-prop = hlevel!
-    m .P-0m = g.pres-0
-    m .P-neg x p =
-      g.map (neg x) ≡⟨ g.pres-neg ⟩
-      M.- (g.map x) ≡⟨ ap M.-_ p ⟩
-      M.- fold x ∎
-    m .P-+ x y p q =
-      g.map (x + y)       ≡⟨ g.pres-+ x y ⟩
-      g.map x M.+ g.map y ≡⟨ ap₂ M._+_ p q ⟩
-      fold x M.+ fold y   ∎
-    m .P-· x y p =
-      g.map (x · y) ≡⟨ g.pres-⋆ x y ⟩
-      x M.⋆ g.map y ≡⟨ ap (x M.⋆_) p ⟩
-      x M.⋆ fold y  ∎
-    m .P-inc = p #ₚ_
+  go .has-is-free .unique {M} {f} g p = reext! p
 ```
 
 After that calculation, we can ✨ just ✨ conclude that
@@ -282,25 +315,6 @@ Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ
 
 <!--
 ```agda
-open Free-elim-prop
-
-equal-on-basis
-  : ∀ {ℓb ℓg} {T : Type ℓb} (M : Module R ℓg)
-  → {f g : Linear-map (Free-Mod T) M}
-  → ((x : T) → f .map (inc x) ≡ g .map (inc x))
-  → f ≡ g
-equal-on-basis M {f} {g} p =
-  Linear-map-path $ Free-elim-prop.elim λ where
-    .has-is-prop x → M .fst .is-tr _ _
-    .P-0m        → f.pres-0 ∙ sym g.pres-0
-    .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
-    .P-inc       → p
-    .P-· x y α   → f.pres-⋆ _ _ ·· ap (x M.⋆_) α ·· sym (g.pres-⋆ _ _)
-    .P-+ x y α β → f.pres-+ _ _ ·· ap₂ M._+_ α β ·· sym (g.pres-+ _ _)
-  where
-    module f = Linear-map f
-    module g = Linear-map g
-    module M = Module-on (M .snd)
 
 equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)

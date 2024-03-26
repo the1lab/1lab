@@ -1,7 +1,7 @@
 <!--
 ```
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -281,8 +281,8 @@ The implementation of multiplication uses the decomposition of numbers
 into their signs and absolute values: The product $xy$ is defined to be
 
 $$
-\operatorname{sign}(x) * \operatorname{sign}(y) * |x| * |y|\text{,}
-$$
+\operatorname{sign}(x) * \operatorname{sign}(y) * |x| * |y|
+$$,
 
 There are actually three different "multiplication" signs in the formula
 above. The first is _sign multiplication_, the second is

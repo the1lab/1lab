@@ -382,12 +382,40 @@ one below.
 
 Since $f_1$ and $f_2$ are both Cartesian morphisms, we can factor $f_2$
 through $a_1'$ by a map $g$, and conversely, $f_1$ through $a_2'$ by
-$h$, so that we have $f_2gh = f_1h = f_2$, and $gh$ is a factorisation
-of $f_2$ through $a'_2$, its own domain; but, of course, $f_2$ also
-factors through its own domain by the identity map! Since $f_2$ is
-Cartesian, these factorisations must be the same, hence $gh = \id$. A
-symmetric argument shows that $hg$ is also the identity, so $g : a_1'
-\cong a_2'$.
+$h$.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {a_2'} \\
+  {a_1'} & b'
+  \arrow["g"', shift right=2, dashed, from=1-1, to=2-1]
+  \arrow["h"', shift right=2, dashed, from=2-1, to=1-1]
+  \arrow["{f_1}"', from=2-1, to=2-2]
+  \arrow["{f_2}", from=1-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+Since we're trying to prove that $h$ is an isomorphism, we want to show
+that $hg=\mathrm{id}_{a_2'}$. We know that $f_2$ factors through $a'_2$,
+its own domain, via the identity map. We will show that it also factors
+through $hg$ to show that the two are equal, by the universal property
+of $f_2$ being Cartesian. Consider the following diagram:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {a_2'} & b' \\
+  {a_1'} & {a_2'}
+  \arrow["g"', shift right=2, dashed, from=1-1, to=2-1]
+  \arrow["{f_1}"', from=2-1, to=1-2]
+  \arrow["{f_2}", from=1-1, to=1-2]
+  \arrow["h"', shift right=2, dashed, from=2-1, to=2-2]
+  \arrow["{f_2}"', from=2-2, to=1-2]
+  \arrow["{\mathrm{id}}"{description, pos=0.2}, curve={height=12pt}, dashed, from=1-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+We have $f_2hg = f_1g = f_2$. A symmetric argument shows that $gh$ is
+also the identity, so $h : a_1' \cong a_2'$.
 
 ```agda
 cartesian-domain-unique

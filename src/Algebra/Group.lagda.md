@@ -44,7 +44,7 @@ record is-group {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
 ```
 
 There is also a map which assigns to each element $x$ its _`inverse`{.Agda
-ident=inverse}_ $x^{-1}$, and this inverse must multiply with $x$ to
+ident=inverse}_ $x\inv$, and this inverse must multiply with $x$ to
 give the unit, both on the left and on the right:
 
 ```agda
@@ -102,7 +102,7 @@ Note that any element $x$ of $G$ determines two
 bijections on the underlying set of $G$, by multiplication with $x$ on
 the left and on the right.
 The inverse of this bijection is given by multiplication with
-$x^{-1}$, and the proof that these are in fact inverse functions are
+$x\inv$, and the proof that these are in fact inverse functions are
 given by the group laws:
 
 ```agda
@@ -128,7 +128,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-group)
 
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
-is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
+is-group-is-prop {A = A} x y = Iso.injective eqv $
      1x=1y
   ,ₚ funext (λ a →
       monoid-inverse-unique x.has-is-monoid a _ _
@@ -168,7 +168,7 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
     has-is-group : is-group _⋆_
 
   infixr 20 _⋆_
-  infixl 30 _⁻¹
+  infixl 35 _⁻¹
 
   _⁻¹ : A → A
   x ⁻¹ = has-is-group .is-group.inverse x
@@ -335,8 +335,8 @@ ident=is-equiv-is-prop}.
 The associativity and identity laws hold definitionally.
 
 ```agda
-  group-str .assoc _ _ _ = Σ-prop-path is-equiv-is-prop refl
-  group-str .idl _ = Σ-prop-path is-equiv-is-prop refl
+  group-str .assoc _ _ _ = trivial!
+  group-str .idl _ = trivial!
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
@@ -345,6 +345,5 @@ equivalence is both a section and a retraction.
 
 ```agda
   group-str .inv = _e⁻¹
-  group-str .invl (f , eqv) =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
+  group-str .invl (f , eqv) = ext (equiv→unit eqv)
 ```

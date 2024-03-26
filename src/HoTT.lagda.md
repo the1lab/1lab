@@ -31,6 +31,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
 open import Cat.Instances.Sets
 open import Cat.Univalent.Rezk
 open import Cat.Allegory.Base
@@ -79,11 +80,11 @@ formalised univalent mathematics, we have formalised a _considerable_
 subset of the first part, and most of chapter 9. The vast majority of
 the 1Lab is material that was _not_ covered in the HoTT book.
 
-# Part 1 Foundations
+# Part 1: Foundations
 
-## Chapter 2 Homotopy type theory
+## Chapter 2: Homotopy type theory
 
-### 2.1 Types are higher groupoids
+### 2.1: Types are higher groupoids
 
 <!--
 ```agda
@@ -111,7 +112,7 @@ _ = Ωⁿ
 * Definition 2.1.7: `Type∙`{.Agda}
 * Definition 2.1.8: `Ωⁿ`{.Agda}
 
-### 2.2 Functions are functors
+### 2.2: Functions are functors
 
 <!--
 ```agda
@@ -127,7 +128,7 @@ _ = ap-∙
   iii. _Definitional in cubical type theory_
   iv. _Definitional in cubical type theory_
 
-### 2.3 Type families are fibrations
+### 2.3: Type families are fibrations
 
 <!--
 ```agda
@@ -145,7 +146,7 @@ _ = subst-∙
 * Lemma 2.3.9: `subst-∙`{.Agda}
 * Lemma 2.3.10: _Definitional in cubical type theory_
 
-### 2.4 Homotopies and equivalences
+### 2.4: Homotopies and equivalences
 
 <!--
 ```agda
@@ -165,7 +166,7 @@ _ = _∙e_
 * Example 2.4.9: `transport⁻transport`{.Agda}
 * Lemma 2.4.12: `id-equiv`{.Agda}, `Equiv.inverse`{.Agda}, `_∙e_`{.Agda}
 
-### 2.7 Cartesian product types
+### 2.7: Cartesian product types
 
 <!--
 ```agda
@@ -176,7 +177,7 @@ _ = Σ-pathp-iso
 * Theorem 2.7.2: `Σ-pathp-iso`{.Agda}
 * Theorem 2.7.3: Agda has definitional η equality for records.
 
-### 2.9 Π-types and function extensionality
+### 2.9: Π-types and function extensionality
 
 <!--
 ```agda
@@ -188,7 +189,7 @@ _ = funext-dep
 * Theorem 2.9.3: `funext`{.Agda} (no longer an axiom)
 * Lemma 2.9.6: `funext-dep`{.Agda} (no longer an axiom)
 
-### 2.10 Universes and univalence
+### 2.10: Universes and univalence
 
 <!--
 ```agda
@@ -207,7 +208,7 @@ _ = sym-ua
   * `ua`{.Agda}, `uaβ`{.Agda}
   * `ua-id-equiv`{.Agda}, `ua∙`{.Agda}, `sym-ua`{.Agda}
 
-### 2.11 Identity type
+### 2.11: Identity type
 
 <!--
 ```agda
@@ -223,7 +224,7 @@ _ = commutes→square
 * Lemma 2.11.2: `subst-path-left`{.Agda}, `subst-path-right`{.Agda}, `transport-path`{.Agda}
 * Theorem 2.11.5: `commutes→square`{.Agda}
 
-### 2.12 Coproducts
+### 2.12: Coproducts
 
 <!--
 ```agda
@@ -243,9 +244,9 @@ _ = Σ-assoc
 
 * Exercise 2.10: `Σ-assoc`{.Agda}
 
-## Chapter 3 Sets and Logic
+## Chapter 3: Sets and Logic
 
-### 3.1 Sets and n-types
+### 3.1: Sets and n-types
 
 <!--
 ```agda
@@ -266,7 +267,7 @@ _ = is-hlevel-suc
 * Definition 3.1.7: `is-groupoid`{.Agda}
 * Lemma 3.1.8: `is-hlevel-suc`{.Agda} (special case)
 
-### 3.2 Propositions as types?
+### 3.2: Propositions as types?
 
 <!--
 ```agda
@@ -278,7 +279,7 @@ _ = ¬LEM∞
 * Theorem 3.2.2: `¬DNE∞`{.Agda}
 * Corollary 3.2.7: `¬LEM∞`{.Agda}
 
-### 3.3 Mere propositions
+### 3.3: Mere propositions
 
 <!--
 ```agda
@@ -295,7 +296,7 @@ _ = is-hlevel-is-prop
 * Lemma 3.3.4: `is-prop→is-set`{.Agda}
 * Lemma 3.3.5: `is-prop-is-prop`{.Agda}, `is-hlevel-is-prop`{.Agda}
 
-### 3.4 Classical vs. intuitionistic logic
+### 3.4: Classical vs. intuitionistic logic
 
 <!--
 ```agda
@@ -309,10 +310,10 @@ _ = Discrete
 * Definition 3.4.1: `LEM`{.Agda}
 * Definition 3.4.2: `DNE`{.Agda}
 * Definition 3.4.3:
-  i. `Dec`{.Agda}
-  iii. `Discrete`{.Agda}
+  * (i) `Dec`{.Agda}
+  * (iii) `Discrete`{.Agda}
 
-### 3.5 Subsets and propositional resizing
+### 3.5: Subsets and propositional resizing
 
 <!--
 ```agda
@@ -325,7 +326,7 @@ _ = □
 * Lemma 3.5.1: `Σ-prop-path`{.Agda}
 * Axiom 3.5.5: `Ω`{.Agda}, `□`{.Agda}.
 
-### 3.7 Propositional truncation
+### 3.7: Propositional truncation
 
 <!--
 ```agda
@@ -337,7 +338,7 @@ _ = ∃
 The type itself is defined as a higher-inductive type `∥_∥`{.Agda}. We
 also define `∃`{.Agda} as a shorthand for the truncation of `Σ`{.Agda}.
 
-### 3.8 The axiom of choice
+### 3.8: The axiom of choice
 
 <!--
 ```agda
@@ -347,7 +348,7 @@ _ = Axiom-of-choice
 
 * Definition 3.8.3: `Axiom-of-choice`{.Agda}
 
-### 3.9 The principle of unique choice
+### 3.9: The principle of unique choice
 
 <!--
 ```agda
@@ -360,7 +361,7 @@ _ = ∥-∥-proj
 * Lemma 3.9.1: `is-prop→equiv∥-∥`{.Agda}
 * Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
 
-### 3.11 Contractibility
+### 3.11: Contractibility
 
 <!--
 ```agda
@@ -414,9 +415,9 @@ _ = Finite-choice
 * Exercise 3.21: `is-prop≃equiv∥-∥`{.Agda}
 * Exercise 3.22: `Finite-choice`{.Agda}
 
-## Chapter 4 Equivalences
+## Chapter 4: Equivalences
 
-### 4.2 Half adjoint equivalences
+### 4.2: Half adjoint equivalences
 
 <!--
 ```agda
@@ -443,7 +444,7 @@ _ = is-iso→is-contr-rinv
 * Lemma 4.2.8: `is-equiv→pre-is-equiv`{.Agda}, `is-equiv→post-is-equiv`{.Agda}
 * Lemma 4.2.9: `is-iso→is-contr-linv`{.Agda}, `is-iso→is-contr-rinv`{.Agda}
 
-### 4.3 Bi-invertible maps
+### 4.3: Bi-invertible maps
 
 <!--
 ```agda
@@ -455,7 +456,7 @@ _ = is-biinv-is-prop
 * Definition 4.3.1: `is-biinv`{.Agda}
 * Theorem 4.3.2: `is-biinv-is-prop`{.Agda}
 
-### 4.4 Contractible fibres
+### 4.4: Contractible fibres
 
 <!--
 ```agda
@@ -474,7 +475,7 @@ generally use it through the interface of half-adjoint equivalences.
 * Theorem 4.4.3: `is-equiv→is-half-adjoint-equiv`{.Agda}
 * Lemma 4.4.4: `is-equiv-is-prop`{.Agda}
 
-### 4.6 Surjections and embeddings
+### 4.6: Surjections and embeddings
 
 <!--
 ```agda
@@ -494,7 +495,7 @@ _ = embedding-surjective→is-equiv
 * Definition 4.6.2: `injective`{.Agda}
 * Theorem 4.6.3: `is-equiv→is-surjective`{.Agda}, `is-equiv→is-embedding`{.Agda}, `embedding-surjective→is-equiv`{.Agda}
 
-### 4.8 The object classifier
+### 4.8: The object classifier
 
 <!--
 ```agda
@@ -508,9 +509,9 @@ _ = Map-classifier
 * Lemma 4.8.2: `Total-equiv`{.Agda}
 * Theorem 4.8.3: `Map-classifier`{.Agda}
 
-## Chapter 5 Induction
+## Chapter 5: Induction
 
-### 5.3 W-types
+### 5.3: W-types
 
 <!--
 ```agda
@@ -520,7 +521,7 @@ _ = W
 
 * W-types: `W`{.Agda}
 
-### 5.4 Inductive types are initial algebras
+### 5.4: Inductive types are initial algebras
 
 <!--
 ```agda
@@ -530,9 +531,9 @@ _ = W-initial
 
 * Theorem 5.4.7: `W-initial`{.Agda}
 
-## Chapter 6 Higher inductive types
+## Chapter 6: Higher inductive types
 
-### 6.2 Induction principles and dependent paths
+### 6.2: Induction principles and dependent paths
 
 <!--
 ```agda
@@ -544,11 +545,11 @@ _ = Ωⁿ≃Sⁿ-map
 -->
 
 * Remark 6.2.3: `to-pathp`{.Agda}, `from-pathp`{.Agda}
-* _Induction principle for $\bb{S}^1$: by pattern matching.
+* *Induction principle for $\bb{S}^1$*: by pattern matching.
 * Lemma 6.2.5: `S¹-rec`{.Agda}
 * Lemma 6.2.9: `Ωⁿ≃Sⁿ-map`{.Agda} for `n = 1`{.Agda}
 
-### 6.3 The interval
+### 6.3: The interval
 
 <!--
 ```agda
@@ -563,7 +564,7 @@ This is the higher inductive type `[0,1]`{.Agda}, not the interval type
 
 * Lemma 6.3.1: `interval-contractible`{.Agda}
 
-### 6.4 Circles and spheres
+### 6.4: Circles and spheres
 
 <!--
 ```agda
@@ -577,7 +578,7 @@ _ = ap-square
 * Lemma 6.4.2: `always-loop`{.Agda}
 * Lemma 6.4.4: `ap-square`{.Agda}
 
-### 6.5 Suspensions
+### 6.5: Suspensions
 
 <!--
 ```agda
@@ -593,7 +594,7 @@ _ = Σ-map∙≃map∙-Ω
 * Definition 6.5.2: `Sⁿ⁻¹`{.Agda}
 * Lemma 6.5.4: `Σ-map∙≃map∙-Ω`{.Agda}
 
-### 6.6 Cell complexes
+### 6.6: Cell complexes
 
 <!--
 ```agda
@@ -603,7 +604,7 @@ _ = T²
 
 * The torus: `T²`{.Agda}.
 
-### 6.9 Truncations
+### 6.9: Truncations
 
 <!--
 ```agda
@@ -613,7 +614,7 @@ _ = ∥-∥₀-elim
 
 * Lemma 6.9.1: `∥-∥₀-elim`{.Agda}
 
-### 6.10 Quotients
+### 6.10: Quotients
 
 <!--
 ```agda
@@ -628,7 +629,7 @@ We define the quotient `_/_`{.Agda} in terms of coequalisers
 
 * Lemma 6.10.3: `Coeq-univ`{.Agda}.
 
-### 6.11 Algebra
+### 6.11: Algebra
 
 <!--
 ```agda
@@ -655,9 +656,9 @@ _ = T²≃S¹×S¹
 
 * Exercise 6.3: `T²≃S¹×S¹`{.Agda}
 
-## Chapter 7 Homotopy n-types
+## Chapter 7: Homotopy n-types
 
-### 7.1 Definition of n-types
+### 7.1: Definition of n-types
 
 <!--
 ```agda
@@ -677,7 +678,7 @@ _ = n-Type-is-hlevel
 * Theorem 7.1.10: `is-hlevel-is-prop`{.Agda}
 * Theorem 7.1.11: `n-Type-is-hlevel`{.Agda}
 
-### 7.2 Uniqueness of identity proofs and Hedberg's theorem
+### 7.2: Uniqueness of identity proofs and Hedberg's theorem
 
 <!--
 ```agda
@@ -695,7 +696,7 @@ _ = hlevel→hubs-and-spokes
 * Theorem 7.2.6: `Discrete-Nat`{.Agda}
 * Theorem 7.2.7: `hubs-and-spokes→hlevel`{.Agda}, `hlevel→hubs-and-spokes`{.Agda}
 
-### 7.3 Truncations
+### 7.3: Truncations
 
 <!--
 ```agda
@@ -709,7 +710,7 @@ _ = n-Tr-path-equiv
 * Lemma 7.3.2: `n-Tr-elim`{.Agda}
 * Theorem 7.3.12: `n-Tr-path-equiv`{.Agda}
 
-### 7.5 Connectedness
+### 7.5: Connectedness
 
 <!--
 ```agda
@@ -738,14 +739,14 @@ _ = is-n-connected≃∥-∥
 
 * Exercise 7.6: `is-n-connected≃∥-∥`{.Agda}
 
-# Part 2 Mathematics
+# Part 2: Mathematics
 
-## Chapter 8 Homotopy theory
+## Chapter 8: Homotopy theory
 
 The only non-trivial result worth mentioning from Chapter 8 is the
 fundamental group of the circle.
 
-### 8.1 π₁(S¹)
+### 8.1: π₁(S¹)
 
 <!--
 ```agda
@@ -768,7 +769,7 @@ _ = πₙ₊₂S¹≡0
 * Corollary 8.1.10: `ΩS¹≃integers`{.Agda}
 * Corollary 8.1.11: `π₁S¹≡ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
 
-### 8.2 Connectedness of suspensions
+### 8.2: Connectedness of suspensions
 
 <!--
 ```
@@ -780,7 +781,7 @@ _ = Sⁿ⁻¹-is-connected
 * Theorem 8.2.1: `Susp-is-connected`{.Agda}
 * Corollary 8.2.2: `Sⁿ⁻¹-is-connected`{.Agda}
 
-### 8.6 The Freudenthal suspension theorem
+### 8.6: The Freudenthal suspension theorem
 
 <!--
 ```agda
@@ -792,13 +793,13 @@ _ = Wedge.elim
 * Lemma 8.6.1: `relative-n-type-const-plus`{.Agda}
 * Lemma 8.6.2: `Wedge.elim`{.Agda}
 
-## Chapter 9 Category theory
+## Chapter 9: Category theory
 
 Since a vast majority of the 1Lab's mathematics consists of pure
 category theory, or mathematics done with a very categorical
 inclination, this is our most complete chapter.
 
-### 9.1 Categories and Precategories
+### 9.1: Categories and Precategories
 
 <!--
 ```agda
@@ -842,13 +843,12 @@ for categories. It is shown equivalent to the usual formulation by
 * Example 9.1.16: `Disc`{.Agda}
 * Example 9.1.19: `Rel`{.Agda}
 
-### 9.2 Functors and Transformations
+### 9.2: Functors and Transformations
 
 <!--
 ```agda
 _ = Functor
 _ = _=>_
-_ = Nat-path
 _ = Nat-is-set
 _ = Functor-path
 _ = invertible→invertibleⁿ
@@ -866,7 +866,7 @@ _ = Cat
 
 * Definition 9.2.1: `Functor`{.Agda}
 * Definition 9.2.2: `_=>_`{.Agda}
-  * The paragraph immediately after 9.2.2 is `Nat-path`{.Agda} and
+  * The paragraph immediately after 9.2.2 is `Nat-pathp`{.Agda} and
     `Nat-is-set`{.Agda}
   * The one after that is `Functor-path`{.Agda}.
 * Definition 9.2.3: `Cat[_,_]`{.Agda}
@@ -878,7 +878,7 @@ _ = Cat
 * Lemma 9.2.10: See the definition of `Prebicategory.pentagon`{.Agda} for `Cat`{.Agda}.
 * Lemma 9.2.11: See the definition of `Prebicategory.triangle`{.Agda} for `Cat`{.Agda}.
 
-### 9.3 Adjunctions
+### 9.3: Adjunctions
 
 <!--
 ```agda
@@ -890,7 +890,7 @@ _ = is-left-adjoint-is-prop
 * Lemma 9.3.1: `_⊣_`{.Agda}
 * Lemma 9.3.2: `is-left-adjoint-is-prop`{.Agda}
 
-### 9.4 Equivalences
+### 9.4: Equivalences
 
 
 <!--
@@ -923,7 +923,7 @@ _ = Category-identity-system
 * Lemma 9.4.15: `Precategory-identity-system`{.Agda}
 * Theorem 9.4.16: `Category-identity-system`{.Agda}
 
-### 9.5 The Yoneda lemma
+### 9.5: The Yoneda lemma
 
 <!--
 ```agda
@@ -951,20 +951,20 @@ _ = hom-iso→adjoints
 * Theorem 9.5.9: `Representation-is-prop`{.Agda}
 * Lemma 9.5.10: [Adjoints in terms of representability](Cat.Functor.Adjoint.Representable.html)
 
-### 9.6 Strict categories
+### 9.6: Strict categories
 
 This chapter is mostly text.
 
 * Definition 9.6.1: [Strict precategories](Cat.Instances.StrictCat.html)
 
-### 9.7 Dagger categories
+### 9.7: Dagger categories
 
 We do not have a type of dagger-categories, but note that we do have the
 closely-related notion of [allegory].
 
 [allegory]: Cat.Allegory.Base.html
 
-### 9.8 The structure identity principle
+### 9.8: The structure identity principle
 
 <!--
 ```agda
@@ -978,7 +978,7 @@ _ = Displayed
 * Definition 9.8.1: `Thin-structure-over`{.Agda}, generalised into `Displayed`{.Agda}
 * Theorem 9.8.2: `Structured-objects-is-category`{.Agda}, generalised into `is-category-total`{.Agda}
 
-### 9.9 The Rezk completion
+### 9.9: The Rezk completion
 
 <!--
 ```agda
@@ -1018,9 +1018,9 @@ _ = Slice
 * Exercise 9.3: `is-equivalence.F⁻¹⊣F`{.Agda}
 * Exercise 9.4: `Prebicategory`{.Agda}
 
-## Chapter 10 Set theory
+## Chapter 10: Set theory
 
-### 10.1 The category of sets
+### 10.1: The category of sets
 
 <!--
 ```agda
@@ -1044,7 +1044,7 @@ _ = AC→LEM
 * Lemma 10.1.13: `Susp-prop-is-set`{.Agda}, `Susp-prop-path`{.Agda}
 * Theorem 10.1.14: `AC→LEM`{.Agda}
 
-### 10.5 The cumulative hierarchy
+### 10.5: The cumulative hierarchy
 
 <!--
 ```agda
@@ -1067,11 +1067,11 @@ _ = separation
 * Lemma 10.5.6: `presentation`{.Agda}
 * Definition 10.5.7: `Presentation.members`{.Agda}
 * Theorem 10.5.8:
-  i. `extensionality`{.Agda}
-  ii. `empty-set`{.Agda}
-  iii. `pairing`{.Agda}
-  iv. `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
-  v. `union`{.Agda}
-  vii. `∈-induction`{.Agda}
-  viii. `replacement`{.Agda}
-  ix. `separation`{.Agda}
+  * (i) `extensionality`{.Agda}
+  * (ii) `empty-set`{.Agda}
+  * (iii) `pairing`{.Agda}
+  * (iv) `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
+  * (v) `union`{.Agda}
+  * (vii) `∈-induction`{.Agda}
+  * (viii) `replacement`{.Agda}
+  * (ix) `separation`{.Agda}

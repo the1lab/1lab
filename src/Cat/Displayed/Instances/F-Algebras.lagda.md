@@ -54,8 +54,8 @@ adds an extra point and a copy of $A$, etc. Consequently, a map $\cC(F(A), A)$
 picks out a suitably structured $A$; e.g. writing a map $\cC(A + 1, A)$
 requires $A$ to be equipped with a global element and an endomap $\cC(A,A)$.
 In analogy to [[monad algebras]], a map $\cC(F(A),A)$ is called an
-**F-algebra** on $A$.[^Alternatively, we can view $F$-algebras as monad
-algebras over functors that lack algebraic structure.]
+**F-algebra** on $A$^[Alternatively, we can view $F$-algebras as monad
+algebras over functors that lack algebraic structure.].
 
 Likewise, a map $f : \cC(A,B)$ between two $F$-algebras $\alpha : \cC(F(A),A)$
 and $\beta : \cC(F(B), B)$ is an **F-algebra homomorphism** if it commutes
@@ -558,7 +558,7 @@ algebra morphisms.
       ∙ ap₂ _∘_ refl (cancell (F.annihilate zag))
 ```
 
-Therefore, we have an [[isomorphism of categories]] between the category
+Therefore, we have an [[isomorphism of precategories]] between the category
 of $F$-algebras and the [[Eilenberg-Moore category]] of the free monad
 on $F$. Put more succinctly, the free monad on $F$ is **algebraically free**.
 

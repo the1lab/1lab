@@ -44,7 +44,7 @@ record is-equivalence (F : Functor C D) : Type (adj-level C D) where
     F⁻¹      : Functor D C
     F⊣F⁻¹    : F ⊣ F⁻¹
 
-  open _⊣_ F⊣F⁻¹ public
+  open _⊣_ F⊣F⁻¹ hiding (η ; ε) public
 
   field
     unit-iso   : ∀ x → C.is-invertible (unit.η x)
@@ -79,35 +79,31 @@ morphisms gives isomorphisms in the respective functor categories:
     adj' .unit   = counit⁻¹
     adj' .counit = unit⁻¹
     adj' .zig {a} = zig' where abstract
-      p : η unit⁻¹ (F₀ F⁻¹ a) ≡ F₁ F⁻¹ (adj.counit.ε _)
+      p : unit⁻¹ .η (F⁻¹ # a) ≡ F⁻¹ .F₁ (adj.ε _)
       p =
-        η unit⁻¹ (F₀ F⁻¹ a)                                                ≡⟨ C.introl adj.zag ⟩
-        (F₁ F⁻¹ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ η unit⁻¹ (F₀ F⁻¹ a) ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
-        F₁ F⁻¹ (adj.counit.ε _)                                            ∎
+        unit⁻¹ .η _                                      ≡⟨ C.introl adj.zag ⟩
+        (F⁻¹ .F₁ (adj.ε _) C.∘ adj.η _) C.∘ unit⁻¹ .η _  ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
+        F⁻¹ .F₁ (adj.ε _)                                ∎
 
-      zig' : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
-      zig' = ap₂ C._∘_ p refl
-        ·· sym (F-∘ F⁻¹ _ _)
-        ·· ap (F₁ F⁻¹) (counit-iso _ .D.is-invertible.invl) ∙ F-id F⁻¹
+      zig' : unit⁻¹ .η (F⁻¹ # a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
+      zig' = ap₂ C._∘_ p refl ·· sym (F⁻¹ .F-∘ _ _) ·· ap (F⁻¹ .F₁) (counit-iso _ .D.is-invertible.invl) ∙ F⁻¹ .F-id
 
     adj' .zag {b} = zag' where abstract
-      p : counit⁻¹ .η (F₀ F b) ≡ F .F₁ (adj.unit.η b)
+      p : counit⁻¹ .η (F # b) ≡ F .F₁ (adj.η b)
       p =
-        counit⁻¹ .η _                                                     ≡⟨ D.intror adj.zig ⟩
-        counit⁻¹ .η _ D.∘ adj.counit.ε (F₀ F b) D.∘ (F₁ F (adj.unit.η b)) ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
-        F .F₁ (adj.unit.η b)                                              ∎
+        counit⁻¹ .η _                                  ≡⟨ D.intror adj.zig ⟩
+        counit⁻¹ .η _ D.∘ adj.ε _ D.∘ F .F₁ (adj.η b)  ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
+        F .F₁ (adj.η b)                                ∎
 
-      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
-      zag' = ap₂ D._∘_ refl p
-        ·· sym (F .F-∘ _ _)
-        ·· (ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id)
+      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F # b) ≡ D.id
+      zag' = ap₂ D._∘_ refl p ·· sym (F .F-∘ _ _) ·· ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id
 
   inverse-equivalence : is-equivalence F⁻¹
-  inverse-equivalence =
-    record { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
-           ; unit-iso   = λ x → D.is-invertible-inverse (counit-iso _)
-           ; counit-iso = λ x → C.is-invertible-inverse (unit-iso _)
-           }
+  inverse-equivalence = record
+    { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
+    ; unit-iso   = λ x → D.is-invertible-inverse (counit-iso _)
+    ; counit-iso = λ x → C.is-invertible-inverse (unit-iso _)
+    }
 ```
 -->
 
@@ -167,20 +163,20 @@ by faithfulness.
   ff+split-eso→inverse .F-id {x} =
     ff⁻¹ (f*x-iso .di.from D.∘ ⌜ D.id D.∘ f*x-iso .di.to ⌝) ≡⟨ ap! (D.idl _) ⟩
     ff⁻¹ (f*x-iso .di.from D.∘ f*x-iso .di.to)              ≡⟨ ap ff⁻¹ (f*x-iso .di.invr) ⟩
-    ff⁻¹ D.id                                               ≡˘⟨ ap ff⁻¹ (F-id F) ⟩
-    ff⁻¹ (F₁ F C.id)                                        ≡⟨ ff.η _ ⟩
+    ff⁻¹ D.id                                               ≡˘⟨ ap ff⁻¹ (F .F-id) ⟩
+    ff⁻¹ (F .F₁ C.id)                                       ≡⟨ ff.η _ ⟩
     C.id                                                    ∎
     where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
     fully-faithful→faithful {F = F} ff (
-      F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ ff.ε _ ⟩
+      F .F₁ (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))     ≡⟨ ff.ε _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ cat! D ⟩
       ffz D.∘ f D.∘ ⌜ D.id ⌝ D.∘ g D.∘ ftx         ≡˘⟨ ap¡ (f*y-iso .di.invl) ⟩
       ffz D.∘ f D.∘ (fty D.∘ ffy) D.∘ g D.∘ ftx    ≡⟨ cat! D ⟩
       (ffz D.∘ f D.∘ fty) D.∘ (ffy D.∘ g D.∘ ftx)  ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-      F₁ F (ff⁻¹ _) D.∘ F₁ F (ff⁻¹ _)              ≡˘⟨ F-∘ F _ _ ⟩
-      F₁ F (ff⁻¹ _ C.∘ ff⁻¹ _)                     ∎
+      F .F₁ (ff⁻¹ _) D.∘ F .F₁ (ff⁻¹ _)            ≡˘⟨ F .F-∘ _ _ ⟩
+      F .F₁ (ff⁻¹ _ C.∘ ff⁻¹ _)                    ∎
     )
     where
       open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
@@ -220,7 +216,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 ```agda
   ff+split-eso→unit : Id => (G F∘ F)
   ff+split-eso→unit .η x = ff⁻¹ (f*x-iso .di.from)
-    where open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso (F # x)) renaming (fst to f*x ; snd to f*x-iso)
 ```
 
 <details>
@@ -229,18 +225,18 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 ```agda
   ff+split-eso→unit .is-natural x y f =
     fully-faithful→faithful {F = F} ff (
-      F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
-      ⌜ F₁ F (ff⁻¹ ffy) ⌝ D.∘ F₁ F f                           ≡⟨ ap! (ff.ε _) ⟩
-      ffy D.∘ ⌜ F₁ F f ⌝                                       ≡⟨ ap! (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invl))) ⟩
-      ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ cat! D ⟩
-      (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-      F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx)) D.∘ F₁ F (ff⁻¹ ffx) ≡˘⟨ F-∘ F _ _ ⟩
-      F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx) C.∘ ff⁻¹ ffx)        ≡⟨⟩
-      F₁ F (F₁ (G F∘ F) f C.∘ x→f*x)                           ∎
+      F .F₁ (ff⁻¹ ffy C.∘ f)                                      ≡⟨ F .F-∘ _ _ ⟩
+      ⌜ F .F₁ (ff⁻¹ ffy) ⌝ D.∘ F .F₁ f                            ≡⟨ ap! (ff.ε _) ⟩
+      ffy D.∘ ⌜ F .F₁ f ⌝                                         ≡⟨ ap! (sym (D.idr _) ∙ ap (F .F₁ f D.∘_) (sym (f*x-iso .di.invl))) ⟩
+      ffy D.∘ F .F₁ f D.∘ ftx D.∘ ffx                             ≡⟨ cat! D ⟩
+      (ffy D.∘ F .F₁ f D.∘ ftx) D.∘ ffx                           ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx)) D.∘ F .F₁ (ff⁻¹ ffx) ≡˘⟨ F .F-∘ _ _ ⟩
+      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx) C.∘ ff⁻¹ ffx)         ≡⟨⟩
+      F .F₁ ((G F∘ F) .F₁ f C.∘ x→f*x)                            ∎
     )
     where
-      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
-      open Σ (eso (F₀ F y)) renaming (fst to f*y ; snd to f*y-iso)
+      open Σ (eso (F .F₀ x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F .F₀ y)) renaming (fst to f*y ; snd to f*y-iso)
 
       ffy = f*y-iso .di.from
       fty = f*y-iso .di.to
@@ -270,7 +266,7 @@ again pick the given isomorphism.
 
 ```agda
   ff+split-eso→counit .is-natural x y f =
-    fty D.∘ ⌜ F₁ F (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ⌝ ≡⟨ ap! (ff.ε _) ⟩
+    fty D.∘ ⌜ F .F₁ (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ⌝ ≡⟨ ap! (ff.ε _) ⟩
     fty D.∘ ffy D.∘ f D.∘ ftx                   ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
     f D.∘ ftx                                   ∎
     where
@@ -295,14 +291,14 @@ calculations without commentary:
   ff+split-eso→F⊣inverse .unit    = ff+split-eso→unit
   ff+split-eso→F⊣inverse .counit  = ff+split-eso→counit
   ff+split-eso→F⊣inverse .zig {x} =
-    ftx D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (ff.ε _) ⟩
-    ftx D.∘ ffx             ≡⟨ f*x-iso .di.invl ⟩
-    D.id                    ∎
+    ftx D.∘ F .F₁ (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (ff.ε _) ⟩
+    ftx D.∘ ffx              ≡⟨ f*x-iso .di.invl ⟩
+    D.id                     ∎
 ```
 <!--
 ```agda
     where
-      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F .F₀ x)) renaming (fst to f*x ; snd to f*x-iso)
 
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
@@ -314,12 +310,12 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
 ```agda
   ff+split-eso→F⊣inverse .zag {x} =
     fully-faithful→faithful {F = F} ff (
-      F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
-      F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-      (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ cat! D ⟩
-      (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                       ≡⟨ ap₂ D._∘_ (f*x-iso .di.invr) (f*f*x-iso .di.invl) ⟩
-      D.id D.∘ D.id                                           ≡⟨ D.idl _ ∙ sym (F-id F) ⟩
-      F₁ F C.id                                               ∎
+      F .F₁ (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)         ≡⟨ F .F-∘ _ _ ⟩
+      F .F₁ (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F .F₁ (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+      (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                           ≡⟨ cat! D ⟩
+      (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                         ≡⟨ ap₂ D._∘_ (f*x-iso .di.invr) (f*f*x-iso .di.invl) ⟩
+      D.id D.∘ D.id                                             ≡⟨ D.idl _ ∙ sym (F .F-id) ⟩
+      F .F₁ C.id                                                ∎
     )
 ```
 
@@ -329,7 +325,7 @@ Now to show they are componentwise invertible:
 ```agda
     where
       open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
-      open Σ (eso (F₀ F f*x)) renaming (fst to f*f*x ; snd to f*f*x-iso)
+      open Σ (eso (F .F₀ f*x)) renaming (fst to f*f*x ; snd to f*f*x-iso)
 
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
@@ -361,21 +357,21 @@ needs an appeal to faithfulness (two, actually):
     { inv      = ff⁻¹ (f*x-iso .di.to)
     ; inverses = record
       { invl = fully-faithful→faithful {F = F} ff (
-          F₁ F (ff⁻¹ ffx C.∘ ff⁻¹ ftx)        ≡⟨ F-∘ F _ _ ⟩
-          F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-          ffx D.∘ ftx                         ≡⟨ f*x-iso .di.invr ⟩
-          D.id                                ≡˘⟨ F-id F ⟩
-          F₁ F C.id                           ∎)
+          F .F₁ (ff⁻¹ ffx C.∘ ff⁻¹ ftx)         ≡⟨ F .F-∘ _ _ ⟩
+          F .F₁ (ff⁻¹ ffx) D.∘ F .F₁ (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+          ffx D.∘ ftx                           ≡⟨ f*x-iso .di.invr ⟩
+          D.id                                  ≡˘⟨ F .F-id ⟩
+          F .F₁ C.id                            ∎)
       ; invr = fully-faithful→faithful {F = F} ff (
-          F₁ F (ff⁻¹ ftx C.∘ ff⁻¹ ffx)        ≡⟨ F-∘ F _ _ ⟩
-          F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-          ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invl ⟩
-          D.id                                ≡˘⟨ F-id F ⟩
-          F₁ F C.id                           ∎)
+          F .F₁ (ff⁻¹ ftx C.∘ ff⁻¹ ffx)         ≡⟨ F .F-∘ _ _ ⟩
+          F .F₁ (ff⁻¹ ftx) D.∘ F .F₁ (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+          ftx D.∘ ffx                           ≡⟨ f*x-iso .di.invl ⟩
+          D.id                                  ≡˘⟨ F .F-id ⟩
+          F .F₁ C.id                            ∎)
       }
     }
     where
-      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F .F₀ x)) renaming (fst to f*x ; snd to f*x-iso)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
 ```
@@ -423,10 +419,10 @@ objects $x, y : \cC$ and isomorphisms $i : F(x) \cong z$ and $j :
 F(y) \cong z$. We must show that $x \equiv y$, and that over this path,
 $i = j$. Since $F$ is fully faithful, we can `find an isomorphism`{.Agda
 ident=is-ff→essentially-injective} $x \cong y$ in $\cC$, which $F$
-sends back to $i \circ j^{-1}$.
+sends back to $i \circ j\inv$.
 
 ```agda
-    Fx≅Fy : F₀ F x D.≅ F₀ F y
+    Fx≅Fy : F .F₀ x D.≅ F .F₀ y
     Fx≅Fy = i D.∘Iso (j D.Iso⁻¹)
 
     x≅y : x C.≅ y
@@ -443,7 +439,7 @@ must give a path $i \equiv j$ laying over $\ap(F)(p)$.
     x≡y : x ≡ y
     x≡y = ccat .to-path x≅y
 
-    Fx≡Fy : F₀ F x ≡ F₀ F y
+    Fx≡Fy : F .F₀ x ≡ F .F₀ y
     Fx≡Fy = dcat .to-path Fx≅Fy
 ```
 
@@ -464,13 +460,13 @@ indeed the same path:
 
 ```agda
     abstract
-      square : ap (F₀ F) x≡y ≡ Fx≡Fy
+      square : ap# F x≡y ≡ Fx≡Fy
       square =
-        ap (F₀ F) x≡y                     ≡⟨ F-map-path ccat dcat F x≅y ⟩
+        ap# F x≡y                         ≡⟨ F-map-path F ccat dcat x≅y ⟩
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
-    over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
+    over : PathP (λ i → F .F₀ (x≡y i) D.≅ z) i j
     over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over'
 ```
 
@@ -498,9 +494,9 @@ surjective functor between categories is an equivalence:
 
 Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
 then it's an equivalence-on-objects functor. The inverse functor
-$F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
+$F\inv : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
 into objects of $\cC$, and unit/counit of the equivalence ensure
-that $c \cong F^{-1}(F(c))$ and $d \cong F(F^{-1}(d))$, so all that remains
+that $c \cong F\inv(F(c))$ and $d \cong F(F\inv(d))$, so all that remains
 is to use the fact that $\cC$ and $\cD$ are categories to get the
 requisite paths.
 
@@ -520,9 +516,7 @@ is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
     module e = is-equivalence eqv
 ```
 
-
-
-## Isomorphisms {defines="isomorphism-of-categories"}
+## Isomorphisms {defines="isomorphism-of-precategories"}
 
 Another, more direct way of proving that a functor is an equivalence of
 precategories is proving that it is an **isomorphism of precategories**:
@@ -535,13 +529,13 @@ record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
   constructor iso
   field
     has-is-ff  : is-fully-faithful F
-    has-is-iso : is-equiv (F₀ F)
+    has-is-iso : is-equiv (F .F₀)
 ```
 
 Such a functor is (immediately) fully faithful, and the inverse
 `has-is-iso`{.Agda} means that it is split essentially surjective; For
-given $y : D$, the inverse of $F_0$ gives us an object $F^{-1}(y)$; We must
-then provide an isomorphism $F(F^{-1}(y)) \cong y$, but those are
+given $y : D$, the inverse of $F_0$ gives us an object $F\inv(y)$; We must
+then provide an isomorphism $F(F\inv(y)) \cong y$, but those are
 identical, hence isomorphic.
 
 ```agda
@@ -672,7 +666,7 @@ module _
     : (F : Functor C D)
     → is-fully-faithful F
     → is-split-eso F
-    → ∀ (d d' : D.Ob) → Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d')
+    → ∀ d d' → Σ[ c ∈ C ] Σ[ c' ∈ C ] (C.Hom c c' ≃ D.Hom d d')
   ff+split-eso→hom-equiv F ff split-eso d d' =
     d-fib .fst , d'-fib .fst ,
     (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
@@ -684,7 +678,7 @@ module _
     : (F : Functor C D)
     → is-fully-faithful F
     → is-eso F
-    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d') ∥
+    → ∀ d d' → ∃[ c ∈ C ] Σ[ c' ∈ C ] (C.Hom c c' ≃ D.Hom d d')
   ff+eso→hom-equiv F ff eso d d' = do
       (c , Fc≅d) ← eso d
       (c' , Fc'≅d') ← eso d'

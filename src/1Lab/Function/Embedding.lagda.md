@@ -8,8 +8,8 @@ description: |
 <!--
 ```agda
 open import 1Lab.Equiv.Fibrewise
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -45,11 +45,8 @@ $1 \coprod 1$.
 [elementary topoi]: https://ncatlab.org/nlab/show/elementary+topos
 
 To develop this correspondence, we note that, if a map is
-`injective`{.Agda} and its codomain is a [set], then all the
-`fibres`{.Agda ident=fibre} $f^*(x)$ of $f$ are [propositions].
-
-[set]: 1Lab.HLevel.html#is-set
-[propositions]: 1Lab.HLevel.html#is-prop
+`injective`{.Agda} and its codomain is a [[set]], then all the
+`fibres`{.Agda ident=fibre} $f^*(x)$ of $f$ are [[propositions]].
 
 ```agda
 injective : (A → B) → Type _
@@ -76,11 +73,11 @@ has-prop-fibres→injective _ prop p = ap fst (prop _ (_ , p) (_ , refl))
 between-sets-injective≃has-prop-fibres
   : is-set A → is-set B → (f : A → B)
   → injective f ≃ (∀ x → is-prop (fibre f x))
-between-sets-injective≃has-prop-fibres aset bset f =
-  prop-ext (λ p q i x → aset _ _ (p x) (q x) i)
-           (Π-is-hlevel 1 λ _ → is-prop-is-prop)
-           (injective→is-embedding bset f)
-           (has-prop-fibres→injective f)
+between-sets-injective≃has-prop-fibres aset bset f = prop-ext
+  (λ p q i x → aset _ _ (p x) (q x) i)
+  (Π-is-hlevel 1 λ _ → is-prop-is-prop)
+  (injective→is-embedding bset f)
+  (has-prop-fibres→injective f)
 ```
 
 Since we want "is a subtype inclusion" to be a property --- that is, we
@@ -119,7 +116,7 @@ Since $B(x)$ was assumed to be a prop., then so are the fibres of
 Subset-proj-embedding
   : ∀ {B : A → Type ℓ} → (∀ x → is-prop (B x))
   → is-embedding {A = Σ A B} fst
-Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x) (Bprop _)
+Subset-proj-embedding {B = B} Bprop x = Equiv→is-hlevel 1 (Fibre-equiv B x) (Bprop _)
 ```
 
 <!--
@@ -129,7 +126,7 @@ Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x) (Bprop 
   → {f : A → B} {g : B → C}
   → is-embedding f → is-embedding g → is-embedding (g ∘ f)
 ∙-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c =
-  is-hlevel≃ {A = Σ[ g-fib ∈ fibre g c ] fibre f (g-fib .fst)} 1
+  Equiv→is-hlevel 1
     (fibre-∘-≃ c)
     (Σ-is-hlevel 1 (g-emb c) (λ g-fib → f-emb (g-fib .fst)))
 
@@ -184,7 +181,7 @@ right-inverse→injective g rinv {x} {y} p = sym (rinv x) ∙ ap g p ∙ rinv y
 ```
 -->
 
-# As ff morphisms
+## As fully faithful morphisms
 
 A [[fully faithful functor]] is a functor whose action on morphisms is
 an isomorphism everywhere. By the "types are higher groupoids" analogy,
@@ -201,14 +198,14 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
 
   cancellable→embedding : (∀ {x y} → (f x ≡ f y) ≃ (x ≡ y)) → is-embedding f
   cancellable→embedding eqv =
-    embedding-lemma λ x → is-hlevel≃ 0 (Σ-ap-snd (λ _ → eqv)) $
+    embedding-lemma λ x → Equiv→is-hlevel 0 (Σ-ap-snd (λ _ → eqv)) $
       contr (x , refl) λ (y , p) i → p (~ i) , λ j → p (~ i ∨ j)
 
   embedding→cancellable : is-embedding f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
   embedding→cancellable emb = total→equiv {f = λ y p → ap f {y = y} p}
     (is-contr→is-equiv
       (contr (_ , refl) λ (y , p) i → p i , λ j → p (i ∧ j))
-      (contr (_ , refl) (is-hlevel≃ 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
+      (contr (_ , refl) (Equiv→is-hlevel 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
 
   equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
   equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
@@ -221,7 +218,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       : ∀ n → is-embedding f
       → is-hlevel B (suc n)
       → is-hlevel A (suc n)
-    embedding→is-hlevel n emb a-hl = is-hlevel≃ (suc n) (Total-equiv f) $
+    embedding→is-hlevel n emb a-hl = Equiv→is-hlevel (suc n) (Total-equiv f) $
       Σ-is-hlevel (suc n) a-hl λ x → is-prop→is-hlevel-suc (emb x)
 ```
 -->

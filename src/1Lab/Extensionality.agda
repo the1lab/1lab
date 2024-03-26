@@ -3,9 +3,11 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
+open import 1Lab.Resizing
 open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -188,6 +190,15 @@ Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp
   (sa .idsᵉ .to-path-over p)
   (sb .idsᵉ .to-path-over q)
 
+Extensional-lift-map
+  : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ''}
+  → ⦃ sa : Extensional (A → B) ℓr ⦄
+  → Extensional (Lift ℓ' A → B) ℓr
+Extensional-lift-map ⦃ sa = sa ⦄ .Pathᵉ f g = sa .Pathᵉ (f ∘ lift) (g ∘ lift)
+Extensional-lift-map ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (x ∘ lift)
+Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path h i (lift x) = sa .idsᵉ .to-path h i x
+Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path-over h = sa .idsᵉ  .to-path-over h
+
 instance
   extensionality-fun
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -198,6 +209,11 @@ instance
     : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
     → Extensionality (Σ A B → C)
   extensionality-uncurry = record { lemma = quote Extensional-uncurry }
+
+  extensionality-lift-map
+    : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
+    → Extensionality (Lift ℓ'' A → B)
+  extensionality-lift-map = record { lemma = quote Extensional-lift-map }
 
   extensionality-Π
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
@@ -307,13 +323,25 @@ trivial-iso!
 trivial-iso! ⦃ r ⦄ ⦃ s ⦄ f g {p = p} {q = q} =
   f , iso g (happly (s .idsᵉ .to-path q)) (happly (r .idsᵉ .to-path p))
 
+abstract
+  unext : ∀ {ℓ ℓr} {A : Type ℓ} ⦃ e : Extensional A ℓr ⦄ {x y : A} → x ≡ y → e .Pathᵉ x y
+  unext ⦃ e ⦄ {x = x} p = transport (λ i → e .Pathᵉ x (p i)) (e .reflᵉ x)
+
+macro
+  reext!
+    : ∀ {ℓ ℓr} {A : Type ℓ} ⦃ ea : Extensional A ℓr ⦄ {x y : A}
+    → x ≡ y → Term → TC ⊤
+  reext! p goal = do
+    `p ← quoteTC p
+    unify goal (def (quote ext) [ argN (def (quote unext) [ argN `p ]) ])
+
 Pathᵉ-is-hlevel
   : ∀ {ℓ ℓr} {A : Type ℓ} n (sa : Extensional A ℓr)
   → is-hlevel A (suc n)
   → ∀ {x y}
   → is-hlevel (Pathᵉ sa x y) n
 Pathᵉ-is-hlevel n sa hl =
-  is-hlevel≃ _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
+  Equiv→is-hlevel _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
 
 embedding→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
@@ -351,3 +379,38 @@ injection→extensional!
   → Extensional B ℓr
   → Extensional A ℓr
 injection→extensional! {sb = b-set} = injection→extensional b-set
+
+Σ-prop-extensional
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+  → (∀ x → is-prop (B x))
+  → Extensional A ℓr
+  → Extensional (Σ A B) ℓr
+Σ-prop-extensional bprop = embedding→extensional (fst , Subset-proj-embedding bprop)
+
+Extensional-Σ-trunc
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+  → ⦃ ea : Extensional A ℓr ⦄ → Extensional (Σ A λ x → ∥ B x ∥) ℓr
+Extensional-Σ-trunc ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+
+Extensional-Σ-□
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+  → ⦃ ea : Extensional A ℓr ⦄ → Extensional (Σ A λ x → □ (B x)) ℓr
+Extensional-Σ-□ ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+
+Extensional-equiv
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+  → ⦃ ea : Extensional (A → B) ℓr ⦄ → Extensional (A ≃ B) ℓr
+Extensional-equiv ⦃ ea ⦄ = Σ-prop-extensional (λ x → is-equiv-is-prop _) ea
+
+instance
+  extensionality-Σ-trunc
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Extensionality (Σ A λ x → ∥ B x ∥)
+  extensionality-Σ-trunc = record { lemma = quote Extensional-Σ-trunc }
+
+  extensionality-Σ-□
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Extensionality (Σ A λ x → □ (B x))
+  extensionality-Σ-□ = record { lemma = quote Extensional-Σ-□ }
+
+  extensionality-equiv
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → Extensionality (A ≃ B)
+  extensionality-equiv = record { lemma = quote Extensional-equiv }

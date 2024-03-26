@@ -338,7 +338,7 @@ Up to a reorganization of data, free objects and [[universal morphisms]]
 are identical: both encode the data of a universal pair $(A, \cD(X, U(A)))$.
 
 ```agda
-  free-object≃universal-morphism : ∀ x → Free-object-on U x ≃ Universal-morphism x U
+  free-object≃universal-map : ∀ x → Free-object-on U x ≃ Universal-morphism x U
 ```
 
 <details>
@@ -346,7 +346,7 @@ are identical: both encode the data of a universal pair $(A, \cD(X, U(A)))$.
 </summary>
 
 ```agda
-  free-object≃universal-morphism x =
+  free-object≃universal-map x =
    Iso→Equiv (trivial-iso! free→univ univ→free)
     where
       open Initial
@@ -372,13 +372,11 @@ This lets us easily deduce that systems of universal morphisms are equivalent
 to left adjoints.
 
 ```agda
-  universal-morphisms≃left-adjoint
+  universal-maps≃left-adjoint
     : (∀ x → Universal-morphism x U) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
-  universal-morphisms≃left-adjoint =
-    Π-cod≃ free-object≃universal-morphism e⁻¹ ∙e free-objects≃left-adjoint
+  universal-maps≃left-adjoint =
+    Π-cod≃ free-object≃universal-map e⁻¹ ∙e free-objects≃left-adjoint
 ```
-
-## Free objects and initiality
 
 <!--
 ```agda
@@ -394,8 +392,21 @@ module _
     module U = Cat.Functor.Reasoning U
 
   open Free-object-on
+
+  universal-maps→L : (∀ x → Universal-morphism x U) → Functor D C
+  universal-maps→L = fst ⊙ Equiv.to (universal-maps≃left-adjoint U)
+
+  universal-maps→L⊣R
+    : (univ : ∀ x → Universal-morphism x U)
+    → (universal-maps→L univ) ⊣ U
+  universal-maps→L⊣R = snd ⊙ Equiv.to (universal-maps≃left-adjoint U)
+
+  L⊣R→universal-maps : ∀ {F : Functor D C} → F ⊣ U → ∀ x → Universal-morphism x U
+  L⊣R→universal-maps {F = F} F⊣U = Equiv.from (universal-maps≃left-adjoint U) (F , F⊣U)
 ```
 -->
+
+## Free objects and initiality
 
 In categorical semantics, syntax for a theory $\bT$ is often
 presented in 2 seemingly unconnected ways:

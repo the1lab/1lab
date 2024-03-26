@@ -40,8 +40,8 @@ by saying that the identity matrix has $(i,j)$th entry $\bigvee_{i = j}
 entry given by
 
 $$
-\bigvee_{b : B} N(a,b) \wedge M(b,c) \text{,}
-$$
+\bigvee_{b : B} N(a,b) \wedge M(b,c)
+$$,
 
 which is easily seen to be an analogue of the $\sum_{b = 0}^{B}
 N(a,b)M(b,c)$ which implements composition when matrices take values in

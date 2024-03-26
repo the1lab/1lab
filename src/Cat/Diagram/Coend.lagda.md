@@ -52,8 +52,8 @@ $B$ agree". In particular, it's known that we can compute the tensor
 product of modules as being (the object in) a coequaliser diagram like
 
 $$
-A \otimes R \otimes B \tto A \otimes B \epi A \otimes_R B\text{,}
-$$
+A \otimes R \otimes B \tto A \otimes B \epi A \otimes_R B
+$$,
 
 where the undecorated $A \otimes B$ stands for the [tensor product of
 abelian groups], and the two maps are given by the $R$-actions of $A$

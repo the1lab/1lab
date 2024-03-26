@@ -9,7 +9,7 @@ description: |
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import 1Lab.Reflection.Marker
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
@@ -24,7 +24,7 @@ open import 1Lab.Type
 module 1Lab.Equiv.HalfAdjoint where
 ```
 
-# Adjoint equivalences
+# Adjoint equivalences {defines="half-adjoint-equivalence"}
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
@@ -33,7 +33,7 @@ functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
 equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
-[isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
+[isomorphism]: 1Lab.Equiv.html#improving-isomorphisms
 [homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences

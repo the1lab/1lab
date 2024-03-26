@@ -1,8 +1,8 @@
 {-# OPTIONS -vtactic.hlevel:20 -vtc.def:10 #-}
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.Record
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel

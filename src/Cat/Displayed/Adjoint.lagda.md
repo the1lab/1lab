@@ -24,7 +24,7 @@ Let $\cE, \cF$ be [[categories displayed over|displayed category]] $\cA,
 a pair of adjoint functors. We say 2 [[displayed functors]] $L', R'$ over
 $L$ and $R$ resp. are **displayed adjoint functors** if we have
 displayed natural transformations $\eta' : \mathrm{Id} \to R' \circ L'$
-and $\varepsilon' : L' \circ R' \to \mathrm{Id}$ displayed over the unit
+and $\eps' : L' \circ R' \to \mathrm{Id}$ displayed over the unit
 and counit of the adjunction in the base that satisfy the usual triangle
 identities.
 

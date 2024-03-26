@@ -74,23 +74,32 @@ record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-gr
     hiding ( pres-⋆ )
     public
 
-Bilinear-path
-  : ∀ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ''}
-  → {ba bb : Bilinear A B C}
-  → (∀ x y → Bilinear.map ba x y ≡ Bilinear.map bb x y)
-  → ba ≡ bb
-Bilinear-path {A = A} {B = B} {C = C} {ba = ba} {bb} p = q where
-  module A = Abelian-group-on (A .snd)
-  module B = Abelian-group-on (B .snd)
-  module C = Abelian-group-on (C .snd)
-  open Bilinear
+module _ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ''} where
+  private
+    module A = Abelian-group-on (A .snd)
+    module B = Abelian-group-on (B .snd)
+    module C = Abelian-group-on (C .snd)
 
-  q : ba ≡ bb
-  q i .map x y = p x y i
-  q i .pres-*l x y z = is-prop→pathp (λ i → C.has-is-set (p (x A.* y) z i) (p x z i C.* p y z i))
-    (ba .pres-*l x y z) (bb .pres-*l x y z) i
-  q i .pres-*r x y z = is-prop→pathp (λ i → C.has-is-set (p x (y B.* z) i) (p x y i C.* p x z i))
-    (ba .pres-*r x y z) (bb .pres-*r x y z) i
+    Bilinear-path
+      : {ba bb : Bilinear A B C}
+      → (∀ x y → Bilinear.map ba x y ≡ Bilinear.map bb x y)
+      → ba ≡ bb
+    Bilinear-path {ba = ba} {bb} p = q where
+      open Bilinear
+
+      q : ba ≡ bb
+      q i .map x y = p x y i
+      q i .pres-*l x y z = is-prop→pathp (λ i → C.has-is-set (p (x A.* y) z i) (p x z i C.* p y z i))
+        (ba .pres-*l x y z) (bb .pres-*l x y z) i
+      q i .pres-*r x y z = is-prop→pathp (λ i → C.has-is-set (p x (y B.* z) i) (p x y i C.* p x z i))
+        (ba .pres-*r x y z) (bb .pres-*r x y z) i
+
+  Extensional-bilinear : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Bilinear A B C) ℓr
+  Extensional-bilinear ⦃ ef ⦄ = injection→extensional! (λ h → Bilinear-path (λ x y → h # x # y)) ef
+
+  instance
+    extensionality-bilinear : Extensionality (Bilinear A B C)
+    extensionality-bilinear = record { lemma = quote Extensional-bilinear }
 
 module _ {ℓ} (A B C : Abelian-group ℓ) where
 ```
@@ -107,8 +116,8 @@ homomorphisms $A \to [B,C]$.
   curry-bilinear : Bilinear A B C → Ab.Hom A Ab[ B , C ]
   curry-bilinear f .hom a .hom       = f .Bilinear.map a
   curry-bilinear f .hom a .preserves = Bilinear.fixl-is-group-hom f a
-  curry-bilinear f .preserves .is-group-hom.pres-⋆ x y =
-    Homomorphism-path λ z → f .Bilinear.pres-*l _ _ _
+  curry-bilinear f .preserves .is-group-hom.pres-⋆ x y = ext λ z →
+    f .Bilinear.pres-*l _ _ _
 
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
@@ -117,7 +126,7 @@ homomorphisms $A \to [B,C]$.
     morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_# _) (uc .preserves .is-group-hom.pres-⋆ _ _)
     morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc # _) .preserves .is-group-hom.pres-⋆ _ _
     morp .is-iso.rinv uc = trivial!
-    morp .is-iso.linv uc = Bilinear-path λ x y → refl
+    morp .is-iso.linv uc = trivial!
 ```
 
 ## The tensor product {defines="tensor-product-of-abelian-groups"}
@@ -287,20 +296,22 @@ an equivalence requires appealing to an induction principle of
   from-bilinear-map-is-equiv = is-iso→is-equiv morp where
     morp : is-iso from-bilinear-map
     morp .is-iso.inv = to-bilinear-map
-    morp .is-iso.rinv hom = Homomorphism-path $ Tensor-elim-prop A B (λ x → C.has-is-set _ _)
+    morp .is-iso.rinv hom = ext $ Tensor-elim-prop A B (λ x → C.has-is-set _ _)
       (λ x y → refl)
       (λ x y → ap₂ C._*_ x y ∙ sym (hom .preserves .is-group-hom.pres-⋆ _ _))
       (λ x → ap C._⁻¹ x ∙ sym (is-group-hom.pres-inv (hom .preserves)))
       (sym (is-group-hom.pres-id (hom .preserves)))
-    morp .is-iso.linv x = Bilinear-path (λ x y → refl)
+    morp .is-iso.linv x = trivial!
 ```
 
 <!--
 ```agda
   Bilinear≃Hom : Bilinear A B C ≃ Ab.Hom (A ⊗ B) C
   Bilinear≃Hom = from-bilinear-map , from-bilinear-map-is-equiv
+
   Hom≃Bilinear : Ab.Hom (A ⊗ B) C ≃ Bilinear A B C
   Hom≃Bilinear = Bilinear≃Hom e⁻¹
+
   module Bilinear≃Hom = Equiv Bilinear≃Hom
   module Hom≃Bilinear = Equiv Hom≃Bilinear
 ```
@@ -331,8 +342,8 @@ Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin .Bilinear.map x y       = f # x , g # y
   bilin .Bilinear.pres-*l x y z = ap (_, g # z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
   bilin .Bilinear.pres-*r x y z = ap (f # x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
-Ab-tensor-functor .F-id    = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
-Ab-tensor-functor .F-∘ f g = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
+Ab-tensor-functor .F-id    = Hom≃Bilinear.injective _ _ _ trivial!
+Ab-tensor-functor .F-∘ f g = Hom≃Bilinear.injective _ _ _ trivial!
 
 Tensor⊣Hom : (A : Abelian-group ℓ) → Bifunctor.Left Ab-tensor-functor A ⊣ Bifunctor.Right Ab-hom-functor A
 Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where

@@ -45,8 +45,7 @@ Note that the space of isomorphisms between any 2 objects is contractible.
 0≅1-iso-contr : ∀ X Y → is-contr (Isomorphism 0≅1 X Y)
 0≅1-iso-contr _ _ .centre =
   0≅1.make-iso tt tt (hlevel 1 _ _) (hlevel 1 _ _)
-0≅1-iso-contr _ _ .paths p =
-  0≅1.≅-pathp refl refl refl
+0≅1-iso-contr _ _ .paths p = trivial!
 ```
 
 The isomorphism category is strict, as its objects form a set.
@@ -77,7 +76,7 @@ into some category $\cC$ are equivalent to isomorphisms in $\cC$.
 
 ```agda
 Isos : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)
-Isos 𝒞 = Σ[ A ∈ 𝒞.Ob ] Σ[ B ∈ 𝒞.Ob ] (A 𝒞.≅ B)
+Isos 𝒞 = Σ[ A ∈ 𝒞 ] Σ[ B ∈ 𝒞 ] (A 𝒞.≅ B)
   where module 𝒞 = Cat.Reasoning 𝒞
 ```
 
@@ -100,8 +99,7 @@ isomorphisms to obtain an isomorphism in $\cC$.
 
 ```agda
   functor→iso : (F : Functor 0≅1 𝒞) → Isos 𝒞
-  functor→iso F =
-    _ , _ , F-map-iso F (0≅1-iso-contr true false .centre)
+  functor→iso F = _ , _ , F-map-iso F (0≅1-iso-contr true false .centre)
 ```
 
 For the backwards direction, we are given an isomorphism $X \cong Y$
@@ -114,23 +112,22 @@ provided isomorphism is indeed an isomorphism.
 
 ```agda
   iso→functor : Isos 𝒞 → Functor 0≅1 𝒞
-  iso→functor (X , Y , isom) = fun
-    where
-      fun : Functor _ _
-      fun .F₀ true = X
-      fun .F₀ false = Y
-      fun .F₁ {true} {true} _ = 𝒞.id
-      fun .F₁ {true} {false} _ = to isom
-      fun .F₁ {false} {true} _ = from isom
-      fun .F₁ {false} {false} _ = 𝒞.id
-      fun .F-id {true} = refl
-      fun .F-id {false} = refl
-      fun .F-∘ {true} {true} {z} f g = sym $ 𝒞.idr _
-      fun .F-∘ {true} {false} {true} f g = sym $ invr isom
-      fun .F-∘ {true} {false} {false} f g = sym $ 𝒞.idl _
-      fun .F-∘ {false} {true} {true} f g = sym $ 𝒞.idl _
-      fun .F-∘ {false} {true} {false} f g = sym $ invl isom
-      fun .F-∘ {false} {false} {z} f g = sym $ 𝒞.idr _
+  iso→functor (X , Y , isom) = fun where
+    fun : Functor _ _
+    fun .F₀ true = X
+    fun .F₀ false = Y
+    fun .F₁ {true}  {true}  _ = 𝒞.id
+    fun .F₁ {true}  {false} _ = isom .to
+    fun .F₁ {false} {true}  _ = isom .from
+    fun .F₁ {false} {false} _ = 𝒞.id
+    fun .F-id {true}  = refl
+    fun .F-id {false} = refl
+    fun .F-∘ {true}  {true}  {z}     f g = sym $ 𝒞.idr _
+    fun .F-∘ {true}  {false} {true}  f g = sym $ isom .invr
+    fun .F-∘ {true}  {false} {false} f g = sym $ 𝒞.idl _
+    fun .F-∘ {false} {true}  {true}  f g = sym $ 𝒞.idl _
+    fun .F-∘ {false} {true}  {false} f g = sym $ isom .invl
+    fun .F-∘ {false} {false} {z}     f g = sym $ 𝒞.idr _
 ```
 
 Showing that this function is an equivalence is relatively simple:
@@ -141,14 +138,13 @@ path spaces!
   iso≃functor : is-equiv iso→functor
   iso≃functor = is-iso→is-equiv (iso functor→iso rinv linv) where
     rinv : is-right-inverse functor→iso iso→functor
-    rinv F =
-      Functor-path
-        (λ { true → refl ; false → refl })
-        (λ { {true} {true} _ → sym (F-id F)
-           ; {true} {false} tt → refl
-           ; {false} {true} tt → refl
-           ; {false} {false} tt → sym (F-id F) })
+    rinv F = Functor-path
+      (λ { true → refl ; false → refl })
+      (λ { {true}  {true}  _  → sym (F .F-id)
+         ; {true}  {false} tt → refl
+         ; {false} {true}  tt → refl
+         ; {false} {false} tt → sym (F .F-id) })
 
     linv : is-left-inverse functor→iso iso→functor
-    linv F = Σ-pathp refl $ Σ-pathp refl $ 𝒞.≅-pathp refl refl refl
+    linv F = Σ-pathp refl $ Σ-pathp refl $ trivial!
 ```

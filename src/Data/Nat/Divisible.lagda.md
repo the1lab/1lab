@@ -53,7 +53,7 @@ instance
 ```
 
 The type $x | y$ is, in fact, the [[propositional truncation]] of $(*
-x)^{-1}(y)$ --- and it is logically equivalent to that type, too!
+x)\inv(y)$ --- and it is logically equivalent to that type, too!
 
 ```agda
 ∣-is-truncation : ∀ {x y} → (x ∣ y) ≃ ∥ fibre (_* x) y ∥

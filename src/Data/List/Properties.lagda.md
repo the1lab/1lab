@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -88,7 +88,7 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
 ```agda
   List-is-hlevel : (n : Nat) → is-hlevel A (2 + n) → is-hlevel (List A) (2 + n)
-  List-is-hlevel n ahl x y = is-hlevel≃ (suc n) Code≃Path Code-is-hlevel where
+  List-is-hlevel n ahl x y = Equiv→is-hlevel (suc n) Code≃Path Code-is-hlevel where
     Code-is-hlevel : {x y : List A} → is-hlevel (Code x y) (suc n)
     Code-is-hlevel {[]} {[]}         = is-prop→is-hlevel-suc λ x y → refl
     Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)

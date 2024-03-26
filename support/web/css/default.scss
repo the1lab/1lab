@@ -53,8 +53,10 @@ html, body, main, div#post-toc-container {
   }
 
   &.justified {
-    text-align: justify;
-    hyphens: auto;
+    p, li, summary, blockquote {
+      text-align: justify;
+      hyphens: auto;
+    }
   }
 }
 
@@ -98,6 +100,7 @@ main {
 @include highlight(warning,     theme(--warning-bg),     theme(--warning-icon));
 @include highlight(note,        theme(--note-bg),        theme(--note-icon));
 @include highlight(terminology, theme(--terminology-bg), theme(--terminology-icon));
+@include highlight(source,      theme(--source-bg),      theme(--source-icon));
 
 figure {
   overflow-x: auto;
@@ -128,18 +131,41 @@ ol, ul {
 span.katex {
   font-size: inherit;
   line-height: inherit;
+
+  span.mord.text > span.mord.textrm {
+    font-family: var(--serif), var(--sans-serif);
+  }
 }
 
 span.abbrev {
   text-decoration: 2px dotted underline;
 }
 
-.katex-display {
+span.katex-display {
   overflow-x: auto;
   overflow-y: clip;
 
+  // KaTeX is really bad at coming up with a bounding box for the entire
+  // span which includes all the superscripts. For example, try rendering
+  //
+  //    \mathcal{C} \xrightarrow{X} \mathrm{PSh}(\mathcal{C})
+  //
+  // in the demo on katex.org, then inspect the enclosing
+  // span.katex-display and add overflow-x: auto; to the element styles
+  // At the time of writing (2024-02-17), the top serifs of the X get
+  // basically entirely clipped.
+  //
+  // The solution is to position display maths closer to the elements
+  // around it on the block axis, and to make up with *padding* instead.
+  // Padding the bounding box by 0.5em; is slightly absurd, but it does
+  // guarantee that we won't have clipping issues unless KaTeX well and
+  // truly screws up the character metrics.
+
+  margin-block: -0.25em;
+
   > span.katex {
     white-space: normal;
+    padding-block: 0.5em;
   }
 }
 
@@ -187,6 +213,11 @@ blockquote, details.blockquote {
   }
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin-block-start: 1em;
+  margin-block-end: -0.25em;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -200,9 +231,10 @@ table {
 details {
   @include left-bordered(theme(--note-bg));
 
+  margin-block: 1em;
+
   > summary {
     list-style-type: none;
-    padding-block: 0.25em;
 
     cursor: pointer;
 
@@ -211,7 +243,7 @@ details {
     }
 
     &::after {
-      content: 'read more';
+      content: 'read\A0more';
       font-style: italic;
       margin-left: 0.223em;
       color: theme(--text-fg);
@@ -225,7 +257,7 @@ details {
   &[open] {
     summary {
       &::after {
-        content: 'read less';
+        content: 'read\A0less';
       }
       margin-bottom: 0.3em;
     }
@@ -371,13 +403,6 @@ span.enclosing.liesover {
   background-position: center center;
 }
 
-@media (prefers-color-scheme: dark) {
-  span.enclosing.liesover {
-    background: url('../static/lies-over-dark.svg') no-repeat;
-    background-size: contain;
-    background-position: center center;
-  }
-}
 
 input {
   background-color: theme(--input-bg);

@@ -40,7 +40,9 @@ private variable
 
 ```agda
 subset-is-sat : ∀ {Γ} → (Proposition Γ → Ω) → Type _
-subset-is-sat {Γ} ϕs = ∃[ ρ ∈ (Fin Γ → Bool) ] (∀ ϕ → ϕ ∈ ϕs → ⟦ ϕ ⟧ ρ ≡ true)
+subset-is-sat {Γ} ϕs =
+  ∃[ ρ ∈ (Fin Γ → Bool) ]
+  ((ϕ : Proposition Γ) → ϕ ∈ ϕs → ⟦ ϕ ⟧ ρ ≡ true)
 
 has-compactness : Type
 has-compactness =

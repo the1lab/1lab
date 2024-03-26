@@ -139,7 +139,7 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
   P (base x) = el ∥ fibre f x ∥ hlevel!
   P (cone a i) =
     n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
-      (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
+      (prop-ext! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
   P' : ∥ Cofibre f ∥₀ → Prop _
   P' = ∥-∥₀-elim (λ _ → hlevel!) P
@@ -149,8 +149,8 @@ Letting $x$ be an element of the codomain, and since by assumption $f$'s
 cofibre is connected, we have a path
 
 $$
-\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|\text{,}
-$$
+\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|
+$$,
 
 so since the unit type is trivially inhabited, so is the fibre of $f$
 over $x$: $f$ is surjective.

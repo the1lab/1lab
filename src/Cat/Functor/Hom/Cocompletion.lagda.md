@@ -70,8 +70,8 @@ embedding] satisfies the property we're looking for: Any functor $F :
 \cC \to \cD$ into a cocomplete category $\cD$ factors as
 
 $$
-\cC \xto{\yo} \psh(\cC) \xto{\Lan_\yo F} \cD\text{,}
-$$
+\cC \xto{\yo} \psh(\cC) \xto{\Lan_\yo F} \cD
+$$,
 
 where $\Lan_\yo F$ is the [[left Kan extension]] of $F$ along the Yoneda
 embedding, and furthermore this extension preserves colimits. While this

@@ -69,7 +69,7 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
     (λ j → eta j x) , λ x y f → p f $ₚ _
   lim .factors _ _ = refl
   lim .unique eta p other q = funext λ x →
-    Σ-prop-path hlevel! (funext λ j → q j $ₚ x)
+    Σ-prop-path! (funext λ j → q j $ₚ x)
 ```
 
 <!--
@@ -125,13 +125,14 @@ using $\Sigma$:
   Sets-equalisers : (f g : Hom A B) → Equaliser (Sets ℓ) {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
     eq : Equaliser (Sets ℓ) f g
-    eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
+    eq .apex .∣_∣ = Σ[ x ∈ A ] (f x ≡ g x)
+    eq .apex .is-tr = hlevel!
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
     eq .has-is-eq .factors = refl
     eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly q x)
+      funext λ x → Σ-prop-path! (happly q x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.
@@ -141,7 +142,8 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
                  → Pullback (Sets ℓ) {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback (Sets ℓ) f g
-    pb .apex = el! $ Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)
+    pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
+    pb .apex .is-tr = hlevel!
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

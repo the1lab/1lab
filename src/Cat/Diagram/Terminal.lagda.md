@@ -1,5 +1,8 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -85,6 +88,28 @@ terminal objects:
     isom .to ∘ term x .centre ≡⟨ ap (isom .to ∘_) (term x .paths _) ⟩
     isom .to ∘ isom .from ∘ h ≡⟨ cancell (isom .invl) ⟩
     h                         ∎
+```
+
+## In terms of right adjoints
+
+We prove that the inclusion functor of an object $x$ of $\cC$ is right adjoint
+to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
+
+```agda
+  module _ (x : Ob) (term : is-terminal x) where
+    terminal→inclusion-is-right-adjoint : !F ⊣ const! {A = C} x
+    terminal→inclusion-is-right-adjoint =
+      hom-iso→adjoints (e _ .fst) (e _ .snd)
+        λ _ _ _ → term _ .paths _
+      where
+        e : ∀ y → ⊤ ≃ Hom y x
+        e y = is-contr→≃ (hlevel 0) (term y)
+  
+  module _ (x : Ob) (adj : !F ⊣ const! {A = C} x) where
+    inclusion-is-right-adjoint→terminal : is-terminal x
+    inclusion-is-right-adjoint→terminal y = Equiv→is-hlevel 0
+      (Σ-contract (λ _ → hlevel 0) e⁻¹)
+      (R-adjunct-is-equiv adj .is-eqv _)
 ```
 
 <!--

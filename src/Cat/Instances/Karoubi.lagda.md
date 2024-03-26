@@ -49,15 +49,10 @@ from the right: $\phi \circ f = \phi = g \circ \phi$.
 ```agda
 private
   KOb : Type (o ⊔ h)
-  KOb = Σ[ c ∈ C.Ob ] Σ[ f ∈ C.Hom c c ] (is-idempotent f)
+  KOb = Σ[ c ∈ C ] Σ[ f ∈ C.Hom c c ] (is-idempotent f)
 
   KHom : KOb → KOb → Type h
   KHom (c , f , _) (d , g , _) = Σ[ φ ∈ C.Hom c d ] ((φ C.∘ f ≡ φ) × (g C.∘ φ ≡ φ))
-
-  KH≡ : ∀ {a b : C.Ob} {af : C.Hom a a} {bf : C.Hom b b}
-          {ai : is-idempotent af} {bi : is-idempotent bf}
-          {f g : KHom (a , af , ai) (b , bf , bi)} → fst f ≡ fst g → f ≡ g
-  KH≡ = Σ-prop-path (λ _ → hlevel 1)
 ```
 
 We can see that these data assemble into a precategory. However, note
@@ -73,10 +68,9 @@ Karoubi .Hom-set _ _ = hlevel 2
 Karoubi .id {x = c , e , i} = e , i , i
 Karoubi ._∘_ (f , fp , fp') (g , gp , gp') = f C.∘ g , C.pullr gp , C.pulll fp'
 
-Karoubi .idr {x = _ , _ , i} {_ , _ , j} (f , p , q) = KH≡ {ai = i} {bi = j} p
-Karoubi .idl {x = _ , _ , i} {_ , _ , j} (f , p , q) = KH≡ {ai = i} {bi = j} q
-Karoubi .assoc {w = _ , _ , i} {z = _ , _ , j} _ _ _ =
-  KH≡ {ai = i} {bi = j} (C.assoc _ _ _)
+Karoubi .idr {x = _ , _ , i} {_ , _ , j} (f , p , q) = Σ-prop-path! p
+Karoubi .idl {x = _ , _ , i} {_ , _ , j} (f , p , q) = Σ-prop-path! q
+Karoubi .assoc {w = _ , _ , i} {z = _ , _ , j} _ _ _ = Σ-prop-path! (C.assoc _ _ _)
 ```
 
 We can now define the embedding functor from C to its `Karoubi`{.Agda}
@@ -88,8 +82,8 @@ which absorbs $\id$ on either side; But this is just $f$ again.
 Embed : Functor C Karoubi
 Embed .F₀ x = x , C.id , id-is-idempotent
 Embed .F₁ f = f , C.idr _ , C.idl _
-Embed .F-id = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} refl
-Embed .F-∘ f g = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} refl
+Embed .F-id = Σ-prop-path! refl
+Embed .F-∘ f g = Σ-prop-path! refl
 ```
 
 An elementary argument shows that the morphism part of `Embed`{.Agda}
@@ -99,7 +93,7 @@ Hence, `Embed` is `fully faithful`{.Agda ident=is-fully-faithful}.
 ```agda
 Embed-is-fully-faithful : is-fully-faithful Embed
 Embed-is-fully-faithful = is-iso→is-equiv $
-  iso fst (λ _ → Σ-prop-path (λ _ → hlevel 1) refl) λ _ → refl
+  iso fst (λ _ → Σ-prop-path! refl) λ _ → refl
 ```
 
 ## Idempotent-completeness
@@ -139,8 +133,8 @@ that the identity on $(A, f)$ is $f$, so we _also_ have this by
 assumption!
 
 ```agda
-  spl .p∘i = KH≡ {ai = f-idem} {bi = f-idem} f-idem
-  spl .i∘p = KH≡ {ai = i} {bi = i} f-idem
+  spl .p∘i = Σ-prop-path! f-idem
+  spl .i∘p = Σ-prop-path! f-idem
 ```
 
 Hence $\~\cC$ is an idempotent-complete category which admits $C$ as
@@ -160,8 +154,8 @@ Karoubi-is-completion complete = ff+split-eso→is-equivalence Embed-is-fully-fa
     same : (c' , C.id , _) Karoubi.≅ (c , e , ie)
     same .to = i , C.idr _ , C.rswizzle (sym i∘p) p∘i
     same .from = p , C.lswizzle (sym i∘p) p∘i , C.idl _
-    same .inverses .invl = KH≡ {ai = ie} {bi = ie} i∘p
-    same .inverses .invr = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} p∘i
+    same .inverses .invl = Σ-prop-path! i∘p
+    same .inverses .invr = Σ-prop-path! p∘i
 ```
 
 This makes the Karoubi envelope an "idempotent completion" in two *different* technical

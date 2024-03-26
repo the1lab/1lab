@@ -94,8 +94,8 @@ To understand why these whiskering lemmas have such complicated types,
 recall that the "displayed composition" operator has type
 
 $$
-\hom_f(b, c) \times \hom_g(a, b) \to \hom_{f \circ g}(a, c)\text{,}
-$$
+\hom_f(b, c) \times \hom_g(a, b) \to \hom_{f \circ g}(a, c)
+$$,
 
 so if we have some path $p : g = g'$, the composite $f \circ p_*g$ will
 have type $\hom_{f \circ g'}(-,-)$, but the composite $f \circ g$ has

@@ -49,8 +49,8 @@ The **subset** relation is defined as is done traditionally: If $x \in
 X$ implies $x \in Y$, for $X, Y : \bb{P}(T)$, then $X \subseteq Y$.
 
 ```agda
-_⊆_ : ℙ X → ℙ X → Type _
-X ⊆ Y = ∀ x → x ∈ X → x ∈ Y
+_ : {X : Type ℓ} {S T : ℙ X} → (S ⊆ T) ≡ ((x : X) → x ∈ S → x ∈ T)
+_ = refl
 ```
 
 By function and propositional extensionality, two subsets of $X$ are
@@ -66,8 +66,8 @@ propositions to each inhabitant of $X$.
 
 ## Lattice structure
 
-The type $\bb{P}(X)$ has a lattice structure, with the order given
-by `subset inclusion`{.Agda ident=_⊆_}. We call the meets
+The type $\bb{P}(X)$ has a lattice structure, with the order given by
+`subset inclusion`{.Agda ident=⊆}. We call the meets
 **`intersections`{.Agda ident=_∩_}** and the joins **`unions`{.Agda
 ident=_∪_}**.
 
@@ -102,8 +102,8 @@ is nothing which guarantees that A and B are disjoint subsets.
 _∪_ : ℙ X → ℙ X → ℙ X
 (A ∪ B) x = A x ∨Ω B x
 
-infixr 22 _∩_
-infixr 21 _∪_
+infixr 32 _∩_
+infixr 31 _∪_
 ```
 
 ## Images
@@ -112,6 +112,6 @@ infixr 21 _∪_
 image-of
   : ∀ {a b} {A : Type a} {B : Type b} {@(tactic hlevel-tactic-worker) b-set : is-set B}
   → (f : A → B) → ℙ A → ℙ B
-∣ image-of {b-set = b-set} f s b ∣ = □ (Σ[ a ∈ _ ] ((a ∈ s) × (f a ≡ b)))
-image-of {b-set = b-set} f s b .is-tr = squash
+image-of {A = A} {b-set = b-set} f s b .∣_∣ = □ (Σ[ a ∈ A ] ((a ∈ s) × (f a ≡ b)))
+image-of _ _ _ .is-tr = squash
 ```

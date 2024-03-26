@@ -476,6 +476,14 @@ subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
 subst P p x = transp (λ i → P (p i)) i0 x
 ```
 
+<!--
+```agda
+subst₂ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : Type ℓ₂} (P : A → B → Type ℓ₃) {a a' : A} {b b' : B}
+       → a ≡ a' → b ≡ b' → P a b → P a' b'
+subst₂ P p q x = transp (λ i → P (p i) (q i)) i0 x
+```
+-->
+
 ### Computation
 
 In “Book HoTT”, `transport`{.Agda} is defined using path induction, and
@@ -759,7 +767,7 @@ contradiction, since any `I → Partial i1 T` extends to a path:
   _ = λ f i → f i 1=1
 ```
 
-## Extensibility
+## Extensibility {defines="extensibility extension-type"}
 
 A partial element in a context with $n$-variables gives us a way of
 mapping some subobject of the $n$-cube into a type. A natural question
@@ -924,11 +932,13 @@ module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} wher
   double-comp-tube i j (j = i0) = q i
 ```
 
+:::{.definition #fibrancy alias="homogeneous-composition"}
 The Kan condition on types says that, whenever we have some formula
 $\phi$ and a partial element $u$ defined along $\phi \lor \neg j$ (for
 $j$ disjoint from $\phi$; we call it the "direction of composition",
 sometimes), then we can extend it to a totally-defined element, which
 agrees with $u$ along $\phi$.
+:::
 
 The idea is that the $\neg j$, being in some sense "orthogonal to" the
 dimensions in $\phi$, will "connect" the tube given by $\phi$. This is a

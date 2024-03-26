@@ -71,8 +71,8 @@ an equivalence.
 
 ```agda
   action : ∀ {a b : C.Ob} (f : C.Hom a b)
-          → Σ[ c ∈ C.Ob ] (Hom→Arrow C (C.id {x = c}) ≡ Hom→Arrow C f)
-          → Σ[ c ∈ D.Ob ] (Hom→Arrow D (D.id {x = c}) ≡ Hom→Arrow D (F.₁ f))
+         → Σ[ c ∈ C ] (Hom→Arrow C (C.id {x = c}) ≡ Hom→Arrow C f)
+         → Σ[ c ∈ D ] (Hom→Arrow D (D.id {x = c}) ≡ Hom→Arrow D (F.₁ f))
   action f (c , p) = F.₀ c , q where
     q : Hom→Arrow D D.id ≡ Hom→Arrow D (F.₁ f)
     q i .fst = F.₀ (p i .fst)
@@ -107,10 +107,10 @@ now in $\cD$. But because $\cD$ is a univalent category, $Fi$ is
 an identity, and by $F$'s amnesia, so is $i$.
 
 ```agda
-      p : Σ[ c ∈ C.Ob ] Path (Arrows C) (c , c , C.id) (A , B , isom .C.to)
-      p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $
-            F.₀ A , Arrows-path D refl (d-cat .to-path isom')
-                      (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
+      p : Σ[ c ∈ C ] Path (Arrows C) (c , c , C.id) (A , B , isom .C.to)
+      p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $ F.₀ A ,
+        Arrows-path D refl (d-cat .to-path isom')
+          (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 
 Unfolding, we have an object $x : \cC$ and an identification $p : (x,

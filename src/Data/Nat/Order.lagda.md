@@ -192,7 +192,7 @@ module _ {ℓ} {P : Nat → Prop ℓ} where
 
     minimal-solution-unique : is-prop (minimal-solution λ x → ∣ P x ∣)
     minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
-      Σ-prop-path (λ y → hlevel!) (≤-antisym (n-min _ pk) (k-min _ pn))
+      Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
 ```
 
 The step of the code that actually finds a minimal solution does not

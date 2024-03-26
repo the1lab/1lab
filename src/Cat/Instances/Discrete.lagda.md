@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Product
+open import Cat.Groupoid
 open import Cat.Morphism
 open import Cat.Prelude
 
@@ -51,12 +52,15 @@ Disc' A = Disc ∣ A ∣ h where abstract
   h = is-hlevel-suc 2 (A .is-tr)
 ```
 
-Clearly this is a [[univalent category]]:
+Clearly this is a [[univalent|univalent category]] [[groupoid|pregroupoid]]:
 
 ```agda
 Disc-is-category : ∀ {A : Type ℓ} {A-grpd} → is-category (Disc A A-grpd)
 Disc-is-category .to-path is = is .to
 Disc-is-category .to-path-over is = ≅-pathp _ _ _ λ i j → is .to (i ∧ j)
+
+Disc-is-groupoid : ∀ {A : Type ℓ} {A-grpd} → is-pregroupoid (Disc A A-grpd)
+Disc-is-groupoid p = make-invertible _ (sym p) (∙-invl p) (∙-invr p)
 ```
 
 We can lift any function between the underlying types to a functor
@@ -158,6 +162,16 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
               ·· transport-refl _
               ·· C.introl (transport-refl _))
         f {x} g
+
+Disc-into
+  : ∀ {ℓ} (X : Set ℓ)
+  → (F : C .Ob → ∣ X ∣)
+  → (F₁ : ∀ {x y} → C .Hom x y → F x ≡ F y)
+  → Functor C (Disc' X)
+Disc-into X F F₁ .F₀ = F
+Disc-into X F F₁ .F₁ = F₁
+Disc-into X F F₁ .F-id = X .is-tr _ _ _ _
+Disc-into X F F₁ .F-∘ _ _ = X .is-tr _ _ _ _
 ```
 -->
 

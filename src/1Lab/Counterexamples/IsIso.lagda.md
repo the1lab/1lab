@@ -4,7 +4,7 @@ description: |
 ---
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
 open import 1Lab.HLevel
