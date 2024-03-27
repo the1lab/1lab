@@ -82,17 +82,9 @@ Since least upper bounds are unique when they exist, being a DCPO is a
 
 <!--
 ```agda
-module _ {o ℓ} {P : Poset o ℓ} where
-  open Poset P
-  open is-dcpo
+unquoteDecl H-Level-is-dcpo = declare-record-hlevel 1 H-Level-is-dcpo (quote is-dcpo)
 ```
 -->
-
-```agda
-  is-dcpo-is-prop : is-prop (is-dcpo P)
-  is-dcpo-is-prop = Iso→is-hlevel 1 eqv hlevel!
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo)
-```
 
 # Scott-continuous functions
 
@@ -120,7 +112,7 @@ module _ {P Q : Poset o ℓ} where
 
   is-scott-continuous-is-prop
     : ∀ (f : Posets.Hom P Q) → is-prop (is-scott-continuous f)
-  is-scott-continuous-is-prop = hlevel!
+  is-scott-continuous-is-prop _ = hlevel 1
 ```
 
 If $(P, \le)$ is a DCPO, then any function $f : P \to Q$ which preserves
@@ -235,7 +227,7 @@ DCPOs : ∀ (o ℓ : Level) → Precategory (lsuc (o ⊔ ℓ)) (lsuc o ⊔ ℓ)
 DCPOs o ℓ = Subcategory (DCPOs-subcat o ℓ)
 
 DCPOs-is-category : ∀ {o ℓ} → is-category (DCPOs o ℓ)
-DCPOs-is-category = subcat-is-category Posets-is-category (λ _ → is-dcpo-is-prop)
+DCPOs-is-category = subcat-is-category Posets-is-category (λ _ → hlevel 1)
 ```
 
 <!--

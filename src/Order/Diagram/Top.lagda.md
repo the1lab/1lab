@@ -52,7 +52,7 @@ is-glb→is-top glb x = glb .greatest x λ ()
 <!--
 ```agda
 is-top-is-prop : ∀ x → is-prop (is-top x)
-is-top-is-prop _ = hlevel!
+is-top-is-prop _ = hlevel 1
 
 top-unique : ∀ {x y} → is-top x → is-top y → x ≡ y
 top-unique p q = ≤-antisym (q _) (p _)

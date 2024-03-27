@@ -66,10 +66,6 @@ module
     module C = Cat.Reasoning C
     module F = Cat.Functor.Reasoning F
     module G = Cat.Functor.Reasoning G
-
-  open A.HLevel-instance
-  open B.HLevel-instance
-  open C.HLevel-instance
 ```
 -->
 
@@ -155,7 +151,7 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-set : ∀ x y → is-set (↓Hom x y)
   ↓Hom-set a b = hl' where abstract
     hl' : is-set (↓Hom a b)
-    hl' = Iso→is-hlevel 2 eqv (hlevel 2)
+    hl' = Iso→is-hlevel! 2 eqv
 ```
 -->
 

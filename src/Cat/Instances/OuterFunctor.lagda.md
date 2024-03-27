@@ -77,7 +77,7 @@ module _ (ℂ : Internal-cat) where
   Outer-functors : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
   Outer-functors .Precategory.Ob = Outer-functor ℂ
   Outer-functors .Precategory.Hom = _=>o_
-  Outer-functors .Precategory.Hom-set _ _ = Outer-nat-is-set
+  Outer-functors .Precategory.Hom-set _ _ = hlevel 2
   Outer-functors .Precategory.id = idnto
   Outer-functors .Precategory._∘_ = _∘nto_
   Outer-functors .Precategory.idr α = Outer-nat-path (λ _ → refl)

@@ -118,21 +118,12 @@ of any universe. These functions compute on `inc`{.Agda}s, as usual.
 □-map f (inc x) = inc (f x)
 □-map f (squash x y i) = squash (□-map f x) (□-map f y) i
 
-□-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-  → {@(tactic hlevel-tactic-worker) pa : is-prop B}
-  → (A → B) → □ A → B
-□-rec! {pa = pa} f (inc x) = f x
-□-rec! {pa = pa} f (squash x y i) =
-  pa (□-rec! {pa = pa} f x) (□-rec! {pa = pa} f y) i
-
-out! : ∀ {ℓ} {A : Type ℓ}
-     → {@(tactic hlevel-tactic-worker) pa : is-prop A}
-     → □ A → A
-out! {pa = pa} = □-rec! {pa = pa} (λ x → x)
+□-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-prop B → (A → B) → □ A → B
+□-rec bp f (inc x)        = f x
+□-rec bp f (squash x y i) = bp (□-rec bp f x) (□-rec bp f y) i
 
 elΩ : ∀ {ℓ} (T : Type ℓ) → Ω
-∣ elΩ T ∣ = □ T
+elΩ T .∣_∣ = □ T
 elΩ T .is-tr = squash
 ```
 
@@ -147,6 +138,17 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
+□-rec!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → ⦃ _ : H-Level B 1 ⦄
+  → (A → B) → □ A → B
+□-rec! = □-rec (hlevel 1)
+
+out! : ∀ {ℓ} {A : Type ℓ}
+     → ⦃ _ : H-Level A 1 ⦄
+     → □ A → A
+out! = □-rec! λ x → x
+
 □-rec-set
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (f : A → B)
@@ -160,7 +162,7 @@ elΩ T .is-tr = squash
     a
 
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
-□-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
+□-idempotent aprop = prop-ext squash aprop (out! ⦃ basic-instance 1 aprop ⦄) inc
 
 □-ap
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -190,7 +192,7 @@ is-set→locally-small
   : ∀ {ℓ} {A : Type ℓ}
   → is-set A
   → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
-is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
+is-set→locally-small a-set .to-path = □-rec (a-set _ _) id
 is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
 
 to-is-true
@@ -225,23 +227,23 @@ infixr 4 _→Ω_
 ```agda
 ⊤Ω : Ω
 ∣ ⊤Ω ∣ = ⊤
-⊤Ω .is-tr = hlevel!
+⊤Ω .is-tr = hlevel 1
 
 ⊥Ω : Ω
 ∣ ⊥Ω ∣ = ⊥
-⊥Ω .is-tr = hlevel!
+⊥Ω .is-tr = hlevel 1
 
 _∧Ω_ : Ω → Ω → Ω
 ∣ P ∧Ω Q ∣ = ∣ P ∣ × ∣ Q ∣
-(P ∧Ω Q) .is-tr = hlevel!
+(P ∧Ω Q) .is-tr = hlevel 1
 
 _∨Ω_ : Ω → Ω → Ω
 ∣ P ∨Ω Q ∣ = ∥ ∣ P ∣ ⊎ ∣ Q ∣ ∥
-(P ∨Ω Q) .is-tr = hlevel!
+(P ∨Ω Q) .is-tr = hlevel 1
 
 _→Ω_ : Ω → Ω → Ω
 ∣ P →Ω Q ∣ = ∣ P ∣ → ∣ Q ∣
-(P →Ω Q) .is-tr = hlevel!
+(P →Ω Q) .is-tr = hlevel 1
 
 ¬Ω_ : Ω → Ω
 ¬Ω P = P →Ω ⊥Ω

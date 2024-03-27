@@ -175,7 +175,7 @@ make-free-group .Ml.unit _ = inc
 make-free-group .Ml.universal f = fold-free-group f
 make-free-group .Ml.commutes f = refl
 make-free-group .Ml.unique {y = y} {g = g} p =
-  ext $ Free-elim-prop _ (λ _ → hlevel!)
+  ext $ Free-elim-prop _ (λ _ → hlevel 1)
     (p $ₚ_)
     (λ a p b q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
     (λ a p → ap y.inverse p ∙ sym (is-group-hom.pres-inv (g .preserves)))

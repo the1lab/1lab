@@ -94,8 +94,7 @@ interpretation above _literally_:
 
 ```agda
 Polynomial-functor : ∀ {ℓ} → Poly.Ob {ℓ} → Functor (Sets ℓ) (Sets ℓ)
-Polynomial-functor (I , A) .F₀ X .∣_∣   = Σ[ i ∈ I ] (A ʻ i → ⌞ X ⌟)
-Polynomial-functor (I , A) .F₀ X .is-tr = hlevel!
+Polynomial-functor (I , A) .F₀ X = el (Σ[ i ∈ I ] (A ʻ i → ⌞ X ⌟)) (hlevel 2)
 Polynomial-functor (I , A) .F₁ f (a , g) = a , λ z → f (g z)
 Polynomial-functor (I , A) .F-id = refl
 Polynomial-functor (I , A) .F-∘ f g = refl

@@ -2,6 +2,7 @@
 ```
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
+open import Cat.Morphism.Instances
 open import Cat.Base
 
 import Cat.Reasoning
@@ -65,8 +66,8 @@ determines the h-level of the type it applies to, we have that the space
 of objects in any univalent category is a proposition:
 
 ```agda
-  Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
-  Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
+  Ob-is-groupoid : is-groupoid ⌞ C ⌟
+  Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → hlevel 2
 ```
 
 :::{.definition #transport-in-hom}

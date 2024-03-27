@@ -54,6 +54,8 @@ Has-meets P = ∀ x y → Meet P x y
 
 <!--
 ```agda
+unquoteDecl H-Level-is-meet = declare-record-hlevel 1 H-Level-is-meet (quote is-meet)
+
 module _ {P : Poset o ℓ} where
   open Poset P
   open is-glb
@@ -80,14 +82,6 @@ greatest lower bound of a family of two elements.
 
 <!--
 ```agda
-  private unquoteDecl eqv' = declare-record-iso eqv' (quote is-meet)
-
-  instance
-    H-Level-is-meet
-      : ∀ {a b glb : Ob} {n}
-      → H-Level (is-meet P a b glb) (suc n)
-    H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv' hlevel!
-
   meet-unique : ∀ {a b x y} → is-meet P a b x → is-meet P a b y → x ≡ y
   meet-unique {a = a} {b} x-meet y-meet = glb-unique
     (is-meet→is-glb x-meet)

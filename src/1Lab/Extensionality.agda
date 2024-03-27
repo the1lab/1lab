@@ -226,12 +226,12 @@ injection→extensional b-set {f} inj ext =
 
 injection→extensional!
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
-  → {@(tactic hlevel-tactic-worker) sb : is-set B}
+  → ⦃ _ : H-Level B 2 ⦄
   → {f : A → B}
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
-injection→extensional! {sb = b-set} = injection→extensional b-set
+injection→extensional! = injection→extensional (hlevel 2)
 
 Σ-prop-extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
@@ -258,12 +258,12 @@ instance
 
   Extensional-tr-map
     : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
-    → {@(tactic hlevel-tactic-worker) bset : is-set B}
-    → ⦃ _ : Extensional (A → B) ℓr ⦄
+    → ⦃ bset : H-Level B 2 ⦄
+    → ⦃ ea : Extensional (A → B) ℓr ⦄
     → Extensional (∥ A ∥ → B) ℓr
-  Extensional-tr-map {bset = bset} ⦃ ea ⦄ =
-    injection→extensional (Π-is-hlevel 2 λ _ → bset) {f = λ f → f ∘ inc}
-      (λ p → funext $ ∥-∥-elim (λ _ → bset _ _) (happly p)) ea
+  Extensional-tr-map ⦃ ea = ea ⦄ =
+    injection→extensional! {f = λ f → f ∘ inc}
+      (λ p → funext $ ∥-∥-elim (λ _ → hlevel 1) (happly p)) ea
 
 private module test where
   variable

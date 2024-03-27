@@ -220,9 +220,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where instance
     → Funlike (Algebra-hom C M X Y) A B
   Funlike-Algebra-hom ⦃ i ⦄ .Funlike._#_ f x = f .morphism # x
 
-  H-Level-Algebra-hom : ∀ {A B n} → H-Level (Algebra-hom C M A B) (2 + n)
-  H-Level-Algebra-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv (hlevel 2)
-    where unquoteDecl eqv = declare-record-iso eqv (quote Algebra-hom)
+unquoteDecl H-Level-Algebra-hom = declare-record-hlevel 2 H-Level-Algebra-hom (quote Algebra-hom)
 
 module _ {o ℓ} (C : Precategory o ℓ) where
   private module C = Cat.Reasoning C

@@ -95,7 +95,6 @@ arbitrary $n$, $a \within{n} f(a) \within{n} b$, meaning $a = b$.
 
   Limit-is-prop : (f : Nat → A) → is-prop (Limit f)
   Limit-is-prop f (a , α) (b , β) = Σ-prop-path! (limit-is-unique f α β)
-    where open OFE-H-Level P
 
   limit-from-tail
     : ∀ (f : Nat → A) x → is-chain f → is-limit (λ n → f (suc n)) x → is-limit f x

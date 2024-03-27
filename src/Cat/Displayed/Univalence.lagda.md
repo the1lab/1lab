@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base

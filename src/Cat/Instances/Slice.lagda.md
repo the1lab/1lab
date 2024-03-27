@@ -128,17 +128,13 @@ says that the map $h$ "respects reindexing", or less obliquely
              → x ≡ y
   /-Hom-path = /-Hom-pathp refl refl
 
-  private unquoteDecl eqv = declare-record-iso eqv (quote /-Hom)
-
   instance
     Extensional-/-Hom
       : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.domain a) (/-Obj.domain b)) ℓ ⦄
       → Extensional (/-Hom {c = c} a b) ℓ
     Extensional-/-Hom ⦃ sa ⦄ = injection→extensional! (/-Hom-pathp refl refl) sa
 
-    abstract
-      H-Level-/-Hom : ∀ {c a b n} → H-Level (/-Hom {c = c} a b) (2 + n)
-      H-Level-/-Hom = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
+unquoteDecl H-Level-/-Hom = declare-record-hlevel 2 H-Level-/-Hom (quote /-Hom)
 ```
 -->
 
@@ -515,7 +511,7 @@ fast:
 
 ```agda
   Total-space : Functor Cat[ Disc' I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
+  Total-space .F₀ F .domain = el! (Σ _ (∣_∣ ⊙ F₀ F))
   Total-space .F₀ F .map    = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x

@@ -159,7 +159,7 @@ again preserve _all_ the commutativities.
 
 <!--
 ```agda
-    cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
+    cat .Hom-set x y = Iso→is-hlevel! 2 eqv
 
   open _=>_
 ```

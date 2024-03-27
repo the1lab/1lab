@@ -62,7 +62,7 @@ Im-universal
   → f ≡ m .map ∘ e
   → Im f ≤ₘ m
 Im-universal f m {e = e} p = r where
-  the-lift = out! {pa = is-strong-epi-is-prop C _} (factor f .mediate∈E) .snd
+  the-lift = out! (factor f .mediate∈E) .snd
     record { Subobject m } (sym (factor f .factors) ∙ p)
 
   r : _ ≤ₘ _
@@ -98,7 +98,7 @@ image-pre-cover {a = a} {b} {c} f g g-covers = Sub-antisym imf≤imfg imfg≤imf
     (out! (factor f .forget∈M) _ _ (sym (pulll (sym (imfg≤imf .sq) ∙ idl _) ∙ sym (factor (f ∘ g) .factors) ∙ pushl (factor f .factors)))) .centre
 
   inverse : is-invertible (imfg≤imf .map)
-  inverse = is-strong-epi→is-extremal-epi C (out! {pa = is-strong-epi-is-prop C _} (factor f .mediate∈E))
+  inverse = is-strong-epi→is-extremal-epi C (out! (factor f .mediate∈E))
     (≤ₘ→mono imfg≤imf) (the-lift .fst) (sym (the-lift .snd .snd))
 
   imf≤imfg : Im f ≤ₘ Im (f ∘ g)

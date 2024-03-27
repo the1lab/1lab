@@ -237,7 +237,7 @@ The dual is given by inverting the order of arguments to $R$, and the
 modular law is given by some pair-shuffling.
 
 ```agda
-Rel ℓ ._∩_ R S x y = el (∣ R x y ∣ × ∣ S x y ∣) hlevel!
+Rel ℓ ._∩_ R S x y = el (∣ R x y ∣ × ∣ S x y ∣) (hlevel 1)
 Rel ℓ ._† R x y = R y x
 Rel ℓ .modular R S T x y (α , β) =
   □-rec! (λ { (z , r , s) → inc (z , (r , inc (y , β , s)) , s) }) α
@@ -261,7 +261,7 @@ Rel ℓ .cat .assoc T S R = ext λ x y → Ω-ua
   (□-rec! λ { (a , b , w) → □-rec! (λ { (c , d , x) →
     inc (c , inc (a , b , d) , x) }) w })
 
-Rel ℓ .≤-thin = hlevel!
+Rel ℓ .≤-thin = hlevel 1
 Rel ℓ .≤-refl x y w = w
 Rel ℓ .≤-trans x y p q z = y p q (x p q z)
 Rel ℓ .≤-antisym p q = ext λ x y → Ω-ua (p x y) (q x y)

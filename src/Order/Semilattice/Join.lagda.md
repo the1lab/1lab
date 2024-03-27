@@ -144,19 +144,7 @@ record
 
 open is-join-slat-hom
 
-abstract
-  is-join-slat-hom-is-prop
-    : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q} {P-slat Q-slat}
-    → is-prop (is-join-slat-hom f P-slat Q-slat)
-  is-join-slat-hom-is-prop =
-    Iso→is-hlevel 1 eqv hlevel!
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-join-slat-hom)
-
-instance
-  H-Level-is-join-slat-hom
-    : ∀ {f : Monotone P Q} {P-slat Q-slat n}
-    → H-Level (is-join-slat-hom f P-slat Q-slat) (suc n)
-  H-Level-is-join-slat-hom = prop-instance is-join-slat-hom-is-prop
+unquoteDecl H-Level-is-join-slat-hom = declare-record-hlevel 1 H-Level-is-join-slat-hom (quote is-join-slat-hom)
 
 open Poset
 ```
@@ -195,7 +183,7 @@ id-join-slat-hom {P = P} _ .bot-≤   = P .≤-refl
 Join-slats-subcat : ∀ o ℓ → Subcat (Posets o ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Join-slats-subcat o ℓ .Subcat.is-ob       = is-join-semilattice
 Join-slats-subcat o ℓ .Subcat.is-hom      = is-join-slat-hom
-Join-slats-subcat o ℓ .Subcat.is-hom-prop = hlevel!
+Join-slats-subcat o ℓ .Subcat.is-hom-prop _ _ _ = hlevel 1
 Join-slats-subcat o ℓ .Subcat.is-hom-id   = id-join-slat-hom
 Join-slats-subcat o ℓ .Subcat.is-hom-∘    = ∘-join-slat-hom
 

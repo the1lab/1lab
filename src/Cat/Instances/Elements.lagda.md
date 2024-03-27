@@ -75,6 +75,7 @@ space of `Element-hom`{.Agda}.
 
 <!--
 ```agda
+unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (quote Element-hom)
 
 module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor (C ^op) (Sets s)} where instance
   open Element
@@ -85,14 +86,6 @@ module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor (C ^op) (Sets s)} where 
     → Extensional (Element-hom C P x y) ℓr
   Extensional-element-hom ⦃ ext ⦄ = injection→extensional
     (C .Precategory.Hom-set _ _) (Element-hom-path C P) ext
-
-  open Precategory C
-
-  H-Level-Element-hom
-    : ∀ {x y : Element C P} {n}
-    → H-Level (Element-hom C P x y) (2 + n)
-  H-Level-Element-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv hlevel!
-    where unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
 
 module _ {o ℓ s} (C : Precategory o ℓ) (P : Functor (C ^op) (Sets s)) where
   private module P = Functor P

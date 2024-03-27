@@ -202,20 +202,13 @@ nondecreasing sequences of elements in $P$.
 ```agda
 open Monotone public
 
-private
-  variable
-    o ℓ o' ℓ' o'' ℓ'' : Level
-    P Q R : Poset o ℓ
+private variable
+  o ℓ o' ℓ' o'' ℓ'' : Level
+  P Q R : Poset o ℓ
 
-Monotone-is-hlevel : ∀ n → is-hlevel (Monotone P Q) (2 + n)
-Monotone-is-hlevel {Q = Q} n =
-  Iso→is-hlevel (2 + n) eqv $ is-set→is-hlevel+2 $ hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote Monotone)
+unquoteDecl H-Level-Monotone = declare-record-hlevel 2 H-Level-Monotone (quote Monotone)
 
 instance
-  H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
-  H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
-
   Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
   Funlike-Monotone = record { _#_ = hom }
 
@@ -260,9 +253,9 @@ _∘ₘ_ : Monotone Q R → Monotone P Q → Monotone P R
 (f ∘ₘ g) .pres-≤ x≤y = f .pres-≤ (g .pres-≤ x≤y)
 
 Posets : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Posets o ℓ .Precategory.Ob      = Poset o ℓ
-Posets o ℓ .Precategory.Hom     = Monotone
-Posets o ℓ .Precategory.Hom-set = hlevel!
+Posets o ℓ .Precategory.Ob          = Poset o ℓ
+Posets o ℓ .Precategory.Hom         = Monotone
+Posets o ℓ .Precategory.Hom-set _ _ = hlevel 2
 
 Posets o ℓ .Precategory.id  = idₘ
 Posets o ℓ .Precategory._∘_ = _∘ₘ_
@@ -286,7 +279,7 @@ evidently extends to a faithful functor $\Pos \to \Sets$.
 ```agda
 Forget-poset : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
 ∣ Forget-poset .Functor.F₀ P ∣    = ⌞ P ⌟
-Forget-poset .Functor.F₀ P .is-tr = hlevel!
+Forget-poset .Functor.F₀ P .is-tr = hlevel 2
 
 Forget-poset .Functor.F₁ = hom
 
@@ -316,7 +309,7 @@ We can construct the trivial posets with one and zero (object(s), ordering(s)) r
 𝟙ᵖ : ∀ {o ℓ} → Poset o ℓ
 𝟙ᵖ .Poset.Ob = Lift _ ⊤
 𝟙ᵖ .Poset._≤_ _ _ = Lift _ ⊤
-𝟙ᵖ .Poset.≤-thin = hlevel!
+𝟙ᵖ .Poset.≤-thin = hlevel 1
 𝟙ᵖ .Poset.≤-refl = lift tt
 𝟙ᵖ .Poset.≤-trans = λ _ _ → lift tt
 𝟙ᵖ .Poset.≤-antisym = λ _ _ → refl

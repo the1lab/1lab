@@ -65,8 +65,8 @@ orders $P$ and $Q$.
 ```agda
     abstract
       sum-≤-thin : ∀ {x y} → is-prop (sum-≤ x y)
-      sum-≤-thin {inl x} {inl y} = hlevel!
-      sum-≤-thin {inr x} {inr y} = hlevel!
+      sum-≤-thin {inl x} {inl y} = hlevel 1
+      sum-≤-thin {inr x} {inr y} = hlevel 1
 
       sum-≤-refl : ∀ {x} → sum-≤ x x
       sum-≤-refl {inl x} = lift P.≤-refl

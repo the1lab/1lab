@@ -17,7 +17,6 @@ module Cat.Instances.Karoubi {o h} (C : Precategory o h) where
 ```agda
 open CI C
 import Cat.Reasoning C as C
-open C.HLevel-instance
 open Precategory
 open Functor
 ```

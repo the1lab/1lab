@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Prelude
@@ -57,18 +56,14 @@ Thus we proceed to dualise the whole construction.
 
 <!--
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
-  Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
-  Element-hom-is-set x y = Iso→is-hlevel 2 eqv T-is-set where
-    T-is-set : is-set _
-    T-is-set = hlevel!
-
   Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
   Element-hom-path p i .hom = p i
   Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
     is-prop→pathp (λ j → P.₀ (y .ob) .is-tr (P.₁ (p j) (x .section)) (y .section))
       (f .commute)
       (g .commute) i
+
+unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (quote Element-hom)
 
 module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} where instance
   Extensional-element-hom
@@ -77,12 +72,6 @@ module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} where instan
     → Extensional (Element-hom P x y) ℓr
   Extensional-element-hom ⦃ ext ⦄ = injection→extensional
     (C .Precategory.Hom-set _ _) (Element-hom-path P) ext
-
-  open Precategory C
-
-  H-Level-element-hom : ∀ {x y : Element P} {n} → H-Level (Element-hom P x y) (2 + n)
-  H-Level-element-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv hlevel!
-    where unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
 
 module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   private module P = Functor P

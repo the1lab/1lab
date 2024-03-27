@@ -280,7 +280,7 @@ Category-identity-system
 Category-identity-system =
   transfer-identity-system Category-identity-system-pre
 
-    (λ x y → Σ-ap-snd λ F → prop-ext! {bprop = is-equivalence-is-prop (x .snd) F}
+    (λ x y → Σ-ap-snd λ F → prop-ext (hlevel 1) (is-equivalence-is-prop (x .snd) F)
       is-precat-iso→is-equivalence
       (eqv→iso (x .snd) (y .snd) F))
 ```

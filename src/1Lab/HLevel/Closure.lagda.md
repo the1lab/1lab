@@ -394,6 +394,11 @@ instance opaque
 
   H-Level-is-contr : ∀ {n} {ℓ} {T : Type ℓ} → H-Level (is-contr T) (suc n)
   H-Level-is-contr = prop-instance is-contr-is-prop
+
+  H-Level-is-equiv
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {n}
+    → H-Level (is-equiv f) (suc n)
+  H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
 ```
 
 <!--

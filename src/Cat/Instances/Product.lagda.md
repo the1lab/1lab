@@ -68,7 +68,7 @@ C ×ᶜ D = prodcat module ×ᶜ where
   prodcat : Precategory _ _
   prodcat .Ob = Ob C × Ob D
   prodcat .Hom (a , a') (b , b') = Hom C a b × Hom D a' b'
-  prodcat .Hom-set (a , a') (b , b') = hlevel!
+  prodcat .Hom-set (a , a') (b , b') = hlevel 2
   prodcat .id = id C , id D
   prodcat ._∘_ (f , f') (g , g') = f C.∘ g , f' D.∘ g'
   prodcat .idr (f , f') i = C.idr f i , D.idr f' i

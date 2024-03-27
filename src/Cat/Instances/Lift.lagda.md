@@ -19,7 +19,6 @@ uniformly lift the precategory $\cC$ to this bigger universe.
 Lift-cat : ∀ {o ℓ} o' ℓ' → Precategory o ℓ → Precategory (o ⊔ o') (ℓ ⊔ ℓ')
 Lift-cat o' ℓ' C = liftc where
   open Precategory C
-  open HLevel-instance
   liftc : Precategory _ _
   liftc .Precategory.Ob = Lift o' Ob
   liftc .Precategory.Hom (lift x) (lift y) = Lift ℓ' (Hom x y)

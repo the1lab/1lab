@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import 1Lab.Rewrite
 
 open import Cat.Diagram.Coend.Sets
@@ -306,14 +305,10 @@ $f(\day{h,x,y})$, in a way compatible with the relation above.
 
   instance
     Extensional-day-map
-      : ∀ {i ℓ' ℓr} {C : Type ℓ'} {@(tactic hlevel-tactic-worker) c-set : is-set C}
+      : ∀ {i ℓ' ℓr} {C : Type ℓ'} ⦃ _ : H-Level C 2 ⦄
       → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
       → Extensional (⌞ Day.nadir i ⌟ → C) (ℓ ⊔ ℓr)
-    Extensional-day-map {i} {C = C} {c-set} ⦃ sf ⦄ = done where
-      instance
-        _ : H-Level C 2
-        _ = basic-instance 2 c-set
-
+    Extensional-day-map {i} {C = C} ⦃ sf ⦄ = done where
       T : Type _
       T = {a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C
 

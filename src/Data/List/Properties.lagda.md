@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
+open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -96,8 +97,8 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
     Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
   instance
-    H-Level-List : ∀ {n} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n)
-    H-Level-List {n = n} ⦃ x ⦄ =
+    H-Level-List : ∀ {n} ⦃ p : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (List A) n
+    H-Level-List {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ ⦃ x ⦄ =
       record { has-hlevel = List-is-hlevel n (H-Level.has-hlevel x) }
 
   is-set→List-is-set : is-set A → is-set (List A)
@@ -106,9 +107,8 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
 <!--
 ```agda
-instance
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
+_ : ∀ {ℓ} {A : n-Type ℓ 2} → is-hlevel (List ∣ A ∣) 5
+_ = hlevel 5
 ```
 -->
 

@@ -7,7 +7,7 @@ open import Data.Maybe.Base
 open import Data.List.Base using (_∷_; [])
 open import Data.Dec.Base
 open import Data.Nat.Base
-open import Data.Fin
+open import Data.Fin hiding (_≤_)
 ```
 -->
 
@@ -108,8 +108,11 @@ Maybe-is-hlevel n ahl x y =
 <!--
 ```agda
 instance
-  decomp-maybe : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (Maybe A)
-  decomp-maybe = decomp (quote Maybe-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
+  H-Level-Maybe
+    : ∀ {ℓ} {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄
+    → H-Level (Maybe A) n
+  H-Level-Maybe {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+    Maybe-is-hlevel n (hlevel (2 + n))
 ```
 -->
 

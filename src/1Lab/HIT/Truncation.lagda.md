@@ -103,14 +103,13 @@ whenever it is a family of propositions, by providing a case for
 ∥-∥-rec₂ pprop = ∥-∥-elim₂ (λ _ _ → pprop)
 
 ∥-∥-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
-  → {@(tactic hlevel-tactic-worker) pprop : is-prop P}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ _ : H-Level P 1 ⦄
   → (A → P)
   → (x : ∥ A ∥) → P
-∥-∥-rec! {pprop = pprop} = ∥-∥-elim (λ _ → pprop)
+∥-∥-rec! = ∥-∥-elim (λ _ → hlevel 1)
 
-∥-∥-proj! : ∀ {ℓ} {A : Type ℓ} → {@(tactic hlevel-tactic-worker) ap : is-prop A} → ∥ A ∥ → A
-∥-∥-proj! {ap = ap} = ∥-∥-proj ap
+∥-∥-proj! : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ → ∥ A ∥ → A
+∥-∥-proj! = ∥-∥-proj (hlevel 1)
 ```
 -->
 

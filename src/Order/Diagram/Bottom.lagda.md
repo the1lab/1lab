@@ -53,7 +53,7 @@ is-lub→is-bottom lub x = lub .least x λ ()
 <!--
 ```agda
 is-bottom-is-prop : ∀ x → is-prop (is-bottom x)
-is-bottom-is-prop _ = hlevel!
+is-bottom-is-prop _ = hlevel 1
 
 bottom-unique : ∀ {x y} → is-bottom x → is-bottom y → x ≡ y
 bottom-unique p q = ≤-antisym (p _) (q _)

@@ -228,22 +228,7 @@ open is-frame-hom
 
 <!--
 ```agda
-abstract
-  is-frame-hom-is-prop
-    : ∀ {f : Monotone P Q} {P-frame Q-frame}
-    → is-prop (is-frame-hom f P-frame Q-frame)
-  is-frame-hom-is-prop {Q = Q} = Iso→is-hlevel 1 eqv $
-    ×-is-hlevel 1 (Π-is-hlevel² 1 λ _ _ → Q.≤-thin) $
-    ×-is-hlevel 1 Q.≤-thin $
-    Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → Q.≤-thin
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
-          module Q = Poset Q
-
-instance
-  H-Level-is-frame-hom
-    : ∀ {f : Monotone P Q} {P-frame Q-frame}
-    → ∀ {n} → H-Level (is-frame-hom f P-frame Q-frame) (suc n)
-  H-Level-is-frame-hom = prop-instance is-frame-hom-is-prop
+unquoteDecl H-Level-is-frame-hom = declare-record-hlevel 1 H-Level-is-frame-hom (quote is-frame-hom)
 ```
 -->
 
@@ -284,7 +269,7 @@ of the category of posets.
 Frame-subcat : ∀ o ℓ → Subcat (Posets o ℓ) _ _
 Frame-subcat o ℓ .Subcat.is-ob = is-frame
 Frame-subcat o ℓ .Subcat.is-hom = is-frame-hom
-Frame-subcat o ℓ .Subcat.is-hom-prop = hlevel!
+Frame-subcat o ℓ .Subcat.is-hom-prop _ _ _ = hlevel 1
 Frame-subcat o ℓ .Subcat.is-hom-id = id-frame-hom
 Frame-subcat o ℓ .Subcat.is-hom-∘ = ∘-frame-hom
 

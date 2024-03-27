@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Reflection hiding (absurd)
+
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
@@ -113,6 +115,19 @@ record OFE-on {ℓ} ℓ' (X : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
     has-is-ofe : is-ofe within
   open is-ofe has-is-ofe public
 
+private
+  hlevel-within : ∀ {ℓ ℓ'} {X : Type ℓ} (O : OFE-on ℓ' X) {x y n} → is-prop (O .OFE-on.within n x y)
+  hlevel-within O = O .OFE-on.has-is-prop _ _ _
+
+instance
+  open hlevel-projection
+
+  hlevel-proj-ofe : hlevel-projection (quote OFE-on.within)
+  hlevel-proj-ofe .has-level       = quote hlevel-within
+  hlevel-proj-ofe .get-level _     = pure (quoteTerm (suc zero))
+  hlevel-proj-ofe .get-argument (_ ∷ _ ∷ _ ∷ o v∷ _) = pure o
+  hlevel-proj-ofe .get-argument _ = typeError []
+
 module
   _ {ℓ ℓ₁ ℓ' ℓ₁'} {X : Type ℓ} {Y : Type ℓ₁} (f : X → Y)
     (O : OFE-on ℓ' X) (P : OFE-on ℓ₁' Y)
@@ -176,18 +191,8 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} {O : OFE-on ℓ
   Nonexp-ext {f = f} {g} α i .pres-≈ n {x} {y} β =
     is-prop→pathp (λ i → P.has-is-prop n (α x i) (α y i)) (f .pres-≈ n β) (g .pres-≈ n β) i
 
-private unquoteDecl eqv' = declare-record-iso eqv' (quote is-non-expansive)
-
-instance
-  H-Level-is-non-expansive
-    : ∀ {ℓ ℓ₁ ℓ' ℓ₁'} {X : Type ℓ} {Y : Type ℓ₁} {f : X → Y}
-        {O : OFE-on ℓ' X} {P : OFE-on ℓ₁' Y} {n}
-    → H-Level (is-non-expansive f O P) (suc n)
-  H-Level-is-non-expansive {P = P} = prop-instance (Iso→is-hlevel 1 eqv' (hlevel 1)) where
-    module P = OFE-on P
-    instance
-      hlr : ∀ {n k x y} → H-Level (P.within x n y) (suc k)
-      hlr = prop-instance (P .OFE-on.has-is-prop _ _ _)
+unquoteDecl
+  H-Level-is-non-expansive = declare-record-hlevel 1 H-Level-is-non-expansive (quote is-non-expansive)
 
 open is-non-expansive
 
@@ -351,18 +356,8 @@ module
 
 <!--
 ```agda
-private unquoteDecl eqv'' = declare-record-iso eqv'' (quote is-contractive)
-
-instance
-  H-Level-is-contractive
-    : ∀ {ℓ ℓ₁ ℓ' ℓ₁'} {X : Type ℓ} {Y : Type ℓ₁} {f : X → Y}
-        {O : OFE-on ℓ' X} {P : OFE-on ℓ₁' Y} {n}
-    → H-Level (is-contractive f O P) (suc n)
-  H-Level-is-contractive {P = P} = prop-instance (Iso→is-hlevel 1 eqv'' (hlevel 1)) where
-    module P = OFE-on P
-    instance
-      hlr : ∀ {n k x y} → H-Level (P.within x n y) (suc k)
-      hlr = prop-instance (P .OFE-on.has-is-prop _ _ _)
+unquoteDecl
+  H-Level-is-contractive = declare-record-hlevel 1 H-Level-is-contractive (quote is-contractive)
 
 module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓa' A) (P : OFE-on ℓb' B)
   where
@@ -387,13 +382,6 @@ module OFE-Notation {ℓ ℓ'} {X : Type ℓ} ⦃ O : OFE-on ℓ' X ⦄ where
   private module O = OFE-on O
   _≈[_]_ : X → Nat → X → Type ℓ'
   x ≈[ n ] y = O.within n x y
-
-module OFE-H-Level {ℓ ℓ'} {X : Type ℓ} (O : OFE-on ℓ' X) where
-  private module O = OFE-on O
-  open OFE-Notation ⦃ O ⦄
-  instance
-    H-Level-≈ : ∀ {n k x y} → H-Level (x ≈[ n ] y) (suc k)
-    H-Level-≈ = prop-instance (O.has-is-prop _ _ _)
 
 from-ofe-on : ∀ {ℓ ℓ'} {X : Type ℓ} → OFE-on ℓ' X → OFEs.Ob
 ∣ from-ofe-on {X = X} O .fst ∣ = X

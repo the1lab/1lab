@@ -93,7 +93,7 @@ give the unit, both on the left and on the right:
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
   open Cat.Reasoning (B (underlying-monoid .snd))
-    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_ ; module HLevel-instance)
+    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
     public
 ```
 -->
@@ -329,7 +329,7 @@ assumption), and `being an equivalence is a proposition`{.Agdaa
 ident=is-equiv-is-prop}.
 
 ```agda
-  group-str .group-is-set = hlevel!
+  group-str .group-is-set = hlevel 2
 ```
 
 The associativity and identity laws hold definitionally.

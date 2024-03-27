@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Functor
@@ -183,7 +183,7 @@ laws, a great simplification.
 
     instance
       H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom f mo no) (suc k)
-      H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
+      H-Level-is-monoid-hom = prop-instance $ Iso→is-hlevel! 1 eqv
 
   open Displayed
   open Functor
@@ -221,15 +221,7 @@ category $\cC$, the reasoning isn't _that_ painful:
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {M : Monoidal-category C} where
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
-
-  open Precategory C using (Hom ; module HLevel-instance)
-  open HLevel-instance
-
-  instance
-    H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom M f mo no) (suc k)
-    H-Level-is-monoid-hom = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
+unquoteDecl H-Level-is-monoid-hom = declare-record-hlevel 1 H-Level-is-monoid-hom (quote is-monoid-hom)
 
 private
   Mon : ∀ {ℓ} → Displayed (Sets ℓ) _ _
@@ -269,7 +261,7 @@ into an identification.
   F .F₀' o .identity = o .η (lift tt)
   F .F₀' o ._⋆_ x y = o .μ (x , y)
   F .F₀' o .has-is-monoid .Mon.has-is-semigroup =
-    record { has-is-magma = record { has-is-set = hlevel! }
+    record { has-is-magma = record { has-is-set = hlevel 2 }
            ; associative  = o .μ-assoc $ₚ _
            }
   F .F₀' o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ _

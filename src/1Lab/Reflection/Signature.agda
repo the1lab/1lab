@@ -215,15 +215,15 @@ private
   make-args : Nat → List (Arg Nat) → List (Arg Term)
   make-args n xs = reverse $ map (λ (arg ai i) → arg ai (var (n - i - 1) [])) xs
 
-  class-for-param : Name → Nat → List (Arg Nat) → Term → Maybe Term
+  class-for-param : (Arg Term → Term) → Nat → List (Arg Nat) → Term → Maybe Term
   class-for-param class n xs (agda-sort _) =
-    just (def class (argN (var n (make-args n xs)) ∷ []))
+    just (class (argN (var n (make-args n xs))))
   class-for-param class n xs (pi a (abs s b)) =
     pi (argH (Arg.unarg a)) ∘ abs s <$>
       class-for-param class (suc n) (arg (Arg.arg-info a) n ∷ xs) b
   class-for-param _ _ _ _ = nothing
 
-  compute-telescope : Name → Nat → List (Arg Nat) → Telescope → Telescope → Telescope × List (Arg Term)
+  compute-telescope : (Arg Term → Term) → Nat → List (Arg Nat) → Telescope → Telescope → Telescope × List (Arg Term)
   compute-telescope d n xs is [] = reverse is , make-args (n + length is) xs
   compute-telescope d n xs is ((x , a) ∷ tel) =
     let
@@ -247,14 +247,14 @@ private
 -- That is, all the parameters of the data type are bound invisibly, and
 -- parameters that (end in) a type additionally have corresponding
 -- instances of the class available.
-instance-telescope : Name → Name → TC (Telescope × List (Arg Term))
+instance-telescope : (Arg Term → Term) → Name → TC (Telescope × List (Arg Term))
 instance-telescope class dat = do
   (tele , _) ← pi-view <$> get-type dat
   pure (compute-telescope class 0 [] [] tele)
 
 -- Like `instance-telescope`, but instead return the complete pi-type of
 -- the derived instance.
-instance-type : Name → Name → TC Term
+instance-type : (Arg Term → Term) → Name → TC Term
 instance-type class dat = do
   (tel , vs) ← instance-telescope class dat
-  pure $ unpi-view tel $ def class [ argN (def dat vs) ]
+  pure $ unpi-view tel $ class (argN (def dat vs))

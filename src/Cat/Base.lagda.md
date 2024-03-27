@@ -2,10 +2,12 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.Record
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
 open import 1Lab.HLevel.Closure
 open import 1Lab.Underlying
+open import 1Lab.Reflection
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -119,10 +121,18 @@ g) \circ h = f \circ (g \circ h)$.
 
 <!--
 ```agda
-  module HLevel-instance where
-    instance
-      H-Level-Hom : ∀ {x y} {k} → H-Level (Hom x y) (2 + k)
-      H-Level-Hom = basic-instance 2 (Hom-set _ _)
+open hlevel-projection
+private
+  hom-set : ∀ {o ℓ} (C : Precategory o ℓ) {x y} → is-set (C .Precategory.Hom x y)
+  hom-set C = C .Precategory.Hom-set _ _
+
+instance
+  hlevel-proj-hom : hlevel-projection (quote Precategory.Hom)
+  hlevel-proj-hom .has-level = quote hom-set
+  hlevel-proj-hom .get-level _ = pure (quoteTerm (suc (suc zero)))
+  hlevel-proj-hom .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
+  {-# CATCHALL #-}
+  hlevel-proj-hom .get-argument _ = typeError []
 ```
 -->
 
@@ -492,6 +502,8 @@ module _ where
 infixr 30 _F∘_
 infix 20 _=>_
 
+unquoteDecl H-Level-Nat = declare-record-hlevel 2 H-Level-Nat (quote _=>_)
+
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂}
@@ -515,21 +527,10 @@ natural transformations and a certain $\Sigma$ type; This type can then
 be shown to be a set using the standard `hlevel`{.Agda} machinery.
 
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote _=>_)
   opaque
     Nat-is-set : is-set (F => G)
-    Nat-is-set = Iso→is-hlevel 2 eqv (hlevel 2) where
-      open C.HLevel-instance
-      open D.HLevel-instance
+    Nat-is-set = hlevel 2
 ```
-
-<!--
-```agda
-  instance
-    H-Level-Nat : H-Level (F => G) 2
-    H-Level-Nat = basic-instance 2 Nat-is-set
-```
--->
 
 Another fundamental lemma is that equality of natural transformations
 depends only on equality of the family of morphisms, since being natural

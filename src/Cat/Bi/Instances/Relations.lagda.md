@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.def:20 #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
@@ -375,7 +375,7 @@ Since $q$ is a strong epi, $\alpha$ is, too.
     α-is-pb = pasting-outer→left-is-pullback ([rs]t.inter .has-is-pb) rem₁ ([rs]t.inter .p₂∘universal)
 
   α-cover : is-strong-epi C α
-  α-cover = stable _ _ (out! {pa = is-strong-epi-is-prop C _} (factor rs.it .mediate∈E)) α-is-pb
+  α-cover = stable _ _ (out! (factor rs.it .mediate∈E)) α-is-pb
 ```
 
 The purpose of all this calculation is the following: Postcomposing with
@@ -434,7 +434,7 @@ want to look at the formalisation.
       (r[st].inter .p₁∘universal)
 
   β-cover : is-strong-epi C β
-  β-cover = stable _ _ (out! {pa = is-strong-epi-is-prop C _} (factor st.it .mediate∈E)) β-is-pb
+  β-cover = stable _ _ (out! (factor st.it .mediate∈E)) β-is-pb
 
   r[st]≅i : Im r[st].it Sub.≅ Im j
   r[st]≅i = subst (λ e → Im r[st].it Sub.≅ Im e)

@@ -52,7 +52,7 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
     rem₁ : is-equiv λ b a → b
     rem₁ = is-n-connected→n-type-const
       {B = n-Tr.inc {n = 3 + n} N ≡ inc S} {A = A}
-      (suc n) hlevel! a-conn
+      (suc n) (hlevel (2 + n)) a-conn
 
     rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
     rem₂ = _ , λ x → sym (rem₁ .is-eqv _ .centre .snd) $ₚ x
@@ -154,9 +154,9 @@ We've defined a reflexive family of propositions:
 
 ```agda
     Code-is-prop : ∀ a b → is-prop (Code a b)
-    Code-is-prop = Susp-elim-prop hlevel!
-      (Susp-elim-prop hlevel! hlevel! prop)
-      (Susp-elim-prop hlevel! prop hlevel!)
+    Code-is-prop = Susp-elim-prop (λ _ → hlevel 1)
+      (Susp-elim-prop (λ _ → hlevel 1) (hlevel 1) prop)
+      (Susp-elim-prop (λ _ → hlevel 1) prop (hlevel 1))
 
     Code-refl : ∀ a → Code a a
     Code-refl = Susp-elim-prop (λ a → Code-is-prop a a) _ _

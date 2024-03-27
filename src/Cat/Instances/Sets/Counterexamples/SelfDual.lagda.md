@@ -27,7 +27,7 @@ To show our goal, we need to find a categorical property that holds in $\Sets$ b
 First we note that both $\Sets$ and $\Sets\op$ have an initial object.
 
 In $\Sets$:
-  
+
 ```agda
 _ : Initial (Sets ℓ)
 _ = Sets-initial
@@ -48,16 +48,16 @@ open Sets.Inverses
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
 Sets^op-initial .bot = el! (Lift _ ⊤)
-Sets^op-initial .has⊥ x = hlevel!
+Sets^op-initial .has⊥ x = hlevel 0
 ```
 <!--
 ```agda
 _ = ⊥
-``` 
+```
 -->
 
 Now we can observe an interesting property of the initial object of $\Sets$: it is *[strict]*, meaning every morphism into it is in fact an *iso*morphism.
-Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be empty. 
+Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be empty.
 
 [strict]: Cat.Diagram.Initial.html#strictness
 
@@ -69,13 +69,13 @@ Sets-strict-initial .has-is-strict x f .inverses .invl = ext λ ()
 Sets-strict-initial .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .Lift.lower)
 ```
 
-<!-- 
+<!--
 ```agda
 _ = true≠false
 ```
 -->
 
-Crucially, this property is not shared by the initial object of $\Sets\op$! Unfolding definitions, it says 
+Crucially, this property is not shared by the initial object of $\Sets\op$! Unfolding definitions, it says
 that any function $\top \to X$ is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
 `Bool`{.Agda} is inhabited, but not contractible, since `true≠false`{.Agda}.
 
@@ -103,8 +103,8 @@ we conclude that `Bool`{.Agda} is contractible, from which we obtain (modulo `li
     Bool≅⊤ = to-iso-⊤ (el! (Lift _ Bool)) λ _ → lift true
 
     Bool-is-contr : is-contr (Lift ℓ Bool)
-    Bool-is-contr = subst (is-contr ⊙ ∣_∣) (sym (Univalent.iso→path Sets^op-is-category Bool≅⊤)) hlevel!
-    
+    Bool-is-contr = subst (is-contr ⊙ ∣_∣) (sym (Univalent.iso→path Sets^op-is-category Bool≅⊤)) (hlevel 0)
+
     true≡false : true ≡ false
     true≡false = lift-inj $ is-contr→is-prop Bool-is-contr _ _
 ```
@@ -116,4 +116,3 @@ so we have a contradiction!
 Sets≠Sets^op : ¬ (Sets ℓ ≡ Sets ℓ ^op)
 Sets≠Sets^op p = ¬Sets^op-strict-initial (subst Strict-initial p Sets-strict-initial)
 ```
-  

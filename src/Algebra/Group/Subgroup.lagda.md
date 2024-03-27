@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -65,7 +64,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
   sg' : make-group (Σ[ x ∈ G ] x ∈ H)
-  sg' .make-group.group-is-set = hlevel!
+  sg' .make-group.group-is-set = hlevel 2
   sg' .make-group.unit = unit , has-unit
   sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg' .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
@@ -529,7 +528,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
   open Congruence
   normal-subgroup→congruence : Congruence _ _
   normal-subgroup→congruence ._∼_ = rel
-  normal-subgroup→congruence .has-is-prop x y = hlevel!
+  normal-subgroup→congruence .has-is-prop x y = hlevel 1
   normal-subgroup→congruence .reflᶜ = rel-refl _
   normal-subgroup→congruence ._∙ᶜ_ = rel-trans
   normal-subgroup→congruence .symᶜ = rel-sym

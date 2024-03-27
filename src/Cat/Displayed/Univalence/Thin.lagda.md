@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
+{-# OPTIONS --lossy-unification #-}
 open import 1Lab.Function.Embedding
 
 open import Cat.Displayed.Univalence
@@ -83,12 +83,12 @@ laws are trivial since $H$ is valued in propositions.
   Thin-structure-over : Displayed (Sets ℓ) o' ℓ'
   Thin-structure-over .Ob[_] x = S ∣ x ∣
   Thin-structure-over .Hom[_] f x y = ∣ spec .is-hom f x y ∣
-  Thin-structure-over .Hom[_]-set f a b = is-prop→is-set hlevel!
+  Thin-structure-over .Hom[_]-set f a b = hlevel 2
   Thin-structure-over .id' = spec .id-is-hom
   Thin-structure-over ._∘'_ f g = spec .∘-is-hom _ _ f g
-  Thin-structure-over .idr' f' = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .idl' f' = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .assoc' f' g' h' = is-prop→pathp (λ _ → hlevel!) _ _
+  Thin-structure-over .idr' f' = prop!
+  Thin-structure-over .idl' f' = prop!
+  Thin-structure-over .assoc' f' g' h' = prop!
 
   Structured-objects : Precategory _ _
   Structured-objects = ∫ Thin-structure-over
@@ -120,8 +120,7 @@ By construction, such a category of structured objects admits a
   Forget-structure = πᶠ Thin-structure-over
 
   Structured-hom-path : is-faithful Forget-structure
-  Structured-hom-path p =
-    total-hom-path Thin-structure-over p (is-prop→pathp (λ _ → hlevel!) _ _)
+  Structured-hom-path p = total-hom-path Thin-structure-over p prop!
 
 module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S} where
   private

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Monoid.Category
 open import Algebra.Semigroup
 open import Algebra.Monoid renaming (idr to mon-idr; idl to mon-idl)

@@ -37,8 +37,6 @@ module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : 
     module E = Cat.Reasoning E
     module B = Cat.Reasoning B
     module P = Functor P
-  open B.HLevel-instance
-  open E.HLevel-instance
 ```
 -->
 

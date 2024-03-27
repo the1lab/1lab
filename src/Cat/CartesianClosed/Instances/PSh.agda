@@ -1,4 +1,3 @@
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Exponential
@@ -66,8 +65,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
         i j
 
     pb : Pullback (PSh κ C) f g
-    pb .apex .F₀ i .∣_∣   = Σ[ x ∈ X.₀ i ] Σ[ y ∈ Y.₀ i ] (f.η i x ≡ g.η i y)
-    pb .apex .F₀ i .is-tr = hlevel!
+    pb .apex .F₀ i = el! (Σ[ x ∈ X.₀ i ] Σ[ y ∈ Y.₀ i ] (f.η i x ≡ g.η i y))
     pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
       path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
       path = happly (f.is-natural _ _ _) _

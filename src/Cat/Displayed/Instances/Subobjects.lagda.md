@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian

@@ -220,7 +220,7 @@ make-free-abelian {ℓ} = go where
         f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
         f # (a G.⋆ (c G.⋆ b))       ∎
   go .universal f .preserves .is-group-hom.pres-⋆ =
-    Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+    Coeq-elim-prop₂ (λ _ _ → hlevel 1) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
   go .commutes f = trivial!
   go .unique p = ext (p #ₚ_)
 ```

@@ -72,7 +72,7 @@ Cat[_,_]
   → Precategory (o ⊔ ℓ ⊔ o₁ ⊔ ℓ₁) (o ⊔ ℓ ⊔ ℓ₁)
 Cat[ C , D ] .Pc.Ob          = Functor C D
 Cat[ C , D ] .Pc.Hom         = _=>_
-Cat[ C , D ] .Pc.Hom-set F G = Nat-is-set
+Cat[ C , D ] .Pc.Hom-set F G = hlevel 2
 
 Cat[ C , D ] .Pc.id  = idnt
 Cat[ C , D ] .Pc._∘_ = _∘nt_
@@ -234,7 +234,7 @@ already coherent enough to ensure that these actions agree:
       ap# F (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap# F) (Univalent.iso→path-id ccat) ⟩
       ap# F refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
       dcat .to-path D.id-iso                   ≡⟨ ap (dcat .to-path) (ext (sym (F .F-id))) ⟩
-      dcat .to-path (F-map-iso C.id-iso)     ∎
+      dcat .to-path (F-map-iso C.id-iso)       ∎
 ```
 
 <!--

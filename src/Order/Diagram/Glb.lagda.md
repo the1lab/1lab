@@ -60,22 +60,11 @@ us, a meet is a glb of two elements.
 
 <!--
 ```agda
+unquoteDecl H-Level-is-glb = declare-record-hlevel 1 H-Level-is-glb (quote is-glb)
+
 module _ {o ℓ} {P : Poset o ℓ} where
   open Poset P
   open is-glb
-
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
-
-  is-glb-is-prop
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
-    → is-prop (is-glb P F glb)
-  is-glb-is-prop = Iso→is-hlevel 1 eqv hlevel!
-
-  instance
-    H-Level-is-glb
-      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob} {n}
-      → H-Level (is-glb P F glb) (suc n)
-    H-Level-is-glb = prop-instance is-glb-is-prop
 
   glb-unique
     : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}

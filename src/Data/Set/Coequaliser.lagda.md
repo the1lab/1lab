@@ -510,7 +510,7 @@ so the function $f^*x \to A/\ker f$ is constant, and factors through the
     g₀-const (_ , p) (_ , q) = quot (p ∙ sym q)
 
   g₁ : ∀ {x} → ∥ fibre f x ∥ → c.quotient
-  g₁ f = ∥-∥-rec-set hlevel! g₀ g₀-const f
+  g₁ f = ∥-∥-rec-set (hlevel 2) g₀ g₀-const f
 ```
 
 Since each $\| f^*x \|$ is inhabited, all of these functions glue
@@ -539,14 +539,14 @@ is a set, that means it's an equivalence.
 instance
   Extensional-coeq-map
     : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f g : A → B}
-    → ⦃ sf : Extensional (B → C) ℓr ⦄ {@(tactic hlevel-tactic-worker) c-set : is-set C}
+    → ⦃ sf : Extensional (B → C) ℓr ⦄ ⦃ _ : H-Level C 2 ⦄
     → Extensional (Coeq f g → C) ℓr
   Extensional-coeq-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
   Extensional-coeq-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
-  Extensional-coeq-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path h = funext $
-    Coeq-elim-prop (λ x → c-set _ _) (happly (sf .idsᵉ .to-path h))
-  Extensional-coeq-map ⦃ sf ⦄ {c-set} .idsᵉ .to-path-over p =
-    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (fun-is-hlevel 2 c-set)) _ _
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path h = funext $
+    Coeq-elim-prop (λ x → hlevel 1) (happly (sf .idsᵉ .to-path h))
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
+    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
 
 private module test where
   variable C : Type ℓ

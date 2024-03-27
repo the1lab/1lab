@@ -200,7 +200,7 @@ Family-generic-object→Strict-equiv
   → Σ[ Strict ∈ Precategory h h ]
     (is-set ⌞ Strict ⌟ × Equivalence Strict C)
 Family-generic-object→Strict-equiv small =
-  Strict , hlevel! , eqv module Family-generic-object-strict where
+  Strict , hlevel 2 , eqv module Family-generic-object-strict where
   open Globally-small small
 ```
 
