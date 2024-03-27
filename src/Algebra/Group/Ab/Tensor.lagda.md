@@ -317,7 +317,7 @@ module _ {ℓ} {A B C : Abelian-group ℓ} where instance
   Extensional-tensor-hom
     : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Ab.Hom (A ⊗ B) C) ℓr
   Extensional-tensor-hom ⦃ ef ⦄ =
-    injection→extensional! {B = ⌞ A ⌟ → ⌞ B ⌟ → ∣ C .fst ∣} ⦃ auto ⦄
+    injection→extensional!
       {f = λ f x y → f .hom (x , y)}
       (λ {x} p → Hom≃Bilinear.injective _ _ _ (ext (subst (ef .Pathᵉ _) p (ef .reflᵉ _))))
       auto

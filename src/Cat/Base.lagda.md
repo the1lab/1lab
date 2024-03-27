@@ -1,13 +1,13 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.Reflection.Record
 open import 1Lab.Reflection.HLevel
+open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
 open import 1Lab.HLevel.Closure
-open import 1Lab.Underlying
 open import 1Lab.Reflection
+open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv

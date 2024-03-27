@@ -138,10 +138,8 @@ private
     try : TC ⊤
     try = do
       `r ← wait-for-type =<< quoteTC r
-      ty ← quoteTC (Pathᵉ r x y)
       `x ← quoteTC x
-      `refl ← check-type (it reflᵉ ##ₙ `r ##ₙ `x) ty <|> error
-      unify goal `refl
+      unify goal (it reflᵉ ##ₙ `r ##ₙ `x) <|> error
 
     error = do
       `x ← quoteTC x
