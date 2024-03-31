@@ -4,7 +4,6 @@ open import Cat.Instances.Functor
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
-open import Cat.Diagram.Free
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
@@ -39,8 +38,8 @@ are "initial" among displayed maps:
 private
   module B = Cr B
   module E = Displayed E
-open is-free-object-on
-open Free-object-on
+open is-free-object
+open Free-object
 open Functor
 ```
 -->
@@ -63,10 +62,10 @@ initial objects.
 
 ```agda
   private
-    free-objects : ∀ x → Free-object-on (πᶠ E) x
+    free-objects : ∀ x → Free-object (πᶠ E) x
     free-objects x .free = x , system x
-    free-objects x .eta = B.id
-    free-objects x .has-is-free .eps {y , y'} f =
+    free-objects x .unit = B.id
+    free-objects x .has-is-free .adjunctl {y , y'} f =
       total-hom f (is-free f y' .centre)
     free-objects x .has-is-free .commute = B.idr _ 
     free-objects x .has-is-free .unique g p =

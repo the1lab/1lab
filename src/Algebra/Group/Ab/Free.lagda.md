@@ -8,7 +8,6 @@ open import Algebra.Group
 
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint
-open import Cat.Diagram.Free
 open import Cat.Prelude
 ```
 -->

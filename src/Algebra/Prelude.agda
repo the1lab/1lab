@@ -21,7 +21,6 @@ open import Cat.Diagram.Initial public
 open import Cat.Diagram.Pushout public
 open import Cat.Diagram.Product public
 open import Cat.Diagram.Image public
-open import Cat.Diagram.Free public
 open import Cat.Diagram.Zero public
 
 import Cat.Reasoning

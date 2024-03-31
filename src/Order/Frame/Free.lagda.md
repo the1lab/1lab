@@ -3,7 +3,6 @@
 {-# OPTIONS --lossy-unification -vtc.decl:5 -vtactic.hlevel:30 #-}
 open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
-open import Cat.Diagram.Free
 open import Cat.Prelude
 
 open import Data.Bool
@@ -106,7 +105,7 @@ functor $A \to B$”.
 
 
 ```agda
-make-free-cocompletion : ∀ {ℓ} → (A : Meet-semilattice ℓ ℓ) → Free-object-on Frame↪SLat A
+make-free-cocompletion : ∀ {ℓ} → (A : Meet-semilattice ℓ ℓ) → Free-object Frame↪SLat A
 make-free-cocompletion {ℓ} A = go where
 ```
 
@@ -204,16 +203,16 @@ cocontinuous extensions to tie everything up:
 
 <!--
 ```agda
-  open Free-object-on
-  open is-free-object-on
+  open Free-object
+  open is-free-object
 ```
 -->
 
 ```agda
-  go : Free-object-on Frame↪SLat A
+  go : Free-object Frame↪SLat A
   go .free = Lower-sets-frame A
-  go .eta = the-unit A
-  go .has-is-free .eps {B} f = Mk.mkhom B f
+  go .unit = the-unit A
+  go .has-is-free .adjunctl {B} f = Mk.mkhom B f
   go .has-is-free .commute {B} {f} = ext (Mk.mkcomm B f)
   go .has-is-free .unique {B} {f} g wit = ext (p #ₚ_) where
     open Mk B f
@@ -226,32 +225,3 @@ cocontinuous extensions to tie everything up:
       (is-frame-hom.pres-⋃ (g .witness))
       (wit #ₚ_)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

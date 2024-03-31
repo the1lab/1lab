@@ -6,7 +6,6 @@ open import Algebra.Monoid
 
 open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
-open import Cat.Diagram.Free
 open import Cat.Prelude
 
 open import Data.Fin.Indexed
@@ -195,25 +194,24 @@ x \}$, and the universal extension of $f : A \to B$ is as defined above.
 
 <!--
 ```agda
-open Free-object-on
+open Free-object
 open Subcat-hom
-open is-free-object-on
+open is-free-object
 open is-join-slat-hom
 ```
 -->
 
 ```agda
-
-make-free-join-slat : ∀ {ℓ} → (A : Set ℓ) → Free-object-on (Join-slats↪Sets {ℓ = ℓ}) A
+make-free-join-slat : ∀ {ℓ} → (A : Set ℓ) → Free-object (Join-slats↪Sets {ℓ = ℓ}) A
 make-free-join-slat A .free = K[ A ]
-make-free-join-slat A .eta = singletonᵏ A
-make-free-join-slat A .has-is-free .eps {B} f .hom .hom =
+make-free-join-slat A .unit = singletonᵏ A
+make-free-join-slat A .has-is-free .adjunctl {B} f .hom .hom =
   fold-K A B f
-make-free-join-slat A .has-is-free .eps {B} f .hom .pres-≤ {P} {Q} =
+make-free-join-slat A .has-is-free .adjunctl {B} f .hom .pres-≤ {P} {Q} =
   fold-K-pres-≤ A B f P Q
-make-free-join-slat A .has-is-free .eps {B} f .witness .∪-≤ =
+make-free-join-slat A .has-is-free .adjunctl {B} f .witness .∪-≤ =
   fold-K-∪-≤ A B f
-make-free-join-slat A .has-is-free .eps {B} f .witness .bot-≤ =
+make-free-join-slat A .has-is-free .adjunctl {B} f .witness .bot-≤ =
   fold-K-bot-≤ A B f
 ```
 
@@ -245,54 +243,3 @@ make-free-join-slat A .has-is-free .unique {B} {f} g p = ext λ P pfin →
       pres-finitely-indexed-lub (g .witness) pfin _ _ $
       K-singleton-lub A _)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

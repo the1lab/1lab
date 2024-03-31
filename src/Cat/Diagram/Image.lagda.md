@@ -94,18 +94,19 @@ of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
       (∀ {a b} {f : Hom a b} → M f → is-monic f)
 
   M-image : ∀ {a b} → Class-of-monos ℓ' → Hom a b → Type _
-  M-image {a = a} {b} M f = Universal-morphism (cut f)
+  M-image {a = a} {b} M f = Universal-morphism 
     (Forget-full-subcat
       {C = Slice C b}
-      {P = (λ o → M .fst (o .map))})
+      {P = (λ o → M .fst (o .map))}) (cut f)
 ```
 
 **The** image is the $M$-image for $M$ = the class of all monomorphisms.
 
 ```agda
   Image : ∀ {a b} → Hom a b → Type _
-  Image {b = b} f = Universal-morphism (cut f)
+  Image {b = b} f = Universal-morphism
     (Forget-full-subcat {C = Slice C b} {P = is-monic ⊙ map})
+    (cut f)
 ```
 
 ## Friendly interface

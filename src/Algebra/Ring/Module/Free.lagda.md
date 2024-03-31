@@ -287,16 +287,15 @@ the operation constructors, which is.. inductive, but manageable. I'll
 leave the computation here if you're interested:
 
 ```agda
--- <<<<<<< HEAD
-make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object-on (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
 make-free-module {ℓ' = ℓ'} S = go where
-  open Free-object-on
-  open is-free-object-on
+  open Free-object
+  open is-free-object
 
-  go : Free-object-on (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+  go : Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
   go .free = Free-Mod ⌞ S ⌟
-  go .eta = inc
-  go .has-is-free .eps {b} f = linear-map→hom (fold-free-mod b f)
+  go .unit = inc
+  go .has-is-free .adjunctl {b} f = linear-map→hom (fold-free-mod b f)
   go .has-is-free .commute = refl
   go .has-is-free .unique {M} {f} g p = reext! p
 ```
@@ -315,7 +314,6 @@ Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ
 
 <!--
 ```agda
-
 equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)
   → (let module M = Module-on M)

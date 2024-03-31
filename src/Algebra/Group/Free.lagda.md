@@ -7,7 +7,6 @@ open import Algebra.Group
 
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Diagram.Free
 open import Cat.Prelude
 ```
 -->
@@ -168,18 +167,18 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 <!--
 ```agda
-open Free-object-on
-open is-free-object-on
+open Free-object
+open is-free-object
 ```
 -->
 
 ```agda
-make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object-on Grp↪Sets S
+make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object Grp↪Sets S
 make-free-group S .free = Free-Group ⌞ S ⌟
-make-free-group S .eta = inc
-make-free-group S .has-is-free .eps = fold-free-group
+make-free-group S .unit = inc
+make-free-group S .has-is-free .adjunctl = fold-free-group
 make-free-group S .has-is-free .commute = refl
-make-free-group S .has-is-free .unique {b = H} g p =
+make-free-group S .has-is-free .unique {H} g p =
   ext $ Free-elim-prop _ hlevel!
     (p #ₚ_)
     (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
@@ -189,5 +188,5 @@ make-free-group S .has-is-free .unique {b = H} g p =
     module H = Group-on (H .snd)
     module g = is-group-hom (g .preserves)
 
-module Free-groups {ℓ} (S : Set ℓ) = Free-object-on (make-free-group S)
+module Free-groups {ℓ} (S : Set ℓ) = Free-object (make-free-group S)
 ```

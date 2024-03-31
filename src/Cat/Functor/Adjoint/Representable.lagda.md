@@ -15,7 +15,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Sets
-open import Cat.Diagram.Free
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -130,7 +129,7 @@ module _ {o'} {D : Precategory o' ℓ}
 </details>
 
 ```agda
-  objectwise-rep→universal-maps : ∀ d → Universal-morphism d R
+  objectwise-rep→universal-maps : ∀ d → Universal-morphism R d
   objectwise-rep→universal-maps d = subst Initial (sym (↙≡∫ d))
     (corepresentation→initial-element (corep d))
 

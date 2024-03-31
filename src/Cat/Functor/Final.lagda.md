@@ -9,7 +9,6 @@ open import Cat.Instances.Discrete
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
-open import Cat.Diagram.Free
 open import Cat.Connected
 open import Cat.Groupoid
 open import Cat.Prelude
