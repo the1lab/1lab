@@ -4,7 +4,6 @@ description: |
 ---
 <!--
 ```agda
-open import Cat.Displayed.Instances.F-Algebras
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.CartesianClosed.Locally
@@ -13,6 +12,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Congruence
 open import Cat.Instances.Karoubi
+open import Cat.Functor.Algebra
 open import Cat.Regular
 
 open import Topoi.Base

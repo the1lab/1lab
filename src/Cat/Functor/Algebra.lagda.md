@@ -1,6 +1,6 @@
 ---
 description: |
-  F-Algebras, Lambek's lemma, Adámek's theorem, as well as free monads and
+  F-Algebras, Lambek's lemma, Adámek's theorem, free monads and
   free relative extension systems.
 ---
 <!--
@@ -15,7 +15,6 @@ open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Diagram.Monad
-open import Cat.Diagram.Free
 open import Cat.Prelude
 
 open import Data.Nat
@@ -28,7 +27,7 @@ import Cat.Reasoning
 ```
 -->
 ```agda
-module Cat.Displayed.Instances.F-Algebras where
+module Cat.Functor.Algebra where
 ```
 
 ```agda
@@ -139,13 +138,13 @@ inverses.
     make-inverses section $
       f .hom ∘ α           ≡⟨ f .preserves ⟩
       F.₁ α ∘ F.₁ (f .hom) ≡⟨ F.annihilate section ⟩
-      id ∎
+      id                   ∎
 ```
 
 On to the main result. Let $(A, \alpha)$ be an initial $F$-algebra. As before,
 $(F(A), F(\alpha))$ is also an $F$-algebra, so initiality gives us a unique
 $F$-algebra morphism $\textrm{unroll} : (A, \alpha) \to (F(A), F(\alpha))$.
-Likewise, $\alpha$ induces an $F$-algebra morphism $\textrm{roll} : (F(A), F(\alpha) \to (A, \alpha)$.
+Likewise, $\alpha$ induces an $F$-algebra morphism $\textrm{roll} : (F(A), F(\alpha) \to (A, \alpha))$.
 Furthermore, $\textrm{unroll}$ is a section of $\textrm{roll}$, as maps
 out of the initial object are unique. Therefore, $\textrm{unroll}$ must
 also be an inverse, so $\alpha$ is invertible.
@@ -174,12 +173,12 @@ The canonical example is the initial algebra of $X \mapsto 1 + X$: if it
 exists, this will be an object of the form $1 + (1 + (1 + \cdots))$: in
 $\Sets$, this initial algebra is the natural numbers! In general, initial
 $F$-algebras are how we give a categorical semantics to non-indexed
-inductive datatypes like `Nat`{.Agda}, `List`{.Agda}, etc.
+inductive datatypes like `Nat`{.Agda} or `List`{.Agda}.
 
 ## Adámek's fixpoint theorem {defines="adameks-theorem"}
 
 Note that initial $F$-algebras need not exist for a given functor $F$.
-Nevertheless, **Adámek's fixpoint theorem** lets us can construct some
+Nevertheless, **Adámek's fixpoint theorem** lets us construct some
 initial $F$-algebras, provided that:
 
 1. $\cC$ has an initial object.
@@ -198,7 +197,7 @@ Note that this construction is precisely a categorified version of
 [[Kleene's fixpoint theorem]], so we will be following the exact same
 proof strategy.
 
-We begin by constructing the above diagram as a functor $F^{(-)}(\bot)\omega \to \cC$,
+We begin by constructing the above diagram as a functor $F^{(-)}(\bot) : \omega \to \cC$,
 where $\omega$ is the [[poset of natural numbers]], regarded as a category.
 
 <!--
@@ -278,8 +277,7 @@ by using the universal property of the colimit $F(F^{\infty}(\bot))$.
     adamek Fⁿ[⊥]-colim F-pres-Fⁿ[⊥]-colim = ∐Fⁿ[⊥]-initial
       module adamek where
       module ∐Fⁿ[⊥] = Colimit Fⁿ[⊥]-colim
-      module F[∐Fⁿ[⊥]] = is-colimit (F-pres-Fⁿ[⊥]-colim (∐Fⁿ[⊥].has-colimit))
-      module F-pres-Fⁿ[⊥] = preserves-colimit F-pres-Fⁿ[⊥]-colim
+      module F[∐Fⁿ[⊥]] = is-colimit (F-pres-Fⁿ[⊥]-colim ∐Fⁿ[⊥].has-colimit)
 
       ∐Fⁿ[⊥] : Ob
       ∐Fⁿ[⊥] = ∐Fⁿ[⊥].coapex
@@ -352,6 +350,8 @@ is an initial $F$-algebra.
 
 ## Free algebras and free monads
 
+<!-- [TODO: Reed M, 31/03/2024] Migrate to free monad page once it is written. -->
+
 In the previous section, we dismissed free $F$-algebras as somewhat rare
 objects. It is now time to see *why* this is the case. Suppose that
 $\cC$ has all free $F$-algebras: this is equivalent to requiring a left
@@ -366,11 +366,11 @@ adjoint to the functor that forgets $F$-algebras.
 ```
 
 This adjunction [[induces a monad|monad-from-adjunction]] on $\cC$, which
-we will call the **free monad** on $F$. 
+we will call the **algebraically free monad** on $F$.
 
 ```agda
-    Free-monad : Monad C
-    Free-monad = Adjunction→Monad Free⊣π
+    Alg-free-monad : Monad C
+    Alg-free-monad = Adjunction→Monad Free⊣π
 ```
 
 That was pretty abstract, so let's unpack the data we have on hand.
@@ -379,8 +379,8 @@ with an $F$-algebra $\mathrm{roll} : \cC(F(F^{*}(A)),F^{*}(A))$.
 
 <!--
 ```agda
-    open Algebra-on {M = Free-monad}
-    open Algebra-hom {M = Free-monad}
+    open Algebra-on {M = Alg-free-monad}
+    open Algebra-hom {M = Alg-free-monad}
 ```
 -->
 
@@ -437,7 +437,7 @@ Extending $\mathrm{roll}$ gives us the multiplication of the monad.
 ```
 
 We can also determine the equality of $F$-algebra morphisms $\cC(F^{*}(A),B)$
-purely based off of how they behave on a points.
+purely based off of how they behave on points.
 
 ```agda
       fold-ext
@@ -451,10 +451,10 @@ purely based off of how they behave on a points.
 ```
 
 Note that any $F$-algebra $\alpha : \cC(F(A), A)$ yields an algebra for
-the free monad via extension along $\mathrm{fold}$.
+the algebraically free monad via extension along $\mathrm{fold}$.
 
 ```agda
-    lift-alg : ∀ {a} → Hom (F.₀ a) a → Algebra-on C Free-monad a
+    lift-alg : ∀ {a} → Hom (F.₀ a) a → Algebra-on C Alg-free-monad a
     lift-alg {a = a} α .ν = fold α
     lift-alg {a = a} α .ν-unit = zag
     lift-alg {a = a} α .ν-mult =
@@ -467,7 +467,7 @@ lifts $F(A)$ into $F^{*}(A)$ by adding on zero extra layers, and then
 passes it off to the monad algebra to be eliminated.
 
 ```agda
-    lower-alg : ∀ {a} → Algebra-on C Free-monad a → Hom (F.₀ a) a
+    lower-alg : ∀ {a} → Algebra-on C Alg-free-monad a → Hom (F.₀ a) a
     lower-alg {a = a} α = α .ν ∘ roll a ∘ F.₁ (unit.η a)
 ```
 
@@ -494,7 +494,7 @@ clear, but proving it involves quite a bit of algebra.
 
 ```agda
     alg*
-      : ∀ {a} → (α : Algebra-on C Free-monad a)
+      : ∀ {a} → (α : Algebra-on C Alg-free-monad a)
       → FAlg.Hom (F* a , roll a) (a , (α .ν ∘ roll a ∘ F.₁ (unit.η a)))
     alg* {a = a} α .hom = α .ν
     alg* {a = a} α .preserves =
@@ -508,17 +508,17 @@ clear, but proving it involves quite a bit of algebra.
 ```
 
 However, this algebra pays off, as it lets us establish an equivalence
-between $F$-algebras and algebras over the free monad on $F$.
+between $F$-algebras and algebras over the algebraically free monad on $F$.
 
 ```agda
-    f-algebra≃free-monad-algebra : ∀ a → Hom (F.₀ a) a ≃ Algebra-on C Free-monad a
+    f-algebra≃free-monad-algebra : ∀ a → Hom (F.₀ a) a ≃ Algebra-on C Alg-free-monad a
     f-algebra≃free-monad-algebra a = Iso→Equiv $
       lift-alg , iso lower-alg
         (Algebra-on-pathp C refl ⊙ equivl)
         equivr
       where
         equivl
-          : ∀ {a} (α : Algebra-on C Free-monad a)
+          : ∀ {a} (α : Algebra-on C Alg-free-monad a)
           → counit.ε (a , lower-alg α) .hom ≡ α .ν
         equivl α =
           fold-ext (counit.ε _) (alg* α) $ zag ∙ sym (α .ν-unit)
@@ -534,7 +534,7 @@ Likewise, we have an equivalence between $F$-algebra morphisms and monad
 algebra morphisms.
 
 ```agda
-    private module Free-EM = Cat.Reasoning (Eilenberg-Moore C Free-monad)
+    private module Free-EM = Cat.Reasoning (Eilenberg-Moore C Alg-free-monad)
 
     lift-alg-hom
       : ∀ {a b} {α β}
@@ -549,22 +549,23 @@ algebra morphisms.
       → Free-EM.Hom (a , lift-alg α) (b , lift-alg β)
       → FAlg.Hom (a , α) (b , β)
     lower-alg-hom f .hom = f .morphism
-    lower-alg-hom {α = α} {β = β} f .preserves =
-      ap₂ _∘_ refl (insertr (F.annihilate zag))
-      ∙ push-inner (sym $ fold-roll α)
-      ∙ ap (_∘ (roll _ ∘ F.₁ (unit.η _))) (f .commutes)
-      ∙ pull-inner (map*-roll (f .morphism))
-      ∙ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _)))
-      ∙ ap₂ _∘_ refl (cancell (F.annihilate zag))
+    lower-alg-hom {a} {b} {α} {β} f .preserves =
+      f .morphism ∘ α                                                      ≡⟨ ap₂ _∘_ refl (insertr (F.annihilate zag)) ⟩
+      f .morphism ∘ (α ∘ F.₁ (ε (a , α) .hom)) ∘ F.₁ (η a)                 ≡⟨ push-inner (sym (fold-roll α)) ⟩
+      ⌜ f .morphism ∘ ε (a , α) .hom ⌝ ∘ (roll a ∘ F.₁ (η a))              ≡⟨ ap! (f .commutes) ⟩
+      (ε (b , β) .hom ∘ Free.F₁ (f .morphism) .hom) ∘ (roll a ∘ F.₁ (η a)) ≡⟨ pull-inner (map*-roll (f .morphism)) ⟩
+      ε (b , β) .hom ∘ (roll b ∘ F.₁ (map* (f .morphism))) ∘ F.₁ (η a)     ≡⟨ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _))) ⟩
+      β ∘ F.₁ (ε (b , β) .hom) ∘ F.₁ (η b) ∘ F.₁ (f .morphism)             ≡⟨ ap₂ _∘_ refl (cancell (F.annihilate zag)) ⟩
+      β ∘ (F.₁ (f .morphism))                                              ∎
 ```
 
 Therefore, we have an [[isomorphism of precategories]] between the category
-of $F$-algebras and the [[Eilenberg-Moore category]] of the free monad
-on $F$. Put more succinctly, the free monad on $F$ is **algebraically free**.
+of $F$-algebras and the [[Eilenberg-Moore category]] of the monad we constructed,
+giving us the appropriate universal property for an algebraically free monad.
 
 ```agda
     FAlg→Free-EM
-      : Functor FAlg (Eilenberg-Moore C Free-monad)
+      : Functor FAlg (Eilenberg-Moore C Alg-free-monad)
     FAlg→Free-EM .F₀ (a , α) =
       a , lift-alg α
     FAlg→Free-EM .F₁ = lift-alg-hom
@@ -580,36 +581,29 @@ on $F$. Put more succinctly, the free monad on $F$ is **algebraically free**.
       Σ-ap-snd f-algebra≃free-monad-algebra .snd
 ```
 
-
 ### Free algebras and free relative monads
 
-The previous construction of the free monad on $F$ only works if
-we have *all* free $F$-algebras. This is a rather strong condition
+The previous construction of the algebraically free monad on $F$ only works
+if we have *all* free $F$-algebras. This is a rather strong condition
 on $F$: what can we do in the general setting?
 
-<!--
-```agda
-  open Relative-extension-system
-```
--->
-
 First, note that the category of objects equipped with free $F$-algebras
-forms a subcategory of $C$.
+forms a fulll subcategory of $\cC$.
 
 ```agda
   Free-algebras : Precategory _ _
-  Free-algebras = Restrict {C = C} (Free-object-on (πᶠ F-Algebras))
+  Free-algebras = Restrict {C = C} (Free-object (πᶠ F-Algebras))
 
-  Forget-free-algebras : Functor Free-algebras C
-  Forget-free-algebras = Forget-full-subcat
+  Free-algebras↪C : Functor Free-algebras C
+  Free-algebras↪C = Forget-full-subcat
 ```
 
 <!--
 ```agda
-
   private module Free-algebras = Cat.Reasoning Free-algebras
-  module Free-algebra (α : Free-algebras.Ob) where
-    open Free-object-on (α .witness) public
+  module Free-alg (α : Free-algebras.Ob) where
+    -- Rexport stuff in a more user-friendly format
+    open Free-object (α .witness) public
 
     ob : Ob
     ob = free .fst
@@ -617,25 +611,28 @@ forms a subcategory of $C$.
     alg : Hom (F.₀ ob) ob
     alg = free .snd
 
-  open Free-algebra
+  open Relative-extension-system
 ```
 -->
 
 If we restrict along the inclusion from this category, we can construct
-the free [[relative extension system]] on $F$. Unlike the free monad
-on $F$, this extension system always exists, though it may be trivial
+the free [[relative extension system]] on $F$. Unlike the algebraically free
+monad on $F$, this extension system always exists, though it may be trivial
 if $F$ lacks any free algebras.
 
 ```agda
-  Free-relative-extension : Relative-extension-system Forget-free-algebras
-  Free-relative-extension .M₀ α = ob α
-  Free-relative-extension .unit {α} = eta α
-  Free-relative-extension .bind {α} {β} f = eps α {b = free β} f .hom
+  Free-relative-extension : Relative-extension-system Free-algebras↪C
+  Free-relative-extension .M₀ α =
+    Free-alg.ob α
+  Free-relative-extension .unit {α} =
+    Free-alg.unit α
+  Free-relative-extension .bind {α} {β} f =
+    Free-alg.adjunctl α {Free-alg.free β} f .hom
   Free-relative-extension .bind-unit-id {α} =
-    sym $ ap hom $ unique α FAlg.id (idl _)
+    ap hom $ Free-alg.adjunctl-unit α
   Free-relative-extension .bind-unit-∘ {α} {β} f =
-    commute α
-  Free-relative-extension .bind-∘ {α} {β} {γ} f g =
-    ap hom $ unique α (eps β f FAlg.∘ eps α g) $
-    pullr (commute α)
+    Free-alg.adjunctrl α
+  Free-relative-extension .bind-∘ {α} {β} {γ} f g = ap hom $
+    Free-alg.adjunctl β f FAlg.∘ Free-alg.adjunctl α g   ≡˘⟨ Free-alg.adjunctl-natural α (Free-alg.adjunctl β f) g ⟩
+    Free-alg.adjunctl α (Free-alg.adjunctl β f .hom ∘ g) ∎
 ```
