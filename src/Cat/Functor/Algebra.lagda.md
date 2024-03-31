@@ -588,7 +588,7 @@ if we have *all* free $F$-algebras. This is a rather strong condition
 on $F$: what can we do in the general setting?
 
 First, note that the category of objects equipped with free $F$-algebras
-forms a fulll subcategory of $\cC$.
+forms a full subcategory of $\cC$.
 
 ```agda
   Free-algebras : Precategory _ _
