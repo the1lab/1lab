@@ -1,20 +1,18 @@
 <!--
 ```agda
-open import Cat.Prelude
-
-open import Cat.Diagram.Coproduct
-open import Cat.Diagram.Product
-open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Coequaliser
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Initial
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Pushout
-
-open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Colimit.Cocone
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
+open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
+open import Cat.Diagram.Product
+open import Cat.Diagram.Pushout
+open import Cat.Prelude
 ```
 -->
 

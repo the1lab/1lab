@@ -1,9 +1,8 @@
 <!--
 ```agda
-open import Cat.Prelude
-
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Zero
+open import Cat.Prelude
 
 import Cat.Reasoning
 ```

@@ -7,9 +7,8 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Zero
-
 open import Cat.Abelian.Base
+open import Cat.Diagram.Zero
 open import Cat.Prelude hiding (_-_ ; _+_)
 
 open import Data.Id.Base
