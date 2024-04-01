@@ -73,7 +73,7 @@ assemble into a *functor* $L : \cD \to \cC$?
 We answer the question indirectly^[for a more direct construction based on the Yoneda
 embedding, see the [nLab](https://ncatlab.org/nlab/show/adjoint+functor#AdjointFunctorFromObjectwiseRepresentingObject)]:
 what is a sufficient condition for $R$ to have a left adjoint?
-Well, by our characterisation in terms of [[universal morphisms]], it should be
+Well, by our characterisation in terms of [[free objects]], it should be
 enough to have [[initial objects]] for each [[comma category]] $d \swarrow R$.
 But we have also `established`{.Agda ident=corepresentation→initial-element}
 that a (covariant) functor into $\Sets$ is representable if and only if its

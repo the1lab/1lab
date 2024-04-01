@@ -332,9 +332,9 @@ this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
 ```
 
 Another general class of final functors is given by [[right adjoint]]
-functors.  This follows directly from the characterisation of right
-adjoints in terms of [[universal morphisms]]: since the comma categories
-$c \swarrow R$ have initial objects, they are connected.
+functors. This follows directly from the characterisation of right
+adjoints in terms of [[free objects]]: since the comma categories $c
+\swarrow R$ have initial objects, they are connected.
 
 ```agda
 right-adjoint-is-final
