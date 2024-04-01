@@ -836,5 +836,23 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
 
   Universal-morphism : Functor D C → C.Ob → Type _
   Universal-morphism R X = Initial (X ↙ R)
+
+  open Free-object
+  open Initial
+  open ↓Obj
+  open ↓Hom
+
+  universal-map→free-object : ∀ {R X} → Universal-morphism R X → Free-object R X
+  universal-map→free-object x .free = _
+  universal-map→free-object x .unit = x .bot .map
+  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .β
+  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .sq) ∙ C.idr _
+  universal-map→free-object x .unique g p = ap β (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+
+  universal-maps→L : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
+  universal-maps→L u = free-objects→functor (λ X → universal-map→free-object (u X))
+
+  universal-maps→L⊣R : ∀ {R} (h : ∀ X → Universal-morphism R X) → universal-maps→L h ⊣ R
+  universal-maps→L⊣R h = free-objects→left-adjoint _
 ```
 -->
