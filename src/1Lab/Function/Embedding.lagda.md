@@ -220,5 +220,13 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       → is-hlevel A (suc n)
     embedding→is-hlevel n emb a-hl = Equiv→is-hlevel (suc n) (Total-equiv f) $
       Σ-is-hlevel (suc n) a-hl λ x → is-prop→is-hlevel-suc (emb x)
+
+    injective→is-set
+      : injective f
+      → is-set B
+      → is-set A
+    injective→is-set inj b-set =
+      embedding→is-hlevel 1
+        (injective→is-embedding b-set f inj) b-set
 ```
 -->

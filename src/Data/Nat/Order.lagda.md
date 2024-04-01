@@ -227,3 +227,18 @@ an inhabited subset.
   ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
     (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
 ```
+
+<!--
+```agda
+-- Avoids transports in indices.
+cast-≤ : ∀ {m m' n n'} → m ≡ m' → n ≡ n' → m ≤ n → m' ≤ n'
+cast-≤ {zero} {zero} {zero} {zero} p q 0≤x = 0≤x
+cast-≤ {zero} {zero} {zero} {suc n'} p q m≤n = absurd (zero≠suc q)
+cast-≤ {zero} {zero} {suc n} {zero} p q m≤n = absurd (suc≠zero q)
+cast-≤ {zero} {zero} {suc n} {suc n'} p q 0≤x = 0≤x
+cast-≤ {zero} {suc m'} {n} {n'} p q m≤n = absurd (zero≠suc p)
+cast-≤ {suc m} {zero} {n} {n'} p q m≤n = absurd (suc≠zero p)
+cast-≤ {suc m} {suc m'} {suc n} {zero} p q m≤n = absurd (suc≠zero q)
+cast-≤ {suc m} {suc m'} {suc n} {suc n'} p q (s≤s m≤n) = s≤s (cast-≤ (suc-inj p) (suc-inj q) m≤n)
+```
+-->

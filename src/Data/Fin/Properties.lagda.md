@@ -294,3 +294,40 @@ insert-delete {n = n} ρ fzero a p (fsuc j) = refl
 insert-delete {n = suc n} ρ (fsuc i) a p fzero = refl
 insert-delete {n = suc n} ρ (fsuc i) a p (fsuc j) = insert-delete (ρ ∘ fsuc) i a p j
 ```
+
+<!--
+```agda
+to-nat-inj
+  : ∀ {n} {i j : Fin n}
+  → to-nat i ≡ to-nat j
+  → i ≡ j
+to-nat-inj {i = fzero} {j = fzero} p = refl
+to-nat-inj {i = fzero} {j = fsuc j} p = absurd (Nat.zero≠suc p)
+to-nat-inj {i = fsuc i} {j = fzero} p = absurd (Nat.suc≠zero p)
+to-nat-inj {i = fsuc i} {j = fsuc j} p = ap fsuc (to-nat-inj (Nat.suc-inj p))
+
+to-from-nat : ∀ n → to-nat (from-nat n) ≡ n
+to-from-nat zero = refl
+to-from-nat (suc n) = ap suc (to-from-nat n)
+
+from-nat-pres-≤
+  : ∀ {m n}
+  → m Nat.≤ n
+  → to-nat (from-nat m) Nat.≤ to-nat (from-nat n)
+from-nat-pres-≤ {m} {n} p = Nat.cast-≤ (sym (to-from-nat m)) (sym (to-from-nat n)) p
+
+from-nat-top
+  : ∀ {n}
+  → (i : Fin (suc n))
+  → i ≤ from-nat n
+from-nat-top {n = n} fzero = Nat.0≤x
+from-nat-top {n = suc n} (fsuc i) = Nat.s≤s (from-nat-top i)
+
+to-nat-weaken-≤
+  : ∀ {m n n'}
+  → (p : m Nat.≤ n) (q : m Nat.≤ n') (i : Fin m)
+  → to-nat (weaken-≤ p i) ≡ to-nat (weaken-≤ q i)
+to-nat-weaken-≤ (Nat.s≤s p) (Nat.s≤s q) fzero = refl
+to-nat-weaken-≤ (Nat.s≤s p) (Nat.s≤s q) (fsuc i) = ap suc (to-nat-weaken-≤ p q i)
+```
+-->
