@@ -290,14 +290,13 @@ leave the computation here if you're interested:
 make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
 make-free-module {ℓ' = ℓ'} S = go where
   open Free-object
-  open is-free-object
 
   go : Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
   go .free = Free-Mod ⌞ S ⌟
   go .unit = inc
-  go .has-is-free .adjunctl {b} f = linear-map→hom (fold-free-mod b f)
-  go .has-is-free .commute = refl
-  go .has-is-free .unique {M} {f} g p = reext! p
+  go .fold {b} f = linear-map→hom (fold-free-mod b f)
+  go .commute = refl
+  go .unique {M} {f} g p = reext! p
 ```
 
 After that calculation, we can ✨ just ✨ conclude that

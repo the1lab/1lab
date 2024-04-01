@@ -627,12 +627,12 @@ if $F$ lacks any free algebras.
   Free-relative-extension .unit {α} =
     Free-alg.unit α
   Free-relative-extension .bind {α} {β} f =
-    Free-alg.adjunctl α {Free-alg.free β} f .hom
+    Free-alg.fold α {Free-alg.free β} f .hom
   Free-relative-extension .bind-unit-id {α} =
-    ap hom $ Free-alg.adjunctl-unit α
+    ap hom $ Free-alg.fold-unit α
   Free-relative-extension .bind-unit-∘ {α} {β} f =
-    Free-alg.adjunctrl α
+    Free-alg.commute α
   Free-relative-extension .bind-∘ {α} {β} {γ} f g = ap hom $
-    Free-alg.adjunctl β f FAlg.∘ Free-alg.adjunctl α g   ≡˘⟨ Free-alg.adjunctl-natural α (Free-alg.adjunctl β f) g ⟩
-    Free-alg.adjunctl α (Free-alg.adjunctl β f .hom ∘ g) ∎
+    Free-alg.fold β f FAlg.∘ Free-alg.fold α g   ≡˘⟨ Free-alg.fold-natural α (Free-alg.fold β f) g ⟩
+    Free-alg.fold α (Free-alg.fold β f .hom ∘ g) ∎
 ```

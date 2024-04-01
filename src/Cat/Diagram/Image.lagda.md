@@ -24,7 +24,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
   open ↓Hom
   open /-Obj
   open /-Hom
-  
+
   private variable
     a b : Ob
     ℓ' : Level
@@ -94,7 +94,7 @@ of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
       (∀ {a b} {f : Hom a b} → M f → is-monic f)
 
   M-image : ∀ {a b} → Class-of-monos ℓ' → Hom a b → Type _
-  M-image {a = a} {b} M f = Universal-morphism 
+  M-image {a = a} {b} M f = Universal-morphism
     (Forget-full-subcat
       {C = Slice C b}
       {P = (λ o → M .fst (o .map))}) (cut f)
@@ -126,7 +126,7 @@ is the image object, and $m$ is the inclusion map:
 ```agda
     Im : Ob
     Im = im .bot .y .object .domain
-  
+
     Im→codomain : Hom Im b
     Im→codomain = im .bot .y .object .map
 ```
@@ -137,7 +137,7 @@ monomorphisms), and an $M$-inclusion at that:
 ```agda
     Im→codomain-is-M : M .fst Im→codomain
     Im→codomain-is-M = im .bot .y .witness
-  
+
     Im→codomain-is-monic : is-monic Im→codomain
     Im→codomain-is-monic = M .snd Im→codomain-is-M
 ```
@@ -149,7 +149,7 @@ comma category. We also have the "morphism" part, which provides our
 ```agda
     corestrict : Hom a Im
     corestrict = im .bot .map .map
-  
+
     image-factors : Im→codomain ∘ corestrict ≡ f
     image-factors = im .bot .map .commutes
 ```
@@ -178,13 +178,13 @@ through $k$:
       obj .x = tt
       obj .y = restrict (cut m) M
       obj .map = record { map = i ; commutes = p }
-  
+
     universal-factors
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
       → {p : m ∘ i ≡ f}
       → m ∘ universal m M i p ≡ Im→codomain
     universal-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .β .commutes
-  
+
     universal-commutes
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
       → {p : m ∘ i ≡ f}

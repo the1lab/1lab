@@ -166,7 +166,7 @@ module _
 ```
 -->
 
-# Adjuncts {defines=adjuncts}
+## Adjuncts {defines=adjuncts}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any
@@ -291,32 +291,66 @@ Furthermore, these equivalences are natural.
 ```
 -->
 
-# Free Objects
+## Free objects
 
-Another perspective is that adjunctions describe free constructions:
-the right adjoint forgets structure, and the left adjoint freely adds it.
-These sorts of adjunctions are so common that we may be tempted to *define*
-free constructions as left adjoints. However, this doesn't quite capture
-the whole story: there are many situations where a left adjoint does not
-exist, yet we can perform a free constructions on *some* objects.
-This gives rise to the following definition:
+In contrast to the formal descriptions above, this section presents an
+*intuitive* perspective on adjoint functors: namely, a (left) adjoint,
+when it exists, provides the *most efficient possible solutions* to the
+problem posed by its (right) adjoint. This perspective is particularly
+helpful when the right adjoint in question is easily conceptualised as a
+*forgetful* functor. For a concrete example, we could consider the
+([[fully faithful]]) inclusion of [[abelian groups]] into all
+[[groups]].
 
-:::{.definition #free-object}
+The first thing to notice is that $U : \Ab \to \Grp$ induces a notion of
+morphism from groups $G$ to abelian groups $H$: this is the hom-set
+$\hom_\Grp(G, U(H))$. This observation isn't particularly deep *in this
+case*, since the maps between abelian groups are also group
+homomorphisms, but note that this works for *any* functor: the forgetful
+functor $U : \Grp \to \Sets$ lets us consider maps "from a group to a
+set".
 
-Let $\cC, \cD$ be a pair of categories, and let $U : \cC \to \cD$ be a
-functor. An object $A : \cC$ equipped with a map $\eta : \cD(X, U(A))$
-is a **free object** on $X : \cD$ with respect to $U$ if it satisfies
-the following universal property:
+By letting the abelian group $H$ vary, we can consider morphisms from a
+group $G$ to *some* abelian group. These form a category in their own
+right, the [[comma category]] $G \swarrow U$. In a sense, these are all
+solutions to the problem of *turning $G$ into an abelian group* --- or,
+more precisely, *mapping* $G$ into an abelian group. For a given $G$,
+there can be arbitrarily many of these, and some are extremely boring:
+for example, the zero group is abelian, so we can always consider $G \to
+\varnothing$ as a way to "turn $G$ into an abelian group"!
 
-- For every $B : \cD$ and $f : \cD(X, U(B))$, there exists a unique
-  map $\eps : \cC(A, B)$ with $U(\eps) \circ \eta = f$.
-:::
+So we're left with defining which of these solutions is *the most
+efficient*. Since turning a group abelian necessarily involves
+identifying elements that were previously distinct --- all the $gh \ne
+hg$ have to be squashed --- we could attempt to measure *how many*
+elements got identified, and choose the one that imposes the least
+amount of these relations. While this might be tractable for finitely
+presented groups, it would be really hard to define, let alone measure,
+these *imposed relations* for an arbitrary $U : \cD \to \cC$!
+
+However, we don't need any actual *count* of the relations imposed, or
+even a notion of relation. The important thing to observe is that, if
+$(H, \eta)$ and $(H', \eta')$ are both *ways of turning $G$ into an
+abelian group*, then we can factor $\eta'$ as a map
+
+$$
+G \xto{\eta} H \xto{f} H'
+$$
+
+if *and only if* $\eta$ imposes less relations on the elements of $G$
+than $\eta'$ does. The *most efficient* solution to turning $G$ into an
+abelian group, then, would be the one through which all others factor,
+since it will *impose the least number of relations*! Abstractly, we are
+looking for an [[initial object]] in the comma category $G \swarrow U$.
+
+While the abstract phrasing we've arrived at is very elegant, it does
+seriously obfuscate the data necessary. To work with left adjoints
+smoothly, and to present the ideas more clearly, we introduce an
+auxiliary notion: **free objects**.
 
 <!--
 ```agda
-module _
-  (U : Functor C D)
-  where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
@@ -324,101 +358,67 @@ module _
 ```
 -->
 
-```agda
-  record is-free-object {X : D.Ob} {A : C.Ob} (unit : D.Hom X (U.₀ A)) : Type (adj-level C D) where
-    field
-      adjunctl : ∀ {B} → D.Hom X (U.₀ B) → C.Hom A B
-      commute : ∀ {B} {f : D.Hom X (U.₀ B)} → U.₁ (adjunctl f) D.∘ unit ≡ f
-      unique
-        : ∀ {B} {f : D.Hom X (U.₀ B)}
-        → (other : C.Hom A B)
-        → U.₁ other D.∘ unit ≡ f
-        → other ≡ adjunctl f
+::: {.definition #free-object}
+A **free object** on $X : \cC$, relative to $U : \cD \to \cC$, consists
+of an object $F(X) : \cD$ and an arrow $\eta : X \to UF(X)$, such that
+every $f : X \to UY$, $f$ factors uniquely through $\eta$. Expanding
+this to an *operations-and"properties" presentation, we could say that:
 
-    adjunctl-natural
-      : ∀ {B B' : C.Ob}
-      → (f : C.Hom B B') (g : D.Hom X (U.₀ B))
-      → adjunctl (U.₁ f D.∘ g) ≡ f C.∘ adjunctl g
-    adjunctl-natural f g = sym (unique (f C.∘ adjunctl g) (U.popr commute))
-```
-
-
-<!--
-```agda
-    unique₂
-      : ∀ {B} {f : D.Hom X (U.₀ B)}
-      → (other₁ other₂ : C.Hom A B)
-      → U.₁ other₁ D.∘ unit ≡ f
-      → U.₁ other₂ D.∘ unit ≡ f
-      → other₁ ≡ other₂
-    unique₂ other₁ other₂ p q = unique other₁ p ∙ sym (unique other₂ q)
-
-    adjunctl-unit : adjunctl unit ≡ C.id
-    adjunctl-unit = sym (unique C.id (D.eliml U.F-id))
-```
--->
-
-A free object on $X : \cC$ with respect to $U$ is an explicit choice of
-$A : \cC$ and $\eta : \cD(X, U(A))$ that form a free object.
+* There is a map `fold`{.Agda} from $\cD(X, UY)$ to $\cC(FX, Y)$, and
+* for every $f$, we have $U(\operatorname{fold} f)\eta = f$, and
+* for every $f$ and $g$, if $U(g)\eta = f$, then $g = \operatorname{fold} f$.
+:::
 
 ```agda
   record Free-object (X : D.Ob) : Type (adj-level C D) where
     field
-      free : C.Ob
-      unit : D.Hom X (U.₀ free)
-      has-is-free : is-free-object unit
+      {free} : C.Ob
+      unit   : D.Hom X (U.₀ free)
+
+      fold    : ∀ {Y} (f : D.Hom X (U.₀ Y)) → C.Hom free Y
+      commute : ∀ {Y} {f : D.Hom X (U.₀ Y)} → U.₁ (fold f) D.∘ unit ≡ f
+      unique
+        : ∀ {Y} {f : D.Hom X (U.₀ Y)} (g : C.Hom free Y)
+        → U.₁ g D.∘ unit ≡ f
+        → g ≡ fold f
 ```
-
-Intuitively, a free object on $X$ is an approximation of a
-(potentially non-existent) left adjoint at $X$. The universal property
-gives us a left adjunct that only works for $X$, and the unit of the free
-object gives us the corresponding right adjunct.
-
-```agda
-    open is-free-object has-is-free renaming (commute to adjunctrl) public
-
-    adjunctr : ∀ {B : C.Ob} → C.Hom free B → D.Hom X (U.₀ B)
-    adjunctr f = U.₁ f D.∘ unit
-
-    adjunctlr : ∀ {B} {f : C.Hom free B} → adjunctl (adjunctr f) ≡ f
-    adjunctlr = sym (unique _ refl)
-
-    adjunctr-unique
-        : ∀ {B} {f : C.Hom free B}
-        → (other : D.Hom X (U.₀ B))
-        → adjunctl other ≡ f
-        → other ≡ adjunctr f
-    adjunctr-unique {f = f} other p =
-      other                             ≡˘⟨ adjunctrl ⟩
-      (U.₁ ⌜ adjunctl other ⌝ D.∘ unit) ≡⟨ ap! p ⟩
-      U.₁ f D.∘ unit                    ∎
-
-    adjunctr-natural
-      : ∀ {B B' : C.Ob}
-      → (f : C.Hom B B') (g : C.Hom free B)
-      → adjunctr (f C.∘ g) ≡ U.₁ f D.∘ adjunctr g 
-    adjunctr-natural f g = D.pushl (U.F-∘ _ _)
-```
-
-A free object $A : \cC$ on $X : \cD$ induces an equivalence between
-$\cD(X, U(B))$ and $\cC(A, B)$. In other words, free objects are
-representing objects for the functor $\cD(X,U(-))$.
-
-```agda
-    adjunctl-is-equiv : ∀ B → is-equiv (adjunctl {B})
-    adjunctl-is-equiv B =
-      is-iso→is-equiv $ iso adjunctr (λ _ → adjunctlr) (λ _ → adjunctrl)
-```
-
-Free objects have all the usual hallmarks of universal constructions:
-the universal property of free objects is a proposition, and they are
-unique up to isomorphism.
 
 <!--
 ```agda
-module _
-  {U : Functor C D}
-  where
+    abstract
+      fold-natural
+        : ∀ {Y Y'} (f : C.Hom Y Y') (g : D.Hom X (U.₀ Y))
+        → fold (U.₁ f D.∘ g) ≡ f C.∘ fold g
+      fold-natural f g = sym (unique (f C.∘ fold g) (U.popr commute))
+
+      fold-unit : fold unit ≡ C.id
+      fold-unit = sym (unique C.id (D.eliml U.F-id))
+
+      unique₂
+        : ∀ {B} {f : D.Hom X (U.₀ B)} (g₁ g₂ : C.Hom free B)
+        → U.₁ g₁ D.∘ unit ≡ f
+        → U.₁ g₂ D.∘ unit ≡ f
+        → g₁ ≡ g₂
+      unique₂ g₁ g₂ p q = unique g₁ p ∙ sym (unique g₂ q)
+```
+-->
+
+Note that *factors uniquely through $\eta$* is precisely equivalent to
+saying that $\eta$ induces an equivalence between $\cD(X, UY)$ and
+$\cC(FX, Y)$. In other words, free objects are representing objects for
+the functor $\cD(X,U(-))$.
+
+```agda
+    fold-is-equiv : ∀ B → is-equiv (fold {B})
+    fold-is-equiv B = is-iso→is-equiv λ where
+      .is-iso.inv  f → U.₁ f D.∘ unit
+      .is-iso.rinv _ → sym (unique _ refl)
+      .is-iso.linv _ → commute
+```
+
+<!--
+```agda
+module _ {U : Functor C D} where
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
@@ -428,12 +428,20 @@ module _
 ```
 -->
 
-```agda
-  is-free-object-is-prop
-    : ∀ {X A} {unit : D.Hom X (U.₀ A)}
-    → is-prop (is-free-object U unit)
+This implies that free objects have all the usual properties of
+universal constructions: they are unique up to unique isomorphism, and
+identity of free objects is determined by identity of the unit maps ---
+put another way, *being a free object* is truly a [[property]] of the
+pair $(FX, \eta)$.
 
+```agda
   free-object-unique : ∀ {X} (A B : Free-object U X) → A .free C.≅ B .free
+
+  Free-object-path
+    : ∀ {X} {x y : Free-object U X}
+    → (p : x .free ≡ y .free)
+    → (q : PathP (λ i → D.Hom X (U.₀ (p i))) (x .unit) (y .unit))
+    → x ≡ y
 ```
 
 <details>
@@ -442,73 +450,97 @@ so we will omit the details.</summary>
 
 ```agda
   free-object-unique a b =
-    C.make-iso (a .adjunctl (b .unit)) (b .adjunctl (a .unit))
-      (unique₂ b _ _ (U.popr (b .adjunctrl) ∙ a .adjunctrl) (D.eliml U.F-id))
-      (unique₂ a _ _ (U.popr (a .adjunctrl) ∙ b .adjunctrl) (D.eliml U.F-id))
-
-  is-free-object-is-prop {X = X} {A = A} {unit = unit} fo fo' = path where
-    module fo = is-free-object fo
-    module fo' = is-free-object fo'
-
-    adjunctl-path : ∀ {B} (f : D.Hom X (U.₀ B)) → fo.adjunctl f ≡ fo'.adjunctl f
-    adjunctl-path f = fo'.unique (fo.adjunctl f) fo.commute
-
-    path : fo ≡ fo' 
-    path i .is-free-object.adjunctl f = adjunctl-path f i
-    path i .is-free-object.commute {f = f} =
-      is-prop→pathp (λ i → D.Hom-set _ _ (U.₁ (adjunctl-path f i) D.∘ unit) f)
-        fo.commute fo'.commute i
-    path i .is-free-object.unique {f = f} o p =
-      is-prop→pathp (λ i → C.Hom-set _ _ o (adjunctl-path f i))
-        (fo.unique o p) (fo'.unique o p) i
+    C.make-iso (a .fold (b .unit)) (b .fold (a .unit))
+      (unique₂ b _ _ (U.popr (b .commute) ∙ a .commute) (D.eliml U.F-id))
+      (unique₂ a _ _ (U.popr (a .commute) ∙ b .commute) (D.eliml U.F-id))
 ```
+
 </details>
 
 <!--
 ```agda
-  private unquoteDecl free-obj-eqv = declare-record-iso free-obj-eqv (quote Free-object) 
+  Free-object-path {X = X} {x} {y} p q = r where
+    folds : ∀ {Y} (f : D.Hom X (U.₀ Y)) → PathP (λ i → C.Hom (p i) Y) (x .fold f) (y .fold f)
+    folds {Y} f = to-pathp $
+      let
+        it : U.₁ (x .fold f) D.∘ x .unit
+           ≡ U.₁ (transport (λ i → C.Hom (p i) Y) (x .fold f)) D.∘ y .unit
+        it i = U.₁ (coe0→i (λ i → C.Hom (p i) Y) i (x .fold f)) D.∘ q i
+      in y .unique _ (sym it ∙ x .commute)
+
+    r : x ≡ y
+    r i .free = p i
+    r i .unit = q i
+    r i .fold f = folds f i
+    r i .commute {f = f} = is-prop→pathp
+      (λ i → D.Hom-set _ _ (U.₁ (folds f i) D.∘ q i) f) (x .commute) (y .commute) i
+    r i .unique {Y = Y} {f} = is-prop→pathp
+      (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1 λ g _ → C.Hom-set _ _ g (folds f i))
+      (x .unique) (y .unique) i
 
   -- This lets us ignore 'is-free-object' when proving equality.
   Extensional-Free-object
     : ∀ {X ℓr}
     → ⦃ sa : Extensional (Σ[ A ∈ C.Ob ] (D.Hom X (U.₀ A))) ℓr ⦄
     → Extensional (Free-object U X) ℓr
-  Extensional-Free-object ⦃ sa ⦄ =
-    embedding→extensional
-      (Iso→Embedding free-obj-eqv
-      ∙emb Equiv→Embedding Σ-assoc
-      ∙emb (fst , Subset-proj-embedding λ _ → is-free-object-is-prop))
-      sa
+  Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y = sa .Pathᵉ (_ , x .unit) (_ , y .unit)
+  Extensional-Free-object ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (_ , x .unit)
+  Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path h =
+    let p = sa .idsᵉ .to-path h
+     in Free-object-path (ap fst p) (ap snd p)
+  Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path-over p =
+    sa .idsᵉ .to-path-over p
 
   instance
     Extensionality-Free-object
       : ∀ {X}
       → Extensionality (Free-object U X)
     Extensionality-Free-object = record { lemma = quote Extensional-Free-object }
+
+  private module I = Initial
+  open ↓Hom
 ```
 -->
 
-## Free objects and adjoints
-
-If $U$ has a left adjoint $F$, then every $X : \cD$ has a corresponding
-free object given by $(F(X), \eta)$, where $\eta$ is the unit of the
-adjunction.
+Finally, we sketch one direction of the equivalence between our new
+definition of *free object for $X$ relative to $U$* and the more
+abstract construction of *initial object in the comma category $X
+\swarrow U$* which we had arrived at earlier. This is simply a
+re-labelling of data: it would not be hard to complete this to a full
+equivalence, but it would not be very useful, either.
 
 ```agda
+  Free-object→universal-map
+    : ∀ {X} → Free-object U X → Initial (X ↙ U)
+  Free-object→universal-map fo = λ where
+    .I.bot → ↓obj (fo .unit)
+    .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
+    .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
+      fo .unique _ (sym (p .sq) ∙ D.idr _)
+```
+
+### Free objects and adjoints
+
+If $U$ has a left adjoint $F$, then every $X : \cD$ has a corresponding
+free object: $(FX, \eta)$, where $\eta$ is the unit of the adjunction.
+This justifies our use of the notation $FX$ for a free object on $X$,
+even if a functor $F(-)$ does not necessarily exist.
+
+<!--
+```agda
   module _ {F : Functor D C} (F⊣U : F ⊣ U) where
-    open is-free-object
     open _⊣_ F⊣U
+```
+-->
 
-    left-adjoint→unit-is-free : ∀ x → is-free-object U (unit.η x)
-    left-adjoint→unit-is-free x .adjunctl f = R-adjunct F⊣U f
-    left-adjoint→unit-is-free x .commute = L-R-adjunct F⊣U _
-    left-adjoint→unit-is-free x .unique other p =
-      Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (p ∙ sym (L-R-adjunct F⊣U _))
-
+```agda
     left-adjoint→free-objects : ∀ X → Free-object U X
-    left-adjoint→free-objects X .free = Functor.F₀ F X
-    left-adjoint→free-objects X .unit = unit.η X
-    left-adjoint→free-objects X .has-is-free = left-adjoint→unit-is-free X
+    left-adjoint→free-objects X .free    = F .F₀ X
+    left-adjoint→free-objects X .unit    = unit.η X
+    left-adjoint→free-objects X .fold f  = R-adjunct F⊣U f
+    left-adjoint→free-objects X .commute = L-R-adjunct F⊣U _
+    left-adjoint→free-objects X .unique g p =
+      Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (p ∙ sym (L-R-adjunct F⊣U _))
 ```
 
 Conversely, if $\cD$ has all free objects, then $U$ has a left adjoint.
@@ -516,25 +548,28 @@ We begin by constructing a functor $F : \cD \to \cC$ that assigns each
 object to its free counterpart; functoriality follows from the universal
 property.
 
+<!--
 ```agda
   module _ (free-objects : ∀ X → Free-object U X) where
-    private
-      module F {X} = Free-object (free-objects X)
-      open Functor
-      open _=>_
-      open _⊣_
+    private module F {X} where open Free-object (free-objects X) public
+    open Functor
+    open _=>_
+    open _⊣_
+```
+-->
 
+```agda
     free-objects→functor : Functor D C
     free-objects→functor .F₀ X = F.free {X}
-    free-objects→functor .F₁ f = F.adjunctl (F.unit D.∘ f)
+    free-objects→functor .F₁ f = F.fold (F.unit D.∘ f)
     free-objects→functor .F-id =
-      F.adjunctl ⌜ F.unit D.∘ D.id ⌝ ≡⟨ ap! (D.idr _) ⟩
-      F.adjunctl F.unit              ≡⟨ F.adjunctl-unit ⟩
-      C.id ∎
+      F.fold (F.unit D.∘ D.id)  ≡⟨ ap F.fold (D.idr _) ⟩
+      F.fold F.unit             ≡⟨ F.fold-unit ⟩
+      C.id                      ∎
     free-objects→functor .F-∘ f g =
-      F.adjunctl ⌜ F.unit D.∘ f D.∘ g ⌝                               ≡⟨ ap! (D.extendl (sym F.adjunctrl)) ⟩
-      F.adjunctl (U.₁ (F.adjunctl (F.unit D.∘ f)) D.∘ (F.unit D.∘ g)) ≡⟨ F.adjunctl-natural _ _ ⟩
-      F.adjunctl (F.unit D.∘ f) C.∘ F.adjunctl (F.unit D.∘ g)         ∎
+      F.fold (F.unit D.∘ f D.∘ g)                              ≡⟨ ap F.fold (D.extendl (sym F.commute)) ⟩
+      F.fold (U.₁ (F.fold (F.unit D.∘ f)) D.∘ (F.unit D.∘ g))  ≡⟨ F.fold-natural _ _ ⟩
+      F.fold (F.unit D.∘ f) C.∘ F.fold (F.unit D.∘ g)          ∎
 ```
 
 The unit of the adjunction is given by $\eta$, the counit by $\eps \id$,and
@@ -544,26 +579,24 @@ about adjuncts.
 ```agda
     free-objects→left-adjoint : free-objects→functor ⊣ U
     free-objects→left-adjoint .unit .η X = F.unit {X}
-    free-objects→left-adjoint .unit .is-natural X Y f = sym F.adjunctrl
-    free-objects→left-adjoint .counit .η X = F.adjunctl D.id
+    free-objects→left-adjoint .unit .is-natural X Y f = sym F.commute
+    free-objects→left-adjoint .counit .η X = F.fold D.id
     free-objects→left-adjoint .counit .is-natural X Y f =
-      F.adjunctl D.id C.∘ F.adjunctl (F.unit D.∘ U.₁ f)       ≡˘⟨ F.adjunctl-natural _ _ ⟩
-      F.adjunctl (U.₁ (F.adjunctl D.id) D.∘ F.unit D.∘ U.₁ f) ≡⟨ ap F.adjunctl (D.cancell F.adjunctrl ∙ sym (D.idr _)) ⟩
-      F.adjunctl (U.₁ f D.∘ D.id)                             ≡⟨ F.adjunctl-natural _ _ ⟩
-      f C.∘ F.adjunctl D.id ∎
+      F.fold D.id C.∘ F.fold (F.unit D.∘ U.₁ f)        ≡˘⟨ F.fold-natural _ _ ⟩
+      F.fold (U.₁ (F.fold D.id) D.∘ F.unit D.∘ U.₁ f)  ≡⟨ ap F.fold (D.cancell F.commute ∙ sym (D.idr _)) ⟩
+      F.fold (U.₁ f D.∘ D.id)                          ≡⟨ F.fold-natural _ _ ⟩
+      f C.∘ F.fold D.id                                ∎
     free-objects→left-adjoint .zig =
-      F.adjunctl D.id C.∘ F.adjunctl (F.unit D.∘ F.unit)       ≡˘⟨ F.adjunctl-natural _ _ ⟩
-      F.adjunctl (U.₁ (F.adjunctl D.id) D.∘ F.unit D.∘ F.unit) ≡⟨ ap F.adjunctl (D.cancell F.adjunctrl) ⟩
-      F.adjunctl F.unit                                        ≡⟨ F.adjunctl-unit ⟩
-      C.id ∎
-    free-objects→left-adjoint .zag =
-      F.adjunctrl
+      F.fold D.id C.∘ F.fold (F.unit D.∘ F.unit)        ≡˘⟨ F.fold-natural _ _ ⟩
+      F.fold (U.₁ (F.fold D.id) D.∘ F.unit D.∘ F.unit)  ≡⟨ ap F.fold (D.cancell F.commute) ⟩
+      F.fold F.unit                                     ≡⟨ F.fold-unit ⟩
+      C.id                                              ∎
+    free-objects→left-adjoint .zag = F.commute
 ```
 
 If we round-trip a left adjoint through these two constructions, then
 we obtain the same functor we started with. Moreover, we also obtain
 the same unit/counit!
-
 
 ```agda
   left-adjoint→free-objects→left-adjoint
@@ -604,7 +637,7 @@ This yields an equivalence between systems of free objects and left adjoints.
 
 ```agda
   free-objects≃left-adjoint
-    : (∀ x → Free-object U x) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
+    : (∀ X → Free-object U X) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
 ```
 
 <details>
@@ -625,7 +658,7 @@ already have all the pieces laying about!
 ```
 </details>
 
-## Free objects and initiality
+### Free objects and initiality
 
 In categorical semantics, syntax for a theory $\bT$ is often
 presented in two seemingly unconnected ways:
@@ -653,12 +686,11 @@ $A$ is an initial object in $\cC$.
 ```agda
   module _ (initial : Initial D) where
     open Initial initial
-    open is-free-object
 
     free-on-initial→initial
       : (F[⊥] : Free-object U bot)
       → is-initial C (F[⊥] .free)
-    free-on-initial→initial F[⊥] x .centre = F[⊥] .adjunctl ¡
+    free-on-initial→initial F[⊥] x .centre = F[⊥] .fold ¡
     free-on-initial→initial F[⊥] x .paths f =
       sym $ F[⊥] .unique f (sym (¡-unique _))
 ```
@@ -669,13 +701,14 @@ is a free object for $\bot_{\cC}$.
 ```agda
     is-initial→free-on-initial
       : (c-initial : Initial C)
-      → is-free-object U {A = Initial.bot c-initial} ¡ 
-    is-initial→free-on-initial c-initial .adjunctl _ =
-      Initial.¡ c-initial
-    is-initial→free-on-initial c-initial .commute =
-      ¡-unique₂ _ _
-    is-initial→free-on-initial c-initial .unique _ _ =
-      sym $ Initial.¡-unique c-initial _
+      → Free-object U bot
+    is-initial→free-on-initial c-init = record
+      { free    = Initial.bot c-init
+      ; unit    = ¡
+      ; fold    = λ _ → Initial.¡ c-init
+      ; commute = ¡-unique₂ _ _
+      ; unique  = λ _ _ → Initial.¡-unique₂ c-init _ _
+      }
 ```
 
 Note an initial object in $\cC$ does not guarantee an initial object in
@@ -683,169 +716,12 @@ $\cD$, regardless of how many free objects there are. Put syntactically,
 a notion of "syntax without generators" does not imply that there is an
 object of 0 generators!
 
-# Universal morphisms {defines="universal-morphism"}
-
-<!--
-```agda
-module _
-  {o h o' h'}
-  {C : Precategory o h}
-  {D : Precategory o' h'}
-  where
-
-  private
-    module C = Precategory C
-    module D = Precategory D
-```
--->
-
-Yet another perspective on adjoint functors is given by finding "most
-efficient solutions" to the "problem" posed by a functor. For instance,
-the ([[fully faithful]]) inclusion of [[posets]] into [[strict
-(pre)categories|strict category]] poses the problem of turning a
-precategory into a poset. While this can't be done in a 1:1 way
-(precategories are strictly more general than posets), we _can_ still
-ponder whether there is some "most efficient" way to turn a category
-into a poset.
-
-While we can't directly consider maps from precategories to posets, we
-_can_ consider maps from precategories to the inclusion of a poset; Let
-us write $\cC$ for a generic precategory, $\cP$ for a generic poset, and
-$U(\cP)$ for $\cP$ considered as a precategory. Any functor $\cC \to
-U(\cP)$ can be seen as "a way to turn $\cC$ into a poset", but not all
-of these can be the "most efficient" way. In fact, there is a vast sea
-of uninteresting ways to turn a precategory into a poset: turn them all
-into the [[terminal|terminal object]] poset!
-
-A "most efficient" solution, then, would be one through which all others
-factor. A "universal" way of turning a strict precategory into a poset:
-A **universal morphism** from $\cC$ to $U$. The way we think about
-universal morphisms (reusing the same variables) is as [initial objects]
-in the [comma category] $\cC \swarrow U$, where that category is
-conceptualised as being "the category of maps from $\cC$ to $U$".
-
-[initial objects]: Cat.Diagram.Initial.html
-[comma category]: Cat.Instances.Comma.html
-
-```agda
-  Universal-morphism : Functor D C → C.Ob → Type _
-  Universal-morphism R X = Initial (X ↙ R)
-```
-
-If $R : \cD \to \cC$ has universal morphisms for every object of $\cC$, then
-this assignment extends to a functor $L : \cC \to \cD$ with $L \dashv R$ as
-defined above. Likewise, if there already exists a left adjoint $L \dashv R$,
-then we can obtain a system of universal morphisms.
-
-<!--
-```agda
-module _
-  (U : Functor C D)
-  where
-  private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module U = Func U
-
-  open Free-object
-```
--->
-
-We will establish this correspondence by showing that universal morphisms
-are equivalent to free objects: both encode the data of a universal pair
-$(A, \cD(X, U(A)))$.
-
-```agda
-  free-object≃universal-map : ∀ X → Free-object U X ≃ Universal-morphism U X
-```
-
-The proof is an exercise in shuffling data around: if we have a free
-object on $X$, then the unit of the free object gives a pair $(A, \cD(X, U(A)))$.
-Moreover, the universal properties are almost identical; the only differences
-are some extraneous identity morphisms.
-
-```agda
-  free-object≃universal-map X = Iso→Equiv isom
-    where
-      open Initial
-
-      free→univ : Free-object U X → Universal-morphism U X
-      free→univ fo .bot = ↓obj (fo .unit)
-      free→univ fo .has⊥ x .centre = ↓hom $
-        (↓Obj.map x D.∘ D.id)                  ≡⟨ D.idr _ ⟩
-        ↓Obj.map x                             ≡˘⟨ fo .adjunctrl ⟩
-        adjunctr fo (adjunctl fo (↓Obj.map x)) ∎
-      free→univ fo .has⊥ x .paths α = ext $ sym $ fo .unique _ $
-        U.₁ (α .↓Hom.β) D.∘ fo .unit ≡˘⟨ ↓Hom.sq α ⟩
-        ↓Obj.map x D.∘ D.id ≡⟨ D.idr _ ⟩
-        ↓Obj.map x ∎
-```
-
-The other direction is equally as easy: a universal morphism is already
-a pair $(A, \cD(X, U(A)))$ with the appropriate universal property, so
-all that we need to do is shuffle around some fields.
-
-```agda
-      univ→free : Universal-morphism U X → Free-object U X
-      univ→free i .free = ↓Obj.y (i .bot)
-      univ→free i .unit = ↓Obj.map (i .bot)
-      univ→free i .has-is-free .is-free-object.adjunctl f =
-        ↓Hom.β (i .has⊥ (↓obj f) .centre)
-      univ→free i .has-is-free .is-free-object.commute {f = f} =
-        sym (↓Hom.sq (i .has⊥ (↓obj f) .centre)) ∙ D.idr _
-      univ→free i .has-is-free .is-free-object.unique {f = f} g p =
-        sym $ ap ↓Hom.β (i .has⊥ (↓obj f) .paths (↓hom (D.idr _ ∙ sym p)))
-```
-
-This proposed isomorphism so mechanice that Agda is able to derive
-the left and right inverse proofs for us!
-
-```agda
-      isom : Iso (Free-object U X) (Universal-morphism U X)
-      isom = trivial-iso! free→univ univ→free
-```
-
-We have already shown that systems of free objects are equivalent to
-left adjoints, so all that we need to do is precompose with the equivalence
-we just constructed to get our result.
-
-```agda
-  universal-maps≃left-adjoint
-    : (∀ X → Universal-morphism U X) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
-  universal-maps≃left-adjoint =
-    Π-cod≃ free-object≃universal-map e⁻¹ ∙e free-objects≃left-adjoint
-```
-
-<!--
-```agda
-module _
-  {U : Functor C D}
-  where
-  private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module U = Func U
-
-  open Free-object
-
-  universal-maps→L : (∀ X → Universal-morphism U X) → Functor D C
-  universal-maps→L = fst ⊙ Equiv.to (universal-maps≃left-adjoint U)
-
-  universal-maps→L⊣R
-    : (univ : ∀ X → Universal-morphism U X)
-    → (universal-maps→L univ) ⊣ U
-  universal-maps→L⊣R = snd ⊙ Equiv.to (universal-maps≃left-adjoint U)
-
-  L⊣R→universal-maps : ∀ {F : Functor D C} → F ⊣ U → ∀ X → Universal-morphism U X
-  L⊣R→universal-maps {F = F} F⊣U = Equiv.from (universal-maps≃left-adjoint U) (F , F⊣U)
-```
--->
-
-# Induced adjunctions
+## Induced adjunctions
 
 Any adjunction $L \dashv R$ induces, in a very boring way, an *opposite* adjunction
 $R\op \dashv L\op$ between `opposite functors`{.Agda ident=op}:
 
+<!--
 ```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
@@ -855,7 +731,10 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 
   open _⊣_
   open _=>_
+```
+-->
 
+```agda
   opposite-adjunction : R.op ⊣ L.op
   opposite-adjunction .unit .η _ = adj.ε _
   opposite-adjunction .unit .is-natural x y f = sym (adj.counit.is-natural _ _ _)
@@ -951,6 +830,11 @@ adjoint-natural-isor
   : ∀ {L : Functor C D} {R R' : Functor D C}
   → R ≅ⁿ R' → L ⊣ R → L ⊣ R'
 adjoint-natural-isor β = adjoint-natural-iso idni β
+
+module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
+  private module C = Precategory C
+
+  Universal-morphism : Functor D C → C.Ob → Type _
+  Universal-morphism R X = Initial (X ↙ R)
 ```
 -->
-

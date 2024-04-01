@@ -196,7 +196,6 @@ x \}$, and the universal extension of $f : A \to B$ is as defined above.
 ```agda
 open Free-object
 open Subcat-hom
-open is-free-object
 open is-join-slat-hom
 ```
 -->
@@ -205,14 +204,10 @@ open is-join-slat-hom
 make-free-join-slat : ∀ {ℓ} → (A : Set ℓ) → Free-object (Join-slats↪Sets {ℓ = ℓ}) A
 make-free-join-slat A .free = K[ A ]
 make-free-join-slat A .unit = singletonᵏ A
-make-free-join-slat A .has-is-free .adjunctl {B} f .hom .hom =
-  fold-K A B f
-make-free-join-slat A .has-is-free .adjunctl {B} f .hom .pres-≤ {P} {Q} =
-  fold-K-pres-≤ A B f P Q
-make-free-join-slat A .has-is-free .adjunctl {B} f .witness .∪-≤ =
-  fold-K-∪-≤ A B f
-make-free-join-slat A .has-is-free .adjunctl {B} f .witness .bot-≤ =
-  fold-K-bot-≤ A B f
+make-free-join-slat A .fold {B} f .hom .hom            = fold-K A B f
+make-free-join-slat A .fold {B} f .hom .pres-≤ {P} {Q} = fold-K-pres-≤ A B f P Q
+make-free-join-slat A .fold {B} f .witness .∪-≤   = fold-K-∪-≤ A B f
+make-free-join-slat A .fold {B} f .witness .bot-≤ = fold-K-bot-≤ A B f
 ```
 
 As noted earlier, the extension of $f$ agrees with $f$ on singleton
@@ -220,7 +215,7 @@ sets, so the universal extension commutes with the unit of the
 adjunction.
 
 ```agda
-make-free-join-slat A .has-is-free .commute {B} {f} = ext (fold-K-singleton A B f)
+make-free-join-slat A .commute {B} {f} = ext (fold-K-singleton A B f)
 ```
 
 Finally, we shall show that the universal extension of $f$ is unique.
@@ -237,7 +232,7 @@ elements of $P$, which is the same join used to compute the extension of
 $f$.
 
 ```agda
-make-free-join-slat A .has-is-free .unique {B} {f} g p = ext λ P pfin →
+make-free-join-slat A .unique {B} {f} g p = ext λ P pfin →
   sym $ lub-unique (fold-K.ε'.has-lub A B f P pfin)
     (cast-is-lubᶠ (λ Q → (p #ₚ Q .fst)) $
       pres-finitely-indexed-lub (g .witness) pfin _ _ $

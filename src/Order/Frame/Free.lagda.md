@@ -103,7 +103,6 @@ functor $A \to B$”.
 
 [Diaconescu's theorem]: Topoi.Classifying.Diaconescu.html
 
-
 ```agda
 make-free-cocompletion : ∀ {ℓ} → (A : Meet-semilattice ℓ ℓ) → Free-object Frame↪SLat A
 make-free-cocompletion {ℓ} A = go where
@@ -204,7 +203,6 @@ cocontinuous extensions to tie everything up:
 <!--
 ```agda
   open Free-object
-  open is-free-object
 ```
 -->
 
@@ -212,9 +210,9 @@ cocontinuous extensions to tie everything up:
   go : Free-object Frame↪SLat A
   go .free = Lower-sets-frame A
   go .unit = the-unit A
-  go .has-is-free .adjunctl {B} f = Mk.mkhom B f
-  go .has-is-free .commute {B} {f} = ext (Mk.mkcomm B f)
-  go .has-is-free .unique {B} {f} g wit = ext (p #ₚ_) where
+  go .fold {B} f = Mk.mkhom B f
+  go .commute {B} {f} = ext (Mk.mkcomm B f)
+  go .unique {B} {f} g wit = ext (p #ₚ_) where
     open Mk B f
 
     gᵐ : Monotone (Lower-sets (A .fst)) (B .fst)

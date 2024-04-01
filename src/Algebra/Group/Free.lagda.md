@@ -168,7 +168,6 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 <!--
 ```agda
 open Free-object
-open is-free-object
 ```
 -->
 
@@ -176,9 +175,9 @@ open is-free-object
 make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object Grp↪Sets S
 make-free-group S .free = Free-Group ⌞ S ⌟
 make-free-group S .unit = inc
-make-free-group S .has-is-free .adjunctl = fold-free-group
-make-free-group S .has-is-free .commute = refl
-make-free-group S .has-is-free .unique {H} g p =
+make-free-group S .fold = fold-free-group
+make-free-group S .commute = refl
+make-free-group S .unique {H} g p =
   ext $ Free-elim-prop _ hlevel!
     (p #ₚ_)
     (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
