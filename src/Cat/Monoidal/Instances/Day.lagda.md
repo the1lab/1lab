@@ -319,7 +319,7 @@ $f(\day{h,x,y})$, in a way compatible with the relation above.
         unfolding Day-coend day
 
         to-p : ∀ {f g} → Path T (unday f) (unday g) → f ≡ g
-        to-p p = ext λ (a , b) h x y i → p i {a} {b} h x y
+        to-p p = ext λ a b h x y i → p i {a} {b} h x y
 
       done : Extensional (⌞ Day.nadir i ⌟ → C) _
       done = injection→extensional (hlevel 2) to-p auto
