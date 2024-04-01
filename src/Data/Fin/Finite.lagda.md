@@ -107,11 +107,11 @@ open Finite using (Finite→is-set) public
 instance opaque
   H-Level-Finite : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level (Finite A) (suc n)
   H-Level-Finite = prop-instance {T = Finite _} λ where
-    x y i .Finite.cardinality → ∥-∥-proj!
+    x y i .Finite.cardinality → ∥-∥-out!
       ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈
       i
     x y i .Finite.enumeration → is-prop→pathp
-      {B = λ i → ∥ _ ≃ Fin (∥-∥-proj! ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈ i) ∥}
+      {B = λ i → ∥ _ ≃ Fin (∥-∥-out! ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈ i) ∥}
       (λ _ → squash)
       (x .enumeration) (y .enumeration) i
 
@@ -146,7 +146,7 @@ Finite-≃ ⦃ fin {n} e ⦄ e' = fin (∥-∥-map (e' e⁻¹ ∙e_) e)
 equiv→same-cardinality
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fa : Finite A ⦄ ⦃ fb : Finite B ⦄
   → ∥ A ≃ B ∥ → fa .Finite.cardinality ≡ fb .Finite.cardinality
-equiv→same-cardinality ⦃ fa ⦄ ⦃ fb ⦄ e = ∥-∥-proj! do
+equiv→same-cardinality ⦃ fa ⦄ ⦃ fb ⦄ e = ∥-∥-out! do
   e ← e
   ea ← fa .Finite.enumeration
   eb ← fb .Finite.enumeration
@@ -164,7 +164,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
   (e : ∥ A ≃ B ∥) (f : A → B) where
 
   Finite-injection→equiv : injective f → is-equiv f
-  Finite-injection→equiv inj = ∥-∥-proj! do
+  Finite-injection→equiv inj = ∥-∥-out! do
     e ← e
     eb ← fb .Finite.enumeration
     pure
@@ -174,7 +174,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
       $ Equiv.injective (eb e⁻¹ ∙e e e⁻¹) ∘ inj ∘ Equiv.injective eb
 
   Finite-surjection→equiv : is-surjective f → is-equiv f
-  Finite-surjection→equiv surj = ∥-∥-proj! do
+  Finite-surjection→equiv surj = ∥-∥-out! do
     e ← e
     eb ← fb .Finite.enumeration
     pure
@@ -222,7 +222,7 @@ Finite-⊎ {A = A} {B = B} = fin $ do
   beq ← enumeration {T = B}
   pure (⊎-ap aeq beq ∙e Finite-coproduct)
 
-Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-proj! do
+Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
   aeq ← afin .Finite.enumeration
   let
     module aeq = Equiv aeq
@@ -232,7 +232,7 @@ Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-proj! do
     t ← Finite-choice λ x → pfin {x} .Finite.enumeration
     pure (Π-cod≃ t ∙e Π-dom≃ aeq.inverse ∙e Finite-product bc)
 
-Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-proj! do
+Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
   aeq ← afin .Finite.enumeration
   let
     module aeq = Equiv aeq

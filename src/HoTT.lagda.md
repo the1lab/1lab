@@ -354,12 +354,12 @@ _ = Axiom-of-choice
 ```agda
 _ = is-prop→equiv∥-∥
 _ = ∥-∥-univ
-_ = ∥-∥-proj
+_ = ∥-∥-out
 ```
 -->
 
 * Lemma 3.9.1: `is-prop→equiv∥-∥`{.Agda}
-* Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
+* Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-out`{.Agda}
 
 ### 3.11: Contractibility
 

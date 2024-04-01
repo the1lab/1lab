@@ -22,6 +22,58 @@ open import Prim.Data.Nat
 
 module 1Lab.Reflection.HLevel where
 
+{-
+Further automation of h-level proofs
+------------------------------------
+
+This module expands the setup for automation of h-level proofs that is
+bootstrapped in 1Lab.HLevel.Closure with the following extra features:
+
+* Establishing the h-level of 'is-hlevel' itself; at the base-case, this
+  boils down to instances for `H-Level (is-prop A) (suc n)`.
+
+* Support for computing h-levels of projections.
+
+The second bullet point might seem a bit surprising: Agda has native
+support for marking some projections as instances ("instance fields"),
+so why not use that? The reason is twofold:
+
+1.
+  The fields would have to have type ∀ {k} → H-Level X (n + k), where n
+  is the actual truncation level.
+
+  This is not a big problem, since an n-truncated type is
+  (n + k)-truncated, but it is slightly unnatural when compared to
+  having is-hlevel X n.
+
+2.
+  Instance fields work by eta-expanding variables in the context. Put
+  concretely, if we have
+
+    record Set : Type₁ where
+      field
+        it  : Type₀
+        prf : H-Level it 2
+
+  then the following *would* work,
+
+    module _ {X : Set} where
+      _ : is-set (X .it)
+      _ = hlevel 2
+
+  but the following would not, since 'Y x' is not a variable in the
+  context.
+
+    module _ {X : Type} {Y : X → Set} where
+      _ : ∀ {x} → is-hlevel (Y x .it)
+      _ = hlevel 2
+
+To handle this extended situation, we extend the graph of H-Level
+instances with a very generic H-Level-projection instance which uses
+tactic arguments to decompose (Y x .it) into an application of (.it) +
+the argument (Y x).
+-}
+
 -- | How to decompose an application of a record selector into something
 -- which might have an h-level.
 record hlevel-projection (proj : Name) : Type where
@@ -35,6 +87,7 @@ record hlevel-projection (proj : Name) : Type where
     -- type have? Necessary for computing lifts.
     get-argument : List (Arg Term) → TC Term
     -- ^ Extract the argument out from under the application.
+
 {-
 Using projections
 -----------------
@@ -73,7 +126,7 @@ is-hlevel-le (suc (suc n)) (suc (suc k)) (s≤s le) p x y =
 
 hlevel-proj : ∀ {ℓ} → Type ℓ → Nat → Term → TC ⊤
 hlevel-proj A want goal = do
-  want ← quoteTC want
+  want ← quoteTC want >>= normalise
 
   def head args ← reduce =<< quoteTC A
     where ty → typeError [ "H-Level: I do not know how to show that\n  " , termErr ty , "\nhas h-level\n", termErr want ]
@@ -82,9 +135,22 @@ hlevel-proj A want goal = do
   projection ← resetting do
     (mv , _) ← new-meta' (def (quote hlevel-projection) (argN (lit (name head)) ∷ []))
     get-instances mv >>= λ where
+      [] → typeError
+        [ "H-Level: There are no hints for treating the name" , nameErr head , "as a projection."
+        , "When showing that the type\n " , termErr (def head args)
+        , "\nhas h-level " , termErr want , ".\n"
+        ]
+
       (tm ∷ []) → unquoteTC {A = hlevel-projection head} =<< normalise tm
-      []        → typeError [ "H-Level: Do not know how to invert projection\n  " , termErr (def head args) ]
-      _         → typeError [ "H-Level: Ambiguous inversions for projection\n  " , nameErr head ]
+
+      insts@(_ ∷ _ ∷ _) → do
+        tms ← quoteTC insts >>= normalise
+        typeError
+          [ "H-Level: Ambiguous inversions for projection\n  "
+          , nameErr head
+          , "\nAll of the following apply:\n"
+          , termErr tms
+          ]
 
   it   ← projection .get-argument args
   lvl  ← projection .get-level =<< infer-type it
@@ -98,6 +164,7 @@ hlevel-proj A want goal = do
       ]
 
   unify goal soln
+
 open hlevel-projection
 
 instance
@@ -129,14 +196,11 @@ instance
 
 open Data.Nat.Base using (0≤x ; s≤s' ; x≤x ; x≤sucy) public
 
-hlevel' : ∀ {ℓ} {T : Type ℓ} (n : Nat) → ⦃ H-Level T n ⦄ → is-hlevel T n
-hlevel' n ⦃ x ⦄ = H-Level.has-hlevel x
-
 private module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
   some-def = ∣ A ∣
 
   _ : is-hlevel (∣ A ∣ → ∣ A ∣) 2
-  _ = hlevel' {T = _ → _} 2
+  _ = hlevel {T = _ → _} 2
 
   _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
   _ = hlevel 3
@@ -172,12 +236,14 @@ private variable
   ℓ ℓ' : Level
   A B C : Type ℓ
 
--- In addition to using the macro as a.. well, macro, it can be used as
--- a tactic argument, to replace instance search by the more powerful
--- decomposition-projection mechanism of the tactic. We provide only
--- some of the most common helpers:
+{-
+In addition to the top-level 'hlevel' entry point, there are quite a few
+helper functions which simplify use sites by hiding the repetitive
+(hlevel n) arguments.
+-}
+
 el! : ∀ {ℓ} (A : Type ℓ) {n} ⦃ hl : H-Level A n ⦄ → n-Type ℓ n
-∣ el! A ∣ = A
+el! A .∣_∣ = A
 el! A {n} .is-tr = hlevel n
 
 biimp-is-equiv!
@@ -201,19 +267,43 @@ prop-ext! = prop-ext (hlevel 1) (hlevel 1)
   → x ≡ y
 Σ-prop-path! = Σ-prop-path (λ x → hlevel 1)
 
+Σ-prop-pathp!
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
+  → ⦃ bxprop : ∀ {i x} → H-Level (B i x) 1 ⦄
+  → {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
+  → PathP A (x .fst) (y .fst)
+  → PathP (λ i → Σ (A i) (B i)) x y
+Σ-prop-pathp! = Σ-prop-pathp (λ _ _ → hlevel 1)
+
 prop!
-  : ∀ {ℓ} {A : I → Type ℓ} ⦃ aip : H-Level (A i0) 1 ⦄
-  → {x : A i0} {y : A i1}
+  : ∀ {ℓ} {A : I → Type ℓ} ⦃ aip : ∀ {i} → H-Level (A i) 1 ⦄ {x y}
   → PathP (λ i → A i) x y
 prop! {A = A} {x} {y} =
   is-prop→pathp (λ i → coe0→i (λ j → is-prop (A j)) i (hlevel 1)) x y
 
 injective→is-embedding!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ bset : H-Level B 2 ⦄
-  → ∀ {f : A → B}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ bset : H-Level B 2 ⦄ {f : A → B}
   → injective f
   → is-embedding f
 injective→is-embedding! {f = f} inj = injective→is-embedding (hlevel 2) f inj
+
+Iso→is-hlevel! : (n : Nat) → Iso B A → ⦃ _ : H-Level A n ⦄ → is-hlevel B n
+Iso→is-hlevel! n i = Iso→is-hlevel n i (hlevel n)
+
+{-
+Metaprogram for defining instances of H-Level (R x) n, where R x is a
+record type whose components can all immediately be seen to have h-level
+n.
+
+That is, this works for things like Cat.Morphism._↪_, since the H-Level
+automation already works for showing that its representation as a Σ-type
+has hlevel 2, but it does not work for Algebra.Group.is-group, since
+that requires specific knowledge about is-group to work.
+
+Can be used either for unquoteDecl or unquoteDef. In the latter case, it
+is possible to give the generated instance a more specific context which
+might help to automatically derive instances for more types.
+-}
 
 private
   record-hlevel-instance
@@ -223,9 +313,6 @@ private
     → H-Level B k
   record-hlevel-instance n im ⦃ p ⦄ = hlevel-instance $
     Iso→is-hlevel _ im (is-hlevel-le _ _ p (hlevel _))
-
-Iso→is-hlevel! : (n : Nat) → Iso B A → ⦃ _ : H-Level A n ⦄ → is-hlevel B n
-Iso→is-hlevel! n i = Iso→is-hlevel n i (hlevel n)
 
 declare-record-hlevel : (n : Nat) → Name → Name → TC ⊤
 declare-record-hlevel lvl inst rec = do

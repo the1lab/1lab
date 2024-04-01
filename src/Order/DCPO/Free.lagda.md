@@ -156,9 +156,9 @@ long as we show that the function $s_{-}$ is _constant_.
 
 ```agda
 ⊑-lub {Ix = Ix} s dir .elt =
-  □-rec-set (λ (ix , def) → s ix .elt def) (λ p q i →
+  □-rec-set (hlevel 2) (λ (ix , def) → s ix .elt def) (λ p q i →
     is-const p q i .elt $
-    is-prop→pathp (λ i → is-const p q i .def .is-tr) (p .snd) (q .snd) i) (hlevel 2)
+    is-prop→pathp (λ i → is-const p q i .def .is-tr) (p .snd) (q .snd) i)
   where abstract
 ```
 
@@ -171,7 +171,7 @@ satisfying $s_i \lsq s_k$ and $s_j \lsq s_k$. We then compute:
     is-const
       : ∀ (p q : Σ[ i ∈ Ix ] ⌞ s i ⌟)
       → s (p .fst) ≡ s (q .fst)
-    is-const (i , si) (j , sj) = ∥-∥-proj! $ do
+    is-const (i , si) (j , sj) = ∥-∥-out! do
       (k , p , q) ← dir i j
       pure $ part-ext (λ _ → sj) (λ _ → si) λ si sj →
         s i .elt _   ≡˘⟨ p .refines si ⟩
@@ -202,7 +202,7 @@ module
     : ∀ x → (∀ i → s i ⊑ x) → ⊑-lub s dir ⊑ x
   ⊑-lub-least x le .implies = □-rec! λ (i , si) →
     le i .implies si
-  ⊑-lub-least x le .refines = □-elim (λ _ → hlevel 1) λ (i , si) →
+  ⊑-lub-least x le .refines = □-elim! λ (i , si) →
     le i .refines si
 ```
 
@@ -253,7 +253,7 @@ part-map-lub f .fam≤lub i = part-map-⊑ (⊑-lub-le i)
 part-map-lub f .least y le .implies =
   □-rec! λ (i , si) → le i .implies si
 part-map-lub {B = B} f .least y le .refines =
-  □-elim (λ _ → B .is-tr _ _) λ (i , si) → le i .refines si
+  □-elim! λ (i , si) → le i .refines si
 
 Free-Pointed-dcpo : Functor (Sets ℓ) (Pointed-DCPOs ℓ ℓ)
 Free-Pointed-dcpo .F₀ A = Parts-pointed-dcpo A

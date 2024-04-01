@@ -126,7 +126,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
     where
       cover-preserves-is-glb : ∀ {glb} → is-glb P F glb → is-glb P (F ⊙ f) glb
       cover-preserves-is-glb g .glb≤fam i = g .glb≤fam (f i)
-      cover-preserves-is-glb g .greatest lb' le = g .greatest lb' λ i → ∥-∥-proj! do
+      cover-preserves-is-glb g .greatest lb' le = g .greatest lb' λ i → ∥-∥-out! do
         (i' , p) ← surj i
         pure (≤-trans (le i') (≤-refl' (ap F p)))
 
@@ -135,7 +135,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
       cover-preserves-glb g .Glb.has-glb = cover-preserves-is-glb (g .Glb.has-glb)
 
       cover-reflects-is-glb : ∀ {glb} → is-glb P (F ⊙ f) glb → is-glb P F glb
-      cover-reflects-is-glb g .glb≤fam i = ∥-∥-proj! do
+      cover-reflects-is-glb g .glb≤fam i = ∥-∥-out! do
         (y , p) ← surj i
         pure (≤-trans (g .glb≤fam y) (≤-refl' (ap F p)))
       cover-reflects-is-glb g .greatest lb' le = g .greatest lb' λ i → le (f i)

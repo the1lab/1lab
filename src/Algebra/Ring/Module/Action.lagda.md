@@ -108,8 +108,6 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
   Action≃Hom
     : (G : Abelian-group ℓ)
     → Ring-action (G .snd) ≃ Rings.Hom R (Endo Ab-ab-category G)
-  Action≃Hom G =
-    Iso→Equiv $ Action→Hom G , iso (Hom→Action G) (λ x → trivial!)
-      (λ x → Iso.injective eqv (Σ-prop-path! refl))
-    where private unquoteDecl eqv = declare-record-iso eqv (quote Ring-action)
+  Action≃Hom G = Iso→Equiv $ Action→Hom G
+    , iso (Hom→Action G) (λ x → trivial!) (λ x → refl)
 ```

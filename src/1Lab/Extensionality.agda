@@ -18,7 +18,82 @@ open import Data.Nat.Base
 
 module 1Lab.Extensionality where
 
-record Extensional {ℓ} (A : Type ℓ) (ℓ-rel : Level) : Type (ℓ ⊔ lsuc ℓ-rel) where
+{-
+Automation for extensionality
+=============================
+
+The 'Extensional' typeclass equips a type with a “preferred” choice of
+identity system. What “preferred” of course depends on the type under
+consideration, but the vast majority of instances simply exist to note
+that the projection of some record field is an embedding.
+
+'Extensional' is quite a well-behaved typeclass. For starters, it is a
+proposition: any pair of identity systems is connected by an equivalence
+which preserves refl, and being an identity system is a proposition.
+
+Of course, identity systems are not *definitionally* unique. However,
+unlike classes which equip a type with *structure* (e.g., our very own
+Meta.Append, or From-list, etc), a change in which Extensional instance
+is selected can not change the *meaning* of a program: it can only
+change whether or not the program actually elaborates.
+
+Extensionality instances
+------------------------
+
+Every type has a default 'Extensional' instance, with the underlying
+identity system being that of paths. Using instance overlap pragmas, we
+can instruct Agda to only select the default instance in case it has
+nothing else to try.
+
+All other instances serve as "reduction rules". For example, extensional
+equality for functions will, by default, be pointwise extensional
+equality in the codomain; extensionality for pairs can also be
+pointwise.
+
+However, it's important that the "reduction rules" are maximally lazy.
+This is because the 'Extensional' class is not actually definitionally
+confluent. For example, we might expect that, since we have
+
+  Extensionality-Π : ⦃ Extensional B ⦄ → Extensional (A → B)
+
+then the instance for equivalences should be
+
+  Extensionality-≃ : ⦃ Extensional B ⦄ → Extensional (A ≃ B)
+
+but this is not actually the case: for specific instantiations of A and
+B, it might be the case that a rule more specific than Extensional-Π can
+fire (e.g. A is a quotient). The instance should instead be
+
+  Extensionality-≃ : ⦃ Extensional (A → B) ⦄ → Extensional (A ≃ B)
+
+which *only* applies the fact that is-equiv is a proposition, and does
+not apply function extensionality.
+
+Entry points
+------------
+
+While it would be possible to define a global relation _∼_ which
+computes to the relation underlying a type's Extensional instance, this
+would be pretty useless: the extensional instance would be frozen when
+*the relation itself* is used, not when its values are used (or
+introduced).
+
+Our overarching philosophy is that Extensional computes "the domain of a
+smart constructor for equality"; therefore, we only expose a few entry
+points:
+
+- ext:      turn extensional equality into equality
+- unext:    the opposite
+- reext!:   a macro which abbreviates "ext (unext p)"
+- trivial!: a macro which abbreviates "ext (_ .reflᵉ _)"
+-}
+
+private variable
+  ℓ ℓ' ℓ'' ℓr : Level
+  A B C : Type ℓ
+  P Q R : A → Type ℓ
+
+record Extensional (A : Type ℓ) ℓ-rel : Type (ℓ ⊔ lsuc ℓ-rel) where
   no-eta-equality
   field
     Pathᵉ : A → A → Type ℓ-rel
@@ -28,51 +103,53 @@ record Extensional {ℓ} (A : Type ℓ) (ℓ-rel : Level) : Type (ℓ ⊔ lsuc �
 open Extensional using (Pathᵉ ; reflᵉ ; idsᵉ) public
 
 instance
-  -- Default instance, uses regular paths for the relation.
-  Extensional-default : ∀ {ℓ} {A : Type ℓ} → Extensional A ℓ
+  Extensional-default : Extensional A (level-of A)
   Extensional-default .Pathᵉ   = _≡_
   Extensional-default .reflᵉ _ = refl
   Extensional-default .idsᵉ    = Path-identity-system
 
+  -- We can't mark this instance as OVERLAPPABLE because it's not
+  -- strictly less specific than most other instances (it fixes the
+  -- level of the relation to be that of the type).
   {-# INCOHERENT Extensional-default #-}
 
-  Extensional-Lift
-    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ}
-    → ⦃ sa : Extensional A ℓr ⦄
-    → Extensional (Lift ℓ' A) ℓr
+  -- Some vanilla "reduction rules": these all simply apply a
+  -- pre-existing extensionality lemma. E.g., equality for values in a
+  -- lifted type is equality of the underlying values, or equality of
+  -- functions is pointwise.
+
+  Extensional-Lift : ⦃ Extensional A ℓr ⦄ → Extensional (Lift ℓ' A) ℓr
   Extensional-Lift ⦃ sa ⦄ .Pathᵉ (lift x) (lift y) = sa .Pathᵉ x y
   Extensional-Lift ⦃ sa ⦄ .reflᵉ (lift x) = sa .reflᵉ x
   Extensional-Lift ⦃ sa ⦄ .idsᵉ .to-path p = ap lift (sa .idsᵉ .to-path p)
   Extensional-Lift ⦃ sa ⦄ .idsᵉ .to-path-over p = sa .idsᵉ .to-path-over p
 
   Extensional-Π
-    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
-    → ⦃ sb : ∀ {x} → Extensional (B x) ℓr ⦄
-    → Extensional ((x : A) → B x) (ℓ ⊔ ℓr)
+    : ⦃ ∀ {x} → Extensional (P x) ℓr ⦄
+    → Extensional ((x : A) → P x) (level-of A ⊔ ℓr)
   Extensional-Π ⦃ sb ⦄ .Pathᵉ f g = ∀ x → Pathᵉ sb (f x) (g x)
   Extensional-Π ⦃ sb ⦄ .reflᵉ f x = reflᵉ sb (f x)
   Extensional-Π ⦃ sb ⦄ .idsᵉ .to-path h = funext λ i → sb .idsᵉ .to-path (h i)
   Extensional-Π ⦃ sb ⦄ .idsᵉ .to-path-over h = funextP λ i → sb .idsᵉ .to-path-over (h i)
 
+  -- This instance is *very often* specialised.
   {-# OVERLAPPABLE Extensional-Π #-}
 
   Extensional-Π'
-    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
-    → ⦃ sb : ∀ {x} → Extensional (B x) ℓr ⦄
-    → Extensional ({x : A} → B x) (ℓ ⊔ ℓr)
+    : ⦃ ∀ {x} → Extensional (P x) ℓr ⦄
+    → Extensional ({x : A} → P x) (level-of A ⊔ ℓr)
   Extensional-Π' ⦃ sb ⦄ .Pathᵉ f g = ∀ {x} → Pathᵉ (sb {x}) f g
   Extensional-Π' ⦃ sb ⦄ .reflᵉ f = reflᵉ sb f
   Extensional-Π' ⦃ sb ⦄ .idsᵉ .to-path h i = sb .idsᵉ .to-path h i
   Extensional-Π' ⦃ sb ⦄ .idsᵉ .to-path-over h i = sb .idsᵉ .to-path-over h i
 
-  Extensional-uncurry
-    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
-    → ⦃ sb : Extensional ((x : A) → B x → C) ℓr ⦄
-    → Extensional (Σ A B → C) ℓr
-  Extensional-uncurry ⦃ sb ⦄ .Pathᵉ f g = sb .Pathᵉ (curry f) (curry g)
-  Extensional-uncurry ⦃ sb ⦄ .reflᵉ f = sb .reflᵉ (curry f)
-  Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path h i (a , b) = sb .idsᵉ .to-path h i a b
-  Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path-over h = sb .idsᵉ .to-path-over h
+  Extensional-Π''
+    : ⦃ ∀ ⦃ x ⦄ → Extensional (P x) ℓr ⦄
+    → Extensional (⦃ x : A ⦄ → P x) (level-of A ⊔ ℓr)
+  Extensional-Π'' ⦃ sb ⦄ .Pathᵉ f g = ∀ ⦃ x ⦄ → Pathᵉ (sb ⦃ x ⦄) f g
+  Extensional-Π'' ⦃ sb ⦄ .reflᵉ f = reflᵉ sb f
+  Extensional-Π'' ⦃ sb ⦄ .idsᵉ .to-path h i = sb .idsᵉ .to-path h i
+  Extensional-Π'' ⦃ sb ⦄ .idsᵉ .to-path-over h i = sb .idsᵉ .to-path-over h i
 
   Extensional-×
     : ∀ {ℓ ℓ' ℓr ℓs} {A : Type ℓ} {B : Type ℓ'}
@@ -88,6 +165,26 @@ instance
     (sa .idsᵉ .to-path-over p)
     (sb .idsᵉ .to-path-over q)
 
+  -- Some non-confluent "reduction rules" for extensionality are those
+  -- for functions from a type with a mapping-out property; here, we can
+  -- immediately define instances for functions from Σ-types (equality
+  -- is equality after currying) and for functions from lifts (equality
+  -- is equality after lifting).
+  --
+  -- These overlap the Extensional-Π instance. To have them selected for
+  -- e.g. equivalences ((Σ A B) ≃ C), the instance for equivalences
+  -- *needs* to ask for Extensional (Σ A B → C) instead of Extensional
+  -- C.
+
+  Extensional-uncurry
+    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
+    → ⦃ sb : Extensional ((x : A) (y : B x) → C x y) ℓr ⦄
+    → Extensional ((p : Σ A B) → C (p .fst) (p .snd)) ℓr
+  Extensional-uncurry ⦃ sb ⦄ .Pathᵉ f g = sb .Pathᵉ (curry f) (curry g)
+  Extensional-uncurry ⦃ sb ⦄ .reflᵉ f = sb .reflᵉ (curry f)
+  Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path h i (a , b) = sb .idsᵉ .to-path h i a b
+  Extensional-uncurry ⦃ sb = sb ⦄ .idsᵉ .to-path-over h = sb .idsᵉ .to-path-over h
+
   Extensional-lift-map
     : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Lift ℓ' A → Type ℓ''}
     → ⦃ sa : Extensional ((x : A) → B (lift x)) ℓr ⦄
@@ -97,11 +194,6 @@ instance
   Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path h i (lift x) = sa .idsᵉ .to-path h i x
   Extensional-lift-map ⦃ sa = sa ⦄ .idsᵉ .to-path-over h = sa .idsᵉ  .to-path-over h
 
-{-
-Actual user-facing entry point for the tactic: using the 'extensional'
-tactic (through the blanket instance) we can find an identity system for
-the type A, and turn a proof in the computed relation to an identity.
--}
 ext
   : ∀ {ℓ ℓr} {A : Type ℓ} {x y : A} ⦃ r : Extensional A ℓr ⦄
   → Pathᵉ r x y → x ≡ y
@@ -123,11 +215,8 @@ tactic argument to accomplish this.
 
 private
   trivial-worker
-    : ∀ {ℓ ℓr} {A : Type ℓ}
-    → (r : Extensional A ℓr)
-    → (x y : A)
-    → Term
-    → TC ⊤
+    : ∀ {ℓ ℓr} {A : Type ℓ} (r : Extensional A ℓr)
+    → (x y : A) → Term → TC ⊤
   trivial-worker r x y goal = try where
     error : ∀ {ℓ} {A : Type ℓ} → TC A
 
@@ -149,7 +238,7 @@ private
         , termErr `x
         , "\nand\n  "
         , termErr `y
-        , "\nare not extensionally equal by refl."
+        , "\nare not extensionally equal by refl.\n"
         ]
 
 {-
@@ -194,6 +283,11 @@ Pathᵉ-is-hlevel
 Pathᵉ-is-hlevel n sa hl =
   Equiv→is-hlevel _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
 
+-- Constructors for Extensional instances in terms of embeddings. The
+-- extra coherence is required to make sure that we still have an
+-- identity system by the end.
+-- If the type you're reducing to is a set, use injection→extensional! instead.
+
 embedding→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → (f : A ↪ B)
@@ -219,8 +313,11 @@ injection→extensional
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
-injection→extensional b-set {f} inj ext =
-  embedding→extensional (f , injective→is-embedding b-set f inj) ext
+injection→extensional b-set {f} inj ext .Pathᵉ x y = ext .Pathᵉ (f x) (f y)
+injection→extensional b-set {f} inj ext .reflᵉ x = ext .reflᵉ (f x)
+injection→extensional b-set {f} inj ext .idsᵉ .to-path x = inj (ext .idsᵉ .to-path x)
+injection→extensional b-set {f} inj ext .idsᵉ .to-path-over p =
+  is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 ext b-set) _ _
 
 injection→extensional!
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
@@ -264,11 +361,6 @@ instance
       (λ p → funext $ ∥-∥-elim (λ _ → hlevel 1) (happly p)) ea
 
 private module test where
-  variable
-    ℓ ℓ' ℓ'' : Level
-    A B C : Type ℓ
-    P Q R : A → Type ℓ
-
   _ : {f g : A → B} → ((x : A) → f x ≡ g x) → f ≡ g
   _ = ext
 

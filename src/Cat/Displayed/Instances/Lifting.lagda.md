@@ -154,12 +154,7 @@ between $F'(j)$ and $G'(j)$.
 
 <!--
 ```agda
-module _
-  {o ℓ o' ℓ' oj ℓj}
-  {B : Precategory o ℓ}
-  {J : Precategory oj ℓj}
-  {E : Displayed B o' ℓ'}
-  where
+module _ {o ℓ o' ℓ' oj ℓj} {B : Precategory o ℓ} {J : Precategory oj ℓj} {E : Displayed B o' ℓ'} where
   private module J = Precategory J
 
   open Cat.Reasoning B
@@ -203,14 +198,11 @@ module _
 
   private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>l_)
 
-  Nat-lift-is-set
-    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
-    → {α : F => G} → is-set (F' =[ α ]=>l G')
-  Nat-lift-is-set =
-    Iso→is-hlevel 2 eqv $
-    Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ → Hom[ _ ]-set _ _) λ _ →
-    Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
-    PathP-is-hlevel 2 (Hom[ _ ]-set _ _)
+  instance
+    H-Level-Nat-Lift
+      : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G} {α : F => G} {n}
+      → H-Level (F' =[ α ]=>l G') (2 + n)
+    H-Level-Nat-Lift = basic-instance 2 $ Iso→is-hlevel! 2 eqv
 ```
 -->
 
@@ -318,7 +310,7 @@ module _
   Liftings : Displayed Cat[ J , B ] (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) (ℓ' ⊔ oj ⊔ ℓj)
   Liftings .Displayed.Ob[_] = Lifting E
   Liftings .Displayed.Hom[_] α F' G' = F' =[ α ]=>l G'
-  Liftings .Displayed.Hom[_]-set _ _ _ = Nat-lift-is-set
+  Liftings .Displayed.Hom[_]-set _ _ _ = hlevel 2
   Liftings .Displayed.id' = idntl
   Liftings .Displayed._∘'_ = _∘ntl_
   Liftings .Displayed.idr' _ = Nat-lift-pathp (λ _ → idr' _)

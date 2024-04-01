@@ -37,7 +37,7 @@ of its interesting information is in its (higher) path spaces:
 ```agda
   connected : (x : BAut) → ∥ x ≡ base ∥
   connected (b , x) =
-    ∥-∥-elim {P = λ x → ∥ (b , x) ≡ base ∥} (λ _ → squash) (λ e → inc (p _ _)) x
+    ∥-∥-elim! {P = λ x → ∥ (b , x) ≡ base ∥} (λ e → inc (p _ _)) x
     where
       p : ∀ b e → (b , inc e) ≡ base
       p _ = EquivJ (λ B e → (B , inc e) ≡ base) refl

@@ -591,9 +591,6 @@ instance
   Extensional-natural-transformation ⦃ sa ⦄ .idsᵉ .to-path x = Nat-pathp _ _ λ i →
     sa .idsᵉ .to-path (x i)
   Extensional-natural-transformation {D = D} ⦃ sa ⦄ .idsᵉ .to-path-over h =
-    is-prop→pathp
-      (λ i → Π-is-hlevel 1
-        (λ _ → Equiv→is-hlevel 1 (identity-system-gives-path (sa .idsᵉ)) (D .Hom-set _ _ _ _)))
-      _ _
+    is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
 ```
 -->

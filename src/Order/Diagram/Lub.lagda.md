@@ -124,7 +124,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
     where
       cover-preserves-is-lub : ∀ {lub} → is-lub P F lub → is-lub P (F ⊙ f) lub
       cover-preserves-is-lub l .fam≤lub x = l .fam≤lub (f x)
-      cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-proj! do
+      cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-out! do
         (i' , p) ← surj i
         pure (≤-trans (≤-refl' (ap F (sym p))) (le i'))
 
@@ -133,7 +133,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
       cover-preserves-lub l .Lub.has-lub = cover-preserves-is-lub (l .Lub.has-lub)
 
       cover-reflects-is-lub : ∀ {lub} → is-lub P (F ⊙ f) lub → is-lub P F lub
-      cover-reflects-is-lub l .fam≤lub x = ∥-∥-proj! do
+      cover-reflects-is-lub l .fam≤lub x = ∥-∥-out! do
         (y , p) ← surj x
         pure (≤-trans (≤-refl' (ap F (sym p))) (l .fam≤lub y))
       cover-reflects-is-lub l .least ub' le = l .least ub' λ i → le (f i)

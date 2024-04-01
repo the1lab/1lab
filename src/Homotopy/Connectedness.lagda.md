@@ -167,7 +167,7 @@ the general $n$-truncation uniformly.
 
 ```agda
 is-n-connected-Tr : ∀ {ℓ} {A : Type ℓ} n → is-n-connected A (suc n) → is-contr (n-Tr A (suc n))
-is-n-connected-Tr zero a-conn = ∥-∥-proj! do
+is-n-connected-Tr zero a-conn = ∥-∥-out! do
   pt ← a-conn
   pure $ contr (inc pt) (λ x → n-Tr-is-hlevel 0 _ _)
 is-n-connected-Tr (suc zero) a-conn =

@@ -138,11 +138,20 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
+□-elim!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : □ A → Type ℓ'} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+  → (∀ x → P (inc x))
+  → ∀ x → P x
+□-elim! = □-elim (λ _ → hlevel 1)
+
 □-rec!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → ⦃ _ : H-Level B 1 ⦄
   → (A → B) → □ A → B
 □-rec! = □-rec (hlevel 1)
+
+□-out : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A → A
+□-out ap = □-rec ap (λ x → x)
 
 out! : ∀ {ℓ} {A : Type ℓ}
      → ⦃ _ : H-Level A 1 ⦄
@@ -151,18 +160,18 @@ out! = □-rec! λ x → x
 
 □-rec-set
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → is-set B
   → (f : A → B)
   → (∀ x y → f x ≡ f y)
-  → is-set B
   → □ A → B
-□-rec-set f f-const B-set a =
+□-rec-set B-set f f-const a =
   fst $ □-elim
     (λ _ → is-constant→image-is-prop B-set f f-const)
     (λ a → f a , inc (a , refl))
     a
 
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
-□-idempotent aprop = prop-ext squash aprop (out! ⦃ basic-instance 1 aprop ⦄) inc
+□-idempotent aprop = prop-ext squash aprop (□-out aprop) inc
 
 □-ap
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}

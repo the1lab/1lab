@@ -118,7 +118,7 @@ We will set the `<details>`{.html} aside for the curious reader.
     let (ϕ , ϕ∈ϕs') = enum.from 0
     sub ϕ ϕ∈ϕs' <&> λ where
       (inl xp) →
-        (λ _ → true) , λ ϕ' ϕ'∈ϕs' → ∥-∥-proj! do
+        (λ _ → true) , λ ϕ' ϕ'∈ϕs' → ∥-∥-out! do
           sub ϕ' ϕ'∈ϕs' >>= λ where
             (inl xp') → □-tr do
               (x=ϕ' , _) ← xp'
@@ -128,7 +128,7 @@ We will set the `<details>`{.html} aside for the curious reader.
               (_ , ¬p) ← ¬xp'
               absurd (¬p p)
       (inr ¬xp) →
-        (λ _ → false) , λ ϕ' ϕ'∈ϕs' → ∥-∥-proj! do
+        (λ _ → false) , λ ϕ' ϕ'∈ϕs' → ∥-∥-out! do
           sub ϕ' ϕ'∈ϕs' >>= λ where
             (inl xp') → □-tr do
               (_ , ¬p) ← ¬xp
@@ -218,7 +218,7 @@ If we put this all together, then we can decide $\neg P$!
 
 ```agda
   ¬P∨¬¬P : Dec (¬ ∣ P ∣)
-  ¬P∨¬¬P = ∥-∥-proj! do
+  ¬P∨¬¬P = ∥-∥-out! do
     (ρ , ρ-sat) ← compact ([x∣P] ∪ [¬x∣¬P]) finitely-consistent
     pure $
       Bool-elim (λ b → ρ 0 ≡ b → Dec (¬ ∣ P ∣))

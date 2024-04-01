@@ -58,7 +58,7 @@ open Total-hom
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote Total-hom)
+unquoteDecl H-Level-Total-hom = declare-record-hlevel 2 H-Level-Total-hom (quote Total-hom)
 ```
 -->
 
@@ -67,10 +67,6 @@ the bundled morphisms form an hset, and another characterizing
 the paths between morphisms.
 
 ```agda
-total-hom-is-set : ∀ (X Y : Total) → is-set (Total-hom X Y)
-total-hom-is-set X Y = Iso→is-hlevel 2 eqv $
-  Σ-is-hlevel 2 (hlevel 2) (λ a → Hom[ _ ]-set _ _)
-
 total-hom-path : ∀ {X Y : Total} {f g : Total-hom X Y}
                → (p : f .hom ≡ g .hom) → f .preserves ≡[ p ] g .preserves → f ≡ g
 total-hom-path p p' i .hom = p i
@@ -96,7 +92,7 @@ With all that in place, we can construct the total category!
 ∫ : Precategory (o ⊔ o') (ℓ ⊔ ℓ')
 ∫ .Precategory.Ob = Total
 ∫ .Precategory.Hom = Total-hom
-∫ .Precategory.Hom-set = total-hom-is-set
+∫ .Precategory.Hom-set _ _ = hlevel 2
 ∫ .Precategory.id .hom = id
 ∫ .Precategory.id .preserves = id'
 ∫ .Precategory._∘_ f g .hom = f .hom ∘ g .hom

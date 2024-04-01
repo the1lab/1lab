@@ -118,7 +118,7 @@ embedding-surjective→is-equiv
   → is-embedding f
   → is-surjective f
   → is-equiv f
-embedding-surjective→is-equiv f-emb f-surj .is-eqv x = ∥-∥-proj! do
+embedding-surjective→is-equiv f-emb f-surj .is-eqv x = ∥-∥-out! do
   pt ← f-surj x
   pure $ is-prop∙→is-contr (f-emb x) pt
 ```

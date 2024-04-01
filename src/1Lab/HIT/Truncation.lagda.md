@@ -88,13 +88,13 @@ whenever it is a family of propositions, by providing a case for
                   (go x z) (go x₁ z) i
 
 ∥-∥-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
-         → is-prop P
-         → (A → P)
-         → (x : ∥ A ∥) → P
+        → is-prop P
+        → (A → P)
+        → (x : ∥ A ∥) → P
 ∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
 
-∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → is-prop A → ∥ A ∥ → A
-∥-∥-proj ap = ∥-∥-rec ap λ x → x
+∥-∥-out : ∀ {ℓ} {A : Type ℓ} → is-prop A → ∥ A ∥ → A
+∥-∥-out ap = ∥-∥-rec ap λ x → x
 
 ∥-∥-rec₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ''} {P : Type ℓ'}
          → is-prop P
@@ -102,14 +102,18 @@ whenever it is a family of propositions, by providing a case for
          → (x : ∥ A ∥) (y : ∥ B ∥) → P
 ∥-∥-rec₂ pprop = ∥-∥-elim₂ (λ _ _ → pprop)
 
+∥-∥-elim!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : ∥ A ∥ → Type ℓ'} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+  → (∀ x → P (inc x)) → ∀ x → P x
+∥-∥-elim! = ∥-∥-elim (λ _ → hlevel 1)
+
 ∥-∥-rec!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ _ : H-Level P 1 ⦄
-  → (A → P)
-  → (x : ∥ A ∥) → P
+  → (A → P) → (x : ∥ A ∥) → P
 ∥-∥-rec! = ∥-∥-elim (λ _ → hlevel 1)
 
-∥-∥-proj! : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ → ∥ A ∥ → A
-∥-∥-proj! = ∥-∥-proj (hlevel 1)
+∥-∥-out! : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ → ∥ A ∥ → A
+∥-∥-out! = ∥-∥-out (hlevel 1)
 ```
 -->
 
@@ -175,7 +179,7 @@ nothing:
 
 ```agda
 is-prop→equiv∥-∥ : ∀ {ℓ} {P : Type ℓ} → is-prop P → P ≃ ∥ P ∥
-is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-proj pprop)
+is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-out pprop)
 ```
 
 In fact, an alternative definition of `is-prop`{.Agda} is given by "being
@@ -286,6 +290,19 @@ truncation onto a set using a constant map.
   ∥-∥-elim {P = λ _ → image f}
     (λ _ → is-constant→image-is-prop bset f fconst) (f-image f) x .fst
 ```
+
+<!--
+```agda
+∥-∥-rec-set!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ _ : H-Level B 2 ⦄
+  → (f : A → B) (c : ∀ x y → f x ≡ f y)
+  → ∥ A ∥ → B
+∥-∥-rec-set! {A = A} f c x = go x .fst where
+  go : ∥ A ∥ → image f
+  go (inc x)        = f x , inc (x , refl)
+  go (squash x y i) = is-constant→image-is-prop (hlevel 2) f c (go x) (go y) i
+```
+-->
 
 ## Maps into groupoids
 
@@ -465,6 +482,5 @@ instance
     go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
     go (inc x) f = f x
     go (squash x y i) f = squash (go x f) (go y f) i
-
 ```
 -->
