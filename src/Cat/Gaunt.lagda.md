@@ -111,9 +111,7 @@ is straightforward, as $\cC$ is strict.
 ```agda
 skeletal+trivial-automorphisms→gaunt {C = C} skel trivial-aut =
   skeletal+category→gaunt skel $
-    equiv-path→identity-system
-      (Iso→Equiv path-iso)
-      (λ _ → transport-refl _)
+    equiv-path→identity-system (Iso→Equiv path-iso)
   where
     open is-gaunt
 

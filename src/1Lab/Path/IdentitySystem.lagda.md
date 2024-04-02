@@ -116,40 +116,43 @@ to-path-over-refl {a = a} ids = ap (ap snd) $ to-path-refl-coh ids a
 ```
 -->
 
+Note that for any $(R, r)$, the type of identity system data on $(R, r)$
+is a proposition. This is because it is exactly equivalent to the type
+$\sum_a (R a)$ being contractible for every $a$, which is a proposition
+by standard results.
+
+```agda
+contr→identity-system
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
+  → (∀ {a} → is-contr (Σ _ (R a)))
+  → is-identity-system R r
+contr→identity-system {R = R} {r} c = ids where
+  paths' : ∀ {a} (p : Σ _ (R a)) → (a , r a) ≡ p
+  paths' _ = is-contr→is-prop c _ _
+
+  ids : is-identity-system R r
+  ids .to-path p = ap fst (paths' (_ , p))
+  ids .to-path-over p = ap snd (paths' (_ , p))
+```
+
 If we have a relation $R$ together with reflexivity witness $r$, then
-any equivalence $f : R(a, b) \simeq (a \equiv b)$ which maps $f(r) =
-\refl$ equips $(R, r)$ with the structure of an identity system. Of
+any equivalence $f : R(a, b) \simeq (a \equiv b)$ equips $(R, r)$ with
+the structure of an identity system, by contractibility of singletons. Of
 course if we do not particularly care about the specific reflexivity
 witness, we can simply define $r$ as $f\inv(\refl)$.
 
 ```agda
 equiv-path→identity-system
   : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
-  → (eqv : ∀ {a b} → R a b ≃ (a ≡ b))
-  → (∀ a → Equiv.from eqv refl ≡ r a)
+  → (∀ {a b} → R a b ≃ (a ≡ b))
   → is-identity-system R r
-equiv-path→identity-system {R = R} {r = r} eqv pres' = ids where
-  contract : ∀ {a} → is-contr (Σ _ (R a))
-  contract = Equiv→is-hlevel 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
+equiv-path→identity-system eqv = contr→identity-system $
+  Equiv→is-hlevel 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
     (contr _ Singleton-is-contr)
-
-  pres : ∀ {a} → eqv .fst (r a) ≡ refl
-  pres {a = a} = Equiv.injective₂ (eqv e⁻¹) (Equiv.η eqv _) (pres' _)
-
-  ids : is-identity-system R r
-  ids .to-path = eqv .fst
-  ids .to-path-over {a = a} {b = b} p i =
-    is-prop→pathp
-    (λ i → is-contr→is-prop (eqv .snd .is-eqv λ j → eqv .fst p (i ∧ j)))
-    (r a , pres)
-    (p , refl)
-    i .fst
 ```
 
-Note that for any $(R, r)$, the type of identity system data on $(R, r)$
-is a proposition. This is because it is exactly equivalent to the type
-$\sum_a (R a)$ being contractible for every $a$, which is a proposition
-by standard results.
+Conversely, any identity system $(R, r)$ implies an equivalence
+$R(a, b) \simeq (a \equiv b)$.
 
 ```agda
 identity-system-gives-path
