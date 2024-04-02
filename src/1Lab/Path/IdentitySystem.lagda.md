@@ -344,6 +344,7 @@ set-identity-system rprop rpath .to-path-over p =
 If $A$ is a type with ¬¬-stable equality, then by the theorem above, the
 pointwise double negation of its identity types is an identity system:
 and so, if a type has decidable (thus ¬¬-stable) equality, it is a set.
+This is known as **Hedberg's theorem**.
 
 ```agda
 ¬¬-stable-identity-system
