@@ -510,9 +510,9 @@ re-labelling of data: it would not be hard to complete this to a full
 equivalence, but it would not be very useful, either.
 
 ```agda
-  Free-object→universal-map
+  free-object→universal-map
     : ∀ {X} → Free-object U X → Initial (X ↙ U)
-  Free-object→universal-map fo = λ where
+  free-object→universal-map fo = λ where
     .I.bot → ↓obj (fo .unit)
     .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
     .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
@@ -849,10 +849,16 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   universal-map→free-object x .commute = sym (x .has⊥ _ .centre .sq) ∙ C.idr _
   universal-map→free-object x .unique g p = ap β (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
 
-  universal-maps→L : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
-  universal-maps→L u = free-objects→functor (λ X → universal-map→free-object (u X))
+  universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
+  universal-maps→functor u = free-objects→functor (λ X → universal-map→free-object (u X))
 
-  universal-maps→L⊣R : ∀ {R} (h : ∀ X → Universal-morphism R X) → universal-maps→L h ⊣ R
-  universal-maps→L⊣R h = free-objects→left-adjoint _
+  universal-maps→left-adjoint
+    : ∀ {R} (h : ∀ X → Universal-morphism R X)
+    → universal-maps→functor h ⊣ R
+  universal-maps→left-adjoint h = free-objects→left-adjoint _
+
+  left-adjoint→universal-maps : ∀ {L R} → L ⊣ R → ∀ X → Universal-morphism R X
+  left-adjoint→universal-maps L⊣R X =
+    free-object→universal-map (left-adjoint→free-objects L⊣R X)
 ```
 -->

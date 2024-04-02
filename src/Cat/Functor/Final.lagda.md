@@ -342,7 +342,7 @@ right-adjoint-is-final
   → {L : Functor 𝒞 𝒟} {R : Functor 𝒟 𝒞} (L⊣R : L ⊣ R)
   → is-final R
 right-adjoint-is-final L⊣R c =
-  initial→connected  (L⊣R→universal-maps L⊣R c)
+  initial→connected  (left-adjoint→universal-maps L⊣R c)
 ```
 
 In particular, the inclusion of a [[terminal object]] into a category is

@@ -133,13 +133,13 @@ module _ {o'} {D : Precategory o' ℓ}
   objectwise-rep→universal-maps d = subst Initial (sym (↙≡∫ d))
     (corepresentation→initial-element (corep d))
 
-  objectwise-rep→L : Functor D C
-  objectwise-rep→L =
-    universal-maps→L objectwise-rep→universal-maps
+  objectwise-rep→functor : Functor D C
+  objectwise-rep→functor =
+    universal-maps→functor objectwise-rep→universal-maps
 
-  objectwise-rep→L⊣R : objectwise-rep→L ⊣ R
-  objectwise-rep→L⊣R =
-    universal-maps→L⊣R objectwise-rep→universal-maps
+  objectwise-rep→left-adjoint : objectwise-rep→functor ⊣ R
+  objectwise-rep→left-adjoint =
+    universal-maps→left-adjoint objectwise-rep→universal-maps
 ```
 
 ## Right adjoints into Sets are representable
@@ -194,9 +194,9 @@ module _
       F∘-iso-r (R-corep .corepresents)
       ∘ni copower-hom-iso ni⁻¹
 
-  corepresentable→L : Functor (Sets ℓ) C
-  corepresentable→L = objectwise-rep→L Hom[X,R-]-rep
+  corepresentable→functor : Functor (Sets ℓ) C
+  corepresentable→functor = objectwise-rep→functor Hom[X,R-]-rep
 
-  corepresentable→L⊣R : corepresentable→L ⊣ R
-  corepresentable→L⊣R = objectwise-rep→L⊣R Hom[X,R-]-rep
+  corepresentable→left-adjoint : corepresentable→functor ⊣ R
+  corepresentable→left-adjoint = objectwise-rep→left-adjoint Hom[X,R-]-rep
 ```
