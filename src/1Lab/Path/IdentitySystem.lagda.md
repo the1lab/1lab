@@ -265,15 +265,14 @@ is-identity-system-is-prop {A = A} {R} {r} =
     to : is-identity-system R r → ∀ x → is-contr (Σ A (R x))
     to ids x = is-contr-ΣR ids
 
+    from : (∀ x → is-contr (Σ A (R x))) → is-identity-system R r
+    from x = contr→identity-system (x _)
+
     sys : ∀ (l : ∀ x → is-contr (Σ A (R x))) a b (s : R a b) (i j : I)
         → Partial (∂ i ∨ ~ j) (Σ A (R a))
     sys l a b s i j (j = i0) = l a .centre
     sys l a b s i j (i = i0) = l a .paths (a , r a) j
     sys l a b s i j (i = i1) = l a .paths (b , s) j
-
-    from : (∀ x → is-contr (Σ A (R x))) → is-identity-system R r
-    from x .to-path      {a} {b} s i = hcomp (∂ i) (sys x a b s i) .fst
-    from x .to-path-over {a} {b} s i = hcomp (∂ i) (sys x a b s i) .snd
 
     square : ∀ (x : is-identity-system R r) a b (s : R a b)
            → Square {A = Σ A (R a)}
