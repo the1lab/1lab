@@ -291,7 +291,7 @@ Furthermore, these equivalences are natural.
 ```
 -->
 
-## Free objects
+## Free objects {defines="universal-morphisms"}
 
 In contrast to the formal descriptions above, this section presents an
 *intuitive* perspective on adjoint functors: namely, a (left) adjoint,
