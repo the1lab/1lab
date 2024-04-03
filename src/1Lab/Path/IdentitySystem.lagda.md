@@ -268,39 +268,16 @@ is-identity-system-is-prop {A = A} {R} {r} =
     from : (∀ x → is-contr (Σ A (R x))) → is-identity-system R r
     from x = contr→identity-system (x _)
 
-    sys : ∀ (l : ∀ x → is-contr (Σ A (R x))) a b (s : R a b) (i j : I)
-        → Partial (∂ i ∨ ~ j) (Σ A (R a))
-    sys l a b s i j (j = i0) = l a .centre
-    sys l a b s i j (i = i0) = l a .paths (a , r a) j
-    sys l a b s i j (i = i1) = l a .paths (b , s) j
-
-    square : ∀ (x : is-identity-system R r) a b (s : R a b)
-           → Square {A = Σ A (R a)}
-             (λ i → x .to-path (r a) i , x .to-path-over (r a) i)
-             (λ i → x .to-path s i , x .to-path-over s i)
-             (λ i → x .to-path s i , x .to-path-over s i)
-             refl
-    square x a b s i j = hcomp (∂ i ∨ ∂ j) λ where
-      k (k = i0) → x .to-path s j , x .to-path-over s j
-      k (i = i0) → x .to-path s j , x .to-path-over s j
-      k (i = i1) → x .to-path s j , x .to-path-over s j
-      k (j = i0) → to-path-refl-coh {R = R} {r = r} x a (~ k) i
-      k (j = i1) → b , s
-
-    sys' : ∀ (x : is-identity-system R r) a b (s : R a b) i j k
-         → Partial (∂ i ∨ ∂ j ∨ ~ k) (Σ A (R a))
-    sys' x a b s i j k (k = i0) = x .to-path (r a) i , x .to-path-over (r a) i
-    sys' x a b s i j k (i = i0) = hfill (∂ j) k (sys (to x) a b s j)
-    sys' x a b s i j k (i = i1) =
-        x .to-path (x .to-path-over s (k ∨ j)) (k ∧ j)
-      , x .to-path-over (x .to-path-over s (k ∨ j)) (k ∧ j)
-    sys' x a b s i j k (j = i0) =
-        x .to-path (r a) (k ∨ i) , x .to-path-over (r a) (k ∨ i)
-    sys' x a b s i j k (j = i1) = square x a b s i k
+    cancel'
+      : ∀ (x : is-identity-system R r) {a b} (s : R a b)
+      → PathP (λ i → (a , r a) ≡ (b , s))
+        (is-contr-ΣR (from (to x)) .paths (b , s))
+        (is-contr-ΣR x .paths (b , s))
+    cancel' x s = is-prop→squarep (λ _ _ → is-contr→is-prop (is-contr-ΣR x)) _ _ _ _
 
     cancel : is-left-inverse from to
-    cancel x i .to-path {a} {b} s j      = hcomp (∂ i ∨ ∂ j) (sys' x a b s i j) .fst
-    cancel x i .to-path-over {a} {b} s j = hcomp (∂ i ∨ ∂ j) (sys' x a b s i j) .snd
+    cancel x i .to-path s = ap fst (cancel' x s i)
+    cancel x i .to-path-over s = ap snd (cancel' x s i)
 
 instance
   H-Level-is-identity-system
