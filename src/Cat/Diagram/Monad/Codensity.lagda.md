@@ -184,10 +184,8 @@ maps we want to compute with.</summary>
 </details>
 
 To understand what the codensity monad _represents_, recall that
-adjoints can be understood as [efficient solutions] to "optimisation
+adjoints can be understood as [[efficient solutions|universal-morphism]] to "optimisation
 problems". But when a functor does _not_ admit a left adjoint, we
 conclude that there is no most efficient solution; This doesn't mean
 that we can't _approximate_ a solution, though! And indeed, this kind of
 approximation is exactly what right Kan extensions are for.
-
-[efficient solutions]: Cat.Functor.Adjoint.html#universal-morphisms

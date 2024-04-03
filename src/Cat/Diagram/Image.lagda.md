@@ -71,12 +71,11 @@ factors.
 
 Since keeping track of all the factorisations by hand would be fiddly,
 we formalise the idea of image here using [comma categories], namely the
-idea of [universal morphisms] as in the construction of adjoints. Fix a
+idea of [[universal morphisms]] as in the construction of adjoints. Fix a
 morphism $f : a \to b$, and consider it as an object of the [slice
 category] $\cC/b$.
 
 [comma categories]: Cat.Instances.Comma.html
-[universal morphisms]: Cat.Functor.Adjoint.html#universal-morphisms
 [slice category]: Cat.Instances.Slice.html
 
 For a given subclass of monomorphisms $M$, there is a full subcategory

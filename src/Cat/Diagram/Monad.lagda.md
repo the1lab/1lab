@@ -359,11 +359,10 @@ algebraic action:
 
 This is a free construction in the precise sense of the word: it's the
 [left adjoint] to the functor `Forget`{.Agda}, so in particular it
-provides a systematic, [universal] way of mapping from $\cC$ to
+provides a systematic, [[universal|universal-morphism]] way of mapping from $\cC$ to
 $\cC^M$.
 
 [left adjoint]: Cat.Functor.Adjoint.html
-[universal]: Cat.Functor.Adjoint.html#universal-morphisms
 
 ```agda
     open _⊣_
