@@ -68,15 +68,12 @@ module _ {o ℓ : _} {C : Precategory o ℓ} where
   Sieve-path {x = x} {y} p i .closed {f = f} hf g =
     is-prop→pathp (λ i → fun-is-hlevel {A = ⌞ p i f ⌟} 1 (p i (f C.∘ g) .is-tr)) (λ w → x .closed w g) (λ w → y .closed w g) i hf
 
-  Extensional-sieve : ∀ {ℓr c} ⦃ _ : Extensional (∀ {y} → C.Hom y c → Ω) ℓr ⦄ → Extensional (Sieve C c) ℓr
-  Extensional-sieve ⦃ e ⦄ = injection→extensional! Sieve-path e
-
   instance
     Membership-Sieve : ∀ {c d} → Membership (C.Hom d c) (Sieve C c) _
     Membership-Sieve = record { _∈_ = λ x S → x ∈ S .Sieve.arrows }
 
-    Extensionality-sieve : ∀ {c} → Extensionality (Sieve C c)
-    Extensionality-sieve = record { lemma = quote Extensional-sieve }
+    Extensional-sieve : ∀ {ℓr c} ⦃ _ : Extensional (∀ {y} → C.Hom y c → Ω) ℓr ⦄ → Extensional (Sieve C c) ℓr
+    Extensional-sieve ⦃ e ⦄ = injection→extensional! Sieve-path e
 
     H-Level-Sieve : ∀ {c n} → H-Level (Sieve C c) (2 + n)
     H-Level-Sieve = basic-instance 2 $
@@ -136,7 +133,7 @@ componentwise monic, and embeddings are monic, the result follows.
 
 ```agda
   pullback : ∀ {u v} → C.Hom v u → Sieve C u → Sieve C v
-  pullback f s .arrows h = el (f C.∘ h ∈ s) hlevel!
+  pullback f s .arrows h = el (f C.∘ h ∈ s) (hlevel 1)
   pullback f s .closed hf g = subst (_∈ s) (sym (C.assoc f _ g)) (s .closed hf g)
 
   pullback-id : ∀ {c} {s : Sieve C c} → pullback C.id s ≡ s

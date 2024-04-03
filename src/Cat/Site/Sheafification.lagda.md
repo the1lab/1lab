@@ -114,7 +114,7 @@ module Sheafification {o ℓ ℓc} {C : Precategory o ℓ} (J : Coverage C ℓc)
       : ∀ {U : ⌞ C ⌟} (c : J .covers U) (p : pre.Parts C map (J .cover c)) (g : pre.is-patch C map (J .cover c) p)
       → (∀ {V} (f : Hom V U) (hf : f ∈ J .cover c) → P' (p f hf))
       → P' (glue c p g)
-    p'glue c p compat loc f = ∥-∥-proj (pprop _) do
+    p'glue c p compat loc f = ∥-∥-out (pprop _) do
       (c' , sub) ← J .stable c f
       pure $ plocal c' (map f (glue c p compat)) λ g hg →
         let
@@ -187,7 +187,7 @@ module Small {ℓ} {C : Precategory ℓ ℓ} (J : Coverage C ℓ)  where
     → univ G shf eta ≡ eps
   unique {F = F} G shf eta eps comm = ext λ i → Sheafify-elim-prop F
     (λ {v} x → univ G shf eta .η v x ≡ eps .η v x)
-    (λ {U} x → hlevel!)
+    (λ {U} x → hlevel 1)
     (λ x → sym (comm _ x))
     (λ c x l → is-sheaf.separate shf c (λ f hf → l f hf ∙ eps .is-natural _ _ _ # _))
 ```

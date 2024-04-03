@@ -186,7 +186,7 @@ show this assuming that we have some $g : W \to V$, with $fg \in R$. The
 calculation goes through without problems:
 
 ```agda
-    sec .patch f hf = ∥-∥-proj! do
+    sec .patch f hf = ∥-∥-out! do
       (c' , sub) ← J .stable c f
       pure $ shf.separate c' λ g hg →
         A ⟪ g ⟫ (A ⟪ f ⟫ sec' .part) ≡⟨ A.collapse refl ⟩
@@ -210,7 +210,7 @@ above!
 ```agda
   is-sheaf-pullback
     : ∀ {V U} (c : J # U) (f : Hom V U) → is-sheaf₁ A (pullback f (J .cover c))
-  is-sheaf-pullback c f p = ∥-∥-proj! do
+  is-sheaf-pullback c f p = ∥-∥-out! do
     (c' , sub) ← J .stable c f
     pure (is-sheaf-factor (pullback f (J .cover c)) c' sub p)
 ```

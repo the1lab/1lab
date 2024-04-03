@@ -171,34 +171,28 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
   private module A = Psh A
   open pre C A.₁ hiding (is-section) public
 
-  Extensional-Patch
-    : ∀ {U ℓr} {S : Sieve C U} ⦃ _ : Extensional (Parts S) ℓr ⦄
-    → Extensional (Patch A S) ℓr
-  Extensional-Patch ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .part) (y .part)
-  Extensional-Patch ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .part)
-  Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path p i .part = e .idsᵉ .to-path p i
-  Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path {x} {y} p i .patch {W = W} f hf g hgf =
-    is-prop→pathp (λ i → A.₀ W .is-tr (A.₁ g (e .idsᵉ .to-path p i _ hf)) (e .idsᵉ .to-path p i _ hgf))
-      (x .patch f hf g hgf) (y .patch f hf g hgf) i
-  Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e hlevel!) _ _
-
-  Extensional-Section
-    : ∀ {U ℓr} {S : Sieve C U} {p : Patch A S} ⦃ _ : Extensional (A ʻ U) ℓr ⦄
-    → Extensional (Section A p) ℓr
-  Extensional-Section ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .part) (y .part)
-  Extensional-Section ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .part)
-  Extensional-Section ⦃ e ⦄ .idsᵉ .to-path p i .part = e .idsᵉ .to-path p i
-  Extensional-Section {p = p} ⦃ e ⦄ .idsᵉ .to-path {a} {b} q i .patch {V} f hf =
-    is-prop→pathp (λ i → A.₀ V .is-tr (A.₁ f (e .idsᵉ .to-path q i)) (p .part f hf))
-      (a .patch f hf) (b .patch f hf) i
-  Extensional-Section ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (A.₀ _ .is-tr)) _ _
-
   instance
-    extensionality-section : ∀ {U} {S : Sieve C U} {p : Patch A S} → Extensionality (Section A p)
-    extensionality-section = record { lemma = quote Extensional-Section }
+    Extensional-Patch
+      : ∀ {U ℓr} {S : Sieve C U} ⦃ _ : Extensional (Parts S) ℓr ⦄
+      → Extensional (Patch A S) ℓr
+    Extensional-Patch ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .part) (y .part)
+    Extensional-Patch ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .part)
+    Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path p i .part = e .idsᵉ .to-path p i
+    Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path {x} {y} p i .patch {W = W} f hf g hgf =
+      is-prop→pathp (λ i → A.₀ W .is-tr (A.₁ g (e .idsᵉ .to-path p i _ hf)) (e .idsᵉ .to-path p i _ hgf))
+        (x .patch f hf g hgf) (y .patch f hf g hgf) i
+    Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (hlevel 2)) _ _
 
-    extensionality-patch : ∀ {U} {S : Sieve C U} → Extensionality (Patch A S)
-    extensionality-patch = record { lemma = quote Extensional-Patch }
+    Extensional-Section
+      : ∀ {U ℓr} {S : Sieve C U} {p : Patch A S} ⦃ _ : Extensional (A ʻ U) ℓr ⦄
+      → Extensional (Section A p) ℓr
+    Extensional-Section ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .part) (y .part)
+    Extensional-Section ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .part)
+    Extensional-Section ⦃ e ⦄ .idsᵉ .to-path p i .part = e .idsᵉ .to-path p i
+    Extensional-Section {p = p} ⦃ e ⦄ .idsᵉ .to-path {a} {b} q i .patch {V} f hf =
+      is-prop→pathp (λ i → A.₀ V .is-tr (A.₁ f (e .idsᵉ .to-path q i)) (p .part f hf))
+        (a .patch f hf) (b .patch f hf) i
+    Extensional-Section ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (hlevel 2)) _ _
 
   subset→patch
     : ∀ {U} {S S' : Sieve C U}
@@ -344,7 +338,7 @@ module _ {o ℓ ℓc ℓp} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Fu
   private unquoteDecl eqv = declare-record-iso eqv (quote is-sheaf)
   instance
     H-Level-is-sheaf : ∀ {n} → H-Level (is-sheaf J A) (suc n)
-    H-Level-is-sheaf = prop-instance $ Iso→is-hlevel 1 eqv hlevel!
+    H-Level-is-sheaf = prop-instance $ Iso→is-hlevel! 1 eqv
 ```
 -->
 
