@@ -23,7 +23,7 @@ private variable
 
 # Sites and sheaves
 
-## Parts, patches and sections
+## Parts, patches and sections {defines="patch"}
 
 <!--
 ```agda
@@ -147,7 +147,7 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} (A : Functor (C ^op) (Sets ℓs)) 
         part (j ∘ h) _    ≡⟨ sym (patch j _ h (T .closed js h)) ⟩
         A ⟪ h ⟫ part j js ∎
 
-  open Patch public
+  open Patch
 
   is-section : ∀ {U} {T : Sieve C U} → A ʻ U → Patch T → Type _
   is-section {T = T} p x = pre.is-section C A.₁ T p (x .part)
@@ -160,14 +160,14 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} (A : Functor (C ^op) (Sets ℓs)) 
     field
       {part} : A ʻ U
       patch  : is-section part p
-
-  open Section public
 ```
 
 <!--
 ```agda
 module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} where
   open Cat C
+  open Section
+  open Patch
   private module A = Psh A
   open pre C A.₁ hiding (is-section) public
 
@@ -207,6 +207,15 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
   pullback-patch {S = S} f s .patch g h hfg hfgh =
       s .patch (f ∘ g) h hfg (S .closed h hfg)
     ∙ app s (pullr refl)
+
+  open _=>_
+
+  map-patch
+    : ∀ {B : Functor (C ^op) (Sets ℓs)} {U} {S : Sieve C U} (eta : A => B)
+    → Patch A S
+    → Patch B S
+  map-patch eta x .part f hf = eta .η _ (x .part f hf)
+  map-patch eta x .patch f hf g hgf = sym (eta .is-natural _ _ _ $ₚ _) ∙ ap (eta .η _) (x .patch f hf g hgf)
 ```
 -->
 
@@ -226,7 +235,7 @@ a patch for a sieve $T$ on $U$, and it is a section of this patch.
   section→section u .patch f hf = refl
 ```
 
-## The notion of sheaf {defines="sheaf"}
+## The notion of sheaf {defines="sheaf sheaves"}
 
 Using our terminology above, we can very concisely define what it means
 for a functor $A : \psh(\cC)$ to be a sheaf, at least with respect to a
@@ -236,6 +245,8 @@ sieve $T$ on $U$: any patch $p$ of $T$ has a unique section.
 ```agda
 module _ {o ℓ ℓs} {C : Precategory o ℓ} (A : Functor (C ^op) (Sets ℓs)) where
   open Precategory C
+  open Section
+  open Patch
 ```
 -->
 
@@ -244,6 +255,7 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} (A : Functor (C ^op) (Sets ℓs)) 
   is-sheaf₁ T = (p : Patch A T) → is-contr (Section A p)
 ```
 
+::: {.definition #separated-presheaf}
 We will also need the notion of **separated presheaf**. These are
 typically defined to be the presheaves which have *at most one* section
 for each patch: the type of sections for each patch is a
@@ -251,6 +263,7 @@ for each patch: the type of sections for each patch is a
 type-theoretic perspective, it makes more sense to define separated
 presheaves in the following "unfolded" form, which says that that
 equality on $A(U)$ is a $T$-local property.
+:::
 
 ```agda
   is-separated₁ : ∀ {U} (T : Sieve C U) → Type _
@@ -270,7 +283,35 @@ the above mapping from elements to sections.
       record { patch = λ f hf → sym (lp f hf) }
 ```
 
-# Sites, formally {defines="site"}
+<!--
+```agda
+  from-is-separated₁
+    : ∀ {U} {T : Sieve C U}
+    → is-separated₁ T
+    → ∀ {p : Patch A T} (s : Section A p)
+    → is-contr (Section A p)
+  from-is-separated₁ sep sec .centre = sec
+  from-is-separated₁ sep sec .paths x = ext $ sep λ f hf →
+    sec .patch f hf ∙ sym (x .patch f hf)
+
+  -- This is equal to `subst (is-sheaf₁ A)` but has better definitional
+  -- behaviour for the relevant part.
+  subst-is-sheaf₁ : ∀ {U} {T S : Sieve C U} (p : T ≡ S) → is-sheaf₁ T → is-sheaf₁ S
+  subst-is-sheaf₁ {T = T} {S = S} p shf pa = done where
+    pa' : Patch A T
+    pa' .part f hf = pa .part f (subst (f ∈_) p hf)
+    pa' .patch f hf g hgf = pa .patch f _ g _
+
+    sec = shf pa'
+
+    done : is-contr (Section A pa)
+    done .centre .part = sec .centre .part
+    done .centre .patch f hf = sec .centre .patch f (subst (f ∈_) (sym p) hf) ∙ app pa refl
+    done .paths x = ext (ap part (sec .paths record { patch = λ f hf → x .patch f (subst (f ∈_) p hf) ∙ app pa refl }))
+```
+-->
+
+# Sites, formally {defines="site coverage"}
 
 ```agda
 record Coverage {o ℓ} (C : Precategory o ℓ) ℓc : Type (o ⊔ ℓ ⊔ lsuc ℓc) where
@@ -311,34 +352,65 @@ module _ {o ℓ ℓc ℓs} {C : Precategory o ℓ} (J : Coverage C ℓc) (A : Fu
   is-separated = ∀ {U : ⌞ C ⌟} (c : J # U) → is-separated₁ A (J .cover c)
 
   record is-sheaf : Type (o ⊔ ℓ ⊔ ℓs ⊔ ℓc) where
+    no-eta-equality
     field
-      has-sheaf₁ : ∀ {U} (c : J .covers U) → is-sheaf₁ A (J .cover c)
+      part     : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → A ʻ U
+      patch    : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-section A (part S p) p
+      separate : ∀ {U} (S : J .covers U) → is-separated₁ A (J .cover S)
 
-    split : ∀ {U : ⌞ C ⌟} {c : J # U} (p : Patch A (J .cover c)) → Section A p
-    split {c = c} p = has-sheaf₁ c p .centre
+    split : ∀ {U} {S : J .covers U} (p : Patch A (J .cover S)) → Section A p
+    split p .Section.part  = part _ p
+    split p .Section.patch = patch _ p
 
-    abstract
-      separate : ∀ {U : ⌞ C ⌟} (c : J # U) → is-separated₁ A (J .cover c)
-      separate c l = is-sheaf₁→is-separated₁ A (J .cover c) (has-sheaf₁ c) l
-
-  open is-sheaf using (has-sheaf₁) public
-
-  from-is-separated
-    : is-separated
-    → (∀ {U} (c : J .covers U) (s : Patch A (J .cover c)) → Section A s)
-    → is-sheaf
-  from-is-separated sep split .has-sheaf₁ c p .centre = split c p
-  from-is-separated sep split .has-sheaf₁ c p .paths x = ext $ sep c λ f hf →
-    split c p .patch f hf ∙ sym (x .patch f hf)
+  open is-sheaf using (part ; patch ; separate) public
 ```
 
 <!--
 ```agda
+module _ {o ℓ ℓc ℓs} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Functor (C ^op) (Sets ℓs)} where
+  from-is-separated
+    : is-separated J A
+    → (∀ {U} (c : J .covers U) (s : Patch A (J .cover c)) → Section A s)
+    → is-sheaf J A
+  from-is-separated sep split .part S p   = split S p .Section.part
+  from-is-separated sep split .patch S p  = split S p .Section.patch
+  from-is-separated sep split .separate S = sep S
+
+  from-is-sheaf₁
+    : (∀ {U} (c : J .covers U) → is-sheaf₁ A (J .cover c))
+    → is-sheaf J A
+  from-is-sheaf₁ shf .part S p = shf _ p .centre .Section.part
+  from-is-sheaf₁ shf .patch S p = shf _ p .centre .Section.patch
+  from-is-sheaf₁ shf .separate S = is-sheaf₁→is-separated₁ _ _ (shf _)
+
+  to-is-sheaf₁ : is-sheaf J A → ∀ {U} (c : J .covers U) → is-sheaf₁ A (J .cover c)
+  to-is-sheaf₁ shf c p = from-is-separated₁ _ (shf .separate c) (is-sheaf.split shf p)
+```
+-->
+
+<!--
+```agda
+open Section public
+open Patch public
+
 module _ {o ℓ ℓc ℓp} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Functor (C ^op) (Sets ℓp)} where
   private unquoteDecl eqv = declare-record-iso eqv (quote is-sheaf)
-  instance
+  abstract instance
     H-Level-is-sheaf : ∀ {n} → H-Level (is-sheaf J A) (suc n)
-    H-Level-is-sheaf = prop-instance $ Iso→is-hlevel! 1 eqv
+    H-Level-is-sheaf = prop-instance $ retract→is-hlevel 1 from to ft (hlevel 1) where
+      T : Type (o ⊔ ℓ ⊔ ℓc ⊔ ℓp)
+      T = ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-contr (Section A p)
+
+      from : T → is-sheaf J A
+      from x .part  S p  = x S p .centre .part
+      from x .patch S p  = x S p .centre .patch
+      from x .separate S = is-sheaf₁→is-separated₁ A _ (x S)
+
+      to : is-sheaf J A → T
+      to shf S p = from-is-separated₁ _ (shf .separate S) (is-sheaf.split shf p)
+
+      ft : ∀ x → from (to x) ≡ x
+      ft x = Iso.injective eqv (Σ-prop-path! refl)
 ```
 -->
 
@@ -351,8 +423,11 @@ module _ {o ℓ ℓc} {C : Precategory o ℓ} (J : Coverage C ℓc) ℓs where
 -->
 
 ```agda
+  Sheaf : Type _
+  Sheaf = Σ[ p ∈ Functor (C ^op) (Sets ℓs) ] is-sheaf J p
+
   Sheaves : Precategory (o ⊔ ℓ ⊔ ℓc ⊔ lsuc ℓs) (o ⊔ ℓ ⊔ ℓs)
-  Sheaves .Ob = Σ[ p ∈ Functor (C ^op) (Sets ℓs) ] is-sheaf J p
+  Sheaves .Ob = Sheaf
   Sheaves .Hom (S , _) (T , _) = S => T
   Sheaves .Hom-set _ _ = hlevel 2
   Sheaves .id = idnt

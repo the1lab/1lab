@@ -7,7 +7,7 @@ open import Cat.Site.Constructions
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Sieve
 open import Cat.Functor.Hom
-open import Cat.Site.Base
+open import Cat.Site.Base hiding (part ; patch ; separate)
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as Psh
@@ -25,6 +25,9 @@ module Cat.Site.Closure where
 ```agda
 module _ {o ℓ ℓs} {C : Precategory o ℓ} (A : Functor (C ^op) (Sets ℓs)) where
   open Cat C
+  open Section
+  open Patch
+  open is-sheaf
   private module A = Psh A
 ```
 -->
@@ -129,7 +132,7 @@ we can appeal to separatedness *again*, this time at $(fg)^*(S)$.  This
     q : is-contr (Section A p)
     q .centre .part = s .part
     q .centre .patch f hf = R*sep f hf λ g hg → is-sheaf₁→is-separated₁ A _ (S*sheaf (f ∘ g) hg) λ h hh →
-      A ⟪ h ⟫ (A ⟪ g ⟫ (A ⟪ f ⟫ s .part)) ≡⟨ ap₂ A.₁ refl (A.collapse refl ∙ Rsheaf p'' .centre .patch (f ∘ g) hg) ⟩
+      A ⟪ h ⟫ (A ⟪ g ⟫ (A ⟪ f ⟫ s .part)) ≡⟨ A.ap (A.collapse refl ∙ Rsheaf p'' .centre .patch (f ∘ g) hg) ⟩
       A ⟪ h ⟫ p'' .part (f ∘ g) hg        ≡⟨ S*sheaf (f ∘ g) hg (p' (f ∘ g)) .centre .patch h hh ⟩
       p .part ((f ∘ g) ∘ h) hh            ≡˘⟨ app p (assoc f g h) ⟩
       p .part (f ∘ g ∘ h) _               ≡˘⟨ p .patch f hf (g ∘ h) (subst (_∈ S) (sym (assoc f g h)) hh) ⟩
@@ -148,6 +151,10 @@ module
   where
 
   open Precategory C
+  open is-sheaf
+  open Section
+  open Patch
+
   private
     module A = Psh A
     module shf = is-sheaf shf
@@ -237,11 +244,11 @@ of $J$. This is actually a pretty simple process:
     max : ∀ {U} {R : Sieve C U} → id ∈ R → J ∋ R
 
     local
-      : ∀ {U R} (hr : J ∋ R) (S : Sieve C U)
+      : ∀ {U R} (hr : J ∋ R) {S : Sieve C U}
       → (∀ {V} (f : Hom V U) (hf : f ∈ R) → J ∋ pullback f S)
       → J ∋ S
 
-    pull : ∀ {U V} (h : Hom V U) (R : Sieve C U) (hr : J ∋ R) → J ∋ pullback h R
+    pull : ∀ {U V} (h : Hom V U) {R : Sieve C U} (hr : J ∋ R) → J ∋ pullback h R
 
     squash : ∀ {U} {R : Sieve C U} → is-prop (J ∋ R)
 ```
@@ -264,11 +271,11 @@ sieve belongs to the saturation in at most one way.
       : ∀ {J : Coverage C ℓs} {U} {R S : Sieve C U}
       → (∀ {V} (f : Hom V U) → f ∈ S → f ∈ R)
       → J ∋ S → J ∋ R
-    incl {J = J} {S = S} sr us = local us _ λ f hf → subst (J ∋_) refl $
+    incl {J = J} {S = S} sr us = local us λ f hf → subst (J ∋_) refl $
       max $ sr (f ∘ id) (S .closed hf id)
 
   Saturation : Coverage C ℓs → Coverage C (o ⊔ ℓ ⊔ ℓs)
-  Saturation J = from-stable-property (J ∋_) pull
+  Saturation J = from-stable-property (J ∋_) λ f R s → pull f s
 ```
 
 <!--
@@ -302,20 +309,20 @@ that, it's a very straightforward recursive computation:
   is-sheaf-sat _ (max {R = R} p) h = is-sheaf-maximal A $
     subst (_∈ R) id-comm-sym (R .closed p h)
 
-  is-sheaf-sat shf {V} (local {U} {R} hR S x) h =
+  is-sheaf-sat shf {V} (local {U} {R} hR {S} x) h =
     let
       rem₁ : ∀ {W} (f : Hom W V) → h ∘ f ∈ S
            → is-separated₁ A (pullback f (pullback h R))
       rem₁ f hhf = is-sheaf₁→is-separated₁ A _ $
-        subst (is-sheaf₁ A) pullback-∘ (is-sheaf-sat shf hR (h ∘ f))
+        subst-is-sheaf₁ A pullback-∘ (is-sheaf-sat shf hR (h ∘ f))
 
       rem₂ : ∀ {W} (f : Hom W V) → h ∘ f ∈ R
            → is-sheaf₁ A (pullback f (pullback h S))
-      rem₂ f hf = subst (is-sheaf₁ A) (pullback-id ∙ pullback-∘) $
+      rem₂ f hf = subst-is-sheaf₁ A (pullback-id ∙ pullback-∘) $
         is-sheaf-sat shf (x (h ∘ f) hf) id
     in is-sheaf-transitive A rem₁ rem₂ (is-sheaf-sat shf hR h)
 
-  is-sheaf-sat shf (pull h R hR) g = subst (is-sheaf₁ A) pullback-∘ $
+  is-sheaf-sat shf (pull h {R} hR) g = subst-is-sheaf₁ A pullback-∘ $
     is-sheaf-sat shf hR (h ∘ g)
 
   is-sheaf-sat shf (squash {R} x y i) h p = is-contr-is-prop
@@ -327,10 +334,30 @@ Showing that a $\widehat{J}$-sheaf is also a $J$-sheaf is immediate.
 
 ```agda
   is-sheaf-saturation : is-sheaf J A ≃ is-sheaf (Saturation J) A
-  is-sheaf-saturation .fst sheaf .has-sheaf₁ (R , hR) =
-    subst (is-sheaf₁ A) pullback-id $ is-sheaf-sat sheaf hR id
-  is-sheaf-saturation .snd = biimp-is-equiv! _ λ where
-    sheaf .has-sheaf₁ c → sheaf .has-sheaf₁ (_ , inc c)
+  is-sheaf-saturation .fst sheaf = from-is-sheaf₁ λ (R , hR) → subst-is-sheaf₁ A pullback-id $ is-sheaf-sat sheaf hR id
+  is-sheaf-saturation .snd = biimp-is-equiv! _ λ shf → from-is-sheaf₁ λ c →
+    to-is-sheaf₁ shf (J .cover c , inc c)
 
   module is-sheaf-saturation = Equiv is-sheaf-saturation
 ```
+
+<!--
+```agda
+module sat {o ℓ ℓs ℓc} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Functor (C ^op) (Sets ℓs)} (shf : is-sheaf J A) where
+  private module shf = is-sheaf (is-sheaf-saturation.to shf)
+
+  part : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → A ʻ U
+  part w = shf.part (_ , w)
+
+  abstract
+    patch : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → is-section A (part w p) p
+    patch w = shf.patch (_ , w)
+
+    separate : ∀ {U} {S : Sieve C U} (w : J ∋ S) → is-separated₁ A S
+    separate w = shf.separate (_ , w)
+
+  split : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → Section A p
+  split w p .Section.part = part w p
+  split w p .Section.patch = patch w p
+```
+-->

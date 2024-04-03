@@ -1,4 +1,4 @@
-open import Cat.Prelude
+open import Cat.Prelude hiding (ap ; ap₂)
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
@@ -47,3 +47,9 @@ annihilate p = happly (Pf.annihilate p) _
 
 conjure : id ≡ f ∘ g → x ≡ F₁ f (F₁ g x)
 conjure p = sym (annihilate (sym p))
+
+ap : x ≡ y → F₁ f x ≡ F₁ f y
+ap {f = f} p i = F₁ f (p i)
+
+ap₂ : f ≡ g → x ≡ y → F₁ f x ≡ F₁ g y
+ap₂ p q i = F₁ (p i) (q i)

@@ -31,7 +31,7 @@ open Algebra-on
 ```
 -->
 
-# Limits in categories of algebras
+# Limits in categories of algebras {defines="limits-in-categories-of-algebras"}
 
 Suppose that $\cC$ be a category, $M$ be a [monad] on $\cC$, and
 $F$ be a $\cJ$-shaped diagram of [$M$-algebras][malg] (that is, a

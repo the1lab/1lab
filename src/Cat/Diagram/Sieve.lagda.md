@@ -136,14 +136,15 @@ componentwise monic, and embeddings are monic, the result follows.
   pullback f s .arrows h = el (f C.∘ h ∈ s) (hlevel 1)
   pullback f s .closed hf g = subst (_∈ s) (sym (C.assoc f _ g)) (s .closed hf g)
 
-  pullback-id : ∀ {c} {s : Sieve C c} → pullback C.id s ≡ s
-  pullback-id {s = s} = ext λ h → Ω-ua (subst (_∈ s) (C.idl h)) (subst (_∈ s) (sym (C.idl h)))
+  abstract
+    pullback-id : ∀ {c} {s : Sieve C c} → pullback C.id s ≡ s
+    pullback-id {s = s} = ext λ h → Ω-ua (subst (_∈ s) (C.idl h)) (subst (_∈ s) (sym (C.idl h)))
 
-  pullback-∘
-    : ∀ {u v w} {f : C.Hom w v} {g : C.Hom v u} {R : Sieve C u}
-    → pullback (g C.∘ f) R ≡ pullback f (pullback g R)
-  pullback-∘ {f = f} {g} {R = R} = ext λ h →
-    Ω-ua (subst (_∈ R) (sym (C.assoc g f h))) (subst (_∈ R) (C.assoc g f h))
+    pullback-∘
+      : ∀ {u v w} {f : C.Hom w v} {g : C.Hom v u} {R : Sieve C u}
+      → pullback (g C.∘ f) R ≡ pullback f (pullback g R)
+    pullback-∘ {f = f} {g} {R = R} = ext λ h →
+      Ω-ua (subst (_∈ R) (sym (C.assoc g f h))) (subst (_∈ R) (C.assoc g f h))
 
   Sieves : Functor (C ^op) (Sets (o ⊔ ℓ))
   Sieves .F₀ U .∣_∣ = Sieve C U

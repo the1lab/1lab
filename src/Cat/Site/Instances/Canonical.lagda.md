@@ -111,7 +111,7 @@ is-universal-colim→よ-is-sheaf {U} {V} S colim p = uniq where
 
 representable-is-sheaf-canonical
   : ∀ {U} → is-sheaf Canonical-coverage (Hom-into C U)
-representable-is-sheaf-canonical .has-sheaf₁ (S , hS) =
+representable-is-sheaf-canonical = from-is-sheaf₁ λ (S , hS) →
   is-universal-colim→よ-is-sheaf S hS
 
 is-subcanonical→is-universal-colim
