@@ -91,23 +91,20 @@ module _ {o h} {C : Precategory o h} where
   private unquoteDecl zero-eqv = declare-record-iso zero-eqv (quote Zero)
 
   is-zero-is-prop : ∀ {x} → is-prop (is-zero C x)
-  is-zero-is-prop = Iso→is-hlevel 1 is-zero-eqv hlevel!
+  is-zero-is-prop = Iso→is-hlevel 1 is-zero-eqv (hlevel 1)
 
   instance
     HLevel-is-zero : ∀ {x} {n} → H-Level (is-zero C x) (1 + n)
     HLevel-is-zero = prop-instance is-zero-is-prop
 
-  Extensional-Zero
-    : ∀ {ℓr}
-    → ⦃ sa : Extensional Ob ℓr ⦄
-    → Extensional (Zero C) ℓr
-  Extensional-Zero ⦃ sa ⦄ =
-    embedding→extensional
-      (Iso→Embedding zero-eqv ∙emb (fst , Subset-proj-embedding hlevel!))
-      sa
-
   instance
-    Extensionality-Zero : Extensionality (Zero C)
-    Extensionality-Zero = record { lemma = quote Extensional-Zero }
+    Extensional-Zero
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Zero C) ℓr
+    Extensional-Zero ⦃ sa ⦄ =
+      embedding→extensional
+        (Iso→Embedding zero-eqv ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
+        sa
 ```
 -->

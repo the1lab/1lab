@@ -99,7 +99,7 @@ Direct-product (G , Gg) (H , Hg) = to-group G×Hg where
   module H = Group-on Hg
 
   G×Hg : make-group (∣ G ∣ × ∣ H ∣)
-  G×Hg .make-group.group-is-set = hlevel!
+  G×Hg .make-group.group-is-set = hlevel 2
   G×Hg .make-group.unit = G.unit , H.unit
   G×Hg .make-group.mul (a , x) (b , y) = a G.⋆ b , x H.⋆ y
   G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -68,7 +67,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
   sg' : make-group (Σ[ x ∈ G ] x ∈ H)
-  sg' .make-group.group-is-set = hlevel!
+  sg' .make-group.group-is-set = hlevel 2
   sg' .make-group.unit = unit , has-unit
   sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg' .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
@@ -313,10 +312,8 @@ rest of the construction, most of it is applying induction
 will compute.
 
 ```agda
-    coeq : is-coequaliser (Groups ℓ) _ _ A→im
-    coeq .coequal = Grp↪Sets-is-faithful (funext path) where
-      path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
-      path (x* , p) = Tpath (f.pres-id ∙ sym p)
+    coeq : is-coequaliser (Groups ℓ) (Zero.zero→ ∅ᴳ) Kerf.kernel A→im
+    coeq .coequal = ext λ x p → f.pres-id ∙ sym p
 
     coeq .universal {F = F} {e' = e'} p = gh where
       module F = Group-on (F .snd)
@@ -331,17 +328,8 @@ will compute.
 
     coeq .factors = Grp↪Sets-is-faithful refl
 
-    coeq .unique {F} {p = p} {colim = colim} prf = Grp↪Sets-is-faithful (funext path)
-      where
-        module F = Group-on (F .snd)
-        path : ∀ (x : image (apply f)) → colim # x ≡ elim p (x .snd)
-        path (x , t) =
-          ∥-∥-elim
-            {P = λ q → colim # (x , q) ≡ elim p q}
-            (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (apply colim) (Σ-prop-path! (sym fp))
-                          ∙ (happly (ap hom prf) f) })
-            t
+    coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
+      ap# colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
 ```
 
 ## Representing kernels
@@ -543,7 +531,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
   open Congruence
   normal-subgroup→congruence : Congruence _ _
   normal-subgroup→congruence ._∼_ = rel
-  normal-subgroup→congruence .has-is-prop x y = hlevel!
+  normal-subgroup→congruence .has-is-prop x y = hlevel 1
   normal-subgroup→congruence .reflᶜ = rel-refl _
   normal-subgroup→congruence ._∙ᶜ_ = rel-trans
   normal-subgroup→congruence .symᶜ = rel-sym

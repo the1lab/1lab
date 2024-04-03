@@ -131,37 +131,29 @@ Discrete-inj' f inj {x} {y} =
   Dec-map (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
 
 instance
-  Dec-Σ-path
+  Discrete-Σ
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
     → ⦃ _ : Discrete A ⦄
     → ⦃ _ : ∀ {x} → Discrete (B x) ⦄
     → Discrete (Σ A B)
-  Dec-Σ-path {B = B} {x = a , b} {a' , b'} = case a ≡ᵢ? a' of λ where
+  Discrete-Σ {B = B} {x = a , b} {a' , b'} = case a ≡ᵢ? a' of λ where
     (yes reflᵢ) → case b ≡? b' of λ where
       (yes q) → yes (ap₂ _,_ refl q)
       (no ¬q) → no λ p → ¬q (Σ-inj-set (Discrete→is-set auto) p)
     (no ¬p) → no λ p → ¬p (Id≃path.from (ap fst p))
 
-abstract
-  Id-is-hlevel
-    : ∀ {ℓ} {A : Type ℓ} (n : Nat)
-    → is-hlevel A n
-    → ∀ {a b : A}
-    → is-hlevel (a ≡ᵢ b) n
-  Id-is-hlevel n p = Equiv→is-hlevel n Id≃path (Path-is-hlevel n p)
+abstract instance
+  H-Level-Id
+    : ∀ {ℓ n} {S : Type ℓ} ⦃ s : H-Level S (suc n) ⦄ {x y : S}
+    → H-Level (x ≡ᵢ y) n
+  H-Level-Id {n = n} = hlevel-instance (Equiv→is-hlevel n Id≃path (hlevel n))
 
-  Id-is-hlevel'
-    : ∀ {ℓ} {A : Type ℓ} (n : Nat)
-     → is-hlevel A (suc n)
-    → ∀ {a b : A}
-    → is-hlevel (a ≡ᵢ b) n
-  Id-is-hlevel' n p = Equiv→is-hlevel n Id≃path (Path-is-hlevel' n p _ _)
-
-substᵢ-filler-set : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
-                → is-set A
-                → {a : A}
-                → (p : a ≡ᵢ a)
-                → ∀ x → x ≡ substᵢ P p x
+substᵢ-filler-set
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
+  → is-set A
+  → {a : A}
+  → (p : a ≡ᵢ a)
+  → ∀ x → x ≡ substᵢ P p x
 substᵢ-filler-set P is-set-A p x = subst (λ q → x ≡ substᵢ P q x) (is-set→is-setᵢ is-set-A _ _ reflᵢ p) refl
 
 record Recallᵢ
@@ -178,7 +170,6 @@ recallᵢ
   → (f : (x : A) → B x) (x : A)
   → Recallᵢ f x (f x)
 recallᵢ f x = ⟪ reflᵢ ⟫ᵢ
-
 
 symᵢ : ∀ {a} {A : Type a} {x y : A} → x ≡ᵢ y → y ≡ᵢ x
 symᵢ reflᵢ = reflᵢ

@@ -7,7 +7,6 @@ description: |
 ---
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Initial
 open import Cat.Functor.Compose
@@ -478,24 +477,20 @@ so we will omit the details.</summary>
       (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1 λ g _ → C.Hom-set _ _ g (folds f i))
       (x .unique) (y .unique) i
 
-  -- This lets us ignore 'is-free-object' when proving equality.
-  Extensional-Free-object
-    : ∀ {X ℓr}
-    → ⦃ sa : Extensional (Σ[ A ∈ C.Ob ] (D.Hom X (U.₀ A))) ℓr ⦄
-    → Extensional (Free-object U X) ℓr
-  Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y = sa .Pathᵉ (_ , x .unit) (_ , y .unit)
-  Extensional-Free-object ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (_ , x .unit)
-  Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path h =
-    let p = sa .idsᵉ .to-path h
-     in Free-object-path (ap fst p) (ap snd p)
-  Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path-over p =
-    sa .idsᵉ .to-path-over p
-
   instance
-    Extensionality-Free-object
-      : ∀ {X}
-      → Extensionality (Free-object U X)
-    Extensionality-Free-object = record { lemma = quote Extensional-Free-object }
+    -- This lets us ignore 'is-free-object' when proving equality.
+    Extensional-Free-object
+      : ∀ {X ℓr}
+      → ⦃ sa : Extensional (Σ[ A ∈ C.Ob ] (D.Hom X (U.₀ A))) ℓr ⦄
+      → Extensional (Free-object U X) ℓr
+    Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y = sa .Pathᵉ (_ , x .unit) (_ , y .unit)
+    Extensional-Free-object ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (_ , x .unit)
+    Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path h =
+      let p = sa .idsᵉ .to-path h
+       in Free-object-path (ap fst p) (ap snd p)
+    Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path-over p =
+      sa .idsᵉ .to-path-over p
+
 
   private module I = Initial
   open ↓Hom

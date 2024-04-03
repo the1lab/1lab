@@ -54,9 +54,7 @@ then for any two morphisms $f_1,f_2$ lying over $f$,
 and any $p, q : f_1 = f_2$, $p=q$.
 
 ```agda
-  _×ᵀᴰ_ .Displayed.Hom[_]-set (f₁ , f₂) (x'₁ , x'₂) (y'₁ , y'₂) =
-    ×-is-hlevel 2
-    (EC.Hom[ f₁ ]-set x'₁ y'₁) (ED.Hom[ f₂ ]-set x'₂ y'₂)
+  _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ```
 Composition is pairwise.
 ```agda

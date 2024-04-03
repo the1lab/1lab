@@ -45,7 +45,7 @@ lattice : Lattice o ℓ
 lattice = P , has-lattice
 
 open Order.Lattice.Reasoning has-lattice using
-  (∩-idl; ∩-idr; module ∩
+  ( ∩-idl; ∩-idr; module ∩
   ; ∪-idl; ∪-idr; module ∪
   ; ∩-absorbl; ∩-absorbr; ∪-absorbl; ∪-absorbr
   ) public

@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure

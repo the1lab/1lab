@@ -78,8 +78,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
   Twisted : Precategory (o ⊔ ℓ) ℓ
   Twisted .Precategory.Ob = Σ[ (a , b) ∈ Ob × Ob ] Hom a b
   Twisted .Precategory.Hom (_ , f) (_ , g) = Twist f g
-  Twisted .Precategory.Hom-set (_ , f) (_ , g) =
-    Iso→is-hlevel 2 eqv (hlevel 2)
+  Twisted .Precategory.Hom-set (_ , f) (_ , g) = Iso→is-hlevel! 2 eqv
   Twisted .Precategory.id = record
     { before   = id ; after    = id ; commutes = idl _ ∙ idr _ }
   Twisted .Precategory._∘_ t1 t2 .Twist.before = t2 .Twist.before ∘ t1 .Twist.before
@@ -119,8 +118,7 @@ Note that the twisted arrow category is equivalently the
     F .F-∘ f g = trivial!
 
     F-precat-iso : is-precat-iso F
-    F-precat-iso .has-is-ff = injective-surjective→is-equiv
-      (Element-hom-is-set _ _ _)
+    F-precat-iso .has-is-ff = injective-surjective→is-equiv!
       (λ p → Twist-path (ap (fst ⊙ hom) p) (ap (snd ⊙ hom) p))
       λ f → inc (twist (f .hom .fst) (f .hom .snd) (f .commute) , trivial!)
     F-precat-iso .has-is-iso = is-iso→is-equiv (iso

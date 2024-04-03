@@ -81,7 +81,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
   Aut : C.Ob → Group _
   Aut X = to-group mg where
     mg : make-group (X C.≅ X)
-    mg .make-group.group-is-set = C.≅-is-set
+    mg .make-group.group-is-set = hlevel 2
     mg .make-group.unit = C.id-iso
     mg .make-group.mul g f = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹

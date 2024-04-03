@@ -1,10 +1,12 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Universe
 open import 1Lab.Extensionality
 open import 1Lab.HLevel.Closure
+open import 1Lab.Reflection
 open import 1Lab.Underlying
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
@@ -119,10 +121,18 @@ g) \circ h = f \circ (g \circ h)$.
 
 <!--
 ```agda
-  module HLevel-instance where
-    instance
-      H-Level-Hom : ∀ {x y} {k} → H-Level (Hom x y) (2 + k)
-      H-Level-Hom = basic-instance 2 (Hom-set _ _)
+open hlevel-projection
+private
+  hom-set : ∀ {o ℓ} (C : Precategory o ℓ) {x y} → is-set (C .Precategory.Hom x y)
+  hom-set C = C .Precategory.Hom-set _ _
+
+instance
+  hlevel-proj-hom : hlevel-projection (quote Precategory.Hom)
+  hlevel-proj-hom .has-level = quote hom-set
+  hlevel-proj-hom .get-level _ = pure (quoteTerm (suc (suc zero)))
+  hlevel-proj-hom .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
+  {-# CATCHALL #-}
+  hlevel-proj-hom .get-argument _ = typeError []
 ```
 -->
 
@@ -492,6 +502,8 @@ module _ where
 infixr 30 _F∘_
 infix 20 _=>_
 
+unquoteDecl H-Level-Nat = declare-record-hlevel 2 H-Level-Nat (quote _=>_)
+
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂}
@@ -515,21 +527,10 @@ natural transformations and a certain $\Sigma$ type; This type can then
 be shown to be a set using the standard `hlevel`{.Agda} machinery.
 
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote _=>_)
   opaque
     Nat-is-set : is-set (F => G)
-    Nat-is-set = Iso→is-hlevel 2 eqv (hlevel 2) where
-      open C.HLevel-instance
-      open D.HLevel-instance
+    Nat-is-set = hlevel 2
 ```
-
-<!--
-```agda
-  instance
-    H-Level-Nat : H-Level (F => G) 2
-    H-Level-Nat = basic-instance 2 Nat-is-set
-```
--->
 
 Another fundamental lemma is that equality of natural transformations
 depends only on equality of the family of morphisms, since being natural
@@ -580,49 +581,16 @@ instance
     → Funlike (F => G) ⌞ C ⌟ (λ x → D .Precategory.Hom (F # x) (G # x))
   Funlike-natural-transformation = record { _#_ = _=>_.η }
 
-{-
-Set-up for using natural transformations with the extensionality tactic;
-See the docs in 1Lab.Extensionality for a more detailed explanation of
-how it works.
-
-This function is the actual worker which computes the preferred
-identity system for natural transformations. Its type asks for
-
-   ∀ x → Extensional (D.Hom (F # x) (G # x))
-
-instead of the more generic ∀ x y → Extensional (D.Hom x y) so that
-any specific *instances* for D.Hom involving the object parts of F and G
-have a chance to fire. E.g. if G is the product functor on Sets then
-(x → y) will only match the funext instance but (x → G # y) will
-match funext *and* product extensionality.
--}
-Extensional-natural-transformation
-  : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-  → {F G : Functor C D}
-  → {@(tactic extensionalᶠ {A = ⌞ C ⌟ → Type _}
-        (λ x → D .Hom (F # x) (G # x)))
-      sa : ∀ x → Extensional (D .Hom (F # x) (G # x)) ℓr}
-  → Extensional (F => G) (o ⊔ ℓr)
-Extensional-natural-transformation {sa = sa} .Pathᵉ f g = ∀ i → Pathᵉ (sa i) (f .η i) (g .η i)
-Extensional-natural-transformation {sa = sa} .reflᵉ x i = reflᵉ (sa i) (x .η i)
-Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-pathp _ _ λ i →
-  sa _ .idsᵉ .to-path (x i)
-Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
-  is-prop→pathp
-    (λ i → Π-is-hlevel 1
-      (λ _ → Equiv→is-hlevel 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
-    _ _
-
--- Actually define the loop-breaker instance which tells the
--- extensionality tactic what lemma to use for a type of natural
--- transformations.
-
-instance
-  extensionality-natural-transformation
-    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-        {F G : Functor C D}
-    → Extensionality (F => G)
-  extensionality-natural-transformation = record
-    { lemma = quote Extensional-natural-transformation }
+  Extensional-natural-transformation
+    : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    → {F G : Functor C D}
+    → ⦃ sa : {x : ⌞ C ⌟} → Extensional (D .Hom (F # x) (G # x)) ℓr ⦄
+    → Extensional (F => G) (o ⊔ ℓr)
+  Extensional-natural-transformation ⦃ sa ⦄ .Pathᵉ f g = ∀ i → Pathᵉ sa (f .η i) (g .η i)
+  Extensional-natural-transformation ⦃ sa ⦄ .reflᵉ x i = reflᵉ sa (x .η i)
+  Extensional-natural-transformation ⦃ sa ⦄ .idsᵉ .to-path x = Nat-pathp _ _ λ i →
+    sa .idsᵉ .to-path (x i)
+  Extensional-natural-transformation {D = D} ⦃ sa ⦄ .idsᵉ .to-path-over h =
+    is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
 ```
 -->

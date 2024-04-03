@@ -111,20 +111,11 @@ forms a set.
 ```agda
 is-total-is-prop : ∀ {x y} → (f : Hom x y) → is-prop (is-total f)
 is-total-is-prop f = Hom-set _ _ _ _
-
-Total-is-set : ∀ {x y} → is-set (Total x y)
 ```
 
 <!--
 ```agda
-Total-is-set = Iso→is-hlevel 2 eqv $
-  Σ-is-hlevel 2 (Hom-set _ _) λ _ →
-  Path-is-hlevel 2 (Hom-set _ _)
-  where unquoteDecl eqv = declare-record-iso eqv (quote Total)
-
-instance
-  H-Level-Total : ∀ {x y} {n} → H-Level (Total x y) (suc (suc n))
-  H-Level-Total = basic-instance 2 Total-is-set
+unquoteDecl H-Level-Total = declare-record-hlevel 2 H-Level-Total (quote Total)
 ```
 -->
 

@@ -102,7 +102,7 @@ category of sets of _any_ level $\ell$ admits them.
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
   Sets-terminal .top = el! (Lift _  ⊤)
-  Sets-terminal .has⊤ _ = hlevel!
+  Sets-terminal .has⊤ _ = hlevel 0
 ```
 
 Products are given by product sets:
@@ -126,7 +126,7 @@ using $\Sigma$:
   Sets-equalisers {A = A} {B = B} f g = eq where
     eq : Equaliser (Sets ℓ) f g
     eq .apex .∣_∣ = Σ[ x ∈ A ] (f x ≡ g x)
-    eq .apex .is-tr = hlevel!
+    eq .apex .is-tr = hlevel 2
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
@@ -143,7 +143,7 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback (Sets ℓ) f g
     pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
-    pb .apex .is-tr = hlevel!
+    pb .apex .is-tr = hlevel 2
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

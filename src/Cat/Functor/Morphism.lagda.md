@@ -101,7 +101,7 @@ $F(g') = g \circ i$.
 ```agda
 module _ (ff : is-fully-faithful F) (eso : is-eso F) where
   ff+eso→preserves-mono : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
-  ff+eso→preserves-mono {a = a} a-monic {x} f g p = ∥-∥-proj! do
+  ff+eso→preserves-mono {a = a} a-monic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
     (f* , q) ← fully-faithful→full {F = F} ff (f 𝒟.∘ 𝒟.to i)
     (g* , r) ← fully-faithful→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
@@ -143,7 +143,7 @@ formally dual to the case above, we will not dwell on it.
 
 ```agda
   ff+eso→preserves-epi : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
-  ff+eso→preserves-epi {a = a} a-epic {x} f g p = ∥-∥-proj! do
+  ff+eso→preserves-epi {a = a} a-epic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
     (f* , q) ← fully-faithful→full {F = F} ff (𝒟.from i 𝒟.∘ f)
     (g* , r) ← fully-faithful→full {F = F} ff (𝒟.from i 𝒟.∘ g)

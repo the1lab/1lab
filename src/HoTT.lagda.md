@@ -354,12 +354,12 @@ _ = Axiom-of-choice
 ```agda
 _ = is-prop→equiv∥-∥
 _ = ∥-∥-univ
-_ = ∥-∥-proj
+_ = ∥-∥-out
 ```
 -->
 
 * Lemma 3.9.1: `is-prop→equiv∥-∥`{.Agda}
-* Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
+* Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-out`{.Agda}
 
 ### 3.11: Contractibility
 
@@ -808,7 +808,6 @@ _ = is-invertible
 _ = _≅_
 _ = is-invertible-is-prop
 _ = Cat[_,_]
-_ = ≅-is-set
 _ = path→iso
 _ = is-category
 _ = equiv-path→identity-system
@@ -829,7 +828,7 @@ _ = Sets-is-category
 
 * Definition 9.1.1: `Precategory`{.Agda}
 * Definition 9.1.2: `is-invertible`{.Agda}, `_≅_`{.Agda}
-* Lemma 9.1.3: `is-invertible-is-prop`{.Agda}, `≅-is-set`{.Agda}
+* Lemma 9.1.3: `is-invertible-is-prop`{.Agda}
 * Lemma 9.1.4: `path→iso`{.Agda}
 * Example 9.1.5: `Sets`{.Agda}
 * Definition 9.1.6^[We use a slightly different definition of univalence

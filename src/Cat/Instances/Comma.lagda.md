@@ -66,10 +66,6 @@ module
     module C = Cat.Reasoning C
     module F = Cat.Functor.Reasoning F
     module G = Cat.Functor.Reasoning G
-
-  open A.HLevel-instance
-  open B.HLevel-instance
-  open C.HLevel-instance
 ```
 -->
 
@@ -286,104 +282,71 @@ module _ where
   open Functor
 
 
-  Extensional-↓Hom
-    : ∀ {ℓr}
-    → {F : Functor A C} {G : Functor B C}
-    → {f g : ↓Obj F G}
-    → ⦃ sab : Extensional (A .Hom (f .x) (g .x) × B .Hom (f .y) (g .y)) ℓr ⦄
-    → Extensional (↓Hom F G f g) ℓr
-  Extensional-↓Hom {A = A} {B = B} {F = F} {G = G} {f = f} {g = g} ⦃ sab ⦄ =
-    injection→extensional! (λ p → ↓Hom-path F G (ap fst p) (ap snd p)) sab
-    where
-      open Precategory.HLevel-instance A
-      open Precategory.HLevel-instance B
-
-  -- Overlapping instances for ↙ and ↘; these resolve issues where
-  -- Agda cannot determine the source category A for 'Const'. We can
-  -- also optimize the instance a bit to avoid a silly obligation that
-  -- 'tt ≡ tt'.
-  Extensional-↙Hom
-    : ∀ {ℓr}
-    → {X : A .Ob} {T : Functor B A}
-    → {f g : ↓Obj (const! X) T}
-    → ⦃ sb : Extensional (B .Hom (f .y) (g .y)) ℓr ⦄
-    → Extensional (↓Hom (const! X) T f g) ℓr
-  Extensional-↙Hom {B = B} {X = X} {T = T} {f = f} {g = g} ⦃ sb ⦄ =
-    injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (const! X) T refl p) sb
-    where
-      open Precategory.HLevel-instance B
-
-  Extensional-↘Hom
-    : ∀ {ℓr}
-    → {T : Functor A B} {X : B .Ob}
-    → {f g : ↓Obj T (const! X)}
-    → ⦃ sa : Extensional (A .Hom (f .x) (g .x)) ℓr ⦄
-    → Extensional (↓Hom T (const! X) f g) ℓr
-  Extensional-↘Hom {A = A} {T = T} {X = X} {f = f} {g = g} ⦃ sa ⦄ =
-    injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (const! X) p refl) sa
-    where
-      open Precategory.HLevel-instance A
-
   instance
-    Extensionality-↓Hom
-      : ∀ {F : Functor A C} {G : Functor B C}
+    Extensional-↓Hom
+      : ∀ {ℓr}
+      → {F : Functor A C} {G : Functor B C}
       → {f g : ↓Obj F G}
-      → Extensionality (↓Hom F G f g)
-    Extensionality-↓Hom = record { lemma = quote Extensional-↓Hom }
+      → ⦃ sab : Extensional (A .Hom (f .x) (g .x) × B .Hom (f .y) (g .y)) ℓr ⦄
+      → Extensional (↓Hom F G f g) ℓr
+    Extensional-↓Hom {A = A} {B = B} {F = F} {G = G} {f = f} {g = g} ⦃ sab ⦄ =
+      injection→extensional! (λ p → ↓Hom-path F G (ap fst p) (ap snd p)) sab
 
-    Extensionality-↙Hom
-      : ∀ {X : A .Ob} {T : Functor B A}
+    -- Overlapping instances for ↙ and ↘; these resolve issues where
+    -- Agda cannot determine the source category A for 'Const'. We can
+    -- also optimize the instance a bit to avoid a silly obligation that
+    -- 'tt ≡ tt'.
+    Extensional-↙Hom
+      : ∀ {ℓr}
+      → {X : A .Ob} {T : Functor B A}
       → {f g : ↓Obj (const! X) T}
-      → Extensionality (↓Hom (const! X) T f g)
-    Extensionality-↙Hom = record { lemma = quote Extensional-↙Hom }
+      → ⦃ sb : Extensional (B .Hom (f .y) (g .y)) ℓr ⦄
+      → Extensional (↓Hom (const! X) T f g) ℓr
+    Extensional-↙Hom {B = B} {X = X} {T = T} {f = f} {g = g} ⦃ sb ⦄ =
+      injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (const! X) T refl p) sb
+    {-# OVERLAPS Extensional-↙Hom #-}
 
-    Extensionality-↘Hom
-      : ∀ {T : Functor A B} {X : B .Ob}
+    Extensional-↘Hom
+      : ∀ {ℓr}
+      → {T : Functor A B} {X : B .Ob}
       → {f g : ↓Obj T (const! X)}
-      → Extensionality (↓Hom T (const! X) f g)
-    Extensionality-↘Hom = record { lemma = quote Extensional-↘Hom }
+      → ⦃ sa : Extensional (A .Hom (f .x) (g .x)) ℓr ⦄
+      → Extensional (↓Hom T (const! X) f g) ℓr
+    Extensional-↘Hom {A = A} {T = T} {X = X} {f = f} {g = g} ⦃ sa ⦄ =
+      injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (const! X) p refl) sa
+    {-# OVERLAPS Extensional-↘Hom #-}
 
-  -- Extensionality cannot handle PathP, but we /can/ make a bit of progress
-  -- by deleting 'tt ≡ tt' obligations when using ↙ and ↘.
-  Extensional-↙Obj
-    : ∀ {ℓr}
-    → {X : A .Ob} {T : Functor B A}
-    → ⦃ sb : Extensional (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y))) ℓr ⦄
-    → Extensional (↓Obj (const! X) T) ℓr
-  Extensional-↙Obj {A = A} {B = B} {X = X} {T = T} ⦃ sb ⦄ =
-    iso→extensional isom sb
-      where
-        -- Easier to just do this by hand.
-        isom : Iso (↓Obj (const! X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
-        isom .fst α = ↓Obj.y α , ↓Obj.map α
-        isom .snd .is-iso.inv (Y , f) = ↓obj f
-        isom .snd .is-iso.rinv _ = refl
-        isom .snd .is-iso.linv _ = ↓Obj-path (const! X) T refl refl refl
 
-  Extensional-↘Obj
-    : ∀ {ℓr}
-    → {T : Functor A B} {Y : B .Ob}
-    → ⦃ sb : Extensional (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y)) ℓr ⦄
-    → Extensional (↓Obj T (const! Y)) ℓr
-  Extensional-↘Obj {A = A} {B = B} {T = T} {Y = Y} ⦃ sb ⦄ =
-    iso→extensional isom sb
-      where
-        -- Easier to just do this by hand.
-        isom : Iso (↓Obj T (const! Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
-        isom .fst α = ↓Obj.x α , ↓Obj.map α
-        isom .snd .is-iso.inv (Y , f) = ↓obj f
-        isom .snd .is-iso.rinv _ = refl
-        isom .snd .is-iso.linv _ = ↓Obj-path T (const! Y) refl refl refl
+    -- Extensionality cannot handle PathP, but we /can/ make a bit of progress
+    -- by deleting 'tt ≡ tt' obligations when using ↙ and ↘.
+    Extensional-↙Obj
+      : ∀ {ℓr}
+      → {X : A .Ob} {T : Functor B A}
+      → ⦃ sb : Extensional (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y))) ℓr ⦄
+      → Extensional (↓Obj (const! X) T) ℓr
+    Extensional-↙Obj {A = A} {B = B} {X = X} {T = T} ⦃ sb ⦄ =
+      iso→extensional isom sb
+        where
+          -- Easier to just do this by hand.
+          isom : Iso (↓Obj (const! X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
+          isom .fst α = ↓Obj.y α , ↓Obj.map α
+          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.rinv _ = refl
+          isom .snd .is-iso.linv _ = ↓Obj-path (const! X) T refl refl refl
 
-  instance
-    Extensionality-↙Obj
-      : ∀ {X : A .Ob} {T : Functor B A}
-      → Extensionality (↓Obj (const! X) T)
-    Extensionality-↙Obj = record { lemma = quote Extensional-↙Obj }
-
-    Extensionality-↘Obj
-      : ∀ {T : Functor A B} {Y : B .Ob}
-      → Extensionality (↓Obj T (const! Y))
-    Extensionality-↘Obj = record { lemma = quote Extensional-↘Obj }
+    Extensional-↘Obj
+      : ∀ {ℓr}
+      → {T : Functor A B} {Y : B .Ob}
+      → ⦃ sb : Extensional (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y)) ℓr ⦄
+      → Extensional (↓Obj T (const! Y)) ℓr
+    Extensional-↘Obj {A = A} {B = B} {T = T} {Y = Y} ⦃ sb ⦄ =
+      iso→extensional isom sb
+        where
+          -- Easier to just do this by hand.
+          isom : Iso (↓Obj T (const! Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
+          isom .fst α = ↓Obj.x α , ↓Obj.map α
+          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.rinv _ = refl
+          isom .snd .is-iso.linv _ = ↓Obj-path T (const! Y) refl refl refl
 ```
 -->

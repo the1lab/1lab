@@ -123,7 +123,7 @@ category, it's immediate that they form a category.
     cat .idr f = Cocone-hom-path (C.idr (f .hom))
     cat .idl f = Cocone-hom-path (C.idl (f .hom))
     cat .assoc f g h = Cocone-hom-path (C.assoc (f .hom) (g .hom) (h .hom))
-    cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
+    cat .Hom-set x y = Iso→is-hlevel! 2 eqv
 ```
 -->
 

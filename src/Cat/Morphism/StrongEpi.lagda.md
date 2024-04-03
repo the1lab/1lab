@@ -67,7 +67,7 @@ lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
 abstract
   is-strong-epi-is-prop
     : ∀ {a b} (f : Hom a b) → is-prop (is-strong-epi f)
-  is-strong-epi-is-prop f = hlevel!
+  is-strong-epi-is-prop f = hlevel 1
 ```
 -->
 

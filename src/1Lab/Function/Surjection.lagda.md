@@ -118,7 +118,7 @@ embedding-surjective→is-equiv
   → is-embedding f
   → is-surjective f
   → is-equiv f
-embedding-surjective→is-equiv f-emb f-surj .is-eqv x = ∥-∥-proj! do
+embedding-surjective→is-equiv f-emb f-surj .is-eqv x = ∥-∥-out! do
   pt ← f-surj x
   pure $ is-prop∙→is-contr (f-emb x) pt
 ```
@@ -135,11 +135,11 @@ injective-surjective→is-equiv b-set f-inj =
   embedding-surjective→is-equiv (injective→is-embedding b-set _ f-inj)
 
 injective-surjective→is-equiv!
-  : {f : A → B} {@(tactic hlevel-tactic-worker) b-set : is-set B}
+  : {f : A → B} ⦃ b-set : H-Level B 2 ⦄
   → injective f
   → is-surjective f
   → is-equiv f
-injective-surjective→is-equiv! {b-set = b-set} =
-  injective-surjective→is-equiv b-set
+injective-surjective→is-equiv! =
+  injective-surjective→is-equiv (hlevel 2)
 ```
 -->

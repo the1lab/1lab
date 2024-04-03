@@ -150,20 +150,7 @@ record
 
 open is-meet-slat-hom
 
-abstract
-  is-meet-slat-hom-is-prop
-    : ∀ {P : Poset o ℓ} {Q : Poset o' ℓ'} {f : Monotone P Q}
-        {P-slat Q-slat}
-    → is-prop (is-meet-slat-hom f P-slat Q-slat)
-  is-meet-slat-hom-is-prop =
-    Iso→is-hlevel 1 eqv hlevel!
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-meet-slat-hom)
-
-instance
-  H-Level-is-meet-slat-hom
-    : ∀ {f : Monotone P Q} {P-slat Q-slat n}
-    → H-Level (is-meet-slat-hom f P-slat Q-slat) (suc n)
-  H-Level-is-meet-slat-hom = prop-instance is-meet-slat-hom-is-prop
+unquoteDecl H-Level-is-meet-slat-hom = declare-record-hlevel 1 H-Level-is-meet-slat-hom (quote is-meet-slat-hom)
 ```
 -->
 
@@ -191,7 +178,7 @@ id-meet-slat-hom {P = P} _ .top-≤ = Poset.≤-refl P
 Meet-slats-subcat : ∀ o ℓ → Subcat (Posets o ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Meet-slats-subcat o ℓ .Subcat.is-ob = is-meet-semilattice
 Meet-slats-subcat o ℓ .Subcat.is-hom = is-meet-slat-hom
-Meet-slats-subcat o ℓ .Subcat.is-hom-prop = hlevel!
+Meet-slats-subcat o ℓ .Subcat.is-hom-prop _ _ _ = hlevel 1
 Meet-slats-subcat o ℓ .Subcat.is-hom-id = id-meet-slat-hom
 Meet-slats-subcat o ℓ .Subcat.is-hom-∘ = ∘-meet-slat-hom
 

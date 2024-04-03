@@ -111,10 +111,10 @@ The definition above corresponds to the top face in the square
 <!--
 ```agda
   order-thin : ∀ i x y → is-prop (order i x y)
-  order-thin i = coe0→i (λ i → (x y : ob i) → is-prop (order i x y)) i hlevel!
+  order-thin i = coe0→i (λ i → (x y : ob i) → is-prop (order i x y)) i (λ _ _ → hlevel 1)
 
   ob-set : ∀ i → is-set (ob i)
-  ob-set i = coe0→i (λ i → is-set (ob i)) i hlevel!
+  ob-set i = coe0→i (λ i → is-set (ob i)) i (hlevel 2)
 ```
 -->
 

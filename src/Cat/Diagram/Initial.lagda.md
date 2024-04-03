@@ -118,7 +118,7 @@ Strictness is a property of, not structure on, an initial object.
 
 ```agda
   is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-  is-strict-initial-is-prop i = hlevel!
+  is-strict-initial-is-prop i = hlevel 1
 ```
 
 <!--
@@ -127,17 +127,14 @@ module _ {o h} {C : Precategory o h} where
   open Cat.Morphism C
   private unquoteDecl eqv = declare-record-iso eqv (quote Initial) 
 
-  Extensional-Initial
-    : ∀ {ℓr}
-    → ⦃ sa : Extensional Ob ℓr ⦄
-    → Extensional (Initial C) ℓr
-  Extensional-Initial ⦃ sa ⦄ =
-    embedding→extensional
-      (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding hlevel!))
-      sa
-
   instance
-    Extensionality-Initial : Extensionality (Initial C)
-    Extensionality-Initial = record { lemma = quote Extensional-Initial }
+    Extensional-Initial
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Initial C) ℓr
+    Extensional-Initial ⦃ sa ⦄ =
+      embedding→extensional
+        (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding λ _ → hlevel 1))
+        sa
 ```
 -->

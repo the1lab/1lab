@@ -118,17 +118,14 @@ module _ {o h} {C : Precategory o h} where
   open Cat.Reasoning C
   private unquoteDecl eqv = declare-record-iso eqv (quote Terminal) 
 
-  Extensional-Terminal
-    : ∀ {ℓr}
-    → ⦃ sa : Extensional Ob ℓr ⦄
-    → Extensional (Terminal C) ℓr
-  Extensional-Terminal ⦃ sa ⦄ =
-    embedding→extensional
-      (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding hlevel!))
-      sa
-
   instance
-    Extensionality-Terminal : Extensionality (Terminal C)
-    Extensionality-Terminal = record { lemma = quote Extensional-Terminal }
+    Extensional-Terminal
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Terminal C) ℓr
+    Extensional-Terminal ⦃ sa ⦄ =
+      embedding→extensional
+        (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
+        sa
 ```
 -->

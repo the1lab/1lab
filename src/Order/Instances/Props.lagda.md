@@ -41,7 +41,7 @@ is a single poset of propositions --- this is the principle of
 Props : Poset lzero lzero
 Props .Poset.Ob = Ω
 Props .Poset._≤_ P Q = ∣ P ∣ → ∣ Q ∣
-Props .Poset.≤-thin = hlevel!
+Props .Poset.≤-thin = hlevel 1
 Props .Poset.≤-refl x = x
 Props .Poset.≤-trans g f x = f (g x)
 Props .Poset.≤-antisym = Ω-ua

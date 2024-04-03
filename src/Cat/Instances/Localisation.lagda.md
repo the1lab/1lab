@@ -209,19 +209,15 @@ module _ {o ℓ w} {C : Precategory o ℓ} {W : Wide-subcat C w} where
   abstract
     Zigzag-elim-prop
       : ∀ {ℓ'} (P : ∀ {a b} → Zigzag C W a b → Type ℓ')
-      → (∀ {a b} (h : Zigzag C W a b) → is-prop (P h))
+      → ⦃ ∀ {a b} {h : Zigzag C W a b} → H-Level (P h) 1 ⦄
       → (hnil : ∀ {a} → P {a} [])
       → (hzig : ∀ {a b c} (f : Hom b c) (h : Zigzag C W a b) → P h → P (zig f h))
       → (hzag : ∀ {a b c} (f : Hom c b) (hf : f ∈ W) (h : Zigzag C W a b) → P h → P (zag f hf h))
       → ∀ {a b} (h : Zigzag C W a b) → P h
-    Zigzag-elim-prop P pprop hnil hzig hzag =
-      Zigzag-elim P
-        (λ h → is-prop→is-set (pprop h))
+    Zigzag-elim-prop P hnil hzig hzag =
+      Zigzag-elim P (λ h → is-prop→is-set (hlevel 1))
         hnil hzig hzag
-        (λ ph → is-prop→pathp (λ i → pprop _) _ _)
-        (λ ph → is-prop→pathp (λ i → pprop _) _ _)
-        (λ ph → is-prop→pathp (λ i → pprop _) _ _)
-        (λ ph → is-prop→pathp (λ i → pprop _) _ _)
+        (λ _ → prop!) (λ _ → prop!) (λ _ → prop!) (λ _ → prop!)
 ```
 -->
 
@@ -254,14 +250,13 @@ again mirror precisely the proofs for lists, or simple paths.
 ```agda
   abstract
     ++-nil : ∀ {a b} (fs : Zigzag C W a b) → fs ++ [] ≡ fs
-    ++-nil = Zigzag-elim-prop (λ h → h ++ [] ≡ h) (λ h → hlevel 1)
+    ++-nil = Zigzag-elim-prop (λ h → h ++ [] ≡ h)
       refl (λ f h p → ap (zig f) p) (λ f hf h p → ap (zag f hf) p)
 
     ++-assoc
       : ∀ {a b c d} (fs : Zigzag C W c d) (gs : Zigzag C W b c) (hs : Zigzag C W a b)
        → (fs ++ gs) ++ hs ≡ fs ++ (gs ++ hs)
     ++-assoc = Zigzag-elim-prop (λ fs → ∀ gs hs → (fs ++ gs) ++ hs ≡ fs ++ (gs ++ hs))
-      (λ h → hlevel 1)
       (λ gs hs → refl)
       (λ f h p gs hs → ap (zig f) (p gs hs))
       (λ f hf h p gs hs → ap (zag f hf) (p gs hs))
@@ -369,7 +364,6 @@ identity definitionally.</summary>
         → Zigzag-univ (f ++ g) ≡ Zigzag-univ f D.∘ Zigzag-univ g
       Zigzag-univ-++ = Zigzag-elim-prop
         (λ f → ∀ g → Zigzag-univ (f ++ g) ≡ Zigzag-univ f D.∘ Zigzag-univ g)
-        (λ _ → hlevel 1)
         (λ g → D.introl refl)
         (λ f h p g → ap (F.₁ f D.∘_) (p g) ∙ D.pulll refl)
         (λ f hf h p g → ap (F⁻¹ f hf D.∘_) (p g) ∙ D.pulll refl)
@@ -401,7 +395,6 @@ localisation functor results in the identity.
   Localisation-univ-η : Localisation-univ Localise inverted ≡ Id
   Localisation-univ-η = Functor-path (λ _ → refl) $ Zigzag-elim-prop
     (λ h → Zigzag-univ Localise inverted h ≡ h)
-    (λ h → squash _ _)
     refl (λ f h p → ap (zig f) p) (λ f hf h p → ap (zag f hf) p)
 ```
 
@@ -475,7 +468,6 @@ induction.</summary>
       : ∀ {a b c d} (fs : Meander d c) (gs : Meander b c) (hs : Meander a b)
       → (fs r++ gs) ++ hs ≡ fs r++ (gs ++ hs)
     r++-assoc = Zigzag-elim-prop (λ fs → ∀ gs hs → (fs r++ gs) ++ hs ≡ fs r++ (gs ++ hs))
-      (λ _ → hlevel 1)
       (λ _ _ → refl)
       (λ f fs rec gs hs → rec _ _)
       (λ f hf fs rec gs hs → rec _ _)
@@ -484,7 +476,6 @@ induction.</summary>
       : ∀ {a b c d} (fs : Meander b c) (gs : Meander d c) (hs : Meander a b)
       → (fs r++ gs) r++ hs ≡ gs r++ (fs ++ hs)
     r++-assoc' = Zigzag-elim-prop (λ f → ∀ g h → (f r++ g) r++ h ≡ g r++ (f ++ h))
-      (λ _ → hlevel 1)
       (λ _ _ → refl)
       (λ f fs rec gs hs → rec _ _)
       (λ f h fs rec gs hs → rec _ _)
@@ -505,7 +496,6 @@ categorical *inverse* in the total localisation $\cC\loc{\cC}$.
 ```agda
     r++-cancel : ∀ {a b} (fs : Meander a b) → fs r++ fs ≡ []
     r++-cancel = Zigzag-elim-prop (λ fs → fs r++ fs ≡ [])
-      (λ _ → hlevel 1)
       refl
       (λ f    fs rec → ap (fs r++_) (zag-zig _ _ _) ∙ rec)
       (λ f tt fs rec → ap (fs r++_) (zig-zag _ _ _) ∙ rec)

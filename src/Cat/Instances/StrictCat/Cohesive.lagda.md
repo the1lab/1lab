@@ -351,7 +351,7 @@ the morphisms.
 ```agda
   f : π₀ ʻ (C ×ᶜ D) → π₀ ʻ C × π₀ ʻ D
   f = Quot-elim
-    (λ _ → hlevel!)
+    (λ _ → hlevel 2)
     (λ (a , b) → inc a , inc b)
     λ (x , x') (y , y') (f , g) i →
       glue (x , y , f) i , glue (x' , y' , g) i

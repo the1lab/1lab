@@ -22,7 +22,7 @@ with a unique isomorphism between them.
 0≅1 : Precategory lzero lzero
 0≅1 .Precategory.Ob = Bool
 0≅1 .Precategory.Hom _ _ = ⊤
-0≅1 .Precategory.Hom-set _ _ = hlevel!
+0≅1 .Precategory.Hom-set _ _ = hlevel 2
 0≅1 .Precategory.id = tt
 0≅1 .Precategory._∘_ tt tt = tt
 0≅1 .Precategory.idr tt i = tt
@@ -52,7 +52,7 @@ The isomorphism category is strict, as its objects form a set.
 
 ```agda
 0≅1-is-strict : is-set 0≅1.Ob
-0≅1-is-strict = hlevel!
+0≅1-is-strict = hlevel 2
 ```
 
 # The isomorphism category is not univalent

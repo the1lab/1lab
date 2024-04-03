@@ -1,5 +1,3 @@
-{-# OPTIONS -vtc.def.fun:10 #-}
-
 module Cat.Displayed.Solver where
 
 open import Data.List

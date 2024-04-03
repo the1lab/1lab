@@ -58,22 +58,11 @@ lubs, with the binary name being **join**.
 
 <!--
 ```agda
+unquoteDecl H-Level-is-lub = declare-record-hlevel 1 H-Level-is-lub (quote is-lub)
+
 module _ {o ℓ} {P : Poset o ℓ} where
   open Order.Reasoning P
   open is-lub
-
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
-
-  is-lub-is-prop
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {lub : Ob}
-    → is-prop (is-lub P F lub)
-  is-lub-is-prop = Iso→is-hlevel 1 eqv hlevel!
-
-  instance
-    H-Level-is-lub
-      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {lub : Ob} {n}
-      → H-Level (is-lub P F lub) (suc n)
-    H-Level-is-lub = prop-instance is-lub-is-prop
 
   lub-unique
     : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
@@ -90,7 +79,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
     lub-unique (Lub.has-lub p) (Lub.has-lub q) i
   Lub-is-prop {F = F} p q i .Lub.has-lub =
     is-prop→pathp
-      (λ i → is-lub-is-prop {lub = lub-unique (Lub.has-lub p) (Lub.has-lub q) i})
+      (λ i → hlevel {T = is-lub _ _ (lub-unique (Lub.has-lub p) (Lub.has-lub q) i)} 1)
       (Lub.has-lub p) (Lub.has-lub q) i
 
   instance
@@ -135,7 +124,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
     where
       cover-preserves-is-lub : ∀ {lub} → is-lub P F lub → is-lub P (F ⊙ f) lub
       cover-preserves-is-lub l .fam≤lub x = l .fam≤lub (f x)
-      cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-proj! do
+      cover-preserves-is-lub l .least   ub' le = l .least ub' λ i → ∥-∥-out! do
         (i' , p) ← surj i
         pure (≤-trans (≤-refl' (ap F (sym p))) (le i'))
 
@@ -144,7 +133,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
       cover-preserves-lub l .Lub.has-lub = cover-preserves-is-lub (l .Lub.has-lub)
 
       cover-reflects-is-lub : ∀ {lub} → is-lub P (F ⊙ f) lub → is-lub P F lub
-      cover-reflects-is-lub l .fam≤lub x = ∥-∥-proj! do
+      cover-reflects-is-lub l .fam≤lub x = ∥-∥-out! do
         (y , p) ← surj x
         pure (≤-trans (≤-refl' (ap F (sym p))) (l .fam≤lub y))
       cover-reflects-is-lub l .least ub' le = l .least ub' λ i → le (f i)
@@ -213,7 +202,7 @@ inhabited, then $f$ has a least upper bound.
     → ∥ I ∥
     → is-lub P F x
   const-inhabited-fam→is-lub {I = I} {F = F} {x = x} is-const =
-    ∥-∥-rec is-lub-is-prop mk-is-lub where
+    ∥-∥-rec! mk-is-lub where
       mk-is-lub : I → is-lub P F x
       mk-is-lub i .is-lub.fam≤lub j = ≤-refl' (is-const j)
       mk-is-lub i .is-lub.least y le =

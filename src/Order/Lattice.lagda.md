@@ -139,26 +139,7 @@ record
 
 <!--
 ```agda
-is-lattice-hom-is-prop
-  : ∀ {f : Monotone P Q} {P-lattice Q-lattice}
-  → is-prop (is-lattice-hom f P-lattice Q-lattice)
-is-lattice-hom-is-prop {Q = Q} =
-  -- The hlevel! tactic is *really slow* here, so define it by hand
-  Iso→is-hlevel 1 eqv $
-    ×-is-hlevel 1 Q.≤-thin $
-    ×-is-hlevel 1 Q.≤-thin $
-    ×-is-hlevel 1 (Π-is-hlevel²' 1 (λ _ _ → Q.≤-thin)) $
-    Π-is-hlevel²' 1 (λ _ _ → Q.≤-thin)
-  where
-    unquoteDecl eqv = declare-record-iso eqv (quote is-lattice-hom)
-    module Q = Poset Q
-
-instance
-  H-Level-is-lattice-hom
-    : ∀ {f : Monotone P Q} {P-lattice Q-lattice n}
-    → H-Level (is-lattice-hom f P-lattice Q-lattice) (suc n)
-  H-Level-is-lattice-hom = prop-instance is-lattice-hom-is-prop
-
+unquoteDecl H-Level-is-lattice-hom = declare-record-hlevel 1 H-Level-is-lattice-hom (quote is-lattice-hom)
 open is-lattice-hom
 ```
 -->
@@ -201,7 +182,7 @@ of the category of posets.
 Lattices-subcat : ∀ o ℓ → Subcat (Posets o ℓ) _ _
 Lattices-subcat o ℓ .Subcat.is-ob = is-lattice
 Lattices-subcat o ℓ .Subcat.is-hom = is-lattice-hom
-Lattices-subcat o ℓ .Subcat.is-hom-prop = hlevel!
+Lattices-subcat o ℓ .Subcat.is-hom-prop _ _ _ = hlevel 1
 Lattices-subcat o ℓ .Subcat.is-hom-id = id-lattice-hom
 Lattices-subcat o ℓ .Subcat.is-hom-∘ = ∘-lattice-hom
 

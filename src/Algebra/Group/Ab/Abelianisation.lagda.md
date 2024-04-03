@@ -221,7 +221,7 @@ make-free-abelian G .fold {H} f .hom =
       f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
       f # (a G.⋆ (c G.⋆ b))       ∎
 make-free-abelian G .fold {H} f .preserves .is-group-hom.pres-⋆ =
-  Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+  Coeq-elim-prop₂ (λ _ _ → hlevel 1) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
 make-free-abelian G .commute = trivial!
 make-free-abelian G .unique f p = ext (p #ₚ_)
 ```

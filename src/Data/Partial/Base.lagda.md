@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Maybe.Base
 open import Data.List.Base
+open import Data.Nat.Base
 open import Data.Dec
 ```
 -->
@@ -111,16 +112,11 @@ instance
 
 <!--
 ```agda
-abstract
-  ↯-is-hlevel : ∀ {A : Type ℓ} n → is-hlevel A (2 + n) → is-hlevel (↯ A) (2 + n)
-  ↯-is-hlevel n hl = Iso→is-hlevel (2 + n) eqv $
-    Σ-is-hlevel (2 + n) hlevel! λ _  →
-    Π-is-hlevel (2 + n) λ _ → hl
+abstract instance
+  H-Level-↯ : ∀ {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (↯ A) n
+  H-Level-↯ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ =
+    hlevel-instance $ Iso→is-hlevel! (2 + n) eqv
     where unquoteDecl eqv = declare-record-iso eqv (quote ↯)
-
-instance
-  decomp-part : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (↯ A)
-  decomp-part = decomp (quote ↯-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 ```
 -->
 
@@ -148,16 +144,10 @@ record _⊑_ {ℓ} {A : Type ℓ} (x y : ↯ A) : Type ℓ where
 ```agda
 open _⊑_ public
 
-abstract
-  ⊑-is-hlevel : ∀ {x y : ↯ A} n → is-hlevel A (2 + n) → is-hlevel (x ⊑ y) (suc n)
-  ⊑-is-hlevel {x = x} {y = y} n hl = Iso→is-hlevel (suc n) eqv $
-    Σ-is-hlevel (suc n) (Π-is-hlevel (suc n) λ _ → is-prop→is-hlevel-suc (y .def .is-tr)) λ _ →
-    Π-is-hlevel (suc n) λ _ → hl _ _
+abstract instance
+  H-Level-⊑ : ∀ {A : Type ℓ} {x y : ↯ A} {n} ⦃ _ : 1 ≤ n ⦄ ⦃ _ : H-Level A (suc n) ⦄ → H-Level (x ⊑ y) n
+  H-Level-⊑ {n = suc n} ⦃ s≤s p ⦄ = hlevel-instance $ Iso→is-hlevel! (suc n) eqv
     where unquoteDecl eqv = declare-record-iso eqv (quote _⊑_)
-
-instance
-  decomp-⊑ : ∀ {ℓ} {A : Type ℓ} {x y : ↯ A} → hlevel-decomposition (x ⊑ y)
-  decomp-⊑ = decomp (quote ⊑-is-hlevel) (`level-minus 1 ∷ `search ∷ [])
 ```
 -->
 
@@ -200,7 +190,7 @@ always a .elt _ = a
 
 part-bind : ↯ A → (A → ↯ B) → ↯ B
 part-bind x f .def .∣_∣   = Σ[ px ∈ x ] (f ʻ x .elt px)
-part-bind x f .def .is-tr = hlevel!
+part-bind x f .def .is-tr = hlevel 1
 part-bind x f .elt (px , pfx) = f (x .elt px) .elt pfx
 ```
 
@@ -211,7 +201,7 @@ result whenever they are both defined.
 ```agda
 part-ap : ↯ (A → B) → ↯ A → ↯ B
 part-ap f x .def .∣_∣      = ⌞ f ⌟ × ⌞ x ⌟
-part-ap f x .def .is-tr    = hlevel!
+part-ap f x .def .is-tr    = hlevel 1
 part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
 ```
 

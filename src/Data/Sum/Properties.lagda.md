@@ -9,6 +9,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Nat.Base
 open import Data.Sum.Base
 open import Data.Dec
 ```
@@ -152,16 +153,16 @@ also at the same h-level as `A` and `B`. Thus, we have:
   Equiv→is-hlevel (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 
 instance
-  hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)
-  hlevel-decomp-⊎ = decomp (quote ⊎-is-hlevel)
-    (`level-minus 2 ∷ `search ∷ `search ∷ [])
+  H-Level-⊎ : ∀ {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ ⦃ _ : H-Level B n ⦄ → H-Level (A ⊎ B) n
+  H-Level-⊎ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+    ⊎-is-hlevel _ (hlevel (2 + n)) (hlevel (2 + n))
 ```
 
 <!--
 ```agda
 module _ {ℓ} {A : n-Type ℓ 2} where
   _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
-  _ = hlevel!
+  _ = hlevel 5
 ```
 -->
 

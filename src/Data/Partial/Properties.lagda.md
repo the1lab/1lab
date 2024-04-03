@@ -31,9 +31,6 @@ $A$ is a [[set]], the information ordering is an actual [[poset]]:
   ⊑-refl .implies x-def = x-def
   ⊑-refl .refines _     = refl
 
-  ⊑-thin : {x y : ↯ A} → is-set A → is-prop (x ⊑ y)
-  ⊑-thin A-set = ⊑-is-hlevel 0 A-set
-
   ⊑-trans : {x y z : ↯ A} → x ⊑ y → y ⊑ z → x ⊑ z
   ⊑-trans p q .implies = q .implies ∘ p .implies
   ⊑-trans {x = x} {y} {z} p q .refines x-def =

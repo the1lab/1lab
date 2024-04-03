@@ -44,7 +44,7 @@ We can do that same thing using the inductive identity type.
 Discᵢ : ∀ {ℓ} → Set ℓ → Poset ℓ ℓ
 Discᵢ A .Ob = ⌞ A ⌟
 Discᵢ A ._≤_ = _≡ᵢ_
-Discᵢ A .≤-thin = hlevel!
+Discᵢ A .≤-thin = hlevel 1
 Discᵢ A .≤-refl = reflᵢ
 Discᵢ A .≤-trans = _∙ᵢ_
 Discᵢ A .≤-antisym reflᵢ _ = refl

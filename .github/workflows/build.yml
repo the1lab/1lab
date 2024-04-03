@@ -48,8 +48,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: _build
-          key: shake-4-${{ env.shake_version }}-${{ github.run_id }}
-          restore-keys: shake-4-${{ env.shake_version }}-
+          key: shake-5-${{ env.shake_version }}-${{ github.run_id }}
+          restore-keys: shake-5-${{ env.shake_version }}-
 
       - name: Build 🛠️
         run: |

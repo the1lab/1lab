@@ -43,9 +43,9 @@ module _ {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ') where
   _⋆_ .Hom = ⋆Hom
   _⋆_ .Hom-set x y = iss x y where
     iss : ∀ x y → is-set (⋆Hom x y)
-    iss (inl x) (inl y) = hlevel!
+    iss (inl x) (inl y) = hlevel 2
     iss (inl x) (inr y) _ _ p q i j = lift tt
-    iss (inr x) (inr y) = hlevel!
+    iss (inr x) (inr y) = hlevel 2
   _⋆_ .id {inl x} = lift C.id
   _⋆_ .id {inr x} = lift D.id
   _⋆_ ._∘_ = ⋆compose

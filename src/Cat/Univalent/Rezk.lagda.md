@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
@@ -156,6 +155,7 @@ functor is fully faithful, that's equivalent to what we want.
 
 ```agda
   private module Rezk↪PSh = Ffr Rezk↪PSh id-equiv
+
   abstract
     Rezk-completion-is-category : is-category Rezk-completion
     Rezk-completion-is-category =

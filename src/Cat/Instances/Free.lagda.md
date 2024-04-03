@@ -281,6 +281,6 @@ make this induction acceptable.
   Path-category-is-gaunt : is-gaunt Path-category
   Path-category-is-gaunt = record
     { has-category = Path-category-is-category
-    ; has-strict   = hlevel!
+    ; has-strict   = hlevel 2
     }
 ```

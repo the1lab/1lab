@@ -52,7 +52,7 @@ that this is, indeed, a category:
   Mat : Precategory (lsuc o) o
   Mat .Ob          = Set o
   Mat .Hom A B     = ∣ A ∣ → ∣ B ∣ → ⌞ L ⌟
-  Mat .Hom-set x y = hlevel!
+  Mat .Hom-set x y = hlevel 2
 
   Mat .id x y              = ⋃ λ (_ : x ≡ y) → top
   Mat ._∘_ {y = y} M N i j = ⋃ λ k → N i k ∩ M k j
@@ -90,7 +90,7 @@ a bit more algebra is the verification of the modular law:
   Matrices .A.cat = Mat
   Matrices .A._≤_ M N = ∀ i j → M i j ≤ N i j
 
-  Matrices .A.≤-thin          = hlevel!
+  Matrices .A.≤-thin          = hlevel 1
   Matrices .A.≤-refl i j      = ≤-refl
   Matrices .A.≤-trans p q i j = ≤-trans (p i j) (q i j)
   Matrices .A.≤-antisym p q   = ext λ i j → ≤-antisym (p i j) (q i j)

@@ -105,13 +105,3 @@ _∪_ : ℙ X → ℙ X → ℙ X
 infixr 32 _∩_
 infixr 31 _∪_
 ```
-
-## Images
-
-```agda
-image-of
-  : ∀ {a b} {A : Type a} {B : Type b} {@(tactic hlevel-tactic-worker) b-set : is-set B}
-  → (f : A → B) → ℙ A → ℙ B
-image-of {A = A} {b-set = b-set} f s b .∣_∣ = □ (Σ[ a ∈ A ] ((a ∈ s) × (f a ≡ b)))
-image-of _ _ _ .is-tr = squash
-```

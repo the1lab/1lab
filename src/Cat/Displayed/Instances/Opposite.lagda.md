@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 --lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Fibre

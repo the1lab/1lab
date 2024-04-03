@@ -204,6 +204,16 @@ instance
   s≤s' : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
   s≤s' ⦃ x ⦄ = s≤s x
 
+  x≤x : ∀ {x} → x ≤ x
+  x≤x {zero}  = 0≤x
+  x≤x {suc x} = s≤s x≤x
+
+  x≤sucy : ∀ {x y} ⦃ p : x ≤ y ⦄ → x ≤ suc y
+  x≤sucy {.0} {y} ⦃ 0≤x ⦄ = 0≤x
+  x≤sucy {.(suc _)} {.(suc _)} ⦃ s≤s p ⦄ = s≤s (x≤sucy ⦃ p ⦄)
+
+  {-# INCOHERENT x≤x x≤sucy #-}
+
 Positive : Nat → Type
 Positive zero    = ⊥
 Positive (suc n) = ⊤
