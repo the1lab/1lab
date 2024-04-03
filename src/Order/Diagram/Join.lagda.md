@@ -55,6 +55,8 @@ open is-join
 
 <!--
 ```agda
+unquoteDecl H-Level-is-join = declare-record-hlevel 1 H-Level-is-join (quote is-join)
+
 module _ {o ℓ} {P : Poset o ℓ} where
   open Poset P
   open is-lub
@@ -78,14 +80,6 @@ module _ {o ℓ} {P : Poset o ℓ} where
 
 <!--
 ```
-  private unquoteDecl eqv' = declare-record-iso eqv' (quote is-join)
-
-  instance
-    H-Level-is-join
-      : ∀ {a b lub : Ob} {n}
-      → H-Level (is-join P a b lub) (suc n)
-    H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' hlevel!
-
   join-unique
     : ∀ {a b x y}
     → is-join P a b x → is-join P a b y

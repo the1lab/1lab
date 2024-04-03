@@ -95,7 +95,6 @@ arbitrary $n$, $a \within{n} f(a) \within{n} b$, meaning $a = b$.
 
   Limit-is-prop : (f : Nat → A) → is-prop (Limit f)
   Limit-is-prop f (a , α) (b , β) = Σ-prop-path! (limit-is-unique f α β)
-    where open OFE-H-Level P
 
   limit-from-tail
     : ∀ (f : Nat → A) x → is-chain f → is-limit (λ n → f (suc n)) x → is-limit f x
@@ -195,7 +194,7 @@ exactly what we want.
 
 ```agda
   banach : ∥ A ∥ → (f : P →ᶜᵒⁿ P) → Σ A λ x → f .map x ≡ x
-  banach inhab f = ∥-∥-proj fp-unique fp' where
+  banach inhab f = ∥-∥-out fp-unique fp' where
     fp-unique : is-prop (Σ A λ x → f .map x ≡ x)
     fp-unique (a , p) (b , q) =
       Σ-prop-path (λ x → from-ofe-on P .fst .is-tr _ _)

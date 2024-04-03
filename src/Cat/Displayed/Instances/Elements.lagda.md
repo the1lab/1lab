@@ -43,7 +43,7 @@ elements, as we obtain the more traditional definition by taking the
 ∫ : Displayed B s s
 ∫ .Displayed.Ob[_] X = P ʻ X
 ∫ .Displayed.Hom[_] f P[X] P[Y] = P.₁ f P[Y] ≡ P[X]
-∫ .Displayed.Hom[_]-set _ _ _ = hlevel!
+∫ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ∫ .Displayed.id' = happly P.F-id _
 ∫ .Displayed._∘'_ {x = x} {y} {z} {f} {g} p q = pf where abstract
   pf : P.₁ (f ∘ g) z ≡ x

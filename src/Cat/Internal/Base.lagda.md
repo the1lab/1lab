@@ -180,7 +180,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Internal-hom)
 Internal-hom-set
   : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
   → is-set (Internal-hom src tgt x y)
-Internal-hom-set = Iso→is-hlevel 2 eqv hlevel!
+Internal-hom-set = Iso→is-hlevel! 2 eqv
 
 instance
   H-Level-Internal-hom
@@ -532,6 +532,8 @@ open _=>i_
 
 <!--
 ```agda
+unquoteDecl H-Level-=>i = declare-record-hlevel 2 H-Level-=>i (quote _=>i_)
+
 module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
   private
     module ℂ = Internal-cat ℂ
@@ -552,21 +554,5 @@ module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
       (α .ηi-nat x σ)
       (β .ηi-nat x σ)
       (λ i → p (x ∘ σ) i) i
-
-  private unquoteDecl nat-eqv = declare-record-iso nat-eqv (quote _=>i_)
-
-  Internal-nat-set : is-set (F =>i G)
-  Internal-nat-set = Iso→is-hlevel 2 nat-eqv $
-    Σ-is-hlevel 2 hlevel! $ λ _ →
-    Σ-is-hlevel 2 hlevel! $ λ _ →
-    Π-is-hlevel²' 2 λ _ _ →
-    Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
-    PathP-is-hlevel 2 Internal-hom-set
-
-instance
-  H-Level-Internal-nat
-    : ∀ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} {n}
-    → H-Level (F =>i G) (2 + n)
-  H-Level-Internal-nat = basic-instance 2 Internal-nat-set
 ```
 -->

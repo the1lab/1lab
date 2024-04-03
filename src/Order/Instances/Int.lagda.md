@@ -30,7 +30,7 @@ set of integers. Most of the proofs are in the module
 Int-poset : Poset lzero lzero
 Int-poset .P.Ob        = Int
 Int-poset .P._≤_       = _≤_
-Int-poset .P.≤-thin    = hlevel!
+Int-poset .P.≤-thin    = hlevel 1
 Int-poset .P.≤-refl    = ≤-refl
 Int-poset .P.≤-trans   = ≤-trans
 Int-poset .P.≤-antisym = ≤-antisym

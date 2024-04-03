@@ -53,7 +53,7 @@ is-decidable {A = A} p = (a : A) → Dec (a ∈ p)
 is-decidable→is-complemented : (p : ℙ A) → is-decidable p → is-complemented p
 is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
   inv : ℙ A
-  inv x = el (¬ (x ∈ p)) hlevel!
+  inv x = el (¬ (x ∈ p)) (hlevel 1)
 
   intersection : (p ∩ inv) ⊆ minimal
   intersection x (x∈p , x∉p) = x∉p x∈p
@@ -102,7 +102,7 @@ subobject because $2$ has decidable equality.
 
 ```agda
   to : (A → Bool) → (Σ[ p ∈ ℙ A ] (is-decidable p))
-  to map .fst x = el (map x ≡ true) hlevel!
+  to map .fst x = el (map x ≡ true) (hlevel 1)
   to map .snd p = Bool-elim (λ p → Dec (p ≡ true))
     (yes refl) (no (λ p → true≠false (sym p))) (map p)
 ```

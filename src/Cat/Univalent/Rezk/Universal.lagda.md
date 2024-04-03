@@ -85,7 +85,7 @@ eso→pre-faithful
   → is-eso H → (γ δ : F => G)
   → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
 eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p = ext λ b →
-  ∥-∥-proj (C.Hom-set _ _ _ _) do
+  ∥-∥-out (C.Hom-set _ _ _ _) do
   (b' , m) ← h-eso b
   ∥_∥.inc $
     γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
@@ -190,7 +190,7 @@ this file in Agda and poke around the proof.
 ```agda
       lemma : (a : A.Ob) (f : H.₀ a B.≅ b)
             → γ.η a ≡ G.₁ (f .from) C.∘ g C.∘ F.₁ (f .to)
-      lemma a f = ∥-∥-proj (C.Hom-set _ _ _ _) do
+      lemma a f = ∥-∥-out (C.Hom-set _ _ _ _) do
         (k , p)   ← H-full (h.from B.∘ B.to f)
         (k⁻¹ , q) ← H-full (B.from f B.∘ h.to)
         ∥_∥.inc $
@@ -213,7 +213,7 @@ over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
-    T-prop b (g , coh) (g' , coh') = Σ-prop-path (λ x → hlevel 1) $ ∥-∥-proj (hlevel 1) do
+    T-prop b (g , coh) (g' , coh') = Σ-prop-path! $ ∥-∥-out! do
       (a₀ , h) ← H-eso b
       pure $ C.iso→epic (F-map-iso F h) _ _
         (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
@@ -233,7 +233,7 @@ $(a,h)$ pair.
       ∥_∥.inc (Mk.g b a₀ h , Mk.lemma b a₀ h)
 
     mkT : ∀ b → T b
-    mkT b = ∥-∥-proj (T-prop b) (mkT' b (H-eso b))
+    mkT b = ∥-∥-out (T-prop b) (mkT' b (H-eso b))
 ```
 
 Another calculation shows that, since $H$ is full, given any pair of
@@ -257,7 +257,7 @@ the transformation we're defining, too.
         module h = B._≅_ h
 
       naturality : _
-      naturality = ∥-∥-proj (C.Hom-set _ _ _ _) do
+      naturality = ∥-∥-out (C.Hom-set _ _ _ _) do
         (k , p) ← H-full (h'.from B.∘ f B.∘ h.to)
         pure $ C.pullr (C.pullr (F.weave (sym
                   (B.pushl p ∙ ap₂ B._∘_ refl (B.cancelr h.invl)))))
@@ -278,8 +278,8 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
     δ : F => G
     δ .η b = mkT b .fst
     δ .is-natural b b' f = ∥-∥-elim₂
-      {P = λ α β → ∥-∥-proj (T-prop b') (mkT' b' α) .fst C.∘ F.₁ f
-                 ≡ G.₁ f C.∘ ∥-∥-proj (T-prop b) (mkT' b β) .fst}
+      {P = λ α β → ∥-∥-out (T-prop b') (mkT' b' α) .fst C.∘ F.₁ f
+                 ≡ G.₁ f C.∘ ∥-∥-out (T-prop b) (mkT' b β) .fst}
       (λ _ _ → C.Hom-set _ _ _ _)
       (λ (a' , h') (a , h) → naturality f a a' h h') (H-eso b') (H-eso b)
 
@@ -287,7 +287,7 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
   full {x = x} {y = y} γ = pure (δ _ _ γ , ext p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
-      (λ e → ∥-∥-proj (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst
+      (λ e → ∥-∥-out (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst
            ≡ γ .η b)
       (squash (inc (b , B.id-iso)) (H-eso (H.₀ b)))
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
@@ -357,8 +357,7 @@ candidate over it.
     Obs-is-prop : ∀ {b} (f : Essential-fibre H b) (c : Obs b) → obj' f ≡ c
     Obs-is-prop (a₀ , h₀) (c' , k' , β) =
       Σ-pathp (Univalent.iso→path c-cat c≅c') $
-      Σ-prop-pathp
-        (λ i x → Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) $
+      Σ-prop-pathp! $
         funextP λ a → funextP λ h → C.≅-pathp _ _ $
           Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c'}
             ( C.pullr (F.eliml (H.from-id (h₀ .invr)))
@@ -374,7 +373,7 @@ candidate over it.
 <!--
 ```agda
     summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
-    summon f = ∥-∥-proj is-contr-is-prop do
+    summon f = ∥-∥-out is-contr-is-prop do
       f ← f
       pure $ contr (obj' f) (Obs-is-prop f)
 
@@ -408,15 +407,6 @@ any essential fibre $(a,h)$ over $b$, $(a',h')$ over $b'$, and map $l : a
     Homs : ∀ {b b'} (f : B.Hom b b') → Type _
     Homs {b = b} {b'} f = Σ (C.Hom (G₀ b) (G₀ b')) (compat f)
 ```
-
-<!--
-```agda
-    compat-prop : ∀ {b b'} (f : B.Hom b b') {g : C.Hom (G₀ b) (G₀ b')}
-                → is-prop (compat f g)
-    compat-prop f = Π-is-hlevel³ 1 λ _ _ _ →
-                    Π-is-hlevel³ 1 λ _ _ _ → C.Hom-set _ _ _ _
-```
--->
 
 <details>
 <summary>It will again turn out that any initial choice of fibre over
@@ -481,11 +471,11 @@ This proof _really_ isn't commented. I'm sorry.
     Homs-contr' {b = b} {b'} f = do
       (a₀ , h)   ← H-eso b
       (a₀' , h') ← H-eso b'
-      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path
-        (λ _ → compat-prop f) (sym (Homs-prop' f _ _ _ _ h')))
+      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path!
+        (sym (Homs-prop' f _ _ _ _ h')))
 
     Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
-    Homs-contr f = ∥-∥-proj! (Homs-contr' f)
+    Homs-contr f = ∥-∥-out! (Homs-contr' f)
 
     G₁ : ∀ {b b'} → B.Hom b b' → C.Hom (G₀ b) (G₀ b')
     G₁ f = Homs-contr f .centre .fst
@@ -549,7 +539,7 @@ a set --- a proposition --- these choices don't matter, so we can use
 essential surjectivity of $H$.
 
 ```agda
-    G .F-∘ {x} {y} {z} f g = ∥-∥-proj! do
+    G .F-∘ {x} {y} {z} f g = ∥-∥-out! do
       (ax , hx) ← H-eso x
       (ay , hy) ← H-eso y
       (az , hz) ← H-eso z

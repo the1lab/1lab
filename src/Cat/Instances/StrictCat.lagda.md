@@ -41,13 +41,9 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Functor)
 
 Functor-is-set : ∀ {o h} {C D : Precategory o h} → is-set (Ob D)
                → is-set (Functor C D)
-Functor-is-set {o = o} {h} {C} {D} dobset =
-  Iso→is-hlevel 2 eqv (hlevel 2)
-  where
-    open Precategory.HLevel-instance D
-    instance
-      Dob : H-Level (Ob D) 2
-      Dob = basic-instance 2 dobset
+Functor-is-set {o = o} {h} {C} {D} dobset = Iso→is-hlevel! 2 eqv where instance
+  Dob : H-Level (Ob D) 2
+  Dob = basic-instance 2 dobset
 ```
 -->
 

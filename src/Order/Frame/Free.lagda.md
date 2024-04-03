@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.decl:5 -vtactic.hlevel:30 #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
 open import Cat.Prelude

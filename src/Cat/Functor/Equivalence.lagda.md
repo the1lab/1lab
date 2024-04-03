@@ -575,13 +575,7 @@ Id-is-equivalence {C = C} .unit-iso x =
 Id-is-equivalence {C = C} .counit-iso x =
   Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
 
-private unquoteDecl eqv = declare-record-iso eqv (quote is-precat-iso)
-instance
-  H-Level-is-precat-iso
-    : ∀ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'}
-        {F : Functor C D} {n}
-    → H-Level (is-precat-iso F) (suc n)
-  H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
+unquoteDecl H-Level-is-precat-iso = declare-record-hlevel 1 H-Level-is-precat-iso (quote is-precat-iso)
 
 module
   _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
@@ -699,7 +693,7 @@ of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
     → (∀ c c' → P (Lift ℓd (C.Hom c c')))
     → ∀ d d' → P (Lift ℓc (D.Hom d d'))
   ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
-    ∥-∥-proj (prop (Lift ℓc (D.Hom d d'))) $ do
+    ∥-∥-out (prop (Lift ℓc (D.Hom d d'))) $ do
       (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
       pure (transport (ap P (ua (Lift-ap eqv))) (P-hom c c'))
 ```

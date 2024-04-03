@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
 open import Algebra.Group.Ab hiding (ℤ)
@@ -105,7 +104,6 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
     public
 
   module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-    hiding (module HLevel-instance)
   module a = Abelian-group-on record { has-is-ab = +-group }
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where

@@ -175,7 +175,7 @@ coproduct.
 ```agda
     coprod .injections-are-monic ix g h path = funext go where abstract
       path' : Path (∀ c → Σ[ i ∈ I ] (F ʻ i)) (λ c → _ , g c) (λ c → _ , h c)
-      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
+      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel 2)
         (λ x → x) (path i c)
 
       q : ∀ {c} → ap fst (happly path' c) ≡ refl

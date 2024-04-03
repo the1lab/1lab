@@ -7,7 +7,6 @@ description: |
 ---
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Initial
 open import Cat.Functor.Compose

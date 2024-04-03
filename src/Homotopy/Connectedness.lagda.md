@@ -91,7 +91,7 @@ module _ {ℓ} {X@(_ , pt) : Type∙ ℓ} where
   is-connected∙→is-connected c .centre = inc pt
   is-connected∙→is-connected c .paths =
     ∥-∥₀-elim (λ _ → is-hlevel-suc 2 squash (inc pt) _) λ x →
-      ∥-∥-rec! {pprop = squash _ _} (ap inc ∘ sym) (c x)
+      ∥-∥-rec! (ap inc ∘ sym) (c x)
 
   is-connected→is-connected∙ : is-connected ⌞ X ⌟ → is-connected∙ X
   is-connected→is-connected∙ c x =
@@ -167,7 +167,7 @@ the general $n$-truncation uniformly.
 
 ```agda
 is-n-connected-Tr : ∀ {ℓ} {A : Type ℓ} n → is-n-connected A (suc n) → is-contr (n-Tr A (suc n))
-is-n-connected-Tr zero a-conn = ∥-∥-proj! do
+is-n-connected-Tr zero a-conn = ∥-∥-out! do
   pt ← a-conn
   pure $ contr (inc pt) (λ x → n-Tr-is-hlevel 0 _ _)
 is-n-connected-Tr (suc zero) a-conn =
@@ -184,7 +184,7 @@ is-n-connected-Tr (suc (suc n)) a-conn = a-conn
 is-n-connected-Tr-is-equiv : ∀ {ℓ} {A : Type ℓ} n → is-equiv (is-n-connected-Tr {A = A} n)
 is-n-connected-Tr-is-equiv {A = A} n = prop-ext (is-n-connected-is-prop _) (hlevel 1) _ (from n) .snd where
   from : ∀ n → is-contr (n-Tr A (suc n)) → is-n-connected A (suc n)
-  from zero c = n-Tr-elim (λ _ → ∥ A ∥) (λ _ → squash) inc (c .centre)
+  from zero c = n-Tr-rec! inc (c .centre)
   from (suc zero) = retract→is-hlevel 0 (n-Tr-rec! inc)
     (∥-∥₀-rec (n-Tr-is-hlevel 1) inc)
     (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ _ → refl)
@@ -243,7 +243,7 @@ _ = is-hlevel-suc
 Path-is-connected : ∀ n → is-n-connected A (suc n) → is-n-connected (Path A x y) n
 Path-is-connected 0 = _
 Path-is-connected {x = x} (suc n) conn = n-connected.from n (contr (ps _ _) $
-  n-Tr-elim _ (λ _ → hlevel!)
+  n-Tr-elim! _
     (J (λ y p → ps x y ≡ inc p) (Equiv.injective (Equiv.inverse n-Tr-path-equiv)
       (is-contr→is-set (is-n-connected-Tr _ conn) _ _ _ _))))
   where
@@ -255,7 +255,7 @@ is-connected-suc
   → is-n-connected A (suc n) → is-n-connected A n
 is-connected-suc {A = A} zero _ = _
 is-connected-suc {A = A} (suc n) w = n-connected.from n $ n-Tr-elim! _
-    (λ x → contr (inc x) (n-Tr-elim _ (λ _ → hlevel!) (rem₁ n w x)))
+    (λ x → contr (inc x) (n-Tr-elim! _ (rem₁ n w x)))
     (is-n-connected-Tr (suc n) w .centre)
   where
     rem₁ : ∀ n → is-n-connected A (2 + n) → ∀ x y → Path (n-Tr A (suc n)) (inc x) (inc y)
@@ -311,7 +311,7 @@ is-contr-n-Tr→∥-∥ (suc n) h .snd a b = is-contr-n-Tr→∥-∥ n
 
 ∥-∥→is-contr-n-Tr
   : ∀ n → is-n-connected-∥-∥ A (suc n) → is-contr (n-Tr A (suc n))
-∥-∥→is-contr-n-Tr zero (a , _) = is-prop∙→is-contr hlevel! (∥-∥-rec! inc a)
+∥-∥→is-contr-n-Tr zero (a , _) = is-prop∙→is-contr (hlevel 1) (∥-∥-rec! inc a)
 ∥-∥→is-contr-n-Tr (suc n) (a , h) = ∥-∥-rec! (λ a → is-prop∙→is-contr
   (n-Tr-elim! _ λ a → n-Tr-elim! _ λ b →
     Equiv.from n-Tr-path-equiv (∥-∥→is-contr-n-Tr n (h a b) .centre))
@@ -390,7 +390,7 @@ n-type-const→is-n-connected
 n-type-const→is-n-connected {A = A} n eqv =
   n-connected.from n $ contr (rem.from inc) $ n-Tr-elim _
     (λ h → Path-is-hlevel (suc n) (n-Tr-is-hlevel n)) (rem.ε inc $ₚ_)
-  where module rem = Equiv (_ , eqv {n-Tr A (suc n)} hlevel!)
+  where module rem = Equiv (_ , eqv {n-Tr A (suc n)} (hlevel _))
 ```
 
 We can now generalise this to work with an $n$-connected map $f : A \to

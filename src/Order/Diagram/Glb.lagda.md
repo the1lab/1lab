@@ -60,22 +60,11 @@ us, a meet is a glb of two elements.
 
 <!--
 ```agda
+unquoteDecl H-Level-is-glb = declare-record-hlevel 1 H-Level-is-glb (quote is-glb)
+
 module _ {o ℓ} {P : Poset o ℓ} where
   open Poset P
   open is-glb
-
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
-
-  is-glb-is-prop
-    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
-    → is-prop (is-glb P F glb)
-  is-glb-is-prop = Iso→is-hlevel 1 eqv hlevel!
-
-  instance
-    H-Level-is-glb
-      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob} {n}
-      → H-Level (is-glb P F glb) (suc n)
-    H-Level-is-glb = prop-instance is-glb-is-prop
 
   glb-unique
     : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
@@ -137,7 +126,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
     where
       cover-preserves-is-glb : ∀ {glb} → is-glb P F glb → is-glb P (F ⊙ f) glb
       cover-preserves-is-glb g .glb≤fam i = g .glb≤fam (f i)
-      cover-preserves-is-glb g .greatest lb' le = g .greatest lb' λ i → ∥-∥-proj! do
+      cover-preserves-is-glb g .greatest lb' le = g .greatest lb' λ i → ∥-∥-out! do
         (i' , p) ← surj i
         pure (≤-trans (le i') (≤-refl' (ap F p)))
 
@@ -146,7 +135,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
       cover-preserves-glb g .Glb.has-glb = cover-preserves-is-glb (g .Glb.has-glb)
 
       cover-reflects-is-glb : ∀ {glb} → is-glb P (F ⊙ f) glb → is-glb P F glb
-      cover-reflects-is-glb g .glb≤fam i = ∥-∥-proj! do
+      cover-reflects-is-glb g .glb≤fam i = ∥-∥-out! do
         (y , p) ← surj i
         pure (≤-trans (g .glb≤fam y) (≤-refl' (ap F p)))
       cover-reflects-is-glb g .greatest lb' le = g .greatest lb' λ i → le (f i)

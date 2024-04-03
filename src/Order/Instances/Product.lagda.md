@@ -44,7 +44,7 @@ P ×ᵖ Q = po module ×ᵖ where
   po : Poset _ _
   po .Poset.Ob = P.Ob × Q.Ob
   po .Poset._≤_ (x , x') (y , y') = x P.≤ y × x' Q.≤ y'
-  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-thin = hlevel 1
   po .Poset.≤-refl = P.≤-refl , Q.≤-refl
   po .Poset.≤-trans   (f≤g , f≤g') (g≤h , g≤h') =
     P.≤-trans f≤g g≤h , Q.≤-trans f≤g' g≤h'

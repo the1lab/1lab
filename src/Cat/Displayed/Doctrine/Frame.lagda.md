@@ -52,10 +52,6 @@ Indexed-frame {o = o} {ℓ} {κ} F = idx where
 <!--
 ```agda
   module F = Frm (F .snd)
-
-  private opaque
-    isp : ∀ {x : Type κ} {f g : x → ⌞ F ⌟} → is-prop (∀ x → f x F.≤ g x)
-    isp = Π-is-hlevel 1 λ _ → F.≤-thin
 ```
 -->
 
@@ -73,7 +69,7 @@ the equivalence $(x \le_f y) \equiv (x \le_{\id} f^*y)$ of maps into a
   disp : Displayed (Sets κ) (o ⊔ κ) (ℓ ⊔ κ)
   disp .Ob[_] S          = ⌞ S ⌟ → ⌞ F ⌟
   disp .Hom[_]     f g h = ∀ x → g x F.≤ h (f x)
-  disp .Hom[_]-set f g h = is-prop→is-set isp
+  disp .Hom[_]-set f g h = hlevel 2
 
   disp .id'      x = F.≤-refl
   disp ._∘'_ p q x = F.≤-trans (q x) (p _)
@@ -81,9 +77,9 @@ the equivalence $(x \le_f y) \equiv (x \le_{\id} f^*y)$ of maps into a
 
 <!--
 ```agda
-  disp .idr' f'         = isp _ _
-  disp .idl' f'         = isp _ _
-  disp .assoc' f' g' h' = isp _ _
+  disp .idr' f'         = prop!
+  disp .idl' f'         = prop!
+  disp .assoc' f' g' h' = prop!
 ```
 -->
 
@@ -102,16 +98,16 @@ function which is constantly the top element.
 
 <!--
 ```agda
-  prod f g .has-is-product .π₁∘factor    = isp _ _
-  prod f g .has-is-product .π₂∘factor    = isp _ _
-  prod f g .has-is-product .unique _ _ _ = isp _ _
+  prod f g .has-is-product .π₁∘factor    = prop!
+  prod f g .has-is-product .π₂∘factor    = prop!
+  prod f g .has-is-product .unique _ _ _ = prop!
 ```
 -->
 
 ```agda
   term : ∀ S → Terminal (Fibre disp S)
   term S .top  _ = F.top
-  term S .has⊤ f = is-prop∙→is-contr isp (λ i → F.!)
+  term S .has⊤ f = is-prop∙→is-contr (hlevel 1) (λ i → F.!)
 ```
 
 ## As a fibration
@@ -127,8 +123,8 @@ $gf : X \to F$.
   cart .has-lift f g .lifting i = F.≤-refl
   cart .has-lift f g .cartesian = record
     { universal = λ m p x → p x
-    ; commutes  = λ m h'  → isp _ _
-    ; unique    = λ m p   → isp _ _
+    ; commutes  = λ m h'  → prop!
+    ; unique    = λ m p   → prop!
     }
 ```
 
@@ -188,8 +184,8 @@ a calculation:
         g x          F.≤⟨ h' x ⟩
         u' (m (f x)) F.=⟨ ap u' (ap m p) ⟩
         u' (m i)     F.≤∎ }) b
-    lifted .cocartesian .commutes m h = isp _ _
-    lifted .cocartesian .unique   m x = isp _ _
+    lifted .cocartesian .commutes m h = prop!
+    lifted .cocartesian .unique   m x = prop!
 ```
 
 ## Putting it together
@@ -201,9 +197,9 @@ We're ready to put everything together. By construction, we have a
   idx : Regular-hyperdoctrine (Sets κ) _ _
   idx .ℙ                = disp
   idx .has-is-set  x    = Π-is-hlevel 2 λ _ → F.Ob-is-set
-  idx .has-is-thin f g  = isp
+  idx .has-is-thin f g  = hlevel 1
   idx .has-univalence S = set-identity-system
-    (λ _ _ _ _ → Cat.≅-path (Fibre disp _) (isp _ _))
+    (λ _ _ _ _ → Cat.≅-path (Fibre disp _) prop!)
     λ im → funextP λ i → F.≤-antisym (Cat.to im i) (Cat.from im i)
 ```
 

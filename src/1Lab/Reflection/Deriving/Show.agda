@@ -167,11 +167,11 @@ private
 derive-show : Name → Name → TC ⊤
 derive-show nm dat = do
   is-defined nm >>= λ where
-    false → declare (argI nm) =<< instance-type (quote Show) dat
+    false → declare (argI nm) =<< instance-type (it Show ##_) dat
     true  → pure tt
 
   cons ← get-type-constructors dat
-  (tel , as) ← instance-telescope (quote Show) dat
+  (tel , as) ← instance-telescope (it Show ##_) dat
   let ty = unpi-view tel $ itₙ Fun (it Precedence) (itₙ Fun (def dat as) (it ShowS))
   work ← helper-function nm "go" ty []
 

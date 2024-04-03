@@ -78,7 +78,7 @@ on the index set $I$.
   Disjoint-over : Displayed _ _ (Discᵢ I)
   Disjoint-over .D.Ob[_]        = ⌞F⌟
   Disjoint-over .D.Rel[_] p x y = x ≤[ p ]' y
-  Disjoint-over .D.≤-thin'    = hlevel!
+  Disjoint-over .D.≤-thin' _  = hlevel 1
   Disjoint-over .D.≤-refl'    = F.≤-refl
   Disjoint-over .D.≤-antisym' = F.≤-antisym
   Disjoint-over .D.≤-trans' {f = reflᵢ} {g = reflᵢ} =
@@ -128,7 +128,7 @@ identifies each factor $F_i$ with its image in $\Sigma F$.
   injᵖ-is-order-embedding i .fst = injᵖ i .pres-≤
   injᵖ-is-order-embedding i .snd = biimp-is-equiv!
     (injᵖ i .pres-≤)
-    λ { (p , q) → ≤-trans (≤-refl' (substᵢ-filler-set _ hlevel! p _)) q }
+    λ { (p , q) → ≤-trans (≤-refl' (substᵢ-filler-set _ (hlevel 2) p _)) q }
 ```
 
 To complete the construction of the coproduct, we have the following

@@ -115,5 +115,5 @@ Strictness is a property of, not structure on, an initial object.
 
 ```agda
 is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-is-strict-initial-is-prop i = hlevel!
+is-strict-initial-is-prop i = hlevel 1
 ```

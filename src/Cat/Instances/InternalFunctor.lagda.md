@@ -93,7 +93,7 @@ The category equations all follow from the fact that equality of
 internal natural transformations is given by componentwise equality.
 
 ```agda
-  Internal-functors .Precategory.Hom-set _ _ = Internal-nat-set
+  Internal-functors .Precategory.Hom-set _ _ = hlevel 2
   Internal-functors .Precategory.idr α =
     Internal-nat-path λ x → 𝔻.idri _
   Internal-functors .Precategory.idl α =

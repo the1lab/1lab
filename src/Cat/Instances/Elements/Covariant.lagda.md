@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Prelude
@@ -57,12 +56,6 @@ Thus we proceed to dualise the whole construction.
 
 <!--
 ```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
-  Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
-  Element-hom-is-set x y = Iso→is-hlevel 2 eqv T-is-set where
-    T-is-set : is-set _
-    T-is-set = hlevel!
-
   Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
   Element-hom-path p i .hom = p i
   Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
@@ -70,18 +63,15 @@ Thus we proceed to dualise the whole construction.
       (f .commute)
       (g .commute) i
 
-Extensional-element-hom
-  : ∀ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} {x y : Element P} {ℓr}
-  → ⦃ ext : Extensional (C .Precategory.Hom (Element.ob x) (y .Element.ob)) ℓr ⦄
-  → Extensional (Element-hom P x y) ℓr
-Extensional-element-hom {C = C} {P} ⦃ ext ⦄ = injection→extensional
-  (C .Precategory.Hom-set _ _) (Element-hom-path P) ext
+unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (quote Element-hom)
 
-instance
-  extensionality-element-hom
-    : ∀ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} {x y}
-    → Extensionality (Element-hom P x y)
-  extensionality-element-hom = record { lemma = quote Extensional-element-hom }
+module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} where instance
+  Extensional-element-hom
+    : ∀ {x y : Element P} {ℓr}
+    → ⦃ ext : Extensional (C .Precategory.Hom (x .Element.ob) (y .Element.ob)) ℓr ⦄
+    → Extensional (Element-hom P x y) ℓr
+  Extensional-element-hom ⦃ ext ⦄ = injection→extensional
+    (C .Precategory.Hom-set _ _) (Element-hom-path P) ext
 
 module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   private module P = Functor P
@@ -97,7 +87,7 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   ∫ : Precategory (o ⊔ s) (ℓ ⊔ s)
   ∫ .Precategory.Ob = Element P
   ∫ .Precategory.Hom = Element-hom P
-  ∫ .Precategory.Hom-set = Element-hom-is-set P
+  ∫ .Precategory.Hom-set _ _ = hlevel 2
   ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .section)
   ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm where abstract
     comm : P.₁ (f .hom ∘ g .hom) (x .section) ≡ z .section

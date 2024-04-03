@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_ ; module Extensionality)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_)
 
 open import Cat.Solver
 open import Cat.Base
@@ -49,13 +49,6 @@ open _↪_ public
 
 <!--
 ```agda
-↪-is-set : ∀ {a b} → is-set (a ↪ b)
-↪-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote _↪_)
-
-instance
-  H-Level-↪ : ∀ {a b} {n} → H-Level (a ↪ b) (suc (suc n))
-  H-Level-↪ = basic-instance 2 ↪-is-set
 ```
 -->
 
@@ -79,18 +72,6 @@ record _↠_ (a b : Ob) : Type (o ⊔ h) where
 
 open _↠_ public
 ```
-
-<!--
-```agda
-↠-is-set : ∀ {a b} → is-set (a ↠ b)
-↠-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote _↠_)
-
-instance
-  H-Level-↠ : ∀ {a b} {n} → H-Level (a ↠ b) (suc (suc n))
-  H-Level-↠ = basic-instance 2 ↠-is-set
-```
--->
 
 The identity morphism is monic and epic.
 
@@ -238,20 +219,6 @@ has-section→epic {f = f} f-sect g h p =
   h ∎
 ```
 
-<!--
-```agda
-has-section-is-set : ∀ {a b} {f : Hom a b} → is-set (has-section f)
-has-section-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote has-section)
-
-instance
-  H-Level-has-section
-    : ∀ {a b} {f : Hom a b} {n}
-    → H-Level (has-section f) (suc (suc n))
-  H-Level-has-section = basic-instance 2 has-section-is-set
-```
--->
-
 ## Retracts
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
@@ -296,20 +263,6 @@ retract-∘ f-ret g-ret .retract = g-ret .retract ∘ f-ret .retract
 retract-∘ f-ret g-ret .is-retract =
   retract-of-∘ (f-ret .is-retract) (g-ret .is-retract)
 ```
-
-<!--
-```agda
-has-retract-is-set : ∀ {a b} {f : Hom a b} → is-set (has-retract f)
-has-retract-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote has-retract)
-
-instance
-  H-Level-has-retract
-    : ∀ {a b} {f : Hom a b} {n}
-    → H-Level (has-retract f) (suc (suc n))
-  H-Level-has-retract = basic-instance 2 has-retract-is-set
-```
--->
 
 If $f$ has a retract, then $f$ is monic.
 
@@ -541,10 +494,6 @@ make-iso f g p q ._≅_.from = g
 make-iso f g p q ._≅_.inverses .Inverses.invl = p
 make-iso f g p q ._≅_.inverses .Inverses.invr = q
 
-instance
-  H-Level-is-invertible : ∀ {f : Hom a b} {n} → H-Level (is-invertible f) (suc n)
-  H-Level-is-invertible = prop-instance is-invertible-is-prop
-
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
@@ -565,24 +514,6 @@ is-invertible-inverse g =
 
 iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
 iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
-
-≅-is-set : is-set (a ≅ b)
-≅-is-set x y p q = s where
-  open _≅_
-  open Inverses
-
-  s : p ≡ q
-  s i j .to = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j
-  s i j .from = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j
-  s i j .inverses =
-    is-prop→squarep
-      (λ i j → Inverses-are-prop {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
-                                 {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
-      (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
-
-instance
-  H-Level-≅ : ∀ {a b} {n} → H-Level (a ≅ b) (suc (suc n))
-  H-Level-≅ = basic-instance 2 ≅-is-set
 
 private
   ≅-pathp-internal

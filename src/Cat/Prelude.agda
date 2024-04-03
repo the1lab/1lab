@@ -26,4 +26,4 @@ open import Cat.Univalent
         ; module Univalent )
   public
 
-open import Cat.Morphism.Extensionality public
+open import Cat.Morphism.Instances public

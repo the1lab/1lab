@@ -34,7 +34,7 @@ $B$, called the **identity bifibration**.
 IdD : Displayed B lzero lzero
 IdD .Ob[_] _ = ⊤
 IdD .Hom[_] _ _ _ = ⊤
-IdD .Hom[_]-set _ _ _ = hlevel!
+IdD .Hom[_]-set _ _ _ = hlevel 2
 IdD .id' = tt
 IdD ._∘'_ _ _ = tt
 IdD .idr' _ = refl
@@ -47,8 +47,8 @@ discrete as you can get!
 
 ```agda
 IdD-discrete-fibration : Discrete-fibration IdD
-IdD-discrete-fibration .Discrete-fibration.fibre-set = hlevel!
-IdD-discrete-fibration .Discrete-fibration.lifts _ _ = hlevel!
+IdD-discrete-fibration .Discrete-fibration.fibre-set _ = hlevel 2
+IdD-discrete-fibration .Discrete-fibration.lifts _ _ = hlevel 0
 ```
 
 Every morphism in the identity fibration is trivially cartesian and

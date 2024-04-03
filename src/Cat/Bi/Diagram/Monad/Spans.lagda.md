@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.def.fun:10 #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Instances.Sets.Complete
 open import Cat.Bi.Instances.Spans
 open import Cat.Bi.Diagram.Monad
@@ -94,7 +94,6 @@ strict-category→span-monad
 strict-category→span-monad C cset = m where
   open Monad
   open n-Type (el {n = 2} _ cset) using (H-Level-n-type)
-  open Precategory.HLevel-instance C
   module C = Precategory C
 
   homs : Span (Sets ℓ) (el _ cset) (el _ cset)

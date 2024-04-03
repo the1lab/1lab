@@ -35,8 +35,6 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
       _ = P
     module O = OFE-on O
     module P = OFE-on P
-  open OFE-H-Level O
-  open OFE-H-Level P
 ```
 -->
 
@@ -97,7 +95,6 @@ module
       P-ofe : ∀ {i} → OFE-on ℓr (F i)
       P-ofe {i} = P i
     module P {i} = OFE-on (P i)
-    module _ {i} where open OFE-H-Level (P i) public
 ```
 -->
 
@@ -153,7 +150,7 @@ about to get the actual inhabitant of $(1)$ that we're interested in.
   Π-OFE .has-is-ofe .limit x y wit i j = P.limit (x j) (y j) (λ n → wit' n j) i
     where
       wit' : ∀ n i → within (P i) n (x i) (y i)
-      wit' n i = out! {pa = hlevel 1} (wit n .Lift.lower) i
+      wit' n i = out! (wit n .Lift.lower) i
 ```
 
 <!--
@@ -177,7 +174,7 @@ OFE-Indexed-product F .ΠF = from-ofe-on $
   Π-OFE (λ i → ∣ F i .fst ∣) (λ i → F i .snd)
 OFE-Indexed-product F .π i .hom f = f i
 OFE-Indexed-product F .π i .preserves .pres-≈ α =
-  out! {pa = F i .snd .has-is-prop _ _ _} ((_$ i) <$> α .Lift.lower)
+  out! ((_$ i) <$> α .Lift.lower)
 OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i # x
 OFE-Indexed-product F .has-is-ip .tuple f .preserves .pres-≈ wit =
   lift $ inc λ i → f i .preserves .pres-≈ wit

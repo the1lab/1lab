@@ -189,10 +189,9 @@ Precategory-identity-system
     (λ C D → Σ (Functor C D) is-precat-iso)
     (λ a → Id , iso id-equiv id-equiv)
 Precategory-identity-system .to-path (F , i) = Precategory-path F i
-Precategory-identity-system .to-path-over {C} {D} (F , i) =
-  Σ-prop-pathp (λ _ _ → hlevel 1) $
-    Functor-pathp (λ p → path→ua-pathp _ (λ j → F.₀ (p j)))
-                  (λ {x} {y} → homs x y)
+Precategory-identity-system .to-path-over {C} {D} (F , i) = Σ-prop-pathp! $
+  Functor-pathp (λ p → path→ua-pathp _ (λ j → F.₀ (p j)))
+                (λ {x} {y} → homs x y)
   where
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
@@ -280,7 +279,7 @@ Category-identity-system
 Category-identity-system =
   transfer-identity-system Category-identity-system-pre
 
-    (λ x y → Σ-ap-snd λ F → prop-ext! {bprop = is-equivalence-is-prop (x .snd) F}
+    (λ x y → Σ-ap-snd λ F → prop-ext (hlevel 1) (is-equivalence-is-prop (x .snd) F)
       is-precat-iso→is-equivalence
       (eqv→iso (x .snd) (y .snd) F))
 ```

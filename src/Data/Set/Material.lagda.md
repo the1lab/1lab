@@ -215,7 +215,7 @@ $i = a$!
 V-identity-system
   : ∀ {ℓ} → is-identity-system {A = V ℓ}
     (λ A B → A ⊆ B × B ⊆ A) λ a → (λ _ w → w) , λ _ w → w
-V-identity-system = set-identity-system (λ x y → hlevel!)
+V-identity-system = set-identity-system (λ x y → hlevel 1)
   λ { (a , b) → extensionality _ _ a b }
 ```
 -->
@@ -274,8 +274,8 @@ Presentation-is-prop {ℓ} {A} f P1 P2 = done where
 
   eqv : ∀ x → fibre g x ≃ fibre h x
   eqv x = prop-ext (gm x) (hm x)
-    (λ fib → ∥-∥-proj (hm x) (v' .fst x (u' .snd x (inc fib))))
-    (λ fib → ∥-∥-proj (gm x) (u' .fst x (v' .snd x (inc fib))))
+    (λ fib → ∥-∥-out (hm x) (v' .fst x (u' .snd x (inc fib))))
+    (λ fib → ∥-∥-out (gm x) (u' .fst x (v' .snd x (inc fib))))
 ```
 
 This pointwise equivalence between fibres extends to an equivalence
@@ -375,7 +375,7 @@ module Members {ℓ} (X : V ℓ) where
 
   memb : ∀ {x} → x ∈ X ≃ fibre elem x
   memb {x = x} = prop-ext (is-member _ X .is-tr) (embeds _)
-    (λ a → ∥-∥-proj (embeds _) (subst (x ∈_) presents a))
+    (λ a → ∥-∥-out (embeds _) (subst (x ∈_) presents a))
     (λ a → subst (x ∈_) (sym presents) (inc a))
 
   module memb {x} = Equiv (memb {x})
@@ -465,7 +465,7 @@ F \simeq m_F^*(x)$.
 
 ```agda
   union : ∀ {x F} → x ∈ ⋃V F ≃ ∃ (V ℓ) λ u → x ∈ u × u ∈ F
-  union {x} {F} = prop-ext hlevel! squash
+  union {x} {F} = prop-ext!
     (∥-∥-map λ { ((i , j) , p) →
         Members.elem F i
       , Members.contains' (Members.elem F i) (sym p)
@@ -618,8 +618,8 @@ $p$, a proof that $C$ holds of $x$.
 
 ```agda
   separation : ∀ a C (x : V ℓ) → (x ∈ subset a C) ≃ (x ∈ a × x ∈ C)
-  separation a C x = prop-ext squash hlevel!
-    (∥-∥-rec hlevel! λ { ((j , w) , p) →
+  separation a C x = prop-ext!
+    (∥-∥-rec! λ { ((j , w) , p) →
       Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w })
     (λ { (i∈a , Ci) → inc (
       ( Members.memb.to a i∈a .fst
@@ -670,8 +670,8 @@ construction of power set.
       deduplicate
         : (x ∈ a × x ∈ predicate→class p)
         ≃ Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p)
-      deduplicate = prop-ext hlevel! hp
-        (λ { (_ , pcx) → out! {pa = hp} pcx })
+      deduplicate = prop-ext (hlevel 1) hp
+        (λ { (_ , pcx) → □-rec hp id pcx })
         λ { (f , p) → Members.memb.from a f , inc (f , p) }
 ```
 -->
@@ -720,7 +720,7 @@ By transporting this last proof along the middle path, we conclude $x
       to : subset a (predicate→class belongs) ⊆ i
       to e e∈sub = subst (_∈ i)
         (Equiv.to (subset-separation belongs e) e∈sub .fst .snd)
-        (out! {pa = is-member _ i .is-tr}
+        (□-rec (is-member _ i .is-tr) id
           (Equiv.to (subset-separation belongs e) e∈sub .snd))
 ```
 
@@ -735,7 +735,7 @@ m_a^*(x)$. It remains to show $m_a(k) \in i$; but this is equal to $x
         ( Members.memb.to a (i⊆a _ e∈i)
         , inc (subst (_∈ i) (sym (Members.memb.to a (i⊆a _ e∈i) .snd)) e∈i))
 
-    done = prop-ext squash hlevel! (∥-∥-rec hlevel! p1) p2
+    done = prop-ext! (∥-∥-rec! p1) p2
 ```
 
 ## Set induction

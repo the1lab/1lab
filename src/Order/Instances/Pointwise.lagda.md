@@ -51,7 +51,7 @@ Pointwise I P = po where
   po : Poset _ _
   po .Poset.Ob = (i : I) → ⌞ P i ⌟
   po .Poset._≤_ f g = ∀ x → f x ≤ g x
-  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-thin = hlevel 1
   po .Poset.≤-refl x = ≤-refl
   po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
   po .Poset.≤-antisym f≤g g≤f = funext λ x → ≤-antisym (f≤g x) (g≤f x)
@@ -94,7 +94,7 @@ Poset[_,_] P Q = po module Poset[_,_] where
   po .Poset.Ob      = Monotone P Q
   po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f # x ≤ g # x
 
-  po .Poset.≤-thin   = hlevel!
+  po .Poset.≤-thin   = hlevel 1
   po .Poset.≤-refl _ = ≤-refl
 
   po .Poset.≤-trans   f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)

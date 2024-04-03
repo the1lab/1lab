@@ -105,7 +105,7 @@ projection `fst`{.Agda}:
   presheaf→slice-ob y = obj where
     obj : /-Obj {C = Cat[ _ , _ ]} P
     obj .domain .F₀ c .∣_∣   = Σ[ sect ∈ P ʻ c ] y ʻ elem c sect
-    obj .domain .F₀ c .is-tr = hlevel!
+    obj .domain .F₀ c .is-tr = hlevel 2
     obj .domain .F₁ f (x , p) = P.₁ f x , y .F₁ (elem-hom f refl) p
     obj .map .η x = fst
 ```

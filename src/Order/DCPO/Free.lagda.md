@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin using (extensionality-hom)
-open import Cat.Functor.Subcategory using (extensionality-subcat-hom)
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Subcategory
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -111,7 +111,7 @@ properties], so that we immediately get a [[poset]] of partial elements:
 Parts : (A : Set ℓ) → Poset ℓ ℓ
 Parts A .Poset.Ob        = ↯ ∣ A ∣
 Parts A .Poset._≤_       = _⊑_
-Parts A .Poset.≤-thin    = ⊑-thin (A .is-tr)
+Parts A .Poset.≤-thin    = hlevel 1
 Parts A .Poset.≤-refl    = ⊑-refl
 Parts A .Poset.≤-trans   = ⊑-trans
 Parts A .Poset.≤-antisym = ⊑-antisym
@@ -132,7 +132,7 @@ We will proceed in this order.
 
 ```agda
 ⊑-lub
-  : {Ix : Type ℓ} (aset : is-set A) (s : Ix → ↯ A)
+  : {Ix : Type ℓ} ⦃ _ : H-Level A 2 ⦄ (s : Ix → ↯ A)
   → (semi : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k))
   → ↯ A
 ```
@@ -144,7 +144,7 @@ that the join $\bigsqcup_i s_i$ is defined whenever there exists $i : I$
 such that $s_i$ is defined.
 
 ```agda
-⊑-lub {Ix = Ix} set s dir .def = elΩ (Σ[ i ∈ Ix ] ⌞ s i ⌟)
+⊑-lub {Ix = Ix} s dir .def = elΩ (Σ[ i ∈ Ix ] ⌞ s i ⌟)
 ```
 
 Next, we need to construct an element of $A$, under the assumption that
@@ -155,10 +155,10 @@ that's not a major impediment: we're allowed to make this choice, as
 long as we show that the function $s_{-}$ is _constant_.
 
 ```agda
-⊑-lub {Ix = Ix} set s dir .elt =
-  □-rec-set (λ (ix , def) → s ix .elt def) (λ p q i →
+⊑-lub {Ix = Ix} s dir .elt =
+  □-rec-set (hlevel 2) (λ (ix , def) → s ix .elt def) (λ p q i →
     is-const p q i .elt $
-    is-prop→pathp (λ i → is-const p q i .def .is-tr) (p .snd) (q .snd) i) set
+    is-prop→pathp (λ i → is-const p q i .def .is-tr) (p .snd) (q .snd) i)
   where abstract
 ```
 
@@ -171,7 +171,7 @@ satisfying $s_i \lsq s_k$ and $s_j \lsq s_k$. We then compute:
     is-const
       : ∀ (p q : Σ[ i ∈ Ix ] ⌞ s i ⌟)
       → s (p .fst) ≡ s (q .fst)
-    is-const (i , si) (j , sj) = ∥-∥-proj (↯-is-hlevel 0 set _ _) $ do
+    is-const (i , si) (j , sj) = ∥-∥-out! do
       (k , p , q) ← dir i j
       pure $ part-ext (λ _ → sj) (λ _ → si) λ si sj →
         s i .elt _   ≡˘⟨ p .refines si ⟩
@@ -187,22 +187,22 @@ straightforward, so we present the solution without further comments:
 <!--
 ```agda
 module
-  _ {Ix : Type ℓ} {set : is-set A} {s : Ix → ↯ A}
+  _ {Ix : Type ℓ} ⦃ set : H-Level A 2 ⦄ {s : Ix → ↯ A}
     {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
   where
 ```
 -->
 
 ```agda
-  ⊑-lub-le : ∀ i → s i ⊑ ⊑-lub set s dir
+  ⊑-lub-le : ∀ i → s i ⊑ ⊑-lub s dir
   ⊑-lub-le i .implies si = inc (i , si)
   ⊑-lub-le i .refines si = refl
 
   ⊑-lub-least
-    : ∀ x → (∀ i → s i ⊑ x) → ⊑-lub set s dir ⊑ x
+    : ∀ x → (∀ i → s i ⊑ x) → ⊑-lub s dir ⊑ x
   ⊑-lub-least x le .implies = □-rec! λ (i , si) →
     le i .implies si
-  ⊑-lub-least x le .refines = □-elim (λ _ → set _ _) λ (i , si) →
+  ⊑-lub-least x le .refines = □-elim! λ (i , si) →
     le i .refines si
 ```
 
@@ -218,7 +218,7 @@ open Lub
 ```agda
 Parts-is-dcpo : ∀ {A : Set ℓ} → is-dcpo (Parts A)
 Parts-is-dcpo {A = A} .directed-lubs s dir .lub =
-  ⊑-lub (A .is-tr) s (dir .semidirected)
+  ⊑-lub s (dir .semidirected)
 Parts-is-dcpo {A = A} .directed-lubs s dir .has-lub .fam≤lub = ⊑-lub-le
 Parts-is-dcpo {A = A} .directed-lubs s dir .has-lub .least = ⊑-lub-least
 
@@ -248,12 +248,12 @@ part-map-lub
   : {Ix : Type ℓ} {A : Set o} {B : Set o'} {s : Ix → ↯ ∣ A ∣}
   → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
   → (f : ∣ A ∣ → ∣ B ∣)
-  → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub (A .is-tr) s dir))
+  → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub s dir))
 part-map-lub f .fam≤lub i = part-map-⊑ (⊑-lub-le i)
 part-map-lub f .least y le .implies =
   □-rec! λ (i , si) → le i .implies si
 part-map-lub {B = B} f .least y le .refines =
-  □-elim (λ _ → B .is-tr _ _) λ (i , si) → le i .refines si
+  □-elim! λ (i , si) → le i .refines si
 
 Free-Pointed-dcpo : Functor (Sets ℓ) (Pointed-DCPOs ℓ ℓ)
 Free-Pointed-dcpo .F₀ A = Parts-pointed-dcpo A
@@ -289,7 +289,7 @@ $$.
   part-counit : ↯ Ob → Ob
   part-counit x = ⋃-prop (x .elt ⊙ Lift.lower) def-prop where abstract
     def-prop : is-prop (Lift o ⌞ x ⌟)
-    def-prop = hlevel!
+    def-prop = hlevel 1
 ```
 
 We can characterise the behaviour of this definition as though it were
@@ -318,7 +318,7 @@ The following three properties are fundamental: the counit
   part-counit-⊑ : ∀ {x y} → x ⊑ y → part-counit x ≤ part-counit y
   part-counit-lub
     : ∀ {Ix} s (sdir : is-semidirected-family (Parts set) {Ix} s)
-    → is-lub poset (part-counit ⊙ s) (part-counit (⊑-lub (set .is-tr) s sdir))
+    → is-lub poset (part-counit ⊙ s) (part-counit (⊑-lub s sdir))
   part-counit-never : ∀ x → part-counit never ≤ x
 ```
 
@@ -336,7 +336,7 @@ curious reader.</summary>
     ⋃-prop-least _ _ _ λ (lift p) →
     ⋃-prop-le _ _ (lift (inc (i , p)))
   part-counit-lub {Ix = Ix} s sdir .is-lub.least y le = ⋃-prop-least _ _ _ $
-    λ (lift p) → □-elim (λ p → ≤-thin {x = ⊑-lub _ s sdir .elt p}) (λ (i , si) →
+    λ (lift p) → □-elim (λ p → ≤-thin {x = ⊑-lub s sdir .elt p}) (λ (i , si) →
       s i .elt si ≤⟨ ⋃-prop-le _ _ (lift si) ⟩
       ⋃-prop _ _  ≤⟨ le i ⟩
       y           ≤∎) p

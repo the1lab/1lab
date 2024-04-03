@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 -vtc.ip.boundary:30 #-}
 open import 1Lab.Prelude
 
 open import Data.Id.Base

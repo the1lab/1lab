@@ -102,7 +102,7 @@ category of sets of _any_ level $\ell$ admits them.
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
   Sets-terminal .top = el! (Lift _  ⊤)
-  Sets-terminal .has⊤ _ = hlevel!
+  Sets-terminal .has⊤ _ = hlevel 0
 ```
 
 Products are given by product sets:
@@ -142,7 +142,7 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback f g
     pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
-    pb .apex .is-tr = hlevel!
+    pb .apex .is-tr = hlevel 2
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

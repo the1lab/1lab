@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Nat.Base
 open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
@@ -130,8 +131,8 @@ n-Tr-is-hlevel
 n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
 
 instance
-  n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → hlevel-decomposition (n-Tr A (suc n))
-  n-tr-decomp = decomp (quote n-Tr-is-hlevel) (`level-minus 1 ∷ [])
+  H-Level-n-Tr : ∀ {ℓ} {A : Type ℓ} {n k} ⦃ _ : suc n ≤ k ⦄ → H-Level (n-Tr A (suc n)) k
+  H-Level-n-Tr {k = _} ⦃ p ⦄ = hlevel-instance $ is-hlevel-le _ _ p (n-Tr-is-hlevel _)
 
 n-Tr-elim
   : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
@@ -163,16 +164,16 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
 n-Tr-elim!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
   → (P : n-Tr A (suc n) → Type ℓ')
-  → {@(tactic hlevel-tactic-worker) hl : ∀ x → is-hlevel (P x) (suc n)}
+  → ⦃ _ : ∀ {x} → H-Level (P x) (suc n) ⦄
   → (∀ x → P (inc x))
   → ∀ x → P x
-n-Tr-elim! P {hl} f = n-Tr-elim P hl f
+n-Tr-elim! P f = n-Tr-elim P (λ x → hlevel _) f
 
 n-Tr-rec!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
-  → {@(tactic hlevel-tactic-worker) hl : is-hlevel B (suc n)}
+  → ⦃ hl : H-Level B (suc n) ⦄
   → (A → B) → n-Tr A (suc n) → B
-n-Tr-rec! {hl = hl} = n-Tr-elim (λ _ → _) (λ _ → hl)
+n-Tr-rec! = n-Tr-elim (λ _ → _) (λ _ → hlevel _)
 ```
 -->
 
@@ -216,10 +217,7 @@ $(2+n)$-type.
 
 ```agda
   code : (x : A) (y' : n-Tr A (2 + n)) → n-Type _ (suc n)
-  code x =
-    n-Tr-elim!
-      (λ y' → n-Type _ (suc n))
-      (λ y' → el! (n-Tr (Path A x y') (suc n)))
+  code x = n-Tr-rec! λ y' → el! (n-Tr (Path A x y') (suc n))
 ```
 
 The rest of the proof boils down to applications of `path
@@ -230,14 +228,10 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
   encode' x _ = J (λ y _ → ∣ code x y ∣) (inc refl)
 
   decode' : ∀ x y → ∣ code x y ∣ → inc x ≡ y
-  decode' x =
-    n-Tr-elim! _ λ x → n-Tr-rec hlevel! (ap inc)
+  decode' x = n-Tr-elim! _ λ x → n-Tr-rec! (ap inc)
 
   rinv : ∀ x y → is-right-inverse (decode' x y) (encode' x y)
-  rinv x = n-Tr-elim _
-    (λ y → Π-is-hlevel (2 + n)
-      (λ c → Path-is-hlevel (2 + n) (is-hlevel-suc (suc n) (code x y .is-tr))))
-    λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
+  rinv x = n-Tr-elim! _ λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
 
   linv : ∀ x y → is-left-inverse (decode' x y) (encode' x y)
   linv x _ = J (λ y p → decode' x y (encode' x y p) ≡ p)
@@ -284,10 +278,9 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product wh
 
   distrib-is-iso : is-iso distrib
   distrib-is-iso .inv (x , y)  = pair x y
-  distrib-is-iso .rinv (x , y) = n-Tr-elim
+  distrib-is-iso .rinv (x , y) = n-Tr-elim!
     (λ x → ∀ y → distrib (pair x y) ≡ (x , y))
-    (λ _ → Π-is-hlevel (suc n) λ x → Path-is-hlevel (suc n) (×-is-hlevel (suc n) hlevel! hlevel!))
-    (λ x → n-Tr-elim _ (λ y → Path-is-hlevel (suc n) (×-is-hlevel (suc n) hlevel! hlevel!)) λ y → refl)
+    (λ x → n-Tr-elim! _ λ y → refl)
     x y
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 

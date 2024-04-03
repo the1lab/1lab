@@ -63,7 +63,4 @@ instance
   H-Level-Dec : ∀ {n} {ℓ} {A : Type ℓ} ⦃ hl : H-Level A n ⦄
               → H-Level (Dec A) n
   H-Level-Dec {n} = hlevel-instance (Dec-is-hlevel n (hlevel n))
-
-  decomp-dec : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (Dec A)
-  decomp-dec = decomp (quote Dec-is-hlevel) (`level ∷ `search ∷ [])
 ```

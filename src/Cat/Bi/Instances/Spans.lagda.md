@@ -75,7 +75,7 @@ record Span-hom {a b : Ob} (x y : Span a b) : Type ℓ where
 <!--
 ```agda
 open Span-hom
-private unquoteDecl eqv = declare-record-iso eqv (quote Span-hom)
+unquoteDecl H-Level-Span-hom = declare-record-hlevel 2 H-Level-Span-hom (quote Span-hom)
 
 instance
   Underlying-Span : ∀ {a b} ⦃ _ : Underlying Ob ⦄ → Underlying (Span a b)
@@ -103,7 +103,7 @@ at the level of maps in $\cC$.
 Spans : Ob → Ob → Precategory _ _
 Spans x y .Precategory.Ob = Span x y
 Spans x y .Precategory.Hom = Span-hom
-Spans x y .Precategory.Hom-set _ _ = Iso→is-hlevel 2 eqv (hlevel 2)
+Spans x y .Precategory.Hom-set _ _ = hlevel 2
 Spans x y .Precategory.id .map = id
 Spans x y .Precategory.id .left = intror refl
 Spans x y .Precategory.id .right = intror refl

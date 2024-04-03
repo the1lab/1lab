@@ -148,7 +148,7 @@ the listing into an enumeration.
 nub-listing : ⦃ _ : Discrete A ⦄ → Listing A → Enumeration A
 nub-listing li = record
   { members    = nub m
-  ; has-member = λ a → ∥-∥-proj! do
+  ; has-member = λ a → ∥-∥-out! do
     memb ← has a
     pure (is-prop∙→is-contr (member-nub-is-prop m) (member→member-nub memb))
   }
@@ -164,7 +164,7 @@ Discrete-finitely-indexed→Finite
   : ⦃ _ : Discrete A ⦄
   → is-finitely-indexed A
   → Finite A
-Discrete-finitely-indexed→Finite fi = ∥-∥-proj! do
+Discrete-finitely-indexed→Finite fi = ∥-∥-out! do
   cov ← □-tr fi
   let
     over  = finite-cover→listing cov

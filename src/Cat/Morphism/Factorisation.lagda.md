@@ -216,7 +216,7 @@ orthogonal to itself, hence an isomorphism.
 
   in-intersection≃is-iso
     : ∀ {a b} (f : C.Hom a b) → C.is-invertible f ≃ ((f ∈ E) × (f ∈ M))
-  in-intersection≃is-iso f = prop-ext (hlevel 1) (×-is-hlevel 1 hlevel! hlevel!)
+  in-intersection≃is-iso f = prop-ext!
     (λ fi → is-iso→in-E f fi , is-iso→in-M f fi)
     λ { (a , b) → in-intersection→is-iso f a b }
 ```

@@ -121,10 +121,7 @@ Slice-path
   → f' ≡ g'
 Slice-path = Slice-pathp refl
 
-module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
-  Slice-is-set : is-set (Slice-hom f px py)
-  Slice-is-set = Iso→is-hlevel 2 eqv (hlevel 2)
-    where open HLevel-instance
+unquoteDecl H-Level-Slice-hom = declare-record-hlevel 2 H-Level-Slice-hom (quote Slice-hom)
 ```
 -->
 
@@ -136,7 +133,7 @@ displayed over $\cB$.
 Slices : Displayed B (o ⊔ ℓ) ℓ
 Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
-Slices .Hom[_]-set = Slice-is-set
+Slices .Hom[_]-set _ _ _ = hlevel 2
 Slices .id' = slice-hom id id-comm-sym
 Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $

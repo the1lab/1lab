@@ -164,7 +164,7 @@ specification.
 
     base-case : Set ℓ
     ∣ base-case ∣    = ⌞ G ⌟
-    base-case .is-tr = hlevel!
+    base-case .is-tr = hlevel 2
 ```
 
 To handle the path case, we'll have to produce, given an element $x :
@@ -356,7 +356,7 @@ of a loop with arbitrary base.
 <!--
 ```agda
     hl : (x : Deloop G) → is-set (x ≡ x → ⌞ G ⌟)
-    hl _ = hlevel!
+    hl _ = hlevel 2
 
     interleaved mutual
       go   : (x : Deloop G) → x ≡ x → ⌞ G ⌟
@@ -486,12 +486,9 @@ We can then obtain a nice interface for working with `winding`{.Agda}.
   _ = refl -- MUST check!
 
   pathᵇ-sq : ∀ (x : Deloop G) g h → Square refl (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
-  pathᵇ-sq = Deloop-elim-prop G _
-    (λ x → Π-is-hlevel² 1 λ g h → PathP-is-hlevel' {A = λ i → x ≡ pathᵇ x h i} 1
-      (squash _ _) _ _)
-    λ g h → path-sq g h
+  pathᵇ-sq = Deloop-elim-prop G _ (λ x → hlevel 1) λ g h → path-sq g h
 
 Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
-Deloop-is-connected = Deloop-elim-prop _ _ hlevel! (inc refl)
+Deloop-is-connected = Deloop-elim-prop _ _ (λ _ → hlevel 1) (inc refl)
 ```
 -->

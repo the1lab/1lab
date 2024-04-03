@@ -46,16 +46,16 @@ We show that these two statements are equivalent propositions.
 
 ```agda
 LEM-is-prop : is-prop LEM
-LEM-is-prop = hlevel!
+LEM-is-prop = hlevel 1
 
 DNE-is-prop : is-prop DNE
-DNE-is-prop = hlevel!
+DNE-is-prop = hlevel 1
 
 LEM→DNE : LEM → DNE
 LEM→DNE lem P = Dec-elim _ (λ p _ → p) (λ ¬p ¬¬p → absurd (¬¬p ¬p)) (lem P)
 
 DNE→LEM : DNE → LEM
-DNE→LEM dne P = dne (el (Dec ∣ P ∣) hlevel!) λ k → k (no λ p → k (yes p))
+DNE→LEM dne P = dne (el (Dec ∣ P ∣) (hlevel 1)) λ k → k (no λ p → k (yes p))
 
 LEM≃DNE : LEM ≃ DNE
 LEM≃DNE = prop-ext LEM-is-prop DNE-is-prop LEM→DNE DNE→LEM
@@ -84,7 +84,7 @@ The weak law of excluded middle is also a proposition.
 
 ```agda
 WLEM-is-prop : is-prop WLEM
-WLEM-is-prop = hlevel!
+WLEM-is-prop = hlevel 1
 ```
 
 ## The axiom of choice {defines="axiom-of-choice"}
@@ -151,7 +151,7 @@ gives us a section $\Sigma P \to 2$.
 ```agda
 module _ (split : Surjections-split) (P : Ω) where
   section : ∥ ((x : Susp ∣ P ∣) → fibre 2→Σ x) ∥
-  section = split Bool-is-set (Susp-prop-is-set hlevel!) 2→Σ 2→Σ-surjective
+  section = split Bool-is-set (Susp-prop-is-set (hlevel 1)) 2→Σ 2→Σ-surjective
 ```
 
 But a section is always injective, and the booleans are [[discrete]], so we can
@@ -160,11 +160,11 @@ is equivalent to $P$, this concludes the proof.
 
 ```agda
   Discrete-ΣP : Discrete (Susp ∣ P ∣)
-  Discrete-ΣP = ∥-∥-rec (Dec-is-hlevel 1 (Susp-prop-is-set hlevel! _ _))
+  Discrete-ΣP = ∥-∥-rec (Dec-is-hlevel 1 (Susp-prop-is-set (hlevel 1) _ _))
     (λ f → Discrete-inj (fst ∘ f) (right-inverse→injective 2→Σ (snd ∘ f))
                         Discrete-Bool)
     section
 
   AC→LEM : Dec ∣ P ∣
-  AC→LEM = Dec-≃ (Susp-prop-path hlevel!) Discrete-ΣP
+  AC→LEM = Dec-≃ (Susp-prop-path (hlevel 1)) Discrete-ΣP
 ```

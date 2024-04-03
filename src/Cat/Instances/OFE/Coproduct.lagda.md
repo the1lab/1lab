@@ -40,8 +40,6 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
       _ = P
     module O = OFE-on O
     module P = OFE-on P
-    open OFE-H-Level O
-    open OFE-H-Level P
 ```
 -->
 
@@ -93,8 +91,8 @@ to write about.</summary>
 
 ```agda
   ⊎-OFE .has-is-ofe .has-is-prop zero x y _ _ = refl
-  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inl _) (inl _) = hlevel!
-  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inr _) (inr _) = hlevel!
+  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inl _) (inl _) = hlevel 1
+  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inr _) (inr _) = hlevel 1
 
   ⊎-OFE .has-is-ofe .≈-sym zero p = lift tt
   ⊎-OFE .has-is-ofe .≈-sym (suc n) {inl _} {inl _} p = lift (O.≈-sym _ (p .Lift.lower))

@@ -387,12 +387,9 @@ are closed under identities and composites.
 <summary>All of the equations are trivial.
 </summary>
 ```agda
-  Relative-Eilenberg-Moore .Hom[_]-set = hlevel!
-  Relative-Eilenberg-Moore .idr' _ =
-    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
-  Relative-Eilenberg-Moore .idl' _ =
-    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
-  Relative-Eilenberg-Moore .assoc' _ _ _ =
-    is-prop→pathp (λ i → Π-is-hlevel' 1 λ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) _ _
+  Relative-Eilenberg-Moore .Hom[_]-set _ _ _ = hlevel 2
+  Relative-Eilenberg-Moore .idr' _ = prop!
+  Relative-Eilenberg-Moore .idl' _ = prop!
+  Relative-Eilenberg-Moore .assoc' _ _ _ = prop!
 ```
 </details>

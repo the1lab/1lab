@@ -50,6 +50,7 @@ this indirection, we can prove that divisibility is a mere property:
 instance
   H-Level-∣ : ∀ {x y} {n} → H-Level (x ∣ y) (suc n)
   H-Level-∣ = prop-instance (∣-is-prop _ _)
+  {-# INCOHERENT H-Level-∣ #-}
 ```
 
 The type $x | y$ is, in fact, the [[propositional truncation]] of $(*

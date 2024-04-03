@@ -136,7 +136,7 @@ ConcreteGroups-Hom-set
   : (G : ConcreteGroup ℓ) (H : ConcreteGroup ℓ')
   → is-set (B G →∙ B H)
 ConcreteGroups-Hom-set G H (f , ptf) (g , ptg) p q =
-  Σ-set-square hlevel! (funext-square (B-elim-contr G square))
+  Σ-set-square (λ _ → hlevel 2) (funext-square (B-elim-contr G square))
   where
     open ConcreteGroup H using (H-Level-B)
     square : is-contr ((λ j → p j .fst (pt G)) ≡ (λ j → q j .fst (pt G)))

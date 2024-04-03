@@ -50,11 +50,7 @@ open is-connected-cat
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-connected-cat)
 
-instance
-  H-Level-is-connected-cat
-    : ∀ {k o ℓ} {C : Precategory o ℓ}
-    → H-Level (is-connected-cat C) (1 + k)
-  H-Level-is-connected-cat = basic-instance 1 (Iso→is-hlevel 1 eqv (hlevel 1))
+unquoteDecl hl-is-connected-cat = declare-record-hlevel 1 hl-is-connected-cat (quote is-connected-cat)
 ```
 -->
 
