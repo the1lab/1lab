@@ -332,9 +332,9 @@ this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
 ```
 
 Another general class of final functors is given by [[right adjoint]]
-functors.  This follows directly from the characterisation of right
-adjoints in terms of [[universal morphisms]]: since the comma categories
-$c \swarrow R$ have initial objects, they are connected.
+functors. This follows directly from the characterisation of right
+adjoints in terms of [[free objects]]: since the comma categories $c
+\swarrow R$ have initial objects, they are connected.
 
 ```agda
 right-adjoint-is-final
@@ -342,7 +342,7 @@ right-adjoint-is-final
   → {L : Functor 𝒞 𝒟} {R : Functor 𝒟 𝒞} (L⊣R : L ⊣ R)
   → is-final R
 right-adjoint-is-final L⊣R c =
-  initial→connected (L⊣R→universal-maps L⊣R c)
+  initial→connected  (left-adjoint→universal-maps L⊣R c)
 ```
 
 In particular, the inclusion of a [[terminal object]] into a category is
@@ -458,8 +458,7 @@ morphism are related, which again involves the connectedness of $x
           z' : Meander (c ↙ G F∘ F) _ _
           z' = Free-groupoid-map (↙-compose f) .F₁ z
           fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
-          fixup = ↓Obj-path _ _ refl refl $
-            G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
+          fixup = ext $ refl ,ₚ G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
         pure (subst (Meander (c ↙ G F∘ F) (f ↙> f')) fixup z')
 
       refine : ∀ {f g} → Meander (c ↙ G) f g → R ._∼_ f g

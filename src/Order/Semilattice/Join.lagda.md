@@ -192,8 +192,11 @@ Join-slats o ℓ = Subcategory (Join-slats-subcat o ℓ)
 
 module Join-slats {o} {ℓ} = Cat.Reasoning (Join-slats o ℓ)
 
-Forget-join-slat : ∀ {o ℓ} → Functor (Join-slats o ℓ) (Posets o ℓ)
-Forget-join-slat = Forget-subcat
+Join-slats→Posets : ∀ {o ℓ} → Functor (Join-slats o ℓ) (Posets o ℓ)
+Join-slats→Posets = Forget-subcat
+
+Join-slats↪Sets : ∀ {o ℓ} → Functor (Join-slats o ℓ) (Sets o)
+Join-slats↪Sets = Posets↪Sets F∘ Join-slats→Posets
 
 Join-semilattice : ∀ o ℓ → Type _
 Join-semilattice o ℓ = Join-slats.Ob {o} {ℓ}

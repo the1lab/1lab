@@ -1091,5 +1091,34 @@ lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A}
   → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b → a ≡ b
 lift-inj p = ap Lift.lower p
+
+-- Fibres of composites are given by pairs of fibres.
+fibre-∘-≃
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → {f : B → C} {g : A → B}
+  → ∀ c → fibre (f ∘ g) c ≃ (Σ[ (b , _) ∈ fibre f c ] (fibre g b))
+fibre-∘-≃ {f = f} {g = g} c = Iso→Equiv (fwd , iso bwd invl invr)
+    where
+      fwd : fibre (f ∘ g) c → Σ[ (b , _) ∈ fibre f c ] (fibre g b)
+      fwd (a , p) = ((g a) , p) , (a , refl)
+
+      bwd : Σ[ (b , _) ∈ fibre f c ] (fibre g b) → fibre (f ∘ g) c
+      bwd ((b , p) , (a , q)) = a , ap f q ∙ p
+
+      invl : ∀ x → fwd (bwd x) ≡ x
+      invl ((b , p) , (a , q)) i .fst .fst = q i
+      invl ((b , p) , (a , q)) i .fst .snd j =
+        hcomp (∂ i ∨ ∂ j) λ where
+          k (i = i0) → ∙-filler (ap f q) p k j
+          k (i = i1) → p (j ∧ k)
+          k (j = i0) → f (q i)
+          k (j = i1) → p k
+          k (k = i0) → f (q (i ∨ j))
+      invl ((b , p) , a , q) i .snd .fst = a
+      invl ((b , p) , a , q) i .snd .snd j = q (i ∧ j)
+
+      invr : ∀ x → bwd (fwd x) ≡ x
+      invr (a , p) i .fst = a
+      invr (a , p) i .snd = ∙-idl p i
 ```
 -->

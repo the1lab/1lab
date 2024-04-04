@@ -151,7 +151,8 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-set : ∀ x y → is-set (↓Hom x y)
   ↓Hom-set a b = hl' where abstract
     hl' : is-set (↓Hom a b)
-    hl' = Iso→is-hlevel! 2 eqv
+    hl' = Iso→is-hlevel 2 eqv (hlevel 2)
+
 ```
 -->
 
@@ -272,5 +273,80 @@ module ↙-compose
 
   ↙>-id : ∀ {c} {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙> ↓obj 𝒟.id ≡ f
   ↙>-id = ↓Obj-path _ _ refl refl (G.eliml refl)
+
+-- Outside the main module to make instance search work.
+module _ where
+  open ↓Hom
+  open ↓Obj
+  open Precategory
+  open Functor
+
+
+  instance
+    Extensional-↓Hom
+      : ∀ {ℓr}
+      → {F : Functor A C} {G : Functor B C}
+      → {f g : ↓Obj F G}
+      → ⦃ sab : Extensional (A .Hom (f .x) (g .x) × B .Hom (f .y) (g .y)) ℓr ⦄
+      → Extensional (↓Hom F G f g) ℓr
+    Extensional-↓Hom {A = A} {B = B} {F = F} {G = G} {f = f} {g = g} ⦃ sab ⦄ =
+      injection→extensional! (λ p → ↓Hom-path F G (ap fst p) (ap snd p)) sab
+
+    -- Overlapping instances for ↙ and ↘; these resolve issues where
+    -- Agda cannot determine the source category A for 'Const'. We can
+    -- also optimize the instance a bit to avoid a silly obligation that
+    -- 'tt ≡ tt'.
+    Extensional-↙Hom
+      : ∀ {ℓr}
+      → {X : A .Ob} {T : Functor B A}
+      → {f g : ↓Obj (const! X) T}
+      → ⦃ sb : Extensional (B .Hom (f .y) (g .y)) ℓr ⦄
+      → Extensional (↓Hom (const! X) T f g) ℓr
+    Extensional-↙Hom {B = B} {X = X} {T = T} {f = f} {g = g} ⦃ sb ⦄ =
+      injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (const! X) T refl p) sb
+    {-# OVERLAPS Extensional-↙Hom #-}
+
+    Extensional-↘Hom
+      : ∀ {ℓr}
+      → {T : Functor A B} {X : B .Ob}
+      → {f g : ↓Obj T (const! X)}
+      → ⦃ sa : Extensional (A .Hom (f .x) (g .x)) ℓr ⦄
+      → Extensional (↓Hom T (const! X) f g) ℓr
+    Extensional-↘Hom {A = A} {T = T} {X = X} {f = f} {g = g} ⦃ sa ⦄ =
+      injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (const! X) p refl) sa
+    {-# OVERLAPS Extensional-↘Hom #-}
+
+
+    -- Extensionality cannot handle PathP, but we /can/ make a bit of progress
+    -- by deleting 'tt ≡ tt' obligations when using ↙ and ↘.
+    Extensional-↙Obj
+      : ∀ {ℓr}
+      → {X : A .Ob} {T : Functor B A}
+      → ⦃ sb : Extensional (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y))) ℓr ⦄
+      → Extensional (↓Obj (const! X) T) ℓr
+    Extensional-↙Obj {A = A} {B = B} {X = X} {T = T} ⦃ sb ⦄ =
+      iso→extensional isom sb
+        where
+          -- Easier to just do this by hand.
+          isom : Iso (↓Obj (const! X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
+          isom .fst α = ↓Obj.y α , ↓Obj.map α
+          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.rinv _ = refl
+          isom .snd .is-iso.linv _ = ↓Obj-path (const! X) T refl refl refl
+
+    Extensional-↘Obj
+      : ∀ {ℓr}
+      → {T : Functor A B} {Y : B .Ob}
+      → ⦃ sb : Extensional (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y)) ℓr ⦄
+      → Extensional (↓Obj T (const! Y)) ℓr
+    Extensional-↘Obj {A = A} {B = B} {T = T} {Y = Y} ⦃ sb ⦄ =
+      iso→extensional isom sb
+        where
+          -- Easier to just do this by hand.
+          isom : Iso (↓Obj T (const! Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
+          isom .fst α = ↓Obj.x α , ↓Obj.map α
+          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.rinv _ = refl
+          isom .snd .is-iso.linv _ = ↓Obj-path T (const! Y) refl refl refl
 ```
 -->

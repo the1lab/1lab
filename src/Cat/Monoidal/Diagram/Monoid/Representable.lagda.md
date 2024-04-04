@@ -174,12 +174,12 @@ into an object, it's representable!
 ```agda
   Mon→PshMon-rep
     : ∀ {m} → (mon : C-Monoid m)
-    → Representation {C = C} (Forget F∘ Mon→PshMon mon)
+    → Representation {C = C} (Mon↪Sets F∘ Mon→PshMon mon)
   Mon→PshMon-rep {m = m} mon .rep = m
   Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
     open make-natural-iso
 
-    ni : make-natural-iso (Forget F∘ Mon→PshMon mon) (Hom-into C m)
+    ni : make-natural-iso (Mon↪Sets F∘ Mon→PshMon mon) (Hom-into C m)
     ni .eta _ f   = f
     ni .inv _ f   = f
     ni .eta∘inv _ = refl
@@ -239,7 +239,7 @@ externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
   PShMon κ = Cat[ C ^op , Monoids κ ]
 
   RepPShMon : Precategory (o ⊔ lsuc ℓ) (o ⊔ ℓ)
-  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Forget F∘ P))
+  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Mon↪Sets F∘ P))
 ```
 -->
 
@@ -381,7 +381,7 @@ object $M : \cC$.
 ```agda
   RepPshMon→Mon
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
-    → (P-rep : Representation {C = C} (Forget F∘ P))
+    → (P-rep : Representation {C = C} (Mon↪Sets F∘ P))
     → C-Monoid (P-rep .rep)
   RepPshMon→Mon P P-rep = Hom-mon→Mon hom-mon η*-nat μ*-nat
     module RepPshMon→Mon where

@@ -308,8 +308,8 @@ is univalent.
   R-Mod : ∀ ℓm → Precategory (lsuc ℓm ⊔ ℓ) (ℓm ⊔ ℓ)
   R-Mod ℓm = Structured-objects (R-Mod-structure {ℓm})
 
-  Forget-module : ∀ ℓm → Functor (R-Mod ℓm) (Sets ℓm)
-  Forget-module _ = Forget-structure R-Mod-structure
+  R-Mod↪Sets : ∀ ℓm → Functor (R-Mod ℓm) (Sets ℓm)
+  R-Mod↪Sets _ = Forget-structure R-Mod-structure
 
   record make-module {ℓm} (M : Type ℓm) : Type (ℓm ⊔ ℓ) where
     field

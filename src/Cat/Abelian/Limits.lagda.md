@@ -6,7 +6,9 @@ open import Algebra.Group.Ab
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Equaliser
 open import Cat.Abelian.Base
+open import Cat.Diagram.Zero
 open import Cat.Prelude hiding (_-_ ; _+_)
 
 open import Data.Id.Base
@@ -50,10 +52,10 @@ module _ (A : is-pre-abelian C) where
   open is-pre-abelian A
   difference-kernel
     : ∀ {A B} {f g : Hom A B}
-    → is-equaliser f g (Ker.kernel (f - g))
+    → is-equaliser C f g (Ker.kernel (f - g))
   difference-kernel {f = f} {g} = equ where
     open is-equaliser
-    equ : is-equaliser f g (Ker.kernel (f - g))
+    equ : is-equaliser C f g (Ker.kernel (f - g))
     equ .equal = zero-diff $
       (f ∘ Ker.kernel (f - g)) - (g ∘ Ker.kernel (f - g)) ≡⟨ ∘-minus-l f g (Ker.kernel (f - g)) ⟩
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩

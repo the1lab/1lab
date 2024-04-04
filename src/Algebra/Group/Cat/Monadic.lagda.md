@@ -26,10 +26,10 @@ module Algebra.Group.Cat.Monadic {ℓ} where
 ```agda
 private
   F : Functor (Sets ℓ) (Groups ℓ)
-  F = Free-groups.to-functor
+  F = free-objects→functor make-free-group
 
   F⊣U : F ⊣ _
-  F⊣U = Free-groups.to-left-adjoint
+  F⊣U = free-objects→left-adjoint make-free-group
 
   K = Comparison F⊣U
 
@@ -152,7 +152,7 @@ Group-is-monadic = is-precat-iso→is-equivalence
 
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
-                                   (λ x → Grp.Forget-is-faithful refl)
+                                   (λ x → Grp.Grp↪Sets-is-faithful refl)
 ```
 
 To show that the object mapping of the comparison functor is invertible,

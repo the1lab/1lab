@@ -277,14 +277,12 @@ The simplest thing we can do _to_ a poset is to forget the order. This
 evidently extends to a faithful functor $\Pos \to \Sets$.
 
 ```agda
-Forget-poset : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
-∣ Forget-poset .Functor.F₀ P ∣    = ⌞ P ⌟
-Forget-poset .Functor.F₀ P .is-tr = hlevel 2
-
-Forget-poset .Functor.F₁ = hom
-
-Forget-poset .Functor.F-id    = refl
-Forget-poset .Functor.F-∘ _ _ = refl
+Posets↪Sets : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
+Posets↪Sets .Functor.F₀ P .∣_∣    = ⌞ P ⌟
+Posets↪Sets .Functor.F₀ P .is-tr = hlevel 2
+Posets↪Sets .Functor.F₁ = hom
+Posets↪Sets .Functor.F-id    = refl
+Posets↪Sets .Functor.F-∘ _ _ = refl
 ```
 
 Slightly less trivial, we can extend the opposite category construction

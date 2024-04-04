@@ -78,7 +78,7 @@ Furthermore, this functor is left adjoint to the forgetful functor
 to $\Sets$.
 
 ```agda
-Free-DCPO⊣Forget-DCPO : ∀ {ℓ} → Free-DCPO {ℓ} ⊣ Forget-DCPO
+Free-DCPO⊣Forget-DCPO : ∀ {ℓ} → Free-DCPO {ℓ} ⊣ DCPOs↪Sets
 Free-DCPO⊣Forget-DCPO .unit .η _ x = x
 Free-DCPO⊣Forget-DCPO .unit .is-natural _ _ _ = refl
 Free-DCPO⊣Forget-DCPO .counit .η D =
@@ -350,7 +350,7 @@ We can tie this all together to obtain the desired adjunction.
 
 ```agda
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo
-  : ∀ {ℓ} → Free-Pointed-dcpo {ℓ} ⊣ Forget-Pointed-dcpo
+  : ∀ {ℓ} → Free-Pointed-dcpo {ℓ} ⊣ Pointed-DCPOs↪Sets
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .η A x = always x
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = ext λ _ →
   sym (always-natural f)

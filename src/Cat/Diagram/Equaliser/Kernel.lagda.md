@@ -1,22 +1,21 @@
 <!--
 ```agda
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Zero
 open import Cat.Prelude
 
-import Cat.Diagram.Equaliser
-import Cat.Diagram.Zero
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Equaliser.Kernel {o ℓ} (C : Precategory o ℓ) where
+module Cat.Diagram.Equaliser.Kernel where
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
-
-open Cat.Diagram.Equaliser C
-open Cat.Diagram.Zero C
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
 ```
 -->
 
@@ -37,23 +36,23 @@ $f$.
 ~~~
 
 ```agda
-module _ (∅ : Zero) where
-  open Zero ∅
-
-  is-kernel : ∀ {a b ker} (f : Hom a b) (k : Hom ker a) → Type _
-  is-kernel f = is-equaliser f zero→
-
-  kernels-are-subobjects
-    : ∀ {a b ker} {f : Hom a b} (k : Hom ker a)
-    → is-kernel f k → is-monic k
-  kernels-are-subobjects = is-equaliser→is-monic
-
-  record Kernel {a b} (f : Hom a b) : Type (o ⊔ ℓ) where
-    field
-      {ker} : Ob
-      kernel : Hom ker a
-      has-is-kernel : is-kernel f kernel
-    open is-equaliser has-is-kernel public
+  module _ (∅ : Zero C) where
+    open Zero ∅
+  
+    is-kernel : ∀ {a b ker} (f : Hom a b) (k : Hom ker a) → Type _
+    is-kernel f = is-equaliser C f zero→
+  
+    kernels-are-subobjects
+      : ∀ {a b ker} {f : Hom a b} (k : Hom ker a)
+      → is-kernel f k → is-monic k
+    kernels-are-subobjects = is-equaliser→is-monic
+  
+    record Kernel {a b} (f : Hom a b) : Type (o ⊔ ℓ) where
+      field
+        {ker} : Ob
+        kernel : Hom ker a
+        has-is-kernel : is-kernel f kernel
+      open is-equaliser has-is-kernel public
 ```
 
 **Lemma**: Let $\cC$ be a category with equalisers and a zero object.
@@ -62,15 +61,15 @@ category has a choice of zero object and a choice of equaliser for any
 pair of morphisms, then it has canonically-defined choices of kernels:
 
 ```agda
-module Canonical-kernels
-  (zero : Zero) (eqs : ∀ {a b} (f g : Hom a b) → Equaliser f g) where
-  open Zero zero
-  open Kernel
-
-  Ker : ∀ {a b} (f : Hom a b) → Kernel zero f
-  Ker f .ker           = _
-  Ker f .kernel        = eqs f zero→ .Equaliser.equ
-  Ker f .has-is-kernel = eqs _ _ .Equaliser.has-is-eq
+  module Canonical-kernels
+    (zero : Zero C) (eqs : ∀ {a b} (f g : Hom a b) → Equaliser C f g) where
+    open Zero zero
+    open Kernel
+  
+    Ker : ∀ {a b} (f : Hom a b) → Kernel zero f
+    Ker f .ker           = _
+    Ker f .kernel        = eqs f zero→ .Equaliser.equ
+    Ker f .has-is-kernel = eqs _ _ .Equaliser.has-is-eq
 ```
 
 We now show that the maps $! : \ker\ker f \to \emptyset$ and $¡ :
@@ -80,10 +79,10 @@ direction, we have maps $\ker\ker f \to \ker\ker f$, which, since $\ker$
 is a limit, are uniquely determined _if_ they are cone homomorphisms.
 
 ```agda
-  Ker-of-ker≃∅ : ∀ {a b} (f : Hom a b) → Ker (Ker f .kernel) .ker ≅ ∅
-  Ker-of-ker≃∅ f = make-iso ! ¡ (!-unique₂ _ _) p where
-    module Kf = Kernel (Ker f)
-    module KKf = Kernel (Ker (Ker f .kernel))
+    Ker-of-ker≃∅ : ∀ {a b} (f : Hom a b) → Ker (Ker f .kernel) .ker ≅ ∅
+    Ker-of-ker≃∅ f = make-iso ! ¡ (!-unique₂ _ _) p where
+      module Kf = Kernel (Ker f)
+      module KKf = Kernel (Ker (Ker f .kernel))
 ```
 
 The calculation is straightforward enough: The hardest part is showing
@@ -98,9 +97,9 @@ $$
 $$
 
 ```agda
-    p : ¡ ∘ ! ≡ id
-    p = KKf.unique₂ (zero-comm _ _) (zero-∘l _)
-          (Kf.unique₂ (extendl (zero-comm _ _))
-                      (pulll KKf.equal ∙ idr _)
-                      (zero-comm _ _))
+      p : ¡ ∘ ! ≡ id
+      p = KKf.unique₂ (zero-comm _ _) (zero-∘l _)
+            (Kf.unique₂ (extendl (zero-comm _ _))
+                        (pulll KKf.equal ∙ idr _)
+                        (zero-comm _ _))
 ```

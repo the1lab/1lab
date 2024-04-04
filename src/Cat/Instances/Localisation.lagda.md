@@ -30,11 +30,10 @@ module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat C w) where
 
 A problem in category theory which sounds simple but turns out to be
 surprisingly tricky is **localisation**: constructing [[universal
-solutions|universal morphism]] to the problem of *inverting a given
-class of morphisms.* More precisely, suppose that we have a category
-$\cC$ and a [[wide subcategory]] $W \sube \cC$. The localisation
-$\cC\loc{W}$, if it exists, should satisfy the following universal
-property:
+solutions|free object]] to the problem of *inverting a given class of
+morphisms.* More precisely, suppose that we have a category $\cC$ and a
+[[wide subcategory]] $W \sube \cC$. The localisation $\cC\loc{W}$, if it
+exists, should satisfy the following universal property:
 
 - There is a functor $\cL : \cC \to \cC\loc{W}$ which *inverts every
   morphsim in $W$*, in the sense that, if $f \in W$, then $\cL f$ is an

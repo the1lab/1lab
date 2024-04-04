@@ -180,11 +180,11 @@ have to show this!
 
 ```agda
     fold-K-singleton
-      : (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟) → f x ≡ fold-K f (singletonᵏ x)
+      : (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟) → fold-K f (singletonᵏ x) ≡ f x
     fold-K-singleton f x = B.≤-antisym
-      (ε'.fam≤lub (x , inc refl))
       (ε'.least (f x) λ (y , □x=y) → □-rec!
         (λ x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl) □x=y)
+      (ε'.fam≤lub (x , inc refl))
       where open fold-K f (singleton x) (singleton-is-K-finite (A .is-tr) x)
 ```
 
@@ -192,21 +192,22 @@ We now have all the ingredients to show that $K$ is a left adjoint.  The
 unit of the adjunction takes an element $x : A$ to the singleton set $\{
 x \}$, and the universal extension of $f : A \to B$ is as defined above.
 
+<!--
 ```agda
-open make-left-adjoint
-open is-join-slat-hom
+open Free-object
 open Subcat-hom
+open is-join-slat-hom
+```
+-->
 
-make-free-join-slat : ∀ {ℓ} → make-left-adjoint (Forget-poset {ℓ} {ℓ} F∘ Forget-join-slat)
-make-free-join-slat .free A = K[ A ]
-make-free-join-slat .unit x = singletonᵏ x
-make-free-join-slat .universal {A} {B} f .hom .hom = fold-K A B f
-make-free-join-slat .universal {A} {B} f .hom .pres-≤ {P} {Q} =
-  fold-K-pres-≤ A B f P Q
-make-free-join-slat .universal {A} {B} f .witness .∪-≤ P Q =
-  fold-K-∪-≤ A B f P Q
-make-free-join-slat .universal {A} {B} f .witness .bot-≤ =
-  fold-K-bot-≤ A B f
+```agda
+make-free-join-slat : ∀ {ℓ} → (A : Set ℓ) → Free-object (Join-slats↪Sets {ℓ = ℓ}) A
+make-free-join-slat A .free = K[ A ]
+make-free-join-slat A .unit = singletonᵏ A
+make-free-join-slat A .fold {B} f .hom .hom            = fold-K A B f
+make-free-join-slat A .fold {B} f .hom .pres-≤ {P} {Q} = fold-K-pres-≤ A B f P Q
+make-free-join-slat A .fold {B} f .witness .∪-≤   = fold-K-∪-≤ A B f
+make-free-join-slat A .fold {B} f .witness .bot-≤ = fold-K-bot-≤ A B f
 ```
 
 As noted earlier, the extension of $f$ agrees with $f$ on singleton
@@ -214,7 +215,7 @@ sets, so the universal extension commutes with the unit of the
 adjunction.
 
 ```agda
-make-free-join-slat .commutes {A} {B} f = ext (fold-K-singleton A B f)
+make-free-join-slat A .commute {B} {f} = ext (fold-K-singleton A B f)
 ```
 
 Finally, we shall show that the universal extension of $f$ is unique.
@@ -231,9 +232,9 @@ elements of $P$, which is the same join used to compute the extension of
 $f$.
 
 ```agda
-make-free-join-slat .unique {A} {B} {f} {g} p = ext λ P pfin → lub-unique
-  (fold-K.ε'.has-lub A B f P pfin)
-  (cast-is-lubᶠ (λ Q → sym (p #ₚ Q .fst)) $
-    pres-finitely-indexed-lub (g .witness) pfin _ _ $
-    K-singleton-lub A _)
+make-free-join-slat A .unique {B} {f} g p = ext λ P pfin →
+  sym $ lub-unique (fold-K.ε'.has-lub A B f P pfin)
+    (cast-is-lubᶠ (λ Q → (p #ₚ Q .fst)) $
+      pres-finitely-indexed-lub (g .witness) pfin _ _ $
+      K-singleton-lub A _)
 ```

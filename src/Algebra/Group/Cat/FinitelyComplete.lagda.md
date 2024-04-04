@@ -4,6 +4,10 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import Cat.Instances.Sets.Complete as SL
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
+open import Cat.Diagram.Product
+open import Cat.Diagram.Zero
 open import Cat.Prelude
 ```
 -->
@@ -40,12 +44,6 @@ _forced_ to do this since [right adjoints preserve limits].
 
 ## The zero group
 
-```agda
-open import Cat.Diagram.Terminal (Groups ℓ)
-open import Cat.Diagram.Initial (Groups ℓ)
-open import Cat.Diagram.Zero (Groups ℓ)
-```
-
 The zero object in the category of groups is given by the unit type,
 equipped with its unique group structure. Correspondingly, we may refer
 to this group in prose either as $0$ or as $\{\star\}$.
@@ -62,7 +60,7 @@ Zero-group = to-group zg where
   zg .make-group.invl x = refl
   zg .make-group.idl x = refl
 
-Zero-group-is-initial : is-initial Zero-group
+Zero-group-is-initial : is-initial (Groups ℓ) Zero-group
 Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
   module G = Group-on G
   gh : is-group-hom _ _ (λ x → G.unit)
@@ -72,27 +70,23 @@ Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
 Zero-group-is-initial (_ , G) .paths x =
   ext λ _ → sym (is-group-hom.pres-id (x .preserves))
 
-Zero-group-is-terminal : is-terminal Zero-group
+Zero-group-is-terminal : is-terminal (Groups ℓ) Zero-group
 Zero-group-is-terminal _ .centre =
   total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
 Zero-group-is-terminal _ .paths x = trivial!
 
-Zero-group-is-zero : is-zero Zero-group
+Zero-group-is-zero : is-zero (Groups ℓ) Zero-group
 Zero-group-is-zero = record
   { has-is-initial = Zero-group-is-initial
   ; has-is-terminal = Zero-group-is-terminal
   }
 
-∅ᴳ : Zero
+∅ᴳ : Zero (Groups ℓ)
 ∅ᴳ .Zero.∅ = Zero-group
 ∅ᴳ .Zero.has-is-zero = Zero-group-is-zero
 ```
 
 ## Direct products
-
-```agda
-open import Cat.Diagram.Product (Groups ℓ)
-```
 
 We compute the product of two groups $G \times H$ as the product of
 their underlying sets, equipped with the operation of "pointwise
@@ -130,14 +124,14 @@ factor : Groups.Hom G H → Groups.Hom G K → Groups.Hom G (Direct-product H K)
 factor f g .hom x = f # x , g # x
 factor f g .preserves .pres-⋆ x y = ap₂ _,_ (f .preserves .pres-⋆ _ _) (g .preserves .pres-⋆ _ _)
 
-Direct-product-is-product : is-product {G} {H} proj₁ proj₂
+Direct-product-is-product : is-product (Groups ℓ) {G} {H} proj₁ proj₂
 Direct-product-is-product {G} {H} = p where
   open is-product
-  p : is-product _ _
+  p : is-product _ _ _
   p .⟨_,_⟩ = factor
-  p .π₁∘factor = Forget-is-faithful refl
-  p .π₂∘factor = Forget-is-faithful refl
-  p .unique other p q = Forget-is-faithful (funext λ x →
+  p .π₁∘factor = Grp↪Sets-is-faithful refl
+  p .π₂∘factor = Grp↪Sets-is-faithful refl
+  p .unique other p q = Grp↪Sets-is-faithful (funext λ x →
     ap₂ _,_ (happly (ap hom p) x) (happly (ap hom q) x))
 ```
 
@@ -151,12 +145,12 @@ a coproduct.
 inj₁ : G Groups.↪ Direct-product G H
 inj₁ {G} {H} .mor .hom x = x , H .snd .unit
 inj₁ {G} {H} .mor .preserves .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
-inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .fst)
+inj₁ {G} {H} .monic g h x = Grp↪Sets-is-faithful (funext λ e i → (x i # e) .fst)
 
 inj₂ : H Groups.↪ Direct-product G H
 inj₂ {H} {G} .mor .hom x = G .snd .unit , x
 inj₂ {H} {G} .mor .preserves .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
-inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .snd)
+inj₂ {H} {G} .monic g h x = Grp↪Sets-is-faithful (funext λ e i → (x i # e) .snd)
 ```
 
 ## Equalisers
@@ -235,17 +229,17 @@ $g$.
   Groups-equalisers : Equaliser (Groups ℓ) f g
   Groups-equalisers .apex = Equaliser-group
   Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
-  Groups-equalisers .has-is-eq .equal = Forget-is-faithful seq.equal
+  Groups-equalisers .has-is-eq .equal = Grp↪Sets-is-faithful seq.equal
   Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom go lim-gh where
     go = seq.universal {F = underlying-set (F .snd)} (ap hom p)
 
     lim-gh : is-group-hom _ _ go
     lim-gh .pres-⋆ x y = Σ-prop-path! (e' .preserves .pres-⋆ _ _)
 
-  Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Forget-is-faithful
+  Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Grp↪Sets-is-faithful
     (seq.factors {F = underlying-set (F .snd)} {p = ap hom p})
 
-  Groups-equalisers .has-is-eq .unique {F = F} {p = p} q = Forget-is-faithful
+  Groups-equalisers .has-is-eq .unique {F = F} {p = p} q = Grp↪Sets-is-faithful
     (seq.unique {F = underlying-set (F .snd)} {p = ap hom p} (ap hom q))
 ```
 
@@ -259,11 +253,11 @@ open import Cat.Diagram.Limit.Finite
 Groups-finitely-complete : Finitely-complete (Groups ℓ)
 Groups-finitely-complete = with-equalisers (Groups ℓ) top prod Groups-equalisers
   where
-    top : Terminal
+    top : Terminal (Groups ℓ)
     top .Terminal.top = Zero-group
     top .Terminal.has⊤ = Zero-group-is-terminal
 
-    prod : ∀ A B → Product A B
+    prod : ∀ A B → Product (Groups ℓ) A B
     prod A B .Product.apex = Direct-product A B
     prod A B .Product.π₁ = proj₁
     prod A B .Product.π₂ = proj₂

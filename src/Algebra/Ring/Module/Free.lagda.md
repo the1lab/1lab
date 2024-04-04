@@ -268,15 +268,16 @@ the operation constructors, which is.. inductive, but manageable. I'll
 leave the computation here if you're interested:
 
 ```agda
-open make-left-adjoint
-make-free-module : ∀ {ℓ'} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ'))
-make-free-module {ℓ'} = go where
-  go : make-left-adjoint (Forget-structure (R-Mod-structure R))
-  go .free x = Free-Mod ∣ x ∣
-  go .unit x = Free-mod.inc
-  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ'} y f)
-  go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p = reext! p
+make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+make-free-module {ℓ' = ℓ'} S = go where
+  open Free-object
+
+  go : Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+  go .free = Free-Mod ⌞ S ⌟
+  go .unit = inc
+  go .fold {b} f = linear-map→hom (fold-free-mod b f)
+  go .commute = refl
+  go .unique {M} {f} g p = reext! p
 ```
 
 After that calculation, we can ✨ just ✨ conclude that
@@ -285,17 +286,14 @@ rearrange the proof above into the form of a functor and an adjunction.
 
 ```agda
 Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
-Free-module {ℓ' = ℓ'} =
-  make-left-adjoint.to-functor (make-free-module {ℓ' = ℓ'})
+Free-module {ℓ' = ℓ'} = free-objects→functor (make-free-module {ℓ' = ℓ'})
 
-Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ Forget-module R (ℓ ⊔ ℓ')
-Free⊣Forget {ℓ'} = make-left-adjoint.to-left-adjoint
-  (make-free-module {ℓ' = ℓ'})
+Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ R-Mod↪Sets R (ℓ ⊔ ℓ')
+Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ'})
 ```
 
 <!--
 ```agda
-
 equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)
   → (let module M = Module-on M)

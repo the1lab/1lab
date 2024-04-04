@@ -670,6 +670,11 @@ is-contr→is-set C x y p q i j = outS do
 
 <!--
 ```agda
+is-contr→pathp : ∀ {B : I → Type ℓ} → ((i : I) → is-contr (B i))
+              → (b0 : B i0) (b1 : B i1)
+              → PathP (λ i → B i) b0 b1
+is-contr→pathp hB b0 b1 = is-prop→pathp (λ i → is-contr→is-prop (hB i)) b0 b1
+
 SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
 SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 
@@ -682,6 +687,7 @@ SinglP-is-contr A a .paths (x , p) i = _ , λ j → fill A (∂ i) j λ where
 
 SinglP-is-prop : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → is-prop (SingletonP A a)
 SinglP-is-prop = is-contr→is-prop (SinglP-is-contr _ _)
+
 
 is-prop→squarep
   : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))

@@ -65,7 +65,7 @@ Furthermore, this functor is a [[left adjoint]] to the forgetful functor
 into $\Sets$.
 
 ```agda
-DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ Forget-poset
+DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ Posets↪Sets
 DiscF⊣Forget .unit .η A x = x
 DiscF⊣Forget .unit .is-natural _ _ _ = refl
 DiscF⊣Forget .counit .η P .hom x  = x

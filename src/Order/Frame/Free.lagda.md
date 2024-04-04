@@ -39,7 +39,6 @@ assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
 ```agda
 open Functor
 open Subcat-hom
-open make-left-adjoint
 open is-frame-hom
 ```
 -->
@@ -104,10 +103,9 @@ functor $A \to B$”.
 
 [Diaconescu's theorem]: Topoi.Classifying.Diaconescu.html
 
-
 ```agda
-make-free-cocompletion : ∀ {ℓ} → make-left-adjoint (Frame↪SLat {ℓ} {ℓ})
-make-free-cocompletion {ℓ} = go where
+make-free-cocompletion : ∀ {ℓ} → (A : Meet-semilattice ℓ ℓ) → Free-object Frame↪SLat A
+make-free-cocompletion {ℓ} A = go where
 ```
 
 Anwyay, that was a _very_ dense explanation of the universal property.
@@ -116,10 +114,11 @@ encounter it. We start by packaging together the extension of a
 semilattice homomorphism $A \to B$ to a frame homomorphism $DA \to B$.
 
 ```agda
-  module Mk (A : Meet-semilattice ℓ ℓ) (B : Frame ℓ ℓ)
-            (f : Meet-slats ℓ ℓ .Precategory.Hom A (Frm.meets (B .snd)))
+  module A  = Meet-slat (A .snd)
+
+  module Mk (B : Frame ℓ ℓ)
+            (f : Meet-slats.Hom A (Frm.meets (B .snd)))
     where
-    module A  = Meet-slat (A .snd)
     module A↓ = Frm (Lower-sets-frame A .snd)
     module B  = Frm (B .snd)
     module f = is-meet-slat-hom (f .witness)
@@ -169,9 +168,9 @@ It's also free from the definition of cocompletions that the extended
 map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
-    mkcomm : ∀ x → f # x ≡ mkhom # (↓ (A .fst) x)
+    mkcomm : ∀ x → mkhom # (↓ (A .fst) x) ≡ f # x
     mkcomm x =
-      sym (Lan↓-commutes B.⋃-lubs (f .hom) x)
+      (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```
 
 Now we must define the unit map. We've already committed to defining
@@ -201,14 +200,20 @@ We're already 80% done with the adjunction. The final thing to do is to
 put it all together, bringing in the result about uniqueness of
 cocontinuous extensions to tie everything up:
 
+<!--
 ```agda
-  go : make-left-adjoint (Frame↪SLat {ℓ})
-  go .free = Lower-sets-frame
-  go .unit = the-unit
-  go .universal {A} {B} f = Mk.mkhom A B f
-  go .commutes {A} {B} f = ext (Mk.mkcomm A B f)
-  go .unique {A} {B} {f = f} {g} wit = ext q where
-    open Mk A B f
+  open Free-object
+```
+-->
+
+```agda
+  go : Free-object Frame↪SLat A
+  go .free = Lower-sets-frame A
+  go .unit = the-unit A
+  go .fold {B} f = Mk.mkhom B f
+  go .commute {B} {f} = ext (Mk.mkcomm B f)
+  go .unique {B} {f} g wit = ext (p #ₚ_) where
+    open Mk B f
 
     gᵐ : Monotone (Lower-sets (A .fst)) (B .fst)
     gᵐ .hom x = g # x
@@ -216,8 +221,5 @@ cocontinuous extensions to tie everything up:
 
     p = Lan↓-unique B.⋃-lubs (f .hom) gᵐ
       (is-frame-hom.pres-⋃ (g .witness))
-      λ x → ap (_# x) (sym wit)
-
-    q : ∀ x → Lan↓ B.⋃-lubs (f .hom) # x ≡ g # x
-    q x = sym p #ₚ x
+      (wit #ₚ_)
 ```

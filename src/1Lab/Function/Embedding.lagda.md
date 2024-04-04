@@ -121,6 +121,23 @@ Subset-proj-embedding {B = B} Bprop x = Equiv→is-hlevel 1 (Fibre-equiv B x) (B
 
 <!--
 ```agda
+∙-is-embedding
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → {f : A → B} {g : B → C}
+  → is-embedding f → is-embedding g → is-embedding (g ∘ f)
+∙-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c =
+  Equiv→is-hlevel 1
+    (fibre-∘-≃ c)
+    (Σ-is-hlevel 1 (g-emb c) (λ g-fib → f-emb (g-fib .fst)))
+
+_∙emb_
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → A ↪ B → B ↪ C → A ↪ C
+(f ∙emb g) .fst = g .fst ∘ f .fst
+(f ∙emb g) .snd = ∙-is-embedding (f .snd) (g .snd)
+
+infixr 30 _∙emb_
+
 embedding→monic
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
   → is-embedding f

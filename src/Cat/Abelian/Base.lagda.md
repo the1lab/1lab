@@ -7,6 +7,11 @@ open import Algebra.Monoid
 open import Algebra.Group
 
 open import Cat.Diagram.Equaliser.Kernel
+open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
+open import Cat.Diagram.Zero
 
 import Algebra.Group.Cat.Base as Grp
 import Algebra.Group.Ab.Hom as Ab
@@ -146,13 +151,13 @@ $A$ is an object s.t. $\id_A = 0$, then $A$ is a zero object.
 module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
   private module A = Ab-category A
 
-  id-zero→zero : ∀ {A} → A.id {A} ≡ A.0m → A.is-zero A
-  id-zero→zero idm .A.is-zero.has-is-initial B = contr A.0m λ h → sym $
+  id-zero→zero : ∀ {X} → A.id {X} ≡ A.0m → is-zero C X
+  id-zero→zero idm .is-zero.has-is-initial B = contr A.0m λ h → sym $
     h                                ≡⟨ A.intror refl ⟩
     h A.∘ A.id                       ≡⟨ A.refl⟩∘⟨ idm ⟩
     h A.∘ A.0m                       ≡⟨ A.∘-zero-r ⟩
     A.0m                             ∎
-  id-zero→zero idm .A.is-zero.has-is-terminal x = contr A.0m λ h → sym $
+  id-zero→zero idm .is-zero.has-is-terminal x = contr A.0m λ h → sym $
     h                              ≡⟨ A.introl refl ⟩
     A.id A.∘ h                     ≡⟨ idm A.⟩∘⟨refl ⟩
     A.0m A.∘ h                     ≡⟨ A.∘-zero-l ⟩
@@ -189,10 +194,10 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   open Ab-category has-ab public
 
   field
-    has-terminal : Terminal
-    has-prods    : ∀ A B → Product A B
+    has-terminal : Terminal C
+    has-prods    : ∀ A B → Product C A B
 
-  ∅ : Zero
+  ∅ : Zero C
   ∅ .Zero.∅ = has-terminal .Terminal.top
   ∅ .Zero.has-is-zero = id-zero→zero has-ab $
     is-contr→is-prop (has-terminal .Terminal.has⊤ _) _ _
@@ -230,12 +235,12 @@ and analogously for the second coprojection followed by
 comultiplication.
 
 ```agda
-  has-coprods : ∀ A B → Coproduct A B
+  has-coprods : ∀ A B → Coproduct C A B
   has-coprods A B = coprod where
     open Coproduct
     open is-coproduct
     module Prod = Product (has-prods A B)
-    coprod : Coproduct A B
+    coprod : Coproduct C A B
     coprod .coapex = Prod.apex
     coprod .in₀ = Prod.⟨ id , 0m ⟩
     coprod .in₁ = Prod.⟨ 0m , id ⟩
@@ -287,7 +292,7 @@ record is-pre-abelian {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) wh
   open is-additive has-additive public
   field
     kernel   : ∀ {A B} (f : Hom A B) → Kernel C ∅ f
-    cokernel : ∀ {A B} (f : Hom A B) → Coequaliser 0m f
+    cokernel : ∀ {A B} (f : Hom A B) → Coequaliser C 0m f
 
   module Ker {A B} (f : Hom A B) = Kernel (kernel f)
   module Coker {A B} (f : Hom A B) = Coequaliser (cokernel f)

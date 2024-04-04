@@ -143,7 +143,7 @@ module _
 
     F'-lim : Limit F'
     F'-lim = functor-limit
-      (λ f → subst Limit F^op^op≡F (Colimit→Co-limit _ (has-D-colims (Functor.op f))))
+      (λ f → subst Limit F^op^op≡F (Colimit→Co-limit (has-D-colims (Functor.op f))))
       F'
 
     LF'' : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))
@@ -153,7 +153,7 @@ module _
     LFop = subst Limit (F∘-assoc ∙ ap (_F∘ Functor.op F) op-functor←→ ∙ F∘-idl) LF''
 
     colim : Colimit F
-    colim = Co-limit→Colimit _ LFop
+    colim = Co-limit→Colimit LFop
 
 Functor-cat-is-cocomplete :
   ∀ {o ℓ} {o₁ ℓ₁} {C : Precategory o₁ ℓ₁} {o₂ ℓ₂} {D : Precategory o₂ ℓ₂}

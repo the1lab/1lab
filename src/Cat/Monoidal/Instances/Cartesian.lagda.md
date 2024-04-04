@@ -6,10 +6,10 @@ open import Cat.Monoidal.Diagonals
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Braided
+open import Cat.Diagram.Product
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
-import Cat.Diagram.Product
 import Cat.Reasoning as Cr
 ```
 -->
@@ -29,8 +29,7 @@ categories**, also known as _finite-products categories_.
 ```agda
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (open Cat.Diagram.Product C)
-  (prods : ∀ A B → Product A B) (term : Terminal C)
+  (prods : ∀ A B → Product C A B) (term : Terminal C)
   where
 ```
 
@@ -42,7 +41,7 @@ module _
   open Diagonals hiding (δ)
   open make-natural-iso
   open Cr C
-  open Binary-products prods
+  open Binary-products C prods
   open Terminal term
 ```
 -->

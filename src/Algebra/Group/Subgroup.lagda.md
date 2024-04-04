@@ -6,6 +6,9 @@ open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Diagram.Equaliser.Kernel
+open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Zero
 
 open import Data.Power
 
@@ -103,7 +106,7 @@ module _ {ℓ} where
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
   Ker-subgroup f =
     record { map   = kernel
-           ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
+           ; monic = is-equaliser→is-monic _ has-is-kernel }
     where
       open Kernel (Ker f)
 ```
@@ -228,7 +231,7 @@ construction used to implement it does not matter.
 :::
 
 ```agda
-  1st-iso-theorem : Groups.is-coequaliser (Groups.Zero.zero→ ∅ᴳ) Kerf.kernel A→im
+  1st-iso-theorem : is-coequaliser (Groups ℓ) (Zero.zero→ ∅ᴳ) Kerf.kernel A→im
   1st-iso-theorem = coeq where
     open Groups
     open is-coequaliser
@@ -309,7 +312,7 @@ rest of the construction, most of it is applying induction
 will compute.
 
 ```agda
-    coeq : is-coequaliser (Groups.Zero.zero→ ∅ᴳ) Kerf.kernel A→im
+    coeq : is-coequaliser (Groups ℓ) (Zero.zero→ ∅ᴳ) Kerf.kernel A→im
     coeq .coequal = ext λ x p → f.pres-id ∙ sym p
 
     coeq .universal {F = F} {e' = e'} p = gh where
@@ -323,7 +326,7 @@ will compute.
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
 
-    coeq .factors = Forget-is-faithful refl
+    coeq .factors = Grp↪Sets-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
       ap# colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
@@ -582,11 +585,11 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
     ker≤H : Ker-sg ≤ₘ H-sg
     ker≤H .map = to
-    ker≤H .sq = Forget-is-faithful refl
+    ker≤H .sq = Grp↪Sets-is-faithful refl
 
     H≤ker : H-sg ≤ₘ Ker-sg
     H≤ker .map = from
-    H≤ker .sq = Forget-is-faithful refl
+    H≤ker .sq = Grp↪Sets-is-faithful refl
 
     done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

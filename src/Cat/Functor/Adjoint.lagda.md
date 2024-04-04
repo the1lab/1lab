@@ -69,6 +69,7 @@ starts as such:
 
 ```agda
 record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level C D) where
+  no-eta-equality
   private
     module C = Precategory C
     module D = Precategory D
@@ -127,405 +128,44 @@ commutative diagrams:
 
 </div>
 
-# Universal morphisms {defines="universal-morphism"}
-
 <!--
 ```agda
+{-
+Characterising paths between adjoints.
+-}
 module _
-  {o h o' h'}
-  {C : Precategory o h}
-  {D : Precategory o' h'}
+  {L L' : Functor C D} {R R' : Functor D C}
   where
-
   private
-    module C = Precategory C
-    module D = Precategory D
-```
--->
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
 
-Another perspective on adjoint functors is given by finding "most
-efficient solutions" to the "problem" posed by a functor. For instance,
-the ([[fully faithful]]) inclusion of [[posets]] into [[strict
-(pre)categories|strict category]] poses the problem of turning a
-precategory into a poset. While this can't be done in a 1:1 way
-(precategories are strictly more general than posets), we _can_ still
-ponder whether there is some "most efficient" way to turn a category
-into a poset.
-
-While we can't directly consider maps from precategories to posets, we
-_can_ consider maps from precategories to the inclusion of a poset; Let
-us write $\cC$ for a generic precategory, $\cP$ for a generic poset, and
-$U(\cP)$ for $\cP$ considered as a precategory. Any functor $\cC \to
-U(\cP)$ can be seen as "a way to turn $\cC$ into a poset", but not all
-of these can be the "most efficient" way. In fact, there is a vast sea
-of uninteresting ways to turn a precategory into a poset: turn them all
-into the [[terminal|terminal object]] poset!
-
-A "most efficient" solution, then, would be one through which all others
-factor. A "universal" way of turning a strict precategory into a poset:
-A **universal morphism** from $\cC$ to $U$. The way we think about
-universal morphisms (reusing the same variables) is as [initial objects]
-in the [comma category] $\cC \swarrow U$, where that category is
-conceptualised as being "the category of maps from $\cC$ to $U$".
-
-[initial objects]: Cat.Diagram.Initial.html
-[comma category]: Cat.Instances.Comma.html
-
-```agda
-  Universal-morphism : C.Ob → Functor D C → Type _
-  Universal-morphism X R = Initial (X ↙ R)
-```
-
-Abstracting away, suppose that $R : D \to C$ has universal morphisms for
-every object of $C$. To show the correspondence between these two ideas
-of adjunction, we show that this assignment extends to a functor $L : C
-\to D$, with $L \dashv R$ as defined above.
-
-<!--
-```agda
-module _
-  {o h o' h'}
-  {C : Precategory o h}
-  {D : Precategory o' h'}
-  (R : Functor D C)
-  (universal-map-for : ∀ c → Universal-morphism c R)
-  where
-
-  open Initial
-  open ↓Hom using (β)
-  open ↓Obj using (map)
-
-  open Precategory
-
-  private
-    import Cat.Reasoning C as C
-    import Cat.Reasoning D as D
-    module R = Functor R
-```
--->
-
-## Defining the L
-
-We first show that the assignment of universal morphisms restricts to a
-functorial assignment $L : C \to D$. Recall that an object in $X
-\swarrow R$ is given by a codomain $y$ and a map $X \to R(y)$. We define
-$L_0(x)$ to be the codomain of the universal morphism:
-
-```agda
-  L₀ : C.Ob → D.Ob
-  L₀ x = universal-map-for x .bot .↓Obj.y
-
-  L₀' : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
-  L₀' x = universal-map-for x .bot .map
-```
-
-Given an arrow $a \to b$ in $\cC$, we can send it to a
-uniquely-determined _object_ in $a \swarrow R$: We take the universal
-arrow assigned to $b$ (an object of $b \swarrow R$), and precompose with
-$a$. This object will then serve as the domain of the morphism part of
-$L$, which is given by the unique assignment arrows out of the initial
-object in $a \swarrow R$ (see `lift↓`{.Agda} below).
-
-```agda
-  private
-    to-ob : ∀ {a b} → C.Hom a b → ⌞ a ↙ R ⌟
-    to-ob {a} {b} h = record { map = L₀' b C.∘ h }
-
-    lift↓ : ∀ {x y} (g : C.Hom x y)
-          → (x ↙ R) .Precategory.Hom (universal-map-for x .bot) (to-ob g)
-    lift↓ {x} {y} g = ¡ (universal-map-for x) {to-ob g}
-
-  L₁ : ∀ {a b} → C.Hom a b → D.Hom (L₀ a) (L₀ b)
-  L₁ {a} {b} x = lift↓ x .β
-```
-
-<details>
-<summary>
-It now suffices to show the functor identities hold for `L₁`{.Agda}.
-They follow essentially from the uniqueness of maps out of an initial
-object.
-</summary>
-
-```agda
-  private abstract
-    L-id : ∀ {a} → L₁ (C.id {a}) ≡ D.id {L₀ a}
-    L-id {a} = ap β (¡-unique (universal-map-for a)
-                      (record { sq = C.elimr refl
-                                  ·· C.elimr refl
-                                  ·· sym (C.eliml R.F-id) }))
-
-    lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
-          → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀' x)
-          ≡ to-ob (f C.∘ g) .map C.∘ C.id
-    lemma {x} {y} {z} f g =
-      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀' x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
-      R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀' x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
-      R.₁ (lift↓ f .β) C.∘ L₀' y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
-      L₀' z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
-      to-ob (f C.∘ g) .map C.∘ C.id                     ∎
-
-    L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
-        → L₁ (f C.∘ g) ≡ L₁ f D.∘ L₁ g
-    L-∘ f g = ap β (¡-unique (universal-map-for _) (record { sq = sym (lemma f g) }))
-```
-</details>
-
-That out of the way, we have our $L$ functor. We now have to show that
-it defines a left adjoint to the $R$ we started with.
-
-```agda
-  universal-maps→L : Functor C D
-  universal-maps→L .F₀ = L₀
-  universal-maps→L .F₁ = L₁
-  universal-maps→L .F-id = L-id
-  universal-maps→L .F-∘ = L-∘
-```
-
-<!--
-```agda
-  open _⊣_ hiding (η ; ε)
-  open _=>_
-```
--->
-
-## Building the adjunction
-
-We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \Id \To (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \To \Id$ (the
-_adjunction counit_). We begin with the counit, since that's more
-involved.
-
-The construction begins by defining a function `mapd`{.Agda} which sends
-each object of $\cC$ to the initial object in $x \swarrow R$. Note
-that this is the same as `L₀`{.Agda}, but returning the entire object
-rather than a part of it.
-
-```agda
-  private
-    mapd : ∀ (x : C.Ob) → Ob (x ↙ R)
-    mapd x = universal-map-for x .bot
-```
-
-Now for an object $x : \cD$, we have $R(x) : \cC$, so by the
-assumption that $R$ has a collection of universal objects, the comma
-category $R(x) \swarrow R$ has an initial object; Let us write that
-object as $(L(R(x)), !)$ --- recall that here, $! : R(x) \to RLR(x)$.
-
-This means, in particular, that for any other object $(y, f)$ (with $y
-\in \cD$ and $f : R(x) \to R(y)$ in $\cC$), there is a unique map
-$\rm{mapd}(x) \to (y, f)$, which breaks down as a map $\beta :
-L(R(x)) \to y$ such that the square below commutes.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  {R(x)} & {RLR(x)} \\
-  & {R(y)}
-  \arrow["{!}", from=1-1, to=1-2]
-  \arrow["{R(\beta)}", from=1-2, to=2-2]
-  \arrow["f"', from=1-1, to=2-2]
-\end{tikzcd}\]
-~~~
-
-```agda
-    ε : ∀ (x : D.Ob) → Hom (R.₀ x ↙ R) (mapd (R.₀ x)) _
-    ε x = Initial.¡ (universal-map-for (R.₀ x)) {x = record { y = x ; map = C.id }}
-```
-
-The magic trick is that, if we pick $(x, \id)$ as the object of
-$R(x)\swarrow R$ to map into, then $\beta$ in the diagram above must be
-$LR(x) \to x$! We choose this map as our adjunction counit. A tedious
-calculation shows that this assignment is natural, essentially because
-$\beta$ is unique.
-
-```agda
-  universal-maps→L⊣R : universal-maps→L ⊣ R
-  universal-maps→L⊣R .counit .η x = ε x .↓Hom.β
-  universal-maps→L⊣R .counit .is-natural x y f =
-    ap ↓Hom.β (
-      ¡-unique₂ (universal-map-for (R.₀ x)) {record { map = R.₁ f }}
-      (record { sq =
-        R.₁ f C.∘ C.id                                          ≡⟨ C.idr _ ⟩
-        R.₁ f                                                   ≡˘⟨ C.cancell (sym (ε y .↓Hom.sq) ∙ C.idr _) ⟩
-        R.₁ (ε y .β) C.∘ _ C.∘ R.₁ f                            ≡˘⟨ ap₂ C._∘_ refl (sym (lift↓ (R.₁ f) .↓Hom.sq) ∙ C.idr _) ⟩
-        R.₁ (ε y .β) C.∘ R.₁ (L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-        R.₁ (ε y .β D.∘ L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map       ∎ })
-      (record { sq =
-        R.₁ f C.∘ C.id                               ≡˘⟨ ap (R.₁ f C.∘_) (sym (ε x .↓Hom.sq) ∙ C.idr _) ⟩
-        R.₁ f C.∘ R.₁ (ε x .β) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-        R.₁ (f D.∘ ε x .β) C.∘ mapd (R.₀ x) .map     ∎ }))
-```
-
-For the adjunction unit, the situation is a lot easier. Recall that we
-_defined_ $L(x)$ on objects (`L₀`{.Agda}) to be the codomain part of the
-initial object of $x \swarrow R$; The _map_ part of that object then
-gives us a natural family of morphisms $x \to R(L(x))$. By definition.
-It's so "by definition" that Agda can figure out the components by
-itself:
-
-```agda
-  universal-maps→L⊣R .unit .η x              = _
-  universal-maps→L⊣R .unit .is-natural x y f = sym (C.idr _) ∙ lift↓ f .↓Hom.sq
-```
-
-If you think back to the adjunction counit, you'll recall that it
-satisfied a triangle that looks like the one below, and that the top map
-(the map component of the initial object) is what we defined the
-adjunction unit to be, so.. It's `zag`{.Agda}.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  {R(x)} && {RLR(x)} \\
-  \\
-  && R(x)
-  \arrow["{\id}"', from=1-1, to=3-3]
-  \arrow["{!}", from=1-1, to=1-3]
-  \arrow["{R(\beta)}", from=1-3, to=3-3]
-\end{tikzcd}\]
-~~~
-
-```agda
-  universal-maps→L⊣R .zag {x} = sym (ε x .↓Hom.sq) ∙ C.idr _
-```
-
-The other triangle identity is slightly more annoying, but it works just
-as well. It follows from the uniqueness of maps out of the initial
-object:
-
-```agda
-  universal-maps→L⊣R .zig {x} =
-    ap ↓Hom.β (
-      ¡-unique₂ (universal-map-for x) {record { map = α }}
-        (record { sq =
-          α C.∘ C.id                      ≡⟨ C.idr _ ⟩
-          α                               ≡˘⟨ C.cancell (sym (ε (L₀ x) .↓Hom.sq) ∙ C.idr _) ⟩
-          R.₁ _ C.∘ _ C.∘ α               ≡˘⟨ C.pullr (sym (lift↓ α .↓Hom.sq) ∙ C.idr _) ⟩
-          (R.₁ _ C.∘ R.₁ (L .F₁ α)) C.∘ α ≡˘⟨ ap (C._∘ α) (R.F-∘ _ _) ⟩
-          R.₁ (_ D.∘ L .F₁ α) C.∘ α       ∎
-        })
-        (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
-    )
-    where α = L₀' x
-          L = universal-maps→L
-```
-
-## From an adjunction
-
-To finish the correspondence, we show that any (left) adjoint functor $L
-\dashv R$ defines a system of universal arrows $- \swarrow R$; This
-means that, not only does a "universal way of solving $R$" _give_ a left
-adjoint to $R$, it _is_ a left adjoint to $R$.
-
-<!--
-```agda
-module _
-  {L : Functor C D} {R : Functor D C}
-  (adj : L ⊣ R)
-  where
-
-  private
-    import Cat.Functor.Reasoning L as L
-    import Cat.Functor.Reasoning R as R
-    import Cat.Reasoning C as C
-    import Cat.Reasoning D as D
-    module adj = _⊣_ adj
-```
--->
-
-So, given an object $x \in \cC$, we must find an object $y$ and a
-universal map $x \to R(y)$. Recall that, in the previous section, we
-constructed the left adjoint $L$'s action on objects by using our system
-of universal arrows; Symmetrically, in this section, we take the codomain
-to be $y = L(x)$. We must then find an arrow $x \to RLx$, but this is
-exactly the adjunction unit $\eta$!
-
-```agda
-  L⊣R→map-to-R : ∀ x → ⌞ x ↙ R ⌟
-  L⊣R→map-to-R x .↓Obj.x = tt
-  L⊣R→map-to-R x .↓Obj.y = L.₀ x
-  L⊣R→map-to-R x .↓Obj.map = adj.η _
-```
-
-We must now show that the unit $\eta$ is universal among the pairs $(y,
-f)$, with $f$ a map $x \to R(y)$. Recall that for our object $(Lx,
-\eta)$ to be [initial], we must find an arrow $(y, f) \to (Lx, \eta)$,
-and prove that this is the only possible such arrow; And that morphisms
-in the comma category $x \swarrow R$ break down as maps $g : Lx \to y$ such
-that the triangle below commutes:
-
-[initial]: Cat.Diagram.Initial.html
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  x && RLx \\
-  \\
-  && Ry
-  \arrow["f"', from=1-1, to=3-3]
-  \arrow["\eta", from=1-1, to=1-3]
-  \arrow["Rg", from=1-3, to=3-3]
-\end{tikzcd}\]
-~~~
-
-We can actually read off the map $g$ pretty directly from the diagram:
-It must be a map $Lx \to y$, but we've been given a map $LRx \to x$ (the
-adjunction counit) and a map $x \to Ry$; We may then take our $g$ to be
-the composite
-
-$$
-Lx \to LRy \to y
-$$
-
-```agda
-  L⊣R→map-to-R-is-initial
-    : ∀ x → is-initial (x ↙ R) (L⊣R→map-to-R x)
-  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.α = tt
-  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.β =
-    adj.ε _ D.∘ L.₁ (other-map .↓Obj.map)
-  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.sq =
-    sym (
-      R.₁ (adj.ε _ D.∘ L.₁ om.map) C.∘ adj.η _       ≡⟨ ap₂ C._∘_ (R.F-∘ _ _) refl ∙ sym (C.assoc _ _ _) ⟩
-      R.₁ (adj.ε _) C.∘ R.₁ (L.₁ om.map) C.∘ adj.η _ ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
-      (R.₁ (adj.ε _) C.∘ adj.η _ C.∘ om.map)         ≡⟨ C.cancell adj.zag ⟩
-      om.map                                         ≡⟨ sym (C.idr _) ⟩
-      om.map C.∘ C.id                                ∎
-    )
-    where module om = ↓Obj other-map
-```
-
-Checking that the triangle above commutes is a routine application of
-naturality and the triangle identities; The same is true for proving
-that the map $g$ above is unique.
-
-```agda
-  L⊣R→map-to-R-is-initial x other-map .paths y = ↓Hom-path _ _ refl $
-    adj.ε _ D.∘ L.₁ om.map                       ≡⟨ D.refl⟩∘⟨ L.expand (sym (C.idr _) ∙ y .↓Hom.sq) ⟩
-    adj.ε _ D.∘ L.₁ (R.₁ y.β) D.∘ L.₁ (adj.η _)  ≡⟨ D.pulll (adj.counit.is-natural _ _ _) ⟩
-    (y.β D.∘ adj.ε _) D.∘ L.₁ (adj.η _)          ≡⟨ D.cancelr adj.zig ⟩
-    y.β                                          ∎
+  module _
+    {adj : L ⊣ R} {adj' : L' ⊣ R'}
+    (p : L ≡ L') (q : R ≡ R')
     where
-      module om = ↓Obj other-map
-      module y = ↓Hom y
+    private
+      module adj = _⊣_ adj
+      module adj' = _⊣_ adj'
+      open Functor
+      open _=>_
+
+    adjoint-pathp
+      : PathP (λ i → Id => q i F∘ p i) adj.unit adj'.unit
+      → PathP (λ i → p i F∘ q i => Id) adj.counit adj'.counit
+      → PathP (λ i → p i ⊣ q i) adj adj'
+    adjoint-pathp r s i ._⊣_.unit = r i
+    adjoint-pathp r s i ._⊣_.counit = s i
+    adjoint-pathp r s i ._⊣_.zig {A} =
+      is-prop→pathp (λ i → D.Hom-set _ _ (s i .η (p i .F₀ A) D.∘ p i .F₁ (r i .η A)) D.id)
+        adj.zig adj'.zig i
+    adjoint-pathp r s i ._⊣_.zag {A} =
+      is-prop→pathp (λ i → C.Hom-set _ _ (q i .F₁ (s i .η A) C.∘ r i .η (q i .F₀ A)) C.id)
+        adj.zag adj'.zag i
 ```
+-->
 
-Hence, we can safely say that having a functor $L$ and an adjunction $L
-\dashv R$ is the same thing as having a functor $R$ and a system of
-universal arrows into $R$:
-
-```agda
-  L⊣R→universal-maps : ∀ x → Universal-morphism x R
-  L⊣R→universal-maps x .Initial.bot = L⊣R→map-to-R x
-  L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x
-```
-
-By going from the adjunction to universal maps and then back to an adjunction, we
-recover $L$:
-
-```agda
-  L→universal-maps→L : universal-maps→L R L⊣R→universal-maps ≡ L
-  L→universal-maps→L = Functor-path (λ _ → refl) λ f → L.pushr refl ∙ D.eliml adj.zig
-```
-
-# Adjuncts {defines=adjuncts}
+## Adjuncts {defines=adjuncts}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any
@@ -581,6 +221,13 @@ $\hom(La,b) \cong \hom(a,Rb)$.
   R-adjunct-is-equiv = is-iso→is-equiv
     (iso L-adjunct R-L-adjunct L-R-adjunct)
 ```
+
+<!--
+```agda
+  module L-adjunct {a b} = Equiv (L-adjunct {a} {b} , L-adjunct-is-equiv)
+  module R-adjunct {a b} = Equiv (R-adjunct {a} {b} , R-adjunct-is-equiv)
+```
+-->
 
 Furthermore, these equivalences are natural.
 
@@ -643,11 +290,433 @@ Furthermore, these equivalences are natural.
 ```
 -->
 
-# Induced adjunctions
+## Free objects {defines="universal-morphism"}
+
+In contrast to the formal descriptions above, this section presents an
+*intuitive* perspective on adjoint functors: namely, a (left) adjoint,
+when it exists, provides the *most efficient possible solutions* to the
+problem posed by its (right) adjoint. This perspective is particularly
+helpful when the right adjoint in question is easily conceptualised as a
+*forgetful* functor. For a concrete example, we could consider the
+([[fully faithful]]) inclusion of [[abelian groups]] into all
+[[groups]].
+
+The first thing to notice is that $U : \Ab \to \Grp$ induces a notion of
+morphism from groups $G$ to abelian groups $H$: this is the hom-set
+$\hom_\Grp(G, U(H))$. This observation isn't particularly deep *in this
+case*, since the maps between abelian groups are also group
+homomorphisms, but note that this works for *any* functor: the forgetful
+functor $U : \Grp \to \Sets$ lets us consider maps "from a group to a
+set".
+
+By letting the abelian group $H$ vary, we can consider morphisms from a
+group $G$ to *some* abelian group. These form a category in their own
+right, the [[comma category]] $G \swarrow U$. In a sense, these are all
+solutions to the problem of *turning $G$ into an abelian group* --- or,
+more precisely, *mapping* $G$ into an abelian group. For a given $G$,
+there can be arbitrarily many of these, and some are extremely boring:
+for example, the zero group is abelian, so we can always consider $G \to
+\varnothing$ as a way to "turn $G$ into an abelian group"!
+
+So we're left with defining which of these solutions is *the most
+efficient*. Since turning a group abelian necessarily involves
+identifying elements that were previously distinct --- all the $gh \ne
+hg$ have to be squashed --- we could attempt to measure *how many*
+elements got identified, and choose the one that imposes the least
+amount of these relations. While this might be tractable for finitely
+presented groups, it would be really hard to define, let alone measure,
+these *imposed relations* for an arbitrary $U : \cD \to \cC$!
+
+However, we don't need any actual *count* of the relations imposed, or
+even a notion of relation. The important thing to observe is that, if
+$(H, \eta)$ and $(H', \eta')$ are both *ways of turning $G$ into an
+abelian group*, then we can factor $\eta'$ as a map
+
+$$
+G \xto{\eta} H \xto{f} H'
+$$
+
+if *and only if* $\eta$ imposes less relations on the elements of $G$
+than $\eta'$ does. The *most efficient* solution to turning $G$ into an
+abelian group, then, would be the one through which all others factor,
+since it will *impose the least number of relations*! Abstractly, we are
+looking for an [[initial object]] in the comma category $G \swarrow U$.
+
+While the abstract phrasing we've arrived at is very elegant, it does
+seriously obfuscate the data necessary. To work with left adjoints
+smoothly, and to present the ideas more clearly, we introduce an
+auxiliary notion: **free objects**.
+
+<!--
+```agda
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module U = Func U
+```
+-->
+
+::: {.definition #free-object}
+A **free object** on $X : \cC$, relative to $U : \cD \to \cC$, consists
+of an object $F(X) : \cD$ and an arrow $\eta : X \to UF(X)$, such that
+every $f : X \to UY$, $f$ factors uniquely through $\eta$. Expanding
+this to an *operations-and"properties" presentation, we could say that:
+
+* There is a map `fold`{.Agda} from $\cD(X, UY)$ to $\cC(FX, Y)$, and
+* for every $f$, we have $U(\operatorname{fold} f)\eta = f$, and
+* for every $f$ and $g$, if $U(g)\eta = f$, then $g = \operatorname{fold} f$.
+:::
+
+```agda
+  record Free-object (X : D.Ob) : Type (adj-level C D) where
+    field
+      {free} : C.Ob
+      unit   : D.Hom X (U.₀ free)
+
+      fold    : ∀ {Y} (f : D.Hom X (U.₀ Y)) → C.Hom free Y
+      commute : ∀ {Y} {f : D.Hom X (U.₀ Y)} → U.₁ (fold f) D.∘ unit ≡ f
+      unique
+        : ∀ {Y} {f : D.Hom X (U.₀ Y)} (g : C.Hom free Y)
+        → U.₁ g D.∘ unit ≡ f
+        → g ≡ fold f
+```
+
+<!--
+```agda
+    abstract
+      fold-natural
+        : ∀ {Y Y'} (f : C.Hom Y Y') (g : D.Hom X (U.₀ Y))
+        → fold (U.₁ f D.∘ g) ≡ f C.∘ fold g
+      fold-natural f g = sym (unique (f C.∘ fold g) (U.popr commute))
+
+      fold-unit : fold unit ≡ C.id
+      fold-unit = sym (unique C.id (D.eliml U.F-id))
+
+      unique₂
+        : ∀ {B} {f : D.Hom X (U.₀ B)} (g₁ g₂ : C.Hom free B)
+        → U.₁ g₁ D.∘ unit ≡ f
+        → U.₁ g₂ D.∘ unit ≡ f
+        → g₁ ≡ g₂
+      unique₂ g₁ g₂ p q = unique g₁ p ∙ sym (unique g₂ q)
+```
+-->
+
+Note that *factors uniquely through $\eta$* is precisely equivalent to
+saying that $\eta$ induces an equivalence between $\cD(X, UY)$ and
+$\cC(FX, Y)$. In other words, free objects are representing objects for
+the functor $\cD(X,U(-))$.
+
+```agda
+    fold-is-equiv : ∀ B → is-equiv (fold {B})
+    fold-is-equiv B = is-iso→is-equiv λ where
+      .is-iso.inv  f → U.₁ f D.∘ unit
+      .is-iso.rinv _ → sym (unique _ refl)
+      .is-iso.linv _ → commute
+```
+
+<!--
+```agda
+module _ {U : Functor C D} where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module U = Func U
+
+  open Free-object
+```
+-->
+
+This implies that free objects have all the usual properties of
+universal constructions: they are unique up to unique isomorphism, and
+identity of free objects is determined by identity of the unit maps ---
+put another way, *being a free object* is truly a [[property]] of the
+pair $(FX, \eta)$.
+
+```agda
+  free-object-unique : ∀ {X} (A B : Free-object U X) → A .free C.≅ B .free
+
+  Free-object-path
+    : ∀ {X} {x y : Free-object U X}
+    → (p : x .free ≡ y .free)
+    → (q : PathP (λ i → D.Hom X (U.₀ (p i))) (x .unit) (y .unit))
+    → x ≡ y
+```
+
+<details>
+<summary>The proofs follow the usual script for universal constructions,
+so we will omit the details.</summary>
+
+```agda
+  free-object-unique a b =
+    C.make-iso (a .fold (b .unit)) (b .fold (a .unit))
+      (unique₂ b _ _ (U.popr (b .commute) ∙ a .commute) (D.eliml U.F-id))
+      (unique₂ a _ _ (U.popr (a .commute) ∙ b .commute) (D.eliml U.F-id))
+```
+
+</details>
+
+<!--
+```agda
+  Free-object-path {X = X} {x} {y} p q = r where
+    folds : ∀ {Y} (f : D.Hom X (U.₀ Y)) → PathP (λ i → C.Hom (p i) Y) (x .fold f) (y .fold f)
+    folds {Y} f = to-pathp $
+      let
+        it : U.₁ (x .fold f) D.∘ x .unit
+           ≡ U.₁ (transport (λ i → C.Hom (p i) Y) (x .fold f)) D.∘ y .unit
+        it i = U.₁ (coe0→i (λ i → C.Hom (p i) Y) i (x .fold f)) D.∘ q i
+      in y .unique _ (sym it ∙ x .commute)
+
+    r : x ≡ y
+    r i .free = p i
+    r i .unit = q i
+    r i .fold f = folds f i
+    r i .commute {f = f} = is-prop→pathp
+      (λ i → D.Hom-set _ _ (U.₁ (folds f i) D.∘ q i) f) (x .commute) (y .commute) i
+    r i .unique {Y = Y} {f} = is-prop→pathp
+      (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1 λ g _ → C.Hom-set _ _ g (folds f i))
+      (x .unique) (y .unique) i
+
+  instance
+    -- This lets us ignore 'is-free-object' when proving equality.
+    Extensional-Free-object
+      : ∀ {X ℓr}
+      → ⦃ sa : Extensional (Σ[ A ∈ C.Ob ] (D.Hom X (U.₀ A))) ℓr ⦄
+      → Extensional (Free-object U X) ℓr
+    Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y = sa .Pathᵉ (_ , x .unit) (_ , y .unit)
+    Extensional-Free-object ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (_ , x .unit)
+    Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path h =
+      let p = sa .idsᵉ .to-path h
+       in Free-object-path (ap fst p) (ap snd p)
+    Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path-over p =
+      sa .idsᵉ .to-path-over p
+
+
+  private module I = Initial
+  open ↓Hom
+```
+-->
+
+Finally, we sketch one direction of the equivalence between our new
+definition of *free object for $X$ relative to $U$* and the more
+abstract construction of *initial object in the comma category $X
+\swarrow U$* which we had arrived at earlier. This is simply a
+re-labelling of data: it would not be hard to complete this to a full
+equivalence, but it would not be very useful, either.
+
+```agda
+  free-object→universal-map
+    : ∀ {X} → Free-object U X → Initial (X ↙ U)
+  free-object→universal-map fo = λ where
+    .I.bot → ↓obj (fo .unit)
+    .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
+    .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
+      fo .unique _ (sym (p .sq) ∙ D.idr _)
+```
+
+### Free objects and adjoints
+
+If $U$ has a left adjoint $F$, then every $X : \cD$ has a corresponding
+free object: $(FX, \eta)$, where $\eta$ is the unit of the adjunction.
+This justifies our use of the notation $FX$ for a free object on $X$,
+even if a functor $F(-)$ does not necessarily exist.
+
+<!--
+```agda
+  module _ {F : Functor D C} (F⊣U : F ⊣ U) where
+    open _⊣_ F⊣U
+```
+-->
+
+```agda
+    left-adjoint→free-objects : ∀ X → Free-object U X
+    left-adjoint→free-objects X .free    = F .F₀ X
+    left-adjoint→free-objects X .unit    = unit.η X
+    left-adjoint→free-objects X .fold f  = R-adjunct F⊣U f
+    left-adjoint→free-objects X .commute = L-R-adjunct F⊣U _
+    left-adjoint→free-objects X .unique g p =
+      Equiv.injective (_ , L-adjunct-is-equiv F⊣U) (p ∙ sym (L-R-adjunct F⊣U _))
+```
+
+Conversely, if $\cD$ has all free objects, then $U$ has a left adjoint.
+We begin by constructing a functor $F : \cD \to \cC$ that assigns each
+object to its free counterpart; functoriality follows from the universal
+property.
+
+<!--
+```agda
+  module _ (free-objects : ∀ X → Free-object U X) where
+    private module F {X} where open Free-object (free-objects X) public
+    open Functor
+    open _=>_
+    open _⊣_
+```
+-->
+
+```agda
+    free-objects→functor : Functor D C
+    free-objects→functor .F₀ X = F.free {X}
+    free-objects→functor .F₁ f = F.fold (F.unit D.∘ f)
+    free-objects→functor .F-id =
+      F.fold (F.unit D.∘ D.id)  ≡⟨ ap F.fold (D.idr _) ⟩
+      F.fold F.unit             ≡⟨ F.fold-unit ⟩
+      C.id                      ∎
+    free-objects→functor .F-∘ f g =
+      F.fold (F.unit D.∘ f D.∘ g)                              ≡⟨ ap F.fold (D.extendl (sym F.commute)) ⟩
+      F.fold (U.₁ (F.fold (F.unit D.∘ f)) D.∘ (F.unit D.∘ g))  ≡⟨ F.fold-natural _ _ ⟩
+      F.fold (F.unit D.∘ f) C.∘ F.fold (F.unit D.∘ g)          ∎
+```
+
+The unit of the adjunction is given by $\eta$, the counit by $\eps \id$,and
+Both naturality and the zig-zag identities follow from some short arguments
+about adjuncts.
+
+```agda
+    free-objects→left-adjoint : free-objects→functor ⊣ U
+    free-objects→left-adjoint .unit .η X = F.unit {X}
+    free-objects→left-adjoint .unit .is-natural X Y f = sym F.commute
+    free-objects→left-adjoint .counit .η X = F.fold D.id
+    free-objects→left-adjoint .counit .is-natural X Y f =
+      F.fold D.id C.∘ F.fold (F.unit D.∘ U.₁ f)        ≡˘⟨ F.fold-natural _ _ ⟩
+      F.fold (U.₁ (F.fold D.id) D.∘ F.unit D.∘ U.₁ f)  ≡⟨ ap F.fold (D.cancell F.commute ∙ sym (D.idr _)) ⟩
+      F.fold (U.₁ f D.∘ D.id)                          ≡⟨ F.fold-natural _ _ ⟩
+      f C.∘ F.fold D.id                                ∎
+    free-objects→left-adjoint .zig =
+      F.fold D.id C.∘ F.fold (F.unit D.∘ F.unit)        ≡˘⟨ F.fold-natural _ _ ⟩
+      F.fold (U.₁ (F.fold D.id) D.∘ F.unit D.∘ F.unit)  ≡⟨ ap F.fold (D.cancell F.commute) ⟩
+      F.fold F.unit                                     ≡⟨ F.fold-unit ⟩
+      C.id                                              ∎
+    free-objects→left-adjoint .zag = F.commute
+```
+
+If we round-trip a left adjoint through these two constructions, then
+we obtain the same functor we started with. Moreover, we also obtain
+the same unit/counit!
+
+```agda
+  left-adjoint→free-objects→left-adjoint
+    : ∀ {F : Functor D C}
+    → (F⊣U : F ⊣ U)
+    → free-objects→functor (left-adjoint→free-objects F⊣U) ≡ F
+  left-adjoint→free-objects→left-adjoint {F = F} F⊣U =
+    Functor-path (λ _ → refl) λ f →
+      ap (R-adjunct F⊣U) (unit.is-natural _ _ f)
+      ∙ R-L-adjunct F⊣U (F.₁ f)
+    where
+      module F = Functor F
+      open _⊣_ F⊣U
+
+  adjoint-pair→free-objects→adjoint-pair
+    : ∀ {F : Functor D C}
+    → (F⊣U : F ⊣ U)
+    → PathP (λ i → left-adjoint→free-objects→left-adjoint F⊣U i ⊣ U)
+      (free-objects→left-adjoint (left-adjoint→free-objects F⊣U))
+      F⊣U
+  adjoint-pair→free-objects→adjoint-pair {F = F} F⊣U =
+    adjoint-pathp _ _
+      (Nat-pathp _ _ λ _ → refl)
+      (Nat-pathp _ _ λ x → C.elimr F.F-id)
+    where module F = Functor F
+```
+
+A similar result holds for a system of free objects.
+
+```agda
+  free-objects→left-adjoint→free-objects
+    : ∀ (free-objects : ∀ x → Free-object U x)
+    → left-adjoint→free-objects (free-objects→left-adjoint free-objects) ≡ free-objects
+  free-objects→left-adjoint→free-objects free-objects = trivial!
+```
+
+This yields an equivalence between systems of free objects and left adjoints.
+
+```agda
+  free-objects≃left-adjoint
+    : (∀ X → Free-object U X) ≃ (Σ[ F ∈ Functor D C ] F ⊣ U)
+```
+
+<details>
+<summary>Constructing the equivalence is straightforward, as we
+already have all the pieces laying about!
+</summary>
+
+```agda
+  free-objects≃left-adjoint = Iso→Equiv $
+    (λ free-objects →
+      free-objects→functor free-objects ,
+      free-objects→left-adjoint free-objects) ,
+    iso (λ left-adj → left-adjoint→free-objects (left-adj .snd))
+      (λ left-adj →
+        left-adjoint→free-objects→left-adjoint (left-adj .snd) ,ₚ
+        adjoint-pair→free-objects→adjoint-pair (left-adj .snd))
+      free-objects→left-adjoint→free-objects
+```
+</details>
+
+### Free objects and initiality
+
+In categorical semantics, syntax for a theory $\bT$ is often
+presented in two seemingly unconnected ways:
+
+1. Via a left adjoint to the forgetful functor that forgets the structure
+  of a $\bT$-model; or
+2. As an [[initial object]] in the category of $\bT$-models.
+
+Left adjoints encode the universal property "syntax with generators":
+structure-preserving maps $\cC(F(X),A)$ out of the syntax generated by $X$
+are given by non-structure $\cD(X,U(A))$ on the generators. Conversely,
+initial objects give us the universal property of "syntax without generators":
+there is a unique structure-preserving map out of the syntax into each model.
+
+We can somewhat reconcile these views by recalling that
+[[left adjoints preserve colimits|lapc]]. The initial object is a colimit,
+so the initial object in the category $\bT$-models is $F(\bot)$. In other
+words: "syntax without generators" and "syntax on 0 generators" coincide.
+This correspondence remains intact even when we lack a full left adjoint.
+
+For the remainder of this section, assume that $\cD$ has an initial object
+$\bot_{\cD}$. If there is a free object $A : \cC$ on $\bot_{\cD}$, then
+$A$ is an initial object in $\cC$.
+
+```agda
+  module _ (initial : Initial D) where
+    open Initial initial
+
+    free-on-initial→initial
+      : (F[⊥] : Free-object U bot)
+      → is-initial C (F[⊥] .free)
+    free-on-initial→initial F[⊥] x .centre = F[⊥] .fold ¡
+    free-on-initial→initial F[⊥] x .paths f =
+      sym $ F[⊥] .unique f (sym (¡-unique _))
+```
+
+Conversely, if $\cC$ has an initial object $\bot_{\cC}$, then $\bot_{\cC}$
+is a free object for $\bot_{\cC}$.
+
+```agda
+    is-initial→free-on-initial
+      : (c-initial : Initial C)
+      → Free-object U bot
+    is-initial→free-on-initial c-init = record
+      { free    = Initial.bot c-init
+      ; unit    = ¡
+      ; fold    = λ _ → Initial.¡ c-init
+      ; commute = ¡-unique₂ _ _
+      ; unique  = λ _ _ → Initial.¡-unique₂ c-init _ _
+      }
+```
+
+Note an initial object in $\cC$ does not guarantee an initial object in
+$\cD$, regardless of how many free objects there are. Put syntactically,
+a notion of "syntax without generators" does not imply that there is an
+object of 0 generators!
+
+## Induced adjunctions
 
 Any adjunction $L \dashv R$ induces, in a very boring way, an *opposite* adjunction
 $R\op \dashv L\op$ between `opposite functors`{.Agda ident=op}:
 
+<!--
 ```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
@@ -657,7 +726,10 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 
   open _⊣_
   open _=>_
+```
+-->
 
+```agda
   opposite-adjunction : R.op ⊣ L.op
   opposite-adjunction .unit .η _ = adj.ε _
   opposite-adjunction .unit .is-natural x y f = sym (adj.counit.is-natural _ _ _)
@@ -691,52 +763,6 @@ between [postcomposition and precomposition functors], respectively:
   precomposite-adjunction .zig {F} = ext λ _ → Func.annihilate F adj.zag
   precomposite-adjunction .zag {F} = ext λ _ → Func.annihilate F adj.zig
 ```
-
-<!--
-```agda
-record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
-  private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module R = Functor R
-
-  field
-    free      : C.Ob → D.Ob
-    unit      : ∀ x → C.Hom x (R.₀ (free x))
-    universal : ∀ {x y} (f : C.Hom x (R.₀ y)) → D.Hom (free x) y
-    commutes  : ∀ {x y} (f : C.Hom x (R.₀ y)) → f ≡ R.₁ (universal f) C.∘ unit _
-    unique
-      : ∀ {x y} {f : C.Hom x (R.₀ y)} {g : D.Hom (free x) y}
-      → f ≡ R.₁ g C.∘ unit _
-      → universal f ≡ g
-
-  to-universal-arrows : ∀ x → Universal-morphism x R
-  to-universal-arrows x = go where
-    start : ↓Obj _ _
-    start .↓Obj.x = tt
-    start .↓Obj.y = free x
-    start .↓Obj.map = unit _
-
-    go : Initial _
-    go .Initial.bot = start
-    go .Initial.has⊥ oth = contr dh uniq where
-      dh : ↓Hom (Const x) R _ oth
-      dh .↓Hom.α = tt
-      dh .↓Hom.β = universal (oth .↓Obj.map)
-      dh .↓Hom.sq = C.idr (oth .↓Obj.map) ∙ commutes (↓Obj.map oth)
-
-      uniq : ∀ y → dh ≡ y
-      uniq y = ↓Hom-path _ _ refl (unique (sym (C.idr _) ∙ y .↓Hom.sq))
-
-  to-functor : Functor C D
-  to-functor = universal-maps→L R to-universal-arrows
-
-  to-left-adjoint : to-functor ⊣ R
-  to-left-adjoint = universal-maps→L⊣R R to-universal-arrows
-
-module Ml = make-left-adjoint
-```
--->
 
 <!--
 ```agda
@@ -799,5 +825,35 @@ adjoint-natural-isor
   : ∀ {L : Functor C D} {R R' : Functor D C}
   → R ≅ⁿ R' → L ⊣ R → L ⊣ R'
 adjoint-natural-isor β = adjoint-natural-iso idni β
+
+module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
+  private module C = Precategory C
+
+  Universal-morphism : Functor D C → C.Ob → Type _
+  Universal-morphism R X = Initial (X ↙ R)
+
+  open Free-object
+  open Initial
+  open ↓Obj
+  open ↓Hom
+
+  universal-map→free-object : ∀ {R X} → Universal-morphism R X → Free-object R X
+  universal-map→free-object x .free = _
+  universal-map→free-object x .unit = x .bot .map
+  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .β
+  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .sq) ∙ C.idr _
+  universal-map→free-object x .unique g p = ap β (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+
+  universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
+  universal-maps→functor u = free-objects→functor (λ X → universal-map→free-object (u X))
+
+  universal-maps→left-adjoint
+    : ∀ {R} (h : ∀ X → Universal-morphism R X)
+    → universal-maps→functor h ⊣ R
+  universal-maps→left-adjoint h = free-objects→left-adjoint _
+
+  left-adjoint→universal-maps : ∀ {L R} → L ⊣ R → ∀ X → Universal-morphism R X
+  left-adjoint→universal-maps L⊣R X =
+    free-object→universal-map (left-adjoint→free-objects L⊣R X)
 ```
 -->

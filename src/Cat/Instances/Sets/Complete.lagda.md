@@ -2,7 +2,10 @@
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 ```
 -->
@@ -72,9 +75,6 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
 <!--
 ```agda
 module _ {ℓ} where
-  open import Cat.Diagram.Equaliser (Sets ℓ)
-  open import Cat.Diagram.Pullback (Sets ℓ)
-  open import Cat.Diagram.Product (Sets ℓ)
   open Precategory (Sets ℓ)
 
   private variable
@@ -108,7 +108,7 @@ category of sets of _any_ level $\ell$ admits them.
 Products are given by product sets:
 
 ```agda
-  Sets-products : (A B : Set ℓ) → Product A B
+  Sets-products : (A B : Set ℓ) → Product (Sets ℓ) A B
   Sets-products A B .apex = el! (∣ A ∣ × ∣ B ∣)
   Sets-products A B .π₁ = fst
   Sets-products A B .π₂ = snd
@@ -122,10 +122,11 @@ Equalisers are given by carving out the subset of $A$ where $f$ and $g$ agree
 using $\Sigma$:
 
 ```agda
-  Sets-equalisers : (f g : Hom A B) → Equaliser {A = A} {B = B} f g
+  Sets-equalisers : (f g : Hom A B) → Equaliser (Sets ℓ) {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
-    eq : Equaliser f g
-    eq .apex = el! (Σ[ x ∈ A ] (f x ≡ g x))
+    eq : Equaliser (Sets ℓ) f g
+    eq .apex .∣_∣ = Σ[ x ∈ A ] (f x ≡ g x)
+    eq .apex .is-tr = hlevel 2
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
@@ -138,9 +139,9 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
 
 ```agda
   Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C)
-                 → Pullback {X = A} {Y = B} {Z = C} f g
+                 → Pullback (Sets ℓ) {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
-    pb : Pullback f g
+    pb : Pullback (Sets ℓ) f g
     pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
     pb .apex .is-tr = hlevel 2
     pb .p₁ (x , _ , _) = x

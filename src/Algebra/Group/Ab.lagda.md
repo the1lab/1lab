@@ -183,6 +183,9 @@ Ab↪Grp .F₁ f .hom = f .hom
 Ab↪Grp .F₁ f .preserves = f .preserves
 Ab↪Grp .F-id = trivial!
 Ab↪Grp .F-∘ f g = trivial!
+
+Ab↪Sets : ∀ {ℓ} → Functor (Ab ℓ) (Sets ℓ)
+Ab↪Sets = Grp↪Sets F∘ Ab↪Grp
 ```
 -->
 

@@ -132,7 +132,7 @@ upper bound in a pointed DCPO.
     extend-bottom-lub→lub (⋃.has-lub _ _)
 ```
 
-## Fixpoints
+## Fixpoints {defines="kleenes-fixpoint-theorem"}
 
 Let $D$ be a pointed DCPO. Every Scott continuous function $f : D \to D$ has a
 [least fixed point].
@@ -302,8 +302,11 @@ module Pointed-DCPOs {o ℓ : Level} = Cat.Reasoning (Pointed-DCPOs o ℓ)
 Pointed-dcpo : ∀ o ℓ → Type _
 Pointed-dcpo o ℓ = Pointed-DCPOs.Ob {o} {ℓ}
 
-Forget-Pointed-dcpo : Functor (Pointed-DCPOs o ℓ) (Sets o)
-Forget-Pointed-dcpo = Forget-DCPO F∘ Forget-subcat
+Pointed-DCPOs↪DCPOs : Functor (Pointed-DCPOs o ℓ) (DCPOs o ℓ)
+Pointed-DCPOs↪DCPOs = Forget-subcat
+
+Pointed-DCPOs↪Sets : Functor (Pointed-DCPOs o ℓ) (Sets o)
+Pointed-DCPOs↪Sets = DCPOs↪Sets F∘ Pointed-DCPOs↪DCPOs
 ```
 -->
 
