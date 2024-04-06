@@ -3,6 +3,7 @@
 open import 1Lab.Function.Embedding
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Closure
+open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi
@@ -335,4 +336,59 @@ opaque
   Discrete→is-set {A = A} dec = identity-system→hlevel 1
     (¬¬-stable-identity-system (dec→dne ⦃ dec ⦄))
     λ x y f g → funext λ h → absurd (g h)
+```
+
+### Generalized Hedberg's Theorem
+
+<!--
+[FIXME: Reed M, 04/04/2024] Write this!
+-->
+
+```agda
+fixpoint-of-const-is-prop
+  : ∀ {ℓ} {A : Type ℓ} {f : A → A}
+  → (f-const : ∀ x y → f x ≡ f y)
+  → is-prop (Σ[ x ∈ A ] (f x ≡ x))
+fixpoint-of-const-is-prop {A = A} {f = f} f-const (x , x-fix) (y , y-fix) =
+  x=y ,ₚ square
+  where
+    -- Stabilize the 'f-const' path so that it contracts away nicely.
+    stab : ∀ x y → f x ≡ f y
+    stab x y = sym (f-const x x) ∙ f-const x y
+
+    -- Kraus's trick: 'ap f' is a constant map.
+    kraus : ∀ {x y} → (p : x ≡ y) → stab x y ≡ ap f p
+    kraus {x} = J (λ y p → stab x y ≡ ap f p) (∙-invl _)
+
+    -- Insert the stablized path in the middle.
+    x=y : x ≡ y
+    x=y = sym x-fix ·· stab x y ·· y-fix
+
+    -- Nice little square :)
+    square : Square (ap f x=y) x-fix y-fix x=y
+    square i j = hcomp (∂ i ∨ ∂ j) λ where
+      k (i = i0) → x-fix (j ∧ k)
+      k (i = i1) → y-fix (j ∧ k)
+      k (j = i0) → kraus x=y k i
+      k (j = i1) → ··-filler (sym x-fix) (stab x y) y-fix k i
+      k (k = i0) → stab x y i
+
+fixpoint-identity-system
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
+  → {f : ∀ {a b} → R a b → R a b}
+  → is-identity-system R r
+  → (f-const : ∀ {a b} → (s t : R a b) → f s ≡ f t)
+  → is-identity-system (λ a b → Σ[ s ∈ R a b ] (f s ≡ s)) (λ a → f (r a) , f-const (f (r a)) (r a))
+fixpoint-identity-system {r = r} {f = f} ids f-const =
+  set-identity-system (λ _ _ → fixpoint-of-const-is-prop f-const) (ids .to-path ∘ fst)
+
+constant-map→is-set
+  : ∀ {ℓ} {A : Type ℓ}
+  → {f : ∀ {a b : A} → a ≡ b → a ≡ b}
+  → (∀ {a b} → (p q : a ≡ b) → f p ≡ f q)
+  → is-set A
+constant-map→is-set f-const =
+  identity-system→hlevel 1
+    (fixpoint-identity-system Path-identity-system f-const)
+    (λ _ _ → fixpoint-of-const-is-prop f-const)
 ```
