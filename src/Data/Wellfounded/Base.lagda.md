@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.HLevel.Closure
+open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
 ```
@@ -9,7 +11,7 @@ open import 1Lab.Type
 module Data.Wellfounded.Base where
 ```
 
-# Well-founded relations
+# Well-founded relations {defines="well-founded"}
 
 Well-founded relations are, in essence, orders over which _induction_ is
 acceptable. A relation is well-founded if all of its chains have bounded
@@ -64,4 +66,29 @@ $P$ to be the proposition "$x$ is accessible".
     : (∀ {ℓ'} (P : A → Type ℓ') → (∀ x → (∀ y → y < x → P y) → P x) → ∀ x → P x)
     → Wf
   Induction-wf ind = ind Acc (λ _ → acc)
+```
+
+Somewhat surprisingly, being accessible is a proposition! We can prove
+this via induction.
+
+<!--
+```agda
+private variable
+  ℓ : Level
+  A B : Type ℓ
+  R : A → A → Type ℓ
+```
+-->
+
+```agda
+Acc-is-prop : ∀ x → is-prop (Acc R x)
+Acc-is-prop x (acc s) (acc t) =
+  ap acc (funext (λ y → funext λ y<x → Acc-is-prop y (s y y<x) (t y y<x)))
+```
+
+This directly implies that being well-founded is also a proposition.
+
+```agda
+Wf-is-prop : is-prop (Wf R)
+Wf-is-prop = Π-is-hlevel 1 Acc-is-prop
 ```

@@ -2,7 +2,6 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Data.Wellfounded.Properties
 open import Data.Wellfounded.Base
 open import Data.Nat.Properties
 open import Data.Nat.Divisible
