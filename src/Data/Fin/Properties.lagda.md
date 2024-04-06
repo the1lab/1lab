@@ -20,18 +20,6 @@ module Data.Fin.Properties where
 
 # Finite sets - properties
 
-## Basic properties
-
-The conversion from `Fin`{.Agda} to `Nat`{.Agda} is injective.
-
-```agda
-to-nat-inj : ∀ {n} {i j : Fin n} → to-nat i ≡ to-nat j → i ≡ j
-to-nat-inj {i = fzero} {j = fzero} p = refl
-to-nat-inj {i = fzero} {j = fsuc j} p = absurd (Nat.zero≠suc p)
-to-nat-inj {i = fsuc i} {j = fzero} p = absurd (Nat.suc≠zero p)
-to-nat-inj {i = fsuc i} {j = fsuc j} p = ap fsuc (to-nat-inj (Nat.suc-inj p))
-```
-
 ## Ordering
 
 As noted in [`Data.Fin.Base`], we've set up the ordering on `Fin` so that
@@ -170,7 +158,7 @@ to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
 to-from-ℕ< {n = suc n} x = Σ-prop-path! (to-from-ℕ {n = suc n} x) where
   to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
   to-from-ℕ {n = suc n} (zero , p) = refl
-  to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
+  to-from-ℕ {n = suc n} (suc x , p) = ap suc (to-from-ℕ {n = n} (x , Nat.≤-peel p))
 
 from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
 from-to-ℕ< fzero = refl

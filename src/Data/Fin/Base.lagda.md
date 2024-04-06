@@ -48,6 +48,16 @@ to-nat fzero = zero
 to-nat (fsuc i) = suc (to-nat i)
 ```
 
+The conversion from `Fin`{.Agda} to `Nat`{.Agda} is injective.
+
+```agda
+to-nat-inj : ∀ {n} {i j : Fin n} → to-nat i ≡ to-nat j → i ≡ j
+to-nat-inj {i = fzero} {j = fzero} p = refl
+to-nat-inj {i = fzero} {j = fsuc j} p = absurd (Nat.zero≠suc p)
+to-nat-inj {i = fsuc i} {j = fzero} p = absurd (Nat.suc≠zero p)
+to-nat-inj {i = fsuc i} {j = fsuc j} p = ap fsuc (to-nat-inj (Nat.suc-inj p))
+```
+
 A note of caution: because of some ✨technical reasons✨ cubical
 agda cannot handle transports over indexed inductive types very well.
 Instead, we define a function `cast`{.Agda} that computes on
@@ -177,7 +187,7 @@ instance
     go zero (suc n) e = fzero
     go (suc k) (suc n) (Nat.s≤s e) = fsuc (go k n e)
 
-open import Data.Nat.Base using (0≤x ; s≤s') public
+open import Data.Nat.Base using (0≤x ; s≤s ; s≤s' ; x≤x ; x≤sucy ; ≤-peel) public
 
 Fin-elim
   : ∀ {ℓ} (P : ∀ {n} → Fin n → Type ℓ)
@@ -248,7 +258,7 @@ $n$ values of $\bb{N}$.
 
 from-ℕ< : ∀ {n} → ℕ< n → Fin n
 from-ℕ< {n = suc n} (zero , q) = fzero
-from-ℕ< {n = suc n} (suc p , Nat.s≤s q) = fsuc (from-ℕ< (p , q))
+from-ℕ< {n = suc n} (suc p , q) = fsuc (from-ℕ< (p , Nat.≤-peel q))
 
 to-ℕ< : ∀ {n} → Fin n → ℕ< n
 to-ℕ< x = to-nat x , p x where

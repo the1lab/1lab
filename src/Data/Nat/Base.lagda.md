@@ -205,6 +205,7 @@ data _≤_ : Nat → Nat → Type where
 
 <!--
 ```agda
+
 instance
   s≤s' : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
   s≤s' ⦃ x ⦄ = s≤s x
@@ -231,6 +232,14 @@ re-using the definition of `_≤_`{.Agda}.
 _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
 infix 7 _<_ _≤_
+```
+
+As a minor convenience, we note that the constructor `s≤s`{.Agda} is an
+equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
+
+```agda
+≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
+≤-peel (s≤s p) = p
 ```
 
 As an "ordering combinator", we can define the _maximum_ of two natural
