@@ -543,7 +543,7 @@ is a set, that means it's an equivalence.
   g' : B → c.quotient
   g' x = g₁ (surj x)
 
-  g'-inj : injective g'
+  g'-inj : is-injective g'
   g'-inj {x} {y} = ∥-∥-elim₂ {P = λ a b → g₁ a ≡ g₁ b → x ≡ y}
     (λ _ _ → fun-is-hlevel 1 (b-set _ _))
     (λ (_ , p) (_ , q) r → sym p ∙ c.effective r ∙ q)

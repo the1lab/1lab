@@ -49,11 +49,11 @@ To develop this correspondence, we note that, if a map is
 `fibres`{.Agda ident=fibre} $f^*(x)$ of $f$ are [[propositions]].
 
 ```agda
-injective : (A → B) → Type _
-injective f = ∀ {x y} → f x ≡ f y → x ≡ y
+is-injective : (A → B) → Type _
+is-injective f = ∀ {x y} → f x ≡ f y → x ≡ y
 
 injective→is-embedding
-  : is-set B → (f : A → B) → injective f
+  : is-set B → (f : A → B) → is-injective f
   → ∀ x → is-prop (fibre f x)
 injective→is-embedding bset f inj x (f*x , p) (f*x' , q) =
   Σ-prop-path (λ x → bset _ _) (inj (p ∙ sym q))
@@ -67,12 +67,12 @@ inclusion".
 ```agda
 has-prop-fibres→injective
   : (f : A → B) → (∀ x → is-prop (fibre f x))
-  → injective f
+  → is-injective f
 has-prop-fibres→injective _ prop p = ap fst (prop _ (_ , p) (_ , refl))
 
 between-sets-injective≃has-prop-fibres
   : is-set A → is-set B → (f : A → B)
-  → injective f ≃ (∀ x → is-prop (fibre f x))
+  → is-injective f ≃ (∀ x → is-prop (fibre f x))
 between-sets-injective≃has-prop-fibres aset bset f = prop-ext
   (λ p q i x → aset _ _ (p x) (q x) i)
   (Π-is-hlevel 1 λ _ → is-prop-is-prop)
@@ -176,7 +176,7 @@ monic→is-embedding {f = f} bset monic =
 right-inverse→injective
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → {f : A → B} (g : B → A)
-  → is-right-inverse f g → injective f
+  → is-right-inverse f g → is-injective f
 right-inverse→injective g rinv {x} {y} p = sym (rinv x) ∙ ap g p ∙ rinv y
 ```
 -->

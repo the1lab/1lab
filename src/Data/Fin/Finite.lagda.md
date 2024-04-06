@@ -161,7 +161,7 @@ same-cardinality→equiv ⦃ fa ⦄ ⦃ fb ⦄ p = do
 module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
   (e : ∥ A ≃ B ∥) (f : A → B) where
 
-  Finite-injection→equiv : injective f → is-equiv f
+  Finite-injection→equiv : is-injective f → is-equiv f
   Finite-injection→equiv inj = ∥-∥-out! do
     e ← e
     eb ← fb .Finite.enumeration

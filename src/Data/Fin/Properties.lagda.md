@@ -20,6 +20,18 @@ module Data.Fin.Properties where
 
 # Finite sets - properties
 
+## Basic properties
+
+The conversion from `Fin`{.Agda} to `Nat`{.Agda} is injective.
+
+```agda
+to-nat-inj : ∀ {n} {i j : Fin n} → to-nat i ≡ to-nat j → i ≡ j
+to-nat-inj {i = fzero} {j = fzero} p = refl
+to-nat-inj {i = fzero} {j = fsuc j} p = absurd (Nat.zero≠suc p)
+to-nat-inj {i = fsuc i} {j = fzero} p = absurd (Nat.suc≠zero p)
+to-nat-inj {i = fsuc i} {j = fsuc j} p = ap fsuc (to-nat-inj (Nat.suc-inj p))
+```
+
 ## Ordering
 
 As noted in [`Data.Fin.Base`], we've set up the ordering on `Fin` so that
@@ -338,7 +350,7 @@ but annoying induction on $n$.
 ```agda
 Fin-injection→equiv
   : ∀ {n} (f : Fin n → Fin n)
-  → injective f → is-equiv f
+  → is-injective f → is-equiv f
 Fin-injection→equiv {zero} f inj .is-eqv ()
 Fin-injection→equiv {suc n} f inj .is-eqv i with f 0 ≡? i
 ... | yes p = contr (0 , p) λ (j , p') → Σ-prop-path! (inj (p ∙ sym p'))

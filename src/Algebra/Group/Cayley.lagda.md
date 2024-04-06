@@ -41,7 +41,7 @@ Finally, we show that this map is injective; Thus, $G$ embeds as a
 subgroup of $\rm{Sym}(G)$ (the image of `Cayley`{.Agda}).
 
 ```agda
-Cayley-injective : injective Cayley
+Cayley-injective : is-injective Cayley
 Cayley-injective {x} {y} eqvs-equal =
   x                   ≡⟨ sym idr ⟩
   x ⋆ unit            ≡⟨⟩

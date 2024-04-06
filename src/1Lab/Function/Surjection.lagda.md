@@ -129,7 +129,7 @@ embedding-surjective→is-equiv f-emb f-surj .is-eqv x = ∥-∥-out! do
 injective-surjective→is-equiv
   : {f : A → B}
   → is-set B
-  → injective f
+  → is-injective f
   → is-surjective f
   → is-equiv f
 injective-surjective→is-equiv b-set f-inj =
@@ -137,7 +137,7 @@ injective-surjective→is-equiv b-set f-inj =
 
 injective-surjective→is-equiv!
   : {f : A → B} ⦃ b-set : H-Level B 2 ⦄
-  → injective f
+  → is-injective f
   → is-surjective f
   → is-equiv f
 injective-surjective→is-equiv! =

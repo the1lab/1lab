@@ -41,7 +41,7 @@ A functor is **faithful** when its action on hom-sets is injective:
 
 ```agda
 is-faithful : Functor C D → Type _
-is-faithful F = ∀ {x y} → injective (F .F₁ {x = x} {y})
+is-faithful F = ∀ {x y} → is-injective (F .F₁ {x = x} {y})
 ```
 :::
 

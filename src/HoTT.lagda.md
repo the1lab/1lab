@@ -482,7 +482,7 @@ generally use it through the interface of half-adjoint equivalences.
 _ = is-surjective
 _ = is-embedding
 _ = embedding→cancellable
-_ = injective
+_ = is-injective
 _ = is-equiv→is-surjective
 _ = is-equiv→is-embedding
 _ = embedding-surjective→is-equiv
@@ -492,7 +492,7 @@ _ = embedding-surjective→is-equiv
 * Definition 4.6.1:
   i. `is-surjective`{.Agda}
   ii. `is-embedding`{.Agda}, `embedding→cancellable`{.Agda}
-* Definition 4.6.2: `injective`{.Agda}
+* Definition 4.6.2: `is-injective`{.Agda}
 * Theorem 4.6.3: `is-equiv→is-surjective`{.Agda}, `is-equiv→is-embedding`{.Agda}, `embedding-surjective→is-equiv`{.Agda}
 
 ### 4.8: The object classifier

@@ -297,7 +297,7 @@ prop! {A = A} {x} {y} = is-prop→pathp (λ _ → hlevel 1) x y
 
 injective→is-embedding!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ bset : H-Level B 2 ⦄ {f : A → B}
-  → injective f
+  → is-injective f
   → is-embedding f
 injective→is-embedding! {f = f} inj = injective→is-embedding (hlevel 2) f inj
 
