@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Data.Bool.Base
+open import Data.Wellfounded.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum
@@ -210,7 +211,102 @@ their strict ordering:
   go zero (suc (suc y)) p q = absurd (p (s≤s 0≤x))
   go (suc zero) zero p q    = absurd (q (s≤s 0≤x))
   go (suc (suc x)) zero p q = absurd (q (s≤s 0≤x))
+  {-# CATCHALL #-}
   go (suc x) (suc y) p q    = ap suc (go x y (λ { a → p (s≤s a) }) λ { a → q (s≤s a) })
+```
+
+### Properties of the strict order
+
+The strict order on natural numbers is asymmetric, irreflexive, and
+transitive.
+
+```agda
+<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+
+<-asym : ∀ {x y} → x < y → ¬ (y < x)
+<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
+
+<-not-equal : ∀ {x y} → x < y → ¬ x ≡ y
+<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
+<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
+
+<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
+<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
+<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
+<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
+
+<-trans : ∀ {x y z} → x < y → y < z → x < z
+<-trans p q = ≤-trans (≤-sucr p) q
+```
+
+The successor of $x$ is always strictly larger than $x$, and $0$ is
+strictly smaller than every successor.
+
+```agda
+<-ascend : ∀ {x} → x < suc x
+<-ascend = ≤-refl
+
+pattern 0<s = s≤s 0≤x
+
+x≮0 : ∀ {x} → ¬ (x < 0)
+x≮0 {x} ()
+```
+
+If $x < y$, then $x \leq y$. Morover, both $x < y \leq z$ and $x \leq y < z$
+imply that $x < z$.
+
+```agda
+<-weaken : ∀ {x y} → x < y → x ≤ y
+<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
+
+<-transl : ∀ {x y z} → x < y → y ≤ z → x < z
+<-transl x<y y≤z = ≤-trans x<y y≤z
+
+<-transr : ∀ {x y z} → x ≤ y → y < z → x < z
+<-transr x≤y y<z = ≤-trans (s≤s x≤y) y<z
+```
+
+Conversely, if $x \leq y$ and $x \neq y$, then $x < y$.
+
+```agda
+≤-strengthen : ∀ {x y} → x ≤ y → ¬ (x ≡ y) → x < y
+≤-strengthen {zero} {zero} x≤y x≠y = absurd (x≠y refl)
+≤-strengthen {zero} {suc y} x≤y x≠y = 0<s
+≤-strengthen {suc x} {suc y} (s≤s x≤y) x≠y = s≤s (≤-strengthen x≤y (x≠y ∘ ap suc))
+```
+
+There are no natural numbers $y$ with $x < y < 1 + x$.
+
+```agda
+<-between : ∀ {x y} → x < y → y < suc x → ⊥
+<-between {suc x} {suc y} (s≤s x<y) (s≤s y<sx) = <-between x<y y<sx
+```
+
+If every $a < x$ is also strictly smaller than $y$, then $x \leq y$.
+This gives
+
+```agda
+<-below : ∀ {x y} → (∀ a → a < x → a < y) → x ≤ y
+<-below {zero}  {y} p = 0≤x
+<-below {suc x} {y} p = p x <-ascend
+```
+
+If $y \nless x$, then $x \leq y$.
+
+```agda
+not-< : ∀ {x y} → ¬ (y < x) → x ≤ y
+not-< {zero} {y} y≮x = 0≤x
+not-< {suc x} {zero} y≮x = absurd (y≮x 0<s)
+not-< {suc x} {suc y} y≮x = s≤s (not-< (y≮x ∘ s≤s))
+```
+
+This means that $<$ is a **connected** order: if $x \nless y$ and $y \nless x$,
+then $x = y$.
+
+```agda
+<-connected : ∀ {x y} → ¬ (x < y) → ¬ (y < x) → x ≡ y
+<-connected x≮y y≮x = ≤-antisym (not-< y≮x) (not-< x≮y)
 ```
 
 ## Nat is a lattice
@@ -297,4 +393,30 @@ an inhabited subset.
     → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
   ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
     (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
+```
+
+## Well-foundedness
+
+The usual induction principle for the natural numbers is equivalent to
+saying that the relation $R(x,y) := y = 1+x$ is well-founded.
+Additionally, the relation $<$ on the natural numbers is well-founded.
+
+```agda
+suc-wf : Wf (λ x y → y ≡ suc x)
+suc-wf = Induction-wf (λ x y → y ≡ suc x) λ P m →
+  Nat-elim P
+    (m 0 λ y 0=suc → absurd (zero≠suc 0=suc))
+    λ {n} Pn → m (suc n) (λ y s → subst P (suc-inj s) Pn)
+```
+
+
+The $<$ relation on natural numbers is [[well-founded]]: this allows us to do
+strong induction natural numbers!
+
+```agda
+<-wf : Wf _<_
+<-wf x = go x x ≤-refl where
+  go : ∀ x y → .(x ≤ y) → Acc _<_ x
+  go zero y x≤y = acc (λ z z<0 → absurd (x≮0 z<0))
+  go (suc x) (suc y) x≤y = acc (λ z z<sx → go z y (≤-trans (≤-peel z<sx) (≤-peel x≤y)))
 ```
