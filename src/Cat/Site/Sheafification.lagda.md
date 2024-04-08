@@ -348,8 +348,7 @@ the path constructors are all handled by the corresponding laws in $B$.
     go U (inc x)   = eta .η U x
     go U (map f x) = G ⟪ f ⟫ (go _ x)
     go U (glue c p g) =
-      is-sheaf.part shf c
-        record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) }
+      shf .part c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) }
 ```
 
 <details>
@@ -361,8 +360,8 @@ naturality of $\eta'$ is a definitional equality.</summary>
     go U (map-id x i) = G.F-id {x = go _ x} i
     go U (map-∘ {g = g} {f = f} x i) = G.F-∘ f g {x = go _ x} i
     go U (inc-natural {f = f} x i) = eta .is-natural _ U f i x
-    go U (sep {x = x} {y = y} c l i) = is-sheaf.separate shf c {go _ x} {go _ y} (λ f hf i → go _ (l f hf i)) i
-    go U (glues c p g f hf i) = is-sheaf.patch shf c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) } f hf i
+    go U (sep {x = x} {y = y} c l i) = shf .separate c {go _ x} {go _ y} (λ f hf i → go _ (l f hf i)) i
+    go U (glues c p g f hf i) = shf .patch c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) } f hf i
     go U (squash x y p q i j) = G.₀ U .is-tr (go U x) (go U y) (λ i → go U (p i)) (λ i → go U (q i)) i j
 
     nt : Sheafify A => G
@@ -391,13 +390,14 @@ in $B(U)$ is $J$-local.
 
 <!--
 ```agda
-  private module ml = make-left-adjoint
+  private module fo = Free-object
 
-  make-free-sheaf : make-left-adjoint (forget-sheaf J ℓ)
-  make-free-sheaf .ml.free F = Sheafify F , Sheafify-is-sheaf F
-  make-free-sheaf .ml.unit x = unit
-  make-free-sheaf .ml.universal {F} {G , shf} = univ G shf
-  make-free-sheaf .ml.commutes f = trivial!
-  make-free-sheaf .ml.unique {F} {G , shf} p = unique G shf _ _ λ U x → sym (p ηₚ U $ₚ x)
+  make-free-sheaf : ∀ F → Free-object (forget-sheaf J ℓ) F
+  make-free-sheaf F .fo.free = Sheafify F , Sheafify-is-sheaf F
+  make-free-sheaf F .fo.unit = unit
+  make-free-sheaf F .fo.fold {G , shf} = univ G shf
+  make-free-sheaf F .fo.commute = trivial!
+  make-free-sheaf F .fo.unique {G , shf} _ p = sym $
+    unique G shf _ _ λ U x → p ηₚ _ $ₚ _
 ```
 -->

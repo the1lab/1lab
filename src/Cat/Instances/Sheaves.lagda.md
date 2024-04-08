@@ -63,10 +63,10 @@ immediately conclude that the category of sheaves on a site is
 
 ```agda
   Sheafification : Functor (PSh ℓ C) Sh[ C , J ]
-  Sheafification = make-left-adjoint.to-functor (Small.make-free-sheaf J)
+  Sheafification = free-objects→functor (Small.make-free-sheaf J)
 
   Sheafification⊣ι : Sheafification ⊣ forget-sheaf J _
-  Sheafification⊣ι = make-left-adjoint.to-left-adjoint (Small.make-free-sheaf J)
+  Sheafification⊣ι = free-objects→left-adjoint (Small.make-free-sheaf J)
 
   Sheafification-is-monadic : is-monadic Sheafification⊣ι
   Sheafification-is-monadic = is-reflective→is-monadic _ id-equiv
