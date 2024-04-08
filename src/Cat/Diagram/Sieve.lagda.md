@@ -129,23 +129,47 @@ componentwise monic, and embeddings are monic, the result follows.
   to-presheaf↪よ {S} .monic g h path = ext λ i x → Σ-prop-path! (unext path i x)
 ```
 
-## Pullback of sieves
+## Pullback of sieves {defines="pullback-sieve"}
+
+If we have a sieve $R$ on $U$, and any morphism $f : V \to U$, then
+there is a natural way to restrict the $h_i$ to a sieve on $V$: a
+morphism $g : V_i \to V$ belongs to the restriction if the composite $fg
+: V_i \to V \to U$ belongs to $R$. We refer to the resulting sieve as
+the **pullback of $R$ along $f$**, and write it $f^*(R)$.
 
 ```agda
   pullback : ∀ {u v} → C.Hom v u → Sieve C u → Sieve C v
   pullback f s .arrows h = el (f C.∘ h ∈ s) (hlevel 1)
   pullback f s .closed hf g = subst (_∈ s) (sym (C.assoc f _ g)) (s .closed hf g)
+```
 
+If we consider the collection of "sieves on $U$" as varying along $U$ as
+a parameter, the pullback operation becomes functorial. Since it is
+contravariant, this means that the assignment $U \mapsto
+\operatorname{Sieves}(U)$ is *itself* a presheaf on $U$.
+
+```agda
   abstract
     pullback-id : ∀ {c} {s : Sieve C c} → pullback C.id s ≡ s
-    pullback-id {s = s} = ext λ h → Ω-ua (subst (_∈ s) (C.idl h)) (subst (_∈ s) (sym (C.idl h)))
+    pullback-id {s = s} = ext λ h → Ω-ua
+      (subst (_∈ s) (C.idl h))
+      (subst (_∈ s) (sym (C.idl h)))
 
     pullback-∘
       : ∀ {u v w} {f : C.Hom w v} {g : C.Hom v u} {R : Sieve C u}
       → pullback (g C.∘ f) R ≡ pullback f (pullback g R)
-    pullback-∘ {f = f} {g} {R = R} = ext λ h →
-      Ω-ua (subst (_∈ R) (sym (C.assoc g f h))) (subst (_∈ R) (C.assoc g f h))
+    pullback-∘ {f = f} {g} {R = R} = ext λ h → Ω-ua
+      (subst (_∈ R) (sym (C.assoc g f h)))
+      (subst (_∈ R) (C.assoc g f h))
+```
 
+This presheaf has an important universal property: the natural
+transformations $X \to \operatorname{Sieves}$ correspond naturally to
+the [[subobjects|poset of subobjects]] of $X$. Categorically, we say
+that $\operatorname{Sieves}$ is a **subobject classifier** in the
+category $\psh(\cC)$.
+
+```agda
   Sieves : Functor (C ^op) (Sets (o ⊔ ℓ))
   Sieves .F₀ U .∣_∣ = Sieve C U
   Sieves .F₀ U .is-tr = hlevel 2

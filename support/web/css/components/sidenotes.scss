@@ -29,6 +29,10 @@ div.sidenote {
   }
 
   a.footnote-back { display: none; }
+
+  div.diagram-container img.diagram {
+    height: calc(0.66 * var(--height));
+  }
 }
 
 section.footnotes {

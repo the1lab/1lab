@@ -29,7 +29,7 @@ open Frame isf
 Frame-coverage : Coverage (poset→category P) (lsuc o)
 Frame-coverage .covers U = Σ[ I ∈ Type o ] Σ[ f ∈ (I → ⌞ P ⌟) ] (⋃ f ≡ U)
 Frame-coverage .cover (I , f , _) .arrows {V} V≤U = elΩ (Σ[ i ∈ I ] (V ≤ f i))
-Frame-coverage .cover (I , f , _) .closed hf g = □-map (λ (i , q) → i , (≤-trans g q)) hf
+Frame-coverage .cover (I , f , _) .closed hf g = □-map (λ (i , q) → i , ≤-trans g q) hf
 Frame-coverage .stable {U} {V} (I , f , p) g =
   let
     covers : ⋃ (λ i → f i ∩ V) ≡ V

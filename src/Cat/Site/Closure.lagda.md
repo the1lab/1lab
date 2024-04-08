@@ -19,7 +19,7 @@ import Cat.Reasoning as Cat
 module Cat.Site.Closure where
 ```
 
-# Closure properties of sites
+# Closure properties of sites {defines="closure-properties-of-sites"}
 
 <!--
 ```agda
