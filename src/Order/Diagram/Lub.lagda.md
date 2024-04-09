@@ -202,7 +202,7 @@ inhabited, then $f$ has a least upper bound.
     → ∥ I ∥
     → is-lub P F x
   const-inhabited-fam→is-lub {I = I} {F = F} {x = x} is-const =
-    ∥-∥-rec! mk-is-lub where
+    rec! mk-is-lub where
       mk-is-lub : I → is-lub P F x
       mk-is-lub i .is-lub.fam≤lub j = ≤-refl' (is-const j)
       mk-is-lub i .is-lub.least y le =
@@ -216,7 +216,7 @@ inhabited, then $f$ has a least upper bound.
     → ∥ I ∥
     → Lub P F
   const-inhabited-fam→lub {I = I} {F = F} is-const =
-    ∥-∥-rec Lub-is-prop mk-lub where
+    rec! mk-lub where
       mk-lub : I → Lub P F
       mk-lub i .Lub.lub = F i
       mk-lub i .Lub.has-lub =

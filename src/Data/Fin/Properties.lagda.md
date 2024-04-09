@@ -244,11 +244,10 @@ also a bijection.
 Fin-surjection→equiv
   : ∀ {n} (f : Fin n → Fin n)
   → is-surjective f → is-equiv f
-Fin-surjection→equiv f surj = ∥-∥-rec!
-  (λ split → left-inverse→equiv (snd ∘ split)
+Fin-surjection→equiv f surj = case finite-surjection-split f surj of λ split →
+  left-inverse→equiv (snd ∘ split)
     (Fin-injection→equiv (fst ∘ split)
-      (right-inverse→injective f (snd ∘ split))))
-  (finite-surjection-split f surj)
+      (right-inverse→injective f (snd ∘ split)))
 ```
 
 ## Vector operations

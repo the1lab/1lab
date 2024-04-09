@@ -61,7 +61,7 @@ x)\inv(y)$ --- and it is logically equivalent to that type, too!
 ∣-is-truncation {zero} {y} =
   prop-ext!
     (λ p → inc (y , *-zeror y ∙ sym p))
-    (∥-∥-rec! (λ{ (x , p) → sym p ∙ *-zeror x }))
+    (rec! λ x p → sym p ∙ *-zeror x )
 ∣-is-truncation {suc x} {y} = Equiv.to is-prop≃equiv∥-∥ (∣-is-prop (suc x) y)
 
 ∣→fibre : ∀ {x y} → x ∣ y → fibre (_* x) y

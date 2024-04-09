@@ -45,15 +45,15 @@ Liftℤ = to-ring mr where
 
 <!--
 ```agda
-  mr .*-idl      {lift x}                   = ap lift $ *ℤ-idl x
-  mr .*-idr      {lift x}                   = ap lift $ *ℤ-idr x
-  mr .+-idl      {lift x}                   = ap lift $ +ℤ-zerol x
-  mr .+-invr     {lift x}                   = ap lift $ +ℤ-inverser x
-  mr .+-comm     {lift x} {lift y}          = ap lift $ +ℤ-commutative x y
-  mr .+-assoc    {lift x} {lift y} {lift z} = ap lift $ +ℤ-associative x y z
-  mr .*-assoc    {lift x} {lift y} {lift z} = ap lift $ *ℤ-associative x y z
-  mr .*-distribl {lift x} {lift y} {lift z} = ap lift $ *ℤ-distrib-+ℤ-l x y z
-  mr .*-distribr {lift x} {lift y} {lift z} = ap lift $ *ℤ-distrib-+ℤ-r x y z
+  mr .*-idl      (lift x)                   = ap lift $ *ℤ-idl x
+  mr .*-idr      (lift x)                   = ap lift $ *ℤ-idr x
+  mr .+-idl      (lift x)                   = ap lift $ +ℤ-zerol x
+  mr .+-invr     (lift x)                   = ap lift $ +ℤ-inverser x
+  mr .+-comm     (lift x) (lift y)          = ap lift $ +ℤ-commutative x y
+  mr .+-assoc    (lift x) (lift y) (lift z) = ap lift $ +ℤ-associative x y z
+  mr .*-assoc    (lift x) (lift y) (lift z) = ap lift $ *ℤ-associative x y z
+  mr .*-distribl (lift x) (lift y) (lift z) = ap lift $ *ℤ-distrib-+ℤ-l x y z
+  mr .*-distribr (lift x) (lift y) (lift z) = ap lift $ *ℤ-distrib-+ℤ-r x y z
 ```
 -->
 

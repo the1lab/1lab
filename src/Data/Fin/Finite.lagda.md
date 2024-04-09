@@ -116,7 +116,7 @@ instance opaque
       (x .enumeration) (y .enumeration) i
 
 Finite→Discrete : ∀ {ℓ} {A : Type ℓ} → ⦃ Finite A ⦄ → Discrete A
-Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = ∥-∥-rec! go (f .enumeration) where
+Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = rec! go (f .enumeration) where
   open Finite f using (Finite→H-Level)
   go : A ≃ Fin (f .cardinality) → Dec (x ≡ y)
   go e with Equiv.to e x ≡? Equiv.to e y
@@ -264,6 +264,6 @@ Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
 <!--
 ```agda
 card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
-card-zero→empty ∥e∥ a = ∥-∥-rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
+card-zero→empty ∥e∥ a = rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

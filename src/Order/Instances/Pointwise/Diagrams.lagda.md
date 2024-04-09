@@ -142,8 +142,7 @@ Every subset is a least upper bound of singleton sets.
 subset-singleton-lub
   : ∀ {ℓ} {A : Type ℓ} (P : A → Ω)
   → is-lub (Subsets A) {I = ∫ₚ P} (singleton ⊙ fst) P
-subset-singleton-lub P .is-lub.fam≤lub (x , x∈P) y □x=y =
-  □-rec! (λ x=y → subst (_∈ P) x=y x∈P) □x=y
+subset-singleton-lub P .is-lub.fam≤lub (x , x∈P) y = rec! λ x=y → subst (_∈ P) x=y x∈P
 subset-singleton-lub P .is-lub.least ub sing≤ub x x∈P =
   sing≤ub (x , x∈P) x (inc refl)
 ```

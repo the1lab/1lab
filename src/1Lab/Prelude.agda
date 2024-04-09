@@ -4,7 +4,7 @@
 module 1Lab.Prelude where
 
 open import 1Lab.Type
-  hiding (Σ-syntax)
+  hiding (Σ-syntax ; case_of_ ; case_return_of_)
   public
 
 open import 1Lab.Path public
@@ -54,5 +54,6 @@ open import 1Lab.Resizing public
 open import 1Lab.Underlying public
 open import 1Lab.Membership public
 open import 1Lab.Extensionality public
+open import 1Lab.Inductive public
 
 open import Data.Id.Base public

@@ -619,8 +619,8 @@ $p$, a proof that $C$ holds of $x$.
 ```agda
   separation : ∀ a C (x : V ℓ) → (x ∈ subset a C) ≃ (x ∈ a × x ∈ C)
   separation a C x = prop-ext!
-    (∥-∥-rec! λ { ((j , w) , p) →
-      Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w })
+    (rec! λ j w p →
+      Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w )
     (λ { (i∈a , Ci) → inc (
       ( Members.memb.to a i∈a .fst
       , subst (λ e → ∣ C e ∣) (sym (Members.memb.to a i∈a .snd)) Ci)
@@ -735,7 +735,7 @@ m_a^*(x)$. It remains to show $m_a(k) \in i$; but this is equal to $x
         ( Members.memb.to a (i⊆a _ e∈i)
         , inc (subst (_∈ i) (sym (Members.memb.to a (i⊆a _ e∈i) .snd)) e∈i))
 
-    done = prop-ext! (∥-∥-rec! p1) p2
+    done = prop-ext! (∥-∥-rec (hlevel 1) p1) p2
 ```
 
 ## Set induction
@@ -751,5 +751,5 @@ as it holds for every $x \in a$, then $P$ holds of any material set.
     → ({a : V ℓ} → ({x : V ℓ} → x ∈ a → x ∈ P) → a ∈ P)
     → (x : V ℓ) → x ∈ P
   ∈-induction P ps = V-elim-prop (λ z → z ∈ P) (λ _ → P _ .is-tr) $ λ f i →
-    ps λ {x} → ∥-∥-rec! λ (a , p) → subst (_∈ P) p (i a)
+    ps λ {x} → rec! λ a p → subst (_∈ P) p (i a)
 ```

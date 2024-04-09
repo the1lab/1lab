@@ -129,14 +129,14 @@ hlevel-proj A want goal = do
   want ← quoteTC want >>= normalise
 
   def head args ← reduce =<< quoteTC A
-    where ty → typeError [ "H-Level: I do not know how to show that\n  " , termErr ty , "\nhas h-level\n", termErr want ]
+    where ty → typeError [ "H-Level: I do not know how to show that\n  " , termErr ty , "\nhas h-level\n  ", termErr want ]
   debugPrint "tactic.hlevel" 30 [ "H-Level: trying projections for term:\n  " , termErr (def head args), "\nwith head symbol ", nameErr head ]
 
   projection ← resetting do
     (mv , _) ← new-meta' (def (quote hlevel-projection) (argN (lit (name head)) ∷ []))
     get-instances mv >>= λ where
       [] → typeError
-        [ "H-Level: There are no hints for treating the name" , nameErr head , "as a projection."
+        [ "H-Level: There are no hints for treating the name " , nameErr head , " as a projection.\n"
         , "When showing that the type\n " , termErr (def head args)
         , "\nhas h-level " , termErr want , ".\n"
         ]

@@ -64,13 +64,9 @@ group operation is `path concatenation`{.Agda ident=_∙_}, and the
 inverses are given by `inverting paths`{.Agda ident=sym}.
 
 ```agda
-  omega .make-group.assoc =
-    ∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
-      λ x y z i → inc (∙-assoc x y z i)
-  omega .make-group.invl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-invl x i)
-  omega .make-group.idl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-idl x i)
+  omega .make-group.assoc = elim! λ x y z i → inc (∙-assoc x y z i)
+  omega .make-group.invl = elim! λ x i → inc (∙-invl x i)
+  omega .make-group.idl = elim! λ x i → inc (∙-idl x i)
 ```
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
@@ -140,8 +136,7 @@ $\pi_{n+2}$ is an [[Abelian group]]:
 πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat)
                       → Group-on-is-abelian (πₙ₊₁ (1 + n) A .snd)
 πₙ₊₂-is-abelian-group {A = A} n =
-  ∥-∥₀-elim₂ (λ x y → is-prop→is-set (squash _ _))
-             (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
+  elim! λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i)
 ```
 
 We can give an alternative construction of the fundamental group $\pi_1$ for types

@@ -75,7 +75,7 @@ latter two names have a placeholder for the morphism we are factoring.
     im[ f ] = factor f .Factorisation.mediating
 
     im[_]↪b : ∀ {a b} (f : C.Hom a b) → im[ f ] C.↪ b
-    im[ f ]↪b = record { monic = out! (factor f .Factorisation.forget∈M) }
+    im[ f ]↪b = record { monic = □-out! (factor f .Factorisation.forget∈M) }
 
     a↠im[_] : ∀ {a b} (f : C.Hom a b) → C.Hom a im[ f ]
     a↠im[ f ] = factor f .Factorisation.mediate
@@ -96,10 +96,10 @@ latter two names have a placeholder for the morphism we are factoring.
       rem₁ : f ≡ r.im[ f ]↪b .C.mor C.∘ r.a↠im[ f ]
       rem₁ = r.factor f .factors
 
-      p = out! (r.factor f .mediate∈E) .snd (record { monic = x })
+      p = □-out! (r.factor f .mediate∈E) .snd (record { monic = x })
         (sym (r.factor f .factors) ∙ sym (C.idr _))
       res = C.make-invertible (p .centre .fst)
-        (out! (r.factor f .mediate∈E) .fst _ _
+        (□-out! (r.factor f .mediate∈E) .fst _ _
           (C.pullr (p .centre .snd .fst) ∙ C.id-comm))
         (p .centre .snd .fst)
 ```
@@ -263,7 +263,7 @@ obtaining
 
 ```agda
       g-monic : C.is-monic g
-      g-monic {e} k l w' = out! dgh.forget∈M _ _ rem₈ where
+      g-monic {e} k l w' = □-out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
         module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
           renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
@@ -317,7 +317,7 @@ skip it.
         open is-pullback
 
         rem₂ : is-strong-epi 𝒞 (×-functor .F₁ (d , id))
-        rem₂ = r.stable d π₁ {p2 = π₁} (out! dgh.mediate∈E) λ where
+        rem₂ = r.stable d π₁ {p2 = π₁} (□-out! dgh.mediate∈E) λ where
           .square → π₁∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
           .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
@@ -328,7 +328,7 @@ skip it.
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
 
         rem₃ : is-strong-epi 𝒞 (×-functor .F₁ (id , d))
-        rem₃ = r.stable d π₂ {p2 = π₂} (out! dgh.mediate∈E) λ where
+        rem₃ = r.stable d π₂ {p2 = π₂} (□-out! dgh.mediate∈E) λ where
           .square → π₂∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
           .p₁∘universal {p = p} → ⟨⟩∘ _
@@ -382,7 +382,7 @@ we do below.
 ```agda
       g-iso : is-invertible g
       g-iso = make-invertible (p .centre .fst) (p .centre .snd .snd)
-        (out! dgh.mediate∈E .fst _ _
+        (□-out! dgh.mediate∈E .fst _ _
           ( pullr (pullr (sym dgh.factors) ∙ π₁∘⟨⟩)
           ∙ p .centre .snd .fst ∙ introl refl))
         module g-ortho where

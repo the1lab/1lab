@@ -76,11 +76,10 @@ Rel-map→function {x = x} {y} {rel} map elt =
   where
     module map = is-map map
     functional' : ∀ {a b c} → ∣ rel a b ∣ → ∣ rel a c ∣ → b ≡ c
-    functional' r1 r2 = out! (map.functional _ _ (inc (_ , r1 , r2)))
+    functional' r1 r2 = □-out! (map.functional _ _ (inc (_ , r1 , r2)))
 
     entire' : ∀ a → ∃ ∣ y ∣ λ b → ∣ rel a b ∣
-    entire' a =
-      □-rec! (λ { (x , y , R) → inc (x , R) }) (map.entire a a (inc refl))
+    entire' a = case map.entire a a (inc refl) of λ x _ a~x → inc (x , a~x)
 ```
 
 ## The category of maps

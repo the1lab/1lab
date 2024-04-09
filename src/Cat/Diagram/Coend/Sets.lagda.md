@@ -112,7 +112,7 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
   Coends : Functor Cat[ 𝒞 ^op ×ᶜ 𝒞 , Sets (o ⊔ ℓ) ] (Sets (o ⊔ ℓ))
   Coends .F₀ F = el! (Coeq (dimapl F) (dimapr F))
   Coends .F₁ α =
-    Coeq-rec squash (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
+    Coeq-rec (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
       (X , Y , f , Fxy) →
         (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ··
         glue (X , Y , f , α .η (X , Y) Fxy) ··

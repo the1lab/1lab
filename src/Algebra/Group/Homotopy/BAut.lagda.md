@@ -36,11 +36,9 @@ of its interesting information is in its (higher) path spaces:
 
 ```agda
   connected : (x : BAut) → ∥ x ≡ base ∥
-  connected (b , x) =
-    ∥-∥-elim! {P = λ x → ∥ (b , x) ≡ base ∥} (λ e → inc (p _ _)) x
-    where
-      p : ∀ b e → (b , inc e) ≡ base
-      p _ = EquivJ (λ B e → (B , inc e) ≡ base) refl
+  connected = elim! λ b e → inc (p b e) where
+    p : ∀ b e → (b , inc e) ≡ base
+    p _ = EquivJ (λ B e → (B , inc e) ≡ base) refl
 ```
 
 We now turn to proving that $\pi_1(\baut(X)) \simeq (X \simeq X)$. We

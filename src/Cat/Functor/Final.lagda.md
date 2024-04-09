@@ -151,9 +151,8 @@ the following diagram:
         extend-const
           : ∀ d (f g : Ob (d ↙ F))
           → extend d f ≡ extend d g
-        extend-const d f g = ∥-∥-rec!
-          (Meander-rec-≡ (el! _) (extend d) (extend-const1 d))
-          (fin.zigzag d f g)
+        extend-const d f g = case fin.zigzag d f g of
+          Meander-rec-≡ (el! _) (extend d) (extend-const1 d)
 ```
 
 In order to make reasoning easier, we define the extended cocone

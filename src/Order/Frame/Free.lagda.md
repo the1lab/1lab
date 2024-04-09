@@ -79,9 +79,9 @@ Lower-sets-frame (P , L) = Lower-sets P , L↓-frame where
   L↓-frame .is-frame.has-top = Lower-sets-top P
   L↓-frame .is-frame.⋃ k = Lower-sets-cocomplete P k .Lub.lub
   L↓-frame .is-frame.⋃-lubs k = Lower-sets-cocomplete P k .Lub.has-lub
-  L↓-frame .is-frame.⋃-distribl x f = ext λ arg →
-    Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
-         (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
+  L↓-frame .is-frame.⋃-distribl x f = ext λ arg → Ω-ua
+    (rec! λ x≤a i fi≤a → inc (i , x≤a , fi≤a))
+    (rec! λ i x≤a fi≤a → x≤a , inc (i , fi≤a))
 ```
 
 The unit map $A \to D(A)$ sends an element of $A$ to its down-set,

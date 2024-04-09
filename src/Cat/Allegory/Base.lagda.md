@@ -220,7 +220,7 @@ y) \simeq R(a, y)$, and we're done.
 
 ```agda
 Rel ℓ .cat .idr {A} {B} R = ext λ x y → Ω-ua
-  (□-rec! (λ { (a , b , w) → subst (λ e → ∣ R e y ∣) (sym (out! b)) w }))
+  (rec! λ a b w → subst (λ e → ∣ R e y ∣) (sym b) w)
   λ w → inc (x , inc refl , w)
 ```
 
@@ -239,8 +239,8 @@ modular law is given by some pair-shuffling.
 ```agda
 Rel ℓ ._∩_ R S x y = el (∣ R x y ∣ × ∣ S x y ∣) (hlevel 1)
 Rel ℓ ._† R x y = R y x
-Rel ℓ .modular R S T x y (α , β) =
-  □-rec! (λ { (z , r , s) → inc (z , (r , inc (y , β , s)) , s) }) α
+Rel ℓ .modular R S T x y (α , β) = case α of λ where
+  z x~z z~y → inc (z , (x~z , inc (y , β , z~y)) , z~y)
 ```
 
 <details>
@@ -252,14 +252,12 @@ automatic proof search: that speaks to how contentful it is.</summary>
 ```agda
 Rel ℓ .cat .Hom-set x y = hlevel 2
 Rel ℓ .cat .idl R = ext λ x y → Ω-ua
-  (□-rec! (λ { (a , b , w) → subst (λ e → ∣ R x e ∣) (out! w) b }))
+  (rec! λ z x~z z=y → subst (λ e → ∣ R x e ∣) z=y x~z)
   λ w → inc (y , w , inc refl)
 
 Rel ℓ .cat .assoc T S R = ext λ x y → Ω-ua
-  (□-rec! λ { (a , b , w) → □-rec! (λ { (c , d , x) →
-    inc (c , d , inc (a , x , w)) }) b })
-  (□-rec! λ { (a , b , w) → □-rec! (λ { (c , d , x) →
-    inc (c , inc (a , b , d) , x) }) w })
+  (rec! λ a b r s t → inc (b , r , inc (a , s , t)))
+  (rec! λ a r b s t → inc (b , inc (a , r , s) , t))
 
 Rel ℓ .≤-thin = hlevel 1
 Rel ℓ .≤-refl x y w = w

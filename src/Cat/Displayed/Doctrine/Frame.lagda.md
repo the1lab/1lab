@@ -178,12 +178,11 @@ a calculation:
     lifted : Cocartesian-lift disp f g
     lifted .y' y      = exist y
     lifted .lifting i = F.⋃-inj (g i , inc (i , refl , refl))
-    lifted .cocartesian .universal {u' = u'} m h' i = F.⋃-universal _ λ (e , b) →
-      □-rec! (λ { (x , p , q) →
-        e            F.=⟨ sym q ⟩
-        g x          F.≤⟨ h' x ⟩
-        u' (m (f x)) F.=⟨ ap u' (ap m p) ⟩
-        u' (m i)     F.≤∎ }) b
+    lifted .cocartesian .universal {u' = u'} m h' i = F.⋃-universal _ $ elim! λ e x p q →
+      e            F.=˘⟨ q ⟩
+      g x          F.≤⟨ h' x ⟩
+      u' (m (f x)) F.=⟨ ap u' (ap m p) ⟩
+      u' (m i)     F.≤∎
     lifted .cocartesian .commutes m h = prop!
     lifted .cocartesian .unique   m x = prop!
 ```
@@ -233,11 +232,11 @@ distributive law in $F$:
       ⟩
       exist (λ x → α x F.∩ β (f x)) i           F.≤∎ )
     ( exist (λ x → α x F.∩ β (f x)) i           F.≤⟨
-        F.⋃-universal _ (λ (e , p) → □-rec! (λ { (x , p , q) →
+        F.⋃-universal _ (elim! λ e x p q →
           e                                         F.=⟨ sym q ⟩
           α x F.∩ β (f x)                           F.=⟨ ap (α x F.∩_) (ap β p) ⟩
           α x F.∩ β i                               F.≤⟨ F.⋃-inj (α x , inc (x , p , refl)) ⟩
-          F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤∎ }) p)
+          F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤∎)
       ⟩
       F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.=⟨ sym (F.⋃-distribr _ _) ⟩
       exist α i F.∩ β i                         F.≤∎)

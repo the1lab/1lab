@@ -154,20 +154,18 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
 
     coequ : Coequaliser (PSh _ C) f g
     coequ .coapex .F₀ i = el (Coeq (f .η i) (g .η i)) squash
-    coequ .coapex .F₁ h = Coeq-rec squash (λ g → inc (Y.₁ h g)) λ x →
+    coequ .coapex .F₁ h = Coeq-rec (λ g → inc (Y.₁ h g)) λ x →
       inc (Y.₁ h (f .η _ x)) ≡˘⟨ ap incq (happly (f .is-natural _ _ h) x) ⟩
       inc (f .η _ _)         ≡⟨ glue (X.₁ h x) ⟩
       inc (g .η _ _)         ≡⟨ ap incq (happly (g .is-natural _ _ h) x) ⟩
       inc (Y.₁ h (g .η _ x)) ∎
-    coequ .coapex .F-id = funext $ Coeq-elim-prop (λ _ → squash _ _) λ _ →
-      ap incq (happly Y.F-id _)
-    coequ .coapex .F-∘ f g = funext $ Coeq-elim-prop (λ _ → squash _ _) λ _ →
-      ap incq (happly (Y.F-∘ f g) _)
+    coequ .coapex .F-id = ext λ _ → ap incq (happly Y.F-id _)
+    coequ .coapex .F-∘ f g = ext λ _ → ap incq (happly (Y.F-∘ f g) _)
     coequ .coeq .η i = incq
     coequ .coeq .is-natural x y f = refl
     coequ .has-is-coeq .coequal = ext λ i x → glue x
     coequ .has-is-coeq .universal {F = F} {e' = e'} p .η x =
-      Coeq-rec (F .F₀ x .is-tr) (e' .η x) (p ηₚ x $ₚ_)
+      Coeq-rec (e' .η x) (p ηₚ x $ₚ_)
     coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = ext λ x →
       e' .is-natural _ _ _ $ₚ _
     coequ .has-is-coeq .factors = trivial!

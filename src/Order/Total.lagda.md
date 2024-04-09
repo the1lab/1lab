@@ -179,6 +179,11 @@ which we refer to as **weak totality**.
 
 <!--
 ```agda
+  from-not-≤ : ∀ {x y} → ¬ (x ≤ y) → y ≤ x
+  from-not-≤ {x} {y} ¬x≤y with compare x y
+  ... | inl x≤y = absurd (¬x≤y x≤y)
+  ... | inr y≤x = y≤x
+
 module _ {o ℓ} {P : Poset o ℓ} ⦃ _ : Discrete ⌞ P ⌟ ⦄ ⦃ _ : is-decidable-poset P ⦄ where
   open Poset P
 ```

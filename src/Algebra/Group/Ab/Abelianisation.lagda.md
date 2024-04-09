@@ -109,7 +109,7 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
 
 ```agda
   ab*-comm : ∀ x y → x ab* y ≡ y ab* x
-  ab*-comm = Coeq-elim-prop₂ (λ _ _ → squash _ _) l1 where abstract
+  ab*-comm = elim! l1 where abstract
     l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
     l1 x y =
       inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idl) refl ∙ sym G.associative) ⟩
@@ -127,7 +127,7 @@ tedious algebra:
 
 ```agda
   abinv : G^ab → G^ab
-  abinv = Coeq-rec squash (λ x → inc^ab (x ⁻¹)) l1 where abstract
+  abinv = Coeq-rec (λ x → inc^ab (x ⁻¹)) l1 where abstract
     l1 : ((x , y , z) : G × G × G)
         → inc^ab ((x ⋆ y ⋆ z) ⁻¹) ≡ inc^ab ((x ⋆ z ⋆ y) ⁻¹)
     l1 (x , y , z) =
@@ -160,8 +160,7 @@ inherited from $G$!
 
 ```agda
   ab*-associative : ∀ x y z → x ab* (y ab* z) ≡ (x ab* y) ab* z
-  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
-    λ _ _ _ → ap inc^ab associative
+  ab*-associative = elim! λ _ _ _ → ap inc^ab associative
 
   open make-abelian-group
   Abelian-group-on-G^ab : make-abelian-group G^ab
@@ -170,10 +169,8 @@ inherited from $G$!
   Abelian-group-on-G^ab .mul = _ab*_
   Abelian-group-on-G^ab .inv = abinv
   Abelian-group-on-G^ab .assoc = ab*-associative
-  Abelian-group-on-G^ab .invl =
-    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inversel)
-  Abelian-group-on-G^ab .idl =
-    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl)
+  Abelian-group-on-G^ab .invl = elim! λ _ → ap inc^ab G.inversel
+  Abelian-group-on-G^ab .idl = elim! λ _ → ap inc^ab G.idl
   Abelian-group-on-G^ab .comm = ab*-comm
 
   Abelianise : Abelian-group ℓ
@@ -221,7 +218,7 @@ make-free-abelian G .fold {H} f .hom =
       f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
       f # (a G.⋆ (c G.⋆ b))       ∎
 make-free-abelian G .fold {H} f .preserves .is-group-hom.pres-⋆ =
-  Coeq-elim-prop₂ (λ _ _ → hlevel 1) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+  elim! λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
 make-free-abelian G .commute = trivial!
 make-free-abelian G .unique f p = ext (p #ₚ_)
 ```

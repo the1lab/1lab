@@ -73,10 +73,8 @@ meet.
       → is-finitely-indexed I
       → (f : I → Ob)
       → Glb P f
-    Finitely-indexed-glbs {I = I} fin-indexed f =
-      □-rec! (λ cov →
-          cover-reflects-glb (cov .is-cover) (Finite-glbs (f ⊙ cov .cover)))
-        fin-indexed
+    Finitely-indexed-glbs {I = I} fin-indexed f = case fin-indexed of λ cov →
+      cover-reflects-glb (cov .is-cover) (Finite-glbs (f ⊙ cov .cover))
       where open Finite-cover
 ```
 

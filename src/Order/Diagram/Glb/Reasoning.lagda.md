@@ -141,7 +141,7 @@ distributive law can be extended to an equality.
   ∩-distrib-nonempty-⋂-l i =
     ≤-antisym
      ∩-distrib-⋂-≤l
-     (∥-∥-rec! (λ i → ∩-universal _ (≤-trans (⋂-proj i) ∩≤l) (⋂≤⋂ λ _ → ∩≤r)) i)
+     (rec! (λ i → ∩-universal _ (≤-trans (⋂-proj i) ∩≤l) (⋂≤⋂ λ _ → ∩≤r)) i)
 ```
 
 <!--
