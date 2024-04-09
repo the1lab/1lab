@@ -162,7 +162,7 @@ slice-is-regular .factor {a} {b} f = fact' where
   fact' .mediate∈E = do
     c ← f.mediate∈E
     pure (reflect-cover (fact' .mediate) c)
-  fact' .forget∈M = inc λ g h p → ext $ out! f.forget∈M (g .map) (h .map) (ap map p)
+  fact' .forget∈M = inc λ g h p → ext $ □-out! f.forget∈M (g .map) (h .map) (ap map p)
   fact' .factors = ext f.factors
 
 slice-is-regular .stable {B = B} f g {p1} {p2} cover is-pb =

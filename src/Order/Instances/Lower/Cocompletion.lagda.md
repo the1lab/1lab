@@ -51,7 +51,7 @@ in Agda and play with it themselves!
 ```agda
   lower-set-is-lub : is-lub (Lower-sets P) diagram Ls
   lower-set-is-lub .is-lub.fam≤lub (j , j∈Ls) i □i≤j =
-    Ls .pres-≤ (out! □i≤j) j∈Ls
+    Ls .pres-≤ (□-out! □i≤j) j∈Ls
   lower-set-is-lub .is-lub.least ub' fam≤ub' i i∈Ls =
     fam≤ub' (i , i∈Ls) i (inc (P.≤-refl))
 ```
@@ -109,7 +109,7 @@ that our cocontinuous extension commutes with the "unit map" $A \to DA$.
 ```agda
   Lan↓-commutes : ∀ x → Lan↓ # (↓ A x) ≡ f # x
   Lan↓-commutes x = B.≤-antisym
-    (B-cocomplete.⋃-universal _ (λ { (i , □i≤x) → f .pres-≤ (out! □i≤x) }))
+    (B-cocomplete.⋃-universal _ (λ { (i , □i≤x) → f .pres-≤ (□-out! □i≤x) }))
     (B-cocomplete.⋃-inj (x , inc A.≤-refl))
 ```
 
@@ -121,11 +121,8 @@ establishes that the cocontinuous extension does live up to its name:
     : ∀ {I : Type o} (F : I → Lower-set A)
     → Lan↓ # Lub.lub (Lower-sets-cocomplete A F) ≡ ⋃ (λ i → Lan↓ # (F i))
   Lan↓-cocontinuous F = B.≤-antisym
-    (B-cocomplete.⋃-universal _ λ where
-      (i , i∈⋃F) →
-        □-rec! (λ { (j , i∈Fj) →
-          B.≤-trans (B-cocomplete.⋃-inj (i , i∈Fj)) (B-cocomplete.⋃-inj j)
-        }) i∈⋃F)
+    (B-cocomplete.⋃-universal _ (elim! λ x i fi≤x →
+      B.≤-trans (B-cocomplete.⋃-inj (x , fi≤x)) (B-cocomplete.⋃-inj i)))
     (B-cocomplete.⋃-universal _ λ i →
      B-cocomplete.⋃-universal _ λ where
        (j , j∈Fi) → B-cocomplete.⋃-inj (j , inc (i , j∈Fi)))

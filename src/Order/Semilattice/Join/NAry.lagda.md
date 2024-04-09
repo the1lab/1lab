@@ -76,10 +76,8 @@ least upper bound.
       → is-finitely-indexed I
       → (f : I → Ob)
       → Lub P f
-    Finitely-indexed-lubs {I = I} fin-indexed f =
-      □-rec! (λ cov →
-          cover-reflects-lub (cov .is-cover) (Finite-lubs (f ⊙ cov .cover)))
-        fin-indexed
+    Finitely-indexed-lubs {I = I} fin-indexed f = case fin-indexed of λ cov →
+      cover-reflects-lub (cov .is-cover) (Finite-lubs (f ⊙ cov .cover))
       where open Finite-cover
 ```
 
@@ -126,13 +124,10 @@ module
     → (x : ⌞ P ⌟)
     → is-lub P k x
     → is-lub Q (λ x → f # (k x)) (f # x)
-  pres-finite-lub I-finite k x P-lub =
-    ∥-∥-rec!
-      (λ enum →
-        cast-is-lub (enum e⁻¹) (λ _ → refl) $
-        pres-fin-lub (k ⊙ Equiv.from enum) x $
-        cast-is-lub enum (λ x → sym (ap k (Equiv.η enum x))) P-lub)
-      (I-finite .enumeration)
+  pres-finite-lub I-finite k x P-lub = case I-finite .enumeration of λ enum →
+    cast-is-lub (enum e⁻¹) (λ _ → refl) $
+    pres-fin-lub (k ⊙ Equiv.from enum) x $
+    cast-is-lub enum (λ x → sym (ap k (Equiv.η enum x))) P-lub
 ```
 
 As a corollary, join semilattice homomorphisms must also preserve joins of
@@ -146,10 +141,8 @@ finitely-indexed sets.
     → (x : ⌞ P ⌟)
     → is-lub P k x
     → is-lub Q (λ x → f # (k x)) (f # x)
-  pres-finitely-indexed-lub I-fin-indexed k x P-lub =
-    □-rec! (λ cov →
-      cover-reflects-is-lub (Finite-cover.is-cover cov) $
-      pres-fin-lub (k ⊙ Finite-cover.cover cov) x $
-      cover-preserves-is-lub (Finite-cover.is-cover cov) P-lub)
-    I-fin-indexed
+  pres-finitely-indexed-lub I-fin-indexed k x P-lub = case I-fin-indexed of λ cov →
+    cover-reflects-is-lub (Finite-cover.is-cover cov) $
+    pres-fin-lub (k ⊙ Finite-cover.cover cov) x $
+    cover-preserves-is-lub (Finite-cover.is-cover cov) P-lub
 ```

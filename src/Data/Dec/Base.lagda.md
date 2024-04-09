@@ -159,5 +159,12 @@ infix 0 ifᵈ_then_else_
 ifᵈ_then_else_ : Dec A → B → B → B
 ifᵈ yes a then y else n = y
 ifᵈ no ¬a then y else n = n
+
+is-yes : ∀ {ℓ} {A : Type ℓ} → Dec A → Type
+is-yes (yes x) = ⊤
+is-yes (no _)  = ⊥
+
+decide! : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ {_ : is-yes d} → A
+decide! ⦃ yes x ⦄ = x
 ```
 -->

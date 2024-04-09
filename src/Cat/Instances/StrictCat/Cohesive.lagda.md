@@ -322,15 +322,13 @@ the same set we started with.
 
 ```agda
   adj .counit .η X = Quot-elim (λ _ → X .is-tr) (λ x → x) λ x y r → r
-  adj .counit .is-natural x y f =
-    funext (Coeq-elim-prop (λ _ → y .is-tr _ _) λ _ → refl)
+  adj .counit .is-natural x y f = trivial!
 ```
 
 The triangle identities are again straightforwardly checked.
 
 ```agda
-  adj .zig {x} = funext (Coeq-elim-prop (λ _ → squash _ _) λ x → refl)
-
+  adj .zig {x} = trivial!
   adj .zag = Functor-path (λ x → refl) λ f → refl
 ```
 
@@ -366,13 +364,8 @@ This map has an inverse given by joining up the pairs:
     (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i)
     a b
 
-  isom .rinv (a , b) = Coeq-elim-prop₂
-    {C = λ x y → f (isom .inv (x , y)) ≡ (x , y)}
-    (λ _ _ → ×-is-hlevel 2 squash squash _ _)
-    (λ _ _ → refl)
-    a b
-
-  isom .linv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
+  isom .rinv = elim! λ x y → refl
+  isom .linv = elim! λ x y → refl
 ```
 
 ## Pieces have points
@@ -387,5 +380,5 @@ Points→Pieces .η _ x = inc x
 Points→Pieces .is-natural x y f i o = inc (f .F₀ o)
 
 pieces-have-points : ∀ {x} → is-surjective (Points→Pieces {ℓ} .η x)
-pieces-have-points = Coeq-elim-prop (λ _ → squash) λ x → inc (x , refl)
+pieces-have-points = elim! λ x → inc (x , refl)
 ```

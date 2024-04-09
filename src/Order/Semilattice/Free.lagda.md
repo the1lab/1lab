@@ -127,7 +127,7 @@ $[n]$.
         cover-reflects-lub surj (Finite-lubs (B .snd) (fam ⊙ g))
 
       ε' : Lub (B .fst) fam
-      ε' = □-rec! ε P-fin
+      ε' = rec! ε P-fin
 
       module ε' = Lub ε'
 ```
@@ -182,8 +182,8 @@ have to show this!
     fold-K-singleton
       : (f : ⌞ A ⌟ → ⌞ B ⌟) (x : ⌞ A ⌟) → fold-K f (singletonᵏ x) ≡ f x
     fold-K-singleton f x = B.≤-antisym
-      (ε'.least (f x) λ (y , □x=y) → □-rec!
-        (λ x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl) □x=y)
+      (ε'.least (f x) λ (y , □x=y) → case □x=y of λ
+        x=y → subst (λ ϕ → f ϕ B.≤ f x) x=y B.≤-refl)
       (ε'.fam≤lub (x , inc refl))
       where open fold-K f (singleton x) (singleton-is-K-finite (A .is-tr) x)
 ```

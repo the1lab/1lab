@@ -120,7 +120,7 @@ definition.
        → sum / rel
        → ∣ A ∣
   univ {A} eps p =
-    Coeq-rec (A .is-tr)
+    Coeq-rec
       (λ { (x , p) → eps x p })
       (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eps _) q})
 

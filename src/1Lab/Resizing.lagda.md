@@ -8,6 +8,7 @@ open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
+open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -138,25 +139,24 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
-□-elim!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : □ A → Type ℓ'} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
-  → (∀ x → P (inc x))
-  → ∀ x → P x
-□-elim! = □-elim (λ _ → hlevel 1)
-
-□-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-  → ⦃ _ : H-Level B 1 ⦄
-  → (A → B) → □ A → B
-□-rec! = □-rec (hlevel 1)
+instance
+  Inductive-□
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {P : □ A → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-□ ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → □-elim (λ x → hlevel 1) (i .Inductive.from f)
+    }
 
 □-out : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A → A
 □-out ap = □-rec ap (λ x → x)
 
-out! : ∀ {ℓ} {A : Type ℓ}
-     → ⦃ _ : H-Level A 1 ⦄
-     → □ A → A
-out! = □-rec! λ x → x
+□-out!
+  : ∀ {ℓ} {A : Type ℓ}
+  → ⦃ _ : H-Level A 1 ⦄
+  → □ A → A
+□-out! = rec! λ x → x
 
 □-rec-set
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -290,6 +290,6 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) where
 
   opaque
     Ω-corestriction-is-surjective : is-surjective Ω-corestriction
-    Ω-corestriction-is-surjective (b , p) = □-rec! (λ (a , p) → inc (a , Σ-prop-path! p)) p
+    Ω-corestriction-is-surjective = elim! λ y x fx=y → pure (x , Σ-prop-path! fx=y)
 ```
 -->

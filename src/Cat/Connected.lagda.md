@@ -89,12 +89,8 @@ zigzags into sets:
 
 ```agda
   connected→π₀-is-contr : is-connected-cat C → is-contr (π₀ ʻ C)
-  connected→π₀-is-contr conn = ∥-∥-rec!
-    (λ x → contr (inc x)
-      (Coeq-elim-prop (λ _ → hlevel 1)
-        λ y → ∥-∥-rec! (Meander-rec-≡ (π₀ C) inc quot)
-          (conn .zigzag x y)))
-    (conn .point)
+  connected→π₀-is-contr conn = case conn .point of λ x → contr (inc x)
+    (elim! λ y → rec! (Meander-rec-≡ (π₀ C) inc quot) (conn .zigzag x y))
 ```
 
 Showing the converse implication is not as straightforward: in order to
@@ -123,15 +119,14 @@ a zigzag.
     R .symᶜ     = ∥-∥-map (reverse C)
 
     is : Iso (quotient R) (π₀ ʻ C)
-    is .fst = Coeq-rec squash inc λ (x , y , fs) →
-      ∥-∥-rec (squash _ _) (Meander-rec-≡ (π₀ C) inc quot) fs
-    is .snd .is-iso.inv = Coeq-rec squash inc λ (x , y , f) →
+    is .fst = Coeq-rec inc (elim! λ x y → Meander-rec-≡ (π₀ C) inc quot)
+    is .snd .is-iso.inv = Coeq-rec inc λ (x , y , f) →
       quot (inc (zig f []))
-    is .snd .is-iso.rinv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
-    is .snd .is-iso.linv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
+    is .snd .is-iso.rinv = elim! λ _ → refl
+    is .snd .is-iso.linv = elim! λ _ → refl
 
     conn : is-connected-cat C
-    conn .point = Coeq-elim-prop (λ _ → squash) inc (π₀-contr .centre)
+    conn .point = rec! inc (π₀-contr .centre)
     conn .zigzag x y = effective R
       (is-contr→is-prop (Iso→is-hlevel 0 is π₀-contr) (inc x) (inc y))
 

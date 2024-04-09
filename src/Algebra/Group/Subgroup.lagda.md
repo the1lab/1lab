@@ -474,7 +474,7 @@ $(x - y) \in H$, we also have $(x\inv - y) \in H$.
 ```agda
     inverse : G/H → G/H
     inverse =
-      Coeq-rec squash (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
+      Coeq-rec (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
       where abstract
         p : ∀ x y → (x — y) ∈ H → (inv x — inv y) ∈ H
         p x y r = has-comm (subst (_∈ H) inv-comm (has-inv r))
@@ -491,13 +491,9 @@ rather directly:
     Group-on-G/H .make-group.unit = inc unit
     Group-on-G/H .make-group.mul = op
     Group-on-G/H .make-group.inv = inverse
-    Group-on-G/H .make-group.assoc =
-      Coeq-elim-prop₃ (λ _ _ _ → squash _ _) λ x y z i →
-        inc (associative {x = x} {y} {z} i)
-    Group-on-G/H .make-group.invl =
-      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i)
-    Group-on-G/H .make-group.idl =
-      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i)
+    Group-on-G/H .make-group.assoc = elim! λ x y z → ap Coeq.inc associative
+    Group-on-G/H .make-group.invl  = elim! λ x → ap Coeq.inc inversel
+    Group-on-G/H .make-group.idl   = elim! λ x → ap Coeq.inc idl
 
   _/ᴳ_ : Group _
   _/ᴳ_ = to-group Group-on-G/H

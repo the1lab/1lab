@@ -266,6 +266,33 @@ wait-just-a-bit : Term → TC Term
 wait-just-a-bit (meta m _) = block-on-meta m
 wait-just-a-bit tm = pure tm
 
+blocking-meta : Term → Maybe Blocker
+blocking-meta* : List (Arg Term) → Maybe Blocker
+
+blocking-meta (var x as)       = nothing
+blocking-meta (con c as)       = nothing
+blocking-meta (def f as)       = blocking-meta* as
+blocking-meta (lam v t)        = nothing
+blocking-meta (pat-lam _ as)   = blocking-meta* as
+blocking-meta (pi a (abs _ b)) = blocking-meta b
+blocking-meta (agda-sort s)    = nothing
+blocking-meta (lit l)          = nothing
+blocking-meta (meta x _)       = just (blocker-meta x)
+blocking-meta unknown          = nothing
+
+blocking-meta* (arg (arginfo visible _)   tm ∷ _) = blocking-meta tm
+blocking-meta* (arg (arginfo instance' _) tm ∷ _) = blocking-meta tm
+blocking-meta* (arg (arginfo hidden _)    tm ∷ as) = blocking-meta* as
+
+blocking-meta* [] = nothing
+
+reduceB : Term → TC Term
+reduceB tm = do
+  tm' ← reduce tm
+  case blocking-meta tm' of λ where
+    (just b) → blockTC b
+    nothing  → pure tm'
+
 unapply-path : Term → TC (Maybe (Term × Term × Term))
 unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
   domain ← new-meta (def (quote Type) (l v∷ []))

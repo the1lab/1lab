@@ -57,5 +57,5 @@ module
       : ∀ {P : ⌞ F ⌟ → Ω} {x}
       → (∀ i → i ∈ P → i ≤ x)
       → ⋃ˢ P ≤ x
-    ⋃ˢ-universal f = P.⋃-universal _ λ (i , w) → f i (out! w)
+    ⋃ˢ-universal f = P.⋃-universal _ λ (i , w) → f i (□-out! w)
 ```

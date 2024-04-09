@@ -73,10 +73,9 @@ intersection $(p \cap p\inv)$ is empty.
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
 is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
-  ∥-∥-rec!  (λ { (inl x∈p)   → yes x∈p
-             ; (inr x∈p⁻¹) → no λ x∈p → intersection elt (x∈p , x∈p⁻¹)
-             })
-    (union elt tt)
+  case union elt tt of λ where
+    (inl x∈p)  → yes x∈p
+    (inr x∈¬p) → no λ x∈p → intersection elt (x∈p , x∈¬p)
 ```
 
 # Decidable subobject classifiers

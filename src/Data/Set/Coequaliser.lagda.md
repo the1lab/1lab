@@ -55,14 +55,15 @@ the diagram below.
 We refer to this unique factoring as `Coeq-rec`{.Agda}.
 
 ```agda
-Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
-      → is-set C → (h : B → C)
-      → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
-Coeq-rec cset h h-coeqs (inc x) = h x
-Coeq-rec cset h h-coeqs (glue x i) = h-coeqs x i
-Coeq-rec cset h h-coeqs (squash x y p q i j) =
-  cset (g x) (g y) (λ i → g (p i)) (λ i → g (q i)) i j
-  where g = Coeq-rec cset h h-coeqs
+Coeq-rec
+  : ∀ {ℓ} {C : Type ℓ} {f g : A → B} ⦃ _ : H-Level C 2 ⦄
+  → (h : B → C)
+  → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
+Coeq-rec h h-coeqs (inc x) = h x
+Coeq-rec h h-coeqs (glue x i) = h-coeqs x i
+Coeq-rec ⦃ cs ⦄ h h-coeqs (squash x y p q i j) =
+  hlevel 2 (g x) (g y) (λ i → g (p i)) (λ i → g (q i)) i j
+  where g = Coeq-rec ⦃ cs ⦄ h h-coeqs
 ```
 
 An alternative phrasing of the desired universal property is
@@ -85,10 +86,11 @@ not yet been defined. It says that, to define a dependent function from
 acts on `inc`{.Agda}: The path constructions don't matter.
 
 ```agda
-Coeq-elim-prop : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
-              → (∀ x → is-prop (C x))
-              → (∀ x → C (inc x))
-              → ∀ x → C x
+Coeq-elim-prop
+  : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
+  → (∀ x → is-prop (C x))
+  → (∀ x → C (inc x))
+  → ∀ x → C x
 Coeq-elim-prop cprop cinc (inc x) = cinc x
 ```
 
@@ -103,6 +105,32 @@ Coeq-elim-prop cprop cinc (squash x y p q i j) =
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim-prop cprop cinc
 ```
+
+<!--
+```agda
+instance
+  Inductive-Coeq
+    : ∀ {ℓ ℓm} {f g : A → B} {P : Coeq f g → Type ℓ}
+    → ⦃ _ : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-Coeq ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → Coeq-elim-prop (λ x → hlevel 1) (i .Inductive.from f)
+    }
+
+  Extensional-coeq-map
+    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f g : A → B}
+    → ⦃ sf : Extensional (B → C) ℓr ⦄ ⦃ _ : H-Level C 2 ⦄
+    → Extensional (Coeq f g → C) ℓr
+  Extensional-coeq-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path h = funext $
+    elim! (happly (sf .idsᵉ .to-path h))
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
+    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
+```
+-->
 
 </div>
 
@@ -125,19 +153,16 @@ and this equivalence is given by `inc`{.Agda}, the "universal
 Coequalising map".
 
 ```agda
-Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
-          → is-set C
+Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B} ⦃ _ : H-Level C 2 ⦄
           → is-equiv {A = Coeq f g → C} {B = coeq-cone f g C}
             (λ h → h ∘ inc , λ i z → h (glue z i))
-Coeq-univ {C = C} {f = f} {g = g} cset =
-  is-iso→is-equiv (iso cr' (λ x → refl) islinv)
-  where
-    open is-iso
+Coeq-univ {C = C} {f = f} {g = g} =
+  is-iso→is-equiv (iso cr' (λ x → refl) islinv) where
     cr' : coeq-cone f g C → Coeq f g → C
-    cr' (f , f-coeqs) = Coeq-rec cset f (happly f-coeqs)
+    cr' (f , f-coeqs) = Coeq-rec f (happly f-coeqs)
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
-    islinv f = funext (Coeq-elim-prop (λ x → cset _ _) λ x → refl)
+    islinv f = trivial!
 ```
 
 </div>
@@ -165,61 +190,8 @@ Coeq-elim cset ci cg (squash x y p q i j) =
   where g = Coeq-elim cset ci cg
 ```
 
-There is a barrage of combined eliminators, whose definitions are not
-very enlightening --- you can mouse over these links to see their types:
-`Coeq-elim-prop₂`{.Agda} `Coeq-elim-prop₃`{.Agda} `Coeq-rec₂`{.Agda}.
-
 <!--
 ```agda
-{-# TERMINATING #-}
-Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
-                   {C : Coeq f g → Coeq f' g' → Type ℓ}
-               → (∀ x y → is-prop (C x y))
-               → (∀ x y → C (inc x) (inc y))
-               → ∀ x y → C x y
-Coeq-elim-prop₂ prop f (inc x) (inc y) = f x y
-Coeq-elim-prop₂ {f' = f'} {g'} prop f (inc x) (glue y i) =
-  is-prop→pathp (λ i → prop (inc x) (glue y i)) (f x (f' y)) (f x (g' y)) i
-Coeq-elim-prop₂ prop f (inc x) (squash y y' p q i j) =
-  is-prop→squarep (λ i j → prop (inc x) (squash y y' p q i j))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) y)
-    (λ i → Coeq-elim-prop₂ prop f (inc x) (p i))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) (q i))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) y')
-    i j
-Coeq-elim-prop₂ {f = f'} {g = g'} prop f (glue x i) y =
-  is-prop→pathp (λ i → prop (glue x i) y)
-    (Coeq-elim-prop₂ prop f (inc (f' x)) y)
-    (Coeq-elim-prop₂ prop f (inc (g' x)) y)
-    i
-Coeq-elim-prop₂ prop f (squash x x' p q i j) y =
-  is-prop→squarep (λ i j → prop (squash x x' p q i j) y)
-    (λ i → Coeq-elim-prop₂ prop f x y)
-    (λ i → Coeq-elim-prop₂ prop f (p i) y)
-    (λ i → Coeq-elim-prop₂ prop f (q i) y)
-    (λ i → Coeq-elim-prop₂ prop f x' y)
-    i j
-
-Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
-                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
-               → (∀ x y z → is-prop (C x y z))
-               → (∀ x y z → C (inc x) (inc y) (inc z))
-               → ∀ x y z → C x y z
-Coeq-elim-prop₃ cprop f (inc a) y z =
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
-    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z (inc a)
-Coeq-elim-prop₃ cprop f (glue x i) y z =
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
-    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z
-    (glue x i)
-Coeq-elim-prop₃ cprop f (squash x x' p q i j) y z =
-  is-prop→squarep (λ i j → cprop (squash x x' p q i j) y z)
-    (λ i → Coeq-elim-prop₃ cprop f x y z)
-    (λ i → Coeq-elim-prop₃ cprop f (p i) y z)
-    (λ i → Coeq-elim-prop₃ cprop f (q i) y z)
-    (λ i → Coeq-elim-prop₃ cprop f x' y z)
-    i j
-
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → is-set C
           → (ci : B → B' → C)
@@ -392,9 +364,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
     encode x y p = subst (λ y → ∣ Code x y ∣) p reflᶜ
 
     decode : ∀ x y (p : ∣ Code x y ∣) → inc x ≡ y
-    decode x y p =
-      Coeq-elim-prop {C = λ y → (p : ∣ Code x y ∣) → inc x ≡ y}
-        (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
+    decode = elim! λ x y r → quot r
 ```
 
 For `encode`{.Agda}, it suffices to transport the proof that $R$ is
@@ -433,8 +403,8 @@ Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong rdec =
-  Coeq-elim-prop₂ {C = λ x y → Dec (x ≡ y)} (λ x y → hlevel 1) go _ _ where
+Discrete-quotient cong rdec {x} {y} =
+  elim! {P = λ x → ∀ y → Dec (x ≡ y)} go _ _ where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)
@@ -536,17 +506,6 @@ is a set, that means it's an equivalence.
 
 <!--
 ```agda
-instance
-  Extensional-coeq-map
-    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f g : A → B}
-    → ⦃ sf : Extensional (B → C) ℓr ⦄ ⦃ _ : H-Level C 2 ⦄
-    → Extensional (Coeq f g → C) ℓr
-  Extensional-coeq-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
-  Extensional-coeq-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
-  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path h = funext $
-    Coeq-elim-prop (λ x → hlevel 1) (happly (sf .idsᵉ .to-path h))
-  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
-    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
 
 private module test where
   variable C : Type ℓ

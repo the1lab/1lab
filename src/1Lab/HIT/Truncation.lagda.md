@@ -10,6 +10,7 @@ open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
+open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -102,18 +103,18 @@ whenever it is a family of propositions, by providing a case for
          → (x : ∥ A ∥) (y : ∥ B ∥) → P
 ∥-∥-rec₂ pprop = ∥-∥-elim₂ (λ _ _ → pprop)
 
-∥-∥-elim!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : ∥ A ∥ → Type ℓ'} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
-  → (∀ x → P (inc x)) → ∀ x → P x
-∥-∥-elim! = ∥-∥-elim (λ _ → hlevel 1)
-
-∥-∥-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ _ : H-Level P 1 ⦄
-  → (A → P) → (x : ∥ A ∥) → P
-∥-∥-rec! = ∥-∥-elim (λ _ → hlevel 1)
-
 ∥-∥-out! : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ → ∥ A ∥ → A
 ∥-∥-out! = ∥-∥-out (hlevel 1)
+
+instance
+  Inductive-∥∥
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {P : ∥ A ∥ → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-∥∥ ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → ∥-∥-elim (λ x → hlevel 1) (i .Inductive.from f)
+    }
 ```
 -->
 

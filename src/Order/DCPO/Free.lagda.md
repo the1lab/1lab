@@ -52,9 +52,7 @@ Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
   const-inhabited-fam→lub disc-fam-const (dir .elt)
   where
     disc-fam-const : ∀ i j → f i ≡ f j
-    disc-fam-const i j =
-      ∥-∥-rec! (λ (k , p , q) → p ∙ sym q)
-        (dir .semidirected i j)
+    disc-fam-const i j = case dir .semidirected i j of λ k p q → p ∙ sym q
 
 Disc-dcpo : (A : Set ℓ) → DCPO ℓ ℓ
 Disc-dcpo A = Disc A , Disc-is-dcpo
@@ -200,10 +198,8 @@ module
 
   ⊑-lub-least
     : ∀ x → (∀ i → s i ⊑ x) → ⊑-lub s dir ⊑ x
-  ⊑-lub-least x le .implies = □-rec! λ (i , si) →
-    le i .implies si
-  ⊑-lub-least x le .refines = □-elim! λ (i , si) →
-    le i .refines si
+  ⊑-lub-least x le .implies = rec! λ i si → le i .implies si
+  ⊑-lub-least x le .refines = elim! λ i si → le i .refines si
 ```
 
 <!--
@@ -250,10 +246,8 @@ part-map-lub
   → (f : ∣ A ∣ → ∣ B ∣)
   → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub s dir))
 part-map-lub f .fam≤lub i = part-map-⊑ (⊑-lub-le i)
-part-map-lub f .least y le .implies =
-  □-rec! λ (i , si) → le i .implies si
-part-map-lub {B = B} f .least y le .refines =
-  □-elim! λ (i , si) → le i .refines si
+part-map-lub f .least y le .implies = rec! λ i si → le i .implies si
+part-map-lub {B = B} f .least y le .refines = elim! λ i si → le i .refines si
 
 Free-Pointed-dcpo : Functor (Sets ℓ) (Pointed-DCPOs ℓ ℓ)
 Free-Pointed-dcpo .F₀ A = Parts-pointed-dcpo A

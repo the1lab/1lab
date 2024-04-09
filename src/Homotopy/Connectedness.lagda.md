@@ -89,9 +89,8 @@ is-connected∙ (X , pt) = (x : X) → ∥ x ≡ pt ∥
 module _ {ℓ} {X@(_ , pt) : Type∙ ℓ} where
   is-connected∙→is-connected : is-connected∙ X → is-connected ⌞ X ⌟
   is-connected∙→is-connected c .centre = inc pt
-  is-connected∙→is-connected c .paths =
-    ∥-∥₀-elim (λ _ → is-hlevel-suc 2 squash (inc pt) _) λ x →
-      ∥-∥-rec! (ap inc ∘ sym) (c x)
+  is-connected∙→is-connected c .paths = elim! λ x → case c x of λ
+    pt=x → ap inc (sym pt=x)
 
   is-connected→is-connected∙ : is-connected ⌞ X ⌟ → is-connected∙ X
   is-connected→is-connected∙ c x =
@@ -209,9 +208,9 @@ retract→is-n-connected 0 = _
 retract→is-n-connected 1 f g h a-conn = f <$> a-conn
 retract→is-n-connected (suc (suc n)) f g h a-conn =
   n-connected.from (suc n) $ retract→is-contr
-    (n-Tr-rec! (inc ∘ f))
-    (n-Tr-rec! (inc ∘ g))
-    (n-Tr-elim! _ λ x → ap n-Tr.inc (h x))
+    (rec! (inc ∘ f))
+    (rec! (inc ∘ g))
+    (elim! λ x → ap n-Tr.inc (h x))
     (is-n-connected-Tr (suc n) a-conn)
 ```
 
@@ -254,8 +253,8 @@ is-connected-suc
   : ∀ {ℓ} {A : Type ℓ} n
   → is-n-connected A (suc n) → is-n-connected A n
 is-connected-suc {A = A} zero _ = _
-is-connected-suc {A = A} (suc n) w = n-connected.from n $ n-Tr-elim! _
-    (λ x → contr (inc x) (n-Tr-elim! _ (rem₁ n w x)))
+is-connected-suc {A = A} (suc n) w = n-connected.from n $ elim!
+    (λ x → contr (inc x) (elim! (rem₁ n w x)))
     (is-n-connected-Tr (suc n) w .centre)
   where
     rem₁ : ∀ n → is-n-connected A (2 + n) → ∀ x y → Path (n-Tr A (suc n)) (inc x) (inc y)
@@ -311,11 +310,11 @@ is-contr-n-Tr→∥-∥ (suc n) h .snd a b = is-contr-n-Tr→∥-∥ n
 
 ∥-∥→is-contr-n-Tr
   : ∀ n → is-n-connected-∥-∥ A (suc n) → is-contr (n-Tr A (suc n))
-∥-∥→is-contr-n-Tr zero (a , _) = is-prop∙→is-contr (hlevel 1) (∥-∥-rec! inc a)
-∥-∥→is-contr-n-Tr (suc n) (a , h) = ∥-∥-rec! (λ a → is-prop∙→is-contr
-  (n-Tr-elim! _ λ a → n-Tr-elim! _ λ b →
-    Equiv.from n-Tr-path-equiv (∥-∥→is-contr-n-Tr n (h a b) .centre))
-  (inc a)) a
+∥-∥→is-contr-n-Tr zero (a , _) = is-prop∙→is-contr (hlevel 1) (rec! inc a)
+∥-∥→is-contr-n-Tr (suc n) (a , h) = case a of λ a →
+  is-prop∙→is-contr
+    (elim! λ a b → Equiv.from n-Tr-path-equiv (∥-∥→is-contr-n-Tr n (h a b) .centre))
+    (inc a)
 
 is-n-connected→∥-∥
   : ∀ n → is-n-connected A n → is-n-connected-∥-∥ A n

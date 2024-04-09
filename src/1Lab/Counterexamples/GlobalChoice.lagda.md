@@ -76,7 +76,7 @@ double negation elimination is false:
 
 ```agda
 ¬DNE∞ : (∀ {ℓ} (A : Type ℓ) → ¬ ¬ A → A) → ⊥
-¬DNE∞ dne∞ = ¬global-choice λ A a → dne∞ A (λ ¬A → ∥-∥-rec! ¬A a)
+¬DNE∞ dne∞ = ¬global-choice λ A a → dne∞ A (λ ¬A → rec! ¬A a)
 ```
 
 Thus $\rm{LEM}_\infty$, which is equivalent to $\rm{DNE}_\infty$, also fails:

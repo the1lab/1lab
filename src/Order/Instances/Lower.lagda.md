@@ -85,7 +85,7 @@ by arbitrarily large types:
   Lower-sets-complete F .Glb.glb .hom i = elΩ (∀ j → i ∈ F j)
   Lower-sets-complete F .Glb.glb .pres-≤ j≤i =
     □-map λ x∈Fj j → F j .pres-≤ j≤i (x∈Fj j)
-  Lower-sets-complete F .Glb.has-glb .is-glb.glb≤fam i x x∈Fj = (out! x∈Fj) i
+  Lower-sets-complete F .Glb.has-glb .is-glb.glb≤fam i x x∈Fj = □-out! x∈Fj i
   Lower-sets-complete F .Glb.has-glb .is-glb.greatest lb' lb'≤Fi x y∈lb' =
     inc (λ j → lb'≤Fi j x y∈lb')
 ```
@@ -104,7 +104,7 @@ operator automatically propositionally truncates.
   Lower-sets-cocomplete F .Lub.has-lub .is-lub.fam≤lub i x x∈Fi =
     inc (i , x∈Fi)
   Lower-sets-cocomplete F .Lub.has-lub .is-lub.least lb' lb'≤Fi x =
-    □-rec! (λ { (i , x∈Fi) → lb'≤Fi i x x∈Fi })
+    rec! λ i x∈Fi → lb'≤Fi i x x∈Fi
 ```
 
 <!--
@@ -125,7 +125,7 @@ operator automatically propositionally truncates.
   Lower-sets-joins a b .Join.has-join .is-join.l≤join x x∈a = inc (inl x∈a)
   Lower-sets-joins a b .Join.has-join .is-join.r≤join x x∈b = inc (inr x∈b)
   Lower-sets-joins a b .Join.has-join .is-join.least ub' f g x =
-    ∥-∥-rec! [ (f x) , (g x) ]
+    rec! [ f x , g x ]
 
   Lower-sets-top : Top (Lower-sets P)
   Lower-sets-top .Top.top .hom _ = ⊤Ω

@@ -304,6 +304,6 @@ Power-frame A .snd .⋃ k i = ∃Ω _ (λ j → k j i)
 Power-frame A .snd .⋃-lubs k = is-lub-pointwise _ _ λ _ →
   Props-has-lubs λ i → k i _
 Power-frame A .snd .⋃-distribl x f = funext λ i → Ω-ua
-  (λ (x , i) → □-map (λ (y , z) → _ , x , z) i)
-  (λ r → □-rec! (λ { (x , y , z) → y , inc (_ , z) }) r)
+  (rec! λ xi j j~i → inc (j , xi , j~i))
+  (rec! λ j xi j~i → xi , inc (j , j~i))
 ```

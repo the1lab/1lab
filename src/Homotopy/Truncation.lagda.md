@@ -161,6 +161,15 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
 
 <!--
 ```agda
+instance
+  Inductive-n-Tr
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {n} {P : n-Tr A (suc n) → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) (suc n) ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-n-Tr ⦃ i ⦄ = record
+    { from = λ f → n-Tr-elim _ (λ x → hlevel _) (i .Inductive.from f)
+    }
+
 n-Tr-elim!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
   → (P : n-Tr A (suc n) → Type ℓ')
@@ -228,10 +237,10 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
   encode' x _ = J (λ y _ → ∣ code x y ∣) (inc refl)
 
   decode' : ∀ x y → ∣ code x y ∣ → inc x ≡ y
-  decode' x = n-Tr-elim! _ λ x → n-Tr-rec! (ap inc)
+  decode' = elim! λ x y → ap inc
 
   rinv : ∀ x y → is-right-inverse (decode' x y) (encode' x y)
-  rinv x = n-Tr-elim! _ λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
+  rinv = elim! λ x y x=y → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
 
   linv : ∀ x y → is-left-inverse (decode' x y) (encode' x y)
   linv x _ = J (λ y p → decode' x y (encode' x y p) ≡ p)
@@ -278,10 +287,7 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product wh
 
   distrib-is-iso : is-iso distrib
   distrib-is-iso .inv (x , y)  = pair x y
-  distrib-is-iso .rinv (x , y) = n-Tr-elim!
-    (λ x → ∀ y → distrib (pair x y) ≡ (x , y))
-    (λ x → n-Tr-elim! _ λ y → refl)
-    x y
+  distrib-is-iso .rinv = elim! λ x y → refl
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 
   distrib-is-equiv = is-iso→is-equiv distrib-is-iso

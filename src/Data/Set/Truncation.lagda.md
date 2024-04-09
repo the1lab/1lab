@@ -4,6 +4,7 @@ open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
+open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -53,6 +54,20 @@ map into must be a set, as required by the `squash`{.Agda} constructor.
   where go = ∥-∥₀-rec bset f
 ```
 
+<!--
+```agda
+instance
+  Inductive-∥∥₀
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {P : ∥ A ∥₀ → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 2 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-∥∥₀ ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → ∥-∥₀-elim (λ x → hlevel 2) (i .Inductive.from f)
+    }
+```
+-->
+
 The most interesting result is that, since the sets form a [[reflective
 subcategory]] of types, the set-truncation is an idempotent monad.
 Indeed, as required, the counit `inc`{.Agda} is an equivalence:
@@ -98,21 +113,6 @@ using `is-set→squarep`{.Agda}.
          (λ i → ∥-∥₀-map₂ f a (p i))
          (λ i → ∥-∥₀-map₂ f a (q i))
          i j
-
-∥-∥₀-elim₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : ∥ A ∥₀ → ∥ B ∥₀ → Type ℓ''}
-           → (∀ x y → is-set (C x y))
-           → (∀ x y → C (inc x) (inc y))
-           → ∀ x y → C x y
-∥-∥₀-elim₂ Bset f = ∥-∥₀-elim (λ x → Π-is-hlevel 2 (Bset x))
-  λ x → ∥-∥₀-elim (Bset (inc x)) (f x)
-
-∥-∥₀-elim₃ : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
-               {D : ∥ A ∥₀ → ∥ B ∥₀ → ∥ C ∥₀ → Type ℓ'''}
-           → (∀ x y z → is-set (D x y z))
-           → (∀ x y z → D (inc x) (inc y) (inc z))
-           → ∀ x y z → D x y z
-∥-∥₀-elim₃ Bset f = ∥-∥₀-elim₂ (λ x y → Π-is-hlevel 2 (Bset x y))
-  λ x y → ∥-∥₀-elim (Bset (inc x) (inc y)) (f x y)
 ```
 
 # Paths in the set truncation

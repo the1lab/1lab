@@ -78,7 +78,7 @@ module _ {o κ : _} (C : Precategory o κ) (c : ⌞ C ⌟) where
 
   intersect : ∀ {I : Type κ} (F : I → Sieve C c) → Sieve C c
   intersect {I = I} F .arrows h = elΩ ((x : I) → h ∈ F x)
-  intersect {I = I} F .closed g x = inc λ i → F i .closed g (out! x i)
+  intersect {I = I} F .closed g x = inc λ i → F i .closed g (□-out! x i)
 ```
 
 ## Representing subfunctors

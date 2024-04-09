@@ -96,32 +96,17 @@ quotients into propositions, then applying $R$'s laws.</summary>
   make-R/I .0R = inc 0r
   make-R/I ._+_ = R/I._⋆_
   make-R/I .-_ = R/I.inverse
-  make-R/I .+-idl = R/I.idl
-  make-R/I .+-invr {x} = R/I.inverser {x}
-  make-R/I .+-assoc {x} {y} {z} = R/I.associative {x} {y} {z}
+  make-R/I .+-idl x = R/I.idl
+  make-R/I .+-invr x = R/I.inverser {x}
+  make-R/I .+-assoc x y z = R/I.associative {x} {y} {z}
   make-R/I .1R = inc R.1r
   make-R/I ._*_ = quot-mul
-  make-R/I .+-comm {x} {y} =
-    Coeq-elim-prop₂ {C = λ x y → x R/I.⋆ y ≡ y R/I.⋆ x} (λ x y → hlevel 1)
-      (λ x y → ap Coeq.inc R.+-commutes) x y
-  make-R/I .*-idl {x} =
-    Coeq-elim-prop {C = λ x → quot-mul (inc R.1r) x ≡ x} (λ _ → hlevel 1)
-      (λ x → ap Coeq.inc R.*-idl) x
-  make-R/I .*-idr {x} =
-    Coeq-elim-prop {C = λ x → quot-mul x (inc R.1r) ≡ x} (λ _ → hlevel 1)
-      (λ x → ap Coeq.inc R.*-idr) x
-  make-R/I .*-assoc {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul x (quot-mul y z) ≡ quot-mul (quot-mul x y) z}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-associative) x y z
-  make-R/I .*-distribl {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul x (y R/I.⋆ z) ≡ quot-mul x y R/I.⋆ quot-mul x z}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-distribl) x y z
-  make-R/I .*-distribr {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul (y R/I.⋆ z) x ≡ quot-mul y x R/I.⋆ quot-mul z x}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-distribr) x y z
+  make-R/I .+-comm = elim! λ x y → ap Coeq.inc R.+-commutes
+  make-R/I .*-idl = elim! λ x → ap Coeq.inc R.*-idl
+  make-R/I .*-idr = elim! λ x → ap Coeq.inc R.*-idr
+  make-R/I .*-assoc = elim! λ x y z → ap Coeq.inc R.*-associative
+  make-R/I .*-distribl = elim! λ x y z → ap Coeq.inc R.*-distribl
+  make-R/I .*-distribr = elim! λ x y z → ap Coeq.inc R.*-distribr
 ```
 
 </details>

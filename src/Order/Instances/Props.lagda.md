@@ -62,21 +62,21 @@ Props-has-bot .Bottom.has-bottom _ ()
 Props-has-joins : ∀ P Q → is-join Props P Q (P ∨Ω Q)
 Props-has-joins P Q .is-join.l≤join = pure ⊙ inl
 Props-has-joins P Q .is-join.r≤join = pure ⊙ inr
-Props-has-joins P Q .is-join.least R l r = ∥-∥-rec! [ l , r ]
+Props-has-joins P Q .is-join.least R l r = rec! [ l , r ]
 
 Props-has-meets : ∀ P Q → is-meet Props P Q (P ∧Ω Q)
 Props-has-meets P Q .is-meet.meet≤l = fst
 Props-has-meets P Q .is-meet.meet≤r = snd
-Props-has-meets P Q .is-meet.greatest R l r x = (l x) , (r x)
+Props-has-meets P Q .is-meet.greatest R l r x = l x , r x
 
 module _ {ℓ} {I : Type ℓ} (Ps : I → Ω) where
   Props-has-glbs : is-glb Props Ps (∀Ω I Ps)
-  Props-has-glbs .is-glb.glb≤fam i f = out! f i
+  Props-has-glbs .is-glb.glb≤fam i = rec! (_$ i)
   Props-has-glbs .is-glb.greatest R k x = inc (λ i → k i x)
 
   Props-has-lubs : is-lub Props Ps (∃Ω I Ps)
   Props-has-lubs .is-lub.fam≤lub i pi = inc (i , pi)
-  Props-has-lubs .is-lub.least R k = □-rec! λ { (i , pi) → k i pi }
+  Props-has-lubs .is-lub.least R k = rec! k
 ```
 
 <!--
