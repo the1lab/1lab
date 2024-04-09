@@ -97,6 +97,12 @@ instance
   Inductive-Σ ⦃ r ⦄ .methods        = r .methods
   Inductive-Σ ⦃ r ⦄ .from f (x , y) = r .from f x y
 
+  Inductive-Lift
+    : {B : Lift ℓ A → Type ℓ'}
+    → ⦃ _ : Inductive (∀ x → B (lift x)) ℓm ⦄
+    → Inductive (∀ x → B x) ℓm
+  Inductive-Lift ⦃ i ⦄ = record { from = λ f (lift x) → i .from f x }
+
   -- However, we don't uncurry equivalences.
 
   Inductive-≃ : {C : A ≃ B → Type ℓ''} → Inductive (∀ x → C x) _
