@@ -316,5 +316,27 @@ delete ρ i j = ρ (skip i j)
 ```agda
 fabsurd : ∀ {ℓ} {A : Type ℓ} → Fin 0 → A
 fabsurd ()
+
+Finite-one-is-prop : is-prop (Fin 1)
+Finite-one-is-prop fzero fzero = refl
+
+fpred : ∀ {n} → Fin (2 + n) → Fin (1 + n)
+fpred fzero = fzero
+fpred (fsuc i) = i
+
+fkeep : ∀ {m n} → (Fin m → Fin n) → Fin (suc m) → Fin (suc n)
+fkeep f fzero = fzero
+fkeep f (fsuc i) = fsuc (f i)
+
+fkeep-id : ∀ {n} → ∀ (i : Fin (suc n)) → fkeep (λ x → x) i ≡ i
+fkeep-id fzero = refl
+fkeep-id (fsuc i) = refl
+
+fkeep-∘
+  : ∀ {m n o}
+  → {f : Fin n → Fin o} {g : Fin m → Fin n}
+  → ∀ i → fkeep (f ∘ g) i ≡ fkeep f (fkeep g i)
+fkeep-∘ fzero = refl
+fkeep-∘ (fsuc i) = refl
 ```
 -->

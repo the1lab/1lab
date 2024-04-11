@@ -94,11 +94,14 @@ instance
 -->
 
 We also have that a successor is never smaller than the number it
-succeeds:
+succeeds, and that a successor is always larger than zero.
 
 ```agda
 ¬sucx≤x : (x : Nat) → ¬ (suc x ≤ x)
 ¬sucx≤x (suc x) (s≤s ord) = ¬sucx≤x x ord
+
+¬sucx≤0 : (x : Nat) → ¬ (suc x ≤ 0)
+¬sucx≤0 x ()
 ```
 
 We can do proofs on pairs of natural numbers by splitting into cases of
