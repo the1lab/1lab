@@ -6,8 +6,8 @@ description: |
 ```agda
 open import 1Lab.Function.Surjection
 open import 1Lab.Function.Embedding
-open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Inductive

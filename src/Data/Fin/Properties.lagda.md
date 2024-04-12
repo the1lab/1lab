@@ -1,9 +1,8 @@
 <!--
 ```agda
-open import 1Lab.Prelude
-
 open import 1Lab.Function.Antisurjection
 open import 1Lab.Function.Antiinjection
+open import 1Lab.Prelude
 
 open import Data.Dec.Base
 open import Data.Fin.Base

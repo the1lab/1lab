@@ -4,13 +4,14 @@ description: |
 ---
 <!--
 ```agda
-open import Meta.Foldable
 open import 1Lab.Reflection
-
-open import Data.Nat.Base
 
 open import Cat.Functor.Properties
 open import Cat.Prelude
+
+open import Data.Nat.Base
+
+open import Meta.Foldable
 
 import Cat.Reasoning
 ```

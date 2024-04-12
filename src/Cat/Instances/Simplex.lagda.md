@@ -4,30 +4,28 @@ description: |
 ---
 <!--
 ```agda
-open import Meta.Brackets
-
 open import 1Lab.Function.Antisurjection
 open import 1Lab.Function.Antiinjection
+
+open import Cat.Diagram.Terminal
+open import Cat.Functor.Concrete
+open import Cat.Diagram.Initial
+open import Cat.Prelude
+open import Cat.Gaunt
 
 open import Data.Dec
 open import Data.Fin
 
+open import Meta.Brackets
+
 open import Order.Instances.Nat
-
-open import Cat.Functor.Concrete
-open import Cat.Diagram.Initial
-open import Cat.Diagram.Terminal
-open import Cat.Gaunt
-
-open import Cat.Prelude
-
-import Data.Nat as Nat
-import Data.Fin as Fin
 
 import Cat.Reasoning
 
-import Order.Reasoning
+import Data.Fin as Fin
+import Data.Nat as Nat
 
+import Order.Reasoning
 ```
 -->
 
