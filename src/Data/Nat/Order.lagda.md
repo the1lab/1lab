@@ -145,6 +145,15 @@ weaken-< : ∀ {x y} → x < y → x ≤ y
 weaken-< {x} {suc y} p = ≤-sucr (≤-peel p)
 ```
 
+<!--
+```agda
+not-<-≤ : ∀ {x y} → ¬ (y < x) → x ≤ y
+not-<-≤ {zero} {y} ¬y<x = 0≤x
+not-<-≤ {suc x} {zero} ¬y<x = absurd (¬y<x 0<s)
+not-<-≤ {suc x} {suc y} ¬y<x = s≤s (not-<-≤ (¬y<x ∘ s≤s))
+```
+-->
+
 ## Nat is a lattice
 
 An interesting tidbit about the ordering on $\NN$ is that it is, in some
