@@ -6,6 +6,9 @@ description: |
 ```agda
 open import Meta.Brackets
 
+open import 1Lab.Function.Antisurjection
+open import 1Lab.Function.Antiinjection
+
 open import Data.Dec
 open import Data.Fin
 
@@ -35,12 +38,14 @@ module Cat.Instances.Simplex where
 <!--
 ```agda
 open Precategory
+open split-antiinjective
 ```
 -->
 
-# The simplex category {defines="simplex-category semisimplex-category"}
+# The simplex category {defines="simplex-category semisimplex-category demisimplex-category"}
 
 The simplex category, $\Delta$, is generally introduced as the category
+
 of non-empty finite ordinals and order-preserving maps. Though
 conceptually simple, this definition is difficult to work with: in particular,
 diagrams over $\Delta$ are extremely hard to form! This is why mathematicians
@@ -369,11 +374,12 @@ demisimplicial maps encode *split* surjections.
 Δ-hom⁺-to-inj
   : ∀ {m n}
   → (f : Δ-Hom⁺ m n)
-  → injective (Δ-hom⁺ f)
+  → injective ⟦ f ⟧
+
 Δ-hom⁻-to-split-surj
   : ∀ {m n}
   → (f : Δ-Hom⁻ m n)
-  → ∀ (i : Fin n) → fibre (Δ-hom⁻ f) i
+  → split-surjective ⟦ f ⟧
 ```
 
 <details>
@@ -400,6 +406,16 @@ demisimplicial maps encode *split* surjections.
   Σ-map fsuc (ap fsuc) (Δ-hom⁻-to-split-surj f i)
 ```
 </details>
+
+<!--
+```agda
+Δ-hom⁻-to-surj
+  : ∀ {m n}
+  → (f : Δ-Hom⁻ m n)
+  → is-surjective ⟦ f ⟧
+Δ-hom⁻-to-surj f i = inc (Δ-hom⁻-to-split-surj f i)
+```
+-->
 
 We also remark that semi and demisimplicial maps always encode monotonic functions.
 
@@ -460,6 +476,7 @@ Likewise, demisimplicial maps reflect the strict order.
 Δ-hom⁻-reflect-< (keep⁻ f⁻) {fsuc i} {fsuc j} fi<fj =
   Nat.s≤s (Δ-hom⁻-reflect-< f⁻ (Nat.≤-peel fi<fj))
 ```
+
 
 ### Injectivity of interpretations
 
@@ -621,6 +638,35 @@ neatly as corollaries.
 Δ-hom⁻-inj f⁻ g⁻ p = Δ-hom-unique⁻ id⁺ id⁺ f⁻ g⁻ (ap (Δ-hom⁺ id⁺) ⊙ p)
 ```
 
+<!--
+```agda
+instance
+  Extensional-Δ-Hom⁺
+    : ∀ {m n ℓr}
+    → ⦃ e : Extensional (Fin m → Fin n) ℓr ⦄
+    → Extensional (Δ-Hom⁺ m n) ℓr
+  Extensional-Δ-Hom⁺ ⦃ e ⦄ =
+    injection→extensional! {f = Δ-hom⁺}
+      (λ {f} {g} p → Δ-hom⁺-inj f g (happly p)) e
+
+  Extensional-Δ-Hom⁻
+    : ∀ {m n ℓr}
+    → ⦃ e : Extensional (Fin m → Fin n) ℓr ⦄
+    → Extensional (Δ-Hom⁻ m n) ℓr
+  Extensional-Δ-Hom⁻ ⦃ e ⦄ =
+    injection→extensional! {f = Δ-hom⁻}
+      (λ {f} {g} p → Δ-hom⁻-inj f g (happly p)) e
+
+  Extensional-Δ-Hom
+    : ∀ {m n ℓr}
+    → ⦃ e : Extensional (Fin m → Fin n) ℓr ⦄
+    → Extensional (Δ-Hom m n) ℓr
+  Extensional-Δ-Hom ⦃ e ⦄ =
+    injection→extensional! {f = Δ-hom}
+      (λ {f} {g} p → Δ-hom-inj f g (happly p)) e
+```
+-->
+
 ### Functoriality of interpretations
 
 Finally, we shall prove functoriality of all of our interpretations.
@@ -749,7 +795,7 @@ are concrete is just an exercise in building records.
 Δₐ⁺-concrete .make-concrete._∘_ = _∘⁺_
 Δₐ⁺-concrete .make-concrete.lvl = lzero
 Δₐ⁺-concrete .make-concrete.F₀ = Fin
-Δₐ⁺-concrete .make-concrete.F₀-is-set = hlevel!
+Δₐ⁺-concrete .make-concrete.F₀-is-set = hlevel 2
 Δₐ⁺-concrete .make-concrete.F₁ = Δ-hom⁺
 Δₐ⁺-concrete .make-concrete.F₁-inj = Δ-hom⁺-inj _ _
 Δₐ⁺-concrete .make-concrete.F-id = Δ-hom⁺-id
@@ -759,7 +805,7 @@ are concrete is just an exercise in building records.
 Δₐ⁻-concrete .make-concrete._∘_ = _∘⁻_
 Δₐ⁻-concrete .make-concrete.lvl = lzero
 Δₐ⁻-concrete .make-concrete.F₀ = Fin
-Δₐ⁻-concrete .make-concrete.F₀-is-set = hlevel!
+Δₐ⁻-concrete .make-concrete.F₀-is-set = hlevel 2
 Δₐ⁻-concrete .make-concrete.F₁ = Δ-hom⁻
 Δₐ⁻-concrete .make-concrete.F₁-inj = Δ-hom⁻-inj _ _
 Δₐ⁻-concrete .make-concrete.F-id = Δ-hom⁻-id
@@ -769,7 +815,7 @@ are concrete is just an exercise in building records.
 Δₐ-concrete .make-concrete._∘_ = _∘Δ_
 Δₐ-concrete .make-concrete.lvl = lzero
 Δₐ-concrete .make-concrete.F₀ = Fin
-Δₐ-concrete .make-concrete.F₀-is-set = hlevel!
+Δₐ-concrete .make-concrete.F₀-is-set = hlevel 2
 Δₐ-concrete .make-concrete.F₁ = Δ-hom
 Δₐ-concrete .make-concrete.F₁-inj = Δ-hom-inj _ _
 Δₐ-concrete .make-concrete.F-id = Δ-hom-id
@@ -779,7 +825,7 @@ are concrete is just an exercise in building records.
 Δ⁺-concrete .make-concrete._∘_ = _∘⁺_
 Δ⁺-concrete .make-concrete.lvl = lzero
 Δ⁺-concrete .make-concrete.F₀ n = Fin (suc n)
-Δ⁺-concrete .make-concrete.F₀-is-set = hlevel!
+Δ⁺-concrete .make-concrete.F₀-is-set = hlevel 2
 Δ⁺-concrete .make-concrete.F₁ = Δ-hom⁺
 Δ⁺-concrete .make-concrete.F₁-inj = Δ-hom⁺-inj _ _
 Δ⁺-concrete .make-concrete.F-id = Δ-hom⁺-id
@@ -789,7 +835,7 @@ are concrete is just an exercise in building records.
 Δ⁻-concrete .make-concrete._∘_ = _∘⁻_
 Δ⁻-concrete .make-concrete.lvl = lzero
 Δ⁻-concrete .make-concrete.F₀ n = Fin (suc n)
-Δ⁻-concrete .make-concrete.F₀-is-set = hlevel!
+Δ⁻-concrete .make-concrete.F₀-is-set = hlevel 2
 Δ⁻-concrete .make-concrete.F₁ = Δ-hom⁻
 Δ⁻-concrete .make-concrete.F₁-inj = Δ-hom⁻-inj _ _
 Δ⁻-concrete .make-concrete.F-id = Δ-hom⁻-id
@@ -799,7 +845,7 @@ are concrete is just an exercise in building records.
 Δ-concrete .make-concrete._∘_ = _∘Δ_
 Δ-concrete .make-concrete.lvl = lzero
 Δ-concrete .make-concrete.F₀ n = Fin (suc n)
-Δ-concrete .make-concrete.F₀-is-set = hlevel!
+Δ-concrete .make-concrete.F₀-is-set = hlevel 2
 Δ-concrete .make-concrete.F₁ = Δ-hom
 Δ-concrete .make-concrete.F₁-inj = Δ-hom-inj _ _
 Δ-concrete .make-concrete.F-id = Δ-hom-id
@@ -836,6 +882,605 @@ module Δ⁺ = Cat.Reasoning Δ⁺
 module Δ⁻ = Cat.Reasoning Δ⁻
 module Δ = Cat.Reasoning Δ
 ```
+
+## Univalence
+
+All of the various semi/demi/augmented simplex categories are univalent,
+though this is somewhat non-trivial to show. The proof will consist of 3
+major steps:
+1. Every map that does not contain a `shift⁺`{.Agda} or a `crush⁻`{.Agda} constructor
+  preserves dimension.
+2. Every semi/demisimplicial endomap is an identity.
+3. A map is is interpreted as an equivalence if and only if it does not
+  contain any `shift⁺`{.Agda} or a `crush⁻`{.Agda} constructors.
+
+Once we have these 3 pieces, we can show that every isomorphism is an
+equivalence, so it cannot contain `shift⁺`{.Agda} or a `crush⁻`{.Agda}
+constructors. This means that the image of every factorization of an
+isomorphism must have the same dimension as both endpoints, so both
+the semi/demisimplicial components of the factorization are endomaps,
+and thus identities.
+
+Filling out this proof sketch will involve quite a bit of work, so
+let's get to it!
+
+### Dimension
+
+First, note that every semisimplicial map raises the dimension, and
+every demisimplicial map lowers it.
+
+```agda
+Δ-dim⁺-≤ : ∀ {m n} → (f : Δ-Hom⁺ m n) → m Nat.≤ n
+Δ-dim⁺-≤ done⁺ = Nat.0≤x
+Δ-dim⁺-≤ (shift⁺ f) = Nat.≤-sucr (Δ-dim⁺-≤ f)
+Δ-dim⁺-≤ (keep⁺ f) = Nat.s≤s (Δ-dim⁺-≤ f)
+
+Δ-dim⁻-≤ : ∀ {m n} → (f : Δ-Hom⁻ m n) → n Nat.≤ m
+Δ-dim⁻-≤ done⁻ = Nat.0≤x
+Δ-dim⁻-≤ (crush⁻ f) = Nat.≤-sucr (Δ-dim⁻-≤ f)
+Δ-dim⁻-≤ (keep⁻ f) = Nat.s≤s (Δ-dim⁻-≤ f)
+```
+
+We can tighten these bounds if $f$ contains a `shift⁺`{.Agda} or a
+`crush⁻`{.Agda} constructor.
+
+```agda
+has-shift⁺ : ∀ {m n} → Δ-Hom⁺ m n → Type
+has-shift⁺ done⁺ = ⊥
+has-shift⁺ (shift⁺ f) = ⊤
+has-shift⁺ (keep⁺ f) = has-shift⁺ f
+
+has-crush⁻ : ∀ {m n} → Δ-Hom⁻ m n → Type
+has-crush⁻ done⁻ = ⊥
+has-crush⁻ (crush⁻ f) = ⊤
+has-crush⁻ (keep⁻ f) = has-crush⁻ f
+
+has-shift : ∀ {m n} → Δ-Hom m n → Type
+has-shift f = has-shift⁺ (f .hom⁺)
+
+has-crush : ∀ {m n} → Δ-Hom m n → Type
+has-crush f = has-crush⁻ (f .hom⁻)
+
+Δ-dim⁺-< : ∀ {m n} → (f : Δ-Hom⁺ m n) → has-shift⁺ f → m Nat.< n
+Δ-dim⁺-< (shift⁺ f) p = Nat.s≤s (Δ-dim⁺-≤ f)
+Δ-dim⁺-< (keep⁺ f) p = Nat.s≤s (Δ-dim⁺-< f p)
+
+Δ-dim⁻-< : ∀ {m n} → (f : Δ-Hom⁻ m n) → has-crush⁻ f → n Nat.< m
+Δ-dim⁻-< (crush⁻ f) p = Nat.s≤s (Δ-dim⁻-≤ f)
+Δ-dim⁻-< (keep⁻ f) p = Nat.s≤s (Δ-dim⁻-< f p)
+```
+
+The converse is also true; if $f$ strictly raises or lowers the dimension
+then contains a `shift⁺`{.Agda} or a `crush⁻`{.Agda} constructor.
+
+```agda
+Δ-dim⁺-<-has-shift⁺
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → m Nat.< n
+  → has-shift⁺ f⁺
+Δ-dim⁺-<-has-shift⁺ (shift⁺ f⁺) m<n = tt
+Δ-dim⁺-<-has-shift⁺ (keep⁺ f⁺) m<n = Δ-dim⁺-<-has-shift⁺ f⁺ (Nat.≤-peel m<n)
+
+Δ-dim⁻-<-has-crush⁻
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → n Nat.< m
+  → has-crush⁻ f⁻
+Δ-dim⁻-<-has-crush⁻ (crush⁻ f) n<m = tt
+Δ-dim⁻-<-has-crush⁻ (keep⁻ f) n<m = Δ-dim⁻-<-has-crush⁻ f (Nat.≤-peel n<m)
+```
+
+Additionally, if $f$ does not contain any `shift⁺`{.Agda} or `crush⁻`{.Agda}
+constructors, then it must preserve the dimension. This concludes step 1!
+
+```agda
+no-shift⁺→dim-stable
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → ¬ (has-shift⁺ f⁺)
+  → m ≡ n
+no-shift⁺→dim-stable done⁺ no-shift = refl
+no-shift⁺→dim-stable (shift⁺ f⁺) no-shift = absurd (no-shift tt)
+no-shift⁺→dim-stable (keep⁺ f⁺) no-shift = ap suc (no-shift⁺→dim-stable f⁺ no-shift)
+
+no-crush⁻→dim-stable
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → ¬ (has-crush⁻ f⁻)
+  → m ≡ n
+no-crush⁻→dim-stable done⁻ no-crush = refl
+no-crush⁻→dim-stable (crush⁻ f⁻) no-crush = absurd (no-crush tt)
+no-crush⁻→dim-stable (keep⁻ f⁻) no-crush = ap suc (no-crush⁻→dim-stable f⁻ no-crush)
+
+no-shift+no-crush→dim-stable
+  : ∀ (f : Δ-Hom m n)
+  → ¬ (has-shift f) → ¬ (has-crush f)
+  → m ≡ n
+no-shift+no-crush→dim-stable f no-shift no-crush =
+  no-crush⁻→dim-stable (f .hom⁻) no-crush
+  ∙ no-shift⁺→dim-stable (f .hom⁺) no-shift
+```
+
+Luckily, the second step of the proof is much easier: an semi/demisimplicial
+endomap cannot have `shift⁺`{.Agda} or `crush⁻`{.Agda} constructors, as
+they would raise/lower the dimension!
+
+```agda
+Δ-endo⁺-id : ∀ (f : Δ-Hom⁺ n n) → f ≡ id⁺
+Δ-endo⁺-id done⁺ = refl
+Δ-endo⁺-id (shift⁺ f) = absurd (Nat.¬sucx≤x _ (Δ-dim⁺-≤ f))
+Δ-endo⁺-id (keep⁺ f) = ap keep⁺ (Δ-endo⁺-id f)
+
+Δ-endo⁻-id : ∀ (f : Δ-Hom⁻ n n) → f ≡ id⁻
+Δ-endo⁻-id done⁻ = refl
+Δ-endo⁻-id (crush⁻ f) = absurd (Nat.¬sucx≤x _ (Δ-dim⁻-≤ f))
+Δ-endo⁻-id (keep⁻ f) = ap keep⁻ (Δ-endo⁻-id f)
+```
+
+<!--
+```agda
+Δ-endo⁺-idp
+  : ∀ {p : m ≡ n} (f⁺ : Δ-Hom⁺ m n)
+  → PathP (λ i → Δ-Hom⁺ (p i) n) f⁺ id⁺
+Δ-endo⁺-idp {m = m} {p = p} f⁺ =
+  J (λ n p → ∀ (f⁺ : Δ-Hom⁺ m n) → PathP (λ i → Δ-Hom⁺ (p i) n) f⁺ id⁺)
+    Δ-endo⁺-id p
+    f⁺
+
+Δ-endo⁻-idp
+  : ∀ {p : n ≡ m} (f⁻ : Δ-Hom⁻ m n)
+  → PathP (λ i → Δ-Hom⁻ m (p i)) f⁻ id⁻
+Δ-endo⁻-idp {n = n} {p = p} f⁻ =
+  J (λ m p → ∀ (f⁻ : Δ-Hom⁻ m n) → PathP (λ i → Δ-Hom⁻ m (p i)) f⁻ id⁻)
+    Δ-endo⁻-id p
+    f⁻
+```
+-->
+
+At this point, we already have enough results to show that the
+(augmented) semi and demisimplex categories are univalent! We
+will only focus on the augmented semisimplex category, as all the
+other cases are more are less identical.
+
+The key insight is that we can get a path $m = n$ from a pair of
+semisimplicial maps $[m] \to [n], [n] \to [m]$ by appealing to
+our antisymmetry.
+
+```agda
+Δ-hom⁺-pair-dim
+  : ∀ (f : Δ-Hom⁺ m n) (f⁻¹ : Δ-Hom⁺ n m)
+  → m ≡ n
+Δ-hom⁺-pair-dim f f⁻¹ = Nat.≤-antisym (Δ-dim⁺-≤ f) (Δ-dim⁺-≤ f⁻¹)
+```
+
+This gives us a way to turn isomorphisms in $\Delta_{a}^{+}$ into
+paths, and there is a unique automorphism, so $\Delta_{a}^{+}$ must
+be univalent.
+
+```agda
+Δₐ⁺-is-category : is-category Δₐ⁺
+Δₐ⁺-is-category =
+  set-identity-system-K
+    (λ n f → Δₐ⁺.≅-path (Δ-endo⁺-id (Δₐ⁺.to f)))
+    (λ f →  Δ-hom⁺-pair-dim (Δₐ⁺.to f) (Δₐ⁺.from f))
+```
+
+<!--
+```agda
+Δ-hom⁻-pair-dim
+  : ∀ (f : Δ-Hom⁻ m n) (f⁻¹ : Δ-Hom⁻ n m)
+  → m ≡ n
+Δ-hom⁻-pair-dim f f⁻¹ = Nat.≤-antisym (Δ-dim⁻-≤ f⁻¹) (Δ-dim⁻-≤ f)
+
+Δₐ⁻-is-category : is-category Δₐ⁻
+Δₐ⁻-is-category =
+  set-identity-system-K
+    (λ n f → Δₐ⁻.≅-path (Δ-endo⁻-id (Δₐ⁻.to f)))
+    (λ f →  Δ-hom⁻-pair-dim (Δₐ⁻.to f) (Δₐ⁻.from f))
+
+Δ⁺-is-category : is-category Δ⁺
+Δ⁺-is-category =
+  set-identity-system-K
+    (λ n f → Δ⁺.≅-path (Δ-endo⁺-id (Δ⁺.to f)))
+    (λ f → Nat.suc-inj (Δ-hom⁺-pair-dim (Δ⁺.to f) (Δ⁺.from f)))
+
+Δ⁻-is-category : is-category Δ⁻
+Δ⁻-is-category =
+  set-identity-system-K
+    (λ n f → Δ⁻.≅-path (Δ-endo⁻-id (Δ⁻.to f)))
+    (λ f → Nat.suc-inj (Δ-hom⁻-pair-dim (Δ⁻.to f) (Δ⁻.from f)))
+```
+-->
+
+Unfortunately, simplicial maps require an additional step. Our goal is to
+characterise the morphisms that get interpreted as equivalence, but we will
+do this in a somewhat roundabout way: instead of characterizing equivalences, we
+will characterize everything that is *not* an equivalence!
+
+In particular, we our goal is to show that a morphism is an equivalence if
+and only if it does not contain any `shift⁺`{.Agda} or a `crush⁻`{.Agda}
+constructor. However, doing so will require characterizing morphisms that *do*
+contain these constructors. First, note that if a semisimplicial map $f$
+contains a `shift⁺`{.Agda}, then it is [[split antisurjective]], as we can
+find an element in the codomain that is not in the image of $f$.
+
+```agda
+shift⁺-split-antisurj
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → split-antisurjective ⟦ shift⁺ f⁺ ⟧
+shift⁺-split-antisurj f⁺ = fzero , fsuc≠fzero ⊙ snd
+
+has-shift⁺→split-antisurj
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → has-shift⁺ f⁺
+  → split-antisurjective ⟦ f⁺ ⟧
+has-shift⁺→split-antisurj (shift⁺ f⁺) shift =
+  shift⁺-split-antisurj f⁺
+has-shift⁺→split-antisurj (keep⁺ f⁺) shift =
+  fkeep-split-antisurj (has-shift⁺→split-antisurj f⁺ shift)
+```
+
+Similarly, if a demisimplicial map $f$ contains a `crush⁻`, then it
+is [[split antiinjective]], as we can find a fibre that contains at
+least 2 distinct elements. The proof of this is a bit tricky though:
+we need to observe that there are no demisimplicial maps $[1 + n] \to [0]$.
+
+<!--
+```agda
+Δ-hom⁺-zero-strict : ¬ (Δ-Hom⁺ (suc n) 0)
+Δ-hom⁺-zero-strict ()
+
+Δ-hom⁻-no-initial : ¬ (Δ-Hom⁻ 0 (suc n))
+Δ-hom⁻-no-initial ()
+```
+-->
+
+```agda
+Δ-hom⁻-zero-strict : ¬ (Δ-Hom⁻ (suc n) 0)
+Δ-hom⁻-zero-strict (crush⁻ f⁻) = Δ-hom⁻-zero-strict f⁻
+
+crush⁻-split-antiinj
+  : ∀ (f⁻ : Δ-Hom⁻ (suc m) n)
+  → split-antiinjective ⟦ crush⁻ f⁻ ⟧
+crush⁻-split-antiinj {n = zero} f⁻ = absurd (Δ-hom⁻-zero-strict f⁻)
+crush⁻-split-antiinj {n = suc n} f⁻ = antiinj where
+  open split-antiinjective
+
+  antiinj : split-antiinjective (⟦ f⁻ ⟧ ⊙ fpred)
+  antiinj .pt = 0
+  antiinj .x₀ = 0
+  antiinj .x₁ = 1
+  antiinj .map-to₀ = Δ-hom⁻-zero f⁻
+  antiinj .map-to₁ = Δ-hom⁻-zero f⁻
+  antiinj .distinct = fzero≠fsuc
+
+has-crush⁻→split-antiinj
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → has-crush⁻ f⁻
+  → split-antiinjective ⟦ f⁻ ⟧
+has-crush⁻→split-antiinj (crush⁻ f⁻) degen = crush⁻-split-antiinj f⁻
+has-crush⁻→split-antiinj (keep⁻ f⁻) degen =
+  fkeep-split-antiinj (has-crush⁻→split-antiinj f⁻ degen)
+```
+
+The converse also holds: if $f$ is split antisurjective or antiinjective,
+then $f$ has a `shift⁺`{.Agda} or a `crush⁻`{.Agda}.
+
+```agda
+split-antisurj→has-shift⁺
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → split-antisurjective ⟦ f⁺ ⟧
+  → has-shift⁺ f⁺
+split-antisurj→has-shift⁺ (shift⁺ f⁺) antisurj = tt
+split-antisurj→has-shift⁺ (keep⁺ f⁺) antisurj =
+  split-antisurj→has-shift⁺ f⁺ (fkeep-reflect-split-antisurj antisurj)
+
+split-antiinj→has-crush⁻
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → split-antiinjective ⟦ f⁻ ⟧
+  → has-crush⁻ f⁻
+split-antiinj→has-crush⁻ done⁻ antiinj = fabsurd (antiinj .pt)
+split-antiinj→has-crush⁻ (crush⁻ f⁻) antiinj = tt
+split-antiinj→has-crush⁻ (keep⁻ f⁻) antiinj =
+  split-antiinj→has-crush⁻ f⁻ (fkeep-reflect-split-antiinj antiinj)
+```
+
+Split antiinjective and antisurjective functions are stable under post
+and precomposition respectively, so simplicial maps that contain
+`shift⁺`{.Agda} or `crush⁻`{.Agda} are also split antiinjective/antisurjective.
+
+```agda
+has-shift→split-antisurj
+  : (f : Δ-Hom m n)
+  → has-shift f
+  → split-antisurjective ⟦ f ⟧
+has-shift→split-antisurj f shift =
+  split-antisurj-∘l {f = ⟦ f .hom⁺ ⟧} {g = ⟦ f .hom⁻ ⟧} $
+  has-shift⁺→split-antisurj (f .hom⁺) shift
+
+has-crush→split-antiinj
+  : (f : Δ-Hom m n)
+  → has-crush f
+  → split-antiinjective ⟦ f ⟧
+has-crush→split-antiinj f crush =
+  split-antiinj-∘r {f = ⟦ f .hom⁺ ⟧} {g = ⟦ f .hom⁻ ⟧} $
+  has-crush⁻→split-antiinj (f .hom⁻) crush
+```
+
+Conversely, if a simplicial map is split antiinjective or antisurjective,
+then it contains a `shift⁺`{.Agda} or a `crush⁻`{.Agda}, respectively.
+We shall focus on the antisurjective case, as the antiinjective one
+follows a similar argument. Recall that if $f \circ g$ is antisurjective
+and $g$ is surjective, then $f$ must be antisurjective. This means that
+the semisimplicial portion of the factorization must be antisurjective,
+and thus must contain a shift.
+
+```agda
+split-antisurj→has-shift
+  : (f : Δ-Hom m n)
+  → split-antisurjective ⟦ f ⟧
+  → has-shift f
+split-antisurj→has-shift f antisurj =
+  split-antisurj→has-shift⁺ (f .hom⁺) $
+  split-antisurj-cancelr (Δ-hom⁻-to-surj (f .hom⁻)) antisurj
+```
+
+<details>
+<summary>As noted above, antiinjectivity follows an identical argument.
+</summary>
+```agda
+split-antiinj→has-crush
+  : (f : Δ-Hom m n)
+  → split-antiinjective ⟦ f ⟧
+  → has-crush f
+split-antiinj→has-crush f antiinj =
+  split-antiinj→has-crush⁻ (f .hom⁻) $
+  split-antiinj-cancell (Δ-hom⁺-to-inj (f .hom⁺)) antiinj
+```
+</details>
+
+We also remark that $f$ does not contain a `shift⁺`{.Agda} or a
+`crush⁻`{.Agda}, then $f$ is an equivalence.
+
+```agda
+no-shift⁺→is-equiv
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → ¬ (has-shift⁺ f⁺)
+  → is-equiv ⟦ f⁺ ⟧
+no-shift⁺→is-equiv done⁺ no-shift .is-eqv i = fabsurd i
+no-shift⁺→is-equiv (shift⁺ f⁺) no-shift = absurd (no-shift tt)
+no-shift⁺→is-equiv (keep⁺ f⁺) no-shift = fkeep-equiv (no-shift⁺→is-equiv f⁺ no-shift)
+
+no-crush⁻→is-equiv
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → ¬ (has-crush⁻ f⁻)
+  → is-equiv ⟦ f⁻ ⟧
+no-crush⁻→is-equiv done⁻ no-crush .is-eqv i = fabsurd i
+no-crush⁻→is-equiv (crush⁻ f⁻) no-crush = absurd (no-crush tt)
+no-crush⁻→is-equiv (keep⁻ f⁻) no-crush = fkeep-equiv (no-crush⁻→is-equiv f⁻ no-crush)
+
+no-shift+no-crush→is-equiv
+  : ∀ (f : Δ-Hom m n)
+  → ¬ (has-shift f) → ¬ (has-crush f)
+  → is-equiv ⟦ f ⟧
+no-shift+no-crush→is-equiv f no-shift no-crush =
+  ∙-is-equiv
+    (no-crush⁻→is-equiv (f .hom⁻) no-crush)
+    (no-shift⁺→is-equiv (f .hom⁺) no-shift)
+```
+
+Additionally, antisurjective and antiinjective functions are never
+equivalences, so $f$ is an equivalence *if and only if* it does not
+contain `shift⁺`{.Agda} or `crush⁻`{.Agda}.
+
+```agda
+is-equiv→no-shift⁺
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → is-equiv ⟦ f⁺ ⟧
+  → ¬ (has-shift⁺ f⁺)
+
+is-equiv→no-crush⁻
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → is-equiv ⟦ f⁻ ⟧
+  → ¬ (has-crush⁻ f⁻)
+
+is-equiv→no-shift
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → ¬ (has-shift f)
+
+is-equiv→no-crush
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → ¬ (has-crush f)
+```
+
+<details>
+<summary>The proofs all follow from general results about antiinjective
+and antisurjective functions, so they are not particularly enlightening.
+</summary>
+```agda
+is-equiv→no-shift⁺ f⁺ f-eqv shift =
+ split-antisurj→not-equiv (has-shift⁺→split-antisurj f⁺ shift) f-eqv
+
+is-equiv→no-crush⁻ f⁻ f-eqv crush =
+ split-antiinj→not-equiv (has-crush⁻→split-antiinj f⁻ crush) f-eqv
+
+is-equiv→no-shift f f-eqv shift =
+ split-antisurj→not-equiv (has-shift→split-antisurj f shift) f-eqv
+
+is-equiv→no-crush f f-eqv crush =
+ split-antiinj→not-equiv (has-crush→split-antiinj f crush) f-eqv
+```
+</details>
+
+<!--
+```agda
+is-equiv→no-shift+no-crush
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → (¬ (has-shift f)) × (¬ (has-crush f))
+is-equiv→no-shift+no-crush f f-eqv =
+  (is-equiv→no-shift f f-eqv , is-equiv→no-crush f f-eqv)
+```
+-->
+
+This concludes step 3, so all we need to do is put the pieces together!
+We will only show the proof for the augmented simplex category, as the
+non-augmented case is identical.
+
+Invertible simplicial maps are equivalences; so isomorphisms do not contain
+any `shift⁺`{.Agda} or `crush⁻`{.Agda} constructors.
+
+```agda
+Δₐ-iso→is-equiv
+  : ∀ (f : m Δₐ.≅ n)
+  → is-equiv ⟦ Δₐ.to f ⟧
+Δₐ-iso→is-equiv f =
+  is-iso→is-equiv $
+    iso ⟦ from ⟧
+      (λ i → sym (Δ-hom-∘ to from i) ∙ unext invl i ∙ Δ-hom-id i)
+      (λ i → sym (Δ-hom-∘ from to i) ∙ unext invr i ∙ Δ-hom-id i)
+  where open Δₐ._≅_ f
+```
+
+<!--
+```agda
+Δ-iso→is-equiv
+  : ∀ (f : m Δ.≅ n)
+  → is-equiv ⟦ Δ.to f ⟧
+Δ-iso→is-equiv f =
+  is-iso→is-equiv $
+    iso ⟦ from ⟧
+      (λ i → sym (Δ-hom-∘ to from i) ∙ unext invl i ∙ Δ-hom-id i)
+      (λ i → sym (Δ-hom-∘ from to i) ∙ unext invr i ∙ Δ-hom-id i)
+  where open Δ._≅_ f
+```
+-->
+
+We can put steps 1, and 3 together to show that equivalences, and
+thus isomorphisms, have images that are the same dimension as
+both endpoints.
+
+```agda
+is-equiv→im-stablel
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → m ≡ f .im
+is-equiv→im-stablel f eqv =
+  no-crush⁻→dim-stable (f .hom⁻) $
+  is-equiv→no-crush f eqv
+
+is-equiv→im-stabler
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → f .im ≡ n
+is-equiv→im-stabler f eqv =
+  no-shift⁺→dim-stable (f .hom⁺) $
+  is-equiv→no-shift f eqv
+```
+
+If we combine with with step 2, then we can show that every automorphism
+is trivial.
+
+```agda
+Δₐ-auto-id
+  : ∀ (f : n Δₐ.≅ n)
+  → f ≡ Δₐ.id-iso
+Δₐ-auto-id f =
+  Δₐ.≅-path $
+  Δ-Hom-path
+    (is-equiv→im-stabler f.to (Δₐ-iso→is-equiv f))
+    (Δ-endo⁺-idp (f.to .hom⁺))
+    (Δ-endo⁻-idp (f.to .hom⁻))
+  where module f = Δₐ._≅_ f
+```
+
+<!--
+```agda
+Δ-auto-id
+  : ∀ (f : n Δ.≅ n)
+  → f ≡ Δ.id-iso
+Δ-auto-id f =
+  Δ.≅-path $
+  Δ-Hom-path
+    (is-equiv→im-stabler f.to (Δ-iso→is-equiv f))
+    (Δ-endo⁺-idp (f.to .hom⁺))
+    (Δ-endo⁻-idp (f.to .hom⁻))
+  where module f = Δ._≅_ f
+```
+-->
+
+Finally, equivalences (and thus isomorphisms) must preserve dimension:
+this gives us a way of turning isomorphisms into paths.
+
+```agda
+is-equiv→dim-stable
+  : ∀ (f : Δ-Hom m n)
+  → is-equiv ⟦ f ⟧
+  → m ≡ n
+is-equiv→dim-stable f eqv =
+  no-shift+no-crush→dim-stable f
+    (is-equiv→no-shift f eqv)
+    (is-equiv→no-crush f eqv)
+```
+
+And just like that, the proof is done!
+
+```agda
+Δₐ-is-category : is-category Δₐ
+Δₐ-is-category =
+  set-identity-system-K
+    (λ _ → Δₐ-auto-id)
+    (λ f → is-equiv→dim-stable (Δₐ.to f) (Δₐ-iso→is-equiv f))
+```
+
+<!--
+```agda
+Δ-is-category : is-category Δ
+Δ-is-category =
+  set-identity-system-K
+    (λ _ → Δ-auto-id)
+    (λ f → Nat.suc-inj (is-equiv→dim-stable (Δ.to f) (Δ-iso→is-equiv f)))
+```
+-->
+
+
+Moreover, the all of the variations of the simplex are all strict, and thus
+gaunt.
+
+```agda
+Δₐ-is-gaunt : is-gaunt Δₐ
+Δₐ⁺-is-gaunt : is-gaunt Δₐ⁺
+Δₐ⁻-is-gaunt : is-gaunt Δₐ⁻
+
+Δ-is-gaunt : is-gaunt Δ
+Δ⁺-is-gaunt : is-gaunt Δ⁺
+Δ⁻-is-gaunt : is-gaunt Δ⁻
+```
+
+<details>
+<summary>The proofs are just packaging up results we have already shown,
+so they aren't very interesting.
+</summary>
+```agda
+Δₐ-is-gaunt .is-gaunt.has-category = Δₐ-is-category
+Δₐ-is-gaunt .is-gaunt.has-strict = hlevel 2
+
+Δₐ⁺-is-gaunt .is-gaunt.has-category = Δₐ⁺-is-category
+Δₐ⁺-is-gaunt .is-gaunt.has-strict = hlevel 2
+
+Δₐ⁻-is-gaunt .is-gaunt.has-category = Δₐ⁻-is-category
+Δₐ⁻-is-gaunt .is-gaunt.has-strict = hlevel 2
+
+Δ-is-gaunt .is-gaunt.has-category = Δ-is-category
+Δ-is-gaunt .is-gaunt.has-strict = hlevel 2
+
+Δ⁺-is-gaunt .is-gaunt.has-category = Δ⁺-is-category
+Δ⁺-is-gaunt .is-gaunt.has-strict = hlevel 2
+
+Δ⁻-is-gaunt .is-gaunt.has-category = Δ⁻-is-category
+Δ⁻-is-gaunt .is-gaunt.has-strict = hlevel 2
+```
+</details>
+
 
 ## Categorical structure
 
@@ -929,10 +1574,10 @@ yield functions `Fin 0 → Fin n`, which are extremely easy to prove unique.
 
 ```agda
 ¡⁺-unique : (f : Δ-Hom⁺ 0 n) → f ≡ ¡⁺
-¡⁺-unique f = Δ-hom⁺-inj f ¡⁺ (λ i → fabsurd i)
+¡⁺-unique f = ext λ i → fabsurd i
 
 ¡Δ-unique : (f : Δ-Hom 0 n) → f ≡ ¡Δ
-¡Δ-unique f = Δ-hom-inj f ¡Δ (λ i → fabsurd i)
+¡Δ-unique f = ext λ i → fabsurd i
 ```
 
 <!--
@@ -948,16 +1593,6 @@ yield functions `Fin 0 → Fin n`, which are extremely easy to prove unique.
 Δₐ-initial .Initial.has⊥ _ .paths f = sym (¡Δ-unique f)
 ```
 -->
-
-```agda
--- FIXME: Rename these
-¡⁺-strict : ¬ (Δ-Hom⁺ (suc n) 0)
-¡⁺-strict ()
-
-!⁻-strict : ¬ (Δ-Hom⁻ 0 (suc n))
-!⁻-strict ()
-```
-
 
 Likewise, $1$ is a terminal object in the (demi) simplex category.
 
@@ -988,10 +1623,10 @@ unique.
 
 ```agda
 !⁻-unique : (f : Δ-Hom⁻ (suc n) 1) → f ≡ !⁻
-!⁻-unique f = Δ-hom⁻-inj f !⁻ λ i → Finite-one-is-prop (⟦ f ⟧ i) (⟦ !⁻ ⟧ i)
+!⁻-unique f = ext λ i → Finite-one-is-prop (⟦ f ⟧ i) (⟦ !⁻ ⟧ i)
 
 !Δ-unique : (f : Δ-Hom (suc n) 1) → f ≡ !Δ
-!Δ-unique f = Δ-hom-inj f !Δ λ i → Finite-one-is-prop (⟦ f ⟧ i) (⟦ !Δ ⟧ i)
+!Δ-unique f = ext λ i → Finite-one-is-prop (⟦ f ⟧ i) (⟦ !Δ ⟧ i)
 
 !Δₐ-unique : (f : Δ-Hom n 1) → f ≡ !Δₐ
 !Δₐ-unique {n = zero} = ¡Δ-unique
@@ -1017,91 +1652,6 @@ unique.
 ```
 -->
 
-## Isomorphisms
-
-```agda
-Δₐ⁺-iso-is-prop : is-prop (m Δₐ⁺.≅ n)
-Δₐ⁺-iso-is-prop {m = m} f g = {!!}
-  where
-    module f = Δₐ⁺._≅_ f
-    module g = Δₐ⁺._≅_ g
-    open Order.Reasoning Nat-poset
-
-    cool : ∀ (i : Fin m) → ⟦ f.to ⟧ i Fin.≤ ⟦ g.to ⟧ i
-    cool i =
-      to-nat (⟦ f.to ⟧ i)                         ≤⟨ {!!} ⟩
-      to-nat (⟦ f.to ⟧ (⟦ f.from ⟧ (⟦ g.to ⟧ i))) =⟨ ap to-nat {!!} ⟩
-      to-nat (⟦ g.to ⟧ i) ≤∎
-```
-
-
-## Dimension
-
-If $f : [m] \to [n]$ is a semisimplicial map, then $m \leq n$. Conversely,
-if $f$ is a demisimplicial map then $m \geq n$. The slogan here is that
-semisimplicial maps increase dimension, and demisimplicial maps lower it.
-
-```agda
-Δ-dim⁺-≤ : ∀ {m n} → (f : Δ-Hom⁺ m n) → m Nat.≤ n
-Δ-dim⁺-≤ done⁺ = Nat.0≤x
-Δ-dim⁺-≤ (shift⁺ f) = Nat.≤-sucr (Δ-dim⁺-≤ f)
-Δ-dim⁺-≤ (keep⁺ f) = Nat.s≤s (Δ-dim⁺-≤ f)
-
-Δ-dim⁻-≤ : ∀ {m n} → (f : Δ-Hom⁻ m n) → n Nat.≤ m
-Δ-dim⁻-≤ done⁻ = Nat.0≤x
-Δ-dim⁻-≤ (crush⁻ f) = Nat.≤-sucr (Δ-dim⁻-≤ f)
-Δ-dim⁻-≤ (keep⁻ f) = Nat.s≤s (Δ-dim⁻-≤ f)
-```
-
-Moreover, if a semi/demisimplicial map contains a face/degeneracy,
-then we know it must *strictly* increase/decrease the dimension.
-
-```agda
-has-face⁺ : ∀ {m n} → Δ-Hom⁺ m n → Type
-has-face⁺ done⁺ = ⊥
-has-face⁺ (shift⁺ f) = ⊤
-has-face⁺ (keep⁺ f) = has-face⁺ f
-
-has-degeneracy⁻ : ∀ {m n} → Δ-Hom⁻ m n → Type
-has-degeneracy⁻ done⁻ = ⊥
-has-degeneracy⁻ (crush⁻ f) = ⊤
-has-degeneracy⁻ (keep⁻ f) = has-degeneracy⁻ f
-
-
-Δ-dim⁺-< : ∀ {m n} → (f : Δ-Hom⁺ m n) → has-face⁺ f → m Nat.< n
-Δ-dim⁺-< (shift⁺ f) p = Nat.s≤s (Δ-dim⁺-≤ f)
-Δ-dim⁺-< (keep⁺ f) p = Nat.s≤s (Δ-dim⁺-< f p)
-
-Δ-dim⁻-< : ∀ {m n} → (f : Δ-Hom⁻ m n) → has-degeneracy⁻ f → n Nat.< m
-Δ-dim⁻-< (crush⁻ f) p = Nat.s≤s (Δ-dim⁻-≤ f)
-Δ-dim⁻-< (keep⁻ f) p = Nat.s≤s (Δ-dim⁻-< f p)
-```
-
-```agda
-is-id⁺ : ∀ {m n} → Δ-Hom⁺ m n → Type
-is-id⁺ done⁺ = ⊤
-is-id⁺ (shift⁺ f) = ⊥
-is-id⁺ (keep⁺ f) = is-id⁺ f
-
-is-id⁻ : ∀ {m n} → Δ-Hom⁻ m n → Type
-is-id⁻ done⁻ = ⊤
-is-id⁻ (crush⁻ f) = ⊥
-is-id⁻ (keep⁻ f) = is-id⁻ f
-```
-
-Note that these dimension raising/lowering properties immediately imply
-that the (augmented) demi/semi simplex categories are categories.
-
-```agda
-Δₐ⁺-is-category : is-category Δₐ⁺
-Δₐ⁺-is-category = set-identity-system (λ _ _ → Δₐ⁺-iso-is-prop) λ f →
-  Nat.≤-antisym (Δ-dim⁺-≤ (Δₐ⁺.to f)) (Δ-dim⁺-≤ (Δₐ⁺.from f))
-
-Δₐ⁺-is-gaunt : is-gaunt Δₐ⁺
-Δₐ⁺-is-gaunt .is-gaunt.has-category = Δₐ⁺-is-category
-Δₐ⁺-is-gaunt .is-gaunt.has-strict = Nat.Nat-is-set
-```
-
 ## Decidable equality
 
 <!--
@@ -1113,14 +1663,14 @@ cast⁻ : ∀ {m' n' m n} → m ≡ m' → n ≡ n' → Δ-Hom⁻ m n → Δ-Hom
 castΔ : m ≡ m' → n ≡ n' → Δ-Hom m n → Δ-Hom m' n'
 
 cast⁺ {zero}   {zero}   p q f          = done⁺
-cast⁺ {zero}   {suc m'} p q f          = absurd (¡⁺-strict (subst₂ Δ-Hom⁺ p q f))
+cast⁺ {zero}   {suc m'} p q f          = absurd (Δ-hom⁺-zero-strict (subst₂ Δ-Hom⁺ p q f))
 cast⁺ {suc n'} {m'}     p q done⁺      = absurd (Nat.zero≠suc q)
 cast⁺ {suc n'} {m'}     p q (shift⁺ f) = shift⁺ (cast⁺ p (Nat.suc-inj q) f)
 cast⁺ {suc n'} {zero}   p q (keep⁺ f)  = absurd (Nat.suc≠zero p)
 cast⁺ {suc n'} {suc m'} p q (keep⁺ f)  = keep⁺ (cast⁺ (Nat.suc-inj p) (Nat.suc-inj q) f)
 
 cast⁻ {zero}         {zero}   p q f          = done⁻
-cast⁻ {zero}         {suc n'} p q f          = absurd (!⁻-strict (subst₂ Δ-Hom⁻ p q f))
+cast⁻ {zero}         {suc n'} p q f          = absurd (Δ-hom⁻-no-initial (subst₂ Δ-Hom⁻ p q f))
 cast⁻ {suc m'}       {n'}     p q done⁻      = absurd (Nat.zero≠suc p)
 cast⁻ {suc zero}     {n'}     p q (crush⁻ f) = absurd (Nat.suc≠zero (Nat.suc-inj p))
 cast⁻ {suc (suc m')} {n'}     p q (crush⁻ f) = crush⁻ (cast⁻ (Nat.suc-inj p) q f)
@@ -1298,5 +1848,68 @@ general morphisms.
         (Nat.Nat-is-set _ _ _ _)
         (Equiv.from (cast⁺≃pathp (ap im s) refl) $ ap hom⁺ s)
   Discrete-Δ-Hom {x = x} {y = y} | no ¬p = no (¬p ⊙ ap im)
+```
+</details>
+
+Equality is not the only thing we can decide: recall that
+a map $f$ is an equivalence if and only if it does not contain
+any `shift⁺`{.Agda} or `crush⁻`{.Agda} constructors. The latter is
+a purely syntactic condition, which makes it easily decidable!
+
+```agda
+has-shift?⁺
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → Dec (has-shift⁺ f⁺)
+has-shift?⁺ done⁺ = no λ ff → ff
+has-shift?⁺ (shift⁺ f⁺) = yes tt
+has-shift?⁺ (keep⁺ f⁺) = has-shift?⁺ f⁺
+
+has-crush?⁻
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → Dec (has-crush⁻ f⁻)
+has-crush?⁻ done⁻ = no λ ff → ff
+has-crush?⁻ (crush⁻ f⁻) = yes tt
+has-crush?⁻ (keep⁻ f⁻) = has-crush?⁻ f⁻
+```
+
+This gives us an efficient way to check if a (semi/demi) simplicial
+map is an equivalence.
+
+```agda
+Δ-hom⁺-equiv?
+  : ∀ (f⁺ : Δ-Hom⁺ m n)
+  → Dec (is-equiv ⟦ f⁺ ⟧)
+
+Δ-hom⁻-equiv?
+  : ∀ (f⁻ : Δ-Hom⁻ m n)
+  → Dec (is-equiv ⟦ f⁻ ⟧)
+
+Δ-hom-equiv?
+  : ∀ (f : Δ-Hom m n)
+  → Dec (is-equiv ⟦ f ⟧)
+```
+
+<details>
+<summary>The actual decidability proofs are just stitching together
+previous results, and are not particularly interesting.
+</summary>
+```agda
+Δ-hom⁺-equiv? f⁺ =
+  Dec-map
+    (no-shift⁺→is-equiv f⁺)
+    (is-equiv→no-shift⁺ f⁺)
+    (not? (has-shift?⁺ f⁺))
+
+Δ-hom⁻-equiv? f⁻ =
+  Dec-map
+    (no-crush⁻→is-equiv f⁻)
+    (is-equiv→no-crush⁻ f⁻)
+    (not? (has-crush?⁻ f⁻))
+
+Δ-hom-equiv? f =
+  Dec-map
+    (rec! (no-shift+no-crush→is-equiv f))
+    (is-equiv→no-shift+no-crush f)
+    (Dec-× ⦃ not? (has-shift?⁺ (f .hom⁺)) ⦄ ⦃ not? (has-crush?⁻ (f .hom⁻)) ⦄)
 ```
 </details>
