@@ -126,3 +126,20 @@ inj+is-antisurj→is-antisurj
 inj+is-antisurj→is-antisurj f-inj =
   ∥-∥-map (inj+split-antisurj→split-antisurj f-inj)
 ```
+
+```agda
+split-antisurj-cancelr
+  : {f : B → C} {g : A → B}
+  → is-surjective g
+  → split-antisurjective (f ∘ g)
+  → split-antisurjective f
+split-antisurj-cancelr {f = f} {g = g} surj (c , ¬fib) =
+  c , rec! λ b p → rec! (λ a q → ¬fib (a , ap f q ∙ p)) (surj b)
+
+is-antisurj-cancelr
+  : {f : B → C} {g : A → B}
+  → is-surjective g
+  → is-antisurjective (f ∘ g)
+  → is-antisurjective f
+is-antisurj-cancelr surj = ∥-∥-map (split-antisurj-cancelr surj) 
+```

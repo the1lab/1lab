@@ -162,3 +162,30 @@ is-antiinj+is-surj→is-antiinj ∥f-ai∥ g-s = do
   fib₁ ← g-s (f-ai .x₁)
   pure (split-antiinj+in-image→split-antiinj f-ai fib₀ fib₁)
 ```
+
+```agda
+split-antiinj-cancell
+  : {f : B → C} {g : A → B}
+  → injective f
+  → split-antiinjective (f ∘ g)
+  → split-antiinjective g
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .pt =
+  g (fg-ai .x₀)
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .x₀ =
+  fg-ai .x₀
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .x₁ =
+  fg-ai .x₁
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .map-to₀ =
+ refl
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .map-to₁ =
+  f-inj (fg-ai .map-to₁ ∙ sym (fg-ai .map-to₀))
+split-antiinj-cancell {f = f} {g = g} f-inj fg-ai .distinct =
+  fg-ai .distinct
+
+is-antiinj-cancell
+  : {f : B → C} {g : A → B}
+  → injective f
+  → is-antiinjective (f ∘ g)
+  → is-antiinjective g
+is-antiinj-cancell f-inj = ∥-∥-map (split-antiinj-cancell f-inj)
+```
