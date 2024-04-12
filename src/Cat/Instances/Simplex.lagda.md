@@ -1486,7 +1486,7 @@ Now that we actually have categories, we can start to construct some
 interesting maps. We begin by constructing more familiar versions of
 face and degeneracy map that are parameterized by some $i$.
 
-```
+```agda
 δ⁺ : Fin (suc n) → Δ-Hom⁺ n (suc n)
 δ⁺ {n = _} fzero = shift⁺ id⁺
 δ⁺ {n = suc _} (fsuc i) = keep⁺ (δ⁺ i)
