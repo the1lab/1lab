@@ -151,10 +151,9 @@ injective-surjective→is-equiv! =
 A function is **split surjective** if for each $b : B$ we have a designated
 element of the fibre $f^*b$. Note that this is actually a *structure*
 on $f$ instead of a property: in fact, the statement that every
-surjection between sets is a split surjection is [equivalent to the
-axiom of choice].
+surjection between sets is a split surjection is [[equivalent to the
+axiom of choice|axiom-of-choice]].
 
-[equivalent to the axiom of choice]: 1Lab.Classical.html#axiom-of-choice
 
 ```agda
 split-surjective : (A → B) → Type _
