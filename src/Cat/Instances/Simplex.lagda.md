@@ -43,30 +43,31 @@ open split-antiinjective
 # The simplex category {defines="simplex-category semisimplex-category demisimplex-category"}
 
 The simplex category, $\Delta$, is generally introduced as the category
-
 of non-empty finite ordinals and order-preserving maps. Though
-conceptually simple, this definition is difficult to work with: in particular,
-diagrams over $\Delta$ are extremely hard to form! This is why mathematicians
+conceptually simple, this definition is difficult to work with, as
+diagrams over $\Delta$ are extremely hard to form. This is why mathematicians
 prefer to work with a particular presentation of $\Delta$ as a free category
 generated from 2 classes of maps:
-- Face maps $\delta^{n}_{i} : [n] \to [n + 1]$ for $0 \leq i \leq n$, $0 < n$
-- Degeneracy maps $\sigma^{n}_{i} : [n + 1] \to [n]$ for $0 \leq i < n$, $0 < n$
 
-Intuitively, the face maps $\delta^{n}_{i}$ are injections that skip the $i$th
-element of $[n + 1]$, and degeneracy maps are surjections that take both $i$th and
-$i+1$-th element of $[n + 1]$ to $i$.
+* Face maps $\delta^{n}_{i} : [n] \to [n + 1]$ for $0 \leq i \leq n$, $0 < n$
+* Degeneracy maps $\sigma^{n}_{i} : [n + 1] \to [n]$ for $0 \leq i < n$, $0 < n$
+
+Face maps $\delta^{n}_{i}$ are meant to be interpreted as injections that skip
+the $i$th element of $[n + 1]$, and degeneracies as surjections that
+take both $i$th and $i+1$-th element of $[n + 1]$ to $i$.
 
 Unfortunately, we need to quotient these generators to get the correct
 category; these equations are known as the **simplicial identities**, and
 are quite involved.
-- For all $i \leq j$, $\delta^{n + 1}_i \circ \delta^{n}_j = \delta^{n+1}_{j+1} \circ \delta^{n}_{i}$; and
-- For all $i \leq j$, $\sigma^{n}_j \circ \sigma^{n+1}_i = \sigma^{n}_i \circ \sigma^{n+1}_{j + 1}$; and
-- For all $i \leq j$, $\sigma^{n+1}_{j+1} \circ \delta^{n+2}_i = \delta^{n+1}_i \circ \sigma^{n}_{j}$; and
-- For all $i, j$ with $i = j$ or $i = j + 1$, $\sigma{n}_j \circ \delta^{n+1}_i = id$; and
-- For all $j < i$, $\sigma^{n+1}_j \circ \delta^{n+2}_{i+1} = \delta^{n+1}_{i} \circ \sigma^{n}_{j}$
+
+* For all $i \leq j$, $\delta^{n + 1}_i \circ \delta^{n}_j = \delta^{n+1}_{j+1} \circ \delta^{n}_{i}$; and
+* For all $i \leq j$, $\sigma^{n}_j \circ \sigma^{n+1}_i = \sigma^{n}_i \circ \sigma^{n+1}_{j + 1}$; and
+* For all $i \leq j$, $\sigma^{n+1}_{j+1} \circ \delta^{n+2}_i = \delta^{n+1}_i \circ \sigma^{n}_{j}$; and
+* For all $i, j$ with $i = j$ or $i = j + 1$, $\sigma{n}_j \circ \delta^{n+1}_i = id$; and
+* For all $j < i$, $\sigma^{n+1}_j \circ \delta^{n+2}_{i+1} = \delta^{n+1}_{i} \circ \sigma^{n}_{j}$
 
 These identities are extremely painful to work with, and we would need
-to deal with them *every* time we eliminated out of the simplex category.
+to deal with them *every* time we construct a simplicial diagram.
 This is a complete non-starter, so we will need to figure out a better approach.
 
 Typically, the way to avoid dealing with quotients by some set of equations
@@ -75,7 +76,10 @@ particularly simple normal form: every map can be expressed uniquely as
 $$
 \delta_{i_1} \circ \cdots \circ \delta_{i_k} \circ \sigma_{j_1} \circ \cdots \sigma_{j_l}
 $$
-where $0 \leq i_k < \cdots < i_1$ and $0 \leq j_1 < \cdots < j_l$.
+where $0 \leq i_k < \cdots < i_1$ and $0 \leq j_1 < \cdots < j_l$. In simpler
+terms, every map can be uniquely factored as a composite of a strictly
+increasing sequence of face maps, followed by a decreasing sequence of
+degeneracies.
 
 <!--
 ```agda
@@ -85,10 +89,10 @@ private variable
 -->
 
 These normal forms are relatively straightforward to encode in Agda:
-descending chains of face maps can be defined via an indexed inductive,
-where `shift⁺`{.Agda} postcomposes the nth face map, and `keep⁺`{.Agda} keeps
-the value of 'n' fixed. We call these maps **semisimplicial**, and the
-resulting category will be denoted $\Delta^{+}$
+ascending chains of face maps can be defined via an indexed inductive,
+where `shift⁺`{.Agda} postcomposes the 0th face map, and `keep⁺`{.Agda}
+shifts up the index of every face map by 1. We call these maps **semisimplicial**,
+and the resulting category will be denoted $\Delta_{a}^{+}$
 
 ```agda
 data Δ-Hom⁺ : Nat → Nat → Type where
@@ -97,10 +101,17 @@ data Δ-Hom⁺ : Nat → Nat → Type where
   keep⁺ : ∀ {m n} → Δ-Hom⁺ m n → Δ-Hom⁺ (suc m) (suc n)
 ```
 
+For instance, the map $\delta_{0} \circ \delta_{2} : [2] \to [4]$
+would be written as `shift⁺ (keep⁺ (keep⁺ (shift⁺ done⁺)))`{.Agda}: the
+first `shift⁺`{.Agda} denotes the postcomposition of the 0th face maps,
+and the 2 `keep⁺`{.Agda} constructors bump up the index of the next
+face map by 2. This means that the final `shift⁺`{.Agda} denotes the 4th
+face map!
+
 Descending chains of degeneracies are defined in a similar fashion, where
-where `crush⁻`{.Agda} precomposes the nth degeneracy map. We will call
+where `crush⁻`{.Agda} precomposes the 0th degeneracy map. We will call
 these maps **demisimplicial**, and the category they form will be denoted
-$\Delta^{-}.$
+$\Delta_{a}^{-}$.
 
 ```agda
 data Δ-Hom⁻ : Nat → Nat → Type where
@@ -109,9 +120,17 @@ data Δ-Hom⁻ : Nat → Nat → Type where
   keep⁻ : ∀ {m n} → Δ-Hom⁻ m n → Δ-Hom⁻ (suc m) (suc n)
 ```
 
-Morphisms in $\Delta$ consist of a pair of composable semi and demisimplicial
-maps. Note that we allow both `m` and `n` to be 0; this allows us to share
-code between the simplex and augmented simplex category.
+As an example, the map $\sigma_{2} \circ \sigma_{0} : [5] \to [3]$ would
+be written as `crush⁻ (keep⁻ (keep⁻ (crush⁻ (keep⁻ done⁻))))`{.Agda}. Here,
+the outermost `crush⁻` constructor denotes the precomposition by $\sigma_{0}$.
+Next, the two `keep⁻`{.Agda} constructors bump the index of the next face
+map we encounter up by 2, so the final `crush⁻` constructor denotes the
+2nd degeneracy map.
+
+Finally, a **simplicial map** consist of an ascending chain of face maps
+and a descending chain of degeneracies that factor through the same object.
+We will refer to this object as the *image* of the map. These maps will form
+the **augmented simplicial category**, which is denoted via $\Delta_{a}$.
 
 ```agda
 record Δ-Hom (m n : Nat) : Type where
@@ -124,6 +143,14 @@ record Δ-Hom (m n : Nat) : Type where
 
 open Δ-Hom
 ```
+
+Note that we allow $m$ and $n$ to be 0 for all of our classes of maps;
+this is useful for algebraic applications, as $0$ plays the role of the
+empty context. However, $0$ can be problematic for homotopical applications,
+so it is useful to consider categories of simplicial maps between non-zero
+naturals. This category is known as the **simplex category**, and is denoted
+by $\Delta$. Moreover, there are also non-augmented versions of semi and
+demisimplex categories, which are denoted by $\Delta^{+}$ and $\Delta^{-}$, resp.
 
 <!--
 ```agda
@@ -199,28 +226,120 @@ idΔ .hom⁺ = id⁺
 idΔ .hom⁻ = id⁻
 ```
 
-Composites of semi and demisimplicial maps can be defined by a pair of
-somewhat tricky inductions.
+Composing semisimplicial maps is somewhat tricky, as we need to preserve
+the invariant that they form an ascending chain of face maps. To ensure
+this, we will need to judiciously apply the simplicial identities to
+commute face maps past one another.
 
 ```agda
 _∘⁺_ : Δ-Hom⁺ n o → Δ-Hom⁺ m n → Δ-Hom⁺ m o
-f ∘⁺ done⁺ = f
-shift⁺ f ∘⁺ shift⁺ g = shift⁺ (f ∘⁺ shift⁺ g)
-keep⁺ f ∘⁺ shift⁺ g = shift⁺ (f ∘⁺ g)
-shift⁺ f ∘⁺ keep⁺ g = shift⁺ (f ∘⁺ keep⁺ g)
-keep⁺ f ∘⁺ keep⁺ g = keep⁺ (f ∘⁺ g)
+```
 
+First, the base case: composing a semisimplicial map $f$ with the identity
+map $[0] \to [0]$ should clearly yield $f$.
+
+```agda
+f ∘⁺ done⁺ = f
+```
+
+Next, the composite $(\delta_0 \circ f) \circ (\delta_0 \circ g)$
+can be written in normal form by reassociating as $\delta_0 \circ (f \circ (\delta_0 \circ g))$
+and then recursively normalizing the right-hand side.
+
+```agda
+shift⁺ f ∘⁺ shift⁺ g = shift⁺ (f ∘⁺ shift⁺ g)
+```
+
+Now for the tricky case: consider the composite $\uparrow f \circ (\delta_0 \circ g)$,
+where $\uparrow f$ shifts the index of every face map in $f$ by 1.
+This means that we can repeatedly apply the 1st simplicial identity to
+commute $\delta_{0}$ past every single face map in $f$ by lowering their
+indices by one. This yields the following equality, which we will bake
+directly into the definition of composition.
+$$
+\uparrow f \circ (\delta_0 \circ g) = \delta_0 \circ (f \circ g)
+$$
+
+```agda
+keep⁺ f ∘⁺ shift⁺ g = shift⁺ (f ∘⁺ g)
+```
+
+Luckily, the dual case is much easier: the composite $(\delta_0 \circ f) \circ \uparrow g$
+can be written in our normal form as $\delta_0 \circ (f \circ \uparrow g)$.
+
+```agda
+shift⁺ f ∘⁺ keep⁺ g = shift⁺ (f ∘⁺ keep⁺ g)
+```
+
+Finally, $\uparrow f \circ \uparrow g = \uparrow (f \circ g)$.
+
+```agda
+keep⁺ f ∘⁺ keep⁺ g = keep⁺ (f ∘⁺ g)
+```
+
+Composing demisimplicial maps follows a similar process.
+
+```agda
 _∘⁻_ : Δ-Hom⁻ n o → Δ-Hom⁻ m n → Δ-Hom⁻ m o
+```
+
+Precomposing $g$ with the identity map $[0] \to [0]$ just yields $g$.
+
+```agda
 done⁻ ∘⁻ g = g
+```
+
+Next, $(f \circ \sigma_0) \circ (g \circ \sigma_0)$ can be written
+in our normal form by reassociating as $(f \circ \sigma_0) \circ g) \circ \sigma_0$
+and then recursively normalizing the left-hand side.
+
+```agda
 crush⁻ f ∘⁻ crush⁻ g = crush⁻ (crush⁻ f ∘⁻ g)
+```
+
+Our first tricky case is when we encounter a composite of the form
+$(f \circ \sigma_0) \circ (\uparrow g \circ \sigma_1)$. Every degeneracy
+in $\uparrow g$ must have an index of at least $1$, so we can apply
+the 2nd simplicial identity to commute the 0th face map past them
+by lowering all indices by 1. This yields the following equation,
+which we will use definitionally:
+$$
+(f \circ \sigma_0) \circ (\uparrow g \circ \sigma_1) = (f \circ g) \circ \sigma_0 \circ \sigma_0
+$$
+
+
+```agda
 crush⁻ f ∘⁻ keep⁻ (crush⁻ g) = crush⁻ (crush⁻ (f ∘⁻ g))
+```
+
+The next tricky case is when we encounter a composite of the form
+$(f \circ \sigma_0) \circ (\uparrow \uparrow g)$. We can use a similar
+line of reasoning as the previous case to commute $\sigma_0$ past $\uparrow \uparrow g$
+by decrementing all indices by one, yielding the following equation:
+$$
+(f \circ \sigma_0) \circ (\uparrow \uparrow g) = (f \circ \uparrow g) \circ \sigma_0
+$$
+
+We will take this equation as definitional, and then proceed to recursively
+normalize the left-hand side.
+
+```agda
 crush⁻ f ∘⁻ keep⁻ (keep⁻ g) = crush⁻ (f ∘⁻ (keep⁻ g))
+```
+
+Mercifully, the final 2 cases are easy. For the first, note that
+composites of the form $\uparrow f \circ (g \circ \sigma_0)$ can
+be placed into normal form by reassociating and recursively normalizing.
+The second case is even easier, as we can rewrite $\uparrow f \circ \uparrow g$
+into $\uparrow (f \circ g)$.
+
+```agda
 keep⁻ f ∘⁻ crush⁻ g = crush⁻ (keep⁻ f ∘⁻ g)
 keep⁻ f ∘⁻ keep⁻ g = keep⁻ (f ∘⁻ g)
 ```
 
 Composites of simplicial maps are even more tricky, as we
-need to somehow factor a string of maps $f^{+} \circ f^{-} \circ g^{+} \circ g^{-}$
+need to somehow normalize a string of maps $f^{+} \circ f^{-} \circ g^{+} \circ g^{-}$
 into a pair of a semisimplicial and demisimplicial maps. The crux of
 the problem is factoring $f^{-} \circ g^{+}$ as a semisimplicial map
 $h^{+}$ and demisimplicial map $h^{-}$; once we do this, we can
@@ -1491,9 +1610,13 @@ face and degeneracy map that are parameterized by some $i$.
 δ⁺ {n = _} fzero = shift⁺ id⁺
 δ⁺ {n = suc _} (fsuc i) = keep⁺ (δ⁺ i)
 
+
 σ⁻ : Fin n → Δ-Hom⁻ (suc n) n
 σ⁻ fzero = crush⁻ id⁻
 σ⁻ (fsuc i) = keep⁻ (σ⁻ i)
+
+cool = σ⁻ {3} 2 ∘⁻ σ⁻ {4} 0
+_ = {!σ⁻ 0 ∘⁻ σ⁻ {2} 0!}
 ```
 
 We can extend `δ⁺`{.Agda} and `σ⁻`{.Agda} to simplicial maps by
