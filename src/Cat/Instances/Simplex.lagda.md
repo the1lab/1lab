@@ -102,8 +102,15 @@ data Δ-Hom⁺ : Nat → Nat → Type where
 ```
 
 For instance, the map $\delta_{0} \circ \delta_{2} : [2] \to [4]$
-would be written as `shift⁺ (keep⁺ (keep⁺ (shift⁺ done⁺)))`{.Agda}: the
-first `shift⁺`{.Agda} denotes the postcomposition of the 0th face maps,
+would be written as:
+
+```agda
+private
+  δ₀∘δ₂ : Δ-Hom⁺ 2 4
+  δ₀∘δ₂ = shift⁺ (keep⁺ (keep⁺ (shift⁺ done⁺)))
+```
+
+The first `shift⁺`{.Agda} denotes the postcomposition of the 0th face maps,
 and the 2 `keep⁺`{.Agda} constructors bump up the index of the next
 face map by 2. This means that the final `shift⁺`{.Agda} denotes the 4th
 face map!
@@ -121,8 +128,15 @@ data Δ-Hom⁻ : Nat → Nat → Type where
 ```
 
 As an example, the map $\sigma_{2} \circ \sigma_{0} : [5] \to [3]$ would
-be written as `crush⁻ (keep⁻ (keep⁻ (crush⁻ (keep⁻ done⁻))))`{.Agda}. Here,
-the outermost `crush⁻` constructor denotes the precomposition by $\sigma_{0}$.
+be written as:
+
+```agda
+private
+  σ₂∘σ₀ : Δ-Hom⁻ 5 3
+  σ₂∘σ₀ = crush⁻ (keep⁻ (keep⁻ (crush⁻ (keep⁻ done⁻))))
+```
+
+Here, the outermost `crush⁻` constructor denotes the precomposition by $\sigma_{0}$.
 Next, the two `keep⁻`{.Agda} constructors bump the index of the next face
 map we encounter up by 2, so the final `crush⁻` constructor denotes the
 2nd degeneracy map.
@@ -243,7 +257,10 @@ f ∘⁺ done⁺ = f
 ```
 
 Next, the composite $(\delta_0 \circ f) \circ (\delta_0 \circ g)$
-can be written in normal form by reassociating as $\delta_0 \circ (f \circ (\delta_0 \circ g))$
+can be written in normal form by reassociating as
+$$
+\delta_0 \circ (f \circ (\delta_0 \circ g))
+$$
 and then recursively normalizing the right-hand side.
 
 ```agda
@@ -254,18 +271,23 @@ Now for the tricky case: consider the composite $\uparrow f \circ (\delta_0 \cir
 where $\uparrow f$ shifts the index of every face map in $f$ by 1.
 This means that we can repeatedly apply the 1st simplicial identity to
 commute $\delta_{0}$ past every single face map in $f$ by lowering their
-indices by one. This yields the following equality, which we will bake
-directly into the definition of composition.
+indices by one. This yields the following equality
 $$
 \uparrow f \circ (\delta_0 \circ g) = \delta_0 \circ (f \circ g)
 $$
+and the right-hand side can be placed into normal form by normalizing
+$f \circ g$.
 
 ```agda
 keep⁺ f ∘⁺ shift⁺ g = shift⁺ (f ∘⁺ g)
 ```
 
 Luckily, the dual case is much easier: the composite $(\delta_0 \circ f) \circ \uparrow g$
-can be written in our normal form as $\delta_0 \circ (f \circ \uparrow g)$.
+can directly be reassociated as
+$$
+\delta_0 \circ (f \circ \uparrow g)
+$$
+We can then recursively normalize the right hand side to obtain a normal form.
 
 ```agda
 shift⁺ f ∘⁺ keep⁺ g = shift⁺ (f ∘⁺ keep⁺ g)
@@ -277,20 +299,24 @@ Finally, $\uparrow f \circ \uparrow g = \uparrow (f \circ g)$.
 keep⁺ f ∘⁺ keep⁺ g = keep⁺ (f ∘⁺ g)
 ```
 
-Composing demisimplicial maps follows a similar process.
+Composing demisimplicial maps follows a similar process, though it is
+slightly trickier.
 
 ```agda
 _∘⁻_ : Δ-Hom⁻ n o → Δ-Hom⁻ m n → Δ-Hom⁻ m o
 ```
 
-Precomposing $g$ with the identity map $[0] \to [0]$ just yields $g$.
+As before, precomposing $g$ with the identity map $[0] \to [0]$ just yields $g$.
 
 ```agda
 done⁻ ∘⁻ g = g
 ```
 
 Next, $(f \circ \sigma_0) \circ (g \circ \sigma_0)$ can be written
-in our normal form by reassociating as $(f \circ \sigma_0) \circ g) \circ \sigma_0$
+in our normal form by reassociating it as
+$$
+(f \circ \sigma_0) \circ g) \circ \sigma_0
+$$
 and then recursively normalizing the left-hand side.
 
 ```agda
@@ -301,12 +327,12 @@ Our first tricky case is when we encounter a composite of the form
 $(f \circ \sigma_0) \circ (\uparrow g \circ \sigma_1)$. Every degeneracy
 in $\uparrow g$ must have an index of at least $1$, so we can apply
 the 2nd simplicial identity to commute the 0th face map past them
-by lowering all indices by 1. This yields the following equation,
-which we will use definitionally:
+by lowering all indices by 1. This yields the following equation
 $$
 (f \circ \sigma_0) \circ (\uparrow g \circ \sigma_1) = (f \circ g) \circ \sigma_0 \circ \sigma_0
 $$
-
+If we recursively normalize $f \circ g$, then the RHS of this equation will
+be in normal form!
 
 ```agda
 crush⁻ f ∘⁻ keep⁻ (crush⁻ g) = crush⁻ (crush⁻ (f ∘⁻ g))
@@ -341,9 +367,10 @@ keep⁻ f ∘⁻ keep⁻ g = keep⁻ (f ∘⁻ g)
 Composites of simplicial maps are even more tricky, as we
 need to somehow normalize a string of maps $f^{+} \circ f^{-} \circ g^{+} \circ g^{-}$
 into a pair of a semisimplicial and demisimplicial maps. The crux of
-the problem is factoring $f^{-} \circ g^{+}$ as a semisimplicial map
-$h^{+}$ and demisimplicial map $h^{-}$; once we do this, we can
-pre and post-compose $g^{-}$ and $f^{+}$, resp.
+the problem is that we need to factor the composite of $f^{-} \circ g^{+}$
+$h^{+} \circ h^{-}$, where $h^{+}$ is semisimplicial and $h^{-}$ is
+demisimplicial. Once this is done, we can obtain our final factorization
+by pre and post-composing with $g^{-}$ and $f^{+}$, resp.
 
 For pedagogic purposes, we will define the image and semi/demisimplicial
 components of our factorization simultaneously.
@@ -429,13 +456,21 @@ _∘Δ_ : Δ-Hom n o → Δ-Hom m n → Δ-Hom m o
 At this point, we could prove the associativity/unitality laws for
 $\Delta^{+}, \Delta^{-}$, and $\Delta$ by a series of brutal inductions.
 Luckily for us, there is a more elegant approach: all of these maps
-have interpretations as maps `Fin m → Fin n`, and these interpretations
-are both injective and functorial. This allows us to lift equations from functions
-back to equations on their syntactic presentations, which gives us associativity
+have interpretations as maps `Fin m → Fin n`. This interpretation is
+has 2 key properties:
+
+1. The interpretation is functorial: both $\llbracket id \rrbracket = id$,
+  and $\llbracket f \circ g \rrbracket = \llbracket f \rrbracket \circ \llbracket g \rrbracket$.
+2. The interpretation is injective: if $\llbracket f \rrbracket = \llbracket g \rrbracket$, then $f = g$.
+
+Together, this ensures that our interpretations form a series [[faithful functors]],
+which allows us to lift equations from functions back to equations on their
+syntactic presentations. In particular, composition of functions is associative
+and unital, so constructing these interpretations gives us associativity
 and unitality "for free".
 
-With that plan outlined, we begin by constructing interpretations
-of (semi/demi) simplicial maps as functions.
+With that plan outlined, we begin by constructing interpretations of (semi/demi)
+simplicial maps as functions.
 
 ```agda
 Δ-hom⁺ : ∀ {m n} → Δ-Hom⁺ m n → Fin m → Fin n
@@ -458,36 +493,35 @@ of (semi/demi) simplicial maps as functions.
 ```
 -->
 
-We will denote each of these interpretations with `⟦ f ⟧ i` to avoid
+We will denote each of these interpretations as `⟦ f ⟧ i` to avoid
 too much syntactic overhead.
 
+<!--
 ```agda
 instance
   Δ-Hom⁺-⟦⟧-notation
     : ∀ {m n} → ⟦⟧-notation (Δ-Hom⁺ m n)
-  Δ-Hom⁻-⟦⟧-notation
-    : ∀ {m n} → ⟦⟧-notation (Δ-Hom⁻ m n)
-  Δ-Hom-⟦⟧-notation
-    : ∀ {m n} → ⟦⟧-notation (Δ-Hom m n)
-```
-
-<!--
-```agda
   Δ-Hom⁺-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.lvl = lzero
   Δ-Hom⁺-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.Sem = Fin m → Fin n
   Δ-Hom⁺-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.⟦_⟧ = Δ-hom⁺
 
+  Δ-Hom⁻-⟦⟧-notation
+    : ∀ {m n} → ⟦⟧-notation (Δ-Hom⁻ m n)
   Δ-Hom⁻-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.lvl = lzero
   Δ-Hom⁻-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.Sem = Fin m → Fin n
   Δ-Hom⁻-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.⟦_⟧ = Δ-hom⁻
 
+  Δ-Hom-⟦⟧-notation
+    : ∀ {m n} → ⟦⟧-notation (Δ-Hom m n)
   Δ-Hom-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.lvl = lzero
   Δ-Hom-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.Sem = Fin m → Fin n
   Δ-Hom-⟦⟧-notation {m = m} {n = n} .⟦⟧-notation.⟦_⟧ = Δ-hom
 ```
 -->
 
-Note that semisimplicial maps always encode inflationary functions.
+Now that we have our interpretations, we can start to charaterize their
+behaviour. First, note that semisimplicial maps always encode inflationary
+functions.
 
 ```agda
 Δ-hom⁺-incr
@@ -611,7 +645,7 @@ Semisimplicial maps are not just monotonic; they are *strictly* monotonic!
   Nat.s≤s (Δ-hom⁺-pres-< f⁺ (Nat.≤-peel i<j))
 ```
 
-Likewise, demisimplicial maps reflect the strict order.
+Likewise, demisimplicial maps reflect the strict order on `Fin`{.Agda}.
 
 ```agda
 Δ-hom⁻-reflect-<
@@ -629,11 +663,10 @@ Likewise, demisimplicial maps reflect the strict order.
   Nat.s≤s (Δ-hom⁻-reflect-< f⁻ (Nat.≤-peel fi<fj))
 ```
 
-
 ### Injectivity of interpretations
 
 As noted earlier, each map in $\Delta^{+}, \Delta^{-}$ and $\Delta$ resp.
-encode a unique function between finite sets. Proving this for $\Delta^{+}$
+encodes a unique function between finite sets. Proving this for $\Delta^{+}$
 and $\Delta^{-}$ is tedious, but straightforward. However, $\Delta$ presents
 a more difficult challenge, as we *also* need to show that two factorizations
 that are semantically equal factor through the same image.
@@ -686,8 +719,7 @@ equal, then the semi and demisimplicial components are syntactically equal.
 ```
 
 <details>
-<summary>These follow by some more brutal inductions that we will
-shield the innocent reader from.
+<summary>These follow by some more brutal inductions.
 </summary>
 
 ```agda
@@ -773,7 +805,7 @@ directly from these lemmas.
     (Δ-hom-uniquep⁻ (f .hom⁺) (g .hom⁺) (f .hom⁻) (g .hom⁻) p)
 ```
 
-Injectivity the interpretaion of semi and demisimplicial maps follow
+Injectivity the interpretation of semi and demisimplicial maps follow
 neatly as corollaries.
 
 ```agda
