@@ -345,37 +345,72 @@ the problem is factoring $f^{-} \circ g^{+}$ as a semisimplicial map
 $h^{+}$ and demisimplicial map $h^{-}$; once we do this, we can
 pre and post-compose $g^{-}$ and $f^{+}$, resp.
 
-We begin by computing the image of the putative factorization of $f^{-} \circ g^{+}$.
+For pedagogic purposes, we will define the image and semi/demisimplicial
+components of our factorization simultaneously.
 
 ```agda
-imΔ : Δ-Hom⁻ n o → Δ-Hom⁺ m n → Nat
-imΔ done⁻ done⁺ = 0
-imΔ (crush⁻ f) (shift⁺ g) = imΔ f g
-imΔ (crush⁻ f) (keep⁺ (shift⁺ g)) = imΔ f (keep⁺ g)
-imΔ (crush⁻ f) (keep⁺ (keep⁺ g)) = imΔ f (keep⁺ g)
-imΔ (keep⁻ f) (shift⁺ g) = imΔ f g
-imΔ (keep⁻ f) (keep⁺ g) = suc (imΔ f g)
+interleaved mutual
+  imΔ : Δ-Hom⁻ n o → Δ-Hom⁺ m n → Nat
+  _∘Δ⁺_ : (f⁻ : Δ-Hom⁻ n o) → (f⁺ : Δ-Hom⁺ m n) → Δ-Hom⁺ (imΔ f⁻ f⁺) o
+  _∘Δ⁻_ : (f⁻ : Δ-Hom⁻ n o) → (f⁺ : Δ-Hom⁺ m n) → Δ-Hom⁻ m (imΔ f⁻ f⁺)
 ```
 
-Next, we can compute both the semi and demisimplicial components of
-the factorization via a pair of gnarly inductions.
+If both maps are the identity $[0] \to [0]$, then we can clearly factor
+them as identity maps.
 
 ```agda
-_∘Δ⁺_ : (f⁻ : Δ-Hom⁻ n o) → (f⁺ : Δ-Hom⁺ m n) → Δ-Hom⁺ (imΔ f⁻ f⁺) o
-_∘Δ⁺_ done⁻ done⁺ = done⁺
-_∘Δ⁺_ (crush⁻ f⁺) (shift⁺ f⁻) = f⁺ ∘Δ⁺ f⁻
-_∘Δ⁺_ (crush⁻ f⁺) (keep⁺ (shift⁺ f⁻)) = f⁺ ∘Δ⁺ (keep⁺ f⁻)
-_∘Δ⁺_ (crush⁻ f⁺) (keep⁺ (keep⁺ f⁻)) = f⁺ ∘Δ⁺ (keep⁺ f⁻)
-_∘Δ⁺_ (keep⁻ f⁺) (shift⁺ f⁻) = shift⁺ (f⁺ ∘Δ⁺ f⁻)
-_∘Δ⁺_ (keep⁻ f⁺) (keep⁺ f⁻) = keep⁺ (f⁺ ∘Δ⁺ f⁻)
+  imΔ done⁻ done⁺ = 0
+  done⁻ ∘Δ⁺ done⁺ = done⁺
+  done⁻ ∘Δ⁻ done⁺ = done⁻
+```
 
-_∘Δ⁻_ : (f⁻ : Δ-Hom⁻ n o) → (f⁺ : Δ-Hom⁺ m n) → Δ-Hom⁻ m (imΔ f⁻ f⁺)
-_∘Δ⁻_ done⁻ done⁺ = done⁻
-_∘Δ⁻_ (crush⁻ f⁻) (shift⁺ f⁺) = f⁻ ∘Δ⁻ f⁺
-_∘Δ⁻_ (crush⁻ f⁻) (keep⁺ (shift⁺ f⁺)) = f⁻ ∘Δ⁻ (keep⁺ f⁺)
-_∘Δ⁻_ (crush⁻ f⁻) (keep⁺ (keep⁺ f⁺)) = crush⁻ (f⁻ ∘Δ⁻ (keep⁺ f⁺))
-_∘Δ⁻_ (keep⁻ f⁻) (shift⁺ f⁺) = f⁻ ∘Δ⁻ f⁺
-_∘Δ⁻_ (keep⁻ f⁻) (keep⁺ f⁺) = keep⁻ (f⁻ ∘Δ⁻ f⁺)
+Next, a composite of the form $(f^{-} \circ \sigma_0) \circ (\delta_0 \circ g^{+})$
+is equal to $f^{-} \circ g^{+}$ by the 4th simplicial identity.
+
+```agda
+  imΔ (crush⁻ f⁻) (shift⁺ g⁺) = imΔ f⁻ g⁺
+  (crush⁻ f⁻) ∘Δ⁺ (shift⁺ g⁺) = f⁻ ∘Δ⁺ g⁺
+  (crush⁻ f⁻) ∘Δ⁻ (shift⁺ g⁺) = f⁻ ∘Δ⁻ g⁺
+```
+
+We can also apply the 4th simplicial identity to composites of the form
+$(f^{-} \circ \sigma_0) \circ (\delta_1 \circ \uparrow g^{+})$.
+
+
+```agda
+  imΔ (crush⁻ f⁻) (keep⁺ (shift⁺ g⁺)) = imΔ f⁻ (keep⁺ g⁺)
+  (crush⁻ f⁻) ∘Δ⁺ (keep⁺ (shift⁺ g⁺)) = f⁻ ∘Δ⁺ (keep⁺ g⁺)
+  (crush⁻ f⁻) ∘Δ⁻ (keep⁺ (shift⁺ g⁺)) = f⁻ ∘Δ⁻ (keep⁺ g⁺)
+```
+
+The 5th simplicial identity can be applied to composites of the form
+$(f^{-} \circ \sigma_0) \circ (\uparrow \uparrow g^{+})$, which allows
+us to commute the $\sigma_0$ past $\uparrow \uparrow g^{+}$ by decrementing
+the index of every face map in $\uparrow \uparrow g^{+}$.
+
+```agda
+  imΔ (crush⁻ f⁻) (keep⁺ (keep⁺ g⁺)) = imΔ f⁻ (keep⁺ g⁺)
+  (crush⁻ f⁻) ∘Δ⁺ (keep⁺ (keep⁺ g⁺)) = f⁻ ∘Δ⁺ (keep⁺ g⁺)
+  (crush⁻ f⁻) ∘Δ⁻ (keep⁺ (keep⁺ g⁺)) = crush⁻ (f⁻ ∘Δ⁻ (keep⁺ g⁺))
+```
+
+Likewise, the 3rd simplicial identity can be applied to composites
+of the form $(\uparrow f^{-}) \circ (\delta_0 \circ g^{+})$. This
+Like the other laws, this lets us commute $\delta_0$ past $\uparrow f^{-}$
+by decrementing the index of every face map.
+
+```agda
+  imΔ (keep⁻ f) (shift⁺ g⁺) = imΔ f g⁺
+  (keep⁻ f⁻) ∘Δ⁺ (shift⁺ g⁺) = shift⁺ (f⁻ ∘Δ⁺ g⁺)
+  (keep⁻ f⁻) ∘Δ⁻ (shift⁺ g⁺) = f⁻ ∘Δ⁻ g⁺
+```
+
+Finally, we can reduce $\uparrow f^{-} \circ \uparrow g{+}$ to $\uparrow (f^{-} \circ g^{+})$.
+
+```agda
+  imΔ (keep⁻ f) (keep⁺ g) = suc (imΔ f g)
+  _∘Δ⁺_ (keep⁻ f⁻) (keep⁺ f⁺) = keep⁺ (f⁻ ∘Δ⁺ f⁺)
+  _∘Δ⁻_ (keep⁻ f⁻) (keep⁺ f⁺) = keep⁻ (f⁻ ∘Δ⁻ f⁺)
 ```
 
 With that hard work out of the way, constructing the composite of
@@ -1614,9 +1649,6 @@ face and degeneracy map that are parameterized by some $i$.
 σ⁻ : Fin n → Δ-Hom⁻ (suc n) n
 σ⁻ fzero = crush⁻ id⁻
 σ⁻ (fsuc i) = keep⁻ (σ⁻ i)
-
-cool = σ⁻ {3} 2 ∘⁻ σ⁻ {4} 0
-_ = {!σ⁻ 0 ∘⁻ σ⁻ {2} 0!}
 ```
 
 We can extend `δ⁺`{.Agda} and `σ⁻`{.Agda} to simplicial maps by
