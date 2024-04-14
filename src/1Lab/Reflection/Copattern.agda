@@ -142,19 +142,6 @@ The `define-eta-expansion` macro will automatically construct a function
 `R p → R q` that eta-expands the first record out into a copattern definition.
 -}
 
-make-eta-expansion : Name → Maybe Name → TC Term → TC ⊤
-make-eta-expansion nm lemma? make-tp = do
-  tp ← make-tp
-  -- Get the type of the predeclared binding.
-  -- Next, grab the telescope, and use it to construct a function
-  -- that simply returns the last argument with the provided
-  -- lemma applied.
-  let tele , _ = pi-view tp
-  let tm = case lemma? of λ where
-    (just lemma) → tel→lam tele (def lemma (argN (var 0 []) ∷ []))
-    nothing → tel→lam tele (var 0 [])
-  make-copattern false nm tm tp
-
 define-eta-expansion : Name → TC ⊤
 define-eta-expansion nm = do
   tp ← reduce =<< infer-type (def nm [])
