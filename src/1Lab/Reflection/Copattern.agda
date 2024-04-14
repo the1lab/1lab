@@ -3,12 +3,6 @@ open import 1Lab.Reflection
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Meta.Foldable
-open import Meta.Append
-
-import Prim.Data.Sigma as S
-import Prim.Data.Nat as N
-
 module 1Lab.Reflection.Copattern where
 
 -- Create a copattern clause for a field.
