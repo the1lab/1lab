@@ -201,6 +201,10 @@ under-abs (lam v (abs nm _)) m = extend-context nm (arg (arginfo v (modality rel
 under-abs (pi a (abs nm _))  m = extend-context nm a m
 under-abs _ m = m
 
+extend-context* : ∀ {a} {A : Type a} → Telescope → TC A → TC A
+extend-context* [] a = a
+extend-context* ((nm , tm) ∷ xs) a = extend-context nm tm (extend-context* xs a)
+
 new-meta : Term → TC Term
 new-meta ty = do
   mv ← check-type unknown ty
