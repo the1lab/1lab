@@ -1,5 +1,5 @@
-open import 1Lab.Reflection.Signature
 open import 1Lab.Reflection.Copattern
+open import 1Lab.Reflection.Signature
 open import 1Lab.Reflection
 
 open import Cat.Prelude
@@ -62,6 +62,10 @@ cohere-dualise is-dual tm hole = do
     pure (argN t)
 
   unify hole (con c args)
+
+macro
+  cohere!  = cohere-dualise false
+  dualise! = cohere-dualise true
 
 nat-assoc-to    : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
 nat-assoc-from  : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
