@@ -1,53 +1,74 @@
 open import 1Lab.Reflection.Signature
+open import 1Lab.Reflection.Subst
 open import 1Lab.Reflection
 open import 1Lab.Path
 open import 1Lab.Type
 
 module 1Lab.Reflection.Copattern where
 
+--------------------------------------------------------------------------------
+-- Macros for manipulating copattern definitions.
+
 -- Create a copattern clause for a field.
-make-copattern-clause : List (Arg Term) → Term → Arg Name → TC Clause
-make-copattern-clause params tm (arg field-info field-name) = do
+make-copattern-clause : Telescope → Term → Arg Name → TC Clause
+make-copattern-clause arg-tele tm (arg field-info field-name) = do
   -- Infer the type of the field with all known arguments instantiated.
-  field-tp ← infer-type (def field-name (map hide params ++ argN tm ∷ []))
+  -- This needs to be performed in an extended context so that we can
+  -- fully saturate the function that returns our record.
+  field-tp ← in-context (reverse arg-tele) $
+    infer-type (def field-name (argN (apply-tm* tm (tel→args 0 arg-tele)) ∷ []))
+
   -- Agda will insert implicits when defining copatterns even
   -- with 'withExpandLast true', so we need to do implicit instantiation
   -- by hand.
+
   -- First, we strip off all leading implicits from the field type.
   let (implicit-tele , tp) = pi-impl-view field-tp
+  let nimplicits = length implicit-tele
 
   -- Construct the pattern portion of the clause, making sure to bind
   -- all implicit variables.
   -- Note that copattern projections are always visible.
-  let pat = arg (set-visibility visible field-info) (proj field-name) ∷ tel→pats 0 implicit-tele
+  let pat =
+        tel→pats nimplicits arg-tele ++
+        arg (set-visibility visible field-info) (proj field-name) ∷
+        tel→pats 0 implicit-tele
 
-  -- Construct the body of the clause, making sure to instantiate
-  -- all implicit arguments.
-  let body = def field-name (argN tm ∷ tel→args 0 implicit-tele)
+  -- Construct the body of the clause, making sure to apply all arguments
+  -- bound outside the copattern match, and instantiate all implicit arguments.
+  -- We also need to apply all of the arguments to 'tm'.
+  let inst-tm = apply-tm* tm (tel→args nimplicits arg-tele)
+  let body = def field-name (argN inst-tm ∷ tel→args 0 implicit-tele)
 
-  pure $ clause implicit-tele pat body
+  -- Construct the final clause.
+  pure $ clause (arg-tele ++ implicit-tele) pat body
 
 
 -- Make a top-level copattern binding for a record.
-make-copattern : ∀ {ℓ} {A : Type ℓ} → Bool → Name → A → TC ⊤
-make-copattern declare? def-name x = do
-  -- Infer the type of the provided term, and ensure that it is a record type.
-  tm ← quoteTC x
-  def rec-name params ← infer-type tm
-    where tp → typeError ("Expected an element of a record type, yet " ∷ termErr tm ∷ " has type " ∷ termErr tp ∷ [])
+make-copattern : Bool → Name → TC Term → (Term → TC Term) → TC ⊤
+make-copattern declare? def-name make-term make-type = do
+  -- Infer the type of the provided term, and ensure that its codomain a record type.
+  tm ← make-term
+  tp ← make-type tm
+  let tele , cod-tp = pi-view tp
+  def rec-name params ← pure cod-tp
+    where _ → typeError [ "make-copattern: codomain of " , termErr tp , " is not a record type." ]
 
   -- Construct copattern clauses for each field.
   ctor , fields ← get-record-type rec-name
-  clauses ← traverse (make-copattern-clause params tm) fields
+  clauses ← traverse (make-copattern-clause tele tm) fields
 
   -- Define a copattern binding, and predeclare its type if required.
   case declare? of λ where
-    true → declare (argN def-name) (def rec-name params)
+    true → declare (argN def-name) tp
     false → pure tt
+
   define-function def-name clauses
 
+--------------------------------------------------------------------------------
+-- Usage
+
 {-
-Usage:
 Write the following in a module:
 >  unquoteDecl copat = declare-copattern copat thing-to-be-expanded
 
@@ -58,15 +79,54 @@ If you wish to give the binding a type annotation, you can also use
 
 All features of non-recursive records are supported, including instance
 fields and fields with implicit arguments.
+
+These macros also allow you to lift functions 'A → some-record-type'
+into copattern definitions. Note that Agda will generate meta for
+implicits before performing quotation, so we need to explicitly
+bind all implicits using a lambda before quotation!
 -}
 
 declare-copattern : ∀ {ℓ} {A : Type ℓ} → Name → A → TC ⊤
-declare-copattern = make-copattern true
+declare-copattern {A = A} nm x = make-copattern true nm (quoteTC x) (λ _ → quoteTC A)
 
 define-copattern : ∀ {ℓ} {A : Type ℓ} → Name → A → TC ⊤
-define-copattern = make-copattern false
+define-copattern {A = A} nm x = make-copattern false nm (quoteTC x) (λ _ → quoteTC A)
 
+{-
+There is a slight caveat with level-polymorphic defintions, as
+they cannot be quoted into any `Type ℓ`. With this in mind,
+we also provide a pair of macros that work over `Typeω` instead.
+-}
+
+declare-copattern-levels : ∀ {U : Typeω} → Name → U → TC ⊤
+declare-copattern-levels nm U = make-copattern true nm (quoteωTC U) infer-type
+
+define-copattern-levels : ∀ {U : Typeω} → Name → U → TC ⊤
+define-copattern-levels nm U = make-copattern false nm (quoteωTC U) infer-type
+
+{-
+Another common pattern is that two records `r : R p` and `s : R q` may contain
+the same data, but they are parameterized by different values.
+The `define-eta-expansion` macro will automatically construct a function
+`R p → R q` that eta-expands the first record out into a copattern definition.
+-}
+
+define-eta-expansion : Name → TC ⊤
+define-eta-expansion nm = do
+  -- Get the type of the predeclared binding.
+  tp ← reduce =<< infer-type (def nm [])
+  -- Next, grab the telescope, and use it to construct a function
+  -- that simply returns the last argument.
+  let tele , _ = pi-view tp
+  let tm = tel→lam tele (var 0 [])
+  -- Pass this function + type off to `make-copattern`; this will
+  -- use our function to η-expand the last argument for
+  -- each field!
+  make-copattern false nm (pure tm) λ _ → pure tp
+
+--------------------------------------------------------------------------------
 -- Tests
+
 private module Test where
   -- Record type that uses all interesting features.
   record Record {ℓ} (A : Type ℓ) : Type ℓ where
@@ -97,3 +157,27 @@ private module Test where
 
   -- Also works when applied to the result of a function.
   unquoteDecl copat-decl-via-function = declare-copattern copat-decl-via-function (via-function via-ctor)
+
+  -- Test to see how we handle unused parameters.
+  record Unused (n : Nat) : Type where
+    field
+      actual : Nat
+
+  zero-unused-param : Unused 0
+  zero-unused-param = record { actual = 0 }
+
+  one-unused-param : ∀ {n} → Unused n
+  unquoteDef one-unused-param = define-copattern one-unused-param zero-unused-param
+
+  -- Functions into records that are universe polymorphic
+  neat : ∀ {ℓ} {A : Type ℓ} → A → Record A
+  neat a .Record.c = a
+  neat a .Record.f _ = a
+  neat a .Record.const = refl
+
+  cool : ∀ {ℓ} {A : Type ℓ} → A → Record A
+  unquoteDef cool = define-copattern-levels cool λ {ℓ} {A : Type ℓ} → neat
+
+  -- Eta-expanders
+  expander : ∀ {m n : Nat} → Unused m → Unused n
+  unquoteDef expander = define-eta-expansion expander
