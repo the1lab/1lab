@@ -1,4 +1,5 @@
 open import 1Lab.Reflection.Signature
+open import 1Lab.Reflection.Copattern
 open import 1Lab.Reflection
 
 open import Cat.Prelude
@@ -62,47 +63,13 @@ cohere-dualise is-dual tm hole = do
 
   unify hole (con c args)
 
-cohere-dualise-into : Bool → ∀ {ℓ ℓ'} {S : Type ℓ'} → Name → (T : Type ℓ) → S → TC ⊤
-cohere-dualise-into is-dual nam T tm = do
-  `tm ← quoteTC tm
-  `T ← quoteTC T
-  (_ , fs) ← get-record `T
-  dual ← get-dual is-dual `T
-  clauses ← for fs λ (arg ai prj) → do
-    t ← reduce $ def prj [ argN (dual `tm) ]
-    pure $ clause [] [ arg ai (proj prj) ] t
-
-  declare (argN nam) `T
-  define-function nam clauses
-
-define-coherator-dualiser : Bool → Name → TC ⊤
-define-coherator-dualiser is-dual nam = do
-  (fs , dual) ← run-speculative do
-    `T ← infer-type (def nam [ argN unknown ])
-    (_ , fs) ← get-record `T
-    dual ← get-dual is-dual `T
-    pure ((fs , dual) , false)
-  clauses ← for fs λ (arg ai prj) → do
-    pure $ clause (("α" , argN unknown) ∷ [])
-              [ argN (var 0) , arg ai (proj prj) ]
-              (def prj [ argN (dual (var 0 [])) ])
-
-  define-function nam clauses
-
-macro
-  cohere!  = cohere-dualise false
-  dualise! = cohere-dualise true
-
-cohere-into      = cohere-dualise-into false
-dualise-into     = cohere-dualise-into true
-define-coherence = define-coherator-dualiser false
-define-dualiser  = define-coherator-dualiser true
-
 nat-assoc-to    : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
 nat-assoc-from  : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
 op-compose-into : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
+nat-assoc-to-op : f ⇒ g ⊗ h ⊗ i → (Functor.op g ⊗ Functor.op h) ⊗ Functor.op i ⇒ Functor.op f
 
-unquoteDef nat-assoc-to nat-assoc-from op-compose-into = do
-  define-coherence nat-assoc-to
-  define-coherence nat-assoc-from
-  define-coherence op-compose-into
+unquoteDef nat-assoc-to nat-assoc-from op-compose-into nat-assoc-to-op = do
+  define-eta-expansion nat-assoc-to
+  define-eta-expansion nat-assoc-from
+  define-eta-expansion op-compose-into
+  define-eta-expansion-with nat-assoc-to-op (quote _=>_.op)
