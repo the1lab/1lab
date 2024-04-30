@@ -386,7 +386,7 @@ the witnesses that $F$ and $G$ are functorial.
 ```
 -->
 
-The identity functor can be defined using the identity funct_ion_ for
+The identity functor can be defined using the identity function for
 both its object and morphism mappings. That functors have an identity
 and compose would seem to imply that categories form a category:
 However, since there is no upper bound on the h-level of `Ob`{.Agda}, we
