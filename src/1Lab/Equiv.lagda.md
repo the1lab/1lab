@@ -270,10 +270,8 @@ Since Cubical Agda has primitives that refer to equivalences, we have to
 take some time to teach the system about the type we just defined above.
 In addition to teaching it how to project the underlying function of an
 equivalence, we must prove that an equivalence has contractible fibres
---- but what the system asks of us is that each [partial fibre] be
-*extensible*: the cubical phrasing of contractibility.
-
-[partial fibre]: 1Lab.Path.html#extensibility
+--- but what the system asks of us is that each [[partial fibre|partial
+cube]] be *extensible*: the cubical phrasing of contractibility.
 
 ```agda
 {-# BUILTIN EQUIV _≃_ #-}

@@ -1,6 +1,39 @@
+% Of the highest importance:
+\renewcommand{\phi}{\varphi}
+
+% Saner abbreviations for font faces (take an argument rather than
+% applying to the current context).
 \renewcommand{\rm}[1]{\mathrm{#1}}
 \newcommand{\bb}[1]{\mathbb{#1}}
 \renewcommand{\bf}[1]{\mathbf{#1}}
+
+% Define \cA..\cZ
+\definealphabet{c}{\mathcal}{A}{Z}
+% Define \bA..\bZ
+\definealphabet{b}{\mathbb}{A}{Z}
+
+% Notation for lambda abstractions.
+\newcommand{\lam}[2]{\lambda #1.\ #2}
+
+% Notation for paths, the interval, and its operations.
+\newcommand{\is}{\equiv}
+\newcommand{\PathP}[3]{\operatorname{PathP}\ {#1}\ {#2}\ {#3}}
+\newcommand{\Path}[3]{\operatorname{Path}\ {#1}\ {#2}\ {#3}}
+\newcommand{\Square}[4]{\operatorname{Square}\ {#1}\ {#2}\ {#3}\ {#4}}
+
+\newcommand{\iZ}{\rm{i0}}
+\newcommand{\iO}{\rm{i1}}
+
+\newcommand{\ineg}{\lnot}
+\newcommand{\imin}{\land}
+\newcommand{\imax}{\lor}
+
+\newcommand{\transport}[2]{\operatorname{transport}(#1,~ #2)}
+\newcommand{\transp}[3]{\operatorname{transp}(#1,~ #2,~ #3)}
+\newcommand{\Partial}[2]{\operatorname{Partial}(#1,~ #2)}
+\newcommand{\Extn}[2]{{#1}[#2]}
+\DeclareMathOperator{\inS}{inS}
+\DeclareMathOperator{\outS}{outS}
 
 \newcommand{\thecat}[1]{\mathbf{#1}}     % Names of "concrete" categories
 \newcommand{\thebicat}[1]{\mathfrak{#1}} % Names of "concrete" bicategories
@@ -17,11 +50,6 @@
 % \yo for よ is only allowed in KaTeX:
 \newcommand{\yo}\katex{よ}
 \newcommand{\zap}\katex{↯}
-
-% Define \cA..\cZ
-\definealphabet{c}{\mathcal}{A}{Z}
-% Define \bA..\bZ
-\definealphabet{b}{\mathbb}{A}{Z}
 
 \newcommand{\knowncat}[1]{\newcommand{\csname #1\endcsname}{\thecat{#1}}}
 \newcommand{\knownbicat}[1]{\newcommand{\csname #1\endcsname}{\thebicat{#1}}}
@@ -129,3 +157,10 @@
 \renewcommand{\day}[1]{\operatorname{day}(#1)}
 
 \newcommand{\loc}[1]{[{#1}\inv]}
+
+\newcommand{\indicatortwod}[2]{
+  \begin{tikzpicture}
+  \draw[->] (0,0) -- (1,0)  node[midway, above] {$#1$};
+  \draw[->] (0,0) -- (0,-1) node[midway, left]  {$#2$};
+  \end{tikzpicture}
+}

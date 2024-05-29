@@ -15,14 +15,12 @@ module 1Lab.Univalence where
 # Univalence {defines=univalence}
 
 In Homotopy Type Theory, **univalence** is the principle stating that
-[equivalent] types can be [identified]. When [the book] first came out,
-there was no widely-accepted _computational_ interpretation of this
-principle, so it was added to the theory as an axiom: the **univalence
-axiom**.
+[[equivalent|equivalence]] types can be [[identified|path]]. When [the
+book] first came out, there was no widely-accepted _computational_
+interpretation of this principle, so it was added to the theory as an
+axiom: the **univalence axiom**.
 
 [the book]: https://homotopytypetheory.org/book
-[equivalent]: 1Lab.Equiv.html#_≃_
-[identified]: Prim.Kan.html#Path
 
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
@@ -64,17 +62,11 @@ path.
 
 [RedPRL school]: https://redprl.org/
 
-[_equivalences_]: 1Lab.Equiv.html#is-equiv
-[open box]: 1Lab.Path.html#transitivity
-
-In [CCHM] --- and therefore Cubical Agda --- a different approach is
-taken, which combines proving univalence with defining a fibrancy
+In CCHM [-@CCHM] --- and therefore Cubical Agda --- a different approach
+is taken, which combines proving univalence with defining a fibrancy
 structure for the universe. The core idea is to define a new type
-former, `Glue`{.Agda}, which "glues" a [partial type], along an
-equivalence, to a total type.
-
-[CCHM]: https://arxiv.org/abs/1611.02108
-[partial type]: 1Lab.Path.html#partial-elements
+former, `Glue`{.Agda}, which "glues" a [[partial type|partial cube]],
+along an equivalence, to a total type.
 
 <!--
 ```agda
@@ -108,18 +100,16 @@ Glue : (A : Type ℓ)
 ```
 
 The public interface of `Glue`{.Agda} demands a type $A$, called the
-_base type_, a formula $\varphi$, and a [partial type] $T$ which is
-equivalent to $A$. Since the equivalence is defined _inside_ the partial
-element, it can also (potentially) vary over the interval, so in reality
-we have a _family_ of partial types $T$ and a _family_ of partial
-equivalences $T \simeq A$.
+_base type_, a formula $\varphi$, and a [[partial type|partial cube]]
+$T$ which is equivalent to $A$. Since the equivalence is defined
+_inside_ the partial element, it can also (potentially) vary over the
+interval, so in reality we have a _family_ of partial types $T$ and a
+_family_ of partial equivalences $T \simeq A$.
 
 In the specific case where we set $\varphi = \neg i \lor i$, we can
 illustrate `Glue A (T, f)` as the dashed line in the square diagram
 below. The conceptual idea is that by "gluing" $T$ onto a totally
-defined type, we get a type which [extends] $T$.
-
-[extends]: 1Lab.Path.html#extensibility
+defined type, we get a type which [[extends|extension type]] $T$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -153,8 +143,6 @@ glue-inc φ p x = prim^glue {φ = φ} p (outS x)
 
 ```
 -->
-
-[family of partial types]: 1Lab.Path.html#partial-elements
 
 For `Glue`{.Agda} to extend $T$, we add a computation rule which could
 be called a **boundary condition**, since it specifies how `Glue`{.Agda}
@@ -309,11 +297,9 @@ Iso→Path (f , iiso) = ua (f , is-iso→is-equiv iiso)
 The introduction and elimination forms for `Glue`{.Agda} can be
 specialised to the case of `ua`{.Agda}, leading to the definitions of
 `ua-glue`{.Agda} and `ua-unglue`{.Agda} below. Their types are written
-in terms of interval variables and [extensions], rather than using
+in terms of interval variables and [[extension types]], rather than using
 `Path`{.Agda}s, because these typings make the structure of
 `Glue`{.Agda} more explicit.
-
-[extensions]: 1Lab.Path.html#extensibility
 
 The first, `ua-unglue`{.Agda}, tells us that if we have some `x : ua e
 i` (varying over an interval variable `i`), then we have an element of
@@ -456,14 +442,12 @@ is apply `uaβ`{.Agda}:
     Σ-path (funext (uaβ (f , is-eqv))) (is-equiv-is-prop f _ _)
 ```
 
-For the other direction, we use [path induction] to reduce the problem
+For the other direction, we use [[path induction]] to reduce the problem
 from showing that `ua`{.Agda} inverts `path→equiv`{.Agda} for an
 arbitrary path (which is hard) to showing that `path→equiv`{.Agda}
 takes `refl`{.Agda} to the identity equivalence
 (`path→equiv-refl`{.Agda}), and that `ua`{.Agda} takes the identity
 equivalence to `refl`{.Agda} (`ua-id-equiv`{.Agda}).
-
-[path induction]: 1Lab.Path.html#J
 
 ```agda
   iiso .is-iso.linv =
@@ -492,18 +476,16 @@ univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
 ## Equivalence induction {defines="equivalence-induction"}
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
-the type of _equivalences_ satisfies [the same induction principle] as
-the type of _identifications_. By analogy with how path induction can be
-characterised as contractibility of singletons and transport,
-“equivalence induction” can be characterised as transport and
+the type of _equivalences_ satisfies [[the same induction principle|path
+induction]] as the type of _identifications_. By analogy with how path
+induction can be characterised as contractibility of singletons and
+transport, “equivalence induction” can be characterised as transport and
 contractibility of _singletons up to equivalence_:
-
-[the same induction principle]: 1Lab.Path.html#J
 
 ```agda
 Equiv-is-contr : ∀ {ℓ} (A : Type ℓ) → is-contr (Σ[ B ∈ Type ℓ ] A ≃ B)
-is-contr.centre (Equiv-is-contr A)            = A , _ , id-equiv
-is-contr.paths (Equiv-is-contr A) (B , A≃B) i = ua A≃B i , p i , q i where
+Equiv-is-contr A .centre            = A , _ , id-equiv
+Equiv-is-contr A .paths (B , A≃B) i = ua A≃B i , p i , q i where
   p : PathP (λ i → A → ua A≃B i) id (A≃B .fst)
   p i x = outS (ua-glue A≃B i (λ { (i = i0) → x }) (inS (A≃B .fst x)))
 

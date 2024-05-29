@@ -52,11 +52,8 @@ postulate
 
 infix 4 _≡_
 
-Path : ∀ {ℓ} (A : Type ℓ) → A → A → Type ℓ
-Path A = PathP (λ i → A)
-
 _≡_ : ∀ {ℓ} {A : Type ℓ} → A → A → Type ℓ
-_≡_ {A = A} = Path A
+_≡_ {A = A} = PathP (λ i → A)
 
 {-# BUILTIN PATH _≡_ #-}
 ```
