@@ -39,23 +39,24 @@ private
 # Paths and the interval
 
 One of the key observations behind HoTT is that Martin-Löf's identity
-type can be given a *homotopical* interpretation: if we interpret types
-$A$ as spaces, then the identity type $a, b : A$ behaves like the space
-of *paths* $a \is b$ in $A$. There is a constant path $\refl : a
-\is a$ at each point; every path $p : a \is b$ has an inverse
-$p\inv : b \is a$; paths $p : a \is b$ and $q : b \is c$ can be
-laid end-to-end, giving the composite $p\cdot q : a \is c$; and these
-operations satisfy algebraic laws, like the inverse law $p\inv \cdot p
-\is \refl$, up to paths-between-paths.
+type can be given a *homotopical* interpretation: if we interpret a type
+$A$ as a space, then for a pair of points $a, b : A$, the identity
+type $a \is b$ behaves like the space of *paths* from $a$ to $b$ in $A$.
+There is a constant path $\refl : a \is a$ at each point; every path $p
+: a \is b$ has an inverse $p\inv : b \is a$; paths $p : a \is b$ and $q
+: b \is c$ can be laid end-to-end, giving the composite $p\cdot q : a
+\is c$. Even further, these operations can be shown to satisfy algebraic
+laws, like the inverse law $p\inv \cdot p \is \refl$, but only to
+paths-between-paths: *homotopies*.
 
-In the interpretation of homotopy in topological spaces, paths in a
-space $A$ are defined to be continuous mappings $f : [0,1] \to A$ from
-the *interval* to our space. The key idea behind cubical type theory,
-and thus our implementation Cubical Agda, is that by axiomatizing the
-important properties of $[0,1]$ as an **interval type** $\bI$, we could
-similarly define *paths* to be functions $\bI \to A$. We don't have to
-cut down to a type of "continuous" functions; instead, we arrange for
-the interval *type* to be so that all functions from it are continuous.
+In the homotopy theory of topological spaces, paths in a space $A$ are
+defined to be continuous mappings $f : [0,1] \to A$ from the *interval*
+to our space. The key idea behind cubical type theory, and thus our
+implementation Cubical Agda, is that by axiomatizing the important
+properties of $[0,1]$ as an **interval type** $\bI$, we could similarly
+define *paths* to be functions $\bI \to A$. We don't have to cut down to
+a type of "continuous" functions; instead, we arrange for the interval
+*type* to be so that all functions from it are continuous.
 
 <details>
 <summary>
@@ -122,35 +123,45 @@ path, it looks a lot like the identity function; we do not *require*
 this helper, since we can always write paths using the same syntax as
 for functions.
 
+When we can infer the type $A$ from the points $a, b : A$, we write the
+type of paths as $a \is b$, both in the formalisation and the prose.
+This is traditional in Agda, but slightly breaks with the convention of
+type theory *literature*, which traditionally uses $a \is b$ to mean
+definitional equality.
+
 ```agda
 private
   to-path : ∀ {ℓ} {A : Type ℓ} (f : I → A) → f i0 ≡ f i1
   to-path f = λ i → f i
+```
 
+The easiest path to construct is *reflexivity*, called `refl`{.Agda} for
+short: Given a point $a : A$, there is a distinguished path $\refl_a : a
+\is a$, which goes from $a$ to $a$ by ignoring the interval variable $i$
+entirely.
+
+```agda
 refl : ∀ {ℓ} {A : Type ℓ} {x : A} → x ≡ x
 refl {x = x} i = x
 ```
 
-When we can infer the type $A$ from the points $a, b : A$, we write the
-type of paths as $a \is b$, both in the formalisation and the prose.
-This is traditional in Agda, but slightly breaks with the convention of
-type theory *literature*. The "reflexivity" of paths is witnessed by a
-*constant* function: it goes from $x$ to $x$ by not moving at all. We
-can also demonstrate the elimination rule for paths. Note that, when we
-apply $p : a \is b$ to one of the endpoints of the interval, we
+Before we move on, we can also demonstrate the elimination rule for
+paths *as functions from the interval*, that is, application. Note that,
+when we apply $p : a \is b$ to one of the endpoints of the interval, we
 *definitionally* get back the endpoints of the path. Other than the
 circularity (needing sameness to define paths, which are our notion of
-sameness), this is the reason that paths are a primitive type former.
+sameness), these definitional equalities are the reason that paths are a
+primitive type former.
 
 ```agda
-module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where private
+module _ {ℓ} {A : Type ℓ} {a b : A} {p : a ≡ b} where private
   apply-path : (i : I) → A
   apply-path i = p i
 
-  left-endpoint : p i0 ≡ x
+  left-endpoint : p i0 ≡ a
   left-endpoint = refl
 
-  right-endpoint : p i1 ≡ y
+  right-endpoint : p i1 ≡ b
   right-endpoint = refl
 ```
 
@@ -286,12 +297,11 @@ iterated path type $p \is q$. Cubically, we're now talking about
 functions $\bI \to \bI \to A$, with *two* dimensions: a way of mapping
 the *square* into a type.
 
-Considering a path $p : a \is b$ as an inhabitant, we have a reflexivity
-path $\refl_p : p \is p$, which lives in a dimension higher. In this
-section, we'll explore the ways in which we can lift $n$-cubes to $n+1$
-cubes, and to higher dimensions from there. Since the interval behaves,
-in contexts, like an ordinary type, the first thing we might try is to
-introduce another dimension and remain constant along it.
+If we consider a path $p : a \is b$ as an object in its own right, we
+can consider the reflexivity path $\refl_p : p \is p$, which by the
+paragraph above lives one dimension higher. In this section, we'll
+explore the *other* ways in which we can lift $n$-cubes to $n+1$ cubes,
+and to higher dimensions from there.
 
 <!--
 ```agda
@@ -299,10 +309,13 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
 ```
 -->
 
-In a context with two interval variables, we can move in two dimensions.
-These give us two squares, which both have two $p$ faces and two
-constant faces. Note that the square `drop-i`{.Agda} is just
-`refl`{.Agda}.
+In a context with two interval variables, we can move in two dimensions
+(call them $i$ and $j$): to use our path $p$, which only varies along
+*one* dimension, we must either *discard* one of $i$ or $j$, or find a
+way to *combine* them. Discarding is the easier option. Depending on
+what dimension we ignore, we get one of two squares, both of which have
+two $p$ faces *across* from eachother. Note that the square
+`drop-i`{.Agda} is just the reflexivity path `refl`{.Agda}.
 
 ```agda
   drop-i : PathP (λ i → a ≡ b) p p
