@@ -321,7 +321,7 @@ varies top-to-bottom. The `drop-i`{.Agda} square is *constant* in the
 $i$ direction, but in the $j$ direction, it's $p$. This manifests in the
 diagram as having $\refl$ for both of its vertical faces: on the left,
 we're looking at $p(\iZ) = a$ *not* varying along the vertical axis, and
-respectively for $p(\iO) = b$ on the right. For the `drop-i`{.Agda}
+respectively for $p(\iO) = b$ on the right. For the `drop-j`{.Agda}
 square, the situation is flipped, since we're now ignoring the
 horizontal direction.
 
