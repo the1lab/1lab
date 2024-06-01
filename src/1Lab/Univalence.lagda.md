@@ -512,7 +512,7 @@ EquivJ P pid eqv =
 
 Equivalence induction simplifies the proofs of many properties about
 equivalences. For example, if $f$ is an equivalence, then so is its
-`action on paths`{.Agda ident=ap} $\ap(f)$.
+`action on paths`{.Agda ident=ap} $\ap{f}{}$.
 
 ```agda
 private
@@ -528,12 +528,12 @@ The proof can be rendered in English roughly as follows:
 
 > Suppose $f : A \to B$ `is an equivalence`{.Agda ident=is-equiv}. We
 want to show that, for any choice of $x, y : A$, the map
-$\ap(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
+$\rm{ap}(f){x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 >
 > By `induction`{.Agda ident=EquivJ}, it suffices to cover the case
 where $B$ is $A$, and $f$ is the identity function.
 >
-> But then, we have that $\ap(\id)$ is definitionally equal to
+> But then, we have that $\ap{\id}{}$ is definitionally equal to
 $\id$, which is known to be `an equivalence`{.Agda ident=id-equiv}.
 <span class=qed>$\blacksquare$</span>
 

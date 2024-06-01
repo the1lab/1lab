@@ -182,7 +182,7 @@ another $(x, p)$ using a very boring calculation:
 The calculation of `path`{.Agda} factors as a bunch of boring
 adjustments to paths using the groupoid structure of types, and the two
 interesting steps above: The triangle identity says that
-$\ap(f)(\eta x) = \varepsilon(f x)$, and naturality of
+$\ap{f}{(\eta x)} = \varepsilon(f x)$, and naturality of
 $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
