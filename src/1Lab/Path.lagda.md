@@ -29,9 +29,8 @@ private
 
   variable
     ℓ : Level
-    A B C : Type ℓ
-    f : A → B
-    g : B → C
+    A B : Type ℓ
+    f g : A → B
     x y : A
 ```
 -->
@@ -373,8 +372,12 @@ horizontal direction.
 :::{.definition #connection}
 We can now introduce the two operators that go into making the interval
 a de Morgan algebra: minimum, written $i \imin j$, and maximum, $i \imax
-j$. These satisfy the familiar rules of conjunction and disjunction in
-Boolean logic, except for excluded middle and noncontradiction.
+j$. As mentioned [below](#summary-of-interval-algebra), these satisfy
+the familiar rules for conjunctions and disjunctions in logic, hence the
+notation. But keep in mind that $\bI$ is not like $\{0,1\}$, but rather
+more like $[0,1]$: we do not have $(i \imin \ineg i) = \iZ$, because
+there are points along the interval where the "minimum" of $i$ and "$1 -
+i$" is not zero.
 :::
 
 ```agda
@@ -385,12 +388,14 @@ Boolean logic, except for excluded middle and noncontradiction.
   ∨-conn i j = p (i ∨ j)
 ```
 
-These correspond to the following two squares. In the diagram, we only
-have the space to write out the computation for the horizontal faces,
-but e.g. in the $p(i\imin j)$ square, note that the left face is
+These correspond to the following two squares, called **connections**.
+In the diagrams below, we do not have the space to include the
+computation for the faces that vary along $j$, but we did include them
+for the faces varying along $i$, e.g., in the $p(i\imin j)$ square, the
+left face (varying along $j$, with $i = \iZ$) is
 
 $$
-p(\iZ\imin i) = p(\iZ) = a
+p(\iZ\imin j) = p(\iZ) = a
 $$,
 
 while the right face in $p(i\imax j)$ is $p(\iO\imax j) = p(\iO) = b$.
@@ -427,11 +432,45 @@ while the right face in $p(i\imax j)$ is $p(\iO\imax j) = p(\iO) = b$.
 
 </div>
 
-Since iterated paths are used _a lot_ in homotopy type theory, we
-introduce a shorthand `Square`{.Agda} for a square of paths. There is
-also a `SquareP`{.Agda}, for a square of `PathP`{.Agda}s --- since its
-type is a bit of a nightmare, we omit its definition from the page, but
-you can click to navigate to it.
+Iterated paths are used a *lot* in homotopy type theory, but in cubical
+type theory, it's best to have a type that lets us specify the boundary
+of a complete 2-dimensional *square*: this can be defined in terms of
+`PathP`{.Agda}, as we do below. A square with faces $p$, $q$, $r$, and
+$s$, as laid out in the diagram below,
+
+::: mathpar
+~~~{.quiver}
+\indicatortwod{i}{j}
+~~~
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {a_{00}} && {a_{10}} \\
+  \\
+  {a_{01}} && {a_{11}}
+  \arrow["q(i)"', from=1-1, to=3-1]
+  \arrow["p(j)", from=1-1, to=1-3]
+  \arrow["s(i)", from=1-3, to=3-3]
+  \arrow["r(j)"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+:::
+
+is read as saying that the *composites* $q \cdot r$ and $p \cdot s$ are
+identified.[^comm-to-square] In the 1Lab, we define the type
+`Square`{.Agda} so that the arguments are given in the order
+$p$-$q$-$s$-$r$, i.e. top-left-right-bottom. This choice is basically
+arbitrary, but it matters when reading out the (graphical) boundary from
+the type of a term.
+
+[^comm-to-square]:
+    At this point in the formalisation, we have not yet introduced the
+    machinery necessary to define composition of paths, let alone prove
+    that squares correspond to identities between composites.
+
+    However, it's instructive to keep this intuition in mind for when we
+    *do* define composition, and for when we can [prove this
+    correspondence](1Lab.Path.Groupoid.html#convenient-helpers).
 
 ```agda
 Square
@@ -439,6 +478,44 @@ Square
   → (p : a00 ≡ a01) (q : a00 ≡ a10) (s : a01 ≡ a11) (r : a10 ≡ a11)
   → Type ℓ
 Square p q s r = PathP (λ i → p i ≡ r i) q s
+```
+
+To start building some intuition, we can rewrite the dimension-raising
+operations we named above so that their types are given in terms of
+`Square`{.Agda}. We also ask Agda to check that a square with top/bottom
+faces `refl`{.Agda}, but left/right faces $p$, is the same thing as a
+path between paths.
+
+<!--
+```agda
+module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
+```
+-->
+
+```agda
+  drop-i : Square refl p p refl
+  drop-i i j = p j
+
+  drop-j : Square p refl refl p
+  drop-j i j = p i
+
+  ∧-conn : Square refl refl p p
+  ∧-conn i j = p (i ∧ j)
+
+  ∨-conn : Square p p refl refl
+  ∨-conn i j = p (i ∨ j)
+```
+
+
+<!--
+```agda
+module _ {ℓ} {A : Type ℓ} {a b : A} {p q : Path A a b} where private
+```
+-->
+
+```agda
+  _ : Square refl p q refl ≡ (p ≡ q)
+  _ = refl
 ```
 
 <!--
@@ -455,34 +532,6 @@ SquareP : ∀ {ℓ}
 SquareP A p q s r = PathP (λ i → PathP (λ j → A i j) (p i) (r i)) q s
 ```
 -->
-
-The arguments to `Square`{.Agda} are as in the following diagram, listed
-in the order “PQSR”. This order is a bit unusual (it's one off from
-being alphabetical, for instance) but it does have a significant
-benefit: If you imagine that the letters are laid out in a circle,
-_identical paths are adjacent_. Reading the square in the left-right
-direction, it says that $p$ and $r$ are identical --- these are adjacent
-if you "fold up" the sequence `p q s r`. Similarly, reading top-down, it
-says that $q$ and $s$ are identical - these are directly adjacent.
-
-::: mathpar
-~~~{.quiver}
-\indicatortwod{i}{j}
-~~~
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  \bullet && \bullet \\
-  \\
-  \bullet && \bullet
-  \arrow["p(i)"', from=1-1, to=3-1]
-  \arrow["q(j)", from=1-1, to=1-3]
-  \arrow["r(i)", from=1-3, to=3-3]
-  \arrow["s(j)"', from=3-1, to=3-3]
-\end{tikzcd}\]
-~~~
-:::
-
 
 <!--
 ```agda
@@ -565,7 +614,7 @@ module _ where private
 ```
 -->
 
-# Respect for equality
+# Paths as "sameness"
 
 One of the fundamental features of equality is that it is respected by
 all functions: if we have $f : A \to B$, and $x = y : A$, then also
@@ -630,14 +679,6 @@ ap₂
   → (p : x ≡ y) (q : PathP (λ i → B (p i)) α β)
   → PathP (λ i → C (p i) (q i)) (f x α) (f y β)
 ap₂ f p q i = f (p i) (q i)
-
-ap-square
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {a00 a01 a10 a11 : A}
-      {p : a00 ≡ a01} {q : a00 ≡ a10} {s : a01 ≡ a11} {r : a10 ≡ a11}
-  → (f : (a : A) → B a)
-  → (α : Square p q s r)
-  → SquareP (λ i j → B (α i j)) (ap f p) (ap f q) (ap f s) (ap f r)
-ap-square f α i j = f (α i j)
 ```
 -->
 
@@ -675,7 +716,7 @@ preserves identity and composition of *functions*, too.
   ap-id = refl
 ```
 
-# Transport
+## Transport
 
 We've established that every function preserves paths, but this is not
 *quite* enough for a notion of sameness. The key principle that
@@ -731,14 +772,15 @@ subst₂ P p q x = transp (λ i → P (p i) (q i)) i0 x
 
 [see here]: Data.Bool.html#Bool-aut≡2
 
-The actual primitive, `transp`{.Agda}, is a slight generalisation of
-`transport`{.Agda}. In addition to letting us specify the line (read:
+As we mentioned above, the primitive `transp`{.Agda} slightly
+generalises the `transport`{.Agda} operation: we'll now see how this
+generality is useful. In addition to letting us specify the line (read:
 identification between types) to transport over, and the thing to
 transport, it has an additional argument $\phi : \bI$. This is the first
 instance of the interval naming **formulas**: rather than being an
 *endpoint*, the argument $\phi$ specifies *where the path is constant*.
-When an element $\phi : \bI$ is taken to be a *formula*, we interpret
-it to be the proposition $\phi = \iO$.
+When an element $\phi : \bI$ is taken to be a *formula*, we interpret it
+to be the proposition $\phi = \iO$.
 
 The constancy of the path is a side-condition in the type of `transp`
 that is enforced by the type checker, but which we do not (yet) have the
@@ -885,24 +927,25 @@ $$
 
 We're now faced with the conundrum of transporting $y_0$ along $B$. But
 we can't take the line to be $\lam{i}{B(i,x_0)}$ since $x_0 : A(\iZ)$,
-while we need something in $A(i)$! This is where our
-`transport-filler`{.Agda} operation comes in. We generalise $x_0$ to a
-line
+while the argument to $B(i,-)$ should be in $A(i)$! The solution is to
+*generalise* $x_0$ to a line
 
 $$
 x_i = \transp{(\lam{j}{A\ (i \imax \ineg j)})}{i}{x} : A(i)
 $$
 
 so that we may form $\lam{i}{B(i,x_i)}$ connecting $B(\iZ, x_0)$ and
-$B(\iO, x)$. We can then obtain our return value by transporting $y_0$
-along this line.
+$B(\iO, x)$. While this construction seems to have come out of nowhere,
+note that $x_i$ is the inverse of `transport-filler`{.Agda} along
+$A\inv$! We can then obtain our return value by transporting $y_0$ along
+this line.
 
 ```agda
   _ : {f : (x : A i0) → B i0 x} → transport (λ i → (x : A i) → B i x) f ≡
     λ (x : A i1) →
       let
         xi : ∀ i → A i
-        xi i = transp (λ j → A (~ j ∨ i)) i x
+        xi i = transport-filler (λ i → A (~ i)) x (~ i)
 
         y0 = f (xi i0)
       in transport (λ i → B i (xi i)) y0
@@ -966,22 +1009,27 @@ Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
 Singleton x = Σ[ y ∈ _ ] (x ≡ y)
 ```
 
-The proof is very natural when we write out the boundaries and use the
-[[connections]]. We're given an inhabitant $y : A$ and a path $p : x \is
-y$. To identify $(x, \refl) \is (y, p)$, we have to produce an
-identification $x \is y$ (we can use $p$), and, over this, an
-identification of $\refl$ and $p$. This later type turns out to be a
-`Square`{.Agda}, with the top and left faces `refl`{.Agda}, and the
-bottom and right faces $p$.
+We're given an inhabitant $y : A$ and a path $p : x \is y$. To identify
+$(x, \refl) \is (y, p)$, we have to produce an identification $x \is y$
+(we can use $p$), and, over this, an identification of $\refl$ and $p$.
 
 ```agda
 Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
                    → Path (Singleton x) (x , refl) y
 Singleton-is-contr {x = x} (y , p) =
+```
+
+Writing out the dependency explicitly, we see that the second component
+should inhabit the dependent path type $$\PathP{(\lam{i}{x \is
+p(i)})}{\refl}{p}$$, which we've already seen: not only can it be
+expressed as a `Square`, but it is precisely the type of the
+[[connection]] square $p(i \imin j)$:
+
+```agda
   let
-    snds : Square refl refl p p
-    snds = λ i j → p (i ∧ j)
-  in λ i → p i , snds i
+    q : Square refl refl p p
+    q = λ i j → p (i ∧ j)
+  in λ i → p i , q i
 ```
 
 We then obtain the definition of J: If we have $\rm{prefl} : P(x,
@@ -1084,13 +1132,13 @@ In Agda, we write `IsOne`{.Agda} for the type of such evidence, and we
 write `1=1`{.Agda} for the proof that $\iO = \iO$.
 
 The key feature of partial elements is that we can introduce them by
-giving **systems**: If you want to define an $f : \Partial{\phi \imax
-\psi}{A}$, it suffices to give $x : \Partial{\phi}{A}$ and $y :
+giving **systems**: If you want to define an $f : \Partial{(\phi \imax
+\psi)}{A}$, it suffices to give $x : \Partial{\phi}{A}$ and $y :
 \Partial{\psi}{A}$, *as long as they agree when $(\phi = \iO) \land
 (\psi = \iO)$.*
 
 For instance, if we have a dimension $i : \bI$, then the type
-$\Partial{i \imax \ineg i}{A}$ represents the *endpoints* of a line in
+$\Partial{(i \imax \ineg i)}{A}$ represents the *endpoints* of a line in
 $A$. We do not have a *complete* line, just the endpoints! As an
 example, we can define a value of `Bool`{.Agda} which is `true`{.Agda}
 on the left endpoint of the interval, and `false`{.Agda} on the right
@@ -1115,7 +1163,12 @@ values at each endpoint of the interval.
 
 As a further example, we could imagine piecing together *three* paths
 into a partial element that is defined on three faces, resulting in
-something like an upside-down drinking glass:
+something like an upside-down drinking glass. Note that each of the
+faces in the system below only constrains *one* of the dimensions, as
+written between parentheses on the left-hand-side. This means the
+right-hand-side can, and does, still vary along the *other* dimension.
+This is in contrast to our `not-a-path`{.Agda} example above, in which
+the *only* dimension is constrained, so there can be no variation.
 
 ```agda
 module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} where private
@@ -1135,16 +1188,16 @@ module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} wher
   x && y \\
   \\
   w && z
-  \arrow["{p(\ineg j)}", from=1-1, to=3-1]
+  \arrow["{p(\ineg j)}"', from=1-1, to=3-1]
   \arrow["q(i)", from=1-1, to=1-3]
-  \arrow["r(j)"', from=1-3, to=3-3]
+  \arrow["r(j)", from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 :::
 
 Note that this element is valid *only because* we laid out the paths
-such that their common vertices are aligned. This is the side condition
-we have to fulfill when defining a system: on common edges, the faces of
+with their common vertices are aligned. This is the side condition we
+have to fulfill when defining a system: on common edges, the faces of
 the partial element *must* agree.
 
 ## Extensibility {defines="extensibility extension-type"}
@@ -1204,18 +1257,18 @@ definitionally equal as long as they are definitionally equal on their
 intersections. This might be a bit abstract, so let's diagram the case
 where we have some square $a$, and the partial element has formula $i
 \lor j$. This extension can be drawn as in the diagram below: The red
-"backwards L" shape is the partial element, which is "extended by" the
-black lines to make a complete square.
+wedge shape is the partial element, which is "extended by" the black
+lines to make a complete square.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {a_{0,0}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{0,1}} \\
-  & {a_{i,j}} \\
-  \textcolor{rgb,255:red,214;green,92;blue,92}{a_{1,0}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{1,1}}
-  \arrow[from=1-1, to=1-3]
-  \arrow[color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
-  \arrow[from=1-1, to=3-1]
-  \arrow[color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=3-3]
+  {a_{\iZ, \iZ}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{\iO, \iZ}} \\
+  & {a_{i, j}} \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{a_{\iZ, \iO}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{\iO, \iO}}
+  \arrow["{a_{i, \iZ}}", from=1-1, to=1-3]
+  \arrow["{a_{\iO, j}}", color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
+  \arrow["{a_{\iZ, j}}"', from=1-1, to=3-1]
+  \arrow["{a_{i, \iO}}"', color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -1275,9 +1328,9 @@ element we drew by gluing three paths together, and its formalisation:
   x && y \\
   \\
   w && z
-  \arrow["{p(\ineg j)}", from=1-1, to=3-1]
+  \arrow["{p(\ineg j)}"', from=1-1, to=3-1]
   \arrow["q(i)", from=1-1, to=1-3]
-  \arrow["r(j)"', from=1-3, to=3-3]
+  \arrow["r(j)", from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 :::
@@ -1323,7 +1376,7 @@ some $(n+1)$-dimensional shape. Its actual interface says that, if we
 have some shape $\phi : I$, and a partial element
 
 $$
-i : \bI \vdash e : \Partial{\ineg i \imax \phi}{A}
+i : \bI \vdash e : \Partial{(\ineg i \imax \phi)}{A}
 $$,
 
 then we can obtain an extension $\Extn{A}{\phi \mapsto e(\iO)}$. The
@@ -1419,17 +1472,25 @@ for definiteness we choose `p`. Note that we can also define a filler
 for the single composition, whose type we read as saying that $\refl
 \cdot (p \cdot q) = p \cdot q$.
 
+::: mathpar
+
+~~~{.quiver}
+\indicatortwod{i}{j}
+~~~
+
 ~~~{.quiver}
 \[\begin{tikzcd}
   x && y \\
-  \\
+  & {\bullet\text{-filler}~ p~ q}      \\
   x && z
-  \arrow["{p}", from=1-1, to=1-3]
-  \arrow["{\refl}"', from=1-1, to=3-1]
-  \arrow["{q}", from=1-3, to=3-3]
-  \arrow["{p \bullet q}"', from=3-1, to=3-3, dashed]
+  \arrow["{\refl}", from=1-1, to=1-3]
+  \arrow["{p}"', from=1-1, to=3-1]
+  \arrow["{p \bullet q}", dashed, from=1-3, to=3-3]
+  \arrow["{q}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
+
+:::
 
 ```agda
 _∙_
@@ -1487,19 +1548,111 @@ _∙₂_ : ∀ {ℓ} {A : Type ℓ} {a00 a01 a02 a10 a11 a12 : A}
 (α ∙₂ β) i j = ((λ i → α i j) ∙ (λ i → β i j)) i
 
 infixr 30 _∙P_ _∙₂_
-
--- TODO: write about this computation rule.
-
-_ : {A : I → I → Type} {x : ∀ i → A i i0} {y : ∀ i → A i i1} {p : PathP (λ i → A i0 i) (x i0) (y i0)}
-  → transport (λ i → PathP (λ j → A i j) (x i) (y i)) p ≡ λ i → hcomp (∂ i) λ where
-    j (j = i0) → transp (λ j → A j i) i0 (p i)
-    j (i = i0) → transp (λ i → A (j ∨ i) i0) j (x j)
-    j (i = i1) → transp (λ i → A (j ∨ i) i1) j (y j)
-_ = refl
 ```
 -->
 
-## Uniqueness
+## The need for hcomp
+
+At the start of this section, our goal was to explain how to compute
+`transp`{.Agda} in a line of *paths* (or `PathP`{.Agda}s). Towards this,
+we introduced the higher-dimensional composition operation,
+`hcomp`{.Agda}, and we've shown that it can be used to recover ordinary
+path composition --- but we have not explained how that connects to
+reduction of `transp`{.Agda} in path types. Let us do so now. Readers
+familiar with MLTT will know that composition of paths can be defined in
+terms of path induction, or, more clearly, `transport`{.Agda}:
+
+```agda
+_∙'_ : {x y z : A} (p : x ≡ y) (q : y ≡ z) → x ≡ z
+_∙'_ {x = x} p q = transport (λ i → x ≡ q i) p
+```
+
+Since we know that `transport`{.Agda} reduces when applied to type
+formers, the definition above is *not* neutral, even when $p$ and $q$
+are variables. But what does it reduce *to*? A natural attempt would be
+to say that, at a point $i : \bI$, the path $\transport{(\lam{i}. x \is
+q(i))}{p}$ is $t = \transport{(\lam{i}. A)}{p(i)}$ --- i.e., transport
+of paths is, pointwise, transport along the base. But this can't be the
+case, since $t$ has endpoints
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  {\transport{(\lam{i}{A})}{x}} \&\& {\transport{(\lam{i}{A})}{y}}
+	\arrow["t", from=1-1, to=1-3]
+\end{tikzcd}\]
+~~~
+
+which are *both* wrong! More saliently, this attempt makes no use of the
+path $q$ at all, so there's no way it can be right. However, the
+endpoints are *propositionally* correct. What we need is a way to
+correct the endpoints after transporting the base, using an arbitrary
+path. But this is exactly what `hcomp`{.Agda} lets us do! The *real*
+normal form of our transport is the dashed path in the diagram below,
+where we abbreviate $\transp{(\lam{i}{A})}{\phi}{x}$ as
+$\rm{tr}~{\phi}~{x}$:
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+	{\rm{tr}~\iZ~x} \&\&\&\& {\rm{tr}~\iZ~y} \\
+	\\
+	x \&\&\&\& z
+	\arrow["{{\rm{tr}~\iZ~p(i)}}", from=1-1, to=1-5]
+	\arrow["{{\rm{tr}~j~x}}"', from=1-1, to=3-1]
+	\arrow["{{\rm{tr}~j~q(j)}}", from=1-5, to=3-5]
+	\arrow["{{\transport{(\lam{i}{x \is q(i)})}{p(i)}}}"', dashed, from=3-1, to=3-5]
+\end{tikzcd}\]
+~~~
+
+We can ask Agda to verify this, by writing out the diagram as an `hcomp`{.Agda}:
+
+```agda
+_ : {x y z : A} {p : x ≡ y} {q : y ≡ z} →
+  let
+    tr : (φ : I) (a : A) → A
+    tr φ a = transp (λ i → A) φ a
+
+    the-hcomp : x ≡ z
+    the-hcomp i = hcomp (∂ i) λ where
+      j (j = i0) → tr i0 (p i)
+      j (i = i0) → tr j x
+      j (i = i1) → tr j (q j)
+  in (p ∙' q) ≡ the-hcomp
+_ = refl
+```
+
+More generally, we can demonstrate the computation rule in an arbitrary
+`PathP`{.Agda}. It's a straightforward generalisation of the
+construction above: We have a *square* of types $A(i,j)$, and lines of
+endpoints $x(i) : A(i,\iZ)$ and $y(i) : A(i, \iO)$. Writing
+
+$$
+C(j) = \PathP{(\lam{i}{A(j,i)})}{x(j)}{y(j)}\text{,}
+$$
+
+we can ask Agda to check that transporting a $p : C(\iZ)$ to something
+in $C(\iO)$ is done by computing the composition below:
+
+<!--
+```agda
+private module _ {A : I → I → Type} {x : ∀ i → A i i0} {y : ∀ i → A i i1} where private
+```
+-->
+
+```agda
+  C : I → Type
+  C j = PathP (λ i → A j i) (x j) (y j)
+
+  the-hcomp : C i0 → C i1
+  the-hcomp p i = hcomp (∂ i) λ where
+    j (j = i0) → transp (λ j → A j i) i0 (p i)
+    j (i = i0) → transp (λ i → A (j ∨ i) i0) j (x j)
+    j (i = i1) → transp (λ i → A (j ∨ i) i1) j (y j)
+
+  _ : {p : C i0} → transp C i0 p ≡ the-hcomp p
+  _ = refl
+```
+
+## Uniqueness of compositions
 
 Since we're defining composition of paths as the missing face in a
 particular square, we have to wonder: can paths have *multiple*
@@ -1631,13 +1784,60 @@ its filler), it is contractible:
 ```
 -->
 
+Finally, we note that the uniqueness results from this section let us
+prove that path composition as defined directly through `hcomp`{.Agda}
+agrees with path composition as defined through transport. The key
+observation is that the `transport-filler`{.Agda} along $\lam{i}{x \is
+q(i)}$ is *precisely* the square analogous to `∙-filler`{.Agda}:
+
+```agda
+_ : (x : A) {y z : A} (p : x ≡ y) (q : y ≡ z) → p ∙' q ≡ p ∙ q
+_ = λ x p q →
+  let
+    filler : Square refl p (p ∙' q) q
+    filler = transport-filler (λ i → x ≡ q i) p
+  in ∙-unique (p ∙' q) filler
+```
+
 ### Functoriality of ap
 
 This is a very short section: when we [introduced
-ap](#respect-for-equality), we promised that `ap`{.Agda} would also
-preserve path composition, to complete the requirement of functoriality.
-Using the uniqueness result from the previous section, we can now show
-this.
+`ap`](#paths-as-sameness), we promised to show that it also preserves
+path composition, to complete the requirements of functoriality. Using
+the uniqueness result from the previous section, this becomes mostly
+straightforward. First, we introduce the operation `ap-square`{.Agda},
+which, as the name implies, shows that every function preserves squares:
+
+```agda
+ap-square
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {a00 a01 a10 a11 : A}
+      {p : a00 ≡ a01} {q : a00 ≡ a10} {s : a01 ≡ a11} {r : a10 ≡ a11}
+  → (f : (a : A) → B a)
+  → (α : Square p q s r)
+  → SquareP (λ i j → B (α i j)) (ap f p) (ap f q) (ap f s) (ap f r)
+ap-square f α i j = f (α i j)
+```
+
+Despite the nightmare type (to allow `f` to be a dependent function),
+the definition is just as straightforward as that of `ap`{.Agda}. Using
+this with `··filler`{.Agda}, we get a square with boundary
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  fy \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{fx} \\
+  \\
+  fz \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{fw}
+  \arrow["{\ap{f}{p\inv}}", from=1-1, to=1-3]
+  \arrow["{\ap{f}{q}}"', from=1-1, to=3-1]
+  \arrow["{\ap{f}{(p \dcomp q \dcomp r)}}", color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
+  \arrow["{\ap{f}{r}}"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+but note that our lemma `··-unique'`{.Agda} says precisely that, for
+every square with this boundary, we can get a square connecting the red
+path $\ap{f}{(p \dcomp q \dcomp r)}$ and the composition $\ap{f}{p} \dcomp
+\ap{f}{q} \dcomp \ap{f}{r}$.
 
 ```agda
 ap-·· : (f : A → B) {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)

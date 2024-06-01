@@ -591,7 +591,7 @@ filler for the square above.
 ```
 
 Observe that we can coherently alter $\theta$ to get $\iota$ below,
-which expresses that $\ap g\ p_0$ and $\ap g\ p_1$ are identified.
+which expresses that $\ap{g}{p_0}$ and $\ap{g}{p_1}$ are identified.
 
 ```agda
     ι : Square (ap (g ∘ f) π) (ap g p0) (ap g p1) refl
@@ -621,11 +621,11 @@ the $j = \rm{i0}$ (top) face is `t (π i) (~ k)`, and similarly for $i =
   \arrow[""{name=2, anchor=center, inner sep=0}, "{\pi_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[""{name=3, anchor=center, inner sep=0}, "{\pi_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
   \arrow[from=4-4, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap{(g \circ f)}{\pi}}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{g\ y}"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
   \arrow[from=2-4, to=1-5]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap{g}{p_1}}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap{g}{p_0}}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[from=2-2, to=1-1]
   \arrow[from=4-2, to=5-1]
   \arrow["{\theta\ i\ (\neg\ j)}"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=1, to=0]
@@ -666,13 +666,13 @@ cubical diagram below. Once more, left is $i = \rm{i0}$, right is $i =
   & \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} \\
   \textcolor{rgb,255:red,214;green,92;blue,92}{y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{p_1}", from=1-5, to=5-5]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\ap f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\ap{f}{\pi}}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "{p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[""{name=3, anchor=center, inner sep=0}, "y"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap{(f \circ g\circ f)}{\pi}}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{f(g\ y)}", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap{f}{p_1}}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap{f}{p_0}}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[from=2-2, to=1-1]
   \arrow[from=2-4, to=1-5]
   \arrow[from=4-4, to=5-5]

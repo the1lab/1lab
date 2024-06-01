@@ -12,14 +12,16 @@
 % Define \bA..\bZ
 \definealphabet{b}{\mathbb}{A}{Z}
 
-% Notation for lambda abstractions.
+% Notation for lambda abstractions and function application. $~$
+% is the spacing that should be used between arguments.
 \newcommand{\lam}[2]{\lambda #1.\ #2}
 
 % Notation for paths, the interval, and its operations.
 \newcommand{\is}{\equiv}
-\newcommand{\PathP}[3]{\operatorname{PathP}\ {#1}\ {#2}\ {#3}}
-\newcommand{\Path}[3]{\operatorname{Path}\ {#1}\ {#2}\ {#3}}
-\newcommand{\Square}[4]{\operatorname{Square}\ {#1}\ {#2}\ {#3}\ {#4}}
+\newcommand{\PathP}[3]{\rm{PathP}~ {#1}~ {#2}~ {#3}}
+\newcommand{\Path}[3]{\rm{Path}~ {#1}~ {#2}~ {#3}}
+\newcommand{\Square}[4]{\rm{Square}~ {#1}~ {#2}~ {#3}~ {#4}}
+\newcommand{\ap}[2]{\rm{ap}~ {#1}~ {#2}}
 
 \newcommand{\iZ}{\rm{i0}}
 \newcommand{\iO}{\rm{i1}}
@@ -28,10 +30,12 @@
 \newcommand{\imin}{\land}
 \newcommand{\imax}{\lor}
 
-\newcommand{\transport}[2]{\operatorname{transport}(#1,~ #2)}
-\newcommand{\transp}[3]{\operatorname{transp}(#1,~ #2,~ #3)}
-\newcommand{\Partial}[2]{\operatorname{Partial}(#1,~ #2)}
+\newcommand{\transport}[2]{\rm{transport}~ #1~ #2}
+\newcommand{\transp}[3]{\rm{transp}~ #1~ #2~ #3}
+\newcommand{\Partial}[2]{\rm{Partial}~ #1~ #2}
+\newcommand{\dcomp}{\mathrel{\cdot\cdot}}
 \newcommand{\Extn}[2]{{#1}[#2]}
+
 \DeclareMathOperator{\inS}{inS}
 \DeclareMathOperator{\outS}{outS}
 
@@ -136,7 +140,6 @@
 
 \DeclareMathOperator{\isiso}{is-iso}
 \DeclareMathOperator{\isequiv}{is-equiv}
-\DeclareMathOperator{\ap}{ap}
 
 \DeclareMathOperator{\Spans}{Spans}
 
