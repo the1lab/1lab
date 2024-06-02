@@ -54,7 +54,7 @@ unitors $\lambda, \rho$.
       μ-unitl : μ B.∘ (η B.◀ M) ≡ B.λ← M
 ```
 
-We can draw these compatibility conditions as pretty commputative
+We can draw these compatibility conditions as pretty commutative
 diagrams. The commutative altar (on top) indicates associativity of
 multiplication, or more abstractly, compatibility of the multiplication
 with the associator. The commutative upside-down triangle indicates
