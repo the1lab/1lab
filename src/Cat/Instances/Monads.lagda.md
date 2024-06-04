@@ -50,11 +50,11 @@ module _ {C : Precategory o h} where
 -->
 
 A monad homomorphism is a natural transformation $\nu$ preserving
-the unit $\eta$ and the multiplication $\mu$. In other words, the
-following two diagrams commute, where $\blacklozenge$ is the
-[horizontal composition of natural transformations]:
+the unit $\eta$ and the multiplication $\mu$. In other words,
+the following two diagrams commute, where
+`$\blacklozenge$`{.Agda ident=_◆_} is the [horizontal composition]:
 
-[horizontal composition of natural transformations]: Cat.Functor.Compose.html
+[horizontal composition]: Cat.Functor.Compose.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}
