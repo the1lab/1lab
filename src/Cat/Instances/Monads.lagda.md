@@ -65,7 +65,7 @@ following two diagrams commute, where $\blacklozenge$ is the
   \arrow["{\nu}"', from=3-1, to=3-3]
   \arrow["{\eta_M}"', from=1-1, to=3-1]
   \arrow["{\eta_N}", from=1-3, to=3-3]
-  \arrow["{\nu\blacklozenge\nu}", from=1-5, to=1-7]
+  \arrow["{\nu\mathbin{\blacklozenge}\nu}", from=1-5, to=1-7]
   \arrow["{\nu}"', from=3-5, to=3-7]
   \arrow["{\mu_M}"', from=1-5, to=3-5]
   \arrow["{\mu_N}", from=1-7, to=3-7]
