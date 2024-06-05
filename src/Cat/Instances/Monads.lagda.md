@@ -23,7 +23,7 @@ open Functor
 ```
 -->
 
-# Categories of Monads {defines="category-of-monads"}
+# Categories of monads {defines="category-of-monads"}
 
 The **category of monads** of a category $\cC$ consists of [[monads]]
 on $\cC$ and natural transformations preserving the monadic structure.
