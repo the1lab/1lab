@@ -168,7 +168,7 @@ We have the identity and composition as expected.
       O.mult ∘nt ((ν.nat ∘nt ξ.nat) ◆ (ν.nat ∘nt ξ.nat)) ∎
 ```
 
-Putting these together, we have the 1-category of monads.
+Putting these together, we have the category of monads.
 
 ```agda
 Monads : ∀ (C : Precategory o h) → Precategory (o ⊔ h) (o ⊔ h)
