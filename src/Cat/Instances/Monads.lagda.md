@@ -179,5 +179,5 @@ Monads C .id          = monad-hom-id
 Monads C ._∘_         = monad-hom-∘
 Monads C .idr _       = ext λ _ → C .idr _
 Monads C .idl _       = ext λ _ → C .idl _
-Monads C .assoc _ _ _ = ext λ _ → C. assoc _ _ _
+Monads C .assoc _ _ _ = ext λ _ → C .assoc _ _ _
 ```
