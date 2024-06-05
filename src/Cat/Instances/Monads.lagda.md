@@ -27,13 +27,10 @@ open Functor
 
 The **category of monads** of a category $\cC$ consists of [[monads]]
 on $\cC$ and natural transformations preserving the monadic structure.
-In terms of the bicategory of
-[[monads in $\Cat$|monads in a bicategory]], a morphism in the
-1-categorical version always has the identity functor as the underlying
-1-cell. That is, the 1-category of monads on is the "2-fibre" of the
-displayed bicategory of monads in $\∁at$ over $\cC$.
-
-[monads in a bicategory]: Cat.Bi.Diagram.Monad.html
+In terms of the bicategory of [[monads in $\Cat$|monads in]],
+a morphism in the 1-categorical version always has the identity functor
+as the underlying 1-cell. That is, the 1-category of monads on is the
+"2-fibre" of the displayed bicategory of monads in $\∁at$ over $\cC$.
 
 <!--
 ```agda
@@ -54,9 +51,7 @@ module _ {C : Precategory o h} where
 A monad homomorphism is a natural transformation $\nu$ preserving
 the unit $\eta$ and the multiplication $\mu$. In other words, the
 following two diagrams commute, where $\blacklozenge$ is the
-[horizontal composition]:
-
-[horizontal composition]: Cat.Functor.Compose.html
+[horizontal composition|horizontal-composition-in-cat]:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
