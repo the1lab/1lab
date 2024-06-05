@@ -80,11 +80,11 @@ mutual compatibility of the multiplication and unit with the unitors.
   {M\mathrm{Id}} && MM && {\mathrm{Id}M} \\
   \\
   && M
-  \arrow["{M \blacktriangleleft \mu}", from=1-1, to=1-3]
+  \arrow["{M \blacktriangleright \eta}", from=1-1, to=1-3]
   \arrow["\mu", from=1-3, to=3-3]
   \arrow["\lambda"', from=1-1, to=3-3]
   \arrow["\rho", from=1-5, to=3-3]
-  \arrow["{\mu \blacktriangleright M}"', from=1-5, to=1-3]
+  \arrow["{\eta \blacktriangleleft M}"', from=1-5, to=1-3]
 \end{tikzcd}\]
 ~~~
 
