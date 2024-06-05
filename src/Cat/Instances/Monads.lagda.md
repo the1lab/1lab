@@ -27,9 +27,11 @@ open Functor
 
 The **category of monads** of a category $\cC$ consists of [[monads]]
 on $\cC$ and natural transformations preserving the monadic structure.
-In terms of the bicategory of [monads in a bicategory], a morphism
-in the 1-categorical version always has the identity functor as the
-underlying 1-cell.
+In terms of the bicategory of
+[[monads in $\Cat$|monads in a bicategory]], a morphism in the
+1-categorical version always has the identity functor as the underlying
+1-cell. That is, the 1-category of monads on is the "2-fibre" of the
+displayed bicategory of monads in $\∁at$ over $\cC$.
 
 [monads in a bicategory]: Cat.Bi.Diagram.Monad.html
 
