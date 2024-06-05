@@ -55,7 +55,7 @@ following two diagrams commute, where $\blacklozenge$ is the
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {\id} && {\id} && {MM} && {NN} \\
+  {\Id} && {\Id} && {MM} && {NN} \\
   \\
   {M} && {N} && {M} && {N}
   \arrow["{\id}", from=1-1, to=1-3]
