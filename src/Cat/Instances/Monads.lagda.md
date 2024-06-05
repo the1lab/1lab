@@ -138,8 +138,7 @@ We have the identity and composition as expected.
   monad-hom-id {M = _} .Monad-hom.pres-unit = Endo.idl _
   monad-hom-id {M = M} .Monad-hom.pres-mult =
     let module M = Monad M in
-    idnt ∘nt M.mult          ≡⟨ Endo.idl _ ⟩
-    M.mult                   ≡˘⟨ Endo.idr _ ⟩
+    idnt ∘nt M.mult          ≡⟨ Endo.id-comm-sym ⟩
     M.mult ∘nt idnt          ≡˘⟨ ap (M.mult ∘nt_) Endo-∘.F-id ⟩
     M.mult ∘nt (idnt ◆ idnt) ∎
 
