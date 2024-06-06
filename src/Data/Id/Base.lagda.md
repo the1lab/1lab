@@ -22,7 +22,7 @@ open import Data.Nat.Base
 module Data.Id.Base where
 ```
 
-# Inductive identity
+# Inductive identity {defines="inductive-identity"}
 
 In cubical type theory, we generally use the [path] types to represent
 identifications. But in cubical type theory with indexed inductive

@@ -101,8 +101,8 @@ retract→is-hlevel 1 = retract→is-prop
 ```
 
 In the inductive case, we show that a retraction *induces* retractions
-between path spaces: the map $\ap_g : x \equiv y \to g(x) \equiv y$ is a
-split surjection. The construction simply whiskers the proof $\ap_f(p) :
+between path spaces: the map $\ap{g} : x \equiv y \to g(x) \equiv y$ is a
+split surjection. The construction simply whiskers the proof $\ap{f}{p} :
 fg(x) = fg(y)$ with paths that cancel $fg$:
 
 ```agda

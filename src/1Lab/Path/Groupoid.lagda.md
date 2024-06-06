@@ -18,9 +18,7 @@ module 1Lab.Path.Groupoid where
 ```agda
 _ = Path
 _ = hfill
-_ = ap-refl
 _ = ap-∙
-_ = ap-sym
 ```
 -->
 
@@ -208,11 +206,9 @@ equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 ```
 
 In addition to the groupoid identities for paths in a type, it has been
-established that functions behave like functors: These are the lemmas
-`ap-refl`{.Agda}, `ap-∙`{.Agda} and `ap-sym`{.Agda} in the
-[1Lab.Path] module.
-
-[1Lab.Path]: 1Lab.Path.html#functorial-action
+established that functions behave like functors: Other than the lemma
+`ap-∙`{.Agda}, preservation of reflexivity and of inverses is
+definitional.
 
 ### Convenient helpers
 
