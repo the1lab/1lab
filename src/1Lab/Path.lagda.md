@@ -233,8 +233,8 @@ below.
 ~~~{.quiver}
 \begin{tikzpicture}
 
-\node (baseA1) at (2.5,   0.5)  {$A(i1)$};
-\node (baseA0) at (-2.25, -0.5)  {$A(i0)$};
+\node (baseA0) at (-2.25, -0.5) {$A(\iZ)$};
+\node (baseA1) at (2.5,   0.5)  {$A(\iO)$};
 
 % Control points for the Bézier path in the base space
 \node (C1) at (-0.75, -1.5) {};
@@ -253,7 +253,7 @@ below.
 \node (a) at (-2.25, 1.5) {$a$};
 \node (b) at (2.5,   2.5) {$b$};
 
-\draw[->] (a) -- node[below] {$p$} (b);
+\draw[->] (a) -- node[above] {$p$} (b);
 \draw[lies over] (a) -- (baseA0);
 \draw[lies over] (b) -- (baseA1);
 
