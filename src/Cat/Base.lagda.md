@@ -110,8 +110,8 @@ related, these operations _matter_, and thus must satisfy laws:
 
 The two identity laws say that the identity morphisms serve as neutral
 elements for the composition operation, both on the left and on the
-right. The "two" associativity laws (below) say that both ways of writing
-parentheses around a composition of three morphisms is equal: $(f \circ
+right. The associativity law (below) says that both ways of writing
+parentheses around a composition of three morphisms are equal: $(f \circ
 g) \circ h = f \circ (g \circ h)$.
 
 ```agda
