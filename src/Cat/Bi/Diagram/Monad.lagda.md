@@ -24,7 +24,7 @@ module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
 # Monads in a bicategory {defines="monad-in"}
 
 Recall that a [monad] _on_ a category $\cC$ consists of a functor $M :
-\cC \to \cC$ and natural transformations $\mu : MM \To M$, $\eta : \id
+\cC \to \cC$ and natural transformations $\mu : MM \To M$, $\eta : \Id
 \To M$. While the words "functor" and "natural transformation" are
 specific to the setup where $\cC$ is a category, if we replace those
 with "1-cell" and "2-cell", then the definition works in any
