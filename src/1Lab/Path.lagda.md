@@ -413,7 +413,7 @@ horizontal direction.
 :::{.definition #connection}
 We can now introduce the two operators that go into making the interval
 a de Morgan algebra: minimum, written $i \imin j$, and maximum, $i \imax
-j$. As mentioned [below](#summary-of-interval-algebra), these satisfy
+j$. As we'll see [below](#summary-of-interval-algebra), these satisfy
 the familiar rules for conjunctions and disjunctions in logic, hence the
 notation. But keep in mind that $\bI$ is not like $\{0,1\}$, but rather
 more like $[0,1]$: we do not have $(i \imin \ineg i) = \iZ$, because
@@ -434,12 +434,10 @@ In the diagrams below, we do not have the space to include the
 computation for the faces that vary along $j$, but we did include them
 for the faces varying along $i$, e.g., in the $p(i\imin j)$ square, the
 left face (varying along $j$, with $i = \iZ$) is
-
 $$
 p(\iZ\imin j) = p(\iZ) = a
 $$,
-
-while the right face in $p(i\imax j)$ is $p(\iO\imax j) = p(\iO) = b$.
+while the right face in $p(i\imax j)$ is $$p(\iO\imax j) = p(\iO) = b$$.
 
 <div class="mathpar">
 
@@ -475,9 +473,8 @@ while the right face in $p(i\imax j)$ is $p(\iO\imax j) = p(\iO) = b$.
 
 Iterated paths are used a *lot* in homotopy type theory, but in cubical
 type theory, it's best to have a type that lets us specify the boundary
-of a complete 2-dimensional *square*: this can be defined in terms of
-`PathP`{.Agda}, as we do below. A square with faces $p$, $q$, $r$, and
-$s$, as laid out in the diagram below,
+of a complete 2-dimensional *square*. Pictorially, we lay out a square
+with faces $p$, $q$, $r$, and $s$, as in the diagram below.
 
 ::: mathpar
 ~~~{.quiver}
@@ -497,12 +494,12 @@ $s$, as laid out in the diagram below,
 ~~~
 :::
 
-is read as saying that the *composites* $q \cdot r$ and $p \cdot s$ are
-identified.[^comm-to-square] In the 1Lab, we define the type
-`Square`{.Agda} so that the arguments are given in the order
-$p$-$q$-$s$-$r$, i.e. top-left-right-bottom. This choice is basically
-arbitrary, but it matters when reading out the (graphical) boundary from
-the type of a term.
+Intuitively, we may read this square as saying that the *composites* $q
+\cdot r$ and $p \cdot s$ are identified.[^comm-to-square] In the 1Lab,
+we define the type `Square`{.Agda} so that the arguments are given in
+the order $p$-$q$-$s$-$r$, i.e. top-left-right-bottom. This choice is
+basically arbitrary, but it matters when reading out the (graphical)
+boundary from the type of a term.
 
 [^comm-to-square]:
     At this point in the formalisation, we have not yet introduced the
