@@ -37,16 +37,17 @@ private
 
 # Paths and the interval
 
-One of the key observations behind HoTT is that Martin-Löf's identity
-type can be given a *homotopical* interpretation: if we interpret a type
-$A$ as a space, then for a pair of points $a, b : A$, the identity
-type $a \is b$ behaves like the space of *paths* from $a$ to $b$ in $A$.
-There is a constant path $\refl : a \is a$ at each point; every path $p
-: a \is b$ has an inverse $p\inv : b \is a$; paths $p : a \is b$ and $q
-: b \is c$ can be laid end-to-end, giving the composite $p\cdot q : a
-\is c$. Even further, these operations can be shown to satisfy algebraic
-laws, like the inverse law $p\inv \cdot p \is \refl$, but only to
-paths-between-paths: *homotopies*.
+One of the key observations behind HoTT is that [[the inductive
+*identity type*|inductive identity]] can be given a *spatial*
+interpretation: if we interpret a type $A$ as a space, then for a pair
+of points $a, b : A$, the identity type $a \is b$ behaves like the space
+of *paths* from $a$ to $b$ in $A$.  There is a constant path $\refl : a
+\is a$ at each point; every path $p : a \is b$ has an inverse $p\inv : b
+\is a$; paths $p : a \is b$ and $q : b \is c$ can be laid end-to-end,
+giving the composite $p\cdot q : a \is c$. Even further, these
+operations can be shown to satisfy algebraic laws, like the inverse law
+$p\inv \cdot p \is \refl$, but only up to paths-between-paths:
+*homotopies*.
 
 In the homotopy theory of topological spaces, paths in a space $A$ are
 defined to be continuous mappings $f : [0,1] \to A$ from the *interval*
@@ -223,13 +224,53 @@ $$
 :::
 
 Colloquially, we speak of a value $p : \PathP{A}{a}{b}$ as a path
-between $a$ and $b$ **over $A$**. The idea is that, while $a$ and $b$
-may live in different types, $A$ is an identification between them; and,
-over this identification, $a$ and $b$ are identical.
+between $a$ and $b$ **over $A$**. Formally, the idea is that, while $a$
+and $b$ may live in different types, $A$ is an identification between
+them; and, *over* this identification, $a$ and $b$ are identical. The
+generic situation for a path over a path is pictured in the diagram
+below.
 
-In reality, `PathP`{.Agda}, being the more general connective, is the
-actual *primitive*. The type $a \is b$, and its longhand
-$\Path{A}{a}{b}$, are defined in terms of `PathP`{.Agda}.
+~~~{.quiver}
+\begin{tikzpicture}
+
+\node (baseA1) at (2.5,   0.5)  {$A(i1)$};
+\node (baseA0) at (-2.25, -0.5)  {$A(i0)$};
+
+% Control points for the Bézier path in the base space
+\node (C1) at (-0.75, -1.5) {};
+\node (C2) at (0.75, 0.9)   {};
+\draw[->] (baseA0) .. controls (C1) and (C2) .. (baseA1);
+
+% Draw the base space itself (a potato, like any space, but more like a
+% smoothed out triangle)
+\draw plot[smooth cycle] coordinates
+  {(0, -1.5) (-3, -0.75) (-2.5, 0.25) (3, 1.25) (3.5, 0.25)};
+
+\node at (2.75, -1) {$\ty$};
+
+\node (A) at (0.275, -0.375) {$A$};
+
+\node (a) at (-2.25, 1.5) {$a$};
+\node (b) at (2.5,   2.5) {$b$};
+
+\draw[->] (a) -- node[below] {$p$} (b);
+\draw[lies over] (a) -- (baseA0);
+\draw[lies over] (b) -- (baseA1);
+
+\end{tikzpicture}
+~~~
+
+Above, we have a blob representing the type of types, `Type`{.Agda},
+which is on the bottom of the image. The line of types $A$ is drawn as a
+literal path between the points $A(\iZ)$ and $A(\iO)$ in this space. On
+top, we have the points $a$ and $b$, which "lie over" their respective
+types. And finally, our $p : \PathP{A}{a}{b}$ is path from $a$ to $b$
+*over* the path $A$.
+
+Even though we introduced `Path`{.Agda} first, the `PathP`{.Agda}
+connective, being more general, is the actual *primitive* provided by
+Agda. The path type $a \is b$, and its longhand $\Path{A}{a}{b}$, are
+defined in terms of `PathP`{.Agda}.
 
 ```agda
 Path : ∀ {ℓ} (A : Type ℓ) (x y : A) → Type ℓ
@@ -1453,8 +1494,8 @@ _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
 Since it will be useful later, we also give an explicit name for the
 *filler* of the double composition square. Since `Square`{.Agda}
 expresses an equation between paths, we can read the type of
-`··-filler`{.Agda} as saying that $p\inv \cdot (p ·· q ·· r) = q \cdot
-r$.
+`··-filler`{.Agda} as saying that $p\inv \cdot (p \dcomp q \dcomp r) = q
+\cdot r$.
 
 ```agda
 ··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
