@@ -49,10 +49,12 @@ private variable
 ```
 -->
 
+:::{.definition #horizontal-composition-in-cat}
 We start by defining the action of the composition functor on *morphisms*:
 given a pair of natural transformations as in the following diagram, we
 define their **horizontal composition** as a natural transformation
 $F \circ H \To G \circ K$.
+:::
 
 ~~~{.quiver}
 \[\begin{tikzcd}
