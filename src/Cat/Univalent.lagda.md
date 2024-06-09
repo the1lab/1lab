@@ -63,7 +63,7 @@ module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
 
 Furthermore, since the h-level of the relation behind an identity system
 determines the h-level of the type it applies to, we have that the space
-of objects in any univalent category is a proposition:
+of objects in any univalent category is a groupoid:
 
 ```agda
   Ob-is-groupoid : is-groupoid ⌞ C ⌟
