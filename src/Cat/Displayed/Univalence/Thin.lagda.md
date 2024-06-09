@@ -134,11 +134,6 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     Extensional-Hom ⦃ sa ⦄ = injection→extensional!
       (Structured-hom-path spec) sa
 
-    Funlike-Hom : ∀ {x y} → Funlike (So.Hom x y) ⌞ x ⌟ λ _ → ⌞ y ⌟
-    Funlike-Hom = record
-      { _#_ = Total-hom.hom
-      }
-
   Homomorphism-monic
     : ∀ {x y : So.Ob} (f : So.Hom x y)
     → (∀ {x y} (p : f # x ≡ f # y) → x ≡ y)
