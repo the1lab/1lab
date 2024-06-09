@@ -36,7 +36,7 @@ morphisms.* More precisely, suppose that we have a category $\cC$ and a
 exists, should satisfy the following universal property:
 
 - There is a functor $\cL : \cC \to \cC\loc{W}$ which *inverts every
-  morphsim in $W$*, in the sense that, if $f \in W$, then $\cL f$ is an
+  morphism in $W$*, in the sense that, if $f \in W$, then $\cL f$ is an
   isomorphism in $\cC$; and
 
 - If we're given a category $\cD$, and a functor $F : \cC \to \cD$ which
