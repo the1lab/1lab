@@ -8,6 +8,7 @@ open import Data.Id.Base
 open import Data.Bool
 open import Data.Sum
 
+open import Order.Instances.LexicalSum
 open import Order.Instances.Coproduct renaming (matchᵖ to match⊎ᵖ)
 open import Order.Instances.Discrete
 open import Order.Displayed
@@ -34,8 +35,6 @@ then we can equip the $\Sigma$-type $\Sigma_{(i : I)} F_i$ with a
 "fibrewise" partial order: this is the [[coproduct]] of these orders in
 the category of posets.
 
-[partially ordered sets]: Order.Base.html
-
 <!--
 ```agda
 private module D = Displayed
@@ -49,60 +48,18 @@ module _ {ℓ ℓₐ ℓᵣ} (I : Set ℓ) (F : ⌞ I ⌟ → Poset ℓₐ ℓ�
 ```
 -->
 
-Since the indices $i, j : I$ are drawn from completely arbitrary sets,
-we can't exactly define the order by pattern matching, as in the
-[[binary coproduct of posets]]. Instead, we must define what it means to
-compare two totally arbitrary pairs $(i, x) \le (j, y)$^[where $x : F_x$
-and $y : F_j$].
-
-Considering that we only know how to compare elements in the same fibre,
-the natural solution is to require, as part of proving $(i, x) \le (j,
-y)$, some evidence $p : i = j$. We can then transport $x$ across $p$ to
-obtain a value in $F_j$, which can be compared against $y : F_j$.
-
-The concerns of defining the ordering in each fibre, and then defining
-the ordering on the entire total space, are mostly orthogonal. Indeed,
-these can be handled in a modular way: the construction we're interested
-in naturally arises as the [[total (thin) category|total category]] of a
-particular [[displayed order]] --- over the [[discrete partial order]]
-on the index set $I$.
-
-```agda
-  _≤[_]'_ : {i j : ⌞ I ⌟} → ⌞F⌟ i → i ≡ᵢ j → ⌞F⌟ j → Type ℓᵣ
-  x ≤[ p ]' y = substᵢ ⌞F⌟ p x ≤ y
-
-  substᵖ : ∀ {i j} → i ≡ᵢ j → Monotone (F i) (F j)
-  substᵖ reflᵢ .hom    x   = x
-  substᵖ reflᵢ .pres-≤ x≤y = x≤y
-
-  Disjoint-over : Displayed _ _ (Discᵢ I)
-  Disjoint-over .D.Ob[_]        = ⌞F⌟
-  Disjoint-over .D.Rel[_] p x y = x ≤[ p ]' y
-  Disjoint-over .D.≤-thin' _  = hlevel 1
-  Disjoint-over .D.≤-refl'    = F.≤-refl
-  Disjoint-over .D.≤-antisym' = F.≤-antisym
-  Disjoint-over .D.≤-trans' {f = reflᵢ} {g = reflᵢ} =
-    F.≤-trans
-```
-
-To differentiate from the binary coproducts, we refer to the indexed
-coproduct of a family as **disjoint** coproducts, or `Disjoint`{.Agda}
-for short.
+The indexed coproduct is a special case of the [[lexicographic
+sum|lexicographic sum of posets]] where the base poset is [[discrete|
+discrete-partial-order]]. It means that there is no non-trivial
+relationship across fibres.
 
 ```agda
   Disjoint : Poset _ _
-  Disjoint = ∫ Disjoint-over
+  Disjoint = Lexical-sum (Discᵢ I) F
 ```
 
 <!--
 ```agda
-_≤[_]_
-  : ∀ {ℓ ℓₐ ℓᵣ} {I : Set ℓ} {F : ⌞ I ⌟ → Poset ℓₐ ℓᵣ} {i j : ⌞ I ⌟}
-  → ⌞ F i ⌟ → i ≡ᵢ j → ⌞ F j ⌟
-  → Type ℓᵣ
-_≤[_]_ {I = I} {F = F} x p y = _≤[_]'_ I F x p y
-{-# DISPLAY _≤[_]'_ I F x p y = x ≤[ p ] y #-}
-
 module _ {ℓ ℓₐ ℓᵣ} {I : Set ℓ} {F : ⌞ I ⌟ → Poset ℓₐ ℓᵣ} where
   private
     open module F {i : ⌞ I ⌟} = Pr (F i)
@@ -115,7 +72,8 @@ module _ {ℓ ℓₐ ℓᵣ} {I : Set ℓ} {F : ⌞ I ⌟ → Poset ℓₐ ℓ�
 ```agda
   injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Disjoint I F)
   injᵖ i .hom    x   = i , x
-  injᵖ i .pres-≤ x≤y = reflᵢ , x≤y
+  injᵖ i .pres-≤ x≤y = reflᵢ , λ p →
+    subst (_≤ _) (substᵢ-filler-set ⌞F⌟ (hlevel 2) p _) x≤y
 ```
 
 The name `Disjoint`{.Agda} is justified by the observation that each of
@@ -125,10 +83,7 @@ identifies each factor $F_i$ with its image in $\Sigma F$.
 ```agda
   injᵖ-is-order-embedding
     : ∀ i → is-order-embedding (F i) (Disjoint I F) (apply (injᵖ i))
-  injᵖ-is-order-embedding i .fst = injᵖ i .pres-≤
-  injᵖ-is-order-embedding i .snd = biimp-is-equiv!
-    (injᵖ i .pres-≤)
-    λ { (p , q) → ≤-trans (≤-refl' (substᵢ-filler-set _ (hlevel 2) p _)) q }
+  injᵖ-is-order-embedding i = prop-ext! (injᵖ i .pres-≤) λ { (_ , q) → q reflᵢ }
 ```
 
 To complete the construction of the coproduct, we have the following
@@ -141,7 +96,7 @@ function for mapping _out_, by cases:
     → Monotone (Disjoint I F) R
   matchᵖ cases .hom    (i , x)       = cases i # x
   matchᵖ cases .pres-≤ (reflᵢ , x≤y) =
-    cases _ .pres-≤ x≤y
+    cases _ .pres-≤ (x≤y reflᵢ)
 ```
 
 Straightforward calculations finish the proof that $\Pos$ has all
