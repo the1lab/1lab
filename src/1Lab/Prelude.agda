@@ -13,6 +13,7 @@ open import 1Lab.Path.Groupoid public
 open import 1Lab.Path.IdentitySystem public
 open import 1Lab.Path.IdentitySystem.Interface public
 
+open import Meta.Brackets public
 open import Meta.Append public
 open import Meta.Idiom public
 open import Meta.Bind public

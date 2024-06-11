@@ -16,11 +16,12 @@ module 1Lab.Membership where
 -- propositions, either. In practice, both of these conditions are
 -- satisfied.
 
-record Membership {ℓ ℓe} (A : Type ℓe) (ℙA : Type ℓ) ℓm : Type (ℓ ⊔ lsuc (ℓe ⊔ ℓm)) where
+record Membership {ℓ ℓe} (A : Type ℓe) (ℙA : Type ℓ) ℓm : Type (ℓ ⊔ ℓe ⊔ lsuc ℓm) where
   field _∈_ : A → ℙA → Type ℓm
   infix 30 _∈_
 
 open Membership ⦃ ... ⦄ using (_∈_) public
+{-# DISPLAY Membership._∈_ i a b = a ∈ b #-}
 
 -- The prototypical instance is given by functions into a universe:
 
@@ -38,17 +39,37 @@ _∉_ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {ℙA : Type ℓ'} ⦃ m : Membershi
     → A → ℙA → Type ℓ''
 x ∉ y = ¬ (x ∈ y)
 
--- Inclusion relative to the _∈_ projection.
-
-_⊆_ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {ℙA : Type ℓ'} ⦃ m : Membership A ℙA ℓ'' ⦄
-    → ℙA → ℙA → Type (ℓ ⊔ ℓ'')
-_⊆_ {A = A} S T = (a : A) → a ∈ S → a ∈ T
+infix 30 _∉_
 
 -- Total space of a predicate.
-
 ∫ₚ
   : ∀ {ℓ ℓ' ℓ''} {X : Type ℓ} {ℙX : Type ℓ'} ⦃ m : Membership X ℙX ℓ'' ⦄
   → ℙX → Type _
 ∫ₚ {X = X} P = Σ[ x ∈ X ] (x ∈ P)
 
-infix 30 _∉_ _⊆_
+-- Notation typeclass for _⊆_. We could always define
+--
+--   S ⊆ T = ∀ x → x ∈ S → x ∈ T
+--
+-- but this doesn't work too well for collections where the element type
+-- is more polymorphic than the collection type, e.g. sieves, where we
+-- would instead like
+--
+--  S ⊆ T = ∀ {i} (x : F i) → x ∈ S → x ∈ T
+--
+-- Instead we can define _⊆_ as its own class, then write a default
+-- instance in terms of _∈_.
+
+record Inclusion {ℓ} (ℙA : Type ℓ) ℓi : Type (ℓ ⊔ lsuc (ℓi)) where
+  field _⊆_ : ℙA → ℙA → Type ℓi
+  infix 30 _⊆_
+
+open Inclusion ⦃ ... ⦄ using (_⊆_) public
+{-# DISPLAY Inclusion._⊆_ i a b = a ⊆ b #-}
+
+instance
+  Inclusion-default
+    : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {ℙA : Type ℓ'} ⦃ m : Membership A ℙA ℓ'' ⦄
+    → Inclusion ℙA (ℓ ⊔ ℓ'')
+  Inclusion-default {A = A} = record { _⊆_ = λ S T → (a : A) → a ∈ S → a ∈ T }
+  {-# INCOHERENT Inclusion-default #-}

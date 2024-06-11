@@ -269,8 +269,7 @@ sieve belongs to the saturation in at most one way.
   abstract
     incl
       : ∀ {J : Coverage C ℓs} {U} {R S : Sieve C U}
-      → (∀ {V} (f : Hom V U) → f ∈ S → f ∈ R)
-      → J ∋ S → J ∋ R
+      → S ⊆ R → J ∋ S → J ∋ R
     incl {J = J} {S = S} sr us = local us λ f hf → subst (J ∋_) refl $
       max $ sr (f ∘ id) (S .closed hf id)
 

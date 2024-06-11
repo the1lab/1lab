@@ -261,7 +261,7 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
 
   subset→patch
     : ∀ {U} {S S' : Sieve C U}
-    → (∀ {V} (f : Hom V U) → f ∈ S' → f ∈ S)
+    → S' ⊆ S
     → Patch A S
     → Patch A S'
   subset→patch incl p .part f hf = p .part f (incl f hf)
@@ -429,7 +429,7 @@ stating it in terms of sieves does simplify the formalisation:
 ```agda
     stable
       : ∀ {U V : ⌞ C ⌟} (R : covers U) (f : Hom V U)
-      → ∃[ S ∈ covers V ] (∀ {W} (g : Hom W V) → g ∈ cover S → f ∘ g ∈ cover R)
+      → ∃[ S ∈ covers V ] (cover S ⊆ pullback f (cover R))
 ```
 
 Thinking back to the case of $\cC = \Omega(L)$, we can equip any frame

@@ -137,6 +137,10 @@ a[href].hover-highlight {
   }
 }
 
+h1 + .Agda, h2 + .Agda, h3 + .Agda, h4 + .Agda, h5 + .Agda, h6 + .Agda {
+  margin-block-start: 1em;
+}
+
 // Styles for code
 code.kw, span.kw { color: theme(--code-keyword); } /* Keyword */
 code.dt, span.dt { color: theme(--primary); } /* DataType */
