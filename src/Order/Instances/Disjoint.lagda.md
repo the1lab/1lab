@@ -125,8 +125,7 @@ identifies each factor $F_i$ with its image in $\Sigma F$.
 ```agda
   injᵖ-is-order-embedding
     : ∀ i → is-order-embedding (F i) (Disjoint I F) (apply (injᵖ i))
-  injᵖ-is-order-embedding i .fst = injᵖ i .pres-≤
-  injᵖ-is-order-embedding i .snd = biimp-is-equiv!
+  injᵖ-is-order-embedding i = prop-ext!
     (injᵖ i .pres-≤)
     λ { (p , q) → ≤-trans (≤-refl' (substᵢ-filler-set _ (hlevel 2) p _)) q }
 ```
