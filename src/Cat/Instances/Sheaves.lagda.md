@@ -147,8 +147,8 @@ The terminal object in sheaves is even easier to define:
   Sh[]-terminal .top .fst = PSh-terminal {C = C} .top
   Sh[]-terminal .has⊤ (S , _) = PSh-terminal {C = C} .has⊤ S
 
-  Sh[]-terminal .top .snd .part _ _      = lift tt
-  Sh[]-terminal .top .snd .patch _ _ _ _ = refl
+  Sh[]-terminal .top .snd .whole _ _     = lift tt
+  Sh[]-terminal .top .snd .glues _ _ _ _ = refl
   Sh[]-terminal .top .snd .separate _ _  = refl
 ```
 

@@ -166,9 +166,9 @@ colim sieve.
 
 ```agda
   uniq : is-contr (Section _ p)
-  uniq .centre  = record { patch = πβ }
+  uniq .centre  = record { glues = πβ }
   uniq .paths x = ext $
-    x.σ-uniq {σ' = const-nt _} (ext λ i → sym (x .patch _ _)) ηₚ tt
+    x.σ-uniq {σ' = const-nt _} (ext λ i → sym (x .glues _ _)) ηₚ tt
 ```
 
 Generalising the proof above, we conclude that *any* representable
@@ -249,7 +249,7 @@ W$. But note that $\eps(-)$ is precisely the data of a [[patch]] for
 $\cC(-, W)$ under $f^*(S)$!
 
 ```agda
-  mk .universal {W} ε comm = [_] .centre .part module univ where
+  mk .universal {W} ε comm = [_] .centre .whole module univ where
     ε' : Patch (よ₀ C W) (pullback f (J .cover S))
     ε' .part  g hg       = ε (elem _ (_ , hg))
     ε' .patch g hg h hhg = comm (elem-hom h (Σ-prop-path! refl))
@@ -266,7 +266,7 @@ W \to V$ belonging to $f^*(S)$, we have $[\eps] \circ g = \eps(g)$.
     [_] : is-contr (Section (Hom-into C W) ε')
     [_] = is-sheaf-pullback shf S f ε'
 
-  mk .factors {elem W (g , hg)} ε p = univ.[ ε ] p .centre .patch _ _
+  mk .factors {elem W (g , hg)} ε p = univ.[ ε ] p .centre .glues _ _
 ```
 
 Finally, for $V$ to be a colimit, we must show uniqueness of the map
@@ -279,6 +279,6 @@ must be equal to the $[\eps]$ we obtained from *the* section for
 $\eps$.
 
 ```agda
-  mk .unique ε p σ q = sym $ ap part $ univ.[ ε ] p .paths
-    record { patch = λ f hf → q (elem _ (f , hf)) }
+  mk .unique ε p σ q = sym $ ap whole $ univ.[ ε ] p .paths
+    record { glues = λ f hf → q (elem _ (f , hf)) }
 ```

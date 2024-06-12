@@ -2,7 +2,7 @@
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Sieve
-open import Cat.Site.Base
+open import Cat.Site.Base hiding (glues)
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as Psh
@@ -142,8 +142,8 @@ By distributing the data above, we see that $A^+$ is indeed a functor
 
   Sheafify-is-sheaf : is-sheaf J Sheafify
   Sheafify-is-sheaf = from-is-separated Sheafify-is-sep λ c s → record
-    { part  = glue c (s .part) (s .patch)
-    ; patch = glues c (s .part) (s .patch)
+    { whole = glue c (s .part) (s .patch)
+    ; glues = glues c (s .part) (s .patch)
     }
 ```
 
@@ -348,7 +348,7 @@ the path constructors are all handled by the corresponding laws in $B$.
     go U (inc x)   = eta .η U x
     go U (map f x) = G ⟪ f ⟫ (go _ x)
     go U (glue c p g) =
-      shf .part c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) }
+      shf .whole c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) }
 ```
 
 <details>
@@ -361,7 +361,7 @@ naturality of $\eta'$ is a definitional equality.</summary>
     go U (map-∘ {g = g} {f = f} x i) = G.F-∘ f g {x = go _ x} i
     go U (inc-natural {f = f} x i) = eta .is-natural _ U f i x
     go U (sep {x = x} {y = y} c l i) = shf .separate c {go _ x} {go _ y} (λ f hf i → go _ (l f hf i)) i
-    go U (glues c p g f hf i) = shf .patch c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) } f hf i
+    go U (glues c p g f hf i) = shf .is-sheaf.glues c record { patch = λ f hf h hhf i → go _ (g f hf h hhf i) } f hf i
     go U (squash x y p q i j) = G.₀ U .is-tr (go U x) (go U y) (λ i → go U (p i)) (λ i → go U (q i)) i j
 
     nt : Sheafify A => G

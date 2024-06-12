@@ -223,8 +223,8 @@ elements-which-are-sections, so they also get a record type.
   record Section {U} {T : Sieve C U} (p : Patch T) : Type (o ⊔ ℓ ⊔ ℓs) where
     no-eta-equality
     field
-      {part} : A ʻ U
-      patch  : is-section part p
+      {whole} : A ʻ U
+      glues   : is-section whole p
 ```
 
 <!--
@@ -251,12 +251,12 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
     Extensional-Section
       : ∀ {U ℓr} {S : Sieve C U} {p : Patch A S} ⦃ _ : Extensional (A ʻ U) ℓr ⦄
       → Extensional (Section A p) ℓr
-    Extensional-Section ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .part) (y .part)
-    Extensional-Section ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .part)
-    Extensional-Section ⦃ e ⦄ .idsᵉ .to-path p i .part = e .idsᵉ .to-path p i
-    Extensional-Section {p = p} ⦃ e ⦄ .idsᵉ .to-path {a} {b} q i .patch {V} f hf =
+    Extensional-Section ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .whole) (y .whole)
+    Extensional-Section ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .whole)
+    Extensional-Section ⦃ e ⦄ .idsᵉ .to-path p i .whole = e .idsᵉ .to-path p i
+    Extensional-Section {p = p} ⦃ e ⦄ .idsᵉ .to-path {a} {b} q i .glues {V} f hf =
       is-prop→pathp (λ i → A.₀ V .is-tr (A.₁ f (e .idsᵉ .to-path q i)) (p .part f hf))
-        (a .patch f hf) (b .patch f hf) i
+        (a .glues f hf) (b .glues f hf) i
     Extensional-Section ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (hlevel 2)) _ _
 
   subset→patch
@@ -296,8 +296,8 @@ functorially.
   section→section
     : ∀ {U} {T : Sieve C U} (u : A ʻ U)
     → Section A {T = T} (section→patch u)
-  section→section u .part       = u
-  section→section u .patch f hf = refl
+  section→section u .whole      = u
+  section→section u .glues f hf = refl
 ```
 
 ## The notion of sheaf {defines="sheaf sheaves"}
@@ -349,15 +349,15 @@ using the above mapping from elements to sections. The assumption of
 
 ```agda
   is-sheaf₁→is-separated₁ : ∀ {U} (T : Sieve C U) → is-sheaf₁ T → is-separated₁ T
-  is-sheaf₁→is-separated₁ T sheaf {x} {y} lp = ap part $
+  is-sheaf₁→is-separated₁ T sheaf {x} {y} lp = ap whole $
     let
       sec₁ : Section A (section→patch x)
       sec₁ = section→section x
 
       sec₂ : Section A (section→patch x)
       sec₂ = record
-        { part  = y
-        ; patch = λ f hf →
+        { whole = y
+        ; glues = λ f hf →
           A ⟪ f ⟫ y ≡˘⟨ lp f hf ⟩
           A ⟪ f ⟫ x ∎
         }
@@ -373,7 +373,7 @@ using the above mapping from elements to sections. The assumption of
     → is-contr (Section A p)
   from-is-separated₁ sep sec .centre = sec
   from-is-separated₁ sep sec .paths x = ext $ sep λ f hf →
-    sec .patch f hf ∙ sym (x .patch f hf)
+    sec .glues f hf ∙ sym (x .glues f hf)
 
   -- This is equal to `subst (is-sheaf₁ A)` but has better definitional
   -- behaviour for the relevant part.
@@ -386,9 +386,9 @@ using the above mapping from elements to sections. The assumption of
     sec = shf pa'
 
     done : is-contr (Section A pa)
-    done .centre .part = sec .centre .part
-    done .centre .patch f hf = sec .centre .patch f (subst (f ∈_) (sym p) hf) ∙ app pa refl
-    done .paths x = ext (ap part (sec .paths record { patch = λ f hf → x .patch f (subst (f ∈_) p hf) ∙ app pa refl }))
+    done .centre .whole = sec .centre .whole
+    done .centre .glues f hf = sec .centre .glues f (subst (f ∈_) (sym p) hf) ∙ app pa refl
+    done .paths x = ext (ap whole (sec .paths record { glues = λ f hf → x .glues f (subst (f ∈_) p hf) ∙ app pa refl }))
 ```
 -->
 
@@ -470,8 +470,8 @@ for sheaves, formalisation concerns lead us to instead define an
   record is-sheaf : Type (o ⊔ ℓ ⊔ ℓs ⊔ ℓc) where
     no-eta-equality
     field
-      part     : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → A ʻ U
-      patch    : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-section A (part S p) p
+      whole   : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → A ʻ U
+      glues   : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-section A (whole S p) p
       separate : is-separated
 ```
 
@@ -481,10 +481,10 @@ the first two fields as saying that each patch has a section:
 
 ```agda
     split : ∀ {U} {S : J .covers U} (p : Patch A (J .cover S)) → Section A p
-    split p .Section.part  = part _ p
-    split p .Section.patch = patch _ p
+    split p .Section.whole = whole _ p
+    split p .Section.glues = glues _ p
 
-  open is-sheaf using (part ; patch ; separate) public
+  open is-sheaf using (whole ; glues ; separate) public
 ```
 
 Note that, if a functor satisfies the sheaf condition for all
@@ -498,15 +498,15 @@ module _ {o ℓ ℓc ℓs} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Fu
     : is-separated J A
     → (∀ {U} (c : J .covers U) (s : Patch A (J .cover c)) → Section A s)
     → is-sheaf J A
-  from-is-separated sep split .part S p   = split S p .Section.part
-  from-is-separated sep split .patch S p  = split S p .Section.patch
+  from-is-separated sep split .whole S p  = split S p .Section.whole
+  from-is-separated sep split .glues S p  = split S p .Section.glues
   from-is-separated sep split .separate S = sep S
 
   from-is-sheaf₁
     : (∀ {U} (c : J .covers U) → is-sheaf₁ A (J .cover c))
     → is-sheaf J A
-  from-is-sheaf₁ shf .part S p = shf _ p .centre .Section.part
-  from-is-sheaf₁ shf .patch S p = shf _ p .centre .Section.patch
+  from-is-sheaf₁ shf .whole S p = shf _ p .centre .Section.whole
+  from-is-sheaf₁ shf .glues S p = shf _ p .centre .Section.glues
   from-is-sheaf₁ shf .separate S = is-sheaf₁→is-separated₁ _ _ (shf _)
 
   to-is-sheaf₁ : is-sheaf J A → ∀ {U} (c : J .covers U) → is-sheaf₁ A (J .cover c)
@@ -528,8 +528,8 @@ module _ {o ℓ ℓc ℓp} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Fu
       T = ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-contr (Section A p)
 
       from : T → is-sheaf J A
-      from x .part  S p  = x S p .centre .part
-      from x .patch S p  = x S p .centre .patch
+      from x .whole S p  = x S p .centre .whole
+      from x .glues S p  = x S p .centre .glues
       from x .separate S = is-sheaf₁→is-separated₁ A _ (x S)
 
       to : is-sheaf J A → T

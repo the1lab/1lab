@@ -236,6 +236,10 @@ write `⟦ cov ⟧` instead of `cover→sieve cov`.
 
 <!--
 ```agda
+  map→sieve : ∀ {V U} → C.Hom V U → Sieve C U
+  map→sieve f .arrows g = elΩ (Σ[ h ∈ C.Hom _ _ ] (f C.∘ h ≡ g))
+  map→sieve f .closed = rec! λ g p h → inc (g C.∘ h , C.pulll p)
+
   instance
     ⟦⟧-Cover : ∀ {ℓ' U} → ⟦⟧-notation (Cover C U ℓ')
     ⟦⟧-Cover = brackets _ cover→sieve

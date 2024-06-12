@@ -7,7 +7,7 @@ open import Cat.Site.Constructions
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Sieve
 open import Cat.Functor.Hom
-open import Cat.Site.Base hiding (part ; patch ; separate)
+open import Cat.Site.Base hiding (whole ; glues ; separate)
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as Psh
@@ -48,15 +48,15 @@ $A$ is a sheaf for $S$:
 
 ```agda
   is-sheaf-maximal : ∀ {U} {S : Sieve C U} → id ∈ S → is-sheaf₁ A S
-  is-sheaf-maximal {S = S} id∈S p .centre .part = p .part id id∈S
-  is-sheaf-maximal {S = S} id∈S p .centre .patch f hf =
+  is-sheaf-maximal {S = S} id∈S p .centre .whole = p .part id id∈S
+  is-sheaf-maximal {S = S} id∈S p .centre .glues f hf =
     A ⟪ f ⟫ p .part id id∈S ≡⟨ p .patch id id∈S f (subst (_∈ S) (sym (idl f)) hf) ⟩
     p .part (id ∘ f) _      ≡⟨ app p (idl f) ⟩
     p .part f hf            ∎
   is-sheaf-maximal {S = S} id∈S p .paths x = ext $
-    p .part id id∈S  ≡˘⟨ x .patch id id∈S ⟩
-    A ⟪ id ⟫ x .part ≡⟨ A.F-id ⟩
-    x .part          ∎
+    p .part id id∈S   ≡˘⟨ x .glues id id∈S ⟩
+    A ⟪ id ⟫ x .whole ≡⟨ A.F-id ⟩
+    x .whole          ∎
 ```
 
 Since sieves are closed under composition, this can be extended to any
@@ -106,12 +106,12 @@ give a patch on $R$.
     p' f = pullback-patch f p
 
     p'' : Patch A R
-    p'' .part f hf = S*sheaf f hf (p' f) .centre .part
+    p'' .part f hf = S*sheaf f hf (p' f) .centre .whole
     p'' .patch f hf g hgf = ext $ is-sheaf₁→is-separated₁ A _ (S*sheaf (f ∘ g) hgf) λ h hh →
       A ⟪ h ⟫ (A ⟪ g ⟫ (p'' .part f hf))  ≡⟨ A.collapse refl ⟩
-      A ⟪ g ∘ h ⟫ (p'' .part f hf)        ≡⟨ S*sheaf f hf (p' f) .centre .patch (g ∘ h) (subst (_∈ S) (sym (assoc f g h)) hh) ⟩
+      A ⟪ g ∘ h ⟫ (p'' .part f hf)        ≡⟨ S*sheaf f hf (p' f) .centre .glues (g ∘ h) (subst (_∈ S) (sym (assoc f g h)) hh) ⟩
       p .part (f ∘ g ∘ h) _               ≡⟨ app p (assoc _ _ _) ⟩
-      p .part ((f ∘ g) ∘ h) _             ≡˘⟨ S*sheaf (f ∘ g) hgf (p' (f ∘ g)) .centre .patch h hh ⟩
+      p .part ((f ∘ g) ∘ h) _             ≡˘⟨ S*sheaf (f ∘ g) hgf (p' (f ∘ g)) .centre .glues h hh ⟩
       A.₁ h (p'' .part (f ∘ g) hgf)       ∎
 
     s : Section A p''
@@ -130,17 +130,17 @@ we can appeal to separatedness *again*, this time at $(fg)^*(S)$.  This
 
 ```agda
     q : is-contr (Section A p)
-    q .centre .part = s .part
-    q .centre .patch f hf = R*sep f hf λ g hg → is-sheaf₁→is-separated₁ A _ (S*sheaf (f ∘ g) hg) λ h hh →
-      A ⟪ h ⟫ (A ⟪ g ⟫ (A ⟪ f ⟫ s .part)) ≡⟨ A.ap (A.collapse refl ∙ Rsheaf p'' .centre .patch (f ∘ g) hg) ⟩
-      A ⟪ h ⟫ p'' .part (f ∘ g) hg        ≡⟨ S*sheaf (f ∘ g) hg (p' (f ∘ g)) .centre .patch h hh ⟩
+    q .centre .whole = s .whole
+    q .centre .glues f hf = R*sep f hf λ g hg → is-sheaf₁→is-separated₁ A _ (S*sheaf (f ∘ g) hg) λ h hh →
+      A ⟪ h ⟫ (A ⟪ g ⟫ (A ⟪ f ⟫ s .whole)) ≡⟨ A.ap (A.collapse refl ∙ Rsheaf p'' .centre .glues (f ∘ g) hg) ⟩
+      A ⟪ h ⟫ p'' .part (f ∘ g) hg        ≡⟨ S*sheaf (f ∘ g) hg (p' (f ∘ g)) .centre .glues h hh ⟩
       p .part ((f ∘ g) ∘ h) hh            ≡˘⟨ app p (assoc f g h) ⟩
       p .part (f ∘ g ∘ h) _               ≡˘⟨ p .patch f hf (g ∘ h) (subst (_∈ S) (sym (assoc f g h)) hh) ⟩
       A ⟪ g ∘ h ⟫ (p .part f hf)          ≡⟨ A.expand refl ⟩
       A ⟪ h ⟫ (A ⟪ g ⟫ p .part f hf)      ∎
-    q .paths x = ext $ ap part $ Rsheaf p'' .paths
-      record { patch = λ f hf → sym $ ap part (S*sheaf f hf (p' f) .paths
-        record { patch = λ g hg → A.collapse refl ∙ x .patch (f ∘ g) hg }) }
+    q .paths x = ext $ ap whole $ Rsheaf p'' .paths
+      record { glues = λ f hf → sym $ ap whole (S*sheaf f hf (p' f) .paths
+        record { glues = λ g hg → A.collapse refl ∙ x .glues (f ∘ g) hg }) }
 ```
 
 <!--
@@ -185,7 +185,7 @@ characterised for $f \in R$!
 
 ```agda
     sec : Section A ps
-    sec .part = sec' .part
+    sec .whole = sec' .whole
 ```
 
 However, by passing to the pullback sieve $f^*(R)$, we're allowed to
@@ -193,20 +193,20 @@ show this assuming that we have some $g : W \to V$, with $fg \in R$. The
 calculation goes through without problems:
 
 ```agda
-    sec .patch f hf = ∥-∥-out! do
+    sec .glues f hf = ∥-∥-out! do
       (c' , sub) ← J .stable c f
       pure $ shf.separate c' λ g hg →
-        A ⟪ g ⟫ (A ⟪ f ⟫ sec' .part) ≡⟨ A.collapse refl ⟩
-        A ⟪ f ∘ g ⟫ sec' .part       ≡⟨ sec' .patch (f ∘ g) (sub _ hg) ⟩
+        A ⟪ g ⟫ (A ⟪ f ⟫ sec' .whole) ≡⟨ A.collapse refl ⟩
+        A ⟪ f ∘ g ⟫ sec' .whole       ≡⟨ sec' .glues (f ∘ g) (sub _ hg) ⟩
         ps .part (f ∘ g) _           ≡˘⟨ ps .patch f hf g (c⊆s (f ∘ g) (sub g hg)) ⟩
         A ⟪ g ⟫ ps .part f hf        ∎
 
     done : is-contr (Section A ps)
     done .centre = sec
     done .paths x = ext $ shf.separate c λ f hf →
-      A ⟪ f ⟫ sec' .part ≡⟨ sec' .patch f hf ⟩
-      ps .part f _       ≡˘⟨ x .patch f (c⊆s f hf) ⟩
-      A ⟪ f ⟫ x .part    ∎
+      A ⟪ f ⟫ sec' .whole ≡⟨ sec' .glues f hf ⟩
+      ps .part f _        ≡˘⟨ x .glues f (c⊆s f hf) ⟩
+      A ⟪ f ⟫ x .whole    ∎
 ```
 
 As a specialisation of the lemma above, we can show that $A$ is a sheaf
@@ -345,18 +345,18 @@ Showing that a $\widehat{J}$-sheaf is also a $J$-sheaf is immediate.
 module sat {o ℓ ℓs ℓc} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Functor (C ^op) (Sets ℓs)} (shf : is-sheaf J A) where
   private module shf = is-sheaf (is-sheaf-saturation.to shf)
 
-  part : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → A ʻ U
-  part w = shf.part (_ , w)
+  whole : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → A ʻ U
+  whole w = shf.whole (_ , w)
 
   abstract
-    patch : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → is-section A (part w p) p
-    patch w = shf.patch (_ , w)
+    glues : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → is-section A (whole w p) p
+    glues w = shf.glues (_ , w)
 
     separate : ∀ {U} {S : Sieve C U} (w : J ∋ S) → is-separated₁ A S
     separate w = shf.separate (_ , w)
 
   split : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → Section A p
-  split w p .Section.part = part w p
-  split w p .Section.patch = patch w p
+  split w p .Section.whole = whole w p
+  split w p .Section.glues = glues w p
 ```
 -->

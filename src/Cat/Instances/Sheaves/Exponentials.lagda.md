@@ -54,21 +54,21 @@ is-sheaf-exponential {C = C} J A B bshf = from-is-sheaf₁ λ c → done where
       p .part (f ∘ g ∘ h) _ .η _ (id , A ⟪ g ∘ h ⟫ e)          ∎
 
     s' : Section (PSh[_,_] {C = C} A B) p
-    s' .part .η x (f , e) = it .part module s' where
+    s' .whole .η x (f , e) = it .whole module s' where
       it : Section B (p' e f)
       it = bshf.split (pull f (inc c)) (p' e f)
 
-    s' .part .is-natural x y f = ext λ g e → bshf.separate (pull (g ∘ f) (inc c)) λ h hh →
+    s' .whole .is-natural x y f = ext λ g e → bshf.separate (pull (g ∘ f) (inc c)) λ h hh →
       let clo = subst (_∈ J .cover c) (sym (assoc _ _ _)) hh in
-      B ⟪ h ⟫ (s'.it y (g ∘ f) (A ⟪ f ⟫ e) .part)             ≡⟨ s'.it y (g ∘ f) (A ⟪ f ⟫ e) .patch _ hh ⟩
+      B ⟪ h ⟫ (s'.it y (g ∘ f) (A ⟪ f ⟫ e) .whole)            ≡⟨ s'.it y (g ∘ f) (A ⟪ f ⟫ e) .glues _ hh ⟩
       p .part ((g ∘ f) ∘ h) _ .η _ (id , A ⟪ h ⟫ (A ⟪ f ⟫ e)) ≡˘⟨ (λ i → p .part (assoc g f h i) (coe1→i (λ i → assoc g f h i ∈ J .cover c) i hh) .η _ (id , A .F-∘ h f i e)) ⟩
-      p .part (g ∘ f ∘ h) _ .η _ (id , A ⟪ f ∘ h ⟫ e)         ≡˘⟨ sym (B .F-∘ _ _ # _) ∙ s'.it x g e .patch (f ∘ h) clo ⟩
-      B ⟪ h ⟫ (B ⟪ f ⟫ (s'.it x g e .part))                   ∎
+      p .part (g ∘ f ∘ h) _ .η _ (id , A ⟪ f ∘ h ⟫ e)         ≡˘⟨ sym (B .F-∘ _ _ # _) ∙ s'.it x g e .glues (f ∘ h) clo ⟩
+      B ⟪ h ⟫ (B ⟪ f ⟫ (s'.it x g e .whole))                  ∎
 
-    s' .patch f hf = ext λ x g e →
+    s' .glues f hf = ext λ x g e →
       let clo = J .cover c .closed (J .cover c .closed hf g) id in
-      s'.it x (f ∘ g) e .part                          ≡˘⟨ B .F-id # _ ⟩
-      (B ⟪ id ⟫ s'.it x (f ∘ g) e .part)               ≡⟨ s'.it x (f ∘ g) e .patch id clo ⟩
+      s'.it x (f ∘ g) e .whole                         ≡˘⟨ B .F-id # _ ⟩
+      (B ⟪ id ⟫ s'.it x (f ∘ g) e .whole)              ≡⟨ s'.it x (f ∘ g) e .glues id clo ⟩
       p .part ((f ∘ g) ∘ id) _ .η x (id , A ⟪ id ⟫ e)  ≡⟨ ap₂ (λ i1 i2 → p .part i1 i2 .η x (id , A ⟪ id ⟫ e)) (idr (f ∘ g)) prop! ⟩
       p .part (f ∘ g) _ .η x (id , A ⟪ id ⟫ e)         ≡⟨ sym (p .patch f hf g (J .cover c .closed hf g) ηₚ _ $ₚ (id , A ⟪ id ⟫ e)) ⟩
       p .part f hf .η x (g ∘ id , A ⟪ id ⟫ e)          ≡⟨ ap (p .part f hf .η x) (Σ-pathp (idr g) (A .F-id # _)) ⟩

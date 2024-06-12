@@ -66,21 +66,21 @@ is-sheaf₁-limit {C = C} {D} F L ψ lim {U} R F-sheaf ps = from-is-separated₁
   ps' j = F-sheaf j (map-patch (ψ .η j) ps) .centre
 
   elts : ∀ j → よ₀ C U => F .F₀ j
-  elts j = yo (F .F₀ j) (ps' j .part)
+  elts j = yo (F .F₀ j) (ps' j .whole)
 
   abstract
     elts-nat : ∀ {x y} (f : D .Precategory.Hom x y) → F .F₁ f ∘nt elts x ≡ elts y
     elts-nat {x} {y} f = yo-natl $ is-sheaf₁→is-separated₁ _ _ (F-sheaf y) λ g hg → sym $
-      F.₁ y g (ps' y .part)                       ≡⟨ ps' y .patch g hg ⟩
+      F.₁ y g (ps' y .whole)                      ≡⟨ ps' y .glues g hg ⟩
       ψ .η y .η _ (ps .part g hg)                 ≡⟨ ψ .is-natural x y f ηₚ _ $ₚ ps .part g hg ⟩
-      F .F₁ f .η _ (ψ .η x .η _ (ps .part g hg))  ≡˘⟨ ap (F .F₁ f .η _) (ps' x .patch g hg) ⟩
-      F .F₁ f .η _ (F.₁ x g (ps' x .part))        ≡⟨ F .F₁ f .is-natural _ _ _ $ₚ _ ⟩
-      F.₁ y g (F .F₁ f .η _ (ps' x .part))        ∎
+      F .F₁ f .η _ (ψ .η x .η _ (ps .part g hg))  ≡˘⟨ ap (F .F₁ f .η _) (ps' x .glues g hg) ⟩
+      F .F₁ f .η _ (F.₁ x g (ps' x .whole))       ≡⟨ F .F₁ f .is-natural _ _ _ $ₚ _ ⟩
+      F.₁ y g (F .F₁ f .η _ (ps' x .whole))       ∎
 
   sec : Section L ps
-  sec .part = unyo _ (lim.universal elts elts-nat)
-  sec .patch {V} f hf =
-    L ⟪ f ⟫ sec .part                         ≡˘⟨ lim.universal _ _ .is-natural _ _ _ $ₚ _ ⟩
+  sec .whole = unyo _ (lim.universal elts elts-nat)
+  sec .glues {V} f hf =
+    L ⟪ f ⟫ sec .whole                        ≡˘⟨ lim.universal _ _ .is-natural _ _ _ $ₚ _ ⟩
     lim.universal elts elts-nat .η V (id ∘ f) ≡⟨ ap (lim.universal _ _ .η _) (Cat.id-comm-sym C) ⟩
     lim.universal elts elts-nat .η V (f ∘ id) ≡⟨ unext it _ id ⟩
     L ⟪ id ⟫ (ps .part f hf)                  ≡⟨ L.F-id ⟩
@@ -89,7 +89,7 @@ is-sheaf₁-limit {C = C} {D} F L ψ lim {U} R F-sheaf ps = from-is-separated₁
       it = lim.unique₂ {x = よ₀ C V} _
         (λ f → Cat.pulll (PSh _ C) (elts-nat f))
         (λ j → Cat.pulll (PSh _ C) (lim.factors elts elts-nat))
-        (λ j → yo-natl (sym (ps' j .patch f hf)) ∙ sym (yo-natr refl))
+        (λ j → yo-natl (sym (ps' j .glues f hf)) ∙ sym (yo-natr refl))
 ```
 
 <!--
