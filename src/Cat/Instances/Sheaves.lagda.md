@@ -67,6 +67,15 @@ immediately conclude that the category of sheaves on a site is
 
   Sheafification⊣ι : Sheafification ⊣ forget-sheaf J _
   Sheafification⊣ι = free-objects→left-adjoint (Small.make-free-sheaf J)
+```
+
+Note that since the category of $J$-sheaves is defined to literally have
+the same $\hom$-sets as the category of presheaves on $\cC$, the action
+of the forgetful functor on morphisms is definitionally the identity.
+
+```agda
+  Sheafification-is-reflective : is-reflective Sheafification⊣ι
+  Sheafification-is-reflective = id-equiv
 
   Sheafification-is-monadic : is-monadic Sheafification⊣ι
   Sheafification-is-monadic = is-reflective→is-monadic _ id-equiv

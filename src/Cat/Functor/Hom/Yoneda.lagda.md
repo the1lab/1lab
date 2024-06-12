@@ -89,8 +89,8 @@ $$
 is natural in both $A$ and $U$, there are two statements. We implement
 the proofs of naturality for the $\operatorname{yo}$-
 $\operatorname{unyo}$ isomorphism as *combinators*, so that they can
-slot into bigger proofs more easily. Calling these combinators $\refl$
-gives back the familiar naturality results.
+slot into bigger proofs more easily. Calling these combinators with
+$\refl$ gives back the familiar naturality results.
 
 For naturality "on the right", i.e. in the $U$ coordinate, naturality
 says that given $h : V \to U$, we have for all $x$,
