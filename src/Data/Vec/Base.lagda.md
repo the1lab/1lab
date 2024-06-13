@@ -93,6 +93,10 @@ replicate : (n : Nat) → A → Vec A n
 replicate zero a = []
 replicate (suc n) a = a ∷ replicate n a
 
+_++ᵥ_ : Vec A k → Vec A n → Vec A (k + n)
+[] ++ᵥ bs = bs
+(a ∷ as) ++ᵥ bs = a ∷ (as ++ᵥ bs)
+
 instance
   From-prod-Vec : From-product A (Vec A)
   From-prod-Vec .From-product.from-prod = go where
