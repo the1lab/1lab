@@ -80,6 +80,29 @@ make a new poset.
   po .Poset.≤-trans (p , p') (q , q') = P.≤-trans p q , D.≤-trans' p' q'
   po .Poset.≤-antisym (p , p') (q , q') =
     Σ-pathp (P.≤-antisym p q) (D.≤-antisym-over p' q')
+```
 
-open Displayed
+## Fibre posets {defines="fibre-posets"}
+
+Similarly, we can define **fibre posets** as a special case of [[fibre
+categories]]. Because posets are thin categories, we do not worry about
+most coherence conditions.
+
+```agda
+Fibre
+  : ∀ {ℓ ℓ' ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} (D : Displayed ℓ ℓ' P) (X : ⌞ P ⌟)
+  → Poset _ _
+Fibre {P = P} D X = po where
+  module D = Displayed D
+  module P = Pr P
+
+  po : Poset _ _
+  po .Poset.Ob = D.Ob[ X ]
+  po .Poset._≤_ = D.Rel[ P.≤-refl ]
+  po .Poset.≤-thin = D.≤-thin' P.≤-refl
+  po .Poset.≤-refl = D.≤-refl'
+  po .Poset.≤-trans p q =
+    subst (λ r → D.Rel[ r ] _ _) (P.≤-thin _ _) $
+    D.≤-trans' p q
+  po .Poset.≤-antisym = D.≤-antisym'
 ```
