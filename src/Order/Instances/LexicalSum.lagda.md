@@ -50,7 +50,7 @@ $$
 
 The reason is that $i < j$ naturally involves $i \neq j$ when we take
 the non-strict order $i \leq j$ as the primitive notion. Negated types
-carry little information and usually do not work well in constructive
+carry little information and usually work less well in constructive
 settings.
 :::
 
