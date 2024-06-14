@@ -45,7 +45,7 @@ $$
 We avoid the more traditional formulation that uses the strict order:
 
 $$
-  (i, x) < (j, y) \iff i < j \vee i = j \wedge x < y
+  (i, x) < (j, y) \iff i < j \vee (i = j \wedge x < y)
 $$
 
 The reason is that $i < j$ naturally involves $i \neq j$ when we take
