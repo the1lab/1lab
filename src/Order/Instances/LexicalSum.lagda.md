@@ -1,25 +1,13 @@
 <!--
 ```agda
-open import Cat.Diagram.Coproduct.Indexed
-open import Cat.Morphism
 open import Cat.Prelude
 
 open import Data.Id.Base
-open import Data.Bool
-open import Data.Sum
 
-open import Order.Instances.Coproduct renaming (matchᵖ to match⊎ᵖ)
-open import Order.Instances.Discrete
 open import Order.Displayed
-open import Order.Univalent
-open import Order.Morphism
 open import Order.Base
 
 import Order.Reasoning as Pr
-
-open is-indexed-coproduct
-open Indexed-coproduct
-open Inverses
 ```
 -->
 
