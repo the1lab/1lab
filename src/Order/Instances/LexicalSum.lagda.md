@@ -132,14 +132,18 @@ lexical sum such that it commutes with $\sigma$.
     → Monotone (∫ G) (Lexical-sum I F)
   splitᵖ G cases .hom    (i , x)     = i , cases i # x
   splitᵖ G cases .pres-≤ (i≤j , x≤y) =
-    i≤j , λ p → lemma p i≤j x≤y
+    i≤j , λ i=ᵢj → lemma-pres-≤ i=ᵢj i≤j x≤y
+```
+<!--
+```agda
     where
       module G = D G
 
-      lemma
+      lemma-pres-≤
         : ∀ {i j} (p : i ≡ᵢ j) (i≤j : i I.≤ j) {x y}
         → G.Rel[ i≤j ] x y
         → substᵢ ⌞F⌟ p (cases i .hom x) F.≤ (cases j .hom y)
-      lemma {i = i} reflᵢ i≤j x≤y =
+      lemma-pres-≤ {i = i} reflᵢ i≤j x≤y =
         cases i .pres-≤ $ subst (λ q → G.Rel[ q ] _ _) (I.≤-thin i≤j I.≤-refl) x≤y
 ```
+-->
