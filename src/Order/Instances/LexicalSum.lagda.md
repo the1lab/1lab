@@ -33,7 +33,7 @@ module _ {ℓₐ ℓᵣ ℓₐ' ℓᵣ'} (I : Poset ℓₐ ℓᵣ) (F : ⌞ I �
 -->
 
 Let $I$ be a [[partial order]] and $F_i$ be a family of [[partial
-orders]] indexed by the underlying set of $I$.We can equip the
+orders]] indexed by the underlying set of $I$. We can equip the
 $\Sigma$-type $\Sigma_{(i : I)} F_i$ with a lexicographic partial
 order:
 
