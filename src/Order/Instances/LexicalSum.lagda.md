@@ -55,7 +55,7 @@ settings.
 :::
 
 Given the dependency of $F$ on $I$, the comparison between $x : F_i$
-and $y : F_j$ only make sense when they lie in the same fibre, that is,
+and $y : F_j$ only makes sense when they lie in the same fibre, that is,
 when there is evidence $p : i = j$. We can then transport $x$ across
 $p$ to obtain a value in $F_j$, which can then be compared against
 $y : F_j$.
