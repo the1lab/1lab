@@ -146,3 +146,9 @@ lexical sum such that it commutes with $\sigma$.
         cases i .pres-≤ $ subst (λ q → G.Rel[ q ] _ _) (I.≤-thin i≤j I.≤-refl) x≤y
 ```
 -->
+
+::: source
+The categorical definition of lexicographic sums is given by Reinhard
+Börger, Walter Tholen and Anna Tozzi in their paper [Lexicographic sums
+and fibre-faithful maps](https://doi.org/10.1007/BF00872986).
+:::
