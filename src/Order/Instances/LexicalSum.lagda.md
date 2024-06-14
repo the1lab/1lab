@@ -5,6 +5,7 @@ open import Cat.Prelude
 open import Data.Id.Base
 
 open import Order.Displayed
+open import Order.Morphism
 open import Order.Base
 
 import Order.Reasoning as Pr
@@ -41,13 +42,10 @@ $$
 $$
 
 ::: note
-The above formulation intentionally avoids the conventional strict
-order:
-
+We avoid the more traditional formulation that uses the strict order:
 $$
   (i, x) < (j, y) \iff i < j \vee i = j \wedge x < y
 $$
-
 The reason is that $i < j$ naturally involves $i \neq j$ as we take
 the non-strict order $i \leq j$ as the primitive notion. Negated types
 carry little information and do not work well in constructive settings.
@@ -101,6 +99,22 @@ module _ {ℓₐ ℓᵣ ℓₐ' ℓᵣ'} {I : Poset ℓₐ ℓᵣ} {F : ⌞ I �
     ⌞F⌟ e = ⌞ F e ⌟
 ```
 -->
+
+By construction, the fiber in a lexical sum over $i : I$ is essentially
+$F_i$, which is witnessed by the coprojections from $F_i$ that are order
+embeddings:
+
+```agda
+  lexical-sum-injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Lexical-sum I F)
+  lexical-sum-injᵖ i .hom    x   = i , x
+  lexical-sum-injᵖ i .pres-≤ x≤y = I.≤-refl , λ p →
+    subst (F._≤ _) (substᵢ-filler-set ⌞F⌟ (hlevel 2) p _) x≤y
+
+  lexical-sum-injᵖ-is-order-embedding
+    : ∀ i → is-order-embedding (F i) (Lexical-sum I F) (apply (lexical-sum-injᵖ i))
+  lexical-sum-injᵖ-is-order-embedding i =
+    prop-ext! (lexical-sum-injᵖ i .pres-≤) λ { (_ , q) → q reflᵢ }
+```
 
 The name `Lexical-sum`{.Agda} is justified by its mapping-in universal
 property: given another poset $G$ displayed over $I$ and a collection

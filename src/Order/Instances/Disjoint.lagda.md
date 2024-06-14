@@ -71,9 +71,7 @@ module _ {ℓ ℓₐ ℓᵣ} {I : Set ℓ} {F : ⌞ I ⌟ → Poset ℓₐ ℓ�
 
 ```agda
   injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Disjoint I F)
-  injᵖ i .hom    x   = i , x
-  injᵖ i .pres-≤ x≤y = reflᵢ , λ p →
-    subst (_≤ _) (substᵢ-filler-set ⌞F⌟ (hlevel 2) p _) x≤y
+  injᵖ = lexical-sum-injᵖ
 ```
 
 The name `Disjoint`{.Agda} is justified by the observation that each of
@@ -83,7 +81,8 @@ identifies each factor $F_i$ with its image in $\Sigma F$.
 ```agda
   injᵖ-is-order-embedding
     : ∀ i → is-order-embedding (F i) (Disjoint I F) (apply (injᵖ i))
-  injᵖ-is-order-embedding i = prop-ext! (injᵖ i .pres-≤) λ { (_ , q) → q reflᵢ }
+  injᵖ-is-order-embedding =
+    lexical-sum-injᵖ-is-order-embedding {I = Discᵢ I} {F = F}
 ```
 
 To complete the construction of the coproduct, we have the following
