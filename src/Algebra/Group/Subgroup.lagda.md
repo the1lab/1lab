@@ -58,7 +58,7 @@ record represents-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
 
 If $H$ represents a subgroup, then its total space $\Sigma H$ inherits a
 group structure from $G$, and the first projection $\Sigma H \to G$ is a
-group homormophism.
+group homomorphism.
 
 ```agda
 rep-subgroup→group-on
