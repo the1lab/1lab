@@ -48,9 +48,10 @@ $$
   (i, x) < (j, y) \iff i < j \vee i = j \wedge x < y
 $$
 
-The reason is that $i < j$ naturally involves $i \neq j$ as we take
+The reason is that $i < j$ naturally involves $i \neq j$ when we take
 the non-strict order $i \leq j$ as the primitive notion. Negated types
-carry little information and do not work well in constructive settings.
+carry little information and usually do not work well in constructive
+settings.
 :::
 
 Given the dependency of $F$ on $I$, the comparison between $x : F_i$
@@ -103,7 +104,7 @@ module _ {ℓₐ ℓᵣ ℓₐ' ℓᵣ'} {I : Poset ℓₐ ℓᵣ} {F : ⌞ I �
 -->
 
 By construction, the fiber in a lexical sum over $i : I$ is essentially
-$F_i$, which is witnessed by the coprojections from $F_i$ that are order
+$F_i$, which is witnessed by the injections from $F_i$ that are order
 embeddings:
 
 ```agda
@@ -120,9 +121,9 @@ embeddings:
 
 The name `Lexical-sum`{.Agda} is justified by its mapping-in universal
 property: given another poset $G$ displayed over $I$ and a collection
-of fibrewise maps $\sigma_{i\in I} : G_i \to F_i$, there exists a
+a fibrewise map $\sigma_{i\in I} : G_i \to F_i$, there exists a
 (unique!) index-preserving map from the total space of $G$ into the
-lexical sum such that it commutes with all $\sigma_i$.
+lexical sum such that it commutes with $\sigma$.
 
 ```agda
   splitᵖ
