@@ -43,9 +43,11 @@ $$
 
 ::: note
 We avoid the more traditional formulation that uses the strict order:
+
 $$
   (i, x) < (j, y) \iff i < j \vee i = j \wedge x < y
 $$
+
 The reason is that $i < j$ naturally involves $i \neq j$ as we take
 the non-strict order $i \leq j$ as the primitive notion. Negated types
 carry little information and do not work well in constructive settings.
