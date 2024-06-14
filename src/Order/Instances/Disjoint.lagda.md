@@ -4,7 +4,6 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Morphism
 open import Cat.Prelude
 
-open import Data.Id.Base
 open import Data.Bool
 open import Data.Sum
 
@@ -71,7 +70,7 @@ module _ {ℓ ℓₐ ℓᵣ} {I : Set ℓ} {F : ⌞ I ⌟ → Poset ℓₐ ℓ�
 
 ```agda
   injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Disjoint I F)
-  injᵖ = lexical-sum-injᵖ
+  injᵖ = lexical-sum-injᵖ {I = Discᵢ I} {F = F}
 ```
 
 The name `Disjoint`{.Agda} is justified by the observation that each of
