@@ -99,9 +99,9 @@ most coherence conditions.
   Fibre x .Poset._≤_ = D.Rel[ P.≤-refl ]
   Fibre x .Poset.≤-thin = D.≤-thin' P.≤-refl
   Fibre x .Poset.≤-refl = D.≤-refl'
-  Fibre x .Poset.≤-trans p q =
-    subst (λ r → D.Rel[ r ] _ _) (P.≤-thin _ _) $
-    D.≤-trans' p q
+  Fibre x .Poset.≤-trans p' q' =
+    subst (λ p → D.Rel[ p ] _ _) (P.≤-thin _ _) $
+    D.≤-trans' p' q'
   Fibre x .Poset.≤-antisym = D.≤-antisym'
 ```
 
@@ -118,5 +118,5 @@ an order embedding.
   fibre-injᵖ-is-order-embedding x =
     prop-ext (D.≤-thin' P.≤-refl) (∫ .Poset.≤-thin)
       (fibre-injᵖ x .pres-≤)
-      λ { (p , q) → subst (λ p → D.Rel[ p ] _ _) (P.≤-thin p _) q }
+      λ { (p , p') → subst (λ p → D.Rel[ p ] _ _) (P.≤-thin p _) p' }
 ```
