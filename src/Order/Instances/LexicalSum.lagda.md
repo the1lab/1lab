@@ -103,9 +103,29 @@ module _ {ℓₐ ℓᵣ ℓₐ' ℓᵣ'} {I : Poset ℓₐ ℓᵣ} {F : ⌞ I �
 ```
 -->
 
-By construction, the fiber in a lexical sum over $i : I$ is essentially
-$F_i$, which is witnessed by the injections from $F_i$ that are order
-embeddings:
+The fibre in a lexical sum over $i : I$ is essentially $F_i$. In fact,
+their underlying types are judgementally equal in the current
+construction. We do not express the sameness using isomorphisms in the
+category of posets (`Posets`{.Agda}) due to technical reasons: their
+universe levels do not match and we would need ugly lifting to
+compensate for the differences.
+
+```agda
+  lexical-sum-fibre-equiv
+    : (i : ⌞ I ⌟) → ⌞ Fibre (Lexical-sum-over I F) i ⌟ ≃ ⌞ F i ⌟
+  lexical-sum-fibre-equiv i = _ , id-equiv
+
+  lexical-sum-fibre-equiv-is-order-embedding
+    : ∀ i → is-order-embedding (Fibre (Lexical-sum-over I F) i) (F i) (λ x → x)
+  lexical-sum-fibre-equiv-is-order-embedding i =
+    prop-ext!
+      (λ x≤y → x≤y reflᵢ)
+      (λ x≤y p → subst (F._≤ _) (substᵢ-filler-set ⌞F⌟ (hlevel 2) p _) x≤y)
+```
+
+We can also define injections from $F_i$, which are essentially
+`Order.Displayed.fibre-injᵖ`{.Agda} precomposed with the inverse of
+`lexical-sum-fibre-equiv`{.Agda}.
 
 ```agda
   lexical-sum-injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Lexical-sum I F)
@@ -116,7 +136,7 @@ embeddings:
   lexical-sum-injᵖ-is-order-embedding
     : ∀ i → is-order-embedding (F i) (Lexical-sum I F) (apply (lexical-sum-injᵖ i))
   lexical-sum-injᵖ-is-order-embedding i =
-    prop-ext! (lexical-sum-injᵖ i .pres-≤) λ { (_ , q) → q reflᵢ }
+    prop-ext! (lexical-sum-injᵖ i .pres-≤) λ (_ , q) → q reflᵢ
 ```
 
 The name `Lexical-sum`{.Agda} is justified by its mapping-in universal
