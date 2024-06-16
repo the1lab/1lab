@@ -118,5 +118,5 @@ an order embedding.
   fibre-injᵖ-is-order-embedding x =
     prop-ext (D.≤-thin' P.≤-refl) (∫ .Poset.≤-thin)
       (fibre-injᵖ x .pres-≤)
-      λ { (p , p') → subst (λ p → D.Rel[ p ] _ _) (P.≤-thin p _) p' }
+      (λ (p , p') → subst (λ p → D.Rel[ p ] _ _) (P.≤-thin p _) p')
 ```
