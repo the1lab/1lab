@@ -122,9 +122,9 @@ compensate for the differences.
       (λ x≤y p → subst (F._≤ _) (substᵢ-filler-set ⌞F⌟ (hlevel 2) p _) x≤y)
 ```
 
-We can also define injections from $F_i$, which are essentially
+We can also define injections from $F_i$, which are the generic injections
 `fibre-injᵖ`{.Agda} (for general displayed posets) precomposed with the
-inverse of `lexical-sum-fibre-equiv`{.Agda}.
+inverse of the above equivalence `lexical-sum-fibre-equiv`{.Agda}.
 
 ```agda
   lexical-sum-injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Lexical-sum I F)
