@@ -68,14 +68,13 @@ particular [[displayed order]] over the base poset $I$.
 
 ```agda
   Lexical-sum-over : Displayed _ _ I
-  Lexical-sum-over .D.Ob[_]      = ⌞F⌟
-  Lexical-sum-over .D.Rel[_] {i} {j} _ x y =
-    (p : i ≡ᵢ j) → substᵢ ⌞F⌟ p x F.≤ y
+  Lexical-sum-over .D.Ob[_]                = ⌞F⌟
+  Lexical-sum-over .D.Rel[_] {i} {j} _ x y = (p : i ≡ᵢ j) → substᵢ ⌞F⌟ p x F.≤ y
 ```
 <!--
 ```agda
-  Lexical-sum-over .D.≤-thin' _  = hlevel 1
-  Lexical-sum-over .D.≤-refl' p  = F.≤-refl' $ sym $ substᵢ-filler-set ⌞F⌟ (hlevel 2) p _
+  Lexical-sum-over .D.≤-thin' _ = hlevel 1
+  Lexical-sum-over .D.≤-refl' p = F.≤-refl' $ sym $ substᵢ-filler-set ⌞F⌟ (hlevel 2) p _
   Lexical-sum-over .D.≤-antisym' x≤'y y≤'x = F.≤-antisym (x≤'y reflᵢ) (y≤'x reflᵢ)
   Lexical-sum-over .D.≤-trans' {f = i≤j} {g = j≤i} x≤'y y≤'z reflᵢ =
     let i=ᵢj = Id≃path.from $ I.≤-antisym i≤j j≤i in
