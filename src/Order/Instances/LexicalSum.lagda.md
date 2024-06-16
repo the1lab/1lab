@@ -32,9 +32,9 @@ module _ {ℓₐ ℓᵣ ℓₐ' ℓᵣ'} (I : Poset ℓₐ ℓᵣ) (F : ⌞ I �
 ```
 -->
 
-Let $I$ be a [[partial order]] and $F_i$ be a family of [[partial
-orders]] indexed by the underlying set of $I$. We can equip the
-$\Sigma$-type $\Sigma_{(i : I)} F_i$ with a lexicographic partial
+Let $I$ be a [[partial order]] and $F_{i\in I}$ be a family of
+[[partial orders]] indexed by the underlying set of $I$. We can equip
+the $\Sigma$-type $\Sigma_{(i : I)} F_i$ with a lexicographic partial
 order:
 
 $$
@@ -124,8 +124,8 @@ compensate for the differences.
 ```
 
 We can also define injections from $F_i$, which are essentially
-`Order.Displayed.fibre-injᵖ`{.Agda} precomposed with the inverse of
-`lexical-sum-fibre-equiv`{.Agda}.
+`fibre-injᵖ`{.Agda} (for general displayed posets) precomposed with the
+inverse of `lexical-sum-fibre-equiv`{.Agda}.
 
 ```agda
   lexical-sum-injᵖ : (i : ⌞ I ⌟) → Monotone (F i) (Lexical-sum I F)
@@ -139,11 +139,12 @@ We can also define injections from $F_i$, which are essentially
     prop-ext! (lexical-sum-injᵖ i .pres-≤) λ (_ , q) → q reflᵢ
 ```
 
-The name `Lexical-sum`{.Agda} is justified by its mapping-in universal
-property: given another poset $G$ displayed over $I$ and a collection
-a fibrewise map $\sigma_{i\in I} : G_i \to F_i$, there exists a
-(unique!) index-preserving map from the total space of $G$ into the
-lexical sum such that it commutes with $\sigma$.
+The name `Lexical-sum`{.Agda} is justified by the observation that it
+is the _maximal_ poset with the given index $I$ and fibres $F$. Its
+mapping-in universal property is: given another poset $G$ displayed
+over $I$ and a collection a fibrewise map $\sigma_{i\in I} : G_i \to
+F_i$, there exists a (unique!) index-preserving map from the total
+space of $G$ into the lexical sum such that it commutes with $\sigma$.
 
 ```agda
   splitᵖ
