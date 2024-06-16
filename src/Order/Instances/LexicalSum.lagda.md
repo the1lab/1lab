@@ -139,7 +139,7 @@ inverse of `lexical-sum-fibre-equiv`{.Agda}.
 ```
 
 The name `Lexical-sum`{.Agda} is justified by the observation that it
-is the _maximal_ poset with the given index $I$ and fibres $F$. Its
+is the _maximum_ poset with the given index $I$ and fibres $F$. Its
 mapping-in universal property is: given another poset $G$ displayed
 over $I$ and a collection a fibrewise map $\sigma_{i\in I} : G_i \to
 F_i$, there exists a (unique!) index-preserving map from the total
