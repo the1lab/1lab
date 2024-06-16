@@ -306,8 +306,8 @@ morphism from groups $G$ to abelian groups $H$: this is the hom-set
 $\hom_\Grp(G, U(H))$. This observation isn't particularly deep *in this
 case*, since the maps between abelian groups are also group
 homomorphisms, but note that this works for *any* functor: the forgetful
-functor $U : \Grp \to \Sets$ lets us consider maps "from a group to a
-set".
+functor $U : \Grp \to \Sets$ lets us consider maps "from a set to a
+group".
 
 By letting the abelian group $H$ vary, we can consider morphisms from a
 group $G$ to *some* abelian group. These form a category in their own
