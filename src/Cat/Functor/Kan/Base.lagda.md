@@ -214,51 +214,57 @@ record Ran (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
 
 <!--
 ```agda
-is-lan-is-prop
-  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p}
-  → is-prop (is-lan p F G eta)
-is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
-  private
-    module a = is-lan a
-    module b = is-lan b
+module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p} where
+  is-lan-is-prop : is-prop (is-lan p F G eta)
+  is-lan-is-prop a b = path where
+    private
+      module a = is-lan a
+      module b = is-lan b
 
-  σ≡ : {M : Functor _ _} (α : F => M F∘ p) → a.σ α ≡ b.σ α
-  σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
+    σ≡ : {M : Functor _ _} (α : F => M F∘ p) → a.σ α ≡ b.σ α
+    σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
 
-  open is-lan
-  path : a ≡ b
-  path i .σ α = σ≡ α i
-  path i .σ-comm {α = α} =
-    is-prop→pathp (λ i → Nat-is-set ((σ≡ α i ◂ p) ∘nt eta) α)
-      (a.σ-comm {α = α}) (b.σ-comm {α = α})
-      i
-  path i .σ-uniq {α = α} β =
-    is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
-      (a.σ-uniq β) (b.σ-uniq β)
-      i
+    open is-lan
+    path : a ≡ b
+    path i .σ α = σ≡ α i
+    path i .σ-comm {α = α} =
+      is-prop→pathp (λ i → Nat-is-set ((σ≡ α i ◂ p) ∘nt eta) α)
+        (a.σ-comm {α = α}) (b.σ-comm {α = α})
+        i
+    path i .σ-uniq {α = α} β =
+      is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
+        (a.σ-uniq β) (b.σ-uniq β)
+        i
 
-is-ran-is-prop
-  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F}
-  → is-prop (is-ran p F G eps)
-is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
-  private
-    module a = is-ran a
-    module b = is-ran b
+  instance
+    H-Level-is-lan : ∀ {k} → H-Level (is-lan p F G eta) (suc k)
+    H-Level-is-lan = prop-instance is-lan-is-prop
 
-  σ≡ : {M : Functor _ _} (α : M F∘ p => F) → a.σ α ≡ b.σ α
-  σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
+module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F} where
+  is-ran-is-prop : is-prop (is-ran p F G eps)
+  is-ran-is-prop a b = path where
+    private
+      module a = is-ran a
+      module b = is-ran b
 
-  open is-ran
-  path : a ≡ b
-  path i .σ α = σ≡ α i
-  path i .σ-comm {β = α} =
-    is-prop→pathp (λ i → Nat-is-set (eps ∘nt (σ≡ α i ◂ p)) α)
-      (a.σ-comm {β = α}) (b.σ-comm {β = α})
-      i
-  path i .σ-uniq {β = α} γ =
-    is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
-      (a.σ-uniq γ) (b.σ-uniq γ)
-      i
+    σ≡ : {M : Functor _ _} (α : M F∘ p => F) → a.σ α ≡ b.σ α
+    σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
+
+    open is-ran
+    path : a ≡ b
+    path i .σ α = σ≡ α i
+    path i .σ-comm {β = α} =
+      is-prop→pathp (λ i → Nat-is-set (eps ∘nt (σ≡ α i ◂ p)) α)
+        (a.σ-comm {β = α}) (b.σ-comm {β = α})
+        i
+    path i .σ-uniq {β = α} γ =
+      is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
+        (a.σ-uniq γ) (b.σ-uniq γ)
+        i
+
+  instance
+    H-Level-is-ran : ∀ {k} → H-Level (is-ran p F G eps) (suc k)
+    H-Level-is-ran = prop-instance is-ran-is-prop
 ```
 -->
 

@@ -306,9 +306,10 @@ module Colimit
     import Cat.Reasoning J as J
     import Cat.Reasoning C as C
     module Diagram = Functor D
-    open Lan L
     open Functor
     open _=>_
+
+  open Lan L public
 ```
 -->
 
@@ -427,7 +428,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 Furthermore, if the universal map is invertible, then that means its
 domain is _also_ a colimit of the diagram. This also follows from a
-[general theorem of Kan extensions], though some golfin is required to
+[general theorem of Kan extensions], though some golfing is required to
 obtain the correct inverse definitionally.
 
 [general theorem of Kan extensions]: Cat.Functor.Kan.Unique.html#is-invertible→is-lan
@@ -539,12 +540,10 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of colimits
+# Preservation and reflection of colimits {defines="preserved-colimit reflected-colimit"}
 
-The definitions here are the same idea as [preservation of limits], just
-dualised.
-
-[preservation of limits]: Cat.Diagram.Limit.Base.html#preservation-of-limits
+The definitions here are the same idea as [[preservation of
+limits|preserved limit]], just dualised.
 
 <!--
 ```agda

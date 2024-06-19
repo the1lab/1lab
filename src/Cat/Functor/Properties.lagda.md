@@ -36,7 +36,7 @@ is-full {C = C} {D = D} F = ∀ {x y} → is-surjective (F .F₁ {x = x} {y})
 ```
 :::
 
-:::{.definition #faithful-functor}
+:::{.definition #faithful-functor alias="faithful"}
 A functor is **faithful** when its action on hom-sets is injective:
 
 ```agda

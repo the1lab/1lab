@@ -1,11 +1,13 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -25,6 +27,7 @@ private variable
   o ℓ o' ℓ' : Level
 open Functor
 open _=>_
+open _⊣_
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   private
@@ -189,6 +192,47 @@ commutativity for $g \circ f$).
   precat .idr f = ext (C.idr _)
   precat .idl f = ext (C.idl _)
   precat .assoc f g h = ext (C.assoc _ _ _)
+```
+
+There is an evident projection functor from $\cC/c$ to $\cC$ that only
+remembers the domains.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} {c} where
+  open /-Hom
+  open /-Obj
+  private
+    module C = Cat.Reasoning C
+    module C/c = Cat.Reasoning (Slice C c)
+```
+-->
+
+```agda
+  Forget/ : Functor (Slice C c) C
+  Forget/ .F₀ o = o .domain
+  Forget/ .F₁ f = f .map
+  Forget/ .F-id = refl
+  Forget/ .F-∘ _ _ = refl
+```
+
+Furthermore, this forgetful functor is easily seen to be [[faithful]]
+and [[conservative]]: if $f$ is a morphism in $\cC/c$ whose underlying
+map has an inverse $f^{-1}$ in $\cC$, then $f^{-1}$ clearly also makes
+the triangle commute, so that $f$ is invertible in $\cC/c$.
+
+```agda
+  Forget/-is-faithful : is-faithful Forget/
+  Forget/-is-faithful p = ext p
+
+  Forget/-is-conservative : is-conservative Forget/
+  Forget/-is-conservative {f = f} i =
+    C/c.make-invertible f⁻¹ (ext i.invl) (ext i.invr)
+    where
+      module i = C.is-invertible i
+      f⁻¹ : /-Hom _ _
+      f⁻¹ .map = i.inv
+      f⁻¹ .commutes = C.rswizzle (sym (f .commutes)) i.invl
 ```
 
 ## Finite limits
@@ -692,3 +736,36 @@ the fibre over $h$ would correspondingly be isomorphic to $A \times \top
       (idr _))
     where open Pullback (pb (constant-family .F₀ A .map) h)
 ```
+
+The constant families functor is a [[right adjoint]] to the projection
+$\cC/B \to \cC$. This can be understood in terms of [[base change|pullback functor]]:
+if $\cC$ has a [[terminal object]] $\top$, then the slice $\cC/\top$ is
+equivalent to $\cC$, and the unique map $B \to \top$ induces a pullback
+functor $\cC \to \cC/B$ that is just the constant families functor.
+On the other hand, the "dependent sum" functor sends a map $A \to B$
+to the unique composite $A \to B \to \top$: it simply `Forget/`{.Agda}s the
+map. Thus the following adjunction is a special case of the
+adjunction between dependent sum and base change.
+
+```agda
+  Forget⊣constant-family : Forget/ ⊣ constant-family
+  Forget⊣constant-family .unit .η X .map = ⟨ id , X .map ⟩
+  Forget⊣constant-family .unit .η X .commutes = π₂∘⟨⟩
+  Forget⊣constant-family .unit .is-natural _ _ f = ext (unique₂
+    (pulll π₁∘⟨⟩ ∙ id-comm-sym)
+    (pulll π₂∘⟨⟩ ∙ f .commutes)
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+    (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩))
+  Forget⊣constant-family .counit .η x = π₁
+  Forget⊣constant-family .counit .is-natural _ _ f = π₁∘⟨⟩
+  Forget⊣constant-family .zig = π₁∘⟨⟩
+  Forget⊣constant-family .zag = ext (unique₂
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+    (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
+    refl
+    (idr _))
+```
+
+<!--
+TODO(@ncfavier): this adjunction is comonadic!
+-->

@@ -663,7 +663,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of limits
+# Preservation of limits {defines="preserved-limit"}
 
 <!--
 ```agda
@@ -697,7 +697,7 @@ object! Any limit is as good as any other.
     → preserves-ran F lim
 ```
 
-## Reflection of limits
+## Reflection of limits {defines="reflected-limit"}
 
 Using the terminology from before, we say a functor **reflects limits**
 if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":

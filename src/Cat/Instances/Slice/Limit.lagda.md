@@ -19,7 +19,7 @@ open Functor
 module Cat.Instances.Slice.Limit where
 ```
 
-# Arbitrary limits in slices
+# Arbitrary limits in slices {defines="limits-in-slice-categories"}
 
 Suppose we have some really weird diagram $F : \cJ \to \cC/c$ in a
 [[slice category]], like the
@@ -40,7 +40,7 @@ limit in the slice.
 The observation that will let us compute a limit for this diagram is
 inspecting the computation of [[products in a slice]]. To
 compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
-_pullback_ of $a \xto{f} c \xot{b}$ in $\cC$ --- which we had assumed
+_pullback_ of $a \xto{f} c \xot{g} b$ in $\cC$ --- which we had assumed
 exists. But! Take a look at what that diagram _looks like_:
 
 ~~~{.quiver}
