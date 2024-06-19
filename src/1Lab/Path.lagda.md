@@ -165,7 +165,7 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : a ≡ b} where private
   right-endpoint = refl
 ```
 
-## Dependent paths
+## Dependent paths {defines="dependent-path path-over"}
 
 Since we're working in dependent type theory, a sensible question to ask
 is whether we can extend the idea that paths are functions $\bI \to A$

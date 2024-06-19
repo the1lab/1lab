@@ -624,10 +624,10 @@ underlying monoidal functor is [[symmetric|symmetric monoidal functor]].
       (_ , m .Monoidal-monad-on.monad-monoidal)
 ```
 
-Then, we have that, *over* the above identification between monoidal
-monads and commutative strengths, the property of being a *symmetric*
-monoidal monad is identified with the property of being a *symmetric*
-strength.
+Then, we have that, *[[over|equivalence over]]* the above equivalence
+between monoidal monads and commutative strengths, the property of being
+a *symmetric* monoidal monad is equivalent to the property of being a
+*symmetric* strength.
 
 Given a symmetric monoidal monad, we immediately see that the induced
 left and right strengths are related by the braiding.
@@ -697,15 +697,17 @@ between the *structure* of a symmetric monoidal monad and the *structure*
 of a symmetric commutative strength.
 
 ```agda
+    symmetric≃symmetric
+      : is-symmetric-monoidal-monad ≃[ monoidal≃commutative ]
+        (is-symmetric-monad-strength Cᵇ ⊙ fst)
+    symmetric≃symmetric = prop-over-ext monoidal≃commutative (hlevel 1) (hlevel 1)
+      symmetric-monoidal→symmetric-strength symmetric-strength→symmetric-monoidal
+
     symmetric-monoidal≃symmetric-commutative
       : Σ (Monoidal-monad-on Cᵐ monad) is-symmetric-monoidal-monad
       ≃ Σ (Monad-strength Cᵐ monad) (λ s →
         is-commutative-strength s × is-symmetric-monad-strength Cᵇ s)
     symmetric-monoidal≃symmetric-commutative =
-      Σ-ap monoidal≃commutative (λ m → prop-ext!
-        (symmetric-monoidal→symmetric-strength m)
-        (λ sy → subst is-symmetric-monoidal-monad (monoidal≃commutative.η m)
-          (symmetric-strength→symmetric-monoidal
-            (monoidal≃commutative.to m) sy)))
+      over→total monoidal≃commutative symmetric≃symmetric
       ∙e Σ-assoc e⁻¹
 ```

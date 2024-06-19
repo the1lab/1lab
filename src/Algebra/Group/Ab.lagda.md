@@ -38,6 +38,9 @@ private variable
 
 Group-on-is-abelian : Group-on G → Type _
 Group-on-is-abelian G = ∀ x y → Group-on._⋆_ G x y ≡ Group-on._⋆_ G y x
+
+Group-on-is-abelian-is-prop : (g : Group-on G) → is-prop (Group-on-is-abelian g)
+Group-on-is-abelian-is-prop g = Π-is-hlevel² 1 λ _ _ → g .Group-on.has-is-set _ _
 ```
 -->
 
@@ -60,7 +63,7 @@ instance
   H-Level-is-abelian-group
     : ∀ {n} {* : G → G → G} → H-Level (is-abelian-group *) (suc n)
   H-Level-is-abelian-group = prop-instance $ Iso→is-hlevel 1 eqv $
-    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ →
+    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel²' 1 λ _ _ →
       is-group.has-is-set x _ _
 ```
 -->

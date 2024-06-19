@@ -59,30 +59,27 @@ that has equal opposite sides.
     x
 ```
 
-Still unsurprisingly, the delooping of an abelian group is abelian.
+Still unsurprisingly, the properties of being a concrete abelian group
+and being an abelian group are [[equivalent over|equivalence over]]
+the equivalence between concrete and abstract groups.
 
 ```agda
-Deloop-abelian
-  : ∀ {ℓ} {G : Group ℓ}
-  → is-commutative-group G → is-concrete-abelian (Concrete G)
-Deloop-abelian G-ab = ∙-comm _ G-ab
+abelian≃abelian
+  : ∀ {ℓ}
+  → is-concrete-abelian ≃[ Concrete≃Abstract {ℓ} ] is-commutative-group
+abelian≃abelian = prop-over-ext Concrete≃Abstract
+  (λ {G} → is-concrete-abelian-is-prop G)
+  (λ {G} → Group-on-is-abelian-is-prop (G .snd))
+  (λ G G-ab → G-ab)
+  (λ G G-ab → ∙-comm _ G-ab)
 ```
 
-The circle is another example, being the delooping of $\mathbb{Z}$.
+For example, the circle is abelian, being the delooping of $\mathbb{Z}$.
 
 ```agda
-π₁-abelian→abelian
-  : ∀ {ℓ} {G : ConcreteGroup ℓ}
-  → is-commutative-group (π₁B G) → is-concrete-abelian G
-π₁-abelian→abelian {G = G} π₁G-ab = subst is-concrete-abelian
-  (Concrete≃Abstract.η G)
-  (Deloop-abelian π₁G-ab)
-
 S¹-concrete-abelian : is-concrete-abelian S¹-concrete
-S¹-concrete-abelian = π₁-abelian→abelian {G = S¹-concrete}
-  (subst is-commutative-group
-    (sym π₁S¹≡ℤ)
-    (Abelian→Group-on-abelian (ℤ-ab .snd)))
+S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ π₁S¹≡ℤ)
+  (Abelian→Group-on-abelian (ℤ-ab .snd))
 ```
 
 ## First abelian group cohomology
@@ -228,6 +225,8 @@ module _ {ℓ}
     : H¹[ Concrete G , Concrete H ] ≃ Hom (Groups ℓ) G H
   first-abelian-group-cohomology =
     first-concrete-abelian-group-cohomology
-      (Concrete G) (Concrete H) (Deloop-abelian H-ab) e⁻¹
+      (Concrete G) (Concrete H)
+      (Equiv.from (abelian≃abelian (Concrete H) H (Concrete≃Abstract.ε H)) H-ab)
+      e⁻¹
     ∙e Deloop-hom-equiv
 ```
