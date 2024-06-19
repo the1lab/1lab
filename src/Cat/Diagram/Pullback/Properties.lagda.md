@@ -16,7 +16,7 @@ module Cat.Diagram.Pullback.Properties where
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C
   open is-pullback
-  
+
   private variable
     A B P : Ob
     f g h : Hom A B
@@ -27,7 +27,31 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 This module chronicles some general properties of [[pullbacks]].
 
-## Pasting law
+## Identity
+
+Degenerate squares where two opposite sides are identities are pullbacks.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a & a \\
+  b & b
+  \arrow[Rightarrow, no head, from=1-1, to=1-2]
+  \arrow["f"', from=1-1, to=2-1]
+  \arrow["f", from=1-2, to=2-2]
+  \arrow[Rightarrow, no head, from=2-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+  id-is-pullback : ∀ {a b : Ob} {f : Hom a b} → is-pullback C id f f id
+  id-is-pullback .square = id-comm
+  id-is-pullback .universal {p₁' = p₁'} _ = p₁'
+  id-is-pullback .p₁∘universal = idl _
+  id-is-pullback .p₂∘universal {p = p} = p ∙ idl _
+  id-is-pullback .unique q r = sym (idl _) ∙ q
+```
+
+## Pasting law {defines="pasting-law-for-pullbacks"}
 
 The pasting law for pullbacks says that, if in the _commutative_ diagram
 below the the right square is a pullback, then the left square is
@@ -58,7 +82,7 @@ through.
            {c→f : Hom c f}
            (right-pullback : is-pullback C b→c c→f b→e e→f)
     where
-  
+
     private module right = is-pullback right-pullback
 ```
 
@@ -109,7 +133,7 @@ assumption $p$ in the code). Check out the calculation below:
           e→f ∘ b→e ∘ P→b   ≡⟨ ap (e→f ∘_) p ⟩
           e→f ∘ d→e ∘ P→d   ≡⟨ cat! C ⟩
           (e→f ∘ d→e) ∘ P→d ∎
-  
+
       pb : is-pullback C _ _ _ _
       pb .is-pullback.square =
         b→e ∘ a→b ≡⟨ square ⟩
@@ -122,15 +146,15 @@ makes everything in sight commute, and does so uniquely.
 ```agda
       pb .universal {p₁' = P→b} {p₂' = P→d} p =
         outer.universal {p₁' = b→c ∘ P→b} {p₂' = P→d} (path p)
-  
+
       pb .p₁∘universal {p₁' = P→b} {p₂' = P→d} {p = p} =
         right.unique₂ {p = pulll right.square ∙ pullr p}
           (assoc _ _ _ ∙ outer.p₁∘universal)
           (pulll square ∙ pullr outer.p₂∘universal)
           refl p
-  
+
       pb .p₂∘universal {p₁' = P→b} {p₂' = P→d} {p = p} = outer.p₂∘universal
-  
+
       pb .unique {p = p} q r =
         outer.unique (sym (ap (_ ∘_) (sym q) ∙ assoc _ _ _)) r
 ```
@@ -148,7 +172,7 @@ then have a map $x \to a$, as we wanted.
       → is-pullback C (b→c ∘ a→b) c→f a→d (e→f ∘ d→e)
     pasting-left→outer-is-pullback left square = pb where
       module left = is-pullback left
-  
+
       pb : is-pullback C (b→c ∘ a→b) c→f a→d (e→f ∘ d→e)
       pb .is-pullback.square =
         c→f ∘ b→c ∘ a→b   ≡⟨ square ⟩
@@ -193,7 +217,7 @@ is a monomorphism iff. the square below is a pullback.
     is-monic→is-pullback mono .p₁∘universal = idl _
     is-monic→is-pullback mono .p₂∘universal {p = p} = idl _ ∙ mono _ _ p
     is-monic→is-pullback mono .unique p q = introl refl ∙ p
-  
+
     is-pullback→is-monic : is-pullback C id f id f → is-monic f
     is-pullback→is-monic pb f g p = sym (pb .p₁∘universal {p = p}) ∙ pb .p₂∘universal
 ```
@@ -215,10 +239,10 @@ Pullbacks additionally preserve monomorphisms, as shown below:
         g ∘ p2 ∘ h ≡⟨ ap (g ∘_) p ⟩
         g ∘ p2 ∘ j ≡˘⟨ extendl pb.square ⟩
         f ∘ p1 ∘ j ∎
-  
+
       r : p1 ∘ h ≡ p1 ∘ j
       r = mono _ _ q
-  
+
       eq : h ≡ j
       eq = pb.unique₂ {p = extendl pb.square} r p refl refl
 ```
@@ -234,42 +258,47 @@ Pullbacks additionally preserve monomorphisms, as shown below:
   rotate-pullback pb .p₁∘universal = pb .p₂∘universal
   rotate-pullback pb .p₂∘universal = pb .p₁∘universal
   rotate-pullback pb .unique p q = pb .unique q p
-  
+
+  pullback-unique
+    : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+        {p1' : Hom p' x} {p2' : Hom p' y}
+    → (pb : is-pullback C p1 f p2 g)
+    → (sq : f ∘ p1' ≡ g ∘ p2')
+    → is-invertible (pb .universal sq)
+    ≃ is-pullback C p1' f p2' g
+  pullback-unique {f = f} {g} {p1} {p2} {p1'} {p2'} pb sq
+    = prop-ext! inv→pb pb→inv
+    where
+    module _ (inv : is-invertible (pb .universal sq)) where
+      module i = is-invertible inv
+      open is-pullback
+      inv→pb : is-pullback C p1' f p2' g
+      inv→pb .square = sq
+      inv→pb .universal p = i.inv ∘ pb .universal p
+      inv→pb .p₁∘universal = pulll (rswizzle (sym (pb .p₁∘universal)) i.invl) ∙ pb .p₁∘universal
+      inv→pb .p₂∘universal = pulll (rswizzle (sym (pb .p₂∘universal)) i.invl) ∙ pb .p₂∘universal
+      inv→pb .unique p q =
+        sym (lswizzle (sym (pb .unique (pulll (pb .p₁∘universal) ∙ p) (pulll (pb .p₂∘universal) ∙ q))) i.invr)
+    pb→inv : is-pullback C p1' f p2' g → is-invertible (pb .universal sq)
+    pb→inv pb' = make-invertible (pb' .universal (pb .square))
+      (unique₂ pb {p = pb .square}
+        (pulll (pb .p₁∘universal) ∙ pb' .p₁∘universal)
+        (pulll (pb .p₂∘universal) ∙ pb' .p₂∘universal)
+        (idr _) (idr _))
+      (unique₂ pb' {p = pb' .square}
+        (pulll (pb' .p₁∘universal) ∙ pb .p₁∘universal)
+        (pulll (pb' .p₂∘universal) ∙ pb .p₂∘universal)
+        (idr _) (idr _))
+
   is-pullback-iso
     : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
     → (i : p ≅ p')
     → is-pullback C p1 f p2 g
     → is-pullback C (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
-  is-pullback-iso {f = f} {g} {p1} {p2} i pb = pb' where
-    module i = _≅_ i
-    pb' : is-pullback C _ _ _ _
-    pb' .square = extendl (pb .square)
-    pb' .universal p = i.to ∘ pb .universal p
-    pb' .p₁∘universal = cancel-inner i.invr ∙ pb .p₁∘universal
-    pb' .p₂∘universal = cancel-inner i.invr ∙ pb .p₂∘universal
-    pb' .unique p q = invertible→monic (iso→invertible (i Iso⁻¹)) _ _ $ sym $
-      cancell i.invr ∙ sym (pb .unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
-  
-  pullback-unique
-    : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
-        {p1' : Hom p' x} {p2' : Hom p' y}
-    → is-pullback C p1 f p2 g
-    → is-pullback C p1' f p2' g
-    → p ≅ p'
-  pullback-unique {f = f} {g} {p1} {p2} {p1'} {p2'} pb pb'
-    = make-iso pb→pb' pb'→pb il ir
-    where
-      pb→pb' = pb' .universal (pb .square)
-      pb'→pb = pb .universal (pb' .square)
-      il = unique₂ pb' {p = pb' .square}
-        (pulll (pb' .p₁∘universal) ∙ pb .p₁∘universal)
-        (pulll (pb' .p₂∘universal) ∙ pb .p₂∘universal)
-        (idr _) (idr _)
-      ir = unique₂ pb {p = pb .square}
-        (pulll (pb .p₁∘universal) ∙ pb' .p₁∘universal)
-        (pulll (pb .p₂∘universal) ∙ pb' .p₂∘universal)
-        (idr _) (idr _)
-  
+  is-pullback-iso i pb = Equiv.to
+    (pullback-unique pb (extendl (pb .square)))
+    (subst is-invertible (pb .unique refl refl) (iso→invertible (i Iso⁻¹)))
+
   Pullback-unique
     : ∀ {x y z} {f : Hom x z} {g : Hom y z}
     → is-category C
@@ -278,22 +307,22 @@ Pullbacks additionally preserve monomorphisms, as shown below:
     open Pullback
     module x = Pullback x
     module y = Pullback y
-    apices = c-cat .to-path (pullback-unique (x .has-is-pb) (y .has-is-pb))
-  
+    apices = c-cat .to-path (invertible→iso _ (Equiv.from (pullback-unique (y .has-is-pb) (x .square)) (x .has-is-pb)))
+
     abstract
       p1s : PathP (λ i → Hom (apices i) X) x.p₁ y.p₁
       p1s = Univalent.Hom-pathp-refll-iso c-cat (x.p₁∘universal)
-  
+
       p2s : PathP (λ i → Hom (apices i) Y) x.p₂ y.p₂
       p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘universal)
-  
+
       lims
         : ∀ {P'} {p1' : Hom P' X} {p2' : Hom P' Y} (p : f ∘ p1' ≡ g ∘ p2')
         → PathP (λ i → Hom P' (apices i)) (x.universal p) (y.universal p)
       lims p = Univalent.Hom-pathp-reflr-iso c-cat $
         y.unique (pulll y.p₁∘universal ∙ x.p₁∘universal)
                 (pulll y.p₂∘universal ∙ x.p₂∘universal)
-  
+
     p : x ≡ y
     p i .apex = apices i
     p i .p₁ = p1s i
@@ -317,7 +346,7 @@ Pullbacks additionally preserve monomorphisms, as shown below:
         (λ lim → x.unique {lim' = lim})
         (λ lim → y.unique {lim' = lim})
         i lim'
-  
+
   canonically-stable
     : ∀ {ℓ'} (P : ∀ {a b} → Hom a b → Type ℓ')
     → is-category C

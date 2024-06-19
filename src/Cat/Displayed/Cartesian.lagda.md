@@ -493,9 +493,7 @@ cartesian-vertical-retraction-stable {f' = f'} {f''} {ϕ} f-cart ϕ-sect factor 
 ```
 
 We also have the following extremely useful pasting lemma, which
-generalizes the [pasting law for pullbacks].
-
-[pasting law for pullbacks]: Cat.Diagram.Pullback.Properties.html#pasting-law
+generalizes the [[pasting law for pullbacks]].
 
 ```agda
 cartesian-pasting
