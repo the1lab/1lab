@@ -69,7 +69,7 @@ $$
 B(g)(x(f, z)) = B(g)(y(f, z))
 $$
 for any $g \in S$. Note that, by naturality, these are equal to $x(fg,
-z)$,resp. $y(fg, z)$. We can then choose $S = f^*(R)$, which lets us
+z)$, resp. $y(fg, z)$. We can then choose $S = f^*(R)$, which lets us
 apply our $R$-local equality (since $g \in f^*(R)$ means $fg \in R$)!
 This concludes the proof that $B^A$ is $J$-separated.
 
@@ -95,7 +95,7 @@ put together a section for a [[patch]] $p$ for a $J$-covering sieve $R$,
 it suffices to do so at each component; so we'll start by showing that
 $p$ descends to a patch $p'$ for $B(U)$ on $f^*R$, for any $f : V \to
 U$, as long as we're given $x : A(V)$. Each part of $p'$ is given by
-evaluating the correspoding part of $p$:
+evaluating the corresponding part of $p$:
 
 ```agda
   module _ {U} {c : J .covers U} (p : Patch psh (J .cover c)) where
