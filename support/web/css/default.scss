@@ -52,7 +52,7 @@ html, body, main, div#post-toc-container {
     display: revert;
   }
 
-  &.justified {
+  &.justified article {
     p, li, summary, blockquote {
       text-align: justify;
       hyphens: auto;
