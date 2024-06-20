@@ -120,7 +120,7 @@ opaque
 S¹-concrete : ConcreteGroup lzero
 S¹-concrete .B = S¹∙
 S¹-concrete .has-is-connected = S¹-is-connected
-S¹-concrete .has-is-groupoid = hlevel 3
+S¹-concrete .has-is-groupoid = S¹-is-groupoid
 ```
 
 ## The category of concrete groups
@@ -409,7 +409,7 @@ need to bend the path into a `Square`{.Agda}:
   linv = funext∙ g≡f ptg≡ptf
 ```
 
-*Phew*. At last, `π₁F`{.Agda} is fully faithful.
+At last, `π₁F`{.Agda} is fully faithful.
 
 ```agda
 π₁F-is-ff : is-fully-faithful (π₁F {ℓ})
@@ -428,11 +428,11 @@ this lets us conclude with the desired equivalence.
   (λ {G} {H} → π₁F-is-ff {_} {G} {H})
   π₁F-is-split-eso
 
-π₁B-is-equiv : is-equiv (π₁B {ℓ})
-π₁B-is-equiv = is-cat-equivalence→equiv-on-objects
+Concrete≃Abstract : ConcreteGroup ℓ ≃ Group ℓ
+Concrete≃Abstract = _ , is-cat-equivalence→equiv-on-objects
   ConcreteGroups-is-category
   Groups-is-category
   π₁F-is-equivalence
 
-module Concrete≃Abstract {ℓ} = Equiv (_ , π₁B-is-equiv {ℓ})
+module Concrete≃Abstract {ℓ} = Equiv (Concrete≃Abstract {ℓ})
 ```

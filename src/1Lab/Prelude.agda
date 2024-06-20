@@ -33,7 +33,9 @@ open import 1Lab.Equiv.HalfAdjoint public
 open import 1Lab.Function.Surjection public
 
 open import 1Lab.Univalence public
-open import 1Lab.Univalence.SIP public
+open import 1Lab.Univalence.SIP
+  renaming (_≃[_]_ to _≃[_]s_)
+  public
 
 open import 1Lab.Type.Pi public
 open import 1Lab.Type.Sigma public

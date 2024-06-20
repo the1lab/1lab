@@ -220,6 +220,9 @@ $\hom(La,b) \cong \hom(a,Rb)$.
   R-adjunct-is-equiv : ∀ {a b} → is-equiv (R-adjunct {a} {b})
   R-adjunct-is-equiv = is-iso→is-equiv
     (iso L-adjunct R-L-adjunct L-R-adjunct)
+
+  adjunct-hom-equiv : ∀ {a b} → D.Hom (L.₀ a) b ≃ C.Hom a (R.₀ b)
+  adjunct-hom-equiv = L-adjunct , L-adjunct-is-equiv
 ```
 
 <!--

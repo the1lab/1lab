@@ -562,19 +562,6 @@ open is-equivalence
 open Precategory
 open _⊣_
 
-Id-is-equivalence : ∀ {o h} {C : Precategory o h} → is-equivalence {C = C} Id
-Id-is-equivalence {C = C} .F⁻¹ = Id
-Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .η x = C .id
-Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
-Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .η x = C .id
-Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
-Id-is-equivalence {C = C} .F⊣F⁻¹ .zig = C .idl _
-Id-is-equivalence {C = C} .F⊣F⁻¹ .zag = C .idl _
-Id-is-equivalence {C = C} .unit-iso x =
-  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
-Id-is-equivalence {C = C} .counit-iso x =
-  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
-
 unquoteDecl H-Level-is-precat-iso = declare-record-hlevel 1 H-Level-is-precat-iso (quote is-precat-iso)
 
 module
@@ -830,4 +817,94 @@ _∘Equivalence_ : Equivalence C D → Equivalence D E → Equivalence C E
   Equivalence.To G F∘ Equivalence.To F
 (F ∘Equivalence G) .Equivalence.To-equiv =
   is-equivalence-∘ (Equivalence.To-equiv G) (Equivalence.To-equiv F)
+```
+
+Unsurprisingly, the identity functor is an equivalence.
+
+```agda
+Id-is-equivalence : ∀ {o h} {C : Precategory o h} → is-equivalence {C = C} Id
+Id-is-equivalence {C = C} .F⁻¹ = Id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .η x = C .id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
+Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .η x = C .id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
+Id-is-equivalence {C = C} .F⊣F⁻¹ .zig = C .idl _
+Id-is-equivalence {C = C} .F⊣F⁻¹ .zag = C .idl _
+Id-is-equivalence {C = C} .unit-iso x =
+  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+Id-is-equivalence {C = C} .counit-iso x =
+  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+```
+
+### Preserving invertibility
+
+We can characterise equivalences as those adjunctions $L \vdash R$ that
+*preserve invertibility*, in the sense that the adjunct of an isomorphism
+$L(a) \cong b$ is an isomorphism $a \cong R(b)$ and vice versa;
+that is, the property of being invertible in $\cC$ is equivalent to
+the property of being invertible in $\cD$ [[over|equivalence over]]
+the adjunction's $\hom$-equivalence $(L(a) \to b) \simeq (a \to R(b))$.
+
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    {L : Functor C D} {R : Functor D C} (L⊣R : L ⊣ R)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module L = Fr L
+    module R = Fr R
+```
+-->
+
+```agda
+  preserves-invertibility : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
+  preserves-invertibility = ∀ {a b} →
+    D.is-invertible ≃[ adjunct-hom-equiv L⊣R {a} {b} ] C.is-invertible
+```
+
+Since the unit and counit of an adjunction are adjuncts of identities,
+it's not hard to see that they must be invertible if the adjunction
+preserves invertibility.
+
+```agda
+  preserves-invertibility→equivalence
+    : preserves-invertibility → is-equivalence L
+  preserves-invertibility→equivalence e .F⁻¹ = R
+  preserves-invertibility→equivalence e .F⊣F⁻¹ = L⊣R
+  preserves-invertibility→equivalence e .unit-iso c = C.invertible-cancelr
+    (R.F-map-invertible D.id-invertible)
+    (Equiv.to (e D.id _ refl) D.id-invertible)
+  preserves-invertibility→equivalence e .counit-iso d = D.invertible-cancell
+    (L.F-map-invertible C.id-invertible)
+    (Equiv.from (e _ _ (L-R-adjunct L⊣R _)) C.id-invertible)
+```
+
+The other direction is just as straightforward, since adjuncts are
+defined by composition with the (co)unit, and isomorphisms compose.
+
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    (F : Functor C D) (eqv : is-equivalence F)
+  where
+  private
+    module e = is-equivalence eqv
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Fr F
+    module F⁻¹ = Fr e.F⁻¹
+```
+-->
+
+```agda
+  equivalence→preserves-invertibility : preserves-invertibility e.F⊣F⁻¹
+  equivalence→preserves-invertibility = prop-over-ext
+    (adjunct-hom-equiv e.F⊣F⁻¹)
+    (hlevel 1) (hlevel 1)
+    (λ f inv → C.invertible-∘ (F⁻¹.F-map-invertible inv) (e.unit-iso _))
+    (λ f inv → D.invertible-∘ (e.counit-iso _) (F.F-map-invertible inv))
 ```

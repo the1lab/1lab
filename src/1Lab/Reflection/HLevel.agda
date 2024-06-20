@@ -2,6 +2,7 @@ open import 1Lab.Reflection.Signature
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.Record
 open import 1Lab.Reflection.Subst
+open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
@@ -235,6 +236,7 @@ private module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
 private variable
   ℓ ℓ' : Level
   A B C : Type ℓ
+  P Q : A → Type ℓ
 
 {-
 In addition to the top-level 'hlevel' entry point, there are quite a few
@@ -258,6 +260,15 @@ prop-ext!
   → (A → B) → (B → A)
   → A ≃ B
 prop-ext! = prop-ext (hlevel 1) (hlevel 1)
+
+prop-over-ext!
+  : (e : A ≃ B) (let module e = Equiv e)
+  → ⦃ ∀ {a} → H-Level (P a) 1 ⦄
+  → ⦃ ∀ {b} → H-Level (Q b) 1 ⦄
+  → (∀ (a : A) → P a → Q (e.to a))
+  → (∀ (b : B) → Q b → P (e.from b))
+  → P ≃[ e ] Q
+prop-over-ext! e = prop-over-ext e (hlevel 1) (hlevel 1)
 
 Σ-prop-path!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}

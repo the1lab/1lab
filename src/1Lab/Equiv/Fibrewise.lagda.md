@@ -1,11 +1,14 @@
 ---
 description: |
   We establish a correspondence between "fibrewise equivalences" and
-  equivalences of total spaces (Σ-types).
+  equivalences of total spaces (Σ-types), and define equivalences over.
 ---
 <!--
 ```agda
+open import 1Lab.Equiv.FromPath
 open import 1Lab.HLevel.Closure
+open import 1Lab.Type.Sigma
+open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -90,4 +93,63 @@ equiv→total always-eqv .is-eqv y =
     (total-fibres .fst)
     (total-fibres .snd)
     (always-eqv .is-eqv (y .snd))
+```
+
+## Equivalences over {defines="equivalence-over"}
+
+We can generalise the notion of fibrewise equivalence to families
+$P : A \to \ty$, $Q : B \to \ty$ over *different* base types,
+provided we have an equivalence $e : A \simeq B$. In that case, we
+say that $P$ and $Q$ are **equivalent over** $e$ if $P(a) \simeq Q(b)$
+whenever $a : A$ and $b : B$ are identified [[over|path over]] $e$.
+
+Using univalence, we can see this as a special case of [[dependent paths]],
+where the base type is taken to be the universe and the type family sends
+a type $A$ to the type of type families over $A$. However, the
+following explicit definition is easier to work with.
+
+<!--
+```agda
+module _ {ℓa ℓb} {A : Type ℓa} {B : Type ℓb} where
+```
+-->
+
+```agda
+  _≃[_]_ : ∀ {ℓp ℓq} (P : A → Type ℓp) (e : A ≃ B) (Q : B → Type ℓq) → Type _
+  P ≃[ e ] Q = ∀ (a : A) (b : B) → e .fst a ≡ b → P a ≃ Q b
+```
+
+While this definition is convenient to *use*, we provide helpers that
+make it easier to *build* equivalences over.
+
+<!--
+```agda
+  module _ {ℓp ℓq} {P : A → Type ℓp} {Q : B → Type ℓq} (e : A ≃ B) where
+    private module e = Equiv e
+```
+-->
+
+```agda
+    over-left→over : (∀ (a : A) → P a ≃ Q (e.to a)) → P ≃[ e ] Q
+    over-left→over e' a b p = e' a ∙e line→equiv (λ i → Q (p i))
+
+    over-right→over : (∀ (b : B) → P (e.from b) ≃ Q b) → P ≃[ e ] Q
+    over-right→over e' a b p = line→equiv (λ i → P (e.adjunctl p i)) ∙e e' b
+
+    prop-over-ext
+      : (∀ {a} → is-prop (P a))
+      → (∀ {b} → is-prop (Q b))
+      → (∀ (a : A) → P a → Q (e.to a))
+      → (∀ (b : B) → Q b → P (e.from b))
+      → P ≃[ e ] Q
+    prop-over-ext propP propQ P→Q Q→P a b p = prop-ext propP propQ
+      (subst Q p ∘ P→Q a)
+      (subst P (sym (e.adjunctl p)) ∘ Q→P b)
+```
+
+An equivalence over $e$ induces an equivalence of total spaces:
+
+```agda
+    over→total : P ≃[ e ] Q → Σ A P ≃ Σ B Q
+    over→total e' = Σ-ap e λ a → e' a (e.to a) refl
 ```
