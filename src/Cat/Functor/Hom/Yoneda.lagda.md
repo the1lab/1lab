@@ -15,7 +15,7 @@ open _=>_
 module Cat.Functor.Hom.Yoneda where
 ```
 
-# The Yoneda lemma
+# The Yoneda lemma {defines="yoneda-lemma"}
 
 <!--
 ```agda

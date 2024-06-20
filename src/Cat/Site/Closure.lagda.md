@@ -279,6 +279,10 @@ sieve belongs to the saturation in at most one way.
 
 <!--
 ```agda
+  instance
+    H-Level-∋ : ∀ {J : Coverage C ℓs} {U} {S : Sieve C U} {n} → H-Level (J ∋ S) (suc n)
+    H-Level-∋ = prop-instance squash
+
 module _ {o ℓ ℓs ℓp} {C : Precategory o ℓ} {J : Coverage C ℓs} {A : Functor (C ^op) (Sets ℓp)}  where
   open Cat C
 ```
