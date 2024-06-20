@@ -6,13 +6,17 @@ description: |
 ```agda
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Site.Instances.Canonical
 open import Cat.CartesianClosed.Locally
 open import Cat.Functor.Monadic.Crude
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Congruence
 open import Cat.Instances.Karoubi
+open import Cat.Instances.Sheaves
 open import Cat.Functor.Algebra
+open import Cat.Site.Closure
+open import Cat.Site.Base
 open import Cat.Regular
 
 open import Topoi.Base
@@ -102,3 +106,53 @@ _ = lcc→dependent-product
   (⇐) `lcc→dependent-product`{.Agda}
 
 ### A1.6 Subobject classifiers
+
+# C Toposes as spaces
+
+## C2 Sheaves on a site
+
+### C2.1 Sites and coverages
+
+<!--
+```agda
+_ = Coverage
+_ = Patch
+_ = is-separated₁
+_ = is-sheaf
+_ = is-separated
+_ = is-sheaf-maximal
+_ = is-sheaf-factor
+_ = is-sheaf-transitive
+_ = is-colim
+_ = is-universal-colim
+```
+-->
+
+* Definition 2.1.1: `Coverage`{.Agda}
+* Definition 2.1.2:
+  * *Compatible families*: `Patch`{.Agda}
+  * *Separated presheaves*: `is-separated₁`{.Agda}
+  * *Sheaves on a site*: `is-sheaf`{.Agda}, `is-separated`{.Agda}
+* Lemma 2.1.5: `is-sheaf-maximal`{.Agda}
+* Lemma 2.1.6: `is-sheaf-factor`{.Agda}
+* Lemma 2.1.7: `is-sheaf-transitive`{.Agda}, though see the warning there.
+* Example 2.1.12, *(universally) effective-epimorphic sieves*: `is-colim`{.Agda}, `is-universal-colim`{.Agda}
+
+### C2.2 The topos of sheaves
+
+See [[topos of sheaves]].
+
+<!--
+```agda
+_ = Sheafification-is-reflective
+_ = Sh[]-is-complete
+_ = Sh[]-is-cocomplete
+_ = Sh[]-cc
+```
+-->
+
+* Proposition 2.2.6:
+  * *Reflectivity*: `Sheafification-is-reflective`{.Agda}
+  * *Completeness*: `Sh[]-is-complete`{.Agda}
+  * *Cocompleteness*: `Sh[]-is-cocomplete`{.Agda}
+  * *Cartesian closure*: `Sh[]-cc`{.Agda}

@@ -28,7 +28,6 @@ open Lub
 module _ {o ℓ} {P : Poset o ℓ} (l : is-join-semilattice P) where
   open is-join-semilattice l
   open Poset P
-
 ```
 -->
 

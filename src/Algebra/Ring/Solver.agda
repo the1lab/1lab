@@ -175,11 +175,16 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   sem [+] = R._+_
   sem [*] = R._*_
 
-  ⟦_⟧ : ∀ {n} → Polynomial n → Vec R n → R
-  ⟦ op o p₁ p₂ ⟧ ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
-  ⟦ con c      ⟧ ρ = embed-coe (lift c)
-  ⟦ var x      ⟧ ρ = lookup ρ x
-  ⟦ :- p       ⟧ ρ = R.- ⟦ p ⟧ ρ
+  eval : ∀ {n} → Polynomial n → Vec R n → R
+
+  instance
+    ⟦⟧-Polynomial : ∀ {n} → ⟦⟧-notation (Polynomial n)
+    ⟦⟧-Polynomial = brackets _ eval
+
+  eval (op o p₁ p₂) ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
+  eval (con c)      ρ = embed-coe (lift c)
+  eval (var x)      ρ = lookup ρ x
+  eval (:- p)       ρ = R.- ⟦ p ⟧ ρ
 
   ---
 

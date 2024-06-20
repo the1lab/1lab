@@ -176,30 +176,32 @@ module _ {κ} {C : Precategory κ κ} where
     module C = Cat.Reasoning C
     module PSh = Cat.Reasoning (PSh κ C)
 
+  open Binary-products (PSh κ C) (PSh-products {C = C})
+
+  PSh[_,_] : PSh.Ob → PSh.Ob → PSh.Ob
+  PSh[ A , B ] = F module psh-exp where
+    module A = Functor A
+    module B = Functor B
+
+    F : PSh.Ob
+    F .F₀ c = el ((よ₀ C c ⊗₀ A) => B) Nat-is-set
+    F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
+    F .F₁ f nt .is-natural x y g = funext λ o →
+      ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
+    F .F-id = ext λ f i g x →
+      ap (f .η i) (Σ-pathp (C.idl _) refl)
+    F .F-∘ f g = ext λ h i j x →
+      ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
+
+  {-# DISPLAY psh-exp.F A B = PSh[ A , B ] #-}
+
   PSh-closed : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
   PSh-closed = cc where
     cat = PSh κ C
 
-    open Binary-products cat (PSh-products {C = C}) public
-
     module _ (A : PSh.Ob) where
-      module A = Functor A
-
-      hom₀ : PSh.Ob → PSh.Ob
-      hom₀ B = F where
-        module B = Functor B
-        F : PSh.Ob
-        F .F₀ c = el ((よ₀ C c ⊗₀ A) => B) Nat-is-set
-        F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
-        F .F₁ f nt .is-natural x y g = funext λ o →
-          ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
-        F .F-id = ext λ f i g x →
-          ap (f .η i) (Σ-pathp (C.idl _) refl)
-        F .F-∘ f g = ext λ h i j x →
-          ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
-
       func : Functor (PSh κ C) (PSh κ C)
-      func .F₀ = hom₀
+      func .F₀ = PSh[ A ,_]
       func .F₁ f .η i g .η j (h , x) = f .η _ (g .η _ (h , x))
       func .F₁ f .η i g .is-natural x y h = funext λ x →
         ap (f .η _) (happly (g .is-natural _ _ _) _) ∙ happly (f .is-natural _ _ _) _

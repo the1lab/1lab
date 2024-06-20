@@ -351,7 +351,7 @@ patchBlock _ (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes
     need [ light, dark ]
     diagramHeight light
 
-  let attrs' = ("style", "height: " <> Text.pack (show height) <> "px;"):attrs
+  let attrs' = ("style", "--height: " <> Text.pack (show height) <> "px;"):attrs
 
   pure $ Div ("", ["diagram-container"], [])
     [ Plain [ Image (id, "diagram diagram-light":classes, attrs') [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
