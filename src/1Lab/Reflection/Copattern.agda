@@ -121,18 +121,32 @@ they cannot be quoted into any `Type ℓ`. With this in mind,
 we also provide a pair of macros that work over `Typeω` instead.
 -}
 
-declare-copattern-levels : ∀ {U : Typeω} → Name → U → TC ⊤
+-- Helper for the 'define' macros; Unifies the given goal with the type
+-- of the given function, if it has been defined. If the function has
+-- not been defined, and the first argument is 'false', then an error is
+-- raised.
+type-for : Bool → Name → Term → TC ⊤
+type-for decl? fun goal with decl?
+... | true  = (unify goal =<< get-type fun) <|> pure tt
+... | false = (unify goal =<< get-type fun) <|> typeError
+  [ "define-copattern-levels: the function " , nameErr fun , " should already have been declared."
+  ]
+
+declare-copattern-levels
+  : (nm : Name) {@(tactic (type-for true nm)) U : Typeω}
+  → U → TC ⊤
 declare-copattern-levels nm A = do
   `A ← quoteωTC A
   -- Cannot quote things in type Typeω, but we can infer their type.
   `U ← infer-type `A
   make-copattern true nm `A `U
 
-define-copattern-levels : ∀ {U : Typeω} → Name → U → TC ⊤
+define-copattern-levels
+  : (nm : Name) {@(tactic (type-for false nm)) U : Typeω}
+  → U → TC ⊤
 define-copattern-levels nm A = do
   `A ← quoteωTC A
-  -- Cannot quote things in type Typeω, but we can infer their type.
-  `U ← infer-type `A
+  `U ← get-type nm
   make-copattern false nm `A `U
 
 {-
@@ -200,9 +214,14 @@ private module Test where
   neat a .Record.f _ = a
   neat a .Record.const = refl
 
+  -- Implicit insertion is correct for the define- macro, since the type
+  -- of the function is given.
   cool : ∀ {ℓ} {A : Type ℓ} → A → Record A
-  unquoteDef cool = define-copattern-levels cool λ {ℓ} {A : Type ℓ} → neat
+  unquoteDef cool = define-copattern-levels cool neat
 
   -- Eta-expanders
   expander : ∀ {m n : Nat} → Unused m → Unused n
   unquoteDef expander = define-eta-expansion expander
+
+  -- Raises a type error: the function should have a declaration.
+  -- unquoteDecl uncool = define-copattern-levels uncool neat
