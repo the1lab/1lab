@@ -29,31 +29,40 @@ make-copattern declare? def-name tm tp = do
 
       -- Agda will insert implicits when defining copatterns even
       -- with 'withExpandLast true', so we need to do implicit instantiation
-      -- by hand. First, we strip off all leading implicits from the field type.
-      let (implicit-tele , tp) = pi-impl-view field-tp
-      let nimplicits = length implicit-tele
-      let clause-tele = tele ++ implicit-tele
+      -- by hand. There are also cases where it's better to fully
+      -- eta-expand than not (e.g. the 'helper' we're expanding has a
+      -- field defined by lazy matching, which does not reduce unless
+      -- applied, and would cause duplication of the big input term). So
+      -- we fully eta-expand clauses here.
+      -- First, we strip off all leading quantifiers from the field
+      -- type.
+      let
+        (field-tele , tp) = pi-view field-tp
+        nargs = length field-tele
+        clause-tele = tele ++ field-tele
 
-      -- Construct the pattern portion of the clause, making sure to bind
-      -- all implicit variables. Note that copattern projections are always visible.
-      let pat =
-            tel→pats nimplicits tele ++
-            arg (set-visibility visible field-info) (proj field-name) ∷
-            tel→pats 0 implicit-tele
+      -- Construct the pattern portion of the clause, making sure to
+      -- bind all variables. Note that copattern projections are always
+      -- visible.
+      let
+        pat = tel→pats nargs tele ++
+          arg (set-visibility visible field-info) (proj field-name) ∷
+          tel→pats 0 field-tele
 
-      -- Construct the body of the clause, making sure to apply all arguments
-      -- bound outside the copattern match, and instantiate all implicit arguments.
-      -- We also need to apply all of the implicit arguments to 'tm'.
+      -- Construct the body of the clause, making sure to apply all
+      -- arguments bound outside the copattern match, and apply the
+      -- eta-expanded arguments. We also need to apply all of the
+      -- implicit arguments to 'tm'.
       body ←
         in-context (reverse clause-tele) $
-        reduce (def field-name (argN (raise nimplicits inst-tm) ∷ tel→args 0 implicit-tele))
+        reduce (def field-name (raise nargs inst-tm v∷ tel→args 0 field-tele))
 
       -- Construct the final clause.
       pure $ clause clause-tele pat body
 
   -- Define a copattern binding, and predeclare its type if required.
   case declare? of λ where
-    true → declare (argN def-name) tp
+    true  → declare (argN def-name) tp <|> pure tt
     false → pure tt
 
   -- Construct the final copattern.
@@ -82,6 +91,17 @@ repack-record tm tp = do
   -- Builld a pointwise repacking.
   pure (tel→lam tele (con ctor args))
 
+-- Helper for the 'define' macros; Unifies the given goal with the type
+-- of the given function, if it has been defined. If the function has
+-- not been defined, and the first argument is 'false', then an error is
+-- raised.
+type-for : String → Bool → Name → Term → TC ⊤
+type-for tac decl? fun goal with decl?
+... | true  = (unify goal =<< get-type fun) <|> pure tt
+... | false = (unify goal =<< get-type fun) <|> typeError
+  [ "define-" , strErr tac , ": the function " , nameErr fun , " should already have been declared."
+  ]
+
 --------------------------------------------------------------------------------
 -- Usage
 
@@ -94,8 +114,10 @@ If you wish to give the binding a type annotation, you can also use
 >  copat : Your-type
 >  unquoteDecl copat = declare-copattern copat thing-to-be-expanded
 
-All features of non-recursive records are supported, including instance
-fields and fields with implicit arguments.
+Note that, in this case, the thing-to-be-expanded must have exactly the
+same type as the binding `copat`. All features of non-recursive records
+are supported, including instance fields and fields with implicit
+arguments.
 
 These macros also allow you to lift functions 'A → some-record-type'
 into copattern definitions. Note that Agda will generate meta for
@@ -109,10 +131,13 @@ declare-copattern {A = A} nm x = do
   `A ← quoteTC A
   make-copattern true nm `x `A
 
-define-copattern : ∀ {ℓ} {A : Type ℓ} → Name → A → TC ⊤
-define-copattern {A = A} nm x = do
-  `x ← quoteTC x
+define-copattern
+  : ∀ {ℓ} (nm : Name)
+  → {@(tactic (type-for "copattern" true nm)) A : Type ℓ}
+  → A → TC ⊤
+define-copattern nm {A = A} x = do
   `A ← quoteTC A
+  `x ← define-abbrev nm "value" `A =<< quoteTC x
   make-copattern false nm `x `A
 
 {-
@@ -121,32 +146,19 @@ they cannot be quoted into any `Type ℓ`. With this in mind,
 we also provide a pair of macros that work over `Typeω` instead.
 -}
 
--- Helper for the 'define' macros; Unifies the given goal with the type
--- of the given function, if it has been defined. If the function has
--- not been defined, and the first argument is 'false', then an error is
--- raised.
-type-for : Bool → Name → Term → TC ⊤
-type-for decl? fun goal with decl?
-... | true  = (unify goal =<< get-type fun) <|> pure tt
-... | false = (unify goal =<< get-type fun) <|> typeError
-  [ "define-copattern-levels: the function " , nameErr fun , " should already have been declared."
-  ]
-
-declare-copattern-levels
-  : (nm : Name) {@(tactic (type-for true nm)) U : Typeω}
-  → U → TC ⊤
-declare-copattern-levels nm A = do
+declare-copatternω : ∀ {U : Typeω} → Name → U → TC ⊤
+declare-copatternω nm A = do
   `A ← quoteωTC A
   -- Cannot quote things in type Typeω, but we can infer their type.
   `U ← infer-type `A
   make-copattern true nm `A `U
 
-define-copattern-levels
-  : (nm : Name) {@(tactic (type-for false nm)) U : Typeω}
+define-copatternω
+  : (nm : Name) {@(tactic (type-for "copatternω" false nm)) U : Typeω}
   → U → TC ⊤
-define-copattern-levels nm A = do
-  `A ← quoteωTC A
+define-copatternω nm A = do
   `U ← get-type nm
+  `A ← define-abbrev nm "value" `U =<< quoteωTC A
   make-copattern false nm `A `U
 
 {-
@@ -206,7 +218,11 @@ private module Test where
   zero-unused-param = record { actual = 0 }
 
   one-unused-param : ∀ {n} → Unused n
-  unquoteDef one-unused-param = define-copattern one-unused-param zero-unused-param
+  unquoteDef one-unused-param = declare-copattern one-unused-param zero-unused-param
+  -- This is a type error:
+  -- unquoteDef one-unused-param = define-copattern one-unused-param zero-unused-param
+  -- because the 'define' macro propagates the type of the thing being
+  -- defined inwards.
 
   -- Functions into records that are universe polymorphic
   neat : ∀ {ℓ} {A : Type ℓ} → A → Record A
@@ -217,11 +233,11 @@ private module Test where
   -- Implicit insertion is correct for the define- macro, since the type
   -- of the function is given.
   cool : ∀ {ℓ} {A : Type ℓ} → A → Record A
-  unquoteDef cool = define-copattern-levels cool neat
+  unquoteDef cool = define-copatternω cool neat
 
   -- Eta-expanders
   expander : ∀ {m n : Nat} → Unused m → Unused n
   unquoteDef expander = define-eta-expansion expander
 
   -- Raises a type error: the function should have a declaration.
-  -- unquoteDecl uncool = define-copattern-levels uncool neat
+  -- unquoteDecl uncool = define-copatternω uncool neat

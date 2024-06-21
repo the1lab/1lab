@@ -603,7 +603,7 @@ forms a full subcategory of $\cC$.
   private module Free-algebras = Cat.Reasoning Free-algebras
   module Free-alg (α : Free-algebras.Ob) where
     -- Rexport stuff in a more user-friendly format
-    open Free-object (α .witness) public
+    open Free-object (α .snd) public
 
     ob : Ob
     ob = free .fst

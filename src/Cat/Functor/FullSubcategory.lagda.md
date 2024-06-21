@@ -34,18 +34,9 @@ subgraphs" of the categorical world: Keep only some of the vertices
 (objects), but all of the arrows (arrows) between them.
 
 ```agda
-record Restrict-ob (P : C.Ob → Type ℓ) : Type (o ⊔ ℓ) where
-  no-eta-equality
-  constructor restrict
-  field
-    object  : C.Ob
-    witness : P object
-
-open Restrict-ob public
-
 Restrict : (P : C.Ob → Type ℓ) → Precategory (o ⊔ ℓ) h
-Restrict P .Ob = Restrict-ob P
-Restrict P .Hom A B = C.Hom (A .object) (B .object)
+Restrict P .Ob = Σ[ O ∈ C ] (P O)
+Restrict P .Hom A B = C.Hom (A .fst) (B .fst)
 Restrict P .Hom-set _ _ = C.Hom-set _ _
 Restrict P .id    = C.id
 Restrict P ._∘_   = C._∘_
@@ -53,19 +44,6 @@ Restrict P .idr   = C.idr
 Restrict P .idl   = C.idl
 Restrict P .assoc = C.assoc
 ```
-
-<!--
-```agda
-Restrict-ob-path
-  : ∀ {P : C.Ob → Type ℓ}
-  → {x y : Restrict-ob P}
-  → (p : x .object ≡ y .object)
-  → PathP (λ i → P (p i)) (x .witness) (y .witness)
-  → x ≡ y
-Restrict-ob-path p q i .object = p i
-Restrict-ob-path p q i .witness = q i
-```
--->
 
 A very important property of full subcategories (`Restrict`{.Agda}ions)
 is that _any full subcategory of a [[univalent category]] is univalent_. The
@@ -85,11 +63,11 @@ $\cR$ here) and in $\cC$, which can be done by destructuring and
 reassembling:
 
 ```agda
-  sub-iso→super-iso : ∀ {A B : Restrict-ob P} → (A R.≅ B) → (A .object C.≅ B .object)
+  sub-iso→super-iso : ∀ {A B : Σ _ P} → (A R.≅ B) → (A .fst C.≅ B .fst)
   sub-iso→super-iso x = C.make-iso x.to x.from x.invl x.invr
     where module x = R._≅_ x
 
-  super-iso→sub-iso : ∀ {A B : Restrict-ob P} → (A .object C.≅ B .object) → (A R.≅ B)
+  super-iso→sub-iso : ∀ {A B : Σ _ P} → (A .fst C.≅ B .fst) → (A R.≅ B)
   super-iso→sub-iso y = R.make-iso y.to y.from y.invl y.invr
     where module y = C._≅_ y
 ```
@@ -108,10 +86,10 @@ is $\cR$.
 ```agda
   Restrict-is-category : is-category C → is-category (Restrict P)
   Restrict-is-category cids = λ where
-    .to-path im i .object → Univalent.iso→path cids (sub-iso→super-iso P im) i
-    .to-path {a = a} {b = b} im i .witness → is-prop→pathp
+    .to-path im i .fst → Univalent.iso→path cids (sub-iso→super-iso P im) i
+    .to-path {a = a} {b = b} im i .snd → is-prop→pathp
       (λ i → pprop (cids .to-path (sub-iso→super-iso P im) i))
-      (a .witness) (b .witness) i
+      (a .snd) (b .snd) i
     .to-path-over p → R.≅-pathp _ _ λ i → cids .to-path-over (sub-iso→super-iso P p) i .C.to
 ```
 
@@ -140,7 +118,7 @@ functor from $\cD$. This functor is actually just $F$ again:
 
 ```agda
   Ff-domain→Full-subcat : Functor D Full-inclusion→Full-subcat
-  Ff-domain→Full-subcat .Functor.F₀ x = restrict (F₀ x) (inc (x , C.id-iso))
+  Ff-domain→Full-subcat .Functor.F₀ x = F₀ x , inc (x , C.id-iso)
   Ff-domain→Full-subcat .Functor.F₁ = F₁
   Ff-domain→Full-subcat .Functor.F-id = F-id
   Ff-domain→Full-subcat .Functor.F-∘ = F-∘
@@ -151,7 +129,7 @@ functor from $\cD$. This functor is actually just $F$ again:
   is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
   is-eso-domain→Full-subcat yo =
     ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ isom)
-      (yo .witness)
+      (yo .snd)
 ```
 
 Up to weak equivalence, admitting a full inclusion is equivalent to
@@ -162,7 +140,7 @@ morphisms by the identity function.
 ```agda
 module _ {P : C.Ob → Type ℓ} where
   Forget-full-subcat : Functor (Restrict P) C
-  Forget-full-subcat .Functor.F₀ = object
+  Forget-full-subcat .Functor.F₀ = fst
   Forget-full-subcat .Functor.F₁ f = f
   Forget-full-subcat .Functor.F-id = refl
   Forget-full-subcat .Functor.F-∘ f g i = f C.∘ g

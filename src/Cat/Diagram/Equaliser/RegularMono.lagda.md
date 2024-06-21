@@ -43,7 +43,7 @@ is an [[equaliser]] of some pair of arrows $g, h : b \to c$.
       {c}       : Ob
       arr₁ arr₂ : Hom b c
       has-is-eq : is-equaliser C arr₁ arr₂ f
-  
+
     open is-equaliser has-is-eq public
 ```
 
@@ -53,7 +53,7 @@ are in fact monomorphisms:
 ```agda
     is-regular-mono→is-mono : is-monic f
     is-regular-mono→is-mono = is-equaliser→is-monic _ has-is-eq
-  
+
   open is-regular-mono using (is-regular-mono→is-mono) public
 ```
 
@@ -126,7 +126,7 @@ $\phi \circ i_2 = \rm{arr_2}$.
 ```agda
     phi : Hom f⊔f.coapex reg.c
     phi = f⊔f.universal reg.equal
-  
+
     open is-effective-mono
     mon : is-effective-mono C f
     mon .cokernel = f⊔f.coapex
@@ -201,12 +201,12 @@ the code below demonstrates.
     → M-image C (is-regular-mono C , is-regular-mono→is-mono) f
   is-effective-mono→image {f = f} mon = im where
     module eff = is-effective-mono mon
-  
+
     itself : ↓Obj _ _
     itself .x = tt
-    itself .y = restrict (cut f) eff.is-effective-mono→is-regular-mono
+    itself .y = cut f , eff.is-effective-mono→is-regular-mono
     itself .map = record { map = id ; commutes = idr _ }
-  
+
     im : Initial _
     im .bot = itself
     im .has⊥ other = contr hom unique where
@@ -214,7 +214,7 @@ the code below demonstrates.
       hom .α = tt
       hom .β = other .map
       hom .sq = trivial!
-  
+
       unique : ∀ x → hom ≡ x
       unique x = ↓Hom-path _ _ refl
         (ext (intror refl ∙ ap map (x .sq) ∙ elimr refl))

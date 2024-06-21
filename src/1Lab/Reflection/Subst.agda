@@ -142,7 +142,7 @@ subst-tm ρ (agda-sort s) with s
 subst-tel ρ []                    = []
 subst-tel ρ ((x , arg ai t) ∷ xs) = (x , arg ai (subst-tm ρ t)) ∷ subst-tel (liftS 1 ρ) xs
 
-subst-clause σ (clause tel ps t)      = clause (subst-tel σ tel) ps (subst-tm (wkS (length tel) σ) t)
+subst-clause σ (clause tel ps t)      = clause (subst-tel σ tel) ps (subst-tm (liftS (length tel) σ) t)
 subst-clause σ (absurd-clause tel ps) = absurd-clause (subst-tel σ tel) ps
 
 _<#>_ : Term → Arg Term → Term

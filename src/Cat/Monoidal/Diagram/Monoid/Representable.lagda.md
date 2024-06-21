@@ -257,8 +257,8 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
 
 ```agda
   Mon→RepPShMon : Functor Mon[C] RepPShMon
-  Mon→RepPShMon .F₀ (m , mon) .object  = Mon→PshMon mon
-  Mon→RepPShMon .F₀ (m , mon) .witness = Mon→PshMon-rep mon
+  Mon→RepPShMon .F₀ (m , mon) .fst = Mon→PshMon mon
+  Mon→RepPShMon .F₀ (m , mon) .snd = Mon→PshMon-rep mon
 
   Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
   Mon→RepPShMon .F₁ f .η x .preserves =
@@ -493,13 +493,12 @@ monoids isomorphic to the one we started with.
 
 ```agda
   Mon→RepPShMon-is-split-eso : is-split-eso Mon→RepPShMon
-  Mon→RepPShMon-is-split-eso P .fst =
-    P .witness .rep , RepPshMon→Mon (P .object) (P .witness)
-  Mon→RepPShMon-is-split-eso P .snd = super-iso→sub-iso _ $ to-natural-iso ni where
+  Mon→RepPShMon-is-split-eso (P , pm) .fst = pm .rep , RepPshMon→Mon P pm
+  Mon→RepPShMon-is-split-eso (P , pm) .snd = super-iso→sub-iso _ $ to-natural-iso ni where
     open make-natural-iso
-    open RepPshMon→Mon (P .object) (P .witness)
+    open RepPshMon→Mon P pm
     open PMon using (identity; _⋆_)
-    module P = Functor (P .object)
+    module P = Functor P
 ```
 
 <details>
@@ -507,7 +506,7 @@ monoids isomorphic to the one we started with.
 expand this `<details>` element.</summary>
 
 ```agda
-    ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon (P .object) (P .witness))) (P .object)
+    ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon P pm)) P
     ni .eta x .hom = repr.from .η x
     ni .inv x .hom = repr.to .η x
 

@@ -283,7 +283,7 @@ strong-epi-mono→image f a→im (_ , str-epi) im→b mono fact = go where
 
   obj : ↓Obj (Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})
   obj .x = tt
-  obj .y = restrict (cut im→b) mono
+  obj .y = cut im→b , mono
   obj .map = record { map = a→im ; commutes = fact }
 ```
 
@@ -300,7 +300,7 @@ in the relevant comma categories.
 
     the-lifting =
       str-epi
-        (record { monic = o.y .witness })
+        (record { monic = o.y .snd })
         {u = o.map .map}
         {v = im→b} (sym (o.map .commutes ∙ sym fact))
 
