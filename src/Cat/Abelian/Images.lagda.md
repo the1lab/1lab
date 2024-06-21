@@ -53,8 +53,8 @@ images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
   the-img : ↓Obj (const! (cut f)) Forget-full-subcat
   the-img .x = tt
-  the-img .y .object = cut (Ker.kernel (Coker.coeq f))
-  the-img .y .witness {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
+  the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
+  the-img .y .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
 ```
 
 Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
@@ -128,7 +128,7 @@ a (unique) map $\coker (\ker f) \to X$ s.t. the triangle above commutes!
       where abstract
         path : other .map .map ∘ 0m ≡ other .map .map ∘ kernel f .Kernel.kernel
         path =
-          other .y .witness _ _ $ sym $
+          other .y .snd _ _ $ sym $
                 pulll (other .map .commutes)
             ·· Ker.equal f
             ·· ∅.zero-∘r _
@@ -154,14 +154,14 @@ is the image of $f$.
                           (coker-ker≃ker-coker f .is-invertible.invr))) refl
               ∙ pullr (Coker.factors _) ∙ other .map .commutes)
         (sym (decompose f .snd ∙ assoc _ _ _))
-    factor .sq = /-Hom-path $ sym $ other .y .witness _ _ $
+    factor .sq = /-Hom-path $ sym $ other .y .snd _ _ $
       pulll (factor .β .commutes)
       ∙ the-img .map .commutes
       ·· sym (other .map .commutes)
-      ·· ap (other .y .object .map ∘_) (intror refl)
+      ·· ap (other .y .fst .map ∘_) (intror refl)
 
     unique : ∀ x → factor ≡ x
-    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .witness _ _ $
+    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .snd _ _ $
       sym (x .β .commutes ∙ sym (factor .β .commutes))
 ```
 </details>

@@ -124,10 +124,10 @@ is the image object, and $m$ is the inclusion map:
 
 ```agda
     Im : Ob
-    Im = im .bot .y .object .domain
+    Im = im .bot .y .fst .domain
 
     Im→codomain : Hom Im b
-    Im→codomain = im .bot .y .object .map
+    Im→codomain = im .bot .y .fst .map
 ```
 
 Furthermore, this map is both an inclusion (since $M$ is a class of
@@ -135,7 +135,7 @@ monomorphisms), and an $M$-inclusion at that:
 
 ```agda
     Im→codomain-is-M : M .fst Im→codomain
-    Im→codomain-is-M = im .bot .y .witness
+    Im→codomain-is-M = im .bot .y .snd
 
     Im→codomain-is-monic : is-monic Im→codomain
     Im→codomain-is-monic = M .snd Im→codomain-is-M
@@ -175,7 +175,7 @@ through $k$:
     universal m M i p = im .has⊥ obj .centre .β .map where
       obj : ↓Obj _ _
       obj .x = tt
-      obj .y = restrict (cut m) M
+      obj .y = cut m , M
       obj .map = record { map = i ; commutes = p }
 
     universal-factors

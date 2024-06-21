@@ -9,6 +9,7 @@ open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sheaves.Limits
 open import Cat.Functor.Adjoint.Monadic
+open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Colimit.Base

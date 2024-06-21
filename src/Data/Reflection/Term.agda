@@ -34,7 +34,7 @@ data Term where
   pi        : (a : Arg Term) (b : Abs Term) → Term
   agda-sort : (s : Sort) → Term
   lit       : (l : Literal) → Term
-  meta      : (x : Meta) → List (Arg Term) → Term
+  meta      : (m : Meta) (args : List (Arg Term)) → Term
   unknown   : Term
 
 data Sort where
@@ -463,3 +463,21 @@ instance
 pattern con₀ v = con v []
 pattern def₀ v = def v []
 pattern var₀ v = var v []
+
+-- Test whether a term is "hereditarily atomic", i.e. it is a head
+-- application and all of its arguments are hereditarily atomic.
+is-atomic-tree? : Term → Bool
+is-atomic-args? : List (Arg Term) → Bool
+
+is-atomic-tree? (var x args)  = is-atomic-args? args
+is-atomic-tree? (con c args)  = is-atomic-args? args
+is-atomic-tree? (def f args)  = is-atomic-args? args
+is-atomic-tree? (meta m args) = is-atomic-args? args
+is-atomic-tree? (lit l)       = true
+{-# CATCHALL #-}
+is-atomic-tree? _             = false
+
+is-atomic-args? [] = true
+is-atomic-args? (arg _ x ∷ xs) with is-atomic-tree? x
+... | true  = is-atomic-args? xs
+... | false = false

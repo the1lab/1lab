@@ -211,6 +211,18 @@ helper-function def-nm suf ty cls = do
     _  → define-function nm cls
   pure nm
 
+-- Given a well-typed `val : ty`, return a definitionally-equal atomic
+-- term equal to `val`, potentially by lifting it into the signature.
+-- See 'helper-function' for the naming scheme.
+define-abbrev : Name → String → Term → Term → TC Term
+define-abbrev def-nm suf ty val with is-atomic-tree? val
+... | true  = pure val
+... | false = do
+  let (tel , _) = pi-impl-view ty
+  nm ← helper-function def-nm suf ty
+    [ clause tel (tel→pats 0 tel) (apply-tm* val (tel→args 0 tel)) ]
+  pure (def₀ nm)
+
 private
   make-args : Nat → List (Arg Nat) → List (Arg Term)
   make-args n xs = reverse $ map (λ (arg ai i) → arg ai (var (n - i - 1) [])) xs

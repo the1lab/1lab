@@ -1,5 +1,8 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Copattern
+
+open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Functor
 open import Cat.Diagram.Sieve
 open import Cat.Prelude hiding (glue)
@@ -561,14 +564,8 @@ $\psh(\cC)$'s good categorical properties --- we refer to it as the
   Sheaf = Σ[ p ∈ Functor (C ^op) (Sets ℓs) ] is-sheaf J p
 
   Sheaves : Precategory (o ⊔ ℓ ⊔ ℓc ⊔ lsuc ℓs) (o ⊔ ℓ ⊔ ℓs)
-  Sheaves .Ob = Sheaf
-  Sheaves .Hom (S , _) (T , _) = S => T
-  Sheaves .Hom-set _ _ = hlevel 2
-  Sheaves .id  = idnt
-  Sheaves ._∘_ = _∘nt_
-  Sheaves .idr   f     = trivial!
-  Sheaves .idl   f     = trivial!
-  Sheaves .assoc f g h = trivial!
+  unquoteDef Sheaves = define-copattern Sheaves $
+    Restrict {C = PSh ℓs C} (is-sheaf J)
 
   forget-sheaf : Functor Sheaves (PSh ℓs C)
   forget-sheaf .F₀ (S , _) = S
