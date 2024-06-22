@@ -1,10 +1,12 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality.Reflection
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Shape.Terminal
 open import Cat.CartesianClosed.Locally
 open import Cat.Instances.Slice.Colimit
+open import Cat.Functor.Kan.Reflection
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Join
@@ -302,16 +304,7 @@ repackaging data between "obviously isomorphic" functors.
 
 ```agda
   step2→1 : step2 → has-stable-colimits
-  step2→1 u f F {K} {eta} =
-      natural-isos→is-lan idni
-        (iso→isoⁿ (λ _ → C/.id-iso) (λ _ → ext id-comm))
-        (iso→⊤-natural-iso C/.id-iso)
-        (ext λ j → eliml (eliml (ap map ((Base-change pb f F∘ K) .F-id))) ∙ idr _)
-    ⊙ u _ _ α eq
-    ⊙ natural-isos→is-lan idni
-        (iso→isoⁿ (λ j → C/.id-iso) λ f → ext id-comm)
-        (iso→⊤-natural-iso C/.id-iso)
-        (ext λ j → eliml (idl _) ∙ idr _)
+  step2→1 u f F {K} {eta} = trivial-is-lan! ⊙ u _ _ α eq ⊙ trivial-is-lan!
     where
       α : cocone/→cocone▹ (Base-change pb f F∘ cocone→cocone▹ eta)
        => cocone/→cocone▹ (cocone→cocone▹ eta)
@@ -357,10 +350,7 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
       prop-ext!
         (Forget/-preserves-colimits _ (J-colims _))
         (Forget/-reflects-colimits _)
-      ∙e natural-isos→lan-equiv idni
-        (iso→isoⁿ (λ _ → id-iso) (λ _ → id-comm))
-        (iso→⊤-natural-iso id-iso)
-        (ext λ j → eliml (idl _) ∙ idr _)
+      ∙e trivial-lan-equiv!
 
     step2≃3 : step2 ≃ step3
     step2≃3 = Π-cod≃ λ F → Π-cod≃ λ G → Π-cod≃ λ α → Π-cod≃ λ eq →
@@ -379,10 +369,7 @@ retracts onto $\cJ^\triangleright$.
       ▹-retract
         : (F : Functor (J ▹) C)
         → is-colimit▹ ((F F∘ ▹-join) F∘ ▹-in) ≃ is-colimit▹ F
-      ▹-retract F = natural-isos→lan-equiv idni
-        (iso→isoⁿ (λ _ → id-iso) (λ _ → id-comm))
-        (iso→⊤-natural-iso id-iso)
-        (ext λ j → eliml (idl _) ∙ idr _)
+      ▹-retract F = trivial-lan-equiv!
 
   step4→3 : has-universal-colimits → step3
   step4→3 u F G α eq = u _ _ (α ◂ ▹-in) (◂-equifibred ▹-in α eq)

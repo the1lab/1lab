@@ -550,6 +550,11 @@ is a proposition:
       (a .is-natural x y f)
       (b .is-natural x y f) i
 
+  Nat-path : {a b : F => G}
+           → ((x : _) → a .η x ≡ b .η x)
+           → a ≡ b
+  Nat-path = Nat-pathp refl refl
+
   _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
   p ηₚ x = ap (λ e → e .η x) p
 
@@ -588,7 +593,7 @@ instance
     → Extensional (F => G) (o ⊔ ℓr)
   Extensional-natural-transformation ⦃ sa ⦄ .Pathᵉ f g = ∀ i → Pathᵉ sa (f .η i) (g .η i)
   Extensional-natural-transformation ⦃ sa ⦄ .reflᵉ x i = reflᵉ sa (x .η i)
-  Extensional-natural-transformation ⦃ sa ⦄ .idsᵉ .to-path x = Nat-pathp _ _ λ i →
+  Extensional-natural-transformation ⦃ sa ⦄ .idsᵉ .to-path x = Nat-path λ i →
     sa .idsᵉ .to-path (x i)
   Extensional-natural-transformation {D = D} ⦃ sa ⦄ .idsᵉ .to-path-over h =
     is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
