@@ -139,10 +139,10 @@ about colimits follows by duality.
 </summary>
 
 ```agda
-  conservative-reflects-colimits C-colim preservesa {K} {eps} FK-colim =
+  conservative-reflects-colimits C-colim preservesa {K} {eta} FK-colim =
     is-invertible→is-colimitp
       {K = Colimit.Ext C-colim} {etay = Colimit.cocone C-colim} (Colimit.has-colimit C-colim)
-      (eps .η) (λ f → eps .is-natural _ _ f ∙ C.eliml (K .F-id)) refl
+      (eta .η) (λ f → eta .is-natural _ _ f ∙ C.eliml (K .F-id)) refl
       $ conservative
       $ invert
 
@@ -157,7 +157,7 @@ about colimits follows by duality.
           (λ j → F .F₁ (C-colim.ψ j))
           (λ f → sym (F .F-∘ _ _) ∙ ap (F .F₁) (C-colim.commutes f))
 
-      invert : D.is-invertible (F .F₁ (C-colim.universal (eps .η) _))
+      invert : D.is-invertible (F .F₁ (C-colim.universal (eta .η) _))
       invert =
         D.make-invertible uinv
           (FK-colim.unique₂ _ (λ j → FK-colim.commutes j)

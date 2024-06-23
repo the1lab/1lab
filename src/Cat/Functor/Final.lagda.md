@@ -247,14 +247,14 @@ it in this `<details>`{.html} tag for the curious reader only.
         mc : make-is-colimit D coapex
         mc .ψ x = extend-cocone K .η x
         mc .commutes f = extend-cocone K .is-natural _ _ _ ∙ ℰ.idl _
-        mc .universal eps p =
-          colim.universal (λ j → eps (F.₀ j)) λ f → p (F.₁ f)
-        mc .factors {j} eps p =
+        mc .universal eta p =
+          colim.universal (λ j → eta (F.₀ j)) λ f → p (F.₁ f)
+        mc .factors {j} eta p =
           extend-cocone-elim K j
-            (λ ex → mc .universal eps p ℰ.∘ ex ≡ eps j)
+            (λ ex → mc .universal eta p ℰ.∘ ex ≡ eta j)
             (λ _ → hlevel 1)
             λ f → ℰ.pulll (colim.factors _ _) ∙ p (f .map)
-        mc .unique eps p other q =
+        mc .unique eta p other q =
           colim.unique _ _ _ λ j →
             sym (ℰ.refl⟩∘⟨ extend-cocone-is-iso .linv K ηₚ j)
             ∙ q (F.₀ j)

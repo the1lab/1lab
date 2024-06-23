@@ -115,13 +115,13 @@ with the relevant maps into $c$; this follows from the uniqueness of
 the universal map.
 
 ```agda
-      mk .universal eta' comm .map = UF-colim.universal
-        (λ j → eta' j .map)
+      mk .universal eta comm .map = UF-colim.universal
+        (λ j → eta j .map)
         (λ f → unext (comm f))
-      mk .universal eta' comm .commutes = ext (UF-colim.unique _ _ _ λ j →
-        C.pullr (UF-colim.factors _ _) ∙ eta' j .commutes)
-      mk .factors eta' comm = ext (UF-colim.factors _ _)
-      mk .unique eta' comm u fac = ext (UF-colim.unique _ _ _ λ j →
+      mk .universal eta comm .commutes = ext (UF-colim.unique _ _ _ λ j →
+        C.pullr (UF-colim.factors _ _) ∙ eta j .commutes)
+      mk .factors eta comm = ext (UF-colim.factors _ _)
+      mk .unique eta comm u fac = ext (UF-colim.unique _ _ _ λ j →
         unext (fac j))
 
       K-colim : is-colimit F K (to-cocone mk)

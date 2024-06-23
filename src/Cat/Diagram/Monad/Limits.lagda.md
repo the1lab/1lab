@@ -110,17 +110,17 @@ $\cC$ later.
     em-lim .ψ j .morphism = lim.ψ j
     em-lim .ψ j .commutes = comm j
     em-lim .commutes f    = ext (lim.commutes f)
-    em-lim .universal eta p .morphism =
-      lim.universal (λ j → eta j .morphism) (λ f i → p f i .morphism)
-    em-lim .factors eta p =
+    em-lim .universal eps p .morphism =
+      lim.universal (λ j → eps j .morphism) (λ f i → p f i .morphism)
+    em-lim .factors eps p =
       ext (lim.factors _ _)
-    em-lim .unique eta p other q =
+    em-lim .unique eps p other q =
       ext (lim.unique _ _ _ λ j i → q j i .morphism)
-    em-lim .universal eta p .commutes = lim.unique₂ _
+    em-lim .universal eps p .commutes = lim.unique₂ _
       (λ f → C.pulll (F.F₁ f .commutes)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap morphism (p f))))
       (λ j → C.pulll (lim.factors _ _)
-           ∙ eta j .commutes)
+           ∙ eps j .commutes)
       (λ j → C.pulll (comm j)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim.factors _ _)))
 ```
