@@ -19,7 +19,7 @@ open Functor
 module Cat.Instances.Slice.Limit where
 ```
 
-# Arbitrary limits in slices
+# Arbitrary limits in slices {defines="limits-in-slice-categories"}
 
 Suppose we have some really weird diagram $F : \cJ \to \cC/c$ in a
 [[slice category]], like the
@@ -40,7 +40,7 @@ limit in the slice.
 The observation that will let us compute a limit for this diagram is
 inspecting the computation of [[products in a slice]]. To
 compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
-_pullback_ of $a \xto{f} c \xot{b}$ in $\cC$ --- which we had assumed
+_pullback_ of $a \xto{f} c \xot{g} b$ in $\cC$ --- which we had assumed
 exists. But! Take a look at what that diagram _looks like_:
 
 ~~~{.quiver}
@@ -113,12 +113,12 @@ in $\cC$, then pass back to the slice category.
 
     module Cone
       {x : C/o.Ob}
-      (eta : (j : J.Ob) → C/o.Hom x (F .F₀ j))
-      (p : ∀ {i j : J.Ob} → (f : J.Hom i j) → F .F₁ f C/o.∘ eta i ≡ eta j)
+      (eps : (j : J.Ob) → C/o.Hom x (F .F₀ j))
+      (p : ∀ {i j : J.Ob} → (f : J.Hom i j) → F .F₁ f C/o.∘ eps i ≡ eps j)
       where
 
         ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .domain) (F' .F₀ j)
-        ϕ (inl j) = eta j .map
+        ϕ (inl j) = eps j .map
         ϕ (inr _) = x .map
 
         ϕ-commutes
@@ -126,12 +126,12 @@ in $\cC$, then pass back to the slice category.
           → (f : ⋆Hom J ⊤Cat i j)
           → F' .F₁ f C.∘ ϕ i ≡ ϕ j
         ϕ-commutes {inl i} {inl j} (lift f) = ap map (p f)
-        ϕ-commutes {inl i} {inr j} (lift f) = eta i .commutes
+        ϕ-commutes {inl i} {inr j} (lift f) = eps i .commutes
         ϕ-commutes {inr i} {inr x} (lift f) = C.idl _
 
         ϕ-factor
           : ∀ (other : /-Hom x apex)
-          → (∀ j → nadir j C/o.∘ other ≡ eta j)
+          → (∀ j → nadir j C/o.∘ other ≡ eps j)
           → (j : J.Ob ⊎ ⊤)
           → lims.ψ j C.∘ other .map ≡ ϕ j
         ϕ-factor other q (inl j) = ap map (q j)
@@ -140,13 +140,13 @@ in $\cC$, then pass back to the slice category.
     lim : make-is-limit F apex
     lim .ψ = nadir
     lim .commutes f = ext (lims.commutes (lift f))
-    lim .universal {x} eta p .map =
-      lims.universal (Cone.ϕ eta p) (Cone.ϕ-commutes eta p)
-    lim .universal eta p .commutes =
+    lim .universal {x} eps p .map =
+      lims.universal (Cone.ϕ eps p) (Cone.ϕ-commutes eps p)
+    lim .universal eps p .commutes =
       lims.factors _ _
-    lim .factors eta p = ext (lims.factors _ _)
-    lim .unique eta p other q = ext $
-      lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
+    lim .factors eps p = ext (lims.factors _ _)
+    lim .unique eps p other q = ext $
+      lims.unique _ _ (other .map) (Cone.ϕ-factor eps p other q)
 ```
 
 In particular, if a category $\cC$ is complete, then so are its slices:

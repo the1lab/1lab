@@ -96,12 +96,12 @@ construct to the identity morphism. Naturality follows from the fact
 that $K$ is a cocone, and the components of $K$ are natural.
 
 ```agda
-    colim .universal eps _ .η x px =  eps (elem x px) .η x id
-    colim .universal {Q} eps comm .is-natural x y f = funext λ px →
-      eps (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce C P f px) i .η y id) ⟩
-      eps (elem x px) .η y (f ∘ id)           ≡⟨ ap (eps (elem x px) .η y) id-comm ⟩
-      eps (elem x px) .η y (id ∘ f)           ≡⟨ happly (eps (elem x px) .is-natural x y f) id ⟩
-      Q .F₁ f (eps (elem x px) .η x id)       ∎
+    colim .universal eta _ .η x px =  eta (elem x px) .η x id
+    colim .universal {Q} eta comm .is-natural x y f = funext λ px →
+      eta (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce C P f px) i .η y id) ⟩
+      eta (elem x px) .η y (f ∘ id)           ≡⟨ ap (eta (elem x px) .η y) id-comm ⟩
+      eta (elem x px) .η y (id ∘ f)           ≡⟨ happly (eta (elem x px) .is-natural x y f) id ⟩
+      Q .F₁ f (eta (elem x px) .η x id)       ∎
 ```
 
 Next, we need to show that this morphism factors each of the components
@@ -109,20 +109,20 @@ of $K$. The tricky bit of the proof here is that we need to use
 `induce`{.Agda} to regard `f` as a morphism in the category of elements.
 
 ```agda
-    colim .factors {o} eps comm = ext λ x f →
-      eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .section)) i .η x id) ⟩
-      eps o .η x (f ∘ id)                        ≡⟨ ap (eps o .η x) (idr f) ⟩
-      eps o .η x f                               ∎
+    colim .factors {o} eta comm = ext λ x f →
+      eta (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .section)) i .η x id) ⟩
+      eta o .η x (f ∘ id)                        ≡⟨ ap (eta o .η x) (idr f) ⟩
+      eta o .η x f                               ∎
 ```
 
 Finally, uniqueness: This just follows by the commuting conditions on
 `α`.
 
 ```agda
-    colim .unique eps comm α p = ext λ x px →
+    colim .unique eta comm α p = ext λ x px →
       α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
       α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
-      eps (elem x px) .η x id ∎
+      eta (elem x px) .η x id ∎
 ```
 
 And that's it! The important takeaway here is not the shuffling around

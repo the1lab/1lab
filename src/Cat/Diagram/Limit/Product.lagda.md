@@ -89,17 +89,17 @@ is-product→is-limit {x = x} {a} {b} {p1} {p2} is-prod =
     ml .commutes {true}  {false} f = absurd (true≠false f)
     ml .commutes {false} {true}  f = absurd (true≠false $ sym f)
     ml .commutes {false} {false} f = idl p2
-    ml .universal       eta _ = is-prod.⟨ eta true , eta false ⟩
-    ml .factors {true}  eta _ = is-prod.π₁∘factor
-    ml .factors {false} eta _ = is-prod.π₂∘factor
-    ml .unique eta p other q = is-prod.unique other (q true) (q false)
+    ml .universal       eps _ = is-prod.⟨ eps true , eps false ⟩
+    ml .factors {true}  eps _ = is-prod.π₁∘factor
+    ml .factors {false} eps _ = is-prod.π₂∘factor
+    ml .unique eps p other q = is-prod.unique other (q true) (q false)
 
 is-limit→is-product
   : ∀ {a b} {K : Functor ⊤Cat C}
-  → {eta : K F∘ !F => 2-object-diagram a b}
-  → is-ran !F (2-object-diagram a b) K eta
-  → is-product C (eta .η true) (eta .η false)
-is-limit→is-product {a} {b} {K} {eta} lim = prod where
+  → {eps : K F∘ !F => 2-object-diagram a b}
+  → is-ran !F (2-object-diagram a b) K eps
+  → is-product C (eps .η true) (eps .η false)
+is-limit→is-product {a} {b} {K} {eps} lim = prod where
   module lim = is-limit lim
 
   pair
@@ -117,7 +117,7 @@ is-limit→is-product {a} {b} {K} {eta} lim = prod where
       J (λ _ p → 2-object-diagram a b .F₁ p ∘ pair p1 p2 _ ≡ pair p1 p2 _)
         (eliml (2-object-diagram a b .F-id))
 
-  prod : is-product C (eta .η true) (eta .η false)
+  prod : is-product C (eps .η true) (eps .η false)
   prod .⟨_,_⟩ f g = lim.universal (pair f g) pair-commutes
   prod .π₁∘factor {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
   prod .π₂∘factor {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
@@ -199,20 +199,20 @@ module _ {ℓ} {I : Type ℓ} (i-is-grpd : is-groupoid I) (F : I → Ob) where
         J (λ j p → subst (Hom (F i) ⊙ F) p id ∘ π i ≡ π j)
           (eliml (transport-refl _))
           p
-      ml .universal eta p = ip.tuple eta
-      ml .factors eta p = ip.commute
-      ml .unique eta p other q = ip.unique eta q
+      ml .universal eps p = ip.tuple eps
+      ml .factors eps p = ip.commute
+      ml .unique eps p other q = ip.unique eps q
 
   is-limit→is-indexed-product
     : ∀ {K : Functor ⊤Cat C}
-    → {eta : K F∘ !F => Disc-adjunct {iss = i-is-grpd} F}
-    → is-ran !F (Disc-adjunct F) K eta
-    → is-indexed-product C F (eta .η)
-  is-limit→is-indexed-product {K = K} {eta} lim = ip where
+    → {eps : K F∘ !F => Disc-adjunct {iss = i-is-grpd} F}
+    → is-ran !F (Disc-adjunct F) K eps
+    → is-indexed-product C F (eps .η)
+  is-limit→is-indexed-product {K = K} {eps} lim = ip where
     module lim = is-limit lim
-    open is-indexed-product hiding (eta)
+    open is-indexed-product
 
-    ip : is-indexed-product C F (eta .η)
+    ip : is-indexed-product C F (eps .η)
     ip .tuple k =
       lim.universal k
         (J (λ j p → subst (Hom (F _) ⊙ F) p id ∘ k _ ≡ k j)

@@ -31,7 +31,7 @@ $x$; Hence the pullback is also called the **fibred product**.
 ```agda
   record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
     : Type (o ⊔ ℓ) where
-  
+
     no-eta-equality
     field
       square   : f ∘ p₁ ≡ g ∘ p₂
@@ -62,12 +62,12 @@ overall square has to commute.
                → f ∘ p₁' ≡ g ∘ p₂' → Hom P' P
       p₁∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₁ ∘ universal p ≡ p₁'
       p₂∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₂ ∘ universal p ≡ p₂'
-  
+
       unique : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P' P}
              → p₁ ∘ lim' ≡ p₁'
              → p₂ ∘ lim' ≡ p₂'
              → lim' ≡ universal p
-  
+
     unique₂
       : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P' P}
       → p₁ ∘ lim' ≡ p₁' → p₂ ∘ lim' ≡ p₂'
@@ -122,9 +122,35 @@ maps:
       p₁ : Hom apex X
       p₂ : Hom apex Y
       has-is-pb : is-pullback p₁ f p₂ g
-  
+
     open is-pullback has-is-pb public
 ```
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  private variable
+    P' X Y Z : Ob
+    h p₁' p₂' : Hom X Y
+
+  is-pullback-is-prop : ∀ {P} {p₁ : Hom P X} {f : Hom X Z} {p₂ : Hom P Y} {g : Hom Y Z} → is-prop (is-pullback C p₁ f p₂ g)
+  is-pullback-is-prop {X = X} {Y = Y} {p₁ = p₁} {f} {p₂} {g} x y = q where
+    open is-pullback
+    p : Path (∀ {P'} {p₁' : Hom P' X} {p₂' : Hom P' Y} → f ∘ p₁' ≡ g ∘ p₂' → _) (x .universal) (y .universal)
+    p i sq = y .unique {p = sq} (x .p₁∘universal {p = sq}) (x .p₂∘universal) i
+    q : x ≡ y
+    q i .square = Hom-set _ _ _ _ (x .square) (y .square) i
+    q i .universal = p i
+    q i .p₁∘universal {p₁' = p₁'} {p = sq} = is-prop→pathp (λ i → Hom-set _ _ (p₁ ∘ p i sq) p₁') (x .p₁∘universal) (y .p₁∘universal) i
+    q i .p₂∘universal {p = sq} = is-prop→pathp (λ i → Hom-set _ _ (p₂ ∘ p i sq) _) (x .p₂∘universal) (y .p₂∘universal) i
+    q i .unique {p = sq} {lim' = lim'} c₁ c₂ = is-prop→pathp (λ i → Hom-set _ _ lim' (p i sq)) (x .unique c₁ c₂) (y .unique c₁ c₂) i
+
+  instance
+    H-Level-is-pullback : ∀ {P} {p₁ : Hom P X} {f : Hom X Z} {p₂ : Hom P Y} {g : Hom Y Z} {n} → H-Level (is-pullback C p₁ f p₂ g) (suc n)
+    H-Level-is-pullback = prop-instance is-pullback-is-prop
+```
+-->
 
 # Categories with all pullbacks
 
@@ -152,7 +178,8 @@ module Pullbacks
 ## Stability {defines="pullback-stability pullback-stable"}
 
 Pullbacks, in addition to their nature as limits, serve as the way of
-"changing the base" of a family of objects: if we think of an arrow
+"[[changing the base|pullback functor]]" of a family of objects: if we
+think of an arrow
 $f : A \to B$ as encoding the data of a family over $B$ (think of the
 special case where $A = \Sigma_{x : A} F(x)$, and $f = \pi_1$), then we
 can think of pulling back $f$ along $g : X \to B$ as "the universal
@@ -162,7 +189,7 @@ category with pullbacks.
 
 In that framing, there is a canonical choice for "the" pullback of an
 arrow along another: We put the arrow $f$ we want to pullback on the
-right side of the diagram, and the pullback is the right arrow. Using
+right side of the diagram, and the pullback is the left arrow. Using
 the type `is-pullback`{.Agda} defined above, the arrow which results
 from pulling back is adjacent _to the adjustment_: `is-pullback f⁺ g _ f`.
 To help keep this straight, we define what it means for a class of

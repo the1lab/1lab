@@ -57,7 +57,7 @@ $C\op$. We prove these correspondences here:
       ; unique     = isp.unique
       }
     where module isp = is-product isp
-  
+
   is-coproduct→is-co-product
     : ∀ {A B P} {i1 : C.Hom A P} {i2 : C.Hom B P}
     → is-coproduct C i1 i2 → is-product (C ^op) i1 i2
@@ -85,7 +85,7 @@ $C\op$. We prove these correspondences here:
       ; unique     = eq.unique
       }
     where module eq = is-equaliser eq
-  
+
   is-coequaliser→is-co-equaliser
     : ∀ {A B E} {f g : C.Hom A B} {coeq : C.Hom B E}
     → is-coequaliser C f g coeq → is-equaliser (C ^op) f g coeq
@@ -104,19 +104,19 @@ $C\op$. We prove these correspondences here:
 ```agda
   open Terminal
   open Initial
-  
+
   is-coterminal→is-initial
     : ∀ {A} → is-terminal (C ^op) A → is-initial C A
   is-coterminal→is-initial x = x
-  
+
   is-initial→is-coterminal
     : ∀ {A} → is-initial C A → is-terminal (C ^op) A
   is-initial→is-coterminal x = x
-  
+
   Coterminal→Initial : Terminal (C ^op) → Initial C
   Coterminal→Initial term .bot = term .top
   Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has⊤)
-  
+
   Initial→Coterminal : Initial C → Terminal (C ^op)
   Initial→Coterminal init .top = init .bot
   Initial→Coterminal init .has⊤ = is-initial→is-coterminal (init .has⊥)
@@ -137,7 +137,7 @@ $C\op$. We prove these correspondences here:
       ; unique = pb.unique
       }
     where module pb = is-pullback pb
-  
+
   is-pushout→is-co-pullback
     : ∀ {P X Y Z} {p1 : C.Hom X P} {f : C.Hom Z X} {p2 : C.Hom Y P} {g : C.Hom Z Y}
     → is-pushout C f p1 g p2 → is-pullback (C ^op) p1 f p2 g
@@ -157,39 +157,39 @@ $C\op$. We prove these correspondences here:
 ```agda
   module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
     open Functor F renaming (op to F^op)
-  
+
     open Cocone-hom
     open Cone-hom
     open Cocone
     open Cone
-  
+
     Co-cone→Cocone : Cone F^op → Cocone F
     Co-cone→Cocone cone .coapex = cone .apex
     Co-cone→Cocone cone .ψ = cone .ψ
     Co-cone→Cocone cone .commutes = cone .commutes
-  
+
     Cocone→Co-cone : Cocone F → Cone F^op
     Cocone→Co-cone cone .apex     = cone .coapex
     Cocone→Co-cone cone .ψ        = cone .ψ
     Cocone→Co-cone cone .commutes = cone .commutes
-  
+
     Cocone→Co-cone→Cocone : ∀ K → Co-cone→Cocone (Cocone→Co-cone K) ≡ K
     Cocone→Co-cone→Cocone K i .coapex = K .coapex
     Cocone→Co-cone→Cocone K i .ψ = K .ψ
     Cocone→Co-cone→Cocone K i .commutes = K .commutes
-  
+
     Co-cone→Cocone→Co-cone : ∀ K → Cocone→Co-cone (Co-cone→Cocone K) ≡ K
     Co-cone→Cocone→Co-cone K i .apex = K .apex
     Co-cone→Cocone→Co-cone K i .ψ = K .ψ
     Co-cone→Cocone→Co-cone K i .commutes = K .commutes
-  
+
     Co-cone-hom→Cocone-hom
       : ∀ {x y}
       → Cone-hom F^op y x
       → Cocone-hom F (Co-cone→Cocone x) (Co-cone→Cocone y)
     Co-cone-hom→Cocone-hom ch .hom = ch .hom
     Co-cone-hom→Cocone-hom ch .commutes o = ch .commutes o
-  
+
     Cocone-hom→Co-cone-hom
       : ∀ {x y}
       → Cocone-hom F x y
@@ -214,20 +214,20 @@ We could work around this, but it's easier to just do the proofs by hand.
     Colimit→Co-limit colim = to-limit (to-is-limit ml) where
       module colim = Colimit colim
       open make-is-limit
-  
+
       ml : make-is-limit F^op colim.coapex
       ml .ψ = colim.ψ
       ml .commutes = colim.commutes
-      ml .universal eta p = colim.universal eta p
-      ml .factors eta p = colim.factors eta p
-      ml .unique eta p other q = colim.unique eta p other q
-  
+      ml .universal eps p = colim.universal eps p
+      ml .factors eps p = colim.factors eps p
+      ml .unique eps p other q = colim.unique eps p other q
+
     Co-limit→Colimit
       : Limit F^op → Colimit F
     Co-limit→Colimit lim = to-colimit (to-is-colimit mc) where
       module lim = Limit lim
       open make-is-colimit
-  
+
       mc : make-is-colimit F lim.apex
       mc .ψ = lim.ψ
       mc .commutes = lim.commutes

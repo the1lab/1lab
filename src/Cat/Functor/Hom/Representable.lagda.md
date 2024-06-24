@@ -412,8 +412,8 @@ Hom-from-preserves-limits c {Diagram = Dia} {K} {eps} lim =
   ml .commutes f = funext λ g →
     C.pulll (sym (eps .is-natural _ _ _))
     ∙ (C.elimr (K .F-id) C.⟩∘⟨refl)
-  ml .universal eta p x =
-    lim.universal (λ j → eta j x) (λ f → p f $ₚ x)
+  ml .universal eps p x =
+    lim.universal (λ j → eps j x) (λ f → p f $ₚ x)
   ml .factors _ _ = funext λ _ →
     lim.factors _ _
   ml .unique eps p other q = funext λ x →
@@ -462,11 +462,11 @@ a pair of maps $a \to x$ and $b \to x$.
   mc .commutes f = funext λ g →
     C.pullr (eta .is-natural _ _ _)
     ∙ (C.refl⟩∘⟨ C.eliml (K .F-id))
-  mc .universal eps p x =
-    colim.universal (λ j → eps j x) (λ f → p f $ₚ x)
-  mc .factors eps p = funext λ _ →
+  mc .universal eta p x =
+    colim.universal (λ j → eta j x) (λ f → p f $ₚ x)
+  mc .factors eta p = funext λ _ →
     colim.factors _ _
-  mc .unique eps p other q = funext λ x →
+  mc .unique eta p other q = funext λ x →
     colim.unique _ _ _ λ j → q j $ₚ x
 
 representable-reverses-colimits

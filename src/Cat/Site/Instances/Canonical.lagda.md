@@ -74,7 +74,7 @@ an arbitrary category, colimits may not be preserved by [[pullback]]; in
 terms of sieves, even if $S$ is a colim sieve over $U$, we may not have
 that $f^*(S)$ is a colim sieve over $V$ for $f : V \to U$. We can,
 however, turn this into a site, by restricting the notion of colim sieve
-so that it's stable under pullbacks: we say that $S$ is a **universal
+so that it's stable under pullbacks: we say that $S$ is a **[[universal|universal colimit]]
 colim sieve** if $f^*(S)$ is a colim sieve, for any appropriate $f$.
 
 ```agda

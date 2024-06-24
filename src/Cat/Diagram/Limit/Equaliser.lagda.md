@@ -49,21 +49,21 @@ is-equaliser→is-limit {e} F {equ} is-eq =
     ml .commutes {false} {true} true = sym is-eq.equal
     ml .commutes {false} {true} false = refl
     ml .commutes {false} {false} tt = eliml (F .F-id)
-    ml .universal eta p =
+    ml .universal eps p =
       is-eq.universal (p {false} {true} false ∙ sym (p {false} {true} true))
-    ml .factors {true} eta p =
+    ml .factors {true} eps p =
       pullr is-eq.factors ∙ p {false} {true} false
-    ml .factors {false} eta p =
+    ml .factors {false} eps p =
       is-eq.factors
-    ml .unique eta p other q =
+    ml .unique eps p other q =
       is-eq.unique (q false)
 
 is-limit→is-equaliser
   : ∀ (F : Functor ·⇉· C) {K : Functor ⊤Cat C}
-  → {eta : K F∘ !F => F}
-  → is-ran !F F K eta
-  → is-equaliser C (forkl F) (forkr F) (eta .η false)
-is-limit→is-equaliser F {K} {eta} lim = eq where
+  → {eps : K F∘ !F => F}
+  → is-ran !F F K eps
+  → is-equaliser C (forkl F) (forkr F) (eps .η false)
+is-limit→is-equaliser F {K} {eps} lim = eq where
   module lim = is-limit lim
 
   parallel
@@ -82,16 +82,16 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   parallel-commutes p false true false = refl
   parallel-commutes p false false tt = eliml (F .F-id)
 
-  eq : is-equaliser C (forkl F) (forkr F) (eta .η false)
+  eq : is-equaliser C (forkl F) (forkr F) (eps .η false)
   eq .equal =
-    sym (eta .is-natural false true false) ∙ eta .is-natural false true true
+    sym (eps .is-natural false true false) ∙ eps .is-natural false true true
   eq .universal {e' = e'} p =
     lim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   eq .factors = lim.factors {j = false} _ _
   eq .unique {p = p} {other = other} q =
     lim.unique _ _ _ λ where
       true →
-        ap (_∘ other) (intror (K .F-id) ∙ eta .is-natural false true true)
+        ap (_∘ other) (intror (K .F-id) ∙ eps .is-natural false true true)
         ·· pullr q
         ·· sym p
       false → q

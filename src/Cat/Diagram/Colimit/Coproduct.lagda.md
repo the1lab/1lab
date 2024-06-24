@@ -68,14 +68,14 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → Ob) where
 
   is-colimit→is-indexed-coprduct
     : ∀ {K : Functor ⊤Cat C}
-    → {eps : Disc-adjunct {iss = i-is-grpd} F => K F∘ !F}
-    → is-lan !F (Disc-adjunct F) K eps
-    → is-indexed-coproduct C F (eps .η)
-  is-colimit→is-indexed-coprduct {K = K} {eps} colim = ic where
+    → {eta : Disc-adjunct {iss = i-is-grpd} F => K F∘ !F}
+    → is-lan !F (Disc-adjunct F) K eta
+    → is-indexed-coproduct C F (eta .η)
+  is-colimit→is-indexed-coprduct {K = K} {eta} colim = ic where
     module colim = is-colimit colim
-    open is-indexed-coproduct
+    open is-indexed-coproduct hiding (eta)
 
-    ic : is-indexed-coproduct C F (eps .η)
+    ic : is-indexed-coproduct C F (eta .η)
     ic .match k =
       colim.universal k
         (J (λ j p → k j ∘ subst (Hom (F _) ⊙ F) p id ≡ k _)

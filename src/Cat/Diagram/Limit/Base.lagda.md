@@ -99,7 +99,7 @@ Luckily, we can! If we take a step back, we can notice that we are
 trying to construct a map into a functor. What are maps into functors?
 Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
-transformation $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top
+transformation $\eps : {!x} \circ \mathord{!} \to D$, where $!x : \top
 \to \cC$ denotes the constant functor that maps object to $x$ and every
 morphism to $id$, and $! : \cJ \to \top$ denotes the unique functor into
 the [[terminal category]]. The components of such a natural
@@ -115,13 +115,13 @@ diagram. We can describe this situation diagrammatically like so:
   \arrow[from=3-1, to=1-3]
   \arrow["{!X}"', from=1-3, to=3-5]
   \arrow[""{name=0, anchor=center, inner sep=0}, from=3-1, to=3-5]
-  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
+  \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
 \end{tikzcd}
 ~~~
 
 All that remains is the universal property. If we translate this into
 our existing machinery, that means that $!x$ must be the universal
-functor equipped with a natural transformation $\eta$; that is, for any
+functor equipped with a natural transformation $\eps$; that is, for any
 other $K : \{*\} \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
 D$, we have a unique natural transformation $\sigma : K \to {!x}$ that
 factors $\tau$. This is a bit of a mouthful, so let's look at a diagram
@@ -136,7 +136,7 @@ instead.
   \arrow[""{name=0, anchor=center, inner sep=0}, "{!x}"', from=1-3, to=3-5]
   \arrow[""{name=1, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "K", curve={height=-18pt}, from=1-3, to=3-5]
-  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
+  \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
   \arrow["\sigma", shorten <=3pt, shorten >=3pt, Rightarrow, from=2, to=0]
 \end{tikzcd}
 ~~~
@@ -166,9 +166,9 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
   unquoteDef cone→counit = define-coherence cone→counit
 
   counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
-  counit→cone {K = K} eta .η = eta .η
-  counit→cone {K = K} eta .is-natural x y f =
-    ap (_ C.∘_) (sym (K .F-id)) ∙ eta .is-natural x y f
+  counit→cone {K = K} eps .η = eps .η
+  counit→cone {K = K} eps .is-natural x y f =
+    ap (_ C.∘_) (sym (K .F-id)) ∙ eps .is-natural x y f
 
   is-limit : (x : C.Ob) → Const x => Diagram → Type _
   is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
@@ -237,42 +237,42 @@ triangles
 ```
 
 The rest of the data says that $\psi$ is the universal family of maps
-with this property: If $\eta_j : x \to Fj$ is another family of maps
-with the same commutativity property, then each $\eta_j$ factors through
+with this property: If $\eps_j : x \to Fj$ is another family of maps
+with the same commutativity property, then each $\eps_j$ factors through
 the apex by a single, _unique_ universal morphism:
 
 ```agda
       universal
         : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
         → C.Hom x apex
 
       factors
         : ∀ {j : J.Ob} {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-        → ψ j C.∘ universal eta p ≡ eta j
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
+        → ψ j C.∘ universal eps p ≡ eps j
 
       unique
         : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
         → (other : C.Hom x apex)
-        → (∀ j → ψ j C.∘ other ≡ eta j)
-        → other ≡ universal eta p
+        → (∀ j → ψ j C.∘ other ≡ eps j)
+        → other ≡ universal eps p
 ```
 
 <!--
 ```agda
     unique₂
       : ∀ {x : C.Ob}
-      → (eta : ∀ j → C.Hom x (F₀ j))
-      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eta j)
-      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eta j)
+      → (eps : ∀ j → C.Hom x (F₀ j))
+      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
+      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eps j)
+      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eps j)
       → o1 ≡ o2
-    unique₂ {x = x} eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
+    unique₂ {x = x} eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
 ```
 -->
 
@@ -364,24 +364,24 @@ limit:
     open make-is-limit
     open _=>_
 
-    module _ {x} (eta : ∀ j → C.Hom x (F₀ j))
-                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+    module _ {x} (eps : ∀ j → C.Hom x (F₀ j))
+                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
       where
 
-      eta-nt : const! x F∘ !F => D
-      eta-nt .η = eta
-      eta-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
+      eps-nt : const! x F∘ !F => D
+      eps-nt .η = eps
+      eps-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
 
       hom : C.Hom x a
-      hom = σ {M = const! x} eta-nt .η tt
+      hom = σ {M = const! x} eps-nt .η tt
 
     ml : make-is-limit D a
     ml .ψ j        = eps.η j
     ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (F .Functor.F-id)
 
     ml .universal   = hom
-    ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
-    ml .unique {x = x} eta p other q =
+    ml .factors e p = σ-comm {β = eps-nt e p} ηₚ _
+    ml .unique {x = x} eps p other q =
       sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
         other-nt : const! x => F
@@ -573,23 +573,23 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   family→cone
     : ∀ {x}
-    → (eta : ∀ j → C.Hom x (D.₀ j))
-    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
+    → (eps : ∀ j → C.Hom x (D.₀ j))
+    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eps x ≡ eps y)
     → Const x => D
-  family→cone eta p .η = eta
-  family→cone eta p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
+  family→cone eps p .η = eps
+  family→cone eps p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
 ```
 -->
 
 ```agda
   is-invertible→is-limitp
     : ∀ {K' : Functor ⊤Cat C} {eps : K' F∘ !F => D}
-    → (eta : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
-    → (∀ {j} → eta j ≡ eps .η j)
-    → C.is-invertible (Ly.universal eta p)
+    → (eps' : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
+    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eps' x ≡ eps' y)
+    → (∀ {j} → eps' j ≡ eps .η j)
+    → C.is-invertible (Ly.universal eps' p)
     → is-ran !F D K' eps
-  is-invertible→is-limitp {K' = K'} eta p q invert =
+  is-invertible→is-limitp {K' = K'} eps' p q invert =
     generalize-limitp
       (is-invertible→is-ran Ly $ invertible→invertibleⁿ _ (λ _ → invert))
       q
@@ -663,7 +663,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of limits
+# Preservation of limits {defines="preserved-limit"}
 
 <!--
 ```agda
@@ -697,7 +697,7 @@ object! Any limit is as good as any other.
     → preserves-ran F lim
 ```
 
-## Reflection of limits
+## Reflection of limits {defines="reflected-limit"}
 
 Using the terminology from before, we say a functor **reflects limits**
 if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":
@@ -720,8 +720,8 @@ module preserves-limit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
   {F : Functor C D} {Dia : Functor J C}
   (preserves : preserves-limit F Dia)
-  {K : Functor ⊤Cat C} {eta : K F∘ !F => Dia}
-  (lim : is-ran !F Dia K eta)
+  {K : Functor ⊤Cat C} {eps : K F∘ !F => Dia}
+  (lim : is-ran !F Dia K eps)
   where
   private
     module D = Precategory D

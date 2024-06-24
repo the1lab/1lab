@@ -116,40 +116,40 @@ is a morphism in the "shape" category $\cJ$, we require $\psi y \circ Ff
 ```
 
 The rest of the data ensures that $\psi$ is the universal family of maps
-with this property; if $\eps_j : Fj \to x$ is another natural family,
-then each $\eps_j$ factors through the coapex by a _unique_ universal
+with this property; if $\eta_j : Fj \to x$ is another natural family,
+then each $\eta_j$ factors through the coapex by a _unique_ universal
 morphism:
 
 ```agda
       universal
         : ∀ {x : C.Ob}
-        → (eps : ∀ j → C.Hom (F₀ j) x)
-        → (∀ {x y} (f : J.Hom x y) → eps y C.∘ F₁ f ≡ eps x)
+        → (eta : ∀ j → C.Hom (F₀ j) x)
+        → (∀ {x y} (f : J.Hom x y) → eta y C.∘ F₁ f ≡ eta x)
         → C.Hom coapex x
       factors
         : ∀ {j : J.Ob} {x : C.Ob}
-        → (eps : ∀ j → C.Hom (F₀ j) x)
-        → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ F₁ f ≡ eps x)
-        → universal eps p C.∘ ψ j ≡ eps j
+        → (eta : ∀ j → C.Hom (F₀ j) x)
+        → (p : ∀ {x y} (f : J.Hom x y) → eta y C.∘ F₁ f ≡ eta x)
+        → universal eta p C.∘ ψ j ≡ eta j
       unique
         : ∀ {x : C.Ob}
-        → (eps : ∀ j → C.Hom (F₀ j) x)
-        → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ F₁ f ≡ eps x)
+        → (eta : ∀ j → C.Hom (F₀ j) x)
+        → (p : ∀ {x y} (f : J.Hom x y) → eta y C.∘ F₁ f ≡ eta x)
         → (other : C.Hom coapex x)
-        → (∀ j → other C.∘ ψ j ≡ eps j)
-        → other ≡ universal eps p
+        → (∀ j → other C.∘ ψ j ≡ eta j)
+        → other ≡ universal eta p
 ```
 
 <!--
 ```agda
     unique₂
       : ∀ {x : C.Ob}
-      → (eps : ∀ j → C.Hom (F₀ j) x)
-      → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ F₁ f ≡ eps x)
-      → ∀ {o1} → (∀ j → o1 C.∘ ψ j ≡ eps j)
-      → ∀ {o2} → (∀ j → o2 C.∘ ψ j ≡ eps j)
+      → (eta : ∀ j → C.Hom (F₀ j) x)
+      → (p : ∀ {x y} (f : J.Hom x y) → eta y C.∘ F₁ f ≡ eta x)
+      → ∀ {o1} → (∀ j → o1 C.∘ ψ j ≡ eta j)
+      → ∀ {o2} → (∀ j → o2 C.∘ ψ j ≡ eta j)
       → o1 ≡ o2
-    unique₂ eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
+    unique₂ eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
 ```
 -->
 
@@ -244,22 +244,22 @@ function which **un**makes a colimit.
     open make-is-colimit
     open _=>_
 
-    module _ {x} (eps : ∀ j → C.Hom (F₀ j) x)
-                 (p : ∀ {x y} (f : J.Hom x y) →  eps y C.∘ F₁ f ≡ eps x)
+    module _ {x} (eta : ∀ j → C.Hom (F₀ j) x)
+                 (p : ∀ {x y} (f : J.Hom x y) →  eta y C.∘ F₁ f ≡ eta x)
       where
 
-      eps-nt : D => const! x F∘ !F
-      eps-nt .η = eps
-      eps-nt .is-natural _ _ f = p f ∙ sym (C.idl _)
+      eta-nt : D => const! x F∘ !F
+      eta-nt .η = eta
+      eta-nt .is-natural _ _ f = p f ∙ sym (C.idl _)
 
       hom : C.Hom coapex x
-      hom = σ {M = const! x} eps-nt .η tt
+      hom = σ {M = const! x} eta-nt .η tt
 
     mc : make-is-colimit D coapex
     mc .ψ = eta.η
     mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (F .Functor.F-id)
     mc .universal = hom
-    mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
+    mc .factors e p = σ-comm {α = eta-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
       sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
@@ -306,9 +306,10 @@ module Colimit
     import Cat.Reasoning J as J
     import Cat.Reasoning C as C
     module Diagram = Functor D
-    open Lan L
     open Functor
     open _=>_
+
+  open Lan L public
 ```
 -->
 
@@ -427,7 +428,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 Furthermore, if the universal map is invertible, then that means its
 domain is _also_ a colimit of the diagram. This also follows from a
-[general theorem of Kan extensions], though some golfin is required to
+[general theorem of Kan extensions], though some golfing is required to
 obtain the correct inverse definitionally.
 
 [general theorem of Kan extensions]: Cat.Functor.Kan.Unique.html#is-invertible→is-lan
@@ -451,8 +452,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   family→cocone
     : ∀ {x}
-    → (eps : ∀ j → C.Hom (D.₀ j) x)
-    → (∀ {x y} (f : J.Hom x y) → eps y C.∘ D.₁ f ≡ eps x)
+    → (eta : ∀ j → C.Hom (D.₀ j) x)
+    → (∀ {x y} (f : J.Hom x y) → eta y C.∘ D.₁ f ≡ eta x)
     → D => Const x
   family→cocone eta p .η = eta
   family→cocone eta p .is-natural _ _ _ = p _ ∙ sym (C.idl _)
@@ -462,12 +463,12 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```agda
   is-invertible→is-colimitp
     : ∀ {K' : Functor ⊤Cat C} {eta : D => K' F∘ !F}
-    → (eps : ∀ j → C.Hom (D.₀ j) (K' .F₀ tt))
-    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ D.₁ f ≡ eps x)
-    → (∀ {j} → eps j ≡ eta .η j)
-    → C.is-invertible (Cy.universal eps p)
+    → (eta' : ∀ j → C.Hom (D.₀ j) (K' .F₀ tt))
+    → (p : ∀ {x y} (f : J.Hom x y) → eta' y C.∘ D.₁ f ≡ eta' x)
+    → (∀ {j} → eta' j ≡ eta .η j)
+    → C.is-invertible (Cy.universal eta' p)
     → is-lan !F D K' eta
-  is-invertible→is-colimitp {K' = K'} {eta = eta} eps p q invert =
+  is-invertible→is-colimitp {K' = K'} {eta = eta} eta' p q invert =
     generalize-colimitp
       (is-invertible→is-lan Cy $ invertible→invertibleⁿ _ λ _ → invert)
       q
@@ -539,12 +540,10 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of colimits
+# Preservation and reflection of colimits {defines="preserved-colimit reflected-colimit"}
 
-The definitions here are the same idea as [preservation of limits], just
-dualised.
-
-[preservation of limits]: Cat.Diagram.Limit.Base.html#preservation-of-limits
+The definitions here are the same idea as [[preservation of
+limits|preserved limit]], just dualised.
 
 <!--
 ```agda
@@ -567,8 +566,8 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 
   reflects-colimit : Type _
   reflects-colimit =
-    ∀ {K : Functor ⊤Cat C} {eps : Diagram => K F∘ !F}
-    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eps)))
+    ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eta)))
     → reflects-lan F lan
 ```
 
@@ -590,10 +589,10 @@ module preserves-colimit
   universal
     : {x : C.Ob}
     → {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
-    → {eps : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
-    → {p : ∀ {i j} (f : J.Hom i j) → eps j C.∘ Dia.F₁ f ≡ eps i}
+    → {eta' : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
+    → {p : ∀ {i j} (f : J.Hom i j) → eta' j C.∘ Dia.F₁ f ≡ eta' i}
     → (colim : is-lan !F Dia K eta)
-    → F.F₁ (is-colimit.universal colim eps p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+    → F.F₁ (is-colimit.universal colim eta' p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eta' j)) (λ f → F.collapse (p f))
   universal colim =
     is-colimit.unique (preserves colim) _ _ _
       (λ j → F.collapse (is-colimit.factors colim _ _))
@@ -613,13 +612,13 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     : F ≅ⁿ F'
     → preserves-colimit F Dia
     → preserves-colimit F' Dia
-  natural-iso→preserves-colimits α F-preserves {K = K} {eps} colim =
+  natural-iso→preserves-colimits α F-preserves {K = K} {eta} colim =
     natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
       (ext λ j →
-        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
-        α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
-        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
-        F' .F₁ (eps .η j) ∎)
+        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
+        α.to .η _ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eta .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+        F' .F₁ (eta .η j) ∎)
       (F-preserves colim)
     where
       module α = Isoⁿ α

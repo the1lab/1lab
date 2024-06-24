@@ -99,20 +99,20 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
       D-lim.factors _ _ _ ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
     ml .commutes f = ext λ j →
       C.pushr (C.introl (F.₀ _ .F-id)) ∙ D-lim.commutes j f
-    ml .universal eta p .η x = D-lim.universal x
-      (λ j → eta j .η x)
+    ml .universal eps p .η x = D-lim.universal x
+      (λ j → eps j .η x)
       (λ f → ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p f ηₚ x)
-    ml .universal eta p .is-natural x y f = D-lim.unique₂ y _
+    ml .universal eps p .is-natural x y f = D-lim.unique₂ y _
       (λ g → C.pulll (ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p g ηₚ y))
       (λ j → C.pulll (D-lim.factors _ _ _))
       (λ j →
           C.pulll (D-lim.factors _ _ _)
         ∙ C.pullr (D-lim.factors _ _ _)
         ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
-        ∙ sym (eta j .is-natural x y f))
-    ml .factors eta p = ext λ j →
+        ∙ sym (eps j .is-natural x y f))
+    ml .factors eps p = ext λ j →
       D-lim.factors j _ _
-    ml .unique eta p other q = ext λ x →
+    ml .unique eps p other q = ext λ x →
       D-lim.unique _ _ _ _ λ j → q j ηₚ x
 ```
 

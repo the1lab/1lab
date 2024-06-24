@@ -115,23 +115,23 @@ definition.
 
 ```agda
   univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
-       → (eps : ∀ j → F ʻ j → ∣ A ∣)
-       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eps y (F.F₁ f Fx) ≡ eps x Fx)
+       → (eta : ∀ j → F ʻ j → ∣ A ∣)
+       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eta y (F.F₁ f Fx) ≡ eta x Fx)
        → sum / rel
        → ∣ A ∣
-  univ {A} eps p =
+  univ {A} eta p =
     Coeq-rec
-      (λ { (x , p) → eps x p })
-      (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eps _) q})
+      (λ { (x , p) → eta x p })
+      (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eta _) q})
 
   colim : make-is-colimit F (el! (sum / rel))
   colim .ψ x p = inc (x , p)
   colim .commutes f = funext λ _ → sym (quot (f , refl))
-  colim .universal {A} eps p x = univ {A} eps (λ f → happly (p f)) x
-  colim .factors eps p = refl
-  colim .unique {A} eps p other q = funext λ x →
+  colim .universal {A} eta p x = univ {A} eta (λ f → happly (p f)) x
+  colim .factors eta p = refl
+  colim .unique {A} eta p other q = funext λ x →
     Coeq-elim-prop
-      (λ x →  A .is-tr (other x) (univ {A} eps (λ f → happly (p f)) x))
+      (λ x →  A .is-tr (other x) (univ {A} eta (λ f → happly (p f)) x))
       (λ x → happly (q (x .fst)) (x .snd))
       x
 ```

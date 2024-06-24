@@ -34,8 +34,8 @@ A [[terminal object]] is equivalently defined as a limit of the empty diagram.
 
 ```agda
 is-limit→is-terminal
-  : ∀ {T : Ob} {eta : Const T => ¡F}
-  → is-limit {C = C} ¡F T eta
+  : ∀ {T : Ob} {eps : Const T => ¡F}
+  → is-limit {C = C} ¡F T eps
   → is-terminal C T
 is-limit→is-terminal lim Y = contr (lim.universal (λ ()) (λ ()))
                                    (λ _ → sym (lim.unique _ _ _ λ ()))
