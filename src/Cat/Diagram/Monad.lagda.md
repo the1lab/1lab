@@ -1,11 +1,13 @@
 <!--
 ```agda
+open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+import Cat.Functor.Reasoning
 
 open _=>_ using (is-natural)
 open Functor
@@ -236,6 +238,7 @@ algebra homomorphism, they assemble into a category: The
   module _ (M : Monad C) where
     private
       module M = Monad M
+      module MR = Cat.Functor.Reasoning M.M
     open M hiding (M)
     open Precategory
     open Algebra-on
@@ -280,6 +283,12 @@ the identity and associativity laws from its underlying category.
 
 </details>
 
+<!--
+```agda
+    private module EM = Cat.Reasoning Eilenberg-Moore
+```
+-->
+
 By projecting the underlying object of the algebras, and the underlying
 morphisms of the homomorphisms between them, we can define a functor
 from `Eilenberg-Moore`{.Agda} back to the underlying category:
@@ -298,6 +307,25 @@ faithful.
 ```agda
     Forget-is-faithful : is-faithful Forget
     Forget-is-faithful = ext
+```
+
+Moreover, this functor is [[conservative]]. This follows from a bit of
+routine algebra.
+
+```agda
+    Forget-is-conservative : is-conservative Forget
+    Forget-is-conservative {X , α} {Y , β} {f = f} f-inv =
+      EM.make-invertible f-alg-inv (ext invl) (ext invr)
+      where
+        open C.is-invertible f-inv
+
+        f-alg-inv : Algebra-hom C M (Y , β) (X , α)
+        f-alg-inv .morphism = inv
+        f-alg-inv .commutes =
+          inv C.∘ β .ν                                 ≡⟨ ap₂ C._∘_ refl (C.intror (MR.annihilate invl)) ⟩
+          inv C.∘ β .ν C.∘ M₁ (f .morphism) C.∘ M₁ inv ≡⟨ ap₂ C._∘_ refl (C.extendl (sym (f .commutes))) ⟩
+          inv C.∘ f .morphism C.∘ α .ν C.∘ M₁ inv      ≡⟨ C.cancell invr ⟩
+          α .ν C.∘ M₁ inv                              ∎
 ```
 
 ## Free algebras {defines="free-algebra"}
