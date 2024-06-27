@@ -177,6 +177,14 @@ symᵢ reflᵢ = reflᵢ
 _∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
 reflᵢ ∙ᵢ q = q
 
+apᵢ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → {x y : A}
+  → (f : A → B)
+  → x ≡ᵢ y → f x ≡ᵢ f y
+apᵢ f reflᵢ = reflᵢ
+
+
 Jᵢ
   : ∀ {ℓ ℓ'} {A : Type ℓ} {x : A} (P : (y : A) → x ≡ᵢ y → Type ℓ')
   → P x reflᵢ
