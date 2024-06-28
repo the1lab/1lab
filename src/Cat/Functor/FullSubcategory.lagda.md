@@ -72,6 +72,25 @@ reassembling:
     where module y = C._≅_ y
 ```
 
+<!--
+```agda
+  sub-inv→super-inv
+    : ∀ {A B : Σ _ P} {f : R.Hom A B}
+    → R.is-invertible {A} {B} f
+    → C.is-invertible f
+  sub-inv→super-inv f-inv = C.make-invertible inv invl invr
+    where open R.is-invertible f-inv
+
+  super-inv→sub-inv
+    : ∀ {A B : Σ _ P} {f : R.Hom A B}
+    → C.is-invertible f
+    → R.is-invertible {A} {B} f
+  super-inv→sub-inv f-inv = R.make-invertible inv invl invr
+    where open C.is-invertible f-inv
+
+```
+-->
+
 ```agda
 module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x))
   where
@@ -93,43 +112,43 @@ is $\cR$.
     .to-path-over p → R.≅-pathp _ _ λ i → cids .to-path-over (sub-iso→super-iso P p) i .C.to
 ```
 
-## From full inclusions
+## From full inclusions {defines="essential-image"}
 
 There is another way of representing full subcategories: By giving a
 _full inclusion_, i.e. a [[fully faithful]] functor $F : \cD \to
 \cC$. Each full inclusion canonically determines a full subcategory
 of $\cC$, namely that consisting of the objects in $\cC$ merely in
-the image of $F$.
+the image of $F$. This category is often referred to as the
+**essential image** of $F$.
 
 ```agda
-module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithful F) where
+module _ {o' h'} {D : Precategory o' h'} (F : Functor D C) where
   open Functor F
 
-  Full-inclusion→Full-subcat : Precategory _ _
-  Full-inclusion→Full-subcat =
+  Essential-image : Precategory _ _
+  Essential-image =
     Restrict (λ x → ∃[ d ∈ Ob D ] (F₀ d C.≅ x))
+
 ```
 
-This canonical full subcategory is weakly equivalent to $\cD$,
-meaning that it admits a fully faithful, [essentially surjective]
-functor from $\cD$. This functor is actually just $F$ again:
-
-[essentially surjective]: Cat.Functor.Properties.html#essential-fibres
+There is a canonical inclusion of $\cD$ into the essential image of
+$F$ that is [[essentially surjective]]. Moreover, this inclusion
+is a weak equivalence if $F$ is [[fully faithful]].
 
 ```agda
-  Ff-domain→Full-subcat : Functor D Full-inclusion→Full-subcat
-  Ff-domain→Full-subcat .Functor.F₀ x = F₀ x , inc (x , C.id-iso)
-  Ff-domain→Full-subcat .Functor.F₁ = F₁
-  Ff-domain→Full-subcat .Functor.F-id = F-id
-  Ff-domain→Full-subcat .Functor.F-∘ = F-∘
+  Essential-inc : Functor D Essential-image
+  Essential-inc .Functor.F₀ x = F₀ x , inc (x , C.id-iso)
+  Essential-inc .Functor.F₁ = F₁
+  Essential-inc .Functor.F-id = F-id
+  Essential-inc .Functor.F-∘ = F-∘
 
-  is-fully-faithful-domain→Full-subcat : is-fully-faithful Ff-domain→Full-subcat
-  is-fully-faithful-domain→Full-subcat = ff
-
-  is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
-  is-eso-domain→Full-subcat yo =
+  Essential-inc-eso : is-eso Essential-inc
+  Essential-inc-eso yo =
     ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ isom)
       (yo .snd)
+
+  ff→Essential-inc-ff : is-fully-faithful F → is-fully-faithful Essential-inc
+  ff→Essential-inc-ff ff = ff
 ```
 
 Up to weak equivalence, admitting a full inclusion is equivalent to
@@ -145,6 +164,6 @@ module _ {P : C.Ob → Type ℓ} where
   Forget-full-subcat .Functor.F-id = refl
   Forget-full-subcat .Functor.F-∘ f g i = f C.∘ g
 
-  is-fully-faithful-Forget-full-subcat : is-fully-faithful Forget-full-subcat
-  is-fully-faithful-Forget-full-subcat = id-equiv
+  Forget-full-subcat-is-ff : is-fully-faithful Forget-full-subcat
+  Forget-full-subcat-is-ff = id-equiv
 ```
