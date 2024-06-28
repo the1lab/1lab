@@ -491,7 +491,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
       → f C.∘ h ≡ g C.∘ h )
     → f ≡ g
   Representables-generate {f = f} {g} sep =
-    fully-faithful→faithful {F = ct.ι} ct.has-ff $
+    ff→faithful {F = ct.ι} ct.has-ff $
       Representables-generate-presheaf ct.site λ h →
         ι.₁ f PSh.∘ h                                     ≡⟨ mangle ⟩
         ι.₁ ⌜ f C.∘ counit.ε _ C.∘ L.₁ h ⌝ PSh.∘ unit.η _ ≡⟨ ap! (sep _) ⟩

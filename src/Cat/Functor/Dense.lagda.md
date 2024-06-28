@@ -93,6 +93,6 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     → (∀ {Z} (h : D.Hom (F.₀ Z) X) → f D.∘ h ≡ g D.∘ h)
     → f ≡ g
   dense→separating dense h =
-    fully-faithful→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
+    ff→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
       ext λ x g → h g
 ```

@@ -98,14 +98,14 @@ module
     morp = D.make-iso (ε _) (g-ff.from (unit.η _)) invl invr
       where abstract
       invl : ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
-      invl = fully-faithful→faithful {F = G} g-ff (
+      invl = ff→faithful {F = G} g-ff (
         G.₁ (ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
         G.₁ (ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
         G.₁ (ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
         G.₁ D.id                        ∎)
 
       invr : g-ff.from (unit.η (G.₀ o)) D.∘ ε o ≡ D.id
-      invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
+      invr = ff→faithful {F = G} g-ff (ap G.₁ (
         g-ff.from _ D.∘ ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
         ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
         ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩

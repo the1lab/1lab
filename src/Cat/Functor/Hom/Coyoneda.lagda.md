@@ -232,7 +232,7 @@ private module _ where private
     → (∀ {Z} (h : Hom Z X) → f ∘ h ≡ g ∘ h)
     → f ≡ g
   よ-cancelr sep =
-    fully-faithful→faithful {F = よ} よ-is-fully-faithful $
+    ff→faithful {F = よ} よ-is-fully-faithful $
       Representables-generate-presheaf λ h → ext λ x a →
         sep (h .η x a)
 ```

@@ -59,7 +59,7 @@ module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
   module ε⁻¹ = _=>_ ε⁻¹
 
   psh-equal : ∀ {X Y} {f g : Hom X Y} → ι.₁ f ≡ ι.₁ g → f ≡ g
-  psh-equal = fully-faithful→faithful {F = T .Topos.ι} (T .Topos.has-ff)
+  psh-equal = ff→faithful {F = T .Topos.ι} (T .Topos.has-ff)
 ```
 
 ::: terminology

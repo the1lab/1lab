@@ -588,7 +588,7 @@ construct the requisite cocone.
       inv c =
         pointwise-colim.universal (p .F₀ c)
           (λ j → F .F₁ (equiv→inverse p-ff (j .map)))
-          (λ {x} {y} f → collapse F (fully-faithful→faithful {F = p} p-ff (path f)))
+          (λ {x} {y} f → collapse F (ff→faithful {F = p} p-ff (path f)))
 
 module _
   {o o' ℓ ℓ'}
@@ -621,7 +621,7 @@ module _
     ni .to x = ↓colim.ψ _ (↓obj C'.id)
     ni .inv x = ↓colim.universal _
       (λ j → G .F₁ (ff.from (j .map)))
-      (λ f → collapse G $ fully-faithful→faithful {F = F} ff $
+      (λ f → collapse G $ ff→faithful {F = F} ff $
            F .F-∘ _ _
         ·· ap₂ C'._∘_ (ff.ε _) refl
         ·· f .sq

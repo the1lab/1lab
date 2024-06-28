@@ -15,7 +15,7 @@ module Cat.Functor.Properties where
 ```agda
 private variable
   o h o₁ h₁ : Level
-  C D : Precategory o h
+  B C D : Precategory o h
 open Precategory
 open Functor
 ```
@@ -62,6 +62,12 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
     Σ-prop-path! $ ext (faithful (ap D.to (p ∙ sym q)))
+
+  is-faithful-∘
+    : ∀ {F : Functor C D} {G : Functor B C}
+    → is-faithful F → is-faithful G
+    → is-faithful (F F∘ G)
+  is-faithful-∘ Ff Gf p = Gf (Ff p)
 ```
 -->
 
@@ -77,11 +83,11 @@ prove the conjunction as a theorem.
 is-fully-faithful : Functor C D → Type _
 is-fully-faithful F = ∀ {x y} → is-equiv (F .F₁ {x = x} {y})
 
-fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
-fully-faithful→faithful f = Equiv.injective (_ , f)
+ff→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
+ff→faithful f = Equiv.injective (_ , f)
 
-fully-faithful→full : {F : Functor C D} → is-fully-faithful F → is-full F
-fully-faithful→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
+ff→full : {F : Functor C D} → is-fully-faithful F → is-full F
+ff→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
 
 full+faithful→ff
   : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
@@ -95,7 +101,7 @@ full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
 ```
 
 A very important property of fully faithful functors (like $F$) is that
-they are **conservative**: If the image of $f : x \to y$ under $F$ is an
+they are [[conservative]]: If the image of $f : x \to y$ under $F$ is an
 isomorphism $Fx \cong Fy$, then $f$ was really an isomorphism $f : x
 \cong y$.
 
@@ -292,7 +298,7 @@ essentially injective.
     : ∀ {F : Functor C D}
     → is-fully-faithful F
     → is-pseudomonic F
-  ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
+  ff→pseudomonic {F} ff .faithful = ff→faithful {F = F} ff
   ff→pseudomonic {F} ff .isos-full f =
     inc (is-ff→essentially-injective {F = F} ff f ,
          ext (equiv→counit ff (D.to f)))
