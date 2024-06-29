@@ -414,6 +414,13 @@ invertible[]→iso[] {f' = f'} i =
   it i .to'       = a i
   it i .from'     = p' i .is-invertible[_].inv'
   it i .inverses' = p' i .is-invertible[_].inverses'
+
+instance
+  Extensional-≅[]
+    : ∀ {ℓr} {x y : Ob} {x' : Ob[ x ]} {y' : Ob[ y ]} {f : x ≅ y}
+    → ⦃ sa : Extensional (Hom[ f .to ] x' y') ℓr ⦄
+    → Extensional (x' ≅[ f ] y') ℓr
+  Extensional-≅[] ⦃ sa ⦄ = injection→extensional! ≅[]-path sa
 ```
 -->
 

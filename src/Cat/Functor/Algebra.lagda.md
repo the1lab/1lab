@@ -380,7 +380,6 @@ with an $F$-algebra $\mathrm{roll} : \cC(F(F^{*}(A)),F^{*}(A))$.
 <!--
 ```agda
     open Algebra-on {M = Alg-free-monad}
-    open Algebra-hom {M = Alg-free-monad}
 ```
 -->
 
@@ -534,29 +533,29 @@ Likewise, we have an equivalence between $F$-algebra morphisms and monad
 algebra morphisms.
 
 ```agda
-    private module Free-EM = Cat.Reasoning (Eilenberg-Moore C Alg-free-monad)
+    private module Free-EM = Cat.Reasoning (Eilenberg-Moore Alg-free-monad)
 
     lift-alg-hom
       : ∀ {a b} {α β}
       → FAlg.Hom (a , α) (b , β)
       → Free-EM.Hom (a , lift-alg α) (b , lift-alg β)
-    lift-alg-hom f .morphism = f .hom
-    lift-alg-hom f .commutes =
+    lift-alg-hom f .hom = f .hom
+    lift-alg-hom f .preserves =
       (sym $ ap hom $ counit.is-natural _ _ f)
 
     lower-alg-hom
       : ∀ {a b} {α β}
       → Free-EM.Hom (a , lift-alg α) (b , lift-alg β)
       → FAlg.Hom (a , α) (b , β)
-    lower-alg-hom f .hom = f .morphism
+    lower-alg-hom f .hom = f .hom
     lower-alg-hom {a} {b} {α} {β} f .preserves =
-      f .morphism ∘ α                                                      ≡⟨ ap₂ _∘_ refl (insertr (F.annihilate zag)) ⟩
-      f .morphism ∘ (α ∘ F.₁ (ε (a , α) .hom)) ∘ F.₁ (η a)                 ≡⟨ push-inner (sym (fold-roll α)) ⟩
-      ⌜ f .morphism ∘ ε (a , α) .hom ⌝ ∘ (roll a ∘ F.₁ (η a))              ≡⟨ ap! (f .commutes) ⟩
-      (ε (b , β) .hom ∘ Free.F₁ (f .morphism) .hom) ∘ (roll a ∘ F.₁ (η a)) ≡⟨ pull-inner (map*-roll (f .morphism)) ⟩
-      ε (b , β) .hom ∘ (roll b ∘ F.₁ (map* (f .morphism))) ∘ F.₁ (η a)     ≡⟨ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _))) ⟩
-      β ∘ F.₁ (ε (b , β) .hom) ∘ F.₁ (η b) ∘ F.₁ (f .morphism)             ≡⟨ ap₂ _∘_ refl (cancell (F.annihilate zag)) ⟩
-      β ∘ (F.₁ (f .morphism))                                              ∎
+      f .hom ∘ α                                                      ≡⟨ ap₂ _∘_ refl (insertr (F.annihilate zag)) ⟩
+      f .hom ∘ (α ∘ F.₁ (ε (a , α) .hom)) ∘ F.₁ (η a)                 ≡⟨ push-inner (sym (fold-roll α)) ⟩
+      ⌜ f .hom ∘ ε (a , α) .hom ⌝ ∘ (roll a ∘ F.₁ (η a))              ≡⟨ ap! (f .preserves) ⟩
+      (ε (b , β) .hom ∘ Free.F₁ (f .hom) .hom) ∘ (roll a ∘ F.₁ (η a)) ≡⟨ pull-inner (map*-roll (f .hom)) ⟩
+      ε (b , β) .hom ∘ (roll b ∘ F.₁ (map* (f .hom))) ∘ F.₁ (η a)     ≡⟨ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _))) ⟩
+      β ∘ F.₁ (ε (b , β) .hom) ∘ F.₁ (η b) ∘ F.₁ (f .hom)             ≡⟨ ap₂ _∘_ refl (cancell (F.annihilate zag)) ⟩
+      β ∘ (F.₁ (f .hom))                                              ∎
 ```
 
 Therefore, we have an [[isomorphism of precategories]] between the category
@@ -565,7 +564,7 @@ giving us the appropriate universal property for an algebraically free monad.
 
 ```agda
     FAlg→Free-EM
-      : Functor FAlg (Eilenberg-Moore C Alg-free-monad)
+      : Functor FAlg (Eilenberg-Moore Alg-free-monad)
     FAlg→Free-EM .F₀ (a , α) =
       a , lift-alg α
     FAlg→Free-EM .F₁ = lift-alg-hom

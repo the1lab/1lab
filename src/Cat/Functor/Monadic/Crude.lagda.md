@@ -15,6 +15,8 @@ open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 
+open import Cat.Displayed.Total
+
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as C-r
 ```
@@ -42,14 +44,14 @@ private
   T : Monad C
   T = Adjunction→Monad F⊣U
   C^T : Precategory _ _
-  C^T = Eilenberg-Moore C T
+  C^T = Eilenberg-Moore T
 
   module C^T = C-r C^T
 
 open _⊣_ F⊣U
 open _=>_
-open Algebra-hom
 open Algebra-on
+open Total-hom
 ```
 -->
 
@@ -71,7 +73,7 @@ characterising exactly when the [comparison functor][comp] $K : \cD
 from the adjunction][madj] is an equivalence. Our refinement here gives
 a _sufficient_ condition.
 
-[comp]: Cat.Functor.Adjoint.Monadic.html#Comparison
+[comp]: Cat.Functor.Adjoint.Monadic.html#Comparison-EM
 [emc]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [madj]: Cat.Functor.Adjoint.Monad.html
 
@@ -110,7 +112,7 @@ private
     → is-coequaliser C (U.₁ f) (U.₁ g) (U.₁ (coequ .Coequaliser.coeq))
 
 module _
-  (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
+  (has-coeq : (M : Algebra T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
   (U-pres : U-preserves-reflexive-coeqs)
   where
 ```
@@ -123,10 +125,10 @@ module _
 
   private
     K⁻¹ : Functor C^T D
-    K⁻¹ = Comparison⁻¹ F⊣U has-coeq
+    K⁻¹ = Comparison-EM⁻¹ F⊣U has-coeq
 
-    K⁻¹⊣K : K⁻¹ ⊣ Comparison F⊣U
-    K⁻¹⊣K = Comparison⁻¹⊣Comparison F⊣U has-coeq
+    K⁻¹⊣K : K⁻¹ ⊣ Comparison-EM F⊣U
+    K⁻¹⊣K = Comparison-EM⁻¹⊣Comparison-EM F⊣U has-coeq
 
     module adj = _⊣_ K⁻¹⊣K
 ```
@@ -179,8 +181,8 @@ we're seeking.
 
 ```agda
     η⁻¹ : C.Hom (U.₀ (coapex (has-coeq o))) (o .fst)
-    η⁻¹η : adj.unit.η _ .morphism C.∘ η⁻¹ ≡ C.id
-    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .morphism ≡ C.id
+    η⁻¹η : adj.unit.η _ .hom C.∘ η⁻¹ ≡ C.id
+    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .hom ≡ C.id
 
     η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
 
@@ -202,8 +204,8 @@ is a calculation reusing the established proof that $\eta\inv\eta =
 
 ```agda
     inverse : C^T.Hom (U.₀ _ , _) o
-    inverse .morphism = η⁻¹
-    inverse .commutes =
+    inverse .hom = η⁻¹
+    inverse .preserves =
       η⁻¹ C.∘ U.₁ (counit.ε _)                                                              ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.intror (F.annihilate (C.assoc _ _ _ ∙ η⁻¹η))) ⟩
       η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coeq)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
       η⁻¹ C.∘ U.₁ (has-coeq o .coeq D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩
@@ -252,7 +254,7 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
       inversel
     where
 
-    oalg = Comparison F⊣U .F₀ o
+    oalg = Comparison-EM F⊣U .F₀ o
     coequ = has-coeq oalg
 
     abstract
@@ -279,15 +281,15 @@ reflexive coequalisers, then the adjunction $F \dashv U$ is monadic.
 
 ```agda
 crude-monadicity
-  : (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
+  : (has-coeq : (M : Algebra T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
     (U-pres : U-preserves-reflexive-coeqs)
     (U-conservative : is-conservative U)
   → is-monadic F⊣U
 crude-monadicity coeq pres cons = eqv' where
   open is-equivalence
-  eqv : is-equivalence (Comparison⁻¹ F⊣U coeq)
-  eqv .F⁻¹          = Comparison F⊣U
-  eqv .F⊣F⁻¹        = Comparison⁻¹⊣Comparison F⊣U coeq
+  eqv : is-equivalence (Comparison-EM⁻¹ F⊣U coeq)
+  eqv .F⁻¹          = Comparison-EM F⊣U
+  eqv .F⊣F⁻¹        = Comparison-EM⁻¹⊣Comparison-EM F⊣U coeq
   eqv .unit-iso _   = prcoeq→unit-is-iso coeq pres
   eqv .counit-iso _ = conservative-prcoeq→counit-is-iso coeq pres cons
   eqv' = inverse-equivalence eqv
