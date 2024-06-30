@@ -105,3 +105,10 @@ _∪_ : ℙ X → ℙ X → ℙ X
 infixr 32 _∩_
 infixr 31 _∪_
 ```
+
+<!--
+```agda
+⋃ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
+⋃ {I = I} A x = ∃Ω[ i ∈ I ] A i x
+```
+-->
