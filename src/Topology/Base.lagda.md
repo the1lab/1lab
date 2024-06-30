@@ -4,19 +4,33 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Properties
+open import Cat.Functor.Morphism
 open import Cat.Prelude
 
+open import Data.Set.Surjection
+open import Data.Sum
 open import Data.Power
 
-open import 1Lab.Reflection hiding (absurd)
+import Cat.Reasoning
+
+open import 1Lab.Reflection hiding (absurd; [_])
 ```
 -->
 ```agda
 module Topology.Base where
 ```
 
+# Topological spaces {defines="topology topological-space open-set"}
+
+
 ```agda
-record is-topology {o ℓ} (X : Type o) (is-open : (X → Ω) → Type ℓ) : Type (lsuc o ⊔ ℓ) where
+record is-topology
+  {o ℓ}
+  (X : Type o)
+  (is-open : (X → Ω) → Type ℓ)
+  : Type (lsuc o ⊔ ℓ) where
+  no-eta-equality
   field
     ∩-open : ∀ {U V : X → Ω} → is-open U → is-open V → is-open (U ∩ V)
     ⋃-open : {I : Type o} → (Uᵢ : I → X → Ω) → (∀ i → is-open (Uᵢ i)) → is-open (⋃ Uᵢ)
@@ -24,10 +38,20 @@ record is-topology {o ℓ} (X : Type o) (is-open : (X → Ω) → Type ℓ) : Ty
     has-is-set : is-set X
     is-open-is-prop : ∀ {U} → is-prop (is-open U)
 
+  open-ext
+    : ∀ {U V : X → Ω}
+    → (∀ x → x ∈ U → x ∈ V)
+    → (∀ x → x ∈ V → x ∈ U)
+    → is-open U
+    → is-open V
+  open-ext to from U-open =
+    subst is-open (ext λ x → Ω-ua (to x) (from x)) U-open
+
   minimal-open : is-open minimal
   minimal-open =
-    subst is-open
-      (ext (λ _ → Ω-ua (rec! (λ ff tt → ff)) λ ff → inc (lift ff , tt)))
+    open-ext
+      (rec! (λ x ff tt → ff))
+      (λ x ff → inc (lift ff , tt))
       (⋃-open {I = Lift _ ⊥} (λ _ _ → ⊤Ω) (λ ff → absurd (Lift.lower ff)))
 
 record Topological-space (o ℓ : Level) : Type (lsuc o ⊔ lsuc ℓ) where
@@ -37,7 +61,38 @@ record Topological-space (o ℓ : Level) : Type (lsuc o ⊔ lsuc ℓ) where
     has-is-topology : is-topology Ob is-open
 
   open is-topology has-is-topology public
+
+  is-closed : ℙ Ob → Type _
+  is-closed U = is-open (U ᶜ)
+
+  ∪-closed : ∀ {U V} → is-closed U → is-closed V → is-closed (U ∪ V)
+  ∪-closed U-closed V-closed =
+    open-ext
+      (λ x (¬U , ¬V) → rec! [ ¬U , ¬V ])
+      (λ x ¬U+V → (λ u → ¬U+V (inc (inl u))) , (λ v → ¬U+V (inc (inr v))))
+      (∩-open U-closed V-closed)
+
+  minimal-closed : is-closed minimal
+  minimal-closed =
+    open-ext
+      (λ x tt ff → ff)
+      (λ x ff→ff → tt)
+      maximal-open
+
+  maximal-closed : is-closed maximal
+  maximal-closed =
+    open-ext
+      (λ x ff tt → ff)
+      (λ x tt→ff → tt→ff tt)
+      minimal-open
 ```
+
+<!--
+```agda
+  is-neighborhood : (x : Ob) → (U : Ob → Ω) → Type _
+  is-neighborhood x U = ∃[ O ∈ (Ob → Ω) ] (O ⊆ U × is-open O)
+```
+-->
 
 <!--
 ```agda
@@ -138,4 +193,38 @@ Top o ℓ .Precategory._∘_ = _∘ᶜ_
 Top o ℓ .Precategory.idr _ = trivial!
 Top o ℓ .Precategory.idl _ = trivial!
 Top o ℓ .Precategory.assoc _ _ _ = trivial!
+```
+
+```agda
+Top↪Sets : Functor (Top o ℓ) (Sets o)
+Top↪Sets .Functor.F₀ X .∣_∣ = ⌞ X ⌟
+Top↪Sets .Functor.F₀ X .is-tr = hlevel 2
+Top↪Sets .Functor.F₁ = hom
+Top↪Sets .Functor.F-id = refl
+Top↪Sets .Functor.F-∘ _ _ = refl
+
+Top↪Sets-is-faithful : is-faithful (Top↪Sets {o} {ℓ})
+Top↪Sets-is-faithful p = ext (apply p)
+
+module Top {o ℓ} = Cat.Reasoning (Top o ℓ)
+```
+
+```agda
+continuous-injection→monic
+  : {X Y : Topological-space o ℓ}
+  → (f : Continuous X Y)
+  → injective (f .hom)
+  → Top.is-monic f
+continuous-injection→monic f f-inj =
+  faithful→reflects-mono Top↪Sets Top↪Sets-is-faithful $ λ {Z} →
+  injective→monic (hlevel 2) f-inj {Z}
+
+continuous-surjection→epic
+  : {X Y : Topological-space o ℓ}
+  → (f : Continuous X Y)
+  → is-surjective (f .hom)
+  → Top.is-epic f
+continuous-surjection→epic {X = X} {Y = Y} f f-surj =
+  faithful→reflects-epi Top↪Sets Top↪Sets-is-faithful $ λ {Z} →
+  surjective→epi (el! ⌞ X ⌟) (el! ⌞ Y ⌟) (f .hom) f-surj {Z}
 ```

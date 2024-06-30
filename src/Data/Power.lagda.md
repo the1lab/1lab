@@ -110,5 +110,11 @@ infixr 31 _∪_
 ```agda
 ⋃ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
 ⋃ {I = I} A x = ∃Ω[ i ∈ I ] A i x
+
+⋂ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
+⋂ {I = I} A x = ∀Ω[ i ∈ I ] A i x
+
+_ᶜ : ℙ X → ℙ X
+(A ᶜ) x = ¬Ω (A x)
 ```
 -->
