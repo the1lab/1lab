@@ -8,6 +8,8 @@ open import Data.Sum
 
 open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Space.Suspension
+
+open import Meta.Invariant
 ```
 -->
 
@@ -166,5 +168,5 @@ is equivalent to $P$, this concludes the proof.
     section
 
   AC→LEM : Dec ∣ P ∣
-  AC→LEM = Dec-≃ (Susp-prop-path (hlevel 1)) Discrete-ΣP
+  AC→LEM = Susp-prop-path (hlevel 1) <≃> Discrete-ΣP
 ```

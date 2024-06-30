@@ -12,6 +12,8 @@ open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
+
+open import Meta.Invariant
 ```
 -->
 
@@ -182,22 +184,15 @@ disjoint-⊎-is-prop Ap Bp notab (inr x) (inl y) = absurd (notab (y , x))
 disjoint-⊎-is-prop Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 ```
 
-## Decidability
+## Discreteness
 
-If `A` and `B` are [[decidable]], then so is `A ⊎ B`.
+If `A` and `B` are [[discrete]], then so is `A ⊎ B`.
 
 ```agda
 instance
-  Dec-⊎ : ⦃ _ : Dec A ⦄ ⦃ _ : Dec B ⦄ → Dec (A ⊎ B)
-  Dec-⊎ ⦃ yes A ⦄ = yes (inl A)
-  Dec-⊎ ⦃ no ¬A ⦄ ⦃ yes B ⦄ = yes (inr B)
-  Dec-⊎ ⦃ no ¬A ⦄ ⦃ no ¬B ⦄ = no λ where
-    (inl A) → ¬A A
-    (inr B) → ¬B B
-
   Discrete-⊎ : ⦃ _ : Discrete A ⦄ ⦃ _ : Discrete B ⦄ → Discrete (A ⊎ B)
-  Discrete-⊎ {x = inl x} {inl y} = Dec-map (ap inl) inl-inj (x ≡? y)
+  Discrete-⊎ {x = inl x} {inl y} = invmap (ap inl) inl-inj (x ≡? y)
   Discrete-⊎ {x = inl x} {inr y} = no inl≠inr
   Discrete-⊎ {x = inr x} {inl y} = no inr≠inl
-  Discrete-⊎ {x = inr x} {inr y} = Dec-map (ap inr) inr-inj (x ≡? y)
+  Discrete-⊎ {x = inr x} {inr y} = invmap (ap inr) inr-inj (x ≡? y)
 ```

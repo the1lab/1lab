@@ -3,6 +3,11 @@
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Sum.Base
+
+open import Meta.Invariant
+open import Meta.Idiom
 ```
 -->
 
@@ -64,17 +69,14 @@ private variable
 -->
 
 If we can construct a pair of maps $A \to B$ and $B \to A$,
-then we can deduce decidability of $B$ from decidability of $A$.
+then we can deduce decidability of $B$ from decidability of $A$:
+that is, `Dec`{.Agda} is an `Invariant`{.Agda} functor.
 
 ```agda
-Dec-map
-  : (A → B) → (B → A)
-  → Dec A → Dec B
-Dec-map to from (yes a) = yes (to a)
-Dec-map to from (no ¬a) = no (¬a ∘ from)
-
-Dec-≃ : A ≃ B → Dec A → Dec B
-Dec-≃ e = Dec-map (Equiv.to e) (Equiv.from e)
+instance
+  Invariant-Dec : Invariant (eff Dec)
+  Invariant-Dec .Invariant.invmap f g (yes a) = yes (f a)
+  Invariant-Dec .Invariant.invmap f g (no ¬a) = no (¬a ∘ g)
 ```
 
 This lets us show the following useful lemma: if $A$ injects into a
@@ -86,7 +88,7 @@ Discrete-inj
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Discrete B → Discrete A
 Discrete-inj f inj eq? {x} {y} =
-  Dec-map inj (ap f) (eq? {f x} {f y})
+  invmap inj (ap f) (eq? {f x} {f y})
 ```
 
 ## Programming with decisions
@@ -130,11 +132,16 @@ private variable
 -->
 
 We then have the following basic instances for combining decisions,
-expressing that the class of decidable types is closed under products
+expressing that the class of decidable types is closed under sums, products
 and functions, and contains the unit type and the empty type.
 
 ```agda
 instance
+  Dec-⊎ : ⦃ _ : Dec A ⦄ ⦃ _ : Dec B ⦄ → Dec (A ⊎ B)
+  Dec-⊎ ⦃ yes A ⦄ ⦃ _ ⦄ = yes (inl A)
+  Dec-⊎ ⦃ no ¬A ⦄ ⦃ yes B ⦄ = yes (inr B)
+  Dec-⊎ ⦃ no ¬A ⦄ ⦃ no ¬B ⦄ = no [ ¬A , ¬B ]
+
   Dec-× : ⦃ _ : Dec P ⦄ ⦃ _ : Dec Q ⦄ → Dec (P × Q)
   Dec-× {Q = _} ⦃ yes p ⦄ ⦃ yes q ⦄ = yes (p , q)
   Dec-× {Q = _} ⦃ yes p ⦄ ⦃ no ¬q ⦄ = no λ z → ¬q (snd z)
@@ -152,7 +159,21 @@ instance
   Dec-⊥ = no id
 
   Dec-Lift : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ Dec A ⦄ → Dec (Lift ℓ' A)
-  Dec-Lift ⦃ d ⦄ = Dec-≃ (Lift-≃ e⁻¹) d
+  Dec-Lift ⦃ d ⦄ = Lift-≃ e⁻¹ <≃> d
+```
+
+These closure properties make `Dec`{.Agda} a `Monoidal`{.Agda} and
+`Alternative`{.Agda} functor.
+
+```agda
+instance
+  Monoidal-Dec : Monoidal (eff Dec)
+  Monoidal-Dec .Monoidal.munit = Dec-⊤
+  Monoidal-Dec .Monoidal._<,>_ a b = Dec-× ⦃ a ⦄ ⦃ b ⦄
+
+  Alternative-Dec : Alternative (eff Dec)
+  Alternative-Dec .Alternative.empty = Dec-⊥
+  Alternative-Dec .Alternative._<+>_ a b = Dec-⊎ ⦃ a ⦄ ⦃ b ⦄
 ```
 
 <!--
@@ -171,3 +192,33 @@ decide! : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ {_ : is-yes d} → A
 decide! ⦃ yes x ⦄ = x
 ```
 -->
+
+## Relation to sums
+
+The decidability of $A$ can also be phrased as $A + \neg A$, so we
+provide helpers to convert between the two.
+
+```agda
+from-dec : Dec A → A ⊎ ¬ A
+from-dec (yes a) = inl a
+from-dec (no ¬a) = inr ¬a
+
+to-dec : A ⊎ ¬ A → Dec A
+to-dec (inl  a) = yes a
+to-dec (inr ¬a) = no ¬a
+```
+
+The proof that these functions are inverses is automatic by computation,
+and thus it can be shown they are equivalences:
+
+```agda
+from-dec-is-equiv : {A : Type ℓ} → is-equiv (from-dec {A = A})
+from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
+  p : _
+  p (inl x)  = refl
+  p (inr ¬x) = refl
+
+  q : _
+  q (yes x) = refl
+  q (no x)  = refl
+```

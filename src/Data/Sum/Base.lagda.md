@@ -4,8 +4,6 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import Data.Dec.Base
 ```
 -->
 
@@ -134,37 +132,6 @@ types.
 ⊎-mapr : (B → C) → A ⊎ B → A ⊎ C
 ⊎-mapr f = ⊎-map id f
 ```
-
-## Decidablity
-
-This type has a very similar structure to [[Dec|type of decisions]], so
-we provide some helpers to convert between the two.
-
-```agda
-from-dec : Dec A → A ⊎ ¬ A
-from-dec (yes a) = inl a
-from-dec (no ¬a) = inr ¬a
-
-to-dec : A ⊎ ¬ A → Dec A
-to-dec (inl  a) = yes a
-to-dec (inr ¬a) = no ¬a
-```
-
-The proof that these functions are inverses is automatic by computation,
-and thus it can be shown they are equivalences:
-
-```agda
-from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
-from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
-  p : _
-  p (inl x)  = refl
-  p (inr ¬x) = refl
-
-  q : _
-  q (yes x) = refl
-  q (no x)  = refl
-```
-
 
 ## Closure under equivalences
 

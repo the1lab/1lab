@@ -11,6 +11,7 @@ open import Data.Sum
 
 open import Logic.Propositional.Classical
 
+open import Meta.Invariant
 open import Meta.Brackets
 
 import Data.List as List
@@ -83,10 +84,10 @@ neg-inj p = ap lit-var p
 
 instance
   Discrete-Literal : Discrete (Literal Γ)
-  Discrete-Literal {x = lit x} {lit y} = Dec-map (ap lit) lit-inj (x ≡? y)
+  Discrete-Literal {x = lit x} {lit y} = invmap (ap lit) lit-inj (x ≡? y)
   Discrete-Literal {x = lit x} {neg y} = no lit≠neg
   Discrete-Literal {x = neg x} {lit y} = no (lit≠neg ∘ sym)
-  Discrete-Literal {x = neg x} {neg y} = Dec-map (ap neg) neg-inj (x ≡? y)
+  Discrete-Literal {x = neg x} {neg y} = invmap (ap neg) neg-inj (x ≡? y)
 
 avoid-lit : (i : Fin (suc Γ)) (x : Literal (suc Γ)) → ¬ i ≡ lit-var x → Literal Γ
 avoid-lit i (lit x) p = lit (avoid i x p)

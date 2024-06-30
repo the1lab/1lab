@@ -18,8 +18,7 @@ module Meta.Invariant where
 
 An `Invariant`{.Agda} functor is, informally, one that has both a covariant
 and a contravariant dependency on its argument type.
-For a motivating example, think of [[`Dec`{.Agda}|decidable]] and
-`Dec-map`{.Agda}.
+For a motivating example, think of [[`Dec`{.Agda}|decidable]].
 
 ```agda
 record Invariant (M : Effect) : Typeω where

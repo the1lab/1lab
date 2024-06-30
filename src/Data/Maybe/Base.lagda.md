@@ -6,6 +6,7 @@ open import 1Lab.Type
 open import Data.Dec.Base
 
 open import Meta.Traversable
+open import Meta.Invariant
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
@@ -100,7 +101,7 @@ just-inj {x = x} = ap (from-just x)
 
 instance
   Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
-  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
+  Discrete-Maybe {x = just x} {just y}   = invmap (ap just) just-inj (x ≡? y)
   Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
   Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
   Discrete-Maybe {x = nothing} {nothing} = yes refl
