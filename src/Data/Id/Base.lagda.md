@@ -15,6 +15,8 @@ open import 1Lab.Type
 open import Data.Maybe.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
+
+open import Meta.Invariant
 ```
 -->
 
@@ -128,7 +130,7 @@ Discrete-inj'
   → ⦃ _ : Discrete B ⦄
   → Discrete A
 Discrete-inj' f inj {x} {y} =
-  Dec-map (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
+  invmap (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
 
 instance
   Discrete-Σ
