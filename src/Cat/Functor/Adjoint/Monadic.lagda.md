@@ -8,18 +8,17 @@ description: |
 ```agda
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 
-open import Cat.Displayed.Total
-
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 
+open Total-hom
 open Functor
 open _=>_
-open Total-hom
 ```
 -->
 

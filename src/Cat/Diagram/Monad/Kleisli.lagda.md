@@ -11,11 +11,10 @@ open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Monad.Solver
 open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
-
-open import Cat.Displayed.Total
 
 open import Data.Bool
 

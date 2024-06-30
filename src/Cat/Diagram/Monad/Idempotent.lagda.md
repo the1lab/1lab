@@ -6,12 +6,11 @@ open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Monoidal.Diagonals
 open import Cat.Monoidal.Functor
+open import Cat.Displayed.Total
 open import Cat.Diagram.Monad
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
-
-open import Cat.Displayed.Total
 
 import Cat.Functor.Reasoning
 import Cat.Reasoning

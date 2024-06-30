@@ -12,11 +12,10 @@ open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
-
-open import Cat.Displayed.Total
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning

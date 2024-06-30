@@ -1,25 +1,23 @@
 <!--
 ```agda
 open import Cat.Functor.FullSubcategory
+open import Cat.Displayed.Univalence
 open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
-
-open import Cat.Displayed.Total
-open import Cat.Displayed.Base
-open import Cat.Displayed.Univalence
-
 
 import Cat.Displayed.Morphism
 import Cat.Functor.Reasoning
 import Cat.Reasoning
 
 open _=>_ using (is-natural)
-open Functor
 open Displayed
 open Total-hom
+open Functor
 ```
 -->
 

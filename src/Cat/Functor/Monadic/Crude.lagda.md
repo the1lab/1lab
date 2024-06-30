@@ -11,11 +11,10 @@ open import Cat.Functor.Conservative
 open import Cat.Functor.Monadic.Beck
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Equivalence
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
-
-open import Cat.Displayed.Total
 
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as C-r

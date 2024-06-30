@@ -5,8 +5,8 @@ description: |
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
-open import Cat.Functor.Adjoint
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
