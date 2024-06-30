@@ -23,7 +23,7 @@ open Functor
 -->
 
 ```agda
-module Cat.Instances.FinSet where
+module Cat.Instances.FinSets where
 ```
 
 # The category of finite sets
