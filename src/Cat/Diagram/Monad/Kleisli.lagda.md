@@ -48,7 +48,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (M : Monad C) where
 ```
 -->
 
-# Kleisli map {defines="kleisli-morphism kleisli-map"}
+# Kleisli maps {defines="kleisli-morphism kleisli-map"}
 
 Let $M : \cC \to \cC$ be a [[monad]]. A **Kleisli map**
 from $X$ to $Y$ with respect to $M$ is a morphism $\cC(X, M(Y))$.
@@ -87,7 +87,7 @@ Luckily, the algebra is simple enough that we can automate it away!
 </details>
 
 Note that each Kleisli map $f : \cC(X,M(Y))$ can be extended
-to and $M$-algebra homomorphism between [[free $M$-algebras|free-algebra]]
+to an $M$-algebra homomorphism between [[free $M$-algebras|free-algebra]]
 on $X$ and $Y$ via $\mu \circ M(f)$. This allows us to construct a functor
 from the category of Kleisli maps into the [[Kleisli category]] of $M$.
 
@@ -162,7 +162,7 @@ category!
 Note that we **cannot** upgrade this weak equivalence to an equivalence when
 $\cC$ is univalent, as categories of Kleisli maps are not, in general,
 univalent. To see why, consider the monad on $\Sets$ that maps every
-set $\top$. Note that every hom set of the corresponding category of
+set to $\top$. Note that every hom set of the corresponding category of
 Kleisli maps is contractible, as all maps are of the form $A \to \top$.
 This in turn means that the type of isos is contractible; if the Kleisli
 map category were univalent, then this would imply that the type of
@@ -207,7 +207,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
   open Cat.Reasoning C
 ```
 
-As shown in the previous section, category of Kleisli maps is weakly
+As shown in the previous section, the category of Kleisli maps is weakly
 equivalent to the Kleisli category, so it inherits all of the Kleisli
 category's nice properties. In particular, the forgetful functor from
 the category of Kleisli maps is faithful, conservative, and has a left
