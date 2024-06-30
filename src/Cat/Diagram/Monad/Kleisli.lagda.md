@@ -4,15 +4,15 @@ description: |
 ---
 <!--
 ```agda
-open import Cat.Diagram.Terminal.Properties
 open import Cat.Functor.FullSubcategory
-open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Monad.Solver
 open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
+open import Cat.Diagram.Terminal
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Instances.Sets
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 
@@ -169,17 +169,28 @@ map category were univalent, then this would imply that the type of
 sets was a proposition.
 
 ```agda
-private
-  ⊤-Monad : ∀ κ → Monad (Sets κ)
-  ⊤-Monad κ = Adjunction→Monad (Terminal→Adjoint (Sets κ) Sets-terminal)
-
-Kleisli-not-univalent : ∀ {κ} → ¬ is-category (Kleisli-maps (⊤-Monad κ))
-Kleisli-not-univalent {κ} cat =
-  ¬Set-is-prop $
-  identity-system→hlevel 0 cat $ λ X Y →
-    ≅-is-contr (hlevel 0)
+Kleisli-not-univalent
+  : ∀ {κ}
+  → Σ[ C ∈ Precategory (lsuc κ) κ ]
+    Σ[ M ∈ Monad C ]
+    (is-category C × (¬ is-category (Kleisli-maps M)))
+Kleisli-not-univalent {κ} =
+  Sets κ , T , Sets-is-category , not-univalent
   where
-    open Cat.Reasoning (Kleisli-maps (⊤-Monad κ))
+    T : Monad (Sets κ)
+    T =
+      Adjunction→Monad $
+      is-terminal→inclusion-is-right-adjoint (Sets κ)
+        (el! (Lift _ ⊤))
+        (λ _ → hlevel 0)
+
+    open Cat.Reasoning (Kleisli-maps T)
+
+    not-univalent : ¬ is-category (Kleisli-maps T)
+    not-univalent cat =
+      ¬Set-is-prop $
+      identity-system→hlevel 0 cat $ λ X Y →
+        ≅-is-contr (hlevel 0)
 ```
 
 # Properties
