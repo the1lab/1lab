@@ -169,7 +169,7 @@ by faithfulness.
     where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful {F = F} ff (
       F .F₁ (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))     ≡⟨ ff.ε _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ cat! D ⟩
       ffz D.∘ f D.∘ ⌜ D.id ⌝ D.∘ g D.∘ ftx         ≡˘⟨ ap¡ (f*y-iso .di.invl) ⟩
@@ -224,7 +224,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 
 ```agda
   ff+split-eso→unit .is-natural x y f =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful {F = F} ff (
       F .F₁ (ff⁻¹ ffy C.∘ f)                                      ≡⟨ F .F-∘ _ _ ⟩
       ⌜ F .F₁ (ff⁻¹ ffy) ⌝ D.∘ F .F₁ f                            ≡⟨ ap! (ff.ε _) ⟩
       ffy D.∘ ⌜ F .F₁ f ⌝                                         ≡⟨ ap! (sym (D.idr _) ∙ ap (F .F₁ f D.∘_) (sym (f*x-iso .di.invl))) ⟩
@@ -309,7 +309,7 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
 
 ```agda
   ff+split-eso→F⊣inverse .zag {x} =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful {F = F} ff (
       F .F₁ (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)         ≡⟨ F .F-∘ _ _ ⟩
       F .F₁ (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F .F₁ (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                           ≡⟨ cat! D ⟩
@@ -356,13 +356,13 @@ needs an appeal to faithfulness (two, actually):
   ff+split-eso→is-equivalence .unit-iso x = record
     { inv      = ff⁻¹ (f*x-iso .di.to)
     ; inverses = record
-      { invl = fully-faithful→faithful {F = F} ff (
+      { invl = ff→faithful {F = F} ff (
           F .F₁ (ff⁻¹ ffx C.∘ ff⁻¹ ftx)         ≡⟨ F .F-∘ _ _ ⟩
           F .F₁ (ff⁻¹ ffx) D.∘ F .F₁ (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ffx D.∘ ftx                           ≡⟨ f*x-iso .di.invr ⟩
           D.id                                  ≡˘⟨ F .F-id ⟩
           F .F₁ C.id                            ∎)
-      ; invr = fully-faithful→faithful {F = F} ff (
+      ; invr = ff→faithful {F = F} ff (
           F .F₁ (ff⁻¹ ftx C.∘ ff⁻¹ ffx)         ≡⟨ F .F-∘ _ _ ⟩
           F .F₁ (ff⁻¹ ftx) D.∘ F .F₁ (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ftx D.∘ ffx                           ≡⟨ f*x-iso .di.invl ⟩

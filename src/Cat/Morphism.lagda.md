@@ -564,6 +564,16 @@ abstract
 ≅-path-from : {f g : a ≅ b} → f ._≅_.from ≡ g ._≅_.from → f ≡ g
 ≅-path-from = ≅-pathp-from refl refl
 
+≅-is-contr : (∀ {a b} → is-contr (Hom a b)) → is-contr (a ≅ b)
+≅-is-contr hom-contr .centre =
+  make-iso (hom-contr .centre) (hom-contr .centre)
+    (is-contr→is-prop hom-contr _ _)
+    (is-contr→is-prop hom-contr _ _)
+≅-is-contr hom-contr .paths f = ≅-path (hom-contr .paths (f .to))
+
+≅-is-prop : (∀ {a b} → is-prop (Hom a b)) → is-prop (a ≅ b)
+≅-is-prop hom-prop f g = ≅-path (hom-prop (f .to) (g .to))
+
 ↪-pathp
   : {a : I → Ob} {b : I → Ob} {f : a i0 ↪ b i0} {g : a i1 ↪ b i1}
   → PathP (λ i → Hom (a i) (b i)) (f .mor) (g .mor)

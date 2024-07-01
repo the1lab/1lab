@@ -6,6 +6,7 @@ open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Monoidal.Diagonals
 open import Cat.Monoidal.Functor
+open import Cat.Displayed.Total
 open import Cat.Diagram.Monad
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
@@ -82,7 +83,7 @@ computation involving the naturality of $\eta$.
 ```agda
 η≡Mη→algebra-invertible
   : (∀ A → η (M₀ A) ≡ M₁ (η A))
-  → ∀ (A : Algebra _ monad)
+  → ∀ (A : Algebra monad)
   → is-invertible (A .snd .ν)
 η≡Mη→algebra-invertible h (A , alg) = make-invertible (η _) (alg .ν-unit) $
   η A ∘ alg .ν           ≡⟨ unit.is-natural _ _ _ ⟩
@@ -97,7 +98,7 @@ $\mu$ is componentwise invertible.
 ```agda
 η≡Mη→idempotent : (∀ A → η (M₀ A) ≡ M₁ (η A)) → is-idempotent-monad
 η≡Mη→idempotent h = invertible→invertibleⁿ _ λ A →
-  η≡Mη→algebra-invertible h (Free _ monad .F₀ A)
+  η≡Mη→algebra-invertible h (Free-EM .F₀ A)
 
 idempotent≃η≡Mη : is-idempotent-monad ≃ (∀ A → η (M₀ A) ≡ M₁ (η A))
 idempotent≃η≡Mη = prop-ext! idempotent→η≡Mη η≡Mη→idempotent
@@ -138,14 +139,14 @@ $\eta$, so this reduces to showing that the *inner* square commutes,
 which is just the naturality of $\eta$.
 
 ```agda
-idempotent→reflective : is-idempotent-monad → is-reflective (Free⊣Forget _ monad)
-idempotent→reflective idem = full+faithful→ff (Forget _ monad)
-  (λ {(A , a)} {(B , b)} f → inc (algebra-hom f
+idempotent→reflective : is-idempotent-monad → is-reflective Free-EM⊣Forget-EM
+idempotent→reflective idem = full+faithful→ff Forget-EM
+  (λ {(A , a)} {(B , b)} f → inc (total-hom f
     (sym (swizzle (sym (unit.is-natural _ _ _))
       (η≡Mη→algebra-invertible (idempotent→η≡Mη idem) (A , a) .is-invertible.invr)
       (b .ν-unit)))
     , refl))
-  (Forget-is-faithful _ monad)
+  Forget-EM-is-faithful
 ```
 
 <!--
@@ -166,13 +167,13 @@ $U \epsilon F$ must be as well, but this is exactly the multiplication
 of our monad.
 
 ```agda
-reflective→idempotent : is-reflective (Free⊣Forget _ monad) → is-idempotent-monad
+reflective→idempotent : is-reflective (Free-EM⊣Forget-EM {M = monad}) → is-idempotent-monad
 reflective→idempotent ref = invertible→invertibleⁿ _ λ A →
-  iso→invertible (F-map-iso (Forget _ monad)
-    (is-reflective→counit-is-iso (Free⊣Forget _ monad) ref
-      {Free _ monad .F₀ A}))
+  iso→invertible (F-map-iso Forget-EM
+    (is-reflective→counit-is-iso Free-EM⊣Forget-EM ref
+      {Free-EM .F₀ A}))
 
-idempotent≃reflective : is-idempotent-monad ≃ is-reflective (Free⊣Forget _ monad)
+idempotent≃reflective : is-idempotent-monad ≃ is-reflective Free-EM⊣Forget-EM
 idempotent≃reflective = prop-ext! idempotent→reflective reflective→idempotent
 ```
 

@@ -143,7 +143,7 @@ embedding functor is [[fully faithful]].
 <!--
 ```agda
 よ-is-faithful : is-faithful よ
-よ-is-faithful = fully-faithful→faithful {F = よ} (よ-is-fully-faithful)
+よ-is-faithful = ff→faithful {F = よ} (よ-is-fully-faithful)
 ```
 -->
 
@@ -185,6 +185,6 @@ As expected, the covariant yoneda embedding is also fully faithful.
 <!--
 ```agda
 よcov-is-faithful : is-faithful よcov
-よcov-is-faithful = fully-faithful→faithful {F = よcov} (よcov-is-fully-faithful)
+よcov-is-faithful = ff→faithful {F = よcov} (よcov-is-fully-faithful)
 ```
 -->

@@ -103,8 +103,8 @@ module _ (ff : is-fully-faithful F) (eso : is-eso F) where
   ff+eso→preserves-mono : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
   ff+eso→preserves-mono {a = a} a-monic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
-    (f* , q) ← fully-faithful→full {F = F} ff (f 𝒟.∘ 𝒟.to i)
-    (g* , r) ← fully-faithful→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
+    (f* , q) ← ff→full {F = F} ff (f 𝒟.∘ 𝒟.to i)
+    (g* , r) ← ff→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
 ```
 
 Next, note that $a \circ f' = a \circ g'$: this follows from
@@ -114,7 +114,7 @@ g$.
 ```agda
     let
       s =
-        fully-faithful→faithful {F = F} ff $
+        ff→faithful {F = F} ff $
         F₁ (a 𝒞.∘ f*)           ≡⟨ F-∘ _ _ ∙ 𝒟.pushr q ⟩
         (F₁ a 𝒟.∘ f) 𝒟.∘ 𝒟.to i ≡⟨ ap₂ 𝒟._∘_ p refl ⟩
         (F₁ a 𝒟.∘ g) 𝒟.∘ 𝒟.to i ≡⟨ 𝒟.pullr (sym r) ∙ sym (F-∘ _ _) ⟩
@@ -145,12 +145,12 @@ formally dual to the case above, we will not dwell on it.
   ff+eso→preserves-epi : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
   ff+eso→preserves-epi {a = a} a-epic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
-    (f* , q) ← fully-faithful→full {F = F} ff (𝒟.from i 𝒟.∘ f)
-    (g* , r) ← fully-faithful→full {F = F} ff (𝒟.from i 𝒟.∘ g)
+    (f* , q) ← ff→full {F = F} ff (𝒟.from i 𝒟.∘ f)
+    (g* , r) ← ff→full {F = F} ff (𝒟.from i 𝒟.∘ g)
     let s = F-∘ _ _ ∙ 𝒟.pushl q ∙ ap₂ 𝒟._∘_ refl p ∙ 𝒟.pulll (sym r) ∙ sym (F-∘ _ _)
     pure $ 𝒟.iso→monic (i 𝒟.Iso⁻¹) f g $
       sym q
-      ·· ap F₁ (a-epic f* g* (fully-faithful→faithful {F = F} ff s))
+      ·· ap F₁ (a-epic f* g* (ff→faithful {F = F} ff s))
       ·· r
 ```
 

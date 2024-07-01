@@ -59,7 +59,7 @@ sea of theory has risen to the point where our result is trivial:
 ```agda
 module Rezk-large (A : Precategory o h) where
   Rezk-completion : Precategory (o ⊔ lsuc h) (o ⊔ h)
-  Rezk-completion = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+  Rezk-completion = Essential-image (よ A)
 
   Rezk-completion-is-category : is-category Rezk-completion
   Rezk-completion-is-category =
@@ -67,14 +67,14 @@ module Rezk-large (A : Precategory o h) where
       (Functor-is-category Sets-is-category)
 
   Complete : Functor A Rezk-completion
-  Complete = Ff-domain→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+  Complete = Essential-inc (よ A)
 
   Complete-is-ff : is-fully-faithful Complete
-  Complete-is-ff = is-fully-faithful-domain→Full-subcat
-      {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-ff = ff→Essential-inc-ff
+      (よ _) (よ-is-fully-faithful _)
 
   Complete-is-eso : is-eso Complete
-  Complete-is-eso = is-eso-domain→Full-subcat {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-eso = Essential-inc-eso (よ _)
 ```
 
 However, this construction is a bit disappointing, because we've had to
