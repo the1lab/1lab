@@ -492,13 +492,17 @@ We can then set about proving that, if $f : A \epi B$ is a surjection
 into a set, then $B$ is the quotient of $A$ under the kernel pair of
 $f$.
 
-<!--
+
 ```agda
 surjection→is-quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (b-set : is-set B)
   → (f : A ↠ B)
   → B ≃ Congruence.quotient (Kernel-pair b-set (f .fst))
+```
+
+<!--
+```agda
 surjection→is-quotient {A = A} {B} b-set (f , surj) =
   _ , injective-surjective→is-equiv! g'-inj g'-surj
   where
