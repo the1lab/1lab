@@ -226,9 +226,9 @@ setting, we also consider the base terms as neutral _at base types_.
 
 ```agda
 data Nf where
-  lam  : Nf (Γ , τ) σ    → Nf Γ (τ `⇒ σ)
-  pair : Nf Γ τ → Nf Γ σ → Nf Γ (τ `× σ)
-  ne   : Ne Γ σ → Nf Γ σ
+  lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
 
 data Ne where
   var  : Var Γ τ → Ne Γ τ
