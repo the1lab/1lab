@@ -29,3 +29,10 @@ hie.yaml
 *.o-boot
 /rubtmp*
 
+# LaTeX stuff that occasionally gets generated
+*.log
+*.synctex.gz
+*.aux
+*.fls
+*.pdf
+*.fdb_latexmk
