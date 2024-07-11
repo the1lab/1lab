@@ -10,8 +10,6 @@ open import Data.Sum
 
 open import Meta.Invariant
 
-import Data.Nat as Nat
-
 open is-iso
 ```
 -->

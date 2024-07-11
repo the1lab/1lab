@@ -16,7 +16,7 @@ open Cat.Reasoning using (Isomorphism; id-iso)
 module Cat.Gaunt where
 ```
 
-# Gaunt (pre)categories
+# Gaunt (pre)categories {defines="gaunt"}
 
 A precategory $\cC$ is **gaunt** if it is [[univalent|univalent
 category]] and [strict]: its type of objects $\rm{Ob}(\cC)$ is a set,

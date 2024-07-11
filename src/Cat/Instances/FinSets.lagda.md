@@ -13,10 +13,13 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
 open import Cat.Instances.Sets
+open import Cat.Functor.Base
+open import Cat.Skeletal
 open import Cat.Prelude
 
 open import Data.Fin.Closure
 open import Data.Fin
+open import Data.Nat
 
 open Functor
 ```
@@ -67,6 +70,15 @@ Fin→Sets .F-∘ _ _ = refl
 
 Fin→Sets-is-ff : is-fully-faithful Fin→Sets
 Fin→Sets-is-ff = id-equiv
+```
+
+As we said earlier, `FinSets`{.Agda} is [[skeletal]]: this follows directly
+from the injectivity of `Fin`{.Agda}.
+
+```agda
+FinSets-is-skeletal : is-skeletal FinSets
+FinSets-is-skeletal = path-from-has-iso→is-skeletal _ $ rec! λ is →
+  Fin-injective (iso→equiv (F-map-iso Fin→Sets is))
 ```
 
 ## Finite limits and colimits

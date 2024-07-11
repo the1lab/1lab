@@ -429,9 +429,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
 
 ```agda
   Kleisli-is-category : is-category C → is-category (Kleisli M)
-  Kleisli-is-category cat =
-    Restrict-is-category _ (λ _ → hlevel 1)
-      (EM-is-category cat)
+  Kleisli-is-category cat = Essential-image-is-category Free-EM
+    (EM-is-category cat)
 ```
 
 As the Kleisli category is a full subcategory, there is a canonical

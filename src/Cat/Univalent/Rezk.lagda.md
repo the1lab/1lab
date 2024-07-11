@@ -62,9 +62,8 @@ module Rezk-large (A : Precategory o h) where
   Rezk-completion = Essential-image (よ A)
 
   Rezk-completion-is-category : is-category Rezk-completion
-  Rezk-completion-is-category =
-    Restrict-is-category _ (λ _ → squash)
-      (Functor-is-category Sets-is-category)
+  Rezk-completion-is-category = Essential-image-is-category (よ A)
+    (Functor-is-category Sets-is-category)
 
   Complete : Functor A Rezk-completion
   Complete = Essential-inc (よ A)
