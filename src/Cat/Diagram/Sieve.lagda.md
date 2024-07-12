@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.instance:70 #-}
 open import Cat.Instances.Functor
 open import Cat.Instances.Slice
 open import Cat.Functor.Hom

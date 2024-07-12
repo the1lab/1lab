@@ -84,7 +84,7 @@ data Definition : Type where
   function    : (cs : List Clause) → Definition
   data-type   : (pars : Nat) (cs : List Name) → Definition
   record-type : (c : Name) (fs : List (Arg Name)) → Definition
-  data-cons   : (d : Name) → Definition
+  data-cons   : (d : Name) (q : Quantity) → Definition
   axiom       : Definition
   prim-fun    : Definition
 

@@ -96,8 +96,8 @@ private module P where
 
   -- White/blacklist specific definitions for reduction while executing the TC computation
   -- 'true' for whitelist, 'false' for blacklist
-    withReduceDefs : ∀ {a} {A : Type a} → (Σ Bool λ _ → List Name) → TC A → TC A
-    askReduceDefs  : TC (Σ Bool λ _ → List Name)
+    withReduceDefs : ∀ {a} {A : Type a} → Bool × List Name → TC A → TC A
+    askReduceDefs  : TC (Bool × List Name)
 
   -- Fail if the given computation gives rise to new, unsolved
   -- "blocking" constraints.
@@ -106,14 +106,14 @@ private module P where
   -- Run the given TC action and return the first component. Resets to
   -- the old TC state if the second component is 'false', or keep the
   -- new TC state if it is 'true'.
-    run-speculative : ∀ {a} {A : Type a} → TC (Σ A λ _ → Bool) → TC A
+    run-speculative : ∀ {a} {A : Type a} → TC (A × Bool) → TC A
 
   -- Get a list of all possible instance candidates for the given meta
   -- variable (it does not have to be an instance meta).
     get-instances : Meta → TC (List Term)
 
     declareData      : Name → Nat → Term → TC ⊤
-    defineData       : Name → List (Σ Name (λ _ → Term)) → TC ⊤
+    defineData       : Name → List (Name × Quantity × Term) → TC ⊤
 ```
 
 <details>
