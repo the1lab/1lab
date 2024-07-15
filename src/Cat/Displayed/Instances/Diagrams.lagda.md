@@ -4,6 +4,7 @@ open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Constant
 open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
@@ -93,15 +94,15 @@ transformations between them.
   ConstL : ∀ {x} → Ob[ x ] → Lifting {J = J} E (Const x)
   ConstL x' .F₀' _ = x'
   ConstL x' .F₁' _ = id'
-  ConstL x' .F-id' = refl
-  ConstL x' .F-∘' _ _ = symP (idr' _)
+  ConstL x' .F-id' = cast[] (λ _ → id')
+  ConstL x' .F-∘' _ _ = cast[] (symP (idr' _))
 
   const-ntl
     : ∀ {x y x' y'} {f : Hom x y} → Hom[ f ] x' y'
-    → (ConstL x') =[ const-nt f ]=>l (ConstL y')
+    → (ConstL x') =[ constⁿ f ]=>l (ConstL y')
   const-ntl f' .η' _ = f'
   const-ntl f' .is-natural' _ _ _ =
-    idr' _ ∙[] symP (idl' _)
+    cast[] (idr' _ ∙[] (symP (idl' _)))
 ```
 
 We also have a vertical functor from $\cE$ to the fibration of diagrams
@@ -131,13 +132,13 @@ diagrams in fibre categories.
 ```agda
   ConstL→Diagram F' .F₀ = F' .F₀'
   ConstL→Diagram F' .F₁ = F' .F₁'
-  ConstL→Diagram F' .F-id = F' .F-id'
+  ConstL→Diagram F' .F-id = cast[] (F' .F-id')
   ConstL→Diagram F' .F-∘ f g =
     from-pathp⁻ $ cast[] {q = sym (idl _)} (F' .F-∘' f g)
 
   Diagram→ConstL F .F₀' = F .F₀
   Diagram→ConstL F .F₁' = F .F₁
-  Diagram→ConstL F .F-id' = F .F-id
+  Diagram→ConstL F .F-id' = cast[] (F .F-id)
   Diagram→ConstL F .F-∘' f g =
     cast[] {p = sym (idl _)} $ to-pathp⁻ (F .F-∘ f g)
 ```
@@ -150,13 +151,13 @@ functor.
 ```agda
   ConstL-natl→Diagram-nat
     : ∀ {x} {F G : Functor J (Fibre E x)}
-    → Diagram→ConstL F =[ const-nt id ]=>l Diagram→ConstL G
+    → Diagram→ConstL F =[ constⁿ id ]=>l Diagram→ConstL G
     → F => G
 
   Diagram-nat→ConstL-natl
     : ∀ {x} {F G : Functor J (Fibre E x)}
     → F => G
-    → Diagram→ConstL F =[ const-nt id ]=>l Diagram→ConstL G
+    → Diagram→ConstL F =[ constⁿ id ]=>l Diagram→ConstL G
 ```
 
 <!--

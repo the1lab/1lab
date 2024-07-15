@@ -241,10 +241,10 @@ module _ {A : Precategory ao ah} {B : Precategory bo bh} where
 
   infix 5 _↙_ _↘_
   _↙_ : A.Ob → Functor B A → Precategory _ _
-  X ↙ T = const! X ↓ T
+  X ↙ T = !Const X ↓ T
 
   _↘_ : Functor B A → A.Ob → Precategory _ _
-  S ↘ X = S ↓ const! X
+  S ↘ X = S ↓ !Const X
 
 module ↙-compose
     {oc ℓc od ℓd oe ℓe}
@@ -299,21 +299,21 @@ module _ where
     Extensional-↙Hom
       : ∀ {ℓr}
       → {X : A .Ob} {T : Functor B A}
-      → {f g : ↓Obj (const! X) T}
+      → {f g : ↓Obj (!Const X) T}
       → ⦃ sb : Extensional (B .Hom (f .y) (g .y)) ℓr ⦄
-      → Extensional (↓Hom (const! X) T f g) ℓr
+      → Extensional (↓Hom (!Const X) T f g) ℓr
     Extensional-↙Hom {B = B} {X = X} {T = T} {f = f} {g = g} ⦃ sb ⦄ =
-      injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (const! X) T refl p) sb
+      injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (!Const X) T refl p) sb
     {-# OVERLAPS Extensional-↙Hom #-}
 
     Extensional-↘Hom
       : ∀ {ℓr}
       → {T : Functor A B} {X : B .Ob}
-      → {f g : ↓Obj T (const! X)}
+      → {f g : ↓Obj T (!Const X)}
       → ⦃ sa : Extensional (A .Hom (f .x) (g .x)) ℓr ⦄
-      → Extensional (↓Hom T (const! X) f g) ℓr
+      → Extensional (↓Hom T (!Const X) f g) ℓr
     Extensional-↘Hom {A = A} {T = T} {X = X} {f = f} {g = g} ⦃ sa ⦄ =
-      injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (const! X) p refl) sa
+      injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (!Const X) p refl) sa
     {-# OVERLAPS Extensional-↘Hom #-}
 
 
@@ -323,30 +323,30 @@ module _ where
       : ∀ {ℓr}
       → {X : A .Ob} {T : Functor B A}
       → ⦃ sb : Extensional (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y))) ℓr ⦄
-      → Extensional (↓Obj (const! X) T) ℓr
+      → Extensional (↓Obj (!Const X) T) ℓr
     Extensional-↙Obj {A = A} {B = B} {X = X} {T = T} ⦃ sb ⦄ =
       iso→extensional isom sb
         where
           -- Easier to just do this by hand.
-          isom : Iso (↓Obj (const! X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
+          isom : Iso (↓Obj (!Const X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
           isom .fst α = ↓Obj.y α , ↓Obj.map α
           isom .snd .is-iso.inv (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
-          isom .snd .is-iso.linv _ = ↓Obj-path (const! X) T refl refl refl
+          isom .snd .is-iso.linv _ = ↓Obj-path (!Const X) T refl refl refl
 
     Extensional-↘Obj
       : ∀ {ℓr}
       → {T : Functor A B} {Y : B .Ob}
       → ⦃ sb : Extensional (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y)) ℓr ⦄
-      → Extensional (↓Obj T (const! Y)) ℓr
+      → Extensional (↓Obj T (!Const Y)) ℓr
     Extensional-↘Obj {A = A} {B = B} {T = T} {Y = Y} ⦃ sb ⦄ =
       iso→extensional isom sb
         where
           -- Easier to just do this by hand.
-          isom : Iso (↓Obj T (const! Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
+          isom : Iso (↓Obj T (!Const Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
           isom .fst α = ↓Obj.x α , ↓Obj.map α
           isom .snd .is-iso.inv (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
-          isom .snd .is-iso.linv _ = ↓Obj-path T (const! Y) refl refl refl
+          isom .snd .is-iso.linv _ = ↓Obj-path T (!Const Y) refl refl refl
 ```
 -->

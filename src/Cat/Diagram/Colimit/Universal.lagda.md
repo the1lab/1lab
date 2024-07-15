@@ -12,6 +12,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Join
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
+open import Cat.Functor.Constant
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Pullback
@@ -307,7 +308,7 @@ colimits, we get that $F$ is colimiting.
       F-colim : is-colimit▹ (cocone▹→cocone/ F)
       F-colim = natural-isos→is-lan idni
         f*G≅F
-        (iso→⊤-natural-iso (C/.invertible→iso
+        (!const-isoⁿ (C/.invertible→iso
           (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
                   ; commutes = eq _ .p₁∘universal })
           (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)

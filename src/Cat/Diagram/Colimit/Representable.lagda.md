@@ -4,6 +4,7 @@ open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Functor
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose
 open import Cat.Functor.Hom
@@ -48,14 +49,14 @@ conditions.
 ```agda
   Lim[C[F-,=]] : Functor C (Sets ℓ)
   Lim[C[F-,=]] .F₀ c = el (Dia => Const c) Nat-is-set
-  Lim[C[F-,=]] .F₁ f α = const-nt f ∘nt α
+  Lim[C[F-,=]] .F₁ f α = constⁿ f ∘nt α
   Lim[C[F-,=]] .F-id = ext λ _ _ → C.idl _
   Lim[C[F-,=]] .F-∘ _ _ = ext λ _ _ → sym $ C.assoc _ _ _
 
   Hom-into-inj
     : ∀ {c : C.Ob} (eta : Dia => Const c)
     → Hom-from C c => Lim[C[F-,=]]
-  Hom-into-inj eta .η x f = const-nt f ∘nt eta
+  Hom-into-inj eta .η x f = constⁿ f ∘nt eta
   Hom-into-inj eta .is-natural x y f = ext λ g _ →
     sym $ C.assoc _ _ _
 
@@ -68,12 +69,11 @@ conditions.
 
     colim : is-colimit Dia c eta
     colim .σ {M} α =
-      hom→⊤-natural-trans $ nat-inv.inv .η _ (idnat-constr ∘nt α)
-    colim .σ-comm {M} {α} = ext λ j →
-      unext nat-inv.invl _ _ j ∙ C.idl _
+      !constⁿ (nat-inv.inv .η _ (to-coconeⁿ α))
+    colim .σ-comm {M} {α} = ext λ j → unext nat-inv.invl _ _ j
     colim .σ-uniq {M} {α} {σ'} q = ext λ j →
-      nat-inv.inv .η _ (idnat-constr ∘nt ⌜ α ⌝)                               ≡⟨ ap! q ⟩
-      nat-inv.inv .η _ ⌜ idnat-constr ∘nt (σ' ◂ !F) ∘nt cocone→unit Dia eta ⌝ ≡⟨ ap! (ext λ _ → C.idl _) ⟩
-      nat-inv.inv .η (M .F₀ tt) (const-nt (σ' .η j) ∘nt eta)                  ≡⟨ unext nat-inv.invr _ _ ⟩
-      σ' .η tt ∎
+      nat-inv.inv .η _ (to-coconeⁿ ⌜ α ⌝)                  ≡⟨ ap! q ⟩
+      nat-inv.inv .η _ ⌜ to-coconeⁿ ((σ' ◂ !F) ∘nt eta) ⌝  ≡⟨ ap! trivial! ⟩
+      nat-inv.inv .η _ ((!constⁿ (σ' .η tt) ◂ !F) ∘nt eta) ≡⟨ unext nat-inv.invr _ _ ⟩
+      σ' .η tt                                             ∎
 ```

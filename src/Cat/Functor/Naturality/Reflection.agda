@@ -23,7 +23,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
     `C ← quoteTC C
     `D ← quoteTC D
     wait-just-a-bit `C >>= unify hole ⊙ λ where
-      (def₀ (quote ⊤Cat)) → def₀ (quote iso→⊤-natural-iso)
+      (def₀ (quote ⊤Cat)) → def₀ (quote !const-isoⁿ)
         ##ₙ (def₀ (quote id-iso) ##ₙ `D)
       _ → def₀ (quote iso→isoⁿ)
         ##ₙ vlam "" (def₀ (quote id-iso) ##ₙ raise 1 `D)
@@ -47,5 +47,5 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   _ : ∀ {F : Functor C C} → F ≅ⁿ F
   _ = trivial-isoⁿ!
 
-  _ : ∀ {K : Functor ⊤Cat C} → const! (K .Functor.F₀ _) ≅ⁿ K
+  _ : ∀ {K : Functor ⊤Cat C} → !Const (K .Functor.F₀ _) ≅ⁿ K
   _ = trivial-isoⁿ!

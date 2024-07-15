@@ -4,6 +4,7 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Limit.Finite
+open import Cat.Instances.Shape.Terminal
 open import Cat.Morphism.Orthogonal
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Pullback
@@ -281,7 +282,7 @@ strong-epi-mono→image f a→im (_ , str-epi) im→b mono fact = go where
   open ↓Obj
   open ↓Hom
 
-  obj : ↓Obj (Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})
+  obj : ↓Obj (!Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})
   obj .x = tt
   obj .y = cut im→b , mono
   obj .map = record { map = a→im ; commutes = fact }
@@ -304,7 +305,7 @@ in the relevant comma categories.
         {u = o.map .map}
         {v = im→b} (sym (o.map .commutes ∙ sym fact))
 
-    dh : ↓Hom (Const (cut f)) _ obj other
+    dh : ↓Hom (!Const (cut f)) _ obj other
     dh .α = tt
     dh .β .map = the-lifting .centre .fst
     dh .β .commutes = the-lifting .centre .snd .snd

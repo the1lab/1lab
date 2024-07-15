@@ -7,6 +7,7 @@ open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
@@ -61,12 +62,9 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
   private
     module C = Precategory C
 
-  cocone→unit : ∀ {x : C.Ob} → (Diagram => Const x) → Diagram => const! x F∘ !F
-  unquoteDef cocone→unit = define-coherence cocone→unit
-
   is-colimit : (x : C.Ob) → Diagram => Const x → Type _
   is-colimit x cocone =
-    is-lan !F Diagram (const! x) (cocone→unit cocone)
+    is-lan !F Diagram (!Const x) cocone
 
   Colimit : Type _
   Colimit = Lan !F Diagram
@@ -199,8 +197,8 @@ the rest of the data.
   -- colimit, but this has better definitional behaviour.
   generalize-colimitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
-    → {eta : D => (const! (Functor.F₀ K tt)) F∘ !F} {eta' : D => K F∘ !F}
-    → is-lan !F D (const! (Functor.F₀ K tt)) eta
+    → {eta : D => (Const (Functor.F₀ K tt))} {eta' : D => K F∘ !F}
+    → is-lan !F D (!Const (Functor.F₀ K tt)) eta
     → (∀ {j} → eta .η j ≡ eta' .η j)
     → is-lan !F D K eta'
   generalize-colimitp {D} {K} {eta} {eta'} lan q = lan' where
@@ -209,12 +207,12 @@ the rest of the data.
     open Functor
 
     lan' : is-lan !F D K eta'
-    lan' .σ α = hom→⊤-natural-trans (lan.σ α .η tt)
+    lan' .σ α = !constⁿ (lan.σ α .η tt)
     lan' .σ-comm {M} {α} = ext λ j →
         ap (_ C.∘_) (sym q)
       ∙ lan.σ-comm {α = α} ηₚ _
     lan' .σ-uniq {M} {α} {σ'} r = ext λ j →
-      lan.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
+      lan.σ-uniq {σ' = !constⁿ (σ' .η tt)}
         (ext λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q)) ηₚ j
 
   to-is-colimitp
@@ -248,12 +246,12 @@ function which **un**makes a colimit.
                  (p : ∀ {x y} (f : J.Hom x y) →  eta y C.∘ F₁ f ≡ eta x)
       where
 
-      eta-nt : D => const! x F∘ !F
+      eta-nt : D => Const x
       eta-nt .η = eta
       eta-nt .is-natural _ _ f = p f ∙ sym (C.idl _)
 
       hom : C.Hom coapex x
-      hom = σ {M = const! x} eta-nt .η tt
+      hom = σ {M = !Const x} eta-nt .η tt
 
     mc : make-is-colimit D coapex
     mc .ψ = eta.η
@@ -263,7 +261,7 @@ function which **un**makes a colimit.
     mc .unique {x = x} eta p other q =
       sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
-        other-nt : F => const! x
+        other-nt : F => !Const x
         other-nt .η _ = other
         other-nt .is-natural _ _ _ = C.elimr (F .Functor.F-id) ∙ sym (C.idl _)
 ```
@@ -404,14 +402,14 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 <!--
 ```agda
   colimits→inversesp {f = f} {g = g} f-factor g-factor =
-    inversesⁿ→inverses {α = hom→⊤-natural-trans f} {β = hom→⊤-natural-trans g}
+    inversesⁿ→inverses {α = !constⁿ f} {β = !constⁿ g}
       (Lan-unique.σ-inversesp Cx Cy
         (ext λ j → f-factor {j})
         (ext λ j → g-factor {j}))
       tt
 
   colimits→invertiblep {f = f} f-factor =
-    is-invertibleⁿ→is-invertible {α = hom→⊤-natural-trans f}
+    is-invertibleⁿ→is-invertible {α = !constⁿ f}
       (Lan-unique.σ-is-invertiblep
         Cx Cy (ext λ j → f-factor {j}))
       tt

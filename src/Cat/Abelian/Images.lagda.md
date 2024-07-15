@@ -51,7 +51,7 @@ epi] followed by a [regular mono].
 ```agda
 images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
-  the-img : ↓Obj (const! (cut f)) Forget-full-subcat
+  the-img : ↓Obj (!Const (cut f)) Forget-full-subcat
   the-img .x = tt
   the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
   the-img .y .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
@@ -112,7 +112,7 @@ commutes.
   im : Image C f
   im .Initial.bot = the-img
   im .Initial.has⊥ other = contr factor unique where
-    factor : ↓Hom (const! (cut f)) Forget-full-subcat the-img other
+    factor : ↓Hom (!Const (cut f)) Forget-full-subcat the-img other
     factor .α = tt
     factor .β ./-Hom.map =
         Coker.universal (Ker.kernel f) {e' = other .map .map} path

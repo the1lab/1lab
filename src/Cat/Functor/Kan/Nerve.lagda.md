@@ -210,7 +210,7 @@ module _
     module F = Func F
 
     module ↓colim c' =
-      comma-colimits→lan.↓colim (よ C) F (λ c'' → cocompl (F F∘ Dom (よ C) (Const c''))) c'
+      comma-colimits→lan.↓colim (よ C) F (λ c'' → cocompl (F F∘ Dom (よ C) (!Const c''))) c'
 ```
 -->
 
@@ -238,7 +238,7 @@ below we denote `elem`{.Agda}.
 
 ```agda
     elem : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
-         → (arg : P ʻ i) → ↓Obj (よ C) (const! P)
+         → (arg : P ʻ i) → ↓Obj (よ C) (!Const P)
     elem P i arg .x = i
     elem P i arg .y = tt
     elem P i arg .map .η j h = P .F₁ h arg
@@ -275,7 +275,7 @@ from that same naturality:
     adj .counit .η ob = ↓colim.universal _ (λ j → j .map .η _ C.id) comm
       where abstract
       comm
-        : ∀ {x y} (f : ↓Hom (よ C) (const! (Nerve F .F₀ ob)) x y)
+        : ∀ {x y} (f : ↓Hom (よ C) (!Const (Nerve F .F₀ ob)) x y)
         → y .map .η _ C.id D.∘ F.₁ (f .α) ≡ x .map .η _ C.id
       comm {x} {y} f =
         y .map .η _ C.id D.∘ F.₁ (f .α) ≡˘⟨ y .map .is-natural _ _ _ $ₚ _ ⟩

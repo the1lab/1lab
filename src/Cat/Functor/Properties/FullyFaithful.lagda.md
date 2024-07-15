@@ -136,13 +136,13 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
     → ∀ {o} → apex Lim D.≅ F.₀ o
     → Limit G
   ff→reflects-Limit Lim {o} is = to-limit (ff→reflects-limit lim) where
-    eps' : F F∘ Const o F∘ !F => F F∘ G
+    eps' : F F∘ !Const o F∘ !F => F F∘ G
     eps' = nat-unassoc-from
-      (Lim .eps ∘nt (hom→⊤-natural-trans (is .D.from) ◂ !F))
+      (Lim .eps ∘nt (!constⁿ (is .D.from) ◂ !F))
 
-    lim : is-ran !F (F F∘ G) (F F∘ Const o) (nat-assoc-from (F ▸ unwhisker eps'))
+    lim : is-ran !F (F F∘ G) (F F∘ !Const o) (nat-assoc-from (F ▸ unwhisker eps'))
     lim = natural-isos→is-ran idni idni
-      (iso→⊤-natural-iso is)
+      (!const-isoⁿ is)
       (ext λ j → D.idl _ ·· (D.refl⟩∘⟨ D.eliml (Lim .Ext .F-id)) ·· sym (F.ε _))
       (Lim .has-ran)
 
@@ -151,13 +151,13 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
     → ∀ {o} → coapex Colim D.≅ F.₀ o
     → Colimit G
   ff→reflects-Colimit Colim {o} is = to-colimit (ff→reflects-colimit colim) where
-    eta' : F F∘ G => F F∘ Const o F∘ !F
+    eta' : F F∘ G => F F∘ !Const o F∘ !F
     eta' = nat-unassoc-to
-      ((hom→⊤-natural-trans (is .D.to) ◂ !F) ∘nt Colim .eta)
+      ((!constⁿ (is .D.to) ◂ !F) ∘nt Colim .eta)
 
-    colim : is-lan !F (F F∘ G) (F F∘ Const o) (nat-assoc-to (F ▸ unwhisker eta'))
+    colim : is-lan !F (F F∘ G) (F F∘ !Const o) (nat-assoc-to (F ▸ unwhisker eta'))
     colim = natural-isos→is-lan idni idni
-      (iso→⊤-natural-iso is)
+      (!const-isoⁿ is)
       (ext λ j → (F.eliml refl D.⟩∘⟨ D.idr _) ∙ sym (F.ε _))
       (Colim .has-lan)
 ```

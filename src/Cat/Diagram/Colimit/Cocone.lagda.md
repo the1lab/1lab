@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Constant
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 

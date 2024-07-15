@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Instances.Product
 open import Cat.Functor.Compose
+open import Cat.Functor.Constant
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
@@ -56,7 +57,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} where
 ```agda
   ConstD : Functor C Cat[ J , C ]
   ConstD .F₀ x = Const x
-  ConstD .F₁ f = const-nt f
+  ConstD .F₁ f = constⁿ f
   ConstD .F-id = ext λ _ → refl
   ConstD .F-∘ f g = ext λ _ → refl
 ```

@@ -5,6 +5,7 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Elements
 open import Cat.Site.Constructions
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Constant
 open import Cat.Diagram.Sieve
 open import Cat.Site.Closure
 open import Cat.Functor.Hom
@@ -117,7 +118,7 @@ by these maps, we see that $p(-)$ is a transformation $S \To
 patch→cocone
   : ∀ {U V} (S : Sieve C U)
   → Patch (Hom-into C V) S
-  → πₚ C (to-presheaf S) => const! V F∘ !F
+  → πₚ C (to-presheaf S) => !Const V F∘ !F
 patch→cocone S p .η (elem _ (f , hf)) = p .part f hf
 ```
 
@@ -144,7 +145,7 @@ is-colim→よ-is-sheaf
 is-colim→よ-is-sheaf {U} {V} S colim p = uniq where
   module x = is-lan colim
 
-  p' : πₚ C (to-presheaf S) => const! V F∘ !F
+  p' : πₚ C (to-presheaf S) => !Const V F∘ !F
   p' = patch→cocone S p
 ```
 
@@ -168,7 +169,7 @@ colim sieve.
   uniq : is-contr (Section _ p)
   uniq .centre  = record { glues = πβ }
   uniq .paths x = ext $
-    x.σ-uniq {σ' = const-nt _} (ext λ i → sym (x .glues _ _)) ηₚ tt
+    x.σ-uniq {σ' = !constⁿ _} (ext λ i → sym (x .glues _ _)) ηₚ tt
 ```
 
 Generalising the proof above, we conclude that *any* representable
