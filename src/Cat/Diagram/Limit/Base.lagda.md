@@ -7,6 +7,7 @@ open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
@@ -162,16 +163,8 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
     open _=>_
     open Functor
 
-  cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
-  unquoteDef cone→counit = define-coherence cone→counit
-
-  counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
-  counit→cone {K = K} eps .η = eps .η
-  counit→cone {K = K} eps .is-natural x y f =
-    ap (_ C.∘_) (sym (K .F-id)) ∙ eps .is-natural x y f
-
   is-limit : (x : C.Ob) → Const x => Diagram → Type _
-  is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
+  is-limit x cone = is-ran !F Diagram (!Const x) cone
 ```
 
 In a "bundled" form, we may define the _type of limits_ for a diagram
@@ -317,8 +310,8 @@ other data we have been given:
 ```agda
   generalize-limitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
-    → {eps : (const! (Functor.F₀ K tt)) F∘ !F => D} {eps' : K F∘ !F => D}
-    → is-ran !F D (const! (Functor.F₀ K tt)) eps
+    → {eps : (Const (Functor.F₀ K tt)) => D} {eps' : K F∘ !F => D}
+    → is-ran !F D (!Const (Functor.F₀ K tt)) eps
     → (∀ {j} → eps .η j ≡ eps' .η j)
     → is-ran !F D K eps'
   generalize-limitp {D} {K} {eps} {eps'} ran q = ran' where
@@ -327,11 +320,11 @@ other data we have been given:
     open Functor
 
     ran' : is-ran !F D K eps'
-    ran' .σ α = hom→⊤-natural-trans (ran.σ α .η tt)
+    ran' .σ α = !constⁿ (ran.σ α .η tt)
     ran' .σ-comm {M} {β} = ext λ j →
       ap (C._∘ _) (sym q) ∙ ran.σ-comm {β = β} ηₚ _
     ran' .σ-uniq {M} {β} {σ'} r = ext λ j →
-      ran.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
+      ran.σ-uniq {σ' = !constⁿ (σ' .η tt)}
         (ext λ j → r ηₚ j ∙ ap (C._∘ _) (sym q)) ηₚ j
 
   to-is-limitp
@@ -368,12 +361,12 @@ limit:
                  (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
       where
 
-      eps-nt : const! x F∘ !F => D
+      eps-nt : Const x => D
       eps-nt .η = eps
       eps-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
 
       hom : C.Hom x a
-      hom = σ {M = const! x} eps-nt .η tt
+      hom = σ {M = !Const x} eps-nt .η tt
 
     ml : make-is-limit D a
     ml .ψ j        = eps.η j
@@ -384,7 +377,7 @@ limit:
     ml .unique {x = x} eps p other q =
       sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
-        other-nt : const! x => F
+        other-nt : !Const x => F
         other-nt .η _ = other
         other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (F .Functor.F-id)
 
@@ -508,7 +501,7 @@ with the 2 limits, then $f$ and $g$ are inverses.
     → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
     → C.Inverses f g
   limits→inversesp {f = f} {g = g} f-factor g-factor =
-    inversesⁿ→inverses {α = hom→⊤-natural-trans f} {β = hom→⊤-natural-trans g}
+    inversesⁿ→inverses {α = !constⁿ f} {β = !constⁿ g}
       (Ran-unique.σ-inversesp Ly Lx
         (ext λ j → f-factor {j})
         (ext λ j → g-factor {j}))
@@ -524,7 +517,7 @@ must be invertible.
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → C.is-invertible f
   limits→invertiblep {f = f} f-factor = is-invertibleⁿ→is-invertible
-    {α = hom→⊤-natural-trans f}
+    {α = !constⁿ f}
     (Ran-unique.σ-is-invertiblep Ly Lx
       (ext λ j → f-factor {j}))
     tt

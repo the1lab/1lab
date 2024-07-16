@@ -6,9 +6,11 @@ description: |
 
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Constant
 open import Cat.Prelude
 ```
 -->

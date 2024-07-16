@@ -11,6 +11,7 @@ open import Cat.Diagram.Product.Indexed
 open import Cat.Instances.Shape.Two
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Discrete
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Product
 open import Cat.Prelude

@@ -10,6 +10,7 @@ open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Functor.Coherence
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
@@ -183,7 +184,7 @@ diagrams all have colimits in $\cD$.
 
 ```agda
     ↓Dia : (c' : C'.Ob) → Functor (F ↘ c') D
-    ↓Dia c' = G F∘ Dom F (Const c')
+    ↓Dia c' = G F∘ Dom F (!Const c')
 ```
 
 In fact, we can weaken the precondition from cocompleteness of $\cD$ to
@@ -349,12 +350,12 @@ end up being off by a bunch of natural isomorphisms.
       open make-natural-iso
       open Func
 
-      ↓colim : (c' : C'.Ob) → Colimit (G F∘ Dom F (Const c'))
-      ↓colim c' = colimits (G F∘ Dom F (Const c'))
+      ↓colim : (c' : C'.Ob) → Colimit (G F∘ Dom F (!Const c'))
+      ↓colim c' = colimits (G F∘ Dom F (!Const c'))
 
       module ↓colim c' = Colimit (↓colim c')
 
-      H-↓colim : (c' : C'.Ob) → Colimit ((H F∘ G) F∘ Dom F (Const c'))
+      H-↓colim : (c' : C'.Ob) → Colimit ((H F∘ G) F∘ Dom F (!Const c'))
       H-↓colim c' =
         natural-iso→colimit ni-assoc $
         preserves-colimit.colimit cocont (↓colim c')
@@ -371,7 +372,7 @@ up not being very interesting.
 
 ```agda
       F' : Functor C' D
-      F' = comma-colimits→lan.F' F G λ c' → colimits (G F∘ Dom F (Const c'))
+      F' = comma-colimits→lan.F' F G λ c' → colimits (G F∘ Dom F (!Const c'))
 
       HF' : Functor C' E
       HF' = comma-colimits→lan.F' F (H F∘ G) H-↓colim
@@ -454,7 +455,7 @@ module _
 We begin by constructing a cocone for every object $c' : \cC'$.
 
 ```agda
-  ↓cocone : ∀ (c' : C'.Ob) → F F∘ Dom p (const! c') => Const (L .F₀ c')
+  ↓cocone : ∀ (c' : C'.Ob) → F F∘ Dom p (!Const c') => Const (L .F₀ c')
   ↓cocone c' .η j = L .F₁ (j .map) D.∘ eta .η _
   ↓cocone c' .is-natural _ _ f =
     D.pullr (eta .is-natural _ _ _ )
@@ -470,7 +471,7 @@ we shall appeal to the fact that [colimits are representable].
 ```agda
   pointwise-lan→has-comma-colimits
     : ∀ (c' : C'.Ob)
-    → is-colimit (F F∘ Dom p (const! c')) (L .F₀ c') (↓cocone c')
+    → is-colimit (F F∘ Dom p (!Const c')) (L .F₀ c') (↓cocone c')
   pointwise-lan→has-comma-colimits c' =
     represents→is-colimit $
     [D,Sets].make-invertible inv invl invr
@@ -485,7 +486,7 @@ representability nonsense to get there.
 ```agda
       represent-↓cocone
         : ∀ (d : D.Ob)
-        → F F∘ Dom p (const! c') => Const d
+        → F F∘ Dom p (!Const c') => Const d
         → Functor.op (よ₀ D d) F∘ F => Functor.op (よ₀ C' c') F∘ p
       represent-↓cocone d α .η c f = α .η (↓obj f)
       represent-↓cocone d α .is-natural _ _ f = funext λ g →
@@ -494,7 +495,7 @@ representability nonsense to get there.
 
       pointwise-↓cocone
         : ∀ (d : D.Ob)
-        → (α : F F∘ Dom p (const! c') => Const d)
+        → (α : F F∘ Dom p (!Const c') => Const d)
         → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
       pointwise-↓cocone d α = pointwise.σ d (represent-↓cocone d α)
 ```
@@ -565,7 +566,7 @@ construct the requisite cocone.
            (λ j → D.idl _
                 ∙ ap₂ D._∘_ (ap (L .F₁) (sym (equiv→counit p-ff (j .map)))) refl))
          (pointwise.σ-comm _ ηₚ c $ₚ C'.id
-          ∙ elimr F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
+          ∙ elim F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
 ```
 
 <!--
@@ -574,7 +575,7 @@ construct the requisite cocone.
       module pointwise-colim c' = is-colimit (pointwise-lan→has-comma-colimits c')
 
       path
-        : {c : C.Ob} {x y : ↓Obj p (const! (p .F₀ c))} (f : ↓Hom p (const! (p .F₀ c)) x y)
+        : {c : C.Ob} {x y : ↓Obj p (!Const (p .F₀ c))} (f : ↓Hom p (!Const (p .F₀ c)) x y)
         → p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α) ≡ p .F₁ (equiv→inverse p-ff (x .map))
       path {c} {x} {y} f =
         p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α)          ≡⟨ p .F-∘ _ _ ⟩
@@ -613,7 +614,7 @@ module _
     → is-fully-faithful F
     → cocomplete→lan F G cocompl .Ext F∘ F ≅ⁿ G
   ff→cocomplete-lan-ext cocompl ff = (to-natural-iso ni) ni⁻¹ where
-    open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (Const c')))
+    open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (!Const c')))
     open make-natural-iso renaming (eta to to)
     module ff {x} {y} = Equiv (_ , ff {x} {y})
 

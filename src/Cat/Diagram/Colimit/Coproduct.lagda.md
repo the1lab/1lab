@@ -12,6 +12,7 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Shape.Two
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Coproduct
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 

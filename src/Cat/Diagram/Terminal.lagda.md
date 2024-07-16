@@ -97,7 +97,7 @@ to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
 
 ```agda
   module _ (x : Ob) (term : is-terminal x) where
-    is-terminal→inclusion-is-right-adjoint : !F ⊣ const! {A = C} x
+    is-terminal→inclusion-is-right-adjoint : !F ⊣ !Const {C = C} x
     is-terminal→inclusion-is-right-adjoint =
       hom-iso→adjoints (e _ .fst) (e _ .snd)
         λ _ _ _ → term _ .paths _
@@ -105,7 +105,7 @@ to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
         e : ∀ y → ⊤ ≃ Hom y x
         e y = is-contr→≃ (hlevel 0) (term y)
 
-  module _ (x : Ob) (adj : !F ⊣ const! {A = C} x) where
+  module _ (x : Ob) (adj : !F ⊣ !Const {C = C} x) where
     inclusion-is-right-adjoint→is-terminal : is-terminal x
     inclusion-is-right-adjoint→is-terminal y = Equiv→is-hlevel 0
       (Σ-contract (λ _ → hlevel 0) e⁻¹)

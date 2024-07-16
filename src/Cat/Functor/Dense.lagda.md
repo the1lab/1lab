@@ -4,6 +4,7 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Properties
 open import Cat.Functor.Kan.Nerve
+open import Cat.Functor.Constant
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
@@ -51,7 +52,7 @@ module
 -->
 
 ```agda
-  dense-cocone : ∀ d → F F∘ Dom F (const! d) => Const d
+  dense-cocone : ∀ d → F F∘ Dom F (!Const d) => Const d
   dense-cocone d .η x = x .map
   dense-cocone d .is-natural _ _ f = f .sq
 

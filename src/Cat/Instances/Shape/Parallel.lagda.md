@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Constant
 open import Cat.Prelude
 open import Cat.Finite
 

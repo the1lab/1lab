@@ -7,6 +7,7 @@ open import Cat.Functor.Properties
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Constant
 open import Cat.Morphism.Duality
 open import Cat.Diagram.Initial
 open import Cat.Functor.Hom
