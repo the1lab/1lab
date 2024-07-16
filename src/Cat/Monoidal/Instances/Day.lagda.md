@@ -303,12 +303,12 @@ $f(\day{h,x,y})$, in a way compatible with the relation above.
   -- computation rule for `factor W (day ...)` without exposing the
   -- computational behaviour of any other of the symbols here.
 
-  instance
-    Extensional-day-map
+  private
+    extensional-work
       : ∀ {i ℓ' ℓr} {C : Type ℓ'} ⦃ _ : H-Level C 2 ⦄
       → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
       → Extensional (⌞ Day.nadir i ⌟ → C) (ℓ ⊔ ℓr)
-    Extensional-day-map {i} {C = C} ⦃ sf ⦄ = done where
+    extensional-work {i} {C = C} ⦃ sf ⦄ = done where
       T : Type _
       T = {a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C
 
@@ -318,11 +318,23 @@ $f(\day{h,x,y})$, in a way compatible with the relation above.
       opaque
         unfolding Day-coend day
 
+        -- Note: Extensional-day-map and Extensional-coeq-map well and
+        -- truly overlap whenever Day.nadir is unfoldable (which it is
+        -- in the definition of to-p). So we can't let to-p see
+        -- Extensional-day-map as an instance.
+
         to-p : ∀ {f g} → Path T (unday f) (unday g) → f ≡ g
         to-p p = ext λ a b h x y i → p i {a} {b} h x y
 
       done : Extensional (⌞ Day.nadir i ⌟ → C) _
       done = injection→extensional (hlevel 2) to-p auto
+
+  instance
+    Extensional-day-map
+      : ∀ {i ℓ' ℓr} {C : Type ℓ'} ⦃ _ : H-Level C 2 ⦄
+      → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
+      → Extensional (⌞ Day.nadir i ⌟ → C) (ℓ ⊔ ℓr)
+    Extensional-day-map = extensional-work
 
   day-swap
     : ∀ {i a b a' b'} {f : Hom a' a} {g : Hom b' b} {h : Hom i (a' ⊗ b')}

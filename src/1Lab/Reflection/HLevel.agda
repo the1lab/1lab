@@ -192,8 +192,12 @@ instance
   h-level-is-prop : ∀ {ℓ} {A : Type ℓ} {n : Nat} ⦃ _ : 1 ≤ n ⦄ → H-Level (is-prop A) n
   h-level-is-prop ⦃ s≤s _ ⦄ = hlevel-instance (is-prop→is-hlevel-suc is-prop-is-prop)
 
+  H-Level-Singleton : ∀ {ℓ} {A : Type ℓ} {a : A} {n : Nat} → H-Level (Singleton a) n
+  H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n (contr _ Singleton-is-contr))
+
   {-# INCOHERENT H-Level-projection #-}
   {-# OVERLAPPING h-level-is-prop #-}
+  {-# OVERLAPPING H-Level-Singleton #-}
 
 open Data.Nat.Base using (0≤x ; s≤s' ; x≤x ; x≤sucy) public
 

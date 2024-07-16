@@ -291,23 +291,17 @@ killQual = Con.mapExpr (wrap . forget) where
 
 getClass :: QName -> TCM (Set QName)
 getClass q = isRecord q >>= \case
-  Just Record{ recFields = f } -> pure $! Set.fromList (map I.unDom f)
+  Just RecordData{ _recFields = f } -> pure $! Set.fromList (map I.unDom f)
   _ -> pure mempty
 
 usedInstances :: I.TermLike a => a -> TCM (Set QName)
-usedInstances =
-  let
-    getClass q = isRecord q >>= \case
-      Just Record{ recFields = f } -> pure $! Set.fromList (map I.unDom f)
-      _ -> pure mempty
-  in
-    I.foldTerm \case
-      I.Def q _ -> do
-        def <- getConstInfo q
-        case Agda.Compiler.Backend.defInstance def of
-          Just c  -> Set.insert q <$> getClass (instanceClass c)
-          Nothing -> pure mempty
-      _ -> pure mempty
+usedInstances = I.foldTerm \case
+  I.Def q _ -> do
+    def <- getConstInfo q
+    case Agda.Compiler.Backend.defInstance def of
+      Just c  -> Set.insert q <$> getClass (instanceClass c)
+      Nothing -> pure mempty
+  _ -> pure mempty
 
 typeToText :: Definition -> TCM Text
 typeToText d = do
