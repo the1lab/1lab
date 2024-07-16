@@ -5,7 +5,7 @@ open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Fr
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 import Cat.Morphism
 
@@ -44,7 +44,7 @@ opposite direction to $p$.
 private variable
   o ℓ : Level
   A B C C' D E : Precategory o ℓ
-  F G H K : Functor C D
+  F G H K L M : Functor C D
   α β γ : F => G
 ```
 -->
@@ -76,7 +76,7 @@ _◆_ : ∀ {F G : Functor D E} {H K : Functor C D}
     → F => G → H => K → F F∘ H => G F∘ K
 _◆_ {E = E} {F = F} {G} {H} {K} α β = nat module horizontal-comp where
   private module E = Cat.Reasoning E
-  open Fr
+  open Cat.Functor.Reasoning
   nat : F F∘ H => G F∘ K
   nat .η x = G .F₁ (β .η _) E.∘ α .η _
   nat .is-natural x y f =
@@ -147,6 +147,28 @@ module _ (p : Functor C C') where
   postcompose .F-∘ f g = ext λ _ → p .F-∘ _ _
 ```
 
+We also remark that horizontal composition obeys a very handy interchange
+law.
+
+```agda
+◆-interchange
+  : {F H L : Functor B C} {G K M : Functor A B}
+  → (α : F => H) (β : G => K)
+  → (γ : H => L) (δ : K => M)
+  → (γ ◆ δ) ∘nt (α ◆ β) ≡ (γ ∘nt α) ◆ (δ ∘nt β)
+◆-interchange {B = B} {C = C} {A = A} {H = H} {L = L}  α β γ δ = ext λ j →
+  (L.₁ (δ .η _) C.∘ γ .η _) C.∘ H.₁ (β .η _) C.∘ α .η _ ≡⟨ C.extendl (sym (L.shuffler (sym (γ .is-natural _ _ _)))) ⟩
+  L.₁ (δ .η _ B.∘ β .η _) C.∘ γ .η _ C.∘ α .η _         ∎
+  where
+    module A = Cat.Reasoning A
+    module B = Cat.Reasoning B
+    module C = Cat.Reasoning C
+    module L = Cat.Functor.Reasoning L
+    module H = Cat.Functor.Reasoning H
+    open Functor
+```
+
+
 <!--
 [TODO: Reed M, 13/02/2023] Add whiskering reasoning combinators!
 -->
@@ -155,7 +177,7 @@ module _ (p : Functor C C') where
 ```agda
 module _ {F G : Functor C D} where
   open Cat.Morphism
-  open Fr
+  open Cat.Functor.Reasoning
 
   _◂ni_ : F ≅ⁿ G → (H : Functor B C) → (F F∘ H) ≅ⁿ (G F∘ H)
   (α ◂ni H) = make-iso _ (α .to ◂ H) (α .from ◂ H)
