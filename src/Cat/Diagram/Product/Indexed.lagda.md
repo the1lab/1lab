@@ -71,12 +71,6 @@ record Indexed-product (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) wh
     π         : ∀ i → C.Hom ΠF (F i)
     has-is-ip : is-indexed-product F π
   open is-indexed-product has-is-ip public
-
-has-products-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
-has-products-indexed-by I = ∀ (F : I → C.Ob) → Indexed-product F
-
-has-indexed-products : ∀ ℓ → Type _
-has-indexed-products ℓ = ∀ {I : Type ℓ} → has-products-indexed-by I
 ```
 
 <!--
@@ -328,4 +322,22 @@ The rest of the structure follows a similar pattern.
       ΠᵃΠᵇ .unique _ λ a →
       Πᵇ _ .unique _ λ b →
       C.assoc _ _ _ ∙ p (a , b)
+```
+
+# Categories with all indexed products
+
+```agda
+has-products-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
+has-products-indexed-by I = ∀ (F : I → C.Ob) → Indexed-product F
+
+has-indexed-products : ∀ ℓ → Type _
+has-indexed-products ℓ = ∀ {I : Type ℓ} → has-products-indexed-by I
+
+module Indexed-products
+  {κ : Level}
+  (has-ip : has-indexed-products κ)
+  where
+  module Π {Idx : Type κ} (F : Idx → C.Ob) = Indexed-product (has-ip F)
+
+  open Π renaming (commute to π-commute; unique to tuple-unique) public
 ```
