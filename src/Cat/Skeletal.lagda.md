@@ -15,7 +15,7 @@ open Precategory using (Ob)
 module Cat.Skeletal where
 ```
 
-# Skeletal precategories
+# Skeletal precategories {defines="skeletal"}
 
 A precategory $\cC$ is **skeletal** if objects having _the property of
 being isomorphic_ are identical. The clunky rephrasing is proposital: if

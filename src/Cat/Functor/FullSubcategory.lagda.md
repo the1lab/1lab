@@ -128,8 +128,14 @@ module _ {o' h'} {D : Precategory o' h'} (F : Functor D C) where
   Essential-image : Precategory _ _
   Essential-image =
     Restrict (λ x → ∃[ d ∈ Ob D ] (F₀ d C.≅ x))
-
 ```
+
+<!--
+```agda
+  Essential-image-is-category : is-category C → is-category Essential-image
+  Essential-image-is-category cat = Restrict-is-category _ (λ _ → hlevel 1) cat
+```
+-->
 
 There is a canonical inclusion of $\cD$ into the essential image of
 $F$ that is [[essentially surjective]]. Moreover, this inclusion

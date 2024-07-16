@@ -207,7 +207,7 @@ and-complementl true = refl
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
 [2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
 
-Furthermore, note that `not` has no fixed points.
+Furthermore, note that `not`{.Agda} has no fixed points.
 
 ```agda
 not-no-fixed : ∀ {x} → x ≡ not x → ⊥
