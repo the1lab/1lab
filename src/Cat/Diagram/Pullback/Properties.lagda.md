@@ -247,6 +247,29 @@ Pullbacks additionally preserve monomorphisms, as shown below:
       eq = pb.unique₂ {p = extendl pb.square} r p refl refl
 ```
 
+A similar result holds for isomorphisms.
+
+```agda
+  is-invertible→pullback-is-invertible
+    : ∀ {x y z} {f : Hom x z} {g : Hom y z} {p} {p1 : Hom p x} {p2 : Hom p y}
+    → is-invertible f
+    → is-pullback C p1 f p2 g
+    → is-invertible p2
+  is-invertible→pullback-is-invertible {f = f} {g} {p1 = p1} {p2} f-inv pb =
+    make-invertible
+      (pb.universal {p₁' = f.inv ∘ g} {p₂' = id} (cancell f.invl ∙ sym (idr _)))
+      pb.p₂∘universal
+      (pb.unique₂ {p = pulll (cancell f.invl)}
+        (pulll pb.p₁∘universal)
+        (cancell pb.p₂∘universal)
+        (idr _ ∙ introl f.invr ∙ extendr pb.square)
+        (idr _))
+    where
+      module f = is-invertible f-inv
+      module pb = is-pullback pb
+```
+
+
 <!--
 ```agda
   rotate-pullback

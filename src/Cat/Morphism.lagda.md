@@ -153,7 +153,7 @@ epic-precomp-embedding epic =
   injective→is-embedding (Hom-set _ _) _ (epic _ _)
 ```
 
-## Sections
+## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
 when $r \cdot s = id$. The intuition for this name is that $s$ picks
