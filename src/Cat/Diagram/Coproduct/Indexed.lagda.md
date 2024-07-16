@@ -98,8 +98,130 @@ Lift-Indexed-coproduct
   → Indexed-coproduct {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
   → Indexed-coproduct F
 Lift-Indexed-coproduct _ = Indexed-coproduct-≃ (Lift-≃ e⁻¹)
+
+is-indexed-coproduct-is-prop
+  : ∀ {ℓ'} {Idx : Type ℓ'}
+  → {F : Idx → C.Ob} {ΣF : C.Ob} {ι : ∀ idx → C.Hom (F idx) ΣF}
+  → is-prop (is-indexed-coproduct F ι)
+is-indexed-coproduct-is-prop {Idx = Idx} {F} {ΣF} {ι} P Q = path where
+  open is-indexed-coproduct
+
+  p : ∀ {X} → (f : ∀ i → C.Hom (F i) X) → P .match f ≡ Q .match f
+  p f = Q .unique f (λ i → P .commute)
+
+  path : P ≡ Q
+  path i .match f = p f i
+  path i .commute {i = idx} {f = f} =
+    is-prop→pathp (λ i → C.Hom-set _ _ (p f i C.∘ ι idx) (f idx))
+      (P .commute)
+      (Q .commute) i
+  path i .unique {h = h} f q =
+    is-prop→pathp (λ i → C.Hom-set _ _ h (p f i))
+      (P .unique f q)
+      (Q .unique f q) i
+
+module _ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob} {P P' : Indexed-coproduct F} where
+  private
+    module P = Indexed-coproduct P
+    module P' = Indexed-coproduct P'
+
+  Indexed-coproduct-path
+    : (p : P.ΣF ≡ P'.ΣF)
+    → (∀ idx → PathP (λ i → C.Hom (F idx) (p i)) (P.ι idx) (P'.ι idx))
+    → P ≡ P'
+  Indexed-coproduct-path p q i .Indexed-coproduct.ΣF = p i
+  Indexed-coproduct-path p q i .Indexed-coproduct.ι idx = q idx i
+  Indexed-coproduct-path p q i .Indexed-coproduct.has-is-ic =
+    is-prop→pathp (λ i → is-indexed-coproduct-is-prop {ΣF = p i} {ι = λ idx → q idx i})
+      P.has-is-ic
+      P'.has-is-ic i
 ```
 -->
+
+## Uniqueness
+
+As universal constructions, indexed coproducts are unique up to isomorphism.
+The proof follows the usual pattern: we use the universal morphisms to
+construct morphisms in both directions, and uniqueness ensures that these
+maps form an isomorphism.
+
+```agda
+is-indexed-coproduct→iso
+  : ∀ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob}
+  → {ΣF ΣF' : C.Ob}
+  → {ι : ∀ i → C.Hom (F i) ΣF} {ι' : ∀ i → C.Hom (F i) ΣF'}
+  → is-indexed-coproduct F ι
+  → is-indexed-coproduct F ι'
+  → ΣF C.≅ ΣF'
+is-indexed-coproduct→iso {ι = ι} {ι' = ι'} ΣF-coprod ΣF'-coprod =
+  C.make-iso (ΣF.match ι') (ΣF'.match ι)
+    (ΣF'.unique₂ (λ i → C.pullr ΣF'.commute ∙ ΣF.commute ∙ sym (C.idl _)))
+    (ΣF.unique₂ (λ i → C.pullr ΣF.commute ∙ ΣF'.commute ∙ sym (C.idl _)))
+  where
+    module ΣF = is-indexed-coproduct ΣF-coprod
+    module ΣF' = is-indexed-coproduct ΣF'-coprod
+```
+
+<!--
+```agda
+Indexed-coproduct→iso
+  : ∀ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob}
+  → (P P' : Indexed-coproduct F)
+  → Indexed-coproduct.ΣF P C.≅ Indexed-coproduct.ΣF P'
+Indexed-coproduct→iso P P' =
+  is-indexed-coproduct→iso
+    (Indexed-coproduct.has-is-ic P)
+    (Indexed-coproduct.has-is-ic P')
+```
+-->
+
+## Properties
+
+Let $X : \Sigma A B \to \cC$ be a family of objects in $\cC$. If the
+the indexed coproducts $\Sigma_{a, b : \Sigma A B} X_{a,b}$ and
+$\Sigma_{a : A} \Sigma_{b : B(a)} X_{a, b}$ exists, then they are isomorphic.
+
+The formal statement of this is a bit of a mouthful, but all of these
+arguments are just required to ensure that the various coproducts actually
+exist.
+
+```agda
+is-indexed-coproduct-assoc
+  : ∀ {κ κ'} {A : Type κ} {B : A → Type κ'}
+  → {X : Σ A B → C.Ob}
+  → {ΣᵃᵇX : C.Ob} {ΣᵃΣᵇX : C.Ob} {ΣᵇX : A → C.Ob}
+  → {ιᵃᵇ : (ab : Σ A B) → C.Hom (X ab) ΣᵃᵇX}
+  → {ιᵃ : ∀ a → C.Hom (ΣᵇX a) ΣᵃΣᵇX}
+  → {ιᵇ : ∀ a → (b : B a) → C.Hom (X (a , b)) (ΣᵇX a)}
+  → is-indexed-coproduct X ιᵃᵇ
+  → is-indexed-coproduct ΣᵇX ιᵃ
+  → (∀ a → is-indexed-coproduct (λ b → X (a , b)) (ιᵇ a))
+  → ΣᵃᵇX C.≅ ΣᵃΣᵇX
+```
+
+Luckily, the proof of this fact is easier than the statement! Indexed
+coproducts are unique up to isomorphism, so it suffices to show that
+$\Sigma_{a : A} \Sigma_{b : B(a)} X_{a, b}$ is an indexed product
+over $X$, which follows almost immediately from our hypotheses.
+
+```agda
+is-indexed-coproduct-assoc {A = A} {B} {X} {ΣᵃΣᵇX = ΣᵃΣᵇX} {ιᵃ = ιᵃ} {ιᵇ} Σᵃᵇ ΣᵃΣᵇ Σᵇ =
+  is-indexed-coproduct→iso Σᵃᵇ Σᵃᵇ'
+  where
+    open is-indexed-coproduct
+
+    ιᵃᵇ' : ∀ (ab : Σ A B) → C.Hom (X ab) ΣᵃΣᵇX
+    ιᵃᵇ' (a , b) = ιᵃ a C.∘ ιᵇ a b
+
+    Σᵃᵇ' : is-indexed-coproduct X ιᵃᵇ'
+    Σᵃᵇ' .match f = ΣᵃΣᵇ .match λ a → Σᵇ a .match λ b → f (a , b)
+    Σᵃᵇ' .commute = C.pulll (ΣᵃΣᵇ .commute) ∙ Σᵇ _ .commute
+    Σᵃᵇ' .unique {h = h} f p =
+      ΣᵃΣᵇ .unique _ λ a →
+      Σᵇ _ .unique _ λ b →
+      sym (C.assoc _ _ _) ∙ p (a , b)
+```
+
 
 # Disjoint coproducts
 
