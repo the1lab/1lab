@@ -4,9 +4,9 @@ open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Constant
 open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
+open import Cat.Functor.Constant
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude

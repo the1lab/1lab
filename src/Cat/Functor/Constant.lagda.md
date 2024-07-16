@@ -10,8 +10,8 @@ open import Cat.Functor.Compose
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 

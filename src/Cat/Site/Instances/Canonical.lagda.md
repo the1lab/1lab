@@ -4,8 +4,8 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Elements
 open import Cat.Site.Constructions
-open import Cat.Functor.Kan.Base
 open import Cat.Functor.Constant
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Sieve
 open import Cat.Site.Closure
 open import Cat.Functor.Hom

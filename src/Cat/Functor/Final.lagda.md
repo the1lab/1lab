@@ -7,8 +7,8 @@ open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Terminal
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Constant
+open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Connected
 open import Cat.Groupoid

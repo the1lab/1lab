@@ -12,8 +12,8 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Join
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
-open import Cat.Functor.Constant
 open import Cat.Diagram.Pullback
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Pullback
 open import Cat.Functor.Compose

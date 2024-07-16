@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Instances.Product
-open import Cat.Functor.Compose
 open import Cat.Functor.Constant
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
