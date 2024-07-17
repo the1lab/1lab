@@ -193,7 +193,7 @@ attention on the first projection.
 ```
 
 Recall that a morphism is epic if it has a [[section]]; that is,
-some morphism $u$ such that $p_1 \circ u = id$. We can construct
+some morphism $u$ such that $p_1 \circ u = \id$. We can construct
 such a $u$ by applying the universal property of the pullback to
 the following diagram.
 
