@@ -314,7 +314,7 @@ successive product.
 
 The rest of the structure follows a similar pattern.
 
-```
+```agda
     Πᵃᵇ' : is-indexed-product X πᵃᵇ'
     Πᵃᵇ' .tuple f = ΠᵃΠᵇ .tuple λ a → Πᵇ a .tuple λ b → f (a , b)
     Πᵃᵇ' .commute = C.pullr (ΠᵃΠᵇ .commute) ∙ Πᵇ _ .commute
