@@ -247,7 +247,7 @@ is given by $(\id, \id)$.
     → is-kernel-pair C id id f
 ```
 
-Clearly, the square $f \circ id = f \circ id$ commutes, so the tricky
+Clearly, the square $f \circ \id = f \circ \id$ commutes, so the tricky
 bit will be constructing a universal morphism. If $f \circ p_1 = f \circ
 p_2$ for some $p_1, p_2 : P \to X$, then we can simply use one of $p_1$
 or $p_2$ for our universal map; the choice we make does not matter, as
