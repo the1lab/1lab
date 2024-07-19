@@ -427,10 +427,10 @@ identifies _exactly those_ objects related by $R$, and no more.
 record is-effective-congruence {A} (R : Congruence-on A) : Type (o ⊔ ℓ) where
   private module R = Congruence-on R
   field
-    {A/R}          : Ob
-    quotient       : Hom A A/R
-    has-quotient   : is-quotient-of R quotient
-    is-kernel-pair : is-pullback C R.rel₁ quotient R.rel₂ quotient
+    {A/R}           : Ob
+    quotient        : Hom A A/R
+    has-quotient    : is-quotient-of R quotient
+    has-kernel-pair : is-kernel-pair C R.rel₁ R.rel₂ quotient
 ```
 
 If $f$ is the coequaliser of its kernel pair --- that is, it is an
@@ -454,7 +454,7 @@ kernel-pair-is-effective {a = a} {b} {f} quot = epi where
   epi .is-effective-congruence.A/R = b
   epi .quotient = f
   epi .has-quotient = quot
-  epi .is-kernel-pair =
+  epi .has-kernel-pair =
     transport
       (λ i → is-pullback C (a×a.π₁∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
                            (a×a.π₂∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
@@ -471,6 +471,6 @@ kp-effective-congruence→effective-epi {f = f} cong = epi where
   epi .kernel = Kernel-pair _ .Congruence-on.domain
   epi .p₁ = _
   epi .p₂ = _
-  epi .is-kernel-pair = cong.is-kernel-pair
+  epi .has-kernel-pair = cong.has-kernel-pair
   epi .has-is-coeq = cong.has-quotient
 ```

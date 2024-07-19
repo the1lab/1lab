@@ -39,12 +39,12 @@ right-hand-sides agree.
         : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} {other : Hom F E}
         → equ ∘ other ≡ e'
         → other ≡ universal p
-  
+
     equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
     equal-∘ {h = h} =
       f ∘ equ ∘ h ≡⟨ extendl equal ⟩
       g ∘ equ ∘ h ∎
-  
+
     unique₂
       : ∀ {F} {e' : Hom F A}  {o1 o2 : Hom F E}
       → f ∘ e' ≡ g ∘ e'
@@ -77,7 +77,7 @@ its domain:
       {apex}  : Ob
       equ     : Hom apex A
       has-is-eq : is-equaliser f g equ
-  
+
     open is-equaliser has-is-eq public
 ```
 
@@ -105,6 +105,70 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     unique₂ (extendl equal) p refl
     where open is-equaliser equalises
 ```
+
+## Uniqueness
+
+As universal constructions, equalisers are unique up to isomorphism.
+The proof follows the usual pattern: if $E, E'$ both equalise $f, g : A \to B$,
+then we can construct maps between $E$ and $E'$ via the universal property
+of equalisers, and uniqueness ensures that these maps form an isomorphism.
+
+```agda
+  is-equaliser→iso
+    : {E E' : Ob}
+    → {e : Hom E A} {e' : Hom E' A}
+    → is-equaliser C f g e
+    → is-equaliser C f g e'
+    → E ≅ E'
+  is-equaliser→iso {e = e} {e' = e'} eq eq' =
+    make-iso (eq' .universal (eq .equal)) (eq .universal (eq' .equal))
+      (unique₂ eq' (eq' .equal) (pulll (eq' .factors) ∙ eq .factors) (idr _))
+      (unique₂ eq (eq .equal) (pulll (eq .factors) ∙ eq' .factors) (idr _))
+    where open is-equaliser
+```
+
+## Properties of equalisers
+
+The equaliser of the pair $(f, f) : A \to B$ always exists, and is given
+by the identity map $\id : A \to A$.
+
+```agda
+  id-is-equaliser : is-equaliser C f f id
+  id-is-equaliser .is-equaliser.equal = refl
+  id-is-equaliser .is-equaliser.universal {e' = e'} _ = e'
+  id-is-equaliser .is-equaliser.factors = idl _
+  id-is-equaliser .is-equaliser.unique p = sym (idl _) ∙ p
+```
+
+If $e : E \to A$ is an equaliser and an [[epimorphism]], then $e$ is
+an iso.
+
+```agda
+  equaliser+epi→invertible
+    : ∀ {E} {e : Hom E A}
+    → is-equaliser C f g e
+    → is-epic e
+    → is-invertible e
+```
+
+Suppose that $e$ equalises some pair $(f, g) : A \to B$. By definition,
+this means that $f \circ e = g \circ e$; however, $e$ is an epi, so
+$f = g$. This in turn means that $\id : A \to A$ can be extended into
+a map $A \to E$ via the universal property of $e$, and universality
+ensures that this extension is an isomorphism!
+
+```agda
+  equaliser+epi→invertible {f = f} {g = g} {e = e} e-equaliser e-epi =
+    make-invertible
+      (universal {e' = id} (ap₂ _∘_ f≡g refl))
+      factors
+      (unique₂ (ap₂ _∘_ f≡g refl) (pulll factors) id-comm)
+    where
+      open is-equaliser e-equaliser
+      f≡g : f ≡ g
+      f≡g = e-epi f g equal
+```
+
 
 # Categories with all equalisers
 

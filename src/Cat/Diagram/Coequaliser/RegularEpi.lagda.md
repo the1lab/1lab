@@ -45,7 +45,7 @@ arrows $R \tto a$.
       {r}           : Ob
       {arr₁} {arr₂} : Hom r a
       has-is-coeq   : is-coequaliser C arr₁ arr₂ f
-  
+
     open is-coequaliser has-is-coeq public
 ```
 
@@ -55,7 +55,7 @@ fact epic:
 ```agda
     is-regular-epi→is-epic : is-epic f
     is-regular-epi→is-epic = is-coequaliser→is-epic _ has-is-coeq
-  
+
   open is-regular-epi using (is-regular-epi→is-epic) public
 ```
 
@@ -73,9 +73,9 @@ epis:
     field
       {kernel}       : Ob
       p₁ p₂          : Hom kernel a
-      is-kernel-pair : is-pullback C p₁ f p₂ f
+      has-kernel-pair : is-kernel-pair C p₁ p₂ f
       has-is-coeq    : is-coequaliser C p₁ p₂ f
-  
+
     is-effective-epi→is-regular-epi : is-regular-epi f
     is-effective-epi→is-regular-epi = re where
       open is-regular-epi hiding (has-is-coeq)
@@ -107,14 +107,14 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   is-regular-epi→is-effective-epi {f = f} kp reg = epi where
     module reg = is-regular-epi reg
     module kp = Pullback kp
-  
+
     open is-effective-epi
     open is-coequaliser
     epi : is-effective-epi C f
     epi .kernel = kp.apex
     epi .p₁ = kp.p₁
     epi .p₂ = kp.p₂
-    epi .is-kernel-pair = kp.has-is-pb
+    epi .has-kernel-pair = kp.has-is-pb
     epi .has-is-coeq .coequal = kp.square
     epi .has-is-coeq .universal {F = F} {e'} p = reg.universal q where
       q : e' ∘ reg.arr₁ ≡ e' ∘ reg.arr₂

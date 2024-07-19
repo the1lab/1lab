@@ -152,6 +152,202 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
+## Kernel pairs {defines="kernel-pair"}
+
+The **kernel pair** of a morphism $f : X \to Y$ (if it exists) is
+the pullback of $f$ along itself. Intuitively, one should think
+of a kernel pair as a partition of $X$ induced by the preimage of
+$f$.
+
+<!--
+```agda
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
+```
+-->
+
+```agda
+  is-kernel-pair : ∀ {P X Y} → Hom P X → Hom P X → Hom X Y → Type _
+  is-kernel-pair p1 p2 f = is-pullback C p1 f p2 f
+```
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  private variable
+    X Y P : Ob
+```
+-->
+
+Note that each of the projections out of the kernel pair of $f$ are
+[[epimorphisms]]. Without loss of generality, we will focus our
+attention on the first projection.
+
+
+```agda
+  is-kernel-pair→epil
+    : ∀ {p1 p2 : Hom P X} {f : Hom X Y}
+    → is-kernel-pair C p1 p2 f
+    → is-epic p1
+```
+
+Recall that a morphism is epic if it has a [[section]]; that is,
+some morphism $u$ such that $p_1 \circ u = \id$. We can construct
+such a $u$ by applying the universal property of the pullback to
+the following diagram.
+
+~~~{.quiver}
+\begin{tikzcd}
+  X \\
+  & P && X \\
+  \\
+  & X && Y
+  \arrow["u", from=1-1, to=2-2]
+  \arrow["id", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["id"', curve={height=12pt}, from=1-1, to=4-2]
+  \arrow["{p_2}", from=2-2, to=2-4]
+  \arrow["{p_1}"', from=2-2, to=4-2]
+  \arrow["f", from=2-4, to=4-4]
+  \arrow["f"', from=4-2, to=4-4]
+\end{tikzcd}
+~~~
+
+```agda
+  is-kernel-pair→epil {p1 = p1} is-kp =
+    has-section→epic $
+    make-section
+      (universal refl)
+      p₁∘universal
+    where open is-pullback is-kp
+```
+
+<!--
+```agda
+  is-kernel-pair→epir
+    : ∀ {P} {p1 p2 : Hom P X} {f : Hom X Y}
+    → is-kernel-pair C p1 p2 f
+    → is-epic p2
+  is-kernel-pair→epir {p2 = p2} is-kp =
+    has-section→epic $
+    make-section
+      (universal refl)
+      p₂∘universal
+    where open is-pullback is-kp
+```
+-->
+
+If $f$ is a [[monomorphism]], then its kernel pair always exists, and
+is given by $(\id, \id)$.
+
+```agda
+  monic→id-kernel-pair
+    : ∀ {f : Hom X Y}
+    → is-monic f
+    → is-kernel-pair C id id f
+```
+
+Clearly, the square $f \circ \id = f \circ \id$ commutes, so the tricky
+bit will be constructing a universal morphism. If $f \circ p_1 = f \circ
+p_2$ for some $p_1, p_2 : P \to X$, then we can simply use one of $p_1$
+or $p_2$ for our universal map; the choice we make does not matter, as
+we can obtain $p_1 = p_2$ from the fact that $f$ is monic! The rest of
+the universal property follows directly from this lovely little
+observation.
+
+```agda
+  monic→id-kernel-pair {f = f} f-monic = id-kp where
+    open is-pullback
+
+    id-kp : is-kernel-pair C id id f
+    id-kp .square = refl
+    id-kp .universal {p₁' = p₁'} _ = p₁'
+    id-kp .p₁∘universal = idl _
+    id-kp .p₂∘universal {p = p} = idl _ ∙ f-monic _ _ p
+    id-kp .unique p q = sym (idl _) ∙ p
+```
+
+Conversely, if $(\id, \id)$ is the kernel pair of $f$, then $f$ is
+monic. Suppose that $f \circ g = f \circ h$ for some $g, h : A \to X$,
+and note that both $g$ and $h$ are equal to the universal map obtained
+via the square $f \circ g = f \circ h$.
+
+```agda
+  id-kernel-pair→monic
+    : ∀ {f : Hom X Y}
+    → is-kernel-pair C id id f
+    → is-monic f
+  id-kernel-pair→monic {f = f} id-kp g h p =
+    g                ≡˘⟨ p₁∘universal ⟩
+    id ∘ universal p ≡⟨ p₂∘universal ⟩
+    h                ∎
+    where open is-pullback id-kp
+```
+
+We can strengthen this result by noticing that if $(p, p)$ is the kernel
+pair of $f$ for some $P : \cC, p : P \to X$, then $(\id, \id)$ is also a
+kernel pair of $f$.
+
+```agda
+  same-kernel-pair→id-kernel-pair
+    : ∀ {P} {p : Hom P X} {f : Hom X Y}
+    → is-kernel-pair C p p f
+    → is-kernel-pair C id id f
+```
+
+As usual, the difficulty is constructing the universal map. Suppose
+that $f \circ p_1 = f \circ p_2$ for some $P' : \cC, p_1, p_2 : P' \to X$,
+as in the following diagram:
+
+~~~{.quiver}
+\begin{tikzcd}
+  {P'} \\
+  & P && X \\
+  \\
+  & X && Y
+  \arrow["{p_2}", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["{p_1}"', curve={height=12pt}, from=1-1, to=4-2]
+  \arrow["p", from=2-2, to=2-4]
+  \arrow["p"', from=2-2, to=4-2]
+  \arrow["f", from=2-4, to=4-4]
+  \arrow["f"', from=4-2, to=4-4]
+\end{tikzcd}
+~~~
+
+This diagram is conspicuously missing a morphism, so let's fill
+it in by using the universal property of the kernel pair.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {P'} \\
+  & P && X \\
+  \\
+  & X && Y
+  \arrow["u", dashed, from=1-1, to=2-2]
+  \arrow["{p_2}", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["{p_1}"', curve={height=12pt}, from=1-1, to=4-2]
+  \arrow["p", from=2-2, to=2-4]
+  \arrow["p"', from=2-2, to=4-2]
+  \arrow["f", from=2-4, to=4-4]
+  \arrow["f"', from=4-2, to=4-4]
+\end{tikzcd}
+~~~
+
+Next, note that $p \circ u$ factorizes both $p_1$ *and* $p_2$; moreover,
+it is the unique such map!
+
+```agda
+  same-kernel-pair→id-kernel-pair {p = p} {f = f} p-kp = id-kp where
+    open is-pullback
+
+    id-kp : is-kernel-pair C id id f
+    id-kp .square = refl
+    id-kp .universal q = p ∘ p-kp .universal q
+    id-kp .p₁∘universal {p = q} = idl _ ∙ p-kp .p₁∘universal
+    id-kp .p₂∘universal {p = q} = idl _ ∙ p-kp .p₂∘universal
+    id-kp .unique q r = (sym (idl _)) ∙ q ∙ sym (p-kp .p₁∘universal)
+```
+
 # Categories with all pullbacks
 
 We also provide a helper module for working with categories that have all

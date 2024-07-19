@@ -71,12 +71,6 @@ record Indexed-product (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) wh
     π         : ∀ i → C.Hom ΠF (F i)
     has-is-ip : is-indexed-product F π
   open is-indexed-product has-is-ip public
-
-has-products-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
-has-products-indexed-by I = ∀ (F : I → C.Ob) → Indexed-product F
-
-has-indexed-products : ∀ ℓ → Type _
-has-indexed-products ℓ = ∀ {I : Type ℓ} → has-products-indexed-by I
 ```
 
 <!--
@@ -112,6 +106,43 @@ Lift-Indexed-product
   → Indexed-product {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
   → Indexed-product F
 Lift-Indexed-product _ = Indexed-product-≃ (Lift-≃ e⁻¹)
+
+is-indexed-product-is-prop
+  : ∀ {ℓ'} {Idx : Type ℓ'}
+  → {F : Idx → C.Ob} {ΠF : C.Ob} {π : ∀ idx → C.Hom ΠF (F idx)}
+  → is-prop (is-indexed-product F π)
+is-indexed-product-is-prop {Idx = Idx} {F = F} {ΠF = ΠF} {π = π} P Q = path where
+  open is-indexed-product
+
+  p : ∀ {X} → (f : (i : Idx) → C.Hom X (F i)) → P .tuple f ≡ Q .tuple f
+  p f = Q .unique f (λ idx → P .commute)
+
+  path : P ≡ Q
+  path i .tuple f = p f i
+  path i .commute {i = idx} {f = f} =
+    is-prop→pathp (λ i → C.Hom-set _ _ (π idx C.∘ p f i) (f idx))
+      (P .commute)
+      (Q .commute) i
+  path i .unique {h = h} f q =
+      is-prop→pathp (λ i → C.Hom-set _ _ h (p f i))
+        (P .unique f q)
+        (Q .unique f q) i
+
+module _ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob} {P P' : Indexed-product F} where
+  private
+    module P = Indexed-product P
+    module P' = Indexed-product P'
+
+  Indexed-product-path
+    : (p : P.ΠF ≡ P'.ΠF)
+    → (∀ idx → PathP (λ i → C.Hom (p i) (F idx)) (P.π idx) (P'.π idx))
+    → P ≡ P'
+  Indexed-product-path p q i .Indexed-product.ΠF = p i
+  Indexed-product-path p q i .Indexed-product.π idx = q idx i
+  Indexed-product-path p q i .Indexed-product.has-is-ip =
+    is-prop→pathp (λ i → is-indexed-product-is-prop {ΠF = p i} {π = λ idx → q idx i})
+      P.has-is-ip
+      P'.has-is-ip i
 ```
 -->
 
@@ -124,64 +155,72 @@ is (at most) a contractible space of indexed products of that diagram.
 And again as is traditional with universal constructions, the proof is
 surprisingly straightforward!
 
-```agda
-Indexed-product-unique
-  : ∀ {ℓ'} {I : Type ℓ'} (F : I → C.Ob)
-  → is-category C → is-prop (Indexed-product F)
-Indexed-product-unique {I = I} F c-cat x y = p where
-  module x = Indexed-product x
-  module y = Indexed-product y
-```
-
-All we have to do --- "all" --- is exhibit an isomorphism between the
-apices which commutes with the projection function in one direction, and
-with the product with morphisms in the other. That's it! The isomorphism
+First, a general result: if two objects are both indexed products over the
+same family of objects, then those objects are isomorphic. This isomorphism
 is induced by the universal properties, and is readily seen to commute
 with both projections:
 
 ```agda
-  apices : x.ΠF C.≅ y.ΠF
-  apices = C.make-iso (y.tuple x.π) (x.tuple y.π)
-    ( y.unique y.π (λ i → C.pulll y.commute ∙ x.commute)
-    ∙ sym (y.unique y.π λ i → C.idr _) )
-    ( x.unique x.π (λ i → C.pulll x.commute ∙ y.commute)
-    ∙ sym (x.unique x.π λ i → C.idr _))
+is-indexed-product→iso
+  : ∀ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob}
+  → {ΠF ΠF' : C.Ob}
+  → {π : ∀ i → C.Hom ΠF (F i)} {π' : ∀ i → C.Hom ΠF' (F i)}
+  → is-indexed-product F π
+  → is-indexed-product F π'
+  → ΠF C.≅ ΠF'
+is-indexed-product→iso {π = π} {π' = π'} ΠF-prod ΠF'-prod =
+  C.make-iso (ΠF'.tuple π) (ΠF.tuple π')
+    (ΠF'.unique₂ (λ i → C.pulll ΠF'.commute ∙ ΠF.commute ∙ sym (C.idr _)))
+    (ΠF.unique₂ λ i → C.pulll ΠF.commute ∙ ΠF'.commute ∙ sym (C.idr _))
+  where
+    module ΠF = is-indexed-product ΠF-prod
+    module ΠF' = is-indexed-product ΠF'-prod
+
+```
+
+<!--
+```agda
+Indexed-product→iso
+  : ∀ {ℓ'} {Idx : Type ℓ'} {F : Idx → C.Ob}
+  → (P P' : Indexed-product F)
+  → Indexed-product.ΠF P C.≅ Indexed-product.ΠF P'
+Indexed-product→iso P P' =
+  is-indexed-product→iso
+    (Indexed-product.has-is-ip P)
+    (Indexed-product.has-is-ip P')
+```
+-->
+
+With that out of the way, we can proceed to show our original result!
+First, note that paths between indexed products are determined by a
+path between apices, and a corresponding path-over between projections.
+We can upgrade the iso from our previous lemma into a path, so all that
+remains is to construct the path-over.
+
+```agda
+Indexed-product-unique
+  : ∀ {ℓ'} {I : Type ℓ'} (F : I → C.Ob)
+  → is-category C → is-prop (Indexed-product F)
+Indexed-product-unique {I = I} F c-cat x y =
+  Indexed-product-path
+    (c-cat .to-path apices)
+    pres
+  where
+    module x = Indexed-product x
+    module y = Indexed-product y
+
+    apices : x.ΠF C.≅ y.ΠF
+    apices = Indexed-product→iso x y
 ```
 
 By the characterisation of paths-over in Hom-sets, we get paths-over
 between the projection maps and the product maps:
 
 ```agda
-  module apices = C._≅_ apices
-  abstract
-    pres : ∀ j → PathP (λ i → C.Hom (c-cat .to-path apices i) (F j)) (x.π j) (y.π j)
-    pres j = Univalent.Hom-pathp-refll-iso c-cat x.commute
-
-    pres' : ∀ {Y} (f : ∀ j → C.Hom Y (F j))
-      → PathP (λ i → C.Hom Y (c-cat .to-path apices i)) (x.tuple f) (y.tuple f)
-    pres' f =
-      Univalent.Hom-pathp-reflr-iso c-cat (y.unique f λ j → C.pulll y.commute ∙ x.commute)
-```
-
-And after some munging (dealing with the axioms), that's exactly what we
-need to prove that indexed products are unique.
-
-```agda
-  open Indexed-product
-  open is-indexed-product
-  p : x ≡ y
-  p i .ΠF = c-cat .to-path apices i
-  p i .π j = pres j i
-  p i .has-is-ip .tuple f = pres' f i
-  p i .has-is-ip .commute {i = j} {f = f} =
-    is-prop→pathp (λ i → C.Hom-set _ (F j) (pres j i C.∘ pres' f i) _)
-     (x .has-is-ip .commute) (y .has-is-ip .commute) i
-  p i .has-is-ip .unique {h = h} f =
-    is-prop→pathp
-      (λ i → Π-is-hlevel {A = C.Hom _ (c-cat .to-path apices i)} 1
-       λ h → Π-is-hlevel {A = ∀ j → pres j i C.∘ h ≡ f j} 1
-       λ p → C.Hom-set _ (c-cat .to-path apices i) h (pres' f i))
-      (λ h → x.unique {h = h} f) (λ h → y.unique {h = h} f) i h
+    module apices = C._≅_ apices
+    abstract
+      pres : ∀ j → PathP (λ i → C.Hom (c-cat .to-path apices i) (F j)) (x.π j) (y.π j)
+      pres j = Univalent.Hom-pathp-refll-iso c-cat x.commute
 ```
 
 We can also prove the converse direction: if indexed products in $\cC$ are unique,
@@ -232,4 +271,73 @@ lying over our isomorphism.
   cat : is-category C
   cat .to-path = path
   cat .to-path-over = path-over
+```
+
+## Properties
+
+Let $X : \Sigma A B \to \cC$ be a family of objects in $\cC$. If the
+the indexed products $\Pi_{a, b : \Sigma A B} X_{a,b}$ and
+$\Pi_{a : A} \Pi_{b : B(a)} X_{a, b}$ exists, then they are isomorphic.
+
+```agda
+is-indexed-product-assoc
+  : ∀ {κ κ'} {A : Type κ} {B : A → Type κ'}
+  → {X : Σ A B → C.Ob}
+  → {ΠᵃᵇX : C.Ob} {ΠᵃΠᵇX : C.Ob} {ΠᵇX : A → C.Ob}
+  → {πᵃᵇ : (ab : Σ A B) → C.Hom ΠᵃᵇX (X ab)}
+  → {πᵃ : ∀ a → C.Hom ΠᵃΠᵇX (ΠᵇX a)}
+  → {πᵇ : ∀ a → (b : B a) → C.Hom (ΠᵇX a) (X (a , b))}
+  → is-indexed-product X πᵃᵇ
+  → is-indexed-product ΠᵇX πᵃ
+  → (∀ a → is-indexed-product (λ b → X (a , b)) (πᵇ a))
+  → ΠᵃᵇX C.≅ ΠᵃΠᵇX
+```
+
+The proof is surprisingly straightforward: as indexed products are
+unique up to iso, it suffices to show that $\Pi_{a : A} \Pi_{b : B(a)} X_{a, b}$
+is an indexed product over $X$.
+
+```agda
+is-indexed-product-assoc {A = A} {B} {X} {ΠᵃΠᵇX = ΠᵃΠᵇX} {πᵃ = πᵃ} {πᵇ} Πᵃᵇ ΠᵃΠᵇ Πᵇ =
+  is-indexed-product→iso Πᵃᵇ Πᵃᵇ'
+  where
+    open is-indexed-product
+```
+
+We can construct projections by composing the projections out of each
+successive product.
+
+```agda
+    πᵃᵇ' : ∀ (ab : Σ A B) → C.Hom ΠᵃΠᵇX (X ab)
+    πᵃᵇ' (a , b) = πᵇ a b C.∘ πᵃ a
+```
+
+The rest of the structure follows a similar pattern.
+
+```agda
+    Πᵃᵇ' : is-indexed-product X πᵃᵇ'
+    Πᵃᵇ' .tuple f = ΠᵃΠᵇ .tuple λ a → Πᵇ a .tuple λ b → f (a , b)
+    Πᵃᵇ' .commute = C.pullr (ΠᵃΠᵇ .commute) ∙ Πᵇ _ .commute
+    Πᵃᵇ' .unique {h = h} f p =
+      ΠᵃΠᵇ .unique _ λ a →
+      Πᵇ _ .unique _ λ b →
+      C.assoc _ _ _ ∙ p (a , b)
+```
+
+# Categories with all indexed products
+
+```agda
+has-products-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
+has-products-indexed-by I = ∀ (F : I → C.Ob) → Indexed-product F
+
+has-indexed-products : ∀ ℓ → Type _
+has-indexed-products ℓ = ∀ {I : Type ℓ} → has-products-indexed-by I
+
+module Indexed-products
+  {κ : Level}
+  (has-ip : has-indexed-products κ)
+  where
+  module Π {Idx : Type κ} (F : Idx → C.Ob) = Indexed-product (has-ip F)
+
+  open Π renaming (commute to π-commute; unique to tuple-unique) public
 ```
