@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/plt-amy/1lab.git"
+    "url": "git+https://github.com/the1lab/1lab.git"
   },
   "author": "Amélia Liao et. al.",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/plt-amy/1lab/issues"
+    "url": "https://github.com/the1lab/1lab/issues"
   },
-  "homepage": "https://github.com/plt-amy/1lab#readme",
+  "homepage": "https://github.com/the1lab/1lab#readme",
   "devDependencies": {
     "@types/d3": "^7.1.0",
     "d3": "^7.4.4",

@@ -102,7 +102,7 @@ blazeCommit baseUrl (Commit author subject hash date changes) = do
 
   H.div ! A.class_ "commit" $ do
     H.a
-      ! A.href ("https://github.com/plt-amy/1lab/commit/" <> H.preEscapedTextValue hash)
+      ! A.href ("https://github.com/the1lab/1lab/commit/" <> H.preEscapedTextValue hash)
       ! A.class_ "commit-subject"
       $ H.text subject
     H.span ! A.class_ "commit-author-date" $ do

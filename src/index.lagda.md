@@ -124,7 +124,7 @@ work takes place on [GitHub], but ongoing discussion happens on
 [Discord]. We welcome all contributions, though we would kindly ask that
 anyone submitting a substantial change discuss it on Discord first.
 
-[GitHub]: https://github.com/plt-amy/1lab
+[GitHub]: https://github.com/the1lab/1lab
 [Discord]: https://discord.gg/eQDNM26uKP
 [authors]: Authors.html
 
@@ -208,7 +208,7 @@ their fundamental importance:
 [KaTeX]: https://katex.org
 
 [fast-fuzzy]: https://www.npmjs.com/package/fast-fuzzy
-[our GitHub]: https://github.com/plt-amy/1lab/tree/main/support/web/js
+[our GitHub]: https://github.com/the1lab/1lab/tree/main/support/web/js
 
 ## Other resources
 

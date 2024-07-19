@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   line.parentElement!.insertBefore(
     <div id="controls">
-      <Button icon="github" label="Link to source" click={`https://github.com/plt-amy/1lab/blob/${links.source}`} />
+      <Button icon="github" label="Link to source" click={`https://github.com/the1lab/1lab/blob/${links.source}`} />
       <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
 
       <div class="dropdown">
