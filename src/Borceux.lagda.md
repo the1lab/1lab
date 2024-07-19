@@ -68,6 +68,7 @@ open import Cat.Instances.Product
 open import Cat.Internal.Opposite
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Initial
