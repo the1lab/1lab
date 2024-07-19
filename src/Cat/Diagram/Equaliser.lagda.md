@@ -153,7 +153,7 @@ an iso.
 
 Suppose that $e$ equalises some pair $(f, g) : A \to B$. By definition,
 this means that $f \circ e = g \circ e$; however, $e$ is an epi, so
-$f = g$. This in turn means that $id : A \to A$ can be extended into
+$f = g$. This in turn means that $\id : A \to A$ can be extended into
 a map $A \to E$ via the universal property of $e$, and universality
 ensures that this extension is an isomorphism!
 

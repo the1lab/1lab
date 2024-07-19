@@ -238,7 +238,7 @@ the following diagram.
 -->
 
 If $f$ is a [[monomorphism]], then its kernel pair always exists, and
-is given by $(id, id)$.
+is given by $(\id, \id)$.
 
 ```agda
   monic→id-kernel-pair
@@ -248,11 +248,12 @@ is given by $(id, id)$.
 ```
 
 Clearly, the square $f \circ id = f \circ id$ commutes, so the tricky
-bit will be constructing a universal morphism. If $f \circ p_1 = f \circ p_2$
-for some $p_1, p_2 : P \to X$, then we can simply use one of $p_1$ or
-$p_2$ for our universal map; the choice we make does not matter, as
-we can obtain $p_1 = p_2$ from the fact that $f$ is monic! The rest
-of the universal property follows directly from this lovely little observation.
+bit will be constructing a universal morphism. If $f \circ p_1 = f \circ
+p_2$ for some $p_1, p_2 : P \to X$, then we can simply use one of $p_1$
+or $p_2$ for our universal map; the choice we make does not matter, as
+we can obtain $p_1 = p_2$ from the fact that $f$ is monic! The rest of
+the universal property follows directly from this lovely little
+observation.
 
 ```agda
   monic→id-kernel-pair {f = f} f-monic = id-kp where
@@ -266,10 +267,10 @@ of the universal property follows directly from this lovely little observation.
     id-kp .unique p q = sym (idl _) ∙ p
 ```
 
-Conversely, if $(id, id)$ is the kernel pair of $f$, then $f$ is monic.
-Suppose that $f \circ g = f \circ h$ for some $g, h : A \to X$, and
-note that both $g$ and $h$ are equal to the universal map obtained via
-the square $f \circ g = f \circ h$.
+Conversely, if $(\id, \id)$ is the kernel pair of $f$, then $f$ is
+monic. Suppose that $f \circ g = f \circ h$ for some $g, h : A \to X$,
+and note that both $g$ and $h$ are equal to the universal map obtained
+via the square $f \circ g = f \circ h$.
 
 ```agda
   id-kernel-pair→monic
@@ -284,8 +285,8 @@ the square $f \circ g = f \circ h$.
 ```
 
 We can strengthen this result by noticing that if $(p, p)$ is the kernel
-pair of $f$ for some $P : \cC, p : P \to X$, then $(id, id)$ is also
-a kernel pair of $f$.
+pair of $f$ for some $P : \cC, p : P \to X$, then $(\id, \id)$ is also a
+kernel pair of $f$.
 
 ```agda
   same-kernel-pair→id-kernel-pair
