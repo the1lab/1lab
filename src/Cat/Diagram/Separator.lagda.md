@@ -8,8 +8,11 @@ description: |
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Sets
 open import Cat.Functor.Constant
+open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
@@ -18,8 +21,8 @@ open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-
 import Cat.Reasoning
+import Cat.Morphism.StrongEpi
 ```
 -->
 
@@ -29,6 +32,7 @@ module Cat.Diagram.Separator {o ℓ} (C : Precategory o ℓ) where
 
 <!--
 ```agda
+open Cat.Morphism.StrongEpi C
 open Cat.Reasoning C
 open _=>_
 ```
@@ -184,13 +188,13 @@ module _
   (copowers : (I : Set ℓ) → has-coproducts-indexed-by C ∣ I ∣)
   where
   private
-    module ∐ᶠx x = Indexed-coproduct (copowers (el! (Hom s x)) λ f → s)
+    module Elts x = Indexed-coproduct (copowers (el! (Hom s x)) λ f → s)
 
-  separator→epic : ∀ {x} → is-separator s → is-epic (∐ᶠx.match x λ f → f)
-  separator→epic {x} separate f g p = separate λ e →
-    f ∘ e                       ≡⟨ pushr (sym (∐ᶠx.commute x)) ⟩
-    (f ∘ (∐ᶠx.match x λ f → f)) ∘ ∐ᶠx.ι x e ≡⟨ p ⟩∘⟨refl ⟩
-    (g ∘ (∐ᶠx.match x λ f → f)) ∘ ∐ᶠx.ι x e ≡⟨ pullr (∐ᶠx.commute x) ⟩
+  separator→epi : ∀ {x} → is-separator s → is-epic (Elts.match x λ f → f)
+  separator→epi {x} separate f g p = separate λ e →
+    f ∘ e                       ≡⟨ pushr (sym (Elts.commute x)) ⟩
+    (f ∘ (Elts.match x λ f → f)) ∘ Elts.ι x e ≡⟨ p ⟩∘⟨refl ⟩
+    (g ∘ (Elts.match x λ f → f)) ∘ Elts.ι x e ≡⟨ pullr (Elts.commute x) ⟩
     g ∘ e                       ∎
 ```
 
@@ -203,9 +207,9 @@ by our hypothesis, so $f \circ \gamma_{X} = g \circ \gamma_{X}$. Moreover,
 $\gamma_{X}$ is an epi, so $f = g$.
 
 ```agda
-  epic→separator : (∀ {x} → is-epic (∐ᶠx.match x λ f → f)) → is-separator s
-  epic→separator epic {f = f} {g = g} p =
-    epic f g $ ∐ᶠx.unique₂ _ λ e →
+  epi→separator : (∀ {x} → is-epic (Elts.match x λ f → f)) → is-separator s
+  epi→separator epic {f = f} {g = g} p =
+    epic f g $ Elts.unique₂ _ λ e →
       sym (assoc _ _ _)
       ∙ p _
       ∙ assoc _ _ _
@@ -233,16 +237,16 @@ module _
 
 ```agda
   private
-    module ∐ᶠxᵢ (x : Ob) =
+    module Elts (x : Ob) =
       Indexed-coproduct (coprods (el! (Σ[ i ∈ Idx ] Hom (sᵢ i) x)) (sᵢ ⊙ fst))
 
-  separating-family→epic
+  separating-family→epi
     : ∀ {x}
     → is-separating-family sᵢ
-    → is-epic (∐ᶠxᵢ.match x snd)
+    → is-epic (Elts.match x snd)
 
-  epic→separating-family
-    : (∀ {x} → is-epic (∐ᶠxᵢ.match x snd))
+  epi→separating-family
+    : (∀ {x} → is-epic (Elts.match x snd))
     → is-separating-family sᵢ
 ```
 
@@ -251,19 +255,87 @@ module _
 we omit the details.
 </summary>
 ```agda
-  separating-family→epic {x = x} separate f g p = separate λ {i} eᵢ →
-    f ∘ eᵢ                                     ≡⟨ pushr (sym (∐ᶠxᵢ.commute x)) ⟩
-    (f ∘ ∐ᶠxᵢ.match x snd) ∘ ∐ᶠxᵢ.ι x (i , eᵢ) ≡⟨ p ⟩∘⟨refl ⟩
-    (g ∘ ∐ᶠxᵢ.match x snd) ∘ ∐ᶠxᵢ.ι x (i , eᵢ) ≡⟨ pullr (∐ᶠxᵢ.commute x) ⟩
+  separating-family→epi {x = x} separate f g p = separate λ {i} eᵢ →
+    f ∘ eᵢ                                     ≡⟨ pushr (sym (Elts.commute x)) ⟩
+    (f ∘ Elts.match x snd) ∘ Elts.ι x (i , eᵢ) ≡⟨ p ⟩∘⟨refl ⟩
+    (g ∘ Elts.match x snd) ∘ Elts.ι x (i , eᵢ) ≡⟨ pullr (Elts.commute x) ⟩
     g ∘ eᵢ                                     ∎
 
-  epic→separating-family epic {f = f} {g = g} p =
-    epic f g $ ∐ᶠxᵢ.unique₂ _ λ (i , eᵢ) →
+  epi→separating-family epic {f = f} {g = g} p =
+    epic f g $ Elts.unique₂ _ λ (i , eᵢ) →
       sym (assoc _ _ _)
       ∙ p _
       ∙ assoc _ _ _
 ```
 </details>
+
+# Strong separators
+
+```agda
+module _
+  (copowers : (I : Set ℓ) → has-coproducts-indexed-by C ∣ I ∣)
+  where
+  private
+    module Elts s x = Indexed-coproduct (copowers (el! (Hom s x)) λ f → s)
+
+  is-strong-separator : Ob → Type (o ⊔ ℓ)
+  is-strong-separator s = ∀ {x} → is-strong-epi (Elts.match s x λ e → e)
+
+  strong-separator→separator
+    : ∀ {s}
+    → is-strong-separator s
+    → is-separator s
+  strong-separator→separator strong =
+    epi→separator copowers (strong .fst)
+```
+
+```agda
+  strong-separator→conservative
+    : ∀ {s}
+    → is-strong-separator s
+    → is-conservative (Hom-from C s)
+  strong-separator→conservative {s = s} strong {A = a} {B = b} {f = f} f∘-inv =
+    strong-epi-mono→is-invertible
+      f-mono
+      f-strong-epi
+    where
+      module f∘- = Equiv (f ∘_ , is-invertible→is-equiv f∘-inv)
+
+      f-mono : is-monic f
+      f-mono u v p =
+        strong-separator→separator strong λ e →
+        f∘-.injective (extendl p)
+
+      f' : Hom (Elts.ΣF s b) a
+      f' = Elts.match s b λ e → f∘-.from e
+
+      f'-factors : f ∘ f' ≡ Elts.match s b (λ e → e)
+      f'-factors = Elts.unique s b _ λ e →
+        (f ∘ f') ∘ Elts.ι _ _ e ≡⟨ pullr (Elts.commute s b) ⟩
+        f ∘ f∘-.from e          ≡⟨ f∘-.ε e ⟩
+        e                       ∎
+
+      f-strong-epi : is-strong-epi f
+      f-strong-epi =
+        strong-epi-cancell f f' $
+        subst is-strong-epi (sym f'-factors) strong
+```
+
+```agda
+  finitely-complete+conservative→strong-separator
+    : ∀ {s}
+    → Finitely-complete C
+    → is-conservative (Hom-from C s)
+    → is-strong-separator s
+  finitely-complete+conservative→strong-separator lex f∘-conservative =
+    is-extremal-epi→is-strong-epi lex λ m i p →
+    f∘-conservative $
+    is-equiv→is-invertible $
+    is-iso→is-equiv $ iso
+      (λ e → i ∘ Elts.ι _ _ e)
+      (λ f' → pulll (sym p) ∙ Elts.commute _ _)
+      (λ e → m .monic _ _ (pulll (sym p) ∙ Elts.commute _ _))
+```
 
 
 # Dense separators

@@ -150,11 +150,11 @@ given $zw = vf$ to lift $f$ against $z$. We don't have a $u$ as before,
 but we can take $u = wg$ to get a lift $t$.
 
 ```agda
-strong-epi-cancel-l
+strong-epi-cancell
   : ∀ {a b c} (f : Hom b c) (g : Hom a b)
   → is-strong-epi (f ∘ g)
   → is-strong-epi f
-strong-epi-cancel-l g f (gf-epi , gf-str) = lifts→is-strong-epi epi lifts where
+strong-epi-cancell g f (gf-epi , gf-str) = lifts→is-strong-epi epi lifts where
   epi : is-epic g
   epi α β p = gf-epi α β (extendl p)
 
