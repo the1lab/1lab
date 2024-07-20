@@ -9,6 +9,7 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Equaliser
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Sets
 open import Cat.Functor.Constant
@@ -268,6 +269,51 @@ we omit the details.
       ∙ assoc _ _ _
 ```
 </details>
+
+## Existence of separating families
+
+```agda
+equalisers+conservative→separator
+  : ∀ {s}
+  → has-equalisers C
+  → is-conservative (Hom-from C s)
+  → is-separator s
+equalisers+conservative→separator equalisers f∘-conservative {f = f} {g = g} p =
+  invertible→epic equ-invertible f g Eq.equal
+  where
+    module Eq = Equaliser (equalisers f g)
+
+    equ-invertible : is-invertible Eq.equ
+    equ-invertible =
+      f∘-conservative $
+      is-equiv→is-invertible $
+      is-iso→is-equiv $ iso
+        (λ e → Eq.universal (p e))
+        (λ e → Eq.factors)
+        (λ h → sym (Eq.unique refl))
+```
+
+```agda
+equalisers+jointly-conservative→separating-family
+  : ∀ {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
+  → has-equalisers C
+  → is-jointly-conservative (λ i → Hom-from C (sᵢ i))
+  → is-separating-family sᵢ
+equalisers+jointly-conservative→separating-family equalisers fᵢ∘-conservative {f = f} {g = g} p =
+  invertible→epic equ-invertible f g Eq.equal
+  where
+    module Eq = Equaliser (equalisers f g)
+
+    equ-invertible : is-invertible Eq.equ
+    equ-invertible =
+      fᵢ∘-conservative λ i →
+      is-equiv→is-invertible $
+      is-iso→is-equiv $ iso
+        (λ eᵢ → Eq.universal (p eᵢ))
+        (λ eᵢ → Eq.factors)
+        (λ h → sym (Eq.unique refl))
+```
+
 
 # Strong separators
 
