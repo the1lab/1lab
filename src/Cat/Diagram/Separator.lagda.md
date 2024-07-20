@@ -7,6 +7,8 @@ description: |
 ```agda
 open import Cat.Diagram.Coproduct.Copower
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Coequaliser.RegularEpi
+open import Cat.Diagram.Coequaliser
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
@@ -486,7 +488,6 @@ object only lets us *equate* morphisms; ideally, we would be able to
 construct a morphism $\cC(X,Y)$ by giving a function $\cC(S,X) \to \cC(S,Y)$
 on $S$-generalized elements as well! This desire leads directly to the
 notion of a **dense separating object**.
-
 
 :::{.definition #dense-separating-object alias="dense-separator"}
 An object $S : \cC$ **dense separating object** is a
