@@ -185,7 +185,7 @@ module _ {ℓi} {Idx : Type ℓi} (Xᵢ : Idx → C.Ob) where
   Family : Precategory ℓi h
   Family .Ob = Idx
   Family .Hom i j = C.Hom (Xᵢ i) (Xᵢ j)
-  Family .Hom-set = hlevel!
+  Family .Hom-set _ _ = hlevel 2
   Family .id = C.id
   Family ._∘_ = C._∘_
   Family .idr = C.idr
@@ -193,7 +193,7 @@ module _ {ℓi} {Idx : Type ℓi} (Xᵢ : Idx → C.Ob) where
   Family .assoc = C.assoc
 ```
 
-There is an evident functor from $X_i \to \cC$ that takes each $i$ to 
+There is an evident functor from $X_i \to \cC$ that takes each $i$ to
 $X_i$.
 
 ```

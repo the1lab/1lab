@@ -44,7 +44,7 @@ Swap F .F₀ c .F-∘ f g = F .F-∘ f g ηₚ c
 Swap F .F₁ f .η k = F .F₀ k .F₁ f
 Swap F .F₁ f .is-natural x y g = sym (F .F₁ g .is-natural _ _ f)
 Swap F .F-id = ext λ k → F .F₀ k .F-id
-Swap F .F-∘ f g = ext λ k → F .F₀ k .F-∘ f g 
+Swap F .F-∘ f g = ext λ k → F .F₀ k .F-∘ f g
 
 module _
   {oc ℓc od ℓd}
@@ -82,7 +82,7 @@ precisely when $\hat{F} : \cC \to [\cI, \cD]$ is faithful.
     → is-faithful (Swap F)
     → is-jointly-faithful (F .F₀)
   swap-faithful→jointly-faithful F faithful p = faithful (ext p)
-  
+
   jointly-faithful→swap-faithful
     : (F : Functor K Cat[ C , D ])
     → is-jointly-faithful (F .F₀)
@@ -113,7 +113,7 @@ $F : \cI \to [ \cC, \cD ]$.
     → is-jointly-conservative (F .F₀)
   swap-conservative→jointly-conservative F reflect-iso isos =
     reflect-iso (invertible→invertibleⁿ (Swap F .F₁ _) isos)
-  
+
   jointly-conservative→swap-conservative
     : (F : Functor K Cat[ C , D ])
     → is-jointly-conservative (F .F₀)
