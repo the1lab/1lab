@@ -96,6 +96,21 @@ uniqueness properties of colimiting maps.
       pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
 ```
 
+```agda
+  ∐! : (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (F : Idx → Ob) → Ob
+  ∐! Idx F = ΣF (coprods (el! Idx) F)
+
+  module ∐! (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (F : Idx → Ob) =
+    Indexed-coproduct (coprods (el! Idx) F)
+
+  _⊗!_ : (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ → Ob → Ob
+  I ⊗! X = el! I ⊗ X
+
+  module ⊗! (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (X : Ob) =
+    Indexed-coproduct (coprods (el! Idx) (λ _ → X))
+```
+
+
 <!--
 ```agda
 cocomplete→copowering

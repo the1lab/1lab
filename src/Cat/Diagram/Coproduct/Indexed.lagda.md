@@ -65,12 +65,6 @@ record Indexed-coproduct (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) 
     ι         : ∀ i → C.Hom (F i) ΣF
     has-is-ic : is-indexed-coproduct F ι
   open is-indexed-coproduct has-is-ic public
-
-has-coproducts-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
-has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
-
-has-indexed-coproducts : ∀ ℓ → Type _
-has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
 ```
 
 <!--
@@ -220,6 +214,24 @@ is-indexed-coproduct-assoc {A = A} {B} {X} {ΣᵃΣᵇX = ΣᵃΣᵇX} {ιᵃ = 
       ΣᵃΣᵇ .unique _ λ a →
       Σᵇ _ .unique _ λ b →
       sym (C.assoc _ _ _) ∙ p (a , b)
+```
+
+# Categories with all indexed coproducts
+
+```agda
+has-coproducts-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
+has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
+
+has-indexed-coproducts : ∀ ℓ → Type _
+has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
+
+module Indexed-coproducts
+  {κ : Level}
+  (has-ic : has-indexed-coproducts κ)
+  where
+  module ∏ {Idx : Type κ} (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
+
+  open ∏ renaming (commute to ι-commute; unique to match-unique) public
 ```
 
 

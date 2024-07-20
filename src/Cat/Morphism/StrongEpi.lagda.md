@@ -170,9 +170,9 @@ be, in particular, left orthogonal to _itself_, and the only
 self-orthogonal maps are isos.
 
 ```agda
-strong-epi-mono→is-invertible
+strong-epi+mono→is-invertible
   : ∀ {a b} {f : Hom a b} → is-monic f → is-strong-epi f → is-invertible f
-strong-epi-mono→is-invertible mono (_ , epi) =
+strong-epi+mono→is-invertible mono (_ , epi) =
   self-orthogonal→is-iso C _ (epi (record { monic = mono }))
 ```
 
