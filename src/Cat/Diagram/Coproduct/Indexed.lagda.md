@@ -225,13 +225,22 @@ has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
 has-indexed-coproducts : ∀ ℓ → Type _
 has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
 
+module Indexed-coproducts-by
+  {κ : Level} {Idx : Type κ}
+  (has-ic : has-coproducts-indexed-by Idx)
+  where
+  module ∐ (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
+
+  open ∐ renaming (commute to ι-commute; unique to match-unique) public
+
+
 module Indexed-coproducts
   {κ : Level}
   (has-ic : has-indexed-coproducts κ)
   where
-  module ∏ {Idx : Type κ} (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
+  module ∐ {Idx : Type κ} (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
 
-  open ∏ renaming (commute to ι-commute; unique to match-unique) public
+  open ∐ renaming (commute to ι-commute; unique to match-unique) public
 ```
 
 

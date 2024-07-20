@@ -10,6 +10,7 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Zero
 open import Cat.Diagram.Equaliser
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Sets
@@ -25,6 +26,8 @@ open import Cat.Prelude
 
 import Cat.Reasoning
 import Cat.Morphism.StrongEpi
+
+open import Data.Dec.Base
 ```
 -->
 
@@ -139,7 +142,7 @@ functors $C(S_i, -)$ are [[jointly faithful]].
 separating-family→jointly-faithful
   : ∀ {ℓi} {Idx : Type ℓi} {sᵢ : Idx → Ob}
   → is-separating-family sᵢ
-  → is-jointly-faithful (λ i → Hom-from C (sᵢ i ))
+  → is-jointly-faithful (λ i → Hom-from C (sᵢ i))
 separating-family→jointly-faithful separates p = separates λ eᵢ → p _ $ₚ eᵢ
 
 jointly-faithful→separating-family
@@ -302,6 +305,40 @@ equalisers+jointly-conservative→separating-family equalisers fᵢ∘-conservat
 ```
 </details>
 
+```agda
+module _
+  {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
+  ⦃ Idx-Discrete : Discrete Idx ⦄
+  (coprods : has-coproducts-indexed-by C Idx)
+  (zero : Zero C)
+  where
+  open Zero zero
+  open Indexed-coproducts-by C coprods
+
+  zero+separating-family→separator
+    : is-separating-family sᵢ
+    → is-separator (ΣF sᵢ)
+  zero+separating-family→separator separate {f = f} {g = g} p =
+    separate λ {i} eᵢ →
+      f ∘ eᵢ                              ≡˘⟨ ap (f ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
+      f ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ extendl (p _) ⟩
+      g ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ ap (g ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
+      g ∘ eᵢ                              ∎
+    where
+      detect : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → (j : Idx) → Hom (sᵢ j) x
+      detect i eᵢ j with i ≡? j
+      ... | yes i=j = subst _ i=j eᵢ
+      ... | no _ = zero→
+
+      detect-yes : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → detect i eᵢ i ≡ eᵢ
+      detect-yes {x = x} i eᵢ with i ≡? i
+      ... | yes i=i =
+        is-set→subst-refl
+          (λ i → Hom (sᵢ i) x)
+          (Discrete→is-set Idx-Discrete)
+          i=i eᵢ
+      ... | no ¬i=i = absurd (¬i=i refl)
+```
 
 # Strong separators
 
