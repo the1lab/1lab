@@ -24,7 +24,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-# Regular epimorphisms
+# Regular epimorphisms {defines="regular-epi regular-epimorphism"}
 
 [Dually] to [regular monomorphisms], which behave as _embeddings_,
 regular [epimorphisms] behave like _covers_: A regular epimorphism $f :
