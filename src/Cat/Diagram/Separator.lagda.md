@@ -257,17 +257,34 @@ we omit the details.
 
 ## Existence of separating families
 
+If $\cC$ has [[equalisers]] and $\cC(S,-)$ is [[conservative]], then
+$S$ is a separating family.
+
 ```agda
 equalisers+conservative→separator
   : ∀ {s}
   → has-equalisers C
   → is-conservative (Hom-from C s)
   → is-separator s
+```
+
+Let $f, g : \cC(A,B)$, and suppose that $f \circ e = g \circ e$ for every $\cC(S,A)$.
+We can then form the equaliser $(E,e)$ of $f$ and $g$. Note that if $e$
+is invertible, then $f = g$, as $f \circ e = g \circ e$ holds by virtue of
+$e$ being an equaliser.
+
+```agda
 equalisers+conservative→separator equalisers f∘-conservative {f = f} {g = g} p =
   invertible→epic equ-invertible f g Eq.equal
   where
     module Eq = Equaliser (equalisers f g)
+```
 
+Moreover, $\cC(S,-)$ is conservative, so it suffices to prove that
+precomposition of $e$ with an $S$-generalized element is an equalivalence.
+This follows immediately from the universal property of equalisers!
+
+```agda
     equ-invertible : is-invertible Eq.equ
     equ-invertible =
       f∘-conservative $
@@ -278,6 +295,9 @@ equalisers+conservative→separator equalisers f∘-conservative {f = f} {g = g}
         (λ h → sym (Eq.unique refl))
 ```
 
+A similar line of argument lets us generalize this result to separating
+families.
+
 ```agda
 equalisers+jointly-conservative→separating-family
   : ∀ {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
@@ -287,10 +307,11 @@ equalisers+jointly-conservative→separating-family
 ```
 
 <details>
-<summary>
+<summary>The proof is more-or-less the same, so we omit the details.
 </summary>
 ```agda
-equalisers+jointly-conservative→separating-family equalisers fᵢ∘-conservative {f = f} {g = g} p =
+equalisers+jointly-conservative→separating-family
+  equalisers fᵢ∘-conservative {f = f} {g = g} p =
   invertible→epic equ-invertible f g Eq.equal
   where
     module Eq = Equaliser (equalisers f g)
@@ -306,30 +327,62 @@ equalisers+jointly-conservative→separating-family equalisers fᵢ∘-conservat
 ```
 </details>
 
+Our next result lets us relate separating objects and separating families.
+Clearly, a separating object yields a separating family; when does the
+converse hold? One possible scenario is when:
+1. The separating family $S_i$ is indexed by a [[discrete]] type.
+2. $\cC$ has $I$-indexed coproducts.
+3. Every hom set $\cC(S_i, X)$ has a distinguished inhabitant.
+
 ```agda
 module _
   {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
   ⦃ Idx-Discrete : Discrete Idx ⦄
   (coprods : has-coproducts-indexed-by C Idx)
-  (zero : Zero C)
   where
-  open Zero zero
   open Indexed-coproducts-by C coprods
 
-  zero+separating-family→separator
-    : is-separating-family sᵢ
+  hom-inhabited+separating-family→separator
+    : (∀ i x → Hom (sᵢ i) x)
+    → is-separating-family sᵢ
     → is-separator (ΣF sᵢ)
-  zero+separating-family→separator separate {f = f} {g = g} p =
+```
+
+We shall show that the coproduct $\coprod_{i : I} S_i$ is a separating object.
+Suppose that $f, g : \cC(X,Y)$ such that $f \circ e = g \circ e$ for any
+$\cC(\coprod_{i : I} S_i, X)$. $S_i$ is a separating family, so we can
+attempt to show that $f = g$ by showing that $f \circ e_i = g \circ e_i$
+for every $e_i : \cC(S_i, X)$.
+
+This is where we need to start using our somewhat contrived assumptions.
+The crux of the problem is that we need to somehow turn our proof obligation
+into a question of equality involving $\cC(\coprod_{i : I} S_i, X)$. In
+particular, if we could factorize $e_i$ into a coproduct injection $\iota$
+followed by a map $u$ out of the coproduct, then our hypothesis would let us
+deduce that $f \circ u \circ \iota = g \circ u \circ \iota$. Unfortunatelly,
+cooking up a factorization is a bit tricky!
+
+```agda
+  hom-inhabited+separating-family→separator hom-default separate {x = x} {y = y} {f = f} {g = g} p =
     separate λ {i} eᵢ →
       f ∘ eᵢ                              ≡˘⟨ ap (f ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
       f ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ extendl (p _) ⟩
       g ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ ap (g ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
       g ∘ eᵢ                              ∎
     where
+```
+
+The key idea is that we can extend a single morphism $e_i : \cC(S_i, X)$ to a
+family of morphisms $e_{i}^* : (j : I) \to \cC(S_j, X)$ by checking if $i = j$; if it does, then
+we simply return $e_i$; if not, then we use the distinguished inhabitant
+of $\cC(S_j, X)$. By definition, $e_{i}^*(i) = e_i$, so this construction
+provides the required factorization.
+
+```agda
       detect : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → (j : Idx) → Hom (sᵢ j) x
       detect i eᵢ j with i ≡? j
       ... | yes i=j = subst _ i=j eᵢ
-      ... | no _ = zero→
+      ... | no _ = hom-default j _
 
       detect-yes : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → detect i eᵢ i ≡ eᵢ
       detect-yes {x = x} i eᵢ with i ≡? i
@@ -340,6 +393,21 @@ module _
           i=i eᵢ
       ... | no ¬i=i = absurd (¬i=i refl)
 ```
+
+In particular, if $\cC$ meets conditions (1) and (2) and has a [[zero object]],
+then $\cC$ has a separating object.
+
+```agda
+  zero+separating-family→separator
+    : Zero C
+    → is-separating-family sᵢ
+    → is-separator (ΣF sᵢ)
+  zero+separating-family→separator z separates =
+    hom-inhabited+separating-family→separator
+      (λ _ _ → Zero.zero→ z)
+      separates
+```
+
 
 # Dense separators
 
