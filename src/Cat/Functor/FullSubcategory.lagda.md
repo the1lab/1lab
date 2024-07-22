@@ -196,7 +196,7 @@ module _ {ℓi} {Idx : Type ℓi} (Xᵢ : Idx → C.Ob) where
 There is an evident functor from $X_i \to \cC$ that takes each $i$ to
 $X_i$.
 
-```
+```agda
   Forget-family : Functor Family C
   Forget-family .Functor.F₀ = Xᵢ
   Forget-family .Functor.F₁ f = f

@@ -53,10 +53,7 @@ recover {A = A} ⦃ no ¬x ⦄ x = go (¬x x) where
 ```
 -->
 
-:::{.definition #discrete}
-A type is **discrete** if it has decidable equality.
-:::
-
+A type is _discrete_ if it has decidable equality.
 
 ```agda
 Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
