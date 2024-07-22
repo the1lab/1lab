@@ -133,6 +133,11 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 # Existence of regular epis
 
+Let $\cJ, \cC$ be a categories such that $\cC$ has coproducts indexed
+by the objects and arrows of $\cC$, and let $F : \cJ \to \cC$ be a functor
+with a colimit $C$ in $\cC$. The canonical map $\coprod_{j : J} F(j) \to C$
+is a regular epimorphism
+
 ```agda
 module _ {o ℓ oj ℓj}
   {C : Precategory o ℓ} {J : Precategory oj ℓj}
@@ -141,6 +146,10 @@ module _ {o ℓ oj ℓj}
   (∐Hom : has-coproducts-indexed-by C (Arrows J))
   (∐F : Colimit F)
   where
+```
+
+<!--
+```agda
   private
     module C = Cat.Reasoning C
     module J = Cat.Reasoning J
@@ -151,19 +160,40 @@ module _ {o ℓ oj ℓj}
 
   open is-regular-epi
   open is-coequaliser
+```
+-->
 
+```agda
   indexed-coproduct→regular-epi : is-regular-epi C (∐Ob.match F.₀ ∐F.ψ)
-  indexed-coproduct→regular-epi .r = ∐Hom.ΣF λ (a , b , f) → F.₀ a
-  indexed-coproduct→regular-epi .arr₁ = ∐Hom.match _ λ (a , b , f) → ∐Ob.ι F.₀ b C.∘ F.₁ f
-  indexed-coproduct→regular-epi .arr₂ = ∐Hom.match _ λ (a , b , f) → ∐Ob.ι F.₀ a
+```
+
+We start by constructing a pair of maps $p, q : \coprod_{f : \cJ(i,j)} F(i) \to \coprod_{j : J} F(j)$
+via the universal property of $\coprod_{f : \cJ(i,j)} F(i)$.
+
+```agda
+  indexed-coproduct→regular-epi .r = ∐Hom.ΣF λ (i , j , f) → F.₀ i
+  indexed-coproduct→regular-epi .arr₁ = ∐Hom.match _ λ (i , j , f) → ∐Ob.ι F.₀ j C.∘ F.₁ f
+  indexed-coproduct→regular-epi .arr₂ = ∐Hom.match _ λ (i , j , f) → ∐Ob.ι F.₀ i
+```
+
+By some rather tedious calculations, we can show that $p$ and $q$
+coequalize $f$.
+
+```agda
   indexed-coproduct→regular-epi .has-is-coeq .coequal =
-    ∐Hom.unique₂ _ λ (a , b , f) →
-    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (a , b , f) ≡⟨ C.pullr (∐Hom.commute _) ⟩
-    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ b C.∘ F.₁ f                       ≡⟨ C.pulll (∐Ob.commute _) ⟩
-    ∐F.ψ b C.∘ F.₁ f                                                 ≡⟨ ∐F.commutes f ⟩
-    ∐F.ψ a                                                           ≡˘⟨ ∐Ob.commute _ ⟩
-    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ a                                 ≡˘⟨ C.pullr (∐Hom.commute _) ⟩
-    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (a , b , f) ∎
+    ∐Hom.unique₂ _ λ (i , j , f) →
+    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (i , j , f) ≡⟨ C.pullr (∐Hom.commute _) ⟩
+    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ j C.∘ F.₁ f                       ≡⟨ C.pulll (∐Ob.commute _) ⟩
+    ∐F.ψ j C.∘ F.₁ f                                                 ≡⟨ ∐F.commutes f ⟩
+    ∐F.ψ i                                                           ≡˘⟨ ∐Ob.commute _ ⟩
+    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ i                                 ≡˘⟨ C.pullr (∐Hom.commute _) ⟩
+    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (i , j , f) ∎
+```
+
+Moreover, $p$ and $q$ form the universal such coequalizing pair. This
+follows by yet more brute-force calculation.
+
+```agda
   indexed-coproduct→regular-epi .has-is-coeq .universal {e' = e'} p =
     ∐F.universal (λ j → e' C.∘ ∐Ob.ι F.₀ j) comm
     where abstract
