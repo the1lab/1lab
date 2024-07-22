@@ -77,7 +77,7 @@ is-strong-separating-family Idx sᵢ =
   ∀ {x} → is-strong-epi (∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) x)) (sᵢ ⊙ fst) snd)
 ```
 
-Strong separators are [[separatings]]. This follows from the fact
+Strong separators are [[separators]]. This follows from the fact
 that an object $S$ is a separator if and only if the canonical map
 $\coprod_{\cC(S,X)} S \to X$ is an epi.
 

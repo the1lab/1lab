@@ -56,7 +56,7 @@ module _
     module D = Cat.Reasoning D
 ```
 
-:::{.definition #jointly-faithful-functors}
+:::{.definition #jointly-faithful-functors alias="jointly-faithful"}
 A family of functors $F_i : \cC \to \cD$ is **jointly faithful** when:
 - For any $f, g : \cC(x,y)$, if $F_i(f) = F_i(g)$ for every $I$, then
 $f = g$
@@ -92,7 +92,7 @@ precisely when $\hat{F} : \cC \to [\cI, \cD]$ is faithful.
 
 ## Jointly conservative functors
 
-:::{.definition #jointly-conservative-functors}
+:::{.definition #jointly-conservative-functors alias="jointly-conservative"}
 A family of functors $F_i : \cC \to \cD$ is **jointly conservative** when:
 - For $f : \cC(x,y)$, if $F_i(f)$ is an iso for every $i$, then $f$ is an iso.
 :::
@@ -125,7 +125,7 @@ $F : \cI \to [ \cC, \cD ]$.
 
 ## Jointly full functors
 
-:::{.definition #jointly-full-functors}
+:::{.definition #jointly-full-functors alias="jointy full"}
 A diagram of functors $F : \cI \to [\cC, \cD]$ is **jointly full** when
 the functor $\hat{F} : \cC \to [\cI, \cD]$ is full. Explicitly, $F$ is
 jointly full if a family of morphisms $g_i : \cD(F(i)(x), F(i)(y))$ that is
@@ -169,7 +169,7 @@ module _
 
 ## Jointly fully faithful functors
 
-:::{.definition #jointly-fully-faithful-functors}
+:::{.definition #jointly-fully-faithful-functors alias="jointly-fully-faithful"}
 A diagram of functors $F : \cI \to [\cC, \cD]$ is **jointly fully faithful** when
 the functor $\hat{F} : \cC \to [\cI, \cD]$ is fully faithful. Explicitly, $F$ is
 jointly faully faithful if there is an equivalence of natural transformations
