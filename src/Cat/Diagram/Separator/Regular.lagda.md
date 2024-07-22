@@ -5,8 +5,8 @@ description: |
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Coproduct.Copower
+open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
 

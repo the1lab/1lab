@@ -5,31 +5,31 @@ description: |
 
 <!--
 ```agda
+open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coproduct.Copower
 open import Cat.Diagram.Coproduct.Indexed
-open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Diagram.Coequaliser
+open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Zero
-open import Cat.Diagram.Equaliser
-open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Sets
-open import Cat.Functor.Constant
 open import Cat.Functor.Conservative
+open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Properties
+open import Cat.Diagram.Equaliser
+open import Cat.Functor.Constant
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
+open import Cat.Instances.Sets
 open import Cat.Functor.Joint
+open import Cat.Diagram.Zero
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Morphism.StrongEpi
-
 open import Data.Dec.Base
+
+import Cat.Morphism.StrongEpi
+import Cat.Reasoning
 ```
 -->
 
