@@ -5,7 +5,6 @@ description: |
 
 <!--
 ```agda
-open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coproduct.Copower
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Shape.Terminal
@@ -149,7 +148,7 @@ separating-family→jointly-faithful separates p = separates λ eᵢ → p _ $�
 
 jointly-faithful→separating-family
   : ∀ {ℓi} {Idx : Type ℓi} {sᵢ : Idx → Ob}
-  → is-jointly-faithful (λ i → Hom-from C (sᵢ i ))
+  → is-jointly-faithful (λ i → Hom-from C (sᵢ i))
   → is-separating-family sᵢ
 jointly-faithful→separating-family faithful p = faithful λ i → funext p
 ```
@@ -341,143 +340,6 @@ module _
           i=i eᵢ
       ... | no ¬i=i = absurd (¬i=i refl)
 ```
-
-# Strong separators
-
-```agda
-module _
-  (copowers : (I : Set ℓ) → has-coproducts-indexed-by C ∣ I ∣)
-  where
-  open Copowers copowers
-
-  is-strong-separator : Ob → Type (o ⊔ ℓ)
-  is-strong-separator s = ∀ {x} → is-strong-epi (⊗!.match (Hom s x) s λ e → e)
-
-  is-strong-separating-family
-    : ∀ (Idx : Set ℓ)
-    → (sᵢ : ∣ Idx ∣ → Ob)
-    → Type (o ⊔ ℓ)
-  is-strong-separating-family Idx sᵢ =
-    ∀ {x} → is-strong-epi (∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) x)) (sᵢ ⊙ fst) snd)
-
-  strong-separator→separator
-    : ∀ {s}
-    → is-strong-separator s
-    → is-separator s
-  strong-separator→separator strong =
-    epi→separator copowers (strong .fst)
-
-  strong-separating-family→separating-family
-    : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
-    → is-strong-separating-family Idx sᵢ
-    → is-separating-family sᵢ
-  strong-separating-family→separating-family Idx sᵢ strong =
-    epi→separating-family copowers Idx sᵢ (strong .fst)
-```
-
-```agda
-  strong-separator→conservative
-    : ∀ {s}
-    → is-strong-separator s
-    → is-conservative (Hom-from C s)
-  strong-separator→conservative {s = s} strong {A = a} {B = b} {f = f} f∘-inv =
-    strong-epi+mono→is-invertible
-      f-mono
-      f-strong-epi
-    where
-      module f∘- = Equiv (f ∘_ , is-invertible→is-equiv f∘-inv)
-
-      f-mono : is-monic f
-      f-mono u v p =
-        strong-separator→separator strong λ e →
-        f∘-.injective (extendl p)
-
-      f' : Hom ((Hom s b) ⊗! s) a
-      f' = ⊗!.match (Hom s b) s λ e → f∘-.from e
-
-      f'-factors : f ∘ f' ≡ ⊗!.match (Hom s b) s (λ e → e)
-      f'-factors = ⊗!.unique _ _ _ λ e →
-        (f ∘ f') ∘ ⊗!.ι (Hom s b) s e ≡⟨ pullr (⊗!.commute (Hom s b) s) ⟩
-        f ∘ f∘-.from e                ≡⟨ f∘-.ε e ⟩
-        e                             ∎
-
-      f-strong-epi : is-strong-epi f
-      f-strong-epi =
-        strong-epi-cancell f f' $
-        subst is-strong-epi (sym f'-factors) strong
-```
-
-```agda
-  lex+conservative→strong-separator
-    : ∀ {s}
-    → Finitely-complete C
-    → is-conservative (Hom-from C s)
-    → is-strong-separator s
-  lex+conservative→strong-separator lex f∘-conservative =
-    is-extremal-epi→is-strong-epi lex λ m i p →
-    f∘-conservative $
-    is-equiv→is-invertible $
-    is-iso→is-equiv $ iso
-      (λ e → i ∘ ⊗!.ι _ _ e)
-      (λ f' → pulll (sym p) ∙ ⊗!.commute _ _)
-      (λ e → m .monic _ _ (pulll (sym p) ∙ ⊗!.commute _ _))
-```
-
-```agda
-  strong-separating-family→jointly-conservative
-    : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
-    → is-strong-separating-family Idx sᵢ
-    → is-jointly-conservative (λ i → Hom-from C (sᵢ i))
-
-  lex+jointly-conservative→strong-separating-family
-    : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
-    → Finitely-complete C
-    → is-jointly-conservative (λ i → Hom-from C (sᵢ i))
-    → is-strong-separating-family Idx sᵢ
-```
-
-<details>
-<summary>
-</summary>
-```agda
-  strong-separating-family→jointly-conservative Idx sᵢ strong {x = a} {y = b} {f = f} f∘ᵢ-inv =
-    strong-epi+mono→is-invertible
-      f-mono
-      f-strong-epi
-    where
-      module f∘- {i : ∣ Idx ∣} = Equiv (_ , is-invertible→is-equiv (f∘ᵢ-inv i))
-
-      f-mono : is-monic f
-      f-mono u v p =
-        strong-separating-family→separating-family Idx sᵢ strong λ eᵢ →
-        f∘-.injective (extendl p)
-
-      f' : Hom (∐! (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) b)) (sᵢ ⊙ fst)) a
-      f' = ∐!.match _ _ (f∘-.from ⊙ snd)
-
-      f'-factors : f ∘ f' ≡ ∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (sᵢ i) b)) (sᵢ ⊙ fst) snd
-      f'-factors =
-        ∐!.unique _ _ _ λ (i , eᵢ) →
-        (f ∘ f') ∘ ∐!.ι _ _ (i , eᵢ) ≡⟨ pullr (∐!.commute _ _) ⟩
-        f ∘ f∘-.from eᵢ              ≡⟨ f∘-.ε eᵢ ⟩
-        eᵢ                           ∎
-
-      f-strong-epi : is-strong-epi f
-      f-strong-epi =
-        strong-epi-cancell f f' $
-        subst is-strong-epi (sym f'-factors) strong
-
-  lex+jointly-conservative→strong-separating-family Idx sᵢ lex f∘-conservative =
-    is-extremal-epi→is-strong-epi lex λ m f p →
-    f∘-conservative $ λ i →
-    is-equiv→is-invertible $
-    is-iso→is-equiv $ iso
-      (λ eᵢ → f ∘ ∐!.ι _ _ (i , eᵢ))
-      (λ f' → pulll (sym p) ∙ ∐!.commute _ _)
-      (λ eᵢ → m .monic _ _ (pulll (sym p) ∙ ∐!.commute _ _))
-
-```
-</details>
 
 # Dense separators
 
