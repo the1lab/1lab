@@ -111,16 +111,6 @@ categories]].
 ```agda
   Cartesian-symmetric : Symmetric-monoidal Cartesian-monoidal
   Cartesian-symmetric = to-symmetric-monoidal mk where
-    swap-natural
-      : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
-      → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
-    swap-natural (f , g) =
-      (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
-      ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
-      ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
-      ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
-      swap ∘ (f ⊗₁ g)                       ∎
-
     open make-symmetric-monoidal
     mk : make-symmetric-monoidal Cartesian-monoidal
     mk .has-braiding = iso→isoⁿ

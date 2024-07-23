@@ -28,7 +28,7 @@ Most of these helpers were taken from `agda-categories`.
 ```agda
 private variable
   u v w x y z : Ob
-  a a' a'' b b' b'' c c' c'' d d' d'' : Hom x y
+  a a' a'' b b' b'' c c' c'' d d' d'' e : Hom x y
   f g g' h h' i : Hom x y
 ```
 -->
@@ -109,6 +109,15 @@ module _ (abc≡d : a ∘ b ∘ c ≡ d) where abstract
     f ∘ a ∘ b ∘ c     ≡⟨ ap (f ∘_) abc≡d ⟩
     f ∘ d ∎
 
+module _ (abcd≡e : a ∘ b ∘ c ∘ d ≡ e) where abstract
+  pulll4 : a ∘ (b ∘ (c ∘ (d ∘ f))) ≡ e ∘ f
+  pulll4 {f = f} =
+    a ∘ b ∘ c ∘ d ∘ f ≡⟨ ap (λ x → a ∘ b ∘ x) (assoc _ _ _) ⟩
+    a ∘ b ∘ (c ∘ d) ∘ f ≡⟨ ap (a ∘_) (assoc _ _ _) ⟩
+    a ∘ (b ∘ c ∘ d) ∘ f ≡⟨ assoc _ _ _ ⟩
+    (a ∘ b ∘ c ∘ d) ∘ f ≡⟨ ap (_∘ f) abcd≡e ⟩
+    e ∘ f ∎
+
 module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
   pushl = sym (pulll (sym c≡ab))
@@ -125,6 +134,10 @@ module _ (d≡abc : d ≡ a ∘ b ∘ c) where abstract
 
   pushr3 : f ∘ d ≡ ((f ∘ a) ∘ b) ∘ c
   pushr3 = sym (pullr3 (sym d≡abc))
+
+module _ (e≡abcd : e ≡ a ∘ b ∘ c ∘ d) where abstract
+  pushl4 : e ∘ f ≡ a ∘ (b ∘ (c ∘ (d ∘ f)))
+  pushl4 = sym (pulll4 (sym e≡abcd))
 
 module _ (p : f ∘ h ≡ g ∘ i) where abstract
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
@@ -150,6 +163,10 @@ module _ (p : a ∘ b ∘ c ≡ d ∘ f ∘ g) where abstract
 
   extendr3 : ((h ∘ a) ∘ b) ∘ c ≡ ((h ∘ d) ∘ f) ∘ g
   extendr3 = pullr3 p ∙ sym (pullr3 refl)
+
+module _ (p : a ∘ b ∘ c ∘ d ≡ e ∘ f ∘ g ∘ h) where abstract
+  extendl4 : a ∘ b ∘ c ∘ d ∘ i ≡ e ∘ f ∘ g ∘ h ∘ i
+  extendl4 = pulll4 p ∙ sym (pulll4 refl)
 ```
 
 We also define some useful combinators for performing repeated pulls/pushes.

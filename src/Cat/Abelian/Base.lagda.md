@@ -3,11 +3,12 @@
 open import Algebra.Group.Ab.Tensor
 open import Algebra.Group.Ab
 open import Algebra.Prelude
-open import Algebra.Monoid
+open import Algebra.Monoid hiding (idl; idr)
 open import Algebra.Group
 
 open import Cat.Diagram.Equaliser.Kernel
 open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Biproduct
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -15,6 +16,8 @@ open import Cat.Diagram.Zero
 
 import Algebra.Group.Cat.Base as Grp
 import Algebra.Group.Ab.Hom as Ab
+
+import Cat.Reasoning
 ```
 -->
 
@@ -29,7 +32,7 @@ abelian categories: Ab-enriched categories, pre-additive categories,
 pre-abelian categories, and abelian categories. Each concept builds on
 the last by adding a new categorical property on top of a precategory.
 
-## Ab-enriched categories
+## Ab-enriched categories {defines="ab-enriched-category"}
 
 An $\Ab$-enriched category is one where each $\hom$ set carries the
 structure of an [[Abelian group]], such that the composition map is
@@ -181,7 +184,7 @@ module _ where
     sym (f .preserves .is-group-hom.pres-⋆ _ _)
 ```
 
-# Additive categories
+## Additive categories {defines="additive-category"}
 
 An $\Ab$-category is **additive** when its underlying category has a
 [[terminal object]] and finite [[products]]; By the yoga above, this
@@ -208,13 +211,13 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
 ```
 
 Coincidence of finite products and finite coproducts leads to an object
-commonly called a (finite) **biproduct**. The coproduct coprojections
+commonly called a (finite) **[[biproduct]]**. The coproduct coprojections
 are given by the pair of maps
 
 $$
 \begin{align*}
-&(\id \times 0) : A \to A \times B \\
-&(0 \times \id) : B \to A \times B\text{,}
+&\langle \id , 0 \rangle : A \to A \times B \\
+&\langle 0 , \id \rangle : B \to A \times B\text{,}
 \end{align*}
 $$
 
@@ -224,8 +227,8 @@ by comultiplication,
 
 $$
 \begin{align*}
-& (f\pi_1+g\pi_2)(\id\times 0) \\
-=& f\pi_1(\id\times 0) + g\pi_2(\id\times 0) \\
+& (f\pi_1+g\pi_2) \langle \id , 0 \rangle \\
+=& f\pi_1\langle \id , 0 \rangle + g\pi_2\langle \id , 0 \rangle \\
 =& f\id + g0 \\
 =& f\text{,}
 \end{align*}
@@ -235,26 +238,28 @@ and analogously for the second coprojection followed by
 comultiplication.
 
 ```agda
+  private module Prod = Binary-products C has-prods
+  open Prod
+
   has-coprods : ∀ A B → Coproduct C A B
   has-coprods A B = coprod where
     open Coproduct
     open is-coproduct
-    module Prod = Product (has-prods A B)
     coprod : Coproduct C A B
-    coprod .coapex = Prod.apex
-    coprod .in₀ = Prod.⟨ id , 0m ⟩
-    coprod .in₁ = Prod.⟨ 0m , id ⟩
-    coprod .has-is-coproduct .[_,_] f g = f ∘ Prod.π₁ + g ∘ Prod.π₂
-    coprod .has-is-coproduct .in₀∘factor {inj0 = inj0} {inj1} =
-      (inj0 ∘ Prod.π₁ + inj1 ∘ Prod.π₂) ∘ Prod.⟨ id , 0m ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
-      ((inj0 ∘ Prod.π₁) ∘ Prod.⟨ id , 0m ⟩ + _)            ≡⟨ Hom.elimr (pullr Prod.π₂∘factor ∙ ∘-zero-r) ⟩
-      (inj0 ∘ Prod.π₁) ∘ Prod.⟨ id , 0m ⟩                  ≡⟨ cancelr Prod.π₁∘factor ⟩
-      inj0                                                ∎
-    coprod .has-is-coproduct .in₁∘factor {inj0 = inj0} {inj1} =
-      (inj0 ∘ Prod.π₁ + inj1 ∘ Prod.π₂) ∘ Prod.⟨ 0m , id ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
-      (_ + (inj1 ∘ Prod.π₂) ∘ Prod.⟨ 0m , id ⟩)            ≡⟨ Hom.eliml (pullr Prod.π₁∘factor ∙ ∘-zero-r) ⟩
-      (inj1 ∘ Prod.π₂) ∘ Prod.⟨ 0m , id ⟩                  ≡⟨ cancelr Prod.π₂∘factor ⟩
-      inj1                                                 ∎
+    coprod .coapex = apex
+    coprod .in₀ = ⟨ id , 0m ⟩
+    coprod .in₁ = ⟨ 0m , id ⟩
+    coprod .has-is-coproduct .[_,_] f g = f ∘ π₁ + g ∘ π₂
+    coprod .has-is-coproduct .in₀∘factor {inj0 = f} {g} =
+      (f ∘ π₁ + g ∘ π₂) ∘ ⟨ id , 0m ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
+      (f ∘ π₁) ∘ ⟨ id , 0m ⟩ + _      ≡⟨ Hom.elimr (pullr π₂∘⟨⟩ ∙ ∘-zero-r) ⟩
+      (f ∘ π₁) ∘ ⟨ id , 0m ⟩          ≡⟨ cancelr π₁∘⟨⟩ ⟩
+      f                               ∎
+    coprod .has-is-coproduct .in₁∘factor {inj0 = f} {g} =
+      (f ∘ π₁ + g ∘ π₂) ∘ ⟨ 0m , id ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
+      _ + (g ∘ π₂) ∘ ⟨ 0m , id ⟩      ≡⟨ Hom.eliml (pullr π₁∘⟨⟩ ∙ ∘-zero-r) ⟩
+      (g ∘ π₂) ∘ ⟨ 0m , id ⟩          ≡⟨ cancelr π₂∘⟨⟩ ⟩
+      g                               ∎
 ```
 
 For uniqueness, we use distributivity of composition over addition of
@@ -262,22 +267,103 @@ morphisms and the universal property of the product to establish the
 desired equation. Check it out:
 
 ```agda
-    coprod .has-is-coproduct .unique {inj0 = inj0} {inj1} other p q = sym $
-      inj0 ∘ Prod.π₁ + inj1 ∘ Prod.π₂                                             ≡⟨ ap₂ _+_ (pushl (sym p)) (pushl (sym q)) ⟩
-      (other ∘ Prod.⟨ id , 0m ⟩ ∘ Prod.π₁) + (other ∘ Prod.⟨ 0m , id ⟩ ∘ Prod.π₂) ≡⟨ ∘-linear-r _ _ _ ⟩
-      other ∘ (Prod.⟨ id , 0m ⟩ ∘ Prod.π₁ + Prod.⟨ 0m , id ⟩ ∘ Prod.π₂)           ≡⟨ elimr lemma ⟩
-      other                                                                       ∎
+    coprod .has-is-coproduct .unique {inj0 = f} {g} other p q = sym $
+      f ∘ π₁ + g ∘ π₂                                         ≡⟨ ap₂ _+_ (pushl (sym p)) (pushl (sym q)) ⟩
+      (other ∘ ⟨ id , 0m ⟩ ∘ π₁) + (other ∘ ⟨ 0m , id ⟩ ∘ π₂) ≡⟨ ∘-linear-r _ _ _ ⟩
+      other ∘ (⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂)           ≡⟨ elimr lemma ⟩
+      other                                                   ∎
       where
-        lemma : Prod.⟨ id , 0m ⟩ ∘ Prod.π₁ + Prod.⟨ 0m , id ⟩ ∘ Prod.π₂
+        lemma : ⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂
               ≡ id
-        lemma = Prod.unique₂ {pr1 = Prod.π₁} {pr2 = Prod.π₂}
-          (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (cancell Prod.π₁∘factor) (pulll Prod.π₁∘factor ∙ ∘-zero-l) ∙ Hom.elimr refl)
-          (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (pulll Prod.π₂∘factor ∙ ∘-zero-l) (cancell Prod.π₂∘factor) ∙ Hom.eliml refl)
+        lemma = Prod.unique₂ {pr1 = π₁} {pr2 = π₂}
+          (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (cancell π₁∘⟨⟩) (pulll π₁∘⟨⟩ ∙ ∘-zero-l) ∙ Hom.elimr refl)
+          (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (pulll π₂∘⟨⟩ ∙ ∘-zero-l) (cancell π₂∘⟨⟩) ∙ Hom.eliml refl)
           (elimr refl)
           (elimr refl)
+
+  module Coprod = Binary-coproducts C has-coprods
+  open Coprod
 ```
 
-# Pre-abelian & abelian categories
+Thus every additive category is [[semiadditive|semiadditive category]].
+
+```agda
+  additive→semiadditive : is-semiadditive C
+  additive→semiadditive .is-semiadditive.has-zero = ∅
+  additive→semiadditive .is-semiadditive.has-biproducts {A} {B} = bp where
+    open is-biproduct
+    bp : Biproduct C A B
+    bp .Biproduct.biapex = A ⊗₀ B
+    bp .Biproduct.π₁ = π₁
+    bp .Biproduct.π₂ = π₂
+    bp .Biproduct.ι₁ = in₀
+    bp .Biproduct.ι₂ = in₁
+    bp .Biproduct.has-is-biproduct .has-is-product = Prod.has-is-product
+    bp .Biproduct.has-is-biproduct .has-is-coproduct = Coprod.has-is-coproduct
+    bp .Biproduct.has-is-biproduct .πι₁ = π₁∘⟨⟩
+    bp .Biproduct.has-is-biproduct .πι₂ = π₂∘⟨⟩
+    bp .Biproduct.has-is-biproduct .ιπ-comm =
+      in₀ ∘ π₁ ∘ in₁ ∘ π₂ ≡⟨ refl⟩∘⟨ pulll π₁∘⟨⟩ ⟩
+      in₀ ∘ 0m ∘ π₂       ≡⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+      0m                  ≡˘⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+      in₁ ∘ 0m ∘ π₁       ≡˘⟨ refl⟩∘⟨ pulll π₂∘⟨⟩ ⟩
+      in₁ ∘ π₂ ∘ in₀ ∘ π₁ ∎
+
+  open is-semiadditive additive→semiadditive hiding (∘-linear-l; ∘-linear-r)
+```
+
+As described there, every [[semiadditive category]] has its own enrichment
+in commutative monoids. Since we already know that the zero morphisms
+agree (`0m-unique`{.Agda}), it would be natural to expect that the
+additions also agree; this is straightforward to check by linearity.
+
+```agda
+  enrichments-agree : ∀ {A B} {f g : Hom A B} → f +→ g ≡ f + g
+  enrichments-agree {f = f} {g} =
+    (id ∘ π₁ + id ∘ π₂) ∘ (f ⊗₁ g) ∘ δ      ≡⟨ ap₂ _+_ (idl _) (idl _) ⟩∘⟨refl ⟩
+    (π₁ + π₂) ∘ (f ⊗₁ g) ∘ δ                ≡˘⟨ ∘-linear-l _ _ _ ⟩
+    (π₁ ∘ (f ⊗₁ g) ∘ δ + π₂ ∘ (f ⊗₁ g) ∘ δ) ≡⟨ ap₂ _+_ (pulll π₁∘⟨⟩ ∙ cancelr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩) ⟩
+    f + g                                   ∎
+```
+
+Therefore, in order to get an additive category from a semiadditive
+category, it suffices to ask for inverses for every morphism, so that
+each $\hom$-monoid becomes a $\hom$-*group*.
+
+<!--
+```agda
+module _ {o ℓ} (C : Precategory o ℓ) (semiadditive : is-semiadditive C) where
+  open Cat.Reasoning C
+  open is-semiadditive semiadditive
+```
+-->
+
+```agda
+  semiadditive+group→additive
+    : (inv : ∀ {A B} → Hom A B → Hom A B)
+    → (invl : ∀ {A B} {f : Hom A B} → inv f +→ f ≡ zero→)
+    → is-additive C
+  semiadditive+group→additive inv invl .is-additive.has-ab = ab where
+    mk : ∀ {A B} → make-abelian-group (Hom A B)
+    mk .make-abelian-group.ab-is-set = hlevel 2
+    mk .make-abelian-group.mul = _+→_
+    mk .make-abelian-group.inv = inv
+    mk .make-abelian-group.1g = zero→
+    mk .make-abelian-group.idl _ = +-idl
+    mk .make-abelian-group.assoc _ _ _ = +-assoc
+    mk .make-abelian-group.invl _ = invl
+    mk .make-abelian-group.comm _ _ = +-comm
+
+    ab : Ab-category C
+    ab .Ab-category.Abelian-group-on-hom _ _  = to-abelian-group-on mk
+    ab .Ab-category.∘-linear-l _ _ _ = ∘-linear-l
+    ab .Ab-category.∘-linear-r _ _ _ = ∘-linear-r
+
+  semiadditive+group→additive inv invl .is-additive.has-terminal = terminal
+  semiadditive+group→additive inv invl .is-additive.has-prods _ _ = biproduct.product
+```
+
+## Pre-abelian & abelian categories {defines="pre-abelian-category abelian-category"}
 
 An additive category is **pre-abelian** when it additionally has
 [kernels] and cokernels, hence binary [[equalisers]] and [coequalisers]

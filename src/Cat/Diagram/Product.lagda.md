@@ -203,6 +203,26 @@ the projections.
     prod' .unique other p q = prod .unique other
       (sym (ap (_ ∘_) (sym p) ∙ pulll (cancell fi.invr)))
       (sym (ap (_ ∘_) (sym q) ∙ pulll (cancell gi.invr)))
+
+  is-product-iso-apex
+    : ∀ {A B P P'} {π₁ : Hom P A} {π₂ : Hom P B}
+        {π₁' : Hom P' A} {π₂' : Hom P' B}
+        {f : Hom P' P}
+    → is-invertible f
+    → π₁ ∘ f ≡ π₁'
+    → π₂ ∘ f ≡ π₂'
+    → is-product C π₁ π₂
+    → is-product C π₁' π₂'
+  is-product-iso-apex {f = f} f-iso f-π₁ f-π₂ prod = prod' where
+    module fi = is-invertible f-iso
+
+    open is-product
+    prod' : is-product _ _ _
+    prod' .⟨_,_⟩ qa qb = fi.inv ∘ prod .⟨_,_⟩ qa qb
+    prod' .π₁∘factor = pulll (rswizzle (sym f-π₁) fi.invl) ∙ prod .π₁∘factor
+    prod' .π₂∘factor = pulll (rswizzle (sym f-π₂) fi.invl) ∙ prod .π₂∘factor
+    prod' .unique other p q = sym $ lswizzle
+      (sym (prod .unique (f ∘ other) (pulll f-π₁ ∙ p) (pulll f-π₂ ∙ q))) fi.invr
 ```
 
 # Categories with all binary products
@@ -265,6 +285,9 @@ We also define a handful of common morphisms.
 
   swap : Hom (a ⊗₀ b) (b ⊗₀ a)
   swap = ⟨ π₂ , π₁ ⟩
+
+  ×-assoc : Hom (a ⊗₀ (b ⊗₀ c)) ((a ⊗₀ b) ⊗₀ c)
+  ×-assoc = ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩
 ```
 
 <!--
@@ -299,6 +322,31 @@ We also define a handful of common morphisms.
     → g ∘ is-invertible.inv ⟨⟩-inv ≡ π₂
   π₂-inv {f = f} {g = g} ⟨⟩-inv =
     pushl (sym π₂∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
+
+  swap-natural
+    : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
+    → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
+  swap-natural (f , g) =
+    (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
+    ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
+    ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
+    ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
+    swap ∘ (f ⊗₁ g)                       ∎
+
+  swap-δ : ∀ {A} → swap ∘ δ ≡ δ {A}
+  swap-δ = ⟨⟩-unique _ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)
+
+  assoc-δ : ∀ {a} → ×-assoc ∘ (id ⊗₁ δ {a}) ∘ δ {a} ≡ (δ ⊗₁ id) ∘ δ
+  assoc-δ = unique₂
+    (pulll π₁∘⟨⟩ ∙ unique₂
+      (pulll π₁∘⟨⟩ ∙ pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₁∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+      (pulll (pulll π₁∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+      (pulll (pulll π₂∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+    ∙ pushl (sym π₁∘⟨⟩))
+    (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₂∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+    refl
+    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 ```
 -->
 
