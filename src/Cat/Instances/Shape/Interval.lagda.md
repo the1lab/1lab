@@ -154,9 +154,9 @@ to establish commutativity and uniqueness.
 </details>
 
 ```agda
-0≤1-products A B .has-is-product .π₁∘factor = Poset.≤-thin Bool-poset _ _
-0≤1-products A B .has-is-product .π₂∘factor = Poset.≤-thin Bool-poset _ _
-0≤1-products A B .has-is-product .unique _ _ _ = Poset.≤-thin Bool-poset _ _
+0≤1-products A B .has-is-product .π₁∘⟨⟩ = Poset.≤-thin Bool-poset _ _
+0≤1-products A B .has-is-product .π₂∘⟨⟩ = Poset.≤-thin Bool-poset _ _
+0≤1-products A B .has-is-product .unique _ _ = Poset.≤-thin Bool-poset _ _
 ```
 
 # The space of arrows

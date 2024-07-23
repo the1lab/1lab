@@ -83,7 +83,7 @@ Cartesian→standard-finite-products F = prod where
   F-unique {n = zero} F f {h} p = sym $ !-unique terminal _
   F-unique {n = suc zero} F f {h} p = sym (idl h) ∙ p fzero
   F-unique {n = suc (suc n)} F f {h} p =
-    products _ _ .unique h (p fzero)
+    products _ _ .unique (p fzero)
       (F-unique (λ e → F (fsuc e)) (λ i → f (fsuc i))
         λ i → assoc _ _ _ ∙ p (fsuc i))
 

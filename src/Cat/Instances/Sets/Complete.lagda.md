@@ -113,9 +113,9 @@ Products are given by product sets:
   Sets-products A B .π₁ = fst
   Sets-products A B .π₂ = snd
   Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
-  Sets-products A B .has-is-product .π₁∘factor = refl
-  Sets-products A B .has-is-product .π₂∘factor = refl
-  Sets-products A B .has-is-product .unique o p q i x = p i x , q i x
+  Sets-products A B .has-is-product .π₁∘⟨⟩ = refl
+  Sets-products A B .has-is-product .π₂∘⟨⟩ = refl
+  Sets-products A B .has-is-product .unique p q i x = p i x , q i x
 ```
 
 Equalisers are given by carving out the subset of $A$ where $f$ and $g$ agree

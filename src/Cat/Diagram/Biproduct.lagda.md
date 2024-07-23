@@ -90,13 +90,13 @@ $$
 
     coproduct : Coproduct C A B
     coproduct = record
-      { coapex = biapex ; in₀ = ι₁ ; in₁ = ι₂ ; has-is-coproduct = has-is-coproduct }
+      { coapex = biapex ; ι₁ = ι₁ ; ι₂ = ι₂ ; has-is-coproduct = has-is-coproduct }
 
     open Product product public
       hiding (π₁; π₂)
       renaming (unique₂ to ⟨⟩-unique₂)
     open Coproduct coproduct public
-      hiding (in₀; in₁)
+      hiding (ι₁; ι₂)
       renaming (unique₂ to []-unique₂)
 ```
 
@@ -126,7 +126,7 @@ $\cC$ in *commutative monoids*!
     open Biprod using (πι₁; πι₂; ιπ-comm)
 
     open Binary-products C (λ _ _ → Biprod.product)
-    open Binary-coproducts C (λ _ _ → Biprod.coproduct) renaming (in₀ to ι₁; in₁ to ι₂)
+    open Binary-coproducts C (λ _ _ → Biprod.coproduct)
 
     open Monoidal-category (Cartesian-monoidal (λ _ _ → Biprod.product) terminal) using (associator; module ⊗)
     open Diagonals (Cartesian-diagonal (λ _ _ → Biprod.product) terminal) hiding (δ)
@@ -213,10 +213,10 @@ $$
       → (π₁ ∘ f ∘ ι₂ ≡ π₁ ∘ g ∘ ι₂)
       → (π₂ ∘ f ∘ ι₂ ≡ π₂ ∘ g ∘ ι₂)
       → f ≡ g
-    unique-matrix p₁₁ p₁₂ p₂₁ p₂₂ = Biprod.[]-unique₂ _
+    unique-matrix p₁₁ p₁₂ p₂₁ p₂₂ = Biprod.[]-unique₂
       (Biprod.⟨⟩-unique₂ p₁₁ p₁₂ refl refl)
       (Biprod.⟨⟩-unique₂ p₂₁ p₂₂ refl refl)
-      _ refl refl
+      refl refl
 ```
 
 This implies that $f \times_1 g$ and $f +_1 g$ are equal, as they both have
@@ -232,10 +232,10 @@ $$
 ```agda
     ⊕₁≡⊗₁ : ∀ {a b c d} {f : Hom a b} {g : Hom c d} → f ⊕₁ g ≡ f ⊗₁ g
     ⊕₁≡⊗₁ = unique-matrix
-      ((refl⟩∘⟨ in₀∘[]) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ cancelr πι₁))
-      ((refl⟩∘⟨ in₀∘[]) ∙ pulll π₂-ι₁ ∙ zero-∘r _ ∙ sym (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _))
-      ((refl⟩∘⟨ in₁∘[]) ∙ pulll π₁-ι₂ ∙ zero-∘r _ ∙ sym (pulll π₁∘⟨⟩ ∙ pullr π₁-ι₂ ∙ zero-∘l _))
-      ((refl⟩∘⟨ in₁∘[]) ∙ cancell πι₂ ∙ sym (pulll π₂∘⟨⟩ ∙ cancelr πι₂))
+      ((refl⟩∘⟨ []∘ι₁) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ cancelr πι₁))
+      ((refl⟩∘⟨ []∘ι₁) ∙ pulll π₂-ι₁ ∙ zero-∘r _ ∙ sym (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _))
+      ((refl⟩∘⟨ []∘ι₂) ∙ pulll π₁-ι₂ ∙ zero-∘r _ ∙ sym (pulll π₁∘⟨⟩ ∙ pullr π₁-ι₂ ∙ zero-∘l _))
+      ((refl⟩∘⟨ []∘ι₂) ∙ cancell πι₂ ∙ sym (pulll π₂∘⟨⟩ ∙ cancelr πι₂))
 ```
 
 <details>
@@ -251,33 +251,31 @@ coproducts coincide.
 
 ```agda
     coassoc≡assoc = unique-matrix
-      ((refl⟩∘⟨ in₀∘[]) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ Biprod.⟨⟩-unique₂
+      ((refl⟩∘⟨ []∘ι₁) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ Biprod.⟨⟩-unique₂
         (pulll π₁∘⟨⟩ ∙ πι₁)
         (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _)
         πι₁ π₂-ι₁))
-      ((refl⟩∘⟨ in₀∘[]) ∙ pulll π₂-ι₁ ∙ zero-∘r _ ∙ sym (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _))
-      ((refl⟩∘⟨ in₁∘[]) ∙ unique-matrix
-        ((refl⟩∘⟨ pullr in₀∘[] ∙ cancell πι₁) ∙ π₁-ι₂ ∙ sym (pulll (pulll π₁∘⟨⟩) ∙ (π₁-ι₂ ⟩∘⟨refl) ∙ zero-∘r _))
-        ((refl⟩∘⟨ pullr in₀∘[] ∙ cancell πι₁) ∙ πι₂ ∙ sym (pulll (pulll π₂∘⟨⟩) ∙ (cancelr πι₂ ⟩∘⟨refl) ∙ πι₁))
-        ((refl⟩∘⟨ pullr in₁∘[] ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₁∘⟨⟩) ∙ (π₁-ι₂ ⟩∘⟨refl) ∙ zero-∘r _))
-        ((refl⟩∘⟨ pullr in₁∘[] ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₂∘⟨⟩) ∙ (cancelr πι₂ ⟩∘⟨refl) ∙ π₁-ι₂))
+      ((refl⟩∘⟨ []∘ι₁) ∙ pulll π₂-ι₁ ∙ zero-∘r _ ∙ sym (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _))
+      ((refl⟩∘⟨ []∘ι₂) ∙ unique-matrix
+        ((refl⟩∘⟨ pullr []∘ι₁ ∙ cancell πι₁) ∙ π₁-ι₂ ∙ sym (pulll (pulll π₁∘⟨⟩) ∙ (π₁-ι₂ ⟩∘⟨refl) ∙ zero-∘r _))
+        ((refl⟩∘⟨ pullr []∘ι₁ ∙ cancell πι₁) ∙ πι₂ ∙ sym (pulll (pulll π₂∘⟨⟩) ∙ (cancelr πι₂ ⟩∘⟨refl) ∙ πι₁))
+        ((refl⟩∘⟨ pullr []∘ι₂ ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₁∘⟨⟩) ∙ (π₁-ι₂ ⟩∘⟨refl) ∙ zero-∘r _))
+        ((refl⟩∘⟨ pullr []∘ι₂ ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₂∘⟨⟩) ∙ (cancelr πι₂ ⟩∘⟨refl) ∙ π₁-ι₂))
       ∙ sym (pulll π₁∘⟨⟩))
-      ((refl⟩∘⟨ in₁∘[]) ∙ Biprod.[]-unique₂
-        _
-        (pullr in₀∘[] ∙ pulll π₂-ι₁ ∙ zero-∘r _)
-        (pullr in₁∘[] ∙ πι₂)
-        _
+      ((refl⟩∘⟨ []∘ι₂) ∙ Biprod.[]-unique₂
+        (pullr []∘ι₁ ∙ pulll π₂-ι₁ ∙ zero-∘r _)
+        (pullr []∘ι₂ ∙ πι₂)
         ((cancelr πι₂ ⟩∘⟨refl) ∙ π₂-ι₁)
         ((cancelr πι₂ ⟩∘⟨refl) ∙ πι₂)
       ∙ sym (pulll π₂∘⟨⟩))
 
-    coswap≡swap = ⟨⟩-unique _
+    coswap≡swap = ⟨⟩-unique
       (Biprod.[]-unique₂
-        _ (pullr in₀∘[] ∙ π₁-ι₂) (pullr in₁∘[] ∙ πι₁)
-        _ π₂-ι₁ πι₂)
+        (pullr []∘ι₁ ∙ π₁-ι₂) (pullr []∘ι₂ ∙ πι₁)
+        π₂-ι₁ πι₂)
       (Biprod.[]-unique₂
-        _ (pullr in₀∘[] ∙ πι₂) (pullr in₁∘[] ∙ π₂-ι₁)
-        _ πι₁ π₁-ι₂)
+        (pullr []∘ι₁ ∙ πι₂) (pullr []∘ι₂ ∙ π₂-ι₁)
+        πι₁ π₁-ι₂)
 ```
 </details>
 
@@ -367,8 +365,8 @@ which is that the [[zero object]] is a left unit for $\oplus$.
 ```agda
     ∇-¡l : ∀ {a} → ∇ {a} ∘ (¡ ⊕₁ id) ≡ π₂
     ∇-¡l = Biprod.[]-unique₂
-      _ (¡-unique₂ _ _) (pullr in₁∘[] ∙ cancell in₁∘[])
-      _ refl πι₂
+      (¡-unique₂ _ _) (pullr []∘ι₂ ∙ cancell []∘ι₂)
+      refl πι₂
 
     +-idl : ∀ {x y} {f : Hom x y} → zero→ +→ f ≡ f
     +-idl {f = f} =
@@ -451,19 +449,19 @@ when equipped with the projections $[\id, 0]$ and $[0, \id]$.
     has-biproducts {a} {b} .Biproduct.biapex = a ⊕₀ b
     has-biproducts .Biproduct.π₁ = [ id , zero→ ]
     has-biproducts .Biproduct.π₂ = [ zero→ , id ]
-    has-biproducts .Biproduct.ι₁ = in₀
-    has-biproducts .Biproduct.ι₂ = in₁
+    has-biproducts .Biproduct.ι₁ = ι₁
+    has-biproducts .Biproduct.ι₂ = ι₂
     has-biproducts .Biproduct.has-is-biproduct .is-biproduct.has-is-product =
         is-product-iso-apex coproduct≅product π₁∘⟨⟩ π₂∘⟨⟩ has-is-product
     has-biproducts .Biproduct.has-is-biproduct .is-biproduct.has-is-coproduct = has-is-coproduct
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₁ = in₀∘[]
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₂ = in₁∘[]
+    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₁ = []∘ι₁
+    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₂ = []∘ι₂
     has-biproducts .Biproduct.has-is-biproduct .is-biproduct.ιπ-comm =
-      in₀ ∘ [ id , zero→ ] ∘ in₁ ∘ [ zero→ , id ] ≡⟨ refl⟩∘⟨ pulll in₁∘[] ⟩
-      in₀ ∘ zero→ ∘ [ zero→ , id ]                ≡⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩
-      zero→                                       ≡˘⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩
-      in₁ ∘ zero→ ∘ [ id , zero→ ]                ≡˘⟨ refl⟩∘⟨ pulll in₀∘[] ⟩
-      in₁ ∘ [ zero→ , id ] ∘ in₀ ∘ [ id , zero→ ] ∎
+      ι₁ ∘ [ id , zero→ ] ∘ ι₂ ∘ [ zero→ , id ] ≡⟨ refl⟩∘⟨ pulll []∘ι₂ ⟩
+      ι₁ ∘ zero→ ∘ [ zero→ , id ]               ≡⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩
+      zero→                                     ≡˘⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩
+      ι₂ ∘ zero→ ∘ [ id , zero→ ]               ≡˘⟨ refl⟩∘⟨ pulll []∘ι₁ ⟩
+      ι₂ ∘ [ zero→ , id ] ∘ ι₁ ∘ [ id , zero→ ] ∎
 
   open make-semiadditive
 

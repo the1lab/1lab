@@ -96,7 +96,7 @@ formal proof requires a _lot_ of calculation, however:
     ni .natural x y f =
       ⟨ f .fst ∘ π₁ , ⟨ f .snd .fst ∘ π₁ , f .snd .snd ∘ π₂ ⟩ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩     ≡⟨ products! C prods ⟩
       ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ (⟨ f .fst ∘ π₁ , f .snd .fst ∘ π₂ ⟩ ∘ π₁) , (f .snd .snd ∘ π₂) ⟩ ∎
-  Cartesian-monoidal .triangle = Product.unique (prods _ _) _
+  Cartesian-monoidal .triangle = Product.unique (prods _ _)
     (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₁∘⟨⟩ ∙ introl refl)
     (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl _)
   Cartesian-monoidal .pentagon =

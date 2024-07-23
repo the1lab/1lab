@@ -98,9 +98,9 @@ function which is constantly the top element.
 
 <!--
 ```agda
-  prod f g .has-is-product .π₁∘factor    = prop!
-  prod f g .has-is-product .π₂∘factor    = prop!
-  prod f g .has-is-product .unique _ _ _ = prop!
+  prod f g .has-is-product .π₁∘⟨⟩      = prop!
+  prod f g .has-is-product .π₂∘⟨⟩      = prop!
+  prod f g .has-is-product .unique _ _ = prop!
 ```
 -->
 

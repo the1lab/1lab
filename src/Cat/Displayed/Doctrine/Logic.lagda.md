@@ -382,8 +382,8 @@ $$
         ⟨⟩∘ _
       ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
       ·· sym (⟨⟩∘ _)
-      ∙ eliml (sym (⟨⟩-unique id (idr _) (idr _)))
-    rem₁ .unique q r = ⟨⟩-unique _ q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
+      ∙ eliml (sym (⟨⟩-unique (idr _) (idr _)))
+    rem₁ .unique q r = ⟨⟩-unique q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
 ```
 -->
 

@@ -97,14 +97,14 @@ if we do it by hand.
     c-prod : is-product C (R.₁ p1) (R.₁ p2)
     c-prod .⟨_,_⟩ f g =
       L-adjunct L⊣R (d-prod .⟨_,_⟩ (R-adjunct L⊣R f) (R-adjunct L⊣R g))
-    c-prod .π₁∘factor =
-      R.pulll (d-prod .π₁∘factor) ∙ L-R-adjunct L⊣R _
-    c-prod .π₂∘factor =
-      R.pulll (d-prod .π₂∘factor) ∙ L-R-adjunct L⊣R _
-    c-prod .unique other p q =
+    c-prod .π₁∘⟨⟩ =
+      R.pulll (d-prod .π₁∘⟨⟩) ∙ L-R-adjunct L⊣R _
+    c-prod .π₂∘⟨⟩ =
+      R.pulll (d-prod .π₂∘⟨⟩) ∙ L-R-adjunct L⊣R _
+    c-prod .unique {other = other} p q =
       sym (L-R-adjunct L⊣R other)
       ∙ ap (L-adjunct L⊣R)
-           (d-prod .unique _ (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+           (d-prod .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
 
   right-adjoint→is-pullback
     : ∀ {p x y z}

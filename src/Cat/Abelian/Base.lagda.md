@@ -247,15 +247,15 @@ comultiplication.
     open is-coproduct
     coprod : Coproduct C A B
     coprod .coapex = apex
-    coprod .in₀ = ⟨ id , 0m ⟩
-    coprod .in₁ = ⟨ 0m , id ⟩
+    coprod .ι₁ = ⟨ id , 0m ⟩
+    coprod .ι₂ = ⟨ 0m , id ⟩
     coprod .has-is-coproduct .[_,_] f g = f ∘ π₁ + g ∘ π₂
-    coprod .has-is-coproduct .in₀∘factor {inj0 = f} {g} =
+    coprod .has-is-coproduct .[]∘ι₁ {inj0 = f} {g} =
       (f ∘ π₁ + g ∘ π₂) ∘ ⟨ id , 0m ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
       (f ∘ π₁) ∘ ⟨ id , 0m ⟩ + _      ≡⟨ Hom.elimr (pullr π₂∘⟨⟩ ∙ ∘-zero-r) ⟩
       (f ∘ π₁) ∘ ⟨ id , 0m ⟩          ≡⟨ cancelr π₁∘⟨⟩ ⟩
       f                               ∎
-    coprod .has-is-coproduct .in₁∘factor {inj0 = f} {g} =
+    coprod .has-is-coproduct .[]∘ι₂ {inj0 = f} {g} =
       (f ∘ π₁ + g ∘ π₂) ∘ ⟨ 0m , id ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
       _ + (g ∘ π₂) ∘ ⟨ 0m , id ⟩      ≡⟨ Hom.eliml (pullr π₁∘⟨⟩ ∙ ∘-zero-r) ⟩
       (g ∘ π₂) ∘ ⟨ 0m , id ⟩          ≡⟨ cancelr π₂∘⟨⟩ ⟩
@@ -267,7 +267,7 @@ morphisms and the universal property of the product to establish the
 desired equation. Check it out:
 
 ```agda
-    coprod .has-is-coproduct .unique {inj0 = f} {g} other p q = sym $
+    coprod .has-is-coproduct .unique {inj0 = f} {g} {other} p q = sym $
       f ∘ π₁ + g ∘ π₂                                         ≡⟨ ap₂ _+_ (pushl (sym p)) (pushl (sym q)) ⟩
       (other ∘ ⟨ id , 0m ⟩ ∘ π₁) + (other ∘ ⟨ 0m , id ⟩ ∘ π₂) ≡⟨ ∘-linear-r _ _ _ ⟩
       other ∘ (⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂)           ≡⟨ elimr lemma ⟩
@@ -296,18 +296,18 @@ Thus every additive category is [[semiadditive|semiadditive category]].
     bp .Biproduct.biapex = A ⊗₀ B
     bp .Biproduct.π₁ = π₁
     bp .Biproduct.π₂ = π₂
-    bp .Biproduct.ι₁ = in₀
-    bp .Biproduct.ι₂ = in₁
+    bp .Biproduct.ι₁ = ι₁
+    bp .Biproduct.ι₂ = ι₂
     bp .Biproduct.has-is-biproduct .has-is-product = Prod.has-is-product
     bp .Biproduct.has-is-biproduct .has-is-coproduct = Coprod.has-is-coproduct
     bp .Biproduct.has-is-biproduct .πι₁ = π₁∘⟨⟩
     bp .Biproduct.has-is-biproduct .πι₂ = π₂∘⟨⟩
     bp .Biproduct.has-is-biproduct .ιπ-comm =
-      in₀ ∘ π₁ ∘ in₁ ∘ π₂ ≡⟨ refl⟩∘⟨ pulll π₁∘⟨⟩ ⟩
-      in₀ ∘ 0m ∘ π₂       ≡⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
-      0m                  ≡˘⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
-      in₁ ∘ 0m ∘ π₁       ≡˘⟨ refl⟩∘⟨ pulll π₂∘⟨⟩ ⟩
-      in₁ ∘ π₂ ∘ in₀ ∘ π₁ ∎
+      ι₁ ∘ π₁ ∘ ι₂ ∘ π₂ ≡⟨ refl⟩∘⟨ pulll π₁∘⟨⟩ ⟩
+      ι₁ ∘ 0m ∘ π₂      ≡⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+      0m                ≡˘⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+      ι₂ ∘ 0m ∘ π₁      ≡˘⟨ refl⟩∘⟨ pulll π₂∘⟨⟩ ⟩
+      ι₂ ∘ π₂ ∘ ι₁ ∘ π₁ ∎
 
   open is-semiadditive additive→semiadditive hiding (∘-linear-l; ∘-linear-r)
 ```
@@ -360,7 +360,7 @@ module _ {o ℓ} (C : Precategory o ℓ) (semiadditive : is-semiadditive C) wher
     ab .Ab-category.∘-linear-r _ _ _ = ∘-linear-r
 
   semiadditive+group→additive inv invl .is-additive.has-terminal = terminal
-  semiadditive+group→additive inv invl .is-additive.has-prods _ _ = biproduct.product
+  semiadditive+group→additive inv invl .is-additive.has-prods _ _ = Biprod.product
 ```
 
 ## Pre-abelian & abelian categories {defines="pre-abelian-category abelian-category"}

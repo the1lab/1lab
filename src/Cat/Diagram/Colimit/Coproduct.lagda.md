@@ -59,9 +59,9 @@ is-coproduct→is-colimit {x = x} {F} {eta} coprod =
     mc .ψ j = eta .η j
     mc .commutes f = eta .is-natural _ _ _ ∙ idl _
     mc .universal eta _ = coprod.[ eta true , eta false ]
-    mc .factors {true} eta _ = coprod.in₀∘factor
-    mc .factors {false} eta _ = coprod.in₁∘factor
-    mc .unique eta p other q = coprod.unique other (q true) (q false)
+    mc .factors {true} eta _ = coprod.[]∘ι₁
+    mc .factors {false} eta _ = coprod.[]∘ι₂
+    mc .unique eta p other q = coprod.unique (q true) (q false)
 
 is-colimit→is-coproduct
   : ∀ {a b} {K : Functor ⊤Cat C}
@@ -91,9 +91,9 @@ is-colimit→is-coproduct {a} {b} {K} {eta} colim = coprod where
 
   coprod : is-coproduct C (eta .η true) (eta .η false)
   coprod .[_,_] f g = colim.universal (copair f g) copair-commutes
-  coprod .in₀∘factor {_} {p1'} {p2'} = colim.factors (copair p1' p2') copair-commutes
-  coprod .in₁∘factor {_} {p1'} {p2'} = colim.factors (copair p1' p2') copair-commutes
-  coprod .unique other p q = colim.unique _ _ other λ where
+  coprod .[]∘ι₁ {_} {p1'} {p2'} = colim.factors (copair p1' p2') copair-commutes
+  coprod .[]∘ι₂ {_} {p1'} {p2'} = colim.factors (copair p1' p2') copair-commutes
+  coprod .unique p q = colim.unique _ _ _ λ where
     true → p
     false → q
 
@@ -102,8 +102,8 @@ Coproduct→Colimit coprod = to-colimit (is-coproduct→is-colimit {eta = 2-obje
 
 Colimit→Coproduct : ∀ {a b} → Colimit (2-object-diagram a b) → Coproduct C a b
 Colimit→Coproduct colim .coapex = Colimit.coapex colim
-Colimit→Coproduct colim .in₀ = Colimit.cocone colim .η true
-Colimit→Coproduct colim .in₁ = Colimit.cocone colim .η false
+Colimit→Coproduct colim .ι₁ = Colimit.cocone colim .η true
+Colimit→Coproduct colim .ι₂ = Colimit.cocone colim .η false
 Colimit→Coproduct colim .has-is-coproduct =
   is-colimit→is-coproduct (Colimit.has-colimit colim)
 ```

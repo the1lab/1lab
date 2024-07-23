@@ -132,7 +132,7 @@ $\langle \pi_1 , f' \rangle$ is, in fact, an inverse.
 
 ```agda
   cart .commutes m h' =
-    f' ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique _ (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
+    f' ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
     f' ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩                   ≡⟨ pulll (π₂-inv ⟨⟩-inv) ⟩
     π₂ ∘ ⟨ m ∘ π₁ , h' ⟩                                ≡⟨ π₂∘⟨⟩ ⟩
     h'                                                  ∎

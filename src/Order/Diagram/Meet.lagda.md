@@ -147,7 +147,7 @@ $\hom(x,y)$ a [[proposition]], then products in $\cC$ are simply meets.
   is-meet→product glb .π₂ = glb .is-meet.meet≤r
   is-meet→product glb .has-is-product .⟨_,_⟩ q<a q<b =
     glb .is-meet.greatest _ q<a q<b
-  is-meet→product glb .has-is-product .π₁∘factor = prop!
-  is-meet→product glb .has-is-product .π₂∘factor = prop!
-  is-meet→product glb .has-is-product .unique _ _ _ = prop!
+  is-meet→product glb .has-is-product .π₁∘⟨⟩ = prop!
+  is-meet→product glb .has-is-product .π₂∘⟨⟩ = prop!
+  is-meet→product glb .has-is-product .unique _ _ = prop!
 ```
