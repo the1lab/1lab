@@ -169,6 +169,7 @@ _ = よcov₁
 _ = yo-is-equiv
 _ = yo-naturalr
 _ = yo-naturall
+_ = constⁿ
 ```
 -->
 
@@ -181,7 +182,7 @@ _ = yo-naturall
 * Proposition 1.3.4: `_◆_`{.Agda}
 * Examples 1.3.6:
   * c. `よcov₁`{.Agda}
-  * d. `const-nt`{.Agda}
+  * d. `constⁿ`{.Agda}
 
 ### 1.4 Contravariant functors
 
@@ -348,14 +349,17 @@ _ = Hom[-,-]
 
 * Definition 1.10.1: `_^op`{.Agda}
 * Examples 1.10.3:
-  * a. `Hom[-,-]`
+  * a. `Hom[-,-]`{.Agda}
 
 ### 1.11 Exercises
 
 <!--
 ```agda
+_ = thin-functor
 _ = よ-preserves-mono
 _ = よcov-reverses-epi
+_ = Curry
+_ = Uncurry
 _ = has-section+monic→invertible
 ```
 -->
@@ -388,7 +392,6 @@ _ = Indexed-product-unique
   * 2. `Cartesian-monoidal`{.Agda}
 * Definition 2.1.4: `is-indexed-product`{.Agda}
 * Proposition 2.1.5: `Indexed-product-unique`{.Agda}
-* Examples 2.1.7:
 
 ## 2.2 Coproducts
 
@@ -440,6 +443,8 @@ _ = Pullback-unique
 _ = is-monic→pullback-is-monic
 _ = is-effective-epi.is-effective-epi→is-regular-epi
 _ = is-regular-epi→is-effective-epi
+_ = pasting-left→outer-is-pullback
+_ = Sets-pullbacks
 ```
 -->
 
@@ -529,7 +534,7 @@ _ = conservative-reflects-limits
 ### 2.11 Final functors
 
 ::: warning
-Borceux uses some outdated terminology here , and also uses a condition
+Borceux uses some outdated terminology here, and also uses a condition
 that is overly powerful. We opt to stick with the terminology from the
 nLab instead.
 :::
@@ -585,7 +590,7 @@ _ = Cone→cone
 -->
 
 * Exercise 2.17.3: 🚧 `Cone→cone`{.Agda}
-* Exercises 2.17.8: `extend-is-colimit`{.Adga}, `is-colimit-restrict`{.Agda}
+* Exercises 2.17.8: `extend-is-colimit`{.Agda}, `is-colimit-restrict`{.Agda}
 
 ## 3 Adjoint functors
 
@@ -641,10 +646,10 @@ _ = is-equivalence
 -->
 
 * Proposition 3.4.1:
-  (⇒). `is-reflective→counit-is-iso`{.Agda}
-  (⇐). `is-counit-iso→is-reflective`{.Agda}
+  * (⇒). `is-reflective→counit-is-iso`{.Agda}
+  * (⇐). `is-counit-iso→is-reflective`{.Agda}
 
-* Definition 3.4.4: `is-equivalence`{.Adga}
+* Definition 3.4.4: `is-equivalence`{.Agda}
 
 ### 3.5 Reflective subcategories
 
@@ -670,6 +675,7 @@ _ = left-adjoint→left-extension
 _ = is-initial-cocone→is-colimit
 _ = is-colimit→is-initial-cocone
 _ = is-colimit→is-initial-cocone
+_ = adjoint→is-lan-id
 _ = adjoint→is-absolute-lan
 ```
 -->
@@ -698,7 +704,7 @@ _ = Karoubi-is-completion
 
 * Exercise 3.9.2:
   * (⇒) `corepresentable→left-adjoint`{.Agda}
-  * (⇐) `right-adjoint→objectwise-rep`
+  * (⇐) `right-adjoint→objectwise-rep`{.Agda}
 * Exercise 3.9.3: `Karoubi-is-completion`{.Agda}
 
 ## 4 Generators and Projectives
@@ -789,8 +795,8 @@ _ = in-subcategory→orthogonal-to-ηs
 
 * Definition 5.4.1: `m⊥m`{.Agda}
 * Definition 5.4.2:
-  1. `m⊥o`
-  2. `o⊥m`
+  1. `m⊥o`{.Agda}
+  2. `o⊥m`{.Agda}
 * Proposition 5.4.3: `object-orthogonal-!-orthogonal`{.Agda}
 * Proposition 5.4.4:
   * 1.
@@ -804,6 +810,7 @@ _ = in-subcategory→orthogonal-to-ηs
 _ = is-factorisation-system
 _ = factorisation-essentially-unique
 _ = E-is-⊥M
+_ = in-intersection≃is-iso
 ```
 -->
 
@@ -923,6 +930,7 @@ _ = Outer-functor
 _ = _=>o_
 _ = Outer-functors
 _ = ConstO
+_ = const-nato
 ```
 -->
 
