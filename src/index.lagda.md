@@ -98,6 +98,9 @@ by enumerating each book's index:
   Theory: Univalent Foundations of Mathematics* [-@HoTT], which is also
   referred throughout the 1Lab as *the HoTT book*;
 
+* The [Borceux](Borceux.html) page correlates with the first volume
+  of the *Handbook of Categorical Algebra* [-@Borceux:vol1].
+
 * The [Elephant](Elephant.html) page correlates with Johnstone's
   *Sketches of an Elephant: A Topos Theory Compendium* [-@Elephant].
 
