@@ -165,6 +165,7 @@ _ = Const
 _ = _=>_
 _ = Cat[_,_]
 _ = _◆_
+_ = ◆-interchange
 _ = よcov₁
 _ = yo-is-equiv
 _ = yo-naturalr
@@ -180,6 +181,7 @@ _ = constⁿ
   * 2. `yo-naturalr`{.Agda}
   * 3. `yo-naturall`{.Agda}
 * Proposition 1.3.4: `_◆_`{.Agda}
+* Proposition 1.3.5: `◆-interchange`{.Agda}
 * Examples 1.3.6:
   * c. `よcov₁`{.Agda}
   * d. `constⁿ`{.Agda}
@@ -382,6 +384,7 @@ _ = Binary-products.swap-is-iso
 _ = Cartesian-monoidal
 _ = is-indexed-product
 _ = Indexed-product-unique
+_ = is-indexed-product-assoc
 ```
 -->
 
@@ -392,16 +395,21 @@ _ = Indexed-product-unique
   * 2. `Cartesian-monoidal`{.Agda}
 * Definition 2.1.4: `is-indexed-product`{.Agda}
 * Proposition 2.1.5: `Indexed-product-unique`{.Agda}
+* Proposition 2.1.6: `is-indexed-product-assoc`{.Agda}
 
 ## 2.2 Coproducts
 
 <!--
 ```agda
 _ = is-indexed-coproduct
+_ = is-indexed-coproduct→iso
+_ = is-indexed-coproduct-assoc
 ```
 -->
 
 * Definition 2.2.1: `is-indexed-coproduct`{.Agda}
+* Proposition 2.2.2: `is-indexed-coproduct→iso`{.Agda}
+* Proposition 2.2.3: `is-indexed-coproduct-assoc`{.Agda}
 
 ## 2.3 Initial and terminal objects
 
@@ -427,12 +435,18 @@ _ = Zero-group-is-zero
 <!--
 ```agda
 _ = is-equaliser
+_ = is-equaliser→iso
 _ = is-equaliser→is-monic
+_ = id-is-equaliser
+_ = equaliser+epi→invertible
 ```
 -->
 
 * Definition 2.4.1: `is-equaliser`{.Agda}
+* Proposition 2.4.2: `is-equaliser→iso`{.Agda}
 * Proposition 2.4.3: `is-equaliser→is-monic`{.Agda}
+* Proposition 2.4.4: `id-is-equaliser`{.Agda}
+* Proposition 2.4.5: `equaliser+epi→invertible`{.Agda}
 
 ## 2.5 Pullbacks, pushouts
 
@@ -441,6 +455,13 @@ _ = is-equaliser→is-monic
 _ = is-pullback
 _ = Pullback-unique
 _ = is-monic→pullback-is-monic
+_ = is-invertible→pullback-is-invertible
+_ = is-kernel-pair
+_ = is-kernel-pair→epil
+_ = is-kernel-pair→epir
+_ = monic→id-kernel-pair
+_ = id-kernel-pair→monic
+_ = same-kernel-pair→id-kernel-pair
 _ = is-effective-epi.is-effective-epi→is-regular-epi
 _ = is-regular-epi→is-effective-epi
 _ = pasting-left→outer-is-pullback
@@ -452,6 +473,13 @@ _ = Sets-pullbacks
 * Proposition 2.5.2: `Pullback-unique`{.Agda}
 * Proposition 2.5.3:
   * 1. `is-monic→pullback-is-monic`{.Agda}
+  * 2. `is-invertible→pullback-is-invertible`{.Agda}
+* Definition 2.5.4: `is-kernel-pair`{.Agda}
+* Proposition 2.5.5: `is-kernel-pair→epil`{.Agda}, `is-kernel-pair→epir`{.Agda}
+* Proposition 2.5.6:
+  * (1 ⇒ 2): `monic→id-kernel-pair`{.Agda}
+  * (2 ⇒ 1): `id-kernel-pair→monic`{.Agda}
+  * (3 ⇒ 2): `same-kernel-pair→id-kernel-pair`{.Agda}
 * Proposition 2.5.7: `is-effective-epi.is-effective-epi→is-regular-epi`{.Agda}
 * Proposition 2.5.8: `is-regular-epi→is-effective-epi`{.Agda}
 * Proposition 2.5.9:
