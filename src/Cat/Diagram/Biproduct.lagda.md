@@ -4,7 +4,6 @@ open import Algebra.Group.Ab
 
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Functor.Naturality
-open import Cat.Monoidal.Diagonals
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
@@ -34,7 +33,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 Recall that, in an [[$\Ab$-enriched category]], [[products]] and
 [[coproducts]] automatically coincide: these are called **biproducts**
-and written $A \oplus B$.
+and are written $A \oplus B$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -81,7 +80,10 @@ $$
       ι₁ : Hom A biapex
       ι₂ : Hom B biapex
       has-is-biproduct : is-biproduct π₁ π₂ ι₁ ι₂
+```
 
+<!--
+```agda
     open is-biproduct has-is-biproduct public
 
     product : Product C A B
@@ -99,6 +101,7 @@ $$
       hiding (ι₁; ι₂)
       renaming (unique₂ to []-unique₂)
 ```
+-->
 
 ## Semiadditive categories {defines="semiadditive-category"}
 
@@ -129,7 +132,6 @@ $\cC$ in *commutative monoids*!
     open Binary-coproducts C (λ _ _ → Biprod.coproduct)
 
     open Monoidal-category (Cartesian-monoidal (λ _ _ → Biprod.product) terminal) using (associator; module ⊗)
-    open Diagonals (Cartesian-diagonal (λ _ _ → Biprod.product) terminal) hiding (δ)
 ```
 -->
 
@@ -390,7 +392,7 @@ with respect to our defined addition.
       → f ∘ h +→ g ∘ h ≡ (f +→ g) ∘ h
     ∘-linear-l {f = f} {g} {h} =
       ∇ ∘ ((f ∘ h) ⊗₁ (g ∘ h)) ∘ δ ≡⟨ refl⟩∘⟨ ⊗.pushl refl ⟩
-      ∇ ∘ (f ⊗₁ g) ∘ (h ⊗₁ h) ∘ δ  ≡˘⟨ pullr (pullr (diagonals .is-natural _ _ _)) ⟩
+      ∇ ∘ (f ⊗₁ g) ∘ (h ⊗₁ h) ∘ δ  ≡˘⟨ pullr (pullr (δ-natural _ _ _)) ⟩
       (∇ ∘ (f ⊗₁ g) ∘ δ) ∘ h       ∎
 
     ∘-linear-r
@@ -408,8 +410,8 @@ instead of starting with an [[$\Ab$-enriched category]] and requiring
 finite (co)products, we can start with a semiadditive category and
 require that every $\hom$-monoid be a group.
 
-We provide a helpful way to construct a semiadditive category from a category
-with a [[zero object]], binary [[products]] and [[coproducts]]: it
+In order to *construct* a semiadditive category from a category
+with a [[zero object]], binary [[products]] and [[coproducts]], it
 suffices to require that the map $A + B \to A \times B$ defined by
 the matrix representation
 

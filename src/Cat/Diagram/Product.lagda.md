@@ -291,10 +291,40 @@ We also define a handful of common morphisms.
 
 <!--
 ```agda
+  δ-natural : is-natural-transformation Id (×-functor F∘ Cat⟨ Id , Id ⟩) λ _ → δ
+  δ-natural x y f = unique₂
+    (cancell π₁∘⟨⟩) (cancell π₂∘⟨⟩)
+    (pulll π₁∘⟨⟩ ∙ cancelr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
+
   swap-is-iso : ∀ {a b} → is-invertible (swap {a} {b})
   swap-is-iso = make-invertible swap
     (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
     (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+
+  swap-natural
+    : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
+    → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
+  swap-natural (f , g) =
+    (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
+    ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
+    ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
+    ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
+    swap ∘ (f ⊗₁ g)                       ∎
+
+  swap-δ : ∀ {A} → swap ∘ δ ≡ δ {A}
+  swap-δ = ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)
+
+  assoc-δ : ∀ {a} → ×-assoc ∘ (id ⊗₁ δ {a}) ∘ δ {a} ≡ (δ ⊗₁ id) ∘ δ
+  assoc-δ = unique₂
+    (pulll π₁∘⟨⟩ ∙ unique₂
+      (pulll π₁∘⟨⟩ ∙ pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₁∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+      (pulll (pulll π₁∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+      (pulll (pulll π₂∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+    ∙ pushl (sym π₁∘⟨⟩))
+    (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₂∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+    refl
+    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 
   by-π₁ : ∀ {f f' : Hom a b} {g g' : Hom a c} → ⟨ f , g ⟩ ≡ ⟨ f' , g' ⟩ → f ≡ f'
   by-π₁ p = sym π₁∘⟨⟩ ∙ ap (π₁ ∘_) p ∙ π₁∘⟨⟩
@@ -321,33 +351,10 @@ We also define a handful of common morphisms.
     → g ∘ is-invertible.inv ⟨⟩-inv ≡ π₂
   π₂-inv {f = f} {g = g} ⟨⟩-inv =
     pushl (sym π₂∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
-
-  swap-natural
-    : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
-    → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
-  swap-natural (f , g) =
-    (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
-    ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
-    ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
-    ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
-    swap ∘ (f ⊗₁ g)                       ∎
-
-  swap-δ : ∀ {A} → swap ∘ δ ≡ δ {A}
-  swap-δ = ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)
-
-  assoc-δ : ∀ {a} → ×-assoc ∘ (id ⊗₁ δ {a}) ∘ δ {a} ≡ (δ ⊗₁ id) ∘ δ
-  assoc-δ = unique₂
-    (pulll π₁∘⟨⟩ ∙ unique₂
-      (pulll π₁∘⟨⟩ ∙ pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
-      (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₁∘⟨⟩) ∙ pullr π₂∘⟨⟩)
-      (pulll (pulll π₁∘⟨⟩) ∙ pullr π₁∘⟨⟩)
-      (pulll (pulll π₂∘⟨⟩) ∙ pullr π₁∘⟨⟩)
-    ∙ pushl (sym π₁∘⟨⟩))
-    (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₂∘⟨⟩) ∙ pullr π₂∘⟨⟩)
-    refl
-    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 ```
 -->
+
+# Representability of products
 
 <!--
 ```agda
@@ -355,8 +362,6 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C
 ```
 -->
-
-## Representability of products
 
 The collection of maps into a product $a \times b$ is equivalent to
 the collection of pairs of maps into $a$ and $b$. The forward direction

@@ -159,6 +159,14 @@ module Binary-coproducts (all-coproducts : has-coproducts) where
 
   ⊕-assoc : ∀ {a b c} → Hom (a ⊕₀ (b ⊕₀ c)) ((a ⊕₀ b) ⊕₀ c)
   ⊕-assoc = [ ι₁ ∘ ι₁ , [ ι₁ ∘ ι₂ , ι₂ ] ]
+```
+
+<!--
+```agda
+  ∇-natural : is-natural-transformation (⊕-functor F∘ Cat⟨ Id , Id ⟩) Id λ _ → ∇
+  ∇-natural x y f = unique₂
+    (pullr []∘ι₁ ∙ cancell []∘ι₁) (pullr []∘ι₂ ∙ cancell []∘ι₂)
+    (cancelr []∘ι₁) (cancelr []∘ι₂)
 
   ∇-coswap : ∀ {a} → ∇ ∘ coswap ≡ ∇ {a}
   ∇-coswap = []-unique (pullr []∘ι₁ ∙ []∘ι₂) (pullr []∘ι₂ ∙ []∘ι₁)
@@ -168,12 +176,8 @@ module Binary-coproducts (all-coproducts : has-coproducts) where
     (pullr (pullr []∘ι₁) ∙ (refl⟩∘⟨ pulll []∘ι₁) ∙ pulll (pulll []∘ι₁) ∙ pullr []∘ι₁)
     (pullr (pullr []∘ι₂) ∙ []-unique
       (pullr (pullr []∘ι₁) ∙ extend-inner []∘ι₁ ∙ cancell []∘ι₁ ∙ []∘ι₂)
-      (pullr (pullr []∘ι₂) ∙ (refl⟩∘⟨ []∘ι₂) ∙ pulll []∘ι₂ ∙ idl _))
+      (pullr (pullr []∘ι₂) ∙ (refl⟩∘⟨ []∘ι₂) ∙ cancell []∘ι₂))
     (pullr []∘ι₁ ∙ pulll []∘ι₁)
-    (pullr []∘ι₂ ∙ pulll []∘ι₂ ∙ idl _)
-
-  ∇-natural : is-natural-transformation (⊕-functor F∘ Cat⟨ Id , Id ⟩) Id λ _ → ∇
-  ∇-natural x y f = unique₂
-    (pullr []∘ι₁ ∙ cancell []∘ι₁) (pullr []∘ι₂ ∙ cancell []∘ι₂)
-    (cancelr []∘ι₁) (cancelr []∘ι₂)
+    (pullr []∘ι₂ ∙ cancell []∘ι₂)
 ```
+-->
