@@ -135,7 +135,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 Let $\cJ, \cC$ be a categories such that $\cC$ has coproducts indexed
 by the objects and arrows of $\cC$, and let $F : \cJ \to \cC$ be a functor
-with a colimit $C$ in $\cC$. The canonical map $\coprod_{j : J} F(j) \to C$
+with a colimit $C$ in $\cC$. The canonical map $\coprod_{j : \cJ} F(j) \to C$
 is a regular epimorphism
 
 ```agda
@@ -167,7 +167,7 @@ module _ {o ℓ oj ℓj}
   indexed-coproduct→regular-epi : is-regular-epi C (∐Ob.match F.₀ ∐F.ψ)
 ```
 
-We start by constructing a pair of maps $p, q : \coprod_{f : \cJ(i,j)} F(i) \to \coprod_{j : J} F(j)$
+We start by constructing a pair of maps $p, q : \coprod_{f : \cJ(i,j)} F(i) \to \coprod_{j : \cJ} F(j)$
 via the universal property of $\coprod_{f : \cJ(i,j)} F(i)$.
 
 ```agda

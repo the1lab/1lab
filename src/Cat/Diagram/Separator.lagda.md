@@ -52,20 +52,20 @@ open _=>_
 # Separating objects
 
 One of key property of $\Sets$ is that we can demonstrate the equality of
-2 functions $f, g : A \to B$ by showing that they are equal pointwise.
+two functions $f, g : A \to B$ by showing that they are equal pointwise.
 Categorically, this is equivalent to saying that we can determine the
-equality of 2 morphisms $A \to B$ in $\Sets$ solely by looking at
+equality of two morphisms $A \to B$ in $\Sets$ solely by looking at
 global elements $\top \to A$. This is not the case for general categories
 equipped with a terminal object: the [[category of groups]] has a terminal
 object (the [[zero group]]), yet maps out of the zero group are
 unique^[In other words, the zero group is a [[zero object]].]! In light of
 this, we can generalize the role that $\top$ plays in $\Sets$ to obtain
-the a notion of separating object:
+the notion of separating object:
 
 :::{.definition #separating-object alias="separator"}
 A **separating object** or **separator** is an object $S : \cC$ that lets
 us determine equality of morphisms $f, g : \cC(A,B)$ solely by looking at
-the $S$-generalized elements of $A$. Expliclity, $S$ is a separator if:
+the $S$-generalized elements of $A$. Explicitly, $S$ is a separator if:
 - For every $f, g : \cC(A, B)$, if $f \circ e = g \circ e$ for every
   $e : \cC(S,A)$, then $f = g$.
 
@@ -114,18 +114,19 @@ separator-identity-system separate =
   set-identity-system (λ _ _ → hlevel 1) separate
 ```
 
-# Separating Families
+# Separating families
 
 Many categories lack a single separating object $S : \cC$, but do have a *family* of
-separating objects $S_i : I \to \cC$. The canonical is the category of presheaves:
-we cannot determine equality of natural transformations $\alpha, \beta : P \to Q$
-by looking at all maps $S \to P$ single $S$, but we *can* if we look at all
-maps $\yo(A) \to P$! This leads us to the following notion:
+separating objects $S_i : I \to \cC$. The canonical example is the category
+of presheaves: we cannot determine equality of natural transformations
+$\alpha, \beta : P \to Q$ by looking at all maps $S \to P$ for a single $S$,
+but we *can* if we look at all maps $\yo(A) \to P$! This leads us to the
+following notion:
 
 :::{.definition #separating-family}
-A **separating family** is a family of objects $S : I \to \cC$ such that:
-- For every $f, g : \cC(A, B)$, if $f \circ e_i = g \circ e_i$ for every
-  $i : I$ and every $e_i : \cC(S_i,A)$, then $f = g$.
+A **separating family** is a family of objects $S : I \to \cC$ such that
+for every $f, g : \cC(A, B)$, if $f \circ e_i = g \circ e_i$ for every
+$i : I$ and every $e_i : \cC(S_i,A)$, then $f = g$.
 :::
 
 ```agda
@@ -136,7 +137,7 @@ is-separating-family s =
   → f ≡ g
 ```
 
-Equivalently, an family $S_i : \cC$ of objects form a separating family if the hom
+Equivalently, a family $S_i : \cC$ of objects is a separating family if the hom
 functors $C(S_i, -)$ are [[jointly faithful]].
 
 ```agda
@@ -183,9 +184,9 @@ we can show that the universal map $\cC(S,X) \otimes X \to X$ out of the
 copower is an epimorphism.
 
 To see this, let $f, g : \cC(X, Y)$ such that
-$f \mathrm{match}(\lambda f. f) = f \circ \mathrm{match}(\lambda f. f)$;
+$f \circ \mathrm{match}(\lambda e. e) = g \circ \mathrm{match}(\lambda e. e)$;
 $S$ is a separating object, so it suffices to show that $f \circ e = g \circ e$
-for every generalized element $e : \cC(S, X)$. However, $e = \mathrm{match}(\lambda f. f) \circ \iota_e$,
+for every generalized element $e : \cC(S, X)$. However, $e = \mathrm{match}(\lambda e. e) \circ \iota_e$,
 which immediately gives us $f \circ e = g \circ e$ by our hypothesis.
 
 ```agda
@@ -219,8 +220,8 @@ $\gamma_{X}$ is an epi, so $f = g$.
       ∙ assoc _ _ _
 ```
 
-A similar result hold for separating families, but with: a family $S_i : \cC$
-is a separating family if and only if the canonical map
+A similar result holds for separating families, insofar that a family
+$S_i : \cC$ is a separating family if and only if the canonical map
 $\coprod_{\Sigma (i : I), \cC(S_i, X)} S_i \to X$ is an epimorphism.
 
 ```agda
@@ -281,7 +282,7 @@ equalisers+conservative→separator equalisers f∘-conservative {f = f} {g = g}
 ```
 
 Moreover, $\cC(S,-)$ is conservative, so it suffices to prove that
-precomposition of $e$ with an $S$-generalized element is an equalivalence.
+precomposition of $e$ with an $S$-generalized element is an equivalence.
 This follows immediately from the universal property of equalisers!
 
 ```agda
@@ -330,9 +331,10 @@ equalisers+jointly-conservative→separating-family
 Our next result lets us relate separating objects and separating families.
 Clearly, a separating object yields a separating family; when does the
 converse hold? One possible scenario is when:
+
 1. The separating family $S_i$ is indexed by a [[discrete]] type.
 2. $\cC$ has $I$-indexed coproducts.
-3. Every hom set $\cC(S_i, X)$ has a distinguished inhabitant.
+3. Every $\hom$-set $\cC(S_i, X)$ has a distinguished inhabitant.
 
 ```agda
 module _
@@ -422,6 +424,7 @@ notion of a **dense separating object**.
 :::{.definition #dense-separating-object alias="dense-separator"}
 An object $S : \cC$ **dense separating object** is a
 **dense separating object** or **dense separator** if:
+
 - For all $X, Y : \cC$, a function $\eta : \cC(S,X) \to \cC(S,Y)$ induces
   a morphism $u_{\eta} : \cC(X,Y)$; and
 - For every generalized element $e : \cC(S, X)$, $u_{\eta} \circ e = \eta e$; and
@@ -540,9 +543,10 @@ Next, we extend the notion of a dense separator to a family of objects.
 
 ::: {.definition #dense-separating-family}
 A family of objects $S_i : \cC$ is a **dense separating family** if:
+
 - functions $\eta : (i : I) \to \cC(S_i, X) \to \cC(S_i, y)$ with
-  $\eta i (f \circ g) = eta j f \circ g$ induce maps $u_{\eta} : \cC(X,Y)$; and
-- For every $e_i : \cC(S_i, X)$, $u_{\eta} \circ e_i = \eta i e_i$; and
+  $\eta_i (f \circ g) = \eta_j f \circ g$ induce maps $u_{\eta} : \cC(X,Y)$; and
+- For every $e_i : \cC(S_i, X)$, $u_{\eta} \circ e_i = \eta_i e_i$; and
 - The map $u_{f}$ is universal among all such maps.
 :::
 
@@ -626,7 +630,7 @@ by $S_i$ into $[\cC, \Sets]$
 ```
 
 We can also express this universality using the language of colimits.
-In particular, if $S\_i : I \to \cC$ is a dense separating family,
+In particular, if $S_i : I \to \cC$ is a dense separating family,
 then every object of $\cC$ can be expressed as a colimit over the
 diagram $\mathrm{Dom}_{X} : S_i \downarrow X \to \cC$ that takes a map
 $\cC(S_i, X)$ to its domain.

@@ -43,7 +43,7 @@ private variable
 
 Recall that a [[separating object]] $S$ lets us determine equality of
 morphisms solely by examining $S$-generalized objects. This leads to
-the a natural question: what other properties of morphisms can we compute
+a natural question: what other properties of morphisms can we compute
 like this? In our case: can we determine if a map $f : \cC(X,Y)$ is
 [[invertible]] by restricting to generalized objects? Generally speaking,
 the answer is no, but it is possible if we strengthen our notion of
@@ -174,7 +174,7 @@ lex+extremal-separating-family→strong-separating-family Idx sᵢ lex extremal 
 
 ## Functorial definitions
 
-We shall now prover our claim that a strong separator $S$ allows us to
+We shall now prove our claim that a strong separator $S$ allows us to
 distinguish invertible morphisms purely by checking invertibility at
 $S$-generalized elements. More precisely, if $S$ is a strong separator,
 then $\cC(S,-)$ is [[conservative]].

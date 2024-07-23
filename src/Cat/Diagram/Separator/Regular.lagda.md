@@ -66,13 +66,13 @@ is-regular-separating-family Idx sᵢ =
 ```
 
 To motivate this definition, note that [[dense separators]] are extremely
-rare, as it imposes a strong discreteness condition on $\cC$. Instead, it
+rare, as they impose a strong discreteness condition on $\cC$. Instead, it
 is slightly more reasonable to assume that every object of $\cC$ arises
-via some *quotient* of a bunch of points. It this intuition is what regular
+via some *quotient* of a bunch of points. This intuition is what regular
 separators codify.
 
 As the name suggests, regular separators and regular separating families
-are separators and separating families, resp. This follows directly
+are separators and separating families, respectively. This follows directly
 from the fact that regular epis are epis.
 
 ```agda
