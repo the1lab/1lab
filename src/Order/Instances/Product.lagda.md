@@ -88,9 +88,9 @@ Posets-has-products P Q .apex = P ×ᵖ Q
 Posets-has-products P Q .π₁ = fstᵖ
 Posets-has-products P Q .π₂ = sndᵖ
 Posets-has-products P Q .has-is-product .⟨_,_⟩     = pairᵖ
-Posets-has-products P Q .has-is-product .π₁∘factor = trivial!
-Posets-has-products P Q .has-is-product .π₂∘factor = trivial!
-Posets-has-products P Q .has-is-product .unique other α β =
+Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = trivial!
+Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = trivial!
+Posets-has-products P Q .has-is-product .unique α β =
   ext λ x → α #ₚ x , β #ₚ x
 ```
 

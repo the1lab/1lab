@@ -493,7 +493,7 @@ but keep in mind that they are not commented.
 
 ∘-rel-idr f = Sub-antisym fid≤f f≤fid where
   fid≤f : ∘-rel f id-rel ≤ₘ f
-  fid≤f = Im-universal _ _ {e = ∘-rel.inter f id-rel .p₂} $ sym $ ⟨⟩-unique _
+  fid≤f = Im-universal _ _ {e = ∘-rel.inter f id-rel .p₂} $ sym $ ⟨⟩-unique
     (sym (∘-rel.inter f id-rel .square ∙ sym (assoc _ _ _)) ∙ eliml π₂∘⟨⟩ ∙ introl π₁∘⟨⟩)
     (assoc _ _ _)
 
@@ -501,13 +501,13 @@ but keep in mind that they are not commented.
   f≤fid .map = factor _ .mediate ∘
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
-  f≤fid .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique _
+  f≤fid .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
     (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter _ _ .p₁∘universal))
     (sym (pullr (∘-rel.inter _ _ .p₂∘universal) ∙ idr _))))
 
 ∘-rel-idl f = Sub-antisym idf≤f f≤idf where
   idf≤f : ∘-rel id-rel f ≤ₘ f
-  idf≤f = Im-universal _ _ {e = ∘-rel.inter id-rel f .p₁} $ sym $ ⟨⟩-unique _
+  idf≤f = Im-universal _ _ {e = ∘-rel.inter id-rel f .p₁} $ sym $ ⟨⟩-unique
     (assoc _ _ _)
     (assoc _ _ _ ∙ ∘-rel.inter id-rel f .square ∙ eliml π₁∘⟨⟩ ∙ introl π₂∘⟨⟩)
 
@@ -515,7 +515,7 @@ but keep in mind that they are not commented.
   f≤idf .map = factor _ .mediate ∘
     ∘-rel.inter id-rel f .universal {p₁' = id} {p₂' = Relation.tgt f}
       (idr _ ∙ sym (eliml π₁∘⟨⟩))
-  f≤idf .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique _
+  f≤idf .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
     (sym (pullr (∘-rel.inter id-rel f .p₁∘universal) ∙ idr _))
     (sym (pullr (∘-rel.inter id-rel f .p₂∘universal) ∙ eliml π₂∘⟨⟩))))
 

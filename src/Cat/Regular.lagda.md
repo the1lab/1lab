@@ -271,8 +271,8 @@ obtaining
         m = π₁ C.∘ mn
         n = π₂ C.∘ mn
         sq' : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
-        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
-                                               (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
+        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
+                                             (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
 ```
 
 We define a map $q : P \to R$ into the kernel pair of $a$, factoring
@@ -322,9 +322,9 @@ skip it.
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
           .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
-            ·· sym (⟨⟩-unique _ refl refl)
+            ·· sym (⟨⟩-unique refl refl)
           .p₂∘universal → π₁∘⟨⟩
-          .unique {p = p} {lim'} q r → ⟨⟩-unique _ r $ sym $
+          .unique {p = p} {lim'} q r → ⟨⟩-unique r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
 
         rem₃ : is-strong-epi 𝒞 (×-functor .F₁ (id , d))
@@ -333,9 +333,9 @@ skip it.
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
           .p₁∘universal {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
-            ·· sym (⟨⟩-unique _ refl p)
+            ·· sym (⟨⟩-unique refl p)
           .p₂∘universal → π₂∘⟨⟩
-          .unique {p = p} {lim'} q r → ⟨⟩-unique _
+          .unique {p = p} {lim'} q r → ⟨⟩-unique
             (sym (ap (π₁ ∘_) (sym q) ∙ pulll π₁∘⟨⟩ ∙ ap (_∘ lim') (idl _)))
             r
 
@@ -365,11 +365,11 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
         rem₈ : gh C.∘ k ≡ gh C.∘ l
         rem₈ =
-          gh ∘ k              ≡⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
+          gh ∘ k              ≡⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
           ⟨ g , h ⟩ ∘ k       ≡⟨ ⟨⟩∘ _ ⟩
           ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w' rem₇ ⟩
           ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
-          ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
+          ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
 ```
 
@@ -395,7 +395,7 @@ we do below.
 ```agda
       compute =
         (h ∘ g.from) ∘ f                           ≡⟨ pullr refl ∙ pullr refl ⟩
-        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨ refl ⟩
+        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique refl refl ⟩∘⟨ refl ⟩
         π₂ ∘ ⟨ g , h ⟩ ∘ g.from ∘ f                ≡⟨ refl⟩∘⟨ ⟨⟩∘ _ ⟩
         π₂ ∘ ⟨ g ∘ g.from ∘ f , h ∘ g.from ∘ f ⟩   ≡⟨ π₂∘⟨⟩ ⟩
         h ∘ g.from ∘ f                             ≡⟨ refl⟩∘⟨ g-ortho.p .centre .snd .fst ⟩

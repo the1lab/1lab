@@ -93,14 +93,14 @@ around products and pullbacks.
     has-is-monic _ _ $
     inclusion ∘ has-trans ∘ R×R.universal _  ≡⟨ unpair-trans _ ⟩
     ⟨ rel₁ ∘ f .ihom , rel₂ ∘ has-refl ∘ y ⟩ ≡⟨ ap₂ ⟨_,_⟩ (f .has-src) (pulll refl-p₂ ∙ idl _) ⟩
-    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique _ (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
+    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
     inclusion ∘ f .ihom                      ∎
   icat .has-internal-cat .idri {x = x} {y = y} f =
     Internal-hom-path $
     has-is-monic _ _ $
     inclusion ∘ has-trans ∘ R×R.universal _  ≡⟨ unpair-trans _ ⟩
     ⟨ rel₁ ∘ has-refl ∘ x , rel₂ ∘ f .ihom ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pulll refl-p₁ ∙ idl _) (f .has-tgt) ⟩
-    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique _ (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
+    ⟨ x , y ⟩                                ≡˘⟨ ⟨⟩-unique (assoc _ _ _ ∙ f .has-src) (assoc _ _ _ ∙ f .has-tgt) ⟩
     inclusion ∘ f .ihom ∎
   icat .has-internal-cat .associ {w = w} {x = x} {y = y} {z = z} f g h =
     Internal-hom-path $

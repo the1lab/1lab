@@ -259,9 +259,9 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
   prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
-  prod .has-is-product .π₁∘factor = trivial!
-  prod .has-is-product .π₂∘factor = trivial!
-  prod .has-is-product .unique other p q = ext λ x → p #ₚ x , q #ₚ x
+  prod .has-is-product .π₁∘⟨⟩ = trivial!
+  prod .has-is-product .π₂∘⟨⟩ = trivial!
+  prod .has-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 
 <!-- TODO [Amy 2022-09-15]

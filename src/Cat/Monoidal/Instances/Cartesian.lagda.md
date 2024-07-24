@@ -96,7 +96,7 @@ formal proof requires a _lot_ of calculation, however:
     ni .natural x y f =
       ⟨ f .fst ∘ π₁ , ⟨ f .snd .fst ∘ π₁ , f .snd .snd ∘ π₂ ⟩ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩     ≡⟨ products! C prods ⟩
       ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ (⟨ f .fst ∘ π₁ , f .snd .fst ∘ π₂ ⟩ ∘ π₁) , (f .snd .snd ∘ π₂) ⟩ ∎
-  Cartesian-monoidal .triangle = Product.unique (prods _ _) _
+  Cartesian-monoidal .triangle = Product.unique (prods _ _)
     (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₁∘⟨⟩ ∙ introl refl)
     (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl _)
   Cartesian-monoidal .pentagon =
@@ -111,16 +111,6 @@ categories]].
 ```agda
   Cartesian-symmetric : Symmetric-monoidal Cartesian-monoidal
   Cartesian-symmetric = to-symmetric-monoidal mk where
-    swap-natural
-      : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
-      → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
-    swap-natural (f , g) =
-      (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
-      ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
-      ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
-      ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
-      swap ∘ (f ⊗₁ g)                       ∎
-
     open make-symmetric-monoidal
     mk : make-symmetric-monoidal Cartesian-monoidal
     mk .has-braiding = iso→isoⁿ
@@ -134,7 +124,7 @@ We also have a system of [[diagonal morphisms|monoidal category with diagonals]]
 ```agda
   Cartesian-diagonal : Diagonals Cartesian-monoidal
   Cartesian-diagonal .diagonals ._=>_.η A = δ
-  Cartesian-diagonal .diagonals ._=>_.is-natural A B f = products! C prods
+  Cartesian-diagonal .diagonals ._=>_.is-natural = δ-natural
   Cartesian-diagonal .diagonal-λ→ = ap ⟨_, id ⟩ (sym (!-unique _))
 ```
 

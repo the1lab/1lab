@@ -132,10 +132,10 @@ finite cases:
     prod .apex .fst = prod' .apex
     prod .π₁ = prod' .π₁
     prod .π₂ = prod' .π₂
-    prod .has-is-product .⟨_,_⟩     = prod' .⟨_,_⟩
-    prod .has-is-product .π₁∘factor = prod' .π₁∘factor
-    prod .has-is-product .π₂∘factor = prod' .π₂∘factor
-    prod .has-is-product .unique    = prod' .unique
+    prod .has-is-product .⟨_,_⟩  = prod' .⟨_,_⟩
+    prod .has-is-product .π₁∘⟨⟩  = prod' .π₁∘⟨⟩
+    prod .has-is-product .π₂∘⟨⟩  = prod' .π₂∘⟨⟩
+    prod .has-is-product .unique = prod' .unique
 
     prod .apex .snd = is-sheaf-limit
       {F = 2-object-diagram _ _} {ψ = 2-object-nat-trans _ _}

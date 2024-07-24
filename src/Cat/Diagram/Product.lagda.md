@@ -64,12 +64,12 @@ the pairing $\langle f, g \rangle$ is a global element of the product $A
 ```agda
   record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ ℓ) where
     field
-      ⟨_,_⟩     : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
-      π₁∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
-      π₂∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
+      ⟨_,_⟩ : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
+      π₁∘⟨⟩ : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
+      π₂∘⟨⟩ : ∀ {Q} {p1 : Hom Q _} {p2} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
 
       unique : ∀ {Q} {p1 : Hom Q A} {p2}
-             → (other : Hom Q P)
+             → {other : Hom Q P}
              → π₁ ∘ other ≡ p1
              → π₂ ∘ other ≡ p2
              → other ≡ ⟨ p1 , p2 ⟩
@@ -78,14 +78,14 @@ the pairing $\langle f, g \rangle$ is a global element of the product $A
             → ∀ {o1} (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
             → ∀ {o2} (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
             → o1 ≡ o2
-    unique₂ p1 q1 p2 q2 = unique _ p1 q1 ∙ sym (unique _ p2 q2)
+    unique₂ p1 q1 p2 q2 = unique p1 q1 ∙ sym (unique p2 q2)
 
     ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
         → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
-    ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
+    ⟨⟩∘ f = unique (pulll π₁∘⟨⟩) (pulll π₂∘⟨⟩)
 
     ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
-    ⟨⟩-η = sym $ unique id (idr _) (idr _)
+    ⟨⟩-η = sym $ unique (idr _) (idr _)
 ```
 
 A product of $A$ and $B$ is an explicit choice of product diagram:
@@ -173,15 +173,15 @@ the projections.
       p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
       p1→p2→p1 =
         p2.unique₂
-          (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
-          (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
+          (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘⟨⟩ ·· p1.π₁∘⟨⟩)
+          (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘⟨⟩ ·· p1.π₂∘⟨⟩)
           (idr _) (idr _)
 
       p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
       p2→p1→p2 =
         p1.unique₂
-          (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
-          (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
+          (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘⟨⟩ ·· p2.π₁∘⟨⟩)
+          (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘⟨⟩ ·· p2.π₂∘⟨⟩)
           (idr _) (idr _)
 
   is-product-iso
@@ -198,11 +198,31 @@ the projections.
     open is-product
     prod' : is-product _ _ _
     prod' .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
-    prod' .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
-    prod' .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
-    prod' .unique other p q = prod .unique other
+    prod' .π₁∘⟨⟩ = pullr (prod .π₁∘⟨⟩) ∙ cancell fi.invl
+    prod' .π₂∘⟨⟩ = pullr (prod .π₂∘⟨⟩) ∙ cancell gi.invl
+    prod' .unique p q = prod .unique
       (sym (ap (_ ∘_) (sym p) ∙ pulll (cancell fi.invr)))
       (sym (ap (_ ∘_) (sym q) ∙ pulll (cancell gi.invr)))
+
+  is-product-iso-apex
+    : ∀ {A B P P'} {π₁ : Hom P A} {π₂ : Hom P B}
+        {π₁' : Hom P' A} {π₂' : Hom P' B}
+        {f : Hom P' P}
+    → is-invertible f
+    → π₁ ∘ f ≡ π₁'
+    → π₂ ∘ f ≡ π₂'
+    → is-product C π₁ π₂
+    → is-product C π₁' π₂'
+  is-product-iso-apex {f = f} f-iso f-π₁ f-π₂ prod = prod' where
+    module fi = is-invertible f-iso
+
+    open is-product
+    prod' : is-product _ _ _
+    prod' .⟨_,_⟩ qa qb = fi.inv ∘ prod .⟨_,_⟩ qa qb
+    prod' .π₁∘⟨⟩ = pulll (rswizzle (sym f-π₁) fi.invl) ∙ prod .π₁∘⟨⟩
+    prod' .π₂∘⟨⟩ = pulll (rswizzle (sym f-π₂) fi.invl) ∙ prod .π₂∘⟨⟩
+    prod' .unique p q = sym $ lswizzle
+      (sym (prod .unique (pulll f-π₁ ∙ p) (pulll f-π₂ ∙ q))) fi.invr
 ```
 
 # Categories with all binary products
@@ -226,7 +246,7 @@ module Binary-products
   module product {a} {b} = Product (all-products a b)
 
   open product renaming
-    (unique to ⟨⟩-unique; π₁∘factor to π₁∘⟨⟩; π₂∘factor to π₂∘⟨⟩) public
+    (unique to ⟨⟩-unique) public
   open Functor
 
   infixr 7 _⊗₀_
@@ -246,13 +266,12 @@ This operation extends to a bifunctor $\cC \times \cC \to \cC$.
   _⊗₁_ : ∀ {a b x y} → Hom a x → Hom b y → Hom (a ⊗₀ b) (x ⊗₀ y)
   f ⊗₁ g = ⟨ f ∘ π₁ , g ∘ π₂ ⟩
 
-
   ×-functor : Functor (C ×ᶜ C) C
   ×-functor .F₀ (a , b) = a ⊗₀ b
   ×-functor .F₁ (f , g) = f ⊗₁ g
-  ×-functor .F-id = sym $ ⟨⟩-unique id id-comm id-comm
+  ×-functor .F-id = sym $ ⟨⟩-unique id-comm id-comm
   ×-functor .F-∘ (f , g) (h , i) =
-    sym $ ⟨⟩-unique (f ⊗₁ g ∘ h ⊗₁ i)
+    sym $ ⟨⟩-unique
       (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩)
       (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)
 ```
@@ -265,14 +284,47 @@ We also define a handful of common morphisms.
 
   swap : Hom (a ⊗₀ b) (b ⊗₀ a)
   swap = ⟨ π₂ , π₁ ⟩
+
+  ×-assoc : Hom (a ⊗₀ (b ⊗₀ c)) ((a ⊗₀ b) ⊗₀ c)
+  ×-assoc = ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩
 ```
 
 <!--
 ```agda
+  δ-natural : is-natural-transformation Id (×-functor F∘ Cat⟨ Id , Id ⟩) λ _ → δ
+  δ-natural x y f = unique₂
+    (cancell π₁∘⟨⟩) (cancell π₂∘⟨⟩)
+    (pulll π₁∘⟨⟩ ∙ cancelr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
+
   swap-is-iso : ∀ {a b} → is-invertible (swap {a} {b})
   swap-is-iso = make-invertible swap
     (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
     (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+
+  swap-natural
+    : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
+    → (g ⊗₁ f) ∘ swap ≡ swap ∘ (f ⊗₁ g)
+  swap-natural (f , g) =
+    (g ⊗₁ f) ∘ swap                       ≡⟨ ⟨⟩∘ _ ⟩
+    ⟨ (g ∘ π₁) ∘ swap , (f ∘ π₂) ∘ swap ⟩ ≡⟨ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩) (pullr π₂∘⟨⟩) ⟩
+    ⟨ g ∘ π₂ , f ∘ π₁ ⟩                   ≡˘⟨ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ⟩
+    ⟨ π₂ ∘ (f ⊗₁ g) , π₁ ∘ (f ⊗₁ g) ⟩     ≡˘⟨ ⟨⟩∘ _ ⟩
+    swap ∘ (f ⊗₁ g)                       ∎
+
+  swap-δ : ∀ {A} → swap ∘ δ ≡ δ {A}
+  swap-δ = ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)
+
+  assoc-δ : ∀ {a} → ×-assoc ∘ (id ⊗₁ δ {a}) ∘ δ {a} ≡ (δ ⊗₁ id) ∘ δ
+  assoc-δ = unique₂
+    (pulll π₁∘⟨⟩ ∙ unique₂
+      (pulll π₁∘⟨⟩ ∙ pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₁∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+      (pulll (pulll π₁∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+      (pulll (pulll π₂∘⟨⟩) ∙ pullr π₁∘⟨⟩)
+    ∙ pushl (sym π₁∘⟨⟩))
+    (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₂∘⟨⟩) ∙ pullr π₂∘⟨⟩)
+    refl
+    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 
   by-π₁ : ∀ {f f' : Hom a b} {g g' : Hom a c} → ⟨ f , g ⟩ ≡ ⟨ f' , g' ⟩ → f ≡ f'
   by-π₁ p = sym π₁∘⟨⟩ ∙ ap (π₁ ∘_) p ∙ π₁∘⟨⟩
@@ -302,14 +354,14 @@ We also define a handful of common morphisms.
 ```
 -->
 
+# Representability of products
+
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C
 ```
 -->
-
-## Representability of products
 
 The collection of maps into a product $a \times b$ is equivalent to
 the collection of pairs of maps into $a$ and $b$. The forward direction
@@ -325,7 +377,7 @@ the reverse direction by the universal property of products.
   product-repr prod x = Iso→Equiv λ where
       .fst f → π₁ ∘ f , π₂ ∘ f
       .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
-      .snd .is-iso.rinv (f , g) → π₁∘factor ,ₚ π₂∘factor
+      .snd .is-iso.rinv (f , g) → π₁∘⟨⟩ ,ₚ π₂∘⟨⟩
       .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
     where open Product prod
 ```
