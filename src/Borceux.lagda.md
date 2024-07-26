@@ -21,8 +21,10 @@ open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Colimit.Universal
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Separator.Regular
 open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Sets.Cocomplete
+open import Cat.Diagram.Separator.Strong
 open import Cat.Instances.Functor.Limits
 open import Cat.CartesianClosed.Locally
 open import Cat.Diagram.Limit.Equaliser
@@ -62,6 +64,7 @@ open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Separator
 open import Cat.Instances.Functor
 open import Cat.Instances.Karoubi
 open import Cat.Instances.Product
@@ -83,13 +86,10 @@ open import Cat.Instances.Free
 open import Cat.Instances.Sets
 open import Cat.Diagram.Monad
 open import Cat.Functor.Final
+open import Cat.Functor.Joint
 open import Cat.Internal.Base
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
-open import Cat.Diagram.Separator
-open import Cat.Diagram.Separator.Strong
-open import Cat.Diagram.Separator.Regular
-open import Cat.Functor.Joint
 open import Cat.Morphism
 open import Cat.Bi.Base
 open import Cat.Prelude
