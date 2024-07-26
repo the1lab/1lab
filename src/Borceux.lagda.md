@@ -86,6 +86,10 @@ open import Cat.Functor.Final
 open import Cat.Internal.Base
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
+open import Cat.Diagram.Separator
+open import Cat.Diagram.Separator.Strong
+open import Cat.Diagram.Separator.Regular
+open import Cat.Functor.Joint
 open import Cat.Morphism
 open import Cat.Bi.Base
 open import Cat.Prelude
@@ -748,8 +752,8 @@ _ = Karoubi-is-completion
 _ = is-regular-epi
 _ = is-strong-epi
 _ = strong-epi-compose
-_ = strong-epi-cancel-l
-_ = strong-epi-mono→is-invertible
+_ = strong-epi-cancell
+_ = strong-epi+mono→is-invertible
 _ = is-regular-epi→is-strong-epi
 _ = is-strong-epi→is-extremal-epi
 _ = equaliser-lifts→is-strong-epi
@@ -772,6 +776,71 @@ _ = is-extremal-epi→is-strong-epi
 ### 4.4 Epi-mono factorizations
 
 ### 4.5 Generators
+
+<!--
+```agda
+_ = is-separating-family
+_ = is-separator
+_ = separating-family→epi
+_ = epi→separating-family
+_ = is-strong-separating-family
+_ = is-regular-separating-family
+_ = is-dense-separating-family
+_ = is-dense-separator
+_ = dense-separator→regular-separator
+_ = regular-separator→strong-separator
+_ = is-jointly-faithful
+_ = is-jointly-conservative
+_ = separating-family→jointly-faithful
+_ = jointly-faithful→separating-family
+_ = separator→faithful
+_ = faithful→separator
+_ = strong-separating-family→jointly-conservative
+_ = lex+jointly-conservative→strong-separating-family
+_ = strong-separator→conservative
+_ = lex+conservative→strong-separator
+_ = equalisers+jointly-conservative→separating-family
+_ = dense-separating-family→jointly-ff
+_ = jointly-ff→dense-separating-family
+_ = zero+separating-family→separator
+```
+-->
+
+* Definition 4.5.1:
+  * `is-separating-family`{.Agda}
+  * `is-separator`{.Agda}
+* Proposition 5.4.2:
+  * (⇒) `separating-family→epic`{.Agda}
+  * (⇐) `epic→separating-family`{.Agda}
+* Definition 4.5.3:
+  * `is-strong-separating-family`{.Agda}
+  * `is-regular-separating-family`{.Agda}
+* Definition 4.5.4:
+  * `is-dense-separating-family`{.Agda}
+  * `is-dense-separator`{.Agda}
+* Proposition 4.5.5:
+  * `dense-separator→regular-separator`{.Agda}
+  * `regular-separator→strong-separator`{.Agda}
+* Definition 4.5.7:
+  * `is-jointly-faithful`{.Agda}
+  * `is-jointly-conservative`{.Agda}
+* Proposition 4.5.8:
+  * (⇒) `separating-family→jointly-faithful`{.Agda}
+  * (⇐) `jointly-faithful→separating-family` {.Agda}
+* Proposition 4.5.9:
+  * (⇒) `separator→faithful`{.Agda}
+  * (⇐) `faithful→separator`{.Agda}
+* Proposition 4.5.10:
+  * (⇒) `strong-separating-family→jointly-conservative`{.Agda}
+  * (⇐) `lex+jointly-conservative→strong-separating-family`{.Agda}
+* Proposition 4.5.11:
+  * (⇒) `strong-separator→conservative`{.Agda}
+  * (⇐) `lex+conservative→strong-separator`{.Agda}
+* Proposition 4.5.12: `equalisers+jointly-conservative→separating-family`{.Agda}
+* Proposition 4.5.14
+  * (⇒) `dense-separating-family→jointly-ff`{.Agda}
+  * (⇐) `jointly-ff→dense-separating-family`{.Agda}
+* Proposition 4.5.16: `zero+separating-family→separator`{.Agda}
 
 ### 4.6 Projectives
 
