@@ -269,10 +269,11 @@ record Binary-products {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   product A B .Product.has-is-product .is-product.π₂∘⟨⟩ = π₂∘⟨⟩
   product A B .Product.has-is-product .is-product.unique = ⟨⟩-unique
 
-  module product {A} {B} = Product (product A B)
+  private module product {A} {B} = Product (product A B)
   open product
-    using (⟨⟩∘; ⟨⟩-η)
+    using (⟨⟩∘; ⟨⟩-η; has-is-product)
     renaming (unique₂ to ⟨⟩-unique₂)
+    public
 ```
 -->
 
@@ -370,6 +371,27 @@ We also define a handful of common morphisms.
     → g ∘ is-invertible.inv ⟨⟩-inv ≡ π₂
   π₂-inv {f = f} {g = g} ⟨⟩-inv =
     pushl (sym π₂∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
+```
+-->
+
+<!--
+```agda
+to-binary-products
+  : ∀ {o ℓ} {C : Precategory o ℓ}
+  → (∀ A B → Product C A B)
+  → Binary-products C
+to-binary-products {C = C} products = binary-products where
+  module product {A} {B} = Product (products A B)
+  open Binary-products hiding (product)
+
+  binary-products : Binary-products C
+  binary-products ._⊗₀_ A B = product.apex {A} {B}
+  binary-products .π₁ = product.π₁
+  binary-products .π₂ = product.π₂
+  binary-products .⟨_,_⟩ = product.⟨_,_⟩
+  binary-products .π₁∘⟨⟩ = product.π₁∘⟨⟩
+  binary-products .π₂∘⟨⟩ = product.π₂∘⟨⟩
+  binary-products .⟨⟩-unique = product.unique
 ```
 -->
 
