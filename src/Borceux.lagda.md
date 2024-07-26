@@ -59,6 +59,7 @@ open import Cat.Bi.Instances.Spans
 open import Cat.Diagram.Idempotent
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
+open import Cat.Diagram.Projective
 open import Cat.Functor.Hom.Yoneda
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
@@ -843,6 +844,10 @@ _ = zero+separating-family→separator
 * Proposition 4.5.16: `zero+separating-family→separator`{.Agda}
 
 ### 4.6 Projectives
+
+::: warning
+Borceux uses the term "projective" to refer to [[strong projectives]].
+:::
 
 ### 4.7 Injective cogenerators
 

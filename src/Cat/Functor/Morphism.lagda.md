@@ -28,7 +28,7 @@ module Cat.Functor.Morphism
 private
   module 𝒞 = Cat.Reasoning 𝒞
   module 𝒟 = Cat.Reasoning 𝒟
-open Cat.Functor.Reasoning F public
+open Cat.Functor.Reasoning F
 
 private variable
   A B C : 𝒞.Ob
@@ -42,6 +42,34 @@ private variable
 
 This module describes how various classes of functors act on designated
 collections of morphisms.
+
+First, some general definitions. Let $H$ be a collection of morphisms in $\cC$.
+A functor $F : \cC \to \cD$ **preserves** $H$-morphisms if $f \in H$ implies
+that $F(f) \in H$.
+
+```agda
+preserves-monos : Type _
+preserves-monos =
+  ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒞.is-monic f → 𝒟.is-monic (F₁ f)
+
+preserves-epis : Type _
+preserves-epis =
+  ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒞.is-epic f → 𝒟.is-epic (F₁ f)
+```
+
+Likewise, a functor $F : \cC \to \cD$ **reflects** $H$-morphisms
+if $F(f) \in H$ implies that $f \in H$.
+
+```agda
+reflects-monos : Type _
+reflects-monos =
+  ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒟.is-monic (F₁ f) → 𝒞.is-monic f
+
+reflects-epis : Type _
+reflects-epis =
+  ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒟.is-epic (F₁ f) → 𝒞.is-epic f
+```
+
 
 ## Faithful functors
 
