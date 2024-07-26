@@ -63,14 +63,14 @@ of identifications required to make the aforementioned square commute.
 ```agda
         universal : ∀ {Q} {i₁' : Hom Y Q} {i₂' : Hom Z Q}
                    → i₁' ∘ f ≡ i₂' ∘ g → Hom P Q
-        i₁∘universal : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₁ ≡ i₁'
-        i₂∘universal : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₂ ≡ i₂'
-  
+        universal∘i₁ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₁ ≡ i₁'
+        universal∘i₂ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₂ ≡ i₂'
+
         unique : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' : Hom P Q}
                → colim' ∘ i₁ ≡ i₁'
                → colim' ∘ i₂ ≡ i₂'
                → colim' ≡ universal p
-  
+
       unique₂
         : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' colim'' : Hom P Q}
         → colim' ∘ i₁ ≡ i₁' → colim' ∘ i₂ ≡ i₂'
@@ -89,6 +89,6 @@ maps:
       i₁       : Hom Y coapex
       i₂       : Hom Z coapex
       has-is-po  : is-pushout f i₁ g i₂
-  
+
     open is-pushout has-is-po public
 ```

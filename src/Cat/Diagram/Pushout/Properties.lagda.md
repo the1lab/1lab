@@ -41,12 +41,12 @@ $f : A \to B$ is an epimorphism iff. the square below is a pushout
     is-epic→is-pushout : is-epic f → is-pushout C f id f id
     is-epic→is-pushout epi .square = refl
     is-epic→is-pushout epi .universal {i₁' = i₁'} p = i₁'
-    is-epic→is-pushout epi .i₁∘universal = idr _
-    is-epic→is-pushout epi .i₂∘universal {p = p} = idr _ ∙ epi _ _ p
+    is-epic→is-pushout epi .universal∘i₁ = idr _
+    is-epic→is-pushout epi .universal∘i₂ {p = p} = idr _ ∙ epi _ _ p
     is-epic→is-pushout epi .unique p q = intror refl ∙ p
   
     is-pushout→is-epic : is-pushout C f id f id → is-epic f
-    is-pushout→is-epic pb g h p = sym (pb .i₁∘universal {p = p}) ∙ pb .i₂∘universal
+    is-pushout→is-epic pb g h p = sym (pb .universal∘i₁ {p = p}) ∙ pb .universal∘i₂
 ```
 
 Pushout additionally preserve epimorphisms, as shown below:

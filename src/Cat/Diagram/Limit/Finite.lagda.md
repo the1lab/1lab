@@ -193,15 +193,15 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 ```agda
     pb .universal {p₁' = p₁'} {p₂' = p₂'} p =
       eq.universal {e' = pr.⟨ p₁' , p₂' ⟩} (
-        (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘factor ⟩
+        (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘⟨⟩ ⟩
         f ∘ p₁'                     ≡⟨ p ⟩
-        g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘factor ⟩
+        g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘⟨⟩ ⟩
         (g ∘ p2) ∘ pr.⟨ p₁' , p₂' ⟩ ∎
       )
-    pb .p₁∘universal = pullr eq.factors ∙ pr.π₁∘factor
-    pb .p₂∘universal = pullr eq.factors ∙ pr.π₂∘factor
+    pb .p₁∘universal = pullr eq.factors ∙ pr.π₁∘⟨⟩
+    pb .p₂∘universal = pullr eq.factors ∙ pr.π₂∘⟨⟩
     pb .unique p q =
-      eq.unique ((pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
+      eq.unique (pr.unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
 ```
 
 Hence, assuming that a category has a terminal object, binary products
@@ -280,9 +280,9 @@ object $*$.
     prod : is-product C p1 p2
     prod .is-product.⟨_,_⟩ p1' p2' =
       Pb.universal {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
-    prod .is-product.π₁∘factor = Pb.p₁∘universal
-    prod .is-product.π₂∘factor = Pb.p₂∘universal
-    prod .is-product.unique other p q = Pb.unique p q
+    prod .is-product.π₁∘⟨⟩ = Pb.p₁∘universal
+    prod .is-product.π₂∘⟨⟩ = Pb.p₂∘universal
+    prod .is-product.unique p q = Pb.unique p q
 
   with-pullbacks
     : Terminal C
@@ -351,11 +351,11 @@ conclude that $f \circ \rm{equ} = g \circ \rm{equ}$.
       eq .apex = Pb.apex
       eq .equ = Pb.p₂
       eq .has-is-eq .equal =
-        f ∘ Pb.p₂               ≡˘⟨ pulll Bb.π₁∘factor ⟩
+        f ∘ Pb.p₂               ≡˘⟨ pulll Bb.π₁∘⟨⟩ ⟩
         Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ ap (Bb.π₁ ∘_) (sym Pb.square) ⟩
-        Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ pulll Bb.π₁∘factor ∙ sym (pulll Bb.π₂∘factor) ⟩
+        Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ pulll Bb.π₁∘⟨⟩ ∙ sym (pulll Bb.π₂∘⟨⟩) ⟩
         Bb.π₂ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ ap (Bb.π₂ ∘_) Pb.square ⟩
-        Bb.π₂ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ pulll Bb.π₂∘factor ⟩
+        Bb.π₂ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ pulll Bb.π₂∘⟨⟩ ⟩
         g ∘ Pb.p₂               ∎
 ```
 
@@ -391,15 +391,15 @@ is indeed the equaliser of $f$ and $g$.
         where
           p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e'
           p1 =
-            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₁∘factor ⟩
-            f ∘ e'                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
+            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₁∘⟨⟩ ⟩
+            f ∘ e'                     ≡˘⟨ pulll Bb.π₁∘⟨⟩ ⟩
             Bb.π₁ ∘ ⟨f,g⟩ ∘ e'         ∎
 
           p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e'
           p2 =
-            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₂∘factor ⟩
+            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₂∘⟨⟩ ⟩
             f ∘ e'                     ≡⟨ p ⟩
-            g ∘ e'                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
+            g ∘ e'                     ≡˘⟨ pulll Bb.π₂∘⟨⟩ ⟩
             Bb.π₂ ∘ ⟨f,g⟩ ∘ e'         ∎
 
       eq .has-is-eq .factors = Pb.p₂∘universal
@@ -408,10 +408,10 @@ is indeed the equaliser of $f$ and $g$.
         where
           path : Pb.p₁ ∘ other ≡ f ∘ e'
           path =
-            Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘factor ⟩
+            Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘⟨⟩ ⟩
             Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ other ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
             Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e') ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'              ≡⟨ pulll Bb.π₁∘factor ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'              ≡⟨ pulll Bb.π₁∘⟨⟩ ⟩
             f ∘ e'                          ∎
 ```
 
@@ -435,9 +435,9 @@ Putting it all together into a record we get our proof of finite completeness:
     pb : is-pullback C _ _ _ _
     pb .square = is-contr→is-prop (t _) _ _
     pb .universal _ = r .is-product.⟨_,_⟩ _ _
-    pb .p₁∘universal = r .is-product.π₁∘factor
-    pb .p₂∘universal = r .is-product.π₂∘factor
-    pb .unique p q = r .is-product.unique _ p q
+    pb .p₁∘universal = r .is-product.π₁∘⟨⟩
+    pb .p₂∘universal = r .is-product.π₂∘⟨⟩
+    pb .unique p q = r .is-product.unique p q
 
   is-complete→finitely
     : ∀ {a b} → is-complete a b C → Finitely-complete

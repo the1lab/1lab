@@ -181,12 +181,12 @@ Coproducts are given by disjoint sums:
 ```agda
   Sets-coproducts : (A B : Set ℓ) → Coproduct (Sets ℓ) A B
   Sets-coproducts A B .coapex = el! (∣ A ∣ ⊎ ∣ B ∣)
-  Sets-coproducts A B .in₀ = inl
-  Sets-coproducts A B .in₁ = inr
+  Sets-coproducts A B .ι₁ = inl
+  Sets-coproducts A B .ι₂ = inr
   Sets-coproducts A B .has-is-coproduct .is-coproduct.[_,_] f g = Data.Sum.[ f , g ]
-  Sets-coproducts A B .has-is-coproduct .in₀∘factor = refl
-  Sets-coproducts A B .has-is-coproduct .in₁∘factor = refl
-  Sets-coproducts A B .has-is-coproduct .unique o p q = sym ([]-unique (sym p) (sym q))
+  Sets-coproducts A B .has-is-coproduct .[]∘ι₁ = refl
+  Sets-coproducts A B .has-is-coproduct .[]∘ι₂ = refl
+  Sets-coproducts A B .has-is-coproduct .unique p q = sym ([]-unique (sym p) (sym q))
 ```
 
 [[Set coequalisers]] are described in their own module.
@@ -214,8 +214,8 @@ Pushouts are similar to coequalisers, but gluing together points of $A + B$.
   Sets-pushouts f g .has-is-po .square = ext λ x → glue _
   Sets-pushouts f g .has-is-po .universal {i₁' = i₁'} {i₂'} p =
     Coeq-rec Data.Sum.[ i₁' , i₂' ] (unext p)
-  Sets-pushouts f g .has-is-po .i₁∘universal = refl
-  Sets-pushouts f g .has-is-po .i₂∘universal = refl
+  Sets-pushouts f g .has-is-po .universal∘i₁ = refl
+  Sets-pushouts f g .has-is-po .universal∘i₂ = refl
   Sets-pushouts f g .has-is-po .unique q r =
     ext (Equiv.from ⊎-universal (unext q , unext r))
 ```

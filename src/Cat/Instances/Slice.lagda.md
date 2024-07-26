@@ -394,9 +394,9 @@ product in $\cC/c.$
 
 <!--
 ```agda
-    is-pullback→is-fibre-product .π₁∘factor = ext pb.p₁∘universal
-    is-pullback→is-fibre-product .π₂∘factor = ext pb.p₂∘universal
-    is-pullback→is-fibre-product .unique other p q =
+    is-pullback→is-fibre-product .π₁∘⟨⟩ = ext pb.p₁∘universal
+    is-pullback→is-fibre-product .π₂∘⟨⟩ = ext pb.p₂∘universal
+    is-pullback→is-fibre-product .unique p q =
       ext (pb.unique (ap map p) (ap map q))
 
   Pullback→Fibre-product
@@ -692,9 +692,9 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
   constant-family .F₀ A = cut (π₂ {a = A})
   constant-family .F₁ f .map      = ⟨ f ∘ π₁ , π₂ ⟩
   constant-family .F₁ f .commutes = π₂∘⟨⟩
-  constant-family .F-id    = ext (sym (⟨⟩-unique _ id-comm (idr _)))
+  constant-family .F-id    = ext (sym (⟨⟩-unique id-comm (idr _)))
   constant-family .F-∘ f g = ext $ sym $
-      ⟨⟩-unique _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
+      ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
 ```
 
 We can observe that this really is a _constant families_ functor by
@@ -726,13 +726,13 @@ the fibre over $h$ would correspondingly be isomorphic to $A \times \top
     → pb (constant-family .F₀ A .map) h .Pullback.apex ≅ (A ⊗₀ Y)
   constant-family-fibre pb {A} h = make-iso
     ⟨ π₁ ∘ p₁ , p₂ ⟩ (universal {p₁' = ⟨ π₁ , h ∘ π₂ ⟩} {p₂' = π₂} π₂∘⟨⟩)
-    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _) _
+    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _)
       (idr _ ∙ sym (pullr p₁∘universal ∙ π₁∘⟨⟩))
       (idr _ ∙ sym p₂∘universal)))
     (Pullback.unique₂ (pb _ _) {p = π₂∘⟨⟩ ∙ square}
       (pulll p₁∘universal ∙ ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₁∘⟨⟩ (pullr π₂∘⟨⟩ ∙ sym square))
       (pulll p₂∘universal ∙ π₂∘⟨⟩)
-      (idr _ ∙ Product.unique (prod _ _) _ refl refl)
+      (idr _ ∙ Product.unique (prod _ _) refl refl)
       (idr _))
     where open Pullback (pb (constant-family .F₀ A .map) h)
 ```

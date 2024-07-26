@@ -154,9 +154,9 @@ universal map $E \to a$ which commutes with "everything in sight":
       eq .universal {F = F} {e' = e'} p = reg.universal p' where
         p' : reg.arr₁ ∘ e' ≡ reg.arr₂ ∘ e'
         p' =
-          reg.arr₁ ∘ e'       ≡˘⟨ ap (_∘ e') f⊔f.i₁∘universal ⟩
+          reg.arr₁ ∘ e'       ≡˘⟨ ap (_∘ e') f⊔f.universal∘i₁ ⟩
           (phi ∘ f⊔f.i₁) ∘ e' ≡⟨ extendr p ⟩
-          (phi ∘ f⊔f.i₂) ∘ e' ≡⟨ ap (_∘ e') f⊔f.i₂∘universal ⟩
+          (phi ∘ f⊔f.i₂) ∘ e' ≡⟨ ap (_∘ e') f⊔f.universal∘i₂ ⟩
           reg.arr₂ ∘ e'       ∎
       eq .factors = reg.factors
       eq .unique = reg.unique

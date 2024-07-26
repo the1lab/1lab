@@ -126,15 +126,15 @@ of $in_0f$ and $in_1g$.
     po .square = sym (assoc _ _ _) ∙ cq.coequal ∙ assoc _ _ _
     po .universal {i₁' = i₁'} {i₂'} p =
       cq.universal {e' = cp.[ i₁' , i₂' ]} (
-        cp.[ i₁' , i₂' ] ∘ (in1 ∘ f) ≡⟨ pulll cp.in₀∘factor ⟩
+        cp.[ i₁' , i₂' ] ∘ (in1 ∘ f) ≡⟨ pulll cp.[]∘ι₁ ⟩
         i₁' ∘ f                      ≡⟨ p ⟩
-        i₂' ∘ g                      ≡˘⟨ pulll cp.in₁∘factor ⟩
+        i₂' ∘ g                      ≡˘⟨ pulll cp.[]∘ι₂ ⟩
         cp.[ i₁' , i₂' ] ∘ (in2 ∘ g) ∎
       )
-    po .i₁∘universal = pulll cq.factors ∙ cp.in₀∘factor
-    po .i₂∘universal = pulll cq.factors ∙ cp.in₁∘factor
+    po .universal∘i₁ = pulll cq.factors ∙ cp.[]∘ι₁
+    po .universal∘i₂ = pulll cq.factors ∙ cp.[]∘ι₂
     po .unique p q =
-      cq.unique ((cp.unique _ (sym (assoc _ _ _) ∙ p) (sym (assoc _ _ _) ∙ q)))
+      cq.unique ((cp.unique (sym (assoc _ _ _) ∙ p) (sym (assoc _ _ _) ∙ q)))
 ```
 
 Thus, if a category has an initial object, binary coproducts, and
@@ -153,7 +153,7 @@ binary coequalisers, it is finitely cocomplete.
     record { has-is-po = coproduct-coequaliser→pushout Copr.has-is-coproduct Coequ.has-is-coeq }
     where
       module Copr = Coproduct (copr A B)
-      module Coequ = Coequaliser (coeq (Copr.in₀ ∘ f) (Copr.in₁ ∘ g))
+      module Coequ = Coequaliser (coeq (Copr.ι₁ ∘ f) (Copr.ι₂ ∘ g))
 ```
 
 ## With pushouts
@@ -170,9 +170,9 @@ A coproduct is a pushout under a span whose vertex is the initial object.
       coprod : is-coproduct C in1 in2
       coprod .is-coproduct.[_,_] in1' in2' =
         Po.universal {i₁' = in1'} {i₂' = in2'} (is-contr→is-prop (init _) _ _)
-      coprod .is-coproduct.in₀∘factor = Po.i₁∘universal
-      coprod .is-coproduct.in₁∘factor = Po.i₂∘universal
-      coprod .is-coproduct.unique other p q = Po.unique p q
+      coprod .is-coproduct.[]∘ι₁ = Po.universal∘i₁
+      coprod .is-coproduct.[]∘ι₂ = Po.universal∘i₂
+      coprod .is-coproduct.unique p q = Po.unique p q
 
   with-pushouts
     : Initial C
@@ -225,38 +225,38 @@ limits]].
       coequ .coapex = Po.coapex
       coequ .coeq = Po.i₁
       coequ .has-is-coeq .coequal =
-        Po.i₁ ∘ f                 ≡˘⟨ ap (Po.i₁ ∘_) A+A.in₀∘factor ⟩
-        Po.i₁ ∘ [f,g] ∘ A+A.in₀   ≡⟨ assoc _ _ _ ∙ ap (_∘ A+A.in₀) Po.square ⟩
-        (Po.i₂ ∘ [id,id]) ∘ A+A.in₀ ≡⟨ sym (assoc _ _ _) ∙ pushr (A+A.in₀∘factor ∙ sym A+A.in₁∘factor) ⟩
-        (Po.i₂ ∘ [id,id]) ∘ A+A.in₁ ≡⟨ ap (_∘ A+A.in₁) (sym Po.square) ⟩
-        (Po.i₁ ∘ [f,g]) ∘ A+A.in₁   ≡⟨ sym (assoc _ _ _) ∙ ap (Po.i₁ ∘_) A+A.in₁∘factor ⟩
-        Po.i₁ ∘ g                 ∎
+        Po.i₁ ∘ f                  ≡˘⟨ ap (Po.i₁ ∘_) A+A.[]∘ι₁ ⟩
+        Po.i₁ ∘ [f,g] ∘ A+A.ι₁     ≡⟨ assoc _ _ _ ∙ ap (_∘ A+A.ι₁) Po.square ⟩
+        (Po.i₂ ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ sym (assoc _ _ _) ∙ pushr (A+A.[]∘ι₁ ∙ sym A+A.[]∘ι₂) ⟩
+        (Po.i₂ ∘ [id,id]) ∘ A+A.ι₂ ≡⟨ ap (_∘ A+A.ι₂) (sym Po.square) ⟩
+        (Po.i₁ ∘ [f,g]) ∘ A+A.ι₂   ≡⟨ sym (assoc _ _ _) ∙ ap (Po.i₁ ∘_) A+A.[]∘ι₂ ⟩
+        Po.i₁ ∘ g                  ∎
       coequ .has-is-coeq .universal {e' = e'} p =
-        Po.universal (A+A.unique₂ _ refl refl _ (in1) (in2))
+        Po.universal (A+A.unique₂ refl refl (in1) (in2))
         where
-          in1 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡ (e' ∘ [f,g]) ∘ A+A.in₀
+          in1 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₁ ≡ (e' ∘ [f,g]) ∘ A+A.ι₁
           in1 =
-            ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ cancelr A+A.in₀∘factor ⟩ -- ≡⟨ cancell A+A.in₀∘factor ⟩
-            e' ∘ f                     ≡˘⟨ pullr A+A.in₀∘factor ⟩ -- ≡˘⟨ pulll A+A.in₀∘factor ⟩
-            (e' ∘ [f,g]) ∘ A+A.in₀       ∎
+            ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ cancelr A+A.[]∘ι₁ ⟩ -- ≡⟨ cancell A+A.[]∘ι₁ ⟩
+            e' ∘ f                        ≡˘⟨ pullr A+A.[]∘ι₁ ⟩ -- ≡˘⟨ pulll A+A.[]∘ι₁ ⟩
+            (e' ∘ [f,g]) ∘ A+A.ι₁         ∎
 
-          in2 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₁ ≡ (e' ∘ [f,g]) ∘ A+A.in₁
+          in2 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₂ ≡ (e' ∘ [f,g]) ∘ A+A.ι₂
           in2 =
-            ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₁  ≡⟨ cancelr A+A.in₁∘factor ⟩
-            e' ∘ f                     ≡⟨ p ⟩
-            e' ∘ g                     ≡˘⟨ pullr A+A.in₁∘factor ⟩
-            (e' ∘ [f,g]) ∘ A+A.in₁        ∎
+            ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₂ ≡⟨ cancelr A+A.[]∘ι₂ ⟩
+            e' ∘ f                        ≡⟨ p ⟩
+            e' ∘ g                        ≡˘⟨ pullr A+A.[]∘ι₂ ⟩
+            (e' ∘ [f,g]) ∘ A+A.ι₂         ∎
 
-      coequ .has-is-coeq .factors = Po.i₁∘universal
+      coequ .has-is-coeq .factors = Po.universal∘i₁
       coequ .has-is-coeq .unique {F} {e' = e'} {colim = colim} e'=col∘i₁ =
         Po.unique e'=col∘i₁ path
         where
           path : colim ∘ Po.i₂ ≡ e' ∘ f
           path =
-            colim ∘ Po.i₂                         ≡⟨ insertr A+A.in₀∘factor ⟩
-            ((colim ∘ Po.i₂) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ ap (_∘ A+A.in₀) (extendr (sym Po.square)) ⟩
-            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.in₀   ≡⟨ ap (_∘ A+A.in₀) (ap (_∘ [f,g]) e'=col∘i₁) ⟩
-            (e' ∘ [f,g]) ∘ A+A.in₀                ≡⟨ pullr A+A.in₀∘factor ⟩
+            colim ∘ Po.i₂                        ≡⟨ insertr A+A.[]∘ι₁ ⟩
+            ((colim ∘ Po.i₂) ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ ap (_∘ A+A.ι₁) (extendr (sym Po.square)) ⟩
+            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.ι₁   ≡⟨ ap (_∘ A+A.ι₁) (ap (_∘ [f,g]) e'=col∘i₁) ⟩
+            (e' ∘ [f,g]) ∘ A+A.ι₁                ≡⟨ pullr A+A.[]∘ι₁ ⟩
             e' ∘ f           ∎
 
     fcc : Finitely-cocomplete
@@ -276,9 +276,9 @@ limits]].
     po : is-pushout C _ _ _ _
     po .square = is-contr→is-prop (i _) _ _
     po .universal _ = r .is-coproduct.[_,_] _ _
-    po .i₁∘universal = r .is-coproduct.in₀∘factor
-    po .i₂∘universal = r .is-coproduct.in₁∘factor
-    po .unique p q = r .is-coproduct.unique _ p q
+    po .universal∘i₁ = r .is-coproduct.[]∘ι₁
+    po .universal∘i₂ = r .is-coproduct.[]∘ι₂
+    po .unique p q = r .is-coproduct.unique p q
 ```
 -->
 

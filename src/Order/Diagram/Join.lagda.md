@@ -142,11 +142,11 @@ relation, the concept of join needs to be refined to that of coproduct.
 
   is-join→coproduct : ∀ {a b lub : Ob} → is-join P a b lub → Coproduct (poset→category P) a b
   is-join→coproduct lub .coapex = _
-  is-join→coproduct lub .in₀ = lub .is-join.l≤join
-  is-join→coproduct lub .in₁ = lub .is-join.r≤join
+  is-join→coproduct lub .ι₁ = lub .is-join.l≤join
+  is-join→coproduct lub .ι₂ = lub .is-join.r≤join
   is-join→coproduct lub .has-is-coproduct .[_,_] a<q b<q =
     lub .is-join.least _ a<q b<q
-  is-join→coproduct lub .has-is-coproduct .in₀∘factor = prop!
-  is-join→coproduct lub .has-is-coproduct .in₁∘factor = prop!
-  is-join→coproduct lub .has-is-coproduct .unique _ _ _ = prop!
+  is-join→coproduct lub .has-is-coproduct .[]∘ι₁ = prop!
+  is-join→coproduct lub .has-is-coproduct .[]∘ι₂ = prop!
+  is-join→coproduct lub .has-is-coproduct .unique _ _ = prop!
 ```

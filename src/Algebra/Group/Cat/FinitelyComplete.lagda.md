@@ -129,9 +129,9 @@ Direct-product-is-product {G} {H} = p where
   open is-product
   p : is-product _ _ _
   p .⟨_,_⟩ = factor
-  p .π₁∘factor = Grp↪Sets-is-faithful refl
-  p .π₂∘factor = Grp↪Sets-is-faithful refl
-  p .unique other p q = Grp↪Sets-is-faithful (funext λ x →
+  p .π₁∘⟨⟩ = Grp↪Sets-is-faithful refl
+  p .π₂∘⟨⟩ = Grp↪Sets-is-faithful refl
+  p .unique p q = Grp↪Sets-is-faithful (funext λ x →
     ap₂ _,_ (happly (ap hom p) x) (happly (ap hom q) x))
 ```
 

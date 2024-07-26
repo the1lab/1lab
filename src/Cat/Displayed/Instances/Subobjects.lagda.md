@@ -358,9 +358,9 @@ Sub-products {y} pb a b = prod where
     it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
     idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
-  prod .Product.has-is-product .is-product.π₁∘factor = prop!
-  prod .Product.has-is-product .is-product.π₂∘factor = prop!
-  prod .Product.has-is-product .is-product.unique _ _ _ = prop!
+  prod .Product.has-is-product .is-product.π₁∘⟨⟩ = prop!
+  prod .Product.has-is-product .is-product.π₂∘⟨⟩ = prop!
+  prod .Product.has-is-product .is-product.unique _ _ = prop!
 ```
 
 ## Univalence

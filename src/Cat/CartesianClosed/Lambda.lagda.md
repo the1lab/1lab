@@ -312,7 +312,7 @@ tag.
 ⟦⟧-∘ʳ (drop ρ) σ = pushl (⟦⟧-∘ʳ ρ σ)
 ⟦⟧-∘ʳ (keep ρ) stop = introl refl
 ⟦⟧-∘ʳ (keep ρ) (drop σ) = pushl (⟦⟧-∘ʳ ρ σ) ∙ sym (pullr π₁∘⟨⟩)
-⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (fp _ _) _
+⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (fp _ _)
   (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ pulll (sym (⟦⟧-∘ʳ ρ σ)))
   (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl _)
 
@@ -593,7 +593,7 @@ establishing that $\sem{\reify v} = h$ when $v$ tracks $h$.
 
 ```agda
 reifyᵖ-correct {τ = τ `× σ} (a , b) = sym $
-  Product.unique (fp _ _) _ (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
+  Product.unique (fp _ _) (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
 reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
   let
     p : ⟦ reifyᵖ (ν (drop stop) (reflectᵖ (var stop))) ⟧ₙ ≡ ev ∘ ⟨ h ∘ id ∘ π₁ , π₂ ⟩
@@ -611,7 +611,7 @@ reifyᵖ-correct {τ = ` x} d = d .snd
 
 ⟦⟧ˢ-correct : ∀ {Γ Δ h} (ρ : Subᵖ Γ Δ h) → ⟦ ρ ⟧ˢ ≡ h
 ⟦⟧ˢ-correct ∅       = Terminal.!-unique term _
-⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (fp _ _) _ (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
+⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (fp _ _) (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
 ```
 -->
 
@@ -643,7 +643,7 @@ baseᵖ {τ = τ `× τ₁} x c     =
     tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₁ ∘ x) c)
   , tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₂ ∘ x) c)
 
-baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
+baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
   (baseᵖ (ev ∘ ⟨ h ∘ π₁ , π₂ ⟩) (
     subᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-subᵖ ρ c), tyᵖ⟨ sym π₂∘⟨⟩ ⟩ a))
 
@@ -676,7 +676,7 @@ exprᵖ {h = h} (`λ f) ρ σ {m} a = tyᵖ⟨ fixup ⟩ (exprᵖ f
   where abstract
   fixup : ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡ ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩
   fixup = sym $
-    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· eliml refl)) ⟩
+    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· eliml refl)) ⟩
     ev ∘ ⟦ `λ f ⟧ᵉ ⊗₁ id ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡⟨ pulll (is-exponential.commutes has-is-exp _) ⟩
     ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩               ∎
 ```

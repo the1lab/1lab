@@ -103,9 +103,9 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     prod .has-is-product .⟨_,_⟩ f g =
       NT (λ i x → f .η i x , g .η i x) λ x y h i a →
         f .is-natural x y h i a , g .is-natural x y h i a
-    prod .has-is-product .π₁∘factor = trivial!
-    prod .has-is-product .π₂∘factor = trivial!
-    prod .has-is-product .unique h p q = ext λ i x → unext p i x , unext q i x
+    prod .has-is-product .π₁∘⟨⟩ = trivial!
+    prod .has-is-product .π₂∘⟨⟩ = trivial!
+    prod .has-is-product .unique p q = ext λ i x → unext p i x , unext q i x
 
   {-# TERMINATING #-}
   PSh-coproducts : (A B : PSh.Ob) → Coproduct (PSh κ C) A B
@@ -125,18 +125,18 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coprod .coapex .F-∘ f g = funext λ where
       (inl x) → ap inl (happly (A.F-∘ f g) x)
       (inr x) → ap inr (happly (B.F-∘ f g) x)
-    coprod .in₀ .η _ x = inl x
-    coprod .in₀ .is-natural x y f i a = inl (A.₁ f a)
-    coprod .in₁ .η _ x = inr x
-    coprod .in₁ .is-natural x y f i b = inr (B.₁ f b)
+    coprod .ι₁ .η _ x = inl x
+    coprod .ι₁ .is-natural x y f i a = inl (A.₁ f a)
+    coprod .ι₂ .η _ x = inr x
+    coprod .ι₂ .is-natural x y f i b = inr (B.₁ f b)
     coprod .has-is-coproduct .is-coproduct.[_,_] f g .η _ (inl x) = f .η _ x
     coprod .has-is-coproduct .is-coproduct.[_,_] f g .η _ (inr x) = g .η _ x
     coprod .has-is-coproduct .is-coproduct.[_,_] f g .is-natural x y h = funext λ where
       (inl x) → f .is-natural _ _ _ $ₚ _
       (inr x) → g .is-natural _ _ _ $ₚ _
-    coprod .has-is-coproduct .in₀∘factor = trivial!
-    coprod .has-is-coproduct .in₁∘factor = trivial!
-    coprod .has-is-coproduct .unique other p q = ext λ where
+    coprod .has-is-coproduct .[]∘ι₁ = trivial!
+    coprod .has-is-coproduct .[]∘ι₂ = trivial!
+    coprod .has-is-coproduct .unique p q = ext λ where
       a (inl x) → unext p a x
       a (inr x) → unext q a x
 

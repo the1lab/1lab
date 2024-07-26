@@ -52,8 +52,8 @@ $C\op$. We prove these correspondences here:
   is-co-product→is-coproduct isp =
     record
       { [_,_]      = isp.⟨_,_⟩
-      ; in₀∘factor = isp.π₁∘factor
-      ; in₁∘factor = isp.π₂∘factor
+      ; []∘ι₁ = isp.π₁∘⟨⟩
+      ; []∘ι₂ = isp.π₂∘⟨⟩
       ; unique     = isp.unique
       }
     where module isp = is-product isp
@@ -64,8 +64,8 @@ $C\op$. We prove these correspondences here:
   is-coproduct→is-co-product iscop =
     record
       { ⟨_,_⟩     = iscop.[_,_]
-      ; π₁∘factor = iscop.in₀∘factor
-      ; π₂∘factor = iscop.in₁∘factor
+      ; π₁∘⟨⟩ = iscop.[]∘ι₁
+      ; π₂∘⟨⟩ = iscop.[]∘ι₂
       ; unique    = iscop.unique
       }
     where module iscop = is-coproduct iscop
@@ -132,8 +132,8 @@ $C\op$. We prove these correspondences here:
     record
       { square = pb.square
       ; universal = pb.universal
-      ; i₁∘universal = pb.p₁∘universal
-      ; i₂∘universal = pb.p₂∘universal
+      ; universal∘i₁ = pb.p₁∘universal
+      ; universal∘i₂ = pb.p₂∘universal
       ; unique = pb.unique
       }
     where module pb = is-pullback pb
@@ -145,8 +145,8 @@ $C\op$. We prove these correspondences here:
     record
       { square      = po.square
       ; universal    = po.universal
-      ; p₁∘universal = po.i₁∘universal
-      ; p₂∘universal = po.i₂∘universal
+      ; p₁∘universal = po.universal∘i₁
+      ; p₂∘universal = po.universal∘i₂
       ; unique      = po.unique
       }
     where module po = is-pushout po

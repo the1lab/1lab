@@ -61,9 +61,9 @@ is-product→is-limit {x = x} {F} {eps} is-prod =
     ml .ψ j = eps .η j
     ml .commutes f = sym (eps .is-natural _ _ _) ∙ idr _
     ml .universal eps _ = is-prod.⟨ eps true , eps false ⟩
-    ml .factors {true} eps _ = is-prod.π₁∘factor
-    ml .factors {false} eps _ = is-prod.π₂∘factor
-    ml .unique eps p other q = is-prod.unique other (q true) (q false)
+    ml .factors {true} eps _ = is-prod.π₁∘⟨⟩
+    ml .factors {false} eps _ = is-prod.π₂∘⟨⟩
+    ml .unique eps p other q = is-prod.unique (q true) (q false)
 
 is-limit→is-product
   : ∀ {a b} {K : Functor ⊤Cat C}
@@ -93,9 +93,9 @@ is-limit→is-product {a} {b} {K} {eps} lim = prod where
 
   prod : is-product C (eps .η true) (eps .η false)
   prod .⟨_,_⟩ f g = lim.universal (pair f g) pair-commutes
-  prod .π₁∘factor {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
-  prod .π₂∘factor {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
-  prod .unique other p q = lim.unique _ _ other λ where
+  prod .π₁∘⟨⟩ {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
+  prod .π₂∘⟨⟩ {_} {p1'} {p2'} = lim.factors (pair p1' p2') pair-commutes
+  prod .unique {other = other} p q = lim.unique _ _ other λ where
     true → p
     false → q
 
