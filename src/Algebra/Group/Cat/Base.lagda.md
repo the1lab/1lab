@@ -23,7 +23,7 @@ import Cat.Reasoning as CR
 ```
 -->
 
-# The category of groups
+# The category of groups {defines="category-of-groups"}
 
 The category of groups, as the name implies, has its objects the
 `Groups`{.Agda ident=Group}, with the morphisms between them the `group
