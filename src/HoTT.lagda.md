@@ -58,6 +58,7 @@ open import Homotopy.Space.Circle
 open import Homotopy.Space.Sphere
 open import Homotopy.Space.Torus
 open import Homotopy.Truncation
+open import Homotopy.Pushout
 open import Homotopy.Wedge
 open import Homotopy.Base
 
@@ -603,6 +604,21 @@ _ = T²
 -->
 
 * The torus: `T²`{.Agda}.
+
+### 6.8: Pushouts
+<!--
+```agda
+_ = Pushout
+_ = cocone
+_ = Susp≡Pushout-⊤←A→⊤
+_ = Pushout→E≡coconeE 
+```
+-->
+
+* The pushout: `Pushout`{.Agda}
+* Definition 6.8.1: `cocone`{.Agda}
+* Lemma 6.8.2: `Pushout→E≡coconeE`{.Agda}
+* Observation: `Susp≡Pushout-⊤←A→⊤`{.Agda}
 
 ### 6.9: Truncations
 
