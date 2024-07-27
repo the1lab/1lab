@@ -47,6 +47,28 @@ only difference between these types can be patched by
     where module x = Sets._≅_ x
 ```
 
+<!--
+```agda
+  is-invertible→is-equiv
+    : {A B : Set ℓ} {f : ∣ A ∣ → ∣ B ∣}
+    → Sets.is-invertible {A} {B} f
+    → is-equiv f
+  is-invertible→is-equiv x =
+    is-iso→is-equiv $ iso x.inv (happly x.invl) (happly x.invr)
+    where module x = Sets.is-invertible x
+
+  is-equiv→is-invertible
+    : {A B : Set ℓ} {f : ∣ A ∣ → ∣ B ∣}
+    → is-equiv f
+    → Sets.is-invertible {A} {B} f
+  is-equiv→is-invertible f-eqv =
+    Sets.make-invertible
+      (equiv→inverse f-eqv)
+      (funext (equiv→counit f-eqv))
+      (funext (equiv→unit f-eqv))
+```
+-->
+
 Using univalence for $n$-types, function extensionality and the
 computation rule for univalence, it is almost trivial to show that
 categorical isomorphisms of sets are an [[identity system]].

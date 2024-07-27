@@ -1,9 +1,13 @@
 <!--
 ```agda
+open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Instances.Shape.Interval
+open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -20,7 +24,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-# Regular epimorphisms
+# Regular epimorphisms {defines="regular-epi regular-epimorphism"}
 
 [Dually] to [regular monomorphisms], which behave as _embeddings_,
 regular [epimorphisms] behave like _covers_: A regular epimorphism $f :
@@ -125,4 +129,90 @@ module _ {o ℓ} {C : Precategory o ℓ} where
         e' ∘ reg.arr₂                               ∎
     epi .has-is-coeq .factors = reg.factors
     epi .has-is-coeq .unique = reg.unique
+```
+
+# Existence of regular epis
+
+Let $\cJ, \cC$ be a categories such that $\cC$ has coproducts indexed
+by the objects and arrows of $\cC$, and let $F : \cJ \to \cC$ be a functor
+with a colimit $C$ in $\cC$. The canonical map $\coprod_{j : \cJ} F(j) \to C$
+is a regular epimorphism
+
+```agda
+module _ {o ℓ oj ℓj}
+  {C : Precategory o ℓ} {J : Precategory oj ℓj}
+  {F : Functor J C}
+  (∐Ob : has-coproducts-indexed-by C ⌞ J ⌟)
+  (∐Hom : has-coproducts-indexed-by C (Arrows J))
+  (∐F : Colimit F)
+  where
+```
+
+<!--
+```agda
+  private
+    module C = Cat.Reasoning C
+    module J = Cat.Reasoning J
+    module F = Cat.Functor.Reasoning F
+    module ∐Ob F = Indexed-coproduct (∐Ob F)
+    module ∐Hom F = Indexed-coproduct (∐Hom F)
+    module ∐F = Colimit ∐F
+
+  open is-regular-epi
+  open is-coequaliser
+```
+-->
+
+```agda
+  indexed-coproduct→regular-epi : is-regular-epi C (∐Ob.match F.₀ ∐F.ψ)
+```
+
+We start by constructing a pair of maps $p, q : \coprod_{f : \cJ(i,j)} F(i) \to \coprod_{j : \cJ} F(j)$
+via the universal property of $\coprod_{f : \cJ(i,j)} F(i)$.
+
+```agda
+  indexed-coproduct→regular-epi .r = ∐Hom.ΣF λ (i , j , f) → F.₀ i
+  indexed-coproduct→regular-epi .arr₁ = ∐Hom.match _ λ (i , j , f) → ∐Ob.ι F.₀ j C.∘ F.₁ f
+  indexed-coproduct→regular-epi .arr₂ = ∐Hom.match _ λ (i , j , f) → ∐Ob.ι F.₀ i
+```
+
+By some rather tedious calculations, we can show that $p$ and $q$
+coequalize $f$.
+
+```agda
+  indexed-coproduct→regular-epi .has-is-coeq .coequal =
+    ∐Hom.unique₂ _ λ (i , j , f) →
+    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (i , j , f) ≡⟨ C.pullr (∐Hom.commute _) ⟩
+    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ j C.∘ F.₁ f                       ≡⟨ C.pulll (∐Ob.commute _) ⟩
+    ∐F.ψ j C.∘ F.₁ f                                                 ≡⟨ ∐F.commutes f ⟩
+    ∐F.ψ i                                                           ≡˘⟨ ∐Ob.commute _ ⟩
+    ∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι _ i                                 ≡˘⟨ C.pullr (∐Hom.commute _) ⟩
+    (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Hom.match _ _) C.∘ ∐Hom.ι _ (i , j , f) ∎
+```
+
+Moreover, $p$ and $q$ form the universal such coequalizing pair. This
+follows by yet more brute-force calculation.
+
+```agda
+  indexed-coproduct→regular-epi .has-is-coeq .universal {e' = e'} p =
+    ∐F.universal (λ j → e' C.∘ ∐Ob.ι F.₀ j) comm
+    where abstract
+      comm
+        : ∀ {i j} (f : J.Hom i j)
+        → (e' C.∘ ∐Ob.ι F.₀ j) C.∘ F.₁ f ≡ e' C.∘ ∐Ob.ι F.₀ i
+      comm {i} {j} f =
+        (e' C.∘ ∐Ob.ι F.₀ j) C.∘ F.₁ f                   ≡⟨ C.pullr (sym (∐Hom.commute _)) ⟩
+        e' C.∘ (∐Hom.match _ _ C.∘ ∐Hom.ι _ (i , j , f)) ≡⟨ C.extendl p ⟩
+        e' C.∘ (∐Hom.match _ _ C.∘ ∐Hom.ι _ (i , j , f)) ≡⟨ ap₂ C._∘_ refl (∐Hom.commute _) ⟩
+        e' C.∘ ∐Ob.ι F.₀ i                               ∎
+  indexed-coproduct→regular-epi .has-is-coeq .factors {e' = e'} {p = p} =
+    ∐Ob.unique₂ F.₀ λ j →
+      (∐F.universal _ _ C.∘ ∐Ob.match F.₀ ∐F.ψ) C.∘ ∐Ob.ι F.₀ j ≡⟨ C.pullr (∐Ob.commute _) ⟩
+      ∐F.universal _ _ C.∘ ∐F.ψ j                               ≡⟨ ∐F.factors _ _ ⟩
+      e' C.∘ ∐Ob.ι F.₀ j                                        ∎
+  indexed-coproduct→regular-epi .has-is-coeq .unique {e' = e'} {colim = h} p =
+    ∐F.unique _ _ _ λ j →
+      h C.∘ ∐F.ψ j                               ≡˘⟨ ap₂ C._∘_ refl (∐Ob.commute _) ⟩
+      h C.∘ (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι F.₀ j) ≡⟨ C.pulll p ⟩
+      e' C.∘ ∐Ob.ι F.₀ j                         ∎
 ```

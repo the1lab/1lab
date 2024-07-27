@@ -42,7 +42,7 @@ _forced_ to do this since [right adjoints preserve limits].
 [underlying set]: Algebra.Group.Cat.Base.html#the-underlying-set
 [right adjoints preserve limits]: Cat.Functor.Adjoint.Continuous.html
 
-## The zero group
+## The zero group {defines="zero-group"}
 
 The zero object in the category of groups is given by the unit type,
 equipped with its unique group structure. Correspondingly, we may refer

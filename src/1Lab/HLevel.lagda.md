@@ -741,5 +741,15 @@ is-set→cast-pathp
   → PathP (λ i → P (q i)) px py
 is-set→cast-pathp {p = p} {q = q} P {px} {py} set  r =
   coe0→1 (λ i → PathP (λ j → P (set _ _ p q i j)) px py) r
+
+is-set→subst-refl
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {x : A}
+  → (P : A → Type ℓ')
+  → is-set A
+  → (p : x ≡ x)
+  → (px : P x)
+  → subst P p px ≡ px
+is-set→subst-refl {x = x} P set p px i =
+  transp (λ j → P (set x x p refl i j)) i px
 ```
 -->

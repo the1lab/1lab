@@ -173,3 +173,36 @@ module _ {P : C.Ob → Type ℓ} where
   Forget-full-subcat-is-ff : is-fully-faithful Forget-full-subcat
   Forget-full-subcat-is-ff = id-equiv
 ```
+
+## From families of objects
+
+Finally, we can construct a full subcategory by giving a family of
+objects $X_i : I \to Ob$ of $\cC$ by forming a modified version of
+$\cC$ whose objects have been replaced by elements of $I$.
+
+```agda
+module _ {ℓi} {Idx : Type ℓi} (Xᵢ : Idx → C.Ob) where
+  Family : Precategory ℓi h
+  Family .Ob = Idx
+  Family .Hom i j = C.Hom (Xᵢ i) (Xᵢ j)
+  Family .Hom-set _ _ = hlevel 2
+  Family .id = C.id
+  Family ._∘_ = C._∘_
+  Family .idr = C.idr
+  Family .idl = C.idl
+  Family .assoc = C.assoc
+```
+
+There is an evident functor from $X_i \to \cC$ that takes each $i$ to
+$X_i$.
+
+```agda
+  Forget-family : Functor Family C
+  Forget-family .Functor.F₀ = Xᵢ
+  Forget-family .Functor.F₁ f = f
+  Forget-family .Functor.F-id = refl
+  Forget-family .Functor.F-∘ _ _ = refl
+
+  Forget-family-ff : is-fully-faithful Forget-family
+  Forget-family-ff = id-equiv
+```
