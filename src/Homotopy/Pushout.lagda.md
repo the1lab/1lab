@@ -11,21 +11,21 @@ open import Homotopy.Space.Suspension
 module Homotopy.Pushout where
 ```
 
-# Pushouts {defines="pushout"}
+# Pushouts {defines="pushout cocone"}
 
 Given the following span:
 
 ~~~{.quiver}
-\begin{tikzpicture}
-\node[] (c) at (0, 0) {$C$};
-\node[] (a) at (0, -2) {$A$};
-\node[] (b) at (2, 0) {$B$};
-\draw[->] (c) -- (a) node[midway,xshift=-10]{${f}$};
-\draw[->] (c) -- (b) node[midway,above]{${g}$};
-\end{tikzpicture}
+\[\begin{tikzcd}
+  C && B \\
+  \\
+  A
+  \arrow["g", from=1-1, to=1-3]
+  \arrow["f"', from=1-1, to=3-1]
+\end{tikzcd}\]
 ~~~
 
-The `Pushout`{.Agda} of this span is defined as the higher inductive type
+The **Pushout** of this span is defined as the higher inductive type
 presented by:
 ```agda
 data Pushout {ℓ} (C : Type ℓ)
@@ -51,81 +51,80 @@ And, for every `c : C`, a path
 These combine to give the following:
 
 ~~~{.quiver}
-\begin{tikzpicture}
-\node[] (c) at (0, 0) {$C$};
-\node[] (a) at (0, -2) {$A$};
-\node[] (b) at (2, 0) {$B$};
-\node[] (d) at (2, -2) {$Push$};
-\draw[->] (c) -- (a) node[midway,xshift=-10]{${f}$};
-\draw[->] (c) -- (b) node[midway,above]{${g}$};
-\draw[->] (a) -- (d) node[midway,below]{$inl$};
-\draw[->] (b) -- (d) node[midway,right]{$inr$};
-
-\draw[->,shorten <=0.2cm,shorten >=0.2cm,very thick] (a) -- (b) node[midway,above left]{$h$};
-\end{tikzpicture}
+\[\begin{tikzcd}
+	C && B \\
+	\\
+	A && {\rm{Pushout}}
+	\arrow["g", from=1-1, to=1-3]
+	\arrow["f"', from=1-1, to=3-1]
+	\arrow["{\rm{inl}}", from=1-3, to=3-3]
+	\arrow["{\rm{commutes}}"{description}, shorten <=6pt, shorten >=6pt, Rightarrow, from=3-1, to=1-3]
+	\arrow["{\rm{inl}}"', from=3-1, to=3-3]
+\end{tikzcd}\]
 ~~~
-where $h$ is our path `commutes`{.Agda}, and $Push$ our Pushout. [^comm].
-
-[^comm]: Big words, small diagram.
 
 ## Suspensions as Pushouts
 
 First, recall the `Susp`{.Agda}, which serves to increase the
 connectedness of a space. Suspension can be expressed as a
-`Pushout`{.Agda} of some type
-$A$, alongside two instaces of $⊤$; i.e., the span `⊤ ← A → ⊤`{.Agda}
-or the following:
+`Pushout`{.Agda} of, for some type `A`, the span `⊤ ← A → ⊤`{.Agda}:
 
 ~~~{.quiver}
-\begin{tikzpicture}
-\node[] (c) at (0, 0) {$C$};
-\node[] (a) at (0, -2) {$\top$};
-\node[] (b) at (2, 0) {$\top$};
-\draw[->] (c) -- (a) node[midway,xshift=-15]{$\rm{con}$};
-\draw[->] (c) -- (b) node[midway,above]{$\rm{con}$};
-\end{tikzpicture}
+\[\begin{tikzcd}
+	C && \top \\
+	\\
+	\top && {\rm{Pushout}}
+	\arrow["{\rm{const\,tt}}", from=1-1, to=1-3]
+	\arrow["{\rm{const\,tt}}"', from=1-1, to=3-1]
+	\arrow["{\rm{inl}}", from=1-3, to=3-3]
+	\arrow["{\rm{commutes}}"{description}, shorten <=6pt, shorten >=6pt, Rightarrow, from=3-1, to=1-3]
+	\arrow["{\rm{inl}}"', from=3-1, to=3-3]
+\end{tikzcd}\]
 ~~~
 
-where 
-
+<!--
 ```agda
-to-top : {A : Type} → A → ⊤
-to-top _ = tt
+const : {A B : Type} → A → B → A
+const t _ = t
 ```
+-->
+
 There is only one element of `⊤`{.Agda}, and hence only one choice
-for the function projecting into `⊤`{.Agda}.
+for the function projecting into `⊤`{.Agda} - `const tt`{.Agda}.
 
 If one considers the structure we're creating, it becomes very
-obvious that this is equivalent to suspension - we take our
-`inl`{.Agda} and `inr`{.Agda} constructors to `N`{.Agda} and
-`S`{.Agda}, as the input into them is now `⊤`{.Agda}, which only
-has one element anyway. Likewise, we turn `commutes`{.Agda} into
+obvious that this is equivalent to suspension - because both of our
+non-path constructors have input `⊤`{.Agda}, they're indistiguishable
+from members of the pushout; therefore, we take the
+`inl`{.Agda} and `inr`{.Agda} to `N`{.Agda} and
+`S`{.Agda} respectively.
+Likewise, we turn `commutes`{.Agda} into
 `merid`{.Agda}, as our functions `f`{.Agda} and `g`{.Agda} can only
-be `con`{.Agda}, so it reduces (with a suitable element of `C`{.Agda})
-from `∀ c → inl (f c) ≡ inr (g c)`{.Agda} to `inl tt ≡ inr tt`{.Agda}, or
-by funext, `inl ≡ inr`{.Agda}.
+be `to-top`{.Agda}, so it reduces (with a suitable element of `C`{.Agda})
+from `∀ c → inl (f c) ≡ inr (g c)`{.Agda} to `inl tt ≡ inr tt`{.Agda},
+or equivalently `inl ≡ inr`{.Agda}.
 
 We therefore aim to show:
 
 ```agda
-Susp≡Pushout-⊤←A→⊤ : ∀ {A} → Susp A ≡ Pushout A ⊤ to-top ⊤ to-top
+Susp≡Pushout-⊤←A→⊤ : ∀ {A} → Susp A ≡ Pushout A ⊤ (const tt) ⊤ (const tt)
 ```
 
-The left and right functions are very simple:
+The left and right functions are trival:
 
 ```agda
-Susp→Pushout-⊤←A→⊤ : ∀ {A} → Susp A → Pushout A ⊤ to-top ⊤ to-top
+Susp→Pushout-⊤←A→⊤ : ∀ {A} → Susp A → Pushout A ⊤ (const tt) ⊤ (const tt)
 Susp→Pushout-⊤←A→⊤ N = inl tt
 Susp→Pushout-⊤←A→⊤ S = inr tt
 Susp→Pushout-⊤←A→⊤ (merid x i) = commutes x i
 
-Pushout-⊤←A→⊤→Susp : ∀ {A} → Pushout A ⊤ to-top ⊤ to-top → Susp A
-Pushout-⊤←A→⊤→Susp (inl x) = N
-Pushout-⊤←A→⊤→Susp (inr x) = S
-Pushout-⊤←A→⊤→Susp (commutes c i) = merid c i
+Pushout-⊤←A→⊤-to-Susp : ∀ {A} → Pushout A ⊤ (const tt) ⊤ (const tt) → Susp A
+Pushout-⊤←A→⊤-to-Susp (inl x) = N
+Pushout-⊤←A→⊤-to-Susp (inr x) = S
+Pushout-⊤←A→⊤-to-Susp (commutes c i) = merid c i
 ```
 
-We then have:
+So we then have:
 
 ```agda
 Susp≡Pushout-⊤←A→⊤ = ua (Susp→Pushout-⊤←A→⊤ , is-iso→is-equiv iso-pf) where
@@ -138,7 +137,7 @@ similarities in structure.</summary>
   open is-iso
 
   iso-pf : is-iso Susp→Pushout-⊤←A→⊤
-  iso-pf .inv = Pushout-⊤←A→⊤→Susp
+  iso-pf .inv = Pushout-⊤←A→⊤-to-Susp 
   iso-pf .rinv (inl x) = refl
   iso-pf .rinv (inr x) = refl
   iso-pf .rinv (commutes c i) = refl
@@ -148,20 +147,17 @@ similarities in structure.</summary>
 ```
 </details>
 
-## The Universal property of a pushout
+## The Universal property of a pushout, via Cocones
 
-We can also formulate the universal property of a pushout. We first
-do this by introducing the `cocone`{.Adga}. A `cocone`{.Agda},
-given a type `D`{.Agda} and a span $\mathcal{D}$:
+To formulate the universal property of a pushout, we first introduce the **Cocone**.
+A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 
 ~~~{.quiver}
-\begin{tikzpicture}
-\node[] (c) at (2, 0) {$C$};
-\node[] (a) at (0, 0) {$A$};
-\node[] (b) at (4, 0) {$B$};
-\draw[->] (c) -- (a) node[midway,above]{${f}$};
-\draw[->] (c) -- (b) node[midway,above]{${g}$};
-\end{tikzpicture}
+\[\begin{tikzcd}
+	A & C & B
+	\arrow["f"', from=1-2, to=1-1]
+	\arrow["g", from=1-2, to=1-3]
+\end{tikzcd}\]
 ~~~
 
 consists of functions:
@@ -190,37 +186,38 @@ and a homotopy
 forming:
 
 ~~~{.quiver}
-\begin{tikzpicture}
-\node[] (c) at (0, 0) {$C$};
-\node[] (a) at (0, -2) {$A$};
-\node[] (b) at (2, 0) {$B$};
-\node[] (d) at (2, -2) {$D$};
-\draw[->] (c) -- (a) node[midway,xshift=-10]{${f}$};
-\draw[->] (c) -- (b) node[midway,above]{${g}$};
-\draw[->] (a) -- (d) node[midway,below]{$i$};
-\draw[->] (b) -- (d) node[midway,right]{$j$};
-\draw[->,shorten <=0.2cm,shorten >=0.2cm,very thick] (a) -- (b) node[midway,above left]{$h$};
-\end{tikzpicture}
+\[\begin{tikzcd}
+	C && B \\
+	\\
+	A && D
+	\arrow["g", from=1-1, to=1-3]
+	\arrow["f"', from=1-1, to=3-1]
+	\arrow["j", from=1-3, to=3-3]
+	\arrow["h"{description}, shorten <=6pt, shorten >=6pt, Rightarrow, from=3-1, to=1-3]
+	\arrow["i"', from=3-1, to=3-3]
+\end{tikzcd}\]
 ~~~
 
+
 One can then note the similarities between this definition,
-and our previous `Pushout`{.Agda} definition. We denote the type of `cocone`{.Agda}s as:
+and our previous `Pushout`{.Agda} definition. We denote the type of
+`Cocone`{.Agda}s as:
 
 ```agda
-cocone : {C A B : Type} → (f : C → A) → (g : C → B) → (D : Type) → Type
-cocone {C} {A} {B} f g D =
+Cocone : {C A B : Type} → (f : C → A) → (g : C → B) → (D : Type) → Type
+Cocone {C} {A} {B} f g D =
   Σ[ i ∈ (A → D) ]
     Σ[ j ∈ (B → D) ]
       ((c : C) → i (f c) ≡ j (g c))
 ```
 
-We can then show that the canonical `cocone`{.Agda} consisting of a `Pushout`{.Agda}
-is the universal `cocone`{.Agda}.
+We can then show that the canonical `Cocone`{.Agda} consisting of a `Pushout`{.Agda}
+is the universal `Cocone`{.Agda}.
 
 ```agda
-Pushout→E≡coconeE : ∀ {A B C E f g} →
-                    (Pushout C A f B g → E) ≡ (cocone f g E)
-Pushout→E≡coconeE = ua ( pushout→cocone , is-iso→is-equiv iso-pc ) where
+Pushout→E≡CoconeE : ∀ {A B C E f g} →
+                    (Pushout C A f B g → E) ≡ (Cocone f g E)
+Pushout→E≡CoconeE = ua ( pushout→Cocone , is-iso→is-equiv iso-pc ) where
 ```
 
 <details><summary> Once again we show that the above is an equivalence;
@@ -230,19 +227,19 @@ and again mostly reduces to `refl`{.Agda}.
 ```agda
   open is-iso
 
-  pushout→cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) → cocone f g E
-  cocone→pushout : ∀ {A B C E f g} → cocone f g E → (Pushout C A f B g → E)
-  iso-pc : is-iso pushout→cocone
+  pushout→Cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) → Cocone f g E
+  Cocone→pushout : ∀ {A B C E f g} → Cocone f g E → (Pushout C A f B g → E)
+  iso-pc : is-iso pushout→Cocone
 
-  pushout→cocone t = (λ x → t (inl x)) ,
+  pushout→Cocone t = (λ x → t (inl x)) ,
                      (λ x → t (inr x)) ,
                      (λ c i → ap t (commutes c) i)
 
-  cocone→pushout t (inl x) = fst t x 
-  cocone→pushout t (inr x) = fst (snd t) x
-  cocone→pushout t (commutes c i) = snd (snd t) c i
+  Cocone→pushout t (inl x) = fst t x 
+  Cocone→pushout t (inr x) = fst (snd t) x
+  Cocone→pushout t (commutes c i) = snd (snd t) c i
 
-  iso-pc .inv = cocone→pushout
+  iso-pc .inv = Cocone→pushout
   iso-pc .rinv _ = refl
   iso-pc .linv _ = funext (λ { (inl y) → refl;
                                 (inr y) → refl;

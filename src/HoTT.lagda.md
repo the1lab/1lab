@@ -609,15 +609,15 @@ _ = T²
 <!--
 ```agda
 _ = Pushout
-_ = cocone
+_ = Cocone
+_ = Pushout→E≡CoconeE
 _ = Susp≡Pushout-⊤←A→⊤
-_ = Pushout→E≡coconeE 
 ```
 -->
 
 * The pushout: `Pushout`{.Agda}
-* Definition 6.8.1: `cocone`{.Agda}
-* Lemma 6.8.2: `Pushout→E≡coconeE`{.Agda}
+* Definition 6.8.1: `Cocone`{.Agda}
+* Lemma 6.8.2: `Pushout→E≡CoconeE`{.Agda}
 * Observation: `Susp≡Pushout-⊤←A→⊤`{.Agda}
 
 ### 6.9: Truncations
