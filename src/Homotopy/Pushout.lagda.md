@@ -11,7 +11,7 @@ open import Homotopy.Space.Suspension
 module Homotopy.Pushout where
 ```
 
-# Pushouts {defines="pushout cocone"}
+# Pushouts {defines="pushout"}
 
 Given the following span:
 
@@ -217,7 +217,7 @@ is the universal `Cocone`{.Agda}.
 ```agda
 Pushout→E≡CoconeE : ∀ {A B C E f g} →
                     (Pushout C A f B g → E) ≡ (Cocone f g E)
-Pushout→E≡CoconeE = ua ( pushout→Cocone , is-iso→is-equiv iso-pc ) where
+Pushout→E≡CoconeE = ua ( Pushout→Cocone , is-iso→is-equiv iso-pc ) where
 ```
 
 <details><summary> Once again we show that the above is an equivalence;
@@ -227,19 +227,19 @@ and again mostly reduces to `refl`{.Agda}.
 ```agda
   open is-iso
 
-  pushout→Cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) → Cocone f g E
-  Cocone→pushout : ∀ {A B C E f g} → Cocone f g E → (Pushout C A f B g → E)
-  iso-pc : is-iso pushout→Cocone
+  Pushout→Cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) → Cocone f g E
+  Cocone→Pushout : ∀ {A B C E f g} → Cocone f g E → (Pushout C A f B g → E)
+  iso-pc : is-iso Pushout→Cocone
 
-  pushout→Cocone t = (λ x → t (inl x)) ,
+  Pushout→Cocone t = (λ x → t (inl x)) ,
                      (λ x → t (inr x)) ,
                      (λ c i → ap t (commutes c) i)
 
-  Cocone→pushout t (inl x) = fst t x 
-  Cocone→pushout t (inr x) = fst (snd t) x
-  Cocone→pushout t (commutes c i) = snd (snd t) c i
+  Cocone→Pushout t (inl x) = fst t x 
+  Cocone→Pushout t (inr x) = fst (snd t) x
+  Cocone→Pushout t (commutes c i) = snd (snd t) c i
 
-  iso-pc .inv = Cocone→pushout
+  iso-pc .inv = Cocone→Pushout
   iso-pc .rinv _ = refl
   iso-pc .linv _ = funext (λ { (inl y) → refl;
                                 (inr y) → refl;
