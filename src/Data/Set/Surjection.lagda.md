@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
+open import Cat.Morphism.StrongEpi
 open import Cat.Prelude
 
 open import Homotopy.Connectedness
@@ -83,6 +84,14 @@ surjectivity out of the way, we get what we wanted.
 
 <!--
 ```agda
+surjective→strong-epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → is-strong-epi (Sets ℓ) {c} {d} f
+surjective→strong-epi c d f f-surj =
+  is-regular-epi→is-strong-epi (Sets _) f $
+  surjective→regular-epi c d f f-surj
+
 surjective→epi
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → is-surjective f

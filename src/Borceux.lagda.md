@@ -21,6 +21,7 @@ open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Colimit.Universal
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Projective.Strong
 open import Cat.Diagram.Separator.Regular
 open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Sets.Cocomplete
@@ -59,7 +60,6 @@ open import Cat.Bi.Instances.Spans
 open import Cat.Diagram.Idempotent
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
-open import Cat.Diagram.Projective
 open import Cat.Functor.Hom.Yoneda
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
@@ -848,6 +848,21 @@ _ = zero+separating-family→separator
 ::: warning
 Borceux uses the term "projective" to refer to [[strong projectives]].
 :::
+
+<!--
+```agda
+_ = is-strong-projective
+_ = preserves-strong-epis→strong-projective
+_ = strong-projective→preserves-strong-epis
+```
+-->
+
+* Definition 4.6.1: `is-strong-projective`{.Agda}
+* Proposition 4.6.2:
+  Note that there is a slight typo in Borceux here: $\cC(P,-)$
+  must preserve [[strong epimorphisms]].
+  (⇒) `preserves-strong-epis→strong-projective`{.Agda}
+  (⇐) `strong-projective→preserves-strong-epis`{.Agda}
 
 ### 4.7 Injective cogenerators
 

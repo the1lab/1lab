@@ -6,6 +6,7 @@ description: |
 <!--
 ```agda
 open import Cat.Functor.Properties
+open import Cat.Morphism.StrongEpi
 open import Cat.Morphism.Duality
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -56,6 +57,14 @@ preserves-epis : Type _
 preserves-epis =
   ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒞.is-epic f → 𝒟.is-epic (F₁ f)
 ```
+
+<!--
+```agda
+preserves-strong-epis : Type _
+preserves-strong-epis =
+  ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → is-strong-epi 𝒞 f → is-strong-epi 𝒟 (F₁ f)
+```
+-->
 
 Likewise, a functor $F : \cC \to \cD$ **reflects** $H$-morphisms
 if $F(f) \in H$ implies that $f \in H$.
