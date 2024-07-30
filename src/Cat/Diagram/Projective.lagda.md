@@ -12,6 +12,7 @@ open import Cat.Functor.Hom
 open import Cat.Groupoid
 open import Cat.Prelude
 
+open import Data.Set.Projective
 open import Data.Set.Surjection
 
 import Cat.Reasoning
@@ -95,10 +96,14 @@ all-projective→epis-split pro e = do
 
 This suggests that projective objects are quite hard to come by
 in constructive foundations! For the most part, this is true:
-constructively, the category of sets has very few projectives, and
+constructively, the category of sets has very few projectives[^1], and
 many categories inherit their epimorphisms from $\Sets$. However,
 it is still possible to have projectives if epis in $\cC$ are extremely
 structured, or there are very few maps out of some $P$.
+
+[^1]: In fact, it is consistent that [the only projective sets are the finite sets]!
+
+[the only projective sets are the finite sets]: Data.Set.Projective.html#taboos
 
 <!-- [TODO: Reed M, 26/07/2024]
   Link to stuff about projective modules when that gets written.
@@ -197,7 +202,33 @@ coproduct-projective {ι₁ = ι₁} {ι₂ = ι₂} P-pro Q-pro coprod p e = do
   where open is-coproduct coprod
 ```
 
-Additionally, projectives are closed under retracts.
+We can extend this result to [[indexed coproducts]], provided that
+the indexing type is [[set projective]].
+
+```agda
+indexed-coproduct→projective
+  : ∀ {κ} {Idx : Type κ}
+  → {P : Idx → Ob} {∐P : Ob} {ι : ∀ i → Hom (P i) ∐P}
+  → is-set-projective Idx ℓ
+  → (∀ i → is-projective (P i))
+  → is-indexed-coproduct C P ι
+  → is-projective ∐P
+indexed-coproduct→projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e = do
+  s ← Idx-pro
+        (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e .mor ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
+        (λ i → P-pro i (p ∘ ι i) e)
+  pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
+  where open is-indexed-coproduct coprod
+```
+
+Note that this projectivity requirement is required: if projective objects
+were closed under arbitrary coproducts, then we would immediately be able
+to prove the [[axiom of choice]]: the singleton set is both a projective
+object and a [[dense separator]] in $\Sets$, so closure under arbitrary
+coproducts would mean that every set is projective, which is precisely
+the axiom of choice.
+
+Putting coproducts aside, note that projectives are closed under retracts.
 
 ```agda
 retract-projective
@@ -209,8 +240,6 @@ retract-projective {r = r} {s = s} P-pro retract p e = do
   (t , t-factor) ← P-pro (p ∘ r) e
   pure (t ∘ s , pulll t-factor ∙ cancelr retract)
 ```
-
-
 
 ## Enough projectives
 
@@ -230,29 +259,4 @@ record Projectives : Type (o ⊔ ℓ) where
     Pro : Ob → Ob
     present : ∀ {X} → Pro X ↠ X
     projective : ∀ {X} → is-projective (Pro X)
-```
-
-# Algebraically projective objects
-
-```agda
-Algebraically-projective : (P : Ob) → Type _
-Algebraically-projective P =
-  ∀ {X Y} (p : Hom P Y) (e : X ↠ Y)
-  → Σ[ s ∈ Hom P X ] (e .mor ∘ s ≡ p)
-```
-
-```agda
-indexed-coproduct-algebraically-projective
-  : ∀ {κ} {Idx : Type κ}
-  → {Pᵢ : Idx → Ob} {∐P : Ob} {ι : (i : Idx) → Hom (Pᵢ i) ∐P}
-  → (∀ i → Algebraically-projective (Pᵢ i))
-  → is-indexed-coproduct C Pᵢ ι
-  → Algebraically-projective ∐P
-indexed-coproduct-algebraically-projective {ι = ι} Pᵢ-pro coprod p e =
-  match (λ i → Pᵢ-pro i (p ∘ ι i) e .fst) ,
-  unique₂ λ i →
-    (e .mor ∘ match λ i → Pᵢ-pro i (p ∘ ι i) e .fst) ∘ ι i ≡⟨ pullr commute ⟩
-    e .mor ∘ Pᵢ-pro i (p ∘ ι i) e .fst                     ≡⟨ Pᵢ-pro i (p ∘ ι i) e .snd ⟩
-    p ∘ ι i                                                ∎
-  where open is-indexed-coproduct coprod
 ```
