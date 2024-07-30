@@ -854,6 +854,10 @@ Borceux uses the term "projective" to refer to [[strong projectives]].
 _ = is-strong-projective
 _ = preserves-strong-epis→strong-projective
 _ = strong-projective→preserves-strong-epis
+_ = indexed-coproduct-strong-projective
+_ = retract→strong-projective
+_ = Strong-projectives
+_ = strong-projective-separating-faily→strong-projectives
 ```
 -->
 
@@ -863,6 +867,10 @@ _ = strong-projective→preserves-strong-epis
   must preserve [[strong epimorphisms]].
   (⇒) `preserves-strong-epis→strong-projective`{.Agda}
   (⇐) `strong-projective→preserves-strong-epis`{.Agda}
+* Proposition 4.6.3: `indexed-coproduct-strong-projective`{.Agda}
+* Proposition 4.6.4: `retract→strong-projective`{.Agda}
+* Definition 4.6.5: `Strong-projectives`{.Agda}
+* Proposition 4.6.6: `strong-projective-separating-faily→strong-projectives`{.Agda}
 
 ### 4.7 Injective cogenerators
 

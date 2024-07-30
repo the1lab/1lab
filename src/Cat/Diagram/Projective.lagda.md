@@ -206,14 +206,14 @@ We can extend this result to [[indexed coproducts]], provided that
 the indexing type is [[set projective]].
 
 ```agda
-indexed-coproduct→projective
+indexed-coproduct-projective
   : ∀ {κ} {Idx : Type κ}
   → {P : Idx → Ob} {∐P : Ob} {ι : ∀ i → Hom (P i) ∐P}
   → is-set-projective Idx ℓ
   → (∀ i → is-projective (P i))
   → is-indexed-coproduct C P ι
   → is-projective ∐P
-indexed-coproduct→projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e = do
+indexed-coproduct-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e = do
   s ← Idx-pro
         (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e .mor ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
         (λ i → P-pro i (p ∘ ι i) e)
@@ -231,12 +231,12 @@ the axiom of choice.
 Putting coproducts aside, note that projectives are closed under retracts.
 
 ```agda
-retract-projective
+retract→projective
   : ∀ {R P} {r : Hom P R} {s : Hom R P}
   → is-projective P
   → r retract-of s
   → is-projective R
-retract-projective {r = r} {s = s} P-pro retract p e = do
+retract→projective {r = r} {s = s} P-pro retract p e = do
   (t , t-factor) ← P-pro (p ∘ r) e
   pure (t ∘ s , pulll t-factor ∙ cancelr retract)
 ```

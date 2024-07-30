@@ -4,12 +4,16 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Diagram.Coproduct.Copower
+open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.Morphism
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
+open import Data.Set.Projective
 open import Data.Set.Surjection
 
+import Cat.Diagram.Separator.Strong
 import Cat.Diagram.Projective
 import Cat.Morphism.StrongEpi
 import Cat.Reasoning
@@ -110,3 +114,109 @@ strong-projective→preserves-strong-epis {P = P} pro {X} {Y} {f = f} f-strong =
     pro p f f-strong
 ```
 </details>
+
+## Closure of strong projectives
+
+Like projective objects, strong projectives are closed under coproducts
+indexed by [[set-projective]] types and retracts.
+
+```agda
+indexed-coproduct-strong-projective
+  : ∀ {κ} {Idx : Type κ}
+  → {P : Idx → Ob} {∐P : Ob} {ι : ∀ i → Hom (P i) ∐P}
+  → is-set-projective Idx ℓ
+  → (∀ i → is-strong-projective (P i))
+  → is-indexed-coproduct C P ι
+  → is-strong-projective ∐P
+
+retract→strong-projective
+  : ∀ {R P} {r : Hom P R} {s : Hom R P}
+  → is-strong-projective P
+  → r retract-of s
+  → is-strong-projective R
+```
+
+<details>
+<summary>These proofs are more or less identical to the corresponding
+ones for projective objects.
+</summary>
+```agda
+indexed-coproduct-strong-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e e-strong = do
+  s ← Idx-pro
+        (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
+        (λ i → P-pro i (p ∘ ι i) e e-strong)
+  pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
+  where open is-indexed-coproduct coprod
+
+retract→strong-projective {r = r} {s = s} P-pro retract p e e-strong = do
+  (t , t-factor) ← P-pro (p ∘ r) e e-strong
+  pure (t ∘ s , pulll t-factor ∙ cancelr retract)
+```
+</details>
+
+## Enough strong projectives
+
+A category $\cC$ is said to have **enough strong projectives** if for
+object $X : \cC$ there is some strong epi $P \epi X$ with $P$ strong projective.
+We will refer to these projectives as **projective presentations**
+of $X$.
+
+Note that there are two variations on this condition: one where
+there *merely* exists a strong projective presentation for every $X$, and
+another where those presentations are provided as structure. We prefer
+to work with the latter, as it tends to be less painful to work with.
+
+```agda
+record Strong-projectives : Type (o ⊔ ℓ) where
+  field
+    Pro : Ob → Ob
+    present : ∀ {X} → Hom (Pro X) X
+    present-strong-epi : ∀ {X} → is-strong-epi (present {X})
+    projective : ∀ {X} → is-strong-projective (Pro X)
+```
+
+<!--
+```agda
+module _ (coprods : (Idx : Set ℓ) → has-coproducts-indexed-by C ∣ Idx ∣)
+  where
+  open Cat.Diagram.Separator.Strong C coprods
+  open Copowers coprods
+```
+-->
+
+If $\cC$ has set-indexed coproducts, and $P_i$ is a [[strong separating family]]
+with each $P_i$ a strong projective, then $\cC$ has enough strong projectives
+if $\Sigma(i : Idx), (\cC(P_i, X))$ is a set-projective type.
+
+```agda
+  strong-projective-separating-faily→strong-projectives
+    : ∀ {Idx : Set ℓ} {Pᵢ : ∣ Idx ∣ → Ob}
+    → (∀ X → is-set-projective (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) ℓ)
+    → (∀ i → is-strong-projective (Pᵢ i))
+    → is-strong-separating-family Idx Pᵢ
+    → Strong-projectives
+```
+
+The hypotheses of this theorem hint basically give the game away: by definition,
+there is a strong epimorphism $\coprod_{\Sigma(i : I), \cC(P_i, X)} S_i \to X$
+for every $X$. Moreover, $\Sigma(i : I), \cC(P_i, X)$ is set-projective,
+so the corresponding coproduct is a strong projective.
+
+```agda
+  strong-projective-separating-faily→strong-projectives
+    {Idx} {Pᵢ} Idx-pro Pᵢ-pro strong-sep = strong-projectives where
+    open Strong-projectives
+
+    strong-projectives : Strong-projectives
+    strong-projectives .Pro X =
+      ∐! (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst)
+    strong-projectives .present {X = X} =
+      ∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst) snd
+    strong-projectives .present-strong-epi =
+      strong-sep
+    strong-projectives .projective {X = X} =
+      indexed-coproduct-strong-projective
+        (Idx-pro X)
+        (Pᵢ-pro ⊙ fst)
+        (∐!.has-is-ic (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst))
+```
