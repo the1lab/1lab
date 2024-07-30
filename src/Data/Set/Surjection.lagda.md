@@ -81,6 +81,17 @@ surjectivity out of the way, we get what we wanted.
       (surj a)
 ```
 
+<!--
+```agda
+surjective→epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → Cr.is-epic (Sets ℓ) {c} {d} f
+surjective→epi c d f surj {c = x} =
+  is-regular-epi→is-epic (surjective→regular-epi c d f surj) {c = x}
+```
+-->
+
 # Epis are surjective {defines="epis-are-surjective"}
 
 Now _this_ is the hard direction. Our proof follows [@Rijke:2015, §2.9],
