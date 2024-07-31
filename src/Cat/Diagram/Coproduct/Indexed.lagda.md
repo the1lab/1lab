@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Pullback
-open import Cat.Diagram.Zero
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Zero
 open import Cat.Univalent
 open import Cat.Prelude
 

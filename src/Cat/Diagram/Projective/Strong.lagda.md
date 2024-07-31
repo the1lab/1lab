@@ -13,7 +13,6 @@ open import Cat.Prelude
 
 open import Data.Set.Projective
 open import Data.Set.Surjection
-
 open import Data.Dec
 
 import Cat.Diagram.Separator.Strong
