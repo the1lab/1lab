@@ -37,8 +37,9 @@ open Cat.Reasoning C
 
 :::{.definition #projective-object alias="projective"}
 Let $\cC$ be a precategory. An object $P : \cC$ is **projective**
-if for every $p : P \to Y$ and $e : X \epi Y$, there merely exists
-a $s : P \to X$ such that $e \circ s = p$, as in the following diagram:
+if for every morphism $p : P \to Y$ and [[epimorphism]] $e : X \epi Y$,
+there merely exists a $s : P \to X$ such that $e \circ s = p$, as in the
+following diagram:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -46,7 +47,7 @@ a $s : P \to X$ such that $e \circ s = p$, as in the following diagram:
   \\
   P && Y
   \arrow["e", two heads, from=1-3, to=3-3]
-  \arrow["\exists", dashed, from=3-1, to=1-3]
+  \arrow["\exists s", dashed, from=3-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
 \end{tikzcd}
 ~~~
@@ -65,14 +66,12 @@ is-projective P =
 If we take the perspective of generalized elements, then a projective
 object $P$ lets us pick a $P$-element of $X$ from the preimage $e^{-1}(y)$
 of a $P$-element $y : Y$ along every $e : X \epi Y$. This endows $\cC$ with
-a $P$-relative version of the [[axiom of choice]].
+an internal $P$-relative version of the [[axiom of choice]].
 
 This intuition can be made more precise by noticing that every
 object of $\cC$ is projective if and only if every epimorphism (merely)
-splits.
-
-For the forward direction, let $e : X \epi Y$ have a section $s : Y \to X$,
-and note that $s \circ p$ factorizes $p$ through $e$.
+splits. For the forward direction, let $e : X \epi Y$ have a section
+$s : Y \to X$, and note that $s \circ p$ factorizes $p$ through $e$.
 
 ```agda
 epis-split→all-projective
@@ -160,8 +159,8 @@ preserves-epis→projective {P = P} hom-epi {X = X} {Y = Y} p e =
 For the reverse direciton, let $P$ be projective, $f : X \epi Y$ be an epi,
 and $g, h : \cC(P, X) \to A$ be a pair of functions into an arbitrary
 set $A$ such that $g(f \circ s) = h(f \circ s)$ for any $s : \cC(P, X)$.
-To show that $\cC(P,-)$ preserves epis, we must show that $g = h$.
-This follows directly from the existence of a lift for every $\cC(P,X)$.
+To show that $\cC(P,-)$ preserves epis, we must show that $g = h$, which
+follows directly from the existence of a lift for every $\cC(P,X)$.
 
 ```agda
 projective→preserves-epis
@@ -223,8 +222,6 @@ indexed-coproduct-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y =
   where open is-indexed-coproduct coprod
 ```
 
-
-
 Note that this projectivity requirement is required: if projective objects
 were closed under arbitrary coproducts, then we would immediately be able
 to prove the [[axiom of choice]]: the singleton set is both a projective
@@ -232,8 +229,8 @@ object and a [[dense separator]] in $\Sets$, so closure under arbitrary
 coproducts would mean that every set is projective, which is precisely
 the axiom of choice.
 
-Putting coproducts aside, note that projectives are closed under retracts.
-This follows by a straightforward bit of algebra.
+Putting coproducts aside for a moment, note that projectives are closed
+under retracts. This follows by a straightforward bit of algebra.
 
 ```agda
 retract→projective

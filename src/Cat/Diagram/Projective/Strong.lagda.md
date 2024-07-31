@@ -53,7 +53,7 @@ a $s : P \to X$ such that $e \circ s = p$, as in the following diagram:
   \\
   P && Y
   \arrow["e", two heads, from=1-3, to=3-3]
-  \arrow["\exists", dashed, from=3-1, to=1-3]
+  \arrow["\exists s", dashed, from=3-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
 \end{tikzcd}
 ~~~
@@ -214,7 +214,7 @@ module _ (coprods : (Idx : Set ℓ) → has-coproducts-indexed-by C ∣ Idx ∣)
 
 If $\cC$ has set-indexed coproducts, and $P_i$ is a [[strong separating family]]
 with each $P_i$ a strong projective, then $\cC$ has enough strong projectives
-if $\Sigma(i : Idx), (\cC(P_i, X))$ is a set-projective type.
+if $\Sigma(i : Idx) (\cC(P_i, X))$ is a set-projective type.
 
 ```agda
   strong-projective-separating-faily→strong-projectives
@@ -225,9 +225,9 @@ if $\Sigma(i : Idx), (\cC(P_i, X))$ is a set-projective type.
     → Strong-projectives
 ```
 
-The hypotheses of this theorem hint basically give the game away: by definition,
-there is a strong epimorphism $\coprod_{\Sigma(i : I), \cC(P_i, X)} S_i \to X$
-for every $X$. Moreover, $\Sigma(i : I), \cC(P_i, X)$ is set-projective,
+The hypotheses of this theorem basically give the game away: by definition,
+there is a strong epimorphism $\coprod_{\Sigma(i : I) \cC(P_i, X)} S_i \to X$
+for every $X$. Moreover, $\Sigma(i : I) \cC(P_i, X)$ is set-projective,
 so the corresponding coproduct is a strong projective.
 
 ```agda

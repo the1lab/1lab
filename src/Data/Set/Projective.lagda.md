@@ -1,6 +1,6 @@
 ---
 description: |
-  We define projective sets, and prove some taboos.
+  We define set-projective types, and prove some taboos.
 ---
 <!--
 ```agda
@@ -17,7 +17,7 @@ open import Meta.Invariant
 module Data.Set.Projective where
 ```
 
-# Projective sets
+# Set-projective types
 
 <!--
 ```agda
@@ -65,7 +65,7 @@ sets-projective→surjections-split
 ```
 
 <details>
-<summary>These proof of this is a specialization of the of the proof that
+<summary>This is essentially a specialization of the of the proof that
 the axiom of choice is equivalent to every surjection splitting, so we
 will not dwell on the details.
 </summary>
@@ -85,11 +85,12 @@ sets-projective→surjections-split A-set A-pro E-set f =
 
 Set-projective types are closed under Σ-types. Suppose that $A : \ty$ is a
 set-projective type, and that $B : A \to \ty$ is a family of set-projective
-types, and let $P : \Sigma A B \to \set$ be a family of sets such that $\| P(a,b) \|$
-for every $a, b$. Note that $\lambda a. (b : B(a)) \to P(a, b)$ is an $A$-indexed
-family of sets, so we can commute truncation past it via projectivity of $A$.
-Moreover, each $B(a)$ is also projective, so we can further commute truncations
-past the $B(a)$.
+types, and let $P : \Sigma\ A\ B \to \set$ be a family of merely inhabited sets.
+Note that $(b : B(a)) \to P(a, b)$ is a $B(a)$-indexed family of merely
+inhabited sets for every $a$, so its product must also be inhabited by projectivity
+of $B(a)$. Moreover, $A$ is also projective, so $(a : A) \to (b : B(a)) \to P(a, b)$
+is also merely inhabited, as $(b : B(a)) \to P(a, b)$ is an $A$-indexed family of
+merely inhabited sets. We can then uncurry this family to finish the proof.
 
 ```agda
 Σ-set-projective
@@ -104,7 +105,7 @@ past the $B(a)$.
 ```
 
 Moreover, set-projective types are stable under retracts. Suppose that
-we have $f : A \to B, g : B \to A$ with $f \circ g = id$ and $A$ set-projective,
+we have $f : A \to B, g : B \to A$ with $f \circ g = id$ with $A$ set-projective,
 and let $P : B \to \set$ be a family of merely inhabited sets. We can
 precompose $P$ with $f$ to obtain an $A$-indexed family of sets whose
 product $\Pi (a : A) \to P(f(a))$ must be inhabited via projectivity of $A$.
@@ -163,7 +164,7 @@ constructively! The general sketch of the taboo is that it is consistent that:
 
 The existence of such a model is out of scope for this page, so we will
 focus our attention on the internal portion of the argument. In particular,
-we will prove that under assumptions (1), the existence of an
+we will prove that if propositions are set-projective, then the existence of an
 Dedekind-infinite set-projective type implies countable choice.
 
 First, note that if propositions are set-projective, then the [[image]] of
@@ -213,7 +214,7 @@ obtain countable choice from the existence of a Dedekind-infinite type.
     props-projective+is-embedding→set-projective
 ```
 
-Note that the projectivity of propositions is itself a taboo: in particular,
+Note that the set-projectivity of propositions is itself a taboo: in particular,
 every proposition is set-projective if and only if every set has split support.
 The following proof is adapted from [@Kraus-Escardó-Coquand-Altenkirch:2016].
 
