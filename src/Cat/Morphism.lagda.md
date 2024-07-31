@@ -219,7 +219,7 @@ has-section→epic {f = f} f-sect g h p =
   h ∎
 ```
 
-## Retracts
+## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
 when $r \cdot s = id$. Note that this is the same equation involved
