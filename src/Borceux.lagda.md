@@ -858,6 +858,7 @@ _ = indexed-coproduct-strong-projective
 _ = retract→strong-projective
 _ = Strong-projectives
 _ = strong-projective-separating-faily→strong-projectives
+_ = zero+indexed-coproduct-strong-projective→strong-projective
 ```
 -->
 
@@ -871,6 +872,9 @@ _ = strong-projective-separating-faily→strong-projectives
 * Proposition 4.6.4: `retract→strong-projective`{.Agda}
 * Definition 4.6.5: `Strong-projectives`{.Agda}
 * Proposition 4.6.6: `strong-projective-separating-faily→strong-projectives`{.Agda}
+* Proposition 4.6.7:
+  * (⇒) `zero+indexed-coproduct-strong-projective→strong-projective`{.Agda}
+  * (⇐) `indexed-coproduct-strong-projective`{.Agda}
 
 ### 4.7 Injective cogenerators
 

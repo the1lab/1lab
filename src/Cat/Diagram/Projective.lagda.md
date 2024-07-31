@@ -8,12 +8,14 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Coproduct
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Zero
 open import Cat.Functor.Hom
 open import Cat.Groupoid
 open import Cat.Prelude
 
 open import Data.Set.Projective
 open import Data.Set.Surjection
+open import Data.Dec
 
 import Cat.Reasoning
 ```
@@ -221,6 +223,8 @@ indexed-coproduct-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y =
   where open is-indexed-coproduct coprod
 ```
 
+
+
 Note that this projectivity requirement is required: if projective objects
 were closed under arbitrary coproducts, then we would immediately be able
 to prove the [[axiom of choice]]: the singleton set is both a projective
@@ -229,16 +233,42 @@ coproducts would mean that every set is projective, which is precisely
 the axiom of choice.
 
 Putting coproducts aside, note that projectives are closed under retracts.
+This follows by a straightforward bit of algebra.
 
 ```agda
 retract→projective
-  : ∀ {R P} {r : Hom P R} {s : Hom R P}
+  : ∀ {R P}
   → is-projective P
-  → r retract-of s
+  → (s : Hom R P)
+  → has-retract s
   → is-projective R
-retract→projective {r = r} {s = s} P-pro retract p e = do
-  (t , t-factor) ← P-pro (p ∘ r) e
-  pure (t ∘ s , pulll t-factor ∙ cancelr retract)
+retract→projective P-pro s r p e = do
+  (t , t-factor) ← P-pro (p ∘ r .retract) e
+  pure (t ∘ s , pulll t-factor ∙ cancelr (r .is-retract))
+```
+
+A nice consequence of this is that if $\cC$ has a [[zero object]] and
+a projective coproduct $\coprod_{I} P_i$ indexed by a [[discrete]] type,
+then each component of the coproduct is also projective.
+
+```agda
+zero+indexed-coproduct-projective→projective
+  : ∀ {κ} {Idx : Type κ} ⦃ Idx-Discrete : Discrete Idx ⦄
+  → {P : Idx → Ob} {∐P : Ob} {ι : ∀ i → Hom (P i) ∐P}
+  → Zero C
+  → is-indexed-coproduct C P ι
+  → is-projective ∐P
+  → ∀ i → is-projective (P i)
+```
+
+This follows immediately from the fact that if $\cC$ has a zero object
+and $\coprod_{I} P_i$ is indexed by a discrete type, then each coproduct
+inclusion has a retract.
+
+```agda
+zero+indexed-coproduct-projective→projective {ι = ι} z coprod ∐P-pro i =
+  retract→projective ∐P-pro (ι i) $
+  zero→ι-has-retract C coprod z i
 ```
 
 ## Enough projectives

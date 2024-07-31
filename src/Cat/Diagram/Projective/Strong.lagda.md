@@ -7,11 +7,14 @@ description: |
 open import Cat.Diagram.Coproduct.Copower
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.Morphism
+open import Cat.Diagram.Zero
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
 open import Data.Set.Projective
 open import Data.Set.Surjection
+
+open import Data.Dec
 
 import Cat.Diagram.Separator.Strong
 import Cat.Diagram.Projective
@@ -130,9 +133,10 @@ indexed-coproduct-strong-projective
   → is-strong-projective ∐P
 
 retract→strong-projective
-  : ∀ {R P} {r : Hom P R} {s : Hom R P}
+  : ∀ {R P}
   → is-strong-projective P
-  → r retract-of s
+  → (s : Hom R P)
+  → has-retract s
   → is-strong-projective R
 ```
 
@@ -148,9 +152,34 @@ indexed-coproduct-strong-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = 
   pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
   where open is-indexed-coproduct coprod
 
-retract→strong-projective {r = r} {s = s} P-pro retract p e e-strong = do
-  (t , t-factor) ← P-pro (p ∘ r) e e-strong
-  pure (t ∘ s , pulll t-factor ∙ cancelr retract)
+retract→strong-projective P-pro s r p e e-strong = do
+  (t , t-factor) ← P-pro (p ∘ r .retract) e e-strong
+  pure (t ∘ s , pulll t-factor ∙ cancelr (r .is-retract))
+```
+</details>
+
+Moreover, if $\cC$ has a [[zero object]] and a strong projective
+coproduct $\coprod_{I} P_i$ indexed by a [[discrete]] type, then
+each component of the coproduct is a strong projective.
+
+```agda
+zero+indexed-coproduct-strong-projective→strong-projective
+  : ∀ {κ} {Idx : Type κ} ⦃ Idx-Discrete : Discrete Idx ⦄
+  → {P : Idx → Ob} {∐P : Ob} {ι : ∀ i → Hom (P i) ∐P}
+  → Zero C
+  → is-indexed-coproduct C P ι
+  → is-strong-projective ∐P
+  → ∀ i → is-strong-projective (P i)
+```
+
+<details>
+<summary>Following the general theme, the proof is identical
+to the non-strong case.
+</summary>
+```agda
+zero+indexed-coproduct-strong-projective→strong-projective {ι = ι} z coprod ∐P-pro i =
+  retract→strong-projective ∐P-pro (ι i) $
+  zero→ι-has-retract C coprod z i
 ```
 </details>
 
