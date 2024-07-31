@@ -328,88 +328,72 @@ equalisers+jointly-conservative→separating-family
 ```
 </details>
 
+
+```agda
+```
+
 Our next result lets us relate separating objects and separating families.
 Clearly, a separating object yields a separating family; when does the
-converse hold? One possible scenario is when:
+converse hold?
+
+One possible scenario is that there is an object $X : \cC$ such that
+every $S_i$ comes equipped with a section/retraction pair
+$f_i : S_i \rightleftarrows X : r_i$. To see why, let $g, h : \cC(A, B)$
+and suppose that $g \circ e = h \circ e$ for every $e : \cC(X, A)$.
+As $S_i$ is a separating family, it suffices to show that $g \circ e_i = h \circ e_i$
+for every $i : I$, $e_i : \cC(S_i, A)$.
+
+Next, note that $g \circ e_i = g  \circ e_i \circ r_i \circ f_i$, as
+$f_i$ and $r_i$ are a section/retraction pair. Moreover,
+$e_i \circ r_i : \cC(X, A)$, so
+
+$$g \circ e_i \circ r_i \circ f_i = h \circ e_i \circ r_i \circ f_i$$
+
+by our hypothesis. Finally, we can use the fact that $f_i$ and $r_i$
+are a section/retraction pair to observe that $g \circ e_i = f \circ e_i$,
+completeing the proof
+
+```agda
+retracts+separating-family→separator
+  : ∀ {κ} {Idx : Type κ} {sᵢ : Idx → Ob} {x : Ob}
+  → is-separating-family sᵢ
+  → (fᵢ : ∀ i → Hom (sᵢ i) x)
+  → (∀ i → has-retract (fᵢ i))
+  → is-separator x
+retracts+separating-family→separator separate fᵢ r {f = g} {g = h} p =
+  separate λ {i} eᵢ →
+    g ∘ eᵢ                         ≡˘⟨ pullr (cancelr (r i .is-retract)) ⟩
+    (g ∘ eᵢ ∘ r i .retract) ∘ fᵢ i ≡⟨ ap₂ _∘_ (p (eᵢ ∘ r i .retract)) refl ⟩
+    (h ∘ eᵢ ∘ r i .retract) ∘ fᵢ i ≡⟨ pullr (cancelr (r i .is-retract)) ⟩
+    h ∘ eᵢ                         ∎
+```
+
+We can immediately use this result to note that a separating family
+$S_i$ can be turned into a separating object, provided that:
 
 1. The separating family $S_i$ is indexed by a [[discrete]] type.
-2. $\cC$ has $I$-indexed coproducts.
-3. Every $\hom$-set $\cC(S_i, X)$ has a distinguished inhabitant.
+2. The coproduct of $\coprod_{I} S_i$ exists.
+3. $\cC$ has a zero object.
+
 
 ```agda
-module _
-  {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
-  ⦃ Idx-Discrete : Discrete Idx ⦄
-  (coprods : has-coproducts-indexed-by C Idx)
-  where
-  open Indexed-coproducts-by C coprods
-
-  hom-inhabited+separating-family→separator
-    : (∀ i x → Hom (sᵢ i) x)
-    → is-separating-family sᵢ
-    → is-separator (ΣF sᵢ)
+zero+separating-family→separator
+  : ∀ {κ} {Idx : Type κ} {sᵢ : Idx → Ob} {∐s : Ob} {ι : ∀ i → Hom (sᵢ i) ∐s}
+  → ⦃ Idx-Discrete : Discrete Idx ⦄
+  → Zero C
+  → is-separating-family sᵢ
+  → is-indexed-coproduct C sᵢ ι
+  → is-separator ∐s
 ```
 
-We shall show that the coproduct $\coprod_{i : I} S_i$ is a separating object.
-Suppose that $f, g : \cC(X,Y)$ such that $f \circ e = g \circ e$ for any
-$\cC(\coprod_{i : I} S_i, X)$. $S_i$ is a separating family, so we can
-attempt to show that $f = g$ by showing that $f \circ e_i = g \circ e_i$
-for every $e_i : \cC(S_i, X)$.
-
-This is where we need to start using our somewhat contrived assumptions.
-The crux of the problem is that we need to somehow turn our proof obligation
-into a question of equality involving $\cC(\coprod_{i : I} S_i, X)$. In
-particular, if we could factorize $e_i$ into a coproduct injection $\iota$
-followed by a map $u$ out of the coproduct, then our hypothesis would let us
-deduce that $f \circ u \circ \iota = g \circ u \circ \iota$. Unfortunatelly,
-cooking up a factorization is a bit tricky!
+This follows immediately from the fact that coproduct inclusions have
+retracts when hypotheses (1) and (3) hold.
 
 ```agda
-  hom-inhabited+separating-family→separator hom-default separate {x = x} {y = y} {f = f} {g = g} p =
-    separate λ {i} eᵢ →
-      f ∘ eᵢ                              ≡˘⟨ ap (f ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
-      f ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ extendl (p _) ⟩
-      g ∘ match sᵢ (detect i eᵢ) ∘ ι sᵢ i ≡⟨ ap (g ∘_) (ι-commute _ ∙ detect-yes i eᵢ) ⟩
-      g ∘ eᵢ                              ∎
-    where
+zero+separating-family→separator {ι = ι} z separates coprod =
+  retracts+separating-family→separator separates ι $
+  zero→ι-has-retract C coprod z
 ```
-
-The key idea is that we can extend a single morphism $e_i : \cC(S_i, X)$ to a
-family of morphisms $e_{i}^* : (j : I) \to \cC(S_j, X)$ by checking if $i = j$; if it does, then
-we simply return $e_i$; if not, then we use the distinguished inhabitant
-of $\cC(S_j, X)$. By definition, $e_{i}^*(i) = e_i$, so this construction
-provides the required factorization.
-
-```agda
-      detect : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → (j : Idx) → Hom (sᵢ j) x
-      detect i eᵢ j with i ≡? j
-      ... | yes i=j = subst _ i=j eᵢ
-      ... | no _ = hom-default j _
-
-      detect-yes : ∀ {x} (i : Idx) (eᵢ : Hom (sᵢ i) x) → detect i eᵢ i ≡ eᵢ
-      detect-yes {x = x} i eᵢ with i ≡? i
-      ... | yes i=i =
-        is-set→subst-refl
-          (λ i → Hom (sᵢ i) x)
-          (Discrete→is-set Idx-Discrete)
-          i=i eᵢ
-      ... | no ¬i=i = absurd (¬i=i refl)
-```
-
-In particular, if $\cC$ meets conditions (1) and (2) and has a [[zero object]],
-then $\cC$ has a separating object.
-
-```agda
-  zero+separating-family→separator
-    : Zero C
-    → is-separating-family sᵢ
-    → is-separator (ΣF sᵢ)
-  zero+separating-family→separator z separates =
-    hom-inhabited+separating-family→separator
-      (λ _ _ → Zero.zero→ z)
-      separates
-```
-
 
 # Dense separators
 
