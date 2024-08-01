@@ -771,7 +771,7 @@ In Cubical Agda, the relevant *primitive* is the function
 for now. To start with, this is where paths show their difference from
 the notion of equality in set-level type theories: it says that we have
 a function from paths $p : A \is B$ to functions $A \to B$. However,
-it's *not* the case that every $p, q : A \to B$ gives back the *same*
+it's *not* the case that every $p, q : A \is B$ gives back the *same*
 function $A \to B$. Which function you get depends on (and determines) the
 path you put in!
 
