@@ -42,7 +42,7 @@ Two functions `inl`{.Agda} and `inr`{.Agda}, that "connect" from `A` and `B`:
 ```
 
 And, for every `c : C`, a path
-`commutes : inl (f c) ≡ inr (g c)`{.Agda}:
+`inl (f c) ≡ inr (g c)`{.Agda}:
 
 ```agda
   commutes : ∀ c → inl (f c) ≡ inr (g c)
@@ -98,7 +98,7 @@ non-path constructors have input `⊤`{.Agda}, they're indistiguishable
 from members of the pushout; therefore, we take the
 `inl`{.Agda} and `inr`{.Agda} to `N`{.Agda} and
 `S`{.Agda} respectively.
-Likewise, we turn `commutes`{.Agda} into
+Likewise, we take `commutes`{.Agda} to
 `merid`{.Agda}, as our functions `f`{.Agda} and `g`{.Agda} can only
 be `to-top`{.Agda}, so it reduces (with a suitable element of `C`{.Agda})
 from `∀ c → inl (f c) ≡ inr (g c)`{.Agda} to `inl tt ≡ inr tt`{.Agda},
@@ -110,7 +110,7 @@ We therefore aim to show:
 Susp≡Pushout-⊤←A→⊤ : ∀ {A} → Susp A ≡ Pushout A ⊤ (const tt) ⊤ (const tt)
 ```
 
-The left and right functions are trival:
+The left and right functions are therefore trival:
 
 ```agda
 Susp→Pushout-⊤←A→⊤ : ∀ {A} → Susp A → Pushout A ⊤ (const tt) ⊤ (const tt)
