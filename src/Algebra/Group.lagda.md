@@ -151,7 +151,7 @@ instance
   H-Level-is-group = prop-instance is-group-is-prop
 ```
 
-# Group homomorphisms
+# Group homomorphisms {defines="group-homomorphism"}
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
