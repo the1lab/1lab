@@ -147,7 +147,7 @@ similarities in structure.</summary>
 ```
 </details>
 
-## The Universal property of a pushout, via Cocones
+## The universal property of a pushout, via Cocones
 
 To formulate the universal property of a pushout, we first introduce the **Cocone**.
 A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
@@ -215,9 +215,9 @@ We can then show that the canonical `Cocone`{.Agda} consisting of a `Pushout`{.A
 is the universal `Cocone`{.Agda}.
 
 ```agda
-Pushout→E≡CoconeE : ∀ {A B C E f g} →
+Pushout-is-universal-cocone : ∀ {A B C E f g} →
                     (Pushout C A f B g → E) ≡ (Cocone f g E)
-Pushout→E≡CoconeE = ua ( Pushout→Cocone , is-iso→is-equiv iso-pc ) where
+Pushout-is-universal-cocone = ua ( Pushout→Cocone , is-iso→is-equiv iso-pc ) where
 ```
 
 <details><summary> Once again we show that the above is an equivalence;
