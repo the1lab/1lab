@@ -215,8 +215,7 @@ We can then show that the canonical `Cocone`{.Agda} consisting of a `Pushout`{.A
 is the universal `Cocone`{.Agda}.
 
 ```agda
-Pushout-is-universal-cocone : ∀ {A B C E f g} →
-                    (Pushout C A f B g → E) ≡ (Cocone f g E)
+Pushout-is-universal-cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) ≡ (Cocone f g E)
 Pushout-is-universal-cocone = ua ( Pushout→Cocone , is-iso→is-equiv iso-pc ) where
 ```
 
