@@ -139,8 +139,8 @@ A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 \end{tikzcd}\]
 ~~~
 
-consists of functions `i : A → D`{.Agda} & `j : B → D`{.Agda}, and a homotopy
-`h : (c : C) → i (f c) ≡ j (g c)`{.Agda}, forming:
+consists of functions $i : A \to D$, $j : B \to D$, and a homotopy
+$h : (c : C) \to i (f c) \is j (g c)$, forming:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
