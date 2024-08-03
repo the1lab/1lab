@@ -25,26 +25,15 @@ Given the following span:
 \end{tikzcd}\]
 ~~~
 
-The **Pushout** of this span is defined as the higher inductive type
+The **pushout** of this span is defined as the higher inductive type
 presented by:
 ```agda
 data Pushout {ℓ} (C : Type ℓ)
                  (A : Type ℓ) (f : C → A)
                  (B : Type ℓ) (g : C → B)
                  : Type ℓ where
-```
-
-Two functions `inl`{.Agda} and `inr`{.Agda}, that "connect" from `A` and `B`:
-
-```agda
   inl : A → Pushout C A f B g
   inr : B → Pushout C A f B g
-```
-
-And, for every `c : C`, a path
-`inl (f c) ≡ inr (g c)`{.Agda}:
-
-```agda
   commutes : ∀ c → inl (f c) ≡ inr (g c)
 ```
 
@@ -57,26 +46,25 @@ These combine to give the following:
 	A && {\rm{Pushout}}
 	\arrow["g", from=1-1, to=1-3]
 	\arrow["f"', from=1-1, to=3-1]
-	\arrow["{\rm{inl}}", from=1-3, to=3-3]
+	\arrow["{\rm{inr}}", from=1-3, to=3-3]
 	\arrow["{\rm{commutes}}"{description}, shorten <=6pt, shorten >=6pt, Rightarrow, from=3-1, to=1-3]
 	\arrow["{\rm{inl}}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
-## Suspensions as Pushouts
+## Suspensions as pushouts
 
-First, recall the `Susp`{.Agda}, which serves to increase the
-connectedness of a space. Suspension can be expressed as a
-`Pushout`{.Agda} of, for some type `A`, the span `⊤ ← A → ⊤`{.Agda}:
+The [[suspension]] of a type $A$ can be expressed as the  `Pushout`{.Agda}
+of the span `⊤ ← A → ⊤`{.Agda}:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
 	C && \top \\
 	\\
 	\top && {\rm{Pushout}}
-	\arrow["{\rm{const\,tt}}", from=1-1, to=1-3]
-	\arrow["{\rm{const\,tt}}"', from=1-1, to=3-1]
-	\arrow["{\rm{inl}}", from=1-3, to=3-3]
+	\arrow["{\rm{!}}", from=1-1, to=1-3]
+	\arrow["{\rm{!}}"', from=1-1, to=3-1]
+	\arrow["{\rm{inr}}", from=1-3, to=3-3]
 	\arrow["{\rm{commutes}}"{description}, shorten <=6pt, shorten >=6pt, Rightarrow, from=3-1, to=1-3]
 	\arrow["{\rm{inl}}"', from=3-1, to=3-3]
 \end{tikzcd}\]
@@ -99,20 +87,11 @@ from members of the pushout; therefore, we take the
 `inl`{.Agda} and `inr`{.Agda} to `N`{.Agda} and
 `S`{.Agda} respectively.
 Likewise, we take `commutes`{.Agda} to
-`merid`{.Agda}, as our functions `f`{.Agda} and `g`{.Agda} can only
-be `to-top`{.Agda}, so it reduces (with a suitable element of `C`{.Agda})
-from `∀ c → inl (f c) ≡ inr (g c)`{.Agda} to `inl tt ≡ inr tt`{.Agda},
-or equivalently `inl ≡ inr`{.Agda}.
-
-We therefore aim to show:
+`merid`{.Agda}.
 
 ```agda
 Susp≡Pushout-⊤←A→⊤ : ∀ {A} → Susp A ≡ Pushout A ⊤ (const tt) ⊤ (const tt)
-```
 
-The left and right functions are therefore trival:
-
-```agda
 Susp→Pushout-⊤←A→⊤ : ∀ {A} → Susp A → Pushout A ⊤ (const tt) ⊤ (const tt)
 Susp→Pushout-⊤←A→⊤ N = inl tt
 Susp→Pushout-⊤←A→⊤ S = inr tt
@@ -147,9 +126,9 @@ similarities in structure.</summary>
 ```
 </details>
 
-## The universal property of a pushout, via Cocones
+## The universal property of pushouts
 
-To formulate the universal property of a pushout, we first introduce the **Cocone**.
+To formulate the universal property of a pushout, we first introduce **cocones**.
 A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 
 ~~~{.quiver}
@@ -160,30 +139,8 @@ A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 \end{tikzcd}\]
 ~~~
 
-consists of functions:
-<!--
-```agda
-module _ (A B C D : Type) (f : C → A) (g : C → B)
-  (i' : A → D) (j' : B → D) (h' : (c : C) → i' (f c) ≡ j' (g c))
-  where
-```
--->
-```agda
-  i : A → D
-  j : B → D
-``` 
-and a homotopy
-```agda
-  h : (c : C) → i (f c) ≡ j (g c)
-```
-<!--
-```agda
-  i = i'
-  j = j'
-  h = h'
-```
--->
-forming:
+consists of functions `i : A → D`{.Agda} & `j : B → D`{.Agda}, and a homotopy
+`h : (c : C) → i (f c) ≡ j (g c)`{.Agda}, forming:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
