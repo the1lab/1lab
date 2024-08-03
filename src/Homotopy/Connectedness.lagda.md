@@ -18,6 +18,7 @@ module Homotopy.Connectedness where
 private variable
   ℓ ℓ' ℓ'' : Level
   A B : Type ℓ
+  P : A → Type ℓ
   x y : A
 ```
 -->
@@ -216,7 +217,7 @@ retract→is-n-connected (suc (suc n)) f g h a-conn =
 
 Since the truncation operator $\| - \|_n$ also preserves products, a
 remarkably similar argument shows that if $A$ and $B$ are $n$-connected,
-then so is $A \times B$ is.
+then so is $A \times B$.
 
 ```agda
 ×-is-n-connected
@@ -224,6 +225,20 @@ then so is $A \times B$ is.
 ×-is-n-connected 0 = _
 ×-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ Equiv→is-hlevel 0
   n-Tr-product (×-is-hlevel 0 (n-connected.to n a-conn) (n-connected.to n b-conn))
+```
+
+We can generalise this to $\Sigma$-types: if $A$ is $n$-connected and
+$B$ is an $A$-indexed family of $n$-connected types, then we have
+$\|\Sigma_{a : A} B(a)\|_n \simeq \|\Sigma_{a : A} \|B(a)\|_n\|_n
+\simeq \|A\|_n \simeq 1$.
+
+```agda
+Σ-is-n-connected
+  : ∀ n → is-n-connected A n → (∀ a → is-n-connected (P a) n) → is-n-connected (Σ A P) n
+Σ-is-n-connected 0 = _
+Σ-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ Equiv→is-hlevel 0
+  (n-Tr-Σ ∙e n-Tr-≃ (Σ-contract λ _ → n-connected.to n (b-conn _)))
+  (n-connected.to n a-conn)
 ```
 
 Finally, we show the dual of two properties of truncations: if $A$ is

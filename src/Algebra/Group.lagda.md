@@ -193,7 +193,7 @@ record
 ```
 
 A tedious calculation shows that this is sufficient to preserve the
-identity:
+identity and inverses:
 
 ```agda
   private

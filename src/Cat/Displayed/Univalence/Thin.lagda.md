@@ -148,27 +148,35 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  equiv-hom→inverse-hom
+  abstract
+    equiv-hom→inverse-hom
+      : ∀ {a b : So.Ob}
+      → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
+      → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
+      → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
+    equiv-hom→inverse-hom {a = a} {b = b} f e =
+      EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
+        (λ _ → invert-id-hom) f (b .snd) e
+
+  total-iso
     : ∀ {a b : So.Ob}
     → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
     → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
-    → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
-  equiv-hom→inverse-hom {a = a} {b = b} f e =
-    EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
-      (λ _ → invert-id-hom) f (b .snd) e
+    → a Som.≅ b
+  total-iso f e = Som.make-iso
+    (total-hom (Equiv.to f) e)
+    (total-hom (Equiv.from f) (equiv-hom→inverse-hom f e))
+    (ext (Equiv.ε f))
+    (ext (Equiv.η f))
 
   ∫-Path
     : ∀ {a b : So.Ob}
     → (f : So.Hom a b)
     → is-equiv (f #_)
     → a ≡ b
-  ∫-Path {a = a} {b = b} f eqv =
-    Σ-pathp (n-ua (f .hom , eqv)) $
-      EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → PathP (λ i → S (ua e i)) (a .snd) st)
-        (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
-                  ·· transport-refl _
-                  ·· spec .id-hom-unique pres (invert-id-hom pres)))
-        (f .hom , eqv) (b .snd) (f .preserves)
+  ∫-Path {a = a} {b = b} f eqv = Univalent.iso→path
+    (Structured-objects-is-category spec)
+    (total-iso ((f #_) , eqv) (f .preserves))
 
 open is-equational public
 ```

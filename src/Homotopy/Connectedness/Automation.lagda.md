@@ -64,12 +64,12 @@ instance
   Connected-⊤ {n} = conn-instance (n-connected-∥-∥.from n
     (is-contr→is-connected (hlevel 0)))
 
-  Connected-×
-    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
-    → ⦃ Connected A n ⦄ → ⦃ Connected B n ⦄
-    → Connected (A × B) n
-  Connected-× {n = n} ⦃ conn-instance ac ⦄ ⦃ conn-instance bc ⦄ = conn-instance
-    (×-is-n-connected n ac bc)
+  Connected-Σ
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {n}
+    → ⦃ Connected A n ⦄ → ⦃ ∀ {a} → Connected (B a) n ⦄
+    → Connected (Σ A B) n
+  Connected-Σ {n = n} ⦃ conn-instance ac ⦄ ⦃ bc ⦄ = conn-instance
+    (Σ-is-n-connected n ac λ _ → Connected.has-n-connected bc)
 
   Connected-Path
     : ∀ {ℓ} {A : Type ℓ} {x y : A} {n}
