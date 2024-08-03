@@ -4,6 +4,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
 open import Cat.Functor.Morphism
 open import Cat.Prelude
@@ -23,208 +24,225 @@ module Topology.Base where
 
 # Topological spaces {defines="topology topological-space open-set"}
 
+A **topology** on a type $X$ consists of a subset $\mathcal{O}$ of the [[power set]]
+of $X$ that is closed under finite intersections and infinitary unions.
+The elements of $\mathcal{O}$ are known as **open sets**,
+and a set equipped with a topology is called a **topological space**
+
+Topological spaces allow us to study geometric ideas like continuity,
+convergence, etc. within a relatively abstract framework, and are a
+pillar of modern classical mathematics. However, they tend to be rather
+ill-behaved constructively, and provide a rich source of constructive
+taboos.
+
+With that small bit of motivation out of the way, we can proceed to
+give a formal definition of a topology.
 
 ```agda
-record is-topology
-  {o ℓ}
-  (X : Type o)
-  (is-open : (X → Ω) → Type ℓ)
-  : Type (lsuc o ⊔ ℓ) where
+record Topology-on {ℓ} (X : Type ℓ) : Type ℓ where
   no-eta-equality
   field
-    ∩-open : ∀ {U V : X → Ω} → is-open U → is-open V → is-open (U ∩ V)
-    ⋃-open : {I : Type o} → (Uᵢ : I → X → Ω) → (∀ i → is-open (Uᵢ i)) → is-open (⋃ Uᵢ)
-    maximal-open : is-open maximal
-    has-is-set : is-set X
-    is-open-is-prop : ∀ {U} → is-prop (is-open U)
+    Opens : ℙ (ℙ X)
+```
+
+We ensure that the set of opens is closed under finite intersections
+by requiring that the entirety of $X$ is open, along with closure
+under binary intersections.
+
+```agda
+    maximal-open : maximal ∈ Opens
+    ∩-open : ∀ {U V : ℙ X} → U ∈ Opens → V ∈ Opens → (U ∩ V) ∈ Opens
+```
+
+Instead of closure under infinitary unions $\bigcup_{i : I} U_i$, we
+require that the set of opens is closed under unions of subsets. This
+allows us to avoid a bump in universe level, as we do not need to quantify
+over any types!
+
+```agda
+    ⋃ˢ-open : ∀ (S : ℙ (ℙ X)) → S ⊆ Opens → ⋃ˢ S ∈ Opens
+```
+
+<!--
+```agda
+  is-open : ℙ X → Type
+  is-open X = ∣ Opens X ∣
 
   open-ext
-    : ∀ {U V : X → Ω}
-    → (∀ x → x ∈ U → x ∈ V)
-    → (∀ x → x ∈ V → x ∈ U)
-    → is-open U
-    → is-open V
+    : ∀ {U V : ℙ X}
+    → (∀ (x : X) → x ∈ U → x ∈ V)
+    → (∀ (x : X) → x ∈ V → x ∈ U)
+    → U ∈ Opens
+    → V ∈ Opens
   open-ext to from U-open =
     subst is-open (ext λ x → Ω-ua (to x) (from x)) U-open
+```
+-->
 
-  minimal-open : is-open minimal
+Next, we will show that open sets are closed under indexed unions.
+Let $U_i$ be a family of open sets indexed by an arbitrary type $I$.
+Note that if $U$ is in the fibre of $U_i$, then $U$ is open. Moreover,
+the set of fibres of $U_i$ forms a subset of the powerset, so its
+union is also open. Finally, the union of the fibres of $U_i$ is equal
+to the union of $U_i$, so $\bigcup_{I} U_i$ is open.
+
+```agda
+  fibre-open
+    : ∀ {κ} {I : Type κ}
+    → (Uᵢ : I → ℙ X) → (∀ i → Uᵢ i ∈ Opens)
+    → ∀ (U : ℙ X) → □ (fibre Uᵢ U) → U ∈ Opens
+  fibre-open Uᵢ Uᵢ-open U = rec! λ i Uᵢ=U →
+    subst is-open Uᵢ=U (Uᵢ-open i)
+
+  ⋃-open
+    : ∀ {κ} {I : Type κ}
+    → (Uᵢ : I → ℙ X) → (∀ i → Uᵢ i ∈ Opens)
+    → ⋃ Uᵢ ∈ Opens
+  ⋃-open {I = I} Uᵢ Uᵢ-open =
+    subst is-open
+      (⋃-fibre Uᵢ)
+      (⋃ˢ-open (λ U → elΩ (fibre Uᵢ U)) (fibre-open Uᵢ Uᵢ-open))
+```
+
+As an easy corollary, the empty set is also open.
+
+```agda
+  minimal-open : minimal ∈ Opens
   minimal-open =
-    open-ext
-      (rec! (λ x ff tt → ff))
-      (λ x ff → inc (lift ff , tt))
-      (⋃-open {I = Lift _ ⊥} (λ _ _ → ⊤Ω) (λ ff → absurd (Lift.lower ff)))
-
-record Topological-space (o ℓ : Level) : Type (lsuc o ⊔ lsuc ℓ) where
-  field
-    Ob : Type o
-    is-open : (Ob → Ω) → Type ℓ
-    has-is-topology : is-topology Ob is-open
-
-  open is-topology has-is-topology public
-
-  is-closed : ℙ Ob → Type _
-  is-closed U = is-open (U ᶜ)
-
-  ∪-closed : ∀ {U V} → is-closed U → is-closed V → is-closed (U ∪ V)
-  ∪-closed U-closed V-closed =
-    open-ext
-      (λ x (¬U , ¬V) → rec! [ ¬U , ¬V ])
-      (λ x ¬U+V → (λ u → ¬U+V (inc (inl u))) , (λ v → ¬U+V (inc (inr v))))
-      (∩-open U-closed V-closed)
-
-  minimal-closed : is-closed minimal
-  minimal-closed =
-    open-ext
-      (λ x tt ff → ff)
-      (λ x ff→ff → tt)
-      maximal-open
-
-  maximal-closed : is-closed maximal
-  maximal-closed =
-    open-ext
-      (λ x ff tt → ff)
-      (λ x tt→ff → tt→ff tt)
-      minimal-open
+    subst is-open
+      (⋃-minimal (λ _ → maximal))
+      (⋃-open (λ _ → maximal) (λ _ → maximal-open))
 ```
 
-<!--
+We pause to note that paths between topologies are relatively easy to
+characterise: if two topologies on $X$ have the same sets of opens, then
+the two topologies are equal!
+
 ```agda
-  is-neighborhood : (x : Ob) → (U : Ob → Ω) → Type _
-  is-neighborhood x U = ∃[ O ∈ (Ob → Ω) ] (O ⊆ U × is-open O)
+Topology-on-path
+  : ∀ {ℓ} {X : Type ℓ}
+  → {S T : Topology-on X}
+  → (Topology-on.Opens S ⊆ Topology-on.Opens T)
+  → (Topology-on.Opens T ⊆ Topology-on.Opens S)
+  → S ≡ T
 ```
--->
 
-<!--
+<details>
+<summary>The proof is somewhat tedious, but the key observation is that
+the sets of opens are the only non-propositional piece of data in a
+topology.
+</summary>
 ```agda
-private variable
-  o ℓ o' ℓ' : Level
-  X Y Z : Topological-space o ℓ
+Topology-on-path {X = X} {S = S} {T = T} to from = path where
+  module S = Topology-on S
+  module T = Topology-on T
 
-instance
-  Underlying-Topological-space : ∀ {o ℓ} → Underlying (Topological-space o ℓ)
-  Underlying-Topological-space .Underlying.ℓ-underlying = _
-  Underlying-Topological-space .Underlying.⌞_⌟ = Topological-space.Ob
 
-  open hlevel-projection
+  opens : S.Opens ≡ T.Opens
+  opens = funext λ U → Ω-ua (to U) (from U)
 
-  Topological-space-ob-hlevel-proj : hlevel-projection (quote Topological-space.Ob)
-  Topological-space-ob-hlevel-proj .has-level   = quote Topological-space.has-is-set
-  Topological-space-ob-hlevel-proj .get-level _ = pure (lit (nat 2))
-  Topological-space-ob-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Topological-space-ob-hlevel-proj .get-argument _                     = typeError []
-
-  Topological-space-open-hlevel-proj : hlevel-projection (quote Topological-space.is-open)
-  Topological-space-open-hlevel-proj .has-level   = quote Topological-space.is-open-is-prop
-  Topological-space-open-hlevel-proj .get-level _ = pure (lit (nat 1))
-  Topological-space-open-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Topological-space-open-hlevel-proj .get-argument _                     = typeError []
-
+  path : S ≡ T
+  path i .Topology-on.Opens = opens i
+  path i .Topology-on.maximal-open =
+    is-prop→pathp (λ i → opens i maximal .is-tr)
+      S.maximal-open
+      T.maximal-open i
+  path i .Topology-on.∩-open {U} {V} =
+    is-prop→pathp
+      (λ i →
+        Π-is-hlevel² {A = U ∈ opens i} {B = λ _ → V ∈ opens i} 1 λ _ _ →
+        opens i (U ∩ V) .is-tr)
+      S.∩-open
+      T.∩-open i
+  path i .Topology-on.⋃ˢ-open S =
+    is-prop→pathp
+      (λ i →
+        Π-is-hlevel {A = S ⊆ opens i} 1 λ _ →
+        opens i (⋃ˢ S) .is-tr)
+      (S.⋃ˢ-open S)
+      (T.⋃ˢ-open S) i
 ```
--->
+</details>
+
+
+# Continuous Maps
 
 ```agda
-record Continuous
-  {o ℓ o' ℓ'}
-  (X : Topological-space o ℓ) (Y : Topological-space o' ℓ')
-  : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
+record is-continuous
+  {ℓ ℓ'} {X : Type ℓ} {Y : Type ℓ'}
+  (f : X → Y)
+  (X-top : Topology-on X) (Y-top : Topology-on Y)
+  : Type ℓ'
+  where
   no-eta-equality
   private
-    module X = Topological-space X
-    module Y = Topological-space Y
+    module X = Topology-on X-top
+    module Y = Topology-on Y-top
   field
-    hom : X.Ob → Y.Ob
-    reflect-open : ∀ {U} → Y.is-open U → X.is-open (λ x → U (hom x))
+      reflect-open : ∀ {U : ℙ Y} → U ∈ Y.Opens → Preimage f U ∈ X.Opens
 
-open Continuous
 ```
 
 <!--
 ```agda
-unquoteDecl H-Level-Continuous = declare-record-hlevel 2 H-Level-Continuous (quote Continuous)
+open is-continuous
 
-instance
-  Funlike-Continuous : Funlike (Continuous X Y) ⌞ X ⌟ λ _ → ⌞ Y ⌟
-  Funlike-Continuous = record { _#_ = hom }
-
-Continuous-pathp
-  : ∀ {o ℓ o' ℓ'} {P : I → Topological-space o ℓ} {Q : I → Topological-space o' ℓ'}
-  → {f : Continuous (P i0) (Q i0)} {g : Continuous (P i1) (Q i1)}
-  → PathP (λ i → ⌞ P i ⌟ → ⌞ Q i ⌟) (apply f) (apply g)
-  → PathP (λ i → Continuous (P i) (Q i)) f g
-Continuous-pathp q i .hom a = q i a
-Continuous-pathp {P = P} {Q} {f} {g} q i .Continuous.reflect-open {U} U-open =
-  is-prop→pathp
-    (λ i →
-      Π-is-hlevel' {A = ⌞ Q i ⌟ → Ω} {B = λ U → Q.is-open i U → P.is-open i λ x → U (q i x)} 1 λ _ →
-      Π-is-hlevel 1 λ _ → P.is-open-is-prop i)
-    (λ U-open → f .reflect-open U-open)
-    (λ U-open → g .reflect-open U-open)
-    i U-open
-  where
-    module P i = Topological-space (P i)
-    module Q i = Topological-space (Q i)
-
-instance
-  Extensional-Continuous
-    : ∀ {o ℓ o' ℓ' ℓr} {P : Topological-space o ℓ} {Q : Topological-space o' ℓ'}
-    → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
-    → Extensional (Continuous P Q) ℓr
-  Extensional-Continuous {Q = Q} ⦃ sa ⦄ =
-    injection→extensional! Continuous-pathp sa
-
+unquoteDecl H-Level-is-continuous = declare-record-hlevel 1 H-Level-is-continuous (quote is-continuous)
 ```
 -->
 
+# The category of topological spaces
+
 ```agda
-idᶜ : Continuous X X
-idᶜ .hom x = x
-idᶜ .reflect-open U-open = U-open
-
-_∘ᶜ_ : Continuous Y Z → Continuous X Y → Continuous X Z
-(f ∘ᶜ g) .hom x = f # (g # x)
-(f ∘ᶜ g) .reflect-open U-open = g .reflect-open (f .reflect-open U-open)
-
-Top : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Top o ℓ .Precategory.Ob = Topological-space o ℓ
-Top o ℓ .Precategory.Hom = Continuous
-Top o ℓ .Precategory.Hom-set _ _ = hlevel 2
-Top o ℓ .Precategory.id = idᶜ
-Top o ℓ .Precategory._∘_ = _∘ᶜ_
-Top o ℓ .Precategory.idr _ = trivial!
-Top o ℓ .Precategory.idl _ = trivial!
-Top o ℓ .Precategory.assoc _ _ _ = trivial!
+Topology-structure : ∀ ℓ → Thin-structure ℓ (Topology-on {ℓ})
+Topology-structure ℓ .is-hom f X-top Y-top =
+  el! (is-continuous f X-top Y-top)
+Topology-structure ℓ .id-is-hom .reflect-open U-open = U-open
+Topology-structure ℓ .∘-is-hom f g f-cont g-cont .reflect-open =
+  g-cont .reflect-open ⊙ f-cont .reflect-open
+Topology-structure ℓ .id-hom-unique p q =
+  Topology-on-path (λ U → q .reflect-open) (λ U → p .reflect-open)
 ```
 
 ```agda
-Top↪Sets : Functor (Top o ℓ) (Sets o)
-Top↪Sets .Functor.F₀ X .∣_∣ = ⌞ X ⌟
-Top↪Sets .Functor.F₀ X .is-tr = hlevel 2
-Top↪Sets .Functor.F₁ = hom
-Top↪Sets .Functor.F-id = refl
-Top↪Sets .Functor.F-∘ _ _ = refl
+Topologies : ∀ ℓ → Precategory (lsuc ℓ) (ℓ ⊔ ℓ)
+Topologies ℓ = Structured-objects (Topology-structure ℓ)
 
-Top↪Sets-is-faithful : is-faithful (Top↪Sets {o} {ℓ})
-Top↪Sets-is-faithful p = ext (apply p)
+module Topologies {ℓ} = Cat.Reasoning (Topologies ℓ)
 
-module Top {o ℓ} = Cat.Reasoning (Top o ℓ)
+Topological-space : ∀ ℓ → Type (lsuc ℓ)
+Topological-space ℓ = Topologies.Ob {ℓ}
+```
+
+```agda
+Topologies↪Sets : ∀ {ℓ} → Functor (Topologies ℓ) (Sets ℓ)
+Topologies↪Sets = Forget-structure (Topology-structure _)
+
+Topologies↪Sets-faithful : ∀ {ℓ} → is-faithful (Topologies↪Sets {ℓ})
+Topologies↪Sets-faithful = Structured-hom-path (Topology-structure _)
+```
+
+```agda
+Topologies-is-category : ∀ {ℓ} → is-category (Topologies ℓ)
+Topologies-is-category = Structured-objects-is-category (Topology-structure _)
 ```
 
 ```agda
 continuous-injection→monic
-  : {X Y : Topological-space o ℓ}
-  → (f : Continuous X Y)
+  : ∀ {ℓ} {X Y : Topological-space ℓ}
+  → (f : Topologies.Hom X Y)
   → injective (f .hom)
-  → Top.is-monic f
+  → Topologies.is-monic f
 continuous-injection→monic f f-inj =
-  faithful→reflects-mono Top↪Sets Top↪Sets-is-faithful $ λ {Z} →
+  faithful→reflects-mono Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
   injective→monic (hlevel 2) f-inj {Z}
 
 continuous-surjection→epic
-  : {X Y : Topological-space o ℓ}
-  → (f : Continuous X Y)
+  : ∀ {ℓ} {X Y : Topological-space ℓ}
+  → (f : Topologies.Hom X Y)
   → is-surjective (f .hom)
-  → Top.is-epic f
+  → Topologies.is-epic f
 continuous-surjection→epic {X = X} {Y = Y} f f-surj =
-  faithful→reflects-epi Top↪Sets Top↪Sets-is-faithful $ λ {Z} →
+  faithful→reflects-epi Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
   surjective→epi (el! ⌞ X ⌟) (el! ⌞ Y ⌟) (f .hom) f-surj {Z}
 ```

@@ -14,7 +14,7 @@ module Data.Power where
 ```agda
 private variable
   ℓ : Level
-  X : Type ℓ
+  X Y : Type ℓ
 ```
 -->
 
@@ -106,15 +106,66 @@ infixr 32 _∩_
 infixr 31 _∪_
 ```
 
-<!--
+We can also take unions of $I$-indexed families of sets $A_i$, as well
+as unions of subsets of the power set.
+
 ```agda
 ⋃ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
 ⋃ {I = I} A x = ∃Ω[ i ∈ I ] A i x
 
+⋃ˢ : ℙ (ℙ X) → ℙ X
+⋃ˢ {X = X} P = ⋃ {I = Σ[ U ∈ ℙ X ] U ∈ P} fst
+```
+
+Note that the union of a family of sets $A_i$ is equal to the union
+of the fibres of $A_i$.
+
+```agda
+⋃-fibre
+  : ∀ {κ} {I : Type κ}
+  → (Aᵢ : I → ℙ X)
+  → ⋃ˢ (λ A → elΩ (fibre Aᵢ A)) ≡ ⋃ Aᵢ
+⋃-fibre Aᵢ =
+  funext λ x →
+  Ω-ua
+    (rec! λ A i Aᵢ=A x∈A → pure (i , (subst (λ A → ∣ A x ∣) (sym Aᵢ=A) x∈A)))
+    (rec! λ i x∈Aᵢ → pure ((Aᵢ i , pure (i , refl)) , x∈Aᵢ))
+```
+
+Moreover, the union of an empty family of sets is equal to the empty
+set.
+
+```agda
+⋃-minimal
+  : (A : ⊥ → ℙ X)
+  → ⋃ {I = ⊥} A ≡ minimal
+⋃-minimal _ =
+  funext λ x →
+    Ω-ua
+      (rec! λ ff x∈A → ff)
+      (λ ff → absurd ff)
+```
+
+
+<!--
+```agda
 ⋂ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
 ⋂ {I = I} A x = ∀Ω[ i ∈ I ] A i x
 
 _ᶜ : ℙ X → ℙ X
 (A ᶜ) x = ¬Ω (A x)
+
+Preimage : (X → Y) → ℙ Y → ℙ X
+Preimage f A = A ∘ f
+
+Direct-image : (X → Y) → ℙ X → ℙ Y
+Direct-image {X = X} f A y = elΩ (Σ[ x ∈ X ] (x ∈ A × (f x ≡ y)))
+
+direct-preimage
+  : ∀ {f : X → Y}
+  → ∀ (U : ℙ Y)
+  → Direct-image f (Preimage f U) ⊆ U
+direct-preimage {f = f} U y =
+  rec! λ x fx∈U p → subst (λ x → ∣ U x ∣) p fx∈U
 ```
 -->
