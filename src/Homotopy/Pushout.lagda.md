@@ -55,7 +55,7 @@ These combine to give the following:
 ## Suspensions as pushouts
 
 The [[suspension]] of a type $A$ can be expressed as the  `Pushout`{.Agda}
-of the span `⊤ ← A → ⊤`{.Agda}:
+of the span $\top \ot A \to \top$:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
