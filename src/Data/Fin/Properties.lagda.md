@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Function.Antisurjection
+open import 1Lab.Function.Antiinjection
 open import 1Lab.Prelude
 
 open import Data.Fin.Base
@@ -383,3 +385,177 @@ insert-delete {n = n} ρ fzero a p (fsuc j) = refl
 insert-delete {n = suc n} ρ (fsuc i) a p fzero = refl
 insert-delete {n = suc n} ρ (fsuc i) a p (fsuc j) = insert-delete (ρ ∘ fsuc) i a p j
 ```
+
+<!--
+```agda
+to-nat-inj
+  : ∀ {n} {i j : Fin n}
+  → to-nat i ≡ to-nat j
+  → i ≡ j
+to-nat-inj {i = fzero} {j = fzero} p = refl
+to-nat-inj {i = fzero} {j = fsuc j} p = absurd (Nat.zero≠suc p)
+to-nat-inj {i = fsuc i} {j = fzero} p = absurd (Nat.suc≠zero p)
+to-nat-inj {i = fsuc i} {j = fsuc j} p = ap fsuc (to-nat-inj (Nat.suc-inj p))
+
+to-from-nat : ∀ n → to-nat (from-nat n) ≡ n
+to-from-nat zero = refl
+to-from-nat (suc n) = ap suc (to-from-nat n)
+
+from-nat-pres-≤
+  : ∀ {m n}
+  → m Nat.≤ n
+  → to-nat (from-nat m) Nat.≤ to-nat (from-nat n)
+from-nat-pres-≤ {m} {n} p = Nat.cast-≤ (sym (to-from-nat m)) (sym (to-from-nat n)) p
+
+from-nat-top
+  : ∀ {n}
+  → (i : Fin (suc n))
+  → i ≤ from-nat n
+from-nat-top {n = n} fzero = Nat.0≤x
+from-nat-top {n = suc n} (fsuc i) = Nat.s≤s (from-nat-top i)
+
+to-nat-weaken-≤
+  : ∀ {m n n'}
+  → (p : m Nat.≤ n) (q : m Nat.≤ n') (i : Fin m)
+  → to-nat (weaken-≤ p i) ≡ to-nat (weaken-≤ q i)
+to-nat-weaken-≤ (Nat.s≤s p) (Nat.s≤s q) fzero = refl
+to-nat-weaken-≤ (Nat.s≤s p) (Nat.s≤s q) (fsuc i) = ap suc (to-nat-weaken-≤ p q i)
+```
+-->
+
+<!--
+```agda
+Finite-one-is-prop : is-prop (Fin 1)
+Finite-one-is-prop fzero fzero = refl
+```
+-->
+
+<!--
+```agda
+fkeep-id : ∀ {n} → ∀ (i : Fin (suc n)) → fkeep (λ x → x) i ≡ i
+fkeep-id fzero = refl
+fkeep-id (fsuc i) = refl
+
+fkeep-∘
+  : ∀ {m n o}
+  → {f : Fin n → Fin o} {g : Fin m → Fin n}
+  → ∀ i → fkeep (f ∘ g) i ≡ fkeep f (fkeep g i)
+fkeep-∘ fzero = refl
+fkeep-∘ (fsuc i) = refl
+
+fkeep-inj : ∀ {m n} → injective (fkeep {m} {n})
+fkeep-inj p = ext λ i → fsuc-inj (p $ₚ fsuc i)
+
+fkeep-split-antisurj
+  : ∀ {m n} {f : Fin m → Fin n}
+  → split-antisurjective f
+  → split-antisurjective (fkeep f)
+fkeep-split-antisurj (i , ¬fib) = fsuc i , λ where
+  (fzero , p) → fzero≠fsuc p
+  (fsuc i , p) → ¬fib (i , fsuc-inj p)
+
+fkeep-split-antiinj
+  : ∀ {m n} {f : Fin m → Fin n}
+  → split-antiinjective f
+  → split-antiinjective (fkeep f)
+fkeep-split-antiinj {f = f} f-ai = fkeep-antiinj where
+  open split-antiinjective
+
+  fkeep-antiinj : split-antiinjective (fkeep f)
+  fkeep-antiinj .pt = fsuc (f-ai .pt)
+  fkeep-antiinj .x₀ = fsuc (f-ai .x₀)
+  fkeep-antiinj .x₁ = fsuc (f-ai .x₁)
+  fkeep-antiinj .map-to₀ = ap fsuc (f-ai .map-to₀)
+  fkeep-antiinj .map-to₁ = ap fsuc (f-ai .map-to₁)
+  fkeep-antiinj .distinct = f-ai .distinct ∘ fsuc-inj
+
+fkeep-fzero
+  : ∀ {m n} {f : Fin m → Fin n}
+  → ∀ i → fkeep f i ≡ fzero → i ≡ fzero
+fkeep-fzero fzero p = refl
+fkeep-fzero (fsuc i) p = absurd (fsuc≠fzero p)
+
+fkeep-fpred
+  : ∀ {m n} {f : Fin (suc m) → Fin (suc n)}
+  → ∀ i → ¬ (i ≡ 0) → fpred (fkeep f i) ≡ f (fpred i)
+fkeep-fpred fzero i≠0 = absurd (i≠0 refl)
+fkeep-fpred (fsuc i) i≠0 = refl
+
+fpred-nonzero-inj
+  : ∀ {n} {i j : Fin (suc (suc n))}
+  → ¬ (i ≡ 0) → ¬ (j ≡ 0)
+  → fpred i ≡ fpred j
+  → i ≡ j
+fpred-nonzero-inj {i = fzero} {j = j} i≠0 j≠0 p = absurd (i≠0 refl)
+fpred-nonzero-inj {i = fsuc i} {j = fzero} i≠0 j≠0 p = absurd (j≠0 refl)
+fpred-nonzero-inj {i = fsuc i} {j = fsuc j} i≠0 j≠0 p = ap fsuc p
+
+open split-antiinjective
+
+fkeep-reflect-split-antiinj-suc
+  : ∀ {m n} {f : Fin (suc m) → Fin (suc n)}
+  → split-antiinjective (fkeep f)
+  → split-antiinjective f
+fkeep-reflect-split-antiinj-suc {f = f} fkeep-antiinj = antiinj where
+  abstract
+    pt≠0 : ¬ (fkeep-antiinj .pt ≡ 0)
+    pt≠0 p =
+      fkeep-antiinj .distinct $
+      fkeep-fzero _ (fkeep-antiinj .map-to₀ ∙ p)
+      ∙ sym (fkeep-fzero _ (fkeep-antiinj .map-to₁ ∙ p))
+
+    x₀≠0 : ¬ (fkeep-antiinj .x₀ ≡ 0)
+    x₀≠0 p = pt≠0 $ sym (ap (fkeep f) (sym p) ∙ fkeep-antiinj .map-to₀)
+
+    x₁≠0 : ¬ (fkeep-antiinj .x₁ ≡ 0)
+    x₁≠0 p = pt≠0 $ sym (ap (fkeep f) (sym p) ∙ fkeep-antiinj .map-to₁)
+
+  antiinj : split-antiinjective f
+  antiinj .pt = fpred (fkeep-antiinj .pt)
+  antiinj .x₀ = fpred (fkeep-antiinj .x₀)
+  antiinj .x₁ = fpred (fkeep-antiinj .x₁)
+  antiinj .map-to₀ =
+    sym (fkeep-fpred {f = f} (fkeep-antiinj .x₀) x₀≠0)
+    ∙ ap fpred (fkeep-antiinj .map-to₀)
+  antiinj .map-to₁ =
+    sym (fkeep-fpred {f = f} (fkeep-antiinj .x₁) x₁≠0)
+    ∙ ap fpred (fkeep-antiinj .map-to₁)
+  antiinj .distinct = fkeep-antiinj .distinct ∘ fpred-nonzero-inj x₀≠0 x₁≠0
+
+fkeep-reflect-split-antiinj
+  : ∀ {m n} {f : Fin m → Fin n}
+  → split-antiinjective (fkeep f)
+  → split-antiinjective f
+fkeep-reflect-split-antiinj {m = zero} {n = n} {f = f} fkeep-antiinj =
+  absurd (fkeep-antiinj .distinct (Finite-one-is-prop _ _))
+fkeep-reflect-split-antiinj {m = suc m} {n = zero} {f = f} fkeep-antiinj =
+  fabsurd (f 0)
+fkeep-reflect-split-antiinj {m = suc m} {n = suc n} {f = f} fkeep-antiinj =
+  fkeep-reflect-split-antiinj-suc fkeep-antiinj
+
+fkeep-reflect-split-antisurj
+  : ∀ {m n} {f : Fin m → Fin n}
+  → split-antisurjective (fkeep f)
+  → split-antisurjective f
+fkeep-reflect-split-antisurj (fzero , ¬fib) = absurd (¬fib (0 , refl))
+fkeep-reflect-split-antisurj (fsuc b , ¬fib) = b , ¬fib ∘ Σ-map fsuc (ap fsuc)
+
+fkeep-equiv
+  : ∀ {m n} {f : Fin m → Fin n}
+  → is-equiv f
+  → is-equiv (fkeep f)
+fkeep-equiv {m} {n} {f} f-eqv = is-iso→is-equiv (iso f⁻¹ f⁻¹→fkeep fkeep→f⁻¹)
+  where
+    f⁻¹ : Fin (suc n) → Fin (suc m)
+    f⁻¹ fzero = fzero
+    f⁻¹ (fsuc i) = fsuc (equiv→inverse f-eqv i)
+
+    f⁻¹→fkeep : ∀ i → fkeep f (f⁻¹ i) ≡ i
+    f⁻¹→fkeep fzero = refl
+    f⁻¹→fkeep (fsuc i) = ap fsuc (equiv→counit f-eqv i)
+
+    fkeep→f⁻¹ : ∀ i → f⁻¹ (fkeep f i) ≡ i
+    fkeep→f⁻¹ fzero = refl
+    fkeep→f⁻¹ (fsuc i) = ap fsuc (equiv→unit f-eqv i)
+```
+-->
