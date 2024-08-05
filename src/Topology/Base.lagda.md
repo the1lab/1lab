@@ -165,7 +165,12 @@ Topology-on-path {X = X} {S = S} {T = T} to from = path where
 </details>
 
 
-# Continuous Maps
+# Continuous functions {defines="continuous-function"}
+
+A function $f : X \to Y$ between two topological spaces is **continuous**
+if it reflects open sets. Explicitly, $f$ is continuous if, for every
+open set $U : \power{Y}$, the preimage $f^{-1}(U) : \power{X}$ is open
+in $X$.
 
 ```agda
 record is-continuous
@@ -179,8 +184,7 @@ record is-continuous
     module X = Topology-on X-top
     module Y = Topology-on Y-top
   field
-      reflect-open : ∀ {U : ℙ Y} → U ∈ Y.Opens → Preimage f U ∈ X.Opens
-
+    reflect-open : ∀ {U : ℙ Y} → U ∈ Y.Opens → Preimage f U ∈ X.Opens
 ```
 
 <!--
@@ -207,6 +211,9 @@ Topology-structure ℓ .id-hom-unique p q =
 ```agda
 Topologies : ∀ ℓ → Precategory (lsuc ℓ) (ℓ ⊔ ℓ)
 Topologies ℓ = Structured-objects (Topology-structure ℓ)
+
+Topologies-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Topologies-on ℓ = Thin-structure-over (Topology-structure ℓ)
 
 module Topologies {ℓ} = Cat.Reasoning (Topologies ℓ)
 
