@@ -17,7 +17,7 @@ private module A = Ab-category A
 ```
 -->
 
-# Endomorphism rings
+# Endomorphism rings {defines="endomorphism-ring"}
 
 Fix an [$\Ab$-category] $\cA$: It can be the category of [[abelian
 groups]] $\Ab$ itself, for example, or $R$-Mod for your favourite

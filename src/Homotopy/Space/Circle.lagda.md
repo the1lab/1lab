@@ -4,9 +4,9 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.FinitelyComplete
+open import Algebra.Group.Instances.Integers
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
-open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Data.Set.Truncation
@@ -299,7 +299,7 @@ loopⁿ-+ a = Integers.induction Int-integers
     loopⁿ (a +ℤ sucℤ b) ≡ loopⁿ a ∙ loopⁿ (sucℤ b)     ≃∎
 
 π₁S¹≡ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid ≡ ℤ
-π₁S¹≡ℤ = sym $ ∫-Path Groups-equational
+π₁S¹≡ℤ = sym $ ∫-Path
   (total-hom (Equiv.from ΩS¹≃integers ∘ Lift.lower)
     (record { pres-⋆ = λ (lift a) (lift b) → loopⁿ-+ a b }))
   (∙-is-equiv (Lift-≃ .snd) ((ΩS¹≃integers e⁻¹) .snd))
@@ -314,7 +314,7 @@ get that all of its higher homotopy groups are trivial.
 Ωⁿ⁺²S¹-is-contr (suc n) = Path-is-hlevel 0 (Ωⁿ⁺²S¹-is-contr n)
 
 πₙ₊₂S¹≡0 : ∀ n → πₙ₊₁ (suc n) S¹∙ ≡ Zero-group {lzero}
-πₙ₊₂S¹≡0 n = ∫-Path Groups-equational
+πₙ₊₂S¹≡0 n = ∫-Path
   (Zero-group-is-terminal _ .centre)
   (is-contr→≃ (is-contr→∥-∥₀-is-contr (Ωⁿ⁺²S¹-is-contr n)) (hlevel 0) .snd)
 ```

@@ -284,7 +284,7 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≃ΩB = Iso→Equiv (decode base , iso (encode base) encode→decode (decode→encode base))
 
   G≡π₁B : G ≡ πₙ₊₁ 0 (Deloop , base)
-  G≡π₁B = ∫-Path Groups-equational
+  G≡π₁B = ∫-Path
     (total-hom (λ x → inc (path x))
       record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
     (∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))

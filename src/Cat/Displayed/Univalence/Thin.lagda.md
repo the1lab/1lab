@@ -178,7 +178,7 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
     (Structured-objects-is-category spec)
     (total-iso ((f #_) , eqv) (f .preserves))
 
-open is-equational public
+open is-equational ⦃ ... ⦄ public
 ```
 
 <!--

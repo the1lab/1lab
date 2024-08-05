@@ -28,7 +28,7 @@ To motivate the concept, let's consider some examples:
 - The [[dihedral group]] of order $2n$, $D_n$, which is the group of
 symmetries of a regular $n$-gon, can be defined as the semidirect product
 $\ZZ/2\ZZ \ltimes \ZZ/n\ZZ$, where the action of $\ZZ/2\ZZ$ sends $1$
-to the "negation" automorphism of $\ZZ/n\ZZ$. Intuitively, a symmetry
+to the [[negation automorphism]] of $\ZZ/n\ZZ$. Intuitively, a symmetry
 of the regular $n$-gon has two components: a reflection (captured by the
 cyclic group $\ZZ/2\ZZ$) and a rotation (captured by the cyclic group $\ZZ/n\ZZ$);
 but when combining two symmetries, a reflection will swap the direction
@@ -123,7 +123,7 @@ module _ (A : Group ℓ) (B : Group ℓ) where
 ```agda
   Semidirect-trivial
     : Semidirect-product A B (trivial-action A B) ≡ Direct-product A B
-  Semidirect-trivial = ∫-Path Groups-equational
+  Semidirect-trivial = ∫-Path
     (total-hom (λ x → x) (record { pres-⋆ = λ _ _ → refl }))
     id-equiv
 ```

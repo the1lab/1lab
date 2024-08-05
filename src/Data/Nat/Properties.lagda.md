@@ -198,6 +198,11 @@ arithmetic operators:
 +-≤r x zero = 0≤x
 +-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (s≤s (+-≤r x y))
 
+monus-≤ : (x y : Nat) → x - y ≤ x
+monus-≤ x zero = x≤x
+monus-≤ zero (suc y) = 0≤x
+monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
+
 +-preserves-≤l : (x y z : Nat) → x ≤ y → (z + x) ≤ (z + y)
 +-preserves-≤l .0 y zero 0≤x = 0≤x
 +-preserves-≤l .0 y (suc z) 0≤x =

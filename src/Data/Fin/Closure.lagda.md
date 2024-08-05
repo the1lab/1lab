@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Set.Coequaliser
 open import Data.Fin.Properties
+open import Data.Nat.Prime
 open import Data.Fin.Base
 open import Data.Dec
 open import Data.Sum
@@ -135,7 +136,7 @@ Finite-multiply {n} {m} =
     sum≡* (suc n) m = ap (m +_) (sum≡* n m)
 ```
 
-## Products
+### Products
 
 Similarly to the case for sums, the cardinality of a dependent *product* of
 finite sets is the `product`{.Agda} of the cardinalities:
@@ -156,6 +157,53 @@ Finite-product {suc n} B =
   Fin (B fzero) × (∀ x → Fin (B (fsuc x)))   ≃⟨ Σ-ap-snd (λ _ → Finite-product (B ∘ fsuc)) ⟩
   Fin (B fzero) × Fin (product n (B ∘ fsuc)) ≃⟨ Finite-multiply ⟩
   Fin (B fzero * product n (B ∘ fsuc))       ≃∎
+```
+
+## Permutations
+
+We show that the set of permutations $[n] \simeq [n]$ is finite with
+cardinality $n!$ (the `factorial`{.Agda} of $n$).
+
+We start by showing that $([n+1] \simeq [n+1]) \simeq [n+1] \times
+([n] \simeq [n])$: a permutation of $[n+1]$ is determined by what happens
+to $0$ and by the remaining permutation of $[n]$.
+
+```agda
+Fin-permutations-suc
+  : ∀ n → (Fin (suc n) ≃ Fin (suc n)) ≃ (Fin (suc n) × (Fin n ≃ Fin n))
+Fin-permutations-suc n = to , is-iso→is-equiv is where
+  to : (Fin (suc n) ≃ Fin (suc n)) → Fin (suc n) × (Fin n ≃ Fin n)
+  to e .fst = e # 0
+  to e .snd .fst i = avoid (e # 0) (e # (fsuc i)) λ p →
+    fzero≠fsuc (Equiv.injective e p)
+  to e .snd .snd = Fin-injection→equiv _ λ p →
+    fsuc-inj (Equiv.injective e (avoid-injective (e # 0) p))
+
+  is : is-iso to
+  is .is-iso.inv (n , e) .fst fzero = n
+  is .is-iso.inv (n , e) .fst (fsuc x) = skip n (e # x)
+  is .is-iso.inv (n , e) .snd = Fin-injection→equiv _ λ where
+    {fzero} {fzero} p → refl
+    {fzero} {fsuc y} p → absurd (skip-skips n _ (sym p))
+    {fsuc x} {fzero} p → absurd (skip-skips n _ p)
+    {fsuc x} {fsuc y} p → ap fsuc (Equiv.injective e (skip-injective n _ _ p))
+  is .is-iso.rinv (n , e) = Σ-pathp refl (ext λ i → avoid-skip n (e # i))
+  is .is-iso.linv e = ext λ where
+    fzero → refl
+    (fsuc i) → skip-avoid (e # 0) (e # (fsuc i))
+```
+
+We can now show that $([n] \simeq [n]) \simeq [n!]$ by induction.
+
+```agda
+Fin-permutations : ∀ n → (Fin n ≃ Fin n) ≃ Fin (factorial n)
+Fin-permutations zero = is-contr→≃
+  (contr id≃ λ _ → ext λ ()) Finite-one-is-contr
+Fin-permutations (suc n) =
+  Fin (suc n) ≃ Fin (suc n)       ≃⟨ Fin-permutations-suc n ⟩
+  Fin (suc n) × (Fin n ≃ Fin n)   ≃⟨ Σ-ap-snd (λ _ → Fin-permutations n) ⟩
+  Fin (suc n) × Fin (factorial n) ≃⟨ Finite-multiply ⟩
+  Fin (factorial (suc n))         ≃∎
 ```
 
 ## Decidable subsets

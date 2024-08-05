@@ -2,6 +2,7 @@
 ```
 open import 1Lab.Prelude
 
+open import Algebra.Group.Instances.Symmetric
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 ```
@@ -16,10 +17,8 @@ open Group-on (G .snd) renaming (underlying-set to G-set)
 # Cayley's theorem {defines="cayleys-theorem"}
 
 Cayley's theorem says that any group $G$ admits a representation as a
-subgroup of a [symmetric group], specifically the symmetric group acting
+subgroup of a [[symmetric group]], specifically the symmetric group acting
 on the underlying set of $G$.
-
-[symmetric group]: Algebra.Group.html#symmetric-groups
 
 First, recall that we get a family of equivalences $G \simeq G$ by multiplication
 on the left, the [[principal action]] of $G$ on itself:

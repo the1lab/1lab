@@ -54,19 +54,15 @@ $\bb{C} \to \bb{C}$ in a way _compatible_ with the group structure:
 Additive inverses "translate to" inverse maps, addition translates to
 function composition, and the additive identity is mapped to the
 identity function. Note that since $\bb{C}$ is a set, this is
-equivalently a [group homomorphism]
+equivalently a [[group homomorphism]]
 
 $$
 \bb{R} \to \rm{Sym}(\bb{C})
 $$,
 
-where the codomain is the [group of symmetries] of $\bb{C}$. But what if
+where the codomain is the [[group of symmetries|symmetric group]] of $\bb{C}$. But what if
 we want a group $G$ to act on an object $X$ of a more general
-[category], rather than an object of $\Sets$?
-
-[group homomorphism]: Algebra.Group.html#group-homomorphisms
-[group of symmetries]: Algebra.Group.html#symmetric-groups
-[category]: Cat.Base.html
+[[category]], rather than an object of $\Sets$?
 
 ## Automorphism groups {defines="automorphism-group"}
 
@@ -207,7 +203,7 @@ of $G$ that arises from conjugation with an element of $G$ is called an
 
 ```agda
   conjugation-action : Action (Groups ℓ) G G
-  conjugation-action .hom x = total-iso Groups-equational
+  conjugation-action .hom x = total-iso
     ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∙-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
     (record { pres-⋆ = λ y z → group! G })
   conjugation-action .preserves .pres-⋆ x y = ext λ z → group! G

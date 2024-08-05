@@ -3,12 +3,8 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
-open import Cat.Displayed.Total
+open import Cat.Functor.Properties
 open import Cat.Prelude hiding (_*_ ; _+_)
-
-open import Data.Int.Properties
-open import Data.Int.Base
 
 import Cat.Reasoning
 ```
@@ -55,6 +51,13 @@ record is-abelian-group (_*_ : G → G → G) : Type (level-of G) where
     commutes     : ∀ {x y} → x * y ≡ y * x
   open is-group has-is-group renaming (unit to 1g) public
 ```
+
+<!--
+```agda
+  equal-sum→equal-diff : ∀ a b c d → a * b ≡ c * d → a — c ≡ d — b
+  equal-sum→equal-diff a b c d p = commutes ∙ swizzle p inverser inversel
+```
+-->
 
 <!--
 ```agda
@@ -113,6 +116,10 @@ Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
 
 module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
+
+instance
+  Ab-equational : ∀ {ℓ} → is-equational (Abelian-group-structure ℓ)
+  Ab-equational .is-equational.invert-id-hom = Groups-equational .is-equational.invert-id-hom
 ```
 
 <!--
@@ -176,6 +183,14 @@ from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group
 from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
   comm _ _
 
+Grp→Ab→Grp
+  : ∀ {ℓ} (G : Group ℓ) (c : is-commutative-group G)
+  → Abelian→Group (from-commutative-group G c) ≡ G
+Grp→Ab→Grp G c = Σ-pathp refl go where
+  go : Abelian→Group-on (from-commutative-group G c .snd) ≡ G .snd
+  go i .Group-on._⋆_ = G .snd .Group-on._⋆_
+  go i .Group-on.has-is-group = G .snd .Group-on.has-is-group
+
 open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-abelian-group-on ; to-ab) public
 
 open Functor
@@ -187,30 +202,17 @@ Ab↪Grp .F₁ f .preserves = f .preserves
 Ab↪Grp .F-id = trivial!
 Ab↪Grp .F-∘ f g = trivial!
 
+Ab↪Grp-is-ff : ∀ {ℓ} → is-fully-faithful (Ab↪Grp {ℓ})
+Ab↪Grp-is-ff {x = A} {B} = is-iso→is-equiv $ iso
+  promote (λ _ → trivial!) (λ _ → trivial!)
+  where
+    promote : Groups.Hom (Abelian→Group A) (Abelian→Group B) → Ab.Hom A B
+    promote f .hom = f .hom
+    promote f .preserves = f .preserves
+
 Ab↪Sets : ∀ {ℓ} → Functor (Ab ℓ) (Sets ℓ)
 Ab↪Sets = Grp↪Sets F∘ Ab↪Grp
 ```
 -->
 
-The fundamental example of abelian group is the integers, $\ZZ$, under
-addition. A type-theoretic interjection is necessary: the integers live
-on the zeroth universe, so to have an $\ell$-sized group of integers, we
-must lift it.
-
-```agda
-ℤ-ab : ∀ {ℓ} → Abelian-group ℓ
-ℤ-ab = to-ab mk-ℤ where
-  open make-abelian-group
-  mk-ℤ : make-abelian-group (Lift _ Int)
-  mk-ℤ .ab-is-set = hlevel 2
-  mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
-  mk-ℤ .inv (lift x) = lift (negℤ x)
-  mk-ℤ .1g = lift 0
-  mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
-  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-assoc x y z)
-  mk-ℤ .invl (lift x) = ap lift (+ℤ-invl x)
-  mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
-
-ℤ : ∀ {ℓ} → Group ℓ
-ℤ = Abelian→Group ℤ-ab
-```
+The fundamental example of an abelian group is the [[group of integers]].

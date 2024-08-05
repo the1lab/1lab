@@ -131,5 +131,10 @@ case x return P of f = f x
 
 {-# INLINE case_of_        #-}
 {-# INLINE case_return_of_ #-}
+
+instance
+  Number-Lift : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ Number A ⦄ → Number (Lift ℓ' A)
+  Number-Lift {ℓ' = ℓ'} ⦃ a ⦄ .Number.Constraint n = Lift ℓ' (a .Number.Constraint n)
+  Number-Lift ⦃ a ⦄ .Number.fromNat n ⦃ lift c ⦄ = lift (a .Number.fromNat n ⦃ c ⦄)
 ```
 -->

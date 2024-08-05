@@ -132,6 +132,10 @@ instance
     elim! (happly (sf .idsᵉ .to-path h))
   Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
     is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
+
+  Number-Coeq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Number B ⦄ → {f g : A → B} → Number (Coeq f g)
+  Number-Coeq {ℓ = ℓ} ⦃ b ⦄ .Number.Constraint n = Lift ℓ (b .Number.Constraint n)
+  Number-Coeq ⦃ b ⦄ .Number.fromNat n ⦃ lift c ⦄ = inc (b .Number.fromNat n ⦃ c ⦄)
 ```
 -->
 
