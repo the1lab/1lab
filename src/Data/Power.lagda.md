@@ -90,6 +90,16 @@ _∩_ : ℙ X → ℙ X → ℙ X
   → U ⊆ V ∩ W
 ∩-⊆ U⊆V V⊆W x x∈U =
   (U⊆V x x∈U) , (V⊆W x x∈U)
+
+∩-⊆l
+  : ∀ (U V : ℙ X)
+  → U ∩ V ⊆ U
+∩-⊆l _ _ x (x∈U , x∈V) = x∈U
+
+∩-⊆r
+  : ∀ (U V : ℙ X)
+  → U ∩ V ⊆ V
+∩-⊆r _ _ x (x∈U , x∈V) = x∈V
 ```
 -->
 

@@ -168,8 +168,8 @@ Topology-on-path {X = X} {S = S} {T = T} to from = path where
 # Continuous functions {defines="continuous-function"}
 
 A function $f : X \to Y$ between two topological spaces is **continuous**
-if it reflects open sets. Explicitly, $f$ is continuous if, for every
-open set $U : \power{Y}$, the preimage $f^{-1}(U) : \power{X}$ is open
+if it reflects open sets. Explicitly, $f$ is continuous if for every
+open set $U : \power{Y}$, the [[preimage]] $f^{-1}(U) : \power{X}$ is open
 in $X$.
 
 ```agda
@@ -197,6 +197,9 @@ unquoteDecl H-Level-is-continuous = declare-record-hlevel 1 H-Level-is-continuou
 
 # The category of topological spaces
 
+Topological spaces and continuous maps form a category, which we will
+denote $\Top$.
+
 ```agda
 Topology-structure : ∀ ℓ → Thin-structure ℓ (Topology-on {ℓ})
 Topology-structure ℓ .is-hom f X-top Y-top =
@@ -206,20 +209,22 @@ Topology-structure ℓ .∘-is-hom f g f-cont g-cont .reflect-open =
   g-cont .reflect-open ⊙ f-cont .reflect-open
 Topology-structure ℓ .id-hom-unique p q =
   Topology-on-path (λ U → q .reflect-open) (λ U → p .reflect-open)
-```
 
-```agda
 Topologies : ∀ ℓ → Precategory (lsuc ℓ) (ℓ ⊔ ℓ)
 Topologies ℓ = Structured-objects (Topology-structure ℓ)
+```
 
-Topologies-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
-Topologies-on ℓ = Thin-structure-over (Topology-structure ℓ)
-
+<!--
+```agda
 module Topologies {ℓ} = Cat.Reasoning (Topologies ℓ)
 
 Topological-space : ∀ ℓ → Type (lsuc ℓ)
 Topological-space ℓ = Topologies.Ob {ℓ}
 ```
+-->
+
+As $\Top$ is a category of [[thin structures]], it comes equipped with
+a forgetful functor into sets.
 
 ```agda
 Topologies↪Sets : ∀ {ℓ} → Functor (Topologies ℓ) (Sets ℓ)
@@ -229,27 +234,58 @@ Topologies↪Sets-faithful : ∀ {ℓ} → is-faithful (Topologies↪Sets {ℓ})
 Topologies↪Sets-faithful = Structured-hom-path (Topology-structure _)
 ```
 
+Additionally, $\Top$ is a [[univalent category]].
+
 ```agda
 Topologies-is-category : ∀ {ℓ} → is-category (Topologies ℓ)
 Topologies-is-category = Structured-objects-is-category (Topology-structure _)
 ```
 
+<!--
 ```agda
-continuous-injection→monic
-  : ∀ {ℓ} {X Y : Topological-space ℓ}
-  → (f : Topologies.Hom X Y)
-  → injective (f .hom)
-  → Topologies.is-monic f
-continuous-injection→monic f f-inj =
-  faithful→reflects-mono Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
-  injective→monic (hlevel 2) f-inj {Z}
-
-continuous-surjection→epic
-  : ∀ {ℓ} {X Y : Topological-space ℓ}
-  → (f : Topologies.Hom X Y)
-  → is-surjective (f .hom)
-  → Topologies.is-epic f
-continuous-surjection→epic {X = X} {Y = Y} f f-surj =
-  faithful→reflects-epi Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
-  surjective→epi (el! ⌞ X ⌟) (el! ⌞ Y ⌟) (f .hom) f-surj {Z}
+instance
+  Extensional-Topology-hom
+    : ∀ {ℓ} {X Y : Topological-space ℓ} {ℓr}
+    → ⦃ _ : Extensional (⌞ X ⌟ → ⌞ Y ⌟) ℓr ⦄
+    → Extensional (Topologies.Hom X Y) ℓr
+  Extensional-Topology-hom ⦃ e ⦄ =
+    injection→extensional! (λ p → total-hom-path _ p prop!) e
 ```
+-->
+
+-- ## Morphisms
+
+-- ```agda
+-- continuous-injection→monic
+--   : ∀ {ℓ} {X Y : Topological-space ℓ}
+--   → (f : Topologies.Hom X Y)
+--   → injective (f .hom)
+--   → Topologies.is-monic f
+-- continuous-injection→monic f f-inj =
+--   faithful→reflects-mono Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
+--   injective→monic (hlevel 2) f-inj {Z}
+
+-- monic→continuous-injection
+--   : ∀ {ℓ} {X Y : Topological-space ℓ}
+--   → (f : Topologies.Hom X Y)
+--   → Topologies.is-monic f
+--   → injective (f .hom)
+-- monic→continuous-injection f f-monic =
+--   {!!}
+--   -- monic→injective (hlevel 2) $
+--   -- λ g h p → ap hom (f-monic (total-hom g {!!}) (total-hom h {!!}) (total-hom-path _ p prop!))
+
+-- continuous-surjection→epic
+--   : ∀ {ℓ} {X Y : Topological-space ℓ}
+--   → (f : Topologies.Hom X Y)
+--   → is-surjective (f .hom)
+--   → Topologies.is-epic f
+-- continuous-surjection→epic {X = X} {Y = Y} f f-surj =
+--   faithful→reflects-epi Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
+--   surjective→epi (el! ⌞ X ⌟) (el! ⌞ Y ⌟) (f .hom) f-surj {Z}
+-- ```
+
+-- ```agda
+-- Topologies-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+-- Topologies-on ℓ = Thin-structure-over (Topology-structure ℓ)
+-- ```
