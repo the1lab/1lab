@@ -181,6 +181,15 @@ injective→monic
 injective→monic B-set inj =
   embedding→monic (injective→is-embedding B-set _ inj)
 
+monic→injective
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-set B
+  → (∀ {C : Set ℓ''} (g h : ∣ C ∣ → A) → f ∘ g ≡ f ∘ h → g ≡ h)
+  → injective f
+monic→injective {f = f} B-set monic =
+  has-prop-fibres→injective f $
+  monic→is-embedding B-set (λ {C} → monic {C})
+
 right-inverse→injective
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → {f : A → B} (g : B → A)

@@ -13,6 +13,7 @@ open import Data.Power
 open import Topology.Base
 ```
 -->
+
 ```agda
 module Topology.Instances.Discrete where
 ```
@@ -31,14 +32,15 @@ private variable
   ℓ ℓ' : Level
   X Y : Type ℓ
 
-open Topology-on
+open Free-object
 open is-continuous
+open Topology-on
 open Total-hom
 ```
 -->
 
 ```agda
-Discrete-topology : ∀ {ℓ} (X : Type ℓ) → Topology-on X
+Discrete-topology : (X : Type ℓ) → Topology-on X
 Discrete-topology X .Opens = maximal
 Discrete-topology X .maximal-open = tt
 Discrete-topology X .∩-open _ _ = tt
@@ -50,9 +52,9 @@ Note that every function out of the discrete topology on $X$ is continuous.
 ```agda
 discrete-continuous
   : ∀ {T : Topology-on Y}
-  → (f : X → Y)
+  → {f : X → Y}
   → is-continuous f (Discrete-topology X) T
-discrete-continuous f .reflect-open _ = tt
+discrete-continuous .reflect-open _ = tt
 ```
 
 This means that discrete topologies are [[free objects]] relative to
@@ -60,12 +62,12 @@ the forgetful functor $\Top \to \Sets$.
 
 ```agda
 Discrete-topology-free : ∀ (X : Set ℓ) → Free-object Topologies↪Sets X
-Discrete-topology-free X .Free-object.free = X , Discrete-topology ⌞ X ⌟
-Discrete-topology-free X .Free-object.unit x = x
-Discrete-topology-free X .Free-object.fold f .hom = f
-Discrete-topology-free X .Free-object.fold f .preserves = discrete-continuous f
-Discrete-topology-free X .Free-object.commute = refl
-Discrete-topology-free X .Free-object.unique g p = ext (apply p)
+Discrete-topology-free X .free = X , Discrete-topology ⌞ X ⌟
+Discrete-topology-free X .unit x = x
+Discrete-topology-free X .fold f .hom = f
+Discrete-topology-free X .fold f .preserves = discrete-continuous
+Discrete-topology-free X .commute = refl
+Discrete-topology-free X .unique g p = ext (apply p)
 ```
 
 We can assemble these free objects together to form a left adjoint

@@ -6,7 +6,6 @@ description: |
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
-open import Cat.Functor.Morphism
 open import Cat.Prelude
 
 open import Data.Set.Surjection
