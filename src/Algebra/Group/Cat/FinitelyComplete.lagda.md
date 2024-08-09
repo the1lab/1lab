@@ -157,6 +157,8 @@ inj₂ {H} {G} .monic g h x = Grp↪Sets-is-faithful (funext λ e i → (x i # e
 
 ```agda
 open import Cat.Diagram.Equaliser
+
+open Equalisers
 ```
 
 The equaliser of two group homomorphisms $f, g : G \to H$ is given by
@@ -166,18 +168,12 @@ in sets, and re-use all of its infrastructure to make an equaliser in
 `Groups`{.Agda}.
 
 ```agda
-module _ {G H : Group ℓ} (f g : Groups.Hom G H) where
-  private
-    module G = Group-on (G .snd)
-    module H = Group-on (H .snd)
-
-    module f = is-group-hom (f .preserves)
-    module g = is-group-hom (g .preserves)
-    module seq = Equaliser
-      (SL.Sets-equalisers
-        {A = G.underlying-set}
-        {B = H.underlying-set}
-        (f .hom) (g .hom))
+Groups-equalisers : Equalisers (Groups ℓ)
+Groups-equalisers .Eq {G} {H} f g = to-group equ-group where
+  module G = Group-on (G .snd)
+  module H = Group-on (H .snd)
+  module f = is-group-hom (f .preserves)
+  module g = is-group-hom (g .preserves)
 ```
 
 Recall that points there are elements of the domain (here, a point $x :
@@ -187,60 +183,45 @@ structure from $G$ to $\rm{equ}(f,g)$, we must prove that, if $f(x)
 follows from $f$ and $g$ being group homomorphisms:
 
 ```agda
-  Equaliser-group : Group ℓ
-  Equaliser-group = to-group equ-group where
-    equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
-    equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
-      r : f # (G .snd ._⋆_ a b) ≡ g # (G .snd ._⋆_ a b)
-      r = f.pres-⋆ a b ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
-
-    equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
-    equ-inv (x , p) = x G.⁻¹ , q where abstract
-      q : f # (G.inverse x) ≡ g # (G.inverse x)
-      q = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
-
-    abstract
-      invs : f # G.unit ≡ g # G.unit
-      invs = f.pres-id ∙ sym g.pres-id
+  equ-group : make-group (Σ[ x ∈ G ] (f # x ≡ g # x))
+  equ-group .make-group.group-is-set = hlevel 2
+  equ-group .make-group.mul (x , p) (y , q) =
+    x G.⋆ y , ⋆-eq where abstract
+      ⋆-eq : f # (x G.⋆ y) ≡ g # (x G.⋆ y)
+      ⋆-eq = f.pres-⋆ _ _ ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
 ```
 
 Similar yoga must be done for the inverse maps and the group unit.
 
 ```agda
-    equ-group : make-group ∣ seq.apex ∣
-    equ-group .make-group.group-is-set = seq.apex .is-tr
-    equ-group .make-group.unit = G.unit , invs
-    equ-group .make-group.mul = equ-⋆
-    equ-group .make-group.inv = equ-inv
-    equ-group .make-group.assoc x y z = Σ-prop-path! G.associative
-    equ-group .make-group.invl x = Σ-prop-path! G.inversel
-    equ-group .make-group.idl x = Σ-prop-path! G.idl
-
-  open is-equaliser
-  open Equaliser
+  equ-group .make-group.unit =
+    G.unit , unit-eq where abstract
+      unit-eq : f # G.unit ≡ g # G.unit
+      unit-eq = f.pres-id ∙ sym g.pres-id
+  equ-group .make-group.inv (x , p) =
+    x G.⁻¹ , inv-eq where abstract
+      inv-eq : f # (G.inverse x) ≡ g # (G.inverse x)
+      inv-eq = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
+  equ-group .make-group.assoc x y z = Σ-prop-path! G.associative
+  equ-group .make-group.invl x = Σ-prop-path! G.inversel
+  equ-group .make-group.idl x = Σ-prop-path! G.idl
 ```
 
-We can then, pretty effortlessly, prove that the
-`Equaliser-group`{.Agda}, together with the canonical injection
-$\rm{equ}(f,g) \mono G$, equalise the group homomorphisms $f$ and
-$g$.
+We can then, pretty effortlessly, prove that this group, together with
+the canonical injection $\rm{equ}(f,g) \mono G$, equalise the group
+homomorphisms $f$ and $g$.
+
 
 ```agda
-  Groups-equalisers : Equaliser (Groups ℓ) f g
-  Groups-equalisers .apex = Equaliser-group
-  Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
-  Groups-equalisers .has-is-eq .equal = Grp↪Sets-is-faithful seq.equal
-  Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom go lim-gh where
-    go = seq.universal {F = underlying-set (F .snd)} (ap hom p)
-
-    lim-gh : is-group-hom _ _ go
-    lim-gh .pres-⋆ x y = Σ-prop-path! (e' .preserves .pres-⋆ _ _)
-
-  Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Grp↪Sets-is-faithful
-    (seq.factors {F = underlying-set (F .snd)} {p = ap hom p})
-
-  Groups-equalisers .has-is-eq .unique {F = F} {p = p} q = Grp↪Sets-is-faithful
-    (seq.unique {F = underlying-set (F .snd)} {p = ap hom p} (ap hom q))
+Groups-equalisers .equ f g .hom = fst
+Groups-equalisers .equ f g .preserves .pres-⋆ _ _ = refl
+Groups-equalisers .equal = ext (λ x p → p)
+Groups-equalisers .equalise e p .hom x = e # x , p #ₚ x
+Groups-equalisers .equalise e p .preserves .pres-⋆ x y =
+  Σ-prop-path! (e .preserves .pres-⋆ x y)
+Groups-equalisers .equ∘equalise = trivial!
+Groups-equalisers .equalise-unique p =
+  ext λ x → Σ-prop-path! (p #ₚ x)
 ```
 
 Putting all of these constructions together, we get the proof that

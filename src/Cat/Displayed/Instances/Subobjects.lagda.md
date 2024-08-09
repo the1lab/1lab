@@ -121,7 +121,6 @@ open Cartesian-fibration
 open is-weak-cocartesian
 open Cartesian-lift
 open is-cartesian
-open Pullback
 ```
 -->
 
@@ -160,24 +159,25 @@ is enough for its uniqueness.
 
 ```agda
 Subobject-fibration
-  : has-pullbacks B
+  : Pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y' = l where
-  it : Pullback _ _ _
-  it = pb (y' .map) f
+Subobject-fibration pullbacks .has-lift f y' = l where
+  open Pullbacks pullbacks
+
   l : Cartesian-lift Subobjects f y'
 
   -- The blue square:
-  l .x' .domain = it .apex
-  l .x' .map    = it .p₂
-  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
-  l .lifting .map = it .p₁
-  l .lifting .sq  = sym (it .square)
+  l .x' .domain = Pb (y' .map) f
+  l .x' .map    = p₂ (y' .map) f
+  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) has-is-pb
+  -- (it .has-is-pb)
+  l .lifting .map = p₁ (y' .map) f
+  l .lifting .sq  = sym square
 
   -- The dashed red arrow:
   l .cartesian .universal {u' = u'} m h' = λ where
-    .map → it .Pullback.universal (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
-    .sq  → sym (it .p₂∘universal)
+    .map → pb (h' .map) (m ∘ u' .map) (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
+    .sq  → sym p₂∘pb
   l .cartesian .commutes _ _ = prop!
   l .cartesian .unique _ _   = prop!
 ```
@@ -261,7 +261,7 @@ cocartesian fibration must actually be a full opfibration.
 ```agda
 Subobject-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
-  → (pb : has-pullbacks B)
+  → (pb : Pullbacks B)
   → Cocartesian-fibration Subobjects
 Subobject-opfibration images pb = cartesian+weak-opfibration→opfibration _
   (Subobject-fibration pb)
@@ -336,31 +336,28 @@ products, regardless of what $y$ is.
 ```agda
 Sub-products
   : ∀ {y}
-  → has-pullbacks B
+  → Pullbacks B
   → Binary-products (Sub y)
-Sub-products {y} pb a b = prod where
-  it = pb (a .map) (b .map)
+Sub-products {y} pullbacks = prods where
+  open Pullbacks pullbacks
+  open Binary-products
 
-  prod : Product (Sub y) a b
-  prod .Product.apex .domain = it .apex
-  prod .Product.apex .map = a .map ∘ it .p₁
-  prod .Product.apex .monic = monic-∘
+  prods : Binary-products (Sub y)
+  (prods ⊗₀ a) b .domain = Pb (a .map) (b .map)
+  (prods ⊗₀ a) b .map = a .map ∘ p₁ (a .map) (b .map)
+  (prods ⊗₀ a) b .monic = monic-∘
     (a .monic)
-    (is-monic→pullback-is-monic (b .monic) (rotate-pullback (it .has-is-pb)))
-
-  prod .Product.π₁ .map = it .p₁
-  prod .Product.π₁ .sq  = idl _
-
-  prod .Product.π₂ .map = it .p₂
-  prod .Product.π₂ .sq  = idl _ ∙ it .square
-
-  prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .map =
-    it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
-  prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
-    idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
-  prod .Product.has-is-product .is-product.π₁∘⟨⟩ = prop!
-  prod .Product.has-is-product .is-product.π₂∘⟨⟩ = prop!
-  prod .Product.has-is-product .is-product.unique _ _ = prop!
+    (is-monic→pullback-is-monic (b .monic) (rotate-pullback has-is-pb))
+  prods .π₁ .map = p₁ _ _
+  prods .π₁ .sq = idl _
+  prods .π₂ .map = p₂ _ _
+  prods .π₂ .sq = idl _ ∙ square
+  prods .⟨_,_⟩ q≤a q≤b .map = pb (q≤a .map) (q≤b .map) (sym (q≤a .sq) ∙ q≤b .sq)
+  prods .⟨_,_⟩ q≤a q≤b .sq =
+      idl _ ∙ sym (pullr p₁∘pb ∙ sym (q≤a .sq) ∙ idl _)
+  prods .π₁∘⟨⟩ = prop!
+  prods .π₂∘⟨⟩ = prop!
+  prods .⟨⟩-unique _ _ = prop!
 ```
 
 ## Univalence

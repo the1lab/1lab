@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Sets.Complete
-open import Cat.Diagram.Product.Solver
+open import Cat.Cartesian.Solver
 open import Cat.Monoidal.Diagonals
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
@@ -29,7 +29,7 @@ categories**, also known as _finite-products categories_.
 ```agda
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (prods : ∀ A B → Product C A B) (term : Terminal C)
+  (prods : Binary-products C) (term : Terminal C)
   where
 ```
 
@@ -41,7 +41,7 @@ module _
   open Diagonals hiding (δ)
   open make-natural-iso
   open Cr C
-  open Binary-products C prods
+  open Binary-products prods
   open Terminal term
 ```
 -->
@@ -57,51 +57,33 @@ banging out the calculation. Our tensor product functor is the Cartesian
 product functor, and the tensor unit is the [[terminal object]] (the empty
 product). Associators and units are the evident maps, which are coherent
 by the properties of limits. Translating this intuitive explanation to a
-formal proof requires a _lot_ of calculation, however:
+formal proof requires a _lot_ of calculation. Luckily, this calculation
+is rote enough that we can automate it away!
 
 ```agda
   Cartesian-monoidal .unitor-l = to-natural-iso ni where
     ni : make-natural-iso _ _
     ni .eta x = ⟨ ! , id ⟩
     ni .inv x = π₂
-    ni .eta∘inv x = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ∙ sym (!-unique _)) (cancell π₂∘⟨⟩) (!-unique₂ _ _) (idr _)
+    ni .eta∘inv x = cartesian! term prods
     ni .inv∘eta x = π₂∘⟨⟩
-    ni .natural x y f = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
-      (!-unique₂ _ _) (pulll π₂∘⟨⟩ ∙ idl f)
+    ni .natural x y f = cartesian! term prods
   Cartesian-monoidal .unitor-r = to-natural-iso ni where
     ni : make-natural-iso _ _
     ni .eta x = ⟨ id , ! ⟩
     ni .inv x = π₁
-    ni .eta∘inv x = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ sym (!-unique _))
-      (idr _) (sym (!-unique _))
+    ni .eta∘inv x = cartesian! term prods
     ni .inv∘eta x = π₁∘⟨⟩
-    ni .natural x y f = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· idr f)
-      (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl !)
-      (pulll π₁∘⟨⟩ ∙ idl f)
-      (!-unique₂ _ _)
+    ni .natural x y f = cartesian! term prods
   Cartesian-monoidal .associator = to-natural-iso ni where
     ni : make-natural-iso _ _
     ni .eta x = ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩
     ni .inv x = ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩
-    ni .eta∘inv x =
-      ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ≡⟨ products! C prods ⟩
-      id ∎
-    ni .inv∘eta x =
-      ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ≡⟨ products! C prods ⟩
-      id ∎
-    ni .natural x y f =
-      ⟨ f .fst ∘ π₁ , ⟨ f .snd .fst ∘ π₁ , f .snd .snd ∘ π₂ ⟩ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩     ≡⟨ products! C prods ⟩
-      ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ (⟨ f .fst ∘ π₁ , f .snd .fst ∘ π₂ ⟩ ∘ π₁) , (f .snd .snd ∘ π₂) ⟩ ∎
-  Cartesian-monoidal .triangle = Product.unique (prods _ _)
-    (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₁∘⟨⟩ ∙ introl refl)
-    (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl _)
-  Cartesian-monoidal .pentagon =
-    ⟨ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ id ∘ π₁ , ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₂ ⟩ ≡⟨ products! C prods ⟩
-    ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∎
+    ni .eta∘inv x = cartesian! term prods
+    ni .inv∘eta x = cartesian! term prods
+    ni .natural x y f = cartesian! term prods
+  Cartesian-monoidal .triangle = cartesian! term prods
+  Cartesian-monoidal .pentagon = cartesian! term prods
 ```
 
 Cartesian monoidal categories also inherit a lot of additional structure
@@ -116,7 +98,7 @@ categories]].
     mk .has-braiding = iso→isoⁿ
       (λ _ → invertible→iso swap swap-is-iso) swap-natural
     mk .symmetric = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ∙ ⟨⟩-η
-    mk .has-braiding-α→ = products! C prods
+    mk .has-braiding-α→ = cartesian! term prods
 ```
 
 We also have a system of [[diagonal morphisms|monoidal category with diagonals]]:

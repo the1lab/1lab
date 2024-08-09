@@ -38,15 +38,15 @@ $f$.
 ```agda
   module _ (∅ : Zero C) where
     open Zero ∅
-  
+
     is-kernel : ∀ {a b ker} (f : Hom a b) (k : Hom ker a) → Type _
     is-kernel f = is-equaliser C f zero→
-  
+
     kernels-are-subobjects
       : ∀ {a b ker} {f : Hom a b} (k : Hom ker a)
       → is-kernel f k → is-monic k
     kernels-are-subobjects = is-equaliser→is-monic
-  
+
     record Kernel {a b} (f : Hom a b) : Type (o ⊔ ℓ) where
       field
         {ker} : Ob
@@ -62,14 +62,16 @@ pair of morphisms, then it has canonically-defined choices of kernels:
 
 ```agda
   module Canonical-kernels
-    (zero : Zero C) (eqs : ∀ {a b} (f g : Hom a b) → Equaliser C f g) where
+    (zero : Zero C)
+    (equalisers : Equalisers C) where
     open Zero zero
+    open Equalisers equalisers
     open Kernel
-  
+
     Ker : ∀ {a b} (f : Hom a b) → Kernel zero f
     Ker f .ker           = _
-    Ker f .kernel        = eqs f zero→ .Equaliser.equ
-    Ker f .has-is-kernel = eqs _ _ .Equaliser.has-is-eq
+    Ker f .kernel        = equ f zero→
+    Ker f .has-is-kernel = has-is-eq
 ```
 
 We now show that the maps $! : \ker\ker f \to \emptyset$ and $¡ :

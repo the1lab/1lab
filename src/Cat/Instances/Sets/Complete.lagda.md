@@ -84,10 +84,8 @@ module _ {ℓ} where
   open Terminal
   open is-product
   open Binary-products
-  open is-pullback
-  open Pullback
-  open is-equaliser
-  open Equaliser
+  open Equalisers
+  open Pullbacks
 ```
 -->
 
@@ -108,19 +106,6 @@ category of sets of _any_ level $\ell$ admits them.
 Products are given by product sets:
 
 ```agda
-<<<<<<< ours
-<<<<<<< Updated upstream
-  Sets-products : (A B : Set ℓ) → Product (Sets ℓ) A B
-  Sets-products A B .apex = el! (∣ A ∣ × ∣ B ∣)
-  Sets-products A B .π₁ = fst
-  Sets-products A B .π₂ = snd
-  Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
-  Sets-products A B .has-is-product .π₁∘⟨⟩ = refl
-  Sets-products A B .has-is-product .π₂∘⟨⟩ = refl
-  Sets-products A B .has-is-product .unique p q i x = p i x , q i x
-=======
-=======
->>>>>>> theirs
   Sets-products : Binary-products (Sets ℓ)
   Sets-products ._⊗₀_ A B = el! (∣ A ∣ × ∣ B ∣)
   Sets-products .π₁ = fst
@@ -128,49 +113,36 @@ Products are given by product sets:
   Sets-products .⟨_,_⟩ f g x = f x , g x
   Sets-products .π₁∘⟨⟩ = refl
   Sets-products .π₂∘⟨⟩ = refl
-  Sets-products .⟨⟩-unique o p q i x = p i x , q i x
-<<<<<<< ours
->>>>>>> Stashed changes
-=======
->>>>>>> theirs
+  Sets-products .⟨⟩-unique p q i x = p i x , q i x
 ```
 
 Equalisers are given by carving out the subset of $A$ where $f$ and $g$ agree
 using $\Sigma$:
 
 ```agda
-  Sets-equalisers : (f g : Hom A B) → Equaliser (Sets ℓ) {A = A} {B = B} f g
-  Sets-equalisers {A = A} {B = B} f g = eq where
-    eq : Equaliser (Sets ℓ) f g
-    eq .apex .∣_∣ = Σ[ x ∈ A ] (f x ≡ g x)
-    eq .apex .is-tr = hlevel 2
-    eq .equ = fst
-    eq .has-is-eq .equal = funext snd
-    eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
-    eq .has-is-eq .factors = refl
-    eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path! (happly q x)
+  Sets-equalisers : Equalisers (Sets ℓ)
+  Sets-equalisers .Eq {X} {Y} f g = el! (Σ[ x ∈ X ] (f x ≡ g x))
+  Sets-equalisers .equ f g = fst
+  Sets-equalisers .equal = funext snd
+  Sets-equalisers .equalise e p x = e x , p $ₚ x
+  Sets-equalisers .equ∘equalise = refl
+  Sets-equalisers .equalise-unique p =
+      funext λ x → Σ-prop-path! (p $ₚ x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.
 
 ```agda
-  Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C)
-                 → Pullback (Sets ℓ) {X = A} {Y = B} {Z = C} f g
-  Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
-    pb : Pullback (Sets ℓ) f g
-    pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
-    pb .apex .is-tr = hlevel 2
-    pb .p₁ (x , _ , _) = x
-    pb .p₂ (_ , y , _) = y
-    pb .has-is-pb .square = funext (snd ⊙ snd)
-    pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p a = p₁' a , p₂' a , happly p a
-    pb .has-is-pb .p₁∘universal = refl
-    pb .has-is-pb .p₂∘universal = refl
-    pb .has-is-pb .unique {p = p} {lim' = lim'} q r i x =
-      q i x , r i x ,
-      λ j → is-set→squarep (λ i j → C .is-tr)
-        (λ j → f (q j x)) (λ j → lim' x .snd .snd j) (happly p x) (λ j → g (r j x)) i j
+  Sets-pullbacks : Pullbacks (Sets ℓ)
+  Sets-pullbacks .Pb {X} {Y} {Z} f g = el! (Σ[ x ∈ X ] Σ[ y ∈ Y ] (f x ≡ g y))
+  Sets-pullbacks .p₁ f g (x , _ , _) = x
+  Sets-pullbacks .p₂ f g (_ , y , _) = y
+  Sets-pullbacks .square = funext (snd ⊙ snd)
+  Sets-pullbacks .pb p1 p2 sq x = p1 x , p2 x , sq $ₚ x
+  Sets-pullbacks .p₁∘pb = refl
+  Sets-pullbacks .p₂∘pb = refl
+  Sets-pullbacks .pb-unique p q =
+    funext λ x → Σ-pathp (p $ₚ x) (Σ-pathp (q $ₚ x) prop!)
 ```
 
 Hence, `Sets`{.Agda} is finitely complete:

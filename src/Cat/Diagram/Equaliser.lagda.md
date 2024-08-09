@@ -184,21 +184,21 @@ record Equalisers {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     Eq : ∀ {X Y} → Hom X Y → Hom X Y → Ob
     equ : ∀ {X Y} → (f g : Hom X Y) → Hom (Eq f g) X
     equal : ∀ {X Y} {f g : Hom X Y} → f ∘ equ f g ≡ g ∘ equ f g
-    equate
+    equalise
       : ∀ {E X Y} {f g : Hom X Y}
       → (e : Hom E X)
       → f ∘ e ≡ g ∘ e
       → Hom E (Eq f g)
-    equ∘equate
+    equ∘equalise
       : ∀ {E X Y} {f g : Hom X Y}
       → {e : Hom E X} {p : f ∘ e ≡ g ∘ e}
-      → equ f g ∘ equate e p ≡ e
-    equate-unique
+      → equ f g ∘ equalise e p ≡ e
+    equalise-unique
       : ∀ {E X Y} {f g : Hom X Y}
       → {e : Hom E X} {p : f ∘ e ≡ g ∘ e}
       → {other : Hom E (Eq f g)}
       → equ f g ∘ other ≡ e
-      → other ≡ equate e p
+      → other ≡ equalise e p
 ```
 
 <!--
@@ -207,9 +207,9 @@ record Equalisers {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   equaliser f g .Equaliser.apex = Eq f g
   equaliser f g .Equaliser.equ = equ f g
   equaliser f g .Equaliser.has-is-eq .is-equaliser.equal = equal
-  equaliser f g .Equaliser.has-is-eq .is-equaliser.universal = equate _
-  equaliser f g .Equaliser.has-is-eq .is-equaliser.factors = equ∘equate
-  equaliser f g .Equaliser.has-is-eq .is-equaliser.unique = equate-unique
+  equaliser f g .Equaliser.has-is-eq .is-equaliser.universal = equalise _
+  equaliser f g .Equaliser.has-is-eq .is-equaliser.factors = equ∘equalise
+  equaliser f g .Equaliser.has-is-eq .is-equaliser.unique = equalise-unique
 
   private module equaliser {X Y} {f g : Hom X Y} = Equaliser (equaliser f g)
   open equaliser
@@ -231,8 +231,8 @@ to-equalisers {C = C} has-equalisers = equalisers where
   equalisers .Eq f g = eq.apex {f = f} {g = g}
   equalisers .equ _ _ = eq.equ
   equalisers .equal = eq.equal
-  equalisers .equate _ = eq.universal
-  equalisers .equ∘equate = eq.factors
-  equalisers .equate-unique = eq.unique
+  equalisers .equalise _ = eq.universal
+  equalisers .equ∘equalise = eq.factors
+  equalisers .equalise-unique = eq.unique
 ```
 -->
