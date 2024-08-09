@@ -21,7 +21,7 @@ open Internal-hom
 ```
 -->
 
-# Discrete internal categories
+# Discrete internal categories {defines="discrete-internal-category"}
 
 Every object $I : \cC$ induces a category internal to $\cC$, where the
 object-of-objects and object-of-morphisms are both taken to be $I$, and

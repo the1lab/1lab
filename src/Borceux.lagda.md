@@ -1008,6 +1008,7 @@ _ = Internal-cat
 _ = Internal-functor
 _ = _=>i_
 _ = Disci
+_ = Consti
 _ = _^opi
 ```
 -->
@@ -1017,6 +1018,7 @@ _ = _^opi
 * Definition 8.1.3: `_=>i_`{.Agda}
 * Examples 8.1.6:
   * a. `Disci`{.Agda}
+  * b. `Consti`{.Agda}
   * c. `_^opi`{.Agda}
 
 ### 8.2 Internal base-valued functors

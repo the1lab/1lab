@@ -188,6 +188,13 @@ instance
     → H-Level (Internal-hom src tgt x y) (2 + n)
   H-Level-Internal-hom = basic-instance 2 Internal-hom-set
 
+  Extensional-Internal-hom
+    : ∀ {ℓr}  {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
+    → ⦃ _ : Extensional (Hom Γ C₁) ℓr ⦄
+    → Extensional (Internal-hom src tgt x y) ℓr
+  Extensional-Internal-hom ⦃ e ⦄ =
+    injection→extensional! Internal-hom-path e
+
 _ihomₚ
   : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
   → {f g : Internal-hom src tgt x y}
@@ -273,6 +280,7 @@ categories internal to $\cC$.
 
 ```agda
 record Internal-cat : Type (o ⊔ ℓ) where
+  no-eta-equality
   field
     C₀ C₁ : Ob
     src tgt : Hom C₁ C₀
@@ -455,6 +463,46 @@ objects.
 open Internal-functor
 ```
 
+<!--
+```agda
+module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
+  private
+    module ℂ = Internal-cat ℂ
+    module 𝔻 = Internal-cat 𝔻
+
+  Internal-functor-path
+    : (p0 : ∀ {Γ} (x : Hom Γ ℂ.C₀) → F .Fi₀ x ≡ G .Fi₀ x)
+    → (p1 : ∀ {Γ} {x y : Hom Γ ℂ.C₀} (f : ℂ.Homi x y)
+          → PathP (λ i → 𝔻.Homi (p0 x i) (p0 y i)) (F .Fi₁ f) (G .Fi₁ f))
+    → F ≡ G
+  Internal-functor-path p0 p1 = path where
+    nat₀ : ∀ {Γ Δ} (x : Hom Δ ℂ.C₀) (σ : Hom Γ Δ) → ∀ i → p0 x i ∘ σ ≡ p0 (x ∘ σ) i
+    nat₀ x σ i =
+      is-prop→pathp (λ i → Hom-set _ _ (p0 x i ∘ σ) (p0 (x ∘ σ) i))
+        (F .Fi₀-nat x σ)
+        (G .Fi₀-nat x σ) i
+
+    path : F ≡ G
+    path i .Fi₀ x = p0 x i
+    path i .Fi₁ f = p1 f i
+    path i .Fi-id {x = x} =
+     is-prop→pathp (λ i → Internal-hom-set (p1 (ℂ.idi x) i) (𝔻.idi (p0 x i)))
+       (F .Fi-id)
+       (G .Fi-id) i
+    path i .Fi-∘ f g =
+      is-prop→pathp (λ i → Internal-hom-set (p1 (f ℂ.∘i g) i) (p1 f i 𝔻.∘i p1 g i))
+        (F .Fi-∘ f g)
+        (G .Fi-∘ f g) i
+    path i .Fi₀-nat x σ = nat₀ x σ i
+    path i .Fi₁-nat {x = x} {y = y} f σ j =
+      is-set→squarep (λ i j → Internal-hom-set {x = nat₀ x σ i j} {y = nat₀ y σ i j})
+        (λ i → p1 f i [ σ ])
+        (F .Fi₁-nat f σ)
+        (G .Fi₁-nat f σ)
+        (p1 (f [ σ ])) i j
+```
+-->
+
 ### Internal functor composition
 
 <!--
@@ -495,6 +543,38 @@ Idi .Fi-∘ _ _ = refl
 Idi .Fi₀-nat _ _ = refl
 Idi .Fi₁-nat _ _ = refl
 ```
+
+## Constant internal functors
+
+We can also define an internal version of [[constant functors]], though
+there is a slight subtlety with how we handle the object involved
+in the definition. In 1-category theory, we can construct a constant
+functor $\cC \to \cD$ simply by providing an object of $\cD$. In internal
+category theory, we need a suitably natural family of generalized objects
+of $\bD_0$ instead.
+
+```agda
+module _ {ℂ 𝔻 : Internal-cat} where
+  private
+    module ℂ = Internal-cat ℂ
+    module 𝔻 = Internal-cat 𝔻
+
+  Consti
+    : (d : ∀ {Γ} → Hom Γ 𝔻.C₀)
+    → (∀ {Γ Δ} (σ : Hom Γ Δ) → d ∘ σ ≡ d)
+    → Internal-functor ℂ 𝔻
+  Consti d d-nat .Fi₀ _ = d
+  Consti d d-nat .Fi₁ _ = 𝔻.idi d
+  Consti d d-nat .Fi-id = refl
+  Consti d d-nat .Fi-∘ _ _ = sym (𝔻.idli _)
+  Consti d d-nat .Fi₀-nat _ σ = d-nat σ
+  Consti d d-nat .Fi₁-nat f σ =
+    Internal-hom-pathp _ _ $
+    𝔻.idi d .ihom ∘ σ      ≡⟨ ap ihom (𝔻.idi-nat σ) ⟩
+    𝔻.idi ⌜ d ∘ σ ⌝ .ihom  ≡⟨ ap! (d-nat σ) ⟩
+    𝔻.idi d .ihom          ∎
+```
+
 
 ## Internal natural transformations
 
