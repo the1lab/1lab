@@ -252,39 +252,9 @@ instance
 ```
 -->
 
--- ## Morphisms
+# As a displayed category
 
--- ```agda
--- continuous-injection→monic
---   : ∀ {ℓ} {X Y : Topological-space ℓ}
---   → (f : Topologies.Hom X Y)
---   → injective (f .hom)
---   → Topologies.is-monic f
--- continuous-injection→monic f f-inj =
---   faithful→reflects-mono Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
---   injective→monic (hlevel 2) f-inj {Z}
-
--- monic→continuous-injection
---   : ∀ {ℓ} {X Y : Topological-space ℓ}
---   → (f : Topologies.Hom X Y)
---   → Topologies.is-monic f
---   → injective (f .hom)
--- monic→continuous-injection f f-monic =
---   {!!}
---   -- monic→injective (hlevel 2) $
---   -- λ g h p → ap hom (f-monic (total-hom g {!!}) (total-hom h {!!}) (total-hom-path _ p prop!))
-
--- continuous-surjection→epic
---   : ∀ {ℓ} {X Y : Topological-space ℓ}
---   → (f : Topologies.Hom X Y)
---   → is-surjective (f .hom)
---   → Topologies.is-epic f
--- continuous-surjection→epic {X = X} {Y = Y} f f-surj =
---   faithful→reflects-epi Topologies↪Sets Topologies↪Sets-faithful $ λ {Z} →
---   surjective→epi (el! ⌞ X ⌟) (el! ⌞ Y ⌟) (f .hom) f-surj {Z}
--- ```
-
--- ```agda
--- Topologies-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
--- Topologies-on ℓ = Thin-structure-over (Topology-structure ℓ)
--- ```
+```agda
+Topologies-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Topologies-on ℓ = Thin-structure-over (Topology-structure ℓ)
+```

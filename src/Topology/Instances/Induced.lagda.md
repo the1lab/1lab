@@ -22,6 +22,7 @@ module Topology.Instances.Induced where
 ```agda
 private variable
   ℓ ℓ' : Level
+  X Y Z : Type ℓ
 
 open Topology-on
 open is-continuous
@@ -78,6 +79,17 @@ induced-continuous
   → is-continuous f (Induced f Y-top) Y-top
 induced-continuous .reflect-open {U = U} U-open =
   pure (U , U-open , refl)
+
+induced-universal
+  : ∀ {S : Topology-on X} {T : Topology-on Z}
+  → {f : Y → Z} {g : X → Y}
+  → is-continuous (f ⊙ g) S T
+  → is-continuous g S (Induced f T)
+induced-universal {S = S} {T = T} {g = g} fg-cont .reflect-open {U} =
+  rec! λ V V-open f[V]=U →
+    subst (is-open S)
+      (funext λ z → f[V]=U $ₚ g z)
+      (fg-cont .reflect-open V-open)
 ```
 
 ```agda
@@ -89,11 +101,7 @@ Topologies-fibration {ℓ} .Cartesian-fibration.has-lift f Y-top = cart where
   cart : Cartesian-lift (Topologies-on ℓ) f Y-top
   cart .x' = Induced f Y-top
   cart .lifting = induced-continuous
-  cart .cartesian .universal {u = Z} {u' = Z-top} g fg-cont .reflect-open {U = U} =
-    rec! λ V V-open f[V]=U →
-      subst (is-open Z-top)
-        (funext λ z → f[V]=U $ₚ g z)
-        (fg-cont .reflect-open V-open)
+  cart .cartesian .universal g fg-cont = induced-universal fg-cont
   cart .cartesian .commutes _ _ = prop!
   cart .cartesian .unique _ _ = prop!
 ```
