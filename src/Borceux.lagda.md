@@ -895,6 +895,7 @@ _ = Path-category
 _ = Free-category
 _ = Comm-graph
 _ = Comm-graphs
+_ = Comm-free-category
 ```
 -->
 

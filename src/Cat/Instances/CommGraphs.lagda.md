@@ -227,7 +227,7 @@ Strict-cats↪Comm-graphs-full
 To see why, suppose that $f : \cC \to \cD$ is a commutative
 graph homomorphism between strict categories. By definition, $f$
 already contains the data of a functor; the tricky part is showing
-the properties.
+that this data is functorial.
 
 ```agda
 Strict-cats↪Comm-graphs-full {x = C} {y = D} f =
@@ -244,7 +244,7 @@ Strict-cats↪Comm-graphs-full {x = C} {y = D} f =
 The trick is that commutative graph homomorphisms between categories cannot observe
 the intensional structure of paths, as they must preserve all commutativities.
 In particular, $f$ will preserve the commutativity in $\cC$ between the singleton path
-containing $id$ is equal to the empty path; so $f(\id) = \id$
+$[id]$ and the empty path; so $f(\id) = \id$
 
 ```agda
     functor .F-id =
@@ -254,7 +254,7 @@ containing $id$ is equal to the empty path; so $f(\id) = \id$
 ```
 
 Additionally, $f$ will preserve the commutativity between the singleton
-path $g \circ h$ and the path $h, g$, so $f(g \circ h) = f g \circ f h$.
+path $[g \circ h]$ and the path $[h, g]$, so $f(g \circ h) = f g \circ f h$.
 
 ```agda
     functor .F-∘ g h =
@@ -363,7 +363,7 @@ module _ (C : Σ (Precategory o ℓ) is-strict) where
     → path-fold C (f .hom) p ≡ path-fold C (f .hom) q
 ```
 
-The proof is an easy but tedious application of the elimination principe
+The proof is an easy but tedious application of the elimination principle
 of `Commutative`{.Agda}.
 
 ```agda
