@@ -165,7 +165,6 @@ As a terminological note, we call this function `reflect` because
   reflect X “ Y ” (vhom f) = f
 ```
 
-
 ## Evaluation
 
 Evaluation operates in much the same way as the [category solver],
@@ -394,7 +393,6 @@ macro
                                   termErr goal ∷ []
     “prod” ← quoteTC prod
     unify hole (def (quote solve-product) (“prod” v∷ lhs v∷ rhs v∷ “refl” v∷ []))
-
 ```
 
 # Demo
