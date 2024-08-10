@@ -168,3 +168,49 @@ We also have interchange laws relating horizontal and vertical composition.
       → (δ : Cell g1 v1 v2 h1)
       → (δ ∘ β) ◆ (γ ∘ α) ≡ (δ ◆ γ) ∘ (β ◆ α)
 ```
+
+Vertical morphisms form a category.
+
+```agda
+  Vertical : Precategory o ℓv
+  Vertical .Precategory.Ob = Ob
+  Vertical .Precategory.Hom = Vert
+  Vertical .Precategory.Hom-set _ _ = Vert-set
+  Vertical .Precategory.id = idv
+  Vertical .Precategory._∘_ = _∘v_
+  Vertical .Precategory.idr = idvr
+  Vertical .Precategory.idl = idvl
+  Vertical .Precategory.assoc = assocv
+```
+
+We can also construct a category of cells, where the objects
+are horizontal morphisms, and the morphims 2-cells.
+
+```agda
+  Cells : Precategory (o ⊔ ℓh) (ℓv ⊔ ℓc)
+  Cells .Precategory.Ob =
+    Σ[ a ∈ Ob ] Σ[ b ∈ Ob ] Horiz a b
+  Cells .Precategory.Hom (a0 , a1 , f) (b0 , b1 , g) =
+    Σ[ u ∈ Vert a0 b0 ] Σ[ v ∈ Vert a1 b1 ] Cell f u v g
+  Cells .Precategory.Hom-set _ _ =
+    Σ-is-hlevel 2 Vert-set λ u →
+    Σ-is-hlevel 2 Vert-set λ v →
+    Cell-set
+  Cells .Precategory.id = idv , idv , idv2
+  Cells .Precategory._∘_ (u0 , v0 , α) (u1 , v1 , β) =
+    u0 ∘v u1 , v0 ∘v v1 , α ∘ β
+  Cells .Precategory.idr (u , v , α) =
+    idvr u ,ₚ idvr v ,ₚ idv2r α
+  Cells .Precategory.idl (u , v , α) =
+    idvl u ,ₚ idvl v ,ₚ idv2l α
+  Cells .Precategory.assoc (u0 , v0 , α) (u1 , v1 , β) (u2 , v2 , γ) =
+    assocv u0 u1 u2 ,ₚ assocv v0 v1 v2 ,ₚ assocv2 α β γ
+```
+
+```agda
+  Left : Functor Cells Vertical
+  Left .Functor.F₀ (a , _ , _) = a
+  Left .Functor.F₁ (u , _ , _) = u
+  Left .Functor.F-id = refl
+  Left .Functor.F-∘ _ _ = refl
+```
