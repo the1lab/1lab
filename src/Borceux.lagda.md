@@ -1030,6 +1030,7 @@ _ = _=>o_
 _ = Outer-functors
 _ = ConstO
 _ = const-nato
+_ = Outer-functors→Slice-iso
 ```
 -->
 
@@ -1037,6 +1038,7 @@ _ = const-nato
 * Definition 8.2.2: `_=>o_`{.Agda}
 * Proposition 8.2.3: `Outer-functors`{.Agda}
 * Example 8.2.4: `ConstO`{.Agda}, `const-nato`{.Agda}
+* Proposition 8.2.5: `Outer-functors→Slice-iso`{.Agda}
 
 ### 8.3 Internal limits and colimits
 

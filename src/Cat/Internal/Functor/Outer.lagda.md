@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Path.Cartesian
+
 open import Cat.Diagram.Product.Solver
 open import Cat.Internal.Opposite
 open import Cat.Diagram.Pullback
@@ -114,6 +116,64 @@ functors from the [internal opposite category] of $\ica{C}$.
 
 [discrete fibrations]: Cat.Displayed.Cartesian.Discrete.html
 [internal opposite category]: Cat.Internal.Opposite.html
+
+<!--
+```agda
+module _ {ℂ : Internal-cat} {P Q : Outer-functor ℂ} where
+  open Internal-cat ℂ
+
+  Outer-functor-path
+    : (∫p : P .∫P ≡ Q .∫P)
+    → (p0 : ∀ {Γ} → PathP (λ i → Hom Γ (∫p i) → Hom Γ C₀) (P .P₀) (Q .P₀))
+    → (p1 : ∀ {Γ} → {y : Hom Γ C₀} → PathP (λ i → (px : Hom Γ (∫p i)) → (f : Homi (p0 i px) y) → Hom Γ (∫p i)) (λ px f → P .P₁ px f) (λ px f → Q .P₁ px f))
+    → P ≡ Q
+  Outer-functor-path ∫p p0 p1 = path where
+
+    tgt-path : ∀ {Γ} i (px : Hom Γ (∫p i)) (y : Hom Γ C₀) → (f : Homi (p0 i px) y) → y ≡ p0 i (p1 i px f)
+    tgt-path {Γ} i px y f =
+      is-prop→pathp (λ i →
+          Π-is-hlevel {A = Hom Γ (∫p i)} 1 λ px →
+          Π-is-hlevel {A = Homi (p0 i px) y} 1 λ f →
+          Hom-set Γ C₀ y (p0 i (p1 i px f)))
+        (λ px f → P .P₁-tgt px f)
+        (λ px f → Q .P₁-tgt px f) i px f
+
+    nat-path : ∀ {Γ Δ} → ∀ i → (px : Hom Δ (∫p i)) → (σ : Hom Γ Δ) → p0 i px ∘ σ ≡ p0 i (px ∘ σ)
+    nat-path {Γ} {Δ} i px σ =
+      is-prop→pathp (λ i →
+          Π-is-hlevel {A = Hom Δ (∫p i)} 1 λ px →
+          Hom-set Γ C₀ (p0 i px ∘ σ) (p0 i (px ∘ σ)))
+       (λ px → P .P₀-nat px σ)
+       (λ px → Q .P₀-nat px σ) i px
+
+    path : P ≡ Q
+    path i .∫P = ∫p i
+    path i .P₀ {Γ} px = p0 i px
+    path i .P₁ {Γ} px {y} f = p1 i px f
+    path i .P₁-tgt {Γ} px {y} f = tgt-path i px y f
+    path i .P-id {Γ} px =
+      is-prop→pathp (λ i →
+          Π-is-hlevel {A = Hom Γ (∫p i)} 1 λ px →
+          Hom-set Γ (∫p i) (p1 i px (idi (p0 i px))) px)
+        (P .P-id)
+        (Q .P-id) i px
+    path i .P-∘ {Γ} px {y} {z} f g =
+      is-prop→pathp (λ i →
+          Π-is-hlevel {A = Hom Γ (∫p i)} 1 λ px →
+          Π-is-hlevel {A = Homi (p0 i px) y} 1 λ g →
+          Hom-set Γ (∫p i) (p1 i px (f ∘i g)) (p1 i (p1 i px g) (adjusti (tgt-path i px y g) refl f)))
+        (λ px g → P .P-∘ px f g)
+        (λ px g → Q .P-∘ px f g) i px g
+    path i .P₀-nat px σ = nat-path i px σ
+    path i .P₁-nat {Γ} {Δ} px {y} f σ =
+      is-prop→pathp (λ i →
+          Π-is-hlevel {A = Hom Δ (∫p i)} 1 λ px →
+          Π-is-hlevel {A = Homi (p0 i px) y} 1 λ f →
+          Hom-set Γ (∫p i) (p1 i px f ∘ σ) (p1 i (px ∘ σ) (adjusti (nat-path i px σ) refl (f [ σ ]))))
+        (λ px f → P .P₁-nat px f σ)
+        (λ px f → Q .P₁-nat px f σ) i px f
+```
+-->
 
 ## Internal Hom functors
 
@@ -334,7 +394,16 @@ us to work in the internal language of $\cC$.
       (α .ηo-nat px σ)
       (β .ηo-nat px σ) i
 
+  instance
+    Extensional-Outer-nat
+      : ∀ {P Q : Outer-functor ℂ} {ℓr}
+      → ⦃ _ : Extensional (∀ {Γ} → Hom Γ (P .∫P) → Hom Γ (Q .∫P)) ℓr ⦄
+      → Extensional (P =>o Q) ℓr
+    Extensional-Outer-nat ⦃ e ⦄ =
+      injection→extensional! (λ p → Outer-nat-path λ px i → p i px) e
+
 unquoteDecl H-Level-=>o = declare-record-hlevel 2 H-Level-=>o (quote _=>o_)
+
 ```
 -->
 

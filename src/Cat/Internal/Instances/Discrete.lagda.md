@@ -70,7 +70,27 @@ Disci I .Internal-cat.C₁ = I
 Disci I .Internal-cat.src = id
 Disci I .Internal-cat.tgt = id
 Disci I .Internal-cat.has-internal-cat = Disci-is-internal-cat I
+
+module Disci X = Internal-cat (Disci X)
 ```
+
+<!--
+```agda
+Disci-hom→ob-path
+  : ∀ {Γ X} {x y : Hom Γ X}
+  → Disci.Homi X x y
+  → x ≡ y
+Disci-hom→ob-path f = sym (f .has-src) ∙ f .has-tgt
+
+Disci-hom-is-prop
+  : ∀ {Γ X} {x y : Hom Γ X}
+  → is-prop (Disci.Homi X x y)
+Disci-hom-is-prop {x = x} f g = ext $
+  f .ihom ≡⟨ sym (idl _) ∙ f .has-src ⟩
+  x       ≡˘⟨ sym (idl _) ∙ g .has-src ⟩
+  g .ihom ∎
+```
+-->
 
 Functors between discrete internal categories are given by morphisms
 between their objects of objects.
