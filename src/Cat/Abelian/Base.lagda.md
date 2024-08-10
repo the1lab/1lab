@@ -193,12 +193,13 @@ products coincide with finite coproducts.
 
 ```agda
 record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
-  field has-ab : Ab-category C
-  open Ab-category has-ab public
-
+  no-eta-equality
   field
+    has-ab : Ab-category C
     has-terminal : Terminal C
-    has-prods    : ∀ A B → Product C A B
+    has-prods    : Binary-products C
+
+  open Ab-category has-ab public
 
   ∅ : Zero C
   ∅ .Zero.∅ = has-terminal .Terminal.top
@@ -238,28 +239,23 @@ and analogously for the second coprojection followed by
 comultiplication.
 
 ```agda
-  private module Prod = Binary-products C has-prods
-  open Prod
+  open Binary-products has-prods
 
-  has-coprods : ∀ A B → Coproduct C A B
-  has-coprods A B = coprod where
-    open Coproduct
-    open is-coproduct
-    coprod : Coproduct C A B
-    coprod .coapex = apex
-    coprod .ι₁ = ⟨ id , 0m ⟩
-    coprod .ι₂ = ⟨ 0m , id ⟩
-    coprod .has-is-coproduct .[_,_] f g = f ∘ π₁ + g ∘ π₂
-    coprod .has-is-coproduct .[]∘ι₁ {inj0 = f} {g} =
-      (f ∘ π₁ + g ∘ π₂) ∘ ⟨ id , 0m ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
-      (f ∘ π₁) ∘ ⟨ id , 0m ⟩ + _      ≡⟨ Hom.elimr (pullr π₂∘⟨⟩ ∙ ∘-zero-r) ⟩
-      (f ∘ π₁) ∘ ⟨ id , 0m ⟩          ≡⟨ cancelr π₁∘⟨⟩ ⟩
-      f                               ∎
-    coprod .has-is-coproduct .[]∘ι₂ {inj0 = f} {g} =
-      (f ∘ π₁ + g ∘ π₂) ∘ ⟨ 0m , id ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
-      _ + (g ∘ π₂) ∘ ⟨ 0m , id ⟩      ≡⟨ Hom.eliml (pullr π₁∘⟨⟩ ∙ ∘-zero-r) ⟩
-      (g ∘ π₂) ∘ ⟨ 0m , id ⟩          ≡⟨ cancelr π₂∘⟨⟩ ⟩
-      g                               ∎
+  has-coprods : Binary-coproducts C
+  has-coprods .Binary-coproducts._⊕₀_ = _⊗₀_
+  has-coprods .Binary-coproducts.ι₁ = ⟨ id , 0m ⟩
+  has-coprods .Binary-coproducts.ι₂ = ⟨ 0m  , id ⟩
+  has-coprods .Binary-coproducts.[_,_] f g = f ∘ π₁ + g ∘ π₂
+  has-coprods .Binary-coproducts.[]∘ι₁ {inj0 = f} {g} =
+    (f ∘ π₁ + g ∘ π₂) ∘ ⟨ id , 0m ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
+    (f ∘ π₁) ∘ ⟨ id , 0m ⟩ + _      ≡⟨ Hom.elimr (pullr π₂∘⟨⟩ ∙ ∘-zero-r) ⟩
+    (f ∘ π₁) ∘ ⟨ id , 0m ⟩          ≡⟨ cancelr π₁∘⟨⟩ ⟩
+    f                               ∎
+  has-coprods .Binary-coproducts.[]∘ι₂ {inj0 = f} {g} =
+    (f ∘ π₁ + g ∘ π₂) ∘ ⟨ 0m , id ⟩ ≡⟨ sym (∘-linear-l _ _ _) ⟩
+    _ + (g ∘ π₂) ∘ ⟨ 0m , id ⟩      ≡⟨ Hom.eliml (pullr π₁∘⟨⟩ ∙ ∘-zero-r) ⟩
+    (g ∘ π₂) ∘ ⟨ 0m , id ⟩          ≡⟨ cancelr π₂∘⟨⟩ ⟩
+    g                               ∎
 ```
 
 For uniqueness, we use distributivity of composition over addition of
@@ -267,7 +263,7 @@ morphisms and the universal property of the product to establish the
 desired equation. Check it out:
 
 ```agda
-    coprod .has-is-coproduct .unique {inj0 = f} {g} {other} p q = sym $
+  has-coprods .Binary-coproducts.[]-unique {inj0 = f} {g} {other} p q = sym $
       f ∘ π₁ + g ∘ π₂                                         ≡⟨ ap₂ _+_ (pushl (sym p)) (pushl (sym q)) ⟩
       (other ∘ ⟨ id , 0m ⟩ ∘ π₁) + (other ∘ ⟨ 0m , id ⟩ ∘ π₂) ≡⟨ ∘-linear-r _ _ _ ⟩
       other ∘ (⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂)           ≡⟨ elimr lemma ⟩
@@ -275,41 +271,46 @@ desired equation. Check it out:
       where
         lemma : ⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂
               ≡ id
-        lemma = Prod.unique₂ {pr1 = π₁} {pr2 = π₂}
+        lemma = ⟨⟩-unique₂ {pr1 = π₁} {pr2 = π₂}
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (cancell π₁∘⟨⟩) (pulll π₁∘⟨⟩ ∙ ∘-zero-l) ∙ Hom.elimr refl)
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (pulll π₂∘⟨⟩ ∙ ∘-zero-l) (cancell π₂∘⟨⟩) ∙ Hom.eliml refl)
           (elimr refl)
           (elimr refl)
 
-  module Coprod = Binary-coproducts C has-coprods
-  open Coprod
+  open Binary-coproducts has-coprods
 ```
 
 Thus every additive category is [[semiadditive|semiadditive category]].
 
 ```agda
+  has-biprods : Binary-biproducts C
+  has-biprods .Binary-biproducts._⊕₀_ = _⊗₀_
+  has-biprods .Binary-biproducts.π₁ = π₁
+  has-biprods .Binary-biproducts.π₂ = π₂
+  has-biprods .Binary-biproducts.⟨_,_⟩ = ⟨_,_⟩
+  has-biprods .Binary-biproducts.π₁∘⟨⟩ = π₁∘⟨⟩
+  has-biprods .Binary-biproducts.π₂∘⟨⟩ = π₂∘⟨⟩
+  has-biprods .Binary-biproducts.⟨⟩-unique = ⟨⟩-unique
+  has-biprods .Binary-biproducts.ι₁ = ι₁
+  has-biprods .Binary-biproducts.ι₂ = ι₂
+  has-biprods .Binary-biproducts.[_,_] = [_,_]
+  has-biprods .Binary-biproducts.[]∘ι₁ = []∘ι₁
+  has-biprods .Binary-biproducts.[]∘ι₂ = []∘ι₂
+  has-biprods .Binary-biproducts.[]-unique = []-unique
+  has-biprods .Binary-biproducts.πι₁ = π₁∘⟨⟩
+  has-biprods .Binary-biproducts.πι₂ = π₂∘⟨⟩
+  has-biprods .Binary-biproducts.ιπ-comm =
+    ι₁ ∘ π₁ ∘ ι₂ ∘ π₂ ≡⟨ refl⟩∘⟨ pulll π₁∘⟨⟩ ⟩
+    ι₁ ∘ 0m ∘ π₂      ≡⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+    0m                ≡˘⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
+    ι₂ ∘ 0m ∘ π₁      ≡˘⟨ refl⟩∘⟨ pulll π₂∘⟨⟩ ⟩
+    ι₂ ∘ π₂ ∘ ι₁ ∘ π₁ ∎
+
   additive→semiadditive : is-semiadditive C
   additive→semiadditive .is-semiadditive.has-zero = ∅
-  additive→semiadditive .is-semiadditive.has-biproducts {A} {B} = bp where
-    open is-biproduct
-    bp : Biproduct C A B
-    bp .Biproduct.biapex = A ⊗₀ B
-    bp .Biproduct.π₁ = π₁
-    bp .Biproduct.π₂ = π₂
-    bp .Biproduct.ι₁ = ι₁
-    bp .Biproduct.ι₂ = ι₂
-    bp .Biproduct.has-is-biproduct .has-is-product = Prod.has-is-product
-    bp .Biproduct.has-is-biproduct .has-is-coproduct = Coprod.has-is-coproduct
-    bp .Biproduct.has-is-biproduct .πι₁ = π₁∘⟨⟩
-    bp .Biproduct.has-is-biproduct .πι₂ = π₂∘⟨⟩
-    bp .Biproduct.has-is-biproduct .ιπ-comm =
-      ι₁ ∘ π₁ ∘ ι₂ ∘ π₂ ≡⟨ refl⟩∘⟨ pulll π₁∘⟨⟩ ⟩
-      ι₁ ∘ 0m ∘ π₂      ≡⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
-      0m                ≡˘⟨ pulll ∘-zero-r ∙ ∘-zero-l ⟩
-      ι₂ ∘ 0m ∘ π₁      ≡˘⟨ refl⟩∘⟨ pulll π₂∘⟨⟩ ⟩
-      ι₂ ∘ π₂ ∘ ι₁ ∘ π₁ ∎
+  additive→semiadditive .is-semiadditive.has-biproducts = has-biprods
 
-  open is-semiadditive additive→semiadditive hiding (∘-linear-l; ∘-linear-r)
+  open is-semiadditive additive→semiadditive using (_+→_)
 ```
 
 As described there, every [[semiadditive category]] has its own enrichment
@@ -360,7 +361,7 @@ module _ {o ℓ} (C : Precategory o ℓ) (semiadditive : is-semiadditive C) wher
     ab .Ab-category.∘-linear-r _ _ _ = ∘-linear-r
 
   semiadditive+group→additive inv invl .is-additive.has-terminal = terminal
-  semiadditive+group→additive inv invl .is-additive.has-prods _ _ = Biprod.product
+  semiadditive+group→additive inv invl .is-additive.has-prods = products
 ```
 
 ## Pre-abelian & abelian categories {defines="pre-abelian-category abelian-category"}
