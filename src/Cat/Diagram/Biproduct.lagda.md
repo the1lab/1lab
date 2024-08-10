@@ -103,6 +103,74 @@ $$
 ```
 -->
 
+## Categories with all biproducts
+
+```agda
+  record Binary-biproducts : Type (o ⊔ ℓ) where
+    no-eta-equality
+    field
+      _⊕₀_ : Ob → Ob → Ob
+
+      π₁ : ∀ {A B} → Hom (A ⊕₀ B) A
+      π₂ : ∀ {A B} → Hom (A ⊕₀ B) B
+      ⟨_,_⟩ : ∀ {X A B} (p1 : Hom X A) (p2 : Hom X B) → Hom X (A ⊕₀ B)
+      π₁∘⟨⟩ : ∀ {X A B} {p1 : Hom X A} {p2 : Hom X B} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
+      π₂∘⟨⟩ : ∀ {X A B} {p1 : Hom X A} {p2 : Hom X B} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
+      ⟨⟩-unique
+        : ∀ {X A B} {p1 : Hom X A} {p2 : Hom X B}
+        → {other : Hom X (A ⊕₀ B)}
+        → π₁ ∘ other ≡ p1
+        → π₂ ∘ other ≡ p2
+        → other ≡ ⟨ p1 , p2 ⟩
+
+      ι₁ : ∀ {A B} → Hom A (A ⊕₀ B)
+      ι₂ : ∀ {A B} → Hom B (A ⊕₀ B)
+      [_,_] : ∀ {A B X} (inj0 : Hom A X) (inj1 : Hom B X) → Hom (A ⊕₀ B) X
+      []∘ι₁ : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X} → [ inj0 , inj1 ] ∘ ι₁ ≡ inj0
+      []∘ι₂ : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X} → [ inj0 , inj1 ] ∘ ι₂ ≡ inj1
+      []-unique
+        : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X}
+        → {other : Hom (A ⊕₀ B) X}
+        → other ∘ ι₁ ≡ inj0
+        → other ∘ ι₂ ≡ inj1
+        → other ≡ [ inj0 , inj1 ]
+
+      πι₁ : ∀ {A B} → π₁ ∘ ι₁ {A} {B} ≡ id
+      πι₂ : ∀ {A B} → π₂ ∘ ι₂ {A} {B} ≡ id
+      ιπ-comm : ∀ {A B} → ι₁ {A} {B} ∘ π₁ ∘ ι₂ ∘ π₂ {A} {B} ≡ ι₂ ∘ π₂ ∘ ι₁ ∘ π₁
+```
+
+<!--
+```agda
+    products : Binary-products C
+    products .Binary-products._⊗₀_ = _⊕₀_
+    products .Binary-products.π₁ = π₁
+    products .Binary-products.π₂ = π₂
+    products .Binary-products.⟨_,_⟩ = ⟨_,_⟩
+    products .Binary-products.π₁∘⟨⟩ = π₁∘⟨⟩
+    products .Binary-products.π₂∘⟨⟩ = π₂∘⟨⟩
+    products .Binary-products.⟨⟩-unique = ⟨⟩-unique
+
+    coproducts : Binary-coproducts C
+    coproducts .Binary-coproducts._⊕₀_ = _⊕₀_
+    coproducts .Binary-coproducts.ι₁ = ι₁
+    coproducts .Binary-coproducts.ι₂ = ι₂
+    coproducts .Binary-coproducts.[_,_] = [_,_]
+    coproducts .Binary-coproducts.[]∘ι₁ = []∘ι₁
+    coproducts .Binary-coproducts.[]∘ι₂ = []∘ι₂
+    coproducts .Binary-coproducts.[]-unique = []-unique
+
+    open Binary-products products
+      hiding (_⊗₀_; π₁; π₂; ⟨_,_⟩; π₁∘⟨⟩; π₂∘⟨⟩; ⟨⟩-unique)
+      public
+
+    open Binary-coproducts coproducts
+      hiding (_⊕₀_; ι₁; ι₂; [_,_]; []∘ι₁; []∘ι₂; []-unique)
+      public
+```
+-->
+
+
 ## Semiadditive categories {defines="semiadditive-category"}
 
 Just like [[terminal objects]] (resp. [[initial objects]]) are 0-ary
@@ -114,7 +182,7 @@ biproducts) is called **semiadditive**.
   record is-semiadditive : Type (o ⊔ ℓ) where
     field
       has-zero : Zero C
-      has-biproducts : ∀ {A B} → Biproduct A B
+      has-biproducts : Binary-biproducts
 ```
 
 As the name hints, every [[additive category]] is semiadditive.
@@ -125,13 +193,9 @@ $\cC$ in *commutative monoids*!
 <!--
 ```agda
     open Zero has-zero public
-    module Biprod {A B} = Biproduct (has-biproducts {A} {B})
-    open Biprod using (πι₁; πι₂; ιπ-comm)
+    open Binary-biproducts has-biproducts public
 
-    open Binary-products C (λ _ _ → Biprod.product)
-    open Binary-coproducts C (λ _ _ → Biprod.coproduct)
-
-    open Monoidal-category (Cartesian-monoidal (λ _ _ → Biprod.product) terminal) using (associator; module ⊗)
+    open Monoidal-category (Cartesian-monoidal products terminal) using (associator; module ⊗)
 ```
 -->
 
@@ -215,9 +279,9 @@ $$
       → (π₁ ∘ f ∘ ι₂ ≡ π₁ ∘ g ∘ ι₂)
       → (π₂ ∘ f ∘ ι₂ ≡ π₂ ∘ g ∘ ι₂)
       → f ≡ g
-    unique-matrix p₁₁ p₁₂ p₂₁ p₂₂ = Biprod.[]-unique₂
-      (Biprod.⟨⟩-unique₂ p₁₁ p₁₂ refl refl)
-      (Biprod.⟨⟩-unique₂ p₂₁ p₂₂ refl refl)
+    unique-matrix p₁₁ p₁₂ p₂₁ p₂₂ = []-unique₂
+      (⟨⟩-unique₂ p₁₁ p₁₂ refl refl)
+      (⟨⟩-unique₂ p₂₁ p₂₂ refl refl)
       refl refl
 ```
 
@@ -253,7 +317,7 @@ coproducts coincide.
 
 ```agda
     coassoc≡assoc = unique-matrix
-      ((refl⟩∘⟨ []∘ι₁) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ Biprod.⟨⟩-unique₂
+      ((refl⟩∘⟨ []∘ι₁) ∙ cancell πι₁ ∙ sym (pulll π₁∘⟨⟩ ∙ ⟨⟩-unique₂
         (pulll π₁∘⟨⟩ ∙ πι₁)
         (pulll π₂∘⟨⟩ ∙ pullr π₂-ι₁ ∙ zero-∘l _)
         πι₁ π₂-ι₁))
@@ -264,7 +328,7 @@ coproducts coincide.
         ((refl⟩∘⟨ pullr []∘ι₂ ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₁∘⟨⟩) ∙ (π₁-ι₂ ⟩∘⟨refl) ∙ zero-∘r _))
         ((refl⟩∘⟨ pullr []∘ι₂ ∙ π₁-ι₂) ∙ zero-∘l _ ∙ sym (pulll (pulll π₂∘⟨⟩) ∙ (cancelr πι₂ ⟩∘⟨refl) ∙ π₁-ι₂))
       ∙ sym (pulll π₁∘⟨⟩))
-      ((refl⟩∘⟨ []∘ι₂) ∙ Biprod.[]-unique₂
+      ((refl⟩∘⟨ []∘ι₂) ∙ []-unique₂
         (pullr []∘ι₁ ∙ pulll π₂-ι₁ ∙ zero-∘r _)
         (pullr []∘ι₂ ∙ πι₂)
         ((cancelr πι₂ ⟩∘⟨refl) ∙ π₂-ι₁)
@@ -272,10 +336,10 @@ coproducts coincide.
       ∙ sym (pulll π₂∘⟨⟩))
 
     coswap≡swap = ⟨⟩-unique
-      (Biprod.[]-unique₂
+      ([]-unique₂
         (pullr []∘ι₁ ∙ π₁-ι₂) (pullr []∘ι₂ ∙ πι₁)
         π₂-ι₁ πι₂)
-      (Biprod.[]-unique₂
+      ([]-unique₂
         (pullr []∘ι₁ ∙ πι₂) (pullr []∘ι₂ ∙ π₂-ι₁)
         πι₁ π₁-ι₂)
 ```
@@ -366,7 +430,7 @@ which is that the [[zero object]] is a left unit for $\oplus$.
 
 ```agda
     ∇-¡l : ∀ {a} → ∇ {a} ∘ (¡ ⊕₁ id) ≡ π₂
-    ∇-¡l = Biprod.[]-unique₂
+    ∇-¡l = []-unique₂
       (¡-unique₂ _ _) (pullr []∘ι₂ ∙ cancell []∘ι₂)
       refl πι₂
 
@@ -428,12 +492,12 @@ is invertible.
   record make-semiadditive : Type (o ⊔ ℓ) where
     field
       has-zero : Zero C
-      has-coprods : ∀ a b → Coproduct C a b
-      has-prods : ∀ a b → Product C a b
+      has-coprods : Binary-coproducts C
+      has-prods : Binary-products C
 
     open Zero has-zero
-    open Binary-products C has-prods
-    open Binary-coproducts C has-coprods
+    open Binary-products has-prods
+    open Binary-coproducts has-coprods
 
     coproduct→product : ∀ {a b} → Hom (a ⊕₀ b) (a ⊗₀ b)
     coproduct→product = ⟨ [ id , zero→ ]
@@ -447,18 +511,28 @@ If that is the case, then the coproduct $A + B$ is a biproduct
 when equipped with the projections $[\id, 0]$ and $[0, \id]$.
 
 ```agda
-    has-biproducts : ∀ {a b} → Biproduct a b
-    has-biproducts {a} {b} .Biproduct.biapex = a ⊕₀ b
-    has-biproducts .Biproduct.π₁ = [ id , zero→ ]
-    has-biproducts .Biproduct.π₂ = [ zero→ , id ]
-    has-biproducts .Biproduct.ι₁ = ι₁
-    has-biproducts .Biproduct.ι₂ = ι₂
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.has-is-product =
-        is-product-iso-apex coproduct≅product π₁∘⟨⟩ π₂∘⟨⟩ has-is-product
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.has-is-coproduct = has-is-coproduct
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₁ = []∘ι₁
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.πι₂ = []∘ι₂
-    has-biproducts .Biproduct.has-is-biproduct .is-biproduct.ιπ-comm =
+    ⊕-is-product : ∀ {A B} → is-product C [ id {A} , zero→ ] [ zero→ , id {B} ]
+    ⊕-is-product = is-product-iso-apex coproduct≅product π₁∘⟨⟩ π₂∘⟨⟩ has-is-product
+
+    private module ⊕-is-product {A} {B} = is-product (⊕-is-product {A} {B})
+
+    has-biproducts : Binary-biproducts
+    has-biproducts .Binary-biproducts._⊕₀_ = _⊕₀_
+    has-biproducts .Binary-biproducts.π₁ = [ id , zero→ ]
+    has-biproducts .Binary-biproducts.π₂ = [ zero→ , id ]
+    has-biproducts .Binary-biproducts.⟨_,_⟩ = ⊕-is-product.⟨_,_⟩
+    has-biproducts .Binary-biproducts.π₁∘⟨⟩ = ⊕-is-product.π₁∘⟨⟩
+    has-biproducts .Binary-biproducts.π₂∘⟨⟩ = ⊕-is-product.π₂∘⟨⟩
+    has-biproducts .Binary-biproducts.⟨⟩-unique = ⊕-is-product.unique
+    has-biproducts .Binary-biproducts.ι₁ = ι₁
+    has-biproducts .Binary-biproducts.ι₂ = ι₂
+    has-biproducts .Binary-biproducts.[_,_] = [_,_]
+    has-biproducts .Binary-biproducts.[]∘ι₁ = []∘ι₁
+    has-biproducts .Binary-biproducts.[]∘ι₂ = []∘ι₂
+    has-biproducts .Binary-biproducts.[]-unique = []-unique
+    has-biproducts .Binary-biproducts.πι₁ = []∘ι₁
+    has-biproducts .Binary-biproducts.πι₂ = []∘ι₂
+    has-biproducts .Binary-biproducts.ιπ-comm =
       ι₁ ∘ [ id , zero→ ] ∘ ι₂ ∘ [ zero→ , id ] ≡⟨ refl⟩∘⟨ pulll []∘ι₂ ⟩
       ι₁ ∘ zero→ ∘ [ zero→ , id ]               ≡⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩
       zero→                                     ≡˘⟨ pulll (zero-∘l _) ∙ zero-∘r _ ⟩

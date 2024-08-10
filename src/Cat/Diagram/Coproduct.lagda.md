@@ -118,27 +118,58 @@ module _ where
 
 # Categories with all binary coproducts
 
-Categories with all binary coproducts are quite common, so we define
-a module for working with them.
+Categories with all binary coproducts are quite common, so we provide
+an API for working with them. In order to get better printing in goals,
+we define an unnested record where all operations are top-level fields;
+this means that goals willl print as `[ f , g ]` instead of
+`is-coproduct.[_,_] (coproduct A B) f g`.
 
 ```agda
-has-coproducts : Type _
-has-coproducts = ∀ a b → Coproduct a b
-
-module Binary-coproducts (all-coproducts : has-coproducts) where
-
-  module coproduct {a} {b} = Coproduct (all-coproducts a b)
-
-  open coproduct renaming
-    (unique to []-unique) public
-  open Functor
+record Binary-coproducts : Type (o ⊔ h) where
+  no-eta-equality
+  field
+    _⊕₀_ : Ob → Ob → Ob
+    ι₁ : ∀ {A B} → Hom A (A ⊕₀ B)
+    ι₂ : ∀ {A B} → Hom B (A ⊕₀ B)
+    [_,_] : ∀ {A B X} (inj0 : Hom A X) (inj1 : Hom B X) → Hom (A ⊕₀ B) X
+    []∘ι₁ : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X} → [ inj0 , inj1 ] ∘ ι₁ ≡ inj0
+    []∘ι₂ : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X} → [ inj0 , inj1 ] ∘ ι₂ ≡ inj1
+    []-unique
+      : ∀ {A B X} {inj0 : Hom A X} {inj1 : Hom B X}
+      → {other : Hom (A ⊕₀ B) X}
+      → other ∘ ι₁ ≡ inj0
+      → other ∘ ι₂ ≡ inj1
+      → other ≡ [ inj0 , inj1 ]
 
   infixr 7 _⊕₀_
   infix 50 _⊕₁_
+```
 
-  _⊕₀_ : Ob → Ob → Ob
-  a ⊕₀ b = coproduct.coapex {a} {b}
+<!--
+```agda
+  open Functor
 
+  coproduct : ∀ A B → Coproduct A B
+  coproduct A B .Coproduct.coapex = A ⊕₀ B
+  coproduct A B .Coproduct.ι₁ = ι₁
+  coproduct A B .Coproduct.ι₂ = ι₂
+  coproduct A B .Coproduct.has-is-coproduct .is-coproduct.[_,_] = [_,_]
+  coproduct A B .Coproduct.has-is-coproduct .is-coproduct.[]∘ι₁ = []∘ι₁
+  coproduct A B .Coproduct.has-is-coproduct .is-coproduct.[]∘ι₂ = []∘ι₂
+  coproduct A B .Coproduct.has-is-coproduct .is-coproduct.unique = []-unique
+
+  private module coproduct {A} {B} = Coproduct (coproduct A B)
+  open coproduct
+    using (has-is-coproduct)
+    renaming (unique₂ to []-unique₂)
+    public
+```
+-->
+
+If a category has all binary coproducts, we can define a bifunctor
+$\cC \times \cC \to \cC$ that sets $A, B$ to their coproduct.
+
+```agda
   _⊕₁_ : ∀ {a b x y} → Hom a x → Hom b y → Hom (a ⊕₀ b) (x ⊕₀ y)
   f ⊕₁ g = [ ι₁ ∘ f , ι₂ ∘ g ]
 
@@ -150,7 +181,11 @@ module Binary-coproducts (all-coproducts : has-coproducts) where
     sym $ []-unique
       (pullr []∘ι₁ ∙ extendl []∘ι₁)
       (pullr []∘ι₂ ∙ extendl []∘ι₂)
+```
 
+We also define a handful of common morphisms.
+
+```agda
   ∇ : ∀ {a} → Hom (a ⊕₀ a) a
   ∇ = [ id , id ]
 
@@ -164,7 +199,7 @@ module Binary-coproducts (all-coproducts : has-coproducts) where
 <!--
 ```agda
   ∇-natural : is-natural-transformation (⊕-functor F∘ Cat⟨ Id , Id ⟩) Id λ _ → ∇
-  ∇-natural x y f = unique₂
+  ∇-natural x y f = []-unique₂
     (pullr []∘ι₁ ∙ cancell []∘ι₁) (pullr []∘ι₂ ∙ cancell []∘ι₂)
     (cancelr []∘ι₁) (cancelr []∘ι₂)
 
@@ -172,7 +207,7 @@ module Binary-coproducts (all-coproducts : has-coproducts) where
   ∇-coswap = []-unique (pullr []∘ι₁ ∙ []∘ι₂) (pullr []∘ι₂ ∙ []∘ι₁)
 
   ∇-assoc : ∀ {a} → ∇ {a} ∘ (∇ {a} ⊕₁ id) ∘ ⊕-assoc ≡ ∇ ∘ (id ⊕₁ ∇)
-  ∇-assoc = unique₂
+  ∇-assoc = []-unique₂
     (pullr (pullr []∘ι₁) ∙ (refl⟩∘⟨ pulll []∘ι₁) ∙ pulll (pulll []∘ι₁) ∙ pullr []∘ι₁)
     (pullr (pullr []∘ι₂) ∙ []-unique
       (pullr (pullr []∘ι₁) ∙ extend-inner []∘ι₁ ∙ cancell []∘ι₁ ∙ []∘ι₂)
