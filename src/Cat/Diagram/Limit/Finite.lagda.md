@@ -74,6 +74,7 @@ to give a terminal object and binary products.
 
 ```agda
   record Finitely-complete : Type (ℓ ⊔ ℓ') where
+    no-eta-equality
     field
       terminal   : Terminal C
       products   : Binary-products C

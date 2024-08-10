@@ -23,8 +23,6 @@ module Cat.Functor.Pullback
 <!--
 ```agda
 open Cat.Reasoning C
-open is-pullback
-open Pullback
 open Initial
 open Functor
 open _=>_
@@ -60,12 +58,14 @@ functor gives is the vertical arrow $Y \times_X K \to Y$.
 ~~~
 
 ```agda
-module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob} (f : Hom Y X) where
+module _ (pullbacks : Pullbacks C) {X Y : Ob} (f : Hom Y X) where
+  open Pullbacks pullbacks
+
   Base-change : Functor (Slice C X) (Slice C Y)
   Base-change .F₀ x = ob where
     ob : /-Obj Y
-    ob .domain = pullbacks (x .map) f .apex
-    ob .map    = pullbacks (x .map) f .p₂
+    ob .domain = Pb (x .map) f
+    ob .map    = p₂ (x .map) f
 ```
 
 On morphisms, we use the universal property of the pullback to obtain a
@@ -86,12 +86,9 @@ diagram below is a cone over $K' \to X \ot Y$.
 
 ```agda
   Base-change .F₁ {x} {y} dh = dh' where
-    module ypb = Pullback (pullbacks (y .map) f)
-    module xpb = Pullback (pullbacks (x .map) f)
     dh' : /-Hom _ _
-    dh' .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
-      (pulll (dh .commutes) ∙ xpb.square)
-    dh' .commutes = ypb.p₂∘universal
+    dh' .map = pb (dh .map ∘ p₁ (x .map) f) _ (pulll (dh .commutes) ∙ square)
+    dh' .commutes = p₂∘pb
 ```
 
 <details>
@@ -99,16 +96,12 @@ diagram below is a cone over $K' \to X \ot Y$.
 functorial, but the details are not particularly enlightening.</summary>
 
 ```agda
-  Base-change .F-id {x} = ext (sym (xpb.unique id-comm (idr _)))
-    where module xpb = Pullback (pullbacks (x .map) f)
+  Base-change .F-id {x} = ext (sym (pb-unique id-comm (idr _)))
 
   Base-change .F-∘ {x} {y} {z} am bm =
-    ext (sym (zpb.unique
-      (pulll zpb.p₁∘universal ∙ pullr ypb.p₁∘universal ∙ assoc _ _ _)
-      (pulll zpb.p₂∘universal ∙ ypb.p₂∘universal)))
-    where
-      module ypb = Pullback (pullbacks (y .map) f)
-      module zpb = Pullback (pullbacks (z .map) f)
+    ext (sym (pb-unique
+      (pulll p₁∘pb ∙ pullr p₁∘pb ∙ assoc _ _ _)
+      (pulll p₂∘pb ∙ p₂∘pb)))
 ```
 
 </details>
@@ -174,45 +167,35 @@ Explain this better
 -->
 
 ```agda
-module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob} (f : Hom Y X) where
+module _ (pullbacks : Pullbacks C) {X Y : Ob} (f : Hom Y X) where
+  open Pullbacks pullbacks
   open _⊣_
   open _=>_
 
   Σf⊣f* : Σf f ⊣ Base-change pullbacks f
   Σf⊣f* .unit .η obj = dh where
-    module pb = Pullback (pullbacks (f ∘ obj .map) f)
     dh : /-Hom _ _
-    dh .map = pb.universal {p₁' = id} {p₂' = obj .map} (idr _)
-    dh .commutes = pb.p₂∘universal
+    dh .map = pb id (obj .map) (idr _)
+    dh .commutes = p₂∘pb
   Σf⊣f* .unit .is-natural x y g =
-    ext (pb.unique₂
+    ext (pb-unique₂
       {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ cat! C ⟩ f ∘ y .map ∘ g .map ∎}
-      (pulll pb.p₁∘universal)
-      (pulll pb.p₂∘universal)
-      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ id-comm)
-      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal ∙ sym (g .commutes)))
-    where
-      module pb = Pullback (pullbacks (f ∘ y .map) f)
-      module pb' = Pullback (pullbacks (f ∘ x .map) f)
+      (pulll p₁∘pb)
+      (pulll p₂∘pb)
+      (pulll p₁∘pb ∙ pullr p₁∘pb ∙ id-comm)
+      (pulll p₂∘pb ∙ p₂∘pb ∙ sym (g .commutes)))
 
   Σf⊣f* .counit .η obj = dh where
-    module pb = Pullback (pullbacks (obj .map) f)
     dh : /-Hom _ _
-    dh .map = pb.p₁
-    dh .commutes = pb.square
-  Σf⊣f* .counit .is-natural x y g = ext pb.p₁∘universal
-    where module pb = Pullback (pullbacks (y .map) f)
-
-  Σf⊣f* .zig {A} = ext pb.p₁∘universal
-    where module pb = Pullback (pullbacks (f ∘ A .map) f)
-
+    dh .map = p₁ (obj .map) f
+    dh .commutes = square
+  Σf⊣f* .counit .is-natural x y g = ext p₁∘pb
+  Σf⊣f* .zig {A} = ext p₁∘pb
   Σf⊣f* .zag {B} = ext
-    (sym (pb.unique₂ {p = pb.square}
+    (sym (pb-unique₂ {p = square}
       (idr _) (idr _)
-      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ idr _)
-      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal))) where
-    module pb = Pullback (pullbacks (B .map) f)
-    module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
+      (pulll p₁∘pb ∙ pullr p₁∘pb ∙ idr _)
+      (pulll p₂∘pb ∙ p₂∘pb)))
 ```
 
 ## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}

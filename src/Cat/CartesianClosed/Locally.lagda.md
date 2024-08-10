@@ -60,12 +60,12 @@ record Locally-cartesian-closed {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ �
 module _ {o ℓ} (C : Precategory o ℓ) (fp : Finitely-complete C) where
   open Locally-cartesian-closed
   open Finitely-complete fp
+  open Pullbacks pullbacks
   open Cat.Reasoning C
-  open Pullback
 
   module _ {A : Ob} where
     private module Fc = Cat.Reasoning Cat[ Slice C A , Slice C A ]
-    ×/ = Binary-products.×-functor (Slice C A) (Slice-products pullbacks)
+    ×/ = Binary-products.×-functor (Slice-products {b = A} pullbacks)
     open make-natural-iso
 ```
 -->
@@ -184,13 +184,15 @@ isomorphic.
       (Bifunctor.Left ×/ X)
 
     Slice-product-functor .eta x .map      = id
-    Slice-product-functor .eta x .commutes = idr _ ∙ pullbacks _ _ .square
+    Slice-product-functor .eta x .commutes = idr _ ∙ square
     Slice-product-functor .inv x .map      = id
-    Slice-product-functor .inv x .commutes = idr _ ∙ sym (pullbacks _ _ .square)
+    Slice-product-functor .inv x .commutes = idr _ ∙ sym square
     Slice-product-functor .eta∘inv x     = ext $ idl _
     Slice-product-functor .inv∘eta x     = ext $ idl _
-    Slice-product-functor .natural x y f = ext $ id-comm ∙ ap (id ∘_) (pullbacks _ _ .unique
-      (pullbacks _ _ .p₁∘universal) (pullbacks _ _ .p₂∘universal ∙ idl _))
+    Slice-product-functor .natural x y f =
+      ext $
+      id-comm
+      ∙ ap (id ∘_) (pb-unique p₁∘pb (p₂∘pb ∙ idl _))
 ```
 
 If we then have a functor $\Pi_f$ fitting into an adjoint triple
@@ -219,16 +221,17 @@ each slice of $\cC$ is Cartesian closed.
 module _ {o ℓ} (C : Precategory o ℓ) (lcc : Locally-cartesian-closed C) where
   open Locally-cartesian-closed lcc
   open Finitely-complete has-is-lex
+  open Pullbacks pullbacks
   open Cat.Reasoning C
   open Pullback
 
   private
     module _ A where open Cartesian-closed (slices-cc A) public
 
-    prod/ : ∀ {a} → has-products (Slice C a)
+    prod/ : ∀ {a} → Binary-products (Slice C a)
     prod/ = Slice-products pullbacks
 
-    pullback/ : ∀ {b} → has-pullbacks (Slice C b)
+    pullback/ : ∀ {b} → Pullbacks (Slice C b)
     pullback/ = Slice-pullbacks pullbacks
 ```
 -->
@@ -282,6 +285,6 @@ equivalence $(\cC/B)/f \cong \cC/A$.
     rem₂ .inv∘eta x = ext (idr _)
     rem₂ .natural x y f = ext $
          idr _
-      ·· ap (pullbacks _ _ .universal) prop!
+      ·· ap (pb _ _) prop!
       ·· sym (idl _)
 ```
