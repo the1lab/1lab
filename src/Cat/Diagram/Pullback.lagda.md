@@ -403,7 +403,7 @@ record Pullbacks {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
 
   private module pullback {X Y Z} {f : Hom X Z} {g : Hom Y Z} = Pullback (pullback f g)
   open pullback
-    using (has-is-pb)
+    using (has-is-pb; pullback-univ)
     renaming (unique₂ to pb-unique₂)
     public
 

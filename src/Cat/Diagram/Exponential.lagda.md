@@ -16,7 +16,7 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Diagram.Exponential
-  {o ℓ} (C : Precategory o ℓ) (fp : has-products C) (term : Terminal C) where
+  {o ℓ} (C : Precategory o ℓ) (fp : Binary-products C) (term : Terminal C) where
 ```
 
 # Exponential objects {defines="exponential-object"}
@@ -38,7 +38,7 @@ $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
 
 <!--
 ```agda
-open Binary-products C fp hiding (unique₂)
+open Binary-products fp
 open Cat.Reasoning C
 open Terminal term
 open Functor
@@ -248,7 +248,7 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
     ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
     (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
     g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
-    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
+    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (⟨⟩-unique (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
   product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
@@ -300,7 +300,6 @@ product-adjoint→cartesian-closed A→ adj = cc where
 ```agda
 open /-Obj
 open /-Hom
-open Pullback
 
 module _ B (exp : ∀ A → Exponential B A) where
   private module _ A where open Exponential (exp A) renaming (B^A to -^B₀) hiding (ƛ ; unlambda ; ev) public
@@ -356,36 +355,39 @@ omit it from the page.
 
 ```agda
   exponentiable→product
-    : has-pullbacks C
+    : Pullbacks C
     → Functor (Slice C B) C
-  exponentiable→product pb = f where
+  exponentiable→product pullbacks = f where
+    open Pullbacks pullbacks
+
     f : Functor (Slice C B) C
-    f .F₀ h = pb {B = top} (-^B .F₁ (h .map)) (ƛ π₂) .apex
-    f .F₁ {x} {y} h = pb _ _ .universal (sym p) where abstract
-      p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (ƛ π₂) .p₁
-      p = ƛ π₂ ∘ !                                         ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
-          ƛ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
-          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
-          ƛ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
-          ƛ (y .map ∘ ev) ∘ ƛ (h .map ∘ ev) ∘ pb _ _ .p₁   ∎
+    f .F₀ h = Pb {Y = top} (-^B .F₁ (h .map)) (ƛ π₂)
+    f .F₁ {x} {y} h = pb _ _ (sym p) where abstract
+      p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ p₁ {Y = top} (-^B .F₁ (x .map)) (ƛ π₂)
+      p = ƛ π₂ ∘ !                                   ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
+          ƛ π₂ ∘ p₂ _ _                              ≡˘⟨ square ⟩
+          ƛ (x .map ∘ ev) ∘ p₁ _ _                   ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
+          ƛ ((y .map ∘ h .map) ∘ ev) ∘ p₁ _ _        ≡⟨ pushl (-^B .F-∘ _ _) ⟩
+          ƛ (y .map ∘ ev) ∘ ƛ (h .map ∘ ev) ∘ p₁ _ _ ∎
 ```
 
 <!--
 ```agda
-    f .F-id = sym $ pb _ _ .Pullback.unique
+    f .F-id = sym $ pb-unique
       (sym (eliml (-^B .F-id) ∙ intror refl)) (sym (!-unique _))
 
-    f .F-∘ f g = sym $ pb _ _ .Pullback.unique
-      (pulll (pb _ _ .p₁∘universal) ·· pullr (pb _ _ .p₁∘universal) ·· pulll (sym (-^B .F-∘ _ _)))
+    f .F-∘ f g = sym $ pb-unique
+      (pulll p₁∘pb ·· pullr p₁∘pb ·· pulll (sym (-^B .F-∘ _ _)))
       (sym (!-unique _))
 
   exponentiable→constant-family⊣product
-    : (pb : has-pullbacks C)
+    : (pb : Pullbacks C)
     → constant-family fp ⊣ exponentiable→product pb
-  exponentiable→constant-family⊣product pb =
+  exponentiable→constant-family⊣product pullbacks =
     hom-iso-inv→adjoints (rem₁ _ .fst) (rem₁ _ .snd) nat where
     module b = Functor (constant-family fp)
-    module Π = Functor (exponentiable→product pb)
+    module Π = Functor (exponentiable→product pullbacks)
+    open Pullbacks pullbacks
 ```
 -->
 
@@ -448,7 +450,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
 
 ```agda
         Hom X (Π.₀ f)
-          ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
+          ≃⟨ pullback-univ ⟩
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
           ≃⟨ Σ-ap-snd (λ x → Σ-contr-eqv (has⊤ X)) ⟩
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
@@ -459,17 +461,17 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
           ≃∎
 
       rem₁-β : ∀ {X} (f : /-Obj B) (h : Hom X (Π.₀ f))
-             → Equiv.to (rem₁ f) h .map ≡ app (pb _ _ .p₁ ∘ h)
+             → Equiv.to (rem₁ f) h .map ≡ app (p₁ _ _ ∘ h)
       rem₁-β f h = refl
 
-    nat : hom-iso-inv-natural {L = constant-family fp} {R = exponentiable→product pb} (rem₁ _ .fst)
+    nat : hom-iso-inv-natural {L = constant-family fp} {R = exponentiable→product pullbacks} (rem₁ _ .fst)
     nat g h x = ext $
      rem₁ _ .fst (Π.₁ g ∘ x ∘ h) .map                           ≡⟨ rem₁-β _ _ ⟩
-     app (pb _ _ .p₁ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (pb _ _ .p₁∘universal ∙ ƛ-∘ {f = g .map} {g = pb _ _ .p₁} (has-is-exp _))) ⟩
-     app (ƛ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ x ∘ h)           ≡⟨ ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _) ∙ pulll refl ⟩
-     app (ƛ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id)) ∘ (x ∘ h) ⊗₁ id   ≡⟨ ap₂ _∘_ (Equiv.η (_ , lambda-is-equiv _) _) refl ⟩
-     (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ (x ∘ h) ⊗₁ id           ≡⟨ pullr (pullr (sym (×-functor .F-∘ _ _) ∙ ap₂ _⊗₁_ (assoc _ _ _) refl ∙ ×-functor .F-∘ _ _)) ⟩
-     g .map ∘ ev ∘ (pb _ _ .p₁ ∘ x) ⊗₁ id ∘ h ⊗₁ id             ≡⟨ refl⟩∘⟨ (pulll refl ∙ ap₂ _∘_ refl (ap₂ ⟨_,_⟩ refl (idl _))) ⟩
-     g .map ∘ (ev ∘ (pb _ _ .p₁ ∘ x) ⊗₁ id) ∘ b.₁ h .map        ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ (sym (rem₁-β _ _)) refl) ⟩
+     app (p₁ _ _ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (p₁∘pb ∙ ƛ-∘ {f = g .map} {g = p₁ _ _} (has-is-exp _))) ⟩
+     app (ƛ (g .map ∘ ev ∘ p₁ _ _ ⊗₁ id) ∘ x ∘ h)           ≡⟨ ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _) ∙ pulll refl ⟩
+     app (ƛ (g .map ∘ ev ∘ p₁ _ _ ⊗₁ id)) ∘ (x ∘ h) ⊗₁ id   ≡⟨ ap₂ _∘_ (Equiv.η (_ , lambda-is-equiv _) _) refl ⟩
+     (g .map ∘ ev ∘ p₁ _ _ ⊗₁ id) ∘ (x ∘ h) ⊗₁ id           ≡⟨ pullr (pullr (sym (×-functor .F-∘ _ _) ∙ ap₂ _⊗₁_ (assoc _ _ _) refl ∙ ×-functor .F-∘ _ _)) ⟩
+     g .map ∘ ev ∘ (p₁ _ _ ∘ x) ⊗₁ id ∘ h ⊗₁ id             ≡⟨ refl⟩∘⟨ (pulll refl ∙ ap₂ _∘_ refl (ap₂ ⟨_,_⟩ refl (idl _))) ⟩
+     g .map ∘ (ev ∘ (p₁ _ _ ∘ x) ⊗₁ id) ∘ b.₁ h .map        ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ (sym (rem₁-β _ _)) refl) ⟩
      g .map ∘ rem₁ _ .fst x .map ∘ b.₁ h .map                   ∎
 ```
