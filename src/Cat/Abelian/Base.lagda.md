@@ -201,14 +201,15 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
 
   open Ab-category has-ab public
 
-  ∅ : Zero C
-  ∅ .Zero.∅ = has-terminal .Terminal.top
-  ∅ .Zero.has-is-zero = id-zero→zero has-ab $
+  has-zero : Zero C
+  has-zero .Zero.∅ = has-terminal .Terminal.top
+  has-zero .Zero.has-is-zero = id-zero→zero has-ab $
     is-contr→is-prop (has-terminal .Terminal.has⊤ _) _ _
-  module ∅ = Zero ∅
 
-  0m-unique : ∀ {A B} → ∅.zero→ {A} {B} ≡ 0m
-  0m-unique = ap₂ _∘_ (∅.has⊥ _ .paths _) refl ∙ ∘-zero-l
+  open Zero has-zero public
+
+  0m-unique : ∀ {A B} → zero→ {A} {B} ≡ 0m
+  0m-unique = ap₂ _∘_ (¡-unique 0m) refl ∙ ∘-zero-l
 ```
 
 Coincidence of finite products and finite coproducts leads to an object
@@ -307,10 +308,10 @@ Thus every additive category is [[semiadditive|semiadditive category]].
     ι₂ ∘ π₂ ∘ ι₁ ∘ π₁ ∎
 
   additive→semiadditive : is-semiadditive C
-  additive→semiadditive .is-semiadditive.has-zero = ∅
+  additive→semiadditive .is-semiadditive.has-zero = has-zero
   additive→semiadditive .is-semiadditive.has-biproducts = has-biprods
 
-  open is-semiadditive additive→semiadditive using (_+→_)
+  open is-semiadditive additive→semiadditive using (_+→_) public
 ```
 
 As described there, every [[semiadditive category]] has its own enrichment
@@ -326,6 +327,12 @@ additions also agree; this is straightforward to check by linearity.
     (π₁ ∘ (f ⊗₁ g) ∘ δ + π₂ ∘ (f ⊗₁ g) ∘ δ) ≡⟨ ap₂ _+_ (pulll π₁∘⟨⟩ ∙ cancelr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩) ⟩
     f + g                                   ∎
 ```
+
+<!--
+```agda
+  open Binary-biproducts has-biprods public
+```
+-->
 
 Therefore, in order to get an additive category from a semiadditive
 category, it suffices to ask for inverses for every morphism, so that
@@ -378,7 +385,7 @@ record is-pre-abelian {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) wh
   field has-additive : is-additive C
   open is-additive has-additive public
   field
-    kernel   : ∀ {A B} (f : Hom A B) → Kernel C ∅ f
+    kernel   : ∀ {A B} (f : Hom A B) → Kernel C has-zero f
     cokernel : ∀ {A B} (f : Hom A B) → Coequaliser C 0m f
 
   module Ker {A B} (f : Hom A B) = Kernel (kernel f)
@@ -415,8 +422,8 @@ monomorphism].
         where abstract
           path : f ∘ kernel f .Kernel.kernel ≡ f ∘ 0m
           path = Ker.equal f
-            ·· ∅.zero-∘r _
-            ·· ap₂ _∘_ (∅.has⊥ _ .paths 0m) refl
+            ·· zero-∘r _
+            ·· ap₂ _∘_ (¡-unique 0m) refl
             ·· ∘-zero-l ·· sym ∘-zero-r
 ```
 -->
@@ -434,10 +441,10 @@ the canonical subobject inclusion $\ker(f) \to B$.
 <!--
 ```agda
         where abstract
-          path : ∅.zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
+          path : zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
           path = Coker.unique₂ (Ker.kernel f)
             {e' = 0m} (∘-zero-r ∙ sym ∘-zero-l)
-            (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
+            (pushl (zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (!-unique 0m)
                                                ∙ ∘-zero-r)
                  ∙ ∘-zero-l)
             (pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
@@ -506,11 +513,11 @@ $f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
         where abstract
           path : f ∘ id ∘ 0m ≡ f ∘ id ∘ Ker.kernel f
           path =
-            f ∘ id ∘ 0m              ≡⟨ ap (f ∘_) (eliml refl) ∙ ∘-zero-r ⟩
-            0m                       ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-            (∅.zero→ ∘ Ker.kernel f) ≡˘⟨ Ker.equal f ⟩
-            f ∘ Ker.kernel f         ≡⟨ ap (f ∘_) (introl refl) ⟩
-            f ∘ id ∘ Ker.kernel f    ∎
+            f ∘ id ∘ 0m            ≡⟨ ap (f ∘_) (eliml refl) ∙ ∘-zero-r ⟩
+            0m                     ≡˘⟨ zero-∘r _ ∙ 0m-unique ⟩
+            (zero→ ∘ Ker.kernel f) ≡˘⟨ Ker.equal f ⟩
+            f ∘ Ker.kernel f       ≡⟨ ap (f ∘_) (introl refl) ⟩
+            f ∘ id ∘ Ker.kernel f  ∎
 ```
 
 This is indeed a map in the slice using that both isomorphisms and

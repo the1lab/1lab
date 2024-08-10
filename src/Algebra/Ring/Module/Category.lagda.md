@@ -15,6 +15,8 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Abelian.Base
 open import Cat.Prelude hiding (_+_ ; _*_)
+
+import Algebra.Ring.Module.Reasoning
 ```
 -->
 
@@ -26,7 +28,6 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 ```agda
 private module R = Ring-on (R .snd)
 open Ab-category hiding (_+_)
-open is-additive hiding (_+_)
 open make-abelian-group
 open Total-hom
 
@@ -195,8 +196,9 @@ constantly the unit, including the paths, which are _all_ reflexivity.
 
 ```agda
 R-Mod-is-additive : ∀ {ℓ} → is-additive (R-Mod R ℓ)
-R-Mod-is-additive .has-ab = R-Mod-ab-category
-R-Mod-is-additive .has-terminal = term where
+R-Mod-is-additive {ℓ} .is-additive.has-ab = R-Mod-ab-category
+R-Mod-is-additive {ℓ} .is-additive.has-terminal = term where
+  open is-additive (Ab-is-additive {ℓ})
   act : Ring-action R _
   act .Ring-action._⋆_ r _          = lift tt
   act .Ring-action.⋆-distribl r x y = refl
@@ -205,9 +207,9 @@ R-Mod-is-additive .has-terminal = term where
   act .Ring-action.⋆-id x           = refl
 
   ∅ᴹ : Module R _
-  ∅ᴹ = Action→Module R (Ab-is-additive .has-terminal .Terminal.top) act
+  ∅ᴹ = Action→Module R ∅ act
 
-  term : Terminal (R-Mod R _)
+  term : Terminal (R-Mod R ℓ)
   term .Terminal.top = ∅ᴹ
   term .Terminal.has⊤ x .centre .hom _ = lift tt
   term .Terminal.has⊤ x .centre .preserves .linear r s t = refl
@@ -221,24 +223,26 @@ Cartesian product of types). The module action, and its laws, are
 defined pointwise using the $R$-module structures of $M$ and $N$:
 
 ```agda
-R-Mod-is-additive .has-prods M N = prod where
-  module P = Product (Ab-is-additive .has-prods
-    (M .fst , Module-on→Abelian-group-on (M .snd))
-    (N .fst , Module-on→Abelian-group-on (N .snd)))
+R-Mod-is-additive {ℓ = ℓ} .is-additive.has-prods = prods where
+  open is-additive (Ab-is-additive {ℓ})
 
-  instance
-    _ = module-notation M
-    _ = module-notation N
+  prods : Binary-products (R-Mod R ℓ)
+  prods .Binary-products._⊗₀_ M N =
+    Action→Module R (M.Ab-group ⊕₀ N.Ab-group) act
+    where
+      module M = Algebra.Ring.Module.Reasoning M
+      module N = Algebra.Ring.Module.Reasoning N
 
-  act : Ring-action R _
-  act .Ring-action._⋆_ r (a , b)    = r ⋆ a , r ⋆ b
-  act .Ring-action.⋆-distribl r x y = ap₂ _,_ (⋆-distribl _ _ _) (⋆-distribl _ _ _)
-  act .Ring-action.⋆-distribr r x y = ap₂ _,_ (⋆-distribr _ _ _) (⋆-distribr _ _ _)
-  act .Ring-action.⋆-assoc r s x    = ap₂ _,_ (⋆-assoc _ _ _) (⋆-assoc _ _ _)
-  act .Ring-action.⋆-id x           = ap₂ _,_ (⋆-id _) (⋆-id _)
+      instance
+        _ = module-notation M
+        _ = module-notation N
 
-  M⊕ᵣN : Module R _
-  M⊕ᵣN = Action→Module R P.apex act
+      act : Ring-action R _
+      act .Ring-action._⋆_ r (a , b)    = r ⋆ a , r ⋆ b
+      act .Ring-action.⋆-distribl r x y = ap₂ _,_ (⋆-distribl _ _ _) (⋆-distribl _ _ _)
+      act .Ring-action.⋆-distribr r x y = ap₂ _,_ (⋆-distribr _ _ _) (⋆-distribr _ _ _)
+      act .Ring-action.⋆-assoc r s x    = ap₂ _,_ (⋆-assoc _ _ _) (⋆-assoc _ _ _)
+      act .Ring-action.⋆-id x           = ap₂ _,_ (⋆-id _) (⋆-id _)
 ```
 
 We can readily define the universal cone: The projection maps are the
@@ -247,21 +251,16 @@ Proving that this cone is actually universal involves a bit of
 path-mangling, but it's nothing _too_ bad:
 
 ```agda
-  open Product
-  open is-product
-
-  prod : Product (R-Mod _ _) M N
-  prod .apex = M⊕ᵣN
-  prod .π₁ .hom = fst
-  prod .π₁ .preserves .linear r s t = refl
-  prod .π₂ .hom = snd
-  prod .π₂ .preserves .linear r s t = refl
-  prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
-  prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
+  prods .Binary-products.π₁ .hom = fst
+  prods .Binary-products.π₁ .preserves .linear r s t = refl
+  prods .Binary-products.π₂ .hom = snd
+  prods .Binary-products.π₂ .preserves .linear r s t = refl
+  prods .Binary-products.⟨_,_⟩ f g .hom x = f # x , g # x
+  prods .Binary-products.⟨_,_⟩ f g .preserves .linear r m s =
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
-  prod .has-is-product .π₁∘⟨⟩ = trivial!
-  prod .has-is-product .π₂∘⟨⟩ = trivial!
-  prod .has-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
+  prods .Binary-products.π₁∘⟨⟩ = trivial!
+  prods .Binary-products.π₂∘⟨⟩ = trivial!
+  prods .Binary-products.⟨⟩-unique p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 
 <!-- TODO [Amy 2022-09-15]

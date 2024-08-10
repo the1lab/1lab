@@ -52,9 +52,6 @@ Ab-is-additive .has-terminal .top = from-commutative-group (Zero-group {ℓ}) (�
 Ab-is-additive .has-terminal .has⊤ x =
   contr (total-hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
     λ x → trivial!
-
-Ab-is-additive .has-prods A B .apex = A ⊕ B
-Ab-is-additive .has-prods A B .π₁ = _
-Ab-is-additive .has-prods A B .π₂ = _
-Ab-is-additive .has-prods A B .has-is-product = Direct-sum-is-product
+Ab-is-additive .has-prods =
+  has-products→binary-products λ A B → Direct-sum-is-product
 ```
