@@ -407,25 +407,45 @@ record Pullbacks {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     renaming (unique₂ to pb-unique₂)
     public
 
-to-pullbacks
-  : ∀ {o ℓ} {C : Precategory o ℓ}
-  → (let open Precategory C)
-  → (∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g)
-  → Pullbacks C
-to-pullbacks {C = C} has-pullbacks = pullbacks where
+module _ {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
-  module pb {X Y Z} {f : Hom X Z} {g : Hom Y Z} = Pullback (has-pullbacks f g)
-  open Pullbacks
 
-  pullbacks : Pullbacks C
-  pullbacks .Pb f g = pb.apex {f = f} {g = g}
-  pullbacks .p₁ _ _ = pb.p₁
-  pullbacks .p₂ _ _ = pb.p₂
-  pullbacks .square = pb.square
-  pullbacks .pb p1 p2 sq = pb.universal sq
-  pullbacks .p₁∘pb = pb.p₁∘universal
-  pullbacks .p₂∘pb = pb.p₂∘universal
-  pullbacks .pb-unique = pb.unique
+  all-pullbacks→pullbacks
+    : (∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g)
+    → Pullbacks C
+  all-pullbacks→pullbacks has-pullbacks = pullbacks where
+    module pb {X Y Z} {f : Hom X Z} {g : Hom Y Z} = Pullback (has-pullbacks f g)
+    open Pullbacks
+
+    pullbacks : Pullbacks C
+    pullbacks .Pb f g = pb.apex {f = f} {g = g}
+    pullbacks .p₁ _ _ = pb.p₁
+    pullbacks .p₂ _ _ = pb.p₂
+    pullbacks .square = pb.square
+    pullbacks .pb p1 p2 sq = pb.universal sq
+    pullbacks .p₁∘pb = pb.p₁∘universal
+    pullbacks .p₂∘pb = pb.p₂∘universal
+    pullbacks .pb-unique = pb.unique
+
+  has-pullbacks→pullbacks
+    : {Pb : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Ob}
+    → {p₁ : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Hom (Pb f g) A}
+    → {p₂ : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Hom (Pb f g) B}
+    → (∀ {A B X} (f : Hom A X) (g : Hom B X) → is-pullback C (p₁ f g) f (p₂ f g) g)
+    → Pullbacks C
+  has-pullbacks→pullbacks {Pb = Pb} {p₁} {p₂} is-pullbacks = pullbacks where
+    module pb {X Y Z} {f : Hom X Z} {g : Hom Y Z} = is-pullback (is-pullbacks f g)
+
+    pullbacks : Pullbacks C
+    pullbacks .Pullbacks.Pb = Pb
+    pullbacks .Pullbacks.p₁ = p₁
+    pullbacks .Pullbacks.p₂ = p₂
+    pullbacks .Pullbacks.square = pb.square
+    pullbacks .Pullbacks.pb p1 p2 sq = pb.universal sq
+    pullbacks .Pullbacks.p₁∘pb = pb.p₁∘universal
+    pullbacks .Pullbacks.p₂∘pb = pb.p₂∘universal
+    pullbacks .Pullbacks.pb-unique = pb.unique
+
 ```
 -->
 

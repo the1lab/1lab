@@ -376,22 +376,42 @@ We also define a handful of common morphisms.
 
 <!--
 ```agda
-to-binary-products
-  : ∀ {o ℓ} {C : Precategory o ℓ}
-  → (∀ A B → Product C A B)
-  → Binary-products C
-to-binary-products {C = C} products = binary-products where
-  module product {A} {B} = Product (products A B)
-  open Binary-products hiding (product)
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Precategory C
 
-  binary-products : Binary-products C
-  binary-products ._⊗₀_ A B = product.apex {A} {B}
-  binary-products .π₁ = product.π₁
-  binary-products .π₂ = product.π₂
-  binary-products .⟨_,_⟩ = product.⟨_,_⟩
-  binary-products .π₁∘⟨⟩ = product.π₁∘⟨⟩
-  binary-products .π₂∘⟨⟩ = product.π₂∘⟨⟩
-  binary-products .⟨⟩-unique = product.unique
+  all-products→binary-products
+    : (∀ A B → Product C A B)
+    → Binary-products C
+  all-products→binary-products products = binary-products where
+    module product {A} {B} = Product (products A B)
+    open Binary-products hiding (product)
+
+    binary-products : Binary-products C
+    binary-products ._⊗₀_ A B = product.apex {A} {B}
+    binary-products .π₁ = product.π₁
+    binary-products .π₂ = product.π₂
+    binary-products .⟨_,_⟩ = product.⟨_,_⟩
+    binary-products .π₁∘⟨⟩ = product.π₁∘⟨⟩
+    binary-products .π₂∘⟨⟩ = product.π₂∘⟨⟩
+    binary-products .⟨⟩-unique = product.unique
+
+  has-products→binary-products
+    : {_⊗₀_ : Ob → Ob → Ob}
+    → {π₁ : ∀ {A B} → Hom (A ⊗₀ B) A} {π₂ : ∀ {A B} → Hom (A ⊗₀ B) B}
+    → (∀ A B → is-product C (π₁ {A} {B}) (π₂ {A}))
+    → Binary-products C
+  has-products→binary-products {_⊗₀_ = _⊗₀_} {π₁} {π₂} is-products = binary-products where
+    module product {A} {B} = is-product (is-products A B)
+
+    binary-products : Binary-products C
+    binary-products .Binary-products._⊗₀_ = _⊗₀_
+    binary-products .Binary-products.π₁ = π₁
+    binary-products .Binary-products.π₂ = π₂
+    binary-products .Binary-products.⟨_,_⟩ = product.⟨_,_⟩
+    binary-products .Binary-products.π₁∘⟨⟩ = product.π₁∘⟨⟩
+    binary-products .Binary-products.π₂∘⟨⟩ = product.π₂∘⟨⟩
+    binary-products .Binary-products.⟨⟩-unique = product.unique
+
 ```
 -->
 

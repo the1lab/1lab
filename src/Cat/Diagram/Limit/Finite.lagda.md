@@ -102,9 +102,12 @@ products).
   is-finitely-complete→Finitely-complete flim = Flim where
     Flim : Finitely-complete
     Flim .terminal = Limit→Terminal C (flim finite-cat _)
-    Flim .products = to-binary-products λ a b → Limit→Product C (flim Disc-finite _)
-    Flim .equalisers = to-equalisers λ f g → Limit→Equaliser C (flim ·⇉·-finite _)
-    Flim .pullbacks = to-pullbacks λ f g → Limit→Pullback C {lzero} {lzero} (flim ·→·←·-finite _)
+    Flim .products = all-products→binary-products λ a b →
+      Limit→Product C (flim Disc-finite _)
+    Flim .equalisers = all-equalisers→equalisers λ f g →
+      Limit→Equaliser C (flim ·⇉·-finite _)
+    Flim .pullbacks = all-pullbacks→pullbacks λ f g →
+      Limit→Pullback C {lzero} {lzero} (flim ·→·←·-finite _)
 ```
 
 ## With equalisers
@@ -201,14 +204,13 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
     : Binary-products C
     → Equalisers C
     → Pullbacks C
-  products+equalisers→pullbacks prods eqs = pbs where
+  products+equalisers→pullbacks prods eqs =
+    has-pullbacks→pullbacks λ f g →
+      product+equaliser→pullback has-is-product has-is-eq
+    where
+
     open Binary-products prods
     open Equalisers eqs
-
-    pbs : Pullbacks C
-    pbs = to-pullbacks λ f g → record {
-       has-is-pb = product+equaliser→pullback has-is-product has-is-eq
-     }
 ```
 -->
 
@@ -403,9 +405,8 @@ is indeed the equaliser of $f$ and $g$.
     → Pullbacks C
     → Binary-products C
   terminal+pullbacks→products top pullbacks =
-    to-binary-products λ A B → record {
-       has-is-product = terminal+pullback→product {f = !} {g = !} has⊤ has-is-pb
-    }
+    has-products→binary-products λ A B →
+      terminal+pullback→product {f = !} {g = !} has⊤ has-is-pb
     where
       open Terminal top
       open Pullbacks pullbacks
@@ -415,9 +416,8 @@ is indeed the equaliser of $f$ and $g$.
     → Pullbacks C
     → Equalisers C
   products+pullbacks→equalisers products pullbacks =
-    to-equalisers λ f g → record {
-      has-is-eq = product+pullback→equaliser has-is-product has-is-pb
-    }
+    has-equalisers→equalisers λ f g →
+      product+pullback→equaliser has-is-product has-is-pb
     where
       open Binary-products products
       open Pullbacks pullbacks
@@ -461,7 +461,7 @@ Putting it all together into a record we get our proof of finite completeness:
   is-complete→finitely {a} {b} compl = with-pullbacks term' pb
     where
       pb : Pullbacks C
-      pb = to-pullbacks λ f g →
+      pb = all-pullbacks→pullbacks λ f g →
         Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
 
       idx : Precategory a b

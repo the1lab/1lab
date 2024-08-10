@@ -217,22 +217,38 @@ record Equalisers {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     renaming (unique₂ to equate-unique₂)
     public
 
-to-equalisers
-  : ∀ {o ℓ} {C : Precategory o ℓ}
-  → (let open Precategory C)
-  → (∀ {X Y} → (f g : Hom X Y) → Equaliser C f g)
-  → Equalisers C
-to-equalisers {C = C} has-equalisers = equalisers where
+module _ {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
-  module eq {X Y} {f g : Hom X Y} = Equaliser (has-equalisers f g)
-  open Equalisers
 
-  equalisers : Equalisers C
-  equalisers .Eq f g = eq.apex {f = f} {g = g}
-  equalisers .equ _ _ = eq.equ
-  equalisers .equal = eq.equal
-  equalisers .equalise _ = eq.universal
-  equalisers .equ∘equalise = eq.factors
-  equalisers .equalise-unique = eq.unique
+  all-equalisers→equalisers
+    : (∀ {X Y} → (f g : Hom X Y) → Equaliser C f g)
+    → Equalisers C
+  all-equalisers→equalisers has-equalisers = equalisers where
+    module eq {X Y} {f g : Hom X Y} = Equaliser (has-equalisers f g)
+    open Equalisers
+
+    equalisers : Equalisers C
+    equalisers .Eq f g = eq.apex {f = f} {g = g}
+    equalisers .equ _ _ = eq.equ
+    equalisers .equal = eq.equal
+    equalisers .equalise _ = eq.universal
+    equalisers .equ∘equalise = eq.factors
+    equalisers .equalise-unique = eq.unique
+
+  has-equalisers→equalisers
+    : ∀ {Eq : ∀ {X Y} → (f g : Hom X Y) → Ob}
+    → {equ : ∀ {X Y} → (f g : Hom X Y) → Hom (Eq f g) X}
+    → (∀ {X Y} → (f g : Hom X Y) → is-equaliser C f g (equ f g))
+    → Equalisers C
+  has-equalisers→equalisers {Eq = Eq} {equ} is-equalisers = equalisers where
+    module eq {X Y} {f g : Hom X Y} = is-equaliser (is-equalisers f g)
+
+    equalisers : Equalisers C
+    equalisers .Equalisers.Eq = Eq
+    equalisers .Equalisers.equ = equ
+    equalisers .Equalisers.equal = eq.equal
+    equalisers .Equalisers.equalise _ = eq.universal
+    equalisers .Equalisers.equ∘equalise = eq.factors
+    equalisers .Equalisers.equalise-unique = eq.unique
 ```
 -->
