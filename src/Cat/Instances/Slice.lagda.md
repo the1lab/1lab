@@ -501,7 +501,7 @@ statements above are just putting things together. We leave them in this
 </summary>
 
 ```agda
-  Slice-pullbacks pullbacks = to-pullbacks λ {A} {B} f g → record
+  Slice-pullbacks pullbacks = all-pullbacks→pullbacks λ {A} {B} f g → record
     { apex = cut (A .map ∘ p₁ (f .map) (g .map))
     ; p₁ = /-hom (p₁ (f .map) (g .map)) refl
     ; p₂ = /-hom (p₂ (f .map) (g .map))
@@ -513,7 +513,7 @@ statements above are just putting things together. We leave them in this
     where open Pullbacks pullbacks
 
   Slice-products pullbacks =
-    to-binary-products λ f g → Pullback→Fibre-product (pullback (f .map) (g .map))
+    all-products→binary-products λ f g → Pullback→Fibre-product (pullback (f .map) (g .map))
     where open Pullbacks pullbacks
 
   Slice-lex pb = with-pullbacks (Slice C _)

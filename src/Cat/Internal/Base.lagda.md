@@ -368,10 +368,9 @@ the identity morphism can be done by looking instantiating `idi`{.Agda}
 at the identity morphism.
 
 ```agda
-private module _ (pbs : has-pullbacks C) (ℂ : Internal-cat) where
+private module _ (pullbacks : Pullbacks C) (ℂ : Internal-cat) where
   open Internal-cat ℂ
-  open Pullbacks C pbs
-  open pullback
+  open Pullbacks pullbacks
 
   internal-id : Hom C₀ C₁
   internal-id = idi id .ihom
@@ -397,7 +396,7 @@ have a pair of internal morphisms that can be composed.
     g : Homi (src ∘ p₂ src tgt) (src ∘ p₁ src tgt)
     g .ihom = p₂ src tgt
     g .has-src = refl
-    g .has-tgt = sym $ square src tgt
+    g .has-tgt = sym square
 ```
 
 ## Internal functors
