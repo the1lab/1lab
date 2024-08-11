@@ -98,9 +98,10 @@ the top diagram is colimiting in $\cC/X$, which amounts to saying that every
 module _ {oj ℓj oc ℓc}
   (J : Precategory oj ℓj)
   (C : Precategory oc ℓc)
-  (pb : has-pullbacks C)
+  (pullbacks : Pullbacks C)
   where
   open Precategory C
+  open Pullbacks pullbacks
 ```
 -->
 
@@ -108,7 +109,7 @@ module _ {oj ℓj oc ℓc}
   has-stable-colimits : Type _
   has-stable-colimits =
     ∀ {X Y} (f : Hom X Y) (F : Functor J (Slice C Y))
-    → preserves-colimit (Base-change pb f) F
+    → preserves-colimit (Base-change pullbacks f) F
 ```
 
 ::: note
@@ -260,12 +261,12 @@ $\cJ^\triangleright \to \cC/X$) is colimiting.
 module _ {oj ℓj oc ℓc}
   (J : Precategory oj ℓj)
   (C : Precategory oc ℓc)
-  (pb : has-pullbacks C)
+  (pullbacks : Pullbacks C)
   where
   open Cat.Reasoning C
   open /-Obj
   open /-Hom
-  open is-pullback
+  open Pullbacks pullbacks
   private
     module C/ {X} = Cat.Reasoning (Slice C X)
 ```
@@ -283,40 +284,42 @@ construct a natural isomorphism $f^* \circ G \cong F : \cJ^\triangleright
 colimits, we get that $F$ is colimiting.
 
 ```agda
-    step1→2 : has-stable-colimits J C pb → step2
+    step1→2 : has-stable-colimits J C pullbacks → step2
     step1→2 u F G α eq G-colim = F-colim where
+      module eq {x} {y} {f : Precategory.Hom (J ▹ ▹) x y} = is-pullback (eq f)
+
       f = α .η (inr _)
 
-      f*G≅F : Base-change pb f F∘ cocone▹→cocone/ G F∘ ▹-in
+      f*G≅F : Base-change pullbacks f F∘ cocone▹→cocone/ G F∘ ▹-in
             ≅ⁿ cocone▹→cocone/ F F∘ ▹-in
       f*G≅F = iso→isoⁿ
         (λ j → C/.invertible→iso
-          (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
-                  ; commutes = eq _ .p₁∘universal })
+          (record { map = eq.universal (sym square)
+                  ; commutes = eq.p₁∘universal })
           (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
-            (pb _ _ .Pullback.has-is-pb))))
-        λ f → ext (unique₂ (eq _)
-          {p = sym (pb _ _ .Pullback.square) ∙ pushl (G .F-∘ _ _)}
-          (pulll (sym (F .F-∘ _ _)) ∙ eq _ .p₁∘universal)
-          (pulll (α .is-natural _ _ _) ∙ pullr (eq _ .p₂∘universal))
-          (pulll (eq _ .p₁∘universal) ∙ pb _ _ .Pullback.p₂∘universal)
-          (pulll (eq _ .p₂∘universal) ∙ pb _ _ .Pullback.p₁∘universal))
+            has-is-pb)))
+        λ f → ext (eq.unique₂
+          {p = sym square ∙ pushl (G .F-∘ _ _)}
+          (pulll (sym (F .F-∘ _ _)) ∙ eq.p₁∘universal)
+          (pulll (α .is-natural _ _ _) ∙ pullr (eq.p₂∘universal))
+          (pulll (eq.p₁∘universal) ∙ p₂∘pb)
+          (pulll (eq.p₂∘universal) ∙ p₁∘pb))
 
-      f*G-colim : preserves-lan (Base-change pb f) G-colim
+      f*G-colim : preserves-lan (Base-change pullbacks f) G-colim
       f*G-colim = u f _ G-colim
 
       F-colim : is-colimit▹ (cocone▹→cocone/ F)
       F-colim = natural-isos→is-lan idni
         f*G≅F
         (!const-isoⁿ (C/.invertible→iso
-          (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
-                  ; commutes = eq _ .p₁∘universal })
+          (record { map = eq.universal (sym square)
+                  ; commutes = eq.p₁∘universal })
           (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
-            (pb _ _ .Pullback.has-is-pb)))))
-        (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
-          {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
-          (pulll (eq _ .p₁∘universal) ·· pulll (pb _ _ .Pullback.p₂∘universal) ·· pb _ _ .Pullback.p₂∘universal)
-          (pulll (eq _ .p₂∘universal) ·· pulll (pb _ _ .Pullback.p₁∘universal) ·· pullr (pb _ _ .Pullback.p₁∘universal))
+            has-is-pb))))
+        (ext λ j → (idl _ ⟩∘⟨refl) ∙ eq.unique₂
+          {p = eq.square ∙ pushl (G .F-∘ _ _)}
+          (pulll (eq.p₁∘universal) ·· pulll p₂∘pb ·· p₂∘pb)
+          (pulll (eq.p₂∘universal) ·· pulll p₁∘pb ·· pullr p₁∘pb)
           (sym (F .F-∘ _ _))
           (α .is-natural _ _ _))
         f*G-colim
@@ -328,26 +331,26 @@ pullback of $G$ to $G$ and show that it is equifibred using the
 repackaging data between "obviously isomorphic" functors.
 
 ```agda
-    step2→1 : step2 → has-stable-colimits J C pb
+    step2→1 : step2 → has-stable-colimits J C pullbacks
     step2→1 u f F {K} {eta} = trivial-is-colimit! ⊙ u _ _ α eq ⊙ trivial-is-colimit!
       where
-        α : cocone/→cocone▹ (Base-change pb f F∘ cocone→cocone▹ eta)
+        α : cocone/→cocone▹ (Base-change pullbacks f F∘ cocone→cocone▹ eta)
          => cocone/→cocone▹ (cocone→cocone▹ eta)
-        α .η (inl j) = pb _ _ .Pullback.p₁
+        α .η (inl j) = p₁ _ _
         α .η (inr _) = f
-        α .is-natural (inl x) (inl y) g = pb _ _ .Pullback.p₁∘universal
-        α .is-natural (inl x) (inr _) g = sym (pb _ _ .Pullback.square)
+        α .is-natural (inl x) (inl y) g = p₁∘pb
+        α .is-natural (inl x) (inr _) g = sym square
         α .is-natural (inr _) (inr _) g = id-comm
 
         eq : is-equifibred α
         eq {inl x} {inl y} (lift g) = pasting-outer→left-is-pullback
-          (rotate-pullback (pb _ _ .Pullback.has-is-pb))
-          (subst₂ (λ x y → is-pullback C x f (pb _ _ .Pullback.p₁) y)
-            (sym ((Base-change pb f F∘ cocone→cocone▹ eta) .F₁ g .commutes))
+          (rotate-pullback has-is-pb)
+          (subst₂ (λ x y → is-pullback C x f (p₁ _ _) y)
+            (sym ((Base-change pullbacks f F∘ cocone→cocone▹ eta) .F₁ g .commutes))
             (sym (cocone→cocone▹ eta .F₁ g .commutes))
-            (rotate-pullback (pb _ _ .Pullback.has-is-pb)))
+            (rotate-pullback has-is-pb))
           (α .is-natural (inl x) (inl y) (lift g))
-        eq {inl x} {inr _} g = rotate-pullback (pb _ _ .Pullback.has-is-pb)
+        eq {inl x} {inr _} g = rotate-pullback has-is-pb
         eq {inr _} {inr _} g = id-is-pullback
 ```
 
@@ -405,7 +408,7 @@ This concludes our equivalence.
 ```agda
   stable≃universal
     : (∀ (F : Functor J C) → Colimit F)
-    → has-stable-colimits J C pb ≃ has-universal-colimits J C
+    → has-stable-colimits J C pullbacks ≃ has-universal-colimits J C
   stable≃universal J-colims =
        prop-ext! step1→2 step2→1
     ∙e step2≃3 J-colims
