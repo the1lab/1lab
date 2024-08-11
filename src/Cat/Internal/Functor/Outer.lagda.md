@@ -124,9 +124,9 @@ hom functor $\cC(X,-)$. We require the following data: $\cC$ is
 in the empty context.
 
 ```agda
-module _ (pb : has-pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
+module _ (pullbacks : Pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
   open Cat.Internal.Reasoning ℂ
-  open Pullbacks C pb
+  open Pullbacks pullbacks
   open Terminal term
 
   Internal-hom-from : (x : Hom top C₀) → Outer-functor ℂ
@@ -157,19 +157,17 @@ of $C_x$ to its codomain. The lifting morphism $P_1$ follows from the
 universal property of the pullback.
 
 ```agda
-    open Pullback (pb src x) renaming (apex to Cₓ)
-
     outf : Outer-functor ℂ
-    outf .∫P = Cₓ
-    outf .P₀ fₓ = tgt ∘ p₁ ∘ fₓ
-    outf .P₁ fₓ {y = y} g = universal coh
+    outf .∫P = Pb src x
+    outf .P₀ fₓ = tgt ∘ p₁ src x ∘ fₓ
+    outf .P₁ fₓ {y = y} g = pb _ _ coh
       module hom-from-action where abstract
-        coh : src ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡ x ∘ !
+        coh : src ∘ (g ∘i homi (p₁ src x ∘ fₓ)) .ihom ≡ x ∘ !
         coh =
-          src ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡⟨ (g ∘i homi (p₁ ∘ fₓ)) .has-src ⟩
-          src ∘ p₁ ∘ fₓ ≡⟨ pulll square ⟩
-          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (sym (!-unique _)) ⟩
-          x ∘ ! ∎
+          src ∘ (g ∘i homi (p₁ _ _ ∘ fₓ)) .ihom ≡⟨ (g ∘i homi (p₁ _ _ ∘ fₓ)) .has-src ⟩
+          src ∘ p₁ _ _ ∘ fₓ                     ≡⟨ pulll square ⟩
+          (x ∘ p₂ _ _) ∘ fₓ                     ≡⟨ pullr (sym (!-unique _)) ⟩
+          x ∘ !                                 ∎
 ```
 
 <details>
@@ -181,25 +179,25 @@ of maps into a limit.
 
 ```agda
     outf .P₁-tgt fₓ {y = y} g = tgt-coh where abstract
-      tgt-coh : y ≡ tgt ∘ p₁ ∘ universal (hom-from-action.coh fₓ g)
+      tgt-coh : y ≡ tgt ∘ p₁ _ _ ∘ pb _ _ (hom-from-action.coh fₓ g)
       tgt-coh =
-        y                                 ≡˘⟨ (g ∘i homi (p₁ ∘ fₓ)) .has-tgt ⟩
-        tgt ∘ (g ∘i homi (p₁ ∘ fₓ)) .ihom ≡˘⟨ ap (tgt ∘_) p₁∘universal ⟩
-        tgt ∘ p₁ ∘ universal _            ∎
+        y                                     ≡˘⟨ (g ∘i homi (p₁ _ _ ∘ fₓ)) .has-tgt ⟩
+        tgt ∘ (g ∘i homi (p₁ _ _ ∘ fₓ)) .ihom ≡˘⟨ ap (tgt ∘_) p₁∘pb ⟩
+        tgt ∘ p₁ _ _ ∘ pb _ _ _               ∎
     outf .P-id fₓ =
-      sym $ unique (sym (ap ihom (idli _))) (sym (!-unique _))
-    outf .P-∘ fₓ g h = unique
-      (p₁∘universal
+      sym $ pb-unique (sym (ap ihom (idli _))) (sym (!-unique _))
+    outf .P-∘ fₓ g h = pb-unique
+      (p₁∘pb
       ∙ ap ihom (sym $ associ _ _ _)
       ∙ ∘i-ihom
-          (sym (ap (src ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-src))
-          (sym (ap (tgt ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-tgt))
-          refl refl (sym p₁∘universal))
-      p₂∘universal
+          (sym (ap (src ∘_) p₁∘pb ∙ (h ∘i homi (p₁ _ _ ∘ fₓ)) .has-src))
+          (sym (ap (tgt ∘_) p₁∘pb ∙ (h ∘i homi (p₁ _ _ ∘ fₓ)) .has-tgt))
+          refl refl (sym p₁∘pb))
+      p₂∘pb
     outf .P₀-nat fₓ σ = sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _))
-    outf .P₁-nat fₓ g σ = unique
-      (pulll p₁∘universal
-        ∙ ap ihom (∘i-nat g (homi (p₁ ∘ fₓ)) σ)
+    outf .P₁-nat fₓ g σ = pb-unique
+      (pulll p₁∘pb
+        ∙ ap ihom (∘i-nat g (homi (p₁ _ _ ∘ fₓ)) σ)
         ∙ ∘i-ihom
             (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
             (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
@@ -215,7 +213,6 @@ This outer functor plays the role of the Yoneda embedding.
 ```agda
   Internal-hom-into : (x : Hom top C₀) → Outer-functor (ℂ ^opi)
   Internal-hom-into x = outf where
-    open Pullback (pb tgt x) renaming (apex to Cₓ)
 ```
 
 <details>
@@ -225,38 +222,38 @@ covariant construction, performed above.
 
 ```agda
     outf : Outer-functor (ℂ ^opi)
-    outf .∫P = Cₓ
-    outf .P₀ fₓ = src ∘ p₁ ∘ fₓ
-    outf .P₁ fₓ g = universal coh
+    outf .∫P = Pb tgt x
+    outf .P₀ fₓ = src ∘ p₁ tgt x ∘ fₓ
+    outf .P₁ fₓ g = pb _ _ coh
       module hom-into-action where abstract
-        coh : tgt ∘ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .ihom ≡ x ∘ !
+        coh : tgt ∘ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom g) .ihom ≡ x ∘ !
         coh =
-          tgt ∘ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .ihom ≡⟨ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-tgt ⟩
-          tgt ∘ p₁ ∘ fₓ ≡⟨ pulll square ⟩
-          (x ∘ p₂) ∘ fₓ ≡⟨ pullr (sym (!-unique _)) ⟩
-          x ∘ ! ∎
+          tgt ∘ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom g) .ihom ≡⟨ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom g) .has-tgt ⟩
+          tgt ∘ p₁ _ _ ∘ fₓ                             ≡⟨ pulll square ⟩
+          (x ∘ p₂ _ _) ∘ fₓ                             ≡⟨ pullr (sym (!-unique _)) ⟩
+          x ∘ !                                         ∎
     outf .P₁-tgt fₓ {y} g = src-coh where abstract
-      src-coh : y ≡ src ∘ p₁ ∘ universal (hom-into-action.coh fₓ g)
+      src-coh : y ≡ src ∘ p₁ _ _ ∘ pb _ _ (hom-into-action.coh fₓ g)
       src-coh =
-        sym (ap (src ∘_) p₁∘universal
-        ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-src)
+        sym (ap (src ∘_) p₁∘pb
+        ∙ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom g) .has-src)
     outf .P-id fₓ =
-      sym $ unique (sym (ap ihom (idri _))) (sym (!-unique _))
+      sym $ pb-unique (sym (ap ihom (idri _))) (sym (!-unique _))
     outf .P-∘ fₓ g h =
-      unique
-        (p₁∘universal
+      pb-unique
+        (p₁∘pb
          ∙ ap ihom (associ _ _ _)
          ∙ ∘i-ihom refl
-             (sym (ap (src ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-src))
-             (sym (ap (tgt ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-tgt))
-             (sym p₁∘universal) refl)
-        p₂∘universal
+             (sym (ap (src ∘_) p₁∘pb ∙ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom h) .has-src))
+             (sym (ap (tgt ∘_) p₁∘pb ∙ (homi (p₁ _ _ ∘ fₓ) ∘i op-ihom h) .has-tgt))
+             (sym p₁∘pb) refl)
+        p₂∘pb
     outf .P₀-nat fₓ σ =
       sym (assoc _ _ _)
       ∙ ap (src ∘_) (sym (assoc _ _ _))
     outf .P₁-nat fₓ g σ =
-      unique
-        (pulll p₁∘universal
+      pb-unique
+        (pulll p₁∘pb
         ∙ ap ihom (∘i-nat _ _ _)
         ∙ ∘i-ihom refl
              (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
@@ -348,8 +345,8 @@ is the internalized version of the [chaotic bifibration].
 
 <!--
 ```agda
-module _ (prods : has-products C) {ℂ : Internal-cat} where
-  open Binary-products C prods
+module _ (prods : Binary-products C) {ℂ : Internal-cat} where
+  open Binary-products prods
   open Internal-cat ℂ
   open _=>o_
 ```
@@ -376,10 +373,10 @@ For once, the naturality constraints are not egregious: In fact, since
 they are all facts about products, they can all be solved automatically.
 
 ```agda
-  ConstO X .P-id px = products! C prods
-  ConstO X .P-∘ px f g = products! C prods
+  ConstO X .P-id px = products! prods
+  ConstO X .P-∘ px f g = products! prods
   ConstO X .P₀-nat px σ = sym (assoc _ _ _)
-  ConstO X .P₁-nat px f σ = products! C prods
+  ConstO X .P₁-nat px f σ = products! prods
 ```
 </details>
 
@@ -390,7 +387,7 @@ we can apply automation to satisfy the coherence constraints.
 ```agda
   const-nato : ∀ {X Y : Ob} → Hom X Y → ConstO X =>o ConstO Y
   const-nato f .ηo g = ⟨ f ∘ π₁ ∘ g , π₂ ∘ g ⟩
-  const-nato f .ηo-fib px          = products! C prods
-  const-nato f .is-naturalo px y g = products! C prods
-  const-nato f .ηo-nat px σ        = products! C prods
+  const-nato f .ηo-fib px          = products! prods
+  const-nato f .is-naturalo px y g = products! prods
+  const-nato f .ηo-nat px σ        = products! prods
 ```

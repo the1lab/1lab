@@ -87,9 +87,9 @@ module _ (ℂ : Internal-cat) where
 
 <!--
 ```agda
-module _ (prods : has-products C) (ℂ : Internal-cat) where
+module _ (prods : Binary-products C) (ℂ : Internal-cat) where
   open Internal-cat ℂ
-  open Binary-products C prods
+  open Binary-products prods
 ```
 -->
 
@@ -107,7 +107,5 @@ to $\cC$, then we can construct a _constant outer-functor functor_ $\cC
     ap₂ ⟨_,_⟩ (idl _) refl
     ∙ sym (⟨⟩∘ px)
     ∙ eliml ⟨⟩-η
-  Δo .F-∘ f g = Outer-nat-path λ px →
-    ⟨ (f ∘ g) ∘ π₁ ∘ px , π₂ ∘ px ⟩                                        ≡⟨ products! C prods ⟩
-    ⟨ f ∘ π₁ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ , π₂ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ ⟩ ∎
+  Δo .F-∘ f g = Outer-nat-path λ px → products! prods
 ```
