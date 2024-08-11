@@ -81,7 +81,10 @@ to give a terminal object and binary products.
       equalisers : Equalisers C
       pullbacks  : Pullbacks C
 
-  open Finitely-complete
+    open Terminal terminal public
+    open Binary-products products public
+    open Equalisers equalisers public
+    open Pullbacks pullbacks public
 ```
 
 As promised, the two definitions imply each other, assuming that $\cC$ is a
@@ -94,13 +97,16 @@ products).
     → Finitely-complete → is-finitely-complete
   Finitely-complete→is-finitely-complete cat Flim finite =
     limit-as-equaliser-of-product
-      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Ob))
-      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Arrows))
-      (Flim .equalisers)
+      (Cartesian→finite-products terminal products cat (finite .has-finite-Ob))
+      (Cartesian→finite-products terminal products cat (finite .has-finite-Arrows))
+      equalisers
+    where open Finitely-complete Flim
 
   is-finitely-complete→Finitely-complete
     : is-finitely-complete → Finitely-complete
   is-finitely-complete→Finitely-complete flim = Flim where
+    open Finitely-complete
+
     Flim : Finitely-complete
     Flim .terminal = Limit→Terminal C (flim finite-cat _)
     Flim .products = all-products→binary-products λ a b →
@@ -224,10 +230,11 @@ and binary equalisers means it also admits pullbacks.
     → Binary-products C
     → Equalisers C
     → Finitely-complete
-  with-equalisers top prods eqs .terminal = top
-  with-equalisers top prods eqs .products = prods
-  with-equalisers top prods eqs .equalisers = eqs
-  with-equalisers top prods eqs .pullbacks = products+equalisers→pullbacks prods eqs
+  with-equalisers top prods eqs .Finitely-complete.terminal = top
+  with-equalisers top prods eqs .Finitely-complete.products = prods
+  with-equalisers top prods eqs .Finitely-complete.equalisers = eqs
+  with-equalisers top prods eqs .Finitely-complete.pullbacks =
+    products+equalisers→pullbacks prods eqs
 ```
 
 
@@ -437,10 +444,10 @@ Putting it all together into a record we get our proof of finite completeness:
     prods = terminal+pullbacks→products top pbs
 
     fc : Finitely-complete
-    fc .terminal = top
-    fc .products = prods
-    fc .equalisers = products+pullbacks→equalisers prods pbs
-    fc .pullbacks = pbs
+    fc .Finitely-complete.terminal = top
+    fc .Finitely-complete.products = prods
+    fc .Finitely-complete.equalisers = products+pullbacks→equalisers prods pbs
+    fc .Finitely-complete.pullbacks = pbs
 ```
 
 -- <!--

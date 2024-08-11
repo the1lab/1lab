@@ -6,6 +6,7 @@ open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Pushout
 open import Cat.Prelude
@@ -260,7 +261,8 @@ F_j$.
 ```agda
     coprod : is-disjoint-coproduct _ _ _
     coprod .has-is-ic = coprod.has-is-ic
-    coprod .summands-intersect i j = Sets-pullbacks _ _
+    coprod .summands-intersect i j =
+      Pullbacks.pullback Sets-pullbacks (coprod.ι i) (coprod.ι j)
 ```
 
 To prove that the injections are monic, we use our assumption that the

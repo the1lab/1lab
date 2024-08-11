@@ -54,7 +54,7 @@ images f = im where
   the-img : ↓Obj (!Const (cut f)) Forget-full-subcat
   the-img .x = tt
   the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
-  the-img .y .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
+  the-img .y .snd {c} = kernels-are-subobjects C has-zero _ (Ker.has-is-kernel _)
 ```
 
 Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
@@ -131,7 +131,7 @@ a (unique) map $\coker (\ker f) \to X$ s.t. the triangle above commutes!
           other .y .snd _ _ $ sym $
                 pulll (other .map .commutes)
             ·· Ker.equal f
-            ·· ∅.zero-∘r _
+            ·· zero-∘r _
             ·· 0m-unique
             ·· sym (ap₂ _∘_ refl ∘-zero-r ∙ ∘-zero-r)
 ```
@@ -148,7 +148,7 @@ is the image of $f$.
 ```agda
     factor .β ./-Hom.commutes = invertible→epic (coker-ker≃ker-coker f) _ _ $
       Coker.unique₂ (Ker.kernel f)
-        (sym (Ker.equal f ∙ ∅.zero-∘r _ ∙ 0m-unique ∙ sym ∘-zero-r))
+        (sym (Ker.equal f ∙ zero-∘r _ ∙ 0m-unique ∙ sym ∘-zero-r))
         (ap₂ _∘_ ( sym (assoc _ _ _)
                         ∙ ap₂ _∘_ refl (cancelr
                           (coker-ker≃ker-coker f .is-invertible.invr))) refl

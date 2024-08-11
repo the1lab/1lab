@@ -59,14 +59,14 @@ module _ (A : is-pre-abelian C) where
     equ .equal = zero-diff $
       (f ∘ Ker.kernel (f - g)) - (g ∘ Ker.kernel (f - g)) ≡⟨ ∘-minus-l f g (Ker.kernel (f - g)) ⟩
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
-      ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
+      zero→ ∘ Ker.kernel (f - g)                          ≡⟨ zero-∘r _ ∙ 0m-unique ⟩
       0m                                                  ∎
     equ .universal {e' = e'} p = Ker.universal (f - g) {e' = e'} $
       (f - g) ∘ e'         ≡˘⟨ ∘-minus-l _ _ _ ⟩
       f ∘ e' - g ∘ e'      ≡⟨ ap (f ∘ e' -_) (sym p) ⟩
       f ∘ e' - f ∘ e'      ≡⟨ Hom.inverser ⟩
-      0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-      Zero.zero→ ∅ ∘ e'    ∎
+      0m                   ≡˘⟨ zero-∘r _ ∙ 0m-unique ⟩
+      zero→ ∘ e'           ∎
     equ .factors = Ker.factors _
     equ .unique = Ker.unique (f - g)
 ```
@@ -78,8 +78,8 @@ above implies that any pre-abelian category is finitely complete.
 ```agda
   finitely-complete : Finitely-complete C
   finitely-complete =
-    with-equalisers C has-terminal has-prods λ f g →
-      record { has-is-eq = difference-kernel }
+    with-equalisers C has-terminal has-prods $
+    has-equalisers→equalisers λ f g → difference-kernel
 ```
 
 ## Finite biproducts

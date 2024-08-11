@@ -60,7 +60,6 @@ record Locally-cartesian-closed {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ �
 module _ {o ℓ} (C : Precategory o ℓ) (fp : Finitely-complete C) where
   open Locally-cartesian-closed
   open Finitely-complete fp
-  open Pullbacks pullbacks
   open Cat.Reasoning C
 
   module _ {A : Ob} where
@@ -221,9 +220,7 @@ each slice of $\cC$ is Cartesian closed.
 module _ {o ℓ} (C : Precategory o ℓ) (lcc : Locally-cartesian-closed C) where
   open Locally-cartesian-closed lcc
   open Finitely-complete has-is-lex
-  open Pullbacks pullbacks
   open Cat.Reasoning C
-  open Pullback
 
   private
     module _ A where open Cartesian-closed (slices-cc A) public

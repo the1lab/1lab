@@ -411,7 +411,7 @@ is-extremal-epi→is-strong-epi
   → (∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor))
   → is-strong-epi e
 is-extremal-epi→is-strong-epi {a} {b} {e} lex extremal =
-  equaliser-lifts→is-strong-epi lex.equalisers λ w → Mk.the-lift w where
+  equaliser-lifts→is-strong-epi lex.equaliser λ w → Mk.the-lift w where
     module lex = Finitely-complete lex
 ```
 
@@ -444,7 +444,7 @@ pulling back a monomorphism.
 ```agda
     module Mk {c d : Ob} (m : c ↪ d) {u : Hom a c} {v : Hom b d}
               (wit : v ∘ e ≡ m .mor ∘ u) where
-      module P = Pullback (lex.pullbacks v (m .mor)) renaming (p₁ to q ; p₂ to p)
+      module P = Pullback (lex.pullback v (m .mor)) renaming (p₁ to q ; p₂ to p)
       r : Hom a P.apex
       r = P.universal {p₁' = e} {p₂' = u} wit
 

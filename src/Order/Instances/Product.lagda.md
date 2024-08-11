@@ -16,9 +16,8 @@ open import Order.Base
 
 import Order.Reasoning as Pr
 
-open is-product
+open Binary-products
 open Terminal
-open Product
 ```
 -->
 
@@ -83,14 +82,14 @@ module _ {o o' ℓ ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'} where
 It's straightforward to show this really is the product in $\Pos$.
 
 ```agda
-Posets-has-products : ∀ {o ℓ} → has-products (Posets o ℓ)
-Posets-has-products P Q .apex = P ×ᵖ Q
-Posets-has-products P Q .π₁ = fstᵖ
-Posets-has-products P Q .π₂ = sndᵖ
-Posets-has-products P Q .has-is-product .⟨_,_⟩     = pairᵖ
-Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = trivial!
-Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = trivial!
-Posets-has-products P Q .has-is-product .unique α β =
+Posets-has-products : ∀ {o ℓ} → Binary-products (Posets o ℓ)
+Posets-has-products ._⊗₀_ = _×ᵖ_
+Posets-has-products .π₁ = fstᵖ
+Posets-has-products .π₂ = sndᵖ
+Posets-has-products .⟨_,_⟩ = pairᵖ
+Posets-has-products .π₁∘⟨⟩ = trivial!
+Posets-has-products .π₂∘⟨⟩ = trivial!
+Posets-has-products .⟨⟩-unique α β =
   ext λ x → α #ₚ x , β #ₚ x
 ```
 
