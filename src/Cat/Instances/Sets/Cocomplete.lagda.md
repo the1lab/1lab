@@ -180,44 +180,41 @@ category of sets of _any_ level $\ell$ admits them.
 Coproducts are given by disjoint sums:
 
 ```agda
-  Sets-coproducts : (A B : Set ℓ) → Coproduct (Sets ℓ) A B
-  Sets-coproducts A B .coapex = el! (∣ A ∣ ⊎ ∣ B ∣)
-  Sets-coproducts A B .ι₁ = inl
-  Sets-coproducts A B .ι₂ = inr
-  Sets-coproducts A B .has-is-coproduct .is-coproduct.[_,_] f g = Data.Sum.[ f , g ]
-  Sets-coproducts A B .has-is-coproduct .[]∘ι₁ = refl
-  Sets-coproducts A B .has-is-coproduct .[]∘ι₂ = refl
-  Sets-coproducts A B .has-is-coproduct .unique p q = sym ([]-unique (sym p) (sym q))
+  Sets-coproducts : Binary-coproducts (Sets ℓ)
+  Sets-coproducts .Binary-coproducts._⊕₀_ A B = el! (⌞ A ⌟ ⊎ ⌞ B ⌟)
+  Sets-coproducts .Binary-coproducts.ι₁ = inl
+  Sets-coproducts .Binary-coproducts.ι₂ = inr
+  Sets-coproducts .Binary-coproducts.[_,_] = Data.Sum.[_,_]
+  Sets-coproducts .Binary-coproducts.[]∘ι₁ = refl
+  Sets-coproducts .Binary-coproducts.[]∘ι₂ = refl
+  Sets-coproducts .Binary-coproducts.[]-unique p q = sym ([]-unique (sym p) (sym q))
 ```
 
 [[Set coequalisers]] are described in their own module.
 
 ```agda
-  Sets-coequalisers : (f g : Hom A B) → Coequaliser (Sets ℓ) {A = A} {B = B} f g
-  Sets-coequalisers f g .coapex .∣_∣ = Coeq f g
-  Sets-coequalisers f g .coapex .is-tr = hlevel 2
-  Sets-coequalisers f g .coeq = inc
-  Sets-coequalisers f g .has-is-coeq .coequal = ext λ x → glue _
-  Sets-coequalisers f g .has-is-coeq .universal {e' = e'} p = Coeq-rec e' (unext p)
-  Sets-coequalisers f g .has-is-coeq .factors = refl
-  Sets-coequalisers f g .has-is-coeq .unique q = reext! q
+  Sets-coequalisers : Coequalisers (Sets ℓ)
+  Sets-coequalisers .Coequalisers.Coequ f g = el! (Coeq f g)
+  Sets-coequalisers .Coequalisers.coequ _ _ = inc
+  Sets-coequalisers .Coequalisers.coequal = ext λ _ → glue _
+  Sets-coequalisers .Coequalisers.coequalise e' p = Coeq-rec e' (unext p)
+  Sets-coequalisers .Coequalisers.coequalise∘coequ = refl
+  Sets-coequalisers .Coequalisers.coequalise-unique q = reext! q
 ```
 
 Pushouts are similar to coequalisers, but gluing together points of $A + B$.
 
 ```agda
-  Sets-pushouts : ∀ {A B C} (f : Hom C A) (g : Hom C B)
-                → Pushout (Sets ℓ) {X = C} {Y = A} {Z = B} f g
-  Sets-pushouts f g .coapex .∣_∣   = Coeq (inl ⊙ f) (inr ⊙ g)
-  Sets-pushouts f g .coapex .is-tr = hlevel 2
-  Sets-pushouts f g .i₁ a = inc (inl a)
-  Sets-pushouts f g .i₂ b = inc (inr b)
-  Sets-pushouts f g .has-is-po .square = ext λ x → glue _
-  Sets-pushouts f g .has-is-po .universal {i₁' = i₁'} {i₂'} p =
-    Coeq-rec Data.Sum.[ i₁' , i₂' ] (unext p)
-  Sets-pushouts f g .has-is-po .universal∘i₁ = refl
-  Sets-pushouts f g .has-is-po .universal∘i₂ = refl
-  Sets-pushouts f g .has-is-po .unique q r =
+  Sets-pushouts : Pushouts (Sets ℓ)
+  Sets-pushouts .Pushouts.Po f g = el! (Coeq (inl ⊙ f) (inr ⊙ g))
+  Sets-pushouts .Pushouts.i₁ f g a = inc (inl a)
+  Sets-pushouts .Pushouts.i₂ f g b = inc (inr b)
+  Sets-pushouts .Pushouts.cosquare = ext λ _ → glue _
+  Sets-pushouts .Pushouts.po inj1 inj2 p =
+    Coeq-rec Data.Sum.[ inj1 , inj2 ] (unext p)
+  Sets-pushouts .Pushouts.po∘i₁ = refl
+  Sets-pushouts .Pushouts.po∘i₂ = refl
+  Sets-pushouts .Pushouts.po-unique q r =
     ext (Equiv.from ⊎-universal (unext q , unext r))
 ```
 
