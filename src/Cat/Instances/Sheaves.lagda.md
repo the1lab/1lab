@@ -30,9 +30,7 @@ open import Cat.Prelude
 open Cartesian-closed
 open is-exponential
 open Exponential
-open is-product
 open Terminal
-open Product
 ```
 -->
 
@@ -124,22 +122,22 @@ that [[sheaves are closed under limits|limits of sheaves]] to these
 finite cases:
 
 ```agda
-  Sh[]-products : has-products Sh[ C , J ]
-  Sh[]-products (A , ashf) (B , bshf) = prod where
-    prod' = PSh-products {C = C} A B
+  Sh[]-products : Binary-products Sh[ C , J ]
+  Sh[]-products = prods where
+    open Binary-products (PSh-products {C = C})
 
-    prod : Product Sh[ C , J ] _ _
-    prod .apex .fst = prod' .apex
-    prod .π₁ = prod' .π₁
-    prod .π₂ = prod' .π₂
-    prod .has-is-product .⟨_,_⟩  = prod' .⟨_,_⟩
-    prod .has-is-product .π₁∘⟨⟩  = prod' .π₁∘⟨⟩
-    prod .has-is-product .π₂∘⟨⟩  = prod' .π₂∘⟨⟩
-    prod .has-is-product .unique = prod' .unique
+    prods : Binary-products Sh[ C , J ]
+    prods .Binary-products._⊗₀_ (A , ashf) (B , bshf) .fst = A ⊗₀ B
+    prods .Binary-products.π₁ = π₁
+    prods .Binary-products.π₂ = π₂
+    prods .Binary-products.⟨_,_⟩ = ⟨_,_⟩
+    prods .Binary-products.π₁∘⟨⟩ = π₁∘⟨⟩
+    prods .Binary-products.π₂∘⟨⟩ = π₂∘⟨⟩
+    prods .Binary-products.⟨⟩-unique p = ⟨⟩-unique p
 
-    prod .apex .snd = is-sheaf-limit
+    prods .Binary-products._⊗₀_ (A , ashf) (B , bshf) .snd = is-sheaf-limit
       {F = 2-object-diagram _ _} {ψ = 2-object-nat-trans _ _}
-      (is-product→is-limit (PSh ℓ C) (prod' .has-is-product))
+      (is-product→is-limit (PSh ℓ C) has-is-product)
       (λ { true → ashf ; false → bshf })
 ```
 

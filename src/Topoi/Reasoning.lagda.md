@@ -86,82 +86,34 @@ do it by hand for the [[terminal object]], binary [[products]], and binary
   terminal-sheaf .top = L.₀ (PSh-terminal {C = site} .top)
   terminal-sheaf .has⊤ = L-lex.pres-⊤ (PSh-terminal {C = site} .has⊤)
 
-  product-sheaf : ∀ A B → Product 𝒯 A B
-  product-sheaf A B = product' where
-    product-presheaf : Product (PSh ℓ site) (ι.₀ A) (ι.₀ B)
-    product-presheaf = PSh-products {C = site} _ _
+  products-sheaf : Binary-products 𝒯
+  products-sheaf =
+    has-products→binary-products λ A B →
+    is-product-iso (Lι-iso A) (Lι-iso B) $
+    L-lex.pres-product
+      (PSh-terminal {C = site} .has⊤)
+      (PSh-products {C = site} .Binary-products.has-is-product)
 
-    open Product
-    product' : Product 𝒯 A B
-    product' .apex = L.₀ (product-presheaf .apex)
-    product' .π₁ = counit.ε _ ∘ L.₁ (product-presheaf .π₁)
-    product' .π₂ = counit.ε _ ∘ L.₁ (product-presheaf .π₂)
-    product' .has-is-product =
-      let
-        prod =
-          L-lex.pres-product
-            (PSh-terminal {C = site} .has⊤)
-            (product-presheaf .has-is-product)
-      in is-product-iso (Lι-iso _) (Lι-iso _) prod
-
-  open Binary-products 𝒯 product-sheaf public
+  open Binary-products products-sheaf public
 ```
 
 The computation for finite connected limits (pullbacks, equalisers) is a
 bit more involved, but not by much:
 
 ```agda
-  pullback-sheaf
-    : ∀ {X Y Z} (f : Hom X Z) (g : Hom Y Z)
-    → Pullback 𝒯 f g
-  pullback-sheaf f g = pullback' where
-    pullback-presheaf : Pullback (PSh ℓ site) (ι.₁ f) (ι.₁ g)
-    pullback-presheaf = PSh-pullbacks {C = site} _ _
-
-    open Pullback
-    open is-pullback
-    module Pb = Pullback pullback-presheaf
-    module lpb = is-pullback (L-lex.pres-pullback (pullback-presheaf .has-is-pb))
-
-    pullback' : Pullback 𝒯 f g
-    pullback' .apex = L.₀ Pb.apex
-    pullback' .p₁ = counit.ε _ ∘ L.₁ Pb.p₁
-    pullback' .p₂ = counit.ε _ ∘ L.₁ Pb.p₂
-    pullback' .has-is-pb = pb' where
-      pb' : is-pullback 𝒯 _ f _ g
-      pb' .square = square' where abstract
-        square' : f ∘ counit.ε _ ∘ L.₁ Pb.p₁ ≡ g ∘ counit.ε _ ∘ L.₁ Pb.p₂
-        square' =
-          f ∘ counit.ε _ ∘ L.₁ Pb.p₁           ≡⟨ extendl (sym (counit.is-natural _ _ _)) ⟩
-          counit.ε _ ∘ L.₁ (ι.₁ f) ∘ L.₁ Pb.p₁ ≡⟨ refl⟩∘⟨ lpb.square ⟩
-          counit.ε _ ∘ L.₁ (ι.₁ g) ∘ L.₁ Pb.p₂ ≡⟨ extendl (counit.is-natural _ _ _) ⟩
-          g ∘ counit.ε _ ∘ L.₁ Pb.p₂           ∎
-
-      pb' .universal {p₁' = p₁'} {p₂'} p =
-        lpb.universal {p₁' = ε⁻¹.η _ ∘ p₁'} {p₂' = ε⁻¹.η _ ∘ p₂'} path
-        where abstract
-          path : L.₁ (ι.₁ f) ∘ ε⁻¹.η _ ∘ p₁' ≡ L.₁ (ι.₁ g) ∘ ε⁻¹.η _ ∘ p₂'
-          path =
-            L.₁ (ι.₁ f) ∘ ε⁻¹.η _ ∘ p₁' ≡⟨ extendl (sym (ε⁻¹.is-natural _ _ _)) ⟩
-            ε⁻¹.η _ ∘ f ∘ p₁'           ≡⟨ refl⟩∘⟨ p ⟩
-            ε⁻¹.η _ ∘ g ∘ p₂'           ≡⟨ extendl (ε⁻¹.is-natural _ _ _) ⟩
-            L.₁ (ι.₁ g) ∘ ε⁻¹.η _ ∘ p₂' ∎
-
-      pb' .p₁∘universal =
-        pullr lpb.p₁∘universal ∙ cancell (Lι-iso _ .is-invertible.invl)
-      pb' .p₂∘universal =
-        pullr lpb.p₂∘universal ∙ cancell (Lι-iso _ .is-invertible.invl)
-      pb' .unique p q = lpb.unique
-        (sym ( ap₂ _∘_ refl (sym p ∙ sym (assoc _ _ _))
-             ∙ cancell (Lι-iso _ .is-invertible.invr)))
-        (sym ( ap₂ _∘_ refl (sym q ∙ sym (assoc _ _ _))
-             ∙ cancell (Lι-iso _ .is-invertible.invr)))
+  pullbacks-sheaf : Pullbacks 𝒯
+  pullbacks-sheaf =
+    has-pullbacks→pullbacks λ {X} {Y} {Z} f g →
+    is-pullback-inner (Lι-iso X) (Lι-iso Y) (Lι-iso Z)
+      (sym (counit.is-natural _ _ f))
+      (sym (counit.is-natural _ _ g))
+      (L-lex.pres-pullback (PSh-pullbacks {C = site} .Pullbacks.has-is-pb))
 
   finitely-complete : Finitely-complete 𝒯
   finitely-complete .Finitely-complete.terminal = terminal-sheaf
-  finitely-complete .Finitely-complete.products = product-sheaf
+  finitely-complete .Finitely-complete.products = products-sheaf
   finitely-complete .Finitely-complete.equalisers =
-    with-pullbacks 𝒯 terminal-sheaf pullback-sheaf
+    with-pullbacks 𝒯 terminal-sheaf pullbacks-sheaf
       .Finitely-complete.equalisers
-  finitely-complete .Finitely-complete.pullbacks = pullback-sheaf
+  finitely-complete .Finitely-complete.pullbacks = pullbacks-sheaf
 ```

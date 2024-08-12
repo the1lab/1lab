@@ -313,12 +313,69 @@ A similar result holds for isomorphisms.
         (pulll (pb' .p₂∘universal) ∙ pb .p₂∘universal)
         (idr _) (idr _))
 
-  is-pullback-iso
+  -- Extend a pullback from the inner diagram to the outer
+  --   \begin{tikzcd}
+  -- 	P && Y & {Y'} \\
+  -- 	\\
+  -- 	X && {Z'} \\
+  -- 	{X'} &&& Z
+  -- 	\arrow["{p_2}", from=1-1, to=1-3]
+  -- 	\arrow["{p_1}"', from=1-1, to=3-1]
+  -- 	\arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  -- 	\arrow["k", tail reversed, from=1-3, to=1-4]
+  -- 	\arrow["g"', from=1-3, to=3-3]
+  -- 	\arrow["{g'}", from=1-4, to=4-4]
+  -- 	\arrow["f"', from=3-1, to=3-3]
+  -- 	\arrow["h"', tail reversed, from=3-1, to=4-1]
+  -- 	\arrow["l", tail reversed, from=3-3, to=4-4]
+  -- 	\arrow["{f'}"', from=4-1, to=4-4]
+  -- \end{tikzcd}
+
+  is-pullback-inner
+    : ∀ {p x x' y y' z z'}
+    → {f : Hom x z} {f' : Hom x' z'} {g : Hom y z} {g' : Hom y' z'}
+    → {p1 : Hom p x} {p2 : Hom p y}
+    → {h : Hom x x'} {k : Hom y y'} {l : Hom z z'}
+    → is-invertible h
+    → is-invertible k
+    → is-invertible l
+    → f' ∘ h ≡ l ∘ f → g' ∘ k ≡ l ∘ g
+    → is-pullback C p1 f p2 g
+    → is-pullback C (h ∘ p1) f' (k ∘ p2) g'
+  is-pullback-inner {f = f} {f'} {g} {g'} {p1} {p2} {h} {k} {l} h-inv k-inv l-inv p q pb = pb-inner where
+    module pb = is-pullback pb
+    module h = is-invertible h-inv
+    module k = is-invertible k-inv
+    module l = is-invertible l-inv
+
+    pb-inner : is-pullback C (h ∘ p1) f' (k ∘ p2) g'
+    pb-inner .square = pulll p ∙ extendr pb.square ∙ sym (pulll q)
+    pb-inner .universal {p₁' = p₁'} {p₂' = p₂'} sq =
+      pb.universal sq'
+      where abstract
+        sq' : f ∘ h.inv ∘ p₁' ≡ g ∘ k.inv ∘ p₂'
+        sq' =
+          f ∘ h.inv ∘ p₁'                   ≡⟨ introl l.invr ⟩
+          (l.inv ∘ l) ∘ f ∘ h.inv ∘ p₁'     ≡⟨ pullr (extendl (sym p)) ⟩
+          l.inv ∘ f' ∘ ⌜ h ∘ h.inv ∘ p₁' ⌝  ≡⟨ ap! (cancell h.invl) ⟩
+          l.inv ∘ f' ∘ p₁'                  ≡⟨ ap₂ _∘_ refl sq ⟩
+          l.inv ∘ g' ∘ p₂'                  ≡⟨ ap¡ (sym (cancell k.invl)) ⟩
+          l.inv ∘ g' ∘ ⌜ k ∘ k.inv ∘ p₂' ⌝  ≡˘⟨ pullr (extendl (sym q)) ⟩
+          (l.inv ∘ l) ∘ g ∘ k.inv ∘ p₂'     ≡˘⟨ introl l.invr ⟩
+          g ∘ k.inv ∘ p₂' ∎
+    pb-inner .p₁∘universal = pullr pb.p₁∘universal ∙ cancell h.invl
+    pb-inner .p₂∘universal = pullr pb.p₂∘universal ∙ cancell k.invl
+    pb-inner .unique r s =
+      pb.unique
+        (introl h.invr ∙ pullr (assoc _ _ _ ∙ r))
+        (introl k.invr ∙ pullr (assoc _ _ _ ∙ s))
+
+  is-pullback-iso-apex
     : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
     → (i : p ≅ p')
     → is-pullback C p1 f p2 g
     → is-pullback C (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
-  is-pullback-iso i pb = Equiv.to
+  is-pullback-iso-apex i pb = Equiv.to
     (pullback-unique pb (extendl (pb .square)))
     (subst is-invertible (pb .unique refl refl) (iso→invertible (i Iso⁻¹)))
 
@@ -373,15 +430,16 @@ A similar result holds for isomorphisms.
   canonically-stable
     : ∀ {ℓ'} (P : ∀ {a b} → Hom a b → Type ℓ')
     → is-category C
-    → (pb : ∀ {a b c} (f : Hom a c) (g : Hom b c) → Pullback C f g)
+    → (pullbacks : Pullbacks C)
     → ( ∀ {A B X} (f : Hom A B) (g : Hom X B)
-      → P f → P (pb g f .Pullback.p₁) )
+      → P f → P (pullbacks .Pullbacks.p₁ g f) )
     → is-pullback-stable C P
-  canonically-stable P C-cat pbs stab f g Pf pb =
-    transport (λ i → P (Pullback-unique C-cat (pbs g f) pb' i .Pullback.p₁))
+  canonically-stable P C-cat pbs stab f g Pf is-pb =
+    transport (λ i → P (Pullback-unique C-cat (pullback g f) pb' i .Pullback.p₁))
       (stab f g Pf)
     where
+      open Pullbacks pbs
       pb' : Pullback C _ _
-      pb' = record { has-is-pb = pb }
+      pb' = record { has-is-pb = is-pb }
 ```
 -->

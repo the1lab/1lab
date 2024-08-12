@@ -49,31 +49,31 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     uniq x .paths f = trivial!
 
   {-# TERMINATING #-}
-  PSh-pulllbacks : Pullbacks (PSh κ C)
-  PSh-pulllbacks .Pb {X} {Y} f g .F₀ i =
+  PSh-pullbacks : Pullbacks (PSh κ C)
+  PSh-pullbacks .Pb {X} {Y} f g .F₀ i =
     el! (Σ[ x ∈ X ʻ i ] Σ[ y ∈ Y ʻ i ] (f .η i x ≡ g .η i y))
-  PSh-pulllbacks .Pb {X} {Y} {Z} f g .F₁ {x} {y} h (a , b , p) =
+  PSh-pullbacks .Pb {X} {Y} {Z} f g .F₁ {x} {y} h (a , b , p) =
     X .F₁ h a , Y .F₁ h b , path where abstract
       path : f .η y (X .F₁ h a) ≡ g .η y (Y .F₁ h b)
       path = happly (f .is-natural _ _ _) _
           ·· (λ i → Z .F₁ h (p i))
           ·· sym (happly (g .is-natural _ _ _) _)
-  PSh-pulllbacks .Pb {X} {Y} f g .F-id =
+  PSh-pullbacks .Pb {X} {Y} f g .F-id =
     ext λ a b p → X .F-id $ₚ a ,ₚ Y .F-id $ₚ b ,ₚ prop!
-  PSh-pulllbacks .Pb {X} {Y} f g .F-∘ h h' =
+  PSh-pullbacks .Pb {X} {Y} f g .F-∘ h h' =
     ext λ a b p → X .F-∘ h h' $ₚ a ,ₚ Y .F-∘ h h' $ₚ b ,ₚ prop!
-  PSh-pulllbacks .p₁ f g .η idx (a , _ , _) = a
-  PSh-pulllbacks .p₁ f g .is-natural _ _ _ = refl
-  PSh-pulllbacks .p₂ f g .η idx (_ , b , _) = b
-  PSh-pulllbacks .p₂ f g .is-natural _ _ _ = refl
-  PSh-pulllbacks .square = ext λ i a b p → p
-  PSh-pulllbacks .pb f g p .η idx arg =
+  PSh-pullbacks .p₁ f g .η idx (a , _ , _) = a
+  PSh-pullbacks .p₁ f g .is-natural _ _ _ = refl
+  PSh-pullbacks .p₂ f g .η idx (_ , b , _) = b
+  PSh-pullbacks .p₂ f g .is-natural _ _ _ = refl
+  PSh-pullbacks .square = ext λ i a b p → p
+  PSh-pullbacks .pb f g p .η idx arg =
     f .η idx arg , g .η idx arg , unext p idx arg
-  PSh-pulllbacks .pb f g p .is-natural x y h =
+  PSh-pullbacks .pb f g p .is-natural x y h =
     ext λ a → f .is-natural x y h $ₚ a ,ₚ g .is-natural x y h $ₚ a ,ₚ prop!
-  PSh-pulllbacks .p₁∘pb = trivial!
-  PSh-pulllbacks .p₂∘pb = trivial!
-  PSh-pulllbacks .pb-unique p q =
+  PSh-pullbacks .p₁∘pb = trivial!
+  PSh-pullbacks .p₂∘pb = trivial!
+  PSh-pullbacks .pb-unique p q =
     ext λ i a → unext p i a ,ₚ unext q i a ,ₚ prop!
 
   {-# TERMINATING #-}
