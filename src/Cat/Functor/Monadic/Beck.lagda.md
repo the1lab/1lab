@@ -223,17 +223,17 @@ far $\cD$ is from being the category of $T$-algebras.
   Comparison-EM⁻¹ .F₁ {X} {Y} alg-map =
     has-coeq X .universal {e' = e'} path where
       e' : D.Hom (F.F₀ (X .fst)) (Comparison-EM⁻¹ .F₀ Y)
-      e' = has-coeq Y .coeq D.∘ F.₁ (alg-map .hom)
+      e' = has-coeq Y .coequ D.∘ F.₁ (alg-map .hom)
 ```
 <!--
 ```agda
       abstract
         path : e' D.∘ F.₁ (X .snd .ν) ≡ e' D.∘ ε (F.₀ (X .fst))
         path =
-          (has-coeq Y .coeq D.∘ F.₁ (alg-map .hom)) D.∘ F.₁ (X .snd .ν)      ≡⟨ D.pullr (F.weave (alg-map .preserves)) ⟩
-          has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .hom)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
-          has-coeq Y .coeq D.∘ ε _ D.∘ F.₁ (T.M₁ (alg-map .hom))             ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
-          (has-coeq Y .coeq D.∘ F.₁ (alg-map .hom)) D.∘ ε _                  ∎
+          (has-coeq Y .coequ D.∘ F.₁ (alg-map .hom)) D.∘ F.₁ (X .snd .ν)      ≡⟨ D.pullr (F.weave (alg-map .preserves)) ⟩
+          has-coeq Y .coequ D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .hom)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
+          has-coeq Y .coequ D.∘ ε _ D.∘ F.₁ (T.M₁ (alg-map .hom))             ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
+          (has-coeq Y .coequ D.∘ F.₁ (alg-map .hom)) D.∘ ε _                  ∎
   Comparison-EM⁻¹ .F-id {X} = sym $ has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
   Comparison-EM⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $
        D.pullr (has-coeq X .factors)
@@ -253,7 +253,7 @@ readers.
 ```agda
   Comparison-EM⁻¹⊣Comparison-EM : Comparison-EM⁻¹ ⊣ Comparison-EM F⊣G
   Comparison-EM⁻¹⊣Comparison-EM .unit .η x .hom =
-    G.₁ (has-coeq _ .coeq) C.∘ T.unit .η _
+    G.₁ (has-coeq _ .coequ) C.∘ T.unit .η _
   Comparison-EM⁻¹⊣Comparison-EM .counit .η x =
     has-coeq _ .universal (F⊣G .counit.is-natural _ _ _)
 ```
@@ -269,11 +269,11 @@ readers.
     ∙ G.intror (F⊣G .zig)
     ∙ G.weave (D.pulll (sym (F⊣G .counit.is-natural _ _ _)) ∙ D.pullr (sym (F.F-∘ _ _)))
   Comparison-EM⁻¹⊣Comparison-EM .unit .is-natural x y f = ext $
-    (G.₁ (has-coeq y .coeq) C.∘ T.unit.η _) C.∘ f .hom                    ≡⟨ C.pullr (T.unit.is-natural _ _ _) ⟩
-    G.₁ (has-coeq y .coeq) C.∘ T.M₁ (f .hom) C.∘ T.unit .η (x .fst)       ≡⟨ C.pulll (sym (G.F-∘ _ _)) ⟩
-    G.₁ (has-coeq y .coeq D.∘ F.₁ (f .hom)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .factors)) C.⟩∘⟨refl ⟩
-    G.₁ (has-coeq x .universal _ D.∘ has-coeq x .coeq) C.∘ T.unit .η (x .fst) ≡⟨ C.pushl (G.F-∘ _ _) ⟩
-    G.₁ (has-coeq x .universal _) C.∘ G.₁ (has-coeq x .coeq) C.∘ T.unit.η _   ∎
+    (G.₁ (has-coeq y .coequ) C.∘ T.unit.η _) C.∘ f .hom                    ≡⟨ C.pullr (T.unit.is-natural _ _ _) ⟩
+    G.₁ (has-coeq y .coequ) C.∘ T.M₁ (f .hom) C.∘ T.unit .η (x .fst)       ≡⟨ C.pulll (sym (G.F-∘ _ _)) ⟩
+    G.₁ (has-coeq y .coequ D.∘ F.₁ (f .hom)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .factors)) C.⟩∘⟨refl ⟩
+    G.₁ (has-coeq x .universal _ D.∘ has-coeq x .coequ) C.∘ T.unit .η (x .fst) ≡⟨ C.pushl (G.F-∘ _ _) ⟩
+    G.₁ (has-coeq x .universal _) C.∘ G.₁ (has-coeq x .coequ) C.∘ T.unit.η _   ∎
   Comparison-EM⁻¹⊣Comparison-EM .counit .is-natural x y f =
       has-coeq (F₀ (Comparison-EM F⊣G) x) .unique
         {p = ap₂ D._∘_ (F⊣G .counit.is-natural _ _ _) refl

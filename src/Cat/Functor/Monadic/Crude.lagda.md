@@ -108,7 +108,7 @@ private
     ∀ {A B} {f g : D.Hom A B} (i : D.Hom B A)
     → (f D.∘ i ≡ D.id) → (g D.∘ i ≡ D.id)
     → (coequ : Coequaliser D f g)
-    → is-coequaliser C (U.₁ f) (U.₁ g) (U.₁ (coequ .Coequaliser.coeq))
+    → is-coequaliser C (U.₁ f) (U.₁ g) (U.₁ (coequ .Coequaliser.coequ))
 
 module _
   (has-coeq : (M : Algebra T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
@@ -150,7 +150,7 @@ triangle identities for $F \dashv U$ and the algebra laws.
     abstract
       preserved : is-coequaliser C
         (UF.₁ (o .snd .ν)) (U.₁ (counit.ε (F.₀ (o .fst))))
-        (U.₁ (has-coeq o .coeq))
+        (U.₁ (has-coeq o .coequ))
       preserved =
         U-pres (F.₁ (unit.η _)) (F.annihilate (o .snd .ν-unit)) zig
           (has-coeq o)
@@ -186,7 +186,7 @@ we're seeking.
     η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
 
     η⁻¹η = is-coequaliser.unique₂ preserved
-      {e' = U.₁ (has-coeq o .coeq)}
+      {e' = U.₁ (has-coeq o .coequ)}
       (preserved .coequal)
       (C.pullr (preserved .factors)
        ∙ C.pullr (unit.is-natural _ _ _)
@@ -206,9 +206,9 @@ is a calculation reusing the established proof that $\eta\inv\eta =
     inverse .hom = η⁻¹
     inverse .preserves =
       η⁻¹ C.∘ U.₁ (counit.ε _)                                                              ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.intror (F.annihilate (C.assoc _ _ _ ∙ η⁻¹η))) ⟩
-      η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coeq)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
-      η⁻¹ C.∘ U.₁ (has-coeq o .coeq D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩
-      η⁻¹ C.∘ U.₁ (has-coeq o .coeq) C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))        ≡⟨ C.pulll (preserved .factors) ⟩
+      η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coequ)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
+      η⁻¹ C.∘ U.₁ (has-coeq o .coequ D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩
+      η⁻¹ C.∘ U.₁ (has-coeq o .coequ) C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))        ≡⟨ C.pulll (preserved .factors) ⟩
       o .snd .ν C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))                             ≡⟨ C.refl⟩∘⟨ ap U.₁ (ap (counit.ε _ D.∘_) (F.F-∘ _ _) ∙ D.cancell zig) ⟩
       o .snd .ν C.∘ UF.₁ η⁻¹                                                                ∎
 ```
@@ -249,25 +249,25 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
     : ∀ {o} → is-conservative U → D.is-invertible (adj.counit.ε o)
   conservative-prcoeq→counit-is-iso {o} reflect-iso = reflect-iso $
     C.make-invertible
-      (U.₁ (coequ .coeq) C.∘ unit.η _) (U.pulll (coequ .factors) ∙ zag)
+      (U.₁ (coeq .coequ) C.∘ unit.η _) (U.pulll (coeq .factors) ∙ zag)
       inversel
     where
 
     oalg = Comparison-EM F⊣U .F₀ o
-    coequ = has-coeq oalg
+    coeq = has-coeq oalg
 
     abstract
       preserved : is-coequaliser C
         (UF.₁ (oalg .snd .ν)) (U.₁ (counit.ε (F.₀ (oalg .fst))))
-        (U.₁ (coequ .coeq))
+        (U.₁ (coeq .coequ))
       preserved =
-        U-pres (F.₁ (unit.η _)) (F.annihilate (oalg .snd .ν-unit)) zig coequ
+        U-pres (F.₁ (unit.η _)) (F.annihilate (oalg .snd .ν-unit)) zig coeq
 
     inversel =
       is-coequaliser.unique₂ preserved
-        {e' = U.₁ (coequ .coeq)}
+        {e' = U.₁ (coeq .coequ)}
         (preserved .coequal)
-        (C.pullr (U.collapse (coequ .factors))
+        (C.pullr (U.collapse (coeq .factors))
             ∙ C.pullr (unit.is-natural _ _ _)
             ∙ C.pulll (preserved .coequal)
             ∙ C.cancelr zag)
