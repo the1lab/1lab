@@ -219,7 +219,7 @@ has-section→epic {f = f} f-sect g h p =
   h ∎
 ```
 
-## Retracts
+## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
 when $r \cdot s = id$. Note that this is the same equation involved
@@ -744,6 +744,13 @@ inverses→from-has-retract
   → Inverses f g → has-retract g
 inverses→from-has-retract {f = f} inv .retract = f
 inverses→from-has-retract inv .is-retract = Inverses.invl inv
+```
+
+<!--
+```agda
+invertible→to-has-section : is-invertible f → has-section f
+invertible→to-has-section f-inv .section = is-invertible.inv f-inv
+invertible→to-has-section f-inv .is-section = is-invertible.invl f-inv
 
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from
@@ -761,6 +768,7 @@ iso→from-has-retract : (f : a ≅ b) → has-retract (f .from)
 iso→from-has-retract f .retract = f .to
 iso→from-has-retract f .is-retract = f .invl
 ```
+-->
 
 Using our lemmas about section/retraction pairs from before, we
 can show that if $f$ is a monic retract, then $f$ is an

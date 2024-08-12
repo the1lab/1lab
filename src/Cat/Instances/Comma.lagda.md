@@ -1,6 +1,9 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Constant
+open import Cat.Functor.Compose
+open import Cat.Functor.Base
 open import Cat.Groupoid
 open import Cat.Morphism
 open import Cat.Prelude
@@ -237,14 +240,29 @@ square.
     ↓-is-pregroupoid f .inverses .invr = ↓Hom-path (A-grpd (f .α) .invr) (B-grpd (f .β) .invr)
 
 module _ {A : Precategory ao ah} {B : Precategory bo bh} where
-  private module A = Precategory A
+  private
+    module A = Precategory A
+    module B = Precategory B
+    variable
+      F : Functor A B
+  open ↓Obj
+  open ↓Hom
 
-  infix 5 _↙_ _↘_
+  infix 8 _↙_ _↘_
   _↙_ : A.Ob → Functor B A → Precategory _ _
   X ↙ T = !Const X ↓ T
 
   _↘_ : Functor B A → A.Ob → Precategory _ _
   S ↘ X = S ↓ !Const X
+
+  θ↘ : ∀ {X} → F F∘ Dom F (!Const X) => Const X
+  θ↘ ._=>_.η f = f .map
+  θ↘ ._=>_.is-natural _ _ γ = γ .sq
+
+  θ↙ : ∀ {X} → Const X => F F∘ Cod (!Const X) F
+  θ↙ ._=>_.η f = f .map
+  θ↙ ._=>_.is-natural _ _ γ = γ .sq
+
 
 module ↙-compose
     {oc ℓc od ℓd oe ℓe}
@@ -273,6 +291,7 @@ module ↙-compose
 
   ↙>-id : ∀ {c} {f : Ob (c ↙ G F∘ F)} → ↓obj (f .map) ↙> ↓obj 𝒟.id ≡ f
   ↙>-id = ↓Obj-path _ _ refl refl (G.eliml refl)
+
 
 -- Outside the main module to make instance search work.
 module _ where

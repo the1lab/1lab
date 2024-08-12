@@ -24,6 +24,8 @@ module Cat.Morphism.StrongEpi {o ℓ} (C : Precategory o ℓ) where
 open Cat.Reasoning C
 ```
 
+# Strong epimorphisms {defines="strong-epi strong-epimorphism"}
+
 A **strong epimorphism** is an epimorphism which is, additionally, left
 [orthogonal] to every monomorphism. Unfolding that definition, for $f :
 a \epi b$ to be a strong epimorphism means that, given $g : c \mono b$
@@ -150,11 +152,11 @@ given $zw = vf$ to lift $f$ against $z$. We don't have a $u$ as before,
 but we can take $u = wg$ to get a lift $t$.
 
 ```agda
-strong-epi-cancel-l
+strong-epi-cancell
   : ∀ {a b c} (f : Hom b c) (g : Hom a b)
   → is-strong-epi (f ∘ g)
   → is-strong-epi f
-strong-epi-cancel-l g f (gf-epi , gf-str) = lifts→is-strong-epi epi lifts where
+strong-epi-cancell g f (gf-epi , gf-str) = lifts→is-strong-epi epi lifts where
   epi : is-epic g
   epi α β p = gf-epi α β (extendl p)
 
@@ -170,9 +172,9 @@ be, in particular, left orthogonal to _itself_, and the only
 self-orthogonal maps are isos.
 
 ```agda
-strong-epi-mono→is-invertible
+strong-epi+mono→is-invertible
   : ∀ {a b} {f : Hom a b} → is-monic f → is-strong-epi f → is-invertible f
-strong-epi-mono→is-invertible mono (_ , epi) =
+strong-epi+mono→is-invertible mono (_ , epi) =
   self-orthogonal→is-iso C _ (epi (record { monic = mono }))
 ```
 
@@ -396,7 +398,7 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
     in e-epi u v ker.equal
 ```
 
-## Extremal epimorphisms
+## Extremal epimorphisms {defines="extremal-epi extremal-epimorphism"}
 
 Another well-behaved subclass of epimorphism are the **extremal**
 epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a
@@ -405,10 +407,16 @@ is an isomorphism. In a [[finitely complete category]], every extremal
 epimorphism is strong; the converse is immediate.
 
 ```agda
+is-extremal-epi : ∀ {a b} → Hom a b → Type _
+is-extremal-epi {a} {b} e =
+  ∀ {c} (m : c ↪ b) (g : Hom a c)
+  → e ≡ m .mor ∘ g
+  → is-invertible (m .mor)
+
 is-extremal-epi→is-strong-epi
   : ∀ {a b} {e : Hom a b}
   → Finitely-complete C
-  → (∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor))
+  → is-extremal-epi e
   → is-strong-epi e
 is-extremal-epi→is-strong-epi {a} {b} {e} lex extremal =
   equaliser-lifts→is-strong-epi lex.equaliser λ w → Mk.the-lift w where

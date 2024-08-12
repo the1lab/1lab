@@ -771,7 +771,7 @@ In Cubical Agda, the relevant *primitive* is the function
 for now. To start with, this is where paths show their difference from
 the notion of equality in set-level type theories: it says that we have
 a function from paths $p : A \is B$ to functions $A \to B$. However,
-it's *not* the case that every $p, q : A \to B$ gives back the *same*
+it's *not* the case that every $p, q : A \is B$ gives back the *same*
 function $A \to B$. Which function you get depends on (and determines) the
 path you put in!
 
@@ -1044,7 +1044,7 @@ inhabitant!
 
 ```agda
 Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
-Singleton x = Σ[ y ∈ _ ] (x ≡ y)
+Singleton x = Σ[ y ∈ _ ] x ≡ y
 ```
 
 We're given an inhabitant $y : A$ and a path $p : x \is y$. To identify
@@ -2378,5 +2378,8 @@ _$ₚ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} {f g : �
      → f ≡ g → ∀ x → f x ≡ g x
 (f $ₚ x) i = f i x
 {-# INLINE _$ₚ_ #-}
+
+_≠_ : ∀ {ℓ} {A : Type ℓ} → A → A → Type ℓ
+x ≠ y = ¬ x ≡ y
 ```
 -->

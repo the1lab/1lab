@@ -337,7 +337,7 @@ module Indexed-products
   {κ : Level}
   (has-ip : has-indexed-products κ)
   where
-  module Π {Idx : Type κ} (F : Idx → C.Ob) = Indexed-product (has-ip F)
+  module ∏ {Idx : Type κ} (F : Idx → C.Ob) = Indexed-product (has-ip F)
 
-  open Π renaming (commute to π-commute; unique to tuple-unique) public
+  open ∏ renaming (commute to π-commute; unique to tuple-unique) public
 ```

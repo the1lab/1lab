@@ -94,10 +94,29 @@ uniqueness properties of colimiting maps.
   Copowering .F-∘ {X , A} f g = sym $
     coprods X (λ _ → A) .unique _ λ i →
       pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
+```
 
+```agda
+  ∐! : (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (F : Idx → Ob) → Ob
+  ∐! Idx F = ΣF (coprods (el! Idx) F)
+
+  module ∐! (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (F : Idx → Ob) =
+    Indexed-coproduct (coprods (el! Idx) F)
+
+  _⊗!_ : (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ → Ob → Ob
+  I ⊗! X = el! I ⊗ X
+
+  module ⊗! (Idx : Type ℓ) ⦃ hl : H-Level Idx 2 ⦄ (X : Ob) =
+    Indexed-coproduct (coprods (el! Idx) (λ _ → X))
+```
+
+
+<!--
+```agda
 cocomplete→copowering
   : ∀ {o ℓ} {C : Precategory o ℓ}
   → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
 cocomplete→copowering colim = Copowers.Copowering λ S F →
   Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) F (colim _)
 ```
+-->

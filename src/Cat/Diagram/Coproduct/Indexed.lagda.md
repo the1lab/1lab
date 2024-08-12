@@ -3,8 +3,11 @@
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Zero
 open import Cat.Univalent
 open import Cat.Prelude
+
+open import Data.Dec
 ```
 -->
 
@@ -65,12 +68,6 @@ record Indexed-coproduct (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) 
     ι         : ∀ i → C.Hom (F i) ΣF
     has-is-ic : is-indexed-coproduct F ι
   open is-indexed-coproduct has-is-ic public
-
-has-coproducts-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
-has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
-
-has-indexed-coproducts : ∀ ℓ → Type _
-has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
 ```
 
 <!--
@@ -222,6 +219,33 @@ is-indexed-coproduct-assoc {A = A} {B} {X} {ΣᵃΣᵇX = ΣᵃΣᵇX} {ιᵃ = 
       sym (C.assoc _ _ _) ∙ p (a , b)
 ```
 
+# Categories with all indexed coproducts
+
+```agda
+has-coproducts-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
+has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
+
+has-indexed-coproducts : ∀ ℓ → Type _
+has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
+
+module Indexed-coproducts-by
+  {κ : Level} {Idx : Type κ}
+  (has-ic : has-coproducts-indexed-by Idx)
+  where
+  module ∐ (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
+
+  open ∐ renaming (commute to ι-commute; unique to match-unique) public
+
+
+module Indexed-coproducts
+  {κ : Level}
+  (has-ic : has-indexed-coproducts κ)
+  where
+  module ∐ {Idx : Type κ} (F : Idx → C.Ob) = Indexed-coproduct (has-ic F)
+
+  open ∐ renaming (commute to ι-commute; unique to match-unique) public
+```
+
 
 # Disjoint coproducts
 
@@ -282,4 +306,96 @@ is-initial→is-disjoint-coproduct {F = F} {i = i} init = is-disjoint where
   is-disjoint .injections-are-monic i = absurd i
   is-disjoint .summands-intersect i j = absurd i
   is-disjoint .different-images-are-disjoint i j p = absurd i
+```
+
+## Coproducts and zero objects
+
+Let $\cC$ be a category with a [[zero object]], and let $\coprod_{i : I} P_i$
+be a coproduct. If $I$ is a [[discrete]] type, then every coproduct
+inclusion $\iota_{i} : \cC(P_i, \coprod_{i : I} P_i)$ has a [[retract]].
+
+<!--
+```agda
+module _
+  {κ} {Idx : Type κ}
+  {P : Idx → C.Ob} {∐P : C.Ob} {ι : ∀ i → C.Hom (P i) ∐P}
+  (coprod : is-indexed-coproduct P ι)
+  where
+  open is-indexed-coproduct coprod
+```
+-->
+
+First, a useful lemma. Suppose that we have a coproduct $\coprod_{i : I} P_i$
+indexed by a discrete type, and a map $t_i : \cC(P_i, X)$ for some $i : I$.
+If there exists maps $f_j : \cC(P_j, X)$ for every $j \neq i$, then we can
+obtain a map $\cC(\coprod_{i : I} P_i, X)$.
+
+
+```agda
+  detect
+    : ∀ {X} ⦃ Idx-Discrete : Discrete Idx ⦄
+    → (i : Idx) → C.Hom (P i) X
+    → (∀ (j : Idx) → ¬ i ≡ j → C.Hom (P j) X)
+    → C.Hom ∐P X
+```
+
+The key idea here is to check if $i = j$ when invoking the universal
+property of $\coprod_{i : I} P_i$; if $i = j$ we use $t_i$,
+otherwise we use $f_j$.
+
+```agda
+  detect {X = X} ⦃ Idx-Discrete ⦄ i tᵢ fⱼ = match probe
+    module detect where
+      probe : ∀ (j : Idx) → C.Hom (P j) X
+      probe j with i ≡? j
+      ... | yes i=j = subst _ i=j tᵢ
+      ... | no ¬i=j = fⱼ j ¬i=j
+
+      probe-yes : probe i ≡ tᵢ
+      probe-yes with i ≡? i
+      ... | yes i=i =
+        is-set→subst-refl
+          (λ j → C.Hom (P j) X)
+          (Discrete→is-set Idx-Discrete)
+          i=i tᵢ
+      ... | no ¬i=i = absurd (¬i=i refl)
+
+      probe-no : ∀ j → (¬i=j : ¬ (i ≡ j)) → probe j ≡ fⱼ j ¬i=j
+      probe-no j ¬i=j with i ≡? j
+      ... | yes i=j = absurd (¬i=j i=j)
+      ... | no _ = ap (fⱼ j) prop!
+```
+
+Moreover, we observe that our newly created map interacts nicely
+with the inclusions into the coproduct.
+
+```agda
+  detect-yes
+    : ∀ {X} ⦃ Idx-Discrete : Discrete Idx ⦄
+    → {i : Idx} → {tᵢ : C.Hom (P i) X}
+    → {fⱼ : ∀ (j : Idx) → ¬ i ≡ j → C.Hom (P j) X}
+    → detect i tᵢ fⱼ C.∘ ι i ≡ tᵢ
+  detect-yes = commute ∙ detect.probe-yes _ _ _
+
+  detect-no
+    : ∀ {X} ⦃ Idx-Discrete : Discrete Idx ⦄
+    → {i : Idx} → {tᵢ : C.Hom (P i) X}
+    → {fⱼ : ∀ (j : Idx) → ¬ i ≡ j → C.Hom (P j) X}
+    → ∀ j → (¬i=j : ¬ i ≡ j) → detect i tᵢ fⱼ C.∘ ι j ≡ fⱼ j ¬i=j
+  detect-no j ¬i=j = commute ∙ detect.probe-no _ _ _ j ¬i=j
+```
+
+Refocusing our attention back to our original claim, suppose that
+$\cC$ has a zero object. This means that there is a canonical choice
+of morphism between any two objects, so we can apply our previous
+lemma to obtain a retract $\cC(\coprod_{I} P_i, P_i)$.
+
+```agda
+  zero→ι-has-retract
+    : ∀ ⦃ Idx-Discrete : Discrete Idx ⦄
+    → Zero C
+    → ∀ i → C.has-retract (ι i)
+  zero→ι-has-retract z i =
+    C.make-retract (detect i C.id (λ _ _ → zero→)) detect-yes
+    where open Zero z
 ```

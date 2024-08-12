@@ -6,6 +6,7 @@ definition: |
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
@@ -239,16 +240,16 @@ image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
 
 To see that the `image`{.Agda} indeed implements the concept of image,
 we define a way to factor any map through its image. By the definition
-of image, we have that the map `f-image`{.Agda} is always surjective,
+of image, we have that the map `image-inc`{.Agda} is always surjective,
 and since `∃` is a family of props, the first projection out of
 `image`{.Agda} is an embedding. Thus we factor a map $f$ as $A \epi \im
 f \mono B$.
 
 ```agda
-f-image
+image-inc
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (f : A → B) → A → image f
-f-image f x = f x , inc (x , refl)
+image-inc f x = f x , inc (x , refl)
 ```
 
 We now prove the theorem that will let us map out of a propositional
@@ -295,7 +296,7 @@ truncation onto a set using a constant map.
             → ∥ A ∥ → B
 ∥-∥-rec-set {A = A} {B} bset f fconst x =
   ∥-∥-elim {P = λ _ → image f}
-    (λ _ → is-constant→image-is-prop bset f fconst) (f-image f) x .fst
+    (λ _ → is-constant→image-is-prop bset f fconst) (image-inc f) x .fst
 ```
 
 <!--
@@ -489,5 +490,26 @@ instance
     go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
     go (inc x) f = f x
     go (squash x y i) f = squash (go x f) (go y f) i
+```
+-->
+
+<!--
+```agda
+is-embedding→image-inc-is-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-embedding f
+  → is-equiv (image-inc f)
+is-embedding→image-inc-is-equiv {f = f} f-emb =
+  is-iso→is-equiv $
+  iso (λ im → fst $ ∥-∥-out (f-emb _) (im .snd))
+    (λ im → Σ-prop-path! (snd $ ∥-∥-out (f-emb _) (im .snd)))
+    (λ _ → refl)
+
+is-embedding→image-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-embedding f
+  → A ≃ image f
+is-embedding→image-equiv {f = f} f-emb =
+  image-inc f , is-embedding→image-inc-is-equiv f-emb
 ```
 -->
