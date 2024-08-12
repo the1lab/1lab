@@ -5,11 +5,12 @@ description: |
 <!--
 ```agda
 open import 1Lab.Reflection
-open import Data.Id.Base
 
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
+
+open import Data.Id.Base
 
 import Cat.Reasoning
 ```

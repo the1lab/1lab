@@ -1,9 +1,9 @@
 <!--
 ```agda
 open import Cat.Instances.Sets.Complete
-open import Cat.Cartesian.Solver
 open import Cat.Monoidal.Diagonals
 open import Cat.Instances.Functor
+open import Cat.Cartesian.Solver
 open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Braided
 open import Cat.Diagram.Product
