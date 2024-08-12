@@ -49,19 +49,22 @@ open /-Hom
 
 private
   C/y-lex : Finitely-complete C/y
-  C/y-lex = with-pullbacks C/y Slice-terminal-object pb where
-    pb : ∀ {A B X} (f : C/y.Hom A X) (g : C/y.Hom B X) → Pullback C/y f g
-    pb {A = A} f g = below where
-      above = r.lex.pullbacks (f .map) (g .map)
+  C/y-lex =
+    with-pullbacks C/y Slice-terminal-object $
+    all-pullbacks→pullbacks pullbacks
+    where
+      pullbacks : ∀ {A B X} (f : C/y.Hom A X) (g : C/y.Hom B X) → Pullback C/y f g
+      pullbacks {A = A} f g = below where
+        above = r.lex.pullback (f .map) (g .map)
 
-      below : Pullback C/y f g
-      below .Pullback.apex = cut (A .map ∘ above .Pullback.p₁)
-      below .Pullback.p₁ .map      = above .Pullback.p₁
-      below .Pullback.p₁ .commutes = refl
-      below .Pullback.p₂ .map      = above .Pullback.p₂
-      below .Pullback.p₂ .commutes =
-        pushl (sym (g .commutes)) ∙ ap₂ _∘_ refl (sym (above .Pullback.square)) ∙ pulll (f .commutes)
-      below .Pullback.has-is-pb = pullback-above→pullback-below (above .Pullback.has-is-pb)
+        below : Pullback C/y f g
+        below .Pullback.apex = cut (A .map ∘ above .Pullback.p₁)
+        below .Pullback.p₁ .map      = above .Pullback.p₁
+        below .Pullback.p₁ .commutes = refl
+        below .Pullback.p₂ .map      = above .Pullback.p₂
+        below .Pullback.p₂ .commutes =
+          pushl (sym (g .commutes)) ∙ ap₂ _∘_ refl (sym (above .Pullback.square)) ∙ pulll (f .commutes)
+        below .Pullback.has-is-pb = pullback-above→pullback-below (above .Pullback.has-is-pb)
 
   pres-mono
     : ∀ {a b} (h : a C/y.↪ b)

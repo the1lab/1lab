@@ -96,14 +96,18 @@ FinSets-finitely-complete = with-equalisers _ terminal products equalisers where
     Sets-terminal
     (equiv→iso (is-contr→≃ (hlevel 0) Finite-one-is-contr))
 
-  products : has-products FinSets
-  products a b = ff→reflects-Product Fin→Sets Fin→Sets-is-ff
-    (Sets-products _ _)
+  products : Binary-products FinSets
+  products =
+    all-products→binary-products λ A B →
+    ff→reflects-Product Fin→Sets Fin→Sets-is-ff
+    (Binary-products.product Sets-products _ _)
     (equiv→iso Finite-multiply)
 
-  equalisers : has-equalisers FinSets
-  equalisers f g = ff→reflects-Equaliser Fin→Sets Fin→Sets-is-ff
-    (Sets-equalisers f g)
+  equalisers : Equalisers FinSets
+  equalisers =
+    all-equalisers→equalisers λ f g →
+    ff→reflects-Equaliser Fin→Sets Fin→Sets-is-ff
+    (Equalisers.equaliser Sets-equalisers f g)
     (equiv→iso (Finite-subset (λ x → f x ≡ g x) .snd e⁻¹))
 
 FinSets-finitely-cocomplete : Finitely-cocomplete FinSets
@@ -113,13 +117,17 @@ FinSets-finitely-cocomplete = with-coequalisers _ initial coproducts coequaliser
     Sets-initial
     (equiv→iso (Lift-≃ ∙e Finite-zero-is-initial e⁻¹))
 
-  coproducts : has-coproducts FinSets
-  coproducts a b = ff→reflects-Coproduct Fin→Sets Fin→Sets-is-ff
-    (Sets-coproducts _ _)
+  coproducts : Binary-coproducts FinSets
+  coproducts =
+    all-coproducts→binary-coproducts λ A B →
+    ff→reflects-Coproduct Fin→Sets Fin→Sets-is-ff
+    (Binary-coproducts.coproduct Sets-coproducts _ _)
     (equiv→iso Finite-coproduct)
 
-  coequalisers : has-coequalisers FinSets
-  coequalisers f g = ff→reflects-Coequaliser Fin→Sets Fin→Sets-is-ff
-    (Sets-coequalisers f g)
+  coequalisers : Coequalisers FinSets
+  coequalisers =
+    all-coequalisers→coequalisers λ f g →
+    ff→reflects-Coequaliser Fin→Sets Fin→Sets-is-ff
+    (Coequalisers.coequaliser Sets-coequalisers f g)
     (equiv→iso (Finite-coequaliser f g .snd e⁻¹))
 ```

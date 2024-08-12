@@ -125,14 +125,14 @@ A straightforward calculation shows that this really is the coproduct in
 $\Pos$.
 
 ```agda
-Posets-has-coproducts : ∀ {o ℓ} → has-coproducts (Posets o ℓ)
-Posets-has-coproducts P Q .coapex = P ⊎ᵖ Q
-Posets-has-coproducts P Q .ι₁ = inlᵖ
-Posets-has-coproducts P Q .ι₂ = inrᵖ
-Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = matchᵖ
-Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₁ = trivial!
-Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₂ = trivial!
-Posets-has-coproducts P Q .has-is-coproduct .unique α β = ext λ where
+Posets-coproducts : ∀ {o ℓ} → Binary-coproducts (Posets o ℓ)
+Posets-coproducts .Binary-coproducts._⊕₀_ P Q = P ⊎ᵖ Q
+Posets-coproducts .Binary-coproducts.ι₁ = inlᵖ
+Posets-coproducts .Binary-coproducts.ι₂ = inrᵖ
+Posets-coproducts .Binary-coproducts.[_,_] = matchᵖ
+Posets-coproducts .Binary-coproducts.[]∘ι₁ = trivial!
+Posets-coproducts .Binary-coproducts.[]∘ι₂ = trivial!
+Posets-coproducts .Binary-coproducts.[]-unique α β = ext λ where
   (inl x) → α #ₚ x
   (inr x) → β #ₚ x
 ```

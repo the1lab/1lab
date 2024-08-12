@@ -23,9 +23,7 @@ module Cat.Internal.Instances.Congruence
 open Cat.Diagram.Congruence fc
 open Cat.Internal.Base C
 open Cat.Reasoning C
-private module fc = Finitely-complete fc
-open Pullbacks C fc.pullbacks
-open Binary-products C fc.products
+open Finitely-complete fc
 
 open Internal-cat
 open Internal-cat-on
@@ -47,7 +45,7 @@ are congruent.
 EquivRel : ∀ {A} → Congruence-on A → Internal-cat
 EquivRel {A} cong = icat where
   open Congruence-on cong
-  private module R×R = Pullback (fc.pullbacks rel₁ rel₂)
+  private module R×R = Pullback (pullback rel₁ rel₂)
 ```
 
 The object of objects of the internal category will simply be $A$, and
@@ -71,7 +69,7 @@ composition by transitivity.
   icat .has-internal-cat .idi x .has-src = cancell refl-p₁
   icat .has-internal-cat .idi x .has-tgt = cancell refl-p₂
   icat .has-internal-cat ._∘i_ f g .ihom =
-    has-trans ∘ pullback.universal _ _ (f .has-src ∙ sym (g .has-tgt))
+    has-trans ∘ pb _ _ (f .has-src ∙ sym (g .has-tgt))
   icat .has-internal-cat ._∘i_ f g .has-src =
        pulll trans-p₁
     ·· pullr R×R.p₂∘universal

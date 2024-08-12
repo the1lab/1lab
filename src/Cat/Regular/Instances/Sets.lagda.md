@@ -70,10 +70,10 @@ Sets-regular .stable =
       rem₁ = epi→surjective a b f λ {c} → f-epi {c}
 
       T : Set _
-      T = Sets-pullbacks {A = c} {a} {b} g f .Pullback.apex
+      T = Sets-pullbacks .Pullbacks.Pb {c} {a} {b} g f
 
       pb : ∣ T ∣ → ∣ c ∣
-      pb = Sets-pullbacks {A = c} {a} {b} g f .Pullback.p₁
+      pb = Sets-pullbacks .Pullbacks.p₁ {c} {a} {b} g f
 
       rem₂ : is-surjective pb
       rem₂ x = do
