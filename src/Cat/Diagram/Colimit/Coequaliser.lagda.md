@@ -86,7 +86,7 @@ is-colimit→is-coequaliser F {K} {eta} colim = co where
   co .universal {e' = e'} p =
     colim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   co .factors = colim.factors {j = true} _ _
-  co .unique {p = p} {colim = other} q =
+  co .unique {p = p} {other = other} q =
     colim.unique _ _ _ λ where
       true → q
       false →
@@ -99,7 +99,7 @@ Coequaliser→Colimit {F = F} coeq = to-colimit (is-coequaliser→is-colimit F (
 
 Colimit→Coequaliser : ∀ {a b} {f g : Hom a b} → Colimit {C = C} (Fork f g) → Coequaliser C f g
 Colimit→Coequaliser colim .coapex = _
-Colimit→Coequaliser colim .coeq = _
+Colimit→Coequaliser colim .coequ = _
 Colimit→Coequaliser {f = f} {g} colim .has-is-coeq =
   is-colimit→is-coequaliser (Fork f g) (Colimit.has-colimit colim)
 ```
