@@ -47,17 +47,14 @@ Equivalently, a finitely cocomplete category has:
   record Finitely-cocomplete : Type (ℓ ⊔ ℓ') where
     field
       initial      : Initial C
-      coproducts   : ∀ A B → Coproduct C A B
-      coequalisers : ∀ {A B} (f g : Hom A B) → Coequaliser C f g
-      pushouts     : ∀ {A B X} (f : Hom X A) (g : Hom X B) → Pushout C f g
+      coproducts   : Binary-coproducts C
+      coequalisers : Coequalisers C
+      pushouts     : Pushouts C
 
-    Coequ : ∀ {A B} (f g : Hom A B) → Ob
-    Coequ f g = coequalisers f g .Coequaliser.coapex
-
-    Po : ∀ {A B C} (f : Hom C A) (g : Hom C B) → Ob
-    Po f g = pushouts f g .Pushout.coapex
-
-  open Finitely-cocomplete
+    open Initial initial public
+    open Binary-coproducts coproducts public
+    open Coequalisers coequalisers public
+    open Pushouts pushouts public
 ```
 
 As seen on the page for finitely complete categories, this definition
@@ -111,13 +108,13 @@ where $E$ is the pushout's coapex, or equivalently, the coequaliser
 of $in_0f$ and $in_1g$.
 
 ```agda
-  coproduct-coequaliser→pushout
+  coproduct+coequaliser→pushout
     : ∀ {E P X Y Z} {in1 : Hom X P} {in2 : Hom Y P} {f : Hom Z X}
         {g : Hom Z Y} {e : Hom P E}
     → is-coproduct C in1 in2
     → is-coequaliser C (in1 ∘ f) (in2 ∘ g) e
     → is-pushout C f (e ∘ in1) g (e ∘ in2)
-  coproduct-coequaliser→pushout {in1 = in1} {in2} {f} {g} {e} cp cq = po where
+  coproduct+coequaliser→pushout {in1 = in1} {in2} {f} {g} {e} cp cq = po where
     open is-pushout
     module cq = is-coequaliser cq
     module cp = is-coproduct cp
@@ -143,17 +140,18 @@ binary coequalisers, it is finitely cocomplete.
 ```agda
   with-coequalisers
     : Initial C
-    → (∀ A B → Coproduct C A B)
-    → (∀ {A B} (f g : Hom A B) → Coequaliser C f g)
+    → Binary-coproducts C
+    → Coequalisers C
     → Finitely-cocomplete
-  with-coequalisers init copr coeq .initial      = init
-  with-coequalisers init copr coeq .coproducts   = copr
-  with-coequalisers init copr coeq .coequalisers = coeq
-  with-coequalisers init copr coeq .pushouts {A} {B} {X} f g =
-    record { has-is-po = coproduct-coequaliser→pushout Copr.has-is-coproduct Coequ.has-is-coeq }
+  with-coequalisers init copr coeq .Finitely-cocomplete.initial      = init
+  with-coequalisers init copr coeq .Finitely-cocomplete.coproducts   = copr
+  with-coequalisers init copr coeq .Finitely-cocomplete.coequalisers = coeq
+  with-coequalisers init copr coeq .Finitely-cocomplete.pushouts     =
+    has-pushouts→pushouts λ f g →
+    coproduct+coequaliser→pushout has-is-coproduct has-is-coeq
     where
-      module Copr = Coproduct (copr A B)
-      module Coequ = Coequaliser (coeq (Copr.ι₁ ∘ f) (Copr.ι₂ ∘ g))
+      open Binary-coproducts copr
+      open Coequalisers coeq
 ```
 
 ## With pushouts
@@ -161,10 +159,10 @@ binary coequalisers, it is finitely cocomplete.
 A coproduct is a pushout under a span whose vertex is the initial object.
 
 ```agda
-  initial-pushout→coproduct
+  initial+pushout→coproduct
     : ∀ {P X Y I} {in1 : Hom X P} {in2 : Hom Y P} {f : Hom I X} {g : Hom I Y}
     → is-initial C I → is-pushout C f in1 g in2 → is-coproduct C in1 in2
-  initial-pushout→coproduct {in1 = in1} {in2} {f} {g} init po = coprod where
+  initial+pushout→coproduct {in1 = in1} {in2} {f} {g} init po = coprod where
       module Po = is-pushout po
 
       coprod : is-coproduct C in1 in2
@@ -173,20 +171,8 @@ A coproduct is a pushout under a span whose vertex is the initial object.
       coprod .is-coproduct.[]∘ι₁ = Po.universal∘i₁
       coprod .is-coproduct.[]∘ι₂ = Po.universal∘i₂
       coprod .is-coproduct.unique p q = Po.unique p q
-
-  with-pushouts
-    : Initial C
-    → (∀ {A B X} (f : Hom X A) (g : Hom X B) → Pushout C f g)
-    → Finitely-cocomplete
-  with-pushouts bot po = fcc where
-    module bot = Initial bot
-    mkcoprod : ∀ A B → Coproduct C A B
-    mkcoprod A B = record { has-is-coproduct = initial-pushout→coproduct bot.has⊥ po' }
-      where po' = po (bot.has⊥ A .centre) (bot.has⊥ B .centre) .Pushout.has-is-po
-
-    mkcoeq : ∀ {A B} (f g : Hom A B) → Coequaliser C f g
-    mkcoeq {A = A} {B} f g = coequ where
 ```
+
 
 The construction of coequalisers from pushouts follows its [[dual|finite
 limits]].
@@ -204,66 +190,78 @@ limits]].
 \end{tikzcd}\]
 ~~~
 
+```agda
+  coproduct+pushout→coequaliser
+    : ∀ {E X Y X+X}
+    → {f g : Hom X Y} {e : Hom Y E} {ι₁ ι₂ : Hom X X+X} {i₁ : Hom X E}
+    → (is-coprod : is-coproduct C ι₁ ι₂) (let open is-coproduct is-coprod)
+    → (is-po : is-pushout C [ id , id ] i₁ [ f , g ] e)
+    → is-coequaliser C f g e
+```
+
 <!--
 ```agda
-      module A+A = Coproduct (mkcoprod A A)
-      [id,id] : Hom A+A.coapex A
-      [id,id] = A+A.[ id , id ]
+  coproduct+pushout→coequaliser {f = f} {g} {e} {ι₁} {ι₂} {i₁} is-coprod is-po = is-coeq where
+    open is-coproduct is-coprod renaming (unique₂ to []-unique₂)
+    open is-pushout is-po renaming (unique to po-unique)
 
-      [f,g] : Hom A+A.coapex B
-      [f,g] = A+A.[ f , g ]
-
-      module Po = Pushout (po [f,g] [id,id])
-
-      open is-coequaliser
-      open Coequaliser
+    is-coeq : is-coequaliser C f g e
+    is-coeq .is-coequaliser.coequal =
+      e ∘ f                   ≡˘⟨ pullr []∘ι₁ ⟩
+      (e ∘ [ f , g ]) ∘ ι₁    ≡˘⟨ ap₂ _∘_ square refl ⟩
+      (i₁ ∘ [ id , id ]) ∘ ι₁ ≡⟨ extendr ([]∘ι₁ ∙ sym []∘ι₂) ⟩
+      (i₁ ∘ [ id , id ]) ∘ ι₂ ≡⟨ ap₂ _∘_ square refl ⟩
+      (e ∘ [ f , g ]) ∘ ι₂    ≡⟨ pullr []∘ι₂ ⟩
+      e ∘ g                   ∎
+    is-coeq .is-coequaliser.universal {e' = e'} p =
+      universal {i₁' = e' ∘ f} {i₂' = e'} comm
+      where abstract
+        comm : (e' ∘ f) ∘ [ id , id ] ≡ e' ∘ [ f , g ]
+        comm =
+          []-unique₂
+            (cancelr []∘ι₁) (cancelr []∘ι₂)
+            (pullr []∘ι₁) (pullr []∘ι₂ ∙ sym p)
+    is-coeq .is-coequaliser.factors = universal∘i₂
+    is-coeq .is-coequaliser.unique {e' = e'} {p = p} {other = other} other∘e=e' =
+      po-unique
+        other∘i₁=e'∘f
+        other∘e=e'
+      where
+        other∘i₁=e'∘f : other ∘ i₁ ≡ e' ∘ f
+        other∘i₁=e'∘f =
+          other ∘ i₁ ≡⟨ insertr []∘ι₁ ⟩
+          ((other ∘ i₁) ∘ [ id , id ]) ∘ ι₁ ≡⟨ ap₂ _∘_ (extendr square) refl ⟩
+          ((other ∘ e) ∘ [ f , g ]) ∘ ι₁    ≡⟨ pullr []∘ι₁ ⟩
+          (other ∘ e) ∘ f                   ≡⟨ ap₂ _∘_ other∘e=e' refl ⟩
+          e' ∘ f                            ∎
 ```
 -->
 
+
 ```agda
-      coequ : Coequaliser C f g
-      coequ .coapex = Po.coapex
-      coequ .coeq = Po.i₁
-      coequ .has-is-coeq .coequal =
-        Po.i₁ ∘ f                  ≡˘⟨ ap (Po.i₁ ∘_) A+A.[]∘ι₁ ⟩
-        Po.i₁ ∘ [f,g] ∘ A+A.ι₁     ≡⟨ assoc _ _ _ ∙ ap (_∘ A+A.ι₁) Po.square ⟩
-        (Po.i₂ ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ sym (assoc _ _ _) ∙ pushr (A+A.[]∘ι₁ ∙ sym A+A.[]∘ι₂) ⟩
-        (Po.i₂ ∘ [id,id]) ∘ A+A.ι₂ ≡⟨ ap (_∘ A+A.ι₂) (sym Po.square) ⟩
-        (Po.i₁ ∘ [f,g]) ∘ A+A.ι₂   ≡⟨ sym (assoc _ _ _) ∙ ap (Po.i₁ ∘_) A+A.[]∘ι₂ ⟩
-        Po.i₁ ∘ g                  ∎
-      coequ .has-is-coeq .universal {e' = e'} p =
-        Po.universal (A+A.unique₂ refl refl (in1) (in2))
-        where
-          in1 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₁ ≡ (e' ∘ [f,g]) ∘ A+A.ι₁
-          in1 =
-            ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ cancelr A+A.[]∘ι₁ ⟩ -- ≡⟨ cancell A+A.[]∘ι₁ ⟩
-            e' ∘ f                        ≡˘⟨ pullr A+A.[]∘ι₁ ⟩ -- ≡˘⟨ pulll A+A.[]∘ι₁ ⟩
-            (e' ∘ [f,g]) ∘ A+A.ι₁         ∎
+  with-pushouts
+    : Initial C
+    → Pushouts C
+    → Finitely-cocomplete
+  with-pushouts initial pushouts = fcc where
+    open Initial initial
+    open Pushouts pushouts
 
-          in2 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₂ ≡ (e' ∘ [f,g]) ∘ A+A.ι₂
-          in2 =
-            ((e' ∘ f) ∘ [id,id]) ∘ A+A.ι₂ ≡⟨ cancelr A+A.[]∘ι₂ ⟩
-            e' ∘ f                        ≡⟨ p ⟩
-            e' ∘ g                        ≡˘⟨ pullr A+A.[]∘ι₂ ⟩
-            (e' ∘ [f,g]) ∘ A+A.ι₂         ∎
+    coprods : Binary-coproducts C
+    coprods = has-coproducts→binary-coproducts λ A B →
+      initial+pushout→coproduct {f = ¡} {g = ¡} has⊥ has-is-po
 
-      coequ .has-is-coeq .factors = Po.universal∘i₁
-      coequ .has-is-coeq .unique {F} {e' = e'} {colim = colim} e'=col∘i₁ =
-        Po.unique e'=col∘i₁ path
-        where
-          path : colim ∘ Po.i₂ ≡ e' ∘ f
-          path =
-            colim ∘ Po.i₂                        ≡⟨ insertr A+A.[]∘ι₁ ⟩
-            ((colim ∘ Po.i₂) ∘ [id,id]) ∘ A+A.ι₁ ≡⟨ ap (_∘ A+A.ι₁) (extendr (sym Po.square)) ⟩
-            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.ι₁   ≡⟨ ap (_∘ A+A.ι₁) (ap (_∘ [f,g]) e'=col∘i₁) ⟩
-            (e' ∘ [f,g]) ∘ A+A.ι₁                ≡⟨ pullr A+A.[]∘ι₁ ⟩
-            e' ∘ f           ∎
+    open Binary-coproducts coprods
+
+    coeqs : Coequalisers C
+    coeqs = has-coequalisers→coequalisers λ f g →
+      coproduct+pushout→coequaliser has-is-coproduct has-is-po
 
     fcc : Finitely-cocomplete
-    fcc .initial      = bot
-    fcc .coproducts   = mkcoprod
-    fcc .coequalisers = mkcoeq
-    fcc .pushouts     = po
+    fcc .Finitely-cocomplete.initial      = initial
+    fcc .Finitely-cocomplete.coproducts   = coprods
+    fcc .Finitely-cocomplete.coequalisers = coeqs
+    fcc .Finitely-cocomplete.pushouts     = pushouts
 ```
 
 <!--
@@ -311,7 +309,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
       → is-initial C I
       → is-coproduct C in1 in2
       → is-coproduct D (F.₁ in1) (F.₁ in2)
-    pres-coproduct  init copr = initial-pushout→coproduct D (pres-⊥ init)
+    pres-coproduct  init copr = initial+pushout→coproduct D (pres-⊥ init)
       (pres-pushout {f = init _ .centre} {g = init _ .centre}
         (coproduct→initial-pushout C init copr))
     pres-epis : ∀ {A B} {f : C.Hom A B} → C.is-epic f → D.is-epic (F.₁ f)

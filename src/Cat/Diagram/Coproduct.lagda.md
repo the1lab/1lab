@@ -2,20 +2,23 @@
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Coproduct {o h} (C : Precategory o h) where
+module Cat.Diagram.Coproduct where
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
-private variable
-  A B : Ob
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
 ```
 -->
+
+
 
 # Coproducts {defines="coproduct"}
 
@@ -42,36 +45,36 @@ $Q$. This is best explained by a commutative diagram:
 ~~~
 
 ```agda
-record is-coproduct {A B P} (ι₁ : Hom A P) (ι₂ : Hom B P) : Type (o ⊔ h) where
-  field
-    [_,_] : ∀ {Q} (inj0 : Hom A Q) (inj1 : Hom B Q) → Hom P Q
-    []∘ι₁ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₁ ≡ inj0
-    []∘ι₂ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₂ ≡ inj1
+  record is-coproduct {A B P} (ι₁ : Hom A P) (ι₂ : Hom B P) : Type (o ⊔ ℓ) where
+    field
+      [_,_] : ∀ {Q} (inj0 : Hom A Q) (inj1 : Hom B Q) → Hom P Q
+      []∘ι₁ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₁ ≡ inj0
+      []∘ι₂ : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ ι₂ ≡ inj1
 
-    unique : ∀ {Q} {inj0 : Hom A Q} {inj1}
-           → {other : Hom P Q}
-           → other ∘ ι₁ ≡ inj0
-           → other ∘ ι₂ ≡ inj1
-           → other ≡ [ inj0 , inj1 ]
+      unique : ∀ {Q} {inj0 : Hom A Q} {inj1}
+             → {other : Hom P Q}
+             → other ∘ ι₁ ≡ inj0
+             → other ∘ ι₂ ≡ inj1
+             → other ≡ [ inj0 , inj1 ]
 
-  unique₂ : ∀ {Q} {inj0 : Hom A Q} {inj1}
-          → ∀ {o1} (p1 : o1 ∘ ι₁ ≡ inj0) (q1 : o1 ∘ ι₂ ≡ inj1)
-          → ∀ {o2} (p2 : o2 ∘ ι₁ ≡ inj0) (q2 : o2 ∘ ι₂ ≡ inj1)
-          → o1 ≡ o2
-  unique₂ p1 q1 p2 q2 = unique p1 q1 ∙ sym (unique p2 q2)
+    unique₂ : ∀ {Q} {inj0 : Hom A Q} {inj1}
+            → ∀ {o1} (p1 : o1 ∘ ι₁ ≡ inj0) (q1 : o1 ∘ ι₂ ≡ inj1)
+            → ∀ {o2} (p2 : o2 ∘ ι₁ ≡ inj0) (q2 : o2 ∘ ι₂ ≡ inj1)
+            → o1 ≡ o2
+    unique₂ p1 q1 p2 q2 = unique p1 q1 ∙ sym (unique p2 q2)
 ```
 
 A coproduct of $A$ and $B$ is an explicit choice of coproduct diagram:
 
 ```agda
-record Coproduct (A B : Ob) : Type (o ⊔ h) where
-  field
-    coapex : Ob
-    ι₁ : Hom A coapex
-    ι₂ : Hom B coapex
-    has-is-coproduct : is-coproduct ι₁ ι₂
+  record Coproduct (A B : Ob) : Type (o ⊔ ℓ) where
+    field
+      coapex : Ob
+      ι₁ : Hom A coapex
+      ι₂ : Hom B coapex
+      has-is-coproduct : is-coproduct ι₁ ι₂
 
-  open is-coproduct has-is-coproduct public
+    open is-coproduct has-is-coproduct public
 ```
 
 ## Uniqueness
@@ -81,39 +84,39 @@ for the [[product|uniqueness of products]].
 
 <!--
 ```agda
-module _ where
-  open Coproduct
+  module _ where
+    open Coproduct
 ```
 -->
 
 ```agda
-  +-Unique : (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
-  +-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
-    where
-      module c1 = Coproduct c1
-      module c2 = Coproduct c2
+    +-Unique : ∀ {A B} (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
+    +-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
+      where
+        module c1 = Coproduct c1
+        module c2 = Coproduct c2
 
-      c1→c2 : Hom (coapex c1) (coapex c2)
-      c1→c2 = c1.[ c2.ι₁ , c2.ι₂ ]
+        c1→c2 : Hom (coapex c1) (coapex c2)
+        c1→c2 = c1.[ c2.ι₁ , c2.ι₂ ]
 
-      c2→c1 : Hom (coapex c2) (coapex c1)
-      c2→c1 = c2.[ c1.ι₁ , c1.ι₂ ]
+        c2→c1 : Hom (coapex c2) (coapex c1)
+        c2→c1 = c2.[ c1.ι₁ , c1.ι₂ ]
 ```
 
 ```agda
-      c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
-      c1→c2→c1 =
-        c2.unique₂
-          (pullr c2.[]∘ι₁ ∙ c1.[]∘ι₁)
-          (pullr c2.[]∘ι₂ ∙ c1.[]∘ι₂)
-          (idl _) (idl _)
+        c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
+        c1→c2→c1 =
+          c2.unique₂
+            (pullr c2.[]∘ι₁ ∙ c1.[]∘ι₁)
+            (pullr c2.[]∘ι₂ ∙ c1.[]∘ι₂)
+            (idl _) (idl _)
 
-      c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
-      c2→c1→c2 =
-        c1.unique₂
-          (pullr c1.[]∘ι₁ ∙ c2.[]∘ι₁)
-          (pullr c1.[]∘ι₂ ∙ c2.[]∘ι₂)
-          (idl _) (idl _)
+        c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
+        c2→c1→c2 =
+          c1.unique₂
+            (pullr c1.[]∘ι₁ ∙ c2.[]∘ι₁)
+            (pullr c1.[]∘ι₂ ∙ c2.[]∘ι₂)
+            (idl _) (idl _)
 ```
 
 # Categories with all binary coproducts
@@ -125,8 +128,9 @@ this means that goals willl print as `[ f , g ]` instead of
 `is-coproduct.[_,_] (coproduct A B) f g`.
 
 ```agda
-record Binary-coproducts : Type (o ⊔ h) where
+record Binary-coproducts {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
+  open Cat.Reasoning C
   field
     _⊕₀_ : Ob → Ob → Ob
     ι₁ : ∀ {A B} → Hom A (A ⊕₀ B)
@@ -149,7 +153,7 @@ record Binary-coproducts : Type (o ⊔ h) where
 ```agda
   open Functor
 
-  coproduct : ∀ A B → Coproduct A B
+  coproduct : ∀ A B → Coproduct C A B
   coproduct A B .Coproduct.coapex = A ⊕₀ B
   coproduct A B .Coproduct.ι₁ = ι₁
   coproduct A B .Coproduct.ι₂ = ι₂
@@ -214,5 +218,46 @@ We also define a handful of common morphisms.
       (pullr (pullr []∘ι₂) ∙ (refl⟩∘⟨ []∘ι₂) ∙ cancell []∘ι₂))
     (pullr []∘ι₁ ∙ pulll []∘ι₁)
     (pullr []∘ι₂ ∙ cancell []∘ι₂)
+```
+-->
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Precategory C
+
+  all-coproducts→binary-coproducts
+    : (∀ A B → Coproduct C A B)
+    → Binary-coproducts C
+  all-coproducts→binary-coproducts coproducts = binary-coproducts where
+    module coproduct {A} {B} = Coproduct (coproducts A B)
+    open Binary-coproducts hiding (coproduct)
+
+    binary-coproducts : Binary-coproducts C
+    binary-coproducts ._⊕₀_ A B = coproduct.coapex {A} {B}
+    binary-coproducts .ι₁ = coproduct.ι₁
+    binary-coproducts .ι₂ = coproduct.ι₂
+    binary-coproducts .[_,_] = coproduct.[_,_]
+    binary-coproducts .[]∘ι₁ = coproduct.[]∘ι₁
+    binary-coproducts .[]∘ι₂ = coproduct.[]∘ι₂
+    binary-coproducts .[]-unique = coproduct.unique
+
+  has-coproducts→binary-coproducts
+    : {_⊕₀_ : Ob → Ob → Ob}
+    → {ι₁ : ∀ {A B} → Hom A (A ⊕₀ B)} {ι₂ : ∀ {A B} → Hom B (A ⊕₀ B)}
+    → (∀ A B → is-coproduct C (ι₁ {A} {B}) (ι₂ {A}))
+    → Binary-coproducts C
+  has-coproducts→binary-coproducts {_⊕₀_ = _⊕₀_} {ι₁} {ι₂} is-coproducts = binary-coproducts where
+    module coproduct {A} {B} = is-coproduct (is-coproducts A B)
+
+    binary-coproducts : Binary-coproducts C
+    binary-coproducts .Binary-coproducts._⊕₀_ = _⊕₀_
+    binary-coproducts .Binary-coproducts.ι₁ = ι₁
+    binary-coproducts .Binary-coproducts.ι₂ = ι₂
+    binary-coproducts .Binary-coproducts.[_,_] = coproduct.[_,_]
+    binary-coproducts .Binary-coproducts.[]∘ι₁ = coproduct.[]∘ι₁
+    binary-coproducts .Binary-coproducts.[]∘ι₂ = coproduct.[]∘ι₂
+    binary-coproducts .Binary-coproducts.[]-unique = coproduct.unique
+
 ```
 -->

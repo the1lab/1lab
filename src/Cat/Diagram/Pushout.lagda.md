@@ -92,3 +92,99 @@ maps:
 
     open is-pushout has-is-po public
 ```
+
+# Categories with all pushouts
+
+```agda
+record Pushouts {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
+  no-eta-equality
+  open Cat.Reasoning C
+  field
+    Po : ∀ {X Y Z} → Hom X Y → Hom X Z → Ob
+    i₁ : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Hom Y (Po f g)
+    i₂ : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Hom Z (Po f g)
+    cosquare
+      : ∀ {X Y Z} {f : Hom X Y} {g : Hom X Z}
+      → i₁ f g ∘ f ≡ i₂ f g ∘ g
+    po
+      : ∀ {P X Y Z} {f : Hom X Y} {g : Hom X Z}
+      → (i1 : Hom Y P) (i2 : Hom Z P)
+      → i1 ∘ f ≡ i2 ∘ g
+      → Hom (Po f g) P
+    po∘i₁
+      : ∀ {P X Y Z} {f : Hom X Y} {g : Hom X Z}
+      → {i1 : Hom Y P} {i2 : Hom Z P}
+      → {sq : i1 ∘ f ≡ i2 ∘ g}
+      → po i1 i2 sq ∘ i₁ f g ≡ i1
+    po∘i₂
+      : ∀ {P X Y Z} {f : Hom X Y} {g : Hom X Z}
+      → {i1 : Hom Y P} {i2 : Hom Z P}
+      → {sq : i1 ∘ f ≡ i2 ∘ g}
+      → po i1 i2 sq ∘ i₂ f g ≡ i2
+    po-unique
+      : ∀ {P X Y Z} {f : Hom X Y} {g : Hom X Z}
+      → {i1 : Hom Y P} {i2 : Hom Z P}
+      → {sq : i1 ∘ f ≡ i2 ∘ g}
+      → {other : Hom (Po f g) P}
+      → other ∘ i₁ f g ≡ i1
+      → other ∘ i₂ f g ≡ i2
+      → other ≡ po i1 i2 sq
+```
+
+<!--
+```agda
+  pushout : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Pushout C f g
+  pushout f g .Pushout.coapex = Po f g
+  pushout f g .Pushout.i₁ = i₁ f g
+  pushout f g .Pushout.i₂ = i₂ f g
+  pushout f g .Pushout.has-is-po .is-pushout.square = cosquare
+  pushout f g .Pushout.has-is-po .is-pushout.universal = po _ _
+  pushout f g .Pushout.has-is-po .is-pushout.universal∘i₁ = po∘i₁
+  pushout f g .Pushout.has-is-po .is-pushout.universal∘i₂ = po∘i₂
+  pushout f g .Pushout.has-is-po .is-pushout.unique = po-unique
+
+  private module pushout {X Y Z} {f : Hom X Y} {g : Hom X Z} = Pushout (pushout f g)
+  open pushout
+    renaming (unique₂ to po-unique₂)
+    using (has-is-po)
+    public
+
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Precategory C
+
+  all-pushouts→pushouts
+    : (∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Pushout C f g)
+    → Pushouts C
+  all-pushouts→pushouts all-pushouts = pushouts where
+    module po {X Y Z} {f : Hom X Y} {g : Hom X Z} = Pushout (all-pushouts f g)
+
+    pushouts : Pushouts C
+    pushouts .Pushouts.Po f g = po.coapex {f = f} {g = g}
+    pushouts .Pushouts.i₁ _ _ = po.i₁
+    pushouts .Pushouts.i₂ _ _ = po.i₂
+    pushouts .Pushouts.cosquare = po.square
+    pushouts .Pushouts.po _ _ = po.universal
+    pushouts .Pushouts.po∘i₁ = po.universal∘i₁
+    pushouts .Pushouts.po∘i₂ = po.universal∘i₂
+    pushouts .Pushouts.po-unique = po.unique
+
+  has-pushouts→pushouts
+    : {Po : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Ob}
+    → {i₁ : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Hom Y (Po f g)}
+    → {i₂ : ∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → Hom Z (Po f g)}
+    → (∀ {X Y Z} (f : Hom X Y) (g : Hom X Z) → is-pushout C f (i₁ f g) g (i₂ f g))
+    → Pushouts C
+  has-pushouts→pushouts {Po = Po} {i₁} {i₂} has-pushouts = pushouts where
+    module po {X Y Z} {f : Hom X Y} {g : Hom X Z} = is-pushout (has-pushouts f g)
+
+    pushouts : Pushouts C
+    pushouts .Pushouts.Po = Po
+    pushouts .Pushouts.i₁ = i₁
+    pushouts .Pushouts.i₂ = i₂
+    pushouts .Pushouts.cosquare = po.square
+    pushouts .Pushouts.po _ _ = po.universal
+    pushouts .Pushouts.po∘i₁ = po.universal∘i₁
+    pushouts .Pushouts.po∘i₂ = po.universal∘i₂
+    pushouts .Pushouts.po-unique = po.unique
+```
+-->

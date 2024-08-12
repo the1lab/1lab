@@ -47,9 +47,9 @@ and $g$.
       factors    : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
                  → universal p ∘ coeq ≡ e'
 
-      unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
-                 → colim ∘ coeq ≡ e'
-                 → colim ≡ universal p
+      unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {other : Hom E F}
+                 → other ∘ coeq ≡ e'
+                 → other ≡ universal p
 
     unique₂
       : ∀ {F} {e' : Hom B F}  {o1 o2 : Hom E F}
@@ -162,5 +162,43 @@ record Coequalisers {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     using (has-is-coeq; id-coequalise)
     renaming (unique₂ to coequalise-unique₂)
     public
+```
+-->
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Precategory C
+
+  all-coequalisers→coequalisers
+    : (∀ {X Y} → (f g : Hom X Y) → Coequaliser C f g)
+    → Coequalisers C
+  all-coequalisers→coequalisers has-coequalisers = coequalisers where
+    module coeq {X Y} {f g : Hom X Y} = Coequaliser (has-coequalisers f g)
+    open Coequalisers
+
+    coequalisers : Coequalisers C
+    coequalisers .Coequ f g = coeq.coapex {f = f} {g = g}
+    coequalisers .coequ _ _ = coeq.coequ
+    coequalisers .coequal = coeq.coequal
+    coequalisers .coequalise _ = coeq.universal
+    coequalisers .coequalise∘coequ = coeq.factors
+    coequalisers .coequalise-unique = coeq.unique
+
+  has-coequalisers→coequalisers
+    : ∀ {Coequ : ∀ {X Y} → (f g : Hom X Y) → Ob}
+    → {coequ : ∀ {X Y} → (f g : Hom X Y) → Hom Y (Coequ f g)}
+    → (∀ {X Y} → (f g : Hom X Y) → is-coequaliser C f g (coequ f g))
+    → Coequalisers C
+  has-coequalisers→coequalisers {Coequ = Coequ} {coequ} is-coequalisers = coequalisers where
+    module coeq {X Y} {f g : Hom X Y} = is-coequaliser (is-coequalisers f g)
+
+    coequalisers : Coequalisers C
+    coequalisers .Coequalisers.Coequ = Coequ
+    coequalisers .Coequalisers.coequ = coequ
+    coequalisers .Coequalisers.coequal = coeq.coequal
+    coequalisers .Coequalisers.coequalise _ = coeq.universal
+    coequalisers .Coequalisers.coequalise∘coequ = coeq.factors
+    coequalisers .Coequalisers.coequalise-unique = coeq.unique
 ```
 -->
