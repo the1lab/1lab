@@ -53,7 +53,7 @@ images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
   the-img : ↓Obj (!Const (cut f)) Forget-full-subcat
   the-img .x = tt
-  the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
+  the-img .y .fst = cut (Ker.kernel (Coker.coequ f))
   the-img .y .snd {c} = kernels-are-subobjects C has-zero _ (Ker.has-is-kernel _)
 ```
 
@@ -80,7 +80,7 @@ A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B
 $$.
 
 ```agda
-  the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _
+  the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coequ _
   the-img .map ./-Hom.commutes = pulll (Ker.factors _) ∙ Coker.factors _
 ```
 
