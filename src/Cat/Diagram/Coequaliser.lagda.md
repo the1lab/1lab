@@ -46,11 +46,11 @@ and $g$.
       universal  : ∀ {F} {e' : Hom B F} (p : e' ∘ f ≡ e' ∘ g) → Hom E F
       factors    : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
                  → universal p ∘ coeq ≡ e'
-  
+
       unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
                  → colim ∘ coeq ≡ e'
                  → colim ≡ universal p
-  
+
     unique₂
       : ∀ {F} {e' : Hom B F}  {o1 o2 : Hom E F}
       → (e' ∘ f ≡ e' ∘ g)
@@ -58,7 +58,7 @@ and $g$.
       → o2 ∘ coeq ≡ e'
       → o1 ≡ o2
     unique₂ p q r = unique {p = p} q ∙ sym (unique r)
-  
+
     id-coequalise : id ≡ universal coequal
     id-coequalise = unique (idl _)
 ```
@@ -70,9 +70,9 @@ its codomain:
   record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
     field
       {coapex}  : Ob
-      coeq      : Hom B coapex
-      has-is-coeq : is-coequaliser f g coeq
-  
+      coequ      : Hom B coapex
+      has-is-coeq : is-coequaliser f g coequ
+
     open is-coequaliser has-is-coeq public
 ```
 
@@ -101,7 +101,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     universal (extendr coequal) ≡˘⟨ unique refl ⟩
     i                            ∎
     where open is-coequaliser equalises
-  
+
   coequaliser-unique
     : ∀ {E E'} {c1 : Hom A E} {c2 : Hom A E'}
     → is-coequaliser C f g c1
@@ -118,22 +118,49 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 # Categories with all coequalisers
 
-We also define a helper module for working with categories that have
+We also define a helper record for working with categories that have
 coequalisers of all parallel pairs of morphisms.
 
 ```agda
-has-coequalisers : ∀ {o ℓ} → Precategory o ℓ → Type _
-has-coequalisers C = ∀ {a b} (f g : Hom a b) → Coequaliser C f g
-  where open Precategory C
-
-module Coequalisers
-  {o ℓ}
-  (C : Precategory o ℓ)
-  (all-coequalisers : has-coequalisers C)
-  where
+record Coequalisers {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
+  no-eta-equality
   open Cat.Reasoning C
-  module coequaliser {a b} (f g : Hom a b) = Coequaliser (all-coequalisers f g)
-
-  Coequ : ∀ {a b} (f g : Hom a b) → Ob
-  Coequ = coequaliser.coapex
+  field
+    Coequ : ∀ {X Y} → Hom X Y → Hom X Y → Ob
+    coequ : ∀ {X Y} → (f g : Hom X Y) → Hom Y (Coequ f g)
+    coequal : ∀ {X Y} {f g : Hom X Y} → coequ f g ∘ f ≡ coequ f g ∘ g
+    coequalise
+      : ∀ {E X Y} {f g : Hom X Y}
+      → (e' : Hom Y E)
+      → e' ∘ f ≡ e' ∘ g
+      → Hom (Coequ f g) E
+    coequalise∘coequ
+      : ∀ {E X Y} {f g : Hom X Y}
+      → {e : Hom Y E} {p : e ∘ f ≡ e ∘ g}
+      → coequalise e p ∘ coequ f g ≡ e
+    coequalise-unique
+      : ∀ {E X Y} {f g : Hom X Y}
+      → {e : Hom Y E} {p : e ∘ f ≡ e ∘ g}
+      → {other : Hom (Coequ f g) E}
+      → other ∘ coequ f g ≡ e
+      → other ≡ coequalise e p
 ```
+
+
+<!--
+```agda
+  coequaliser : ∀ {X Y} (f g : Hom X Y) → Coequaliser C f g
+  coequaliser f g .Coequaliser.coapex = Coequ f g
+  coequaliser f g .Coequaliser.coequ = coequ f g
+  coequaliser f g .Coequaliser.has-is-coeq .is-coequaliser.coequal = coequal
+  coequaliser f g .Coequaliser.has-is-coeq .is-coequaliser.universal = coequalise _
+  coequaliser f g .Coequaliser.has-is-coeq .is-coequaliser.factors = coequalise∘coequ
+  coequaliser f g .Coequaliser.has-is-coeq .is-coequaliser.unique = coequalise-unique
+
+  private module coequaliser {X Y} {f g : Hom X Y} = Coequaliser (coequaliser f g)
+  open coequaliser
+    using (has-is-coeq; id-coequalise)
+    renaming (unique₂ to coequalise-unique₂)
+    public
+```
+-->
