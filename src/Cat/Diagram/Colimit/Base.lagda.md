@@ -671,7 +671,6 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     module C = Cat.Reasoning C
     open Indexed-coproduct
     open make-is-colimit
-    open Coequaliser
 ```
 -->
 
@@ -680,7 +679,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
     → has-coproducts-indexed-by C ⌞ J ⌟
     → has-coproducts-indexed-by C (Arrows J)
-    → has-coequalisers C
+    → Coequalisers C
     → (F : Functor J C) → Colimit F
   colimit-as-coequaliser-of-coproduct {oj} {ℓj} {J} has-Ob-cop has-Arrows-cop has-coeq F =
     to-colimit (to-is-colimit colim) where
@@ -690,6 +689,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
     module J = Cat.Reasoning J
     open Functor F
+    open Coequalisers has-coeq
 ```
 -->
 
@@ -731,10 +731,7 @@ and the second morphism to be the injection into the codomain component precompo
     s = Dom .match λ (a , b , f) → Obs .ι b C.∘ F₁ f
     t = Dom .match λ (a , b , f) → Obs .ι a
 
-    coequ : Coequaliser C s t
-    coequ = has-coeq _ _
-
-    colim : make-is-colimit F (coequ .coapex)
+    colim : make-is-colimit F (Coequ s t)
 ```
 
 <details>
@@ -744,13 +741,13 @@ as the data for a colimit.
 </summary>
 
 ```agda
-    colim .ψ c = coequ .coeq C.∘ Obs .ι c
+    colim .ψ c = coequ s t C.∘ Obs .ι c
     colim .commutes {a} {b} f =
-      (coequ .coeq C.∘ Obs .ι b) C.∘ F₁ f          ≡˘⟨ C.extendr (Dom .commute) ⟩
-      ⌜ coequ .coeq C.∘ s ⌝ C.∘ Dom .ι (a , b , f) ≡⟨ ap! (coequ .coequal) ⟩
-      (coequ .coeq C.∘ t) C.∘ Dom .ι (a , b , f)   ≡⟨ C.pullr (Dom .commute) ⟩
-      coequ .coeq C.∘ Obs .ι a                     ∎
-    colim .universal {x} e comm = coequ .universal comm' where
+      (coequ s t C.∘ Obs .ι b) C.∘ F₁ f          ≡˘⟨ C.extendr (Dom .commute) ⟩
+      ⌜ coequ s t C.∘ s ⌝ C.∘ Dom .ι (a , b , f) ≡⟨ ap! coequal ⟩
+      (coequ s t C.∘ t) C.∘ Dom .ι (a , b , f)   ≡⟨ C.pullr (Dom .commute) ⟩
+      coequ s t C.∘ Obs .ι a                     ∎
+    colim .universal {x} e comm = coequalise _ comm' where
       e' : C.Hom (Obs .ΣF) x
       e' = Obs .match e
       comm' : e' C.∘ s ≡ e' C.∘ t
@@ -762,10 +759,10 @@ as the data for a colimit.
         e' C.∘ Obs .ι a              ≡˘⟨ C.pullr (Dom .commute) ⟩
         (e' C.∘ t) C.∘ Dom .ι i      ∎
     colim .factors {j} e comm =
-      colim .universal e comm C.∘ (coequ .coeq C.∘ Obs .ι j) ≡⟨ C.pulll (coequ .factors) ⟩
+      colim .universal e comm C.∘ (coequ s t C.∘ Obs .ι j) ≡⟨ C.pulll coequalise∘coequ ⟩
       Obs .match e C.∘ Obs .ι j                              ≡⟨ Obs .commute ⟩
       e j                                                    ∎
-    colim .unique e comm u' fac = coequ .unique $ Obs .unique _
+    colim .unique e comm u' fac = coequalise-unique $ Obs .unique _
       λ i → sym (C.assoc _ _ _) ∙ fac i
 ```
 </details>
@@ -777,7 +774,7 @@ all colimits.
   coproducts+coequalisers→cocomplete
     : ∀ {oj ℓj}
     → has-indexed-coproducts C (oj ⊔ ℓj)
-    → has-coequalisers C
+    → Coequalisers C
     → is-cocomplete oj ℓj C
   coproducts+coequalisers→cocomplete {oj} {ℓj} has-cop has-coeq =
     colimit-as-coequaliser-of-coproduct

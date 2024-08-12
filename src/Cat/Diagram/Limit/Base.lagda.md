@@ -864,7 +864,7 @@ and the second morphism to be the projection of the domain postcomposed with $f$
     s = Cod .tuple λ (a , b , f) → F₁ f C.∘ Obs .π a
     t = Cod .tuple λ (a , b , f) → Obs .π b
 
-    lim : make-is-limit F (Eq s t)
+    lim : make-is-limit F (Equ s t)
 ```
 
 <details>

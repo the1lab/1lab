@@ -309,6 +309,9 @@ We also define a handful of common morphisms.
 
 <!--
 ```agda
+  δ-is-monic : ∀ {A} → is-monic (δ {A})
+  δ-is-monic f g p = introl π₁∘⟨⟩ ∙ extendr p ∙ eliml π₁∘⟨⟩
+
   δ-natural : is-natural-transformation Id (×-functor F∘ Cat⟨ Id , Id ⟩) λ _ → δ
   δ-natural x y f = ⟨⟩-unique₂
     (cancell π₁∘⟨⟩) (cancell π₂∘⟨⟩)

@@ -121,7 +121,7 @@ using $\Sigma$:
 
 ```agda
   Sets-equalisers : Equalisers (Sets ℓ)
-  Sets-equalisers .Eq {X} {Y} f g = el! (Σ[ x ∈ X ] (f x ≡ g x))
+  Sets-equalisers .Equ {X} {Y} f g = el! (Σ[ x ∈ X ] (f x ≡ g x))
   Sets-equalisers .equ f g = fst
   Sets-equalisers .equal = funext snd
   Sets-equalisers .equalise e p x = e x , p $ₚ x

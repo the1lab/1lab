@@ -28,7 +28,7 @@ module Cat.Bi.Instances.Relations
 ```agda
 open Pullback
 open is-regular reg
-open Binary-products C lex.products
+open Binary-products lex.products
 open Factorisation
 open Cr C
 open Sub C
@@ -150,7 +150,7 @@ corresponding to $0 \le 0 \ge 0$ and $0 \le 1 \ge 0$.
   module ψ = Relation ψ
 
   inter : Pullback C ψ.tgt φ.src
-  inter = lex.pullbacks _ _
+  inter = lex.pullback _ _
 ```
 
 Can we fix it? Yes! Since $\cC$ is a regular category, our morphism
@@ -214,7 +214,7 @@ into a subobject.]
     ζ₂ = r[st].inter .p₂
 
   X : Pullback C (rs.inter .p₁) (st.inter .p₂)
-  X = lex.pullbacks (rs.inter .p₁) (st.inter .p₂)
+  X = lex.pullback (rs.inter .p₁) (st.inter .p₂)
   private module X = Pullback X renaming (p₂ to x₁ ; p₁ to x₂)
   open X using (x₂ ; x₁)
 ```
@@ -481,7 +481,7 @@ but keep in mind that they are not commented.
       ( pullr (pulll (sym (β .sq) ∙ idl _))
       ∙ sym (pullr (pulll (sym (α .sq) ∙ idl _))
       ∙ (assoc _ _ _ ·· sym (∘-rel.inter r s .square) ·· sym (assoc _ _ _))))}
-    (Product.unique₂ (lex.products _ _)
+    (⟨⟩-unique₂
       (π₁∘⟨⟩ ∙ pullr refl)
       (π₂∘⟨⟩ ∙ pullr refl)
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))

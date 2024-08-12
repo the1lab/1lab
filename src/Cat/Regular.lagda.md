@@ -189,14 +189,14 @@ of its kernel pair.
   module _ (r : is-regular) {A B} (f : C.Hom A B) (is-s : is-strong-epi 𝒞 f) where
     private
       module r = is-regular r
-      module kp = Pullback (r.lex.pullbacks f f)
+      module kp = Pullback (r.lex.pullback f f)
         renaming (apex to R ; p₁ to a ; p₂ to b)
 ```
 
 <!--
 ```agda
       open kp using (R ; a ; b ; square)
-      open Binary-products 𝒞 r.lex.products
+      open Binary-products r.lex.products
       open C
 ```
 -->
@@ -265,7 +265,7 @@ obtaining
       g-monic : C.is-monic g
       g-monic {e} k l w' = □-out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
-        module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
+        module pb = Pullback (r.lex.pullback ⟨ k , l ⟩ d×d)
           renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
         open pb using (p ; P ; mn ; sq'-)
         m = π₁ C.∘ mn

@@ -169,7 +169,7 @@ in sets, and re-use all of its infrastructure to make an equaliser in
 
 ```agda
 Groups-equalisers : Equalisers (Groups ℓ)
-Groups-equalisers .Eq {G} {H} f g = to-group equ-group where
+Groups-equalisers .Equ {G} {H} f g = to-group equ-group where
   module G = Group-on (G .snd)
   module H = Group-on (H .snd)
   module f = is-group-hom (f .preserves)

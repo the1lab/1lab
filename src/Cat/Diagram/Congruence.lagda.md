@@ -142,19 +142,13 @@ pullbacks, we go ahead and assume the category is [[finitely complete]].
 
 <!--
 ```agda
+open Finitely-complete fc
 open Cat.Reasoning C
-open Pullback
-open Product
-private module fc = Finitely-complete fc
-
-private
-  _⊗_ : Ob → Ob → Ob
-  A ⊗ B = fc.products A B .apex
 ```
 -->
 
 ```agda
-record is-congruence {A R} (m : Hom R (A ⊗ A)) : Type (o ⊔ ℓ) where
+record is-congruence {A R} (m : Hom R (A ⊗₀ A)) : Type (o ⊔ ℓ) where
   no-eta-equality
 ```
 
@@ -162,13 +156,12 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
 
 <!--
 ```agda
-  private module A×A = Product (fc.products A A)
   rel₁ : Hom R A
-  rel₁ = A×A.π₁ ∘ m
+  rel₁ = π₁ {A} {A} ∘ m
   rel₂ : Hom R A
-  rel₂ = A×A.π₂ ∘ m
-  private module R×R = Pullback (fc.pullbacks rel₁ rel₂)
-  private module A×A×A = Pullback (fc.pullbacks rel₁ rel₂)
+  rel₂ = π₂ {A} {A} ∘ m
+  private module R×R = Pullback (pullback rel₁ rel₂)
+  private module A×A×A = Pullback (pullback rel₁ rel₂)
 ```
 -->
 
@@ -189,8 +182,8 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
     -- Transitivity
     has-trans : Hom R×R.apex R
 
-  source-target : Hom R×R.apex A×A.apex
-  source-target = A×A.⟨ rel₁ ∘ R×R.p₂ , rel₂ ∘ R×R.p₁ ⟩
+  source-target : Hom R×R.apex (A ⊗₀ A)
+  source-target = ⟨ rel₁ ∘ R×R.p₂ , rel₂ ∘ R×R.p₁ ⟩
 
   field
     trans-factors : source-target ≡ m ∘ has-trans
@@ -201,21 +194,21 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
   trans-p₁ : rel₁ ∘ has-trans ≡ rel₁ ∘ A×A×A.p₂
   trans-p₁ =
     pullr (sym trans-factors)
-    ∙ A×A.π₁∘⟨⟩
+    ∙ π₁∘⟨⟩
 
   trans-p₂ : rel₂ ∘ has-trans ≡ rel₂ ∘ A×A×A.p₁
   trans-p₂ =
     pullr (sym trans-factors)
-    ∙ A×A.π₂∘⟨⟩
+    ∙ π₂∘⟨⟩
 
   unpair-trans
     : ∀ {X} {p₁' p₂' : Hom X R}
     → (sq : rel₁ ∘ p₁' ≡ rel₂ ∘ p₂')
-    → m ∘ has-trans ∘ R×R.universal sq ≡ A×A.⟨ rel₁ ∘ p₂' , rel₂ ∘ p₁' ⟩
+    → m ∘ has-trans ∘ R×R.universal sq ≡ ⟨ rel₁ ∘ p₂' , rel₂ ∘ p₁' ⟩
   unpair-trans sq =
     pulll (sym trans-factors)
-    ·· A×A.⟨⟩∘ _
-    ·· ap₂ A×A.⟨_,_⟩ (pullr R×R.p₂∘universal) (pullr R×R.p₁∘universal)
+    ·· ⟨⟩∘ _
+    ·· ap₂ ⟨_,_⟩ (pullr R×R.p₂∘universal) (pullr R×R.p₁∘universal)
 ```
 -->
 
@@ -224,7 +217,7 @@ record Congruence-on A : Type (o ⊔ ℓ) where
   no-eta-equality
   field
     {domain}    : Ob
-    inclusion   : Hom domain (A ⊗ A)
+    inclusion   : Hom domain (A ⊗₀ A)
     has-is-cong : is-congruence inclusion
   open is-congruence has-is-cong public
 ```
@@ -234,23 +227,8 @@ record Congruence-on A : Type (o ⊔ ℓ) where
 The first example of a congruence we will see is the "diagonal" morphism
 $\Delta : A \to (A \times A)$, corresponding to the "trivial relation".
 
-```agda
-diagonal : ∀ {A} → Hom A (A ⊗ A)
-diagonal {A} = fc.products A A .⟨_,_⟩ id id
-```
-
 That the diagonal morphism is monic follows from the following
 calculation, where we use that $\id = \pi_1 \circ \Delta$.
-
-```agda
-diagonal-is-monic : ∀ {A} → is-monic (diagonal {A})
-diagonal-is-monic {A} g h p =
-  g                       ≡⟨ introl A×A.π₁∘⟨⟩ ⟩
-  (A×A.π₁ ∘ diagonal) ∘ g ≡⟨ extendr p ⟩
-  (A×A.π₁ ∘ diagonal) ∘ h ≡⟨ eliml A×A.π₁∘⟨⟩ ⟩
-  h                       ∎
-  where module A×A = Product (fc.products A A)
-```
 
 We now calculate that it is a congruence, using the properties of
 products and pullbacks. The reflexivity map is given by the identity,
@@ -259,25 +237,24 @@ pick the first projection from the pullback of "composable pairs"; The
 second projection would've worked just as well.
 
 ```agda
-diagonal-congruence : ∀ {A} → is-congruence diagonal
+diagonal-congruence : ∀ {A} → is-congruence δ
 diagonal-congruence {A} = cong where
-  module A×A = Product (fc.products A A)
-  module Pb = Pullback (fc.pullbacks (A×A.π₁ ∘ diagonal) (A×A.π₂ ∘ diagonal))
+  module Pb = Pullback (pullback (π₁ ∘ δ {A}) (π₂ ∘ δ {A}))
   open is-congruence
 
   cong : is-congruence _
-  cong .has-is-monic = diagonal-is-monic
+  cong .has-is-monic = δ-is-monic
   cong .has-refl = id
-  cong .refl-p₁ = eliml A×A.π₁∘⟨⟩
-  cong .refl-p₂ = eliml A×A.π₂∘⟨⟩
+  cong .refl-p₁ = eliml π₁∘⟨⟩
+  cong .refl-p₂ = eliml π₂∘⟨⟩
   cong .has-sym = id
-  cong .sym-p₁ = eliml A×A.π₁∘⟨⟩ ∙ sym A×A.π₂∘⟨⟩
-  cong .sym-p₂ = eliml A×A.π₂∘⟨⟩ ∙ sym A×A.π₁∘⟨⟩
+  cong .sym-p₁ = eliml π₁∘⟨⟩ ∙ sym π₂∘⟨⟩
+  cong .sym-p₂ = eliml π₂∘⟨⟩ ∙ sym π₁∘⟨⟩
   cong .has-trans = Pb.p₁
-  cong .trans-factors = A×A.unique₂
-    (A×A.π₁∘⟨⟩ ∙ eliml A×A.π₁∘⟨⟩) (A×A.π₂∘⟨⟩ ∙ eliml A×A.π₂∘⟨⟩)
-    (assoc _ _ _ ∙ Pb.square ∙ eliml A×A.π₂∘⟨⟩)
-    (cancell A×A.π₂∘⟨⟩)
+  cong .trans-factors = ⟨⟩-unique₂
+    (π₁∘⟨⟩ ∙ eliml π₁∘⟨⟩) (π₂∘⟨⟩ ∙ eliml π₂∘⟨⟩)
+    (assoc _ _ _ ∙ Pb.square ∙ eliml π₂∘⟨⟩)
+    (cancell π₂∘⟨⟩)
 ```
 
 # Effective congruences
@@ -291,21 +268,20 @@ consisting of those "values which $f$ maps to the same thing".
 ```agda
 module _ {a b} (f : Hom a b) where
   private
-    module Kp = Pullback (fc.pullbacks f f)
-    module a×a = Product (fc.products a a)
+    module Kp = Pullback (pullback f f)
 
-  kernel-pair : Hom Kp.apex a×a.apex
-  kernel-pair = a×a.⟨ Kp.p₁ , Kp.p₂ ⟩
+  kernel-pair : Hom Kp.apex (a ⊗₀ a)
+  kernel-pair = ⟨ Kp.p₁ , Kp.p₂ ⟩
 
   private
     module rel = Pullback
-      (fc.pullbacks (a×a.π₁ ∘ kernel-pair) (a×a.π₂ ∘ kernel-pair))
+      (pullback (π₁ ∘ kernel-pair) (π₂ ∘ kernel-pair))
 
   kernel-pair-is-monic : is-monic kernel-pair
   kernel-pair-is-monic g h p = Kp.unique₂ {p = extendl Kp.square}
     refl refl
-    (sym (pulll a×a.π₁∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₁∘⟨⟩)
-    (sym (pulll a×a.π₂∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₂∘⟨⟩)
+    (sym (pulll π₁∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll π₁∘⟨⟩)
+    (sym (pulll π₂∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll π₂∘⟨⟩)
 ```
 
 We build the congruence in parts.
@@ -324,8 +300,8 @@ diagrammatically, that $f(x) = f(x)$.
 
 ```agda
     cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl
-    cg .refl-p₁ = ap (_∘ Kp.universal refl) a×a.π₁∘⟨⟩ ∙ Kp.p₁∘universal
-    cg .refl-p₂ = ap (_∘ Kp.universal refl) a×a.π₂∘⟨⟩ ∙ Kp.p₂∘universal
+    cg .refl-p₁ = ap (_∘ Kp.universal refl) π₁∘⟨⟩ ∙ Kp.p₁∘universal
+    cg .refl-p₂ = ap (_∘ Kp.universal refl) π₂∘⟨⟩ ∙ Kp.p₂∘universal
 ```
 
 Symmetry is witnessed by the map $(A \times_B A) \to (A \times_B A)$
@@ -333,10 +309,10 @@ which swaps the components. This one's pretty simple.
 
 ```agda
     cg .has-sym = Kp.universal {p₁' = Kp.p₂} {p₂' = Kp.p₁} (sym Kp.square)
-    cg .sym-p₁ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₁∘⟨⟩
-               ∙ sym (a×a.π₂∘⟨⟩ ∙ sym Kp.p₁∘universal)
-    cg .sym-p₂ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₂∘⟨⟩
-               ∙ sym (a×a.π₁∘⟨⟩ ∙ sym Kp.p₂∘universal)
+    cg .sym-p₁ = ap (_∘ Kp.universal (sym Kp.square)) π₁∘⟨⟩
+               ∙ sym (π₂∘⟨⟩ ∙ sym Kp.p₁∘universal)
+    cg .sym-p₂ = ap (_∘ Kp.universal (sym Kp.square)) π₂∘⟨⟩
+               ∙ sym (π₁∘⟨⟩ ∙ sym Kp.p₂∘universal)
 ```
 
 <details>
@@ -350,19 +326,19 @@ Understanding the transitivity map is left as an exercise to the reader.
       where abstract
         path : f ∘ Kp.p₁ ∘ rel.p₂ ≡ f ∘ Kp.p₂ ∘ rel.p₁
         path =
-          f ∘ Kp.p₁ ∘ rel.p₂                  ≡⟨ extendl (Kp.square ∙ ap (f ∘_) (sym a×a.π₂∘⟨⟩)) ⟩
-          f ∘ (a×a.π₂ ∘ kernel-pair) ∘ rel.p₂ ≡⟨ ap (f ∘_) (sym rel.square) ⟩
-          f ∘ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ extendl (ap (f ∘_) a×a.π₁∘⟨⟩ ∙ Kp.square) ⟩
+          f ∘ Kp.p₁ ∘ rel.p₂                  ≡⟨ extendl (Kp.square ∙ ap (f ∘_) (sym π₂∘⟨⟩)) ⟩
+          f ∘ (π₂ ∘ kernel-pair) ∘ rel.p₂ ≡⟨ ap (f ∘_) (sym rel.square) ⟩
+          f ∘ (π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ extendl (ap (f ∘_) π₁∘⟨⟩ ∙ Kp.square) ⟩
           f ∘ Kp.p₂ ∘ rel.p₁                  ∎
 
     cg .trans-factors =
       sym (
         kernel-pair ∘ Kp.universal _
-      ≡⟨ a×a.⟨⟩∘ _ ⟩
-        a×a.⟨ Kp.p₁ ∘ Kp.universal _ , Kp.p₂ ∘ Kp.universal _ ⟩
-      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym a×a.π₁∘⟨⟩) refl)
-                       (Kp.p₂∘universal ∙ ap₂ _∘_ (sym a×a.π₂∘⟨⟩) refl) ⟩
-        a×a.⟨ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₂ , (a×a.π₂ ∘ kernel-pair) ∘ rel.p₁ ⟩
+      ≡⟨ ⟨⟩∘ _ ⟩
+        ⟨ Kp.p₁ ∘ Kp.universal _ , Kp.p₂ ∘ Kp.universal _ ⟩
+      ≡⟨ ap₂ ⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym π₁∘⟨⟩) refl)
+                       (Kp.p₂∘universal ∙ ap₂ _∘_ (sym π₂∘⟨⟩) refl) ⟩
+        ⟨ (π₁ ∘ kernel-pair) ∘ rel.p₂ , (π₂ ∘ kernel-pair) ∘ rel.p₁ ⟩
       ∎)
 
   Kernel-pair : Congruence-on a
@@ -446,8 +422,7 @@ kernel-pair-is-effective
   → is-effective-congruence (Kernel-pair f)
 kernel-pair-is-effective {a = a} {b} {f} quot = epi where
   open is-effective-congruence hiding (A/R)
-  module a×a = Product (fc.products a a)
-  module pb = Pullback (fc.pullbacks f f)
+  module pb = Pullback (pullback f f)
 
   open is-coequaliser
   epi : is-effective-congruence _
@@ -456,8 +431,8 @@ kernel-pair-is-effective {a = a} {b} {f} quot = epi where
   epi .has-quotient = quot
   epi .has-kernel-pair =
     transport
-      (λ i → is-pullback C (a×a.π₁∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
-                           (a×a.π₂∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
+      (λ i → is-pullback C (π₁∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
+                           (π₂∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
       pb.has-is-pb
 
 kp-effective-congruence→effective-epi

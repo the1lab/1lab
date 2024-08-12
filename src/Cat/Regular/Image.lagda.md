@@ -24,7 +24,7 @@ module Cat.Regular.Image
 
 <!--
 ```agda
-open Binary-products C (reg .is-regular.lex.products)
+open Binary-products (reg .is-regular.lex.products)
 open Cat.Displayed.Instances.Subobjects C
 open is-regular reg
 open Factorisation
