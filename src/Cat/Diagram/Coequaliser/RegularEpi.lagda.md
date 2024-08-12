@@ -210,7 +210,7 @@ follows by yet more brute-force calculation.
       (∐F.universal _ _ C.∘ ∐Ob.match F.₀ ∐F.ψ) C.∘ ∐Ob.ι F.₀ j ≡⟨ C.pullr (∐Ob.commute _) ⟩
       ∐F.universal _ _ C.∘ ∐F.ψ j                               ≡⟨ ∐F.factors _ _ ⟩
       e' C.∘ ∐Ob.ι F.₀ j                                        ∎
-  indexed-coproduct→regular-epi .has-is-coeq .unique {e' = e'} {colim = h} p =
+  indexed-coproduct→regular-epi .has-is-coeq .unique {e' = e'} {other = h} p =
     ∐F.unique _ _ _ λ j →
       h C.∘ ∐F.ψ j                               ≡˘⟨ ap₂ C._∘_ refl (∐Ob.commute _) ⟩
       h C.∘ (∐Ob.match F.₀ ∐F.ψ C.∘ ∐Ob.ι F.₀ j) ≡⟨ C.pulll p ⟩

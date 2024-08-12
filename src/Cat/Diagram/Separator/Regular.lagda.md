@@ -135,7 +135,7 @@ This is straightforward enough to prove with sufficient elbow grease.
       (dense.universal _ ∘ ⊗!.match _ _ _) ∘ ⊗!.ι _ _ e ≡⟨ pullr (⊗!.commute _ _) ⟩
       dense.universal _ ∘ e                             ≡⟨ dense.commute ⟩
       e' ∘ ⊗!.ι _ _ e                                   ∎
-  regular .has-is-coeq .unique {e' = e'} {colim = h} p =
+  regular .has-is-coeq .unique {e' = e'} {other = h} p =
     dense.unique _ λ e →
       h ∘ e                           ≡˘⟨ ap (h ∘_) (⊗!.commute (Hom s x) s) ⟩
       h ∘ ⊗!.match _ _ _ ∘ ⊗!.ι _ _ e ≡⟨ pulll p ⟩

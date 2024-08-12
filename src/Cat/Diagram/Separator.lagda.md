@@ -264,7 +264,7 @@ $S$ is a separating family.
 ```agda
 equalisers+conservative→separator
   : ∀ {s}
-  → has-equalisers C
+  → Equalisers C
   → is-conservative (Hom-from C s)
   → is-separator s
 ```
@@ -276,9 +276,9 @@ $e$ being an equaliser.
 
 ```agda
 equalisers+conservative→separator equalisers f∘-conservative {f = f} {g = g} p =
-  invertible→epic equ-invertible f g Eq.equal
+  invertible→epic equ-invertible f g equal
   where
-    module Eq = Equaliser (equalisers f g)
+    open Equalisers equalisers
 ```
 
 Moreover, $\cC(S,-)$ is conservative, so it suffices to prove that
@@ -286,14 +286,14 @@ precomposition of $e$ with an $S$-generalized element is an equivalence.
 This follows immediately from the universal property of equalisers!
 
 ```agda
-    equ-invertible : is-invertible Eq.equ
+    equ-invertible : is-invertible (equ f g)
     equ-invertible =
       f∘-conservative $
       is-equiv→is-invertible $
       is-iso→is-equiv $ iso
-        (λ e → Eq.universal (p e))
-        (λ e → Eq.factors)
-        (λ h → sym (Eq.unique refl))
+        (λ e → equalise e (p e))
+        (λ e → equ∘equalise)
+        (λ h → sym (equalise-unique refl))
 ```
 
 A similar line of argument lets us generalize this result to separating
@@ -302,7 +302,7 @@ families.
 ```agda
 equalisers+jointly-conservative→separating-family
   : ∀ {κ} {Idx : Type κ} {sᵢ : Idx → Ob}
-  → has-equalisers C
+  → Equalisers C
   → is-jointly-conservative (λ i → Hom-from C (sᵢ i))
   → is-separating-family sᵢ
 ```
@@ -313,18 +313,18 @@ equalisers+jointly-conservative→separating-family
 ```agda
 equalisers+jointly-conservative→separating-family
   equalisers fᵢ∘-conservative {f = f} {g = g} p =
-  invertible→epic equ-invertible f g Eq.equal
+  invertible→epic equ-invertible f g equal
   where
-    module Eq = Equaliser (equalisers f g)
+    open Equalisers equalisers
 
-    equ-invertible : is-invertible Eq.equ
+    equ-invertible : is-invertible (equ f g)
     equ-invertible =
       fᵢ∘-conservative λ i →
       is-equiv→is-invertible $
       is-iso→is-equiv $ iso
-        (λ eᵢ → Eq.universal (p eᵢ))
-        (λ eᵢ → Eq.factors)
-        (λ h → sym (Eq.unique refl))
+        (λ eᵢ → equalise eᵢ (p eᵢ))
+        (λ eᵢ → equ∘equalise)
+        (λ h → sym (equalise-unique refl))
 ```
 </details>
 
