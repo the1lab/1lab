@@ -286,16 +286,16 @@ to $\underline{\cB}$ regarded as a Cartesian fibration as the
 
 ```agda
 Codomain-fibration
-  : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
+  : Pullbacks B
   → Cartesian-fibration Slices
 Codomain-fibration pullbacks .has-lift f y' = lift-f where
-  module pb = Pullback (pullbacks f (y' .map))
+  open Pullbacks pullbacks
 
   lift-f : Cartesian-lift Slices f y'
-  lift-f .x' = cut pb.p₁
-  lift-f .lifting .to = pb.p₂
-  lift-f .lifting .commute = pb.square
-  lift-f .cartesian = pullback→cartesian pb.has-is-pb
+  lift-f .x' = cut (p₁ f (y' .map))
+  lift-f .lifting .to = p₂ f (y' .map)
+  lift-f .lifting .commute = square
+  lift-f .cartesian = pullback→cartesian has-is-pb
 ```
 
 [pullbacks]: Cat.Diagram.Pullback.html

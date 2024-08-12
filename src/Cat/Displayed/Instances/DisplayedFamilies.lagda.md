@@ -172,12 +172,12 @@ proof is **why** we defined it using abstract nonsense!
 ```agda
 module _
   (fib : Cartesian-fibration E)
-  (pb : ∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
+  (pullbacks : Pullbacks B)
   where
 
   Disp-family-fibration : Cartesian-fibration Disp-family
   Disp-family-fibration =
-    fibration-∘ (Codomain-fibration B pb) (Change-of-base-fibration Dom E fib)
+    fibration-∘ (Codomain-fibration B pullbacks) (Change-of-base-fibration Dom E fib)
 ```
 
 ## Constant families

@@ -27,8 +27,7 @@ module Cat.Displayed.Doctrine.Logic
   where
 
 open Regular-hyperdoctrine P
-open Finitely-complete fc hiding (_⊗₀_)
-open Binary-products B products
+open Finitely-complete fc
 open Displayed ℙ
 open Cat B
 
@@ -374,7 +373,7 @@ $$
 <!--
 ```agda
     open is-pullback
-    rem₁ : is-pullback B (π₁ {b = ⟦ τ ⟧ᵗ}) ⟦ ρ ⟧ˢ ⟨ ⟦ ρ ⟧ˢ ∘ π₁ , π₂ ⟩ π₁
+    rem₁ : is-pullback B (π₁ {B = ⟦ τ ⟧ᵗ}) ⟦ ρ ⟧ˢ ⟨ ⟦ ρ ⟧ˢ ∘ π₁ , π₂ ⟩ π₁
     rem₁ .square = sym π₁∘⟨⟩
     rem₁ .universal {p₁' = p₁'} {p₂'} prf = ⟨ p₁' , π₂ ∘ p₂' ⟩
     rem₁ .p₁∘universal = π₁∘⟨⟩
@@ -661,9 +660,9 @@ to-semᵖ (sem p)  = p
 to-semᵖ (p `∧ q) = ap₂ _&_ (to-semᵖ p) (to-semᵖ q)
 to-semᵖ (`∃ p)   = ap (exists π₁) (to-semᵖ p)
 to-semᵖ (pred p) = ap₂ _[_] refl (to-semᵗ p)
-to-semᵖ (_=ᵖ_ {Γ = Γ} {τ = τ} p q) = ap₂ equ (to-semᵗ p) (to-semᵗ q) where
-  equ : ∀ (h h' : Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ) → ℙ.Ob[ ⟦ Γ ⟧ᶜ ]
-  equ h h' = exists ⟨ id , id ⟩ aye [ ⟨ h , h' ⟩ ]
+to-semᵖ (_=ᵖ_ {Γ = Γ} {τ = τ} p q) = ap₂ eq (to-semᵗ p) (to-semᵗ q) where
+  eq : ∀ (h h' : Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ) → ℙ.Ob[ ⟦ Γ ⟧ᶜ ]
+  eq h h' = exists ⟨ id , id ⟩ aye [ ⟨ h , h' ⟩ ]
 ```
 
 We can then provide combinators for turning $\phi \approx \psi$ into
