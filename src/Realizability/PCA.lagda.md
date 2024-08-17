@@ -514,6 +514,49 @@ The rest follows from our characterisation of constant functions.
 ```
 -->
 
+### Fixpoints
+
+```agda
+  opaque
+    “w” : A
+    “w” = term (⟨ r ⟩ ⟨ f ⟩ (f “⋆” (r “⋆” r “⋆” f)))
+
+    “fix” : A
+    “fix” = “w” ⋆ “w”
+
+    “u” : A
+    “u” = term (⟨ r ⟩ ⟨ f ⟩ ⟨ x ⟩ (f “⋆” (r “⋆” r “⋆” f) “⋆” x))
+
+    “loop” : A
+    “loop” = “u” ⋆ “u”
+```
+
+<!--
+```agda
+    w-def : ∣ “w” ↓ ∣
+    w-def = abs-def
+
+    u-def : ∣ “u” ↓ ∣
+    u-def = abs-def
+```
+-->
+
+```agda
+    fix-eval : ∀ f → “fix” ⋆ f ≡ f ⋆ (“fix” ⋆ f)
+    fix-eval f =
+      def-ext (∣ f ↓ ∣) ⋆-defr ⋆-defl λ f↓ →
+      “w” ⋆ “w” ⋆ f         ≡⟨ abs-evalₙ (value f f↓ ∷ value “w” w-def ∷ []) ⟩
+      (f ⋆ (“w” ⋆ “w” ⋆ f)) ∎
+
+    loop-eval : ∀ f x → “loop” ⋆ f ⋆ x ≡ f ⋆ (“loop” ⋆ f) ⋆ x
+    loop-eval f x =
+      def-ext (∣ f ↓ ∣ × ∣ x ↓ ∣)
+        (λ p↓ → ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
+        (λ p↓ → ⋆-defl (⋆-defl p↓) , ⋆-defr p↓)
+        (λ (f↓ , x↓) → abs-evalₙ (value x x↓ ∷ value f f↓ ∷ value “u” u-def ∷ []))
+```
+
+
 ### Natural numbers
 
 We encode natural numbers via **Curry numerals**, which encode
