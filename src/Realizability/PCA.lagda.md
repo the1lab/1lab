@@ -1,6 +1,6 @@
 ---
 description: |
-  Partial Combinatory Algebras
+  Partial Combinatory algebras.
 ---
 <!--
 ```agda
@@ -18,6 +18,20 @@ module Realizability.PCA where
 
 # Partial combinatory algebras
 
+:::{.definition #partial-combinatory-algebra alias="pca"}
+A **partial combinatory algebra** or **PCA** is a [[partial applicative structure]]
+with abstraction operation that lets us interpret the untyped lambda
+calculus. Explicitly, a PCA is a PAS $(A, \downarrow, \star)$ equipped
+with an operation $\mathrm{abs} : \mathrm{Term}(A)_{n+1} \to \mathrm{Term}(A)_{n}$
+such that:
+
+- For every term $e : \mathrm{Term}(A)_{n+1}$ with $n+1$ free variables
+  and every environment $\rho$, $\llbracket \mathrm{abs}(e) \rrbracket \rho$
+  is defined; and
+- For every term $e : \mathrm{Term}(A)_{n+1}$, environment $\rho$ and
+  value $a$, $\llbracket e \rrbracket \rho \start a = \llbracket e \rrbracket (a, \rho)$.
+:::
+
 <!--
 ```agda
 private variable
@@ -34,8 +48,7 @@ record PCA-on (A : Type ℓ) : Type ℓ where
     _↓ : A → Ω
     has-pas : is-pas _⋆_ _↓
 
-
-  infixl 6 _⋆_
+  infixl 8 _⋆_
 
   open PAS has-pas public
 
@@ -46,12 +59,26 @@ record PCA-on (A : Type ℓ) : Type ℓ where
       : {n : Nat} {e : Term (1 + n)} {a : A} {ρ : Vec Val n}
       → (a↓ : ∣ a ↓ ∣)
       → (eval (abs e) ρ ⋆ a) ≡ eval e (value a a↓ ∷ ρ)
+```
 
-  lam : (Term (1 + n) → Term (1 + n)) → Term n
-  lam k = abs (k (var 0))
+Working with de Bruijn indices is a bit annoying, so we expose an interface
+that lets us pretend that we are using higher-order abstract syntax.
+
+```agda
+  abs-syntax : (Term (1 + n) → Term (1 + n)) → Term n
+  abs-syntax k = abs (k (var 0))
+
+  syntax abs-syntax (λ x → e) = ⟨ x ⟩ e
+  infix 4 abs-syntax
+
 ```
 
 ## Programming with PCAs
+
+The raison d'etre of PCAs is that they form a simple algebraic model
+of computation, so let's write some programs! We begin by defining
+n-ary versions of abstraction and application, and prove an n-ary
+version of the 2nd PCA axiom.
 
 ```agda
 module PCA (pca : PCA-on A) where
@@ -77,19 +104,20 @@ module PCA (pca : PCA-on A) where
     eval e ((a ∷ as) ++ᵥ ρ) ∎
 ```
 
-<!--
-```agda
-  -- Weird behaviour; need to mark this as INCOHERENT here instead of alongside the definition?
-  {-# INCOHERENT Splice-Shift #-}
-```
--->
+With that out of the way, we can write our very first program: the
+identity function!
 
 ```agda
   opaque
     “id” : A
-    “id” = term (lam λ x → “ x ”)
+    “id” = term (⟨ x ⟩ “ x ”)
+```
 
+We can also characterize the computational behaviour of the identity
+function. The proof leverages Kleene extensionality: $\mathrm{abs}(0) \star a = a$
+under the assumption that $a \downarrow$!
 
+```agda
     id-eval : ∀ (a : A) → “id” ⋆ a ≡ a
     id-eval a = def-ext ∣ a ↓ ∣ ⋆-defr id abs-eval
 ```
@@ -99,18 +127,28 @@ module PCA (pca : PCA-on A) where
     id-def : ∣ “id” ↓ ∣
     id-def = abs-def
 
+    id-def₁ : ∀ {a} → ∣ a ↓ ∣ → ∣ (“id” ⋆ a) ↓ ∣
+    id-def₁ a↓ = subst (λ e → ∣ e ↓ ∣) (sym (id-eval _)) a↓
+
   instance
     Defined-id : Defined “id”
     Defined-id .defined = id-def
 ```
 -->
 
+We can also define function composition.
+
 ```agda
   opaque
     “comp” : A
-    “comp” = term (lam λ f → lam λ g → lam λ x → f “⋆” (g “⋆” x))
+    “comp” = term (⟨ f ⟩ ⟨ g ⟩ ⟨ x ⟩ f “⋆” (g “⋆” x))
+```
 
+Kleene extensionality lets us prove that function composition acts like
+function composition, though the proof is a bit more complicated than
+the identity function!
 
+```agda
     comp-eval : ∀ (f g a : A) → “comp” ⋆ f ⋆ g ⋆ a ≡ f ⋆ (g ⋆ a)
     comp-eval f g a =
       def-ext (∣ f ↓ ∣ × ∣ g ↓ ∣ × ∣ a ↓ ∣)
@@ -136,15 +174,21 @@ module PCA (pca : PCA-on A) where
 ```
 -->
 
+Next, we define constant functions.
 
 ```agda
   opaque
     “const” : A
-    “const” = term (lam λ x → lam λ y → “ x ”)
+    “const” = term (⟨ x ⟩ ⟨ y ⟩ “ x ”)
 
     “ignore” : A
-    “ignore” = term (lam λ x → lam λ y → “ y ”)
+    “ignore” = term (⟨ x ⟩ ⟨ y ⟩ “ y ”)
+```
 
+Once again, Kleene extensionality lets us characterise how constant
+functions compute.
+
+```agda
     const-eval : ∀ (a b : A) → ∣ b ↓ ∣ → “const” ⋆ a ⋆ b ≡ a
     const-eval a b b↓ =
       def-ext (∣ a ↓ ∣ × ∣ b ↓ ∣)
@@ -181,18 +225,60 @@ module PCA (pca : PCA-on A) where
 ```
 -->
 
+We also have analog of the `flip`{.Agda} function.
+
+```agda
+  opaque
+    “flip” : A
+    “flip” = term (⟨ f ⟩ ⟨ x ⟩ ⟨ y ⟩ f “⋆” y “⋆” x)
+```
+
+<!--
+```agda
+    flip-def : ∣ “flip” ↓ ∣
+    flip-def = abs-def
+
+    flip-def₁ : ∀ {f} → ∣ f ↓ ∣ → ∣ (“flip” ⋆ f) ↓ ∣
+    flip-def₁ f↓ = subst (λ e → ∣ e ↓ ∣) (sym (abs-eval f↓)) abs-def
+
+    flip-def₂ : ∀ {f x} → ∣ f ↓ ∣ → ∣ x ↓ ∣ → ∣ (“flip” ⋆ f ⋆ x) ↓ ∣
+    flip-def₂ f↓ x↓ = subst (λ e → ∣ e ↓ ∣) (sym (ap₂ _⋆_ (abs-eval f↓) refl ∙ (abs-eval x↓))) abs-def
+
+```
+-->
+
+<details>
+<summary>The characterisation of flip is more of the same, so we omit it.
+</summary>
+```agda
+    flip-eval : ∀ f x y → “flip” ⋆ f ⋆ x ⋆ y ≡ f ⋆ y ⋆ x
+    flip-eval f x y =
+      def-ext (∣ f ↓ ∣ × ∣ x ↓ ∣ × ∣ y ↓ ∣)
+        (λ p↓ → ⋆-defr (⋆-defl (⋆-defl p↓)) , ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
+        (λ p↓ → ⋆-defl (⋆-defl p↓) , ⋆-defr p↓ , ⋆-defr (⋆-defl p↓))
+        λ (f↓ , x↓ , y↓) →
+      abs-evalₙ (value y y↓ ∷ value x x↓ ∷ value f f↓ ∷ [])
+```
+</details>
+
 ### Pairing
+
+With those basics out of the way, we can build up some actual datastructures.
+We start with pairs, as it is basically impossible to make any progress
+without them. Like lambda calculi, all we have is functions and application,
+so we must Church-encode all data. Luckily, we can use Church-encoded
+pairs essentially verbaitim.
 
 ```agda
   opaque
     “pair” : A
-    “pair” = term (lam λ x → lam λ y → lam λ p → p “⋆” x “⋆” y)
+    “pair” = term (⟨ x ⟩ ⟨ y ⟩ ⟨ p ⟩ p “⋆” x “⋆” y)
 
     “fst” : A
-    “fst” = term (lam λ p → p “⋆” “const”)
+    “fst” = term (⟨ p ⟩ p “⋆” “const”)
 
     “snd” : A
-    “snd” = term (lam λ p → p “⋆” “ignore”)
+    “snd” = term (⟨ p ⟩ p “⋆” “ignore”)
 ```
 
 <!--
@@ -206,12 +292,32 @@ module PCA (pca : PCA-on A) where
     pair-def : ∣ “pair” ↓ ∣
     pair-def = abs-def
 
+
     pair-def₂ : ∀ {a b : A} → ∣ a ↓ ∣ → ∣ b ↓ ∣ → ∣ (“pair” ⋆ a ⋆ b) ↓ ∣
     pair-def₂ {a = a} {b = b} a↓ b↓ =
       subst (λ e → ∣ e ↓ ∣) (sym (ap₂ _⋆_ (abs-eval a↓) refl ∙ (abs-eval b↓))) abs-def
 
+    fst-eval : ∀ a → “fst” ⋆ a ≡ a ⋆ “const”
+    fst-eval a =
+      def-ext ∣ a ↓ ∣ ⋆-defr ⋆-defl abs-eval
+
+    snd-eval : ∀ a → “snd” ⋆ a ≡ a ⋆ “ignore”
+    snd-eval a =
+      def-ext ∣ a ↓ ∣ ⋆-defr ⋆-defl abs-eval
+
+    fst-def₁ : ∀ {a} → ∣ (a ⋆ “const”) ↓ ∣ → ∣ (“fst” ⋆ a) ↓ ∣
+    fst-def₁ {a} p↓ =
+      subst (λ e → ∣ e ↓ ∣) (sym (fst-eval a)) p↓
+
+    snd-def₁ : ∀ {a} → ∣ (a ⋆ “ignore”) ↓ ∣ → ∣ (“snd” ⋆ a) ↓ ∣
+    snd-def₁ {a} p↓ =
+      subst (λ e → ∣ e ↓ ∣) (sym (snd-eval a)) p↓
 ```
 -->
+
+Following the usual pattern, we invoke Kleene extensionality to prove
+the $\beta$-laws for pairs, though we need to do a bit more algebra
+this time.
 
 ```agda
     fst-pair-eval : ∀ (a b : A) → ∣ b ↓ ∣ → “fst” ⋆ (“pair” ⋆ a ⋆ b) ≡ a
@@ -254,31 +360,45 @@ module PCA (pca : PCA-on A) where
 ```
 -->
 
+We also take the time to define currying and uncurrying.
+
 ```agda
   opaque
     “curry” : A
-    “curry” = term (lam λ f → lam λ x → lam λ y → f “⋆” (“pair” “⋆” x “⋆” y))
+    “curry” = term (⟨ f ⟩ ⟨ x ⟩ ⟨ y ⟩ f “⋆” (“pair” “⋆” x “⋆” y))
 
     “uncurry” : A
-    “uncurry” = term (lam λ f → lam λ xy → f “⋆” (“fst” “⋆” xy) “⋆” (“snd” “⋆” xy))
+    “uncurry” = term (⟨ f ⟩ ⟨ xy ⟩ f “⋆” (“fst” “⋆” xy) “⋆” (“snd” “⋆” xy))
 
     curry-eval : ∀ (f a b : A) → “curry” ⋆ f ⋆ a ⋆ b ≡ f ⋆ (“pair” ⋆ a ⋆ b)
+    uncurry-eval : ∀ (f a b : A) → “uncurry” ⋆ f ⋆ a ≡ f ⋆ (“fst” ⋆ a) ⋆ (“snd” ⋆ a)
+```
+
+<details>
+<summary>The characterisations of currying and uncurrying are another
+application of Kleene extensionality.
+</summary>
+```agda
     curry-eval f a b =
       def-ext (∣ f ↓ ∣ × ∣ a ↓ ∣ × ∣ b ↓ ∣)
         (λ p↓ → ⋆-defr (⋆-defl (⋆-defl p↓)) , ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
         (λ p↓ → ⋆-defl p↓ , ⋆-defr (⋆-defl (⋆-defr p↓)) , ⋆-defr (⋆-defr p↓))
         (λ (f↓ , a↓ , b↓) → abs-evalₙ (value b b↓ ∷ value a a↓ ∷ value f f↓ ∷ []))
 
-    uncurry-eval : ∀ (f a b : A) → “uncurry” ⋆ f ⋆ a ≡ f ⋆ (“fst” ⋆ a) ⋆ (“snd” ⋆ a)
     uncurry-eval f a b =
       def-ext (∣ f ↓ ∣ × ∣ a ↓ ∣)
         (λ p↓ → ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
         (λ p↓ → ⋆-defl (⋆-defl p↓) , ⋆-defr (⋆-defr p↓))
         (λ (f↓ , a↓) → abs-evalₙ (value a a↓ ∷ value f f↓ ∷ []))
 ```
+</details>
 
 
 ### Booleans
+
+Booleans are also represented via Church-encoding. We have already defined
+both constant functions, so all we need to do is provide some more suggestive
+names.
 
 ```agda
   “true” : A
@@ -290,17 +410,30 @@ module PCA (pca : PCA-on A) where
 
 ### Coproducts
 
+Coproducts are encoded as pairs of a tag bit and data.
+
 ```agda
   opaque
     “inl” : A
-    “inl” = term (lam λ x → “pair” “⋆” “true” “⋆” x)
+    “inl” = term (⟨ x ⟩ “pair” “⋆” “true” “⋆” x)
 
     “inr” : A
-    “inr” = term (lam λ x → “pair” “⋆” “false” “⋆” x)
+    “inr” = term (⟨ x ⟩ “pair” “⋆” “false” “⋆” x)
+```
 
+The eliminator for coproducts is a bit subtle. We start by extracting
+the tag bit from the scrutinee. This tag is then applied to methods
+of the eliminator, taking advantage of the fact that booleans are represented
+as binary functions. We then apply this to the data component of the product,
+resulting in the somewhat opaque term $\langle l, r, x \rangle \mathrm{fst} x l r (\mathrm{snd} x)$
+
+```agda
     “elim” : A
-    “elim” = term (lam λ l → lam λ r → lam λ x → (“fst” “⋆” x) “⋆” l “⋆” r “⋆” (“snd” “⋆” x))
+    “elim” = term (⟨ l ⟩ ⟨ r ⟩ ⟨ x ⟩ (“fst” “⋆” x) “⋆” l “⋆” r “⋆” (“snd” “⋆” x))
+```
 
+<!--
+```agda
     inl-eval : (a : A) → “inl” ⋆ a ≡ “pair” ⋆ “true” ⋆ a
     inl-eval a = def-ext ∣ a ↓ ∣ ⋆-defr ⋆-defr abs-eval
 
@@ -322,8 +455,22 @@ module PCA (pca : PCA-on A) where
     elim-def₂ : {l r : A} → ∣ l ↓ ∣ → ∣ r ↓ ∣ → ∣ (“elim” ⋆ l ⋆ r) ↓ ∣
     elim-def₂ l↓ r↓ =
       subst (λ e → ∣ e ↓ ∣) (sym (abs-evalₙ (value _ r↓ ∷ value _ l↓ ∷ []))) abs-def
+```
+-->
 
+We shall now prove the $\beta$-laws for coproducts.
+
+```agda
     elim-inl-eval : ∀ (l r a : A) → ∣ r ↓ ∣ → “elim” ⋆ l ⋆ r ⋆ (“inl” ⋆ a) ≡ l ⋆ a
+    elim-inr-eval : ∀ (l r a : A) → ∣ l ↓ ∣ → “elim” ⋆ l ⋆ r ⋆ (“inr” ⋆ a) ≡ r ⋆ a
+```
+
+We shall focus our attention on the left $\beta$-law. We start by applying
+Kleene extensionality so that we can assume that all arguments are defined,
+and then invoke the $\beta$ laws of pairs to get out the tag and data.
+The rest follows from our characterisation of constant functions.
+
+```agda
     elim-inl-eval l r a r↓ =
       def-ext (∣ l ↓ ∣ × ∣ r ↓ ∣ × ∣ a ↓ ∣)
         (λ p↓ → ⋆-defr (⋆-defl (⋆-defl p↓)) , ⋆-defr (⋆-defl p↓) , ⋆-defr (⋆-defr p↓))
@@ -335,8 +482,12 @@ module PCA (pca : PCA-on A) where
           ⌜ “const” ⋆ l ⋆ r ⌝ ⋆ (“snd” ⋆ (“pair” ⋆ “true” ⋆ a))                       ≡⟨ ap! (const-eval l r r↓) ⟩
           l ⋆ ⌜ “snd” ⋆ (“pair” ⋆ “true” ⋆ a) ⌝                                       ≡⟨ ap! (snd-pair-eval “true” a const-def) ⟩
           l ⋆ a                                                                       ∎)
+```
 
-    elim-inr-eval : ∀ (l r a : A) → ∣ l ↓ ∣ → “elim” ⋆ l ⋆ r ⋆ (“inr” ⋆ a) ≡ r ⋆ a
+<details>
+<summary>The right $\beta$-law follows from a similar line of reasoning.
+</summary>
+```agda
     elim-inr-eval l r a l↓ =
       def-ext (∣ l ↓ ∣ × ∣ r ↓ ∣ × ∣ a ↓ ∣)
         (λ p↓ → ⋆-defr (⋆-defl (⋆-defl p↓)) , ⋆-defr (⋆-defl p↓) , ⋆-defr (⋆-defr p↓))
@@ -349,14 +500,94 @@ module PCA (pca : PCA-on A) where
           r ⋆ ⌜ “snd” ⋆ (“pair” ⋆ “false” ⋆ a) ⌝                                        ≡⟨ ap! (snd-pair-eval “false” a ignore-def) ⟩
           r ⋆ a                                                                         ∎)
 ```
+</details>
+
+<!--
+```agda
+  inlv : Val → Val
+  inlv a .elt = “inl” ⋆ a .elt
+  inlv a .def = inl-def₁ (a .def)
+
+  inrv : Val → Val
+  inrv a .elt = “inr” ⋆ a .elt
+  inrv a .def = inr-def₁ (a .def)
+```
+-->
+
+### Natural numbers
+
+We encode natural numbers via **Curry numerals**, which encode
+a natural number $n$ as an $n$-tuple where the first $n$ components
+are `“true”`{.Agda}, and the final component is `“false”`{.Agda}.
 
 ```agda
-  inl-val : Val → Val
-  inl-val a .elt = “inl” ⋆ a .elt
-  inl-val a .def = inl-def₁ (a .def)
+  opaque
+    “nat” : Nat → A
+    “nat” zero = “false”
+    “nat” (suc n) = “pair” ⋆ “true” ⋆ “nat” n
 
-  inr-val : Val → Val
-  inr-val a .elt = “inr” ⋆ a .elt
-  inr-val a .def = inr-def₁ (a .def)
+    “zero” : A
+    “zero” = “false”
 
+    “suc” : A
+    “suc” = term (⟨ x ⟩ “pair” “⋆” “true” “⋆” x)
+```
+
+<!--
+```agda
+    zero-def : ∣ “zero” ↓ ∣
+    zero-def = ignore-def
+
+    zero-eval : “zero” ≡ “false”
+    zero-eval = refl
+
+    suc-eval : ∀ x → “suc” ⋆ x ≡ “pair” ⋆ “true” ⋆ x
+    suc-eval x = def-ext ∣ x ↓ ∣ ⋆-defr ⋆-defr abs-eval
+
+    suc-def₁ : ∀ {x} → ∣ x ↓ ∣ → ∣ (“suc” ⋆ x) ↓ ∣
+    suc-def₁ x↓ = subst (λ e → ∣ e ↓ ∣) (sym (suc-eval _)) (pair-def₂ const-def x↓)
+
+    nat-def : ∀ x → ∣ “nat” x ↓ ∣
+    nat-def zero = ignore-def
+    nat-def (suc x) = pair-def₂ const-def (nat-def x)
+
+    nat-zero-eval : “nat” 0 ≡ “zero”
+    nat-zero-eval = refl
+
+    nat-suc-eval : ∀ x → “nat” (suc x) ≡ “suc” ⋆ (“nat” x)
+    nat-suc-eval x = sym (abs-eval (nat-def x))
+```
+-->
+
+We can define a predecessor function by examining the first component
+of the tuple, and then using the church boolean within to select either
+the rest of the Curry numeral or zero.
+
+```agda
+    “pred” : A
+    “pred” = term (⟨ x ⟩ (“fst” “⋆” x) “⋆” (“snd” “⋆” x) “⋆” “zero”)
+```
+
+A bit of algebra lets us show that predecessor has the correct computational
+behaviour.
+
+```agda
+    pred-zero-eval : “pred” ⋆ “zero” ≡ “zero”
+    pred-zero-eval =
+      “pred” ⋆ “zero”                                    ≡⟨ abs-eval zero-def ⟩
+      ⌜ “fst” ⋆ “zero” ⌝ ⋆ (“snd” ⋆ “zero”)  ⋆ “zero”    ≡⟨ ap! (fst-eval “zero”) ⟩
+      ⌜ “ignore” ⋆ “const” ⋆ (“snd” ⋆ “zero”) ⌝ ⋆ “zero” ≡⟨ ap! (ignore-eval “const” (“snd” ⋆ “zero”) const-def) ⟩
+      ⌜ “snd” ⋆ “zero” ⌝ ⋆ “zero”                        ≡⟨ ap! (snd-eval “zero”) ⟩
+      “ignore” ⋆ “ignore” ⋆ “zero”                       ≡⟨ ignore-eval “ignore” “zero” ignore-def ⟩
+      “zero”                                             ∎
+
+    pred-suc-eval : ∀ x → “pred” ⋆ (“suc” ⋆ x) ≡ x
+    pred-suc-eval x =
+      def-ext ∣ x ↓ ∣ (λ p↓ → ⋆-defr (⋆-defr p↓)) (λ x↓ → x↓) $ λ x↓ →
+      “pred” ⋆ (“suc” ⋆ x)                                                         ≡⟨ abs-eval (suc-def₁ x↓) ⟩
+      “fst” ⋆ ⌜ “suc” ⋆ x ⌝ ⋆ (“snd” ⋆ ⌜ “suc” ⋆ x ⌝) ⋆ “zero”                     ≡⟨ ap! (suc-eval x) ⟩
+      ⌜ “fst” ⋆ (“pair” ⋆ “true” ⋆ x) ⌝ ⋆ (“snd” ⋆ (“pair” ⋆ “true” ⋆ x)) ⋆ “zero” ≡⟨ ap! (fst-pair-eval “true” x x↓) ⟩
+      “true” ⋆ (“snd” ⋆ (“pair” ⋆ “true” ⋆ x)) ⋆ “zero”                            ≡⟨ const-eval _ _ zero-def ⟩
+      “snd” ⋆ (“pair” ⋆ “true” ⋆ x)                                                ≡⟨ snd-pair-eval “true” x const-def ⟩
+      x ∎
 ```

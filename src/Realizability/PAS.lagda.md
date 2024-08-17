@@ -318,6 +318,7 @@ insertion of weakenings automatically.
 
     Splice-Shift : {n k : Nat} {e : Term n} → ⦃ Splice A e k ⦄ → Splice A e (1 + k)
     Splice-Shift ⦃ s ⦄ = record { splice = shift (Splice.splice s) }
+    {-# INCOHERENT Splice-Shift #-}
 
   “_” : {E : Type ℓ'} → (e : E) → ⦃ s : Splice A e n ⦄ → Term n
   “_” e ⦃ s ⦄ = Splice.splice s
