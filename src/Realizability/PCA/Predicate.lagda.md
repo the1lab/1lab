@@ -25,9 +25,6 @@ private variable
   ℓ' : Level
   X : Type ℓ'
   P Q R : X → Val → Ω
-
--- Weird behaviour; need to mark this as INCOHERENT here instead of alongside the definition?
-{-# INCOHERENT Splice-Shift #-}
 ```
 -->
 
@@ -125,7 +122,7 @@ _∧ₐ_ : (X → Val → Ω) → (X → Val → Ω) → (X → Val → Ω)
   f ← p≤q
   g ← p≤r
   realize
-    (term (lam λ x →
+    (term (⟨ x ⟩
       “pair” “⋆” (code-val f “⋆” x) “⋆” (code-val g “⋆” x)))
     abs-def
     λ x a a∈px →
@@ -146,18 +143,17 @@ _∨ₐ_ : (X → Val → Ω) → (X → Val → Ω) → (X → Val → Ω)
     refl ,
     inc (inl (a , refl , a∈px)))
 
-
 ∨ₐ-least : P ≤ₐ R → Q ≤ₐ R → (P ∨ₐ Q) ≤ₐ R
 ∨ₐ-least p≤r q≤r = do
   f ← p≤r
   g ← q≤r
   realize (“elim” ⋆ f .code ⋆ g .code) (elim-def₂ (f .code-def) (g .code-def))
     λ x a → rec! [
-      rec! (λ v p v∈px →
+      (λ (v , p , v∈px) →
         inc (track-val f x v v∈px ,
           ap₂ _⋆_ refl p ∙ elim-inl-eval _ _ _ (g .code-def) ,
           f .tracks x v v∈px)) ,
-      rec! (λ v p v∈qx →
+      (λ (v , p , v∈qx) →
         inc (track-val g x v v∈qx ,
           ap₂ _⋆_ refl p ∙ elim-inr-eval _ _ _ (f .code-def) ,
           g .tracks x v v∈qx))
