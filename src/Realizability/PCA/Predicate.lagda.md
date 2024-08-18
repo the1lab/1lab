@@ -17,6 +17,8 @@ open import Realizability.PCA
 module Realizability.PCA.Predicate {ℓ : Level} {A : Type ℓ} (pca : PCA-on A) where
 ```
 
+# Predicates valued in PCAs
+
 <!--
 ```agda
 open PCA pca
@@ -158,4 +160,47 @@ _∨ₐ_ : (X → Val → Ω) → (X → Val → Ω) → (X → Val → Ω)
           ap₂ _⋆_ refl p ∙ elim-inr-eval _ _ _ (f .code-def) ,
           g .tracks x v v∈qx))
     ]
+```
+
+```agda
+_⇒ₐ_ : (X → Val → Ω) → (X → Val → Ω) → (X → Val → Ω)
+(P ⇒ₐ Q) x f = elΩ $
+  ∀ (a : Val)
+  → ∣ P x a ∣
+  → Σ[ fa↓ ∈ ∣ (f .elt ⋆ a .elt) ↓ ∣ ] value (f .elt ⋆ a .elt) fa↓ ∈ Q x
+```
+
+```agda
+⇒-curryₐ : (P ∧ₐ Q) ≤ₐ R → P ≤ₐ (Q ⇒ₐ R)
+⇒-curryₐ {P = P} {Q} {R} p∧q≤r = do
+  f ← p∧q≤r
+  realize (“curry” ⋆ f .code) (curry-def₁ (f .code-def)) λ x a p →
+    pure $
+      value (“curry” ⋆ f .code ⋆ a .elt) (curry-def₂ (f .code-def) (a .def)) ,
+      refl ,
+      pure λ b q →
+        let pq : ∣ (P ∧ₐ Q) x (pair-val a b) ∣
+            pq = pure (_ , _ , refl , p , q)
+        in
+          curry-def₃ (f .track-def x (pair-val a b) pq) ,
+          subst (λ v → ∣ R x v ∣) (ext (sym (curry-eval _ _ _)))
+            (f .tracks x (pair-val a b) pq)
+```
+
+```agda
+⇒-uncurryₐ : P ≤ₐ (Q ⇒ₐ R) → (P ∧ₐ Q) ≤ₐ R
+⇒-uncurryₐ {P = P} {Q} {R} p≤q⇒r = do
+  f ← p≤q⇒r
+  realize (“uncurry” ⋆ f .code) (uncurry-def₁ (f .code-def)) λ x ab → rec! λ a b eq p q → do
+      fa ← □-tr (f .tracks x a p)
+      let uncurry-fab : f .code ⋆ a .elt ⋆ b .elt ≡ “uncurry” ⋆ f .code ⋆ (“pair” ⋆ a .elt ⋆ b .elt)
+          uncurry-fab = sym $
+            uncurry-eval (f .code) (“pair” ⋆ a .elt ⋆ b .elt)
+            ∙ ap₂ (λ a b → f .code ⋆ a ⋆ b) (fst-pair-eval _ _ (b .def)) (snd-pair-eval _ _ (a .def))
+      let fab↓ : ∣ (“uncurry” ⋆ f .code ⋆ (“pair” ⋆ a .elt ⋆ b .elt)) ↓ ∣
+          fab↓ = subst (λ e → ∣ e ↓ ∣) uncurry-fab (fa b q .fst)
+      pure $
+        value (“uncurry” ⋆ f .code ⋆ (“pair” ⋆ a .elt ⋆ b .elt)) fab↓ ,
+        ap (“uncurry” ⋆ f .code ⋆_) eq ,
+        subst (λ v → ∣ R x v ∣) (ext uncurry-fab) (fa b q .snd)
 ```

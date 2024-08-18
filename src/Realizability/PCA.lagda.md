@@ -408,7 +408,7 @@ We also take the time to define currying and uncurrying.
     “uncurry” = term (⟨ f ⟩ ⟨ xy ⟩ f “⋆” (“fst” “⋆” xy) “⋆” (“snd” “⋆” xy))
 
     curry-eval : ∀ (f a b : A) → “curry” ⋆ f ⋆ a ⋆ b ≡ f ⋆ (“pair” ⋆ a ⋆ b)
-    uncurry-eval : ∀ (f a b : A) → “uncurry” ⋆ f ⋆ a ≡ f ⋆ (“fst” ⋆ a) ⋆ (“snd” ⋆ a)
+    uncurry-eval : ∀ (f a : A) → “uncurry” ⋆ f ⋆ a ≡ f ⋆ (“fst” ⋆ a) ⋆ (“snd” ⋆ a)
 ```
 
 <details>
@@ -422,13 +422,35 @@ application of Kleene extensionality.
         (λ p↓ → ⋆-defl p↓ , ⋆-defr (⋆-defl (⋆-defr p↓)) , ⋆-defr (⋆-defr p↓))
         (λ (f↓ , a↓ , b↓) → abs-evalₙ (value b b↓ ∷ value a a↓ ∷ value f f↓ ∷ []))
 
-    uncurry-eval f a b =
+    uncurry-eval f a =
       def-ext (∣ f ↓ ∣ × ∣ a ↓ ∣)
         (λ p↓ → ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
         (λ p↓ → ⋆-defl (⋆-defl p↓) , ⋆-defr (⋆-defr p↓))
         (λ (f↓ , a↓) → abs-evalₙ (value a a↓ ∷ value f f↓ ∷ []))
 ```
 </details>
+
+<!--
+```agda
+    curry-def₁ : ∀ {f} → ∣ f ↓ ∣ → ∣ (“curry” ⋆ f) ↓ ∣
+    curry-def₁ f↓ = subst (λ e → ∣ e ↓ ∣) (sym (abs-eval f↓)) abs-def
+
+    curry-def₂ : ∀ {f a} → ∣ f ↓ ∣ → ∣ a ↓ ∣ → ∣ (“curry” ⋆ f ⋆ a) ↓ ∣
+    curry-def₂ {f} {a} f↓ a↓ =
+      subst (λ e → ∣ e ↓ ∣) (sym (abs-evalₙ (value a a↓ ∷ value f f↓ ∷ []))) abs-def
+
+    curry-def₃ : ∀ {f a b} → ∣ (f ⋆ (“pair” ⋆ a ⋆ b)) ↓ ∣ → ∣ (“curry” ⋆ f ⋆ a ⋆ b) ↓ ∣
+    curry-def₃ {f} {a} {b} p↓ =
+      subst (λ e → ∣ e ↓ ∣) (sym (curry-eval f a b)) p↓
+
+    uncurry-def₁ : ∀ {f} → ∣ f ↓ ∣ → ∣ (“uncurry” ⋆ f) ↓ ∣
+    uncurry-def₁ f↓ = subst (λ e → ∣ e ↓ ∣) (sym (abs-eval f↓)) abs-def
+
+    uncurry-def₂ : ∀ {f ab} → ∣ (f ⋆ (“fst” ⋆ ab) ⋆ (“snd” ⋆ ab)) ↓ ∣ → ∣ (“uncurry” ⋆ f ⋆ ab) ↓ ∣
+    uncurry-def₂ {f} {ab} p↓ =
+      subst (λ e → ∣ e ↓ ∣) (sym (uncurry-eval f ab)) p↓
+```
+-->
 
 
 ### Booleans
