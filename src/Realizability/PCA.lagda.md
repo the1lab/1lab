@@ -43,6 +43,7 @@ private variable
 
 ```agda
 record PCA-on (A : Type ℓ) : Type ℓ where
+  no-eta-equality
   field
     _⋆_ : A → A → A
     _↓ : A → Ω
@@ -70,7 +71,6 @@ that lets us pretend that we are using higher-order abstract syntax.
 
   syntax abs-syntax (λ x → e) = ⟨ x ⟩ e
   infix 4 abs-syntax
-
 ```
 
 ## Programming with PCAs

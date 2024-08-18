@@ -289,14 +289,22 @@ of $A$.
   term e = eval e []
 ```
 
-We also define weakening on terms.
+We also define shifts and weakening on terms.
 
 ```agda
   shift : Term n → Term (1 + n)
   shift (var x) = var (fsuc x)
-  shift (const x) = var fzero
+  shift (const x) = const x
   shift (op e₁ e₂) = op (shift e₁) (shift e₂)
+
+  eval-shift
+    : ∀ {n} (e : Term n) (v : Val) (ρ : Vec Val n)
+    → eval (shift e) (v ∷ ρ) ≡ eval e ρ
+  eval-shift (var x) v ρ = refl
+  eval-shift (const x) v ρ = refl
+  eval-shift (op e₁ e₂) v ρ = ap₂ _⋆_ (eval-shift e₁ v ρ) (eval-shift e₂ v ρ)
 ```
+
 
 Finally, we provide a small DSL for constructing terms that handles
 insertion of weakenings automatically.

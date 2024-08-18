@@ -30,7 +30,6 @@ private variable
 ```
 -->
 
-
 ```agda
 record Realizer {X : Type ℓ'} (P Q : X → Val → Ω) : Type (ℓ ⊔ ℓ') where
   no-eta-equality
