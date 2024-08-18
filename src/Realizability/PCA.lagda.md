@@ -261,6 +261,43 @@ We also have analog of the `flip`{.Agda} function.
 ```
 </details>
 
+We can also define a combinator `“s”`{.Agda} that takes 3 arguments
+$x, y, z$ and applies $x$ to $z$ and $y z$.
+
+```agda
+  opaque
+    “s” : A
+    “s” = term (⟨ x ⟩ ⟨ y ⟩ ⟨ z ⟩ (x “⋆” z “⋆” (y “⋆” z)))
+
+    s-eval : ∀ x y z → “s” ⋆ x ⋆ y ⋆ z ≡ x ⋆ z ⋆ (y ⋆ z)
+```
+
+<details>
+<summary>The characterisation of `“s”`{.Agda} is pretty rote, so
+we omit it.
+</summary>
+```agda
+    s-eval x y z =
+      def-ext (∣ x ↓ ∣ × ∣ y ↓ ∣ × ∣ z ↓ ∣)
+        (λ p↓ → ⋆-defr (⋆-defl (⋆-defl p↓)) , ⋆-defr (⋆-defl p↓) , ⋆-defr p↓)
+        (λ p↓ → ⋆-defl (⋆-defl p↓) , ⋆-defl (⋆-defr p↓) , ⋆-defr (⋆-defr p↓))
+        (λ (x↓ , y↓ , z↓)  → abs-evalₙ (value z z↓ ∷ value y y↓ ∷ value x x↓ ∷ []))
+```
+</details>
+
+<!--
+```agda
+    s-def : ∣ “s” ↓ ∣
+    s-def = abs-def
+
+    s-def₂ : ∀ {x y} → ∣ x ↓ ∣ → ∣ y ↓ ∣ → ∣ (“s” ⋆ x ⋆ y) ↓ ∣
+    s-def₂ {x} {y} x↓ y↓ =
+      subst (λ e → ∣ e ↓ ∣)
+        (sym (abs-evalₙ (value y y↓ ∷ value x x↓ ∷ [])))
+        abs-def
+```
+-->
+
 ### Pairing
 
 With those basics out of the way, we can build up some actual datastructures.

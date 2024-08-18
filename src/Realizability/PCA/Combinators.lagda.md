@@ -16,7 +16,7 @@ open import Realizability.PCA
 module Realizability.PCA.Combinators where
 ```
 
-# Combinatory completeness of S and K
+# Combinatory completeness of S and K {defines="completeness-of-s-and-k"}
 
 <!--
 ```agda
