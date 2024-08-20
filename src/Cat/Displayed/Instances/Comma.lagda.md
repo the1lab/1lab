@@ -4,8 +4,12 @@ description: |
 ---
 <!--
 ```agda
-open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Instances.Coslice
+open import Cat.Displayed.Instances.Slice
+open import Cat.Instances.Coslice
+open import Cat.Displayed.Functor
 open import Cat.Instances.Product
+open import Cat.Instances.Slice
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -72,6 +76,24 @@ hold trivially.
   _↓_ .assoc' _ _ _ = prop!
 ```
 </details>
+
+The displayed comma category also comes with a pair of [[displayed functors]]
+into the displayed categories of coslices and slices, resp.
+
+```agda
+  Dom : Displayed-functor _↓_ (Coslices C) (F F∘ Fst)
+  Dom .Displayed-functor.F₀' f = cut f
+  Dom .Displayed-functor.F₁' α = coslice-hom _ (sym α)
+  Dom .Displayed-functor.F-id' = Coslice-pathp C _ G.F-id
+  Dom .Displayed-functor.F-∘' = Coslice-pathp C _ (G.F-∘ _ _)
+
+  Cod : Displayed-functor _↓_ (Slices C) (G F∘ Snd)
+  Cod .Displayed-functor.F₀' f = cut f
+  Cod .Displayed-functor.F₁' α = slice-hom _ (sym α)
+  Cod .Displayed-functor.F-id' = Slice-pathp C _ F.F-id
+  Cod .Displayed-functor.F-∘' = Slice-pathp C _ (F.F-∘ _ _)
+```
+
 
 <!--
 [TODO: Reed M, 20/08/2024] This is a 2-sided fibration.

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -243,6 +244,34 @@ The identity functor is obviously fibred.
   Idf' .Fibred-functor.F-cartesian = Id'-fibred
 ```
 
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
+    {A : Precategory o ℓ}
+    {B : Precategory o₂ ℓ₂}
+    {ℰ : Displayed A o' ℓ'}
+    {ℱ : Displayed B o₂' ℓ₂'}
+    {F : Functor A B}
+    (F' : Displayed-functor ℰ ℱ F)
+    where
+  open Displayed-functor
+  open Total-hom
+  open Functor
+```
+-->
+
+Moreover, note that displayed functors give rise to functors between
+the corresponding [[total categories]].
+
+```agda
+  ∫F : Functor (∫ ℰ) (∫ ℱ)
+  ∫F .F₀ (x , x') = F .F₀ x , F' .F₀' x'
+  ∫F .F₁ f .hom = F .F₁ (f .hom)
+  ∫F .F₁ f .preserves = F' .F₁' (f .preserves)
+  ∫F .F-id = total-hom-path ℱ (F .F-id) (F' .F-id')
+  ∫F .F-∘ f g = total-hom-path ℱ (F .F-∘ _ _) (F' .F-∘')
+```
 
 ## Vertical functors
 
