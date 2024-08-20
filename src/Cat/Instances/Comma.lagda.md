@@ -27,7 +27,7 @@ open Functor
 ```
 -->
 
-# Comma categories {defines="comma-category"}
+# Comma categories {defines="comma-category comma-categories"}
 
 The **comma category** of two functors $F : \cA \to \cC$ and $G : \cB
 \to \cC$ with common codomain, written $F \downarrow G$, is the
