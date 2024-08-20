@@ -77,6 +77,20 @@ associativity laws exactly analogous to those of a monoid.
       mult-assoc  : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
 ```
 
+<!--
+```agda
+  record is-monad (M : Functor C C) (unit : Id => M) (mult : M F∘ M => M) : Type (o ⊔ h) where
+    no-eta-equality
+    open Functor M renaming (F₀ to M₀; F₁ to M₁)
+    open _=>_ unit using (η)
+    open _=>_ mult renaming (η to μ) using ()
+    field
+      left-ident  : ∀ {x} → μ x C.∘ M₁ (η x) ≡ C.id
+      right-ident : ∀ {x} → μ x C.∘ η (M₀ x) ≡ C.id
+      mult-assoc  : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
+```
+-->
+
 # Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
