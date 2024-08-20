@@ -58,3 +58,17 @@ Unsurprisingly, these are dual to the equations of a monad.
     right-ident : ∀ {x} → counit.ε (W₀ x) ∘ comult.η x ≡ id
     comult-assoc : ∀ {x} → W₁ (comult.η x) ∘ comult.η x ≡ comult.η (W₀ x) ∘ comult.η x
 ```
+
+<!--
+```agda
+record is-comonad (W : Functor C C) (counit : W => Id) (comult : W => W F∘ W) : Type (o ⊔ ℓ) where
+  no-eta-equality
+  open Functor W renaming (F₀ to W₀; F₁ to W₁)
+  open _=>_ counit renaming (η to ε) using ()
+  open _=>_ comult renaming (η to δ) using ()
+  field
+    left-ident : ∀ {x} → W₁ (ε x) ∘ δ x ≡ id
+    right-ident : ∀ {x} → ε (W₀ x) ∘ δ x ≡ id
+    comult-assoc : ∀ {x} → W₁ (δ x) ∘ δ x ≡ δ (W₀ x) ∘ δ x
+```
+-->
