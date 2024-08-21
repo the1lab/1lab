@@ -88,6 +88,9 @@ instance
 
 ### Properties of the strict order
 
+The strict order on natural numbers is asymmetric, irreflexive, and
+transitive.
+
 ```agda
 <-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
 <-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
@@ -95,7 +98,7 @@ instance
 <-asym : ∀ {x y} → x < y → ¬ (y < x)
 <-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
 
-<-not-equal : ∀ {x y} → x < y → x ≠ y
+<-not-equal : ∀ {x y} → x < y → ¬ x ≡ y
 <-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
 <-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
 
@@ -104,20 +107,79 @@ instance
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 
+<-trans : ∀ {x y z} → x < y → y < z → x < z
+<-trans p q = ≤-trans (≤-sucr p) q
+```
+
+The successor of $x$ is always strictly larger than $x$, and $0$ is
+strictly smaller than every successor.
+
+```agda
+<-ascend : ∀ {x} → x < suc x
+<-ascend = ≤-refl
+
+pattern 0<s = s≤s 0≤x
+
+x≮0 : ∀ {x} → ¬ (x < 0)
+x≮0 {x} ()
+```
+
+If $x < y$, then $x \leq y$. Morover, both $x < y \leq z$ and $x \leq y < z$
+imply that $x < z$.
+
+```agda
 <-weaken : ∀ {x y} → x < y → x ≤ y
 <-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
 
+<-transl : ∀ {x y z} → x < y → y ≤ z → x < z
+<-transl x<y y≤z = ≤-trans x<y y≤z
+
+<-transr : ∀ {x y z} → x ≤ y → y < z → x < z
+<-transr x≤y y<z = ≤-trans (s≤s x≤y) y<z
+```
+
+Conversely, if $x \leq y$ then either $x = y$ or $x < y$.
+
+```agda
 ≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
 ≤-strengthen {zero} {zero} 0≤x = inl refl
 ≤-strengthen {zero} {suc y} 0≤x = inr (s≤s 0≤x)
 ≤-strengthen {suc x} {suc y} (s≤s p) with ≤-strengthen p
 ... | inl eq = inl (ap suc eq)
 ... | inr le = inr (s≤s le)
+```
 
-<-from-≤ : ∀ {x y} → x ≠ y → x ≤ y → x < y
-<-from-≤ x≠y x≤y with ≤-strengthen x≤y
-... | inl x=y = absurd (x≠y x=y)
-... | inr x<y = x<y
+There are no natural numbers $y$ with $x < y < 1 + x$.
+
+```agda
+<-between : ∀ {x y} → x < y → y < suc x → ⊥
+<-between {suc x} {suc y} (s≤s x<y) (s≤s y<sx) = <-between x<y y<sx
+```
+
+If every $a < x$ is also strictly smaller than $y$, then $x \leq y$.
+This gives
+
+```agda
+<-below : ∀ {x y} → (∀ a → a < x → a < y) → x ≤ y
+<-below {zero}  {y} p = 0≤x
+<-below {suc x} {y} p = p x <-ascend
+```
+
+If $y \nless x$, then $x \leq y$.
+
+```agda
+not-< : ∀ {x y} → ¬ (y < x) → x ≤ y
+not-< {zero} {y} y≮x = 0≤x
+not-< {suc x} {zero} y≮x = absurd (y≮x 0<s)
+not-< {suc x} {suc y} y≮x = s≤s (not-< (y≮x ∘ s≤s))
+```
+
+This means that $<$ is a **connected** order: if $x \nless y$ and $y \nless x$,
+then $x = y$.
+
+```agda
+<-connected : ∀ {x y} → ¬ (x < y) → ¬ (y < x) → x ≡ y
+<-connected x≮y y≮x = ≤-antisym (not-< y≮x) (not-< x≮y)
 ```
 
 ### Linearity
@@ -210,99 +272,6 @@ their strict ordering:
   go (suc x) (suc y) p q    = ap suc (go x y (λ { a → p (s≤s a) }) λ { a → q (s≤s a) })
 ```
 
-### Properties of the strict order
-
-The strict order on natural numbers is asymmetric, irreflexive, and
-transitive.
-
-```agda
-<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
-<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
-
-<-asym : ∀ {x y} → x < y → ¬ (y < x)
-<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
-
-<-not-equal : ∀ {x y} → x < y → ¬ x ≡ y
-<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
-<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
-
-<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
-<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
-<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
-
-<-trans : ∀ {x y z} → x < y → y < z → x < z
-<-trans p q = ≤-trans (≤-sucr p) q
-```
-
-The successor of $x$ is always strictly larger than $x$, and $0$ is
-strictly smaller than every successor.
-
-```agda
-<-ascend : ∀ {x} → x < suc x
-<-ascend = ≤-refl
-
-pattern 0<s = s≤s 0≤x
-
-x≮0 : ∀ {x} → ¬ (x < 0)
-x≮0 {x} ()
-```
-
-If $x < y$, then $x \leq y$. Morover, both $x < y \leq z$ and $x \leq y < z$
-imply that $x < z$.
-
-```agda
-<-weaken : ∀ {x y} → x < y → x ≤ y
-<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
-
-<-transl : ∀ {x y z} → x < y → y ≤ z → x < z
-<-transl x<y y≤z = ≤-trans x<y y≤z
-
-<-transr : ∀ {x y z} → x ≤ y → y < z → x < z
-<-transr x≤y y<z = ≤-trans (s≤s x≤y) y<z
-```
-
-Conversely, if $x \leq y$ and $x \neq y$, then $x < y$.
-
-```agda
-≤-strengthen : ∀ {x y} → x ≤ y → ¬ (x ≡ y) → x < y
-≤-strengthen {zero} {zero} x≤y x≠y = absurd (x≠y refl)
-≤-strengthen {zero} {suc y} x≤y x≠y = 0<s
-≤-strengthen {suc x} {suc y} (s≤s x≤y) x≠y = s≤s (≤-strengthen x≤y (x≠y ∘ ap suc))
-```
-
-There are no natural numbers $y$ with $x < y < 1 + x$.
-
-```agda
-<-between : ∀ {x y} → x < y → y < suc x → ⊥
-<-between {suc x} {suc y} (s≤s x<y) (s≤s y<sx) = <-between x<y y<sx
-```
-
-If every $a < x$ is also strictly smaller than $y$, then $x \leq y$.
-This gives
-
-```agda
-<-below : ∀ {x y} → (∀ a → a < x → a < y) → x ≤ y
-<-below {zero}  {y} p = 0≤x
-<-below {suc x} {y} p = p x <-ascend
-```
-
-If $y \nless x$, then $x \leq y$.
-
-```agda
-not-< : ∀ {x y} → ¬ (y < x) → x ≤ y
-not-< {zero} {y} y≮x = 0≤x
-not-< {suc x} {zero} y≮x = absurd (y≮x 0<s)
-not-< {suc x} {suc y} y≮x = s≤s (not-< (y≮x ∘ s≤s))
-```
-
-This means that $<$ is a **connected** order: if $x \nless y$ and $y \nless x$,
-then $x = y$.
-
-```agda
-<-connected : ∀ {x y} → ¬ (x < y) → ¬ (y < x) → x ≡ y
-<-connected x≮y y≮x = ≤-antisym (not-< y≮x) (not-< x≮y)
-```
 
 ## Nat is a lattice
 
