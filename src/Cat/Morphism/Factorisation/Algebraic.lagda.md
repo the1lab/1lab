@@ -61,6 +61,22 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     δ : ∀ {x y} (f : Hom x y) → Hom (fac f) (fac (left f))
     δ {x} {y} f = comult .η ((x , y) , f) .hom .snd
 
+    μ-natural
+      : ∀ {a b x y} {f : Hom a b} {g : Hom x y} {h : Hom a x} {k : Hom b y}
+      → (p : k ∘ f ≡ g ∘ h) (q : k ∘ right f ≡ right g ∘ split k h p)
+      → μ g ∘ split k (split k h p) q ≡ split k h p ∘ μ f
+    μ-natural {f = f} {g} {h} {k} p q =
+      ap (λ q → μ g ∘ split k (split k h p) q) prop!
+      ∙ ap (fst ⊙ hom) (mult .is-natural (_ , f) (_ , g) (total-hom (h , k) (sym p)))
+
+    δ-natural
+      : ∀ {a b x y} {f : Hom a b} {g : Hom x y} {h : Hom a x} {k : Hom b y}
+      → (p : k ∘ f ≡ g ∘ h) (q : split k h p ∘ left f ≡ left g ∘ h)
+      → δ g ∘ split k h p ≡ split (split k h p) h q ∘ δ f
+    δ-natural {f = f} {g} {h} {k} p q =
+      ap (snd ⊙ hom) (comult .is-natural (_ , f) (_ , g) (total-hom (h , k) (sym p)))
+      ∙ ap (λ q → split (split k h p) h q ∘ δ f) prop!
+
     μ-right : ∀ {x y} (f : Hom x y) → right f ∘ μ f ≡ right (right f)
     μ-right f =
       mult .η (_ , f) .preserves
