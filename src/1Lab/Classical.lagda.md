@@ -36,8 +36,10 @@ LEM = ∀ (P : Ω) → Dec ∣ P ∣
 Note that we cannot do without the assumption that $P$ is a proposition: the statement
 that all types are decidable is [[inconsistent with univalence|LEM-infty]].
 
+:::{.definition #double-negation-elimination alias="dne"}
 An equivalent statement of excluded middle is the **law of double negation
 elimination** (DNE):
+:::
 
 ```agda
 DNE : Type

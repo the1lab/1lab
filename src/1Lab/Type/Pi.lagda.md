@@ -220,5 +220,13 @@ flip
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → (∀ a b → C a b) → (∀ b a → C a b)
 flip f b a = f a b
+
+_on_
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : B → B → Type ℓ''}
+  → (∀ b b' → C b b')
+  → (f : A → B)
+  → ∀ a a' → C (f a) (f a')
+g on f = λ a a' → g (f a) (f a')
+{-# INLINE _on_ #-}
 ```
 -->
