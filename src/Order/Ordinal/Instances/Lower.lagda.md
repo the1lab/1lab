@@ -27,8 +27,8 @@ open Simulation
 -->
 
 ```agda
-Lower : ∀ {o ℓ} → (X : Ordinal o ℓ) → ⌞ X ⌟ → Ordinal (o ⊔ ℓ) ℓ
-Lower X x = ord module Lower where
+Lowerₒ : ∀ {o ℓ} → (X : Ordinal o ℓ) → ⌞ X ⌟ → Ordinal (o ⊔ ℓ) ℓ
+Lowerₒ X x = ord module Lower where
   open Order.Ordinal.Reasoning X
 
   ord : Ordinal _ _
@@ -45,7 +45,7 @@ Lower X x = ord module Lower where
 
 <!--
 ```agda
-{-# DISPLAY Lower.ord X x = Lower X x #-}
+{-# DISPLAY Lower.ord X x = Lowerₒ X x #-}
 ```
 -->
 
@@ -53,7 +53,7 @@ Lower X x = ord module Lower where
 module _ {o ℓ} {X : Ordinal o ℓ} {x : ⌞ X ⌟} where
   private module X = Order.Ordinal.Reasoning X
 
-  segment : Simulation (Lower X x) X
+  segment : Simulation (Lowerₒ X x) X
   segment .hom = fst
   segment .pres-≺ x≺y = x≺y
   segment .sim {a , a≺x} {y} y≺a = y , X.≺-trans y≺a a≺x

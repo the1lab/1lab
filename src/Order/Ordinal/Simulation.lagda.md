@@ -113,3 +113,20 @@ Simulation-is-prop {X = X} {Y = Y} f g = path where
       (λ p → g.simulates {p = p})
       i y≺px
 ```
+
+```agda
+module _ {o ℓ o' ℓ'} {X : Ordinal o ℓ} {Y : Ordinal o' ℓ'} where
+  private
+    module X = Order.Ordinal.Reasoning X
+    module Y = Order.Ordinal.Reasoning Y
+    open Simulation
+
+  simulation-pres-bot
+    : {bot : ⌞ X ⌟}
+    → (f : Simulation X Y)
+    → (∀ x → bot X.≼ x)
+    → ∀ y → f # bot Y.≼ y
+  simulation-pres-bot {bot} f bot-≼ y yₒ yₒ≺f[bot] = absurd (X.≺-irrefl (bot-≼ _ _ below)) where
+    below : f .sim yₒ≺f[bot] X.≺ bot
+    below = f .sim-≺ {p = yₒ≺f[bot]}
+```
