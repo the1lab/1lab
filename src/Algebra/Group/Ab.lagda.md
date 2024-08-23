@@ -216,3 +216,24 @@ Ab↪Sets = Grp↪Sets F∘ Ab↪Grp
 -->
 
 The fundamental example of an abelian group is the [[group of integers]].
+
+:::{.definition #negation-automorphism}
+Given an abelian group $G$, we can define the **negation automorphism**
+$G \cong G$ which inverts every element: since the group operation is
+commutative, we have $(x \star y)^{-1} = y^{-1} \star x^{-1} = x^{-1}
+\star y^{-1}$, so this is a homomorphism.
+:::
+
+<!--
+```agda
+module _ {ℓ} (G : Abelian-group ℓ) where
+  open Abelian-group-on (G .snd)
+```
+-->
+
+```agda
+  negation : G Ab.≅ G
+  negation = total-iso
+    (_⁻¹ , is-involutive→is-equiv (λ _ → inv-inv))
+    (record { pres-⋆ = λ x y → inv-comm ∙ commutes })
+```
