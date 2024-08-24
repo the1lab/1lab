@@ -17,7 +17,7 @@ module _ {o h} (C : Precategory o h) where
 ```
 -->
 
-# Initial objects {defines="initial-object"}
+# Initial objects {defines="initial-object initial"}
 
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
 if there exists a _unique_ map to any other object:
@@ -25,7 +25,7 @@ if there exists a _unique_ map to any other object:
 ```agda
   is-initial : Ob → Type _
   is-initial ob = ∀ x → is-contr (Hom ob x)
-  
+
   record Initial : Type (o ⊔ h) where
     field
       bot  : Ob
@@ -38,13 +38,13 @@ contractible type, it is unique.
 ```agda
     ¡ : ∀ {x} → Hom bot x
     ¡ = has⊥ _ .centre
-  
+
     ¡-unique : ∀ {x} (h : Hom bot x) → ¡ ≡ h
     ¡-unique = has⊥ _ .paths
-  
+
     ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
     ¡-unique₂ = is-contr→is-prop (has⊥ _)
-  
+
   open Initial
 ```
 
@@ -85,7 +85,7 @@ a proposition:
   ⊥-is-prop : is-category C → is-prop Initial
   ⊥-is-prop ccat x1 x2 i .bot =
     Univalent.iso→path ccat (⊥-unique x1 x2) i
-  
+
   ⊥-is-prop ccat x1 x2 i .has⊥ ob =
     is-prop→pathp
       (λ i → is-contr-is-prop
@@ -107,7 +107,7 @@ This is an instance of the more general notion of [van Kampen colimits].
 ```agda
   is-strict-initial : Initial → Type _
   is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
-  
+
   record Strict-initial : Type (o ⊔ h) where
     field
       initial : Initial
@@ -125,7 +125,7 @@ Strictness is a property of, not structure on, an initial object.
 ```agda
 module _ {o h} {C : Precategory o h} where
   open Cat.Morphism C
-  private unquoteDecl eqv = declare-record-iso eqv (quote Initial) 
+  private unquoteDecl eqv = declare-record-iso eqv (quote Initial)
 
   instance
     Extensional-Initial
