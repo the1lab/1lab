@@ -77,4 +77,11 @@ instance
     → Connected (Path A x y) n
   Connected-Path {n = n} ⦃ conn-instance ac ⦄ = conn-instance
     (Path-is-connected n ac)
+
+  Connected-Lift
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
+    → ⦃ Connected A n ⦄
+    → Connected (Lift ℓ' A) n
+  Connected-Lift {n = n} ⦃ conn-instance ac ⦄ = conn-instance
+    (is-n-connected-≃ n (Lift-≃ e⁻¹) ac)
 ```

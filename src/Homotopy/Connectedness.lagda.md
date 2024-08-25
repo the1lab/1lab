@@ -215,6 +215,15 @@ retract→is-n-connected (suc (suc n)) f g h a-conn =
     (is-n-connected-Tr (suc n) a-conn)
 ```
 
+<!--
+```agda
+is-n-connected-≃
+  : (n : Nat) (e : A ≃ B)
+  → is-n-connected A n → is-n-connected B n
+is-n-connected-≃ n e = retract→is-n-connected n (e .fst) _ (Equiv.ε e)
+```
+-->
+
 Since the truncation operator $\| - \|_n$ also preserves products, a
 remarkably similar argument shows that if $A$ and $B$ are $n$-connected,
 then so is $A \times B$.
