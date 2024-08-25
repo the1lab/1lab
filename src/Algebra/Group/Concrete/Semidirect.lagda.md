@@ -84,7 +84,7 @@ involve a `sym` to align them up.
   π₁-φ .preserves .pres-⋆ p q =
     path→iso (ap (π₁B ⊙ φ) (p ∙ q))                          ≡⟨ ap path→iso (ap-∙ (π₁B ⊙ φ) p q) ⟩
     path→iso (ap (π₁B ⊙ φ) p ∙ ap (π₁B ⊙ φ) q)               ≡⟨ path→iso-∙ (Groups ℓ) _ _ ⟩
-    path→iso (ap (π₁B ⊙ φ) p) ∘Iso path→iso (ap (π₁B ⊙ φ) q) ∎
+    path→iso (ap (π₁B ⊙ φ) p) ∙Iso path→iso (ap (π₁B ⊙ φ) q) ∎
 
   π₁BG⋉π₁BH : Group ℓ
   π₁BG⋉π₁BH = Semidirect-product (π₁B G) (π₁B H) π₁-φ

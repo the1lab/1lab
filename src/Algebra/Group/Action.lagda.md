@@ -83,7 +83,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg : make-group (X C.≅ X)
     mg .make-group.group-is-set = hlevel 2
     mg .make-group.unit = C.id-iso
-    mg .make-group.mul f g = f C.∘Iso g
+    mg .make-group.mul f g = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹
     mg .make-group.assoc x y z = ext (sym (C.assoc _ _ _))
     mg .make-group.invl x = ext (x .C.invl)

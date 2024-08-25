@@ -340,8 +340,8 @@ of isomorphisms.
 ```agda
 Iso-swapr :
   ∀ {a : x ≅ y} {b : y ≅ z} {c : x ≅ z}
-  → a ∘Iso b ≡ c
-  → a ≡ c ∘Iso (b Iso⁻¹)
+  → b ∘Iso a ≡ c
+  → a ≡ b Iso⁻¹ ∘Iso c
 Iso-swapr {a = a} {b = b} {c = c} p = ≅-path $
   a .to                     ≡⟨ introl (b .invr) ⟩
   (b .from ∘ b .to) ∘ a .to ≡⟨ pullr (ap to p) ⟩
@@ -349,8 +349,8 @@ Iso-swapr {a = a} {b = b} {c = c} p = ≅-path $
 
 Iso-swapl :
   ∀ {a : x ≅ y} {b : y ≅ z} {c : x ≅ z}
-  → a ∘Iso b ≡ c
-  → b ≡ (a Iso⁻¹) ∘Iso c
+  → b ∘Iso a ≡ c
+  → b ≡ c ∘Iso a Iso⁻¹
 Iso-swapl {a = a} {b = b} {c = c} p = ≅-path $
   b .to                   ≡⟨ intror (a .invl) ⟩
   b .to ∘ a .to ∘ a .from ≡⟨ pulll (ap to p) ⟩
@@ -384,11 +384,11 @@ bottom face.
 Iso-prism : ∀ {a : u ≅ v} {b : v ≅ w} {c : u ≅ w}
       → {d : u ≅ x} {e : v ≅ y} {f : w ≅ z}
       → {g : x ≅ y} {h : y ≅ z} {i : x ≅ z}
-      → a ∘Iso b ≡ c
-      → a ∘Iso e ≡ d ∘Iso g
-      → b ∘Iso f ≡ e ∘Iso h
-      → c ∘Iso f ≡ d ∘Iso i
-      → g ∘Iso h ≡ i
+      → b ∘Iso a ≡ c
+      → e ∘Iso a ≡ g ∘Iso d
+      → f ∘Iso b ≡ h ∘Iso e
+      → f ∘Iso c ≡ i ∘Iso d
+      → h ∘Iso g ≡ i
 Iso-prism {a = a} {b} {c} {d} {e} {f} {g} {h} {i} top left right front =
   ≅-path $
     h .to ∘ g .to                                           ≡⟨ ap₂ _∘_ (ap to (Iso-swapl (sym right))) (ap to (Iso-swapl (sym left)) ∙ sym (assoc _ _ _)) ⟩

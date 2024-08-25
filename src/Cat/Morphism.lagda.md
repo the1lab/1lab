@@ -420,33 +420,36 @@ id-iso .inverses .invr = idl id
 
 Isomorphism = _≅_
 
-Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
-           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
+Inverses-∘ : {a b c : Ob} {f : Hom b c} {f⁻¹ : Hom c b} {g : Hom a b} {g⁻¹ : Hom b a}
+           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (f ∘ g) (g⁻¹ ∘ f⁻¹)
 Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
   module finv = Inverses finv
   module ginv = Inverses ginv
 
   abstract
-    l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
-    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ cat! C ⟩
-        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
-        g ∘ id ∘ g⁻¹        ≡⟨ cat! C ⟩
-        g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
+    l : (f ∘ g) ∘ g⁻¹ ∘ f⁻¹ ≡ id
+    l = (f ∘ g) ∘ g⁻¹ ∘ f⁻¹ ≡⟨ cat! C ⟩
+        f ∘ (g ∘ g⁻¹) ∘ f⁻¹ ≡⟨ (λ i → f ∘ ginv.invl i ∘ f⁻¹) ⟩
+        f ∘ id ∘ f⁻¹        ≡⟨ cat! C ⟩
+        f ∘ f⁻¹             ≡⟨ finv.invl ⟩
         id                  ∎
 
-    r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
-    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ cat! C ⟩
-        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
-        f⁻¹ ∘ id ∘ f        ≡⟨ cat! C ⟩
-        f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
+    r : (g⁻¹ ∘ f⁻¹) ∘ f ∘ g ≡ id
+    r = (g⁻¹ ∘ f⁻¹) ∘ f ∘ g ≡⟨ cat! C ⟩
+        g⁻¹ ∘ (f⁻¹ ∘ f) ∘ g ≡⟨ (λ i → g⁻¹ ∘ finv.invr i ∘ g) ⟩
+        g⁻¹ ∘ id ∘ g        ≡⟨ cat! C ⟩
+        g⁻¹ ∘ g             ≡⟨ ginv.invr ⟩
         id                  ∎
 
-_∘Iso_ : a ≅ b → b ≅ c → a ≅ c
-(f ∘Iso g) .to = g .to ∘ f .to
-(f ∘Iso g) .from = f .from ∘ g .from
+_∘Iso_ : ∀ {a b c : Ob} → b ≅ c → a ≅ b → a ≅ c
+(f ∘Iso g) .to = f .to ∘ g .to
+(f ∘Iso g) .from = g .from ∘ f .from
 (f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
 
-infixr 40 _∘Iso_
+_∙Iso_ : ∀ {a b c : Ob} → a ≅ b → b ≅ c → a ≅ c
+f ∙Iso g = g ∘Iso f
+
+infixr 40 _∘Iso_ _∙Iso_
 infixr 41 _Iso⁻¹
 
 invertible-∘
@@ -455,7 +458,7 @@ invertible-∘
   → is-invertible (f ∘ g)
 invertible-∘ f-inv g-inv = record
   { inv = g-inv.inv ∘ f-inv.inv
-  ; inverses = Inverses-∘ g-inv.inverses f-inv.inverses
+  ; inverses = Inverses-∘ f-inv.inverses g-inv.inverses
   }
   where
     module f-inv = is-invertible f-inv

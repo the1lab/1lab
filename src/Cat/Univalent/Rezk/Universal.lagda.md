@@ -351,7 +351,7 @@ candidate over it.
 ```agda
     obj' : ∀ {b} → Essential-fibre H b → Obs b
     obj' (a₀ , h₀) .fst = F.₀ a₀
-    obj' (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h B.∘Iso (h₀ B.Iso⁻¹)))
+    obj' (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h₀ B.Iso⁻¹ B.∘Iso h))
     obj' (a₀ , h₀) .snd .snd (a , h) (a' , h') f p = F.collapse (H.ipushr p)
 
     Obs-is-prop : ∀ {b} (f : Essential-fibre H b) (c : Obs b) → obj' f ≡ c
@@ -367,7 +367,7 @@ candidate over it.
         c = ckα .fst
         k = ckα .snd .fst
         α = ckα .snd .snd
-        c≅c' = (k a₀ h₀ C.Iso⁻¹) C.∘Iso k' a₀ h₀
+        c≅c' = k' a₀ h₀ C.∘Iso k a₀ h₀ C.Iso⁻¹
 ```
 
 <!--
@@ -432,13 +432,13 @@ This proof _really_ isn't commented. I'm sorry.
       module _ a (h : H.₀ a B.≅ b) a' (h' : H.₀ a' B.≅ b')
                 (l : A.Hom a a') (w : h' .to B.∘ H.₁ l ≡ f B.∘ h .to) where
         m : a₀ A.≅ a
-        m = H.iso.from (h₀ B.∘Iso (h B.Iso⁻¹))
+        m = H.iso.from (h B.Iso⁻¹ B.∘Iso h₀)
 
         m' : a₀' A.≅ a'
-        m' = H.iso.from (h₀' B.∘Iso (h' B.Iso⁻¹))
+        m' = H.iso.from (h' B.Iso⁻¹ B.∘Iso h₀')
 
         α : k a₀ h₀ .from ≡ F.₁ (m .from) C.∘ k a h .from
-        α = C.inverse-unique _ _ (k a₀ h₀) (F-map-iso F m C.∘Iso k a h) $
+        α = C.inverse-unique _ _ (k a₀ h₀) (k a h C.∘Iso F-map-iso F m) $
           sym (kcomm _ _ _ (H.ε-lswizzle (h .invl)))
 
         γ : H.₁ (m' .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)

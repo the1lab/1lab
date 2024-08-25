@@ -178,7 +178,7 @@ paths in `Hom`{.Agda}-sets.
 
   path→iso-∙
     : ∀ {A B C} (p : A ≡ B) (q : B ≡ C)
-    → path→iso (p ∙ q) ≡ path→iso p ∘Iso path→iso q
+    → path→iso (p ∙ q) ≡ path→iso p ∙Iso path→iso q
   path→iso-∙ p q = ext (path→to-∙ p q)
 
   path→to-sym : ∀ {A B} (p : A ≡ B) → path→iso p .from ≡ path→iso (sym p) .to

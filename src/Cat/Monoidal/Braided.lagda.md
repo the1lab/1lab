@@ -121,8 +121,8 @@ braiding.
   β←-α← : ∀ {A B C}
     → (β← ⊗₁ id) ∘ α← B A C ∘ (id ⊗₁ β←) ≡ α← A B C ∘ β← ∘ α← B C A
   β←-α← = inverse-unique refl refl
-    (◀.F-map-iso β≅ ∘Iso α≅ ∘Iso ▶.F-map-iso β≅)
-    (α≅ ∘Iso β≅ ∘Iso α≅)
+    (◀.F-map-iso β≅ ∙Iso α≅ ∙Iso ▶.F-map-iso β≅)
+    (α≅ ∙Iso β≅ ∙Iso α≅)
     (sym (assoc _ _ _) ·· braiding-α→ ·· assoc _ _ _)
 ```
 -->

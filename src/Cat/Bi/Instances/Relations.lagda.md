@@ -443,7 +443,7 @@ want to look at the formalisation.
     (image-pre-cover r[st].it _ β-cover)
 
   done : Im r[st].it Sub.≅ Im [rs]t.it
-  done = r[st]≅i Sub.∘Iso ([rs]t≅i Sub.Iso⁻¹)
+  done = [rs]t≅i Sub.Iso⁻¹ Sub.∘Iso r[st]≅i
 ```
 -->
 

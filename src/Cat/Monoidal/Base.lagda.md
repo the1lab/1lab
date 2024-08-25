@@ -176,8 +176,8 @@ children's drawing of a house, so that it fits on the page horizontally.
     → (A ▶ α→ B C D) ∘ α→ A (B ⊗ C) D ∘ (α→ A B C ◀ D)
     ≡ α→ A B (C ⊗ D) ∘ α→ (A ⊗ B) C D
   pentagon-α→ = inverse-unique refl refl
-    (▶.F-map-iso (α≅ Iso⁻¹) ∘Iso α≅ Iso⁻¹ ∘Iso ◀.F-map-iso (α≅ Iso⁻¹))
-    (α≅ Iso⁻¹ ∘Iso α≅ Iso⁻¹)
+    (▶.F-map-iso (α≅ Iso⁻¹) ∙Iso α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (α≅ Iso⁻¹))
+    (α≅ Iso⁻¹ ∙Iso α≅ Iso⁻¹)
     (sym (assoc _ _ _) ∙ pentagon)
 ```
 -->
@@ -301,24 +301,24 @@ desired equation since $1 \otimes -$ is an equivalence.
   triangle-λ← {A} {B} = push-eqⁿ (unitor-l ni⁻¹) $
     ▶.F-∘ _ _ ∙ ap to (Iso-prism base sq1 sq2 sq3)
     where
-      base : ◀.F-map-iso (α≅ Iso⁻¹) ∘Iso ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹))
+      base : ◀.F-map-iso (α≅ Iso⁻¹) ∙Iso ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹))
            ≡ ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹))
       base = ≅-path (◀.collapse triangle)
 
-      sq1 : ◀.F-map-iso (α≅ Iso⁻¹) ∘Iso α≅ ∘Iso α≅ ≡ α≅ ∘Iso ▶.F-map-iso α≅
+      sq1 : ◀.F-map-iso (α≅ Iso⁻¹) ∙Iso α≅ ∙Iso α≅ ≡ α≅ ∙Iso ▶.F-map-iso α≅
       sq1 = ≅-path (rswizzle (sym pentagon-α→ ∙ assoc _ _ _)
         (◀.annihilate (α≅ .invl)))
 
-      sq2 : ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∘Iso α≅
-          ≡ (α≅ ∘Iso α≅) ∘Iso ▶.F-map-iso (λ≅ Iso⁻¹)
+      sq2 : ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∙Iso α≅
+          ≡ (α≅ ∙Iso α≅) ∙Iso ▶.F-map-iso (λ≅ Iso⁻¹)
       sq2 = ≅-path $
         α→ _ _ _ ∘ ((ρ← ⊗₁ id) ⊗₁ id)    ≡⟨ associator .Isoⁿ.to .is-natural _ _ _ ⟩
         (ρ← ⊗₁ ⌜ id ⊗₁ id ⌝) ∘ α→ _ _ _  ≡⟨ ap! ⊗.F-id ⟩
         (ρ← ⊗₁ id) ∘ α→ _ _ _            ≡˘⟨ pulll triangle-α→ ⟩
         (id ⊗₁ λ←) ∘ α→ _ _ _ ∘ α→ _ _ _ ∎
 
-      sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∘Iso α≅
-          ≡ α≅ ∘Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
+      sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∙Iso α≅
+          ≡ α≅ ∙Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
       sq3 = ≅-path (associator .Isoⁿ.to .is-natural _ _ _)
 ```
 
