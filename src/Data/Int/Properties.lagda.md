@@ -319,6 +319,10 @@ no further comments.
   assign-+ {neg} (suc x) zero = ap negsuc (+-zeror _)
   assign-+ {neg} (suc x) (suc y) = ap negsuc (+-sucr _ _)
 
+  possuc≠assign-neg : ∀ {x y} → possuc x ≠ assign neg y
+  possuc≠assign-neg {x} {zero} p = suc≠zero (pos-injective p)
+  possuc≠assign-neg {x} {suc y} p = pos≠negsuc p
+
   *ℤ-onel : ∀ x → 1 *ℤ x ≡ x
   *ℤ-onel (pos x)    = ap (assign pos) (+-zeror x) ∙ assign-pos x
   *ℤ-onel (negsuc x) = ap negsuc (+-zeror x)
@@ -451,4 +455,17 @@ no further comments.
   *ℤ-injectiver-possuc k (negsuc x) (pos y) p = absurd (negsuc≠pos (p ∙ assign-pos (y * suc k)))
   *ℤ-injectiver-possuc k (negsuc x) (negsuc y) p =
     ap (assign neg) (*-suc-inj k (suc x) (suc y) (ap suc (negsuc-injective p)))
+
+  *ℤ-injectiver-negsuc : ∀ k x y → x *ℤ negsuc k ≡ y *ℤ negsuc k → x ≡ y
+  *ℤ-injectiver-negsuc k (pos x) (pos y) p = ap pos (*-suc-inj k x y (pos-injective (negℤ-injective _ _ (sym (assign-neg _) ·· p ·· assign-neg _))))
+  *ℤ-injectiver-negsuc k posz (negsuc y) p = absurd (zero≠suc (pos-injective p))
+  *ℤ-injectiver-negsuc k (possuc x) (negsuc y) p = absurd (negsuc≠pos p)
+  *ℤ-injectiver-negsuc k (negsuc x) posz p = absurd (suc≠zero (pos-injective p))
+  *ℤ-injectiver-negsuc k (negsuc x) (possuc y) p = absurd (pos≠negsuc p)
+  *ℤ-injectiver-negsuc k (negsuc x) (negsuc y) p = ap (assign neg) (*-suc-inj k (suc x) (suc y) (ap suc (suc-inj (pos-injective p))))
+
+  *ℤ-injectiver : ∀ k x y → k ≠ 0 → x *ℤ k ≡ y *ℤ k → x ≡ y
+  *ℤ-injectiver posz x y k≠0 p = absurd (k≠0 refl)
+  *ℤ-injectiver (possuc k) x y k≠0 p = *ℤ-injectiver-possuc k x y p
+  *ℤ-injectiver (negsuc k) x y k≠0 p = *ℤ-injectiver-negsuc k x y p
 ```

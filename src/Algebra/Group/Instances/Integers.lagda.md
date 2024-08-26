@@ -8,9 +8,12 @@ open import Algebra.Group
 open import Cat.Functor.Adjoint
 
 open import Data.Int.Universal
+open import Data.Nat.Order
 open import Data.Int
+open import Data.Nat
 
 open is-group-hom
+open Lift
 ```
 -->
 
@@ -161,4 +164,83 @@ one generator.
 ℤ-free .Free-object.commute {G} {x} = ext λ _ → pow-1 G (x _)
 ℤ-free .Free-object.unique {G} {x} g comm =
   pow-unique G (x _) g (unext comm _)
+```
+
+::: note
+While the notation $x^n$ for `pow`{.Agda} makes sense in
+multiplicative notation, we would instead write $n \cdot x$ in additive
+notation. In fact, we can show that $n \cdot x$ coincides with the
+multiplication $n \times x$ in the group of integers itself.
+
+```agda
+pow-ℤ : ∀ {ℓ} a b → Lift.lower (pow (ℤ {ℓ}) (lift a) b) ≡ a *ℤ b
+pow-ℤ {ℓ} a = ℤ.induction (sym (*ℤ-zeror a)) λ b →
+  lower (pow ℤ (lift a) b)        ≡ a *ℤ b      ≃⟨ ap (_+ℤ a) , equiv→cancellable (equiv≃ Lift-≃ Lift-≃ .fst (_ , Group-on.⋆-equivr (ℤ {ℓ} .snd) (lift a)) .snd) ⟩
+  lower (pow ℤ (lift a) b) +ℤ a   ≡ a *ℤ b +ℤ a ≃⟨ ∙-pre-equiv (ap lower (pow-sucr ℤ (lift a) b)) ⟩
+  lower (pow ℤ (lift a) (sucℤ b)) ≡ a *ℤ b +ℤ a ≃⟨ ∙-post-equiv (sym (*ℤ-sucr a b)) ⟩
+  lower (pow ℤ (lift a) (sucℤ b)) ≡ a *ℤ sucℤ b ≃∎
+```
+:::
+
+# Order of an element {defines="order-of-an-element"}
+
+<!--
+```agda
+module _ {ℓ} (G : Group ℓ) where
+  open Group-on (G .snd)
+```
+-->
+
+We define the **order** of an element $x : G$ of a group $G$ as the
+minimal *positive*^[Without this requirement, every element would
+trivially have order $0$!] integer $n$ such that $x^n = 1$, if it exists.
+
+In particular, if $x^n = 1$, then we have that the order of $x$ divides
+$n$. We define this notion first in the code, then use it to define the
+order of $x$.
+
+```agda
+  order-divides : ⌞ G ⌟ → Nat → Type ℓ
+  order-divides x n = pow G x (pos n) ≡ unit
+
+  has-finite-order : ⌞ G ⌟ → Type ℓ
+  has-finite-order x = minimal-solution λ n →
+    Positive n × order-divides x n
+
+  order : (x : ⌞ G ⌟) → has-finite-order x → Nat
+  order x (n , _) = n
+```
+
+::: {.definition #torsion}
+An element $x$ with finite order is also called a **torsion element**.
+A group all of whose elements are torsion is called a **torsion group**,
+while a group whose only torsion element is the unit is called
+**torsion-free**.
+:::
+
+```agda
+  is-torsion-group : Type ℓ
+  is-torsion-group = ∀ g → has-finite-order g
+
+  is-torsion-free : Type ℓ
+  is-torsion-free = ∀ g → has-finite-order g → g ≡ unit
+```
+
+::: note
+Our definition of torsion groups requires being able to compute
+the order of every element of the group. There is a weaker definition
+that only requires every element $x$ to have *some* $n$ such that
+$x^n = 1$; the two definitions are equivalent if the group is
+[[discrete]], since [[$\NN$ is well-ordered|N is well-ordered]].
+:::
+
+We quickly note that $\ZZ$ is torsion-free, since multiplication by
+a nonzero integer is injective.
+
+```agda
+ℤ-torsion-free : ∀ {ℓ} → is-torsion-free (ℤ {ℓ})
+ℤ-torsion-free (lift n) (k , (k>0 , nk≡0) , _) = ap lift $
+  *ℤ-injectiver (pos k) n 0
+    (λ p → <-not-equal k>0 (pos-injective (sym p)))
+    (sym (pow-ℤ n (pos k)) ∙ ap Lift.lower nk≡0)
 ```
