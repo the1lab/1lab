@@ -300,9 +300,9 @@ loopⁿ-+ a = Integers.induction Int-integers
 
 π₁S¹≡ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid ≡ ℤ
 π₁S¹≡ℤ = sym $ ∫-Path
-  (total-hom (Equiv.from ΩS¹≃integers ∘ Lift.lower)
-    (record { pres-⋆ = λ (lift a) (lift b) → loopⁿ-+ a b }))
-  (∙-is-equiv (Lift-≃ .snd) ((ΩS¹≃integers e⁻¹) .snd))
+  (total-hom (Equiv.from ΩS¹≃integers)
+    (record { pres-⋆ = loopⁿ-+ }))
+  ((ΩS¹≃integers e⁻¹) .snd)
 ```
 
 Furthermore, since the loop space of the circle is a set, we automatically

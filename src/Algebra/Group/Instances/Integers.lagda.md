@@ -13,7 +13,6 @@ open import Data.Int
 open import Data.Nat
 
 open is-group-hom
-open Lift
 ```
 -->
 
@@ -29,26 +28,24 @@ private module ℤ = Integers Int-integers
 
 # The group of integers {defines="integer-group group-of-integers"}
 
-The fundamental example of an [[abelian group]] is the group of [[**integers**]], $\ZZ$, under
-addition. A type-theoretic interjection is necessary: the integers live
-on the zeroth universe, so to have an $\ell$-sized group of integers, we
-must lift it.
+The fundamental example of an [[abelian group]] is the group of
+[[**integers**]], $\ZZ$, under addition.
 
 ```agda
-ℤ-ab : ∀ {ℓ} → Abelian-group ℓ
+ℤ-ab : Abelian-group lzero
 ℤ-ab = to-ab mk-ℤ where
   open make-abelian-group
-  mk-ℤ : make-abelian-group (Lift _ Int)
+  mk-ℤ : make-abelian-group Int
   mk-ℤ .ab-is-set = hlevel 2
-  mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
-  mk-ℤ .inv (lift x) = lift (negℤ x)
+  mk-ℤ .mul x y = x +ℤ y
+  mk-ℤ .inv x = negℤ x
   mk-ℤ .1g = 0
-  mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
-  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-assoc x y z)
-  mk-ℤ .invl (lift x) = ap lift (+ℤ-invl x)
-  mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
+  mk-ℤ .idl x = +ℤ-zerol x
+  mk-ℤ .assoc x y z = +ℤ-assoc x y z
+  mk-ℤ .invl x = +ℤ-invl x
+  mk-ℤ .comm x y = +ℤ-commutative x y
 
-ℤ : ∀ {ℓ} → Group ℓ
+ℤ : Group lzero
 ℤ = Abelian→Group ℤ-ab
 ```
 
@@ -85,8 +82,14 @@ module _ {ℓ} (G : Group ℓ) where
         pow (a +ℤ b) ⋆ x    ≡ pow a ⋆ pow (sucℤ b) ≃⟨ ∙-pre-equiv (pow-sucr (a +ℤ b)) ⟩
         pow (sucℤ (a +ℤ b)) ≡ pow a ⋆ pow (sucℤ b) ≃⟨ ∙-pre-equiv (ap pow (+ℤ-sucr a b)) ⟩
         pow (a +ℤ sucℤ b)   ≡ pow a ⋆ pow (sucℤ b) ≃∎
+```
 
-    pow-hom : Groups.Hom ℤ G
+A type-theoretic interjection is necessary: the integers live on the
+zeroth universe, so to have an $\ell$-sized group of integers, we
+must lift it.
+
+```agda
+    pow-hom : Groups.Hom (LiftGroup ℓ ℤ) G
     pow-hom .hom (lift i) = pow i
     pow-hom .preserves .pres-⋆ (lift a) (lift b) = pow-+ a b
 ```
@@ -94,7 +97,7 @@ module _ {ℓ} (G : Group ℓ) where
 This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
 
 ```agda
-    pow-unique : (g : Groups.Hom ℤ G) → g # 1 ≡ x → g ≡ pow-hom
+    pow-unique : (g : Groups.Hom (LiftGroup ℓ ℤ) G) → g # 1 ≡ x → g ≡ pow-hom
     pow-unique g g1≡x = ext $ ℤ.map-out-unique (λ i → g # lift i)
       (pres-id (g .preserves))
       λ y →
@@ -158,7 +161,7 @@ one generator.
 
 ```agda
 ℤ-free : Free-object Grp↪Sets (el! ⊤)
-ℤ-free .Free-object.free = ℤ
+ℤ-free .Free-object.free = LiftGroup lzero ℤ
 ℤ-free .Free-object.unit _ = 1
 ℤ-free .Free-object.fold {G} x = pow-hom G (x _)
 ℤ-free .Free-object.commute {G} {x} = ext λ _ → pow-1 G (x _)
@@ -173,12 +176,12 @@ notation. In fact, we can show that $n \cdot x$ coincides with the
 multiplication $n \times x$ in the group of integers itself.
 
 ```agda
-pow-ℤ : ∀ {ℓ} a b → Lift.lower (pow (ℤ {ℓ}) (lift a) b) ≡ a *ℤ b
-pow-ℤ {ℓ} a = ℤ.induction (sym (*ℤ-zeror a)) λ b →
-  lower (pow ℤ (lift a) b)        ≡ a *ℤ b      ≃⟨ ap (_+ℤ a) , equiv→cancellable (equiv≃ Lift-≃ Lift-≃ .fst (_ , Group-on.⋆-equivr (ℤ {ℓ} .snd) (lift a)) .snd) ⟩
-  lower (pow ℤ (lift a) b) +ℤ a   ≡ a *ℤ b +ℤ a ≃⟨ ∙-pre-equiv (ap lower (pow-sucr ℤ (lift a) b)) ⟩
-  lower (pow ℤ (lift a) (sucℤ b)) ≡ a *ℤ b +ℤ a ≃⟨ ∙-post-equiv (sym (*ℤ-sucr a b)) ⟩
-  lower (pow ℤ (lift a) (sucℤ b)) ≡ a *ℤ sucℤ b ≃∎
+pow-ℤ : ∀ a b → pow ℤ a b ≡ a *ℤ b
+pow-ℤ a = ℤ.induction (sym (*ℤ-zeror a)) λ b →
+  pow ℤ a b        ≡ a *ℤ b      ≃⟨ ap (_+ℤ a) , equiv→cancellable (Group-on.⋆-equivr (ℤ .snd) a) ⟩
+  pow ℤ a b +ℤ a   ≡ a *ℤ b +ℤ a ≃⟨ ∙-pre-equiv (pow-sucr ℤ a b) ⟩
+  pow ℤ a (sucℤ b) ≡ a *ℤ b +ℤ a ≃⟨ ∙-post-equiv (sym (*ℤ-sucr a b)) ⟩
+  pow ℤ a (sucℤ b) ≡ a *ℤ sucℤ b ≃∎
 ```
 :::
 
@@ -238,9 +241,8 @@ We quickly note that $\ZZ$ is torsion-free, since multiplication by
 a nonzero integer is injective.
 
 ```agda
-ℤ-torsion-free : ∀ {ℓ} → is-torsion-free (ℤ {ℓ})
-ℤ-torsion-free (lift n) (k , (k>0 , nk≡0) , _) = ap lift $
-  *ℤ-injectiver (pos k) n 0
-    (λ p → <-not-equal k>0 (pos-injective (sym p)))
-    (sym (pow-ℤ n (pos k)) ∙ ap Lift.lower nk≡0)
+ℤ-torsion-free : is-torsion-free ℤ
+ℤ-torsion-free n (k , (k>0 , nk≡0) , _) = *ℤ-injectiver (pos k) n 0
+  (λ p → <-not-equal k>0 (pos-injective (sym p)))
+  (sym (pow-ℤ n (pos k)) ∙ nk≡0)
 ```

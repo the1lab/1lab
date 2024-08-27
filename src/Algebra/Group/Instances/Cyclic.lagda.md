@@ -19,7 +19,6 @@ open import Data.Nat
 open represents-subgroup
 open normal-subgroup
 open is-group-hom
-open Lift
 ```
 -->
 
@@ -29,7 +28,7 @@ module Algebra.Group.Instances.Cyclic where
 
 <!--
 ```agda
-private module ℤ {ℓ} = Group-on (ℤ {ℓ} .snd) hiding (magma-hlevel)
+private module ℤ = Group-on (ℤ .snd) hiding (magma-hlevel)
 ```
 -->
 
@@ -75,20 +74,20 @@ $n$ when $n \geq 1$, and is the infinite cyclic group when $n = 0$.
 
 ```agda
 infix 30 _·ℤ
-_·ℤ : ∀ (n : Nat) {ℓ} → normal-subgroup (ℤ {ℓ}) λ (lift i) → el (n ∣ℤ i) (∣ℤ-is-prop n i)
+_·ℤ : ∀ (n : Nat) → normal-subgroup ℤ λ i → el (n ∣ℤ i) (∣ℤ-is-prop n i)
 (n ·ℤ) .has-rep .has-unit = ∣ℤ-zero
 (n ·ℤ) .has-rep .has-⋆ = ∣ℤ-+
 (n ·ℤ) .has-rep .has-inv = ∣ℤ-negℤ
-(n ·ℤ) {ℓ} .has-conjugate {lift x} {lift y} = subst (n ∣ℤ_) x≡y+x-y
+(n ·ℤ) .has-conjugate {x} {y} = subst (n ∣ℤ_) x≡y+x-y
   where
     x≡y+x-y : x ≡ y +ℤ (x -ℤ y)
     x≡y+x-y =
-      x                  ≡⟨ ap lower (ℤ.insertl {h = lift {ℓ = ℓ} y} (ℤ.inverser {x = lift y})) ⟩
+      x                  ≡⟨ ℤ.insertl {h = y} (ℤ.inverser {x = y}) ⟩
       y +ℤ (negℤ y +ℤ x) ≡⟨ ap (y +ℤ_) (+ℤ-commutative (negℤ y) x) ⟩
       y +ℤ (x -ℤ y)      ∎
 
 infix 25 ℤ/_
-ℤ/_ : Nat → ∀ {ℓ} → Group ℓ
+ℤ/_ : Nat → Group lzero
 ℤ/ n = ℤ /ᴳ n ·ℤ
 ```
 
@@ -96,11 +95,11 @@ $\ZZ/n\ZZ$ is an [[abelian group]], since the commutativity of
 addition descends to the quotient.
 
 ```agda
-ℤ/n-commutative : ∀ n {ℓ} → is-commutative-group {ℓ} (ℤ/ n)
-ℤ/n-commutative n = elim! λ x y → ap (inc ⊙ lift) (+ℤ-commutative x y)
+ℤ/n-commutative : ∀ n → is-commutative-group (ℤ/ n)
+ℤ/n-commutative n = elim! λ x y → ap inc (+ℤ-commutative x y)
 
 infix 25 ℤ-ab/_
-ℤ-ab/_ : Nat → ∀ {ℓ} → Abelian-group ℓ
+ℤ-ab/_ : Nat → Abelian-group lzero
 ℤ-ab/_ n = from-commutative-group (ℤ/ n) (ℤ/n-commutative n)
 ```
 
@@ -109,24 +108,23 @@ by $1$.
 
 <!--
 ```agda
-module _ (n : Nat) {ℓ} where
-  open Group-on {ℓ} ((ℤ/ n) .snd)
-  ℤ/n = (ℤ/ n) {ℓ}
+module _ (n : Nat) where
+  open Group-on ((ℤ/ n) .snd)
 ```
 -->
 
 ```agda
-  ℤ/n-cyclic : is-cyclic ℤ/n
+  ℤ/n-cyclic : is-cyclic (ℤ/ n)
   ℤ/n-cyclic = inc (1 , gen) where
-    gen : ℤ/n is-generated-by 1
+    gen : ℤ/ n is-generated-by 1
     gen = elim! λ x → inc (x , Integers.induction Int-integers
-      {P = λ x → inc (lift x) ≡ pow ℤ/n 1 x}
+      {P = λ x → inc x ≡ pow (ℤ/ n) 1 x}
       refl
       (λ x →
-        inc (lift x)        ≡ pow ℤ/n 1 x        ≃⟨ _ , equiv→cancellable (⋆-equivr 1) ⟩
-        inc (lift x) ⋆ 1    ≡ pow ℤ/n 1 x ⋆ 1    ≃⟨ ∙-pre-equiv (sym (ap (inc ⊙ lift) (+ℤ-oner x))) ⟩
-        inc (lift (sucℤ x)) ≡ pow ℤ/n 1 x ⋆ 1    ≃⟨ ∙-post-equiv (sym (pow-sucr ℤ/n 1 x)) ⟩
-        inc (lift (sucℤ x)) ≡ pow ℤ/n 1 (sucℤ x) ≃∎)
+        inc x        ≡ pow (ℤ/ n) 1 x        ≃⟨ _ , equiv→cancellable (⋆-equivr 1) ⟩
+        inc x ⋆ 1    ≡ pow (ℤ/ n) 1 x ⋆ 1    ≃⟨ ∙-pre-equiv (sym (ap inc (+ℤ-oner x))) ⟩
+        inc (sucℤ x) ≡ pow (ℤ/ n) 1 x ⋆ 1    ≃⟨ ∙-post-equiv (sym (pow-sucr (ℤ/ n) 1 x)) ⟩
+        inc (sucℤ x) ≡ pow (ℤ/ n) 1 (sucℤ x) ≃∎)
       x)
 ```
 
@@ -148,8 +146,8 @@ module _
   (wraps : x^ pos n ≡ unit)
   where
 
-  ℤ/-out : Groups.Hom (ℤ/ n) G
-  ℤ/-out .hom = Coeq-rec (apply x^-) λ (lift a , lift b , n∣a-b) → zero-diff $
+  ℤ/-out : Groups.Hom (LiftGroup ℓ (ℤ/ n)) G
+  ℤ/-out .hom (lift i) = Coeq-rec (apply x^- ⊙ lift) (λ (a , b , n∣a-b) → zero-diff $
     let k , k*n≡a-b = ∣ℤ→fibre n∣a-b in
     x^ a — x^ b          ≡˘⟨ pres-diff (x^- .preserves) {lift a} {lift b} ⟩
     x^ (a -ℤ b)          ≡˘⟨ ap x^_ k*n≡a-b ⟩
@@ -157,7 +155,8 @@ module _
     x^ (pos n *ℤ k)      ≡⟨ pow-* G x (pos n) k ⟩
     pow G ⌜ x^ pos n ⌝ k ≡⟨ ap! wraps ⟩
     pow G unit k         ≡⟨ pow-unit G k ⟩
-    unit                 ∎
+    unit                 ∎)
+    i
   ℤ/-out .preserves .pres-⋆ = elim! λ x y →
     x^- .preserves .pres-⋆ (lift x) (lift y)
 ```
@@ -165,14 +164,14 @@ module _
 We can check that $\ZZ/0\ZZ \is \ZZ$:
 
 ```agda
-ℤ-ab/0≡ℤ-ab : ∀ {ℓ} → ℤ-ab/ 0 ≡ ℤ-ab {ℓ}
+ℤ-ab/0≡ℤ-ab : ℤ-ab/ 0 ≡ ℤ-ab
 ℤ-ab/0≡ℤ-ab = ∫-Path
   (total-hom
-    (Coeq-rec (λ z → z) (λ (_ , _ , p) → ℤ.zero-diff (ap lift p)))
+    (Coeq-rec (λ z → z) (λ (_ , _ , p) → ℤ.zero-diff p))
     (record { pres-⋆ = elim! λ _ _ → refl }))
   (is-iso→is-equiv (iso inc (λ _ → refl) (elim! λ _ → refl)))
 
-ℤ/0≡ℤ : ∀ {ℓ} → ℤ/ 0 ≡ ℤ {ℓ}
+ℤ/0≡ℤ : ℤ/ 0 ≡ ℤ
 ℤ/0≡ℤ = Grp→Ab→Grp (ℤ/ 0) (ℤ/n-commutative 0) ∙ ap Abelian→Group ℤ-ab/0≡ℤ-ab
 ```
 
@@ -182,16 +181,16 @@ $x : \ZZ$ to the representative of its congruence class modulo $n$,
 $x \% n$.
 
 ```agda
-ℤ/n≃ℕ<n : ∀ n {ℓ} → .⦃ Positive n ⦄ → ⌞ (ℤ/ n) {ℓ} ⌟ ≃ ℕ< n
-ℤ/n≃ℕ<n n .fst = Coeq-rec (λ (lift i) → i %ℤ n , x%ℤy<y i n)
-  λ (lift x , lift y , p) → Σ-prop-path! (divides-diff→same-rem n x y p)
+ℤ/n≃ℕ<n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ ℕ< n
+ℤ/n≃ℕ<n n .fst = Coeq-rec (λ i → i %ℤ n , x%ℤy<y i n)
+  λ (x , y , p) → Σ-prop-path! (divides-diff→same-rem n x y p)
 ℤ/n≃ℕ<n n .snd = is-iso→is-equiv $ iso
-  (λ (i , p) → inc (lift (pos i)))
+  (λ (i , p) → inc (pos i))
   (λ i → Σ-prop-path! (ℕ<-%ℤ i))
   (elim! λ i → quot (same-rem→divides-diff n (pos (i %ℤ n)) i
     (ℕ<-%ℤ (_ , x%ℤy<y i n))))
 
-Finite-ℤ/n : ∀ n {ℓ} → .⦃ Positive n ⦄ → ⌞ (ℤ/ n) {ℓ} ⌟ ≃ Fin n
+Finite-ℤ/n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
 Finite-ℤ/n n = ℤ/n≃ℕ<n n ∙e Fin≃ℕ< e⁻¹
 ```
 
@@ -205,6 +204,7 @@ corresponds to $1 : [2!]$.
 ℤ/2→S₂ : Groups.Hom (ℤ/ 2) (S 2)
 ℤ/2→S₂ = ℤ/-out 2 (Equiv.from (Fin-permutations 2) 1)
   (Equiv.injective (Fin-permutations 2) refl)
+  Groups.∘ G→LiftG (ℤ/ 2)
 ```
 
 In order to conclude the proof, we show that the function $f : \ZZ/2\ZZ
