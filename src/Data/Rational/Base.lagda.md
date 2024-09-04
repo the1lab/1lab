@@ -1,18 +1,18 @@
 <!--
 ```agda
+open import 1Lab.Prelude
+
 open import Algebra.Ring.Localisation hiding (_/_)
 open import Algebra.Ring.Commutative
 open import Algebra.Monoid
 
-open import 1Lab.Prelude
-
 open import Data.Set.Coequaliser hiding (_/_)
-open import Data.Nat.Properties
 open import Data.Int.Properties
+open import Data.Nat.Properties
 open import Data.Bool.Base
+open import Data.Dec.Base
 open import Data.Int.Base
 open import Data.Sum.Base
-open import Data.Dec.Base
 ```
 -->
 

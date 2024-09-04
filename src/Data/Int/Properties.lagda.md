@@ -6,8 +6,8 @@ open import Data.Nat.Properties
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Int.Base
-open import Data.Sum.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 ```
 -->
 
