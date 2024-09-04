@@ -4,6 +4,9 @@ open import 1Lab.Function.Embedding
 
 open import Algebra.Prelude
 open import Algebra.Ring
+
+open import Data.Int.Properties
+open import Data.Int.Base
 ```
 -->
 
@@ -61,4 +64,7 @@ module CRing {ℓ} (R : CRing ℓ) where
 is-commutative-ring : ∀ {ℓ} (R : Ring ℓ) → Type _
 is-commutative-ring R = ∀ {x y} → x R.* y ≡ y R.* x where
   module R = Ring-on (R .snd)
+
+ℤ-comm : CRing lzero
+ℤ-comm = record { fst = el! Int ; snd = record { has-ring-on = ℤ .snd ; *-commutes = λ {x y} → *ℤ-commutative x y } }
 ```

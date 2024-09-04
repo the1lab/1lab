@@ -20,9 +20,10 @@ open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Data.Fin.Product
 open import Data.Fin.Base
 open import Data.Int.HIT
-open import Data.List hiding (lookup)
+open import Data.List hiding (lookup ; tabulate)
 open import Data.Dec
 open import Data.Nat
 
@@ -154,8 +155,8 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
   -- Short-hand notation.
 
-  infix 40 _:-_
-  infix 30 _:*_
+  infixl 30 _:-_ _:+_
+  infixl 40 _:*_
 
   _:+_ : ∀ {n} → Polynomial n → Polynomial n → Polynomial n
   _:+_ = op [+]
@@ -179,6 +180,10 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   instance
     ⟦⟧-Polynomial : ∀ {n} → ⟦⟧-notation (Polynomial n)
     ⟦⟧-Polynomial = brackets _ eval
+
+    Number-Polynomial : ∀ {n} → Number (Polynomial n)
+    Number-Polynomial .Number.Constraint x = Lift _ ⊤
+    Number-Polynomial .Number.fromNat n = con (diff n 0)
 
   eval (op o p₁ p₂) ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
   eval (con c)      ρ = embed-coe (lift c)
@@ -388,6 +393,30 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     test-identities x =
       solve (var 0 :+ (con 0 :* con 1)) ((con 1 :+ con 0) :* var 0) (x ∷ []) refl
 
+module Explicit {ℓ} {R : Type ℓ} (cring : CRing-on R) where
+  private module I = Impl cring
+
+  open I renaming (solve to solve-impl)
+  open I public using (Polynomial ; _:+_ ; _:-_ ; :-_ ; _:*_ ; con ; Number-Polynomial)
+
+  _≔_ : ∀ {n} → Polynomial n → Polynomial n → Polynomial n × Polynomial n
+  x ≔ y = x , y
+
+  private
+    variables : ∀ {n} → Πᶠ {n = n} λ i → Polynomial n
+    variables = tabulateₚ var
+
+  abstract
+    solve
+      : (n : Nat) (f : Arrᶠ {n = n} (λ i → Polynomial n) (Polynomial n × Polynomial n))
+      → (let (lhs , rhs) = applyᶠ {n = n} f variables)
+      → ∀ᶠ n (λ i → R) λ vs
+        → (let rs = tabulate (indexₚ vs))
+        → En (normal lhs) rs ≡ En (normal rhs) rs
+        → ⟦ lhs ⟧ rs ≡ ⟦ rhs ⟧ rs
+    solve n f = curry-∀ᶠ {n = n} (λ a → solve-impl lhs rhs (tabulate (indexₚ a)))
+      where open Σ (applyᶠ {n = n} f variables) renaming (fst to lhs ; snd to rhs)
+
 module Reflection where
   private
     pattern ring-args cring args = (_ hm∷ _ hm∷ cring v∷ args)
@@ -496,3 +525,13 @@ private module TestCRing {ℓ} (R : CRing ℓ) where
 
   test-identities : ∀ x → x R.+ (R.0r R.* R.1r) ≡ (R.1r R.+ R.0r) R.* x
   test-identities x = cring! R
+
+private module TestExplicit where
+  cℤ : CRing-on (Lift lzero Int)
+  cℤ = record { has-ring-on = Liftℤ .snd ; *-commutes = λ {x y} → ap lift (*ℤ-commutative (x .Lift.lower) (y .Lift.lower)) }
+
+  open Explicit cℤ
+
+  _ : ∀ x y u v → (x *ℤ y) *ℤ (u *ℤ v) ≡ (x *ℤ u) *ℤ (y *ℤ v)
+  _ = λ x y u v → ap Lift.lower
+    (solve 4 (λ x y u v → (x :* y) :* (u :* v) ≔ (x :* u) :* (y :* v)) (lift x) (lift y) (lift u) (lift v) refl)

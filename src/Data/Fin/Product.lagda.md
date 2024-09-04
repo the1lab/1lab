@@ -145,6 +145,27 @@ Arrᶠ {0} P x     = x
 Arrᶠ {suc n} P x = P fzero → Arrᶠ (λ i → P (fsuc i)) x
 ```
 
+<!--
+```agda
+∀ᶠ : ∀ n {ℓ ℓ'} (P : (i : Fin n) → Type (ℓ i)) (Q : Πᶠ P → Type ℓ') → Type (ℓ-maxᶠ ℓ ⊔ ℓ')
+∀ᶠ zero P Q = Q tt
+∀ᶠ (suc n) P Q = (a : P fzero) → ∀ᶠ n (λ i → P (fsuc i)) (λ b → Q (a , b))
+
+apply-∀ᶠ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ∀ᶠ n P Q → (a : Πᶠ P) → Q a
+apply-∀ᶠ {zero} f a = f
+apply-∀ᶠ {suc n} f (a , as) = apply-∀ᶠ (f a) as
+
+curry-∀ᶠ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ((a : Πᶠ P) → Q a)
+  → ∀ᶠ n P Q
+curry-∀ᶠ {zero} f = f tt
+curry-∀ᶠ {suc n} f a = curry-∀ᶠ {n} λ b → f (a , b)
+```
+-->
+
 In the generic case, a finitary curried function can be eliminated using
 a finitary dependent product; Moreover, curried functions are
 "extensional" with respect to this application.

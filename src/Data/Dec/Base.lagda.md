@@ -224,3 +224,11 @@ from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   q (yes x) = refl
   q (no x)  = refl
 ```
+
+<!--
+```agda
+Dec→Bool : ∀ {A : Type ℓ} → Dec A → Bool
+Dec→Bool (yes x) = true
+Dec→Bool (no ¬x) = false
+```
+-->

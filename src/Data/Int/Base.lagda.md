@@ -303,7 +303,8 @@ sign× pos neg = neg
 sign× neg pos = neg
 
 _*ℤ_ : Int → Int → Int
-i *ℤ j = assign (sign× (sign i) (sign j)) (abs i * abs j)
+i@(pos _)    *ℤ j = assign (sign× pos (sign j)) (abs i * abs j)
+i@(negsuc _) *ℤ j = assign (sign× neg (sign j)) (abs i * abs j)
 ```
 
 There are actually alternative definitions of addition and

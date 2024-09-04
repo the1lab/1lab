@@ -6,6 +6,7 @@ open import Data.Nat.Properties
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Int.Base
+open import Data.Sum.Base
 open import Data.Nat.Base
 ```
 -->
@@ -358,19 +359,14 @@ no further comments.
     lemma : ∀ x y z → z + y * suc z + x * suc (z + y * suc z)  ≡ z + (y + x * suc y) * suc z
     lemma x y z = nat!
 
+    -- *ℤ-def : ∀ x y → x *ℤ y ≡ assign (sign× (sign x) (sign y)) (abs x * abs y)
+
   *ℤ-associative : ∀ x y z → x *ℤ (y *ℤ z) ≡ (x *ℤ y) *ℤ z
   *ℤ-associative posz y z = refl
-  *ℤ-associative x posz z =
-    ap (λ e → assign (sign× (sign x) pos) e) (*-zeror (abs x)) ∙ sym (ap
-      (λ e → assign
-        (sign× (sign (assign (sign× (sign x) pos) e)) (sign z))
-        (abs (assign (sign× (sign x) pos) e) * abs z)) (*-zeror (abs x)))
-  *ℤ-associative x y posz =
-    ap (λ e →
-      assign (sign× (sign x) (sign (assign (sign× (sign y) pos) e)))
-        (abs x * abs (assign (sign× (sign y) pos) e))) (*-zeror (abs y))
-    ∙ ap₂ assign refl (*-zeror (abs x))
-    ∙ sym (ap₂ assign refl (*-zeror (abs (assign (sign× (sign x) (sign y)) (abs x * abs y)))))
+  *ℤ-associative (pos x@(suc _)) posz z = ap (assign pos) (*-zeror x) ∙ sym (ap₂ _*ℤ_ (ap (assign pos) (*-zeror x)) refl)
+  *ℤ-associative (negsuc x) posz z = ap (assign neg) (*-zeror x) ∙ sym (ap₂ _*ℤ_ (ap (assign neg) (*-zeror x)) refl)
+  *ℤ-associative x (pos y) posz = ap₂ _*ℤ_ (λ i → x) (ap (assign pos) (*-zeror y)) ∙ *ℤ-zeror x ∙ sym (*ℤ-zeror (x *ℤ pos y))
+  *ℤ-associative x (negsuc y) posz = ap₂ _*ℤ_ (λ i → x) (ap (assign neg) (*-zeror y)) ∙ *ℤ-zeror x ∙ sym (*ℤ-zeror (x *ℤ negsuc y))
   *ℤ-associative (possuc x) (possuc y) (possuc z) = ap possuc (lemma x y z)
   *ℤ-associative (possuc x) (possuc y) (negsuc z) = ap negsuc (lemma x y z)
   *ℤ-associative (possuc x) (negsuc y) (possuc z) = ap negsuc (lemma x y z)
@@ -404,7 +400,10 @@ no further comments.
   sign×-commutative neg neg = refl
 
   *ℤ-commutative : ∀ x y → x *ℤ y ≡ y *ℤ x
-  *ℤ-commutative x y = ap₂ assign (sign×-commutative _ _) (*-commutative (abs x) (abs y))
+  *ℤ-commutative (pos x) (pos y) = ap (assign pos) (*-commutative x y)
+  *ℤ-commutative (pos x) (negsuc y) = ap (assign neg) (*-commutative x (suc y))
+  *ℤ-commutative (negsuc x) (pos y) = ap (assign neg) (*-commutative (suc x) y)
+  *ℤ-commutative (negsuc x) (negsuc y) = ap (assign pos) (*-commutative (suc x) (suc y))
 
   dot-is-mul : ∀ x y → (dotℤ x y) ≡ (x *ℤ y)
   dot-is-mul posz y = refl
@@ -468,4 +467,14 @@ no further comments.
   *ℤ-injectiver posz x y k≠0 p = absurd (k≠0 refl)
   *ℤ-injectiver (possuc k) x y k≠0 p = *ℤ-injectiver-possuc k x y p
   *ℤ-injectiver (negsuc k) x y k≠0 p = *ℤ-injectiver-negsuc k x y p
+
+  *ℤ-is-zero : ∀ x y → (x *ℤ y) ≡ 0 → (x ≡ 0) ⊎ (y ≡ 0)
+  *ℤ-is-zero posz (pos _)    _ = inl refl
+  *ℤ-is-zero (negsuc _) posz _ = inr refl
+  *ℤ-is-zero posz (negsuc _) _ = inl refl
+  *ℤ-is-zero (possuc _) posz _ = inr refl
+  *ℤ-is-zero (possuc _) (possuc _) p = absurd (suc≠zero (pos-injective p))
+  *ℤ-is-zero (possuc _) (negsuc _) p = absurd (negsuc≠pos p)
+  *ℤ-is-zero (negsuc _) (possuc _) p = absurd (negsuc≠pos p)
+  *ℤ-is-zero (negsuc _) (negsuc _) p = absurd (suc≠zero (pos-injective p))
 ```
