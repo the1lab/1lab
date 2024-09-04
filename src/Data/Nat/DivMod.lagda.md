@@ -16,7 +16,7 @@ open import Data.Sum.Base
 module Data.Nat.DivMod where
 ```
 
-# Natural division
+# Natural division {defines="natural-division"}
 
 This module implements the basics of the theory of **division** (not
 [divisibility], see there) for the natural numbers. In particular, we
@@ -159,6 +159,8 @@ d1 /ₙ suc d2 = div-helper 0 d2 d1 d2
 
 _%_ : (d1 d2 : Nat) .⦃ _ : Positive d2 ⦄ → Nat
 d1 % suc d2 = mod-helper 0 d2 d1 d2
+
+infixl 9 _/ₙ_ _%_
 
 abstract
   private

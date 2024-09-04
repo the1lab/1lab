@@ -142,7 +142,7 @@ record
 open Unital-magma≃
 ```
 
-* One-sided identities
+## One-sided identities
 
 Dropping either of the paths involved in a unital magma results in a
 right identity or a left identity.

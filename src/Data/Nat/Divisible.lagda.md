@@ -14,7 +14,7 @@ open import Data.Sum.Base
 module Data.Nat.Divisible where
 ```
 
-# Divisibility {defines="divisibility"}
+# Divisibility of natural numbers {defines="divisibility divisible"}
 
 In the natural numbers, **divisibility**[^divide] is the property
 expressing that a given number can be expressed as a multiple of
@@ -176,7 +176,7 @@ The only number that divides 1 is 1 itself:
 ∣-1 {suc (suc n)} (k , p) = *-is-oner k (2 + n) p
 ```
 
-## Even and odd numbers
+## Even and odd natural numbers
 
 A number is **even** if it is divisible by 2, and **odd** otherwise.
 Note that a number is odd if and only if its successor is even; we take this

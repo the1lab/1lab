@@ -58,13 +58,16 @@ isomorphism in a functor category.
   idni : ∀ {F} → F ≅ⁿ F
   idni = CD.id-iso
 
-  _∘ni_ : ∀ {F G H} → F ≅ⁿ G → G ≅ⁿ H → F ≅ⁿ H
+  _∘ni_ : ∀ {F G H} → G ≅ⁿ H → F ≅ⁿ G → F ≅ⁿ H
   _∘ni_ = CD._∘Iso_
+
+  _∙ni_ : ∀ {F G H} → F ≅ⁿ G → G ≅ⁿ H → F ≅ⁿ H
+  f ∙ni g = g ∘ni f
 
   _ni⁻¹ : ∀ {F G} → F ≅ⁿ G → G ≅ⁿ F
   _ni⁻¹ = CD._Iso⁻¹
 
-  infixr 30 _∘ni_
+  infixr 30 _∘ni_ _∙ni_
   infix 31 _ni⁻¹
 
   ≅ⁿ-pathp : ∀ {a c b d : Functor C D} (p : a ≡ c) (q : b ≡ d) {f : a ≅ⁿ b} {g : c ≅ⁿ d}

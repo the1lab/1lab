@@ -20,7 +20,7 @@ module _ {o h} (C : Precategory o h) where
 ```
 -->
 
-# Terminal objects {defines=terminal-object}
+# Terminal objects {defines="terminal-object terminal"}
 
 An object $\top$ of a category $\mathcal{C}$ is said to be **terminal**
 if it admits a _unique_ map from any other object:

@@ -242,7 +242,9 @@ Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
 
 Finite-⊥ = fin (inc (Finite-zero-is-initial e⁻¹))
 Finite-⊤ = fin (inc (is-contr→≃⊤ Finite-one-is-contr e⁻¹))
-Finite-Bool = fin (inc (Iso→Equiv enum)) where
+
+Bool≃Fin2 : Bool ≃ Fin 2
+Bool≃Fin2 = Iso→Equiv enum where
   enum : Iso Bool (Fin 2)
   enum .fst false = 0
   enum .fst true = 1
@@ -252,6 +254,8 @@ Finite-Bool = fin (inc (Iso→Equiv enum)) where
   enum .snd .is-iso.rinv (fsuc fzero) = refl
   enum .snd .is-iso.linv true = refl
   enum .snd .is-iso.linv false = refl
+
+Finite-Bool = fin (inc Bool≃Fin2)
 
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 

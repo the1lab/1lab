@@ -423,7 +423,7 @@ sends back to $i \circ j\inv$.
 
 ```agda
     Fx≅Fy : F .F₀ x D.≅ F .F₀ y
-    Fx≅Fy = i D.∘Iso (j D.Iso⁻¹)
+    Fx≅Fy = j D.Iso⁻¹ D.∘Iso i
 
     x≅y : x C.≅ y
     x≅y = is-ff→essentially-injective {F = F} ff Fx≅Fy

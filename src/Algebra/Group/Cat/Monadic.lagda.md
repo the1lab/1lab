@@ -163,7 +163,7 @@ but the other direction is by induction on "words".
 ```agda
   isom : is-iso K.₀
   isom .is-iso.inv (A , alg) = A , Algebra-on→group-on alg
-  isom .is-iso.linv x = ∫-Path Groups-equational
+  isom .is-iso.linv x = ∫-Path
     (total-hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
     id-equiv
   isom .is-iso.rinv x = Σ-pathp refl (Algebra-on-pathp _ _ go) where

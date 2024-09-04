@@ -246,24 +246,6 @@ Category-identity-system-pre =
     (fst , (Subset-proj-embedding (λ x → is-identity-system-is-prop)))
 ```
 
-<!--
-```agda
-module
-  _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-    (F : Functor C D)
-    (eqv : is-equivalence F)
-  where
-
-  private
-    open is-equivalence eqv
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module F = Functor F
-  open _=>_
-
-```
--->
-
 Then, since the spaces of equivalences $\cC \cong \cD$ and
 isomorphisms $\cC \to \cD$ are both defined as the total space of
 a predicate on the same types, it suffices to show that the predicates
@@ -317,3 +299,17 @@ the necessary paths for showing that $F_0$ is an equivalence of types.
         .is-iso.rinv x → dcat .to-path       $ isoⁿ→iso (F∘F⁻¹≅Id eqv) _
         .is-iso.linv x → sym $ ccat .to-path $ isoⁿ→iso (Id≅F⁻¹∘F eqv) _
 ```
+
+<!--
+```agda
+module
+  _ {o ℓ} {C : Precategory o ℓ} {D : Precategory o ℓ}
+    (ccat : is-category C) (dcat : is-category D)
+    (F : Functor C D)
+    (eqv : is-equivalence F)
+  where
+
+  eqv→path : C ≡ D
+  eqv→path = ap fst (Category-identity-system .to-path {C , ccat} {D , dcat} (F , eqv))
+```
+-->

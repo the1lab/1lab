@@ -86,7 +86,7 @@ Zero-group-is-zero = record
 ∅ᴳ .Zero.has-is-zero = Zero-group-is-zero
 ```
 
-## Direct products
+## Direct products {defines="direct-product-of-groups"}
 
 We compute the product of two groups $G \times H$ as the product of
 their underlying sets, equipped with the operation of "pointwise

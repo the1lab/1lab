@@ -183,6 +183,11 @@ n-Tr-rec!
   → ⦃ hl : H-Level B (suc n) ⦄
   → (A → B) → n-Tr A (suc n) → B
 n-Tr-rec! = n-Tr-elim (λ _ → _) (λ _ → hlevel _)
+
+n-Tr-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
+  → (A → B) → n-Tr A (suc n) → n-Tr B (suc n)
+n-Tr-map f = n-Tr-rec! (inc ∘ f)
 ```
 -->
 
@@ -267,7 +272,7 @@ n-Tr-univ n b-hl = Iso→Equiv λ where
 n-Tr-product
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → n-Tr (A × B) (suc n) ≃ (n-Tr A (suc n) × n-Tr B (suc n))
-n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product where
+n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv where
   distrib : n-Tr (A × B) (suc n) → n-Tr A (suc n) × n-Tr B (suc n)
   distrib (inc (x , y)) = inc x , inc y
   distrib (hub r) .fst = hub λ s → distrib (r s) .fst
@@ -291,4 +296,24 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product wh
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 
   distrib-is-equiv = is-iso→is-equiv distrib-is-iso
+
+n-Tr-Σ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {n}
+  → n-Tr (Σ A B) (suc n) ≃ n-Tr (Σ A λ a → n-Tr (B a) (suc n)) (suc n)
+n-Tr-Σ {A = A} {B} {n} = Iso→Equiv is where
+  is : Iso _ _
+  is .fst = n-Tr-map (Σ-map id inc)
+  is .snd .is-iso.inv = n-Tr-rec! λ (a , b) → n-Tr-map (a ,_) b
+  is .snd .is-iso.rinv = n-Tr-elim! _ λ (a , b) → n-Tr-elim! (λ b → n-Tr-map (Σ-map id inc) (n-Tr-map (a ,_) b) ≡ inc (a , b)) (λ _ → refl) b
+  is .snd .is-iso.linv = n-Tr-elim! _ λ _ → refl
+
+n-Tr-≃
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
+  → (e : A ≃ B) → n-Tr A (suc n) ≃ n-Tr B (suc n)
+n-Tr-≃ e = Iso→Equiv is where
+  is : Iso _ _
+  is .fst = n-Tr-map (e .fst)
+  is .snd .is-iso.inv = n-Tr-map (Equiv.from e)
+  is .snd .is-iso.rinv = elim! λ _ → ap inc (Equiv.ε e _)
+  is .snd .is-iso.linv = elim! λ _ → ap inc (Equiv.η e _)
 ```

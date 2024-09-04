@@ -235,7 +235,7 @@ that here (it is a more general fact about
   from {suc x} {suc y} p = s≤s (from (suc-inj p))
 ```
 
-## Well-ordering
+## Well-ordering {defines="N-is-well-ordered"}
 
 In classical mathematics, the well-ordering principle states that every
 nonempty subset of the natural numbers has a minimal element. In
@@ -256,14 +256,14 @@ implicitly appealing to path induction to reduce this to the case where
 $p, q : P(n)$] automatically have that $p = q$.
 
 ```agda
-module _ {ℓ} {P : Nat → Prop ℓ} where
-  private
-    minimal-solution : ∀ {ℓ} (P : Nat → Type ℓ) → Type _
-    minimal-solution P = Σ[ n ∈ Nat ] (P n × (∀ k → P k → n ≤ k))
+minimal-solution : ∀ {ℓ} (P : Nat → Type ℓ) → Type _
+minimal-solution P = Σ[ n ∈ Nat ] (P n × (∀ k → P k → n ≤ k))
 
-    minimal-solution-unique : is-prop (minimal-solution λ x → ∣ P x ∣)
-    minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
-      Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
+minimal-solution-unique
+  : ∀ {ℓ} {P : Nat → Prop ℓ}
+  → is-prop (minimal-solution λ x → ∣ P x ∣)
+minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
+  Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
 ```
 
 The step of the code that actually finds a minimal solution does not
@@ -271,30 +271,32 @@ need $P$ to be a predicate: we only need that for actually searching for
 an inhabited subset.
 
 ```agda
-    min-suc
-      : ∀ {P : Nat → Type ℓ} → ∀ n → ¬ P 0
-      → (∀ k → P (suc k) → n ≤ k)
-      → ∀ k → P k → suc n ≤ k
-    min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)
-    min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
-    min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
+min-suc
+  : ∀ {ℓ} {P : Nat → Type ℓ}
+  → ∀ n → ¬ P 0
+  → (∀ k → P (suc k) → n ≤ k)
+  → ∀ k → P k → suc n ≤ k
+min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)
+min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
+min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
 
-  ℕ-minimal-solution
-    : ∀ (P : Nat → Type ℓ)
-    → (∀ n → Dec (P n))
-    → (n : Nat) → P n
-    → minimal-solution P
-  ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
-  ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
-    (yes p0) → 0 , p0 , λ k _ → 0≤x
-    (no ¬p0) →
-      let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
-       in suc a , pa , min-suc {P} a ¬p0 x
+ℕ-minimal-solution
+  : ∀ {ℓ} (P : Nat → Type ℓ)
+  → (∀ n → Dec (P n))
+  → (n : Nat) → P n
+  → minimal-solution P
+ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
+ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
+  (yes p0) → 0 , p0 , λ k _ → 0≤x
+  (no ¬p0) →
+    let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
+      in suc a , pa , min-suc {P = P} a ¬p0 x
 
-  ℕ-well-ordered
-    : (∀ n → Dec ∣ P n ∣)
-    → ∃[ n ∈ Nat ] ∣ P n ∣
-    → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
-  ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
-    (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
+ℕ-well-ordered
+  : ∀ {ℓ} {P : Nat → Prop ℓ}
+  → (∀ n → Dec ∣ P n ∣)
+  → ∃[ n ∈ Nat ] ∣ P n ∣
+  → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
+ℕ-well-ordered {P = P} P-dec wit = ∥-∥-rec (minimal-solution-unique {P = P})
+  (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
 ```

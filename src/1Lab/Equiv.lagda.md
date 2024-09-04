@@ -960,10 +960,12 @@ is-involutive→is-equiv inv = is-iso→is-equiv (iso _ inv inv)
 
 ## Closure properties
 
+:::{.definition #two-out-of-three}
 We will now show a rather fundamental property of equivalences: they are
 closed under *two-out-of-three*. This means that, considering $f : A \to
 B$, $g : B \to C$, and $(g \circ f) : A \to C$ as a set of three things,
 if any two are an equivalence, then so is the third:
+:::
 
 <!--
 ```agda

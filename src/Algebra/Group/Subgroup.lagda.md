@@ -387,6 +387,7 @@ f(yy\inv) = f(1) = 1$$.
       B.unit                        ∎
 ```
 
+:::{.definition #normal-subgroup}
 It turns out that this last property is enough to pick out exactly the
 kernels amongst the representations of subgroups: If $H$ is closed under
 conjugation, then $H$ generates an equivalence relation on the set
@@ -395,6 +396,7 @@ this equivalence relation with a group structure. The kernel of the
 quotient map $G \to G/H$ is then $H$. We call a predicate representing a
 kernel a **normal subgroup**, and we denote this in shorthand by $H
 \unlhd G$.
+:::
 
 ```agda
 record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
@@ -495,6 +497,7 @@ rather directly:
     Group-on-G/H .make-group.invl  = elim! λ x → ap Coeq.inc inversel
     Group-on-G/H .make-group.idl   = elim! λ x → ap Coeq.inc idl
 
+  infix 25 _/ᴳ_
   _/ᴳ_ : Group _
   _/ᴳ_ = to-group Group-on-G/H
 

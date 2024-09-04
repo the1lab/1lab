@@ -15,14 +15,14 @@ open import Data.Nat.Base
 module Data.Int.Base where
 ```
 
-# The integers {defines=integers}
+# The integers {defines=integer}
 
 The familiar [[set]] of integers, in addition to its intuitive
 characterisation in terms of positive and negative numbers, can be
 specified by a wide variety of universal properties:
 
 - The set of integers, with the operation of addition, is the [[free
-group]] on one generator.
+group]] on one generator (see the [[group of integers]]).
 
 - The set of integers, with the operations of addition and
 multiplication, is the [[initial ring]].
@@ -254,6 +254,13 @@ are positive (resp. negative), then we can compute their sum in the
 natural numbers. If the numbers have mismatched sign, then the addition
 function is actually computing a difference, and we already know how to
 compute differences.
+
+<!--
+```agda
+infixl 8 _+ℤ_ _-ℤ_
+infixl 9 _*ℤ_
+```
+-->
 
 ```agda
 _+ℤ_ : Int → Int → Int

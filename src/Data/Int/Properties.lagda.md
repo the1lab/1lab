@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Nat.Properties
 open import Data.Nat.Solver
+open import Data.Nat.Order
 open import Data.Int.Base
 open import Data.Nat.Base
 ```
@@ -32,6 +33,11 @@ no further comments.
   nat-diff-zero zero    = refl
   nat-diff-zero (suc x) = nat-diff-zero x
 
+  nat-diff-positive : ∀ a b → a ℕ- b ≡ 0 → a ≡ b
+  nat-diff-positive a zero p          = pos-injective p
+  nat-diff-positive zero (suc b) p    = absurd (negsuc≠pos p)
+  nat-diff-positive (suc a) (suc b) p = ap suc (nat-diff-positive a b p)
+
   sucℤ-nat-diff : ∀ x y → sucℤ (x ℕ- y) ≡ suc x ℕ- y
   sucℤ-nat-diff zero zero          = refl
   sucℤ-nat-diff zero (suc zero)    = refl
@@ -44,6 +50,16 @@ no further comments.
   predℤ-nat-diff zero (suc y)    = refl
   predℤ-nat-diff (suc x) zero    = refl
   predℤ-nat-diff (suc x) (suc y) = predℤ-nat-diff x y
+
+  nat-diff-monus : ∀ x y → y ≤ x → x ℕ- y ≡ pos (x - y)
+  nat-diff-monus x y 0≤x                         = refl
+  nat-diff-monus (suc x) (suc zero) (s≤s y≤x)    = refl
+  nat-diff-monus (suc x) (suc (suc y)) (s≤s y≤x) = nat-diff-monus x (suc y) y≤x
+
+  nat-diff-bounded : ∀ a b c → a ≤ c → b ≤ c → abs (a ℕ- b) ≤ c
+  nat-diff-bounded a zero c ac bc          = ac
+  nat-diff-bounded zero (suc b) c ac bc    = bc
+  nat-diff-bounded (suc a) (suc b) c ac bc = nat-diff-bounded a b c (<-weaken ac) (<-weaken bc)
 ```
 
 ## Negations
@@ -90,6 +106,19 @@ no further comments.
   negℤ-distrib-min (negsuc x) posz       = refl
   negℤ-distrib-min (negsuc x) (possuc y) = refl
   negℤ-distrib-min (negsuc x) (negsuc y) = refl
+```
+
+## Absolute value
+
+```agda
+  abs-positive : ∀ x → abs x ≡ 0 → x ≡ 0
+  abs-positive (pos x) p = ap pos p
+  abs-positive (negsuc x) p = absurd (suc≠zero p)
+
+  abs-negℤ : ∀ z → abs (negℤ z) ≡ abs z
+  abs-negℤ (posz) = refl
+  abs-negℤ (possuc _) = refl
+  abs-negℤ (negsuc _) = refl
 ```
 
 ## Rotations
@@ -201,6 +230,12 @@ no further comments.
   +ℤ-predr : ∀ x y → x +ℤ predℤ y ≡ predℤ (x +ℤ y)
   +ℤ-predr x y = +ℤ-commutative x (predℤ y) ·· +ℤ-predl y x ·· ap predℤ (+ℤ-commutative y x)
 
+  +ℤ-onel : ∀ x → 1 +ℤ x ≡ sucℤ x
+  +ℤ-onel x = +ℤ-sucl 0 x ∙ ap sucℤ (+ℤ-zerol x)
+
+  +ℤ-oner : ∀ x → x +ℤ 1 ≡ sucℤ x
+  +ℤ-oner x = +ℤ-sucr x 0 ∙ ap sucℤ (+ℤ-zeror x)
+
   +ℤ-injectiver : ∀ k x y → k +ℤ x ≡ k +ℤ y → x ≡ y
   +ℤ-injectiver k x y p =
       sym (+ℤ-zerol x)
@@ -220,6 +255,39 @@ no further comments.
       ap negℤ (rot-is-add x y)
     ·· negℤ-distrib-rot x y
     ·· sym (rot-is-add (negℤ x) (negℤ y))
+
+  negℤ-+ℤ-negsuc : ∀ a b → negℤ (pos a) +ℤ negsuc b ≡ negsuc (a + b)
+  negℤ-+ℤ-negsuc a b =
+      +ℤ-commutative (negℤ (pos a)) (negsuc b)
+    ·· sym (negℤ-distrib (possuc b) (pos a))
+    ·· ap negsuc (+-commutative b a)
+
+  pos-pos : ∀ a b → pos a -ℤ pos b ≡ a ℕ- b
+  pos-pos a zero = +ℤ-zeror _
+  pos-pos a (suc b) = refl
+
+  -ℤ-swapl : ∀ a b c → a +ℤ b ≡ c → a ≡ c -ℤ b
+  -ℤ-swapl a b c p =
+      sym (+ℤ-zeror _)
+    ∙ ap (a +ℤ_) (sym (+ℤ-invr b))
+    ·· +ℤ-assoc a _ _
+    ·· ap (_+ℤ negℤ b) p
+
+  private
+    distrib-lemma
+      : ∀ x y z w → (x +ℤ y) +ℤ (z +ℤ w) ≡ (x +ℤ z) +ℤ (y +ℤ w)
+    distrib-lemma x y z w =
+        +ℤ-assoc (x +ℤ y) z w
+      ·· ap (_+ℤ w) (sym (+ℤ-assoc x y z) ·· ap (x +ℤ_) (+ℤ-commutative y z) ·· +ℤ-assoc x z y)
+      ·· sym (+ℤ-assoc (x +ℤ z) y w)
+
+  -ℤ-cancelr : ∀ k x y → (x +ℤ k) -ℤ (y +ℤ k) ≡ x -ℤ y
+  -ℤ-cancelr k x y =
+    (x +ℤ k) -ℤ (y +ℤ k)      ≡⟨ ap ((x +ℤ k) +ℤ_) (negℤ-distrib y k) ⟩
+    (x +ℤ k) +ℤ (negℤ y -ℤ k) ≡⟨ distrib-lemma x k (negℤ y) (negℤ k) ⟩
+    (x -ℤ y) +ℤ (k -ℤ k)      ≡⟨ ap ((x -ℤ y) +ℤ_) (+ℤ-invr k) ⟩
+    (x -ℤ y) +ℤ 0             ≡⟨ +ℤ-zeror (x -ℤ y) ⟩
+    x -ℤ y                    ∎
 ```
 
 ## Multiplication
@@ -228,6 +296,32 @@ no further comments.
   assign-pos : ∀ x → assign pos x ≡ pos x
   assign-pos zero    = refl
   assign-pos (suc x) = refl
+
+  assign-neg : ∀ x → assign neg x ≡ negℤ (pos x)
+  assign-neg zero    = refl
+  assign-neg (suc x) = refl
+
+  neg-sign : Sign → Sign
+  neg-sign pos = neg
+  neg-sign neg = pos
+
+  neg-assign : ∀ {s} x → assign (neg-sign s) x ≡ negℤ (assign s x)
+  neg-assign {pos} zero = refl
+  neg-assign {pos} (suc x) = refl
+  neg-assign {neg} zero = refl
+  neg-assign {neg} (suc x) = refl
+
+  assign-+ : ∀ {s} x y → assign s (x + y) ≡ assign s x +ℤ assign s y
+  assign-+ {pos} zero y = sym (+ℤ-zerol _)
+  assign-+ {pos} (suc x) zero = refl
+  assign-+ {pos} (suc x) (suc y) = refl
+  assign-+ {neg} zero y = sym (+ℤ-zerol _)
+  assign-+ {neg} (suc x) zero = ap negsuc (+-zeror _)
+  assign-+ {neg} (suc x) (suc y) = ap negsuc (+-sucr _ _)
+
+  possuc≠assign-neg : ∀ {x y} → possuc x ≠ assign neg y
+  possuc≠assign-neg {x} {zero} p = suc≠zero (pos-injective p)
+  possuc≠assign-neg {x} {suc y} p = pos≠negsuc p
 
   *ℤ-onel : ∀ x → 1 *ℤ x ≡ x
   *ℤ-onel (pos x)    = ap (assign pos) (+-zeror x) ∙ assign-pos x
@@ -244,6 +338,21 @@ no further comments.
   *ℤ-zeror : ∀ x → x *ℤ 0 ≡ 0
   *ℤ-zeror (pos x)    = ap (assign pos) (*-zeror x)
   *ℤ-zeror (negsuc x) = ap (assign neg) (*-zeror x)
+
+  assign-*l : ∀ {s} x y → assign s (x * y) ≡ assign s x *ℤ pos y
+  assign-*l {pos} zero y = sym (*ℤ-zerol (pos y))
+  assign-*l {pos} (suc x) y = refl
+  assign-*l {neg} zero y = refl
+  assign-*l {neg} (suc x) y = refl
+
+  *ℤ-negl : ∀ x y → negℤ x *ℤ y ≡ negℤ (x *ℤ y)
+  *ℤ-negl posz y = refl
+  *ℤ-negl (possuc x) y with sign y
+  ... | pos = neg-assign (suc x * abs y)
+  ... | neg = neg-assign (suc x * abs y)
+  *ℤ-negl (negsuc x) y with sign y
+  ... | pos = neg-assign (suc x * abs y)
+  ... | neg = neg-assign (suc x * abs y)
 
   private
     lemma : ∀ x y z → z + y * suc z + x * suc (z + y * suc z)  ≡ z + (y + x * suc y) * suc z
@@ -307,14 +416,6 @@ no further comments.
   dot-is-mul (negsuc zero) (negsuc x) = ap possuc (sym (+-zeror x))
   dot-is-mul (negsuc (suc x)) y = sym (*ℤ-negsucl x y ∙ ap (negℤ y +ℤ_) (sym (dot-is-mul (negsuc x) y)))
 
-  private
-    distrib-lemma
-      : ∀ x y z w → (x +ℤ y) +ℤ (z +ℤ w) ≡ (x +ℤ z) +ℤ (y +ℤ w)
-    distrib-lemma x y z w =
-        +ℤ-assoc (x +ℤ y) z w
-      ·· ap (_+ℤ w) (sym (+ℤ-assoc x y z) ·· ap (x +ℤ_) (+ℤ-commutative y z) ·· +ℤ-assoc x z y)
-      ·· sym (+ℤ-assoc (x +ℤ z) y w)
-
   dot-distribr : ∀ x y z → dotℤ z (x +ℤ y) ≡ (dotℤ z x) +ℤ (dotℤ z y)
   dot-distribr x y posz = refl
   dot-distribr x y (possuc z) =
@@ -336,4 +437,35 @@ no further comments.
       *ℤ-commutative (y +ℤ z) x
     ·· *ℤ-distribl x y z
     ·· ap₂ _+ℤ_ (*ℤ-commutative x y) (*ℤ-commutative x z)
+
+  *ℤ-distribr-minus : ∀ x y z → (y -ℤ z) *ℤ x ≡ (y *ℤ x) -ℤ (z *ℤ x)
+  *ℤ-distribr-minus x y z = *ℤ-distribr x y (negℤ z) ∙ ap (y *ℤ x +ℤ_) (*ℤ-negl z x)
+
+  *ℤ-sucr : ∀ x y → x *ℤ sucℤ y ≡ x *ℤ y +ℤ x
+  *ℤ-sucr x y =
+    x *ℤ sucℤ y      ≡˘⟨ ap (x *ℤ_) (+ℤ-oner y) ⟩
+    x *ℤ (y +ℤ 1)    ≡⟨ *ℤ-distribl x y 1 ⟩
+    x *ℤ y +ℤ x *ℤ 1 ≡⟨ ap (x *ℤ y +ℤ_) (*ℤ-oner x) ⟩
+    x *ℤ y +ℤ x      ∎
+
+  *ℤ-injectiver-possuc : ∀ k x y → x *ℤ possuc k ≡ y *ℤ possuc k → x ≡ y
+  *ℤ-injectiver-possuc k (pos x) (pos y) p =
+    ap pos (*-suc-inj k x y (pos-injective (sym (assign-pos _) ·· p ·· assign-pos _)))
+  *ℤ-injectiver-possuc k (pos x) (negsuc y) p = absurd (pos≠negsuc (sym (assign-pos (x * suc k)) ∙ p))
+  *ℤ-injectiver-possuc k (negsuc x) (pos y) p = absurd (negsuc≠pos (p ∙ assign-pos (y * suc k)))
+  *ℤ-injectiver-possuc k (negsuc x) (negsuc y) p =
+    ap (assign neg) (*-suc-inj k (suc x) (suc y) (ap suc (negsuc-injective p)))
+
+  *ℤ-injectiver-negsuc : ∀ k x y → x *ℤ negsuc k ≡ y *ℤ negsuc k → x ≡ y
+  *ℤ-injectiver-negsuc k (pos x) (pos y) p = ap pos (*-suc-inj k x y (pos-injective (negℤ-injective _ _ (sym (assign-neg _) ·· p ·· assign-neg _))))
+  *ℤ-injectiver-negsuc k posz (negsuc y) p = absurd (zero≠suc (pos-injective p))
+  *ℤ-injectiver-negsuc k (possuc x) (negsuc y) p = absurd (negsuc≠pos p)
+  *ℤ-injectiver-negsuc k (negsuc x) posz p = absurd (suc≠zero (pos-injective p))
+  *ℤ-injectiver-negsuc k (negsuc x) (possuc y) p = absurd (pos≠negsuc p)
+  *ℤ-injectiver-negsuc k (negsuc x) (negsuc y) p = ap (assign neg) (*-suc-inj k (suc x) (suc y) (ap suc (suc-inj (pos-injective p))))
+
+  *ℤ-injectiver : ∀ k x y → k ≠ 0 → x *ℤ k ≡ y *ℤ k → x ≡ y
+  *ℤ-injectiver posz x y k≠0 p = absurd (k≠0 refl)
+  *ℤ-injectiver (possuc k) x y k≠0 p = *ℤ-injectiver-possuc k x y p
+  *ℤ-injectiver (negsuc k) x y k≠0 p = *ℤ-injectiver-negsuc k x y p
 ```

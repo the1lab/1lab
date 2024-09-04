@@ -178,6 +178,38 @@ avoid-injective {suc n} (fsuc i) {fzero} {fsuc k} p = absurd (fzero≠fsuc p)
 avoid-injective {suc n} (fsuc i) {fsuc j} {fzero} p = absurd (fzero≠fsuc (sym p))
 avoid-injective {suc n} (fsuc i) {fsuc j} {fsuc k} p =
   ap fsuc (avoid-injective {n} i {j} {k} (fsuc-inj p))
+
+skip-injective
+  : ∀ {n} (i : Fin (suc n)) (j k : Fin n)
+  → skip i j ≡ skip i k → j ≡ k
+skip-injective fzero j k p = fsuc-inj p
+skip-injective (fsuc i) fzero fzero p = refl
+skip-injective (fsuc i) fzero (fsuc k) p = absurd (fzero≠fsuc p)
+skip-injective (fsuc i) (fsuc j) fzero p = absurd (fzero≠fsuc (sym p))
+skip-injective (fsuc i) (fsuc j) (fsuc k) p = ap fsuc (skip-injective i j k (fsuc-inj p))
+
+skip-skips
+  : ∀ {n} (i : Fin (suc n)) (j : Fin n)
+  → skip i j ≠ i
+skip-skips fzero j p = fzero≠fsuc (sym p)
+skip-skips (fsuc i) fzero p = fzero≠fsuc p
+skip-skips (fsuc i) (fsuc j) p = skip-skips i j (fsuc-inj p)
+
+avoid-skip
+  : ∀ {n} (i : Fin (suc n)) (j : Fin n) {neq : i ≠ skip i j}
+  → avoid i (skip i j) neq ≡ j
+avoid-skip fzero fzero = refl
+avoid-skip fzero (fsuc j) = refl
+avoid-skip (fsuc i) fzero = refl
+avoid-skip (fsuc i) (fsuc j) = ap fsuc (avoid-skip i j)
+
+skip-avoid
+  : ∀ {n} (i : Fin (suc n)) (j : Fin (suc n)) {i≠j : i ≠ j}
+  → skip i (avoid i j i≠j) ≡ j
+skip-avoid fzero fzero {i≠j} = absurd (i≠j refl)
+skip-avoid {suc n} fzero (fsuc j) = refl
+skip-avoid {suc n} (fsuc i) fzero = refl
+skip-avoid {suc n} (fsuc i) (fsuc j) = ap fsuc (skip-avoid i j)
 ```
 
 ## Iterated products and sums {defines="iterated-products"}

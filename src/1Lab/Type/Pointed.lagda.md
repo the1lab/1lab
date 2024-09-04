@@ -35,6 +35,8 @@ Those are called **pointed maps**.
 ```agda
 _→∙_ : Type∙ ℓ → Type∙ ℓ' → Type _
 (A , a) →∙ (B , b) = Σ[ f ∈ (A → B) ] (f a ≡ b)
+
+infixr 0 _→∙_
 ```
 
 Pointed maps compose in a straightforward way.
@@ -57,4 +59,19 @@ funext∙ : {f g : A →∙ B}
         → Square (h (A .snd)) (f .snd) (g .snd) refl
         → f ≡ g
 funext∙ h pth i = funext h i , pth i
+```
+
+The product of two pointed types is again a pointed type.
+
+```agda
+_×∙_ : Type∙ ℓ → Type∙ ℓ' → Type∙ (ℓ ⊔ ℓ')
+(A , a) ×∙ (B , b) = A × B , a , b
+
+infixr 5 _×∙_
+
+fst∙ : A ×∙ B →∙ A
+fst∙ = fst , refl
+
+snd∙ : A ×∙ B →∙ B
+snd∙ = snd , refl
 ```

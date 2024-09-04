@@ -1,10 +1,13 @@
 <!--
 ```agda
+open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
+open import Algebra.Group.Solver
 open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Instances.Delooping
+open import Cat.Instances.Sets
 
 import Cat.Functor.Reasoning as Functor-kit
 ```
@@ -16,11 +19,12 @@ module Algebra.Group.Action where
 
 <!--
 ```agda
+open is-group-hom
 open Functor
 ```
 -->
 
-# Group actions
+# Group actions {defines="group-action"}
 
 A useful way to think about [groups] is to think of their elements as
 encoding "symmetries" of a particular object. For a concrete example,
@@ -50,21 +54,17 @@ $\bb{C} \to \bb{C}$ in a way _compatible_ with the group structure:
 Additive inverses "translate to" inverse maps, addition translates to
 function composition, and the additive identity is mapped to the
 identity function. Note that since $\bb{C}$ is a set, this is
-equivalently a [group homomorphism]
+equivalently a [[group homomorphism]]
 
 $$
 \bb{R} \to \rm{Sym}(\bb{C})
 $$,
 
-where the codomain is the [group of symmetries] of $\bb{C}$. But what if
+where the codomain is the [[group of symmetries|symmetric group]] of $\bb{C}$. But what if
 we want a group $G$ to act on an object $X$ of a more general
-[category], rather than an object of $\Sets$?
+[[category]], rather than an object of $\Sets$?
 
-[group homomorphism]: Algebra.Group.html#group-homomorphisms
-[group of symmetries]: Algebra.Group.html#symmetric-groups
-[category]: Cat.Base.html
-
-## Automorphism groups
+## Automorphism groups {defines="automorphism-group"}
 
 The answer is that, for an object $X$ of some category $\cC$, the
 collection of all [isomorphisms] $X \cong X$ forms a group under
@@ -83,7 +83,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg : make-group (X C.≅ X)
     mg .make-group.group-is-set = hlevel 2
     mg .make-group.unit = C.id-iso
-    mg .make-group.mul g f = g C.∘Iso f
+    mg .make-group.mul f g = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹
     mg .make-group.assoc x y z = ext (sym (C.assoc _ _ _))
     mg .make-group.invl x = ext (x .C.invl)
@@ -98,6 +98,14 @@ $G$; A **$G$-action on $X$** is a group homomorphism $G \to
   Action : Group ℓ → C.Ob → Type _
   Action G X = Groups.Hom G (Aut X)
 ```
+
+::: note
+Since we've defined $f \star g = g \circ f$ in the automorphism group,
+our definition corresponds to *right* actions. If we had defined
+$f \star g = f \circ g$ instead, we would get *left* actions.
+Of course, the two definitions are formally dual, so it does not
+really matter.
+:::
 
 # As functors
 
@@ -152,4 +160,51 @@ applying the right helpers for pushing paths inwards, we're left with
         total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
           (is-prop→pathp (λ i → is-group-hom-is-prop) _ _)
       .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
+```
+
+# Examples of actions
+
+:::{.definition #trivial-action}
+For any group $G$, category $\cC$ and object $X : \cC$, we have the
+**trivial action** of $G$ on $X$ which maps every element to the
+identity automorphism. It can be defined simply as the [[zero morphism]]
+$G \to \rm{Aut}(X)$.
+:::
+
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} (G : Group ℓ) where
+  trivial-action : ∀ X → Action C G X
+  trivial-action X = Zero.zero→ ∅ᴳ
+```
+
+:::{.definition #principal-action}
+Any group $G$ acts on itself on the right in two ways: first, $G$ acts on its
+underlying set by multiplication on the right. This is sometimes called
+the **principal action** or the **(right-)regular action**, and is the
+basis for [[Cayley's theorem]].
+:::
+
+<!--
+```agda
+module _ {ℓ} (G : Group ℓ) where
+  private module G = Group-on (G .snd)
+```
+-->
+
+```agda
+  principal-action : Action (Sets ℓ) G (G .fst)
+  principal-action .hom x = equiv→iso ((G._⋆ x) , G.⋆-equivr x)
+  principal-action .preserves .pres-⋆ x y = ext λ z → G.associative
+```
+
+$G$ also acts on itself *as a group* by **conjugation**. An automorphism
+of $G$ that arises from conjugation with an element of $G$ is called an
+**inner automorphism**.
+
+```agda
+  conjugation-action : Action (Groups ℓ) G G
+  conjugation-action .hom x = total-iso
+    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∙-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
+    (record { pres-⋆ = λ y z → group! G })
+  conjugation-action .preserves .pres-⋆ x y = ext λ z → group! G
 ```
