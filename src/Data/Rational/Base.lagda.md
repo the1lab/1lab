@@ -1,17 +1,22 @@
 <!--
 ```agda
+{-# OPTIONS --no-qualified-instances #-}
 open import 1Lab.Prelude
 
 open import Algebra.Ring.Localisation hiding (_/_)
 open import Algebra.Ring.Commutative
-open import Algebra.Monoid
+open import Algebra.Ring.Solver
+open import Algebra.Monoid hiding (magma-hlevel)
 
+open import Data.Nat.Divisible.GCD
 open import Data.Set.Coequaliser hiding (_/_)
 open import Data.Int.Properties
 open import Data.Nat.Properties
+open import Data.Nat.Divisible
 open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Int.Base
+open import Data.Nat.Base
 open import Data.Sum.Base
 ```
 -->
@@ -40,7 +45,9 @@ Nonzero-mult {x} {y} x≠0 y≠0 α with *ℤ-is-zero x y α
 
 private
   module L = Loc ℤ-comm Nonzero record { has-1 = decide! ; has-* = Nonzero-mult }
-  module ℤ = CRing ℤ-comm
+  module ℤ = CRing ℤ-comm hiding (has-is-set ; magma-hlevel)
+  open Frac ℤ-comm using (Inductive-≈)
+  open Explicit (ℤ-comm .snd)
 ```
 
 Strictly speaking, the construction is now done. However, we provide a
@@ -297,3 +304,121 @@ $\bQ$.
   go (x@(possuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (lemma x y))
   go (x@(negsuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (lemma x y))
 ```
+
+<!--
+```agda
+reduce : Fraction (_≠ pos 0) → Fraction (_≠ pos 0)
+reduce (x / y [ p ]) = frac' module reduce where
+  gcd[x,y] : GCD (abs x) (abs y)
+  gcd[x,y] = Euclid.euclid (abs x) (abs y)
+
+  open is-gcd (gcd[x,y] .snd) public
+
+  open Σ (∣→fibre gcd-∣l) renaming (fst to x/g ; snd to x/g*g=x) public
+  open Σ (∣→fibre gcd-∣r) renaming (fst to y/g ; snd to y/g*g=y) public
+
+  g : Nat
+  g = gcd[x,y] .fst
+
+  rem₁ : y/g ≠ 0
+  rem₁ y/g=0 with y/g | y/g=0 | y/g*g=y
+  ... | zero | y/g=0 | q = p (abs-positive y (sym q))
+  ... | suc n | y/g=0 | q = absurd (suc≠zero y/g=0)
+
+  rem₂ : g ≠ 0
+  rem₂ g=0 = p (abs-positive y (sym (sym (*-zeror y/g) ∙ ap (y/g *_) (sym g=0) ∙ y/g*g=y)))
+
+  s' = sign (x *ℤ y)
+
+  frac' : Fraction (_≠ pos 0)
+  frac' = assign s' x/g / pos y/g [ rem₁ ∘ pos-injective ]
+
+  lemma : ∀ x y → assign pos (abs y) *ℤ x ≡ assign (sign (x *ℤ y)) (abs x) *ℤ y
+  lemma x y with x | y
+  ... | posz | y = *ℤ-zeror (assign pos (abs y))
+  ... | possuc x | posz = sym (*ℤ-zeror (assign (sign (assign pos (x * 0))) (suc x)))
+  ... | possuc x | possuc y = ap Int.pos (*-commutative (suc y) (suc x))
+  ... | possuc x | negsuc y = ap Int.pos (*-commutative (suc y) (suc x))
+  ... | negsuc x | posz = sym (*ℤ-zeror (assign (sign (assign neg (x * 0))) (suc x)))
+  ... | negsuc x | possuc y = ap negsuc (suc-inj (*-commutative (suc y) (suc x)))
+  ... | negsuc x | negsuc y = ap negsuc (suc-inj (*-commutative (suc y) (suc x)))
+
+  related : (x / y [ p ]) L.≈ frac'
+  related = L.inc (pos (gcd[x,y] .fst)) (rem₂ ∘ pos-injective) $
+    pos g *ℤ x *ℤ pos y/g         ≡⟨ solve 3 (λ x y z → x :* y :* z ≔ (x :* z) :* y) (pos g) x (pos y/g) refl ⟩
+    (pos g *ℤ pos y/g) *ℤ x       ≡⟨ ap (_*ℤ x) (ap (assign pos) (*-commutative g y/g ∙ y/g*g=y)) ⟩
+    assign pos (abs y) *ℤ x       ≡⟨ lemma x y ⟩
+    assign s' (abs x) *ℤ y        ≡⟨ ap (_*ℤ y) (ap (assign s') (sym x/g*g=x)) ⟩
+    assign s' (x/g * g) *ℤ y      ≡⟨ ap (_*ℤ y) (assign-*l {s'} x/g g) ⟩
+    (assign s' x/g *ℤ pos g) *ℤ y ≡⟨ solve 3 (λ x y z → (x :* y) :* z ≔ y :* x :* z) (assign s' x/g) (pos g) y refl ⟩
+    pos g *ℤ assign s' x/g *ℤ y   ∎
+
+reduce-*r : ∀ x y t (p : y ≠ 0) (q : t ≠ 0) → reduce ((x *ℤ t) / (y *ℤ t) [ Nonzero-mult p q ]) ≡ reduce (x / y [ p ])
+reduce-*r x y t p q = Fraction-path
+  (ap₂ assign {x = sign (x *ℤ t *ℤ (y *ℤ t))} {sign (x *ℤ y)} {n.x/g} {m.x/g} (lemma x y t q) p2')
+  (ap Int.pos p3') where
+  module m = reduce x y p
+  module n = reduce (x *ℤ t) (y *ℤ t) (Nonzero-mult p q)
+
+  instance
+    _ : Positive (abs t)
+    _ = nonzero→positive (λ p → q (abs-positive t p))
+
+  lemma : ∀ x y t → t ≠ 0 → sign (x *ℤ t *ℤ (y *ℤ t)) ≡ sign (x *ℤ y)
+  lemma x y t p = ap sign (solve 3 (λ x y t → x :* t :* (y :* t) ≔ (x :* y) :* (t :* t)) x y t refl) ∙ sign-*ℤ-square (x *ℤ y) t p
+
+  p1 : n.g ≡ m.g * abs t
+  p1 = ap₂ gcd (abs-*ℤ x t) (abs-*ℤ y t) ∙ gcd-factor (abs x) (abs y) (abs t)
+
+  p2 : n.x/g * m.g ≡ abs x
+  p2 = *-injr (abs t) (n.x/g * m.g) (abs x) (*-associative n.x/g m.g (abs t) ∙ sym (ap (n.x/g *_) p1) ∙ n.x/g*g=x ∙ abs-*ℤ x t)
+
+  p2' : n.x/g ≡ m.x/g
+  p2' = *-injr m.g n.x/g m.x/g ⦃ nonzero→positive m.rem₂ ⦄ (p2 ∙ sym m.x/g*g=x)
+
+  p3 : n.y/g * m.g ≡ abs y
+  p3 = *-injr (abs t) (n.y/g * m.g) (abs y) (*-associative n.y/g m.g (abs t) ∙ sym (ap (n.y/g *_) p1) ∙ n.y/g*g=y ∙ abs-*ℤ y t)
+
+  p3' : n.y/g ≡ m.y/g
+  p3' = *-injr m.g n.y/g m.y/g ⦃ nonzero→positive m.rem₂ ⦄ (p3 ∙ sym m.y/g*g=y)
+
+opaque
+  unfolding ℚ
+
+  reduce-resp : (x y : Fraction (_≠ pos 0)) → x L.≈ y → reduce x ≡ reduce y
+  reduce-resp = elim! λ x s s≠0 y t t≠0 u u≠0 uxt=uys →
+    let
+
+      module r1 = reduce x s s≠0
+      module r2 = reduce y t t≠0 renaming (x/g to y/h ; y/g to t/h)
+
+      xt=ys = *ℤ-injectiver u (x *ℤ t) (y *ℤ s) u≠0 (solve 3 (λ x t u → x :* t :* u ≔ u :* x :* t) x t u refl ∙ uxt=uys ∙ solve 3 (λ u y s → u :* y :* s ≔ y :* s :* u) u y s refl)
+    in
+      reduce (x / s [ s≠0 ])                                ≡⟨ sym (reduce-*r x s t s≠0 t≠0) ⟩
+      reduce ((x *ℤ t) / (s *ℤ t) [ Nonzero-mult s≠0 t≠0 ]) ≡⟨ ap reduce (Fraction-path {x = _ / _ [ Nonzero-mult s≠0 t≠0 ]} {_ / _ [ Nonzero-mult t≠0 s≠0 ]} xt=ys (*ℤ-commutative s t)) ⟩
+      reduce ((y *ℤ s) / (t *ℤ s) [ Nonzero-mult t≠0 s≠0 ]) ≡⟨ reduce-*r y t s t≠0 s≠0 ⟩
+      reduce (y / t [ t≠0 ])                                ∎
+
+  split : ℚ → Fraction (_≠ pos 0)
+  split = Coeq-elim (λ _ → hlevel 2) reduce λ (x , y , r) → reduce-resp x y r
+
+  split-β : ∀ x → split (toℚ x) ≡ reduce x
+  split-β x = refl
+
+  {-# REWRITE split-β #-}
+
+  split≈id : (x : ℚ) → toℚ (split x) ≡ x
+  split≈id = ℚ-elim-prop (λ _ → squash _ _) λ where
+    f@(x / y [ p ]) → quotℚ (L.Fr.symᶜ (reduce.related x y p))
+
+  reduce-idemp : ∀ x → reduce (split x) ≡ split x
+  reduce-idemp = ℚ-elim-prop (λ _ → hlevel 1) λ where
+    f@(x / y [ p ]) → reduce-resp (reduce f) f (L.Fr.symᶜ (reduce.related x y p))
+
+ℚ≃reduced-fraction : Iso ℚ (image reduce)
+ℚ≃reduced-fraction = (λ x → split x , inc (split x , reduce-idemp x)) , iso (toℚ ∘ fst)
+  (λ where (f@(x / y [ yp ]) , b) → ∥-∥-rec (hlevel 1) (λ where
+    (f'@(x' / y' [ yp' ] ) , p) → Σ-prop-path! (reduce-resp f f' (L.Fr.reflᶜ' (sym p) L.Fr.∙ᶜ L.Fr.symᶜ (reduce.related x' y' yp')) ∙ p)) b)
+  split≈id
+```
+-->

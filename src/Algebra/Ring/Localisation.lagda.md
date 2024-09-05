@@ -7,6 +7,7 @@ open import Algebra.Ring.Solver
 open import Algebra.Ring
 
 open import Data.Set.Coequaliser hiding (_/_)
+open import Data.Nat.Base using (_≤_)
 ```
 -->
 
@@ -49,6 +50,16 @@ open Fraction renaming (num to ↑ ; denom to ↓)
 pattern _/_ x y = x / y [ _ ]
 
 instance
+  H-Level-Fraction
+    : ∀ {n ℓ ℓ'} {R : Type ℓ} {S : R → Type ℓ'} ⦃ _ : H-Level R n ⦄ ⦃ _ : ∀ {x} → H-Level (S x) n ⦄
+    → H-Level (Fraction S) n
+  H-Level-Fraction {n = n} {k} {R = R} {S} = hlevel-instance
+    (retract→is-hlevel {A = R × ∫ₚ S} n
+      (λ (x , y , p) → x / y [ p ])
+      (λ (x / y [ p ]) → x , y , p)
+      (λ { (x / y [ p ]) i → x / y [ p ] })
+        (hlevel n))
+
   Inductive-Fraction
     : ∀ {ℓ ℓ' ℓ'' ℓm} {R : Type ℓ} {S : R → Type ℓ'} {P : Fraction S → Type ℓ''}
     → ⦃ _ : Inductive ((num : ⌞ R ⌟) (denom : ⌞ R ⌟) (has : denom ∈ S) → P (num / denom [ has ])) ℓm ⦄

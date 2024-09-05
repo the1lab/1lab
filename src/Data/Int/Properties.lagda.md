@@ -477,4 +477,34 @@ no further comments.
   *ℤ-is-zero (possuc _) (negsuc _) p = absurd (negsuc≠pos p)
   *ℤ-is-zero (negsuc _) (possuc _) p = absurd (negsuc≠pos p)
   *ℤ-is-zero (negsuc _) (negsuc _) p = absurd (suc≠zero (pos-injective p))
+
+  abs-assign : ∀ s n → abs (assign s n) ≡ n
+  abs-assign pos zero = refl
+  abs-assign pos (suc n) = refl
+  abs-assign neg zero = refl
+  abs-assign neg (suc n) = refl
+
+  abs-*ℤ : ∀ x y → abs (x *ℤ y) ≡ abs x * abs y
+  abs-*ℤ (pos x) (pos y) = abs-assign pos (x * y)
+  abs-*ℤ (pos x) (negsuc y) = abs-assign neg (x * suc y)
+  abs-*ℤ (negsuc x) (pos y) = abs-assign neg (y + x * y)
+  abs-*ℤ (negsuc x) (negsuc y) = refl
+
+  sign-*ℤ-square : ∀ x t → t ≠ 0 → sign (x *ℤ (t *ℤ t)) ≡ sign x
+  sign-*ℤ-square _ posz p = absurd (p refl)
+  sign-*ℤ-square posz (possuc y) _ = refl
+  sign-*ℤ-square (possuc x) (possuc y) _ = refl
+  sign-*ℤ-square (negsuc x) (possuc y) _ = refl
+  sign-*ℤ-square posz (negsuc y) _ = refl
+  sign-*ℤ-square (possuc x) (negsuc y) _ = refl
+  sign-*ℤ-square (negsuc x) (negsuc y) _ = refl
+
+  divides-*ℤ : ∀ {n k m} → k * n ≡ abs m → pos k *ℤ assign (sign m) n ≡ m
+  divides-*ℤ {zero} {k} {pos x} p = ap (assign pos) (*-zeror k) ∙ ap Int.pos (sym (*-zeror k) ∙ p)
+  divides-*ℤ {suc n} {k} {posz} p = ap (assign pos) p
+  divides-*ℤ {suc n} {zero} {possuc x} p = ap pos p
+  divides-*ℤ {suc n} {suc k} {possuc x} p = ap pos p
+  divides-*ℤ {zero} {k} {negsuc x} p = absurd (zero≠suc (sym (*-zeror k) ∙ p))
+  divides-*ℤ {suc n} {zero} {negsuc x} p = absurd (zero≠suc p)
+  divides-*ℤ {suc n} {suc k} {negsuc x} p = ap negsuc (suc-inj p)
 ```
