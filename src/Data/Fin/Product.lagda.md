@@ -57,6 +57,17 @@ tabulateₚ {n = zero} f  = tt
 tabulateₚ {n = suc n} f = f fzero , tabulateₚ λ i → f (fsuc i)
 ```
 
+<!--
+```agda
+extₚ
+  : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {xs ys : Πᶠ P}
+  → (∀ i → indexₚ xs i ≡ indexₚ ys i)
+  → xs ≡ ys
+extₚ {zero} p = refl
+extₚ {suc n} p = ap₂ _,_ (p fzero) (extₚ {n} (λ i → p (fsuc i)))
+```
+-->
+
 Elements of $\Pi^f$ for sequences with a known length enjoy strong
 extensionality properties, since they are iterated types with
 $\eta$-expansion. As an example:
@@ -107,6 +118,25 @@ mapₚ
 mapₚ {0}     f xs = xs
 mapₚ {suc n} f xs = f fzero (xs .fst) , mapₚ (λ i → f (fsuc i)) (xs .snd)
 ```
+
+<!--
+```agda
+indexₚ-mapₚ
+  : ∀ {n} {ℓ ℓ' : Fin n → Level}
+      {P : (i : Fin n) → Type (ℓ i)}
+      {Q : (i : Fin n) → Type (ℓ' i)}
+  → ∀ (f : ∀ i → P i → Q i) (xs : Πᶠ P) i
+  → indexₚ (mapₚ f xs) i ≡ f i (indexₚ xs i)
+indexₚ-mapₚ {suc n} f xs fzero = refl
+indexₚ-mapₚ {suc n} f xs (fsuc i) = indexₚ-mapₚ (λ i → f (fsuc i)) (xs .snd) i
+
+indexₚ-tabulateₚ
+  : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} (f : ∀ i → P i) i
+  → indexₚ (tabulateₚ f) i ≡ f i
+indexₚ-tabulateₚ f fzero = refl
+indexₚ-tabulateₚ f (fsuc i) = indexₚ-tabulateₚ (λ i → f (fsuc i)) i
+```
+-->
 
 More generically, we can characterise the entries of an updated product
 type.

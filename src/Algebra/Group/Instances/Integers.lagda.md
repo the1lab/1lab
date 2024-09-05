@@ -9,7 +9,7 @@ open import Cat.Functor.Adjoint
 
 open import Data.Int.Universal
 open import Data.Nat.Order
-open import Data.Int
+open import Data.Int hiding (Positive)
 open import Data.Nat
 
 open is-group-hom

@@ -6,7 +6,7 @@ open import Data.Nat.Properties
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Int.Base
-open import Data.Nat.Base
+open import Data.Nat.Base hiding (Positive)
 open import Data.Sum.Base
 ```
 -->
@@ -490,14 +490,17 @@ no further comments.
   abs-*ℤ (negsuc x) (pos y) = abs-assign neg (y + x * y)
   abs-*ℤ (negsuc x) (negsuc y) = refl
 
-  sign-*ℤ-square : ∀ x t → t ≠ 0 → sign (x *ℤ (t *ℤ t)) ≡ sign x
-  sign-*ℤ-square _ posz p = absurd (p refl)
-  sign-*ℤ-square posz (possuc y) _ = refl
-  sign-*ℤ-square (possuc x) (possuc y) _ = refl
-  sign-*ℤ-square (negsuc x) (possuc y) _ = refl
-  sign-*ℤ-square posz (negsuc y) _ = refl
-  sign-*ℤ-square (possuc x) (negsuc y) _ = refl
-  sign-*ℤ-square (negsuc x) (negsuc y) _ = refl
+  sign-*ℤ-positive : ∀ x t → Positive t → sign (x *ℤ t) ≡ sign x
+  sign-*ℤ-positive (pos x) (possuc y) (pos _) = ap sign (assign-pos (x * suc y))
+  sign-*ℤ-positive (negsuc x) (possuc y) (pos _) = refl
+
+  assign-sign : ∀ x → assign (sign x) (abs x) ≡ x
+  assign-sign posz = refl
+  assign-sign (possuc _) = refl
+  assign-sign (negsuc _) = refl
+
+  assign-pos-positive : ∀ x → Positive x → assign pos (abs x) ≡ x
+  assign-pos-positive x@(possuc _) (pos _) = refl
 
   divides-*ℤ : ∀ {n k m} → k * n ≡ abs m → pos k *ℤ assign (sign m) n ≡ m
   divides-*ℤ {zero} {k} {pos x} p = ap (assign pos) (*-zeror k) ∙ ap Int.pos (sym (*-zeror k) ∙ p)
@@ -507,4 +510,18 @@ no further comments.
   divides-*ℤ {zero} {k} {negsuc x} p = absurd (zero≠suc (sym (*-zeror k) ∙ p))
   divides-*ℤ {suc n} {zero} {negsuc x} p = absurd (zero≠suc p)
   divides-*ℤ {suc n} {suc k} {negsuc x} p = ap negsuc (suc-inj p)
+```
+
+## Positivity
+
+```agda
+*ℤ-positive : ∀ {x y} → Positive x → Positive y → Positive (x *ℤ y)
+*ℤ-positive (pos x) (pos y) = pos (y + x * suc y)
+
+pos-positive : ∀ {x} → x ≠ 0 → Positive (pos x)
+pos-positive {zero} 0≠0 = absurd (0≠0 refl)
+pos-positive {suc n} _ = pos n
+
+positive→nonzero : ∀ {x} → Positive x → x ≠ 0
+positive→nonzero .{possuc x} (pos x) p = suc≠zero (pos-injective p)
 ```

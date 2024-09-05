@@ -3,20 +3,24 @@
 {-# OPTIONS --no-qualified-instances #-}
 open import 1Lab.Prelude
 
-open import Algebra.Ring.Localisation hiding (_/_)
+open import Algebra.Ring.Localisation hiding (_/_ ; Fraction)
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
 open import Algebra.Monoid hiding (magma-hlevel)
 
+open import Data.Set.Coequaliser.Split
 open import Data.Nat.Divisible.GCD
 open import Data.Set.Coequaliser hiding (_/_)
+open import Data.Fin.Properties
 open import Data.Int.Properties
 open import Data.Nat.Properties
 open import Data.Nat.Divisible
+open import Data.Fin.Product
 open import Data.Bool.Base
 open import Data.Dec.Base
+open import Data.Fin.Base
 open import Data.Int.Base
-open import Data.Nat.Base
+open import Data.Nat.Base hiding (Positive)
 open import Data.Sum.Base
 ```
 -->
@@ -29,26 +33,34 @@ module Data.Rational.Base where
 
 The ring of **rational numbers**, $\bQ$, is the
 [[localisation|localisation of a ring]] of the ring of [[integers]]
-$\bZ$, inverting all non-zero elements. We've already done most of the
-work in that module, but we're missing an (easy) proof that the product
-of nonzero integers is nonzero.
+$\bZ$, inverting every positive element. We've already done most of the
+work while implementing localisations:
 
 ```agda
-Nonzero : Int → Ω
-Nonzero x .∣_∣ = x ≠ 0
-Nonzero x .is-tr = hlevel 1
-
-Nonzero-mult : ∀ {x y} → x ∈ Nonzero → y ∈ Nonzero → (x *ℤ y) ∈ Nonzero
-Nonzero-mult {x} {y} x≠0 y≠0 α with *ℤ-is-zero x y α
-... | inl x=0 = x≠0 x=0
-... | inr y=0 = y≠0 y=0
+PositiveΩ : Int → Ω
+PositiveΩ x .∣_∣ = Positive x
+PositiveΩ x .is-tr = hlevel 1
 
 private
-  module L = Loc ℤ-comm Nonzero record { has-1 = decide! ; has-* = Nonzero-mult }
-  module ℤ = CRing ℤ-comm hiding (has-is-set ; magma-hlevel)
-  open Frac ℤ-comm using (Inductive-≈)
-  open Explicit (ℤ-comm .snd)
+  module L = Loc ℤ-comm PositiveΩ record { has-1 = pos 0 ; has-* = *ℤ-positive }
 ```
+
+<!--
+```agda
+  module ℤ = CRing ℤ-comm hiding (has-is-set ; magma-hlevel)
+
+open Algebra.Ring.Localisation using (module Fraction) public
+
+Fraction : Type
+Fraction = Algebra.Ring.Localisation.Fraction Positive
+
+open Frac ℤ-comm using (Inductive-≈)
+open Explicit (ℤ-comm .snd)
+open Fraction renaming (num to ↑ ; denom to ↓) public
+open L using (_≈_) renaming (module Fr to ≈) public
+open Algebra.Ring.Localisation using (_/_[_]) public
+```
+-->
 
 Strictly speaking, the construction is now done. However, we provide a
 set of `opaque`{.Agda} wrappers for the operations on $\bZ\loc{(\ne 0)}$
@@ -60,7 +72,7 @@ opaque
   ℚ : Type
   ℚ = ⌞ L.S⁻¹R ⌟
 
-  toℚ : Fraction {R = Int} (_∈ Nonzero) → ℚ
+  toℚ : Fraction → ℚ
   toℚ = inc
 
   _+ℚ_ : ℚ → ℚ → ℚ
@@ -95,6 +107,21 @@ every $x : \bQ$, it suffices to do so at the fractions.
 
   {-# REWRITE ℚ-elim-prop-β #-}
 
+  ℚ-rec
+    : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
+    → (f : Fraction → P)
+    → (∀ x y → x ≈ y → f x ≡ f y)
+    → ℚ → P
+  ℚ-rec f p = Coeq-rec f (λ (x , y , r) → p x y r)
+
+  ℚ-rec-β
+    : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
+    → (f : Fraction → P) (r : ∀ x y → x ≈ y → f x ≡ f y) (x : Fraction)
+    → ℚ-rec f r (toℚ x) ≡ f x
+  ℚ-rec-β f r x = refl
+
+  {-# REWRITE ℚ-rec-β #-}
+
   +ℚ-β : ∀ {x y} → toℚ x +ℚ toℚ y ≡ toℚ (L.+f x y)
   +ℚ-β = refl
 
@@ -115,11 +142,11 @@ the converse is true as well:
 opaque
   unfolding ℚ
 
-  quotℚ : ∀ {x y} → x L.≈ y → toℚ x ≡ toℚ y
+  quotℚ : ∀ {x y} → x ≈ y → toℚ x ≡ toℚ y
   quotℚ = quot
 
-  unquotℚ : ∀ {x y} → toℚ x ≡ toℚ y → x L.≈ y
-  unquotℚ = L.Fr.effective
+  unquotℚ : ∀ {x y} → toℚ x ≡ toℚ y → x ≈ y
+  unquotℚ = ≈.effective
 ```
 
 Finally, we want to show that the type of rational numbers is discrete.
@@ -135,12 +162,19 @@ sameness of fractions boils down to checking whether they
 "cross-multiply" to the same thing.
 
 ```agda
-Dec-same-rational : (x y : Fraction (_≠ 0)) → Dec (x L.≈ y)
+from-same-rational : {x y : Fraction} → x ≈ y → x .↑ *ℤ y .↓ ≡ y .↑ *ℤ x .↓
+from-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = case L.≈→≈' p of λ where
+  u@(possuc u') (pos u') p → case *ℤ-is-zero u _ p of λ where
+    (inl u=0)     → absurd (suc≠zero (pos-injective u=0))
+    (inr xt-ys=0) → ℤ.zero-diff xt-ys=0
+
+to-same-rational : {x y : Fraction} → x .↑ *ℤ y .↓ ≡ y .↑ *ℤ x .↓ → x ≈ y
+to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (sym (*ℤ-associative 1 x t) ·· ap (1 *ℤ_) p ·· *ℤ-associative 1 y s)
+
+Dec-same-rational : (x y : Fraction) → Dec (x ≈ y)
 Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
-... | yes p = yes (L.inc 1 decide! (sym (*ℤ-associative 1 x t) ·· ap (1 *ℤ_) p ·· *ℤ-associative 1 y s))
-... | no xt≠ys = no λ p → case L.≈→≈' p of λ u u≠0 p → case *ℤ-is-zero u _ p of λ where
-  (inl u=0) → u≠0 u=0
-  (inr xt-ys=0) → xt≠ys (ℤ.zero-diff xt-ys=0)
+... | yes p = yes (to-same-rational p)
+... | no xt≠ys = no λ p → xt≠ys (from-same-rational p)
 ```
 
 <!--
@@ -202,8 +236,10 @@ infixl 8 _+ℚ_ _-ℚ_
 infixl 9 _*ℚ_
 infix 10 -ℚ_
 
-_/_ : (x y : Int) ⦃ d : Dec (y ≠ 0) ⦄ {_ : is-yes d} → ℚ
-_/_ x y ⦃ yes p ⦄ = toℚ (x / y [ p ])
+_/_ : (x y : Int) ⦃ _ : Positive y ⦄ → ℚ
+_/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
+
+infix 11 _/_
 
 {-# DISPLAY toℚ (_/_[_] x y p) = x / y #-}
 
@@ -219,6 +255,8 @@ instance
   H-Level-ℚ : ∀ {n} → H-Level ℚ (2 + n)
   H-Level-ℚ = basic-instance 2 (Discrete→is-set auto)
 
+  {-# OVERLAPPING H-Level-ℚ #-}
+
   Number-ℚ : Number ℚ
   Number-ℚ .Number.Constraint _ = ⊤
   Number-ℚ .Number.fromNat x = pos x /1
@@ -227,6 +265,14 @@ instance
   Negative-ℚ .Negative.Constraint _ = ⊤
   Negative-ℚ .Negative.fromNeg 0 = 0
   Negative-ℚ .Negative.fromNeg (suc x) = negsuc x /1
+
+  Inductive-ℚ
+    : ∀ {ℓ ℓm} {P : ℚ → Type ℓ}
+    → ⦃ _ : Inductive ((x : Fraction) → P (toℚ x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-ℚ ⦃ r ⦄ .Inductive.methods = r .Inductive.methods
+  Inductive-ℚ ⦃ r ⦄ .Inductive.from f = ℚ-elim-prop (λ x → hlevel 1) (r .Inductive.from f)
 
 abstract opaque
   unfolding ℚ
@@ -287,8 +333,8 @@ inverseℚ = ℚ-elim-prop is-p go where
     is-p : (x : ℚ) → is-prop (x ≠ 0 → Σ[ y ∈ ℚ ] (x *ℚ y ≡ 1))
     is-p x = Π-is-hlevel 1 λ _ (y , p) (z , q) → Σ-prop-path! (monoid-inverse-unique *ℚ-monoid x y z (*ℚ-commutative y x ∙ p) q)
 
-    lemma : ∀ x y → 1 *ℤ (x *ℤ y) *ℤ 1 ≡ 1 *ℤ (y *ℤ x)
-    lemma x y = ap (_*ℤ 1) (*ℤ-onel (x *ℤ y))
+    rem₁ : ∀ x y → 1 *ℤ (x *ℤ y) *ℤ 1 ≡ 1 *ℤ (y *ℤ x)
+    rem₁ x y = ap (_*ℤ 1) (*ℤ-onel (x *ℤ y))
       ∙ *ℤ-oner (x *ℤ y) ∙ *ℤ-commutative x y ∙ sym (*ℤ-onel (y *ℤ x))
 ```
 
@@ -299,126 +345,316 @@ fraction $y/x$. It's then routine to show that $(x/y)(y/x) = 1$ holds in
 $\bQ$.
 
 ```agda
-  go : (x : Fraction _) → toℚ x ≠ 0 → Σ[ y ∈ ℚ ] (toℚ x *ℚ y ≡ 1)
+  go : (x : Fraction) → toℚ x ≠ 0 → Σ[ y ∈ ℚ ] (toℚ x *ℚ y ≡ 1)
   go (posz / y [ _ ]) nz = absurd (nz (quotℚ (L.inc 1 decide! refl)))
-  go (x@(possuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (lemma x y))
-  go (x@(negsuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (lemma x y))
+  go (x@(possuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (rem₁ x y))
+  go (x@(negsuc x') / y [ p ]) nz with y | p
+  ... | possuc y | _ = negsuc y / possuc x' , quotℚ (L.inc 1 decide! (rem₁ (negsuc x') (negsuc y)))
+  ... | negsuc y | _ = possuc y / possuc x' , quotℚ (L.inc 1 decide! (rem₁ x (possuc y)))
+```
+
+## Reduced fractions
+
+We now show that the quotient defining $\bQ$ is [[*split*|split
+quotient]]: integer fractions have a well-defined notion of *normal
+form*, and similarity of fractions is equivalent to equality under
+normalisation. The procedure we formalise is the familiar one, sending a
+fraction $x/y$ to
+
+$$
+\frac{x \ndiv \gcd(x, y)}{y \ndiv \gcd(x, y)}
+$$.
+
+What remains is proving that this is actually a normalisation procedure,
+which takes up the remainder of this module.
+
+```agda
+reduce-fraction : Fraction → Fraction
+reduce-fraction (x / y [ p ]) = reduced module reduce where
+  gcd[x,y] : GCD (abs x) (abs y)
+  gcd[x,y] = Euclid.euclid (abs x) (abs y)
 ```
 
 <!--
 ```agda
-reduce : Fraction (_≠ pos 0) → Fraction (_≠ pos 0)
-reduce (x / y [ p ]) = frac' module reduce where
-  gcd[x,y] : GCD (abs x) (abs y)
-  gcd[x,y] = Euclid.euclid (abs x) (abs y)
-
-  open is-gcd (gcd[x,y] .snd) public
+  open Σ gcd[x,y] renaming (fst to g) using () public
+  open is-gcd (gcd[x,y] .snd)
 
   open Σ (∣→fibre gcd-∣l) renaming (fst to x/g ; snd to x/g*g=x) public
   open Σ (∣→fibre gcd-∣r) renaming (fst to y/g ; snd to y/g*g=y) public
+```
+-->
 
-  g : Nat
-  g = gcd[x,y] .fst
+Our first obligation, to form the reduced fraction at all, is showing
+that the denominator is non-zero. This is pretty easy: we know that $y$
+is nonzero, so if $y \ndiv \gcd(x,y)$ were zero, we would have
+$$y = \gcd(x, y) * (y \ndiv \gcd(x,y)) = \gcd(x,y) * 0 = 0$$,
+which is a contradiction. A similar argument shows that $\gcd(x,y)$ is
+itself nonzero, a fact we'll need later.
 
+```agda
   rem₁ : y/g ≠ 0
   rem₁ y/g=0 with y/g | y/g=0 | y/g*g=y
-  ... | zero | y/g=0 | q = p (abs-positive y (sym q))
+  ... | zero  | y/g=0 | q = positive→nonzero p (abs-positive y (sym q))
   ... | suc n | y/g=0 | q = absurd (suc≠zero y/g=0)
 
   rem₂ : g ≠ 0
-  rem₂ g=0 = p (abs-positive y (sym (sym (*-zeror y/g) ∙ ap (y/g *_) (sym g=0) ∙ y/g*g=y)))
+  rem₂ g=0 = positive→nonzero p (abs-positive y (sym (sym (*-zeror y/g) ∙ ap (y/g *_) (sym g=0) ∙ y/g*g=y)))
+```
 
-  s' = sign (x *ℤ y)
+Finally, we must quickly mention the issue of signs. Since `gcd`{.Agda}
+produces a natural number, we have to multiply it by the sign $\sgn(x)$
+of $x$, to make sure signs are preserved. Note that the denominator must
+be positive.
 
-  frac' : Fraction (_≠ pos 0)
-  frac' = assign s' x/g / pos y/g [ rem₁ ∘ pos-injective ]
+```agda
+  reduced : Fraction
+  reduced = assign (sign x) x/g / pos y/g [ pos-positive rem₁ ]
+```
 
-  lemma : ∀ x y → assign pos (abs y) *ℤ x ≡ assign (sign (x *ℤ y)) (abs x) *ℤ y
-  lemma x y with x | y
-  ... | posz | y = *ℤ-zeror (assign pos (abs y))
-  ... | possuc x | posz = sym (*ℤ-zeror (assign (sign (assign pos (x * 0))) (suc x)))
-  ... | possuc x | possuc y = ap Int.pos (*-commutative (suc y) (suc x))
-  ... | possuc x | negsuc y = ap Int.pos (*-commutative (suc y) (suc x))
-  ... | negsuc x | posz = sym (*ℤ-zeror (assign (sign (assign neg (x * 0))) (suc x)))
-  ... | negsuc x | possuc y = ap negsuc (suc-inj (*-commutative (suc y) (suc x)))
-  ... | negsuc x | negsuc y = ap negsuc (suc-inj (*-commutative (suc y) (suc x)))
+Finally, we can calculate that these fractions are similar.
 
-  related : (x / y [ p ]) L.≈ frac'
-  related = L.inc (pos (gcd[x,y] .fst)) (rem₂ ∘ pos-injective) $
-    pos g *ℤ x *ℤ pos y/g         ≡⟨ solve 3 (λ x y z → x :* y :* z ≔ (x :* z) :* y) (pos g) x (pos y/g) refl ⟩
-    (pos g *ℤ pos y/g) *ℤ x       ≡⟨ ap (_*ℤ x) (ap (assign pos) (*-commutative g y/g ∙ y/g*g=y)) ⟩
-    assign pos (abs y) *ℤ x       ≡⟨ lemma x y ⟩
-    assign s' (abs x) *ℤ y        ≡⟨ ap (_*ℤ y) (ap (assign s') (sym x/g*g=x)) ⟩
-    assign s' (x/g * g) *ℤ y      ≡⟨ ap (_*ℤ y) (assign-*l {s'} x/g g) ⟩
-    (assign s' x/g *ℤ pos g) *ℤ y ≡⟨ solve 3 (λ x y z → (x :* y) :* z ≔ y :* x :* z) (assign s' x/g) (pos g) y refl ⟩
-    pos g *ℤ assign s' x/g *ℤ y   ∎
+```agda
+  related : (x / y [ p ]) ≈ reduced
+  related = L.inc (pos g) (pos-positive rem₂) $
+    pos g *ℤ x *ℤ pos y/g               ≡⟨ solve 3 (λ x y z → x :* y :* z ≔ (z :* x) :* y) (pos g) x (pos y/g) refl ⟩
+    (pos y/g *ℤ pos g) *ℤ x             ≡⟨ ap (_*ℤ x) (ap (assign pos) y/g*g=y) ⟩
+    assign pos (abs y) *ℤ x             ≡⟨ ap₂ _*ℤ_ (assign-pos-positive y p) (sym (divides-*ℤ {n = x/g} {g} {x} (*-commutative g x/g ∙ x/g*g=x))) ⟩
+    y *ℤ (pos g *ℤ assign (sign x) x/g) ≡⟨ solve 3 (λ y g x → y :* (g :* x) ≔ g :* x :* y) y (pos g) (assign (sign x) x/g) refl ⟩
+    pos g ℤ.* assign (sign x) x/g ℤ.* y ∎
+```
 
-reduce-*r : ∀ x y t (p : y ≠ 0) (q : t ≠ 0) → reduce ((x *ℤ t) / (y *ℤ t) [ Nonzero-mult p q ]) ≡ reduce (x / y [ p ])
-reduce-*r x y t p q = Fraction-path
-  (ap₂ assign {x = sign (x *ℤ t *ℤ (y *ℤ t))} {sign (x *ℤ y)} {n.x/g} {m.x/g} (lemma x y t q) p2')
-  (ap Int.pos p3') where
+<!--
+```agda
+  coprime : is-gcd x/g y/g 1
+  coprime .is-gcd.gcd-∣l = ∣-one
+  coprime .is-gcd.gcd-∣r = ∣-one
+  coprime .is-gcd.greatest {g'} p q with (p , α) ← ∣→fibre p | (q , β) ← ∣→fibre q =
+    ∣-*-cancelr {g} {g'} {1} ⦃ nonzero→positive rem₂ ⦄ (∣-trans (gcd[x,y] .snd .is-gcd.greatest p1 p2) (subst (g ∣_) (sym (+-zeror g)) ∣-refl))
+    where
+      p1 : g' * g ∣ abs x
+      p1 = fibre→∣ (p , sym (*-associative p g' g) ∙ ap (_* g) α ∙ x/g*g=x)
+
+      p2 : g' * g ∣ abs y
+      p2 = fibre→∣ (q , sym (*-associative q g' g) ∙ ap (_* g) β ∙ y/g*g=y)
+
+```
+-->
+
+We'll now show that `reduce-fraction`{.Agda} respects similarity of
+fractions. We show this by an intermediate lemma, which says that, given
+a non-zero $s$ and a fraction $x/y$, we have
+$$
+\frac{xs \ndiv \gcd(xs, ys)}{ys \ndiv \gcd(xs, ys)} = \frac{x \ndiv \gcd(x, y)}{y \ndiv \gcd(x, y)}
+$$,
+as integer fractions (rather than rational numbers).
+
+```agda
+reduce-*r
+  : ∀ x y s (p : Positive y) (q : Positive s)
+  → reduce-fraction ((x *ℤ s) / (y *ℤ s) [ *ℤ-positive p q ])
+  ≡ reduce-fraction (x / y [ p ])
+reduce-*r x y s p q = Fraction-path (ap₂ assign sgn num) (ap Int.pos denom) where
+```
+
+<!--
+```agda
   module m = reduce x y p
-  module n = reduce (x *ℤ t) (y *ℤ t) (Nonzero-mult p q)
+  module n = reduce (x *ℤ s) (y *ℤ s) (*ℤ-positive p q)
+
+  open n renaming (x/g to xs/gcd ; y/g to ys/gcd) using ()
+  open m renaming (x/g to x/gcd ; y/g to y/gcd) using ()
 
   instance
-    _ : Positive (abs t)
-    _ = nonzero→positive (λ p → q (abs-positive t p))
+    _ : Data.Nat.Base.Positive (abs s)
+    _ = nonzero→positive (λ p → positive→nonzero q (abs-positive s p))
 
-  lemma : ∀ x y t → t ≠ 0 → sign (x *ℤ t *ℤ (y *ℤ t)) ≡ sign (x *ℤ y)
-  lemma x y t p = ap sign (solve 3 (λ x y t → x :* t :* (y :* t) ≔ (x :* y) :* (t :* t)) x y t refl) ∙ sign-*ℤ-square (x *ℤ y) t p
+    _ : Data.Nat.Base.Positive m.g
+    _ = nonzero→positive m.rem₂
 
-  p1 : n.g ≡ m.g * abs t
-  p1 = ap₂ gcd (abs-*ℤ x t) (abs-*ℤ y t) ∙ gcd-factor (abs x) (abs y) (abs t)
+  gcdℤ : Int → Int → Nat
+  gcdℤ x y = gcd (abs x) (abs y)
+```
+-->
 
-  p2 : n.x/g * m.g ≡ abs x
-  p2 = *-injr (abs t) (n.x/g * m.g) (abs x) (*-associative n.x/g m.g (abs t) ∙ sym (ap (n.x/g *_) p1) ∙ n.x/g*g=x ∙ abs-*ℤ x t)
+The first observation is that $\gcd(xs, ys) = \gcd(x,y)s$, even when
+absolute values are involved.^[Keep in mind that the `gcd`{.Agda}
+function is defined over the naturals, and we're extending it to
+integers by $\gcd(x,y) = \gcd(\abs{x}, \abs{y})$.]
 
-  p2' : n.x/g ≡ m.x/g
-  p2' = *-injr m.g n.x/g m.x/g ⦃ nonzero→positive m.rem₂ ⦄ (p2 ∙ sym m.x/g*g=x)
+```agda
+  p1 : gcdℤ (x *ℤ s) (y *ℤ s) ≡ gcdℤ x y * abs s
+  p1 = ap₂ gcd (abs-*ℤ x s) (abs-*ℤ y s) ∙ gcd-factor (abs x) (abs y) (abs s)
+```
 
-  p3 : n.y/g * m.g ≡ abs y
-  p3 = *-injr (abs t) (n.y/g * m.g) (abs y) (*-associative n.y/g m.g (abs t) ∙ sym (ap (n.y/g *_) p1) ∙ n.y/g*g=y ∙ abs-*ℤ y t)
+This implies that $$(xs \ndiv \gcd(xs, ys)) \gcd(x,y) s = x s$$, and,
+because multiplication by $s$ is injective, this in turn implies that
+$(xs \ndiv \gcd(xs, ys))\gcd(x, y)$ is also $x$. We conclude $(xs \ndiv
+\gcd(xs, ys)) = (x \ndiv \gcd(x, y))$, since both sides multiply with
+$\gcd(x, y)$ to $x$, and this multiplication is *also* injective.
+Therefore, our numerators have the same absolute value.
 
-  p3' : n.y/g ≡ m.y/g
-  p3' = *-injr m.g n.y/g m.y/g ⦃ nonzero→positive m.rem₂ ⦄ (p3 ∙ sym m.y/g*g=y)
+```agda
+  num' : xs/gcd * gcdℤ x y ≡ abs x
+  num' = *-injr (abs s) (xs/gcd * m.g) (abs x) $
+    xs/gcd * gcdℤ x y * abs s       ≡⟨ *-associative xs/gcd m.g (abs s) ⟩
+    xs/gcd * (gcdℤ x y * abs s)     ≡˘⟨ ap (xs/gcd *_) p1 ⟩
+    xs/gcd * gcdℤ (x *ℤ s) (y *ℤ s) ≡⟨ n.x/g*g=x ⟩
+    abs (x *ℤ s)                    ≡⟨ abs-*ℤ x s ⟩
+    abs x * abs s                   ∎
+
+  num : xs/gcd ≡ x/gcd
+  num = *-injr (gcdℤ x y) xs/gcd x/gcd (num' ∙ sym m.x/g*g=x)
+```
+
+We must still show that the resulting numerators have the same sign.
+Fortunately, this boils down to a bit of algebra, plus the
+hyper-specific fact that $\sgn(ab^2) = \sgn(a)$, whenever $b$ is
+nonzero.^[Here, we're applying this lemma with $a = xy$ and $b = s$, and
+we have assumed $s$ nonzero. The $\sgn$ function is not fun.]
+
+```agda
+  sgn : sign (x *ℤ s) ≡ sign x
+  sgn = sign-*ℤ-positive x s q
+```
+
+A symmetric calculation shows that the denominators also have the same
+absolute value, and, since they're both positive in the resulting
+fraction, we're done.
+
+```agda
+  denom' : ys/gcd * gcdℤ x y ≡ abs y
+  denom' = *-injr (abs s) (ys/gcd * m.g) (abs y) (*-associative ys/gcd m.g (abs s) ∙ sym (ap (ys/gcd *_) p1) ∙ n.y/g*g=y ∙ abs-*ℤ y s)
+
+  denom : ys/gcd ≡ y/gcd
+  denom = *-injr (gcdℤ x y) ys/gcd y/gcd (denom' ∙ sym m.y/g*g=y)
+```
+
+We can use this to show that `reduce-fraction`{.Agda} sends similar
+fractions to *equal* normal forms: If $x/s \approx y/t$, we have $xt =
+ys$, and we can calculate
+$$
+\frac{x \ndiv \gcd(x, s)}{s \ndiv \gcd(x, s)}
+= \frac{xt \ndiv \gcd(xt, st)}{st \ndiv \gcd(xt, st)}
+= \frac{ys \ndiv \gcd(ys, ts)}{ts \ndiv \gcd(ys, ts)}
+= \frac{y \ndiv \gcd(y, t)}{t \ndiv \gcd(y, t)}
+$$
+using the previous lemma. Thus, by the general logic of [[split
+quotients]], we conclude that $\bQ$ is equivalent to the set of reduced
+integer fractions.
+
+```agda
+reduce-resp : (x y : Fraction) → x ≈ y → reduce-fraction x ≡ reduce-fraction y
+reduce-resp f@(x / s [ s≠0 ]) f'@(y / t [ t≠0 ]) p =
+  reduce-fraction (x / s [ s≠0 ])             ≡⟨ sym (reduce-*r x s t s≠0 t≠0) ⟩
+  reduce-fraction ((x *ℤ t) / (s *ℤ t) [ _ ]) ≡⟨ ap reduce-fraction (Fraction-path {x = _ / _ [ *ℤ-positive s≠0 t≠0 ]} {_ / _ [ *ℤ-positive t≠0 s≠0 ]} (from-same-rational p) (*ℤ-commutative s t)) ⟩
+  reduce-fraction ((y *ℤ s) / (t *ℤ s) [ _ ]) ≡⟨ reduce-*r y t s t≠0 s≠0 ⟩
+  reduce-fraction (y / t [ t≠0 ])             ∎
+
+integer-frac-splits : is-split-congruence L.Fraction-congruence
+integer-frac-splits = record
+  { has-is-set = hlevel 2
+  ; normalise  = reduce-fraction
+  ; represents = elim! reduce.related
+  ; respects   = reduce-resp
+  }
+```
+
+<!--
+```agda
+private module split = is-split-congruence integer-frac-splits
 
 opaque
   unfolding ℚ
 
-  reduce-resp : (x y : Fraction (_≠ pos 0)) → x L.≈ y → reduce x ≡ reduce y
-  reduce-resp = elim! λ x s s≠0 y t t≠0 u u≠0 uxt=uys →
-    let
+  reduceℚ : ℚ → Fraction
+  reduceℚ = split.choose
 
-      module r1 = reduce x s s≠0
-      module r2 = reduce y t t≠0 renaming (x/g to y/h ; y/g to t/h)
+  reducesℚ : ∀ x → reduceℚ (toℚ x) ≈ x
+  reducesℚ x = unquotℚ (split.splitting (toℚ x) .snd)
 
-      xt=ys = *ℤ-injectiver u (x *ℤ t) (y *ℤ s) u≠0 (solve 3 (λ x t u → x :* t :* u ≔ u :* x :* t) x t u refl ∙ uxt=uys ∙ solve 3 (λ u y s → u :* y :* s ≔ y :* s :* u) u y s refl)
-    in
-      reduce (x / s [ s≠0 ])                                ≡⟨ sym (reduce-*r x s t s≠0 t≠0) ⟩
-      reduce ((x *ℤ t) / (s *ℤ t) [ Nonzero-mult s≠0 t≠0 ]) ≡⟨ ap reduce (Fraction-path {x = _ / _ [ Nonzero-mult s≠0 t≠0 ]} {_ / _ [ Nonzero-mult t≠0 s≠0 ]} xt=ys (*ℤ-commutative s t)) ⟩
-      reduce ((y *ℤ s) / (t *ℤ s) [ Nonzero-mult t≠0 s≠0 ]) ≡⟨ reduce-*r y t s t≠0 s≠0 ⟩
-      reduce (y / t [ t≠0 ])                                ∎
+  reduceℚ-β : ∀ x → reduceℚ (toℚ x) ≡ reduce-fraction x
+  reduceℚ-β x = refl
+  {-# REWRITE reduceℚ-β #-}
 
-  split : ℚ → Fraction (_≠ pos 0)
-  split = Coeq-elim (λ _ → hlevel 2) reduce λ (x , y , r) → reduce-resp x y r
+splitℚ : (x : ℚ) → fibre toℚ x
+splitℚ x = record
+  { fst = reduceℚ x
+  ; snd = ℚ-elim-prop {P = λ x → toℚ (reduceℚ x) ≡ x} (λ x → hlevel 1) (λ x → quotℚ (reducesℚ x)) x
+  }
 
-  split-β : ∀ x → split (toℚ x) ≡ reduce x
-  split-β x = refl
+reduce-injective : ∀ x y → reduceℚ x ≡ reduceℚ y → x ≡ y
+reduce-injective = elim! (λ x s s≠0 y t t≠0 p → quotℚ (split.reflects _ _ p))
 
-  {-# REWRITE split-β #-}
+common-denominator
+  : ∀ n (fs : Fin n → Fraction) → Σ[ c ∈ Int ] Σ[ p ∈ Positive c ] Σ[ n ∈ (Fin n → Int) ] (∀ j → fs j ≈ (n j / c [ p ]))
+common-denominator 0 _ = 1 , pos 0 , (λ ()) , (λ ())
+common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denominator sz (fs ∘ fsuc) | inspect (fs fzero)
+... | n / d [ d≠0 ] , prf = c' , c'≠0 , nums' , prfs' where
+  c'   = d *ℤ c
+  c'≠0 = *ℤ-positive d≠0 c≠0
 
-  split≈id : (x : ℚ) → toℚ (split x) ≡ x
-  split≈id = ℚ-elim-prop (λ _ → squash _ _) λ where
-    f@(x / y [ p ]) → quotℚ (L.Fr.symᶜ (reduce.related x y p))
+  nums' : Fin (suc sz) → Int
+  nums' fzero = n *ℤ c
+  nums' (fsuc n) = nums n *ℤ d
 
-  reduce-idemp : ∀ x → reduce (split x) ≡ split x
-  reduce-idemp = ℚ-elim-prop (λ _ → hlevel 1) λ where
-    f@(x / y [ p ]) → reduce-resp (reduce f) f (L.Fr.symᶜ (reduce.related x y p))
+  abstract
+    prfs' : (n : Fin (suc sz)) → fs n ≈ (nums' n / c' [ c'≠0 ])
+    prfs' fzero    = ≈.reflᶜ' prf ≈.∙ᶜ L.inc c c≠0 (solve 3 (λ c n d → c :* n :* (d :* c) ≔ c :* (n :* c) :* d) c n d refl)
+    prfs' (fsuc n) = prfs n ≈.∙ᶜ L.inc d d≠0 (solve 3 (λ c n d → d :* n :* (d :* c) ≔ d :* (n :* d) :* c) c (nums n) d refl)
 
-ℚ≃reduced-fraction : Iso ℚ (image reduce)
-ℚ≃reduced-fraction = (λ x → split x , inc (split x , reduce-idemp x)) , iso (toℚ ∘ fst)
-  (λ where (f@(x / y [ yp ]) , b) → ∥-∥-rec (hlevel 1) (λ where
-    (f'@(x' / y' [ yp' ] ) , p) → Σ-prop-path! (reduce-resp f f' (L.Fr.reflᶜ' (sym p) L.Fr.∙ᶜ L.Fr.symᶜ (reduce.related x' y' yp')) ∙ p)) b)
-  split≈id
+-- Induction principle for n-tuples of rational numbers which reduces to
+-- the case of n fractions /with the same denominator/. The type is
+-- pretty noisy since it uses the combinators for finite products, but
+-- it specialises at concrete n to what you would expect, e.g.
+--
+--    ℚ-elim-propⁿ 2
+--      : ∀ {P : ℚ → ℚ → Prop}
+--      → (∀ d (p : Positive d) a b → P (a / d) (b / d))
+--      → ∀ a b → P a b
+--
+-- This is useful primarily when dealing with the order, since
+-- a / d ≤ b / d is just a ≤ b. Algebraic properties of the rationals
+-- don't generally get any easier by assuming a common denominator.
+
+abstract
+  ℚ-elim-propⁿ
+    : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → ℚ) (Type ℓ)}
+    → ⦃ _ : {as : Πᶠ (λ i → ℚ)} → H-Level (applyᶠ P as) 1 ⦄
+    → ( (d : Int) (p : Positive d)
+      → ∀ᶠ n (λ i → Int) (λ as → applyᶠ P (mapₚ (λ i n → toℚ (n / d [ p ])) as)))
+    → ∀ᶠ n (λ _ → ℚ) λ as → applyᶠ P as
+
+  ℚ-elim-propⁿ n {P = P} work = curry-∀ᶠ go where
+    reps : ∀ n → (qs : Fin n → ℚ) → ∥ ((i : Fin n) → fibre toℚ (qs i)) ∥
+    reps n qs = finite-choice n (λ i → ℚ-elim-prop {P = λ x → ∥ fibre toℚ x ∥} (λ _ → squash) (λ x → inc (x , refl)) (qs i))
+
+    go : (as : Πᶠ (λ i → ℚ)) → applyᶠ P as
+    go as = ∥-∥-out! do
+      fracs' ← reps _ (indexₚ as)
+
+      let
+        fracs : Fin n → Fraction
+        fracs i = fracs' i .fst
+
+        same : (i : Fin n) → toℚ (fracs i) ≡ indexₚ as i
+        same i = fracs' i .snd
+
+      (d , d≠0 , nums , same') ← pure (common-denominator _ fracs)
+
+      let
+        rats : Πᶠ (λ i → ℚ)
+        rats = mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums)
+
+        p₀ : applyᶠ P rats
+        p₀ = apply-∀ᶠ (work d d≠0) (tabulateₚ nums)
+
+        rats=as : rats ≡ as
+        rats=as = extₚ λ i →
+          indexₚ-mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums) i
+          ·· ap (λ e → toℚ (e / d [ d≠0 ])) (indexₚ-tabulateₚ nums i)
+          ·· sym (quotℚ (same' i)) ∙ same i
+
+      pure (subst (applyᶠ P) rats=as p₀)
 ```
 -->

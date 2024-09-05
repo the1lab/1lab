@@ -256,18 +256,6 @@ factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s�
     ; is-primes = composite .p-prime ∷ primes
     }
 
-factorial : Nat → Nat
-factorial zero = 1
-factorial (suc n) = suc n * factorial n
-
-factorial-positive : ∀ n → Positive (factorial n)
-factorial-positive zero = s≤s 0≤x
-factorial-positive (suc n) = *-preserves-≤ 1 (suc n) 1 (factorial n) (s≤s 0≤x) (factorial-positive n)
-
-≤-factorial : ∀ n → n ≤ factorial n
-≤-factorial zero = 0≤x
-≤-factorial (suc n) = subst (_≤ factorial (suc n)) (*-oner (suc n)) (*-preserves-≤ (suc n) (suc n) 1 (factorial n) ≤-refl (factorial-positive n))
-
 ∣-factorial : ∀ n {m} → m < n → suc m ∣ factorial n
 ∣-factorial (suc n) {m} m≤n with suc m ≡? suc n
 ... | yes m=n = subst (_∣ factorial (suc n)) (sym m=n) (∣-*l {suc n} {factorial n})

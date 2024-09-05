@@ -13,7 +13,7 @@ open import Data.Int.Universal
 open import Data.Fin.Closure
 open import Data.Int.DivMod
 open import Data.Fin
-open import Data.Int
+open import Data.Int hiding (Positive)
 open import Data.Nat
 
 open represents-subgroup

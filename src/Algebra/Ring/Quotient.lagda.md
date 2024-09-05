@@ -54,7 +54,7 @@ comprehensibility's sake).
   private
     quot-grp : Group _
     quot-grp = R.additive-group /ᴳ I.ideal→normal
-    module R/I = Group-on (quot-grp .snd)
+    module R/I = Group-on (quot-grp .snd) hiding (magma-hlevel)
 ```
 -->
 

@@ -191,7 +191,10 @@ is-gcd-graphs-gcd : ∀ {m n d} → is-gcd m n d ≃ (gcd m n ≡ d)
 is-gcd-graphs-gcd {m = m} {n} {d} = prop-ext!
   (λ x → ap fst $ GCD-is-prop (gcd m n , Euclid.euclid m n .snd) (d , x))
   (λ p → subst (is-gcd m n) p (Euclid.euclid m n .snd))
+```
 
+<!--
+```agda
 is-gcd-factor : ∀ x y n k .⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
 is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (*-associative q n k ∙ α))
 is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (*-associative q n k ∙ α))
@@ -206,6 +209,7 @@ gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gc
   d' : is-gcd x y (k∣gcd .fst)
   d' = is-gcd-factor x y (k∣gcd .fst) k (subst (is-gcd _ _) (sym (k∣gcd .snd)) (Euclid.euclid (x * k) (y * k) .snd))
 ```
+-->
 
 ## Euclid's lemma
 

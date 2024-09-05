@@ -2,12 +2,13 @@
 ```
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Closure
+open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
-open import Data.Nat.Base
+open import Data.Nat.Base hiding (Positive)
 ```
 -->
 
@@ -347,3 +348,38 @@ minℤ (pos _)    (negsuc y) = negsuc y
 minℤ (negsuc x) (pos _)    = negsuc x
 minℤ (negsuc x) (negsuc y) = negsuc (max x y)
 ```
+
+<!--
+```agda
+data Positive : Int → Type where
+  pos : ∀ x → Positive (possuc x)
+
+instance
+  H-Level-Positive : ∀ {n k} → H-Level (Positive n) (suc k)
+  H-Level-Positive {n} = prop-instance (retract→is-hlevel 1 (from _) (to _) (li _) (isp n)) where
+    pos' : Int → Type
+    pos' posz = ⊥
+    pos' (possuc x) = ⊤
+    pos' (negsuc x) = ⊥
+
+    isp : ∀ n → is-prop (pos' n)
+    isp (possuc _) tt tt = refl
+
+    to : ∀ x → Positive x → pos' x
+    to .(possuc x) (pos x) = tt
+
+    from : ∀ x → pos' x → Positive x
+    from (possuc x) tt = pos x
+
+    li : ∀ x → is-left-inverse (from x) (to x)
+    li .(possuc x) (pos x) = refl
+
+  Positive-suc : ∀ {x} → Positive (possuc x)
+  Positive-suc = pos _
+
+  Dec-Positive : ∀ {x} → Dec (Positive x)
+  Dec-Positive {posz} = no λ ()
+  Dec-Positive {negsuc x} = no λ ()
+  Dec-Positive {possuc x} = yes (pos x)
+```
+-->
