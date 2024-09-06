@@ -97,9 +97,9 @@ natural.
 
     grp .inv f .η x = B.Hom.inverse (f .η x)
     grp .inv f .is-natural x y g =
-      B.Hom.inverse (f .η y) B.∘ F.₁ g   ≡˘⟨ B.neg-∘-l ⟩
+      B.Hom.inverse (f .η y) B.∘ F.₁ g   ≡˘⟨ B.∘-negatel ⟩
       B.Hom.inverse ⌜ f .η y B.∘ F.₁ g ⌝ ≡⟨ ap! (f .is-natural x y g) ⟩
-      B.Hom.inverse (G.₁ g B.∘ f .η x)   ≡⟨ B.neg-∘-r ⟩
+      B.Hom.inverse (G.₁ g B.∘ f .η x)   ≡⟨ B.∘-negater ⟩
       G.₁ g B.∘ B.Hom.inverse (f .η x)   ∎
 
     grp .assoc _ _ _ = ext λ _ → B.Hom.associative

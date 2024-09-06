@@ -16,25 +16,39 @@ open import 1Lab.Reflection
 open import Algebra.Ring.Cat.Initial
 open import Algebra.Ring.Commutative
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Displayed.Total
+open import Cat.Prelude hiding (_+_ ; _*_ ; _-_)
+
 open import Data.Fin.Product
 open import Data.Fin.Base
-open import Data.Int.HIT
+open import Data.Int.Base
 open import Data.List hiding (lookup ; tabulate)
 open import Data.Dec
 open import Data.Nat
+
+import Algebra.Ring.Reasoning as Kit
+
+import Data.Int.Base as B
+
+open Total-hom
 
 module Algebra.Ring.Solver where
 
 module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   private
-    module R = CRing-on cring
-    ℤ↪R-rh = Int-is-initial (el _ R.has-is-set , R.has-ring-on) .centre
+    R' : Ring _
+    R' = record { fst = el _ (CRing-on.has-is-set cring) ; snd = CRing-on.has-ring-on cring }
+
+    module R = Kit R'
+
+    ℤ↪R-rh = Int-is-initial R' .centre
     module ℤ↪R = is-ring-hom (ℤ↪R-rh .preserves)
     embed-coe = ℤ↪R-rh .hom
+
+    open CRing-on cring using (*-commutes)
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ
@@ -138,7 +152,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   -ₙ_ : ∀ {n} → Normal n → Normal n
   -ₚ_ : ∀ {n} → Poly (suc n) → Poly (suc n)
 
-  -ₙ con x = con (negate x)
+  -ₙ con x = con (negℤ x)
   -ₙ poly x = poly (-ₚ x)
 
   -ₚ x = (-ₙ 1n) *ₙₚ x
@@ -183,7 +197,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
     Number-Polynomial : ∀ {n} → Number (Polynomial n)
     Number-Polynomial .Number.Constraint x = Lift _ ⊤
-    Number-Polynomial .Number.fromNat n = con (diff n 0)
+    Number-Polynomial .Number.fromNat n = con (pos n)
 
   eval (op o p₁ p₂) ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
   eval (con c)      ρ = embed-coe (lift c)
@@ -312,7 +326,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
       where
       lem₁' =
         a R.* c R.* x     ≡˘⟨ R.*-associative ⟩
-        a R.* ⌜ c R.* x ⌝ ≡⟨ ap! R.*-commutes ⟩
+        a R.* ⌜ c R.* x ⌝ ≡⟨ ap! *-commutes ⟩
         a R.* (x R.* c)   ≡⟨ R.*-associative ⟩
         a R.* x R.* c     ∎
 
@@ -324,7 +338,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
       lem₂ =
         (a R.* d R.+ b R.* c) R.* x           ≡⟨ R.*-distribr ⟩
         a R.* d R.* x R.+ b R.* c R.* x       ≡˘⟨ ap₂ R._+_ R.*-associative R.*-associative ⟩
-        a R.* ⌜ d R.* x ⌝ R.+ b R.* (c R.* x) ≡⟨ ap! R.*-commutes ⟩
+        a R.* ⌜ d R.* x ⌝ R.+ b R.* (c R.* x) ≡⟨ ap! *-commutes ⟩
         a R.* (x R.* d) R.+ b R.* (c R.* x)   ≡⟨ ap₂ R._+_ R.*-associative refl ⟩
         a R.* x R.* d R.+ b R.* (c R.* x)     ∎
 
@@ -342,7 +356,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   *ₚₙ-hom c (p *x+ d) x ρ with c ==ₙ 0n
   ... | just c=0 = sym (ap₂ R._*_ refl (ap (λ e → En e ρ) c=0 ∙ 0n-hom ρ) ∙ R.*-zeror)
   ... | nothing  =
-      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl R.*-commutes ∙ R.*-associative)
+      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl *-commutes ∙ R.*-associative)
         (*ₙ-hom d c ρ)
     ∙ sym R.*-distribr
 
@@ -352,7 +366,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   -ₚ-hom p (x ∷ ρ) =
       *ₙₚ-hom (-ₙ 1n) p x ρ
     ∙ ap₂ R._*_ (-ₙ-hom 1n ρ ∙ ap R.-_ (1n-hom ρ)) refl
-    ∙ sym R.neg-*-l ∙ ap R.-_ R.*-idl
+    ∙ R.*-negatel ∙ ap R.-_ R.*-idl
   -ₙ-hom (con x) ρ = ℤ↪R.pres-neg {x = lift x}
   -ₙ-hom (poly x) ρ = -ₚ-hom x ρ
 
@@ -393,8 +407,8 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     test-identities x =
       solve (var 0 :+ (con 0 :* con 1)) ((con 1 :+ con 0) :* var 0) (x ∷ []) refl
 
-module Explicit {ℓ} {R : Type ℓ} (cring : CRing-on R) where
-  private module I = Impl cring
+module Explicit {ℓ} (R : CRing ℓ) where
+  private module I = Impl (R .snd)
 
   open I renaming (solve to solve-impl)
   open I public using (Polynomial ; _:+_ ; _:-_ ; :-_ ; _:*_ ; con ; Number-Polynomial)
@@ -410,7 +424,7 @@ module Explicit {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     solve
       : (n : Nat) (f : Arrᶠ {n = n} (λ i → Polynomial n) (Polynomial n × Polynomial n))
       → (let (lhs , rhs) = applyᶠ {n = n} f variables)
-      → ∀ᶠ n (λ i → R) λ vs
+      → ∀ᶠ n (λ i → ⌞ R ⌟) λ vs
         → (let rs = tabulate (indexₚ vs))
         → En (normal lhs) rs ≡ En (normal rhs) rs
         → ⟦ lhs ⟧ rs ≡ ⟦ rhs ⟧ rs
@@ -450,11 +464,11 @@ module Reflection where
   build-expr : ∀ {ℓ} {A : Type ℓ} → Term → Variables A → Term → TC (Term × Variables A)
   build-expr cring vs (“0” cring') = do
     unify cring cring'
-    z ← quoteTC (diff 0 0)
+    z ← quoteTC (Int.pos 0)
     pure $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
   build-expr cring vs (“1” cring') = do
     unify cring cring'
-    o ← quoteTC (diff 1 0)
+    o ← quoteTC (Int.pos 1)
     pure $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
   build-expr cring vs (“*” cring' t1 t2) = do
     unify cring cring'
@@ -526,12 +540,13 @@ private module TestCRing {ℓ} (R : CRing ℓ) where
   test-identities : ∀ x → x R.+ (R.0r R.* R.1r) ≡ (R.1r R.+ R.0r) R.* x
   test-identities x = cring! R
 
+  test-negation : ∀ x y → x R.* (R.- y) ≡ R.- (x R.* y)
+  test-negation x y = cring! R
+
 private module TestExplicit where
-  cℤ : CRing-on (Lift lzero Int)
-  cℤ = record { has-ring-on = Liftℤ .snd ; *-commutes = λ {x y} → ap lift (*ℤ-commutative (x .Lift.lower) (y .Lift.lower)) }
+  open Explicit ℤ-comm
 
-  open Explicit cℤ
-
-  _ : ∀ x y u v → (x *ℤ y) *ℤ (u *ℤ v) ≡ (x *ℤ u) *ℤ (y *ℤ v)
-  _ = λ x y u v → ap Lift.lower
-    (solve 4 (λ x y u v → (x :* y) :* (u :* v) ≔ (x :* u) :* (y :* v)) (lift x) (lift y) (lift u) (lift v) refl)
+  _ : ∀ x y u v → (x B.*ℤ y) B.*ℤ (u B.*ℤ v) ≡ (x B.*ℤ u) B.*ℤ (y B.*ℤ v)
+  _ = λ x y u v → solve 4
+    (λ x y u v → (x :* y) :* (u :* v) ≔ (x :* u) :* (y :* v))
+    x y u v refl

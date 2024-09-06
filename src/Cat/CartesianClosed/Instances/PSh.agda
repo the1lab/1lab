@@ -1,8 +1,12 @@
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
+open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Exponential
-open import Cat.Diagram.Everything
+open import Cat.Diagram.Coproduct
 open import Cat.Instances.Functor
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
 open import Cat.Functor.Hom

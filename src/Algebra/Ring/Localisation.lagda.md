@@ -82,7 +82,7 @@ Fraction-path {S = S} {x = x / s [ p ]} {y / t [ q ] } α β i = record
 <!--
 ```agda
 module Frac {ℓ} (R : CRing ℓ) where
-  open Explicit (R .snd)
+  open Explicit R
   open CRing R
 ```
 -->
@@ -192,7 +192,7 @@ but the equivalence between that and our definition is routine.
 ```agda
 module Loc {ℓ} (R : CRing ℓ) (S : ⌞ R ⌟ → Ω) (mult : Frac.is-multiplicative R (_∈ S)) where
   open Frac.is-multiplicative mult
-  open Explicit (R .snd)
+  open Explicit R
   open CRing R
   open Frac R public
 
@@ -294,9 +294,9 @@ long, so we'll leave them in this `<details>`{.html} block.</summary>
     -f-resp (x / s) (y / t) = elim! λ u u∈S p →
       let
         prf =
-          u * (- x) * t ≡⟨ ap (_* t) (sym neg-*-r) ∙ sym neg-*-l ⟩
+          u * (- x) * t ≡⟨ ap (_* t) *-negater ∙ *-negatel ⟩
           - (u * x * t) ≡⟨ ap -_ p ⟩
-          - (u * y * s) ≡⟨ neg-*-l ∙ ap (_* s) neg-*-r ⟩
+          - (u * y * s) ≡⟨ sym *-negatel ∙ ap (_* s) (sym *-negater) ⟩
           u * (- y) * s ∎
       in quot (inc u u∈S prf)
 

@@ -242,4 +242,7 @@ abstract
   *ℤ-preserves-≤r {pos x} {pos y} (possuc z) ⦃ pos z ⦄ p = apos≤apos {x * suc z} {y * suc z} (Nat.*-preserves-≤r x y (suc z) (unpos≤pos p))
   *ℤ-preserves-≤r {negsuc x} {pos y} (possuc z) ⦃ pos z ⦄ p = ≤-trans neg≤pos (≤-refl' (sym (assign-pos (y * suc z))))
   *ℤ-preserves-≤r {negsuc x} {negsuc y} (possuc z) ⦃ pos z ⦄ p = neg≤neg (Nat.+-preserves-≤l (y * suc z) (x * suc z) z (Nat.*-preserves-≤r y x (suc z) (unneg≤neg p)))
+
+  *ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → 0 ≤ (x *ℤ y)
+  *ℤ-nonnegative {pos x} {pos y} (pos≤pos p) (pos≤pos q) = ≤-trans (pos≤pos Nat.0≤x) (≤-refl' (sym (assign-pos (x * y))))
 ```

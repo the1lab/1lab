@@ -2,10 +2,10 @@
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Functor.Adjoint
+open import Cat.Prelude
 
 open import Data.Int.Universal
 open import Data.Nat.Order

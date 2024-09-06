@@ -46,7 +46,7 @@ record is-monoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
     idl : {x : A} → id ⋆ x ≡ x
     idr : {x : A} → x ⋆ id ≡ x
 
-open is-monoid public
+open is-monoid
 ```
 
 The condition of $(A, 0, \star)$ defining a monoid is a proposition, so

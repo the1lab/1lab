@@ -1,12 +1,13 @@
 <!--
 ```agda
 {-# OPTIONS --no-qualified-instances #-}
+open import 1Lab.Extensionality
 open import 1Lab.Prelude
 
 open import Algebra.Ring.Localisation hiding (_/_ ; Fraction)
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
-open import Algebra.Monoid hiding (magma-hlevel)
+open import Algebra.Monoid
 
 open import Data.Set.Coequaliser.Split
 open import Data.Nat.Divisible.GCD
@@ -55,83 +56,71 @@ Fraction : Type
 Fraction = Algebra.Ring.Localisation.Fraction Positive
 
 open Frac ℤ-comm using (Inductive-≈)
-open Explicit (ℤ-comm .snd)
+open Explicit ℤ-comm
 open Fraction renaming (num to ↑ ; denom to ↓) public
 open L using (_≈_) renaming (module Fr to ≈) public
 open Algebra.Ring.Localisation using (_/_[_]) public
 ```
 -->
 
-Strictly speaking, the construction is now done. However, we provide a
-set of `opaque`{.Agda} wrappers for the operations on $\bZ\loc{(\ne 0)}$
-so that the casual user of $\bQ$ does not have to care about the
-details. The first thing we rename are the algebraic operations:
+Strictly speaking, we are done: we could simply define $\bQ$ to be the
+ring we just constructed. However, for the sake of implementation
+hiding, we wrap it as a distinct type constructor. This lets consumers
+of the type $\bQ$ forget that it's implemented as a localisation.
 
 ```agda
-opaque
-  ℚ : Type
-  ℚ = ⌞ L.S⁻¹R ⌟
+data ℚ : Type where
+  inc : ⌞ L.S⁻¹R ⌟ → ℚ
 
-  toℚ : Fraction → ℚ
-  toℚ = inc
+toℚ : Fraction → ℚ
+toℚ x = inc (inc x)
 
-  _+ℚ_ : ℚ → ℚ → ℚ
-  _+ℚ_ = L._+ₗ_
+_+ℚ_ : ℚ → ℚ → ℚ
+_+ℚ_ (inc x) (inc y) = inc (x L.+ₗ y)
 
-  _*ℚ_ : ℚ → ℚ → ℚ
-  _*ℚ_ = L._*ₗ_
+_*ℚ_ : ℚ → ℚ → ℚ
+_*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 
-  -ℚ_ : ℚ → ℚ
-  -ℚ_ = L.-ₗ_
-```
-
-Next, we have an elimination principle, which states that $\bQ$ is a
-quotient of the type of integer fractions: to show a [[proposition]] at
-every $x : \bQ$, it suffices to do so at the fractions.
-
-```agda
-  ℚ-elim-prop
-    : ∀ {ℓ} {P : ℚ → Type ℓ} (pprop : ∀ x → is-prop (P x))
-    → (f : ∀ x → P (toℚ x))
-    → ∀ x → P x
-  ℚ-elim-prop pprop f = Coeq-elim-prop pprop f
+-ℚ_ : ℚ → ℚ
+-ℚ_ (inc x) = inc (L.-ₗ x)
 ```
 
 <!--
 ```agda
-  ℚ-elim-prop-β
-    : ∀ {ℓ} {P : ℚ → Type ℓ} (pprop : ∀ x → is-prop (P x))
-    → ∀ (f : ∀ x → P (toℚ x)) x
-    → ℚ-elim-prop {P = P} pprop f (toℚ x) ≡ f x
-  ℚ-elim-prop-β _ _ _ = refl
+private
+  unℚ : ℚ → ⌞ L.S⁻¹R ⌟
+  unℚ (inc x) = x
+```
+-->
 
-  {-# REWRITE ℚ-elim-prop-β #-}
+However, clients of this module *will* need the fact that $\bQ$ is a
+quotient of the type of integer fractions. Therefore, we expose an
+elimination principle, saying that to show a [[proposition]] everywhere
+over $\bQ$, it suffices to do so at the fractions.
 
-  ℚ-rec
-    : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
-    → (f : Fraction → P)
-    → (∀ x y → x ≈ y → f x ≡ f y)
-    → ℚ → P
-  ℚ-rec f p = Coeq-rec f (λ (x , y , r) → p x y r)
+```agda
+ℚ-elim-prop
+  : ∀ {ℓ} {P : ℚ → Type ℓ} (pprop : ∀ x → is-prop (P x))
+  → (f : ∀ x → P (toℚ x))
+  → ∀ x → P x
+ℚ-elim-prop pprop f (inc (inc x)) = f x
+ℚ-elim-prop pprop f (inc (glue r@(x , y , _) i)) = is-prop→pathp (λ i → pprop (inc (glue r i))) (f x) (f y) i
+ℚ-elim-prop pprop f (inc (squash x y p q i j)) =
+  is-prop→squarep
+    (λ i j → pprop (inc (squash x y p q i j)))
+    (λ i → go (inc x)) (λ i → go (inc (p i))) (λ i → go (inc (q i))) (λ i → go (inc y))
+    i j
+  where go = ℚ-elim-prop pprop f
+```
 
-  ℚ-rec-β
-    : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
-    → (f : Fraction → P) (r : ∀ x y → x ≈ y → f x ≡ f y) (x : Fraction)
-    → ℚ-rec f r (toℚ x) ≡ f x
-  ℚ-rec-β f r x = refl
-
-  {-# REWRITE ℚ-rec-β #-}
-
-  +ℚ-β : ∀ {x y} → toℚ x +ℚ toℚ y ≡ toℚ (L.+f x y)
-  +ℚ-β = refl
-
-  *ℚ-β : ∀ {x y} → toℚ x *ℚ toℚ y ≡ toℚ (L.*f x y)
-  *ℚ-β = refl
-
-  -ℚ-β : ∀ {x} → -ℚ (toℚ x) ≡ toℚ (L.-f x)
-  -ℚ-β = refl
-
-  {-# REWRITE +ℚ-β *ℚ-β -ℚ-β #-}
+<!--
+```agda
+ℚ-rec
+  : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
+  → (f : Fraction → P)
+  → (∀ x y → x ≈ y → f x ≡ f y)
+  → ℚ → P
+ℚ-rec f p (inc x) = Coeq-rec f (λ (x , y , r) → p x y r) x
 ```
 -->
 
@@ -139,14 +128,12 @@ Next, we show that sameness of fractions implies identity in $\bQ$, and
 the converse is true as well:
 
 ```agda
-opaque
-  unfolding ℚ
-
+abstract
   quotℚ : ∀ {x y} → x ≈ y → toℚ x ≡ toℚ y
-  quotℚ = quot
+  quotℚ p = ap ℚ.inc (quot p)
 
   unquotℚ : ∀ {x y} → toℚ x ≡ toℚ y → x ≈ y
-  unquotℚ = ≈.effective
+  unquotℚ p = ≈.effective (ap unℚ p)
 ```
 
 Finally, we want to show that the type of rational numbers is discrete.
@@ -169,7 +156,7 @@ from-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = case L.≈→≈' p o
     (inr xt-ys=0) → ℤ.zero-diff xt-ys=0
 
 to-same-rational : {x y : Fraction} → x .↑ *ℤ y .↓ ≡ y .↑ *ℤ x .↓ → x ≈ y
-to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (sym (*ℤ-associative 1 x t) ·· ap (1 *ℤ_) p ·· *ℤ-associative 1 y s)
+to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (recover (sym (*ℤ-associative 1 x t) ·· ap (1 *ℤ_) p ·· *ℤ-associative 1 y s))
 
 Dec-same-rational : (x y : Fraction) → Dec (x ≈ y)
 Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
@@ -179,45 +166,15 @@ Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
 
 <!--
 ```agda
--- Since we want _≡?_ and friends to compute for toℚ, we'll define them
--- by a detour through boolean equality. We can define an equality map
---
---   sameℚ : ℚ → ℚ → Bool
---
--- using the pre-existing proof of Discrete-quotient. This map is much
--- easier to rewrite than the actual decision! In particular,
---
---  sameℚ (toℚ x) (toℚ y) = Dec→Bool (Dec-same-rational x y)
---
--- is a pretty normal equation, and Agda is happy with it. We can then
--- use sameℚ to define the Discrete-ℚ instance in a way that computes.
+private
+  _≡ℚ?_ : (x y : ⌞ L.S⁻¹R ⌟) → Dec (x ≡ y)
+  x ≡ℚ? y = Discrete-quotient L.Fraction-congruence Dec-same-rational {x} {y}
 
-opaque
-  unfolding ℚ
-
-  private
-    _≡ℚ?_ : (x y : ℚ) → Dec (x ≡ y)
-    x ≡ℚ? y = Discrete-quotient L.Fraction-congruence Dec-same-rational {x} {y}
-
-  sameℚ : ℚ → ℚ → Bool
-  sameℚ x y = Dec→Bool (x ≡ℚ? y)
-
-  sameℚ-β : ∀ {x y} → sameℚ (toℚ x) (toℚ y) ≡ Dec→Bool (Dec-same-rational x y)
-  sameℚ-β {x} {y} with Dec-same-rational x y
-  ... | yes p = refl
-  ... | no ¬p = refl
-
-  {-# REWRITE sameℚ-β #-}
-
-  from-sameℚ : ∀ {x y} → ⌞ sameℚ x y ⌟ → x ≡ y
-  from-sameℚ {x} {y} p with x ≡ℚ? y | p
-  ... | yes q | p = q
-  ... | no ¬q | ()
-
-  to-sameℚ : ∀ {x y} → x ≡ y → ⌞ sameℚ x y ⌟
-  to-sameℚ {x} {y} p with x ≡ℚ? y
-  ... | yes p = oh
-  ... | no ¬p = absurd (¬p p)
+instance
+  Discrete-ℚ : Discrete ℚ
+  Discrete-ℚ {inc x} {inc y} with x ≡ℚ? y
+  ... | yes p = yes (ap ℚ.inc p)
+  ... | no ¬p = no (¬p ∘ ap unℚ)
 ```
 -->
 
@@ -241,21 +198,14 @@ _/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
 
 infix 11 _/_
 
-{-# DISPLAY toℚ (_/_[_] x y p) = x / y #-}
+{-# DISPLAY ℚ.inc (Coeq.inc (_/_[_] x y p)) = x / y #-}
 
 _/1 : Int → ℚ
 x /1 = x / 1
 
 instance
-  Discrete-ℚ : Discrete ℚ
-  Discrete-ℚ {x} {y} with holds? (So (sameℚ x y))
-  ... | yes p = yes (from-sameℚ p)
-  ... | no ¬p = no λ p → ¬p (to-sameℚ p)
-
   H-Level-ℚ : ∀ {n} → H-Level ℚ (2 + n)
   H-Level-ℚ = basic-instance 2 (Discrete→is-set auto)
-
-  {-# OVERLAPPING H-Level-ℚ #-}
 
   Number-ℚ : Number ℚ
   Number-ℚ .Number.Constraint _ = ⊤
@@ -274,41 +224,39 @@ instance
   Inductive-ℚ ⦃ r ⦄ .Inductive.methods = r .Inductive.methods
   Inductive-ℚ ⦃ r ⦄ .Inductive.from f = ℚ-elim-prop (λ x → hlevel 1) (r .Inductive.from f)
 
-abstract opaque
-  unfolding ℚ
-
+abstract
   +ℚ-idl : ∀ x → 0 +ℚ x ≡ x
-  +ℚ-idl = L.+ₗ-idl
+  +ℚ-idl (inc x) = ap inc (L.+ₗ-idl x)
 
   +ℚ-idr : ∀ x → x +ℚ 0 ≡ x
-  +ℚ-idr x = CRing.+-idr L.S⁻¹R
+  +ℚ-idr (inc x) = ap ℚ.inc (CRing.+-idr L.S⁻¹R)
 
   +ℚ-associative : ∀ x y z → x +ℚ (y +ℚ z) ≡ (x +ℚ y) +ℚ z
-  +ℚ-associative = L.+ₗ-assoc
+  +ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.+ₗ-assoc x y z)
 
   +ℚ-commutative : ∀ x y → x +ℚ y ≡ y +ℚ x
-  +ℚ-commutative = L.+ₗ-comm
+  +ℚ-commutative (inc x) (inc y) = ap inc (L.+ₗ-comm x y)
 
   *ℚ-idl : ∀ x → 1 *ℚ x ≡ x
-  *ℚ-idl = L.*ₗ-idl
+  *ℚ-idl (inc x) = ap inc (L.*ₗ-idl x)
 
   *ℚ-idr : ∀ x → x *ℚ 1 ≡ x
-  *ℚ-idr x = CRing.*-idr L.S⁻¹R
+  *ℚ-idr (inc x) = ap ℚ.inc (CRing.*-idr L.S⁻¹R)
 
   *ℚ-associative : ∀ x y z → x *ℚ (y *ℚ z) ≡ (x *ℚ y) *ℚ z
-  *ℚ-associative = L.*ₗ-assoc
+  *ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.*ₗ-assoc x y z)
 
   *ℚ-commutative : ∀ x y → x *ℚ y ≡ y *ℚ x
-  *ℚ-commutative = L.*ₗ-comm
+  *ℚ-commutative (inc x) (inc y) = ap inc (L.*ₗ-comm x y)
 
   *ℚ-zerol : ∀ x → 0 *ℚ x ≡ 0
-  *ℚ-zerol x = CRing.*-zerol L.S⁻¹R {f = x}
+  *ℚ-zerol (inc x) = ap ℚ.inc (CRing.*-zerol L.S⁻¹R {x})
 
   *ℚ-zeror : ∀ x → x *ℚ 0 ≡ 0
-  *ℚ-zeror x = CRing.*-zeror L.S⁻¹R {f = x}
+  *ℚ-zeror (inc x) = ap ℚ.inc (CRing.*-zeror L.S⁻¹R {x})
 
   *ℚ-distribl : ∀ x y z → x *ℚ (y +ℚ z) ≡ x *ℚ y +ℚ x *ℚ z
-  *ℚ-distribl = L.*ₗ-distribl
+  *ℚ-distribl (inc x) (inc y) (inc z) = ap ℚ.inc (L.*ₗ-distribl x y z)
 
 +ℚ-monoid : is-monoid 0 _+ℚ_
 +ℚ-monoid = record { has-is-semigroup = record { has-is-magma = record { has-is-set = hlevel 2 } ; associative = λ {x} {y} {z} → +ℚ-associative x y z } ; idl = +ℚ-idl _ ; idr = +ℚ-idr _ }
@@ -564,27 +512,21 @@ integer-frac-splits = record
 ```agda
 private module split = is-split-congruence integer-frac-splits
 
-opaque
-  unfolding ℚ
-
-  reduceℚ : ℚ → Fraction
-  reduceℚ = split.choose
-
-  reducesℚ : ∀ x → reduceℚ (toℚ x) ≈ x
-  reducesℚ x = unquotℚ (split.splitting (toℚ x) .snd)
-
-  reduceℚ-β : ∀ x → reduceℚ (toℚ x) ≡ reduce-fraction x
-  reduceℚ-β x = refl
-  {-# REWRITE reduceℚ-β #-}
+reduceℚ : ℚ → Fraction
+reduceℚ (inc x) = split.choose x
 
 splitℚ : (x : ℚ) → fibre toℚ x
-splitℚ x = record
-  { fst = reduceℚ x
-  ; snd = ℚ-elim-prop {P = λ x → toℚ (reduceℚ x) ≡ x} (λ x → hlevel 1) (λ x → quotℚ (reducesℚ x)) x
+splitℚ (inc x) = record
+  { fst = split.choose x
+  -- The use of 'recover' here replaces the calculated proof that
+  -- is-split-congruence returns by an invocation of Discrete-ℚ. This
+  -- has much shorter normal forms when applied to concrete values.
+  ; snd = recover (ap inc (split.splitting x .snd))
   }
 
-reduce-injective : ∀ x y → reduceℚ x ≡ reduceℚ y → x ≡ y
-reduce-injective = elim! (λ x s s≠0 y t t≠0 p → quotℚ (split.reflects _ _ p))
+abstract
+  reduce-injective : ∀ x y → reduceℚ x ≡ reduceℚ y → x ≡ y
+  reduce-injective = elim! (λ x s s≠0 y t t≠0 p → quotℚ (split.reflects _ _ p))
 
 common-denominator
   : ∀ n (fs : Fin n → Fraction) → Σ[ c ∈ Int ] Σ[ p ∈ Positive c ] Σ[ n ∈ (Fin n → Int) ] (∀ j → fs j ≈ (n j / c [ p ]))
@@ -656,5 +598,30 @@ abstract
           ·· sym (quotℚ (same' i)) ∙ same i
 
       pure (subst (applyᶠ P) rats=as p₀)
+
+same-frac : Fraction → Fraction → Prop lzero
+same-frac f@record{} g@record{} = el! (f .↑ *ℤ g .↓ ≡ g .↑ *ℤ f .↓)
+
+private
+  eqℚ : ℚ → ℚ → Prop lzero
+  eqℚ (inc x) (inc y) = Coeq-rec₂ (hlevel 2) same-frac
+    (λ { f@(x / s [ p ]) (g@(y / t [ q ]) , h@(z / u [ r ]) , α) → n-ua (prop-ext!
+      (λ β → from-same-rational {h} {f} (≈.symᶜ α ≈.∙ᶜ to-same-rational β))
+      (λ β → from-same-rational {g} {f} (α ≈.∙ᶜ to-same-rational β))) })
+    (λ { f@(x / s [ p ]) (g@(y / t [ q ]) , h@(z / u [ r ]) , α) → n-ua (prop-ext!
+      (λ β → from-same-rational {f} {h} (to-same-rational β ≈.∙ᶜ α))
+      (λ β → from-same-rational {f} {g} (to-same-rational β ≈.∙ᶜ ≈.symᶜ α))) })
+    x y
+
+open Extensional
+
+instance
+  Extensional-ℚ : Extensional ℚ lzero
+  Extensional-ℚ .Pathᵉ x y = ⌞ eqℚ x y ⌟
+  Extensional-ℚ .reflᵉ = ℚ-elim-prop (λ _ → hlevel 1) λ { record{} → refl }
+  Extensional-ℚ .idsᵉ .to-path {a} {b} = go a b where
+    go : ∀ a b → ⌞ eqℚ a b ⌟ → a ≡ b
+    go = ℚ-elim-propⁿ 2 (λ d _ a b p → quotℚ (to-same-rational p))
+  Extensional-ℚ .idsᵉ .to-path-over p = prop!
 ```
 -->

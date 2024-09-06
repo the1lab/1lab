@@ -7,7 +7,7 @@ open import Algebra.Ring.Solver
 
 open import Data.Set.Coequaliser hiding (_/_)
 open import Data.Rational.Base
-open import Data.Int.Base
+open import Data.Int.Base hiding (Positive ; H-Level-Positive ; Dec-Positive)
 open import Data.Dec
 
 open import Order.Instances.Int
@@ -15,6 +15,7 @@ open import Order.Reasoning Int-poset using (_=⟨_⟩_ ; _≤⟨_⟩_ ; _=˘⟨
 
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
+import Data.Int.Base as ℤ
 ```
 -->
 
@@ -24,7 +25,7 @@ module Data.Rational.Order where
 
 <!--
 ```agda
-open Explicit (ℤ-comm .snd)
+open Explicit ℤ-comm
 ```
 -->
 
@@ -73,8 +74,12 @@ above, so we'll leave this in a `<details>`{.html} block.
 
 ```agda
 private
-  orderℚ : ℚ → ℚ → Prop lzero
-  orderℚ = ℚ-rec (λ f₁ → ℚ-rec (work f₁) (r1 f₁)) (λ f₁ f₂ p → ext (ℚ-elim-prop (λ _ → hlevel 1) (λ u → r2 f₁ f₂ u p))) where
+  leℚ : ℚ → ℚ → Prop lzero
+  leℚ (inc x) (inc y) =
+    Coeq-rec₂ (hlevel 2) work
+      (λ a (x , y , r) → r2 x y a r)
+      (λ a (x , y , r) → r1 a x y r) x y
+    where
     work : Fraction → Fraction → Prop lzero
     ∣ work x y ∣ = x ≤ᶠ y
     work record{} record{} .is-tr = hlevel 1
@@ -101,7 +106,7 @@ normal form.
 record _≤_ (x y : ℚ) : Type where
   constructor inc
   field
-    le : ⌞ orderℚ x y ⌟
+    lower : ⌞ leℚ x y ⌟
 ```
 
 <!--
@@ -121,7 +126,7 @@ reflexive, transitive, and antisymmetric.
   go : ∀ x y → Dec (toℚ x ≤ toℚ y)
   go x@record{} y@record{} with holds? ((↑ x *ℤ ↓ y) ℤ.≤ (↑ y *ℤ ↓ x))
   ... | yes p = yes (inc p)
-  ... | no ¬p = no (¬p ∘ le)
+  ... | no ¬p = no (¬p ∘ lower)
 
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
@@ -139,13 +144,13 @@ abstract
   ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
   ≤-trans {x} {y} {z} = work x y z where
     work : ∀ x y z → x ≤ y → y ≤ z → x ≤ z
-    work = elim! λ x y z p q → inc (≤ᶠ-trans x y z (p .le) (q .le))
+    work = elim! λ x y z p q → inc (≤ᶠ-trans x y z (p .lower) (q .lower))
 
   ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
   ≤-antisym {x} {y} = work x y where
     work : ∀ x y → x ≤ y → y ≤ x → x ≡ y
     work = elim! λ where
-      x@record{} y@record{} p q → quotℚ (to-same-rational (ℤ.≤-antisym (p .le) (q .le)))
+      x@record{} y@record{} p q → quotℚ (to-same-rational (ℤ.≤-antisym (p .lower) (q .lower)))
 ```
 
 ## Algebraic properties
@@ -156,7 +161,7 @@ in both arguments, and division by a positive integer preserves the
 order.
 
 ```agda
-  common-denominator-≤ : ∀ {x y d} (p : Positive d) → x ℤ.≤ y → toℚ (x / d [ p ]) ≤ toℚ (y / d [ p ])
+  common-denominator-≤ : ∀ {x y d} (p : ℤ.Positive d) → x ℤ.≤ y → toℚ (x / d [ p ]) ≤ toℚ (y / d [ p ])
   common-denominator-≤ {d = d} (pos _) p = inc (ℤ.*ℤ-preserves-≤r d p)
 
   +ℚ-preserves-≤ : ∀ x y a b → x ≤ y → a ≤ b → (x +ℚ a) ≤ (y +ℚ b)
@@ -165,4 +170,55 @@ order.
       x *ℤ d +ℤ a *ℤ d ≤⟨ ℤ.+ℤ-preserves-≤r (a *ℤ d) _ _ p ⟩
       y *ℤ d +ℤ a *ℤ d ≤⟨ ℤ.+ℤ-preserves-≤l (y *ℤ d) _ _ q ⟩
       y *ℤ d +ℤ b *ℤ d ≤∎
+
+  *ℚ-nonnegative : ∀ x y → 0 ≤ x → 0 ≤ y → 0 ≤ (x *ℚ y)
+  *ℚ-nonnegative = ℚ-elim-propⁿ 2 λ d d≠0 x y (inc p) (inc q) → inc (ℤ.≤-trans
+    (ℤ.*ℤ-nonnegative
+      (ℤ.≤-trans p (ℤ.≤-refl' (ℤ.*ℤ-oner x)))
+      (ℤ.≤-trans q (ℤ.≤-refl' (ℤ.*ℤ-oner y))))
+    (ℤ.≤-refl' (sym (ℤ.*ℤ-oner (x *ℤ y)))))
+```
+
+## Positivity
+
+```agda
+private
+  positiveℚ : ℚ → Prop lzero
+  positiveℚ (inc x) = Coeq-rec (λ f → el! (ℤ.Positive (↑ f))) (λ (x , y , p) → r x y p) x where
+    r : ∀ x y → x ≈ y → el! (ℤ.Positive (↑ x)) ≡ el! (ℤ.Positive (↑ y))
+    r (x / s [ ps ]) (y / t [ pt ]) r with r ← from-same-rational r = n-ua (prop-ext!
+      (λ px → ℤ.*ℤ-positive-cancel ps (subst ℤ.Positive (r ∙ ℤ.*ℤ-commutative y s) (ℤ.*ℤ-positive px pt)))
+      λ py → ℤ.*ℤ-positive-cancel pt (subst ℤ.Positive (sym r ∙ ℤ.*ℤ-commutative x t) (ℤ.*ℤ-positive py ps)))
+
+record Positive (q : ℚ) : Type where
+  constructor inc
+  field
+    lower : ⌞ positiveℚ q ⌟
+
+open Positive
+
+unquoteDecl H-Level-Positive = declare-record-hlevel 1 H-Level-Positive (quote Positive)
+
+instance
+  Dec-Positive : ∀ {x} → Dec (Positive x)
+  Dec-Positive {x} with (r@(n / d [ p ]) , q) ← splitℚ x | holds? (ℤ.Positive n)
+  ... | yes p = yes (subst Positive q (inc (recover p)))
+  ... | no ¬p = no λ x → case subst Positive (sym q) x of λ (inc p) → ¬p p
+
+nonnegative-nonzero→positive : ∀ {x} → 0 ≤ x → x ≠ 0 → Positive x
+nonnegative-nonzero→positive = work _ where
+  work : ∀ x → 0 ≤ x → x ≠ 0 → Positive x
+  work = ℚ-elim-propⁿ 1 λ where
+    d p posz (inc q) r → absurd (r (ext refl))
+    d p (possuc x) (inc q) r → inc (pos x)
+
+*ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x *ℚ y)
+*ℚ-positive = work _ _ where
+  work : ∀ x y → Positive x → Positive y → Positive (x *ℚ y)
+  work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.*ℤ-positive x y)
+
++ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x +ℚ y)
++ℚ-positive = work _ _ where
+  work : ∀ x y → Positive x → Positive y → Positive (x +ℚ y)
+  work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.+ℤ-positive (ℤ.*ℤ-positive x p) (ℤ.*ℤ-positive y p))
 ```

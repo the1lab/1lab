@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Algebra.Semigroup using (is-semigroup)
-open import Algebra.Prelude
 open import Algebra.Monoid using (is-monoid)
 open import Algebra.Group
 open import Algebra.Magma using (is-magma)
@@ -9,6 +8,8 @@ open import Algebra.Magma using (is-magma)
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
 open import Cat.Prelude
+
+import Cat.Reasoning as Cat
 ```
 -->
 

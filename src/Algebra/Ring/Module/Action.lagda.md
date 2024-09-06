@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Algebra.Ring.Cat.Initial
 open import Algebra.Group.Notation
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -110,4 +111,19 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
     → Ring-action (G .snd) ≃ Rings.Hom R (Endo Ab-ab-category G)
   Action≃Hom G = Iso→Equiv $ Action→Hom G
     , iso (Hom→Action G) (λ x → trivial!) (λ x → refl)
+```
+
+## Abelian groups as Z-modules
+
+A fun consequence of $\ZZ$ being the initial ring is that every
+[[abelian group]] admits a unique $\ZZ$-module structure. This is, if
+you ask me, rather amazing! The correspondence is as follows: Because of
+the delooping-endomorphism ring adjunction, we have a correspondence
+between "$R$-module structures on G" and "ring homomorphisms $R \to
+\rm{Endo}(G)$" --- and since the latter is contractible, so is the
+former!
+
+```agda
+ℤ-module-unique : ∀ {ℓ} (G : Abelian-group ℓ) → is-contr (Ring-action Liftℤ (G .snd))
+ℤ-module-unique G = Equiv→is-hlevel 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
 ```

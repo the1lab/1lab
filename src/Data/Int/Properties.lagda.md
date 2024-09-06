@@ -518,10 +518,17 @@ no further comments.
 *ℤ-positive : ∀ {x y} → Positive x → Positive y → Positive (x *ℤ y)
 *ℤ-positive (pos x) (pos y) = pos (y + x * suc y)
 
++ℤ-positive : ∀ {x y} → Positive x → Positive y → Positive (x +ℤ y)
++ℤ-positive (pos x) (pos y) = pos (x + suc y)
+
 pos-positive : ∀ {x} → x ≠ 0 → Positive (pos x)
 pos-positive {zero} 0≠0 = absurd (0≠0 refl)
 pos-positive {suc n} _ = pos n
 
 positive→nonzero : ∀ {x} → Positive x → x ≠ 0
 positive→nonzero .{possuc x} (pos x) p = suc≠zero (pos-injective p)
+
+*ℤ-positive-cancel : ∀ {x y} → Positive x → Positive (x *ℤ y) → Positive y
+*ℤ-positive-cancel {pos .(suc x)} {posz} (pos x) q = absurd (positive→nonzero q (ap (assign pos) (*-zeror x)))
+*ℤ-positive-cancel {pos .(suc x)} {possuc y} (pos x) q = pos y
 ```

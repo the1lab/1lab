@@ -3,8 +3,9 @@
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Action
-open import Algebra.Prelude
 open import Algebra.Group
+
+open import Cat.Prelude
 
 open is-group-hom
 open make-group

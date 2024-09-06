@@ -1,6 +1,8 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
+open import Algebra.Monoid using (is-monoid)
+
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Functor
@@ -18,6 +20,8 @@ import Algebra.Monoid as Mon
 import Cat.Functor.Reasoning
 import Cat.Diagram.Monad as Mo
 import Cat.Reasoning
+
+open is-monoid
 ```
 -->
 
@@ -260,12 +264,12 @@ into an identification.
   F : Displayed-functor Mon[ Setsₓ ] Mon Id
   F .F₀' o .identity = o .η (lift tt)
   F .F₀' o ._⋆_ x y = o .μ (x , y)
-  F .F₀' o .has-is-monoid .Mon.has-is-semigroup =
+  F .F₀' o .has-is-monoid .has-is-semigroup =
     record { has-is-magma = record { has-is-set = hlevel 2 }
            ; associative  = o .μ-assoc $ₚ _
            }
-  F .F₀' o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ _
-  F .F₀' o .has-is-monoid .Mon.idr = o .μ-unitr $ₚ _
+  F .F₀' o .has-is-monoid .idl = o .μ-unitl $ₚ _
+  F .F₀' o .has-is-monoid .idr = o .μ-unitr $ₚ _
   F .F₁' wit .pres-id = wit .pres-η $ₚ _
   F .F₁' wit .pres-⋆ x y = wit .pres-μ $ₚ _
   F .F-id' = prop!

@@ -85,7 +85,7 @@ $b - (-a)\%b$ as the remainder.
     lemma =
       assign neg (q * b + suc r)                               ≡⟨ ap (assign neg) (+-commutative (q * b) _) ⟩
       negsuc (r + q * b)                                       ≡˘⟨ negℤ-+ℤ-negsuc r (q * b) ⟩
-      negℤ (pos r) +ℤ negsuc (q * b)                           ≡⟨ ap (_+ℤ negsuc (q * b)) (ℤ.insertl {h = negℤ (pos b')} (+ℤ-invl (pos b')) {f = negℤ (pos r)}) ⟩
+      negℤ (pos r) +ℤ negsuc (q * b)                           ≡⟨ ap (_+ℤ negsuc (q * b)) (ℤ.insertl {negℤ (pos b')} (+ℤ-invl (pos b')) {negℤ (pos r)}) ⟩
       ⌜ negℤ (pos b') ⌝ +ℤ (pos b' -ℤ pos r) +ℤ negsuc (q * b) ≡˘⟨ ap¡ (assign-neg b') ⟩
       assign neg b' +ℤ (pos b' -ℤ pos r) +ℤ negsuc (q * b)     ≡⟨ ap (_+ℤ negsuc (q * b)) (+ℤ-commutative (assign neg b') (pos b' -ℤ pos r)) ⟩
       (pos b' -ℤ pos r) +ℤ assign neg b' +ℤ negsuc (q * b)     ≡˘⟨ +ℤ-assoc (pos b' -ℤ pos r) _ _ ⟩
@@ -186,7 +186,7 @@ divides-diff→same-rem n x y n∣x-y
     p' : y ≡ (q -ℤ k) *ℤ pos n +ℤ pos r
     p' =
       y                                            ≡˘⟨ negℤ-negℤ y ⟩
-      negℤ (negℤ y)                                ≡⟨ ℤ.insertr (ℤ.inversel {x}) {f = negℤ (negℤ y)} ⟩
+      negℤ (negℤ y)                                ≡⟨ ℤ.insertr (ℤ.inversel {x}) {negℤ (negℤ y)} ⟩
       ⌜ negℤ (negℤ y) +ℤ negℤ x ⌝ +ℤ x             ≡⟨ ap! (+ℤ-commutative (negℤ (negℤ y)) _) ⟩
       ⌜ negℤ x -ℤ negℤ y ⌝ +ℤ x                    ≡˘⟨ ap¡ (negℤ-distrib x (negℤ y)) ⟩
       negℤ ⌜ x -ℤ y ⌝ +ℤ x                         ≡˘⟨ ap¡ z ⟩

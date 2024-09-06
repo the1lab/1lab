@@ -25,6 +25,7 @@ module Algebra.Monoid.Category where
 ```
 open Precategory
 open is-semigroup
+open is-monoid
 open is-magma
 open Monoid-hom
 open Monoid-on
