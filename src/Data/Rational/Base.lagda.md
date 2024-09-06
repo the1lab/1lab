@@ -559,45 +559,44 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
 -- a / d ≤ b / d is just a ≤ b. Algebraic properties of the rationals
 -- don't generally get any easier by assuming a common denominator.
 
-abstract
-  ℚ-elim-propⁿ
-    : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → ℚ) (Type ℓ)}
-    → ⦃ _ : {as : Πᶠ (λ i → ℚ)} → H-Level (applyᶠ P as) 1 ⦄
-    → ( (d : Int) (p : Positive d)
-      → ∀ᶠ n (λ i → Int) (λ as → applyᶠ P (mapₚ (λ i n → toℚ (n / d [ p ])) as)))
-    → ∀ᶠ n (λ _ → ℚ) λ as → applyᶠ P as
+ℚ-elim-propⁿ
+  : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → ℚ) (Type ℓ)}
+  → ⦃ _ : {as : Πᶠ (λ i → ℚ)} → H-Level (applyᶠ P as) 1 ⦄
+  → ( (d : Int) (p : Positive d)
+    → ∀ᶠ n (λ i → Int) (λ as → applyᶠ P (mapₚ (λ i n → toℚ (n / d [ p ])) as)))
+  → ∀ᶠ n (λ _ → ℚ) λ as → applyᶠ P as
 
-  ℚ-elim-propⁿ n {P = P} work = curry-∀ᶠ go where
-    reps : ∀ n → (qs : Fin n → ℚ) → ∥ ((i : Fin n) → fibre toℚ (qs i)) ∥
-    reps n qs = finite-choice n (λ i → ℚ-elim-prop {P = λ x → ∥ fibre toℚ x ∥} (λ _ → squash) (λ x → inc (x , refl)) (qs i))
+ℚ-elim-propⁿ n {P = P} work = curry-∀ᶠ go where abstract
+  reps : ∀ n → (qs : Fin n → ℚ) → ∥ ((i : Fin n) → fibre toℚ (qs i)) ∥
+  reps n qs = finite-choice n (λ i → ℚ-elim-prop {P = λ x → ∥ fibre toℚ x ∥} (λ _ → squash) (λ x → inc (x , refl)) (qs i))
 
-    go : (as : Πᶠ (λ i → ℚ)) → applyᶠ P as
-    go as = ∥-∥-out! do
-      fracs' ← reps _ (indexₚ as)
+  go : (as : Πᶠ (λ i → ℚ)) → applyᶠ P as
+  go as = ∥-∥-out! do
+    fracs' ← reps _ (indexₚ as)
 
-      let
-        fracs : Fin n → Fraction
-        fracs i = fracs' i .fst
+    let
+      fracs : Fin n → Fraction
+      fracs i = fracs' i .fst
 
-        same : (i : Fin n) → toℚ (fracs i) ≡ indexₚ as i
-        same i = fracs' i .snd
+      same : (i : Fin n) → toℚ (fracs i) ≡ indexₚ as i
+      same i = fracs' i .snd
 
-      (d , d≠0 , nums , same') ← pure (common-denominator _ fracs)
+    (d , d≠0 , nums , same') ← pure (common-denominator _ fracs)
 
-      let
-        rats : Πᶠ (λ i → ℚ)
-        rats = mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums)
+    let
+      rats : Πᶠ (λ i → ℚ)
+      rats = mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums)
 
-        p₀ : applyᶠ P rats
-        p₀ = apply-∀ᶠ (work d d≠0) (tabulateₚ nums)
+      p₀ : applyᶠ P rats
+      p₀ = apply-∀ᶠ (work d d≠0) (tabulateₚ nums)
 
-        rats=as : rats ≡ as
-        rats=as = extₚ λ i →
-          indexₚ-mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums) i
-          ·· ap (λ e → toℚ (e / d [ d≠0 ])) (indexₚ-tabulateₚ nums i)
-          ·· sym (quotℚ (same' i)) ∙ same i
+      rats=as : rats ≡ as
+      rats=as = extₚ λ i →
+        indexₚ-mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums) i
+        ·· ap (λ e → toℚ (e / d [ d≠0 ])) (indexₚ-tabulateₚ nums i)
+        ·· sym (quotℚ (same' i)) ∙ same i
 
-      pure (subst (applyᶠ P) rats=as p₀)
+    pure (subst (applyᶠ P) rats=as p₀)
 
 same-frac : Fraction → Fraction → Prop lzero
 same-frac f@record{} g@record{} = el! (f .↑ *ℤ g .↓ ≡ g .↑ *ℤ f .↓)

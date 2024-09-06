@@ -181,6 +181,9 @@ order.
 
 ## Positivity
 
+We can also lift the notion of positivity from the integers to the
+rational numbers. A fraction is positive if its numerator is positive.
+
 ```agda
 private
   positiveℚ : ℚ → Prop lzero
@@ -194,7 +197,10 @@ record Positive (q : ℚ) : Type where
   constructor inc
   field
     lower : ⌞ positiveℚ q ⌟
+```
 
+<!--
+```agda
 open Positive
 
 unquoteDecl H-Level-Positive = declare-record-hlevel 1 H-Level-Positive (quote Positive)
@@ -205,6 +211,15 @@ instance
   ... | yes p = yes (subst Positive q (inc (recover p)))
   ... | no ¬p = no λ x → case subst Positive (sym q) x of λ (inc p) → ¬p p
 
+  Positive-pos : ∀ {x s p} → Positive (toℚ (possuc x / s [ p ]))
+  Positive-pos = inc (pos _)
+```
+-->
+
+This has the expected interaction with the ordering and the algebraic
+operations.
+
+```agda
 nonnegative-nonzero→positive : ∀ {x} → 0 ≤ x → x ≠ 0 → Positive x
 nonnegative-nonzero→positive = work _ where
   work : ∀ x → 0 ≤ x → x ≠ 0 → Positive x

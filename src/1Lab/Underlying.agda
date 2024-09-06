@@ -54,7 +54,7 @@ instance
     : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ ua : Underlying A ⦄
     → Underlying (Lift ℓ' A)
   Underlying-Lift ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
-  Underlying-Lift .⌞_⌟ x = ⌞ x .Lift.lower ⌟
+  Underlying-Lift .⌞_⌟ x = ⌞ x .lower ⌟
 
   Underlying-Bool : Underlying Bool
   Underlying-Bool = record { ⌞_⌟ = So }

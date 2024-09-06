@@ -150,7 +150,7 @@ about to get the actual inhabitant of $(1)$ that we're interested in.
   Π-OFE .has-is-ofe .limit x y wit i j = P.limit (x j) (y j) (λ n → wit' n j) i
     where
       wit' : ∀ n i → within (P i) n (x i) (y i)
-      wit' n i = □-out! (wit n .Lift.lower) i
+      wit' n i = □-out! (wit n .lower) i
 ```
 
 <!--
@@ -174,7 +174,7 @@ OFE-Indexed-product F .ΠF = from-ofe-on $
   Π-OFE (λ i → ∣ F i .fst ∣) (λ i → F i .snd)
 OFE-Indexed-product F .π i .hom f = f i
 OFE-Indexed-product F .π i .preserves .pres-≈ α =
-  □-out! ((_$ i) <$> α .Lift.lower)
+  □-out! ((_$ i) <$> α .lower)
 OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i # x
 OFE-Indexed-product F .has-is-ip .tuple f .preserves .pres-≈ wit =
   lift $ inc λ i → f i .preserves .pres-≈ wit

@@ -266,13 +266,13 @@ successor universe:
 ```agda
 opaque
   Lift-is-hlevel : ∀ n → is-hlevel A n → is-hlevel (Lift ℓ' A) n
-  Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
+  Lift-is-hlevel n a-hl = retract→is-hlevel n lift lower (λ _ → refl) a-hl
 ```
 
 <!--
 ```agda
   Lift-is-hlevel' : ∀ n → is-hlevel (Lift ℓ' A) n → is-hlevel A n
-  Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+  Lift-is-hlevel' n lift-hl = retract→is-hlevel n lower lift (λ _ → refl) lift-hl
 ```
 -->
 

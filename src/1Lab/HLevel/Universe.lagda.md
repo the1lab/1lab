@@ -193,7 +193,7 @@ Prop ℓ = n-Type ℓ 1
 ```agda
 ¬Set-is-prop : ¬ is-prop (Set ℓ)
 ¬Set-is-prop prop =
-  Lift.lower $
+  lower $
   transport (ap ∣_∣ (prop (el (Lift _ ⊤) (hlevel 2)) (el (Lift _ ⊥) (hlevel 2)))) (lift tt)
 ```
 -->
