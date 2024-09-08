@@ -6,7 +6,9 @@ open import Algebra.Group.Semidirect
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Action
 open import Algebra.Group.Ab
-open import Algebra.Prelude
+
+open import Cat.Functor.Base
+open import Cat.Prelude
 ```
 -->
 

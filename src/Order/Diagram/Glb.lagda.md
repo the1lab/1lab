@@ -92,25 +92,25 @@ module _ {o ℓ} {P : Poset o ℓ} where
 
   lift-is-glb
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
-    → is-glb P F glb → is-glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb
+    → is-glb P F glb → is-glb P (F ⊙ lower {ℓ = ℓᵢ'}) glb
   lift-is-glb is .glb≤fam (lift ix) = is .glb≤fam ix
   lift-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ lift)
 
   lift-glb
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-    → Glb P F → Glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'})
+    → Glb P F → Glb P (F ⊙ lower {ℓ = ℓᵢ'})
   lift-glb glb .Glb.glb = Glb.glb glb
   lift-glb glb .Glb.has-glb = lift-is-glb (Glb.has-glb glb)
 
   lower-is-glb
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
-    → is-glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb → is-glb P F glb
+    → is-glb P (F ⊙ lower {ℓ = ℓᵢ'}) glb → is-glb P F glb
   lower-is-glb is .glb≤fam ix = is .glb≤fam (lift ix)
-  lower-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ Lift.lower)
+  lower-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ lower)
 
   lower-glb
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-    → Glb P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Glb P F
+    → Glb P (F ⊙ lower {ℓ = ℓᵢ'}) → Glb P F
   lower-glb glb .Glb.glb = Glb.glb glb
   lower-glb glb .Glb.has-glb = lower-is-glb (Glb.has-glb glb)
 ```

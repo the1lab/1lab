@@ -66,7 +66,7 @@ Sets-strict-initial : Strict-initial (Sets ℓ)
 Sets-strict-initial .initial = Sets-initial
 Sets-strict-initial .has-is-strict x f .inv ()
 Sets-strict-initial .has-is-strict x f .inverses .invl = ext λ ()
-Sets-strict-initial .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .Lift.lower)
+Sets-strict-initial .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .lower)
 ```
 
 <!--

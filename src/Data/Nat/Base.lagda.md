@@ -219,6 +219,10 @@ instance
 
   {-# INCOHERENT x≤x x≤sucy #-}
 
+factorial : Nat → Nat
+factorial zero = 1
+factorial (suc n) = suc n * factorial n
+
 Positive : Nat → Type
 Positive n = 1 ≤ n
 ```

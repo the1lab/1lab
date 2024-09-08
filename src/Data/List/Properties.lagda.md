@@ -92,8 +92,8 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
   List-is-hlevel n ahl x y = Equiv→is-hlevel (suc n) Code≃Path Code-is-hlevel where
     Code-is-hlevel : {x y : List A} → is-hlevel (Code x y) (suc n)
     Code-is-hlevel {[]} {[]}         = is-prop→is-hlevel-suc λ x y → refl
-    Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
-    Code-is-hlevel {x ∷ x₁} {[]}     = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
+    Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (lower x)
+    Code-is-hlevel {x ∷ x₁} {[]}     = is-prop→is-hlevel-suc λ x → absurd (lower x)
     Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
   instance

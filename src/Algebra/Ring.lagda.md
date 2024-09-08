@@ -1,17 +1,19 @@
 <!--
 ```agda
-open import Algebra.Group.Cat.Base
+open import 1Lab.Prelude hiding (_*_ ; _+_)
+
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Instances.Delooping
-open import Cat.Abelian.Base
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Base
 
 open import Data.Int.Properties
 open import Data.Int.Base
+
+import Algebra.Monoid.Reasoning as Mon
 
 import Cat.Reasoning
 ```
@@ -72,7 +74,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
              )
     public
 
-  additive-group : Group ℓ
+  additive-group : Σ (Set ℓ) (λ x → Group-on ⌞ x ⌟)
   ∣ additive-group .fst ∣                    = R
   additive-group .fst .is-tr                 = is-abelian-group.has-is-set +-group
   additive-group .snd .Group-on._⋆_          = _+_
@@ -84,27 +86,13 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
   group .snd .Abelian-group-on._*_       = _+_
   group .snd .Abelian-group-on.has-is-ab = +-group
 
-  Ringoid : Ab-category (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-  Ringoid .Ab-category.Abelian-group-on-hom _ _ = record { has-is-ab = +-group }
-  Ringoid .Ab-category.∘-linear-l f g h = sym *-distribr
-  Ringoid .Ab-category.∘-linear-r f g h = sym *-distribl
+  multiplicative-monoid : Monoid ℓ
+  multiplicative-monoid .fst = R
+  multiplicative-monoid .snd = record { has-is-monoid = *-monoid }
 
-  private
-    module ringoid = Ab-category Ringoid
-      using ( ∘-zero-l ; ∘-zero-r ; neg-∘-l ; neg-∘-r ; ∘-minus-l ; ∘-minus-r )
-
-  open ringoid renaming
-      ( ∘-zero-l to *-zerol
-      ; ∘-zero-r to *-zeror
-      ; neg-∘-l to neg-*-l
-      ; neg-∘-r to neg-*-r
-      ; ∘-minus-l to *-minus-l
-      ; ∘-minus-r to *-minus-r
-      )
-    public
-
-  module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
+  module m = Mon multiplicative-monoid
   module a = Abelian-group-on record { has-is-ab = +-group }
+    hiding (_*_ ; 1g ; _⁻¹)
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
   field
@@ -246,6 +234,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
   to-ring-on : Ring-on R
   to-ring-on = ring where
     open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr ; +-idl ; +-idr)
+    open is-monoid
 
     -- All in copatterns to prevent the unfolding from exploding on you
     ring : Ring-on R

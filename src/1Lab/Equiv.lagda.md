@@ -945,7 +945,7 @@ Lift-ap
 Lift-ap (f , eqv) .fst (lift x) = lift (f x)
 Lift-ap f .snd .is-eqv (lift y) .centre = lift (Equiv.from f y) , ap lift (Equiv.ε f y)
 Lift-ap f .snd .is-eqv (lift y) .paths (lift x , q) i = lift (p i .fst) , λ j → lift (p i .snd j)
-  where p = f .snd .is-eqv y .paths (x , ap Lift.lower q)
+  where p = f .snd .is-eqv y .paths (x , ap lower q)
 ```
 
 ### Involutions
@@ -1090,7 +1090,7 @@ syntax ≃⟨⟩-syntax x q p = x ≃⟨ p ⟩ q
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A}
   → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b → a ≡ b
-lift-inj p = ap Lift.lower p
+lift-inj p = ap lower p
 
 -- Fibres of composites are given by pairs of fibres.
 fibre-∘-≃

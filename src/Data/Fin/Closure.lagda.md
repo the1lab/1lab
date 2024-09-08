@@ -4,8 +4,8 @@ open import 1Lab.Prelude
 
 open import Data.Set.Coequaliser
 open import Data.Fin.Properties
-open import Data.Nat.Prime
 open import Data.Fin.Base
+open import Data.Nat.Base
 open import Data.Dec
 open import Data.Sum
 

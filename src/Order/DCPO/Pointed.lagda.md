@@ -530,7 +530,7 @@ Scott-continuous.
       pres-bot : ∀ x → is-bottom D.poset x → is-bottom E.poset (f x)
       pres-bot x x-bot y =
         f x              E.≤⟨ monotone (x-bot _) ⟩
-        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (λ x → absurd (x .Lift.lower)) (λ ())) y (λ ()) ⟩
+        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (λ x → absurd (x .lower)) (λ ())) y (λ ()) ⟩
         y                E.≤∎
 ```
 
@@ -567,6 +567,6 @@ families, then $f$ must be monotonic, and thus strictly Scott-continuous.
       (to-scott-directed f
         (λ s dir x lub → pres s (is-directed-family.semidirected dir) x lub))
       (λ x x-bot y → is-lub.least
-          (pres _ (λ x → absurd (x .Lift.lower)) x (lift-is-lub (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
+          (pres _ (λ x → absurd (x .lower)) x (lift-is-lub (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
           y (λ ()))
 ```

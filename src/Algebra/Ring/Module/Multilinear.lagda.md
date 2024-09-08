@@ -5,7 +5,6 @@ open import Algebra.Ring.Module.Notation
 open import Algebra.Ring.Commutative
 open import Algebra.Group.Notation
 open import Algebra.Ring.Module hiding (map)
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 

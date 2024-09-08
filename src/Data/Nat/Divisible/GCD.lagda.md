@@ -193,6 +193,24 @@ is-gcd-graphs-gcd {m = m} {n} {d} = prop-ext!
   (λ p → subst (is-gcd m n) p (Euclid.euclid m n .snd))
 ```
 
+<!--
+```agda
+is-gcd-factor : ∀ x y n k .⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
+is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (*-associative q n k ∙ α))
+is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (*-associative q n k ∙ α))
+is-gcd-factor x y n k p .greatest {g'} α β with (q , α) ← ∣→fibre α | (r , β) ← ∣→fibre β =
+  ∣-*-cancelr {n = k} (p .greatest (fibre→∣ (q , sym (*-associative q g' k) ∙ ap (_* k) α)) (fibre→∣ (r , sym (*-associative r g' k) ∙ ap (_* k) β)))
+
+gcd-factor : ∀ x y k → gcd (x * k) (y * k) ≡ gcd x y * k
+gcd-factor x y zero = ap₂ gcd (*-zeror x) (*-zeror y) ∙ sym (*-zeror (gcd x y))
+gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gcd-graphs-gcd d')) where
+  k∣gcd = Euclid.euclid (x * k) (y * k) .snd .greatest {k} (∣-*r {k} {x}) (∣-*r {k} {y})
+
+  d' : is-gcd x y (k∣gcd .fst)
+  d' = is-gcd-factor x y (k∣gcd .fst) k (subst (is-gcd _ _) (sym (k∣gcd .snd)) (Euclid.euclid (x * k) (y * k) .snd))
+```
+-->
+
 ## Euclid's lemma
 
 ```agda

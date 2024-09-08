@@ -6,6 +6,7 @@ open import 1Lab.Type
 open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 open import Data.Bool
 ```
 -->
@@ -134,6 +135,21 @@ numbers]. Since they're mostly simple inductive arguments written in
 
 *-is-oner : ∀ x n → x * n ≡ 1 → n ≡ 1
 *-is-oner x n p = *-is-onel n x (*-commutative n x ∙ p)
+
+*-is-zero : ∀ x y → x * y ≡ 0 → (x ≡ 0) ⊎ (y ≡ 0)
+*-is-zero zero y p = inl refl
+*-is-zero (suc x) zero p = inr refl
+*-is-zero (suc x) (suc y) p = absurd (suc≠zero p)
+
+*-is-zerol : ∀ x y ⦃ _ : Positive y ⦄ → x * y ≡ 0 → x ≡ 0
+*-is-zerol x (suc y) p with *-is-zero x (suc y) p
+... | inl p = p
+... | inr q = absurd (suc≠zero q)
+
+*-is-zeror : ∀ x y ⦃ _ : Positive x ⦄ → x * y ≡ 0 → y ≡ 0
+*-is-zeror (suc x) y p with *-is-zero (suc x) y p
+... | inl p = absurd (suc≠zero p)
+... | inr q = q
 ```
 
 ## Exponentiation
@@ -252,9 +268,14 @@ difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (su
 nonzero→positive : ∀ {x} → x ≠ 0 → 0 < x
 nonzero→positive {zero} p = absurd (p refl)
 nonzero→positive {suc x} p = s≤s 0≤x
+
+*-cancel-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
+*-cancel-≤r (suc x) {zero} {z} p = 0≤x
+*-cancel-≤r (suc x) {suc y} {suc z} (s≤s p) = s≤s
+  (*-cancel-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x p))
 ```
 
-### Monus
+## Monus
 
 ```agda
 monus-zero : ∀ a → 0 - a ≡ 0
@@ -294,7 +315,7 @@ monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
 monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 ```
 
-### Maximum
+## Maximum
 
 ```agda
 max-assoc : (x y z : Nat) → max x (max y z) ≡ max (max x y) z
@@ -334,7 +355,7 @@ max-zeror zero = refl
 max-zeror (suc x) = refl
 ```
 
-### Minimum
+## Minimum
 
 ```agda
 min-assoc : (x y z : Nat) → min x (min y z) ≡ min (min x y) z
@@ -370,4 +391,16 @@ min-zerol (suc x) = refl
 min-zeror : (x : Nat) → min x 0 ≡ 0
 min-zeror zero = refl
 min-zeror (suc x) = refl
+```
+
+## The factorial function
+
+```agda
+factorial-positive : ∀ n → Positive (factorial n)
+factorial-positive zero = s≤s 0≤x
+factorial-positive (suc n) = *-preserves-≤ 1 (suc n) 1 (factorial n) (s≤s 0≤x) (factorial-positive n)
+
+≤-factorial : ∀ n → n ≤ factorial n
+≤-factorial zero = 0≤x
+≤-factorial (suc n) = subst (_≤ factorial (suc n)) (*-oner (suc n)) (*-preserves-≤ (suc n) (suc n) 1 (factorial n) ≤-refl (factorial-positive n))
 ```

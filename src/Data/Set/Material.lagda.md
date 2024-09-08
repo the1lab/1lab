@@ -520,7 +520,7 @@ constructor to the successor set.
 
 ```agda
   ℕV : V ℓ
-  ℕV = set (Lift ℓ Nat) λ x → go (Lift.lower x) where
+  ℕV = set (Lift ℓ Nat) λ x → go (lower x) where
     go : Nat → V ℓ
     go zero    = ∅V
     go (suc x) = suc-V (go x)
@@ -558,7 +558,7 @@ set.
       (inr w) → do
         (pred , ix , w) ← w
         (ix , x) ← ix
-        pure (lift (suc (ix .Lift.lower)) , ap₂ _∪V_ x (ap singleton x) ∙ sym w))
+        pure (lift (suc (ix .lower)) , ap₂ _∪V_ x (ap singleton x) ∙ sym w))
 ```
 
 ## Replacement

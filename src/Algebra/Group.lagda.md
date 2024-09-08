@@ -5,12 +5,12 @@ open import 1Lab.Prelude
 
 open import Algebra.Magma.Unital hiding (idl ; idr)
 open import Algebra.Semigroup
-open import Algebra.Monoid hiding (idl ; idr)
+open import Algebra.Monoid
 open import Algebra.Magma
 
-open import Cat.Instances.Delooping
+import Algebra.Monoid.Reasoning as Mon
 
-import Cat.Reasoning
+open is-monoid hiding (idl ; idr)
 ```
 -->
 
@@ -93,9 +93,7 @@ give the unit, both on the left and on the right:
   underlying-monoid = A , record
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
-  open Cat.Reasoning (B (underlying-monoid .snd))
-    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
-    public
+  open Mon underlying-monoid public
 ```
 -->
 

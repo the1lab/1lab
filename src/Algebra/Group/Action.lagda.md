@@ -3,13 +3,16 @@
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Solver
-open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Instances.Delooping
+open import Cat.Instances.Functor
 open import Cat.Instances.Sets
+open import Cat.Diagram.Zero
+open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Functor-kit
+import Cat.Reasoning as Cat
 ```
 -->
 

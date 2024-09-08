@@ -11,6 +11,8 @@ open import Order.Base
 import Cat.Reasoning
 
 import Order.Reasoning
+
+open is-monoid
 ```
 -->
 

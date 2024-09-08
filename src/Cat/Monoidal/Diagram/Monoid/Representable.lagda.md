@@ -2,7 +2,7 @@
 ```agda
 open import Algebra.Monoid.Category
 open import Algebra.Semigroup
-open import Algebra.Monoid renaming (idr to mon-idr; idl to mon-idl)
+open import Algebra.Monoid
 open import Algebra.Magma
 
 open import Cat.Monoidal.Instances.Cartesian
@@ -22,6 +22,8 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
+
+open is-monoid renaming (idl to mon-idl ; idr to mon-idr)
 ```
 -->
 

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Fibre

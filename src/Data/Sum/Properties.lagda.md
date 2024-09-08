@@ -73,8 +73,8 @@ the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 
 ```agda
   decode : {x y : A ⊎ B} → Code x y → x ≡ y
-  decode {x = inl x} {y = inl x₁} code = ap inl (Lift.lower code)
-  decode {x = inr x} {y = inr x₁} code = ap inr (Lift.lower code)
+  decode {x = inl x} {y = inl x₁} code = ap inl (lower code)
+  decode {x = inr x} {y = inr x₁} code = ap inr (lower code)
 ```
 
 In the inverse direction, we have a procedure for turning paths into

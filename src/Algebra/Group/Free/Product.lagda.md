@@ -4,10 +4,13 @@ open import 1Lab.Reflection.Induction
 
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
-open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Diagram.Colimit.Finite
+open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Pushout
+open import Cat.Diagram.Zero
+open import Cat.Prelude
 
 open Finitely-cocomplete
 open is-group-hom

@@ -92,7 +92,7 @@ Indexed-coproduct-≃ e {F} p = λ where
 
 Lift-Indexed-coproduct
   : ∀ {ℓ} ℓ' → {I : Type ℓ} → {F : I → C.Ob}
-  → Indexed-coproduct {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
+  → Indexed-coproduct {Idx = Lift ℓ' I} (F ⊙ lower)
   → Indexed-coproduct F
 Lift-Indexed-coproduct _ = Indexed-coproduct-≃ (Lift-≃ e⁻¹)
 

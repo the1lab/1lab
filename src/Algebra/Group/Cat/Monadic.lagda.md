@@ -2,7 +2,6 @@
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
-open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
@@ -10,7 +9,9 @@ open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
+open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
+open import Cat.Prelude
 
 import Algebra.Group.Cat.Base as Grp
 

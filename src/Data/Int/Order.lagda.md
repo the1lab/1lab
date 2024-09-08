@@ -57,6 +57,12 @@ for the ordering on natural numbers.
 ≤-refl {x = pos x}    = pos≤pos Nat.≤-refl
 ≤-refl {x = negsuc x} = neg≤neg Nat.≤-refl
 
+≤-refl' : ∀ {x y} → x ≡ y → x ≤ y
+≤-refl' {pos x} {pos y} p = pos≤pos (Nat.≤-refl' (pos-injective p))
+≤-refl' {pos x} {negsuc y} p = absurd (pos≠negsuc p)
+≤-refl' {negsuc x} {pos y} p = absurd (negsuc≠pos p)
+≤-refl' {negsuc x} {negsuc y} p = neg≤neg (Nat.≤-refl' (negsuc-injective (sym p)))
+
 ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
 ≤-trans (neg≤neg p) (neg≤neg q) = neg≤neg (Nat.≤-trans q p)
 ≤-trans (neg≤neg p) neg≤pos     = neg≤pos
@@ -66,6 +72,18 @@ for the ordering on natural numbers.
 ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
 ≤-antisym (neg≤neg p) (neg≤neg q) = ap negsuc (Nat.≤-antisym q p)
 ≤-antisym (pos≤pos p) (pos≤pos q) = ap pos (Nat.≤-antisym p q)
+
+unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
+unpos≤pos (pos≤pos p) = p
+
+unneg≤neg : ∀ {x y} → negsuc x ≤ negsuc y → y Nat.≤ x
+unneg≤neg (neg≤neg p) = p
+
+apos≤apos : ∀ {x y} → x Nat.≤ y → assign pos x ≤ assign pos y
+apos≤apos {x} {y} p = ≤-trans (≤-refl' (assign-pos x)) (≤-trans (pos≤pos p) (≤-refl' (sym (assign-pos y))))
+
+unapos≤apos : ∀ {x y} → assign pos x ≤ assign pos y → x Nat.≤ y
+unapos≤apos {x} {y} p = unpos≤pos (≤-trans (≤-refl' (sym (assign-pos x))) (≤-trans p (≤-refl' (assign-pos y))))
 ```
 
 ## Totality
@@ -187,15 +205,15 @@ rotℤ≤l (negsuc zero)    x y p = pred-≤ _ _ p
 rotℤ≤l (negsuc (suc k)) x y p = pred-≤ _ _ (rotℤ≤l (negsuc k) x y p)
 
 abstract
-  +ℤ-mono-l : ∀ k x y → x ≤ y → (k +ℤ x) ≤ (k +ℤ y)
-  +ℤ-mono-l k x y p = transport
+  +ℤ-preserves-≤l : ∀ k x y → x ≤ y → (k +ℤ x) ≤ (k +ℤ y)
+  +ℤ-preserves-≤l k x y p = transport
     (sym (ap₂ _≤_ (rot-is-add k x) (rot-is-add k y)))
     (rotℤ≤l k x y p)
 
-  +ℤ-mono-r : ∀ k x y → x ≤ y → (x +ℤ k) ≤ (y +ℤ k)
-  +ℤ-mono-r k x y p = transport
+  +ℤ-preserves-≤r : ∀ k x y → x ≤ y → (x +ℤ k) ≤ (y +ℤ k)
+  +ℤ-preserves-≤r k x y p = transport
     (ap₂ _≤_ (+ℤ-commutative k x) (+ℤ-commutative k y))
-    (+ℤ-mono-l k x y p)
+    (+ℤ-preserves-≤l k x y p)
 
   negℤ-anti : ∀ x y → x ≤ y → negℤ y ≤ negℤ x
   negℤ-anti posz       posz       x≤y                     = x≤y
@@ -211,4 +229,20 @@ abstract
   negℤ-anti-full (possuc x) (possuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
   negℤ-anti-full (negsuc x) (pos y)    _                       = neg≤pos
   negℤ-anti-full (negsuc x) (negsuc y) (pos≤pos (Nat.s≤s y≤x)) = neg≤neg y≤x
+
+  *ℤ-cancel-≤r : ∀ {x y z} ⦃ _ : Positive x ⦄ → (y *ℤ x) ≤ (z *ℤ x) → y ≤ z
+  *ℤ-cancel-≤r {possuc x} {y = pos y} {pos z} ⦃ pos _ ⦄ p = pos≤pos
+    (Nat.*-cancel-≤r (suc x) (unapos≤apos p))
+  *ℤ-cancel-≤r {possuc x} {y = pos y} {negsuc z} ⦃ pos _ ⦄ p = absurd (¬pos≤neg (≤-trans (≤-refl' (sym (assign-pos (y * suc x)))) p))
+  *ℤ-cancel-≤r {possuc x} {y = negsuc y} {pos z} ⦃ pos _ ⦄ p = neg≤pos
+  *ℤ-cancel-≤r {possuc x} {y = negsuc y} {negsuc z} ⦃ pos _ ⦄ p = neg≤neg
+    (Nat.*-cancel-≤r (suc x) (Nat.+-reflects-≤l (z * suc x) (y * suc x) x (unneg≤neg p)))
+
+  *ℤ-preserves-≤r : ∀ {x y} z ⦃ _ : Positive z ⦄ → x ≤ y → (x *ℤ z) ≤ (y *ℤ z)
+  *ℤ-preserves-≤r {pos x} {pos y} (possuc z) ⦃ pos z ⦄ p = apos≤apos {x * suc z} {y * suc z} (Nat.*-preserves-≤r x y (suc z) (unpos≤pos p))
+  *ℤ-preserves-≤r {negsuc x} {pos y} (possuc z) ⦃ pos z ⦄ p = ≤-trans neg≤pos (≤-refl' (sym (assign-pos (y * suc z))))
+  *ℤ-preserves-≤r {negsuc x} {negsuc y} (possuc z) ⦃ pos z ⦄ p = neg≤neg (Nat.+-preserves-≤l (y * suc z) (x * suc z) z (Nat.*-preserves-≤r y x (suc z) (unneg≤neg p)))
+
+  *ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → 0 ≤ (x *ℤ y)
+  *ℤ-nonnegative {pos x} {pos y} (pos≤pos p) (pos≤pos q) = ≤-trans (pos≤pos Nat.0≤x) (≤-refl' (sym (assign-pos (x * y))))
 ```

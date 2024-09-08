@@ -57,6 +57,17 @@ tabulateₚ {n = zero} f  = tt
 tabulateₚ {n = suc n} f = f fzero , tabulateₚ λ i → f (fsuc i)
 ```
 
+<!--
+```agda
+extₚ
+  : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {xs ys : Πᶠ P}
+  → (∀ i → indexₚ xs i ≡ indexₚ ys i)
+  → xs ≡ ys
+extₚ {zero} p = refl
+extₚ {suc n} p = ap₂ _,_ (p fzero) (extₚ {n} (λ i → p (fsuc i)))
+```
+-->
+
 Elements of $\Pi^f$ for sequences with a known length enjoy strong
 extensionality properties, since they are iterated types with
 $\eta$-expansion. As an example:
@@ -108,6 +119,25 @@ mapₚ {0}     f xs = xs
 mapₚ {suc n} f xs = f fzero (xs .fst) , mapₚ (λ i → f (fsuc i)) (xs .snd)
 ```
 
+<!--
+```agda
+indexₚ-mapₚ
+  : ∀ {n} {ℓ ℓ' : Fin n → Level}
+      {P : (i : Fin n) → Type (ℓ i)}
+      {Q : (i : Fin n) → Type (ℓ' i)}
+  → ∀ (f : ∀ i → P i → Q i) (xs : Πᶠ P) i
+  → indexₚ (mapₚ f xs) i ≡ f i (indexₚ xs i)
+indexₚ-mapₚ {suc n} f xs fzero = refl
+indexₚ-mapₚ {suc n} f xs (fsuc i) = indexₚ-mapₚ (λ i → f (fsuc i)) (xs .snd) i
+
+indexₚ-tabulateₚ
+  : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} (f : ∀ i → P i) i
+  → indexₚ (tabulateₚ f) i ≡ f i
+indexₚ-tabulateₚ f fzero = refl
+indexₚ-tabulateₚ f (fsuc i) = indexₚ-tabulateₚ (λ i → f (fsuc i)) i
+```
+-->
+
 More generically, we can characterise the entries of an updated product
 type.
 
@@ -144,6 +174,27 @@ Arrᶠ : ∀ {n ℓ ℓ'} (P : (i : Fin n) → Type (ℓ i)) → Type ℓ' → T
 Arrᶠ {0} P x     = x
 Arrᶠ {suc n} P x = P fzero → Arrᶠ (λ i → P (fsuc i)) x
 ```
+
+<!--
+```agda
+∀ᶠ : ∀ n {ℓ ℓ'} (P : (i : Fin n) → Type (ℓ i)) (Q : Πᶠ P → Type ℓ') → Type (ℓ-maxᶠ ℓ ⊔ ℓ')
+∀ᶠ zero P Q = Q tt
+∀ᶠ (suc n) P Q = (a : P fzero) → ∀ᶠ n (λ i → P (fsuc i)) (λ b → Q (a , b))
+
+apply-∀ᶠ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ∀ᶠ n P Q → (a : Πᶠ P) → Q a
+apply-∀ᶠ {zero} f a = f
+apply-∀ᶠ {suc n} f (a , as) = apply-∀ᶠ (f a) as
+
+curry-∀ᶠ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ((a : Πᶠ P) → Q a)
+  → ∀ᶠ n P Q
+curry-∀ᶠ {zero} f = f tt
+curry-∀ᶠ {suc n} f a = curry-∀ᶠ {n} λ b → f (a , b)
+```
+-->
 
 In the generic case, a finitary curried function can be eliminated using
 a finitary dependent product; Moreover, curried functions are
