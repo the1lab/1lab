@@ -22,7 +22,7 @@ of elements $S$ is the universal solution to forcing the elements of $S$
 to become invertible, analogously to how [[localisations of a
 category||localisation]] $\cC$ universally invert a class of maps in
 $\cC$. Explicitly, it is a commutative ring $R\loc{S}$, equipped with a
-homomorphism $1/- : R \to R\loc{S}$ which sends elements $s \in S$ to
+homomorphism $-/1 : R \to R\loc{S}$ which sends elements $s \in S$ to
 *invertible* elements $s/1 : R\loc{S}$, and which is initial among
 these.
 
@@ -240,14 +240,14 @@ two endpoints $x/s$ and $z/u$.
 
 We then define $R\loc{S}$ to be the set of fractions $r/s$, identified
 according to this relation. Since $1 \in S$, we can immediately cough up
-the function $x \mapsto x/1$, mapping $R \to R\loc{W}$.
+the function $x \mapsto x/1$, mapping $R \to R\loc{S}$.
 
 ```agda
   _/1 : ⌞ R ⌟ → Fr.quotient
   x /1 = inc (x / 1r [ has-1 ])
 ```
 
-To define the operations of a ring on $R\loc{W}$, we first define them
+To define the operations of a ring on $R\loc{S}$, we first define them
 at the level of fractions:
 
 ::: mathpar
