@@ -70,6 +70,8 @@ data Int : Type where
 
 pattern posz     = pos zero
 pattern possuc x = pos (suc x)
+
+{-# DISPLAY pos x = x #-}
 ```
 -->
 

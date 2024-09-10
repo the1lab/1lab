@@ -33,6 +33,20 @@ data _≤_ : Int → Int → Type where
   neg≤pos : ∀ {x y}             → negsuc x ≤ pos y
 ```
 
+<!--
+```agda
+instance
+  ≤-neg-neg : ∀ {x y} ⦃ p : y Nat.≤ x ⦄ → negsuc x ≤ negsuc y
+  ≤-neg-neg ⦃ p ⦄ = neg≤neg p
+
+  ≤-pos-pos : ∀ {x y} ⦃ p : x Nat.≤ y ⦄ → pos x ≤ pos y
+  ≤-pos-pos ⦃ p ⦄ = pos≤pos p
+
+  ≤-neg-pos : ∀ {x y} → negsuc x ≤ pos y
+  ≤-neg-pos = neg≤pos
+```
+-->
+
 Note the key properties: the ordering between negative numbers is
 reversed, and every negative number is smaller than every positive
 number.  This means that $\bZ$ decomposes, as an order, into an _ordinal
@@ -245,4 +259,16 @@ abstract
 
   *ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → 0 ≤ (x *ℤ y)
   *ℤ-nonnegative {pos x} {pos y} (pos≤pos p) (pos≤pos q) = ≤-trans (pos≤pos Nat.0≤x) (≤-refl' (sym (assign-pos (x * y))))
+
+  positive→nonnegative : ∀ {x} → Positive x → 0 ≤ x
+  positive→nonnegative (pos x) = pos≤pos Nat.0≤x
+
+  -ℕ-nonnegative : ∀ {x y} → y Nat.≤ x → 0 ≤ (x ℕ- y)
+  -ℕ-nonnegative {x} {y} Nat.0≤x = pos≤pos Nat.0≤x
+  -ℕ-nonnegative {suc x} {suc y} (Nat.s≤s p) = -ℕ-nonnegative p
+
+  -ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → y ≤ x → 0 ≤ (x -ℤ y)
+  -ℤ-nonnegative {posz} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
+  -ℤ-nonnegative {possuc x} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
+  -ℤ-nonnegative {possuc x} {possuc y} (pos≤pos p) (pos≤pos q) (pos≤pos r) = -ℕ-nonnegative (Nat.≤-peel r)
 ```

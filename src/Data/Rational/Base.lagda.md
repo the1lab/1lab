@@ -8,6 +8,7 @@ open import Algebra.Ring.Localisation hiding (_/_ ; Fraction)
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
 open import Algebra.Monoid
+open import Algebra.Ring
 
 open import Data.Set.Coequaliser.Split
 open import Data.Nat.Divisible.GCD
@@ -187,7 +188,7 @@ so we do not remark on them any further.
 
 ```agda
 _-ℚ_ : ℚ → ℚ → ℚ
-x -ℚ y = x +ℚ (-ℚ y)
+(inc x) -ℚ (inc y) = inc (x L.+ₗ L.-ₗ y)
 
 infixl 8 _+ℚ_ _-ℚ_
 infixl 9 _*ℚ_
@@ -199,6 +200,7 @@ _/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
 infix 11 _/_
 
 {-# DISPLAY ℚ.inc (Coeq.inc (_/_[_] x y p)) = x / y #-}
+{-# DISPLAY _/_ x (Int.pos 1) = x #-}
 
 _/1 : Int → ℚ
 x /1 = x / 1
@@ -231,6 +233,12 @@ abstract
   +ℚ-idr : ∀ x → x +ℚ 0 ≡ x
   +ℚ-idr (inc x) = ap ℚ.inc (CRing.+-idr L.S⁻¹R)
 
+  +ℚ-invl : ∀ x → (-ℚ x) +ℚ x ≡ 0
+  +ℚ-invl (inc x) = ap ℚ.inc (CRing.+-invl L.S⁻¹R {x})
+
+  +ℚ-invr : ∀ x → x +ℚ (-ℚ x) ≡ 0
+  +ℚ-invr (inc x) = ap ℚ.inc (L.+ₗ-invr x)
+
   +ℚ-associative : ∀ x y z → x +ℚ (y +ℚ z) ≡ (x +ℚ y) +ℚ z
   +ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.+ₗ-assoc x y z)
 
@@ -258,11 +266,37 @@ abstract
   *ℚ-distribl : ∀ x y z → x *ℚ (y +ℚ z) ≡ x *ℚ y +ℚ x *ℚ z
   *ℚ-distribl (inc x) (inc y) (inc z) = ap ℚ.inc (L.*ₗ-distribl x y z)
 
+  *ℚ-distribr : ∀ x y z → (y +ℚ z) *ℚ x ≡ y *ℚ x +ℚ z *ℚ x
+  *ℚ-distribr x y z = *ℚ-commutative (y +ℚ z) x ∙ *ℚ-distribl x y z ∙ ap₂ _+ℚ_ (*ℚ-commutative x y) (*ℚ-commutative x z)
+
 +ℚ-monoid : is-monoid 0 _+ℚ_
 +ℚ-monoid = record { has-is-semigroup = record { has-is-magma = record { has-is-set = hlevel 2 } ; associative = λ {x} {y} {z} → +ℚ-associative x y z } ; idl = +ℚ-idl _ ; idr = +ℚ-idr _ }
 
 *ℚ-monoid : is-monoid 1 _*ℚ_
 *ℚ-monoid = record { has-is-semigroup = record { has-is-magma = record { has-is-set = hlevel 2 } ; associative = λ {x} {y} {z} → *ℚ-associative x y z } ; idl = *ℚ-idl _ ; idr = *ℚ-idr _ }
+
+ℚ-ring : CRing lzero
+∣ ℚ-ring .fst ∣ = ℚ
+ℚ-ring .fst .is-tr = hlevel 2
+ℚ-ring .snd .CRing-on.has-ring-on = to-ring-on mk where
+  open make-ring
+  mk : make-ring ℚ
+  mk .ring-is-set = hlevel 2
+  mk .0R = 0
+  mk .make-ring._+_ = _+ℚ_
+  - mk = -ℚ_
+  mk .+-idl = +ℚ-idl
+  mk .+-invr = +ℚ-invr
+  mk .+-assoc = +ℚ-associative
+  mk .+-comm = +ℚ-commutative
+  mk .1R = 1
+  mk .make-ring._*_ = _*ℚ_
+  mk .*-idl = *ℚ-idl
+  mk .*-idr = *ℚ-idr
+  mk .*-assoc = *ℚ-associative
+  mk .*-distribl = *ℚ-distribl
+  mk .*-distribr = *ℚ-distribr
+ℚ-ring .snd .CRing-on.*-commutes = *ℚ-commutative _ _
 ```
 
 </details>
@@ -622,5 +656,47 @@ instance
     go : ∀ a b → ⌞ eqℚ a b ⌟ → a ≡ b
     go = ℚ-elim-propⁿ 2 (λ d _ a b p → quotℚ (to-same-rational p))
   Extensional-ℚ .idsᵉ .to-path-over p = prop!
+
+record Nonzero (x : ℚ) : Type where
+  constructor inc
+  field
+    .lower : x ≠ 0
+
+instance
+  H-Level-Nonzero : ∀ {x n} → H-Level (Nonzero x) (suc n)
+  H-Level-Nonzero = prop-instance λ _ _ → refl
+
+open Nonzero
+
+abstract
+  from-nonzero : ∀ {x} ⦃ p : Nonzero x ⦄ → x ≠ 0
+  from-nonzero ⦃ inc α ⦄ p = absurd (α p)
+
+  from-nonzero-frac : ∀ {x y} {p : Positive y} → Nonzero (toℚ (x / y [ p ])) → x ≠ 0
+  from-nonzero-frac (inc α) p = absurd (α (quotℚ (to-same-rational (*ℤ-oner _ ∙ p))))
+
+  to-nonzero-frac : ∀ {x y} {p : Positive y} → x ≠ 0 → Nonzero (toℚ (x / y [ p ]))
+  to-nonzero-frac p = inc λ α → p (sym (*ℤ-oner _) ∙ from-same-rational (unquotℚ α))
+
+instance
+  Nonzero-pos : ∀ {x d} {p : Positive d} → Nonzero (toℚ (possuc x / d [ p ]))
+  Nonzero-pos = inc (λ p → absurd (suc≠zero (pos-injective (from-same-rational (unquotℚ p)))))
+
+  Nonzero-neg : ∀ {x d} {p : Positive d} → Nonzero (toℚ (negsuc x / d [ p ]))
+  Nonzero-neg = inc (λ p → absurd (negsuc≠pos (from-same-rational (unquotℚ p))))
+
+-- The rewrapping here is important to make sure that invℚ is injective
+invℚ : (x : ℚ) ⦃ p : Nonzero x ⦄ → ℚ
+invℚ (inc x) ⦃ inc α ⦄ = inc (unℚ (inverseℚ (inc x) (λ p → absurd (α p)) .fst))
+
+*ℚ-invr : {x : ℚ} {p : Nonzero x} → x *ℚ invℚ x ⦃ p ⦄ ≡ 1
+*ℚ-invr {inc x} {inc α} with inverseℚ (inc x) (λ p → absurd (α p))
+... | (inc x , p) = p
+
+-ℚ-def : ∀ x y → x +ℚ (-ℚ y) ≡ x -ℚ y
+-ℚ-def (inc x) (inc y) = refl
+
+_/ℚ_ : (x y : ℚ) ⦃ p : Nonzero y ⦄ → ℚ
+inc x /ℚ inc y = inc x *ℚ invℚ (inc y)
 ```
 -->

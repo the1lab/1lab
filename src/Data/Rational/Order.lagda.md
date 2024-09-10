@@ -132,6 +132,9 @@ instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
   Dec-≤ {x} {y} = ≤-dec x y
 
+  ≤-from : ∀ {x y} ⦃ p : (↑ x *ℤ ↓ y) ℤ.≤ (↑ y *ℤ ↓ x) ⦄ → toℚ x ≤ toℚ y
+  ≤-from {record{}} {record{}} ⦃ p ⦄ = inc p
+
 abstract
   toℚ≤ : ∀ {x y} → (↑ x *ℤ ↓ y) ℤ.≤ (↑ y *ℤ ↓ x) → toℚ x ≤ toℚ y
   toℚ≤ {record{}} {record{}} p = inc p
@@ -140,6 +143,9 @@ abstract
   ≤-refl {x} = work x where
     work : ∀ x → x ≤ x
     work = elim! λ f → toℚ≤ ℤ.≤-refl
+
+  ≤-refl' : ∀ {x y} (p : x ≡ y) → x ≤ y
+  ≤-refl' {x} p = transport (λ i → x ≤ p i) ≤-refl
 
   ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
   ≤-trans {x} {y} {z} = work x y z where
@@ -177,6 +183,15 @@ order.
       (ℤ.≤-trans p (ℤ.≤-refl' (ℤ.*ℤ-oner x)))
       (ℤ.≤-trans q (ℤ.≤-refl' (ℤ.*ℤ-oner y))))
     (ℤ.≤-refl' (sym (ℤ.*ℤ-oner (x *ℤ y)))))
+
+  invℚ-nonnegative : ∀ x ⦃ p : Nonzero x ⦄ → 0 ≤ x → 0 ≤ (invℚ x ⦃ p ⦄)
+  invℚ-nonnegative = ℚ-elim-prop (λ q x y i ⦃ p ⦄ α → hlevel {T = 0 ≤ invℚ q} 1 (x α) (y α) i)
+    λ where
+      (posz / y [ py ]) ⦃ inc α ⦄ (inc β) → absurd (α (quotℚ (to-same-rational refl)))
+      (possuc x / pos y [ py ]) ⦃ inc α ⦄ (inc β) → inc (ℤ.apos≤apos {0} {y * 1} 0≤x)
+
+  /ℚ-nonnegative : ∀ x y ⦃ p : Nonzero y ⦄ → 0 ≤ x → 0 ≤ y → 0 ≤ (x /ℚ y)
+  /ℚ-nonnegative (inc x) (inc y) a b = *ℚ-nonnegative (inc x) (invℚ (inc y)) a (invℚ-nonnegative (inc y) b)
 ```
 
 ## Positivity
@@ -209,7 +224,7 @@ instance
   Dec-Positive : ∀ {x} → Dec (Positive x)
   Dec-Positive {x} with (r@(n / d [ p ]) , q) ← splitℚ x | holds? (ℤ.Positive n)
   ... | yes p = yes (subst Positive q (inc (recover p)))
-  ... | no ¬p = no λ x → case subst Positive (sym q) x of λ (inc p) → ¬p p
+  ... | no ¬p = no λ x → absurd (case subst Positive (sym q) x of λ (inc p) → ¬p p)
 
   Positive-pos : ∀ {x s p} → Positive (toℚ (possuc x / s [ p ]))
   Positive-pos = inc (pos _)
@@ -227,13 +242,15 @@ nonnegative-nonzero→positive = work _ where
     d p posz (inc q) r → absurd (r (ext refl))
     d p (possuc x) (inc q) r → inc (pos x)
 
-*ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x *ℚ y)
-*ℚ-positive = work _ _ where
-  work : ∀ x y → Positive x → Positive y → Positive (x *ℚ y)
-  work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.*ℤ-positive x y)
+positive→nonzero : ∀ {x} → Positive x → x ≠ 0
+positive→nonzero = work _ where
+  work : ∀ x → Positive x → x ≠ 0
+  work = ℚ-elim-propⁿ 1 λ where
+    d px a (inc α) β → ℤ.positive→nonzero α (sym (ℤ.*ℤ-oner a) ∙ from-same-rational (unquotℚ β))
 
-+ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x +ℚ y)
-+ℚ-positive = work _ _ where
-  work : ∀ x y → Positive x → Positive y → Positive (x +ℚ y)
-  work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.+ℤ-positive (ℤ.*ℤ-positive x p) (ℤ.*ℤ-positive y p))
+positive→nonnegative : ∀ {x} → Positive x → 0 ≤ x
+positive→nonnegative = work _ where
+  work : ∀ x → Positive x → 0 ≤ x
+  work = ℚ-elim-propⁿ 1 λ where
+    d px a (inc α) → inc (ℤ.≤-trans (ℤ.positive→nonnegative α) (ℤ.≤-refl' (sym (ℤ.*ℤ-oner a))))
 ```
