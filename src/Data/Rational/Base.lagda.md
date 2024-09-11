@@ -695,11 +695,12 @@ abstract
   to-nonzero-frac p = inc λ α → p (sym (*ℤ-oner _) ∙ from-same-rational (unquotℚ α))
 
 instance
-  Nonzero-pos : ∀ {x d} {p : Positive d} → Nonzero (toℚ (possuc x / d [ p ]))
-  Nonzero-pos = inc (λ p → absurd (suc≠zero (pos-injective (from-same-rational (unquotℚ p)))))
-
   Nonzero-neg : ∀ {x d} {p : Positive d} → Nonzero (toℚ (negsuc x / d [ p ]))
   Nonzero-neg = inc (λ p → absurd (negsuc≠pos (from-same-rational (unquotℚ p))))
+
+  Nonzero-pos : ∀ {x d} {p : Positive d} ⦃ _ : Positive x ⦄ → Nonzero (toℚ (x / d [ p ]))
+  Nonzero-pos {.(possuc x)} ⦃ pos x ⦄ = inc (λ p → absurd (suc≠zero (pos-injective (from-same-rational (unquotℚ p)))))
+  {-# OVERLAPPABLE Nonzero-pos #-}
 
 -- Since we want invℚ to be injective as well, we re-wrap the result on
 -- the RHS, to make sure the clause is headed by a constructor.
