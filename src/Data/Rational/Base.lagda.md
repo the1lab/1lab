@@ -88,6 +88,14 @@ _*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 
 <!--
 ```agda
+-- Note on the definitions of ℚ/the operations above: we want all the
+-- algebraic operations over ℚ to be definitionally injective. This
+-- means that every clause has to have a proper match, and return a
+-- distinct head symbol.
+--
+-- The requirement of having a proper match means we can't use a record
+-- (even a no-eta pattern record), since Agda doesn't count those as
+-- proper. Therefore, we have to use a data type.
 private
   unℚ : ℚ → ⌞ L.S⁻¹R ⌟
   unℚ (inc x) = x
@@ -659,6 +667,14 @@ instance
 
 record Nonzero (x : ℚ) : Type where
   constructor inc
+  -- It's important that Nonzero is a strict proposition, living in
+  -- Type, so that it doesn't matter what instance gets selected when we
+  -- use it in invℚ etc.
+  --
+  -- The alternative is to always use it as an irrelevant instance (or
+  -- to, god forbid, have it in Agda's Prop), but that doesn't play well
+  -- with the overlap pragmas; and we need those if we're gonna have
+  -- e.g. Nonzero (p * q) as an instance.
   field
     .lower : x ≠ 0
 
@@ -685,7 +701,8 @@ instance
   Nonzero-neg : ∀ {x d} {p : Positive d} → Nonzero (toℚ (negsuc x / d [ p ]))
   Nonzero-neg = inc (λ p → absurd (negsuc≠pos (from-same-rational (unquotℚ p))))
 
--- The rewrapping here is important to make sure that invℚ is injective
+-- Since we want invℚ to be injective as well, we re-wrap the result on
+-- the RHS, to make sure the clause is headed by a constructor.
 invℚ : (x : ℚ) ⦃ p : Nonzero x ⦄ → ℚ
 invℚ (inc x) ⦃ inc α ⦄ = inc (unℚ (inverseℚ (inc x) (λ p → absurd (α p)) .fst))
 
