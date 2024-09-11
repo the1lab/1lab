@@ -9,11 +9,11 @@ open import Data.Rational.Order
 open import Data.Rational.Base
 open import Data.Nat.Base hiding (Positive)
 
+import Algebra.Ring.Reasoning as Kit
+
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
 import Data.Int.Base as ℤ
-
-import Algebra.Ring.Reasoning as Kit
 ```
 -->
 
