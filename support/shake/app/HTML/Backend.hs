@@ -1,10 +1,7 @@
 -- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleContexts, BlockArguments, LambdaCase, DerivingStrategies, OverloadedStrings #-}
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
