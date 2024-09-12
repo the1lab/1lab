@@ -119,7 +119,6 @@ abstract
 
   /ℚ-frac
     : ∀ {n d} ⦃ p : ℤ.Positive d ⦄
-    → (let instance _ = to-nonzero-frac (ℤ.positive→nonzero p))
     → (n / 1) /ℚ (d / 1) ≡ (n / d)
   /ℚ-frac {n} {d = ℤ.possuc x} ⦃ p = ℤ.pos x ⦄ = quotℚ (to-same-rational (sym (ℤ.*ℤ-associative n 1 (ℤ.possuc x))))
 

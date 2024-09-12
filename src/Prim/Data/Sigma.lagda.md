@@ -39,8 +39,8 @@ syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
 infix 4 Σ-syntax
 
 instance
-  make-Σ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} ⦃ x : A ⦄ ⦃ y : B x ⦄ → Σ A B
-  make-Σ ⦃ x ⦄ ⦃ y ⦄ = x , y
+  Σ-of-instances : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} ⦃ x : A ⦄ ⦃ y : B x ⦄ → Σ A B
+  Σ-of-instances ⦃ x ⦄ ⦃ y ⦄ = x , y
 ```
 -->
 
