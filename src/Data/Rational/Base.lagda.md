@@ -604,7 +604,7 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
 ℚ-elim-propⁿ
   : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → ℚ) (Type ℓ)}
   → ⦃ _ : {as : Πᶠ (λ i → ℚ)} → H-Level (applyᶠ P as) 1 ⦄
-  → ( (d : Int) (p : Positive d)
+  → ( (d : Int) ⦃ p : Positive d ⦄
     → ∀ᶠ n (λ i → Int) (λ as → applyᶠ P (mapₚ (λ i n → toℚ (n / d [ p ])) as)))
   → ∀ᶠ n (λ _ → ℚ) λ as → applyᶠ P as
 
@@ -630,7 +630,7 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
       rats = mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums)
 
       p₀ : applyᶠ P rats
-      p₀ = apply-∀ᶠ (work d d≠0) (tabulateₚ nums)
+      p₀ = apply-∀ᶠ (work d ⦃ d≠0 ⦄) (tabulateₚ nums)
 
       rats=as : rats ≡ as
       rats=as = extₚ λ i →
@@ -662,7 +662,7 @@ instance
   Extensional-ℚ .reflᵉ = ℚ-elim-prop (λ _ → hlevel 1) λ { record{} → refl }
   Extensional-ℚ .idsᵉ .to-path {a} {b} = go a b where
     go : ∀ a b → ⌞ eqℚ a b ⌟ → a ≡ b
-    go = ℚ-elim-propⁿ 2 (λ d _ a b p → quotℚ (to-same-rational p))
+    go = ℚ-elim-propⁿ 2 (λ d a b p → quotℚ (to-same-rational p))
   Extensional-ℚ .idsᵉ .to-path-over p = prop!
 
 record Nonzero (x : ℚ) : Type where
@@ -716,5 +716,9 @@ invℚ (inc x) ⦃ inc α ⦄ = inc (unℚ (inverseℚ (inc x) (λ p → absurd 
 
 _/ℚ_ : (x y : ℚ) ⦃ p : Nonzero y ⦄ → ℚ
 inc x /ℚ inc y = inc x *ℚ invℚ (inc y)
+
+abstract
+  from-same-denom : ∀ {x y d} ⦃ p : Positive d ⦄ → x / d ≡ y / d → x ≡ y
+  from-same-denom {x} {y} {d} p = *ℤ-injectiver d x y (positive→nonzero auto) (from-same-rational (unquotℚ p))
 ```
 -->

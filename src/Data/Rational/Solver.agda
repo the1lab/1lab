@@ -130,17 +130,18 @@ module Impl where
       → _/ℚ_ (↑e e) (↓e e) ⦃ split-denom-nz e ewf ⦄ ≡ embed e env ewf
 
     split-denom-nz (var x) wf = auto
-    split-denom-nz (con (n / d [ p ])) wf = subst Nonzero (sym (rem₁ d)) (inc λ q → ℤ.positive→nonzero p (sym (ℤ.*ℤ-oner d) ∙ from-same-rational (unquotℚ q)))
-    split-denom-nz (x :+ y) (wx , wy) = *ℚ-nonzero _ _ (split-denom-nz x wx) (split-denom-nz y wy)
-    split-denom-nz (x :* y) (wx , wy) = *ℚ-nonzero _ _ (split-denom-nz x wx) (split-denom-nz y wy)
-    split-denom-nz (x :- y) (wx , wy) = *ℚ-nonzero _ _ (split-denom-nz x wx) (split-denom-nz y wy)
-    split-denom-nz (x :/ y) (wx , wy , wnz) = *ℚ-nonzero _ _
-      (split-denom-nz x wx)
-      (/ℚ-nonzero-num (↑e y) (↓e y)
+    split-denom-nz (con (n / d [ p ])) wf =
+      subst Nonzero (sym (rem₁ d))
+        (inc λ q → ℤ.positive→nonzero p (sym (ℤ.*ℤ-oner d) ∙ from-same-rational (unquotℚ q)))
+    split-denom-nz (x :+ y) (wx , wy) = *ℚ-nonzero (split-denom-nz x wx) (split-denom-nz y wy)
+    split-denom-nz (x :* y) (wx , wy) = *ℚ-nonzero (split-denom-nz x wx) (split-denom-nz y wy)
+    split-denom-nz (x :- y) (wx , wy) = *ℚ-nonzero (split-denom-nz x wx) (split-denom-nz y wy)
+    split-denom-nz (x :/ y) (wx , wy , wnz) = *ℚ-nonzero (split-denom-nz x wx)
+      (/ℚ-nonzero-num
         (subst Nonzero (sym (split-sound y wy)) wnz))
       where instance nz1 = split-denom-nz y wy
     split-denom-nz (neg e) we = split-denom-nz e we
-    split-denom-nz (inv e) (we , wnz) = /ℚ-nonzero-num _ _ (subst Nonzero (sym (split-sound e we)) wnz)
+    split-denom-nz (inv e) (we , wnz) = /ℚ-nonzero-num (subst Nonzero (sym (split-sound e we)) wnz)
       where instance nz1 = split-denom-nz e we
 
     split-sound (var x) ewf = /ℚ-oner (lookup env x)
@@ -180,7 +181,7 @@ module Impl where
           nz2 = split-denom-nz y yw
           nz3 = ynz
           nz4 = subst Nonzero (sym (split-sound y yw)) ynz
-          nz5 = /ℚ-nonzero-num (↑e y) (↓e y) auto
+          nz5 = /ℚ-nonzero-num {↑e y} {↓e y} auto
       in
         (↑e x *ℚ ↓e y) /ℚ (↓e x *ℚ ↑e y)               ≡⟨ /ℚ-def ⟩
         (↑e x *ℚ ↓e y) *ℚ invℚ (↓e x *ℚ ↑e y)          ≡⟨ ap₂ _*ℚ_ (λ i → ↑e x *ℚ ↓e y) invℚ-*ℚ ⟩
@@ -204,7 +205,7 @@ module Impl where
       invℚ (embed e env ewf) ⦃ _ ⦄ ∎
       where instance
         nz1 = split-denom-nz e ewf
-        nz2 = /ℚ-nonzero-num (↑e e) (↓e e) (subst Nonzero (sym (split-sound e ewf)) enz)
+        nz2 = /ℚ-nonzero-num {↑e e} {↓e e} (subst Nonzero (sym (split-sound e ewf)) enz)
 
   module _ {n} (x y : Exp n) (env : Vec ℚ n) where abstract
     open Σ (split x) renaming (fst to ↑x ; snd to ↓x)

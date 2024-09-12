@@ -9,7 +9,7 @@ open import Cat.Prelude
 
 open import Data.Int.Universal
 open import Data.Nat.Order
-open import Data.Int hiding (Positive)
+open import Data.Int hiding (Positive ; <-not-equal)
 open import Data.Nat
 
 open is-group-hom

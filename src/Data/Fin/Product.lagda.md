@@ -193,6 +193,23 @@ curry-∀ᶠ
   → ∀ᶠ n P Q
 curry-∀ᶠ {zero} f = f tt
 curry-∀ᶠ {suc n} f a = curry-∀ᶠ {n} λ b → f (a , b)
+
+∀ᶠⁱ : ∀ n {ℓ ℓ'} (P : (i : Fin n) → Type (ℓ i)) (Q : Πᶠ P → Type ℓ') → Type (ℓ-maxᶠ ℓ ⊔ ℓ')
+∀ᶠⁱ zero P Q = Q tt
+∀ᶠⁱ (suc n) P Q = {a : P fzero} → ∀ᶠⁱ n (λ i → P (fsuc i)) (λ b → Q (a , b))
+
+apply-∀ᶠⁱ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ∀ᶠⁱ n P Q → (a : Πᶠ P) → Q a
+apply-∀ᶠⁱ {zero} f a = f
+apply-∀ᶠⁱ {suc n} f (a , as) = apply-∀ᶠⁱ (f {a}) as
+
+curry-∀ᶠⁱ
+  : ∀ {n} {ℓ : Fin n → Level} {ℓ'} {P : (i : Fin n) → Type (ℓ i)} {Q : Πᶠ P → Type ℓ'}
+  → ((a : Πᶠ P) → Q a)
+  → ∀ᶠⁱ n P Q
+curry-∀ᶠⁱ {zero} f = f tt
+curry-∀ᶠⁱ {suc n} f {a} = curry-∀ᶠⁱ {n} λ b → f (a , b)
 ```
 -->
 

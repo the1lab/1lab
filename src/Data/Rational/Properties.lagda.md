@@ -5,9 +5,10 @@ open import 1Lab.Prelude
 open import Algebra.Ring.Commutative
 open import Algebra.Monoid
 
+open import Data.Rational.Reflection
 open import Data.Rational.Order
 open import Data.Rational.Base
-open import Data.Nat.Base hiding (Positive)
+open import Data.Nat.Base hiding (Positive ; _<_ ; _≤_)
 
 import Algebra.Ring.Reasoning as Kit
 
@@ -51,36 +52,39 @@ abstract
   /ℚ-def : {x y : ℚ} ⦃ p : Nonzero y ⦄ → (x /ℚ y) ≡ x *ℚ invℚ y
   /ℚ-def {inc x} {inc y} = refl
 
-  *ℚ-nonzero : ∀ x y → Nonzero x → Nonzero y → Nonzero (x *ℚ y)
-  *ℚ-nonzero = ℚ-elim-propⁿ 2 λ d p a b α β → to-nonzero-frac (ℤ.*ℤ-nonzero (from-nonzero-frac α) (from-nonzero-frac β))
+  *ℚ-nonzero : ∀ {x y} → Nonzero x → Nonzero y → Nonzero (x *ℚ y)
+  /ℚ-nonzero-num : ∀ {n d} ⦃ p : Nonzero d ⦄ → Nonzero (n /ℚ d) → Nonzero n
+  negℚ-nonzero : ∀ {n} → Nonzero n → Nonzero (-ℚ n)
+  invℚ-nonzero : ∀ {n} ⦃ d : Nonzero n ⦄ → Nonzero (invℚ n)
 
-  /ℚ-nonzero-num : ∀ n d ⦃ p : Nonzero d ⦄ → Nonzero (n /ℚ d) → Nonzero n
-  /ℚ-nonzero-num = ℚ-elim-propⁿ 2 λ where
-    d dpos x ℤ.posz ⦃ p ⦄ nz → absurd (from-nonzero-frac p refl)
-    d dpos x (ℤ.possuc y) nz → to-nonzero-frac (ℤ.*ℤ-nonzero-cancel {x} {d} (from-nonzero-frac nz))
-    (ℤ.possuc x) (ℤ.pos .x) y (ℤ.negsuc z) nz → to-nonzero-frac (ℤ.*ℤ-nonzero-cancel {y} {ℤ.negsuc x} (from-nonzero-frac nz))
+  unquoteDef *ℚ-nonzero /ℚ-nonzero-num negℚ-nonzero invℚ-nonzero = do
+    by-elim-ℚ *ℚ-nonzero λ d a b α β →
+      to-nonzero-frac (ℤ.*ℤ-nonzero (from-nonzero-frac α) (from-nonzero-frac β))
 
-  negℚ-nonzero : ∀ n → Nonzero n → Nonzero (-ℚ n)
-  negℚ-nonzero = ℚ-elim-propⁿ 1 λ where
-    d dpos ℤ.posz (inc α) → absurd (α (quotℚ (to-same-rational refl)))
-    d dpos (ℤ.possuc x) (inc α) → to-nonzero-frac ℤ.negsuc≠pos
-    d dpos (ℤ.negsuc x) (inc α) → to-nonzero-frac (suc≠zero ∘ ℤ.pos-injective)
+    by-elim-ℚ /ℚ-nonzero-num λ where
+      d x ℤ.posz ⦃ p ⦄ nz → absurd (from-nonzero-frac p refl)
+      d x (ℤ.possuc y) nz → to-nonzero-frac (ℤ.*ℤ-nonzero-cancel {x} {d} (from-nonzero-frac nz))
+      (ℤ.possuc x) ⦃ ℤ.pos .x ⦄ y (ℤ.negsuc z) nz → to-nonzero-frac (ℤ.*ℤ-nonzero-cancel {y} {ℤ.negsuc x} (from-nonzero-frac nz))
 
-  invℚ-nonzero : ∀ n ⦃ d : Nonzero n ⦄ → Nonzero (invℚ n)
-  invℚ-nonzero = ℚ-elim-propⁿ 1 λ where
-    d dpos ℤ.posz ⦃ inc α ⦄ → absurd (α (quotℚ (to-same-rational refl)))
-    (ℤ.possuc d) (ℤ.pos .d) (ℤ.possuc x) ⦃ inc α ⦄ → to-nonzero-frac (suc≠zero ∘ ℤ.pos-injective)
-    (ℤ.possuc d) (ℤ.pos .d) (ℤ.negsuc x) ⦃ inc α ⦄ → to-nonzero-frac ℤ.negsuc≠pos
+    by-elim-ℚ negℚ-nonzero λ where
+      d ℤ.posz (inc α) → absurd (α (quotℚ (to-same-rational refl)))
+      d (ℤ.possuc x) (inc α) → to-nonzero-frac ℤ.negsuc≠pos
+      d (ℤ.negsuc x) (inc α) → to-nonzero-frac (suc≠zero ∘ ℤ.pos-injective)
+
+    by-elim-ℚ invℚ-nonzero λ where
+      d ℤ.posz ⦃ inc α ⦄ → absurd (α (quotℚ (to-same-rational refl)))
+      (ℤ.possuc d) ⦃ ℤ.pos .d ⦄ (ℤ.possuc x) ⦃ inc α ⦄ → to-nonzero-frac (suc≠zero ∘ ℤ.pos-injective)
+      (ℤ.possuc d) ⦃ ℤ.pos .d ⦄ (ℤ.negsuc x) ⦃ inc α ⦄ → to-nonzero-frac ℤ.negsuc≠pos
 
   instance
     Nonzero-*ℚ : ∀ {x y : ℚ} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x *ℚ y)
-    Nonzero-*ℚ ⦃ p ⦄ ⦃ q ⦄ = *ℚ-nonzero _ _ p q
+    Nonzero-*ℚ ⦃ p ⦄ ⦃ q ⦄ = *ℚ-nonzero p q
 
     Nonzero-invℚ : ∀ {x} ⦃ p : Nonzero x ⦄ → Nonzero (invℚ x)
-    Nonzero-invℚ ⦃ p ⦄ = invℚ-nonzero _ ⦃ p ⦄
+    Nonzero-invℚ ⦃ p ⦄ = invℚ-nonzero ⦃ p ⦄
 
     Nonzero-/ℚ : ∀ {x y} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x /ℚ y)
-    Nonzero-/ℚ {x} {y} ⦃ p ⦄ ⦃ q ⦄ = subst Nonzero (sym /ℚ-def) (*ℚ-nonzero x (invℚ y) p (invℚ-nonzero y))
+    Nonzero-/ℚ {x} {y} ⦃ p ⦄ ⦃ q ⦄ = subst Nonzero (sym /ℚ-def) (*ℚ-nonzero p invℚ-nonzero)
 
     {-# OVERLAPPABLE Nonzero-*ℚ Nonzero-invℚ Nonzero-/ℚ #-}
 ```
@@ -172,21 +176,49 @@ abstract
 ## Positivity
 
 ```agda
+abstract
   *ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x *ℚ y)
-  *ℚ-positive = work _ _ where
-    work : ∀ x y → Positive x → Positive y → Positive (x *ℚ y)
-    work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.*ℤ-positive x y)
-
   +ℚ-positive : ∀ {x y} → Positive x → Positive y → Positive (x +ℚ y)
-  +ℚ-positive = work _ _ where
-    work : ∀ x y → Positive x → Positive y → Positive (x +ℚ y)
-    work = ℚ-elim-propⁿ 2 λ d p a b (inc x) (inc y) → inc (ℤ.+ℤ-positive (ℤ.*ℤ-positive x p) (ℤ.*ℤ-positive y p))
+  +ℚ-nonneg-positive : ∀ {x y} → 0 ≤ x → Positive y → Positive (x +ℚ y)
+  invℚ-positive : ∀ {d} (p : Positive d) → Positive (invℚ d ⦃ inc (positive→nonzero p) ⦄)
 
-  invℚ-positive : ∀ d (p : Positive d) → Positive (invℚ d ⦃ inc (positive→nonzero p) ⦄)
-  invℚ-positive = ℚ-elim-propⁿ 1 λ where
-    d@(ℤ.possuc d') (ℤ.pos .d') (ℤ.possuc x) px → inc (ℤ.pos d')
+  unquoteDef *ℚ-positive +ℚ-positive invℚ-positive +ℚ-nonneg-positive = do
+    by-elim-ℚ *ℚ-positive λ d a b (inc x) (inc y) → inc (ℤ.*ℤ-positive x y)
+    by-elim-ℚ +ℚ-positive λ d a b (inc x) (inc y) → inc (ℤ.+ℤ-positive (ℤ.*ℤ-positive x auto) (ℤ.*ℤ-positive y auto))
+    by-elim-ℚ invℚ-positive λ where
+      d@(ℤ.possuc d') ⦃ ℤ.pos .d' ⦄ (ℤ.possuc x) px → inc (ℤ.pos d')
+
+    by-elim-ℚ +ℚ-nonneg-positive λ where
+      d (ℤ.posz) b (inc x) (inc y) → inc (subst ℤ.Positive (sym (ℤ.+ℤ-zerol (b ℤ.*ℤ d))) (ℤ.*ℤ-positive y auto))
+      d (ℤ.possuc a) b (inc x) (inc y) → inc (ℤ.+ℤ-positive {ℤ.possuc a ℤ.*ℤ d} {b ℤ.*ℤ d} (ℤ.*ℤ-positive (ℤ.pos a) auto) (ℤ.*ℤ-positive y auto))
 
   /ℚ-positive : ∀ {x y} (p : Positive x) (q : Positive y) → Positive ((x /ℚ y) ⦃ inc (positive→nonzero q) ⦄)
   /ℚ-positive {y = y} p q = subst Positive
-    (sym (/ℚ-def ⦃ _ ⦄)) (*ℚ-positive p (invℚ-positive y q))
+    (sym (/ℚ-def ⦃ _ ⦄)) (*ℚ-positive p (invℚ-positive q))
+
+  from-positive : ∀ {x} → Positive x → 0 < x
+  to-positive : ∀ {x} → 0 < x → Positive x
+
+  unquoteDef from-positive to-positive = do
+    by-elim-ℚ from-positive λ where
+      d (ℤ.possuc x) (inc (ℤ.pos .x)) → inc (ℤ.pos<pos (s≤s 0≤x))
+
+    by-elim-ℚ to-positive λ where
+      d (ℤ.pos zero) (inc p) → inc (absurd (ℤ.<-irrefl refl p))
+      d (ℤ.pos (suc x)) (inc p) → inc (ℤ.pos x)
+
+  absℚ-nonneg : ∀ {x} → 0 ≤ absℚ x
+  unquoteDef absℚ-nonneg = by-elim-ℚ absℚ-nonneg λ where
+    d (ℤ.pos x) → inc (ℤ.apos≤apos {0} {x * 1} 0≤x)
+    d (ℤ.negsuc x) → inc (ℤ.pos≤pos 0≤x)
+```
+
+```agda
+abstract
+  negℚ-< : ∀ {x y} → x < y → -ℚ y < -ℚ x
+  <-negℚ : ∀ {x y} → -ℚ x < -ℚ y → y < x
+
+  unquoteDef negℚ-< <-negℚ = do
+    by-elim-ℚ negℚ-< λ d x y α → common-denom-< (ℤ.negℤ-< (<-common-denom α))
+    by-elim-ℚ <-negℚ λ d x y α → common-denom-< (ℤ.<-negℤ (<-common-denom α))
 ```

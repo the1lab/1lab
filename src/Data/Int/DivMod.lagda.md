@@ -10,7 +10,7 @@ open import Data.Int.Divisible
 open import Data.Nat.DivMod
 open import Data.Dec.Base
 open import Data.Fin hiding (_<_)
-open import Data.Int hiding (Positive)
+open import Data.Int hiding (Positive ; _<_ ; <-weaken)
 open import Data.Nat as Nat
 ```
 -->
