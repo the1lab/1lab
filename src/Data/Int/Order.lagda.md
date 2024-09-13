@@ -439,12 +439,13 @@ abstract
     (*ℤ-preserves-≤r {x} {y} z (<-weaken x<y))
     λ xz=yz → <-irrefl (*ℤ-injectiver z x y (positive→nonzero auto) xz=yz) x<y
 
-  negℤ-< : ∀ {x y} → x < y → negℤ y < negℤ x
-  negℤ-< {posz} {pos y} (pos<pos (Nat.s≤s p)) = neg<pos
-  negℤ-< {possuc x} {pos y} (pos<pos (Nat.s≤s p)) = neg<neg p
-  negℤ-< {negsuc x} {posz} neg<pos = pos<pos (Nat.s≤s Nat.0≤x)
-  negℤ-< {negsuc x} {possuc y} neg<pos = neg<pos
-  negℤ-< {negsuc x} {negsuc y} (neg<neg p) = pos<pos (Nat.s≤s p)
+  negℤ-anti-< : ∀ {x y} → x < y → negℤ y < negℤ x
+  negℤ-anti-< {posz} {pos y} (pos<pos (Nat.s≤s p)) = neg<pos
+  negℤ-anti-< {possuc x} {pos y} (pos<pos (Nat.s≤s p)) = neg<neg p
+  negℤ-anti-< {negsuc x} {posz} neg<pos = pos<pos (Nat.s≤s Nat.0≤x)
+  negℤ-anti-< {negsuc x} {possuc y} neg<pos = neg<pos
+  negℤ-anti-< {negsuc x} {negsuc y} (neg<neg p) = pos<pos (Nat.s≤s p)
 
-  <-negℤ : ∀ {x y} → negℤ x < negℤ y → y < x
-  <-negℤ {x} {y} p = subst₂ _<_ (negℤ-negℤ y) (negℤ-negℤ x) (negℤ-< p)
+  negℤ-anti-full-< : ∀ {x y} → negℤ x < negℤ y → y < x
+  negℤ-anti-full-< {x} {y} p = subst₂ _<_ (negℤ-negℤ y) (negℤ-negℤ x) (negℤ-anti-< p)
+```

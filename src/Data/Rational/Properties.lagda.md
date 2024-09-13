@@ -215,10 +215,10 @@ abstract
 
 ```agda
 abstract
-  negℚ-< : ∀ {x y} → x < y → -ℚ y < -ℚ x
-  <-negℚ : ∀ {x y} → -ℚ x < -ℚ y → y < x
+  negℚ-anti-< : ∀ {x y} → x < y → -ℚ y < -ℚ x
+  negℚ-anti-full-< : ∀ {x y} → -ℚ x < -ℚ y → y < x
 
-  unquoteDef negℚ-< <-negℚ = do
-    by-elim-ℚ negℚ-< λ d x y α → common-denom-< (ℤ.negℤ-< (<-common-denom α))
-    by-elim-ℚ <-negℚ λ d x y α → common-denom-< (ℤ.<-negℤ (<-common-denom α))
+  unquoteDef negℚ-anti-< negℚ-anti-full-< = do
+    by-elim-ℚ negℚ-anti-< λ d x y α → common-denom-< (ℤ.negℤ-anti-< (<-common-denom α))
+    by-elim-ℚ negℚ-anti-full-< λ d x y α → common-denom-< (ℤ.negℤ-anti-full-< (<-common-denom α))
 ```
