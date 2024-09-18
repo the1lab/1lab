@@ -34,7 +34,7 @@ strategy is as follows:
 
 - First, we reflect (accurately) a pair of rational expressions into a
   value of 'Exp', defined below, which contains constructors for all the
-  basic operations on ℚ. Note that, since _*ℚ_ and _-ℚ_ are neutral on
+  basic operations on ℚ. Note that, since _/ℚ_ and _-ℚ_ are neutral on
   neutral values (i.e. they don't compute to x * (1 / y) or x + (- y)
   until x and y are actual fractions), we have to reflect them, too.
 
