@@ -250,7 +250,7 @@ comultiplication.
     open Coproduct
     open is-coproduct
     coprod : Coproduct C A B
-    coprod .coapex = apex
+    coprod .coapex = A ⊗₀ B
     coprod .ι₁ = ⟨ id , 0m ⟩
     coprod .ι₂ = ⟨ 0m , id ⟩
     coprod .has-is-coproduct .[_,_] f g = f ∘ π₁ + g ∘ π₂
