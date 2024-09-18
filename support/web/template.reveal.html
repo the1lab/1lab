@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+  <link rel="stylesheet" href="$revealjs-url$/dist/reset.css">
+  <link rel="stylesheet" href="$revealjs-url$/dist/reveal.css">
+  <link rel="stylesheet" href="$base-url$/css/talk.css" />
+  <link rel="stylesheet" href="$base-url$/css/katex.min.css" />
+
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+  </style>
+
+  <script src="$base-url$/start.js?v=$digest.start-js$"></script>
+  <script defer src="$base-url$/main.js?v=$digest.main-js$"></script>
+
+  <noscript>
+    <style>
+      body span.reasoning-step .as-written {
+        display: inline;
+      }
+
+      body span.reasoning-step .alternate {
+        display: none;
+      }
+    </style>
+  </noscript>
+
+  <!-- Google font embeds -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <script>
+    Object.assign(window, {
+      'baseURL': "$base-url$",
+      'source': "$source$",
+    });
+
+    document.documentElement.classList.add("dark-theme");
+  </script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+$body$
+    </div>
+  </div>
+
+  <script src="$revealjs-url$/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="$revealjs-url$/plugin/notes/notes.js"></script>
+  <script src="$revealjs-url$/plugin/zoom/zoom.js"></script>
+$if(mathjax)$
+  <script src="$revealjs-url$/plugin/math/math.js"></script>
+$endif$
+  <script>
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        plugins: [
+          RevealNotes,
+          RevealZoom
+        ],
+        transition: 'slide',
+        // transitionSpeed: 'fast',
+      });
+    </script>
+  $for(include-after)$
+  $include-after$
+  $endfor$
+  </body>
+</html>

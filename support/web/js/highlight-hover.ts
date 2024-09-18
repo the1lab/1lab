@@ -34,15 +34,18 @@ document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) 
 
         const selfRect = link.getBoundingClientRect();
         const hoverRect = currentHover.getBoundingClientRect();
+
+        console.log(link.getClientRects())
+
         // If we're close to the bottom of the page, push the tooltip above instead.
         // The constant here is arbitrary, because trying to convert em to px in JS is a fool's errand.
         if (selfRect.bottom + hoverRect.height + 30 > window.innerHeight) {
           // 2em from the material mixin. I'm sorry
-          currentHover.style.top = `calc(${link.offsetTop - hoverRect.height}px - 1em`;
+          currentHover.style.top = `calc(${selfRect.top - hoverRect.height}px - 1em`;
         } else {
-          currentHover.style.top = `${link.offsetTop + (link.offsetHeight / 2)}px`;
+          currentHover.style.top = `${selfRect.top + (selfRect.height / 2)}px`;
         }
-        currentHover.style.left = `${link.offsetLeft}px`;
+        currentHover.style.left = `${selfRect.left}px`;
       }
     }
     match = that => that.href === link.href;

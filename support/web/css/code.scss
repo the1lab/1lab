@@ -132,7 +132,7 @@ a[href].hover-highlight {
   font-weight: 400;
 
   font-size: initial;
-  body.text-page & {
+  body.text-page &, .reveal & {
     font-size: var(--code-font-size);
   }
 }
