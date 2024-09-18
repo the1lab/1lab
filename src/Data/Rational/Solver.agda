@@ -35,8 +35,9 @@ strategy is as follows:
 - First, we reflect (accurately) a pair of rational expressions into a
   value of 'Exp', defined below, which contains constructors for all the
   basic operations on ℚ. Note that, since _/ℚ_ and _-ℚ_ are neutral on
-  neutral values (i.e. they don't compute to x * (1 / y) or x + (- y)
-  until x and y are actual fractions), we have to reflect them, too.
+  neutral values (i.e. they don't compute to x *ℚ invℚ y or x +ℚ (-ℚ y)
+  until x and y are actual fractions --- in which case they'll also
+  compute further, anyway), we have to reflect them, too.
 
   Note that the 'Exp' type can represent possibly ill-formed
   expressions, since it can have free variables in denominators. E.g.,
