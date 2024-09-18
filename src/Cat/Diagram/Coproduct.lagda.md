@@ -127,17 +127,11 @@ has-coproducts = ∀ a b → Coproduct a b
 
 module Binary-coproducts (all-coproducts : has-coproducts) where
 
-  module coproduct {a} {b} = Coproduct (all-coproducts a b)
-
-  open coproduct renaming
-    (unique to []-unique) public
+  module _ {a b} where open Coproduct (all-coproducts a b) renaming (unique to []-unique) hiding (coapex) public
+  module _ a b where open Coproduct (all-coproducts a b) renaming (coapex to infixr 7 _⊕₀_) using () public
   open Functor
 
-  infixr 7 _⊕₀_
   infix 50 _⊕₁_
-
-  _⊕₀_ : Ob → Ob → Ob
-  a ⊕₀ b = coproduct.coapex {a} {b}
 
   _⊕₁_ : ∀ {a b x y} → Hom a x → Hom b y → Hom (a ⊕₀ b) (x ⊕₀ y)
   f ⊕₁ g = [ ι₁ ∘ f , ι₂ ∘ g ]

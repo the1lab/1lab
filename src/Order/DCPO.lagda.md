@@ -237,7 +237,7 @@ module DCPOs {o ℓ : Level} = Cat.Reasoning (DCPOs o ℓ)
 DCPO : (o ℓ : Level) → Type _
 DCPO o ℓ = DCPOs.Ob {o} {ℓ}
 
-DCPOs↪Posets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Posets o ℓ) 
+DCPOs↪Posets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Posets o ℓ)
 DCPOs↪Posets = Forget-subcat
 
 DCPOs↪Sets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
@@ -261,7 +261,7 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   poset : Poset o ℓ
   poset = D .fst
 
-  open Order.Reasoning poset public
+  open Order.Reasoning (D .fst) public
 
   set : Set o
   set = el ⌞ D ⌟ Ob-is-set
@@ -269,7 +269,7 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   has-dcpo : is-dcpo poset
   has-dcpo = D .snd
 
-  open is-dcpo has-dcpo public
+  open is-dcpo (D .snd) public
 
   ⋃-pointwise
     : ∀ {Ix} {s s' : Ix → Ob}
