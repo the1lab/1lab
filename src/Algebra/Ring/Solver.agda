@@ -46,9 +46,14 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
     ℤ↪R-rh = Int-is-initial R' .centre
     module ℤ↪R = is-ring-hom (ℤ↪R-rh .preserves)
-    embed-coe = ℤ↪R-rh .hom
 
     open CRing-on cring using (*-commutes)
+
+  embed-coe : Int → R
+  embed-coe x = ℤ↪R-rh .hom (lift x)
+
+  embed-lemma : {h' : Int → R} → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower) → ∀ x → embed-coe x ≡ h' x
+  embed-lemma p x = happly (ap Total-hom.hom (Int-is-initial R' .paths (total-hom _ p))) (lift x)
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ
@@ -67,7 +72,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   Ep ∅ i = R.0r
   Ep (p *x+ c) (x ∷ e) = Ep p (x ∷ e) R.* x R.+ En c e
 
-  En (con x) i = embed-coe (lift x)
+  En (con x) i = embed-coe x
   En (poly x) i = Ep x i
 
   0h : ∀ {n} → Poly n
@@ -200,7 +205,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     Number-Polynomial .Number.fromNat n = con (pos n)
 
   eval (op o p₁ p₂) ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
-  eval (con c)      ρ = embed-coe (lift c)
+  eval (con c)      ρ = embed-coe c
   eval (var x)      ρ = lookup ρ x
   eval (:- p)       ρ = R.- ⟦ p ⟧ ρ
 
@@ -371,7 +376,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   -ₙ-hom (poly x) ρ = -ₚ-hom x ρ
 
   sound-coe
-    : ∀ {n} (c : Int) (ρ : Vec R n) → En (normal-coe c) ρ ≡ embed-coe (lift c)
+    : ∀ {n} (c : Int) (ρ : Vec R n) → En (normal-coe c) ρ ≡ embed-coe c
   sound-coe c [] = refl
   sound-coe c (x ∷ ρ) = ∅*x+ₙ-hom (normal-coe c) x ρ ∙ sound-coe c ρ
 

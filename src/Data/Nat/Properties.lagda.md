@@ -235,6 +235,14 @@ monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
 +-preserves-≤ x y x' y' prf prf' = ≤-trans
   (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
++-preserves-<l : (x y z : Nat) → x < y → (z + x) < (z + y)
++-preserves-<l x (suc y) z (s≤s p) = ≤-trans (s≤s (+-preserves-≤l x y z p)) (≤-refl' (sym (+-sucr z y)))
+
++-preserves-<r : (x y z : Nat) → x < y → (x + z) < (y + z)
++-preserves-<r x y z p = subst₂ _<_ (+-commutative z x) (+-commutative z y) (+-preserves-<l x y z p)
+
++-preserves-< : ∀ x y x' y' → x < y → x' < y' → (x + x') < (y + y')
++-preserves-< x y x' y' p q = <-trans _ _ _ (+-preserves-<r x y x' p) (+-preserves-<l x' y' y q)
 
 *-preserves-≤l : (x y z : Nat) → x ≤ y → (z * x) ≤ (z * y)
 *-preserves-≤l x y zero prf = 0≤x

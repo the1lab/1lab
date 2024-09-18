@@ -160,6 +160,15 @@ module _ where private
 <-from-not-≤ (suc x) (suc y) ¬s≤s = s≤s $
   <-from-not-≤ x y λ z → ¬s≤s (s≤s z)
 
+≤-from-not-< : ∀ x y → ¬ (x < y) → y ≤ x
+≤-from-not-< zero zero p = 0≤x
+≤-from-not-< zero (suc y) p = absurd (p (s≤s 0≤x))
+≤-from-not-< (suc x) zero p = 0≤x
+≤-from-not-< (suc x) (suc y) p = s≤s (≤-from-not-< x y (p ∘ s≤s))
+
+<-trans : ∀ x y z → x < y → y < z → x < z
+<-trans x (suc y) (suc z) (s≤s p) (s≤s q) = ≤-trans (s≤s p) (≤-trans q ≤-ascend)
+
 ≤-uncap : ∀ m n → m ≠ suc n → m ≤ suc n → m ≤ n
 ≤-uncap m n p 0≤x = 0≤x
 ≤-uncap (suc x) zero p (s≤s 0≤x) = absurd (p refl)
