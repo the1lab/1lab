@@ -47,7 +47,7 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Hom.Coyoneda
-open import Cat.Instances.CommGraphs
+open import Cat.Instances.MarkedGraphs
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint.Kan
@@ -893,9 +893,9 @@ _ = Graph-hom
 _ = Path-in
 _ = Path-category
 _ = Free-category
-_ = Comm-graph
-_ = Comm-graphs
-_ = Comm-free-category
+_ = Marked-graph
+_ = Marked-graphs
+_ = Marked-free-category
 ```
 -->
 
@@ -903,8 +903,8 @@ _ = Comm-free-category
 * Definition 5.1.2: `Graph-hom`{.Agda}
 * Definition 5.1.3: `Path-in`{.Agda}
 * Proposition 5.1.4: `Path-category`{.Agda}, `Free-category`{.Agda}
-* Definition 5.1.5: `Comm-graph`{.Agda}, `Comm-graphs`{.Agda}
-* Proposition 5.1.6: `Comm-free-category`{.Agda}
+* Definition 5.1.5: `Marked-graph`{.Agda}, `Marked-graphs`{.Agda}
+* Proposition 5.1.6: `Marked-free-category`{.Agda}
 
 ### 5.2 Calculus of fractions
 
