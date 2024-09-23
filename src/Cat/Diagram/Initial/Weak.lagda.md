@@ -28,8 +28,8 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 A **weakly initial object** is like an [[initial object]], but dropping
 the requirement of uniqueness. Explicitly, an object $X$ is weakly
-initial in $\cC$, if, for every $Y : \cC$, there exists an arrow $X
-\to Y$.
+initial in $\cC$, if, for every $Y : \cC$, there merely exists an arrow
+$X \to Y$.
 
 ```agda
   is-weak-initial : ⌞ C ⌟ → Type _

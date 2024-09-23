@@ -144,8 +144,9 @@ functor from this `shape`{.Agda} category to $\cC$.
 If the family is pointed, and the `diagram`{.Agda} has a limit, then
 this limit is a joint equaliser of the given arrows. The requirement for
 a point in the family ensures that we're not taking the joint equaliser
-of *no* arrows. The construction is invariant under the choice of point
-(since joint equalisers, as limits, are unique), but we won't need this.
+of *no* arrows, which would be a [[product]]. Finally, since joint
+equalisers are unique, this construction is invariant under the chosen
+point; it would thus suffice for the family to be inhabited instead.
 
 ```agda
   is-limit→joint-equaliser : ∀ {L} {l} → I → is-limit diagram L l → is-joint-equaliser F (l .η false)
