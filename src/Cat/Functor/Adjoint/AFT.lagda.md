@@ -20,9 +20,24 @@ module Cat.Functor.Adjoint.AFT where
 
 The **adjoint functor theorem** states a sufficient condition for a
 [[continuous functor]] $F : \cC \to \cD$ from a locally small,
-[[complete category]] to have a [[left adjoint]]. This is, essentially,
-a rephrasing of pre-existing lemmas, usually stated in terms of a
-technical notion called a **solution set**.
+[[complete category]] to have a [[left adjoint]].
+
+In an ideal world, this would always be the case: we want to compute an
+[[initial object]] $Lx$ in the [[comma category]] $x \swarrow F$, for
+each $x : \cD$. Generalising from the case of [[partial orders]], where
+a [[bottom element]] is the intersection of everything in the poset, we
+might try to find $Lx$ as the limit of the identity functor on $x
+\swarrow F$. Furthermore, each of these comma categories are
+[[complete|complete category]], by completeness of $\cC$ and continuity
+of $F$, so this functor should have a limit!
+
+Unfortunately, the only categories which can be shown to admit arbitrary
+limits indexed by themselves are the preorders; The existence of a
+large-complete *non*-preorder would contradict excluded middle, which we
+neither assume nor reject. Therefore, we're left with the task of
+finding a condition on the functor $F$ which ensures that we can compute
+the limit of $\Id : x \swarrow F \to x \swarrow F$ using only small
+data. The result is a technical device called a **solution set**.
 
 <!--
 ```agda
@@ -40,7 +55,7 @@ A solution set (for $F$ with respect to $Y : \cD$) is a [[set]] $I$,
 together with an $I$-indexed family of objects $X_i$ and morphisms $m_i
 : Y \to F(X_i)$, which commute in the sense that, for every $X'$ and $h
 : Y \to X'$, there exists a $j : I$ and $t : X_i \to X'$ which satisfy
-$$h = F(t)m_i$.
+$h = F(t)m_i$.
 
 ```agda
   record Solution-set (Y : ⌞ D ⌟) : Type (o ⊔ lsuc ℓ) where
