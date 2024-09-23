@@ -9,6 +9,7 @@ open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
+open import Cat.Instances.Lift
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -754,7 +755,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 ```
 -->
 
-## Continuity
+## Continuity {defines="continuous-functor"}
 
 ```agda
 is-continuous
@@ -791,6 +792,26 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
 is-complete oj ℓj C = ∀ {J : Precategory oj ℓj} (F : Functor J C) → Limit F
 ```
+
+<!--
+```agda
+is-complete-lower
+  : ∀ {o ℓ} {C : Precategory o ℓ} o₁ ℓ₁ o₂ ℓ₂
+  → is-complete (o₁ ⊔ o₂) (ℓ₁ ⊔ ℓ₂) C
+  → is-complete o₂ ℓ₂ C
+is-complete-lower o₁ ℓ₁ _ _ compl {J} F = to-limit (to-is-limit mk) where
+  lim = compl {J = Lift-cat o₁ ℓ₁ J} (Lift-functor-l _ _ F)
+  module lim = Limit lim
+  open make-is-limit
+
+  mk : make-is-limit F lim.apex
+  mk .ψ j = lim.ψ (lift j)
+  mk .commutes f = lim.commutes _
+  mk .universal eps x = lim.universal (λ j → eps (j .lower)) (λ f → x (f .lower))
+  mk .factors eps p = lim.factors _ _
+  mk .unique eps p other x = lim.unique _ _ _ λ j → x (j .lower)
+```
+-->
 
 While this condition might sound very strong, and thus that it would be hard to come
 by, it turns out we can get away with only two fundamental types of limits:
