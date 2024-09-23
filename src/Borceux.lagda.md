@@ -37,6 +37,7 @@ open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Functor.Hom.Properties
 open import Cat.Instances.Localisation
+open import Cat.Instances.MarkedGraphs
 open import Cat.Instances.OuterFunctor
 open import Cat.Internal.Functor.Outer
 open import Cat.Morphism.Factorisation
@@ -47,7 +48,6 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Hom.Coyoneda
-open import Cat.Instances.MarkedGraphs
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint.Kan
