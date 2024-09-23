@@ -2,7 +2,6 @@
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
-open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
@@ -10,7 +9,9 @@ open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
+open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
+open import Cat.Prelude
 
 import Algebra.Group.Cat.Base as Grp
 
@@ -163,7 +164,7 @@ but the other direction is by induction on "words".
 ```agda
   isom : is-iso K.₀
   isom .is-iso.inv (A , alg) = A , Algebra-on→group-on alg
-  isom .is-iso.linv x = ∫-Path Groups-equational
+  isom .is-iso.linv x = ∫-Path
     (total-hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
     id-equiv
   isom .is-iso.rinv x = Σ-pathp refl (Algebra-on-pathp _ _ go) where

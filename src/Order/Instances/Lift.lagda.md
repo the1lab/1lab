@@ -20,7 +20,7 @@ Fortunately you can uniformly lift the poset to this bigger universe.
 ```agda
 Liftᵖ : ∀ {o r} o′ r′ → Poset o r → Poset (o ⊔ o′) (r ⊔ r′)
 Liftᵖ o' r' X .Poset.Ob      = Lift o' ⌞ X ⌟
-Liftᵖ o' r' X .Poset._≤_ x y = Lift r' $ (X .Poset._≤_) (Lift.lower x) (Lift.lower y)
+Liftᵖ o' r' X .Poset._≤_ x y = Lift r' $ (X .Poset._≤_) (lower x) (lower y)
 Liftᵖ o' r' X .Poset.≤-thin  = Lift-is-hlevel 1 $ X .Poset.≤-thin
 Liftᵖ o' r' X .Poset.≤-refl  = lift $ X .Poset.≤-refl
 Liftᵖ o' r' X .Poset.≤-trans (lift p) (lift q)   = lift (X .Poset.≤-trans p q)

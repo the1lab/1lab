@@ -95,7 +95,7 @@ open import 1Lab.Equiv.FromPath
 ```agda
 Glue : (A : Type ℓ)
      → {φ : I}
-     → (Te : Partial φ (Σ[ T ∈ Type ℓ' ] (T ≃ A)))
+     → (Te : Partial φ (Σ[ T ∈ Type ℓ' ] T ≃ A))
      → Type ℓ'
 ```
 
@@ -466,10 +466,10 @@ ident=lift} is still an equivalence:
 univalence-lift : {A B : Type ℓ} → is-equiv (λ e → lift (path→equiv {A = A} {B} e))
 univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
   morp : is-iso (λ e → lift {ℓ = lsuc ℓ} (path→equiv e))
-  morp .is-iso.inv x = ua (x .Lift.lower)
+  morp .is-iso.inv x = ua (x .lower)
   morp .is-iso.rinv x =
-    lift (path→equiv (ua (x .Lift.lower))) ≡⟨ ap lift (Path≃Equiv .snd .is-iso.rinv _) ⟩
-    x                                      ∎
+    lift (path→equiv (ua (x .lower))) ≡⟨ ap lift (Path≃Equiv .snd .is-iso.rinv _) ⟩
+    x                                 ∎
   morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
 

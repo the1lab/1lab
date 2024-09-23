@@ -2,9 +2,12 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum
+
+import Prim.Data.Nat as Prim
 ```
 -->
 
@@ -28,7 +31,19 @@ naturals automatically.
 ≤-refl : ∀ {x : Nat} → x ≤ x
 ≤-refl {zero}  = 0≤x
 ≤-refl {suc x} = s≤s ≤-refl
+```
 
+<!--
+```agda
+≤-refl' : ∀ {x y} → x ≡ y → x ≤ y
+≤-refl' {zero} {zero} p = 0≤x
+≤-refl' {zero} {suc y} p = absurd (zero≠suc p)
+≤-refl' {suc x} {zero} p = absurd (suc≠zero p)
+≤-refl' {suc x} {suc y} p = s≤s (≤-refl' (suc-inj p))
+```
+-->
+
+```agda
 ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
 ≤-trans 0≤x     0≤x     = 0≤x
 ≤-trans 0≤x     (s≤s q) = 0≤x
@@ -60,22 +75,73 @@ equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
 
 <!--
 ```agda
+private
+  from-prim-< : ∀ x y → ⌞ x Prim.< y ⌟ → x < y
+  from-prim-< zero (suc y) o = s≤s 0≤x
+  from-prim-< (suc x) (suc y) o = s≤s (from-prim-< x y o)
+
+  to-prim-< : ∀ x y → x < y → ⌞ x Prim.< y ⌟
+  to-prim-< zero (suc y) o = oh
+  to-prim-< (suc x) (suc y) o = to-prim-< x y (≤-peel o)
+
 instance
   H-Level-≤ : ∀ {n x y} → H-Level (x ≤ y) (suc n)
   H-Level-≤ = prop-instance ≤-is-prop
 ```
 -->
 
-Furthermore, `_≤_`{.Agda} is decidable, and weakly total:
+### Properties of the strict order
 
 ```agda
-≤-dec : (x y : Nat) → Dec (x ≤ y)
-≤-dec zero zero = yes 0≤x
-≤-dec zero (suc y) = yes 0≤x
-≤-dec (suc x) zero = no λ { () }
-≤-dec (suc x) (suc y) with ≤-dec x y
-... | yes x≤y = yes (s≤s x≤y)
-... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
+<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+
+<-asym : ∀ {x y} → x < y → ¬ (y < x)
+<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
+
+<-not-equal : ∀ {x y} → x < y → x ≠ y
+<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
+<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
+
+<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
+<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
+<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
+<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
+
+<-weaken : ∀ {x y} → x < y → x ≤ y
+<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
+
+≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
+≤-strengthen {zero} {zero} 0≤x = inl refl
+≤-strengthen {zero} {suc y} 0≤x = inr (s≤s 0≤x)
+≤-strengthen {suc x} {suc y} (s≤s p) with ≤-strengthen p
+... | inl eq = inl (ap suc eq)
+... | inr le = inr (s≤s le)
+
+<-from-≤ : ∀ {x y} → x ≠ y → x ≤ y → x < y
+<-from-≤ x≠y x≤y with ≤-strengthen x≤y
+... | inl x=y = absurd (x≠y x=y)
+... | inr x<y = x<y
+```
+
+### Linearity
+
+Furthermore, `_≤_`{.Agda} is decidable, and weakly total:
+
+<!--
+```agda
+module _ where private
+```
+-->
+
+```agda
+  ≤-dec : (x y : Nat) → Dec (x ≤ y)
+  ≤-dec zero zero = yes 0≤x
+  ≤-dec zero (suc y) = yes 0≤x
+  ≤-dec (suc x) zero = no λ { () }
+  ≤-dec (suc x) (suc y) with ≤-dec x y
+  ... | yes x≤y = yes (s≤s x≤y)
+  ... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
 
 ≤-is-weakly-total : ∀ x y → ¬ (x ≤ y) → y ≤ x
 ≤-is-weakly-total zero    zero    _    = 0≤x
@@ -87,6 +153,42 @@ Furthermore, `_≤_`{.Agda} is decidable, and weakly total:
 
 <!--
 ```agda
+<-from-not-≤ : ∀ x y → ¬ (x ≤ y) → y < x
+<-from-not-≤ zero    zero    x    = absurd (x 0≤x)
+<-from-not-≤ zero    (suc y) ¬0≤s = absurd (¬0≤s 0≤x)
+<-from-not-≤ (suc x) zero    _    = s≤s 0≤x
+<-from-not-≤ (suc x) (suc y) ¬s≤s = s≤s $
+  <-from-not-≤ x y λ z → ¬s≤s (s≤s z)
+
+≤-from-not-< : ∀ x y → ¬ (x < y) → y ≤ x
+≤-from-not-< zero zero p = 0≤x
+≤-from-not-< zero (suc y) p = absurd (p (s≤s 0≤x))
+≤-from-not-< (suc x) zero p = 0≤x
+≤-from-not-< (suc x) (suc y) p = s≤s (≤-from-not-< x y (p ∘ s≤s))
+
+<-trans : ∀ x y z → x < y → y < z → x < z
+<-trans x (suc y) (suc z) (s≤s p) (s≤s q) = ≤-trans (s≤s p) (≤-trans q ≤-ascend)
+
+≤-uncap : ∀ m n → m ≠ suc n → m ≤ suc n → m ≤ n
+≤-uncap m n p 0≤x = 0≤x
+≤-uncap (suc x) zero p (s≤s 0≤x) = absurd (p refl)
+≤-uncap (suc x) (suc n) p (s≤s q) = s≤s (≤-uncap x n (p ∘ ap suc) q)
+```
+-->
+
+<!--
+```agda
+≤-dec : (x y : Nat) → Dec (x ≤ y)
+≤-dec x y with x ≡? y
+... | yes x=y = yes (≤-refl' x=y)
+... | no ¬x=y with oh? (x Prim.< y)
+... | yes x<y = yes (<-weaken (from-prim-< x y x<y))
+... | no ¬x<y  = no not-both where
+  not-both : ¬ (x ≤ y)
+  not-both p with ≤-strengthen p
+  ... | inl x=y = ¬x=y x=y
+  ... | inr x<y = ¬x<y (to-prim-< x y x<y)
+
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
   Dec-≤ = ≤-dec _ _
@@ -120,28 +222,6 @@ their strict ordering:
   go (suc x) (suc y) p q    = ap suc (go x y (λ { a → p (s≤s a) }) λ { a → q (s≤s a) })
 ```
 
-### Properties of the strict order
-
-```agda
-<-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
-<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
-
-<-asym : ∀ {x y} → x < y → ¬ (y < x)
-<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
-
-<-not-equal : ∀ {x y} → x < y → ¬ x ≡ y
-<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
-<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
-
-<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
-<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
-<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
-
-weaken-< : ∀ {x y} → x < y → x ≤ y
-weaken-< {x} {suc y} p = ≤-sucr (≤-peel p)
-```
-
 ## Nat is a lattice
 
 An interesting tidbit about the ordering on $\NN$ is that it is, in some
@@ -164,7 +244,7 @@ that here (it is a more general fact about
   from {suc x} {suc y} p = s≤s (from (suc-inj p))
 ```
 
-## Well-ordering
+## Well-ordering {defines="N-is-well-ordered"}
 
 In classical mathematics, the well-ordering principle states that every
 nonempty subset of the natural numbers has a minimal element. In
@@ -185,14 +265,14 @@ implicitly appealing to path induction to reduce this to the case where
 $p, q : P(n)$] automatically have that $p = q$.
 
 ```agda
-module _ {ℓ} {P : Nat → Prop ℓ} where
-  private
-    minimal-solution : ∀ {ℓ} (P : Nat → Type ℓ) → Type _
-    minimal-solution P = Σ[ n ∈ Nat ] (P n × (∀ k → P k → n ≤ k))
+minimal-solution : ∀ {ℓ} (P : Nat → Type ℓ) → Type _
+minimal-solution P = Σ[ n ∈ Nat ] (P n × (∀ k → P k → n ≤ k))
 
-    minimal-solution-unique : is-prop (minimal-solution λ x → ∣ P x ∣)
-    minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
-      Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
+minimal-solution-unique
+  : ∀ {ℓ} {P : Nat → Prop ℓ}
+  → is-prop (minimal-solution λ x → ∣ P x ∣)
+minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
+  Σ-prop-path! (≤-antisym (n-min _ pk) (k-min _ pn))
 ```
 
 The step of the code that actually finds a minimal solution does not
@@ -200,30 +280,32 @@ need $P$ to be a predicate: we only need that for actually searching for
 an inhabited subset.
 
 ```agda
-    min-suc
-      : ∀ {P : Nat → Type ℓ} → ∀ n → ¬ P 0
-      → (∀ k → P (suc k) → n ≤ k)
-      → ∀ k → P k → suc n ≤ k
-    min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)
-    min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
-    min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
+min-suc
+  : ∀ {ℓ} {P : Nat → Type ℓ}
+  → ∀ n → ¬ P 0
+  → (∀ k → P (suc k) → n ≤ k)
+  → ∀ k → P k → suc n ≤ k
+min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)
+min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
+min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
 
-  ℕ-minimal-solution
-    : ∀ (P : Nat → Type ℓ)
-    → (∀ n → Dec (P n))
-    → (n : Nat) → P n
-    → minimal-solution P
-  ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
-  ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
-    (yes p0) → 0 , p0 , λ k _ → 0≤x
-    (no ¬p0) →
-      let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
-       in suc a , pa , min-suc {P} a ¬p0 x
+ℕ-minimal-solution
+  : ∀ {ℓ} (P : Nat → Type ℓ)
+  → (∀ n → Dec (P n))
+  → (n : Nat) → P n
+  → minimal-solution P
+ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
+ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
+  (yes p0) → 0 , p0 , λ k _ → 0≤x
+  (no ¬p0) →
+    let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
+      in suc a , pa , min-suc {P = P} a ¬p0 x
 
-  ℕ-well-ordered
-    : (∀ n → Dec ∣ P n ∣)
-    → ∃[ n ∈ Nat ] ∣ P n ∣
-    → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
-  ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
-    (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
+ℕ-well-ordered
+  : ∀ {ℓ} {P : Nat → Prop ℓ}
+  → (∀ n → Dec ∣ P n ∣)
+  → ∃[ n ∈ Nat ] ∣ P n ∣
+  → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
+ℕ-well-ordered {P = P} P-dec wit = ∥-∥-rec (minimal-solution-unique {P = P})
+  (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
 ```

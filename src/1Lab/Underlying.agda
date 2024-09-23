@@ -6,6 +6,8 @@ open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (Σ-syntax)
 
+open import Data.Bool.Base
+
 module 1Lab.Underlying where
 
 -- Notation class for types which have a chosen projection into a
@@ -52,7 +54,10 @@ instance
     : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ ua : Underlying A ⦄
     → Underlying (Lift ℓ' A)
   Underlying-Lift ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
-  Underlying-Lift .⌞_⌟ x = ⌞ x .Lift.lower ⌟
+  Underlying-Lift .⌞_⌟ x = ⌞ x .lower ⌟
+
+  Underlying-Bool : Underlying Bool
+  Underlying-Bool = record { ⌞_⌟ = So }
 
 -- The converse of to-is-true, generalised slightly. If P and Q are
 -- identical inhabitants of some type of structured types, and Q's
@@ -108,6 +113,13 @@ instance
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {f g : ∀ x → B x}
     → Funlike (f ≡ g) A (λ x → f x ≡ g x)
   Funlike-Homotopy = record { _#_ = happly }
+
+  Funlike-Σ
+    : ∀ {ℓ ℓ' ℓx ℓp} {A : Type ℓ} {B : A → Type ℓ'} {X : Type ℓx} {P : X → Type ℓp}
+    → ⦃ Funlike X A B ⦄
+    → Funlike (Σ X P) A B
+  Funlike-Σ = record { _#_ = λ (f , _) → f #_ }
+  {-# OVERLAPPABLE Funlike-Σ #-}
 
 -- Generalised "sections" (e.g. of a presheaf) notation.
 _ʻ_

@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
+open import Cat.Morphism.StrongEpi
 open import Cat.Prelude
 
 open import Homotopy.Connectedness
@@ -33,7 +34,7 @@ together, we get _every epimorphism is regular_ as a corollary.
 [regular epimorphisms]: Cat.Diagram.Coequaliser.RegularEpi.html#regular-epimorphisms
 [epimorphism]: Cat.Morphism.html#epis
 
-## Surjections are epic
+## Surjections are epic {defines="surjections-are-epic"}
 
 This is the straightforward direction: We know (since $\Sets$ has
 pullbacks) that if a morphism is going to be a regular epimorphism, then
@@ -81,7 +82,26 @@ surjectivity out of the way, we get what we wanted.
       (surj a)
 ```
 
-# Epis are surjective
+<!--
+```agda
+surjective→strong-epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → is-strong-epi (Sets ℓ) {c} {d} f
+surjective→strong-epi c d f f-surj =
+  is-regular-epi→is-strong-epi (Sets _) f $
+  surjective→regular-epi c d f f-surj
+
+surjective→epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → Cr.is-epic (Sets ℓ) {c} {d} f
+surjective→epi c d f surj {c = x} =
+  is-regular-epi→is-epic (surjective→regular-epi c d f surj) {c = x}
+```
+-->
+
+# Epis are surjective {defines="epis-are-surjective"}
 
 Now _this_ is the hard direction. Our proof follows [@Rijke:2015, §2.9],
 so if the exposition below doesn't make a lot of sense, be sure to check

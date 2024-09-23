@@ -202,7 +202,7 @@ point with, rather than being a property of points.
 
 ```agda
 fibre : (A → B) → B → Type _
-fibre {A = A} f y = Σ[ x ∈ A ] (f x ≡ y)
+fibre {A = A} f y = Σ[ x ∈ A ] f x ≡ y
 ```
 :::
 
@@ -945,7 +945,7 @@ Lift-ap
 Lift-ap (f , eqv) .fst (lift x) = lift (f x)
 Lift-ap f .snd .is-eqv (lift y) .centre = lift (Equiv.from f y) , ap lift (Equiv.ε f y)
 Lift-ap f .snd .is-eqv (lift y) .paths (lift x , q) i = lift (p i .fst) , λ j → lift (p i .snd j)
-  where p = f .snd .is-eqv y .paths (x , ap Lift.lower q)
+  where p = f .snd .is-eqv y .paths (x , ap lower q)
 ```
 
 ### Involutions
@@ -960,10 +960,12 @@ is-involutive→is-equiv inv = is-iso→is-equiv (iso _ inv inv)
 
 ## Closure properties
 
+:::{.definition #two-out-of-three}
 We will now show a rather fundamental property of equivalences: they are
 closed under *two-out-of-three*. This means that, considering $f : A \to
 B$, $g : B \to C$, and $(g \circ f) : A \to C$ as a set of three things,
 if any two are an equivalence, then so is the third:
+:::
 
 <!--
 ```agda
@@ -1088,19 +1090,19 @@ syntax ≃⟨⟩-syntax x q p = x ≃⟨ p ⟩ q
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A}
   → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b → a ≡ b
-lift-inj p = ap Lift.lower p
+lift-inj p = ap lower p
 
 -- Fibres of composites are given by pairs of fibres.
 fibre-∘-≃
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
   → {f : B → C} {g : A → B}
-  → ∀ c → fibre (f ∘ g) c ≃ (Σ[ (b , _) ∈ fibre f c ] (fibre g b))
+  → ∀ c → fibre (f ∘ g) c ≃ (Σ[ (b , _) ∈ fibre f c ] fibre g b)
 fibre-∘-≃ {f = f} {g = g} c = Iso→Equiv (fwd , iso bwd invl invr)
     where
-      fwd : fibre (f ∘ g) c → Σ[ (b , _) ∈ fibre f c ] (fibre g b)
+      fwd : fibre (f ∘ g) c → Σ[ (b , _) ∈ fibre f c ] fibre g b
       fwd (a , p) = ((g a) , p) , (a , refl)
 
-      bwd : Σ[ (b , _) ∈ fibre f c ] (fibre g b) → fibre (f ∘ g) c
+      bwd : Σ[ (b , _) ∈ fibre f c ] fibre g b → fibre (f ∘ g) c
       bwd ((b , p) , (a , q)) = a , ap f q ∙ p
 
       invl : ∀ x → fwd (bwd x) ≡ x

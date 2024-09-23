@@ -281,7 +281,7 @@ $$.
 
 ```agda
   part-counit : ↯ Ob → Ob
-  part-counit x = ⋃-prop (x .elt ⊙ Lift.lower) def-prop where abstract
+  part-counit x = ⋃-prop (x .elt ⊙ lower) def-prop where abstract
     def-prop : is-prop (Lift o ⌞ x ⌟)
     def-prop = hlevel 1
 ```
@@ -298,7 +298,7 @@ And if $x$ is undefined, then this is the bottom element.
 
   part-counit-¬elt : (x : ↯ Ob) → (⌞ x ⌟ → ⊥) → part-counit x ≡ bottom
   part-counit-¬elt x ¬def = ≤-antisym
-    (⋃-prop-least _ _ _ (λ p → absurd (¬def (Lift.lower p))))
+    (⋃-prop-least _ _ _ (λ p → absurd (¬def (lower p))))
     (bottom≤x _)
 ```
 
@@ -324,7 +324,7 @@ curious reader.</summary>
   part-counit-⊑ {x = x} {y = y} p = ⋃-prop-least _ _ (part-counit y) λ (lift i) →
     x .elt i                       =˘⟨ p .refines i ⟩
     y .elt (p .implies i)          ≤⟨ ⋃-prop-le _ _ (lift (p .implies i)) ⟩
-    ⋃-prop (y .elt ⊙ Lift.lower) _ ≤∎
+    ⋃-prop (y .elt ⊙ lower) _ ≤∎
 
   part-counit-lub s sdir .is-lub.fam≤lub i =
     ⋃-prop-least _ _ _ λ (lift p) →
@@ -358,10 +358,10 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f = ext λ x →
   sym $ Strict-scott.pres-⋃-prop f _ _ _
 
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} = ext λ x → part-ext
-  (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p , refl)) .implies)
+  (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies)
   (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)
   (λ p q →
-    sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p , refl)) .refines p)
+    sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p)
     ∙ ↯-indep x)
   where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
 

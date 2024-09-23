@@ -1,10 +1,7 @@
 -- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleContexts, BlockArguments, LambdaCase, DerivingStrategies, OverloadedStrings #-}
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
@@ -234,44 +231,6 @@ compileOneModule _pn opts types iface = do
     compDef env menv def = setCurrentRange (defName def) $
       compileDefHtml env menv NotMain def
 
-prettifyTerm :: I.Type -> TCM I.Type
-prettifyTerm =
-  let
-    fixProj :: I.Elim -> I.Elim
-    fixProj (I.Proj _ x) = I.Proj ProjPostfix x
-    fixProj e = e
-
-    saturated :: QName -> [I.Elim] -> Bool
-    saturated q x
-      | Just as <- I.allApplyElims x
-      = Con.numHoles q == length (filter visible as)
-      | otherwise = False
-
-    unspine :: I.Term -> TCM I.Term
-    unspine tm = pure $! case I.unSpine tm of
-      uns@(I.Def prj args) | saturated prj args -> uns
-      _ -> tm
-
-    step = \case
-      I.Pi d x -> pure $ I.Pi d{I.domName = Nothing} x
-
-      I.Def q x
-        | isExtendedLambdaName q -> pure (I.Def q x)
-        | isAbsurdLambdaName q   -> pure (I.Def q x)
-        | saturated q x          -> pure (I.Def q x)
-
-      I.Def q x -> reduceDefCopyTCM q x >>= \case
-        YesReduction _ t -> step t
-        _ | Just _ <- I.allApplyElims x -> do
-          fv <- inTopContext (length <$> lookupSection (qnameModule q))
-          pure $ I.Def q (drop fv x)
-        _ | otherwise -> unspine (I.Def q x)
-
-      I.Con o q x -> unspine $ I.Con o q (map fixProj x)
-      I.Var i x   -> unspine $ I.Var i (map fixProj x)
-      x           -> pure x
-  in I.traverseTermM step
-
 killQual :: Con.Expr -> Con.Expr
 killQual = Con.mapExpr (wrap . forget) where
   work :: Con.QName -> Con.QName
@@ -307,8 +266,7 @@ typeToText :: Definition -> TCM Text
 typeToText d = do
   ui <- usedInstances (I.unEl (defType d))
   ty <- locallyReduceDefs (OnlyReduceDefs ui) $ normalise (defType d)
-  tm <- prettifyTerm ty
-  expr <- runNoCopy (reify tm)
+  expr <- runNoCopy (reify ty)
   fmap (Text.pack . render . pretty . killQual) .
     abstractToConcrete_ . removeImpls $ expr
 

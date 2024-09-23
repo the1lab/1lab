@@ -13,7 +13,7 @@ import Data.Int.HIT as HIT
 module Data.Int.Universal where
 ```
 
-# Universal property of the integers
+# Universal property of the integers {defines="universal-property-of-the-integers"}
 
 We define and prove a type-theoretic universal property of the integers,
 which characterises them as the initial pointed set equipped with an

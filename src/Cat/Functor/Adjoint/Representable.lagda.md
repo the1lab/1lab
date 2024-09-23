@@ -62,8 +62,8 @@ module _ {o'} {D : Precategory o' ℓ}
     : ∀ c → Corepresentation (Hom-into C c F∘ Functor.op L)
   left-adjoint→objectwise-rep c .corep = R .F₀ c
   left-adjoint→objectwise-rep c .corepresents =
-    adjunct-hom-iso-into L⊣R c
-    ∘ni path→iso (sym (Hom-from-op _))
+    path→iso (sym (Hom-from-op _))
+    ∘ni adjunct-hom-iso-into L⊣R c
 ```
 
 The other direction should be more surprising: if we only have a family of objects
@@ -165,8 +165,8 @@ module _
   right-adjoint→corepresentable : Corepresentation R
   right-adjoint→corepresentable .corep = L .F₀ top
   right-adjoint→corepresentable .corepresents =
-    iso→isoⁿ (λ _ → equiv→iso (Π-⊤-eqv e⁻¹)) (λ _ → refl)
-    ∘ni adjunct-hom-iso-from L⊣R top ni⁻¹
+    adjunct-hom-iso-from L⊣R top ni⁻¹
+    ∘ni iso→isoⁿ (λ _ → equiv→iso (Π-⊤-eqv e⁻¹)) (λ _ → refl)
 ```
 
 Going the other way, if we assume that $\cC$ is [[copowered]] over $\Sets_\ell$
@@ -191,8 +191,8 @@ module _
     Hom[X,R-]-rep : ∀ X → Corepresentation (Hom-from (Sets ℓ) X F∘ R)
     Hom[X,R-]-rep X .corep = X ⊗ R-corep .corep
     Hom[X,R-]-rep X .corepresents =
-      F∘-iso-r (R-corep .corepresents)
-      ∘ni copower-hom-iso ni⁻¹
+      copower-hom-iso ni⁻¹
+      ∘ni F∘-iso-r (R-corep .corepresents)
 
   corepresentable→functor : Functor (Sets ℓ) C
   corepresentable→functor = objectwise-rep→functor Hom[X,R-]-rep

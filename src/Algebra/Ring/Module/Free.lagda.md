@@ -3,9 +3,11 @@
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
+
+open import Cat.Functor.Adjoint
+open import Cat.Prelude hiding (_+_ ; _*_)
 
 open import Data.Fin.Product
 open import Data.Fin.Base

@@ -91,7 +91,7 @@ representation-unique : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
 representation-unique X Y =
   is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY where
     よX≅よY : よ₀ C (X .rep) C^.≅ よ₀ C (Y .rep)
-    よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents
+    よX≅よY = Y .represents C^.∘Iso X .represents C^.Iso⁻¹
 ```
 
 Therefore, if $\cC$ is a [[univalent category]], then the type of
@@ -274,7 +274,7 @@ corepresentation-unique X Y =
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
     ni : Hom-from C (Y .corep) ≅ⁿ Hom-from C (X .corep)
-    ni = (Y .corepresents ni⁻¹) ∘ni X .corepresents
+    ni = X .corepresents ∘ni Y .corepresents ni⁻¹
 ```
 </details>
 

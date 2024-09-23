@@ -277,5 +277,8 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
       → {X Y : Total E} ⦃ i : Funlike (Hom (X .fst) (Y .fst)) A B ⦄
       → Funlike (Total-hom E X Y) A B
     Funlike-Total-hom ⦃ i ⦄ .Funlike._#_ f x = f .Total-hom.hom # x
+
+    H-Level-Total-hom' : ∀ {X Y} {n} → H-Level (Total-hom E X Y) (2 + n)
+    H-Level-Total-hom' = H-Level-Total-hom E
 ```
 -->

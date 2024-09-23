@@ -90,25 +90,25 @@ module _ {o ℓ} {P : Poset o ℓ} where
 
   lift-is-lub
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
-    → is-lub P F lub → is-lub P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub
+    → is-lub P F lub → is-lub P (F ⊙ lower {ℓ = ℓᵢ'}) lub
   lift-is-lub is .fam≤lub (lift ix) = is .fam≤lub ix
   lift-is-lub is .least ub' le = is .least ub' (le ⊙ lift)
 
   lift-lub
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-    → Lub P F → Lub P (F ⊙ Lift.lower {ℓ = ℓᵢ'})
+    → Lub P F → Lub P (F ⊙ lower {ℓ = ℓᵢ'})
   lift-lub lub .Lub.lub = Lub.lub lub
   lift-lub lub .Lub.has-lub = lift-is-lub (Lub.has-lub lub)
 
   lower-is-lub
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
-    → is-lub P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub → is-lub P F lub
+    → is-lub P (F ⊙ lower {ℓ = ℓᵢ'}) lub → is-lub P F lub
   lower-is-lub is .fam≤lub ix = is .fam≤lub (lift ix)
-  lower-is-lub is .least ub' le = is .least ub' (le ⊙ Lift.lower)
+  lower-is-lub is .least ub' le = is .least ub' (le ⊙ lower)
 
   lower-lub
     : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
-    → Lub P (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Lub P F
+    → Lub P (F ⊙ lower {ℓ = ℓᵢ'}) → Lub P F
   lower-lub lub .Lub.lub = Lub.lub lub
   lower-lub lub .Lub.has-lub = lower-is-lub (Lub.has-lub lub)
 ```

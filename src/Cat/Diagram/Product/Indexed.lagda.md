@@ -103,7 +103,7 @@ Indexed-product-≃ e {F} p = λ where
 
 Lift-Indexed-product
   : ∀ {ℓ} ℓ' → {I : Type ℓ} → {F : I → C.Ob}
-  → Indexed-product {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
+  → Indexed-product {Idx = Lift ℓ' I} (F ⊙ lower)
   → Indexed-product F
 Lift-Indexed-product _ = Indexed-product-≃ (Lift-≃ e⁻¹)
 

@@ -3,12 +3,15 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Ideal
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Prelude hiding (_*_ ; _+_)
+
 open import Data.Power
 open import Data.Dec
+
+import Algebra.Ring.Reasoning as Kit
 ```
 -->
 
@@ -19,7 +22,7 @@ module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 open Ring-on (R .snd)
-private module R = Ring-on (R .snd)
+private module R = Kit R
 ```
 -->
 
@@ -54,7 +57,7 @@ comprehensibility's sake).
   private
     quot-grp : Group _
     quot-grp = R.additive-group /ᴳ I.ideal→normal
-    module R/I = Group-on (quot-grp .snd)
+    module R/I = Group-on (quot-grp .snd) hiding (magma-hlevel)
 ```
 -->
 
@@ -75,12 +78,12 @@ thing: Since $(x - y) \in I$, also $(xa - ya) \in I$, so $[xa] = [ya]$.
 ```agda
       p1 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (x R.* a) ≡ inc (y R.* a)
       p1 a {x} {y} x-y∈I = quot $ subst (_∈ I)
-        (R.*-distribr ∙ ap (x R.* a R.+_) (sym R.neg-*-l))
+        (R.*-distribr ∙ ap (x R.* a R.+_) R.*-negatel)
         (I.has-*ᵣ a x-y∈I)
 
       p2 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (a R.* x) ≡ inc (a R.* y)
       p2 a {x} {y} x-y∈I = quot $ subst (_∈ I)
-        (R.*-distribl ∙ ap (a R.* x R.+_) (sym R.neg-*-r))
+        (R.*-distribl ∙ ap (a R.* x R.+_) R.*-negater)
         (I.has-*ₗ a x-y∈I)
 ```
 

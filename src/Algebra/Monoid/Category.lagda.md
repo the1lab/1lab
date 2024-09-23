@@ -25,6 +25,7 @@ module Algebra.Monoid.Category where
 ```
 open Precategory
 open is-semigroup
+open is-monoid
 open is-magma
 open Monoid-hom
 open Monoid-on
@@ -107,7 +108,7 @@ Mon↪Sets : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
 Mon↪Sets = Forget-structure (Monoid-structure _)
 ```
 
-## Free objects {defines=free-monoid}
+## Free monoids {defines=free-monoid}
 
 We piece together some properties of `lists`{.Agda ident=List} to show
 that, if $A$ is a set, then $\rm{List}(A)$ is an object of

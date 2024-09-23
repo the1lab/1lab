@@ -64,7 +64,7 @@ binary operation `⋆`, on which no further laws are imposed.
   underlying-set : Set ℓ
   underlying-set = el _ has-is-set
 
-  instance
+  opaque instance
     magma-hlevel : ∀ {n} → H-Level A (2 + n)
     magma-hlevel = basic-instance 2 has-is-set
 
@@ -138,7 +138,7 @@ set, this obviously defines a magma:
 ```agda
 private
   is-magma-imp : is-magma imp
-  is-magma-imp .has-is-set = Bool-is-set
+  is-magma-imp .has-is-set = hlevel 2
 ```
 
 We show it is not commutative or associative by giving counterexamples:

@@ -235,29 +235,31 @@ has-products : ∀ {o ℓ} → Precategory o ℓ → Type _
 has-products C = ∀ a b → Product C a b
 
 module Binary-products
-  {o ℓ}
-  (C : Precategory o ℓ)
-  (all-products : has-products C)
-  where
+  {o ℓ} (C : Precategory o ℓ) (all-products : has-products C) where
+```
+
+<!--
+```agda
   open Cat.Reasoning C
   private variable
     A B a b c d : Ob
 
-  module product {a} {b} = Product (all-products a b)
-
-  open product renaming
-    (unique to ⟨⟩-unique) public
+  -- Note: here and below we have to open public the aliases in a module
+  -- with parameters so Agda picks up the display forms.
+  module _ {a b} where open Product (all-products a b) renaming (unique to ⟨⟩-unique) hiding (apex) public
   open Functor
 
-  infixr 7 _⊗₀_
   infix 50 _⊗₁_
 ```
+-->
 
 We start by defining a "global" product-assigning operation.
 
 ```agda
-  _⊗₀_ : Ob → Ob → Ob
-  a ⊗₀ b = product.apex {a} {b}
+  module _ a b where
+    open Product (all-products a b)
+      renaming (apex to infixr 7 _⊗₀_)
+      using () public
 ```
 
 This operation extends to a bifunctor $\cC \times \cC \to \cC$.

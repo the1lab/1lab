@@ -1,12 +1,12 @@
 <!--
 ```agda
-open import 1Lab.Rewrite
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 open import Data.Bool
 ```
 -->
@@ -119,6 +119,37 @@ numbers]. Since they're mostly simple inductive arguments written in
 
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
 *-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ·· p ·· *-commutative (suc k) y)
+
+*-injr : ∀ k x y .⦃ _ : Positive k ⦄ → x * k ≡ y * k → x ≡ y
+*-injr (suc k) x y p = *-suc-inj k x y p
+
+*-injl : ∀ k x y .⦃ _ : Positive k ⦄ → k * x ≡ k * y → x ≡ y
+*-injl (suc k) x y p = *-suc-inj' k x y p
+
+*-is-onel : ∀ x n → x * n ≡ 1 → x ≡ 1
+*-is-onel zero n p = p
+*-is-onel (suc zero) zero p = refl
+*-is-onel (suc (suc x)) zero p = absurd (zero≠suc (sym (*-zeror x) ∙ p))
+*-is-onel (suc x) (suc zero) p = ap suc (sym (*-oner x)) ∙ p
+*-is-onel (suc x) (suc (suc n)) p = absurd (zero≠suc (sym (suc-inj p)))
+
+*-is-oner : ∀ x n → x * n ≡ 1 → n ≡ 1
+*-is-oner x n p = *-is-onel n x (*-commutative n x ∙ p)
+
+*-is-zero : ∀ x y → x * y ≡ 0 → (x ≡ 0) ⊎ (y ≡ 0)
+*-is-zero zero y p = inl refl
+*-is-zero (suc x) zero p = inr refl
+*-is-zero (suc x) (suc y) p = absurd (suc≠zero p)
+
+*-is-zerol : ∀ x y ⦃ _ : Positive y ⦄ → x * y ≡ 0 → x ≡ 0
+*-is-zerol x (suc y) p with *-is-zero x (suc y) p
+... | inl p = p
+... | inr q = absurd (suc≠zero q)
+
+*-is-zeror : ∀ x y ⦃ _ : Positive x ⦄ → x * y ≡ 0 → y ≡ 0
+*-is-zeror (suc x) y p with *-is-zero (suc x) y p
+... | inl p = absurd (suc≠zero p)
+... | inr q = q
 ```
 
 ## Exponentiation
@@ -183,6 +214,11 @@ arithmetic operators:
 +-≤r x zero = 0≤x
 +-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (s≤s (+-≤r x y))
 
+monus-≤ : (x y : Nat) → x - y ≤ x
+monus-≤ x zero = x≤x
+monus-≤ zero (suc y) = 0≤x
+monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
+
 +-preserves-≤l : (x y z : Nat) → x ≤ y → (z + x) ≤ (z + y)
 +-preserves-≤l .0 y zero 0≤x = 0≤x
 +-preserves-≤l .0 y (suc z) 0≤x =
@@ -199,6 +235,14 @@ arithmetic operators:
 +-preserves-≤ x y x' y' prf prf' = ≤-trans
   (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
++-preserves-<l : (x y z : Nat) → x < y → (z + x) < (z + y)
++-preserves-<l x (suc y) z (s≤s p) = ≤-trans (s≤s (+-preserves-≤l x y z p)) (≤-refl' (sym (+-sucr z y)))
+
++-preserves-<r : (x y z : Nat) → x < y → (x + z) < (y + z)
++-preserves-<r x y z p = subst₂ _<_ (+-commutative z x) (+-commutative z y) (+-preserves-<l x y z p)
+
++-preserves-< : ∀ x y x' y' → x < y → x' < y' → (x + x') < (y + y')
++-preserves-< x y x' y' p q = <-trans _ _ _ (+-preserves-<r x y x' p) (+-preserves-<l x' y' y q)
 
 *-preserves-≤l : (x y z : Nat) → x ≤ y → (z * x) ≤ (z * y)
 *-preserves-≤l x y zero prf = 0≤x
@@ -228,9 +272,18 @@ difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙
 difference→≤ {zero}  {z}     (suc y) p = 0≤x
 difference→≤ {suc x} {zero}  (suc y) p = absurd (suc≠zero p)
 difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
+
+nonzero→positive : ∀ {x} → x ≠ 0 → 0 < x
+nonzero→positive {zero} p = absurd (p refl)
+nonzero→positive {suc x} p = s≤s 0≤x
+
+*-cancel-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
+*-cancel-≤r (suc x) {zero} {z} p = 0≤x
+*-cancel-≤r (suc x) {suc y} {suc z} (s≤s p) = s≤s
+  (*-cancel-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x p))
 ```
 
-### Monus
+## Monus
 
 ```agda
 monus-zero : ∀ a → 0 - a ≡ 0
@@ -270,7 +323,7 @@ monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
 monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 ```
 
-### Maximum
+## Maximum
 
 ```agda
 max-assoc : (x y z : Nat) → max x (max y z) ≡ max (max x y) z
@@ -310,7 +363,7 @@ max-zeror zero = refl
 max-zeror (suc x) = refl
 ```
 
-### Minimum
+## Minimum
 
 ```agda
 min-assoc : (x y z : Nat) → min x (min y z) ≡ min (min x y) z
@@ -346,4 +399,16 @@ min-zerol (suc x) = refl
 min-zeror : (x : Nat) → min x 0 ≡ 0
 min-zeror zero = refl
 min-zeror (suc x) = refl
+```
+
+## The factorial function
+
+```agda
+factorial-positive : ∀ n → Positive (factorial n)
+factorial-positive zero = s≤s 0≤x
+factorial-positive (suc n) = *-preserves-≤ 1 (suc n) 1 (factorial n) (s≤s 0≤x) (factorial-positive n)
+
+≤-factorial : ∀ n → n ≤ factorial n
+≤-factorial zero = 0≤x
+≤-factorial (suc n) = subst (_≤ factorial (suc n)) (*-oner (suc n)) (*-preserves-≤ (suc n) (suc n) 1 (factorial n) ≤-refl (factorial-positive n))
 ```

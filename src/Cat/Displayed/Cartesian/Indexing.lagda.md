@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Bi.Instances.Discrete
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Discrete

@@ -10,16 +10,13 @@ module Algebra.Group.Homotopy.BAut where
 
 # Deloopings of automorphism groups
 
-Recall that any set $X$ generates a group [$\rm{Sym}(X)$][symg], given
+Recall that any set $X$ generates a group [[$\rm{Sym}(X)$|symmetric group]] given
 by the automorphisms $X \simeq X$. We also have a generic construction
 of [[deloopings]]: special spaces $K(G,1)$ (for a group $G$), where the
-[fundamental group] $\pi_1(K(G,1))$ recovers $G$. For the specific case
+[[fundamental group]] $\pi_1(K(G,1))$ recovers $G$. For the specific case
 of deloping automorphism groups, we can give an alternative
 construction: The type of small types [[merely]] equivalent to $X$ has a
 fundamental group of $\rm{Sym}(X)$.
-
-[symg]: Algebra.Group.html#symmetric-groups
-[fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups
 
 ```agda
 module _ {ℓ} (T : Type ℓ) where

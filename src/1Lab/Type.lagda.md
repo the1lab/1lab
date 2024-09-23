@@ -49,7 +49,7 @@ absurd ()
 
 ¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
 ¬ A = A → ⊥
-infix 3 ¬_
+infix 6 ¬_
 ```
 
 :::{.definition #product-type}
@@ -77,6 +77,8 @@ record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
 
 <!--
 ```agda
+open Lift public
+
 instance
   Lift-instance : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ A ⦄ → Lift ℓ' A
   Lift-instance ⦃ x ⦄ = lift x
@@ -131,5 +133,10 @@ case x return P of f = f x
 
 {-# INLINE case_of_        #-}
 {-# INLINE case_return_of_ #-}
+
+instance
+  Number-Lift : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ Number A ⦄ → Number (Lift ℓ' A)
+  Number-Lift {ℓ' = ℓ'} ⦃ a ⦄ .Number.Constraint n = Lift ℓ' (a .Number.Constraint n)
+  Number-Lift ⦃ a ⦄ .Number.fromNat n ⦃ lift c ⦄ = lift (a .Number.fromNat n ⦃ c ⦄)
 ```
 -->

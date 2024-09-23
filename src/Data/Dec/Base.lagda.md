@@ -47,9 +47,11 @@ Dec-rec = Dec-elim _
 ```agda
 recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → .A → A
 recover ⦃ yes x ⦄ _ = x
-recover {A = A} ⦃ no ¬x ⦄ x = go (¬x x) where
-  go : .⊥ → A
-  go ()
+recover ⦃ no ¬x ⦄ x = absurd (¬x x)
+
+dec→dne : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → ¬ ¬ A → A
+dec→dne ⦃ yes x ⦄ _   = x
+dec→dne ⦃ no ¬x ⦄ ¬¬x = absurd (¬¬x ¬x)
 ```
 -->
 
@@ -222,3 +224,11 @@ from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   q (yes x) = refl
   q (no x)  = refl
 ```
+
+<!--
+```agda
+Dec→Bool : ∀ {A : Type ℓ} → Dec A → Bool
+Dec→Bool (yes x) = true
+Dec→Bool (no ¬x) = false
+```
+-->

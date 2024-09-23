@@ -63,17 +63,17 @@ cast {suc m} {suc n} p (fsuc i) = fsuc (cast (Nat.suc-inj p) i)
 
 <!--
 ```agda
-cast-is-equiv : ∀ {m n} (p : m ≡ n) → is-equiv (cast p)
-cast-is-equiv =
-  J (λ _ p → is-equiv (cast p)) cast-refl-is-equiv
-  where
-    id≡cast-refl : ∀ {n} → id ≡ cast (λ _ → n)
-    id≡cast-refl {zero} i ()
-    id≡cast-refl {suc n} i fzero = fzero
-    id≡cast-refl {suc n} i (fsuc x) = fsuc (id≡cast-refl {n} i x)
+cast-uncast : ∀ {m n} → (p : m ≡ n) → ∀ x → cast (sym p) (cast p x) ≡ x
+cast-uncast {suc m} {zero} p fzero = absurd (Nat.suc≠zero p)
+cast-uncast {suc m} {suc n} p fzero = refl
+cast-uncast {suc m} {zero} p (fsuc x) = absurd (Nat.suc≠zero p)
+cast-uncast {suc m} {suc n} p (fsuc x) = ap fsuc (cast-uncast (Nat.suc-inj p) x)
 
-    cast-refl-is-equiv : ∀ {n} → is-equiv (cast (λ i → n))
-    cast-refl-is-equiv = subst is-equiv id≡cast-refl id-equiv
+cast-is-equiv : ∀ {m n} (p : m ≡ n) → is-equiv (cast p)
+cast-is-equiv p = is-iso→is-equiv $ iso
+  (cast (sym p))
+  (cast-uncast (sym p))
+  (cast-uncast p)
 ```
 -->
 
@@ -187,6 +187,10 @@ Fin-elim
 Fin-elim P pfzero pfsuc fzero = pfzero
 Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
 
+fin-cons : ∀ {ℓ} {n} {P : Fin (suc n) → Type ℓ} → P 0 → (∀ x → P (fsuc x)) → ∀ x → P x
+fin-cons p0 ps fzero = p0
+fin-cons p0 ps (fsuc x) = ps x
+
 fin-absurd : Fin 0 → ⊥
 fin-absurd ()
 ```
@@ -203,11 +207,11 @@ sets.
 ```agda
 _≤_ : ∀ {n} → Fin n → Fin n → Type
 i ≤ j = to-nat i Nat.≤ to-nat j
-infix 3 _≤_
+infix 7 _≤_
 
 _<_ : ∀ {n} → Fin n → Fin n → Type
 i < j = to-nat i Nat.< to-nat j
-infix 3 _<_
+infix 7 _<_
 ```
 
 Next, we define a pair of functions `squish`{.Agda} and `skip`{.Agda},
@@ -240,7 +244,7 @@ $n$ values of $\bb{N}$.
 
 ```agda
 ℕ< : Nat → Type
-ℕ< x = Σ[ n ∈ Nat ] (n Nat.< x)
+ℕ< x = Σ[ n ∈ Nat ] n Nat.< x
 
 from-ℕ< : ∀ {n} → ℕ< n → Fin n
 from-ℕ< {n = suc n} (zero , q) = fzero
@@ -271,7 +275,7 @@ split-+ {m = zero} i = inr i
 split-+ {m = suc m} fzero = inl fzero
 split-+ {m = suc m} (fsuc i) = ⊎-map fsuc id (split-+ i)
 
-avoid : ∀ {n} (i j : Fin (suc n)) → (¬ i ≡ j) → Fin n
+avoid : ∀ {n} (i j : Fin (suc n)) → i ≠ j → Fin n
 avoid fzero fzero i≠j = absurd (i≠j refl)
 avoid {n = suc n} fzero (fsuc j) i≠j = j
 avoid {n = suc n} (fsuc i) fzero i≠j = fzero

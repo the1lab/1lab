@@ -11,6 +11,7 @@ open import Data.Char.Base
 open import Data.Fin.Base
 open import Data.Vec.Base hiding (map)
 open import Data.Nat.Base
+open import Data.Int.Base using (Int ; pos ; negsuc)
 
 open import Meta.Foldable
 open import Meta.Append

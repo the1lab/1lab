@@ -188,6 +188,14 @@ between functions is a function into identities:
   (λ f {x} → f x) (λ f x → f) (λ _ → refl)
   (Π-is-hlevel n bhl)
 
+Π-is-hlevel-inst
+  : ∀ {a b} {A : Type a} {B : A → Type b}
+  → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
+  → is-hlevel (⦃ x : A ⦄ → B x) n
+Π-is-hlevel-inst n bhl = retract→is-hlevel n
+  (λ f ⦃ x ⦄ → f x) (λ f x → f ⦃ x ⦄) (λ _ → refl)
+  (Π-is-hlevel n bhl)
+
 Π-is-hlevel²
   : ∀ {a b c} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
   → (n : Nat) (Bhl : (x : A) (y : B x) → is-hlevel (C x y) n)
@@ -266,13 +274,13 @@ successor universe:
 ```agda
 opaque
   Lift-is-hlevel : ∀ n → is-hlevel A n → is-hlevel (Lift ℓ' A) n
-  Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
+  Lift-is-hlevel n a-hl = retract→is-hlevel n lift lower (λ _ → refl) a-hl
 ```
 
 <!--
 ```agda
   Lift-is-hlevel' : ∀ n → is-hlevel (Lift ℓ' A) n → is-hlevel A n
-  Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+  Lift-is-hlevel' n lift-hl = retract→is-hlevel n lower lift (λ _ → refl) lift-hl
 ```
 -->
 
@@ -375,6 +383,12 @@ instance opaque
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
     → H-Level (∀ {x} → S x) n
   H-Level-pi' {n = n} .H-Level.has-hlevel = Π-is-hlevel' n λ _ → hlevel n
+
+  H-Level-pi''
+    : ∀ {n} {S : T → Type ℓ}
+    → ⦃ ∀ {x} → H-Level (S x) n ⦄
+    → H-Level (∀ ⦃ x ⦄ → S x) n
+  H-Level-pi'' {n = n} .H-Level.has-hlevel = Π-is-hlevel-inst n λ _ → hlevel n
 
   H-Level-sigma
     : ∀ {n} {S : T → Type ℓ}

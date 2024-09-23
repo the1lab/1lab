@@ -1,5 +1,6 @@
 {-# LANGUAGE BlockArguments, ScopedTypeVariables #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Shake.AgdaCompile (agdaRules) where
 
 import System.FilePath

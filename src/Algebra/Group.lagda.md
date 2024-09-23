@@ -5,12 +5,12 @@ open import 1Lab.Prelude
 
 open import Algebra.Magma.Unital hiding (idl ; idr)
 open import Algebra.Semigroup
-open import Algebra.Monoid hiding (idl ; idr)
+open import Algebra.Monoid
 open import Algebra.Magma
 
-open import Cat.Instances.Delooping
+import Algebra.Monoid.Reasoning as Mon
 
-import Cat.Reasoning
+open is-monoid hiding (idl ; idr)
 ```
 -->
 
@@ -21,11 +21,11 @@ module Algebra.Group where
 # Groups {defines=group}
 
 A **group** is a [monoid] that has inverses for every element. The
-inverse for an element is [necessarily, unique]; Thus, to say that "$(G,
+inverse for an element is, [necessarily, unique]; thus, to say that "$(G,
 \star)$ is a group" is a statement about $(G, \star)$ having a certain
 _property_ (namely, being a group), not _structure_ on $(G, \star)$.
 
-Furthermore, since `group homomorphisms`{.Agda ident=is-group-hom}
+Furthermore, since [[group homomorphisms]]
 automatically preserve this structure, we are justified in calling this
 _property_ rather than _property-like structure_.
 
@@ -59,6 +59,7 @@ give the unit, both on the left and on the right:
 
 <!--
 ```agda
+  infixr 20 _—_
   _—_ : A → A → A
   x — y = x * inverse y
 
@@ -92,9 +93,7 @@ give the unit, both on the left and on the right:
   underlying-monoid = A , record
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
-  open Cat.Reasoning (B (underlying-monoid .snd))
-    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
-    public
+  open Mon underlying-monoid public
 ```
 -->
 
@@ -151,7 +150,7 @@ instance
   H-Level-is-group = prop-instance is-group-is-prop
 ```
 
-# Group homomorphisms
+# Group homomorphisms {defines="group-homomorphism"}
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
@@ -193,7 +192,7 @@ record
 ```
 
 A tedious calculation shows that this is sufficient to preserve the
-identity:
+identity and inverses:
 
 ```agda
   private
@@ -252,7 +251,7 @@ Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
 Group[ A ⇒ B ] = Σ (A .fst → B .fst) (is-group-hom (A .snd) (B .snd))
 ```
 
-## Making groups
+# Making groups
 
 Since the interface of `Group-on`{.Agda} is very deeply nested, we
 introduce a helper function for arranging the data of a group into a
@@ -302,48 +301,4 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
            }
 
 open make-group using (to-group-on) public
-```
-
-# Symmetric groups
-
-If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
-set, and it forms the carrier for a group: The _symmetric group_ on $X$.
-
-```agda
-Sym : ∀ {ℓ} (X : Set ℓ) → Group-on (∣ X ∣ ≃ ∣ X ∣)
-Sym X = to-group-on group-str where
-  open make-group
-  group-str : make-group (∣ X ∣ ≃ ∣ X ∣)
-  group-str .mul g f = f ∙e g
-```
-
-The group operation is `composition of equivalences`{.Agda ident=∙e};
-The identity element is `the identity equivalence`{.Agda ident=id-equiv}.
-
-```agda
-  group-str .unit = id , id-equiv
-```
-
-This type is a set because $X \to X$ is a set (because $X$ is a set by
-assumption), and `being an equivalence is a proposition`{.Agdaa
-ident=is-equiv-is-prop}.
-
-```agda
-  group-str .group-is-set = hlevel 2
-```
-
-The associativity and identity laws hold definitionally.
-
-```agda
-  group-str .assoc _ _ _ = trivial!
-  group-str .idl _ = trivial!
-```
-
-The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
-the inverse equations hold by the fact that the inverse of an
-equivalence is both a section and a retraction.
-
-```agda
-  group-str .inv = _e⁻¹
-  group-str .invl (f , eqv) = ext (equiv→unit eqv)
 ```

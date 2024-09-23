@@ -3,10 +3,10 @@
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Diagram.Product
+open import Cat.Prelude
 ```
 -->
 

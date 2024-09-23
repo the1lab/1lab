@@ -132,6 +132,10 @@ instance
     elim! (happly (sf .idsᵉ .to-path h))
   Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
     is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
+
+  Number-Coeq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Number B ⦄ → {f g : A → B} → Number (Coeq f g)
+  Number-Coeq {ℓ = ℓ} ⦃ b ⦄ .Number.Constraint n = Lift ℓ (b .Number.Constraint n)
+  Number-Coeq ⦃ b ⦄ .Number.fromNat n ⦃ lift c ⦄ = inc (b .Number.fromNat n ⦃ c ⦄)
 ```
 -->
 
@@ -344,6 +348,16 @@ inc-is-surjective (squash x y p q i j) = is-prop→squarep
   (λ j → inc-is-surjective (p j))
   (λ j → inc-is-surjective (q j))
   (λ i → inc-is-surjective y) i j
+
+Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
+         → (∀ x → R x x) → (∀ y → S y y)
+         → (_⋆_ : A → B → C)
+         → ((a b : A) (x y : B) → R a b → S x y → T (a ⋆ x) (b ⋆ y))
+         → A / R → B / S → C / T
+Quot-op₂ Rr Sr op resp =
+  Coeq-rec₂ squash (λ x y → inc (op x y))
+    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
+    λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
 ```
 -->
 
@@ -423,21 +437,27 @@ proof that equivalence relations are `effective`{.Agda}.
 ```agda
   effective : ∀ {x y : A} → Path quotient (inc x) (inc y) → x ∼ y
   effective = equiv→inverse is-effective
+
+  reflᶜ' : ∀ {x y : A} → x ≡ y → x ∼ y
+  reflᶜ' {x = x} p = transport (λ i → x ∼ p i) reflᶜ
+
+  op₂
+    : (f : A → A → A)
+    → (∀ x y u v → x ∼ u → y ∼ v → f x y ∼ f u v)
+    → quotient → quotient → quotient
+  op₂ f r = Quot-op₂ (λ x → reflᶜ) (λ x → reflᶜ) f (λ a b x y → r a x b y)
+
+  op₂-comm
+    : (f : A → A → A)
+    → (∀ a b → f a b ∼ f b a)
+    → (∀ x u v → u ∼ v → f x u ∼ f x v)
+    → quotient → quotient → quotient
+  op₂-comm f c r = op₂ f (λ x y u v p q → r x y v q ∙ᶜ c x v ∙ᶜ r v x u p ∙ᶜ c v u)
 ```
 -->
 
 <!--
 ```agda
-Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
-         → (∀ x → R x x) → (∀ y → S y y)
-         → (_⋆_ : A → B → C)
-         → ((a b : A) (x y : B) → R a b → S x y → T (a ⋆ x) (b ⋆ y))
-         → A / R → B / S → C / T
-Quot-op₂ Rr Sr op resp =
-  Coeq-rec₂ squash (λ x y → inc (op x y))
-    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
-    λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
-
 Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
   → (∀ x y → Dec (Congruence.relation R x y))

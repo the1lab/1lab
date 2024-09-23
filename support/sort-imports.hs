@@ -4,11 +4,12 @@
          --package deepseq
          --package shake
 -}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, BlockArguments #-}
 module Main where
 
 import Control.Exception
 import Control.DeepSeq
+import Control.Monad
 
 import Data.List (isSuffixOf, sortOn, groupBy, partition)
 import qualified Data.Text.IO as Text
@@ -39,38 +40,36 @@ sortImports path
 
 sortImportsCode :: FilePath -> IO ()
 sortImportsCode path = do
-  putStrLn $ "Sorting Agda file " ++ path
   lines <- Text.lines <$> Text.readFile path
 
   evaluate (rnf lines)
+  let sorted = sortImpl lines
 
-  withFile path WriteMode $ \handle -> do
-    traverse_ (Text.hPutStrLn handle) (sortImpl lines)
+  when (lines /= sorted) do
+    putStrLn $ "Sorting Agda file " ++ path
+    withFile path WriteMode $ \handle -> do
+      traverse_ (Text.hPutStrLn handle) (sortImpl lines)
 
 sortImportsLiterate :: FilePath -> IO ()
 sortImportsLiterate path = do
-  putStrLn $ "Sorting Literate Agda file " ++ path
   lines <- Text.lines <$> Text.readFile path
 
   evaluate (rnf lines)
+  let
+    (prefix, first_code_rest) =
+      break ((||) <$> (== "```agda") <*> (== "```")) lines
 
-  withFile path WriteMode $ \handle -> do
-    let
-      (prefix, first_code_rest) =
-        break ((||) <$> (== "```agda") <*> (== "```")) lines
-
-    traverse_ (Text.hPutStrLn handle) prefix
-
-    case first_code_rest of
-      (pre:lines) -> do
-        Text.hPutStrLn handle pre
-
+    sorted = prefix ++ case first_code_rest of
+      pre:lines ->
         let (code, rest) = break ((||) <$> (== "```agda") <*> (== "```")) lines
             code' = sortImpl code
+        in pre : code' ++ rest
+      _ -> first_code_rest
 
-        traverse_ (Text.hPutStrLn handle) code'
-        traverse_ (Text.hPutStrLn handle) rest
-      _ -> traverse_ (Text.hPutStrLn handle) first_code_rest
+  when (lines /= sorted) do
+    putStrLn $ "Sorting Literate Agda file " ++ path
+    withFile path WriteMode $ \handle -> do
+      traverse_ (Text.hPutStrLn handle) sorted
 
 sortImpl :: [Text.Text] -> [Text.Text]
 sortImpl lines = sorted ++ emptyLineBefore' mod where

@@ -2,8 +2,7 @@
 ```agda
 open import Algebra.Group.Ab.Tensor
 open import Algebra.Group.Ab
-open import Algebra.Prelude
-open import Algebra.Monoid hiding (idl; idr)
+open import Algebra.Monoid
 open import Algebra.Group
 
 open import Cat.Diagram.Equaliser.Kernel
@@ -12,12 +11,17 @@ open import Cat.Diagram.Biproduct
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Displayed.Total
+open import Cat.Instances.Slice
 open import Cat.Diagram.Zero
+open import Cat.Prelude hiding (_+_ ; _*_ ; _-_)
 
 import Algebra.Group.Cat.Base as Grp
 import Algebra.Group.Ab.Hom as Ab
 
-import Cat.Reasoning
+import Cat.Reasoning as Cat
+
+open Total-hom
 ```
 -->
 
@@ -56,11 +60,11 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   field
     Abelian-group-on-hom : ∀ A B → Abelian-group-on (Hom A B)
 
-  _+_ : ∀ {A B} (f g : Hom A B) → Hom A B
-  f + g = Abelian-group-on-hom _ _ .Abelian-group-on._*_ f g
-
-  0m : ∀ {A B} → Hom A B
-  0m = Abelian-group-on-hom _ _ .Abelian-group-on.1g
+  module Hom {A B} = Abelian-group-on (Abelian-group-on-hom A B) renaming (_⁻¹ to inverse)
+  open Hom
+    using (zero-diff)
+    renaming (_—_ to _-_ ; _*_ to _+_ ; 1g to 0m)
+    public
 
   Hom-grp : ∀ A B → Abelian-group ℓ
   Hom-grp A B = (el (Hom A B) (Hom-set A B)) , Abelian-group-on-hom A B
@@ -81,12 +85,6 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
               ; pres-*l = λ x y z → sym (∘-linear-l x y z)
               ; pres-*r = λ x y z → sym (∘-linear-r x y z)
               })
-
-  module Hom {A B} = Abelian-group-on (Abelian-group-on-hom A B) renaming (_⁻¹ to inverse)
-  open Hom
-    using (zero-diff)
-    renaming (_—_ to _-_)
-    public
 ```
 
 <details>
@@ -114,17 +112,17 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
     Hom.inverse (0m ∘ f) + (0m ∘ f)          ≡⟨ Hom.inversel ⟩
     0m                                       ∎
 
-  neg-∘-l
+  ∘-negatel
     : ∀ {A B C} {g : Hom B C} {h : Hom A B}
     → Hom.inverse (g ∘ h) ≡ Hom.inverse g ∘ h
-  neg-∘-l {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
+  ∘-negatel {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
     Hom.inversel
     (∘-linear-l _ _ _ ∙ ap (_∘ h) Hom.inverser ∙ ∘-zero-l)
 
-  neg-∘-r
+  ∘-negater
     : ∀ {A B C} {g : Hom B C} {h : Hom A B}
     → Hom.inverse (g ∘ h) ≡ g ∘ Hom.inverse h
-  neg-∘-r {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
+  ∘-negater {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
     Hom.inversel
     (∘-linear-r _ _ _ ∙ ap (g ∘_) Hom.inverser ∙ ∘-zero-r)
 
@@ -132,7 +130,7 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
     : ∀ {A B C} (f g : Hom B C) (h : Hom A B)
     → (f ∘ h) - (g ∘ h) ≡ (f - g) ∘ h
   ∘-minus-l f g h =
-    f ∘ h - g ∘ h               ≡⟨ ap (f ∘ h +_) neg-∘-l ⟩
+    f ∘ h - g ∘ h               ≡⟨ ap (f ∘ h +_) ∘-negatel ⟩
     f ∘ h + (Hom.inverse g ∘ h) ≡⟨ ∘-linear-l _ _ _ ⟩
     (f - g) ∘ h                 ∎
 
@@ -140,7 +138,7 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
     : ∀ {A B C} (f : Hom B C) (g h : Hom A B)
     → (f ∘ g) - (f ∘ h) ≡ f ∘ (g - h)
   ∘-minus-r f g h =
-    f ∘ g - f ∘ h               ≡⟨ ap (f ∘ g +_) neg-∘-r ⟩
+    f ∘ g - f ∘ h               ≡⟨ ap (f ∘ g +_) ∘-negater ⟩
     f ∘ g + (f ∘ Hom.inverse h) ≡⟨ ∘-linear-r _ _ _ ⟩
     f ∘ (g - h)                 ∎
 ```
@@ -246,7 +244,7 @@ comultiplication.
     open Coproduct
     open is-coproduct
     coprod : Coproduct C A B
-    coprod .coapex = apex
+    coprod .coapex = A ⊗₀ B
     coprod .ι₁ = ⟨ id , 0m ⟩
     coprod .ι₂ = ⟨ 0m , id ⟩
     coprod .has-is-coproduct .[_,_] f g = f ∘ π₁ + g ∘ π₂
@@ -333,7 +331,7 @@ each $\hom$-monoid becomes a $\hom$-*group*.
 <!--
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ) (semiadditive : is-semiadditive C) where
-  open Cat.Reasoning C
+  open Cat C
   open is-semiadditive semiadditive
 ```
 -->

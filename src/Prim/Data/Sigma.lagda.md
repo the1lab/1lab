@@ -36,7 +36,11 @@ infixr 4 _,_
 Σ-syntax X F = Σ X F
 
 syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
-infix 5 Σ-syntax
+infix 4 Σ-syntax
+
+instance
+  Σ-of-instances : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} ⦃ x : A ⦄ ⦃ y : B x ⦄ → Σ A B
+  Σ-of-instances ⦃ x ⦄ ⦃ y ⦄ = x , y
 ```
 -->
 
