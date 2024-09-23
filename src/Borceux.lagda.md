@@ -19,7 +19,6 @@ open import Cat.Diagram.Pullback.Properties
 open import Cat.Internal.Instances.Discrete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
-open import Cat.Functor.Adjoint.AFT
 open import Cat.Diagram.Colimit.Universal
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Projective.Strong
@@ -50,6 +49,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Diagram.Coequaliser
+open import Cat.Functor.Adjoint.AFT
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint.Kan
 open import Cat.Functor.Equivalence

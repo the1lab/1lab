@@ -25,7 +25,7 @@ open _=>_
 # Limits in comma categories
 
 This short note proves the following fact about [[limits]] in [[comma
-categories]] of the form $d \swarrrow F$: If $\cC$ has a limit $L$ for
+categories]] of the form $d \swarrow F$: If $\cC$ has a limit $L$ for
 $\operatorname{cod}\circ G$ and $F$ preserves limits the size of $G$'s
 shape $\cJ$, then $L$ can be made into an object of $d \swarrow F$, and
 this object is the limit of $J$.

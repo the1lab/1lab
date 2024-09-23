@@ -19,7 +19,7 @@ open _=>_
 ```
 -->
 
-# Joint equalisers
+# Joint equalisers {defines="joint-equaliser"}
 
 The **joint equaliser** of a family $(F_i : \hom(a, b))_i$ of parallel
 maps is a straightforward generalisation of the notion of [[equaliser]]

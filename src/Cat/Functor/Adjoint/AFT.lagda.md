@@ -3,9 +3,9 @@
 open import Cat.Instances.Comma.Limits
 open import Cat.Diagram.Initial.Weak
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Comma
-open import Cat.Functor.Adjoint
 open import Cat.Diagram.Initial
+open import Cat.Functor.Adjoint
+open import Cat.Instances.Comma
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
@@ -39,8 +39,8 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ} (F : Functo
 A solution set (for $F$ with respect to $Y : \cD$) is a [[set]] $I$,
 together with an $I$-indexed family of objects $X_i$ and morphisms $m_i
 : Y \to F(X_i)$, which commute in the sense that, for every $X'$ and $h
-: Y \to X'$, [[there exists]] a $j : I$ and $t : X_i \to X'$ which
-satisfy $$h = F(t)m_i$.
+: Y \to X'$, there exists a $j : I$ and $t : X_i \to X'$ which satisfy
+$$h = F(t)m_i$.
 
 ```agda
   record Solution-set (Y : ⌞ D ⌟) : Type (o ⊔ lsuc ℓ) where
@@ -86,7 +86,7 @@ the sea has risen above it:
   categories`{.Agda ident=comma-is-complete};
 * Each $x \swarrow F$ has a weakly initial family, and all small
   [[equalisers]], so they all have initial objects;
-* An initial object for $x \swarrow F$ is exactly a [[universal map]]
+* An initial object for $x \swarrow F$ is exactly a [[universal morphism]]
   into $F$, and if $F$ admits all universal maps, then it has a left
   adjoint.
 

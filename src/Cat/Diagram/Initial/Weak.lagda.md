@@ -28,7 +28,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 A **weakly initial object** is like an [[initial object]], but dropping
 the requirement of uniqueness. Explicitly, an object $X$ is weakly
-initial in $\cC$, if, for every $Y : \cC$, there [[exists]] an arrow $X
+initial in $\cC$, if, for every $Y : \cC$, there exists an arrow $X
 \to Y$.
 
 ```agda
@@ -36,6 +36,7 @@ initial in $\cC$, if, for every $Y : \cC$, there [[exists]] an arrow $X
   is-weak-initial X = ∀ Y → ∥ Hom X Y ∥
 ```
 
+::: {.definition #weakly-initial-family}
 We can weaken this even further, by allowing a family of objects rather
 than the single object $X$: a family $(F_i)_{i : I}$ is weakly initial
 if, for every $Y$, there exists a $j : I$ and a map $F_j \to Y$. Note
@@ -46,6 +47,7 @@ choices of indices.
   is-weak-initial-fam : ∀ {ℓ'} {I : Type ℓ'} (F : I → ⌞ C ⌟) → Type _
   is-weak-initial-fam {I = I} F = (Y : ⌞ C ⌟) → ∃[ i ∈ I ] (Hom (F i) Y)
 ```
+:::
 
 The connection between these notions is the following: the [[indexed
 product]] of a weakly initial family $F$ is a weakly initial object.
