@@ -19,6 +19,7 @@ open import Cat.Diagram.Pullback.Properties
 open import Cat.Internal.Instances.Discrete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.Adjoint.AFT
 open import Cat.Diagram.Colimit.Universal
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Projective.Strong
@@ -669,6 +670,16 @@ _ = right-adjoint-is-continuous
 * Proposition 3.2.2: `right-adjoint-is-continuous`{.Agda}
 
 ### 3.3 The adjoint functor theorem
+
+<!--
+```agda
+_ = Solution-set
+_ = solution-set→left-adjoint
+```
+-->
+
+* Definition 3.3.2: `Solution-set`{.Agda}
+* Theorem 3.3.3: `solution-set→left-adjoint`{.Agda}
 
 ### 3.4 Fully faithful adjoint functors
 
