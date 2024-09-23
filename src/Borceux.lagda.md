@@ -49,6 +49,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Diagram.Coequaliser
+open import Cat.Functor.Adjoint.AFT
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint.Kan
 open import Cat.Functor.Equivalence
@@ -669,6 +670,16 @@ _ = right-adjoint-is-continuous
 * Proposition 3.2.2: `right-adjoint-is-continuous`{.Agda}
 
 ### 3.3 The adjoint functor theorem
+
+<!--
+```agda
+_ = Solution-set
+_ = solution-set→left-adjoint
+```
+-->
+
+* Definition 3.3.2: `Solution-set`{.Agda}
+* Theorem 3.3.3: `solution-set→left-adjoint`{.Agda}
 
 ### 3.4 Fully faithful adjoint functors
 
