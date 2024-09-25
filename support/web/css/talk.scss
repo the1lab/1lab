@@ -21,6 +21,10 @@ body, .reveal-viewport {
   font-size: 24px;
 }
 
+#author {
+  font-size: 28px;
+}
+
 .reveal-viewport {
   --font-size: 24px;
   --code-font-size: calc(0.8 * var(--font-size));
@@ -65,14 +69,21 @@ body, .reveal-viewport {
     display: none;
   }
 
-  ul, ol {
+  .slide > ul, .slide > ol {
     list-style: square;
+    margin-inline: 0;
+
     li {
       margin-block: 0.125em;
     }
   }
+
   em { font-style: italic; }
   strong { font-weight: bold; }
+}
+
+ul, ol {
+  margin-inline-start: 1em;
 }
 
 span.katex {

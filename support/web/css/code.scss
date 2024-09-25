@@ -105,8 +105,8 @@ a[href].hover-highlight {
   .Record                 { color: theme(--primary) !important; }
 
 /* OtherAspects. */
-  .UnsolvedMeta         { color: theme(--code-fg); background: yellow   }
-  .UnsolvedConstraint   { color: theme(--code-fg); background: yellow   }
+  .UnsolvedMeta         { color: theme(--code-fg); background: #806b00   }
+  .UnsolvedConstraint   { color: theme(--code-fg); background: #806b00   }
   .TerminationProblem   { color: theme(--code-fg); background: #FFA07A  }
   .IncompletePattern    { color: theme(--code-fg); background: #F5DEB3  }
   .Error                { color: red;   text-decoration: underline }
