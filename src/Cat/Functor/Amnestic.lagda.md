@@ -29,7 +29,7 @@ private variable
 ```
 -->
 
-# Amnestic functors
+# Amnestic functors {defines="amnestic"}
 
 The notion of **amnestic functor** was introduced by Adámek, Herrlich
 and Strecker in their book "The Joy of Cats"^[Cats are, indeed, very

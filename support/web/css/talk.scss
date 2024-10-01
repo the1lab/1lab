@@ -69,21 +69,42 @@ body, .reveal-viewport {
     display: none;
   }
 
-  .slide > ul, .slide > ol {
-    list-style: square;
-    margin-inline: 0;
-
-    li {
-      margin-block: 0.125em;
-    }
-  }
-
   em { font-style: italic; }
   strong { font-weight: bold; }
+
+  span.reasoning-step {
+    .as-written {
+      display: none;
+    }
+    .alternate {
+      display: inline;
+    }
+  }
 }
 
 ul, ol {
   margin-inline-start: 1em;
+
+  .slide > &, .fragment > & {
+    margin-inline-start: 0;
+  }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+
+  tr.header {
+    text-align: center;
+    padding-inline: 1em;
+
+    border-block-end: 2px;
+  }
+
+  td, th {
+    border: 1px solid theme(--text-fg);
+    padding-inline: 0.25em;
+  }
 }
 
 span.katex {
