@@ -27,9 +27,12 @@ body, .reveal-viewport {
 
 .reveal-viewport {
   --font-size: 24px;
-  --code-font-size: calc(0.8 * var(--font-size));
-
+  --code-font-size: 22px;
   --code-margin: 0;
+
+  pre.Agda {
+    --code-font-size: 18px;
+  }
 }
 
 .reveal {
@@ -84,10 +87,6 @@ body, .reveal-viewport {
 
 ul, ol {
   margin-inline-start: 1em;
-
-  .slide > &, .fragment > & {
-    margin-inline-start: 0;
-  }
 }
 
 table {
