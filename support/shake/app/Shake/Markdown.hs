@@ -179,7 +179,7 @@ buildMarkdown modname input output = do
   gitCommit <- gitCommit
   skipAgda <- getSkipAgda
 
-  need [templateName, bibliographyName, input]
+  need [bibliographyName, input]
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
@@ -209,11 +209,13 @@ buildMarkdown modname input output = do
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
-  Pandoc meta blocks <-
+  Pandoc meta@(Meta metamap) blocks <-
       walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
     . walk uncommentAgda
     $ markdown
+
+  need [ if isJust (Map.lookup "talk" metamap) then talkTemplateName else pageTemplateName ]
 
   -- Rendering the search data has to be done *here*, after running the
   -- maths through KaTeX but before adding the emoji to headers.
@@ -387,14 +389,23 @@ patchBlock _ h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.
-renderMarkdown :: PandocMonad m
-               => [Text]       -- ^ List of authors
-               -> [Val Text]   -- ^ List of references
-               -> String       -- ^ Name of the current module
-               -> String       -- ^ Base URL
-               -> Context Text -- ^ Digests of the various files.
-               -> Pandoc -> m Text
-renderMarkdown authors references modname baseUrl digest markdown = do
+renderMarkdown
+  :: PandocMonad m
+  => [Text]       -- ^ List of authors
+  -> [Val Text]   -- ^ List of references
+  -> String       -- ^ Name of the current module
+  -> String       -- ^ Base URL
+  -> Context Text -- ^ Digests of the various files.
+  -> Pandoc
+  -> m Text
+renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta meta) _) = do
+  let
+    isTalk = isJust $ Map.lookup "talk" meta
+
+    templateName
+      | isTalk    = talkTemplateName
+      | otherwise = pageTemplateName
+
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
   let
@@ -411,13 +422,18 @@ renderMarkdown authors references modname baseUrl digest markdown = do
       , ("digest",       toVal digest)
       ]
 
-    options = def { writerTemplate        = Just template
-                  , writerTableOfContents = True
-                  , writerVariables       = context
-                  , writerExtensions      = getDefaultExtensions "html"
-                  }
+    opts = def
+      { writerTemplate        = Just template
+      , writerTableOfContents = not isTalk
+      , writerVariables       = context
+      , writerExtensions      = getDefaultExtensions "html"
+      , writerSlideLevel      = Just 2
+      }
+
   setTranslations (Lang "en" Nothing Nothing [] [] [])
-  writeHtml5String options markdown
+  if isTalk
+    then writeRevealJs opts markdown
+    else writeHtml5String opts markdown
 
 -- | Simple textual list of starting identifiers not to fold
 don'tFold :: Set.Set Text
@@ -510,6 +526,7 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"
 
-templateName, bibliographyName :: FilePath
-templateName = "support/web/template.html"
+pageTemplateName, talkTemplateName, bibliographyName :: FilePath
+pageTemplateName = "support/web/template.html"
+talkTemplateName = "support/web/template.reveal.html"
 bibliographyName = "src/bibliography.bibtex"

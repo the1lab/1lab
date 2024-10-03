@@ -89,6 +89,9 @@ instance
   Has-subst-Telescope : Has-subst Telescope
   Has-subst-Telescope = record { applyS = subst-tel }
 
+  Has-subst-Abs : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Has-subst (Abs A)
+  Has-subst-Abs = record { applyS = λ rho (abs nm a) → abs nm (applyS (liftS 1 rho) a) }
+
 subst-tm* ρ []             = []
 subst-tm* ρ (arg ι x ∷ ls) = arg ι (subst-tm ρ x) ∷ subst-tm* ρ ls
 
@@ -128,7 +131,7 @@ subst-tm ρ (def f args)      = def f $ subst-tm* ρ args
 subst-tm ρ (meta x args)     = meta x $ subst-tm* ρ args
 subst-tm ρ (pat-lam cs args) = pat-lam (map (subst-clause ρ) cs) (subst-tm* ρ args)
 subst-tm ρ (lam v (abs n b)) = lam v (abs n (subst-tm (liftS 1 ρ) b))
-subst-tm ρ (pi (arg ι a) (abs n b)) = pi (arg ι (subst-tm ρ a)) (abs n (subst-tm (liftS 1 ρ)  b))
+subst-tm ρ (pi (arg ι a) (abs n b)) = pi (arg ι (subst-tm ρ a)) (abs n (subst-tm (liftS 1 ρ) b))
 subst-tm ρ (lit l) = (lit l)
 subst-tm ρ unknown = unknown
 subst-tm ρ (agda-sort s) with s
@@ -144,6 +147,9 @@ subst-tel ρ ((x , arg ai t) ∷ xs) = (x , arg ai (subst-tm ρ t)) ∷ subst-te
 
 subst-clause σ (clause tel ps t)      = clause (subst-tel σ tel) ps (subst-tm (liftS (length tel) σ) t)
 subst-clause σ (absurd-clause tel ps) = absurd-clause (subst-tel σ tel) ps
+
+apply-abs : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Abs A → Term → A
+apply-abs (abs _ x) a = applyS (a ∷ ids) x
 
 _<#>_ : Term → Arg Term → Term
 f <#> x = apply-tm f x

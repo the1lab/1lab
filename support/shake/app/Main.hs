@@ -164,6 +164,7 @@ rules = do
         , "_build/html/static/links.json"
         , "_build/html/static/search.json"
         , "_build/html/css/default.css"
+        , "_build/html/css/talk.css"
         , "_build/html/main.js"
         , "_build/html/start.js"
         , "_build/html/code-only.js"

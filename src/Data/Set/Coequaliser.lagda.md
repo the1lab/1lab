@@ -1,8 +1,10 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
+open import 1Lab.Reflection using (_v∷_ ; typeError)
 open import 1Lab.Prelude
 
+open import Data.List.Base
 open import Data.Dec
 
 open is-iso
@@ -468,6 +470,38 @@ Discrete-quotient cong rdec {x} {y} =
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)
   ... | no ¬xRy = no λ p → ¬xRy (Congruence.effective cong p)
+
+open hlevel-projection
+private
+  sim-prop : ∀ (R : Congruence A ℓ) {x y} → is-prop (R .Congruence._∼_ x y)
+  sim-prop R = R .Congruence.has-is-prop _ _
+
+instance
+  hlevel-proj-congr : hlevel-projection (quote Congruence._∼_)
+  hlevel-proj-congr .has-level = quote sim-prop
+  hlevel-proj-congr .get-level _ = pure (quoteTerm (suc zero))
+  hlevel-proj-congr .get-argument (_ ∷ _ ∷ _ ∷ c v∷ _) = pure c
+  {-# CATCHALL #-}
+  hlevel-proj-congr .get-argument _ = typeError []
+
+private unquoteDecl eqv = declare-record-iso eqv (quote Congruence)
+module _ {R R' : Congruence A ℓ} (p : ∀ x y → Congruence._∼_ R x y ≃ Congruence._∼_ R' x y) where
+  private
+    module R = Congruence R
+    module R' = Congruence R'
+
+  open Congruence
+
+  private
+    lemma : ∀ {x y} i → is-prop (ua (p x y) i)
+    lemma {x} {y} i = is-prop→pathp (λ i → is-prop-is-prop {A = ua (p x y) i}) (R.has-is-prop x y) (R'.has-is-prop x y) i
+
+  Congruence-path : R ≡ R'
+  Congruence-path i ._∼_ x y = ua (p x y) i
+  Congruence-path i .has-is-prop x y = lemma i
+  Congruence-path i .reflᶜ = is-prop→pathp lemma R.reflᶜ R'.reflᶜ i
+  Congruence-path i ._∙ᶜ_ = is-prop→pathp (λ i → Π-is-hlevel² {A = ua (p _ _) i} {B = λ _ → ua (p _ _) i} 1 λ _ _ → lemma i) R._∙ᶜ_ R'._∙ᶜ_ i
+  Congruence-path i .symᶜ = is-prop→pathp (λ i → Π-is-hlevel {A = ua (p _ _) i} 1 λ _ → lemma i) R.symᶜ R'.symᶜ i
 
 open Congruence
 
