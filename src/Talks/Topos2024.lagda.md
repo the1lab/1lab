@@ -15,19 +15,18 @@ Amélia Liao
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude hiding (funext ; sym ; subst ; Extensional ; ext ; uncurry ; id ; _∘_ ; _==_ ; _*_ ; _+_)
 
+open import Algebra.Group.Concrete.Abelian
 open import Algebra.Group.Ab.Tensor
 open import Algebra.Group.Cat.Base hiding (Displayed)
 open import Algebra.Group.Ab
 open import Algebra.Monoid using (Monoid-on)
 open import Algebra.Group
 
-open import Data.Nat.Base hiding (_==_ ; _*_ ; _+_)
-open import Data.Int.Base
-open import Data.Sum
-
 open import Cat.Base
 
-open import Algebra.Group.Concrete.Abelian
+open import Data.Int.Base
+open import Data.Nat.Base hiding (_==_ ; _*_ ; _+_)
+open import Data.Sum
 
 open import Homotopy.Space.Circle
 
