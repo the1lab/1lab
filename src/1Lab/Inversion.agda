@@ -112,34 +112,21 @@ Rules-sound : ∀ {ℓ} → {A : Type ℓ} → (Rs : Rules A) → Type (ℓ ⊔ 
 Rules-sound {A = A} (Head by Body) = Body →* (A → rule-head Head)
 Rules-sound {A = A} (Rs₁ or Rs₂) = Rules-sound Rs₁ × Rules-sound Rs₂
 
-record Inversion_via_ {ℓ} (A : Type ℓ) (Rs : Rules A) : Typeω where
+record Inversion {ℓ} (A : Type ℓ) : Typeω where
   field
-    inversion-rules : Rules-sound Rs
+    rules : Rules A
+    inversion-rules : Rules-sound rules
 
-
-infix -1 Inversion_via_
-open Inversion_via_
-
-inversionl
-  : ∀ {ℓ} {A : Type ℓ} {Rs₁ Rs₂ : Rules A}
-  → Inversion A via (Rs₁ or Rs₂)
-  → Inversion A via Rs₁
-inversionl I .inversion-rules = I .inversion-rules .fst
-
-inversionr
-  : ∀ {ℓ} {A : Type ℓ} {Rs₁ Rs₂ : Rules A}
-  → Inversion A via (Rs₁ or Rs₂)
-  → Inversion A via Rs₂
-inversionr I .inversion-rules = I .inversion-rules .snd
+open Inversion
 
 instance
   -- Default 'Inversion' instance that treats 'A' as a fact.
   Inversion-Default
     : ∀ {ℓ} {A : Type ℓ}
-    → Inversion A via
-        fact A by []
-  Inversion-Default .inversion-rules a = a
-  {-# INCOHERENT Inversion-Default #-}
+    → Inversion A
+  Inversion-Default {A = A} .rules = fact A by []
+  Inversion-Default {A = A} .inversion-rules a = a
+  {-# OVERLAPPABLE Inversion-Default #-}
 
 {-
 Forward Inference
@@ -155,11 +142,11 @@ private variable
 
 data ForwardInference (Facts : Types) (Hyps : Types) (Goals : Types) : Typeω where
   failure : ForwardInference Facts Hyps Goals
-  success : (Facts →* Hyps →* Σ* Goals) → ForwardInference Facts Hyps Goals
+  success : (Σ* Facts → Σ* Hyps → Σ* Goals) → ForwardInference Facts Hyps Goals
 
 data TryFacts (Facts : Types) (Goal : Type ℓ) : Typeω where
   failure : TryFacts Facts Goal
-  success : (Facts →* Goal) → TryFacts Facts Goal
+  success : (Σ* Facts → Goal) → TryFacts Facts Goal
 
 record Haltω : Typeω where
   instance constructor haltω
@@ -178,40 +165,60 @@ WhenInferenceFails
 WhenInferenceFails failure T = T
 WhenInferenceFails (success x) _ = Haltω
 
-record TryInversion (Facts : Types) (Hyps : Types) (I : Inversion H via Rs) : Typeω where
+record SoundRules (A : Type ℓ) (Rs : Rules A) : Typeω where
+  field
+    inversion-rules : Rules-sound Rs
+
+open SoundRules
+
+Left-sound-rules
+  : ∀ {ℓ} {A : Type ℓ} {Rs₁ Rs₂ : Rules A}
+  → SoundRules A (Rs₁ or Rs₂)
+  → SoundRules A Rs₁
+Left-sound-rules I .inversion-rules = I .inversion-rules .fst
+
+Right-sound-rules
+  : ∀ {ℓ} {A : Type ℓ} {Rs₁ Rs₂ : Rules A}
+  → SoundRules A (Rs₁ or Rs₂)
+  → SoundRules A Rs₂
+Right-sound-rules I .inversion-rules = I .inversion-rules .snd
+
+unbundle-inversion : (I : Inversion A) → SoundRules A (I .rules)
+unbundle-inversion I .inversion-rules = I .inversion-rules
+
+record TryInversion (Facts : Types) (Hyps : Types) (Inv : SoundRules H Rs) : Typeω where
   field
     NewFacts : Types
     NewHyps : Types
-    new-proofs : Facts →* Hyps →* (H → Σ* NewFacts × Σ* NewHyps)
+    new-proofs : Σ* Facts → Σ* Hyps → (H → Σ* NewFacts × Σ* NewHyps)
 
 open TryInversion
 
 instance
   TryInversion-By
-    : { I : Inversion H via (Head by Body) }
+    : {Inv : SoundRules H (Head by Body)}
     → ⦃ i : ForwardInference Facts Hyps Body ⦄
-    → TryInversion Facts Hyps I
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ failure ⦄ .NewFacts = []
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ failure ⦄ .NewHyps = []
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ failure ⦄ .new-proofs = const* Facts (const* Hyps λ _ → tt , tt)
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ success pf ⦄ .NewFacts = rule-head-facts Head []
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ success pf ⦄ .NewHyps = rule-head-inversions Head []
-  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {I} ⦃ success pf ⦄ .new-proofs =
-    λ* Facts λ facts → λ* Hyps λ hyps h →
-      rule-head-split Head (I .inversion-rules $* (pf $* facts $* hyps) $ h) tt tt
+    → TryInversion Facts Hyps Inv
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ failure ⦄ .NewFacts = []
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ failure ⦄ .NewHyps = []
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ failure ⦄ .new-proofs = λ _ _ _ → tt , tt
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ success pf ⦄ .NewFacts = rule-head-facts Head []
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ success pf ⦄ .NewHyps = rule-head-inversions Head []
+  TryInversion-By {Head = Head} {Body} {Facts} {Hyps} {Inv} ⦃ success pf ⦄ .new-proofs =
+    λ facts hyps h → rule-head-split Head (Inv .inversion-rules $* pf facts hyps $ h) tt tt
 
   TryRule-Or
-    : {I : Inversion H via (Rs₁ or Rs₂)}
-    → ⦃ i₁ : TryInversion Facts Hyps (inversionl I) ⦄
-    → ⦃ i₂ : TryInversion Facts Hyps (inversionr I) ⦄
+    : {I : SoundRules H (Rs₁ or Rs₂)}
+    → ⦃ i₁ : TryInversion Facts Hyps (Left-sound-rules I) ⦄
+    → ⦃ i₂ : TryInversion Facts Hyps (Right-sound-rules I) ⦄
     → TryInversion Facts Hyps I
   TryRule-Or {Facts = Facts} {Hyps} {I} ⦃ i₁ ⦄ ⦃ i₂ ⦄ .NewFacts = i₁ .NewFacts ++ i₂ .NewFacts
   TryRule-Or {Facts = Facts} {Hyps} {I} ⦃ i₁ ⦄ ⦃ i₂ ⦄ .NewHyps = i₁ .NewHyps ++ i₂ .NewHyps
   TryRule-Or {Facts = Facts} {Hyps} {I} ⦃ i₁ ⦄ ⦃ i₂ ⦄ .new-proofs =
-    λ* Facts λ facts → λ* Hyps λ hyps h →
-    let (f₁ , h₁) = i₁ .new-proofs $* facts $* hyps $ h
-        (f₂ , h₂) = i₂ .new-proofs $* facts $* hyps $ h
-    in (f₁ ,* f₂) , (h₁ ,* h₂)
+    λ facts hyps h →
+      let (f₁ , h₁) = i₁ .new-proofs facts hyps h
+          (f₂ , h₂) = i₂ .new-proofs facts hyps h
+      in (f₁ ,* f₂) , (h₁ ,* h₂)
 
   -- If there are no more facts to try, then we fail.
   TryFacts-Fail
@@ -221,31 +228,35 @@ instance
   -- Solve a goal using a fact.
   TryFacts-Solve
     : TryFacts (Goal , Facts) Goal
-  TryFacts-Solve {Facts = Facts} = success (λ goal → const* Facts goal)
-  {-# OVERLAPPING TryFacts-Solve #-}
+  TryFacts-Solve {Facts = Facts} = success fst
+  {-# OVERLAPS TryFacts-Solve #-}
 
   -- Try using the next fact to solve a goal.
   TryFacts-Next
     : ⦃ i : TryFacts Facts Goal ⦄
     → TryFacts (Fact , Facts) Goal
   TryFacts-Next {Facts = Facts} ⦃ i = failure ⦄ = failure
-  TryFacts-Next {Facts = Facts} ⦃ i = success pf ⦄ = success (λ _ → pf)
+  TryFacts-Next {Facts = Facts} ⦃ i = success pf ⦄ = success (pf ∘ snd)
+
+  TryFacts-False : TryFacts (⊥ , Facts) Goal
+  TryFacts-False = success λ ff → absurd (fst ff)
+  {-# OVERLAPPING TryFacts-False #-}
 
   -- If there are no more goals to solve, then we are done.
   ForwardInference-Done : ForwardInference Facts Hyps []
-  ForwardInference-Done {Facts = Facts} {Hyps = Hyps} = success (const* Facts (const* Hyps tt))
+  ForwardInference-Done {Facts = Facts} {Hyps = Hyps} = success λ _ _ → tt
 
   -- Run all of our forward rules.
   ForwardInference-TryInversion
-    : ⦃ I : Inversion H via Rs ⦄
-    → ⦃ I? : TryInversion Facts Hyps I ⦄
+    : ⦃ I : Inversion H ⦄
+    → ⦃ I? : TryInversion Facts Hyps (unbundle-inversion I) ⦄
     → ⦃ i* : ForwardInference (I? .NewFacts ++ H , Facts) (I? .NewHyps ++ Hyps) (Goal , Goals) ⦄
     → ForwardInference Facts (H , Hyps) (Goal , Goals)
   ForwardInference-TryInversion {Facts = Facts} {Hyps} ⦃ I = I ⦄ ⦃ I? ⦄ ⦃ failure ⦄ = failure
   ForwardInference-TryInversion {Facts = Facts} {Hyps} ⦃ I = I ⦄ ⦃ I? ⦄ ⦃ success pf ⦄ = success
-    (λ* Facts λ facts h → λ* Hyps λ hyps →
-      let (new-facts , new-proofs) = I? .new-proofs $* facts $* hyps $ h
-      in pf $* (new-facts ,* (h , facts)) $* (new-proofs ,* hyps))
+    λ facts (h , hyps) →
+      let (new-facts , new-inversions) = I? .new-proofs facts hyps h
+      in pf (new-facts ,* (h , facts)) (new-inversions ,* hyps)
   {-# INCOHERENT ForwardInference-TryInversion #-}
 
   -- We try to use our facts once we've applied all of our forward lemmas.
@@ -257,7 +268,7 @@ instance
   ForwardInference-TryFacts {Facts = Facts} ⦃ Goal? = failure ⦄ ⦃ i* ⦄ = failure
   ForwardInference-TryFacts {Facts = Facts} ⦃ Goal? = success x ⦄ ⦃ failure ⦄ = failure
   ForwardInference-TryFacts {Facts = Facts} ⦃ Goal? = success pf-goal ⦄ ⦃ success pf-goals ⦄ = success
-    (λ* Facts λ facts → (pf-goal $* facts) , (pf-goals $* facts))
+    λ facts _ → pf-goal facts , pf-goals facts tt
 
 
 data FailWith (msg : String) : Typeω where
@@ -277,11 +288,84 @@ inversion
   : ⦃ i* : ForwardInference [] (A , []) (B , []) ⦄
   → ⦃ _ : WhenInferenceFails i* (FailWith "Inversion failed.") ⦄
   → A → B
-inversion ⦃ i* = success pf ⦄ a = fst (pf a)
+inversion ⦃ i* = success pf ⦄ a = fst (pf tt (a  , tt))
 
 inversion-with
   : (Facts : Types)
   → ⦃ i* : ForwardInference Facts (A , []) (B , []) ⦄
   → ⦃ _ : WhenInferenceFails i* (FailWith "Inversion failed.") ⦄
   → Σ* Facts → A → B
-inversion-with Facts ⦃ success pf ⦄ facts a = fst (pf $* facts $ a)
+inversion-with Facts ⦃ success pf ⦄ facts a = fst (pf facts (a  , tt))
+
+-- Hacky tests.
+private module Tests where
+  open import Data.Vec.Base
+  open import Data.Dec
+  open import Data.Nat
+  open import 1Lab.Prelude
+  open import Meta.Invariant
+
+  data Hamming {ℓ} {A : Type ℓ} : ∀ {n} → Vec A n → Vec A n → Nat → Type ℓ where
+    zero : Hamming [] [] 0
+    same
+      : ∀ {n} {x y : A} {xs ys : Vec A n} {d}
+      → x ≡ y → Hamming xs ys d
+      → Hamming (x ∷ xs) (y ∷ ys) d
+    diff
+      : ∀ {n} {x y : A} {xs ys : Vec A n} {d}
+      → x ≠ y → Hamming xs ys d
+      → Hamming (x ∷ xs) (y ∷ ys) (suc d)
+
+  private variable
+    x y : A
+    n d : Nat
+    xs ys : Vec A n
+
+  instance
+    Inversion-Hamming-∷-zero
+      : Inversion (Hamming (x ∷ xs) (y ∷ ys) 0)
+    Inversion-Hamming-∷-zero {x = x} {xs = xs} {y} {ys} .rules =
+      fact x ≡ y and inverting Hamming xs ys 0 by [] or
+      fact ⊥ by x ≠ y , []
+    Inversion-Hamming-∷-zero .inversion-rules .fst (same p h) = p , h
+    Inversion-Hamming-∷-zero .inversion-rules .snd x≠y (same x=y h) = absurd (x≠y x=y)
+
+    Inversion-Hamming-∷-suc
+      : Inversion (Hamming (x ∷ xs) (y ∷ ys) (suc d))
+    Inversion-Hamming-∷-suc {x = x} {xs = xs} {y} {ys} {d} .rules =
+      inverting Hamming xs ys (suc d) by x ≡ y , [] or
+      inverting Hamming xs ys d by x ≠ y , []
+    Inversion-Hamming-∷-suc .inversion-rules .fst x=y (same _ h) = h
+    Inversion-Hamming-∷-suc .inversion-rules .fst x=y (diff x≠y h) = absurd (x≠y x=y)
+    Inversion-Hamming-∷-suc .inversion-rules .snd x≠y (same x=y h) = absurd (x≠y x=y)
+    Inversion-Hamming-∷-suc .inversion-rules .snd x≠y (diff _ h) = h
+
+    Inversion-Hamming-∷
+      : Inversion (Hamming (x ∷ xs) (y ∷ ys) d)
+    Inversion-Hamming-∷  {x = x} {xs = xs} {y} {ys} {d} .rules =
+      inverting Hamming xs ys d by x ≡ y , [] or
+      inverting Hamming xs ys (pred d) by x ≠ y , []
+    Inversion-Hamming-∷ .inversion-rules .fst x=y (same _ s) = s
+    Inversion-Hamming-∷ .inversion-rules .fst x=y (diff x≠y s) = absurd (x≠y x=y)
+    Inversion-Hamming-∷ .inversion-rules .snd x≠y (same x=y h) = absurd (x≠y x=y)
+    Inversion-Hamming-∷ .inversion-rules .snd x≠y (diff _ h) = h
+    {-# OVERLAPS Inversion-Hamming-∷ #-}
+
+  instance
+    Dec-Hamming
+      : ∀ {xs ys : Vec A n} {d : Nat}
+      → ⦃ _ : Discrete A ⦄
+      → Dec (Hamming xs ys d)
+    Dec-Hamming {xs = []} {ys = []} {d = zero} = yes zero
+    Dec-Hamming {xs = []} {ys = []} {d = suc d} = no λ ()
+    Dec-Hamming {xs = x ∷ xs} {ys = y ∷ ys} {d = d} with x ≡? y
+    Dec-Hamming {A = _} {_} {x ∷ xs} {y ∷ ys} {d = d} | yes x=y =
+      invmap (same x=y) (inversion-with (x ≡ y , []) (x=y , tt)) (holds? (Hamming xs ys d))
+    Dec-Hamming {A = _} {_} {x ∷ xs} {y ∷ ys} {d = d} | no ¬x=y =
+      -- This should be forwards chaining?
+      -- There are two valid constructors here:
+
+      -- Backwards (Hamming (x ∷ xs) (y ∷ ys) d) via
+      --   constructing Hamming xs ys (pred d) by x ≠ y or
+      --   constructing Hamming (x ∷ xs) (y ∷ ys) d by x ≡ y
+      invmap {!!} (inversion-with (x ≠ y , []) (¬x=y , tt)) (holds? (Hamming xs ys (pred d)))
