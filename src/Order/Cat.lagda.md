@@ -59,14 +59,18 @@ automatic.
 
 ```agda
 open Functor
+
+monotone→functor
+  : ∀ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'}
+  → Monotone P Q → Functor (poset→category P) (poset→category Q)
+monotone→functor f .F₀ = f .hom
+monotone→functor f .F₁ = f .pres-≤
+monotone→functor f .F-id = prop!
+monotone→functor f .F-∘ _ _ = prop!
+
 Posets↪Strict-cats : ∀ {ℓ ℓ'} → Functor (Posets ℓ ℓ') (Strict-cats ℓ ℓ')
 Posets↪Strict-cats .F₀ P = poset→category P , Poset.Ob-is-set P
-
-Posets↪Strict-cats .F₁ f .F₀ = f .hom
-Posets↪Strict-cats .F₁ f .F₁ = f .pres-≤
-Posets↪Strict-cats .F₁ {y = y} f .F-id    = Poset.≤-thin y _ _
-Posets↪Strict-cats .F₁ {y = y} f .F-∘ g h = Poset.≤-thin y _ _
-
+Posets↪Strict-cats .F₁ f = monotone→functor f
 Posets↪Strict-cats .F-id    = Functor-path (λ _ → refl) λ _ → refl
 Posets↪Strict-cats .F-∘ f g = Functor-path (λ _ → refl) λ _ → refl
 ```

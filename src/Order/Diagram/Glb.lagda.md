@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
@@ -145,3 +146,33 @@ module _ {o ℓ} {P : Poset o ℓ} where
       cover-reflects-glb g .Glb.has-glb = cover-reflects-is-glb (g .Glb.has-glb)
 ```
 -->
+
+## As limits
+
+If a poset $P$ has all greatest lower bounds of size $\kappa$, then
+it is $\kappa$-[[complete|complete-category]] when [[viewed as a category|posets-as-categories]].
+
+<!--
+```agda
+module _ {o ℓ} {P : Poset o ℓ} where
+  open Poset P
+```
+-->
+
+```agda
+  glbs→complete
+    : ∀ {oκ ℓκ}
+    → (∀ {I : Type oκ} (k : I → Ob) → Glb P k)
+    → is-complete oκ ℓκ (poset→category P)
+  glbs→complete glbs K = to-limit (to-is-limit lim) where
+    open make-is-limit
+    module K = Functor K
+    open Glb (glbs K.₀)
+
+    lim : make-is-limit K glb
+    lim .ψ = glb≤fam
+    lim .commutes _ = prop!
+    lim .universal eps _ = greatest _ eps
+    lim .factors _ _ = prop!
+    lim .unique _ _ _ _ = prop!
+```
