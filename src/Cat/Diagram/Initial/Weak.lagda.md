@@ -133,11 +133,11 @@ initial object.
 
 ```agda
   is-complete-weak-initial→initial
-    : ∀ {I : Type ℓ} (F : I → ⌞ C ⌟) ⦃ _ : ∀ {n} → H-Level I (2 + n) ⦄
-    → is-complete ℓ ℓ C
+    : ∀ {κ} {I : Type κ} (F : I → ⌞ C ⌟) ⦃ _ : ∀ {n} → H-Level I (2 + n) ⦄
+    → is-complete κ (ℓ ⊔ κ) C
     → is-weak-initial-fam F
     → Initial C
-  is-complete-weak-initial→initial F compl wif = record { has⊥ = equal-is-initial } where
+  is-complete-weak-initial→initial {κ = κ} F compl wif = record { has⊥ = equal-is-initial } where
 ```
 
 <details>
@@ -147,17 +147,17 @@ initial object.
     open Indexed-product
 
     prod : Indexed-product C F
-    prod = Limit→IP C (hlevel 3) F (compl _)
+    prod = Limit→IP C (hlevel 3) F (is-complete-lower κ ℓ κ κ compl _)
 
     prod-is-wi : is-weak-initial (prod .ΠF)
     prod-is-wi = is-wif→is-weak-initial F wif (prod .has-is-ip)
 
     equal : Joint-equaliser C {I = Hom (prod .ΠF) (prod .ΠF)} λ h → h
-    equal = Limit→Joint-equaliser C _ id (is-complete-lower ℓ ℓ lzero ℓ compl _)
+    equal = Limit→Joint-equaliser C _ id (is-complete-lower κ κ lzero ℓ compl _)
     open Joint-equaliser equal using (has-is-je)
 
     equal-is-initial = is-weak-initial→equaliser _ prod-is-wi has-is-je λ f g →
-      Limit→Equaliser C (is-complete-lower ℓ ℓ lzero lzero compl _)
+      Limit→Equaliser C (is-complete-lower κ (ℓ ⊔ κ) lzero lzero compl _)
 ```
 
 </details>
