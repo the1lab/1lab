@@ -38,8 +38,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (F : Functor C C) where
 
 <!--
 ```agda
+  private module F = Cat.Functor.Reasoning F
   open Cat.Reasoning C
-  module F = Cat.Functor.Reasoning F
   open Displayed
   open Total-hom
 ```
