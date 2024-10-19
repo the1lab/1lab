@@ -16,7 +16,7 @@ import Cat.Reasoning as Cat
 module Cat.Functor.Adjoint.AFT where
 ```
 
-# The adjoint functor theorem
+# The adjoint functor theorem {defines="adjoint-functor-theorem"}
 
 The **adjoint functor theorem** states a sufficient condition for a
 [[continuous functor]] $F : \cC \to \cD$ from a locally small,
