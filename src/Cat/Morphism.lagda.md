@@ -49,6 +49,8 @@ open _↪_ public
 
 <!--
 ```agda
+Factors : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Type _
+Factors f g = Σ[ h ∈ Hom _ _ ] (f ≡ g ∘ h)
 ```
 -->
 
@@ -500,6 +502,18 @@ make-iso f g p q ._≅_.inverses .Inverses.invr = q
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
+
+_≅⟨_⟩_ : ∀ (x : Ob) {y z} → x ≅ y → y ≅ z → x ≅ z
+x ≅⟨ p ⟩ q = p ∘Iso q
+
+_≅˘⟨_⟩_ : ∀ (x : Ob) {y z} → y ≅ x → y ≅ z → x ≅ z
+x ≅˘⟨ p ⟩ q = (p Iso⁻¹) ∘Iso q
+
+_≅∎ : (x : Ob) → x ≅ x
+x ≅∎ = id-iso
+
+infixr 2 _≅⟨_⟩_ _≅˘⟨_⟩_
+infix  3 _≅∎
 
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =
