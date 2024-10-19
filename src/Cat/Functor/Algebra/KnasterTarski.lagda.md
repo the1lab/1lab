@@ -48,8 +48,8 @@ to repair our proof. In particular, we will impose a variant of the
 that the limit we end up computing is determined by a small amount of data,
 which lets us relax our large-completeness requirement.
 
-Explicilty, we will require that the category of $F$-algebras has a
-small [[weakly initial family]] of algebras. Explicitly, we require:
+More precisely, we will require that the category of $F$-algebras has a
+small [[weakly initial family]] of algebras. This means that we need:
 
 - A family $\alpha_i : F(A_i) \to A_i$ of $F$ algebras indexed by a
   small set $I$, such that;
