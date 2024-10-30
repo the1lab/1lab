@@ -838,7 +838,7 @@ Id-is-equivalence {C = C} .counit-iso x =
 
 ### Preserving invertibility
 
-We can characterise equivalences as those adjunctions $L \vdash R$ that
+We can characterise equivalences as those adjunctions $L \dashv R$ that
 *preserve invertibility*, in the sense that the adjunct of an isomorphism
 $L(a) \cong b$ is an isomorphism $a \cong R(b)$ and vice versa;
 that is, the property of being invertible in $\cC$ is equivalent to
