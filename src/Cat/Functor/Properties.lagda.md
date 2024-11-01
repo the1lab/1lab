@@ -1,8 +1,12 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
+open import Cat.Functor.Compose
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Natural.Reasoning
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -221,6 +225,95 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     isom .is-iso.linv x = ext (equiv→unit ff _)
 ```
 -->
+
+If a functor $F : \cC \to \cD$ is essentially surjective, then the
+precomposition functor $(-) \circ F : [\cD,\cA] \to [\cC,\cA]$ is faithful
+for every precategory $\cA$.
+
+```agda
+  eso→precompose-faithful
+    : ∀ {oa ℓa} {A : Precategory oa ℓa}
+    → (F : Functor C D)
+    → is-eso F
+    → is-faithful (precompose F {D = A})
+```
+
+This is rather abstract, so let's unfold the statement a bit.
+If precomposition by $F$ is fully faithful, then we  can determine
+equality of natural transformations $\alpha, \beta : G \to H$ between functors
+$G, H : \cD \to \cA$ by only looking at the components of the form
+$\alpha_{F(c)}, \beta_{G(c)} : G(F(c)) \to H(F(c))$ for every $c : \cC$.
+
+<details>
+<summary>Intuitively, this should be true for essentially surjective functors, as
+$F$ doesn't miss out on any objects of $d$, but the actual proof involves
+some rather tedious calculations.
+</summary>
+```agda
+  eso→precompose-faithful {A = A} F F-eso {G} {H} {α} {β} αL=βL =
+    ext λ d → ∥-∥-out! do
+      (c , Fc≅d) ← F-eso d
+      let module Fc≅d = D._≅_ Fc≅d
+      pure $
+        α.η d                                             ≡⟨ A.intror (G.annihilate (D.invl Fc≅d)) ⟩
+        α.η d A.∘ G.₁ Fc≅d.to A.∘ G.₁ Fc≅d.from           ≡⟨ A.extendl (α.is-natural _ _ _) ⟩
+        H.₁ Fc≅d.to A.∘ ⌜ α.η (F.₀ c) ⌝ A.∘ G.₁ Fc≅d.from ≡⟨ ap! (unext αL=βL c) ⟩
+        H.₁ Fc≅d.to A.∘ β.η (F.₀ c) A.∘ G.₁ Fc≅d.from     ≡⟨ A.extendl (sym (β.is-natural _ _ _)) ⟩
+        β.η d A.∘ G.₁ Fc≅d.to A.∘ G.₁ Fc≅d.from           ≡⟨ A.elimr (G.annihilate (D.invl Fc≅d)) ⟩
+        β.η d ∎
+    where
+      module A = Cat.Reasoning A
+      module F = Cat.Functor.Reasoning F
+      module G = Cat.Functor.Reasoning G
+      module H = Cat.Functor.Reasoning H
+      module α = _=>_ α
+      module β = _=>_ β
+```
+</details>
+
+Another way of viewing this result is that it is a higher-dimensional analog
+of the fact that `precomposition with an epi is an embedding`{.Agda ident=epic-precomp-embedding}.
+
+Additionally, precomposition with an essentially surjective functor
+is conservative.
+
+```agda
+  eso→precompose-conservative
+    : ∀ {oa ℓa} {A : Precategory oa ℓa}
+    → (F : Functor C D)
+    → is-eso F
+    → {G H : Functor D A} {α : G => H}
+    → is-invertibleⁿ (α ◂ F)
+    → is-invertibleⁿ α
+```
+
+<details>
+<summary>The proof follows the same plan as the previous theorem:
+natural transformations are invertible when they are invertible objectwise,
+and $F$ covers every object of $\cD$.
+</summary>
+```agda
+  eso→precompose-conservative {A = A} F F-eso {G} {H} {α} α⁻¹ =
+    invertible→invertibleⁿ α λ d → ∥-∥-out! do
+      (c , Fc≅d) ← F-eso d
+      let module Fc≅d = D._≅_ Fc≅d
+      pure $
+        A.make-invertible (G.₁ Fc≅d.to A.∘ α⁻¹.η c A.∘ H.₁ Fc≅d.from)
+          (α.pulll (A.cancell (α⁻¹.invl #ₚ c)) ∙ H.annihilate Fc≅d.invl)
+          (A.pullr (α.cancelr (α⁻¹.invr #ₚ c)) ∙ G.annihilate Fc≅d.invl)
+    where
+      module A = Cat.Reasoning A
+      module F = Cat.Functor.Reasoning F
+      module G = Cat.Functor.Reasoning G
+      module H = Cat.Functor.Reasoning H
+
+      module α = Cat.Natural.Reasoning α
+      module α⁻¹ where
+        open is-invertibleⁿ α⁻¹ public
+        open Cat.Natural.Reasoning inv hiding (op) public
+```
+</details>
+
 
 ## Pseudomonic functors {defines="pseudomonic pseudomonic-functor"}
 
