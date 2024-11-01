@@ -498,3 +498,34 @@ is-strong-epi→is-extremal-epi (s , ortho) m g p =
   inv' = ortho m (idl _ ∙ p)
 ```
 -->
+
+<!--
+```agda
+invertible→strong-epi
+  : ∀ {a b} {e : Hom a b}
+  → is-invertible e
+  → is-strong-epi e
+invertible→strong-epi e-inv =
+  invertible→epic e-inv , λ where
+    m {u} {v} ve=mu .centre →
+      u ∘ e.inv ,
+      cancelr e.invr ,
+      invertible→epic e-inv _ v (pullr (cancelr e.invr) ∙ sym ve=mu)
+    m {u} {v} ve=mu .paths → λ (w , we=u , mw=v) →
+      Σ-prop-path! $
+      invertible→epic e-inv _ _ (cancelr e.invr ∙ sym we=u)
+  where module e = is-invertible e-inv
+
+cast-is-strong-epi
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → is-strong-epi f
+  → is-strong-epi g
+cast-is-strong-epi f=g f-strong-epi =
+  cast-is-epic f=g (f-strong-epi .fst) , λ m vg=mu →
+    let vf=mu = ap₂ _∘_ refl f=g ∙ vg=mu
+        (h , hf=u , mh=v) = f-strong-epi .snd m vf=mu .centre
+    in contr (h , ap (h ∘_) (sym f=g) ∙ hf=u , mh=v) λ (w , wg=u , mw=v) →
+      Σ-prop-path! (ap fst (f-strong-epi .snd m vf=mu .paths (w , ap (w ∘_) f=g ∙ wg=u , mw=v)))
+```
+-->

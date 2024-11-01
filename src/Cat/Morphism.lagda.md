@@ -153,6 +153,18 @@ epic-precomp-embedding epic =
   injective→is-embedding (Hom-set _ _) _ (epic _ _)
 ```
 
+<!--
+```agda
+cast-is-epic
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → is-epic f
+  → is-epic g
+cast-is-epic f=g f-epic h i p =
+  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym (f=g)))
+```
+-->
+
 ## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
@@ -177,7 +189,12 @@ record has-section (r : Hom a b) : Type h where
     is-section : section section-of r
 
 open has-section public
+```
 
+The identity map has a section (namely, itself), and the composite
+of maps with sections also has a section.
+
+```agda
 id-has-section : ∀ {a} → has-section (id {a})
 id-has-section .section = id
 id-has-section .is-section = idl _
@@ -201,6 +218,17 @@ section-∘ {f = f} {g = g} f-sect g-sect .is-section =
   section-of-∘ (f-sect .is-section) (g-sect .is-section)
 ```
 
+Moreover, if $f \circ g$ has a section, then so does $f$.
+
+```agda
+section-cancell
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-section (f ∘ g)
+  → has-section f
+section-cancell {g = g} s .section = g ∘ s .section
+section-cancell {g = g} s .is-section = assoc _ _ _ ∙ s .is-section
+```
+
 If $f$ has a section, then $f$ is epic.
 
 ```agda
@@ -218,6 +246,18 @@ has-section→epic {f = f} f-sect g h p =
   h ∘ id                    ≡⟨ idr _ ⟩
   h ∎
 ```
+
+<!--
+```agda
+cast-section
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → has-section f
+  → has-section g
+cast-section p s .section = s .section
+cast-section p s .is-section = ap₂ _∘_ (sym p) refl ∙ s .is-section
+```
+-->
 
 ## Retracts {defines="retract"}
 
@@ -244,7 +284,12 @@ record has-retract (s : Hom b a) : Type h where
     is-retract : retract retract-of s
 
 open has-retract public
+```
 
+The identity map has a retract (namely, itself), and the composite
+of maps with retracts also has a retract.
+
+```agda
 id-has-retract : ∀ {a} → has-retract (id {a})
 id-has-retract .retract = id
 id-has-retract .is-retract = idl _
@@ -263,6 +308,18 @@ retract-∘ f-ret g-ret .retract = g-ret .retract ∘ f-ret .retract
 retract-∘ f-ret g-ret .is-retract =
   retract-of-∘ (f-ret .is-retract) (g-ret .is-retract)
 ```
+
+If $f \circ g$ has a retract, then so does $g$.
+
+```agda
+retract-cancelr
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-retract (f ∘ g)
+  → has-retract g
+retract-cancelr {f = f} r .retract = r .retract ∘ f
+retract-cancelr {f = f} r .is-retract = sym (assoc _ _ _) ∙ r .is-retract
+```
+
 
 If $f$ has a retract, then $f$ is monic.
 
@@ -338,6 +395,39 @@ has-section+monic→has-retract sect monic .is-retract =
 ```
 -->
 
+## Split monomorphisms {defines="split-mono split-monomorphism"}
+
+A morphism $f : A \to B$ is a **split monomorphism** if it merely
+has a [[retract]].
+
+```agda
+is-split-monic : Hom a b → Type _
+is-split-monic f = ∥ has-retract f ∥
+```
+
+Every split mono is a mono, as being monic is a [[proposition]].
+
+```agda
+split-monic→mono : is-split-monic f → is-monic f
+split-monic→mono = rec! has-retract→monic
+```
+
+## Split epimorphisms {defines="split-epi split-epimorphism"}
+
+Dually, a morphism $f : A \to B$ is a **split epimorphism** if it
+merely has a [[section]].
+
+```agda
+is-split-epic : Hom a b → Type _
+is-split-epic f = ∥ has-section f ∥
+```
+
+Like split monos, every split epimorphism is an epimorphism.
+
+```agda
+split-epic→epic : is-split-epic f → is-epic f
+split-epic→epic = rec! has-section→epic
+```
 
 ## Isos {defines="isomorphism invertible"}
 
@@ -822,6 +912,40 @@ has-section+monic→invertible f-sect monic .is-invertible.inv =
   f-sect .section
 has-section+monic→invertible f-sect monic .is-invertible.inverses =
   retract-of+monic→inverses (f-sect .is-section) monic
+```
+-->
+
+In fact, the mere existence of a retract of an epimorphism $f$ suffices to
+show that $f$ is invertible, as invertibility itself is a proposition.
+Put another way, every morphism that is both a split mono and an epi
+is invertible.
+
+```agda
+split-monic+epic→invertible
+  : is-split-monic f
+  → is-epic f
+  → is-invertible f
+split-monic+epic→invertible f-split-monic f-epic =
+  ∥-∥-rec is-invertible-is-prop
+    (λ r → has-retract+epic→invertible r f-epic)
+    f-split-monic
+```
+
+A dual result holds for morphisms that are simultaneously split epic and monic.
+
+```agda
+split-epic+monic→invertible
+  : is-split-epic f
+  → is-monic f
+  → is-invertible f
+```
+
+<!--
+```agda
+split-epic+monic→invertible f-split-epic f-monic =
+  ∥-∥-rec is-invertible-is-prop
+    (λ s → has-section+monic→invertible s f-monic)
+    f-split-epic
 ```
 -->
 
