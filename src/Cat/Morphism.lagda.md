@@ -40,6 +40,7 @@ is-monic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-monic f)
 is-monic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↪_ (a b : Ob) : Type (o ⊔ h) where
+  constructor make-mono
   field
     mor   : Hom a b
     monic : is-monic mor
@@ -66,6 +67,7 @@ is-epic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-epic f)
 is-epic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↠_ (a b : Ob) : Type (o ⊔ h) where
+  constructor make-epi
   field
     mor  : Hom a b
     epic : is-epic mor
