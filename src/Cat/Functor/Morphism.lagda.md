@@ -243,7 +243,7 @@ module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
 
   left-adjoint→preserves-epis : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
   left-adjoint→preserves-epis {a = a} a-epic f g p =
-    L-adjunct.injective L⊣F $
+    L-adjunct.injective F⊣R $
     a-epic _ _ $
     𝒞.pullr (unit.is-natural _ _ _)
     ∙ R.extendl p
