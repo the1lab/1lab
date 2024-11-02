@@ -8,6 +8,7 @@ description: |
 
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Properties
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
@@ -73,10 +74,11 @@ is-reflective {G = G} adj = is-fully-faithful G
 ```
 
 The first thing we will prove is that the counit map $\eps : FGo \to o$
-of a reflexive subcategory inclusion is an isomorphism. Since $G$ is
-fully faithful, the unit map $\eta_{Go} : Go \to GFGo$ corresponds to a
-map $o \to FGo$, and this map can be seen to be a left- and right-
-inverse to $\eps$ applying the triangle identities.
+of a reflexive subcategory inclusion is invertible. Luckily, we have
+developed enough general theory to make this almost immediate:
+- $G$ is full, so the counit must be a [[split monomorphism]].
+- $G$ is faithful, so the counit must be a [[epimorphism]].
+- Every morphism that is simultaneously split monic and epic is invertible.
 
 ```agda
 module
@@ -94,33 +96,30 @@ module
     module g-ff {x} {y} = Equiv (_ , g-ff {x} {y})
   open _⊣_ adj
 
-  is-reflective→counit-is-iso : ∀ {o} → FG.₀ o D.≅ o
-  is-reflective→counit-is-iso {o} = morp where
-    morp : F.₀ (G.₀ o) D.≅ o
-    morp = D.make-iso (ε _) (g-ff.from (unit.η _)) invl invr
-      where abstract
-      invl : ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
-      invl = ff→faithful {F = G} g-ff (
-        G.₁ (ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
-        G.₁ (ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
-        G.₁ (ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
-        G.₁ D.id                        ∎)
+  is-reflective→counit-is-invertible : ∀ {o} → D.is-invertible (ε o)
+  is-reflective→counit-is-invertible {o} =
+    D.split-monic+epic→invertible
+      (right-full→counit-split-monic adj (ff→full {F = G} g-ff))
+      (right-faithful→counit-epic adj (ff→faithful {F = G} g-ff))
 
-      invr : g-ff.from (unit.η (G.₀ o)) D.∘ ε o ≡ D.id
-      invr = ff→faithful {F = G} g-ff (ap G.₁ (
-        g-ff.from _ D.∘ ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-        ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
-        ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
-        D.id                            ∎))
-
-  is-reflective→counit-iso : (F F∘ G) DD.≅ Id
-  is-reflective→counit-iso = DD.invertible→iso counit invs where
-    invs = invertible→invertibleⁿ counit λ x →
-      D.iso→invertible (is-reflective→counit-is-iso {o = x})
 ```
 
 <!--
 ```agda
+  is-reflective→counit-is-iso : ∀ {o} → FG.₀ o D.≅ o
+  is-reflective→counit-is-iso {o} = morp where
+    morp : F.₀ (G.₀ o) D.≅ o
+    morp =
+      D.invertible→iso (ε _) $
+      D.split-monic+epic→invertible
+        (right-full→counit-split-monic adj (ff→full {F = G} g-ff))
+        (right-faithful→counit-epic adj (ff→faithful {F = G} g-ff))
+
+  is-reflective→counit-iso : (F F∘ G) ≅ⁿ Id
+  is-reflective→counit-iso = DD.invertible→iso counit invs where
+    invs = invertible→invertibleⁿ counit λ x →
+      is-reflective→counit-is-invertible
+
   η-comonad-commute : ∀ {x} → unit.η (G.₀ (F.₀ x)) ≡ G.₁ (F.₁ (unit.η x))
   η-comonad-commute {x} = C.right-inv-unique
     (F-map-iso G is-reflective→counit-is-iso)
@@ -249,45 +248,31 @@ module _
 ```
 -->
 
-Let $\eps\inv$ be the (natural) inverse to the counit, and let
-$f : \cC(G(X), G(Y))$. We can obtain a map $\cD(X,Y)$ by conjugating
-with $\eps$ and its inverse.
+Again, the sea has risen to meet us:
+- [[A right adjoint is faithful if and only if the counit is epic|faithful-adjoint]].
+- [[A right adjoint full if and only if the counit is split monic|full-adjoint]].
+
+If the counit is invertible, then it is clearly both split monic and epic,
+and thus the corresponding right adjoint must be fully faithful.
 
 ```agda
   is-counit-iso→is-reflective : is-invertibleⁿ counit → is-reflective adj
   is-counit-iso→is-reflective counit-iso =
-    is-iso→is-equiv $
-      iso (λ f → ε _ D.∘ F.₁ f D.∘ ε⁻¹ _)
-```
-
-Proving that this conjugation forms an equivalence involves the usual
-adjoint yoga. For the forward direction, we need to show that
-$G(\eps \circ F(f) \circ \eps\inv) = f$; if we take the right adjunct,
-this transforms our goal into $\eps \circ F(G(\eps \circ F(f) \circ \eps\inv)) = \eps \circ F(f)$.
-
-From here, we can repeatedly apply naturality to commute the $\eps$
-all the way to the end of the chain of morphisms. This yields
-$\eps \circ F(f) \circ \eps\inv \circ \eps$, which is equal to
-$\eps \circ F(f)$, as $\eps\inv$ is an inverse.
-
-```agda
-        (λ f → Equiv.injective (_ , R-adjunct-is-equiv adj) $
-          ε _ D.∘ F.₁ (G.₁ (ε _ D.∘ F.₁ f D.∘ ε⁻¹ _))   ≡⟨ FG.popl (counit .is-natural _ _ _) ⟩
-          (ε _ D.∘ ε _) D.∘ F.₁ (G.₁ (F.₁ f D.∘ ε⁻¹ _)) ≡⟨ D.extendr (FG.shufflel (counit .is-natural _ _ _)) ⟩
-          (ε _ D.∘ F.₁ f) D.∘ ε _ D.∘ F.₁ (G.₁ (ε⁻¹ _)) ≡⟨ D.elimr (counit .is-natural _ _ _ ∙ counit-iso.invr ηₚ _) ⟩
-          ε _ D.∘ F.₁ f                                 ∎)
-```
-
-The reverse direction follows from a quick application of naturality.
-
-```agda
-        (λ f →
-          ε _ D.∘ F.₁ (G.₁ f) D.∘ ε⁻¹ _ ≡⟨ D.pulll (counit.is-natural _ _ _) ⟩
-          (f D.∘ ε _) D.∘ ε⁻¹ _         ≡⟨ D.cancelr (counit-iso.invl ηₚ _) ⟩
-          f                             ∎)
+    full+faithful→ff G
+      G-full
+      G-faithful
     where
-      module counit-iso = is-invertibleⁿ counit-iso
-      ε⁻¹ = counit-iso.inv .η
+      G-full : is-full G
+      G-full =
+        counit-split-monic→right-full adj $
+        D.invertible→to-split-monic $
+        is-invertibleⁿ→is-invertible counit-iso _
+
+      G-faithful : is-faithful G
+      G-faithful =
+        counit-epic→right-faithful adj $
+        D.invertible→epic $
+        is-invertibleⁿ→is-invertible counit-iso _
 ```
 
 Furthermore, if we have *any* natural isomorphism $\alpha : FG \iso \Id$, then
