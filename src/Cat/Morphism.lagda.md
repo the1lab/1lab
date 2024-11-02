@@ -845,6 +845,16 @@ invertible→to-has-section : is-invertible f → has-section f
 invertible→to-has-section f-inv .section = is-invertible.inv f-inv
 invertible→to-has-section f-inv .is-section = is-invertible.invl f-inv
 
+invertible→to-has-retract : is-invertible f → has-retract f
+invertible→to-has-retract f-inv .retract = is-invertible.inv f-inv
+invertible→to-has-retract f-inv .is-retract = is-invertible.invr f-inv
+
+invertible→to-split-monic : is-invertible f → is-split-monic f
+invertible→to-split-monic f-inv = pure (invertible→to-has-retract f-inv)
+
+invertible→to-split-epic : is-invertible f → is-split-epic f
+invertible→to-split-epic f-inv = pure (invertible→to-has-section f-inv)
+
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from
 iso→to-has-section f .is-section = f .invl
