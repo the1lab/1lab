@@ -15,7 +15,7 @@ import Cat.Reasoning as Cr
 module Cat.Morphism.Orthogonal where
 ```
 
-# Orthogonal maps
+# Orthogonal maps {defines="left-orthogonal right-orthogonal"}
 
 A pair of maps $f : a \to b$ and $g : c \ to d$ are called
 **orthogonal**, written $f \ortho g$^[Though hang tight for a note on
@@ -129,12 +129,145 @@ A slightly more interesting lemma is that, if $f$ is orthogonal to
 itself, then it is an isomorphism:
 
 ```agda
-  self-orthogonal→is-iso : ∀ {a b} (f : C.Hom a b) → m⊥m f f → C.is-invertible f
-  self-orthogonal→is-iso f f⊥f =
+  self-orthogonal→invertible : ∀ {a b} (f : C.Hom a b) → m⊥m f f → C.is-invertible f
+  self-orthogonal→invertible f f⊥f =
     C.make-invertible (gpq .fst) (gpq .snd .snd) (gpq .snd .fst)
     where
       gpq = f⊥f (C.idl _ ∙ C.intror refl) .centre
 ```
+
+For the next few lemmas, consider a square of the following form, where
+$l$ and $k$ are both lifts of the outer square.
+
+~~~{.quiver}
+\begin{tikzcd}
+	a && b \\
+	\\
+	c && d
+	\arrow["f", from=1-1, to=1-3]
+	\arrow["u"', from=1-1, to=3-1]
+	\arrow["l"', shift right, from=1-3, to=3-1]
+	\arrow["k", shift left, from=1-3, to=3-1]
+	\arrow["v", from=1-3, to=3-3]
+	\arrow["g"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+If $f$ is an [[epimorphism]], then $l = k$. In more succinct terms, the
+type of lifts of such a square is a proposition.
+
+```agda
+  left-epic→lift-is-prop
+    : ∀ {a b c d}
+    → {f : C.Hom a b} {g : C.Hom c d} {u : C.Hom a c} {v : C.Hom b d}
+    → C.is-epic f
+    → v C.∘ f ≡ g C.∘ u
+    → is-prop (Σ[ w ∈ C.Hom b c ] ((w C.∘ f ≡ u) × (g C.∘ w ≡ v)))
+  left-epic→lift-is-prop f-epi vf=gu (l , lf=u , _) (k , kf=u , _) =
+    Σ-prop-path! (f-epi l k (lf=u ∙ sym kf=u))
+```
+
+Dually, if $g$ is a [[monomorphism]], then we the type of lifts is also
+a propostion.
+
+```agda
+  right-monic→lift-is-prop
+    : ∀ {a b c d}
+    → {f : C.Hom a b} {g : C.Hom c d} {u : C.Hom a c} {v : C.Hom b d}
+    → C.is-monic g
+    → v C.∘ f ≡ g C.∘ u
+    → is-prop (Σ[ w ∈ C.Hom b c ] ((w C.∘ f ≡ u) × (g C.∘ w ≡ v)))
+  right-monic→lift-is-prop g-mono vf=gu (l , _ , gl=v) (k , _ , gk=v) =
+    Σ-prop-path! (g-mono l k (gl=v ∙ sym gk=v))
+```
+
+As a corollary, if $f$ is an epi or $g$ is a mono, then it is sufficient
+to find _any_ lift to establish that $f \bot g$.
+
+```agda
+  left-epic-lift→orthogonal
+    : ∀ {a b c d} {f : C.Hom a b}
+    → C.is-epic f → (g : C.Hom c d)
+    → (∀ {u v} → v C.∘ f ≡ g C.∘ u → Σ[ w ∈ C.Hom b c ] ((w C.∘ f ≡ u) × (g C.∘ w ≡ v)))
+    → m⊥m f g
+  left-epic-lift→orthogonal f-epi g lifts vf=gu =
+    is-prop∙→is-contr (left-epic→lift-is-prop f-epi vf=gu) (lifts vf=gu)
+
+  right-monic-lift→orthogonal
+    : ∀ {a b c d} {g : C.Hom c d}
+    → (f : C.Hom a b) → C.is-monic g
+    → (∀ {u v} → v C.∘ f ≡ g C.∘ u → Σ[ w ∈ C.Hom b c ] ((w C.∘ f ≡ u) × (g C.∘ w ≡ v)))
+    → m⊥m f g
+  right-monic-lift→orthogonal f g-mono lifts vf=gu =
+    is-prop∙→is-contr (right-monic→lift-is-prop g-mono vf=gu) (lifts vf=gu)
+```
+
+Isomorphisms are left and right orthogonal to every other morphism.
+
+```agda
+  invertible→left-orthogonal
+    : ∀ {a b c d} {f : C.Hom a b}
+    → C.is-invertible f → (g : C.Hom c d)
+    → m⊥m f g
+
+  invertible→right-orthogonal
+    : ∀ {a b c d} {g : C.Hom c d}
+    → (f : C.Hom a b) → C.is-invertible g
+    → m⊥m f g
+```
+
+We will focus our attention on the left orthogonal case, as the proof
+for right orthogonality is completely dual. Suppose that $f$ is invertible,
+and $g$ is an arbitrary morphism. Invertible morphisms are epis, so it
+suffices to establish the existence of lifts to prove that $f$ is orthogonal
+to $g$. Luckily, these lifts are easy to find: if we have some square
+$v \circ f = u \circ g$, then $u \circ f^{-1}$ fits perfectly along the
+diagonal:
+
+~~~{.quiver}
+\begin{tikzcd}
+  a && b \\
+  \\
+  c && d
+  \arrow["f", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["{u \circ f^{-1}}"{description}, from=1-3, to=3-1]
+  \arrow["v", from=1-3, to=3-3]
+  \arrow["g"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+A short calculation verifies that $u \circ f^{-1}$ is indeed a lift.
+
+```agda
+  invertible→left-orthogonal {f = f} f-inv g =
+    left-epic-lift→orthogonal (C.invertible→epic f-inv) g λ {u} {v} vf=gu →
+      u C.∘ f.inv ,
+      C.cancelr f.invr ,
+      Equiv.from
+        (g C.∘ u C.∘ f.inv ≡ v   ≃⟨ C.reassocl e⁻¹ ∙e C.pre-invr f-inv ⟩
+         g C.∘ u ≡ v C.∘ f       ≃⟨ sym-equiv ⟩
+         v C.∘ f ≡ g C.∘ u       ≃∎)
+        vf=gu
+    where module f = C.is-invertible f-inv
+```
+
+<details>
+<summary>The proof of right orthogonality follows the exact same plan,
+so we omit the details.
+</summary>
+```agda
+  invertible→right-orthogonal {g = g} f g-inv =
+    right-monic-lift→orthogonal f (C.invertible→monic g-inv) λ {u} {v} vf=gu →
+      g.inv C.∘ v ,
+      Equiv.from
+        ((g.inv C.∘ v) C.∘ f ≡ u ≃⟨ C.reassocl ∙e C.pre-invl g-inv ⟩
+          v C.∘ f ≡ g C.∘ u      ≃∎)
+        vf=gu ,
+      C.cancell g.invl
+    where module g = C.is-invertible g-inv
+```
+</details>
 
 ## Regarding reflections
 
