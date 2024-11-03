@@ -54,7 +54,7 @@ open Total-hom
 ```
 -->
 
-# Crude monadicity
+# Crude monadicity {defines="crude-monadicity-theorem"}
 
 We present a refinement of the conditions laid out in [Beck's
 coequaliser] for when an adjunction $F \dashv G$ is [monadic]: The
