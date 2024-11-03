@@ -5,8 +5,8 @@ description: |
 ---
 <!--
 ```agda
-open import Cat.Functor.Properties
 open import Cat.Morphism.Strong.Epi
+open import Cat.Functor.Properties
 open import Cat.Morphism.Duality
 open import Cat.Functor.Adjoint
 open import Cat.Prelude

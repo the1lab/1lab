@@ -5,12 +5,12 @@ description: |
 <!--
 ```agda
 open import Cat.Functor.Properties
-open import Cat.Functor.Compose
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
-import Cat.Natural.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Natural.Reasoning
 import Cat.Reasoning
 ```
 -->

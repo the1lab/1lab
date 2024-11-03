@@ -16,8 +16,8 @@ open import Data.Set.Surjection
 open import Data.Dec
 
 import Cat.Diagram.Separator.Strong
-import Cat.Diagram.Projective
 import Cat.Morphism.Strong.Epi
+import Cat.Diagram.Projective
 import Cat.Reasoning
 ```
 -->

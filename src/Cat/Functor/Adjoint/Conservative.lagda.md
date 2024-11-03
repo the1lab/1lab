@@ -9,13 +9,13 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
 open import Cat.Functor.Morphism
-open import Cat.Functor.Compose
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Morphism.Strong.Epi
-import Cat.Natural.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Natural.Reasoning
 import Cat.Reasoning
 ```
 -->

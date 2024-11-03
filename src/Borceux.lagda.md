@@ -59,6 +59,7 @@ open import Cat.Functor.Subcategory
 open import Cat.Instances.Delooping
 open import Cat.Instances.StrictCat
 open import Cat.Morphism.Orthogonal
+open import Cat.Morphism.Strong.Epi
 open import Cat.Bi.Instances.Spans
 open import Cat.Diagram.Idempotent
 open import Cat.Diagram.Limit.Base
@@ -66,7 +67,6 @@ open import Cat.Diagram.Limit.Cone
 open import Cat.Functor.Hom.Yoneda
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
-open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Separator
 open import Cat.Instances.Functor

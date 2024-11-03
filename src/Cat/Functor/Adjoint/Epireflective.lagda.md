@@ -4,18 +4,18 @@ description: |
 ---
 <!--
 ```agda
-open import Cat.Functor.Adjoint.Reflective
 open import Cat.Functor.Adjoint.Properties
+open import Cat.Functor.Adjoint.Reflective
 open import Cat.Morphism.Factorisation
 open import Cat.Functor.Properties
-open import Cat.Functor.Compose
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Morphism.Strong.Mono
 import Cat.Morphism.Strong.Epi
-import Cat.Natural.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Natural.Reasoning
 import Cat.Reasoning
 ```
 -->
