@@ -157,13 +157,21 @@ epic-precomp-embedding epic =
 
 <!--
 ```agda
+cast-is-monic
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → is-monic f
+  → is-monic g
+cast-is-monic f=g f-monic h i p =
+  f-monic h i (ap (_∘ h) f=g ·· p ·· ap (_∘ i) (sym f=g))
+
 cast-is-epic
   : ∀ {a b} {f g : Hom a b}
   → f ≡ g
   → is-epic f
   → is-epic g
 cast-is-epic f=g f-epic h i p =
-  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym (f=g)))
+  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym f=g))
 ```
 -->
 
@@ -702,6 +710,17 @@ abstract
       (f .epic)
       (g .epic)
       i
+
+cast-is-invertible
+  : ∀ {x y} {f g : Hom x y}
+  → f ≡ g
+  → is-invertible f
+  → is-invertible g
+cast-is-invertible f=g f-inv =
+  make-invertible f.inv
+    (ap (_∘ f.inv) (sym f=g) ∙ f.invl)
+    (ap (f.inv ∘_) (sym f=g) ∙ f.invr)
+  where module f = is-invertible f-inv
 ```
 -->
 
