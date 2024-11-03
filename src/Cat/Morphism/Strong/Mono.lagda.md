@@ -101,8 +101,10 @@ invertible→strong-mono f-inv =
 ```
 
 Next, let's show that strong monos compose. This is completely dual
-to the proof that `strong epis compose`{.Agda ident=strong-epi-∘}, so
-we direct the reader there for exposition.
+to the proof that [strong epis compose], so we direct the reader there
+for exposition.
+
+[strong epis compose]: Cat.Morphism.Strong.Epi.html#properties
 
 ```agda
 strong-mono-∘
@@ -125,8 +127,10 @@ strong-mono-∘ f g (f-mono , f-str) (g-mono , g-str) =
 ```
 
 Like their non-strong counterparts, strong monomorphisms satisfy a
-left cancellation property. This is dual to the proof that `strong epis
-cancel`{.Agda ident=strong-epi-cancelr}, so we omit the details.
+left cancellation property. This is dual to the proof that [strong epis
+cancel], so we omit the details.
+
+[strong epis cancel]: Cat.Morphism.Strong.Epi.html#properties
 
 ```agda
 strong-mono-cancell

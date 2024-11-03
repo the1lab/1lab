@@ -271,8 +271,14 @@ some rather tedious calculations.
 ```
 </details>
 
+<!--
+```agda
+  _ = C.epic-precomp-embedding
+```
+-->
+
 Another way of viewing this result is that it is a higher-dimensional analog
-of the fact that `precomposition with an epi is an embedding`{.Agda ident=epic-precomp-embedding}.
+of the fact that `precomposition with an epi is an embedding`{.Agda ident=C.epic-precomp-embedding}.
 
 Additionally, precomposition with an essentially surjective functor
 is conservative.
