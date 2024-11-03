@@ -11,6 +11,7 @@ open import Algebra.Group.Free hiding (_◆_)
 open import Algebra.Group.Ab
 
 open import Cat.Diagram.Coequaliser.RegularEpi
+open import Cat.Functor.Adjoint.Epireflective
 open import Cat.Functor.Adjoint.Representable
 open import Cat.Instances.Elements.Covariant renaming (∫ to ∫cov)
 open import Cat.Instances.StrictCat.Cohesive hiding (Disc)
@@ -382,7 +383,7 @@ _ = has-section+monic→invertible
 
 ## 2 Limits
 
-## 2.1 Products
+### 2.1 Products
 
 <!--
 ```agda
@@ -405,7 +406,7 @@ _ = is-indexed-product-assoc
 * Proposition 2.1.5: `Indexed-product-unique`{.Agda}
 * Proposition 2.1.6: `is-indexed-product-assoc`{.Agda}
 
-## 2.2 Coproducts
+### 2.2 Coproducts
 
 <!--
 ```agda
@@ -419,7 +420,7 @@ _ = is-indexed-coproduct-assoc
 * Proposition 2.2.2: `is-indexed-coproduct→iso`{.Agda}
 * Proposition 2.2.3: `is-indexed-coproduct-assoc`{.Agda}
 
-## 2.3 Initial and terminal objects
+### 2.3 Initial and terminal objects
 
 <!--
 ```agda
@@ -438,7 +439,7 @@ _ = Zero-group-is-zero
   * a. `Sets-initial`{.Agda}, `Sets-terminal`{.Agda}
   * b. 🚧 `Zero-group-is-zero`{.Agda}
 
-## 2.4 Equalizers, coequalizers
+### 2.4 Equalizers, coequalizers
 
 <!--
 ```agda
@@ -456,7 +457,7 @@ _ = equaliser+epi→invertible
 * Proposition 2.4.4: `id-is-equaliser`{.Agda}
 * Proposition 2.4.5: `equaliser+epi→invertible`{.Agda}
 
-## 2.5 Pullbacks, pushouts
+### 2.5 Pullbacks, pushouts
 
 <!--
 ```agda
@@ -709,6 +710,26 @@ _ = is-reflective
 
 ### 3.6 Epireflective subcategories
 
+<!--
+```agda
+_ = is-epireflective
+_ = epireflective+strong-mono→unit-invertible
+_ = factor+strong-mono-unit-invertible→epireflective
+_ = is-strong-epireflective
+_ = strong-epireflective+mono→unit-invertible
+_ = factor+mono-unit-invertible→strong-epireflective
+```
+-->
+
+* Definition 3.6.1: `is-epireflective`{.Agda}
+* Proposition 3.6.2:
+  * (1 ⇒ 2): `epireflective+strong-mono→unit-invertible`{.Agda}
+  * (2 ⇒ 1): `factor+strong-mono-unit-invertible→epireflective`{.Agda}
+* Definition 3.6.2: `is-strong-epireflective`{.Agda}
+* Proposition 3.6.4:
+  * (1 ⇒ 2): `strong-epireflective+mono→unit-invertible`{.Agda}
+  * (2 ⇒ 1): `factor+mono-unit-invertible→strong-epireflective`{.Agda}
+
 ### 3.7 Kan extensions
 
 <!--
@@ -765,9 +786,9 @@ _ = Karoubi-is-completion
 ```agda
 _ = is-regular-epi
 _ = is-strong-epi
-_ = strong-epi-compose
-_ = strong-epi-cancell
-_ = strong-epi+mono→is-invertible
+_ = strong-epi-∘
+_ = strong-epi-cancelr
+_ = strong-epi+mono→invertible
 _ = is-regular-epi→is-strong-epi
 _ = is-strong-epi→is-extremal-epi
 _ = equaliser-lifts→is-strong-epi
@@ -778,9 +799,9 @@ _ = is-extremal-epi→is-strong-epi
 * Definition 4.3.1: `is-regular-epi`{.Agda}
 * Definition 4.3.5: `is-strong-epi`{.Agda}
 * Proposition 4.3.6:
-  * 1. `strong-epi-compose`{.Agda}
-  * 2. `strong-epi-cancel-l`{.Agda}
-  * 3. `strong-epi-mono→is-invertible`{.Agda}
+  * 1. `strong-epi-∘`{.Agda}
+  * 2. `strong-epi-cancelr`{.Agda}
+  * 3. `strong-epi-mono→invertible`{.Agda}
   * 4. `is-regular-epi→is-strong-epi`{.Agda}
   * 5. `is-strong-epi→is-extremal-epi`{.Agda}
 * Proposition 4.3.7:
