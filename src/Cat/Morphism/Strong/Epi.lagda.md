@@ -27,7 +27,7 @@ open Cat.Reasoning C
 # Strong epimorphisms {defines="strong-epi strong-epimorphism"}
 
 A **strong epimorphism** is an epimorphism which is, additionally, [[left
-[orthogonal]] to every monomorphism. Unfolding that definition, for $f :
+orthogonal]] to every monomorphism. Unfolding that definition, for $f :
 a \epi b$ to be a strong epimorphism means that, given $g : c \mono b$
 any mono, and $u$, $v$ arbitrarily fit into a commutative diagram like
 

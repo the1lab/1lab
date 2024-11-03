@@ -93,8 +93,10 @@ Next, let's show that (3 ⇒ 2). This follows from a very short calculation.
       g ∎
 ```
 
-In general, `faithful functors reflect monomorphisms`{.Agda ident=faithful→reflects-mono},
-so we get (1 ⇒ 3) for free, finishing the proof.
+In general, [faithful functors reflect monomorphisms] so we get (1 ⇒ 3)
+for free, finishing the proof.
+
+[faithful functors reflect monomorphisms]: Cat.Functor.Morphism.html#faithful-functors
 
 We also obtain dual results for faithful right adjoints, but we
 omit the (nearly identical) proofs.
@@ -138,7 +140,7 @@ Moreover, $f$ is a section of $\eta_{X}$; EG: $\eta \circ f = \id$.
 By the usual [[adjunct]] yoga, it suffices to show that
 
 $$
-\eps_{L(X)} \circ L(\eta_{X} \circ f\) = \eps_{L(X)} \circ L(id)
+\eps_{L(X)} \circ L(\eta_{X} \circ f) = \eps_{L(X)} \circ L(id)
 $$
 
 which follows from a short calculation.

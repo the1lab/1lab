@@ -124,7 +124,7 @@ this gives us the following commutative square:
 
 ~~~{.quiver}
 \begin{tikzcd}
-  R.₁ (L.₁ forget)a && b \\
+  a && b \\
   \\
   c && d
   \arrow["f", tail, from=1-1, to=1-3]

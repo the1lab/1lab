@@ -166,7 +166,7 @@ module _
 ```
 -->
 
-## Adjuncts {defines=adjuncts}
+## Adjuncts {defines="adjunct left-adjunct right-adjunct"}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any
