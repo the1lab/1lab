@@ -65,7 +65,7 @@ open import Cat.Diagram.Limit.Cone
 open import Cat.Functor.Hom.Yoneda
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Separator
 open import Cat.Instances.Functor

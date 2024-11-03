@@ -3,7 +3,7 @@
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
@@ -168,7 +168,7 @@ point of view informed by parametricity, one might argue that this is
 not only the correct move, but the _only possible_ way of turning a map
 into a subobject.]
 
-[strong epimorphism]: Cat.Morphism.StrongEpi.html
+[strong epimorphism]: Cat.Morphism.Strong.Epi.html
 
 ```agda
   it : Hom (inter .apex) (a ⊗₀ c)
