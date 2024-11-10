@@ -286,33 +286,49 @@ self-jointly-monic-fam→monic f-joint-mono k₁ k₂ p =
   f-joint-mono k₁ k₂ (λ _ → p)
 ```
 
-## Miscellaneous properties of joint monos
+## Joint monos via representability
 
-If $f : \cC(X,Y)$ and $g : \cC(X,Z)$ are jointly monic, then the
-map $\cC(A,X) \to \cC(A,Y) \times \cC(A,Z)$ induced by postcompositon
-is an [[embedding]].
+Like most things categorical, joint monos admit a definition via
+representability: $f : \cC(X,Y)$ and $g : \cC(X,Z)$ are jointly monic
+if and only if the map $\cC(A,X) \to \cC(A,Y) \times \cC(A,Z)$ induced
+by postcompositon is an [[embedding]].
 
 ```agda
-jointly-monic-postcomp-embedding
-  : ∀ {w x y z} {f : Hom x y} {g : Hom x z}
+jointly-monic→postcomp-embedding
+  : ∀ {x y z} {f : Hom x y} {g : Hom x z}
   → is-jointly-monic f g
-  → is-embedding {B = Hom w y × Hom w z} (λ h → f ∘ h , g ∘ h)
-jointly-monic-postcomp-embedding fg-joint-mono =
+  → ∀ {a} → is-embedding {B = Hom a y × Hom a z} (λ h → f ∘ h , g ∘ h)
+jointly-monic→postcomp-embedding fg-joint-mono =
   injective→is-embedding! λ {k₁} {k₂} p →
     fg-joint-mono k₁ k₂ (ap fst p) (ap snd p)
+
+postcomp-embedding→jointly-monic
+  : ∀ {x y z} {f : Hom x y} {g : Hom x z}
+  → (∀ {a} → is-embedding {B = Hom a y × Hom a z} (λ h → f ∘ h , g ∘ h))
+  → is-jointly-monic f g
+postcomp-embedding→jointly-monic {f = f} {g = g} postcomp-embed k₁ k₂ p q =
+  ap fst $ postcomp-embed (f ∘ k₂ , g ∘ k₂) (k₁ , p ,ₚ q) (k₂ , refl)
 ```
 
-If $f_{i} : \cC(X,Y_{i})$ is an $I$-indexed jointly monic family, then
-the map $\cC(A,X) \to ((i : I) \to \cC(A,Y_{i}))$ induced by postcomposition
-is an embedding.
+More generally, $f_{i} : \cC(X,Y_{i})$ is a jointly monic family if and
+only if the map $\cC(A,X) \to ((i : I) \to \cC(A,Y_{i}))$ induced by
+postcomposition is an embedding.
 
 ```agda
-jointly-monic-fam-postcomp-embedding
-  : ∀ {ℓ} {I : Type ℓ} {x y} {zᵢ : I → Ob}
-  → {fᵢ : ∀ i → Hom y (zᵢ i)}
+jointly-monic-fam→postcomp-embedding
+  : ∀ {ℓ} {I : Type ℓ} {x} {yᵢ : I → Ob}
+  → {fᵢ : ∀ i → Hom x (yᵢ i)}
   → is-jointly-monic-fam fᵢ
-  → is-embedding {B = (i : I) → Hom x (zᵢ i)} (λ g i → fᵢ i ∘ g)
-jointly-monic-fam-postcomp-embedding fᵢ-joint-mono =
+  → ∀ {a} → is-embedding {B = (i : I) → Hom a (yᵢ i)} (λ g i → fᵢ i ∘ g)
+jointly-monic-fam→postcomp-embedding fᵢ-joint-mono =
   injective→is-embedding! λ {k₁} {k₂} p →
     fᵢ-joint-mono k₁ k₂ (apply p)
+
+postcomp-embedding→jointly-monic-fam
+  : ∀ {ℓ} {I : Type ℓ} {x} {yᵢ : I → Ob}
+  → {fᵢ : ∀ i → Hom x (yᵢ i)}
+  → (∀ {a} → is-embedding {B = (i : I) → Hom a (yᵢ i)} (λ g i → fᵢ i ∘ g))
+  → is-jointly-monic-fam fᵢ
+postcomp-embedding→jointly-monic-fam {fᵢ = fᵢ} postcomp-embed k₁ k₂ p =
+  ap fst $ postcomp-embed (λ i → fᵢ i ∘ k₂) (k₁ , funext p) (k₂ , refl)
 ```
