@@ -78,18 +78,18 @@ The forward direction follows from a short calculation.
 ```
 
 The reverse direction is a bit tricker, but only just. Suppose that
-$f, g$ are jointly monic, and let $h, k : \cC(A,X)$ such that:
+$f, g$ are jointly monic, and let $h, k : \cC(A,X)$ such that
 
 $$\langle f , g \rangle \circ h = \rangle f , g \langle \circ k$$
 
 Our goal is to show that $h = k$. As $f$ and $g$ are jointly monic,
 it suffices to show that $f \circ h = f \circ k$ and $g \circ h = g \circ k$.
-We can re-arrange our hypothesis to deduce that
+We can re-arrange our hypothesis to get that
 
 $$\langle f \circ h , g \circ h \rangle = \langle f \circ k , g \circ k \rangle$$
 
-We can then apply first and second projections to this equation, which
-lets us deduce that $f \circ h = f \circ k$ and $g \circ h = g \circ k$.
+If we apply first and second projections to this equation, then we get
+exactly the pair of equalities that we were looking for.
 
 ```agda
   jointly-monic→⟨⟩-monic
@@ -107,11 +107,12 @@ lets us deduce that $f \circ h = f \circ k$ and $g \circ h = g \circ k$.
         ⟨ f ∘ k , g ∘ k ⟩ ∎
 ```
 
-This result provides the main motivation for joint monomorphisms: they
-let us talk about monomorphisms into products, even when we don't have
-products.
+This result provides the main motivation for joint monomorphisms. Namely,
+joint monos let us talk about [[subobjects]] of products, even when those products
+may not exist. Put another way, joint monos offer an alternative characterisation
+of relations internal to $\cC$ that works even when $\cC$ lacks products.
 
-Joint monos are also slightly more ergonomic than monos into products.
+Joint monos are also slightly more ergonomic than subobjects of products.
 Typically, if we want to prove that some $R \mono X \times Y$ is monic,
 then our first step is to invoke the universal property of $R$: joint
 monos factor out this first step into the definition!
@@ -162,18 +163,9 @@ omit the details in the interest of brevity.
 ```
 </details>
 
-## Joint monos as relations
-
-In the previous section we proved that in the presence of products,
-joint monomorphisms $X \ot R \to Y$ are equivalent to monos $R \to X \times Y$.
-When viewed as a [[subobject]], a mono $R \to X \times Y$ gives us a
-categorical notion of a binary relation, so we can take the same perspective
-on joint monos! More generally, we can view an $I$-indexed jointly monic family
-as an $I$-ary relation.
-
-This has the nice technical benefit of being able to
-talk about relations in categories that lack products (though such
-relations tend to be rather poorly behaved).
+If we apply the same line of reasoning that we used at the end of the
+previous section, we will notice that $I$-indexed jointly monic families
+are $I$-ary relations internal to $\cC$.
 
 ## Closure properties of joint monos
 
@@ -209,7 +201,7 @@ We get a similar pair of results for jointly monic families.
 
 ```agda
 jointly-monic-fam-∘
-  : ∀ {ℓ} {I : Type ℓ} {x y} {zᵢ : I → Ob}
+  : ∀ {ℓ'} {I : Type ℓ'} {x y} {zᵢ : I → Ob}
   → {fᵢ : ∀ i → Hom y (zᵢ i)} {g : Hom x y}
   → is-jointly-monic-fam fᵢ
   → is-monic g
@@ -220,7 +212,7 @@ jointly-monic-fam-∘ {g = g} fᵢ-joint-mono g-mono k₁ k₂ p =
     assoc _ _ _ ·· p i ·· sym (assoc _ _ _)
 
 jointly-monic-fam-cancell
-  : ∀ {ℓ} {I : Type ℓ} {x y} {zᵢ : I → Ob}
+  : ∀ {ℓ'} {I : Type ℓ'} {x y} {zᵢ : I → Ob}
   → {fᵢ : ∀ i → Hom y (zᵢ i)} {g : Hom x y}
   → is-jointly-monic-fam (λ i → fᵢ i ∘ g)
   → is-monic g
@@ -252,12 +244,27 @@ is monic, then $f_{i}$ is a jointly monic family.
 
 ```agda
 monic→jointly-monic-fam
-  : ∀ {ℓ} {I : Type ℓ} {x} {yᵢ : I → Ob}
+  : ∀ {ℓ'} {I : Type ℓ'} {x} {yᵢ : I → Ob}
   → {fᵢ : ∀ i → Hom x (yᵢ i)}
   → (i : I) → is-monic (fᵢ i)
   → is-jointly-monic-fam fᵢ
 monic→jointly-monic-fam i fᵢ-monic k₁ k₂ p =
   fᵢ-monic k₁ k₂ (p i)
+```
+
+The previous result has an easy generalization: if $f_{j} : \cC(X,Y_{j})$
+is a family of morphisms such $f_{j}$ is jointly monic when restricted
+along a map $\sigma : I \to J$, then $f_{j}$ is jointly monic.
+
+```agda
+restrict-jointly-monic-fam
+  : ∀ {ℓ' ℓ''} {I : Type ℓ'} {J : Type ℓ''}
+  → ∀ {x} {yⱼ : J → Ob} {fⱼ : ∀ j → Hom x (yⱼ j)}
+  → (σ : I → J)
+  → is-jointly-monic-fam (λ i → fⱼ (σ i))
+  → is-jointly-monic-fam fⱼ
+restrict-jointly-monic-fam σ fⱼ-joint-mono k₁ k₂ p =
+  fⱼ-joint-mono k₁ k₂ (λ j → p (σ j))
 ```
 
 If $f$ is jointly monic with itself, then $f$ is monic. Moreover, if
