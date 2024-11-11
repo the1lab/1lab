@@ -71,36 +71,9 @@ category]], then $- \circ H$ is essentially surjective. By the principle
 of unique choice, it is an equivalence, and thus^[since both its domain
 and codomain are univalent] an isomorphism.
 
-## Faithfulness
-
-The argument here is almost elementary: We're given a witness that
-$\gamma H = \delta H$, so all we have to do is manipulate the expression
-$\gamma_b$ to something which has a $\gamma H$ subexpression. Since $H$
-is eso, given $b : \cB$, we can find $a : \cA$ and an iso $m : Ha
-\cong b$, from which we can calculate:
-
-```agda
-eso→pre-faithful
-  : (H : Functor A B) {F G : Functor B C}
-  → is-eso H → (γ δ : F => G)
-  → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
-eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p = ext λ b →
-  ∥-∥-out (C.Hom-set _ _ _ _) do
-  (b' , m) ← h-eso b
-  ∥_∥.inc $
-    γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
-    γ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.extendl (γ .is-natural _ _ _) ⟩
-    G.₁ (m .to) C.∘ γ .η _ C.∘ F.₁ (m .from)    ≡⟨ ap₂ C._∘_ refl (ap₂ C._∘_ (p b') refl) ⟩
-    G.₁ (m .to) C.∘ δ .η _ C.∘ F.₁ (m .from)    ≡⟨ C.extendl (sym (δ .is-natural _ _ _)) ⟩
-    δ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.elimr (F-map-iso F m .invl) ⟩
-    δ .η b                                      ∎
-  where module C = Cat.Reasoning C
-        module F = Functor F
-        module G = Functor G
-```
-
-The above is, unfortunately, the simplest result in this module. The
-next two proofs are both _quite_ technical: that's because we're given
+Luckily, we `already know`{.Agda ident=eso→precompose-faithful} that precomposition
+with an eso functor extends to a faithful functor. Unfortunately, the
+remaining two steps are both _quite_ technical: that's because we're given
 some _mere_^[truncated] data, from the assumption that $H$ is a weak
 equivalence, so to use it as proper data, we need to show that whatever
 we want lives in a contractible space, after which we are free to
