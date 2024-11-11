@@ -266,8 +266,10 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
 
   res : is-fully-faithful (precompose H)
-  res = full+faithful→ff (precompose H) full λ {F} {G} {γ} {δ} p →
-    eso→pre-faithful H H-eso γ δ λ b → p ηₚ b
+  res =
+    full+faithful→ff (precompose H)
+      full
+      (eso→precompose-faithful H H-eso)
 ```
 
 ## Essential surjectivity
