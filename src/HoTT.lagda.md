@@ -1000,7 +1000,7 @@ _ = Displayed
 _ = Rezk-completion-is-category
 _ = weak-equiv→pre-equiv
 _ = weak-equiv→pre-iso
-_ = eso→pre-faithful
+_ = eso→precompose-faithful
 _ = eso-full→pre-ff
 _ = Rezk-completion
 _ = complete-is-eso
@@ -1009,7 +1009,7 @@ _ = complete
 ```
 -->
 
-* Lemma 9.9.1: `eso→pre-faithful`{.Agda}
+* Lemma 9.9.1: `eso→precompose-faithful`{.Agda}
 * Lemma 9.9.2: `eso-full→pre-ff`{.Agda}
 * Lemma 9.9.4: `weak-equiv→pre-equiv`{.Agda}, `weak-equiv→pre-iso`{.Agda}
 * Theorem 9.9.5: `Rezk-completion`{.Agda}, `Rezk-completion-is-category`{.Agda}, `complete`{.Agda}, `complete-is-ff`{.Agda}, `complete-is-eso`{.Agda}.
