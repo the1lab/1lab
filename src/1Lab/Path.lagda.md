@@ -486,10 +486,10 @@ with faces $p$, $q$, $r$, and $s$, as in the diagram below.
   {a_{00}} && {a_{10}} \\
   \\
   {a_{01}} && {a_{11}}
-  \arrow["q(i)"', from=1-1, to=3-1]
-  \arrow["p(j)", from=1-1, to=1-3]
-  \arrow["s(i)", from=1-3, to=3-3]
-  \arrow["r(j)"', from=3-1, to=3-3]
+  \arrow["p(i)"', from=1-1, to=3-1]
+  \arrow["q(j)", from=1-1, to=1-3]
+  \arrow["r(i)", from=1-3, to=3-3]
+  \arrow["s(j)"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 :::
