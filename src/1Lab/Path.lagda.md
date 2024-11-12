@@ -486,10 +486,10 @@ with faces $p$, $q$, $r$, and $s$, as in the diagram below.
   {a_{00}} && {a_{10}} \\
   \\
   {a_{01}} && {a_{11}}
-  \arrow["p(i)"', from=1-1, to=3-1]
-  \arrow["q(j)", from=1-1, to=1-3]
-  \arrow["r(i)", from=1-3, to=3-3]
-  \arrow["s(j)"', from=3-1, to=3-3]
+  \arrow["p(j)"', from=1-1, to=3-1]
+  \arrow["q(i)", from=1-1, to=1-3]
+  \arrow["r(j)", from=1-3, to=3-3]
+  \arrow["s(i)"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 :::
@@ -1503,13 +1503,13 @@ for the single composition, whose type we read as saying that $\refl
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  x && x \\
+  x && y \\
   & {\bullet\text{-filler}~ p~ q}      \\
-  y && z
-  \arrow["{\refl}", from=1-1, to=1-3]
-  \arrow["{p}"', from=1-1, to=3-1]
-  \arrow["{p \bullet q}", dashed, from=1-3, to=3-3]
-  \arrow["{q}"', from=3-1, to=3-3]
+  x && z
+  \arrow["{p}", from=1-1, to=1-3]
+  \arrow["{\refl}"', from=1-1, to=3-1]
+  \arrow["{q}", from=1-3, to=3-3]
+  \arrow["{p \bullet q}"', dashed, from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
