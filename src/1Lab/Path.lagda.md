@@ -1503,9 +1503,9 @@ for the single composition, whose type we read as saying that $\refl
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  x && y \\
+  x && x \\
   & {\bullet\text{-filler}~ p~ q}      \\
-  x && z
+  y && z
   \arrow["{\refl}", from=1-1, to=1-3]
   \arrow["{p}"', from=1-1, to=3-1]
   \arrow["{p \bullet q}", dashed, from=1-3, to=3-3]
