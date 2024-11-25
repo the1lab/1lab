@@ -149,7 +149,7 @@ is reflective!
       unit-strong-mono : C.is-strong-mono (η x)
       unit-strong-mono =
         C.strong-mono-cancell (R.₁ (L.₁ f)) (η x) $
-        C.cast-is-strong-mono (unit.is-natural _ _ _) $
+        C.subst-is-strong-mono (unit.is-natural _ _ _) $
         C.strong-mono-∘ (η (R.₀ a)) f
           (C.invertible→strong-mono (is-reflective→unit-G-is-iso L⊣R reflective))
           f-strong-mono
@@ -224,7 +224,7 @@ $L \dashv R$ is reflective.
       RL[m]∘RL[e]-invertible
         : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
       RL[m]∘RL[e]-invertible =
-        C.cast-is-invertible (R.expand (L.expand factors)) $
+        C.subst-is-invertible (R.expand (L.expand factors)) $
         R.F-map-invertible $
         is-reflective→F-unit-is-iso L⊣R reflective
 ```
@@ -249,7 +249,7 @@ right-cancellation of epis to deduce that $R(L(e))$ must be epic.
       RL[e]-epic : C.is-epic (R.₁ (L.₁ e))
       RL[e]-epic =
         C.epic-cancelr $
-        C.cast-is-epic (unit.is-natural _ _ _) $
+        C.subst-is-epic (unit.is-natural _ _ _) $
         C.epic-∘
           (C.invertible→epic unit-im-invertible)
           (□-out! e-epi)
@@ -283,7 +283,7 @@ itself be invertible, so $m$ is invertible via 2-out-of-3.
       m-invertible =
         C.invertible-cancelr
           (is-reflective→unit-G-is-iso L⊣R reflective)
-          (C.cast-is-invertible (sym (unit.is-natural _ _ _)) $
+          (C.subst-is-invertible (sym (unit.is-natural _ _ _)) $
              C.invertible-∘ RL[m]-invertible unit-im-invertible)
 ```
 
@@ -293,7 +293,7 @@ so it must also be an epi.
 ```agda
       unit-epic : C.is-epic (η x)
       unit-epic =
-        C.cast-is-epic (sym factors) $
+        C.subst-is-epic (sym factors) $
         C.epic-∘
           (C.invertible→epic m-invertible)
           (□-out! e-epi)
@@ -336,7 +336,7 @@ diagram chase; we will spare the innocent reader the details.
       unit-mono : C.is-monic (η x)
       unit-mono =
         C.monic-cancell $
-        C.cast-is-monic (unit.is-natural _ _ _) $
+        C.subst-is-monic (unit.is-natural _ _ _) $
         C.monic-∘
           (C.invertible→monic (is-reflective→unit-G-is-iso L⊣R reflective))
           f-mono
@@ -359,7 +359,7 @@ diagram chase; we will spare the innocent reader the details.
       RL[m]∘RL[e]-invertible
         : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
       RL[m]∘RL[e]-invertible =
-        C.cast-is-invertible (R.expand (L.expand factors)) $
+        C.subst-is-invertible (R.expand (L.expand factors)) $
         R.F-map-invertible $
         is-reflective→F-unit-is-iso L⊣R reflective
 
@@ -372,7 +372,7 @@ diagram chase; we will spare the innocent reader the details.
       RL[e]-strong-epi : C.is-strong-epi (R.₁ (L.₁ e))
       RL[e]-strong-epi =
         C.strong-epi-cancelr _ _ $
-        C.cast-is-strong-epi (unit.is-natural _ _ _) $
+        C.subst-is-strong-epi (unit.is-natural _ _ _) $
         C.strong-epi-∘ _ _
           (C.invertible→strong-epi unit-im-invertible)
           (□-out! e-strong-epi)
@@ -392,12 +392,12 @@ diagram chase; we will spare the innocent reader the details.
       m-invertible =
         C.invertible-cancelr
           (is-reflective→unit-G-is-iso L⊣R reflective)
-          (C.cast-is-invertible (sym (unit.is-natural _ _ _)) $
+          (C.subst-is-invertible (sym (unit.is-natural _ _ _)) $
              C.invertible-∘ RL[m]-invertible unit-im-invertible)
 
       unit-strong-epi : C.is-strong-epi (η x)
       unit-strong-epi =
-        C.cast-is-strong-epi (sym factors) $
+        C.subst-is-strong-epi (sym factors) $
         C.strong-epi-∘ _ _
           (C.invertible→strong-epi m-invertible)
           (□-out! e-strong-epi)

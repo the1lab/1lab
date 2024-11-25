@@ -498,13 +498,13 @@ invertible→strong-epi f-inv =
   invertible→epic f-inv , λ m →
   invertible→left-orthogonal C (m .mor) f-inv
 
-cast-is-strong-epi
+subst-is-strong-epi
   : ∀ {a b} {f g : Hom a b}
   → f ≡ g
   → is-strong-epi f
   → is-strong-epi g
-cast-is-strong-epi f=g f-strong-epi =
-  lifts→is-strong-epi (cast-is-epic f=g (f-strong-epi .fst)) λ m vg=mu →
+subst-is-strong-epi f=g f-strong-epi =
+  lifts→is-strong-epi (subst-is-epic f=g (f-strong-epi .fst)) λ m vg=mu →
     let (h , hf=u , mh=v) = f-strong-epi .snd m (ap₂ _∘_ refl f=g ∙ vg=mu) .centre
     in h , ap (h ∘_) (sym f=g) ∙ hf=u , mh=v
 ```

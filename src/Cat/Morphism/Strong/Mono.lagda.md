@@ -160,13 +160,13 @@ strong-mono+epi→invertible {f = f} (_ , strong) epi =
 
 <!--
 ```agda
-cast-is-strong-mono
+subst-is-strong-mono
   : ∀ {a b} {f g : Hom a b}
   → f ≡ g
   → is-strong-mono f
   → is-strong-mono g
-cast-is-strong-mono f=g f-strong-mono =
-  lifts→is-strong-mono (cast-is-monic f=g (f-strong-mono .fst)) λ e vg=mu →
+subst-is-strong-mono f=g f-strong-mono =
+  lifts→is-strong-mono (subst-is-monic f=g (f-strong-mono .fst)) λ e vg=mu →
     let (h , he=u , fh=v) = f-strong-mono .snd e (vg=mu ∙ ap₂ _∘_ (sym f=g) refl) .centre
     in h , he=u , ap (_∘ h) (sym f=g) ∙ fh=v
 ```

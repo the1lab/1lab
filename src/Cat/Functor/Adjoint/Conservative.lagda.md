@@ -125,7 +125,7 @@ strong epis.
       f-strong-epi : D.is-strong-epi f
       f-strong-epi =
         D.strong-epi-cancelr f (ε x) $
-        D.cast-is-strong-epi (counit.is-natural x y f) $
+        D.subst-is-strong-epi (counit.is-natural x y f) $
         D.strong-epi-∘ (ε y) (L.₁ (R.₁ f))
           ε-strong-epi
           (D.invertible→strong-epi (L.F-map-invertible Rf-inv))
