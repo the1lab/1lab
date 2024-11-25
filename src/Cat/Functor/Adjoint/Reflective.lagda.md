@@ -76,6 +76,7 @@ is-reflective {G = G} adj = is-fully-faithful G
 The first thing we will prove is that the counit map $\eps : FGo \to o$
 of a reflexive subcategory inclusion is invertible. Luckily, we have
 developed enough general theory to make this almost immediate:
+
 - $G$ is full, so the counit must be a [[split monomorphism]].
 - $G$ is faithful, so the counit must be a [[epimorphism]].
 - Every morphism that is simultaneously split monic and epic is invertible.
@@ -249,6 +250,7 @@ module _
 -->
 
 Again, the sea has risen to meet us:
+
 - [[A right adjoint is faithful if and only if the counit is epic|faithful-adjoint]].
 - [[A right adjoint full if and only if the counit is split monic|full-adjoint]].
 

@@ -119,8 +119,8 @@ If $L \dashv R$ is epireflective, and $f : \cC(X,R(A))$ is a
 It suffices to show that $\eta_{X}$ is a strong monomorphism, as strong
 monos that are epic are isos. Luckily, this is rather straightforward:
 strong monos can be left cancelled, so we can resort to showing that
-$R(L(f)) \circ \eta_{X}$ is strong monic. However, $\eta$ is natural:
-this gives us the following commutative square:
+$R(L(f)) \circ \eta_{X}$ is strong monic. However, $\eta$ is natural,
+which gives us the following commutative square:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -156,9 +156,10 @@ is reflective!
 ```
 
 We also can prove a partial converse. $L \dashv R$ is epireflective if:
+
 - $L \dashv R$ is reflective.
 - $\eta_{X}$ is invertible if there is a strong mono $C(x, R(a))$.
-- Every morphism $f : C(x,y)$ factors as a epi followed by a strong mono.
+- Every morphism $f : C(x,y)$ factors as an epi followed by a strong mono.
 
 By our assumptions, $L \dashv R$ is reflective, so all we need to show is
 that the unit is always epic.

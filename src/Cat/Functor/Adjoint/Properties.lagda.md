@@ -46,6 +46,7 @@ module _
 
 Let $L \dashv R$ be a pair of adjoint functors. The following conditions
 are equivalent:
+
 1. $L$ is [[faithful]].
 2. The unit of the adjunction is [[monic]].
 3. $L$ reflects monomorphisms.
