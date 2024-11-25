@@ -23,7 +23,7 @@ open Underlying using (ℓ-underlying)
 -- Workaround for Agda bug https://github.com/agda/agda/issues/6588 —
 -- the principal (instance) argument is reified as visible, so we can
 -- drop it using a display form.
-{-# DISPLAY Underlying.⌞_⌟ f x = ⌞ x ⌟ #-}
+{-# DISPLAY Underlying.⌞_⌟ _ x = ⌞ x ⌟ #-}
 
 instance
 -- For universes, we use the standard notion of "underlying type".
@@ -79,7 +79,7 @@ record Funlike {ℓ ℓ' ℓ''} (A : Type ℓ) (arg : Type ℓ') (out : arg → 
   infixl 999 _#_
 
 open Funlike ⦃ ... ⦄ using (_#_) public
-{-# DISPLAY Funlike._#_ p f x = f # x #-}
+{-# DISPLAY Funlike._#_ _ f x = f # x #-}
 
 -- Sections of the _#_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta

@@ -21,7 +21,7 @@ record Membership {ℓ ℓe} (A : Type ℓe) (ℙA : Type ℓ) ℓm : Type (ℓ 
   infix 30 _∈_
 
 open Membership ⦃ ... ⦄ using (_∈_) public
-{-# DISPLAY Membership._∈_ i a b = a ∈ b #-}
+{-# DISPLAY Membership._∈_ _ a b = a ∈ b #-}
 
 -- The prototypical instance is given by functions into a universe:
 
@@ -65,7 +65,7 @@ record Inclusion {ℓ} (ℙA : Type ℓ) ℓi : Type (ℓ ⊔ lsuc (ℓi)) where
   infix 30 _⊆_
 
 open Inclusion ⦃ ... ⦄ using (_⊆_) public
-{-# DISPLAY Inclusion._⊆_ i a b = a ⊆ b #-}
+{-# DISPLAY Inclusion._⊆_ _ a b = a ⊆ b #-}
 
 instance
   Inclusion-default

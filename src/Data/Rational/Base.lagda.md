@@ -207,7 +207,7 @@ _/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
 
 infix 11 _/_
 
-{-# DISPLAY ℚ.inc (Coeq.inc (_/_[_] x y p)) = x / y #-}
+{-# DISPLAY ℚ.inc (Coeq.inc (_/_[_] x y _)) = x / y #-}
 {-# DISPLAY _/_ x (Int.pos 1) = x #-}
 
 _/1 : Int → ℚ
