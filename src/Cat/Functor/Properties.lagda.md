@@ -231,7 +231,7 @@ precomposition functor $(-) \circ F : [\cD,\cA] \to [\cC,\cA]$ is faithful
 for every precategory $\cA$.
 
 ```agda
-  eso→precompose-faithful
+  is-eso→precompose-is-faithful
     : ∀ {oa ℓa} {A : Precategory oa ℓa}
     → (F : Functor C D)
     → is-eso F
@@ -250,7 +250,7 @@ $F$ doesn't miss out on any objects of $d$, but the actual proof involves
 some rather tedious calculations.
 </summary>
 ```agda
-  eso→precompose-faithful {A = A} F F-eso {G} {H} {α} {β} αL=βL =
+  is-eso→precompose-is-faithful {A = A} F F-eso {G} {H} {α} {β} αL=βL =
     ext λ d → ∥-∥-out! do
       (c , Fc≅d) ← F-eso d
       let module Fc≅d = D._≅_ Fc≅d

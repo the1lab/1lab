@@ -71,7 +71,7 @@ category]], then $- \circ H$ is essentially surjective. By the principle
 of unique choice, it is an equivalence, and thus^[since both its domain
 and codomain are univalent] an isomorphism.
 
-Luckily, we `already know`{.Agda ident=eso→precompose-faithful} that precomposition
+Luckily, we `already know`{.Agda ident=is-eso→precompose-is-faithful} that precomposition
 with an eso functor extends to a faithful functor. Unfortunately, the
 remaining two steps are both _quite_ technical: that's because we're given
 some _mere_^[truncated] data, from the assumption that $H$ is a weak
@@ -269,7 +269,7 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
   res =
     full+faithful→ff (precompose H)
       full
-      (eso→precompose-faithful H H-eso)
+      (is-eso→precompose-is-faithful H H-eso)
 ```
 
 ## Essential surjectivity
