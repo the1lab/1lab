@@ -5,8 +5,8 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Morphism.Strong.Epi
 open import Cat.Functor.Properties
-open import Cat.Morphism.StrongEpi
 open import Cat.Morphism.Duality
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -39,7 +39,7 @@ private variable
 ```
 -->
 
-# Actions of functors on morphisms
+# Actions of functors on morphisms {defines="preserves-monos preserves-epis reflects-monos reflects-epis"}
 
 This module describes how various classes of functors act on designated
 collections of morphisms.
@@ -79,6 +79,8 @@ reflects-epis =
   ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒟.is-epic (F₁ f) → 𝒞.is-epic f
 ```
 
+Functors that reflect invertible morphisms are called [[conservative]],
+and are notable enough to deserve their own name and page!
 
 ## Faithful functors
 
@@ -193,7 +195,7 @@ formally dual to the case above, we will not dwell on it.
 
 </details>
 
-## Left and right adjoints
+## Left and right adjoints {defines="right-adjoints-preserve-monos"}
 
 If we are given an [[adjunction]] $L \dashv F$, then the right adjoint
 $F$ preserves monomorphisms. Fix a mono $a : \cC(A,B)$, and let $f, g :
@@ -219,7 +221,7 @@ module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
 ```agda
   right-adjoint→preserves-monos : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
   right-adjoint→preserves-monos {a = a} a-monic f g p =
-    Equiv.injective (_ , R-adjunct-is-equiv L⊣F) $
+    R-adjunct.injective L⊣F $
     a-monic _ _ $
     a 𝒞.∘ ε _ 𝒞.∘ L.₁ f            ≡⟨ 𝒞.pulll (sym (counit.is-natural _ _ _)) ⟩
     (ε _ 𝒞.∘ L.₁ (F₁ a)) 𝒞.∘ L.₁ f ≡⟨ L.extendr p ⟩
@@ -241,7 +243,7 @@ module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
 
   left-adjoint→preserves-epis : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
   left-adjoint→preserves-epis {a = a} a-epic f g p =
-    Equiv.injective (_ , L-adjunct-is-equiv F⊣R) $
+    L-adjunct.injective F⊣R $
     a-epic _ _ $
     𝒞.pullr (unit.is-natural _ _ _)
     ∙ R.extendl p

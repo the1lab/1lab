@@ -11,7 +11,7 @@ open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
 
 import Cat.Diagram.Separator.Strong
-import Cat.Morphism.StrongEpi
+import Cat.Morphism.Strong.Epi
 import Cat.Diagram.Separator
 import Cat.Reasoning
 ```
@@ -26,7 +26,7 @@ module Cat.Diagram.Separator.Regular
 
 <!--
 ```agda
-open Cat.Morphism.StrongEpi C
+open Cat.Morphism.Strong.Epi C
 open Cat.Diagram.Separator.Strong C coprods
 open Cat.Diagram.Separator C
 open Cat.Reasoning C

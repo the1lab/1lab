@@ -3,7 +3,7 @@
 -- {-# OPTIONS --lossy-unification #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Factorisation
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
@@ -76,7 +76,7 @@ epimorphism] preserves images. Intuitively, this is because a strong
 epimorphism $a \epi b$ expresses $b$ as a quotient, but this
 decomposition does not alter the image of a map $b \to c$.
 
-[strong epimorphism]: Cat.Morphism.StrongEpi.html
+[strong epimorphism]: Cat.Morphism.Strong.Epi.html
 [relations in regular categories]: Cat.Bi.Instances.Relations.html
 
 ```agda

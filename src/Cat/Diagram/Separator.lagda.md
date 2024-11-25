@@ -27,7 +27,7 @@ open import Cat.Prelude
 
 open import Data.Dec.Base
 
-import Cat.Morphism.StrongEpi
+import Cat.Morphism.Strong.Epi
 import Cat.Reasoning
 ```
 -->
@@ -38,7 +38,7 @@ module Cat.Diagram.Separator {o ℓ} (C : Precategory o ℓ) where
 
 <!--
 ```agda
-open Cat.Morphism.StrongEpi C
+open Cat.Morphism.Strong.Epi C
 open Cat.Reasoning C
 open _=>_
 ```

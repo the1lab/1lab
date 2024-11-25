@@ -15,6 +15,7 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
+import Cat.Natural.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -78,8 +79,8 @@ record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level C D) where
     unit   : Id => (R F∘ L)
     counit : (L F∘ R) => Id
 
-  module unit = _=>_ unit
-  module counit = _=>_ counit renaming (η to ε)
+  module unit = Cat.Natural.Reasoning unit
+  module counit = Cat.Natural.Reasoning counit renaming (η to ε)
 
   open unit using (η) public
   open counit using (ε) public
@@ -165,7 +166,7 @@ module _
 ```
 -->
 
-## Adjuncts {defines=adjuncts}
+## Adjuncts {defines="adjunct left-adjunct right-adjunct"}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any

@@ -139,6 +139,12 @@ shufflel p = popl p ∙ sym (𝒟.assoc _ _ _)
 
 shuffler : F₁ b 𝒟.∘ f ≡ g 𝒟.∘ h → F₁ (a 𝒞.∘ b) 𝒟.∘ f ≡ (F₁ a 𝒟.∘ g) 𝒟.∘ h
 shuffler p = popr p ∙ (𝒟.assoc _ _ _)
+
+remover : F₁ b 𝒟.∘ f ≡ 𝒟.id → F₁ (a 𝒞.∘ b) 𝒟.∘ f ≡ F₁ a
+remover p = popr p ∙ 𝒟.idr _
+
+removel : f 𝒟.∘ F₁ a ≡ 𝒟.id → f 𝒟.∘ F₁ (a 𝒞.∘ b) ≡ F₁ b
+removel p = popl p ∙ 𝒟.idl _
 ```
 
 ## Cancellation
@@ -179,6 +185,31 @@ module _ (inv : a 𝒞.∘ b 𝒞.∘ c ≡ 𝒞.id) where
   insertr3 : f ≡ ((f 𝒟.∘ F₁ a) 𝒟.∘ F₁ b) 𝒟.∘ F₁ c
   insertr3 = 𝒟.insertr3 annihilate3
 ```
+
+## Lenses
+
+```agda
+unpackl
+  : F₁ a 𝒟.∘ F₁ b ≡ f
+  → F₁ (a 𝒞.∘ b) ≡ f
+unpackl p = F-∘ _ _ ∙ p
+
+packl
+  : F₁ (a 𝒞.∘ b) ≡ f
+  → F₁ a 𝒟.∘ F₁ b ≡ f
+packl p = sym (F-∘ _ _) ∙ p
+
+unpackr
+  : f ≡ F₁ a 𝒟.∘ F₁ b
+  → f ≡ F₁ (a 𝒞.∘ b)
+unpackr p = p ∙ sym (F-∘ _ _)
+
+packr
+  : f ≡ F₁ (a 𝒞.∘ b)
+  → f ≡ F₁ a 𝒟.∘ F₁ b
+packr p = p ∙ F-∘ _ _
+```
+
 
 ## Notation
 

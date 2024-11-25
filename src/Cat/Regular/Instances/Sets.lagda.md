@@ -2,7 +2,7 @@
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Sets.Complete
 open import Cat.Morphism.Factorisation
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Sets
 open import Cat.Prelude

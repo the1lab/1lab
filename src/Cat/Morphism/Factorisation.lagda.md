@@ -212,7 +212,7 @@ orthogonal to itself, hence an isomorphism.
 ```agda
   in-intersection→is-iso
     : ∀ {a b} (f : C.Hom a b) → f ∈ E → f ∈ M → C.is-invertible f
-  in-intersection→is-iso f f∈E f∈M = self-orthogonal→is-iso C f $ E⊥M f f f∈E f∈M
+  in-intersection→is-iso f f∈E f∈M = self-orthogonal→invertible C f $ E⊥M f f f∈E f∈M
 
   in-intersection≃is-iso
     : ∀ {a b} (f : C.Hom a b) → C.is-invertible f ≃ ((f ∈ E) × (f ∈ M))
