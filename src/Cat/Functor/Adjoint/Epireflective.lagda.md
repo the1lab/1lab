@@ -180,10 +180,7 @@ diagram:
    X &&&& {R(L(X))} \\
    && I \\
    {R(L(X))} &&&& {R(L(R(L(X))))} \\
-   && {R(L(I))} \\
-   \\
-   \\
-   && \bullet
+   && {R(L(I))}
    \arrow["{\eta_{X}}", no head, from=1-1, to=1-5]
    \arrow["e"', two heads, from=1-1, to=2-3]
    \arrow["{\eta_{X}}"', from=1-1, to=3-1]

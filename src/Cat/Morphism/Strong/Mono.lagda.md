@@ -54,7 +54,7 @@ lifts→is-strong-mono
   : ∀ {c d} {f : Hom c d}
   → is-monic f
   → (∀ {a b} (e : a ↠ b) {u v} → v ∘ e .mor ≡ f ∘ u
-    → Σ[ w ∈ Hom b c ] w ∘ e .mor ≡ u × f ∘ w ≡ v)
+    → Lifting C (e .mor) f u v)
   → is-strong-mono f
 lifts→is-strong-mono monic lift-it =
   monic , λ e →
@@ -113,17 +113,9 @@ strong-mono-∘
   → is-strong-mono g
   → is-strong-mono (f ∘ g)
 strong-mono-∘ f g (f-mono , f-str) (g-mono , g-str) =
-  lifts→is-strong-mono fg-mono fg-str
-    where
-      fg-mono : is-monic (f ∘ g)
-      fg-mono = monic-∘ f-mono g-mono
-
-      fg-str : ∀ {a b} (e : a ↠ b) {u v} → v ∘ e .mor ≡ (f ∘ g) ∘ u → _
-      fg-str e {u} {v} ve=fgu =
-          let (w , we=gu , fw=v) = f-str e (reassocr.to ve=fgu) .centre
-              (t , te=u , gt=w) = g-str e we=gu .centre
-          in t , te=u , pullr gt=w ∙ fw=v
-
+  lifts→is-strong-mono (monic-∘ f-mono g-mono) λ e → ∘r-lifts-against C
+    (orthogonal→lifts-against C (f-str e))
+    (orthogonal→lifts-against C (g-str e))
 ```
 
 Like their non-strong counterparts, strong monomorphisms satisfy a

@@ -56,7 +56,7 @@ lifts→is-strong-epi
   : ∀ {a b} {f : Hom a b}
   → is-epic f
   → ( ∀ {c d} (m : c ↪ d) {u} {v} → v ∘ f ≡ m .mor ∘ u
-    → Σ[ w ∈ Hom b c ] ((w ∘ f ≡ u) × (m .mor ∘ w ≡ v)))
+    → Lifting C f (m .mor) u v)
   → is-strong-epi f
 lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
   contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path!
@@ -95,10 +95,29 @@ by commutativity of the lower triangles we have $g\alpha = u = g\beta$.
 
 ## Properties
 
-The proofs here are transcribed from [@Borceux:vol1, §4.3]. Strong
-epimorphisms are closed under composition, for suppose that $f$ and $g$
-are strong epics, and $m$ is the monomorphism to lift against. Fit them
-in a skewed commutative _rectangle_ like
+The first thing we show is that strong epimorphisms are closed under
+composition. It will suffice to show that the composite $fg$ of a pair
+of strong epimorphisms is epic, and that it [[lifts against]] every
+monomorphism. But this is just a pasting of existing results: we already
+know that being epic is `closed under composition`{.Agda ident=epic-∘},
+and that so is `lifting against a given map`{.Agda
+ident=∘l-lifts-against} --- in this case, an arbitrary monomorphism $m$.
+
+```agda
+strong-epi-∘
+  : ∀ {a b c} (f : Hom b c) (g : Hom a b)
+  → is-strong-epi f
+  → is-strong-epi g
+  → is-strong-epi (f ∘ g)
+strong-epi-∘ f g (f-epi , f-str) (g-epi , g-str) =
+  lifts→is-strong-epi (epic-∘ f-epi g-epi) λ e → ∘l-lifts-against C
+    (orthogonal→lifts-against C (f-str e))
+    (orthogonal→lifts-against C (g-str e))
+```
+
+Additionally, there is a partial converse to this result: If the
+composite $gf$ is a strong epi, then $g$ is, too! It'll help to diagram
+the situation:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -110,43 +129,14 @@ in a skewed commutative _rectangle_ like
   \arrow["u"', from=1-1, to=3-1]
   \arrow["z"', hook, from=3-1, to=3-5]
   \arrow["v", from=1-5, to=3-5]
-  \arrow["w"{description}, dashed, from=1-3, to=3-1]
-  \arrow["t"{description}, dashed, from=1-5, to=3-1]
+  \arrow["w"', dashed, from=1-3, to=3-1]
+  \arrow["t", dashed, from=1-5, to=3-1]
 \end{tikzcd}\]
 ~~~
 
-By considering most of the right half as a single, weirdly-shaped square
-(the $vfg = zu$ commutative "square"), we get an intermediate lift $w :
-b \to d$ such that $wg = u$ and $zw=vf$ --- such that $z$, $w$, $f$, and
-$v$ organise into the faces of a lifting diagram, too$ Since $f$ is a
-strong epic, we have a _second_ lift $t : c \to d$, now satisfying
-$tf=w$ and $zt=v$. A quick calculation, implicit in the diagram, shows
-that $t$ is precisely the lift for $fg$ against $z$.
-
-```agda
-strong-epi-∘
-  : ∀ {a b c} (f : Hom b c) (g : Hom a b)
-  → is-strong-epi f
-  → is-strong-epi g
-  → is-strong-epi (f ∘ g)
-strong-epi-∘ f g (f-epi , f-str) (g-epi , g-str) =
-  lifts→is-strong-epi fg-epi fg-str
-  where
-    fg-epi : is-epic (f ∘ g)
-    fg-epi = epic-∘ f-epi g-epi
-
-    fg-str : ∀ {c d} (m : c ↪ d) {u v} → v ∘ f ∘ g ≡ m .mor ∘ u → _
-    fg-str m {u} {v} vfg=zu =
-      let (w , wg=u , mw=vf) = g-str m (reassocl.from vfg=zu) .centre
-          (t , tf=w , mt=v)  = f-str m (sym mw=vf) .centre
-      in t , pulll tf=w ∙ wg=u , mt=v
-```
-
-Additionally, there is a partial converse to this result: If the
-composite $gf$ is a strong epi, then $g$ is, too! Still thinking of the
-same diagram, suppose the whole diagram is a strong epi, and you're
-given $zw = vf$ to lift $f$ against $z$. We don't have a $u$ as before,
-but we can take $u = wg$ to get a lift $t$.
+We can now name our assumptions: we're given $zw = vf$ to lift $f$
+against $z$. We don't have a $u$ as before, but we can take $u = wg$ to
+get a lift $t$.
 
 ```agda
 strong-epi-cancelr
@@ -422,7 +412,7 @@ is-extremal-epi→is-strong-epi {a} {b} {e} lex extremal =
     module lex = Finitely-complete lex
 ```
 
-We adapt the proof from [@Borceux:vol1; §4.3.7]. After
+We adapt the proof from [@Borceux:vol1, §4.3.7]. After
 `equaliser-lifts→is-strong-epi`{.Agda}, it will suffice to construct
 _some_ lift for a square with $ve = mu$, with $m$ monic. Pull $v$ back
 along $m$ to obtain the square
@@ -506,7 +496,7 @@ invertible→strong-epi
   → is-strong-epi f
 invertible→strong-epi f-inv =
   invertible→epic f-inv , λ m →
-  invertible→left-orthogonal C f-inv (m .mor)
+  invertible→left-orthogonal C (m .mor) f-inv
 
 cast-is-strong-epi
   : ∀ {a b} {f g : Hom a b}
