@@ -452,6 +452,7 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
 don'tFold :: Set.Set Text
 don'tFold = Set.fromList
   [ "`⟨" -- used in CC.Lambda
+  , "‶⟨" -- used in Cat.Diagram.Product.Solver
   ]
 
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
