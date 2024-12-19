@@ -55,10 +55,12 @@ unique among functions with these properties.
       → ∀ x → f x ≡ map-out p r x
 ```
 
-By a standard categorical argument, existence and uniqueness together give us an
+By a [standard categorical argument], existence and uniqueness together give us an
 *induction principle* for the integers: to construct a section of a type family
 $P : \bb{Z} \to \ty$, it is enough to give an element of $P(0)$ and a family of
 equivalences $P(n) \simeq P(n + 1)$.
+
+[standard categorical argument]: Data.Wellfounded.W.html#initial-algebras-are-inductive-types
 
 ```agda
   ℤ-η : ∀ z → map-out point rotate z ≡ z
