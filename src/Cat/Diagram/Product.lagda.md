@@ -246,7 +246,11 @@ module Binary-products
 
   -- Note: here and below we have to open public the aliases in a module
   -- with parameters so Agda picks up the display forms.
-  module _ {a b} where open Product (all-products a b) renaming (unique to ⟨⟩-unique) hiding (apex) public
+  module _ {a b} where
+    open Product (all-products a b)
+      renaming (unique to ⟨⟩-unique; unique₂ to ⟨⟩-unique₂)
+      hiding (apex)
+      public
   open Functor
 
   infix 50 _⊗₁_
@@ -294,14 +298,14 @@ We also define a handful of common morphisms.
 <!--
 ```agda
   δ-natural : is-natural-transformation Id (×-functor F∘ Cat⟨ Id , Id ⟩) λ _ → δ
-  δ-natural x y f = unique₂
+  δ-natural x y f = ⟨⟩-unique₂
     (cancell π₁∘⟨⟩) (cancell π₂∘⟨⟩)
     (pulll π₁∘⟨⟩ ∙ cancelr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
 
   swap-is-iso : ∀ {a b} → is-invertible (swap {a} {b})
   swap-is-iso = make-invertible swap
-    (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
-    (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+    (⟨⟩-unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+    (⟨⟩-unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
 
   swap-natural
     : ∀ {A B C D} ((f , g) : Hom A C × Hom B D)
@@ -317,8 +321,8 @@ We also define a handful of common morphisms.
   swap-δ = ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)
 
   assoc-δ : ∀ {a} → ×-assoc ∘ (id ⊗₁ δ {a}) ∘ δ {a} ≡ (δ ⊗₁ id) ∘ δ
-  assoc-δ = unique₂
-    (pulll π₁∘⟨⟩ ∙ unique₂
+  assoc-δ = ⟨⟩-unique₂
+    (pulll π₁∘⟨⟩ ∙ ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙ pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
       (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₁∘⟨⟩) ∙ pullr π₂∘⟨⟩)
       (pulll (pulll π₁∘⟨⟩) ∙ pullr π₁∘⟨⟩)
