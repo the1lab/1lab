@@ -16,8 +16,8 @@ open import Data.Set.Surjection
 open import Data.Dec
 
 import Cat.Diagram.Separator.Strong
+import Cat.Morphism.Strong.Epi
 import Cat.Diagram.Projective
-import Cat.Morphism.StrongEpi
 import Cat.Reasoning
 ```
 -->
@@ -31,7 +31,7 @@ module Cat.Diagram.Projective.Strong
 <!--
 ```agda
 open Cat.Diagram.Projective C
-open Cat.Morphism.StrongEpi C
+open Cat.Morphism.Strong.Epi C
 open Cat.Reasoning C
 ```
 -->

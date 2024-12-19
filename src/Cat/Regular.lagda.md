@@ -4,7 +4,7 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Prelude
@@ -29,7 +29,7 @@ pullback.
 [image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [orthogonal morphisms]: Cat.Morphism.Orthogonal.html
-[strong epimorphisms]: Cat.Morphism.StrongEpi.html
+[strong epimorphisms]: Cat.Morphism.Strong.Epi.html
 
 At face value, it's a bit weird to take the definition of regular
 categories to talk about strong, rather than _regular_, epimorphisms.
@@ -352,7 +352,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
 ```agda
         rem₅ : is-strong-epi 𝒞 d×d
-        rem₅ = subst (is-strong-epi 𝒞) rem₄ (strong-epi-compose 𝒞 _ _ rem₂ rem₃)
+        rem₅ = subst-is-strong-epi 𝒞 rem₄ (strong-epi-∘ 𝒞 _ _ rem₃ rem₂)
 
         rem₆ : is-strong-epi 𝒞 p
         rem₆ = r.stable _ _ rem₅ pb.has-is-pb
