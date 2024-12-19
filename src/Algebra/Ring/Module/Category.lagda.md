@@ -264,6 +264,6 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 
-<!-- TODO [Amy 2022-09-15]
+<!-- [TODO: Amy, 2022-09-15]
 Define kernels, cokernels, and show that ker (coker f) ≃ coker (ker f).
 -->

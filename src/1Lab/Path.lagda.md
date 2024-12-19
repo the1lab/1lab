@@ -557,7 +557,7 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p q : Path A a b} where private
 ```
 
 <!--
-```
+```agda
 SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
   {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
@@ -2311,8 +2311,6 @@ subst-path-both p adj = transport-path p adj adj
 ```
 
 <!--
-TODO: Explain these whiskerings
-
 ```agda
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
   → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁

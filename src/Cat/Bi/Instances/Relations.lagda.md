@@ -84,7 +84,7 @@ this fibre is a morphism $p : \Gamma \to R$ satisfying $fp = x$ and $gp
 = y$.]
 
 <!--
-```
+```agda
 module Relation {a b} (r : _↬_ a b) where
   rel : Ob
   rel = r .domain

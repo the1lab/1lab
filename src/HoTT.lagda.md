@@ -798,7 +798,7 @@ _ = πₙ₊₂S¹≡0
 ### 8.2: Connectedness of suspensions
 
 <!--
-```
+```agda
 _ = Susp-is-connected
 _ = Sⁿ⁻¹-is-connected
 ```

@@ -24,7 +24,7 @@ module 1Lab.HLevel.Closure where
 # Closure of h-levels
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ' : Level
   A B C : Type ℓ

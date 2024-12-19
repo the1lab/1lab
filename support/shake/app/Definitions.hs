@@ -64,7 +64,7 @@ mangleLink = doit where
 parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
 parseDefinitions anchor input = liftIO do
   Pandoc _meta markdown <- readLabMarkdown input
-  pure $ appEndo (query (definitionBlock anchor) markdown) (Glossary mempty)
+  pure $ appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
 
 data Definition = Definition
   { definitionModule :: FilePath
@@ -79,8 +79,8 @@ instance Eq Definition where
 instance Hashable Definition where
   hashWithSalt s = hashWithSalt s . definitionAnchor
 
-definitionBlock :: FilePath -> Block -> Endo Glossary
-definitionBlock fp = go where
+definitionBlock :: FilePath -> FilePath -> Block -> Endo Glossary
+definitionBlock inp fp = go where
   mod = dropExtension fp
   add id v = Endo $ addDefinition (mangleLink v) Definition
     { definitionModule = mod
@@ -97,7 +97,7 @@ definitionBlock fp = go where
   go (Header _ (id, _, keys) _inline) =
     foldMap (addMany id) (lookup "defines" keys)
 
-  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ fp
+  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ inp
 
   go _ = mempty
 

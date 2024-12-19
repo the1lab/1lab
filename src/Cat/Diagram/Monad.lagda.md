@@ -26,7 +26,7 @@ module Cat.Diagram.Monad where
 ```
 
 <!--
-```
+```agda
 module _ {o h : _} (C : Precategory o h) where
   private module C = Cat.Reasoning C
 ```

@@ -50,7 +50,7 @@ module _ {ℓ} (G : Group ℓ) where
 ```
 
 <!--
-```
+```agda
   private instance
     H-Level-Deloop : ∀ {n} → H-Level Deloop (3 + n)
     H-Level-Deloop = basic-instance 3 squash

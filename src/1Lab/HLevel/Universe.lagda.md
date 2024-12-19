@@ -2,7 +2,7 @@
 description: Using univalence, we compute the h-level of the universe of n types.
 ---
 <!--
-```
+```agda
 open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
@@ -18,7 +18,7 @@ module 1Lab.HLevel.Universe where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B C : Type ℓ

@@ -1,17 +1,18 @@
 <!--
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
+
 ```agda
 module 1Lab.Type.Sigma where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ₁ : Level
   A A' X X' Y Y' Z Z' : Type ℓ

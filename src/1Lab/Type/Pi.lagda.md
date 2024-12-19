@@ -1,5 +1,5 @@
 <!--
-```
+```agda
 open import 1Lab.Path.Cartesian
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
@@ -14,7 +14,7 @@ module 1Lab.Type.Pi where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ₁ : Level
   A B C D : Type ℓ

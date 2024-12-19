@@ -76,7 +76,7 @@ module _ {P : Functor (C ^op) (Sets κ)} where
 ```
 
 <!--
-```
+```agda
   slice-ob→presheaf sl .F-id =
     funext λ x → Σ-prop-path! (happly (sl .domain .F-id) _)
   slice-ob→presheaf sl .F-∘ f g =
@@ -111,7 +111,7 @@ projection `fst`{.Agda}:
 ```
 
 <!--
-```
+```agda
     obj .domain .F-id {ob} = funext λ { (x , p) → Σ-path (happly (P.F-id) x) (lemma y _ ∙ happly (y .F-id) _) }
     obj .domain .F-∘ f g = funext λ { (x , p) →
       Σ-path (happly (P.F-∘ f g) x)

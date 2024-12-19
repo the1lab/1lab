@@ -22,7 +22,7 @@ module Algebra.Monoid.Category where
 ```
 
 <!--
-```
+```agda
 open Precategory
 open is-semigroup
 open is-monoid

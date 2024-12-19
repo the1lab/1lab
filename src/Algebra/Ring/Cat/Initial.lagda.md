@@ -100,7 +100,7 @@ We'll need this later.
 ```
 
 <!--
-```
+```agda
   e-suc zero = sym R.+-idr
   e-suc (suc n) = refl
 

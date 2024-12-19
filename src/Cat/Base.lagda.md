@@ -277,7 +277,7 @@ morphisms are taken to identity morphisms (`F-id`{.Agda}) and
 compositions are taken to compositions (`F-∘`{.Agda}).
 
 <!--
-```
+```agda
   -- Alias for F₀ for use in Functor record modules.
   ₀ : C.Ob → D.Ob
   ₀ = F₀

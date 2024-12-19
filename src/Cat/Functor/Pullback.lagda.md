@@ -167,9 +167,9 @@ module _ {X Y : Ob} (f : Hom Y X) where
 -->
 
 The adjunction unit and counit are given by the universal properties of
-pullbacks. ⚠️ WIP ⚠️
+pullbacks.
 
-<!-- TODO [Amy 2022-03-23]
+<!-- [TODO: Amy, 2022-03-23]
 Explain this better
 -->
 
