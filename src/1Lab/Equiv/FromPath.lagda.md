@@ -4,7 +4,7 @@ description: |
   efficient manner, using cubical methods.
 ---
 <!--
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path

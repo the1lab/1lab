@@ -21,7 +21,7 @@ module Order.Semilattice.Join.NAry where
 ```
 
 <!--
-```
+```agda
 open is-lub
 open Lub
 

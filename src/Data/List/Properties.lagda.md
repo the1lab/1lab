@@ -27,7 +27,7 @@ module Data.List.Properties where
 # header
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -142,8 +142,6 @@ ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ```
 
 <!--
-⚠️ TODO: Explain these ⚠️
-
 ```agda
 map-id
   : ∀ {ℓ} {A : Type ℓ}

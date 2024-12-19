@@ -27,7 +27,7 @@ private variable
 ```
 -->
 
-<!-- TODO [Amy 2022-12-14]
+<!-- [TODO: Amy, 2022-12-14]
 Write something informative here
 -->
 

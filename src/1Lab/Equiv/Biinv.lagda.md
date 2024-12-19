@@ -20,7 +20,7 @@ module 1Lab.Equiv.Biinv where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B C : Type ℓ

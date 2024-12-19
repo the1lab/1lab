@@ -80,7 +80,7 @@ to-later A .preserves .pres-≈ {n = suc n} α = A .snd .OFE-on.step n _ _ α
 ```
 
 <!--
-```
+```agda
 module
   _ {ℓa ℓa' ℓb ℓb'} {A : Type ℓa} {B : Type ℓb}
     (P : OFE-on ℓa' A) (Q : OFE-on ℓb' B)

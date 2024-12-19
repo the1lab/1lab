@@ -1,5 +1,5 @@
 <!--
-```
+```agda
 open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 ```

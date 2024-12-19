@@ -666,7 +666,7 @@ Syntactically, this is reflected much more simply as having a _tower_ of
 universes with $\ty_i : \ty_{1+i}$. So, in Agda, we have:
 
 <!--
-```
+```agda
 module _ where private
 ```
 -->
@@ -1207,7 +1207,7 @@ defined the fibre of $f$ over $y$ as $\{ x \in A : f(x) = y \}$. In type
 theory, this is rendered with a $\Sigma$-type, as below:
 
 <!--
-```
+```agda
 module _ {A B : Type} where private
 ```
 -->

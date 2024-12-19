@@ -440,7 +440,7 @@ relative-n-type-const
 ```
 
 <!--
-```
+```agda
 relative-n-type-const {B = B} {A = A} P f (suc (suc k)) n-conn phl =
   subst is-equiv (funext λ g → funext λ a → transport-refl _) (rem₁ .snd)
   where
@@ -482,7 +482,7 @@ is mechanical.
 </details>
 
 <!--
-```
+```agda
 relative-n-type-const {B = B} {A = A} P f 0 n-conn phl =
   is-contr→is-equiv (Π-is-hlevel 0 phl) (Π-is-hlevel 0 λ _ → phl _)
 

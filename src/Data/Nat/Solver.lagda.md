@@ -86,7 +86,7 @@ handles weakening.
 ```
 
 <!--
-```
+```agda
 infixl 2 _*X+_
 
 private variable

@@ -645,7 +645,7 @@ the notion of subobject classifier in a $(1,1)$-topos, since the maps
 with propositional fibres are precisely the injective maps.
 
 <!--
-```
+```agda
 _ = is-prop
 ```
 -->

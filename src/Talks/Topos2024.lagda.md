@@ -109,7 +109,7 @@ But it's for doing maths. Our solution: [the interval](1Lab.Path.html),
 [[paths]].
 
 <!--
-```
+```agda
 _ = I
 _ = i0
 _ = i1

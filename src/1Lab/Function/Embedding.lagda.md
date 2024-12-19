@@ -24,7 +24,7 @@ module 1Lab.Function.Embedding where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ₁ : Level
   A B : Type ℓ

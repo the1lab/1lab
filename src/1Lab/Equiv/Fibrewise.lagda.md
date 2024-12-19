@@ -31,7 +31,7 @@ x` can be referred as a _fibrewise map_.
 A function like this can be lifted to a function on total spaces:
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B : Type ℓ

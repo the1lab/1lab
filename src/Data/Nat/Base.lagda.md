@@ -1,5 +1,5 @@
 <!--
-```
+```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
