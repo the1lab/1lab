@@ -105,7 +105,17 @@ Lift-Indexed-product
   : ∀ {ℓ} ℓ' → {I : Type ℓ} → {F : I → C.Ob}
   → Indexed-product {Idx = Lift ℓ' I} (F ⊙ lower)
   → Indexed-product F
-Lift-Indexed-product _ = Indexed-product-≃ (Lift-≃ e⁻¹)
+Lift-Indexed-product _ {F = F} ip = mk where
+  open Indexed-product
+  open is-indexed-product
+  module i = Indexed-product ip
+
+  mk : Indexed-product F
+  mk .ΠF = i.ΠF
+  mk .π i = i.π (lift i)
+  mk .has-is-ip .tuple x = i.tuple (λ j → x (j .lower))
+  mk .has-is-ip .commute = i.commute
+  mk .has-is-ip .unique p q = i.unique _ (λ i → q (i .lower))
 
 is-indexed-product-is-prop
   : ∀ {ℓ'} {Idx : Type ℓ'}

@@ -532,6 +532,16 @@ _ = W-initial
 
 * Theorem 5.4.7: `W-initial`{.Agda}
 
+### 5.5: Homotopy-inductive types
+
+<!--
+```agda
+_ = initial→induction.elim
+```
+-->
+
+* Theorem 5.5.5: `initial→induction.elim`{.Agda}
+
 ## Chapter 6: Higher inductive types
 
 ### 6.2: Induction principles and dependent paths

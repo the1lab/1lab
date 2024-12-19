@@ -4,7 +4,7 @@ open import 1Lab.Path hiding (J)
 open import 1Lab.Type
 
 open import Data.Set.Truncation hiding (∥-∥₀-elim)
-open import Data.Wellfounded.W hiding (W-elim; P)
+open import Data.Wellfounded.W hiding (W-elim)
 open import Data.Fin.Base hiding (Fin-elim)
 open import Data.Id.Base
 
