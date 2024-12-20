@@ -8,6 +8,7 @@
 @import "components/commit.scss";
 @import "components/search.scss";
 @import "components/modal.scss";
+@import "components/popup.scss";
 @import "components/toc.scss";
 
 @import "code.scss";
@@ -25,10 +26,12 @@ html, body, main, div#post-toc-container {
   max-width: 100vw;
 }
 
-body {
+body, p {
   font-family: var(--serif), var(--sans-serif);
   font-size: var(--font-size);
+}
 
+body {
   width: 100%;
 
   &.text-page {

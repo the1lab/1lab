@@ -82,25 +82,33 @@ rules = do
     let modName = dropExtension (takeFileName out)
 
     modKind <- Map.lookup modName <$> getOurModules
-
     skipAgda <- getSkipAgda
-    if skipAgda
-    then
-      let
-        input = case modName of
+    let
+      input
+        | not skipAgda = "_build/html0" </> modName
+        | otherwise = case modName of
           "all-pages" -> "_build/all-pages"
           _ -> "src" </> map (\c -> if c == '.' then '/' else c) modName
-      in
-      case modKind of
-        Just WithText -> buildMarkdown modName (input <.> ".lagda.md") out
-        _ -> copyFile' (input <.> ".agda") out -- Wrong, but eh!
-    else
-      let input = "_build/html0" </> modName in
-      case modKind of
-        Just WithText -> do buildMarkdown modName (input <.> ".md") out
-        _ -> copyFile' (input <.> ".html") out
+
+      inext = case modKind of
+        Just WithText
+          | skipAgda  -> "lagda.md"
+          | otherwise -> "md"
+        _ -> if skipAgda then "agda" else "html"
+
+    case modKind of
+      Just WithText -> buildMarkdown modName (input <.> inext) out
+      _ -> copyFile' (input <.> inext) out -- Wrong, but eh!
+
+    unless skipAgda $ need ["_build/html/types" </> modName <.> "json"]
 
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
+  "_build/html/types/*.json" %> \out -> do
+    let
+      mn = takeFileName out
+      it = "_build/html0/" </> mn -<.> "used"
+    need [it]
+    copyFile' it $ "_build/html/types/" </> mn
 
   "_build/html/static/search.json" %> \out -> do
     skipAgda <- getSkipAgda
@@ -154,8 +162,11 @@ rules = do
     need and kicks off the above job to build them.
   -}
   phony "all" do
-    agda <- getAllModules >>= \modules ->
-      pure ["_build/html" </> f <.> "html" | (f, _) <- Map.toList modules]
+    agda <- getAllModules >>= \modules -> pure do
+      (f, _) <- Map.toList modules
+      [ "_build/html" </> f <.> "html"
+        , "_build/html/types" </> f <.> "json"
+        ]
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
     need $
