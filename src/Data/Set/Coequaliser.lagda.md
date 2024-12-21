@@ -690,5 +690,38 @@ instance
     : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y} {n}
     → H-Level (Closure R x y) (suc n)
   Closure-H-Level = prop-instance squash
+
+Coeq-ap
+  : ∀ {ℓa ℓa' ℓb ℓb'} {A : Type ℓa} {A' : Type ℓa'} {B : Type ℓb} {B' : Type ℓb'}
+      {f g : A → B} {f' g' : A' → B'} (ea : A ≃ A') (eb : B ≃ B')
+  → (p : f' ≡ Equiv.to eb ∘ f ∘ Equiv.from ea) (q : g' ≡ Equiv.to eb ∘ g ∘ Equiv.from ea)
+  → Coeq f g ≃ Coeq f' g'
+Coeq-ap {f = f} {g} {f'} {g'} ea eb p q = Iso→Equiv (to , iso from (happly ri) (happly li)) where
+  module ea = Equiv ea
+  module eb = Equiv eb
+
+  to : Coeq f g → Coeq f' g'
+  to (inc x) = inc (eb.to x)
+  to (glue x i) = along i $
+    inc (eb.to (f x))  ≡˘⟨ ap Coeq.inc (happly p (ea.to x) ∙ ap eb.to (ap f (ea.η x))) ⟩
+    inc (f' (ea.to x)) ≡⟨ Coeq.glue {f = f'} {g'} (ea.to x) ⟩
+    inc (g' (ea.to x)) ≡⟨ ap Coeq.inc (happly q (ea.to x) ∙ ap eb.to (ap g (ea.η x))) ⟩
+    inc (eb.to (g x))  ∎
+  to (squash x y p q i j) = squash (to x) (to y) (λ i → to (p i)) (λ i → to (q i)) i j
+
+  from : Coeq f' g' → Coeq f g
+  from (inc x) = inc (eb.from x)
+  from (glue x i) = along i $
+    inc (eb.from (f' x)) ≡⟨ ap Coeq.inc (eb.injective (eb.ε _ ∙ happly p x)) ⟩
+    inc (f (ea.from x))  ≡⟨ Coeq.glue (ea.from x) ⟩
+    inc (g (ea.from x))  ≡⟨ ap Coeq.inc (eb.injective (sym (happly q x) ∙ sym (eb.ε _))) ⟩
+    inc (eb.from (g' x)) ∎
+  from (squash x y p q i j) = squash (from x) (from y) (λ i → from (p i)) (λ i → from (q i)) i j
+
+  li : from ∘ to ≡ λ x → x
+  li = ext λ x → ap inc (eb.η _)
+
+  ri : to ∘ from ≡ λ x → x
+  ri = ext λ x → ap inc (eb.ε _)
 ```
 -->

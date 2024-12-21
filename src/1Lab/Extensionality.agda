@@ -363,7 +363,12 @@ instance
   Extensional-equiv
     : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
     → ⦃ ea : Extensional (A → B) ℓr ⦄ → Extensional (A ≃ B) ℓr
-  Extensional-equiv ⦃ ea ⦄ = Σ-prop-extensional (λ x → is-equiv-is-prop _) ea
+  Extensional-equiv ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+
+  Extensional-emb
+    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+    → ⦃ ea : Extensional (A → B) ℓr ⦄ → Extensional (A ↪ B) ℓr
+  Extensional-emb ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
 
   Extensional-tr-map
     : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}

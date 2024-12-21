@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy.BAut
 
+open import Data.Set.Coequaliser
 open import Data.Fin.Properties
 open import Data.Fin.Closure
 open import Data.Fin.Base
@@ -260,6 +261,27 @@ Finite-Bool = fin (inc Bool≃Fin2)
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
+```
+-->
+
+```agda
+abstract instance
+  Finite-Coeq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f g : A → B} ⦃ _ : Finite A ⦄ ⦃ _ : Finite B ⦄ → Finite (Coeq f g)
+```
+
+<!--
+```agda
+  Finite-Coeq {A = A} {B} {f} {g} ⦃ fin ae ⦄ ⦃ fin be ⦄ = ∥-∥-out! do
+    ae ← ae
+    be ← be
+    let
+      f' = Equiv.to be ∘ f ∘ Equiv.from ae
+      g' = Equiv.to be ∘ g ∘ Equiv.from ae
+
+      fn : Σ[ n ∈ Nat ] Fin n ≃ Coeq f' g'
+      fn = Finite-coequaliser f' g'
+
+    pure (fin {cardinality = fn .fst} (inc (Coeq-ap ae be refl refl ∙e Equiv.inverse (fn .snd))))
 ```
 -->
 
