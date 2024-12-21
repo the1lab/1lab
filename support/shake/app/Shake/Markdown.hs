@@ -274,6 +274,7 @@ buildMarkdown modname input output = do
   for_ (Map.toList defs) \(key, bs) -> traced ("writing fragment " <> Text.unpack (getMangled key)) do
     text <- either (fail . show) pure =<<
       runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
+
     Text.writeFile ("_build/html/fragments" </> Text.unpack (getMangled key) <.> "html") text
 
 -- | Find the original Agda file from a 1Lab module name.
@@ -414,7 +415,10 @@ patchBlock _ (Div ("refs", _, _) body) = do
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
 patchBlock _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
-  b <$ tell (MarkdownState mempty (Map.singleton (mangleLink id) bs))
+  let
+    isfn (Note _) = True
+    isfn _ = False
+  b <$ tell (MarkdownState mempty (Map.singleton (mangleLink id) (walk (filter (not . isfn)) bs)))
 
 patchBlock _ h = pure h
 

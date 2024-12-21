@@ -20,6 +20,14 @@
   &:before {
     display: none;
   }
+
+  a.hover-highlight {
+    background-color: unset;
+  }
+}
+
+.popup-hidden {
+  display: none;
 }
 
 @mixin keyframes-for($dir, $dy) {
