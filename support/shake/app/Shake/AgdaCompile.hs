@@ -24,6 +24,7 @@ import Shake.Options (getSkipTypes, getWatching)
 
 import Agda.Compiler.Backend hiding (getEnv)
 import Agda.Interaction.FindFile (SourceFile(..))
+import Agda.TypeChecking.Monad.Base (srcFromPath)
 import Agda.TypeChecking.Pretty.Warning
 import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports
@@ -142,9 +143,9 @@ compileAgda stateVar = do
 
     -- On the initial build, always build everything. Otherwise try to only
     -- rebuild the files which have changed.
-    let (target, state) = case oldState of
-          Nothing -> (["_build/all-pages.agda"], initState)
-          Just state -> (if watching then changed else ["_build/all-pages.agda"], state)
+    (target, state) <- case oldState of
+      Nothing -> (["_build/all-pages.agda"],) <$> initStateIO
+      Just state -> pure (if watching then changed else ["_build/all-pages.agda"], state)
 
     ((), state) <- runTCMPrettyErrors initEnv state do
       -- We preserve the old modules and restore them at the end, as otherwise
@@ -159,7 +160,7 @@ compileAgda stateVar = do
 
       for_ target \source -> do
         absPath <- liftIO $ absolute source
-        source <- parseSource (SourceFile absPath)
+        source <- parseSource =<< srcFromPath absPath
         typeCheckMain TypeCheck source
 
       modifyTCLens stVisitedModules (`Map.union` oldVisited)
