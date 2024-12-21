@@ -214,6 +214,7 @@ buildMarkdown modname input output = do
       = Meta
       . Map.insert "title" (mStr title)
       . Map.insert "source" (mStr permalink)
+      . Map.insert "module" (mStr modname)
       . Map.insert "bibliography" (mStr bibliographyName)
       . Map.insert "link-citations" (MetaBool True)
       . unMeta
@@ -242,9 +243,9 @@ buildMarkdown modname input output = do
   baseUrl <- getBaseUrl
 
   filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl)) blocks
-  let (bs, mss) = unzip filtered
-      MarkdownState references = fold mss
-      markdown = Pandoc meta bs
+  let (bs, mss)                     = unzip filtered
+      MarkdownState references defs = fold mss
+      markdown                      = Pandoc meta bs
 
   digest <- do
     cssDigest     <- getFileDigest "_build/html/css/default.css"
@@ -264,9 +265,16 @@ buildMarkdown modname input output = do
   traverse_ (checkMarkup input) tags
 
   traced "writing" do
-    Text.writeFile output $ renderHTML5 tags
+    Dir.createDirectoryIfMissing False "_build/html/fragments"
     Dir.createDirectoryIfMissing False "_build/search"
+
+    Text.writeFile output $ renderHTML5 tags
     encodeFile ("_build/search" </> modname <.> "json") search
+
+  for_ (Map.toList defs) \(key, bs) -> traced ("writing fragment " <> Text.unpack (getMangled key)) do
+    text <- either (fail . show) pure =<<
+      runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
+    Text.writeFile ("_build/html/fragments" </> Text.unpack (getMangled key) <.> "html") text
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -322,10 +330,18 @@ patchInline _ (Str s)
 
 patchInline _ h = pure h
 
-newtype MarkdownState = MarkdownState
-  { mdReferences :: [Val Text] -- ^ List of references extracted from Pandoc's "reference" div.
+data MarkdownState = MarkdownState
+  { mdReferences  :: [Val Text]
+    -- ^ List of references extracted from Pandoc's "reference" div.
+  , mdDefinitions :: Map.Map Mangled [Block]
+    -- ^ List of definition blocks
   }
-  deriving newtype (Semigroup, Monoid)
+
+instance Semigroup MarkdownState where
+  MarkdownState a b <> MarkdownState a' b' = MarkdownState (a <> a') (b <> b')
+
+instance Monoid MarkdownState where
+  mempty = MarkdownState mempty mempty
 
 diagramResource :: Resource
 diagramResource = unsafePerformIO $ newResourceIO "diagram" 1
@@ -397,6 +413,9 @@ patchBlock _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
+patchBlock _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
+  b <$ tell (MarkdownState mempty (Map.singleton (mangleLink id) bs))
+
 patchBlock _ h = pure h
 
 -- | Render our Pandoc document using the given template variables.
@@ -414,12 +433,15 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
     isTalk = isJust $ Map.lookup "talk" meta
 
     templateName
-      | isTalk    = talkTemplateName
-      | otherwise = pageTemplateName
+      | isTalk         = Just talkTemplateName
+      | mempty == meta = Nothing
+      | otherwise      = Just pageTemplateName
 
-  template <- getTemplate templateName
-    >>= runWithPartials . compileTemplate templateName
-    >>= either (throwError . PandocTemplateError . Text.pack) pure
+    get nm = getTemplate nm
+      >>= runWithPartials . compileTemplate nm
+      >>= either (throwError . PandocTemplateError . Text.pack) pure
+
+  template <- traverse get templateName
 
   let
     authors' = case authors of
@@ -436,7 +458,7 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
       ]
 
     opts = def
-      { writerTemplate        = Just template
+      { writerTemplate        = template
       , writerTableOfContents = not isTalk
       , writerVariables       = context
       , writerExtensions      = getDefaultExtensions "html"
