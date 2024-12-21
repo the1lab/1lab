@@ -278,28 +278,27 @@ typeToText d = do
   fv <- getDefFreeVars (defName d)
 
   ty <- locallyReduceDefs (OnlyReduceDefs ui) $ normalise (defType d)
-  TelV ctx ty <- telViewUpTo fv ty
 
   topm <- topLevelModuleName (qnameModule (defName d))
 
   let
-    n s k = (s, Asp.Name (Just k) False)
+    n k = Asp.Name (Just k) False
     asp = \case
-      I.Axiom{}          -> n "postulate" Asp.Postulate
-      DataOrRecSig{}     -> n "postulate" Asp.Datatype
-      GeneralizableVar{} -> n "variable" Asp.Generalizable
+      I.Axiom{}          -> n Asp.Postulate
+      DataOrRecSig{}     -> n Asp.Datatype
+      GeneralizableVar{} -> n Asp.Generalizable
       AbstractDefn d     -> asp d
       d@Function{}
-        | isProperProjection d -> n "record field" Asp.Field
-        | otherwise -> n "function" Asp.Function
-      Datatype{}         -> n "data type" Asp.Datatype
-      Record{}           -> n "record type" Asp.Record{}
+        | isProperProjection d -> n Asp.Field
+        | otherwise -> n Asp.Function
+      Datatype{}         -> n Asp.Datatype
+      Record{}           -> n Asp.Record{}
       Constructor{conSrcCon = c} ->
-        n "constructor" $ Asp.Constructor (I.conInductive c)
-      I.Primitive{} -> n "primitive" Asp.Primitive
-      PrimitiveSort{} -> ("primitive", Asp.PrimitiveType)
+        n $ Asp.Constructor (I.conInductive c)
+      I.Primitive{} -> n Asp.Primitive
+      PrimitiveSort{} -> Asp.PrimitiveType
 
-    (kind, aspect) = asp (theDef d)
+    aspect = asp (theDef d)
 
     a = Asp.Aspects
       { Asp.aspect         = Just aspect
@@ -309,23 +308,11 @@ typeToText d = do
       , Asp.tokenBased     = Asp.TokenBased
       }
 
-    a' = Asp.Aspects
-      { Asp.aspect         = Just (Asp.Name (Just Asp.Module) False)
-      , Asp.otherAspects   = mempty
-      , Asp.note           = ""
-      , Asp.definitionSite = toDefinitionSite topm (posToRange (startPos Nothing) (startPos Nothing))
-      , Asp.tokenBased     = Asp.TokenBased
-      }
+  expr <- removeImpls <$> reify ty
 
-    topm' = pure (hlKeyword "module") P.<+> annotate a' <$> P.pretty topm
-
-  addContext ctx do
-  expr <- reify ty
-
+  here <- currentTopLevelModule
   tooltip <- fmap renderToHtml $ P.vcat
-    [ P.hsep [ annotate a <$> P.pretty (qnameName (defName d))
-             , "(" <> kind <> ", defined in " <> topm' <> ")"
-             ]
+    [ annotate a <$> P.pretty (qnameName (defName d))
     , P.nest 2 (P.colon P.<+> prettyATop expr)
     ]
   plain <- Text.pack . render <$> prettyATop expr
@@ -354,27 +341,27 @@ killQual = Con.mapExpr wrap where
   wrap (Con.OpApp v qual names args) = Con.OpApp v (work qual) names args
   wrap x = x
 
--- removeImpls :: A.Expr -> A.Expr
--- removeImpls (A.Pi _ (x :| xs) e) =
---   let
---     fixup :: TypedBinding -> TypedBinding
---     fixup q@(TBind rng inf as _)
---       | Hidden <- getHiding q = TBind rng inf as underscore
---       | otherwise = q
---   in makePi (map (A.mapExpr removeImpls) $ map fixup (x:xs)) (removeImpls e)
--- removeImpls (A.Fun span arg ret) =
---   A.Fun span (removeImpls <$> arg) (removeImpls ret)
--- removeImpls e = e
+removeImpls :: A.Expr -> A.Expr
+removeImpls (A.Pi _ (x :| xs) e) =
+  let
+    fixup :: TypedBinding -> TypedBinding
+    fixup q@(TBind rng inf as _)
+      | Hidden <- getHiding q = TBind rng inf as underscore
+      | otherwise = q
+  in makePi (map (A.mapExpr removeImpls) $ map fixup (x:xs)) (removeImpls e)
+removeImpls (A.Fun span arg ret) =
+  A.Fun span (removeImpls <$> arg) (removeImpls ret)
+removeImpls e = e
 
--- makePi :: [A.TypedBinding] -> A.Expr -> A.Expr
--- makePi [] e = e
--- makePi (b:bs) (A.Pi _ bs' e') = makePi (b:bs ++ toList bs') e'
--- makePi (b:bs) e = A.Pi exprNoRange (b `mergeTBinds` bs) e
+makePi :: [A.TypedBinding] -> A.Expr -> A.Expr
+makePi [] e = e
+makePi (b:bs) (A.Pi _ bs' e') = makePi (b:bs ++ toList bs') e'
+makePi (b:bs) e = A.Pi exprNoRange (b `mergeTBinds` bs) e
 
--- mergeTBinds :: A.TypedBinding -> [A.TypedBinding] -> NonEmpty A.TypedBinding
--- mergeTBinds (A.TBind r i as Underscore{}) (A.TBind _ _ as' Underscore{}:bs) =
---   mergeTBinds (A.TBind r i (as <> as') underscore) bs
--- mergeTBinds x xs = x :| xs
+mergeTBinds :: A.TypedBinding -> [A.TypedBinding] -> NonEmpty A.TypedBinding
+mergeTBinds (A.TBind r i as Underscore{}) (A.TBind _ _ as' Underscore{}:bs) =
+  mergeTBinds (A.TBind r i (as <> as') underscore) bs
+mergeTBinds x xs = x :| xs
 
 definitionAnchor :: HtmlCompileEnv -> Definition -> Maybe Text
 definitionAnchor _ def | defCopy def = Nothing

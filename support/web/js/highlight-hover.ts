@@ -2,177 +2,77 @@
 // https://github.com/haskell/haddock/blob/ghc-8.8/LICENSE
 // Slightly modified by Tesla Ice Zhang
 
-let links: Array<HTMLAnchorElement> = [], types: string[];
+import { Hover } from './lib/hover';
+
+let links: Array<HTMLAnchorElement> = [];
 const paths: { module: string, baseURL: string, source: string } = window as any;
-
-const showTimeout: number = 100, hideTimeout: number = 100;
-const currentHovers: Map<HTMLElement, Hover> = new Map();
-
-class Hover {
-  private showTimer?: number;
-  private hideTimer?: number;
-
-  /* Used only to prevent re-renders */
-  private shown: boolean = false;
-
-  /* Is this mouse cursor currently in this element? */
-  private anchored: boolean = false;
-
-  private parents: Hover[] = [];
-  private children: Hover[] = [];
-
-  private fadeDirection: undefined | 'up' | 'down';
-
-  constructor(private parent: HTMLElement, private element: HTMLDivElement, private animate: boolean) {
-    currentHovers.set(parent, this);
-
-    element.addEventListener("mouseenter", () => this.liven());
-    element.addEventListener("mouseleave", () => this.kill());
-  }
-
-  private place() {
-    const selfRect = this.parent.getBoundingClientRect();
-    const hoverRect = this.element.getBoundingClientRect();
-
-    if (selfRect.bottom + hoverRect.height + 48 > window.innerHeight) {
-      // Tooltip placed above anchor
-      this.element.style.top = `${window.scrollY + selfRect.top - hoverRect.height}px`;
-      this.fadeDirection = 'down';
-    } else {
-      // Tooltip placed below anchor
-      this.element.style.top = `${window.scrollY + selfRect.bottom}px`;
-      this.fadeDirection = 'up';
-    }
-
-    if (selfRect.left + hoverRect.width > window.innerWidth) {
-      this.element.style.left = `calc(${selfRect.right - hoverRect.width}px)`;
-    } else {
-      this.element.style.left = `${selfRect.left}px`;
-    }
-
-    if (this.animate)
-      this.element.classList.add(`popup-fade-in-${this.fadeDirection}`);
-  }
-
-  public liven() {
-    this.anchored = true;
-
-    clearTimeout(this.hideTimer)
-    if (this.shown) return;
-
-    this.showTimer = setTimeout(() => {
-      document.body.appendChild(this.element);
-      this.place();
-      this.shown = true;
-
-      for (const [_, other] of currentHovers) {
-        if (other === this) continue;
-        if (other.element.contains(this.parent)) {
-          this.parents.push(other);
-          other.children.push(this);
-
-          continue;
-        };
-
-        other.die();
-      }
-
-      refreshLinks();
-    }, showTimeout);
-  }
-
-  private isAnchored(): boolean {
-    if (this.anchored) return true;
-    for (const e of this.children) {
-      if (e.isAnchored()) return true;
-    }
-    return false;
-  }
-
-  private die() {
-    // If this element or any of its children currently have the mouse,
-    // then we don't do anything.
-    if (this.isAnchored()) return;
-
-    currentHovers.delete(this.parent);
-
-    this.hideTimer = undefined;
-
-    if (this.animate) {
-      this.element.classList.remove(`popup-fade-in-${this.fadeDirection}`);
-      this.element.classList.add(`popup-fade-out-${this.fadeDirection}`);
-
-      setTimeout(() => {
-        this.element?.remove();
-      }, 300);
-    } else {
-      this.element?.remove();
-    }
-
-    // This might've been the last anchored child of its parent, so it
-    // might die now.
-    for (const e of this.parents) {
-      e.die();
-    }
-  }
-
-  public kill() {
-    clearTimeout(this.showTimer);
-    this.anchored = false;
-
-    this.hideTimer = setTimeout(() => {
-      this.die();
-    }, hideTimeout);
-  }
-};
-
 
 const page = window.location.pathname.slice(1).replace(".html", "");
 
-async function fetchTypes(): Promise<string[]> {
-  console.log("fetching types");
+const types: Map<string, Promise<string[]>> = new Map();
 
-  const p = await fetch(`${paths.baseURL}/types/${paths.module}.json`, { method: 'get' });
-  if (!p.ok) throw `Failed to load type-on-hover information for module ${paths.module}`;
+/**
+ * Fetch the types of identifiers used in a given module.
+ *
+ * @param mod The module
+ * @returns
+ *    A promise resolving to the types of every identifier used in that
+ *    module, in some arbitrary order.
+ */
+async function fetchTypes(mod: string): Promise<string[]> {
+  if (types.get(mod)) return types.get(mod)!;
 
-  console.log(p);
+  const prommy = fetch(`${paths.baseURL}/types/${mod}.json`, { method: 'get' }).then(async (r) => {
+    if (!r.ok) throw `Failed to load type-on-hover information for module ${paths.module}`;
+    return await r.json() as string[];
+  });
 
-  const out = await p.json();
-  console.log(out);
-  return out;
+  types.set(mod, prommy);
+  return prommy;
 }
 
-async function getHover(a: HTMLAnchorElement): Promise<Hover | undefined> {
+/**
+ * Construct a Hover appropriate for the given link element, fetching
+ * the appropriate content.
+ *
+ * @param a The element
+ * @returns The instantiated hover, or undefined if this element has no associated popup.
+ */
+function getHover(a: HTMLAnchorElement): Hover | undefined {
   let target;
-  const element = document.createElement("div");
-
-  if (currentHovers.has(a)) return currentHovers.get(a);
+  if (Hover.get(a)) return Hover.get(a);
 
   if (!Number.isNaN(target = Number.parseInt(a.getAttribute("data-identifier") ?? ""))) {
-    if (!types) types = await fetchTypes();
+    let tgt = target;
+    const mod = a.getAttribute("data-module") ?? paths.module;
 
-    element.innerHTML = types[target]!;
-    element.classList.add("hover-popup", "sourceCode");
+    const get = fetchTypes(mod).then((tys) => {
+      const element = document.createElement("div");
+      element.innerHTML = tys[tgt]!;
+      element.classList.add("hover-popup", "sourceCode");
 
-    return new Hover(a, element, false);
-  } else if (target = a.getAttribute("data-target")) {
-    try {
-      const p = await fetch(`${paths.baseURL}/fragments/${target}.html`, { method: 'get' });
-      if (!p.ok) return;
+      return element;
+    });
 
+    return new Hover(a, get, true);
+  } else if ((target = a.getAttribute("data-target")) != null) {
+    const tgt = target;
+    const get = fetch(`${paths.baseURL}/fragments/${tgt}.html`, { method: 'get' }).then(async (p) => {
+      if (!p.ok) throw `Failed to load fragment ${tgt}`;
+
+      const element = document.createElement("div");
       element.innerHTML = await p.text();
       element.classList.add("hover-popup");
       element.style.width = "24em";
 
-      return new Hover(a, element, true);
-    } catch (e) {
-      console.log(e);
-    }
+      return element;
+    });
+
+    return new Hover(a, get, false);
   }
 
   return;
 }
-
 
 /* A `highlight` event contains:
  * `link`: HTMLAnchorElement | Node
@@ -181,23 +81,21 @@ async function getHover(a: HTMLAnchorElement): Promise<Hover | undefined> {
  *   whether to highlight or unhighlight
  */
 
-document.addEventListener('highlight', (({ detail: { link } }: CustomEvent) => {
+document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) => {
   let match: (a : HTMLAnchorElement) => boolean;
 
   if (link instanceof HTMLAnchorElement) {
     match = that => that.href === link.href;
 
-    let hover: Hover | undefined;
     requestAnimationFrame(async () => {
-      if ((hover = await getHover(link))) hover.liven();
-    });
-
-    link.addEventListener('mouseleave', function leave() {
-      links.forEach(that => match(that) && that.classList.remove("hover-highlight"));
-
-      if (hover) hover.kill();
-
-      link.removeEventListener('mouseleave', leave);
+      try {
+        const hover = await getHover(link);
+        if (hover) {
+          await hover.mouseEvent(on);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     });
 
   } else {
@@ -210,20 +108,27 @@ document.addEventListener('highlight', (({ detail: { link } }: CustomEvent) => {
 
   links.forEach(that => {
     if (match(that)) {
-      that.classList.add("hover-highlight");
+      that.classList.toggle("hover-highlight", on);
     }
   });
 }) as EventListener);
 
-export function refreshLinks() {
-  links = Array.from(document.getElementsByTagName("a"));
-  links.forEach(link => {
-    if (link.hasAttribute("href")) {
-      link.onmouseover = () => document.dispatchEvent(new CustomEvent('highlight', { detail: { link, on: true } }))
-    }
+export function refreshLinks(parent?: HTMLElement): HTMLAnchorElement[] {
+  if (!parent) links = [];
+
+  const here = Array.from((parent ?? document.documentElement).querySelectorAll("a[href]")) as HTMLAnchorElement[];
+  links.push(...here);
+
+  here.forEach(link => {
+    link.addEventListener("mouseenter", () =>
+      document.dispatchEvent(new CustomEvent('highlight', { detail: { link, on: true } })));
+    link.addEventListener("mouseleave", () =>
+      document.dispatchEvent(new CustomEvent('highlight', { detail: { link, on: false } })));
   });
+
+  return here;
 }
 
-document.addEventListener("DOMContentLoaded", refreshLinks);
+document.addEventListener("DOMContentLoaded", () => refreshLinks());
 
 export {};

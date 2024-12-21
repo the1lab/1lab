@@ -181,7 +181,7 @@ renderSourceFile types opts (HtmlInputSourceFile moduleName fileType sourceCode 
     used _ [] = mempty
 
     (order, usedts) = used 0 tokens
-    pageContents = code order onlyCode fileType tokens
+    pageContents = code order onlyCode fileType moduleName tokens
   in
     rnf order `seq`
       ( page opts onlyCode moduleName pageContents
@@ -279,9 +279,10 @@ code
   :: HashMap Ts.Text (Int, Identifier)
   -> Bool     -- ^ Whether to generate non-code contents as-is
   -> FileType -- ^ Source file type
+  -> TopLevelModuleName
   -> [TokenInfo]
   -> Html
-code types _onlyCode _fileType = mconcat . map mkMd . splitByMarkup
+code types _onlyCode _fileType mod = mconcat . map mkMd . splitByMarkup
   where
   trd (_, _, a) = a
 
@@ -292,7 +293,7 @@ code types _onlyCode _fileType = mconcat . map mkMd . splitByMarkup
   mkHtml (pos, s, mi) =
     -- Andreas, 2017-06-16, issue #2605:
     -- Do not create anchors for whitespace.
-    applyUnless (mi == mempty) (aspectsToHtml types (Just pos) mi) $ toHtml s
+    applyUnless (mi == mempty) (aspectsToHtml (Just mod) types (Just pos) mi) $ toHtml s
 
   backgroundOrAgdaToHtml :: TokenInfo -> Html
   backgroundOrAgdaToHtml token@(_, s, mi) = case aspect mi of

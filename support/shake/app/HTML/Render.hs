@@ -66,7 +66,7 @@ renderToHtml = finish . Ppr.fullRenderAnn Ppr.PageMode 100 1.5 cont [] where
   toBlaze (Mark _)   = __IMPOSSIBLE__
   toBlaze (Text t)   = Html.text t
   toBlaze (Node a t) = Html.span do
-    aspectsToHtml mempty Nothing a $
+    aspectsToHtml Nothing mempty Nothing a $
       traverse_ toBlaze t
     unless (null (note a)) do
       Html.span (string (note a)) !! [Attr.class_ "Note"]
@@ -98,8 +98,8 @@ modToFile m ext = Network.URI.Encode.encode $ render (pretty m) <.> ext
 -- We put a fail safe numeric anchor (file position) for internal references
 -- (issue #2756), as well as a heuristic name anchor for external references
 -- (issue #2604).
-aspectsToHtml :: HashMap Text.Text (Int, Identifier) -> Maybe Int -> Aspects -> Html -> Html
-aspectsToHtml types pos mi =
+aspectsToHtml :: Maybe TopLevelModuleName -> HashMap Text.Text (Int, Identifier) -> Maybe Int -> Aspects -> Html -> Html
+aspectsToHtml ourmod types pos mi =
   applyWhen hereAnchor (anchorage nameAttributes mempty <>) . anchorage posAttributes
   where
   -- Warp an anchor (<A> tag) with the given attributes around some HTML.
@@ -161,6 +161,7 @@ aspectsToHtml types pos mi =
       ident_ :: Maybe Int
       ident_ = fst <$> Hm.lookup (Text.pack anchor) types
     in [ Attr.href $ stringValue $ anchor ]
+    ++ maybeToList (Html.dataAttribute "module" . stringValue . show . pretty <$> ourmod)
     ++ maybeToList (Html.dataAttribute "identifier" . stringValue . show <$> ident_)
 
 definitionSiteToAnchor :: DefinitionSite -> String
