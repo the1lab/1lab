@@ -104,6 +104,8 @@ htmlBackend' basepn opts = Backend'
   , postCompile = postCompileHtml
   , scopeCheckingSuffices = False
   , mayEraseType = const $ return False
+  , backendInteractTop = Nothing
+  , backendInteractHole = Nothing
   }
 
 runLogHtmlWithMonadDebug :: MonadDebug m => LogHtmlT m a -> m a
