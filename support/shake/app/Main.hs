@@ -162,11 +162,11 @@ rules = do
     need and kicks off the above job to build them.
   -}
   phony "all" do
+    skipAgda <- getSkipAgda
     agda <- getAllModules >>= \modules -> pure do
       (f, _) <- Map.toList modules
-      [ "_build/html" </> f <.> "html"
-        , "_build/html/types" </> f <.> "json"
-        ]
+      [ "_build/html" </> f <.> "html" ] <>
+        [ "_build/html/types" </> f <.> "json" | not skipAgda ]
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
     need $
