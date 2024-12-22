@@ -119,12 +119,18 @@ rules = do
     traced "Writing search data" $ encodeFile out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
-  "_build/html/light-*.svg" %> \out -> do
-    let inp = "_build/diagrams" </> drop (length ("light-" :: String)) (takeFileName out) -<.> "tex"
+  "_build/html/**/*.light.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
     buildDiagram (getPreambleFor False) inp out False
 
-  "_build/html/dark-*.svg" %> \out -> do
-    let inp = "_build/diagrams" </> drop (length ("dark-" :: String)) (takeFileName out) -<.> "tex"
+  "_build/html/**/*.dark.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
     buildDiagram (getPreambleFor True) inp out True
 
   "_build/html/css/*.css" %> \out -> do
