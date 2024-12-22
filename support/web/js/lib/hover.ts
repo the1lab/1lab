@@ -54,8 +54,8 @@ export class Hover {
       e.classList.add('popup-hidden');
       e.id = myself;
 
-      e.addEventListener("mouseenter", async () => await this.mouseEvent(true));
-      e.addEventListener("mouseleave", async () => await this.mouseEvent(false));
+      e.addEventListener("mouseenter", async () => this.fading || await this.mouseEvent(true));
+      e.addEventListener("mouseleave", async () => this.fading || await this.mouseEvent(false));
 
       refreshLinks(e);
 
@@ -127,28 +127,33 @@ export class Hover {
   }
 
   /** Are we playing the closing animation? */
-  private closing: boolean = false;
+  private closing?: Timeout;
 
   /**
    * Hide the popup. Does not remove the element from the DOM!
    */
   private async displace() {
     const el = await this.element;
-    this.closing = true;
+
+    // Set ourselves to a hiding state immediately, so that if the user
+    // goes back onto the link while we're closing we can just
+    // immediately show again.
+    if (this.shown) this.shown();
+    delete this.shown;
 
     if (!this.ephemeral) {
       el.classList.remove(`popup-fade-in-${this.fadeDirection}`);
       el.classList.add(`popup-fade-out-${this.fadeDirection}`);
     }
 
-    await new Timeout(this.ephemeral ? 0 : 250).start();
+    this.closing = new Timeout(this.ephemeral ? 0 : 250, `displace ${this.anchor}`);
+
+    await this.closing.start();
     el.classList.add('popup-hidden')
-    this.closing = false;
 
-    if (this.shown) this.shown();
-    delete this.shown;
+    delete this.closing;
 
-    if (this.ephemeral) this.destroy();
+    if (this.ephemeral) return this.destroy();
   }
 
   private async destroy() {
@@ -162,7 +167,7 @@ export class Hover {
   /** Are we closing this popup, or does it associated with an anchor
    * that belongs to a parent which is fading? */
   private get fading(): boolean {
-    return this.closing || (!!this.parent && this.parent.fading)
+    return !!this.closing || (!!this.parent && this.parent.fading)
   }
 
   /** Timeout before the popup appears. */
@@ -174,13 +179,19 @@ export class Hover {
    * either show it, or cancel a previous show timer if one exists..
    */
   private async unhide() {
-    if (this.cursors >= 1 && !this.fading) {
-      this.showTimer = new Timeout(this.ephemeral ? 0 : showTimeout);
+    if (this.cursors >= 1) {
+      this.showTimer = new Timeout(this.ephemeral ? 0 : showTimeout, `unhide ${this.anchor}`);
+
+      // If we're currently playing the closing animation, but there's a
+      // positive number of cursors (necessarily on the anchor), then we
+      // should wait and show the popup again.
+      if (this.closing) await this.closing.start();
 
       await Promise.all([ this.showTimer?.start(), this.element ]);
       await this.place();
+
       delete this.showTimer;
-    } else if (this.cursors <= 0 && !this.showTimer?.done) {
+    } else if (this.cursors <= 0 && this.showTimer && !this.showTimer.done) {
       this.showTimer?.cancel();
       if (this.ephemeral) this.destroy();
     }
@@ -196,11 +207,10 @@ export class Hover {
    */
   private async unshow() {
     if (this.cursors <= 0) {
-      this.hideTimer = new Timeout(this.ephemeral ? 0 : hideTimeout);
+      this.hideTimer = new Timeout(this.ephemeral ? 0 : hideTimeout, `unshow ${this.anchor}`);
 
       try {
-        await Promise.all(this.children.values());
-        await this.hideTimer.start();
+        await Promise.all(Array.from(this.children.values()).concat(this.hideTimer.start()));
 
         if (this.cursors > 0) return;
         await this.displace();
@@ -221,7 +231,7 @@ export class Hover {
    * @param on Did the mouse move onto the popup, or off it?
    */
   public async mouseEvent(on: boolean) {
-    this.cursors += on ? 1 : -1;
+    this.cursors = Math.max(this.cursors + (on ? 1 : -1), 0);
 
     if (!this.shown) {
       await this.unhide();

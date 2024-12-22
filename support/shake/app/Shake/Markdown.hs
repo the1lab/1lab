@@ -16,6 +16,7 @@ import Control.Applicative
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Map.Lazy as Map
+import qualified Data.Sequence as Seq
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import qualified Data.Set as Set
@@ -227,7 +228,14 @@ buildMarkdown modname input output = do
 
   liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> modname
 
-  let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
+  let
+    refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
+    (display, inline) = flip query markdown \case
+      Math DisplayMath contents -> (Seq.singleton contents, mempty)
+      Math InlineMath contents -> (mempty, Seq.singleton contents)
+      _ -> mempty
+
+  prerenderMaths (toList display) (toList inline)
 
   Pandoc meta@(Meta metamap) blocks <-
       walkM (patchInline refMap)
@@ -271,7 +279,7 @@ buildMarkdown modname input output = do
     Text.writeFile output $ renderHTML5 tags
     encodeFile ("_build/search" </> modname <.> "json") search
 
-  for_ (Map.toList defs) \(key, bs) -> traced ("writing fragment " <> Text.unpack (getMangled key)) do
+  for_ (Map.toList defs) \(key, bs) -> traced "writing fragment" do
     text <- either (fail . show) pure =<<
       runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
 
