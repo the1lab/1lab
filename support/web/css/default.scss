@@ -267,7 +267,11 @@ div.diagram-container {
   }
 }
 
-main a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
+main a[href],
+div#return > a[href],
+div#top > a[href],
+aside#toc > div#toc-container ul a[href],
+div.hover-popup a[href] {
   color: theme(--primary);
   text-decoration: none;
 
