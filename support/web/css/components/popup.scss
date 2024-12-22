@@ -1,4 +1,7 @@
-.hover-popup, div.sourceCode.hover-popup {
+div.hover-popup, div.hover-popup.sourceCode {
+  display: none;
+  @include widescreen { display: block; }
+
   position: absolute;
   z-index: 100;
 
@@ -16,6 +19,10 @@
   padding: 0.3em;
   border: 0;
   margin: 0;
+
+  &:before {
+    display: none;
+  }
 }
 
 .text-popup {
