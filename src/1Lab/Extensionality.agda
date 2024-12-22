@@ -151,20 +151,6 @@ instance
   Extensional-Π'' ⦃ sb ⦄ .idsᵉ .to-path h i = sb .idsᵉ .to-path h i
   Extensional-Π'' ⦃ sb ⦄ .idsᵉ .to-path-over h i = sb .idsᵉ .to-path-over h i
 
-  Extensional-×
-    : ∀ {ℓ ℓ' ℓr ℓs} {A : Type ℓ} {B : Type ℓ'}
-    → ⦃ sa : Extensional A ℓr ⦄
-    → ⦃ sb : Extensional B ℓs ⦄
-    → Extensional (A × B) (ℓr ⊔ ℓs)
-  Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .Pathᵉ (x , y) (x' , y') = Pathᵉ sa x x' × Pathᵉ sb y y'
-  Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .reflᵉ (x , y) = reflᵉ sa x , reflᵉ sb y
-  Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path (p , q) = ap₂ _,_
-    (sa .idsᵉ .to-path p)
-    (sb .idsᵉ .to-path q)
-  Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp
-    (sa .idsᵉ .to-path-over p)
-    (sb .idsᵉ .to-path-over q)
-
   -- Some non-confluent "reduction rules" for extensionality are those
   -- for functions from a type with a mapping-out property; here, we can
   -- immediately define instances for functions from Σ-types (equality

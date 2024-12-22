@@ -205,8 +205,8 @@ module Day (X Y : ⌞ PSh ℓ C ⌟) where
 
   Day-diagram c .F₁ ((f⁻ , g⁻) , f⁺ , g⁺) (h , x , y) = (f⁺ ⊗₁ g⁺) ∘ h , X .F₁ f⁻ x , Y .F₁ g⁻ y
 
-  Day-diagram c .F-id    = ext λ h x y → eliml (-⊗- .F-id) , X .F-id #ₚ x , Y .F-id #ₚ y
-  Day-diagram c .F-∘ f g = ext λ h x y → pushl (-⊗- .F-∘ _ _) , X .F-∘ _ _ #ₚ _ , Y .F-∘ _ _ #ₚ _
+  Day-diagram c .F-id    = ext λ h x y → eliml (-⊗- .F-id) ,ₚ X .F-id #ₚ x ,ₚ Y .F-id #ₚ y
+  Day-diagram c .F-∘ f g = ext λ h x y → pushl (-⊗- .F-∘ _ _) ,ₚ X .F-∘ _ _ #ₚ _ ,ₚ Y .F-∘ _ _ #ₚ _
 ```
 -->
 

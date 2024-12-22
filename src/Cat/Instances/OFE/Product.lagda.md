@@ -83,7 +83,7 @@ OFE-Product A B .has-is-product .⟨_,_⟩ f g .preserves .pres-≈ p =
 
 OFE-Product A B .has-is-product .π₁∘⟨⟩ = trivial!
 OFE-Product A B .has-is-product .π₂∘⟨⟩ = trivial!
-OFE-Product A B .has-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
+OFE-Product A B .has-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
 ```
 
 <!--

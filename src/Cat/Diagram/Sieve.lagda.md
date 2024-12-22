@@ -99,6 +99,14 @@ module _ {o ℓ : _} {C : Precategory o ℓ} where
   intersect {I = I} F .closed x g = inc λ i → F i .closed (□-out! x i) g
 ```
 
+<!--
+```agda
+  _∩S_ : ∀ {U} → Sieve C U → Sieve C U → Sieve C U
+  (S ∩S T) .arrows f = S .arrows f ∧Ω T .arrows f
+  (S ∩S T) .closed (Sf , Tf) g = S .closed Sf g , T .closed Tf g
+```
+-->
+
 ## Representing subfunctors {defines="sieves-as-presheaves"}
 
 Let $S$ be a sieve on $\cC$. We show that it determines a presheaf

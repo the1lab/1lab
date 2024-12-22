@@ -261,7 +261,7 @@ path-mangling, but it's nothing _too_ bad:
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
   prod .has-is-product .π₁∘⟨⟩ = trivial!
   prod .has-is-product .π₂∘⟨⟩ = trivial!
-  prod .has-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
+  prod .has-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
 ```
 
 <!-- [TODO: Amy, 2022-09-15]
