@@ -1,8 +1,8 @@
 import { refreshLinks } from "../highlight-hover";
 import { Timeout } from "./timeout";
 
-const showTimeout: number = 150;
-const hideTimeout: number = 150;
+const showTimeout: number = 250;
+const hideTimeout: number = 500;
 const
   currentHovers: Map<HTMLElement, Hover> = new Map(),
   hovers: Map<string, Hover> = new Map();
@@ -80,7 +80,7 @@ export class Hover {
 
     if (selfRect.bottom + hoverRect.height + 48 > window.innerHeight) {
       // Tooltip placed above anchor
-      el.style.top = `${window.scrollY + selfRect.top - hoverRect.height}px`;
+      el.style.top = `calc(${window.scrollY + selfRect.top - hoverRect.height}px - 1.3rem)`;
       this.fadeDirection = 'down';
     } else {
       // Tooltip placed below anchor
@@ -122,7 +122,7 @@ export class Hover {
 
     return () => {
       this.parent?.children.delete(this);
-      resolve!();
+      requestAnimationFrame(resolve!);
     }
   }
 
@@ -185,12 +185,17 @@ export class Hover {
       // If we're currently playing the closing animation, but there's a
       // positive number of cursors (necessarily on the anchor), then we
       // should wait and show the popup again.
-      if (this.closing) await this.closing.start();
+      try {
+        if (this.closing) await this.closing.start();
 
-      await Promise.all([ this.showTimer?.start(), this.element ]);
-      await this.place();
+        await Promise.all([this.showTimer?.start(), this.element]);
+        await this.place();
 
-      delete this.showTimer;
+        delete this.showTimer;
+      } catch (e) {
+        if (e === this.showTimer?.cancelled) return;
+        throw e;
+      }
     } else if (this.cursors <= 0 && this.showTimer && !this.showTimer.done) {
       this.showTimer?.cancel();
       if (this.ephemeral) this.destroy();
@@ -219,7 +224,7 @@ export class Hover {
         if (e == this.hideTimer.cancelled) return;
         throw e;
       }
-    } else if (this.cursors >= 1 && !this.hideTimer?.done) {
+    } else if (this.cursors >= 1 && this.hideTimer && !this.hideTimer.done) {
       this.hideTimer?.cancel();
     }
   }

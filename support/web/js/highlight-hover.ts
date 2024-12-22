@@ -62,8 +62,7 @@ function getHover(a: HTMLAnchorElement): Hover | undefined {
 
       const element = document.createElement("div");
       element.innerHTML = await p.text();
-      element.classList.add("hover-popup");
-      element.style.width = "24em";
+      element.classList.add("hover-popup", "text-popup");
 
       return element;
     });
