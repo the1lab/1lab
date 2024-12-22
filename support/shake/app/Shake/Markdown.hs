@@ -225,7 +225,7 @@ buildMarkdown modname input output = do
     either (fail . show) pure =<< runIO do
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
 
-  liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
+  liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> modname
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
@@ -242,7 +242,7 @@ buildMarkdown modname input output = do
 
   baseUrl <- getBaseUrl
 
-  filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl)) blocks
+  filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl modname)) blocks
   let (bs, mss)                     = unzip filtered
       MarkdownState references defs = fold mss
       markdown                      = Pandoc meta bs
@@ -352,22 +352,23 @@ diagramResource = unsafePerformIO $ newResourceIO "diagram" 1
 patchBlock
   :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f, MonadTrans t, f ~ t Action)
   => String
+  -> String
   -> Block
   -> f Block
 -- Make all headers links, and add an anchor emoji.
-patchBlock _ (Header i a@(ident, _, _) inl) = pure $ Header i a
+patchBlock _ _ (Header i a@(ident, _, _) inl) = pure $ Header i a
   $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
   : inl
   ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
 
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
-patchBlock _ (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
+patchBlock _ mod (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
-    digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
+    digest = take 12 . showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
     title = fromMaybe "commutative diagram" (lookup "title" attrs)
 
-    light = "_build/html/light-" <> digest <.> "svg"
-    dark  = "_build/html/dark-" <> digest <.> "svg"
+    lfn = mod </> digest <.> "light.svg"
+    dfn = mod </> digest <.> "dark.svg"
 
   height <- lift do
     -- We have to lock the diagram directory to prevent race conditions
@@ -376,25 +377,25 @@ patchBlock _ (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes
     -- This isn't the best in terms of atomicity, but it does preserve
     -- the nice property that diagrams are globally shared by their
     -- contents.
-    withResource diagramResource 1 $ liftIO $
-      Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
+    withResource diagramResource 1 $ liftIO do
+      Text.writeFile ("_build/diagrams" </> mod </> digest <.> "tex") contents
 
-    need [ light, dark ]
-    diagramHeight light
+    need [ "_build/html" </> lfn, "_build/html" </> dfn ]
+    diagramHeight ("_build/html" </> lfn)
 
   let attrs' = ("style", "--height: " <> Text.pack (show height) <> "px;"):attrs
 
   pure $ Div ("", ["diagram-container"], [])
-    [ Plain [ Image (id, "diagram diagram-light":classes, attrs') [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
-    , Plain [ Image (id, "diagram diagram-dark":classes, attrs')  [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
+    [ Plain [ Image (id, "diagram diagram-light":classes, attrs') [] (Text.pack lfn, title) ]
+    , Plain [ Image (id, "diagram diagram-dark":classes, attrs')  [] (Text.pack dfn, title) ]
     ]
 
-patchBlock base (Div attr@("recent-additions", _, _) []) =
+patchBlock base _ (Div attr@("recent-additions", _, _) []) =
   Div attr . map (renderCommit base) <$> lift recentAdditions
 
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
-patchBlock _ (Div ("refs", _, _) body) = do
+patchBlock _ _ (Div ("refs", _, _) body) = do
   for_ body \ref -> case ref of
     (Div (id, _, _) body) -> do
       -- If our citation is a single paragraph, don't wrap it in <p>.
@@ -414,13 +415,13 @@ patchBlock _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
+patchBlock _ _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
   let
     isfn (Note _) = True
     isfn _ = False
   b <$ tell (MarkdownState mempty (Map.singleton (mangleLink id) (walk (filter (not . isfn)) bs)))
 
-patchBlock _ h = pure h
+patchBlock _ _ h = pure h
 
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown
