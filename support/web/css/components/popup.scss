@@ -6,7 +6,7 @@
   background: theme(--code-bg);
 
   --font-size:      1.125rem;
-  --code-font-size: 1.125rem;
+  --code-font-size: 1rem;
 
   box-shadow: 2px 2px 6px theme(--shadow);
 
@@ -16,14 +16,14 @@
   padding: 0.3em;
   border: 0;
   margin: 0;
+}
 
-  &:before {
-    display: none;
-  }
+.text-popup {
+  min-width: 22em;
+  max-width: 26em;
+  width: min-content;
 
-  a.hover-highlight {
-    background-color: unset;
-  }
+  margin-left: 1.25em;
 }
 
 .popup-hidden {
