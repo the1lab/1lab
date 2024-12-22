@@ -38,9 +38,7 @@ Pushout
 Pushout {A = A} {B} {C} f g = Coeq {B = A ⊎ B} (λ z → inl (f z)) (λ z → inr (g z))
 ```
 
-We'll also need the isomorphism between $A \sqcup_C B$ and $B \sqcup_C
-A$, constructed by swapping the constructors.
-
+<!--
 ```agda
 swap-pushout : Pushout f g → Pushout g f
 swap-pushout (incl x) = incr x
@@ -48,10 +46,7 @@ swap-pushout (incr x) = incl x
 swap-pushout (glue x i) = glue x (~ i)
 swap-pushout (squash x y p q i j) =
   let f = swap-pushout in squash (f x) (f y) (λ i → f (p i)) (λ i → f (q i)) i j
-```
 
-<!--
-```agda
 swap-swap : swap-pushout {f = f} {g = g} ∘ swap-pushout ≡ λ x → x
 swap-swap = ext λ where
   (inl x) → refl
@@ -107,7 +102,7 @@ and $g c = b$. While this is a trivial rephrasing, it does inspire
 confidence: can we expect $\rm{incr}\, b = \rm{incl}\, a$ to be given by
 fibres of $\langle f, g \rangle$ over $(a, b)$?
 
-Well, if this were the case, this these fibres would necessarily need to
+Well, if this were the case, these fibres would necessarily need to
 be propositions, so we can start by showing that. The proof turns out
 very simple: the type $$\sum_{c\, :\, C} (f c = a) \times (g c = b)$$ is
 equivalent to $$\sum_{(c,-)\, :\, f^*(a)} g^*(c)$$, and since $f$ is an
@@ -175,20 +170,19 @@ we have $g c = b$ by assumption.
 ```
 -->
 
-We then have the two decoding functions. In the case with matched
+We then have the two encoding functions. In the case with matched
 endpoints, we have exactly our original goal: injectivity of
 `incr`{.Agda}.
 
 ```agda
-  decodeᵣ : injective incr
-  decodeᵣ {a} p = transport (λ i → ⌞ code a (p i) ⌟) (lift refl) .lower
+  encodeᵣ : injective incr
+  encodeᵣ {a} p = transport (λ i → ⌞ code a (p i) ⌟) (lift refl) .lower
 ```
 
 <!--
 ```agda
   f-inj→incr-inj : is-embedding {A = B} {B = Pushout f g} incr
-  f-inj→incr-inj = injective→is-embedding! λ {x} r →
-    transport (λ i → ⌞ code x (r i) ⌟) (lift refl) .lower
+  f-inj→incr-inj = injective→is-embedding! encodeᵣ
 ```
 -->
 
@@ -198,19 +192,19 @@ It's easy to show that projecting the point is the inverse to $g$,
 considered as a function $f^*(x) \to \rm{incr}^*(\rm{incl}\, x)$.
 
 ```agda
-  decodeₗ
+  encodeₗ
     : ∀ {a b} (p : incr b ≡ incl a)
     → Σ[ c ∈ C ] (f c ≡ a × g c ≡ b)
-  decodeₗ {b = b} p = transport (λ i → ⌞ code b (p i) ⌟) (lift refl)
+  encodeₗ {b = b} p = transport (λ i → ⌞ code b (p i) ⌟) (lift refl)
 
   pushout-is-pullback' : ∀ x → fibre f x ≃ fibre {B = Pushout f g} incr (incl x)
   pushout-is-pullback' x .fst (y , p) = g y , sym (glue y) ∙ ap incl p
   pushout-is-pullback' x .snd = is-iso→is-equiv $ iso from ri λ f → f-emb x _ _ where
     from : fibre {B = Pushout f g} incr (incl x) → fibre f x
-    from (y , p) with (c , α , β) ← decodeₗ p = c , α
+    from (y , p) with (c , α , β) ← encodeₗ p = c , α
 
     ri : is-right-inverse from (pushout-is-pullback' x .fst)
-    ri (y , p) with (c , α , β) ← decodeₗ p = Σ-prop-path! β
+    ri (y , p) with (c , α , β) ← encodeₗ p = Σ-prop-path! β
 ```
 
 Finally, we can extend this to an equivalence between $C$ and the
@@ -236,10 +230,10 @@ pullback of $\rm{incl}$ along $\rm{incr}$ by general
   pushout-is-pullback .snd = is-iso→is-equiv (iso from ri λ x → refl) where
     module _ (x : _) (let β = x .snd .snd) where
       from : C
-      from = decodeₗ (sym β) .fst
+      from = encodeₗ (sym β) .fst
 
       ri : (f from , g from , glue from) ≡ (_ , _ , β)
-      ri = decodeₗ (sym β) .snd .fst ,ₚ decodeₗ (sym β) .snd .snd ,ₚ prop!
+      ri = encodeₗ (sym β) .snd .fst ,ₚ encodeₗ (sym β) .snd .snd ,ₚ prop!
 
 module _ ⦃ aset : H-Level A 2 ⦄ (f : C → A) (g : C → B) (g-emb : is-embedding g) where
   g-inj→incl-inj : is-embedding {A = A} {B = Pushout f g} incl

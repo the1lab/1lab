@@ -85,5 +85,5 @@ limits][rapl]).
 
   Direct-sum-is-product .π₁∘⟨⟩ = trivial!
   Direct-sum-is-product .π₂∘⟨⟩ = trivial!
-  Direct-sum-is-product .unique p q = ext λ x → p #ₚ x , q #ₚ x
+  Direct-sum-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
 ```

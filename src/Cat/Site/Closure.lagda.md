@@ -239,7 +239,7 @@ of $J$. This is actually a pretty simple process:
 
 ```agda
   data _∋_ (J : Coverage C ℓs) : {U : ⌞ C ⌟} → Sieve C U → Type (o ⊔ ℓ ⊔ ℓs) where
-    inc : ∀ {U} (c : J .covers U) → J ∋ J .cover c
+    inc : {U : ⌞ C ⌟} (c : J ʻ U) → J ∋ J .cover c
 
     max : ∀ {U} {R : Sieve C U} → id ∈ R → J ∋ R
 
@@ -272,7 +272,19 @@ sieve belongs to the saturation in at most one way.
       → S ⊆ R → J ∋ S → J ∋ R
     incl {J = J} {S = S} sr us = local us λ f hf → subst (J ∋_) refl $
       max $ sr (f ∘ id) (S .closed hf id)
+```
 
+<!--
+```agda
+    ∋-intersect
+      : ∀ {J : Coverage C ℓs} {U} {R S : Sieve C U}
+      → J ∋ R → J ∋ S → J ∋ (R ∩S S)
+    ∋-intersect {J = J} {R = R} {S = S} α β = local β
+      (λ {V} f hf → subst (J ∋_) (ext (λ h → Ω-ua (λ fhR → fhR , S .closed hf _) fst)) (pull f α))
+```
+-->
+
+```agda
   Saturation : Coverage C ℓs → Coverage C (o ⊔ ℓ ⊔ ℓs)
   Saturation J = from-stable-property (J ∋_) λ f R s → pull f s
 ```
