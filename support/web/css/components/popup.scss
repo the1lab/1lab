@@ -1,5 +1,5 @@
 div.hover-popup, div.hover-popup.sourceCode {
-  display: none;
+  &.popup-hidden { display: none; }
   @include widescreen { display: block; }
 
   position: absolute;
@@ -33,9 +33,6 @@ div.hover-popup, div.hover-popup.sourceCode {
   margin-left: 1.25em;
 }
 
-.popup-hidden {
-  display: none;
-}
 
 @mixin keyframes-for($dir, $dy) {
   @keyframes popup-fade-in-#{$dir} {
