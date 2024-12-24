@@ -751,7 +751,7 @@ adjunction between dependent sum and base change.
   Forget⊣constant-family : Forget/ ⊣ constant-family
   Forget⊣constant-family .unit .η X .map = ⟨ id , X .map ⟩
   Forget⊣constant-family .unit .η X .commutes = π₂∘⟨⟩
-  Forget⊣constant-family .unit .is-natural _ _ f = ext (unique₂
+  Forget⊣constant-family .unit .is-natural _ _ f = ext (⟨⟩-unique₂
     (pulll π₁∘⟨⟩ ∙ id-comm-sym)
     (pulll π₂∘⟨⟩ ∙ f .commutes)
     (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
@@ -759,7 +759,7 @@ adjunction between dependent sum and base change.
   Forget⊣constant-family .counit .η x = π₁
   Forget⊣constant-family .counit .is-natural _ _ f = π₁∘⟨⟩
   Forget⊣constant-family .zig = π₁∘⟨⟩
-  Forget⊣constant-family .zag = ext (unique₂
+  Forget⊣constant-family .zag = ext (⟨⟩-unique₂
     (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
     (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
     refl

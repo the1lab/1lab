@@ -38,7 +38,7 @@ $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
 
 <!--
 ```agda
-open Binary-products C fp hiding (unique₂)
+open Binary-products C fp
 open Cat.Reasoning C
 open Terminal term
 open Functor
