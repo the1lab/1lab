@@ -153,6 +153,7 @@ instance
   Dec-→ {Q = _} ⦃ yes p ⦄ ⦃ yes q ⦄ = yes λ _ → q
   Dec-→ {Q = _} ⦃ yes p ⦄ ⦃ no ¬q ⦄ = no λ pq → ¬q (pq p)
   Dec-→ {Q = _} ⦃ no ¬p ⦄ ⦃ q ⦄ = yes λ p → absurd (¬p p)
+  {-# INCOHERENT Dec-→ #-}
 
   Dec-⊤ : Dec ⊤
   Dec-⊤ = yes tt
