@@ -68,7 +68,7 @@ binary operation `⋆`, on which no further laws are imposed.
     magma-hlevel : ∀ {n} → H-Level A (2 + n)
     magma-hlevel = basic-instance 2 has-is-set
 
-open is-magma public
+open is-magma
 ```
 
 Note that we do not generally benefit from the [[set truncation]] of
