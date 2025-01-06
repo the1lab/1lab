@@ -49,6 +49,8 @@ module Sheafification {o ℓ ℓc} {C : Precategory o ℓ} (J : Coverage C ℓc)
   open Precategory C
   open Functor
 
+  open Coverage J using (Membership-covers)
+
   private
     module A = Functor A
     variable
@@ -86,7 +88,7 @@ respect to $s$, living in $A^+(U)$.
     map : (f : Hom U V) → Sheafify₀ V → Sheafify₀ U
 
     glue
-      : (c : J .covers U) (p : pre.Parts C map (J .cover c))
+      : (c : J ʻ U) (p : pre.Parts C map (J .cover c))
       → (g : pre.is-patch C map (J .cover c) p)
       → Sheafify₀ U
 ```
@@ -109,12 +111,12 @@ a section of the given patch.
 
 ```agda
     sep
-      : ∀ {x y : Sheafify₀ U} (c : J .covers U)
-      → (l : ∀ {V} (f : Hom V U) (hf : f ∈ J .cover c) → map f x ≡ map f y)
+      : ∀ {x y : Sheafify₀ U} (c : J ʻ U)
+      → (l : ∀ {V} (f : Hom V U) (hf : f ∈ c) → map f x ≡ map f y)
       → x ≡ y
 
     glues
-      : (c : J .covers U) (p : pre.Parts C map (J .cover c))
+      : (c : J ʻ U) (p : pre.Parts C map (J .cover c))
       → (g : pre.is-patch C map (J .cover c) p)
       → pre.is-section C map (J .cover c) (glue c p g) p
 ```
@@ -185,8 +187,8 @@ restriction $A^+(f)(x)$, as long as $f \in s$.
 
 ```agda
     → (plocal
-        : ∀ {U : ⌞ C ⌟} (c : J .covers U) (x : Sheafify₀ U)
-        → (∀ {V} (f : Hom V U) (hf : f ∈ J .cover c) → P (map f x)) → P x)
+        : ∀ {U : ⌞ C ⌟} (c : J ʻ U) (x : Sheafify₀ U)
+        → (∀ {V} (f : Hom V U) (hf : f ∈ c) → P (map f x)) → P x)
     → ∀ {U} (x : Sheafify₀ U) → P x
 ```
 
@@ -236,9 +238,9 @@ $P'(p(f))$ for any $f \in s$. We want to show $P(A^+(f)(\operatorname{glue} p))$
 
 ```agda
     p'glue
-      : ∀ {U : ⌞ C ⌟} (c : J .covers U) (p : pre.Parts C map (J .cover c))
+      : ∀ {U : ⌞ C ⌟} (c : J ʻ U) (p : pre.Parts C map (J .cover c))
       → (g : pre.is-patch C map (J .cover c) p)
-      → (∀ {V} (f : Hom V U) (hf : f ∈ J .cover c) → P' (p f hf))
+      → (∀ {V} (f : Hom V U) (hf : f ∈ c) → P' (p f hf))
       → P' (glue c p g)
 ```
 

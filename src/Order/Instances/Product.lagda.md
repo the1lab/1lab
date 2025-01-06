@@ -48,8 +48,8 @@ P ×ᵖ Q = po module ×ᵖ where
   po .Poset.≤-refl = P.≤-refl , Q.≤-refl
   po .Poset.≤-trans   (f≤g , f≤g') (g≤h , g≤h') =
     P.≤-trans f≤g g≤h , Q.≤-trans f≤g' g≤h'
-  po .Poset.≤-antisym (f≤g , f≤g') (g≤f , g≤f') = ext $
-    P.≤-antisym f≤g g≤f , Q.≤-antisym f≤g' g≤f'
+  po .Poset.≤-antisym (f≤g , f≤g') (g≤f , g≤f') =
+    P.≤-antisym f≤g g≤f ,ₚ Q.≤-antisym f≤g' g≤f'
 
 {-# DISPLAY ×ᵖ.po a b = a ×ᵖ b #-}
 infixr 20 _×ᵖ_
@@ -91,7 +91,7 @@ Posets-has-products P Q .has-is-product .⟨_,_⟩     = pairᵖ
 Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = trivial!
 Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = trivial!
 Posets-has-products P Q .has-is-product .unique α β =
-  ext λ x → α #ₚ x , β #ₚ x
+  ext λ x → α #ₚ x ,ₚ β #ₚ x
 ```
 
 As a related observation, we can show that the unique partial order on

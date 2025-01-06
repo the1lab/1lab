@@ -75,7 +75,7 @@ This concludes the proof that $B^A$ is $J$-separated.
 
 ```agda
   abstract
-    sep : ∀ {U} {c : J .covers U} → is-separated₁ psh (J .cover c)
+    sep : {U : ⌞ C ⌟} {c : J ʻ U} → is-separated₁ psh (J .cover c)
     sep {c = c} {x} {y} loc = ext λ V f z → bshf.separate (pull f (inc c)) λ g hg →
       B ⟪ g ⟫ x .η V (f , z)             ≡˘⟨ x .is-natural _ _ _ $ₚ _ ⟩
       x .η _ (f ∘ g , A ⟪ g ⟫ z)         ≡⟨ ap (x .η _) (Σ-pathp (intror refl) refl) ⟩
@@ -98,7 +98,7 @@ U$, as long as we're given $x : A(V)$. Each part of $p'$ is given by
 evaluating the corresponding part of $p$:
 
 ```agda
-  module _ {U} {c : J .covers U} (p : Patch psh (J .cover c)) where
+  module _ {U} {c : J ʻ U} (p : Patch psh (J .cover c)) where
     p' : ∀ {V} (e : A ʻ V) (f : Hom V U) → Patch B (pullback f (J .cover c))
     p' e f .part g hg = p .part (f ∘ g) hg .η _ (id , A ⟪ g ⟫ e)
     p' e f .patch g hg h hh =

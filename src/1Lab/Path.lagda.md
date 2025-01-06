@@ -1593,8 +1593,8 @@ _∙'_ {x = x} p q = transport (λ i → x ≡ q i) p
 Since we know that `transport`{.Agda} reduces when applied to type
 formers, the definition above is *not* neutral, even when $p$ and $q$
 are variables. But what does it reduce *to*? A natural attempt would be
-to say that, at a point $i : \bI$, the path $\transport{(\lam{i}. x \is
-q(i))}{p}$ is $t = \transport{(\lam{i}. A)}{p(i)}$ --- i.e., transport
+to say that, at a point $i : \bI$, the path $\transport{(\lam{i} x \is
+q(i))}{p}$ is $t = \transport{(\lam{i} A)}{p(i)}$ --- i.e., transport
 of paths is, pointwise, transport along the base. But this can't be the
 case, since $t$ has endpoints
 

@@ -3,9 +3,12 @@
 open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Naturality
 open import Cat.Instances.Discrete
 open import Cat.Instances.Product
+open import Cat.Diagram.Terminal
+open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -54,9 +57,9 @@ module Copowers
   (coprods : (S : Set ℓ) → has-coproducts-indexed-by C ∣ S ∣)
   where
 
-  open Functor
   open Indexed-coproduct
   open Cat.Reasoning C
+  open Functor
 ```
 -->
 
@@ -120,3 +123,46 @@ cocomplete→copowering colim = Copowers.Copowering λ S F →
   Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) F (colim _)
 ```
 -->
+
+## Constant objects
+
+If $\cC$ has a terminal object $\star$, then the copower $S \times
+\star$ is referred to as the **constant object** on $S$. By simplifying
+the universal property of the copower, we obtain that constant objects
+assemble into a functor left adjoint to $\cC(\star,-)$.^[This right
+adjoint is often called the **global sections functor**.]
+
+<!--
+```agda
+module Consts
+  {o ℓ} {C : Precategory o ℓ}
+  (term : Terminal C)
+  (coprods : (S : Set ℓ) → has-coproducts-indexed-by C ∣ S ∣)
+  where
+
+  open Indexed-coproduct
+  open Cat.Reasoning C
+  open Copowers coprods
+  open Functor
+
+  open Terminal term renaming (top to *C)
+```
+-->
+
+```agda
+  Constant-objects : Functor (Sets ℓ) C
+  Constant-objects .F₀ S = S ⊗ *C
+  Constant-objects .F₁ f = coprods _ _ .match λ i → coprods _ _ .ι (f i)
+  Constant-objects .F-id = sym $ coprods _ _ .unique _ λ i → idl _
+  Constant-objects .F-∘ f g = sym $ coprods _ _ .unique _ λ i →
+    pullr (coprods _ _ .commute) ∙ coprods _ _ .commute
+
+  Const⊣Γ : Constant-objects ⊣ Hom-from _ *C
+  Const⊣Γ = hom-iso→adjoints
+    (λ f x → f ∘ coprods _ _ .ι x)
+    (is-iso→is-equiv (iso
+      (λ h → coprods _ _ .match h)
+      (λ h → ext λ i → coprods _ _ .commute)
+      (λ x → sym (coprods _ _ .unique _ λ i → refl))))
+    (λ g h x → ext λ y → pullr (pullr (coprods _ _ .commute)))
+```
