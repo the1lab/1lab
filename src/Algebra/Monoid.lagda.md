@@ -125,7 +125,7 @@ First, we show that every monoid is a unital magma:
 ```agda
 module _ {id : A} {_⋆_ : A → A → A} where
   is-monoid→is-unital-magma : is-monoid id _⋆_ → is-unital-magma id _⋆_
-  is-monoid→is-unital-magma mon .has-is-magma = mon .has-is-semigroup .has-is-magma
+  is-monoid→is-unital-magma mon .has-is-magma = mon .has-is-magma
   is-monoid→is-unital-magma mon .idl = mon .idl
   is-monoid→is-unital-magma mon .idr = mon .idr
 ```

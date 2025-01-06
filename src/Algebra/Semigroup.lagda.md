@@ -147,7 +147,7 @@ open import Data.Nat.Order
 open import Data.Nat.Base
 
 Nat-min : is-semigroup min
-Nat-min .has-is-magma .has-is-set = Nat-is-set
+Nat-min .has-is-magma .is-magma.has-is-set = Nat-is-set
 Nat-min .associative = min-assoc _ _ _
 ```
 
