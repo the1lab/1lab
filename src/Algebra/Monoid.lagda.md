@@ -80,8 +80,6 @@ record Monoid-on (A : Type ℓ) : Type ℓ where
 
 Monoid : (ℓ : Level) → Type (lsuc ℓ)
 Monoid ℓ = Σ (Type ℓ) Monoid-on
-
-open Monoid-on
 ```
 
 There is also a predicate which witnesses when an equivalence between
