@@ -4,7 +4,7 @@ open import Cat.Prelude
 
 open import Data.Fin.Indexed
 open import Data.Fin.Finite
-open import Data.Fin.Base using (Fin ; fsuc ; fzero)
+open import Data.Fin.Base using (Fin ; fsuc ; fzero ; suc ; zero ; fin-view)
 
 open import Order.Semilattice.Meet
 open import Order.Diagram.Meet
@@ -42,9 +42,10 @@ size of the family.
   ⋂ᶠ {suc (suc n)} f = f fzero ∩ ⋂ᶠ (λ i → f (fsuc i))
 
   ⋂ᶠ-proj : ∀ {n} {f : Fin n → Ob} (i : Fin n) → ⋂ᶠ f ≤ f i
-  ⋂ᶠ-proj {1}           fzero    = ≤-refl
-  ⋂ᶠ-proj {suc (suc n)} fzero    = ∩≤l
-  ⋂ᶠ-proj {suc (suc n)} (fsuc i) = ≤-trans ∩≤r (⋂ᶠ-proj i)
+  ⋂ᶠ-proj i with fin-view i
+  ⋂ᶠ-proj {1}           .fzero    | zero  = ≤-refl
+  ⋂ᶠ-proj {suc (suc n)} .fzero    | zero  = ∩≤l
+  ⋂ᶠ-proj {suc (suc n)} .(fsuc i) | suc i = ≤-trans ∩≤r (⋂ᶠ-proj i)
 
   ⋂ᶠ-universal
     : ∀ {n} {f : Fin n → Ob} (x : Ob)

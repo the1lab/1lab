@@ -12,14 +12,6 @@ open import Homotopy.Space.Circle hiding (S¹-elim)
 
 module 1Lab.Reflection.Induction.Examples where
 
-unquoteDecl Fin-elim = make-elim Fin-elim (quote Fin)
-
-_ : {ℓ : Level} {P : {n : Nat} (f : Fin n) → Type ℓ}
-    (P0 : {n : Nat} → P fzero)
-    (Psuc : {n : Nat} (f : Fin n) (Pf : P f) → P (fsuc f))
-    {n : Nat} (f : Fin n) → P f
-_ = Fin-elim
-
 unquoteDecl J = make-elim-with default-elim-visible J (quote _≡ᵢ_)
 
 _ : {ℓ : Level} {A : Type ℓ} {x : A} {ℓ₁ : Level}
