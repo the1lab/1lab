@@ -80,8 +80,6 @@ record Monoid-on (A : Type ℓ) : Type ℓ where
 
 Monoid : (ℓ : Level) → Type (lsuc ℓ)
 Monoid ℓ = Σ (Type ℓ) Monoid-on
-
-open Monoid-on
 ```
 
 There is also a predicate which witnesses when an equivalence between
@@ -125,7 +123,7 @@ First, we show that every monoid is a unital magma:
 ```agda
 module _ {id : A} {_⋆_ : A → A → A} where
   is-monoid→is-unital-magma : is-monoid id _⋆_ → is-unital-magma id _⋆_
-  is-monoid→is-unital-magma mon .has-is-magma = mon .has-is-semigroup .has-is-magma
+  is-monoid→is-unital-magma mon .has-is-magma = mon .has-is-magma
   is-monoid→is-unital-magma mon .idl = mon .idl
   is-monoid→is-unital-magma mon .idr = mon .idr
 ```
@@ -171,4 +169,34 @@ monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
   ⌜ x ⋆ e ⌝ ⋆ y ≡⟨ ap! li1 ⟩
   1M ⋆ y        ≡⟨ m .idl ⟩
   y             ∎
+```
+
+# Constructing monoids
+
+The interface to `Monoid-on`{.Agda} is contains some annoying nesting,
+so we provide an interface that arranges the data in a more user-friendly
+way.
+
+```agda
+record make-monoid {ℓ} (A : Type ℓ) : Type ℓ where
+  field
+    monoid-is-set : is-set A
+    _⋆_ : A → A → A
+    1M : A
+    ⋆-assoc : ∀ x y z → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
+    ⋆-idl : ∀ x → 1M ⋆ x ≡ x
+    ⋆-idr : ∀ x → x ⋆ 1M ≡ x
+
+  to-is-monoid : is-monoid 1M _⋆_
+  to-is-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = monoid-is-set }
+  to-is-monoid .has-is-semigroup .is-semigroup.associative = ⋆-assoc _ _ _
+  to-is-monoid .idl = ⋆-idl _
+  to-is-monoid .idr = ⋆-idr _
+
+  to-monoid-on : Monoid-on A
+  to-monoid-on .Monoid-on.identity = 1M
+  to-monoid-on .Monoid-on._⋆_ = _⋆_
+  to-monoid-on .Monoid-on.has-is-monoid = to-is-monoid
+
+open make-monoid using (to-is-monoid; to-monoid-on) public
 ```

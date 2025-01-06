@@ -153,15 +153,18 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
     mg .make-group.invl   = invl
     mg .make-group.idl    = idl
 
+  to-is-abelian-group : is-abelian-group mul
+  to-is-abelian-group .is-abelian-group.has-is-group =
+    to-is-group make-abelian-group→make-group
+  to-is-abelian-group .is-abelian-group.commutes =
+    comm _ _
+
   to-group-on-ab : Group-on T
   to-group-on-ab = to-group-on make-abelian-group→make-group
 
   to-abelian-group-on : Abelian-group-on T
   to-abelian-group-on .Abelian-group-on._*_ = mul
-  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.has-is-group =
-    Group-on.has-is-group to-group-on-ab
-  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
-    comm _ _
+  to-abelian-group-on .Abelian-group-on.has-is-ab = to-is-abelian-group
 
   to-ab : Abelian-group ℓ
   ∣ to-ab .fst ∣ = T
@@ -191,7 +194,7 @@ Grp→Ab→Grp G c = Σ-pathp refl go where
   go i .Group-on._⋆_ = G .snd .Group-on._⋆_
   go i .Group-on.has-is-group = G .snd .Group-on.has-is-group
 
-open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-abelian-group-on ; to-ab) public
+open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-is-abelian-group ; to-abelian-group-on ; to-ab) public
 
 open Functor
 

@@ -92,12 +92,13 @@ $$.
 
 ```agda
   Mon→Hom-mon : ∀ {m} (x : Ob) → C-Monoid m → Monoid-on (Hom x m)
-  Mon→Hom-mon {m} x mon = hom-mon where
-    has-semigroup : is-semigroup λ f g → mon .μ ∘ ⟨ f , g ⟩
-    hom-mon : Monoid-on (Hom x m)
+  Mon→Hom-mon {m} x mon = to-monoid-on hom-mon where
+    open make-monoid
 
-    hom-mon .Monoid-on.identity = mon .η ∘ !
-    hom-mon .Monoid-on._⋆_ f g  = mon .μ ∘ ⟨ f , g ⟩
+    hom-mon : make-monoid (Hom x m)
+    hom-mon .monoid-is-set = hlevel 2
+    hom-mon ._⋆_ f g = mon .μ ∘ ⟨ f , g ⟩
+    hom-mon .1M = mon .η ∘ !
 ```
 
 <details>
@@ -105,24 +106,21 @@ $$.
 diagram "relativize" to each $\hom$-set.</summary>
 
 ```agda
-    hom-mon .Monoid-on.has-is-monoid .has-is-semigroup = has-semigroup
-    hom-mon .Monoid-on.has-is-monoid .mon-idl {f} =
-      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
-      mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
-      π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
-      f                                   ∎
-    hom-mon .Monoid-on.has-is-monoid .mon-idr {f} =
-      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! C prod ⟩
-      mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
-      π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
-      f                                   ∎
-
-    has-semigroup .has-is-magma .has-is-set = Hom-set _ _
-    has-semigroup .associative {f} {g} {h} =
+    hom-mon .⋆-assoc f g h =
       mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
       mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! C prod ⟩
       mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
+    hom-mon .⋆-idl f =
+      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
+      π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
+      f                                   ∎
+    hom-mon .⋆-idr f =
+      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
+      π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
+      f                                   ∎
 ```
 
 </details>
@@ -385,7 +383,7 @@ object $M : \cC$.
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
     → (P-rep : Representation {C = C} (Mon↪Sets F∘ P))
     → C-Monoid (P-rep .rep)
-  RepPshMon→Mon P P-rep = Hom-mon→Mon hom-mon η*-nat μ*-nat
+  RepPshMon→Mon P P-rep = Hom-mon→Mon (λ x → to-monoid-on (hom-mon x)) η*-nat μ*-nat
     module RepPshMon→Mon where
 ```
 
@@ -453,14 +451,13 @@ the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 
 <!--
 ```agda
-    hom-mon : ∀ x → Monoid-on (Hom x m)
-    hom-mon x .Monoid-on.identity = η* x
-    hom-mon x .Monoid-on._⋆_ = μ*
-    hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
-      Hom-set x m
-    hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .associative = μ*-assoc _ _ _
-    hom-mon x .Monoid-on.has-is-monoid .mon-idl = η*-idl _
-    hom-mon x .Monoid-on.has-is-monoid .mon-idr = η*-idr _
+    hom-mon : ∀ x → make-monoid (Hom x m)
+    hom-mon x .make-monoid.monoid-is-set = hlevel 2
+    hom-mon x .make-monoid._⋆_ = μ*
+    hom-mon x .make-monoid.1M = η* x
+    hom-mon x .make-monoid.⋆-assoc = μ*-assoc
+    hom-mon x .make-monoid.⋆-idl = η*-idl
+    hom-mon x .make-monoid.⋆-idr = η*-idr
 ```
 -->
 

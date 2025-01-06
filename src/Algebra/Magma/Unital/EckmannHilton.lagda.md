@@ -102,8 +102,8 @@ unitality allows us to prove that the operation is a monoid.
     x ⋆ (y ⋆ z) ∎)
 
   ⋆-is-monoid : is-monoid e _⋆_
-  ⋆-is-monoid .has-is-semigroup .has-is-magma = unital-mgm .has-is-magma
-  ⋆-is-monoid .has-is-semigroup .associative = ⋆-associative _ _ _
+  ⋆-is-monoid .has-is-semigroup .is-semigroup.has-is-magma = unital-mgm .has-is-magma
+  ⋆-is-monoid .has-is-semigroup .is-semigroup.associative = ⋆-associative _ _ _
   ⋆-is-monoid .idl = unital-mgm .idl
   ⋆-is-monoid .idr = unital-mgm .idr
 ```
