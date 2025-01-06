@@ -184,13 +184,13 @@ member→member-nub {xs = x ∷ xs} (there α) with elem? x (nub xs)
 
 <!--
 ```agda
-!-tabulate : ∀ {n} (f : Fin n → A) i → tabulate f ! i ≡ f (cast (length-tabulate f) i)
+!-tabulate : ∀ {n} (f : Fin n → A) i → tabulate f ! i ≡ f (subst Fin (length-tabulate f) i)
 !-tabulate _ ix with fin-view ix
 !-tabulate {n = suc n} f _ | zero  = refl
 !-tabulate {n = suc n} f _ | suc i = !-tabulate (f ∘ fsuc) i
 
 !-tabulate-fibre : ∀ {n} (f : Fin n → A) x → fibre (tabulate f !_) x ≃ fibre f x
-!-tabulate-fibre f x = Σ-ap (cast (length-tabulate f) , cast-is-equiv (length-tabulate f)) λ i →
+!-tabulate-fibre f x = Σ-ap (path→equiv (ap Fin (length-tabulate f))) λ i →
   path→equiv (ap (_≡ x) (!-tabulate f i))
 
 member-tabulate : ∀ {n} (f : Fin n → A) x → (x ∈ tabulate f) ≃ fibre f x

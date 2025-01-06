@@ -150,7 +150,7 @@ distinct-primes→coprime {a@(suc a')} {b@(suc b')} apr bpr a≠b = record
 ```agda
 is-prime-or-composite : ∀ n → 1 < n → is-prime n ⊎ is-composite n
 is-prime-or-composite n@(suc (suc m)) (s≤s p)
-  with Fin-omniscience {n = n} (λ k → 1 < to-nat k × to-nat k ∣ n)
+  with Fin-omniscience {n = n} (λ k → 1 < k .lower × k .lower ∣ n)
 ... | inr prime = inl record { prime≠1 = suc≠zero ∘ suc-inj ; primality = no-divisors→prime } where
   no-divisors→prime : ∀ d → d ∣ n → d ≡ 1 ⊎ d ≡ n
   no-divisors→prime d div with d ≡? 1
@@ -172,18 +172,18 @@ is-prime-or-composite n@(suc (suc m)) (s≤s p)
   open Σ (∣→fibre div) renaming (fst to quot ; snd to path)
 
   abstract
-    least' : (p' : Nat) → 1 < p' → p' ∣ n → to-nat ix ≤ p'
+    least' : (p' : Nat) → 1 < p' → p' ∣ n → ix .lower ≤ p'
     least' p' x div with ≤-strengthen (m∣n→m≤n div)
-    ... | inl same = ≤-trans ≤-ascend (subst (to-nat ix <_) (sym same) (to-ℕ< ix .snd))
+    ... | inl same = ≤-trans ≤-ascend (subst (ix .lower <_) (sym same) (to-ℕ< ix .snd))
     ... | inr less = least (from-ℕ< (p' , less)) (x , div)
 
-  prime : is-prime (to-nat ix)
-  prime = least-divisor→is-prime (to-nat ix) n proper div least'
+  prime : is-prime (ix .lower)
+  prime = least-divisor→is-prime (ix .lower) n proper div least'
 
   proper' : 1 < quot
   proper' with quot | path
   ... | 0 | q = absurd (<-irrefl q (s≤s 0≤x))
-  ... | 1 | q = absurd (<-irrefl (sym (+-zeror (to-nat ix)) ∙ q) (to-ℕ< ix .snd))
+  ... | 1 | q = absurd (<-irrefl (sym (+-zeror (ix .lower)) ∙ q) (to-ℕ< ix .snd))
   ... | suc (suc n) | p = s≤s (s≤s 0≤x)
 
 record Factorisation (n : Nat) : Type where

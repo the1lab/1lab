@@ -42,17 +42,29 @@ would like to enforce that constructions on $\operatorname{Fin}(n)$
 wrapped it in `Irr`{.Agda}.
 
 In dependent type theory, it's common to instead define the finite sets
-as a family indexed over `Nat`{.Agda}. However, we prefer the definition
-above because it lets us `cast`{.Agda} elements of
-$\operatorname{Fin}(n)$ along a path $n = m$ in a way that
-definitionally preserves the underlying number:
+as an inductive family indexed over `Nat`{.Agda}. However, in cubical
+type theory, there is a good reason to avoid inductive families: they
+have `subst`{.Agda} as an additional constructor, *including* along
+constant paths. This makes the normal form of any expression involving
+substitution in an indexed family, even if the thing being transported
+is a constructor form, very bad.
+
+Instead, we would like the `subst`{.Agda} operation on `Fin`{.Agda} to
+definitionally commute with the constructors, and (if possible) to
+definitionally preserve the underlying numeric value. Defining
+`Fin`{.Agda} as an indexed type with an irrelevant proof field achieves
+exactly this:
 
 ```agda
-cast : ∀ {m n} → m ≡ n → Fin m → Fin n
-cast p (fin n ⦃ i ⦄) = record
-  { lower   = n
-  ; bounded = subst (n Nat.<_) p <$> i
-  }
+private
+  cast : ∀ {m n} → m ≡ n → Fin m → Fin n
+  cast p (fin n ⦃ i ⦄) = record
+    { lower   = n
+    ; bounded = subst (n Nat.<_) p <$> i
+    }
+
+  _ : ∀ {m n} {p : m ≡ n} {x : Fin m} → subst Fin p x ≡ cast p x
+  _ = refl
 ```
 
 <!--
@@ -141,15 +153,6 @@ Fin-elim P pfzero pfsuc i with fin-view i
 ```agda
 fin-ap : ∀ {n} {x y : Fin n} → x .lower ≡ y .lower → x ≡ y
 fin-ap p = ap₂ (λ x y → fin x ⦃ y ⦄) p (to-pathp refl)
-
-cast-uncast : ∀ {m n} → (p : m ≡ n) → ∀ x → cast (sym p) (cast p x) ≡ x
-cast-uncast p x = refl
-
-cast-is-equiv : ∀ {m n} (p : m ≡ n) → is-equiv (cast p)
-cast-is-equiv p = is-iso→is-equiv $ iso
-  (cast (sym p))
-  (cast-uncast (sym p))
-  (cast-uncast p)
 ```
 -->
 

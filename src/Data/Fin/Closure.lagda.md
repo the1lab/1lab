@@ -116,7 +116,7 @@ binary products:
 Finite-multiply : (Fin n × Fin m) ≃ Fin (n * m)
 Finite-multiply {n} {m} =
   (Fin n × Fin m)       ≃⟨ Finite-sum (λ _ → m) ⟩
-  Fin (sum n (λ _ → m)) ≃⟨ cast (sum≡* n m) , cast-is-equiv (sum≡* n m) ⟩
+  Fin (sum n (λ _ → m)) ≃⟨ path→equiv (ap Fin (sum≡* n m)) ⟩
   Fin (n * m)           ≃∎
   where
     sum≡* : ∀ n m → sum n (λ _ → m) ≡ n * m

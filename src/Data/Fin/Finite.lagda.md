@@ -160,7 +160,7 @@ same-cardinality→equiv
 same-cardinality→equiv ⦃ fa ⦄ ⦃ fb ⦄ p = do
   ea ← fa .Finite.enumeration
   eb ← fb .Finite.enumeration
-  pure (ea ∙e (_ , cast-is-equiv p) ∙e eb e⁻¹)
+  pure (ea ∙e path→equiv (ap Fin p) ∙e eb e⁻¹)
 
 module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
   (e : ∥ A ≃ B ∥) (f : A → B) where
