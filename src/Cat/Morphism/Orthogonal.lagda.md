@@ -15,7 +15,7 @@ import Cat.Reasoning as Cr
 module Cat.Morphism.Orthogonal where
 ```
 
-# Orthogonal maps
+# Orthogonal maps {defines="left-orthogonal right-orthogonal orthogonality"}
 
 A pair of maps $f : a \to b$ and $g : c \ to d$ are called
 **orthogonal**, written $f \ortho g$^[Though hang tight for a note on
@@ -36,32 +36,56 @@ diagram like
 ~~~
 
 the space of arrows $c \to b$ (dashed) which commute with everything is
-contractible.
+contractible. We refer to the type of these dashed arrows as a
+`Lifting`{.Agda}, and this type is parametrised over all maps in the
+square.
 
 <!--
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ) where
-  private module C = Cr C
+  private
+    module C = Cr C
+    variable
+      a b c d : ⌞ C ⌟
+      f g h u v : C.Hom a b
+  open C using (Ob ; Hom ; _∘_ ; _≅_)
 ```
 -->
 
 ```agda
-  m⊥m : ∀ {a b c d} → C.Hom a b → C.Hom c d → Type _
+  Lifting
+    : (f : Hom a b) (g : Hom c d) (u : Hom a c) (v : Hom b d)
+    → Type _
+  Lifting f g u v = Σ[ w ∈ Hom _ _ ] w ∘ f ≡ u × g ∘ w ≡ v
+
+  m⊥m : Hom a b → Hom c d → Type _
   m⊥m {b = b} {c = c} f g =
-    ∀ {u v} → v C.∘ f ≡ g C.∘ u
-    → is-contr (Σ[ w ∈ C.Hom b c ] ((w C.∘ f ≡ u) × (g C.∘ w ≡ v)))
+    ∀ {u v} → v ∘ f ≡ g ∘ u
+    → is-contr (Lifting f g u v)
 ```
+
+:::{.definition #lifts-against}
+In some of the proofs below, we'll also need a name for a weakening of
+orthogonality, where the requirement that lifts are unique is dropped.
+We say $f$ *lifts against* $g$ if there is a map assigning lifts to
+every commutative squares with opposing $f$ and $g$ faces, as above.
+
+```agda
+  lifts-against : (f : Hom a b) (g : Hom c d) → Type _
+  lifts-against f g = ∀ {u v} → v ∘ f ≡ g ∘ u → Lifting f g u v
+```
+:::
 
 We also outline concepts of a map being orthogonal to an object, which
 is informally written $f \ortho X$, and an object being orthogonal to a
 map $Y \ortho f$.
 
 ```agda
-  m⊥o : ∀ {a b} → C.Hom a b → C.Ob → Type _
-  m⊥o {A} {B} f X = (a : C.Hom A X) → is-contr (Σ[ b ∈ C.Hom B X ] (b C.∘ f ≡ a))
+  m⊥o : Hom a b → ⌞ C ⌟ → Type _
+  m⊥o {a} {b} f X = (a : Hom a X) → is-contr (Σ[ b ∈ Hom b X ] (b ∘ f ≡ a))
 
-  o⊥m : ∀ {a b} → C.Ob → C.Hom a b → Type _
-  o⊥m {A} {B} Y f = (c : C.Hom Y B) → is-contr (Σ[ d ∈ C.Hom Y A ] (f C.∘ d ≡ c))
+  o⊥m : ⌞ C ⌟ → Hom a b → Type _
+  o⊥m {a} {b} Y f = (c : Hom Y b) → is-contr (Σ[ d ∈ Hom Y a ] (f ∘ d ≡ c))
 ```
 
 :::{.note}
@@ -86,7 +110,7 @@ The proof is mostly a calculation, so we present it without a lot of comment.
 
 ```agda
   object-orthogonal-!-orthogonal
-    : ∀ {A B X} (T : Terminal C) (f : C.Hom A B) → m⊥o f X ≃ m⊥m f (! T)
+    : ∀ {X} (T : Terminal C) (f : Hom a b) → m⊥o f X ≃ m⊥m f (! T)
   object-orthogonal-!-orthogonal {X = X} T f =
     prop-ext (hlevel 1) (hlevel 1) to from
     where
@@ -107,21 +131,21 @@ then $f \ortho Y$. Of course, this is immediate in categories, but it
 holds in the generality of precategories.
 
 ```agda
-  m⊥-iso : ∀ {a b} {X Y} (f : C.Hom a b) → X C.≅ Y → m⊥o f X → m⊥o f Y
+  m⊥-iso : ∀ {a b} {X Y} (f : Hom a b) → X ≅ Y → m⊥o f X → m⊥o f Y
 ```
 
 <!--
 ```agda
   m⊥-iso f x≅y f⊥X a =
     contr
-      ( g.to C.∘ contr' .centre .fst
+      ( g.to ∘ contr' .centre .fst
       , C.pullr (contr' .centre .snd) ∙ C.cancell g.invl )
       λ x → Σ-prop-path! $
-        ap₂ C._∘_ refl (ap fst (contr' .paths (g.from C.∘ x .fst , C.pullr (x .snd))))
+        ap₂ _∘_ refl (ap fst (contr' .paths (g.from ∘ x .fst , C.pullr (x .snd))))
         ∙ C.cancell g.invl
     where
       module g = C._≅_ x≅y
-      contr' = f⊥X (g.from C.∘ a)
+      contr' = f⊥X (g.from ∘ a)
 ```
 -->
 
@@ -129,11 +153,219 @@ A slightly more interesting lemma is that, if $f$ is orthogonal to
 itself, then it is an isomorphism:
 
 ```agda
-  self-orthogonal→is-iso : ∀ {a b} (f : C.Hom a b) → m⊥m f f → C.is-invertible f
-  self-orthogonal→is-iso f f⊥f =
+  self-orthogonal→invertible : ∀ {a b} (f : Hom a b) → m⊥m f f → C.is-invertible f
+  self-orthogonal→invertible f f⊥f =
     C.make-invertible (gpq .fst) (gpq .snd .snd) (gpq .snd .fst)
     where
       gpq = f⊥f (C.idl _ ∙ C.intror refl) .centre
+```
+
+For the next few lemmas, consider a square of the following form, where
+$l$ and $k$ are both lifts of the outer square.
+
+~~~{.quiver}
+\begin{tikzcd}
+  a && b \\
+  \\
+  c && d
+  \arrow["f", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["l"', shift right, from=1-3, to=3-1]
+  \arrow["k", shift left, from=1-3, to=3-1]
+  \arrow["v", from=1-3, to=3-3]
+  \arrow["g"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+If $f$ is an [[epimorphism]], then $l = k$. In more succinct terms, the
+type of lifts of such a square is a proposition.
+
+```agda
+  left-epic→lift-is-prop
+    : C.is-epic f → v C.∘ f ≡ g C.∘ u → is-prop (Lifting f g u v)
+  left-epic→lift-is-prop f-epi vf=gu (l , lf=u , _) (k , kf=u , _) =
+    Σ-prop-path! (f-epi l k (lf=u ∙ sym kf=u))
+```
+
+Dually, if $g$ is a [[monomorphism]], then we the type of lifts is also
+a propostion.
+
+```agda
+  right-monic→lift-is-prop
+    : C.is-monic g → v C.∘ f ≡ g C.∘ u → is-prop (Lifting f g u v)
+  right-monic→lift-is-prop g-mono vf=gu (l , _ , gl=v) (k , _ , gk=v) =
+    Σ-prop-path! (g-mono l k (gl=v ∙ sym gk=v))
+```
+
+As a corollary, if $f$ is an epi or $g$ is a mono, then it is sufficient
+to find _any_ lift to establish that $f \bot g$.
+
+```agda
+  left-epic-lift→orthogonal
+    : (g : C.Hom c d)
+    → C.is-epic f → lifts-against f g → m⊥m f g
+  left-epic-lift→orthogonal g f-epi lifts vf=gu =
+    is-prop∙→is-contr (left-epic→lift-is-prop f-epi vf=gu) (lifts vf=gu)
+
+  right-monic-lift→orthogonal
+    : (f : C.Hom a b)
+    → C.is-monic g → lifts-against f g → m⊥m f g
+  right-monic-lift→orthogonal f g-mono lifts vf=gu =
+    is-prop∙→is-contr (right-monic→lift-is-prop g-mono vf=gu) (lifts vf=gu)
+```
+
+Isomorphisms are left and right orthogonal to every other morphism.
+
+```agda
+  invertible→left-orthogonal  : (g : C.Hom c d) → C.is-invertible f → m⊥m f g
+  invertible→right-orthogonal : (f : C.Hom a b) → C.is-invertible g → m⊥m f g
+```
+
+We will focus our attention on the left orthogonal case, as the proof
+for right orthogonality is completely dual. Suppose that $f$ is invertible,
+and $g$ is an arbitrary morphism. Invertible morphisms are epis, so it
+suffices to establish the existence of lifts to prove that $f$ is orthogonal
+to $g$. Luckily, these lifts are easy to find: if we have some square
+$v \circ f = u \circ g$, then $u \circ f^{-1}$ fits perfectly along the
+diagonal:
+
+~~~{.quiver}
+\begin{tikzcd}
+  a && b \\
+  \\
+  c && d
+  \arrow["f", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["{u \circ f^{-1}}"{description}, from=1-3, to=3-1]
+  \arrow["v", from=1-3, to=3-3]
+  \arrow["g"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+A short calculation verifies that $u \circ f^{-1}$ is indeed a lift.
+
+```agda
+  invertible→left-orthogonal {f = f} g f-inv =
+    left-epic-lift→orthogonal g (C.invertible→epic f-inv) λ {u} {v} vf=gu →
+      u ∘ f.inv ,
+      C.cancelr f.invr ,
+      Equiv.from
+        (g ∘ u ∘ f.inv ≡ v   ≃⟨ C.reassocl e⁻¹ ∙e C.pre-invr f-inv ⟩
+         g ∘ u ≡ v ∘ f       ≃⟨ sym-equiv ⟩
+         v ∘ f ≡ g ∘ u       ≃∎)
+        vf=gu
+    where module f = C.is-invertible f-inv
+```
+
+<details>
+<summary>The proof of right orthogonality follows the exact same plan,
+so we omit the details.
+</summary>
+```agda
+  invertible→right-orthogonal {g = g} f g-inv =
+    right-monic-lift→orthogonal f (C.invertible→monic g-inv) λ {u} {v} vf=gu →
+      g.inv ∘ v ,
+      Equiv.from
+        ((g.inv ∘ v) ∘ f ≡ u ≃⟨ C.reassocl ∙e C.pre-invl g-inv ⟩
+          v ∘ f ≡ g ∘ u      ≃∎)
+        vf=gu ,
+      C.cancell g.invl
+    where module g = C.is-invertible g-inv
+```
+</details>
+
+<!--
+```agda
+  orthogonal→lifts-against : m⊥m f g → lifts-against f g
+  orthogonal→lifts-against o p = o p .centre
+```
+-->
+
+We also have the following two properties, which state that "lifting
+against" is, as a property of morphisms, closed under composition on
+both the left and the right. To understand the proof, it's helpful to
+visualise the inputs in a diagram. Suppose we have $f : b \to c$, $g : a
+\to b$, $h : x \to y$, and assume that both $f$ and $g$ lift against
+$h$. Showing that $fg$ lifts against $h$ amounts to finding a diagonal
+for the rectangle
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  a \&\& b \&\& c \\
+  \\
+  x \&\&\&\& y
+  \arrow["g", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["f", from=1-3, to=1-5]
+  \arrow["v", from=1-5, to=3-5]
+  \arrow["h"', from=3-1, to=3-5]
+\end{tikzcd}\]
+~~~
+
+under the assumption that $vfg = hu$. We'll populate this diagram a bit
+by observing that, by composing the $f$ and $v$ edges together, we have
+a commutative square with faces $g$, $vf$, $u$ and $h$ --- and since $g$
+lifts against $h$, this implies that we have a diagonal map $w$, which
+appears dashed in
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  a \&\& b \&\& c \\
+  \\
+  x \&\&\&\& {y.}
+  \arrow["g", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["f", from=1-3, to=1-5]
+  \arrow["w"', dashed, from=1-3, to=3-1]
+  \arrow["v", from=1-5, to=3-5]
+  \arrow["h"', from=3-1, to=3-5]
+\end{tikzcd}\]
+~~~
+
+This map satisfies $wg = u$, and, importantly, $hw = vf$. This latter
+equation implies that we can now treat the right half of the diagram as
+another square, with faces $f$, $h$, $w$, and $v$. Since $f$ *also*
+lifts against $h$, this implies that we can find the *dotted* map $t$ in
+the diagram
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  a \&\& b \&\& c \\
+  \\
+  x \&\&\&\& y
+  \arrow["g", from=1-1, to=1-3]
+  \arrow["u"', from=1-1, to=3-1]
+  \arrow["f", from=1-3, to=1-5]
+  \arrow["w"', dashed, from=1-3, to=3-1]
+  \arrow["t", dotted, from=1-5, to=3-1]
+  \arrow["v", from=1-5, to=3-5]
+  \arrow["h"', from=3-1, to=3-5]
+\end{tikzcd}\]
+~~~
+
+satisfying $tf = w$ and $mt = v$. The map $t$ fits the *type* of fillers
+for our original rectangle, but we must still show that it makes both
+triangles commute. But this is easy: we have $tfg = wg = u$ by a short
+calculation and $ht = w$ immediately.
+
+```agda
+  ∘l-lifts-against : lifts-against f h → lifts-against g h → lifts-against (f ∘ g) h
+  ∘l-lifts-against f-lifts g-lifts vfg=hu =
+    let (w , wg=u , hw=vf) = g-lifts (C.reassocl.from vfg=hu)
+        (t , tf=w , ht=v)  = f-lifts (sym hw=vf)
+    in t , C.pulll tf=w ∙ wg=u , ht=v
+```
+
+This proof dualises almost term-for-term the case where we're composing
+on the bottom face, i.e., when we have some $f$ which lifts against both
+$g$ and $h$, and we want to show $f$ lifts against $gh$.
+
+```agda
+  ∘r-lifts-against : lifts-against f g → lifts-against f h → lifts-against f (g ∘ h)
+  ∘r-lifts-against f-lifts g-lifts ve=fgu =
+    let (w , we=gu , fw=v) = f-lifts (C.reassocr.to ve=fgu)
+        (t , te=u , gt=w)  = g-lifts we=gu
+    in t , te=u , C.pullr gt=w ∙ fw=v
 ```
 
 ## Regarding reflections
@@ -255,7 +487,7 @@ the subcategory:
   orthogonal-to-ηs→in-subcategory {X} ortho =
     C.make-invertible x lemma (ortho X C.id .centre .snd)
     where
-      x = ortho X (C .Precategory.id) .centre .fst
+      x = ortho X C.id .centre .fst
       lemma = unit.η _ C.∘ x             ≡⟨ unit.is-natural _ _ _ ⟩
               ιr.₁ x C.∘ unit.η (ιr.₀ X) ≡⟨ C.refl⟩∘⟨ η-comonad-commute r⊣ι ι-ff ⟩
               ιr.₁ x C.∘ ιr.₁ (unit.η X) ≡⟨ ιr.annihilate (ortho X C.id .centre .snd) ⟩

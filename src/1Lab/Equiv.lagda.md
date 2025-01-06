@@ -250,7 +250,7 @@ id-equiv .is-eqv y .paths (x , p) i = p (~ i) , λ j → p (~ i ∨ j)
 ```
 
 <!--
-```
+```agda
 -- This helper is for functions f, g that cancel eachother, up to
 -- definitional equality, without any case analysis on the argument:
 
@@ -293,7 +293,7 @@ is-eqv' A B (f , is-equiv) a ψ u0 = inS (
 ```
 
 <!--
-```
+```agda
 equiv-centre : (e : A ≃ B) (y : B) → fibre (e .fst) y
 equiv-centre e y = e .snd .is-eqv y .centre
 

@@ -126,5 +126,5 @@ Posets-has-indexed-products F = mk where
   .inverses .invl → ext λ where
     x true → refl
     x false → refl
-  .inverses .invr → ext λ x y → refl , refl
+  .inverses .invr → ext λ x y → refl ,ₚ refl
 ```

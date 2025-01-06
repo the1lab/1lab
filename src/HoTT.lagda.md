@@ -532,6 +532,16 @@ _ = W-initial
 
 * Theorem 5.4.7: `W-initial`{.Agda}
 
+### 5.5: Homotopy-inductive types
+
+<!--
+```agda
+_ = initial→induction.elim
+```
+-->
+
+* Theorem 5.5.5: `initial→induction.elim`{.Agda}
+
 ## Chapter 6: Higher inductive types
 
 ### 6.2: Induction principles and dependent paths
@@ -788,7 +798,7 @@ _ = πₙ₊₂S¹≡0
 ### 8.2: Connectedness of suspensions
 
 <!--
-```
+```agda
 _ = Susp-is-connected
 _ = Sⁿ⁻¹-is-connected
 ```
@@ -1000,7 +1010,7 @@ _ = Displayed
 _ = Rezk-completion-is-category
 _ = weak-equiv→pre-equiv
 _ = weak-equiv→pre-iso
-_ = eso→pre-faithful
+_ = is-eso→precompose-is-faithful
 _ = eso-full→pre-ff
 _ = Rezk-completion
 _ = complete-is-eso
@@ -1009,7 +1019,7 @@ _ = complete
 ```
 -->
 
-* Lemma 9.9.1: `eso→pre-faithful`{.Agda}
+* Lemma 9.9.1: `is-eso→precompose-is-faithful`{.Agda}
 * Lemma 9.9.2: `eso-full→pre-ff`{.Agda}
 * Lemma 9.9.4: `weak-equiv→pre-equiv`{.Agda}, `weak-equiv→pre-iso`{.Agda}
 * Theorem 9.9.5: `Rezk-completion`{.Agda}, `Rezk-completion-is-category`{.Agda}, `complete`{.Agda}, `complete-is-ff`{.Agda}, `complete-is-eso`{.Agda}.

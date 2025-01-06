@@ -20,7 +20,7 @@ module Cat.Displayed.Instances.Trivial
 ```
 
 <!--
-```
+```agda
 open Precategory 𝒞
 open Functor
 open Total-hom

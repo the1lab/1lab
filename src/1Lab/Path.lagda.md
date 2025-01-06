@@ -486,10 +486,10 @@ with faces $p$, $q$, $r$, and $s$, as in the diagram below.
   {a_{00}} && {a_{10}} \\
   \\
   {a_{01}} && {a_{11}}
-  \arrow["q(i)"', from=1-1, to=3-1]
-  \arrow["p(j)", from=1-1, to=1-3]
-  \arrow["s(i)", from=1-3, to=3-3]
-  \arrow["r(j)"', from=3-1, to=3-3]
+  \arrow["p(j)"', from=1-1, to=3-1]
+  \arrow["q(i)", from=1-1, to=1-3]
+  \arrow["r(j)", from=1-3, to=3-3]
+  \arrow["s(i)"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 :::
@@ -557,7 +557,7 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p q : Path A a b} where private
 ```
 
 <!--
-```
+```agda
 SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
   {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
@@ -1506,10 +1506,10 @@ for the single composition, whose type we read as saying that $\refl
   x && y \\
   & {\bullet\text{-filler}~ p~ q}      \\
   x && z
-  \arrow["{\refl}", from=1-1, to=1-3]
-  \arrow["{p}"', from=1-1, to=3-1]
-  \arrow["{p \bullet q}", dashed, from=1-3, to=3-3]
-  \arrow["{q}"', from=3-1, to=3-3]
+  \arrow["{p}", from=1-1, to=1-3]
+  \arrow["{\refl}"', from=1-1, to=3-1]
+  \arrow["{q}", from=1-3, to=3-3]
+  \arrow["{p \bullet q}"', dashed, from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -1593,8 +1593,8 @@ _∙'_ {x = x} p q = transport (λ i → x ≡ q i) p
 Since we know that `transport`{.Agda} reduces when applied to type
 formers, the definition above is *not* neutral, even when $p$ and $q$
 are variables. But what does it reduce *to*? A natural attempt would be
-to say that, at a point $i : \bI$, the path $\transport{(\lam{i}. x \is
-q(i))}{p}$ is $t = \transport{(\lam{i}. A)}{p(i)}$ --- i.e., transport
+to say that, at a point $i : \bI$, the path $\transport{(\lam{i} x \is
+q(i))}{p}$ is $t = \transport{(\lam{i} A)}{p(i)}$ --- i.e., transport
 of paths is, pointwise, transport along the base. But this can't be the
 case, since $t$ has endpoints
 
@@ -2311,8 +2311,6 @@ subst-path-both p adj = transport-path p adj adj
 ```
 
 <!--
-TODO: Explain these whiskerings
-
 ```agda
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
   → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁

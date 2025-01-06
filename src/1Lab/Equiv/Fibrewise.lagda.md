@@ -31,7 +31,7 @@ x` can be referred as a _fibrewise map_.
 A function like this can be lifted to a function on total spaces:
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -153,3 +153,12 @@ An equivalence over $e$ induces an equivalence of total spaces:
     over→total : P ≃[ e ] Q → Σ A P ≃ Σ B Q
     over→total e' = Σ-ap e λ a → e' a (e.to a) refl
 ```
+
+<!--
+```agda
+subst-fibrewise
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''} (g : ∀ x → B x → B' x)
+  → {x y : A} (p : x ≡ y) (h : B x) → subst B' p (g x h) ≡ g y (subst B p h)
+subst-fibrewise {B = B} {B'} g {x} p h = J (λ y p → subst B' p (g x h) ≡ g y (subst B p h)) (transport-refl _ ∙ ap (g x) (sym (transport-refl _))) p
+```
+-->

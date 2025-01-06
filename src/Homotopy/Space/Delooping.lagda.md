@@ -50,7 +50,7 @@ module _ {ℓ} (G : Group ℓ) where
 ```
 
 <!--
-```
+```agda
   private instance
     H-Level-Deloop : ∀ {n} → H-Level Deloop (3 + n)
     H-Level-Deloop = basic-instance 3 squash
@@ -432,7 +432,7 @@ again. That finishes the construction:
           (λ i j → go (α i j)) (λ i j → go (β i j))
           (squash x y p q α β) i j k
 
-  {-# DISPLAY windingⁱ.go x p = winding p #-}
+  {-# DISPLAY windingⁱ.go _ p = winding p #-}
 ```
 -->
 

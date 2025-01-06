@@ -25,6 +25,7 @@ import Data.Foldable
 import Data.Aeson (encodeFile)
 import Data.Maybe
 import Data.Text (Text)
+import Data.Char
 
 import qualified System.Directory as Dir
 
@@ -157,19 +158,37 @@ postParseInlines [] = []
 -- inside a wikilink are replaced by the safe ASCII space @ @.
 mangleMarkdown :: Text -> Text
 mangleMarkdown = Text.pack . toplevel . Text.unpack where
-  toplevel ('[':'[':cs) = '[':'[':wikilink cs
-  toplevel (c:cs)       = c:toplevel cs
-  toplevel []           = []
+  toplevel ('[':'[':cs)         = '[':'[':wikilink toplevel cs
+  toplevel ('<':'!':'-':'-':cs) = startcomment cs
+  toplevel (c:cs)               = c:toplevel cs
+  toplevel []                   = []
 
-  wikilink (']':']':cs) = ']':']':toplevel cs
+  startcomment ('[':'T':'O':'D':'O':cs) = comment False 1 cs
+  startcomment (c:cs)
+    | isSpace c       = startcomment cs
+    | otherwise       = "<div class=\"commented-out\">\n" ++ comment True 1 (c:cs)
+  startcomment []     = error "Unterminated comment"
 
-  wikilink ('\n':cs)    = ' ':wikilink cs
-  wikilink ('\t':cs)    = ' ':wikilink cs
-  wikilink ('\f':cs)    = ' ':wikilink cs
-  wikilink ('\r':cs)    = ' ':wikilink cs
+  comment e 0 cs                   = concat ["\n</div>" | e] ++ toplevel cs
+  comment e n []                   = error "Unterminated comment"
 
-  wikilink (c:cs)       = c:wikilink cs
-  wikilink []           = []
+  comment e n ('-':'-':'>':cs)     = comment e (n - 1) cs
+  comment e n ('<':'!':'-':'-':cs) = comment e (n + 1) cs
+
+  comment True n ('[':'[':cs)      = '[':'[':wikilink (comment True n) cs
+  comment e n (c:cs)
+    | e         = c:comment e n cs
+    | otherwise = comment e n cs
+
+  wikilink k (']':']':cs) = ']':']':k cs
+
+  wikilink k ('\n':cs)    = ' ':wikilink k cs
+  wikilink k ('\t':cs)    = ' ':wikilink k cs
+  wikilink k ('\f':cs)    = ' ':wikilink k cs
+  wikilink k ('\r':cs)    = ' ':wikilink k cs
+
+  wikilink k (c:cs)       = c:wikilink k cs
+  wikilink k []           = []
 
 buildMarkdown :: String   -- ^ The name of the Agda module.
               -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
@@ -212,7 +231,6 @@ buildMarkdown modname input output = do
   Pandoc meta@(Meta metamap) blocks <-
       walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
-    . walk uncommentAgda
     $ markdown
 
   need [ if isJust (Map.lookup "talk" metamap) then talkTemplateName else pageTemplateName ]
@@ -273,12 +291,6 @@ addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
   meta' = case Map.lookup "pagetitle" meta <|> Map.lookup "customtitle" meta <|> search m of
     Just m  -> Map.insert "pagetitle" m meta
     Nothing -> meta
-
--- | Rescue Agda code blocks from under HTML comments so we can show them if needed.
-uncommentAgda :: Block -> Block
-uncommentAgda (RawBlock "html" (parseTags -> [TagComment html])) | any isAgdaBlock (parseTree html) =
-  Div ("", ["commented-out"], []) [RawBlock "html" html]
-uncommentAgda b = b
 
 isAgdaBlock :: TagTree Text -> Bool
 isAgdaBlock (TagBranch _ attrs _) = anyAttrLit ("class", "Agda") attrs
@@ -387,7 +399,6 @@ patchBlock _ (Div ("refs", _, _) body) = do
 
 patchBlock _ h = pure h
 
-
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown
   :: PandocMonad m
@@ -406,8 +417,10 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
       | isTalk    = talkTemplateName
       | otherwise = pageTemplateName
 
-  template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
-                >>= either (throwError . PandocTemplateError . Text.pack) pure
+  template <- getTemplate templateName
+    >>= runWithPartials . compileTemplate templateName
+    >>= either (throwError . PandocTemplateError . Text.pack) pure
+
   let
     authors' = case authors of
       [] -> "Nobody"
@@ -439,6 +452,7 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
 don'tFold :: Set.Set Text
 don'tFold = Set.fromList
   [ "`⟨" -- used in CC.Lambda
+  , "‶⟨" -- used in Cat.Diagram.Product.Solver
   ]
 
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.

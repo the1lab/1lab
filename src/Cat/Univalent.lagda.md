@@ -1,5 +1,5 @@
 <!--
-```
+```agda
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
 open import Cat.Morphism.Instances

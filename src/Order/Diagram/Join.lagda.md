@@ -79,7 +79,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
 ```
 
 <!--
-```
+```agda
   join-unique
     : ∀ {a b x y}
     → is-join P a b x → is-join P a b y

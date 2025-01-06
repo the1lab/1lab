@@ -455,7 +455,7 @@ A4.3.1) implies the topos $\cT$ is an _exponential ideal_ in
 $\psh(\cC)$: If $Y$ is a sheaf, and $X$ is any presheaf, then the
 internal hom $[X,Y]$ is a sheaf: topoi are [[cartesian closed]].
 
-<!-- TODO [Amy 2022-04-02]
+<!-- [TODO: Amy 2022-04-02]
 prove all of the above lmao
 -->
 
@@ -643,7 +643,7 @@ Idg {E = E} = record { Inv[_] = Id ; Dir[_] = Id
 ```
 
 <!--
-```
+```agda
   where
     module E = Cat.Reasoning E
 
@@ -717,6 +717,6 @@ Topos→geometric-embedding T = emb where
   emb .Geom[_↪_].has-ff = T .Topos.has-ff
 ```
 
-<!-- TODO [Amy 2022-04-02]
+<!-- [TODO: Amy, 2022-04-02]
 talk about geometric logic?
 -->

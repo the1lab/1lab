@@ -25,7 +25,7 @@ open Total-hom
 ```
 -->
 
-# Polynomial functors and lenses
+# Polynomial functors and lenses {defines="polynomial-functor"}
 
 The category of _polynomial functors_ is the free coproduct completion
 of $\Sets\op$. Equivalently, it is the [[total category]] of the [family

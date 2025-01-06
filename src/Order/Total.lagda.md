@@ -49,7 +49,7 @@ way: We test whether $x \le y$, and, if that's the case, then $\min(x,y)
 dual.
 
 <!--
-```
+```agda
 module minmax {o ℓ} {P : Poset o ℓ} (to : is-total-order P) where
   open is-total-order to
 ```

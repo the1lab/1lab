@@ -767,5 +767,5 @@ adjunction between dependent sum and base change.
 ```
 
 <!--
-TODO(@ncfavier): this adjunction is comonadic!
+[TODO: Naïm, 24/06/2024] this adjunction is comonadic!
 -->

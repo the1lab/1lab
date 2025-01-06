@@ -14,7 +14,7 @@ open import Cat.Functor.Joint
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Morphism.StrongEpi
+import Cat.Morphism.Strong.Epi
 import Cat.Diagram.Separator
 import Cat.Reasoning
 ```
@@ -29,7 +29,7 @@ module Cat.Diagram.Separator.Strong
 
 <!--
 ```agda
-open Cat.Morphism.StrongEpi C
+open Cat.Morphism.Strong.Epi C
 open Cat.Diagram.Separator C
 open Cat.Reasoning C
 open Copowers coprods
@@ -192,9 +192,9 @@ by showing that it is both a strong epi and a monomorphism.
 
 ```agda
 strong-separator→conservative {s = s} strong {A = a} {B = b} {f = f} f∘-inv =
-  strong-epi+mono→is-invertible
-    f-mono
+  strong-epi+mono→invertible
     f-strong-epi
+    f-mono
   where
     module f∘- = Equiv (f ∘_ , is-invertible→is-equiv f∘-inv)
 ```
@@ -238,7 +238,7 @@ immediately see that $f$ is a strong epi.
 ```agda
     f-strong-epi : is-strong-epi f
     f-strong-epi =
-      strong-epi-cancell f f* $
+      strong-epi-cancelr f f* $
       subst is-strong-epi (sym f*-factors) strong
 ```
 
@@ -302,9 +302,9 @@ so we omit the details.
 </summary>
 ```agda
 strong-separating-family→jointly-conservative Idx sᵢ strong {x = a} {y = b} {f = f} f∘ᵢ-inv =
-  strong-epi+mono→is-invertible
-    f-mono
+  strong-epi+mono→invertible
     f-strong-epi
+    f-mono
   where
     module f∘- {i : ∣ Idx ∣} = Equiv (_ , is-invertible→is-equiv (f∘ᵢ-inv i))
 
@@ -325,7 +325,7 @@ strong-separating-family→jointly-conservative Idx sᵢ strong {x = a} {y = b} 
 
     f-strong-epi : is-strong-epi f
     f-strong-epi =
-      strong-epi-cancell f f* $
+      strong-epi-cancelr f f* $
       subst is-strong-epi (sym f*-factors) strong
 
 jointly-conservative→extremal-separating-family Idx sᵢ lex f∘-conservative m f p =

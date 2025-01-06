@@ -162,7 +162,7 @@ recovered as the composite $\Lan_\yo(F) \circ \yo$, because $\yo$ is a
 [[fully faithful]] functor.
 
 <!--
-```
+```agda
   module _ {D : Precategory κ κ} (F : Functor D C) (flat : Flat F) where
     private module DC = Cat.Reasoning Cat[ D , C ]
 ```

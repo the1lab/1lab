@@ -262,6 +262,12 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
         (a .glues f hf) (b .glues f hf) i
     Extensional-Section ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (hlevel 2)) _ _
 
+  Section-path
+    : ∀ {U} {S : Sieve C U} {p : Patch A S} {s s' : Section A p}
+    → s .whole ≡ s' .whole
+    → s ≡ s'
+  Section-path = ext
+
   subset→patch
     : ∀ {U} {S S' : Sieve C U}
     → S' ⊆ S
@@ -443,7 +449,14 @@ as its union, then the family $(U_i \cap V) \mono (U \cap V)$ has $U
 
 <!--
 ```agda
-open Coverage public
+  instance
+    Membership-covers : ∀ {U V} → Membership (Hom V U) (covers U) _
+    Membership-covers = record { _∈_ = λ f R → f ∈ cover R }
+
+    Sem-covers : ∀ {U} → ⟦⟧-notation (covers U)
+    Sem-covers = brackets _ cover
+
+open Coverage hiding (Membership-covers) public
 
 instance
   Funlike-Coverage : Funlike (Coverage C ℓc) ⌞ C ⌟ (λ _ → Type ℓc)
@@ -457,6 +470,7 @@ instance
 <!--
 ```agda
 module _ {o ℓ ℓc ℓs} {C : Precategory o ℓ} (J : Coverage C ℓc) (A : Functor (C ^op) (Sets ℓs)) where
+  open Coverage J using (Sem-covers)
 ```
 -->
 
@@ -468,13 +482,13 @@ for sheaves, formalisation concerns lead us to instead define an
 
 ```agda
   is-separated : Type _
-  is-separated = ∀ {U : ⌞ C ⌟} (c : J # U) → is-separated₁ A (J .cover c)
+  is-separated = {U : ⌞ C ⌟} (c : J ʻ U) → is-separated₁ A ⟦ c ⟧
 
   record is-sheaf : Type (o ⊔ ℓ ⊔ ℓs ⊔ ℓc) where
     no-eta-equality
     field
-      whole   : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → A ʻ U
-      glues   : ∀ {U} (S : J .covers U) (p : Patch A (J .cover S)) → is-section A (whole S p) p
+      whole   : {U : ⌞ C ⌟} (S : J ʻ U) (p : Patch A ⟦ S ⟧) → A ʻ U
+      glues   : {U : ⌞ C ⌟} (S : J ʻ U) (p : Patch A ⟦ S ⟧) → is-section A (whole S p) p
       separate : is-separated
 ```
 
@@ -483,7 +497,7 @@ will help us in defining [[sheafifications]] later on. We can package
 the first two fields as saying that each patch has a section:
 
 ```agda
-    split : ∀ {U} {S : J .covers U} (p : Patch A (J .cover S)) → Section A p
+    split : {U : ⌞ C ⌟} {S : J ʻ U} (p : Patch A ⟦ S ⟧) → Section A p
     split p .Section.whole = whole _ p
     split p .Section.glues = glues _ p
 

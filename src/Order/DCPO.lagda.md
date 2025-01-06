@@ -315,7 +315,7 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
 </details>
 
 <!--
-```
+```agda
 module _ {o ℓ} {D E : DCPO o ℓ} where
   private
     module D = DCPO D

@@ -109,7 +109,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
         f .is-natural x y h i a , g .is-natural x y h i a
     prod .has-is-product .π₁∘⟨⟩ = trivial!
     prod .has-is-product .π₂∘⟨⟩ = trivial!
-    prod .has-is-product .unique p q = ext λ i x → unext p i x , unext q i x
+    prod .has-is-product .unique p q = ext λ i x → unext p i x ,ₚ unext q i x
 
   {-# TERMINATING #-}
   PSh-coproducts : (A B : PSh.Ob) → Coproduct (PSh κ C) A B
@@ -217,13 +217,13 @@ module _ {κ} {C : Precategory κ κ} where
       adj .unit .η x .η i a =
         NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ → funext λ _ →
           Σ-pathp (happly (x .F-∘ _ _) _) refl
-      adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ # _) , refl
-      adj .unit .is-natural x y f = ext λ _ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) , refl
+      adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ # _) ,ₚ refl
+      adj .unit .is-natural x y f = ext λ _ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) ,ₚ refl
       adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
       adj .counit .η _ .is-natural x y f = funext λ h →
         ap (h .fst .η _) (Σ-pathp C.id-comm refl) ∙ happly (h .fst .is-natural _ _ _) _
       adj .counit .is-natural x y f = trivial!
-      adj .zig {A} = ext λ x _ _ → happly (F-id A) _ , refl
+      adj .zig {A} = ext λ x _ _ → happly (F-id A) _ ,ₚ refl
       adj .zag {A} = ext λ _ x i f g j → x .η i (C.idr f j , g)
 
     cc : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})

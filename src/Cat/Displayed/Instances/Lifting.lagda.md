@@ -438,7 +438,7 @@ Since none of these constructions have deeper mathematical content than
 their types, we omit the definitions from the page entirely.
 
 <!--
-```
+```agda
   ∫Functor→Lifting F .F₀' j = F .F₀ j .snd
   ∫Functor→Lifting F .F₁' f = F .F₁ f .preserves
   ∫Functor→Lifting F .F-id' = cast[] (ap preserves (F .F-id))

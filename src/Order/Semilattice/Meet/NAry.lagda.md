@@ -19,7 +19,7 @@ module Order.Semilattice.Meet.NAry where
 ```
 
 <!--
-```
+```agda
 open is-glb
 open Glb
 

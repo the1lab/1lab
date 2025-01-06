@@ -53,7 +53,7 @@ In type theory with K, the circle is exactly the same type as
 that the circle has at least two different paths:
 
 <!--
-```
+```agda
 _ = ⊤
 ```
 -->
