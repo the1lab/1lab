@@ -77,10 +77,10 @@ The forward direction follows from a short calculation.
       ⟨ f , g ⟩ ∘ k     ∎
 ```
 
-The reverse direction is a bit tricker, but only just. Suppose that
+The reverse direction is a bit trickier, but only just. Suppose that
 $f, g$ are jointly monic, and let $h, k : \cC(A,X)$ such that
 
-$$\langle f , g \rangle \circ h = \rangle f , g \langle \circ k$$
+$$\langle f , g \rangle \circ h = \langle f , g \rangle \circ k$$
 
 Our goal is to show that $h = k$. As $f$ and $g$ are jointly monic,
 it suffices to show that $f \circ h = f \circ k$ and $g \circ h = g \circ k$.
@@ -128,7 +128,7 @@ is monic.
 module _ {ℓ} {I : Type ℓ} (indexed-products : has-products-indexed-by C I) where
   private module ∏ {xᵢ : I → Ob} = Indexed-product (indexed-products xᵢ)
 
-  tuple-monic→jointy-monic-fam
+  tuple-monic→jointly-monic-fam
     : ∀ {x} {yᵢ : I → Ob}
     → {fᵢ : ∀ i → Hom x (yᵢ i)}
     → is-monic (∏.tuple fᵢ)
@@ -147,7 +147,7 @@ omit the details in the interest of brevity.
 </summary>
 
 ```agda
-  tuple-monic→jointy-monic-fam {yᵢ = yᵢ} {fᵢ = fᵢ} tuple-mono h k p =
+  tuple-monic→jointly-monic-fam {yᵢ = yᵢ} {fᵢ = fᵢ} tuple-mono h k p =
     tuple-mono h k $
       ∏.tuple fᵢ ∘ h           ≡⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
       ∏.tuple (λ i → fᵢ i ∘ h) ≡⟨ ap ∏.tuple (funext p) ⟩
@@ -291,7 +291,7 @@ self-jointly-monic-fam→monic f-joint-mono k₁ k₂ p =
 Like most things categorical, joint monos admit a definition via
 representability: $f : \cC(X,Y)$ and $g : \cC(X,Z)$ are jointly monic
 if and only if the map $\cC(A,X) \to \cC(A,Y) \times \cC(A,Z)$ induced
-by postcompositon is an [[embedding]].
+by postcomposition is an [[embedding]].
 
 ```agda
 jointly-monic→postcomp-embedding
