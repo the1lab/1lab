@@ -4,11 +4,13 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy.BAut
 
+open import Data.Maybe.Properties
 open import Data.Set.Coequaliser
 open import Data.Fin.Properties
 open import Data.Fin.Closure
 open import Data.Fin.Base
 open import Data.Nat.Base
+open import Data.Maybe
 open import Data.Dec
 open import Data.Irr
 open import Data.Sum
@@ -196,6 +198,7 @@ private variable
 instance
   Finite-Fin : ∀ {n} → Finite (Fin n)
   Finite-⊎ : ⦃ Finite A ⦄ → ⦃ Finite B ⦄ → Finite (A ⊎ B)
+  Finite-Maybe : ⦃ fa : Finite A ⦄ → Finite (Maybe A)
 
   Finite-Σ
     : {P : A → Type ℓ} → ⦃ Finite A ⦄ → ⦃ ∀ {x} → Finite (P x) ⦄ → Finite (Σ A P)
@@ -221,6 +224,10 @@ Finite-⊎ {A = A} {B = B} = fin $ do
   aeq ← enumeration {T = A}
   beq ← enumeration {T = B}
   pure (⊎-ap aeq beq ∙e Finite-coproduct)
+
+Finite-Maybe {A = A} = fin do
+  an ← enumeration {T = ⊤ ⊎ A}
+  pure (Maybe-is-sum ∙e an)
 
 Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
   aeq ← afin .Finite.enumeration

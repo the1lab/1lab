@@ -149,28 +149,6 @@ Maybe-reflect-discrete
 Maybe-reflect-discrete eq? = Discrete-inj just just-inj eq?
 ```
 
-## Finiteness
-
-If `A` is finite, then `Maybe A` is also finite.
-
-```agda
--- Finite-Maybe
---   : ⦃ fa : Finite A ⦄
---   → Finite (Maybe A)
--- Finite-Maybe ⦃ fa ⦄ .cardinality = suc (fa .cardinality)
--- Finite-Maybe {A = A} ⦃ fa ⦄ .enumeration =
---   ∥-∥-map (Iso→Equiv ∘ maybe-iso) (fa .enumeration) where
---     maybe-iso : A ≃ Fin (fa .cardinality) → Iso (Maybe A) (Fin (suc (fa .cardinality)))
---     maybe-iso f .fst (just x) = fsuc (Equiv.to f x)
---     maybe-iso f .fst nothing = fzero
---     maybe-iso f .snd .is-iso.inv fzero = nothing
---     maybe-iso f .snd .is-iso.inv (fsuc i) = just (Equiv.from f i)
---     maybe-iso f .snd .is-iso.rinv fzero = refl
---     maybe-iso f .snd .is-iso.rinv (fsuc i) = ap fsuc (Equiv.ε f i)
---     maybe-iso f .snd .is-iso.linv (just x) = ap just (Equiv.η f x)
---     maybe-iso f .snd .is-iso.linv nothing = refl
-```
-
 # Misc. properties
 
 If `A` is empty, then a `Maybe A` must be `nothing`{.Agda}.
@@ -230,6 +208,11 @@ map-<|> (just x) y = refl
 map-<|> nothing y = refl
 ```
 
+## Injectivity
+
+We can prove that the `Maybe`{.Agda} type constructor, considered as a
+function from a universe to itself, is injective.
+
 ```agda
 Maybe-injective : Maybe A ≃ Maybe B → A ≃ B
 Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
@@ -267,7 +250,10 @@ Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
         (λ e' → is-right-inverse (maybe-injective e') (maybe-injective (Equiv.inverse e)))
         {Equiv.inverse (Equiv.inverse e)} {e}
         trivial! p
+```
 
+<!--
+```agda
 Maybe-is-sum : Maybe A ≃ (⊤ ⊎ A)
 Maybe-is-sum {A = A} = Iso→Equiv (to , iso from ir il) where
   to   : Maybe A → ⊤ ⊎ A
@@ -286,3 +272,4 @@ Maybe-is-sum {A = A} = Iso→Equiv (to , iso from ir il) where
   il nothing = refl
   il (just x) = refl
 ```
+-->

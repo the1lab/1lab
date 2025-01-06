@@ -126,7 +126,7 @@ Fin-absurd i with fin-view i
 We can also define an elimination principle for the family
 $\operatorname{Fin}(-)$, which applies the view at "every level".
 
-```
+```agda
 Fin-elim
   : ∀ {ℓ} (P : ∀ {n} → Fin n → Type ℓ)
   → (∀ {n} → P {suc n} fzero)
