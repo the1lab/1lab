@@ -93,7 +93,7 @@ a proposition:
       (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```
 
-## Strictness
+## Strictness {defines="strict-initial-object"}
 
 An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
 This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
@@ -119,6 +119,19 @@ Strictness is a property of, not structure on, an initial object.
 ```agda
   is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
   is-strict-initial-is-prop i = hlevel 1
+```
+
+As maps out of initial objects are unique, it suffices to show that
+every map $\text{!`} \circ f = id$ for every $f : X \to \bot$ to establish that $\bot$ is a
+strict initial object.
+
+```agda
+  make-is-strict-initial
+    : (i : Initial)
+    → (∀ x → (f : Hom x (i .bot)) → (¡ i) ∘ f ≡ id)
+    → is-strict-initial i
+  make-is-strict-initial i p x f =
+    make-invertible (¡ i) (¡-unique₂ i (f ∘ ¡ i) id) (p x f)
 ```
 
 <!--
