@@ -84,6 +84,16 @@ is-magma-is-prop x y i .has-is-set =
   is-hlevel-is-prop 2 (x .has-is-set) (y .has-is-set) i
 ```
 
+<!--
+```agda
+instance
+  H-Level-is-magma
+    : ∀ {ℓ} {A : Type ℓ} {_⋆_ : A → A → A} {n}
+    → H-Level (is-magma _⋆_) (suc n)
+  H-Level-is-magma = prop-instance is-magma-is-prop
+```
+-->
+
 By turning the operation parameter into an additional piece of data, we
 get the notion of a **magma structure** on a type, as well as the
 notion of a magma in general by doing the same to the carrier type.
