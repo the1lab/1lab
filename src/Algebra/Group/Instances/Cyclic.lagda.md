@@ -12,9 +12,11 @@ open import Cat.Prelude
 open import Data.Int.Divisible
 open import Data.Int.Universal
 open import Data.Fin.Closure
+open import Data.Fin.Product
 open import Data.Int.DivMod
 open import Data.Fin
 open import Data.Int hiding (Positive)
+open import Data.Irr
 open import Data.Nat
 
 open represents-subgroup
@@ -182,17 +184,14 @@ $x : \ZZ$ to the representative of its congruence class modulo $n$,
 $x \% n$.
 
 ```agda
-ℤ/n≃ℕ<n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ ℕ< n
-ℤ/n≃ℕ<n n .fst = Coeq-rec (λ i → i %ℤ n , x%ℤy<y i n)
-  λ (x , y , p) → Σ-prop-path! (divides-diff→same-rem n x y p)
-ℤ/n≃ℕ<n n .snd = is-iso→is-equiv $ iso
-  (λ (i , p) → inc (pos i))
-  (λ i → Σ-prop-path! (ℕ<-%ℤ i))
-  (elim! λ i → quot (same-rem→divides-diff n (pos (i %ℤ n)) i
-    (ℕ<-%ℤ (_ , x%ℤy<y i n))))
-
 Finite-ℤ/n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
-Finite-ℤ/n n = ℤ/n≃ℕ<n n ∙e Fin≃ℕ< e⁻¹
+Finite-ℤ/n n .fst = Coeq-rec (λ i → from-ℕ< (i %ℤ n , x%ℤy<y i n))
+  λ (x , y , p) → fin-ap (divides-diff→same-rem n x y p)
+Finite-ℤ/n n .snd = is-iso→is-equiv $ iso
+  (λ (fin i) → inc (pos i))
+  (λ i → fin-ap (Fin-%ℤ i))
+  (elim! λ i → quot (same-rem→divides-diff n (pos (i %ℤ n)) i
+    (Fin-%ℤ (fin _ ⦃ forget (x%ℤy<y i n) ⦄))))
 ```
 
 Using this and the fact that $([2] \simeq [2]) \simeq [2!] = [2]$,
@@ -229,8 +228,6 @@ equivalences:
 ℤ/2≡S₂ = ∫-Path ℤ/2→S₂ $
   equiv-cancell (Fin-permutations 2 .snd)
     (equiv-cancelr ((Finite-ℤ/n 2 e⁻¹) .snd)
-      (subst is-equiv (ext λ where
-        fzero → refl
-        (fsuc fzero) → refl)
+      (subst is-equiv (ext (indexₚ (refl , refl , tt)))
       id-equiv))
 ```

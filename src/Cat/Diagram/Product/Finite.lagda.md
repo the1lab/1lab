@@ -60,9 +60,10 @@ Cartesian→standard-finite-products F = prod where
   F-apex {suc (suc n)} F = F fzero ⊗₀ F-apex (λ e → F (fsuc e))
 
   F-pi : ∀ {n} (F : Fin n → Ob) (i : Fin n) → Hom (F-apex F) (F i)
-  F-pi {suc zero} F fzero       = id
-  F-pi {suc (suc n)} F fzero    = Cart.π₁
-  F-pi {suc (suc n)} F (fsuc i) = F-pi (λ e → F (fsuc e)) i ∘ Cart.π₂
+  F-pi F i with fin-view i
+  F-pi {suc zero}    F .fzero    | zero  = id
+  F-pi {suc (suc n)} F .fzero    | zero  = Cart.π₁
+  F-pi {suc (suc n)} F .(fsuc i) | suc i = F-pi (λ e → F (fsuc e)) i ∘ Cart.π₂
 
   F-mult : ∀ {Y} {n} (F : Fin n → Ob)
          → ((i : Fin n) → Hom Y (F i)) → Hom Y (F-apex F)
@@ -72,9 +73,11 @@ Cartesian→standard-finite-products F = prod where
 
   F-commute : ∀ {Y} {n} (F : Fin n → Ob) (f : (i : Fin n) → Hom Y (F i))
             → ∀ i → F-pi F i ∘ F-mult F f ≡ f i
-  F-commute {n = suc zero} F f fzero = idl (f fzero)
-  F-commute {n = suc (suc n)} F f fzero = Cart.π₁∘⟨⟩
-  F-commute {n = suc (suc n)} F f (fsuc i) = pullr Cart.π₂∘⟨⟩ ∙ F-commute (λ e → F (fsuc e)) (λ e → f (fsuc e)) i
+  F-commute F f i with fin-view i
+  F-commute {n = suc zero}    F f .fzero    | zero = idl (f fzero)
+  F-commute {n = suc (suc n)} F f .fzero    | zero = Cart.π₁∘⟨⟩
+  F-commute {n = suc (suc n)} F f .(fsuc i) | suc i =
+    pullr Cart.π₂∘⟨⟩ ∙ F-commute (λ e → F (fsuc e)) (λ e → f (fsuc e)) i
 
   F-unique
     : ∀ {Y} {n} (F : Fin n → Ob) (f : (i : Fin n) → Hom Y (F i))

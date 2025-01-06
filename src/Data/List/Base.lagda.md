@@ -304,8 +304,9 @@ lookup x ((k , v) ∷ xs) with x ≡? k
 ... | no  _ = lookup x xs
 
 _!_ : (l : List A) → Fin (length l) → A
-(x ∷ xs) ! fzero  = x
-(x ∷ xs) ! fsuc n = xs ! n
+(x ∷ xs) ! n with fin-view n
+... | zero  = x
+... | suc i = xs ! i
 
 tabulate : ∀ {n} (f : Fin n → A) → List A
 tabulate {n = zero}  f = []

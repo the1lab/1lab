@@ -579,13 +579,15 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
   c'≠0 = *ℤ-positive d≠0 c≠0
 
   nums' : Fin (suc sz) → Int
-  nums' fzero = n *ℤ c
-  nums' (fsuc n) = nums n *ℤ d
+  nums' i with fin-view i
+  ... | zero  = n *ℤ c
+  ... | suc n = nums n *ℤ d
 
   abstract
     prfs' : (n : Fin (suc sz)) → fs n ≈ (nums' n / c' [ c'≠0 ])
-    prfs' fzero    = ≈.reflᶜ' prf ≈.∙ᶜ L.inc c c≠0 (solve 3 (λ c n d → c :* n :* (d :* c) ≔ c :* (n :* c) :* d) c n d refl)
-    prfs' (fsuc n) = prfs n ≈.∙ᶜ L.inc d d≠0 (solve 3 (λ c n d → d :* n :* (d :* c) ≔ d :* (n :* d) :* c) c (nums n) d refl)
+    prfs' i with fin-view i
+    ... | zero  = ≈.reflᶜ' prf ≈.∙ᶜ L.inc c c≠0 (solve 3 (λ c n d → c :* n :* (d :* c) ≔ c :* (n :* c) :* d) c n d refl)
+    ... | suc n = prfs n ≈.∙ᶜ L.inc d d≠0 (solve 3 (λ c n d → d :* n :* (d :* c) ≔ d :* (n :* d) :* c) c (nums n) d refl)
 
 -- Induction principle for n-tuples of rational numbers which reduces to
 -- the case of n fractions /with the same denominator/. The type is

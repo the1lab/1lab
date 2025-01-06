@@ -47,8 +47,9 @@ these functions are isomorphisms in full generality.
 indexₚ : ∀ {n ℓ} {P : (i : Fin n) → Type (ℓ i)}
        → Πᶠ {ℓ = ℓ} P → ∀ i → P i
 indexₚ {n = zero}  {P = P} prod ()
-indexₚ {n = suc n} {P = P} prod fzero = prod .fst
-indexₚ {n = suc n} {P = P} prod (fsuc x) = indexₚ (prod .snd) x
+indexₚ {n = suc n} {P = P} prod i with fin-view i
+... | zero  = prod .fst
+... | suc x = indexₚ (prod .snd) x
 
 tabulateₚ
   : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
@@ -107,8 +108,9 @@ simply compute away.
 updateₚ
   : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
   → Πᶠ P → ∀ i → P i → Πᶠ P
-updateₚ xs fzero x    = x , xs .snd
-updateₚ xs (fsuc k) x = xs .fst , updateₚ (xs .snd) k x
+updateₚ xs i x' with fin-view i | xs
+... | zero  | _ , xs = x' , xs
+... | suc k | x , xs = x , updateₚ xs k x'
 
 mapₚ
   : ∀ {n} {ℓ ℓ' : Fin n → Level}
@@ -127,14 +129,16 @@ indexₚ-mapₚ
       {Q : (i : Fin n) → Type (ℓ' i)}
   → ∀ (f : ∀ i → P i → Q i) (xs : Πᶠ P) i
   → indexₚ (mapₚ f xs) i ≡ f i (indexₚ xs i)
-indexₚ-mapₚ {suc n} f xs fzero = refl
-indexₚ-mapₚ {suc n} f xs (fsuc i) = indexₚ-mapₚ (λ i → f (fsuc i)) (xs .snd) i
+indexₚ-mapₚ {suc n} f xs i with fin-view i
+... | zero = refl
+... | suc i = indexₚ-mapₚ (λ i → f (fsuc i)) (xs .snd) i
 
 indexₚ-tabulateₚ
   : ∀ {n} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} (f : ∀ i → P i) i
   → indexₚ (tabulateₚ f) i ≡ f i
-indexₚ-tabulateₚ f fzero = refl
-indexₚ-tabulateₚ f (fsuc i) = indexₚ-tabulateₚ (λ i → f (fsuc i)) i
+indexₚ-tabulateₚ f i with fin-view i
+... | zero  = refl
+... | suc i = indexₚ-tabulateₚ (λ i → f (fsuc i)) i
 ```
 -->
 
@@ -146,20 +150,22 @@ updatedₚ
  : ∀ {n} {ℓ : Fin (suc n) → Level} {P : (i : Fin (suc n)) → Type (ℓ i)}
  → (p : Πᶠ P) (i : Fin (suc n)) (x : P i)
  → (indexₚ {P = P} (updateₚ {P = P} p i x) i) ≡ x
-updatedₚ {zero}  p fzero x    = refl
-updatedₚ {suc n} p fzero x    = refl
-updatedₚ {suc n} p (fsuc i) x = updatedₚ (p .snd) i x
+updatedₚ p i x with fin-view i
+updatedₚ {zero}  p _ x | zero = refl
+updatedₚ {suc n} p _ x | zero = refl
+updatedₚ {suc n} p _ x | suc i = updatedₚ (p .snd) i x
 
 updated-neₚ
  : ∀ {n} {ℓ : Fin (suc n) → Level} {P : (i : Fin (suc n)) → Type (ℓ i)}
  → (p : Πᶠ P) (i j : Fin (suc n)) (x : P i)
  → (i ≡ j → ⊥)
  → indexₚ {P = P} (updateₚ {P = P} p i x) j ≡ indexₚ {P = P} p j
-updated-neₚ {zero}  p fzero    fzero    x i≠j = absurd (i≠j refl)
-updated-neₚ {suc n} p fzero    fzero    x i≠j = absurd (i≠j refl)
-updated-neₚ {suc n} p fzero    (fsuc j) x i≠j = refl
-updated-neₚ {suc n} p (fsuc i) fzero    x i≠j = refl
-updated-neₚ {suc n} p (fsuc i) (fsuc j) x i≠j = updated-neₚ (p .snd) i j x λ p → i≠j (ap fsuc p)
+updated-neₚ p i j x i≠j with fin-view i | fin-view j
+updated-neₚ {zero}  p _ _ x i≠j | zero  | zero  = absurd (i≠j refl)
+updated-neₚ {suc n} p _ _ x i≠j | zero  | zero  = absurd (i≠j refl)
+updated-neₚ {suc n} p _ _ x i≠j | zero  | suc j = refl
+updated-neₚ {suc n} p _ _ x i≠j | suc i | zero  = refl
+updated-neₚ {suc n} p _ _ x i≠j | suc i | suc j = updated-neₚ (p .snd) i j x λ p → i≠j (ap fsuc p)
 ```
 
 # Finitary curried functions

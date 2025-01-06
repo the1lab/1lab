@@ -16,6 +16,7 @@ open import Data.Nat.Order
 open import Data.Fin.Base renaming (_≤_ to _≤ᶠ_) hiding (_<_)
 open import Data.Nat.Base
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 ```
 -->
@@ -161,14 +162,11 @@ is-prime-or-composite n@(suc (suc m)) (s≤s p)
       ord : d < n
       ord = proper-divisor-< ¬d=n div
 
-      coh : d ≡ to-nat (from-ℕ< (d , ord))
-      coh = sym (ap fst (to-from-ℕ< (d , ord)))
-
       no = case d return (λ x → ¬ x ≡ 1 → x ∣ n → 1 < x) of λ where
         0 p1 div → absurd (<-irrefl (sym div) (s≤s 0≤x))
         1 p1 div → absurd (p1 refl)
         (suc (suc n)) p1 div → s≤s (s≤s 0≤x)
-    in absurd (prime (from-ℕ< (d , ord)) ((subst (1 <_) coh (no ¬d=1 div)) , subst (_∣ n) coh div))
+    in absurd (prime (from-ℕ< (d , ord)) (no ¬d=1 div , div))
 ... | inl (ix , (proper , div) , least)
   = inr record { p-prime = prime ; q-proper = proper' ; factors = path ; least = least' } where
   open Σ (∣→fibre div) renaming (fst to quot ; snd to path)
@@ -177,16 +175,7 @@ is-prime-or-composite n@(suc (suc m)) (s≤s p)
     least' : (p' : Nat) → 1 < p' → p' ∣ n → to-nat ix ≤ p'
     least' p' x div with ≤-strengthen (m∣n→m≤n div)
     ... | inl same = ≤-trans ≤-ascend (subst (to-nat ix <_) (sym same) (to-ℕ< ix .snd))
-    ... | inr less =
-      let
-        it : ℕ< n
-        it = p' , less
-
-        coh : p' ≡ to-nat (from-ℕ< it)
-        coh = sym (ap fst (to-from-ℕ< it))
-
-        orig = least (from-ℕ< it) (subst (1 <_) coh x , subst (_∣ n) coh div)
-      in ≤-trans orig (subst (to-nat (from-ℕ< it) ≤_) (sym coh) ≤-refl)
+    ... | inr less = least (from-ℕ< (p' , less)) (x , div)
 
   prime : is-prime (to-nat ix)
   prime = least-divisor→is-prime (to-nat ix) n proper div least'

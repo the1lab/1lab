@@ -11,6 +11,7 @@ open import Data.Nat.DivMod
 open import Data.Dec.Base
 open import Data.Fin hiding (_<_)
 open import Data.Int hiding (Positive ; _<_ ; <-weaken)
+open import Data.Irr
 open import Data.Nat as Nat
 ```
 -->
@@ -210,8 +211,8 @@ same-rem→divides-diff n x y p = dividesℤ (x /ℤ n -ℤ y /ℤ n) $
 ...and that natural numbers below $n$ are their own remainder modulo $n$.
 
 ```agda
-ℕ<-%ℤ : ∀ {n} (i : ℕ< n) → .⦃ _ : Positive n ⦄ → pos (i .fst) %ℤ n ≡ i .fst
-ℕ<-%ℤ {n} (i , p) = ap remℤ (DivModℤ-unique (pos i) n
+Fin-%ℤ : ∀ {n} (i : Fin n) → .⦃ _ : Positive n ⦄ → pos (i .lower) %ℤ n ≡ i .lower
+Fin-%ℤ {n} (fin i ⦃ forget p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
   (divide-posℤ (pos i) n) (divmodℤ 0 i refl p))
 ```
 

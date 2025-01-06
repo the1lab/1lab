@@ -77,10 +77,11 @@ module _ {ℓ} {T : Type ℓ} (G : Group-on T)  where
     → f i ≡ x
     → (∀ j → ¬ i ≡ j → f j ≡ G.unit)
     → ∑ G f ≡ x
-  ∑-diagonal-lemma {suc n} fzero f f0=x fj=0 =
+  ∑-diagonal-lemma i _ _ _ with fin-view i
+  ∑-diagonal-lemma {suc n} _ f f0=x fj=0 | zero =
     G.elimr ( ∑-path {n = n} G (λ i → fj=0 (fsuc i) fzero≠fsuc)
             ∙ ∑-zero {n = n} G) ∙ f0=x
-  ∑-diagonal-lemma {suc n} (fsuc i) {x} f fj=x f≠i=0 =
+  ∑-diagonal-lemma {suc n} _ {x} f fj=x f≠i=0 | suc i =
     f fzero G.⋆ ∑ {n} G (λ e → f (fsuc e)) ≡⟨ G.eliml (f≠i=0 fzero λ e → fzero≠fsuc (sym e)) ⟩
     ∑ {n} G (λ e → f (fsuc e))             ≡⟨ ∑-diagonal-lemma {n} i (λ e → f (fsuc e)) fj=x (λ j i≠j → f≠i=0 (fsuc j) (λ e → i≠j (fsuc-inj e))) ⟩
     x                                      ∎

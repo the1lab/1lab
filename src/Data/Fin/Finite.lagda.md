@@ -10,6 +10,7 @@ open import Data.Fin.Closure
 open import Data.Fin.Base
 open import Data.Nat.Base
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 ```
 -->
@@ -249,10 +250,13 @@ Bool≃Fin2 = Iso→Equiv enum where
   enum : Iso Bool (Fin 2)
   enum .fst false = 0
   enum .fst true = 1
-  enum .snd .is-iso.inv fzero = false
-  enum .snd .is-iso.inv (fsuc fzero) = true
-  enum .snd .is-iso.rinv fzero = refl
-  enum .snd .is-iso.rinv (fsuc fzero) = refl
+  enum .snd .is-iso.inv i with fin-view i
+  enum .snd .is-iso.inv _ | zero  = false
+  enum .snd .is-iso.inv _ | suc _ = true
+  enum .snd .is-iso.rinv i with fin-view i
+  enum .snd .is-iso.rinv _ | suc fzero = refl
+  enum .snd .is-iso.rinv _ | suc (fin (suc n) ⦃ forget p ⦄) = absurd (¬suc≤0 (≤-peel p))
+  enum .snd .is-iso.rinv _ | zero  = refl
   enum .snd .is-iso.linv true = refl
   enum .snd .is-iso.linv false = refl
 
@@ -288,6 +292,6 @@ abstract instance
 <!--
 ```agda
 card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
-card-zero→empty ∥e∥ a = rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
+card-zero→empty ∥e∥ a = rec! (λ e → Fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

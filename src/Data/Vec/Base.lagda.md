@@ -43,8 +43,9 @@ private variable
   n k : Nat
 
 lookup : Vec A n → Fin n → A
-lookup (x ∷ xs) fzero = x
-lookup (x ∷ xs) (fsuc i) = lookup xs i
+lookup (x ∷ xs) n with fin-view n
+... | zero  = x
+... | suc i = lookup xs i
 ```
 
 <!--
