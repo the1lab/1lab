@@ -46,7 +46,7 @@ unquoteDecl H-Level-Δ-map = declare-record-hlevel 2 H-Level-Δ-map (quote Δ-ma
   → f ≡ g
 Δ-map-path p i .map x = p x i
 Δ-map-path {f = f} {g} p i .ascending x y w =
-  is-prop→pathp (λ j → Nat.≤-is-prop {to-nat (p x j)} {to-nat (p y j)})
+  is-prop→pathp (λ j → Nat.≤-is-prop {p x j .lower} {p y j .lower})
     (f .ascending x y w) (g .ascending x y w) i
 ```
 -->

@@ -32,8 +32,9 @@ tabulate-lookup []       = refl
 tabulate-lookup (x ∷ xs) = ap (x ∷_) (tabulate-lookup xs)
 
 lookup-tabulate : (xs : Fin n → A) (i : Fin n) → lookup (tabulate xs) i ≡ xs i
-lookup-tabulate xs fzero = refl
-lookup-tabulate xs (fsuc i) = lookup-tabulate (λ x → xs (fsuc x)) i
+lookup-tabulate xs i with fin-view i
+... | zero  = refl
+... | suc i = lookup-tabulate (xs ∘ fsuc) i
 
 lookup-is-equiv : is-equiv (lookup {A = A} {n})
 lookup-is-equiv = is-iso→is-equiv $
@@ -42,8 +43,9 @@ lookup-is-equiv = is-iso→is-equiv $
 module Lookup {ℓ} {A : Type ℓ} {n : Nat} = Equiv (lookup {A = A} {n} , lookup-is-equiv)
 
 map-lookup : ∀ (f : A → B) (xs : Vec A n) i → lookup (Vec.map f xs) i ≡ f (lookup xs i)
-map-lookup f (x ∷ xs) fzero    = refl
-map-lookup f (x ∷ xs) (fsuc i) = map-lookup f xs i
+map-lookup _ _ i with fin-view i
+map-lookup f (x ∷ xs) _ | zero  = refl
+map-lookup f (x ∷ xs) _ | suc i = map-lookup f xs i
 
 map-id : (xs : Vec A n) → Vec.map (λ x → x) xs ≡ xs
 map-id xs = Lookup.injective₂ (funext λ i → map-lookup _ xs i) refl

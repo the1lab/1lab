@@ -4,12 +4,15 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy.BAut
 
+open import Data.Maybe.Properties
 open import Data.Set.Coequaliser
 open import Data.Fin.Properties
 open import Data.Fin.Closure
 open import Data.Fin.Base
 open import Data.Nat.Base
+open import Data.Maybe
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 ```
 -->
@@ -157,7 +160,7 @@ same-cardinality→equiv
 same-cardinality→equiv ⦃ fa ⦄ ⦃ fb ⦄ p = do
   ea ← fa .Finite.enumeration
   eb ← fb .Finite.enumeration
-  pure (ea ∙e (_ , cast-is-equiv p) ∙e eb e⁻¹)
+  pure (ea ∙e path→equiv (ap Fin p) ∙e eb e⁻¹)
 
 module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
   (e : ∥ A ≃ B ∥) (f : A → B) where
@@ -195,6 +198,7 @@ private variable
 instance
   Finite-Fin : ∀ {n} → Finite (Fin n)
   Finite-⊎ : ⦃ Finite A ⦄ → ⦃ Finite B ⦄ → Finite (A ⊎ B)
+  Finite-Maybe : ⦃ fa : Finite A ⦄ → Finite (Maybe A)
 
   Finite-Σ
     : {P : A → Type ℓ} → ⦃ Finite A ⦄ → ⦃ ∀ {x} → Finite (P x) ⦄ → Finite (Σ A P)
@@ -220,6 +224,10 @@ Finite-⊎ {A = A} {B = B} = fin $ do
   aeq ← enumeration {T = A}
   beq ← enumeration {T = B}
   pure (⊎-ap aeq beq ∙e Finite-coproduct)
+
+Finite-Maybe {A = A} = fin do
+  an ← enumeration {T = ⊤ ⊎ A}
+  pure (Maybe-is-sum ∙e an)
 
 Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
   aeq ← afin .Finite.enumeration
@@ -249,10 +257,13 @@ Bool≃Fin2 = Iso→Equiv enum where
   enum : Iso Bool (Fin 2)
   enum .fst false = 0
   enum .fst true = 1
-  enum .snd .is-iso.inv fzero = false
-  enum .snd .is-iso.inv (fsuc fzero) = true
-  enum .snd .is-iso.rinv fzero = refl
-  enum .snd .is-iso.rinv (fsuc fzero) = refl
+  enum .snd .is-iso.inv i with fin-view i
+  enum .snd .is-iso.inv _ | zero  = false
+  enum .snd .is-iso.inv _ | suc _ = true
+  enum .snd .is-iso.rinv i with fin-view i
+  enum .snd .is-iso.rinv _ | suc fzero = refl
+  enum .snd .is-iso.rinv _ | suc (fin (suc n) ⦃ forget p ⦄) = absurd (¬suc≤0 (≤-peel p))
+  enum .snd .is-iso.rinv _ | zero  = refl
   enum .snd .is-iso.linv true = refl
   enum .snd .is-iso.linv false = refl
 
@@ -288,6 +299,6 @@ abstract instance
 <!--
 ```agda
 card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
-card-zero→empty ∥e∥ a = rec! (λ e → fin-absurd (Equiv.to e a)) ∥e∥
+card-zero→empty ∥e∥ a = rec! (λ e → Fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

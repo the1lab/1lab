@@ -4,7 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Bool
 open import Data.List hiding (_++_ ; drop ; tabulate)
-open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
+open import Data.Fin using (Fin; zero; suc; fzero; fsuc; weaken; inject; _[_≔_] ; fin-view)
 open import Data.Nat
 open import Data.Sum
 
@@ -623,10 +623,11 @@ tabulate-atom-true
   → (ρ : Fin Γ → Bool)
   → ρ x ≡ true
   → tabulate ρ ⊢ atom x
-tabulate-atom-true {Γ = suc Γ} fzero ρ x-true with ρ 0
+tabulate-atom-true i _ _ with fin-view i
+tabulate-atom-true {Γ = suc Γ} .fzero ρ x-true | zero with ρ 0
 ... | true  = hyp here
 ... | false = absurd (true≠false $ sym x-true)
-tabulate-atom-true {Γ = suc Γ} (fsuc x) ρ x-true =
+tabulate-atom-true {Γ = suc Γ} .(fsuc x) ρ x-true | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-true x (ρ ∘ fsuc) x-true))
 
 tabulate-atom-false
@@ -634,10 +635,11 @@ tabulate-atom-false
   → (ρ : Fin Γ → Bool)
   → ρ x ≡ false
   → tabulate ρ ⊢ “¬” atom x
-tabulate-atom-false {Γ = suc Γ} fzero ρ x-false with ρ 0
+tabulate-atom-false i _ _ with fin-view i
+tabulate-atom-false {Γ = suc Γ} .fzero ρ x-false | zero with ρ 0
 ... | false = hyp here
 ... | true  = absurd (true≠false x-false)
-tabulate-atom-false {Γ = suc Γ} (fsuc x) ρ x-false =
+tabulate-atom-false {Γ = suc Γ} .(fsuc x) ρ x-false | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-false x (ρ ∘ fsuc) x-false))
 ```
 

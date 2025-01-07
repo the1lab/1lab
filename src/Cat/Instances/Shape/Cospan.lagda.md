@@ -3,7 +3,9 @@
 open import Cat.Prelude
 open import Cat.Finite
 
+open import Data.Fin.Product
 open import Data.Fin.Finite
+open import Data.Dec.Base
 open import Data.Fin
 ```
 -->
@@ -11,6 +13,7 @@ open import Data.Fin
 ```agda
 module Cat.Instances.Shape.Cospan where
 ```
+
 
 # The "cospan" category
 
@@ -97,12 +100,8 @@ instance
     i .fst cs-a = 0
     i .fst cs-b = 1
     i .fst cs-c = 2
-    i .snd .is-iso.inv fzero = cs-a
-    i .snd .is-iso.inv (fsuc fzero) = cs-b
-    i .snd .is-iso.inv (fsuc (fsuc fzero)) = cs-c
-    i .snd .is-iso.rinv fzero = refl
-    i .snd .is-iso.rinv (fsuc fzero) = refl
-    i .snd .is-iso.rinv (fsuc (fsuc fzero)) = refl
+    i .snd .is-iso.inv = indexₚ (cs-a , cs-b , cs-c , tt)
+    i .snd .is-iso.rinv = indexₚ (refl , refl , refl , tt)
     i .snd .is-iso.linv cs-a = refl
     i .snd .is-iso.linv cs-b = refl
     i .snd .is-iso.linv cs-c = refl

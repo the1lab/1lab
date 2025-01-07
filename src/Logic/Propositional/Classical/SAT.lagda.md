@@ -6,7 +6,7 @@ open import Data.Id.Base
 open import Data.Bool
 open import Data.List hiding (_++_)
 open import Data.Dec
-open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete)
+open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete; zero; suc; fin-view)
 open import Data.Nat
 open import Data.Sum
 
@@ -141,14 +141,14 @@ delete-literal-sound
   → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literal (lit-var x) ϕ ⟧ ρ
 
 delete-literal-sound {zero} x [] x∉ϕ ρ = refl
-delete-literal-sound {zero} (lit fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (here refl))
-delete-literal-sound {zero} (lit fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literal-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literal-sound {zero} (neg fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literal-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literal-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (here refl))
+delete-literal-sound {zero} (lit i) (lit j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = absurd (x∉ϕ (here refl))
+delete-literal-sound {zero} (lit i) (neg j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = delete-literal-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg i) (lit j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = delete-literal-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg i) (neg j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = absurd (x∉ϕ (here refl))
 
 delete-literal-sound {suc Γ} x []      x∉ϕ ρ = refl
 delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with lit-var x ≡? lit-var y

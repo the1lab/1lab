@@ -2,11 +2,13 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Maybe.Properties
 open import Data.Set.Coequaliser
 open import Data.Fin.Properties
 open import Data.Fin.Base
 open import Data.Nat.Base
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 
 open import Meta.Invariant
@@ -50,7 +52,8 @@ Finite-zero-is-initial .snd .is-eqv ()
 
 Finite-one-is-contr : is-contr (Fin 1)
 Finite-one-is-contr .centre = fzero
-Finite-one-is-contr .paths fzero = refl
+Finite-one-is-contr .paths i with fin-view i
+... | zero = refl
 ```
 
 The successor operation on indices corresponds to taking coproducts with
@@ -58,22 +61,7 @@ the unit set.
 
 ```agda
 Finite-successor : Fin (suc n) ≃ (⊤ ⊎ Fin n)
-Finite-successor {n} = Iso→Equiv (f , iso g f-g g-f) where
-  f : Fin (suc n) → ⊤ ⊎ Fin n
-  f fzero = inl tt
-  f (fsuc x) = inr x
-
-  g : ⊤ ⊎ Fin n → Fin (suc n)
-  g (inr x) = fsuc x
-  g (inl _) = fzero
-
-  f-g : is-right-inverse g f
-  f-g (inr _) = refl
-  f-g (inl _) = refl
-
-  g-f : is-left-inverse g f
-  g-f fzero = refl
-  g-f (fsuc x) = refl
+Finite-successor {n} = Fin-suc ∙e Maybe-is-sum
 ```
 
 ## Addition
@@ -128,7 +116,7 @@ binary products:
 Finite-multiply : (Fin n × Fin m) ≃ Fin (n * m)
 Finite-multiply {n} {m} =
   (Fin n × Fin m)       ≃⟨ Finite-sum (λ _ → m) ⟩
-  Fin (sum n (λ _ → m)) ≃⟨ cast (sum≡* n m) , cast-is-equiv _ ⟩
+  Fin (sum n (λ _ → m)) ≃⟨ path→equiv (ap Fin (sum≡* n m)) ⟩
   Fin (n * m)           ≃∎
   where
     sum≡* : ∀ n m → sum n (λ _ → m) ≡ n * m
@@ -149,9 +137,11 @@ product (suc n) f = f fzero * product n (f ∘ fsuc)
 Finite-product : (B : Fin n → Nat) → (∀ x → Fin (B x)) ≃ Fin (product n B)
 Finite-product {zero} B .fst _ = fzero
 Finite-product {zero} B .snd = is-iso→is-equiv λ where
-  .is-iso.inv _ ()
-  .is-iso.rinv fzero → refl
+  .is-iso.inv  _ ()
   .is-iso.linv _ → funext λ ()
+
+  .is-iso.rinv fzero                      → refl
+  .is-iso.rinv (fin (suc i) ⦃ forget p ⦄) → absurd (¬suc≤0 (≤-peel p))
 Finite-product {suc n} B =
   (∀ x → Fin (B x))                          ≃⟨ Fin-suc-Π ⟩
   Fin (B fzero) × (∀ x → Fin (B (fsuc x)))   ≃⟨ Σ-ap-snd (λ _ → Finite-product (B ∘ fsuc)) ⟩
@@ -175,22 +165,29 @@ Fin-permutations-suc n = to , is-iso→is-equiv is where
   to : (Fin (suc n) ≃ Fin (suc n)) → Fin (suc n) × (Fin n ≃ Fin n)
   to e .fst = e # 0
   to e .snd .fst i = avoid (e # 0) (e # (fsuc i)) λ p →
-    fzero≠fsuc (Equiv.injective e p)
+    zero≠suc (ap lower (Equiv.injective e p))
   to e .snd .snd = Fin-injection→equiv _ λ p →
     fsuc-inj (Equiv.injective e (avoid-injective (e # 0) p))
 
   is : is-iso to
-  is .is-iso.inv (n , e) .fst fzero = n
-  is .is-iso.inv (n , e) .fst (fsuc x) = skip n (e # x)
-  is .is-iso.inv (n , e) .snd = Fin-injection→equiv _ λ where
-    {fzero} {fzero} p → refl
-    {fzero} {fsuc y} p → absurd (skip-skips n _ (sym p))
-    {fsuc x} {fzero} p → absurd (skip-skips n _ p)
-    {fsuc x} {fsuc y} p → ap fsuc (Equiv.injective e (skip-injective n _ _ p))
+  is .is-iso.inv (n , e) = record { fst = fun ; snd = Fin-injection→equiv _ inj  } module inv where
+    fun : Fin (suc _) → Fin (suc _)
+    fun i with fin-view i
+    ... | zero  = n
+    ... | suc x = skip n (e # x)
+
+    inj : injective fun
+    inj {i} {j} p with fin-view i | fin-view j
+    ... | zero  | zero  = refl
+    ... | zero  | suc y = absurd (skip-skips n _ (sym p))
+    ... | suc i | zero  = absurd (skip-skips n _ p)
+    ... | suc i | suc j = ap fsuc (Equiv.injective e (skip-injective n _ _ p))
   is .is-iso.rinv (n , e) = Σ-pathp refl (ext λ i → avoid-skip n (e # i))
-  is .is-iso.linv e = ext λ where
-    fzero → refl
-    (fsuc i) → skip-avoid (e # 0) (e # (fsuc i))
+  is .is-iso.linv e = ext p where
+    p : ∀ x → inv.fun (e # 0) (to e .snd) x ≡ e .fst x
+    p x with fin-view x
+    ... | zero  = refl
+    ... | suc i = skip-avoid (e # 0) (e # fsuc i)
 ```
 
 We can now show that $([n] \simeq [n]) \simeq [n!]$ by induction.
@@ -292,16 +289,19 @@ the quotient remains unchanged.
   go ⦃ yes (i , r) ⦄ .snd = n/R₁ .snd ∙e Iso→Equiv is where
     is : Iso (Fin n / R₁._∼_) (Fin (suc n) / R._∼_)
     is .fst = Coeq-rec (λ x → inc (fsuc x)) λ (x , y , s) → quot s
-    is .snd .inv = Coeq-rec
-      (λ where fzero → inc i
-               (fsuc x) → inc x)
-      (λ where (fzero , fzero , s) → refl
-               (fzero , fsuc y , s) → quot (R.symᶜ r R.∙ᶜ s)
-               (fsuc x , fzero , s) → quot (s R.∙ᶜ r)
-               (fsuc x , fsuc y , s) → quot s)
-    is .snd .rinv = elim! λ where
-      fzero → quot (R.symᶜ r)
-      (fsuc x) → refl
+    is .snd .inv = Coeq-rec fn λ (i , j , s) → resp i j s where
+      fn : Fin (suc n) → Fin n / R₁._∼_
+      fn j with fin-view j
+      ... | zero  = inc i
+      ... | suc x = inc x
+
+      resp : ∀ i j → i R.∼ j → fn i ≡ fn j
+      resp i j s with fin-view i | fin-view j
+      ... | zero  | zero  = refl
+      ... | zero  | suc y = quot (R.symᶜ r R.∙ᶜ s)
+      ... | suc x | zero  = quot (s R.∙ᶜ r)
+      ... | suc x | suc y = quot s
+    is .snd .rinv = elim! (Fin-cases (quot (R.symᶜ r)) (λ _ → refl))
     is .snd .linv = elim! λ _ → refl
 ```
 
@@ -311,21 +311,22 @@ Otherwise, $0$ creates a new equivalence class for itself.
   go ⦃ no ¬r ⦄ .fst = suc (n/R₁ .fst)
   go ⦃ no ¬r ⦄ .snd = Finite-successor ∙e ⊎-apr (n/R₁ .snd) ∙e Iso→Equiv is where
     to : Fin (suc n) → ⊤ ⊎ (Fin n / R₁._∼_)
-    to fzero = inl _
-    to (fsuc x) = inr (inc x)
+    to i with fin-view i
+    ... | zero  = inl _
+    ... | suc x = inr (inc x)
+
+    resp : ∀ i j → i R.∼ j → to i ≡ to j
+    resp i j s with fin-view i | fin-view j
+    ... | zero  | zero  = refl
+    ... | zero  | suc y = absurd (¬r (y , s))
+    ... | suc x | zero  = absurd (¬r (x , R.symᶜ s))
+    ... | suc x | suc y = ap inr (quot s)
 
     is : Iso (⊤ ⊎ (Fin n / R₁._∼_)) (Fin (suc n) / R._∼_)
     is .fst (inl tt) = inc 0
     is .fst (inr x) = Coeq-rec (λ x → inc (fsuc x)) (λ (x , y , s) → quot s) x
-    is .snd .inv = Coeq-rec to λ where
-      (fzero , fzero , s) → refl
-      (fzero , fsuc y , s) → absurd (¬r (y , s))
-      (fsuc x , fzero , s) → absurd (¬r (x , R.symᶜ s))
-      (fsuc x , fsuc y , s) → ap inr (quot s)
-    is .snd .rinv = elim! go' where
-      go' : ∀ x → is .fst (to x) ≡ inc x
-      go' fzero = refl
-      go' (fsuc _) = refl
+    is .snd .inv = Coeq-rec to λ (x , y , r) → resp x y r
+    is .snd .rinv = elim! (Fin-cases refl (λ _ → refl))
     is .snd .linv (inl tt) = refl
     is .snd .linv (inr x) = elim x where
       elim : ∀ x → is .snd .inv (is .fst (inr x)) ≡ inr x
@@ -366,7 +367,7 @@ $[n] \to [n+1]$, written $R_1$, as well as the *symmetric closure* of $R$,
 written $R^s$.
 
 ```agda
-  Closure-Fin-Dec {suc n} {R = R} {x} {y} = R*-dec where
+  Closure-Fin-Dec {suc n} {ℓ} {R} {x} {y} = R*-dec where
     open Congruence
     module R = Congruence (Closure-congruence R)
 
@@ -388,8 +389,8 @@ written $R^s$.
 We build $D$ by cases. $D(0, 0)$ is trivial, since the closure is reflexive.
 
 ```agda
-    D : Fin (suc n) → Fin (suc n) → Type _
-    D fzero fzero = Lift _ ⊤
+    D' : {i j : Fin (suc n)} → Fin-view i → Fin-view j → Type ℓ
+    D' zero zero = Lift _ ⊤
 ```
 
 For $D(0, y+1)$, we use the omniscience of $[n]$ to search for an $x$
@@ -398,8 +399,8 @@ of $R_1$ being decidable by the induction hypothesis.
 The case $D(x+1, 0)$ is symmetric.
 
 ```agda
-    D fzero (fsuc y) = Σ[ x ∈ Fin n ] Rˢ 0 (fsuc x) × Closure R₁ x y
-    D (fsuc x) fzero = Σ[ y ∈ Fin n ] Closure R₁ x y × Rˢ (fsuc y) 0
+    D' zero (suc y) = Σ[ x ∈ Fin n ] Rˢ 0 (fsuc x) × Closure R₁ x y
+    D' (suc x) zero = Σ[ y ∈ Fin n ] Closure R₁ x y × Rˢ (fsuc y) 0
 ```
 
 Finally, in order to decide whether $x+1$ and $y+1$ are related by $R^*$,
@@ -409,8 +410,15 @@ are paths from $x+1$ to $0$ and from $0$ to $y+1$ in $[n+1]$, which we
 can find using the previous two cases.
 
 ```agda
-    D (fsuc x) (fsuc y) = Closure R₁ x y ⊎ D (fsuc x) 0 × D 0 (fsuc y)
+    D' (suc x) (suc y) = Closure R₁ x y ⊎ D' (suc x) zero × D' zero (suc y)
 ```
+
+<!--
+```agda
+    D : ∀ i j → Type ℓ
+    D i j = D' (fin-view i) (fin-view j)
+```
+-->
 
 <details>
 <summary>
@@ -425,45 +433,48 @@ congruence is tedious but not difficult.
 
 ```agda
     D-refl : ∀ x → D x x
-    D-refl fzero = _
-    D-refl (fsuc x) = inl R₁.reflᶜ
+    D-refl i with fin-view i
+    ... | zero  = _
+    ... | suc x = inl R₁.reflᶜ
 
     D-trans : ∀ x y z → D x y → D y z → D x z
-    D-trans fzero fzero z _ d = d
-    D-trans fzero (fsuc y) fzero _ _ = _
-    D-trans fzero (fsuc y) (fsuc z) (y' , ry , cy) (inl c) = y' , ry , cy R₁.∙ᶜ c
-    D-trans fzero (fsuc y) (fsuc z) _ (inr (_ , dz)) = dz
-    D-trans (fsuc x) fzero fzero d _ = d
-    D-trans (fsuc x) fzero (fsuc z) dx dy = inr (dx , dy)
-    D-trans (fsuc x) (fsuc y) fzero (inl c) (y' , cy , ry) = y' , c R₁.∙ᶜ cy , ry
-    D-trans (fsuc x) (fsuc y) fzero (inr (dx , _)) _ = dx
-    D-trans (fsuc x) (fsuc y) (fsuc z) (inl c) (inl d) = inl (c R₁.∙ᶜ d)
-    D-trans (fsuc x) (fsuc y) (fsuc z) (inl c) (inr ((y' , cy , ry) , dz)) =
-        inr ((y' , c R₁.∙ᶜ cy , ry) , dz)
-    D-trans (fsuc x) (fsuc y) (fsuc z) (inr (dx , (y' , ry , cy))) (inl c) =
-        inr (dx , y' , ry , cy R₁.∙ᶜ c)
-    D-trans (fsuc x) (fsuc y) (fsuc z) (inr (dx , dy)) (inr (dy' , dz)) =
-        inr (dx , dz)
+    D-trans i j k p q with fin-view i | fin-view j | fin-view k | p | q
+    ... | zero  | zero  | z     | _            | d            = d
+    ... | zero  | suc y | zero  | _            | _            = _
+    ... | zero  | suc y | suc z | y' , ry , cy | inl c        = y' , ry , cy R₁.∙ᶜ c
+    ... | zero  | suc y | suc z | _            | inr (_ , dz) = dz
+    ... | suc x | zero  | zero  | d            | _            = d
+    ... | suc x | zero  | suc z | dx           | dy           = inr (dx , dy)
+    ... | suc x | suc y | zero  | inl c        | y' , cy , ry = y' , c R₁.∙ᶜ cy , ry
+    ... | suc x | suc y | zero  | inr (dx , _) | _            = dx
+    ... | suc x | suc y | suc z | inl c        | inl d = inl (c R₁.∙ᶜ d)
+    ... | suc x | suc y | suc z | inl c        | inr ((y' , cy , ry) , dz) =
+      inr ((y' , c R₁.∙ᶜ cy , ry) , dz)
+    ... | suc x | suc y | suc z | inr (dx , (y' , ry , cy)) | inl c =
+      inr (dx , y' , ry , cy R₁.∙ᶜ c)
+    ... | suc x | suc y | suc z | inr (dx , dy) | inr (dy' , dz) =
+      inr (dx , dz)
 
-    D-sym : ∀ x y → D x y → D y x
-    D-sym fzero fzero _ = _
-    D-sym fzero (fsuc y) (y' , r , c) = y' , R₁.symᶜ c , ⊎-comm .fst r
-    D-sym (fsuc x) fzero (x' , c , r) = x' , ⊎-comm .fst r , R₁.symᶜ c
-    D-sym (fsuc x) (fsuc y) (inl r) = inl (R₁.symᶜ r)
-    D-sym (fsuc x) (fsuc y) (inr (dx , dy)) =
-      inr (D-sym fzero (fsuc y) dy , D-sym (fsuc x) fzero dx)
+    D-sym : ∀ {i j} (x : Fin-view i) (y : Fin-view j) → D' x y → D' y x
+    D-sym zero zero    _            = _
+    D-sym zero (suc y) (y' , r , c) = y' , R₁.symᶜ c , ⊎-comm .fst r
+    D-sym (suc x) zero (x' , c , r) = x' , ⊎-comm .fst r , R₁.symᶜ c
+    D-sym (suc x) (suc y) (inl r)   = inl (R₁.symᶜ r)
+    D-sym (suc x) (suc y) (inr (dx , dy)) =
+      inr (D-sym zero (suc y) dy , D-sym (suc x) zero dx)
 
     D-cong ._∼_ x y = ∥ D x y ∥
     D-cong .has-is-prop _ _ = hlevel 1
     D-cong .reflᶜ {x} = inc (D-refl x)
     D-cong ._∙ᶜ_ {x} {y} {z} = ∥-∥-map₂ (D-trans x y z)
-    D-cong .symᶜ {x} {y} = map (D-sym x y)
+    D-cong .symᶜ {x} {y} = map (D-sym (fin-view x) (fin-view y))
 
     {-# INCOHERENT D-Dec #-}
-    D-Dec {fzero} {fzero} = auto
-    D-Dec {fzero} {fsuc y} = auto
-    D-Dec {fsuc x} {fzero} = auto
-    D-Dec {fsuc x} {fsuc y} = auto
+    D-Dec {i} {j} with fin-view i | fin-view j
+    ... | zero  | zero  = auto
+    ... | zero  | suc y = auto
+    ... | suc x | zero  = auto
+    ... | suc x | suc y = auto
 ```
 </details>
 
@@ -472,17 +483,19 @@ it suffices to show that $D$ lies between $R$ and $R^*$.
 
 ```agda
     R→D : ∀ {x y} → R x y → D x y
-    R→D {fzero} {fzero} _ = _
-    R→D {fzero} {fsuc y} r = y , inl r , R₁.reflᶜ
-    R→D {fsuc x} {fzero} r = x , R₁.reflᶜ , inl r
-    R→D {fsuc x} {fsuc y} r = inl (inc r)
+    R→D {i} {j} r with fin-view i | fin-view j
+    ... | zero  | zero  = _
+    ... | zero  | suc y = y , inl r , R₁.reflᶜ
+    ... | suc x | zero  = x , R₁.reflᶜ , inl r
+    ... | suc x | suc y = inl (inc r)
 
-    D→R* : ∀ {x y} → D x y → Closure R x y
-    D→R* {fzero} {fzero} _ = R.reflᶜ
-    D→R* {fzero} {fsuc y} (y' , r , c) = Rˢ→R r R.∙ᶜ R₁→R c
-    D→R* {fsuc x} {fzero} (x' , c , r) = R₁→R c R.∙ᶜ Rˢ→R r
-    D→R* {fsuc x} {fsuc y} (inl r) = R₁→R r
-    D→R* {fsuc x} {fsuc y} (inr (dx , dy)) = D→R* dx R.∙ᶜ D→R* {fzero} dy
+    D→R* : ∀ {x y i j} → D' {x} {y} i j → Closure R x y
+    D→R* {i = zero}  {j = zero}  _ = R.reflᶜ
+    D→R* {i = zero}  {j = suc y} (y' , r , c) = Rˢ→R r R.∙ᶜ R₁→R c
+    D→R* {i = suc x} {j = zero}  (x' , c , r) = R₁→R c R.∙ᶜ Rˢ→R r
+    D→R* {i = suc x} {j = suc y} (inl r) = R₁→R r
+    D→R* {i = suc x} {j = suc y} (inr (dx , dy)) =
+      D→R* {i = suc x} {j = zero} dx R.∙ᶜ D→R* {i = zero} {suc y} dy
 
     R*→D : ∀ {x y} → Closure R x y → ∥ D x y ∥
     R*→D = Closure-rec-congruence R D-cong (inc ∘ R→D)
