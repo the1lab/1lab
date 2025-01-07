@@ -30,6 +30,8 @@ non-associative settings; axioms of the form $xx^{-1} = 1$ are rather
 ill-behaved without associativity, as inverses are no longer necessarily
 unique!
 
+[necessarily unique]: Algebra.Monoid.html#inverses
+
 <!--
 ```agda
 private variable
@@ -101,7 +103,7 @@ right-cancellative.
     /-cancelr z = Equiv.injective (_/ z , /-equivr z)
 ```
 
-It turns out that $- \star x$ being an equivalence is a sufficent condition
+It turns out that $- \star x$ being an equivalence is a sufficient condition
 for a $A$ to be a right quasigroup, provided that $A$ is a [[set]].
 
 ```agda
@@ -308,7 +310,6 @@ Right-quasigroup ℓ = Right-quasigroups.Ob {ℓ}
 
 <!--
 ```agda
-
 module Right-quasigroup {ℓ} (A : Right-quasigroup ℓ) where
   open Right-quasigroup-on (A .snd) public
 ```
@@ -317,16 +318,16 @@ module Right-quasigroup {ℓ} (A : Right-quasigroup ℓ) where
 
 ## Left quasigroups
 
-We can dualize the definition of right quasigroups to arrive at the
+We can dualise the definition of right quasigroups to arrive at the
 notion of a **left quasigroup**.
 
 :::{.definition #left-quasigroup}
 Let $\star : A \to A \to A$ be a binary operator. $(A, \star)$ is a
 **left quasigroup** if $(A, \star)$ is a [[magma]], and there is some
-binary operator $\backslash : A \to A A$, subject to the following axioms:
+binary operator $\backslash : A \to A \to A$, subject to the following axioms:
 
 - For all $x, y : A$, $x \star (x \backslash y) = y$
-- For all $x, y : A$, $(x \star y) \backslash x = y$
+- For all $x, y : A$, $x \backslash (x \star y) = y$
 :::
 
 
@@ -474,7 +475,7 @@ is-left-quasigroup≃⋆-equivl =
 We can continue dualizing to define a notion of homomorphism for
 left quasigroups, though we shall be much more terse in our development.
 Following the pattern of right quasigroups, we begin by defining
-**left quasigroup structures**
+**left quasigroup structures**.
 
 
 :::{.definition #left-quasigroup-structure}
@@ -631,7 +632,7 @@ record is-quasigroup {ℓ} {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ whe
 -->
 
 Quasigroups obey the **latin square property**: for every $x, y : A$,
-there exists a unique pair $l, r : A$ such that $l \star x = y$ and $x \star = y$.
+there exists a unique pair $l, r : A$ such that $l \star x = y$ and $x \star r = y$.
 
 ```agda
   ⋆-latin : ∀ x y → is-contr (Σ[ l ∈ A ] Σ[ r ∈ A ] (l ⋆ x ≡ y × x ⋆ r ≡ y))

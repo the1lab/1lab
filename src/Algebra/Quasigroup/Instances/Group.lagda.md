@@ -126,7 +126,7 @@ which completes the proof.
 
 With that out of the way, we shall show that
 
-$$(A, \star, (a \backslash a), (\lambda x. (a ⧵backslash a) / x))$$
+$$(A, \star, (a \backslash a), (\lambda x. (a \backslash a) / x))$$
 
 forms a group for any $a : A$.
 
@@ -142,7 +142,7 @@ Associativity is one of our hypotheses, so all that remains is left
 inverses and left identities. Next, note that
 
 $$
-(a \backslash a), (\lambda x. (a ⧵backslash a) / x)) \star x = (a \backslash a)
+(a \backslash a), (\lambda x. (a \backslash a) / x)) \star x = (a \backslash a)
 $$
 
 is just one of the quasigroup axioms. Finally, our lemma gives us
