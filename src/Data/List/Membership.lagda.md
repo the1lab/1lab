@@ -72,8 +72,9 @@ element→!-fibre (there prf) with element→!-fibre prf
 !-fibre→element : ∀ {x : A} {xs} → fibre (xs !_) x → x ∈ xs
 !-fibre→element {A = A} {x = x} = λ (ix , p) → go ix p module !-fibre→element where
   go : ∀ {xs} (ix : Fin (length xs)) → xs ! ix ≡ x → x ∈ xs
-  go {xs = x ∷ xs} fzero p     = here  (sym p)
-  go {xs = x ∷ xs} (fsuc ix) p = there (go ix p)
+  go ix _  with fin-view ix
+  go {xs = x ∷ xs} _ p | zero     = here  (sym p)
+  go {xs = x ∷ xs} _ p | (suc ix) = there (go ix p)
 ```
 
 The equivalence between these definitions explains why $a \in_l as$ can
@@ -86,8 +87,9 @@ depending on the type $A$.
 !-fibre→element→fibre : ∀ {x : A} {xs} (f : fibre (xs !_) x) → element→!-fibre (!-fibre→element f) ≡ f
 !-fibre→element→fibre {A = A} {x = x} (ix , p) = go ix p where
   go : ∀ {xs} (ix : Fin (length xs)) (p : xs ! ix ≡ x) → element→!-fibre (!-fibre→element.go {xs = xs} ix p) ≡ (ix , p)
-  go {xs = x ∷ xs} fzero p     = refl
-  go {xs = x ∷ xs} (fsuc ix) p = Σ-pathp (ap fsuc (ap fst p')) (ap snd p')
+  go ix p with fin-view ix
+  go {xs = x ∷ xs} _ p | zero = refl
+  go {xs = x ∷ xs} _ p | suc ix = Σ-pathp (ap fsuc (ap fst p')) (ap snd p')
     where p' = go {xs = xs} ix p
 
 element→!-fibre→element
@@ -182,12 +184,13 @@ member→member-nub {xs = x ∷ xs} (there α) with elem? x (nub xs)
 
 <!--
 ```agda
-!-tabulate : ∀ {n} (f : Fin n → A) i → tabulate f ! i ≡ f (cast (length-tabulate f) i)
-!-tabulate {n = suc n} f fzero    = refl
-!-tabulate {n = suc n} f (fsuc i) = !-tabulate (f ∘ fsuc) i
+!-tabulate : ∀ {n} (f : Fin n → A) i → tabulate f ! i ≡ f (subst Fin (length-tabulate f) i)
+!-tabulate _ ix with fin-view ix
+!-tabulate {n = suc n} f _ | zero  = refl
+!-tabulate {n = suc n} f _ | suc i = !-tabulate (f ∘ fsuc) i
 
 !-tabulate-fibre : ∀ {n} (f : Fin n → A) x → fibre (tabulate f !_) x ≃ fibre f x
-!-tabulate-fibre f x = Σ-ap (cast (length-tabulate f) , cast-is-equiv _) λ i →
+!-tabulate-fibre f x = Σ-ap (path→equiv (ap Fin (length-tabulate f))) λ i →
   path→equiv (ap (_≡ x) (!-tabulate f i))
 
 member-tabulate : ∀ {n} (f : Fin n → A) x → (x ∈ tabulate f) ≃ fibre f x

@@ -231,37 +231,35 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
 
 <!--
 ```agda
-  to-ring-on : Ring-on R
-  to-ring-on = ring where
-    open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr ; +-idl ; +-idr)
-    open is-monoid
+  -- All in copatterns to prevent the unfolding from exploding on you
+  to-is-ring : is-ring 1R _*_ _+_
+  to-is-ring .is-ring.*-monoid .is-monoid.has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
+  to-is-ring .is-ring.*-monoid .is-monoid.has-is-semigroup .is-semigroup.associative = *-assoc _ _ _
+  to-is-ring .is-ring.*-monoid .is-monoid.idl = *-idl _
+  to-is-ring .is-ring.*-monoid .is-monoid.idr = *-idr _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.unit = 0R
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inverse = -_
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.has-is-semigroup .is-semigroup.associative = +-assoc _ _ _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.idl = +-idl _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.idr = +-comm _ _ ∙ +-idl _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inversel = +-comm _ _ ∙ +-invr _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inverser = +-invr _
+  to-is-ring .is-ring.+-group .is-abelian-group.commutes = +-comm _ _
+  to-is-ring .is-ring.*-distribl = *-distribl _ _ _
+  to-is-ring .is-ring.*-distribr = *-distribr _ _ _
 
-    -- All in copatterns to prevent the unfolding from exploding on you
-    ring : Ring-on R
-    ring .Ring-on.1r = 1R
-    ring .Ring-on._*_ = _*_
-    ring .Ring-on._+_ = _+_
-    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.associative = *-assoc _ _ _
-    ring .Ring-on.has-is-ring .*-monoid .idl = *-idl _
-    ring .Ring-on.has-is-ring .*-monoid .idr = *-idr _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.unit = 0R
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .associative = +-assoc _ _ _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idl = +-idl _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idr = +-comm _ _ ∙ +-idl _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverse = -_
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inversel = +-comm _ _ ∙ +-invr _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverser = +-invr _
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.commutes = +-comm _ _
-    ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl _ _ _
-    ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr _ _ _
+  to-ring-on : Ring-on R
+  to-ring-on .Ring-on.1r = 1R
+  to-ring-on .Ring-on._*_ = _*_
+  to-ring-on .Ring-on._+_ = _+_
+  to-ring-on .Ring-on.has-is-ring = to-is-ring
 
   to-ring : Ring ℓ
   to-ring .fst = el R ring-is-set
   to-ring .snd = to-ring-on
 
-open make-ring using (to-ring ; to-ring-on) public
+open make-ring using (to-is-ring; to-ring-on; to-ring) public
 ```
 -->
 

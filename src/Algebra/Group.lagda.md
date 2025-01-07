@@ -271,8 +271,8 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
     idl   : ∀ x → mul unit x ≡ x
 
   private
-    inverser : ∀ x → mul x (inv x) ≡ unit
-    inverser x =
+    invr : ∀ x → mul x (inv x) ≡ unit
+    invr x =
       mul x (inv x)                                   ≡˘⟨ idl _ ⟩
       mul unit (mul x (inv x))                        ≡˘⟨ ap₂ mul (invl _) refl ⟩
       mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡˘⟨ assoc _ _ _ ⟩
@@ -282,23 +282,26 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
       mul (inv (inv x)) (inv x)                       ≡⟨ invl _ ⟩
       unit                                            ∎
 
-  to-group-on : Group-on G
-  to-group-on .Group-on._⋆_ = mul
-  to-group-on .Group-on.has-is-group .is-group.unit = unit
-  to-group-on .Group-on.has-is-group .is-group.inverse = inv
-  to-group-on .Group-on.has-is-group .is-group.inversel = invl _
-  to-group-on .Group-on.has-is-group .is-group.inverser = inverser _
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
+  to-is-group : is-group mul
+  to-is-group .is-group.unit = unit
+  to-is-group .is-group.inverse = inv
+  to-is-group .is-group.inversel = invl _
+  to-is-group .is-group.inverser = invr _
+  to-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
+  to-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
     mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
     mul x (mul (inv x) x)    ≡⟨ assoc _ _ _ ⟩
-    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (inverser x) ⟩
+    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (invr x) ⟩
     mul unit x               ≡⟨ idl x ⟩
     x                        ∎
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
+  to-is-group .is-group.has-is-monoid .has-is-semigroup =
     record { has-is-magma = record { has-is-set = group-is-set }
            ; associative = λ {x y z} → assoc x y z
            }
 
-open make-group using (to-group-on) public
+  to-group-on : Group-on G
+  to-group-on .Group-on._⋆_ = mul
+  to-group-on .Group-on.has-is-group = to-is-group
+
+open make-group using (to-is-group; to-group-on) public
 ```

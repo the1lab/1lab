@@ -44,11 +44,6 @@ naturals automatically.
 -->
 
 ```agda
-≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-≤-trans 0≤x     0≤x     = 0≤x
-≤-trans 0≤x     (s≤s q) = 0≤x
-≤-trans (s≤s p) (s≤s q) = s≤s (≤-trans p q)
-
 ≤-antisym : ∀ {x y : Nat} → x ≤ y → y ≤ x → x ≡ y
 ≤-antisym 0≤x     0≤x     = refl
 ≤-antisym (s≤s p) (s≤s q) = ap suc (≤-antisym p q)
@@ -62,13 +57,6 @@ As a minor convenience, we prove that the constructor `s≤s`{.Agda} is an
 equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
 
 ```agda
-≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
-≤-peel (s≤s p) = p
-
-≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
-≤-sucr 0≤x = 0≤x
-≤-sucr (s≤s p) = s≤s (≤-sucr p)
-
 ≤-ascend : ∀ {x} → x ≤ suc x
 ≤-ascend = ≤-sucr ≤-refl
 ```
@@ -107,9 +95,6 @@ instance
 <-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
-
-<-weaken : ∀ {x y} → x < y → x ≤ y
-<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
 
 ≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
 ≤-strengthen {zero} {zero} 0≤x = inl refl

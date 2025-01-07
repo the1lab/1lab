@@ -216,8 +216,9 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   normal-coe {suc n} x = poly (∅ *x+ₙ normal-coe x)
 
   normal-var : ∀ {n} → Fin n → Normal n
-  normal-var fzero    = poly ((∅ *x+ 1n) *x+ 0n)
-  normal-var (fsuc f) = poly (∅ *x+ₙ normal-var f)
+  normal-var i with fin-view i
+  ... | zero  = poly ((∅ *x+ 1n) *x+ 0n)
+  ... | suc f = poly (∅ *x+ₙ normal-var f)
 
   normal : ∀ {n} → Polynomial n → Normal n
   normal (op [+] x y) = normal x +ₙ normal y
@@ -381,12 +382,13 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   sound-coe c (x ∷ ρ) = ∅*x+ₙ-hom (normal-coe c) x ρ ∙ sound-coe c ρ
 
   sound-var : ∀ {n} (j : Fin n) ρ → En (normal-var j) ρ ≡ lookup ρ j
-  sound-var fzero (x ∷ ρ) =
+  sound-var i _ with fin-view i
+  sound-var _ (x ∷ ρ) | zero =
     Ep (∅ *x+ 1n) (x ∷ ρ) R.* x R.+ En 0n ρ ≡⟨ R.elimr (0n-hom ρ) ⟩
     ⌜ Ep (∅ *x+ 1n) (x ∷ ρ) ⌝ R.* x         ≡⟨ ap! (R.eliml R.*-zerol ∙ 1n-hom ρ) ⟩
     R.1r R.* x                              ≡⟨ R.*-idl ⟩
     x                                       ∎
-  sound-var (fsuc j) (x ∷ ρ) = ∅*x+ₙ-hom (normal-var j) x ρ ∙ sound-var j ρ
+  sound-var _ (x ∷ ρ) | suc j = ∅*x+ₙ-hom (normal-var j) x ρ ∙ sound-var j ρ
 
   sound : ∀ {n} (p : Polynomial n) ρ → En (normal p) ρ ≡ ⟦ p ⟧ ρ
   sound (op [+] p q) ρ = +ₙ-hom (normal p) (normal q) ρ ∙ ap₂ R._+_ (sound p ρ) (sound q ρ)

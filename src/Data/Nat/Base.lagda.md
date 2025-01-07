@@ -219,6 +219,17 @@ instance
 
   {-# INCOHERENT x≤x x≤sucy #-}
 
+≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
+≤-peel (s≤s p) = p
+
+¬suc≤0 : ∀ {x} → suc x ≤ 0 → ⊥
+¬suc≤0 ()
+
+≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+≤-trans 0≤x     0≤x     = 0≤x
+≤-trans 0≤x     (s≤s q) = 0≤x
+≤-trans (s≤s p) (s≤s q) = s≤s (≤-trans p q)
+
 factorial : Nat → Nat
 factorial zero = 1
 factorial (suc n) = suc n * factorial n
@@ -236,6 +247,17 @@ _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
 infix 7 _<_ _≤_
 ```
+
+<!--
+```agda
+≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
+≤-sucr 0≤x = 0≤x
+≤-sucr (s≤s p) = s≤s (≤-sucr p)
+
+<-weaken : ∀ {x y} → x < y → x ≤ y
+<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
+```
+-->
 
 As an "ordering combinator", we can define the _maximum_ of two natural
 numbers by recursion: The maximum of zero and a successor (on either

@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -115,4 +116,13 @@ maybe→alt : ∀ {M : Effect} {ℓ} {A : Type ℓ}
           → ⦃ _ : Alt M ⦄ ⦃ _ : Idiom M ⦄ → Maybe A → M .Effect.₀ A
 maybe→alt (just x) = pure x
 maybe→alt nothing  = fail
+```
+
+```agda
+maybe-injective : Maybe A ≃ Maybe B → A → B
+maybe-injective e x with inspect (e .fst (just x))
+... | just y , _ = y
+... | nothing , p with inspect (e .fst nothing)
+... | just y  , _ = y
+... | nothing , q = absurd (just≠nothing (Equiv.injective₂ e p q))
 ```

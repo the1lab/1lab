@@ -72,8 +72,12 @@ Furthermore, it is associative, and thus forms a [[semigroup]].
         (∩-universal _ (≤-trans ∩≤l ∩≤r) ∩≤r))
 
   ∩-is-semigroup : is-semigroup _∩_
-  ∩-is-semigroup .has-is-magma .has-is-set = Ob-is-set
-  ∩-is-semigroup .associative = ∩-assoc
+  ∩-is-semigroup =
+    to-is-semigroup λ where
+      .semigroup-is-set → hlevel 2
+      ._⋆_ → _∩_
+      .⋆-assoc _ _ _ → ∩-assoc
+    where open make-semigroup
 ```
 
 Additionally, it respects the ordering on $P$, in each variable.
