@@ -36,7 +36,7 @@ is-jointly-monic {x = x} f g =
 ```
 
 :::{.definition #jointly-monic-family}
-More genererally, an $I$-indexed family of morphisms $f_{i} : \cC(X, Y_{i})$
+More generally, an $I$-indexed family of morphisms $f_{i} : \cC(X, Y_{i})$
 is a **jointly monic family** if for every $h, k : \cC(A,X)$, $h = k$ if
 $f_{i} \circ h = f_{i} \circ k$ for every $i : I$.
 :::
@@ -134,7 +134,7 @@ module _ {ℓ} {I : Type ℓ} (indexed-products : has-products-indexed-by C I) w
     → is-monic (∏.tuple fᵢ)
     → is-jointly-monic-fam fᵢ
 
-  jointy-monic-fam→tuple-monic
+  jointly-monic-fam→tuple-monic
     : ∀ {x} {yᵢ : I → Ob}
     → {fᵢ : ∀ i → Hom x (yᵢ i)}
     → is-jointly-monic-fam fᵢ
@@ -154,7 +154,7 @@ omit the details in the interest of brevity.
       ∏.tuple (λ i → fᵢ i ∘ k) ≡˘⟨ tuple∘ C yᵢ (indexed-products yᵢ) fᵢ ⟩
       ∏.tuple fᵢ ∘ k           ∎
 
-  jointy-monic-fam→tuple-monic {yᵢ = yᵢ} {fᵢ = fᵢ} fᵢ-joint-mono h k p =
+  jointly-monic-fam→tuple-monic {yᵢ = yᵢ} {fᵢ = fᵢ} fᵢ-joint-mono h k p =
     fᵢ-joint-mono h k λ i →
       fᵢ i ∘ h               ≡⟨ pushl (sym ∏.commute) ⟩
       ∏.π i ∘ ∏.tuple fᵢ ∘ h ≡⟨ ap (∏.π i ∘_) p ⟩

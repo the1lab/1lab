@@ -70,7 +70,7 @@ $f = g$
 
 The canonical example of a family of jointly faithful functors are the
 family of hom-functors $\hat{C}(\yo(A), -)$, indexed by objects of $A$:
-this is a restatment of the [[coyoneda lemma]].
+this is a restatement of the [[coyoneda lemma]].
 
 Note that every functor $F : \cI \to [\cC, \cD]$ induces a family of
 functors via the mapping on objects: this family is jointly faithful
@@ -125,7 +125,7 @@ $F : \cI \to [ \cC, \cD ]$.
 
 ## Jointly full functors
 
-:::{.definition #jointly-full-functors alias="jointy full"}
+:::{.definition #jointly-full-functors alias="jointly full"}
 A diagram of functors $F : \cI \to [\cC, \cD]$ is **jointly full** when
 the functor $\hat{F} : \cC \to [\cI, \cD]$ is full. Explicitly, $F$ is
 jointly full if a family of morphisms $g_i : \cD(F(i)(x), F(i)(y))$ that is
@@ -172,7 +172,7 @@ module _
 :::{.definition #jointly-fully-faithful-functors alias="jointly-fully-faithful"}
 A diagram of functors $F : \cI \to [\cC, \cD]$ is **jointly fully faithful** when
 the functor $\hat{F} : \cC \to [\cI, \cD]$ is fully faithful. Explicitly, $F$ is
-jointly faully faithful if there is an equivalence of natural transformations
+jointly fully faithful if there is an equivalence of natural transformations
 $\hat{F}(x) \to \hat{F}(y)$ and morphisms $\cC(x,y)$.
 :::
 
