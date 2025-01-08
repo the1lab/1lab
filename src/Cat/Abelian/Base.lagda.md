@@ -273,7 +273,7 @@ desired equation. Check it out:
       where
         lemma : ⟨ id , 0m ⟩ ∘ π₁ + ⟨ 0m , id ⟩ ∘ π₂
               ≡ id
-        lemma = Prod.unique₂ {pr1 = π₁} {pr2 = π₂}
+        lemma = ⟨⟩-unique₂ {pr1 = π₁} {pr2 = π₂}
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (cancell π₁∘⟨⟩) (pulll π₁∘⟨⟩ ∙ ∘-zero-l) ∙ Hom.elimr refl)
           (sym (∘-linear-r _ _ _) ∙ ap₂ _+_ (pulll π₂∘⟨⟩ ∙ ∘-zero-l) (cancell π₂∘⟨⟩) ∙ Hom.eliml refl)
           (elimr refl)
