@@ -3,16 +3,11 @@
 open import 1Lab.Type
 open import 1Lab.Path
 
-
-open import Data.Nat
-
 open import Data.Maybe
-open import Data.List
-
 open import Data.Bool
-
+open import Data.List
 open import Data.Dec
-
+open import Data.Nat
 open import Data.Sum
 
 ```
@@ -22,6 +17,21 @@ open import Data.Sum
 module ProgrammingLanguage.STLC.Simple where
 ```
 
+# The simply-typed lambda calculus
+
+The simple-typed lamdba calclus (STLC) is an example of one of the smallest
+"useful" typed programming languages. While very simple, and lacking
+features that would make it useful for real programming, its small
+size makes it very appealing for the demonstration of programming
+language formalization.
+
+This file represents the first in a series, exploring several
+different approaches to formalizing various properties of the STLC.
+We will start with the most "naive" approach, and build off it to
+more advanced approaches.
+
+First, the types of the STLC: the Unit type, products, and functions.
+
 ```agda
 data Ty : Type where
   UU : Ty
@@ -30,9 +40,10 @@ data Ty : Type where
 ```
 
 We model contexts as (snoc) lists of pairs, alongside a partial
-index function. We use `∷c`{.Agda} as the "reversed" list constructor.
-"Sequels" in this series will use more advanced techniques to avoid
-this partiality, but it's not that bad ;)
+index function. We use `∷c`{.Agda} as the "reversed" list constructor
+to avoid confusion about insertion order.
+Sequels to this file will use more advanced techniques to avoid
+this partiality, but it's alright for right now.
 
 ```agda
 Con : Type
@@ -54,7 +65,7 @@ index (Γ ∷c (n , ty)) k with k ≡? n
 ... | no _ = index Γ k
 ```
 
-We note some minor lemmas around indexing:
+We also note some minor lemmas around indexing:
 ```agda
 index-immediate : ∀ {Γ n t} → index (Γ ∷c (n , t)) n ≡ just t
 index-duplicate : ∀ {Γ n k t₁ t₂ ρ} →
@@ -64,20 +75,20 @@ index-duplicate : ∀ {Γ n k t₁ t₂ ρ} →
 <details>
 ```agda
 index-immediate {Γ} {n} {t} with n ≡? n
-... | yes a = refl
-... | no ¬a = absurd (¬a refl)
+... | yes n≡n = refl
+... | no ¬n≡n = absurd (¬n≡n refl)
 
-index-duplicate {Γ} {n} {k} {t₁} {t₂} {ρ} q with k ≡? n
-... | yes a = q
-... | no ¬a with k ≡? n
-... | yes b = absurd (¬a b)
-... | no ¬b = q
+index-duplicate {Γ} {n} {k} {t₁} {t₂} {ρ} eq with k ≡? n
+... | yes k≡n = eq
+... | no ¬k≡n with k ≡? n
+... | yes k≡n = absurd (¬k≡n k≡n)
+... | no ¬k≡n = eq
 ```
 </details>
 
 
 Then, expressions: we have variables, functions and application,
-pairs and projections, and the unit type.
+pairs and projections, and the unit.
 
 ```agda
 data Expr : Type where
@@ -101,7 +112,8 @@ data Expr : Type where
 </details>
 
 We must then define a relation to assign types to expressions, which
-we will notate `Γ ⊢ tm ⦂ ty`{.Agda}:
+we will notate `Γ ⊢ tm ⦂ ty`{.Agda}, for "a term $tm$ has type $ty$
+in the context $\Gamma$:
 
 <!--
 ```agda
@@ -199,9 +211,10 @@ data Value : Expr → Type where
 Our next goal is to now define a "step" relation,
 which dictates that a term $x$ may, through a reduction, step to
 another expression $x'$ that represents one "step" of evaluation.
-. This is how we will
+
+This is how we will
 define the evaluation of our expressions. Before we can define
-reduction, we need to define substitution, so that we may turn an
+stepping, we need to define substitution, so that we may turn an
 expression like $(\lambda x. f\,x) y$ into $f\,y$. We notate the
 substitution of a variable $n$ for an expression $e$ in another
 expression $f$ as `f [ n := e ]`{.Agda}. The method of substitution
@@ -255,7 +268,7 @@ The act of turning an application $(λ\,y. y)\,x$ into $x$ is called
 to keep reduction deterministic -- this will be elaborated on in
 a moment.
 ```agda
-  λ-β : ∀ {n body x} →
+  β-λ : ∀ {n body x} →
         Value x →
         Step (`$ (`λ n body) x) (body [ n := x ])
 ```
@@ -264,9 +277,9 @@ Likewise, reducing projections on a pair is called β-reduction for
 pairs.
 
 ```agda
-  π₁-β : ∀ {a b} →
+  β-π₁ : ∀ {a b} →
        Step (`π₁ `⟨ a , b ⟩) a
-  π₂-β : ∀ {a b} →
+  β-π₂ : ∀ {a b} →
        Step (`π₂ `⟨ a , b ⟩) b
 ```
 
@@ -285,20 +298,21 @@ we will call ξ rules.
 
 Likewise, we have one that can step inside an application, on
 the left hand side.
+
 ```agda
-  `$-ξₗ : ∀ {f₁ f₂ x} →
+  ξ-$ₗ : ∀ {f₁ f₂ x} →
        Step f₁ f₂ →
        Step (`$ f₁ x) (`$ f₂ x)
 ```
+
 We also include a rule for stepping on the right hand side, requiring
 the left to be a value first. This, combined with the value requirement
-of the `λ-β`{.Agda} rule, keep our evaluation **deterministic**, forcing
+of the `β-λ`{.Agda} rule, keep our evaluation **deterministic**, forcing
 that evaluation should take place from left to right. We will prove
 this later.
 
-
 ```agda
-  `$-ξᵣ : ∀ {f x₁ x₂} →
+  ξ-$ᵣ : ∀ {f x₁ x₂} →
        Value f →
        Step x₁ x₂ →
        Step (`$ f x₁) (`$ f x₂)
@@ -307,6 +321,7 @@ this later.
 These are all of our step rules! The STLC is indeed very simple.
 We can now show that, say, an identity function applied to something
 reduces properly:
+
 <!--
 ```agda
 module Example-2 where
@@ -324,7 +339,7 @@ module Example-2 where
   id-app = `$ our-id pair
 
   id-app-step : Step id-app pair
-  id-app-step = λ-β (v-⟨,⟩ `U `U)
+  id-app-step = β-λ (v-⟨,⟩ `U `U)
 ```
 
 TODO: Refl Trans closure of Step
@@ -477,7 +492,7 @@ context, and where they are not equal requires some shuffling.
 ```agda
 subst-pres {Γ} {n} {t} {`λ x bd} {typ} {s} s⊢ (`λ⊢ {τ = τ} {ρ = ρ} Γ⊢) with x ≡? n
 ... | yes x≡n = `λ⊢ (duplicates-are-ok
-                      (subst (λ k → Γ ∷c _ ∷c _ ⊢ bd ⦂ ρ) (sym x≡n) Γ⊢))
+                      (subst (λ _ → Γ ∷c _ ∷c _ ⊢ bd ⦂ ρ) (sym x≡n) Γ⊢))
 ... | no ¬x≡n = `λ⊢ (subst-pres s⊢ (variable-swap (λ x≡n → ¬x≡n (sym x≡n)) Γ⊢))
 ```
 
@@ -486,8 +501,10 @@ The rest proceeds nicely.
 ```agda
 subst-pres {Γ} {n} {t} {`$ bd bd₁} {typ} {s} s⊢ (`·⊢ Γ⊢₁ Γ⊢₂) =
   `·⊢ (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
+  
 subst-pres {Γ} {n} {t} {`⟨ a , b ⟩} {typ} {s} s⊢ (`⟨,⟩⊢ Γ⊢₁ Γ⊢₂) =
   `⟨,⟩⊢ (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
+  
 subst-pres {Γ} {n} {t} {`π₁ bd} {typ} {s} s⊢ (`π₁⊢ Γ⊢) = `π₁⊢ (subst-pres s⊢ Γ⊢)
 subst-pres {Γ} {n} {t} {`π₂ bd} {typ} {s} s⊢ (`π₂⊢ Γ⊢) = `π₂⊢ (subst-pres s⊢ Γ⊢)
 subst-pres {Γ} {n} {t} {`U} {typ} {s} s⊢ `U⊢ = `U⊢
@@ -502,13 +519,13 @@ preservation : ∀ {x₁ x₂ typ} →
                [] ⊢ x₁ ⦂ typ →
                [] ⊢ x₂ ⦂ typ
                
-preservation (λ-β p) (`·⊢ (`λ⊢ ⊢f) ⊢x) = subst-pres ⊢x ⊢f
-preservation π₁-β (`π₁⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢a
-preservation π₂-β (`π₂⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢b
+preservation (β-λ p) (`·⊢ (`λ⊢ ⊢f) ⊢x) = subst-pres ⊢x ⊢f
+preservation β-π₁ (`π₁⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢a
+preservation β-π₂ (`π₂⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢b
 preservation (ξ-π₁ step) (`π₁⊢ ⊢a) = `π₁⊢ (preservation step ⊢a)
 preservation (ξ-π₂ step) (`π₂⊢ ⊢b) = `π₂⊢ (preservation step ⊢b)
-preservation (`$-ξₗ step) (`·⊢ ⊢f ⊢x) = `·⊢ (preservation step ⊢f) ⊢x
-preservation (`$-ξᵣ val step) (`·⊢ ⊢f ⊢x) = `·⊢ ⊢f (preservation step ⊢x)
+preservation (ξ-$ₗ step) (`·⊢ ⊢f ⊢x) = `·⊢ (preservation step ⊢f) ⊢x
+preservation (ξ-$ᵣ val step) (`·⊢ ⊢f ⊢x) = `·⊢ ⊢f (preservation step ⊢x)
 ```
 
 Then, progress, noting that the expression must be well typed. We
@@ -530,28 +547,25 @@ progress : ∀ {x ty} →
            Progress x
            
 progress (`⊢ n n∈) = absurd (nothing≠just n∈)
-
 progress (`λ⊢ {n = n} {body = body} ⊢x) = done (v-λ n body)
-
 progress (`·⊢ ⊢f ⊢x) with progress ⊢f
-... | going next-f = going (`$-ξₗ next-f)
+... | going next-f = going (ξ-$ₗ next-f)
 ... | done vf with progress ⊢x
-... |   going next-x = going (`$-ξᵣ vf next-x)
+... |   going next-x = going (ξ-$ᵣ vf next-x)
 ... |   done vx with ⊢f
 ... |     `⊢ n n∈ = absurd (nothing≠just n∈)
-... |     `λ⊢ f = going (λ-β vx)
+... |     `λ⊢ f = going (β-λ vx)
 
 progress (`⟨,⟩⊢ {a = a} {b = b} ⊢a ⊢b) = done (v-⟨,⟩ a b)
-
 progress (`π₁⊢ {a = a} ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₁ next)
-... | done (v-⟨,⟩ a b) = going π₁-β
+... | done (v-⟨,⟩ a b) = going β-π₁
 ... | done (v-var n) with ⊢x
 ... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
 
 progress (`π₂⊢ ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₂ next)
-... | done (v-⟨,⟩ a b) = going π₂-β
+... | done (v-⟨,⟩ a b) = going β-π₂
 ... | done (v-var n) with ⊢x
 ... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
 
@@ -587,19 +601,19 @@ deterministic : ∀ {x ty x₁ x₂} →
                 Step x x₂ →
                 x₁ ≡ x₂
                 
-deterministic (`·⊢ ⊢f ⊢x) (λ-β vx₁) (λ-β vx₂) = refl
-deterministic (`·⊢ ⊢f ⊢x) (λ-β vx) (`$-ξᵣ x b) = absurd (value-¬step vx b)
-deterministic (`·⊢ ⊢f ⊢x) (`$-ξₗ →x₁) (`$-ξₗ →x₂) =
+deterministic (`·⊢ ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
+deterministic (`·⊢ ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬step vx b)
+deterministic (`·⊢ ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ₗ →x₂) =
   `$-apₗ (deterministic ⊢f →x₁ →x₂)
   
-deterministic (`·⊢ ⊢f ⊢x) (`$-ξₗ →x₁) (`$-ξᵣ vx →x₂) = absurd (value-¬step vx →x₁)
-deterministic (`·⊢ ⊢f ⊢x) (`$-ξᵣ vx₁ →x₁) (λ-β vx₂) = absurd (value-¬step vx₂ →x₁)
-deterministic (`·⊢ ⊢f ⊢x) (`$-ξᵣ vx →x₁) (`$-ξₗ →x₂) = absurd (value-¬step vx →x₂)
-deterministic (`·⊢ ⊢f ⊢x) (`$-ξᵣ _ →x₁) (`$-ξᵣ _ →x₂) =
+deterministic (`·⊢ ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬step vx →x₁)
+deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬step vx₂ →x₁)
+deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬step vx →x₂)
+deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ _ →x₁) (ξ-$ᵣ _ →x₂) =
   `$-apᵣ (deterministic ⊢x →x₁ →x₂)
   
-deterministic (`π₁⊢ ⊢x) π₁-β π₁-β = refl
+deterministic (`π₁⊢ ⊢x) β-π₁ β-π₁ = refl
 deterministic (`π₁⊢ ⊢x) (ξ-π₁ →x₁) (ξ-π₁ →x₂) = ap `π₁ (deterministic ⊢x →x₁ →x₂)
-deterministic (`π₂⊢ ⊢x) π₂-β π₂-β = refl
+deterministic (`π₂⊢ ⊢x) β-π₂ β-π₂ = refl
 deterministic (`π₂⊢ ⊢x) (ξ-π₂ →x₁) (ξ-π₂ →x₂) = ap `π₂ (deterministic ⊢x →x₁ →x₂)
 ```
