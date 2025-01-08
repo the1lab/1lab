@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 open import Data.Maybe
 open import Data.Bool
@@ -9,7 +9,6 @@ open import Data.List
 open import Data.Dec
 open import Data.Nat
 open import Data.Sum
-
 ```
 -->
 
