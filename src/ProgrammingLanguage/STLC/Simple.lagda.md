@@ -112,7 +112,7 @@ data Expr : Type where
 
 We must then define a relation to assign types to expressions, which
 we will notate `Γ ⊢ tm ⦂ ty`{.Agda}, for "a term $tm$ has type $ty$
-in the context $\Gamma$:
+in the context $\Gamma$":
 
 <!--
 ```agda
@@ -201,9 +201,9 @@ and unit.
 
 ```agda
 data Value : Expr → Type where
-  v-var : ∀ n → Value (` n)
-  v-λ : ∀ n body → Value (`λ n body)
-  v-⟨,⟩ : ∀ a b → Value (`⟨ a , b ⟩)
+  v-var : ∀ {n} → Value (` n)
+  v-λ : ∀ {n body} → Value (`λ n body)
+  v-⟨,⟩ : ∀ {a b} → Value (`⟨ a , b ⟩)
   v-U : Value `U
 ```
 
@@ -338,7 +338,7 @@ module Example-2 where
   id-app = `$ our-id pair
 
   id-app-step : Step id-app pair
-  id-app-step = β-λ (v-⟨,⟩ `U `U)
+  id-app-step = β-λ v-⟨,⟩
 ```
 
 TODO: Refl Trans closure of Step
@@ -546,7 +546,7 @@ progress : ∀ {x ty} →
            Progress x
            
 progress (`⊢ n n∈) = absurd (nothing≠just n∈)
-progress (`λ⊢ {n = n} {body = body} ⊢x) = done (v-λ n body)
+progress (`λ⊢ {n = n} {body = body} ⊢x) = done v-λ
 progress (`·⊢ ⊢f ⊢x) with progress ⊢f
 ... | going next-f = going (ξ-$ₗ next-f)
 ... | done vf with progress ⊢x
@@ -555,17 +555,17 @@ progress (`·⊢ ⊢f ⊢x) with progress ⊢f
 ... |     `⊢ n n∈ = absurd (nothing≠just n∈)
 ... |     `λ⊢ f = going (β-λ vx)
 
-progress (`⟨,⟩⊢ {a = a} {b = b} ⊢a ⊢b) = done (v-⟨,⟩ a b)
+progress (`⟨,⟩⊢ {a = a} {b = b} ⊢a ⊢b) = done v-⟨,⟩
 progress (`π₁⊢ {a = a} ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₁ next)
-... | done (v-⟨,⟩ a b) = going β-π₁
-... | done (v-var n) with ⊢x
+... | done v-⟨,⟩ = going β-π₁
+... | done v-var with ⊢x
 ... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
 
 progress (`π₂⊢ ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₂ next)
-... | done (v-⟨,⟩ a b) = going β-π₂
-... | done (v-var n) with ⊢x
+... | done v-⟨,⟩ = going β-π₂
+... | done v-var with ⊢x
 ... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
 
 progress `U⊢ = done v-U
@@ -586,9 +586,9 @@ value-¬step : ∀ {x y} →
 ```
 <details>
 ```agda
-value-¬step (v-var n) ()
-value-¬step (v-λ n body) ()
-value-¬step (v-⟨,⟩ a b) ()
+value-¬step v-var ()
+value-¬step v-λ ()
+value-¬step v-⟨,⟩ ()
 value-¬step v-U ()
 ```
 </details>
