@@ -204,7 +204,6 @@ and unit.
 
 ```agda
 data Value : Expr → Type where
-  v-var : ∀ {n} → Value (` n)
   v-λ : ∀ {n body} → Value (`λ n body)
   v-⟨,⟩ : ∀ {a b} → Value (`⟨ a , b ⟩)
   v-⊤ : Value `tt
@@ -386,6 +385,9 @@ name-gen-max ex (suc k) = s≤s (k+x≤ (max-index-in ex) k)
     x≤y→x≤sucy : ∀ x y → x ≤ y → x ≤ suc y
     x≤y→x≤sucy zero y x≤y = 0≤x
     x≤y→x≤sucy (suc x) (suc y) (s≤s x≤y) = s≤s (x≤y→x≤sucy x y x≤y)
+
+Env : Type
+Env = List Nat
 ```
 
 
@@ -742,14 +744,10 @@ progress (`×-intro {a = a} {b = b} ⊢a ⊢b) = done v-⟨,⟩
 progress (`×-elim₁ {a = a} ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₁ next)
 ... | done v-⟨,⟩ = going β-π₁
-... | done v-var with ⊢x
-... |   `var-intro _ x∈ = absurd (nothing≠just x∈)
 
 progress (`×-elim₂ ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₂ next)
 ... | done v-⟨,⟩ = going β-π₂
-... | done v-var with ⊢x
-... |   `var-intro _ x∈ = absurd (nothing≠just x∈)
 
 progress `tt-intro = done v-⊤
 ```
@@ -769,7 +767,6 @@ value-¬step : ∀ {x y} →
 ```
 <details>
 ```agda
-value-¬step v-var ()
 value-¬step v-λ ()
 value-¬step v-⟨,⟩ ()
 value-¬step v-⊤ ()
