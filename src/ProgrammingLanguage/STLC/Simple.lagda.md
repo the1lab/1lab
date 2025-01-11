@@ -33,7 +33,7 @@ First, the types of the STLC: the Unit type, products, and functions.
 
 ```agda
 data Ty : Type where
-  UU : Ty
+  `⊤ : Ty
   _`×_ : Ty → Ty → Ty
   _`⇒_ : Ty → Ty → Ty
 ```
@@ -93,20 +93,22 @@ pairs and projections, and the unit.
 data Expr : Type where
   ` : Nat → Expr
   `λ : Nat → Expr → Expr
-  `$ : Expr → Expr → Expr
+  _`$_ : Expr → Expr → Expr
   `⟨_,_⟩ :  Expr → Expr → Expr
   `π₁ : Expr → Expr
   `π₂ : Expr → Expr
-  `U : Expr
+  `tt : Expr
 ```
 
-<details><summary>Some application lemmas, for convinience.</summary>
+<details><summary>Some application lemmas, for convenience.
 ```agda
-`$-apₗ : ∀ {a b x} → a ≡ b → `$ a x ≡ `$ b x
-`$-apᵣ : ∀ {f a b} → a ≡ b → `$ f a ≡ `$ f b
-
-`$-apₗ {x = x} a≡b = ap (λ k → `$ k x) a≡b
-`$-apᵣ {f = f} a≡b = ap (λ k → `$ f k) a≡b
+`$-apₗ : ∀ {a b x} → a ≡ b → a `$ x ≡ b `$ x
+`$-apᵣ : ∀ {f a b} → a ≡ b → f `$ a ≡ f `$ b
+```
+</summary>
+```agda
+`$-apₗ {x = x} a≡b = ap (λ k → k `$ x) a≡b
+`$-apᵣ {f = f} a≡b = ap (λ k → f `$ k) a≡b
 ```
 </details>
 
@@ -128,48 +130,49 @@ We say that a variable $n$ has a type $\tau$ in context $\Gamma$
 if `index Γ n ≡ just τ`{.Agda}.
 
 ```agda
-  `⊢ : ∀ {Γ τ} (n : Nat) →
+  `var-intro : ∀ {Γ τ} (n : Nat) →
        index Γ n ≡ just τ →
        Γ ⊢ ` n ⦂ τ
 ```
 
 For lambda abstraction, if an expression $\text{body}$ extended with a variable $v$
 of type $\tau$ has type $\rho$, we say that $λ\, v.\,\text{body}$ has type
-$\tau \to \rho$.
+$\tau \to \rho$. We call this constructor `\`⇒-intro` as it "introduces"
+the arrow type.
 
 ```agda
-  `λ⊢ : ∀ {Γ n body τ ρ} →
+  `⇒-intro : ∀ {Γ n body τ ρ} →
         Γ ∷c (n , τ) ⊢ body ⦂ ρ →
         Γ ⊢ `λ n body ⦂ τ `⇒ ρ
 ```
 
 If an expression $f$ has type $\tau \to \rho$, and
 an expression $x$ has type $\tau$, then the application $f\, x$ (written here as $\$ f x$) has type $\rho$.
-
+We name it `\`⇒-elim` as it "eliminates" the arrow type.
 ```agda
-  `·⊢ : ∀ {Γ f x τ ρ} →
+  `⇒-elim : ∀ {Γ f x τ ρ} →
         Γ ⊢ f ⦂ τ `⇒ ρ →
         Γ ⊢ x ⦂ τ →
-        Γ ⊢ `$ f x ⦂ ρ
+        Γ ⊢ f `$ x ⦂ ρ
 ```
 
 The rest of the formers follow these patterns:
 ```agda
-  `⟨,⟩⊢ : ∀ {Γ a b τ ρ} →
+  `×-intro : ∀ {Γ a b τ ρ} →
           Γ ⊢ a ⦂ τ →
           Γ ⊢ b ⦂ ρ →
           Γ ⊢ `⟨ a , b ⟩ ⦂ τ `× ρ
           
-  `π₁⊢ :  ∀ {Γ a τ ρ} →
+  `×-elim₁ :  ∀ {Γ a τ ρ} →
           Γ ⊢ a ⦂ τ `× ρ →
           Γ ⊢ `π₁ a ⦂ τ
           
-  `π₂⊢ :  ∀ {Γ a τ ρ} →
+  `×-elim₂ :  ∀ {Γ a τ ρ} →
           Γ ⊢ a ⦂ τ `× ρ →
           Γ ⊢ `π₂ a ⦂ ρ
           
-  `U⊢ :   ∀ {Γ} →
-          Γ ⊢ `U ⦂ UU
+  `tt-intro :   ∀ {Γ} →
+          Γ ⊢ `tt ⦂ `⊤
 ```
 
 This completes our typing relation. We can now show that some given
@@ -185,8 +188,8 @@ module Example-1 where
   const : Expr
   const = `λ 0 (`λ 1 (` 0))
 
-  const-is-UU⇒UU⇒UU : [] ⊢ const ⦂ UU `⇒ (UU `⇒ UU)
-  const-is-UU⇒UU⇒UU = `λ⊢ (`λ⊢ (`⊢ 0 refl))
+  const-is-`⊤⇒`⊤⇒`⊤ : [] ⊢ const ⦂ `⊤ `⇒ (`⊤ `⇒ `⊤)
+  const-is-`⊤⇒`⊤⇒`⊤ = `⇒-intro (`⇒-intro (`var-intro 0 refl))
 ```
 
 The astute amongst you may note that the typing derivation looks
@@ -204,8 +207,188 @@ data Value : Expr → Type where
   v-var : ∀ {n} → Value (` n)
   v-λ : ∀ {n body} → Value (`λ n body)
   v-⟨,⟩ : ∀ {a b} → Value (`⟨ a , b ⟩)
-  v-U : Value `U
+  v-⊤ : Value `tt
 ```
+
+```agda
+max-index-in : Expr → Nat
+max-index-in (` x) = x
+max-index-in (`λ n bd) = max n (max-index-in bd)
+max-index-in (x `$ y) = max (max-index-in x) (max-index-in y)
+max-index-in `⟨ a , b ⟩ = max (max-index-in a) (max-index-in b)
+max-index-in (`π₁ x) = max-index-in x
+max-index-in (`π₂ x) = max-index-in x
+max-index-in `tt = 0
+
+occurs-in : Nat → Expr → Bool
+occurs-in n (` x) with n ≡? x
+... | yes a = true
+... | no ¬a = false
+occurs-in n (`λ x bd) with n ≡? x
+... | yes a = true
+... | no ¬a = occurs-in n bd
+occurs-in n (x `$ b) = or (occurs-in n x) (occurs-in n b)
+occurs-in n `⟨ a , b ⟩ = or (occurs-in n a) (occurs-in n b)
+occurs-in n (`π₁ x) = occurs-in n x
+occurs-in n (`π₂ x) = occurs-in n x
+occurs-in n `tt = false
+
+max-dec : ∀ a b → (max a b ≡ a) ⊎ (max a b ≡ b)
+max-dec (zero) (zero) = inl refl
+max-dec (zero) (suc b) = inr refl
+max-dec (suc a) (zero) = inl refl
+max-dec (suc a) (suc b) with max-dec a b
+... | inl x = inl (ap suc x)
+... | inr x = inr (ap suc x)
+
+max-elim : ∀ {a b} → (P : Nat → Type) → P a → P b → P (max a b)
+max-elim {a} {b} P Pa Pb with max-dec a b
+... | inl x = subst P (sym x) Pa
+... | inr x = subst P (sym x) Pb
+
+sucy≠y : ∀ {y} → suc y ≡ y → ⊥
+sucy≠y {zero} p = suc≠zero p
+sucy≠y {suc y} p = sucy≠y {y} (suc-inj p)
+
+¬sucy≤y : ∀ {k} → suc k ≤ k → ⊥
+¬sucy≤y {zero} ()
+¬sucy≤y (s≤s x) = ¬sucy≤y x
+
+max-lt : ∀ {x y} → max y x ≡ x → y ≤ x
+max-lt {zero} {zero} p = 0≤x
+max-lt {zero} {suc y} p = absurd (suc≠zero p)
+max-lt {suc x} {zero} p = 0≤x
+max-lt {suc x} {suc y} p = s≤s (max-lt (suc-inj p))
+
+max-sym : ∀ {x y} → max x y ≡ max y x
+max-sym {zero} {zero} = refl
+max-sym {zero} {suc y} = refl
+max-sym {suc x} {zero} = refl
+max-sym {suc x} {suc y} = ap suc (max-sym {x} {y})
+
+or-elim : ∀ {x y} → x ≡ false → y ≡ false → or x y ≡ false
+or-elim {x} {y} x≡ y≡ = subst (λ w → or x w ≡ false) (sym y≡) (subst (λ k → or k false ≡ false) (sym x≡) refl)
+
+lt-trans : ∀ {a b c} → a ≤ b → b ≤ c → a ≤ c
+lt-trans {zero} {b} {c} a≤b b≤c = 0≤x
+lt-trans {suc a} {suc b} {suc c} (s≤s a≤b) (s≤s b≤c) = s≤s (lt-trans a≤b b≤c)
+
+not-max : ∀ ex y → suc (max-index-in ex) ≤ y → occurs-in y ex ≡ false
+not-max (` x) y ≤y with y ≡? x
+... | yes a = absurd (h (subst (λ k → suc x ≤ k) a ≤y))
+  where
+    h : ∀ {k} → suc k ≤ k → ⊥
+    h {zero} ()
+    h (s≤s x) = h x
+... | no ¬a = refl
+
+not-max (`λ x ex) y ≤y with y ≡? x | max-dec x (max-index-in ex)
+... | yes a | inl l = absurd (¬sucy≤y {y} (subst (λ k → suc k ≤ y) (sym a) (subst (λ k → suc k ≤ y) l ≤y)))
+... | yes a | inr r = absurd bot
+  where
+    h : ∀ {a b k} → suc a ≤ k → b ≤ a → suc b ≤ k
+    h {zero} {zero} {k} suca≤y b≤a = suca≤y
+    h {suc a} {zero} {k} (s≤s (s≤s sa≤y)) 0≤x = s≤s 0≤x
+    h {suc a} {suc b} {k} (s≤s sa≤y) (s≤s b≤a) = s≤s (h sa≤y b≤a)
+
+    x-lt-max : x ≤ max-index-in ex
+    x-lt-max = max-lt r
+
+    suc-max-lt-y : suc (max-index-in ex) ≤ y
+    suc-max-lt-y = subst (λ k → suc k ≤ y) r ≤y
+
+    suc-x-lt-y : suc x ≤ y
+    suc-x-lt-y = h suc-max-lt-y x-lt-max
+
+    bot : ⊥
+    bot = ¬sucy≤y (subst (λ k → suc k ≤ y) (sym a) suc-x-lt-y)
+
+... | no ¬a | inl l = not-max ex y max-lt-y
+  where
+    x-lt-y : suc x ≤ y
+    x-lt-y = subst (λ k → suc k ≤ y) l ≤y
+
+    max-lt-x : max-index-in ex ≤ x
+    max-lt-x = max-lt (subst (λ k → k ≡ x) (max-sym {x} {max-index-in ex}) l)
+
+    max-lt-y : suc (max-index-in ex) ≤ y
+    max-lt-y = lt-trans (s≤s max-lt-x) x-lt-y
+... | no ¬a | inr r = not-max ex y (subst (λ k → suc k ≤ y) r ≤y)
+
+not-max (f `$ x) y ≤y with max-dec (max-index-in f) (max-index-in x)
+... | inl l = or-elim {occurs-in y f} {occurs-in y x} (not-max f y (subst (λ k → suc k ≤ y) l ≤y)) (not-max x y suc-max-lt-y)
+  where
+    max-x-lt-max-f : max-index-in x ≤ max-index-in f
+    max-x-lt-max-f = max-lt (subst (λ k → k ≡ max-index-in f) max-sym l)
+
+    suc-max-f-lt-y : suc (max-index-in f) ≤ y
+    suc-max-f-lt-y = subst (λ k → suc k ≤ y) l ≤y
+
+    suc-max-lt-y : suc (max-index-in x) ≤ y
+    suc-max-lt-y = lt-trans (s≤s max-x-lt-max-f) suc-max-f-lt-y
+... | inr r = or-elim {occurs-in y f} {occurs-in y x} (not-max f y suc-max-lt-y) (not-max x y (subst (λ k → suc k ≤ y) r ≤y))
+  where
+    max-f-lt-max-x : max-index-in f ≤ max-index-in x
+    max-f-lt-max-x = max-lt r
+
+    suc-max-x-lt-y : suc (max-index-in x) ≤ y
+    suc-max-x-lt-y = subst (λ k → suc k ≤ y) r ≤y
+
+    suc-max-lt-y : suc (max-index-in f) ≤ y
+    suc-max-lt-y = lt-trans (s≤s max-f-lt-max-x) suc-max-x-lt-y
+not-max `⟨ a , b ⟩ y ≤y with max-dec (max-index-in a) (max-index-in b)
+... | inl l = or-elim {occurs-in y a} {occurs-in y b} (not-max a y (subst (λ k → suc k ≤ y) l ≤y)) (not-max b y suc-max-b-lt-y)
+  where
+    max-b-lt-max-a : max-index-in b ≤ max-index-in a
+    max-b-lt-max-a = max-lt (subst (λ k → k ≡ max-index-in a) max-sym l)
+
+    suc-max-a-lt-y : suc (max-index-in a) ≤ y
+    suc-max-a-lt-y = subst (λ k → suc k ≤ y) l ≤y
+
+    suc-max-b-lt-y : suc (max-index-in b) ≤ y
+    suc-max-b-lt-y = lt-trans (s≤s (subst (λ k → max-index-in b ≤ k) (sym l) max-b-lt-max-a)) ≤y
+... | inr r = or-elim {occurs-in y a} {occurs-in y b} (not-max a y suc-max-a-lt-y) (not-max b y (subst (λ k → suc k ≤ y) r ≤y))
+  where
+    max-a-lt-max-b : max-index-in a ≤ max-index-in b
+    max-a-lt-max-b = max-lt r
+
+    suc-max-b-lt-y : suc (max-index-in b) ≤ y
+    suc-max-b-lt-y = subst (λ k → suc k ≤ y) r ≤y
+
+    suc-max-a-lt-y : suc (max-index-in a) ≤ y
+    suc-max-a-lt-y = lt-trans (s≤s (subst (λ k → max-index-in a ≤ k) (sym r) max-a-lt-max-b)) ≤y
+
+not-max (`π₁ ex) y ≤y = not-max ex y ≤y
+not-max (`π₂ ex) y ≤y = not-max ex y ≤y
+not-max `tt y ≤y = refl
+
+name-gen : Expr → Nat → Nat
+name-gen ex = let big = max-index-in ex in
+              λ k → k + (suc big)
+
+name-gen-max : ∀ ex k → suc (max-index-in ex) ≤ name-gen ex k 
+name-gen-max ex zero = ≤-refl
+  where
+    x≤sucx : ∀ x → x ≤ suc x
+    x≤sucx zero = 0≤x
+    x≤sucx (suc x) = s≤s (x≤sucx x)
+name-gen-max ex (suc k) = s≤s (k+x≤ (max-index-in ex) k)
+  where
+    x≤sucx : ∀ x → x ≤ suc x
+    x≤sucx zero = 0≤x
+    x≤sucx (suc x) = s≤s (x≤sucx x)
+
+    k+x≤ : ∀ x k → x ≤ k + suc x
+    k+x≤ zero k = 0≤x
+    k+x≤ (suc x) k with +-sucr k (suc x)
+    ... | p = subst (λ k → suc x ≤ k) (sym p) (s≤s (k+x≤ x k))
+
+    x≤y→x≤sucy : ∀ x y → x ≤ y → x ≤ suc y
+    x≤y→x≤sucy zero y x≤y = 0≤x
+    x≤y→x≤sucy (suc x) (suc y) (s≤s x≤y) = s≤s (x≤y→x≤sucy x y x≤y)
+```
+
+
 
 Our next goal is to now define a "step" relation,
 which dictates that a term $x$ may, through a reduction, step to
@@ -238,7 +421,7 @@ we return the new expression. Else, the variable unchanged.
 
 Here is why it's called capture-avoiding: if our lambda binds the
 variable name again, we don't substitute inside. In other words, the
-substituion `(λ y. y) y [y := k]`{.Agda} yields `(λ y. y) k`{.Agda},
+substitution `(λ y. y) y [y := k]`{.Agda} yields `(λ y. y) k`{.Agda},
 not `(λ y. k) k`{.Agda}.
 
 ```agda
@@ -249,11 +432,11 @@ not `(λ y. k) k`{.Agda}.
 In all other cases, we simply "move" the substition into all
 subexpressions. (Or, do nothing.)
 ```agda
-`$ f x [ n := e ] = `$ (f [ n := e ]) (x [ n := e ])
+f `$ x [ n := e ] = (f [ n := e ]) `$ (x [ n := e ])
 `⟨ a , b ⟩ [ n := e ] = `⟨ a [ n := e ] , b [ n := e ] ⟩
 `π₁ a [ n := e ] = `π₁ (a [ n := e ])
 `π₂ a [ n := e ] = `π₂ (a [ n := e ])
-`U [ n := e ] = `U
+`tt [ n := e ] = `tt
 ```
 
 Now, we define our step relation proper.
@@ -269,7 +452,7 @@ a moment.
 ```agda
   β-λ : ∀ {n body x} →
         Value x →
-        Step (`$ (`λ n body) x) (body [ n := x ])
+        Step ((`λ n body) `$ x) (body [ n := x ])
 ```
 
 Likewise, reducing projections on a pair is called β-reduction for
@@ -301,7 +484,7 @@ the left hand side.
 ```agda
   ξ-$ₗ : ∀ {f₁ f₂ x} →
        Step f₁ f₂ →
-       Step (`$ f₁ x) (`$ f₂ x)
+       Step (f₁ `$ x) (f₂ `$ x)
 ```
 
 We also include a rule for stepping on the right hand side, requiring
@@ -314,7 +497,7 @@ this later.
   ξ-$ᵣ : ∀ {f x₁ x₂} →
        Value f →
        Step x₁ x₂ →
-       Step (`$ f x₁) (`$ f x₂)
+       Step (f `$ x₁) (f `$ x₂)
 ```
 
 These are all of our step rules! The STLC is indeed very simple.
@@ -332,10 +515,10 @@ module Example-2 where
   our-id = `λ 0 (` 0)
 
   pair : Expr
-  pair = `⟨ `U , `U ⟩
+  pair = `⟨ `tt , `tt ⟩
 
   id-app : Expr
-  id-app = `$ our-id pair
+  id-app = our-id `$ pair
 
   id-app-step : Step id-app pair
   id-app-step = β-λ v-⟨,⟩
@@ -351,7 +534,7 @@ given term is either done (a value), or can take another step.
 Preservation states that if a well typed expression $x$ steps to another $x'$,
 they have the same type (i.e., stepping preserves type.)
 
-The first step in proving these is showing that a "proper" substituion
+The first step in proving these is showing that a "proper" substitution
 preserves types. If a term $tm$ has type $\tau$ when extended
 with a variable $n$ of type $\rho$, then substituting any expression
 of type $\rho$ for $n$ preserves the type of $tm$. To prove this,
@@ -370,14 +553,14 @@ Variables are fairly straightforward - we simply apply our renaming
 function.
 
 ```agda
-rename {Γ} {Δ} f (` x) ty (`⊢ .x n) = `⊢ x (f x ty n)
+rename {Γ} {Δ} f (` x) ty (`var-intro .x n) = `var-intro x (f x ty n)
 ```
 
 Lambda abstractions are more complex - we need to extend our renaming
 function to encompass the new abstraction.
 
 ```agda
-rename {Γ} {Δ} f (`λ x tm) ty (`λ⊢ {τ = τ} {ρ = ρ} Γ⊢) = `λ⊢ (rename f' tm ρ Γ⊢)
+rename {Γ} {Δ} f (`λ x tm) ty (`⇒-intro {τ = τ} {ρ = ρ} Γ⊢) = `⇒-intro (rename f' tm ρ Γ⊢)
   where
     f' : (n : Nat) (ty : Ty) →
           index (Γ ∷c (x , τ)) n ≡ just ty →
@@ -390,15 +573,15 @@ rename {Γ} {Δ} f (`λ x tm) ty (`λ⊢ {τ = τ} {ρ = ρ} Γ⊢) = `λ⊢ (re
 Everything else is straightforward, as in the substitution case.
 
 ```agda
-rename {Γ} {Δ} f (`$ f' x) ty (`·⊢ {τ = τ} Γ⊢₁ Γ⊢₂) =
-  `·⊢ (rename f f' (τ `⇒ ty) Γ⊢₁) (rename f x τ Γ⊢₂)
+rename {Γ} {Δ} f (f' `$ x) ty (`⇒-elim {τ = τ} Γ⊢₁ Γ⊢₂) =
+  `⇒-elim (rename f f' (τ `⇒ ty) Γ⊢₁) (rename f x τ Γ⊢₂)
   
-rename {Γ} {Δ} f `⟨ a , b ⟩ ty (`⟨,⟩⊢ {τ = τ} {ρ = ρ} Γ⊢₁ Γ⊢₂) =
-  `⟨,⟩⊢ (rename f a τ Γ⊢₁) (rename f b ρ Γ⊢₂)
+rename {Γ} {Δ} f `⟨ a , b ⟩ ty (`×-intro {τ = τ} {ρ = ρ} Γ⊢₁ Γ⊢₂) =
+  `×-intro (rename f a τ Γ⊢₁) (rename f b ρ Γ⊢₂)
   
-rename {Γ} {Δ} f (`π₁ tm) ty (`π₁⊢ {ρ = ρ} Γ⊢) = `π₁⊢ (rename f tm (ty `× ρ) Γ⊢)
-rename {Γ} {Δ} f (`π₂ tm) ty (`π₂⊢ {τ = τ} Γ⊢) = `π₂⊢ (rename f tm (τ `× ty) Γ⊢)
-rename {Γ} {Δ} f `U ty `U⊢ = `U⊢
+rename {Γ} {Δ} f (`π₁ tm) ty (`×-elim₁ {ρ = ρ} Γ⊢) = `×-elim₁ (rename f tm (ty `× ρ) Γ⊢)
+rename {Γ} {Δ} f (`π₂ tm) ty (`×-elim₂ {τ = τ} Γ⊢) = `×-elim₂ (rename f tm (τ `× ty) Γ⊢)
+rename {Γ} {Δ} f `tt ty `tt-intro = `tt-intro
 ```
 
 Another few lemmas! This time about shuffling and dropping names
@@ -475,13 +658,13 @@ subst-pres : ∀ {Γ n t bd typ s} →
                Γ ⊢ bd [ n := s ] ⦂ typ
 ```
 
-In the case of variables, we use weakening for the substituion itself,
+In the case of variables, we use weakening for the substitution itself,
 to embed our term `s`{.Agda} into the context $\Gamma$.
 
 ```agda
-subst-pres {Γ} {n} {t} {` x} {typ} {s} s⊢ (`⊢ .x k) with x ≡? n
+subst-pres {Γ} {n} {t} {` x} {typ} {s} s⊢ (`var-intro .x k) with x ≡? n
 ... | yes _ = weakening (subst (λ ρ → [] ⊢ s ⦂ ρ) (just-inj k) s⊢)
-... | no _  = `⊢ x k
+... | no _  = `var-intro x k
 ```
 
 Lambda abstraction is once again slightly annoying. Handling the case
@@ -489,24 +672,24 @@ where the names are equal requires some removing of duplicates in the
 context, and where they are not equal requires some shuffling. 
 
 ```agda
-subst-pres {Γ} {n} {t} {`λ x bd} {typ} {s} s⊢ (`λ⊢ {τ = τ} {ρ = ρ} Γ⊢) with x ≡? n
-... | yes x≡n = `λ⊢ (duplicates-are-ok
+subst-pres {Γ} {n} {t} {`λ x bd} {typ} {s} s⊢ (`⇒-intro {τ = τ} {ρ = ρ} Γ⊢) with x ≡? n
+... | yes x≡n = `⇒-intro (duplicates-are-ok
                       (subst (λ _ → Γ ∷c _ ∷c _ ⊢ bd ⦂ ρ) (sym x≡n) Γ⊢))
-... | no ¬x≡n = `λ⊢ (subst-pres s⊢ (variable-swap (λ x≡n → ¬x≡n (sym x≡n)) Γ⊢))
+... | no ¬x≡n = `⇒-intro (subst-pres s⊢ (variable-swap (λ x≡n → ¬x≡n (sym x≡n)) Γ⊢))
 ```
 
 The rest proceeds nicely.
 
 ```agda
-subst-pres {Γ} {n} {t} {`$ bd bd₁} {typ} {s} s⊢ (`·⊢ Γ⊢₁ Γ⊢₂) =
-  `·⊢ (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
+subst-pres {Γ} {n} {t} {f `$ x} {typ} {s} s⊢ (`⇒-elim Γ⊢₁ Γ⊢₂) =
+  `⇒-elim (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
   
-subst-pres {Γ} {n} {t} {`⟨ a , b ⟩} {typ} {s} s⊢ (`⟨,⟩⊢ Γ⊢₁ Γ⊢₂) =
-  `⟨,⟩⊢ (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
+subst-pres {Γ} {n} {t} {`⟨ a , b ⟩} {typ} {s} s⊢ (`×-intro Γ⊢₁ Γ⊢₂) =
+  `×-intro (subst-pres s⊢ Γ⊢₁) (subst-pres s⊢ Γ⊢₂)
   
-subst-pres {Γ} {n} {t} {`π₁ bd} {typ} {s} s⊢ (`π₁⊢ Γ⊢) = `π₁⊢ (subst-pres s⊢ Γ⊢)
-subst-pres {Γ} {n} {t} {`π₂ bd} {typ} {s} s⊢ (`π₂⊢ Γ⊢) = `π₂⊢ (subst-pres s⊢ Γ⊢)
-subst-pres {Γ} {n} {t} {`U} {typ} {s} s⊢ `U⊢ = `U⊢
+subst-pres {Γ} {n} {t} {`π₁ bd} {typ} {s} s⊢ (`×-elim₁ Γ⊢) = `×-elim₁ (subst-pres s⊢ Γ⊢)
+subst-pres {Γ} {n} {t} {`π₂ bd} {typ} {s} s⊢ (`×-elim₂ Γ⊢) = `×-elim₂ (subst-pres s⊢ Γ⊢)
+subst-pres {Γ} {n} {t} {`tt} {typ} {s} s⊢ `tt-intro = `tt-intro
 ```
 
 We'll do preservation first, which follows very easily from the
@@ -518,13 +701,13 @@ preservation : ∀ {x₁ x₂ typ} →
                [] ⊢ x₁ ⦂ typ →
                [] ⊢ x₂ ⦂ typ
                
-preservation (β-λ p) (`·⊢ (`λ⊢ ⊢f) ⊢x) = subst-pres ⊢x ⊢f
-preservation β-π₁ (`π₁⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢a
-preservation β-π₂ (`π₂⊢ (`⟨,⟩⊢ ⊢a ⊢b)) = ⊢b
-preservation (ξ-π₁ step) (`π₁⊢ ⊢a) = `π₁⊢ (preservation step ⊢a)
-preservation (ξ-π₂ step) (`π₂⊢ ⊢b) = `π₂⊢ (preservation step ⊢b)
-preservation (ξ-$ₗ step) (`·⊢ ⊢f ⊢x) = `·⊢ (preservation step ⊢f) ⊢x
-preservation (ξ-$ᵣ val step) (`·⊢ ⊢f ⊢x) = `·⊢ ⊢f (preservation step ⊢x)
+preservation (β-λ p) (`⇒-elim (`⇒-intro ⊢f) ⊢x) = subst-pres ⊢x ⊢f
+preservation β-π₁ (`×-elim₁ (`×-intro ⊢a ⊢b)) = ⊢a
+preservation β-π₂ (`×-elim₂ (`×-intro ⊢a ⊢b)) = ⊢b
+preservation (ξ-π₁ step) (`×-elim₁ ⊢a) = `×-elim₁ (preservation step ⊢a)
+preservation (ξ-π₂ step) (`×-elim₂ ⊢b) = `×-elim₂ (preservation step ⊢b)
+preservation (ξ-$ₗ step) (`⇒-elim ⊢f ⊢x) = `⇒-elim (preservation step ⊢f) ⊢x
+preservation (ξ-$ᵣ val step) (`⇒-elim ⊢f ⊢x) = `⇒-elim ⊢f (preservation step ⊢x)
 ```
 
 Then, progress, noting that the expression must be well typed. We
@@ -545,30 +728,30 @@ progress : ∀ {x ty} →
            [] ⊢ x ⦂ ty →
            Progress x
            
-progress (`⊢ n n∈) = absurd (nothing≠just n∈)
-progress (`λ⊢ {n = n} {body = body} ⊢x) = done v-λ
-progress (`·⊢ ⊢f ⊢x) with progress ⊢f
+progress (`var-intro n n∈) = absurd (nothing≠just n∈)
+progress (`⇒-intro {n = n} {body = body} ⊢x) = done v-λ
+progress (`⇒-elim ⊢f ⊢x) with progress ⊢f
 ... | going next-f = going (ξ-$ₗ next-f)
 ... | done vf with progress ⊢x
 ... |   going next-x = going (ξ-$ᵣ vf next-x)
 ... |   done vx with ⊢f
-... |     `⊢ n n∈ = absurd (nothing≠just n∈)
-... |     `λ⊢ f = going (β-λ vx)
+... |     `var-intro n n∈ = absurd (nothing≠just n∈)
+... |     `⇒-intro f = going (β-λ vx)
 
-progress (`⟨,⟩⊢ {a = a} {b = b} ⊢a ⊢b) = done v-⟨,⟩
-progress (`π₁⊢ {a = a} ⊢x) with progress ⊢x
+progress (`×-intro {a = a} {b = b} ⊢a ⊢b) = done v-⟨,⟩
+progress (`×-elim₁ {a = a} ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₁ next)
 ... | done v-⟨,⟩ = going β-π₁
 ... | done v-var with ⊢x
-... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
+... |   `var-intro _ x∈ = absurd (nothing≠just x∈)
 
-progress (`π₂⊢ ⊢x) with progress ⊢x
+progress (`×-elim₂ ⊢x) with progress ⊢x
 ... | going next = going (ξ-π₂ next)
 ... | done v-⟨,⟩ = going β-π₂
 ... | done v-var with ⊢x
-... |   `⊢ _ x∈ = absurd (nothing≠just x∈)
+... |   `var-intro _ x∈ = absurd (nothing≠just x∈)
 
-progress `U⊢ = done v-U
+progress `tt-intro = done v-⊤
 ```
 
 There's our big two properties! As promised, we'll also now prove
@@ -589,7 +772,7 @@ value-¬step : ∀ {x y} →
 value-¬step v-var ()
 value-¬step v-λ ()
 value-¬step v-⟨,⟩ ()
-value-¬step v-U ()
+value-¬step v-⊤ ()
 ```
 </details>
 
@@ -600,19 +783,19 @@ deterministic : ∀ {x ty x₁ x₂} →
                 Step x x₂ →
                 x₁ ≡ x₂
                 
-deterministic (`·⊢ ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
-deterministic (`·⊢ ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬step vx b)
-deterministic (`·⊢ ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ₗ →x₂) =
+deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
+deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬step vx b)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ₗ →x₂) =
   `$-apₗ (deterministic ⊢f →x₁ →x₂)
   
-deterministic (`·⊢ ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬step vx →x₁)
-deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬step vx₂ →x₁)
-deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬step vx →x₂)
-deterministic (`·⊢ ⊢f ⊢x) (ξ-$ᵣ _ →x₁) (ξ-$ᵣ _ →x₂) =
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬step vx →x₁)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬step vx₂ →x₁)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬step vx →x₂)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ _ →x₁) (ξ-$ᵣ _ →x₂) =
   `$-apᵣ (deterministic ⊢x →x₁ →x₂)
   
-deterministic (`π₁⊢ ⊢x) β-π₁ β-π₁ = refl
-deterministic (`π₁⊢ ⊢x) (ξ-π₁ →x₁) (ξ-π₁ →x₂) = ap `π₁ (deterministic ⊢x →x₁ →x₂)
-deterministic (`π₂⊢ ⊢x) β-π₂ β-π₂ = refl
-deterministic (`π₂⊢ ⊢x) (ξ-π₂ →x₁) (ξ-π₂ →x₂) = ap `π₂ (deterministic ⊢x →x₁ →x₂)
+deterministic (`×-elim₁ ⊢x) β-π₁ β-π₁ = refl
+deterministic (`×-elim₁ ⊢x) (ξ-π₁ →x₁) (ξ-π₁ →x₂) = ap `π₁ (deterministic ⊢x →x₁ →x₂)
+deterministic (`×-elim₂ ⊢x) β-π₂ β-π₂ = refl
+deterministic (`×-elim₂ ⊢x) (ξ-π₂ →x₁) (ξ-π₂ →x₂) = ap `π₂ (deterministic ⊢x →x₁ →x₂)
 ```
