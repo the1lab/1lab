@@ -7,8 +7,8 @@ description: |
 open import 1Lab.Reflection.Record
 open import 1Lab.Extensionality
 open import 1Lab.HLevel.Closure
-open import 1Lab.Equiv
 open import 1Lab.HLevel
+open import 1Lab.Equiv
 open import 1Lab.Type
 
 open import Meta.Invariant
