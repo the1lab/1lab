@@ -25,7 +25,6 @@ A **biimplication** $A \leftrightarrow B$ between a pair of types $A, B$
 is a pair of functions $A \to B, B \to A$.
 :::
 
-
 ```agda
 record _↔_ {ℓ} {ℓ'} (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
   no-eta-equality
@@ -116,6 +115,8 @@ equiv→biimp f .from = Equiv.from f
 ```
 
 Every biimplication between [[propositions]] is an [[equivalence]].
+In light of this, biimplications between propositions
+are often referred to as **logical equivalences**.
 
 ```agda
 biimp→equiv : is-prop A → is-prop B → A ↔ B → A ≃ B
