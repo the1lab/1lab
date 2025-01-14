@@ -11,6 +11,7 @@ open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.Inductive
 open import 1Lab.HLevel
+open import 1Lab.Biimp
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -92,13 +93,15 @@ instance
 ```
 -->
 
-We can also prove a univalence principle for `Ω`{.Agda}:
+We can also prove a univalence principle for `Ω`{.Agda}: if
+$A, B : \Omega$ are [[logically equivalent|logical-equivalence]],
+then they are equal.
 
 ```agda
-Ω-ua : {A B : Ω} → (∣ A ∣ → ∣ B ∣) → (∣ B ∣ → ∣ A ∣) → A ≡ B
-Ω-ua {A} {B} f g i .∣_∣ = ua (prop-ext! f g) i
-Ω-ua {A} {B} f g i .is-tr =
-  is-prop→pathp (λ i → is-prop-is-prop {A = ua (prop-ext! f g) i})
+Ω-ua : {A B : Ω} → ∣ A ∣ ↔ ∣ B ∣ → A ≡ B
+Ω-ua {A} {B} f i .∣_∣ = ua (prop-ext! (Biimp.to f) (Biimp.from f)) i
+Ω-ua {A} {B} f i .is-tr =
+  is-prop→pathp (λ i → is-prop-is-prop {A = ua (prop-ext! (Biimp.to f) (Biimp.from f)) i})
     (A .is-tr) (B .is-tr) i
 
 instance abstract
@@ -106,9 +109,19 @@ instance abstract
   H-Level-Ω = basic-instance 2 $ retract→is-hlevel 2
     (λ r → el ∣ r ∣ (r .is-tr))
     (λ r → el ∣ r ∣ (r .is-tr))
-    (λ x → Ω-ua (λ x → x) λ x → x)
+    (λ x → Ω-ua id↔)
     (n-Type-is-hlevel {lzero} 1)
 ```
+
+<!--
+```agda
+instance
+  Extensionality-Ω : Extensional Ω lzero
+  Extensionality-Ω .Pathᵉ A B = ∣ A ∣ ↔ ∣ B ∣
+  Extensionality-Ω .reflᵉ A = id↔
+  Extensionality-Ω .idsᵉ = set-identity-system (λ _ _ → hlevel 1) Ω-ua
+```
+-->
 
 The `□`{.Agda} type former is a functor (in the handwavy sense that it
 supports a "map" operation), and can be projected from into propositions
@@ -209,7 +222,7 @@ to-is-true
   : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
   → ∣ P ∣
   → P ≡ Q
-to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+to-is-true prf = Ω-ua (biimp (λ _ → hlevel 0 .centre) λ _ → prf)
 
 tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
 tr-□ (inc x) = inc x
@@ -224,7 +237,7 @@ tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
 ## Connectives
 
 The universe of small propositions contains true, false, conjunctions,
-disjunctions, and implications.
+disjunctions, and (bi)implications.
 
 <!--
 ```agda
@@ -254,6 +267,10 @@ _∨Ω_ : Ω → Ω → Ω
 _→Ω_ : Ω → Ω → Ω
 ∣ P →Ω Q ∣ = ∣ P ∣ → ∣ Q ∣
 (P →Ω Q) .is-tr = hlevel 1
+
+_↔Ω_ : Ω → Ω → Ω
+∣ P ↔Ω Q ∣ = ∣ P ∣ ↔ ∣ Q ∣
+(P ↔Ω Q) .is-tr = hlevel 1
 
 ¬Ω_ : Ω → Ω
 ¬Ω P = P →Ω ⊥Ω
