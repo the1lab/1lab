@@ -6,6 +6,7 @@ open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
+open import 1Lab.Extensionality
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.Inductive
@@ -273,6 +274,16 @@ land in `Ω`.
 syntax ∃Ω A (λ x → B) = ∃Ω[ x ∈ A ] B
 syntax ∀Ω A (λ x → B) = ∀Ω[ x ∈ A ] B
 ```
+
+<!--
+```agda
+instance
+  Extensional-Σ-□
+    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+    → ⦃ ea : Extensional A ℓr ⦄ → Extensional (Σ A λ x → □ (B x)) ℓr
+  Extensional-Σ-□ ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+```
+-->
 
 These connectives and quantifiers are only provided for completeness;
 if you find yourself building nested propositions, it is generally a good
