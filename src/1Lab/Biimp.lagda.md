@@ -44,6 +44,13 @@ private variable
 ```
 -->
 
+<!--
+```agda
+module Biimp (f : A ↔ B) where
+  open _↔_ f public
+```
+-->
+
 If $A$ and $B$ [[n-types]], then the type of biimplications $A \leftrightarrow B$
 is also an n-type.
 
@@ -54,8 +61,8 @@ private unquoteDecl eqv = declare-record-iso eqv (quote _↔_)
 -->
 
 ```agda
-↔-is-hlevel : ∀ {n} → is-hlevel A n → is-hlevel B n → is-hlevel (A ↔ B) n
-↔-is-hlevel {n = n} A-hl B-hl =
+↔-is-hlevel : ∀ n → is-hlevel A n → is-hlevel B n → is-hlevel (A ↔ B) n
+↔-is-hlevel n A-hl B-hl =
   Iso→is-hlevel n eqv $
   ×-is-hlevel n
     (Π-is-hlevel n λ _ → B-hl)
@@ -70,7 +77,7 @@ instance
     → ⦃ _ : H-Level A n ⦄ ⦃ _ : H-Level B n ⦄
     → H-Level (A ↔ B) n
   H-Level-↔ {n = n} .H-Level.has-hlevel =
-    ↔-is-hlevel (hlevel n) (hlevel n)
+    ↔-is-hlevel n (hlevel n) (hlevel n)
 
 instance
   Extensional-↔
@@ -114,6 +121,8 @@ equiv→biimp f .to = Equiv.to f
 equiv→biimp f .from = Equiv.from f
 ```
 
+:::{.definition #logical-equivalence}
+
 Every biimplication between [[propositions]] is an [[equivalence]].
 In light of this, biimplications between propositions
 are often referred to as **logical equivalences**.
@@ -123,6 +132,7 @@ biimp→equiv : is-prop A → is-prop B → A ↔ B → A ≃ B
 biimp→equiv A-prop B-prop f =
   prop-ext A-prop B-prop (f .to) (f .from)
 ```
+:::
 
 <!--
 ```agda
