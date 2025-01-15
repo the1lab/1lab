@@ -124,8 +124,8 @@ equiv→biimp f .from = Equiv.from f
 :::{.definition #logical-equivalence}
 
 Every biimplication between [[propositions]] is an [[equivalence]].
-In light of this, biimplications between propositions
-are often referred to as **logical equivalences**.
+In light of this, biimplications are often referred to as
+**logical equivalences**.
 
 ```agda
 biimp→equiv : is-prop A → is-prop B → A ↔ B → A ≃ B
