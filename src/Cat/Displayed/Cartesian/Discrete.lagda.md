@@ -42,6 +42,7 @@ over $\cB$, i.e., a functor $\cB\op\to\Sets$. Here, we identify a purely fibrati
 property that picks out the discrete fibrations among the displayed
 categories, without talking about the fibres directly.
 
+:::{.definition #discrete-cartesian-fibration alias="discrete-fibration"}
 A discrete cartesian fibration is a displayed category such that each type of
 displayed objects is a set, and such that, for each right corner
 
@@ -56,9 +57,9 @@ displayed objects is a set, and such that, for each right corner
 
 there is a contractible space of objects $x'$ over $x$ equipped with
 maps $x' \to_f y'$.
+:::
 
 <!--
-
 ```agda
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   private
@@ -68,11 +69,10 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
     open Cat.Displayed.Morphism E
     open Displayed E
 ```
-
 -->
 
 ```agda
-  record is-discrete-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+  record is-discrete-cartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     field
       fibre-set : ∀ x → is-set E.Ob[ x ]
       cart-lift
@@ -93,7 +93,7 @@ $$
     π* f y' = cart-lift f y' .centre .snd
 ```
 
-## Basic properties of discrete fibrations
+## Basic properties of discrete cartesian fibrations
 
 Every hom set of a discrete fibration is a [[proposition]].
 
@@ -117,20 +117,20 @@ We can improve the previous result by noticing that morphisms
 $f' : x' \to_{f} y'$ give rise to proofs that $f^*(y') = x'$.
 
 ```agda
-    ^*-lift
-      : ∀ {x y x' y'}
-      → (f : B.Hom x y)
-      → Hom[ f ] x' y'
-      → f ^* y' ≡ x'
-    ^*-lift {x' = x'} {y' = y'} f f' =
-      ap fst $ cart-lift f y' .paths (x' , f')
+    opaque
+      ^*-lift
+        : ∀ {x y x' y'}
+        → (f : B.Hom x y)
+        → Hom[ f ] x' y'
+        → f ^* y' ≡ x'
+      ^*-lift {x' = x'} {y' = y'} f f' =
+        ap fst $ cart-lift f y' .paths (x' , f')
 ```
 
 We can further improve this to an equivalence between paths
 $f^{*}(y') = x'$ and morphisms $x' \to y'$.
 
 ```agda
-    opaque
       ^*-hom
         : ∀ {x y x' y'}
         → (f : B.Hom x y)
@@ -140,20 +140,21 @@ $f^{*}(y') = x'$ and morphisms $x' \to y'$.
         hom[ B.idr f ] $
           π* f y' ∘' subst (λ y' → Hom[ B.id ] x' y') (sym p) id'
 
-    ^*-hom-is-equiv
-      : ∀ {x y x' y'}
-      → (f : B.Hom x y)
-      → is-equiv (^*-hom {x' = x'} {y' = y'} f)
-    ^*-hom-is-equiv f =
-      is-iso→is-equiv $
-      iso (^*-lift f)
-        (λ _ → Hom[]-is-prop _ _)
-        (λ _ → fibre-set _ _ _ _ _)
+      ^*-hom-is-equiv
+        : ∀ {x y x' y'}
+        → (f : B.Hom x y)
+        → is-equiv (^*-hom {x' = x'} {y' = y'} f)
+      ^*-hom-is-equiv f =
+        is-iso→is-equiv $
+        iso (^*-lift f)
+          (λ _ → Hom[]-is-prop _ _)
+          (λ _ → fibre-set _ _ _ _ _)
 ```
 
 ## Functoriality of lifts
 
-The (necessarily unique) choice of lifts in a discrete fibration are functorial.
+The (necessarily unique) choice of lifts in a discrete fibration are
+contravariantly functorial.
 
 ```agda
     ^*-id
@@ -177,7 +178,7 @@ the identity morphism, and the latter by composition of lifts!
     ^*-∘ f g z' = ^*-lift (f B.∘ g) (π* f z' ∘' π* g (f ^* z'))
 ```
 
-## Invertible maps in discrete fibrations
+## Invertible maps in discrete cartesian fibrations
 
 Let $f : x \to y$ be an [[invertible]] morphism of $\cB$. If $\cE$
 is a discrete fibration, then every morphism displayed over $f$ is
@@ -293,9 +294,9 @@ _fibrations_, we prove that any discrete fibration is a [[Cartesian
 fibration]].
 
 ```agda
-  discrete→cartesian : is-discrete-fibration → Cartesian-fibration E
+  discrete→cartesian : is-discrete-cartesian-fibration → Cartesian-fibration E
   discrete→cartesian disc = r where
-    open is-discrete-fibration disc
+    open is-discrete-cartesian-fibration disc
     r : Cartesian-fibration E
 ```
 
@@ -326,11 +327,11 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
 ```agda
   discrete→presheaf
     : ∀ {o' ℓ'} (E : Displayed B o' ℓ')
-    → is-discrete-fibration E
+    → is-discrete-cartesian-fibration E
     → Functor (B ^op) (Sets o')
   discrete→presheaf {o' = o'} E disc = psh where
     module E = Displayed E
-    open is-discrete-fibration disc
+    open is-discrete-cartesian-fibration disc
 ```
 
 For each object in $X : \cB$, we take the set of objects $E$ that
@@ -357,14 +358,14 @@ from the contractibilty of singletons.
 ```agda
   presheaf→discrete
     : ∀ {κ} → Functor (B ^op) (Sets κ)
-    → Σ[ E ∈ Displayed B κ κ ] is-discrete-fibration E
+    → Σ[ E ∈ Displayed B κ κ ] is-discrete-cartesian-fibration E
   presheaf→discrete {κ = κ} P = ∫ B P , discrete where
     module P = Functor P
 
-    discrete : is-discrete-fibration (∫ B P)
-    discrete .is-discrete-fibration.fibre-set X =
+    discrete : is-discrete-cartesian-fibration (∫ B P)
+    discrete .is-discrete-cartesian-fibration.fibre-set X =
       P.₀ X .is-tr
-    discrete .is-discrete-fibration.cart-lift f P[Y] =
+    discrete .is-discrete-cartesian-fibration.cart-lift f P[Y] =
       contr (P.₁ f P[Y] , refl) Singleton-is-contr
 ```
 
@@ -395,7 +396,7 @@ objects, and an invertible action on morphisms.
 
 ```agda
   presheaf≃discrete .rinv (P , p-disc) = Σ-prop-path hl ∫≡dx where
-    open is-discrete-fibration p-disc
+    open is-discrete-cartesian-fibration p-disc
     open Displayed-functor
     open Displayed P
 ```
@@ -423,11 +424,10 @@ _can't_ ruin our day. Directly from the uniqueness of $(a', f')$ we
 conclude that we've put together a functor.
 
 ```agda
-    pieces .F-id' = from-pathp (ap snd (cart-lift _ _ .paths _))
+    pieces .F-id' =
+      is-prop→pathp (λ _ → Hom[]-is-prop) _ _
     pieces .F-∘' {f = f} {g} {a'} {b'} {c'} {f'} {g'} =
-      ap (λ e → subst (λ e → Hom[ f B.∘ g ] e c') e
-            (cart-lift _ _ .centre .snd)) (fibre-set _ _ _ _ _)
-      ∙ from-pathp (ap snd (cart-lift _ _ .paths _))
+      is-prop→pathp (λ _ → Hom[]-is-prop) _ _
 ```
 
 It remains to show that, given a map $a'' \to b$ (and the rest of the
@@ -450,7 +450,7 @@ this witness lives in a proposition (it is a pair of propositions), so
 it survives automatically.
 
 ```agda
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-fibration)
+    private unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-cartesian-fibration)
     hl : ∀ x → is-prop _
     hl x = Iso→is-hlevel! 1 eqv
 ```

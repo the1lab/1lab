@@ -46,9 +46,9 @@ This fibration is obviously a discrete fibration; in fact, it's about as
 discrete as you can get!
 
 ```agda
-IdD-discrete-fibration : is-discrete-fibration IdD
-IdD-discrete-fibration .is-discrete-fibration.fibre-set _ = hlevel 2
-IdD-discrete-fibration .is-discrete-fibration.cart-lift _ _ = hlevel 0
+IdD-discrete-fibration : is-discrete-cartesian-fibration IdD
+IdD-discrete-fibration .is-discrete-cartesian-fibration.fibre-set _ = hlevel 2
+IdD-discrete-fibration .is-discrete-cartesian-fibration.cart-lift _ _ = hlevel 0
 ```
 
 Every morphism in the identity fibration is trivially cartesian and
