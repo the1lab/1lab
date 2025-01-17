@@ -195,7 +195,7 @@ also invertible.
 Let $f : x \to y$ be an invertible morphism, and $f' : x' \to_{f} y'$
 be a morphism lying over $f$. Every hom set of $\cE$ is a proposition,
 so constructing an inverse only requires us to exhibit a map
-$y' \to_{f^{-1}} x'$, which in turn is given by a proof that $f^{-1}(x') = y'$.
+$y' \to_{f^{-1}} x'$, which in turn is given by a proof that $(f^{-1})^{*}(x') = y'$.
 This is easy enough to prove with a bit of algebra.
 
 ```agda
@@ -300,7 +300,7 @@ fibration]].
     r : Cartesian-fibration E
 ```
 
-Luckily for us, the sea has already risen to meet us.: by assumption,
+Luckily for us, the sea has already risen to meet us: by assumption,
 every right corner has a unique lift, and every morphism in a discrete
 fibration is cartesian.
 
@@ -337,7 +337,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
 For each object in $X : \cB$, we take the set of objects $E$ that
 lie over $X$. The functorial action of `f : Hom X Y` is then constructed
 by taking the domain of the lift of `f`. Functoriality follows by
-uniqueness of the cart-lift.
+uniqueness of the lifts.
 
 ```agda
     psh : Functor (B ^op) (Sets o')
@@ -405,7 +405,7 @@ The functor will send an object $c \liesover x$ to that same object $c$;
 This is readily seen to be invertible. But the action on morphisms is
 slightly more complicated. Recall that, since $P$ is a discrete
 fibration, every span $b' \liesover b \xot{f} a$ has a contractible
-space of Cartesian cart-lift $(a', f')$. Our functor must, given objects
+space of Cartesian lifts $(a', f')$. Our functor must, given objects
 $a'', b'$, a map $f : a \to b$, and a proof that $a'' = a'$, produce a
 map $a'' \to_f b$ --- so we can take the canonical $f' : a' \to_f b$ and
 transport it over the given $a'' = a'$.
@@ -432,7 +432,7 @@ conclude that we've put together a functor.
 
 It remains to show that, given a map $a'' \to b$ (and the rest of the
 data $a$, $b$, $f : a \to b$, $b' \liesover b$), we can recover a proof
-that $a''$ is the chosen lift $a'$. But again, cart-lift are unique, so this
+that $a''$ is the chosen lift $a'$. But again, lifts are unique, so this
 is immediate.
 
 ```agda
