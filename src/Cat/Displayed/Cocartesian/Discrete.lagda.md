@@ -31,7 +31,7 @@ open is-cocartesian
 
 # Discrete cocartesian fibrations
 
-:::{.definition #discrete-cocartesian-fibration alias="discrete-fibration"}
+:::{.definition #discrete-cocartesian-fibration alias="discrete-opfibration"}
 A **discrete cocartesian fibration** or **discrete opfibration** is a
 [[displayed category]] that satisfies the dual lifting property of a
 [[discrete cartesian fibration]]. Explicitly, a displayed category
