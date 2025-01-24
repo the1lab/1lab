@@ -6,6 +6,9 @@ description: |
 ```agda
 open import 1Lab.Prelude hiding (zero; suc; _+_; _*_)
 
+open import Data.Sum.Base
+
+
 open import Codata.Conat.Base
 
 import Data.Nat.Base as Nat
@@ -22,6 +25,37 @@ open _≈_
 open _≤_
 ```
 -->
+
+# Basic Properties
+
+```agda
+unsuc# : Conat# → Conat
+unsuc# zero# = 0
+unsuc# (suc# x) = x
+
+suc-inj# : ∀ {x y} → suc# x ≡ suc# y → x ≡ y
+suc-inj# = ap unsuc#
+
+force-inj : ∀ {x y : Conat} → x .force ≡ y .force → x ≡ y
+force-inj p i .force = p i
+```
+
+```agda
+is-zero# : Conat# → Type
+is-zero# zero# = ⊤
+is-zero# (suc# x) = ⊥
+
+is-suc# : Conat# → Type
+is-suc# zero# = ⊥
+is-suc# (suc# x) = ⊤
+
+zero#≠suc# : ∀ {x} → zero# ≠ suc# x
+zero#≠suc# p = subst is-zero# p tt
+
+suc#≠zero# : ∀ {x} → suc# x ≠ zero#
+suc#≠zero# p = subst is-suc# p tt
+```
+
 
 ## Bisimulation
 
@@ -79,7 +113,6 @@ mutual
 +-zeror# x = +-comm# x 0 ∙ +-zerol# x
 ```
 
-
 ```agda
 mutual
   fadd-infl : ∀ x y → fadd ∞ x y ≡ ∞
@@ -100,6 +133,119 @@ fadd-infr# x y = fadd-comm# x (suc# ∞) y ∙ fadd-infl# x y
 
 +-infr : ∀ x → x + ∞ ≡ ∞
 +-infr x = fadd-infr x 0
+```
+
+```agda
+fadd-zero-zero : ∀ z → fadd 0 0 z ≡ z
+fadd-zero-zero z = force-inj refl
+```
+
+
+```agda
+mutual
+  fadd-sucl#
+    : ∀ {x+1# x y# y z}
+    → x+1# ≡ suc# x
+    → y# ≡ y .force
+    → fadd# x+1# y# z ≡ suc# (fadd x y z)
+  fadd-sucl# {zero#} {x} {y#} {y} {z} p q =
+    absurd (zero#≠suc# p)
+  fadd-sucl# {suc# x-1} {x} {zero#} {y} {z} p q =
+    ap suc# (ap₂ (λ x y → fadd x y z) (suc-inj# p) (force-inj q))
+  fadd-sucl# {suc# x-1} {x} {suc# y-1} {y} {z} p q i =
+    suc# (fadd-suc-sucr {suc-inj# p i} {y-1} {y} {z} q i)
+
+  fadd-sucr#
+    : ∀ {x# x y+1# y z}
+    → x# ≡ x .force
+    → y+1# ≡ suc# y
+    → fadd# x# y+1# z ≡ suc# (fadd x y z)
+  fadd-sucr# {x#} {x} {zero#} {y} {z} p q =
+    absurd (zero#≠suc# q)
+  fadd-sucr# {zero#} {x} {suc# y-1} {y} {z} p q =
+    ap suc# (ap₂ (λ x y → fadd x y z) (force-inj p) (suc-inj# q))
+  fadd-sucr# {suc# x-1} {x} {suc# y-1} {y} {z} p q i =
+    suc# (fadd-suc-sucl {x-1} {x} {suc-inj# q i} {z} p i)
+
+  fadd-suc-suc#
+    : ∀ {x x+1# y y+1# z}
+    → suc# x ≡ x+1#
+    → suc# y ≡ y+1#
+    → fadd# (x .force) (y .force) (suc (suc z)) ≡ fadd# x+1# y+1# z
+  fadd-suc-suc# {x+1# = zero#} {y+1# = y+1#} p q = absurd (suc#≠zero# p)
+  fadd-suc-suc# {x+1# = suc# x} {y+1# = zero#} p q = absurd (suc#≠zero# q)
+  fadd-suc-suc# {x+1# = suc# x} {y+1# = suc# y} p q =
+    fadd-suc# (ap (force ∘ unsuc#) p) (ap (force ∘ unsuc#) q)
+
+  fadd-suc-suc
+    : ∀ {x x+1 y y+1 z}
+    → suc# x ≡ x+1 .force
+    → suc# y ≡ y+1 .force
+    → fadd x y (suc (suc z)) ≡ fadd x+1 y+1 z
+  fadd-suc-suc {z = z} p q i .force = fadd-suc-suc# {z = z} p q i
+
+  fadd-suc#
+    : ∀ {x# x y# y z}
+    → x# ≡ x .force
+    → y# ≡ y .force
+    → fadd# x# y# (suc z) ≡ suc# (fadd x y z)
+  fadd-suc# {zero#} {x} {zero#} {y} {z} p q =
+    ap suc# $
+    subst₂ (λ x y → z ≡ (fadd x y z))
+      (force-inj p)
+      (force-inj q)
+      (sym (fadd-zero-zero z))
+  fadd-suc# {zero#} {x} {suc# y-1} {y} {z} p q i =
+    suc# (fadd-suc-sucr {force-inj {zero} {x} p i} {y-1} {y} {z} q i)
+  fadd-suc# {suc# x-1} {x} {zero#} {y} {z} p q i =
+    suc# (fadd-suc-sucl {x-1} {x} {force-inj {zero} {y} q i} {z} p i)
+  fadd-suc# {suc# x-1} {x} {suc# y-1} {y} {z} p q i =
+    suc# (fadd-suc-suc {x-1} {x} {y-1} {y} {z} p q i)
+
+  fadd-suc-sucr#
+    : ∀ {x# y y+1# z}
+    → suc# y ≡ y+1#
+    → fadd# x# (y .force) (suc z) ≡ fadd# x# y+1# z
+  fadd-suc-sucr# {x#} {y} {zero#} {z} p = absurd (suc#≠zero# p)
+  fadd-suc-sucr# {zero#} {y} {suc# y-1} {z} p =
+    fadd-suc# refl (ap (force ∘ unsuc#) p)
+  fadd-suc-sucr# {suc# x-1} {y} {suc# y-1} {z} p =
+    fadd-sucl# refl (ap (force ∘ unsuc#) p)
+
+  fadd-suc-sucr
+    : ∀ {x y y+1 z}
+    → suc# y ≡ y+1 .force
+    → fadd x y (suc z) ≡ fadd x y+1 z
+  fadd-suc-sucr {x = x} {z = z} p i .force =
+    fadd-suc-sucr# {x# = x .force} {z = z} p i
+
+  fadd-suc-sucl#
+    : ∀ {x x+1# y# z}
+    → suc# x ≡ x+1#
+    → fadd# (x .force) y# (suc z) ≡ fadd# x+1# y# z
+  fadd-suc-sucl# {x} {zero#} {y#} {z} p =
+    absurd (suc#≠zero# p)
+  fadd-suc-sucl# {x} {suc# x-1} {zero#} {z} p =
+    fadd-suc# (ap (force ∘ unsuc#) p) refl
+  fadd-suc-sucl# {x} {suc# x-1} {suc# y-1} {z} p =
+    fadd-sucr# (ap (force ∘ unsuc#) p) refl
+
+  fadd-suc-sucl
+    : ∀ {x x+1 y z}
+    → suc# x ≡ x+1 .force
+    → fadd x y (suc z) ≡ fadd x+1 y z
+  fadd-suc-sucl {y = y} {z = z} p i .force =
+    fadd-suc-sucl# {y# = y .force} {z = z} p i
+```
+
+```agda
++-sucl : ∀ x y → suc x + y ≡ suc (x + y)
++-sucl x y i .force =
+  fadd-sucl# {x = x} {y = y} {z = 0} refl refl i
+
++-sucr : ∀ x y → x + suc y ≡ suc (x + y)
++-sucr x y i .force =
+  fadd-sucr# {x = x} {y = y} {z = 0} refl refl i
 ```
 
 ```agda
