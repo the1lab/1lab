@@ -10,6 +10,8 @@ description: |
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
+open import 1Lab.Path.Reasoning
+open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -68,7 +70,8 @@ inclusion".
 has-prop-fibres→injective
   : (f : A → B) → (∀ x → is-prop (fibre f x))
   → injective f
-has-prop-fibres→injective _ prop p = ap fst (prop _ (_ , p) (_ , refl))
+has-prop-fibres→injective f prop {x} {y} p =
+  ap fst (prop (f y) (x , p) (y , refl))
 
 between-sets-injective≃has-prop-fibres
   : is-set A → is-set B → (f : A → B)
@@ -202,10 +205,11 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       contr (x , refl) λ (y , p) i → p (~ i) , λ j → p (~ i ∨ j)
 
   embedding→cancellable : is-embedding f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
-  embedding→cancellable emb = total→equiv {f = λ y p → ap f {y = y} p}
-    (is-contr→is-equiv
-      (contr (_ , refl) λ (y , p) i → p i , λ j → p (i ∧ j))
-      (contr (_ , refl) (Equiv→is-hlevel 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
+  embedding→cancellable emb {x} {y} = is-iso→is-equiv λ where
+    .is-iso.inv p → ap fst (emb (f y) (x , p) (y , refl))
+    .is-iso.rinv p → flatten-∨-square (ap snd (emb (f y) (x , p) (y , refl)))
+    .is-iso.linv → J (λ y p → ap fst (emb (f y) (x , ap f p) (y , refl)) ≡ p)
+      (ap-square fst (is-prop→is-set (emb (f x)) _ _ (emb (f x) (x , refl) (x , refl)) refl))
 
   equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
   equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
@@ -213,6 +217,12 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
 
 <!--
 ```agda
+  cancellable→embedding'
+    : (inj : injective f) → (∀ {x y} (p : f x ≡ f y) → ap f (inj p) ≡ p)
+    → is-embedding f
+  cancellable→embedding' i p = embedding-lemma λ x → contr (x , refl) λ where
+    (x , q) → Σ-pathp (i (sym q)) (commutes→square (ap (_∙ q) (p _) ·· ∙-invl _ ·· sym (∙-idr _)))
+
   abstract
     embedding→is-hlevel
       : ∀ n → is-embedding f
