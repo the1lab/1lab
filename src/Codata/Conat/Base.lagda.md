@@ -8,7 +8,7 @@ open import 1Lab.Prelude hiding (zero; suc; _+_; _*_)
 
 open import Data.Maybe.Base
 open import Data.Bool.Base
-open import Data.Dec.Base
+open import Data.Sum.Base
 
 open import Meta.Invariant
 
@@ -236,6 +236,56 @@ Conat#-is-hlevel n =
 ```agda
 suc-peel# : ∀ {x y} → suc# x ≈# suc# y → x ≈ y
 suc-peel# (s≈s# p) = p
+```
+
+## Apartness
+
+```agda
+mutual
+  data _≉#_ : Conat# → Conat# → Type where
+    z≠s# : ∀ {y} → zero# ≉# suc# y
+    s≠z# : ∀ {x} → suc# x ≉# zero#
+    s≉s# : ∀ {x y} → x ≉ y → suc# x ≉# suc# y
+
+  _≉_ : Conat → Conat → Type
+  x ≉ y = x .force ≉# y .force
+```
+
+```agda
+≉-irrefl# : ∀ {x} → ¬ (x ≉# x)
+≉-irrefl# (s≉s# p) = ≉-irrefl# p
+
+≉-irrefl : ∀ {x} → ¬ (x ≉ x)
+≉-irrefl p = ≉-irrefl# p
+
+≉-sym# : ∀ {x y} → x ≉# y → y ≉# x
+≉-sym# z≠s# = s≠z#
+≉-sym# s≠z# = z≠s#
+≉-sym# (s≉s# p) = s≉s# (≉-sym# p)
+
+≉-sym : ∀ {x y} → x ≉ y → y ≉ x
+≉-sym = ≉-sym#
+
+≉-cotrans# : ∀ {x z} → (y : Conat#) → x ≉# z → (x ≉# y) ⊎ (y ≉# z)
+≉-cotrans# {x} {z} zero# z≠s# = inr z≠s#
+≉-cotrans# {x} {z} zero# s≠z# = inl s≠z#
+≉-cotrans# {x} {z} zero# (s≉s# _) = inl s≠z#
+≉-cotrans# {x} {z} (suc# y) z≠s# = inl z≠s#
+≉-cotrans# {x} {z} (suc# y) s≠z# = inr s≠z#
+≉-cotrans# {x} {z} (suc# y) (s≉s# p) = ⊎-map s≉s# s≉s# (≉-cotrans# (y .force) p)
+
+≉-cotrans : ∀ {x z} → (y : Conat) → x ≉ z → (x ≉ y) ⊎ (y ≉ z)
+≉-cotrans y p = ≉-cotrans# (y .force) p
+
+mutual
+  ≉-tight# : ∀ {x y} → ¬ (x ≉# y) → x ≈# y
+  ≉-tight# {x = zero#} {y = zero#} ¬x≉y = z≈z#
+  ≉-tight# {x = zero#} {y = suc# x} ¬x≉y = absurd (¬x≉y z≠s#)
+  ≉-tight# {x = suc# x} {y = zero#} ¬x≉y = absurd (¬x≉y s≠z#)
+  ≉-tight# {x = suc# x} {y = suc# y} ¬x≉y = s≈s# (≉-tight (¬x≉y ∘ s≉s#))
+
+  ≉-tight : ∀ {x y} → ¬ (x ≉ y) → x ≈ y
+  ≉-tight ¬x≈y .force = ≉-tight# ¬x≈y
 ```
 
 
