@@ -7,7 +7,6 @@ description: |
 open import Cat.Displayed.Diagram.Total.Product
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
-
 open import Cat.Prelude
 
 import Cat.Displayed.Instances.Simple

@@ -9,7 +9,6 @@ open import Cat.Displayed.Instances.Family
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
-
 open import Cat.Prelude
 
 import Cat.Reasoning

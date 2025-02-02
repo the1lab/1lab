@@ -154,6 +154,7 @@ Note that a product diagram in a total category does **not** necessarily
 yield a product diagram in the base category. For a counterexample, consider
 the following displayed category:
 
+~~~{.quiver}
 \begin{tikzcd}
   \bullet \\
   \\
@@ -161,6 +162,7 @@ the following displayed category:
   \arrow[from=1-1, lies over, to=3-1]
   \arrow["f"', from=3-1, to=3-1, loop, in=305, out=235, distance=10mm]
 \end{tikzcd}
+~~~
 
 The total category is equivalent to the [[terminal category]], and thus has
 products. However, the base category does not have products, as the uniqueness
