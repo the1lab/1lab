@@ -5,7 +5,6 @@ description: |
 <!--
 ```agda
 open import Cat.Displayed.Diagram.Total.Product
-open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 
