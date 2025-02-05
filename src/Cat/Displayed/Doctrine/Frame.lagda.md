@@ -145,7 +145,7 @@ cocartesian lift of a function $g : X \to F$ along a function $X \to Y$.
 
 ```agda
   cocart : Cocartesian-fibration disp
-  cocart .has-lift {x = X} {y = Y} f g = lifted module cocart where
+  cocart .cocart-lift {x = X} {y = Y} f g = lifted module cocart where
 ```
 
 At each $y : Y$, we would like to take the join

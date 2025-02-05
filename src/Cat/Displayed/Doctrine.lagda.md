@@ -149,10 +149,10 @@ deeply-nested data we have introduced.
 </summary>
 
 ```agda
-  module cocartesian = Cocartesian-fibration cocartesian
   module fibrewise-meet {x} (x' y' : ℙ.Ob[ x ]) = Product (fibrewise-meet x' y')
 
-  open Cartesian-fibration cartesian public
+  open Cartesian-fibration cartesian hiding (rebase) public
+  open Cocartesian-fibration cocartesian public
 
   _[_] : ∀ {x y} → ℙ.Ob[ x ] → Hom y x → ℙ.Ob[ y ]
   _[_] x f = f ^* x
@@ -160,7 +160,7 @@ deeply-nested data we have introduced.
   module fibrewise-top x = Terminal (fibrewise-top x)
 
   exists : ∀ {x y} (f : Hom x y) → ℙ.Ob[ x ] → ℙ.Ob[ y ]
-  exists = cocartesian.has-lift.y'
+  exists f x = f ^! x
 
   _&_ : ∀ {x} (p q : ℙ.Ob[ x ]) → ℙ.Ob[ x ]
   _&_ = fibrewise-meet.apex
@@ -272,8 +272,8 @@ the Beck-Chevalley condition.
 
   exists-id : ∀ {x} (α : ℙ.Ob[ x ]) → exists id α ≡ α
   exists-id α = ≤-antisym
-    (cocartesian.has-lift.universal id α _ (ℙ.id' ℙ.∘' ℙ.id'))
-    (cocartesian.has-lift.lifting id α)
+    (ι!.universal _ (ℙ.id' ℙ.∘' ℙ.id'))
+    (ι! id α)
 
   &-univ : ∀ {x} {α β γ : ℙ.Ob[ x ]} → α ≤ β → α ≤ γ → α ≤ (β & γ)
   &-univ p q = fibrewise-meet.⟨_,_⟩ _ _ p q
@@ -284,7 +284,7 @@ the Beck-Chevalley condition.
     (&-univ (fibrewise-meet.π₂ _ _) (fibrewise-meet.π₁ _ _))
 
   ≤-exists : ∀ {x y} (f : Hom x y) {α β} → α ≤ β [ f ] → exists f α ≤ β
-  ≤-exists f p = cocartesian.has-lift.universalv f _ $
+  ≤-exists f p = ι!.universalv $
     hom[ idr f ] (π* f _ ℙ.∘' p)
 
   subst-! : ∀ {x y} (f : Hom y x) {α} → ℙ.Hom[ id ] α (aye [ f ])

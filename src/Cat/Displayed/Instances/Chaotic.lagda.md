@@ -129,7 +129,7 @@ is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart
       h J.∘ inv       ∎
 
 Chaotic-opfibration : Cocartesian-fibration Chaotic
-Chaotic-opfibration .Cocartesian-fibration.has-lift f x' = cocart-lift where
+Chaotic-opfibration .Cocartesian-fibration.cocart-lift f x' = cocart-lift where
   open Cocartesian-lift
   open is-cocartesian
 

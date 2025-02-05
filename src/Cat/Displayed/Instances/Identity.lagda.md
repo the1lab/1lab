@@ -85,9 +85,9 @@ IdD-fibration .Cartesian-fibration.cart-lift f y' .Cartesian-lift.lifting = tt
 IdD-fibration .Cartesian-fibration.cart-lift f y' .Cartesian-lift.cartesian =
   idd-is-cartesian
 
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.y' = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.lifting = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.cocartesian =
+IdD-opfibration .Cocartesian-fibration.cocart-lift f x' .Cocartesian-lift.y' = tt
+IdD-opfibration .Cocartesian-fibration.cocart-lift f x' .Cocartesian-lift.lifting = tt
+IdD-opfibration .Cocartesian-fibration.cocart-lift f x' .Cocartesian-lift.cocartesian =
   idd-is-cocartesian
 
 IdD-bifibration .is-bifibration.fibration = IdD-fibration

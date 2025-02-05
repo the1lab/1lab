@@ -583,7 +583,7 @@ too.</summary>
         φ⊢ψ)
 
   `∃-intro {Γ = Γ} {Φ = Φ} {ψ = ψ} {t = t} α = hom[ cancell π₁∘⟨⟩ ] $
-         cocartesian.has-lift.lifting π₁ ⟦ ψ ⟧ᵖ
+         ι! π₁ ⟦ ψ ⟧ᵖ
     ℙ.∘' π* ⟨ id , ⟦ t ⟧ᵉ ⟩ ⟦ ψ ⟧ᵖ
     ℙ.∘' p
     where
@@ -601,7 +601,7 @@ too.</summary>
   =-refl : entails φ (t =ᵖ t)
   =-refl {t = t} =
     π*.universal _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
-          cocartesian.has-lift.lifting ⟨ id , id ⟩ aye
+          ι! ⟨ id , id ⟩ aye
     ℙ.∘' π* _ _
     ℙ.∘' subst-! ⟦ t ⟧ᵉ
 ```

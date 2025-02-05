@@ -64,10 +64,10 @@ We can use a similar line of argument to deduce that it is also an opfibration.
 
 ```agda
 Trivial-opfibration : Cocartesian-fibration Trivial
-Trivial-opfibration .has-lift f x' .y' =
+Trivial-opfibration .cocart-lift f x' .y' =
   x'
-Trivial-opfibration .has-lift f x' .lifting = id
-Trivial-opfibration .has-lift f x' .cocartesian = cocartesian-id Trivial
+Trivial-opfibration .cocart-lift f x' .lifting = id
+Trivial-opfibration .cocart-lift f x' .cocartesian = cocartesian-id Trivial
 ```
 
 Therefore, it is also a bifibration.

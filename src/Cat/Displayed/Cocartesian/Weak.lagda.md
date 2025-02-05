@@ -571,7 +571,7 @@ cocartesian-lift→weak-cocartesian-lift cocart .Weak-cocartesian-lift.weak-coca
   cocartesian→weak-cocartesian (Cocartesian-lift.cocartesian cocart)
 
 opfibration→weak-opfibration opfib .is-weak-cocartesian-fibration.weak-lift f x' =
-  cocartesian-lift→weak-cocartesian-lift (Cocartesian-fibration.has-lift opfib f x')
+  cocartesian-lift→weak-cocartesian-lift (Cocartesian-fibration.cocart-lift opfib f x')
 ```
 -->
 
@@ -727,7 +727,7 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso-from
     : ∀ {x y x'} (u : Hom x y)
-    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (has-lift.y' u x')
+    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (u ^! x')
   opfibration→hom-iso-from u =
     weak-opfibration→hom-iso-from (opfibration→weak-opfibration opfib) u
 
@@ -740,18 +740,18 @@ module _ (opfib : Cocartesian-fibration) where
     mi : make-natural-iso
            (Hom-over-into ℰ u y')
            (Hom-into (Fibre ℰ y) y' F∘ Functor.op (cobase-change u) )
-    mi .eta x u' = has-lift.universalv u x u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' has-lift.lifting u _)
+    mi .eta x u' = ι!.universalv u'
+    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (ι!.commutesv _)
     mi .natural _ _ v' = funext λ u' →
-      has-lift.unique u _ _ $ to-pathp $
+      ι!.unique _ $ to-pathp $
         smashl _ _
-        ·· revive₁ (pullr[] _ (has-lift.commutesv u _ _))
+        ·· revive₁ (pullr[] _ (ι!.commutesv _))
         ·· smashr _ _
-        ·· weave _ (pulll (idl u)) _ (pulll[] _ (has-lift.commutesv u _ _))
+        ·· weave _ (pulll (idl u)) _ (pulll[] _ (ι!.commutesv _))
         ·· duplicate id-comm _ (idr u)
 
   opfibration→hom-iso
@@ -769,12 +769,12 @@ module _ (opfib : Cocartesian-fibration) where
     mi : make-natural-iso
            (Hom-over ℰ u)
            (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
-    mi .eta x u' = has-lift.universalv u _ u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' has-lift.lifting u _)
+    mi .eta x u' = ι!.universalv u'
+    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (ι!.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
       ·· sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
@@ -783,14 +783,14 @@ module _ (opfib : Cocartesian-fibration) where
   opfibration→universal-is-equiv
     : ∀ {x y x' y'}
     → (u : Hom x y)
-    → is-equiv (has-lift.universalv u y' {x'})
+    → is-equiv (ι!.universalv {f = u} {x' = x'} {y'})
   opfibration→universal-is-equiv u =
     weak-opfibration→universal-is-equiv (opfibration→weak-opfibration opfib) u
 
   opfibration→vertical-equiv
     : ∀ {x y x' y'}
     → (u : Hom x y)
-    → Hom[ u ] x' y' ≃ Hom[ id ] (has-lift.y' u x') y'
+    → Hom[ u ] x' y' ≃ Hom[ id ] (u ^! x') y'
   opfibration→vertical-equiv u =
    weak-opfibration→vertical-equiv (opfibration→weak-opfibration opfib) u
 ```

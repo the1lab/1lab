@@ -347,7 +347,7 @@ that do not lie in the image of $f$.
 
 ```agda
 Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration .Cocartesian-fibration.has-lift f x' = lift-f where
+Codomain-opfibration .Cocartesian-fibration.cocart-lift f x' = lift-f where
 
   lift-f : Cocartesian-lift Slices f x'
   lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)

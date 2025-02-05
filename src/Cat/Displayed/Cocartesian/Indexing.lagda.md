@@ -51,21 +51,21 @@ adding in empty fibres.
 
 ```agda
 cobase-change : ∀ {x y} (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y)
-cobase-change f .F₀ ob = has-lift.y' f ob
+cobase-change f .F₀ ob = f ^! ob
 cobase-change f .F₁ vert = rebase f vert
 ```
 
 <!--
 ```agda
 cobase-change f .F-id =
-  sym $ has-lift.uniquev _ _ _ $ to-pathp $
+  sym $ ι!.uniquev _ $ to-pathp $
     idl[] ∙ (sym $ cancel _ _ (idr' _))
 cobase-change f .F-∘ f' g' =
-  sym $ has-lift.uniquev _ _ _ $ to-pathp $
+  sym $ ι!.uniquev _ $ to-pathp $
     smashl _ _
-    ·· revive₁ (pullr[] _ (has-lift.commutesv _ _ _))
+    ·· revive₁ (pullr[] _ (ι!.commutesv _))
     ·· smashr _ _
-    ·· revive₁ (pulll[] _ (has-lift.commutesv _ _ _))
+    ·· revive₁ (pulll[] _ (ι!.commutesv _))
       ·· smashl _ _
       ·· sym assoc[]
       ·· sym (smashr _ _)
