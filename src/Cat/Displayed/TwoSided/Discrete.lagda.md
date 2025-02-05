@@ -51,7 +51,7 @@ module _
   record is-discrete-two-sided-fibration : Type (oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe) where
 ```
 
-1. For every $A : \cA$, $B : \cB$, $\cE_{A, B}$ is a [[set]].
+1. For every $A : \cA$, $B : \cB$, the type $\cE_{A, B}$ is a [[set]].
 
 ```agda
     field
@@ -59,7 +59,26 @@ module _
 ```
 
 2. For every $u : \cA(A_1, A_2)$ and $Y : \cE_{A_2, B}$, there exists a
-unique pair $u^{*}(Y) : \cE_{A_1, B}, \pi_{u,Y} : \cE_{u, \id}(u^{*}(Y), Y)$.
+unique pair $u^{*}, \pi_{u,Y}$ that fit into the diagram below.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {u^*(Y)} && Y \\
+  \\
+  {(A_1,B)} && {(A_2,B)}
+  \arrow["{\pi_{u,Y}}", dashed, lies over, from=1-1, to=1-3]
+  \arrow[dashed, from=1-1, to=3-1]
+  \arrow[from=1-3, lies over, to=3-3]
+  \arrow["{(u,\id)}"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+This condition provides us with a source of [[cartesian lifts]], and
+ensures that the [[pullback|pullback-fibration]] of $\cE$ along the functor
+$(-,B) : \cA \to \cA \times \cB$ is a [[discrete fibration]]
+for every $B : \cB$. In more intuitive terms, this means that $\cE$ is
+a sort of "presheaf in $\cA$", as we can contravariantly reindex along
+morphisms in $\cA$!
 
 ```agda
     field
@@ -68,7 +87,10 @@ unique pair $u^{*}(Y) : \cE_{A_1, B}, \pi_{u,Y} : \cE_{u, \id}(u^{*}(Y), Y)$.
         → (f : A.Hom a₁ a₂)
         → (y' : Ob[ a₂ , b ])
         → is-contr (Σ[ x' ∈ Ob[ a₁ , b ] ] Hom[ f , B.id ] x' y')
+```
 
+<!--
+```agda
     _^*_ : ∀ {a₁ a₂ : A.Ob} {b : B.Ob} → A.Hom a₁ a₂ → Ob[ a₂ , b ] → Ob[ a₁ , b ]
     u ^* y' = cart-lift u y' .centre .fst
 
@@ -79,9 +101,26 @@ unique pair $u^{*}(Y) : \cE_{A_1, B}, \pi_{u,Y} : \cE_{u, \id}(u^{*}(Y), Y)$.
       → Hom[ u , B.id ] (u ^* y') y'
     π* u y' = cart-lift u y' .centre .snd
 ```
+-->
 
 3. For every $v : \cB(B_1, B_2)$ and $X : \cE_{A, B_1}$, there exists a
-unique pair $v_{!}(X) : \cE_{B, B_2}, \iota_{v,X} : \cE_{\id, v}(X, v_{!}(X))$.
+unique pair $v_{!}(X), \iota_{v,X}$ that fit into the following diagram.
+
+~~~{.quiver}
+\begin{tikzcd}
+  X && {v_{!}(X)} \\
+  \\
+  {(A,B_1)} && {(A,B_2)}
+  \arrow["{\iota_{v,X}}", dashed, from=1-1, to=1-3]
+  \arrow[from=1-1, to=3-1]
+  \arrow[dashed, from=1-3, to=3-3]
+  \arrow["{(\id,v)}"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+This gives us a source of [[cocartesian lifts]], and ensures that
+the [[pullback|pullback-fibration]] of $\cE$ along the functor
+$(A,-) : \cB \to \cA \times \cB$ is a discrete opfibration.
 
 ```agda
     field
@@ -90,6 +129,10 @@ unique pair $v_{!}(X) : \cE_{B, B_2}, \iota_{v,X} : \cE_{\id, v}(X, v_{!}(X))$.
         → (f : B.Hom b₁ b₂)
         → (x' : Ob[ a , b₁ ])
         → is-contr (Σ[ y' ∈ Ob[ a , b₂ ] ] Hom[ A.id , f ] x' y')
+```
+
+<!--
+```agda
     _^!_ : ∀ {a : A.Ob} {b₁ b₂ : B.Ob} → B.Hom b₁ b₂ → Ob[ a , b₁ ] → Ob[ a , b₂ ]
     v ^! x' = cocart-lift v x' .centre .fst
 
@@ -99,13 +142,41 @@ unique pair $v_{!}(X) : \cE_{B, B_2}, \iota_{v,X} : \cE_{\id, v}(X, v_{!}(X))$.
       → (x' : Ob[ a , b₁ ])
       → Hom[ A.id , v ] x' (v ^! x')
     ι! v x' = cocart-lift v x' .centre .snd
-
 ```
+-->
 
 
 4. For every $f : \cE_{u, v}(X,Y)$, there exists a vertical map
-  $\alpha_{f} : \cE_{\id, \id}(v_{!}(X), u^{*}(Y))$ such that
-  $\pi_{u,Y} \circ \alpha_{f} \circ \iota_{v,X} = f$.
+  $\alpha_{f} : \cE_{\id, \id}(v_{!}(X), u^{*}(Y))$ that causes
+  the following diagram to commute.
+
+~~~{.quiver}
+\begin{tikzcd}
+	& {v_{!}(X)} &&& {u^{*}(Y)} \\
+	X &&& Y \\
+	& {(A_1,B_2)} &&& {(A_1,B_2)} \\
+	{(A_1,B_1)} &&& {(A_2,B_2)}
+	\arrow["{\alpha_f}", dashed, from=1-2, to=1-5]
+	\arrow[from=1-2, lies over, to=3-2]
+	\arrow["{\pi_{u,Y}}"'{pos=0.7}, from=1-5, to=2-4]
+	\arrow[from=1-5, lies over, to=3-5]
+	\arrow["{\iota_{v,X}}"{pos=0.3}, from=2-1, to=1-2]
+	\arrow["f", from=2-1, to=2-4]
+	\arrow[from=2-1, lies over, to=4-1]
+	\arrow[from=2-4, lies over, to=4-4]
+	\arrow["{(\id,\id)}", from=3-2, to=3-5]
+	\arrow["{(u,\id)}", from=3-5, to=4-4]
+	\arrow["{(\id,v)}", from=4-1, to=3-2]
+	\arrow["{(u,v)}"', from=4-1, to=4-4]
+\end{tikzcd}
+~~~
+
+This condition is a bit opaque, and is best understood from the indexed
+point of view. From this perspective, our previous 2 conditions ensure
+that $\cE$ is *separately* functorial in $\cA\op$ and $\cB$; there is
+no way to commute the two reindexing functors! To get something that is
+*jointly* functorial, we need to assert the existence of some extra lifts
+that allow us more room to manuever.
 
 ```agda
     field
@@ -114,6 +185,7 @@ unique pair $v_{!}(X) : \cE_{B, B_2}, \iota_{v,X} : \cE_{\id, v}(X, v_{!}(X))$.
         → {u : A.Hom a₁ a₂} {v : B.Hom b₁ b₂}
         → (f : Hom[ u , v ] x y)
         → Hom[ A.id , B.id ] (v ^! x) (u ^* y)
+
       factors
         : ∀ {a₁ a₂ b₁ b₂ x y}
         → {u : A.Hom a₁ a₂} {v : B.Hom b₁ b₂}
@@ -122,8 +194,8 @@ unique pair $v_{!}(X) : \cE_{B, B_2}, \iota_{v,X} : \cE_{\id, v}(X, v_{!}(X))$.
 ```
 :::
 
-This final condition implies that for every $f : \cE_{u,v}(X,Y)$, the
-lifts $u^{*}(Y)$ and $v_{!}(X)$ coincide.
+In particular, the existence of such vertical lifts ensure that the for
+every $f : \cE_{u,v}(X,Y)$, the lifts $u^{*}(Y)$ and $v_{!}(X)$ coincide.
 
 ```agda
     same-lift
@@ -229,7 +301,7 @@ are vertical over $B$, as lifts are unique.
 ```
 
 Dually, the action $(-)_{!}$ is functorial on the fibres of $E$ that
-are vertical over $B$.
+are vertical over $A$.
 
 ```agda
     ^!-∘
@@ -289,9 +361,9 @@ $u : \cA(A_1, A_2), v : \cB(B_1, B_2)$.
       v⁻¹ = uv⁻¹.inv .snd
 ```
 
-All of our Hom sets are propositional, so constructing an inverse only
-requires us to build a map $\cE_{u^{-1}, v^{-1}}(Y, X)$. Moreover, it
-suffices to prove that $(u^{-1})^{*}(X) = (v^{-1})_{!}(X)$, which follows
+Since each of our $\Hom$-sets is a proposition, to construct an inverse
+it suffices to build a map $\cE_{u^{-1}, v^{-1}}(Y, X)$. This, in turn,
+reduces to showing $(u^{-1})^{*}(X) = (v^{-1})_{!}(X)$, which follows
 from some tedious functoriality algebra.
 
 ```agda
@@ -315,8 +387,8 @@ from some tedious functoriality algebra.
 
 ## Cartesian and cocartesian maps
 
-Every map that is $\cB$-vertical is [[cartesian|cartesian-morphism]] and
-every map that is $\cA$-vertical is [[cocartesian|cocartesian-morphism]].
+Every map that is $\cB$-vertical is [[cartesian|cartesian morphism]]; and, dually,
+every map that is $\cA$-vertical is [[cocartesian|cocartesian morphism]].
 
 ```agda
     vertical-cartesian
