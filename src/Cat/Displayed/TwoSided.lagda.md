@@ -45,11 +45,11 @@ module _
 A displayed category $\cE \liesover \cA \times \cB$ is a **two-sided fibration**
 when it satisfies the following 3 conditions:
 
-1. For every $u : \cA(A_1, A_2)$, $B : \cB$ and $Y : \cE_{A_2, B}$, there
-exists a [[cartesian lift]] $\pi_{u, Y} : \cE_{u, \id}(u^{*}(Y), Y)$.
+1. We are given an operation assigning [[cartesian lifts]]
+$\pi_{u, Y} : \cE_{u, \id}(u^{*}(Y), Y)$ to each $u : \cA(A_1, A_2)$, $B : \cB$, and $Y : \cE_{A_2, B}$.
 
-2. For every $A : \cA, v : \cB(B_1, B_2)$ and $X : \cE_{A, B_1}$, there
-exists a [[cocartesian lift]] $\iota_{v, X} : \cE_{\id, v}(X, v_{!}(X))$.
+2. Similarly, to each $A : \cA, v : \cB(B_1, B_2)$ and $X : \cE_{A, B_1}$,
+we are equipped with a [[cocartesian lift]] $\iota_{v, X} : \cE_{\id, v}(X, v_{!}(X))$.
 
 3. For every diagram of the form below with $f$ cocartesian and $g$ cartesian,
 $h$ is cartesian if and only if $k$ is cocartesian.
@@ -105,7 +105,7 @@ $h$ is cartesian if and only if $k$ is cocartesian.
 This definition is rather opaque, so let's break it down. The first two
 conditions ensure that we have 2 functorial actions on each of the [[fibre categories]]
 $E_{a, b}$: the first acts contravariantly in $\cA$, the second covariantly
-in $\cB$. This is analogous to the actions $P(-, \id)$ and $P(\id, -)$ for
+in $\cB$. These are analogs to the actions $P(-, \id)$ and $P(\id, -)$ of
 a profunctor $P : \cA \times \cB \to \Sets$. The final condition serves to
 ensure that the [[base change]] and [[cobase change]] functors
 $u^{*} : \cE_{A_2, B} \to \cE_{A_1, B}$ and $v_{!} : \cE_{A, B_1} \to \cE_{A, B_2}$
