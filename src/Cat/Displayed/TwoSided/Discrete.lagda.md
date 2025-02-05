@@ -361,7 +361,7 @@ $u : \cA(A_1, A_2), v : \cB(B_1, B_2)$.
       v⁻¹ = uv⁻¹.inv .snd
 ```
 
-Since each of our $\Hom$-sets is a proposition, to construct an inverse
+Since each of our $\rm{Hom}$-sets is a proposition, to construct an inverse
 it suffices to build a map $\cE_{u^{-1}, v^{-1}}(Y, X)$. This, in turn,
 reduces to showing $(u^{-1})^{*}(X) = (v^{-1})_{!}(X)$, which follows
 from some tedious functoriality algebra.
