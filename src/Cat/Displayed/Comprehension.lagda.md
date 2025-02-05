@@ -151,10 +151,10 @@ Furthermore, if $y$ is an object over $\Gamma$, then we have a map over
 
 ```agda
   πᶜ' : ∀ {Γ} {x y : Ob[ Γ ]} → Hom[ πᶜ ] (weaken x y) y
-  πᶜ' = has-lift.lifting πᶜ _
+  πᶜ' = π* πᶜ _
 
   πᶜ'-cartesian : ∀ {Γ x y} → is-cartesian E πᶜ (πᶜ' {Γ} {x} {y})
-  πᶜ'-cartesian = has-lift.cartesian πᶜ _
+  πᶜ'-cartesian = π*.cartesian
 ```
 
 Next, we define extension of substitutions, and show that they commute
@@ -192,14 +192,14 @@ $y$, which also commutes with projections.
   _⨾ˢ'_
     : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → (f : Hom[ σ ] x y)
     → Hom[ σ ⨾ˢ f ] (weaken x x) (weaken y y)
-  σ ⨾ˢ' f = has-lift.universal' πᶜ _ (sub-proj f) (f ∘' πᶜ')
+  σ ⨾ˢ' f = π*.universal' (sub-proj f) (f ∘' πᶜ')
 
   infixl 5 _⨾ˢ'_
 
   sub-proj'
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y)
     → πᶜ' ∘' (σ ⨾ˢ' f) ≡[ sub-proj f ] f ∘' πᶜ'
-  sub-proj' f = has-lift.commutesp πᶜ _ (sub-proj _) (f ∘' πᶜ')
+  sub-proj' f = π*.commutesp  (sub-proj _) (f ∘' πᶜ')
 ```
 
 If we extend the identity substitution with the identity morphism, we
@@ -210,7 +210,7 @@ obtain the identity morphism.
   sub-id = ap to F-id'
 
   sub-id' : ∀ {Γ x} → (id ⨾ˢ' id') ≡[ sub-id {Γ} {x} ] id'
-  sub-id' = symP $ has-lift.uniquep πᶜ _ _ (symP sub-id) (sub-proj id') id' $
+  sub-id' = symP $ π*.uniquep _ (symP sub-id) (sub-proj id') id' $
     idr' _ ∙[] symP (idl' _)
 ```
 
@@ -228,7 +228,7 @@ same as composing the two extensions.
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
     → ((σ ∘ δ) ⨾ˢ' (f ∘' g)) ≡[ sub-∘ ] (σ ⨾ˢ' f) ∘' (δ ⨾ˢ' g)
-  sub-∘' = symP $ has-lift.uniquep πᶜ _ _ (symP sub-∘) (sub-proj _) _ $
+  sub-∘' = symP $ π*.uniquep _ (symP sub-∘) (sub-proj _) _ $
     pulll[] _ (sub-proj' _)
     ∙[] extendr[] _ (sub-proj' _)
 ```
@@ -255,7 +255,7 @@ duplicates the variable $A$ via the following pullback square.
 
 ```agda
   δᶜ : ∀ {Γ x} → Hom (Γ ⨾ x) (Γ ⨾ x ⨾ weaken x x)
-  δᶜ = sub-pullback.universal (has-lift.cartesian πᶜ _) {p₁' = id} {p₂' = id} refl
+  δᶜ = sub-pullback.universal π*.cartesian {p₁' = id} {p₂' = id} refl
 ```
 
 This lets us easily show that applying projection after duplication is
@@ -263,10 +263,10 @@ the identity.
 
 ```agda
   proj-dup : ∀ {Γ x} → πᶜ ∘ δᶜ {Γ} {x} ≡ id
-  proj-dup = sub-pullback.p₁∘universal (has-lift.cartesian πᶜ _)
+  proj-dup = sub-pullback.p₁∘universal π*.cartesian
 
   extend-proj-dup : ∀ {Γ x} → (πᶜ ⨾ˢ πᶜ') ∘ δᶜ {Γ} {x} ≡ id
-  extend-proj-dup = sub-pullback.p₂∘universal (has-lift.cartesian πᶜ _)
+  extend-proj-dup = sub-pullback.p₂∘universal π*.cartesian
 ```
 
 We also obtain a substitution upstairs from the weakening of $x$ to the iterated
@@ -274,7 +274,7 @@ weakening of $x$.
 
 ```agda
   δᶜ' : ∀ {Γ} {x : Ob[ Γ ]} → Hom[ δᶜ ] (weaken x x) (weaken (weaken x x) (weaken x x))
-  δᶜ' = has-lift.universal' πᶜ (weaken _ _) proj-dup id'
+  δᶜ' = π*.universal' proj-dup id'
 ```
 
 We also obtain similar lemmas detailing how duplication upstairs interacts with
@@ -282,10 +282,10 @@ projection.
 
 ```agda
   proj-dup' : ∀ {Γ x} → πᶜ' ∘' δᶜ' {Γ} {x} ≡[ proj-dup ] id'
-  proj-dup' = has-lift.commutesp πᶜ _ proj-dup _
+  proj-dup' = π*.commutesp proj-dup _
 
   extend-proj-dup' : ∀ {Γ x} → (πᶜ ⨾ˢ' πᶜ') ∘' δᶜ' {Γ} {x} ≡[ extend-proj-dup ] id'
-  extend-proj-dup' = has-lift.uniquep₂ πᶜ _ _ _ _ _ _
+  extend-proj-dup' = π*.uniquep₂ _ _ _ _ _
     (pulll[] _ (sub-proj' _) ∙[] cancelr[] _ proj-dup')
     (idr' _)
 ```
@@ -301,18 +301,18 @@ $\pi$.
     open is-cartesian
 
     cart : is-cartesian E (δᶜ {Γ} {x}) δᶜ'
-    cart .universal m h' = hom[ cancell proj-dup ] (πᶜ' ∘' h')
+    cart .universal m h' = hom[ cancell proj-dup ] (π* _ _ ∘' h')
     cart .commutes m h' = cast[] $
       unwrapr _
-      ∙[] has-lift.uniquep₂ πᶜ _ _ (ap₂ _∘_ refl (cancell proj-dup)) refl _ _
+      ∙[] π*.uniquep₂ _ (ap₂ _∘_ refl (cancell proj-dup)) refl _ _
         (cancell[] _ proj-dup')
         refl
     cart .unique m' p =
-      has-lift.uniquep₂ πᶜ _ refl refl _ _ _
+      π*.uniquep₂ refl refl _ _ _
         refl
         (unwrapr _
         ∙[] ap₂ _∘'_ refl (ap₂ _∘'_ refl (sym p))
-        ∙[] λ i → πᶜ' ∘' cancell[] _  proj-dup' {f' = m'} i)
+        ∙[] λ i → π* _ _ ∘' cancell[] _  proj-dup' {f' = m'} i)
 ```
 
 We can also characterize how duplication interacts with extension.
@@ -322,7 +322,7 @@ We can also characterize how duplication interacts with extension.
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
     → δᶜ ∘ (σ ⨾ˢ f) ≡ (σ ⨾ˢ f ⨾ˢ (σ ⨾ˢ' f)) ∘ δᶜ
   dup-extend {σ = σ} {f = f} =
-    sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
+    sub-pullback.unique₂ π*.cartesian
       {p = refl}
       (cancell proj-dup )
       (cancell extend-proj-dup)
@@ -335,7 +335,7 @@ We can also characterize how duplication interacts with extension.
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
     → δᶜ' ∘' (σ ⨾ˢ' f) ≡[ dup-extend ] (σ ⨾ˢ f ⨾ˢ' (σ ⨾ˢ' f)) ∘' δᶜ'
   dup-extend' {σ = σ} {f = f} =
-    has-lift.uniquep₂ πᶜ _ _ _ _ _ _
+    π*.uniquep₂ _ _ _ _ _
       (cancell[] _ proj-dup')
       (pulll[] _ (sub-proj' (σ ⨾ˢ' f)) ∙[] cancelr[] _ proj-dup')
 ```
@@ -343,7 +343,7 @@ We can also characterize how duplication interacts with extension.
 ```agda
   extend-dup² : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ δᶜ') ∘ δᶜ ≡ δᶜ ∘ δᶜ
   extend-dup² =
-    sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
+    sub-pullback.unique₂ π*.cartesian
       {p = refl}
       (pulll (sub-proj _) ∙ cancelr proj-dup)
       (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup' ∙ sub-id))
@@ -351,8 +351,7 @@ We can also characterize how duplication interacts with extension.
       (cancell extend-proj-dup)
 
   extend-dup²' : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ' δᶜ') ∘' δᶜ' ≡[ extend-dup² ] δᶜ' ∘' δᶜ'
-  extend-dup²' = has-lift.uniquep₂ πᶜ
-    _ _ _ _ _ _
+  extend-dup²' = π*.uniquep₂ _ _ _ _ _
     (pulll[] _ (sub-proj' δᶜ') ∙[] cancelr[] _ proj-dup')
     (cancell[] _ proj-dup')
 ```
@@ -432,6 +431,7 @@ Comprehension→comonad
   → Comprehension
   → Comprehension-comonad
 Comprehension→comonad fib P = comp-comonad where
+  open Cartesian-fibration fib
   open Comprehension fib P
   open Comonad
 ```

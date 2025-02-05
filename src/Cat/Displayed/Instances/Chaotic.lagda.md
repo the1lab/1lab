@@ -86,7 +86,7 @@ us avoid an extra `id` composite when constructing the universal map.
 
 ```agda
 Chaotic-fibration : Cartesian-fibration Chaotic
-Chaotic-fibration .Cartesian-fibration.has-lift f y = cart-lift where
+Chaotic-fibration .Cartesian-fibration.cart-lift f y = cart-lift where
   open Cartesian-lift
   open is-cartesian
 

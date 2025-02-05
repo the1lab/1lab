@@ -254,12 +254,12 @@ which we have highlighted in red.
 ```agda
     module Morphisms {u} {u' : Ob[ u ]} (m : Hom y u) (h' : Hom[ m ∘ f ] x' u') where
       y* : Ob[ y ]
-      y* = Cartesian-lift.x' (has-lift m u')
+      y* = Cartesian-lift.x' (cart-lift m u')
 
       m* : Hom[ m ] y* u'
-      m* =  Cartesian-lift.lifting (has-lift m u')
+      m* =  Cartesian-lift.lifting (cart-lift m u')
 
-      module m* = is-cartesian (Cartesian-lift.cartesian (has-lift m u'))
+      module m* = is-cartesian (Cartesian-lift.cartesian (cart-lift m u'))
 ```
 
 Next, we can construct the morphism $h^{*}$ (highlighted in red) as the

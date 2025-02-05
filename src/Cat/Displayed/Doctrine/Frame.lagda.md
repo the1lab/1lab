@@ -119,9 +119,9 @@ $gf : X \to F$.
 
 ```agda
   cart : Cartesian-fibration disp
-  cart .has-lift f g .x' x = g (f x)
-  cart .has-lift f g .lifting i = F.≤-refl
-  cart .has-lift f g .cartesian = record
+  cart .cart-lift f g .x' x = g (f x)
+  cart .cart-lift f g .lifting i = F.≤-refl
+  cart .cart-lift f g .cartesian = record
     { universal = λ m p x → p x
     ; commutes  = λ m h'  → prop!
     ; unique    = λ m p   → prop!

@@ -149,14 +149,15 @@ deeply-nested data we have introduced.
 </summary>
 
 ```agda
-  module cartesian   = Cartesian-fibration cartesian
   module cocartesian = Cocartesian-fibration cocartesian
   module fibrewise-meet {x} (x' y' : ℙ.Ob[ x ]) = Product (fibrewise-meet x' y')
 
-  module fibrewise-top x = Terminal (fibrewise-top x)
+  open Cartesian-fibration cartesian public
 
   _[_] : ∀ {x y} → ℙ.Ob[ x ] → Hom y x → ℙ.Ob[ y ]
-  _[_] x f = cartesian.has-lift.x' f x
+  _[_] x f = f ^* x
+
+  module fibrewise-top x = Terminal (fibrewise-top x)
 
   exists : ∀ {x y} (f : Hom x y) → ℙ.Ob[ x ] → ℙ.Ob[ y ]
   exists = cocartesian.has-lift.y'
@@ -255,19 +256,19 @@ the Beck-Chevalley condition.
   open Disp ℙ public
   subst-∘ : ∀ {x y z} (f : Hom y z) (g : Hom x y) {α} → (α [ f ]) [ g ] ≡ α [ f ∘ g ]
   subst-∘ f g = ≤-antisym
-    (cartesian.has-lift.universalv _ _
-      (cartesian.has-lift.lifting _ _ ℙ.∘' cartesian.has-lift.lifting _ _))
-    (cartesian.has-lift.universalv _ _
-      (cartesian.has-lift.universal f _ g (cartesian.has-lift.lifting _ _)))
+    (π*.universalv
+      (π* _ _ ℙ.∘' π* _ _))
+    (π*.universalv
+      (π*.universal g (π* _ _)))
 
   subst-id : ∀ {x} (α : ℙ.Ob[ x ]) → α [ id ] ≡ α
   subst-id α = ≤-antisym
-    (cartesian.has-lift.lifting id α)
-    (cartesian.has-lift.universal id α _ (ℙ.id' ℙ.∘' ℙ.id'))
+    (π* id α)
+    (π*.universal _ (ℙ.id' ℙ.∘' ℙ.id'))
 
   subst-≤ : ∀ {x y} (f : Hom x y) {α β : ℙ.Ob[ y ]} → α ≤ β → α [ f ] ≤ β [ f ]
-  subst-≤ f p = cartesian.has-lift.universalv f _ $
-    hom[ idl _ ] (p ℙ.∘' cartesian.has-lift.lifting f _)
+  subst-≤ f p = π*.universalv $
+    hom[ idl _ ] (p ℙ.∘' π* f _)
 
   exists-id : ∀ {x} (α : ℙ.Ob[ x ]) → exists id α ≡ α
   exists-id α = ≤-antisym
@@ -284,7 +285,7 @@ the Beck-Chevalley condition.
 
   ≤-exists : ∀ {x y} (f : Hom x y) {α β} → α ≤ β [ f ] → exists f α ≤ β
   ≤-exists f p = cocartesian.has-lift.universalv f _ $
-    hom[ idr f ] (cartesian.has-lift.lifting f _ ℙ.∘' p)
+    hom[ idr f ] (π* f _ ℙ.∘' p)
 
   subst-! : ∀ {x y} (f : Hom y x) {α} → ℙ.Hom[ id ] α (aye [ f ])
   subst-! f {α} = subst (λ e → ℙ.Hom[ id ] α e) (sym (subst-aye f))

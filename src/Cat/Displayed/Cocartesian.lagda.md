@@ -466,9 +466,9 @@ we omit them.
 </summary>
 ```agda
 op-fibration→opfibration fib .Cocartesian-fibration.has-lift f x' =
-  co-cartesian-lift→cocartesian-lift (Cartesian-fibration.has-lift fib f x')
+  co-cartesian-lift→cocartesian-lift (Cartesian-fibration.cart-lift fib f x')
 
-opfibration→op-fibration opfib .Cartesian-fibration.has-lift f y' =
+opfibration→op-fibration opfib .Cartesian-fibration.cart-lift f y' =
   cocartesian-lift→co-cartesian-lift (Cocartesian-fibration.has-lift opfib f y')
 ```
 </details>

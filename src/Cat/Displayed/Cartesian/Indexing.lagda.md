@@ -39,8 +39,6 @@ open is-cartesian
 open Functor
 private
   module Fib = Cat.Displayed.Fibre.Reasoning E
-  _^*_ : ∀ {a b} (f : Hom a b) → Ob[ b ] → Ob[ a ]
-  f ^* x = has-lift.x' f x
 ```
 -->
 
@@ -58,20 +56,20 @@ along $f$.
 ```agda
 module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
   base-change : Functor (Fibre E 𝒷) (Fibre E 𝒶)
-  base-change .F₀ ob = has-lift f ob .x'
+  base-change .F₀ ob = f ^* ob
   base-change .F₁ {x} {y} vert = rebase f vert
 ```
 
 <!--
 ```agda
   base-change .F-id {x} =
-    sym $ has-lift.uniquep f x _ _ _ _ $
+    sym $ π*.uniquep _ _ _ _ $
       idr' _ ∙[] symP (idl' _)
 
   base-change .F-∘ {x} {y} {z} f' g' =
-    sym $ has-lift.uniquep f z _ _ _ _ $
-      Fib.pulllf (has-lift.commutesp f z id-comm _)
-      ∙[] pullr[] _ (has-lift.commutesp f y id-comm _)
+    sym $ π*.uniquep _ _ _ _ $
+      Fib.pulllf (π*.commutesp id-comm _)
+      ∙[] pullr[] _ (π*.commutesp id-comm _)
       ∙[] pulll[] _ Fib.to-fibre
 ```
 -->
@@ -95,15 +93,15 @@ of heart. </summary>
   base-change-id = to-natural-iso mi where
     open make-natural-iso
     mi : make-natural-iso (base-change id) Id
-    mi .eta x = has-lift.lifting id x
-    mi .inv x = has-lift.universalv id x id'
-    mi .eta∘inv x = cancel _ _ (has-lift.commutesv _ _ _)
-    mi .inv∘eta x = sym $ has-lift.uniquep₂ id x _ _ _ _ _
+    mi .eta x = π* id x
+    mi .inv x = π*.universalv id'
+    mi .eta∘inv x = cancel _ _ (π*.commutesv _)
+    mi .inv∘eta x = sym $ π*.uniquep₂ _ _ _ _ _
       (idr' _)
-      (Fib.cancellf (has-lift.commutesv _ _ _))
+      (Fib.cancellf (π*.commutesv _))
     mi .natural x y f =
       sym $ from-pathp $ cast[] $
-        has-lift.commutesp id y id-comm _
+        π*.commutesp id-comm _
         ∙[] Fib.to-fibre
 ```
 </details>
@@ -114,50 +112,51 @@ base along a composite.
 <!--
 ```agda
   ^*-id-to : ∀ {x} → Hom[ id {𝒶} ] (id ^* x) x
-  ^*-id-to = has-lift.lifting id _
+  ^*-id-to = π* _ _
 
   ^*-id-from : ∀ {x} → Hom[ id {𝒶} ] x (id ^* x)
-  ^*-id-from = has-lift.universalv id _ id'
+  ^*-id-from = π*.universalv id'
 
 ^*-comp-from
   : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
   → Hom[ id ] (g ^* (f ^* z)) ((f ∘ g) ^* z)
-^*-comp-from = has-lift.universalv _ _ (has-lift.lifting _ _ ∘' has-lift.lifting _ _)
+^*-comp-from {z = z} {f = f} {g = g} =
+  π*.universalv (π* f z ∘' π* g (f ^* z))
 
 ^*-comp-to
   : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
   → Hom[ id ] ((f ∘ g) ^* z) (g ^* (f ^* z))
-^*-comp-to = has-lift.universalv _ _ (has-lift.universal _ _ _ (has-lift.lifting _ _))
+^*-comp-to {z = z} {f = f} {g = g} = π*.universalv (π*.universal g (π* (f ∘ g) z))
 
 ^*-comp
   : ∀ {a b c} {z} {f : Hom b c} {g : Hom a b}
   → ((f ∘ g) ^* z) Fib.≅ (g ^* (f ^* z))
 ^*-comp = Fib.make-iso ^*-comp-to ^*-comp-from
-  (has-lift.uniquep₂ _ _ _ _ _ _ _
-    (Fib.pulllf (has-lift.commutesv _ _ _) ∙[]
-      has-lift.uniquep₂ _ _ _ (idr _) refl _ _
-        (pulll[] _ (has-lift.commutes _ _ _ _) ∙[]
-          has-lift.commutesv _ _ _) refl)
+  (π*.uniquep₂ _ _ _ _ _
+    (Fib.pulllf (π*.commutesv _) ∙[]
+      π*.uniquep₂ _ (idr _) refl _ _
+        (pulll[] _ (π*.commutes _ _) ∙[]
+          π*.commutesv _) refl)
     (idr' _))
-  (has-lift.uniquep₂ _ _ _ _ _ _ _
-    (Fib.pulllf (has-lift.commutesv _ _ _)
-      ∙[] pullr[] _ (has-lift.commutesv _ _ _)
-      ∙[] has-lift.commutes _ _ _ _)
+  (π*.uniquep₂ _ _ _ _ _
+    (Fib.pulllf (π*.commutesv _)
+      ∙[] pullr[] _ (π*.commutesv _)
+      ∙[] π*.commutes _ _)
     (idr' _))
 
 ^*-comp-to-natural
   : ∀ {a b c} {f : Hom b c} {g : Hom a b} {x y : Ob[ c ]} (f' : Hom[ id ] x y)
   → rebase g (rebase f f') Fib.∘ ^*-comp-to ≡ ^*-comp-to Fib.∘ rebase (f ∘ g) f'
 ^*-comp-to-natural {f = f} {g = g} f' =
-  ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $ cast[] $
-    pulll[] _ (has-lift.commutesp g _ id-comm _)
-    ∙[] pullr[] _ (has-lift.commutesv g _ _)
-    ∙[] has-lift.uniquep₂ _ _ _ id-comm-sym _ _ _
-      (pulll[] _ (has-lift.commutesp _ _ id-comm _)
-        ∙[] pullr[] _ (has-lift.commutes _ _ _ _))
-      (pulll[] _ (has-lift.commutes _ _ _ _)
-        ∙[] has-lift.commutesp _ _ id-comm _)
-    ∙[] pushl[] _ (symP (has-lift.commutesv g _ _))
+  ap hom[] $ cartesian→weak-monic E (π*.cartesian) _ _ $ cast[] $
+    pulll[] _ (π*.commutesp id-comm _)
+    ∙[] pullr[] _ (π*.commutesv _)
+    ∙[] π*.uniquep₂ _ id-comm-sym _ _ _
+      (pulll[] _ (π*.commutesp id-comm _)
+        ∙[] pullr[] _ (π*.commutes _ _))
+      (pulll[] _ (π*.commutes _ _)
+        ∙[] π*.commutesp id-comm _)
+    ∙[] pushl[] _ (symP (π*.commutesv _))
 ```
 -->
 
@@ -200,11 +199,11 @@ base-changes = Disc-adjunct base-change
 
 base-change-coherence
   : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ g)
-  → has-lift.lifting g b' ∘' base-changes .F₁ p .η b'
-  ≡[ idr _ ∙ sym p ] has-lift.lifting f b'
+  → π* g b' ∘' base-changes .F₁ p .η b'
+  ≡[ idr _ ∙ sym p ] π* f b'
 base-change-coherence {b' = b'} {f} = J
-  (λ g p → has-lift.lifting g b' ∘' base-changes .F₁ p .η b'
-         ≡[ idr _ ∙ sym p ] has-lift.lifting f b')
+  (λ g p → π* g b' ∘' base-changes .F₁ p .η b'
+         ≡[ idr _ ∙ sym p ] π* f b')
   (elimr' refl Regularity.reduce!)
 ```
 
@@ -269,11 +268,11 @@ is by definition of the unitor.
 
 ```agda
 Fibres .lax .left-unit f = ext λ a' →
-  has-lift.uniquep₂ f a' _ refl refl _ _
+  π*.uniquep₂ _ refl refl _ _
     (Fib.pulllf (base-change-coherence (idr f))
-    ∙[] Fib.pulllf (has-lift.commutesv (f ∘ id) a' _)
+    ∙[] Fib.pulllf (π*.commutesv _)
     ∙[] (refl⟩∘'⟨ Fib.eliml (base-change id .F-id))
-    ∙[] pullr[] _ (has-lift.commutesv id _ id'))
+    ∙[] pullr[] _ (π*.commutesv id'))
     refl
 ```
 
@@ -311,12 +310,12 @@ of the unitor, and the top square is by definition of `rebase`{.Agda}
 
 ```agda
 Fibres .lax .right-unit f = ext λ a' →
-  has-lift.uniquep₂ f a' _ refl _ _ _
+  π*.uniquep₂ _ refl _ _ _
     (Fib.pulllf (base-change-coherence (idl f))
-    ∙[] Fib.pulllf (has-lift.commutesv (id ∘ f) a' _)
+    ∙[] Fib.pulllf (π*.commutesv _)
     ∙[] (refl⟩∘'⟨ Fib.idr _)
-    ∙[] extendr[] id-comm (has-lift.commutesp f _ _ _)
-    ∙[] (has-lift.commutesv id _ id' ⟩∘'⟨refl))
+    ∙[] extendr[] id-comm (π*.commutesp _ _)
+    ∙[] (π*.commutesv id' ⟩∘'⟨refl))
     (idr' _ ∙[] symP (idl' _))
 ```
 
@@ -369,15 +368,15 @@ lifts, by the commutativity of the following diagram.
 
 ```agda
 Fibres .lax .hexagon f g h = ext λ a' →
-  has-lift.uniquep₂ ((h ∘ g) ∘ f) a' _ refl _ _ _
+  π*.uniquep₂ _ refl _ _ _
     (Fib.pulllf (base-change-coherence (assoc h g f))
-    ∙[] Fib.pulllf (has-lift.commutesv (h ∘ (g ∘ f)) a' _)
+    ∙[] Fib.pulllf (π*.commutesv _)
     ∙[] (refl⟩∘'⟨ Fib.eliml (base-change (g ∘ f) .F-id))
-    ∙[] extendr[] _ (has-lift.commutesv (g ∘ f) _ _))
-    (Fib.pulllf (has-lift.commutesv ((h ∘ g) ∘ f) a' _)
+    ∙[] extendr[] _ (π*.commutesv _))
+    (Fib.pulllf (π*.commutesv _)
     ∙[] (refl⟩∘'⟨ Fib.idr _) ∙[] (refl⟩∘'⟨ Fib.idr _)
-    ∙[] extendr[] id-comm (has-lift.commutesp f _ _ _)
-    ∙[] (has-lift.commutesv (h ∘ g) a' _ ⟩∘'⟨refl))
+    ∙[] extendr[] id-comm (π*.commutesp _ _)
+    ∙[] (π*.commutesv _ ⟩∘'⟨refl))
 ```
 </details>
 
@@ -393,20 +392,20 @@ opaque
       (base-change σ .F₀ (base-change γ .F₀ x'))
       (base-change δ .F₀ (base-change τ .F₀ x'))
   base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
-    has-lift.universalv δ _ $
-    has-lift.universal' τ _ (sym p) $
-    has-lift.lifting γ x' ∘' has-lift.lifting σ _
+    π*.universalv $
+    π*.universal' (sym p) $
+    π* γ x' ∘' π* σ _
 
   base-change-square-lifting
     : ∀ {Γ Δ Θ Ψ : Ob}
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
     → (p : γ ∘ σ ≡ τ ∘ δ) (x' : Ob[ Ψ ])
-    → has-lift.lifting τ x' ∘' has-lift.lifting δ (base-change τ .F₀ x') ∘' base-change-square p x'
-    ≡[ ap (τ ∘_) (idr _) ∙ sym p ] has-lift.lifting γ x' ∘' has-lift.lifting σ _
+    → π* τ x' ∘' π* δ (base-change τ .F₀ x') ∘' base-change-square p x'
+    ≡[ ap (τ ∘_) (idr _) ∙ sym p ] π* γ x' ∘' π* σ _
   base-change-square-lifting {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
     cast[] $
-    apd (λ _ → has-lift.lifting τ x' ∘'_) (has-lift.commutesv _ _ _)
-    ∙[] has-lift.commutesp τ x' (sym p) _
+    apd (λ _ → π* τ x' ∘'_) (π*.commutesv _)
+    ∙[] π*.commutesp (sym p) _
 
   base-change-square-natural
     : ∀ {Γ Δ Θ Ψ : Ob}
@@ -416,18 +415,18 @@ opaque
     → base-change-square p y' ∘' base-change σ .F₁ (base-change γ .F₁ f')
     ≡ base-change δ .F₁ (base-change τ .F₁ f') ∘' base-change-square p x'
   base-change-square-natural {σ = σ} {δ = δ} {γ = γ} {τ = τ} p f' =
-    has-lift.uniquep₂ δ _ _ _ _ _ _
-      (pulll[] _ (has-lift.commutesv δ _ _)
-       ∙[] has-lift.uniquep₂ τ _ _ (idr _) _ _ _
-         (pulll[] _ (has-lift.commutesp τ _ (sym p) _)
-          ∙[] pullr[] _ (has-lift.commutesp σ _ id-comm _)
-          ∙[] extendl[] _ (has-lift.commutesp γ _ id-comm _))
-         (has-lift.commutesp τ _ (sym p ∙ sym (idl _ )) _))
-      (pulll[] _ (has-lift.commutesp δ _ id-comm _)
-       ∙[] pullr[] _ (has-lift.commutesv δ _ _)
-       ∙[] has-lift.uniquep τ _ _ (idl _) (sym p ∙ sym (idl _)) _
-         (pulll[] _ (has-lift.commutesp _ _ id-comm _ )
-          ∙[] pullr[] _ (has-lift.commutesp _ _ (sym p) _)))
+    π*.uniquep₂ _ _ _ _ _
+      (pulll[] _ (π*.commutesv _)
+       ∙[] π*.uniquep₂ _ (idr _) _ _ _
+         (pulll[] _ (π*.commutesp (sym p) _)
+          ∙[] pullr[] _ (π*.commutesp id-comm _)
+          ∙[] extendl[] _ (π*.commutesp id-comm _))
+         (π*.commutesp (sym p ∙ sym (idl _ )) _))
+      (pulll[] _ (π*.commutesp id-comm _)
+       ∙[] pullr[] _ (π*.commutesv _)
+       ∙[] π*.uniquep _ (idl _) (sym p ∙ sym (idl _)) _
+         (pulll[] _ (π*.commutesp id-comm _ )
+          ∙[] pullr[] _ (π*.commutesp (sym p) _)))
 
   base-change-square-inv
     : ∀ {Γ Δ Θ Ψ : Ob}
@@ -435,12 +434,12 @@ opaque
     → (p : γ ∘ σ ≡ τ ∘ δ)
     → ∀ x' → base-change-square p x' ∘' base-change-square (sym p) x' ≡[ idl _ ] id'
   base-change-square-inv {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
-    has-lift.uniquep₂ _ _ _ _ _ _ _
-      (pulll[] _ (has-lift.commutesv δ _ _)
-       ∙[] has-lift.uniquep₂ τ _ _ (idr _) refl _ _
-         (pulll[] _ (has-lift.commutesp τ _ (sym p) _)
-          ∙[] pullr[] _ (has-lift.commutesv σ _ _)
-          ∙[] has-lift.commutesp γ _ p _)
+    π*.uniquep₂ _ _ _ _ _
+      (pulll[] _ (π*.commutesv _)
+       ∙[] π*.uniquep₂ _ (idr _) refl _ _
+         (pulll[] _ (π*.commutesp (sym p) _)
+          ∙[] pullr[] _ (π*.commutesv _)
+          ∙[] π*.commutesp p _)
          refl)
       (idr' _)
 

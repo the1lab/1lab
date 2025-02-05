@@ -91,9 +91,9 @@ Family-is-cartesian = iscart where
   cart f y' .unique m' p = funext λ _ → introl refl ∙ happly p _
 
   iscart : Cartesian-fibration Family
-  iscart .has-lift f y' .x' z = y' (f z)
-  iscart .has-lift f y' .lifting x = id
-  iscart .has-lift {x = x} {y} f y' .cartesian = cart {x = x} {y} f y'
+  iscart .cart-lift f y' .x' z = y' (f z)
+  iscart .cart-lift f y' .lifting x = id
+  iscart .cart-lift {x = x} {y} f y' .cartesian = cart {x = x} {y} f y'
 ```
 
 Morphisms in the family fibration are cartesian if and only if they are

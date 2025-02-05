@@ -90,22 +90,22 @@ just have to perform the lifting of $F f$.
 
 ```agda
 Change-of-base-fibration : Cartesian-fibration E → Cartesian-fibration Change-of-base
-Change-of-base-fibration fib .Cartesian-fibration.has-lift f FY' = cart-lift
+Change-of-base-fibration fib .Cartesian-fibration.cart-lift f FY' = f-cart-lift
   where
-    open Cartesian-lift (Cartesian-fibration.has-lift fib (F₁ f) FY')
+    open Cartesian-fibration fib
 
-    cart-lift : Cartesian-lift Change-of-base f FY'
-    cart-lift .Cartesian-lift.x' = x'
-    cart-lift .Cartesian-lift.lifting = lifting
-    cart-lift .Cartesian-lift.cartesian .is-cartesian.universal m h' =
-      universal (F .Functor.F₁ m) (hom[ F-∘ f m ] h')
-    cart-lift .Cartesian-lift.cartesian .is-cartesian.commutes m h' =
-      hom[ F-∘ f m ]⁻ (lifting E.∘' universal (F₁ m) (hom[ F-∘ f m ] h')) ≡⟨ ap hom[ F-∘ f m ]⁻ (commutes _ _) ⟩
-      hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h')                                 ≡⟨ Ds.disp! E ⟩
-      h'                                                                  ∎
-    cart-lift .Cartesian-lift.cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
-      unique m' $
-        lifting E.∘' m'                                    ≡⟨ Ds.disp! E ⟩
-        hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (lifting E.∘' m')) ≡⟨ ap hom[ F-∘ f m ] p ⟩
-        hom[ F-∘ f m ] h' ∎
+    f-cart-lift : Cartesian-lift Change-of-base f FY'
+    f-cart-lift .Cartesian-lift.x' = F₁ f ^* FY'
+    f-cart-lift .Cartesian-lift.lifting = π* (F₁ f) FY'
+    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.universal m h' =
+      π*.universal (F₁ m) (hom[ F-∘ f m ] h')
+    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.commutes m h' =
+      hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' π*.universal (F₁ m) (hom[ F-∘ f m ] h')) ≡⟨ ap hom[ F-∘ f m ]⁻ (π*.commutes _ _) ⟩
+      hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h')                                          ≡⟨ Ds.disp! E ⟩
+      h'                                                                           ∎
+    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
+      π*.unique m' $
+        π* (F₁ f) FY' E.∘' m'                                    ≡⟨ Ds.disp! E ⟩
+        hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' m')) ≡⟨ ap hom[ F-∘ f m ] p ⟩
+        hom[ F-∘ f m ] h'                                        ∎
 ```

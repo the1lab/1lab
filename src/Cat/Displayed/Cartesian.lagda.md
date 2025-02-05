@@ -635,24 +635,22 @@ Thus, we do not dwell on the distinction.
 record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   no-eta-equality
   field
-    has-lift : ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
+    cart-lift : ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
 ```
 :::
 
 <!--
 ```agda
   module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
-    open Cartesian-lift (has-lift f y')
+    open Cartesian-lift (cart-lift f y')
       using ()
-      renaming (x' to _^*_)
+      renaming (x' to _^*_; lifting to π*)
       public
 
-  module _ {x y} {f : Hom x y} {y' : Ob[ y ]} where
-    open Cartesian-lift (has-lift f y')
-      renaming (lifting to π*; cartesian to π*-cartesian)
+  module π* {x y} {f : Hom x y} {y' : Ob[ y ]} where
+    open Cartesian-lift (cart-lift f y')
+      hiding (x'; lifting)
       public
-
-    module π* = is-cartesian π*-cartesian
 ```
 -->
 
@@ -671,7 +669,7 @@ uses the universal property that yields a vertical morphism.
            → Hom[ id ] y' y''
            → Hom[ id ] (f ^* y') (f ^* y'')
   rebase f vert =
-    π*.universal' id-comm (vert ∘' π*)
+    π*.universal' id-comm (vert ∘' π* f _)
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for

@@ -150,27 +150,18 @@ weak-cartesian→cartesian
   → (fib : Cartesian-fibration)
   → is-weak-cartesian f f'
   → is-cartesian f f'
-weak-cartesian→cartesian {x = x} {y' = y'} {f = f} {f' = f'} fib f-weak = f-cart where
+weak-cartesian→cartesian {x = x} {x' = x'} {y' = y'} {f = f} {f' = f'} fib f-weak = f-cart where
   open Cartesian-fibration fib
   module f-weak = is-weak-cartesian f-weak
 
-  x* : Ob[ x ]
-  x* = has-lift.x' f y'
-
-  f* : Hom[ f ] x* y'
-  f* = has-lift.lifting f y'
-
-  f*-cart : is-cartesian f f*
-  f*-cart = has-lift.cartesian f y'
-
-  f*-weak : is-weak-cartesian f f*
-  f*-weak = cartesian→weak-cartesian f*-cart
+  f^*≅x' : (f ^* y') ≅↓ x'
+  f^*≅x' = weak-cartesian-domain-unique (cartesian→weak-cartesian π*.cartesian) f-weak
 
   f-cart : is-cartesian f f'
   f-cart =
-    cartesian-vertical-retraction-stable f*-cart
-      (iso[]→to-has-section[] (weak-cartesian-domain-unique f*-weak f-weak))
-      (f-weak.commutes f*)
+    cartesian-vertical-retraction-stable π*.cartesian
+      (iso[]→to-has-section[] f^*≅x')
+      (f-weak.commutes (π* f y'))
 ```
 
 $f' : x' \to_{f} y'$ is a weak cartesian morphism if and only if
@@ -275,7 +266,7 @@ cartesian-lift→weak-cartesian-lift cart .Weak-cartesian-lift.weak-cartesian =
   cartesian→weak-cartesian (Cartesian-lift.cartesian cart)
 
 fibration→weak-fibration fib .is-weak-cartesian-fibration.weak-lift x y' =
-  cartesian-lift→weak-cartesian-lift (Cartesian-fibration.has-lift fib x y')
+  cartesian-lift→weak-cartesian-lift (Cartesian-fibration.cart-lift fib x y')
 ```
 </details>
 
@@ -295,7 +286,7 @@ module _ where
        → is-weak-cartesian f f' → is-weak-cartesian g g'
        → is-weak-cartesian (f ∘ g) (f' ∘' g'))
     → Cartesian-fibration
-  weak-fibration→fibration weak-fib weak-∘ .has-lift {x = x} f y' = f-lift where
+  weak-fibration→fibration weak-fib weak-∘ .cart-lift {x = x} f y' = f-lift where
     open is-weak-cartesian-fibration weak-fib
 
     module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z' : Ob[ z ]) =
@@ -670,16 +661,16 @@ module _ (fib : Cartesian-fibration) where
     mi : make-natural-iso
           (Hom-over-from ℰ u x')
           (Hom-from (Fibre ℰ x) x' F∘ base-change u)
-    mi .eta x u' = has-lift.universalv u x u'
-    mi .inv x v' = hom[ idr u ] (has-lift.lifting u x ∘' v')
+    mi .eta x u' = π*.universalv u'
+    mi .inv x v' = hom[ idr u ] (π* u x ∘' v')
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ π*.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (π*.commutesv _)
     mi .natural _ _ v' = funext λ u' →
-      has-lift.uniquep u _ _ _ _ _ $
-        Fib.pulllf (has-lift.commutesp u _ id-comm _)
-        ∙[] pullr[] _ (has-lift.commutesv u _ _)
+      π*.uniquep _ _ _ _ $
+        Fib.pulllf (π*.commutesp id-comm _)
+        ∙[] pullr[] _ (π*.commutesv _)
         ∙[] to-pathp refl
 ```
 
@@ -688,20 +679,20 @@ module _ (fib : Cartesian-fibration) where
   fibration→universal-is-equiv
     : ∀ {x y x' y'}
     → (f : Hom x y)
-    → is-equiv (has-lift.universalv f y' {x'})
+    → is-equiv (π*.universalv {f = f} {y'} {x'})
   fibration→universal-is-equiv f =
     weak-fibration→universal-is-equiv (fibration→weak-fibration fib) f
 
   fibration→vertical-equiv
     : ∀ {x y x' y'}
     → (f : Hom x y)
-    → Hom[ f ] x' y' ≃ Hom[ id ] x' (has-lift.x' f y')
+    → Hom[ f ] x' y' ≃ Hom[ id ] x' (f ^* y')
   fibration→vertical-equiv f =
     weak-fibration→vertical-equiv (fibration→weak-fibration fib) f
 
   fibration→hom-iso-into
     : ∀ {x y y'} (u : Hom x y)
-    → Hom-over-into ℰ u y' ≅ⁿ Hom-into (Fibre ℰ x) (has-lift.x' u y')
+    → Hom-over-into ℰ u y' ≅ⁿ Hom-into (Fibre ℰ x) (u ^* y')
   fibration→hom-iso-into u =
     weak-fibration→hom-iso-into (fibration→weak-fibration fib) u
 ```
@@ -722,12 +713,12 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
     module from-iso {x'} = Isoⁿ (fibration→hom-iso-from {x' = x'} u)
 
     mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
-    mi .eta x u' = has-lift.universalv u _ u'
-    mi .inv x v' = hom[ idr u ] (has-lift.lifting u _ ∘' v')
+    mi .eta x u' = π*.universalv u'
+    mi .inv x v' = hom[ idr u ] (π* u _ ∘' v')
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ π*.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (π*.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       sym (apr' (happly (into-iso.to .is-natural _ _ v₁') u'))
       ·· sym (happly (from-iso.to .is-natural _ _ v₂') (hom[ idr _ ] (u' ∘' v₁')))

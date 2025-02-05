@@ -88,11 +88,7 @@ module _
   {ℰ : Displayed ℬ o' ℓ'} {ℱ : Displayed (∫ ℰ) o'' ℓ''}
   where
 
-  private
-    open Precategory ℬ
-    module ℰ = Displayed ℰ
-    module ℱ = Displayed ℱ
-    module ℱR = DR ℱ
+  open Precategory ℬ
 ```
 -->
 
@@ -100,21 +96,35 @@ The idea of the proof is that we can take lifts of lifts, and in fact,
 this is exactly how we construct the liftings.
 
 ```agda
-  fibration-∘ : Cartesian-fibration ℰ → Cartesian-fibration ℱ
-              → Cartesian-fibration (ℰ D∘ ℱ)
+  fibration-∘
+    : Cartesian-fibration ℰ → Cartesian-fibration ℱ
+    → Cartesian-fibration (ℰ D∘ ℱ)
   fibration-∘ ℰ-fib ℱ-fib = ℰ∘ℱ-fib where
-    open Cartesian-fibration
+```
+
+<!--
+```agda
     open Cartesian-lift
 
+    module ℰ where
+      open Cartesian-fibration ℰ-fib public
+      open Displayed ℰ public
+
+    module ℱ where
+      open Cartesian-fibration ℱ-fib public
+      open Displayed ℱ public
+      open DR ℱ public
+```
+-->
+
+```agda
     ℰ∘ℱ-fib : Cartesian-fibration (ℰ D∘ ℱ)
-    ℰ∘ℱ-fib .has-lift f (y' , y'') = cart-lift where
+    ℰ∘ℱ-fib .Cartesian-fibration.cart-lift f (y' , y'') = f-lift where
 
-      ℰ-lift = ℰ-fib .has-lift f y'
-      ℱ-lift = ℱ-fib .has-lift (total-hom f (ℰ-lift .lifting)) y''
+      f-lift : Cartesian-lift (ℰ D∘ ℱ) f (y' , y'')
+      f-lift .x' = f ℰ.^* y' , total-hom f (ℰ.π* f y') ℱ.^* y''
+      f-lift .lifting = ℰ.π* f y' , ℱ.π* (total-hom f (ℰ.π* f y')) y''
 
-      cart-lift : Cartesian-lift (ℰ D∘ ℱ) f (y' , y'')
-      cart-lift .x' = ℰ-lift .x' , ℱ-lift .x'
-      cart-lift .lifting = ℰ-lift .lifting , ℱ-lift .lifting
 ```
 
 However, showing that the constructed lift is cartesian is somewhat more
@@ -127,16 +137,16 @@ of `ℱ-lift` to construct the universal map, and show that it is indeed
 universal.
 
 ```agda
-      cart-lift .cartesian .is-cartesian.universal m (h' , h'') =
-        ℰ-lift .universal m h' ,
-        universal' ℱ-lift (total-hom-path ℰ refl (ℰ-lift .commutes m h')) h''
-      cart-lift .cartesian .is-cartesian.commutes m h' =
-        ℰ-lift .commutes m (h' .fst) ,ₚ
-        commutesp ℱ-lift _ (h' .snd)
-      cart-lift .cartesian .is-cartesian.unique m' p =
-        ℰ-lift .unique (m' .fst) (ap fst p) ,ₚ
-        uniquep ℱ-lift _ _
-          (total-hom-path ℰ refl (ℰ-lift .commutes _ _))
+      f-lift .cartesian .is-cartesian.universal m (h' , h'') =
+        ℰ.π*.universal m h' ,
+        ℱ.π*.universal' (total-hom-path ℰ refl (ℰ.π*.commutes m h')) h''
+      f-lift .cartesian .is-cartesian.commutes m h' =
+        ℰ.π*.commutes m (h' .fst) ,ₚ
+        ℱ.π*.commutesp _ (h' .snd)
+      f-lift .cartesian .is-cartesian.unique m' p =
+        ℰ.π*.unique (m' .fst) (ap fst p) ,ₚ
+        ℱ.π*.uniquep _ _
+          (total-hom-path ℰ refl (ℰ.π*.commutes _ _))
           (m' .snd)
           (ap snd p)
 ```

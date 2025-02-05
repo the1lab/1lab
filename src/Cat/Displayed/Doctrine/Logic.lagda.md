@@ -584,7 +584,7 @@ too.</summary>
 
   `∃-intro {Γ = Γ} {Φ = Φ} {ψ = ψ} {t = t} α = hom[ cancell π₁∘⟨⟩ ] $
          cocartesian.has-lift.lifting π₁ ⟦ ψ ⟧ᵖ
-    ℙ.∘' cartesian.has-lift.lifting ⟨ id , ⟦ t ⟧ᵉ ⟩ ⟦ ψ ⟧ᵖ
+    ℙ.∘' π* ⟨ id , ⟦ t ⟧ᵉ ⟩ ⟦ ψ ⟧ᵖ
     ℙ.∘' p
     where
     p : ⟦ Φ ⟧ᵖ ≤ (⟦ ψ ⟧ᵖ [ ⟨ id , ⟦ t ⟧ᵉ ⟩ ])
@@ -600,9 +600,9 @@ too.</summary>
 ```agda
   =-refl : entails φ (t =ᵖ t)
   =-refl {t = t} =
-    cartesian.has-lift.universal _ _ _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
+    π*.universal _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
           cocartesian.has-lift.lifting ⟨ id , id ⟩ aye
-    ℙ.∘' cartesian.has-lift.lifting _ _
+    ℙ.∘' π* _ _
     ℙ.∘' subst-! ⟦ t ⟧ᵉ
 ```
 -->

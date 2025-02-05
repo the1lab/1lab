@@ -162,7 +162,7 @@ is enough for its uniqueness.
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y' = l where
+Subobject-fibration pb .cart-lift f y' = l where
   it : Pullback _ _ _
   it = pb (y' .map) f
   l : Cartesian-lift Subobjects f y'

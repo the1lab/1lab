@@ -38,12 +38,6 @@ private
   module F = Fib E
   open F renaming (_∘_ to infixr 25 _∘v_) using ()
 
-  _^*_ : ∀ {a b} (f : Hom a b) → Ob[ b ] → Ob[ a ]
-  f ^* x = has-lift.x' f x
-
-  π : ∀ {a b} {f : Hom a b} {x : Ob[ b ]} → Hom[ f ] (f ^* x) x
-  π = has-lift.lifting _ _
-
   γ← = ^*-comp-from
   γ→ = ^*-comp-to
   ι← = ^*-id-from
@@ -177,7 +171,7 @@ private
     : ∀ {a b} {f f' : Hom a b} {x : Ob[ b ]}
     → (p : f ≡ f')
     → Hom[ id ] (f' ^* x) (f ^* x)
-  adjust p = has-lift.universal' _ _ (idr _ ∙ p) (has-lift.lifting _ _)
+  adjust p = π*.universal' (idr _ ∙ p) (π* _ _)
 ```
 
 <!--
@@ -185,14 +179,14 @@ private
 private abstract
   π-adjust
     : ∀ {a b} {f f' : Hom a b} {x : Ob[ b ]} (p : f ≡ f')
-    → π {a} {b} {f} {x} ∘' adjust p ≡[ refl ∙ idr f ∙ p ] π
-  π-adjust p = has-lift.commutes _ _ _ _ ∙[] to-pathp⁻ refl
+    → π* f x ∘' adjust p ≡[ refl ∙ idr f ∙ p ] π* f' x
+  π-adjust p = π*.commutes _ _ ∙[] to-pathp⁻ refl
 
   adjust-refl
     : ∀ {a b} {f : Hom a b} {x : Ob[ b ]}
     → adjust {x = x} (λ i → f) ≡ id'
-  adjust-refl = has-lift.uniquep₂ _ _ (idr _) refl (idr _) (adjust refl) id'
-    (to-pathp (ap E.hom[] (has-lift.commutes _ _ _ _) ·· E.hom[]-∙ _ _ ·· E.liberate _))
+  adjust-refl = π*.uniquep₂ (idr _) refl (idr _) (adjust refl) id'
+    (to-pathp (ap E.hom[] (π*.commutes _ _) ·· E.hom[]-∙ _ _ ·· E.liberate _))
     (idr' _)
 ```
 -->
@@ -238,23 +232,23 @@ of the underlying displayed category. They're not informative; it's fine
 to take the three theorems above as given.</summary>
 
 ```agda
-  adjust-idr {f = f} {x} = has-lift.uniquep₂ _ _ _ _ _ _ _ (π-adjust (idr f))
-    (   F.pulllf (has-lift.commutesv (f ∘ id) x (π ∘' π))
-    ∙[] E.pullr[] (idr id) (has-lift.commutesp id (f ^* x) (idr id) id')
-    ∙[] idr' π)
+  adjust-idr {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idr f))
+    (   F.pulllf (π*.commutesv (π* _ _ ∘' π* _ _))
+    ∙[] E.pullr[] (idr id) (π*.commutesp (idr id) id')
+    ∙[] idr' (π* _ _))
 
-  adjust-idl {f = f} {x} = has-lift.uniquep₂ _ _ _ _ _ _ _ (π-adjust (idl f))
-    (   F.pulllf (has-lift.commutesv (id ∘ f) x (π ∘' π))
-    ∙[] E.pullr[] _ (has-lift.commutesp f (id ^* x) id-comm (ι← ∘' π))
-    ∙[] E.pulll[] _ (has-lift.commutesp id x (idr id) id') ∙[] idl' π)
+  adjust-idl {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idl f))
+    (   F.pulllf (π*.commutesv (π* _ _ ∘' π* _ _))
+    ∙[] E.pullr[] _ (π*.commutesp id-comm (ι← ∘' π* _ _))
+    ∙[] E.pulll[] _ (π*.commutesp (idr id) id') ∙[] idl' (π* _ _))
 
-  adjust-assoc {f = f} {g} {h} = has-lift.uniquep₂ _ _ _ _ _ _ _ (π-adjust (assoc f g h))
-    (F.pulllf (has-lift.commutesv (f ∘ g ∘ h) _ _) ∙[] E.pullr[] _ (F.pulllf (has-lift.commutesp (g ∘ h) _ (idr (g ∘ h)) _))
-    ∙[] (E.refl⟩∘'⟨ E.pullr[] (id-comm ∙ sym (idr (id ∘ h))) (F.pulllf (has-lift.commutesp _ _ _ _)))
-    ∙[] (E.refl⟩∘'⟨ E.pulll[] _ (E.pulll[] (idr g) (has-lift.commutesp _ _ _ _)))
-    ∙[] E.pulll[] _ (E.pulll[] _ (has-lift.commutes _ _ _ _))
-    ∙[] E.pullr[] (idr h) (has-lift.commutesp _ _ _ _)
-    ∙[] has-lift.commutes _ _ _ _)
+  adjust-assoc {f = f} {g} {h} = π*.uniquep₂ _ _ _ _ _ (π-adjust (assoc f g h))
+    (F.pulllf (π*.commutesv _) ∙[] E.pullr[] _ (F.pulllf (π*.commutesp (idr (g ∘ h)) _))
+    ∙[] (E.refl⟩∘'⟨ E.pullr[] (id-comm ∙ sym (idr (id ∘ h))) (F.pulllf (π*.commutesp _ _)))
+    ∙[] (E.refl⟩∘'⟨ E.pulll[] _ (E.pulll[] (idr g) (π*.commutesp _ _)))
+    ∙[] E.pulll[] _ (E.pulll[] _ (π*.commutes _ _))
+    ∙[] E.pullr[] (idr h) (π*.commutesp _ _)
+    ∙[] π*.commutes _ _)
 ```
 
 </details>
@@ -273,7 +267,7 @@ _^op' : Displayed B o' ℓ'
 _^op' .D.Ob[_] = Ob[_]
 _^op' .D.Hom[_]     f x y = Hom[ id ] (f ^* y) x
 _^op' .D.Hom[_]-set f x y = Hom[_]-set _ _ _
-_^op' .D.id'  = π
+_^op' .D.id'  = π* _ _
 _^op' .D._∘'_ = _∘,_
 ```
 
@@ -286,9 +280,9 @@ indexed nonsense that otherwise haunts working with fibrations.
 ```agda
 _^op' .D.idl' {x = x} {y} {f = f} f' = to-pathp $
   transport (λ i → Hom[ id ] (idl f i ^* y) x) _  ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-idl ⟩
-  (f' ∘v f [ π ] ∘v γ→) ∘v γ← ∘v f [ ι← ]         ≡⟨ F.pullr (F.pullr refl) ⟩
-  f' ∘v f [ π ] ∘v γ→ ∘v (γ← ∘v f [ ι← ])         ≡⟨ ap₂ _∘v_ refl (ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
-  f' ∘v f [ π ] ∘v f [ ι← ]                       ≡⟨ F.elimr (rebase.annihilate (E.cancel _ _ (has-lift.commutesv _ _ _))) ⟩
+  (f' ∘v f [ π* _ _ ] ∘v γ→) ∘v γ← ∘v f [ ι← ]         ≡⟨ F.pullr (F.pullr refl) ⟩
+  f' ∘v f [ π* _ _ ] ∘v γ→ ∘v (γ← ∘v f [ ι← ])         ≡⟨ ap₂ _∘v_ refl (ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
+  f' ∘v f [ π* _ _ ] ∘v f [ ι← ]                       ≡⟨ F.elimr (rebase.annihilate (E.cancel _ _ (π*.commutesv _))) ⟩
   f'                                              ∎
 ```
 
@@ -298,9 +292,9 @@ further comment.
 ```agda
 _^op' .D.idr' {x = x} {y} {f} f' = to-pathp $
   transport (λ i → Hom[ id ] (idr f i ^* y) x) _  ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-idr ⟩
-  (π ∘v id [ f' ] ∘v γ→) ∘v γ← ∘v ι←              ≡⟨ F.pullr (F.pullr (F.cancell (^*-comp .F.invl))) ⟩
-  π ∘v id [ f' ] ∘v ι←                            ≡⟨ ap (π ∘v_) (sym (base-change-id .Isoⁿ.from .is-natural _ _ _)) ⟩
-  π ∘v ι← ∘v f'                                   ≡⟨ F.cancell (base-change-id .Isoⁿ.invl ηₚ _) ⟩
+  (π* _ _ ∘v id [ f' ] ∘v γ→) ∘v γ← ∘v ι←              ≡⟨ F.pullr (F.pullr (F.cancell (^*-comp .F.invl))) ⟩
+  π* _ _ ∘v id [ f' ] ∘v ι←                            ≡⟨ ap (π* _ _ ∘v_) (sym (base-change-id .Isoⁿ.from .is-natural _ _ _)) ⟩
+  π* _ _ ∘v ι← ∘v f'                                   ≡⟨ F.cancell (base-change-id .Isoⁿ.invl ηₚ _) ⟩
   f'                                              ∎
 
 _^op' .D.assoc' {x = x} {y} {z} {f} {g} {h} f' g' h' = to-pathp $
@@ -319,9 +313,9 @@ to $\cE\op$ inverts *each fibre*.
 
 ```agda
 opposite-map : ∀ {a} {x y : Ob[ a ]} → Fib.Hom E y x ≃ Fib.Hom _^op' x y
-opposite-map .fst f = f ∘v π
+opposite-map .fst f = f ∘v π* _ _
 opposite-map .snd = is-iso→is-equiv $ iso
-  (λ f → f ∘v has-lift.universalv id _ id')
+  (λ f → f ∘v π*.universalv id')
   (λ x → F.cancelr (base-change-id .Isoⁿ.invr ηₚ _))
   (λ x → F.cancelr (base-change-id .Isoⁿ.invl ηₚ _))
 ```
@@ -371,7 +365,7 @@ establishes that this choice *does* furnish a Cartesian lift.
 
 ```agda
 Opposite-cartesian : Cartesian-fibration _^op'
-Opposite-cartesian .Cf.has-lift f y' = record
+Opposite-cartesian .Cf.cart-lift f y' = record
   { lifting   = id'
   ; cartesian = record
     { universal = λ m h → h ∘v γ←

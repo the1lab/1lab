@@ -99,14 +99,14 @@ fibration are groupoids.
 
 ```agda
 Objects-fibration : Cartesian-fibration E → Cartesian-fibration Objects
-Objects-fibration fib .Cartesian-fibration.has-lift f y' = cart-lift where
+Objects-fibration fib .Cartesian-fibration.cart-lift f y' = f-lift where
   open Cartesian-fibration fib
 
-  cart-lift : Cartesian-lift Objects f y'
-  cart-lift .Cartesian-lift.x' = has-lift.x' f y'
-  cart-lift .Cartesian-lift.lifting .hom' = has-lift.lifting f y'
-  cart-lift .Cartesian-lift.lifting .cartesian = has-lift.cartesian f y'
-  cart-lift .Cartesian-lift.cartesian = Objects-cartesian _
+  f-lift : Cartesian-lift Objects f y'
+  f-lift .Cartesian-lift.x' = f ^* y'
+  f-lift .Cartesian-lift.lifting .hom' = π* f y'
+  f-lift .Cartesian-lift.lifting .cartesian = π*.cartesian
+  f-lift .Cartesian-lift.cartesian = Objects-cartesian _
 
 Objects-right-fibration : Cartesian-fibration E → Right-fibration Objects
 Objects-right-fibration fib .Right-fibration.is-fibration = Objects-fibration fib

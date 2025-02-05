@@ -55,9 +55,9 @@ open Cartesian-lift
 open Cocartesian-lift
 
 Trivial-fibration : Cartesian-fibration Trivial
-Trivial-fibration .has-lift f y' .x' = y'
-Trivial-fibration .has-lift f y' .lifting = id
-Trivial-fibration .has-lift f y' .cartesian = cartesian-id Trivial
+Trivial-fibration .cart-lift f y' .x' = y'
+Trivial-fibration .cart-lift f y' .lifting = id
+Trivial-fibration .cart-lift f y' .cartesian = cartesian-id Trivial
 ```
 
 We can use a similar line of argument to deduce that it is also an opfibration.
