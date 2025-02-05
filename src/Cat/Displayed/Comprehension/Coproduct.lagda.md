@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian.Indexing
+open import Cat.Displayed.BeckChevalley
 open import Cat.Displayed.Comprehension
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
@@ -115,20 +116,25 @@ record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe �
     ⟨⟩-cocartesian
       : ∀ {Γ} → (x : E.Ob[ Γ ]) (a : D.Ob[ Γ ⨾ x ])
       → is-cocartesian D πᶜ ⟨ x , a ⟩
-    cocartesian-stable
-      : ∀ {Γ Δ x y a a' b b'} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
-      → {r : D.Hom[ πᶜ ] a a'} {h : D.Hom[ σ ] a' b'}
-      → {g : D.Hom[ σ ⨾ˢ f ] a b} {s : D.Hom[ πᶜ ] b b'}
+    ∐-beck-chevalley
+      : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
       → is-cartesian E σ f
-      → s D.∘' g D.≡[ sub-proj f ] h D.∘' r
-      → is-cocartesian D πᶜ s
-      → is-cartesian D (σ ⨾ˢ f) g
-      → is-cartesian D σ h
-      → is-cocartesian D πᶜ r
+      → cocartesian-beck-chevalley D
+          πᶜ (σ ⨾ˢ f) σ πᶜ
+          (sub-proj f)
+```
 
+<!--
+```agda
   module ⟨⟩-cocartesian {Γ} (x : E.Ob[ Γ ]) (a : D.Ob[ Γ ⨾ x ]) =
     is-cocartesian (⟨⟩-cocartesian x a)
+
+  module ∐-beck-chevalley
+    {Γ Δ x y} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
+    (f-cart : is-cartesian E σ f) =
+    cocartesian-beck-chevalley (∐-beck-chevalley f-cart)
 ```
+-->
 
 Now, some general facts about coproducts. To start, note that forming
 coproducts is a functorial operation. The proof is very routine --- if
@@ -336,7 +342,7 @@ introduction rule is also natural.
       → is-cartesian E σ f → (a : D.Ob[ Δ ⨾ y ])
       → is-cocartesian D πᶜ ⟨ f ⨾ a ⟩
     ⟨⨾⟩-cocartesian {x = x} {y = y} {σ = σ} {f = f} cart a =
-      cocartesian-stable cart
+      ∐-beck-chevalley.cocart-stable cart
         (symP (⟨⨾⟩-weaken f a))
         (⟨⟩-cocartesian y a)
         D.π*.cartesian
