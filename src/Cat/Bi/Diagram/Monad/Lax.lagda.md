@@ -20,7 +20,7 @@ private
 
 # Monads as lax functors
 
-[[Monads in a bicategory|monad in]] in a bicategory $\cS$  are equivalent to
+[[Monads in a bicategory|monad in]]  $\cS$  are equivalent to
 [[lax functors|lax functor]] functors from the terminal bicategory to $\cS$.
 
 ```agda
