@@ -4,6 +4,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.BeckChevalley
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.TwoSided
@@ -471,6 +472,8 @@ lifts exit.
 ```agda
   discrete-two-sided-fibration→two-sided-fibration E-dfib = E-fib where
     open is-discrete-two-sided-fibration E-dfib
+    open cocartesian-beck-chevalley
+    open cartesian-beck-chevalley
     open Two-sided-fibration
     open Cocartesian-lift
     open Cartesian-lift
@@ -482,8 +485,8 @@ lifts exit.
     E-fib .cocart-lift v x' .y' = v ^! x'
     E-fib .cocart-lift v x' .lifting = ι! v x'
     E-fib .cocart-lift v x' .cocartesian = vertical-cocartesian (ι! v x')
-    E-fib .cart-cocart-commute p f-cocart g-cart ._↔_.to _ =
-      vertical-cocartesian _
-    E-fib .cart-cocart-commute p f-cocart g-cart ._↔_.from _ =
+    E-fib .cart-beck-chevalley u v .cart-stable _ _ _ _ =
       vertical-cartesian _
+    E-fib .cocart-beck-chevalley u v .cocart-stable _ _ _ _ =
+      vertical-cocartesian _
 ```
