@@ -96,8 +96,15 @@ mutual compatibility of the multiplication and unit with the unitors.
 
 # Monads as lax functors
 
-[[Monads in a bicategory|monad in]]  $\cS$  are equivalent to
-[[lax functors]] from the [[terminal bicategory]] to $\cS$.
+Suppose that we have a [[lax functor]] $P$ from the [[terminal bicategory]] to $\cB$.
+Then $P$ identifies a single object $a=P_0(*)$ as well as a morphism $M:a\to a$
+given by $P\_1(*)$. The composition operation is a natural transformation
+\[
+P\_1(*)\otimes P\_1(*)\To P\_1(*\otimes *)
+\]
+i.e. a natural transformation $\mu :M\otimes M\To M$. Finally, the unitor gives
+$\eta:\id\To M$.
+Altogether, this is exactly the same data as an object $a\in\cB$ and a monad on $a$.
 
 ```agda
   lax-functor→monad : Σ[ a ∈ B.Ob ] Monad a → Lax-functor ⊤Bicat B
@@ -129,7 +136,7 @@ mutual compatibility of the multiplication and unit with the unitors.
     module monad where
       M = P₁.F₀ _
       μ = γ→ _ _
-      --η = unitor
+      η = unitor
       μ-assoc =
         μ ∘ M ▶ μ                           ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
         (μ ∘ M ▶ μ) ∘ (α→ M M M ∘ α← M M M) ≡⟨ cat! (Hom a a) ⟩
