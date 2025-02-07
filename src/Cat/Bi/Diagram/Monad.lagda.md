@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Bi.Instances.Terminal
 open import Cat.Bi.Base
 open import Cat.Prelude
 
@@ -14,10 +16,12 @@ module Cat.Bi.Diagram.Monad  where
 
 <!--
 ```agda
-open _=>_
+open _=>_ hiding (η)
 
 module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
-  private module B = Prebicategory B
+  private
+    open module B = Prebicategory B
+    open Functor
 ```
 -->
 
@@ -90,6 +94,53 @@ mutual compatibility of the multiplication and unit with the unitors.
 
 </div>
 
+# Monads as lax functors
+
+[[Monads in a bicategory|monad in]]  $\cS$  are equivalent to
+[[lax functors]] from the [[terminal bicategory]] to $\cS$.
+
+```agda
+  lax-functor→monad : Σ[ a ∈ B.Ob ] Monad a → Lax-functor ⊤Bicat B
+  lax-functor→monad (a , monad) = P where
+    open Monad monad
+    open Lax-functor
+    P : Lax-functor ⊤Bicat B
+    P .P₀ _ = a
+    P .P₁ = !Const M
+    P .compositor ._=>_.η _ = μ
+    P .compositor .is-natural _ _ _ = B.Hom.elimr (B.compose .F-id) ∙ sym (B.Hom.idl _)
+    P .unitor = η
+    P .hexagon _ _ _ =
+      Hom.id ∘ μ ∘ (μ ◀ M)                ≡⟨ Hom.pulll (Hom.idl _) ⟩
+      μ ∘ (μ ◀ M)                         ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
+      (μ ∘ μ ◀ M) ∘ (α← M M M ∘ α→ M M M) ≡⟨ cat! (Hom a a) ⟩
+      (μ ∘ μ ◀ M ∘ α← M M M) ∘ α→ M M M   ≡˘⟨ Hom.pulll μ-assoc ⟩
+      μ ∘ (M ▶ μ) ∘ (α→ M  M  M)          ∎
+    P .right-unit _ = Hom.id ∘ μ ∘ M ▶ η  ≡⟨ Hom.idl _ ∙ μ-unitr ⟩ ρ← M ∎
+    P .left-unit _ = Hom.id ∘ μ ∘ (η ◀ M) ≡⟨ Hom.idl _ ∙ μ-unitl ⟩ λ← M ∎
+
+  monad→lax-functor : Lax-functor ⊤Bicat B → Σ[ a ∈ B.Ob ] Monad a
+  monad→lax-functor P = (a , record { monad }) where
+    open Lax-functor P
+
+    a : B.Ob
+    a = P₀ tt
+
+    module monad where
+      M = P₁.F₀ _
+      μ = γ→ _ _
+      --η = unitor
+      μ-assoc =
+        μ ∘ M ▶ μ                           ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
+        (μ ∘ M ▶ μ) ∘ (α→ M M M ∘ α← M M M) ≡⟨ cat! (Hom a a) ⟩
+        (μ ∘ M ▶ μ ∘ α→ M M M) ∘ α← M M M   ≡˘⟨ hexagon _ _ _ Hom.⟩∘⟨refl ⟩
+        (P₁.F₁ _ ∘ μ ∘ μ ◀ M) ∘ α← M M M    ≡⟨ ( P₁.F-id Hom.⟩∘⟨refl) Hom.⟩∘⟨refl  ⟩
+        (Hom.id ∘ μ ∘ μ ◀ M) ∘ α← M M M     ≡⟨ cat! (Hom a a) ⟩
+        μ ∘ μ ◀ M ∘ α← M M M ∎
+      μ-unitr = P₁.introl refl ∙ right-unit _
+      μ-unitl = P₁.introl refl ∙ left-unit _
+```
+
 ## In Cat
 
 To prove that this is an actual generalisation of the 1-categorical
@@ -113,15 +164,15 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' .unit = M.η
     monad' .mult = M.μ
     monad' .left-ident {x} =
-        ap (M.μ .η x C.∘_) (C.intror refl)
+        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
       ∙ M.μ-unitr ηₚ x
     monad' .right-ident {x} =
-        ap (M.μ .η x C.∘_) (C.introl (M.M .Functor.F-id))
+        ap (M.μ ._=>_.η x C.∘_) (C.introl (M.M .Functor.F-id))
       ∙ M.μ-unitl ηₚ x
     monad' .mult-assoc {x} =
-        ap (M.μ .η x C.∘_) (C.intror refl)
+        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
      ·· M.μ-assoc ηₚ x
-     ·· ap (M.μ .η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
+     ·· ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
   Monad→bicat-monad monad = monad' where
