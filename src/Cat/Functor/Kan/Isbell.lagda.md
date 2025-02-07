@@ -51,7 +51,7 @@ module _ {o}{l}{x} {y} {C : Precategory o l} where
   open import Cat.Diagram.Duals
 
   is-complete-is-cocomplete-op : is-complete x y C ->  is-cocomplete x y (C ^op)
-  is-complete-is-cocomplete-op isCompl F = Co-limit→Colimit _ (isCompl _)
+  is-complete-is-cocomplete-op isCompl F = Co-limit→Colimit (isCompl _)
 ```
 
 Next we prove that Copresheaves are co-complete this is a direct consequence of opposites swapping completeness for cocompletess,
