@@ -64,11 +64,11 @@ binary operation `⋆`, on which no further laws are imposed.
   underlying-set : Set ℓ
   underlying-set = el _ has-is-set
 
-  instance
+  opaque instance
     magma-hlevel : ∀ {n} → H-Level A (2 + n)
     magma-hlevel = basic-instance 2 has-is-set
 
-open is-magma public
+open is-magma
 ```
 
 Note that we do not generally benefit from the [[set truncation]] of
@@ -83,6 +83,16 @@ is-magma-is-prop : {_⋆_ : A → A → A} → is-prop (is-magma _⋆_)
 is-magma-is-prop x y i .has-is-set =
   is-hlevel-is-prop 2 (x .has-is-set) (y .has-is-set) i
 ```
+
+<!--
+```agda
+instance
+  H-Level-is-magma
+    : ∀ {ℓ} {A : Type ℓ} {_⋆_ : A → A → A} {n}
+    → H-Level (is-magma _⋆_) (suc n)
+  H-Level-is-magma = prop-instance is-magma-is-prop
+```
+-->
 
 By turning the operation parameter into an additional piece of data, we
 get the notion of a **magma structure** on a type, as well as the
@@ -138,7 +148,7 @@ set, this obviously defines a magma:
 ```agda
 private
   is-magma-imp : is-magma imp
-  is-magma-imp .has-is-set = Bool-is-set
+  is-magma-imp .has-is-set = hlevel 2
 ```
 
 We show it is not commutative or associative by giving counterexamples:

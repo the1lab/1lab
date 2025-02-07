@@ -3,11 +3,8 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
-open import Cat.Displayed.Total
+open import Cat.Functor.Properties
 open import Cat.Prelude hiding (_*_ ; _+_)
-
-open import Data.Int
 
 import Cat.Reasoning
 ```
@@ -37,6 +34,9 @@ private variable
 
 Group-on-is-abelian : Group-on G → Type _
 Group-on-is-abelian G = ∀ x y → Group-on._⋆_ G x y ≡ Group-on._⋆_ G y x
+
+Group-on-is-abelian-is-prop : (g : Group-on G) → is-prop (Group-on-is-abelian g)
+Group-on-is-abelian-is-prop g = Π-is-hlevel² 1 λ _ _ → g .Group-on.has-is-set _ _
 ```
 -->
 
@@ -54,12 +54,19 @@ record is-abelian-group (_*_ : G → G → G) : Type (level-of G) where
 
 <!--
 ```agda
+  equal-sum→equal-diff : ∀ a b c d → a * b ≡ c * d → a — c ≡ d — b
+  equal-sum→equal-diff a b c d p = commutes ∙ swizzle p inverser inversel
+```
+-->
+
+<!--
+```agda
 private unquoteDecl eqv = declare-record-iso eqv (quote is-abelian-group)
 instance
   H-Level-is-abelian-group
     : ∀ {n} {* : G → G → G} → H-Level (is-abelian-group *) (suc n)
   H-Level-is-abelian-group = prop-instance $ Iso→is-hlevel 1 eqv $
-    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ →
+    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel²' 1 λ _ _ →
       is-group.has-is-set x _ _
 ```
 -->
@@ -79,9 +86,12 @@ record Abelian-group-on (T : Type ℓ) : Type ℓ where
   Abelian→Group-on .Group-on._⋆_ = _*_
   Abelian→Group-on .Group-on.has-is-group = has-is-group
 
+  Abelian→Group-on-abelian : Group-on-is-abelian Abelian→Group-on
+  Abelian→Group-on-abelian _ _ = commutes
+
   infixr 20 _*_
 
-open Abelian-group-on using (Abelian→Group-on) public
+open Abelian-group-on using (Abelian→Group-on; Abelian→Group-on-abelian) public
 ```
 -->
 
@@ -106,12 +116,19 @@ Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
 
 module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
+
+instance
+  Ab-equational : ∀ {ℓ} → is-equational (Abelian-group-structure ℓ)
+  Ab-equational .is-equational.invert-id-hom = Groups-equational .is-equational.invert-id-hom
 ```
 
 <!--
 ```agda
 Abelian-group : (ℓ : Level) → Type (lsuc ℓ)
 Abelian-group _ = Ab.Ob
+
+Abelian→Group : ∀ {ℓ} → Abelian-group ℓ → Group ℓ
+Abelian→Group G = G .fst , Abelian→Group-on (G .snd)
 
 record make-abelian-group (T : Type ℓ) : Type ℓ where
   no-eta-equality
@@ -136,15 +153,18 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
     mg .make-group.invl   = invl
     mg .make-group.idl    = idl
 
+  to-is-abelian-group : is-abelian-group mul
+  to-is-abelian-group .is-abelian-group.has-is-group =
+    to-is-group make-abelian-group→make-group
+  to-is-abelian-group .is-abelian-group.commutes =
+    comm _ _
+
   to-group-on-ab : Group-on T
   to-group-on-ab = to-group-on make-abelian-group→make-group
 
   to-abelian-group-on : Abelian-group-on T
   to-abelian-group-on .Abelian-group-on._*_ = mul
-  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.has-is-group =
-    Group-on.has-is-group to-group-on-ab
-  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
-    comm _ _
+  to-abelian-group-on .Abelian-group-on.has-is-ab = to-is-abelian-group
 
   to-ab : Abelian-group ℓ
   ∣ to-ab .fst ∣ = T
@@ -152,7 +172,7 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
   to-ab .snd = to-abelian-group-on
 
 is-commutative-group : ∀ {ℓ} → Group ℓ → Type ℓ
-is-commutative-group G = ∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x
+is-commutative-group G = Group-on-is-abelian (G .snd)
 
 from-commutative-group
   : ∀ {ℓ} (G : Group ℓ)
@@ -166,35 +186,57 @@ from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group
 from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
   comm _ _
 
-open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-abelian-group-on ; to-ab) public
+Grp→Ab→Grp
+  : ∀ {ℓ} (G : Group ℓ) (c : is-commutative-group G)
+  → Abelian→Group (from-commutative-group G c) ≡ G
+Grp→Ab→Grp G c = Σ-pathp refl go where
+  go : Abelian→Group-on (from-commutative-group G c .snd) ≡ G .snd
+  go i .Group-on._⋆_ = G .snd .Group-on._⋆_
+  go i .Group-on.has-is-group = G .snd .Group-on.has-is-group
+
+open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-is-abelian-group ; to-abelian-group-on ; to-ab) public
 
 open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
-Ab↪Grp .F₀ (X , A) = X , Abelian→Group-on A
+Ab↪Grp .F₀ = Abelian→Group
 Ab↪Grp .F₁ f .hom = f .hom
 Ab↪Grp .F₁ f .preserves = f .preserves
 Ab↪Grp .F-id = trivial!
 Ab↪Grp .F-∘ f g = trivial!
+
+Ab↪Grp-is-ff : ∀ {ℓ} → is-fully-faithful (Ab↪Grp {ℓ})
+Ab↪Grp-is-ff {x = A} {B} = is-iso→is-equiv $ iso
+  promote (λ _ → trivial!) (λ _ → trivial!)
+  where
+    promote : Groups.Hom (Abelian→Group A) (Abelian→Group B) → Ab.Hom A B
+    promote f .hom = f .hom
+    promote f .preserves = f .preserves
+
+Ab↪Sets : ∀ {ℓ} → Functor (Ab ℓ) (Sets ℓ)
+Ab↪Sets = Grp↪Sets F∘ Ab↪Grp
 ```
 -->
 
-The fundamental example of abelian group is the integers, $\ZZ$, under
-addition. A type-theoretic interjection is necessary: the integers live
-on the zeroth universe, so to have an $\ell$-sized group of integers, we
-must lift it.
+The fundamental example of an abelian group is the [[group of integers]].
+
+:::{.definition #negation-automorphism}
+Given an abelian group $G$, we can define the **negation automorphism**
+$G \cong G$ which inverts every element: since the group operation is
+commutative, we have $(x \star y)^{-1} = y^{-1} \star x^{-1} = x^{-1}
+\star y^{-1}$, so this is a homomorphism.
+:::
+
+<!--
+```agda
+module _ {ℓ} (G : Abelian-group ℓ) where
+  open Abelian-group-on (G .snd)
+```
+-->
 
 ```agda
-ℤ-ab : ∀ {ℓ} → Abelian-group ℓ
-ℤ-ab = to-ab mk-ℤ where
-  open make-abelian-group
-  mk-ℤ : make-abelian-group (Lift _ Int)
-  mk-ℤ .ab-is-set = hlevel 2
-  mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
-  mk-ℤ .inv (lift x) = lift (negate x)
-  mk-ℤ .1g = lift 0
-  mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
-  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-associative x y z)
-  mk-ℤ .invl (lift x) = ap lift (+ℤ-inversel x)
-  mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
+  negation : G Ab.≅ G
+  negation = total-iso
+    (_⁻¹ , is-involutive→is-equiv (λ _ → inv-inv))
+    (record { pres-⋆ = λ x y → inv-comm ∙ commutes })
 ```

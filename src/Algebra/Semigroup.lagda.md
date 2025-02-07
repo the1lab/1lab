@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Semigroups
+# Semigroups {defines=semigroup}
 
 ```agda
 record is-semigroup {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
@@ -34,7 +34,7 @@ equipped with a choice of _associative_ binary operation `⋆`.
 
   open is-magma has-is-magma public
 
-open is-semigroup public
+open is-semigroup
 ```
 
 To see why the [[set truncation]] is really necessary, it helps to
@@ -52,7 +52,7 @@ of the language of higher categories:
 the "pentagonator") witnessing commutativity of the diagram below, where
 all the faces are `α`:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {(a \star b) \star (c\star d)} \\
   {((a \star b) \star c)\star d} && {a\star(b\star(c\star d)))} \\
@@ -147,7 +147,7 @@ open import Data.Nat.Order
 open import Data.Nat.Base
 
 Nat-min : is-semigroup min
-Nat-min .has-is-magma .has-is-set = Nat-is-set
+Nat-min .has-is-magma .is-magma.has-is-set = Nat-is-set
 Nat-min .associative = min-assoc _ _ _
 ```
 
@@ -163,4 +163,28 @@ private
       sucx≤x : suc x ≤ x
       sucx≤x = subst (λ e → e ≤ x) (id (suc x)) (min-≤l x (suc x))
     in ¬sucx≤x x sucx≤x
+```
+
+# Constructing semigroups
+
+The interface to `Semigroup-on`{.Agda} is contains some annoying nesting,
+so we provide an interface that arranges the data in a more user-friendly
+way.
+
+```agda
+record make-semigroup {ℓ} (A : Type ℓ) : Type ℓ where
+  field
+    semigroup-is-set : is-set A
+    _⋆_ : A → A → A
+    ⋆-assoc : ∀ x y z → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
+
+  to-is-semigroup : is-semigroup _⋆_
+  to-is-semigroup .has-is-magma .is-magma.has-is-set = semigroup-is-set
+  to-is-semigroup .associative = ⋆-assoc _ _ _
+
+  to-semigroup-on : Semigroup-on A
+  to-semigroup-on .fst = _⋆_
+  to-semigroup-on .snd = to-is-semigroup
+
+open make-semigroup using (to-is-semigroup; to-semigroup-on) public
 ```

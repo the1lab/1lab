@@ -5,12 +5,12 @@ open import 1Lab.Prelude
 
 open import Algebra.Magma.Unital hiding (idl ; idr)
 open import Algebra.Semigroup
-open import Algebra.Monoid hiding (idl ; idr)
+open import Algebra.Monoid
 open import Algebra.Magma
 
-open import Cat.Instances.Delooping
+import Algebra.Monoid.Reasoning as Mon
 
-import Cat.Reasoning
+open is-monoid hiding (idl ; idr)
 ```
 -->
 
@@ -21,11 +21,11 @@ module Algebra.Group where
 # Groups {defines=group}
 
 A **group** is a [monoid] that has inverses for every element. The
-inverse for an element is [necessarily, unique]; Thus, to say that "$(G,
+inverse for an element is, [necessarily, unique]; thus, to say that "$(G,
 \star)$ is a group" is a statement about $(G, \star)$ having a certain
 _property_ (namely, being a group), not _structure_ on $(G, \star)$.
 
-Furthermore, since `group homomorphisms`{.Agda ident=is-group-hom}
+Furthermore, since [[group homomorphisms]]
 automatically preserve this structure, we are justified in calling this
 _property_ rather than _property-like structure_.
 
@@ -44,7 +44,7 @@ record is-group {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
 ```
 
 There is also a map which assigns to each element $x$ its _`inverse`{.Agda
-ident=inverse}_ $x^{-1}$, and this inverse must multiply with $x$ to
+ident=inverse}_ $x\inv$, and this inverse must multiply with $x$ to
 give the unit, both on the left and on the right:
 
 ```agda
@@ -59,6 +59,7 @@ give the unit, both on the left and on the right:
 
 <!--
 ```agda
+  infixr 20 _—_
   _—_ : A → A → A
   x — y = x * inverse y
 
@@ -92,11 +93,26 @@ give the unit, both on the left and on the right:
   underlying-monoid = A , record
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
-  open Cat.Reasoning (B (underlying-monoid .snd))
-    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
-    public
+  open Mon underlying-monoid public
 ```
 -->
+
+Note that any element $x$ of $G$ determines two
+bijections on the underlying set of $G$, by multiplication with $x$ on
+the left and on the right.
+The inverse of this bijection is given by multiplication with
+$x\inv$, and the proof that these are in fact inverse functions are
+given by the group laws:
+
+```agda
+  ⋆-equivl : ∀ x → is-equiv (x *_)
+  ⋆-equivl x = is-iso→is-equiv (iso (inverse x *_)
+    (λ _ → cancell inverser) λ _ → cancell inversel)
+
+  ⋆-equivr : ∀ y → is-equiv (_* y)
+  ⋆-equivr y = is-iso→is-equiv (iso (_* inverse y)
+    (λ _ → cancelr inversel) λ _ → cancelr inverser)
+```
 
 ## is-group is propositional
 
@@ -111,7 +127,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-group)
 
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
-is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
+is-group-is-prop {A = A} x y = Iso.injective eqv $
      1x=1y
   ,ₚ funext (λ a →
       monoid-inverse-unique x.has-is-monoid a _ _
@@ -120,7 +136,7 @@ is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
   ,ₚ prop!
   where
     module x = is-group x
-    module y = is-group y hiding (magma-hlevel ; module HLevel-instance)
+    module y = is-group y hiding (magma-hlevel)
     A-hl : ∀ {n} → H-Level A (2 + n)
     A-hl = basic-instance {T = A} 2 (x .is-group.has-is-set)
     1x=1y = identities-equal _ _
@@ -134,7 +150,7 @@ instance
   H-Level-is-group = prop-instance is-group-is-prop
 ```
 
-# Group homomorphisms
+# Group homomorphisms {defines="group-homomorphism"}
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
@@ -151,7 +167,7 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
     has-is-group : is-group _⋆_
 
   infixr 20 _⋆_
-  infixl 30 _⁻¹
+  infixl 35 _⁻¹
 
   _⁻¹ : A → A
   x ⁻¹ = has-is-group .is-group.inverse x
@@ -176,7 +192,7 @@ record
 ```
 
 A tedious calculation shows that this is sufficient to preserve the
-identity:
+identity and inverses:
 
 ```agda
   private
@@ -235,7 +251,7 @@ Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
 Group[ A ⇒ B ] = Σ (A .fst → B .fst) (is-group-hom (A .snd) (B .snd))
 ```
 
-## Making groups
+# Making groups
 
 Since the interface of `Group-on`{.Agda} is very deeply nested, we
 introduce a helper function for arranging the data of a group into a
@@ -255,8 +271,8 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
     idl   : ∀ x → mul unit x ≡ x
 
   private
-    inverser : ∀ x → mul x (inv x) ≡ unit
-    inverser x =
+    invr : ∀ x → mul x (inv x) ≡ unit
+    invr x =
       mul x (inv x)                                   ≡˘⟨ idl _ ⟩
       mul unit (mul x (inv x))                        ≡˘⟨ ap₂ mul (invl _) refl ⟩
       mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡˘⟨ assoc _ _ _ ⟩
@@ -266,68 +282,26 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
       mul (inv (inv x)) (inv x)                       ≡⟨ invl _ ⟩
       unit                                            ∎
 
-  to-group-on : Group-on G
-  to-group-on .Group-on._⋆_ = mul
-  to-group-on .Group-on.has-is-group .is-group.unit = unit
-  to-group-on .Group-on.has-is-group .is-group.inverse = inv
-  to-group-on .Group-on.has-is-group .is-group.inversel = invl _
-  to-group-on .Group-on.has-is-group .is-group.inverser = inverser _
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
+  to-is-group : is-group mul
+  to-is-group .is-group.unit = unit
+  to-is-group .is-group.inverse = inv
+  to-is-group .is-group.inversel = invl _
+  to-is-group .is-group.inverser = invr _
+  to-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
+  to-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
     mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
     mul x (mul (inv x) x)    ≡⟨ assoc _ _ _ ⟩
-    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (inverser x) ⟩
+    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (invr x) ⟩
     mul unit x               ≡⟨ idl x ⟩
     x                        ∎
-  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
+  to-is-group .is-group.has-is-monoid .has-is-semigroup =
     record { has-is-magma = record { has-is-set = group-is-set }
            ; associative = λ {x y z} → assoc x y z
            }
 
-open make-group using (to-group-on) public
-```
+  to-group-on : Group-on G
+  to-group-on .Group-on._⋆_ = mul
+  to-group-on .Group-on.has-is-group = to-is-group
 
-# Symmetric groups
-
-If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
-set, and it forms the carrier for a group: The _symmetric group_ on $X$.
-
-```agda
-Sym : ∀ {ℓ} (X : Set ℓ) → Group-on (∣ X ∣ ≃ ∣ X ∣)
-Sym X = to-group-on group-str where
-  open make-group
-  group-str : make-group (∣ X ∣ ≃ ∣ X ∣)
-  group-str .mul g f = f ∙e g
-```
-
-The group operation is `composition of equivalences`{.Agda ident=∙e};
-The identity element is `the identity equivalence`{.Agda ident=id-equiv}.
-
-```agda
-  group-str .unit = id , id-equiv
-```
-
-This type is a set because $X \to X$ is a set (because $X$ is a set by
-assumption), and `being an equivalence is a proposition`{.Agdaa
-ident=is-equiv-is-prop}.
-
-```agda
-  group-str .group-is-set = hlevel!
-```
-
-The associativity and identity laws hold definitionally.
-
-```agda
-  group-str .assoc _ _ _ = Σ-prop-path is-equiv-is-prop refl
-  group-str .idl _ = Σ-prop-path is-equiv-is-prop refl
-```
-
-The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
-the inverse equations hold by the fact that the inverse of an
-equivalence is both a section and a retraction.
-
-```agda
-  group-str .inv = _e⁻¹
-  group-str .invl (f , eqv) =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
+open make-group using (to-is-group; to-group-on) public
 ```

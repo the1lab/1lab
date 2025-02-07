@@ -6,7 +6,7 @@ Thanks for taking the time to contribute!
 This file holds the conventions we use around the codebase, but they're
 guidelines, and not strict rules: If you're unsure of something, hop on
 [the Discord](https://discord.gg/Zp2e8hYsuX) and ask there, or open [a
-discussion thread](https://github.com/plt-amy/1lab/discussions)
+discussion thread](https://github.com/the1lab/1lab/discussions)
 if that's more your style.
 
 ## General guidelines
@@ -28,7 +28,7 @@ of the "highlight" classes, which have names corresponding to each of the
 icons in [`support/web/highlights`]. These **should** use `:::`-fenced
 divs:
 
-[`support/web/highlights`]: https://github.com/plt-amy/1lab/blob/main/support/web/highlights
+[`support/web/highlights`]: https://github.com/the1lab/1lab/blob/main/support/web/highlights
 
     ::: warning
     Warning text goes here.
@@ -76,7 +76,7 @@ be referred to in prose using `` `name`{.Agda} `` (an inline code block
 with class `Agda`). The [HoTT book comparison] uses this feature
 extensively.
 
-[HoTT book comparison]: https://github.com/plt-amy/1lab/blob/main/src/HoTT.lagda.md
+[HoTT book comparison]: https://github.com/the1lab/1lab/blob/main/src/HoTT.lagda.md
 
 If the definition does not naturally appear in the code, the following
 idiom can be used. The implementation of identifier links prevents their
@@ -105,7 +105,7 @@ recommended way of working out whether or not a diagram renders
 correctly is to actually build the website, since that lets you see
 whether or not the image has a reasonable size in the page.
 
-[These LaTeX packages]: https://github.com/plt-amy/1lab/blob/main/default.nix#L18-L27
+[These LaTeX packages]: https://github.com/the1lab/1lab/blob/main/default.nix#L18-L27
 
 Diagrams are compiled if they appear in a *fenced* code block with class
 `quiver`. Accordingly, most of us use [q.uiver.app](https://q.uiver.app)
@@ -114,7 +114,7 @@ your diagram with Quiver, copy the LaTeX export, sans the permalink
 comment, and paste it — maths delimiters and all — into a code block.
 The indentation **should** be changed from tabs to two spaces.
 
-    ~~~{.quiver .short-2}
+    ~~~{.quiver}
     \[\begin{tikzcd}
       a && b
       \arrow[from=1-1, to=1-3]
@@ -126,7 +126,7 @@ Note that the preamble is not directly loadable using Quiver's macros
 functionality since it relies on `\definealphabet`, which is implemented
 separately since it requires a shim to work on KaTeX.
 
-[the preamble]: https://github.com/plt-amy/1lab/blob/main/src/preamble.tex
+[the preamble]: https://github.com/the1lab/1lab/blob/main/src/preamble.tex
 
 ## The structure of a page
 
@@ -143,8 +143,14 @@ general structure:
   **must** appear in this order.
 
   The tool `support/sort-imports.hs` **should** be used to update code
-  to comply to these rules. The modules to format are given as
-  command-line arguments.
+  to comply to these rules. It can be run as a standalone executable if `stack` is
+  available, or with Nix using the following command:
+
+  ```sh
+  nix run --experimental-features nix-command -f . sort-imports
+  ```
+
+  The modules to format are given as command-line arguments.
 
 - The top-level module name, together with any parameters, **must**
   appear before any prose (incl. the initial header), and **must not**
@@ -159,7 +165,7 @@ general structure:
 A perfect example of these guidelines is [`Order.Semilattice.Free`],
 since it has four different import blocks.
 
-[`Order.Semilattice.Free`]: https://github.com/plt-amy/1lab/blob/main/src/Order/Semilattice/Free.lagda.md
+[`Order.Semilattice.Free`]: https://github.com/the1lab/1lab/blob/main/src/Order/Semilattice/Free.lagda.md
 
 ## Agda code style
 
@@ -169,7 +175,7 @@ an equational reasoning block, anything between `⟨_⟩` does not count for
 the line length limit, since those spans can be removed by the user.
 (example: the [dual of the modular law] reaches column 136!)
 
-[dual of the modular law]: https://github.com/plt-amy/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
+[dual of the modular law]: https://github.com/the1lab/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
 
 Types **should** be defined directly in `Type _`, if possible, then
 later shown to be of a particular truncation level. This rule **may** be

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
@@ -60,22 +59,21 @@ sea of theory has risen to the point where our result is trivial:
 ```agda
 module Rezk-large (A : Precategory o h) where
   Rezk-completion : Precategory (o ⊔ lsuc h) (o ⊔ h)
-  Rezk-completion = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+  Rezk-completion = Essential-image (よ A)
 
   Rezk-completion-is-category : is-category Rezk-completion
-  Rezk-completion-is-category =
-    Restrict-is-category _ (λ _ → squash)
-      (Functor-is-category Sets-is-category)
+  Rezk-completion-is-category = Essential-image-is-category (よ A)
+    (Functor-is-category Sets-is-category)
 
   Complete : Functor A Rezk-completion
-  Complete = Ff-domain→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+  Complete = Essential-inc (よ A)
 
   Complete-is-ff : is-fully-faithful Complete
-  Complete-is-ff = is-fully-faithful-domain→Full-subcat
-      {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-ff = ff→Essential-inc-ff
+      (よ _) (よ-is-fully-faithful _)
 
   Complete-is-eso : is-eso Complete
-  Complete-is-eso = is-eso-domain→Full-subcat {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-eso = Essential-inc-eso (よ _)
 ```
 
 However, this construction is a bit disappointing, because we've had to
@@ -156,6 +154,7 @@ functor is fully faithful, that's equivalent to what we want.
 
 ```agda
   private module Rezk↪PSh = Ffr Rezk↪PSh id-equiv
+
   abstract
     Rezk-completion-is-category : is-category Rezk-completion
     Rezk-completion-is-category =
@@ -164,7 +163,7 @@ functor is fully faithful, that's equivalent to what we want.
           (Functor-is-category Sets-is-category)
           (よim.embed , よim.embed-is-embedding))
         (λ x y → Rezk↪PSh.iso-equiv e⁻¹)
-        λ x → Cr.≅-pathp Rezk-completion refl refl refl
+        λ x → trivial!
 ```
 
 It remains to show that the functor $\cA \to \widehat{\cA}$ is a

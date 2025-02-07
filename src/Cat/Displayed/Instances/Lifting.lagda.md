@@ -66,7 +66,7 @@ module _
 -->
 
 ```agda
-  record Lifting (F : Functor J B) : Type (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) where
+  record Lifting (F : Functor J B) : Type (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) where
     no-eta-equality
     field
       F₀'   : (j : J.Ob) → Ob[ F .F₀ j ]
@@ -84,9 +84,9 @@ module _
   Lifting-pathp
     : {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
     → (p : F ≡ G)
-    → (q : ∀ x → PathP (λ i → Ob[ F₀ (p i) x ]) (F' .F₀' x) (G' .F₀' x))
+    → (q : ∀ x → PathP (λ i → Ob[ p i .F₀ x ]) (F' .F₀' x) (G' .F₀' x))
     → (∀ {x y} → (f : J.Hom x y)
-       → PathP (λ i → Hom[ (F₁ (p i) f) ] (q x i) (q y i)) (F' .F₁' f) (G' .F₁' f))
+       → PathP (λ i → Hom[ p i .F₁ f ] (q x i) (q y i)) (F' .F₁' f) (G' .F₁' f))
     → PathP (λ i → Lifting (p i)) F' G'
   Lifting-pathp p q r i .F₀' x = q x i
   Lifting-pathp p q r i .F₁' f = r f i
@@ -154,12 +154,7 @@ between $F'(j)$ and $G'(j)$.
 
 <!--
 ```agda
-module _
-  {o ℓ o' ℓ' oj ℓj}
-  {B : Precategory o ℓ}
-  {J : Precategory oj ℓj}
-  {E : Displayed B o' ℓ'}
-  where
+module _ {o ℓ o' ℓ' oj ℓj} {B : Precategory o ℓ} {J : Precategory oj ℓj} {E : Displayed B o' ℓ'} where
   private module J = Precategory J
 
   open Cat.Reasoning B
@@ -203,18 +198,15 @@ module _
 
   private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>l_)
 
-  Nat-lift-is-set
-    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
-    → {α : F => G} → is-set (F' =[ α ]=>l G')
-  Nat-lift-is-set =
-    Iso→is-hlevel 2 eqv $
-    Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ → Hom[ _ ]-set _ _) λ _ →
-    Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
-    PathP-is-hlevel 2 (Hom[ _ ]-set _ _)
+  instance
+    H-Level-Nat-Lift
+      : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G} {α : F => G} {n}
+      → H-Level (F' =[ α ]=>l G') (2 + n)
+    H-Level-Nat-Lift = basic-instance 2 $ Iso→is-hlevel! 2 eqv
 ```
 -->
 
-Diagramatically, the situation is as follows:
+Diagrammatically, the situation is as follows:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -266,7 +258,7 @@ their bases.
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → (α' : F' =[ α ]=>l G')
     → πᶠ E ▸ Nat-lift→Nat α' ≡ Nat→Nat-lift F' G' α
-  Nat-lift-is-lifting α' = Nat-path (λ _ → refl)
+  Nat-lift-is-lifting α' = ext λ _ → refl
 ```
 
 The identity natural transformation is easy to define, as is vertical
@@ -318,7 +310,7 @@ module _
   Liftings : Displayed Cat[ J , B ] (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) (ℓ' ⊔ oj ⊔ ℓj)
   Liftings .Displayed.Ob[_] = Lifting E
   Liftings .Displayed.Hom[_] α F' G' = F' =[ α ]=>l G'
-  Liftings .Displayed.Hom[_]-set _ _ _ = Nat-lift-is-set
+  Liftings .Displayed.Hom[_]-set _ _ _ = hlevel 2
   Liftings .Displayed.id' = idntl
   Liftings .Displayed._∘'_ = _∘ntl_
   Liftings .Displayed.idr' _ = Nat-lift-pathp (λ _ → idr' _)
@@ -446,7 +438,7 @@ Since none of these constructions have deeper mathematical content than
 their types, we omit the definitions from the page entirely.
 
 <!--
-```
+```agda
   ∫Functor→Lifting F .F₀' j = F .F₀ j .snd
   ∫Functor→Lifting F .F₁' f = F .F₁ f .preserves
   ∫Functor→Lifting F .F-id' = cast[] (ap preserves (F .F-id))
@@ -485,11 +477,9 @@ Using these repackagings, we can define the promised functor from $[\cJ,
   Functors→Liftings .F₁ α .hom       = ∫Nat→Nat α
   Functors→Liftings .F₁ α .preserves = ∫Nat→Nat-lift α
 
-  Functors→Liftings .F-id = total-hom-path Liftings
-    (Nat-path (λ _ → refl))
+  Functors→Liftings .F-id = total-hom-path Liftings (ext λ _ → refl)
     (Nat-lift-pathp (λ _ → refl))
-  Functors→Liftings .F-∘ f g = total-hom-path Liftings
-    (Nat-path (λ _ → refl))
+  Functors→Liftings .F-∘ f g = total-hom-path Liftings (ext (λ _ → refl))
     (Nat-lift-pathp (λ _ → refl))
 ```
 
@@ -500,17 +490,15 @@ appeal to some extensionality lemmas.
 
 ```agda
   Functors→Liftings-is-iso : is-precat-iso Functors→Liftings
-  Functors→Liftings-is-iso .is-precat-iso.has-is-ff =
-    is-iso→is-equiv $
-      iso (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
-      (λ _ → total-hom-path Liftings
-        (Nat-path       λ _ → refl)
-        (Nat-lift-pathp λ _ → refl))
-      (λ _ → Nat-path (λ _ → total-hom-path E refl refl))
-  Functors→Liftings-is-iso .is-precat-iso.has-is-iso =
-    is-iso→is-equiv $
-      iso (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
-        (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
-               Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
-        (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
+  Functors→Liftings-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
+    (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
+    (λ _ → total-hom-path Liftings
+      (ext            λ _ → refl)
+      (Nat-lift-pathp λ _ → refl))
+    (λ _ → ext λ _ → total-hom-path E refl refl)
+  Functors→Liftings-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
+    (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
+    (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
+      Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
+    (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
 ```

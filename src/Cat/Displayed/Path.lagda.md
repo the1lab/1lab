@@ -205,10 +205,10 @@ the displayed equivalent of an isomorphism of precategories.
 We'll define a `displayed-pathp-data`{.Agda}. We define the paths
 between displayed object spaces and displayed path spaces by gluing
 _against the ungluing_ of the paths in the underlying category, in the
-right endpoint category $\cF$. Diagramatically, this looks something
+right endpoint category $\cF$. Diagrammatically, this looks something
 like
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{E}[x]} && {\mathcal{F}[x]} \\
   \\

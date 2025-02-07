@@ -67,7 +67,7 @@ get-type-constructors n = datatype <|> recordtype where
 -- Look up a constructor in the signature.
 get-constructor : Name → TC Constructor
 get-constructor n = get-definition n >>= λ where
-  (data-cons t) → do
+  (data-cons t _) → do
     (npars , cons) ← get-data-type t
     (args , ty)    ← pi-view <$> get-type n
     pure (conhead n t (drop npars args) ty)
@@ -111,7 +111,7 @@ instance
 private
   it-worker : Name → TC Term
   it-worker n = get-definition n <&> λ where
-    (data-cons _) →
+    (data-cons _ _) →
       def₀ (quote Has-constr.from-constr) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
     _ →
       def₀ (quote Has-def.from-def) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
@@ -180,8 +180,8 @@ render-name def-nm = do
   d ← is-defined def-nm
   let
     fancy = get-definition def-nm >>= λ where
-      (data-cons _) → formatErrorParts [ termErr (con₀ def-nm) ]
-      _             → formatErrorParts [ termErr (def₀ def-nm) ]
+      (data-cons _ _) → formatErrorParts [ termErr (con₀ def-nm) ]
+      _               → formatErrorParts [ termErr (def₀ def-nm) ]
     plain = show def-nm
   if d then fancy else pure plain
 
@@ -211,19 +211,31 @@ helper-function def-nm suf ty cls = do
     _  → define-function nm cls
   pure nm
 
+-- Given a well-typed `val : ty`, return a definitionally-equal atomic
+-- term equal to `val`, potentially by lifting it into the signature.
+-- See 'helper-function' for the naming scheme.
+define-abbrev : Name → String → Term → Term → TC Term
+define-abbrev def-nm suf ty val with is-atomic-tree? val
+... | true  = pure val
+... | false = do
+  let (tel , _) = pi-impl-view ty
+  nm ← helper-function def-nm suf ty
+    [ clause tel (tel→pats 0 tel) (apply-tm* val (tel→args 0 tel)) ]
+  pure (def₀ nm)
+
 private
   make-args : Nat → List (Arg Nat) → List (Arg Term)
   make-args n xs = reverse $ map (λ (arg ai i) → arg ai (var (n - i - 1) [])) xs
 
-  class-for-param : Name → Nat → List (Arg Nat) → Term → Maybe Term
+  class-for-param : (Arg Term → Term) → Nat → List (Arg Nat) → Term → Maybe Term
   class-for-param class n xs (agda-sort _) =
-    just (def class (argN (var n (make-args n xs)) ∷ []))
+    just (class (argN (var n (make-args n xs))))
   class-for-param class n xs (pi a (abs s b)) =
     pi (argH (Arg.unarg a)) ∘ abs s <$>
       class-for-param class (suc n) (arg (Arg.arg-info a) n ∷ xs) b
   class-for-param _ _ _ _ = nothing
 
-  compute-telescope : Name → Nat → List (Arg Nat) → Telescope → Telescope → Telescope × List (Arg Term)
+  compute-telescope : (Arg Term → Term) → Nat → List (Arg Nat) → Telescope → Telescope → Telescope × List (Arg Term)
   compute-telescope d n xs is [] = reverse is , make-args (n + length is) xs
   compute-telescope d n xs is ((x , a) ∷ tel) =
     let
@@ -247,14 +259,14 @@ private
 -- That is, all the parameters of the data type are bound invisibly, and
 -- parameters that (end in) a type additionally have corresponding
 -- instances of the class available.
-instance-telescope : Name → Name → TC (Telescope × List (Arg Term))
+instance-telescope : (Arg Term → Term) → Name → TC (Telescope × List (Arg Term))
 instance-telescope class dat = do
   (tele , _) ← pi-view <$> get-type dat
   pure (compute-telescope class 0 [] [] tele)
 
 -- Like `instance-telescope`, but instead return the complete pi-type of
 -- the derived instance.
-instance-type : Name → Name → TC Term
+instance-type : (Arg Term → Term) → Name → TC Term
 instance-type class dat = do
   (tel , vs) ← instance-telescope class dat
-  pure $ unpi-view tel $ def class [ argN (def dat vs) ]
+  pure $ unpi-view tel $ class (argN (def dat vs))

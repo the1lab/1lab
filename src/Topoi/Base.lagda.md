@@ -1,26 +1,34 @@
 <!--
 ```agda
-open import Algebra.Prelude hiding (∫)
-
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
+open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Slice.Presheaf
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Monad
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Monad.Limits
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Equivalence
-open import Cat.Diagram.Everything
+open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Properties
 open import Cat.Instances.Elements
+open import Cat.Instances.Functor
+open import Cat.Diagram.Pullback
 open import Cat.Functor.Pullback
+open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
 open import Cat.Instances.Lift
+open import Cat.Diagram.Monad
 open import Cat.Functor.Slice
+open import Cat.Functor.Hom
+open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
@@ -65,7 +73,7 @@ that the inclusion functor $\iota : \cT \mono [\cC\op,\Sets]$ admits a
 summarise this situation in the diagram below, where "lex" (standing for
 "**l**eft **ex**act") is old-timey speak for "finite limit preserving".
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathcal{T}} & {[\mathcal{C}^{\mathrm{op}},\mathbf{Sets}]}
   \arrow[shift right=2, hook, from=1-1, to=1-2]
@@ -268,8 +276,8 @@ value $X$.
 
   incl .F₁ f = NT (λ _ → f) (λ _ _ _ → refl)
 
-  incl .F-id    = Nat-path λ _ → refl
-  incl .F-∘ f g = Nat-path λ _ → refl
+  incl .F-id    = trivial!
+  incl .F-∘ f g = trivial!
 
   sets : Topos κ (Sets κ)
   sets .site = Lift-cat κ κ ⊤Cat
@@ -287,13 +295,9 @@ sufficient (and necessary) to conclude fully-faithfulness.
   sets .has-ff {x} {y} = is-iso→is-equiv isic where
     open is-iso
     isic : is-iso (incl .F₁ {x} {y})
-    isic .inv nt         = η nt _
-
-    isic .rinv nt i .η _ = η nt _
-    isic .rinv nt i .is-natural _ _ f j x =
-      y .is-tr _ _ (λ j → nt .η _ x) (λ j → nt .is-natural _ _ f j x) i j
-
-    isic .linv x i = x
+    isic .inv  nt = nt .η _
+    isic .rinv nt = trivial!
+    isic .linv f  = refl
 ```
 
 The "sheafification" left adjoint is given by evaluating a presheaf $F$
@@ -302,8 +306,8 @@ transformation $\eta : F \To G$ at its one component $\eta_* : F(*) \to
 G(*)$.
 
 ```agda
-  sets .L .F₀ F    = F₀ F _
-  sets .L .F₁ nt   = η nt _
+  sets .L .F₀ F    = F # _
+  sets .L .F₁ nt   = nt # _
   sets .L .F-id    = refl
   sets .L .F-∘ f g = refl
 ```
@@ -325,30 +329,26 @@ limits directly for efficiency concerns. </summary>
     uniq f = psh-terminal func .paths f' ηₚ _ where
       f' : _ => _
       f' .η _ = f
-      f' .is-natural _ _ _ = funext λ x → happly (sym (F-id T)) _
+      f' .is-natural _ _ _ = funext λ x → happly (sym (T .F-id)) _
 
   sets .L-lex .pres-pullback {P} {X} {Y} {Z} pb = pb' where
     open is-pullback
     pb' : is-pullback (Sets κ) _ _ _ _
     pb' .square = pb .square ηₚ _
     pb' .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
-      η (pb .universal {P' = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
-          (Nat-path λ _ → p)) _
-      where
-        p1' : _ => _
-        p1' .η _ = p₁'
-        p1' .is-natural x y f i o = F-id X (~ i) (p₁' o)
-        p2' : _ => _
-        p2' .η _ = p₂'
-        p2' .is-natural x y f i o = F-id Y (~ i) (p₂' o)
+      pb .universal {P' = incl # P'}
+        {p₁' = NT (λ _ → p₁') (λ _ _ _ → funext λ _ → sym (X .F-id # _))}
+        {p₂' = NT (λ _ → p₂') (λ _ _ _ → funext λ _ → sym (Y .F-id # _))}
+        (Nat-pathp _ _ (λ x → p)) # lift tt
+
     pb' .p₁∘universal = pb .p₁∘universal ηₚ _
     pb' .p₂∘universal = pb .p₂∘universal ηₚ _
     pb' .unique {P'} {lim' = lim'} p1 p2 =
-      pb .unique {lim' = l'} (Nat-path λ _ → p1) (Nat-path λ _ → p2) ηₚ _
+      pb .unique {lim' = l'} (Nat-pathp _ _ λ _ → p1) (Nat-pathp _ _ λ _ → p2) ηₚ _
       where
         l' : incl .F₀ P' => P
         l' .η _ = lim'
-        l' .is-natural x y f i o = F-id P (~ i) (lim' o)
+        l' .is-natural x y f i o = P .F-id (~ i) (lim' o)
 ```
 </details>
 
@@ -357,14 +357,14 @@ components and constructing identity natural transformations.
 
 ```agda
   sets .L⊣ι .unit .η _ .η _ f            = f
-  sets .L⊣ι .unit .η F .is-natural _ _ _ = F-id F
-  sets .L⊣ι .unit .is-natural _ _ _      = Nat-path λ _ → refl
+  sets .L⊣ι .unit .η F .is-natural _ _ _ = F .F-id
+  sets .L⊣ι .unit .is-natural _ _ _      = trivial!
 
   sets .L⊣ι .counit .η _ x            = x
   sets .L⊣ι .counit .is-natural _ _ _ = refl
 
   sets .L⊣ι .zig = refl
-  sets .L⊣ι .zag = Nat-path λ _ → refl
+  sets .L⊣ι .zag = trivial!
 ```
 
 More canonical examples are given by any presheaf category, where both
@@ -389,10 +389,10 @@ Presheaf {κ} C = psh where
   psh .L⊣ι = adj where
     open _⊣_
     adj : Id ⊣ Id
-    adj .unit = NT (λ _ → idnt) λ x y f → Nat-path λ _ → refl
-    adj .counit = NT (λ _ → idnt) (λ x y f → Nat-path λ _ → refl)
-    adj .zig = Nat-path λ _ → refl
-    adj .zag = Nat-path λ _ → refl
+    adj .unit = NT (λ _ → idnt) λ x y f → trivial!
+    adj .counit = NT (λ _ → idnt) λ x y f → trivial!
+    adj .zig = trivial!
+    adj .zag = trivial!
 ```
 
 # Properties of topoi
@@ -455,7 +455,7 @@ A4.3.1) implies the topos $\cT$ is an _exponential ideal_ in
 $\psh(\cC)$: If $Y$ is a sheaf, and $X$ is any presheaf, then the
 internal hom $[X,Y]$ is a sheaf: topoi are [[cartesian closed]].
 
-<!-- TODO [Amy 2022-04-02]
+<!-- [TODO: Amy 2022-04-02]
 prove all of the above lmao
 -->
 
@@ -499,7 +499,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
       → f C.∘ h ≡ g C.∘ h )
     → f ≡ g
   Representables-generate {f = f} {g} sep =
-    fully-faithful→faithful {F = ct.ι} ct.has-ff $
+    ff→faithful {F = ct.ι} ct.has-ff $
       Representables-generate-presheaf ct.site λ h →
         ι.₁ f PSh.∘ h                                     ≡⟨ mangle ⟩
         ι.₁ ⌜ f C.∘ counit.ε _ C.∘ L.₁ h ⌝ PSh.∘ unit.η _ ≡⟨ ap! (sep _) ⟩
@@ -551,7 +551,7 @@ inclusion, the counit is an isomorphism.
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C) where
+module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : ⌞ C ⌟) where
   private
     module C = Cat.Reasoning C
     module Co = Cat.Reasoning (Slice C X)
@@ -564,7 +564,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C
 
 We build the geometric embedding presenting $\cT/X$ as a topos by
 composing the adjunctions $\epsilon_!(L/\iota(X)) \dashv \iota/X$
-and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\cC)/X
+and $F \dashv F\inv$ --- where $F$ is the equivalence $\psh(\cC)/X
 \to \psh(\int X)$. The right adjoint is [[fully faithful]] because it
 composes two fully faithful functors (a slice of $\iota$ and an
 equivalence), the left adjoint preserves finite limits because it is a
@@ -643,7 +643,7 @@ Idg {E = E} = record { Inv[_] = Id ; Dir[_] = Id
 ```
 
 <!--
-```
+```agda
   where
     module E = Cat.Reasoning E
 
@@ -717,6 +717,6 @@ Topos→geometric-embedding T = emb where
   emb .Geom[_↪_].has-ff = T .Topos.has-ff
 ```
 
-<!-- TODO [Amy 2022-04-02]
+<!-- [TODO: Amy, 2022-04-02]
 talk about geometric logic?
 -->

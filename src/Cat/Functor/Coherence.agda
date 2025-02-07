@@ -1,3 +1,4 @@
+open import 1Lab.Reflection.Copattern
 open import 1Lab.Reflection.Signature
 open import 1Lab.Reflection
 
@@ -40,69 +41,66 @@ instance
   Dualises-nat-trans .dualiser = quote _=>_.op
 
 private
-  get-dual : Bool → Term → TC (Term → Term)
-  get-dual false _ = pure (λ t → t)
-  get-dual true T = resetting do
+  get-dual : Term → TC Name
+  get-dual T = resetting do
     (mv , _) ← new-meta' (def (quote Dualises) [ argN T ])
     (qn ∷ []) ← get-instances mv
       where _ → typeError [ "Don't know how to dualise type " , termErr T ]
-    du ← normalise (def (quote dualiser) [ argN qn ])
-      >>= unquoteTC {A = Name}
-    pure λ t → def du [ argN t ]
+    unquoteTC =<< normalise (def (quote dualiser) [ argN qn ])
 
-cohere-dualise : Bool → ∀ {ℓ} {S : Type ℓ} → S → Term → TC ⊤
-cohere-dualise is-dual tm hole = do
+make-cohere : ∀ {ℓ} {S : Type ℓ} → S → Term → TC ⊤
+make-cohere tm hole = do
   `tm ← quoteTC tm
   `T ← infer-type hole
-  (c , fs) ← get-record `T
-  dual ← get-dual is-dual `T
-  args ← for fs λ (arg ai prj) → do
-    t ← reduce $ def prj [ argN (dual `tm) ]
-    pure (argN t)
+  `R ← repack-record `tm `T
+  unify hole `R
 
-  unify hole (con c args)
-
-cohere-dualise-into : Bool → ∀ {ℓ ℓ'} {S : Type ℓ'} → Name → (T : Type ℓ) → S → TC ⊤
-cohere-dualise-into is-dual nam T tm = do
+make-dualise : ∀ {ℓ} {S : Type ℓ} → S → Term → TC ⊤
+make-dualise tm hole = do
   `tm ← quoteTC tm
-  `T ← quoteTC T
-  (_ , fs) ← get-record `T
-  dual ← get-dual is-dual `T
-  clauses ← for fs λ (arg ai prj) → do
-    t ← reduce $ def prj [ argN (dual `tm) ]
-    pure $ clause [] [ arg ai (proj prj) ] t
-
-  declare (argN nam) `T
-  define-function nam clauses
-
-define-coherator-dualiser : Bool → Name → TC ⊤
-define-coherator-dualiser is-dual nam = do
-  (fs , dual) ← run-speculative do
-    `T ← infer-type (def nam [ argN unknown ])
-    (_ , fs) ← get-record `T
-    dual ← get-dual is-dual `T
-    pure ((fs , dual) , false)
-  clauses ← for fs λ (arg ai prj) → do
-    pure $ clause (("α" , argN unknown) ∷ [])
-              [ argN (var 0) , arg ai (proj prj) ]
-              (def prj [ argN (dual (var 0 [])) ])
-
-  define-function nam clauses
+  `T ← infer-type hole
+  dual ← get-dual `T
+  -- Repack using the duality lemma.
+  `R ← repack-record (def dual [ argN `tm ]) `T
+  unify hole `R
 
 macro
-  cohere!  = cohere-dualise false
-  dualise! = cohere-dualise true
+  cohere!  = make-cohere
+  dualise! = make-dualise
 
-cohere-into      = cohere-dualise-into false
-dualise-into     = cohere-dualise-into true
-define-coherence = define-coherator-dualiser false
-define-dualiser  = define-coherator-dualiser true
+cohere-into : ∀ {ℓ ℓ'} {S : Type ℓ'} → Name → (T : Type ℓ) → S → TC ⊤
+cohere-into nm T s = do
+  `s ← quoteTC s
+  `T ← quoteTC T
+  make-copattern true nm `s `T
 
-nat-assoc-to    : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
-nat-assoc-from  : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
-op-compose-into : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
+dualise-into : ∀ {ℓ ℓ'} {S : Type ℓ'} → Name → (T : Type ℓ) → ⦃ Dualises T ⦄ → S → TC ⊤
+dualise-into nm T ⦃ dual ⦄ s = do
+  `s ← quoteTC s
+  `T ← quoteTC T
+  make-copattern true nm (def (dual .dualiser) (argN `s ∷ [])) `T
 
-unquoteDef nat-assoc-to nat-assoc-from op-compose-into = do
-  define-coherence nat-assoc-to
-  define-coherence nat-assoc-from
-  define-coherence op-compose-into
+define-coherence : Name → TC ⊤
+define-coherence nm = define-eta-expansion nm
+
+define-dualiser : Name → TC ⊤
+define-dualiser nm  = do
+  tp ← infer-type (def nm [])
+  let (tele , cod-tp) = pi-view tp
+  -- Find the appropriate duality lemma, and construct a copattern using that lemma.
+  dual ← in-context (reverse tele) (get-dual cod-tp)
+  let tm = tel→lam tele (def dual (argN (var 0 []) ∷ []))
+  make-copattern false nm tm tp
+
+nat-assoc-to     : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
+nat-assoc-from   : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
+nat-unassoc-to   : f ⇒ (g ⊗ h) ⊗ i → f ⇒ g ⊗ h ⊗ i
+nat-unassoc-from : (f ⊗ g) ⊗ h ⇒ i → f ⊗ g ⊗ h ⇒ i
+op-compose-into  : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
+
+unquoteDef nat-assoc-to nat-assoc-from nat-unassoc-to nat-unassoc-from op-compose-into = do
+  define-eta-expansion nat-assoc-to
+  define-eta-expansion nat-assoc-from
+  define-eta-expansion nat-unassoc-to
+  define-eta-expansion nat-unassoc-from
+  define-eta-expansion op-compose-into

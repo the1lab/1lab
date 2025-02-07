@@ -1,11 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
 
 open import Meta.Traversable
+open import Meta.Invariant
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
@@ -26,7 +28,7 @@ private variable
 ```
 -->
 
-<!-- TODO [Amy 2022-12-14]
+<!-- [TODO: Amy, 2022-12-14]
 Write something informative here
 -->
 
@@ -100,7 +102,7 @@ just-inj {x = x} = ap (from-just x)
 
 instance
   Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
-  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
+  Discrete-Maybe {x = just x} {just y}   = invmap (ap just) just-inj (x ≡? y)
   Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
   Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
   Discrete-Maybe {x = nothing} {nothing} = yes refl
@@ -114,4 +116,13 @@ maybe→alt : ∀ {M : Effect} {ℓ} {A : Type ℓ}
           → ⦃ _ : Alt M ⦄ ⦃ _ : Idiom M ⦄ → Maybe A → M .Effect.₀ A
 maybe→alt (just x) = pure x
 maybe→alt nothing  = fail
+```
+
+```agda
+maybe-injective : Maybe A ≃ Maybe B → A → B
+maybe-injective e x with inspect (e .fst (just x))
+... | just y , _ = y
+... | nothing , p with inspect (e .fst nothing)
+... | just y  , _ = y
+... | nothing , q = absurd (just≠nothing (Equiv.injective₂ e p q))
 ```

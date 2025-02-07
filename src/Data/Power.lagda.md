@@ -49,8 +49,8 @@ The **subset** relation is defined as is done traditionally: If $x \in
 X$ implies $x \in Y$, for $X, Y : \bb{P}(T)$, then $X \subseteq Y$.
 
 ```agda
-_⊆_ : ℙ X → ℙ X → Type _
-X ⊆ Y = ∀ x → x ∈ X → x ∈ Y
+_ : {X : Type ℓ} {S T : ℙ X} → (S ⊆ T) ≡ ((x : X) → x ∈ S → x ∈ T)
+_ = refl
 ```
 
 By function and propositional extensionality, two subsets of $X$ are
@@ -61,13 +61,13 @@ propositions to each inhabitant of $X$.
 ℙ-ext : {A B : ℙ X}
       → A ⊆ B → B ⊆ A → A ≡ B
 ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x →
-  Ω-ua (A⊆B x) (B⊂A x)
+  Ω-ua (biimp (A⊆B x) (B⊂A x))
 ```
 
 ## Lattice structure
 
-The type $\bb{P}(X)$ has a lattice structure, with the order given
-by `subset inclusion`{.Agda ident=_⊆_}. We call the meets
+The type $\bb{P}(X)$ has a lattice structure, with the order given by
+`subset inclusion`{.Agda ident=⊆}. We call the meets
 **`intersections`{.Agda ident=_∩_}** and the joins **`unions`{.Agda
 ident=_∪_}**.
 
@@ -79,23 +79,29 @@ minimal : ℙ X
 minimal _ = ⊥Ω
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!
+(A ∩ B) x = A x ∧Ω B x
 ```
 
 <!--
 ```agda
 _ = ∥_∥
+_ = _⊎_
 ```
 -->
 
+```agda
+singleton : X → ℙ X
+singleton x y = elΩ (x ≡ y)
+```
+
 Note that in the definition of `union`{.Agda ident=_∪_}, we must
-`truncate`{.Agda ident=∥_∥} the `coproduct`{.Agda ident=⊎}, since there
+`truncate`{.Agda ident=∥_∥} the `coproduct`{.Agda ident=_⊎_}, since there
 is nothing which guarantees that A and B are disjoint subsets.
 
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
-(A ∪ B) x = elΩ (x ∈ A ⊎ x ∈ B)
+(A ∪ B) x = A x ∨Ω B x
 
-infixr 22 _∩_
-infixr 21 _∪_
+infixr 32 _∩_
+infixr 31 _∪_
 ```

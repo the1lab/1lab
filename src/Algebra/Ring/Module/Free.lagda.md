@@ -3,9 +3,11 @@
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
+
+open import Cat.Functor.Adjoint
+open import Cat.Prelude hiding (_+_ ; _*_)
 
 open import Data.Fin.Product
 open import Data.Fin.Base
@@ -18,7 +20,7 @@ import Algebra.Ring.Module.Multilinear
 module Algebra.Ring.Module.Free {ℓ} (R : Ring ℓ) where
 ```
 
-# Free modules
+# Free modules {defines="free-module"}
 
 For a [finite set] of generators, we can define free [modules] very
 directly: for example, using [vectors]. For infinite sets, this
@@ -227,58 +229,6 @@ write, is definitionally a linear map --- saving us a bit of effort.
 {-# DISPLAY fold-free-mod.go-linear = fold-free-mod #-}
 ```
 
-To prove that free modules have the expected universal property, it
-remains to show that if $f = g\circ\rm{inc}$, then $\rm{fold}(f) = g$.
-Since we're eliminating into a proposition, all we have to handle are
-the operation constructors, which is.. inductive, but manageable. I'll
-leave the computation here if you're interested:
-
-```agda
-open make-left-adjoint
-make-free-module : ∀ {ℓ'} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ'))
-make-free-module {ℓ'} = go where
-  go : make-left-adjoint (Forget-structure (R-Mod-structure R))
-  go .free x = Free-Mod ∣ x ∣
-  go .unit x = Free-mod.inc
-  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ'} y f)
-  go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ'} (Free-elim-prop.elim m) where
-    open Free-elim-prop
-    module g = Linear-map (hom→linear-map g)
-    module y = Module-on (y .snd)
-    fold = fold-free-mod y f .map
-    m : Free-elim-prop (λ a → fold-free-mod y f .map a ≡ g.map a)
-    m .has-is-prop x = hlevel!
-    m .P-· x y p =
-      x y.⋆ fold y   ≡⟨ ap (x y.⋆_) p ⟩
-      x y.⋆ g.map y  ≡˘⟨ g.pres-⋆ _ _ ⟩
-      g.map (x · y)  ∎
-    m .P-0m = sym g.pres-0
-    m .P-+ x y p q =
-      fold x y.+ fold y   ≡⟨ ap₂ y._+_ p q ⟩
-      g.map x y.+ g.map y ≡˘⟨ g.pres-+ _ _ ⟩
-      g.map (x + y)       ∎
-    m .P-neg x p =
-      y.- (fold x)  ≡⟨ ap y.-_ p ⟩
-      y.- (g.map x) ≡˘⟨ g.pres-neg ⟩
-      g.map (neg x) ∎
-    m .P-inc x = p $ₚ x
-```
-
-After that calculation, we can ✨ just ✨ conclude that
-`Free-module`{.Agda} has the right universal property: that is, we can
-rearrange the proof above into the form of a functor and an adjunction.
-
-```agda
-Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
-Free-module {ℓ' = ℓ'} =
-  make-left-adjoint.to-functor (make-free-module {ℓ' = ℓ'})
-
-Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ Forget-module R (ℓ ⊔ ℓ')
-Free⊣Forget {ℓ'} = make-left-adjoint.to-left-adjoint
-  (make-free-module {ℓ' = ℓ'})
-```
-
 <!--
 ```agda
 open Free-elim-prop
@@ -289,7 +239,7 @@ equal-on-basis
   → ((x : T) → f .map (inc x) ≡ g .map (inc x))
   → f ≡ g
 equal-on-basis M {f} {g} p =
-  Linear-map-path $ Free-elim-prop.elim λ where
+  ext $ Free-elim-prop.elim λ where
     .has-is-prop x → M .fst .is-tr _ _
     .P-0m        → f.pres-0 ∙ sym g.pres-0
     .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
@@ -301,6 +251,51 @@ equal-on-basis M {f} {g} p =
     module g = Linear-map g
     module M = Module-on (M .snd)
 
+instance
+  Extensional-linear-map-free
+    : ∀ {ℓb ℓg ℓr} {T : Type ℓb} {M : Module R ℓg}
+    → ⦃ ext : Extensional (T → ⌞ M ⌟) ℓr ⦄
+    → Extensional (Linear-map (Free-Mod T) M) ℓr
+  Extensional-linear-map-free {M = M} ⦃ ext ⦄ =
+    injection→extensional! {f = λ m x → m .map (inc x)} (λ p → equal-on-basis M (happly p)) ext
+
+  {-# OVERLAPS Extensional-linear-map-free #-}
+```
+-->
+
+To prove that free modules have the expected universal property, it
+remains to show that if $f = g\circ\rm{inc}$, then $\rm{fold}(f) = g$.
+Since we're eliminating into a proposition, all we have to handle are
+the operation constructors, which is.. inductive, but manageable. I'll
+leave the computation here if you're interested:
+
+```agda
+make-free-module : ∀ {ℓ'} (S : Set (ℓ ⊔ ℓ')) → Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+make-free-module {ℓ' = ℓ'} S = go where
+  open Free-object
+
+  go : Free-object (R-Mod↪Sets R (ℓ ⊔ ℓ')) S
+  go .free = Free-Mod ⌞ S ⌟
+  go .unit = inc
+  go .fold {b} f = linear-map→hom (fold-free-mod b f)
+  go .commute = refl
+  go .unique {M} {f} g p = reext! p
+```
+
+After that calculation, we can ✨ just ✨ conclude that
+`Free-module`{.Agda} has the right universal property: that is, we can
+rearrange the proof above into the form of a functor and an adjunction.
+
+```agda
+Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
+Free-module {ℓ' = ℓ'} = free-objects→functor (make-free-module {ℓ' = ℓ'})
+
+Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ R-Mod↪Sets R (ℓ ⊔ ℓ')
+Free⊣Forget {ℓ'} = free-objects→left-adjoint (make-free-module {ℓ' = ℓ'})
+```
+
+<!--
+```agda
 equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)
   → (let module M = Module-on M)

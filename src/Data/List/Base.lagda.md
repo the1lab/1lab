@@ -139,7 +139,7 @@ _++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 []       ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
-infixr 5 _++_
+infixr 8 _++_
 
 instance
   Append-List : ∀ {ℓ} {A : Type ℓ} → Append (List A)
@@ -163,6 +163,10 @@ concat (x ∷ xs) = x ++ concat xs
 count : Nat → List Nat
 count zero = []
 count (suc n) = 0 ∷ map suc (count n)
+
+product : List Nat → Nat
+product [] = 1
+product (x ∷ xs) = x * product xs
 
 reverse : List A → List A
 reverse = go [] where
@@ -300,8 +304,9 @@ lookup x ((k , v) ∷ xs) with x ≡? k
 ... | no  _ = lookup x xs
 
 _!_ : (l : List A) → Fin (length l) → A
-(x ∷ xs) ! fzero  = x
-(x ∷ xs) ! fsuc n = xs ! n
+(x ∷ xs) ! n with fin-view n
+... | zero  = x
+... | suc i = xs ! i
 
 tabulate : ∀ {n} (f : Fin n → A) → List A
 tabulate {n = zero}  f = []

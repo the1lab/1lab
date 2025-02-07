@@ -2,7 +2,10 @@
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 ```
 -->
@@ -66,15 +69,12 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
     (λ j → eta j x) , λ x y f → p f $ₚ _
   lim .factors _ _ = refl
   lim .unique eta p other q = funext λ x →
-    Σ-prop-path hlevel! (funext λ j → q j $ₚ x)
+    Σ-prop-path! (funext λ j → q j $ₚ x)
 ```
 
 <!--
 ```agda
 module _ {ℓ} where
-  open import Cat.Diagram.Equaliser (Sets ℓ)
-  open import Cat.Diagram.Pullback (Sets ℓ)
-  open import Cat.Diagram.Product (Sets ℓ)
   open Precategory (Sets ℓ)
 
   private variable
@@ -94,54 +94,56 @@ module _ {ℓ} where
 ## Finite set-limits
 
 For expository reasons, we present the computation of the most famous
-shapes of [[finite limit]] ([[terminal objects]], products, [[pullbacks]],
+shapes of [[finite limit]] ([[terminal objects]], [[products]], [[pullbacks]],
 and [[equalisers]]) in the category of sets. All the definitions below
 are redundant, since finite limits are always small, and thus the
 category of sets of _any_ level $\ell$ admits them.
 
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
-  Sets-terminal .top = el! (Lift _  ⊤)
-  Sets-terminal .has⊤ _ = hlevel!
+  Sets-terminal .top = el! (Lift _ ⊤)
+  Sets-terminal .has⊤ _ = hlevel 0
 ```
 
 Products are given by product sets:
 
 ```agda
-  Sets-products : (A B : Set ℓ) → Product A B
+  Sets-products : (A B : Set ℓ) → Product (Sets ℓ) A B
   Sets-products A B .apex = el! (∣ A ∣ × ∣ B ∣)
   Sets-products A B .π₁ = fst
   Sets-products A B .π₂ = snd
   Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
-  Sets-products A B .has-is-product .π₁∘factor = refl
-  Sets-products A B .has-is-product .π₂∘factor = refl
-  Sets-products A B .has-is-product .unique o p q i x = p i x , q i x
+  Sets-products A B .has-is-product .π₁∘⟨⟩ = refl
+  Sets-products A B .has-is-product .π₂∘⟨⟩ = refl
+  Sets-products A B .has-is-product .unique p q i x = p i x , q i x
 ```
 
 Equalisers are given by carving out the subset of $A$ where $f$ and $g$ agree
 using $\Sigma$:
 
 ```agda
-  Sets-equalisers : (f g : Hom A B) → Equaliser {A = A} {B = B} f g
+  Sets-equalisers : (f g : Hom A B) → Equaliser (Sets ℓ) {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
-    eq : Equaliser f g
-    eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
+    eq : Equaliser (Sets ℓ) f g
+    eq .apex .∣_∣ = Σ[ x ∈ A ] (f x ≡ g x)
+    eq .apex .is-tr = hlevel 2
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .universal {e' = e'} p x = e' x , p $ₚ x
     eq .has-is-eq .factors = refl
     eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly q x)
+      funext λ x → Σ-prop-path! (happly q x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.
 
 ```agda
   Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C)
-                 → Pullback {X = A} {Y = B} {Z = C} f g
+                 → Pullback (Sets ℓ) {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
-    pb : Pullback f g
-    pb .apex = el! $ Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)
+    pb : Pullback (Sets ℓ) f g
+    pb .apex .∣_∣   = Σ[ x ∈ A ] Σ[ y ∈ B ] (f x ≡ g y)
+    pb .apex .is-tr = hlevel 2
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

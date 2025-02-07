@@ -1,11 +1,13 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Conservative
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -25,6 +27,7 @@ private variable
   o ℓ o' ℓ' : Level
 open Functor
 open _=>_
+open _⊣_
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   private
@@ -77,7 +80,7 @@ $f$ and $g$ as _families indexed by $c$_, commutativity of the triangle
 says that the map $h$ "respects reindexing", or less obliquely
 "preserves fibres".
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   & c
@@ -128,24 +131,13 @@ says that the map $h$ "respects reindexing", or less obliquely
              → x ≡ y
   /-Hom-path = /-Hom-pathp refl refl
 
-  Extensional-/-Hom
-    : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.domain a) (/-Obj.domain b)) ℓ ⦄
-    → Extensional (/-Hom {c = c} a b) ℓ
-  Extensional-/-Hom ⦃ sa ⦄ = injection→extensional! (/-Hom-pathp refl refl) sa
-
   instance
-    extensionality-/-hom : ∀ {c a b} → Extensionality (/-Hom {c = c} a b)
-    extensionality-/-hom = record { lemma = quote Extensional-/-Hom }
+    Extensional-/-Hom
+      : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.domain a) (/-Obj.domain b)) ℓ ⦄
+      → Extensional (/-Hom {c = c} a b) ℓ
+    Extensional-/-Hom ⦃ sa ⦄ = injection→extensional! (/-Hom-pathp refl refl) sa
 
-  private unquoteDecl eqv = declare-record-iso eqv (quote /-Hom)
-
-  abstract
-    /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
-    /-Hom-is-set {a = a} {b} = hl where abstract
-      open C.HLevel-instance
-
-      hl : is-set (/-Hom a b)
-      hl = Iso→is-hlevel 2 eqv (hlevel 2)
+unquoteDecl H-Level-/-Hom = declare-record-hlevel 2 H-Level-/-Hom (quote /-Hom)
 ```
 -->
 
@@ -153,7 +145,7 @@ The slice category $\cC/c$ is given by the `/-Obj`{.Agda} and
 `/-Hom`{.Agda}s.
 
 ```agda
-Slice : (C : Precategory o ℓ) → Precategory.Ob C → Precategory _ _
+Slice : (C : Precategory o ℓ) → ⌞ C ⌟ → Precategory _ _
 Slice C c = precat where
   import Cat.Reasoning C as C
   open Precategory
@@ -163,7 +155,7 @@ Slice C c = precat where
   precat : Precategory _ _
   precat .Ob = /-Obj {C = C} c
   precat .Hom = /-Hom
-  precat .Hom-set x y = /-Hom-is-set
+  precat .Hom-set x y = hlevel 2
   precat .id .map      = C.id
   precat .id .commutes = C.idr _
 ```
@@ -173,7 +165,7 @@ commutativity condition for $f$) and the rhombus (the commutativity
 condition for $g$) both commute, then so does the larger triangle (the
 commutativity for $g \circ f$).
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   x && y && z \\
   & c \\
@@ -202,6 +194,47 @@ commutativity for $g \circ f$).
   precat .assoc f g h = ext (C.assoc _ _ _)
 ```
 
+There is an evident projection functor from $\cC/c$ to $\cC$ that only
+remembers the domains.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} {c} where
+  open /-Hom
+  open /-Obj
+  private
+    module C = Cat.Reasoning C
+    module C/c = Cat.Reasoning (Slice C c)
+```
+-->
+
+```agda
+  Forget/ : Functor (Slice C c) C
+  Forget/ .F₀ o = o .domain
+  Forget/ .F₁ f = f .map
+  Forget/ .F-id = refl
+  Forget/ .F-∘ _ _ = refl
+```
+
+Furthermore, this forgetful functor is easily seen to be [[faithful]]
+and [[conservative]]: if $f$ is a morphism in $\cC/c$ whose underlying
+map has an inverse $f^{-1}$ in $\cC$, then $f^{-1}$ clearly also makes
+the triangle commute, so that $f$ is invertible in $\cC/c$.
+
+```agda
+  Forget/-is-faithful : is-faithful Forget/
+  Forget/-is-faithful p = ext p
+
+  Forget/-is-conservative : is-conservative Forget/
+  Forget/-is-conservative {f = f} i =
+    C/c.make-invertible f⁻¹ (ext i.invl) (ext i.invr)
+    where
+      module i = C.is-invertible i
+      f⁻¹ : /-Hom _ _
+      f⁻¹ .map = i.inv
+      f⁻¹ .commutes = C.rswizzle (sym (f .commutes)) i.invl
+```
+
 ## Finite limits
 
 We discuss the construction of _finite_ limits in the slice of $\cC/c$.
@@ -209,7 +242,7 @@ First, every slice category has a [[terminal object]], given by the
 identity map $\id : c \to c$.
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   open /-Hom
@@ -228,7 +261,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
+module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
   import Cat.Reasoning C as C
   import Cat.Reasoning (Slice C c) as C/c
   private variable
@@ -313,7 +346,7 @@ f$ and $q : p \to g$ over $c$ is given precisely by evidence that $fq =
 gp$, meaning that they fit neatly around our pullback diagram, as shown
 in the square below.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   Q \\
   \& {a\times_bc} \&\& a \\
@@ -335,8 +368,8 @@ can obtain the dashed map $l : Q \to a \times_c b$, which we can
 calculate satisfies
 
 $$
-f\pi_1l = fp = Q\text{,}
-$$
+f\pi_1l = fp = Q
+$$,
 
 so that it is indeed a map $Q \to f \times g$ over $c$, as required.
 Reading out the rest of $(a \times_c b)$'s universal property, we see
@@ -361,9 +394,9 @@ product in $\cC/c.$
 
 <!--
 ```agda
-    is-pullback→is-fibre-product .π₁∘factor = ext pb.p₁∘universal
-    is-pullback→is-fibre-product .π₂∘factor = ext pb.p₂∘universal
-    is-pullback→is-fibre-product .unique other p q =
+    is-pullback→is-fibre-product .π₁∘⟨⟩ = ext pb.p₁∘universal
+    is-pullback→is-fibre-product .π₂∘⟨⟩ = ext pb.p₂∘universal
+    is-pullback→is-fibre-product .unique p q =
       ext (pb.unique (ap map p) (ap map q))
 
   Pullback→Fibre-product
@@ -376,6 +409,35 @@ product in $\cC/c.$
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
 ```
 -->
+
+<!--
+```agda
+  module _
+    {f g : /-Obj c} {p : /-Obj c} {π₁ : C/c.Hom p f} {π₂ : C/c.Hom p g}
+    (prod : is-product (Slice C c) π₁ π₂)
+    where
+    private module prod = is-product prod
+```
+-->
+
+We can go in the other direction as well, hence products in a slice
+category correspond precisely to pullbacks in the base category.
+
+```agda
+    open is-pullback
+
+    is-fibre-product→is-pullback : is-pullback C (π₁ .map) (f .map) (π₂ .map) (g .map)
+    is-fibre-product→is-pullback .square = π₁ .commutes ∙ sym (π₂ .commutes)
+    is-fibre-product→is-pullback .universal {P} {p₁} {p₂} square =
+      prod.⟨ record { map = p₁ ; commutes = refl }
+           , record { map = p₂ ; commutes = sym square } ⟩ .map
+    is-fibre-product→is-pullback .p₁∘universal = ap map prod.π₁∘⟨⟩
+    is-fibre-product→is-pullback .p₂∘universal = ap map prod.π₂∘⟨⟩
+    is-fibre-product→is-pullback .unique {lim' = lim'} fac₁ fac₂ = ap map $
+      prod.unique
+        {other = record { map = lim' ; commutes = ap (C._∘ lim') (sym (π₁ .commutes)) ∙ C.pullr fac₁}}
+        (ext fac₁) (ext fac₂)
+```
 
 While products and terminal objects in $\cC/X$ do not correspond to
 those in $\cC$, _pullbacks_ (and equalisers) are precisely equivalent. A
@@ -390,7 +452,7 @@ to the slice category (see the calculation marked `{- * -}`{.Agda}).
 
 <!--
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
          {P A B c} {p1 f p2 g}
   where
   open Cat.Reasoning C
@@ -512,7 +574,7 @@ depart, and write down an outline of the proof.
   `Total-space`{.Agda}, so that it is [[fully faithful]].
 
 - Finally, we show that, given $p : X \to I$, the assignment $i \mapsto
-  p^{-1}(i)$, sending an index to the fibre of $p$ over it, gives a
+  p\inv(i)$, sending an index to the fibre of $p$ over it, gives a
   functor $P$; and that $\int P \cong p$ over $I$, so that
   `Total-space`{.Agda} is a [[split essential surjection]], hence an
   equivalence of categories.
@@ -522,7 +584,7 @@ fast:
 
 ```agda
   Total-space : Functor Cat[ Disc' I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
+  Total-space .F₀ F .domain = el! (Σ _ (∣_∣ ⊙ F₀ F))
   Total-space .F₀ F .map    = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
@@ -548,13 +610,12 @@ dependent function is automatically a natural transformation.
 ```agda
   Total-space-is-ff : is-fully-faithful Total-space
   Total-space-is-ff {F} {G} = is-iso→is-equiv $
-    iso from linv (λ x → Nat-path λ x → funext (λ _ → transport-refl _)) where
+    iso from linv (λ x → ext λ _ _ → transport-refl _) where
 
     from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
     from mp = nt where
-      eta : ∀ i → ⌞ F .F₀ i ⌟ → ⌞ G .F₀ i ⌟
-      eta i j =
-        subst (∣_∣ ⊙ G .F₀) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+      eta : ∀ i → F ʻ i → G ʻ i
+      eta i j = subst (G ʻ_) (mp .commutes # _) (mp .map (i , j) .snd)
 
       nt : F => G
       nt .η = eta
@@ -567,11 +628,7 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = ext λ y → Σ-path (sym (happly (x .commutes) _))
-      ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
-                    (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
-      ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
-      ·· transport-refl _)
+    linv x = ext λ y s → Σ-pathp (sym (x .commutes $ₚ _)) (to-pathp⁻ refl)
 ```
 -->
 
@@ -580,7 +637,7 @@ its family of fibres gets us all the way back around to $p$.
 Fortunately, our proof that universes are [[object classifiers]]
 grappled with many of the same concerns, so we have a reusable
 equivalence `Total-equiv`{.Agda} which slots right in. By univalence, we
-can finish in style: not only is $\Sigma (x \mapsto p^{-1}(x))$
+can finish in style: not only is $\Sigma (x \mapsto p\inv(x))$
 _isomorphic_ to $p$ in $\Sets/I$, it's actually _identical_ to $p$!
 
 ```agda
@@ -608,7 +665,7 @@ that this latter condition reduces to showing $p \circ f = g$.
 
 <!--
 ```agda
-module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where
+module _ {C : Precategory o ℓ} {o : ⌞ C ⌟} (isc : is-category C) where
   private
     module C   = Cat.Reasoning C
     module C/o = Cat.Reasoning (Slice C o)
@@ -664,9 +721,9 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
   constant-family .F₀ A = cut (π₂ {a = A})
   constant-family .F₁ f .map      = ⟨ f ∘ π₁ , π₂ ⟩
   constant-family .F₁ f .commutes = π₂∘⟨⟩
-  constant-family .F-id    = ext (sym (⟨⟩-unique _ id-comm (idr _)))
+  constant-family .F-id    = ext (sym (⟨⟩-unique id-comm (idr _)))
   constant-family .F-∘ f g = ext $ sym $
-      ⟨⟩-unique _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
+      ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
 ```
 
 We can observe that this really is a _constant families_ functor by
@@ -698,13 +755,46 @@ the fibre over $h$ would correspondingly be isomorphic to $A \times \top
     → pb (constant-family .F₀ A .map) h .Pullback.apex ≅ (A ⊗₀ Y)
   constant-family-fibre pb {A} h = make-iso
     ⟨ π₁ ∘ p₁ , p₂ ⟩ (universal {p₁' = ⟨ π₁ , h ∘ π₂ ⟩} {p₂' = π₂} π₂∘⟨⟩)
-    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _) _
+    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _)
       (idr _ ∙ sym (pullr p₁∘universal ∙ π₁∘⟨⟩))
       (idr _ ∙ sym p₂∘universal)))
     (Pullback.unique₂ (pb _ _) {p = π₂∘⟨⟩ ∙ square}
       (pulll p₁∘universal ∙ ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₁∘⟨⟩ (pullr π₂∘⟨⟩ ∙ sym square))
       (pulll p₂∘universal ∙ π₂∘⟨⟩)
-      (idr _ ∙ Product.unique (prod _ _) _ refl refl)
+      (idr _ ∙ Product.unique (prod _ _) refl refl)
       (idr _))
     where open Pullback (pb (constant-family .F₀ A .map) h)
 ```
+
+The constant families functor is a [[right adjoint]] to the projection
+$\cC/B \to \cC$. This can be understood in terms of [[base change|pullback functor]]:
+if $\cC$ has a [[terminal object]] $\top$, then the slice $\cC/\top$ is
+equivalent to $\cC$, and the unique map $B \to \top$ induces a pullback
+functor $\cC \to \cC/B$ that is just the constant families functor.
+On the other hand, the "dependent sum" functor sends a map $A \to B$
+to the unique composite $A \to B \to \top$: it simply `Forget/`{.Agda}s the
+map. Thus the following adjunction is a special case of the
+adjunction between dependent sum and base change.
+
+```agda
+  Forget⊣constant-family : Forget/ ⊣ constant-family
+  Forget⊣constant-family .unit .η X .map = ⟨ id , X .map ⟩
+  Forget⊣constant-family .unit .η X .commutes = π₂∘⟨⟩
+  Forget⊣constant-family .unit .is-natural _ _ f = ext (⟨⟩-unique₂
+    (pulll π₁∘⟨⟩ ∙ id-comm-sym)
+    (pulll π₂∘⟨⟩ ∙ f .commutes)
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+    (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩))
+  Forget⊣constant-family .counit .η x = π₁
+  Forget⊣constant-family .counit .is-natural _ _ f = π₁∘⟨⟩
+  Forget⊣constant-family .zig = π₁∘⟨⟩
+  Forget⊣constant-family .zag = ext (⟨⟩-unique₂
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+    (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
+    refl
+    (idr _))
+```
+
+<!--
+[TODO: Naïm, 24/06/2024] this adjunction is comonadic!
+-->

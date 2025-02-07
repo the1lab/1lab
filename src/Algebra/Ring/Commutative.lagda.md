@@ -2,8 +2,15 @@
 ```agda
 open import 1Lab.Function.Embedding
 
-open import Algebra.Prelude
 open import Algebra.Ring
+
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Prelude hiding (_*_ ; _+_)
+
+open import Data.Int.Properties
+open import Data.Int.Base
+
+import Algebra.Ring.Reasoning as Kit
 ```
 -->
 
@@ -33,7 +40,7 @@ record CRing-on {ℓ} (R : Type ℓ) : Type ℓ where
 
 CRing-structure : ∀ ℓ → Thin-structure ℓ CRing-on
 CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure ℓ) where
-  open CRing-on hiding (_↪_)
+  open CRing-on
   emb : ∀ X → CRing-on X ↪ Ring-on X
   emb X .fst = has-ring-on
   emb X .snd y (r , p) (s , q) =
@@ -56,9 +63,17 @@ CRing : ∀ ℓ → Type (lsuc ℓ)
 CRing ℓ = CRings ℓ .Precategory.Ob
 
 module CRing {ℓ} (R : CRing ℓ) where
-  open CRing-on (R .snd) public
+  ring : Ring ℓ
+  ring .fst = R .fst
+  ring .snd = record { CRing-on (R .snd) }
+
+  open CRing-on (R .snd) using (*-commutes ; _+_ ; _*_ ; -_ ; _-_ ; 1r ; 0r) public
+  open Kit ring hiding (_+_ ; _*_ ; -_ ; _-_ ; 1r ; 0r) public
 
 is-commutative-ring : ∀ {ℓ} (R : Ring ℓ) → Type _
 is-commutative-ring R = ∀ {x y} → x R.* y ≡ y R.* x where
   module R = Ring-on (R .snd)
+
+ℤ-comm : CRing lzero
+ℤ-comm = record { fst = el! Int ; snd = record { has-ring-on = ℤ .snd ; *-commutes = λ {x y} → *ℤ-commutative x y } }
 ```

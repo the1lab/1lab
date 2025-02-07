@@ -37,14 +37,12 @@ module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : 
     module E = Cat.Reasoning E
     module B = Cat.Reasoning B
     module P = Functor P
-  open B.HLevel-instance
-  open E.HLevel-instance
 ```
 -->
 
 ```agda
   functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
-  functor→displayed .Ob[_] x = Σ[ u ∈ E.Ob ] (P.₀ u B.≅ x)
+  functor→displayed .Ob[_] x = Σ[ u ∈ E ] (P.₀ u B.≅ x)
 ```
 
 Following [@relativect], we define such a category by defining the space
@@ -72,7 +70,7 @@ maps $u \to_f v$ which commute with the mediating isomorphisms:
 This fits in a diagram like the one below. Note that the commutativity
 condition is for the lower shape, which is a distorted square.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   & u && v \\
   & {P(u)} && {P(v)} \\
@@ -96,12 +94,9 @@ property (rather than data).
   functor→displayed .id' = E.id , B.elimr P.F-id ∙ B.introl refl
   functor→displayed ._∘'_ (f , φ) (g , ψ) = f E.∘ g ,
     ap₂ B._∘_ refl (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
-  functor→displayed .idr' f' = Σ-pathp (E.idr _) $
-    is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .idl' f' = Σ-pathp (E.idl _) $
-    is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .assoc' f' g' h' = Σ-pathp (E.assoc _ _ _) $
-    is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
+  functor→displayed .idr' f' = Σ-prop-pathp! (E.idr _)
+  functor→displayed .idl' f' = Σ-prop-pathp! (E.idl _)
+  functor→displayed .assoc' f' g' h' = Σ-prop-pathp! (E.assoc _ _ _)
 ```
 
 We call a functor that gives rise to a Cartesian fibration through this

@@ -38,10 +38,7 @@ record Δ-map (n m : Nat) : Type where
 ```agda
 open Δ-map
 
-private
-  unquoteDecl eqv = declare-record-iso eqv (quote Δ-map)
-  Δ-map-is-set : ∀ x y → is-set (Δ-map x y)
-  Δ-map-is-set x y = Iso→is-hlevel 2 eqv $ hlevel!
+unquoteDecl H-Level-Δ-map = declare-record-hlevel 2 H-Level-Δ-map (quote Δ-map)
 
 Δ-map-path
   : ∀ {n m : Nat} {f g : Δ-map n m}
@@ -49,7 +46,7 @@ private
   → f ≡ g
 Δ-map-path p i .map x = p x i
 Δ-map-path {f = f} {g} p i .ascending x y w =
-  is-prop→pathp (λ j → Nat.≤-is-prop {to-nat (p x j)} {to-nat (p y j)})
+  is-prop→pathp (λ j → Nat.≤-is-prop {p x j .lower} {p y j .lower})
     (f .ascending x y w) (g .ascending x y w) i
 ```
 -->
@@ -58,7 +55,7 @@ private
 Δ : Precategory lzero lzero
 Δ .Ob = Nat
 Δ .Hom n m = Δ-map n m
-Δ .Hom-set = Δ-map-is-set
+Δ .Hom-set _ _ = hlevel 2
 
 Δ .id .map x = x
 Δ .id .ascending x y p = p

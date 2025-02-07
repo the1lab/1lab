@@ -22,9 +22,10 @@ module Algebra.Monoid.Category where
 ```
 
 <!--
-```
+```agda
 open Precategory
 open is-semigroup
+open is-monoid
 open is-magma
 open Monoid-hom
 open Monoid-on
@@ -103,11 +104,11 @@ By standard nonsense, then, the category of monoids admits a [[faithful
 functor]] into the category of sets.
 
 ```agda
-Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
-Forget = Forget-structure (Monoid-structure _)
+Mon↪Sets : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
+Mon↪Sets = Forget-structure (Monoid-structure _)
 ```
 
-## Free objects {defines=free-monoid}
+## Free monoids {defines=free-monoid}
 
 We piece together some properties of `lists`{.Agda ident=List} to show
 that, if $A$ is a set, then $\rm{List}(A)$ is an object of
@@ -133,8 +134,8 @@ We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 ```agda
-Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
-Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
+Free-monoid : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
+Free-monoid .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```
 
 The action on morphisms is given by `map`{.Agda}, which preserves the
@@ -142,9 +143,9 @@ monoid identity definitionally; We must prove that it preserves
 concatenation, identity and composition by induction on the list.
 
 ```agda
-Free .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = ext map-id
-Free .F-∘ f g = ext map-∘ where
+Free-monoid .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
+Free-monoid .F-id = ext map-id
+Free-monoid .F-∘ f g = ext map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -202,33 +203,33 @@ fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List ∣ X ∣)
 fold-pure [] = refl
 fold-pure {X = X} (x ∷ xs) = ap (x ∷_) (fold-pure {X = X} xs)
 
-Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
-Free⊣Forget .unit .η _ x = x ∷ []
-Free⊣Forget .unit .is-natural x y f = refl
-Free⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
-Free⊣Forget .counit .is-natural x y th =
+Free-monoid⊣Forget : ∀ {ℓ} → Free-monoid {ℓ} ⊣ Mon↪Sets
+Free-monoid⊣Forget .unit .η _ x = x ∷ []
+Free-monoid⊣Forget .unit .is-natural x y f = refl
+Free-monoid⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
+Free-monoid⊣Forget .counit .is-natural x y th =
   ext $ fold-natural (th .hom) (th .preserves)
-Free⊣Forget .zig {A = A} =
+Free-monoid⊣Forget .zig {A = A} =
   ext $ fold-pure {X = A}
-Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
+Free-monoid⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
 This concludes the proof that `Monoids`{.Agda} has free objects. We now
 prove that monoids are equivalently algebras for the `List`{.Agda}
-monad, i.e. that the `Free⊣Forget`{.Agda} adjunction is [monadic]. More
+monad, i.e. that the `Free-monoid⊣Forget`{.Agda} adjunction is [monadic]. More
 specifically, we show that the canonically-defined `comparison`{.Agda
-ident=Comparison} functor is [[fully faithful]] (list algebra homomoprhisms
+ident=Comparison-EM} functor is [[fully faithful]] (list algebra homomoprhisms
 are equivalent to monoid homomorphisms) and that it is [[split
 essentially surjective]].
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 
 ```agda
-Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})
+Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free-monoid⊣Forget {ℓ})
 Monoid-is-monadic {ℓ} = ff+split-eso→is-equivalence it's-ff it's-eso where
-  open import Cat.Diagram.Monad hiding (Free⊣Forget)
+  open import Cat.Diagram.Monad
 
-  comparison = Comparison (Free⊣Forget {ℓ})
+  comparison = Comparison-EM (Free-monoid⊣Forget {ℓ})
   module comparison = Functor comparison
 
   it's-ff : is-fully-faithful comparison
@@ -244,15 +245,15 @@ algebra homomorphism is a monoid homomorphism, which follows from the
 properties of monoids:
 
 ```agda
-    from : Algebra-hom _ _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
-    from alg .hom = alg .Algebra-hom.morphism
-    from alg .preserves .pres-id = happly (alg .Algebra-hom.commutes) []
+    from : Algebra-hom _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
+    from alg .hom = alg .hom
+    from alg .preserves .pres-id = happly (alg .preserves) []
     from alg .preserves .pres-⋆ a b =
       f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idr) ⟩
-      f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .Algebra-hom.commutes i (a ∷ b ∷ [])) ⟩
+      f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .preserves i (a ∷ b ∷ [])) ⟩
       f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idr ⟩
       f a y.⋆ f b                  ∎
-      where f = alg .Algebra-hom.morphism
+      where f = alg .hom
 ```
 
 The proofs that this is a quasi-inverse is immediate, since both "being
@@ -277,8 +278,7 @@ $[x,y]$.
   it's-eso : is-split-eso comparison
   it's-eso (A , alg) = monoid , the-iso where
     open Algebra-on
-    open Algebra-hom
-    import Cat.Reasoning (Eilenberg-Moore _ (L∘R (Free⊣Forget {ℓ}))) as R
+    import Cat.Reasoning (Eilenberg-Moore (L∘R (Free-monoid⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
     monoid .fst = A
@@ -334,15 +334,15 @@ itself is given by the identity function in both directions, since the
 recovered monoid has the same underlying type as the List-algebra!
 
 ```agda
-    into : Algebra-hom _ _ (comparison.₀ monoid) (A , alg)
-    into .morphism = λ x → x
-    into .commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
+    into : Algebra-hom _ (comparison.₀ monoid) (A , alg)
+    into .hom = λ x → x
+    into .preserves = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
 
-    from : Algebra-hom _ _ (A , alg) (comparison.₀ monoid)
-    from .morphism = λ x → x
-    from .commutes =
+    from : Algebra-hom _ (A , alg) (comparison.₀ monoid)
+    from .hom = λ x → x
+    from .preserves =
       funext (λ x → sym (recover x) ∙ ap (fold _) (sym (map-id x)))
 
     the-iso : comparison.₀ monoid R.≅ (A , alg)
-    the-iso = R.make-iso into from (Algebra-hom-path _ refl) (Algebra-hom-path _ refl)
+    the-iso = R.make-iso into from trivial! trivial!
 ```

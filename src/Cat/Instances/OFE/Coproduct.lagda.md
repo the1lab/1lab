@@ -40,8 +40,6 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
       _ = P
     module O = OFE-on O
     module P = OFE-on P
-    open OFE-H-Level O
-    open OFE-H-Level P
 ```
 -->
 
@@ -93,21 +91,21 @@ to write about.</summary>
 
 ```agda
   ⊎-OFE .has-is-ofe .has-is-prop zero x y _ _ = refl
-  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inl _) (inl _) = hlevel!
-  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inr _) (inr _) = hlevel!
+  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inl _) (inl _) = hlevel 1
+  ⊎-OFE .has-is-ofe .has-is-prop (suc n) (inr _) (inr _) = hlevel 1
 
   ⊎-OFE .has-is-ofe .≈-sym zero p = lift tt
-  ⊎-OFE .has-is-ofe .≈-sym (suc n) {inl _} {inl _} p = lift (O.≈-sym _ (p .Lift.lower))
-  ⊎-OFE .has-is-ofe .≈-sym (suc n) {inr _} {inr _} p = lift (P.≈-sym _ (p .Lift.lower))
+  ⊎-OFE .has-is-ofe .≈-sym (suc n) {inl _} {inl _} p = lift (O.≈-sym _ (p .lower))
+  ⊎-OFE .has-is-ofe .≈-sym (suc n) {inr _} {inr _} p = lift (P.≈-sym _ (p .lower))
 
   ⊎-OFE .has-is-ofe .≈-trans zero p q = lift tt
-  ⊎-OFE .has-is-ofe .≈-trans (suc n) {inl _} {inl _} {inl _} p q = lift (O.≈-trans _ (p .Lift.lower) (q .Lift.lower))
-  ⊎-OFE .has-is-ofe .≈-trans (suc n) {inr _} {inr _} {inr _} p q = lift (P.≈-trans _ (p .Lift.lower) (q .Lift.lower))
+  ⊎-OFE .has-is-ofe .≈-trans (suc n) {inl _} {inl _} {inl _} p q = lift (O.≈-trans _ (p .lower) (q .lower))
+  ⊎-OFE .has-is-ofe .≈-trans (suc n) {inr _} {inr _} {inr _} p q = lift (P.≈-trans _ (p .lower) (q .lower))
 
   ⊎-OFE .has-is-ofe .bounded a b  = lift tt
   ⊎-OFE .has-is-ofe .step zero _ _ p = lift tt
-  ⊎-OFE .has-is-ofe .step (suc n) (inl x) (inl y) p = lift (O.step _ x y (p .Lift.lower))
-  ⊎-OFE .has-is-ofe .step (suc n) (inr x) (inr y) p = lift (P.step _ x y (p .Lift.lower))
+  ⊎-OFE .has-is-ofe .step (suc n) (inl x) (inl y) p = lift (O.step _ x y (p .lower))
+  ⊎-OFE .has-is-ofe .step (suc n) (inr x) (inr y) p = lift (P.step _ x y (p .lower))
 ```
 
 This minor quibble might be of note to the reader curious enough to
@@ -120,13 +118,13 @@ $\rm{inr}(x) \within{0} \rm{inr}(y)$ is uninformative.
   ⊎-OFE .has-is-ofe .limit (inl x) (inl y) f = ap inl (O.limit x y f') where
     f' : ∀ n → O.within n x y
     f' zero    = O.bounded x y
-    f' (suc n) = f (suc n) .Lift.lower
+    f' (suc n) = f (suc n) .lower
   ⊎-OFE .has-is-ofe .limit (inr x) (inr y) f = ap inr (P.limit x y f') where
     f' : ∀ n → P.within n x y
     f' zero    = P.bounded x y
-    f' (suc n) = f (suc n) .Lift.lower
-  ⊎-OFE .has-is-ofe .limit (inl x) (inr y) f = absurd (f 1 .Lift.lower)
-  ⊎-OFE .has-is-ofe .limit (inr x) (inl y) f = absurd (f 1 .Lift.lower)
+    f' (suc n) = f (suc n) .lower
+  ⊎-OFE .has-is-ofe .limit (inl x) (inr y) f = absurd (f 1 .lower)
+  ⊎-OFE .has-is-ofe .limit (inr x) (inl y) f = absurd (f 1 .lower)
 ```
 
 </details>
@@ -187,12 +185,12 @@ unique: but it suffices to reason at the level of sets.
 ```agda
   mk : Coproduct (OFEs _ _) A B
   mk .coapex = it
-  mk .in₀ = in0
-  mk .in₁ = in1
+  mk .ι₁ = in0
+  mk .ι₂ = in1
   mk .has-is-coproduct .is-coproduct.[_,_] {Q = Q} f g = disj f g
-  mk .has-is-coproduct .in₀∘factor = trivial!
-  mk .has-is-coproduct .in₁∘factor = trivial!
-  mk .has-is-coproduct .unique other p q = Homomorphism-path λ where
+  mk .has-is-coproduct .[]∘ι₁ = trivial!
+  mk .has-is-coproduct .[]∘ι₂ = trivial!
+  mk .has-is-coproduct .unique p q = ext λ where
     (inl x) → p #ₚ x
     (inr x) → q #ₚ x
 ```

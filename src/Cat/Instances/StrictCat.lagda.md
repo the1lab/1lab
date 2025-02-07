@@ -41,13 +41,9 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Functor)
 
 Functor-is-set : ∀ {o h} {C D : Precategory o h} → is-set (Ob D)
                → is-set (Functor C D)
-Functor-is-set {o = o} {h} {C} {D} dobset =
-  Iso→is-hlevel 2 eqv (hlevel 2)
-  where
-    open Precategory.HLevel-instance D
-    instance
-      Dob : H-Level (Ob D) 2
-      Dob = basic-instance 2 dobset
+Functor-is-set {o = o} {h} {C} {D} dobset = Iso→is-hlevel! 2 eqv where instance
+  Dob : H-Level (Ob D) 2
+  Dob = basic-instance 2 dobset
 ```
 -->
 
@@ -88,8 +84,8 @@ Strict-cats-products {C = C} {D = D} cob dob = prod where
   prod .π₁ = Fst {C = C} {D = D}
   prod .π₂ = Snd {C = C} {D = D}
   prod .has-is-product .⟨_,_⟩ p q = Cat⟨ p , q ⟩
-  prod .has-is-product .π₁∘factor = Functor-path (λ _ → refl) λ _ → refl
-  prod .has-is-product .π₂∘factor = Functor-path (λ _ → refl) λ _ → refl
-  prod .has-is-product .unique other p q =
+  prod .has-is-product .π₁∘⟨⟩ = Functor-path (λ _ → refl) λ _ → refl
+  prod .has-is-product .π₂∘⟨⟩ = Functor-path (λ _ → refl) λ _ → refl
+  prod .has-is-product .unique p q =
     Functor-path (λ x i → F₀ (p i) x , F₀ (q i) x) λ f i → F₁ (p i) f , F₁ (q i) f
 ```

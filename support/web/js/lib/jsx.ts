@@ -1,7 +1,7 @@
-export type Content = HTMLElement | string | Content[] | undefined;
+export type Content = HTMLElement | string | number | Content[] | undefined;
 
 const add = (element: Node, child: Content) => {
-  if (typeof child === "string") {
+  if (typeof child === "string" || typeof child === "number") {
     element.appendChild(document.createTextNode(child.toString()));
   } else if (child instanceof Array) {
     child.forEach((x) => add(element, x));

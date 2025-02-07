@@ -21,10 +21,10 @@ module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-# Monads in a bicategory
+# Monads in a bicategory {defines="monad-in"}
 
 Recall that a [monad] _on_ a category $\cC$ consists of a functor $M :
-\cC \to \cC$ and natural transformations $\mu : MM \To M$, $\eta : \id
+\cC \to \cC$ and natural transformations $\mu : MM \To M$, $\eta : \Id
 \To M$. While the words "functor" and "natural transformation" are
 specific to the setup where $\cC$ is a category, if we replace those
 with "1-cell" and "2-cell", then the definition works in any
@@ -54,7 +54,7 @@ unitors $\lambda, \rho$.
       μ-unitl : μ B.∘ (η B.◀ M) ≡ B.λ← M
 ```
 
-We can draw these compatibility conditions as pretty commputative
+We can draw these compatibility conditions as pretty commutative
 diagrams. The commutative altar (on top) indicates associativity of
 multiplication, or more abstractly, compatibility of the multiplication
 with the associator. The commutative upside-down triangle indicates
@@ -80,11 +80,11 @@ mutual compatibility of the multiplication and unit with the unitors.
   {M\mathrm{Id}} && MM && {\mathrm{Id}M} \\
   \\
   && M
-  \arrow["{M \blacktriangleleft \mu}", from=1-1, to=1-3]
+  \arrow["{M \blacktriangleright \eta}", from=1-1, to=1-3]
   \arrow["\mu", from=1-3, to=3-3]
   \arrow["\lambda"', from=1-1, to=3-3]
   \arrow["\rho", from=1-5, to=3-3]
-  \arrow["{\mu \blacktriangleright M}"', from=1-5, to=1-3]
+  \arrow["{\eta \blacktriangleleft M}"', from=1-5, to=1-3]
 \end{tikzcd}\]
 ~~~
 
@@ -131,14 +131,14 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' .M = M.M
     monad' .μ = M.mult
     monad' .η = M.unit
-    monad' .μ-assoc = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.elimr refl)
+    monad' .μ-assoc = ext λ _ →
+        ap (M.μ _ C.∘_) (C.elimr refl)
      ·· M.mult-assoc
-     ·· ap (M.mult .η _ C.∘_) (C.introl (M.M .Functor.F-id) ∙ C.intror refl)
-    monad' .μ-unitr = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.elimr refl)
+     ·· ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
+    monad' .μ-unitr = ext λ _ →
+        ap (M.μ _ C.∘_) (C.elimr refl)
       ∙ M.left-ident
-    monad' .μ-unitl = Nat-path λ _ →
-        ap (M.mult .η _ C.∘_) (C.eliml (M.M .Functor.F-id))
+    monad' .μ-unitl = ext λ _ →
+        ap (M.μ _ C.∘_) (C.eliml M.M-id)
       ∙ M.right-ident
 ```

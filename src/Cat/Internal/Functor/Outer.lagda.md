@@ -334,17 +334,7 @@ us to work in the internal language of $\cC$.
       (α .ηo-nat px σ)
       (β .ηo-nat px σ) i
 
-  private unquoteDecl nat-eqv = declare-record-iso nat-eqv (quote _=>o_)
-
-  Outer-nat-is-set
-    : ∀ {F G : Outer-functor ℂ} → is-set (F =>o G)
-  Outer-nat-is-set = Iso→is-hlevel 2 nat-eqv hlevel!
-
-instance
-  H-Level-Outer-nat
-    : ∀ {ℂ : Internal-cat} {F G : Outer-functor ℂ} {n}
-    → H-Level (F =>o G) (2 + n)
-  H-Level-Outer-nat = basic-instance 2 Outer-nat-is-set
+unquoteDecl H-Level-=>o = declare-record-hlevel 2 H-Level-=>o (quote _=>o_)
 ```
 -->
 

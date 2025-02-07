@@ -1,11 +1,15 @@
 <!--
 ```agda
-open import Algebra.Prelude
+open import Algebra.Semigroup using (is-semigroup)
+open import Algebra.Monoid using (is-monoid)
 open import Algebra.Group
+open import Algebra.Magma using (is-magma)
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
 open import Cat.Prelude
+
+import Cat.Reasoning as Cat
 ```
 -->
 
@@ -23,7 +27,7 @@ import Cat.Reasoning as CR
 ```
 -->
 
-# The category of groups
+# The category of groups {defines="category-of-groups"}
 
 The category of groups, as the name implies, has its objects the
 `Groups`{.Agda ident=Group}, with the morphisms between them the `group
@@ -69,6 +73,34 @@ to-group : ∀ {ℓ} {A : Type ℓ} → make-group A → Group ℓ
 to-group {A = A} mg = el A (mg .make-group.group-is-set) , (to-group-on mg)
 ```
 
+<!--
+```agda
+LiftGroup : ∀ {ℓ} ℓ' → Group ℓ → Group (ℓ ⊔ ℓ')
+LiftGroup {ℓ} ℓ' G = G' where
+  module G = Group-on (G .snd)
+  open is-group
+  open is-monoid
+  open is-semigroup
+  open is-magma
+
+  G' : Group (ℓ ⊔ ℓ')
+  G' .fst = el! (Lift ℓ' ⌞ G ⌟)
+  G' .snd ._⋆_ (lift x) (lift y) = lift (x G.⋆ y)
+  G' .snd .has-is-group .unit = lift G.unit
+  G' .snd .has-is-group .inverse (lift x) = lift (G.inverse x)
+  G' .snd .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = hlevel 2
+  G' .snd .has-is-group .has-is-monoid .has-is-semigroup .associative = ap lift G.associative
+  G' .snd .has-is-group .has-is-monoid .idl = ap lift G.idl
+  G' .snd .has-is-group .has-is-monoid .idr = ap lift G.idr
+  G' .snd .has-is-group .inversel = ap lift G.inversel
+  G' .snd .has-is-group .inverser = ap lift G.inverser
+
+G→LiftG : ∀ {ℓ} (G : Group ℓ) → Groups.Hom G (LiftGroup lzero G)
+G→LiftG G .hom = lift
+G→LiftG G .preserves .pres-⋆ _ _ = refl
+```
+-->
+
 ## The underlying set
 
 The category of groups admits a `faithful`{.Agda ident=is-faithful}
@@ -79,9 +111,9 @@ homomorphisms can be tested by comparing the underlying morphisms of
 sets.
 
 ```agda
-Forget : Functor (Groups ℓ) (Sets ℓ)
-Forget = Forget-structure (Group-structure _)
+Grp↪Sets : Functor (Groups ℓ) (Sets ℓ)
+Grp↪Sets = Forget-structure (Group-structure _)
 
-Forget-is-faithful : is-faithful (Forget {ℓ})
-Forget-is-faithful = Structured-hom-path (Group-structure _)
+Grp↪Sets-is-faithful : is-faithful (Grp↪Sets {ℓ})
+Grp↪Sets-is-faithful = Structured-hom-path (Group-structure _)
 ```

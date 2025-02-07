@@ -1,68 +1,87 @@
 <!--
 ```agda
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Zero {o h} (C : Precategory o h) where
+module Cat.Diagram.Zero where
 
-open import Cat.Diagram.Initial C
-open import Cat.Diagram.Terminal C
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
+module _ {o h} (C : Precategory o h) where
+  open Cat.Reasoning C
 ```
 -->
 
-# Zero objects
+# Zero objects {defines="zero-object"}
 
 In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
 coincide. When this occurs, we call the object a **zero object**.
 
 ```agda
-record is-zero (ob : Ob) : Type (o ⊔ h) where
-  field
-    has-is-initial  : is-initial ob
-    has-is-terminal : is-terminal ob
+  record is-zero (ob : Ob) : Type (o ⊔ h) where
+    field
+      has-is-initial  : is-initial C ob
+      has-is-terminal : is-terminal C ob
 
-record Zero : Type (o ⊔ h) where
-  field
-    ∅       : Ob
-    has-is-zero : is-zero ∅
+  record Zero : Type (o ⊔ h) where
+    field
+      ∅       : Ob
+      has-is-zero : is-zero ∅
 
-  open is-zero has-is-zero public
+    open is-zero has-is-zero public
 
-  terminal : Terminal
-  terminal = record { top = ∅ ; has⊤ = has-is-terminal }
+    terminal : Terminal C
+    terminal = record { top = ∅ ; has⊤ = has-is-terminal }
 
-  initial : Initial
-  initial = record { bot = ∅ ; has⊥ = has-is-initial }
+    initial : Initial C
+    initial = record { bot = ∅ ; has⊥ = has-is-initial }
 
-  open Terminal terminal public hiding (top)
-  open Initial initial public hiding (bot)
+    open Terminal terminal public hiding (top)
+    open Initial initial public hiding (bot)
 ```
 
+::: {.definition #zero-morphism}
 A curious fact about zero objects is that their existence implies that
-every hom set is inhabited!
+every hom set is inhabited! Between any objects $x$ and $y$ the morphism
+$0 = ¡ \circ ! : x \to y$ is called the **zero morphism**.
+:::
 
 ```agda
-  zero→ : ∀ {x y} → Hom x y
-  zero→ = ¡ ∘ !
+    zero→ : ∀ {x y} → Hom x y
+    zero→ = ¡ ∘ !
 
-  zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
-  zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
+    zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
+    zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
 
-  zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
-  zero-∘r f = pullr (sym (!-unique (! ∘ f)))
+    zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
+    zero-∘r f = pullr (sym (!-unique (! ∘ f)))
 
-  zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→  ≡ zero→ ∘ g
-  zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)
+    zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→ ≡ zero→ ∘ g
+    zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)
 
-  zero-comm-sym : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → zero→ ∘ f  ≡ g ∘ zero→
-  zero-comm-sym f g = zero-∘r f ∙ sym (zero-∘l g)
+    zero-comm-sym : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → zero→ ∘ f ≡ g ∘ zero→
+    zero-comm-sym f g = zero-∘r f ∙ sym (zero-∘l g)
+```
+
+In the presence of a zero object, zero morphisms are unique with the
+property of being *constant*, in the sense that $0 \circ f = 0 \circ g$
+for any parallel pair $f, g : x \to y$. (By duality, they are also
+unique with the property of being *coconstant*.)
+
+```agda
+    zero-unique
+      : ∀ {x y} {z : Hom x y}
+      → (∀ {w} (f g : Hom w x) → z ∘ f ≡ z ∘ g)
+      → z ≡ zero→
+    zero-unique const = sym (idr _) ∙ const _ zero→ ∙ zero-∘l _
 ```
 
 ## Intuition
@@ -79,3 +98,29 @@ the initial object to have any more structure.
 Another point of interest is that any category with zero objects is
 canonically enriched in pointed sets: the `zero→`{.Agda} morphism from
 earlier acts as the designated basepoint for each of the hom sets.
+
+<!--
+```agda
+module _ {o h} {C : Precategory o h} where
+  open Cat.Reasoning C
+  private unquoteDecl is-zero-eqv = declare-record-iso is-zero-eqv (quote is-zero)
+  private unquoteDecl zero-eqv = declare-record-iso zero-eqv (quote Zero)
+
+  is-zero-is-prop : ∀ {x} → is-prop (is-zero C x)
+  is-zero-is-prop = Iso→is-hlevel 1 is-zero-eqv (hlevel 1)
+
+  instance
+    HLevel-is-zero : ∀ {x} {n} → H-Level (is-zero C x) (1 + n)
+    HLevel-is-zero = prop-instance is-zero-is-prop
+
+  instance
+    Extensional-Zero
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Zero C) ℓr
+    Extensional-Zero ⦃ sa ⦄ =
+      embedding→extensional
+        (Iso→Embedding zero-eqv ∙emb (fst , Subset-proj-embedding (λ _ → hlevel 1)))
+        sa
+```
+-->

@@ -23,7 +23,7 @@ module Cat.CartesianClosed.Lambda
         (cc : Cartesian-closed C fp term)
         where
 
-open Binary-products C fp hiding (unique₂)
+open Binary-products C fp
 open Cartesian-closed cc
 open Cat.Reasoning C
 ```
@@ -226,9 +226,9 @@ setting, we also consider the base terms as neutral _at base types_.
 
 ```agda
 data Nf where
-  lam  : Nf (Γ , τ) σ    → Nf Γ (τ `⇒ σ)
-  pair : Nf Γ τ → Nf Γ σ → Nf Γ (τ `× σ)
-  ne   : Ne Γ σ → Nf Γ σ
+  lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
 
 data Ne where
   var  : Var Γ τ → Ne Γ τ
@@ -293,7 +293,6 @@ brackets. These lemmas essentially say that $\sem{f[\rho]} =
 \sem{f}\sem{\rho}$, so that it doesn't matter whether we first pass to
 the semantics in $\cC$ or apply a renaming.
 
-<!--
 ```agda
 ⟦⟧-∘ʳ   : (ρ : Ren Γ Δ) (σ : Ren Δ Θ) → ⟦ ρ ∘ʳ σ ⟧ʳ ≡ ⟦ σ ⟧ʳ ∘ ⟦ ρ ⟧ʳ
 
@@ -313,7 +312,7 @@ tag.
 ⟦⟧-∘ʳ (drop ρ) σ = pushl (⟦⟧-∘ʳ ρ σ)
 ⟦⟧-∘ʳ (keep ρ) stop = introl refl
 ⟦⟧-∘ʳ (keep ρ) (drop σ) = pushl (⟦⟧-∘ʳ ρ σ) ∙ sym (pullr π₁∘⟨⟩)
-⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (fp _ _) _
+⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (fp _ _)
   (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ pulll (sym (⟦⟧-∘ʳ ρ σ)))
   (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl _)
 
@@ -340,7 +339,7 @@ ren-⟦⟧ₙ ρ (lam t) =
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
 ```
--->
+</details>
 
 ## Normalization
 
@@ -473,8 +472,8 @@ $a$, it must return a value which tracks the application of $h$ to $a$,
 relative to the renaming $\rho$.  In a CCC, that's given by
 
 $$
-\operatorname{ev} \langle h \circ \rho , a \rangle \text{,}
-$$
+\operatorname{ev} \langle h \circ \rho , a \rangle
+$$,
 
 which is precisely what we require.
 
@@ -515,7 +514,7 @@ tyᵖ⟨_⟩ {` x} p (n , q) .snd = q ∙ p
 
 subᵖ⟨_⟩ : ∀ {Γ Δ h h'} → h ≡ h' → Subᵖ Γ Δ h → Subᵖ Γ Δ h'
 subᵖ⟨_⟩ p ∅       = ∅
-subᵖ⟨_⟩ p (r , x) = subᵖ⟨ ap (π₁ ∘_) p ⟩ r , tyᵖ⟨ ap (π₂ ∘_) p ⟩ x
+subᵖ⟨_⟩ p (r , x) = subᵖ⟨ ap (π₁ ∘_) p ⟩ r , tyᵖ⟨ ap (π₂ ∘_) p ⟩ x
 ```
 -->
 
@@ -594,7 +593,7 @@ establishing that $\sem{\reify v} = h$ when $v$ tracks $h$.
 
 ```agda
 reifyᵖ-correct {τ = τ `× σ} (a , b) = sym $
-  Product.unique (fp _ _) _ (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
+  Product.unique (fp _ _) (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
 reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
   let
     p : ⟦ reifyᵖ (ν (drop stop) (reflectᵖ (var stop))) ⟧ₙ ≡ ev ∘ ⟨ h ∘ id ∘ π₁ , π₂ ⟩
@@ -612,7 +611,7 @@ reifyᵖ-correct {τ = ` x} d = d .snd
 
 ⟦⟧ˢ-correct : ∀ {Γ Δ h} (ρ : Subᵖ Γ Δ h) → ⟦ ρ ⟧ˢ ≡ h
 ⟦⟧ˢ-correct ∅       = Terminal.!-unique term _
-⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (fp _ _) _ (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
+⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (fp _ _) (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
 ```
 -->
 
@@ -644,7 +643,7 @@ baseᵖ {τ = τ `× τ₁} x c     =
     tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₁ ∘ x) c)
   , tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₂ ∘ x) c)
 
-baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
+baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
   (baseᵖ (ev ∘ ⟨ h ∘ π₁ , π₂ ⟩) (
     subᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-subᵖ ρ c), tyᵖ⟨ sym π₂∘⟨⟩ ⟩ a))
 
@@ -677,7 +676,7 @@ exprᵖ {h = h} (`λ f) ρ σ {m} a = tyᵖ⟨ fixup ⟩ (exprᵖ f
   where abstract
   fixup : ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡ ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩
   fixup = sym $
-    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· eliml refl)) ⟩
+    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· eliml refl)) ⟩
     ev ∘ ⟦ `λ f ⟧ᵉ ⊗₁ id ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡⟨ pulll (is-exponential.commutes has-is-exp _) ⟩
     ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩               ∎
 ```

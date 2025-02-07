@@ -1,22 +1,24 @@
 <!--
 ```agda
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
 ```agda
-module Cat.Diagram.Pushout {o ℓ} (C : Precategory o ℓ) where
-
+module Cat.Diagram.Pushout where
 ```
 
 # Pushouts {defines="pushout"}
 
 <!--
 ```agda
-open Precategory C
-private variable
-  Q X Y Z : Ob
-  h i₁' i₂' : Hom X Y
+module _ {o ℓ} (C : Precategory o ℓ) where
+  open Cat.Reasoning C
+  private variable
+    Q X Y Z : Ob
+    h i₁' i₂' : Hom X Y
 ```
 -->
 
@@ -30,10 +32,10 @@ to identify.
 [coproduct]: Cat.Diagram.Coproduct.html
 
 ```agda
-record is-pushout {P} (f : Hom X Y) (i₁ : Hom Y P) (g : Hom X Z) (i₂ : Hom Z P)
-  : Type (o ⊔ ℓ) where
-    field
-      square     : i₁ ∘ f ≡ i₂ ∘ g
+  record is-pushout {P} (f : Hom X Y) (i₁ : Hom Y P) (g : Hom X Z) (i₂ : Hom Z P)
+    : Type (o ⊔ ℓ) where
+      field
+        square     : i₁ ∘ f ≡ i₂ ∘ g
 ```
 
 The most important part of the pushout is a commutative square of the
@@ -59,34 +61,34 @@ The universal property ensures that we only perform the minimal number
 of identifications required to make the aforementioned square commute.
 
 ```agda
-      universal : ∀ {Q} {i₁' : Hom Y Q} {i₂' : Hom Z Q}
-                 → i₁' ∘ f ≡ i₂' ∘ g → Hom P Q
-      i₁∘universal : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₁ ≡ i₁'
-      i₂∘universal : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₂ ≡ i₂'
+        universal : ∀ {Q} {i₁' : Hom Y Q} {i₂' : Hom Z Q}
+                   → i₁' ∘ f ≡ i₂' ∘ g → Hom P Q
+        universal∘i₁ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₁ ≡ i₁'
+        universal∘i₂ : {p : i₁' ∘ f ≡ i₂' ∘ g} → universal p ∘ i₂ ≡ i₂'
 
-      unique : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' : Hom P Q}
-             → colim' ∘ i₁ ≡ i₁'
-             → colim' ∘ i₂ ≡ i₂'
-             → colim' ≡ universal p
+        unique : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' : Hom P Q}
+               → colim' ∘ i₁ ≡ i₁'
+               → colim' ∘ i₂ ≡ i₂'
+               → colim' ≡ universal p
 
-    unique₂
-      : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' colim'' : Hom P Q}
-      → colim' ∘ i₁ ≡ i₁' → colim' ∘ i₂ ≡ i₂'
-      → colim'' ∘ i₁ ≡ i₁' → colim'' ∘ i₂ ≡ i₂'
-      → colim' ≡ colim''
-    unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
+      unique₂
+        : {p : i₁' ∘ f ≡ i₂' ∘ g} {colim' colim'' : Hom P Q}
+        → colim' ∘ i₁ ≡ i₁' → colim' ∘ i₂ ≡ i₂'
+        → colim'' ∘ i₁ ≡ i₁' → colim'' ∘ i₂ ≡ i₂'
+        → colim' ≡ colim''
+      unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
 ```
 
 We provide a convenient packaging of the pushout and the injection
 maps:
 
 ```agda
-record Pushout (f : Hom X Y) (g : Hom X Z) : Type (o ⊔ ℓ) where
-  field
-    {coapex} : Ob
-    i₁       : Hom Y coapex
-    i₂       : Hom Z coapex
-    has-is-po  : is-pushout f i₁ g i₂
+  record Pushout (f : Hom X Y) (g : Hom X Z) : Type (o ⊔ ℓ) where
+    field
+      {coapex} : Ob
+      i₁       : Hom Y coapex
+      i₂       : Hom Z coapex
+      has-is-po  : is-pushout f i₁ g i₂
 
-  open is-pushout has-is-po public
+    open is-pushout has-is-po public
 ```

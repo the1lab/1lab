@@ -97,17 +97,17 @@ natural.
 
     grp .inv f .η x = B.Hom.inverse (f .η x)
     grp .inv f .is-natural x y g =
-      B.Hom.inverse (f .η y) B.∘ F.₁ g   ≡˘⟨ B.neg-∘-l ⟩
+      B.Hom.inverse (f .η y) B.∘ F.₁ g   ≡˘⟨ B.∘-negatel ⟩
       B.Hom.inverse ⌜ f .η y B.∘ F.₁ g ⌝ ≡⟨ ap! (f .is-natural x y g) ⟩
-      B.Hom.inverse (G.₁ g B.∘ f .η x)   ≡⟨ B.neg-∘-r ⟩
+      B.Hom.inverse (G.₁ g B.∘ f .η x)   ≡⟨ B.∘-negater ⟩
       G.₁ g B.∘ B.Hom.inverse (f .η x)   ∎
 
-    grp .assoc _ _ _ = Nat-path λ _ → B.Hom.associative
-    grp .idl _       = Nat-path λ x → B.Hom.idl
-    grp .invl _      = Nat-path λ x → B.Hom.inversel
-    grp .comm _ _    = Nat-path λ x → B.Hom.commutes
+    grp .assoc _ _ _ = ext λ _ → B.Hom.associative
+    grp .idl _       = ext λ x → B.Hom.idl
+    grp .invl _      = ext λ x → B.Hom.inversel
+    grp .comm _ _    = ext λ x → B.Hom.commutes
     grp .ab-is-set   = Nat-is-set
 
-  [_,_]Ab .∘-linear-l f g h = Nat-path λ x → B.∘-linear-l _ _ _
-  [_,_]Ab .∘-linear-r f g h = Nat-path λ x → B.∘-linear-r _ _ _
+  [_,_]Ab .∘-linear-l f g h = ext λ x → B.∘-linear-l _ _ _
+  [_,_]Ab .∘-linear-r f g h = ext λ x → B.∘-linear-r _ _ _
 ```

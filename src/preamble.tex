@@ -1,6 +1,46 @@
+% Of the highest importance:
+\renewcommand{\phi}{\varphi}
+
+% Saner abbreviations for font faces (take an argument rather than
+% applying to the current context).
 \renewcommand{\rm}[1]{\mathrm{#1}}
 \newcommand{\bb}[1]{\mathbb{#1}}
 \renewcommand{\bf}[1]{\mathbf{#1}}
+
+% Define \cA..\cZ
+\definealphabet{c}{\mathcal}{A}{Z}
+% Define \bA..\bZ
+\definealphabet{b}{\mathbb}{A}{Z}
+
+% Notation for lambda abstractions and function application. $~$
+% is the spacing that should be used between arguments.
+\newcommand{\lam}[2]{\lambda #1.\ #2}
+
+% Notation for paths, the interval, and its operations.
+\newcommand{\is}{\equiv}
+\newcommand{\PathP}[3]{\rm{PathP}~ {#1}~ {#2}~ {#3}}
+\newcommand{\Path}[3]{\rm{Path}~ {#1}~ {#2}~ {#3}}
+\newcommand{\Square}[4]{\rm{Square}~ {#1}~ {#2}~ {#3}~ {#4}}
+\newcommand{\ap}[2]{\rm{ap}~ {#1}~ {#2}}
+
+\newcommand{\subst}{\operatorname{subst}}
+\newcommand{\ua}{\operatorname{ua}}
+
+\newcommand{\iZ}{\rm{i0}}
+\newcommand{\iO}{\rm{i1}}
+
+\newcommand{\ineg}{\lnot}
+\newcommand{\imin}{\land}
+\newcommand{\imax}{\lor}
+
+\newcommand{\transport}[2]{\rm{transport}~ #1~ #2}
+\newcommand{\transp}[3]{\rm{transp}~ #1~ #2~ #3}
+\newcommand{\Partial}[2]{\rm{Partial}~ #1~ #2}
+\newcommand{\dcomp}{\mathrel{\cdot\cdot}}
+\newcommand{\Extn}[2]{{#1}[#2]}
+
+\DeclareMathOperator{\inS}{inS}
+\DeclareMathOperator{\outS}{outS}
 
 \newcommand{\thecat}[1]{\mathbf{#1}}     % Names of "concrete" categories
 \newcommand{\thebicat}[1]{\mathfrak{#1}} % Names of "concrete" bicategories
@@ -9,7 +49,11 @@
 \newcommand{\ica}[1]{\mathbb{#1}}    % Names of internal categories
 
 \newcommand{\Arr}[1]{%% The arrow category of a category.
-  \rm{Arr}(#1)}
+  \rm{Arr}(#1)
+}
+\newcommand{\FAlg}[1]{%% The category of F-algebras
+  \rm{Alg}(#1)
+}
 
 % \liesover arrow is only allowed in KaTeX:
 \newcommand{\liesover}\katex{\mathrel{\htmlClass{liesover}{\hspace{1.366em}}}}
@@ -18,11 +62,6 @@
 \newcommand{\yo}\katex{よ}
 \newcommand{\zap}\katex{↯}
 
-% Define \cA..\cZ
-\definealphabet{c}{\mathcal}{A}{Z}
-% Define \bA..\bZ
-\definealphabet{b}{\mathbb}{A}{Z}
-
 \newcommand{\knowncat}[1]{\newcommand{\csname #1\endcsname}{\thecat{#1}}}
 \newcommand{\knownbicat}[1]{\newcommand{\csname #1\endcsname}{\thebicat{#1}}}
 
@@ -30,11 +69,16 @@
 \newcommand{\set}{\rm{Set}}
 \newcommand{\prop}{\rm{Prop}}
 \newcommand{\psh}{\rm{PSh}}
-\newcommand{\id}[1][]{\operatorname{id}_{#1}}
-\newcommand{\Id}[1][]{\operatorname{Id}_{#1}}
+
+\DeclareMathOperator{\Sh}{Sh}
+
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
 
 \knowncat{Sets}
 \knowncat{Ab}
+\knowncat{Graphs}
+\knowncat{MarkedGraphs}
 \knowncat{Props}
 \knowncat{FinSets}
 \knowncat{Rings}
@@ -48,11 +92,16 @@
 
 \newcommand{\strcat}{\Cat_\rm{strict}}
 \newcommand{\intcat}{\{0 \le 1\}}
+\newcommand{\twocat}{\mathbf{2}}
 \newcommand{\igpd}{\text{$\infty$-\textbf{Grpd}}}
 \newcommand{\io}{(\infty,1)}
 
-\newcommand{\ot}{\leftarrow}
+% "Postfix" operators that have a subscript and are annoying to write
+% out:
+\newcommand{\inv}{^{-1}}
 \newcommand{\op}{^{\rm{op}}}
+
+\newcommand{\ot}{\leftarrow}
 \renewcommand{\epsilon}{\varepsilon}
 \newcommand{\eps}{\varepsilon}
 
@@ -61,8 +110,10 @@
 \newcommand{\adj}{\rightleftarrows}
 \newcommand{\epi}{\twoheadrightarrow}
 \newcommand{\mono}{\hookrightarrow}
+\newcommand{\iso}{\cong}
 \newcommand{\tto}{\rightrightarrows}
 \newcommand{\rel}{\mathrel{\looparrowright}}
+\newcommand{\heyt}{\mathrel{\scriptsize{⇨}}} % Heyting implication
 
 \newcommand{\xadj}[2]{\xrightleftarrows[#2]{#1}}
 \newcommand{\xto}[1]{\xrightarrow{#1}}
@@ -101,7 +152,6 @@
 
 \DeclareMathOperator{\isiso}{is-iso}
 \DeclareMathOperator{\isequiv}{is-equiv}
-\DeclareMathOperator{\ap}{ap}
 
 \DeclareMathOperator{\Spans}{Spans}
 
@@ -118,3 +168,18 @@
 \DeclareMathOperator{\Glue}{Glue}
 \DeclareMathOperator{\glue}{glue}
 \DeclareMathOperator{\unglue}{unglue}
+
+\renewcommand{\day}[1]{\operatorname{day}(#1)}
+
+\newcommand{\loc}[1]{[{#1}\inv]}
+
+\newcommand{\indicatortwod}[2]{
+  \begin{tikzpicture}
+  \draw[->] (0,0) -- (1,0)  node[midway, above] {$#1$};
+  \draw[->] (0,0) -- (0,-1) node[midway, left]  {$#2$};
+  \end{tikzpicture}
+}
+
+\newcommand{\abs}[1]{\lvert x \rvert}
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\ndiv}{\mathbin{/}}

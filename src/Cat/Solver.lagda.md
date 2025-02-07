@@ -66,6 +66,14 @@ The first is a straightforward `embed`{.Agda}ding:
   embed (f `∘ g) = embed f ∘ embed g
 ```
 
+<!--
+```agda
+  instance
+    ⟦⟧-Expr : ⟦⟧-notation (Expr A B)
+    ⟦⟧-Expr = brackets _ embed
+```
+-->
+
 The second computation is a bit less obvious. If you're a programmer, it
 should be familiar under the name "continuation passing style".
 Categorically, it can be seen as embedding into the presheaf category of
@@ -89,7 +97,7 @@ that's the case! Since `embed`{.Agda} is the "intended semantics", and `eval`{.A
 by induction on the expression, by first generalising over `id`{.Agda}:
 
 ```agda
-  eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e f ≡ embed e ∘ f
+  eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e f ≡ ⟦ e ⟧ ∘ f
   eval-sound-k `id f = sym (idl _) -- f ≡ id ∘ f
   eval-sound-k (f `∘ g) h =
     eval f (eval g h)       ≡⟨ eval-sound-k f _ ⟩
@@ -98,7 +106,7 @@ by induction on the expression, by first generalising over `id`{.Agda}:
     (embed f ∘ embed g) ∘ h ∎
   eval-sound-k (x ↑) f = refl -- x ∘ f ≡ x ∘ f
 
-  eval-sound : (e : Expr A B) → nf e ≡ embed e
+  eval-sound : (e : Expr A B) → nf e ≡ ⟦ e ⟧
   eval-sound e = eval-sound-k e id ∙ idr _
 ```
 
@@ -108,7 +116,7 @@ hom-sets, then they represent the same morphism.
 
 ```agda
   abstract
-    solve : (f g : Expr A B) → nf f ≡ nf g → embed f ≡ embed g
+    solve : (f g : Expr A B) → nf f ≡ nf g → ⟦ f ⟧ ≡ ⟦ g ⟧
     solve f g p = sym (eval-sound f) ·· p ·· (eval-sound g)
 
     solve-filler : (f g : Expr A B) → (p : nf f ≡ nf g) → Square (eval-sound f) p (solve f g p) (eval-sound g)

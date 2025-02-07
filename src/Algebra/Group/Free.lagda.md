@@ -7,7 +7,6 @@ open import Algebra.Group
 
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Instances.Comma
 open import Cat.Prelude
 ```
 -->
@@ -24,8 +23,6 @@ private variable
 open is-group-hom
 open Group-on
 open Initial
-open ↓Obj
-open ↓Hom
 ```
 -->
 
@@ -111,15 +108,13 @@ unquoteDef Free-elim-prop = make-elim-with (default-elim-visible into 1)
 ## Universal property {defines=free-group}
 
 We now prove the universal property of `Free-group`{.Agda}, or, more
-specifically, of the map `inc`{.Agda}: It gives a [universal way of
-mapping] from the category of sets to an object in the category of
+specifically, of the map `inc`{.Agda}: It gives a [[universal way of
+mapping|universal-morphism]] from the category of sets to an object in the category of
 groups, in that any map from a set to (the underlying set of) a group
 factors uniquely through `inc`{.Agda}. To establish this result, we
 first implement a helper function, `fold-free-group`{.Agda}, which,
 given the data of where to send the generators of a free group,
 determines a group homomorphism.
-
-[universal way of mapping]: Cat.Functor.Adjoint.html#universal-morphisms
 
 ```agda
 fold-free-group
@@ -168,18 +163,27 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 [underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set
 
+<!--
 ```agda
-make-free-group : make-left-adjoint (Forget {ℓ})
-make-free-group .Ml.free S = Free-Group ∣ S ∣
-make-free-group .Ml.unit _ = inc
-make-free-group .Ml.universal f = fold-free-group f
-make-free-group .Ml.commutes f = refl
-make-free-group .Ml.unique {y = y} {g = g} p =
-  ext $ Free-elim-prop _ (λ _ → hlevel!)
-    (p $ₚ_)
-    (λ a p b q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
-    (λ a p → ap y.inverse p ∙ sym (is-group-hom.pres-inv (g .preserves)))
-    (sym (is-group-hom.pres-id (g .preserves)))
-  where module y = Group-on (y .snd)
-module Free-groups {ℓ} = make-left-adjoint (make-free-group {ℓ = ℓ})
+open Free-object
+```
+-->
+
+```agda
+make-free-group : ∀ {ℓ} (S : Set ℓ) → Free-object Grp↪Sets S
+make-free-group S .free = Free-Group ⌞ S ⌟
+make-free-group S .unit = inc
+make-free-group S .fold = fold-free-group
+make-free-group S .commute = refl
+make-free-group S .unique {H} g p =
+  ext $ Free-elim-prop _ (λ _ → hlevel 1)
+    (p #ₚ_)
+    (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
+    (λ a p → g.pres-inv ∙ ap H.inverse p)
+    g.pres-id
+  where
+    module H = Group-on (H .snd)
+    module g = is-group-hom (g .preserves)
+
+module Free-groups {ℓ} (S : Set ℓ) = Free-object (make-free-group S)
 ```

@@ -4,21 +4,13 @@ open import 1Lab.Path hiding (J)
 open import 1Lab.Type
 
 open import Data.Set.Truncation hiding (∥-∥₀-elim)
-open import Data.Wellfounded.W hiding (W-elim; P)
+open import Data.Wellfounded.W hiding (W-elim)
 open import Data.Fin.Base hiding (Fin-elim)
 open import Data.Id.Base
 
 open import Homotopy.Space.Circle hiding (S¹-elim)
 
 module 1Lab.Reflection.Induction.Examples where
-
-unquoteDecl Fin-elim = make-elim Fin-elim (quote Fin)
-
-_ : {ℓ : Level} {P : {n : Nat} (f : Fin n) → Type ℓ}
-    (P0 : {n : Nat} → P fzero)
-    (Psuc : {n : Nat} (f : Fin n) (Pf : P f) → P (fsuc f))
-    {n : Nat} (f : Fin n) → P f
-_ = Fin-elim
 
 unquoteDecl J = make-elim-with default-elim-visible J (quote _≡ᵢ_)
 
@@ -57,3 +49,12 @@ _ : {ℓ : Level} {A : Type ℓ} {ℓ₁ : Level} {P : (z : ∥ A ∥₀) → Ty
     (Pinc : (z : A) → P (inc z))
     (x : ∥ A ∥₀) → P x
 _ = ∥-∥₀-elim
+
+-- Test case: this should not generate unsolved metavariables.
+unquoteDecl Nat-rec = make-elim-with (record default-rec { hide-cons-args = true }) Nat-rec (quote Nat)
+
+_ : {ℓ : Level} {P : Type ℓ}
+  → P
+  → ({n : Nat} → P → P)
+  → Nat → P
+_ = Nat-rec

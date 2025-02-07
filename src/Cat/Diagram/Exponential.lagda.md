@@ -34,11 +34,11 @@ $$
 
 standing for the essence of function application: if I have a function
 $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
-: A$.
+: B$.
 
 <!--
 ```agda
-open Binary-products C fp hiding (unique₂)
+open Binary-products C fp
 open Cat.Reasoning C
 open Terminal term
 open Functor
@@ -83,7 +83,7 @@ structure.
 ```
 
 <!--
-```
+```agda
   unique₂ : ∀ {C} {m : Hom (C ⊗₀ _) _} m₁ m₂
           → ev ∘ m₁ ⊗₁ id ≡ m
           → ev ∘ m₂ ⊗₁ id ≡ m
@@ -248,7 +248,7 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
     ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
     (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
     g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
-    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
+    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
   product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
@@ -283,7 +283,7 @@ product-adjoint→cartesian-closed A→ adj = cc where
 
   exp : ∀ A B → Exponential A B
   exp A B .B^A = A→ A .F₀ B
-  exp A B .ev = adj A .counit.ε B
+  exp A B .ev = adj A .ε B
   exp A B .has-is-exp .ƛ          = L-adjunct (adj A)
   exp A B .has-is-exp .commutes m = R-L-adjunct (adj A) m
   exp A B .has-is-exp .unique m' x = sym $
@@ -330,9 +330,9 @@ which sends an object $X$ to the product projection $\pi_2 : X \times B
 \to B$. Following [@Elephant, A1.5.2], we have the following
 characterisation of exponentiability: In a category with pullbacks, an
 object $B$ is exponentiable iff. we have a right adjoint functor
-$\Delta_B \vdash \Pi_B$.
+$\Delta_B \dashv \Pi_B$.
 
-Suppose $B$ is exponentiable. The value $\Pi_B(h)$ on a family $h : A
+Suppose $B$ is exponentiable. The value $\Pi_B(f)$ on a family $f : A
 \to B$ is defined to be the pullback
 
 ~~~{.quiver}
@@ -401,8 +401,8 @@ $$
 is equivalent to asking for
 
 $$
-f \circ \lambda^{-1}(q) = \pi_2\text{,}
-$$
+f \circ \lambda\inv(q) = \pi_2
+$$,
 
 which is in turn equivalent to asking that $q$ be a map $\Delta_B(X) \to
 f$, over $B$.
@@ -417,7 +417,7 @@ f$, over $B$.
 ```
 
 <!--
-```
+```agda
       where
         done : ƛ π₂ ∘ ! ≡ ƛ π₂
         done = Exponential.unique (exp _) _ $
@@ -438,8 +438,8 @@ f)$, and even though it factors through the rather complicated path
 displayed below, it definitionally sends $h : \hom_\cC(X, \Pi_B(f))$ to
 
 $$
-\lambda^{-1}(p_1\circ h)\text{.}
-$$
+\lambda\inv(p_1\circ h)
+$$.
 
 Having this very simple computational description will greatly simplify
 the proof that this meandering equivalence is actually natural --- and

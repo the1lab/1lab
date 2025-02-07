@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 
 open import Cat.Instances.Sets.Complete
@@ -37,7 +37,7 @@ If displayed categories are regarded as functors, then the product of
 displayed categories can be regarded as the usual product of functors.
 ```agda
   _×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
-   EC.Ob[ p₁ ]  × ED.Ob[ p₂ ] 
+   EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
   _×ᵀᴰ_ .Displayed.Hom[_] (f₁ , f₂) (c₁ , c₂) (d₁ , d₂) =
     EC.Hom[ f₁ ] c₁ d₁ ×
     ED.Hom[ f₂ ] c₂ d₂
@@ -54,9 +54,7 @@ then for any two morphisms $f_1,f_2$ lying over $f$,
 and any $p, q : f_1 = f_2$, $p=q$.
 
 ```agda
-  _×ᵀᴰ_ .Displayed.Hom[_]-set (f₁ , f₂) (x'₁ , x'₂) (y'₁ , y'₂) =
-    ×-is-hlevel 2
-    (EC.Hom[ f₁ ]-set x'₁ y'₁) (ED.Hom[ f₂ ]-set x'₂ y'₂)
+  _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ```
 Composition is pairwise.
 ```agda

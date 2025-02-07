@@ -10,16 +10,13 @@ module Algebra.Group.Homotopy.BAut where
 
 # Deloopings of automorphism groups
 
-Recall that any set $X$ generates a group [$\rm{Sym}(X)$][symg], given
+Recall that any set $X$ generates a group [[$\rm{Sym}(X)$|symmetric group]] given
 by the automorphisms $X \simeq X$. We also have a generic construction
 of [[deloopings]]: special spaces $K(G,1)$ (for a group $G$), where the
-[fundamental group] $\pi_1(K(G,1))$ recovers $G$. For the specific case
+[[fundamental group]] $\pi_1(K(G,1))$ recovers $G$. For the specific case
 of deloping automorphism groups, we can give an alternative
 construction: The type of small types [[merely]] equivalent to $X$ has a
 fundamental group of $\rm{Sym}(X)$.
-
-[symg]: Algebra.Group.html#symmetric-groups
-[fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups
 
 ```agda
 module _ {ℓ} (T : Type ℓ) where
@@ -36,11 +33,9 @@ of its interesting information is in its (higher) path spaces:
 
 ```agda
   connected : (x : BAut) → ∥ x ≡ base ∥
-  connected (b , x) =
-    ∥-∥-elim {P = λ x → ∥ (b , x) ≡ base ∥} (λ _ → squash) (λ e → inc (p _ _)) x
-    where
-      p : ∀ b e → (b , inc e) ≡ base
-      p _ = EquivJ (λ B e → (B , inc e) ≡ base) refl
+  connected = elim! λ b e → inc (p b e) where
+    p : ∀ b e → (b , inc e) ≡ base
+    p _ = EquivJ (λ B e → (B , inc e) ≡ base) refl
 ```
 
 We now turn to proving that $\pi_1(\baut(X)) \simeq (X \simeq X)$. We
@@ -114,14 +109,13 @@ proceed exactly by using connectedness.
 
 ```agda
   BAut-is-hlevel : ∀ n → is-hlevel T n → is-hlevel BAut (1 + n)
-  BAut-is-hlevel zero hl (x , f) (y , g) =
-    Σ-prop-path (λ _ → squash) (sym (ua f') ∙ ua g')
+  BAut-is-hlevel zero hl (x , f) (y , g) = Σ-prop-path! (sym (ua f') ∙ ua g')
     where
       extract : ∀ {X} → is-prop (T ≃ X)
-      extract f g = Σ-prop-path is-equiv-is-prop $ funext λ x →
-        ap fst (is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
+      extract f g = ext λ x → ap fst $
+        is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
           (f .fst x , is-contr→is-prop hl _ _)
-          (g .fst x , is-contr→is-prop hl _ _))
+          (g .fst x , is-contr→is-prop hl _ _)
 
       f' = ∥-∥-rec extract (λ x → x) f
       g' = ∥-∥-rec extract (λ x → x) g
@@ -129,6 +123,6 @@ proceed exactly by using connectedness.
     ∥-∥-elim₂ {P = λ _ _ → is-hlevel (x ≡ y) (1 + n)}
       (λ _ _ → is-hlevel-is-prop _)
       (λ p q → transport (ap₂ (λ a b → is-hlevel (a ≡ b) (1 + n)) (sym p) (sym q))
-        (is-hlevel≃ (1 + n) Ω¹BAut (≃-is-hlevel (1 + n) hl hl)))
+        (Equiv→is-hlevel (1 + n) Ω¹BAut (≃-is-hlevel (1 + n) hl hl)))
       (connected x) (connected y)
 ```

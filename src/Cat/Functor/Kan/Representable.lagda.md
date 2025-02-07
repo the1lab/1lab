@@ -113,7 +113,7 @@ exercise in moving data around.
       inv : Hom-from Cat[ C , D ] F F∘ precompose p => Hom-from Cat[ C' , D ] G
       inv .η M α = lan .σ α
       inv .is-natural M N α = funext λ β →
-        lan .σ-uniq (Nat-path λ _ → D.pushr (sym $ lan .σ-comm ηₚ _))
+        lan .σ-uniq (ext λ _ → D.pushr (sym $ lan .σ-comm ηₚ _))
 ```
 
 <!--

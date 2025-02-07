@@ -1,12 +1,15 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
+open import Cat.Instances.Lift
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -98,7 +101,7 @@ Luckily, we can! If we take a step back, we can notice that we are
 trying to construct a map into a functor. What are maps into functors?
 Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
-transformation $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top
+transformation $\eps : {!x} \circ \mathord{!} \to D$, where $!x : \top
 \to \cC$ denotes the constant functor that maps object to $x$ and every
 morphism to $id$, and $! : \cJ \to \top$ denotes the unique functor into
 the [[terminal category]]. The components of such a natural
@@ -114,13 +117,13 @@ diagram. We can describe this situation diagrammatically like so:
   \arrow[from=3-1, to=1-3]
   \arrow["{!X}"', from=1-3, to=3-5]
   \arrow[""{name=0, anchor=center, inner sep=0}, from=3-1, to=3-5]
-  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
+  \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
 \end{tikzcd}
 ~~~
 
 All that remains is the universal property. If we translate this into
 our existing machinery, that means that $!x$ must be the universal
-functor equipped with a natural transformation $\eta$; that is, for any
+functor equipped with a natural transformation $\eps$; that is, for any
 other $K : \{*\} \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
 D$, we have a unique natural transformation $\sigma : K \to {!x}$ that
 factors $\tau$. This is a bit of a mouthful, so let's look at a diagram
@@ -135,7 +138,7 @@ instead.
   \arrow[""{name=0, anchor=center, inner sep=0}, "{!x}"', from=1-3, to=3-5]
   \arrow[""{name=1, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "K", curve={height=-18pt}, from=1-3, to=3-5]
-  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
+  \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
   \arrow["\sigma", shorten <=3pt, shorten >=3pt, Rightarrow, from=2, to=0]
 \end{tikzcd}
 ~~~
@@ -161,16 +164,8 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
     open _=>_
     open Functor
 
-  cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
-  unquoteDef cone→counit = define-coherence cone→counit
-
-  counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
-  counit→cone {K = K} eta .η = eta .η
-  counit→cone {K = K} eta .is-natural x y f =
-    ap (_ C.∘_) (sym (K .F-id)) ∙ eta .is-natural x y f
-
   is-limit : (x : C.Ob) → Const x => Diagram → Type _
-  is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
+  is-limit x cone = is-ran !F Diagram (!Const x) cone
 ```
 
 In a "bundled" form, we may define the _type of limits_ for a diagram
@@ -218,7 +213,7 @@ called $\psi$. Moreover, if $f : x \to y$ is a morphism in the "shape"
 category $\cJ$, then $F(f)\psi_x = \psi_y$, i.e., the $\psi$ maps fit into
 triangles
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   & {\mathrm{apex}} \\
   \\
@@ -236,42 +231,42 @@ triangles
 ```
 
 The rest of the data says that $\psi$ is the universal family of maps
-with this property: If $\eta_j : x \to Fj$ is another family of maps
-with the same commutativity property, then each $\eta_j$ factors through
+with this property: If $\eps_j : x \to Fj$ is another family of maps
+with the same commutativity property, then each $\eps_j$ factors through
 the apex by a single, _unique_ universal morphism:
 
 ```agda
       universal
         : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
         → C.Hom x apex
 
       factors
         : ∀ {j : J.Ob} {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-        → ψ j C.∘ universal eta p ≡ eta j
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
+        → ψ j C.∘ universal eps p ≡ eps j
 
       unique
         : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (eps : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
         → (other : C.Hom x apex)
-        → (∀ j → ψ j C.∘ other ≡ eta j)
-        → other ≡ universal eta p
+        → (∀ j → ψ j C.∘ other ≡ eps j)
+        → other ≡ universal eps p
 ```
 
 <!--
 ```agda
     unique₂
       : ∀ {x : C.Ob}
-      → (eta : ∀ j → C.Hom x (F₀ j))
-      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eta j)
-      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eta j)
+      → (eps : ∀ j → C.Hom x (F₀ j))
+      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
+      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eps j)
+      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eps j)
       → o1 ≡ o2
-    unique₂ {x = x} eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
+    unique₂ {x = x} eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
 ```
 -->
 
@@ -307,9 +302,8 @@ other data we have been given:
       lim .σ α .η _ C.∘ M .F₁ tt ≡⟨ C.elimr (M .F-id) ⟩
       lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
       C.id C.∘ lim .σ α .η _     ∎
-    lim .σ-comm {β = β} = Nat-path λ j →
-      factors (β .η) _
-    lim .σ-uniq {β = β} {σ' = σ'} p = Nat-path λ _ →
+    lim .σ-comm {β = β} = ext λ j → factors (β .η) _
+    lim .σ-uniq {β = β} {σ' = σ'} p = ext λ _ →
       sym $ unique (β .η) _ (σ' .η tt) (λ j → sym (p ηₚ j))
 ```
 
@@ -317,8 +311,8 @@ other data we have been given:
 ```agda
   generalize-limitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
-    → {eps : (const! (Functor.F₀ K tt)) F∘ !F => D} {eps' : K F∘ !F => D}
-    → is-ran !F D (const! (Functor.F₀ K tt)) eps
+    → {eps : (Const (Functor.F₀ K tt)) => D} {eps' : K F∘ !F => D}
+    → is-ran !F D (!Const (Functor.F₀ K tt)) eps
     → (∀ {j} → eps .η j ≡ eps' .η j)
     → is-ran !F D K eps'
   generalize-limitp {D} {K} {eps} {eps'} ran q = ran' where
@@ -327,12 +321,12 @@ other data we have been given:
     open Functor
 
     ran' : is-ran !F D K eps'
-    ran' .σ α = hom→⊤-natural-trans (ran.σ α .η tt)
-    ran' .σ-comm {M} {β} = Nat-path λ j →
+    ran' .σ α = !constⁿ (ran.σ α .η tt)
+    ran' .σ-comm {M} {β} = ext λ j →
       ap (C._∘ _) (sym q) ∙ ran.σ-comm {β = β} ηₚ _
-    ran' .σ-uniq {M} {β} {σ'} r = Nat-path λ j →
-      ran.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
-        (Nat-path (λ j → r ηₚ j ∙ ap (C._∘ _) (sym q))) ηₚ j
+    ran' .σ-uniq {M} {β} {σ'} r = ext λ j →
+      ran.σ-uniq {σ' = !constⁿ (σ' .η tt)}
+        (ext λ j → r ηₚ j ∙ ap (C._∘ _) (sym q)) ηₚ j
 
   to-is-limitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
@@ -351,42 +345,42 @@ limit:
   unmake-limit
     : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
     → is-ran !F D F eps
-    → make-is-limit D (Functor.F₀ F tt)
+    → make-is-limit D (F # tt)
 ```
 
 <!--
 ```agda
   unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
-    a = Functor.F₀ F tt
+    a = F # tt
     module eps = _=>_ eps
     open is-ran lim
     open Functor D
     open make-is-limit
     open _=>_
 
-    module _ {x} (eta : ∀ j → C.Hom x (F₀ j))
-                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+    module _ {x} (eps : ∀ j → C.Hom x (F₀ j))
+                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eps x ≡ eps y)
       where
 
-      eta-nt : const! x F∘ !F => D
-      eta-nt .η = eta
-      eta-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
+      eps-nt : Const x => D
+      eps-nt .η = eps
+      eps-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
 
       hom : C.Hom x a
-      hom = σ {M = const! x} eta-nt .η tt
+      hom = σ {M = !Const x} eps-nt .η tt
 
     ml : make-is-limit D a
     ml .ψ j        = eps.η j
-    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (Functor.F-id F)
+    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (F .Functor.F-id)
 
     ml .universal   = hom
-    ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
-    ml .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ' = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+    ml .factors e p = σ-comm {β = eps-nt e p} ηₚ _
+    ml .unique {x = x} eps p other q =
+      sym $ σ-uniq {σ' = other-nt} (ext λ j → sym (q j)) ηₚ tt
       where
-        other-nt : const! x => F
+        other-nt : !Const x => F
         other-nt .η _ = other
-        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
+        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (F .Functor.F-id)
 
   to-limit
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
@@ -459,10 +453,9 @@ computation.
   has-limit .is-ran.σ α .η = σ α .η
   has-limit .is-ran.σ α .is-natural x y f =
     σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
-  has-limit .is-ran.σ-comm =
-    Nat-path (λ _ → σ-comm ηₚ _)
+  has-limit .is-ran.σ-comm = ext (σ-comm ηₚ_)
   has-limit .is-ran.σ-uniq {M = M} {σ' = σ'} p =
-    Nat-path (λ _ → σ-uniq {σ' = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
+    ext λ _ → σ-uniq {σ' = nt} (reext! p) ηₚ _ where
       nt : M => Ext
       nt .η = σ' .η
       nt .is-natural x y f = σ' .is-natural x y f ∙ ap (C._∘ _) (sym $ Ext .F-id)
@@ -509,12 +502,10 @@ with the 2 limits, then $f$ and $g$ are inverses.
     → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
     → C.Inverses f g
   limits→inversesp {f = f} {g = g} f-factor g-factor =
-    inversesⁿ→inverses
-      {α = hom→⊤-natural-trans f}
-      {β = hom→⊤-natural-trans g}
+    inversesⁿ→inverses {α = !constⁿ f} {β = !constⁿ g}
       (Ran-unique.σ-inversesp Ly Lx
-        (Nat-path λ j → f-factor {j})
-        (Nat-path λ j → g-factor {j}))
+        (ext λ j → f-factor {j})
+        (ext λ j → g-factor {j}))
       tt
 ```
 
@@ -526,14 +517,11 @@ must be invertible.
     : ∀ {f : C.Hom x y}
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → C.is-invertible f
-  limits→invertiblep {f = f} f-factor =
-    is-invertibleⁿ→is-invertible
-      {α = hom→⊤-natural-trans f}
-      (Ran-unique.σ-is-invertiblep
-        Ly
-        Lx
-        (Nat-path λ j → f-factor {j}))
-      tt
+  limits→invertiblep {f = f} f-factor = is-invertibleⁿ→is-invertible
+    {α = !constⁿ f}
+    (Ran-unique.σ-is-invertiblep Ly Lx
+      (ext λ j → f-factor {j}))
+    tt
 ```
 
 This implies that the universal maps must also be inverses.
@@ -579,23 +567,23 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   family→cone
     : ∀ {x}
-    → (eta : ∀ j → C.Hom x (D.₀ j))
-    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
+    → (eps : ∀ j → C.Hom x (D.₀ j))
+    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eps x ≡ eps y)
     → Const x => D
-  family→cone eta p .η = eta
-  family→cone eta p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
+  family→cone eps p .η = eps
+  family→cone eps p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
 ```
 -->
 
 ```agda
   is-invertible→is-limitp
     : ∀ {K' : Functor ⊤Cat C} {eps : K' F∘ !F => D}
-    → (eta : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
-    → (∀ {j} → eta j ≡ eps .η j)
-    → C.is-invertible (Ly.universal eta p)
+    → (eps' : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
+    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eps' x ≡ eps' y)
+    → (∀ {j} → eps' j ≡ eps .η j)
+    → C.is-invertible (Ly.universal eps' p)
     → is-ran !F D K' eps
-  is-invertible→is-limitp {K' = K'} eta p q invert =
+  is-invertible→is-limitp {K' = K'} eps' p q invert =
     generalize-limitp
       (is-invertible→is-ran Ly $ invertible→invertibleⁿ _ (λ _ → invert))
       q
@@ -669,22 +657,19 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of limits
+# Preservation of limits {defines="preserved-limit"}
 
 <!--
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
          (F : Functor C D) (Diagram : Functor J C) where
-  private
-    module D = Precategory D
-    module C = Precategory C
-    module J = Precategory J
-    module F = Func F
 ```
 -->
 
 Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
 **preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+More precisely, we say a functor preserves limits of $\rm{Dia}$ if it
+takes limiting *cones* "upstairs" to limiting cones "downstairs".
 
 This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
@@ -692,9 +677,6 @@ there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
 compare $F(L)$ to. However, since limits are described by a universal
 property (in particular, being terminal), we don't _need_ such an
 object! Any limit is as good as any other.
-
-In more concise terms, we say a functor preserves limits if it takes
-limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
   preserves-limit : Type _
@@ -704,13 +686,14 @@ limiting cones "upstairs" to limiting cones "downstairs".
     → preserves-ran F lim
 ```
 
-## Reflection of limits
+## Reflection of limits {defines="reflected-limit"}
 
 Using the terminology from before, we say a functor **reflects limits**
-if it takes limiting cones "downstairs" to limiting cones "upstairs".
-More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
-apex $F(a)$, then $F$ reflects this limit means that $a$ _was already_
-the limit of $\rm{Dia}$!
+if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":
+this is the converse implication from preservation of limits.
+More concretely, if we have a cone over $\rm{Dia}$ whose image under $F$
+is a limiting cone over $F \circ \rm{Dia}$, then $F$ reflects this limit
+if we _already_ had a limiting cone to begin with!
 
 ```agda
   reflects-limit : Type _
@@ -726,8 +709,8 @@ module preserves-limit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
   {F : Functor C D} {Dia : Functor J C}
   (preserves : preserves-limit F Dia)
-  {K : Functor ⊤Cat C} {eta : K F∘ !F => Dia}
-  (lim : is-ran !F Dia K eta)
+  {K : Functor ⊤Cat C} {eps : K F∘ !F => Dia}
+  (lim : is-ran !F Dia K eps)
   where
   private
     module D = Precategory D
@@ -761,7 +744,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
   natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
     natural-isos→is-ran
       idni (α ◂ni Dia) (α ◂ni K)
-        (Nat-path λ j →
+        (ext λ j →
           α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
           α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
           (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
@@ -772,7 +755,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 ```
 -->
 
-## Continuity
+## Continuity {defines="continuous-functor"}
 
 ```agda
 is-continuous
@@ -810,6 +793,26 @@ is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
 is-complete oj ℓj C = ∀ {J : Precategory oj ℓj} (F : Functor J C) → Limit F
 ```
 
+<!--
+```agda
+is-complete-lower
+  : ∀ {o ℓ} {C : Precategory o ℓ} o₁ ℓ₁ o₂ ℓ₂
+  → is-complete (o₁ ⊔ o₂) (ℓ₁ ⊔ ℓ₂) C
+  → is-complete o₂ ℓ₂ C
+is-complete-lower o₁ ℓ₁ _ _ compl {J} F = to-limit (to-is-limit mk) where
+  lim = compl {J = Lift-cat o₁ ℓ₁ J} (Lift-functor-l _ _ F)
+  module lim = Limit lim
+  open make-is-limit
+
+  mk : make-is-limit F lim.apex
+  mk .ψ j = lim.ψ (lift j)
+  mk .commutes f = lim.commutes _
+  mk .universal eps x = lim.universal (λ j → eps (j .lower)) (λ f → x (f .lower))
+  mk .factors eps p = lim.factors _ _
+  mk .unique eps p other x = lim.unique _ _ _ λ j → x (j .lower)
+```
+-->
+
 While this condition might sound very strong, and thus that it would be hard to come
 by, it turns out we can get away with only two fundamental types of limits:
 [[products]] and [[equalisers]]. In order to construct the limit for a diagram
@@ -830,11 +833,11 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
   limit-as-equaliser-of-product
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
-    → has-products-indexed-by C (Precategory.Ob J)
-    → has-products-indexed-by C (Precategory.Mor J)
+    → has-products-indexed-by C ⌞ J ⌟
+    → has-products-indexed-by C (Arrows J)
     → has-equalisers C
     → (F : Functor J C) → Limit F
-  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Mor-prod has-eq F =
+  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Arrows-prod has-eq F =
     to-limit (to-is-limit lim) where
 ```
 
@@ -866,17 +869,17 @@ This suggests to build another indexed product of all the *codomains* of arrows 
 the diagram, taking the first morphism to be the projection of the codomain
 and the second morphism to be the projection of the domain postcomposed with $f$:
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
-	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Mor}(\mathcal J)} F(b)}
+	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Arrows}(\mathcal J)} F(b)}
 	\arrow["{\pi_b}", shift left, from=1-1, to=1-2]
 	\arrow["{F(f) \circ \pi_a}"', shift right, from=1-1, to=1-2]
 \end{tikzcd}\]
 ~~~
 
 ```agda
-    Cod : Indexed-product C {Idx = J.Mor} λ (a , b , f) → F₀ b
-    Cod = has-Mor-prod _
+    Cod : Indexed-product C {Idx = Arrows J} λ (a , b , f) → F₀ b
+    Cod = has-Arrows-prod _
 
     s t : C.Hom (Obs .ΠF) (Cod .ΠF)
     s = Cod .tuple λ (a , b , f) → F₁ f C.∘ Obs .π a

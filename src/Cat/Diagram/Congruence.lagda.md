@@ -201,12 +201,12 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
   trans-p₁ : rel₁ ∘ has-trans ≡ rel₁ ∘ A×A×A.p₂
   trans-p₁ =
     pullr (sym trans-factors)
-    ∙ A×A.π₁∘factor
+    ∙ A×A.π₁∘⟨⟩
 
   trans-p₂ : rel₂ ∘ has-trans ≡ rel₂ ∘ A×A×A.p₁
   trans-p₂ =
     pullr (sym trans-factors)
-    ∙ A×A.π₂∘factor
+    ∙ A×A.π₂∘⟨⟩
 
   unpair-trans
     : ∀ {X} {p₁' p₂' : Hom X R}
@@ -245,9 +245,9 @@ calculation, where we use that $\id = \pi_1 \circ \Delta$.
 ```agda
 diagonal-is-monic : ∀ {A} → is-monic (diagonal {A})
 diagonal-is-monic {A} g h p =
-  g                       ≡⟨ introl A×A.π₁∘factor ⟩
+  g                       ≡⟨ introl A×A.π₁∘⟨⟩ ⟩
   (A×A.π₁ ∘ diagonal) ∘ g ≡⟨ extendr p ⟩
-  (A×A.π₁ ∘ diagonal) ∘ h ≡⟨ eliml A×A.π₁∘factor ⟩
+  (A×A.π₁ ∘ diagonal) ∘ h ≡⟨ eliml A×A.π₁∘⟨⟩ ⟩
   h                       ∎
   where module A×A = Product (fc.products A A)
 ```
@@ -268,16 +268,16 @@ diagonal-congruence {A} = cong where
   cong : is-congruence _
   cong .has-is-monic = diagonal-is-monic
   cong .has-refl = id
-  cong .refl-p₁ = eliml A×A.π₁∘factor
-  cong .refl-p₂ = eliml A×A.π₂∘factor
+  cong .refl-p₁ = eliml A×A.π₁∘⟨⟩
+  cong .refl-p₂ = eliml A×A.π₂∘⟨⟩
   cong .has-sym = id
-  cong .sym-p₁ = eliml A×A.π₁∘factor ∙ sym A×A.π₂∘factor
-  cong .sym-p₂ = eliml A×A.π₂∘factor ∙ sym A×A.π₁∘factor
+  cong .sym-p₁ = eliml A×A.π₁∘⟨⟩ ∙ sym A×A.π₂∘⟨⟩
+  cong .sym-p₂ = eliml A×A.π₂∘⟨⟩ ∙ sym A×A.π₁∘⟨⟩
   cong .has-trans = Pb.p₁
   cong .trans-factors = A×A.unique₂
-    (A×A.π₁∘factor ∙ eliml A×A.π₁∘factor) (A×A.π₂∘factor ∙ eliml A×A.π₂∘factor)
-    (assoc _ _ _ ∙ Pb.square ∙ eliml A×A.π₂∘factor)
-    (cancell A×A.π₂∘factor)
+    (A×A.π₁∘⟨⟩ ∙ eliml A×A.π₁∘⟨⟩) (A×A.π₂∘⟨⟩ ∙ eliml A×A.π₂∘⟨⟩)
+    (assoc _ _ _ ∙ Pb.square ∙ eliml A×A.π₂∘⟨⟩)
+    (cancell A×A.π₂∘⟨⟩)
 ```
 
 # Effective congruences
@@ -304,8 +304,8 @@ module _ {a b} (f : Hom a b) where
   kernel-pair-is-monic : is-monic kernel-pair
   kernel-pair-is-monic g h p = Kp.unique₂ {p = extendl Kp.square}
     refl refl
-    (sym (pulll a×a.π₁∘factor) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₁∘factor)
-    (sym (pulll a×a.π₂∘factor) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₂∘factor)
+    (sym (pulll a×a.π₁∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₁∘⟨⟩)
+    (sym (pulll a×a.π₂∘⟨⟩) ∙ ap₂ _∘_ refl (sym p) ∙ pulll a×a.π₂∘⟨⟩)
 ```
 
 We build the congruence in parts.
@@ -320,12 +320,12 @@ We build the congruence in parts.
 
 For the reflexivity map, we take the unique map $f : A \to A \times_B A$
 which is characterised by $p_1 f = p_2 f = \mathrm{id}$; This expresses,
-diagramatically, that $f(x) = f(x)$.
+diagrammatically, that $f(x) = f(x)$.
 
 ```agda
     cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl
-    cg .refl-p₁ = ap (_∘ Kp.universal refl) a×a.π₁∘factor ∙ Kp.p₁∘universal
-    cg .refl-p₂ = ap (_∘ Kp.universal refl) a×a.π₂∘factor ∙ Kp.p₂∘universal
+    cg .refl-p₁ = ap (_∘ Kp.universal refl) a×a.π₁∘⟨⟩ ∙ Kp.p₁∘universal
+    cg .refl-p₂ = ap (_∘ Kp.universal refl) a×a.π₂∘⟨⟩ ∙ Kp.p₂∘universal
 ```
 
 Symmetry is witnessed by the map $(A \times_B A) \to (A \times_B A)$
@@ -333,10 +333,10 @@ which swaps the components. This one's pretty simple.
 
 ```agda
     cg .has-sym = Kp.universal {p₁' = Kp.p₂} {p₂' = Kp.p₁} (sym Kp.square)
-    cg .sym-p₁ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₁∘factor
-               ∙ sym (a×a.π₂∘factor ∙ sym Kp.p₁∘universal)
-    cg .sym-p₂ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₂∘factor
-               ∙ sym (a×a.π₁∘factor ∙ sym Kp.p₂∘universal)
+    cg .sym-p₁ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₁∘⟨⟩
+               ∙ sym (a×a.π₂∘⟨⟩ ∙ sym Kp.p₁∘universal)
+    cg .sym-p₂ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₂∘⟨⟩
+               ∙ sym (a×a.π₁∘⟨⟩ ∙ sym Kp.p₂∘universal)
 ```
 
 <details>
@@ -350,9 +350,9 @@ Understanding the transitivity map is left as an exercise to the reader.
       where abstract
         path : f ∘ Kp.p₁ ∘ rel.p₂ ≡ f ∘ Kp.p₂ ∘ rel.p₁
         path =
-          f ∘ Kp.p₁ ∘ rel.p₂                  ≡⟨ extendl (Kp.square ∙ ap (f ∘_) (sym a×a.π₂∘factor)) ⟩
+          f ∘ Kp.p₁ ∘ rel.p₂                  ≡⟨ extendl (Kp.square ∙ ap (f ∘_) (sym a×a.π₂∘⟨⟩)) ⟩
           f ∘ (a×a.π₂ ∘ kernel-pair) ∘ rel.p₂ ≡⟨ ap (f ∘_) (sym rel.square) ⟩
-          f ∘ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ extendl (ap (f ∘_) a×a.π₁∘factor ∙ Kp.square) ⟩
+          f ∘ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ extendl (ap (f ∘_) a×a.π₁∘⟨⟩ ∙ Kp.square) ⟩
           f ∘ Kp.p₂ ∘ rel.p₁                  ∎
 
     cg .trans-factors =
@@ -360,8 +360,8 @@ Understanding the transitivity map is left as an exercise to the reader.
         kernel-pair ∘ Kp.universal _
       ≡⟨ a×a.⟨⟩∘ _ ⟩
         a×a.⟨ Kp.p₁ ∘ Kp.universal _ , Kp.p₂ ∘ Kp.universal _ ⟩
-      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym a×a.π₁∘factor) refl)
-                       (Kp.p₂∘universal ∙ ap₂ _∘_ (sym a×a.π₂∘factor) refl) ⟩
+      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym a×a.π₁∘⟨⟩) refl)
+                       (Kp.p₂∘universal ∙ ap₂ _∘_ (sym a×a.π₂∘⟨⟩) refl) ⟩
         a×a.⟨ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₂ , (a×a.π₂ ∘ kernel-pair) ∘ rel.p₁ ⟩
       ∎)
 
@@ -380,7 +380,7 @@ coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
 A$, then we call $q$ the **quotient map**, and we call $A/R$ the
 **quotient** of $R$.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   R & {A \times A} & A & {A/R}
   \arrow["m", hook, from=1-1, to=1-2]
@@ -427,10 +427,10 @@ identifies _exactly those_ objects related by $R$, and no more.
 record is-effective-congruence {A} (R : Congruence-on A) : Type (o ⊔ ℓ) where
   private module R = Congruence-on R
   field
-    {A/R}          : Ob
-    quotient       : Hom A A/R
-    has-quotient   : is-quotient-of R quotient
-    is-kernel-pair : is-pullback C R.rel₁ quotient R.rel₂ quotient
+    {A/R}           : Ob
+    quotient        : Hom A A/R
+    has-quotient    : is-quotient-of R quotient
+    has-kernel-pair : is-kernel-pair C R.rel₁ R.rel₂ quotient
 ```
 
 If $f$ is the coequaliser of its kernel pair --- that is, it is an
@@ -454,10 +454,10 @@ kernel-pair-is-effective {a = a} {b} {f} quot = epi where
   epi .is-effective-congruence.A/R = b
   epi .quotient = f
   epi .has-quotient = quot
-  epi .is-kernel-pair =
+  epi .has-kernel-pair =
     transport
-      (λ i → is-pullback C (a×a.π₁∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
-                           (a×a.π₂∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
+      (λ i → is-pullback C (a×a.π₁∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
+                           (a×a.π₂∘⟨⟩ {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
       pb.has-is-pb
 
 kp-effective-congruence→effective-epi
@@ -471,6 +471,6 @@ kp-effective-congruence→effective-epi {f = f} cong = epi where
   epi .kernel = Kernel-pair _ .Congruence-on.domain
   epi .p₁ = _
   epi .p₂ = _
-  epi .is-kernel-pair = cong.is-kernel-pair
+  epi .has-kernel-pair = cong.has-kernel-pair
   epi .has-is-coeq = cong.has-quotient
 ```

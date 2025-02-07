@@ -16,7 +16,7 @@ open Cat.Reasoning using (Isomorphism; id-iso)
 module Cat.Gaunt where
 ```
 
-# Gaunt (pre)categories
+# Gaunt (pre)categories {defines="gaunt"}
 
 A precategory $\cC$ is **gaunt** if it is [[univalent|univalent
 category]] and [strict]: its type of objects $\rm{Ob}(\cC)$ is a set,
@@ -38,19 +38,7 @@ record is-gaunt {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote is-gaunt)
-
-is-gaunt-is-prop
-  : ∀ {o ℓ} {C : Precategory o ℓ}
-  → is-prop (is-gaunt C)
-is-gaunt-is-prop =
-  Iso→is-hlevel 1 eqv (Σ-is-hlevel 1 hlevel! (λ _ → is-hlevel-is-prop 2))
-
-instance
-  H-Level-is-gaunt
-    : ∀ {o ℓ} {C : Precategory o ℓ} {n}
-    → H-Level (is-gaunt C) (suc n)
-  H-Level-is-gaunt = prop-instance is-gaunt-is-prop
+unquoteDecl H-Level-is-gaunt = declare-record-hlevel 1 H-Level-is-gaunt (quote is-gaunt)
 ```
 -->
 
@@ -62,7 +50,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (gaunt : is-gaunt C) where
   open Cat.Reasoning C
 
   iso-is-prop : ∀ {x y} → is-prop (x ≅ y)
-  iso-is-prop = hlevel 1
+  iso-is-prop = hlevel 1 ⦃ R-H-level ⦄
 ```
 
 This implies that gaunt categories are [skeletal]: Since there is at
@@ -123,9 +111,7 @@ is straightforward, as $\cC$ is strict.
 ```agda
 skeletal+trivial-automorphisms→gaunt {C = C} skel trivial-aut =
   skeletal+category→gaunt skel $
-    equiv-path→identity-system
-      (Iso→Equiv path-iso)
-      (λ _ → transport-refl _)
+    equiv-path→identity-system (Iso→Equiv path-iso)
   where
     open is-gaunt
 

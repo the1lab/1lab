@@ -62,8 +62,8 @@ module _ {o'} {D : Precategory o' ℓ}
     : ∀ c → Corepresentation (Hom-into C c F∘ Functor.op L)
   left-adjoint→objectwise-rep c .corep = R .F₀ c
   left-adjoint→objectwise-rep c .corepresents =
-    adjunct-hom-iso-into L⊣R c
-    ∘ni path→iso (sym (Hom-from-op _))
+    path→iso (sym (Hom-from-op _))
+    ∘ni adjunct-hom-iso-into L⊣R c
 ```
 
 The other direction should be more surprising: if we only have a family of objects
@@ -73,7 +73,7 @@ assemble into a *functor* $L : \cD \to \cC$?
 We answer the question indirectly^[for a more direct construction based on the Yoneda
 embedding, see the [nLab](https://ncatlab.org/nlab/show/adjoint+functor#AdjointFunctorFromObjectwiseRepresentingObject)]:
 what is a sufficient condition for $R$ to have a left adjoint?
-Well, by our characterisation in terms of [[universal morphisms]], it should be
+Well, by our characterisation in terms of [[free objects]], it should be
 enough to have [[initial objects]] for each [[comma category]] $d \swarrow R$.
 But we have also `established`{.Agda ident=corepresentation→initial-element}
 that a (covariant) functor into $\Sets$ is representable if and only if its
@@ -98,7 +98,7 @@ module _ {o'} {D : Precategory o' ℓ}
 
 ```agda
   private
-    ↙≡∫ : ∀ d → d ↙ R ≡ ∫ C (Hom-from D d F∘ R)
+    ↙≡∫ : ∀ d → d ↙ R ≡ ∫ (Hom-from D d F∘ R)
 ```
 
 <details>
@@ -108,11 +108,11 @@ module _ {o'} {D : Precategory o' ℓ}
     ↙≡∫ d = Precategory-path F F-is-precat-iso where
       open is-precat-iso
 
-      F : Functor (d ↙ R) (∫ C (Hom-from D d F∘ R))
+      F : Functor (d ↙ R) (∫ (Hom-from D d F∘ R))
       F .F₀ m = elem (m .↓Obj.y) (m .↓Obj.map)
       F .F₁ f = elem-hom (f .↓Hom.β) (sym (f .↓Hom.sq) ∙ D.idr _)
-      F .F-id = Element-hom-path _ _ refl
-      F .F-∘ f g = Element-hom-path _ _ refl
+      F .F-id = ext refl
+      F .F-∘ f g = ext refl
 
       F-is-precat-iso : is-precat-iso F
       F-is-precat-iso .has-is-iso = is-iso→is-equiv is where
@@ -123,21 +123,23 @@ module _ {o'} {D : Precategory o' ℓ}
       F-is-precat-iso .has-is-ff = is-iso→is-equiv is where
         is : is-iso (F .F₁)
         is .is-iso.inv h = ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
-        is .is-iso.rinv h = Element-hom-path _ _ refl
+        is .is-iso.rinv h = ext refl
         is .is-iso.linv h = ↓Hom-path _ _ refl refl
 ```
 </details>
 
 ```agda
-  objectwise-rep→universal-maps : ∀ d → Universal-morphism d R
+  objectwise-rep→universal-maps : ∀ d → Universal-morphism R d
   objectwise-rep→universal-maps d = subst Initial (sym (↙≡∫ d))
     (corepresentation→initial-element (corep d))
 
-  objectwise-rep→L : Functor D C
-  objectwise-rep→L = universal-maps→L R objectwise-rep→universal-maps
+  objectwise-rep→functor : Functor D C
+  objectwise-rep→functor =
+    universal-maps→functor objectwise-rep→universal-maps
 
-  objectwise-rep→L⊣R : objectwise-rep→L ⊣ R
-  objectwise-rep→L⊣R = universal-maps→L⊣R R objectwise-rep→universal-maps
+  objectwise-rep→left-adjoint : objectwise-rep→functor ⊣ R
+  objectwise-rep→left-adjoint =
+    universal-maps→left-adjoint objectwise-rep→universal-maps
 ```
 
 ## Right adjoints into Sets are representable
@@ -163,8 +165,8 @@ module _
   right-adjoint→corepresentable : Corepresentation R
   right-adjoint→corepresentable .corep = L .F₀ top
   right-adjoint→corepresentable .corepresents =
-    iso→isoⁿ (λ _ → equiv→iso (Π-⊤-eqv e⁻¹)) (λ _ → refl)
-    ∘ni adjunct-hom-iso-from L⊣R top ni⁻¹
+    adjunct-hom-iso-from L⊣R top ni⁻¹
+    ∘ni iso→isoⁿ (λ _ → equiv→iso (Π-⊤-eqv e⁻¹)) (λ _ → refl)
 ```
 
 Going the other way, if we assume that $\cC$ is [[copowered]] over $\Sets_\ell$
@@ -189,12 +191,12 @@ module _
     Hom[X,R-]-rep : ∀ X → Corepresentation (Hom-from (Sets ℓ) X F∘ R)
     Hom[X,R-]-rep X .corep = X ⊗ R-corep .corep
     Hom[X,R-]-rep X .corepresents =
-      F∘-iso-r (R-corep .corepresents)
-      ∘ni copower-hom-iso ni⁻¹
+      copower-hom-iso ni⁻¹
+      ∘ni F∘-iso-r (R-corep .corepresents)
 
-  corepresentable→L : Functor (Sets ℓ) C
-  corepresentable→L = objectwise-rep→L Hom[X,R-]-rep
+  corepresentable→functor : Functor (Sets ℓ) C
+  corepresentable→functor = objectwise-rep→functor Hom[X,R-]-rep
 
-  corepresentable→L⊣R : corepresentable→L ⊣ R
-  corepresentable→L⊣R = objectwise-rep→L⊣R Hom[X,R-]-rep
+  corepresentable→left-adjoint : corepresentable→functor ⊣ R
+  corepresentable→left-adjoint = objectwise-rep→left-adjoint Hom[X,R-]-rep
 ```

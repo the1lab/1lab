@@ -21,7 +21,7 @@ let
       collection-latex
       xcolor
       preview
-      pgf tikz-cd
+      pgf tikz-cd braids
       mathpazo
       varwidth xkeyval standalone;
   };
@@ -32,17 +32,29 @@ let
     main = "Main.hs";
   };
 
+  sort-imports = let
+    script = builtins.readFile support/sort-imports.hs;
+    # Extract the list of dependencies from the stack shebang comment.
+    deps = lib.concatLists (lib.filter (x: x != null)
+      (map (builtins.match ".*--package +([^[:space:]]*).*")
+        (lib.splitString "\n" script)));
+  in pkgs.writers.writeHaskellBin "sort-imports" {
+    ghc = pkgs.labHaskellPackages.ghc;
+    libraries = lib.attrVals deps pkgs.labHaskellPackages;
+  } script;
+
   deps = with pkgs; [
     # For driving the compilation:
     shakefile
 
     # For building the text and maths:
-    gitMinimal sassc
+    gitMinimal nodePackages.sass
 
     # For building diagrams:
     poppler_utils our-texlive
   ] ++ (if interactive then [
     our-ghc
+    sort-imports
   ] else [
     labHaskellPackages.Agda.data
     labHaskellPackages.pandoc.data
@@ -82,19 +94,8 @@ in
     '';
 
     passthru = {
-      inherit deps shakefile;
+      inherit deps shakefile sort-imports;
       texlive = our-texlive;
       ghc = our-ghc;
-
-      sort-imports = let
-        script = builtins.readFile support/sort-imports.hs;
-        # Extract the list of dependencies from the stack shebang comment.
-        deps = lib.concatLists (lib.filter (x: x != null)
-          (map (builtins.match ".*--package +([^[:space:]]*).*")
-            (lib.splitString "\n" script)));
-      in pkgs.writers.writeHaskellBin "sort-imports" {
-        ghc = pkgs.labHaskellPackages.ghc;
-        libraries = lib.attrVals deps pkgs.labHaskellPackages;
-      } script;
     };
   }

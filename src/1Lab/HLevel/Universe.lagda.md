@@ -2,8 +2,8 @@
 description: Using univalence, we compute the h-level of the universe of n types.
 ---
 <!--
-```
-open import 1Lab.HLevel.Retracts
+```agda
+open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -18,7 +18,7 @@ module 1Lab.HLevel.Universe where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B C : Type ℓ
@@ -114,6 +114,10 @@ record n-Type ℓ n : Type (lsuc ℓ) where
   field
     ∣_∣   : Type ℓ
     is-tr : is-hlevel ∣_∣ n
+```
+
+<!--
+```agda
   infix 100 ∣_∣
   instance
     H-Level-n-type : ∀ {k} → H-Level ∣_∣ (n + k)
@@ -121,6 +125,7 @@ record n-Type ℓ n : Type (lsuc ℓ) where
 
 open n-Type using (∣_∣ ; is-tr ; H-Level-n-type) public
 ```
+-->
 
 Like mentioned in the introduction, the main theorem of this section is
 that `n-Type` is a type of h-level $n+1$. We take a detour first and
@@ -170,7 +175,7 @@ n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
 n-Type-is-hlevel zero x y = n-ua
   ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))
 n-Type-is-hlevel (suc n) x y =
-  is-hlevel≃ (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
+  Equiv→is-hlevel (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
 ```
 
 For 1-categorical mathematics, the important h-levels are the
@@ -186,6 +191,15 @@ Prop ℓ = n-Type ℓ 1
 
 <!--
 ```agda
+¬Set-is-prop : ¬ is-prop (Set ℓ)
+¬Set-is-prop prop =
+  lower $
+  transport (ap ∣_∣ (prop (el (Lift _ ⊤) (hlevel 2)) (el (Lift _ ⊥) (hlevel 2)))) (lift tt)
+```
+-->
+
+<!--
+```agda
 n-Type-square
   : ∀ {ℓ} {n}
   → {w x y z : n-Type ℓ n}
@@ -196,15 +210,5 @@ n-Type-square sq i j .∣_∣ = sq i j
 n-Type-square {p = p} {q} {s} {r} sq i j .is-tr =
   is-prop→squarep (λ i j → is-hlevel-is-prop {A = sq i j} _)
     (ap is-tr p) (ap is-tr q) (ap is-tr s) (ap is-tr r) i j
-
-instance
-  H-Level-nType : ∀ {n k} → H-Level (n-Type ℓ k) (1 + k + n)
-  H-Level-nType {k = k} = basic-instance (1 + k) (n-Type-is-hlevel k)
-
-  H-Level-is-equiv
-    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {n}
-    → H-Level (is-equiv f) (suc n)
-  H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
-
 ```
 -->

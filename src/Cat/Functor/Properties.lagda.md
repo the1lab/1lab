@@ -1,8 +1,12 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
+open import Cat.Functor.Compose
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
+import Cat.Natural.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -15,7 +19,7 @@ module Cat.Functor.Properties where
 ```agda
 private variable
   o h o₁ h₁ : Level
-  C D : Precategory o h
+  B C D : Precategory o h
 open Precategory
 open Functor
 ```
@@ -32,17 +36,16 @@ A functor is **full** when its action on hom-sets is surjective:
 
 ```agda
 is-full : Functor C D → Type _
-is-full {C = C} {D = D} F =
-  ∀ {x y} (g : D .Hom (F₀ F x) (F₀ F y)) → ∃[ f ∈ C .Hom x y ] (F₁ F f ≡ g)
+is-full {C = C} {D = D} F = ∀ {x y} → is-surjective (F .F₁ {x = x} {y})
 ```
 :::
 
-:::{.definition #faithful-functor}
+:::{.definition #faithful-functor alias="faithful"}
 A functor is **faithful** when its action on hom-sets is injective:
 
 ```agda
 is-faithful : Functor C D → Type _
-is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
+is-faithful F = ∀ {x y} → injective (F .F₁ {x = x} {y})
 ```
 :::
 
@@ -59,11 +62,16 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   faithful→iso-fibre-prop
     : ∀ (F : Functor C D)
     → is-faithful F
-    → ∀ {x y} → (f : F₀ F x D.≅ F₀ F y)
+    → ∀ {x y} → (f : F # x D.≅ F # y)
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
-    Σ-prop-path (λ _ → D.≅-is-set _ _) $
-    ext (faithful (ap D.to (p ∙ sym q)))
+    Σ-prop-path! $ ext (faithful (ap D.to (p ∙ sym q)))
+
+  is-faithful-∘
+    : ∀ {F : Functor C D} {G : Functor B C}
+    → is-faithful F → is-faithful G
+    → is-faithful (F F∘ G)
+  is-faithful-∘ Ff Gf p = Gf (Ff p)
 ```
 -->
 
@@ -77,27 +85,27 @@ prove the conjunction as a theorem.
 
 ```agda
 is-fully-faithful : Functor C D → Type _
-is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
+is-fully-faithful F = ∀ {x y} → is-equiv (F .F₁ {x = x} {y})
 
-fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
-fully-faithful→faithful f = Equiv.injective (_ , f)
+ff→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
+ff→faithful f = Equiv.injective (_ , f)
 
-fully-faithful→full : {F : Functor C D} → is-fully-faithful F → is-full F
-fully-faithful→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
+ff→full : {F : Functor C D} → is-fully-faithful F → is-full F
+ff→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
 
 full+faithful→ff
   : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
 full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
-  img-is-prop : ∀ {x y} f → is-prop (fibre (F₁ F {x = x} {y}) f)
+  img-is-prop : ∀ {x y} f → is-prop (fibre (F .F₁ {x = x} {y}) f)
   img-is-prop f (g , p) (h , q) = Σ-prop-path (λ _ → D .Hom-set _ _ _ _) (inj (p ∙ sym q))
 
-  p : ∀ {x y} f → is-contr (fibre (F₁ F {x = x} {y}) f)
+  p : ∀ {x y} f → is-contr (fibre (F .F₁ {x = x} {y}) f)
   p f .centre = ∥-∥-elim (λ _ → img-is-prop f) (λ x → x) (surj f)
   p f .paths = img-is-prop f _
 ```
 
 A very important property of fully faithful functors (like $F$) is that
-they are **conservative**: If the image of $f : x \to y$ under $F$ is an
+they are [[conservative]]: If the image of $f : x \to y$ under $F$ is an
 isomorphism $Fx \cong Fy$, then $f$ was really an isomorphism $f : x
 \cong y$.
 
@@ -112,14 +120,14 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
   is-ff→is-conservative
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} (f : C.Hom X Y) → Dm.is-invertible (F₁ F f)
+    → ∀ {X Y} (f : C.Hom X Y) → Dm.is-invertible (F .F₁ f)
     → Cm.is-invertible f
   is-ff→is-conservative {F = F} ff f isinv = i where
     open Cm.is-invertible
     open Cm.Inverses
 ```
 
-Since the functor is ff, we can find a map "$F_1^{-1}(f) : y \to x$" in
+Since the functor is ff, we can find a map "$F_1\inv(f) : y \to x$" in
 the domain category to serve as an inverse for $f$:
 
 ```agda
@@ -128,36 +136,35 @@ the domain category to serve as an inverse for $f$:
     module ff {a} {b} = Equiv (_ , ff {a} {b})
 
     Ffog =
-      F₁ F (f C.∘ g)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (ff.ε _) ∙ isinv .Dm.is-invertible.invl ⟩
-      D.id              ∎
+      F .F₁ (f C.∘ g)     ≡⟨ F .F-∘ _ _ ⟩
+      F .F₁ f D.∘ F .F₁ g ≡⟨ ap₂ D._∘_ refl (ff.ε _) ∙ isinv .Dm.is-invertible.invl ⟩
+      D.id                ∎
 
     Fgof =
-      F₁ F (g C.∘ f)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (ff.ε _) refl ∙ isinv .Dm.is-invertible.invr ⟩
-      D.id              ∎
+      F .F₁ (g C.∘ f)     ≡⟨ F .F-∘ _ _ ⟩
+      F .F₁ g D.∘ F .F₁ f ≡⟨ ap₂ D._∘_ (ff.ε _) refl ∙ isinv .Dm.is-invertible.invr ⟩
+      D.id                ∎
 
     i : Cm.is-invertible _
     i .inv = g
     i .inverses .invl =
-      f C.∘ g                    ≡⟨ sym (ff.η _) ⟩
-      ff.from ⌜ F₁ F (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F-id F)) ⟩
-      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
-      C.id                       ∎
+      f C.∘ g                     ≡⟨ sym (ff.η _) ⟩
+      ff.from ⌜ F .F₁ (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F .F-id)) ⟩
+      ff.from (F .F₁ C.id)        ≡⟨ ff.η _ ⟩
+      C.id                        ∎
     i .inverses .invr =
-      g C.∘ f                    ≡⟨ sym (ff.η _) ⟩
-      ff.from ⌜ F₁ F (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F-id F)) ⟩
-      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
-      C.id                       ∎
+      g C.∘ f                     ≡⟨ sym (ff.η _) ⟩
+      ff.from ⌜ F .F₁ (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F .F-id)) ⟩
+      ff.from (F .F₁ C.id)        ≡⟨ ff.η _ ⟩
+      C.id                        ∎
 
   is-ff→essentially-injective
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
+    → ∀ {X Y} → F .F₀ X Dm.≅ F .F₀ Y
     → X Cm.≅ Y
   is-ff→essentially-injective {F = F} ff im = im' where
-    -- Cm.make-iso (equiv→inverse ff to) inv invl invr
     open Dm._≅_ im using (to ; from ; inverses)
-    D-inv' : Dm.is-invertible (F₁ F (equiv→inverse ff to))
+    D-inv' : Dm.is-invertible (F .F₁ (equiv→inverse ff to))
     D-inv' .Dm.is-invertible.inv = from
     D-inv' .Dm.is-invertible.inverses =
       subst (λ e → Dm.Inverses e from) (sym (equiv→counit ff _)) inverses
@@ -179,7 +186,7 @@ $y$.
 
 ```agda
 Essential-fibre : Functor C D → D .Ob → Type _
-Essential-fibre {D = D} F y = Σ[ x ∈ _ ] (F₀ F x ≅ y)
+Essential-fibre {C = C} {D = D} F y = Σ[ x ∈ C ] (F # x ≅ y)
   where open import Cat.Morphism D
 ```
 
@@ -210,7 +217,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → is-equiv (F-map-iso {x = X} {Y} F)
+    → ∀ {X Y} → is-equiv (F-map-iso F {x = X} {Y})
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv    = is-ff→essentially-injective {F = F} ff
@@ -218,6 +225,101 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     isom .is-iso.linv x = ext (equiv→unit ff _)
 ```
 -->
+
+If a functor $F : \cC \to \cD$ is essentially surjective, then the
+precomposition functor $(-) \circ F : [\cD,\cA] \to [\cC,\cA]$ is faithful
+for every precategory $\cA$.
+
+```agda
+  is-eso→precompose-is-faithful
+    : ∀ {oa ℓa} {A : Precategory oa ℓa}
+    → (F : Functor C D)
+    → is-eso F
+    → is-faithful (precompose F {D = A})
+```
+
+This is rather abstract, so let's unfold the statement a bit.
+If precomposition by $F$ is fully faithful, then we  can determine
+equality of natural transformations $\alpha, \beta : G \to H$ between functors
+$G, H : \cD \to \cA$ by only looking at the components of the form
+$\alpha_{F(c)}, \beta_{G(c)} : G(F(c)) \to H(F(c))$ for every $c : \cC$.
+
+<details>
+<summary>Intuitively, this should be true for essentially surjective functors, as
+$F$ doesn't miss out on any objects of $d$, but the actual proof involves
+some rather tedious calculations.
+</summary>
+```agda
+  is-eso→precompose-is-faithful {A = A} F F-eso {G} {H} {α} {β} αL=βL =
+    ext λ d → ∥-∥-out! do
+      (c , Fc≅d) ← F-eso d
+      let module Fc≅d = D._≅_ Fc≅d
+      pure $
+        α.η d                                             ≡⟨ A.intror (G.annihilate (D.invl Fc≅d)) ⟩
+        α.η d A.∘ G.₁ Fc≅d.to A.∘ G.₁ Fc≅d.from           ≡⟨ A.extendl (α.is-natural _ _ _) ⟩
+        H.₁ Fc≅d.to A.∘ ⌜ α.η (F.₀ c) ⌝ A.∘ G.₁ Fc≅d.from ≡⟨ ap! (unext αL=βL c) ⟩
+        H.₁ Fc≅d.to A.∘ β.η (F.₀ c) A.∘ G.₁ Fc≅d.from     ≡⟨ A.extendl (sym (β.is-natural _ _ _)) ⟩
+        β.η d A.∘ G.₁ Fc≅d.to A.∘ G.₁ Fc≅d.from           ≡⟨ A.elimr (G.annihilate (D.invl Fc≅d)) ⟩
+        β.η d ∎
+    where
+      module A = Cat.Reasoning A
+      module F = Cat.Functor.Reasoning F
+      module G = Cat.Functor.Reasoning G
+      module H = Cat.Functor.Reasoning H
+      module α = _=>_ α
+      module β = _=>_ β
+```
+</details>
+
+<!--
+```agda
+  _ = C.epic-precomp-embedding
+```
+-->
+
+Another way of viewing this result is that it is a higher-dimensional analog
+of the fact that `precomposition with an epi is an embedding`{.Agda ident=C.epic-precomp-embedding}.
+
+Additionally, precomposition with an essentially surjective functor
+is conservative.
+
+```agda
+  eso→precompose-conservative
+    : ∀ {oa ℓa} {A : Precategory oa ℓa}
+    → (F : Functor C D)
+    → is-eso F
+    → {G H : Functor D A} {α : G => H}
+    → is-invertibleⁿ (α ◂ F)
+    → is-invertibleⁿ α
+```
+
+<details>
+<summary>The proof follows the same plan as the previous theorem:
+natural transformations are invertible when they are invertible objectwise,
+and $F$ covers every object of $\cD$.
+</summary>
+```agda
+  eso→precompose-conservative {A = A} F F-eso {G} {H} {α} α⁻¹ =
+    invertible→invertibleⁿ α λ d → ∥-∥-out! do
+      (c , Fc≅d) ← F-eso d
+      let module Fc≅d = D._≅_ Fc≅d
+      pure $
+        A.make-invertible (G.₁ Fc≅d.to A.∘ α⁻¹.η c A.∘ H.₁ Fc≅d.from)
+          (α.pulll (A.cancell (α⁻¹.invl #ₚ c)) ∙ H.annihilate Fc≅d.invl)
+          (A.pullr (α.cancelr (α⁻¹.invr #ₚ c)) ∙ G.annihilate Fc≅d.invl)
+    where
+      module A = Cat.Reasoning A
+      module F = Cat.Functor.Reasoning F
+      module G = Cat.Functor.Reasoning G
+      module H = Cat.Functor.Reasoning H
+
+      module α = Cat.Natural.Reasoning α
+      module α⁻¹ where
+        open is-invertibleⁿ α⁻¹ public
+        open Cat.Natural.Reasoning inv hiding (op) public
+```
+</details>
+
 
 ## Pseudomonic functors {defines="pseudomonic pseudomonic-functor"}
 
@@ -237,7 +339,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```agda
   is-full-on-isos : Functor C D → Type (o ⊔ h ⊔ h₁)
   is-full-on-isos F =
-    ∀ {x y} → (f : (F .F₀ x) D.≅ (F .F₀ y)) → ∃[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f)
+    ∀ {x y} → (f : F .F₀ x D.≅ F .F₀ y) → ∃[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f)
 
   record is-pseudomonic (F : Functor C D) : Type (o ⊔ h ⊔ h₁) where
     no-eta-equality
@@ -260,7 +362,7 @@ we perform a simple calculation to note that it yields an inverse to $f$.
   pseudomonic→conservative
     : ∀ {F : Functor C D}
     → is-pseudomonic F
-    → ∀ {x y} (f : C.Hom x y) → D.is-invertible (F₁ F f)
+    → ∀ {x y} (f : C.Hom x y) → D.is-invertible (F .F₁ f)
     → C.is-invertible f
   pseudomonic→conservative {F = F} pseudo {x} {y} f inv =
     ∥-∥-rec C.is-invertible-is-prop
@@ -279,7 +381,7 @@ fact that faithful functors are an embedding on isos.
   pseudomonic→essentially-injective
     : ∀ {F : Functor C D}
     → is-pseudomonic F
-    → ∀ {x y} → F₀ F x D.≅ F₀ F y
+    → ∀ {x y} → F .F₀ x D.≅ F .F₀ y
     → x C.≅ y
   pseudomonic→essentially-injective {F = F} pseudo f =
     ∥-∥-rec (faithful→iso-fibre-prop F (pseudo .faithful) f)
@@ -295,7 +397,7 @@ essentially injective.
     : ∀ {F : Functor C D}
     → is-fully-faithful F
     → is-pseudomonic F
-  ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
+  ff→pseudomonic {F} ff .faithful = ff→faithful {F = F} ff
   ff→pseudomonic {F} ff .isos-full f =
     inc (is-ff→essentially-injective {F = F} ff f ,
          ext (equiv→counit ff (D.to f)))

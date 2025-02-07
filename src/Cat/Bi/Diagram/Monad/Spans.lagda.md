@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.def.fun:10 #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Instances.Sets.Complete
 open import Cat.Bi.Instances.Spans
 open import Cat.Bi.Diagram.Monad
@@ -19,6 +19,8 @@ module Cat.Bi.Diagram.Monad.Spans {ℓ} where
 open Precategory
 open Span-hom
 open Span
+open Cat.Bi.Instances.Spans (Sets ℓ) using (Underlying-Span)
+
 private module Sb = Prebicategory (Spanᵇ (Sets ℓ) Sets-pullbacks)
 ```
 -->
@@ -33,8 +35,8 @@ We know that families are equivalently [fibrations], so that we may define
 [fibrations]: 1Lab.Univalence.html#object-classifiers
 
 $$
-\cC_1 = \sum_{x, y : \cC_0} \cC(x, y)\text{,}
-$$
+\cC_1 = \sum_{x, y : \cC_0} \cC(x, y)
+$$,
 
 and, since the family is valued in $\Sets$ and indexed by a set, so is
 $\cC_1$. We can picture $\cC_1$ together with the components of
@@ -92,11 +94,10 @@ strict-category→span-monad
 strict-category→span-monad C cset = m where
   open Monad
   open n-Type (el {n = 2} _ cset) using (H-Level-n-type)
-  open Precategory.HLevel-instance C
   module C = Precategory C
 
   homs : Span (Sets ℓ) (el _ cset) (el _ cset)
-  homs .apex = el (Σ[ x ∈ C .Ob ] Σ[ y ∈ C .Ob ] (C .Hom x y)) (hlevel 2)
+  homs .apex = el (Σ[ x ∈ C ] Σ[ y ∈ C ] (C .Hom x y)) (hlevel 2)
   homs .left (x , _ , _) = x
   homs .right (_ , y , _) = y
 
@@ -177,7 +178,7 @@ span-monad→strict-category C monad = precat where
 
   precat : Precategory _ _
   precat .Ob = ∣ C ∣
-  precat .Hom a b = Σ[ s ∈ ∣ M .apex ∣ ] ((M .left s ≡ a) × (M .right s ≡ b))
+  precat .Hom a b = Σ[ s ∈ M ] ((M .left s ≡ a) × (M .right s ≡ b))
   precat .Hom-set x y = hlevel 2
   precat .id {x} = η .map x , sym (happly (η .left) x) , sym (happly (η .right) x)
   precat ._∘_ (f , fs , ft) (g , gs , gt) =
@@ -198,21 +199,21 @@ extensional type theory, but the tradeoff for decidable type-checking is
 having to munge paths sometimes. This is one of those times:
 
 ```agda
-  precat .idr {x} {y} f = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path (λ _ → C .is-tr _ _) refl))
+  precat .idr {x} {y} f = Σ-prop-path!
+    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path! refl))
     ∙ happly (ap map μ-unitr) (f .fst , x , f .snd .fst))
-  precat .idl {x} {y} f = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (η .map y ,_) (Σ-prop-path (λ _ → C .is-tr _ _) refl))
+  precat .idl {x} {y} f = Σ-prop-path!
+    ( ap (μ .map) (ap (η .map y ,_) (Σ-prop-path! refl))
     ∙ happly (ap map μ-unitl) (y , f .fst , sym (f .snd .snd)))
-  precat .assoc f g h = Σ-prop-path (λ _ → hlevel 1)
-    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path (λ _ → hlevel 1)
+  precat .assoc f g h = Σ-prop-path!
+    ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path!
         (ap (μ .map) (ap (g .fst ,_)
-          (Σ-prop-path (λ _ → hlevel 1) (refl {x = h .fst}))))))
+          (Σ-prop-path! (refl {x = h .fst}))))))
     ·· happly (ap map μ-assoc)
         ( f .fst , (g .fst , h .fst , g .snd .fst ∙ sym (h .snd .snd))
         , f .snd .fst ∙ sym (g .snd .snd)
         )
     ·· ap (μ .map) (Σ-pathp (ap (μ .map) (ap (f .fst ,_)
-        (Σ-prop-path (λ _ → hlevel 1) refl)))
+        (Σ-prop-path! refl)))
            (Σ-pathp refl (is-prop→pathp (λ _ → hlevel 1) _ _))))
 ```

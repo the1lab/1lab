@@ -1,7 +1,8 @@
 <!--
 ```agda
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
+open import 1Lab.Inductive
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -73,7 +74,7 @@ listing→finite-cover l = record
   }
 
 finite-cover→listing : Finite-cover A → Listing A
-finite-cover→listing (cover f has) = record
+finite-cover→listing (covering f has) = record
   { members    = tabulate f
   ; has-member = λ a → Equiv.from (member-tabulate f a) <$> has a
   }
@@ -114,13 +115,13 @@ A$, an enumeration corresponds to an _equivalence_ $[n] \to A$.
 ```agda
 enumeration→fin-equiv : (l : Enumeration A) → Fin (length (l .members)) ≃ A
 enumeration→fin-equiv l .fst         a = l .members ! a
-enumeration→fin-equiv l .snd .is-eqv a = is-hlevel≃ 0
+enumeration→fin-equiv l .snd .is-eqv a = Equiv→is-hlevel 0
   (Equiv.inverse element≃!-fibre) (l .has-member a)
 
 fin-equiv→enumeration : ∀ {n} → Fin n ≃ A → Enumeration A
 fin-equiv→enumeration (fn , eqv) = record
   { members    = tabulate fn
-  ; has-member = λ a → is-hlevel≃ 0 (member-tabulate fn a) (eqv .is-eqv a)
+  ; has-member = λ a → Equiv→is-hlevel 0 (member-tabulate fn a) (eqv .is-eqv a)
   }
 ```
 
@@ -148,7 +149,7 @@ the listing into an enumeration.
 nub-listing : ⦃ _ : Discrete A ⦄ → Listing A → Enumeration A
 nub-listing li = record
   { members    = nub m
-  ; has-member = λ a → ∥-∥-proj! do
+  ; has-member = λ a → ∥-∥-out! do
     memb ← has a
     pure (is-prop∙→is-contr (member-nub-is-prop m) (member→member-nub memb))
   }
@@ -164,7 +165,7 @@ Discrete-finitely-indexed→Finite
   : ⦃ _ : Discrete A ⦄
   → is-finitely-indexed A
   → Finite A
-Discrete-finitely-indexed→Finite fi = ∥-∥-proj! do
+Discrete-finitely-indexed→Finite fi = ∥-∥-out! do
   cov ← □-tr fi
   let
     over  = finite-cover→listing cov

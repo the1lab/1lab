@@ -1,0 +1,147 @@
+@import "vars.scss";
+@import "mixins.scss";
+@import "theme.scss";
+
+@import "code.scss";
+
+@import "components/search.scss";
+@import "components/modal.scss";
+
+body, .reveal-viewport {
+  font-family: var(--serif), var(--sans-serif);
+  font-size: var(--font-size);
+
+  background-color: theme(--text-bg);
+  color:            theme(--text-fg);
+
+  line-height: 1.25;
+}
+
+#search-wrapper {
+  font-size: 24px;
+}
+
+#author {
+  font-size: 28px;
+}
+
+.reveal-viewport {
+  --font-size: 24px;
+  --code-font-size: 22px;
+  --code-margin: 0;
+
+  pre.Agda {
+    --code-font-size: 18px;
+  }
+}
+
+.reveal {
+  .controls {
+    color: theme(--primary);
+  }
+
+  section {
+    text-align: left;
+
+    > :first-child { margin-block-start: 0; }
+    > :last-child { margin-block-end: 0; }
+
+    pre.Agda {
+      margin-block: 0;
+    }
+  }
+
+  h1, h2, h3, h4, p { margin-block: 0.75rem; }
+
+  h1 { font-size: 1.75em; }
+
+  a[href] {
+    color: theme(--primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: 2px currentColor underline !important;
+    }
+
+    &.header-link span.header-link-emoji {
+      display: none;
+    }
+  }
+
+  div.commented-out {
+    display: none;
+  }
+
+  em { font-style: italic; }
+  strong { font-weight: bold; }
+
+  span.reasoning-step {
+    .as-written {
+      display: none;
+    }
+    .alternate {
+      display: inline;
+    }
+  }
+}
+
+ul, ol {
+  margin-inline-start: 1em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+
+  tr.header {
+    text-align: center;
+    padding-inline: 1em;
+
+    border-block-end: 2px;
+  }
+
+  td, th {
+    border: 1px solid theme(--text-fg);
+    padding-inline: 0.25em;
+  }
+}
+
+span.katex {
+  font-size: inherit;
+  line-height: inherit;
+
+  span.mord.text > span.mord.textrm {
+    font-family: var(--serif), var(--sans-serif);
+  }
+}
+
+div.diagram-container {
+  width: 100%;
+  overflow-x: auto;
+
+  margin-block: 1em;
+
+  img.diagram {
+    margin: auto;
+    display: block;
+    height: var(--height);
+
+    overflow-x: auto;
+  }
+}
+
+span.katex-display {
+  overflow-x: auto;
+  overflow-y: clip;
+
+  margin-block: -0.25em;
+
+  > span.katex {
+    white-space: normal;
+    padding-block: 0.5em;
+  }
+}
+
+div.type-tooltip {
+  transform: scale(var(--slide-scale));
+}

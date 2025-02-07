@@ -1,5 +1,8 @@
 <!--
 ```agda
+open import 1Lab.Reflection.HLevel
+open import 1Lab.HLevel.Closure
+open import 1Lab.Reflection
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
@@ -132,3 +135,29 @@ For convenience, we also introduce displayed analogues for equational chain reas
   infixr 30 _∙[]_ ∙[-]-syntax
   infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
 ```
+
+<!--
+```agda
+open hlevel-projection
+
+private
+  Hom[]-set
+    : ∀ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') {x y} {f : B .Precategory.Hom x y} {x' y'}
+    → is-set (E .Displayed.Hom[_] f x' y')
+  Hom[]-set E = E .Displayed.Hom[_]-set _ _ _
+
+instance
+  Hom[]-hlevel-proj : hlevel-projection (quote Displayed.Hom[_])
+  Hom[]-hlevel-proj .has-level   = quote Hom[]-set
+  Hom[]-hlevel-proj .get-level _ = pure (lit (nat 2))
+  Hom[]-hlevel-proj .get-argument (_ ∷ _ ∷ _ ∷ _ ∷ _ ∷ arg _ t ∷ _) =
+    pure t
+  {-# CATCHALL #-}
+  Hom[]-hlevel-proj .get-argument _ =
+    typeError []
+
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
+  _ : ∀ {x y} {f : B .Precategory.Hom x y} {x' y'} → is-set (E .Displayed.Hom[_] f x' y')
+  _ = hlevel 2
+```
+-->

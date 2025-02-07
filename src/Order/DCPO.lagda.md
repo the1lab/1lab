@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin using (extensionality-hom)
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Subcategory
 open import Cat.Displayed.Total
 open import Cat.Prelude
@@ -29,7 +29,7 @@ private variable
 ```
 -->
 
-# Directed-complete partial orders
+# Directed-complete partial orders {defines="dcpo semidirected-family"}
 
 Let $(P, \le)$ be a [[partial order]]. A family of elements $f : I \to P$ is
 a **semi-directed family** if for every $i, j$, there merely exists
@@ -58,7 +58,7 @@ automatically semi-directed:
     : ∀ {Ix : Type o} → (s : Ix → Ob) → is-prop Ix
     → is-semidirected-family s
   prop-indexed→semidirected s prop i j =
-    inc (i , ≤-refl , path→≤ (ap s (prop j i)))
+    inc (i , ≤-refl , ≤-refl' (ap s (prop j i)))
 ```
 
 The poset $(P, \le)$ is a **directed-complete partial order**, or DCPO,
@@ -82,19 +82,9 @@ Since least upper bounds are unique when they exist, being a DCPO is a
 
 <!--
 ```agda
-module _ {o ℓ} {P : Poset o ℓ} where
-  open Poset P
-  open is-dcpo
+unquoteDecl H-Level-is-dcpo = declare-record-hlevel 1 H-Level-is-dcpo (quote is-dcpo)
 ```
 -->
-
-```agda
-  is-dcpo-is-prop : is-prop (is-dcpo P)
-  is-dcpo-is-prop = Iso→is-hlevel 1 eqv $
-    Π-is-hlevel' 1 λ _ →
-    Π-is-hlevel² 1 λ _ _ → Lub-is-prop P
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo)
-```
 
 # Scott-continuous functions
 
@@ -122,9 +112,7 @@ module _ {P Q : Poset o ℓ} where
 
   is-scott-continuous-is-prop
     : ∀ (f : Posets.Hom P Q) → is-prop (is-scott-continuous f)
-  is-scott-continuous-is-prop _ =
-    Π-is-hlevel' 1 λ _ → Π-is-hlevel³ 1 λ _ _ _  → Π-is-hlevel 1 λ _ →
-    is-lub-is-prop Q
+  is-scott-continuous-is-prop _ = hlevel 1
 ```
 
 If $(P, \le)$ is a DCPO, then any function $f : P \to Q$ which preserves
@@ -150,9 +138,7 @@ $$
          → ∀ x → is-lub P s x → is-lub Q (f ⊙ s) (f x))
       → ∀ {x y} → x P.≤ y → f x Q.≤ f y
     dcpo+scott→monotone is-dcpo f scott {x} {y} p =
-      is-lub.fam≤lub fs-lub (lift true)
-      where
-
+      fs-lub .is-lub.fam≤lub (lift true) where
         s : Lift o Bool → P.Ob
         s (lift b) = if b then x else y
 
@@ -241,7 +227,7 @@ DCPOs : ∀ (o ℓ : Level) → Precategory (lsuc (o ⊔ ℓ)) (lsuc o ⊔ ℓ)
 DCPOs o ℓ = Subcategory (DCPOs-subcat o ℓ)
 
 DCPOs-is-category : ∀ {o ℓ} → is-category (DCPOs o ℓ)
-DCPOs-is-category = subcat-is-category Posets-is-category (λ _ → is-dcpo-is-prop)
+DCPOs-is-category = subcat-is-category Posets-is-category (λ _ → hlevel 1)
 ```
 
 <!--
@@ -251,8 +237,11 @@ module DCPOs {o ℓ : Level} = Cat.Reasoning (DCPOs o ℓ)
 DCPO : (o ℓ : Level) → Type _
 DCPO o ℓ = DCPOs.Ob {o} {ℓ}
 
-Forget-DCPO : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
-Forget-DCPO = Forget-poset F∘ Forget-subcat
+DCPOs↪Posets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Posets o ℓ)
+DCPOs↪Posets = Forget-subcat
+
+DCPOs↪Sets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
+DCPOs↪Sets = Posets↪Sets F∘ DCPOs↪Posets
 ```
 -->
 
@@ -272,7 +261,7 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   poset : Poset o ℓ
   poset = D .fst
 
-  open Order.Reasoning poset public
+  open Order.Reasoning (D .fst) public
 
   set : Set o
   set = el ⌞ D ⌟ Ob-is-set
@@ -280,7 +269,7 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   has-dcpo : is-dcpo poset
   has-dcpo = D .snd
 
-  open is-dcpo has-dcpo public
+  open is-dcpo (D .snd) public
 
   ⋃-pointwise
     : ∀ {Ix} {s s' : Ix → Ob}
@@ -304,7 +293,7 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
   opaque
     pres-directed-lub
       : ∀ {Ix} (s : Ix → D.Ob) → is-directed-family D.poset s
-      → ∀ x → is-lub D.poset s x → is-lub E.poset (apply f ⊙ s) (f # x)
+      → ∀ x → is-lub (D .fst) s x → is-lub (E .fst) (apply f ⊙ s) (f # x)
     pres-directed-lub = Subcat-hom.witness f
 
     directed
@@ -326,11 +315,12 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
 </details>
 
 <!--
-```
+```agda
 module _ {o ℓ} {D E : DCPO o ℓ} where
   private
     module D = DCPO D
     module E = DCPO E
+
   open is-directed-family
   open Total-hom
 ```
@@ -359,7 +349,7 @@ chosen _assignment_ of least upper bounds, then it is Scott-continuous.
         monotone (is-lub.fam≤lub x-lub i)
       pres-lub s dir x x-lub .is-lub.least y le =
         f x              E.≤⟨ monotone (is-lub.least x-lub _ (D.⋃.fam≤lub s dir)) ⟩
-        f (D.⋃ s dir)    E.=⟨ lub-unique E.poset (pres-⋃ s dir) (E.⋃.has-lub (f ⊙ s) (monotone∘directed fᵐ dir)) ⟩
+        f (D.⋃ s dir)    E.=⟨ lub-unique (pres-⋃ s dir) (E.⋃.has-lub (f ⊙ s) (monotone∘directed fᵐ dir)) ⟩
         E.⋃ (f ⊙ s) _    E.≤⟨ E.⋃.least _ _ y le ⟩
         y                E.≤∎
 ```

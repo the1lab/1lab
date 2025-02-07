@@ -1,48 +1,51 @@
 <!--
 ```agda
 open import Cat.Prelude
+
+import Cat.Morphism
 ```
 -->
 
 ```agda
-module Cat.Diagram.Initial {o h} (C : Precategory o h) where
+module Cat.Diagram.Initial where
 ```
 
 <!--
 ```agda
-open import Cat.Morphism C
+module _ {o h} (C : Precategory o h) where
+  open Cat.Morphism C
 ```
 -->
 
-# Initial objects {defines="initial-object"}
+# Initial objects {defines="initial-object initial"}
 
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
 if there exists a _unique_ map to any other object:
 
 ```agda
-is-initial : Ob → Type _
-is-initial ob = ∀ x → is-contr (Hom ob x)
+  is-initial : Ob → Type _
+  is-initial ob = ∀ x → is-contr (Hom ob x)
 
-record Initial : Type (o ⊔ h) where
-  field
-    bot  : Ob
-    has⊥ : is-initial bot
+  record Initial : Type (o ⊔ h) where
+    field
+      bot  : Ob
+      has⊥ : is-initial bot
 ```
 
 We refer to the centre of contraction as `¡`{.Agda}. Since it inhabits a
 contractible type, it is unique.
 
 ```agda
-  ¡ : ∀ {x} → Hom bot x
-  ¡ = has⊥ _ .centre
+    ¡ : ∀ {x} → Hom bot x
+    ¡ = has⊥ _ .centre
 
-  ¡-unique : ∀ {x} (h : Hom bot x) → ¡ ≡ h
-  ¡-unique = has⊥ _ .paths
+    ¡-unique : ∀ {x} (h : Hom bot x) → ¡ ≡ h
+    ¡-unique = has⊥ _ .paths
 
-  ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
-  ¡-unique₂ = is-contr→is-prop (has⊥ _)
+    ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
+    ¡-unique₂ = is-contr→is-prop (has⊥ _)
 
-open Initial
+  open Initial
 ```
 
 ## Intuition
@@ -71,26 +74,26 @@ One important fact about initial objects is that they are **unique** up
 to isomorphism:
 
 ```agda
-⊥-unique : (i i' : Initial) → bot i ≅ bot i'
-⊥-unique i i' = make-iso (¡ i) (¡ i') (¡-unique₂ i' _ _) (¡-unique₂ i _ _)
+  ⊥-unique : (i i' : Initial) → bot i ≅ bot i'
+  ⊥-unique i i' = make-iso (¡ i) (¡ i') (¡-unique₂ i' _ _) (¡-unique₂ i _ _)
 ```
 
 Additionally, if $C$ is a category, then the space of initial objects is
 a proposition:
 
 ```agda
-⊥-is-prop : is-category C → is-prop Initial
-⊥-is-prop ccat x1 x2 i .bot =
-  Univalent.iso→path ccat (⊥-unique x1 x2) i
+  ⊥-is-prop : is-category C → is-prop Initial
+  ⊥-is-prop ccat x1 x2 i .bot =
+    Univalent.iso→path ccat (⊥-unique x1 x2) i
 
-⊥-is-prop ccat x1 x2 i .has⊥ ob =
-  is-prop→pathp
-    (λ i → is-contr-is-prop
-      {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
-    (x1 .has⊥ ob) (x2 .has⊥ ob) i
+  ⊥-is-prop ccat x1 x2 i .has⊥ ob =
+    is-prop→pathp
+      (λ i → is-contr-is-prop
+        {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
+      (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```
 
-## Strictness
+## Strictness {defines="strict-initial-object"}
 
 An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
 This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
@@ -102,18 +105,49 @@ This is an instance of the more general notion of [van Kampen colimits].
 
 
 ```agda
-is-strict-initial : Initial → Type _
-is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
+  is-strict-initial : Initial → Type _
+  is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
 
-record Strict-initial : Type (o ⊔ h) where
-  field
-    initial : Initial
-    has-is-strict : is-strict-initial initial
+  record Strict-initial : Type (o ⊔ h) where
+    field
+      initial : Initial
+      has-is-strict : is-strict-initial initial
 ```
 
 Strictness is a property of, not structure on, an initial object.
 
 ```agda
-is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-is-strict-initial-is-prop i = hlevel!
+  is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
+  is-strict-initial-is-prop i = hlevel 1
 ```
+
+As maps out of initial objects are unique, it suffices to show that
+every map $\text{!`} \circ f = id$ for every $f : X \to \bot$ to establish that $\bot$ is a
+strict initial object.
+
+```agda
+  make-is-strict-initial
+    : (i : Initial)
+    → (∀ x → (f : Hom x (i .bot)) → (¡ i) ∘ f ≡ id)
+    → is-strict-initial i
+  make-is-strict-initial i p x f =
+    make-invertible (¡ i) (¡-unique₂ i (f ∘ ¡ i) id) (p x f)
+```
+
+<!--
+```agda
+module _ {o h} {C : Precategory o h} where
+  open Cat.Morphism C
+  private unquoteDecl eqv = declare-record-iso eqv (quote Initial)
+
+  instance
+    Extensional-Initial
+      : ∀ {ℓr}
+      → ⦃ sa : Extensional Ob ℓr ⦄
+      → Extensional (Initial C) ℓr
+    Extensional-Initial ⦃ sa ⦄ =
+      embedding→extensional
+        (Iso→Embedding eqv ∙emb (fst , Subset-proj-embedding λ _ → hlevel 1))
+        sa
+```
+-->

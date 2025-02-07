@@ -68,7 +68,7 @@ in red). For $f'$ to be cocartesian, every such situation must give rise
 to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
 (highlighted in green).
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \begin{tikzcd}
 	&&& \textcolor{rgb,255:red,124;green,50;blue,189}{u'} \\
 	{a'} && {b'} \\

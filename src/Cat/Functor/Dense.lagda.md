@@ -4,6 +4,7 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Properties
 open import Cat.Functor.Kan.Nerve
+open import Cat.Functor.Constant
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
@@ -24,8 +25,8 @@ by those of $\cC$, in a certain canonical way. In particular, any
 functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
-J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D\text{,}
-$$
+J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D
+$$,
 
 where $(F \searrow d) \to C$ is the projection functor from the
 corresponding [comma category], in such a way that the object $d$ is the
@@ -51,7 +52,7 @@ module
 -->
 
 ```agda
-  dense-cocone : ∀ d → F F∘ Dom F (const! d) => Const d
+  dense-cocone : ∀ d → F F∘ Dom F (!Const d) => Const d
   dense-cocone d .η x = x .map
   dense-cocone d .is-natural _ _ f = f .sq
 
@@ -93,6 +94,6 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     → (∀ {Z} (h : D.Hom (F.₀ Z) X) → f D.∘ h ≡ g D.∘ h)
     → f ≡ g
   dense→separating dense h =
-    fully-faithful→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
+    ff→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
       ext λ x g → h g
 ```

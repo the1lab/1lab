@@ -14,7 +14,7 @@ import Cat.Reasoning
 module Cat.Functor.Hom {o h} (C : Precategory o h) where
 ```
 
-# The Hom functor
+# The Hom functor {defines="hom-functor"}
 
 We prove that the assignment of $\hom$-sets in a `Precategory`{.Agda}
 $\cC$ is a `functor`{.Agda}, specifically a bifunctor from $\cC\op
@@ -119,8 +119,8 @@ natural transformations is indeed functorial:
 よ : Functor C Cat[ C ^op , Sets h ]
 よ .F₀      = よ₀
 よ .F₁      = よ₁
-よ .F-id    = Nat-path λ _ i g → idl g i
-よ .F-∘ f g = Nat-path λ _ i h → assoc f g h (~ i)
+よ .F-id    = ext λ _ g → idl g
+よ .F-∘ f g = ext λ _ h → sym (assoc f g h)
 ```
 
 
@@ -139,6 +139,13 @@ embedding functor is [[fully faithful]].
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
 ```
+
+<!--
+```agda
+よ-is-faithful : is-faithful よ
+よ-is-faithful = ff→faithful {F = よ} (よ-is-fully-faithful)
+```
+-->
 
 ## The covariant yoneda embedding
 
@@ -174,3 +181,10 @@ As expected, the covariant yoneda embedding is also fully faithful.
     sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
   isom .linv _ = idl _
 ```
+
+<!--
+```agda
+よcov-is-faithful : is-faithful よcov
+よcov-is-faithful = ff→faithful {F = よcov} (よcov-is-fully-faithful)
+```
+-->

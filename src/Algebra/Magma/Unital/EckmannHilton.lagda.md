@@ -5,6 +5,8 @@ open import 1Lab.Prelude
 open import Algebra.Magma.Unital
 open import Algebra.Semigroup
 open import Algebra.Monoid
+
+open is-monoid
 ```
 -->
 
@@ -12,7 +14,7 @@ open import Algebra.Monoid
 module Algebra.Magma.Unital.EckmannHilton where
 ```
 
-# The Eckmann-Hilton argument
+# The Eckmann-Hilton argument {defines="eckmann-hilton-argument"}
 
 The **Eckmann-Hilton argument** shows that two
 `unital magmas`{.Agda ident=is-unital-magma} on the same carrier type that
@@ -100,8 +102,8 @@ unitality allows us to prove that the operation is a monoid.
     x ⋆ (y ⋆ z) ∎)
 
   ⋆-is-monoid : is-monoid e _⋆_
-  ⋆-is-monoid .has-is-semigroup .has-is-magma = unital-mgm .has-is-magma
-  ⋆-is-monoid .has-is-semigroup .associative = ⋆-associative _ _ _
+  ⋆-is-monoid .has-is-semigroup .is-semigroup.has-is-magma = unital-mgm .has-is-magma
+  ⋆-is-monoid .has-is-semigroup .is-semigroup.associative = ⋆-associative _ _ _
   ⋆-is-monoid .idl = unital-mgm .idl
   ⋆-is-monoid .idr = unital-mgm .idr
 ```

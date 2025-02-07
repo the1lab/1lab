@@ -188,7 +188,7 @@ lemmas. The first states that quoting a `vhom f` gives us back `f`.
   vhom-sound : ∀ X Y → (f : Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ) → reflect X Y (vhom f) ≡ f
   vhom-sound X (Y ‶⊗‶ Z) f =
     ⟨ reflect X Y (vhom (π₁ ∘ f)) , reflect X Z (vhom (π₂ ∘ f)) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (vhom-sound X Y (π₁ ∘ f)) (vhom-sound X Z (π₂ ∘ f)) ⟩
-    ⟨ π₁ ∘ f , π₂ ∘ f ⟩                                           ≡˘⟨ ⟨⟩-unique f refl refl ⟩
+    ⟨ π₁ ∘ f , π₂ ∘ f ⟩                                           ≡˘⟨ ⟨⟩-unique refl refl ⟩
     f                                                             ∎
   vhom-sound X ‶ x ‶ f = refl
 ```

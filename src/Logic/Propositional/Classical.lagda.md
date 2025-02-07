@@ -1,10 +1,10 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∈_)
+open import 1Lab.Prelude
 
 open import Data.Bool
 open import Data.List hiding (_++_ ; drop ; tabulate)
-open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
+open import Data.Fin using (Fin; zero; suc; fzero; fsuc; weaken; inject; _[_≔_] ; fin-view)
 open import Data.Nat
 open import Data.Sum
 
@@ -52,13 +52,17 @@ _++_ : ∀ {Γ} → Ctx Γ → Ctx Γ → Ctx Γ
 We also define a membership relation for contexts.
 
 ```agda
-data _∈_ {Γ : Nat} (P : Proposition Γ) : Ctx Γ → Type where
-  here  : ∀ {ψ} → P ∈ (ψ ⨾ P)
-  there : ∀ {ψ Q} → P ∈ ψ → P ∈ (ψ ⨾ Q)
+data _∈ᶜ_ {Γ : Nat} (P : Proposition Γ) : Ctx Γ → Type where
+  here  : ∀ {ψ} → P ∈ᶜ (ψ ⨾ P)
+  there : ∀ {ψ Q} → P ∈ᶜ ψ → P ∈ᶜ (ψ ⨾ Q)
 ```
 
 <!--
 ```agda
+instance
+  Membership-Ctx : ∀ {Γ} → Membership (Proposition Γ) (Ctx Γ) lzero
+  Membership-Ctx = record { _∈_ = _∈ᶜ_ }
+
 infixr 12 _“⇒”_
 infixr 11 _“∧”_
 infixr 10 _“∨”_
@@ -170,7 +174,7 @@ inc-ctx : Ctx Γ → Ctx (suc Γ)
 inc-ctx []      = []
 inc-ctx (ψ ⨾ P) = inc-ctx ψ ⨾ inc-prop P
 
-inc-atom : P ∈ ψ → inc-prop P ∈ inc-ctx ψ
+inc-atom : P ∈ ψ → inc-prop P ∈ᶜ inc-ctx ψ
 inc-atom here      = here
 inc-atom (there x) = there (inc-atom x)
 
@@ -200,7 +204,7 @@ bump-ctx : Ctx Γ → Ctx (suc Γ)
 bump-ctx []      = []
 bump-ctx (ψ ⨾ P) = bump-ctx ψ ⨾ bump-prop P
 
-bump-atom : P ∈ ψ → bump-prop P ∈ bump-ctx ψ
+bump-atom : P ∈ ψ → bump-prop P ∈ᶜ bump-ctx ψ
 bump-atom here      = here
 bump-atom (there p) = there (bump-atom p)
 
@@ -323,7 +327,7 @@ In categorical terms, this induces a presheaf on the category of
 contexts.
 
 ```agda
-rename-hyp : Rename ψ θ → P ∈ θ → P ∈ ψ
+rename-hyp : Rename ψ θ → P ∈ᶜ θ → P ∈ᶜ ψ
 rename-hyp (drop rn) mem         = there (rename-hyp rn mem)
 rename-hyp (keep rn) here        = here
 rename-hyp (keep rn) (there mem) = there (rename-hyp rn mem)
@@ -619,10 +623,11 @@ tabulate-atom-true
   → (ρ : Fin Γ → Bool)
   → ρ x ≡ true
   → tabulate ρ ⊢ atom x
-tabulate-atom-true {Γ = suc Γ} fzero ρ x-true with ρ 0
+tabulate-atom-true i _ _ with fin-view i
+tabulate-atom-true {Γ = suc Γ} .fzero ρ x-true | zero with ρ 0
 ... | true  = hyp here
 ... | false = absurd (true≠false $ sym x-true)
-tabulate-atom-true {Γ = suc Γ} (fsuc x) ρ x-true =
+tabulate-atom-true {Γ = suc Γ} .(fsuc x) ρ x-true | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-true x (ρ ∘ fsuc) x-true))
 
 tabulate-atom-false
@@ -630,10 +635,11 @@ tabulate-atom-false
   → (ρ : Fin Γ → Bool)
   → ρ x ≡ false
   → tabulate ρ ⊢ “¬” atom x
-tabulate-atom-false {Γ = suc Γ} fzero ρ x-false with ρ 0
+tabulate-atom-false i _ _ with fin-view i
+tabulate-atom-false {Γ = suc Γ} .fzero ρ x-false | zero with ρ 0
 ... | false = hyp here
 ... | true  = absurd (true≠false x-false)
-tabulate-atom-false {Γ = suc Γ} (fsuc x) ρ x-false =
+tabulate-atom-false {Γ = suc Γ} .(fsuc x) ρ x-false | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-false x (ρ ∘ fsuc) x-false))
 ```
 

@@ -2,7 +2,6 @@
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
-open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
@@ -10,7 +9,9 @@ open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
+open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
+open import Cat.Prelude
 
 import Algebra.Group.Cat.Base as Grp
 
@@ -26,19 +27,19 @@ module Algebra.Group.Cat.Monadic {ℓ} where
 ```agda
 private
   F : Functor (Sets ℓ) (Groups ℓ)
-  F = Free-groups.to-functor
+  F = free-objects→functor make-free-group
 
   F⊣U : F ⊣ _
-  F⊣U = Free-groups.to-left-adjoint
+  F⊣U = free-objects→left-adjoint make-free-group
 
-  K = Comparison F⊣U
+  K = Comparison-EM F⊣U
 
   T : Monad (Sets ℓ)
   T = Adjunction→Monad F⊣U
   module F = Functor F
   module T = Monad T
   module K = Functor K
-  module Sets^T = Cat.Reasoning (Eilenberg-Moore (Sets ℓ) T)
+  module Sets^T = Cat.Reasoning (Eilenberg-Moore T)
 ```
 -->
 
@@ -56,7 +57,7 @@ matter since $\Sets_\kappa$ and $\thecat{Groups}_\kappa$ are both
 construct an isomorphism than it is to construct an equivalence.
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
-[comparison functor]: Cat.Functor.Adjoint.Monadic.html#Comparison
+[comparison functor]: Cat.Functor.Adjoint.Monadic.html#Comparison-EM
 
 Let us abbreviate the [monad induced] by the [[free group|free group
 construction]] adjunction by $T$. What we must show is that any
@@ -143,16 +144,15 @@ fully faithful.
 Group-is-monadic : is-monadic F⊣U
 Group-is-monadic = is-precat-iso→is-equivalence
   record { has-is-ff = ff ; has-is-iso = is-iso→is-equiv isom } where
-  open Algebra-hom
   open Algebra-on
 
-  k₁inv : ∀ {G H} → Algebra-hom (Sets ℓ) T (K.₀ G) (K.₀ H) → Groups.Hom G H
-  k₁inv hom .hom = hom .morphism
-  k₁inv hom .preserves .is-group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
+  k₁inv : ∀ {G H} → Algebra-hom T (K.₀ G) (K.₀ H) → Groups.Hom G H
+  k₁inv f .hom = f .hom
+  k₁inv f .preserves .is-group-hom.pres-⋆ x y = happly (f .preserves) (inc x ◆ inc y)
 
   ff : is-fully-faithful K
-  ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
-                                   (λ x → Grp.Forget-is-faithful refl)
+  ff = is-iso→is-equiv $ iso k₁inv (λ x → trivial!)
+                                   (λ x → Grp.Grp↪Sets-is-faithful refl)
 ```
 
 To show that the object mapping of the comparison functor is invertible,
@@ -164,7 +164,7 @@ but the other direction is by induction on "words".
 ```agda
   isom : is-iso K.₀
   isom .is-iso.inv (A , alg) = A , Algebra-on→group-on alg
-  isom .is-iso.linv x = ∫-Path Groups-equational
+  isom .is-iso.linv x = ∫-Path
     (total-hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
     id-equiv
   isom .is-iso.rinv x = Σ-pathp refl (Algebra-on-pathp _ _ go) where

@@ -17,7 +17,7 @@ open Cat.Reasoning C
 ```
 -->
 
-# Internal categories
+# Internal categories {defines="internal-category"}
 
 We often think of categories as _places where we can do mathematics_.
 This is done by translating definitions into the internal language of
@@ -60,7 +60,7 @@ associativity condition is given by the square below, and we trust that
 the reader will understand why will not attempt to draw the identity
 constraints.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   {C_1 \times_{C_0} (C_1 \times_{C_0} C_1)} &&& {C_1 \times_{C_0} C_1} \\
   \\
@@ -81,7 +81,7 @@ identity constraints because they are trivial. Rather, speaking
 euphemistically, they are *highly nontrivial*.]
 
 To solve the problem, we look to a simpler case: [internal monoids] in
-$\cC$. These are straightforward to define in diagramatic language, but
+$\cC$. These are straightforward to define in diagrammatic language, but
 can also be defined [in terms of representability]! The core idea is
 that we can define internal structure in the category of presheaves on
 $\cC$, rather than directly in $\cC$, letting us us use the structure of
@@ -109,7 +109,7 @@ as before. We will define **internal morphisms** between _generalised
 objects_ $x, y : \Gamma \to \bC_0$ to be morphisms $f : \Gamma \to C_1$
 making the following diagram commute.
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \begin{tikzcd}
   & \Gamma \\
   \\
@@ -180,7 +180,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Internal-hom)
 Internal-hom-set
   : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
   → is-set (Internal-hom src tgt x y)
-Internal-hom-set = Iso→is-hlevel 2 eqv hlevel!
+Internal-hom-set = Iso→is-hlevel! 2 eqv
 
 instance
   H-Level-Internal-hom
@@ -404,7 +404,7 @@ have a pair of internal morphisms that can be composed.
 
 We will now start our project of relativisng category theory to
 arbitrary bases. Suppose $\ica{C}, \ica{D}$ are internal categories:
-what are the maps between them? Reasoning diagramatically, they are the
+what are the maps between them? Reasoning diagrammatically, they are the
 morphisms between object-objects and morphism-objects that preserve
 source, target, commute with identity, and commute with composition.
 
@@ -532,6 +532,8 @@ open _=>i_
 
 <!--
 ```agda
+unquoteDecl H-Level-=>i = declare-record-hlevel 2 H-Level-=>i (quote _=>i_)
+
 module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
   private
     module ℂ = Internal-cat ℂ
@@ -552,21 +554,5 @@ module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
       (α .ηi-nat x σ)
       (β .ηi-nat x σ)
       (λ i → p (x ∘ σ) i) i
-
-  private unquoteDecl nat-eqv = declare-record-iso nat-eqv (quote _=>i_)
-
-  Internal-nat-set : is-set (F =>i G)
-  Internal-nat-set = Iso→is-hlevel 2 nat-eqv $
-    Σ-is-hlevel 2 hlevel! $ λ _ →
-    Σ-is-hlevel 2 hlevel! $ λ _ →
-    Π-is-hlevel²' 2 λ _ _ →
-    Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
-    PathP-is-hlevel 2 Internal-hom-set
-
-instance
-  H-Level-Internal-nat
-    : ∀ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} {n}
-    → H-Level (F =>i G) (2 + n)
-  H-Level-Internal-nat = basic-instance 2 Internal-nat-set
 ```
 -->

@@ -1,6 +1,7 @@
 <!--
-```
+```agda
 open import 1Lab.Path.Cartesian
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -13,7 +14,7 @@ module 1Lab.Type.Pi where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ₁ : Level
   A B C D : Type ℓ
@@ -85,6 +86,12 @@ function≃ dom rng = Iso→Equiv the-iso where
   the-iso .snd .is-iso.linv f =
     funext λ x → rng-iso .is-iso.linv _
                ∙ ap f (dom-iso .is-iso.linv _)
+
+equiv≃ : (A ≃ B) → (C ≃ D) → (A ≃ C) ≃ (B ≃ D)
+equiv≃ x y = Σ-ap (function≃ x y) λ f → prop-ext
+  (is-equiv-is-prop _) (is-equiv-is-prop _)
+  (λ e → ∙-is-equiv (∙-is-equiv ((x e⁻¹) .snd) e) (y .snd))
+  λ e → equiv-cancelr ((x e⁻¹) .snd) (equiv-cancell (y .snd) e)
 ```
 
 

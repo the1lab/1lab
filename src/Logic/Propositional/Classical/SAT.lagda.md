@@ -6,7 +6,7 @@ open import Data.Id.Base
 open import Data.Bool
 open import Data.List hiding (_++_)
 open import Data.Dec
-open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete)
+open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete; zero; suc; fin-view)
 open import Data.Nat
 open import Data.Sum
 
@@ -32,7 +32,7 @@ private variable
 ```
 -->
 
-# SAT solving {defines="SAT-solving SAT"}
+# SAT solving {defines="SAT-solving SAT satisfiable"}
 
 SAT solving is the process of determining if we can find some assignment
 of variables $\rho$ that makes a given formula $\phi$ in classical
@@ -136,19 +136,19 @@ This is not hard to show, just tedious.
 ```agda
 delete-literal-sound
   : (x : Literal (suc Γ)) (ϕ : Clause (suc Γ))
-  → ¬ (x ∈ₗ ϕ)
+  → ¬ (x ∈ ϕ)
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literal (lit-var x) ϕ ⟧ ρ
 
 delete-literal-sound {zero} x [] x∉ϕ ρ = refl
-delete-literal-sound {zero} (lit fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (here refl))
-delete-literal-sound {zero} (lit fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literal-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literal-sound {zero} (neg fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literal-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literal-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (here refl))
+delete-literal-sound {zero} (lit i) (lit j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = absurd (x∉ϕ (here refl))
+delete-literal-sound {zero} (lit i) (neg j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = delete-literal-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg i) (lit j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = delete-literal-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg i) (neg j ∷ ϕ) x∉ϕ ρ with fin-view i | fin-view j
+... | zero | zero = absurd (x∉ϕ (here refl))
 
 delete-literal-sound {suc Γ} x []      x∉ϕ ρ = refl
 delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with lit-var x ≡? lit-var y
@@ -195,7 +195,7 @@ which traverses a list of clauses and picks a clause consisting of a
 literal, if one exists.
 
 ```agda
-has-unit-clause? : (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ₗ ϕs))
+has-unit-clause? : (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ ϕs))
 has-unit-clause? [] = no λ ()
 
 has-unit-clause? ([] ∷ ϕs) with has-unit-clause? ϕs
@@ -220,7 +220,7 @@ true.
 ```agda
 unit-clause-sat
   : (x : Literal Γ) (ϕs : CNF Γ)
-  → (x ∷ []) ∈ₗ ϕs
+  → (x ∷ []) ∈ ϕs
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕs ⟧ ρ ≡ true → ⟦ x ⟧ ρ ≡ true
 unit-clause-sat x (ϕ ∷ ϕs) (here [x]=ϕ) ρ ϕs-sat =
@@ -259,8 +259,8 @@ unit-propagate-sat x ϕs (ρ , ρ-sat) =
 unit-propagate-unsat
   : (x : Literal (suc Γ))
   → (ϕs : CNF (suc Γ))
-  → ¬ Σ[ ρ ∈ (Fin Γ → Bool) ]       (⟦ unit-propagate x ϕs ⟧ ρ ≡ true)
-  → ¬ Σ[ ρ ∈ (Fin (suc Γ) → Bool) ] ((⟦ ϕs ⟧ ρ ≡ true) × (⟦ x ⟧ ρ ≡ true))
+  → ¬ (Σ[ ρ ∈ (Fin Γ → Bool) ]       ⟦ unit-propagate x ϕs ⟧ ρ ≡ true)
+  → ¬ (Σ[ ρ ∈ (Fin (suc Γ) → Bool) ] ⟦ ϕs ⟧ ρ ≡ true × ⟦ x ⟧ ρ ≡ true)
 unit-propagate-unsat x ϕs ¬sat (ρ , ρ-sat , x-sat) = ¬sat $
     delete ρ (lit-var x)
   , sym (unit-propagate-complete x ϕs ρ x-sat) ∙ ρ-sat
@@ -274,7 +274,7 @@ representation of $\top$, while having an empty clause is the CNF
 representation of $\bot$.
 
 ```agda
-cnf-sat? : (ϕs : CNF Γ) → Dec (Σ[ ρ ∈ (Fin Γ → Bool) ] (⟦ ϕs ⟧ ρ ≡ true))
+cnf-sat? : (ϕs : CNF Γ) → Dec (Σ[ ρ ∈ (Fin Γ → Bool) ] ⟦ ϕs ⟧ ρ ≡ true)
 cnf-sat? {Γ = zero} []       = yes ((λ ()) , refl)
 cnf-sat? {Γ = zero} (ϕ ∷ ϕs) = no λ where
   (ρ , sat) → ¬empty-clause-sat ϕ ρ (and-reflect-true-l sat)

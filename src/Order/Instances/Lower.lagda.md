@@ -2,10 +2,16 @@
 ```agda
 open import Cat.Prelude
 
+open import Data.Sum.Base
+
 open import Order.Instances.Pointwise
 open import Order.Instances.Props
+open import Order.Diagram.Bottom
+open import Order.Diagram.Join
+open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Top
 open import Order.Base
 
 import Order.Reasoning as Pr
@@ -37,6 +43,13 @@ Lower-set : ∀ {ℓₒ ℓᵣ} (P : Poset ℓₒ ℓᵣ) → Type _
 Lower-set P = ⌞ Lower-sets P ⌟
 ```
 
+<!--
+```agda
+module _ {ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} where
+  private module P = Pr P
+```
+-->
+
 Note the similarity between this construction and the [Yoneda
 embedding]: Indeed, if we take the perspective that a poset $P$ is a
 "$\Props$-category" (as opposed to a "$\Sets$-category"), then the lower
@@ -57,6 +70,7 @@ module _ {ℓₒ ℓᵣ} (P : Poset ℓₒ ℓᵣ) where
   よₚ .pres-≤ x≤y a a≤x = ⦇ P.≤-trans a≤x (pure x≤y) ⦈
 ```
 
+
 ## (Co)completeness
 
 Let us first show that the poset of lower sets is cocomplete (and
@@ -67,16 +81,13 @@ by arbitrarily large types:
 
 ```agda
   Lower-sets-complete
-    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Σ _ (is-glb (Lower-sets P) F)
-  Lower-sets-complete F = fun , glib where
-    fun : Monotone (P  ^opp) Props
-    fun .hom i = elΩ (∀ j → i ∈ apply (F j))
-    fun .pres-≤ y≤x = □-map λ x∈Fj j → F j .pres-≤ y≤x (x∈Fj j)
-
-    glib : is-glb (Lower-sets P) F fun
-    glib .is-glb.glb≤fam i x x∈Fj = (out! x∈Fj) i
-    glib .is-glb.greatest lb' lb'≤Fi x y∈lb' =
-      inc (λ j → lb'≤Fi j x y∈lb')
+    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Glb (Lower-sets P) F
+  Lower-sets-complete F .Glb.glb .hom i = elΩ (∀ j → i ∈ F j)
+  Lower-sets-complete F .Glb.glb .pres-≤ j≤i =
+    □-map λ x∈Fj j → F j .pres-≤ j≤i (x∈Fj j)
+  Lower-sets-complete F .Glb.has-glb .is-glb.glb≤fam i x x∈Fj = □-out! x∈Fj i
+  Lower-sets-complete F .Glb.has-glb .is-glb.greatest lb' lb'≤Fi x y∈lb' =
+    inc (λ j → lb'≤Fi j x y∈lb')
 ```
 
 The same thing happens for joins, which are given by an existential
@@ -85,26 +96,45 @@ operator automatically propositionally truncates.
 
 ```agda
   Lower-sets-cocomplete
-    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Σ _ (is-lub (Lower-sets P) F)
-  Lower-sets-cocomplete F = fun , lub where
-    fun : Monotone (P  ^opp) Props
-    fun .hom i = elΩ (Σ _ λ j → i ∈ apply (F j))
-    fun .pres-≤ y≤x = □-map λ { (i , x∈Fi) → i , F i .pres-≤ y≤x x∈Fi }
-
-    lub : is-lub (Lower-sets P) F fun
-    lub .is-lub.fam≤lub i x x∈Fi = inc (i , x∈Fi)
-    lub .is-lub.least lb' lb'≤Fi x =
-      □-rec! (λ { (i , x∈Fi) → lb'≤Fi i x x∈Fi })
+    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Lub (Lower-sets P) F
+  Lower-sets-cocomplete {I = I} F .Lub.lub .hom i =
+    elΩ (Σ[ j ∈ I ] i ∈ F j)
+  Lower-sets-cocomplete F .Lub.lub .pres-≤ j≤i =
+    □-map λ { (i , x∈Fi) → i , F i .pres-≤ j≤i x∈Fi }
+  Lower-sets-cocomplete F .Lub.has-lub .is-lub.fam≤lub i x x∈Fi =
+    inc (i , x∈Fi)
+  Lower-sets-cocomplete F .Lub.has-lub .is-lub.least lb' lb'≤Fi x =
+    rec! λ i x∈Fi → lb'≤Fi i x x∈Fi
 ```
 
 <!--
 ```agda
-  Lower-sets-meets : (a b : Lower-set P) → Σ _ (is-meet (Lower-sets P) a b)
-  Lower-sets-meets a b .fst .hom i .∣_∣ = i ∈ (apply a) × i ∈ (apply b )
-  Lower-sets-meets a b .fst .hom i .is-tr = hlevel!
-  Lower-sets-meets a b .fst .pres-≤ y≤x (x∈a , x∈b) = (a .pres-≤ y≤x x∈a) , (b .pres-≤ y≤x x∈b)
-  Lower-sets-meets a b .snd .is-meet.meet≤l _ = fst
-  Lower-sets-meets a b .snd .is-meet.meet≤r _ = snd
-  Lower-sets-meets a b .snd .is-meet.greatest lb' f g x x∈lb' = (f x x∈lb') , (g x x∈lb')
+  Lower-sets-meets : (a b : Lower-set P) → Meet (Lower-sets P) a b
+  Lower-sets-meets a b .Meet.glb .hom i = (a # i) ∧Ω (b # i)
+  Lower-sets-meets a b .Meet.glb .pres-≤ j≤i (aj , bj) =
+    a .pres-≤ j≤i aj , b .pres-≤ j≤i bj
+  Lower-sets-meets a b .Meet.has-meet .is-meet.meet≤l _ = fst
+  Lower-sets-meets a b .Meet.has-meet .is-meet.meet≤r _ = snd
+  Lower-sets-meets a b .Meet.has-meet .is-meet.greatest lb' f g x x∈lb' =
+    (f x x∈lb') , (g x x∈lb')
+
+  Lower-sets-joins : (a b : Lower-set P) → Join (Lower-sets P) a b
+  Lower-sets-joins a b .Join.lub .hom i = (a # i) ∨Ω (b # i)
+  Lower-sets-joins a b .Join.lub .pres-≤ j≤i =
+    ∥-∥-map [ (inl ⊙ a .pres-≤ j≤i) , inr ⊙ b .pres-≤ j≤i ]
+  Lower-sets-joins a b .Join.has-join .is-join.l≤join x x∈a = inc (inl x∈a)
+  Lower-sets-joins a b .Join.has-join .is-join.r≤join x x∈b = inc (inr x∈b)
+  Lower-sets-joins a b .Join.has-join .is-join.least ub' f g x =
+    rec! [ f x , g x ]
+
+  Lower-sets-top : Top (Lower-sets P)
+  Lower-sets-top .Top.top .hom _ = ⊤Ω
+  Lower-sets-top .Top.top .pres-≤ _ _ = tt
+  Lower-sets-top .Top.has-top _ _ _ = tt
+
+  Lower-sets-bottom : Bottom (Lower-sets P)
+  Lower-sets-bottom .Bottom.bot .hom _ = ⊥Ω
+  Lower-sets-bottom .Bottom.bot .pres-≤ _ ff = absurd ff
+  Lower-sets-bottom .Bottom.has-bottom _ _ ff = absurd ff
 ```
 -->

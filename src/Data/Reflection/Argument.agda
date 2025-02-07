@@ -132,6 +132,9 @@ record Has-visibility {ℓ} (A : Type ℓ) : Type ℓ where
 open Has-visibility ⦃ ... ⦄ public
 
 instance
+  Has-visibility-ArgInfo : Has-visibility ArgInfo
+  Has-visibility-ArgInfo .set-visibility v (arginfo _ m) = arginfo v m
+
   Has-visibility-Arg : ∀ {ℓ} {A : Type ℓ} → Has-visibility (Arg A)
   Has-visibility-Arg .set-visibility v (arg (arginfo _ m) x) = arg (arginfo v m) x
 

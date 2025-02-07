@@ -1,7 +1,8 @@
 <!--
-```
+```agda
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
+open import Cat.Morphism.Instances
 open import Cat.Base
 
 import Cat.Reasoning
@@ -62,11 +63,11 @@ module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
 
 Furthermore, since the h-level of the relation behind an identity system
 determines the h-level of the type it applies to, we have that the space
-of objects in any univalent category is a proposition:
+of objects in any univalent category is a groupoid:
 
 ```agda
-  Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
-  Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
+  Ob-is-groupoid : is-groupoid ⌞ C ⌟
+  Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → hlevel 2
 ```
 
 :::{.definition #transport-in-hom}
@@ -174,6 +175,11 @@ paths in `Hom`{.Agda}-sets.
           ·· sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
       )
       p q
+
+  path→iso-∙
+    : ∀ {A B C} (p : A ≡ B) (q : B ≡ C)
+    → path→iso (p ∙ q) ≡ path→iso p ∙Iso path→iso q
+  path→iso-∙ p q = ext (path→to-∙ p q)
 
   path→to-sym : ∀ {A B} (p : A ≡ B) → path→iso p .from ≡ path→iso (sym p) .to
   path→to-sym = J (λ B p → path→iso p .from ≡ path→iso (sym p) .to) refl

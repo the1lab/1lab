@@ -3,7 +3,7 @@
 -- {-# OPTIONS --lossy-unification #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Factorisation
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
@@ -49,7 +49,7 @@ $\im f$ whenever $f : x \to y$.
 Im : ∀ {x y} (f : Hom x y) → Subobject y
 Im f .domain = _
 Im f .map    = factor f .forget
-Im f .monic  = out! (factor f .forget∈M)
+Im f .monic  = □-out! (factor f .forget∈M)
 ```
 
 We may then use this to rephrase the universal property of $\im f$ as
@@ -62,7 +62,7 @@ Im-universal
   → f ≡ m .map ∘ e
   → Im f ≤ₘ m
 Im-universal f m {e = e} p = r where
-  the-lift = out! {pa = is-strong-epi-is-prop C _} (factor f .mediate∈E) .snd
+  the-lift = □-out! (factor f .mediate∈E) .snd
     record { Subobject m } (sym (factor f .factors) ∙ p)
 
   r : _ ≤ₘ _
@@ -76,7 +76,7 @@ epimorphism] preserves images. Intuitively, this is because a strong
 epimorphism $a \epi b$ expresses $b$ as a quotient, but this
 decomposition does not alter the image of a map $b \to c$.
 
-[strong epimorphism]: Cat.Morphism.StrongEpi.html
+[strong epimorphism]: Cat.Morphism.Strong.Epi.html
 [relations in regular categories]: Cat.Bi.Instances.Relations.html
 
 ```agda
@@ -95,10 +95,10 @@ image-pre-cover {a = a} {b} {c} f g g-covers = Sub-antisym imf≤imfg imfg≤imf
     (≤ₘ→mono imfg≤imf)
     {factor (f ∘ g) .mediate}
     {factor f .mediate}
-    (out! (factor f .forget∈M) _ _ (sym (pulll (sym (imfg≤imf .sq) ∙ idl _) ∙ sym (factor (f ∘ g) .factors) ∙ pushl (factor f .factors)))) .centre
+    (□-out! (factor f .forget∈M) _ _ (sym (pulll (sym (imfg≤imf .sq) ∙ idl _) ∙ sym (factor (f ∘ g) .factors) ∙ pushl (factor f .factors)))) .centre
 
   inverse : is-invertible (imfg≤imf .map)
-  inverse = is-strong-epi→is-extremal-epi C (out! {pa = is-strong-epi-is-prop C _} (factor f .mediate∈E))
+  inverse = is-strong-epi→is-extremal-epi C (□-out! (factor f .mediate∈E))
     (≤ₘ→mono imfg≤imf) (the-lift .fst) (sym (the-lift .snd .snd))
 
   imf≤imfg : Im f ≤ₘ Im (f ∘ g)

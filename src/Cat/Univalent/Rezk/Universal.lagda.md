@@ -71,36 +71,9 @@ category]], then $- \circ H$ is essentially surjective. By the principle
 of unique choice, it is an equivalence, and thus^[since both its domain
 and codomain are univalent] an isomorphism.
 
-## Faithfulness
-
-The argument here is almost elementary: We're given a witness that
-$\gamma H = \delta H$, so all we have to do is manipulate the expression
-$\gamma_b$ to something which has a $\gamma H$ subexpression. Since $H$
-is eso, given $b : \cB$, we can find $a : \cA$ and an iso $m : Ha
-\cong b$, from which we can calculate:
-
-```agda
-eso→pre-faithful
-  : (H : Functor A B) {F G : Functor B C}
-  → is-eso H → (γ δ : F => G)
-  → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
-eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
-  Nat-path λ b → ∥-∥-proj (C.Hom-set _ _ _ _) do
-  (b' , m) ← h-eso b
-  ∥_∥.inc $
-    γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
-    γ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.extendl (γ .is-natural _ _ _) ⟩
-    G.₁ (m .to) C.∘ γ .η _ C.∘ F.₁ (m .from)    ≡⟨ ap₂ C._∘_ refl (ap₂ C._∘_ (p b') refl) ⟩
-    G.₁ (m .to) C.∘ δ .η _ C.∘ F.₁ (m .from)    ≡⟨ C.extendl (sym (δ .is-natural _ _ _)) ⟩
-    δ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.elimr (F-map-iso F m .invl) ⟩
-    δ .η b                                      ∎
-  where module C = Cat.Reasoning C
-        module F = Functor F
-        module G = Functor G
-```
-
-The above is, unfortunately, the simplest result in this module. The
-next two proofs are both _quite_ technical: that's because we're given
+Luckily, we `already know`{.Agda ident=is-eso→precompose-is-faithful} that precomposition
+with an eso functor extends to a faithful functor. Unfortunately, the
+remaining two steps are both _quite_ technical: that's because we're given
 some _mere_^[truncated] data, from the assumption that $H$ is a weak
 equivalence, so to use it as proper data, we need to show that whatever
 we want lives in a contractible space, after which we are free to
@@ -154,8 +127,8 @@ FG(a)$, we've claimed to have a $Fb \to Gb$, and someone has just handed
 us a $H(a) \cong b$, then it darn well better be the case that $\gamma$ is
 
 $$
-FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf^{-1}} FG(a)\text{.}
-$$
+FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf\inv} FG(a)
+$$.
 
 ```agda
     T : B.Ob → Type _
@@ -190,7 +163,7 @@ this file in Agda and poke around the proof.
 ```agda
       lemma : (a : A.Ob) (f : H.₀ a B.≅ b)
             → γ.η a ≡ G.₁ (f .from) C.∘ g C.∘ F.₁ (f .to)
-      lemma a f = ∥-∥-proj (C.Hom-set _ _ _ _) do
+      lemma a f = ∥-∥-out (C.Hom-set _ _ _ _) do
         (k , p)   ← H-full (h.from B.∘ B.to f)
         (k⁻¹ , q) ← H-full (B.from f B.∘ h.to)
         ∥_∥.inc $
@@ -204,22 +177,20 @@ this file in Agda and poke around the proof.
 
 Anyway, because of how we've phrased the coherence condition, if $g$,
 $g'$ both satisfy it, then we have $\gamma$ equal to both
-$G(h)gF(h^{-1})$ and $G(h)g'F(h^{-1})$.^[I've implicitly used that $H$
+$G(h)gF(h\inv)$ and $G(h)g'F(h\inv)$.^[I've implicitly used that $H$
 is eso to cough up an $(a,h)$ over $b$, since we're proving a
 proposition] Since isomorphisms are both monic and epic, we can cancel
-$G(h)$ and $F(h^{-1})$ from these equations to conclude $g = g'$.  Since
+$G(h)$ and $F(h\inv)$ from these equations to conclude $g = g'$.  Since
 the coherence condition is a proposition, the type of component data
 over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
-    T-prop b (g , coh) (g' , coh') =
-      Σ-prop-path (λ x → Π-is-hlevel² 1 λ _ _ → C.Hom-set _ _ _ _) $
-        ∥-∥-proj (C.Hom-set _ _ _ _) do
-        (a₀ , h) ← H-eso b
-        pure $ C.iso→epic (F-map-iso F h) _ _
-          (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
-            (sym (coh a₀ h) ∙ coh' a₀ h))
+    T-prop b (g , coh) (g' , coh') = Σ-prop-path! $ ∥-∥-out! do
+      (a₀ , h) ← H-eso b
+      pure $ C.iso→epic (F-map-iso F h) _ _
+        (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
+          (sym (coh a₀ h) ∙ coh' a₀ h))
 ```
 
 Given any $b$, $H$ being eso means that we [[merely]] have an essential
@@ -235,7 +206,7 @@ $(a,h)$ pair.
       ∥_∥.inc (Mk.g b a₀ h , Mk.lemma b a₀ h)
 
     mkT : ∀ b → T b
-    mkT b = ∥-∥-proj (T-prop b) (mkT' b (H-eso b))
+    mkT b = ∥-∥-out (T-prop b) (mkT' b (H-eso b))
 ```
 
 Another calculation shows that, since $H$ is full, given any pair of
@@ -259,7 +230,7 @@ the transformation we're defining, too.
         module h = B._≅_ h
 
       naturality : _
-      naturality = ∥-∥-proj (C.Hom-set _ _ _ _) do
+      naturality = ∥-∥-out (C.Hom-set _ _ _ _) do
         (k , p) ← H-full (h'.from B.∘ f B.∘ h.to)
         pure $ C.pullr (C.pullr (F.weave (sym
                   (B.pushl p ∙ ap₂ B._∘_ refl (B.cancelr h.invl)))))
@@ -280,23 +251,25 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
     δ : F => G
     δ .η b = mkT b .fst
     δ .is-natural b b' f = ∥-∥-elim₂
-      {P = λ α β → ∥-∥-proj (T-prop b') (mkT' b' α) .fst C.∘ F.₁ f
-                 ≡ G.₁ f C.∘ ∥-∥-proj (T-prop b) (mkT' b β) .fst}
+      {P = λ α β → ∥-∥-out (T-prop b') (mkT' b' α) .fst C.∘ F.₁ f
+                 ≡ G.₁ f C.∘ ∥-∥-out (T-prop b) (mkT' b β) .fst}
       (λ _ _ → C.Hom-set _ _ _ _)
       (λ (a' , h') (a , h) → naturality f a a' h h') (H-eso b') (H-eso b)
 
   full : is-full (precompose H)
-  full {x = x} {y = y} γ = pure (δ _ _ γ , Nat-path p) where
+  full {x = x} {y = y} γ = pure (δ _ _ γ , ext p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
-      (λ e → ∥-∥-proj (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst
+      (λ e → ∥-∥-out (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst
            ≡ γ .η b)
       (squash (inc (b , B.id-iso)) (H-eso (H.₀ b)))
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
 
   res : is-fully-faithful (precompose H)
-  res = full+faithful→ff (precompose H) full λ {F} {G} {γ} {δ} p →
-    eso→pre-faithful H H-eso γ δ λ b → p ηₚ b
+  res =
+    full+faithful→ff (precompose H)
+      full
+      (is-eso→precompose-is-faithful H H-eso)
 ```
 
 ## Essential surjectivity
@@ -353,14 +326,13 @@ candidate over it.
 ```agda
     obj' : ∀ {b} → Essential-fibre H b → Obs b
     obj' (a₀ , h₀) .fst = F.₀ a₀
-    obj' (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h B.∘Iso (h₀ B.Iso⁻¹)))
+    obj' (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h₀ B.Iso⁻¹ B.∘Iso h))
     obj' (a₀ , h₀) .snd .snd (a , h) (a' , h') f p = F.collapse (H.ipushr p)
 
     Obs-is-prop : ∀ {b} (f : Essential-fibre H b) (c : Obs b) → obj' f ≡ c
     Obs-is-prop (a₀ , h₀) (c' , k' , β) =
       Σ-pathp (Univalent.iso→path c-cat c≅c') $
-      Σ-prop-pathp
-        (λ i x → Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) $
+      Σ-prop-pathp! $
         funextP λ a → funextP λ h → C.≅-pathp _ _ $
           Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c'}
             ( C.pullr (F.eliml (H.from-id (h₀ .invr)))
@@ -370,13 +342,13 @@ candidate over it.
         c = ckα .fst
         k = ckα .snd .fst
         α = ckα .snd .snd
-        c≅c' = (k a₀ h₀ C.Iso⁻¹) C.∘Iso k' a₀ h₀
+        c≅c' = k' a₀ h₀ C.∘Iso k a₀ h₀ C.Iso⁻¹
 ```
 
 <!--
 ```agda
     summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
-    summon f = ∥-∥-proj is-contr-is-prop do
+    summon f = ∥-∥-out is-contr-is-prop do
       f ← f
       pure $ contr (obj' f) (Obs-is-prop f)
 
@@ -411,15 +383,6 @@ any essential fibre $(a,h)$ over $b$, $(a',h')$ over $b'$, and map $l : a
     Homs {b = b} {b'} f = Σ (C.Hom (G₀ b) (G₀ b')) (compat f)
 ```
 
-<!--
-```agda
-    compat-prop : ∀ {b b'} (f : B.Hom b b') {g : C.Hom (G₀ b) (G₀ b')}
-                → is-prop (compat f g)
-    compat-prop f = Π-is-hlevel³ 1 λ _ _ _ →
-                    Π-is-hlevel³ 1 λ _ _ _ → C.Hom-set _ _ _ _
-```
--->
-
 <details>
 <summary>It will again turn out that any initial choice of fibre over
 $b$ and $b'$ gives a morphism candidate over $f : b \to b'$, and the
@@ -444,13 +407,13 @@ This proof _really_ isn't commented. I'm sorry.
       module _ a (h : H.₀ a B.≅ b) a' (h' : H.₀ a' B.≅ b')
                 (l : A.Hom a a') (w : h' .to B.∘ H.₁ l ≡ f B.∘ h .to) where
         m : a₀ A.≅ a
-        m = H.iso.from (h₀ B.∘Iso (h B.Iso⁻¹))
+        m = H.iso.from (h B.Iso⁻¹ B.∘Iso h₀)
 
         m' : a₀' A.≅ a'
-        m' = H.iso.from (h₀' B.∘Iso (h' B.Iso⁻¹))
+        m' = H.iso.from (h' B.Iso⁻¹ B.∘Iso h₀')
 
         α : k a₀ h₀ .from ≡ F.₁ (m .from) C.∘ k a h .from
-        α = C.inverse-unique _ _ {f = k a₀ h₀} {g = F-map-iso F m C.∘Iso k a h} $
+        α = C.inverse-unique _ _ (k a₀ h₀) (k a h C.∘Iso F-map-iso F m) $
           sym (kcomm _ _ _ (H.ε-lswizzle (h .invl)))
 
         γ : H.₁ (m' .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)
@@ -483,11 +446,11 @@ This proof _really_ isn't commented. I'm sorry.
     Homs-contr' {b = b} {b'} f = do
       (a₀ , h)   ← H-eso b
       (a₀' , h') ← H-eso b'
-      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path
-        (λ _ → compat-prop f) (sym (Homs-prop' f _ _ _ _ h')))
+      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path!
+        (sym (Homs-prop' f _ _ _ _ h')))
 
     Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
-    Homs-contr f = ∥-∥-proj! (Homs-contr' f)
+    Homs-contr f = ∥-∥-out! (Homs-contr' f)
 
     G₁ : ∀ {b b'} → B.Hom b b' → C.Hom (G₀ b) (G₀ b')
     G₁ f = Homs-contr f .centre .fst
@@ -551,7 +514,7 @@ a set --- a proposition --- these choices don't matter, so we can use
 essential surjectivity of $H$.
 
 ```agda
-    G .F-∘ {x} {y} {z} f g = ∥-∥-proj! do
+    G .F-∘ {x} {y} {z} f g = ∥-∥-out! do
       (ax , hx) ← H-eso x
       (ay , hy) ← H-eso y
       (az , hz) ← H-eso z

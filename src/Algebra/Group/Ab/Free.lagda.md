@@ -41,10 +41,10 @@ mutual
 
 ```agda
   Free-abelian⊣Forget
-    : ∀ {ℓ} → Free-abelian-functor {ℓ} ⊣ Forget-structure (Group-structure ℓ) F∘ Ab↪Grp
+    : ∀ {ℓ} → Free-abelian-functor {ℓ} ⊣ Ab↪Sets
   Free-abelian⊣Forget = LF⊣GR
-    (Ml.to-left-adjoint make-free-group)
-    (Ml.to-left-adjoint make-free-abelian)
+    (free-objects→left-adjoint make-free-group)
+    (free-objects→left-adjoint make-free-abelian)
 ```
 
 <!--
@@ -66,6 +66,6 @@ module _ {ℓ} (T : Type ℓ) (t-set : is-set T) where
 
     morp : Ab.Hom (Free-abelian T) G
     morp .hom = go
-    morp .preserves .pres-⋆ = Coeq-elim-prop₂ (λ x y → G.has-is-set _ _) λ x y → refl
+    morp .preserves .pres-⋆ = elim! λ x y → refl
 ```
 -->

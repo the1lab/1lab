@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_ ; module Extensionality)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_)
 
 open import Cat.Solver
 open import Cat.Base
@@ -40,6 +40,7 @@ is-monic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-monic f)
 is-monic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↪_ (a b : Ob) : Type (o ⊔ h) where
+  constructor make-mono
   field
     mor   : Hom a b
     monic : is-monic mor
@@ -49,13 +50,6 @@ open _↪_ public
 
 <!--
 ```agda
-↪-is-set : ∀ {a b} → is-set (a ↪ b)
-↪-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote _↪_)
-
-instance
-  H-Level-↪ : ∀ {a b} {n} → H-Level (a ↪ b) (suc (suc n))
-  H-Level-↪ = basic-instance 2 ↪-is-set
 ```
 -->
 
@@ -73,24 +67,13 @@ is-epic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-epic f)
 is-epic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↠_ (a b : Ob) : Type (o ⊔ h) where
+  constructor make-epi
   field
     mor  : Hom a b
     epic : is-epic mor
 
 open _↠_ public
 ```
-
-<!--
-```agda
-↠-is-set : ∀ {a b} → is-set (a ↠ b)
-↠-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote _↠_)
-
-instance
-  H-Level-↠ : ∀ {a b} {n} → H-Level (a ↠ b) (suc (suc n))
-  H-Level-↠ = basic-instance 2 ↠-is-set
-```
--->
 
 The identity morphism is monic and epic.
 
@@ -172,7 +155,27 @@ epic-precomp-embedding epic =
   injective→is-embedding (Hom-set _ _) _ (epic _ _)
 ```
 
-## Sections
+<!--
+```agda
+subst-is-monic
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → is-monic f
+  → is-monic g
+subst-is-monic f=g f-monic h i p =
+  f-monic h i (ap (_∘ h) f=g ·· p ·· ap (_∘ i) (sym f=g))
+
+subst-is-epic
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → is-epic f
+  → is-epic g
+subst-is-epic f=g f-epic h i p =
+  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym f=g))
+```
+-->
+
+## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
 when $r \cdot s = id$. The intuition for this name is that $s$ picks
@@ -196,7 +199,12 @@ record has-section (r : Hom a b) : Type h where
     is-section : section section-of r
 
 open has-section public
+```
 
+The identity map has a section (namely, itself), and the composite
+of maps with sections also has a section.
+
+```agda
 id-has-section : ∀ {a} → has-section (id {a})
 id-has-section .section = id
 id-has-section .is-section = idl _
@@ -220,6 +228,17 @@ section-∘ {f = f} {g = g} f-sect g-sect .is-section =
   section-of-∘ (f-sect .is-section) (g-sect .is-section)
 ```
 
+Moreover, if $f \circ g$ has a section, then so does $f$.
+
+```agda
+section-cancell
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-section (f ∘ g)
+  → has-section f
+section-cancell {g = g} s .section = g ∘ s .section
+section-cancell {g = g} s .is-section = assoc _ _ _ ∙ s .is-section
+```
+
 If $f$ has a section, then $f$ is epic.
 
 ```agda
@@ -240,19 +259,17 @@ has-section→epic {f = f} f-sect g h p =
 
 <!--
 ```agda
-has-section-is-set : ∀ {a b} {f : Hom a b} → is-set (has-section f)
-has-section-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote has-section)
-
-instance
-  H-Level-has-section
-    : ∀ {a b} {f : Hom a b} {n}
-    → H-Level (has-section f) (suc (suc n))
-  H-Level-has-section = basic-instance 2 has-section-is-set
+subst-section
+  : ∀ {a b} {f g : Hom a b}
+  → f ≡ g
+  → has-section f
+  → has-section g
+subst-section p s .section = s .section
+subst-section p s .is-section = ap₂ _∘_ (sym p) refl ∙ s .is-section
 ```
 -->
 
-## Retracts
+## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
 when $r \cdot s = id$. Note that this is the same equation involved
@@ -277,7 +294,12 @@ record has-retract (s : Hom b a) : Type h where
     is-retract : retract retract-of s
 
 open has-retract public
+```
 
+The identity map has a retract (namely, itself), and the composite
+of maps with retracts also has a retract.
+
+```agda
 id-has-retract : ∀ {a} → has-retract (id {a})
 id-has-retract .retract = id
 id-has-retract .is-retract = idl _
@@ -297,19 +319,17 @@ retract-∘ f-ret g-ret .is-retract =
   retract-of-∘ (f-ret .is-retract) (g-ret .is-retract)
 ```
 
-<!--
-```agda
-has-retract-is-set : ∀ {a b} {f : Hom a b} → is-set (has-retract f)
-has-retract-is-set = Iso→is-hlevel 2 eqv hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote has-retract)
+If $f \circ g$ has a retract, then so does $g$.
 
-instance
-  H-Level-has-retract
-    : ∀ {a b} {f : Hom a b} {n}
-    → H-Level (has-retract f) (suc (suc n))
-  H-Level-has-retract = basic-instance 2 has-retract-is-set
+```agda
+retract-cancelr
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → has-retract (f ∘ g)
+  → has-retract g
+retract-cancelr {f = f} r .retract = r .retract ∘ f
+retract-cancelr {f = f} r .is-retract = sym (assoc _ _ _) ∙ r .is-retract
 ```
--->
+
 
 If $f$ has a retract, then $f$ is monic.
 
@@ -385,8 +405,41 @@ has-section+monic→has-retract sect monic .is-retract =
 ```
 -->
 
+## Split monomorphisms {defines="split-mono split-monomorphism"}
 
-## Isos
+A morphism $f : A \to B$ is a **split monomorphism** if it merely
+has a [[retract]].
+
+```agda
+is-split-monic : Hom a b → Type _
+is-split-monic f = ∥ has-retract f ∥
+```
+
+Every split mono is a mono, as being monic is a [[proposition]].
+
+```agda
+split-monic→mono : is-split-monic f → is-monic f
+split-monic→mono = rec! has-retract→monic
+```
+
+## Split epimorphisms {defines="split-epi split-epimorphism"}
+
+Dually, a morphism $f : A \to B$ is a **split epimorphism** if it
+merely has a [[section]].
+
+```agda
+is-split-epic : Hom a b → Type _
+is-split-epic f = ∥ has-section f ∥
+```
+
+Like split monos, every split epimorphism is an epimorphism.
+
+```agda
+split-epic→epic : is-split-epic f → is-epic f
+split-epic→epic = rec! has-section→epic
+```
+
+## Isos {defines="isomorphism invertible"}
 
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
 \circ g$ and $g \circ f$ both equal to the identity. A map $f : A \to B$
@@ -467,33 +520,37 @@ id-iso .inverses .invr = idl id
 
 Isomorphism = _≅_
 
-Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
-           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
+Inverses-∘ : {a b c : Ob} {f : Hom b c} {f⁻¹ : Hom c b} {g : Hom a b} {g⁻¹ : Hom b a}
+           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (f ∘ g) (g⁻¹ ∘ f⁻¹)
 Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
   module finv = Inverses finv
   module ginv = Inverses ginv
 
   abstract
-    l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
-    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ cat! C ⟩
-        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
-        g ∘ id ∘ g⁻¹        ≡⟨ cat! C ⟩
-        g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
+    l : (f ∘ g) ∘ g⁻¹ ∘ f⁻¹ ≡ id
+    l = (f ∘ g) ∘ g⁻¹ ∘ f⁻¹ ≡⟨ cat! C ⟩
+        f ∘ (g ∘ g⁻¹) ∘ f⁻¹ ≡⟨ (λ i → f ∘ ginv.invl i ∘ f⁻¹) ⟩
+        f ∘ id ∘ f⁻¹        ≡⟨ cat! C ⟩
+        f ∘ f⁻¹             ≡⟨ finv.invl ⟩
         id                  ∎
 
-    r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
-    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ cat! C ⟩
-        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
-        f⁻¹ ∘ id ∘ f        ≡⟨ cat! C ⟩
-        f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
+    r : (g⁻¹ ∘ f⁻¹) ∘ f ∘ g ≡ id
+    r = (g⁻¹ ∘ f⁻¹) ∘ f ∘ g ≡⟨ cat! C ⟩
+        g⁻¹ ∘ (f⁻¹ ∘ f) ∘ g ≡⟨ (λ i → g⁻¹ ∘ finv.invr i ∘ g) ⟩
+        g⁻¹ ∘ id ∘ g        ≡⟨ cat! C ⟩
+        g⁻¹ ∘ g             ≡⟨ ginv.invr ⟩
         id                  ∎
 
-_∘Iso_ : a ≅ b → b ≅ c → a ≅ c
-(f ∘Iso g) .to = g .to ∘ f .to
-(f ∘Iso g) .from = f .from ∘ g .from
+_∘Iso_ : ∀ {a b c : Ob} → b ≅ c → a ≅ b → a ≅ c
+(f ∘Iso g) .to = f .to ∘ g .to
+(f ∘Iso g) .from = g .from ∘ f .from
 (f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
 
-infixr 40 _∘Iso_
+_∙Iso_ : ∀ {a b c : Ob} → a ≅ b → b ≅ c → a ≅ c
+f ∙Iso g = g ∘Iso f
+
+infixr 40 _∘Iso_ _∙Iso_
+infixr 41 _Iso⁻¹
 
 invertible-∘
   : ∀ {f : Hom b c} {g : Hom a b}
@@ -501,7 +558,7 @@ invertible-∘
   → is-invertible (f ∘ g)
 invertible-∘ f-inv g-inv = record
   { inv = g-inv.inv ∘ f-inv.inv
-  ; inverses = Inverses-∘ g-inv.inverses f-inv.inverses
+  ; inverses = Inverses-∘ f-inv.inverses g-inv.inverses
   }
   where
     module f-inv = is-invertible f-inv
@@ -540,10 +597,6 @@ make-iso f g p q ._≅_.from = g
 make-iso f g p q ._≅_.inverses .Inverses.invl = p
 make-iso f g p q ._≅_.inverses .Inverses.invr = q
 
-instance
-  H-Level-is-invertible : ∀ {f : Hom a b} {n} → H-Level (is-invertible f) (suc n)
-  H-Level-is-invertible = prop-instance is-invertible-is-prop
-
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
@@ -565,24 +618,6 @@ is-invertible-inverse g =
 iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
 iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
 
-≅-is-set : is-set (a ≅ b)
-≅-is-set x y p q = s where
-  open _≅_
-  open Inverses
-
-  s : p ≡ q
-  s i j .to = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j
-  s i j .from = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j
-  s i j .inverses =
-    is-prop→squarep
-      (λ i j → Inverses-are-prop {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
-                                 {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
-      (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
-
-instance
-  H-Level-≅ : ∀ {a b} {n} → H-Level (a ≅ b) (suc (suc n))
-  H-Level-≅ = basic-instance 2 ≅-is-set
-
 private
   ≅-pathp-internal
     : (p : a ≡ c) (q : b ≡ d)
@@ -598,17 +633,17 @@ private
 
 abstract
   inverse-unique
-    : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) {f : x ≅ b} {g : y ≅ d}
+    : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) (f : x ≅ b) (g : y ≅ d)
     → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
   inverse-unique =
-    J' (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+    J' (λ a c p → ∀ {b d} (q : b ≡ d) (f : a ≅ b) (g : c ≅ d)
       → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
       → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from))
-      λ x → J' (λ b d q → {f : x ≅ b} {g : x ≅ d}
+      λ x → J' (λ b d q → (f : x ≅ b) (g : x ≅ d)
                 → PathP (λ i → Hom x (q i)) (f .to) (g .to)
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
-            λ y {f} {g} p →
+            λ y f g p →
               f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩
               f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
               (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym p) ∙ f .invr) ∙ idl _ ⟩
@@ -618,19 +653,29 @@ abstract
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
   → PathP (λ i → p i ≅ q i) f g
-≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q {f = f} {g = g} r)
+≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q f g r)
 
 ≅-pathp-from
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
   → PathP (λ i → p i ≅ q i) f g
-≅-pathp-from p q {f = f} {g = g} r = ≅-pathp-internal p q (inverse-unique q p {f = f Iso⁻¹} {g = g Iso⁻¹} r) r
+≅-pathp-from p q {f = f} {g = g} r = ≅-pathp-internal p q (inverse-unique q p (f Iso⁻¹) (g Iso⁻¹) r) r
 
 ≅-path : {f g : a ≅ b} → f ._≅_.to ≡ g ._≅_.to → f ≡ g
 ≅-path = ≅-pathp refl refl
 
 ≅-path-from : {f g : a ≅ b} → f ._≅_.from ≡ g ._≅_.from → f ≡ g
 ≅-path-from = ≅-pathp-from refl refl
+
+≅-is-contr : (∀ {a b} → is-contr (Hom a b)) → is-contr (a ≅ b)
+≅-is-contr hom-contr .centre =
+  make-iso (hom-contr .centre) (hom-contr .centre)
+    (is-contr→is-prop hom-contr _ _)
+    (is-contr→is-prop hom-contr _ _)
+≅-is-contr hom-contr .paths f = ≅-path (hom-contr .paths (f .to))
+
+≅-is-prop : (∀ {a b} → is-prop (Hom a b)) → is-prop (a ≅ b)
+≅-is-prop hom-prop f g = ≅-path (hom-prop (f .to) (g .to))
 
 ↪-pathp
   : {a : I → Ob} {b : I → Ob} {f : a i0 ↪ b i0} {g : a i1 ↪ b i1}
@@ -665,9 +710,91 @@ abstract
       (f .epic)
       (g .epic)
       i
+
+subst-is-invertible
+  : ∀ {x y} {f g : Hom x y}
+  → f ≡ g
+  → is-invertible f
+  → is-invertible g
+subst-is-invertible f=g f-inv =
+  make-invertible f.inv
+    (ap (_∘ f.inv) (sym f=g) ∙ f.invl)
+    (ap (f.inv ∘_) (sym f=g) ∙ f.invr)
+  where module f = is-invertible f-inv
 ```
 -->
 
+Isomorphisms enjoy a **2-out-of-3** property: if any 2 of $f$, $g$, and
+$f \circ g$ are isomorphisms, then so is the third.
+
+```agda
+inverses-cancell
+  : ∀ {f : Hom b c} {g : Hom a b} {g⁻¹ : Hom b a} {fg⁻¹ : Hom c a}
+  → Inverses g g⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses f (g ∘ fg⁻¹)
+
+inverses-cancelr
+  : ∀ {f : Hom b c} {f⁻¹ : Hom c b} {g : Hom a b} {fg⁻¹ : Hom c a}
+  → Inverses f f⁻¹ → Inverses (f ∘ g) fg⁻¹
+  → Inverses g (fg⁻¹ ∘ f)
+
+invertible-cancell
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible g → is-invertible (f ∘ g)
+  → is-invertible f
+
+invertible-cancelr
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible f → is-invertible (f ∘ g)
+  → is-invertible g
+```
+
+<details>
+<summary>We are early into our bootstrapping process for category theory,
+so the proofs of these lemmas are quite low-level, and thus omitted.
+</summary>
+
+```agda
+inverses-cancell g-inv fg-inv .invl =
+  assoc _ _ _ ∙ fg-inv .invl
+inverses-cancell g-inv fg-inv .invr =
+  sym (idr _)
+  ∙ ap₂ _∘_ refl (sym (g-inv .invl))
+  ∙ assoc _ _ _
+  ∙ ap₂ _∘_
+    (sym (assoc _ _ _)
+    ∙ sym (assoc _ _ _)
+    ∙ ap₂ _∘_ refl (fg-inv .invr)
+    ∙ idr _)
+    refl
+  ∙ g-inv .invl
+
+inverses-cancelr f-inv fg-inv .invl =
+  sym (idl _)
+  ∙ ap₂ _∘_ (sym (f-inv .invr)) refl
+  ∙ sym (assoc _ _ _)
+  ∙ ap₂ _∘_ refl
+    (assoc _ _ _
+    ∙ assoc _ _ _
+    ∙ ap₂ _∘_ (fg-inv .invl) refl
+    ∙ idl _)
+  ∙ f-inv .invr
+inverses-cancelr f-inv fg-inv .invr =
+  sym (assoc _ _ _) ∙ fg-inv .invr
+
+invertible-cancell g-inv fg-inv =
+  inverses→invertible $
+  inverses-cancell
+    (g-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+
+invertible-cancelr f-inv fg-inv =
+  inverses→invertible $
+  inverses-cancelr
+    (f-inv .is-invertible.inverses)
+    (fg-inv .is-invertible.inverses)
+```
+</details>
 
 We also note that invertible morphisms are both epic and monic.
 
@@ -731,6 +858,23 @@ inverses→from-has-retract
   → Inverses f g → has-retract g
 inverses→from-has-retract {f = f} inv .retract = f
 inverses→from-has-retract inv .is-retract = Inverses.invl inv
+```
+
+<!--
+```agda
+invertible→to-has-section : is-invertible f → has-section f
+invertible→to-has-section f-inv .section = is-invertible.inv f-inv
+invertible→to-has-section f-inv .is-section = is-invertible.invl f-inv
+
+invertible→to-has-retract : is-invertible f → has-retract f
+invertible→to-has-retract f-inv .retract = is-invertible.inv f-inv
+invertible→to-has-retract f-inv .is-retract = is-invertible.invr f-inv
+
+invertible→to-split-monic : is-invertible f → is-split-monic f
+invertible→to-split-monic f-inv = pure (invertible→to-has-retract f-inv)
+
+invertible→to-split-epic : is-invertible f → is-split-epic f
+invertible→to-split-epic f-inv = pure (invertible→to-has-section f-inv)
 
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from
@@ -748,6 +892,7 @@ iso→from-has-retract : (f : a ≅ b) → has-retract (f .from)
 iso→from-has-retract f .retract = f .to
 iso→from-has-retract f .is-retract = f .invl
 ```
+-->
 
 Using our lemmas about section/retraction pairs from before, we
 can show that if $f$ is a monic retract, then $f$ is an
@@ -798,6 +943,40 @@ has-section+monic→invertible f-sect monic .is-invertible.inv =
   f-sect .section
 has-section+monic→invertible f-sect monic .is-invertible.inverses =
   retract-of+monic→inverses (f-sect .is-section) monic
+```
+-->
+
+In fact, the mere existence of a retract of an epimorphism $f$ suffices to
+show that $f$ is invertible, as invertibility itself is a proposition.
+Put another way, every morphism that is both a split mono and an epi
+is invertible.
+
+```agda
+split-monic+epic→invertible
+  : is-split-monic f
+  → is-epic f
+  → is-invertible f
+split-monic+epic→invertible f-split-monic f-epic =
+  ∥-∥-rec is-invertible-is-prop
+    (λ r → has-retract+epic→invertible r f-epic)
+    f-split-monic
+```
+
+A dual result holds for morphisms that are simultaneously split epic and monic.
+
+```agda
+split-epic+monic→invertible
+  : is-split-epic f
+  → is-monic f
+  → is-invertible f
+```
+
+<!--
+```agda
+split-epic+monic→invertible f-split-epic f-monic =
+  ∥-∥-rec is-invertible-is-prop
+    (λ s → has-section+monic→invertible s f-monic)
+    f-split-epic
 ```
 -->
 

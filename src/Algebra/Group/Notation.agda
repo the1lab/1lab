@@ -18,6 +18,7 @@ module Additive-notation = Group-on renaming
   ; inv-comm    to neg-comm
   ; inv-unit    to neg-0
   )
+  hiding (magma-hlevel)
 
 module Multiplicative-notation = Group-on renaming
   ( _⋆_         to infixl 20 _*_
@@ -30,6 +31,7 @@ module Multiplicative-notation = Group-on renaming
   ; idr         to *-idr
   ; inv-unit    to inv-1
   )
+  hiding (magma-hlevel)
 
 instance
   Abelian-group-on→Group-on

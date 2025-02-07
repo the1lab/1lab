@@ -66,9 +66,12 @@ private
   ... | nothing      | yes _ = just tm-var
   ... | nothing      | no _  = nothing
 
+  fzero' : ∀ {n} → Fin (suc n)
+  fzero' = fzero
+
   fin-term : Nat → Term
-  fin-term zero = con (quote fzero) (unknown h∷ [])
-  fin-term (suc n) = con (quote fsuc) (unknown h∷ fin-term n v∷ [])
+  fin-term zero    = def (quote fzero') (unknown h∷ [])
+  fin-term (suc n) = def (quote fsuc)   (unknown h∷ fin-term n v∷ [])
 
   env-rec : (Mot : Nat → Type b) →
           (∀ {n} → Mot n → A → Mot (suc n)) →

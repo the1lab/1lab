@@ -1,12 +1,10 @@
-{-# OPTIONS -vtc.def.fun:10 #-}
-
 module Cat.Displayed.Solver where
 
 open import Data.List
 
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Solver
-open import 1Lab.Prelude hiding (id; _∘_)
+open import 1Lab.Prelude hiding (id; _∘_; ⟦_⟧)
 
 open import Cat.Base
 open import Cat.Displayed.Base

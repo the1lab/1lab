@@ -3,6 +3,7 @@
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Product
 open import Cat.Instances.Twisted
+open import Cat.Functor.Constant
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Coend
 open import Cat.Prelude

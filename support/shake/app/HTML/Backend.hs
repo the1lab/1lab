@@ -1,7 +1,9 @@
 -- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
-{-# LANGUAGE FlexibleContexts, ViewPatterns, DeriveDataTypeable, StandaloneDeriving #-}
+{-# LANGUAGE FlexibleContexts, BlockArguments, LambdaCase, DerivingStrategies, OverloadedStrings, NondecreasingIndentation #-}
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE TypeFamilies #-}
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
@@ -14,36 +16,77 @@ import HTML.Base
 import Prelude hiding ((!!), concatMap)
 import Control.Monad.Identity
 import Control.Monad.Except
+import Control.Monad.Reader
 
 import qualified Data.HashMap.Strict as Hm
+import qualified Data.Map.Strict as Map
+import qualified Data.HashSet as HashSet
 import qualified Data.Text as Text
+import qualified Data.Set as Set
+
 import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
+import Data.Map.Strict (Map)
+import Data.Foldable
+import Data.HashSet (HashSet)
 import Data.Aeson
+import Data.Maybe
 import Data.IORef
 import Data.Text (Text)
 import Data.List
-import Data.Map (Map)
-import qualified Data.Map as Map
+import Data.Set (Set)
 
-import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
-import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
-import Agda.Syntax.Internal (Type, domName)
-import Agda.TypeChecking.Reduce (instantiateFull)
-import qualified Agda.Syntax.Internal.Generic as I
-import qualified Agda.Syntax.Internal as I
-import Agda.Syntax.TopLevelModuleName
-import Agda.Syntax.Abstract.Views
-import Agda.Compiler.Backend
-import Agda.Syntax.Abstract hiding (Type)
+import Agda.Compiler.Backend hiding (topLevelModuleName)
 import Agda.Compiler.Common
-import Agda.Syntax.Position
-import Agda.Utils.FileName
-import Agda.Syntax.Common
+
+import Control.DeepSeq
+
+import qualified Agda.Syntax.Concrete.Generic as Con
+import qualified Agda.Syntax.Internal.Generic as I
+import qualified Agda.Syntax.Abstract.Views as A
+import qualified Agda.Syntax.Common.Aspect as Asp
+import qualified Agda.Syntax.Scope.Base as Scope
+import qualified Agda.Syntax.Concrete as Con
+import qualified Agda.Syntax.Internal as I
+import qualified Agda.Syntax.Abstract as A
+import qualified Agda.Syntax.Concrete as C
+
+import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
+import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_, abstractToConcreteCtx)
+import Agda.Syntax.TopLevelModuleName
+import Agda.Syntax.Abstract.Pretty (prettyA, prettyATop)
+import Agda.Syntax.Abstract.Views
 import Agda.Syntax.Common.Pretty
+import Agda.Syntax.Scope.Monad (modifyCurrentScope, getCurrentModule, freshConcreteName)
+import Agda.Syntax.Abstract hiding (Type)
+import Agda.Syntax.Position
+import Agda.Syntax.Internal (Type, domName)
+import Agda.Syntax.Fixity (Precedence(TopCtx))
+import Agda.Syntax.Common
 import Agda.Syntax.Info
 
-import System.FilePath
+import qualified Agda.TypeChecking.Monad.Base as I
+import qualified Agda.TypeChecking.Pretty as P
+import Agda.TypeChecking.Substitute
+import Agda.TypeChecking.Telescope
+import Agda.TypeChecking.Records (isRecord)
+import Agda.TypeChecking.Reduce (instantiateFull, reduceDefCopyTCM, normalise)
+import Agda.TypeChecking.Level (reallyUnLevelView)
+
+import qualified Agda.Utils.Maybe.Strict as S
+import Agda.Utils.FileName
+import Agda.Utils.Lens
+import Agda.Utils.Size
+
+import System.FilePath hiding (normalise)
+
+import Text.Show.Pretty (ppShow)
+
+import HTML.Render
+import Debug.Trace (traceShow)
+import Agda.Syntax.Internal.Names (namesIn')
+import Agda.Interaction.Response (Response_boot(Resp_RunningInfo))
+import Agda.Interaction.Options.Lenses (LensVerbosity(setVerbosity))
 
 data HtmlCompileEnv = HtmlCompileEnv
   { htmlCompileEnvOpts     :: HtmlOptions
@@ -84,6 +127,8 @@ htmlBackend' basepn opts = Backend'
   , postCompile = postCompileHtml
   , scopeCheckingSuffices = False
   , mayEraseType = const $ return False
+  , backendInteractTop = Nothing
+  , backendInteractHole = Nothing
   }
 
 runLogHtmlWithMonadDebug :: MonadDebug m => LogHtmlT m a -> m a
@@ -138,15 +183,16 @@ compileDefHtml
   -> TCM (Maybe (Text, Identifier))
 compileDefHtml env _ _ _
   | not (htmlOptGenTypes (htmlCompileEnvOpts env)) = pure Nothing
-compileDefHtml env _menv _isMain def = do
+compileDefHtml env _menv _isMain def = withCurrentModule (qnameModule (defName def)) $
   case definitionAnchor env def of
     Just mn -> do
-      ty <- typeToText def
+      (tooltip, ty) <- typeToText def
       let
         ident = Identifier
-          { idAnchor = mn
-          , idIdent = Text.pack (render (pretty (qnameName (defName def))))
-          , idType = Text.pack ty
+          { idAnchor  = mn
+          , idIdent   = Text.pack (render (pretty (qnameName (defName def))))
+          , idType    = ty
+          , idTooltip = tooltip
           }
       pure (Just (mn, ident))
     Nothing -> do
@@ -162,7 +208,7 @@ postModuleHtml
   -> m HtmlModule
 postModuleHtml env menv _isMain _modName _defs = do
   let
-    ins Nothing       = id
+    ins Nothing = id
     ins (Just (a, b)) = Hm.insert a b
 
   types <- liftIO $ atomicModifyIORef' (htmlCompileTypes env) $
@@ -174,7 +220,8 @@ postModuleHtml env menv _isMain _modName _defs = do
       . htmlCompileEnvOpts
       . htmlModEnvCompileEnv
       $ menv
-  htmlSrc <- srcFileOfInterface (htmlModEnvName $ menv) <$> curIF
+
+  htmlSrc <- srcFileOfInterface (htmlModEnvName menv) <$> curIF
   runLogHtmlWithMonadDebug $ generatePage htmlSrc
   pure $ HtmlModule $ foldr ins mempty _defs
 
@@ -211,36 +258,110 @@ compileOneModule _pn opts types iface = do
     compDef env menv def = setCurrentRange (defName def) $
       compileDefHtml env menv NotMain def
 
+getClass :: QName -> TCM (Set QName)
+getClass q = isRecord q >>= \case
+  Just RecordData{ _recFields = f } -> pure $! Set.fromList (map I.unDom f)
+  _ -> pure mempty
 
-prettifyTerm :: Type -> Type
-prettifyTerm = runIdentity . I.traverseTermM unDomName where
-  unDomName :: I.Term -> Identity I.Term
-  unDomName (I.Pi d x) = pure $ I.Pi d{domName = Nothing} x
-  unDomName (I.Def q x) = pure $ I.Def q{qnameModule = MName []} x
-  unDomName x = pure x
+usedInstances :: I.TermLike a => a -> TCM (Set QName)
+usedInstances = I.foldTerm \case
+  I.Def q _ -> do
+    def <- getConstInfo q
+    case Agda.Compiler.Backend.defInstance def of
+      Just c  -> Set.insert q <$> getClass (instanceClass c)
+      Nothing -> pure mempty
+  _ -> pure mempty
 
--- killQual :: Con.Expr -> Con.Expr
--- killQual = everywhere (mkT unQual) where
---   unQual :: Con.QName -> Con.QName
---   unQual (Con.Qual _ x) = unQual x
---   unQual x = x
-
-typeToText :: Definition -> TCM String
+typeToText :: Definition -> TCM (Text, Text)
 typeToText d = do
-  expr <- reify . prettifyTerm $ defType d
-  fmap (render . pretty) .
-    abstractToConcrete_ . removeImpls $ expr
+  ui <- usedInstances (I.unEl (defType d))
+  fv <- getDefFreeVars (defName d)
 
-removeImpls :: Expr -> Expr
-removeImpls (Pi _ (x :| xs) e) =
-  makePi (map (mapExpr removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
-removeImpls (Fun span arg ret) =
-  Fun span (removeImpls <$> arg) (removeImpls ret)
+  ty <- locallyReduceDefs (OnlyReduceDefs ui) $ normalise (defType d)
+
+  topm <- topLevelModuleName (qnameModule (defName d))
+
+  let
+    n k = Asp.Name (Just k) False
+    asp = \case
+      I.Axiom{}          -> n Asp.Postulate
+      DataOrRecSig{}     -> n Asp.Datatype
+      GeneralizableVar{} -> n Asp.Generalizable
+      AbstractDefn d     -> asp d
+      d@Function{}
+        | isProperProjection d -> n Asp.Field
+        | otherwise -> n Asp.Function
+      Datatype{}         -> n Asp.Datatype
+      Record{}           -> n Asp.Record{}
+      Constructor{conSrcCon = c} ->
+        n $ Asp.Constructor (I.conInductive c)
+      I.Primitive{} -> n Asp.Primitive
+      PrimitiveSort{} -> Asp.PrimitiveType
+
+    aspect = asp (theDef d)
+
+    a = Asp.Aspects
+      { Asp.aspect         = Just aspect
+      , Asp.otherAspects   = mempty
+      , Asp.note           = ""
+      , Asp.definitionSite = toDefinitionSite topm (nameBindingSite (qnameName (defName d)))
+      , Asp.tokenBased     = Asp.TokenBased
+      }
+
+  expr <- removeImpls <$> reify ty
+
+  here <- currentTopLevelModule
+  tooltip <- fmap renderToHtml $ P.vcat
+    [ annotate a <$> P.pretty (qnameName (defName d))
+    , P.nest 2 (P.colon P.<+> prettyATop expr)
+    ]
+  plain <- Text.pack . render <$> prettyATop expr
+  pure (tooltip, plain)
+
+toDefinitionSite :: TopLevelModuleName -> Range -> Maybe Asp.DefinitionSite
+toDefinitionSite topm r = do
+  p <- fmap (fromIntegral . posPos) . rStart $ r
+  pure $ Asp.DefinitionSite
+    { Asp.defSiteModule = topm
+    , Asp.defSitePos    = fromIntegral p
+    , Asp.defSiteHere   = True
+    , Asp.defSiteAnchor = Nothing
+    }
+
+killQual :: Con.Expr -> Con.Expr
+killQual = Con.mapExpr wrap where
+  work :: Con.QName -> Con.QName
+  work (Con.Qual _ x) = work x
+  work x = x
+
+  wrap :: Con.Expr -> Con.Expr
+  wrap (Con.Ident v)                 = Con.Ident (work v)
+  wrap (Con.KnownIdent v w)          = Con.KnownIdent v (work w)
+  wrap (Con.KnownOpApp v a b c d)    = Con.KnownOpApp v a (work b) c d
+  wrap (Con.OpApp v qual names args) = Con.OpApp v (work qual) names args
+  wrap x = x
+
+removeImpls :: A.Expr -> A.Expr
+removeImpls (A.Pi _ (x :| xs) e) =
+  let
+    fixup :: TypedBinding -> TypedBinding
+    fixup q@(TBind rng inf as _)
+      | Hidden <- getHiding q = TBind rng inf as underscore
+      | otherwise = q
+  in makePi (map (A.mapExpr removeImpls) $ map fixup (x:xs)) (removeImpls e)
+removeImpls (A.Fun span arg ret) =
+  A.Fun span (removeImpls <$> arg) (removeImpls ret)
 removeImpls e = e
 
-makePi :: [TypedBinding] -> Expr -> Expr
-makePi [] = id
-makePi (b:bs) = Pi exprNoRange (b :| bs)
+makePi :: [A.TypedBinding] -> A.Expr -> A.Expr
+makePi [] e = e
+makePi (b:bs) (A.Pi _ bs' e') = makePi (b:bs ++ toList bs') e'
+makePi (b:bs) e = A.Pi exprNoRange (b `mergeTBinds` bs) e
+
+mergeTBinds :: A.TypedBinding -> [A.TypedBinding] -> NonEmpty A.TypedBinding
+mergeTBinds (A.TBind r i as Underscore{}) (A.TBind _ _ as' Underscore{}:bs) =
+  mergeTBinds (A.TBind r i (as <> as') underscore) bs
+mergeTBinds x xs = x :| xs
 
 definitionAnchor :: HtmlCompileEnv -> Definition -> Maybe Text
 definitionAnchor _ def | defCopy def = Nothing

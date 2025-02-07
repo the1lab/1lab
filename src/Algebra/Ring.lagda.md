@@ -1,17 +1,19 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
-open import Algebra.Group.Cat.Base
+open import 1Lab.Prelude hiding (_*_ ; _+_)
+
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
-open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Instances.Delooping
-open import Cat.Abelian.Base
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Base
 
-open import Data.Int
+open import Data.Int.Properties
+open import Data.Int.Base
+
+import Algebra.Monoid.Reasoning as Mon
 
 import Cat.Reasoning
 ```
@@ -72,7 +74,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
              )
     public
 
-  additive-group : Group ℓ
+  additive-group : Σ (Set ℓ) (λ x → Group-on ⌞ x ⌟)
   ∣ additive-group .fst ∣                    = R
   additive-group .fst .is-tr                 = is-abelian-group.has-is-set +-group
   additive-group .snd .Group-on._⋆_          = _+_
@@ -84,28 +86,13 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
   group .snd .Abelian-group-on._*_       = _+_
   group .snd .Abelian-group-on.has-is-ab = +-group
 
-  Ringoid : Ab-category (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-  Ringoid .Ab-category.Abelian-group-on-hom _ _ = record { has-is-ab = +-group }
-  Ringoid .Ab-category.∘-linear-l f g h = sym *-distribr
-  Ringoid .Ab-category.∘-linear-r f g h = sym *-distribl
+  multiplicative-monoid : Monoid ℓ
+  multiplicative-monoid .fst = R
+  multiplicative-monoid .snd = record { has-is-monoid = *-monoid }
 
-  private
-    module ringoid = Ab-category Ringoid
-      using ( ∘-zero-l ; ∘-zero-r ; neg-∘-l ; neg-∘-r ; ∘-minus-l ; ∘-minus-r )
-
-  open ringoid renaming
-      ( ∘-zero-l to *-zerol
-      ; ∘-zero-r to *-zeror
-      ; neg-∘-l to neg-*-l
-      ; neg-∘-r to neg-*-r
-      ; ∘-minus-l to *-minus-l
-      ; ∘-minus-r to *-minus-r
-      )
-    public
-
-  module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-    hiding (module HLevel-instance)
+  module m = Mon multiplicative-monoid
   module a = Abelian-group-on record { has-is-ab = +-group }
+    hiding (_*_ ; 1g ; _⁻¹)
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
   field
@@ -225,55 +212,54 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     0R      : R
     _+_     : R → R → R
     -_      : R → R
-    +-idl   : ∀ {x} → 0R + x ≡ x
-    +-invr  : ∀ {x} → x + (- x) ≡ 0R
-    +-assoc : ∀ {x y z} → x + (y + z) ≡ (x + y) + z
-    +-comm  : ∀ {x y} → x + y ≡ y + x
+    +-idl   : ∀ x → 0R + x ≡ x
+    +-invr  : ∀ x → x + (- x) ≡ 0R
+    +-assoc : ∀ x y z → x + (y + z) ≡ (x + y) + z
+    +-comm  : ∀ x y → x + y ≡ y + x
 
     -- R is a commutative monoid:
     1R      : R
     _*_     : R → R → R
-    *-idl   : ∀ {x} → 1R * x ≡ x
-    *-idr   : ∀ {x} → x * 1R ≡ x
-    *-assoc : ∀ {x y z} → x * (y * z) ≡ (x * y) * z
+    *-idl   : ∀ x → 1R * x ≡ x
+    *-idr   : ∀ x → x * 1R ≡ x
+    *-assoc : ∀ x y z → x * (y * z) ≡ (x * y) * z
 
     -- Multiplication is bilinear:
-    *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
-    *-distribr : ∀ {x y z} → (y + z) * x ≡ (y * x) + (z * x)
+    *-distribl : ∀ x y z → x * (y + z) ≡ (x * y) + (x * z)
+    *-distribr : ∀ x y z → (y + z) * x ≡ (y * x) + (z * x)
 ```
 
 <!--
 ```agda
-  to-ring-on : Ring-on R
-  to-ring-on = ring where
-    open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr ; +-idl ; +-idr)
+  -- All in copatterns to prevent the unfolding from exploding on you
+  to-is-ring : is-ring 1R _*_ _+_
+  to-is-ring .is-ring.*-monoid .is-monoid.has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
+  to-is-ring .is-ring.*-monoid .is-monoid.has-is-semigroup .is-semigroup.associative = *-assoc _ _ _
+  to-is-ring .is-ring.*-monoid .is-monoid.idl = *-idl _
+  to-is-ring .is-ring.*-monoid .is-monoid.idr = *-idr _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.unit = 0R
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inverse = -_
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.has-is-semigroup .is-semigroup.associative = +-assoc _ _ _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.idl = +-idl _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .is-monoid.idr = +-comm _ _ ∙ +-idl _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inversel = +-comm _ _ ∙ +-invr _
+  to-is-ring .is-ring.+-group .is-abelian-group.has-is-group .is-group.inverser = +-invr _
+  to-is-ring .is-ring.+-group .is-abelian-group.commutes = +-comm _ _
+  to-is-ring .is-ring.*-distribl = *-distribl _ _ _
+  to-is-ring .is-ring.*-distribr = *-distribr _ _ _
 
-    -- All in copatterns to prevent the unfolding from exploding on you
-    ring : Ring-on R
-    ring .Ring-on.1r = 1R
-    ring .Ring-on._*_ = _*_
-    ring .Ring-on._+_ = _+_
-    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.associative = *-assoc
-    ring .Ring-on.has-is-ring .*-monoid .idl = *-idl
-    ring .Ring-on.has-is-ring .*-monoid .idr = *-idr
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.unit = 0R
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .associative = +-assoc
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idl = +-idl
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idr = +-comm ∙ +-idl
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverse = -_
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inversel = +-comm ∙ +-invr
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverser = +-invr
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.commutes = +-comm
-    ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl
-    ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
+  to-ring-on : Ring-on R
+  to-ring-on .Ring-on.1r = 1R
+  to-ring-on .Ring-on._*_ = _*_
+  to-ring-on .Ring-on._+_ = _+_
+  to-ring-on .Ring-on.has-is-ring = to-is-ring
 
   to-ring : Ring ℓ
   to-ring .fst = el R ring-is-set
   to-ring .snd = to-ring-on
 
-open make-ring using (to-ring ; to-ring-on) public
+open make-ring using (to-is-ring; to-ring-on; to-ring) public
 ```
 -->
 
@@ -296,20 +282,20 @@ the ring $\{*\}$ the _One Ring_, which would be objectively cooler.
 Zero-ring : Ring lzero
 Zero-ring = to-ring {R = ⊤} λ where
   .make-ring.ring-is-set _ _ _ _ _ _ → tt
-  .make-ring.0R → tt
-  .make-ring._+_ _ _ → tt
-  .make-ring.-_  _ → tt
-  .make-ring.+-idl _ → tt
-  .make-ring.+-invr _ → tt
-  .make-ring.+-assoc _ → tt
-  .make-ring.+-comm _ → tt
-  .make-ring.1R → tt
-  .make-ring._*_ _ _ → tt
-  .make-ring.*-idl _ → tt
-  .make-ring.*-idr _ → tt
-  .make-ring.*-assoc _ → tt
-  .make-ring.*-distribl _ → tt
-  .make-ring.*-distribr _ → tt
+  .make-ring.0R                      → tt
+  .make-ring._+_ _ _                 → tt
+  .make-ring.-_  _                   → tt
+  .make-ring.+-idl  _ _              → tt
+  .make-ring.+-invr _ _              → tt
+  .make-ring.+-assoc _ _ _ _         → tt
+  .make-ring.+-comm _ _ _            → tt
+  .make-ring.1R                      → tt
+  .make-ring._*_ _ _                 → tt
+  .make-ring.*-idl _ _               → tt
+  .make-ring.*-idr _ _               → tt
+  .make-ring.*-assoc _ _ _ _         → tt
+  .make-ring.*-distribl _ _ _ _      → tt
+  .make-ring.*-distribr _ _ _ _      → tt
 ```
 
 Rings, unlike other categories of algebraic structures (like that of
@@ -328,18 +314,18 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
 ℤ : Ring lzero
 ℤ = to-ring {R = Int} λ where
   .make-ring.ring-is-set → hlevel 2
-  .make-ring.0R → 0
-  .make-ring._+_ → _+ℤ_
-  .make-ring.-_ → negate
-  .make-ring.+-idl → +ℤ-zerol _
-  .make-ring.+-invr {x} → +ℤ-inverser x
-  .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
-  .make-ring.+-comm {x} {y} → +ℤ-commutative x y
-  .make-ring.1R → 1
-  .make-ring._*_   → _*ℤ_
-  .make-ring.*-idl → *ℤ-idl _
-  .make-ring.*-idr → *ℤ-idr _
-  .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
-  .make-ring.*-distribl {x} {y} {z} → *ℤ-distrib-+ℤ-l x y z
-  .make-ring.*-distribr {x} {y} {z} → *ℤ-distrib-+ℤ-r x y z
+  .make-ring.1R         → 1
+  .make-ring.0R         → 0
+  .make-ring._+_        → _+ℤ_
+  .make-ring.-_         → negℤ
+  .make-ring._*_        → _*ℤ_
+  .make-ring.+-idl      → +ℤ-zerol
+  .make-ring.+-invr     → +ℤ-invr
+  .make-ring.+-assoc    → +ℤ-assoc
+  .make-ring.+-comm     → +ℤ-commutative
+  .make-ring.*-idl      → *ℤ-onel
+  .make-ring.*-idr      → *ℤ-oner
+  .make-ring.*-assoc    → *ℤ-associative
+  .make-ring.*-distribl → *ℤ-distribl
+  .make-ring.*-distribr → *ℤ-distribr
 ```

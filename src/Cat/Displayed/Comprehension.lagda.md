@@ -164,7 +164,7 @@ with projections.
   _⨾ˢ_ : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → Hom[ σ ] x y → Hom (Γ ⨾ x) (Δ ⨾ y)
   σ ⨾ˢ f = F₁' f .to
 
-  infixl 5 _⨾ˢ_
+  infixl 8 _⨾ˢ_
 
   sub-proj : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y) → πᶜ ∘ (σ ⨾ˢ f) ≡ σ ∘ πᶜ
   sub-proj f = sym $ F₁' f .commute
@@ -395,8 +395,8 @@ following form is a pullback square, provided that $f$ is cartesian.
   \\
   {(\Gamma, X)} && {(\Delta, Y)}
   \arrow["{(\sigma, f)}"', from=3-1, to=3-3]
-  \arrow["\varepsilon"', from=1-1, to=3-1]
-  \arrow["\varepsilon", from=1-3, to=3-3]
+  \arrow["\eps"', from=1-1, to=3-1]
+  \arrow["\eps", from=1-3, to=3-3]
   \arrow["{W (\sigma, f)}", from=1-1, to=1-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}
@@ -500,7 +500,7 @@ Comonad→comprehension
 
 We begin by constructing a [vertical functor] $\cE \to B^{\to}$ that maps
 an $x$ lying over $\Gamma$ to the base component of the counit
-$\varepsilon : W(\Gamma, X) \to (\Gamma, X)$.
+$\eps : W(\Gamma, X) \to (\Gamma, X)$.
 
 [vertical functor]: Cat.Displayed.Functor.html
 

@@ -5,7 +5,6 @@ open import Algebra.Ring.Module.Notation
 open import Algebra.Ring.Commutative
 open import Algebra.Group.Notation
 open import Algebra.Ring.Module hiding (map)
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
@@ -355,14 +354,12 @@ proofs of linearity.
     → Multilinear-map (suc n) Ms N
   curry-multilinear-map lin = ml where
     ml : Multilinear-map (suc n) _ _
-    ml .map = λ x → lin .map x .map
-    ml .linearₚ = tabulateₚ λ where
-      fzero xs r x y    →
-        ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
+    ml .map x = lin .map x .map
+    ml .linearₚ = tabulateₚ λ i xs r x y → case fin-view i of λ where
+      zero → ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
         ·· apply-zipᶠ _ _ _ _
         ·· ap₂ N._+_ (apply-mapᶠ _ _ _) refl
-      (fsuc i) xs r x y →
-        linear-at (lin .map (xs .fst)) i (xs .snd) r x y
+      (suc i) → linear-at (lin .map (xs .fst)) i (xs .snd) r x y
 
   uncurry-multilinear-map
     : Multilinear-map (suc n) Ms N
@@ -387,7 +384,7 @@ definitionally isomorphisms.
   uncurry-ml-is-iso : is-iso uncurry-multilinear-map
   uncurry-ml-is-iso = λ where
     .is-iso.inv    → curry-multilinear-map
-    .is-iso.rinv x → Linear-map-path λ x → Multilinear-map-path refl
+    .is-iso.rinv x → ext λ x → Multilinear-map-path refl
     .is-iso.linv x → Multilinear-map-path $ funextᶠ λ as → refl
 
   module

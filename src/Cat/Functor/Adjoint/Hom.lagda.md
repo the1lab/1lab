@@ -97,7 +97,7 @@ terms.
 We do not require an explicit naturality witness for the inverse of $f$,
 since if a natural transformation is componentwise invertible, then its
 inverse is natural as well. It remains to use our "binaturality" to
-compute that $f(\id)$ and $f^{-1}(\id)$ do indeed give a system
+compute that $f(\id)$ and $f\inv(\id)$ do indeed give a system
 of adjunction units and co-units.
 
 ```agda
@@ -182,7 +182,7 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     module R = Func R
 
     hom-equiv : ∀ {a b} → C.Hom (L.₀ a) b ≃ D.Hom a (R.₀ b)
-    hom-equiv = _ , L-adjunct-is-equiv adj
+    hom-equiv = adjunct-hom-equiv adj
 
   adjunct-hom-iso-from
     : ∀ a → Hom-from C (L.₀ a) ≅ⁿ Hom-from D a F∘ R

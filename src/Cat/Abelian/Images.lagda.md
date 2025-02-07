@@ -6,6 +6,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Diagram.Image
 open import Cat.Abelian.Base
 open import Cat.Prelude
 
@@ -27,8 +28,8 @@ Let $f : A \to B$ be a morphism in an [abelian category] $\cA$, which
 (by definition) admits a canonical decomposition as
 
 $$
-A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B\text{,}
-$$
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B
+$$,
 
 where the map $p$ is [epic], $i$ is [[monic]], and the indicated
 isomorphism arises from $f$ in a canonical way, using the universal
@@ -48,19 +49,19 @@ epi] followed by a [regular mono].
 ## The image
 
 ```agda
-images : ∀ {A B} (f : Hom A B) → Image f
+images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
-  the-img : ↓Obj (const! (cut f)) Forget-full-subcat
+  the-img : ↓Obj (!Const (cut f)) Forget-full-subcat
   the-img .x = tt
-  the-img .y .object = cut (Ker.kernel (Coker.coeq f))
-  the-img .y .witness {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
+  the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
+  the-img .y .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
 ```
 
 Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
 $i : \ker (\coker f) \mono B$. We can take the map $i$ as the "image"
 subobject. We must provide a map filling the dotted line in
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   A && {\mathrm{im}(f)} \\
   & B
@@ -75,8 +76,8 @@ it's the epimorphism $p$ followed by the isomorphism $f'$ in the
 decomposition
 
 $$
-A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B\text{.}
-$$
+A \xepi{p} \coker (\ker f) \xto{f'} \ker (\coker f) \xmono{i} B
+$$.
 
 ```agda
   the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _
@@ -95,7 +96,7 @@ and we wish to construct a map $g : i' \le i$^[this is an inequality in
 the poset of subobjects of $B$, which is a map $i' \to i$ in the slice
 over $B$.], hence a map $\im f \to X$ such that the triangle
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}
   {\mathrm{im}(f)} & X \\
   B
@@ -108,10 +109,10 @@ over $B$.], hence a map $\im f \to X$ such that the triangle
 commutes.
 
 ```agda
-  im : Image f
+  im : Image C f
   im .Initial.bot = the-img
   im .Initial.has⊥ other = contr factor unique where
-    factor : ↓Hom (const! (cut f)) Forget-full-subcat the-img other
+    factor : ↓Hom (!Const (cut f)) Forget-full-subcat the-img other
     factor .α = tt
     factor .β ./-Hom.map =
         Coker.universal (Ker.kernel f) {e' = other .map .map} path
@@ -127,7 +128,7 @@ a (unique) map $\coker (\ker f) \to X$ s.t. the triangle above commutes!
       where abstract
         path : other .map .map ∘ 0m ≡ other .map .map ∘ kernel f .Kernel.kernel
         path =
-          other .y .witness _ _ $ sym $
+          other .y .snd _ _ $ sym $
                 pulll (other .map .commutes)
             ·· Ker.equal f
             ·· ∅.zero-∘r _
@@ -153,14 +154,14 @@ is the image of $f$.
                           (coker-ker≃ker-coker f .is-invertible.invr))) refl
               ∙ pullr (Coker.factors _) ∙ other .map .commutes)
         (sym (decompose f .snd ∙ assoc _ _ _))
-    factor .sq = /-Hom-path $ sym $ other .y .witness _ _ $
+    factor .sq = /-Hom-path $ sym $ other .y .snd _ _ $
       pulll (factor .β .commutes)
       ∙ the-img .map .commutes
       ·· sym (other .map .commutes)
-      ·· ap (other .y .object .map ∘_) (intror refl)
+      ·· ap (other .y .fst .map ∘_) (intror refl)
 
     unique : ∀ x → factor ≡ x
-    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .witness _ _ $
+    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .snd _ _ $
       sym (x .β .commutes ∙ sym (factor .β .commutes))
 ```
 </details>

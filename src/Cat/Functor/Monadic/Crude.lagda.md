@@ -11,6 +11,7 @@ open import Cat.Functor.Conservative
 open import Cat.Functor.Monadic.Beck
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Equivalence
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
@@ -42,18 +43,18 @@ private
   T : Monad C
   T = Adjunction→Monad F⊣U
   C^T : Precategory _ _
-  C^T = Eilenberg-Moore C T
+  C^T = Eilenberg-Moore T
 
   module C^T = C-r C^T
 
 open _⊣_ F⊣U
 open _=>_
-open Algebra-hom
 open Algebra-on
+open Total-hom
 ```
 -->
 
-# Crude monadicity
+# Crude monadicity {defines="crude-monadicity-theorem"}
 
 We present a refinement of the conditions laid out in [Beck's
 coequaliser] for when an adjunction $F \dashv G$ is [monadic]: The
@@ -71,7 +72,7 @@ characterising exactly when the [comparison functor][comp] $K : \cD
 from the adjunction][madj] is an equivalence. Our refinement here gives
 a _sufficient_ condition.
 
-[comp]: Cat.Functor.Adjoint.Monadic.html#Comparison
+[comp]: Cat.Functor.Adjoint.Monadic.html#Comparison-EM
 [emc]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [madj]: Cat.Functor.Adjoint.Monad.html
 
@@ -80,7 +81,7 @@ paragraph above, and abbreviate the resulting monad by $T$; Denote the
 comparison functor by $K$.
 
 1. If $\cD$ has [Beck's coequalisers] for any $T$-algebra, then $K$
-has a left adjoint $K^{-1} \dashv K$;
+has a left adjoint $K\inv \dashv K$;
 
 2. If, in addition, $U$ preserves coequalisers for any pair which has a
 common right inverse, then the unit of the adjunction $\eta$ is a
@@ -110,7 +111,7 @@ private
     → is-coequaliser C (U.₁ f) (U.₁ g) (U.₁ (coequ .Coequaliser.coeq))
 
 module _
-  (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
+  (has-coeq : (M : Algebra T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
   (U-pres : U-preserves-reflexive-coeqs)
   where
 ```
@@ -123,10 +124,10 @@ module _
 
   private
     K⁻¹ : Functor C^T D
-    K⁻¹ = Comparison⁻¹ F⊣U has-coeq
+    K⁻¹ = Comparison-EM⁻¹ F⊣U has-coeq
 
-    K⁻¹⊣K : K⁻¹ ⊣ Comparison F⊣U
-    K⁻¹⊣K = Comparison⁻¹⊣Comparison F⊣U has-coeq
+    K⁻¹⊣K : K⁻¹ ⊣ Comparison-EM F⊣U
+    K⁻¹⊣K = Comparison-EM⁻¹⊣Comparison-EM F⊣U has-coeq
 
     module adj = _⊣_ K⁻¹⊣K
 ```
@@ -160,7 +161,7 @@ It follows, since $U$ preserves coequalisers, that both rows of the diagram
 ~~~{.quiver}
 \[\begin{tikzcd}
   {T^2o} & UFo & o \\
-  {T^2o} & UFo & {UK^{-1}(o)}
+  {T^2o} & UFo & {UK\inv(o)}
   \arrow[shift left=1, from=1-1, to=1-2]
   \arrow[shift right=1, from=1-1, to=1-2]
   \arrow[shift left=1, from=2-1, to=2-2]
@@ -169,18 +170,18 @@ It follows, since $U$ preserves coequalisers, that both rows of the diagram
   \arrow[Rightarrow, from=1-2, to=2-2]
   \arrow["e", from=1-2, to=1-3]
   \arrow["Ue"', from=2-2, to=2-3]
-  \arrow["{\eta_o^{-1}}", dashed, from=1-3, to=2-3]
+  \arrow["{\eta_o\inv}", dashed, from=1-3, to=2-3]
 \end{tikzcd}\]
 ~~~
 
-are coequalisers, hence there is a unique isomorphism $\eta_o^{-1}$
+are coequalisers, hence there is a unique isomorphism $\eta_o\inv$
 making the diagram commute. This is precisely the inverse to $\eta_o$
 we're seeking.
 
 ```agda
     η⁻¹ : C.Hom (U.₀ (coapex (has-coeq o))) (o .fst)
-    η⁻¹η : adj.unit.η _ .morphism C.∘ η⁻¹ ≡ C.id
-    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .morphism ≡ C.id
+    η⁻¹η : adj.unit.η _ .hom C.∘ η⁻¹ ≡ C.id
+    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .hom ≡ C.id
 
     η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
 
@@ -196,14 +197,14 @@ we're seeking.
     ηη⁻¹ = C.pulll (preserved .factors) ∙ o .snd .ν-unit
 ```
 
-It remains to show that $\eta^{-1}$ is a homomorphism of algebras. This
-is a calculation reusing the established proof that $\eta^{-1}\eta =
+It remains to show that $\eta\inv$ is a homomorphism of algebras. This
+is a calculation reusing the established proof that $\eta\inv\eta =
 \id$ established using the universal property of coequalisers above.
 
 ```agda
     inverse : C^T.Hom (U.₀ _ , _) o
-    inverse .morphism = η⁻¹
-    inverse .commutes =
+    inverse .hom = η⁻¹
+    inverse .preserves =
       η⁻¹ C.∘ U.₁ (counit.ε _)                                                              ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.intror (F.annihilate (C.assoc _ _ _ ∙ η⁻¹η))) ⟩
       η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coeq)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
       η⁻¹ C.∘ U.₁ (has-coeq o .coeq D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩
@@ -213,34 +214,34 @@ is a calculation reusing the established proof that $\eta^{-1}\eta =
 ```
 
 For (3), suppose additionally that $U$ is conservative. Recall that the
-counit $\epsilon$ for the $K^{-1} \dashv K$ adjunction is defined as the
+counit $\epsilon$ for the $K\inv \dashv K$ adjunction is defined as the
 unique dotted map which fits into
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  FUFUA & FUA & {K^{-1}KA} \\
+  FUFUA & FUA & {K\inv KA} \\
   && {A.}
   \arrow[two heads, from=1-2, to=1-3]
-  \arrow["{\varepsilon'_{FUA}}"', shift right=1, from=1-1, to=1-2]
-  \arrow["{\varepsilon'}"', from=1-2, to=2-3]
+  \arrow["{\eps'_{FUA}}"', shift right=1, from=1-1, to=1-2]
+  \arrow["{\eps'}"', from=1-2, to=2-3]
   \arrow["\epsilon", from=1-3, to=2-3]
-  \arrow["{FU\varepsilon_A'}", shift left=1, from=1-1, to=1-2]
+  \arrow["{FU\eps_A'}", shift left=1, from=1-1, to=1-2]
 \end{tikzcd}\]
 ~~~
 
 But observe that the diagram
 
-~~~{.quiver .short-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   UFUFUA && UFUA & {UA,}
   \arrow[two heads, from=1-3, to=1-4]
-  \arrow["{U\varepsilon'_{FUA}}"', shift right=1, from=1-1, to=1-3]
-  \arrow["{UFU\varepsilon_A'}", shift left=1, from=1-1, to=1-3]
+  \arrow["{U\eps'_{FUA}}"', shift right=1, from=1-1, to=1-3]
+  \arrow["{UFU\eps_A'}", shift left=1, from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
 
 is _also_ a coequaliser; Hence, since $U$ preserves the coequaliser $FUA
-\epi K^{-1}KA$, the map $U\eps : UK^{-1}KA \cong UA$; But by assumption
+\epi K\inv KA$, the map $U\eps : UK\inv KA \cong UA$; But by assumption
 $U$ is conservative, so $\eps$ is an isomorphism, as desired.
 
 ```agda
@@ -252,7 +253,7 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
       inversel
     where
 
-    oalg = Comparison F⊣U .F₀ o
+    oalg = Comparison-EM F⊣U .F₀ o
     coequ = has-coeq oalg
 
     abstract
@@ -279,15 +280,15 @@ reflexive coequalisers, then the adjunction $F \dashv U$ is monadic.
 
 ```agda
 crude-monadicity
-  : (has-coeq : (M : Algebra C T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
+  : (has-coeq : (M : Algebra T) → Coequaliser D (F.₁ (M .snd .ν)) (counit.ε _))
     (U-pres : U-preserves-reflexive-coeqs)
     (U-conservative : is-conservative U)
   → is-monadic F⊣U
 crude-monadicity coeq pres cons = eqv' where
   open is-equivalence
-  eqv : is-equivalence (Comparison⁻¹ F⊣U coeq)
-  eqv .F⁻¹          = Comparison F⊣U
-  eqv .F⊣F⁻¹        = Comparison⁻¹⊣Comparison F⊣U coeq
+  eqv : is-equivalence (Comparison-EM⁻¹ F⊣U coeq)
+  eqv .F⁻¹          = Comparison-EM F⊣U
+  eqv .F⊣F⁻¹        = Comparison-EM⁻¹⊣Comparison-EM F⊣U coeq
   eqv .unit-iso _   = prcoeq→unit-is-iso coeq pres
   eqv .counit-iso _ = conservative-prcoeq→counit-is-iso coeq pres cons
   eqv' = inverse-equivalence eqv

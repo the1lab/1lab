@@ -10,6 +10,7 @@ open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Functor.Coherence
+open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
@@ -102,7 +103,7 @@ preserved by *all* functors.
 module _
   {o o' ℓ ℓ'}
   {J : Precategory o' ℓ'} {C : Precategory o ℓ}
-  {Dia : Functor J C} {x : Precategory.Ob C}
+  {Dia : Functor J C} {x : ⌞ C ⌟}
   where
 
   private
@@ -174,8 +175,8 @@ To finish the construction, we take our diagram in $\cC$ and
 post-compose with $G$ to obtain a diagram
 
 $$
-F \swarrow c' \to \cC \xto{G} \cD\text{.}
-$$
+F \swarrow c' \to \cC \xto{G} \cD
+$$.
 
 Since $F \swarrow c'$ is put together out of objects in $\cC$ and
 morphisms in $\cC'$, it is also a $\kappa$-small category, so these
@@ -183,7 +184,7 @@ diagrams all have colimits in $\cD$.
 
 ```agda
     ↓Dia : (c' : C'.Ob) → Functor (F ↘ c') D
-    ↓Dia c' = G F∘ Dom F (Const c')
+    ↓Dia c' = G F∘ Dom F (!Const c')
 ```
 
 In fact, we can weaken the precondition from cocompleteness of $\cD$ to
@@ -244,7 +245,7 @@ what we wanted: a map $G(c) \to F'(F(c))$.
 
 ```agda
       eta .is-natural x y f =
-        ↓colim.commutes (F₀ F y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
+        ↓colim.commutes (F .F₀ y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
         ∙ sym (↓colim.factors _ _ _)
 ```
 
@@ -274,15 +275,15 @@ Finally, commutativity and uniqueness follow from the corresponding
 properties of colimits.
 
 ```agda
-      has-lan .σ-comm {M = M} = Nat-path λ c →
+      has-lan .σ-comm {M = M} = ext λ c →
         ↓colim.factors _ _ _ ∙ D.eliml (M .F-id)
-      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = Nat-path λ c' →
-        sym $ ↓colim.unique _ _ _ _ λ j →
-          σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
-          (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
-          (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
-          M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
-          M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
+      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ c' → sym $
+        ↓colim.unique _ _ _ _ λ j →
+        σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
+        (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
+        (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
+        M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
+        M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
 ```
 
 All that remains is to bundle up the data!
@@ -349,12 +350,12 @@ end up being off by a bunch of natural isomorphisms.
       open make-natural-iso
       open Func
 
-      ↓colim : (c' : C'.Ob) → Colimit (G F∘ Dom F (Const c'))
-      ↓colim c' = colimits (G F∘ Dom F (Const c'))
+      ↓colim : (c' : C'.Ob) → Colimit (G F∘ Dom F (!Const c'))
+      ↓colim c' = colimits (G F∘ Dom F (!Const c'))
 
       module ↓colim c' = Colimit (↓colim c')
 
-      H-↓colim : (c' : C'.Ob) → Colimit ((H F∘ G) F∘ Dom F (Const c'))
+      H-↓colim : (c' : C'.Ob) → Colimit ((H F∘ G) F∘ Dom F (!Const c'))
       H-↓colim c' =
         natural-iso→colimit ni-assoc $
         preserves-colimit.colimit cocont (↓colim c')
@@ -371,7 +372,7 @@ up not being very interesting.
 
 ```agda
       F' : Functor C' D
-      F' = comma-colimits→lan.F' F G λ c' → colimits (G F∘ Dom F (Const c'))
+      F' = comma-colimits→lan.F' F G λ c' → colimits (G F∘ Dom F (!Const c'))
 
       HF' : Functor C' E
       HF' = comma-colimits→lan.F' F (H F∘ G) H-↓colim
@@ -392,12 +393,12 @@ up not being very interesting.
 
       abstract
         fixup : (HF'-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
-        fixup = Nat-path λ j →
-          (H .F₁ (↓colim.universal _ _ _)  E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
-          H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                        ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
-          H .F₁ (↓colim.ψ _ _) E.∘ E.id                                            ≡⟨ E.idr _ ⟩
-          H .F₁ (↓colim.ψ _ (↓obj ⌜ C'.id C'.∘ C'.id ⌝))                           ≡⟨ ap! (C'.idl _) ⟩
-          H .F₁ (↓colim.ψ _ (↓obj (C'.id)))                                        ∎
+        fixup = ext λ j →
+          (H .F₁ (↓colim.universal _ _ _) E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
+          H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                       ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
+          H .F₁ (↓colim.ψ _ _) E.∘ E.id                                           ≡⟨ E.idr _ ⟩
+          H .F₁ (↓colim.ψ _ (↓obj ⌜ C'.id C'.∘ C'.id ⌝))                          ≡⟨ ap! (C'.idl _) ⟩
+          H .F₁ (↓colim.ψ _ (↓obj (C'.id)))                                       ∎
 ```
 </details>
 
@@ -454,7 +455,7 @@ module _
 We begin by constructing a cocone for every object $c' : \cC'$.
 
 ```agda
-  ↓cocone : ∀ (c' : C'.Ob) → F F∘ Dom p (const! c') => Const (L .F₀ c')
+  ↓cocone : ∀ (c' : C'.Ob) → F F∘ Dom p (!Const c') => Const (L .F₀ c')
   ↓cocone c' .η j = L .F₁ (j .map) D.∘ eta .η _
   ↓cocone c' .is-natural _ _ f =
     D.pullr (eta .is-natural _ _ _ )
@@ -470,7 +471,7 @@ we shall appeal to the fact that [colimits are representable].
 ```agda
   pointwise-lan→has-comma-colimits
     : ∀ (c' : C'.Ob)
-    → is-colimit (F F∘ Dom p (const! c')) (L .F₀ c') (↓cocone c')
+    → is-colimit (F F∘ Dom p (!Const c')) (L .F₀ c') (↓cocone c')
   pointwise-lan→has-comma-colimits c' =
     represents→is-colimit $
     [D,Sets].make-invertible inv invl invr
@@ -485,7 +486,7 @@ representability nonsense to get there.
 ```agda
       represent-↓cocone
         : ∀ (d : D.Ob)
-        → F F∘ Dom p (const! c') => Const d
+        → F F∘ Dom p (!Const c') => Const d
         → Functor.op (よ₀ D d) F∘ F => Functor.op (よ₀ C' c') F∘ p
       represent-↓cocone d α .η c f = α .η (↓obj f)
       represent-↓cocone d α .is-natural _ _ f = funext λ g →
@@ -494,7 +495,7 @@ representability nonsense to get there.
 
       pointwise-↓cocone
         : ∀ (d : D.Ob)
-        → (α : F F∘ Dom p (const! c') => Const d)
+        → (α : F F∘ Dom p (!Const c') => Const d)
         → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
       pointwise-↓cocone d α = pointwise.σ d (represent-↓cocone d α)
 ```
@@ -534,9 +535,9 @@ _pointwise_, and remember that we're working with a Kan extension.
         funext λ g → D.pullr (sym (L .F-∘ _ _))
 
       invr : inv ∘nt Hom-into-inj (↓cocone c') ≡ idnt
-      invr = Nat-path λ d → funext λ α →
-        pointwise.σ-uniq d {σ' = vaguely-yoneda α}
-          (ext λ c f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
+      invr = ext λ d α →
+        unext (pointwise.σ-uniq d {σ' = vaguely-yoneda α}
+          (ext λ c f → D.assoc _ _ _)) c' C'.id
         ∙ D.elimr (L .F-id)
 ```
 </details>
@@ -565,7 +566,7 @@ construct the requisite cocone.
            (λ j → D.idl _
                 ∙ ap₂ D._∘_ (ap (L .F₁) (sym (equiv→counit p-ff (j .map)))) refl))
          (pointwise.σ-comm _ ηₚ c $ₚ C'.id
-          ∙ elimr F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
+          ∙ elim F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
 ```
 
 <!--
@@ -574,7 +575,7 @@ construct the requisite cocone.
       module pointwise-colim c' = is-colimit (pointwise-lan→has-comma-colimits c')
 
       path
-        : {c : C.Ob} {x y : ↓Obj p (const! (p .F₀ c))} (f : ↓Hom p (const! (p .F₀ c)) x y)
+        : {c : C.Ob} {x y : ↓Obj p (!Const (p .F₀ c))} (f : ↓Hom p (!Const (p .F₀ c)) x y)
         → p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α) ≡ p .F₁ (equiv→inverse p-ff (x .map))
       path {c} {x} {y} f =
         p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α)          ≡⟨ p .F-∘ _ _ ⟩
@@ -588,7 +589,7 @@ construct the requisite cocone.
       inv c =
         pointwise-colim.universal (p .F₀ c)
           (λ j → F .F₁ (equiv→inverse p-ff (j .map)))
-          (λ {x} {y} f → collapse F (fully-faithful→faithful {F = p} p-ff (path f)))
+          (λ {x} {y} f → collapse F (ff→faithful {F = p} p-ff (path f)))
 
 module _
   {o o' ℓ ℓ'}
@@ -613,7 +614,7 @@ module _
     → is-fully-faithful F
     → cocomplete→lan F G cocompl .Ext F∘ F ≅ⁿ G
   ff→cocomplete-lan-ext cocompl ff = (to-natural-iso ni) ni⁻¹ where
-    open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (Const c')))
+    open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (!Const c')))
     open make-natural-iso renaming (eta to to)
     module ff {x} {y} = Equiv (_ , ff {x} {y})
 
@@ -621,7 +622,7 @@ module _
     ni .to x = ↓colim.ψ _ (↓obj C'.id)
     ni .inv x = ↓colim.universal _
       (λ j → G .F₁ (ff.from (j .map)))
-      (λ f → collapse G $ fully-faithful→faithful {F = F} ff $
+      (λ f → collapse G $ ff→faithful {F = F} ff $
            F .F-∘ _ _
         ·· ap₂ C'._∘_ (ff.ε _) refl
         ·· f .sq

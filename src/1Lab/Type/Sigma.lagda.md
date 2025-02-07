@@ -1,17 +1,18 @@
 <!--
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
+
 ```agda
 module 1Lab.Type.Sigma where
 ```
 
 <!--
-```
+```agda
 private variable
   ℓ ℓ₁ : Level
   A A' X X' Y Y' Z Z' : Type ℓ
@@ -259,6 +260,9 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 
+⟨_,_⟩ : (X → Y) → (X → Z) → X → Y × Z
+⟨ f , g ⟩ x = f x , g x
+
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
 
@@ -322,10 +326,11 @@ infixr 4 _,ₚ_
 
 <!--
 ```agda
-curry : ((X × Y) → Z) → X → Y → Z
-curry f a b = f (a , b)
+module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → Y x → Type ℓ''} where
+  curry : ((p : Σ X Y) → Z (p .fst) (p .snd)) → (x : X) → (y : Y x) → Z x y
+  curry f a b = f (a , b)
 
-uncurry : (X → Y → Z) → (X × Y) → Z
-uncurry f (a , b) = f a b
+  uncurry : ((x : X) → (y : Y x) → Z x y) → (p : Σ X Y) → Z (p .fst) (p .snd)
+  uncurry f (a , b) = f a b
 ```
 -->

@@ -6,7 +6,9 @@ open import Algebra.Group.Ab
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Equaliser
 open import Cat.Abelian.Base
+open import Cat.Diagram.Zero
 open import Cat.Prelude hiding (_-_ ; _+_)
 
 open import Data.Id.Base
@@ -42,18 +44,18 @@ an assumption we _have_ to map out of $\rm{eq}(f,g)$.  Similarly, to
 show that $f\ker(f-g) = g\ker(f-g)$, we calculate
 
 $$
-f\ker(f-g) - g\ker(f-g) = (f-g)\ker(f-g) = 0\text{.}
-$$
+f\ker(f-g) - g\ker(f-g) = (f-g)\ker(f-g) = 0
+$$.
 
 ```agda
 module _ (A : is-pre-abelian C) where
   open is-pre-abelian A
   difference-kernel
     : ∀ {A B} {f g : Hom A B}
-    → is-equaliser f g (Ker.kernel (f - g))
+    → is-equaliser C f g (Ker.kernel (f - g))
   difference-kernel {f = f} {g} = equ where
     open is-equaliser
-    equ : is-equaliser f g (Ker.kernel (f - g))
+    equ : is-equaliser C f g (Ker.kernel (f - g))
     equ .equal = zero-diff $
       (f ∘ Ker.kernel (f - g)) - (g ∘ Ker.kernel (f - g)) ≡⟨ ∘-minus-l f g (Ker.kernel (f - g)) ⟩
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
@@ -154,8 +156,8 @@ component _except_ for the one corresponding to their index in the sum.
 In the binary case, we're showing that
 
 $$
-(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \id\text{.}
-$$
+(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \id
+$$.
 
 ```agda
   split = ∑ₕ I λ j → ip.tuple λ i → δ j i A.∘ ip.π j

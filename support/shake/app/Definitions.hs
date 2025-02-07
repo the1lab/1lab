@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TypeFamilies #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving, DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
 {-# LANGUAGE ViewPatterns, BlockArguments, LambdaCase #-}
 module Definitions
   ( glossaryRules
@@ -29,6 +29,7 @@ import Data.Monoid ( Endo(..) )
 import Data.Binary ( Binary )
 import Data.List (intersperse, sortOn, groupBy)
 import Data.Text (Text)
+import Data.Char
 import Data.Ord (Down(..))
 
 import Development.Shake.FilePath
@@ -58,13 +59,12 @@ mangleLink = doit where
 
   wordChar '-' = True
   wordChar '[' = True
-  wordChar c = ('a' <= c && c <= 'z')
-            || ('0' <= c && c <= '9')
+  wordChar c = isAsciiLower c || isDigit c
 
 parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
 parseDefinitions anchor input = liftIO do
   Pandoc _meta markdown <- readLabMarkdown input
-  pure $ appEndo (query (definitionBlock anchor) markdown) (Glossary mempty)
+  pure $ appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
 
 data Definition = Definition
   { definitionModule :: FilePath
@@ -79,8 +79,8 @@ instance Eq Definition where
 instance Hashable Definition where
   hashWithSalt s = hashWithSalt s . definitionAnchor
 
-definitionBlock :: FilePath -> Block -> Endo Glossary
-definitionBlock fp = go where
+definitionBlock :: FilePath -> FilePath -> Block -> Endo Glossary
+definitionBlock inp fp = go where
   mod = dropExtension fp
   add id v = Endo $ addDefinition (mangleLink v) Definition
     { definitionModule = mod
@@ -97,7 +97,7 @@ definitionBlock fp = go where
   go (Header _ (id, _, keys) _inline) =
     foldMap (addMany id) (lookup "defines" keys)
 
-  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ fp
+  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ inp
 
   go _ = mempty
 
@@ -106,12 +106,14 @@ newtype Glossary = Glossary { getEntries :: Map Mangled Definition }
   deriving anyclass (Binary, NFData, Hashable)
 
 data GlossaryQ       = GlossaryQ deriving (Eq, Show, Generic, NFData, Binary, Hashable)
-data ModuleGlossaryQ = ModuleGlossaryQ FilePath deriving (Eq, Show, Generic, NFData, Binary, Hashable)
-data LinkTargetQ     = LinkTargetQ Text deriving (Eq, Show, Generic, NFData, Binary, Hashable)
+newtype ModuleGlossaryQ = ModuleGlossaryQ FilePath
+  deriving newtype (Eq, Show, NFData, Binary, Hashable)
+newtype LinkTargetQ     = LinkTargetQ Text
+  deriving newtype (Eq, Show, NFData, Binary, Hashable)
 
 type instance RuleResult GlossaryQ       = Glossary
 type instance RuleResult ModuleGlossaryQ = Glossary
-type instance RuleResult LinkTargetQ     = Text
+type instance RuleResult LinkTargetQ     = (Text, Text)
 
 addDefinition :: Mangled -> Definition -> Glossary -> Glossary
 addDefinition _ Definition{definitionCopy = True} ge = ge
@@ -152,7 +154,7 @@ glossaryRules = do
   _ <- addOracle \(LinkTargetQ target) -> do
     glo <- getEntries <$> askOracle GlossaryQ
     case Map.lookup (mangleLink target) glo of
-      Just def -> pure $ definitionTarget def
+      Just def -> pure (definitionAnchor def, definitionTarget def)
       Nothing  -> error $
         "Unknown wiki-link target: " ++ Text.unpack target
 
@@ -201,10 +203,10 @@ isWikiLink (Link attr contents (url, title))
   | "wikilink" == title = pure $ WikiLink url contents attr
 isWikiLink _ = Nothing
 
-getWikiLinkUrl :: Text -> Action Text
+getWikiLinkUrl :: Text -> Action (Text, Text)
 getWikiLinkUrl = askOracle . LinkTargetQ
 
 getWikiLink :: WikiLink -> Action Inline
-getWikiLink (WikiLink dest contents attr) = do
-  url <- getWikiLinkUrl dest
-  pure $ Link attr contents (url, "")
+getWikiLink (WikiLink dest contents (id, cls, kv)) = do
+  (anchor, url) <- getWikiLinkUrl dest
+  pure $ Link (id, cls, ("data-target", anchor):kv) contents (url, "")

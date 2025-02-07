@@ -2,9 +2,15 @@
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Sets.Complete
+open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Pushout
 open import Cat.Prelude
+
+open import Data.Sum
 ```
 -->
 
@@ -95,7 +101,7 @@ Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) wh
   open make-is-colimit
 
   sum : Type _
-  sum = Σ[ d ∈ D.Ob ] ∣ F.₀ d ∣
+  sum = Σ[ d ∈ D ] F ʻ d
 
   rel : sum → sum → Type _
   rel (X , x) (Y , y) = Σ[ f ∈ D.Hom X Y ] (F.₁ f x ≡ y)
@@ -115,25 +121,115 @@ definition.
 
 ```agda
   univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
-       → (eps : ∀ j → ∣ F.F₀ j ∣ → ∣ A ∣)
-       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eps y (F.F₁ f Fx) ≡ eps x Fx)
+       → (eta : ∀ j → F ʻ j → ∣ A ∣)
+       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eta y (F.F₁ f Fx) ≡ eta x Fx)
        → sum / rel
        → ∣ A ∣
-  univ {A} eps p =
-    Coeq-rec (A .is-tr)
-      (λ { (x , p) → eps x p })
-      (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eps _) q})
+  univ {A} eta p =
+    Coeq-rec
+      (λ { (x , p) → eta x p })
+      (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eta _) q})
 
   colim : make-is-colimit F (el! (sum / rel))
   colim .ψ x p = inc (x , p)
   colim .commutes f = funext λ _ → sym (quot (f , refl))
-  colim .universal {A} eps p x = univ {A} eps (λ f → happly (p f)) x
-  colim .factors eps p = refl
-  colim .unique {A} eps p other q = funext λ x →
+  colim .universal {A} eta p x = univ {A} eta (λ f → happly (p f)) x
+  colim .factors eta p = refl
+  colim .unique {A} eta p other q = funext λ x →
     Coeq-elim-prop
-      (λ x →  A .is-tr (other x) (univ {A} eps (λ f → happly (p f)) x))
+      (λ x →  A .is-tr (other x) (univ {A} eta (λ f → happly (p f)) x))
       (λ x → happly (q (x .fst)) (x .snd))
       x
+```
+
+## Finite set-colimits
+
+<!--
+```agda
+module _ {ℓ} where
+  open Precategory (Sets ℓ)
+
+  private variable
+    A B : Set ℓ
+    f g : ⌞ A ⌟ → ⌞ B ⌟
+
+  open Initial
+  open is-coproduct
+  open Coproduct
+  open is-pushout
+  open Pushout
+  open is-coequaliser
+  open Coequaliser
+```
+-->
+
+For expository reasons, we present the computation of the most famous
+shapes of [[finite colimit]] ([[initial objects]], [[coproducts]], [[pushouts]],
+and [[coequalisers]]) in the category of sets. All the definitions below
+are redundant, since finite colimits are always small, and thus the
+category of sets of _any_ level $\ell$ admits them.
+
+```agda
+  Sets-initial : Initial (Sets ℓ)
+  Sets-initial .bot = el! (Lift _ ⊥)
+  Sets-initial .has⊥ _ .centre ()
+  Sets-initial .has⊥ _ .paths _ = ext λ ()
+```
+
+Coproducts are given by disjoint sums:
+
+```agda
+  Sets-coproducts : (A B : Set ℓ) → Coproduct (Sets ℓ) A B
+  Sets-coproducts A B .coapex = el! (∣ A ∣ ⊎ ∣ B ∣)
+  Sets-coproducts A B .ι₁ = inl
+  Sets-coproducts A B .ι₂ = inr
+  Sets-coproducts A B .has-is-coproduct .is-coproduct.[_,_] f g = Data.Sum.[ f , g ]
+  Sets-coproducts A B .has-is-coproduct .[]∘ι₁ = refl
+  Sets-coproducts A B .has-is-coproduct .[]∘ι₂ = refl
+  Sets-coproducts A B .has-is-coproduct .unique p q = sym ([]-unique (sym p) (sym q))
+```
+
+[[Set coequalisers]] are described in their own module.
+
+```agda
+  Sets-coequalisers : (f g : Hom A B) → Coequaliser (Sets ℓ) {A = A} {B = B} f g
+  Sets-coequalisers f g .coapex .∣_∣ = Coeq f g
+  Sets-coequalisers f g .coapex .is-tr = hlevel 2
+  Sets-coequalisers f g .coeq = inc
+  Sets-coequalisers f g .has-is-coeq .coequal = ext λ x → glue _
+  Sets-coequalisers f g .has-is-coeq .universal {e' = e'} p = Coeq-rec e' (unext p)
+  Sets-coequalisers f g .has-is-coeq .factors = refl
+  Sets-coequalisers f g .has-is-coeq .unique q = reext! q
+```
+
+Pushouts are similar to coequalisers, but gluing together points of $A + B$.
+
+```agda
+  Sets-pushouts : ∀ {A B C} (f : Hom C A) (g : Hom C B)
+                → Pushout (Sets ℓ) {X = C} {Y = A} {Z = B} f g
+  Sets-pushouts f g .coapex .∣_∣   = Coeq (inl ⊙ f) (inr ⊙ g)
+  Sets-pushouts f g .coapex .is-tr = hlevel 2
+  Sets-pushouts f g .i₁ a = inc (inl a)
+  Sets-pushouts f g .i₂ b = inc (inr b)
+  Sets-pushouts f g .has-is-po .square = ext λ x → glue _
+  Sets-pushouts f g .has-is-po .universal {i₁' = i₁'} {i₂'} p =
+    Coeq-rec Data.Sum.[ i₁' , i₂' ] (unext p)
+  Sets-pushouts f g .has-is-po .universal∘i₁ = refl
+  Sets-pushouts f g .has-is-po .universal∘i₂ = refl
+  Sets-pushouts f g .has-is-po .unique q r =
+    ext (Equiv.from ⊎-universal (unext q , unext r))
+```
+
+Hence, `Sets`{.Agda} is finitely cocomplete:
+
+```agda
+  open Finitely-cocomplete
+
+  Sets-finitely-cocomplete : Finitely-cocomplete (Sets ℓ)
+  Sets-finitely-cocomplete .initial = Sets-initial
+  Sets-finitely-cocomplete .coproducts = Sets-coproducts
+  Sets-finitely-cocomplete .coequalisers = Sets-coequalisers
+  Sets-finitely-cocomplete .pushouts = Sets-pushouts
 ```
 
 # Coproducts are disjoint
@@ -163,7 +259,7 @@ F_j$.
 
 ```agda
     coprod : is-disjoint-coproduct _ _ _
-    coprod .is-coproduct = coprod.has-is-ic
+    coprod .has-is-ic = coprod.has-is-ic
     coprod .summands-intersect i j = Sets-pullbacks _ _
 ```
 
@@ -173,16 +269,16 @@ we can get it out from under the truncation in the definition of
 coproduct.
 
 ```agda
-    coprod .injections-are-monic _ g h path = funext go where abstract
-      path' : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
-      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
+    coprod .injections-are-monic ix g h path = funext go where abstract
+      path' : Path (∀ c → Σ[ i ∈ I ] (F ʻ i)) (λ c → _ , g c) (λ c → _ , h c)
+      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel 2)
         (λ x → x) (path i c)
 
       q : ∀ {c} → ap fst (happly path' c) ≡ refl
       q = I .is-tr _ _ _ _
 
       go : ∀ c → g c ≡ h c
-      go c = subst (λ e → PathP (λ i → ∣ F (e i) ∣) (g c) (h c)) q
+      go c = subst (λ e → PathP (λ i → F ʻ e i) (g c) (h c)) q
         (ap snd (happly path' c))
 ```
 
@@ -193,20 +289,10 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 
 ```agda
     coprod .different-images-are-disjoint i j i≠j os = contr map uniq where
-      map : Σ[ i ∈ ∣ F i ∣ ] Σ _ (λ x → _) → ∣ os ∣
+      map : Σ[ x ∈ F i ] Σ[ y ∈ F j ] (coprod.ι i x ≡ coprod.ι j y) → ∣ os ∣
       map (i , j , p) = absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 
       uniq : ∀ x → map ≡ x
       uniq _ = funext λ where
         (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```
-<!--
-```agda
-Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
-Sets-initial .Initial.bot = el! (Lift _ ⊥)
-Sets-initial .Initial.has⊥ x .centre () 
-Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
-
-```
-
--->

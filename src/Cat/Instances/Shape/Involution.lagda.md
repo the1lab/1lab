@@ -24,7 +24,7 @@ composition operation.
 ∙⤮∙ : Precategory lzero lzero
 ∙⤮∙ .Precategory.Ob = ⊤
 ∙⤮∙ .Precategory.Hom _ _ = Bool
-∙⤮∙ .Precategory.Hom-set _ _ = Bool-is-set
+∙⤮∙ .Precategory.Hom-set _ _ = hlevel 2
 ∙⤮∙ .Precategory.id = false
 ∙⤮∙ .Precategory._∘_ = xor
 ∙⤮∙ .Precategory.idr f = xor-falser f
@@ -49,11 +49,7 @@ Bool≃∙⤮∙-isos =
     Iso→Bool i = i .to
 
     right-inv : is-right-inverse Iso→Bool Bool→Iso
-    right-inv f =
-      Bool-elim (λ b → b ≡ f .to → Bool→Iso b ≡ f)
-        (≅-pathp refl refl)
-        (≅-pathp refl refl)
-        (f .to) refl
+    right-inv f = Bool-elim (λ b → b ≡ f .to → Bool→Iso b ≡ f) ext ext (f .to) refl
 
     left-inv : is-left-inverse Iso→Bool Bool→Iso
     left-inv true = refl
@@ -86,5 +82,5 @@ walking involution would mean that there are two paths $\tt{tt} \equiv
   Bool≃Ob-path = Bool≃∙⤮∙-isos ∙e identity-system-gives-path is-cat
 
   Bool-is-prop : is-prop Bool
-  Bool-is-prop = is-hlevel≃ 1 Bool≃Ob-path hlevel!
+  Bool-is-prop = Equiv→is-hlevel 1 Bool≃Ob-path (hlevel 1)
 ```

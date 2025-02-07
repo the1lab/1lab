@@ -5,7 +5,6 @@ description: |
 ---
 <!--
 ```agda
-{-# OPTIONS --type-in-type #-}
 open import 1Lab.Path
 open import 1Lab.Type
 ```
@@ -20,12 +19,14 @@ module 1Lab.Counterexamples.Russell where
 This page reproduces [Russell's paradox] from naïve set theory using an
 inductive type of `Type`{.Agda}-indexed trees. By default, Agda places
 the type `Type₀` in `Type₁`, meaning the definition of `V`{.Agda} below
-would not be accepted. The `--type-in-type` flag disables this check,
-meaning the definition goes through.
+would not be accepted. Since we're defining a data type, Agda allows us
+to attach the `NO_UNIVERSE_CHECK` pragma, which disables this checking
+*for the definition of `V`*.
 
 [Russell's paradox]: https://en.wikipedia.org/wiki/Russell%27s_paradox
 
 ```agda
+{-# NO_UNIVERSE_CHECK #-}
 data V : Type where
   set : (A : Type) → (A → V) → V
 ```

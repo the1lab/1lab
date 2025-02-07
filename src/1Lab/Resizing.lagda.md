@@ -1,13 +1,17 @@
 <!--
 ```agda
+open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.Extensionality
 open import 1Lab.HIT.Truncation
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
+open import 1Lab.Inductive
 open import 1Lab.HLevel
+open import 1Lab.Biimp
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -89,13 +93,15 @@ instance
 ```
 -->
 
-We can also prove a univalence principle for `Ω`{.Agda}:
+We can also prove a univalence principle for `Ω`{.Agda}: if
+$A, B : \Omega$ are [[logically equivalent|logical-equivalence]],
+then they are equal.
 
 ```agda
-Ω-ua : {A B : Ω} → (∣ A ∣ → ∣ B ∣) → (∣ B ∣ → ∣ A ∣) → A ≡ B
-Ω-ua {A} {B} f g i .∣_∣ = ua (prop-ext! f g) i
-Ω-ua {A} {B} f g i .is-tr =
-  is-prop→pathp (λ i → is-prop-is-prop {A = ua (prop-ext! f g) i})
+Ω-ua : {A B : Ω} → ∣ A ∣ ↔ ∣ B ∣ → A ≡ B
+Ω-ua {A} {B} f i .∣_∣ = ua (prop-ext! (Biimp.to f) (Biimp.from f)) i
+Ω-ua {A} {B} f i .is-tr =
+  is-prop→pathp (λ i → is-prop-is-prop {A = ua (prop-ext! (Biimp.to f) (Biimp.from f)) i})
     (A .is-tr) (B .is-tr) i
 
 instance abstract
@@ -103,9 +109,19 @@ instance abstract
   H-Level-Ω = basic-instance 2 $ retract→is-hlevel 2
     (λ r → el ∣ r ∣ (r .is-tr))
     (λ r → el ∣ r ∣ (r .is-tr))
-    (λ x → Ω-ua (λ x → x) λ x → x)
+    (λ x → Ω-ua id↔)
     (n-Type-is-hlevel {lzero} 1)
 ```
+
+<!--
+```agda
+instance
+  Extensionality-Ω : Extensional Ω lzero
+  Extensionality-Ω .Pathᵉ A B = ∣ A ∣ ↔ ∣ B ∣
+  Extensionality-Ω .reflᵉ A = id↔
+  Extensionality-Ω .idsᵉ = set-identity-system (λ _ _ → hlevel 1) Ω-ua
+```
+-->
 
 The `□`{.Agda} type former is a functor (in the handwavy sense that it
 supports a "map" operation), and can be projected from into propositions
@@ -117,21 +133,12 @@ of any universe. These functions compute on `inc`{.Agda}s, as usual.
 □-map f (inc x) = inc (f x)
 □-map f (squash x y i) = squash (□-map f x) (□-map f y) i
 
-□-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-  → {@(tactic hlevel-tactic-worker) pa : is-prop B}
-  → (A → B) → □ A → B
-□-rec! {pa = pa} f (inc x) = f x
-□-rec! {pa = pa} f (squash x y i) =
-  pa (□-rec! {pa = pa} f x) (□-rec! {pa = pa} f y) i
-
-out! : ∀ {ℓ} {A : Type ℓ}
-     → {@(tactic hlevel-tactic-worker) pa : is-prop A}
-     → □ A → A
-out! {pa = pa} = □-rec! {pa = pa} (λ x → x)
+□-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-prop B → (A → B) → □ A → B
+□-rec bp f (inc x)        = f x
+□-rec bp f (squash x y i) = bp (□-rec bp f x) (□-rec bp f y) i
 
 elΩ : ∀ {ℓ} (T : Type ℓ) → Ω
-∣ elΩ T ∣ = □ T
+elΩ T .∣_∣ = □ T
 elΩ T .is-tr = squash
 ```
 
@@ -146,20 +153,39 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
+instance
+  Inductive-□
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {P : □ A → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-□ ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → □-elim (λ x → hlevel 1) (i .Inductive.from f)
+    }
+
+□-out : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A → A
+□-out ap = □-rec ap (λ x → x)
+
+□-out!
+  : ∀ {ℓ} {A : Type ℓ}
+  → ⦃ _ : H-Level A 1 ⦄
+  → □ A → A
+□-out! = rec! λ x → x
+
 □-rec-set
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → is-set B
   → (f : A → B)
   → (∀ x y → f x ≡ f y)
-  → is-set B
   → □ A → B
-□-rec-set f f-const B-set a =
+□-rec-set B-set f f-const a =
   fst $ □-elim
     (λ _ → is-constant→image-is-prop B-set f f-const)
     (λ a → f a , inc (a , refl))
     a
 
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
-□-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
+□-idempotent aprop = prop-ext squash aprop (□-out aprop) inc
 
 □-ap
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -189,14 +215,14 @@ is-set→locally-small
   : ∀ {ℓ} {A : Type ℓ}
   → is-set A
   → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
-is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
+is-set→locally-small a-set .to-path = □-rec (a-set _ _) id
 is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
 
 to-is-true
   : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
   → ∣ P ∣
   → P ≡ Q
-to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+to-is-true prf = Ω-ua (biimp (λ _ → hlevel 0 .centre) λ _ → prf)
 
 tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
 tr-□ (inc x) = inc x
@@ -211,36 +237,40 @@ tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
 ## Connectives
 
 The universe of small propositions contains true, false, conjunctions,
-disjunctions, and implications.
+disjunctions, and (bi)implications.
 
 <!--
 ```agda
-infixr 6 _∧Ω_
-infixr 5 _∨Ω_
-infixr 4 _→Ω_
+infixr 10 _∧Ω_
+infixr 9 _∨Ω_
+infixr 8 _→Ω_
 ```
 -->
 
 ```agda
 ⊤Ω : Ω
 ∣ ⊤Ω ∣ = ⊤
-⊤Ω .is-tr = hlevel!
+⊤Ω .is-tr = hlevel 1
 
 ⊥Ω : Ω
 ∣ ⊥Ω ∣ = ⊥
-⊥Ω .is-tr = hlevel!
+⊥Ω .is-tr = hlevel 1
 
 _∧Ω_ : Ω → Ω → Ω
 ∣ P ∧Ω Q ∣ = ∣ P ∣ × ∣ Q ∣
-(P ∧Ω Q) .is-tr = hlevel!
+(P ∧Ω Q) .is-tr = hlevel 1
 
 _∨Ω_ : Ω → Ω → Ω
 ∣ P ∨Ω Q ∣ = ∥ ∣ P ∣ ⊎ ∣ Q ∣ ∥
-(P ∨Ω Q) .is-tr = hlevel!
+(P ∨Ω Q) .is-tr = hlevel 1
 
 _→Ω_ : Ω → Ω → Ω
 ∣ P →Ω Q ∣ = ∣ P ∣ → ∣ Q ∣
-(P →Ω Q) .is-tr = hlevel!
+(P →Ω Q) .is-tr = hlevel 1
+
+_↔Ω_ : Ω → Ω → Ω
+∣ P ↔Ω Q ∣ = ∣ P ∣ ↔ ∣ Q ∣
+(P ↔Ω Q) .is-tr = hlevel 1
 
 ¬Ω_ : Ω → Ω
 ¬Ω P = P →Ω ⊥Ω
@@ -262,7 +292,32 @@ syntax ∃Ω A (λ x → B) = ∃Ω[ x ∈ A ] B
 syntax ∀Ω A (λ x → B) = ∀Ω[ x ∈ A ] B
 ```
 
+<!--
+```agda
+instance
+  Extensional-Σ-□
+    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+    → ⦃ ea : Extensional A ℓr ⦄ → Extensional (Σ A λ x → □ (B x)) ℓr
+  Extensional-Σ-□ ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+```
+-->
+
 These connectives and quantifiers are only provided for completeness;
 if you find yourself building nested propositions, it is generally a good
 idea to construct the large proposition by hand, and then use truncation
 to turn it into a small proposition.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) where
+  Ω-image : Type ℓ'
+  Ω-image = Σ[ b ∈ B ] □ (fibre f b)
+
+  Ω-corestriction : A → Ω-image
+  Ω-corestriction a = f a , inc (a , refl)
+
+  opaque
+    Ω-corestriction-is-surjective : is-surjective Ω-corestriction
+    Ω-corestriction-is-surjective = elim! λ y x fx=y → pure (x , Σ-prop-path! fx=y)
+```
+-->

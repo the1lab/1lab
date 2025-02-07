@@ -86,7 +86,7 @@ handles weakening.
 ```
 
 <!--
-```
+```agda
 infixl 2 _*X+_
 
 private variable
@@ -169,8 +169,9 @@ We also define the identity monomials $X_i \in A[X_0]\cdots[X_n]$.
 
 ```agda
 X[_] : Fin n → Poly Nat n
-X[_] fzero    = 1ₚ *X+ 0ₚ
-X[_] (fsuc i) = 0ₚ *X+ X[ i ]
+X[ i ] with fin-view i
+... | zero  = 1ₚ *X+ 0ₚ
+... | suc i = 0ₚ *X+ X[ i ]
 ```
 
 Now, onto addition of polynomials. This is more or less what one would
@@ -269,12 +270,13 @@ monomial $X_i$.
 
 ```agda
 sound-X[_] : ∀ i → (env : Vec Nat n) → ⟦ X[ i ] ⟧ₚ env ≡ lookup env i
-sound-X[ fzero ] (x₀ ∷ env) =
+sound-X[ i ] _ with fin-view i
+sound-X[ .fzero ] (x₀ ∷ env) | zero =
   ⟦ constₚ 1 ⟧ₚ env * x₀ + ⟦ 0ₚ ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-constₚ 1 env) (sound-0ₚ env) ⟩
   1 * x₀ + 0                           ≡⟨ +-zeror (1 * x₀) ⟩
   1 * x₀                               ≡⟨ *-onel x₀ ⟩
   x₀ ∎
-sound-X[ fsuc i ] (_ ∷ env) = sound-X[ i ] env
+sound-X[ .(fsuc i) ] (_ ∷ env) | suc i = sound-X[ i ] env
 ```
 
 Now, for something more involved: let's show that addition of
@@ -504,9 +506,9 @@ private
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ (lit (nat n)) v∷ _)
   pattern “zero” =
-    con (quote zero) []
+    con (quote Nat.zero) []
   pattern “suc” x =
-    con (quote suc) (x v∷ [])
+    con (quote Nat.suc) (x v∷ [])
   pattern _“+”_ x y =
     def (quote _+_) (x v∷ y v∷ _)
   pattern _“*”_ x y =

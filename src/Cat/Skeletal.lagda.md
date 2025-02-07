@@ -15,7 +15,7 @@ open Precategory using (Ob)
 module Cat.Skeletal where
 ```
 
-# Skeletal precategories
+# Skeletal precategories {defines="skeletal"}
 
 A precategory $\cC$ is **skeletal** if objects having _the property of
 being isomorphic_ are identical. The clunky rephrasing is proposital: if
@@ -25,8 +25,8 @@ is distinct. Instead, skeletality is defined as (equivalent to) the
 existence of a map
 
 $$
-\| a \cong b \| \to a \equiv b\text{,}
-$$
+\| a \cong b \| \to a \equiv b
+$$,
 
 which we can more concisely summarise as "$(\| - \cong - \|, \| \id \|)$
 is an [[identity system]]".

@@ -7,9 +7,8 @@ description: |
 ---
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import 1Lab.Reflection.Marker
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
@@ -24,7 +23,7 @@ open import 1Lab.Type
 module 1Lab.Equiv.HalfAdjoint where
 ```
 
-# Adjoint equivalences
+# Adjoint equivalences {defines="half-adjoint-equivalence"}
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
@@ -33,7 +32,7 @@ functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
 equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
-[isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
+[isomorphism]: 1Lab.Equiv.html#improving-isomorphisms
 [homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
@@ -80,7 +79,7 @@ Drawn as a diagram, the path above factors like:
   {f(g(y))} && y \\
   {f(g(f(g(y))))} && {f(g(y))}
   \arrow["{\rm{sym}\ (\varepsilon(f(g(y))))}"', from=1-1, to=2-1]
-  \arrow["{\ap f\ (\eta(g(y)))}"', from=2-1, to=2-3]
+  \arrow["{\ap{f}{(\eta(g(y)))}}"', from=2-1, to=2-3]
   \arrow["{\varepsilon \ y}"', from=2-3, to=1-3]
   \arrow["{\varepsilon'\ y}", dashed, from=1-1, to=1-3]
 \end{tikzcd}\]
@@ -183,7 +182,7 @@ another $(x, p)$ using a very boring calculation:
 The calculation of `path`{.Agda} factors as a bunch of boring
 adjustments to paths using the groupoid structure of types, and the two
 interesting steps above: The triangle identity says that
-$\ap(f)(\eta x) = \varepsilon(f x)$, and naturality of
+$\ap{f}{(\eta x)} = \varepsilon(f x)$, and naturality of
 $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda

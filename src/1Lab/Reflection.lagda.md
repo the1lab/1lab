@@ -96,8 +96,8 @@ private module P where
 
   -- White/blacklist specific definitions for reduction while executing the TC computation
   -- 'true' for whitelist, 'false' for blacklist
-    withReduceDefs : ∀ {a} {A : Type a} → (Σ Bool λ _ → List Name) → TC A → TC A
-    askReduceDefs  : TC (Σ Bool λ _ → List Name)
+    withReduceDefs : ∀ {a} {A : Type a} → Bool × List Name → TC A → TC A
+    askReduceDefs  : TC (Bool × List Name)
 
   -- Fail if the given computation gives rise to new, unsolved
   -- "blocking" constraints.
@@ -106,14 +106,14 @@ private module P where
   -- Run the given TC action and return the first component. Resets to
   -- the old TC state if the second component is 'false', or keep the
   -- new TC state if it is 'true'.
-    run-speculative : ∀ {a} {A : Type a} → TC (Σ A λ _ → Bool) → TC A
+    run-speculative : ∀ {a} {A : Type a} → TC (A × Bool) → TC A
 
   -- Get a list of all possible instance candidates for the given meta
   -- variable (it does not have to be an instance meta).
     get-instances : Meta → TC (List Term)
 
     declareData      : Name → Nat → Term → TC ⊤
-    defineData       : Name → List (Σ Name (λ _ → Term)) → TC ⊤
+    defineData       : Name → List (Name × Quantity × Term) → TC ⊤
 ```
 
 <details>
@@ -201,6 +201,10 @@ under-abs (lam v (abs nm _)) m = extend-context nm (arg (arginfo v (modality rel
 under-abs (pi a (abs nm _))  m = extend-context nm a m
 under-abs _ m = m
 
+extend-context* : ∀ {a} {A : Type a} → Telescope → TC A → TC A
+extend-context* [] a = a
+extend-context* ((nm , tm) ∷ xs) a = extend-context nm tm (extend-context* xs a)
+
 new-meta : Term → TC Term
 new-meta ty = do
   mv ← check-type unknown ty
@@ -238,29 +242,60 @@ infer-tel tel = (λ (_ , arg ai _) → arg ai unknown) <$> tel
 resetting : ∀ {ℓ} {A : Type ℓ} → TC A → TC A
 resetting k = run-speculative ((_, false) <$> k)
 
-wait-for-args : List (Arg Term) → TC (List (Arg Term))
+all-metas-in : Term → List Blocker
+all-metas-in tm = go tm [] where
+  go  : Term → List Blocker → List Blocker
+  go* : List (Arg Term) → List Blocker → List Blocker
+
+  go (var _ args)             acc = go* args acc
+  go (con _ args)             acc = go* args acc
+  go (def _ args)             acc = go* args acc
+  go (lam _ (abs _ t))        acc = go t acc
+  go (pat-lam cs args)        acc = acc
+  go (pi (arg _ a) (abs _ b)) acc = go a (go b acc)
+  go (agda-sort s)            acc = acc
+  go (lit l)                  acc = acc
+  go (meta x args)            acc = go* args (blocker-meta x ∷ acc)
+  go unknown                  acc = acc
+
+  go* []             acc = acc
+  go* (arg _ x ∷ xs) acc = go x (go* xs acc)
+
 wait-for-type : Term → TC Term
-
-wait-for-type (var x args) = var x <$> wait-for-args args
-wait-for-type (con c args) = con c <$> wait-for-args args
-wait-for-type (def f args) = def f <$> wait-for-args args
-wait-for-type (lam v (abs x t)) = pure (lam v (abs x t))
-wait-for-type (pat-lam cs args) = pure (pat-lam cs args)
-wait-for-type (pi (arg i a) (abs x b)) = do
-  a ← wait-for-type a
-  b ← wait-for-type b
-  pure (pi (arg i a) (abs x b))
-wait-for-type (agda-sort s) = pure (agda-sort s)
-wait-for-type (lit l) = pure (lit l)
-wait-for-type (meta x _) = block-on-meta x
-wait-for-type unknown = pure unknown
-
-wait-for-args [] = pure []
-wait-for-args (arg i a ∷ xs) = ⦇ ⦇ (arg i) (wait-for-type a) ⦈ ∷ wait-for-args xs ⦈
+wait-for-type tm with all-metas-in tm
+... | [] = pure tm
+... | it = blockTC (blocker-all it)
 
 wait-just-a-bit : Term → TC Term
 wait-just-a-bit (meta m _) = block-on-meta m
 wait-just-a-bit tm = pure tm
+
+blocking-meta : Term → Maybe Blocker
+blocking-meta* : List (Arg Term) → Maybe Blocker
+
+blocking-meta (var x as)       = nothing
+blocking-meta (con c as)       = nothing
+blocking-meta (def f as)       = blocking-meta* as
+blocking-meta (lam v t)        = nothing
+blocking-meta (pat-lam _ as)   = blocking-meta* as
+blocking-meta (pi a (abs _ b)) = blocking-meta b
+blocking-meta (agda-sort s)    = nothing
+blocking-meta (lit l)          = nothing
+blocking-meta (meta x _)       = just (blocker-meta x)
+blocking-meta unknown          = nothing
+
+blocking-meta* (arg (arginfo visible _)   tm ∷ _) = blocking-meta tm
+blocking-meta* (arg (arginfo instance' _) tm ∷ _) = blocking-meta tm
+blocking-meta* (arg (arginfo hidden _)    tm ∷ as) = blocking-meta* as
+
+blocking-meta* [] = nothing
+
+reduceB : Term → TC Term
+reduceB tm = do
+  tm' ← reduce tm
+  case blocking-meta tm' of λ where
+    (just b) → blockTC b
+    nothing  → pure tm'
 
 unapply-path : Term → TC (Maybe (Term × Term × Term))
 unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do

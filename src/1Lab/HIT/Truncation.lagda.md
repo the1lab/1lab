@@ -6,14 +6,18 @@ definition: |
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
+open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Dec.Base
 ```
 -->
 
@@ -88,13 +92,13 @@ whenever it is a family of propositions, by providing a case for
                   (go x z) (go x₁ z) i
 
 ∥-∥-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
-         → is-prop P
-         → (A → P)
-         → (x : ∥ A ∥) → P
+        → is-prop P
+        → (A → P)
+        → (x : ∥ A ∥) → P
 ∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
 
-∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → is-prop A → ∥ A ∥ → A
-∥-∥-proj ap = ∥-∥-rec ap λ x → x
+∥-∥-out : ∀ {ℓ} {A : Type ℓ} → is-prop A → ∥ A ∥ → A
+∥-∥-out ap = ∥-∥-rec ap λ x → x
 
 ∥-∥-rec₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ''} {P : Type ℓ'}
          → is-prop P
@@ -102,15 +106,22 @@ whenever it is a family of propositions, by providing a case for
          → (x : ∥ A ∥) (y : ∥ B ∥) → P
 ∥-∥-rec₂ pprop = ∥-∥-elim₂ (λ _ _ → pprop)
 
-∥-∥-rec!
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
-  → {@(tactic hlevel-tactic-worker) pprop : is-prop P}
-  → (A → P)
-  → (x : ∥ A ∥) → P
-∥-∥-rec! {pprop = pprop} = ∥-∥-elim (λ _ → pprop)
+∥-∥-out! : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ → ∥ A ∥ → A
+∥-∥-out! = ∥-∥-out (hlevel 1)
 
-∥-∥-proj! : ∀ {ℓ} {A : Type ℓ} → {@(tactic hlevel-tactic-worker) ap : is-prop A} → ∥ A ∥ → A
-∥-∥-proj! {ap = ap} = ∥-∥-proj ap
+instance
+  Inductive-∥∥
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {P : ∥ A ∥ → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-∥∥ ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → ∥-∥-elim (λ x → hlevel 1) (i .Inductive.from f)
+    }
+
+  Dec-∥∥ : ∀ {ℓ} {A : Type ℓ} → ⦃ Dec A ⦄ → Dec ∥ A ∥
+  Dec-∥∥ ⦃ yes a ⦄ = yes (inc a)
+  Dec-∥∥ ⦃ no ¬a ⦄ = no (rec! ¬a)
 ```
 -->
 
@@ -159,16 +170,24 @@ quantifier** as a truncated `Σ`{.Agda}.
 ```agda
 ∃ : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
 ∃ A B = ∥ Σ A B ∥
-
-syntax ∃ A (λ x → B) = ∃[ x ∈ A ] B
 ```
+
+<!--
+```agda
+∃-syntax : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
+∃-syntax = ∃
+
+syntax ∃-syntax A (λ x → B) = ∃[ x ∈ A ] B
+infix 5 ∃-syntax
+```
+-->
 
 Note that if $P$ is already a proposition, then truncating it does
 nothing:
 
 ```agda
 is-prop→equiv∥-∥ : ∀ {ℓ} {P : Type ℓ} → is-prop P → P ≃ ∥ P ∥
-is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-proj pprop)
+is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-out pprop)
 ```
 
 In fact, an alternative definition of `is-prop`{.Agda} is given by "being
@@ -221,16 +240,16 @@ image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
 
 To see that the `image`{.Agda} indeed implements the concept of image,
 we define a way to factor any map through its image. By the definition
-of image, we have that the map `f-image`{.Agda} is always surjective,
+of image, we have that the map `image-inc`{.Agda} is always surjective,
 and since `∃` is a family of props, the first projection out of
 `image`{.Agda} is an embedding. Thus we factor a map $f$ as $A \epi \im
 f \mono B$.
 
 ```agda
-f-image
+image-inc
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (f : A → B) → A → image f
-f-image f x = f x , inc (x , refl)
+image-inc f x = f x , inc (x , refl)
 ```
 
 We now prove the theorem that will let us map out of a propositional
@@ -277,8 +296,21 @@ truncation onto a set using a constant map.
             → ∥ A ∥ → B
 ∥-∥-rec-set {A = A} {B} bset f fconst x =
   ∥-∥-elim {P = λ _ → image f}
-    (λ _ → is-constant→image-is-prop bset f fconst) (f-image f) x .fst
+    (λ _ → is-constant→image-is-prop bset f fconst) (image-inc f) x .fst
 ```
+
+<!--
+```agda
+∥-∥-rec-set!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ _ : H-Level B 2 ⦄
+  → (f : A → B) (c : ∀ x y → f x ≡ f y)
+  → ∥ A ∥ → B
+∥-∥-rec-set! {A = A} f c x = go x .fst where
+  go : ∥ A ∥ → image f
+  go (inc x)        = f x , inc (x , refl)
+  go (squash x y i) = is-constant→image-is-prop (hlevel 2) f c (go x) (go y) i
+```
+-->
 
 ## Maps into groupoids
 
@@ -387,7 +419,7 @@ we sketch the details of the next level for the curious reader.
 The next coherence involves a tetrahedron all of whose faces are $\rm{coh}$,
 or, since we're doing cubical type theory, a "cubical tetrahedron":
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
 	a &&& a \\
 	& b & b \\
@@ -458,6 +490,26 @@ instance
     go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
     go (inc x) f = f x
     go (squash x y i) f = squash (go x f) (go y f) i
+```
+-->
 
+<!--
+```agda
+is-embedding→image-inc-is-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-embedding f
+  → is-equiv (image-inc f)
+is-embedding→image-inc-is-equiv {f = f} f-emb =
+  is-iso→is-equiv $
+  iso (λ im → fst $ ∥-∥-out (f-emb _) (im .snd))
+    (λ im → Σ-prop-path! (snd $ ∥-∥-out (f-emb _) (im .snd)))
+    (λ _ → refl)
+
+is-embedding→image-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-embedding f
+  → A ≃ image f
+is-embedding→image-equiv {f = f} f-emb =
+  image-inc f , is-embedding→image-inc-is-equiv f-emb
 ```
 -->

@@ -1,8 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
+open import 1Lab.Reflection using (_v∷_ ; typeError)
 open import 1Lab.Prelude
 
+open import Data.List.Base
 open import Data.Dec
+
+open is-iso
 ```
 -->
 
@@ -18,7 +23,7 @@ private variable
 ```
 -->
 
-# Set coequalisers
+# Set coequalisers {defines="set-coequaliser"}
 
 In their most general form, colimits can be pictured as taking disjoint
 unions and then "gluing together" some parts. The "gluing together" part
@@ -55,14 +60,15 @@ the diagram below.
 We refer to this unique factoring as `Coeq-rec`{.Agda}.
 
 ```agda
-Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
-      → is-set C → (h : B → C)
-      → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
-Coeq-rec cset h h-coeqs (inc x) = h x
-Coeq-rec cset h h-coeqs (glue x i) = h-coeqs x i
-Coeq-rec cset h h-coeqs (squash x y p q i j) =
-  cset (g x) (g y) (λ i → g (p i)) (λ i → g (q i)) i j
-  where g = Coeq-rec cset h h-coeqs
+Coeq-rec
+  : ∀ {ℓ} {C : Type ℓ} {f g : A → B} ⦃ _ : H-Level C 2 ⦄
+  → (h : B → C)
+  → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
+Coeq-rec h h-coeqs (inc x) = h x
+Coeq-rec h h-coeqs (glue x i) = h-coeqs x i
+Coeq-rec ⦃ cs ⦄ h h-coeqs (squash x y p q i j) =
+  hlevel 2 (g x) (g y) (λ i → g (p i)) (λ i → g (q i)) i j
+  where g = Coeq-rec ⦃ cs ⦄ h h-coeqs
 ```
 
 An alternative phrasing of the desired universal property is
@@ -85,10 +91,11 @@ not yet been defined. It says that, to define a dependent function from
 acts on `inc`{.Agda}: The path constructions don't matter.
 
 ```agda
-Coeq-elim-prop : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
-              → (∀ x → is-prop (C x))
-              → (∀ x → C (inc x))
-              → ∀ x → C x
+Coeq-elim-prop
+  : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
+  → (∀ x → is-prop (C x))
+  → (∀ x → C (inc x))
+  → ∀ x → C x
 Coeq-elim-prop cprop cinc (inc x) = cinc x
 ```
 
@@ -103,6 +110,36 @@ Coeq-elim-prop cprop cinc (squash x y p q i j) =
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim-prop cprop cinc
 ```
+
+<!--
+```agda
+instance
+  Inductive-Coeq
+    : ∀ {ℓ ℓm} {f g : A → B} {P : Coeq f g → Type ℓ}
+    → ⦃ _ : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-Coeq ⦃ i ⦄ = record
+    { methods = i .Inductive.methods
+    ; from    = λ f → Coeq-elim-prop (λ x → hlevel 1) (i .Inductive.from f)
+    }
+
+  Extensional-coeq-map
+    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f g : A → B}
+    → ⦃ sf : Extensional (B → C) ℓr ⦄ ⦃ _ : H-Level C 2 ⦄
+    → Extensional (Coeq f g → C) ℓr
+  Extensional-coeq-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path h = funext $
+    elim! (happly (sf .idsᵉ .to-path h))
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
+    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
+
+  Number-Coeq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Number B ⦄ → {f g : A → B} → Number (Coeq f g)
+  Number-Coeq {ℓ = ℓ} ⦃ b ⦄ .Number.Constraint n = Lift ℓ (b .Number.Constraint n)
+  Number-Coeq ⦃ b ⦄ .Number.fromNat n ⦃ lift c ⦄ = inc (b .Number.fromNat n ⦃ c ⦄)
+```
+-->
 
 </div>
 
@@ -125,19 +162,16 @@ and this equivalence is given by `inc`{.Agda}, the "universal
 Coequalising map".
 
 ```agda
-Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
-          → is-set C
+Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B} ⦃ _ : H-Level C 2 ⦄
           → is-equiv {A = Coeq f g → C} {B = coeq-cone f g C}
             (λ h → h ∘ inc , λ i z → h (glue z i))
-Coeq-univ {C = C} {f = f} {g = g} cset =
-  is-iso→is-equiv (iso cr' (λ x → refl) islinv)
-  where
-    open is-iso
+Coeq-univ {C = C} {f = f} {g = g} =
+  is-iso→is-equiv (iso cr' (λ x → refl) islinv) where
     cr' : coeq-cone f g C → Coeq f g → C
-    cr' (f , f-coeqs) = Coeq-rec cset f (happly f-coeqs)
+    cr' (f , f-coeqs) = Coeq-rec f (happly f-coeqs)
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
-    islinv f = funext (Coeq-elim-prop (λ x → cset _ _) λ x → refl)
+    islinv f = trivial!
 ```
 
 </div>
@@ -165,61 +199,8 @@ Coeq-elim cset ci cg (squash x y p q i j) =
   where g = Coeq-elim cset ci cg
 ```
 
-There is a barrage of combined eliminators, whose definitions are not
-very enlightening --- you can mouse over these links to see their types:
-`Coeq-elim-prop₂`{.Agda} `Coeq-elim-prop₃`{.Agda} `Coeq-rec₂`{.Agda}.
-
 <!--
 ```agda
-{-# TERMINATING #-}
-Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
-                   {C : Coeq f g → Coeq f' g' → Type ℓ}
-               → (∀ x y → is-prop (C x y))
-               → (∀ x y → C (inc x) (inc y))
-               → ∀ x y → C x y
-Coeq-elim-prop₂ prop f (inc x) (inc y) = f x y
-Coeq-elim-prop₂ {f' = f'} {g'} prop f (inc x) (glue y i) =
-  is-prop→pathp (λ i → prop (inc x) (glue y i)) (f x (f' y)) (f x (g' y)) i
-Coeq-elim-prop₂ prop f (inc x) (squash y y' p q i j) =
-  is-prop→squarep (λ i j → prop (inc x) (squash y y' p q i j))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) y)
-    (λ i → Coeq-elim-prop₂ prop f (inc x) (p i))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) (q i))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) y')
-    i j
-Coeq-elim-prop₂ {f = f'} {g = g'} prop f (glue x i) y =
-  is-prop→pathp (λ i → prop (glue x i) y)
-    (Coeq-elim-prop₂ prop f (inc (f' x)) y)
-    (Coeq-elim-prop₂ prop f (inc (g' x)) y)
-    i
-Coeq-elim-prop₂ prop f (squash x x' p q i j) y =
-  is-prop→squarep (λ i j → prop (squash x x' p q i j) y)
-    (λ i → Coeq-elim-prop₂ prop f x y)
-    (λ i → Coeq-elim-prop₂ prop f (p i) y)
-    (λ i → Coeq-elim-prop₂ prop f (q i) y)
-    (λ i → Coeq-elim-prop₂ prop f x' y)
-    i j
-
-Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
-                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
-               → (∀ x y z → is-prop (C x y z))
-               → (∀ x y z → C (inc x) (inc y) (inc z))
-               → ∀ x y z → C x y z
-Coeq-elim-prop₃ cprop f (inc a) y z =
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
-    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z (inc a)
-Coeq-elim-prop₃ cprop f (glue x i) y z =
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
-    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z
-    (glue x i)
-Coeq-elim-prop₃ cprop f (squash x x' p q i j) y z =
-  is-prop→squarep (λ i j → cprop (squash x x' p q i j) y z)
-    (λ i → Coeq-elim-prop₃ cprop f x y z)
-    (λ i → Coeq-elim-prop₃ cprop f (p i) y z)
-    (λ i → Coeq-elim-prop₃ cprop f (q i) y z)
-    (λ i → Coeq-elim-prop₃ cprop f x' y z)
-    i j
-
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → is-set C
           → (ci : B → B' → C)
@@ -277,7 +258,7 @@ coequalisers. Observe that, by taking the total space of a relation $R :
 A \to A \to \ty$, we obtain two projection maps which have as image all
 of the possible related elements in $A$. By coequalising these
 projections, we obtain a space where any related objects are identified:
-The **quotient** $A/R$.
+the **quotient** $A/R$.
 
 ```agda
 private
@@ -304,6 +285,8 @@ projections from the total space of $R$:
 _/_ : ∀ {ℓ ℓ'} (A : Type ℓ) (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
 A / R = Coeq (/-left {R = R}) /-right
 
+infixl 25 _/_
+
 quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R x y
     → Path (A / R) (inc x) (inc y)
 quot r = glue (_ , _ , r)
@@ -321,6 +304,38 @@ Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
 Quot-elim bset f r = Coeq-elim bset f λ { (x , y , w) → r x y w }
 ```
 
+::: {.definition #coequalisers-as-quotients}
+Conversely, we can describe coequalisers in terms of quotients.
+In order to form the coequaliser of $f, g : A \to B$, we interpret the
+span formed by $f$ and $g$ as a binary relation on $B$: a witness
+that $x, y : B$ are related is an element of the [[fibre]] of
+$\langle f, g \rangle$ at $(x, y)$, that is an $a : A$ such that
+$f(a) = x$ and $g(a) = y$.
+:::
+
+```agda
+span→R
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
+  → B → B → Type (ℓ ⊔ ℓ')
+span→R f g = curry (fibre ⟨ f , g ⟩)
+```
+
+We then recover the coequaliser of $f$ and $g$ as the quotient of $B$
+by this relation.
+
+```agda
+Coeq≃quotient
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
+  → Coeq f g ≃ B / span→R f g
+Coeq≃quotient {B = B} f g = Iso→Equiv is where
+  is : Iso (Coeq f g) (B / span→R f g)
+  is .fst = Coeq-rec inc λ a → quot (a , refl)
+  is .snd .inv = Coeq-rec inc λ (_ , _ , a , p) →
+    sym (ap (inc ∘ fst) p) ·· glue a ·· ap (inc ∘ snd) p
+  is .snd .rinv = elim! λ _ → refl
+  is .snd .linv = elim! λ _ → refl
+```
+
 <!--
 ```agda
 inc-is-surjective : {f g : A → B} → is-surjective {B = Coeq f g} inc
@@ -335,10 +350,20 @@ inc-is-surjective (squash x y p q i j) = is-prop→squarep
   (λ j → inc-is-surjective (p j))
   (λ j → inc-is-surjective (q j))
   (λ i → inc-is-surjective y) i j
+
+Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
+         → (∀ x → R x x) → (∀ y → S y y)
+         → (_⋆_ : A → B → C)
+         → ((a b : A) (x y : B) → R a b → S x y → T (a ⋆ x) (b ⋆ y))
+         → A / R → B / S → C / T
+Quot-op₂ Rr Sr op resp =
+  Coeq-rec₂ squash (λ x y → inc (op x y))
+    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
+    λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
 ```
 -->
 
-## Effectivity {defines="congruence quotients-are-effective"}
+## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
 The most well-behaved case of quotients is when $R : A \to A \to \ty$
 takes values in propositions, is reflexive, transitive and symmetric (an
@@ -353,6 +378,8 @@ record Congruence {ℓ} (A : Type ℓ) ℓ' : Type (ℓ ⊔ lsuc ℓ') where
     reflᶜ : ∀ {x} → x ∼ x
     _∙ᶜ_  : ∀ {x y z} → x ∼ y → y ∼ z → x ∼ z
     symᶜ  : ∀ {x y}   → x ∼ y → y ∼ x
+
+  infixr 30 _∙ᶜ_
 
   relation = _∼_
 
@@ -392,9 +419,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
     encode x y p = subst (λ y → ∣ Code x y ∣) p reflᶜ
 
     decode : ∀ x y (p : ∣ Code x y ∣) → inc x ≡ y
-    decode x y p =
-      Coeq-elim-prop {C = λ y → (p : ∣ Code x y ∣) → inc x ≡ y}
-        (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
+    decode = elim! λ x y r → quot r
 ```
 
 For `encode`{.Agda}, it suffices to transport the proof that $R$ is
@@ -414,41 +439,87 @@ proof that equivalence relations are `effective`{.Agda}.
 ```agda
   effective : ∀ {x y : A} → Path quotient (inc x) (inc y) → x ∼ y
   effective = equiv→inverse is-effective
+
+  reflᶜ' : ∀ {x y : A} → x ≡ y → x ∼ y
+  reflᶜ' {x = x} p = transport (λ i → x ∼ p i) reflᶜ
+
+  op₂
+    : (f : A → A → A)
+    → (∀ x y u v → x ∼ u → y ∼ v → f x y ∼ f u v)
+    → quotient → quotient → quotient
+  op₂ f r = Quot-op₂ (λ x → reflᶜ) (λ x → reflᶜ) f (λ a b x y → r a x b y)
+
+  op₂-comm
+    : (f : A → A → A)
+    → (∀ a b → f a b ∼ f b a)
+    → (∀ x u v → u ∼ v → f x u ∼ f x v)
+    → quotient → quotient → quotient
+  op₂-comm f c r = op₂ f (λ x y u v p q → r x y v q ∙ᶜ c x v ∙ᶜ r v x u p ∙ᶜ c v u)
 ```
 -->
 
 <!--
 ```agda
-Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
-         → (∀ x → R x x) → (∀ y → S y y)
-         → (_⋆_ : A → B → C)
-         → ((a b : A) (x y : B) → R a b → S x y → T (a ⋆ x) (b ⋆ y))
-         → A / R → B / S → C / T
-Quot-op₂ Rr Sr op resp =
-  Coeq-rec₂ squash (λ x y → inc (op x y))
-    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
-    λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
-
 Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong rdec =
-  Coeq-elim-prop₂ {C = λ x y → Dec (x ≡ y)} (λ x y → hlevel 1) go _ _ where
+Discrete-quotient cong rdec {x} {y} =
+  elim! {P = λ x → ∀ y → Dec (x ≡ y)} go _ _ where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)
   ... | no ¬xRy = no λ p → ¬xRy (Congruence.effective cong p)
+
+open hlevel-projection
+private
+  sim-prop : ∀ (R : Congruence A ℓ) {x y} → is-prop (R .Congruence._∼_ x y)
+  sim-prop R = R .Congruence.has-is-prop _ _
+
+instance
+  hlevel-proj-congr : hlevel-projection (quote Congruence._∼_)
+  hlevel-proj-congr .has-level = quote sim-prop
+  hlevel-proj-congr .get-level _ = pure (quoteTerm (suc zero))
+  hlevel-proj-congr .get-argument (_ ∷ _ ∷ _ ∷ c v∷ _) = pure c
+  {-# CATCHALL #-}
+  hlevel-proj-congr .get-argument _ = typeError []
+
+private unquoteDecl eqv = declare-record-iso eqv (quote Congruence)
+module _ {R R' : Congruence A ℓ} (p : ∀ x y → Congruence._∼_ R x y ≃ Congruence._∼_ R' x y) where
+  private
+    module R = Congruence R
+    module R' = Congruence R'
+
+  open Congruence
+
+  private
+    lemma : ∀ {x y} i → is-prop (ua (p x y) i)
+    lemma {x} {y} i = is-prop→pathp (λ i → is-prop-is-prop {A = ua (p x y) i}) (R.has-is-prop x y) (R'.has-is-prop x y) i
+
+  Congruence-path : R ≡ R'
+  Congruence-path i ._∼_ x y = ua (p x y) i
+  Congruence-path i .has-is-prop x y = lemma i
+  Congruence-path i .reflᶜ = is-prop→pathp lemma R.reflᶜ R'.reflᶜ i
+  Congruence-path i ._∙ᶜ_ = is-prop→pathp (λ i → Π-is-hlevel² {A = ua (p _ _) i} {B = λ _ → ua (p _ _) i} 1 λ _ _ → lemma i) R._∙ᶜ_ R'._∙ᶜ_ i
+  Congruence-path i .symᶜ = is-prop→pathp (λ i → Π-is-hlevel {A = ua (p _ _) i} 1 λ _ → lemma i) R.symᶜ R'.symᶜ i
+
+open Congruence
+
+Congruence-pullback
+  : ∀ {ℓa ℓb ℓ} {A : Type ℓa} {B : Type ℓb}
+  → (A → B) → Congruence B ℓ → Congruence A ℓ
+Congruence-pullback {ℓ = ℓ} {A = A} f R = f*R where
+  module R = Congruence R
+  f*R : Congruence A ℓ
+  f*R ._∼_ x y = f x R.∼ f y
+  f*R .has-is-prop x y = R.has-is-prop _ _
+  f*R .reflᶜ = R.reflᶜ
+  f*R ._∙ᶜ_ f g = f R.∙ᶜ g
+  f*R .symᶜ f = R.symᶜ f
 ```
 -->
 
 ## Relation to surjections {defines="surjections-are-quotient-maps"}
-
-<!--
-```agda
-open Congruence
-```
--->
 
 As mentioned in the definition of [[surjection]], we can view a cover $f
 : A \to B$ as expressing a way of _gluing together_ the type $B$ by
@@ -475,13 +546,17 @@ We can then set about proving that, if $f : A \epi B$ is a surjection
 into a set, then $B$ is the quotient of $A$ under the kernel pair of
 $f$.
 
-<!--
+
 ```agda
 surjection→is-quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (b-set : is-set B)
   → (f : A ↠ B)
   → B ≃ Congruence.quotient (Kernel-pair b-set (f .fst))
+```
+
+<!--
+```agda
 surjection→is-quotient {A = A} {B} b-set (f , surj) =
   _ , injective-surjective→is-equiv! g'-inj g'-surj
   where
@@ -495,8 +570,8 @@ defines an element $[a] : A/\ker f$; If we have another fibre $(b, q)$,
 then $[a] = [b]$ because
 
 $$
-f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b) \text{,}
-$$
+f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b)
+$$,
 
 so the function $f^*x \to A/\ker f$ is constant, and factors through the
 [[propositional truncation]] $\| f^*x \|$.
@@ -510,7 +585,7 @@ so the function $f^*x \to A/\ker f$ is constant, and factors through the
     g₀-const (_ , p) (_ , q) = quot (p ∙ sym q)
 
   g₁ : ∀ {x} → ∥ fibre f x ∥ → c.quotient
-  g₁ f = ∥-∥-rec-set hlevel! g₀ g₀-const f
+  g₁ f = ∥-∥-rec-set (hlevel 2) g₀ g₀-const f
 ```
 
 Since each $\| f^*x \|$ is inhabited, all of these functions glue
@@ -533,3 +608,120 @@ is a set, that means it's an equivalence.
     (y , p) ← inc-is-surjective x
     pure (f y , ap g₁ (squash (surj (f y)) (inc (y , refl))) ∙ p)
 ```
+
+<!--
+```agda
+private module test where
+  variable C : Type ℓ
+
+  _ : {f g : A / R → B} ⦃ _ : H-Level B 2 ⦄
+    → ((x : A) → f (inc x) ≡ g (inc x)) → f ≡ g
+  _ = ext
+
+  _ : {f g : (A × B) / R → C} ⦃ _ : H-Level C 2 ⦄
+    → ((x : A) (y : B) → f (inc (x , y)) ≡ g (inc (x , y)))
+    → f ≡ g
+  _ = ext
+```
+-->
+
+## Closures {defines="congruence-closure"}
+
+We define the reflexive, transitive and symmetric closure of a relation
+$R$ and prove that it induces the same quotient as $R$.
+
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') where
+  data Closure : A → A → Type (ℓ ⊔ ℓ') where
+    inc : ∀ {x y} → R x y → Closure x y
+    Closure-refl : ∀ {x} → Closure x x
+    Closure-trans : ∀ {x y z} → Closure x y → Closure y z → Closure x z
+    Closure-sym : ∀ {x y} → Closure y x → Closure x y
+    squash : ∀ {x y} → is-prop (Closure x y)
+
+  Closure-congruence : Congruence A _
+  Closure-congruence .Congruence._∼_ = Closure
+  Closure-congruence .Congruence.has-is-prop _ _ = squash
+  Closure-congruence .Congruence.reflᶜ = Closure-refl
+  Closure-congruence .Congruence._∙ᶜ_ = Closure-trans
+  Closure-congruence .Congruence.symᶜ = Closure-sym
+```
+
+<!--
+```agda
+  unquoteDecl Closure-elim-prop = make-elim-n 1 Closure-elim-prop (quote Closure)
+
+  Closure-rec-congruence
+    : ∀ {ℓ''} (S : Congruence A ℓ'') (let module S = Congruence S)
+    → (∀ {x y} → R x y → x S.∼ y)
+    → ∀ {x y} → Closure x y → x S.∼ y
+  Closure-rec-congruence S h = Closure-elim-prop
+    {P = λ {x} {y} _ → x S.∼ y}
+    (λ _ → S.has-is-prop _ _)
+    h S.reflᶜ (λ _ q _ r → q S.∙ᶜ r) (λ _ r → S.symᶜ r)
+    where module S = Congruence S
+
+  Closure-rec-≡
+    : ∀ {ℓ'} {D : Type ℓ'}
+    → ⦃ H-Level D 2 ⦄
+    → (f : A → D)
+    → (∀ {x y} → R x y → f x ≡ f y)
+    → ∀ {x y} → Closure x y → f x ≡ f y
+  Closure-rec-≡ f = Closure-rec-congruence (Kernel-pair (hlevel 2) f)
+```
+-->
+
+```agda
+Closure-quotient
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ')
+  → A / R ≃ A / Closure R
+Closure-quotient {A = A} R = Iso→Equiv is where
+  is : Iso (A / R) (A / Closure R)
+  is .fst = Coeq-rec inc λ (a , b , r) → quot (inc r)
+  is .snd .inv = Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
+  is .snd .rinv = elim! λ _ → refl
+  is .snd .linv = elim! λ _ → refl
+```
+
+<!--
+```agda
+instance
+  Closure-H-Level
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y} {n}
+    → H-Level (Closure R x y) (suc n)
+  Closure-H-Level = prop-instance squash
+
+Coeq-ap
+  : ∀ {ℓa ℓa' ℓb ℓb'} {A : Type ℓa} {A' : Type ℓa'} {B : Type ℓb} {B' : Type ℓb'}
+      {f g : A → B} {f' g' : A' → B'} (ea : A ≃ A') (eb : B ≃ B')
+  → (p : f' ≡ Equiv.to eb ∘ f ∘ Equiv.from ea) (q : g' ≡ Equiv.to eb ∘ g ∘ Equiv.from ea)
+  → Coeq f g ≃ Coeq f' g'
+Coeq-ap {f = f} {g} {f'} {g'} ea eb p q = Iso→Equiv (to , iso from (happly ri) (happly li)) where
+  module ea = Equiv ea
+  module eb = Equiv eb
+
+  to : Coeq f g → Coeq f' g'
+  to (inc x) = inc (eb.to x)
+  to (glue x i) = along i $
+    inc (eb.to (f x))  ≡˘⟨ ap Coeq.inc (happly p (ea.to x) ∙ ap eb.to (ap f (ea.η x))) ⟩
+    inc (f' (ea.to x)) ≡⟨ Coeq.glue {f = f'} {g'} (ea.to x) ⟩
+    inc (g' (ea.to x)) ≡⟨ ap Coeq.inc (happly q (ea.to x) ∙ ap eb.to (ap g (ea.η x))) ⟩
+    inc (eb.to (g x))  ∎
+  to (squash x y p q i j) = squash (to x) (to y) (λ i → to (p i)) (λ i → to (q i)) i j
+
+  from : Coeq f' g' → Coeq f g
+  from (inc x) = inc (eb.from x)
+  from (glue x i) = along i $
+    inc (eb.from (f' x)) ≡⟨ ap Coeq.inc (eb.injective (eb.ε _ ∙ happly p x)) ⟩
+    inc (f (ea.from x))  ≡⟨ Coeq.glue (ea.from x) ⟩
+    inc (g (ea.from x))  ≡⟨ ap Coeq.inc (eb.injective (sym (happly q x) ∙ sym (eb.ε _))) ⟩
+    inc (eb.from (g' x)) ∎
+  from (squash x y p q i j) = squash (from x) (from y) (λ i → from (p i)) (λ i → from (q i)) i j
+
+  li : from ∘ to ≡ λ x → x
+  li = ext λ x → ap inc (eb.η _)
+
+  ri : to ∘ from ≡ λ x → x
+  ri = ext λ x → ap inc (eb.ε _)
+```
+-->

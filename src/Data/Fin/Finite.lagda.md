@@ -4,11 +4,15 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy.BAut
 
+open import Data.Maybe.Properties
+open import Data.Set.Coequaliser
 open import Data.Fin.Properties
 open import Data.Fin.Closure
 open import Data.Fin.Base
 open import Data.Nat.Base
+open import Data.Maybe
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 ```
 -->
@@ -37,26 +41,30 @@ _is a set_!
 
 ```agda
 naïve-fin-is-set : is-set (Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X)
-naïve-fin-is-set = is-hlevel≃ 2 Σ-swap₂ $
+naïve-fin-is-set = Equiv→is-hlevel 2 Σ-swap₂ $
   Σ-is-hlevel 2 (hlevel 2) λ x → is-prop→is-hlevel-suc {n = 1} $
     is-contr→is-prop $ Equiv-is-contr (Fin x)
 ```
 
 That's because, as the proof above shows, it's equivalent to the type of
 natural numbers: The type
+
 $$
 \sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
 $$
+
 is equivalent to the type
+
 $$
-\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X\text{,}
-$$
+\sum_{n : \NN} \sum_{X : \ty} [n] \simeq X
+$$,
+
 and univalence says (rather directly) that the sum of $[n] \simeq X$ as
 $X$ ranges over a universe is contractible, so we're left with the type
 of natural numbers.
 
 This simply won't do: we want the type of finite sets to be equivalent
-to the (core of the) _category_ of finite sets, where the automorphism
+to the ([[core]] of the) _category_ of finite sets, where the automorphism
 group of $n$ has $n!$ elements, not exactly one element. What we do is
 appeal to a basic intuition: A groupoid is the sum over its connected
 components, and we have representatives for every connected component
@@ -91,7 +99,7 @@ record Finite {ℓ} (T : Type ℓ) : Type ℓ where
 ```agda
   Finite→is-set : is-set T
   Finite→is-set =
-    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → is-hlevel≃ 2 e (hlevel 2)) enumeration
+    ∥-∥-rec (is-hlevel-is-prop 2) (λ e → Equiv→is-hlevel 2 e (hlevel 2)) enumeration
 
   instance
     Finite→H-Level : H-Level T 2
@@ -100,19 +108,19 @@ record Finite {ℓ} (T : Type ℓ) : Type ℓ where
 open Finite ⦃ ... ⦄ using (cardinality; enumeration) public
 open Finite using (Finite→is-set) public
 
-instance
+instance opaque
   H-Level-Finite : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level (Finite A) (suc n)
   H-Level-Finite = prop-instance {T = Finite _} λ where
-    x y i .Finite.cardinality → ∥-∥-proj!
+    x y i .Finite.cardinality → ∥-∥-out!
       ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈
       i
     x y i .Finite.enumeration → is-prop→pathp
-      {B = λ i → ∥ _ ≃ Fin (∥-∥-proj! ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈ i) ∥}
+      {B = λ i → ∥ _ ≃ Fin (∥-∥-out! ⦇ Fin-injective (⦇ ⦇ x .enumeration e⁻¹ ⦈ ∙e y .enumeration ⦈) ⦈ i) ∥}
       (λ _ → squash)
       (x .enumeration) (y .enumeration) i
 
 Finite→Discrete : ∀ {ℓ} {A : Type ℓ} → ⦃ Finite A ⦄ → Discrete A
-Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = ∥-∥-rec! go (f .enumeration) where
+Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = rec! go (f .enumeration) where
   open Finite f using (Finite→H-Level)
   go : A ≃ Fin (f .cardinality) → Dec (x ≡ y)
   go e with Equiv.to e x ≡? Equiv.to e y
@@ -120,9 +128,7 @@ Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = ∥-∥-rec! go (f .enumeration) w
   ... | no ¬p = no λ p → ¬p (ap (e .fst) p)
 
 Dec→Finite : ∀ {ℓ} {A : Type ℓ} → is-prop A → Dec A → Finite A
-Dec→Finite ap d with d
-... | yes p = fin (inc (is-contr→≃ (is-prop∙→is-contr ap p) Finite-one-is-contr))
-... | no ¬p = fin (inc (is-empty→≃⊥ ¬p ∙e Finite-zero-is-initial e⁻¹))
+Dec→Finite ap d = fin (inc (Dec→Fin ap d .snd e⁻¹))
 
 Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} → Finite (x ≡ y)
 Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) d
@@ -139,6 +145,48 @@ Finite-choice {B = B} ⦃ fin {sz} e ⦄ k = do
 Finite-≃ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Finite A ⦄ → A ≃ B → Finite B
 Finite-≃ ⦃ fin {n} e ⦄ e' = fin (∥-∥-map (e' e⁻¹ ∙e_) e)
 
+equiv→same-cardinality
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fa : Finite A ⦄ ⦃ fb : Finite B ⦄
+  → ∥ A ≃ B ∥ → fa .Finite.cardinality ≡ fb .Finite.cardinality
+equiv→same-cardinality ⦃ fa ⦄ ⦃ fb ⦄ e = ∥-∥-out! do
+  e ← e
+  ea ← fa .Finite.enumeration
+  eb ← fb .Finite.enumeration
+  pure (Fin-injective (ea e⁻¹ ∙e e ∙e eb))
+
+same-cardinality→equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fa : Finite A ⦄ ⦃ fb : Finite B ⦄
+  → fa .Finite.cardinality ≡ fb .Finite.cardinality → ∥ A ≃ B ∥
+same-cardinality→equiv ⦃ fa ⦄ ⦃ fb ⦄ p = do
+  ea ← fa .Finite.enumeration
+  eb ← fb .Finite.enumeration
+  pure (ea ∙e path→equiv (ap Fin p) ∙e eb e⁻¹)
+
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄
+  (e : ∥ A ≃ B ∥) (f : A → B) where
+
+  Finite-injection→equiv : injective f → is-equiv f
+  Finite-injection→equiv inj = ∥-∥-out! do
+    e ← e
+    eb ← fb .Finite.enumeration
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-injection→equiv _
+      $ Equiv.injective (eb e⁻¹ ∙e e e⁻¹) ∘ inj ∘ Equiv.injective eb
+
+  Finite-surjection→equiv : is-surjective f → is-equiv f
+  Finite-surjection→equiv surj = ∥-∥-out! do
+    e ← e
+    eb ← fb .Finite.enumeration
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-surjection→equiv _
+      $ ∘-is-surjective (is-equiv→is-surjective (eb .snd))
+      $ ∘-is-surjective surj
+      $ is-equiv→is-surjective ((eb e⁻¹ ∙e e e⁻¹) .snd)
+
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -150,6 +198,7 @@ private variable
 instance
   Finite-Fin : ∀ {n} → Finite (Fin n)
   Finite-⊎ : ⦃ Finite A ⦄ → ⦃ Finite B ⦄ → Finite (A ⊎ B)
+  Finite-Maybe : ⦃ fa : Finite A ⦄ → Finite (Maybe A)
 
   Finite-Σ
     : {P : A → Type ℓ} → ⦃ Finite A ⦄ → ⦃ ∀ {x} → Finite (P x) ⦄ → Finite (Σ A P)
@@ -169,27 +218,6 @@ instance
 
 <!--
 ```agda
-private
-  finite-pi-fin
-    : ∀ {ℓ'} n {B : Fin n → Type ℓ'}
-    → (∀ x → Finite (B x))
-    → Finite ((x : Fin n) → B x)
-  finite-pi-fin zero fam = fin {cardinality = 1} $ pure $ Iso→Equiv λ where
-    .fst x → fzero
-    .snd .is-iso.inv x ()
-    .snd .is-iso.rinv fzero → refl
-    .snd .is-iso.linv x → funext λ { () }
-
-  finite-pi-fin (suc sz) {B} fam = ∥-∥-proj! $ do
-    e ← finite-choice (suc sz) λ x → fam x .enumeration
-    let rest = finite-pi-fin sz (λ x → fam (fsuc x))
-    cont ← rest .Finite.enumeration
-    let
-      work = Fin-suc-universal {n = sz} {A = B}
-        ∙e Σ-ap (e fzero) (λ x → cont)
-        ∙e Finite-sum λ _ → rest .Finite.cardinality
-    pure $ fin $ pure work
-
 Finite-Fin = fin (inc (_ , id-equiv))
 
 Finite-⊎ {A = A} {B = B} = fin $ do
@@ -197,43 +225,80 @@ Finite-⊎ {A = A} {B = B} = fin $ do
   beq ← enumeration {T = B}
   pure (⊎-ap aeq beq ∙e Finite-coproduct)
 
-Finite-Π {A = A} {P = P} ⦃ fin {sz} en ⦄ ⦃ fam ⦄ = ∥-∥-proj! $ do
-  eqv ← en
-  let count = finite-pi-fin sz λ x → fam {equiv→inverse (eqv .snd) x}
-  eqv' ← count .Finite.enumeration
-  pure $ fin $ pure $ Π-dom≃ (eqv e⁻¹) ∙e eqv'
+Finite-Maybe {A = A} = fin do
+  an ← enumeration {T = ⊤ ⊎ A}
+  pure (Maybe-is-sum ∙e an)
 
-Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ fam ⦄ = ∥-∥-proj! $ do
+Finite-Π {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
   aeq ← afin .Finite.enumeration
   let
     module aeq = Equiv aeq
-    bc : (x : Fin (afin .Finite.cardinality)) → Nat
-    bc x = fam {aeq.from x} .Finite.cardinality
+    bc : Fin (afin .Finite.cardinality) → Nat
+    bc x = pfin {aeq.from x} .Finite.cardinality
+  pure $ fin do
+    t ← Finite-choice λ x → pfin {x} .Finite.enumeration
+    pure (Π-cod≃ t ∙e Π-dom≃ aeq.inverse ∙e Finite-product bc)
 
-    fs : (Σ _ λ x → Fin (bc x)) ≃ Fin (sum (afin .Finite.cardinality) bc)
-    fs = Finite-sum bc
-    work = do
-      t ← Finite-choice λ x → fam {x} .Finite.enumeration
-      pure $ Σ-ap aeq λ x → t x
-          ∙e (_ , cast-is-equiv (ap (λ e → fam {e} .cardinality)
-                    (sym (aeq.η x))))
-  pure $ fin ⦇ work ∙e pure fs ⦈
+Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ pfin ⦄ = ∥-∥-out! do
+  aeq ← afin .Finite.enumeration
+  let
+    module aeq = Equiv aeq
+    bc : Fin (afin .Finite.cardinality) → Nat
+    bc x = pfin {aeq.from x} .Finite.cardinality
+  pure $ fin do
+    t ← Finite-choice λ x → pfin {x} .Finite.enumeration
+    pure (Σ-ap-snd t ∙e Σ-ap-fst aeq.inverse e⁻¹ ∙e Finite-sum bc)
 
 Finite-⊥ = fin (inc (Finite-zero-is-initial e⁻¹))
 Finite-⊤ = fin (inc (is-contr→≃⊤ Finite-one-is-contr e⁻¹))
-Finite-Bool = fin (inc (Iso→Equiv enum)) where
+
+Bool≃Fin2 : Bool ≃ Fin 2
+Bool≃Fin2 = Iso→Equiv enum where
   enum : Iso Bool (Fin 2)
   enum .fst false = 0
   enum .fst true = 1
-  enum .snd .is-iso.inv fzero = false
-  enum .snd .is-iso.inv (fsuc fzero) = true
-  enum .snd .is-iso.rinv fzero = refl
-  enum .snd .is-iso.rinv (fsuc fzero) = refl
+  enum .snd .is-iso.inv i with fin-view i
+  enum .snd .is-iso.inv _ | zero  = false
+  enum .snd .is-iso.inv _ | suc _ = true
+  enum .snd .is-iso.rinv i with fin-view i
+  enum .snd .is-iso.rinv _ | suc fzero = refl
+  enum .snd .is-iso.rinv _ | suc (fin (suc n) ⦃ forget p ⦄) = absurd (¬suc≤0 (≤-peel p))
+  enum .snd .is-iso.rinv _ | zero  = refl
   enum .snd .is-iso.linv true = refl
   enum .snd .is-iso.linv false = refl
+
+Finite-Bool = fin (inc Bool≃Fin2)
 
 Finite-PathP = subst Finite (sym (PathP≡Path _ _ _)) (Discrete→Finite≡ Finite→Discrete)
 
 Finite-Lift = Finite-≃ (Lift-≃ e⁻¹)
+```
+-->
+
+```agda
+abstract instance
+  Finite-Coeq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f g : A → B} ⦃ _ : Finite A ⦄ ⦃ _ : Finite B ⦄ → Finite (Coeq f g)
+```
+
+<!--
+```agda
+  Finite-Coeq {A = A} {B} {f} {g} ⦃ fin ae ⦄ ⦃ fin be ⦄ = ∥-∥-out! do
+    ae ← ae
+    be ← be
+    let
+      f' = Equiv.to be ∘ f ∘ Equiv.from ae
+      g' = Equiv.to be ∘ g ∘ Equiv.from ae
+
+      fn : Σ[ n ∈ Nat ] Fin n ≃ Coeq f' g'
+      fn = Finite-coequaliser f' g'
+
+    pure (fin {cardinality = fn .fst} (inc (Coeq-ap ae be refl refl ∙e Equiv.inverse (fn .snd))))
+```
+-->
+
+<!--
+```agda
+card-zero→empty : ∥ A ≃ Fin 0 ∥ → ¬ A
+card-zero→empty ∥e∥ a = rec! (λ e → Fin-absurd (Equiv.to e a)) ∥e∥
 ```
 -->

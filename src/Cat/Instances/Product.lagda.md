@@ -15,6 +15,7 @@ module Cat.Instances.Product where
 ```agda
 open Precategory
 open Functor
+open _=>_
 private variable
   o₁ h₁ o₂ h₂ : Level
   B C D E : Precategory o₁ h₁
@@ -31,8 +32,8 @@ morphism in $\cC$ and a morphism in $\cD$. The product category
 admits two projection functors
 
 $$
-\cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD\text{,}
-$$
+\cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD
+$$,
 
 satisfying a universal property analogous to those of [[product
 diagrams|product]] _in_ categories. Namely, given a setup like in the
@@ -67,7 +68,7 @@ C ×ᶜ D = prodcat module ×ᶜ where
   prodcat : Precategory _ _
   prodcat .Ob = Ob C × Ob D
   prodcat .Hom (a , a') (b , b') = Hom C a b × Hom D a' b'
-  prodcat .Hom-set (a , a') (b , b') = hlevel!
+  prodcat .Hom-set (a , a') (b , b') = hlevel 2
   prodcat .id = id C , id D
   prodcat ._∘_ (f , f') (g , g') = f C.∘ g , f' D.∘ g'
   prodcat .idr (f , f') i = C.idr f i , D.idr f' i
@@ -101,20 +102,28 @@ Snd .F-∘ _ _ = refl
 Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×ᶜ D)
 Cat⟨ F , G ⟩ = f where
   f : Functor _ _
-  f .F₀ x = F₀ F x , F₀ G x
-  f .F₁ f = F₁ F f , F₁ G f
-  f .F-id i = F-id F i , F-id G i
-  f .F-∘ f g i = F-∘ F f g i , F-∘ G f g i
+  f .F₀ x = F .F₀ x , G .F₀ x
+  f .F₁ f = F .F₁ f , G .F₁ f
+  f .F-id i = F .F-id i , G .F-id i
+  f .F-∘ f g i = F .F-∘ f g i , G .F-∘ f g i
 
 _F×_ : Functor B D → Functor C E → Functor (B ×ᶜ C) (D ×ᶜ E)
 _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
   module F× where
 
   func : Functor (B ×ᶜ C) (D ×ᶜ E)
-  func .F₀ (x , y) = (G .F₀ x) , (H .F₀ y)
-  func .F₁ (f , g) = (G .F₁ f) , (H .F₁ g)
-  func .F-id = (G .F-id) ,ₚ (H .F-id)
-  func .F-∘ (f , g) (f' , g') = (G .F-∘ f f') ,ₚ H .F-∘ g g'
+  func .F₀ (x , y) = G .F₀ x , H .F₀ y
+  func .F₁ (f , g) = G .F₁ f , H .F₁ g
+  func .F-id = G .F-id ,ₚ H .F-id
+  func .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
+
+_nt×_
+  : {F G : Functor B D} {H K : Functor C E}
+  → F => G → H => K → (F F× H) => (G F× K)
+_nt×_ α β .η (c , d) = α .η c , β .η d
+_nt×_ α β .is-natural (c , d) (c' , d') (f , g) = Σ-pathp
+  (α .is-natural c c' f)
+  (β .is-natural d d' g)
 ```
 
 <!--
@@ -149,5 +158,5 @@ module
       Σ-pathp (C.iso→path (F-map-iso Fst im)) (D.iso→path (F-map-iso Snd im))
     ×ᶜ-is-category .to-path-over p = C*D.≅-pathp _ _ $
       Σ-pathp (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
-                  (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
+              (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```

@@ -1,9 +1,8 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Monoid.Category
 open import Algebra.Semigroup
-open import Algebra.Monoid renaming (idr to mon-idr; idl to mon-idl)
+open import Algebra.Monoid
 open import Algebra.Magma
 
 open import Cat.Monoidal.Instances.Cartesian
@@ -23,6 +22,8 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
+
+open is-monoid renaming (idl to mon-idl ; idr to mon-idr)
 ```
 -->
 
@@ -66,14 +67,14 @@ elements_ $X \to M$ also carries the structure of a monoid. The unit
 element is given by
 
 $$
-X \xto{!} 1 \xto{\eta} M\text{,}
-$$
+X \xto{!} 1 \xto{\eta} M
+$$,
 
 and the multiplication map is given by
 
 $$
-(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M\text{.}
-$$
+(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M
+$$.
 
 [monoid object]: Cat.Monoidal.Diagram.Monoid.html
 
@@ -91,12 +92,13 @@ $$
 
 ```agda
   Mon→Hom-mon : ∀ {m} (x : Ob) → C-Monoid m → Monoid-on (Hom x m)
-  Mon→Hom-mon {m} x mon = hom-mon where
-    has-semigroup : is-semigroup λ f g → mon .μ ∘ ⟨ f , g ⟩
-    hom-mon : Monoid-on (Hom x m)
+  Mon→Hom-mon {m} x mon = to-monoid-on hom-mon where
+    open make-monoid
 
-    hom-mon .Monoid-on.identity = mon .η ∘ !
-    hom-mon .Monoid-on._⋆_ f g  = mon .μ ∘ ⟨ f , g ⟩
+    hom-mon : make-monoid (Hom x m)
+    hom-mon .monoid-is-set = hlevel 2
+    hom-mon ._⋆_ f g = mon .μ ∘ ⟨ f , g ⟩
+    hom-mon .1M = mon .η ∘ !
 ```
 
 <details>
@@ -104,24 +106,21 @@ $$
 diagram "relativize" to each $\hom$-set.</summary>
 
 ```agda
-    hom-mon .Monoid-on.has-is-monoid .has-is-semigroup = has-semigroup
-    hom-mon .Monoid-on.has-is-monoid .mon-idl {f} =
-      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
-      mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
-      π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
-      f                                   ∎
-    hom-mon .Monoid-on.has-is-monoid .mon-idr {f} =
-      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! C prod ⟩
-      mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
-      π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
-      f                                   ∎
-
-    has-semigroup .has-is-magma .has-is-set = Hom-set _ _
-    has-semigroup .associative {f} {g} {h} =
+    hom-mon .⋆-assoc f g h =
       mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
       mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! C prod ⟩
       mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
+    hom-mon .⋆-idl f =
+      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
+      π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
+      f                                   ∎
+    hom-mon .⋆-idr f =
+      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
+      π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
+      f                                   ∎
 ```
 
 </details>
@@ -165,8 +164,8 @@ is to show functoriality, which follows immediately:
   Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
   Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
 
-  Mon→PshMon {m} mon .F-id    = Homomorphism-path idr
-  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
+  Mon→PshMon {m} mon .F-id    = ext idr
+  Mon→PshMon {m} mon .F-∘ f g = ext λ h → assoc h g f
 ```
 
 And, since this presheaf is _by definition_ given by the set of maps
@@ -175,12 +174,12 @@ into an object, it's representable!
 ```agda
   Mon→PshMon-rep
     : ∀ {m} → (mon : C-Monoid m)
-    → Representation {C = C} (Forget F∘ Mon→PshMon mon)
+    → Representation {C = C} (Mon↪Sets F∘ Mon→PshMon mon)
   Mon→PshMon-rep {m = m} mon .rep = m
   Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
     open make-natural-iso
 
-    ni : make-natural-iso (Forget F∘ Mon→PshMon mon) (Hom-into C m)
+    ni : make-natural-iso (Mon↪Sets F∘ Mon→PshMon mon) (Hom-into C m)
     ni .eta _ f   = f
     ni .inv _ f   = f
     ni .eta∘inv _ = refl
@@ -192,9 +191,11 @@ Now, suppose we have a pair of monoid objects, $M$ and $N$, together
 with a homomorphism $f : M \to N$. We can now consider the
 *post*composition with $f$, a function of sets which maps between the
 relativizations of $M$ and $N$ to arbitrary contexts: it has type
+
 $$
-\hom(X, M) \to \hom(X, N)\text{.}
-$$
+\hom(X, M) \to \hom(X, N)
+$$.
+
 Since we've equipped these sets with monoid structures using the
 internal structures on $M$ and $N$, and $f$ is a homomorphism between
 those, we would like for postcomposition with $f$ to _also_ be a monoid
@@ -238,7 +239,7 @@ externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
   PShMon κ = Cat[ C ^op , Monoids κ ]
 
   RepPShMon : Precategory (o ⊔ lsuc ℓ) (o ⊔ ℓ)
-  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Forget F∘ P))
+  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Mon↪Sets F∘ P))
 ```
 -->
 
@@ -256,18 +257,16 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
 
 ```agda
   Mon→RepPShMon : Functor Mon[C] RepPShMon
-  Mon→RepPShMon .F₀ (m , mon) .object  = Mon→PshMon mon
-  Mon→RepPShMon .F₀ (m , mon) .witness = Mon→PshMon-rep mon
+  Mon→RepPShMon .F₀ (m , mon) .fst = Mon→PshMon mon
+  Mon→RepPShMon .F₀ (m , mon) .snd = Mon→PshMon-rep mon
 
   Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
   Mon→RepPShMon .F₁ f .η x .preserves =
     internal-mon-hom→hom-mon-hom (f .preserves)
-  Mon→RepPShMon .F₁ f .is-natural x y g =
-    Homomorphism-path λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .hom) h g
 
-  Mon→RepPShMon .F-id = Nat-path λ x → Homomorphism-path λ f → idl f
-  Mon→RepPShMon .F-∘ f g = Nat-path λ x → Homomorphism-path λ h →
-    sym (assoc (f .hom) (g .hom) h)
+  Mon→RepPShMon .F-id = ext λ x f → idl f
+  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .hom) (g .hom) h)
 ```
 
 This functor is a simultaneous restriction and corestriction of the
@@ -302,15 +301,12 @@ functor is also [[fully faithful]].
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
     .inv α .hom       → α .η _ # id
     .inv α .preserves → Nat→internal-mon-hom α
-    .rinv α → Nat-path λ _ → Homomorphism-path λ f →
+    .rinv α → ext λ _ f →
       α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
       α .η _ # f        ∎
-    .linv h → total-hom-path _
-      (idr _)
-      (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
+    .linv h → total-hom-path _ (idr _) prop!
 ```
-
 
 # Internalizing presheaves of monoids
 
@@ -385,9 +381,9 @@ object $M : \cC$.
 ```agda
   RepPshMon→Mon
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
-    → (P-rep : Representation {C = C} (Forget F∘ P))
+    → (P-rep : Representation {C = C} (Mon↪Sets F∘ P))
     → C-Monoid (P-rep .rep)
-  RepPshMon→Mon P P-rep = Hom-mon→Mon hom-mon η*-nat μ*-nat
+  RepPshMon→Mon P P-rep = Hom-mon→Mon (λ x → to-monoid-on (hom-mon x)) η*-nat μ*-nat
     module RepPshMon→Mon where
 ```
 
@@ -432,37 +428,36 @@ the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 ```agda
     η*-idl : ∀ {x} → (f : Hom x m) → μ* (η* x) f ≡ f
     η*-idl {x} f =
-      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (identity ⋆ elt f)               ≡⟨ ap gen PMon.idl ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     η*-idr : ∀ {x} → (f : Hom x m) → μ* f (η* x) ≡ f
     η*-idr {x} f =
-      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen identity) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ identity)               ≡⟨ ap gen PMon.idr ⟩
-      gen (elt f)                          ≡⟨ repr.invl ηₚ _ $ₚ _ ⟩
+      gen (elt f)                          ≡⟨ unext repr.invl _ _ ⟩
       f                                    ∎
 
     μ*-assoc : ∀ {x} → (f g h : Hom x m) → μ* f (μ* g h) ≡ μ* (μ* f g) h
     μ*-assoc {x} f g h =
-      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
+      gen (elt f ⋆ ⌜ elt (gen (elt g ⋆ elt h)) ⌝) ≡⟨ ap! (unext repr.invr _ _) ⟩
       gen (elt f ⋆ (elt g ⋆ elt h))               ≡⟨ ap gen PMon.associative ⟩
-      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ repr.invr ηₚ _ $ₚ _) ⟩
+      gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ unext repr.invr _ _) ⟩
       gen (elt (gen (elt f ⋆ elt g)) ⋆ elt h)     ∎
 ```
 </details>
 
 <!--
 ```agda
-    hom-mon : ∀ x → Monoid-on (Hom x m)
-    hom-mon x .Monoid-on.identity = η* x
-    hom-mon x .Monoid-on._⋆_ = μ*
-    hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
-      Hom-set x m
-    hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .associative = μ*-assoc _ _ _
-    hom-mon x .Monoid-on.has-is-monoid .mon-idl = η*-idl _
-    hom-mon x .Monoid-on.has-is-monoid .mon-idr = η*-idr _
+    hom-mon : ∀ x → make-monoid (Hom x m)
+    hom-mon x .make-monoid.monoid-is-set = hlevel 2
+    hom-mon x .make-monoid._⋆_ = μ*
+    hom-mon x .make-monoid.1M = η* x
+    hom-mon x .make-monoid.⋆-assoc = μ*-assoc
+    hom-mon x .make-monoid.⋆-idl = η*-idl
+    hom-mon x .make-monoid.⋆-idr = η*-idr
 ```
 -->
 
@@ -497,13 +492,12 @@ monoids isomorphic to the one we started with.
 
 ```agda
   Mon→RepPShMon-is-split-eso : is-split-eso Mon→RepPShMon
-  Mon→RepPShMon-is-split-eso P .fst =
-    P .witness .rep , RepPshMon→Mon (P .object) (P .witness)
-  Mon→RepPShMon-is-split-eso P .snd = super-iso→sub-iso _ $ to-natural-iso ni where
+  Mon→RepPShMon-is-split-eso (P , pm) .fst = pm .rep , RepPshMon→Mon P pm
+  Mon→RepPShMon-is-split-eso (P , pm) .snd = super-iso→sub-iso _ $ to-natural-iso ni where
     open make-natural-iso
-    open RepPshMon→Mon (P .object) (P .witness)
+    open RepPshMon→Mon P pm
     open PMon using (identity; _⋆_)
-    module P = Functor (P .object)
+    module P = Functor P
 ```
 
 <details>
@@ -511,30 +505,30 @@ monoids isomorphic to the one we started with.
 expand this `<details>` element.</summary>
 
 ```agda
-    ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon (P .object) (P .witness))) (P .object)
+    ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon P pm)) P
     ni .eta x .hom = repr.from .η x
     ni .inv x .hom = repr.to .η x
 
     ni .eta x .preserves .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
-      elt (η* x)                 ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
       identity                   ∎
     ni .eta x .preserves .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
-      elt (μ* f g)                               ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
       (elt f ⋆ elt g)                            ∎
 
     ni .inv x .preserves .pres-id = sym (η*-nat _)
     ni .inv x .preserves .pres-⋆ f g =
-      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.invr ηₚ _ $ₚ _) (repr.invr ηₚ _ $ₚ _)) ⟩
+      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
       μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
 
-    ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
-    ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
-    ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
+    ni .eta∘inv x = ext (unext repr.invr x)
+    ni .inv∘eta x = ext (unext repr.invl x)
+    ni .natural x y f = ext (sym (repr.from .is-natural _ _ _) $ₚ_)
 ```
 </details>
 

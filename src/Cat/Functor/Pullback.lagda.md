@@ -5,6 +5,7 @@ open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
 open import Cat.Prelude
@@ -26,6 +27,7 @@ open is-pullback
 open Pullback
 open Initial
 open Functor
+open _=>_
 open /-Obj
 open /-Hom
 ```
@@ -34,7 +36,7 @@ open /-Hom
 # Base change {defines="pullback-functor"}
 
 Let $\cC$ be a category with all [[pullbacks]], and $f : Y \to X$ a
-morphism in $\cC$. Then we have a functor $f* : \cC/X \to \cC/Y$, called
+morphism in $\cC$. Then we have a functor $f^* : \cC/X \to \cC/Y$, called
 the **base change**, where the action on objects is given by pulling
 back along $f$.
 
@@ -131,7 +133,6 @@ module _ {X Y : Ob} (f : Hom Y X) where
   Σf .F-∘ f g = trivial!
 
   open _⊣_
-  open _=>_
 ```
 
 <!--
@@ -166,9 +167,9 @@ module _ {X Y : Ob} (f : Hom Y X) where
 -->
 
 The adjunction unit and counit are given by the universal properties of
-pullbacks. ⚠️ WIP ⚠️
+pullbacks.
 
-<!-- TODO [Amy 2022-03-23]
+<!-- [TODO: Amy, 2022-03-23]
 Explain this better
 -->
 
@@ -212,4 +213,41 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
       (pulll pb.p₂∘universal ∙ pb'.p₂∘universal))) where
     module pb = Pullback (pullbacks (B .map) f)
     module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
+```
+
+## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}
+
+A [[natural transformation]] $F \To G$ is called **equifibred**, or
+**cartesian**, if each of its naturality squares is a [[pullback]]:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  Fa & Fb \\
+  Ga & Gb
+  \arrow["Ff", from=1-1, to=1-2]
+  \arrow["{\alpha_a}"', from=1-1, to=2-1]
+  \arrow["Gf"', from=2-1, to=2-2]
+  \arrow["{\alpha_b}", from=1-2, to=2-2]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+is-equifibred
+  : ∀ {oj ℓj} {J : Precategory oj ℓj} {F G : Functor J C}
+  → F => G → Type _
+is-equifibred {J = J} {F} {G} α =
+  ∀ {x y} (f : J .Precategory.Hom x y)
+  → is-pullback C (F .F₁ f) (α .η y) (α .η x) (G .F₁ f)
+```
+
+An easy property of equifibered transformations is that they are
+closed under pre-whiskering:
+
+```agda
+◂-equifibred
+  : ∀ {oj ℓj ok ℓk} {J : Precategory oj ℓj} {K : Precategory ok ℓk}
+  → {F G : Functor J C} (H : Functor K J) (α : F => G)
+  → is-equifibred α → is-equifibred (α ◂ H)
+◂-equifibred H α eq f = eq (H .F₁ f)
 ```

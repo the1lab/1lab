@@ -95,8 +95,8 @@ For the multiplication map, observe that we can piece together a natural
 transformation
 
 $$
-(\Lan_F(F))^2Fx \to \Lan_F(F)Fx \to Fx\text{,}
-$$
+(\Lan_F(F))^2Fx \to \Lan_F(F)Fx \to Fx
+$$,
 
 using the canonical natural transformation $\eps : \Lan_F(F)F \To F$.
 Extending _this_ map, then, gives us a natural transformation
@@ -133,10 +133,10 @@ maps we want to compute with.</summary>
     abstract
       path : nat₁ ≡ idnt
       path = σ-uniq₂ eps
-        (Nat-path λ x →
-          sym (B.pulll (σ-comm ηₚ x)
-             ∙ Ext.cancelr (σ-comm ηₚ x)))
-        (Nat-path λ _ → B.intror refl)
+        (ext λ x → sym
+          ( B.pulll (σ-comm ηₚ x)
+          ∙ Ext.cancelr (σ-comm ηₚ x)))
+        (ext λ _ → B.intror refl)
 
   Codensity .right-ident {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
@@ -147,10 +147,11 @@ maps we want to compute with.</summary>
     abstract
       path : nat₁ ≡ idnt
       path = σ-uniq₂ eps
-        (Nat-path λ x → sym $ B.pulll (σ-comm ηₚ x)
-                            ∙ B.pullr (sym (σ unit-nt .is-natural _ _ _))
-                            ∙ B.cancell (σ-comm ηₚ x))
-        (Nat-path λ _ → B.intror refl)
+        (ext λ x → sym $
+            B.pulll (σ-comm ηₚ x)
+          ·· B.pullr (sym (σ unit-nt .is-natural _ _ _))
+          ·· B.cancell (σ-comm ηₚ x))
+        (ext λ _ → B.intror refl)
 
   Codensity .mult-assoc {x = x} = path ηₚ x where
     mult' : (Ext F∘ Ext F∘ Ext) F∘ F => F
@@ -171,20 +172,20 @@ maps we want to compute with.</summary>
     abstract
       path : sig₁ ≡ sig₂
       path = σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult'
-        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
-                           ∙ Ext.pullr (σ-comm ηₚ x)))
-        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
-                          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
-                          ·· B.pulll (σ-comm ηₚ x)
-                           ∙ Ext.pullr refl))
+        (ext λ x → sym $
+            B.pulll (σ-comm ηₚ x)
+          ∙ Ext.pullr (σ-comm ηₚ x))
+        (ext λ x → sym $
+             B.pulll (σ-comm ηₚ x)
+          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
+          ·· B.pulll (σ-comm ηₚ x)
+           ∙ Ext.pullr refl)
 ```
 </details>
 
 To understand what the codensity monad _represents_, recall that
-adjoints can be understood as [efficient solutions] to "optimisation
+adjoints can be understood as [[efficient solutions|universal-morphism]] to "optimisation
 problems". But when a functor does _not_ admit a left adjoint, we
 conclude that there is no most efficient solution; This doesn't mean
 that we can't _approximate_ a solution, though! And indeed, this kind of
 approximation is exactly what right Kan extensions are for.
-
-[efficient solutions]: Cat.Functor.Adjoint.html#universal-morphisms

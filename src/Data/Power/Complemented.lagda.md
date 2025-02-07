@@ -48,12 +48,12 @@ their union is all of $A$.
 
 ```agda
 is-decidable : ∀ {ℓ} {A : Type ℓ} (p : ℙ A) → Type _
-is-decidable p = ∀ a → Dec (a ∈ p)
+is-decidable {A = A} p = (a : A) → Dec (a ∈ p)
 
 is-decidable→is-complemented : (p : ℙ A) → is-decidable p → is-complemented p
 is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
   inv : ℙ A
-  inv x = el (¬ (x ∈ p)) hlevel!
+  inv x = el (¬ (x ∈ p)) (hlevel 1)
 
   intersection : (p ∩ inv) ⊆ minimal
   intersection x (x∈p , x∉p) = x∉p x∈p
@@ -66,17 +66,16 @@ is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
 
 For the converse, since _decidability_ of a proposition is itself a
 proposition, it suffices to assume we have an inhabitant of $(x \in p)
-\coprod (x \in p^{-1})$. Assuming that $x \in p^{-1}$, we must show that
+\coprod (x \in p\inv)$. Assuming that $x \in p\inv$, we must show that
 $x \notin p$: But by the definition of complemented subobject, the
-intersection $(p \cap p^{-1})$ is empty.
+intersection $(p \cap p\inv)$ is empty.
 
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
 is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
-  □-rec!  (λ { (inl x∈p)   → yes x∈p
-             ; (inr x∈p⁻¹) → no λ x∈p → intersection elt (x∈p , x∈p⁻¹)
-             })
-    (union elt tt)
+  case union elt tt of λ where
+    (inl x∈p)  → yes x∈p
+    (inr x∈¬p) → no λ x∈p → intersection elt (x∈p , x∈¬p)
 ```
 
 # Decidable subobject classifiers
@@ -91,8 +90,8 @@ and so they are classified by the "classical subobject classifier" $2 :=
 
 ```agda
 decidable-subobject-classifier
-  : (A → Bool) ≃ (Σ[ p ∈ ℙ A ] (is-decidable p))
-decidable-subobject-classifier = eqv where
+  : {A : Type ℓ} → (A → Bool) ≃ (Σ[ p ∈ ℙ A ] (is-decidable p))
+decidable-subobject-classifier {A = A} = eqv where
 ```
 
 In much the same way that the subobject represented by a map $A \to
@@ -102,7 +101,7 @@ subobject because $2$ has decidable equality.
 
 ```agda
   to : (A → Bool) → (Σ[ p ∈ ℙ A ] (is-decidable p))
-  to map .fst x = el (map x ≡ true) hlevel!
+  to map .fst x = el (map x ≡ true) (hlevel 1)
   to map .snd p = Bool-elim (λ p → Dec (p ≡ true))
     (yes refl) (no (λ p → true≠false (sym p))) (map p)
 ```

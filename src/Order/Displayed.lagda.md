@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Prelude
 
+open import Order.Morphism
 open import Order.Base
 
 import Order.Reasoning as Pr
@@ -12,7 +13,7 @@ import Order.Reasoning as Pr
 module Order.Displayed where
 ```
 
-# Displayed posets
+# Displayed posets {defines="displayed-order"}
 
 As a special case of [[displayed categories]], we can construct
 displayed [[_posets_]]: a poset $P$ displayed over $A$, written $P
@@ -61,48 +62,61 @@ record Displayed {ℓₒ ℓᵣ} ℓ ℓ' (P : Poset ℓₒ ℓᵣ) : Type (lsuc
 ```
 -->
 
+<!--
+```agda
+module _ {ℓ ℓ' ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} (D : Displayed ℓ ℓ' P) where
+  private
+    module D = Displayed D
+    module P = Pr P
+```
+-->
+
 Analogously to a displayed category, where we can take pairs of an
 object $x$ and an object $x'$ over $x$ to make a _new_ category (the
 total space $\int P$), we can take total spaces of displayed _posets_ to
 make a new poset.
 
 ```agda
-∫ : ∀ {ℓ ℓ' ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} → Displayed ℓ ℓ' P → Poset _ _
-∫ {P = P} D = po where
--- to-poset (Σ ⌞ P ⌟ D.Ob[_]) mk-∫ where
-  module D = Displayed D
-  module P = Pr P
-
-  po : Poset _ _
-  po .Poset.Ob = Σ ⌞ P ⌟ D.Ob[_]
-  po .Poset._≤_ (x , x') (y , y') = Σ (x P.≤ y) λ f → D.Rel[ f ] x' y'
-  po .Poset.≤-thin = Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin' f
-  po .Poset.≤-refl = P.≤-refl , D.≤-refl'
-  po .Poset.≤-trans (p , p') (q , q') = P.≤-trans p q , D.≤-trans' p' q'
-  po .Poset.≤-antisym (p , p') (q , q') =
+  ∫ : Poset _ _
+  ∫ .Poset.Ob = Σ ⌞ P ⌟ D.Ob[_]
+  ∫ .Poset._≤_ (x , x') (y , y') = Σ (x P.≤ y) λ f → D.Rel[ f ] x' y'
+  ∫ .Poset.≤-thin = Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin' f
+  ∫ .Poset.≤-refl = P.≤-refl , D.≤-refl'
+  ∫ .Poset.≤-trans (p , p') (q , q') = P.≤-trans p q , D.≤-trans' p' q'
+  ∫ .Poset.≤-antisym (p , p') (q , q') =
     Σ-pathp (P.≤-antisym p q) (D.≤-antisym-over p' q')
-
-open Displayed
 ```
 
-A special case of displayed posets are sub-partial orders, or, (ab)using
-categorical terminology, _full subposets_: These are (the total spaces)
-that result from attaching a proposition to the objects, and leaving the
-order relation alone.
+:::{.definition #fibre-posets}
+Similarly, we can define **fibre posets** as a special case of [[fibre
+categories]]. Because posets are thin categories, we do not worry about
+most coherence conditions.
+:::
 
 ```agda
-Full-subposet'
-  : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)
-  → Displayed ℓ lzero P
-Full-subposet' P S .Ob[_] x = ∣ S x ∣
-Full-subposet' P S .Rel[_] f x y = ⊤
-Full-subposet' P S .≤-refl' = tt
-Full-subposet' P S .≤-thin' f x y = refl
-Full-subposet' P S .≤-trans' _ _ = tt
-Full-subposet' P S .≤-antisym' _ _ = is-prop→pathp (λ i → S _ .is-tr) _ _
+  Fibre : ⌞ P ⌟ → Poset _ _
+  Fibre x .Poset.Ob = D.Ob[ x ]
+  Fibre x .Poset._≤_ = D.Rel[ P.≤-refl ]
+  Fibre x .Poset.≤-thin = D.≤-thin' P.≤-refl
+  Fibre x .Poset.≤-refl = D.≤-refl'
+  Fibre x .Poset.≤-trans p' q' =
+    subst (λ p → D.Rel[ p ] _ _) (P.≤-thin _ _) $
+    D.≤-trans' p' q'
+  Fibre x .Poset.≤-antisym = D.≤-antisym'
+```
 
-Full-subposet
-  : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)
-  → Poset (ℓₒ ⊔ ℓ) ℓᵣ
-Full-subposet P S = ∫ (Full-subposet' P S)
+There is an injection from any fibre poset to the total space that is
+an order embedding.
+
+```agda
+  fibre-injᵖ : (x :  ⌞ P ⌟) → Monotone (Fibre x) ∫
+  fibre-injᵖ x .hom    x'    = x , x'
+  fibre-injᵖ x .pres-≤ x'≤y' = P.≤-refl , x'≤y'
+
+  fibre-injᵖ-is-order-embedding
+    : (x :  ⌞ P ⌟) → is-order-embedding (Fibre x) ∫ (apply (fibre-injᵖ x))
+  fibre-injᵖ-is-order-embedding x =
+    prop-ext (D.≤-thin' P.≤-refl) (∫ .Poset.≤-thin)
+      (fibre-injᵖ x .pres-≤)
+      (λ (p , p') → subst (λ p → D.Rel[ p ] _ _) (P.≤-thin p _) p')
 ```

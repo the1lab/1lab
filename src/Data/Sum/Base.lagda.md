@@ -4,8 +4,6 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import Data.Dec.Base
 ```
 -->
 
@@ -13,7 +11,7 @@ open import Data.Dec.Base
 module Data.Sum.Base where
 ```
 
-# Sum types
+# Sum types {defines="sum-type"}
 
 Sum types are one of the fundamental ingredients of type theory. They
 play a dual role to the [[product type]]; if products allow us to state
@@ -24,7 +22,7 @@ We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
 
 ```agda
-infixr 1 _⊎_
+infixr 3 _⊎_
 
 data _⊎_ {a b} (A : Type a) (B : Type b) : Type (a ⊔ b) where
   inl : A → A ⊎ B
@@ -50,6 +48,16 @@ given two functions `A → C` and `B → C`, we can construct a function
 [ f , g ] (inl x) = f x
 [ f , g ] (inr x) = g x
 ```
+
+<!--
+```agda
+infix 0 if⁺_then_else_
+
+if⁺_then_else_ : A ⊎ B → C → C → C
+if⁺ inl _ then y else n = y
+if⁺ inr _ then y else n = n
+```
+-->
 
 Furthermore, this function is "universal" in the following sense: if we
 have some function `h : A ⊎ B → C` that behaves like `f` when provided
@@ -124,37 +132,6 @@ types.
 ⊎-mapr : (B → C) → A ⊎ B → A ⊎ C
 ⊎-mapr f = ⊎-map id f
 ```
-
-## Decidablity
-
-This type has a very similar structure to [[Dec|type of decisions]], so
-we provide some helpers to convert between the two.
-
-```agda
-from-dec : Dec A → A ⊎ ¬ A
-from-dec (yes a) = inl a
-from-dec (no ¬a) = inr ¬a
-
-to-dec : A ⊎ ¬ A → Dec A
-to-dec (inl  a) = yes a
-to-dec (inr ¬a) = no ¬a
-```
-
-The proof that these functions are inverses is automatic by computation,
-and thus it can be shown they are equivalences:
-
-```agda
-from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
-from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
-  p : _
-  p (inl x)  = refl
-  p (inr ¬x) = refl
-
-  q : _
-  q (yes x) = refl
-  q (no x)  = refl
-```
-
 
 ## Closure under equivalences
 

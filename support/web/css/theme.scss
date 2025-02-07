@@ -1,55 +1,145 @@
+@use "sass:selector";
+@use "sass:meta";
+@use "sass:map";
+
 @import "vars.scss";
+@import "colors.scss";
+
+$theme: (
+  text: (
+    bg:     (light: $light-text-bg, dark: $dark-text-bg),
+    fg:     (light: $light-text-fg, dark: $dark-text-fg),
+    fg-alt: (light: $bluegray-800,  dark: $bluegray-200),
+  ),
+
+  shadow: black,
+
+  primary:   (light: $light-code-blue,   dark: $dark-code-blue),
+  secondary: (light: $light-code-purple, dark: $dark-code-pink),
+  active:    (light: $light-code-blue,   dark: #4267BD),
+
+  modal-bg:  (light: #CCCCCCAA, dark: #282C34AA),
+
+  ruler:     (light: #94A3B8, dark: #94A3B8),
+
+  warning: (
+    bg:   (light: $yellow-400, dark: $yellow-500),
+    icon: (light: $yellow-700, dark: $yellow-400),
+  ),
+
+  note: (
+    bg:   (light: $violet-500, dark: $violet-500),
+    icon: (light: $violet-600, dark: $violet-400),
+  ),
+
+  terminology: (
+    bg:   (light: $cyan-600, dark: $cyan-600),
+    icon: (light: $cyan-900, dark: $cyan-700),
+  ),
+
+  source: (
+    bg:   (light: $cyan-600, dark: $cyan-600),
+    icon: (light: $cyan-900, dark: $cyan-700),
+  ),
+
+  commit: (
+    bg: (light: $violet-500, dark: $violet-400),
+  ),
+
+  code: (
+    bg:          (light: $light-text-bg,     dark: $dark-text-bg),
+    fg:          (light: $light-text-fg,     dark: $dark-text-fg),
+    keyword:     (light: $light-code-orange, dark: $dark-code-yellow),
+    string:      (light: $light-code-red,    dark: $dark-code-red),
+    number:      (light: $light-code-pink,   dark: $dark-code-green),
+    module:      (light: $light-code-pink,   dark: $dark-code-cyan),
+    field:       (light: $light-code-purple, dark: $dark-code-pink),
+    constructor: (light: $light-code-green,  dark: $dark-code-green),
+    highlight:   (light: #F5DEB3,          dark: #EF444499),
+  ),
+
+  search-selected: (light: $violet-800, dark: $cyan-900),
+
+  depgraph-edge:   (light: #EEEEEE, dark: $bluegray-600),
+
+  blockquote-bg:   (light: $purple-300, dark: $bluegray-600),
+
+  input: (
+    bg:     (light: $light-text-bg, dark: $bluegray-700),
+    border: (light: lighten($light-text-fg, 30%), dark: $bluegray-600)
+  ),
+
+  popup-bg:        (light: $light-text-bg, dark: $dark-text-bg),
+  button-hover-bg: (light: $zinc-200,      dark: #3B4454),
+
+  diagram-shaded-bg: (light: #CCFFCC, dark: #2B6253),
+);
+
+@function -join-key($p, $s) {
+  @if $p == '' {
+    @return $s;
+  } @else {
+    @return $p + '-' + $s;
+  }
+}
+
+@function -flatten-theme($val, $key: '', $out: ()) {
+  $ty: meta.type-of($val);
+
+  @if $ty == 'map' {
+    @if map.get($val, 'light') {
+      $out: map.set($out, '--' + $key, true);
+    } @else {
+      @each $suffix, $valu in $val {
+        $out: -flatten-theme($valu, -join-key($key, $suffix), $out);
+      };
+    }
+  } @else if $ty == 'color' {
+    $out: map.set($out, '--' + $key, true);
+  };
+
+  @return $out;
+}
+
+$-allowed-keys: -flatten-theme($theme);
+
+@mixin -dump-color($name, $val, $variant) {
+  $ty: meta.type-of($val);
+
+  @if $ty == 'map' {
+    @if map.get($val, $variant) {
+      --#{$name}: #{map.get($val, $variant)};
+    } @else {
+      @each $suffix, $valu in $val {
+        @include -dump-color($name + "-" + $suffix, $valu, $variant)
+      };
+    }
+  } @else if $ty == 'color' {
+    --#{$name}: #{$val};
+  } @else {
+    @error "Key #{$name} (#{$val}, #{ty}) in theme map does not have a valid value for theme #{$variant}."
+  }
+};
+
+@mixin -theme-colors($variant) {
+  @each $name, $def in $theme {
+    @include -dump-color($name, $def, $variant);
+  }
+}
+
+@function theme($key) {
+  @if map.get($-allowed-keys, $key) {
+    @return var(#{$key});
+  } @else {
+    @debug $-allowed-keys;
+    @error "Unknown theming key: #{$key}."
+  }
+};
 
 :root, :root.light-theme {
-  --text-bg:     #{$light-text-bg};
-  --text-fg:     #{$light-text-fg};
-  --text-fg-alt: #{$bluegray-800};
-  --shadow:    #000;
+  @include -theme-colors('light');
 
-  --primary:   #{$light-code-blue};
-  --secondary: #{$light-code-purple};
-  --active:    #{$light-code-blue};
-
-  --modal-bg: #ccccccaa;
-
-  --warning-bg:   #{$yellow-400};
-  --warning-icon: #{$yellow-700};
-
-  --note-bg:   #{$violet-500};
-  --note-icon: #{$violet-600};
-
-  --terminology-bg:   #{$cyan-600};
-  --terminology-icon: #{$cyan-900};
-
-  --code-bg: var(--text-bg);
-  --code-fg: var(--text-fg);
-
-  --code-keyword:     #{$light-code-orange};
-  --code-string:      #{$light-code-red};
-  --code-number:      #{$light-code-pink};
-  --code-module:      #{$light-code-pink};
-  --code-field:       #{$light-code-purple};
-  --code-constructor: #{$light-code-green};
-  --code-highlight: #F5DEB3;
-
-  --search-selected: #{$violet-800};
-
-  --details-summary: #{$cyan-100};
-  --details-open:    #{$cyan-200};
-
-  --depgraph-edge: #eee;
-  --blockquote-bg: #{$purple-300};
-
-  --tooltip-bg:      #{$zinc-300};
-  --button-hover-bg: #{$light-button-hover-bg};
-
-  --input-bg:     #{$light-text-bg};
-  --input-border: #{lighten($light-text-fg, 30%)};
-
-  --popup-bg:     #{$light-text-bg};
   --icon-filter:  none;
-
-  --diagram-shaded-bg: #cfc;
 
   .diagram-dark {
     display: none !important;
@@ -61,50 +151,9 @@
 }
 
 @mixin dark-theme-vars {
-  --text-bg: #{$dark-text-bg};
-  --text-fg: #{$dark-text-fg};
-  --text-fg-alt: #{$bluegray-200};
-  --shadow: black;
+  @include -theme-colors('dark');
 
-  --primary:   #{$dark-code-blue};
-  --secondary: #{$dark-code-pink};
-  --active:    #4267BD;
-
-  --modal-bg: #282C34aa;
-
-  --warning-bg: #{$yellow-500};
-  --warning-icon: #{$yellow-400};
-
-  --note-bg:   #{$violet-500};
-  --note-icon: #{$violet-400};
-
-  --terminology-bg:   #{$cyan-600};
-  --terminology-icon: #{$cyan-700};
-
-  --code-bg: var(--text-bg);
-  --code-fg: var(--text-fg);
-
-  --code-keyword:     #{$dark-code-yellow};
-  --code-string:      #{$dark-code-red};
-  --code-number:      #{$dark-code-green};
-  --code-module:      #{$dark-code-cyan};
-  --code-field:       #{$dark-code-pink};
-  --code-constructor: #{$dark-code-green};
-  --code-highlight: #ef444499;
-
-  --search-selected: #{$cyan-900};
-
-  --depgraph-edge: #{$bluegray-600};
-  --blockquote-bg: #{$bluegray-600};
-
-  --input-bg:     #{$bluegray-700};
-  --input-border: #{$bluegray-600};
-
-  --popup-bg:        #282C34;
-  --button-hover-bg: #3b4454;
   --icon-filter: invert(79%) sepia(10%) saturate(306%) hue-rotate(181deg) brightness(89%) contrast(92%);;
-
-  --diagram-shaded-bg: #2B6253;
 
   .diagram-dark {
     display: block !important;
@@ -112,6 +161,12 @@
 
   .diagram-light {
     display: none !important;
+  }
+
+  span.enclosing.liesover {
+    background: url('../static/lies-over-dark.svg') no-repeat;
+    background-size: contain;
+    background-position: center center;
   }
 
   div.warning {
@@ -130,5 +185,40 @@
 @media (prefers-color-scheme: dark) {
   :root {
     @include dark-theme-vars;
+  }
+}
+
+:root {
+  --serif: "EB Garamond", "Times New Roman", "serif";
+  --sans-serif: "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-size: 1.4rem;
+  --code-font-size: calc(0.85 * var(--font-size));
+
+  --sidenote-separation: 2em;
+
+  &.sans-serif {
+    --serif: "";
+    --font-size: 1.3rem;
+    --code-font-size: calc(0.92 * var(--font-size));
+  }
+
+  &.show-equations span.reasoning-step {
+    .as-written {
+      display: inline;
+    }
+    .alternate {
+      display: none;
+    }
+  }
+
+  &.show-hidden-code .commented-out {
+    display: revert;
+  }
+
+  &.justified article {
+    p, li, summary, blockquote {
+      text-align: justify;
+      hyphens: auto;
+    }
   }
 }

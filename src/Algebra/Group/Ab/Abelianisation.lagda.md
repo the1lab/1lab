@@ -109,7 +109,7 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
 
 ```agda
   ab*-comm : ∀ x y → x ab* y ≡ y ab* x
-  ab*-comm = Coeq-elim-prop₂ (λ _ _ → squash _ _) l1 where abstract
+  ab*-comm = elim! l1 where abstract
     l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
     l1 x y =
       inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idl) refl ∙ sym G.associative) ⟩
@@ -118,16 +118,16 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
       inc^ab (y ⋆ x)        ∎
 ```
 
-Now we can define the inverse map. We prove that $x \mapsto x^{-1}$
+Now we can define the inverse map. We prove that $x \mapsto x\inv$
 extends from a map $G_0 \to G_0$ to a map $G^{ab}_0 \to G^{ab}_0$. To
-show this, we must prove that $(xyz)^{-1}$ and $(xzy)^{-1}$ are equal in
+show this, we must prove that $(xyz)\inv$ and $(xzy)\inv$ are equal in
 $G^{ab}_0$. This is why we showed commutativity of `_ab*_`{.Agda} before
 defining the inverse map. Here, check out the cute trick embedded in the
 tedious algebra:
 
 ```agda
   abinv : G^ab → G^ab
-  abinv = Coeq-rec squash (λ x → inc^ab (x ⁻¹)) l1 where abstract
+  abinv = Coeq-rec (λ x → inc^ab (x ⁻¹)) l1 where abstract
     l1 : ((x , y , z) : G × G × G)
         → inc^ab ((x ⋆ y ⋆ z) ⁻¹) ≡ inc^ab ((x ⋆ z ⋆ y) ⁻¹)
     l1 (x , y , z) =
@@ -137,8 +137,8 @@ tedious algebra:
 ```
 
 We get to something that is definitionally equal to our `_ab*_`{.Agda}
-multiplication, which _we know is commutative_, so we can swap $y^{-1}$
-and $z^{-1}$ around!
+multiplication, which _we know is commutative_, so we can swap $y\inv$
+and $z\inv$ around!
 
 ```agda
       (inc^ab (z ⁻¹) ab* inc^ab (y ⁻¹)) ab* inc^ab (x ⁻¹) ≡⟨ ap₂ _ab*_ (ab*-comm (inc^ab (z ⁻¹)) (inc^ab (y ⁻¹))) (λ i → inc^ab (x ⁻¹)) ⟩
@@ -160,8 +160,7 @@ inherited from $G$!
 
 ```agda
   ab*-associative : ∀ x y z → x ab* (y ab* z) ≡ (x ab* y) ab* z
-  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
-    λ _ _ _ → ap inc^ab associative
+  ab*-associative = elim! λ _ _ _ → ap inc^ab associative
 
   open make-abelian-group
   Abelian-group-on-G^ab : make-abelian-group G^ab
@@ -170,10 +169,8 @@ inherited from $G$!
   Abelian-group-on-G^ab .mul = _ab*_
   Abelian-group-on-G^ab .inv = abinv
   Abelian-group-on-G^ab .assoc = ab*-associative
-  Abelian-group-on-G^ab .invl =
-    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inversel)
-  Abelian-group-on-G^ab .idl =
-    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl)
+  Abelian-group-on-G^ab .invl = elim! λ _ → ap inc^ab G.inversel
+  Abelian-group-on-G^ab .idl = elim! λ _ → ap inc^ab G.idl
   Abelian-group-on-G^ab .comm = ab*-comm
 
   Abelianise : Abelian-group ℓ
@@ -195,32 +192,33 @@ $$
 
 for some $\hat f : G^{ab} \to H$ derived from $f$.
 
+<!--
 ```agda
-make-free-abelian : ∀ {ℓ} → make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-make-free-abelian {ℓ} = go where
-  open make-left-adjoint
-  go : make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-  go .free G = Abelianise G
+open Free-object
+```
+-->
 
-  go .unit G .hom = inc^ab G
-  go .unit G .preserves .is-group-hom.pres-⋆ x y = refl
-
-  go .universal {x = G} {y = H} f .hom =
-    Coeq-elim (λ _ → H.has-is-set) (f #_) (λ (a , b , c) → resp a b c) where
-    module G = Group-on (G .snd)
-    module H = Abelian-group-on (H .snd)
-    open is-group-hom (f .preserves)
-    abstract
-      resp : ∀ a b c → f # (a G.⋆ (b G.⋆ c)) ≡ f # (a G.⋆ (c G.⋆ b))
-      resp a b c =
-        f # (a G.⋆ (b G.⋆ c))       ≡⟨ pres-⋆ _ _ ⟩
-        f # a H.* f # (b G.⋆ c)     ≡⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
-        f # a H.* (f # b H.* f # c) ≡⟨ ap (f # a H.*_) H.commutes ⟩
-        f # a H.* (f # c H.* f # b) ≡˘⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
-        f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
-        f # (a G.⋆ (c G.⋆ b))       ∎
-  go .universal f .preserves .is-group-hom.pres-⋆ =
-    Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
-  go .commutes f = trivial!
-  go .unique p = ext (Coeq-elim-prop (λ _ → hlevel!) (λ x → p #ₚ x))
+```agda
+make-free-abelian : ∀ {ℓ} (G : Group ℓ) → Free-object Ab↪Grp G
+make-free-abelian G .free = Abelianise G
+make-free-abelian G .unit .hom =  inc^ab G
+make-free-abelian G .unit .preserves .is-group-hom.pres-⋆ x y = refl
+make-free-abelian G .fold {H} f .hom =
+  Coeq-elim (λ _ → H.has-is-set) (f #_) (λ (a , b , c) → resp a b c) where
+  module G = Group-on (G .snd)
+  module H = Abelian-group-on (H .snd)
+  open is-group-hom (f .preserves)
+  abstract
+    resp : ∀ a b c → f # (a G.⋆ (b G.⋆ c)) ≡ f # (a G.⋆ (c G.⋆ b))
+    resp a b c =
+      f # (a G.⋆ (b G.⋆ c))       ≡⟨ pres-⋆ _ _ ⟩
+      f # a H.* f # (b G.⋆ c)     ≡⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
+      f # a H.* (f # b H.* f # c) ≡⟨ ap (f # a H.*_) H.commutes ⟩
+      f # a H.* (f # c H.* f # b) ≡˘⟨ ap (f # a H.*_) (pres-⋆ _ _) ⟩
+      f # a H.* f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
+      f # (a G.⋆ (c G.⋆ b))       ∎
+make-free-abelian G .fold {H} f .preserves .is-group-hom.pres-⋆ =
+  elim! λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+make-free-abelian G .commute = trivial!
+make-free-abelian G .unique f p = ext (p #ₚ_)
 ```

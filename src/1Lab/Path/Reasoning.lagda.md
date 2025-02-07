@@ -98,6 +98,12 @@ module _ (pq≡s : p ∙ q ≡ s) where
   ∙-pullr : (r ∙ p) ∙ q ≡ r ∙ s
   ∙-pullr {r = r} = sym (∙-assoc r p q) ∙ ap (r ∙_) pq≡s
 
+  ∙-swapl : q ≡ sym p ∙ s
+  ∙-swapl = ∙-introl (∙-invl p) ∙ ∙-pullr
+
+  ∙-swapr : p ≡ s ∙ sym q
+  ∙-swapr = ∙-intror (∙-invr q) ∙ ∙-pulll
+
 module _ (s≡pq : s ≡ p ∙ q) where
   ∙-pushl : s ∙ r ≡ p ∙ q ∙ r
   ∙-pushl = sym (∙-pulll (sym s≡pq))
@@ -110,6 +116,9 @@ module _ (s≡pq : s ≡ p ∙ q) where
 
   ∙→square' : Square (sym p) q s refl
   ∙→square' = ∙-filler' p q ▷ sym s≡pq
+
+  ∙→square'' : Square (sym p) refl s q
+  ∙→square'' = transpose (∙-filler'' p q) ▷ sym s≡pq
 
 module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
   ∙-extendl : p ∙ (q ∙ t) ≡ r ∙ (s ∙ t)
@@ -163,9 +172,9 @@ module _ (inv : p ∙ q ≡ refl) where abstract
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
-`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+`ap (f ∙_) p` when proving that `f ∙ g ≡ f ∙ h`. To fix this, we steal
 some cute mixfix notation from `agda-categories` which allows us to write
-`≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
+`≡⟨ refl⟩∙⟨ p ⟩` instead, which is much more aesthetically pleasing!
 
 ```agda
 _⟩∙⟨_ : p ≡ q → r ≡ s → p ∙ r ≡ q ∙ s

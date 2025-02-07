@@ -47,6 +47,28 @@ only difference between these types can be patched by
     where module x = Sets._≅_ x
 ```
 
+<!--
+```agda
+  is-invertible→is-equiv
+    : {A B : Set ℓ} {f : ∣ A ∣ → ∣ B ∣}
+    → Sets.is-invertible {A} {B} f
+    → is-equiv f
+  is-invertible→is-equiv x =
+    is-iso→is-equiv $ iso x.inv (happly x.invl) (happly x.invr)
+    where module x = Sets.is-invertible x
+
+  is-equiv→is-invertible
+    : {A B : Set ℓ} {f : ∣ A ∣ → ∣ B ∣}
+    → is-equiv f
+    → Sets.is-invertible {A} {B} f
+  is-equiv→is-invertible f-eqv =
+    Sets.make-invertible
+      (equiv→inverse f-eqv)
+      (funext (equiv→counit f-eqv))
+      (funext (equiv→unit f-eqv))
+```
+-->
+
 Using univalence for $n$-types, function extensionality and the
 computation rule for univalence, it is almost trivial to show that
 categorical isomorphisms of sets are an [[identity system]].
@@ -66,19 +88,18 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
 
 ```agda
   equiv→iso : {A B : Set ℓ} → ∣ A ∣ ≃ ∣ B ∣ → A Sets.≅ B
-  equiv→iso (f , f-eqv) =
-    Sets.make-iso f (equiv→inverse f-eqv)
-      (funext (equiv→counit f-eqv))
-      (funext (equiv→unit f-eqv))
+  equiv→iso (f , f-eqv) = Sets.make-iso f
+    (equiv→inverse f-eqv)
+    (funext (equiv→counit f-eqv))
+    (funext (equiv→unit f-eqv))
 
   equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (∣ A ∣ ≃ ∣ B ∣)
-  equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q)
-    where
-      p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
-      p x = Σ-prop-path is-equiv-is-prop refl
+  equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q) where
+    p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
+    p x = trivial!
 
-      q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
-      q x = Sets.≅-pathp refl refl refl
+    q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
+    q x = trivial!
 ```
 
 We then use [univalence for $n$-types] to directly establish that $(A
@@ -106,7 +127,7 @@ First we show that isomorphism is invariant under `^op`{.Agda}.
     where
       open import Cat.Morphism
       open Inverses
-      the-iso : Iso (A Sets^op.≅ B) (A Sets.≅ B) 
+      the-iso : Iso (A Sets^op.≅ B) (A Sets.≅ B)
       the-iso .fst i .to = i .from
       the-iso .fst i .from = i .to
       the-iso .fst i .inverses .invl = i .invl
@@ -125,9 +146,9 @@ This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.A
   Sets^op-is-category : is-category (Sets ℓ ^op)
   Sets^op-is-category .to-path = Sets-is-category .to-path ⊙ transport (ua iso-op-invariant)
   Sets^op-is-category .to-path-over {a} {b} p = Sets^op.≅-pathp refl _ $ funext-dep λ {x₀} {x₁} q →
-    x₀                                                    ≡˘⟨ ap (_$ x₀) p.invr ⟩ 
-    p.to ⌜ p.from x₀ ⌝                                    ≡˘⟨ ap¡ Regularity.reduce! ⟩ 
+    x₀                                                    ≡˘⟨ ap (_$ x₀) p.invr ⟩
+    p.to ⌜ p.from x₀ ⌝                                    ≡˘⟨ ap¡ Regularity.reduce! ⟩
     p.to ⌜ transport refl $ p.from $ transport refl x₀ ⌝  ≡⟨ ap! (λ i → unglue (∂ i) (q i)) ⟩
     p.to x₁                                               ∎
     where module p = Sets^op._≅_ p
-```  
+```

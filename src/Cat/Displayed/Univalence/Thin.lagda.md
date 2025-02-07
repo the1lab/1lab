@@ -32,7 +32,7 @@ open _≅[_]_
 ```
 -->
 
-# Thinly displayed structures
+# Thinly displayed structures {defines=thin-structure}
 
 The HoTT Book's version of the structure identity principle can be seen
 as a very early example of [[displayed category]] theory. Their
@@ -83,12 +83,12 @@ laws are trivial since $H$ is valued in propositions.
   Thin-structure-over : Displayed (Sets ℓ) o' ℓ'
   Thin-structure-over .Ob[_] x = S ∣ x ∣
   Thin-structure-over .Hom[_] f x y = ∣ spec .is-hom f x y ∣
-  Thin-structure-over .Hom[_]-set f a b = is-prop→is-set hlevel!
+  Thin-structure-over .Hom[_]-set f a b = hlevel 2
   Thin-structure-over .id' = spec .id-is-hom
   Thin-structure-over ._∘'_ f g = spec .∘-is-hom _ _ f g
-  Thin-structure-over .idr' f' = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .idl' f' = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .assoc' f' g' h' = is-prop→pathp (λ _ → hlevel!) _ _
+  Thin-structure-over .idr' f' = prop!
+  Thin-structure-over .idl' f' = prop!
+  Thin-structure-over .assoc' f' g' h' = prop!
 
   Structured-objects : Precategory _ _
   Structured-objects = ∫ Thin-structure-over
@@ -120,40 +120,25 @@ By construction, such a category of structured objects admits a
   Forget-structure = πᶠ Thin-structure-over
 
   Structured-hom-path : is-faithful Forget-structure
-  Structured-hom-path p =
-    total-hom-path Thin-structure-over p (is-prop→pathp (λ _ → hlevel!) _ _)
+  Structured-hom-path p = total-hom-path Thin-structure-over p prop!
 
 module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S} where
   private
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  Extensional-Hom
-    : ∀ {a b ℓr} ⦃ sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr ⦄
-    → Extensional (So.Hom a b) ℓr
-  Extensional-Hom ⦃ sa ⦄ = injection→extensional!
-    (Structured-hom-path spec) sa
-
   instance
-    extensionality-hom : ∀ {a b} → Extensionality (So.Hom a b)
-    extensionality-hom = record { lemma = quote Extensional-Hom }
-
-    Funlike-Hom : Funlike So.Hom
-    Funlike-Hom = record
-      { _#_ = Total-hom.hom
-      }
-
-  Homomorphism-path
-    : ∀ {x y : So.Ob} {f g : So.Hom x y}
-    → (∀ x → f # x ≡ g # x)
-    → f ≡ g
-  Homomorphism-path h = Structured-hom-path spec (funext h)
+    Extensional-Hom
+      : ∀ {a b ℓr} ⦃ sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr ⦄
+      → Extensional (So.Hom a b) ℓr
+    Extensional-Hom ⦃ sa ⦄ = injection→extensional!
+      (Structured-hom-path spec) sa
 
   Homomorphism-monic
     : ∀ {x y : So.Ob} (f : So.Hom x y)
     → (∀ {x y} (p : f # x ≡ f # y) → x ≡ y)
     → Som.is-monic f
-  Homomorphism-monic f wit g h p = Homomorphism-path λ x → wit (ap hom p $ₚ x)
+  Homomorphism-monic f wit g h p = ext λ x → wit (ap hom p $ₚ x)
 
 record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-structure ℓ' S) : Type (lsuc ℓ ⊔ o' ⊔ ℓ') where
   field
@@ -163,29 +148,37 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  equiv-hom→inverse-hom
+  abstract
+    equiv-hom→inverse-hom
+      : ∀ {a b : So.Ob}
+      → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
+      → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
+      → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
+    equiv-hom→inverse-hom {a = a} {b = b} f e =
+      EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
+        (λ _ → invert-id-hom) f (b .snd) e
+
+  total-iso
     : ∀ {a b : So.Ob}
     → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
     → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
-    → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
-  equiv-hom→inverse-hom {a = a} {b = b} f e =
-    EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
-      (λ _ → invert-id-hom) f (b .snd) e
+    → a Som.≅ b
+  total-iso f e = Som.make-iso
+    (total-hom (Equiv.to f) e)
+    (total-hom (Equiv.from f) (equiv-hom→inverse-hom f e))
+    (ext (Equiv.ε f))
+    (ext (Equiv.η f))
 
   ∫-Path
     : ∀ {a b : So.Ob}
     → (f : So.Hom a b)
     → is-equiv (f #_)
     → a ≡ b
-  ∫-Path {a = a} {b = b} f eqv =
-    Σ-pathp (n-ua (f .hom , eqv)) $
-      EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → PathP (λ i → S (ua e i)) (a .snd) st)
-        (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
-                  ·· transport-refl _
-                  ·· spec .id-hom-unique pres (invert-id-hom pres)))
-        (f .hom , eqv) (b .snd) (f .preserves)
+  ∫-Path {a = a} {b = b} f eqv = Univalent.iso→path
+    (Structured-objects-is-category spec)
+    (total-iso ((f #_) , eqv) (f .preserves))
 
-open is-equational public
+open is-equational ⦃ ... ⦄ public
 ```
 
 <!--

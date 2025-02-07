@@ -1,13 +1,14 @@
 <!--
 ```agda
-open import Algebra.Prelude
-
 open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Kan.Nerve
+open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
+open import Cat.Functor.Hom
+open import Cat.Prelude
 
 open import Topoi.Base
 
@@ -28,8 +29,8 @@ We can build a **logical theory** on top of this signature by imposing
 **axioms** of the form
 
 $$
-P \vdash_{x} Q\text{,}
-$$
+P \vdash_{x} Q
+$$,
 
 where $P$ and $Q$ are formulae, and $x$ is a context consisting of
 variables typed with sorts from the signature. Depending on the
@@ -66,13 +67,13 @@ $$
 x \land \bigvee_i F(i) = \bigvee_i (x \land F(i))
 $$
 
-holds. We call such a structure a _frame_, and we can see that that a
-frame determines a topological space $X$, by letting the opens of the
-topology be the elements of the frame (the points come for free as
-filters satisfying a certain condition). This space $X$ can be called
-the **classifying space** of the theory $T$, since points of $X$
-correspond to models of $T$, and the specialisation preorder on $X$
-corresponds to homomorphism of models.
+holds. We call such a structure a _frame_, and we can see that a frame
+determines a topological space $X$, by letting the opens of the topology
+be the elements of the frame (the points come for free as filters
+satisfying a certain condition). This space $X$ can be called the
+**classifying space** of the theory $T$, since points of $X$ correspond
+to models of $T$, and the specialisation preorder on $X$ corresponds to
+homomorphism of models.
 
 If our theory is _not_ propositional, however, a topological space won't
 cut it, since there can be more than one homomorphism between two given
@@ -161,7 +162,7 @@ recovered as the composite $\Lan_\yo(F) \circ \yo$, because $\yo$ is a
 [[fully faithful]] functor.
 
 <!--
-```
+```agda
   module _ {D : Precategory κ κ} (F : Functor D C) (flat : Flat F) where
     private module DC = Cat.Reasoning Cat[ D , C ]
 ```

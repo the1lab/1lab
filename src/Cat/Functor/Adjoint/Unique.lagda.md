@@ -190,11 +190,11 @@ is-equivalence-is-prop ccat F x y = go where
   go i .F⁻¹ = invs i
   go i .F⊣F⁻¹ = adjs i
   go i .unit-iso a =
-    is-prop→pathp (λ i → C.is-invertible-is-prop {f = _⊣_.unit.η (adjs i) a})
+    is-prop→pathp (λ i → C.is-invertible-is-prop {f = _⊣_.η (adjs i) a})
       (x .unit-iso a)
       (y .unit-iso a) i
   go i .counit-iso a =
-    is-prop→pathp (λ i → D.is-invertible-is-prop {f = _⊣_.counit.ε (adjs i) a})
+    is-prop→pathp (λ i → D.is-invertible-is-prop {f = _⊣_.ε (adjs i) a})
       (x .counit-iso a)
       (y .counit-iso a) i
 ```

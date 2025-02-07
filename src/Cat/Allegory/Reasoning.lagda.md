@@ -15,7 +15,7 @@ module Cat.Allegory.Reasoning {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
 ```agda
 open Allegory A public
 open Cat.Reasoning (A .Allegory.cat)
-  hiding (module HLevel-instance ; Ob ; Hom ; Hom-set ; id ; idl ; idr ; assoc ; _∘_ ; Mor ; Hom→Mor ; Mor-path)
+  hiding (Ob ; Hom ; Hom-set ; id ; idl ; idr ; assoc ; _∘_)
   public
 ```
 

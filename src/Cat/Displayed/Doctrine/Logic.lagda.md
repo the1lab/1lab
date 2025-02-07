@@ -6,7 +6,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
-open import Cat.Prelude
+open import Cat.Prelude hiding (_ʻ_)
 
 import Cat.Displayed.Reasoning as Disp
 import Cat.Reasoning as Cat
@@ -275,8 +275,8 @@ Each fibre has a top element and conjunction. We single out the
 existential quantification along the latest variable
 
 $$
-\exists_\pi : \bP(\Gamma,x) \to \bP(\Gamma)\text{.}
-$$
+\exists_\pi : \bP(\Gamma,x) \to \bP(\Gamma)
+$$.
 
 Moreover, we can define equality $t = s$ of terms $t, s : \Gamma \vdash
 \tau$ in terms of existential quantification, though not along a
@@ -302,8 +302,8 @@ inclusion of semantic predicates is interpreted into substitution, and
 the equality predicate is interpreted by the formula
 
 $$
-(\exists_\delta \top)[\langle t, s \rangle]\text{.}
-$$
+(\exists_\delta \top)[\langle t, s \rangle]
+$$.
 
 ```agda
 ⟦_⟧ᵖ : Formula Γ → ℙ.Ob[ ⟦ Γ ⟧ᶜ ]
@@ -382,8 +382,8 @@ $$
         ⟨⟩∘ _
       ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
       ·· sym (⟨⟩∘ _)
-      ∙ eliml (sym (⟨⟩-unique id (idr _) (idr _)))
-    rem₁ .unique q r = ⟨⟩-unique _ q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
+      ∙ eliml (sym (⟨⟩-unique (idr _) (idr _)))
+    rem₁ .unique q r = ⟨⟩-unique q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
 ```
 -->
 

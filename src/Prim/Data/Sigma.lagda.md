@@ -27,11 +27,22 @@ open Σ public
 
 {-# BUILTIN SIGMA Σ #-}
 
-syntax Σ A (λ x → B) = Σ[ x ∈ A ] B
-
 infixr 4 _,_
-infix 5 Σ
 ```
+
+<!--
+```agda
+Σ-syntax : ∀ {ℓ ℓ'} (A : Type ℓ) (F : A → Type ℓ') → Type _
+Σ-syntax X F = Σ X F
+
+syntax Σ-syntax X (λ x → F) = Σ[ x ∈ X ] F
+infix 4 Σ-syntax
+
+instance
+  Σ-of-instances : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} ⦃ x : A ⦄ ⦃ y : B x ⦄ → Σ A B
+  Σ-of-instances ⦃ x ⦄ ⦃ y ⦄ = x , y
+```
+-->
 
 Similarly, for the unit type:
 

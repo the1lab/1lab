@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Functor.Properties
-open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 
 import Cat.Functor.Reasoning as Fr
@@ -19,7 +18,7 @@ module
 
 # Reasoning for ff functors
 
-<!-- TODO [Amy 2022-12-14]
+<!-- [TODO: Amy, 2022-12-14]
 Write something informative here
 -->
 
@@ -43,10 +42,10 @@ module _ {a} {b} where
   open Equiv (F₁ {a} {b} , ff) public
 
 iso-equiv : ∀ {a b} → (a C.≅ b) ≃ (F₀ a D.≅ F₀ b)
-iso-equiv {a} {b} = (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
+iso-equiv {a} {b} = (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
 
 module iso {a} {b} =
-  Equiv (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
+  Equiv (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
 ```
 -->
 
@@ -72,4 +71,10 @@ ipushr p = injective (F-∘ _ _ ·· ap₂ D._∘_ (ε _) refl ·· D.pullr p �
 
 inv∘l : x D.∘ F₁ f ≡ y → from x C.∘ f ≡ from y
 inv∘l x = sym (ε-twist (D.eliml F-id ∙ sym x)) ∙ C.idl _
+
+whackl : x D.∘ F₁ f ≡ F₁ g → from x C.∘ f ≡ g
+whackl p = sym (ε-twist (D.idr _ ∙ sym p)) ∙ C.elimr (from-id refl)
+
+whackr : F₁ f D.∘ x ≡ F₁ g → f C.∘ from x ≡ g
+whackr p = ε-twist (p ∙ sym (D.idl _)) ∙ C.eliml (from-id refl)
 ```

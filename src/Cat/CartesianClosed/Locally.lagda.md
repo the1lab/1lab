@@ -85,7 +85,7 @@ along the substitution $\sigma : \Delta \to \Gamma$.
 
 [^sets]: Indeed, even for the category $\Sets$, showing local Cartesian
 closure is not at all straightforward: the local exponential $f^g$ over
-$B$ is the set $\sum_{b : B} f^{-1}(b) \to g^{-1}(b)$, though this
+$B$ is the set $\sum_{b : B} f\inv(b) \to g\inv(b)$, though this
 computation is best understood in terms of [slices of
 sets](Cat.Instances.Slice.html#slices-of-sets).
 
@@ -141,8 +141,8 @@ language, that is a [[right adjoint]] to the [[base change
 functor|pullback functor]], fitting into an adjoint triple
 
 $$
-\Sigma_f \dashv f^* \dashv \textstyle\Pi_f\text{.}
-$$
+\Sigma_f \dashv f^* \dashv \textstyle\Pi_f
+$$.
 
 ## From dependent products
 
@@ -153,8 +153,8 @@ theory. First, observe that, for $f : X \to A$, the product functor $-
 \times f : \cC/A \to \cC/A$ is isomorphically given by
 
 $$
-\cC/A \xto{f^*} \cC/X \xto{\Sigma_f} \cC/A \text{,}
-$$
+\cC/A \xto{f^*} \cC/X \xto{\Sigma_f} \cC/A
+$$,
 
 since [[products in a slice]] are implemented by pullbacks in $\cC$; We
 can chase a $g : Y \to A$ along the above diagram to see that it first

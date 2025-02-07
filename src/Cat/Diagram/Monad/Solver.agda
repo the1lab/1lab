@@ -1,79 +1,89 @@
 module Cat.Diagram.Monad.Solver where
 
-open import 1Lab.Prelude hiding (id; _∘_)
+open import 1Lab.Prelude hiding (id; _∘_; refl⟩∘⟨_; _⟩∘⟨refl)
 open import 1Lab.Reflection hiding (_++_)
+open import Data.Id.Base
 
 open import Cat.Base
 open import Cat.Diagram.Monad
 
-import Cat.Functor.Reasoning as FR
-import Cat.Reasoning as CR
+import Cat.Functor.Reasoning
+import Cat.Reasoning
 
 open import Data.List hiding (_++_)
 
-module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
-  open CR 𝒞
-  module M = FR (Monad.M M)
-  open Monad M
+module NbE {o h} {C : Precategory o h} (monad : Monad C) where
+  private
+    open Cat.Reasoning C
+    open Monad monad
+    module M = Cat.Functor.Reasoning M
 
-  --------------------------------------------------------------------------------
-  -- NOTE: Object Expressions
-  -- We can't index everything by 'Ob', as Agda will (rightfully) assume that M₀ is not injective,
-  -- which then inhibits on our ability to pattern match on things.
-  -- Therefore, we introduce a reflected type of object expressions,
-  -- which solves the injectivity issue.
+  data “Ob” : Type o where
+    “_”  : Ob → “Ob”
+    “M₀” : “Ob” → “Ob”
 
-  data ‶Ob‶ : Type o where
-    ‶_‶   : Ob → ‶Ob‶
-    ‶M₀‶ : ‶Ob‶ → ‶Ob‶
+  sem-ob : “Ob” → Ob
+  sem-ob “ X ” = X
+  sem-ob (“M₀” X) = M₀ (sem-ob X)
 
-  ⟦_⟧ₒ : ‶Ob‶ → Ob
-  ⟦ ‶ X ‶ ⟧ₒ = X
-  ⟦ ‶M₀‶ X ⟧ₒ = M₀ ⟦ X ⟧ₒ
+  instance
+    Brackets-“Ob” : ⟦⟧-notation “Ob”
+    Brackets-“Ob” .⟦⟧-notation.lvl = o
+    Brackets-“Ob” .⟦⟧-notation.Sem = Ob
+    Brackets-“Ob” .⟦⟧-notation.⟦_⟧ = sem-ob
 
-  private variable
-    W X Y Z : ‶Ob‶
+  data “Hom” : “Ob” → “Ob” → Type (o ⊔ h) where
+    “M₁”  : ∀ {X Y} → “Hom” X Y → “Hom” (“M₀” X) (“M₀” Y)
+    “η”   : (X : “Ob”) → “Hom” X (“M₀” X)
+    “μ”   : (X : “Ob”) → “Hom” (“M₀” (“M₀” X)) (“M₀” X)
+    _“∘”_ : ∀ {X Y Z} → “Hom” Y Z → “Hom” X Y → “Hom” X Z
+    “id”  : ∀ {X} → “Hom” X X
+    _↑    : ∀ {X Y} → Hom ⟦ X ⟧ ⟦ Y ⟧ → “Hom” X Y
 
-  data ‶Hom‶ : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ h) where
-    ‶M₁‶  : ‶Hom‶ X Y → ‶Hom‶ (‶M₀‶ X) (‶M₀‶ Y)
-    ‶η‶   : (X : ‶Ob‶) → ‶Hom‶ X (‶M₀‶ X)
-    ‶μ‶   : (X : ‶Ob‶) → ‶Hom‶ (‶M₀‶ (‶M₀‶ X)) (‶M₀‶ X)
-    _‶∘‶_ : ‶Hom‶ Y Z → ‶Hom‶ X Y → ‶Hom‶ X Z
-    ‶id‶  : ‶Hom‶ X X
-    _↑    : ∀ {X Y} → Hom X Y → ‶Hom‶ ‶ X ‶ ‶ Y ‶
+  sem-hom : ∀ {X Y} → “Hom” X Y → Hom ⟦ X ⟧ ⟦ Y ⟧
+  sem-hom (“M₁” f) = M₁ (sem-hom f)
+  sem-hom (“η” _) = η _
+  sem-hom (“μ” X) = μ _
+  sem-hom (f “∘” g) = sem-hom f ∘ sem-hom g
+  sem-hom “id” = id
+  sem-hom (f ↑) = f
 
-  ⟦_⟧ₕ : ‶Hom‶ X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
-  ⟦ ‶M₁‶ f ⟧ₕ = M₁ ⟦ f ⟧ₕ
-  ⟦ ‶η‶ X ⟧ₕ = unit.η ⟦ X ⟧ₒ
-  ⟦ ‶μ‶ X ⟧ₕ = mult.η ⟦ X ⟧ₒ
-  ⟦ e1 ‶∘‶ e2 ⟧ₕ = ⟦ e1 ⟧ₕ ∘ ⟦ e2 ⟧ₕ
-  ⟦ ‶id‶ ⟧ₕ = id
-  ⟦ f ↑ ⟧ₕ = f
+  instance
+    Brackets-“Hom” : ∀ {X Y} → ⟦⟧-notation (“Hom” X Y)
+    Brackets-“Hom” .⟦⟧-notation.lvl = h
+    Brackets-“Hom” .⟦⟧-notation.Sem = _
+    Brackets-“Hom” .⟦⟧-notation.⟦_⟧ = sem-hom
 
-  --------------------------------------------------------------------------------
-  -- Values
+  data Frame : “Ob” → “Ob” → Type (o ⊔ h) where
+    khom  : ∀ {X Y} → Hom ⟦ X ⟧ ⟦ Y ⟧ → Frame X Y
+    kmap  : ∀ {X Y} → Frame X Y → Frame (“M₀” X) (“M₀” Y)
+    kunit : (X : “Ob”) → Frame X (“M₀” X)
+    kmult : (X : “Ob”) → Frame (“M₀” (“M₀” X)) (“M₀” X)
 
-  data Frame : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ h) where
-    khom  : ∀ {X Y} → Hom X Y → Frame ‶ X ‶ ‶ Y ‶
-    kmap  : Frame X Y → Frame (‶M₀‶ X) (‶M₀‶ Y)
-    kunit : (X : ‶Ob‶) → Frame X (‶M₀‶ X)
-    kmult : (X : ‶Ob‶) → Frame (‶M₀‶ (‶M₀‶ X)) (‶M₀‶ X)
+  data Value : “Ob” → “Ob” → Type (o ⊔ h) where
+    []  : ∀ {X} → Value X X
+    _∷_ : ∀ {X Y Z} → Frame Y Z → Value X Y → Value X Z
 
-  data Value : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ h) where
-    [] : Value X X
-    _∷_ : Frame Y Z → Value X Y → Value X Z
+  sem-frame : ∀ {X Y} → Frame X Y → Hom ⟦ X ⟧ ⟦ Y ⟧
+  sem-frame (khom f) = f
+  sem-frame (kmap k) = M₁ (sem-frame k)
+  sem-frame (kunit X) = η ⟦ X ⟧
+  sem-frame (kmult X) = μ ⟦ X ⟧
 
-  infixr 20 _∷_
+  sem-value : ∀ {X Y} → Value X Y → Hom ⟦ X ⟧ ⟦ Y ⟧
+  sem-value [] = id
+  sem-value (k ∷ v) = sem-frame k ∘ sem-value v
 
-  ⟦_⟧ₖ : Frame X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
-  ⟦ khom f ⟧ₖ = f
-  ⟦ kmap k ⟧ₖ = M₁ ⟦ k ⟧ₖ
-  ⟦ kunit X ⟧ₖ = unit.η ⟦ X ⟧ₒ
-  ⟦ kmult X ⟧ₖ = mult.η ⟦ X ⟧ₒ
+  instance
+    Brackets-Frame : ∀ {X Y} → ⟦⟧-notation (Frame X Y)
+    Brackets-Frame .⟦⟧-notation.lvl = h
+    Brackets-Frame .⟦⟧-notation.Sem = _
+    Brackets-Frame .⟦⟧-notation.⟦_⟧ = sem-frame
 
-  ⟦_⟧ᵥ : Value X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
-  ⟦ [] ⟧ᵥ = id
-  ⟦ k ∷ v ⟧ᵥ = ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
+    Brackets-Value : ∀ {X Y} → ⟦⟧-notation (Value X Y)
+    Brackets-Value .⟦⟧-notation.lvl = h
+    Brackets-Value .⟦⟧-notation.Sem = _
+    Brackets-Value .⟦⟧-notation.⟦_⟧ = sem-value
 
   --------------------------------------------------------------------------------
   -- Evaluation
@@ -90,17 +100,17 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   -- we don't have to dig nearly as far.
 
   -- Concatenate 2 values together, performing no simplification.
-  _++_ : Value Y Z → Value X Y → Value X Z
+  _++_ : ∀ {X Y Z} → Value Y Z → Value X Y → Value X Z
   [] ++ v2 = v2
   (k ∷ v1) ++ v2 = k ∷ (v1 ++ v2)
 
   -- Apply M₁ to a value.
-  do-vmap : Value X Y → Value (‶M₀‶ X) (‶M₀‶ Y)
+  do-vmap : ∀ {X Y} → Value X Y → Value (“M₀” X) (“M₀” Y)
   do-vmap [] = []
   do-vmap (f ∷ v) = kmap f ∷ do-vmap v
 
-  enact-laws : Frame Y Z → Frame X Y → Value W X → Value W Z
-  push-frm : Frame Y Z → Value X Y → Value X Z
+  enact-laws : ∀ {W X Y Z} → Frame Y Z → Frame X Y → Value W X → Value W Z
+  push-frm : ∀ {X Y Z} → Frame Y Z → Value X Y → Value X Z
 
   -- The meat of the solver! This is responsible for enacting the
   -- monad equations (hence the name).
@@ -116,10 +126,13 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   -- we can simply apply the relevant equations, and potentially keep pushing
   -- frames down.
   enact-laws (khom f) k' v = khom f ∷ k' ∷ v
+  enact-laws (kmap k) (khom g) v = kmap k ∷ khom g ∷ v
   enact-laws (kmap k) (kmap k') v = do-vmap (enact-laws k k' []) ++ v
   enact-laws (kmap k) (kunit _) v = kunit _ ∷ push-frm k v
   enact-laws (kmap k) (kmult _) v = kmult _ ∷ push-frm (kmap (kmap k)) v
   enact-laws (kunit _) k' v = kunit _ ∷ k' ∷ v
+  enact-laws (kmult _) (khom g) v = kmult _ ∷ khom g ∷ v
+  enact-laws (kmult _) (kmap (khom g)) v = kmult _ ∷ kmap (khom g) ∷ v
   enact-laws (kmult _) (kmap (kmap k')) v = kmult _ ∷ kmap (kmap k') ∷ v
   enact-laws (kmult _) (kmap (kunit _)) v = v
   enact-laws (kmult _) (kmap (kmult _)) v = kmult _ ∷ push-frm (kmult _) v
@@ -131,187 +144,204 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   push-frm k (k' ∷ v) = enact-laws k k' v
 
   -- Concatenate 2 stacks together, performing simplification via 'enact-laws'.
-  do-vcomp : Value Y Z → Value X Y → Value X Z
+  do-vcomp : ∀ {X Y Z} → Value Y Z → Value X Y → Value X Z
   do-vcomp [] v2 = v2
   do-vcomp (k ∷ v1) v2 = push-frm k (do-vcomp v1 v2)
 
-  eval : ‶Hom‶ X Y → Value X Y
-  eval (‶M₁‶ e) = do-vmap (eval e)
-  eval (‶η‶ X) = kunit X ∷ []
-  eval (‶μ‶ X) = kmult X ∷ []
-  eval (e1 ‶∘‶ e2) = do-vcomp (eval e1) (eval e2)
-  eval ‶id‶ = []
+  eval : ∀ {X Y} → “Hom” X Y → Value X Y
+  eval (“M₁” e) = do-vmap (eval e)
+  eval (“η” X) = kunit X ∷ []
+  eval (“μ” X) = kmult X ∷ []
+  eval (e1 “∘” e2) = do-vcomp (eval e1) (eval e2)
+  eval “id” = []
   eval (f ↑) = khom f ∷ []
 
   --------------------------------------------------------------------------------
   -- Soundness
 
-  vmap-sound : ∀ (v : Value X Y) → ⟦ do-vmap v ⟧ᵥ ≡ M₁ ⟦ v ⟧ᵥ
+  vmap-sound : ∀ {X Y} → (v : Value X Y) → ⟦ do-vmap v ⟧ ≡ M₁ ⟦ v ⟧
   vmap-sound [] = sym M-id
   vmap-sound (k ∷ v) =
-    M₁ ⟦ k ⟧ₖ ∘ ⟦ do-vmap v ⟧ᵥ ≡⟨ refl⟩∘⟨ vmap-sound v ⟩
-    M₁ ⟦ k ⟧ₖ M.𝒟.∘ M₁ ⟦ v ⟧ᵥ  ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
-    M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ) ∎
+    M₁ ⟦ k ⟧ ∘ ⟦ do-vmap v ⟧ ≡⟨ refl⟩∘⟨ vmap-sound v ⟩
+    M₁ ⟦ k ⟧ ∘ M₁ ⟦ v ⟧      ≡˘⟨ M-∘ ⟦ k ⟧ ⟦ v ⟧ ⟩
+    M₁ (⟦ k ⟧ ∘ ⟦ v ⟧)       ∎
 
-  vconcat-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ v1 ++ v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
-  vconcat-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
+  vconcat-sound
+    : ∀ {X Y Z}
+    → (v1 : Value Y Z) (v2 : Value X Y)
+    → ⟦ v1 ++ v2 ⟧ ≡ ⟦ v1 ⟧ ∘ ⟦ v2 ⟧
+  vconcat-sound [] v2 = sym (idl ⟦ v2 ⟧)
   vconcat-sound (k ∷ v1) v2 = pushr (vconcat-sound v1 v2)
 
-  enact-laws-sound : ∀ (k1 : Frame Y Z) → (k2 : Frame X Y) → (v : Value W X) → ⟦ enact-laws k1 k2 v ⟧ᵥ ≡ ⟦ k1 ⟧ₖ ∘ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ
-  push-frm-sound   : ∀ (k : Frame Y Z) → (v : Value X Y) → ⟦ push-frm k v ⟧ᵥ ≡ ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
+  enact-laws-sound
+    : ∀ {W X Y Z}
+    → (k1 : Frame Y Z) (k2 : Frame X Y) (v : Value W X)
+    → ⟦ enact-laws k1 k2 v ⟧ ≡ ⟦ k1 ⟧ ∘ ⟦ k2 ⟧ ∘ ⟦ v ⟧
+  push-frm-sound
+    : ∀ {X Y Z}
+    → (k : Frame Y Z) (v : Value X Y)
+    → ⟦ push-frm k v ⟧ ≡ ⟦ k ⟧ ∘ ⟦ v ⟧
 
   enact-laws-sound (khom x) k2 v = refl
+  enact-laws-sound (kmap k1) (khom g) v = refl
   enact-laws-sound (kmap k1) (kmap k2) v =
-    ⟦ do-vmap (enact-laws k1 k2 []) ++ v ⟧ᵥ     ≡⟨ vconcat-sound (do-vmap (enact-laws k1 k2 [])) v ⟩
-    ⟦ do-vmap (enact-laws k1 k2 []) ⟧ᵥ ∘ ⟦ v ⟧ᵥ ≡⟨ vmap-sound (enact-laws k1 k2 []) ⟩∘⟨refl ⟩
-    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ M.𝒟.∘ ⟦ v ⟧ᵥ    ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
-    M₁ ⟦ k1 ⟧ₖ ∘ M₁ (⟦ k2 ⟧ₖ ∘ id) ∘ ⟦ v ⟧ᵥ     ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ₖ ⟩ ⟩∘⟨refl) ⟩
-    M₁ ⟦ k1 ⟧ₖ ∘ M₁ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ            ∎
+    ⟦ do-vmap (enact-laws k1 k2 []) ++ v ⟧    ≡⟨ vconcat-sound (do-vmap (enact-laws k1 k2 [])) v ⟩
+    ⟦ do-vmap (enact-laws k1 k2 []) ⟧ ∘ ⟦ v ⟧ ≡⟨ vmap-sound (enact-laws k1 k2 []) ⟩∘⟨refl ⟩
+    M₁ ⟦ enact-laws k1 k2 [] ⟧ ∘ ⟦ v ⟧        ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
+    M₁ ⟦ k1 ⟧ ∘ M₁ (⟦ k2 ⟧ ∘ id) ∘ ⟦ v ⟧      ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ ⟩ ⟩∘⟨refl) ⟩
+    M₁ ⟦ k1 ⟧ ∘ M₁ ⟦ k2 ⟧ ∘ ⟦ v ⟧             ∎
   enact-laws-sound (kmap {Y = Y} k1) (kunit X) v =
-    unit.η ⟦ Y ⟧ₒ ∘ ⟦ push-frm k1 v ⟧ᵥ    ≡⟨ refl⟩∘⟨ push-frm-sound k1 v ⟩
-    unit.η ⟦ Y ⟧ₒ ∘ ⟦ k1 ⟧ₖ ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (unit.is-natural ⟦ X ⟧ₒ ⟦ Y ⟧ₒ ⟦ k1 ⟧ₖ) ⟩
-    M.F₁ ⟦ k1 ⟧ₖ ∘ unit.η ⟦ X ⟧ₒ ∘ ⟦ v ⟧ᵥ ∎
+    unit.η ⟦ Y ⟧ ∘ ⟦ push-frm k1 v ⟧   ≡⟨ refl⟩∘⟨ push-frm-sound k1 v ⟩
+    unit.η ⟦ Y ⟧ ∘ ⟦ k1 ⟧ ∘ ⟦ v ⟧      ≡⟨ extendl (unit.is-natural ⟦ X ⟧ ⟦ Y ⟧ ⟦ k1 ⟧) ⟩
+    M.F₁ ⟦ k1 ⟧ ∘ unit.η ⟦ X ⟧ ∘ ⟦ v ⟧ ∎
   enact-laws-sound (kmap {Y = Y} k1) (kmult X) v =
-    mult.η ⟦ Y ⟧ₒ ∘ ⟦ push-frm (kmap (kmap k1)) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-frm-sound (kmap (kmap k1)) v ⟩
-    mult.η ⟦ Y ⟧ₒ ∘ M₁ (M₁ ⟦ k1 ⟧ₖ) ∘ ⟦ v ⟧ᵥ         ≡⟨ extendl (mult.is-natural ⟦ X ⟧ₒ ⟦ Y ⟧ₒ ⟦ k1 ⟧ₖ) ⟩
-    M.F₁ ⟦ k1 ⟧ₖ ∘ mult.η ⟦ X ⟧ₒ ∘ ⟦ v ⟧ᵥ            ∎
+    mult.η ⟦ Y ⟧ ∘ ⟦ push-frm (kmap (kmap k1)) v ⟧ ≡⟨ refl⟩∘⟨ push-frm-sound (kmap (kmap k1)) v ⟩
+    mult.η ⟦ Y ⟧ ∘ M₁ (M₁ ⟦ k1 ⟧) ∘ ⟦ v ⟧          ≡⟨ extendl (mult.is-natural ⟦ X ⟧ ⟦ Y ⟧ ⟦ k1 ⟧) ⟩
+    M.F₁ ⟦ k1 ⟧ ∘ mult.η ⟦ X ⟧ ∘ ⟦ v ⟧             ∎
   enact-laws-sound (kunit X) k2 v = refl
+  enact-laws-sound (kmult X) (khom g) v = refl
+  enact-laws-sound (kmult X) (kmap (khom g)) v = refl
   enact-laws-sound (kmult X) (kmap (kmap k2)) v = refl
   enact-laws-sound (kmult X) (kmap (kunit .X)) v = insertl left-ident
   enact-laws-sound (kmult X) (kmap (kmult .X)) v =
-    mult.η ⟦ X ⟧ₒ ∘ ⟦ push-frm (kmult (‶M₀‶ X)) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-frm-sound (kmult (‶M₀‶ X)) v ⟩
-    mult.η ⟦ X ⟧ₒ ∘ mult.η (M₀ ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (sym mult-assoc) ⟩
-    mult.η ⟦ X ⟧ₒ ∘ M₁ (mult.η ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ ∎
+    mult.η ⟦ X ⟧ ∘ ⟦ push-frm (kmult (“M₀” X)) v ⟧ ≡⟨ refl⟩∘⟨ push-frm-sound (kmult (“M₀” X)) v ⟩
+    mult.η ⟦ X ⟧ ∘ mult.η (M₀ ⟦ X ⟧) ∘ ⟦ v ⟧       ≡⟨ extendl (sym mult-assoc) ⟩
+    mult.η ⟦ X ⟧ ∘ M₁ (mult.η ⟦ X ⟧) ∘ ⟦ v ⟧       ∎
   enact-laws-sound (kmult X) (kunit _) v = insertl right-ident
   enact-laws-sound (kmult X) (kmult _) v = refl
 
   push-frm-sound k [] = refl
   push-frm-sound k (k' ∷ v) = enact-laws-sound k k' v
 
-  vcomp-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ do-vcomp v1 v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
-  vcomp-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
+  vcomp-sound
+    : ∀ {X Y Z}
+    → (v1 : Value Y Z) (v2 : Value X Y)
+    → ⟦ do-vcomp v1 v2 ⟧ ≡ ⟦ v1 ⟧ ∘ ⟦ v2 ⟧
+  vcomp-sound [] v2 = sym (idl ⟦ v2 ⟧)
   vcomp-sound (k ∷ v1) v2 =
-    ⟦ push-frm k (do-vcomp v1 v2) ⟧ᵥ ≡⟨ push-frm-sound k (do-vcomp v1 v2) ⟩
-    ⟦ k ⟧ₖ ∘ ⟦ do-vcomp v1 v2 ⟧ᵥ ≡⟨ pushr (vcomp-sound v1 v2) ⟩
-    (⟦ k ⟧ₖ ∘ ⟦ v1 ⟧ᵥ) ∘ ⟦ v2 ⟧ᵥ ∎
+    ⟦ push-frm k (do-vcomp v1 v2) ⟧ ≡⟨ push-frm-sound k (do-vcomp v1 v2) ⟩
+    ⟦ k ⟧ ∘ ⟦ do-vcomp v1 v2 ⟧      ≡⟨ pushr (vcomp-sound v1 v2) ⟩
+    (⟦ k ⟧ ∘ ⟦ v1 ⟧) ∘ ⟦ v2 ⟧       ∎
 
-  eval-sound : ∀ (e : ‶Hom‶ X Y) → ⟦ eval e ⟧ᵥ ≡ ⟦ e ⟧ₕ
-  eval-sound (‶M₁‶ e) =
-    ⟦ do-vmap (eval e) ⟧ᵥ ≡⟨ vmap-sound (eval e) ⟩
-    M₁ ⟦ eval e ⟧ᵥ        ≡⟨ M.⟨ eval-sound e ⟩ ⟩
-    M₁ ⟦ e ⟧ₕ ∎
-  eval-sound (‶η‶ X) = idr (unit.η ⟦ X ⟧ₒ)
-  eval-sound (‶μ‶ X) = idr (mult.η ⟦ X ⟧ₒ)
-  eval-sound (e1 ‶∘‶ e2) =
-    ⟦ do-vcomp (eval e1) (eval e2) ⟧ᵥ ≡⟨ vcomp-sound (eval e1) (eval e2) ⟩
-    ⟦ eval e1 ⟧ᵥ ∘ ⟦ eval e2 ⟧ᵥ       ≡⟨ ap₂ _∘_ (eval-sound e1) (eval-sound e2) ⟩
-    ⟦ e1 ⟧ₕ ∘ ⟦ e2 ⟧ₕ                 ∎
-  eval-sound ‶id‶ = refl
+  eval-sound : ∀ {X Y} → (e : “Hom” X Y) → ⟦ eval e ⟧ ≡ ⟦ e ⟧
+  eval-sound (“M₁” e) =
+    ⟦ do-vmap (eval e) ⟧ ≡⟨ vmap-sound (eval e) ⟩
+    M₁ ⟦ eval e ⟧        ≡⟨ ap M₁ (eval-sound e) ⟩
+    M₁ ⟦ e ⟧             ∎
+  eval-sound (“η” X) = idr (unit.η ⟦ X ⟧)
+  eval-sound (“μ” X) = idr (mult.η ⟦ X ⟧)
+  eval-sound (e1 “∘” e2) =
+    ⟦ do-vcomp (eval e1) (eval e2) ⟧ ≡⟨ vcomp-sound (eval e1) (eval e2) ⟩
+    ⟦ eval e1 ⟧ ∘ ⟦ eval e2 ⟧        ≡⟨ ap₂ _∘_ (eval-sound e1) (eval-sound e2) ⟩
+    ⟦ e1 ⟧ ∘ ⟦ e2 ⟧                  ∎
+  eval-sound “id” = refl
   eval-sound (f ↑) = idr f
 
-  abstract
-    solve : ∀ (e1 e2 : ‶Hom‶ X Y) → ⟦ eval e1 ⟧ᵥ ≡ ⟦ eval e2 ⟧ᵥ → ⟦ e1 ⟧ₕ ≡ ⟦ e2 ⟧ₕ
-    solve e1 e2 p = sym (eval-sound e1) ·· p ·· (eval-sound e2)
+module _ {o h} {C : Precategory o h} {monad : Monad C} where
+  private
+    open Cat.Reasoning C
+    open Monad monad
+    module M = Cat.Functor.Reasoning M
+    open NbE monad
 
-module Reflection where
+  record Monad-ob (X : Ob) : Typeω where
+    field
+      “ob” : “Ob”
+      ob-repr : ⟦ “ob” ⟧ ≡ᵢ X
 
-  pattern category-args xs =
-    _ hm∷ _ hm∷ _ v∷ xs
+  “ob” : (X : Ob) → ⦃ “X” : Monad-ob X ⦄ → “Ob”
+  “ob” X ⦃ “X” ⦄ = Monad-ob.“ob” “X”
 
-  pattern functor-args functor xs =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
+  ob-repr : (X : Ob) → ⦃ “X” : Monad-ob X ⦄ → ⟦ “ob” X ⟧ ≡ᵢ X
+  ob-repr X ⦃ “X” ⦄ = Monad-ob.ob-repr “X”
 
-  pattern nat-trans-args nt args =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷
-    _ hm∷ _ hm∷
-    _ hm∷ _ hm∷
-    nt v∷ args
+  record Monad-hom
+    {X Y : Ob}
+    ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
+    (f : Hom X Y) : Typeω where
+    field
+      “hom” : “Hom” (“ob” X) (“ob” Y)
+
+  “hom”
+    : ∀ {X Y : Ob} → (f : Hom X Y)
+    → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
+    → ⦃ “f” : Monad-hom f ⦄
+    → “Hom” (“ob” X) (“ob” Y)
+  “hom” f ⦃ “f” = “f” ⦄ = Monad-hom.“hom” “f”
+
+  instance
+    Monad-ob-Default
+      : ∀ {X} → Monad-ob X
+    Monad-ob-Default {X = X} .Monad-ob.“ob” = NbE.“ X ”
+    Monad-ob-Default .Monad-ob.ob-repr = reflᵢ
+    {-# INCOHERENT Monad-ob-Default #-}
+
+    Monad-ob-M₀ : ∀ {X} → ⦃ “X” : Monad-ob  X ⦄ → Monad-ob (M₀ X)
+    Monad-ob-M₀ {X = X} .Monad-ob.“ob” = “M₀” (“ob” X)
+    Monad-ob-M₀ {X = X} .Monad-ob.ob-repr = apᵢ M₀ (ob-repr X)
+
+    Monad-hom-Default
+      : ∀ {X Y} {f : Hom X Y}
+      → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
+      → Monad-hom f
+    Monad-hom-Default {X = X} {Y = Y} {f = f} .Monad-hom.“hom” =
+      substᵢ (λ X → Hom X ⟦ “ob” Y ⟧) (symᵢ (ob-repr X)) (substᵢ (λ Y → Hom X Y) (symᵢ (ob-repr Y)) f) ↑
+    {-# INCOHERENT Monad-hom-Default #-}
+
+    Monad-hom-M₁
+      : ∀ {X Y} {f : Hom X Y}
+      → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
+      → ⦃ “f” : Monad-hom f ⦄
+      → Monad-hom (M₁ f)
+    Monad-hom-M₁ {f = f} .Monad-hom.“hom” = “M₁” (“hom” f)
+
+    Monad-hom-η
+      : ∀ {X}
+      → ⦃ “X” : Monad-ob X ⦄
+      → Monad-hom (η X)
+    Monad-hom-η {X = X} .Monad-hom.“hom” = “η” (“ob” X)
+
+    Monad-hom-μ
+      : ∀ {X}
+      → ⦃ “X” : Monad-ob X ⦄
+      → Monad-hom (μ X)
+    Monad-hom-μ {X = X} .Monad-hom.“hom” = “μ” (“ob” X)
+
+    Monad-hom-∘
+      : ∀ {X Y Z} {f : Hom Y Z} {g : Hom X Y}
+      → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄ ⦃ “Z” : Monad-ob Z ⦄
+      → ⦃ “f” : Monad-hom f ⦄ ⦃ “g” : Monad-hom g ⦄
+      → Monad-hom (f ∘ g)
+    Monad-hom-∘ {f = f} {g = g} .Monad-hom.“hom” = “hom” f “∘” “hom” g
+
+    Monad-hom-id
+      : ∀ {X}
+      → ⦃ “X” : Monad-ob X ⦄
+      → Monad-hom (id {X})
+    Monad-hom-id {X = X} .Monad-hom.“hom” = “id” {X = “ob” X}
 
 
-  pattern monad-args monad xs =
-    _ hm∷ _ hm∷ _ hm∷ monad v∷ xs
-
-  pattern monad-fn-args monad xs =
-    _ h∷ _ h∷ _ h∷ monad v∷ xs
-
-  pattern “id” =
-    def (quote Precategory.id) (category-args (_ h∷ []))
-
-  pattern “∘” f g =
-    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
-
-  pattern “M₀” monad x =
-    def (quote Monad.M₀) (monad-fn-args monad (x v∷ []))
-
-  pattern “M₁” monad f =
-    def (quote Monad.M₁) (monad-fn-args monad (_ h∷ _ h∷ f v∷ []))
-
-  pattern “η” monad x =
-    def (quote _=>_.η) (nat-trans-args (def (quote Monad.unit) (monad-args monad [])) (x v∷ []))
-
-  pattern “μ” monad x =
-    def (quote _=>_.η) (nat-trans-args (def (quote Monad.mult) (monad-args monad [])) (x v∷ []))
-
-  mk-monad-args : Term → List (Arg Term) → List (Arg Term)
-  mk-monad-args monad args = unknown h∷ unknown h∷ unknown h∷ monad v∷ args
-
-  “solve” : Term → Term → Term → Term
-  “solve” monad lhs rhs =
-    def (quote NbE.solve) (mk-monad-args monad $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
-
-  build-object-expr : Term → Term → TC Term
-  build-object-expr monad (“M₀” monad' x) = do
-    unify monad monad'
-    x ← build-object-expr monad x
-    pure $ con (quote NbE.‶M₀‶) (x v∷ [])
-  build-object-expr monad x =
-    pure $ con (quote NbE.‶_‶) (x v∷ [])
-
-  build-hom-expr : Term → Term → TC Term
-  build-hom-expr monad “id” =
-    pure $ con (quote NbE.‶id‶) []
-  build-hom-expr monad (“∘” f g) = do
-    f ← build-hom-expr monad f
-    g ← build-hom-expr monad g
-    pure $ con (quote NbE._‶∘‶_) (f v∷ g v∷ [])
-  build-hom-expr monad (“M₁” monad' f) = do
-    unify monad monad'
-    f ← build-hom-expr monad f
-    pure $ con (quote NbE.‶M₁‶) (f v∷ [])
-  build-hom-expr monad (“η” monad' x) = do
-    unify monad monad'
-    x ← build-object-expr monad x
-    pure $ con (quote NbE.‶η‶) (x v∷ [])
-  build-hom-expr monad (“μ” monad' x) = do
-    x ← build-object-expr monad x
-    unify monad monad'
-    pure $ con (quote NbE.‶μ‶) (x v∷ [])
-  build-hom-expr monad f =
-    pure $ con (quote NbE._↑) (f v∷ [])
-
-  dont-reduce : List Name
-  dont-reduce =
-    quote Precategory.id ∷ quote Precategory._∘_ ∷
-    quote Functor.F₀ ∷ quote Functor.F₁ ∷
-    quote _=>_.η ∷
-    quote Monad.M ∷ quote Monad.unit ∷ quote Monad.mult ∷ []
-
-  solve-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → TC ⊤
-  solve-macro monad hole =
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-      monad-tm ← quoteTC monad
-      goal ← infer-type hole >>= reduce
-      just (lhs , rhs) ← get-boundary goal
-        where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                    termErr goal ∷ []
-      elhs ← build-hom-expr monad-tm lhs
-      erhs ← build-hom-expr monad-tm rhs
-      noConstraints $ unify hole (“solve” monad-tm elhs erhs)
+abstract
+  solve-monad
+    : ∀ {o h} {C : Precategory o h} (monad : Monad C)
+    → (let open Precategory C) (let open NbE monad)
+    → ∀ {X Y}
+    → (f g : Hom X Y)
+    → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
+    → ⦃ “f” : Monad-hom f ⦄ ⦃ “g” : Monad-hom g ⦄
+    → ⟦ eval (“hom” f) ⟧ ≡ ⟦ eval (“hom” g) ⟧ → ⟦ “hom” f ⟧ ≡ ⟦ “hom” g ⟧
+  solve-monad monad f g p = sym (NbE.eval-sound monad (“hom” f)) ·· p ·· NbE.eval-sound monad (“hom” g)
 
 macro
-  monad! : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → TC ⊤
-  monad! monad = Reflection.solve-macro monad
+  monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → TC ⊤
+  monad! monad hole =
+    withNormalisation false $ do
+    goal ← infer-type hole >>= reduce
+    just (lhs , rhs) ← get-boundary goal
+      where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                  termErr goal ∷ []
+    “monad” ← quoteTC monad
+    unify hole (def (quote solve-monad) (“monad” v∷ lhs v∷ rhs v∷ “refl” v∷ []))
 
 private module Test {o h} {𝒞 : Precategory o h} (monad : Monad 𝒞) where
   open Precategory 𝒞

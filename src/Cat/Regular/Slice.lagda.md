@@ -3,7 +3,7 @@
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Slice
 open import Cat.Prelude
@@ -15,9 +15,7 @@ import Cat.Reasoning as Cr
 
 ```agda
 module Cat.Regular.Slice
-  {o ℓ} {C : Precategory o ℓ} (y : Precategory.Ob C)
-  (reg : is-regular C)
-  where
+  {o ℓ} {C : Precategory o ℓ} (y : ⌞ C ⌟) (reg : is-regular C) where
 ```
 
 # Regular categories are stable under slicing
@@ -32,7 +30,7 @@ well-behaved under passing to arbitrary contexts.
 
 [regular category]: Cat.Regular.html
 [pullback-stable]: Cat.Diagram.Pullback.html#stability
-[strong epi]: Cat.Morphism.StrongEpi.html
+[strong epi]: Cat.Morphism.Strong.Epi.html
 [mono]: Cat.Morphism.html#monos
 [slice]: Cat.Instances.Slice.html
 
@@ -84,7 +82,7 @@ $\cC/y$. To do this, we will freely use that $\cC$ and $\cC/y$ are
 finitely complete, and instead characterise the _extremal_ epimorphisms.
 
 [slilim]: Cat.Instances.Slice.Limit.html
-[strong epimorphisms]: Cat.Morphism.StrongEpi.html
+[strong epimorphisms]: Cat.Morphism.Strong.Epi.html
 
 For this, it will suffice to show that the inclusion functor $\cC/y
 \mono \cC$ both preserves and reflects extermal epimorphisms. Given an
@@ -164,7 +162,7 @@ slice-is-regular .factor {a} {b} f = fact' where
   fact' .mediate∈E = do
     c ← f.mediate∈E
     pure (reflect-cover (fact' .mediate) c)
-  fact' .forget∈M = inc λ g h p → ext $ out! f.forget∈M (g .map) (h .map) (ap map p)
+  fact' .forget∈M = inc λ g h p → ext $ □-out! f.forget∈M (g .map) (h .map) (ap map p)
   fact' .factors = ext f.factors
 
 slice-is-regular .stable {B = B} f g {p1} {p2} cover is-pb =

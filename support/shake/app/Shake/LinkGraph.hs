@@ -47,7 +47,7 @@ linksRules = do
     let searchAnchors = Set.fromList (map idAnchor searchData)
     agdaIdents :: [Identifier] <- readJSONFile "_build/all-types.json"
     let agdaAnchors = Set.fromList [ Text.concat [filename, "#", ident]
-                                   | Identifier ident anchor _type <- agdaIdents
+                                   | Identifier ident anchor _type _tooltip <- agdaIdents
                                    , let (filename, _) = Text.break (== '#') anchor ]
     pure $ Set.unions [moduleAnchors, searchAnchors, agdaAnchors]
 
@@ -89,6 +89,7 @@ getInternalLinks mod = foldMap go where
                    | otherwise -> Just target
           [] | "/" `isPrefixOf` uriPath uri -> Just "index.html"
              | not ("#fn" `isPrefixOf` uriFragment uri)
+             , not ("#cb" `isPrefixOf` uriFragment uri)
              , not ("#ref-" `isPrefixOf` uriFragment uri) -> Just (mod <.> "html")
           _ -> Nothing
   go _ = mempty

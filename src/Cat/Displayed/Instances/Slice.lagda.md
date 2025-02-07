@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Cartesian.Weak
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
@@ -24,6 +25,7 @@ open Cartesian-fibration
 open Cartesian-lift
 open Displayed
 open is-cartesian
+open is-weak-cartesian
 open Functor
 open CR B
 open /-Obj
@@ -35,7 +37,7 @@ open /-Obj
 There is a canonical way of viewing any category $\cB$ as displayed over
 _itself_, given [[fibrewise|fibre categories]] by taking [slice
 categories]. Following [@relativect], we refer to this construction as
-the **canonical-self indexing** of $\cB$ and denote it
+the **canonical self-indexing** of $\cB$ and denote it
 $\underline{\cB}$. Recall that the objects in the slice over $y$ are
 pairs consisting of an object $x$ and a map $f : x \to y$. The core idea
 is that _any morphism_ lets us view an object $x$ as being "structure
@@ -90,7 +92,7 @@ obtained by considering the canonical self-indexing of $\Sets_\kappa$.
 First, recall that an object $f : \Sets/X$ is equivalently a $X$-indexed
 family of sets, with the value of the family at each point $x : X$ being
 the fibre $f^*(x)$. A function $X \to Y$ of sets then corresponds to a
-_reindexing_, which takes an $X$-family of sets to a $Y$-family of sets
+_reindexing_, which takes an $Y$-family of sets to a $X$-family of sets
 ([in a functorial way]). A morphism $X' \to Y'$ in the canonical
 self-indexing of $\Sets$ lying over a map $f : X \to Y$ is then a
 function between the families $X' \to Y'$ which commutes with the
@@ -119,10 +121,7 @@ Slice-path
   → f' ≡ g'
 Slice-path = Slice-pathp refl
 
-module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
-  Slice-is-set : is-set (Slice-hom f px py)
-  Slice-is-set = Iso→is-hlevel 2 eqv (hlevel 2)
-    where open HLevel-instance
+unquoteDecl H-Level-Slice-hom = declare-record-hlevel 2 H-Level-Slice-hom (quote Slice-hom)
 ```
 -->
 
@@ -134,7 +133,7 @@ displayed over $\cB$.
 Slices : Displayed B (o ⊔ ℓ) ℓ
 Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
-Slices .Hom[_]-set = Slice-is-set
+Slices .Hom[_]-set _ _ _ = hlevel 2
 Slices .id' = slice-hom id id-comm-sym
 Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $
@@ -179,7 +178,7 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
 ## Cartesian maps
 
 A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
-cartesian if and only if it forms a pullback square as below:
+[[cartesian|cartesian map]] if and only if it forms a pullback square as below:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -228,16 +227,61 @@ pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
     pb.unique (sym (m' .commute)) (ap to x)
 ```
 
+<!--
+```agda
+_ = weak-cartesian→cartesian
+```
+-->
+
+We can actually weaken the hypothesis of `cartesian→pullback`{.Agda}
+so that pullback squares also exactly characterise [[weakly cartesian morphisms]].
+While this is automatic if $\cB$ has all pullbacks (since then cartesian and
+weakly cartesian morphisms `coincide`{.Agda ident="weak-cartesian→cartesian"}),
+it is sometimes useful to have both characterisations if we do not want to
+make such an assumption.
+
+```agda
+weak-cartesian→pullback
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-weak-cartesian Slices f f'
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+
+pullback→weak-cartesian
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+  → is-weak-cartesian Slices f f'
+```
+
+<details>
+<summary>The computation is essentially the same.</summary>
+
+```agda
+weak-cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
+  pb .is-pullback.square = f' .commute
+  pb .is-pullback.universal p =
+    cart .universal (slice-hom _ p) .to
+  pb .is-pullback.p₁∘universal =
+    sym (cart .universal _ .commute) ∙ idl _
+  pb .is-pullback.p₂∘universal =
+    apd (λ _ → Slice-hom.to) (cart .commutes _)
+  pb .is-pullback.unique p q =
+    ap Slice-hom.to (cart .unique (slice-hom _ (idl _ ∙ sym p)) (Slice-pathp (idr _) q))
+
+pullback→weak-cartesian pb = cartesian→weak-cartesian _ (pullback→cartesian pb)
+```
+</details>
+
 ## As a fibration
 
 If (and only if) $\cB$ has all [[pullbacks]], then its self-indexing is
 a [[Cartesian fibration]]. This is almost by definition, and is in fact
-where the "Cartesian" in "Cartesian fibration" (recall that another term
+where the "Cartesian" in "Cartesian fibration" comes from (recall that another term
 for "pullback square" is "cartesian square"). Since the total space
 $\int \underline{\cB}$ is equivalently the arrow category of $\cB$, with
 the projection functor $\pi : \int \underline{\cB} \to \cB$
 corresponding under this equivalence to the codomain functor, we refer
-to $\underline{ca{B}}$ regarded as a Cartesian fibration as the
+to $\underline{\cB}$ regarded as a Cartesian fibration as the
 **codomain fibration**.
 
 ```agda

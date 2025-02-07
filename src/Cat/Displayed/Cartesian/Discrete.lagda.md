@@ -96,7 +96,7 @@ Cartesian.
 
 So suppose we have an open diagram
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {u'} \\
   & {a'} && {b'} \\
@@ -356,6 +356,5 @@ it survives automatically.
 ```agda
     private unquoteDecl eqv = declare-record-iso eqv (quote Discrete-fibration)
     hl : ∀ x → is-prop _
-    hl x = is-hlevel≃ 1 (Iso→Equiv eqv) $
-      ×-is-hlevel 1 (Π-is-hlevel 1 λ _ → is-hlevel-is-prop 2) hlevel!
+    hl x = Iso→is-hlevel! 1 eqv
 ```

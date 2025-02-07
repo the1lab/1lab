@@ -2,9 +2,12 @@
 ```agda
 open import Cat.CartesianClosed.Instances.PSh
 open import Cat.Functor.Adjoint.Reflective
-open import Cat.Diagram.Everything
+open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -59,7 +62,7 @@ module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
   module ε⁻¹ = _=>_ ε⁻¹
 
   psh-equal : ∀ {X Y} {f g : Hom X Y} → ι.₁ f ≡ ι.₁ g → f ≡ g
-  psh-equal = fully-faithful→faithful {F = T .Topos.ι} (T .Topos.has-ff)
+  psh-equal = ff→faithful {F = T .Topos.ι} (T .Topos.has-ff)
 ```
 
 ::: terminology
@@ -102,7 +105,7 @@ do it by hand for the [[terminal object]], binary [[products]], and binary
           L-lex.pres-product
             (PSh-terminal {C = site} .has⊤)
             (product-presheaf .has-is-product)
-      in is-product-iso 𝒯 (Lι-iso _) (Lι-iso _) prod
+      in is-product-iso (Lι-iso _) (Lι-iso _) prod
 
   open Binary-products 𝒯 product-sheaf public
 ```

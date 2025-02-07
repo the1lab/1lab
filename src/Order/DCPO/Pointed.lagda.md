@@ -7,6 +7,7 @@ open import Cat.Prelude
 open import Data.Maybe.Base
 
 open import Order.Diagram.Fixpoint
+open import Order.Diagram.Bottom
 open import Order.Diagram.Lub
 open import Order.Base
 open import Order.DCPO
@@ -29,7 +30,7 @@ private variable
 ```
 -->
 
-# Pointed DCPOs
+# Pointed DCPOs {defines="pointed-dcpo"}
 
 A [DCPO] is **pointed** if it has a least element $\bot$. This is a
 property of a DCPO, as bottom elements are unique.
@@ -64,7 +65,7 @@ is trivially semidirected.
     : (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub poset s)
     → is-pointed-dcpo D
   semidirected-lub→pointed lub =
-    Lub→Bottom poset (lower-lub poset (lub (λ ()) (λ ())))
+    Lub→Bottom poset (lower-lub (lub (λ ()) (λ ())))
 ```
 
 Conversely, if $D$ has a bottom element $\bot$, then we can extend any semidirected
@@ -131,7 +132,7 @@ upper bound in a pointed DCPO.
     extend-bottom-lub→lub (⋃.has-lub _ _)
 ```
 
-## Fixpoints
+## Fixpoints {defines="kleenes-fixpoint-theorem"}
 
 Let $D$ be a pointed DCPO. Every Scott continuous function $f : D \to D$ has a
 [least fixed point].
@@ -220,7 +221,7 @@ All that remains is to package up the data.
     f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.fixed =
       ≤-antisym roll unroll
     f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.least y y-fix =
-      least-fix y (path→≤ y-fix)
+      least-fix y (≤-refl' y-fix)
 ```
 
 ## Strictly Scott-continuous maps
@@ -301,8 +302,11 @@ module Pointed-DCPOs {o ℓ : Level} = Cat.Reasoning (Pointed-DCPOs o ℓ)
 Pointed-dcpo : ∀ o ℓ → Type _
 Pointed-dcpo o ℓ = Pointed-DCPOs.Ob {o} {ℓ}
 
-Forget-Pointed-dcpo : Functor (Pointed-DCPOs o ℓ) (Sets o)
-Forget-Pointed-dcpo = Forget-DCPO F∘ Forget-subcat
+Pointed-DCPOs↪DCPOs : Functor (Pointed-DCPOs o ℓ) (DCPOs o ℓ)
+Pointed-DCPOs↪DCPOs = Forget-subcat
+
+Pointed-DCPOs↪Sets : Functor (Pointed-DCPOs o ℓ) (Sets o)
+Pointed-DCPOs↪Sets = DCPOs↪Sets F∘ Pointed-DCPOs↪DCPOs
 ```
 -->
 
@@ -418,7 +422,7 @@ This allows us to reflect the truth value of a proposition into $D$.
       : ∀ (s : Ix → Ob) (p : is-prop Ix)
       → (i : Ix) → ⋃-prop s p ≡ s i
     ⋃-prop-true s p i =
-      sym $ lub-of-const-fam poset (λ i j → ap s (p i j)) (⋃-prop-lub s p) i
+      sym $ lub-of-const-fam (λ i j → ap s (p i j)) (⋃-prop-lub s p) i
 ```
 
 We define a similar module for strictly Scott-continuous maps.
@@ -472,7 +476,7 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
       : ∀ {Ix} (s : Ix → D.Ob) (p q : is-prop Ix)
       → f # (D.⋃-prop s p) ≡ E.⋃-prop (apply f ⊙ s) q
     pres-⋃-prop s p q =
-      lub-unique E.poset
+      lub-unique
         (pres-semidirected-lub _
           (prop-indexed→semidirected D.poset s p) (D.⋃-prop s p) (D.⋃-prop-lub s p))
         (E.⋃-prop-lub _ _)
@@ -519,14 +523,14 @@ Scott-continuous.
       pres-⋃ s dir .is-lub.fam≤lub i =
         monotone $ D.⋃.fam≤lub _ _ i
       pres-⋃ s dir .is-lub.least y le =
-        f (D.⋃ s dir)                      E.=⟨ ap f (lub-unique D.poset (D.⋃.has-lub _ _) (D.⋃-semi-lub s (dir .semidirected))) ⟩
-        f (D.⋃-semi s (dir .semidirected)) E.≤⟨ is-lub.least (pres-⋃-semi _ _) y le ⟩
+        f (D.⋃ s dir)                      E.=⟨ ap f (lub-unique (D.⋃.has-lub _ _) (D.⋃-semi-lub s (dir .semidirected))) ⟩
+        f (D.⋃-semi s (dir .semidirected)) E.≤⟨ pres-⋃-semi _ _ .is-lub.least y le ⟩
         y E.≤∎
 
       pres-bot : ∀ x → is-bottom D.poset x → is-bottom E.poset (f x)
       pres-bot x x-bot y =
         f x              E.≤⟨ monotone (x-bot _) ⟩
-        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (λ x → absurd (x .Lift.lower)) (λ ())) y (λ ()) ⟩
+        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (λ x → absurd (x .lower)) (λ ())) y (λ ()) ⟩
         y                E.≤∎
 ```
 
@@ -563,6 +567,6 @@ families, then $f$ must be monotonic, and thus strictly Scott-continuous.
       (to-scott-directed f
         (λ s dir x lub → pres s (is-directed-family.semidirected dir) x lub))
       (λ x x-bot y → is-lub.least
-          (pres _ (λ x → absurd (x .Lift.lower)) x (lift-is-lub D.poset (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
+          (pres _ (λ x → absurd (x .lower)) x (lift-is-lub (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
           y (λ ()))
 ```

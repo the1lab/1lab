@@ -1,12 +1,14 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
-open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Diagram.Equaliser.Kernel
+open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Zero
+open import Cat.Prelude
 
 open import Data.Power
 
@@ -56,22 +58,22 @@ record represents-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
 
 If $H$ represents a subgroup, then its total space $\Sigma H$ inherits a
 group structure from $G$, and the first projection $\Sigma H \to G$ is a
-group homormophism.
+group homomorphism.
 
 ```agda
 rep-subgroup→group-on
-  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
+  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ G ] x ∈ H)
 rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
-  sg' : make-group (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
-  sg' .make-group.group-is-set = hlevel!
+  sg' : make-group (Σ[ x ∈ G ] x ∈ H)
+  sg' .make-group.group-is-set = hlevel 2
   sg' .make-group.unit = unit , has-unit
   sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg' .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
-  sg' .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) associative
-  sg' .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
-  sg' .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
+  sg' .make-group.assoc x y z = Σ-prop-path! associative
+  sg' .make-group.invl x = Σ-prop-path! inversel
+  sg' .make-group.idl x = Σ-prop-path! idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
@@ -80,7 +82,7 @@ predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   it .preserves .is-group-hom.pres-⋆ x y = refl
 
   ism : Groups.is-monic it
-  ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
+  ism = Homomorphism-monic it λ p → Σ-prop-path! p
 ```
 
 # Kernels and images
@@ -104,7 +106,7 @@ module _ {ℓ} where
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
   Ker-subgroup f =
     record { map   = kernel
-           ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
+           ; monic = is-equaliser→is-monic _ has-is-kernel }
     where
       open Kernel (Ker f)
 ```
@@ -128,7 +130,7 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module f = is-group-hom (f .preserves)
 
     Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
-    Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
+    Tpath {x} {y} p = Σ-prop-path! p
 
     abstract
       Tset : is-set (image (apply f))
@@ -229,7 +231,7 @@ construction used to implement it does not matter.
 :::
 
 ```agda
-  1st-iso-theorem : Groups.is-coequaliser (Groups.Zero.zero→ ∅ᴳ) Kerf.kernel A→im
+  1st-iso-theorem : is-coequaliser (Groups ℓ) (Zero.zero→ ∅ᴳ) Kerf.kernel A→im
   1st-iso-theorem = coeq where
     open Groups
     open is-coequaliser
@@ -310,10 +312,8 @@ rest of the construction, most of it is applying induction
 will compute.
 
 ```agda
-    coeq : is-coequaliser _ _ A→im
-    coeq .coequal = Forget-is-faithful (funext path) where
-      path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
-      path (x* , p) = Tpath (f.pres-id ∙ sym p)
+    coeq : is-coequaliser (Groups ℓ) (Zero.zero→ ∅ᴳ) Kerf.kernel A→im
+    coeq .coequal = ext λ x p → f.pres-id ∙ sym p
 
     coeq .universal {F = F} {e' = e'} p = gh where
       module F = Group-on (F .snd)
@@ -326,19 +326,10 @@ will compute.
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
 
-    coeq .factors = Forget-is-faithful refl
+    coeq .factors = Grp↪Sets-is-faithful refl
 
-    coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
-      where
-        module F = Group-on (F .snd)
-        path : ∀ (x : image (apply f)) → colim # x ≡ elim p (x .snd)
-        path (x , t) =
-          ∥-∥-elim
-            {P = λ q → colim # (x , q) ≡ elim p q}
-            (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (apply colim) (Σ-prop-path (λ _ → squash) (sym fp))
-                          ∙ (happly (ap hom prf) f) })
-            t
+    coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
+      ap# colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
 ```
 
 ## Representing kernels
@@ -379,9 +370,9 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
 
 It turns out that $\ker f$ is also closed under _conjugation_ by
 elements of the enveloping group, in that if $f(x) = 1$ (quickly
-switching to "multiplicative" notation for the unit), then $f(yxy^{-1})$
-must be $1$ as well: for we have $$f(y)f(x)f(y^{-1}) = f(y)1f(y^{-1}) =
-f(yy^{-1}) = f(1) = 1$$.
+switching to "multiplicative" notation for the unit), then $f(yxy\inv)$
+must be $1$ as well: for we have $$f(y)f(x)f(y\inv) = f(y)1f(y\inv) =
+f(yy\inv) = f(1) = 1$$.
 
 ```agda
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
@@ -396,6 +387,7 @@ f(yy^{-1}) = f(1) = 1$$.
       B.unit                        ∎
 ```
 
+:::{.definition #normal-subgroup}
 It turns out that this last property is enough to pick out exactly the
 kernels amongst the representations of subgroups: If $H$ is closed under
 conjugation, then $H$ generates an equivalence relation on the set
@@ -404,6 +396,7 @@ this equivalence relation with a group structure. The kernel of the
 quotient map $G \to G/H$ is then $H$. We call a predicate representing a
 kernel a **normal subgroup**, and we denote this in shorthand by $H
 \unlhd G$.
+:::
 
 ```agda
 record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
@@ -416,7 +409,7 @@ record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
   has-conjugatel yin = subst (_∈ H) associative (has-conjugate yin)
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ H → (y ⋆ x) ∈ H
-  has-comm {x = x} {y} ∈ = subst (_∈ H) p (has-conjugate ∈) where
+  has-comm {x = x} {y} mem = subst (_∈ H) p (has-conjugate mem) where
     p = x ⁻¹ ⋆ ⌜ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ⌝ ≡˘⟨ ap¡ associative ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ ⌜ x ⁻¹ ⁻¹ ⌝   ≡⟨ ap! inv-inv ⟩
         x ⁻¹ ⋆ x ⋆ y ⋆ x             ≡⟨ associative ⟩
@@ -478,12 +471,12 @@ a tedious but straightforward calculation:
 ```
 
 To define inverses on the quotient, it suffices to show that whenever
-$(x - y) \in H$, we also have $(x^{-1} - y) \in H$.
+$(x - y) \in H$, we also have $(x\inv - y) \in H$.
 
 ```agda
     inverse : G/H → G/H
     inverse =
-      Coeq-rec squash (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
+      Coeq-rec (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
       where abstract
         p : ∀ x y → (x — y) ∈ H → (inv x — inv y) ∈ H
         p x y r = has-comm (subst (_∈ H) inv-comm (has-inv r))
@@ -500,14 +493,11 @@ rather directly:
     Group-on-G/H .make-group.unit = inc unit
     Group-on-G/H .make-group.mul = op
     Group-on-G/H .make-group.inv = inverse
-    Group-on-G/H .make-group.assoc =
-      Coeq-elim-prop₃ (λ _ _ _ → squash _ _) λ x y z i →
-        inc (associative {x = x} {y} {z} i)
-    Group-on-G/H .make-group.invl =
-      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i)
-    Group-on-G/H .make-group.idl =
-      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i)
+    Group-on-G/H .make-group.assoc = elim! λ x y z → ap Coeq.inc associative
+    Group-on-G/H .make-group.invl  = elim! λ x → ap Coeq.inc inversel
+    Group-on-G/H .make-group.idl   = elim! λ x → ap Coeq.inc idl
 
+  infix 25 _/ᴳ_
   _/ᴳ_ : Group _
   _/ᴳ_ = to-group Group-on-G/H
 
@@ -540,7 +530,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
   open Congruence
   normal-subgroup→congruence : Congruence _ _
   normal-subgroup→congruence ._∼_ = rel
-  normal-subgroup→congruence .has-is-prop x y = hlevel!
+  normal-subgroup→congruence .has-is-prop x y = hlevel 1
   normal-subgroup→congruence .reflᶜ = rel-refl _
   normal-subgroup→congruence ._∙ᶜ_ = rel-trans
   normal-subgroup→congruence .symᶜ = rel-sym
@@ -572,14 +562,14 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
     to : Groups.Hom _ _
     to .hom (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
       x-0∈H = /ᴳ-effective p
-    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
+    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
     from : Groups.Hom _ _
     from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
-    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
+    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
-    il = ext λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
-    ir = ext λ x → Σ-prop-path (λ _ → squash _ _) refl
+    il = ext λ x x∈H → Σ-prop-path! refl
+    ir = ext λ x x∈H → Σ-prop-path! refl
 ```
 
 To show that these are equal as subgroups of $G$, we must show that the
@@ -594,11 +584,11 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
     ker≤H : Ker-sg ≤ₘ H-sg
     ker≤H .map = to
-    ker≤H .sq = Forget-is-faithful refl
+    ker≤H .sq = Grp↪Sets-is-faithful refl
 
     H≤ker : H-sg ≤ₘ Ker-sg
     H≤ker .map = from
-    H≤ker .sq = Forget-is-faithful refl
+    H≤ker .sq = Grp↪Sets-is-faithful refl
 
     done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Constant
 open import Cat.Prelude
 open import Cat.Finite
 
@@ -14,7 +15,7 @@ import Cat.Reasoning
 module Cat.Instances.Shape.Parallel where
 ```
 
-# The "parallel arrows" category
+# The "parallel arrows" category {defines="parallel-arrows"}
 
 The parallel arrows category is the category with two objects, and two
 parallel arrows between them. It is the shape of [[equaliser]] and
@@ -38,9 +39,9 @@ parallel arrows between them. It is the shape of [[equaliser]] and
 
 <!--
 ```agda
-  precat .Hom-set false false a b p q i j = tt
-  precat .Hom-set false true  a b p q i j = Bool-is-set a b p q i j
-  precat .Hom-set true  true  a b p q i j = tt
+  precat .Hom-set false false = hlevel 2
+  precat .Hom-set false true  = hlevel 2
+  precat .Hom-set true  true  = hlevel 2
 
   precat .id {false} = tt
   precat .id {true} = tt
@@ -109,4 +110,17 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     nt .is-natural false true true = idr _ ∙ equal
     nt .is-natural false true false = idr _
     nt .is-natural false false tt = idr _ ∙ introl (F .F-id)
+
+  Cofork→Cocone
+    : ∀ {e} (F : Functor ·⇉· C) {coequ : Hom (F .F₀ true) e}
+    → coequ ∘ forkl F ≡ coequ ∘ forkr F
+    → F => Const e
+  Cofork→Cocone {e = e} F {coequ} coequal = nt where
+    nt : F => Const e
+    nt .η true = coequ
+    nt .η false = coequ ∘ forkl F
+    nt .is-natural true true tt = elimr (F .F-id) ∙ sym (idl _)
+    nt .is-natural false true true = sym coequal ∙ sym (idl _)
+    nt .is-natural false true false = sym (idl _)
+    nt .is-natural false false tt = elimr (F .F-id) ∙ sym (idl _)
 ```

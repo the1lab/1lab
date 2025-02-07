@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Nat.Base
 open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
@@ -15,7 +16,8 @@ module Homotopy.Truncation where
 
 # General truncations
 
-Inspired by the equivalence built above, although _not_ using it
+Inspired by the [equivalence] between loop spaces and maps out of spheres,
+although _not_ using it
 directly, we can characterise [h-levels] in terms of maps of spheres,
 too. The idea is that, since a map $f : S^n \to A$ is equivalently
 _some_ loop in $A$[^someloop], we can characterise the _trivial_ loops as
@@ -23,6 +25,7 @@ the constant functions $S^n \to A$. Correspondingly, if every function
 $S^n \to A$ is trivial, this means that all $n$-loops in $A$ are
 trivial, so that $A$ is $(n+1)$-truncated!
 
+[equivalence]: Homotopy.Base.html#loop-spaces-are-equivalently-based-maps-out-of-spheres
 [h-levels]: 1Lab.HLevel.html
 [^someloop]: Any map $f : S^n \to A$ can be made basepoint-preserving by
 letting $A$ be based at $f(N)$.
@@ -128,8 +131,8 @@ n-Tr-is-hlevel
 n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
 
 instance
-  n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → hlevel-decomposition (n-Tr A (suc n))
-  n-tr-decomp = decomp (quote n-Tr-is-hlevel) (`level-minus 1 ∷ [])
+  H-Level-n-Tr : ∀ {ℓ} {A : Type ℓ} {n k} ⦃ _ : suc n ≤ k ⦄ → H-Level (n-Tr A (suc n)) k
+  H-Level-n-Tr {k = _} ⦃ p ⦄ = hlevel-instance $ is-hlevel-le _ _ p (n-Tr-is-hlevel _)
 
 n-Tr-elim
   : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
@@ -158,19 +161,33 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
 
 <!--
 ```agda
+instance
+  Inductive-n-Tr
+    : ∀ {ℓ ℓ' ℓm} {A : Type ℓ} {n} {P : n-Tr A (suc n) → Type ℓ'} ⦃ i : Inductive (∀ x → P (inc x)) ℓm ⦄
+    → ⦃ _ : ∀ {x} → H-Level (P x) (suc n) ⦄
+    → Inductive (∀ x → P x) ℓm
+  Inductive-n-Tr ⦃ i ⦄ = record
+    { from = λ f → n-Tr-elim _ (λ x → hlevel _) (i .Inductive.from f)
+    }
+
 n-Tr-elim!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
   → (P : n-Tr A (suc n) → Type ℓ')
-  → {@(tactic hlevel-tactic-worker) hl : ∀ x → is-hlevel (P x) (suc n)}
+  → ⦃ _ : ∀ {x} → H-Level (P x) (suc n) ⦄
   → (∀ x → P (inc x))
   → ∀ x → P x
-n-Tr-elim! P {hl} f = n-Tr-elim P hl f
+n-Tr-elim! P f = n-Tr-elim P (λ x → hlevel _) f
 
 n-Tr-rec!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
-  → {@(tactic hlevel-tactic-worker) hl : is-hlevel B (suc n)}
+  → ⦃ hl : H-Level B (suc n) ⦄
   → (A → B) → n-Tr A (suc n) → B
-n-Tr-rec! {hl = hl} = n-Tr-elim (λ _ → _) (λ _ → hl)
+n-Tr-rec! = n-Tr-elim (λ _ → _) (λ _ → hlevel _)
+
+n-Tr-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
+  → (A → B) → n-Tr A (suc n) → n-Tr B (suc n)
+n-Tr-map f = n-Tr-rec! (inc ∘ f)
 ```
 -->
 
@@ -206,7 +223,7 @@ $$
 
 so we will, for every $x : A$, define a type family $\mathrm{code}(x) :
 \|A\|_{2+n} \to \ty$, where the fibre of $\mathrm{code}(x)$ over
-$\rm{inc}(y)$ should be $\|x \equiv y\|_{1+n}$. However, induction
+$\rm{inc}(y)$ should be $\|x \equiv y\|_{1+n}$. However, the induction
 principle for $\|A\|_{2+n}$ only allows us to map into $(2+n)$-types,
 while $\ty$ itself is not an $n$-type for any $n$. We salvage our
 definition by instead mapping into $(1+n)\text{-}\ty$, which _is_ a
@@ -214,10 +231,7 @@ $(2+n)$-type.
 
 ```agda
   code : (x : A) (y' : n-Tr A (2 + n)) → n-Type _ (suc n)
-  code x =
-    n-Tr-elim!
-      (λ y' → n-Type _ (suc n))
-      (λ y' → el! (n-Tr (Path A x y') (suc n)))
+  code x = n-Tr-rec! λ y' → el! (n-Tr (Path A x y') (suc n))
 ```
 
 The rest of the proof boils down to applications of `path
@@ -228,14 +242,10 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
   encode' x _ = J (λ y _ → ∣ code x y ∣) (inc refl)
 
   decode' : ∀ x y → ∣ code x y ∣ → inc x ≡ y
-  decode' x =
-    n-Tr-elim! _ λ x → n-Tr-rec hlevel! (ap inc)
+  decode' = elim! λ x y → ap inc
 
   rinv : ∀ x y → is-right-inverse (decode' x y) (encode' x y)
-  rinv x = n-Tr-elim _
-    (λ y → Π-is-hlevel (2 + n)
-      (λ c → Path-is-hlevel (2 + n) (is-hlevel-suc (suc n) (code x y .is-tr))))
-    λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
+  rinv = elim! λ x y x=y → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
 
   linv : ∀ x y → is-left-inverse (decode' x y) (encode' x y)
   linv x _ = J (λ y p → decode' x y (encode' x y p) ≡ p)
@@ -262,7 +272,7 @@ n-Tr-univ n b-hl = Iso→Equiv λ where
 n-Tr-product
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → n-Tr (A × B) (suc n) ≃ (n-Tr A (suc n) × n-Tr B (suc n))
-n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product where
+n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv where
   distrib : n-Tr (A × B) (suc n) → n-Tr A (suc n) × n-Tr B (suc n)
   distrib (inc (x , y)) = inc x , inc y
   distrib (hub r) .fst = hub λ s → distrib (r s) .fst
@@ -282,12 +292,28 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product wh
 
   distrib-is-iso : is-iso distrib
   distrib-is-iso .inv (x , y)  = pair x y
-  distrib-is-iso .rinv (x , y) = n-Tr-elim
-    (λ x → ∀ y → distrib (pair x y) ≡ (x , y))
-    (λ _ → Π-is-hlevel (suc n) λ x → Path-is-hlevel (suc n) (×-is-hlevel (suc n) hlevel! hlevel!))
-    (λ x → n-Tr-elim _ (λ y → Path-is-hlevel (suc n) (×-is-hlevel (suc n) hlevel! hlevel!)) λ y → refl)
-    x y
+  distrib-is-iso .rinv = elim! λ x y → refl
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 
   distrib-is-equiv = is-iso→is-equiv distrib-is-iso
+
+n-Tr-Σ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {n}
+  → n-Tr (Σ A B) (suc n) ≃ n-Tr (Σ A λ a → n-Tr (B a) (suc n)) (suc n)
+n-Tr-Σ {A = A} {B} {n} = Iso→Equiv is where
+  is : Iso _ _
+  is .fst = n-Tr-map (Σ-map id inc)
+  is .snd .is-iso.inv = n-Tr-rec! λ (a , b) → n-Tr-map (a ,_) b
+  is .snd .is-iso.rinv = n-Tr-elim! _ λ (a , b) → n-Tr-elim! (λ b → n-Tr-map (Σ-map id inc) (n-Tr-map (a ,_) b) ≡ inc (a , b)) (λ _ → refl) b
+  is .snd .is-iso.linv = n-Tr-elim! _ λ _ → refl
+
+n-Tr-≃
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
+  → (e : A ≃ B) → n-Tr A (suc n) ≃ n-Tr B (suc n)
+n-Tr-≃ e = Iso→Equiv is where
+  is : Iso _ _
+  is .fst = n-Tr-map (e .fst)
+  is .snd .is-iso.inv = n-Tr-map (Equiv.from e)
+  is .snd .is-iso.rinv = elim! λ _ → ap inc (Equiv.ε e _)
+  is .snd .is-iso.linv = elim! λ _ → ap inc (Equiv.η e _)
 ```

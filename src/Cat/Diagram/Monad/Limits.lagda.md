@@ -1,12 +1,14 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
+open import Cat.Displayed.Total
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 
@@ -21,16 +23,16 @@ module Cat.Diagram.Monad.Limits {o ℓ} {C : Precategory o ℓ} {M : Monad C} wh
 <!--
 ```agda
 private
-  module EM = Cat.Reasoning (Eilenberg-Moore C M)
+  module EM = Cat.Reasoning (Eilenberg-Moore M)
   module C = Cat.Reasoning C
   module M = Monad M
 
-open Algebra-hom
 open Algebra-on
+open Total-hom
 ```
 -->
 
-# Limits in categories of algebras
+# Limits in categories of algebras {defines="limits-in-categories-of-algebras"}
 
 Suppose that $\cC$ be a category, $M$ be a [monad] on $\cC$, and
 $F$ be a $\cJ$-shaped diagram of [$M$-algebras][malg] (that is, a
@@ -61,7 +63,7 @@ in that $K$ is a limiting cone if, and only if, $U(K)$ is.
 
 <!--
 ```agda
-module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore C M)) where
+module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore M)) where
   private
     module J = Precategory J
     module F = Functor F
@@ -71,6 +73,14 @@ module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore C M
 ```
 -->
 
+That $U$ preserves limits follows immediately from the fact that it is a
+right adjoint: the non-trivial part is showing that it reflects them.
+
+```agda
+  Forget-EM-preserves-limits : preserves-limit Forget-EM F
+  Forget-EM-preserves-limits = right-adjoint-is-continuous Free-EM⊣Forget-EM
+```
+
 We begin with the following key lemma: Write $K : \cC$ for the limit of
 a diagram $\cJ \xto{F} \cC^M \xto{U} \cC$. If $K$ carries an $M$-algebra
 structure $\nu$, and the limit projections $\psi : K \to F(j)$ are
@@ -78,8 +88,8 @@ $M$-algebra morphisms, then $(K, \nu)$ is the limit of $F$ in $\cC^M$.
 
 ```agda
   make-algebra-limit
-    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Forget C M F∘ F}
-    → (lim : is-ran !F (Forget C M F∘ F) K eps)
+    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Forget-EM F∘ F}
+    → (lim : is-ran !F (Forget-EM F∘ F) K eps)
     → (nu : Algebra-on C M (K .F₀ tt))
     → (∀ j → is-limit.ψ lim j C.∘ nu .ν ≡ FAlg.ν j C.∘ M.M₁ (is-limit.ψ lim j))
     → make-is-limit F (K .F₀ tt , nu)
@@ -98,20 +108,20 @@ $\cC$ later.
 
 ```agda
     em-lim : make-is-limit F _
-    em-lim .ψ j .morphism = lim.ψ j
-    em-lim .ψ j .commutes = comm j
+    em-lim .ψ j .hom = lim.ψ j
+    em-lim .ψ j .preserves = comm j
     em-lim .commutes f    = ext (lim.commutes f)
-    em-lim .universal eta p .morphism =
-      lim.universal (λ j → eta j .morphism) (λ f i → p f i .morphism)
-    em-lim .factors eta p =
+    em-lim .universal eps p .hom =
+      lim.universal (λ j → eps j .hom) (λ f i → p f i .hom)
+    em-lim .factors eps p =
       ext (lim.factors _ _)
-    em-lim .unique eta p other q =
-      ext (lim.unique _ _ _ λ j i → q j i .morphism)
-    em-lim .universal eta p .commutes = lim.unique₂ _
-      (λ f → C.pulll (F.F₁ f .commutes)
-           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap morphism (p f))))
+    em-lim .unique eps p other q =
+      ext (lim.unique _ _ _ λ j i → q j i .hom)
+    em-lim .universal eps p .preserves = lim.unique₂ _
+      (λ f → C.pulll (F.F₁ f .preserves)
+           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap hom (p f))))
       (λ j → C.pulll (lim.factors _ _)
-           ∙ eta j .commutes)
+           ∙ eps j .preserves)
       (λ j → C.pulll (comm j)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim.factors _ _)))
 ```
@@ -121,9 +131,9 @@ functor $U$ reflects limits: We already had an algebra structure
 "upstairs"!
 
 ```agda
-  Forget-reflects-limits : reflects-limit (Forget C M) F
+  Forget-reflects-limits : reflects-limit Forget-EM F
   Forget-reflects-limits {K} {eps} lim = to-is-limitp
-    (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .commutes))
+    (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .preserves))
     trivial!
 ```
 
@@ -134,7 +144,7 @@ show that the projection maps $\psi_j : (\lim_j UF(j)) \to UF(j)$ extend
 to algebra homomorphisms.
 
 ```agda
-  Forget-lift-limit : Limit (Forget C M F∘ F) → Limit F
+  Forget-lift-limit : Limit (Forget-EM F∘ F) → Limit F
   Forget-lift-limit lim-over = to-limit $ to-is-limit $ make-algebra-limit
     (Limit.has-limit lim-over) apex-algebra (λ j → lim-over.factors _ _)
     where
@@ -160,12 +170,12 @@ on each $F(j)$, we can "tuple" them into a big map $\nu = \langle \nu_j
     apex-algebra .ν =
       lim-over.universal (λ j → FAlg.ν j C.∘ M.M₁ (lim-over.ψ j)) comm where abstract
       comm : ∀ {x y} (f : J.Hom x y)
-            → F.₁ f .morphism C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
+            → F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
             ≡ FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)
       comm {x} {y} f =
-        F.₁ f .morphism C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .commutes) ⟩
-        FAlg.ν y C.∘ M.M₁ (F.₁ f .morphism) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
-        FAlg.ν y C.∘ M.M₁ (F.₁ f .morphism C.∘ lim-over.ψ x)        ≡⟨ C.refl⟩∘⟨ ap M.M₁ (lim-over.commutes f) ⟩
+        F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .preserves) ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .hom) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .hom C.∘ lim-over.ψ x)        ≡⟨ C.refl⟩∘⟨ ap M.M₁ (lim-over.commutes f) ⟩
         FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)                            ∎
 ```
 
@@ -174,8 +184,8 @@ componentwise, too: we must show that $\nu(\eta_a, \eta_b, ...)$ is
 the identity map: but we can compute
 
 $$
-\nu(\eta_a, \eta_b, ...) = (\nu_a\eta_a, \nu_b\eta_b, ...) = (\id, \id, ...) = \id\text{!}
-$$
+\nu(\eta_a, \eta_b, ...) = (\nu_a\eta_a, \nu_b\eta_b, ...) = (\id, \id, ...) = \id
+$$!
 
 <details>
 <summary>
@@ -191,7 +201,7 @@ more complicated.
           ·· C.cancell (FAlg.ν-unit j))
       (λ j → C.idr _)
     apex-algebra .ν-mult = lim-over.unique₂ _
-      (λ f → C.pulll $ C.pulll (F.₁ f .commutes)
+      (λ f → C.pulll $ C.pulll (F.₁ f .preserves)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.commutes f)))
       (λ j → C.pulll (lim-over.factors _ _)
           ·· C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)
@@ -209,7 +219,7 @@ ill-behaved the monad $M$ might be.
 
 ```agda
 Eilenberg-Moore-is-complete
-  : ∀ {a b} → is-complete a b C → is-complete a b (Eilenberg-Moore _ M)
+  : ∀ {a b} → is-complete a b C → is-complete a b (Eilenberg-Moore M)
 Eilenberg-Moore-is-complete complete F =
   Forget-lift-limit F (complete _)
 ```

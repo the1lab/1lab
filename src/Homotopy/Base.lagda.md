@@ -33,7 +33,7 @@ north pole as the basepoint of the suspended space.
 
 ```agda
 Σ∙ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
-Σ∙ A = Susp (A .fst) , N
+Σ∙ A = Susp∙ (A .fst)
 
 Ω∙ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
 Ω∙ (A , a) = Path A a a , refl

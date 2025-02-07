@@ -12,12 +12,12 @@ import Cat.Reasoning
 module Order.Base where
 ```
 
-# Partially ordered sets {defines="poset partial-order partially-ordered-set"}
+# Partially ordered sets {defines="poset partial-order partially-ordered-set thin-category"}
 
 A **poset** is a [[set]] equipped with a relation $x \le y$, called a
 **partial order**, which is reflexive, transitive, and _antisymmetric_.
 Put another way, a poset is a [[univalent category]] which has _at most
-one_ morphism between each pair of its objects.
+one_ morphism between each pair of its objects: a **thin** category.
 
 Posets are a simultaneous generalisation of many naturally occurring
 notions of "order" in mathematics:
@@ -70,7 +70,7 @@ notions of "order" in mathematics:
   This poset will inherit order-theoretic structure from the logical
   structure of $\bT$: For example, if $\bT$ is expressed in a fragment
   of logic which has conjunction, then $\cL(\bT)$ will be a
-  meet-[[semilattice]]; if it also has infinitary disjunction, then its
+  [[meet-semilattice]]; if it also has infinitary disjunction, then its
   Lindenbaum-Tarski algebra is a [[frame]].
 
 - As mentioned in the opening paragraph, the notion of poset
@@ -118,8 +118,8 @@ However, since the "symmetric part" of $\le$, the relation
 iff.
 
 $$
-x \sim y = (x \le y) \land (y \le x)\text{,}
-$$
+x \sim y = (x \le y) \land (y \le x)
+$$,
 
 is a reflexive mere relation which implies identity, the type of objects
 is automatically a set.
@@ -163,7 +163,7 @@ instance
 ```
 -->
 
-## Monotone maps {defines="monotone-map monotonicity"}
+## Monotone maps {defines="monotone-map monotone-function monotonicity"}
 
 Since we are considering posets to be categories satisfying a property,
 it follows that the _category_ of posets should be a full subcategory of
@@ -202,22 +202,18 @@ nondecreasing sequences of elements in $P$.
 ```agda
 open Monotone public
 
-private
-  variable
-    o ℓ o' ℓ' o'' ℓ'' : Level
-    P Q R : Poset o ℓ
+private variable
+  o ℓ o' ℓ' o'' ℓ'' : Level
+  P Q R : Poset o ℓ
 
-Monotone-is-hlevel : ∀ n → is-hlevel (Monotone P Q) (2 + n)
-Monotone-is-hlevel {Q = Q} n =
-  Iso→is-hlevel (2 + n) eqv $ is-set→is-hlevel+2 $ hlevel!
-  where unquoteDecl eqv = declare-record-iso eqv (quote Monotone)
+unquoteDecl H-Level-Monotone = declare-record-hlevel 2 H-Level-Monotone (quote Monotone)
 
 instance
-  H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
-  H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
-
-  Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
+  Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
   Funlike-Monotone = record { _#_ = hom }
+
+  Membership-Monotone : ⦃ _ : Underlying ⌞ Q ⌟ ⦄ → Membership ⌞ P ⌟ (Monotone P Q) _
+  Membership-Monotone = record { _∈_ = λ x S → ⌞ S # x ⌟ }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
@@ -232,18 +228,13 @@ Monotone-pathp {P = P} {Q} {f} {g} q i .Monotone.pres-≤ {x} {y} α =
     (λ _ _ α → f .Monotone.pres-≤ α)
     (λ _ _ α → g .Monotone.pres-≤ α) i x y α
 
-Extensional-Monotone
-  : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
-  → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
-  → Extensional (Monotone P Q) ℓr
-Extensional-Monotone {Q = Q} ⦃ sa ⦄ =
-  injection→extensional! Monotone-pathp sa
-
 instance
-  Extensionality-Monotone
-    : ∀ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'}
-    → Extensionality (Monotone P Q)
-  Extensionality-Monotone = record { lemma = quote Extensional-Monotone }
+  Extensional-Monotone
+    : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
+    → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
+    → Extensional (Monotone P Q) ℓr
+  Extensional-Monotone {Q = Q} ⦃ sa ⦄ =
+    injection→extensional! Monotone-pathp sa
 ```
 -->
 
@@ -262,9 +253,9 @@ _∘ₘ_ : Monotone Q R → Monotone P Q → Monotone P R
 (f ∘ₘ g) .pres-≤ x≤y = f .pres-≤ (g .pres-≤ x≤y)
 
 Posets : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Posets o ℓ .Precategory.Ob      = Poset o ℓ
-Posets o ℓ .Precategory.Hom     = Monotone
-Posets o ℓ .Precategory.Hom-set = hlevel!
+Posets o ℓ .Precategory.Ob          = Poset o ℓ
+Posets o ℓ .Precategory.Hom         = Monotone
+Posets o ℓ .Precategory.Hom-set _ _ = hlevel 2
 
 Posets o ℓ .Precategory.id  = idₘ
 Posets o ℓ .Precategory._∘_ = _∘ₘ_
@@ -286,14 +277,12 @@ The simplest thing we can do _to_ a poset is to forget the order. This
 evidently extends to a faithful functor $\Pos \to \Sets$.
 
 ```agda
-Forget-poset : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
-∣ Forget-poset .Functor.F₀ P ∣    = ⌞ P ⌟
-Forget-poset .Functor.F₀ P .is-tr = hlevel!
-
-Forget-poset .Functor.F₁ = hom
-
-Forget-poset .Functor.F-id    = refl
-Forget-poset .Functor.F-∘ _ _ = refl
+Posets↪Sets : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
+Posets↪Sets .Functor.F₀ P .∣_∣    = ⌞ P ⌟
+Posets↪Sets .Functor.F₀ P .is-tr = hlevel 2
+Posets↪Sets .Functor.F₁ = hom
+Posets↪Sets .Functor.F-id    = refl
+Posets↪Sets .Functor.F-∘ _ _ = refl
 ```
 
 Slightly less trivial, we can extend the opposite category construction
@@ -309,4 +298,25 @@ _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 (P ^opp) .Poset.≤-refl = Poset.≤-refl P
 (P ^opp) .Poset.≤-trans   x≥y y≥z = Poset.≤-trans P y≥z x≥y
 (P ^opp) .Poset.≤-antisym x≥y y≥x = Poset.≤-antisym P y≥x x≥y
+```
+
+We can construct the trivial posets with one and zero (object(s), ordering(s)) respectively
+
+```agda
+
+𝟙ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟙ᵖ .Poset.Ob = Lift _ ⊤
+𝟙ᵖ .Poset._≤_ _ _ = Lift _ ⊤
+𝟙ᵖ .Poset.≤-thin = hlevel 1
+𝟙ᵖ .Poset.≤-refl = lift tt
+𝟙ᵖ .Poset.≤-trans = λ _ _ → lift tt
+𝟙ᵖ .Poset.≤-antisym = λ _ _ → refl
+
+𝟘ᵖ : ∀ {o ℓ} → Poset o ℓ
+𝟘ᵖ .Poset.Ob = Lift _ ⊥
+𝟘ᵖ .Poset._≤_ _ _ = Lift _ ⊥
+𝟘ᵖ .Poset.≤-thin ()
+𝟘ᵖ .Poset.≤-refl {()}
+𝟘ᵖ .Poset.≤-trans ()
+𝟘ᵖ .Poset.≤-antisym ()
 ```

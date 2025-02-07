@@ -1,16 +1,19 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Dec.Base
+open import Data.Nat.Base
 open import Data.Sum.Base
-open import Data.Dec
+
+open import Meta.Invariant
 ```
 -->
 
@@ -70,8 +73,8 @@ the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 
 ```agda
   decode : {x y : A ⊎ B} → Code x y → x ≡ y
-  decode {x = inl x} {y = inl x₁} code = ap inl (Lift.lower code)
-  decode {x = inr x} {y = inr x₁} code = ap inr (Lift.lower code)
+  decode {x = inl x} {y = inl x₁} code = ap inl (lower code)
+  decode {x = inr x} {y = inr x₁} code = ap inr (lower code)
 ```
 
 In the inverse direction, we have a procedure for turning paths into
@@ -149,31 +152,31 @@ also at the same h-level as `A` and `B`. Thus, we have:
             → is-hlevel B (2 + n)
             → is-hlevel (A ⊎ B) (2 + n)
 ⊎-is-hlevel n ahl bhl x y =
-  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+  Equiv→is-hlevel (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 
 instance
-  hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)
-  hlevel-decomp-⊎ = decomp (quote ⊎-is-hlevel)
-    (`level-minus 2 ∷ `search ∷ `search ∷ [])
+  H-Level-⊎ : ∀ {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ ⦃ _ : H-Level B n ⦄ → H-Level (A ⊎ B) n
+  H-Level-⊎ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+    ⊎-is-hlevel _ (hlevel (2 + n)) (hlevel (2 + n))
 ```
 
 <!--
 ```agda
 module _ {ℓ} {A : n-Type ℓ 2} where
-  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
-  _ = hlevel!
+  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
+  _ = hlevel 5
 ```
 -->
 
 Note that, in general, being a [[proposition]] and [[contractible]]
 are not preserved under coproducts. Consider the case where `(A, a)` and
 `(B, b)` are both contractible (this generalises to propositions): Then
-their coproduct has two distinct points, `in­l a` and `inr b`. However,
+their coproduct has two distinct points, `inl a` and `inr b`. However,
 the coproduct of _disjoint_ propositions is a proposition:
 
 ```agda
 disjoint-⊎-is-prop
-  : is-prop A → is-prop B → ¬ A × B
+  : is-prop A → is-prop B → ¬ (A × B)
   → is-prop (A ⊎ B)
 disjoint-⊎-is-prop Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
 disjoint-⊎-is-prop Ap Bp notab (inl x) (inr y) = absurd (notab (x , y))
@@ -181,22 +184,15 @@ disjoint-⊎-is-prop Ap Bp notab (inr x) (inl y) = absurd (notab (y , x))
 disjoint-⊎-is-prop Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 ```
 
-## Decidability
+## Discreteness
 
-If `A` and `B` are [[decidable]], then so is `A ⊎ B`.
+If `A` and `B` are [[discrete]], then so is `A ⊎ B`.
 
 ```agda
 instance
-  Dec-⊎ : ⦃ _ : Dec A ⦄ ⦃ _ : Dec B ⦄ → Dec (A ⊎ B)
-  Dec-⊎ ⦃ yes A ⦄ = yes (inl A)
-  Dec-⊎ ⦃ no ¬A ⦄ ⦃ yes B ⦄ = yes (inr B)
-  Dec-⊎ ⦃ no ¬A ⦄ ⦃ no ¬B ⦄ = no λ where
-    (inl A) → ¬A A
-    (inr B) → ¬B B
-
   Discrete-⊎ : ⦃ _ : Discrete A ⦄ ⦃ _ : Discrete B ⦄ → Discrete (A ⊎ B)
-  Discrete-⊎ {x = inl x} {inl y} = Dec-map (ap inl) inl-inj (x ≡? y)
+  Discrete-⊎ {x = inl x} {inl y} = invmap (ap inl) inl-inj (x ≡? y)
   Discrete-⊎ {x = inl x} {inr y} = no inl≠inr
   Discrete-⊎ {x = inr x} {inl y} = no inr≠inl
-  Discrete-⊎ {x = inr x} {inr y} = Dec-map (ap inr) inr-inj (x ≡? y)
+  Discrete-⊎ {x = inr x} {inr y} = invmap (ap inr) inr-inj (x ≡? y)
 ```

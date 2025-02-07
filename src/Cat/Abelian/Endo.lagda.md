@@ -17,7 +17,7 @@ private module A = Ab-category A
 ```
 -->
 
-# Endomorphism rings
+# Endomorphism rings {defines="endomorphism-ring"}
 
 Fix an [$\Ab$-category] $\cA$: It can be the category of [[abelian
 groups]] $\Ab$ itself, for example, or $R$-Mod for your favourite
@@ -39,15 +39,15 @@ Endo x = to-ring mr where
   mr .make-ring._+_ = A._+_
   mr .make-ring.-_ = A.Hom.inverse
   mr .make-ring._*_ = A._∘_
-  mr .+-idl = A.Hom.idl
-  mr .+-invr = A.Hom.inverser
-  mr .+-assoc = A.Hom.associative
-  mr .+-comm = A.Hom.commutes
-  mr .*-idl = A.idl _
-  mr .*-idr = A.idr _
-  mr .*-assoc = A.assoc _ _ _
-  mr .*-distribl = sym (A.∘-linear-r _ _ _)
-  mr .*-distribr = sym (A.∘-linear-l _ _ _)
+  mr .+-idl _ = A.Hom.idl
+  mr .+-invr _ = A.Hom.inverser
+  mr .+-assoc _ _ _ = A.Hom.associative
+  mr .+-comm _ _ = A.Hom.commutes
+  mr .*-idl _ = A.idl _
+  mr .*-idr _ = A.idr _
+  mr .*-assoc _ _ _ = A.assoc _ _ _
+  mr .*-distribl _ _ _ = sym (A.∘-linear-r _ _ _)
+  mr .*-distribr _ _ _ = sym (A.∘-linear-l _ _ _)
 ```
 
 This is a fantastic source of non-commutative rings, and indeed the

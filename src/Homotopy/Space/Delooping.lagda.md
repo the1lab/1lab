@@ -2,7 +2,6 @@
 ```agda
 open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
-open import 1Lab.Rewrite
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
@@ -45,10 +44,13 @@ module _ {ℓ} (G : Group ℓ) where
     path    : ⌞ G ⌟ → base ≡ base
     path-sq : (x y : ⌞ G ⌟) → Square refl (path x) (path (x ⋆ y)) (path y)
     squash  : is-groupoid Deloop
+
+  Deloop∙ : Type∙ ℓ
+  Deloop∙ = Deloop , base
 ```
 
 <!--
-```
+```agda
   private instance
     H-Level-Deloop : ∀ {n} → H-Level Deloop (3 + n)
     H-Level-Deloop = basic-instance 3 squash
@@ -161,7 +163,7 @@ specification.
 
     base-case : Set ℓ
     ∣ base-case ∣    = ⌞ G ⌟
-    base-case .is-tr = hlevel!
+    base-case .is-tr = hlevel 2
 ```
 
 To handle the path case, we'll have to produce, given an element $x :
@@ -218,12 +220,12 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
 
 ```agda
   opaque
-    encode : ∀ x → base ≡ x → ∣ Code x ∣
-    encode x p = subst (λ x → ∣ Code x ∣) p unit
+    encode : ∀ x → base ≡ x → Code ʻ x
+    encode x p = subst (Code ʻ_) p unit
 
-  decode : ∀ x → ∣ Code x ∣ → base ≡ x
+  decode : ∀ x → Code ʻ x → base ≡ x
   decode = go where
-    coh : ∀ x → PathP (λ i → path x i ∈ Code → base ≡ path x i) path path
+    coh : ∀ x → PathP (λ i → Code ʻ path x i → base ≡ path x i) path path
     coh x i c j = hcomp (∂ i ∨ ∂ j) λ where
       k (k = i0) → path (ua-unglue (Code.path-case.eqv x) i c) j
       k (i = i0) → path-sq c x (~ k) j
@@ -231,14 +233,14 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
       k (j = i0) → base
       k (j = i1) → path x (i ∨ ~ k)
 
-    go : ∀ x → ∣ Code x ∣ → base ≡ x
+    go : ∀ x → Code ʻ x → base ≡ x
     go base c = path c
     go (path x i) c = coh x i c
     go (path-sq x y i j) = is-set→squarep
-      (λ i j → fun-is-hlevel {A = path-sq x y i j ∈ Code} 2 (Deloop.squash base (path-sq x y i j)) )
+      (λ i j → fun-is-hlevel {A = Code ʻ path-sq x y i j} 2 (Deloop.squash base (path-sq x y i j)) )
       (λ i → path) (coh x) (coh (x ⋆ y)) (coh y) i j
     go (squash x y p q α β i j k) =
-      is-hlevel→is-hlevel-dep {B = λ x → x ∈ Code → base ≡ x} 2 (λ x → hlevel 3)
+      is-hlevel→is-hlevel-dep {B = λ x → Code ʻ x → base ≡ x} 2 (λ x → hlevel 3)
         (go x) (go y) (λ i → go (p i)) (λ i → go (q i))
         (λ i j → go (α i j)) (λ i j → go (β i j)) (squash x y p q α β) i j k
 ```
@@ -266,10 +268,10 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
 \star 1 = 1$.
 
 ```agda
-    decode→encode : ∀ x (c : ∣ Code x ∣) → encode x (decode x c) ≡ c
+    decode→encode : ∀ x (c : Code ʻ x) → encode x (decode x c) ≡ c
     decode→encode =
       Deloop-elim-prop
-        (λ x → (c : ∣ Code x ∣) → encode x (decode x c) ≡ c)
+        (λ x → (c : Code ʻ x) → encode x (decode x c) ≡ c)
         (λ x → Π-is-hlevel 1 λ _ → Code x .is-tr _ _)
         λ c → transport-refl _ ∙ G.idl
 ```
@@ -282,7 +284,7 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≃ΩB = Iso→Equiv (decode base , iso (encode base) encode→decode (decode→encode base))
 
   G≡π₁B : G ≡ πₙ₊₁ 0 (Deloop , base)
-  G≡π₁B = ∫-Path Groups-equational
+  G≡π₁B = ∫-Path
     (total-hom (λ x → inc (path x))
       record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
     (∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
@@ -297,7 +299,7 @@ inverses, differences, etc.
 
 ```agda
   encode-is-group-hom
-    : is-group-hom (π₁Groupoid {T = Deloop} {base} squash) (G .snd) (encode base)
+    : is-group-hom (π₁Groupoid.on-Ω Deloop∙ squash) (G .snd) (encode base)
   encode-is-group-hom .is-group-hom.pres-⋆ x y = eqv.injective₂ (eqv.ε _) $
     path (encode base x ⋆ encode base y)          ≡⟨ path-∙ (encode base x) (encode base y) ⟩
     path (encode base x) ∙ path (encode base y)   ≡⟨ ap₂ _∙_ (eqv.ε _) (eqv.ε _) ⟩
@@ -326,7 +328,7 @@ module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
   open Group-on (G .snd)
   open is-group-hom
 
-  private opaque
+  opaque
 ```
 -->
 
@@ -353,7 +355,7 @@ of a loop with arbitrary base.
 <!--
 ```agda
     hl : (x : Deloop G) → is-set (x ≡ x → ⌞ G ⌟)
-    hl _ = hlevel!
+    hl _ = hlevel 2
 
     interleaved mutual
       go   : (x : Deloop G) → x ≡ x → ⌞ G ⌟
@@ -391,7 +393,7 @@ dependent functions, the above is equivalent to showing that
 `deg`{.Agda} produces identical results given an element $b : G$ and
 loops $x_0$, $x_1$ fiting into a commutative square
 
-~~~{.quiver .short-05}
+~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
   {\rm{base}} \&\& {\rm{base}} \\
   \\
@@ -430,7 +432,7 @@ again. That finishes the construction:
           (λ i j → go (α i j)) (λ i j → go (β i j))
           (squash x y p q α β) i j k
 
-  {-# DISPLAY windingⁱ.go x p = winding p #-}
+  {-# DISPLAY windingⁱ.go _ p = winding p #-}
 ```
 -->
 
@@ -449,7 +451,7 @@ $\rm{winding}_x$ is a group homomorphism $\Omega (\B G, x) \to G$.
       Equiv.inverse (G≃ΩB G) .snd
 
     winding-is-group-hom : ∀ x →
-      is-group-hom (π₁Groupoid {T = Deloop G} {x} (hlevel 3))
+      is-group-hom (π₁Groupoid.on-Ω (Deloop G , x) (hlevel 3))
         (G .snd) (winding {x})
     winding-is-group-hom = Deloop-elim-prop G _ (λ x → hlevel 1) λ where
       .pres-⋆ x y → encode.pres-⋆ G x y
@@ -474,8 +476,8 @@ We can then obtain a nice interface for working with `winding`{.Agda}.
   opaque
     unfolding winding-is-equiv
 
-    winding-is-equiv-base : winding-is-equiv base ≡rw Equiv.inverse (G≃ΩB G) .snd
-    winding-is-equiv-base = make-rewrite prop!
+    winding-is-equiv-base : winding-is-equiv base ≡ Equiv.inverse (G≃ΩB G) .snd
+    winding-is-equiv-base = prop!
 
   {-# REWRITE winding-is-equiv-base #-}
 
@@ -483,12 +485,9 @@ We can then obtain a nice interface for working with `winding`{.Agda}.
   _ = refl -- MUST check!
 
   pathᵇ-sq : ∀ (x : Deloop G) g h → Square refl (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
-  pathᵇ-sq = Deloop-elim-prop G _
-    (λ x → Π-is-hlevel² 1 λ g h → PathP-is-hlevel' {A = λ i → x ≡ pathᵇ x h i} 1
-      (squash _ _) _ _)
-    λ g h → path-sq g h
+  pathᵇ-sq = Deloop-elim-prop G _ (λ x → hlevel 1) λ g h → path-sq g h
 
 Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
-Deloop-is-connected = Deloop-elim-prop _ _ hlevel! (inc refl)
+Deloop-is-connected = Deloop-elim-prop _ _ (λ _ → hlevel 1) (inc refl)
 ```
 -->

@@ -5,8 +5,10 @@ open import 1Lab.Prelude
 
 open import Data.Set.Truncation
 
+open import Homotopy.Connectedness.Automation
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
+open import Homotopy.Space.Sphere
 open import Homotopy.Truncation
 open import Homotopy.Base
 ```
@@ -28,7 +30,7 @@ Susp-is-connected
   : ∀ {ℓ} {A : Type ℓ} n
   → is-n-connected A n → is-n-connected (Susp A) (suc n)
 Susp-is-connected 0 a-conn = inc N
-Susp-is-connected 1 a-conn = ∥-∥-proj! do
+Susp-is-connected 1 a-conn = ∥-∥-out! do
   pt ← a-conn
   pure $ is-connected∙→is-connected λ where
     N           → inc refl
@@ -50,11 +52,28 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
     rem₁ : is-equiv λ b a → b
     rem₁ = is-n-connected→n-type-const
       {B = n-Tr.inc {n = 3 + n} N ≡ inc S} {A = A}
-      (suc n) hlevel! a-conn
+      (suc n) (hlevel (2 + n)) a-conn
 
     rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
     rem₂ = _ , λ x → sym (rem₁ .is-eqv _ .centre .snd) $ₚ x
 ```
+
+As a direct corollary, the $n$-sphere is $(n-1)$-connected (remember that our
+indices are offset by 2).
+
+```agda
+Sⁿ⁻¹-is-connected : ∀ n → is-n-connected (Sⁿ⁻¹ n) n
+Sⁿ⁻¹-is-connected zero = _
+Sⁿ⁻¹-is-connected (suc n) = Susp-is-connected n (Sⁿ⁻¹-is-connected n)
+```
+
+<!--
+```agda
+instance
+  Connected-Susp : ∀ {ℓ} {A : Type ℓ} {n} → ⦃ Connected A n ⦄ → Connected (Susp A) (suc n)
+  Connected-Susp {n = n} ⦃ conn-instance c ⦄ = conn-instance (Susp-is-connected n c)
+```
+-->
 
 ## Truncatedness
 
@@ -135,9 +154,9 @@ We've defined a reflexive family of propositions:
 
 ```agda
     Code-is-prop : ∀ a b → is-prop (Code a b)
-    Code-is-prop = Susp-elim-prop hlevel!
-      (Susp-elim-prop hlevel! hlevel! prop)
-      (Susp-elim-prop hlevel! prop hlevel!)
+    Code-is-prop = Susp-elim-prop (λ _ → hlevel 1)
+      (Susp-elim-prop (λ _ → hlevel 1) (hlevel 1) prop)
+      (Susp-elim-prop (λ _ → hlevel 1) prop (hlevel 1))
 
     Code-refl : ∀ a → Code a a
     Code-refl = Susp-elim-prop (λ a → Code-is-prop a a) _ _
@@ -155,13 +174,13 @@ use `refl`{.Agda} and `merid`{.Agda}.
 ```agda
     decode : ∀ a b → Code a b → a ≡ b
     decode = Susp-prop-elim²
-      (λ _ → refl) merid
-      (λ a → sym (merid a)) (λ _ → refl)
+      (λ _ → refl)          (λ c → merid c)
+      (λ c → sym (merid c)) (λ _ → refl)
 ```
 
 This time, if $A$ holds, we have to fill a *cube* with the given four edges:
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
 	N &&& S \\
 	& N & N \\
@@ -177,7 +196,7 @@ This time, if $A$ holds, we have to fill a *cube* with the given four edges:
 	\arrow[Rightarrow, no head, from=1-4, to=4-4]
 	\arrow["{\mathrm{merid}\ a}"', color={rgb,255:red,153;green,92;blue,214}, from=4-1, to=4-4]
 	\arrow[Rightarrow, no head, from=3-3, to=4-4]
-	\arrow["{\mathrm{merid}^{-1}\ c}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-2, to=4-1]
+	\arrow["{\mathrm{merid}\inv\ c}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-2, to=4-1]
 	\arrow[Rightarrow, no head, from=1-1, to=4-1]
 \end{tikzcd}\]
 ~~~

@@ -45,7 +45,7 @@ the entire structure from becoming degenerate.
 record CT-Structure (s : Level) : Type (o ⊔ lsuc s) where
   field
     is-tp : Ob → Prop s
-    ∃-tp : ∃[ tp ∈ Ob ] (∣ is-tp tp ∣)
+    ∃-tp  : ∃[ tp ∈ Ob ] (tp ∈ is-tp)
 
 open CT-Structure
 ```
@@ -83,7 +83,7 @@ in a simple CT fibration.
 Simple-cartesian→Simple-ct-cartesian
   : ∀ {s} {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom (Γ ⊗₀ x) y}
   → (ct : CT-Structure s)
-  → (x-tp : ∣ is-tp ct x ∣) → (y-tp : ∣ is-tp ct y ∣)
+  → (x-tp : x ∈ ct .is-tp) → (y-tp : y ∈ ct .is-tp)
   → is-cartesian Simple σ f
   → is-cartesian (Simple-ct ct) {a' = x , x-tp} {b' = y , y-tp} σ f
 Simple-cartesian→Simple-ct-cartesian ct x-tp y-tp cart = ct-cart where

@@ -30,7 +30,7 @@ private module Mod {ℓ} (R : Ring ℓ) where
 ```
 -->
 
-# Modules
+# Modules {defines="module"}
 
 A **module** over a [[ring]] $R$ is an [[abelian group]] $G$ equipped
 with an [action by $R$]. Modules generalise the idea of vector spaces,
@@ -182,8 +182,8 @@ Any map which satisfies this equation must preserve addition, since we
 have
 
 $$
-f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)\text{,}
-$$
+f(a+b) = f(1a+b) = 1f(a)+f(b) = f(a)+f(b)
+$$.
 
 and standard lemmas about [group homomorphisms] ensure that $f$ will
 also preserve negation, and, more importantly, zero. We can then derive
@@ -192,8 +192,8 @@ that $f$ preserves the scalar multiplication, by calculating
 [group homomorphisms]: Algebra.Group.html#group-homomorphisms
 
 $$
-f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)\text{.}
-$$
+f(ra) = f(ra + 0) = rf(a) + f(0) = rf(a) + 0 = rf(a)
+$$.
 
 <!--
 ```agda
@@ -308,8 +308,8 @@ is univalent.
   R-Mod : ∀ ℓm → Precategory (lsuc ℓm ⊔ ℓ) (ℓm ⊔ ℓ)
   R-Mod ℓm = Structured-objects (R-Mod-structure {ℓm})
 
-  Forget-module : ∀ ℓm → Functor (R-Mod ℓm) (Sets ℓm)
-  Forget-module _ = Forget-structure R-Mod-structure
+  R-Mod↪Sets : ∀ ℓm → Functor (R-Mod ℓm) (Sets ℓm)
+  R-Mod↪Sets _ = Forget-structure R-Mod-structure
 
   record make-module {ℓm} (M : Type ℓm) : Type (ℓm ⊔ ℓ) where
     field
@@ -410,6 +410,9 @@ open Mod
     ; to-module-on
     ; Module-on→Group-on
     ; Module-on→Abelian-group-on
+    ; H-Level-is-linear-map
+    ; H-Level-is-module
+    ; H-Level-Linear-map
     )
   public
 
@@ -424,8 +427,18 @@ module _ {ℓ} {R : Ring ℓ} where
       ; to-module-on
       ; Module-on→Group-on
       ; Module-on→Abelian-group-on
+      ; H-Level-is-linear-map
+      ; H-Level-is-module
+      ; H-Level-Linear-map
       )
     public
+
+  instance
+    Extensional-linear-map
+      : ∀ {ℓr} {M : Module R ℓm} {N : Module R ℓn}
+      → ⦃ ext : Extensional (⌞ M ⌟ → ⌞ N ⌟) ℓr ⦄
+      → Extensional (Linear-map M N) ℓr
+    Extensional-linear-map ⦃ ext ⦄ = injection→extensional! (λ p → Linear-map-path (happly p)) ext
 
 module R-Mod {ℓ ℓm} {R : Ring ℓ} = Cat.Reasoning (R-Mod R ℓm)
 
@@ -442,5 +455,14 @@ linear-map→hom
   → R-Mod.Hom M N
 linear-map→hom h .hom       = h .map
 linear-map→hom h .preserves = h .lin
+
+extensional-mod-hom
+  : ∀ {ℓ ℓrel} {R : Ring ℓ} {M : Module R ℓm} {N : Module R ℓm}
+  → ⦃ ext : Extensional (Linear-map M N) ℓrel ⦄
+  → Extensional (R-Mod R _ .Precategory.Hom M N) ℓrel
+extensional-mod-hom ⦃ ei ⦄ = injection→extensional! {f = hom→linear-map} (λ p → ext λ e → ap map p $ₚ e) ei
+
+instance Extensional-mod-hom = extensional-mod-hom
+{-# OVERLAPS Extensional-mod-hom #-}
 ```
 -->

@@ -42,7 +42,8 @@ annoying.
 ```agda
 Strict-cat→Internal-cat
   : ∀ {o ℓ}
-  → (C : Precategory o ℓ) → is-set (Precategory.Ob C)
+  → (C : Precategory o ℓ)
+  → is-set ⌞ C ⌟
   → Internal-cat (Sets (o ⊔ ℓ))
 Strict-cat→Internal-cat {o} {ℓ} C ob-set = icat where
 ```
@@ -70,7 +71,7 @@ $\cC(-,-)$, rather than any particular fibre.
 ```agda
   icat : Internal-cat (Sets (o ⊔ ℓ))
   icat .C₀ = el! (Lift ℓ Ob)
-  icat .C₁ = el! (Σ[ x ∈ Ob ] Σ[ y ∈ Ob ] (Hom x y))
+  icat .C₁ = el! (Σ[ x ∈ C ] Σ[ y ∈ C ] (Hom x y))
   icat .src (x , _ , _) = lift x
   icat .tgt (_ , y , _) = lift y
 ```

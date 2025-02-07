@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
+open import Cat.Morphism.Strong.Epi
 open import Cat.Prelude
 
 open import Homotopy.Connectedness
@@ -33,7 +34,7 @@ together, we get _every epimorphism is regular_ as a corollary.
 [regular epimorphisms]: Cat.Diagram.Coequaliser.RegularEpi.html#regular-epimorphisms
 [epimorphism]: Cat.Morphism.html#epis
 
-## Surjections are epic
+## Surjections are epic {defines="surjections-are-epic"}
 
 This is the straightforward direction: We know (since $\Sets$ has
 pullbacks) that if a morphism is going to be a regular epimorphism, then
@@ -61,7 +62,7 @@ elimination principle for $\| f^*x \| \to F$, since $F$ is a set.
 surjective→regular-epi c d f surj .has-is-coeq = coeqs where
   go : ∀ {F} (e' : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
   go e' p x =
-    ∥-∥-rec-set hlevel! (λ x → e' (x .fst))
+    ∥-∥-rec-set (hlevel 2) (λ x → e' (x .fst))
       (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
 ```
 
@@ -74,14 +75,33 @@ surjectivity out of the way, we get what we wanted.
   coeqs .universal {F} {e'} p x = go {F = F} e' p x (surj x)
   coeqs .factors {F} {e'} {p = p} = funext λ x →
     ∥-∥-elim {P = λ e → go {F} e' p (f x) e ≡ e' x}
-      (λ x → hlevel!) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
+      (λ x → hlevel 1) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
   coeqs .unique {F} {e'} {p} {colim} comm = funext λ a →
-    ∥-∥-elim {P = λ e → colim a ≡ go {F} e' p a e} (λ x → hlevel!)
+    ∥-∥-elim {P = λ e → colim a ≡ go {F} e' p a e} (λ x → hlevel 1)
       (λ x → ap colim (sym (x .snd)) ∙ comm $ₚ x .fst)
       (surj a)
 ```
 
-# Epis are surjective
+<!--
+```agda
+surjective→strong-epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → is-strong-epi (Sets ℓ) {c} {d} f
+surjective→strong-epi c d f f-surj =
+  is-regular-epi→is-strong-epi (Sets _) f $
+  surjective→regular-epi c d f f-surj
+
+surjective→epi
+  : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
+  → is-surjective f
+  → Cr.is-epic (Sets ℓ) {c} {d} f
+surjective→epi c d f surj {c = x} =
+  is-regular-epi→is-epic (surjective→regular-epi c d f surj) {c = x}
+```
+-->
+
+# Epis are surjective {defines="epis-are-surjective"}
 
 Now _this_ is the hard direction. Our proof follows [@Rijke:2015, §2.9],
 so if the exposition below doesn't make a lot of sense, be sure to check
@@ -124,7 +144,7 @@ these types are propositions, so we have a bunch of equivalences].
 connected-cofibre→surjective
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
   → is-connected (Cofibre f)
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
 
@@ -135,22 +155,22 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
 
 ```agda
   P : Cofibre f → Prop _
-  P tip      = el (Lift _ ⊤) hlevel!
-  P (base x) = el ∥ fibre f x ∥ hlevel!
+  P tip      = el! (Lift _ ⊤)
+  P (base x) = el! ∥ fibre f x ∥
   P (cone a i) =
-    n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
-      (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
+    n-ua {X = el! (Lift _ ⊤)} {Y = el! ∥ fibre f (f a) ∥}
+      (prop-ext! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
   P' : ∥ Cofibre f ∥₀ → Prop _
-  P' = ∥-∥₀-elim (λ _ → hlevel!) P
+  P' = ∥-∥₀-elim (λ _ → hlevel 2) P
 ```
 
 Letting $x$ be an element of the codomain, and since by assumption $f$'s
 cofibre is connected, we have a path
 
 $$
-\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|\text{,}
-$$
+\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|
+$$,
 
 so since the unit type is trivially inhabited, so is the fibre of $f$
 over $x$: $f$ is surjective.
@@ -180,7 +200,7 @@ epi→connected-cofibre c d f epic = contr (inc tip) $
 ```
 
 Let $x : d$ --- we'll show that $\| \rm{tip} = \rm{base}_x \|$. Here's
-where we $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
+where we use $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
 \rm{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
 write its left-hand-side as the composition of $f$ with a constant
 function, $f$ gives us a path $| \rm{tip} | = | \rm{base}_x |$ ---

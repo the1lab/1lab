@@ -4,7 +4,7 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
-open import Cat.Morphism.StrongEpi
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Prelude
@@ -29,7 +29,7 @@ pullback.
 [image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [orthogonal morphisms]: Cat.Morphism.Orthogonal.html
-[strong epimorphisms]: Cat.Morphism.StrongEpi.html
+[strong epimorphisms]: Cat.Morphism.Strong.Epi.html
 
 At face value, it's a bit weird to take the definition of regular
 categories to talk about strong, rather than _regular_, epimorphisms.
@@ -75,7 +75,7 @@ latter two names have a placeholder for the morphism we are factoring.
     im[ f ] = factor f .Factorisation.mediating
 
     im[_]↪b : ∀ {a b} (f : C.Hom a b) → im[ f ] C.↪ b
-    im[ f ]↪b = record { monic = out! (factor f .Factorisation.forget∈M) }
+    im[ f ]↪b = record { monic = □-out! (factor f .Factorisation.forget∈M) }
 
     a↠im[_] : ∀ {a b} (f : C.Hom a b) → C.Hom a im[ f ]
     a↠im[ f ] = factor f .Factorisation.mediate
@@ -96,10 +96,10 @@ latter two names have a placeholder for the morphism we are factoring.
       rem₁ : f ≡ r.im[ f ]↪b .C.mor C.∘ r.a↠im[ f ]
       rem₁ = r.factor f .factors
 
-      p = out! (r.factor f .mediate∈E) .snd (record { monic = x })
+      p = □-out! (r.factor f .mediate∈E) .snd (record { monic = x })
         (sym (r.factor f .factors) ∙ sym (C.idr _))
       res = C.make-invertible (p .centre .fst)
-        (out! (r.factor f .mediate∈E) .fst _ _
+        (□-out! (r.factor f .mediate∈E) .fst _ _
           (C.pullr (p .centre .snd .fst) ∙ C.id-comm))
         (p .centre .snd .fst)
 ```
@@ -135,8 +135,8 @@ enough to guarantee they behave type-theoretically. In a regular
 category, since images are stable under pullback, the equation
 
 $$
-\exists_k h^*\phi \cong f^* \exists_g \phi\text{,}
-$$
+\exists_k h^*\phi \cong f^* \exists_g \phi
+$$,
 
 holds as long as $f$, $g$, $h$ and $k$ fit into a pullback square,
 expressing that existential quantification commutes with substitution.
@@ -152,8 +152,8 @@ relational composition,
 [bicategory of spans]: Cat.Bi.Instances.Spans.html
 
 $$
-(R \circ S)(a, b) = \exists_{c : C} R(a, c) \land R(c, s)\text{,}
-$$
+(R \circ S)(a, b) = \exists_{c : C} R(a, c) \land R(c, s)
+$$,
 
 internally to an arbitrary category. Regularity comes in when we want to
 show that composition of relations is _associative_: indeed,
@@ -215,8 +215,8 @@ We start by calculating the image factorisation of $(f,c) : A \to B
 \times C$,
 
 $$
-A \xepi{d} D \xmono {(g, h)} B \times C \text{.}
-$$
+A \xepi{d} D \xmono {(g, h)} B \times C
+$$.
 
 
 ```agda
@@ -234,14 +234,14 @@ $$
 ```
 
 Following Johnstone, we show that $g$ is an isomorphism, so that
-$hg^{-1}$ is the factorisation we're looking for.^[Johnstone says it's
+$hg\inv$ is the factorisation we're looking for.^[Johnstone says it's
 _clearly_ unique, but the tiny calculation is included at the end of the
 proof since it wasn't clear to me] Since $f$ is an extremal epimorphism,
 any monomorphism through which it factors must be an iso. And since we have
 
 $$
-f = \pi_1(f,c) = \pi_1(g,h)d = gd\text{,}
-$$
+f = \pi_1(f,c) = \pi_1(g,h)d = gd
+$$,
 
 it will suffice to show that $g$ is a monomorphism. So assume you're
 given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$. Start by
@@ -263,7 +263,7 @@ obtaining
 
 ```agda
       g-monic : C.is-monic g
-      g-monic {e} k l w' = out! dgh.forget∈M _ _ rem₈ where
+      g-monic {e} k l w' = □-out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
         module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
           renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
@@ -271,8 +271,8 @@ obtaining
         m = π₁ C.∘ mn
         n = π₂ C.∘ mn
         sq' : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
-        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
-                                               (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
+        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
+                                             (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
 ```
 
 We define a map $q : P \to R$ into the kernel pair of $a$, factoring
@@ -317,25 +317,25 @@ skip it.
         open is-pullback
 
         rem₂ : is-strong-epi 𝒞 (×-functor .F₁ (d , id))
-        rem₂ = r.stable d π₁ {p2 = π₁} (out! dgh.mediate∈E) λ where
+        rem₂ = r.stable d π₁ {p2 = π₁} (□-out! dgh.mediate∈E) λ where
           .square → π₁∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
           .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
-            ·· sym (⟨⟩-unique _ refl refl)
+            ·· sym (⟨⟩-unique refl refl)
           .p₂∘universal → π₁∘⟨⟩
-          .unique {p = p} {lim'} q r → ⟨⟩-unique _ r $ sym $
+          .unique {p = p} {lim'} q r → ⟨⟩-unique r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
 
         rem₃ : is-strong-epi 𝒞 (×-functor .F₁ (id , d))
-        rem₃ = r.stable d π₂ {p2 = π₂} (out! dgh.mediate∈E) λ where
+        rem₃ = r.stable d π₂ {p2 = π₂} (□-out! dgh.mediate∈E) λ where
           .square → π₂∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
           .p₁∘universal {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
-            ·· sym (⟨⟩-unique _ refl p)
+            ·· sym (⟨⟩-unique refl p)
           .p₂∘universal → π₂∘⟨⟩
-          .unique {p = p} {lim'} q r → ⟨⟩-unique _
+          .unique {p = p} {lim'} q r → ⟨⟩-unique
             (sym (ap (π₁ ∘_) (sym q) ∙ pulll π₁∘⟨⟩ ∙ ap (_∘ lim') (idl _)))
             r
 
@@ -352,7 +352,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
 ```agda
         rem₅ : is-strong-epi 𝒞 d×d
-        rem₅ = subst (is-strong-epi 𝒞) rem₄ (strong-epi-compose 𝒞 _ _ rem₂ rem₃)
+        rem₅ = subst-is-strong-epi 𝒞 rem₄ (strong-epi-∘ 𝒞 _ _ rem₃ rem₂)
 
         rem₆ : is-strong-epi 𝒞 p
         rem₆ = r.stable _ _ rem₅ pb.has-is-pb
@@ -365,24 +365,24 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
         rem₈ : gh C.∘ k ≡ gh C.∘ l
         rem₈ =
-          gh ∘ k              ≡⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
+          gh ∘ k              ≡⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
           ⟨ g , h ⟩ ∘ k       ≡⟨ ⟨⟩∘ _ ⟩
           ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w' rem₇ ⟩
           ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
-          ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
+          ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
 ```
 
 Having shown that $g$ is monic, and knowing that $f$ --- a strong (thus
 extremal) epimorphism --- factors through it, we conclude that $g$ is an
-isomorphism. It remains to `compute`{.Agda} that $hg^{-1}f = c$, which
+isomorphism. It remains to `compute`{.Agda} that $hg\inv f = c$, which
 we do below.
 
 <!--
 ```agda
       g-iso : is-invertible g
       g-iso = make-invertible (p .centre .fst) (p .centre .snd .snd)
-        (out! dgh.mediate∈E .fst _ _
+        (□-out! dgh.mediate∈E .fst _ _
           ( pullr (pullr (sym dgh.factors) ∙ π₁∘⟨⟩)
           ∙ p .centre .snd .fst ∙ introl refl))
         module g-ortho where
@@ -395,7 +395,7 @@ we do below.
 ```agda
       compute =
         (h ∘ g.from) ∘ f                           ≡⟨ pullr refl ∙ pullr refl ⟩
-        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨ refl ⟩
+        π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique refl refl ⟩∘⟨ refl ⟩
         π₂ ∘ ⟨ g , h ⟩ ∘ g.from ∘ f                ≡⟨ refl⟩∘⟨ ⟨⟩∘ _ ⟩
         π₂ ∘ ⟨ g ∘ g.from ∘ f , h ∘ g.from ∘ f ⟩   ≡⟨ π₂∘⟨⟩ ⟩
         h ∘ g.from ∘ f                             ≡⟨ refl⟩∘⟨ g-ortho.p .centre .snd .fst ⟩

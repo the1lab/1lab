@@ -5,17 +5,15 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Instances.Elements {o ℓ s} (C : Precategory o ℓ)
-  (P : Functor (C ^op) (Sets s)) where
+module Cat.Instances.Elements where
 ```
 
 <!--
 ```agda
-open Precategory C
-open Functor
-
-private
-  module P = Functor P
+module _ {o ℓ s} (C : Precategory o ℓ) (P : Functor (C ^op) (Sets s)) where
+  open Precategory C
+  open Functor
+  private module P = Functor P
 ```
 -->
 
@@ -27,13 +25,13 @@ is a means of unpacking the data of the presheaf. Its objects are pairs of an
 object $x$, and a section $s : P x$.
 
 ```agda
-record Element : Type (o ⊔ s) where
-  constructor elem
-  field
-    ob : Ob
-    section : ∣ P.₀ ob ∣
+  record Element : Type (o ⊔ s) where
+    constructor elem
+    field
+      ob : Ob
+      section : P ʻ ob
 
-open Element
+  open Element
 ```
 
 We can think of this as taking an eraser to the data of $P$. If $P(x) =
@@ -53,35 +51,48 @@ have a bunch of tiny bits of data that only describe the action of
 $P(f)$ on a single point.
 
 ```agda
-record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
-  constructor elem-hom
-  no-eta-equality
-  field
-    hom : Hom (x .ob) (y .ob)
-    commute : P.₁ hom (y .section) ≡ x .section
+  record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
+    constructor elem-hom
+    no-eta-equality
+    field
+      hom : Hom (x .ob) (y .ob)
+      commute : P.₁ hom (y .section) ≡ x .section
 
-open Element-hom
+  open Element-hom
 ```
 
 As per usual, we need to prove some helper lemmas that describe the path
-space of `Element-hom`{.Agda}
+space of `Element-hom`{.Agda}.
 
 ```agda
-Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
-Element-hom-path p i .hom = p i
-Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
-  is-prop→pathp (λ j → P.₀ (x .ob) .is-tr (P.₁ (p j) (y .section)) (x .section))
-    (f .commute)
-    (g .commute) i
+  Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
+  Element-hom-path p i .hom = p i
+  Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
+    is-prop→pathp (λ j → P.₀ (x .ob) .is-tr (P.₁ (p j) (y .section)) (x .section))
+      (f .commute)
+      (g .commute) i
 ```
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
-Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
-Element-hom-is-set x y = Iso→is-hlevel 2 eqv T-is-set where
-  T-is-set : is-set _
-  T-is-set = hlevel!
+unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (quote Element-hom)
+
+module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor (C ^op) (Sets s)} where instance
+  open Element
+
+  Extensional-element-hom
+    : ∀ {x y : Element C P} {ℓr}
+    → ⦃ ext : Extensional (C .Precategory.Hom (x .ob) (y .ob)) ℓr ⦄
+    → Extensional (Element-hom C P x y) ℓr
+  Extensional-element-hom ⦃ ext ⦄ = injection→extensional
+    (C .Precategory.Hom-set _ _) (Element-hom-path C P) ext
+
+module _ {o ℓ s} (C : Precategory o ℓ) (P : Functor (C ^op) (Sets s)) where
+  private module P = Functor P
+  open Precategory C
+  open Functor
+  open Element-hom
+  open Element
 ```
 -->
 
@@ -89,32 +100,30 @@ One interesting fact is that morphisms $f : X \to Y$ in $C$ induce
 morphisms in the category of elements for each $py : P(y)$.
 
 ```agda
-induce : ∀ {x y} (f : Hom x y) (py : ∣ P.₀ y ∣)
-       → Element-hom (elem x (P.₁ f py)) (elem y py)
-induce f _ = elem-hom f refl
+  induce : ∀ {x y} (f : Hom x y) (py : P ʻ y)
+        → Element-hom C P (elem x (P.₁ f py)) (elem y py)
+  induce f _ = elem-hom f refl
 ```
 
 Using all this machinery, we can now define the category of elements of
 $P$!
 
 ```agda
-∫ : Precategory (o ⊔ s) (ℓ ⊔ s)
-∫ .Precategory.Ob = Element
-∫ .Precategory.Hom = Element-hom
-∫ .Precategory.Hom-set = Element-hom-is-set
-∫ .Precategory.id {x = x} = elem-hom id  λ i → P.F-id i (x .section)
-∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm
-  where
-    abstract
-      comm : P.₁ (f .hom ∘ g .hom) (z .section) ≡ x .section
-      comm =
-        P.₁ (f .hom ∘ g .hom) (z .section)       ≡⟨ happly (P.F-∘ (g .hom) (f .hom)) (z .section) ⟩
-        P.₁ (g .hom) (P.₁ (f .hom) (z .section)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
-        P.₁ (g .hom) (y .section)                ≡⟨ g .commute ⟩
-        x .section ∎
-∫ .Precategory.idr f = Element-hom-path (idr (f .hom))
-∫ .Precategory.idl f = Element-hom-path (idl (f .hom))
-∫ .Precategory.assoc f g h = Element-hom-path (assoc (f .hom) (g .hom) (h .hom))
+  ∫ : Precategory (o ⊔ s) (ℓ ⊔ s)
+  ∫ .Precategory.Ob = Element C P
+  ∫ .Precategory.Hom = Element-hom C P
+  ∫ .Precategory.Hom-set _ _ = hlevel 2
+  ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .section)
+  ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm where abstract
+    comm : P.₁ (f .hom ∘ g .hom) (z .section) ≡ x .section
+    comm =
+      P.₁ (f .hom ∘ g .hom) (z .section)       ≡⟨ happly (P.F-∘ (g .hom) (f .hom)) (z .section) ⟩
+      P.₁ (g .hom) (P.₁ (f .hom) (z .section)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
+      P.₁ (g .hom) (y .section)                ≡⟨ g .commute ⟩
+      x .section ∎
+  ∫ .Precategory.idr f = ext (idr _)
+  ∫ .Precategory.idl f = ext (idl _)
+  ∫ .Precategory.assoc f g h = ext (assoc _ _ _)
 ```
 
 ## Projection
@@ -124,11 +133,11 @@ $\pi_p : \int P \to C$, which just forgets all of the points and
 morphism actions.
 
 ```agda
-πₚ : Functor ∫ C
-πₚ .F₀ x = x .ob
-πₚ .F₁ f = f .hom
-πₚ .F-id = refl
-πₚ .F-∘ f g = refl
+  πₚ : Functor ∫ C
+  πₚ .F₀ x = x .ob
+  πₚ .F₁ f = f .hom
+  πₚ .F-id = refl
+  πₚ .F-∘ f g = refl
 ```
 
 This functor makes it clear that we ought to think of the category of

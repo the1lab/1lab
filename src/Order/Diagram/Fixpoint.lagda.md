@@ -19,6 +19,8 @@ open Order.Reasoning P
 ```
 -->
 
+# Least fixpoints {defines="least-fixpoint"}
+
 Let $(P, \le)$ be a poset, and $f : P \to P$ be a monotone map. We say
 that $f$ has a **least fixpoint** if there exists some $x : P$ such that
 $f(x) = x$, and for every other $y$ such that $f(y) = y$, $x \le y$.

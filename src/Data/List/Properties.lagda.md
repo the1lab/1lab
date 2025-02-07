@@ -1,7 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -26,7 +27,7 @@ module Data.List.Properties where
 # header
 
 <!--
-```
+```agda
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -88,16 +89,16 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
 ```agda
   List-is-hlevel : (n : Nat) → is-hlevel A (2 + n) → is-hlevel (List A) (2 + n)
-  List-is-hlevel n ahl x y = is-hlevel≃ (suc n) Code≃Path Code-is-hlevel where
+  List-is-hlevel n ahl x y = Equiv→is-hlevel (suc n) Code≃Path Code-is-hlevel where
     Code-is-hlevel : {x y : List A} → is-hlevel (Code x y) (suc n)
     Code-is-hlevel {[]} {[]}         = is-prop→is-hlevel-suc λ x y → refl
-    Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
-    Code-is-hlevel {x ∷ x₁} {[]}     = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
+    Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (lower x)
+    Code-is-hlevel {x ∷ x₁} {[]}     = is-prop→is-hlevel-suc λ x → absurd (lower x)
     Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
   instance
-    H-Level-List : ∀ {n} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n)
-    H-Level-List {n = n} ⦃ x ⦄ =
+    H-Level-List : ∀ {n} ⦃ p : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (List A) n
+    H-Level-List {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ ⦃ x ⦄ =
       record { has-hlevel = List-is-hlevel n (H-Level.has-hlevel x) }
 
   is-set→List-is-set : is-set A → is-set (List A)
@@ -106,9 +107,8 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
 <!--
 ```agda
-instance
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
+_ : ∀ {ℓ} {A : n-Type ℓ 2} → is-hlevel (List ∣ A ∣) 5
+_ = hlevel 5
 ```
 -->
 
@@ -142,8 +142,6 @@ ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ```
 
 <!--
-⚠️ TODO: Explain these ⚠️
-
 ```agda
 map-id
   : ∀ {ℓ} {A : Type ℓ}
@@ -159,7 +157,6 @@ map-++
   → map f (xs ++ ys) ≡ map f xs ++ map f ys
 map-++ f [] ys = refl
 map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
-
 
 take-length : ∀ {ℓ} {A : Type ℓ} (xs : List A) → take (length xs) xs ≡ xs
 take-length [] = refl

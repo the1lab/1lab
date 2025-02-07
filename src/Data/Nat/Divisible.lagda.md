@@ -4,7 +4,9 @@ open import 1Lab.Prelude
 
 open import Data.Nat.Properties
 open import Data.Nat.Order
+open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -12,7 +14,7 @@ open import Data.Nat.Base
 module Data.Nat.Divisible where
 ```
 
-# Divisibility {defines="divisibility"}
+# Divisibility of natural numbers {defines="divisibility divisible"}
 
 In the natural numbers, **divisibility**[^divide] is the property
 expressing that a given number can be expressed as a multiple of
@@ -32,7 +34,7 @@ _∣_ : Nat → Nat → Type
 zero  ∣ y = y ≡ zero
 suc x ∣ y = fibre (_* suc x) y
 
-infix 5 _∣_
+infix 7 _∣_
 ```
 
 In this way, we break the pathological case of $0 | 0$ by _decreeing_ it
@@ -48,17 +50,18 @@ this indirection, we can prove that divisibility is a mere property:
 instance
   H-Level-∣ : ∀ {x y} {n} → H-Level (x ∣ y) (suc n)
   H-Level-∣ = prop-instance (∣-is-prop _ _)
+  {-# INCOHERENT H-Level-∣ #-}
 ```
 
 The type $x | y$ is, in fact, the [[propositional truncation]] of $(*
-x)^{-1}(y)$ --- and it is logically equivalent to that type, too!
+x)\inv(y)$ --- and it is logically equivalent to that type, too!
 
 ```agda
 ∣-is-truncation : ∀ {x y} → (x ∣ y) ≃ ∥ fibre (_* x) y ∥
 ∣-is-truncation {zero} {y} =
   prop-ext!
     (λ p → inc (y , *-zeror y ∙ sym p))
-    (∥-∥-rec! (λ{ (x , p) → sym p ∙ *-zeror x }))
+    (rec! λ x p → sym p ∙ *-zeror x )
 ∣-is-truncation {suc x} {y} = Equiv.to is-prop≃equiv∥-∥ (∣-is-prop (suc x) y)
 
 ∣→fibre : ∀ {x y} → x ∣ y → fibre (_* x) y
@@ -114,6 +117,14 @@ m∣sn→m≤sn : ∀ {x y} → x ∣ suc y → x ≤ suc y
 m∣sn→m≤sn {x} {y} p with ∣→fibre p
 ... | zero  , p = absurd (zero≠suc p)
 ... | suc k , p = difference→≤ (k * x) p
+
+m∣n→m≤n : ∀ {m n} .⦃ _ : Positive n ⦄ → m ∣ n → m ≤ n
+m∣n→m≤n {n = suc _} = m∣sn→m≤sn
+
+proper-divisor-< : ∀ {m n} .⦃ _ : Positive n ⦄ → m ≠ n → m ∣ n → m < n
+proper-divisor-< m≠n m∣n with ≤-strengthen (m∣n→m≤n m∣n)
+... | inl here  = absurd (m≠n here)
+... | inr there = there
 ```
 
 This will let us establish the antisymmetry we were looking for:
@@ -136,4 +147,75 @@ expect a number to divide its multiples. Fortunately, this is the case:
 
 ∣-*r : ∀ {x y} → x ∣ y * x
 ∣-*r {y = y} = fibre→∣ (y , refl)
+
+|-*l-pres : ∀ {n a b} → n ∣ b → n ∣ a * b
+|-*l-pres {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (a * q , *-associative a q n ∙ ap (a *_) α)
+
+∣-*-cancelr : ∀ {n a b} .⦃ _ : Positive n ⦄ → a * n ∣ b * n → a ∣ b
+∣-*-cancelr {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (q , *-injr n (q * a) b (*-associative q a n ∙ α))
 ```
+
+If two numbers are multiples of $k$, then so is their sum.
+
+```agda
+∣-+ : ∀ {k n m} → k ∣ n → k ∣ m → k ∣ (n + m)
+∣-+ {zero} {n} {m} p q = ap (_+ m) p ∙ q
+∣-+ {suc k} (x , p) (y , q) = x + y , *-distrib-+r x y (suc k) ∙ ap₂ _+_ p q
+
+∣-+-cancel : ∀ {n a b} → n ∣ a → n ∣ a + b → n ∣ b
+∣-+-cancel {n} {a} {b} p1 p2 with (q , α) ← ∣→fibre p1 | (r , β) ← ∣→fibre p2 = fibre→∣
+  (r - q , monus-distribr r q n ∙ ap₂ _-_ β α ∙ ap ((a + b) -_) (sym (+-zeror a)) ∙ monus-cancell a b 0)
+
+∣-+-cancel' : ∀ {n a b} → n ∣ b → n ∣ a + b → n ∣ a
+∣-+-cancel' {n} {a} {b} p1 p2 = ∣-+-cancel {n} {b} {a} p1 (subst (n ∣_) (+-commutative a b) p2)
+```
+
+The only number that divides 1 is 1 itself:
+
+```agda
+∣-1 : ∀ {n} → n ∣ 1 → n ≡ 1
+∣-1 {0} p = sym p
+∣-1 {1} p = refl
+∣-1 {suc (suc n)} (k , p) = *-is-oner k (2 + n) p
+```
+
+## Even and odd natural numbers
+
+A number is **even** if it is divisible by 2, and **odd** otherwise.
+Note that a number is odd if and only if its successor is even; we take this
+as our definition because it's easier to compute with positive statements.
+
+```agda
+is-even : Nat → Type
+is-even n = 2 ∣ n
+
+is-odd : Nat → Type
+is-odd n = is-even (suc n)
+
+odd→not-even : ∀ n → is-odd n → ¬ is-even n
+odd→not-even n (x , p) (y , q) = 1≠2*n (x - y) $
+  monus-swapr 1 _ _ (ap suc q ∙ sym p) ∙ sym (monus-distribr x y 2)
+  where
+    1≠2*n : ∀ n → ¬ (1 ≡ n * 2)
+    1≠2*n zero = suc≠zero
+    1≠2*n (suc n) h = zero≠suc (suc-inj h)
+```
+
+We can easily decide whether a number is even or odd by induction.
+
+```agda
+even-or-odd : ∀ n → is-even n ⊎ is-odd n
+even-or-odd zero = inl ∣-zero
+even-or-odd (suc n) with even-or-odd n
+... | inl p = inr (∣-+ ∣-refl p)
+... | inr p = inl p
+
+even? : ∀ n → Dec (is-even n)
+even? n with even-or-odd n
+... | inl e = yes e
+... | inr o = no (odd→not-even n o)
+```
+
+See [`Data.Nat.DivMod`] for a general decision procedure for divisibility.
+
+[`Data.Nat.DivMod`]: Data.Nat.DivMod.html

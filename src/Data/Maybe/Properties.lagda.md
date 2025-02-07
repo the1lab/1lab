@@ -2,12 +2,11 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Data.Fin.Finite
 open import Data.Maybe.Base
 open import Data.List.Base using (_∷_; [])
 open import Data.Dec.Base
 open import Data.Nat.Base
-open import Data.Fin
+open import Data.Sum.Base
 ```
 -->
 
@@ -102,14 +101,17 @@ Maybe-is-hlevel
   → is-hlevel A (2 + n)
   → is-hlevel (Maybe A) (2 + n)
 Maybe-is-hlevel n ahl x y =
-  is-hlevel≃ (1 + n) (MaybePath.Path≃Code x y) (MaybePath.Code-is-hlevel n ahl)
+  Equiv→is-hlevel (1 + n) (MaybePath.Path≃Code x y) (MaybePath.Code-is-hlevel n ahl)
 ```
 
 <!--
 ```agda
 instance
-  decomp-maybe : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (Maybe A)
-  decomp-maybe = decomp (quote Maybe-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
+  H-Level-Maybe
+    : ∀ {ℓ} {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄
+    → H-Level (Maybe A) n
+  H-Level-Maybe {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+    Maybe-is-hlevel n (hlevel (2 + n))
 ```
 -->
 
@@ -145,28 +147,6 @@ Maybe-reflect-discrete
   : Discrete (Maybe A)
   → Discrete A
 Maybe-reflect-discrete eq? = Discrete-inj just just-inj eq?
-```
-
-## Finiteness
-
-If `A` is finite, then `Maybe A` is also finite.
-
-```agda
-Finite-Maybe
-  : ⦃ fa : Finite A ⦄
-  → Finite (Maybe A)
-Finite-Maybe ⦃ fa ⦄ .cardinality = suc (fa .cardinality)
-Finite-Maybe {A = A} ⦃ fa ⦄ .enumeration =
-  ∥-∥-map (Iso→Equiv ∘ maybe-iso) (fa .enumeration) where
-    maybe-iso : A ≃ Fin (fa .cardinality) → Iso (Maybe A) (Fin (suc (fa .cardinality)))
-    maybe-iso f .fst (just x) = fsuc (Equiv.to f x)
-    maybe-iso f .fst nothing = fzero
-    maybe-iso f .snd .is-iso.inv fzero = nothing
-    maybe-iso f .snd .is-iso.inv (fsuc i) = just (Equiv.from f i)
-    maybe-iso f .snd .is-iso.rinv fzero = refl
-    maybe-iso f .snd .is-iso.rinv (fsuc i) = ap fsuc (Equiv.ε f i)
-    maybe-iso f .snd .is-iso.linv (just x) = ap just (Equiv.η f x)
-    maybe-iso f .snd .is-iso.linv nothing = refl
 ```
 
 # Misc. properties
@@ -227,3 +207,69 @@ map-<|>
 map-<|> (just x) y = refl
 map-<|> nothing y = refl
 ```
+
+## Injectivity
+
+We can prove that the `Maybe`{.Agda} type constructor, considered as a
+function from a universe to itself, is injective.
+
+```agda
+Maybe-injective : Maybe A ≃ Maybe B → A ≃ B
+Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
+  a→b = maybe-injective e
+  b→a = maybe-injective (Equiv.inverse e)
+
+  module _ (e : Maybe A ≃ Maybe B) where abstract
+    private
+      module e = Equiv e
+      module e⁻¹ = Equiv e.inverse
+
+    lemma : is-right-inverse (maybe-injective (Equiv.inverse e)) (maybe-injective e)
+    lemma x with inspect (e.from (just x))
+    lemma x | just y , p with inspect (e.to (just y))
+    lemma x | just y , p | just z  , q = just-inj (sym q ∙ ap e.to (sym p) ∙ e.ε _)
+    lemma x | just y , p | nothing , q with inspect (e.to nothing)
+    lemma x | just y , p | nothing , q | nothing , r = absurd (just≠nothing (e.injective₂ q r))
+    lemma x | just y , p | nothing , q | just z  , r = absurd (nothing≠just (sym q ∙ ap e.to (sym p) ∙ e.ε _))
+    lemma x | nothing , p with inspect (e.from nothing)
+    lemma x | nothing , p | nothing , q = absurd (just≠nothing (e⁻¹.injective₂ p q))
+    lemma x | nothing , p | just y , q with inspect (e.to (just y))
+    lemma x | nothing , p | just y , q | just z  , r = absurd (just≠nothing (sym r ∙ ap e.to (sym q) ∙ e.ε _))
+    lemma x | nothing , p | just y , q | nothing , r with inspect (e.to nothing)
+    lemma x | nothing , p | just y , q | nothing , r | nothing , s = absurd (just≠nothing (e.injective₂ r s))
+    lemma x | nothing , p | just y , q | nothing , r | just z , s = just-inj (sym s ∙ ap e.to (sym p) ∙ e.ε _)
+
+  abstract
+    il : is-left-inverse b→a a→b
+    il = p' where
+      p : is-right-inverse (maybe-injective (Equiv.inverse (Equiv.inverse e))) (maybe-injective (Equiv.inverse e))
+      p = lemma (Equiv.inverse e)
+
+      p' : is-right-inverse (maybe-injective e) (maybe-injective (Equiv.inverse e))
+      p' = subst
+        (λ e' → is-right-inverse (maybe-injective e') (maybe-injective (Equiv.inverse e)))
+        {Equiv.inverse (Equiv.inverse e)} {e}
+        trivial! p
+```
+
+<!--
+```agda
+Maybe-is-sum : Maybe A ≃ (⊤ ⊎ A)
+Maybe-is-sum {A = A} = Iso→Equiv (to , iso from ir il) where
+  to   : Maybe A → ⊤ ⊎ A
+  to (just x) = inr x
+  to nothing = inl tt
+
+  from : ⊤ ⊎ A → Maybe A
+  from (inr x) = just x
+  from (inl _) = nothing
+
+  ir : is-right-inverse from to
+  ir (inl x) = refl
+  ir (inr x) = refl
+
+  il : is-right-inverse to from
+  il nothing = refl
+  il (just x) = refl
+```
+-->

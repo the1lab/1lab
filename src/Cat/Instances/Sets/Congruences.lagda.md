@@ -57,14 +57,8 @@ Sets-effective-congruences {A = A} R = epi where
             (ap snd (happly (sym R.trans-factors) _) ∙ ap snd q)
 
   rel-prop : ∀ x y → is-prop (rel x y)
-  rel-prop _ _ (r , s) (q , p) =
-    Σ-path
-      (happly (R.has-is-monic {c = unit} m1 m2 (funext λ _ → s ∙ sym p)) _)
-      (×-is-hlevel 2 (A .is-tr) (A .is-tr) _ _ _ _)
-    where
-      m1 m2 : Precategory.Hom (Sets ℓ) unit R.domain
-      m1 _ = r
-      m2 _ = q
+  rel-prop _ _ (r , s) (q , p) = Σ-prop-path!
+    (happly (R.has-is-monic {c = unit} (λ _ → r) (λ _ → q) (funext λ _ → s ∙ sym p)) _)
 
   open Congruence hiding (quotient)
   undo : ∀ {x y} → inc x ≡ inc y → rel x y
@@ -96,17 +90,17 @@ Sets-effective-congruences {A = A} R = epi where
   epi .has-quotient .unique {F = F} path =
     funext (Coeq-elim-prop (λ x → F .is-tr _ _) (happly path))
 
-  epi .is-kernel-pair .square = funext λ { x → quot (x , refl) }
+  epi .has-kernel-pair .square = funext λ { x → quot (x , refl) }
 
-  epi .is-kernel-pair .universal path x = undo (happly path x) .fst
+  epi .has-kernel-pair .universal path x = undo (happly path x) .fst
 
-  epi .is-kernel-pair .p₁∘universal {p = path} =
+  epi .has-kernel-pair .p₁∘universal {p = path} =
     funext (λ x → ap fst (undo (happly path x) .snd))
 
-  epi .is-kernel-pair .p₂∘universal {p = path} =
+  epi .has-kernel-pair .p₂∘universal {p = path} =
     funext (λ x → ap snd (undo (happly path x) .snd))
 
-  epi .is-kernel-pair .unique {p = p} q r = funext λ x →
+  epi .has-kernel-pair .unique {p = p} q r = funext λ x →
     let p = sym ( undo (happly p x) .snd
                 ∙ Σ-pathp (happly (sym q) _) (happly (sym r) _))
      in happly (R.has-is-monic {c = unit} _ _ (funext λ _ → p)) _

@@ -1,5 +1,5 @@
 import { JSX, type Content } from "./lib/jsx";
-import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, footnoteSetting, serifFontSetting } from "./lib/settings";
+import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, serifFontSetting, justifiedSetting } from "./lib/settings";
 
 // This is pretty evil, but a loose <script> tag assigns these to the
 // window object in the HTML template.
@@ -63,26 +63,47 @@ function Toggle(props: { label: string, sync: Setting<boolean> }): HTMLElement {
   );
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const main = document.querySelector("div#post-toc-container");
-  if (!main) return;
+interface ToggleProps {
+  setting: Setting<boolean>;
 
+  trueLabel:  string;
+  falseLabel: string;
+
+  trueIcon:  string;
+  falseIcon: string;
+}
+
+function ToggleRow({setting, trueLabel, falseLabel, trueIcon, falseIcon }: ToggleProps): HTMLElement {
   const
-    sans  = <Button label="Sans" icon="view-controls" class="button-large" click={() => serifFontSetting.value = false} />,
-    serif = <Button label="Serif" icon="serif" class="button-large" click={() => serifFontSetting.value = true} />;
+    onfalse = <Button label={falseLabel} icon={falseIcon} class="button-large" click={() => setting.value = false} />,
+    ontrue  = <Button label={trueLabel}  icon={trueIcon}  class="button-large" click={() => setting.value = true} />;
 
-  serifFontSetting.onChange((v) => {
+  const go = (v: boolean) => {
     if (v) {
-      serif.classList.add("active");
-      sans.classList.remove("active");
+      ontrue.classList.add("active");
+      onfalse.classList.remove("active");
     } else {
-      sans.classList.add("active");
-      serif.classList.remove("active");
+      onfalse.classList.add("active");
+      ontrue.classList.remove("active");
     }
-  });
+  }
 
-  main.appendChild(<aside>
+  go(setting.value);
+  setting.onChange(go);
+
+  return <ButtonRow>
+    {onfalse} {ontrue}
+  </ButtonRow>;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const line = document.querySelector("aside#toc > hr");
+  if (!line) return;
+
+  line.parentElement!.insertBefore(
     <div id="controls">
+      <Button icon="github" label="Link to source" click={`https://github.com/the1lab/1lab/blob/${links.source}`} />
+      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
 
       <div class="dropdown">
         <Button icon="view-controls" label="View controls" click={(e) => {
@@ -93,24 +114,24 @@ document.addEventListener("DOMContentLoaded", () => {
         </Button>
 
         <div class="dropdown-popup">
-          <ButtonRow>
-            {sans}
-            {serif}
-          </ButtonRow>
-
-          {/* <hr />
-
-          <ButtonRow>
-            <Button label="Left-aligned text" icon="raggedright" class="button-large" click={console.log} />
-            <Button label="Justified text"    icon="justified"   class="button-large" click={console.log} />
-            <Button label="Right-aligned text" icon="raggedleft" class="button-large" click={console.log} />
-          </ButtonRow> */}
+          <ToggleRow
+            setting={serifFontSetting}
+            trueLabel="Serif"
+            trueIcon="serif"
+            falseLabel="Sans"
+            falseIcon="view-controls" />
 
           <hr />
 
+          <ToggleRow
+            setting={justifiedSetting}
+            trueLabel="Justified"
+            trueIcon="justified"
+            falseLabel="Left-aligned text"
+            falseIcon="raggedright" />
+
           <Toggle label="Equations"        sync={equationSetting} />
           <Toggle label="Hidden code"      sync={hiddenCodeSetting} />
-          <Toggle label="Inline footnotes" sync={footnoteSetting} />
 
           <hr />
 
@@ -123,11 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       </div>
 
-      <Button icon="github" label="Link to source" click={`https://github.com/plt-amy/1lab/blob/${links.source}`} />
-      <Button icon="home" label="Return to index" click={`${links.baseURL}/index.html`} />
-      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
-    </div>
-  </aside>);
+    </div>, line
+  );
 
   document.addEventListener("click", (e) => {
     if (!(e.target instanceof HTMLElement)) return;

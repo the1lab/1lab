@@ -3,12 +3,15 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Ideal
-open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Prelude hiding (_*_ ; _+_)
+
 open import Data.Power
 open import Data.Dec
+
+import Algebra.Ring.Reasoning as Kit
 ```
 -->
 
@@ -19,7 +22,7 @@ module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 open Ring-on (R .snd)
-private module R = Ring-on (R .snd)
+private module R = Kit R
 ```
 -->
 
@@ -54,7 +57,7 @@ comprehensibility's sake).
   private
     quot-grp : Group _
     quot-grp = R.additive-group /ᴳ I.ideal→normal
-    module R/I = Group-on (quot-grp .snd)
+    module R/I = Group-on (quot-grp .snd) hiding (magma-hlevel)
 ```
 -->
 
@@ -75,12 +78,12 @@ thing: Since $(x - y) \in I$, also $(xa - ya) \in I$, so $[xa] = [ya]$.
 ```agda
       p1 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (x R.* a) ≡ inc (y R.* a)
       p1 a {x} {y} x-y∈I = quot $ subst (_∈ I)
-        (R.*-distribr ∙ ap (x R.* a R.+_) (sym R.neg-*-l))
+        (R.*-distribr ∙ ap (x R.* a R.+_) R.*-negatel)
         (I.has-*ᵣ a x-y∈I)
 
       p2 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (a R.* x) ≡ inc (a R.* y)
       p2 a {x} {y} x-y∈I = quot $ subst (_∈ I)
-        (R.*-distribl ∙ ap (a R.* x R.+_) (sym R.neg-*-r))
+        (R.*-distribl ∙ ap (a R.* x R.+_) R.*-negater)
         (I.has-*ₗ a x-y∈I)
 ```
 
@@ -96,32 +99,17 @@ quotients into propositions, then applying $R$'s laws.</summary>
   make-R/I .0R = inc 0r
   make-R/I ._+_ = R/I._⋆_
   make-R/I .-_ = R/I.inverse
-  make-R/I .+-idl = R/I.idl
-  make-R/I .+-invr {x} = R/I.inverser {x}
-  make-R/I .+-assoc {x} {y} {z} = R/I.associative {x} {y} {z}
+  make-R/I .+-idl x = R/I.idl
+  make-R/I .+-invr x = R/I.inverser {x}
+  make-R/I .+-assoc x y z = R/I.associative {x} {y} {z}
   make-R/I .1R = inc R.1r
   make-R/I ._*_ = quot-mul
-  make-R/I .+-comm {x} {y} =
-    Coeq-elim-prop₂ {C = λ x y → x R/I.⋆ y ≡ y R/I.⋆ x} (λ x y → hlevel 1)
-      (λ x y → ap Coeq.inc R.+-commutes) x y
-  make-R/I .*-idl {x} =
-    Coeq-elim-prop {C = λ x → quot-mul (inc R.1r) x ≡ x} (λ _ → hlevel 1)
-      (λ x → ap Coeq.inc R.*-idl) x
-  make-R/I .*-idr {x} =
-    Coeq-elim-prop {C = λ x → quot-mul x (inc R.1r) ≡ x} (λ _ → hlevel 1)
-      (λ x → ap Coeq.inc R.*-idr) x
-  make-R/I .*-assoc {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul x (quot-mul y z) ≡ quot-mul (quot-mul x y) z}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-associative) x y z
-  make-R/I .*-distribl {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul x (y R/I.⋆ z) ≡ quot-mul x y R/I.⋆ quot-mul x z}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-distribl) x y z
-  make-R/I .*-distribr {x} {y} {z} =
-    Coeq-elim-prop₃
-      {C = λ x y z → quot-mul (y R/I.⋆ z) x ≡ quot-mul y x R/I.⋆ quot-mul z x}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-distribr) x y z
+  make-R/I .+-comm = elim! λ x y → ap Coeq.inc R.+-commutes
+  make-R/I .*-idl = elim! λ x → ap Coeq.inc R.*-idl
+  make-R/I .*-idr = elim! λ x → ap Coeq.inc R.*-idr
+  make-R/I .*-assoc = elim! λ x y z → ap Coeq.inc R.*-associative
+  make-R/I .*-distribl = elim! λ x y z → ap Coeq.inc R.*-distribl
+  make-R/I .*-distribr = elim! λ x y z → ap Coeq.inc R.*-distribr
 ```
 
 </details>

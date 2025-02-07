@@ -36,13 +36,11 @@ module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
 -->
 
 ```agda
-  Partial-maps-subcat : Wide-subcat {C = cat} ℓ'
-  Partial-maps-subcat .Wide-subcat.P = is-functional
+  Partial-maps-subcat : Wide-subcat cat ℓ'
+  Partial-maps-subcat .Wide-subcat.P        = is-functional
   Partial-maps-subcat .Wide-subcat.P-prop f = ≤-thin
-  Partial-maps-subcat .Wide-subcat.P-id =
-    functional-id
-  Partial-maps-subcat .Wide-subcat.P-∘ f-partial g-partial =
-    functional-∘ f-partial g-partial
+  Partial-maps-subcat .Wide-subcat.P-id     = functional-id
+  Partial-maps-subcat .Wide-subcat.P-∘      = functional-∘
 
   Partial-maps : Precategory o (ℓ ⊔ ℓ')
   Partial-maps = Wide Partial-maps-subcat
@@ -59,12 +57,11 @@ functional; it's only relevant in the converse direction of the 4th axiom!
   Partial-maps-restriction : Restriction-category Partial-maps
   Partial-maps-restriction ._↓ f .hom = domain (f .hom)
   Partial-maps-restriction ._↓ f .witness = domain-functional (f .hom)
-  Partial-maps-restriction .↓-dom f =
-    ext $ domain-absorb (f .hom)
-  Partial-maps-restriction .↓-comm f g =
-    ext $ domain-comm
-  Partial-maps-restriction .↓-smashr f g =
-    ext $ domain-smashr (g .hom) (f .hom)
-  Partial-maps-restriction .↓-swap f g =
-    ext $ domain-swap (f .hom) (g .hom) (g .witness)
+  Partial-maps-restriction .↓-dom f = ext $
+    domain-absorb (f .hom)
+  Partial-maps-restriction .↓-comm f g = ext domain-comm
+  Partial-maps-restriction .↓-smashr f g = ext $
+    domain-smashr (g .hom) (f .hom)
+  Partial-maps-restriction .↓-swap f g = ext $
+    domain-swap (f .hom) (g .hom) (g .witness)
 ```

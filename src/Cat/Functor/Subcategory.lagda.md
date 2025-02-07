@@ -70,46 +70,44 @@ open Subcat-hom
 
 <!--
 ```agda
-module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} where
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private module C = Precategory C
+
+  instance
+    Membership-subcat-ob : ∀ {o' ℓ'} → Membership C.Ob (Subcat C o' ℓ') _
+    Membership-subcat-ob = record { _∈_ = λ o S → o ∈ S .Subcat.is-ob }
+
+module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {S : Subcat C o' ℓ'} where
   open Cat.Reasoning C
-  open Subcat subcat
+  open Subcat S
 
   Subcat-hom-pathp
-    : {x x' y y' : Σ[ ob ∈ Ob ] (is-ob ob)}
-    → {f : Subcat-hom subcat x y} {g : Subcat-hom subcat x' y'}
+    : {x x' y y' : Σ[ ob ∈ C ] (ob ∈ S)}
+    → {f : Subcat-hom S x y} {g : Subcat-hom S x' y'}
     → (p : x ≡ x') (q : y ≡ y')
     → PathP (λ i → Hom (p i .fst) (q i .fst)) (f .hom) (g .hom)
-    → PathP (λ i → Subcat-hom subcat (p i) (q i)) f g
+    → PathP (λ i → Subcat-hom S (p i) (q i)) f g
   Subcat-hom-pathp p q r i .hom = r i
   Subcat-hom-pathp {f = f} {g = g} p q r i .witness =
     is-prop→pathp (λ i → is-hom-prop (r i) (p i .snd) (q i .snd)) (f .witness) (g .witness) i
 
-  Extensional-subcat-hom
-    : ∀ {ℓr} {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
-    → ⦃ sa : Extensional (Hom (x .fst) (y .fst)) ℓr ⦄
-    → Extensional (Subcat-hom subcat x y) ℓr
-  Extensional-subcat-hom ⦃ sa ⦄ = injection→extensional!
-    (Subcat-hom-pathp refl refl) sa
-
   instance
-    extensionality-subcat-hom
-      : ∀ {x y : Σ[ ob ∈ Ob ] (is-ob ob)} → Extensionality (Subcat-hom subcat x y)
-    extensionality-subcat-hom = record { lemma = quote Extensional-subcat-hom }
+    Extensional-subcat-hom
+      : ∀ {ℓr x y} ⦃ sa : Extensional (Hom (x .fst) (y .fst)) ℓr ⦄
+      → Extensional (Subcat-hom S x y) ℓr
+    Extensional-subcat-hom ⦃ sa ⦄ = injection→extensional!
+      (Subcat-hom-pathp refl refl) sa
 
-    Funlike-Subcat-hom : ⦃ _ : Funlike Hom ⦄ → Funlike (Subcat-hom subcat)
-    Funlike-Subcat-hom ⦃ i ⦄ = record
-      { au = Underlying-Σ ⦃ i .Funlike.au ⦄
-      ; bu = Underlying-Σ ⦃ i .Funlike.bu ⦄
-      ; _#_ = λ f x → apply (f .hom) x
-      }
+    Funlike-Subcat-hom
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y}
+      → ⦃ _ : Funlike (Hom (x .fst) (y .fst)) A B ⦄ → Funlike (Subcat-hom S x y) A B
+    Funlike-Subcat-hom ⦃ i ⦄ = record { _#_ = λ f x → apply (f .hom) x }
 
-  Subcat-hom-is-set
-    : {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
-    → is-set (Subcat-hom subcat x y)
-  Subcat-hom-is-set = Iso→is-hlevel 2 eqv $
-    Σ-is-hlevel 2 (Hom-set _ _) λ _ →
-    is-hlevel-suc 1 (is-hom-prop _ _ _)
-    where unquoteDecl eqv = declare-record-iso eqv (quote Subcat-hom)
+    H-Level-Subcat-hom : ∀ {x y n} → H-Level (Subcat-hom S x y) (2 + n)
+    H-Level-Subcat-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv $
+      Σ-is-hlevel 2 (Hom-set _ _) λ _ →
+      is-hlevel-suc 1 (is-hom-prop _ _ _)
+      where unquoteDecl eqv = declare-record-iso eqv (quote Subcat-hom)
 ```
 -->
 
@@ -125,9 +123,9 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} (subcat : Subcat C o' ℓ') whe
 
 ```agda
   Subcategory : Precategory (o ⊔ o') (ℓ ⊔ ℓ')
-  Subcategory .Precategory.Ob = Σ[ ob ∈ Ob ] is-ob ob
+  Subcategory .Precategory.Ob = ∫ₚ subcat
   Subcategory .Precategory.Hom = Subcat-hom subcat
-  Subcategory .Precategory.Hom-set _ _ = Subcat-hom-is-set
+  Subcategory .Precategory.Hom-set _ _ = hlevel 2
   Subcategory .Precategory.id .hom = id
   Subcategory .Precategory.id .witness = is-hom-id _
   Subcategory .Precategory._∘_ f g .hom = f .hom ∘ g .hom
@@ -170,7 +168,7 @@ to those that lie in the image of $F$.
   Faithful-subcat .Subcat.is-hom f (y , y-es) (z , z-es) =
     Σ[ g ∈ C.Hom y z ] (D.to z-es D.∘ F₁ g D.∘ D.from y-es ≡ f)
   Faithful-subcat .Subcat.is-hom-prop f (y , y-es) (z , z-es) (g , p) (h , q) =
-    Σ-prop-path (λ _ → D.Hom-set _ _ _ _) $
+    Σ-prop-path! $
     faithful $
     D.iso→epic (y-es D.Iso⁻¹) _ _ $
     D.iso→monic z-es _ _ $
@@ -211,15 +209,15 @@ There is a faithful functor from a subcategory on $\cC$ to $\cC$.
 
 <!--
 ```agda
-module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} where
+module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {S : Subcat C o' ℓ'} where
   open Cat.Reasoning C
-  private module Sub = Cat.Reasoning (Subcategory subcat)
-  open Subcat subcat
+  private module Sub = Cat.Reasoning (Subcategory S)
+  open Subcat S
 ```
 -->
 
 ```agda
-  Forget-subcat : Functor (Subcategory subcat) C
+  Forget-subcat : Functor (Subcategory S) C
   Forget-subcat .Functor.F₀ (x , _) = x
   Forget-subcat .Functor.F₁ f = f .hom
   Forget-subcat .Functor.F-id = refl
@@ -234,19 +232,17 @@ the forgetful functor is pseudomonic.
 
 ```agda
   is-pseudomonic-Forget-subcat
-    : (∀ {x y} {f : Hom x y} {px : is-ob x} {py : is-ob y}
-       → is-invertible f → subcat .is-hom f px py)
+    : (∀ {x y} {f : Hom x y} {px : x ∈ S} {py : y ∈ S}
+       → is-invertible f → S .is-hom f px py)
     → is-pseudomonic Forget-subcat
   is-pseudomonic-Forget-subcat invert .is-pseudomonic.faithful =
     is-faithful-Forget-subcat
   is-pseudomonic-Forget-subcat invert .is-pseudomonic.isos-full f =
-    pure $
-      Sub.make-iso
-        (sub-hom (f .to) (invert (iso→invertible f)))
-        (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
-        (ext (f .invl))
-        (ext (f .invr))
-      , ≅-path refl
+    pure $ Sub.make-iso
+      (sub-hom (f .to)   (invert (iso→invertible f)))
+      (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
+      (ext (f .invl))
+      (ext (f .invr)) , trivial!
 ```
 
 ## Univalent subcategories
@@ -257,15 +253,14 @@ when the predicate on objects is a proposition.
 [univalent]: Cat.Univalent.html
 
 ```agda
-  subcat-iso→iso : ∀ {x y : Σ[ x ∈ Ob ] is-ob x} → x Sub.≅ y → x .fst ≅ y .fst
-  subcat-iso→iso f =
-    make-iso (Sub.to f .hom) (Sub.from f .hom)
-      (ap hom (Sub.invl f)) (ap hom (Sub.invr f))
+  subcat-iso→iso : ∀ {x y : Σ[ x ∈ Ob ] (x ∈ S)} → x Sub.≅ y → x .fst ≅ y .fst
+  subcat-iso→iso f = make-iso (Sub.to f .hom) (Sub.from f .hom)
+    (ap hom (Sub.invl f)) (ap hom (Sub.invr f))
 
   subcat-is-category
     : is-category C
-    → (∀ x → is-prop (is-ob x))
-    → is-category (Subcategory subcat)
+    → (∀ x → is-prop (x ∈ S))
+    → is-category (Subcategory S)
   subcat-is-category cat ob-prop .to-path {a , pa} {b , pb} f =
     Σ-prop-path ob-prop (cat .to-path (subcat-iso→iso f))
   subcat-is-category cat ob-prop .to-path-over p =
