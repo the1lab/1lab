@@ -81,7 +81,8 @@ parallel arrows between them. It is the shape of [[equaliser]] and
 ```
 -->
 
-The parallel category is isomorphic to its opposite through the involution `not : Bool → Bool`.
+The parallel category is isomorphic to its opposite through the
+involution `not`{.Agda}.
 
 ```agda
 ·⇇· = ·⇉· ^op
@@ -101,10 +102,11 @@ The parallel category is isomorphic to its opposite through the involution `not 
   F .F-∘ {false} {false} {false} f g = refl
 
   F-is-iso : is-precat-iso F
-  F-is-iso .has-is-ff {true} {true} .is-eqv _ = hlevel 0
-  F-is-iso .has-is-ff {true} {false} = id-equiv
-  F-is-iso .has-is-ff {false} {false} .is-eqv y = hlevel 0
   F-is-iso .has-is-iso = not-is-equiv
+  F-is-iso .has-is-ff {true} {true} = id-equiv
+  F-is-iso .has-is-ff {true} {false} = id-equiv
+  F-is-iso .has-is-ff {false} {false} = id-equiv
+  F-is-iso .has-is-ff {false} {true} .is-eqv ()
 ```
 
 <!--
@@ -120,7 +122,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-Paralell pairs of morphisms in a category $\cC$ are equivalent to functors from the
+Parallel pairs of morphisms in a category $\cC$ are equivalent to functors from the
 walking parallel arrow category to $\cC$.
 
 ```agda
@@ -142,14 +144,14 @@ walking parallel arrow category to $\cC$.
 ```
 
 A natural transformation between two diagrams
-$A \stackrel{\overset{f}{\longrightarrow}}{\underset{g}{\longrightarrow}} B$ and
-$C \stackrel{\overset{f'}{\longrightarrow}}{\underset{g'}{\longrightarrow}} D$
-is given by a pair of commutative squares
+$A\ \overset{f}{\underset{g}{\tto}}\ B$ and
+$C\ \overset{f'}{\underset{g'}{\tto}}\ D$ is given by a pair of
+commutative squares
 
 ~~~{.quiver}
 \begin{tikzcd}
 	A & B && A & B \\
-	C & D && C & D
+	C & D && C & D.
 	\arrow["f", from=1-1, to=1-2]
 	\arrow["u"', from=1-1, to=2-1]
 	\arrow["v", from=1-2, to=2-2]
@@ -158,7 +160,7 @@ is given by a pair of commutative squares
 	\arrow["v", from=1-5, to=2-5]
 	\arrow["{f'}", from=2-1, to=2-2]
 	\arrow["{g'}", from=2-4, to=2-5]
-\end{tikzcd}.
+\end{tikzcd}
 ~~~
 
 ```agda
