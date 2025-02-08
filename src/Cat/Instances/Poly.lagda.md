@@ -41,17 +41,22 @@ $$
 [family fibration]: Cat.Displayed.Instances.Family.html
 
 ```agda
-Poly : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-Poly ℓ = ∫ {ℓ = ℓ} (Family (Sets ℓ ^op))
+Poly : ∀ ℓ ℓ' → Precategory (lsuc ℓ ⊔ lsuc ℓ') (ℓ ⊔ ℓ')
+Poly ℓ ℓ' = ∫ (Family (Sets ℓ' ^op) {ℓ = ℓ})
 
-module Poly {ℓ} = Cat.Reasoning (Poly ℓ)
+module Poly where
+  module _ ℓ ℓ' where
+    open Precategory (Poly ℓ ℓ') using (Ob) public
+
+  module _ {ℓ ℓ'} where
+    open Cat.Reasoning (Poly ℓ ℓ') hiding (Ob) public
 ```
 
 Our standard toolkit for showing [[univalence of total categories]]
 applies here:
 
 ```agda
-Poly-is-category : ∀ {ℓ} → is-category (Poly ℓ)
+Poly-is-category : ∀ {ℓ ℓ'} → is-category (Poly ℓ ℓ')
 Poly-is-category =
   is-category-total _ Sets-is-category $
     is-category-fibrewise' _
@@ -64,9 +69,11 @@ are given by pairs of a reindexing together with a contravariant action
 on the families. It is _so_ mechanical that we can do it automatically:
 
 ```agda
-poly-maps : ∀ {ℓ} {A B} → Iso
-  (Poly.Hom {ℓ} A B)
-  (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] (∀ x → B .snd ʻ f x → A .snd ʻ x))
+poly-maps
+  : ∀ {ℓ ℓ'} {A B : Poly.Ob ℓ ℓ'}
+  → Iso
+      (Poly.Hom A B)
+      (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] (∀ x → B .snd ʻ f x → A .snd ʻ x))
 unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
 ```
 
@@ -75,7 +82,7 @@ using regularity:
 
 ```agda
 poly-map-path
-  : ∀ {ℓ A B} {f g : Poly.Hom {ℓ} A B}
+  : ∀ {ℓ ℓ'} {A B : Poly.Ob ℓ ℓ'} {f g : Poly.Hom A B}
   → (hom≡ : f .hom ≡ g .hom)
   → (pre≡ : ∀ a b → f .preserves a (subst (λ hom → B .snd ʻ hom a) (sym hom≡) b)
                   ≡ g .preserves a b)
@@ -93,7 +100,7 @@ possible to evaluate it at a set $X$ and get back a set. We take the
 interpretation above _literally_:
 
 ```agda
-Polynomial-functor : ∀ {ℓ} → Poly.Ob {ℓ} → Functor (Sets ℓ) (Sets ℓ)
+Polynomial-functor : ∀ {ℓ ℓ'} → Poly.Ob ℓ ℓ' → Functor (Sets ℓ) (Sets (ℓ ⊔ ℓ'))
 Polynomial-functor (I , A) .F₀ X = el (Σ[ i ∈ I ] (A ʻ i → ⌞ X ⌟)) (hlevel 2)
 Polynomial-functor (I , A) .F₁ f (a , g) = a , λ z → f (g z)
 Polynomial-functor (I , A) .F-id = refl
@@ -116,9 +123,10 @@ we recover the usual definition of the Haskell type `Lens s t a b`:
 Lens : ∀ {ℓ} (S T A B : Set ℓ) → Type ℓ
 Lens S T A B = Poly.Hom (S , λ _ → T) (A , λ _ → B)
 
-_ : ∀ {ℓ} {S T A B : Set ℓ} → Iso
-  (Lens S T A B)
-  ((∣ S ∣ → ∣ A ∣) × (∣ S ∣ → ∣ B ∣ → ∣ T ∣))
+_ : ∀ {ℓ} {S T A B : Set ℓ}
+  → Iso
+      (Lens S T A B)
+      ((∣ S ∣ → ∣ A ∣) × (∣ S ∣ → ∣ B ∣ → ∣ T ∣))
 _ = poly-maps
 ```
 

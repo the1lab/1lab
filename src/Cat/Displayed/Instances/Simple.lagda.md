@@ -25,7 +25,7 @@ open Cat.Reasoning B
 open Binary-products B has-prods
 ```
 
-# Simple fibrations
+# Simple fibrations {defines="simple-fibration"}
 
 One reason to be interested in fibrations is that they provide an
 excellent setting to study logical and type-theoretical phenomena.

@@ -30,7 +30,7 @@ open _=>_
 ```
 -->
 
-# The family fibration
+# The family fibration {defines="family-fibration"}
 
 We can canonically treat any `Precategory`{.Agda} $\mathcal{C}$ as being
 displayed over `Sets`{.Agda}, regardless of the size of the object- and
