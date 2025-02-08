@@ -107,11 +107,11 @@ this is exactly how we construct the liftings.
     open Cartesian-lift
 
     module ℰ where
-      open Cartesian-fibration ℰ-fib public
+      open Cartesian-fibration ℰ ℰ-fib public
       open Displayed ℰ public
 
     module ℱ where
-      open Cartesian-fibration ℱ-fib public
+      open Cartesian-fibration ℱ ℱ-fib public
       open Displayed ℱ public
       open DR ℱ public
 ```
@@ -119,7 +119,7 @@ this is exactly how we construct the liftings.
 
 ```agda
     ℰ∘ℱ-fib : Cartesian-fibration (ℰ D∘ ℱ)
-    ℰ∘ℱ-fib .Cartesian-fibration.cart-lift f (y' , y'') = f-lift where
+    ℰ∘ℱ-fib f (y' , y'') = f-lift where
 
       f-lift : Cartesian-lift (ℰ D∘ ℱ) f (y' , y'')
       f-lift .x' = f ℰ.^* y' , total-hom f (ℰ.π* f y') ℱ.^* y''

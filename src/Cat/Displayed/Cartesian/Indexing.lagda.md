@@ -30,7 +30,7 @@ module Cat.Displayed.Cartesian.Indexing
 
 <!--
 ```agda
-open Cartesian-fibration cartesian
+open Cartesian-fibration E cartesian
 open Cat.Displayed.Reasoning E
 open Cat.Reasoning B
 open Cartesian-lift

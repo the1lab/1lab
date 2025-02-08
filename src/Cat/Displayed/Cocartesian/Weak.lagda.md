@@ -206,7 +206,7 @@ fibration+weak-cocartesian→cocartesian
   → is-cocartesian f f'
 fibration+weak-cocartesian→cocartesian {x} {y} {x'} {y'} {f} {f'} fib weak = cocart
   where
-    open Cartesian-fibration fib
+    open Cartesian-fibration ℰ fib
     module weak = is-weak-cocartesian weak
 ```
 
@@ -251,17 +251,6 @@ which we have highlighted in red.
 \end{tikzcd}
 ~~~
 
-```agda
-    module Morphisms {u} {u' : Ob[ u ]} (m : Hom y u) (h' : Hom[ m ∘ f ] x' u') where
-      y* : Ob[ y ]
-      y* = Cartesian-lift.x' (cart-lift m u')
-
-      m* : Hom[ m ] y* u'
-      m* =  Cartesian-lift.lifting (cart-lift m u')
-
-      module m* = is-cartesian (Cartesian-lift.cartesian (cart-lift m u'))
-```
-
 Next, we can construct the morphism $h^{*}$ (highlighted in red) as the
 universal factorisation of $h'$ through $m^{*}$.
 
@@ -285,15 +274,16 @@ universal factorisation of $h'$ through $m^{*}$.
 ~~~
 
 ```agda
-      h* : Hom[ f ] x' y*
-      h* = m*.universal f h'
+    module Morphisms {u} {u' : Ob[ u ]} (m : Hom y u) (h' : Hom[ m ∘ f ] x' u') where
+      h* : Hom[ f ] x' (m ^* u')
+      h* = π*.universal f h'
 ```
 
 Finally, we can construct a vertical morphism $h^{**} : y' \to y^{*}$,
 as $f'$ is weakly cartesian.
 
 ```agda
-      h** : Hom[ id ] y' y*
+      h** : Hom[ id ] y' (m ^* u')
       h** = weak.universal h*
 ```
 
@@ -322,7 +312,7 @@ Composing $m^{*}$ and $h^{**}$ gives the desired factorisation.
 ```agda
     cocart : is-cocartesian f f'
     cocart .is-cocartesian.universal m h' =
-      hom[ idr _ ] (m* ∘' h**)
+      hom[ idr _ ] (π* m _ ∘' h**)
       where open Morphisms m h'
 ```
 
@@ -332,9 +322,9 @@ commute.
 
 ```agda
     cocart .is-cocartesian.commutes m h' =
-      hom[] (m* ∘' h**) ∘' f'   ≡˘⟨ yank _ _ _ ⟩
-      m* ∘' hom[] (h** ∘' f')   ≡⟨ ap (m* ∘'_) (from-pathp (weak.commutes _)) ⟩
-      m* ∘' m*.universal f h'                 ≡⟨ m*.commutes f h' ⟩
+      hom[] (π* m _ ∘' h**) ∘' f'   ≡˘⟨ yank _ _ _ ⟩
+      π* m _ ∘' hom[] (h** ∘' f')   ≡⟨ ap (π* m _ ∘'_) (from-pathp (weak.commutes _)) ⟩
+      π* m _ ∘' π*.universal f h'                 ≡⟨ π*.commutes f h' ⟩
       h' ∎
       where open Morphisms m h'
 ```
@@ -419,22 +409,22 @@ $m^{*} \cdot id^{*} \cdot f' = m' \cdot f'$. This commutes because
 $m^{*}$ is cartesian, thus finishing the proof.
 
 ```agda
-    cocart .is-cocartesian.unique {m = m} {h' = h'} m' p =
-      m'                ≡⟨ from-pathp⁻ (symP (m*.commutesp (idr _) m')) ⟩
-      hom[] (m* ∘' id*) ≡⟨ hom[]⟩⟨ ap (m* ∘'_) (weak.unique _ (to-pathp $ m*.unique _ path )) ⟩
-      hom[] (m* ∘' h**) ∎
+    cocart .is-cocartesian.unique {u' = u'} {m = m} {h' = h'} m' p =
+      m'                     ≡⟨ from-pathp⁻ (symP (π*.commutesp (idr _) m')) ⟩
+      hom[] (π* m u' ∘' id*) ≡⟨ hom[]⟩⟨ ap (π* m u' ∘'_) (weak.unique _ (to-pathp $ π*.unique _ path )) ⟩
+      hom[] (π* m u' ∘' h**) ∎
       where
         open Morphisms m h'
 
-        id* : Hom[ id ] y' y*
-        id* = m*.universalv m'
+        id* : Hom[ id ] y' (m ^* u')
+        id* = π*.universalv m'
 
-        path : m* ∘' hom[ idl _ ] (id* ∘' f') ≡ h'
+        path : π* m u' ∘' hom[ idl _ ] (id* ∘' f') ≡ h'
         path =
-          m* ∘' hom[] (id* ∘' f') ≡⟨ whisker-r _ ⟩
-          hom[] (m* ∘' id* ∘' f') ≡⟨ cancel _ (ap (m ∘_) (idl _)) (pulll' (idr _) (m*.commutesv m')) ⟩
-          m' ∘' f'                ≡⟨ p ⟩
-          h' ∎
+          π* m u' ∘' hom[] (id* ∘' f') ≡⟨ whisker-r _ ⟩
+          hom[] (π* m u' ∘' id* ∘' f') ≡⟨ cancel _ (ap (m ∘_) (idl _)) (pulll' (idr _) (π*.commutesv m')) ⟩
+          m' ∘' f'                     ≡⟨ p ⟩
+          h'                           ∎
 ```
 
 ## Weak cocartesian lifts
@@ -455,7 +445,6 @@ record Weak-cocartesian-lift
 
   open is-weak-cocartesian weak-cocartesian public
 ```
-
 
 As expected, weak cocartesian lifts are dual to weak cartesian lifts.
 
@@ -571,7 +560,7 @@ cocartesian-lift→weak-cocartesian-lift cocart .Weak-cocartesian-lift.weak-coca
   cocartesian→weak-cocartesian (Cocartesian-lift.cocartesian cocart)
 
 opfibration→weak-opfibration opfib .is-weak-cocartesian-fibration.weak-lift f x' =
-  cocartesian-lift→weak-cocartesian-lift (Cocartesian-fibration.cocart-lift opfib f x')
+  cocartesian-lift→weak-cocartesian-lift (opfib f x')
 ```
 -->
 

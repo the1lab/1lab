@@ -123,7 +123,7 @@ context extensions, along with their associated projections.
 ```agda
 module Comprehension (fib : Cartesian-fibration E) (P : Comprehension) where opaque
   open Vertical-fibred-functor P
-  open Cartesian-fibration fib
+  open Cartesian-fibration E fib
 
   _⨾_ : ∀ Γ → Ob[ Γ ] → Ob
   Γ ⨾ x = F₀' x .domain
@@ -431,7 +431,7 @@ Comprehension→comonad
   → Comprehension
   → Comprehension-comonad
 Comprehension→comonad fib P = comp-comonad where
-  open Cartesian-fibration fib
+  open Cartesian-fibration E fib
   open Comprehension fib P
   open Comonad
 ```

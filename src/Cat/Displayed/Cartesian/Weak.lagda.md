@@ -266,7 +266,7 @@ cartesian-lift→weak-cartesian-lift cart .Weak-cartesian-lift.weak-cartesian =
   cartesian→weak-cartesian (Cartesian-lift.cartesian cart)
 
 fibration→weak-fibration fib .is-weak-cartesian-fibration.weak-lift x y' =
-  cartesian-lift→weak-cartesian-lift (Cartesian-fibration.cart-lift fib x y')
+  cartesian-lift→weak-cartesian-lift (fib x y')
 ```
 </details>
 
@@ -286,7 +286,7 @@ module _ where
        → is-weak-cartesian f f' → is-weak-cartesian g g'
        → is-weak-cartesian (f ∘ g) (f' ∘' g'))
     → Cartesian-fibration
-  weak-fibration→fibration weak-fib weak-∘ .cart-lift {x = x} f y' = f-lift where
+  weak-fibration→fibration weak-fib weak-∘ {x = x} f y' = f-lift where
     open is-weak-cartesian-fibration weak-fib
 
     module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z' : Ob[ z ]) =

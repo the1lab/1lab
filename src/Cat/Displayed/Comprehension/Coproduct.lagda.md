@@ -32,7 +32,7 @@ private
   module D where
     open Displayed D public
     open Cat.Displayed.Reasoning D public
-    open Cartesian-fibration D-fib public
+    open Cartesian-fibration D D-fib public
 
   module D↓ {Γ} = Cat.Reasoning (Fibre D Γ)
 

@@ -174,7 +174,7 @@ module _
 
     module E where
       open Displayed E public
-      open Cartesian-fibration E-fib public
+      open Cartesian-fibration E E-fib public
 
     module E* {Γ Δ : Ob} (σ : Hom Γ Δ) = Functor (base-change E E-fib σ)
 

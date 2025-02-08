@@ -243,7 +243,7 @@ $g'$ are cartesian to construct the relevant paths.
     {p₁ = p₁} {f} {p₂} {g} {p₁'} {f'} {p₂'} {g'} fib p₁-cart g-cart total-pb = pb where
     open is-pullback
     open Total-hom
-    open Cartesian-fibration fib
+    open Cartesian-fibration E fib
     module p₁' = is-cartesian p₁-cart
     module g' = is-cartesian g-cart
 

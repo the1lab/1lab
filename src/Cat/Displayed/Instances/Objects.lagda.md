@@ -99,8 +99,8 @@ fibration are groupoids.
 
 ```agda
 Objects-fibration : Cartesian-fibration E → Cartesian-fibration Objects
-Objects-fibration fib .Cartesian-fibration.cart-lift f y' = f-lift where
-  open Cartesian-fibration fib
+Objects-fibration fib f y' = f-lift where
+  open Cartesian-fibration E fib
 
   f-lift : Cartesian-lift Objects f y'
   f-lift .Cartesian-lift.x' = f ^* y'

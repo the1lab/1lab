@@ -151,8 +151,8 @@ deeply-nested data we have introduced.
 ```agda
   module fibrewise-meet {x} (x' y' : ℙ.Ob[ x ]) = Product (fibrewise-meet x' y')
 
-  open Cartesian-fibration cartesian hiding (rebase) public
-  open Cocartesian-fibration cocartesian public
+  open Cartesian-fibration ℙ cartesian hiding (rebase) public
+  open Cocartesian-fibration ℙ cocartesian public
 
   _[_] : ∀ {x y} → ℙ.Ob[ x ] → Hom y x → ℙ.Ob[ y ]
   _[_] x f = f ^* x

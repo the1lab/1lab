@@ -90,9 +90,9 @@ just have to perform the lifting of $F f$.
 
 ```agda
 Change-of-base-fibration : Cartesian-fibration E → Cartesian-fibration Change-of-base
-Change-of-base-fibration fib .Cartesian-fibration.cart-lift f FY' = f-cart-lift
+Change-of-base-fibration fib f FY' = f-cart-lift
   where
-    open Cartesian-fibration fib
+    open Cartesian-fibration E fib
 
     f-cart-lift : Cartesian-lift Change-of-base f FY'
     f-cart-lift .Cartesian-lift.x' = F₁ f ^* FY'

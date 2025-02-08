@@ -49,25 +49,23 @@ the same object, so producing cartesian lifts is extremely easy: just
 use the identity morphism!
 
 ```agda
-open Cartesian-fibration
-open Cocartesian-fibration
-open Cartesian-lift
 open Cocartesian-lift
+open Cartesian-lift
 
 Trivial-fibration : Cartesian-fibration Trivial
-Trivial-fibration .cart-lift f y' .x' = y'
-Trivial-fibration .cart-lift f y' .lifting = id
-Trivial-fibration .cart-lift f y' .cartesian = cartesian-id Trivial
+Trivial-fibration f y' .x' = y'
+Trivial-fibration f y' .lifting = id
+Trivial-fibration f y' .cartesian = cartesian-id Trivial
 ```
 
 We can use a similar line of argument to deduce that it is also an opfibration.
 
 ```agda
 Trivial-opfibration : Cocartesian-fibration Trivial
-Trivial-opfibration .cocart-lift f x' .y' =
+Trivial-opfibration f x' .y' =
   x'
-Trivial-opfibration .cocart-lift f x' .lifting = id
-Trivial-opfibration .cocart-lift f x' .cocartesian = cocartesian-id Trivial
+Trivial-opfibration f x' .lifting = id
+Trivial-opfibration f x' .cocartesian = cocartesian-id Trivial
 ```
 
 Therefore, it is also a bifibration.

@@ -351,11 +351,11 @@ When $\cE$ is a fibration, then so is the displayed category of liftings.
   Liftings-fibration
     : (fib : Cartesian-fibration E)
     → Cartesian-fibration Liftings
-  Liftings-fibration fib .Cartesian-fibration.cart-lift {F} {G} α G' = α-lift where
+  Liftings-fibration fib {F} {G} α G' = α-lift where
     module F = Functor F
     module G = Functor G
 
-    open Cartesian-fibration fib
+    open Cartesian-fibration E fib
     open Lifting
     open _=[_]=>l_
 ```

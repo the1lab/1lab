@@ -287,7 +287,7 @@ to $\underline{\cB}$ regarded as a Cartesian fibration as the
 Codomain-fibration
   : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
   → Cartesian-fibration Slices
-Codomain-fibration pullbacks .Cartesian-fibration.cart-lift f y' = lift-f where
+Codomain-fibration pullbacks f y' = lift-f where
   module pb = Pullback (pullbacks f (y' .map))
 
   lift-f : Cartesian-lift Slices f y'
@@ -311,10 +311,9 @@ Codomain-fibration→pullbacks
   → Cartesian-fibration Slices
   → Pullback B f g
 Codomain-fibration→pullbacks f g slices-fib = pb where
-  open Cartesian-fibration slices-fib
+  open Cartesian-fibration Slices slices-fib
   open is-pullback
   open Pullback
-  -- module the-lift = Cartesian-lift (lifts .cart-lift f (cut g))
 
   pb : Pullback B f g
   pb .apex = (f ^* cut g) .domain
@@ -347,7 +346,7 @@ that do not lie in the image of $f$.
 
 ```agda
 Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration .Cocartesian-fibration.cocart-lift f x' = lift-f where
+Codomain-opfibration f x' = lift-f where
 
   lift-f : Cocartesian-lift Slices f x'
   lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)

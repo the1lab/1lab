@@ -19,8 +19,6 @@ import Cat.Reasoning as Cat
 import Order.Frame.Reasoning as Frm
 
 open Regular-hyperdoctrine
-open Cocartesian-fibration
-open Cartesian-fibration
 open Cocartesian-lift
 open Cartesian-lift
 open is-cocartesian
@@ -119,9 +117,9 @@ $gf : X \to F$.
 
 ```agda
   cart : Cartesian-fibration disp
-  cart .cart-lift f g .x' x = g (f x)
-  cart .cart-lift f g .lifting i = F.≤-refl
-  cart .cart-lift f g .cartesian = record
+  cart f g .x' x = g (f x)
+  cart f g .lifting i = F.≤-refl
+  cart f g .cartesian = record
     { universal = λ m p x → p x
     ; commutes  = λ m h'  → prop!
     ; unique    = λ m p   → prop!
@@ -145,7 +143,7 @@ cocartesian lift of a function $g : X \to F$ along a function $X \to Y$.
 
 ```agda
   cocart : Cocartesian-fibration disp
-  cocart .cocart-lift {x = X} {y = Y} f g = lifted module cocart where
+  cocart {x = X} {y = Y} f g = lifted module cocart where
 ```
 
 At each $y : Y$, we would like to take the join

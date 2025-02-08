@@ -471,10 +471,10 @@ opfibration→op-fibration : Cocartesian-fibration → Cartesian-fibration (ℰ 
 we omit them.
 </summary>
 ```agda
-op-fibration→opfibration fib .Cocartesian-fibration.cocart-lift f x' =
-  co-cartesian-lift→cocartesian-lift (Cartesian-fibration.cart-lift fib f x')
+op-fibration→opfibration fib f x' =
+  co-cartesian-lift→cocartesian-lift (fib f x')
 
-opfibration→op-fibration opfib .Cartesian-fibration.cart-lift f y' =
-  cocartesian-lift→co-cartesian-lift (Cocartesian-fibration.cocart-lift opfib f y')
+opfibration→op-fibration opfib f y' =
+  cocartesian-lift→co-cartesian-lift (opfib f y')
 ```
 </details>

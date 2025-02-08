@@ -230,7 +230,7 @@ the lift of $u$ is then simply the (internal) identity morphism.
 
 ```agda
 Externalisation-fibration : Cartesian-fibration Externalise
-Externalisation-fibration .Cartesian-fibration.cart-lift u y = u-lift where
+Externalisation-fibration u y = u-lift where
   open Cartesian-lift
 
   u-lift : Cartesian-lift Externalise u y

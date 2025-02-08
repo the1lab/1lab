@@ -117,7 +117,6 @@ Subobjects .assoc' _ _ _ = prop!
 
 open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
-open Cartesian-fibration
 open is-weak-cocartesian
 open Cartesian-lift
 open is-cartesian
@@ -162,7 +161,7 @@ is enough for its uniqueness.
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .cart-lift f y' = l where
+Subobject-fibration pb f y' = l where
   it : Pullback _ _ _
   it = pb (y' .map) f
   l : Cartesian-lift Subobjects f y'

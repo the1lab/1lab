@@ -25,7 +25,7 @@ module Cat.Displayed.Instances.Opposite
 
 <!--
 ```agda
-open Cartesian-fibration cart
+open Cartesian-fibration E cart
 open Displayed E
 open Ix E cart
 open Cat B
@@ -331,8 +331,6 @@ abstract
   ∘,-idl {f = f} {g} f' =
     f' ∘v g [ id' ] ∘v γ→ ≡⟨ ap (f' ∘v_) (F.eliml (base-change g .Functor.F-id)) ⟩
     f' ∘v γ→              ∎
-
-private module Cf = Cartesian-fibration
 ```
 -->
 
@@ -365,7 +363,7 @@ establishes that this choice *does* furnish a Cartesian lift.
 
 ```agda
 Opposite-cartesian : Cartesian-fibration _^op'
-Opposite-cartesian .Cf.cart-lift f y' = record
+Opposite-cartesian f y' = record
   { lifting   = id'
   ; cartesian = record
     { universal = λ m h → h ∘v γ←

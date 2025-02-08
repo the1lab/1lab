@@ -86,7 +86,7 @@ us avoid an extra `id` composite when constructing the universal map.
 
 ```agda
 Chaotic-fibration : Cartesian-fibration Chaotic
-Chaotic-fibration .Cartesian-fibration.cart-lift f y = cart-lift where
+Chaotic-fibration f y = cart-lift where
   open Cartesian-lift
   open is-cartesian
 
@@ -129,7 +129,7 @@ is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart
       h J.∘ inv       ∎
 
 Chaotic-opfibration : Cocartesian-fibration Chaotic
-Chaotic-opfibration .Cocartesian-fibration.cocart-lift f x' = cocart-lift where
+Chaotic-opfibration f x' = cocart-lift where
   open Cocartesian-lift
   open is-cocartesian
 

@@ -102,7 +102,7 @@ record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
 <!--
 ```agda
 module _ (fib : Cartesian-fibration E) where
-  open Cartesian-fibration fib
+  open Cartesian-fibration E fib
 ```
 -->
 
