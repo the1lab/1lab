@@ -32,21 +32,42 @@ module _
   where
   open Cat.Reasoning B
   open Displayed E
+
+  private variable
+    a x y p : Ob
+    a' x' y' p' : Ob[ a ]
+    f g other : Hom a x
+    f' g' : Hom[ f ] a' x'
 ```
 -->
 
 :::{.definition #total-product-diagram}
 Let $\cE \liesover \cB$ be a [[displayed category]], and
-$P, \pi_1 : P \to A, \pi_2 : P \to B$ be a [[product diagram|product]] in $\cB$.
-A diagram $P' : \cE_{P}, \pi_1' : P' \to_{\pi_1} A', \pi_2' : P' \to_{\pi_2} B'$
+$P, \pi_1 : P \to X, \pi_2 : P \to Y$ be a [[product diagram|product]] in $\cB$.
+A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
+
+~~~{.quiver}
+\begin{tikzcd}
+  {P'} && {Y'} \\
+  & {X'} \\
+  P && Y \\
+  & X
+  \arrow["{\pi_2'}"{description, pos=0.4}, from=1-1, to=1-3]
+  \arrow["{\pi_1'}"{description}, from=1-1, to=2-2]
+  \arrow[from=1-1, lies over, to=3-1]
+  \arrow[from=1-3, lies over, to=3-3]
+  \arrow[from=2-2, lies over, to=4-2]
+  \arrow["{\pi_2}"{description, pos=0.3}, from=3-1, to=3-3]
+  \arrow["{\pi_1}"{description}, from=3-1, to=4-2]
+\end{tikzcd}
+~~~
+
 is a **total product diagram** if it satisfies a displayed version of the
 universal property of the product.
-:::
 
 
 ```agda
   record is-total-product
-      {x y p} {x' : Ob[ x ]} {y' : Ob[ y ]} {p' : Ob[ p ]}
       {π₁ : Hom p x} {π₂ : Hom p y}
       (prod : is-product B π₁ π₂)
       (π₁' : Hom[ π₁ ] p' x') (π₂' : Hom[ π₂ ] p' y')
@@ -54,28 +75,82 @@ universal property of the product.
       where
       no-eta-equality
       open is-product prod
+```
+
+More explicitly, suppose that we had a triple $(A', f', g')$ displayed
+over $(A, f, g)$, as in the following diagram.
+
+~~~{.quiver}
+\begin{tikzcd}
+  \textcolor{rgb,255:red,92;green,92;blue,214}{{A'}} \\
+  && {P'} && {Y'} \\
+  \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
+  && P && Y \\
+  &&& X
+  \arrow[color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
+  \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
+  \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
+  \arrow["{\pi_1'}"{description}, from=2-3, to=3-4]
+  \arrow[from=2-3, lies over, to=4-3]
+  \arrow[from=2-5, lies over, to=4-5]
+  \arrow["g"{description, pos=0.3}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=3-1, to=4-5]
+  \arrow["f"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=3-1, to=5-4]
+  \arrow[from=3-4, lies over, to=5-4]
+  \arrow["{\pi_2}"{description, pos=0.3}, from=4-3, to=4-5]
+  \arrow["{\pi_1}"{description}, from=4-3, to=5-4]
+\end{tikzcd}
+~~~
+
+$P$ is a product, so there exists a unique $\langle f, g \rangle : A \to P$
+that commutes with $\pi_1$ and $\pi_2$.
+
+~~~{.quiver}
+\begin{tikzcd}
+  \textcolor{rgb,255:red,92;green,92;blue,214}{{A'}} \\
+  && {P'} && {Y'} \\
+  \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
+  && P && Y \\
+  &&& X
+  \arrow[color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
+  \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
+  \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
+  \arrow["{\pi_1'}"{description}, from=2-3, to=3-4]
+  \arrow[from=2-3, lies over, to=4-3]
+  \arrow[from=2-5, lies over, to=4-5]
+  \arrow["{\langle f,g \rangle}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=4-3]
+  \arrow["g"{description, pos=0.3}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=3-1, to=4-5]
+  \arrow["f"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=3-1, to=5-4]
+  \arrow[from=3-4, lies over, to=5-4]
+  \arrow["{\pi_2}"{description, pos=0.3}, from=4-3, to=4-5]
+  \arrow["{\pi_1}"{description}, from=4-3, to=5-4]
+\end{tikzcd}
+~~~
+
+This leaves a conspicuous gap in the upstairs portion of the diagram between
+$A'$ and $P'$; $(P', \pi_1', \pi_2')$ is a total product precisely when we
+have a unique lift of $\langle f, g \rangle$ that commutes with $\pi_1'$
+and $\pi_2'$.
+
+
+```agda
       field
         ⟨_,_⟩'
-          : ∀ {a a'} {f : Hom a x} {g : Hom a y}
-          → (f' : Hom[ f ] a' x') (g' : Hom[ g ] a' y')
+          : (f' : Hom[ f ] a' x') (g' : Hom[ g ] a' y')
           → Hom[ ⟨ f , g ⟩ ] a' p'
         π₁∘⟨⟩'
-          : ∀ {a a'} {f : Hom a x} {g : Hom a y}
-          → {f' : Hom[ f ] a' x'} {g' : Hom[ g ] a' y'}
-          → π₁' ∘' ⟨ f' , g' ⟩' ≡[ π₁∘⟨⟩ ] f'
+          : π₁' ∘' ⟨ f' , g' ⟩' ≡[ π₁∘⟨⟩ ] f'
         π₂∘⟨⟩'
-          : ∀ {a a'} {f : Hom a x} {g : Hom a y}
-          → {f' : Hom[ f ] a' x'} {g' : Hom[ g ] a' y'}
-          → π₂' ∘' ⟨ f' , g' ⟩' ≡[ π₂∘⟨⟩ ] g'
+          : π₂' ∘' ⟨ f' , g' ⟩' ≡[ π₂∘⟨⟩ ] g'
         unique'
-          : ∀ {a a'} {f : Hom a x} {g : Hom a y}
-          → {f' : Hom[ f ] a' x'} {g' : Hom[ g ] a' y'}
-          → {other : Hom a p} {p1 : π₁ ∘ other ≡ f} {p2 : π₂ ∘ other ≡ g}
+          : {p1 : π₁ ∘ other ≡ f} {p2 : π₂ ∘ other ≡ g}
           → {other' : Hom[ other ] a' p'}
           → (p1' : (π₁' ∘' other') ≡[ p1 ] f')
           → (p2' : (π₂' ∘' other') ≡[ p2 ] g')
           → other' ≡[ unique p1 p2 ] ⟨ f' , g' ⟩'
 ```
+:::
 
 :::{.definition #total-product}
 A **total product** of $A'$ and $B'$ in $\cE$ consists of a choice
