@@ -115,7 +115,6 @@ Subobjects .idr' _       = prop!
 Subobjects .idl' _       = prop!
 Subobjects .assoc' _ _ _ = prop!
 
-open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
 open is-weak-cocartesian
 open Cartesian-lift
@@ -191,8 +190,8 @@ fibration.
 ```agda
 Subobject-weak-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
-  → is-weak-cocartesian-fibration Subobjects
-Subobject-weak-opfibration ims .weak-lift f x' = l where
+  → Weak-cocartesian-fibration Subobjects
+Subobject-weak-opfibration ims f x' = l where
   module im = Image B (ims (f ∘ x' .map))
 ```
 
