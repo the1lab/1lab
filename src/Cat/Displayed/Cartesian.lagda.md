@@ -658,11 +658,10 @@ module Cartesian-fibration (fib : Cartesian-fibration) where
 Note that if $\cE$ is a fibration, we can define an operation that
 allows us to move vertical morphisms between fibres. This actually
 extends to a collection of functors, called [base change functors].
-This operation is also definable for [weak fibrations], as it only
+This operation is also definable for [[weak cartesian fibrations]], as it only
 uses the universal property that yields a vertical morphism.
 
 [base change functors]: Cat.Displayed.Cartesian.Indexing.html
-[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
 
 ```agda
   rebase : ∀ {x y y' y''} → (f : Hom x y)
