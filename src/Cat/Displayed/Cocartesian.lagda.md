@@ -431,24 +431,23 @@ We can use this notion to define cocartesian fibrations (sometimes
 referred to as **opfibrations**).
 
 ```agda
-record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-  no-eta-equality
-  field
-    cocart-lift : ∀ {x y} (f : Hom x y) (x' : Ob[ x ]) → Cocartesian-lift f x'
+Cocartesian-fibration : Type _
+Cocartesian-fibration = ∀ {x y} (f : Hom x y) (x' : Ob[ x ]) → Cocartesian-lift f x'
 ```
 :::
 
 <!--
 
 ```agda
+module Cocartesian-fibration (fib : Cocartesian-fibration) where
   module _ {x y} (f : Hom x y) (x' : Ob[ x ]) where
-    open Cocartesian-lift (cocart-lift f x')
+    open Cocartesian-lift (fib f x')
       using ()
       renaming (y' to _^!_; lifting to ι!)
       public
 
   module ι! {x y} {f : Hom x y} {x' : Ob[ x ]} where
-    open Cocartesian-lift (cocart-lift f x')
+    open Cocartesian-lift (fib f x')
       hiding (y'; lifting)
       public
 

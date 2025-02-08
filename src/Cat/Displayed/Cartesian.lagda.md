@@ -632,28 +632,28 @@ Thus, we do not dwell on the distinction.
 
 :::{.definition #fibred-category alias="cartesian-fibration fibration"}
 ```agda
-record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-  no-eta-equality
-  field
-    cart-lift : ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
+Cartesian-fibration : Type _
+Cartesian-fibration = ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
+
 ```
 :::
 
 <!--
 ```agda
+module Cartesian-fibration (fib : Cartesian-fibration) where
+
   module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
-    open Cartesian-lift (cart-lift f y')
+    open Cartesian-lift (fib f y')
       using ()
       renaming (x' to _^*_; lifting to π*)
       public
 
   module π* {x y} {f : Hom x y} {y' : Ob[ y ]} where
-    open Cartesian-lift (cart-lift f y')
+    open Cartesian-lift (fib f y')
       hiding (x'; lifting)
       public
 ```
 -->
-
 
 Note that if $\cE$ is a fibration, we can define an operation that
 allows us to move vertical morphisms between fibres. This actually
