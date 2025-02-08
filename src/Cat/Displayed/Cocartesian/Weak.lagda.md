@@ -516,9 +516,7 @@ module Weak-cocartesian-fibration (wfib : Weak-cocartesian-fibration) where
 ```
 -->
 
-Weak opfibrations are dual to [weak fibrations].
-
-[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+Weak cocartesian fibrations are dual to [[weak cartesian fibrations]].
 
 ```agda
 weak-op-fibration→weak-opfibration
