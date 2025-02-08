@@ -635,12 +635,12 @@ Thus, we do not dwell on the distinction.
 Cartesian-fibration : Type _
 Cartesian-fibration = ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
 
+module Cartesian-fibration (fib : Cartesian-fibration) where
 ```
 :::
 
 <!--
 ```agda
-module Cartesian-fibration (fib : Cartesian-fibration) where
 
   module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
     open Cartesian-lift (fib f y')
