@@ -1,7 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Reflection.HLevel
-
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Constant
