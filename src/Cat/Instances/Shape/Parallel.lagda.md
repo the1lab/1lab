@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Functor.Equivalence.Path
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Constant
 open import Cat.Prelude
 open import Cat.Finite
@@ -14,6 +16,13 @@ import Cat.Reasoning
 ```agda
 module Cat.Instances.Shape.Parallel where
 ```
+<!--
+```agda
+open is-precat-iso
+open Functor
+open is-iso
+```
+-->
 
 # The "parallel arrows" category {defines="parallel-arrows"}
 
@@ -70,12 +79,51 @@ parallel arrows between them. It is the shape of [[equaliser]] and
 ```
 -->
 
+The parallel category is isomorphic to its opposite through the
+involution `not`{.Agda}.
+
 ```agda
+·⇇· = ·⇉· ^op
+
+·⇇·≡·⇉· : ·⇇· ≡ ·⇉·
+·⇇·≡·⇉· = Precategory-path F F-is-iso where
+  F : Functor ·⇇· ·⇉·
+  F .F₀ x = not x
+  F .F₁ {true} {true} tt = tt
+  F .F₁ {true} {false} f = f
+  F .F₁ {false} {false} tt = tt
+  F .F-id {true} = refl
+  F .F-id {false} = refl
+  F .F-∘ {true} {true} {true} f g = refl
+  F .F-∘ {true} {true} {false} f g = refl
+  F .F-∘ {true} {false} {false} f g = refl
+  F .F-∘ {false} {false} {false} f g = refl
+
+  F-is-iso : is-precat-iso F
+  F-is-iso .has-is-iso = not-is-equiv
+  F-is-iso .has-is-ff {true} {true} = id-equiv
+  F-is-iso .has-is-ff {true} {false} = id-equiv
+  F-is-iso .has-is-ff {false} {false} = id-equiv
+  F-is-iso .has-is-ff {false} {true} .is-eqv ()
+```
+
+<!--
+```agda
+
+module ·⇉· = Precategory ·⇉·
+module ·⇇· = Precategory ·⇇·
+
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C
   open Functor
   open _=>_
+```
+-->
 
+Parallel pairs of morphisms in a category $\cC$ are equivalent to functors from the
+walking parallel arrow category to $\cC$.
+
+```agda
   Fork : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
   Fork f g = funct where
     funct : Functor _ _
@@ -91,6 +139,37 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {false} {false} {true}  f g   = sym (idr _)
     funct .F-∘ {false} {true}  {true}  tt _  = sym (idl _)
     funct .F-∘ {true}  {true}  {true}  tt tt = sym (idl _)
+```
+
+A natural transformation between two diagrams
+$A\ \overset{f}{\underset{g}{\tto}}\ B$ and
+$C\ \overset{f'}{\underset{g'}{\tto}}\ D$ is given by a pair of
+commutative squares
+
+~~~{.quiver}
+\begin{tikzcd}
+	A & B && A & B \\
+	C & D && C & D.
+	\arrow["f", from=1-1, to=1-2]
+	\arrow["u"', from=1-1, to=2-1]
+	\arrow["v", from=1-2, to=2-2]
+	\arrow["g", from=1-4, to=1-5]
+	\arrow["u"', from=1-4, to=2-4]
+	\arrow["v", from=1-5, to=2-5]
+	\arrow["{f'}", from=2-1, to=2-2]
+	\arrow["{g'}", from=2-4, to=2-5]
+\end{tikzcd}
+~~~
+
+```agda
+  Fork-nt : ∀ {A B C D} {f g : Hom A B} {f' g' : Hom C D} {u : Hom A C} {v : Hom B D}  →
+            (α : v ∘ f ≡ f' ∘ u) (β : v ∘ g ≡ g' ∘ u) → (Fork f g) => (Fork f' g')
+  Fork-nt {u = u} _ _ ._=>_.η false = u
+  Fork-nt {v = v} _ _ ._=>_.η true = v
+  Fork-nt _ _ .is-natural true true _ = id-comm
+  Fork-nt _ _ .is-natural false false _ = id-comm
+  Fork-nt _ β .is-natural false true true = β
+  Fork-nt α _ .is-natural false true false = α
 
   forkl : (F : Functor ·⇉· C) → Hom (F .F₀ false) (F .F₀ true)
   forkl F = F .F₁ {false} {true} false
