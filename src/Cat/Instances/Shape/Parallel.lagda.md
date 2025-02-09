@@ -18,8 +18,8 @@ module Cat.Instances.Shape.Parallel where
 ```
 <!--
 ```agda
-open Functor
 open is-precat-iso
+open Functor
 open is-iso
 ```
 -->
