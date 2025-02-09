@@ -112,7 +112,7 @@ that commutes with $\pi_1$ and $\pi_2$.
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
   && P && Y \\
   &&& X
-  \arrow[color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow["{g'}", color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
   \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
   \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
   \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
