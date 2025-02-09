@@ -409,7 +409,7 @@ a cartesian lift of $f$.
 
 ```agda
     f-lift : Cartesian-lift f y'
-    f-lift .Cartesian-lift.x' = (f ^* y')
+    f-lift .Cartesian-lift.x' = f ^* y'
     f-lift .Cartesian-lift.lifting = π* f y'
     f-lift .Cartesian-lift.cartesian = f*-cartesian
 ```
