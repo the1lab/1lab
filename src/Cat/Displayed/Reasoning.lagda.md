@@ -461,11 +461,23 @@ module _ {a' : Hom[ a ] x' x'}
     hom[ idr f ] (f' ∘' id') ≡⟨ idr[] ⟩
     f' ∎
 
+  eliml[] : ∀ {f' : Hom[ f ] y' x'} → a' ∘' f' ≡[ eliml p ] f'
+  eliml[] = eliml'
+
+  elimr[] : ∀ {f' : Hom[ f ] x' y'} → f' ∘' a' ≡[ elimr p ] f'
+  elimr[] = elimr'
+
   introl' : ∀ {f' : Hom[ f ] y' x'} → {q : f ≡ a ∘ f} → f' ≡[ q ] a' ∘' f'
   introl' {f' = f'} {q = q} i = eliml' {f' = f'} {q = sym q} (~ i)
 
   intror' : ∀ {f' : Hom[ f ] x' y'} → {q : f ≡ f ∘ a} → f' ≡[ q ] f' ∘' a'
   intror' {f' = f'} {q = q} i = elimr' {f' = f'} {q = sym q} (~ i)
+
+  introl[] : ∀ {f' : Hom[ f ] y' x'} → f' ≡[ introl p ] a' ∘' f'
+  introl[] = introl'
+
+  intror[] : ∀ {f' : Hom[ f ] x' y'} → f' ≡[ intror p ] f' ∘' a'
+  intror[] = intror'
 ```
 
 ## Reassociations
