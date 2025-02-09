@@ -431,25 +431,31 @@ We can use this notion to define cocartesian fibrations (sometimes
 referred to as **opfibrations**).
 
 ```agda
-record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-  no-eta-equality
-  field
-    has-lift : ∀ {x y} (f : Hom x y) (x' : Ob[ x ]) → Cocartesian-lift f x'
-
-  module has-lift {x y} (f : Hom x y) (x' : Ob[ x ]) =
-    Cocartesian-lift (has-lift f x')
+Cocartesian-fibration : Type _
+Cocartesian-fibration = ∀ {x y} (f : Hom x y) (x' : Ob[ x ]) → Cocartesian-lift f x'
 ```
-
 :::
 
 <!--
 
 ```agda
+module Cocartesian-fibration (fib : Cocartesian-fibration) where
+  module _ {x y} (f : Hom x y) (x' : Ob[ x ]) where
+    open Cocartesian-lift (fib f x')
+      using ()
+      renaming (y' to _^!_; lifting to ι!)
+      public
+
+  module ι! {x y} {f : Hom x y} {x' : Ob[ x ]} where
+    open Cocartesian-lift (fib f x')
+      hiding (y'; lifting)
+      public
+
   rebase : ∀ {x y x' x''} → (f : Hom x y)
            → Hom[ id ] x' x''
-           → Hom[ id ] (has-lift.y' f x') (has-lift.y' f x'')
+           → Hom[ id ] (f ^! x') (f ^! x'')
   rebase f vert =
-    has-lift.universalv f _ (hom[ idr _ ] (has-lift.lifting f _ ∘' vert))
+    ι!.universalv (hom[ idr _ ] (ι! f _ ∘' vert))
 ```
 -->
 
@@ -465,10 +471,10 @@ opfibration→op-fibration : Cocartesian-fibration → Cartesian-fibration (ℰ 
 we omit them.
 </summary>
 ```agda
-op-fibration→opfibration fib .Cocartesian-fibration.has-lift f x' =
-  co-cartesian-lift→cocartesian-lift (Cartesian-fibration.has-lift fib f x')
+op-fibration→opfibration fib f x' =
+  co-cartesian-lift→cocartesian-lift (fib f x')
 
-opfibration→op-fibration opfib .Cartesian-fibration.has-lift f y' =
-  cocartesian-lift→co-cartesian-lift (Cocartesian-fibration.has-lift opfib f y')
+opfibration→op-fibration opfib f y' =
+  cocartesian-lift→co-cartesian-lift (opfib f y')
 ```
 </details>

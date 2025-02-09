@@ -102,16 +102,15 @@ Much like the simple fibration, the simple fibration associated to a
 CT-structure also deserves its name.
 
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 
 Simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (Simple-ct ct)
-Simple-ct-fibration ct .has-lift u Y .x' = Y
-Simple-ct-fibration ct .has-lift u Y .lifting = π₂
-Simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
-Simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-ct-fibration ct u Y .x' = Y
+Simple-ct-fibration ct u Y .lifting = π₂
+Simple-ct-fibration ct u Y .cartesian .universal _ h = h
+Simple-ct-fibration ct u Y .cartesian .commutes g h = π₂∘⟨⟩
+Simple-ct-fibration ct u Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎

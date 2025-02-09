@@ -230,20 +230,20 @@ the lift of $u$ is then simply the (internal) identity morphism.
 
 ```agda
 Externalisation-fibration : Cartesian-fibration Externalise
-Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
+Externalisation-fibration u y = u-lift where
   open Cartesian-lift
 
-  cart-lift : Cartesian-lift Externalise u y
-  cart-lift .x' = y ∘ u
-  cart-lift .lifting = idi _
-  cart-lift .cartesian .is-cartesian.universal m h' =
+  u-lift : Cartesian-lift Externalise u y
+  u-lift .x' = y ∘ u
+  u-lift .lifting = idi _
+  u-lift .cartesian .is-cartesian.universal m h' =
     adjusti refl (assoc _ _ _) h'
-  cart-lift .cartesian .is-cartesian.commutes m h' =
+  u-lift .cartesian .is-cartesian.commutes m h' =
     Internal-hom-path $
       (⌜ idi _ [ m ] ⌝ ∘i _) .ihom ≡⟨ ap! (idi-nat m) ⟩
       (idi _ ∘i _) .ihom           ≡⟨ ap ihom (idli _) ⟩
       h' .ihom ∎
-  cart-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
+  u-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
     Internal-hom-path $
       m' .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
       (⌜ idi _ ⌝ ∘i m') .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩

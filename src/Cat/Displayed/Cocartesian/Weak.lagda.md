@@ -206,7 +206,7 @@ fibration+weak-cocartesian→cocartesian
   → is-cocartesian f f'
 fibration+weak-cocartesian→cocartesian {x} {y} {x'} {y'} {f} {f'} fib weak = cocart
   where
-    open Cartesian-fibration fib
+    open Cartesian-fibration ℰ fib
     module weak = is-weak-cocartesian weak
 ```
 
@@ -251,17 +251,6 @@ which we have highlighted in red.
 \end{tikzcd}
 ~~~
 
-```agda
-    module Morphisms {u} {u' : Ob[ u ]} (m : Hom y u) (h' : Hom[ m ∘ f ] x' u') where
-      y* : Ob[ y ]
-      y* = Cartesian-lift.x' (has-lift m u')
-
-      m* : Hom[ m ] y* u'
-      m* =  Cartesian-lift.lifting (has-lift m u')
-
-      module m* = is-cartesian (Cartesian-lift.cartesian (has-lift m u'))
-```
-
 Next, we can construct the morphism $h^{*}$ (highlighted in red) as the
 universal factorisation of $h'$ through $m^{*}$.
 
@@ -285,15 +274,16 @@ universal factorisation of $h'$ through $m^{*}$.
 ~~~
 
 ```agda
-      h* : Hom[ f ] x' y*
-      h* = m*.universal f h'
+    module Morphisms {u} {u' : Ob[ u ]} (m : Hom y u) (h' : Hom[ m ∘ f ] x' u') where
+      h* : Hom[ f ] x' (m ^* u')
+      h* = π*.universal f h'
 ```
 
 Finally, we can construct a vertical morphism $h^{**} : y' \to y^{*}$,
 as $f'$ is weakly cartesian.
 
 ```agda
-      h** : Hom[ id ] y' y*
+      h** : Hom[ id ] y' (m ^* u')
       h** = weak.universal h*
 ```
 
@@ -322,7 +312,7 @@ Composing $m^{*}$ and $h^{**}$ gives the desired factorisation.
 ```agda
     cocart : is-cocartesian f f'
     cocart .is-cocartesian.universal m h' =
-      hom[ idr _ ] (m* ∘' h**)
+      hom[ idr _ ] (π* m _ ∘' h**)
       where open Morphisms m h'
 ```
 
@@ -332,9 +322,9 @@ commute.
 
 ```agda
     cocart .is-cocartesian.commutes m h' =
-      hom[] (m* ∘' h**) ∘' f'   ≡˘⟨ yank _ _ _ ⟩
-      m* ∘' hom[] (h** ∘' f')   ≡⟨ ap (m* ∘'_) (from-pathp (weak.commutes _)) ⟩
-      m* ∘' m*.universal f h'                 ≡⟨ m*.commutes f h' ⟩
+      hom[] (π* m _ ∘' h**) ∘' f'   ≡˘⟨ yank _ _ _ ⟩
+      π* m _ ∘' hom[] (h** ∘' f')   ≡⟨ ap (π* m _ ∘'_) (from-pathp (weak.commutes _)) ⟩
+      π* m _ ∘' π*.universal f h'                 ≡⟨ π*.commutes f h' ⟩
       h' ∎
       where open Morphisms m h'
 ```
@@ -419,22 +409,22 @@ $m^{*} \cdot id^{*} \cdot f' = m' \cdot f'$. This commutes because
 $m^{*}$ is cartesian, thus finishing the proof.
 
 ```agda
-    cocart .is-cocartesian.unique {m = m} {h' = h'} m' p =
-      m'                ≡⟨ from-pathp⁻ (symP (m*.commutesp (idr _) m')) ⟩
-      hom[] (m* ∘' id*) ≡⟨ hom[]⟩⟨ ap (m* ∘'_) (weak.unique _ (to-pathp $ m*.unique _ path )) ⟩
-      hom[] (m* ∘' h**) ∎
+    cocart .is-cocartesian.unique {u' = u'} {m = m} {h' = h'} m' p =
+      m'                     ≡⟨ from-pathp⁻ (symP (π*.commutesp (idr _) m')) ⟩
+      hom[] (π* m u' ∘' id*) ≡⟨ hom[]⟩⟨ ap (π* m u' ∘'_) (weak.unique _ (to-pathp $ π*.unique _ path )) ⟩
+      hom[] (π* m u' ∘' h**) ∎
       where
         open Morphisms m h'
 
-        id* : Hom[ id ] y' y*
-        id* = m*.universalv m'
+        id* : Hom[ id ] y' (m ^* u')
+        id* = π*.universalv m'
 
-        path : m* ∘' hom[ idl _ ] (id* ∘' f') ≡ h'
+        path : π* m u' ∘' hom[ idl _ ] (id* ∘' f') ≡ h'
         path =
-          m* ∘' hom[] (id* ∘' f') ≡⟨ whisker-r _ ⟩
-          hom[] (m* ∘' id* ∘' f') ≡⟨ cancel _ (ap (m ∘_) (idl _)) (pulll' (idr _) (m*.commutesv m')) ⟩
-          m' ∘' f'                ≡⟨ p ⟩
-          h' ∎
+          π* m u' ∘' hom[] (id* ∘' f') ≡⟨ whisker-r _ ⟩
+          hom[] (π* m u' ∘' id* ∘' f') ≡⟨ cancel _ (ap (m ∘_) (idl _)) (pulll' (idr _) (π*.commutesv m')) ⟩
+          m' ∘' f'                     ≡⟨ p ⟩
+          h'                           ∎
 ```
 
 ## Weak cocartesian lifts
@@ -455,7 +445,6 @@ record Weak-cocartesian-lift
 
   open is-weak-cocartesian weak-cocartesian public
 ```
-
 
 As expected, weak cocartesian lifts are dual to weak cartesian lifts.
 
@@ -500,37 +489,43 @@ as **weak opfibrations** These are also sometimes called
 conflicts with the precategory/category distinction.
 
 ```agda
-record is-weak-cocartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-  no-eta-equality
-  field
-    weak-lift : ∀ {x y} → (f : Hom x y) → (x' : Ob[ x ]) → Weak-cocartesian-lift f x'
-
-  module weak-lift {x y} (f : Hom x y) (x' : Ob[ x ]) =
-    Weak-cocartesian-lift (weak-lift f x')
+Weak-cocartesian-fibration : Type _
+Weak-cocartesian-fibration = ∀ {x y} → (f : Hom x y) → (x' : Ob[ x ]) → Weak-cocartesian-lift f x'
 ```
 
 <!--
 ```agda
+module Weak-cocartesian-fibration (wfib : Weak-cocartesian-fibration) where
+  module _ {x y} (f : Hom x y) (x' : Ob[ x ]) where
+    open Weak-cocartesian-lift (wfib f x')
+      using ()
+      renaming (y' to _^!_; lifting to ι!)
+      public
+
+  module ι! {x y} {f : Hom x y} {x' : Ob[ x ]} where
+    open Weak-cocartesian-lift (wfib f x')
+      hiding (y'; lifting)
+      public
+
+
   rebase : ∀ {x y x' x''} → (f : Hom x y)
            → Hom[ id ] x' x''
-           → Hom[ id ] (weak-lift.y' f x') (weak-lift.y' f x'')
+           → Hom[ id ] (f ^! x') (f ^! x'')
   rebase f vert =
-    weak-lift.universal f _ (hom[ idr _ ] (weak-lift.lifting f _ ∘' vert))
+    ι!.universal (hom[ idr _ ] (ι! f _ ∘' vert))
 ```
 -->
 
-Weak opfibrations are dual to [weak fibrations].
-
-[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+Weak cocartesian fibrations are dual to [[weak cartesian fibrations]].
 
 ```agda
 weak-op-fibration→weak-opfibration
-  : is-weak-cartesian-fibration (ℰ ^total-op)
-  → is-weak-cocartesian-fibration
+  : Weak-cartesian-fibration (ℰ ^total-op)
+  → Weak-cocartesian-fibration
 
 weak-opfibration→weak-op-fibration
-  : is-weak-cocartesian-fibration
-  → is-weak-cartesian-fibration (ℰ ^total-op)
+  : Weak-cocartesian-fibration
+  → Weak-cartesian-fibration (ℰ ^total-op)
 ```
 
 
@@ -538,13 +533,13 @@ weak-opfibration→weak-op-fibration
 <summary>As usual, we omit the duality proofs, as they are quite tedious.
 </summary>
 ```agda
-weak-op-fibration→weak-opfibration wlift .is-weak-cocartesian-fibration.weak-lift f x' =
+weak-op-fibration→weak-opfibration wlift f x' =
   weak-co-cartesian-lift→weak-cocartesian-lift $
-  is-weak-cartesian-fibration.weak-lift wlift f x'
+  wlift f x'
 
-weak-opfibration→weak-op-fibration wlift .is-weak-cartesian-fibration.weak-lift f y' =
+weak-opfibration→weak-op-fibration wlift f y' =
   weak-cocartesian-lift→weak-co-cartesian-lift $
-  is-weak-cocartesian-fibration.weak-lift wlift f y'
+  wlift f y'
 ```
 </details>
 
@@ -558,7 +553,7 @@ cocartesian-lift→weak-cocartesian-lift
 
 opfibration→weak-opfibration
   : Cocartesian-fibration
-  → is-weak-cocartesian-fibration
+  → Weak-cocartesian-fibration
 ```
 
 <!--
@@ -570,8 +565,8 @@ cocartesian-lift→weak-cocartesian-lift cocart .Weak-cocartesian-lift.lifting =
 cocartesian-lift→weak-cocartesian-lift cocart .Weak-cocartesian-lift.weak-cocartesian =
   cocartesian→weak-cocartesian (Cocartesian-lift.cocartesian cocart)
 
-opfibration→weak-opfibration opfib .is-weak-cocartesian-fibration.weak-lift f x' =
-  cocartesian-lift→weak-cocartesian-lift (Cocartesian-fibration.has-lift opfib f x')
+opfibration→weak-opfibration opfib f x' =
+  cocartesian-lift→weak-cocartesian-lift (opfib f x')
 ```
 -->
 
@@ -582,7 +577,7 @@ closed under composition. This follows via duality.
 
 ```agda
 weak-opfibration→opfibration
-  : is-weak-cocartesian-fibration
+  : Weak-cocartesian-fibration
   → (∀ {x y z x' y' z'} {f : Hom y z} {g : Hom x y}
      → {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
      → is-weak-cocartesian f f' → is-weak-cocartesian g g'
@@ -606,7 +601,7 @@ cocartesian maps are closed under composition, thanks to
 ```agda
 cartesian+weak-opfibration→opfibration
   : Cartesian-fibration ℰ
-  → is-weak-cocartesian-fibration
+  → Weak-cocartesian-fibration
   → Cocartesian-fibration
 cartesian+weak-opfibration→opfibration fib wlifts =
   weak-opfibration→opfibration wlifts λ f-weak g-weak →
@@ -623,25 +618,25 @@ $f^{*}(x') \to_{id} y'$ are equivalent, where $f^{*}(x')$ is the codomain
 of the lift of $f$ along $y'$.
 
 ```agda
-module _ (wopfib : is-weak-cocartesian-fibration) where
-  open is-weak-cocartesian-fibration wopfib
+module _ (wopfib : Weak-cocartesian-fibration) where
+  open Weak-cocartesian-fibration wopfib
 
   weak-opfibration→universal-is-equiv
     : ∀ {x y y' x'}
     → (u : Hom x y)
-    → is-equiv (weak-lift.universal u x' {y'})
+    → is-equiv (ι!.universal {f = u} {x' = x'} {y'})
   weak-opfibration→universal-is-equiv {x' = x'} u =
     is-iso→is-equiv $
-    iso (λ u' → hom[ idl u ] (u' ∘' weak-lift.lifting u x'))
-        (λ u' → sym $ weak-lift.unique u x' u' (to-pathp refl))
-        (λ u' → cancel _ _ (weak-lift.commutes u x' u'))
+    iso (λ u' → hom[ idl u ] (u' ∘' ι! u x'))
+        (λ u' → sym $ ι!.unique u' (to-pathp refl))
+        (λ u' → cancel _ _ (ι!.commutes u'))
 
   weak-opfibration→vertical-equiv
     : ∀ {x y x' y'}
     → (u : Hom x y)
-    → Hom[ u ] x' y' ≃ Hom[ id ] (weak-lift.y' u x') y'
+    → Hom[ u ] x' y' ≃ Hom[ id ] (u ^! x') y'
   weak-opfibration→vertical-equiv {x' = x'} u =
-    weak-lift.universal u x' , weak-opfibration→universal-is-equiv u
+    ι!.universal , weak-opfibration→universal-is-equiv u
 ```
 
 Furthermore, this equivalence is natural.
@@ -649,24 +644,21 @@ Furthermore, this equivalence is natural.
 ```agda
   weak-opfibration→hom-iso-from
     : ∀ {x y x'} (u : Hom x y)
-    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (weak-lift.y' u x')
+    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (u ^! x')
   weak-opfibration→hom-iso-from {y = y} {x' = x'} u = to-natural-iso mi where
     open make-natural-iso
 
-    u*x' : Ob[ y ]
-    u*x' = weak-lift.y' u x'
-
-    mi : make-natural-iso (Hom-over-from ℰ u x') (Hom-from (Fibre ℰ y) u*x')
-    mi .eta x u' = weak-lift.universal u x' u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' weak-lift.lifting u x')
+    mi : make-natural-iso (Hom-over-from ℰ u x') (Hom-from (Fibre ℰ y) (u ^! x'))
+    mi .eta x u' = ι!.universal u'
+    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u x')
     mi .eta∘inv _ = funext λ v' →
-      sym $ weak-lift.unique u _ _ (to-pathp refl)
+      sym $ ι!.unique _ (to-pathp refl)
     mi .inv∘eta _ = funext λ u' →
-      from-pathp $ weak-lift.commutes u _ _
+      from-pathp $ ι!.commutes _
     mi .natural _ _ v' = funext λ u' →
-      weak-lift.unique _ _ _ $ to-pathp $
+      ι!.unique _ $ to-pathp $
         smashl _ _
-      ∙ weave _ (ap (_∘ u) (idl id)) _ (pullr' _ (weak-lift.commutes _ _ _))
+      ∙ weave _ (ap (_∘ u) (idl id)) _ (pullr' _ (ι!.commutes _))
 ```
 
 As in the [weak cartesian case], the converse is also true: if there is
@@ -692,7 +684,7 @@ module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ]) where
     : (to : ∀ {x y x' y'} {f : Hom x y} → Hom[ f ] x' y' → Hom[ id ] (f *₀ x') y')
     → (eqv : ∀ {x y x' y'} {f : Hom x y} → is-equiv (to {x} {y} {x'} {y'} {f}))
     → (natural : vertical-equiv-iso-natural to)
-    → is-weak-cocartesian-fibration
+    → Weak-cocartesian-fibration
   vertical-equiv→weak-opfibration to to-eqv natural =
     weak-op-fibration→weak-opfibration $
     vertical-equiv→weak-fibration (ℰ ^total-op) _*₀_ to to-eqv λ f' g' →
@@ -708,7 +700,7 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ x) (Fibre ℰ y)) whe
   hom-iso→weak-opfibration
     : (∀ {x y x'} (u : Hom x y)
        → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (U u .F₀ x'))
-    → is-weak-cocartesian-fibration
+    → Weak-cocartesian-fibration
   hom-iso→weak-opfibration hom-iso =
     vertical-equiv→weak-opfibration
       (λ u → U u .F₀)
@@ -727,7 +719,7 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso-from
     : ∀ {x y x'} (u : Hom x y)
-    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (has-lift.y' u x')
+    → Hom-over-from ℰ u x' ≅ⁿ Hom-from (Fibre ℰ y) (u ^! x')
   opfibration→hom-iso-from u =
     weak-opfibration→hom-iso-from (opfibration→weak-opfibration opfib) u
 
@@ -740,18 +732,18 @@ module _ (opfib : Cocartesian-fibration) where
     mi : make-natural-iso
            (Hom-over-into ℰ u y')
            (Hom-into (Fibre ℰ y) y' F∘ Functor.op (cobase-change u) )
-    mi .eta x u' = has-lift.universalv u x u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' has-lift.lifting u _)
+    mi .eta x u' = ι!.universalv u'
+    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (ι!.commutesv _)
     mi .natural _ _ v' = funext λ u' →
-      has-lift.unique u _ _ $ to-pathp $
+      ι!.unique _ $ to-pathp $
         smashl _ _
-        ·· revive₁ (pullr[] _ (has-lift.commutesv u _ _))
+        ·· revive₁ (pullr[] _ (ι!.commutesv _))
         ·· smashr _ _
-        ·· weave _ (pulll (idl u)) _ (pulll[] _ (has-lift.commutesv u _ _))
+        ·· weave _ (pulll (idl u)) _ (pulll[] _ (ι!.commutesv _))
         ·· duplicate id-comm _ (idr u)
 
   opfibration→hom-iso
@@ -769,12 +761,12 @@ module _ (opfib : Cocartesian-fibration) where
     mi : make-natural-iso
            (Hom-over ℰ u)
            (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
-    mi .eta x u' = has-lift.universalv u _ u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' has-lift.lifting u _)
+    mi .eta x u' = ι!.universalv u'
+    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (has-lift.commutesv u _ _)
+      from-pathp (ι!.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
       ·· sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
@@ -783,14 +775,14 @@ module _ (opfib : Cocartesian-fibration) where
   opfibration→universal-is-equiv
     : ∀ {x y x' y'}
     → (u : Hom x y)
-    → is-equiv (has-lift.universalv u y' {x'})
+    → is-equiv (ι!.universalv {f = u} {x' = x'} {y'})
   opfibration→universal-is-equiv u =
     weak-opfibration→universal-is-equiv (opfibration→weak-opfibration opfib) u
 
   opfibration→vertical-equiv
     : ∀ {x y x' y'}
     → (u : Hom x y)
-    → Hom[ u ] x' y' ≃ Hom[ id ] (has-lift.y' u x') y'
+    → Hom[ u ] x' y' ≃ Hom[ id ] (u ^! x') y'
   opfibration→vertical-equiv u =
    weak-opfibration→vertical-equiv (opfibration→weak-opfibration opfib) u
 ```

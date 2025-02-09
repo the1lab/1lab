@@ -24,7 +24,6 @@ module Cat.Displayed.Cartesian.Discrete where
 
 <!--
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 ```
@@ -90,8 +89,8 @@ Cartesian.
   discrete→cartesian disc = r where
     open Discrete-fibration disc
     r : Cartesian-fibration E
-    r .has-lift f y' .x' = lifts f y' .centre .fst
-    r .has-lift f y' .lifting = lifts f y' .centre .snd
+    r f y' .x' = lifts f y' .centre .fst
+    r f y' .lifting = lifts f y' .centre .snd
 ```
 
 So suppose we have an open diagram
@@ -122,15 +121,15 @@ but observe that $u' \xto{h'}_{f \circ m} b'$ and $u_2 \xto{l}_{u} a'
 map $u' \to a'$.
 
 ```agda
-    r .has-lift f y' .cartesian .universal {u} {u'} m h' =
+    r  f y' .cartesian .universal {u} {u'} m h' =
       subst (λ x → E.Hom[ m ] x (lifts f y' .centre .fst))
         (ap fst $ is-contr→is-prop (lifts (f B.∘ m) y')
           (_ , lifts f y' .centre .snd E.∘' lifts m _ .centre .snd)
           (u' , h'))
         (lifts m (lifts f y' .centre .fst) .centre .snd)
-    r .has-lift f y' .cartesian .commutes m h' =
+    r  f y' .cartesian .commutes m h' =
       Σ-inj-set (fibre-set _) $ is-contr→is-prop (lifts (f B.∘ m) y') _ _
-    r .has-lift f y' .cartesian .unique {u} {u'} {m} m' x =
+    r  f y' .cartesian .unique {u} {u'} {m} m' x =
       Σ-inj-set (fibre-set u) $ is-contr→is-prop (lifts m _) (u' , m') (u' , _)
 ```
 

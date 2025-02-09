@@ -263,7 +263,6 @@ to touch the types, as there are no possible dependencies!
 
 <!--
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 ```
@@ -271,11 +270,11 @@ open is-cartesian
 
 ```agda
 Simple-fibration : Cartesian-fibration Simple
-Simple-fibration .has-lift f Y .x' = Y
-Simple-fibration .has-lift f Y .lifting = π₂
-Simple-fibration .has-lift f Y .cartesian .universal _ h = h
-Simple-fibration .has-lift f Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-fibration f Y .x' = Y
+Simple-fibration f Y .lifting = π₂
+Simple-fibration f Y .cartesian .universal _ h = h
+Simple-fibration f Y .cartesian .commutes g h = π₂∘⟨⟩
+Simple-fibration f Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
