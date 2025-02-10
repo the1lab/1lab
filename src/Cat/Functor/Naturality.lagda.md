@@ -23,7 +23,6 @@ module collects some notation that will help us with that task.
 ```agda
 module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   private
-    module DD = Cat.Reasoning Cat[ D , D ]
     module CD = Cat.Reasoning Cat[ C , D ]
     module D = Cat.Reasoning D
     module C = Cat.Reasoning C
