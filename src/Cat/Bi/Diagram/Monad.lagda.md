@@ -157,18 +157,16 @@ module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
 
 Suppose that we have a [[lax functor]] $P$ from the [[terminal bicategory]] to $\cB$.
 Then $P$ identifies a single object $a=P_0(*)$ as well as a morphism $M:a\to a$
-given by $P\_1(*)$. The composition operation is a natural transformation
-\[
-P\_1(*)\otimes P\_1(*)\To P\_1(*\otimes *)
-\]
+given by $P_1(\id_*)$. The composition operation is a natural transformation
+$$ P_1(\id_*)\otimes P_1(\id_*)\To P_1(\id_*\otimes \id_*) $$
 i.e. a natural transformation $\mu :M\otimes M\To M$. Finally, the unitor gives
 $\eta:\id\To M$.
 Altogether, this is exactly the same data as an object $a\in\cB$ and a [[monad in]]
 $\cB$ on $a$.
 
 ```agda
-  lax-functor→monad : Σ[ a ∈ B.Ob ] Monad B a → Lax-functor ⊤Bicat B
-  lax-functor→monad (a , monad) = P where
+  monad→lax-functor : Σ[ a ∈ B.Ob ] Monad B a → Lax-functor ⊤Bicat B
+  monad→lax-functor (a , monad) = P where
     open Monad monad
     open Lax-functor
     P : Lax-functor ⊤Bicat B
@@ -186,8 +184,8 @@ $\cB$ on $a$.
     P .right-unit _ = Hom.id ∘ μ ∘ M ▶ η  ≡⟨ Hom.idl _ ∙ μ-unitr ⟩ ρ← M ∎
     P .left-unit _ = Hom.id ∘ μ ∘ (η ◀ M) ≡⟨ Hom.idl _ ∙ μ-unitl ⟩ λ← M ∎
 
-  monad→lax-functor : Lax-functor ⊤Bicat B → Σ[ a ∈ B.Ob ] Monad B a
-  monad→lax-functor P = (a , record { monad }) where
+  lax-functor→monad : Lax-functor ⊤Bicat B → Σ[ a ∈ B.Ob ] Monad B a
+  lax-functor→monad P = (a , record { monad }) where
     open Lax-functor P
 
     a : B.Ob
