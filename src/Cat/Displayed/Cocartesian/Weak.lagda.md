@@ -7,13 +7,17 @@ open import Cat.Displayed.Total.Op
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
+open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Displayed.Cocartesian.Indexing as Indexing
+import Cat.Displayed.Cocartesian.Indexing
+import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Cocartesian as Cocart
+import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as CR
@@ -37,7 +41,7 @@ open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Morphism.Duality ℰ
 open Cat.Displayed.Reasoning ℰ
 private
-  module Fib {x} = Precategory (Fibre ℰ x)
+  module Fib = Cat.Displayed.Fibre.Reasoning ℰ
 ```
 -->
 
@@ -62,8 +66,6 @@ record is-weak-cocartesian
               → (h' : Hom[ id ] b' x')
               → h' ∘' f' ≡[ idl _ ] g'
               → h' ≡ universal g'
-
-open is-weak-cocartesian
 ```
 
 ## Duality
@@ -129,13 +131,13 @@ weak-cocartesian→cocartesian
 precompose-equiv→weak-cocartesian
   : ∀ {x y x' y'} {f : Hom x y}
   → (f' : Hom[ f ] x' y')
-  → (∀ {y''} → is-equiv {A = Hom[ id ] y' y''} (_∘' f'))
+  → (∀ {y''} → is-equiv {A = Hom[ id ] y' y''} (λ h' → hom[ idl _ ] (h' ∘' f')))
   → is-weak-cocartesian f f'
 
 weak-cocartesian→precompose-equiv
   : ∀ {x y x' y' y''} {f : Hom x y} {f' : Hom[ f ] x' y'}
   → is-weak-cocartesian f f'
-  → is-equiv {A = Hom[ id ] y' y''} (_∘' f')
+  → is-equiv {A = Hom[ id ] y' y''} (λ h' → hom[ idl _ ] (h' ∘' f'))
 
 fibre-precompose-equiv→weak-cocartesian
   : ∀ {x} {x' x'' : Ob[ x ]}
@@ -179,19 +181,19 @@ weak-cocartesian→precompose-equiv cocart =
   weak-cartesian→postcompose-equiv (ℰ ^total-op) $
   weak-cocartesian→weak-co-cartesian cocart
 
-fibre-precompose-equiv→weak-cocartesian f' eqv .universal v =
+fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.universal v =
   equiv→inverse eqv v
-fibre-precompose-equiv→weak-cocartesian f' eqv .commutes v =
+fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.commutes v =
   to-pathp $ equiv→counit eqv v
-fibre-precompose-equiv→weak-cocartesian f' eqv .unique v p =
+fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.unique v p =
   sym (equiv→unit eqv v) ∙ ap (equiv→inverse eqv) (from-pathp p)
 
 weak-cocartesian→fibre-precompose-equiv wcocart =
   is-iso→is-equiv $
-    iso (wcocart .universal)
-      (λ v → from-pathp (wcocart .commutes v))
-      (λ v → sym (wcocart .unique v (to-pathp refl)))
-
+    iso universal
+      (λ v → from-pathp (commutes v))
+      (λ v → sym (unique v (to-pathp refl)))
+  where open is-weak-cocartesian wcocart
 ```
 </details>
 
@@ -570,8 +572,6 @@ opfibration→weak-opfibration opfib f x' =
 ```
 -->
 
-
-
 A weak opfibration is an opfibration when weak cocartesian morphisms are
 closed under composition. This follows via duality.
 
@@ -610,6 +610,225 @@ cartesian+weak-opfibration→opfibration fib wlifts =
       (fibration+weak-cocartesian→cocartesian fib f-weak)
       (fibration+weak-cocartesian→cocartesian fib g-weak)
 ```
+
+# Weak cocartesian morphisms as left adjoints to base change
+
+If $\cE$ is a [[cocartesian fibration]], we can define [[cobase change]]
+functors $f_! : \cE_{X} \to \cE_{Y}$ for every $f : X \to Y$. However, the
+requirement that $\cE$ is cocartesian is overly strong[^1]; all we need to define
+a base change functor $f_! : \cE_{X} \to \cE_{Y}$ is a family of *weak*
+cocartesian lifts of $f$.
+
+[^1]: Note that these functors are only well-behaved if $\cE$ is in fact
+cocartesian, so the loss of generality is minimal in the long run.
+
+```agda
+weak-cocartesian-lift→cobase-change
+  : ∀ {x y}
+  → (f : Hom x y)
+  → (∀ x' → Weak-cocartesian-lift f x')
+  → Functor (Fibre ℰ x) (Fibre ℰ y)
+```
+
+The reason that weak cocartesian morphisms suffice is that we only need
+to consider vertical structure when performing cobase change, so the weaker
+universal property is enough. This is reflected in the action on morphisms,
+which is identical to the definition of cobase change for a cocartesian fibration.
+
+```agda
+weak-cocartesian-lift→cobase-change {x = x} {y = y} f wcocart = f-cobase-change where
+  module wcocart (x' : Ob[ x ]) where
+    open Weak-cocartesian-lift (wcocart x')
+      renaming (y' to f^!_; lifting to ι!)
+      public
+
+  open wcocart
+
+  f-cobase-change : Functor (Fibre ℰ x) (Fibre ℰ y)
+  f-cobase-change .Functor.F₀ x' =
+    f^! x'
+  f-cobase-change .Functor.F₁ f' =
+    universal _ (hom[ idr _ ] (ι! _ ∘' f'))
+```
+
+<details>
+<summary>Functoriality follows from the fact that the universal map is
+unique, though this is rather tedious to show.
+</summary>
+```agda
+  f-cobase-change .Functor.F-id =
+    sym $ unique _ _ $ cast[] $
+      id' ∘' ι! _         ≡[]⟨ idl' _ ⟩
+      ι! _                ≡[]⟨ from-pathp⁻ (symP (idr' _)) ⟩
+      hom[] (ι! _ ∘' id') ∎
+  f-cobase-change .Functor.F-∘ f' g' =
+    sym $ unique  _ _ $ cast[] $
+      (universal _ (hom[ idr _ ] (ι! _ ∘' f')) Fib.∘ universal _ (hom[ idr _ ] (ι! _ ∘' g'))) ∘' ι! _
+        ≡[]⟨ Fib.pullrf (commutes _ _) ∙[] unwrapr (idr _) ⟩
+      universal _ (hom[ idr f ] (ι! _ ∘' f')) ∘' (ι! _ ∘' g')
+        ≡[]⟨ pulll[] _ (commutes _ _) ∙[] unwrapl (idr _) ⟩
+      (ι! _ ∘' f') ∘' g'
+        ≡[]⟨ pullr[] _ (wrap (idl _)) ∙[] wrap (idr _) ⟩
+      hom[ idr f ] (ι! _ ∘' f' Fib.∘ g')
+        ∎
+```
+</details>
+
+The existence of cobase change functors also provides an alternative universal
+property for weak cocartesian lifts when $\cE$ is a [[cartesian fibration]];
+namely, a family of cocartesian lifts is equivalent to the existence of a
+[[left adjoint]] to a [[base change]] functor.
+
+```agda
+module _ (fib : Cartesian-fibration ℰ) where
+  open Cat.Displayed.Cartesian.Indexing ℰ fib
+  open Cartesian-fibration ℰ fib
+
+  left-adjoint→weak-cocartesian-lift
+    : ∀ {x y}
+    → (f : Hom x y)
+    → (f^! : Functor (Fibre ℰ x) (Fibre ℰ y))
+    → f^! ⊣ base-change f
+    → ∀ x' → Weak-cocartesian-lift f x'
+
+
+  weak-cocartesian-lift→left-adjoint
+    : ∀ {x y}
+    → (f : Hom x y)
+    → (f^! : ∀ x' → Weak-cocartesian-lift f x')
+    → weak-cocartesian-lift→cobase-change f f^! ⊣ base-change f
+```
+
+We shall start by showing a left adjoint $f^! : \cE_{x} \to \cE_{y}$ to base change along $f$
+induces cocartesian lifts for every $x'$. The object $f_{!}(X')$ is the only
+possible candidate for our lift, and we can construct a map $X' \to f_{!}(X')$
+by composing the unit $\eta_{X'} : X' \to f^{*}f_{!}(X')$ with the projection
+out of $f^{*}f_{!}(X')$.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {X'} & {f^*f_!(X')} && {f_!(X)} \\
+  \\
+  & X && Y
+  \arrow["{\eta_{X'}}", from=1-1, to=1-2]
+  \arrow[from=1-1, to=3-2]
+  \arrow["\pi", from=1-2, to=1-4]
+  \arrow[from=1-2, to=3-2]
+  \arrow[from=1-4, to=3-4]
+  \arrow["f", from=3-2, to=3-4]
+\end{tikzcd}
+~~~
+
+```agda
+  left-adjoint→weak-cocartesian-lift  {y = y} f f^! f^!⊣f^* x' = f-lift where
+    module f^! = Functor f^!
+
+    open Weak-cocartesian-lift
+    open _⊣_ f^!⊣f^*
+
+    ι! : Hom[ f ] x' (f^!.₀ x')
+    ι! = hom[ idr _ ] (π* f (f^!.F₀ x') ∘' η x')
+
+    f-lift : Weak-cocartesian-lift f x'
+    f-lift .y' = f^!.₀ x'
+    f-lift .lifting = ι!
+```
+
+We can prove that our putative lift $\iota = \pi \circ \eta_{X'}$ is weakly
+cocartesian via a nice equivalence chase. First, recall that a map is weakly
+cocartesian if and only if precomposition with a vertical map is an [[equivalence]].
+Moreover, the universal map of a cartesian fibration is also an equivalence,
+so by 2-out-of-3 it suffices to show that the function that takes a vertical
+map $f' : f_{!}(X') \to Y'$ to the universal factorization indicated in the
+following diagram is an equivalence.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {X'} \\
+  & {f^*f_!(X')} && {f_{!}(X')} \\
+  X \\
+  & X && Y
+  \arrow["{\exists!}"', dashed, from=1-1, to=2-2]
+  \arrow["{f' \circ \pi \circ \eta_{X'}}", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow[from=1-1, to=3-1]
+  \arrow["\pi"', from=2-2, to=2-4]
+  \arrow[from=2-2, to=4-2]
+  \arrow[from=2-4, to=4-4]
+  \arrow["\id"{description}, from=3-1, to=4-2]
+  \arrow["f"{description}, from=4-2, to=4-4]
+\end{tikzcd}
+~~~
+
+However, this is just the [[left adjunct]] of the adjoint up to some
+transport gunk, which is an equivalence!
+
+```agda
+    f-lift .weak-cocartesian =
+      precompose-equiv→weak-cocartesian ι! $ λ {y'} →
+      equiv-cancell (fibration→universal-is-equiv ℰ fib f) $
+      subst is-equiv (funext (coh y')) (L-adjunct-is-equiv f^!⊣f^*)
+      where
+        coh
+           : ∀ y' (f' : Hom[ id ] (f^!.₀ x') y')
+           → hom[ idl _ ] (π*.universal' id-comm (f' ∘' π* f _) ∘' η x')
+           ≡ π*.universalv (hom[ idl _ ] (f' ∘' ι!))
+        coh y' f' =
+          from-pathp $ π*.uniquep _ (idl _) (idr _) _ $
+            π* f y' ∘' π*.universal' _ (f' ∘' π* f (f^!.₀ x')) ∘' η x' ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
+            (f' ∘' π* f (f^!.₀ x')) ∘' η x'                            ≡[]⟨ (pullr[] (idr _) (wrap (idr _)) ∙[] wrap (idl _)) ⟩
+            hom[ idl f ] (f' ∘' ι!)                                    ∎
+```
+
+The reverse direction follows from some more equivalence yoga. First,
+recall that we can present [[adjoints as hom isomorphisms]]; this means that it
+suffices to construct an equivalence between $f_{!}(X) \to y$ and
+$X \to f^*{Y}$. Moreover, we already have equivalences that characterise
+these two types: these are just the universal properties of weak cocartesian and
+cartesian maps, resp.
+
+```agda
+  weak-cocartesian-lift→left-adjoint {x = x} {y = y} f wcocart = f-cobase-change-adj where
+    module wcocart (x' : Ob[ x ]) where
+      open Weak-cocartesian-lift (wcocart x')
+        renaming (y' to f^!_; lifting to ι!)
+        public
+
+    open wcocart
+    open _=>_
+    open _⊣_
+
+    f-cobase-change-adj : weak-cocartesian-lift→cobase-change f wcocart ⊣ base-change f
+    f-cobase-change-adj =
+      hom-iso→adjoints
+        (λ f' → π*.universalv (hom[ idl _ ] (f' ∘' ι! _)))
+        (∙-is-equiv (weak-cocartesian→precompose-equiv (weak-cocartesian _))
+          ((fibration→universal-is-equiv ℰ fib f)))
+        universalv-natural
+```
+
+<details>
+<summary>All that remains is the naturality condition, which follows from
+some brute-force applications of the universal property of cartesian maps.
+</summary>
+
+```agda
+      where
+        universalv-natural
+          : ∀ {x' x'' : Ob[ x ]} {y' y'' : Ob[ y ]}
+          → (vy : Hom[ id ] y' y'') (vx : Hom[ id ] x' x'')
+          → (f' : Hom[ id ] (f^! x'') y')
+          → _
+        universalv-natural vy vx f' =
+          π*.uniquep₂ _ _ _ _ _
+            (π*.commutesv _
+              ∙[] unwrap _
+              ∙[] Fib.pullrf (Fib.pullrf (commutes _ _)))
+            (Fib.pulllf (π*.commutesp id-comm _)
+              ∙[] Fib.pulllf (pullr[] _ (π*.commutesv _))
+              ∙[] pullr[] _ (unwrapl (idl f) ∙[] symP (assoc' _ _ _) ∙[] wrapr (idr f)))
+
+```
+</details>
 
 # Weak opfibrations and equivalence of Hom sets
 
@@ -714,8 +933,8 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ x) (Fibre ℰ y)) whe
 <!--
 ```agda
 module _ (opfib : Cocartesian-fibration) where
+  open Cat.Displayed.Cocartesian.Indexing ℰ opfib
   open Cocartesian-fibration opfib
-  open Indexing ℰ opfib
 
   opfibration→hom-iso-from
     : ∀ {x y x'} (u : Hom x y)
