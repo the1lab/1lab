@@ -180,6 +180,8 @@ naturally isomorphic to the identity functor.
       → Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
         (compose-assocˡ {H = Hom} compose)
         (compose-assocʳ {H = Hom} compose)
+
+  module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
 It's traditional to refer to the left unitor as $\lambda$, to the right
@@ -217,18 +219,18 @@ abbreviations here too:
 
   α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
      → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
-  α→ f g h = associator .Cr._≅_.to .η (f , g , h)
+  α→ f g h = associator.to .η (f , g , h)
 
   α← : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
      → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
-  α← f g h = associator .Cr._≅_.from .η (f , g , h)
+  α← f g h = associator.from .η (f , g , h)
 
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
           (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
   α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator .Cr._≅_.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    associator.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
   α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
@@ -236,7 +238,7 @@ abbreviations here too:
            (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
            ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator .Cr._≅_.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    associator.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -425,7 +427,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 <!--
 ```agda
-  module P₁ {A} {B} = Functor (P₁ {A} {B})
+  module P₁ {A} {B} = Fr (P₁ {A} {B})
 
   ₀ : B.Ob → C.Ob
   ₀ = P₀
