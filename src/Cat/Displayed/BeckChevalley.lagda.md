@@ -37,7 +37,7 @@ as left adjoints $\exists_{Y} : \cE_{X \times Y} \to \cE{X}$ to the base changes
 $\pi : X \times Y \to X$:
 
 - The introduction rule is given by the unit $\eta : \cE_{X}(P, \exists_{Y} (\pi^{*} P))$;
-- The elimination rule is given by the counit $\eps : \cE_{X \times Y}(\pi^{*}\exists_{Y} P, P)$; and
+- The elimination rule is given by the counit $\eps : \cE_{X \times Y}(\pi^{*}(\exists_{Y} P), P)$; and
 - The $\beta$ and $\eta$ rules are given by the zig-zag equations.
 
 This story is quite elegant, but there is a missing piece: how do substitutions
@@ -60,7 +60,7 @@ diagram:
 Ideally, we'd like $\sigma^*({\exists_{X} P}) \iso \exists_{X}((\sigma \times \id)^{*} P)$,
 corresponding to the usual substitution rule for quantifiers. Somewhat
 surprisingly, this does not always hold; we always have a map
-$$\exists_{X}((\sigma \times \id)^{*} P) \to (\sigma)^*{\exists_{X} P}$$
+$$\exists_{X}((\sigma \times \id)^{*} P) \to \sigma^*({\exists_{X} P})$$
 coming from adjoint yoga, but this map is not necessarily invertible!
 This leads us to the main topic of this page: the **Beck-Chevalley
 conditions** are a set of properties that ensure that the aforementioned
@@ -470,7 +470,7 @@ property.
 </details>
 
 On to the converse! Suppose that the comparison map
-is invertible, and denote the inverse $\alpha$. By our previous lemma,$((\iota \circ\ \pi)_{!})^{*}$
+is invertible, and denote the inverse $\alpha$. By our previous lemma,
 it suffices to show that the interpolant $(\iota \circ \pi)^{*}$ is cocartesian.
 Moreover, cocartesian maps are stable under precomposition of isomorphisms,
 so it suffices to show that $\alpha \circ (\iota \circ \pi)^{*}$ is cocartesian.
@@ -480,8 +480,8 @@ $$
 \begin{align*}
   ((\iota \circ\ \pi)_{!})^{*} \circ \alpha \circ (\iota \circ \pi)^{*}
   &= (\iota \circ \pi)^{*} \\
-  &= ((\iota \circ\ pi)^{*})_{!} \circ \iota \\
-  &= ((\iota \circ\ pi)_{!})^{*} \circ \iota \\
+  &= ((\iota \circ\ \pi)^{*})_{!} \circ \iota \\
+  &= ((\iota \circ\ \pi)_{!})^{*} \circ \iota \\
 \end{align*}
 $$
 
