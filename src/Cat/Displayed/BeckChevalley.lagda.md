@@ -634,9 +634,29 @@ the comparison map derived from the aforementioned mate is invertible.
 
 Left Beck-Chevalley conditions require stability of cocartesian maps
 under cartesian maps. We can dualize this to obtain the **right Beck-Chevalley
-conditions**, which require that cartesian maps be stable under pushforward
-along cocartesian maps.
+conditions**, which ensures stability of cartesian maps under pushforward
+along cocartesian maps. As before, this is best understood diagrammatically:
 
+~~~{.quiver}
+\begin{tikzcd}
+	{A'} &&& {D'} \\
+	& {B'} &&& {C'} \\
+	A &&& B \\
+	& C &&& D
+	\arrow["{\mathrm{cart}}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-4]
+	\arrow["{\mathrm{cocart}}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=2-2]
+	\arrow[lies over, from=1-1, to=3-1]
+	\arrow["{\mathrm{cocart}}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=1-4, to=2-5]
+	\arrow[lies over, from=1-4, to=3-4]
+	\arrow["{\mathrm{cart}}"{description}, color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-5]
+	\arrow[lies over, from=2-2, to=4-2]
+	\arrow[lies over, from=2-5, to=4-5]
+	\arrow["g"{description}, from=3-1, to=3-4]
+	\arrow["k"{description}, from=3-1, to=4-2]
+	\arrow["f"{description}, from=3-4, to=4-5]
+	\arrow["h"{description}, from=4-2, to=4-5]
+\end{tikzcd}
+~~~
 
 <!--
 ```agda
