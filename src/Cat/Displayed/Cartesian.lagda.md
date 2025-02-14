@@ -339,6 +339,17 @@ invertible→cartesian
     hom[] (f'-inv.inv' ∘' h')       ∎
 ```
 
+<!--
+```agda
+iso→cartesian
+  : ∀ {x y x' y'} {f : x ≅ y}
+  → (f' : x' ≅[ f ] y')
+  → is-cartesian (f .to) (f' .to')
+iso→cartesian {f = f} f' =
+  invertible→cartesian (iso→invertible f) (iso[]→invertible[] f')
+```
+-->
+
 If $f$ is cartesian, it's also a [weak monomorphism].
 
 [weak monomorphism]: Cat.Displayed.Morphism.html#weak-monos

@@ -177,7 +177,6 @@ postcompose-equiv→weak-cartesian f' eqv .universal h' =
   equiv→inverse eqv h'
 postcompose-equiv→weak-cartesian f' eqv .commutes h' =
   to-pathp (equiv→counit eqv h')
-  -- to-pathp⁻ (equiv→counit eqv h')
 postcompose-equiv→weak-cartesian f' eqv .unique m' p =
   sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) (from-pathp p)
 

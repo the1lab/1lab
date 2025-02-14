@@ -322,7 +322,6 @@ invertible→cocartesian f-inv f'-inv =
   invertible→cartesian _ _ (invertible[]→co-invertible[] f'-inv)
 
 cocartesian→weak-epic cocart =
-
   cartesian→weak-monic (ℰ ^total-op) (cocartesian→co-cartesian cocart)
 
 cocartesian-codomain-unique f'-cocart f''-cocart =
@@ -350,6 +349,17 @@ vertical+cocartesian→invertible cocart =
     (cocartesian→co-cartesian cocart)
 ```
 </details>
+
+<!--
+```agda
+iso→cocartesian
+  : ∀ {x y x' y'} {f : x ≅ y}
+  → (f' : x' ≅[ f ] y')
+  → is-cocartesian (f .to) (f' .to')
+iso→cocartesian {f = f} f' =
+  invertible→cocartesian (iso→invertible f) (iso[]→invertible[] f')
+```
+-->
 
 Furthermore, $f' : x' \to_{f} y'$ is cocartesian if and only if the
 function $- \cdot' f$ is an equivalence.
