@@ -379,6 +379,17 @@ make-iso[ inv ] f' g' p q .from' = g'
 make-iso[ inv ] f' g' p q .inverses' .Inverses[_].invl' = p
 make-iso[ inv ] f' g' p q .inverses' .Inverses[_].invr' = q
 
+make-invertible[_]
+  : ∀ {a b a' b'} {f : Hom a b} {f' : Hom[ f ] a' b'}
+  → (f-inv : is-invertible f)
+  → (f-inv' : Hom[ is-invertible.inv f-inv ] b' a')
+  → f' ∘' f-inv' ≡[ is-invertible.invl f-inv ] id'
+  → f-inv' ∘' f' ≡[ is-invertible.invr f-inv ] id'
+  → is-invertible[ f-inv ] f'
+make-invertible[ f-inv ] f-inv' p q .is-invertible[_].inv' = f-inv'
+make-invertible[ f-inv ] f-inv' p q .is-invertible[_].inverses' .Inverses[_].invl' = p
+make-invertible[ f-inv ] f-inv' p q .is-invertible[_].inverses' .Inverses[_].invr' = q
+
 make-vertical-iso
   : ∀ {x} {x' x'' : Ob[ x ]}
   → (f' : Hom[ id ] x' x'') (g' : Hom[ id ] x'' x')
@@ -398,6 +409,14 @@ invertible[]→iso[] {f' = f'} i =
     (is-invertible[_].inv' i)
     (is-invertible[_].invl' i)
     (is-invertible[_].invr' i)
+
+iso[]→invertible[]
+  : ∀ {a b a' b'}
+  → {i : a ≅ b}
+  → (i' : a' ≅[ i ] b')
+  → is-invertible[ iso→invertible i ] (i' .to')
+iso[]→invertible[] {i = i} i' =
+  make-invertible[ (iso→invertible i) ] (i' .from') (i' .invl') (i' .invr')
 
 ≅[]-path
   : {x y : Ob} {A : Ob[ x ]} {B : Ob[ y ]} {f : x ≅ y}
@@ -421,6 +440,15 @@ instance
     → ⦃ sa : Extensional (Hom[ f .to ] x' y') ℓr ⦄
     → Extensional (x' ≅[ f ] y') ℓr
   Extensional-≅[] ⦃ sa ⦄ = injection→extensional! ≅[]-path sa
+
+_Iso[]⁻¹
+  : ∀ {a b a' b'} {i : a ≅ b}
+  → a' ≅[ i ] b'
+  → b' ≅[ i Iso⁻¹ ] a'
+(i' Iso[]⁻¹) .to' = i' .from'
+(i' Iso[]⁻¹) .from' = i' .to'
+(i' Iso[]⁻¹) .inverses' .Inverses[_].invl' = i' .invr'
+(i' Iso[]⁻¹) .inverses' .Inverses[_].invr' = i' .invl'
 ```
 -->
 
@@ -466,6 +494,34 @@ inverses[]→from-has-retract[]
   → has-retract[ inverses→from-has-retract inv ] g'
 inverses[]→from-has-retract[] {f' = f'} inv' .retract' = f'
 inverses[]→from-has-retract[] inv' .is-retract' = Inverses[_].invl' inv'
+
+module _
+  {f : Hom a b} {f' : Hom[ f ] a' b'}
+  {f-inv : is-invertible f}
+  (f'-inv : is-invertible[ f-inv ] f')
+  where
+  private module f' = is-invertible[_] f'-inv
+
+  invertible[]→to-has-section[] : has-section[ invertible→to-has-section f-inv ] f'
+  invertible[]→to-has-section[] .section' = f'.inv'
+  invertible[]→to-has-section[] .is-section' = f'.invl'
+
+  invertible[]→from-has-section[] : has-section[ invertible→from-has-section f-inv ] f'.inv'
+  invertible[]→from-has-section[] .section' = f'
+  invertible[]→from-has-section[] .is-section' = f'.invr'
+
+  invertible[]→to-has-retract[] : has-retract[ invertible→to-has-retract f-inv ] f'
+  invertible[]→to-has-retract[] .retract' = f'.inv'
+  invertible[]→to-has-retract[] .is-retract' = f'.invr'
+
+  invertible[]→from-has-retract[] : has-retract[ invertible→from-has-retract f-inv ] f'.inv'
+  invertible[]→from-has-retract[] .retract' = f'
+  invertible[]→from-has-retract[] .is-retract' = f'.invl'
+
+  invertible[]→monic[] : is-monic[ invertible→monic f-inv ] f'
+  invertible[]→monic[] g' h' p p' =
+    cast[] $ introl[] _ f'.invr' ∙[] extendr[] _ p' ∙[] eliml[] _ f'.invr'
+
 
 iso[]→to-has-section[]
   : {f : a ≅ b} → (f' : a' ≅[ f ] b')
