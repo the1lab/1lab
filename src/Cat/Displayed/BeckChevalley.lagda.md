@@ -65,7 +65,7 @@ surprisingly, this does not always hold; we always have a map
 
 $$\exists_{X}((\sigma \times \id)^{*} P) \to (\sigma)^*{\exists_{X} P}$$
 
-that comes from some adjoint yoga, but this map is not neccesarily invertible!
+that comes from some adjoint yoga, but this map is not necessarily invertible!
 This leads us to the main topic of this page: the **Beck-Chevalley**
 conditions are a set of properties that ensure that the aforementioned
 map is invertible, which in turn ensures that our quantifiers are stable
@@ -84,7 +84,7 @@ be missing some cartesian maps.
 Explicitly, a square $fg = hk$ in $\cB$ satisfies the left Beck-Chevalley
 condition if for every square $f'g' = h'interp$ over $fg = hk$, if $g'$ and
 $h'$ are cartesian and $f'$ is cocartesian, then $interp$ is cocartesian.
-This is best understood diagramatically: suppose we are in a situation
+This is best understood diagrammatically: suppose we are in a situation
 like the diagram below:
 
 ~~~{.quiver}
@@ -272,7 +272,7 @@ universal properties.
 ```
 
 The immortal pentagon diagram above *almost* lets us "interpolate" $B'$
-around the entire square in the base, but there is a conspicous gap between $h^*f_!(B')$
+around the entire square in the base, but there is a conspicuous gap between $h^*f_!(B')$
 and $k_!g^*(B')$; this is precisely the missing map that the Beck-Chevalley condition
 ought to give us.
 
@@ -387,7 +387,7 @@ apply the universal property of $k$ followed by the universal property
 of $h$, or we can apply the universal property of $k$ followed by $h$.
 This means that we have:
 
-$$((\iota \circ \pi)_{!})^{*} \circ \iota = ((\iota \circ \pi)^{*})_{!} \circ \iota = (\iota \circ \pi)^{*}$
+$$((\iota \circ \pi)_{!})^{*} \circ \iota = ((\iota \circ \pi)^{*})_{!} \circ \iota = (\iota \circ \pi)^{*}$$
 
 This reduces the problem to showing that $\iota_{!} \circ (\iota \circ \pi)^{*} = \iota$,
 which follows immediately from commutativity of $(\iota \circ \pi)^{*}$ as
