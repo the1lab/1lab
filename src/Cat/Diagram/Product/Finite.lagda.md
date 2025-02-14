@@ -32,7 +32,7 @@ open Cart using (_⊗₀_)
 ```
 -->
 
-# Computing finite products
+# Computing finite products {defines="finite-products"}
 
 Throughout the 1lab, we have referred to categories having a terminal
 object and binary products as _Cartesian categories_, _finite products
