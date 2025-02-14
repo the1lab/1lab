@@ -267,7 +267,7 @@ composition.
 ```agda
   idntl : ∀ {F : Functor J B} {F' : Lifting E F} → F' =[ idnt ]=>l F'
   idntl .η' j = id'
-  idntl .is-natural' i j f = idl' _ ∙[] symP (idr' _)
+  idntl .is-natural' i j f = cast[] $ idl' _ ∙[] symP (idr' _)
 
   _∘ntl_
     : ∀ {F G H : Functor J B} {F' : Lifting E F} {G' : Lifting E G} {H' : Lifting E H}

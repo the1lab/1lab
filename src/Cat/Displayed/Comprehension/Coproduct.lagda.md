@@ -119,20 +119,13 @@ record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe �
     ∐-beck-chevalley
       : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
       → is-cartesian E σ f
-      → cocartesian-beck-chevalley D
-          πᶜ (σ ⨾ˢ f) σ πᶜ
-          (sub-proj f)
+      → left-beck-chevalley D πᶜ (σ ⨾ˢ f) σ πᶜ (sub-proj f)
 ```
 
 <!--
 ```agda
   module ⟨⟩-cocartesian {Γ} (x : E.Ob[ Γ ]) (a : D.Ob[ Γ ⨾ x ]) =
     is-cocartesian (⟨⟩-cocartesian x a)
-
-  module ∐-beck-chevalley
-    {Γ Δ x y} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
-    (f-cart : is-cartesian E σ f) =
-    cocartesian-beck-chevalley (∐-beck-chevalley f-cart)
 ```
 -->
 
@@ -342,7 +335,7 @@ introduction rule is also natural.
       → is-cartesian E σ f → (a : D.Ob[ Δ ⨾ y ])
       → is-cocartesian D πᶜ ⟨ f ⨾ a ⟩
     ⟨⨾⟩-cocartesian {x = x} {y = y} {σ = σ} {f = f} cart a =
-      ∐-beck-chevalley.cocart-stable cart
+      ∐-beck-chevalley cart
         (symP (⟨⨾⟩-weaken f a))
         (⟨⟩-cocartesian y a)
         D.π*.cartesian

@@ -125,7 +125,7 @@ module _ (fib : Cartesian-fibration) where
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → Cocartesian-fibration
   left-adjoint-base-change→opfibration L adj =
-    cartesian+weak-opfibration→opfibration fib $
+    fibration+weak-opfibration→opfibration fib $
     hom-iso→weak-opfibration L λ u →
       adjunct-hom-iso-from (adj u) _ ni⁻¹ ∘ni fibration→hom-iso-from fib u
 ```
