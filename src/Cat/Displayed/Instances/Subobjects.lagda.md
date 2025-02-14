@@ -261,7 +261,7 @@ Subobject-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
   → (pb : has-pullbacks B)
   → Cocartesian-fibration Subobjects
-Subobject-opfibration images pb = cartesian+weak-opfibration→opfibration _
+Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
   (Subobject-fibration pb)
   (Subobject-weak-opfibration images)
 ```

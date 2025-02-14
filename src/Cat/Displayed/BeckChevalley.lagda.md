@@ -51,11 +51,11 @@ diagram:
 \begin{tikzcd}
   {\mathcal{E}_{\Gamma \times X}} && {\mathcal{E}_{\Gamma}} \\
   \\
-  {\mathcal{E}_{\Delta \times X} && {\mathcal{E}_{\Delta}}
+  {\mathcal{E}_{\Delta \times X}} && {\mathcal{E}_{\Delta}}
   \arrow["{\exists_{X}}", from=1-1, to=1-3]
-  \arrow["{(\sigma \times \id)^*}"', from=1-1, to=3-1]
+  \arrow["{(\sigma \times \id)^{*}}"', from=1-1, to=3-1]
   \arrow["{\sigma^{*}}", from=1-3, to=3-3]
-  \arrow["{\exist_{X}}"', from=3-1, to=3-3]
+  \arrow["{\exists_{X}}"', from=3-1, to=3-3]
 \end{tikzcd}
 ~~~
 
@@ -231,7 +231,6 @@ universal properties.
   && B
   \arrow["{((\iota \circ \pi)_{!})^*}"{description}, curve={height=12pt}, to=1-4, from=1-2]
   \arrow["{((\iota \circ \pi)^{*})_!}"{description}, curve={height=-12pt}, to=1-4, from=1-2]
-  \arrow[shorten <=3pt, shorten >=3pt, equals, from=1, to=0]
   \arrow[lies over, from=1-2, to=3-2]
   \arrow[lies over, from=1-4, to=3-4]
   \arrow["{(\iota \circ \pi)_{!}}"{description}, from=1-4, to=3-5]
