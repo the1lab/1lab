@@ -200,19 +200,20 @@ these functions are inverse _equivalences_ between the hom-sets
 $\hom(La,b) \cong \hom(a,Rb)$.
 
 ```agda
-  L-R-adjunct : ∀ {a b} → is-right-inverse (R-adjunct {a} {b}) L-adjunct
-  L-R-adjunct f =
-    R.₁ (adj.ε _ D.∘ L.₁ f) C.∘ adj.η _        ≡⟨ R.pushl refl ⟩
-    R.₁ (adj.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.η _  ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
-    R.₁ (adj.ε _) C.∘ adj.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
-    f                                          ∎
+  abstract
+    L-R-adjunct : ∀ {a b} → is-right-inverse (R-adjunct {a} {b}) L-adjunct
+    L-R-adjunct f =
+      R.₁ (adj.ε _ D.∘ L.₁ f) C.∘ adj.η _        ≡⟨ R.pushl refl ⟩
+      R.₁ (adj.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.η _  ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
+      R.₁ (adj.ε _) C.∘ adj.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
+      f                                          ∎
 
-  R-L-adjunct : ∀ {a b} → is-left-inverse (R-adjunct {a} {b}) L-adjunct
-  R-L-adjunct f =
-    adj.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.η _)       ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
-    adj.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
-    f D.∘ adj.ε _ D.∘ L.₁ (adj.η _)           ≡⟨ D.elimr adj.zig ⟩
-    f                                         ∎
+    R-L-adjunct : ∀ {a b} → is-left-inverse (R-adjunct {a} {b}) L-adjunct
+    R-L-adjunct f =
+      adj.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.η _)       ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
+      adj.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
+      f D.∘ adj.ε _ D.∘ L.₁ (adj.η _)           ≡⟨ D.elimr adj.zig ⟩
+      f                                         ∎
 
   L-adjunct-is-equiv : ∀ {a b} → is-equiv (L-adjunct {a} {b})
   L-adjunct-is-equiv = is-iso→is-equiv
