@@ -213,7 +213,7 @@ over $g, h$, as in the following diagram.
 -->
 
 Now, fix some $B' : \cE_{B}$. We can form the following immortal pentagonal
-diagram by repeatedly performing taking lifts of $B$ and applying various
+diagram by repeatedly performing taking lifts of $B'$ and applying various
 universal properties.
 
 ~~~{.quiver}
@@ -233,7 +233,7 @@ universal properties.
   \arrow["\pi"{description}, from=3-1, to=4-3]
   \arrow[lies over, from=3-1, to=5-1]
   \arrow["\id"{description}, from=3-2, to=3-4]
-  \arrow[lies over, from=3-4, to=5-5]
+  \arrow["h"{description}, from=3-4, to=5-5]
   \arrow[lies over, from=3-5, to=5-5]
   \arrow["\iota"{description}, from=4-3, to=3-5]
   \arrow[lies over, from=4-3, to=6-3]
