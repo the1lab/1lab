@@ -53,14 +53,21 @@ module _ {w x y z} {a : Hom y z} {b : Hom x y} {c : Hom w x} {f : Hom w z} where
 ## Identity morphisms
 
 ```agda
-id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
-id-comm {f = f} = idr f ∙ sym (idl f)
+abstract
+  id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
+  id-comm {f = f} = idr f ∙ sym (idl f)
 
-id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
-id-comm-sym {f = f} = idl f ∙ sym (idr f)
+  id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
+  id-comm-sym {f = f} = idl f ∙ sym (idr f)
 
-idr2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → f ∘ g ∘ id ≡ f ∘ g
-idr2 f g = ap (f ∘_) (idr g)
+  id2 : ∀ {x} → id {x} ∘ id {x} ≡ id
+  id2 = idl _
+
+  idr2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → f ∘ g ∘ id ≡ f ∘ g
+  idr2 f g = ap (f ∘_) (idr g)
+
+  idl2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → (id ∘ f) ∘ g ≡ f ∘ g
+  idl2 f g = ap (_∘ g) (idl f)
 
 module _ (a≡id : a ≡ id) where abstract
   eliml : a ∘ f ≡ f
