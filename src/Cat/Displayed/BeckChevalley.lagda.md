@@ -4,23 +4,22 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
-open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Base
 open import Cat.Functor.Adjoint.Mate
+open import Cat.Displayed.Cartesian
 open import Cat.Functor.Naturality
+open import Cat.Displayed.Fibre
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Base
 open import Cat.Prelude
-open import Cat.Displayed.Cartesian.Indexing
 
 import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Functor.Reasoning
 import Cat.Reasoning
-
 ```
 -->
 ```agda

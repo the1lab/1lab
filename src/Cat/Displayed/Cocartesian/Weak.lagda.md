@@ -3,11 +3,11 @@
 open import Cat.Displayed.Cartesian.Weak
 open import Cat.Functor.Hom.Displayed
 open import Cat.Displayed.Cartesian
+open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Total.Op
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
-open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Functor.Hom
@@ -16,11 +16,11 @@ open import Cat.Prelude
 import Cat.Displayed.Cocartesian.Indexing
 import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Morphism.Duality
-import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Fibre.Reasoning
-import Cat.Functor.Reasoning
+import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
+import Cat.Functor.Reasoning
 import Cat.Reasoning as CR
 ```
 -->
