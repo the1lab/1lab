@@ -634,3 +634,40 @@ the comparison map derived from the aforementioned mate is invertible.
           (left-adjoint→cocartesian-lift E E-fib Lᵏ⊣k^*)
           (λ b' → subst is-invertible↓ mate-comparison (mate-inv b'))
 ```
+
+## Right Beck-Chevalley conditions
+
+Left Beck-Chevalley conditions require stability of cocartesian maps
+under cartesian maps. We can dualize this to obtain the **right Beck-Chevalley
+conditions**, which require that cartesian maps be stable under pushforward
+along cocartesian maps.
+
+
+<!--
+```agda
+module _
+  {o ℓ o' ℓ'}
+  {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
+  where
+  open Cat.Reasoning B
+  open Displayed E
+  open Cat.Displayed.Reasoning E
+```
+-->
+
+```agda
+  right-beck-chevalley
+    : {a b c d : Ob}
+    → (f : Hom b d) (g : Hom a b) (h : Hom c d) (k : Hom a c)
+    → (p : f ∘ g ≡ h ∘ k)
+    → Type _
+  right-beck-chevalley {a} {b} {c} {d} f g h k p =
+    ∀ {a' : Ob[ a ]} {b' : Ob[ b ]} {c' : Ob[ c ]} {d' : Ob[ d ]}
+    → {f' : Hom[ f ] b' d'} {g' : Hom[ g ] a' b'}
+    → {h' : Hom[ h ] c' d'} {k' : Hom[ k ] a' c'}
+    → f' ∘' g' ≡[ p ] h' ∘' k'
+    → is-cartesian E g g'
+    → is-cocartesian E f f' → is-cocartesian E k k'
+    → is-cartesian E h h'
+```
