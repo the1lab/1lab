@@ -17,7 +17,7 @@ module 1Lab.Path where
 ```agda
 open Prim.Extension public
 open Prim.Interval public
-open Prim.Kan public
+open Prim.Kan hiding (module hcomp-sys ; module comp-sys) public
 
 -- Slightly ugly type to demonstrate the algebraic properties of the
 -- interval.

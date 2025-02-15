@@ -30,7 +30,9 @@ hcomp
   : ∀ {ℓ} {A : Type ℓ} (φ : I)
   → (u : (i : I) → Partial (φ ∨ ~ i) A)
   → A
-hcomp φ u = X.primHComp (λ j .o → u j (leftIs1 φ (~ j) o)) (u i0 1=1)
+hcomp {A = A} φ u = X.primHComp sys (u i0 1=1) module hcomp-sys where
+  sys : ∀ j → Partial φ A
+  sys j (φ = i1) = u j 1=1
 
 ∂ : I → I
 ∂ i = i ∨ ~ i
@@ -39,7 +41,9 @@ comp
   : ∀ {ℓ : I → Level} (A : (i : I) → Type (ℓ i)) (φ : I)
   → (u : (i : I) → Partial (φ ∨ ~ i) (A i))
   → A i1
-comp A φ u = X.primComp A (λ j .o → u j (leftIs1 φ (~ j) o)) (u i0 1=1)
+comp A φ u = X.primHComp sys (transp (λ i → A i) i0 (u i0 1=1)) module comp-sys where
+  sys : ∀ j → Partial φ (A i1)
+  sys i (φ = i1) = transp (λ j → A (i ∨ j)) i (u i 1=1)
 ```
 
 We also define the type of dependent paths, and of non-dependent paths.
@@ -70,5 +74,8 @@ caseⁱ x return P of f = f x (λ i → x)
 
 {-# INLINE caseⁱ_of_ #-}
 {-# INLINE caseⁱ_return_of_ #-}
+
+{-# DISPLAY X.primHComp {_} {_} {φ} (hcomp-sys.sys _ u) _ = hcomp φ u #-}
+{-# DISPLAY X.primHComp {_} {_} {φ} (comp-sys.sys A _ u) _ = comp A φ u #-}
 ```
 -->

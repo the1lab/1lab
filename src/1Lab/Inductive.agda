@@ -1,8 +1,10 @@
 module 1Lab.Inductive where
 
 open import 1Lab.Reflection
+open import 1Lab.Univalence
 open import 1Lab.Equiv
 open import 1Lab.Type hiding (case_of_ ; case_return_of_)
+open import 1Lab.Path
 
 {-
 Automation for applying induction principles
@@ -110,10 +112,11 @@ instance
 
   {-# OVERLAPPING Inductive-≃ #-}
 
--- There are two distinct prefix entry points: rec! and elim!. The
--- difference is just in name, to provide a modicum of documentation. In
--- addition, they have an explicit function type, so that the refine
--- command will always introduce a question mark.
+-- For constructing (dependent) functions, there are two distinct prefix
+-- entry points: rec! and elim!. The difference is just in name, to
+-- provide a modicum of documentation. In addition, they have an
+-- explicit function type, so that the refine command will always
+-- introduce a question mark.
 
 rec! : ⦃ r : Inductive (A → B) ℓm ⦄ → r .methods → A → B
 rec! ⦃ r ⦄ = r .from
@@ -132,3 +135,30 @@ case x return P of f = elim! f x
 
 {-# INLINE case_of_        #-}
 {-# INLINE case_return_of_ #-}
+
+-- For path!, we insist on returning a PathP type. This helps infer the
+-- line.
+
+path! : ∀ {B : I → Type ℓ} {f g} ⦃ r : Inductive (PathP B f g) ℓm ⦄ → r .methods → PathP B f g
+path! ⦃ r ⦄ = r .from
+
+instance
+  Inductive-ua→
+    : ∀ {e : A ≃ B} {C : ∀ i → ua e i → Type ℓ} {f : ∀ a → C i0 a} {g : ∀ a → C i1 a}
+    → ⦃ _ : Inductive ((x : A) → PathP (λ i → C i (ua-inc e x i)) (f x) (g (e .fst x))) ℓm ⦄
+    → Inductive (PathP (λ i → (x : ua e i) → C i x) f g) ℓm
+  Inductive-ua→ ⦃ r ⦄ .methods = r .methods
+  Inductive-ua→ ⦃ r ⦄ .from f  = ua→ (λ a → r .from f a)
+
+  Inductive-ua→'
+    : ∀ {e : A ≃ B} {C : ∀ i → ua e i → Type ℓ} {f : ∀ {a} → C i0 a} {g : ∀ {a} → C i1 a}
+    → ⦃ _ : Inductive ((x : A) → PathP (λ i → C i (ua-inc e x i)) (f {x}) (g {e .fst x})) ℓm ⦄
+    → Inductive (PathP (λ i → {x : ua e i} → C i x) f g) ℓm
+  Inductive-ua→' ⦃ r ⦄ .methods = r .methods
+  Inductive-ua→' ⦃ r ⦄ .from f  = ua→' (λ a → r .from f a)
+
+  Inductive-ua-path
+    : ∀ {e : A ≃ B} {x : A} {y : B}
+    → Inductive (PathP (λ i → ua e i) x y) (level-of B)
+  Inductive-ua-path {e = e} {x} {y} .methods = e .fst x ≡ y
+  Inductive-ua-path .from = path→ua-pathp _

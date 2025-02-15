@@ -68,10 +68,7 @@ identifies $X \equiv T$.
   decode∘encode : ∀ b (p : base ≡ b) → decode b (encode b p) ≡ p
   decode∘encode b =
     J (λ b p → decode b (encode b p) ≡ p)
-      (Σ-prop-square (λ _ → squash) sq)
-    where
-      sq : ua (encode base refl) ≡ refl
-      sq = ap ua path→equiv-refl ∙ ua-id-equiv
+      (Σ-prop-square (λ _ → squash) (ua.ε refl))
 ```
 
 `Encode`{.Agda ident=encode} and `decode`{.Agda} are inverses by a
