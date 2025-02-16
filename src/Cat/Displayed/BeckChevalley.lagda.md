@@ -28,22 +28,25 @@ module Cat.Displayed.BeckChevalley where
 
 # Beck-Chevalley conditions
 
-Let $\cE \liesover \cB$ be a [[cartesian fibration]], which we shall view
-as a setting for some sort of logic or type theory. In particular, we
-shall view the corresponding [[base change]] functors $f^{*} : \cE_{Y} \to \cE_{X}$
-as an operation of substitution on predicates/types, and assume that $\cB$ has
-[[finite products]]. This setup leads to a tidy definition of existential quantifiers 
-as left adjoints $\exists_{Y} : \cE_{X \times Y} \to \cE{X}$ to the base changes along projections
-$\pi : X \times Y \to X$:
+Let $\cE \liesover \cB$ be a [[cartesian fibration]], which we shall
+view as a setting for some sort of logic or type theory. In particular,
+we shall view the corresponding [[base change]] functors $f^{*} :
+\cE_{Y} \to \cE_{X}$ as an operation of substitution on
+predicates/types, and assume that $\cB$ has [[finite products]]. This
+setup leads to a tidy definition of existential quantifiers as left
+adjoints $\exists_{Y} : \cE_{X \times Y} \to \cE{X}$ to the base changes
+along projections $\pi : X \times Y \to X$:
 
-- The introduction rule is given by the unit $\eta : \cE_{X}(P, \exists_{Y} (\pi^{*} P))$;
-- The elimination rule is given by the counit $\eps : \cE_{X \times Y}(\pi^{*}(\exists_{Y} P), P)$; and
+- The introduction rule is given by the unit
+    $\eta : \cE_{X}(P, \exists_{Y} (\pi^{*} P))$;
+- The elimination rule is given by the counit
+    $\eps : \cE_{X \times Y}(\pi^{*}(\exists_{Y} P), P)$; and
 - The $\beta$ and $\eta$ rules are given by the zig-zag equations.
 
-This story is quite elegant, but there is a missing piece: how do substitutions
-interact with $\exists$, or, in categorical terms, how do base change functors
-commute with their left adjoints? In particular, consider the following
-diagram:
+This story is quite elegant, but there is a missing piece: how do
+substitutions interact with $\exists$, or, in categorical terms, how do
+base change functors commute with their left adjoints? In particular,
+consider the following diagram:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -57,7 +60,8 @@ diagram:
 \end{tikzcd}
 ~~~
 
-Ideally, we'd like $\sigma^*({\exists_{X} P}) \iso \exists_{X}((\sigma \times \id)^{*} P)$,
+Ideally, we'd like
+$\sigma^*({\exists_{X} P}) \iso \exists_{X}((\sigma \times \id)^{*} P)$,
 corresponding to the usual substitution rule for quantifiers. Somewhat
 surprisingly, this does not always hold; we always have a map
 $$\exists_{X}((\sigma \times \id)^{*} P) \to \sigma^*({\exists_{X} P})$$
@@ -69,18 +73,19 @@ under substitution.
 
 ## Left Beck-Chevalley conditions
 
-A **left Beck-Chevalley condition** characterises well-behaved left adjoints
-to base change. Typically, this is done by appealing to properties of
-base change, but we opt to use a a more local definition in
-terms of [[cartesian|cartesian map]] and [[cocartesian|cocartesian map]]
-maps. This has the benefit of working in displayed categories that may
-be missing some cartesian maps.
+A **left Beck-Chevalley condition** characterises well-behaved left
+adjoints to base change. Typically, this is done by appealing to
+properties of base change, but we opt to use a a more local definition
+in terms of [[cartesian|cartesian map]] and [[cocartesian|cocartesian
+map]] maps. This has the benefit of working in displayed categories that
+may be missing some cartesian maps.
 
 :::{.definition #left-beck-chevalley-condition}
-Explicitly, a square $fg = hk$ in $\cB$ satisfies the left Beck-Chevalley
-condition if for every square $f'g' = h'k'$ over $fg = hk$, if $g'$ and
-$h'$ are cartesian and $f'$ is cocartesian, then $k'$ is cocartesian.
-This is best understood diagrammatically, so consider the diagram below:
+Explicitly, a square $fg = hk$ in $\cB$ satisfies the left
+Beck-Chevalley condition if for every square $f'g' = h'k'$ over $fg =
+hk$, if $g'$ and $h'$ are cartesian and $f'$ is cocartesian, then $k'$
+is cocartesian.  This is best understood diagrammatically, so consider
+the diagram below:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -104,8 +109,9 @@ This is best understood diagrammatically, so consider the diagram below:
 ~~~
 
 If all the morphisms marked in red are (co)cartesian, then the morphism
-marked in blue must be cocartesian. To put things more succinctly, cocartesian
-morphisms can be pulled back along pairs of cartesian morphisms.
+marked in blue must be cocartesian. To put things more succinctly,
+cocartesian morphisms can be pulled back along pairs of cartesian
+morphisms.
 :::
 
 
@@ -139,9 +145,10 @@ module _
 
 ## Beck-Chevalley and left adjoints to base change
 
-This may seem somewhat far removed from the intuition we provided earlier,
-but it turns out that the two notions are equivalent! Proving this is
-a bit involved though, so we will need some intermediate lemmas first.
+This may seem somewhat far removed from the intuition we provided
+earlier, but it turns out that the two notions are equivalent! Proving
+this is a bit involved though, so we will need some intermediate lemmas
+first.
 
 <!--
 ```agda
@@ -167,9 +174,9 @@ module _
 ```
 -->
 
-In particular, let us consider a commuting square of morphisms $fg = hk$ in
-$\cB$ such that we have cocartesian lifts over $f, k$, and cartesian lifts
-over $g, h$, as in the following diagram.
+In particular, let us consider a commuting square of morphisms $fg = hk$
+in $\cB$ such that we have cocartesian lifts over $f, k$, and cartesian
+lifts over $g, h$, as in the following diagram.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -212,9 +219,9 @@ over $g, h$, as in the following diagram.
 ```
 -->
 
-Now, fix some $B' : \cE_{B}$. We can form the following immortal pentagonal
-diagram by repeatedly performing taking lifts of $B'$ and applying various
-universal properties.
+Now, fix some $B' : \cE_{B}$. We can form the following immortal
+pentagonal diagram by repeatedly performing taking lifts of $B'$ and
+applying various universal properties.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -267,9 +274,9 @@ universal properties.
 ```
 
 The immortal pentagon diagram above *almost* lets us "interpolate" $B'$
-around the entire square in the base, but there is a conspicuous gap between $h^*f_!(B')$
-and $k_!g^*(B')$; this is precisely the missing map that the Beck-Chevalley condition
-ought to give us.
+around the entire square in the base, but there is a conspicuous gap
+between $h^*f_!(B')$ and $k_!g^*(B')$; this is precisely the missing map
+that the Beck-Chevalley condition ought to give us.
 
 ```agda
     left-beck-chevalley→comparison-invertible
@@ -278,8 +285,8 @@ ought to give us.
 ```
 
 First, observe that the map $(\iota \circ \pi)^{*}$ fits into a square
-with 2 cartesian sides and 1 cocartesian side; so can apply Beck-Chevalley
-to deduce that it is cocartesian.
+with 2 cartesian sides and 1 cocartesian side; so can apply
+Beck-Chevalley to deduce that it is cocartesian.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -318,20 +325,21 @@ to deduce that it is cocartesian.
         module h^*-interp = is-cocartesian h^*-interp-cocartesian
 ```
 
-Notably, this lets us factor the map $\iota : \cE_{k}(g^{*}(B'),k_{!}g^{*}(B'))$
-to get a vertical map $\cE(h^{*}f_{!}(B'), k_{!}g^{*}(B'))$ that fits neatly
-into the gap in the pentagon.
+Notably, this lets us factor the map $\iota :
+\cE_{k}(g^{*}(B'),k_{!}g^{*}(B'))$ to get a vertical map
+$\cE(h^{*}f_{!}(B'), k_{!}g^{*}(B'))$ that fits neatly into the gap in
+the pentagon.
 
 ```agda
         comparison⁻¹ : Hom[ id ] (h.^* (f.^! b')) (k.^! (g.^* b'))
         comparison⁻¹ = h^*-interp.universalv (k.ι (g.^* b'))
 ```
 
-We can show that our putative inverse is a left inverse of the comparison
-map by appealing to uniqueness of both maps into and maps out of $h^*f_!(B')$,
-as it is simultaneously a cartesian and a cocartesian lift. This
-yields the following hexagonal goal, which we can show commutes by a short
-diagram chase.
+We can show that our putative inverse is a left inverse of the
+comparison map by appealing to uniqueness of both maps into and maps out
+of $h^*f_!(B')$, as it is simultaneously a cartesian and a cocartesian
+lift. This yields the following hexagonal goal, which we can show
+commutes by a short diagram chase.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -360,9 +368,9 @@ diagram chase.
             f.ι b' ∘' g.π b'                                                         ∎
 ```
 
-The right inverse is a bit trickier. We start by appealing to the uniqueness
-of maps into the cocartesian lift $k_{!}g^{*}(B')$, which reduces the
-goal to the following diagram.
+The right inverse is a bit trickier. We start by appealing to the
+uniqueness of maps into the cocartesian lift $k_{!}g^{*}(B')$, which
+reduces the goal to the following diagram.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -384,9 +392,9 @@ This means that we have:
 
 $$((\iota \circ \pi)_{!})^{*} \circ \iota = ((\iota \circ \pi)^{*})_{!} \circ \iota = (\iota \circ \pi)^{*}$$
 
-This reduces the problem to showing that $\iota_{!} \circ (\iota \circ \pi)^{*} = \iota$,
-which follows immediately from commutativity of $(\iota \circ \pi)^{*}$ as
-a cocartesian map.
+This reduces the problem to showing that $\iota_{!} \circ (\iota \circ
+\pi)^{*} = \iota$, which follows immediately from commutativity of
+$(\iota \circ \pi)^{*}$ as a cocartesian map.
 
 ```agda
         left-beck-invr : comparison⁻¹ ∘' h^*k^!-comparison b' ≡[ idl id ] id'
@@ -398,13 +406,14 @@ a cocartesian map.
           k.ι (g.^* b')                                            ∎
 ```
 
-We shall now show the converse of our previous statement: if
-the comparison map from earlier is invertible, then the Beck-Chevalley
-property holds for our square. At a first glance, this seems a bit tricky:
-the Beck-Chevalley property talks about an arbitrary square of (co)cartesian
-morphisms, but the comparison map only refers to a *particular* square.
-Luckily, we can reduce the Beck-Chevalley property to checking if the
-interpolation map $(\iota \circ \pi)^{*}$ is cocartesian.
+We shall now show the converse of our previous statement: if the
+comparison map from earlier is invertible, then the Beck-Chevalley
+property holds for our square. At a first glance, this seems a bit
+tricky: the Beck-Chevalley property talks about an arbitrary square of
+(co)cartesian morphisms, but the comparison map only refers to a
+*particular* square.  Luckily, we can reduce the Beck-Chevalley property
+to checking if the interpolation map $(\iota \circ \pi)^{*}$ is
+cocartesian.
 
 ```agda
     interp-cocartesian→left-beck-chevalley
@@ -413,13 +422,15 @@ interpolation map $(\iota \circ \pi)^{*}$ is cocartesian.
 ```
 
 <details>
-<summary>The full proof is rather tedious, so we shall only present a
-short sketch. The key fact we shall use is that the (co)domains of (co)cartesian
-morphisms over the same map in the base are vertically isomorphic. This lets us
-connect an arbitrary square of (co)cartesian morphisms to the square formed
-via lifts with a bunch of vertical isos, which lets us transfer the Beck-Chevalley
-property.
+<summary>
+The full proof is rather tedious, so we shall only present a short
+sketch. The key fact we shall use is that the (co)domains of
+(co)cartesian morphisms over the same map in the base are vertically
+isomorphic. This lets us connect an arbitrary square of (co)cartesian
+morphisms to the square formed via lifts with a bunch of vertical isos,
+which lets us transfer the Beck-Chevalley property.
 </summary>
+
 ```agda
     interp-cocartesian→left-beck-chevalley h^*interp-cocart {a'} {b'} {c'} {d'} {f'} {g'} {h'} {k'} q f'-cocart g'-cart h'-cart =
       coe0→1 (λ i → is-cocartesian E ((cancell (idl _) ∙ idr _) i) (square i))
@@ -469,12 +480,12 @@ property.
 ```
 </details>
 
-On to the converse! Suppose that the comparison map
-is invertible, and denote the inverse $\alpha$. By our previous lemma,
-it suffices to show that the interpolant $(\iota \circ \pi)^{*}$ is cocartesian.
-Moreover, cocartesian maps are stable under precomposition of isomorphisms,
-so it suffices to show that $\alpha \circ (\iota \circ \pi)^{*}$ is cocartesian.
-A short calculation reveals that:
+On to the converse! Suppose that the comparison map is invertible, and
+denote the inverse $\alpha$. By our previous lemma, it suffices to show
+that the interpolant $(\iota \circ \pi)^{*}$ is cocartesian.  Moreover,
+cocartesian maps are stable under precomposition of isomorphisms, so it
+suffices to show that $\alpha \circ (\iota \circ \pi)^{*}$ is
+cocartesian.  A short calculation reveals that:
 
 $$
 \begin{align*}
@@ -485,8 +496,8 @@ $$
 \end{align*}
 $$
 
-Finally, since $((\iota \circ\ \pi)_{!})^{*}$ is monic, we have $\alpha \circ (\iota \circ \pi)^{*} = \iota$,
-which is cocartesian!
+Finally, since $((\iota \circ\ \pi)_{!})^{*}$ is monic, we have $\alpha
+\circ (\iota \circ \pi)^{*} = \iota$, which is cocartesian!
 
 ```agda
     comparison-invertible→left-beck-chevalley
@@ -513,11 +524,12 @@ which is cocartesian!
 ```
 
 Now that we have our arsenal of lemmas, we shall tackle our original
-question: how are adjoints to base change related to our formulation
-of Beck-Chevalley? To start, suppose that we have a commutative square
-$fg = hk$, and left adjoints $f_{!}$ and $k_{!}$ to base change along $f$ and $k$,
-respectively. Moreover, recall that [cocartesian lifts are left adjoints to base change],
-so we have cocartesian lifts along $f$ and $k$.
+question: how are adjoints to base change related to our formulation of
+Beck-Chevalley? To start, suppose that we have a commutative square $fg
+= hk$, and left adjoints $f_{!}$ and $k_{!}$ to base change along $f$
+and $k$, respectively. Moreover, recall that [cocartesian lifts are left
+adjoints to base change], so we have cocartesian lifts along $f$ and
+$k$.
 
 [cocartesian lifts are left adjoints to base change]: Cat.Displayed.Cocartesian.Weak.html#weak-cocartesian-morphisms-as-left-adjoints-to-base-change
 
@@ -557,9 +569,9 @@ so we have cocartesian lifts along $f$ and $k$.
 ```
 -->
 
-The commutative square $fg = hk$ lifts to a natural iso $g^{*}f^{*} \iso k^{*}f^{*}$,
-which yields a natural transformation $k_{!}g^{*} \to h^{*}f_{!}$ via
-the calculus of [[mates]].
+The commutative square $fg = hk$ lifts to a natural iso $g^{*}f^{*} \iso
+k^{*}f^{*}$, which yields a natural transformation $k_{!}g^{*} \to
+h^{*}f_{!}$ via the calculus of [[mates]].
 
 ```agda
       private
@@ -570,8 +582,9 @@ the calculus of [[mates]].
             (Isoⁿ.to (base-change-square-ni E E-fib p)) .η b'
 ```
 
-Moreover, the comparison map we get from the mate of $g^{*}f^{*} \iso k^{*}f^{*}$
-is the same comparison map we defined in the previous section.
+Moreover, the comparison map we get from the mate of $g^{*}f^{*} \iso
+k^{*}f^{*}$ is the same comparison map we defined in the previous
+section.
 
 ```agda
         opaque
@@ -582,7 +595,8 @@ is the same comparison map we defined in the previous section.
 ```
 
 <details>
-<summary>This essentially *has* to hold, as there are so many universal
+<summary>
+This essentially *has* to hold, as there are so many universal
 properties floating around. Unfortunately, the proof is a bit more
 tedious than one would hope, so we omit the details.
 </summary>
@@ -601,9 +615,10 @@ tedious than one would hope, so we omit the details.
 ```
 </details>
 
-We can combine this with our previous results about squares of (co)cartesian
-lifts to deduce that the Beck-Chevalley condition holds if and only if
-the comparison map derived from the aforementioned mate is invertible.
+We can combine this with our previous results about squares of
+(co)cartesian lifts to deduce that the Beck-Chevalley condition holds if
+and only if the comparison map derived from the aforementioned mate is
+invertible.
 
 ```agda
       left-beck-chevalley→mate-invertible
@@ -633,9 +648,10 @@ the comparison map derived from the aforementioned mate is invertible.
 ## Right Beck-Chevalley conditions
 
 Left Beck-Chevalley conditions require stability of cocartesian maps
-under cartesian maps. We can dualize this to obtain the **right Beck-Chevalley
-conditions**, which ensures stability of cartesian maps under pushforward
-along cocartesian maps. As before, this is best understood diagrammatically:
+under cartesian maps. We can dualize this to obtain the **right
+Beck-Chevalley conditions**, which ensures stability of cartesian maps
+under pushforward along cocartesian maps. As before, this is best
+understood diagrammatically:
 
 ~~~{.quiver}
 \begin{tikzcd}

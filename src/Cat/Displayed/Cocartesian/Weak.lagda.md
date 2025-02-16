@@ -630,14 +630,13 @@ fibration+weak-cocartesian-lift→cocartesian-lift {f = f} {x' = x'} fib wcocart
 
 # Weak cocartesian morphisms as left adjoints to base change
 
-If $\cE$ is a [[cocartesian fibration]], we can define [[cobase change]]
-functors $f_! : \cE_{X} \to \cE_{Y}$ for every $f : X \to Y$. However, the
-requirement that $\cE$ is cocartesian is overly strong[^1]; all we need to define
-a base change functor $f_! : \cE_{X} \to \cE_{Y}$ is a family of *weak*
-cocartesian lifts of $f$.
+[[Cobase change]] functors $f_! : \cE_X \to \cE_Y$ over a map $f : X \to
+Y$ are most naturally[^1] defined when $\cE$ is a [[cocartesian fibration]],
+but they can be constructed as soon as $f$ admits a family of *weak*
+cocartesian lifts.
 
 [^1]: Note that these functors are only well-behaved if $\cE$ is in fact
-cocartesian, so the loss of generality is minimal in the long run.
+cocartesian, so this is only a slight generalisation.
 
 ```agda
 weak-cocartesian-lift→cobase-change
@@ -647,10 +646,11 @@ weak-cocartesian-lift→cobase-change
   → Functor (Fibre ℰ x) (Fibre ℰ y)
 ```
 
-The reason that weak cocartesian morphisms suffice is that we only need
-to consider vertical structure when performing cobase change, so the weaker
-universal property is enough. This is reflected in the action on morphisms,
-which is identical to the definition of cobase change for a cocartesian fibration.
+The reason that weak cocartesian lifts suffice is that we only need to
+consider vertical structure when performing cobase change, so the weaker
+universal property is enough. This is reflected in the action on
+morphisms, which is identical to the definition of cobase change for a
+cocartesian fibration.
 
 ```agda
 weak-cocartesian-lift→cobase-change {x = x} {y = y} f wcocart = f-cobase-change where
@@ -691,10 +691,10 @@ unique, though this is rather tedious to show.
 ```
 </details>
 
-The existence of cobase change functors also provides an alternative universal
-property for weak cocartesian lifts when $\cE$ is a [[cartesian fibration]];
-namely, a family of cocartesian lifts is equivalent to the existence of a
-[[left adjoint]] to a [[base change]] functor.
+The existence of cobase change functors also provides an alternative
+universal property for weak cocartesian lifts when $\cE$ is a
+[[cartesian fibration]], namely through the existence of [[left
+adjoints]] to each [[base change]] functor.
 
 ```agda
 module _ (fib : Cartesian-fibration ℰ) where
@@ -715,11 +715,12 @@ module _ (fib : Cartesian-fibration ℰ) where
     → weak-cocartesian-lift→cobase-change f f^! ⊣ base-change f
 ```
 
-We shall start by showing a left adjoint $f^! : \cE_{x} \to \cE_{y}$ to base change along $f$
-induces cocartesian lifts for every $x'$. The object $f_{!}(X')$ is the only
-possible candidate for our lift, and we can construct a map $X' \to f_{!}(X')$
-by composing the unit $\eta_{X'} : X' \to f^{*}f_{!}(X')$ with the projection
-out of $f^{*}f_{!}(X')$.
+We start by assuming that base change $f^* : \cE_Y \to \cE_X$ along each
+$f : X \to Y$ admits a left adjoint $f_!$, and showing that for each $X'
+\liesover X$, the object $f_!(X')$ is the codomain of [[cocartesian
+morphism]] over $f$. This map is obtained as the composite of the unit
+$\eta : X' \to f^*f_!(X')$ with the cartesian projection out of
+this latter object.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -727,10 +728,10 @@ out of $f^{*}f_{!}(X')$.
   \\
   & X && Y
   \arrow["{\eta_{X'}}", from=1-1, to=1-2]
-  \arrow[from=1-1, to=3-2]
+  \arrow[lies over, from=1-1, to=3-2]
   \arrow["\pi", from=1-2, to=1-4]
-  \arrow[from=1-2, to=3-2]
-  \arrow[from=1-4, to=3-4]
+  \arrow[lies over, from=1-2, to=3-2]
+  \arrow[lies over, from=1-4, to=3-4]
   \arrow["f", from=3-2, to=3-4]
 \end{tikzcd}
 ~~~
@@ -750,13 +751,13 @@ out of $f^{*}f_{!}(X')$.
     f-lift .lifting = ι!
 ```
 
-We can prove that our putative lift $\iota = \pi \circ \eta_{X'}$ is weakly
-cocartesian via a nice equivalence chase. First, recall that a map is weakly
-cocartesian if and only if precomposition with a vertical map is an [[equivalence]].
-Moreover, the universal map of a cartesian fibration is also an equivalence,
-so by 2-out-of-3 it suffices to show that the function that takes a vertical
-map $f' : f_{!}(X') \to Y'$ to the universal factorization indicated in the
-following diagram is an equivalence.
+We can prove that our putative lift $\iota = \pi \circ \eta_{X'}$ is
+weakly cocartesian via a nice equivalence chase. First, recall that $f'$
+is weakly cocartesian iff. precomposition $- \circ f$ induces an
+[[equivalence]] on vertical maps. Moreover, the universal maps into a
+cartesian lift also assemble into an equivalence, so by 2-out-of-3 it
+suffices to show that the map taking a vertical $f' : f_!(X') \to Y'$ to
+the dashed composite in the diagram
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -775,8 +776,9 @@ following diagram is an equivalence.
 \end{tikzcd}
 ~~~
 
-However, this is just the [[left adjunct]] of the adjoint up to some
-transport gunk, which is an equivalence!
+is an equivalence. However, this map sends each $f'$ to its [[left
+adjunct]] under the adjunction $f_! \dashv f^*$ (up to transports), and
+assigning adjuncts is an equivalence!
 
 ```agda
     f-lift .weak-cocartesian =
@@ -795,15 +797,18 @@ transport gunk, which is an equivalence!
             hom[ idl f ] (f' ∘' ι!)                                    ∎
 ```
 
-The reverse direction follows from some more equivalence yoga. First,
-recall that we can present [[adjoints as hom isomorphisms]]; this means that it
-suffices to construct an equivalence between $f_{!}(X) \to y$ and
-$X \to f^*{Y}$. Moreover, we already have equivalences that characterise
-these two types: these are just the universal properties of weak cocartesian and
-cartesian maps, resp.
+The converse follows from some more equivalence yoga. First, recall that
+we can show $f_! \dashv f^*$ by exhibiting a natural isomorphism
+$$\hom_{\cE_X}(X, f^*Y) \cong \hom_{\cE_X}(f_!(X), Y)$$. But, by the
+universal properties of cartesian and cocartesian maps, respectively,
+these types are both equivalent to maps $X \to Y$ over $f$.
 
 ```agda
   weak-cocartesian-lift→left-adjoint {x = x} {y = y} f wcocart = f-cobase-change-adj where
+```
+
+<!--
+```agda
     module wcocart (x' : Ob[ x ]) where
       open Weak-cocartesian-lift (wcocart x')
         renaming (y' to f^!_; lifting to ι!)
@@ -812,7 +817,10 @@ cartesian maps, resp.
     open wcocart
     open _=>_
     open _⊣_
+```
+-->
 
+```agda
     f-cobase-change-adj : weak-cocartesian-lift→cobase-change f wcocart ⊣ base-change f
     f-cobase-change-adj =
       hom-iso→adjoints
@@ -850,6 +858,7 @@ Note that we can strengthen this result somewhat: every weak cocartesian
 lift in a fibration is in fact cocartesian, so left adjoints to base
 change give a family of cocartesian lifts.
 
+<!--
 ```agda
   module _
     {x y} {f : Hom x y}
@@ -859,26 +868,31 @@ change give a family of cocartesian lifts.
     private
       module f^! = Cat.Functor.Reasoning f^!
       open _⊣_ f^!⊣f^*
+```
+-->
 
+```agda
     left-adjoint→cocartesian-lift : ∀ x' → Cocartesian-lift f x'
     left-adjoint→cocartesian-lift x' =
       fibration+weak-cocartesian-lift→cocartesian-lift
-        fib
-        (left-adjoint→weak-cocartesian-lift f f^! f^!⊣f^* x')
+        fib (left-adjoint→weak-cocartesian-lift f f^! f^!⊣f^* x')
 ```
 
 Moreover, these choices of lifts are natural!
 
+<!--
 ```agda
     private
       module f (x' : Ob[ x ]) where
         open Cocartesian-lift (left-adjoint→cocartesian-lift x')
           renaming (y' to ^!_; lifting to ι)
           public
+```
+-->
 
+```agda
     left-adjoint→cocartesian-lift-natural
-      : ∀ {x' x''}
-      → (h' : Hom[ id ] x' x'')
+      : ∀ {x' x''} (h' : Hom[ id ] x' x'')
       → f^!.₁ h' ∘' f.ι x' ≡[ id-comm-sym ] f.ι x'' ∘' h'
 ```
 
