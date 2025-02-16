@@ -75,7 +75,7 @@ caseⁱ x return P of f = f x (λ i → x)
 {-# INLINE caseⁱ_of_ #-}
 {-# INLINE caseⁱ_return_of_ #-}
 
-{-# DISPLAY X.primHComp {_} {_} {φ} (hcomp-sys.sys _ u) _ = hcomp φ u #-}
+{-# DISPLAY X.primHComp {ℓ} {A} {φ} (hcomp-sys.sys _ u) _ = hcomp {ℓ} {A} φ u #-}
 {-# DISPLAY X.primHComp {_} {_} {φ} (comp-sys.sys A _ u) _ = comp A φ u #-}
 ```
 -->
