@@ -79,19 +79,19 @@ module _ {A B : Type ℓ} {P : A → Type ℓ'} {Q : B → Type ℓ'} (e : A ≃
 ```
 
 We can then use the constructor for `Glue`{.Agda} types to put together
-a proof that a section of $P$ is identical to a section of $B$ when it
+a proof that a section of $P$ is identical to a section of $Q$ when it
 commutes with the given equivalences.
 
 ```agda
   ua-over-pathp
-    : {f : ∀ x → P x} {g : ∀ x → Q x}
-    → ((a : A) → e' a _ refl .fst (f a) ≡ g (e .fst a))
-    → PathP (λ i → (x : ua e i) → ua-over i x) f g
-  ua-over-pathp {g = g} h i x = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS
+    : ∀ {x : A} {y : B} (u : PathP (λ i → ua e i) x y) {x' : P x} {y' : Q y}
+    → e' x y (ua-pathp→path e u) .fst x' ≡ y'
+    → PathP (λ i → ua-over i (u i)) x' y'
+  ua-over-pathp u {x'} {y'} p i = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _}) (inS
     (hcomp (∂ i) λ where
-      k (k = i0) → g (unglue x)
-      k (i = i0) → h x (~ k)
-      k (i = i1) → g x))
+      j (j = i0) → e' _ _ (λ k → unglue (u (i ∧ k))) .fst x'
+      j (i = i0) → e' _ _ refl .fst x'
+      j (i = i1) → p j))
 ```
 
 We can also *destruct* a `Glue`{.Agda} type, which gives us a converse
@@ -99,8 +99,11 @@ to the above.
 
 ```agda
   pathp-ua-over
-    : {f : ∀ x → P x} {g : ∀ x → Q x}
-    → PathP (λ i → (x : ua e i) → ua-over i x) f g
-    → ∀ x → e' x _ refl .fst (f x) ≡ g (e .fst x)
-  pathp-ua-over p x i = unglue (p i (ua-inc e x i))
+    : ∀ {x : A} {y : B} (u : PathP (λ i → ua e i) x y) {x' : P x} {y' : Q y}
+    → PathP (λ i → ua-over i (u i)) x' y'
+    → e' x y (ua-pathp→path e u) .fst x' ≡ y'
+  pathp-ua-over u {x'} {y'} p i = comp (λ j → Q (unglue (u (~ i ∨ j)))) (∂ i) λ where
+    j (j = i0) → e' _ _ (λ k → unglue (u (~ i ∧ k))) .fst x'
+    j (i = i0) → e' _ _ (λ j → unglue (u j)) .fst x'
+    j (i = i1) → unglue (p j)
 ```
