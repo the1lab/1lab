@@ -28,7 +28,7 @@ private variable
 # Univalence for type families
 
 Any [[equivalence]] $e : A \simeq B$ lets us compare type families $P
-\liesover A$ and $Q \liesover Q$, by forming the type of [[fibrewise
+\liesover A$ and $Q \liesover B$, by forming the type of [[fibrewise
 equivalences|equivalence over]] $e$ between $P$ and $Q$. A useful
 univalence-type result in this setting would be to show that equivalent
 type families are actually identical (over the path induced by $e$),
