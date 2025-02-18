@@ -35,6 +35,7 @@ open import 1Lab.Biimp public
 open import 1Lab.Function.Surjection public
 
 open import 1Lab.Univalence public
+
 open import 1Lab.Univalence.SIP
   renaming (_≃[_]_ to _≃[_]s_)
   public
@@ -53,6 +54,7 @@ open import 1Lab.Reflection.Record
   public
 open import 1Lab.Reflection.HLevel public
 open import 1Lab.Reflection.Regularity public
+open import 1Lab.Reflection.Univalence public
 
 open import 1Lab.Resizing public
 

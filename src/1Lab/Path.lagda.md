@@ -17,7 +17,7 @@ module 1Lab.Path where
 ```agda
 open Prim.Extension public
 open Prim.Interval public
-open Prim.Kan public
+open Prim.Kan hiding (module hcomp-sys ; module comp-sys) public
 
 -- Slightly ugly type to demonstrate the algebraic properties of the
 -- interval.
@@ -1467,11 +1467,18 @@ face for the [square] at the start of this section.
 _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
         → w ≡ x → x ≡ y → y ≡ z
         → w ≡ z
-(p ·· q ·· r) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → r j
-  j (j = i0) → q i
+(p ·· q ·· r) i = hcomp (∂ i) sys module ··-sys where
+  sys : ∀ j → Partial (∂ i ∨ ~ j) _
+  sys j (i = i0) = p (~ j)
+  sys j (i = i1) = r j
+  sys j (j = i0) = q i
 ```
+
+<!--
+```agda
+{-# DISPLAY hcomp _ (··-sys.sys {ℓ} {A} {w} {x} {y} {z} p q r i) = _··_··_ {ℓ} {A} {w} {x} {y} {z} p q r i #-}
+```
+-->
 
 Since it will be useful later, we also give an explicit name for the
 *filler* of the double composition square. Since `Square`{.Agda}

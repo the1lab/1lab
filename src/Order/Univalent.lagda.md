@@ -89,7 +89,7 @@ equivalences. And since the missing left-hand-side is precisely the
 statement "$f$ is an order-embedding", we can:
 
 ```agda
-  order i x y = Glue (unglue (∂ i) x Q.≤ unglue (∂ i) y) λ where
+  order i x y = Glue (unglue x Q.≤ unglue y) λ where
     (i = i0) → x P.≤ y , order-iso-is-order-embedding f
     (i = i1) → x Q.≤ y , _ , id-equiv
 ```
