@@ -169,7 +169,7 @@ product [] = 1
 product (x ∷ xs) = x * product xs
 
 reverse : List A → List A
-reverse = go [] where
+reverse {A = A} = go [] module reverse where
   go : List A → List A → List A
   go acc [] = acc
   go acc (x ∷ xs) = go (x ∷ acc) xs
