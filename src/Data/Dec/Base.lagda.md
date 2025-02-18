@@ -52,6 +52,10 @@ recover ⦃ no ¬x ⦄ x = absurd (¬x x)
 dec→dne : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → ¬ ¬ A → A
 dec→dne ⦃ yes x ⦄ _   = x
 dec→dne ⦃ no ¬x ⦄ ¬¬x = absurd (¬¬x ¬x)
+
+contrapose : ∀ {ℓ ℓ'} {Q : Type ℓ} {P : Type ℓ'} ⦃ _ : Dec Q ⦄ → (¬ Q → ¬ P) → P → Q
+contrapose {P = _} ⦃ yes q ⦄ f p = q
+contrapose {P = _} ⦃ no ¬q ⦄ f p = absurd (f ¬q p)
 ```
 -->
 
