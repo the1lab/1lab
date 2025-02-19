@@ -24,13 +24,11 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 # Comonads {defines="comonad"}
 
-A **comonad on a category** $\cC$ is dual to a [monad] on $\cC$; instead
+A **comonad on a category** $\cC$ is dual to a [[monad]] on $\cC$; instead
 of a unit $\Id \To M$ and multiplication $(M \circ M) \To M$, we have a
 counit $W \To \Id$ and comultiplication $W \To (W \circ W)$. More
 generally, we can define what it means to equip a *fixed* functor $W$
 with the structure of a comonad.
-
-[monad]: Cat.Diagram.Monad.html
 
 ```agda
   record Comonad-on (W : Functor C C) : Type (o ⊔ ℓ) where
