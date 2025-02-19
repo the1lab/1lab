@@ -379,7 +379,7 @@ of is a projection $\Gamma.A \to \Gamma$.
     sub-proj f
 ```
 
-## Comprehension structures as comonads
+## Comprehension structures as comonads {defines="comprehension-comonad"}
 
 Comprehension structures on fibrations $\cE$ induce [comonads] on the
 [[total category]] of $\cE$. These comonads are particularly nice: all
