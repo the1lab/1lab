@@ -24,7 +24,7 @@ open is-iso
 ```
 -->
 
-# The "parallel arrows" category {defines="parallel-arrows"}
+# The "parallel arrows" category {defines="parallel-arrows walking-parallel-arrows"}
 
 The parallel arrows category is the category with two objects, and two
 parallel arrows between them. It is the shape of [[equaliser]] and
