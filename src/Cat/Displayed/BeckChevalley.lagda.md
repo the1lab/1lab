@@ -220,7 +220,7 @@ lifts over $g, h$, as in the following diagram.
 -->
 
 Now, fix some $B' : \cE_{B}$. We can form the following immortal
-pentagonal diagram by repeatedly performing taking lifts of $B'$ and
+pentagonal diagram by repeatedly taking lifts of $B'$ and
 applying various universal properties.
 
 ~~~{.quiver}
@@ -231,8 +231,8 @@ applying various universal properties.
   && {B'} \\
   A &&&& D \\
   && B
-  \arrow["{((\iota \circ \pi)_{!})^*}"{description}, curve={height=12pt}, to=1-4, from=1-2]
-  \arrow["{((\iota \circ \pi)^{*})_!}"{description}, curve={height=-12pt}, to=1-4, from=1-2]
+  \arrow["{((\iota \circ \pi)_{!})^*}"{description}, curve={height=12pt}, to=1-2, from=1-4]
+  \arrow["{((\iota \circ \pi)^{*})_!}"{description}, curve={height=-12pt}, to=1-2, from=1-4]
   \arrow[lies over, from=1-2, to=3-2]
   \arrow[lies over, from=1-4, to=3-4]
   \arrow["{(\iota \circ \pi)_{!}}"{description}, from=1-4, to=3-5]
@@ -285,7 +285,7 @@ that the Beck-Chevalley condition ought to give us.
 ```
 
 First, observe that the map $(\iota \circ \pi)^{*}$ fits into a square
-with 2 cartesian sides and 1 cocartesian side; so can apply
+with 2 cartesian sides and 1 cocartesian side; so we can apply
 Beck-Chevalley to deduce that it is cocartesian.
 
 ~~~{.quiver}

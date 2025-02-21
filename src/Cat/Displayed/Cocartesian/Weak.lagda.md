@@ -717,14 +717,14 @@ module _ (fib : Cartesian-fibration ℰ) where
 
 We start by assuming that base change $f^* : \cE_Y \to \cE_X$ along each
 $f : X \to Y$ admits a left adjoint $f_!$, and showing that for each $X'
-\liesover X$, the object $f_!(X')$ is the codomain of [[cocartesian
+\liesover X$, the object $f_!(X')$ is the codomain of a [[cocartesian
 morphism]] over $f$. This map is obtained as the composite of the unit
 $\eta : X' \to f^*f_!(X')$ with the cartesian projection out of
 this latter object.
 
 ~~~{.quiver}
 \begin{tikzcd}
-  {X'} & {f^*f_!(X')} && {f_!(X)} \\
+  {X'} & {f^*f_!(X')} && {f_!(X')} \\
   \\
   & X && Y
   \arrow["{\eta_{X'}}", from=1-1, to=1-2]
@@ -752,31 +752,35 @@ this latter object.
 ```
 
 We can prove that our putative lift $\iota = \pi \circ \eta_{X'}$ is
-weakly cocartesian via a nice equivalence chase. First, recall that $f'$
-is weakly cocartesian iff. precomposition $- \circ f$ induces an
+weakly cocartesian via a nice equivalence chase. First, recall that a morphism
+$f'$ is weakly cocartesian iff. precomposition $- \circ f'$ induces an
 [[equivalence]] on vertical maps. Moreover, the universal maps into a
 cartesian lift also assemble into an equivalence, so by 2-out-of-3 it
-suffices to show that the map taking a vertical $f' : f_!(X') \to Y'$ to
-the dashed composite in the diagram
+suffices to show that the map taking a vertical $h' : f_!(X') \to Y'$ to
+the dashed morphism in the diagram
 
 ~~~{.quiver}
 \begin{tikzcd}
-  {X'} \\
-  & {f^*f_!(X')} && {f_{!}(X')} \\
-  X \\
-  & X && Y
-  \arrow["{\exists!}"', dashed, from=1-1, to=2-2]
-  \arrow["{f' \circ \pi \circ \eta_{X'}}", curve={height=-12pt}, from=1-1, to=2-4]
-  \arrow[from=1-1, to=3-1]
-  \arrow["\pi"', from=2-2, to=2-4]
-  \arrow[from=2-2, to=4-2]
-  \arrow[from=2-4, to=4-4]
-  \arrow["\id"{description}, from=3-1, to=4-2]
-  \arrow["f"{description}, from=4-2, to=4-4]
+  & {f^*(Y')} && {Y'} \\
+  {X'} & {f^*f_!(X')} & {f_!(X')} \\
+  &&& Y \\
+  X & X & Y
+  \arrow["{\pi_{Y'}}", from=1-2, to=1-4]
+  \arrow[lies over, from=1-4, to=3-4]
+  \arrow["{\exists!}", dashed, from=2-1, to=1-2]
+  \arrow["{\eta_{X'}}"', from=2-1, to=2-2]
+  \arrow[lies over, from=2-1, to=4-1]
+  \arrow["{\pi_{f_!(X')}}"', from=2-2, to=2-3]
+  \arrow[lies over, from=2-2, to=4-2]
+  \arrow["{h'}"', from=2-3, to=1-4]
+  \arrow[lies over, from=2-3, to=4-3]
+  \arrow["{\mathrm{id}}"', from=4-1, to=4-2]
+  \arrow["f"', from=4-2, to=4-3]
+  \arrow["{\mathrm{id}}"', from=4-3, to=3-4]
 \end{tikzcd}
 ~~~
 
-is an equivalence. However, this map sends each $f'$ to its [[left
+is an equivalence. However, this map sends each $h'$ to its [[left
 adjunct]] under the adjunction $f_! \dashv f^*$ (up to transports), and
 assigning adjuncts is an equivalence!
 
@@ -787,14 +791,14 @@ assigning adjuncts is an equivalence!
       subst is-equiv (funext (coh y')) (L-adjunct-is-equiv f^!⊣f^*)
       where abstract
         coh
-           : ∀ y' (f' : Hom[ id ] (f^!.₀ x') y')
-           → hom[ idl _ ] (π*.universal' id-comm (f' ∘' π* f _) ∘' η x')
-           ≡ π*.universalv (hom[ idl _ ] (f' ∘' ι!))
-        coh y' f' =
+           : ∀ y' (h' : Hom[ id ] (f^!.₀ x') y')
+           → hom[ idl _ ] (π*.universal' id-comm (h' ∘' π* f _) ∘' η x')
+           ≡ π*.universalv (hom[ idl _ ] (h' ∘' ι!))
+        coh y' h' =
           from-pathp $ π*.uniquep _ (idl _) (idr _) _ $
-            π* f y' ∘' π*.universal' _ (f' ∘' π* f (f^!.₀ x')) ∘' η x' ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
-            (f' ∘' π* f (f^!.₀ x')) ∘' η x'                            ≡[]⟨ (pullr[] (idr _) (wrap (idr _)) ∙[] wrap (idl _)) ⟩
-            hom[ idl f ] (f' ∘' ι!)                                    ∎
+            π* f y' ∘' π*.universal' _ (h' ∘' π* f (f^!.₀ x')) ∘' η x' ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
+            (h' ∘' π* f (f^!.₀ x')) ∘' η x'                            ≡[]⟨ (pullr[] (idr _) (wrap (idr _)) ∙[] wrap (idl _)) ⟩
+            hom[ idl f ] (h' ∘' ι!)                                    ∎
 ```
 
 The converse follows from some more equivalence yoga. First, recall that
