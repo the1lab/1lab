@@ -40,7 +40,7 @@ that characterises a monad. This has a couple of immediate benefits:
 
 3. It is not immediately clear how to generalize monads beyond
    endofunctors.
-   In constrast, extension systems can be readily generalized to
+   In contrast, extension systems can be readily generalized to
    [[relative extension systems]]^[In fact, we will *define* extension
    systems as a special case of relative extension systems!].
 

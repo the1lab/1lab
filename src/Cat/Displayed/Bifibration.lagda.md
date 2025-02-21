@@ -213,7 +213,7 @@ equivalence.
 ```
 
 <details>
-<summary>Futhermore, this equivalence is natural, but that's a very tedious proof.
+<summary>Furthermore, this equivalence is natural, but that's a very tedious proof.
 </summary>
 
 ```agda

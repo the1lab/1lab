@@ -85,7 +85,7 @@ finitely complete, and instead characterise the _extremal_ epimorphisms.
 [strong epimorphisms]: Cat.Morphism.Strong.Epi.html
 
 For this, it will suffice to show that the inclusion functor $\cC/y
-\mono \cC$ both preserves and reflects extermal epimorphisms. Given an
+\mono \cC$ both preserves and reflects extremal epimorphisms. Given an
 extremal epi $h : a \epi b$ over $y$, and a non-trivial factorisation of
 $h$ through a monomorphism $m$ in $\cC$, we can show that $m$ itself is
 a monomorphism $bm \to b$ over $y$, and that it factors $h$ in $\cC/y$.

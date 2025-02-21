@@ -219,7 +219,7 @@ every proposition is set-projective if and only if every set has split support.
 The following proof is adapted from [@Kraus-Escardó-Coquand-Altenkirch:2016].
 
 We will start with the reverse direction. Suppose that every proposition
-is set projective, and let $A$ be a set. The truncation of $A$ is a propositon,
+is set projective, and let $A$ be a set. The truncation of $A$ is a propositton,
 and the constant family $\| A \| \to A$ is a set-indexed family, so projectivity
 of $\| A \|$ directly gives us split support.
 
