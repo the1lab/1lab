@@ -255,7 +255,7 @@ Externalisation-fibration u y = u-lift where
 
 The externalisation is always globally small. We shall use the object of
 objects $C_0$ as the base for our generic object, and the identity
-morphism $id : C_0 \to C_0$ as the upstairs portion. Classifying maps
+morphism $\id : C_0 \to C_0$ as the upstairs portion. Classifying maps
 in the base are given by interpreting using a object $\cC(\Gamma, C_0)$ in
 the externalisation as a morphism in the base, and the displayed
 classifying map is the internal identity morphism, which is always

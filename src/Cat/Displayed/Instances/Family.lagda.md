@@ -441,8 +441,8 @@ Family-gaunt-generic-object→Gaunt ob-set gaunt-gobj =
 
 To see that all automorphisms of $\cC$ are trivial, note that any automorphism
 $f : x \cong x$ induces a cartesian morphism $\{ x \} \to Ob$. Furthermore, this
-cartesian morphism must be unique, as $Ob$ is a gaunt generic object. However, $id$
-also yields a cartesian morphism $\{ x \} \to Ob$, so $f = id$.
+cartesian morphism must be unique, as $Ob$ is a gaunt generic object. However, $\id$
+also yields a cartesian morphism $\{ x \} \to Ob$, so $f = \id$.
 
 ```agda
   trivial-automorphism : ∀ {x} → (f : x ≅ x) → f ≡ id-iso

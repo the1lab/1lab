@@ -82,7 +82,7 @@ To see this, recall that [[cartesian morphisms]] are [stable under
 vertical retractions]. The cartesian lift $f^{*}$ of $f$ is obviously
 cartesian, so it suffices to show that there is a vertical retraction
 $x^{*} \to x'$. To construct this retraction, we shall factorize $f'$
-over $f \cdot id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
+over $f \cdot \id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
 By our hypotheses, $i^{*}$ is invertible, and thus is a retraction.
 What remains to be shown is that the inverse to $i^{*}$ factors
 $f'$ and $f^{*}$; this follows from the factorisation of $f'$ and
