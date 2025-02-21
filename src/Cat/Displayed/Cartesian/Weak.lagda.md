@@ -171,24 +171,24 @@ postcomposition of $f'$ onto vertical maps is an equivalence.
 postcompose-equiv→weak-cartesian
   : ∀ {x y x' y'} {f : Hom x y}
   → (f' : Hom[ f ] x' y')
-  → (∀ {x''} → is-equiv {A = Hom[ id ] x'' x'} (f' ∘'_))
+  → (∀ {x''} → is-equiv {A = Hom[ id ] x'' x'} (λ h' → hom[ idr _ ] (f' ∘' h')))
   → is-weak-cartesian f f'
 postcompose-equiv→weak-cartesian f' eqv .universal h' =
-  equiv→inverse eqv (hom[ idr _ ]⁻ h')
+  equiv→inverse eqv h'
 postcompose-equiv→weak-cartesian f' eqv .commutes h' =
-  to-pathp⁻ (equiv→counit eqv (hom[ idr _ ]⁻ h'))
+  to-pathp (equiv→counit eqv h')
 postcompose-equiv→weak-cartesian f' eqv .unique m' p =
-  (sym $ equiv→unit eqv m') ∙ ap (equiv→inverse eqv) (from-pathp⁻ p)
+  sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) (from-pathp p)
 
 weak-cartesian→postcompose-equiv
   : ∀ {x y x' x'' y'} {f : Hom x y} {f' : Hom[ f ] x' y'}
   → is-weak-cartesian f f'
-  → is-equiv {A = Hom[ id ] x'' x'} (f' ∘'_)
+  → is-equiv {A = Hom[ id ] x'' x'} (λ h' → hom[ idr _ ] (f' ∘' h'))
 weak-cartesian→postcompose-equiv wcart =
   is-iso→is-equiv $
-    iso (λ h' → wcart .universal (hom[ idr _ ] h'))
-        (λ h' → from-pathp⁻ (wcart .commutes _) ·· hom[]-∙ _ _ ·· liberate _)
-        (λ h' → sym $ wcart .unique _ (to-pathp refl))
+    iso (λ h' → wcart .universal h')
+      (λ h' → from-pathp (wcart .commutes h'))
+      (λ h' → sym (wcart .unique _ (wrap (idr _))))
 ```
 
 ## Weak cartesian lifts {defines=weak-cartesian-fibration}
