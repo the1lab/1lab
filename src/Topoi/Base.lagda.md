@@ -45,7 +45,7 @@ open _=>_
 ```
 -->
 
-# Grothendieck topoi
+# Grothendieck topoi {defines="topos topoi"}
 
 Topoi are an abstraction introduced by Alexander Grothendieck in the
 1960s as a generalisation of [topological spaces], suitable for his work
