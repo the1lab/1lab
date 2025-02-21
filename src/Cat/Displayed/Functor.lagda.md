@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -61,6 +62,9 @@ module
     module B = CR B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
+    module E↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
+    module F↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
+
     lvl : Level
     lvl = o ⊔ o' ⊔ o₂' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
 ```
@@ -244,7 +248,7 @@ The identity functor is obviously fibred.
 ```
 
 
-## Vertical functors
+## Vertical functors {defines="vertical-functor"}
 
 Functors displayed over the identity functor are of particular interest.
 Such functors are known as **vertical functors**, and are commonly used
@@ -265,6 +269,9 @@ module
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
+    module F = DR ℱ using (hom[])
+    module E↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
+    module F↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
 ```
 -->
 
@@ -276,15 +283,27 @@ module
       F₁' : ∀ {a b} {f : B.Hom a b} {a' b'}
           → ℰ.Hom[ f ] a' b' → ℱ.Hom[ f ] (F₀' a') (F₀' b')
       F-id' : ∀ {x} {o : ℰ.Ob[ x ]}
-            → PathP ( λ _ →  ℱ.Hom[ B.id ] (F₀' o) (F₀' o))
-                         (F₁' ℰ.id') ℱ.id'
+            → F₁' (ℰ.id' {x} {o}) ≡ ℱ.id'
       F-∘' : ∀ {a b c} {f : B.Hom b c} {g : B.Hom a b} {a' b' c'}
                  {f' : ℰ.Hom[ f ] b' c'} {g' : ℰ.Hom[ g ] a' b'}
-            → PathP (λ _ → ℱ.Hom[ f B.∘ g ] (F₀' a') (F₀' c')) (F₁' (f' ℰ.∘' g'))
-                         (F₁' f' ℱ.∘' F₁' g')
+           → F₁' (f' ℰ.∘' g') ≡ F₁' f' ℱ.∘' F₁' g'
     ₀' = F₀'
     ₁' = F₁'
 ```
+
+<!--
+```agda
+    abstract
+      F-∘↓
+        : ∀ {x} {a b c : ℰ.Ob[ x ]} {f : ℰ.Hom[ B.id ] b c} {g : ℰ.Hom[ B.id ] a b}
+        → F₁' (f E↓.∘ g) ≡ F₁' f F↓.∘ F₁' g
+      F-∘↓ {a = a} {b} {c} {f} {g} =
+        let
+          p : F₁' (f E↓.∘ g) ℱ.≡[ sym (B.idl B.id) ] F₁' (f ℰ.∘' g)
+          p i = F₁' (coe0→i (λ j → ℰ.Hom[ B.idl B.id j ] a c) (~ i) (f ℰ.∘' g))
+        in from-pathp⁻ p ∙ ap F.hom[] F-∘'
+```
+-->
 
 
 This definition is equivalent to a displayed functor over the identity
@@ -475,35 +494,34 @@ module _
   where
   open Vertical-functor
 
-  infixr 30 _V∘_
-  infixr 30 _Vf∘_
+  infixr 30 _∘V_ _∘Vf_
 ```
 -->
 
 ```agda
-  _V∘_ : Vertical-functor ℱ ℋ → Vertical-functor ℰ ℱ → Vertical-functor ℰ ℋ
-  (F' V∘ G') .F₀' x' = F' .F₀' (G' .F₀' x')
-  (F' V∘ G') .F₁' f' = F' .F₁' (G' .F₁' f')
-  (F' V∘ G') .F-id' = ap (F' .F₁') (G' .F-id') ∙ F' .F-id'
-  (F' V∘ G') .F-∘' = ap (F' .F₁') (G' .F-∘') ∙ (F' .F-∘')
+  _∘V_ : Vertical-functor ℱ ℋ → Vertical-functor ℰ ℱ → Vertical-functor ℰ ℋ
+  (F' ∘V G') .F₀' x' = F' .F₀' (G' .F₀' x')
+  (F' ∘V G') .F₁' f' = F' .F₁' (G' .F₁' f')
+  (F' ∘V G') .F-id' = ap (F' .F₁') (G' .F-id') ∙ F' .F-id'
+  (F' ∘V G') .F-∘' = ap (F' .F₁') (G' .F-∘') ∙ (F' .F-∘')
 ```
 
 Furthermore, the composite of vertical fibred functors is also fibred.
 
 ```agda
-  V∘-fibred
+  ∘V-fibred
     : ∀ (F' : Vertical-functor ℱ ℋ) (G' : Vertical-functor ℰ ℱ)
-    → is-vertical-fibred F' → is-vertical-fibred G' → is-vertical-fibred (F' V∘ G')
-  V∘-fibred F' G' F'-fib G'-fib f' cart = F'-fib (G' .F₁' f') (G'-fib f' cart)
+    → is-vertical-fibred F' → is-vertical-fibred G' → is-vertical-fibred (F' ∘V G')
+  ∘V-fibred F' G' F'-fib G'-fib f' cart = F'-fib (G' .F₁' f') (G'-fib f' cart)
 
-  _Vf∘_
+  _∘Vf_
     : Vertical-fibred-functor ℱ ℋ
     → Vertical-fibred-functor ℰ ℱ
     → Vertical-fibred-functor ℰ ℋ
-  (F' Vf∘ G') .Vertical-fibred-functor.vert =
-    Vertical-fibred-functor.vert F' V∘ Vertical-fibred-functor.vert G'
-  (F' Vf∘ G') .Vertical-fibred-functor.F-cartesian =
-    V∘-fibred
+  (F' ∘Vf G') .Vertical-fibred-functor.vert =
+    Vertical-fibred-functor.vert F' ∘V Vertical-fibred-functor.vert G'
+  (F' ∘Vf G') .Vertical-fibred-functor.F-cartesian =
+    ∘V-fibred
       (Vertical-fibred-functor.vert F')
       (Vertical-fibred-functor.vert G')
       (Vertical-fibred-functor.F-cartesian F')
@@ -562,6 +580,7 @@ lying over $\eta$.
 \end{tikzcd}\]
 ~~~
 
+<!--
 ```agda
 module
   _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
@@ -579,9 +598,12 @@ module
     lvl : Level
     lvl = o ⊔ o' ⊔ ℓ ⊔ ℓ' ⊔ ℓ₂'
   infix 20 _=[_]=>_
+```
+-->
 
+```agda
   record _=[_]=>_ {F : Functor A B} {G : Functor A B} (F' : Displayed-functor ℰ ℱ F)
-                          (α : F => G) (G' : Displayed-functor ℰ ℱ G)
+                  (α : F => G) (G' : Displayed-functor ℰ ℱ G)
             : Type lvl where
     no-eta-equality
 
@@ -592,9 +614,12 @@ module
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
-Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural transformation
-between $F$ and $G$ is called a **vertical natural transformation** if all components
-of the natural transformation are vertical.
+::: {.definition #vertical-natural-transformation}
+Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
+transformation between $F$ and $G$ is called a **vertical natural
+transformation** if all components of the natural transformation are
+vertical.
+:::
 
 <!--
 ```agda
@@ -608,6 +633,8 @@ module _
     open CR B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
+    module F↓ {x} = CR (Fibre ℱ x)
+
     open Vertical-functor
 
     lvl : Level
@@ -628,6 +655,17 @@ module _
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ id-comm-sym ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
+<!--
+```agda
+    abstract
+      is-natural↓
+        : ∀ {x} (x' y' : ℰ.Ob[ x ]) (f' : ℰ.Hom[ id ] x' y')
+        → η' y' F↓.∘ F' .F₁' f' ≡ G' .F₁' f' F↓.∘ η' x'
+      is-natural↓ x y f = ap hom[] (from-pathp⁻ (is-natural' x y f)) ∙ sym (duplicate _ _ _) where
+        open DR ℱ using (hom[] ; duplicate)
+```
+-->
+
 This notion of natural transformation is also the correct one for
 fibred vertical functors, as there is no higher structure that needs
 to be preserved.
@@ -637,3 +675,68 @@ to be preserved.
   F' =>f↓ G' = F' .vert =>↓ G' .vert
     where open Vertical-fibred-functor
 ```
+
+<!--
+```agda
+  private unquoteDecl eqv = declare-record-iso eqv (quote _=>↓_)
+
+  instance
+    Extensional-=>↓
+      : ∀ {ℓr F' G'}
+      → ⦃ _ : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F' .F₀' x') (G' .F₀' x')) ℓr ⦄
+      → Extensional (F' =>↓ G') ℓr
+    Extensional-=>↓ {F' = F'} {G' = G'}  ⦃ e ⦄  = injection→extensional! {f = _=>↓_.η'}
+      (λ p → Iso.injective eqv (Σ-prop-path! p)) e
+
+    H-Level-=>↓ : ∀ {F' G'} {n} → H-Level (F' =>↓ G') (2 + n)
+    H-Level-=>↓ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
+
+  open _=>↓_
+
+  idnt↓ : ∀ {F} → F =>↓ F
+  idnt↓ .η' x' = ℱ.id'
+  idnt↓ .is-natural' x' y' f' = to-pathp (DR.id-comm[] ℱ)
+
+  _∘nt↓_ : ∀ {F G H} → G =>↓ H → F =>↓ G → F =>↓ H
+  (f ∘nt↓ g) .η' x' = f .η' _ F↓.∘ g .η' x'
+  _∘nt↓_ {F = F} {G = G} {H = H} f g .is-natural' {f = b} x' y' f' =
+    let open DR ℱ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r) in to-pathp (
+        ap hom[] (whisker-l (idl id))
+    ·· sym (duplicate (ap (_∘ b) (idl id) ∙ id-comm-sym) _ _)
+    ·· ap hom[] (from-pathp⁻ (pullr' id-comm-sym (g .is-natural' _ _ _)
+          {q = ap (_∘ b) (idl id) ∙ id-comm-sym ∙ introl refl}))
+    ·· sym (duplicate (eliml refl) _ _)
+    ·· ap hom[] (from-pathp⁻ (extendl' id-comm-sym (f .is-natural' x' y' f') {q = extendl id-comm-sym}))
+    ·· sym (duplicate (ap (b ∘_) (idl id)) (eliml refl) _)
+    ·· unwhisker-r _ _)
+
+module _
+  {ob ℓb oc ℓc od ℓd oe ℓe}
+  {B : Precategory ob ℓb}
+  {𝒞 : Displayed B oc ℓc}
+  {𝒟 : Displayed B od ℓd}
+  {ℰ : Displayed B oe ℓe}
+  {F G : Vertical-functor 𝒟 ℰ} {H K : Vertical-functor 𝒞 𝒟}
+  (α : F =>↓ G) (β : H =>↓ K) where
+
+  open Vertical-functor
+  open _=>↓_
+  open CR B
+  private module E {x} = CR (Fibre ℰ x) using (_∘_)
+
+  _◆↓_ : (F ∘V H) =>↓ (G ∘V K)
+  _◆↓_ .η' x' = G .F₁' (β .η' _) E.∘ α .η' _
+  _◆↓_ .is-natural' x' y' f' = to-pathp (
+      ap hom[] (whisker-l (idl id))
+      ·· sym (duplicate (ap (_∘ _) (idl id) ∙ id-comm-sym) _ _)
+      ·· ap hom[] (from-pathp⁻ (pullr' _ (α .is-natural' _ _ _) {q = pullr id-comm-sym}))
+      ·· sym (duplicate (eliml refl) _ _)
+      ·· ap hom[] (from-pathp⁻
+        (extendl' _ (symP (G .F-∘') ∙[] (apd (λ i → G .F₁') (β .is-natural' _ _ _) ∙[] G .F-∘'))
+          {q = extendl id-comm-sym}))
+      ·· sym (duplicate (ap (_ ∘_) (idl id)) _ _) ·· unwhisker-r _ _)
+    where
+      open DR ℰ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r)
+      open Displayed ℰ using (_∙[]_)
+```
+-->

@@ -152,7 +152,7 @@ module _
 
   Objects-factors
     : (F : Vertical-fibred-functor R E)
-    → F ≡ Objects-forget Vf∘ Objects-universal F
+    → F ≡ Objects-forget ∘Vf Objects-universal F
   Objects-factors F =
     Vertical-fibred-functor-path (λ _ → refl) (λ _ → refl)
 ```
