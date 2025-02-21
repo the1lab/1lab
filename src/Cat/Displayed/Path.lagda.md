@@ -223,7 +223,7 @@ like
 
 ```agda
     p1 : PathP (λ i → ps i .Ob → Type o') ℰ.Ob[_] ℱ.Ob[_]
-    p1 i x = Glue ℱ.Ob[ unglue (∂ i) x ] λ where
+    p1 i x = Glue ℱ.Ob[ unglue x ] λ where
       (i = i0) → ℰ.Ob[ x ] , G.F₀' , obeqv x
       (i = i1) → ℱ.Ob[ x ] , _ , id-equiv
 ```
@@ -235,17 +235,12 @@ $x$, giving a line of type families `p1`{.Agda} ranging from $\cE[-]
 \to \cF[-]$. The situation for Hom spaces is analogous.
 
 ```agda
-    sys : ∀ i (x y : ps i .Ob) (f : ps i .Hom x y) (x' : p1 i x) (y' : p1 i y)
-        → Partial (i ∨ ~ i) _
-    sys i x y f x' y' (i = i0) = ℰ.Hom[ f ] x' y' , G.F₁' , homeqv
-    sys i x y f x' y' (i = i1) = ℱ.Hom[ f ] x' y' , _ , id-equiv
-
     p2 : PathP
       (λ i → {x y : ps i .Ob} (f : ps i .Hom x y) → p1 i x → p1 i y → Type ℓ')
       ℰ.Hom[_] ℱ.Hom[_]
-    p2 i {x} {y} f x' y' = Glue
-      (ℱ.Hom[ unglue (∂ i) f ] (unglue (∂ i) x') (unglue (∂ i) y'))
-      (sys i x y f x' y')
+    p2 i {x} {y} f x' y' = Glue (ℱ.Hom[ unglue f ] (unglue x') (unglue y')) λ where
+      (i = i0) → ℰ.Hom[ f ] x' y' , G.F₁' , homeqv
+      (i = i1) → ℱ.Hom[ f ] x' y' , id≃
 
     open displayed-pathp-data
     input : displayed-pathp-data
@@ -263,15 +258,14 @@ $F_1'$ and ungluing the domain/codomain, between the identity maps in
 $\cE$ and $\cF$.
 
 ```agda
-    input .idp i {x} {x'} = glue-inc (∂ i)
-      {Tf = sys i x x (ps i .id {x}) x' x'}
+    input .idp i {x} {x'} = attach (∂ i)
       (λ { (i = i0) → ℰ.id' ; (i = i1) → ℱ.id' })
-      (inS (comp (λ j → ℱ.Hom[ p (~ j) ] (unglue (∂ i) x') (unglue (∂ i) x')) (∂ i)
+      (inS (comp (λ j → ℱ.Hom[ p (~ j) ] (unglue x') (unglue x')) (∂ i)
         λ { j (j = i0) → ℱ.id'
           ; j (i = i0) → G.F-id' (~ j)
           ; j (i = i1) → ℱ.id' }))
       where
-        p : unglue (∂ i) (ps i .id {x}) ≡ C.id
+        p : unglue (ps i .id {x}) ≡ C.id
         p j = hfill (∂ i) (~ j) λ where
           k (k = i0) → C.id
           k (i = i0) → F.F-id (~ k)
@@ -283,21 +277,18 @@ $\cE$ and $\cF$.
 I won't comment on it. You can't make me.</summary>
 
 ```agda
-    input .compp i {x} {y} {z} {f} {g} {x'} {y'} {z'} f' g' = glue-inc (∂ i)
-        {Tf = sys i x z (ps i ._∘_ {x} {y} {z} f g) x' z'}
-        (λ { (i = i0) → f' ℰ.∘' g' ; (i = i1) → f' ℱ.∘' g' })
-        (inS (comp (λ j → ℱ.Hom[ p j ] (unglue (∂ i) x') (unglue (∂ i) z')) (∂ i)
-          λ { k (k = i0) →
-                   unglue (∂ i) {T = λ .∂i=i1 → sys i y z f y' z' ∂i=i1 .fst} f'
-              ℱ.∘' unglue (∂ i) g'
-            ; k (i = i0) → G.F-∘' {f' = f'} {g' = g'} (~ k)
-            ; k (i = i1) → f' ℱ.∘' g' }))
+    input .compp i {x} {y} {z} {f} {g} {x'} {y'} {z'} f' g' = attach _
+      (λ { (i = i0) → f' ℰ.∘' g' ; (i = i1) → f' ℱ.∘' g' })
+      (inS (comp (λ j → ℱ.Hom[ p j ] (unglue x') (unglue z')) (∂ i)
+        λ { k (k = i0) → unglue f' ℱ.∘' unglue g'
+          ; k (i = i0) → G.F-∘' {f' = f'} {g' = g'} (~ k)
+          ; k (i = i1) → f' ℱ.∘' g' }))
       where
-        p : I → C .Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) z)
+        p : I → C .Hom (unglue x) (unglue z)
         p j = hfill (∂ i) j λ where
           k (i = i0) → F.F-∘ f g (~ k)
           k (i = i1) → f C.∘ g
-          k (k = i0) → unglue (∂ i) f C.∘ unglue (∂ i) g
+          k (k = i0) → unglue f C.∘ unglue g
 ```
 
 </details>

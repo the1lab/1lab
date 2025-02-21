@@ -144,11 +144,7 @@ This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.A
 
 ```agda
   Sets^op-is-category : is-category (Sets ℓ ^op)
-  Sets^op-is-category .to-path = Sets-is-category .to-path ⊙ transport (ua iso-op-invariant)
-  Sets^op-is-category .to-path-over {a} {b} p = Sets^op.≅-pathp refl _ $ funext-dep λ {x₀} {x₁} q →
-    x₀                                                    ≡˘⟨ ap (_$ x₀) p.invr ⟩
-    p.to ⌜ p.from x₀ ⌝                                    ≡˘⟨ ap¡ Regularity.reduce! ⟩
-    p.to ⌜ transport refl $ p.from $ transport refl x₀ ⌝  ≡⟨ ap! (λ i → unglue (∂ i) (q i)) ⟩
-    p.to x₁                                               ∎
+  Sets^op-is-category .to-path = Sets-is-category .to-path ⊙ iso-op-invariant .fst
+  Sets^op-is-category .to-path-over {a} {b} p = Sets^op.≅-pathp refl _ $ ua→ λ a → sym (p.invr $ₚ a)
     where module p = Sets^op._≅_ p
 ```

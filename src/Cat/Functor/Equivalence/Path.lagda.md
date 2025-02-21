@@ -63,12 +63,10 @@ essentially, the dashed line in the diagram
   obl : ∀ i → Type o
   obl i = ua (F .F₀ , ob≃) i
 
-  sys : ∀ i (x y : obl i) → Partial (i ∨ ~ i) _
-  sys i x y (i = i0) = C.Hom x y , F .F₁ , hom≃
-  sys i x y (i = i1) = D.Hom x y , (λ x → x) , id-equiv
-
   hom : PathP (λ i → obl i → obl i → Type ℓ) C.Hom D.Hom
-  hom i x y = Glue (D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)) (sys i x y)
+  hom i x y = Glue (D.Hom (unglue x) (unglue y)) λ where
+    (i = i0) → C.Hom x y , F .F₁ , hom≃
+    (i = i1) → D.Hom x y , id≃
 ```
 
 Note that $\unglue_{i \lor \neg i}x$ is a term in $\cD_0$ which
@@ -84,10 +82,10 @@ $f$ along $g$ to get an element of $\hom_i(x, y)$.
   hom-glue
     : ∀ i (x y : obl i)
     → (f : PartialP {a = ℓ} (~ i) λ { (i = i0) → C.Hom x y })
-    → (g : D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)
+    → (g : D.Hom (unglue x) (unglue y)
         [ (~ i) ↦ (λ { (i = i0) → F .F₁ (f 1=1) }) ])
     → hom i x y
-  hom-glue i x y f g = glue-inc _ {Tf = sys i x y}
+  hom-glue i x y f g = attach (∂ i)
     (λ { (i = i0) → f 1=1 ; (i = i1) → outS g })
     (inS (outS g))
 ```
@@ -100,17 +98,17 @@ preserves identity_.
 
 ```agda
   idh : ∀ i x → hom i x x
-  idh i x = hom-glue i x x (λ { (i = i0) → C.id }) (inS (hcomp (∂ i) λ where
+  idh i x = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS (hcomp (∂ i) λ where
     j (i = i0) → F .F-id (~ j)
     j (i = i1) → D.id
     j (j = i0) → D.id))
 
   circ : ∀ i x y z → hom i y z → hom i x y → hom i x z
-  circ i x y z f g =
-    hom-glue i x z (λ { (i = i0) → f C.∘ g }) (inS (hcomp (∂ i) λ where
+  circ i x y z f g = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ })
+    (inS (hcomp (∂ i) λ where
       j (i = i0) → F .F-∘ f g (~ j)
       j (i = i1) → f D.∘ g
-      j (j = i0) → unglue (i ∨ ~ i) f D.∘ unglue (i ∨ ~ i) g))
+      j (j = i0) → unglue f D.∘ unglue g))
 ```
 
 The last trick is extending a proposition $P$ along the line
@@ -190,22 +188,9 @@ Precategory-identity-system
     (λ a → Id , iso id-equiv id-equiv)
 Precategory-identity-system .to-path (F , i) = Precategory-path F i
 Precategory-identity-system .to-path-over {C} {D} (F , i) = Σ-prop-pathp! $
-  Functor-pathp (λ p → path→ua-pathp _ (λ j → F.₀ (p j)))
-                (λ {x} {y} → homs x y)
-  where
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module F = Functor F
-
-    homs : ∀ x y (r : ∀ j → C.Hom (x j) (y j)) → PathP _ _ _
-    homs x y f = to-pathp $
-      transport (λ i₁ → D.Hom (F.₀ (x i₁)) (F.₀ (y i₁))) (F.₁ (f i0)) ≡⟨ Hom-transport D (λ i → F.₀ (x i)) (λ i → F.₀ (y i)) (F.₁ (f i0)) ⟩
-      _ D.∘ F.₁ (f i0) D.∘ _                                          ≡⟨ ap D.to (ap-F₀-to-iso F (λ i → y i)) D.⟩∘⟨ (refl D.⟩∘⟨ ap D.from (ap-F₀-to-iso F (λ i → x i))) ⟩
-      F.₁ _ D.∘ F.₁ (f i0) D.∘ F.₁ _                                  ≡˘⟨ D.refl⟩∘⟨ F.F-∘ _ _ ⟩
-      (F.₁ _ D.∘ F.₁ (f i0 C.∘ _))                                    ≡˘⟨ F.F-∘ _ _ ⟩
-      F.₁ (_ C.∘ f i0 C.∘ _)                                          ≡˘⟨ ap F.₁ (Hom-transport C (λ i → x i) (λ i → y i) (f i0)) ⟩
-      F.₁ (coe0→1 (λ z → C.Hom (x z) (y z)) (f i0))                   ≡⟨ ap F.₁ (from-pathp (λ i → f i)) ⟩
-      F.₁ (f i1)                                                      ∎
+  Functor-pathp
+    (λ p → path→ua-pathp _ (λ j → F .F₀ (p j)))
+    (λ {x} {y} f i → attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS (F .F₁ (f i))))
 ```
 
 Note that we did not need to concern ourselves with the actual witness
@@ -243,7 +228,7 @@ Category-identity-system-pre
 Category-identity-system-pre =
   pullback-identity-system
     Precategory-identity-system
-    (fst , (Subset-proj-embedding (λ x → is-identity-system-is-prop)))
+    (fst , Subset-proj-embedding λ x → is-identity-system-is-prop)
 ```
 
 Then, since the spaces of equivalences $\cC \cong \cD$ and
@@ -260,7 +245,6 @@ Category-identity-system
     (λ a → Id , Id-is-equivalence)
 Category-identity-system =
   transfer-identity-system Category-identity-system-pre
-
     (λ x y → Σ-ap-snd λ F → prop-ext (hlevel 1) (is-equivalence-is-prop (x .snd) F)
       is-precat-iso→is-equivalence
       (eqv→iso (x .snd) (y .snd) F))

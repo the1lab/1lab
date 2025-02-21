@@ -230,7 +230,7 @@ face has a dotted boundary.
 
 ```agda
   decode (loop i) n j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → loopⁿ (unglue (∂ i) n) j
+    k (k = i0) → loopⁿ (unglue n) j
     k (i = i0) → ∙→square (loopⁿ⁺¹ n) (~ k) j
     k (i = i1) → loopⁿ n j
     k (j = i0) → base

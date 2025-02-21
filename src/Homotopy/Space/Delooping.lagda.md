@@ -227,7 +227,7 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
   decode = go where
     coh : ∀ x → PathP (λ i → Code ʻ path x i → base ≡ path x i) path path
     coh x i c j = hcomp (∂ i ∨ ∂ j) λ where
-      k (k = i0) → path (ua-unglue (Code.path-case.eqv x) i c) j
+      k (k = i0) → path (unglue c) j
       k (i = i0) → path-sq c x (~ k) j
       k (i = i1) → path c j
       k (j = i0) → base
