@@ -112,7 +112,7 @@ private
     a ← go pre n a
     (arg i a ∷_) <$> go* pre n as
 
-  -- To turn a term into a regularity path, given a level of precision,
+  -- To turn a term into a regularity PathP, given a level of precision,
   -- all we have to do is raise the term by one, do the procedure above,
   -- then wrap it in a lambda. Nice!
   to-regularity-path : Regularity-precision → Term → TC Term
@@ -142,8 +142,8 @@ private
     `p ← quoteTC p
     just (_ , l , r) ← unapply-path =<< wait-for-type =<< infer-type goal
       where _ → typeError [ "goal type is not path type: " , termErr goal ]
-    l ← normalise =<< wait-for-type l
-    r ← normalise =<< wait-for-type r
+    l ← normalise l
+    r ← normalise r
     reg ← to-regularity-path pre l
     reg' ← to-regularity-path pre r
     unify-loudly goal $ def (quote double-comp) $
@@ -159,8 +159,8 @@ module Regularity where
   macro
     reduce! : Term → TC ⊤
     reduce! goal = withNormalisation true do
-      just (_ , l , r) ← unapply-path =<< wait-for-type =<< infer-type goal
-        where _ → typeError []
+      just (_ , l , r) ← unapply-pathp =<< wait-for-type =<< infer-type goal
+        where _ → typeError [ "goal type is not path type: " , termErr goal ]
       reg ← to-regularity-path precise l
       unify-loudly goal reg
 
