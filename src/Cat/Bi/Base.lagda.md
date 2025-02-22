@@ -45,6 +45,15 @@ module _ where
   compose-assocʳ C .F-∘ f g = ap (C .F₁) (Σ-pathp refl (C .F-∘ _ _)) ∙ C .F-∘ _ _
 
 private variable o ℓ ℓ' o₁ ℓ₁ ℓ₁' : Level
+
+Associator-for
+  : ∀ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ')
+  → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
+  → Type _
+Associator-for Hom compose = ∀ {A B C D} →
+  Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
+    (compose-assocˡ {H = Hom} compose)
+    (compose-assocʳ {H = Hom} compose)
 ```
 -->
 
@@ -318,12 +327,28 @@ level does _not_ form a category, but it _does_ form a bicategory.
 [strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
-{-# TERMINATING #-}
 Cat : ∀ o ℓ → Prebicategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Cat o ℓ = pb where
   open Prebicategory
   open Functor
+```
 
+<!--
+```agda
+  assoc : Associator-for Cat[_,_] F∘-functor
+  assoc {D = D} = to-natural-iso ni where
+    module D = Cr D
+    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
+    ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ →
+      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
+```
+-->
+
+```agda
   pb : Prebicategory _ _ _
   pb .Ob = Precategory o ℓ
   pb .Hom = Cat[_,_]
@@ -365,15 +390,7 @@ directly:
     ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
     ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
 
-  pb .associator {A} {B} {C} {D} = to-natural-iso ni where
-    module D = Cr D
-    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
-    ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
-    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = ext λ _ →
-      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
+  pb .associator = assoc
 
   pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
   pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
