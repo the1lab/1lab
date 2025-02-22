@@ -1,0 +1,31 @@
+[files]
+extend-exclude = ["support", "*.scss", "*.bibtex"]
+
+[default.extend-words]
+identicals = "identicals"
+intensional = "intensional"
+operad = "operad"
+projectives = "projectives"
+raison = "raison"
+substituters = "substituters"
+
+# parts of identifiers
+ba = "ba"
+cancell = "cancell"
+DNE = "DNE"
+fo = "fo"
+Iy = "Iy"
+hom = "hom"
+lits = "lits"
+ment = "ment"
+mor = "mor"
+nam = "nam"
+nto = "nto"
+padd = "padd"
+pn = "pn"
+Singl = "Singl"
+SinglP = "SinglP"
+som = "som"
+toi = "toi"
+ue = "ue"
+unitl = "unitl"

@@ -275,7 +275,7 @@ module _ {o ℓ w} (C : Precategory o ℓ) (W : Wide-subcat C w) where
 We thus have the localisation as a [[precategory]]. The localisation
 functor $\cL : \cC \to \cC\loc{W}$ sends a morphism $f : a \to b$ to the
 singleton zigzag consisting of $f$ pointing forwards. Finally, if $f \in
-W$, then we're also allowed to draw it backards; and this inverts $\cL
+W$, then we're also allowed to draw it backwards; and this inverts $\cL
 f$. Since we're just writing down things we've already shown, there's a
 bit of code with not much more we could say:
 

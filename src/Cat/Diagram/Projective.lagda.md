@@ -156,7 +156,7 @@ preserves-epis→projective {P = P} hom-epi {X = X} {Y = Y} p e =
     p
 ```
 
-For the reverse direciton, let $P$ be projective, $f : X \epi Y$ be an epi,
+For the reverse direction, let $P$ be projective, $f : X \epi Y$ be an epi,
 and $g, h : \cC(P, X) \to A$ be a pair of functions into an arbitrary
 set $A$ such that $g(f \circ s) = h(f \circ s)$ for any $s : \cC(P, X)$.
 To show that $\cC(P,-)$ preserves epis, we must show that $g = h$, which

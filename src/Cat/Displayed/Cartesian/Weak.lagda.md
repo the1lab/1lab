@@ -462,9 +462,9 @@ weak-fibration→weak-cartesian-factors {y' = y'} {f = f} wfib f' = weak-factor 
 ## Weak fibrations and equivalence of Hom sets
 
 If $\cE$ is a weak fibration, then the hom sets $x' \to_f y'$ and
-$x' \to_{id} f^{*}(y')$ are equivalent, where $f^{*}(y')$ is the domain
+$x' \to_{\id} f^{*}(y')$ are equivalent, where $f^{*}(y')$ is the domain
 of the lift of $f$ along $y'$. To go from $f' : x' \to_u y'$ to
-$x' \to_{id} f^{*}(y')$, we use the vertical component of the
+$x' \to_{\id} f^{*}(y')$, we use the vertical component of the
 factorisation of $f'$; this forms an equivalence, as this factorisation
 is unique.
 
@@ -566,7 +566,7 @@ natural.
 
 We then proceed to construct a weak lift of $f$. We can use our object
 lifting function to construct the domain of the lift, apply the inverse
-direction of the equivalence to $id' : f^{*}(y') \to f^{*}(y')$ to
+direction of the equivalence to $\id' : f^{*}(y') \to f^{*}(y')$ to
 obtain the required lifting $x' \to_{f} f^{*}(y')$.
 
 ```agda
@@ -675,7 +675,7 @@ module _ (fib : Cartesian-fibration) where
 -->
 
 If we combine this with `weak-fibration→hom-iso-into`{.Agda}, we obtain
-a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
+a natural iso between $\cE_{u}(-,-)$ and $\cE_{\id}(-,u^{*}(-))$.
 
 ```agda
   fibration→hom-iso

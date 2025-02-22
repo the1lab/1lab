@@ -178,7 +178,7 @@ subst-is-epic f=g f-epic h i p =
 ## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
-when $r \cdot s = id$. The intuition for this name is that $s$ picks
+when $r \cdot s = \id$. The intuition for this name is that $s$ picks
 out a cross-section of $a$ from $b$. For instance, $r$ could map
 animals to their species; a section of this map would have to pick out
 a canonical representative of each species from the set of all animals.
@@ -272,7 +272,7 @@ subst-section p s .is-section = ap₂ _∘_ (sym p) refl ∙ s .is-section
 ## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
-when $r \cdot s = id$. Note that this is the same equation involved
+when $r \cdot s = \id$. Note that this is the same equation involved
 in the definition of a section; retracts and sections always come in
 pairs. If sections solve a sort of "curation problem" where we are
 asked to pick out canonical representatives, then retracts solve a

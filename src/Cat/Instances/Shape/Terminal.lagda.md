@@ -40,7 +40,7 @@ trivial morphisms.
 ⊤Cat .assoc _ _ _ _ = tt
 ```
 
-The ony morphism in the terminal category is the identity, so the
+The only morphism in the terminal category is the identity, so the
 terminal category is a [[pregroupoid]].
 
 ```agda

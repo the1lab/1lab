@@ -41,7 +41,7 @@ structure to study simply-typed languages that have enough structure
 to represent contexts internally (i.e.: product types).
 
 To start, we fix some base category $\cB$ with binary products.
-Intuitvely, this will be some sort of category of contexts, and
+Intuitively, this will be some sort of category of contexts, and
 context extension endows this category with products. We interpret a
 type in a context to be an object $\Gamma \times X : \cB$.
 
@@ -62,7 +62,7 @@ situation (IE: STLC without products), then we need to consider a more
 For the maps, we already have the map $\Gamma \to \Delta$ as the
 base morphism, so the displayed portion of the map will be the
 map $\Gamma \times X \to Y$ between derivations. The identity
-morphism $id : \Gamma \times Y \to Y$ ignores the context, and
+morphism $\id : \Gamma \times Y \to Y$ ignores the context, and
 derives $Y$ by using the $Y$ we already had, and is thus represented
 by the second projection $\pi_2$.
 

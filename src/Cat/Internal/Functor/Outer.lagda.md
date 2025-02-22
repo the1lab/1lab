@@ -71,7 +71,7 @@ of $\bC$.
 
 The next data captures how $\bC$'s morphisms act on the fibres. Since
 the family-fibration correspondence takes dependency to sectioning, we
-require an assigment sending maps $f : P_0(x) \to y$ to maps $P_1(f) :
+require an assignment sending maps $f : P_0(x) \to y$ to maps $P_1(f) :
 \Gamma \to P$, which satisfy $y = P_0(P_1(f))$.
 
 ```agda

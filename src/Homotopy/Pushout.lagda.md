@@ -82,7 +82,7 @@ for the function projecting into `⊤`{.Agda} - `const tt`{.Agda}.
 
 If one considers the structure we're creating, it becomes very
 obvious that this is equivalent to suspension - because both of our
-non-path constructors have input `⊤`{.Agda}, they're indistiguishable
+non-path constructors have input `⊤`{.Agda}, they're indistinguishable
 from members of the pushout; therefore, we take the
 `inl`{.Agda} and `inr`{.Agda} to `N`{.Agda} and
 `S`{.Agda} respectively.
@@ -116,7 +116,7 @@ similarities in structure.</summary>
   open is-iso
 
   iso-pf : is-iso Susp→Pushout-⊤←A→⊤
-  iso-pf .inv = Pushout-⊤←A→⊤-to-Susp 
+  iso-pf .inv = Pushout-⊤←A→⊤-to-Susp
   iso-pf .rinv (inl x) = refl
   iso-pf .rinv (inr x) = refl
   iso-pf .rinv (commutes c i) = refl
@@ -191,7 +191,7 @@ and again mostly reduces to `refl`{.Agda}.
                      (λ x → t (inr x)) ,
                      (λ c i → ap t (commutes c) i)
 
-  Cocone→Pushout t (inl x) = fst t x 
+  Cocone→Pushout t (inl x) = fst t x
   Cocone→Pushout t (inr x) = fst (snd t) x
   Cocone→Pushout t (commutes c i) = snd (snd t) c i
 

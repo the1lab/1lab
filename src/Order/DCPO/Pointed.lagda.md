@@ -190,7 +190,7 @@ This follows from som quick induction.
     least-fix y p = ⋃.least _ _ _ (fⁿ⊥≤fix y p)
 ```
 
-Now, let's show that $\bigcup (f^{n}(\bot))$ is actuall a fixpoint.
+Now, let's show that $\bigcup (f^{n}(\bot))$ is actually a fixpoint.
 First, the forward direction: $\bigcup (f^{n}(\bot)) \le f (\bigcup (f^{n}(\bot)))$.
 This follows directly from Scott-continuity of $f$.
 

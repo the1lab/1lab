@@ -466,7 +466,7 @@ open import Cat.Displayed.Instances.Externalisation
 
 ## Order theory
 
-The study of sets equipped with a notion of precendence, or containment;
+The study of sets equipped with a notion of precedence, or containment;
 while the theory of [[partial orders]] is naturally seen as a
 restriction of the theory of categories, formalising these concepts
 separately leads to cleaner mathematics.

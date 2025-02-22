@@ -27,7 +27,7 @@ open Functor
 
 # Functors
 
-This module defines the most important clases of functors: Full,
+This module defines the most important classes of functors: full,
 faithful, fully faithful (abbreviated ff), _split_ essentially
 surjective and ("_merely_") essentially surjective.
 
