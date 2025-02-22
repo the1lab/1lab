@@ -61,7 +61,7 @@ _ = ⊤
 ```agda
 möbius : S¹ → Type
 möbius base = Bool
-möbius (loop i) = ua (not , not-is-equiv) i
+möbius (loop i) = ua not≃ i
 ```
 
 When pattern matching on the circle, we are asked to provide a basepoint
