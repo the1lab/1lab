@@ -3,6 +3,7 @@
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Instances.Algebras.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Shape.Terminal
@@ -13,7 +14,6 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Monad.Limits
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
@@ -410,7 +410,7 @@ categories are complete, and those are complete because $\Sets$ is.)
 module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
   open Topos T
 
-  Sheafify : Monad (PSh κ site)
+  Sheafify : Monad-on _
   Sheafify = Adjunction→Monad L⊣ι
 
   Sheafify-monadic : is-monadic L⊣ι
@@ -419,7 +419,7 @@ module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
   Topos-is-complete : is-complete κ κ 𝓣
   Topos-is-complete = equivalence→complete
     (is-equivalence.inverse-equivalence Sheafify-monadic)
-    (Eilenberg-Moore-is-complete
+    (Eilenberg-Moore-is-complete _
       (Functor-cat-is-complete (Sets-is-complete {ι = κ} {κ} {κ})))
 ```
 

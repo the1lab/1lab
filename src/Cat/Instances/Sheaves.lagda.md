@@ -5,6 +5,7 @@ open import Cat.CartesianClosed.Instances.PSh
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Instances.Algebras.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sheaves.Limits
@@ -13,7 +14,6 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Colimit.Base
-open import Cat.Diagram.Monad.Limits
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Shape.Two
@@ -97,7 +97,7 @@ presheaves, then sheafifying the result.
   Sh[]-is-complete : is-complete ℓ ℓ Sh[ C , J ]
   Sh[]-is-complete = equivalence→complete
     (is-equivalence.inverse-equivalence Sheafification-is-monadic)
-    (Eilenberg-Moore-is-complete
+    (Eilenberg-Moore-is-complete _
       (Functor-cat-is-complete (Sets-is-complete {ι = ℓ} {ℓ} {ℓ})))
 
   Sh[]-is-cocomplete : is-cocomplete ℓ ℓ Sh[ C , J ]
