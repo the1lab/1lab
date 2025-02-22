@@ -3,6 +3,7 @@
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Instances.Algebras.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Shape.Terminal
@@ -13,7 +14,6 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Monad.Limits
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base

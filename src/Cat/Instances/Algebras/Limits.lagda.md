@@ -17,7 +17,7 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Diagram.Monad.Limits {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (M : Monad-on F) where
+module Cat.Instances.Algebras.Limits {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (M : Monad-on F) where
 ```
 
 <!--
