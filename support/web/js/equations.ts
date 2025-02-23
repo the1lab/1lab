@@ -4,7 +4,7 @@ export function scrollToHash() {
   if (window.location.hash === '') return;
 
   const
-    id = window.location.hash.slice(1),
+    id = decodeURIComponent(window.location.hash.slice(1)),
     // #id doesn't work with numerical IDs
     elem = document.querySelector(`[id="${id}"]`);
 

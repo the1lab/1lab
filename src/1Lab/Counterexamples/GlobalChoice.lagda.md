@@ -32,7 +32,7 @@ We pick the loop on `Bool`{.Agda} that swaps the two elements.
 
 ```agda
   swap : Bool ≡ Bool
-  swap = ua (not , not-is-equiv)
+  swap = ua not≃
 ```
 
 The type of booleans is inhabited, so we can apply global choice to it.

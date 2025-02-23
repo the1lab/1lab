@@ -326,13 +326,13 @@ structures, one given by conjunction, one by disjunction, and prove that
 ```
 </div>
 
-I claim that `not`{.Agda} is a $\infty$-magma isomorphism between
+I claim that `not≃`{.Agda} is a $\infty$-magma isomorphism between
 `Conj`{.Agda} and `Disj`{.Agda}:
 
 ```agda
   not-iso : Conj ≃[ ∞-Magma ] Disj
-  not-iso .fst = not , not-is-equiv
-  not-iso .snd = fixup {A = Conj} {B = Disj} {f = _ , not-is-equiv} λ where
+  not-iso .fst = not≃
+  not-iso .snd = fixup {A = Conj} {B = Disj} {f = not≃} λ where
     false false → refl
     false true → refl
     true false → refl
@@ -380,8 +380,8 @@ We have a similar phenomenon that happens with NAND and NOR:
 
 ```agda
   not-iso' : Nand ≃[ ∞-Magma ] Nor
-  not-iso' .fst = not , not-is-equiv
-  not-iso' .snd = fixup {A = Nand} {B = Nor} {f = _ , not-is-equiv} λ where
+  not-iso' .fst = not≃
+  not-iso' .snd = fixup {A = Nand} {B = Nor} {f = not≃} λ where
     false false → refl
     false true → refl
     true false → refl
