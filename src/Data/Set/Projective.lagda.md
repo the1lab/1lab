@@ -105,7 +105,7 @@ merely inhabited sets. We can then uncurry this family to finish the proof.
 ```
 
 Moreover, set-projective types are stable under retracts. Suppose that
-we have $f : A \to B, g : B \to A$ with $f \circ g = id$ with $A$ set-projective,
+we have $f : A \to B, g : B \to A$ with $f \circ g = \id$ with $A$ set-projective,
 and let $P : B \to \set$ be a family of merely inhabited sets. We can
 precompose $P$ with $f$ to obtain an $A$-indexed family of sets whose
 product $\Pi (a : A) \to P(f(a))$ must be inhabited via projectivity of $A$.
@@ -219,7 +219,7 @@ every proposition is set-projective if and only if every set has split support.
 The following proof is adapted from [@Kraus-Escardó-Coquand-Altenkirch:2016].
 
 We will start with the reverse direction. Suppose that every proposition
-is set projective, and let $A$ be a set. The truncation of $A$ is a propositon,
+is set projective, and let $A$ be a set. The truncation of $A$ is a propositton,
 and the constant family $\| A \| \to A$ is a set-indexed family, so projectivity
 of $\| A \|$ directly gives us split support.
 

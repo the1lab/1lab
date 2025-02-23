@@ -250,7 +250,7 @@ $x$, giving a line of type families `p1`{.Agda} ranging from $\cE[-]
 
 We now "just" have to produce inhabitants of `p2`{.Agda} along $i : \II$
 which restrict to $\cE$ and $\cF$'s identity morphisms (and
-composition morphisms) at the endoints of $i$. We can do so by gluing,
+composition morphisms) at the endpoints of $i$. We can do so by gluing,
 now at the level of terms, against a heterogeneous composition. The
 details are quite nasty, but the core of it is extending the witness
 that $G$ respects identity to a path, over line given by gluing

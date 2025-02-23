@@ -178,7 +178,7 @@ $$
 \eta \circ s \circ R(f) \circ \eta = R(f) \circ \eta
 $$
 
-Finally, $\eta \circ s = id$, as $s$ is a section.
+Finally, $\eta \circ s = \id$, as $s$ is a section.
 
 ```agda
   unit-split-epic→left-full

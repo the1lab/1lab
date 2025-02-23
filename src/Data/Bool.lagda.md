@@ -27,7 +27,7 @@ module Data.Bool where
 open import Data.Bool.Base public
 ```
 
-Pattern matching on only the first argument might seem like a somewhat inpractical choice
+Pattern matching on only the first argument might seem like a somewhat impractical choice
 due to its asymmetry - however, it shortens a lot of proofs since we get a lot of judgemental
 equalities for free. For example, see the following statements:
 

@@ -234,7 +234,7 @@ common name, that **can** be used instead of deriving a name based on
 its type.
 
 Sometimes, this can result in verbose names. A bit of verbosity is
-preferrable to having a theorem whose name is not memorable. Deciding on
+preferable to having a theorem whose name is not memorable. Deciding on
 a good name for your lemma can be very hard: don't hesitate to ask on
 Discord for help.
 

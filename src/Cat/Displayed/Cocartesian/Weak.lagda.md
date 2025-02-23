@@ -358,7 +358,7 @@ in the following diagram commutes.
 As a general fact, every morphism in a cartesian fibration factors into
 a composite of a cartesian and vertical morphism, obtained by taking
 the universal factorisation of $m' : y' \to{m \cdot i} u'$. We shall
-denote this morphism as $id*$.
+denote this morphism as $\id^*$.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -377,7 +377,7 @@ denote this morphism as $id*$.
   \arrow["{m^{*}}", from=1-3, to=1-5]
   \arrow["{h^{*}}", from=2-1, to=1-3]
   \arrow["{h^{**}}", curve={height=-6pt}, from=2-3, to=1-3]
-  \arrow["{id^{*}}"', color={rgb,255:red,214;green,92;blue,92}, curve={height=6pt}, from=2-3, to=1-3]
+  \arrow["{\id^{*}}"', color={rgb,255:red,214;green,92;blue,92}, curve={height=6pt}, from=2-3, to=1-3]
 \end{tikzcd}
 ~~~
 
@@ -402,13 +402,13 @@ blue commutes.
   \arrow["{m^{*}}", from=1-3, to=1-5]
   \arrow["{h^{*}}", color={rgb,255:red,92;green,92;blue,214}, from=2-1, to=1-3]
   \arrow["{h^{**}}", curve={height=-6pt}, from=2-3, to=1-3]
-  \arrow["{id^{*}}"', color={rgb,255:red,92;green,92;blue,214}, curve={height=6pt}, from=2-3, to=1-3]
+  \arrow["{\id^{*}}"', color={rgb,255:red,92;green,92;blue,214}, curve={height=6pt}, from=2-3, to=1-3]
 \end{tikzcd}
 ~~~
 
 $h^{*}$ is the unique vertical map that factorises $h'$ through $m'$,
 and $h' = m' \cdot f'$ by our hypothesis, so it suffices to show that
-$m^{*} \cdot id^{*} \cdot f' = m' \cdot f'$. This commutes because
+$m^{*} \cdot \id^{*} \cdot f' = m' \cdot f'$. This commutes because
 $m^{*}$ is cartesian, thus finishing the proof.
 
 ```agda
@@ -973,7 +973,7 @@ spare the reader the details.
 # Weak opfibrations and equivalence of Hom sets
 
 If $\cE$ is a weak opfibration, then the hom sets $x' \to_f y'$ and
-$f^{*}(x') \to_{id} y'$ are equivalent, where $f^{*}(x')$ is the codomain
+$f^{*}(x') \to_{\id} y'$ are equivalent, where $f^{*}(x')$ is the codomain
 of the lift of $f$ along $y'$.
 
 ```agda
