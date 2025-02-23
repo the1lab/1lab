@@ -364,8 +364,12 @@ private module _ {ℓ : Level} where
 Thus, Graphs are presheaves and are thereby a [[topos]].
 
 ```agda
-  graphs-are-presheaves : (Graphs ℓ ℓ) ≡ PSh ℓ ·⇉·
-  graphs-are-presheaves = Precategory-path _ g→p-is-iso ∙ ap (PSh ℓ) ·⇇·≡·⇉·
+  graphs-are-presheaves : Equivalence (Graphs ℓ ℓ) (PSh ℓ ·⇇·)
+  graphs-are-presheaves = eqv where
+    open Equivalence
+    eqv : Equivalence (Graphs ℓ ℓ) (PSh ℓ ·⇇·)
+    eqv .To = graph→presheaf
+    eqv .To-equiv = is-precat-iso→is-equivalence g→p-is-iso
 ```
 
 ## The underlying graph of a strict category {defines="underlying-graph underlying-graph-functor"}
