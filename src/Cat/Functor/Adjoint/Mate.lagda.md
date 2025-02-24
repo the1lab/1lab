@@ -12,7 +12,7 @@ import Cat.Reasoning
 module Cat.Functor.Adjoint.Mate where
 ```
 
-# Mates
+# Mates {defines="mate"}
 
 Let $F \dashv U : A \to B$, $F' \dashv U' : A' \to B'$ be a pair of
 adjunctions, and let $X : A \to A'$ and $Y : B \to B'$ be a pair of
