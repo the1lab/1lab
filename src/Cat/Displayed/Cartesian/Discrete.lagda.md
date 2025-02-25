@@ -29,7 +29,7 @@ open is-cartesian
 ```
 -->
 
-# Discrete fibrations
+# Discrete fibrations {defines="discrete-fibration"}
 
 A **discrete fibration** is a [[displayed category]] whose [[fibre
 categories]] are all _discrete categories_: thin, univalent groupoids.
