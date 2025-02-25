@@ -4,6 +4,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.BeckChevalley
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Product
@@ -91,15 +92,18 @@ $h$ is cartesian if and only if $k$ is cocartesian.
         → (v : B.Hom b₁ b₂)
         → (x' : Ob[ a , b₁ ])
         → Cocartesian-lift E (A.id , v) x'
-      cart-cocart-commute
+      cart-beck-chevalley
         : ∀ {a₁ a₂ : A.Ob} {b₁ b₂ : B.Ob}
         → {u : A.Hom a₁ a₂} {v : B.Hom b₁ b₂}
-        → {w' : Ob[ a₁ , b₁ ]} {x' : Ob[ a₂ , b₁ ]} {y' : Ob[ a₁ , b₂ ]} {z' : Ob[ a₂ , b₂ ]}
-        → {f : Hom[ A.id , v ] x' z'} {g : Hom[ u , B.id ] w' x'}
-        → {h : Hom[ u , B.id ] y' z'} {k : Hom[ A.id , v ] w' y'}
-        → f ∘' g ≡[ sym A.id-comm ,ₚ B.id-comm ] h ∘' k
-        → is-cocartesian E (A.id , v) f → is-cartesian E (u , B.id) g
-        → is-cartesian E (u , B.id) h ↔ is-cocartesian E (A.id , v) k
+        → right-beck-chevalley E
+            (A.id , v) (u , B.id) (u , B.id) (A.id , v)
+            (sym A.id-comm ,ₚ B.id-comm)
+      cocart-beck-chevalley
+        : ∀ {a₁ a₂ : A.Ob} {b₁ b₂ : B.Ob}
+        → {u : A.Hom a₁ a₂} {v : B.Hom b₁ b₂}
+        → left-beck-chevalley E
+            (A.id , v) (u , B.id) (u , B.id) (A.id , v)
+            (sym A.id-comm ,ₚ B.id-comm)
 ```
 
 This definition is rather opaque, so let's break it down. The first two

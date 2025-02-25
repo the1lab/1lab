@@ -482,8 +482,6 @@ lifts exit.
     E-fib .cocart-lift v x' .y' = v ^! x'
     E-fib .cocart-lift v x' .lifting = ι! v x'
     E-fib .cocart-lift v x' .cocartesian = vertical-cocartesian (ι! v x')
-    E-fib .cart-cocart-commute p f-cocart g-cart ._↔_.to _ =
-      vertical-cocartesian _
-    E-fib .cart-cocart-commute p f-cocart g-cart ._↔_.from _ =
-      vertical-cartesian _
+    E-fib .cart-beck-chevalley _ _ _ _ = vertical-cartesian _
+    E-fib .cocart-beck-chevalley _ _ _ _ = vertical-cocartesian _
 ```
