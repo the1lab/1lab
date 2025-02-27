@@ -412,3 +412,22 @@ factorial-positive (suc n) = *-preserves-≤ 1 (suc n) 1 (factorial n) (s≤s 0�
 ≤-factorial zero = 0≤x
 ≤-factorial (suc n) = subst (_≤ factorial (suc n)) (*-oner (suc n)) (*-preserves-≤ (suc n) (suc n) 1 (factorial n) ≤-refl (factorial-positive n))
 ```
+
+## Iteration
+
+<!--
+```agda
+private variable
+  ℓ : Level
+  A : Type ℓ
+```
+-->
+
+```agda
+iter-+
+  : ∀ m n
+  → (f : A → A) (x : A)
+  → iter (m + n) f x ≡ iter m f (iter n f x)
+iter-+ zero n f x = refl
+iter-+ (suc m) n f x = ap f (iter-+ m n f x)
+```
