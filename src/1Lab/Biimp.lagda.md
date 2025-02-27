@@ -7,8 +7,12 @@ description: |
 open import 1Lab.Reflection.Record
 open import 1Lab.Extensionality
 open import 1Lab.HLevel.Closure
+open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel
 open import 1Lab.Equiv
+open import 1Lab.Type.Sigma
+open import Data.Sum.Base
+open import 1Lab.Type.Pi
 open import 1Lab.Type
 
 open import Meta.Invariant
@@ -40,7 +44,8 @@ open _↔_
 ```agda
 private variable
   ℓ ℓ' : Level
-  A B C : Type ℓ
+  A B C D : Type ℓ
+  P Q : A → Type ℓ
 ```
 -->
 
@@ -139,5 +144,26 @@ biimp→equiv A-prop B-prop f =
 infix 21 _↔_
 infixr 30 _∙↔_
 infix 31 _↔⁻¹
+```
+-->
+
+<!--
+```agda
+-- Misc. helpers for constructing biimplications
+Π-cod↔ : ((x : A) → P x ↔ Q x) → ((x : A) → P x) ↔ ((x : A) → Q x)
+Π-cod↔ f .to k x = f x .to (k x)
+Π-cod↔ f .from k x = f x .from (k x)
+
+Σ-↔₂ : ((x : A) → P x ↔ Q x) → Σ A P ↔ Σ A Q
+Σ-↔₂ f .to (x , p) = x , f x .to p
+Σ-↔₂ f .from (x , q) = x , f x .from q
+
+∥-∥-↔ : A ↔ B → ∥ A ∥ ↔ ∥ B ∥
+∥-∥-↔ f .to = ∥-∥-map (f .to)
+∥-∥-↔ f .from = ∥-∥-map (f .from)
+
+⊎-↔ : A ↔ B → C ↔ D → (A ⊎ C) ↔ (B ⊎ D)
+⊎-↔ f g .to = ⊎-map (f .to) (g .to)
+⊎-↔ f g .from = ⊎-map (f .from) (g .from)
 ```
 -->
