@@ -1,10 +1,12 @@
 module 1Lab.Inductive where
 
-open import 1Lab.Reflection
+open import 1Lab.Reflection hiding (absurd)
 open import 1Lab.Univalence
 open import 1Lab.Equiv
 open import 1Lab.Type hiding (case_of_ ; case_return_of_)
 open import 1Lab.Path
+
+open import Data.Sum.Base
 
 {-
 Automation for applying induction principles
@@ -111,6 +113,24 @@ instance
   Inductive-≃ = Inductive-default
 
   {-# OVERLAPPING Inductive-≃ #-}
+
+  -- We split up sums, and apply rules to both sides of the eliminator.
+  Inductive-⊎
+    : ∀ {ℓm ℓm'} {C : A ⊎ B → Type ℓ}
+    → ⦃ _ : Inductive ((a : A) → C (inl a)) ℓm ⦄
+    → ⦃ _ : Inductive ((b : B) → C (inr b)) ℓm' ⦄
+    → Inductive ((ab : A ⊎ B) → C ab) (ℓm ⊔ ℓm')
+  Inductive-⊎ {C = _} ⦃ il ⦄ ⦃ ir ⦄ .methods = il .methods × ir .methods
+  Inductive-⊎ {C = _} ⦃ il ⦄ ⦃ ir ⦄ .from (lm , rm) (inl a) = il .from lm a
+  Inductive-⊎ {C = _} ⦃ il ⦄ ⦃ ir ⦄ .from (lm , rm) (inr b) = ir .from rm b
+
+  -- If we ever see a proof of ⊥, then we stop resolving rules, and use ⊤
+  -- for the methods of induction.
+  Inductive-⊥
+    : ∀ {B : ⊥ → Type ℓ}
+    → Inductive ((ff : ⊥) → B ff) lzero
+  Inductive-⊥ .methods = ⊤
+  Inductive-⊥ .from _ ff = absurd ff
 
 -- For constructing (dependent) functions, there are two distinct prefix
 -- entry points: rec! and elim!. The difference is just in name, to
