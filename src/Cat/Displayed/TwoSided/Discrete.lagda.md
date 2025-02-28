@@ -59,7 +59,7 @@ module _
 ```
 
 2. For every $u : \cA(A_1, A_2)$ and $Y : \cE_{A_2, B}$, there exists a
-unique pair $u^{*}, \pi_{u,Y}$ that fit into the diagram below.
+unique pair $u^{*}, \pi_{u,Y}$ that fits into the diagram below.
 
 ~~~{.quiver}
 \begin{tikzcd}
