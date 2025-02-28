@@ -3,6 +3,7 @@ description: We establish that right adjoints preserve limits.
 ---
 <!--
 ```agda
+open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
@@ -14,6 +15,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
 ```
 -->
 
@@ -31,8 +33,8 @@ module _
   private
     module L = Func L
     module R = Func R
-    module C = Precategory C
-    module D = Precategory D
+    module C = Cat C
+    module D = Cat D
     module adj = _⊣_ L⊣R
     open _=>_
 ```
@@ -126,6 +128,19 @@ if we do it by hand.
       sym (L-R-adjunct L⊣R other)
       ∙ ap (L-adjunct L⊣R)
            (d-pb .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+
+  right-adjoint→is-monic : ∀ {x y} {f : D.Hom x y} → D.is-monic f → C.is-monic (R.₁ f)
+  right-adjoint→is-monic {f = f} mono =
+    let
+      pb : is-pullback D D.id f D.id f
+      pb = is-monic→is-pullback mono
+
+      pb' : is-pullback C (R.₁ D.id) (R.₁ f) (R.₁ D.id) (R.₁ f)
+      pb' = right-adjoint→is-pullback pb
+
+      pb'' = is-pullback C C.id (R.₁ f) C.id (R.₁ f)
+      pb'' = subst-is-pullback R.F-id refl R.F-id refl pb'
+    in is-pullback→is-monic pb''
 
   right-adjoint→is-equaliser
     : ∀ {e a b} {f g : D.Hom a b} {equ : D.Hom e a}
