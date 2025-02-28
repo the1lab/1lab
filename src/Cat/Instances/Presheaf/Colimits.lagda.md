@@ -18,7 +18,8 @@ module Cat.Instances.Presheaf.Colimits {o ℓ} (κ : Level) (C : Precategory o �
 # Colimits in presheaf categories
 
 Just like [[limits in presheaf categories]], these are computed
-pointwise as colimits in $\Sets$.
+pointwise as colimits in $\Sets$. Therefore, this page is only lightly
+commented.
 
 <!--
 ```agda
@@ -71,7 +72,11 @@ PSh-coproducts A B = coprod where
   coprod .has-is-coproduct .unique p q = ext λ where
     a (inl x) → unext p a x
     a (inr x) → unext q a x
+```
 
+The simplest colimit to construct are the [[coequalisers]].
+
+```agda
 PSh-coequaliser
   : ∀ {X Y} (f g : PSh.Hom X Y)
   → Coequaliser (PSh κ C) f g

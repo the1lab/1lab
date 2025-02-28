@@ -138,14 +138,25 @@ PSh-finite-limits = record
 ```
 -->
 
+We can also show abstractly that every limit of presheaves is computed
+pointwise, as for the finite constructions above. First, note that the
+operation $F \mapsto F(c)$, for a fixed $c : \cC$, is functorial on
+presheaves; this is the **evaluation functor**.
+
 ```agda
 private
   ev : ∀ {ℓs} (c : ⌞ C ⌟) → Functor (PSh ℓs C) (Sets ℓs)
-  ev c .F₀ F = F # c
-  ev c .F₁ h i = h .η _ i
-  ev c .F-id = refl
+  ev c .F₀ F    = F # c
+  ev c .F₁ h i  = h .η _ i
+  ev c .F-id    = refl
   ev c .F-∘ f g = refl
+```
 
+This functor has a [[left adjoint]], and since [[right adjoints preserve
+limits|rapl]], we conclude that if $L$ is any limit of a diagram $F$,
+then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
+
+```agda
   clo : ∀ {ℓs} (c : ⌞ C ⌟) → Functor (Sets ℓs) (PSh (ℓs ⊔ ℓ) C)
   clo c .F₀ A = λ where
     .F₀ d         → el! (⌞ A ⌟ × Hom d c)
@@ -166,7 +177,14 @@ private
     iiso {y = y} .inv f .is-natural x z g = ext λ a h → PSh.expand y refl
     iiso {y = y} .rinv x = ext λ a → PSh.F-id y
     iiso {y = y} .linv x = ext (λ i y h → sym (x .is-natural _ _ _ $ₚ _) ∙ ap (x .η i) (refl ,ₚ idl h))
+```
 
+As an important consequence is that if a natural transformation $X \to
+Y$ is monic, then so are all of its components --- this follows from the
+above and from the observation that being a monomorphism is a limit
+property.
+
+```agda
 is-monic→is-embedding-at
   : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
   → Cat.is-monic (PSh ℓ C) m
