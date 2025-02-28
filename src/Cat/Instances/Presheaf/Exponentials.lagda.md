@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Hom.Yoneda
 open import Cat.Diagram.Exponential
 open import Cat.Instances.Functor
 open import Cat.Diagram.Product
@@ -34,6 +35,36 @@ open _⊣_
 ```
 -->
 
+# Exponential objects in presheaf categories
+
+This module presents a construction of exponential objects in presheaf
+categories. First, we'll use the [[yoneda lemma]] to divine what the
+answer *should be*, and then we'll use that to finish the actual
+construction. First, fix a pair of presheaves $A$ and $B$ over some
+category $\cC$, and suppose that the exponential object $B^A$ exists.
+
+```agda
+module _ (A B : Functor (C ^op) (Sets ℓ))
+         (exp : Exponential Cat[ C ^op , Sets ℓ ] PSh-products PSh-terminal A B)
+  where
+  open Exponential exp
+```
+
+The yoneda lemma says that the value $B^A(c)$ of the assumed exponential
+object is the set of natural transformations $\hom(-,x) \to B^A$; In
+turn, the universal property of $B^A$ as an exponential tells us that
+this $\hom$-set is equivalent to $$ \hom(-, x) \times A \to B $$, and
+this essentially fixes the value of $B^A(c)$.
+
+```agda
+  _ : ∀ x → ⌞ B^A .F₀ x ⌟ ≃ ((よ₀ C x ⊗₀ A) => B)
+  _ = λ x →
+    ⌞ B^A .F₀ x ⌟       ≃⟨ yo {C = C} B^A , yo-is-equiv _ ⟩
+    (よ₀ C x => B^A)    ≃˘⟨ ƛ , lambda-is-equiv ⟩
+    (よ₀ C x ⊗₀ A) => B ≃∎
+```
+
+
 <!--
 ```agda
 module _ (A B : ⌞ PSh.Ob ⌟) where
@@ -54,6 +85,10 @@ module _ (A B : ⌞ PSh.Ob ⌟) where
   PSh[_,_] .F-∘ f g = ext λ h i j x →
     ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
 ```
+
+All that remains is to show that, fixing $A$, this construction is
+functorial in $B$, which is essentially symbol shuffling; and to show
+that this functor is right adjoint to the "product with $A$" functor.
 
 ```agda
 PSh-closed : Cartesian-closed (PSh ℓ C) PSh-products PSh-terminal

@@ -68,9 +68,7 @@ fibre, this time of $\name{m}$, and saying that it is $m$ means that
 $\name{m}$ assigns $\top$ to precisely those $x : X$ which are in $m$.
 
 <!--
-```
-_ = fibre
-
+```agda
 module _ {o ℓ} (C : Precategory o ℓ) where
   open Cat.Reasoning C
   open Subobjs C

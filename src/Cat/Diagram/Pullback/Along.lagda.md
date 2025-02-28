@@ -13,11 +13,6 @@ import Cat.Reasoning as Cat
 module Cat.Diagram.Pullback.Along where
 ```
 
-<!--
-```agda
-```
--->
-
 # Pullbacks along an indeterminate morphism
 
 <!--
@@ -58,7 +53,7 @@ is the [[generic subobject]] $\true : \top \to \Omega$.
 ```
 
 <!--
-```
+```agda
 open is-pullback-along
 open is-pullback
 open Pullback
