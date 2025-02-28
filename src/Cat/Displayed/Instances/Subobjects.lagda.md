@@ -156,35 +156,38 @@ pulling $y'$ back along $f$; this base change remains a monomorphism.
 Now given the data in red, we verify that the dashed arrow exists, which
 is enough for its uniqueness.
 
+<!--
 ```agda
--- The blue square:
-pullback-subobject
-  : has-pullbacks B
-  → ∀ {X Y} (h : Hom X Y) (g : Subobject Y)
-  → Subobject X
-pullback-subobject pb h g .domain = pb h (g .map) .apex
-pullback-subobject pb h g .map = pb h (g .map) .p₁
-pullback-subobject pb h g .monic = is-monic→pullback-is-monic
-  (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
+module with-pullbacks (pb : has-pullbacks B) where
+```
+-->
 
-Subobject-fibration
-  : has-pullbacks B
-  → Cartesian-fibration Subobjects
-Subobject-fibration pb f y' = l where
-  it : Pullback _ _ _
-  it = pb (y' .map) f
-  l : Cartesian-lift Subobjects f y'
+```agda
+  -- The blue square:
+  pullback-subobject
+    : ∀ {X Y} (h : Hom X Y) (g : Subobject Y)
+    → Subobject X
+  pullback-subobject h g .domain = pb h (g .map) .apex
+  pullback-subobject h g .map = pb h (g .map) .p₁
+  pullback-subobject h g .monic = is-monic→pullback-is-monic
+    (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
 
-  l .x' = pullback-subobject pb f y'
-  l .lifting .map = pb f (y' .map) .p₂
-  l .lifting .sq  = pb f (y' .map) .square
+  Subobject-fibration : Cartesian-fibration Subobjects
+  Subobject-fibration f y' = l where
+    it : Pullback _ _ _
+    it = pb (y' .map) f
+    l : Cartesian-lift Subobjects f y'
 
-  -- The dashed red arrow:
-  l .cartesian .universal {u' = u'} m h' = λ where
-    .map → pb f (y' .map) .universal (pushr refl ∙ h' .sq)
-    .sq  → sym (pb f (y' .map) .p₁∘universal)
-  l .cartesian .commutes _ _ = prop!
-  l .cartesian .unique _ _   = prop!
+    l .x' = pullback-subobject f y'
+    l .lifting .map = pb f (y' .map) .p₂
+    l .lifting .sq  = pb f (y' .map) .square
+
+    -- The dashed red arrow:
+    l .cartesian .universal {u' = u'} m h' = λ where
+      .map → pb f (y' .map) .universal (pushr refl ∙ h' .sq)
+      .sq  → sym (pb f (y' .map) .p₁∘universal)
+    l .cartesian .commutes _ _ = prop!
+    l .cartesian .unique _ _   = prop!
 ```
 
 ## As a (weak) cocartesian fibration
@@ -269,7 +272,7 @@ Subobject-opfibration
   → (pb : has-pullbacks B)
   → Cocartesian-fibration Subobjects
 Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
-  (Subobject-fibration pb)
+  (with-pullbacks.Subobject-fibration pb)
   (Subobject-weak-opfibration images)
 ```
 

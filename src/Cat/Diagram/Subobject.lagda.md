@@ -125,11 +125,10 @@ module _ {o ℓ} {C : Precategory o ℓ} (fc : Finitely-complete C) (cat : is-ca
   open Subr (fc .Finitely-complete.pullbacks)
   open Terminal (fc .Finitely-complete.terminal) using (top)
 
-  private
-    pt : ∀ {A} (it : Hom top A) → Subobject A
-    pt it .domain = top
-    pt it .map = it
-    pt it .monic g h x = Terminal.!-unique₂ (fc .Finitely-complete.terminal) _ _
+  point→subobject : ∀ {A} (it : Hom top A) → Subobject A
+  point→subobject it .domain = top
+  point→subobject it .map = it
+  point→subobject it .monic g h x = Terminal.!-unique₂ (fc .Finitely-complete.terminal) _ _
 ```
 -->
 
@@ -162,15 +161,15 @@ already natural.
   from-classification
     : ∀ {Ω} (true : Hom top Ω)
     → (name : ∀ {A} (m : Subobject A) → Hom A Ω)
-    → (∀ {A} (m : Subobject A) → m ≅ₘ name m ^* pt true)
-    → (∀ {A} (h : Hom A Ω) → name (h ^* pt true) ≡ h)
+    → (∀ {A} (m : Subobject A) → m ≅ₘ name m ^* point→subobject true)
+    → (∀ {A} (h : Hom A Ω) → name (h ^* point→subobject true) ≡ h)
     → Subobject-classifier C
   from-classification tru nm invl invr = done where
     done : Subobject-classifier C
     done .Ω = _
-    done .true = pt tru
+    done .true = point→subobject tru
     done .generic .name = nm
-    done .generic .classifies m = iso→is-pullback-along {m = m} {n = pt tru} (invl m)
+    done .generic .classifies m = iso→is-pullback-along {m = m} {n = point→subobject tru} (invl m)
 ```
 
 Note that the uniqueness part of the universal property is satisfied by
@@ -181,9 +180,9 @@ $\Sub(A)$; so we have $$\name{m} = \name{h'^*\true} = h'$$.
 ```agda
     done .generic .unique {m = m} {h'} p =
       let
-        rem₁ : m ≡ h' ^* pt tru
+        rem₁ : m ≡ h' ^* point→subobject tru
         rem₁ = Sub-is-category cat .to-path $
-          is-pullback-along→iso {m = m} {n = pt tru} p
+          is-pullback-along→iso {m = m} {n = point→subobject tru} p
       in sym (ap nm rem₁ ∙ invr _)
 ```
 
@@ -194,8 +193,8 @@ $\Sub(A)$; so we have $$\name{m} = \name{h'^*\true} = h'$$.
       {Ω}  : Ob
       true : Hom top Ω
       name : ∀ {A} (m : Subobject A) → Hom A Ω
-      named-name : ∀ {A} (m : Subobject A) → m ≅ₘ name m ^* pt true
-      name-named : ∀ {A} (h : Hom A Ω) → name (h ^* pt true) ≡ h
+      named-name : ∀ {A} (m : Subobject A) → m ≅ₘ name m ^* point→subobject true
+      name-named : ∀ {A} (h : Hom A Ω) → name (h ^* point→subobject true) ≡ h
 
 module _ where
   open make-subobject-classifier hiding (Ω)
@@ -267,7 +266,11 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
   named-name = is-pullback-along→iso (classifies _)
 
   name-injective : ∀ {A} {m n : Subobject A} → name m ≡ name n → m ≅ₘ n
-  name-injective p = named-name Sub.∘Iso path→iso (ap named p) Sub.∘Iso Sub._Iso⁻¹ named-name
+  name-injective {m = m} {n} p =
+    m              Sub.≅⟨ named-name ⟩
+    named (name m) Sub.≅⟨ path→iso (ap named p) ⟩
+    named (name n) Sub.≅˘⟨ named-name ⟩
+    n              Sub.≅∎
 
   name-ap : ∀ {A} {m n : Subobject A} → m ≅ₘ n → name m ≡ name n
   name-ap {m = m} im = so .unique record

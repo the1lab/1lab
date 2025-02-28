@@ -1,11 +1,12 @@
 <!--
 ```agda
+open import Cat.Instances.Presheaf.Exponentials
 open import Cat.Instances.Sheaves.Exponentials
-open import Cat.CartesianClosed.Instances.PSh
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Algebras.Limits
+open import Cat.Instances.Presheaf.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sheaves.Limits
@@ -126,7 +127,7 @@ finite cases:
 ```agda
   Sh[]-products : has-products Sh[ C , J ]
   Sh[]-products (A , ashf) (B , bshf) = prod where
-    prod' = PSh-products {C = C} A B
+    prod' = PSh-products _ C A B
 
     prod : Product Sh[ C , J ] _ _
     prod .apex .fst = prod' .apex
@@ -147,8 +148,8 @@ The terminal object in sheaves is even easier to define:
 
 ```agda
   Sh[]-terminal : Terminal Sh[ C , J ]
-  Sh[]-terminal .top .fst = PSh-terminal {C = C} .top
-  Sh[]-terminal .has⊤ (S , _) = PSh-terminal {C = C} .has⊤ S
+  Sh[]-terminal .top .fst = PSh-terminal _ C .top
+  Sh[]-terminal .has⊤ (S , _) = PSh-terminal _ C .has⊤ S
 
   Sh[]-terminal .top .snd .whole _ _     = lift tt
   Sh[]-terminal .top .snd .glues _ _ _ _ = refl
@@ -165,7 +166,7 @@ closed]].
 ```agda
   Sh[]-cc : Cartesian-closed Sh[ C , J ] Sh[]-products Sh[]-terminal
   Sh[]-cc .has-exp (A , _) (B , bshf) = exp where
-    exp' = PSh-closed {C = C} .has-exp A B
+    exp' = PSh-closed C .has-exp A B
 
     exp : Exponential Sh[ C , J ] _ _ _ _
     exp .B^A .fst = exp' .B^A

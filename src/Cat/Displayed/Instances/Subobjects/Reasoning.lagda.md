@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.display.top:100 #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Pullback.Along
 open import Cat.Displayed.Cartesian
@@ -26,7 +27,7 @@ open Pullback
 open Cat C
 
 private
-  module Ix = Cat.Displayed.Cartesian.Indexing Subobjects (Subobject-fibration pb)
+  module Ix = Cat.Displayed.Cartesian.Indexing Subobjects (with-pullbacks.Subobject-fibration pb)
   variable
     X Y Z : Ob
     f g h : Hom X Y
@@ -50,13 +51,12 @@ open Sub
 # Subobjects in a cartesian category
 
 ```agda
-_^*_ : (f : Hom X Y) (m : Subobject Y) → Subobject X
-f ^* m = pullback-subobject pb f m
+open with-pullbacks pb renaming (pullback-subobject to infixr 35 _^*_) public
+```
 
+```agda
 ^*-univ : ≤-over f m n → m ≤ₘ f ^* n
-^*-univ = Cartesian-fibration.has-lift.universalv (Subobject-fibration pb) _ _
-
-infixr 35 _^*_
+^*-univ = Cartesian-lift.universalv (Subobject-fibration _ _)
 
 ^*-id : id ^* m ≅ₘ m
 ^*-id .to       = Ix.^*-id-to
@@ -70,30 +70,20 @@ infixr 35 _^*_
 
 ⊤ₘ : Subobject X
 ⊤ₘ .domain = _
-⊤ₘ .map = id
-⊤ₘ .monic = id-monic
+⊤ₘ .map    = id
+⊤ₘ .monic  = id-monic
 
 opaque
   !ₘ : m ≤ₘ ⊤ₘ
   !ₘ {m = m} = record { map = m .map ; sq = refl }
 
-opaque
-  _∩ₘ_ : Subobject X → Subobject X → Subobject X
-  m ∩ₘ n = Sub-products pb m n .Product.apex
-
-  infixr 30 _∩ₘ_
-
-opaque
-  unfolding _∩ₘ_
-
-  ∩ₘ≤l : m ∩ₘ n ≤ₘ m
-  ∩ₘ≤l = Sub-products pb _ _ .Product.π₁
-
-  ∩ₘ≤r : m ∩ₘ n ≤ₘ n
-  ∩ₘ≤r = Sub-products pb _ _ .Product.π₂
-
-  ∩ₘ-univ : ∀ {p} → p ≤ₘ m → p ≤ₘ n → p ≤ₘ m ∩ₘ n
-  ∩ₘ-univ = Sub-products pb _ _ .Product.⟨_,_⟩
+module _ {X} where
+  open Binary-products (Sub X) (Sub-products pb) public renaming
+    ( _⊗₀_  to infixr 30 _∩ₘ_
+    ; π₁    to ∩ₘ≤l
+    ; π₂    to ∩ₘ≤r
+    ; ⟨_,_⟩ to ∩ₘ-univ
+    )
 
 opaque
   ∩ₘ-idl : ⊤ₘ ∩ₘ m ≅ₘ m
@@ -108,8 +98,6 @@ opaque
     (∩ₘ-univ (∩ₘ≤l Sub.∘ ∩ₘ≤l) (∩ₘ-univ (∩ₘ≤r Sub.∘ ∩ₘ≤l) ∩ₘ≤r))
 
 opaque
-  unfolding _∩ₘ_
-
   ^*-∩ₘ : f ^* (m ∩ₘ n) ≅ₘ f ^* m ∩ₘ f ^* n
   ^*-∩ₘ {f = f} {m = m} {n = n} = Sub-antisym
     (∩ₘ-univ

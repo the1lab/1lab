@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.CartesianClosed.Instances.PSh
+open import Cat.Instances.Presheaf.Exponentials
 open import Cat.Diagram.Sieve
 open import Cat.Functor.Base
 open import Cat.Site.Closure
@@ -45,12 +45,12 @@ exponential $B^A$ is constructed[^yoneda] to have sections $$(B^A)(x) =
 is-sheaf-exponential
   : ∀ {ℓ ℓs} {C : Precategory ℓ ℓ} (J : Coverage C ℓs) (A B : Functor (C ^op) (Sets ℓ))
   → is-sheaf J B
-  → is-sheaf J (PSh[_,_] {C = C} A B)
+  → is-sheaf J (PSh[_,_] C A B)
 is-sheaf-exponential {C = C} J A B bshf = from-is-sheaf₁ λ c → done where
   open Cat C
   module bshf = sat bshf
 
-  psh = PSh[_,_] {C = C} A B
+  psh = PSh[_,_] C A B
 ```
 
 The first thing we'll do is show that $B^A$ is $J$-separated. Let $R$ be
@@ -116,7 +116,7 @@ showed separatedness we can show naturality, and that the resulting
 natural transformation really does glue $p$.
 
 ```agda
-    s' : Section (PSh[_,_] {C = C} A B) p
+    s' : Section (PSh[_,_] C A B) p
     s' .whole .η x (f , e) = it .whole module s' where
       it : Section B (p' e f)
       it = bshf.split (pull f (inc c)) (p' e f)
