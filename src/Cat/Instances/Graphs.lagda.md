@@ -262,7 +262,7 @@ of sets.
 
 That is, a graph $G$^[whose edges and vertices live in the same
 universe] is the same as functor from the [[walking parallel arrows]]
-category to $\Sets$. Furthermore, presheaves and functors to set are
+category to $\Sets$. Furthermore, presheaves and functors to $\Sets$ are
 equivalent as this category is self-dual.
 
 <!--
@@ -361,7 +361,7 @@ private module _ {ℓ : Level} where
 ```
 -->
 
-Thus, Graphs are presheaves and are thereby a [[topos]].
+Thus, $\Graphs$ are presheaves and are thereby a [[topos]].
 
 ```agda
   graphs-are-presheaves : Equivalence (Graphs ℓ ℓ) (PSh ℓ ·⇇·)
