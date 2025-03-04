@@ -29,7 +29,7 @@ open is-cartesian
 ```
 -->
 
-# Discrete fibrations
+# Discrete fibrations {defines="discrete-fibration"}
 
 A **discrete fibration** is a [[displayed category]] whose [[fibre
 categories]] are all _discrete categories_: thin, univalent groupoids.
@@ -203,7 +203,7 @@ that every vertical morphism in a discrete fibration is invertible.
       x''≡x' = ap fst (discrete→vertical-id disc (x' , f'))
 ```
 
-## Discrete fibrations are presheaves
+## Discrete fibrations are presheaves {defines="discrete-fibrations-are-presheaves"}
 
 As noted earlier, a discrete fibration over $\cB$ encodes the same
 data as a presheaf on $\cB$. First, let us show that we can construct
