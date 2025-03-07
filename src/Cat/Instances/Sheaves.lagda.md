@@ -1,18 +1,18 @@
 <!--
 ```agda
 open import Cat.Instances.Presheaf.Exponentials
-open import Cat.Instances.Sheaf.Exponentials
+open import Cat.Instances.Sheaf.Limits.Finite
 open import Cat.Functor.Equivalence.Complete
+open import Cat.Instances.Sheaf.Exponentials
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Algebras.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
-open import Cat.Instances.Sheaf.Limits
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Sets.Complete
-open import Cat.Instances.Sheaf.Limits.Finite
+open import Cat.Instances.Sheaf.Limits
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Equivalence
