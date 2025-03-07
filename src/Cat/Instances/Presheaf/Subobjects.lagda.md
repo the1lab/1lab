@@ -14,8 +14,8 @@ open import Cat.Diagram.Sieve
 open import Cat.Prelude
 
 import Cat.Displayed.Instances.Subobjects.Reasoning as Sub
-import Cat.Instances.Presheaf.Limits as Lim
 import Cat.Functor.Reasoning.Presheaf as PSh
+import Cat.Instances.Presheaf.Limits as Lim
 import Cat.Reasoning as Cat
 
 open Subobject-classifier

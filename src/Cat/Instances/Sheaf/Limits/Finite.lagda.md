@@ -1,9 +1,9 @@
 <!--
 ```agda
 open import Cat.Instances.Presheaf.Limits
-open import Cat.Instances.Sheaf.Limits
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Instances.Shape.Cospan
+open import Cat.Instances.Sheaf.Limits
 open import Cat.Diagram.Limit.Product
 open import Cat.Instances.Shape.Two
 open import Cat.Diagram.Limit.Base
