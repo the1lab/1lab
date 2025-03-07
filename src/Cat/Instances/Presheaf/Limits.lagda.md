@@ -36,9 +36,12 @@ open C
 # Limits in presheaf categories {defines="limits-in-presheaf-categories"}
 
 We present an explicit construction of finite limits in the category
-$\PSh(\cC)$ of presheaves on $\cC$. These are computed pointwise, with
+$\psh(\cC)$ of presheaves on $\cC$. These are computed pointwise, with
 the value of e.g. $(A \times B)(c)$ being the set $A(c) \times B(c)$.
 Therefore, the constructions below are mostly rote.
+
+First, the [[terminal]] presheaf is constantly the unit set, and all the
+laws (functoriality, naturality, universality) are trivial:
 
 ```agda
 ⊤PSh : ⌞ PSh κ C ⌟
@@ -54,6 +57,11 @@ PSh-terminal = record { has⊤ = uniq } where
   uniq x .centre .is-natural _ _ _ = refl
   uniq x .paths f = trivial!
 ```
+
+The product presheaf is as described in the introduction, now with all
+the laws being componentwise; the projection maps are componentwise the
+product projections from $\Sets$, and the pairing $\langle f, g \rangle$
+is, componentwise, pairing.
 
 ```agda
 _×PSh_ : ⌞ PSh κ C ⌟ → ⌞ PSh κ C ⌟ → ⌞ PSh κ C ⌟
@@ -79,6 +87,7 @@ PSh-products A B = prod where
   prod .has-is-product .unique p q = ext λ i x → unext p i x ,ₚ unext q i x
 ```
 
+<!--
 ```agda
 PSh-pullbacks
   : ∀ {X Y Z} (f : X => Z) (g : Y => Z)
@@ -103,7 +112,14 @@ PSh-pullbacks {X} {Y} {Z} f g = pb where
     is-set→squarep (λ _ _ → Z.₀ idx .is-tr)
       (ap (f .η idx) p) (x .snd .snd) (y .snd .snd) (ap (g .η idx) q)
       i j
+```
+-->
 
+Finally, we also construct pullbacks. As above, the construction is
+straightforwardly given by the relevant constructions on $\Sets$,
+componentwise.
+
+```agda
   pb : Pullback (PSh κ C) f g
   pb .apex .F₀ i = el! (Σ[ x ∈ X.₀ i ] Σ[ y ∈ Y.₀ i ] f.η i x ≡ g.η i y)
   pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
@@ -138,10 +154,12 @@ PSh-finite-limits = record
 ```
 -->
 
-We can also show abstractly that every limit of presheaves is computed
-pointwise, as for the finite constructions above. First, note that the
-operation $F \mapsto F(c)$, for a fixed $c : \cC$, is functorial on
-presheaves; this is the **evaluation functor**.
+## Continuity of evaluation
+
+We can also show abstractly that *every* limit of presheaves is computed
+pointwise, in line with the finitary constructions above. First, note
+that the operation $F \mapsto F(c)$, for a fixed $c : \cC$, is
+functorial on presheaves; this is the **evaluation functor**.
 
 ```agda
 private
@@ -163,6 +181,7 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
     .F₁ g (a , f) → a , f ∘ g
     .F-id         → ext λ a h → refl ,ₚ idr h
     .F-∘ f g      → ext λ a h → refl ,ₚ assoc h g f
+
   clo c .F₁ f .η i (a , g) = f a , g
   clo c .F₁ f .is-natural x y g = refl
   clo c .F-id = trivial!
@@ -189,6 +208,7 @@ is-monic→is-embedding-at
   : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
   → Cat.is-monic (PSh ℓ C) m
   → ∀ {i} → is-embedding (m .η i)
-is-monic→is-embedding-at {Y = Y} {m} mono {i} = monic→is-embedding (hlevel 2) λ {C} g h →
-  right-adjoint→is-monic (clo⊣ev i) mono {C} g h
+is-monic→is-embedding-at {Y = Y} {m} mono {i} =
+  monic→is-embedding (hlevel 2) λ {C} g h →
+    right-adjoint→is-monic (clo⊣ev i) mono {C} g h
 ```
