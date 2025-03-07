@@ -29,7 +29,7 @@ open Functor
 module Cat.Instances.FinSets where
 ```
 
-# The category of finite sets
+# The category of finite sets {defines="category-of-finite-sets"}
 
 Throughout this page, let $n$ be a natural number and $[n]$ denote the
 [standard $n$-element ordinal]. The **category of finite sets**,
