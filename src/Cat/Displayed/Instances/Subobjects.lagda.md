@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Copattern
+
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
@@ -72,6 +74,7 @@ $y'g = fx' = y'h$, then, since $y'$ is a mono, $g = h$.
 
 <!--
 ```agda
+{-# INLINE Subobject.constructor #-}
 ≤-over-is-prop
   : ∀ {x y} {f : Hom x y} {a : Subobject x} {b : Subobject y}
   → (p q : ≤-over f a b)
@@ -283,16 +286,22 @@ the subobject fibration. However, we use a purpose-built transport
 function to cut down on the number of coherences required to work with
 $\Sub(y)$ at use-sites.
 
+<!--
 ```agda
-Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = Fibre' Subobjects y re coh where
-  re : ∀ {a b} → ≤-over (id ∘ id) a b → ≤-over id a b
+private
+  re : ∀ {x} {a b : Subobject x} → ≤-over (id ∘ id) a b → ≤-over id a b
   re x .map = x .map
   re x .sq  = ap₂ _∘_ (introl refl) refl ∙ x .sq
 
   abstract
-    coh : ∀ {a b} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
+    coh : ∀ {x} {a b : Subobject x} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
     coh f = prop!
+```
+-->
+
+```agda
+Sub : Ob → Precategory (o ⊔ ℓ) ℓ
+unquoteDef Sub = define-copattern Sub (λ y → Fibre' Subobjects y re coh)
 
 module Sub {y} = Cr (Sub y)
 ```

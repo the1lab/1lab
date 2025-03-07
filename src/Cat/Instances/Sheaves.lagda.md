@@ -1,28 +1,24 @@
 <!--
 ```agda
 open import Cat.Instances.Presheaf.Exponentials
-open import Cat.Instances.Sheaves.Exponentials
+open import Cat.Instances.Sheaf.Exponentials
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Algebras.Limits
-open import Cat.Instances.Presheaf.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
-open import Cat.Instances.Sheaves.Limits
+open import Cat.Instances.Sheaf.Limits
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Sets.Complete
-open import Cat.Diagram.Limit.Product
+open import Cat.Instances.Sheaf.Limits.Finite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Equivalence
-open import Cat.Instances.Shape.Two
 open import Cat.Site.Sheafification
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Site.Base
@@ -31,9 +27,6 @@ open import Cat.Prelude
 open Cartesian-closed
 open is-exponential
 open Exponential
-open is-product
-open Terminal
-open Product
 ```
 -->
 
@@ -115,47 +108,6 @@ presheaves, then sheafifying the result.
       sheafified
 ```
 
-## Concrete limits
-
-The computations above compute all limits, even the finite limits with
-known shape such as [[products]] and the [[terminal object]], as an
-[[equaliser]] between maps to and from a very big product. To make
-working with finite limits of sheaves smoother, we specialise the proof
-that [[sheaves are closed under limits|limits of sheaves]] to these
-finite cases:
-
-```agda
-  Sh[]-products : has-products Sh[ C , J ]
-  Sh[]-products (A , ashf) (B , bshf) = prod where
-    prod' = PSh-products _ C A B
-
-    prod : Product Sh[ C , J ] _ _
-    prod .apex .fst = prod' .apex
-    prod .π₁ = prod' .π₁
-    prod .π₂ = prod' .π₂
-    prod .has-is-product .⟨_,_⟩  = prod' .⟨_,_⟩
-    prod .has-is-product .π₁∘⟨⟩  = prod' .π₁∘⟨⟩
-    prod .has-is-product .π₂∘⟨⟩  = prod' .π₂∘⟨⟩
-    prod .has-is-product .unique = prod' .unique
-
-    prod .apex .snd = is-sheaf-limit
-      {F = 2-object-diagram _ _} {ψ = 2-object-nat-trans _ _}
-      (is-product→is-limit (PSh ℓ C) (prod' .has-is-product))
-      (λ { true → ashf ; false → bshf })
-```
-
-The terminal object in sheaves is even easier to define:
-
-```agda
-  Sh[]-terminal : Terminal Sh[ C , J ]
-  Sh[]-terminal .top .fst = PSh-terminal _ C .top
-  Sh[]-terminal .has⊤ (S , _) = PSh-terminal _ C .has⊤ S
-
-  Sh[]-terminal .top .snd .whole _ _     = lift tt
-  Sh[]-terminal .top .snd .glues _ _ _ _ = refl
-  Sh[]-terminal .top .snd .separate _ _  = refl
-```
-
 ## Cartesian closure
 
 Since [[sheaves are an exponential ideal|exponentials of sheaves]] in
@@ -164,7 +116,7 @@ conclude that the category of sheaves on a site is also [[Cartesian
 closed]].
 
 ```agda
-  Sh[]-cc : Cartesian-closed Sh[ C , J ] Sh[]-products Sh[]-terminal
+  Sh[]-cc : Cartesian-closed Sh[ C , J ] (Sh[]-products J) (Sh[]-terminal J)
   Sh[]-cc .has-exp (A , _) (B , bshf) = exp where
     exp' = PSh-closed C .has-exp A B
 

@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Functor.Hom.Yoneda
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Hom.Yoneda
 open import Cat.Instances.Functor
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
