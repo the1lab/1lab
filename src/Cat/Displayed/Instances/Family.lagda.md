@@ -30,7 +30,7 @@ open _=>_
 ```
 -->
 
-# The family fibration
+# The family fibration {defines="family-fibration"}
 
 We can canonically treat any `Precategory`{.Agda} $\mathcal{C}$ as being
 displayed over `Sets`{.Agda}, regardless of the size of the object- and
@@ -77,7 +77,6 @@ family of functions $X(a) \to Y(f(a))$. But we may simply take $X(a) :=
 Y(f(a))$, and family is constantly the identity map.
 
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 
@@ -91,9 +90,9 @@ Family-is-cartesian = iscart where
   cart f y' .unique m' p = funext λ _ → introl refl ∙ happly p _
 
   iscart : Cartesian-fibration Family
-  iscart .has-lift f y' .x' z = y' (f z)
-  iscart .has-lift f y' .lifting x = id
-  iscart .has-lift {x = x} {y} f y' .cartesian = cart {x = x} {y} f y'
+  iscart f y' .x' z = y' (f z)
+  iscart f y' .lifting x = id
+  iscart {x = x} {y} f y' .cartesian = cart {x = x} {y} f y'
 ```
 
 Morphisms in the family fibration are cartesian if and only if they are
@@ -442,8 +441,8 @@ Family-gaunt-generic-object→Gaunt ob-set gaunt-gobj =
 
 To see that all automorphisms of $\cC$ are trivial, note that any automorphism
 $f : x \cong x$ induces a cartesian morphism $\{ x \} \to Ob$. Furthermore, this
-cartesian morphism must be unique, as $Ob$ is a gaunt generic object. However, $id$
-also yields a cartesian morphism $\{ x \} \to Ob$, so $f = id$.
+cartesian morphism must be unique, as $Ob$ is a gaunt generic object. However, $\id$
+also yields a cartesian morphism $\{ x \} \to Ob$, so $f = \id$.
 
 ```agda
   trivial-automorphism : ∀ {x} → (f : x ≅ x) → f ≡ id-iso

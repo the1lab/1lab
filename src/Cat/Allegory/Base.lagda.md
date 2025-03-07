@@ -201,7 +201,7 @@ Relational composition is again given by the familiar formula: The
 composite of $R$ and $S$ is given by the relation which "bridges the
 gap", i.e. $(R \circ S)(x, z)$ iff. there exists some $y$ such that
 $R(x, y)$ and $S(y, z)$. I'm not sure how surprising this will be to
-some of you --- embarassingly, it was fairly surprising to me --- but
+some of you --- embarrassingly, it was fairly surprising to me --- but
 the identity relation is.. the identity relation:
 
 ```agda

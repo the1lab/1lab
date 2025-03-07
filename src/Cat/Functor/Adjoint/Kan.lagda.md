@@ -136,7 +136,7 @@ cell $\sigma' : G \to RM$, and let $\sigma : LG \to M$ be its adjunct.
             module RM = Functor (R F∘ M)
 ```
 
-And since every part of the process in the preceeding paragraph is an
+And since every part of the process in the preceding paragraph is an
 isomorphism, this is indeed a factorisation, and it's unique to boot:
 we've shown that $LG$ is the extension of $LF$ along $p$!
 

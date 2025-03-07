@@ -188,7 +188,7 @@ type of lifts of such a square is a proposition.
 ```
 
 Dually, if $g$ is a [[monomorphism]], then we the type of lifts is also
-a propostion.
+a proposition.
 
 ```agda
   right-monic→lift-is-prop

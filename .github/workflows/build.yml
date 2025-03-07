@@ -59,6 +59,7 @@ jobs:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
+            agda --setup
             1lab-shake -j all
             eval "$installPhase"
 

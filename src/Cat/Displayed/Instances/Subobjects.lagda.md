@@ -115,9 +115,7 @@ Subobjects .idr' _       = prop!
 Subobjects .idl' _       = prop!
 Subobjects .assoc' _ _ _ = prop!
 
-open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
-open Cartesian-fibration
 open is-weak-cocartesian
 open Cartesian-lift
 open is-cartesian
@@ -162,7 +160,7 @@ is enough for its uniqueness.
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y' = l where
+Subobject-fibration pb f y' = l where
   it : Pullback _ _ _
   it = pb (y' .map) f
   l : Cartesian-lift Subobjects f y'
@@ -192,8 +190,8 @@ fibration.
 ```agda
 Subobject-weak-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
-  → is-weak-cocartesian-fibration Subobjects
-Subobject-weak-opfibration ims .weak-lift f x' = l where
+  → Weak-cocartesian-fibration Subobjects
+Subobject-weak-opfibration ims f x' = l where
   module im = Image B (ims (f ∘ x' .map))
 ```
 
@@ -263,7 +261,7 @@ Subobject-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
   → (pb : has-pullbacks B)
   → Cocartesian-fibration Subobjects
-Subobject-opfibration images pb = cartesian+weak-opfibration→opfibration _
+Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
   (Subobject-fibration pb)
   (Subobject-weak-opfibration images)
 ```

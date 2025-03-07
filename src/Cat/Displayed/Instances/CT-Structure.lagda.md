@@ -64,13 +64,13 @@ Simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) 
 Simple-ct ct .Displayed.id' = π₂
 Simple-ct ct .Displayed._∘'_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 Simple-ct ct .Displayed.idr' {f = u} f =
-  f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
+  f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! has-prods ⟩
   f                      ∎
 Simple-ct ct .Displayed.idl' {f = u} f =
-  π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
+  π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! has-prods ⟩
   f                   ∎
 Simple-ct ct .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
-  f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+  f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
 
@@ -102,16 +102,15 @@ Much like the simple fibration, the simple fibration associated to a
 CT-structure also deserves its name.
 
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 
 Simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (Simple-ct ct)
-Simple-ct-fibration ct .has-lift u Y .x' = Y
-Simple-ct-fibration ct .has-lift u Y .lifting = π₂
-Simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
-Simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-ct-fibration ct u Y .x' = Y
+Simple-ct-fibration ct u Y .lifting = π₂
+Simple-ct-fibration ct u Y .cartesian .universal _ h = h
+Simple-ct-fibration ct u Y .cartesian .commutes g h = π₂∘⟨⟩
+Simple-ct-fibration ct u Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎

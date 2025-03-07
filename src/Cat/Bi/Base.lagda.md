@@ -45,6 +45,15 @@ module _ where
   compose-assocʳ C .F-∘ f g = ap (C .F₁) (Σ-pathp refl (C .F-∘ _ _)) ∙ C .F-∘ _ _
 
 private variable o ℓ ℓ' o₁ ℓ₁ ℓ₁' : Level
+
+Associator-for
+  : ∀ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ')
+  → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
+  → Type _
+Associator-for Hom compose = ∀ {A B C D} →
+  Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
+    (compose-assocˡ {H = Hom} compose)
+    (compose-assocʳ {H = Hom} compose)
 ```
 -->
 
@@ -180,6 +189,8 @@ naturally isomorphic to the identity functor.
       → Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
         (compose-assocˡ {H = Hom} compose)
         (compose-assocʳ {H = Hom} compose)
+
+  module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
 It's traditional to refer to the left unitor as $\lambda$, to the right
@@ -217,18 +228,18 @@ abbreviations here too:
 
   α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
      → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
-  α→ f g h = associator .Cr._≅_.to .η (f , g , h)
+  α→ f g h = associator.to .η (f , g , h)
 
   α← : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
      → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
-  α← f g h = associator .Cr._≅_.from .η (f , g , h)
+  α← f g h = associator.from .η (f , g , h)
 
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
           (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
   α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator .Cr._≅_.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    associator.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
   α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
@@ -236,7 +247,7 @@ abbreviations here too:
            (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
            ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator .Cr._≅_.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    associator.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -316,12 +327,28 @@ level does _not_ form a category, but it _does_ form a bicategory.
 [strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
-{-# TERMINATING #-}
 Cat : ∀ o ℓ → Prebicategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Cat o ℓ = pb where
   open Prebicategory
   open Functor
+```
 
+<!--
+```agda
+  assoc : Associator-for Cat[_,_] F∘-functor
+  assoc {D = D} = to-natural-iso ni where
+    module D = Cr D
+    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
+    ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = ext λ _ →
+      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
+```
+-->
+
+```agda
   pb : Prebicategory _ _ _
   pb .Ob = Precategory o ℓ
   pb .Hom = Cat[_,_]
@@ -363,15 +390,7 @@ directly:
     ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
     ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
 
-  pb .associator {A} {B} {C} {D} = to-natural-iso ni where
-    module D = Cr D
-    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
-    ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
-    ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
-    ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = ext λ _ →
-      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
+  pb .associator = assoc
 
   pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
   pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
@@ -425,7 +444,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 <!--
 ```agda
-  module P₁ {A} {B} = Functor (P₁ {A} {B})
+  module P₁ {A} {B} = Fr (P₁ {A} {B})
 
   ₀ : B.Ob → C.Ob
   ₀ = P₀

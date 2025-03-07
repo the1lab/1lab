@@ -25,7 +25,7 @@ open Cat.Reasoning B
 open Binary-products B has-prods
 ```
 
-# Simple fibrations
+# Simple fibrations {defines="simple-fibration"}
 
 One reason to be interested in fibrations is that they provide an
 excellent setting to study logical and type-theoretical phenomena.
@@ -41,7 +41,7 @@ structure to study simply-typed languages that have enough structure
 to represent contexts internally (i.e.: product types).
 
 To start, we fix some base category $\cB$ with binary products.
-Intuitvely, this will be some sort of category of contexts, and
+Intuitively, this will be some sort of category of contexts, and
 context extension endows this category with products. We interpret a
 type in a context to be an object $\Gamma \times X : \cB$.
 
@@ -62,7 +62,7 @@ situation (IE: STLC without products), then we need to consider a more
 For the maps, we already have the map $\Gamma \to \Delta$ as the
 base morphism, so the displayed portion of the map will be the
 map $\Gamma \times X \to Y$ between derivations. The identity
-morphism $id : \Gamma \times Y \to Y$ ignores the context, and
+morphism $\id : \Gamma \times Y \to Y$ ignores the context, and
 derives $Y$ by using the $Y$ we already had, and is thus represented
 by the second projection $\pi_2$.
 
@@ -80,13 +80,13 @@ Simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗₀ _) _
 Simple .Displayed.id' = π₂
 Simple .Displayed._∘'_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 Simple .Displayed.idr' f =
-  f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
+  f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! has-prods ⟩
   f                      ∎
 Simple .Displayed.idl' {f = u} f =
-  π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
+  π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! has-prods ⟩
   f                   ∎
 Simple .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
-  f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+  f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
 
@@ -139,7 +139,7 @@ $\langle \pi_1 , f' \rangle$ is, in fact, an inverse.
   cart .unique {m = m} {h' = h'} m' p =
     m'                                                      ≡˘⟨ π₂∘⟨⟩ ⟩
     π₂ ∘ ⟨ m ∘ π₁ , m' ⟩                                    ≡⟨ ap₂ _∘_ refl (introl ⟨⟩-inv.invr) ⟩
-    π₂ ∘ (⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩) ∘ ⟨ m ∘ π₁ , m' ⟩       ≡⟨ products! B has-prods ⟩
+    π₂ ∘ (⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩) ∘ ⟨ m ∘ π₁ , m' ⟩       ≡⟨ products! has-prods ⟩
     π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , ⌜ f' ∘ ⟨ m ∘ π₁ , m' ⟩ ⌝ ⟩ ≡⟨ ap! p ⟩
     π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ∎
 ```
@@ -185,7 +185,7 @@ Showing that this map is a left inverse can be seen by a short computation.
 ```agda
       left-inv : ⟨ π₁ , f' ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩ ≡ id
       left-inv =
-        ⟨ π₁ , f' ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩           ≡⟨ products! B has-prods ⟩
+        ⟨ π₁ , f' ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩           ≡⟨ products! has-prods ⟩
         ⟨ π₁ , ⌜ f' ∘ ⟨ id ∘ π₁ ,  universal id π₂ ⟩ ⌝ ⟩ ≡⟨ ap! (commutes id π₂) ⟩
         ⟨ π₁ , π₂ ⟩                                      ≡⟨ ⟨⟩-η ⟩
         id                                               ∎
@@ -227,7 +227,7 @@ see that $i \circ \langle \pi_1 , f' \rangle = \pi_2$.
 ```agda
       universal-π₂-unique : f' ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡ f'
       universal-π₂-unique =
-        f' ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+        f' ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡⟨ products! has-prods ⟩
         f' ∘ ⟨ id ∘ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡⟨ pulll (commutes id π₂) ⟩
         π₂ ∘ ⟨ π₁ , f' ⟩                                 ≡⟨ π₂∘⟨⟩ ⟩
         f'                                               ∎
@@ -245,7 +245,7 @@ a right inverse.
 ```agda
       right-inv : ⟨ π₁ ,  universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡ id
       right-inv =
-        ⟨ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡⟨ products! B has-prods ⟩
+        ⟨ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡⟨ products! has-prods ⟩
         ⟨ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡⟨ ap₂ ⟨_,_⟩ refl universal-π₂∘f' ⟩
         ⟨ π₁ , π₂ ⟩                            ≡⟨ ⟨⟩-η ⟩
         id                                     ∎
@@ -263,7 +263,6 @@ to touch the types, as there are no possible dependencies!
 
 <!--
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 ```
@@ -271,11 +270,11 @@ open is-cartesian
 
 ```agda
 Simple-fibration : Cartesian-fibration Simple
-Simple-fibration .has-lift f Y .x' = Y
-Simple-fibration .has-lift f Y .lifting = π₂
-Simple-fibration .has-lift f Y .cartesian .universal _ h = h
-Simple-fibration .has-lift f Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h' = h} h' p =
+Simple-fibration f Y .x' = Y
+Simple-fibration f Y .lifting = π₂
+Simple-fibration f Y .cartesian .universal _ h = h
+Simple-fibration f Y .cartesian .commutes g h = π₂∘⟨⟩
+Simple-fibration f Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -304,7 +303,7 @@ Simple→Slices = func where
     id               ∎
   func .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} =
     Slice-path B $
-    ⟨ (f ∘ g) ∘ π₁ , f' ∘ ⟨ g ∘ π₁ , g' ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+    ⟨ (f ∘ g) ∘ π₁ , f' ∘ ⟨ g ∘ π₁ , g' ⟩ ⟩ ≡⟨ products! has-prods ⟩
     ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨ g ∘ π₁ , g' ⟩       ∎
 ```
 
@@ -348,9 +347,9 @@ tedious calculations, so we omit them.
     pb .p₂∘universal {P} {p₁'} {p₂'} {p} =
       ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (⟨⟩∘ _) ⟩
       ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f' ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ ap₂ _∘_ (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) refl ⟩
-      ⟨ f ∘ π₁ , π₂ ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                             ≡⟨ products! B has-prods ⟩
+      ⟨ f ∘ π₁ , π₂ ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                             ≡⟨ products! has-prods ⟩
       ⟨ f ∘ p₁' , π₂ ∘ p₂' ⟩                                           ≡⟨ ap₂ ⟨_,_⟩ p refl ⟩
-      ⟨ π₁ ∘ p₂' , π₂ ∘ p₂' ⟩                                          ≡⟨ products! B has-prods ⟩
+      ⟨ π₁ ∘ p₂' , π₂ ∘ p₂' ⟩                                          ≡⟨ products! has-prods ⟩
       p₂' ∎
     pb .unique {P} {p₁'} {p₂'} {p} {h'} q r =
       h'                                                   ≡⟨ insertl ⟨⟩-inv.invr ⟩

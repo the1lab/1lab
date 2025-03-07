@@ -23,7 +23,6 @@ module Cat.Displayed.Cocartesian.Discrete where
 
 <!--
 ```agda
-open Cocartesian-fibration
 open Cocartesian-lift
 open is-cocartesian
 ```
@@ -276,7 +275,7 @@ by our assumption, all such lifts exist!
     open is-discrete-cocartesian-fibration dfib
 
     cocart-fib : Cocartesian-fibration E
-    cocart-fib .has-lift f x' .y' = f ^! x'
-    cocart-fib .has-lift f x' .lifting = ι! f x'
-    cocart-fib .has-lift f x' .cocartesian = all-cocartesian (ι! f x')
+    cocart-fib f x' .y' = f ^! x'
+    cocart-fib f x' .lifting = ι! f x'
+    cocart-fib f x' .cocartesian = all-cocartesian (ι! f x')
 ```

@@ -267,7 +267,7 @@ composition.
 ```agda
   idntl : ∀ {F : Functor J B} {F' : Lifting E F} → F' =[ idnt ]=>l F'
   idntl .η' j = id'
-  idntl .is-natural' i j f = idl' _ ∙[] symP (idr' _)
+  idntl .is-natural' i j f = cast[] $ idl' _ ∙[] symP (idr' _)
 
   _∘ntl_
     : ∀ {F G H : Functor J B} {F' : Lifting E F} {G' : Lifting E G} {H' : Lifting E H}
@@ -351,10 +351,11 @@ When $\cE$ is a fibration, then so is the displayed category of liftings.
   Liftings-fibration
     : (fib : Cartesian-fibration E)
     → Cartesian-fibration Liftings
-  Liftings-fibration fib .Cartesian-fibration.has-lift {F} {G} α G' = cart-lift where
+  Liftings-fibration fib {F} {G} α G' = α-lift where
     module F = Functor F
     module G = Functor G
-    open Cartesian-fibration fib
+
+    open Cartesian-fibration E fib
     open Lifting
     open _=[_]=>l_
 ```
@@ -364,10 +365,10 @@ reindexing $G'$ pointwise.
 
 ```agda
     G'* : Lifting E F
-    G'* .F₀' j = has-lift.x' (α .η j) (G' .F₀' j)
+    G'* .F₀' j = (α .η j) ^* (G' .F₀' j)
     G'* .F₁' f =
-      has-lift.universal _ _ _
-        (hom[ α .is-natural _ _ f ]⁻ (G' .F₁' f ∘' has-lift.lifting _ _))
+      π*.universal _
+        (hom[ α .is-natural _ _ f ]⁻ (G' .F₁' f ∘' π* _ _))
 ```
 
 <details>
@@ -376,21 +377,21 @@ reindexing $G'$ pointwise.
 
 ```agda
     G'* .F-id' =
-      symP $ has-lift.uniquep _ _ _ (sym (F .F-id)) (α .is-natural _ _ _) id' $
-        has-lift.lifting _ _ ∘' id'          ≡[]⟨ idr' _ ⟩
-        has-lift.lifting _ _                 ≡[]⟨ symP (idl' _) ⟩
-        id' ∘' has-lift.lifting _ _          ≡[]⟨ (λ i → G' .F-id' (~ i) ∘' has-lift.lifting (α .η _) (G' .F₀' _)) ⟩
-        G' .F₁' J.id ∘' has-lift.lifting _ _ ∎
+      symP $ π*.uniquep _ (sym (F .F-id)) (α .is-natural _ _ _) id' $
+        π* _ _ ∘' id'          ≡[]⟨ idr' _ ⟩
+        π* _ _                 ≡[]⟨ symP (idl' _) ⟩
+        id' ∘' π* _ _          ≡[]⟨ (λ i → G' .F-id' (~ i) ∘' π* (α .η _) (G' .F₀' _)) ⟩
+        G' .F₁' J.id ∘' π* _ _ ∎
 
     G'* .F-∘' f g =
-      symP $ has-lift.uniquep _ _ _
+      symP $ π*.uniquep _
         (sym (F .F-∘ f g)) (α .is-natural _ _ _ ) (G'* .F₁' f ∘' G'* .F₁' g) $
-          has-lift.lifting _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (has-lift.commutes _ _ _ _) ⟩
-          hom[] (G' .F₁' f ∘' has-lift.lifting _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
-          (G' .F₁' f ∘' has-lift.lifting _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (has-lift.commutes _ _ _ _) ⟩
-          G' .F₁' f ∘' hom[] (G' .F₁' g ∘' has-lift.lifting _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
-          G' .F₁' f ∘' (G' .F₁' g ∘' has-lift.lifting _ _)        ≡[]⟨ pulll[] _ (symP (G' .F-∘' f g)) ⟩
-          G' .F₁' (f J.∘ g) ∘' has-lift.lifting _ _               ∎
+          π* _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (π*.commutes _ _) ⟩
+          hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
+          (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (π*.commutes _ _) ⟩
+          G' .F₁' f ∘' hom[] (G' .F₁' g ∘' π* _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
+          G' .F₁' f ∘' (G' .F₁' g ∘' π* _ _)        ≡[]⟨ pulll[] _ (symP (G' .F-∘' f g)) ⟩
+          G' .F₁' (f J.∘ g) ∘' π* _ _               ∎
 ```
 
 </details>
@@ -401,15 +402,14 @@ implies that our natural transformation is cartesian.
 
 ```agda
     α'* : G'* =[ α ]=>l G'
-    α'* .η' x = has-lift.lifting (α .η x) (G' .F₀' x)
-    α'* .is-natural' x y f = has-lift.commutesp (α .η y) (G' .F₀' y) _ _
+    α'* .η' x = π* (α .η x) (G' .F₀' x)
+    α'* .is-natural' x y f = π*.commutesp _ _
 
-    cart-lift : Cartesian-lift Liftings α G'
-    cart-lift .Cartesian-lift.x' = G'*
-    cart-lift .Cartesian-lift.lifting = α'*
-    cart-lift .Cartesian-lift.cartesian =
-      pointwise-cartesian→Liftings-cartesian
-        (λ x → has-lift.cartesian (α .η x) (G' .F₀' x))
+    α-lift : Cartesian-lift Liftings α G'
+    α-lift .Cartesian-lift.x' = G'*
+    α-lift .Cartesian-lift.lifting = α'*
+    α-lift .Cartesian-lift.cartesian =
+      pointwise-cartesian→Liftings-cartesian λ x → π*.cartesian
 ```
 
 ## Total category

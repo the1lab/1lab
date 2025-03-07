@@ -282,7 +282,7 @@ module _ (G : Marked-graph o ℓ) where
 -->
 
 In this section, we will detail how to freely construct a category
-from a marked graph $G$. Intuitvely, this works by freely generating
+from a marked graph $G$. Intuitively, this works by freely generating
 a category from $G$, and then identifying all marked pairs.
 However, there is a slight subtlety here: the marked pairs of $G$
 may not respect path concatenation, and may not even form an equivalence

@@ -40,7 +40,7 @@ trivial morphisms.
 ⊤Cat .assoc _ _ _ _ = tt
 ```
 
-The ony morphism in the terminal category is the identity, so the
+The only morphism in the terminal category is the identity, so the
 terminal category is a [[pregroupoid]].
 
 ```agda
@@ -69,6 +69,9 @@ category.
 
   !F-unique : ∀ {F : Functor C ⊤Cat} → F ≡ !F
   !F-unique = Functor-path (λ _ → refl) (λ _ → refl)
+
+  !F-unique₂ : ∀ {F G : Functor C ⊤Cat} → F ≡ G
+  !F-unique₂ = Functor-path (λ _ → refl) (λ _ → refl)
 ```
 
 Conversely, functors $\top \to \cC$ are determined by their behaviour

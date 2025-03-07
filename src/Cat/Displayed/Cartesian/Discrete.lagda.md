@@ -26,7 +26,6 @@ module Cat.Displayed.Cartesian.Discrete where
 
 <!--
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 ```
@@ -305,12 +304,12 @@ every right corner has a unique lift, and every morphism in a discrete
 fibration is cartesian.
 
 ```agda
-    r .has-lift f y' .x' = f ^* y'
-    r .has-lift f y' .lifting = π* f y'
-    r .has-lift f y' .cartesian = all-cartesian (π* f y')
+    r f y' .x' = f ^* y'
+    r f y' .lifting = π* f y'
+    r f y' .cartesian = all-cartesian (π* f y')
 ```
 
-## Discrete fibrations are presheaves
+## Discrete fibrations are presheaves {defines="discrete-fibrations-are-presheaves"}
 
 As noted earlier, a discrete fibration over $\cB$ encodes the same
 data as a presheaf on $\cB$. First, let us show that we can construct

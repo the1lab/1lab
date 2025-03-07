@@ -178,7 +178,7 @@ subst-is-epic f=g f-epic h i p =
 ## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
-when $r \cdot s = id$. The intuition for this name is that $s$ picks
+when $r \cdot s = \id$. The intuition for this name is that $s$ picks
 out a cross-section of $a$ from $b$. For instance, $r$ could map
 animals to their species; a section of this map would have to pick out
 a canonical representative of each species from the set of all animals.
@@ -272,7 +272,7 @@ subst-section p s .is-section = ap₂ _∘_ (sym p) refl ∙ s .is-section
 ## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
-when $r \cdot s = id$. Note that this is the same equation involved
+when $r \cdot s = \id$. Note that this is the same equation involved
 in the definition of a section; retracts and sections always come in
 pairs. If sections solve a sort of "curation problem" where we are
 asked to pick out canonical representatives, then retracts solve a
@@ -862,19 +862,30 @@ inverses→from-has-retract inv .is-retract = Inverses.invl inv
 
 <!--
 ```agda
-invertible→to-has-section : is-invertible f → has-section f
-invertible→to-has-section f-inv .section = is-invertible.inv f-inv
-invertible→to-has-section f-inv .is-section = is-invertible.invl f-inv
+module _ {f : Hom a b} (f-inv : is-invertible f) where
+  private module f = is-invertible f-inv
+  invertible→to-has-section : has-section f
+  invertible→to-has-section .section = f.inv
+  invertible→to-has-section .is-section = f.invl
 
-invertible→to-has-retract : is-invertible f → has-retract f
-invertible→to-has-retract f-inv .retract = is-invertible.inv f-inv
-invertible→to-has-retract f-inv .is-retract = is-invertible.invr f-inv
+  invertible→to-has-retract : has-retract f
+  invertible→to-has-retract .retract = f.inv
+  invertible→to-has-retract .is-retract = f.invr
 
-invertible→to-split-monic : is-invertible f → is-split-monic f
-invertible→to-split-monic f-inv = pure (invertible→to-has-retract f-inv)
+  invertible→to-split-monic : is-split-monic f
+  invertible→to-split-monic = pure invertible→to-has-retract
 
-invertible→to-split-epic : is-invertible f → is-split-epic f
-invertible→to-split-epic f-inv = pure (invertible→to-has-section f-inv)
+  invertible→to-split-epic : is-split-epic f
+  invertible→to-split-epic = pure invertible→to-has-section
+
+  invertible→from-has-section : has-section f.inv
+  invertible→from-has-section .section = f
+  invertible→from-has-section .is-section = f.invr
+
+  invertible→from-has-retract : has-retract f.inv
+  invertible→from-has-retract .retract = f
+  invertible→from-has-retract .is-retract = f.invl
+
 
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from

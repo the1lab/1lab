@@ -429,6 +429,9 @@ module _ {f' : Hom[ f ] x' y'} where abstract
   idr[] : {p : f ∘ id ≡ f} → hom[ p ] (f' ∘' id') ≡ f'
   idr[] {p = p} = reindex p (idr _) ∙ from-pathp (idr' f')
 
+  id-comm[] : {p : id ∘ f ≡ f ∘ id} → hom[ p ] (id' ∘' f') ≡ f' ∘' id'
+  id-comm[] {p = p} = duplicate _ _ _ ∙ ap hom[] (from-pathp (idl' _)) ∙ from-pathp (symP (idr' _))
+
 assoc[] : ∀ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] w' x'}
             {p : a ∘ (b ∘ c) ≡ d} {q : (a ∘ b) ∘ c ≡ d}
           → hom[ p ] (a' ∘' (b' ∘' c')) ≡ hom[ q ] ((a' ∘' b') ∘' c')
@@ -461,11 +464,23 @@ module _ {a' : Hom[ a ] x' x'}
     hom[ idr f ] (f' ∘' id') ≡⟨ idr[] ⟩
     f' ∎
 
+  eliml[] : ∀ {f' : Hom[ f ] y' x'} → a' ∘' f' ≡[ eliml p ] f'
+  eliml[] = eliml'
+
+  elimr[] : ∀ {f' : Hom[ f ] x' y'} → f' ∘' a' ≡[ elimr p ] f'
+  elimr[] = elimr'
+
   introl' : ∀ {f' : Hom[ f ] y' x'} → {q : f ≡ a ∘ f} → f' ≡[ q ] a' ∘' f'
   introl' {f' = f'} {q = q} i = eliml' {f' = f'} {q = sym q} (~ i)
 
   intror' : ∀ {f' : Hom[ f ] x' y'} → {q : f ≡ f ∘ a} → f' ≡[ q ] f' ∘' a'
   intror' {f' = f'} {q = q} i = elimr' {f' = f'} {q = sym q} (~ i)
+
+  introl[] : ∀ {f' : Hom[ f ] y' x'} → f' ≡[ introl p ] a' ∘' f'
+  introl[] = introl'
+
+  intror[] : ∀ {f' : Hom[ f ] x' y'} → f' ≡[ intror p ] f' ∘' a'
+  intror[] = intror'
 ```
 
 ## Reassociations

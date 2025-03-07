@@ -82,7 +82,7 @@ To see this, recall that [[cartesian morphisms]] are [stable under
 vertical retractions]. The cartesian lift $f^{*}$ of $f$ is obviously
 cartesian, so it suffices to show that there is a vertical retraction
 $x^{*} \to x'$. To construct this retraction, we shall factorize $f'$
-over $f \cdot id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
+over $f \cdot \id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
 By our hypotheses, $i^{*}$ is invertible, and thus is a retraction.
 What remains to be shown is that the inverse to $i^{*}$ factors
 $f'$ and $f^{*}$; this follows from the factorisation of $f'$ and
@@ -91,31 +91,23 @@ the fact that $i^{*}$ is invertible.
 [stable under vertical retractions]: Cat.Displayed.Cartesian.html#cartesian-vertical-retraction-stable
 
 ```agda
-    x* : Ob[ x ]
-    x* = has-lift f y' .x-lift
-
-    f* : Hom[ f ] x* y'
-    f* = has-lift f y' .lifting
-
-    module f* = is-cartesian (has-lift f y' .cartesian)
-
-    i* : Hom[ id ] x' x*
-    i* = f*.universal' (idr f) f'
+    i* : Hom[ id ] x' (f ^* y')
+    i* = π*.universal' (idr f) f'
 
     module i*-inv = is-invertible[_] (vert-inv i*)
 
-    i*⁻¹ : Hom[ id ] x* x'
+    i*⁻¹ : Hom[ id ] (f ^* y') x'
     i*⁻¹ = i*-inv.inv'
 
-    factors : f' ∘' i*⁻¹ ≡[ idr f ] f*
+    factors : f' ∘' i*⁻¹ ≡[ idr f ] π* f y'
     factors = to-pathp⁻ $
-      f' ∘' i*⁻¹               ≡⟨ shiftr _ (pushl' _ (symP $ f*.commutesp (idr f) f') {q = ap (f ∘_) (sym (idl _))}) ⟩
-      hom[] (f* ∘' i* ∘' i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr' _ i*-inv.invl') ⟩
-      hom[] f* ∎
+      f' ∘' i*⁻¹                    ≡⟨ shiftr _ (pushl' _ (symP $ π*.commutesp (idr f) f') {q = ap (f ∘_) (sym (idl _))}) ⟩
+      hom[] (π* f y' ∘' i* ∘' i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr' _ i*-inv.invl') ⟩
+      hom[] (π* f y')               ∎
 
     f-cart : is-cartesian f f'
     f-cart = cartesian-vertical-retraction-stable
-      (has-lift f y' .cartesian)
+      π*.cartesian
       (inverses[]→from-has-section[] i*-inv.inverses')
       factors
 ```

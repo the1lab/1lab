@@ -122,7 +122,7 @@ Strictness is a property of, not structure on, an initial object.
 ```
 
 As maps out of initial objects are unique, it suffices to show that
-every map $\text{!`} \circ f = id$ for every $f : X \to \bot$ to establish that $\bot$ is a
+every map $\text{!`} \circ f = \id$ for every $f : X \to \bot$ to establish that $\bot$ is a
 strict initial object.
 
 ```agda

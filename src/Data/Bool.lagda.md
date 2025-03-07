@@ -27,7 +27,7 @@ module Data.Bool where
 open import Data.Bool.Base public
 ```
 
-Pattern matching on only the first argument might seem like a somewhat inpractical choice
+Pattern matching on only the first argument might seem like a somewhat impractical choice
 due to its asymmetry - however, it shortens a lot of proofs since we get a lot of judgemental
 equalities for free. For example, see the following statements:
 
@@ -248,6 +248,9 @@ equivalence:
 ```agda
 not-is-equiv : is-equiv not
 not-is-equiv = is-involutive→is-equiv not-involutive
+
+not≃ : Bool ≃ Bool
+not≃ = not , not-is-equiv
 ```
 
 <!--
@@ -289,7 +292,7 @@ we're looking at the `not`{.Agda} equivalence.
   notLemma : (p : Bool ≃ Bool)
            → p .fst true ≡ false
            → p .fst false ≡ true
-           → p ≡ (not , not-is-equiv)
+           → p ≡ not≃
   notLemma p p1 p2 = Σ-path (funext lemma) (is-equiv-is-prop _ _ _) where
     lemma : (x : Bool) → _
     lemma false = p2
@@ -331,7 +334,7 @@ Now we classify the isomorphism by looking at what it does to
 
 ```agda
   the-iso .snd .is-iso.inv (lift false) = refl
-  the-iso .snd .is-iso.inv (lift true)  = ua (not , not-is-equiv)
+  the-iso .snd .is-iso.inv (lift true)  = ua not≃
 ```
 
 The inverse is determined by the same rule, but backwards. That's why
@@ -389,7 +392,7 @@ The other case is analogous.
 
 ```agda
   ... | no true→false' | no false→true' =
-    ua (not , not-is-equiv)
+    ua not≃
       ≡⟨ ap ua (sym (notLemma _
         (lemma (transport path) true→false')
         (lemma (transport path) false→true')))
