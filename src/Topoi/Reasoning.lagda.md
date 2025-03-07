@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Presheaf.Limits
+open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor

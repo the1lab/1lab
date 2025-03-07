@@ -16,7 +16,7 @@ open _=>_
 -->
 
 ```agda
-module Cat.Instances.Sheaves.Exponentials where
+module Cat.Instances.Sheaf.Exponentials where
 ```
 
 # Exponentials of sheaves {defines="exponentials-of-sheaves"}

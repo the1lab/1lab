@@ -14,8 +14,8 @@ open import Cat.Diagram.Sieve
 open import Cat.Prelude
 
 import Cat.Displayed.Instances.Subobjects.Reasoning as Sub
-import Cat.Functor.Reasoning.Presheaf as PSh
 import Cat.Instances.Presheaf.Limits as Lim
+import Cat.Functor.Reasoning.Presheaf as PSh
 import Cat.Reasoning as Cat
 
 open Subobject-classifier
@@ -83,14 +83,14 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 
 <!--
 ```agda
-done : Subobject-classifier (PSh ℓ C)
-done .Subobject-classifier.Ω = Sieves {C = C}
+ΩPSh : Subobject-classifier (PSh ℓ C)
+ΩPSh .Subobject-classifier.Ω = Sieves {C = C}
 
-done .Subobject-classifier.true .Sub.domain      = _
-done .Subobject-classifier.true .Sub.map         = tru
-done .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
+ΩPSh .Subobject-classifier.true .Sub.domain      = _
+ΩPSh .Subobject-classifier.true .Sub.map         = tru
+ΩPSh .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
 
-done .generic .name = psh-name
+ΩPSh .generic .name = psh-name
 ```
 -->
 
@@ -120,7 +120,7 @@ $P_a$ over $p_1(b)$. This wil be used to define the desired "universal"
 map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
-done .generic .classifies {A} P = record { has-is-pb = pb } where
+ΩPSh .generic .classifies {A} P = record { has-is-pb = pb } where
   emb = is-monic→is-embedding-at (P .monic)
 
   square→pt
@@ -184,7 +184,7 @@ function $n : P \to \Omega$), and to use its universal property to
 the universal natural transformation.
 
 ```agda
-done .generic .unique {A} {m = P} {nm} pb = ext λ i x {U} f →
+ΩPSh .generic .unique {A} {m = P} {nm} pb = ext λ i x {U} f →
   let
     emb = is-monic→is-embedding-at (P .monic)
 ```
