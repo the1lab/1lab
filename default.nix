@@ -45,7 +45,7 @@ let
 
   deps = with pkgs; [
     # For driving the compilation:
-    shakefile
+    shakefile our-ghc
 
     # For building the text and maths:
     gitMinimal nodePackages.sass
@@ -53,10 +53,8 @@ let
     # For building diagrams:
     poppler_utils our-texlive
   ] ++ (if interactive then [
-    our-ghc
     sort-imports
   ] else [
-    labHaskellPackages.Agda.data
     labHaskellPackages.pandoc.data
   ]);
 in
