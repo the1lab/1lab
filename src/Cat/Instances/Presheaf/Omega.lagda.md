@@ -4,12 +4,12 @@ open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Diagram.Pullback.Along
 open import Cat.Functor.Adjoint.Hom
-open import Cat.Diagram.Subobject
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
+open import Cat.Diagram.Omega
 open import Cat.Diagram.Sieve
 open import Cat.Prelude
 
@@ -26,7 +26,7 @@ open is-pullback
 -->
 
 ```agda
-module Cat.Instances.Presheaf.Subobjects {ℓ} (C : Precategory ℓ ℓ) where
+module Cat.Instances.Presheaf.Omega {ℓ} (C : Precategory ℓ ℓ) where
 ```
 
 # The subobject classifier presheaf

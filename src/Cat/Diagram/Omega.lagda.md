@@ -18,7 +18,7 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Diagram.Subobject where
+module Cat.Diagram.Omega where
 ```
 
 # Subobject classifiers {defines="generic-subobject subobject-classifier"}

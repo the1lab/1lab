@@ -40,8 +40,8 @@ summing over the possible maps $P \to Y$ fitting in the diagram below.
 ~~~
 
 While this is a rather artificial notion, it comes up a lot in the
-context of [[elementary topos]] theory, especially in the case where $g$
-is the [[generic subobject]] $\true : \top \to \Omega$.
+context of elementary topos theory, especially in the case where $g$ is
+the [[generic subobject]] $\true : \top \to \Omega$.
 
 ```agda
   record is-pullback-along {P X Y Z} (p₁ : Hom P X) (f : Hom X Z) (g : Hom Y Z) : Type (o ⊔ ℓ) where

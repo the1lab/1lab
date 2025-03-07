@@ -6,17 +6,17 @@ open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Presheaf.Limits
 open import Cat.Diagram.Pullback.Along
 open import Cat.Site.Sheafification
-open import Cat.Diagram.Subobject
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
+open import Cat.Diagram.Omega
 open import Cat.Diagram.Sieve
 open import Cat.Site.Closure
 open import Cat.Site.Base
 open import Cat.Prelude
 
-import Cat.Instances.Presheaf.Subobjects as Soc
+import Cat.Instances.Presheaf.Omega as Soc
 import Cat.Reasoning as Cat
 ```
 -->
