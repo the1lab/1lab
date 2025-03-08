@@ -262,7 +262,7 @@ sheaf-name {A} A' = nm module sheaf-name where
 We can then compute, in $\psh(\cC)$, the name of $A'$, resulting in a
 natural transformation $\name{A'} : A \to \Omega$. It remains to show
 that this transformation is actually valued in $\Omega_J$, i.e. that
-each of the resulting sieves is closed. To this end, susppose we have
+each of the resulting sieves is closed. To this end, suppose we have
 some $x : A(U)$ and that the sieve $h^*(\name{A'} x)$ is $J$-covering.
 We must show that $\name{A'} x$ contains $h$.
 
