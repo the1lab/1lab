@@ -38,7 +38,7 @@ open _⊣_
 # Exponential objects in presheaf categories
 
 This module presents a construction of exponential objects in presheaf
-categories. First, we'll use the [[yoneda lemma]] to divine what the
+categories. First, we'll use the [[Yoneda lemma]] to divine what the
 answer *should be*, and then we'll use that to finish the actual
 construction. First, fix a pair of presheaves $A$ and $B$ over some
 category $\cC$, and suppose that the exponential object $B^A$ exists.
@@ -50,7 +50,7 @@ module _ (A B : Functor (C ^op) (Sets ℓ))
   open Exponential exp
 ```
 
-The yoneda lemma says that the value $B^A(c)$ of the assumed exponential
+The Yoneda lemma says that the value $B^A(c)$ of the assumed exponential
 object is the set of natural transformations $\hom(-,x) \to B^A$; In
 turn, the universal property of $B^A$ as an exponential tells us that
 this $\hom$-set is equivalent to $$ \hom(-, x) \times A \to B $$, and
@@ -74,12 +74,18 @@ module _ (A B : ⌞ PSh.Ob ⌟) where
 ```
 -->
 
+Now that we know what the answer should be, we can fill in the details
+of the construction, which essentially work out to applying naturality
+and functoriality.
+
 ```agda
   PSh[_,_] : PSh.Ob
   PSh[_,_] .F₀ c = el ((よ₀ C c ⊗₀ A) => B) Nat-is-set
   PSh[_,_] .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
-  PSh[_,_] .F₁ f nt .is-natural x y g = funext λ o →
-    ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
+  PSh[_,_] .F₁ f nt .is-natural x y g = funext λ (h , z) →
+    nt .η y (f C.∘ h C.∘ g , A.₁ g z)    ≡⟨ ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ⟩
+    nt .η y ((f C.∘ h) C.∘ g , A.₁ g z)  ≡⟨ nt .is-natural _ _ _ $ₚ _ ⟩
+    B.₁ g (nt .η _ (f C.∘ h , z))        ∎
   PSh[_,_] .F-id = ext λ f i g x →
     ap (f .η i) (Σ-pathp (C.idl _) refl)
   PSh[_,_] .F-∘ f g = ext λ h i j x →

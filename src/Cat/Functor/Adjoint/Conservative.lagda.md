@@ -75,7 +75,7 @@ indeed a section.
     R-cons $
     C.has-section+monic→invertible
       (C.make-section (L-adjunct L⊣R f) (R.pulll (sym ε=mf) ∙ zag))
-      (right-adjoint→preserves-monos R L⊣R (D.monic m))
+      (right-adjoint→is-monic R L⊣R (D.monic m))
 ```
 
 On to the reverse direction. Suppose that the counit is a strong epi,
