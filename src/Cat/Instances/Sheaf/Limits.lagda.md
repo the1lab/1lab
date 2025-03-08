@@ -17,7 +17,7 @@ open _=>_
 -->
 
 ```agda
-module Cat.Instances.Sheaves.Limits where
+module Cat.Instances.Sheaf.Limits where
 ```
 
 # Limits of sheaves {defines="limits-of-sheaves"}
