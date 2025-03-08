@@ -3,9 +3,11 @@
 open import 1Lab.Reflection.Copattern
 
 open import Cat.Diagram.Pullback.Properties
+open import Cat.Displayed.GenericObject
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Pullback.Along
 open import Cat.Diagram.Limit.Finite
+open import Cat.Displayed.Cartesian
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Instances.Sets
@@ -242,6 +244,41 @@ fiddling, but it's nothing outrageous.
   mk .name-named h = ext λ a → Ω-ua
     (rec! λ x _ p y=a → from-is-true (ap h (sym y=a) ∙ p))
     (λ ha → inc ((a , lift tt , ap lift (to-is-true ha)) , refl))
+```
+
+## As generic objects
+
+We can connect the definition above with that of [[generic objects]] in
+a [[fibration]]: specifically, a generic subobject is a generic object
+in the fibration of subobjects. The similar naming is not an accident:
+the proof boils down to shuffling data around.
+
+<!--
+```agda
+module _ {o ℓ} (C : Precategory o ℓ)  where
+  open is-generic-subobject
+  open is-pullback-along
+  open Generic-object
+  open Cat.Reasoning C using (pulll)
+  open is-cartesian
+  open Subobjs C
+```
+-->
+
+```agda
+  from-generic-subobject
+    : ∀ {Ω} {tru : Subobject Ω} → is-generic-subobject C tru
+    → Generic-object Subobjects tru
+  from-generic-subobject gen .classify    = gen .name
+  from-generic-subobject gen .classify' s = record { sq = gen .classifies s .square }
+  from-generic-subobject gen .classify-cartesian s = record
+    { universal = λ {u} {u'} m a → record
+      { map = gen .classifies s .universal (pulll refl ∙ a .sq)
+      ; sq = sym (gen .classifies s .p₁∘universal)
+      }
+    ; commutes  = λ m h → prop!
+    ; unique    = λ m h → prop!
+    }
 ```
 
 <!--
