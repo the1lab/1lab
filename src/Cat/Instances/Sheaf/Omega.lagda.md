@@ -9,6 +9,7 @@ open import Cat.Site.Sheafification
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Morphism
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Omega
 open import Cat.Diagram.Sieve
@@ -247,9 +248,9 @@ sheaf-name {A} A' = nm module sheaf-name where
   sub' : Subobject (PSh ℓ C) (A .fst)
   sub' .domain = A' .domain .fst
   sub' .map    = A' .map
-  sub' .monic  = right-adjoint→is-monic
+  sub' .monic  = right-adjoint→is-monic _
     (free-objects→left-adjoint (Small.make-free-sheaf J))
-    {x = A' .domain} {y = A} (λ {C} → A' .monic {C})
+    {A' .domain} {A} (λ {C} → A' .monic {C})
 
   emb : ∀ {i} → is-embedding (A' .map .η i)
   emb = is-monic→is-embedding-at ℓ C (sub' .monic)

@@ -219,8 +219,8 @@ module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
 -->
 
 ```agda
-  right-adjoint→preserves-monos : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
-  right-adjoint→preserves-monos {a = a} a-monic f g p =
+  right-adjoint→is-monic : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
+  right-adjoint→is-monic {a = a} a-monic f g p =
     R-adjunct.injective L⊣F $
     a-monic _ _ $
     a 𝒞.∘ ε _ 𝒞.∘ L.₁ f            ≡⟨ 𝒞.pulll (sym (counit.is-natural _ _ _)) ⟩

@@ -1,12 +1,12 @@
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Functor.Adjoint.Continuous
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Morphism
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -210,5 +210,5 @@ is-monic→is-embedding-at
   → ∀ {i} → is-embedding (m .η i)
 is-monic→is-embedding-at {Y = Y} {m} mono {i} =
   monic→is-embedding (hlevel 2) λ {C} g h →
-    right-adjoint→is-monic (clo⊣ev i) mono {C} g h
+    right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
 ```

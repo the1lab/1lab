@@ -27,7 +27,7 @@ open Functor
 ```
 -->
 
-# Generic objects
+# Generic objects {defines="generic-object"}
 
 There are 2 perspectives one can take on generic objects. The first is a
 purely logical one: generic objects provide us a tool for giving
