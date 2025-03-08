@@ -235,12 +235,12 @@ $A$ is a sheaf precisely when the associated natural transformation
 $\name{A} : A \to \Omega$ into the presheaf of sieves on $\cC$ is valued
 in closed sieves.
 
-First, suppose that the domain of $A' \mono A$ is indeed a sheaf. First,
+First, suppose that the domain of $A' \mono A$ is indeed a sheaf, and
 note that since the inclusion $\Sh(\cC, J) \mono \psh(\cC)$ is a [[right
 adjoint]], any [[subobject]] $A' \mono A$ in $\Sh(\cC, J)$ is also a
-subobject in $\psh(\cC)$; and since subobjects in $\psh(\cC)$ are
-componentwise embeddings, the same is true of a subobject in $\Sh(\cC,
-J)$.
+subobject in $\psh(\cC)$. Since subobjects in $\psh(\cC)$ are
+componentwise embeddings, the same is thus true of a subobject in
+$\Sh(\cC, J)$.
 
 ```agda
 sheaf-name : {A : Sheaf J _} (A' : Subobject (Sheaves J _) A) → A .fst => ΩJ .fst
