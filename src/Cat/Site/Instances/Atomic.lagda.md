@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Sheaves.Omega
+open import Cat.Instances.Sheaf.Omega
 open import Cat.Site.Grothendieck
 open import Cat.Functor.Constant
 open import Cat.Diagram.Sieve
