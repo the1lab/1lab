@@ -35,12 +35,12 @@ filter-∈ᶠˢ {P = P} ⦃ d ⦄ {x} xs mem px = ∈ᶠˢ-elim (λ xs _ → x �
   (λ {y} {xs} q ind → case d {y} return (λ p → x ∈ᶠˢ cons-if p y (filter P xs)) of λ { (yes _) → thereₛ ind ; (no ¬px) → ind })
   xs mem
 
-∈ᶠˢ-filter : ∀ {P : A → Type ℓ} ⦃ d : ∀ {x} → Dec (P x) ⦄ {x : A} xs → x ∈ᶠˢ filter P xs → ∥ P x ∥
-∈ᶠˢ-filter {P = P} ⦃ d = d ⦄ {x = x} = Finset-elim-prop (λ xs → x ∈ filter P xs → ∥ P x ∥)
+∈ᶠˢ-filter : ∀ {P : A → Type ℓ} ⦃ d : ∀ {x} → Dec (P x) ⦄ {x : A} xs → x ∈ᶠˢ filter P xs → x ∈ xs × ∥ P x ∥
+∈ᶠˢ-filter {P = P} ⦃ d = d ⦄ {x = x} = Finset-elim-prop (λ xs → x ∈ filter P xs → x ∈ xs × ∥ P x ∥)
   (λ w → absurd (¬mem-[] w))
-  (λ y {xs} ind → case d {y} return (λ p → x ∈ᶠˢ cons-if p y (filter P xs) → ∥ P x ∥) of λ where
-    (yes py) → ∈ᶠˢ-split (λ p → inc (substᵢ P (symᵢ p) py)) ind
-    (no ¬py) q → ind q)
+  (λ y {xs} ind → case d {y} return (λ p → x ∈ᶠˢ cons-if p y (filter P xs) → x ∈ (y ∷ xs) × ∥ P x ∥) of λ where
+    (yes py) → ∈ᶠˢ-split (λ p → hereₛ' p , inc (substᵢ P (symᵢ p) py)) λ w → case ind w of λ a b → thereₛ a , inc b
+    (no ¬py) q → case ind q of λ a b → thereₛ a , inc b)
 
 uncons : (x : A) (xs : Finset A) → x ∈ᶠˢ xs → xs ≡ x ∷ xs
 uncons x = Finset-elim-prop _ (λ x → absurd (¬mem-[] x)) λ y {xs} ih → ∈ᶠˢ-split
@@ -208,3 +208,27 @@ powerset (squash x y p q i j) = hlevel 2 (powerset x) (powerset y) (λ i → pow
       ys' p n → ∈ᶠˢ-split {P = λ _ → y ∈ᶠˢ (x ∷ xs)} hereₛ'
         (λ w → thereₛ (ih ys' n y w))
         (substᵢ (y ∈ᶠˢ_) (symᵢ p) m)
+
+delete : ⦃ _ : Discrete A ⦄ → A → Finset A → Finset A
+delete x xs = filter (x ≠_) xs
+
+powerset-∈ᶠˢ : ⦃ _ : Discrete A ⦄ (xs ys : Finset A) → ys ⊆ xs → ys ∈ powerset xs
+powerset-∈ᶠˢ = Finset-elim-prop _
+  (λ ys sube → hereₛ' (Id≃path.from (finset-ext sube (λ a m → absurd (¬mem-[] m)))))
+  λ x {xs} ih ys sube → caseᵈ x ∈ ys of λ where
+    (yes x∈ys) →
+      let
+        ys' = delete x ys
+
+        p : x ∷ ys' ≡ ys
+        p = finset-ext
+          (λ a m → ∈ᶠˢ-split {P = λ _ → a ∈ ys} (λ p → substᵢ (_∈ ys) (symᵢ p) x∈ys) (λ w → case ∈ᶠˢ-filter {P = x ≠_} ys w of λ p _ → p) m)
+          λ a b → case a ≡ᵢ? x of λ { (yes p) → hereₛ' p ; (no ¬q) → thereₛ (filter-∈ᶠˢ ys b λ a → ¬q (Id≃path.from (sym a))) }
+
+        s' : delete x ys ⊆ xs
+        s' a m =
+          let (m' , a≠x) = ∈ᶠˢ-filter ys m
+           in ∈ᶠˢ-split {P = λ _ → a ∈ xs} (λ p → case a≠x of λ ¬x=a → absurd (¬x=a (Id≃path.to (symᵢ p)))) (λ w → w) (sube a m')
+      in unionr-∈ᶠˢ _ (powerset xs) _ $ map-∈ᶠˢ' (x ∷_) (powerset xs) p (ih ys' s')
+    (no x∉ys) → unionl-∈ᶠˢ _ (powerset xs) _ $ ih ys λ a m → ∈ᶠˢ-split {P = λ _ → a ∈ xs}
+      (λ a=x → absurd (x∉ys (substᵢ (_∈ ys) a=x m))) (λ w → w) (sube a m)

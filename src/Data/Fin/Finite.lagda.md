@@ -670,6 +670,12 @@ instance
     b ← fb
     pure (Listing-Coeq ⦃ a ⦄ ⦃ b ⦄)
 
+  Listing-So : ∀ {b} → Listing (So b)
+  Listing-So = Listing-prop
+
+  Finite-So : ∀ {b} → Finite (So b)
+  Finite-So = inc auto
+
 instance
   Discrete-listing-Π : ⦃ _ : Listing A ⦄ ⦃ _ : ∀ {x} → Discrete (P x) ⦄ → Discrete ((x : A) → P x)
   Discrete-listing-Π {A = A} ⦃ xa ⦄ ⦃ dp ⦄ {f} {g} with Listing→exhaustible (λ i → ¬ f i ≡ g i)
