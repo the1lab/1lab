@@ -82,11 +82,8 @@ $$
 $$
 
 ```agda
-    _^!_ : ∀ {x y} → (f : B.Hom x y) → (x' : E.Ob[ x ]) → E.Ob[ y ]
-    f ^! x' = cocart-lift f x' .centre .fst
-
-    ι! : ∀ {x y} → (f : B.Hom x y) → (x' : E.Ob[ x ]) → E.Hom[ f ] x' (f ^! x')
-    ι! f x' = cocart-lift f x' .centre .snd
+    module _ {x y} (f : B.Hom x y) (x' : E.Ob[ x ]) where
+      open Σ (cocart-lift f x' .centre) renaming (fst to _^!_ ; snd to ι!) public
 ```
 
 ## Basic properties of discrete cocartesian fibrations
