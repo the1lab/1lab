@@ -220,5 +220,10 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       → is-hlevel A (suc n)
     embedding→is-hlevel n emb a-hl = Equiv→is-hlevel (suc n) (Total-equiv f) $
       Σ-is-hlevel (suc n) a-hl λ x → is-prop→is-hlevel-suc (emb x)
+
+ap-equiv
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B) {x y : A}
+  → (x ≡ y) ≃ (e .fst x ≡ e .fst y)
+ap-equiv e = _ , equiv→cancellable (e .snd)
 ```
 -->
