@@ -22,6 +22,12 @@ get-record-type n = get-definition n >>= λ where
   (record-type conm fields) → pure (conm , fields)
   _ → typeError [ "get-record-type: definition " , nameErr n , " is not a record type." ]
 
+-- Look up a constructor's quantity in the signature.
+get-con-quantity : Name → TC Quantity
+get-con-quantity n = get-definition n >>= λ where
+  (data-cons _ q) → pure q
+  _ → typeError [ "get-con-erasure: definition " , nameErr n , " is not a constructor." ]
+
 -- Representation of a data/record constructor.
 record Constructor : Type where
   constructor conhead
@@ -31,6 +37,9 @@ record Constructor : Type where
 
     -- Name of the data type:
     con-data      : Name
+
+    -- Quantity of the constructor.
+    con-quantity  : Quantity
 
     -- Argument telescope for the constructor, with the datatype's
     -- parameters removed.
@@ -55,22 +64,23 @@ get-type-constructors n = datatype <|> recordtype where
   datatype = do
     (npars , cons) ← get-data-type n
     for cons λ qn → do
+      q ← get-con-quantity qn
       (args , ty) ← pi-view <$> get-type qn
-      pure (conhead qn n (drop npars args) ty)
+      pure (conhead qn n q (drop npars args) ty)
 
   recordtype = do
     (c  , _)    ← get-record-type n
     (np , _)    ← pi-view <$> get-type n
     (args , ty) ← pi-view <$> get-type c
-    pure ((conhead c n (drop (length np) args) ty) ∷ [])
+    pure ((conhead c n quantity-ω (drop (length np) args) ty) ∷ [])
 
 -- Look up a constructor in the signature.
 get-constructor : Name → TC Constructor
 get-constructor n = get-definition n >>= λ where
-  (data-cons t _) → do
+  (data-cons t q) → do
     (npars , cons) ← get-data-type t
     (args , ty)    ← pi-view <$> get-type n
-    pure (conhead n t (drop npars args) ty)
+    pure (conhead n t q (drop npars args) ty)
   _ → typeError [ "get-constructor: " , nameErr n , " is not a data constructor." ]
 
 -- If a term reduces to an application of a record type, return
