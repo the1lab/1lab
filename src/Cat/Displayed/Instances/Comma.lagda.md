@@ -103,11 +103,12 @@ Comma categories are [[discrete two-sided fibrations]].
   Comma-is-discrete-two-sided-fibration .factors _ = prop!
 ```
 
-Every *$B$-vertical* morphism in a discrete two-sided fibration is [[cartesian|cartesian morphism]],
-but this is not neccesarily true of *every* morphism. In our setting,
-the cartesian maps are given by squares that satisfy the following
-pasting property: for every (potentially non-commutative) square of the below
-form, if the overall rectangle commutes, then the upper square commutes.
+Every *$B$-vertical* morphism in a discrete two-sided fibration is
+[[cartesian|cartesian morphism]], but this is not necessarily true of
+*every* morphism. In our setting, the cartesian maps are given by
+squares that satisfy the following pasting property: for every
+(potentially non-commutative) square of the below form, if the overall
+rectangle commutes, then the upper square commutes.
 
 ~~~{.quiver}
 \begin{tikzcd}

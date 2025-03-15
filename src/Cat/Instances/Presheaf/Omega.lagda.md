@@ -116,7 +116,7 @@ with, we show that given any $p_1 : P' \to X$ making the outer
 ~~~
 
 commute, we can turn sections $b : P'(a)$ into points in the fibre of
-$P_a$ over $p_1(b)$. This wil be used to define the desired "universal"
+$P_a$ over $p_1(b)$. This will be used to define the desired "universal"
 map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
