@@ -186,6 +186,13 @@ hetero-homotopy≃homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
 
 <!--
 ```agda
+funext≃ : ∀ {a b} {A : Type a} {B : A → Type b}
+          {f g : (x : A) → B x}
+        → ((x : A) → f x ≡ g x) ≃ (f ≡ g)
+funext≃ .fst = funext
+funext≃ .snd .is-eqv H .centre = strict-fibres happly H .fst
+funext≃ .snd .is-eqv H .paths = strict-fibres happly H .snd
+
 funextP'
   : ∀ {A : Type ℓ} {B : A → I → Type ℓ₁}
   → {f : ∀ {a} → B a i0} {g : ∀ {a} → B a i1}
