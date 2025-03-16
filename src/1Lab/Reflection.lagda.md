@@ -103,6 +103,9 @@ private module P where
   -- "blocking" constraints.
     noConstraints : ∀ {a} {A : Type a} → TC A → TC A
 
+  -- Run the given computation at the type level, allowing use of erased things.
+    work-on-types : ∀ {a} {A : Type a} → TC A → TC A
+
   -- Run the given TC action and return the first component. Resets to
   -- the old TC state if the second component is 'false', or keep the
   -- new TC state if it is 'true'.
@@ -158,6 +161,7 @@ private module P where
   {-# BUILTIN AGDATCMASKEXPANDLAST     askExpandLast              #-}
   {-# BUILTIN AGDATCMASKREDUCEDEFS     askReduceDefs              #-}
   {-# BUILTIN AGDATCMNOCONSTRAINTS     noConstraints              #-}
+  {-# BUILTIN AGDATCMWORKONTYPES       work-on-types              #-}
   {-# BUILTIN AGDATCMRUNSPECULATIVE    run-speculative            #-}
   {-# BUILTIN AGDATCMGETINSTANCES      get-instances              #-}
   {-# BUILTIN AGDATCMDECLAREDATA       declareData                #-}
