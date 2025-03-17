@@ -115,7 +115,7 @@ PSh-closed = cc where
     adj .unit .η x .η i a =
       NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ → funext λ _ →
         Σ-pathp (happly (x .F-∘ _ _) _) refl
-    adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ # _) ,ₚ refl
+    adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ · _) ,ₚ refl
     adj .unit .is-natural x y f = ext λ _ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) ,ₚ refl
     adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
     adj .counit .η _ .is-natural x y f = funext λ h →

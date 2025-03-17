@@ -125,8 +125,8 @@ componentwise.
   pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
     path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
     path = happly (f.is-natural _ _ _) _
-        ·· (λ i → Z.₁ h (p i))
-        ·· sym (happly (g.is-natural _ _ _) _)
+        ∙∙ (λ i → Z.₁ h (p i))
+        ∙∙ sym (happly (g.is-natural _ _ _) _)
   pb .apex .F-id = funext λ (a , b , _) → pb-path (X.F-id $ₚ a) (Y.F-id $ₚ b)
   pb .apex .F-∘ f g = funext λ (a , b , _) → pb-path (X.F-∘ f g $ₚ a) (Y.F-∘ f g $ₚ b)
   pb .p₁ .η idx (a , b , _) = a
@@ -164,7 +164,7 @@ functorial on presheaves; this is the **evaluation functor**.
 ```agda
 private
   ev : ∀ {ℓs} (c : ⌞ C ⌟) → Functor (PSh ℓs C) (Sets ℓs)
-  ev c .F₀ F    = F # c
+  ev c .F₀ F    = F · c
   ev c .F₁ h i  = h .η _ i
   ev c .F-id    = refl
   ev c .F-∘ f g = refl
@@ -191,7 +191,7 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
   clo⊣ev c = hom-iso→adjoints (λ f x → f .η _ (x , id)) (is-iso→is-equiv iiso) λ g h x → refl where
     open is-iso
 
-    iiso : ∀ {x : Set ℓ} {y : ⌞ PSh ℓ C ⌟} → is-iso {A = clo c # x => y} (λ f x → f .η c (x , id))
+    iiso : ∀ {x : Set ℓ} {y : ⌞ PSh ℓ C ⌟} → is-iso {A = clo c · x => y} (λ f x → f .η c (x , id))
     iiso {y = y} .inv f .η x (a , g) = y ⟪ g ⟫ (f a)
     iiso {y = y} .inv f .is-natural x z g = ext λ a h → PSh.expand y refl
     iiso {y = y} .rinv x = ext λ a → PSh.F-id y

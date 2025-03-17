@@ -160,8 +160,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     open is-pullback
 
     done : is-pullback C p₁' f' p₂' g'
-    done .square = ap₂ _∘_ (sym q) (sym p) ·· α.square ·· ap₂ _∘_ s r
-    done .universal β = α.universal (ap₂ _∘_ q refl ·· β ·· ap₂ _∘_ (sym s) refl)
+    done .square = ap₂ _∘_ (sym q) (sym p) ∙∙ α.square ∙∙ ap₂ _∘_ s r
+    done .universal β = α.universal (ap₂ _∘_ q refl ∙∙ β ∙∙ ap₂ _∘_ (sym s) refl)
     done .p₁∘universal = ap₂ _∘_ (sym p) refl ∙ α.p₁∘universal
     done .p₂∘universal = ap₂ _∘_ (sym r) refl ∙ α.p₂∘universal
     done .unique β γ = α.unique (ap₂ _∘_ p refl ∙ β) (ap₂ _∘_ r refl ∙ γ)

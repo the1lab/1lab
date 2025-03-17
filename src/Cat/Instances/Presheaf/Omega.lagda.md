@@ -83,14 +83,14 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 
 <!--
 ```agda
-ΩPSh : Subobject-classifier (PSh ℓ C)
-ΩPSh .Subobject-classifier.Ω = Sieves {C = C}
+PSh-omega : Subobject-classifier (PSh ℓ C)
+PSh-omega .Subobject-classifier.Ω = Sieves {C = C}
 
-ΩPSh .Subobject-classifier.true .Sub.domain      = _
-ΩPSh .Subobject-classifier.true .Sub.map         = tru
-ΩPSh .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
+PSh-omega .Subobject-classifier.true .Sub.domain      = _
+PSh-omega .Subobject-classifier.true .Sub.map         = tru
+PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
 
-ΩPSh .generic .name = psh-name
+PSh-omega .generic .name = psh-name
 ```
 -->
 
@@ -120,7 +120,7 @@ $P_a$ over $p_1(b)$. This will be used to define the desired "universal"
 map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
-ΩPSh .generic .classifies {A} P = record { has-is-pb = pb } where
+PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
   emb = is-monic→is-embedding-at (P .monic)
 
   square→pt
@@ -184,7 +184,7 @@ function $n : P \to \Omega$), and to use its universal property to
 the universal natural transformation.
 
 ```agda
-ΩPSh .generic .unique {A} {m = P} {nm} pb = ext λ i x {U} f →
+PSh-omega .generic .unique {A} {m = P} {nm} pb = ext λ i x {U} f →
   let
     emb = is-monic→is-embedding-at (P .monic)
 ```

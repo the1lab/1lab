@@ -109,7 +109,7 @@ know that this type has cardinality zero.
         let
           vl = pb .universal {P' = 1} {p₁' = λ _ → x} {p₂' = λ _ → 0} (ext λ _ → w) 0
           it : fibre (m .map) x
-          it = vl , pb .p₁∘universal # 0
+          it = vl , pb .p₁∘universal · 0
         in case e of λ eqv → absurd (Fin-absurd (Equiv.to eqv it))
     in
       Fin-cases {P = λ e → nm x ≡ e → nm x ≡ 0} (λ x → x)

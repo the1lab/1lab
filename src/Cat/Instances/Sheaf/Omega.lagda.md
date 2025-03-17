@@ -39,7 +39,7 @@ open Soc C
 open Cat C
 
 private
-  module ΩPSh = Subobject-classifier ΩPSh
+  module ΩPSh = Subobject-classifier PSh-omega
   module PSh = Cat (PSh ℓ C)
 
 open Coverage J using (Membership-covers ; Sem-covers)
@@ -313,11 +313,11 @@ is a subobject classifier. First, the maximal sieve is obviously closed,
 because it contains *every* morphism:
 
 ```agda
-tru' : Subobject (Sheaves J ℓ) ΩJ
-tru' .domain                = Terminal.top (Sh[]-terminal J)
-tru' .map .η _ _            = maximal' , (λ _ _ → tt)
-tru' .map .is-natural x y f = trivial!
-tru' .monic g h x           = trivial!
+Sh[]-true : Subobject (Sheaves J ℓ) ΩJ
+Sh[]-true .domain                = Terminal.top (Sh[]-terminal J)
+Sh[]-true .map .η _ _            = maximal' , (λ _ _ → tt)
+Sh[]-true .map .is-natural x y f = trivial!
+Sh[]-true .monic g h x           = trivial!
 ```
 
 <details>
@@ -328,22 +328,22 @@ comment on them further.
 </summary>
 
 ```agda
-ΩSheaf : is-generic-subobject (Sheaves J ℓ) tru'
-ΩSheaf .name         = sheaf-name
-ΩSheaf .classifies m = record { has-is-pb = pb' } where
-  rem : is-pullback-along (PSh ℓ C) (m .map) (ΩJ=>Ω ∘nt sheaf-name m) (ΩJ=>Ω ∘nt tru' .map)
+Sh[]-true-is-generic : is-generic-subobject (Sheaves J ℓ) Sh[]-true
+Sh[]-true-is-generic .name         = sheaf-name
+Sh[]-true-is-generic .classifies m = record { has-is-pb = pb' } where
+  rem : is-pullback-along (PSh ℓ C) (m .map) (ΩJ=>Ω ∘nt sheaf-name m) (ΩJ=>Ω ∘nt Sh[]-true .map)
   rem = record { has-is-pb = subst-is-pullback refl trivial! refl trivial!
     (ΩPSh.classifies (sheaf-name.sub' m) .has-is-pb) }
 
-  pb' : is-pullback (Sheaves J ℓ) (m .map) (sheaf-name m) (rem .top) (tru' .map)
+  pb' : is-pullback (Sheaves J ℓ) (m .map) (sheaf-name m) (rem .top) (Sh[]-true .map)
   pb' .square       = ext λ i h {V} x → unext (rem .square) i h x
   pb' .universal α  = rem .universal (PSh.extendr α)
   pb' .p₁∘universal = rem .p₁∘universal
   pb' .p₂∘universal = rem .p₂∘universal
   pb' .unique       = rem .unique
 
-ΩSheaf .unique {m = m} {nm} α = ext λ i x {V} h → unext path i x h where
-  pb : is-pullback (PSh ℓ C) (m .map) nm (α .top) (tru' .map)
+Sh[]-true-is-generic .unique {m = m} {nm} α = ext λ i x {V} h → unext path i x h where
+  pb : is-pullback (PSh ℓ C) (m .map) nm (α .top) (Sh[]-true .map)
   pb = right-adjoint→is-pullback (free-objects→left-adjoint (Small.make-free-sheaf J)) (α .has-is-pb)
 
   pb' : is-pullback (PSh ℓ C) (m .map) (ΩJ=>Ω ∘nt nm) (α .top) (ΩPSh.true .map)
@@ -355,6 +355,13 @@ comment on them further.
 
   path = ΩPSh.unique {m = sheaf-name.sub' m} record { has-is-pb = pb' }
 ```
+
+<!--
+```agda
+Sh[]-omega : Subobject-classifier (Sheaves J ℓ)
+Sh[]-omega = record { generic = Sh[]-true-is-generic }
+```
+-->
 
 </details>
 
