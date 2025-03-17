@@ -176,7 +176,7 @@ point of view. From this perspective, our previous 2 conditions ensure
 that $\cE$ is *separately* functorial in $\cA\op$ and $\cB$; there is
 no way to commute the two reindexing functors! To get something that is
 *jointly* functorial, we need to assert the existence of some extra lifts
-that allow us more room to manuever.
+that allow us more room to maneuver.
 
 ```agda
     field

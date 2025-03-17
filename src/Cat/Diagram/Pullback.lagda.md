@@ -149,6 +149,22 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   instance
     H-Level-is-pullback : ∀ {P} {p₁ : Hom P X} {f : Hom X Z} {p₂ : Hom P Y} {g : Hom Y Z} {n} → H-Level (is-pullback C p₁ f p₂ g) (suc n)
     H-Level-is-pullback = prop-instance is-pullback-is-prop
+
+  subst-is-pullback
+    : ∀ {P} {p₁ p₁' : Hom P X} {f f' : Hom X Z} {p₂ p₂' : Hom P Y} {g g' : Hom Y Z}
+    → p₁ ≡ p₁' → f ≡ f' → p₂ ≡ p₂' → g ≡ g'
+    → is-pullback C p₁ f p₂ g
+    → is-pullback C p₁' f' p₂' g'
+  subst-is-pullback {p₁ = p₁} {p₁'} {f} {f'} {p₂} {p₂'} {g} {g'} p q r s α = done where
+    module α = is-pullback α
+    open is-pullback
+
+    done : is-pullback C p₁' f' p₂' g'
+    done .square = ap₂ _∘_ (sym q) (sym p) ∙∙ α.square ∙∙ ap₂ _∘_ s r
+    done .universal β = α.universal (ap₂ _∘_ q refl ∙∙ β ∙∙ ap₂ _∘_ (sym s) refl)
+    done .p₁∘universal = ap₂ _∘_ (sym p) refl ∙ α.p₁∘universal
+    done .p₂∘universal = ap₂ _∘_ (sym r) refl ∙ α.p₂∘universal
+    done .unique β γ = α.unique (ap₂ _∘_ p refl ∙ β) (ap₂ _∘_ r refl ∙ γ)
 ```
 -->
 
