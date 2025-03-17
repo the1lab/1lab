@@ -31,7 +31,7 @@ private module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C using (_≅_)
   open _≅_ public
 
--- Using ∙/·· over equational reasoning saves ~5k conversion checks
+-- Using ∙/∙∙ over equational reasoning saves ~5k conversion checks
 ```
 -->
 
@@ -168,11 +168,11 @@ this file in Agda and poke around the proof.
         (k⁻¹ , q) ← H-full (B.from f B.∘ h.to)
         ∥_∥.inc $
              C.intror (F.annihilate
-               (ap₂ B._∘_ q p ·· B.cancel-inner h.invl ·· f .invr))
-          ·· C.extendl (γ.is-natural _ _ _)
-          ·· ap₂ (λ e e' → G.₁ e C.∘ γ.η a₀ C.∘ F.₁ e') q p
-          ·· ap₂ (λ e e' → e C.∘ γ.η a₀ C.∘ e') (G.F-∘ _ _) (F.F-∘ _ _)
-          ·· C.pullr (ap (G.₁ h.to C.∘_) (C.pulll refl) ∙ C.pulll refl)
+               (ap₂ B._∘_ q p ∙∙ B.cancel-inner h.invl ∙∙ f .invr))
+          ∙∙ C.extendl (γ.is-natural _ _ _)
+          ∙∙ ap₂ (λ e e' → G.₁ e C.∘ γ.η a₀ C.∘ F.₁ e') q p
+          ∙∙ ap₂ (λ e e' → e C.∘ γ.η a₀ C.∘ e') (G.F-∘ _ _) (F.F-∘ _ _)
+          ∙∙ C.pullr (ap (G.₁ h.to C.∘_) (C.pulll refl) ∙ C.pulll refl)
 ```
 
 Anyway, because of how we've phrased the coherence condition, if $g$,
@@ -234,8 +234,8 @@ the transformation we're defining, too.
         (k , p) ← H-full (h'.from B.∘ f B.∘ h.to)
         pure $ C.pullr (C.pullr (F.weave (sym
                   (B.pushl p ∙ ap₂ B._∘_ refl (B.cancelr h.invl)))))
-            ·· ap₂ C._∘_ refl (C.extendl (γ.is-natural _ _ _))
-            ·· C.extendl (G.weave (B.lswizzle p h'.invl))
+            ∙∙ ap₂ C._∘_ refl (C.extendl (γ.is-natural _ _ _))
+            ∙∙ C.extendl (G.weave (B.lswizzle p h'.invl))
 ```
 
 </details>
@@ -418,21 +418,21 @@ This proof _really_ isn't commented. I'm sorry.
 
         γ : H.₁ (m' .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)
         γ =  B.pushl (H.ε _)
-          ·· ap₂ B._∘_ refl (p ∙
+          ∙∙ ap₂ B._∘_ refl (p ∙
               B.pushl (B.insertr (h .invl) ∙ ap₂ B._∘_ (sym w) refl))
-          ·· B.deletel (h' .invr)
+          ∙∙ B.deletel (h' .invr)
           ∙ ap₂ B._∘_ refl (sym (H.ε _))
 
         γ' : l₀ A.∘ m .from ≡ m' .from A.∘ l
         γ' = A.iso→monic m' _ _ $ A.extendl (H.injective (H.swap γ))
-                               ·· A.elimr (m .invl)
-                               ·· A.insertl (m' .invl)
+                               ∙∙ A.elimr (m .invl)
+                               ∙∙ A.insertl (m' .invl)
 
         δ : g₀ C.∘ k a h .to ≡ k a' h' .to C.∘ F.₁ l
-        δ = C.pullr ( C.pullr refl ·· ap₂ C._∘_ refl (C.pushl α)
-                   ·· C.pulll refl ∙ C.elimr (k a h .invr))
-          ·· ap₂ C._∘_ refl (F.weave γ')
-          ·· C.pulll (C.pushl (sym (kcomm _ _ _ (H.ε-lswizzle (h' .invl))))
+        δ = C.pullr ( C.pullr refl ∙∙ ap₂ C._∘_ refl (C.pushl α)
+                   ∙∙ C.pulll refl ∙ C.elimr (k a h .invr))
+          ∙∙ ap₂ C._∘_ refl (F.weave γ')
+          ∙∙ C.pulll (C.pushl (sym (kcomm _ _ _ (H.ε-lswizzle (h' .invl))))
               ∙ C.elimr (F.annihilate (m' .invl)))
 
       Homs-pt : Homs f
@@ -481,7 +481,7 @@ functor.</summary>
       commutes : G₁ (f B.∘ g) ≡ G₁ f C.∘ G₁ g
       commutes = C.iso→epic (k ax hx) _ _ $
           sym (Homs-contr (f B.∘ g) .centre .snd ax hx az hz (af A.∘ ag)
-                (ap₂ B._∘_ refl h' ·· B.cancell (hz .invl) ·· B.pulll refl))
+                (ap₂ B._∘_ refl h' ∙∙ B.cancell (hz .invl) ∙∙ B.pulll refl))
         ∙ sym ( C.pullr (sym (Homs-contr g .centre .snd ax hx ay hy ag
                   (H.ε-lswizzle (hy .invl))))
               ∙ C.pulll (sym (Homs-contr f .centre .snd ay hy az hz af
@@ -562,10 +562,10 @@ hubris, invoke a lot of technical lemmas about the characterisation of
       hom' .fst = transport (λ i → C.Hom (objp x (~ i)) (objp y (~ i))) (F.₁ f)
       hom' .snd a h a' h' l w = sym $
         C.pushl (Hom-transport C (sym (objp x)) (sym (objp y)) (F.₁ f))
-        ·· ap₂ C._∘_ refl
+        ∙∙ ap₂ C._∘_ refl
           ( C.pullr (from-pathp-from C (objp x) (λ i → kp x a h i .to))
           ∙ F.weave (H.ε-twist (sym w)))
-        ·· C.pulll (from-pathp-to C (sym (objp y)) λ i → kp y a' h' (~ i) .to)
+        ∙∙ C.pulll (from-pathp-to C (sym (objp y)) λ i → kp y a' h' (~ i) .to)
 
       homp : transport (λ i → C.Hom (objp x (~ i)) (objp y (~ i))) (F.₁ f)
            ≡ Homs-contr (H.₁ f) .centre .fst

@@ -315,8 +315,8 @@ colimits, we get that $F$ is colimiting.
             (pb _ _ .Pullback.has-is-pb)))))
         (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
           {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
-          (pulll (eq _ .p₁∘universal) ·· pulll (pb _ _ .Pullback.p₂∘universal) ·· pb _ _ .Pullback.p₂∘universal)
-          (pulll (eq _ .p₂∘universal) ·· pulll (pb _ _ .Pullback.p₁∘universal) ·· pullr (pb _ _ .Pullback.p₁∘universal))
+          (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)
+          (pulll (eq _ .p₂∘universal) ∙∙ pulll (pb _ _ .Pullback.p₁∘universal) ∙∙ pullr (pb _ _ .Pullback.p₁∘universal))
           (sym (F .F-∘ _ _))
           (α .is-natural _ _ _))
         f*G-colim

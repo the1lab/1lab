@@ -79,8 +79,8 @@ formal proof requires a _lot_ of calculation, however:
       (idr _) (sym (!-unique _))
     ni .inv∘eta x = π₁∘⟨⟩
     ni .natural x y f = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· idr f)
-      (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl !)
+      (pulll π₁∘⟨⟩ ∙∙ pullr π₁∘⟨⟩ ∙∙ idr f)
+      (pulll π₂∘⟨⟩ ∙∙ pullr π₂∘⟨⟩ ∙∙ idl !)
       (pulll π₁∘⟨⟩ ∙ idl f)
       (!-unique₂ _ _)
   Cartesian-monoidal .associator = to-natural-iso ni where

@@ -150,7 +150,7 @@ space of $G$ into the lexical sum such that it commutes with $\sigma$.
     : ∀ {o ℓ} (G : Displayed o ℓ I)
     → (∀ i → Monotone (Fibre G i) (F i))
     → Monotone (∫ G) (Lexical-sum I F)
-  splitᵖ G cases .hom    (i , x)     = i , cases i # x
+  splitᵖ G cases .hom    (i , x)     = i , cases i · x
   splitᵖ G cases .pres-≤ (i≤j , x≤y) = i≤j , λ i=ᵢj → lemma-pres-≤ i=ᵢj i≤j x≤y
 ```
 <!--

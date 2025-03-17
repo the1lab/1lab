@@ -1100,10 +1100,10 @@ module _ (opfib : Cocartesian-fibration) where
     mi .natural _ _ v' = funext λ u' →
       ι!.unique _ $ to-pathp $
         smashl _ _
-        ·· revive₁ (pullr[] _ (ι!.commutesv _))
-        ·· smashr _ _
-        ·· weave _ (pulll (idl u)) _ (pulll[] _ (ι!.commutesv _))
-        ·· duplicate id-comm _ (idr u)
+        ∙∙ revive₁ (pullr[] _ (ι!.commutesv _))
+        ∙∙ smashr _ _
+        ∙∙ weave _ (pulll (idl u)) _ (pulll[] _ (ι!.commutesv _))
+        ∙∙ duplicate id-comm _ (idr u)
 
   opfibration→hom-iso
     : ∀ {x y} (u : Hom x y)
@@ -1128,8 +1128,8 @@ module _ (opfib : Cocartesian-fibration) where
       from-pathp (ι!.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
-      ·· sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
-      ·· ap (into-iso.to .η _) (smashl _ _ ∙ sym assoc[])
+      ∙∙ sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
+      ∙∙ ap (into-iso.to .η _) (smashl _ _ ∙ sym assoc[])
 
   opfibration→universal-is-equiv
     : ∀ {x y x' y'}

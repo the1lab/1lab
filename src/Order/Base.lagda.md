@@ -210,10 +210,10 @@ unquoteDecl H-Level-Monotone = declare-record-hlevel 2 H-Level-Monotone (quote M
 
 instance
   Funlike-Monotone : Funlike (Monotone P Q) ⌞ P ⌟ λ _ → ⌞ Q ⌟
-  Funlike-Monotone = record { _#_ = hom }
+  Funlike-Monotone = record { _·_ = hom }
 
   Membership-Monotone : ⦃ _ : Underlying ⌞ Q ⌟ ⦄ → Membership ⌞ P ⌟ (Monotone P Q) _
-  Membership-Monotone = record { _∈_ = λ x S → ⌞ S # x ⌟ }
+  Membership-Monotone = record { _∈_ = λ x S → ⌞ S · x ⌟ }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
@@ -249,7 +249,7 @@ idₘ .hom    x   = x
 idₘ .pres-≤ x≤y = x≤y
 
 _∘ₘ_ : Monotone Q R → Monotone P Q → Monotone P R
-(f ∘ₘ g) .hom    x   = f # (g # x)
+(f ∘ₘ g) .hom    x   = f · (g · x)
 (f ∘ₘ g) .pres-≤ x≤y = f .pres-≤ (g .pres-≤ x≤y)
 
 Posets : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)

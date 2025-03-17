@@ -71,7 +71,7 @@ be [[group homomorphisms]] and to make the pushout square commute...
     inr : ⌞ B ⌟ → Amalgamated
     inr-hom : ∀ b b' → inr (b B.⋆ b') ≡ inr b ◆ inr b'
 
-    glue : (c : ⌞ C ⌟) → inl (f # c) ≡ inr (g # c)
+    glue : (c : ⌞ C ⌟) → inl (f · c) ≡ inr (g · c)
 ```
 
 ...finally, we truncate the resulting type to a set.
@@ -148,9 +148,9 @@ The universal property of the pushout is easy to verify.
     go (f-assoc x y z i) = Q.associative {go x} {go y} {go z} i
     go (f-invl x i) = Q.inversel {go x} i
     go (f-idl x i) = Q.idl {go x} i
-    go (inl a) = p # a
+    go (inl a) = p · a
     go (inl-hom a a' i) = p .preserves .pres-⋆ a a' i
-    go (inr b) = q # b
+    go (inr b) = q · b
     go (inr-hom b b' i) = q .preserves .pres-⋆ b b' i
     go (glue c i) = unext comm c i
     go (squash x y α β i j) =

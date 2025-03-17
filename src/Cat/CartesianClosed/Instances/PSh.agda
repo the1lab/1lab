@@ -73,8 +73,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
       path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
       path = happly (f.is-natural _ _ _) _
-          ·· (λ i → Z.₁ h (p i))
-          ·· sym (happly (g.is-natural _ _ _) _)
+          ∙∙ (λ i → Z.₁ h (p i))
+          ∙∙ sym (happly (g.is-natural _ _ _) _)
     pb .apex .F-id = funext λ (a , b , _) → pb-path (X.F-id $ₚ a) (Y.F-id $ₚ b)
     pb .apex .F-∘ f g = funext λ (a , b , _) → pb-path (X.F-∘ f g $ₚ a) (Y.F-∘ f g $ₚ b)
     pb .p₁ .η idx (a , b , _) = a
@@ -217,7 +217,7 @@ module _ {κ} {C : Precategory κ κ} where
       adj .unit .η x .η i a =
         NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ → funext λ _ →
           Σ-pathp (happly (x .F-∘ _ _) _) refl
-      adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ # _) ,ₚ refl
+      adj .unit .η x .is-natural _ _ _ = ext λ _ _ _ _ → sym (x .F-∘ _ _ · _) ,ₚ refl
       adj .unit .is-natural x y f = ext λ _ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) ,ₚ refl
       adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
       adj .counit .η _ .is-natural x y f = funext λ h →

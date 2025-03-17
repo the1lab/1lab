@@ -458,7 +458,7 @@ path-map
   : ∀ {x y}
   → (f : Graph-hom G H)
   → Path-in G x y
-  → Path-in H (f # x) (f # y)
+  → Path-in H (f · x) (f · y)
 path-map f nil = nil
 path-map f (cons e p) = cons (f .edge e) (path-map f p)
 

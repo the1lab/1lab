@@ -165,7 +165,7 @@ Identities and compositions are given componentwise:
   ↓id : ∀ {a} → ↓Hom a a
   ↓id .↓Hom.α = A.id
   ↓id .↓Hom.β = B.id
-  ↓id .↓Hom.sq = ap (_ C.∘_) (F .F-id) ·· C.id-comm ·· ap (C._∘ _) (sym (G .F-id))
+  ↓id .↓Hom.sq = ap (_ C.∘_) (F .F-id) ∙∙ C.id-comm ∙∙ ap (C._∘ _) (sym (G .F-id))
 
   ↓∘ : ∀ {a b c} → ↓Hom b c → ↓Hom a b → ↓Hom a c
   ↓∘ {a} {b} {c} g f = composite where

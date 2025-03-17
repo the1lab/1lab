@@ -58,7 +58,7 @@ module _ {o ℓ ℓ'} {A : Poset o ℓ} {P : ⌞ A ⌟ → Prop ℓ'} where
 
   subposet-inc-inj
     : {x y : ∫ₚ P}
-    → subposet-inc {A = A} P # x ≡ subposet-inc {A = A} P # y
+    → subposet-inc {A = A} P · x ≡ subposet-inc {A = A} P · y
     → x ≡ y
   subposet-inc-inj p = Σ-prop-path! p
 ```

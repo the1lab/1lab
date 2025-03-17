@@ -119,7 +119,7 @@ the identity internal natural isomorphism as-is.
     ni .eta∘inv _ = Internal-nat-path λ x → idli _
     ni .inv∘eta _ = Internal-nat-path λ x → idli _
     ni .natural (F , G , H) (J , K , L) α = Internal-nat-path λ x →
-      idri _ ·· pushli (J .Fi-∘ _ _) ·· sym (idli _)
+      idri _ ∙∙ pushli (J .Fi-∘ _ _) ∙∙ sym (idli _)
 ```
 
 Once we've got that tedium out of the way, the rest of the construction
@@ -138,7 +138,7 @@ is a breeze.
     where open Cat.Internal.Reasoning C
   icats .pentagon {E = E} F G H J =
     Internal-nat-path λ x → ap₂ _∘i_
-      (elimli (ap (F .Fi₁ ⊙ G .Fi₁) (H .Fi-id) ·· ap (F .Fi₁) (G .Fi-id) ·· F .Fi-id))
+      (elimli (ap (F .Fi₁ ⊙ G .Fi₁) (H .Fi-id) ∙∙ ap (F .Fi₁) (G .Fi-id) ∙∙ F .Fi-id))
       (elimri (elimli (F .Fi-id)))
     where open Cat.Internal.Reasoning E
 ```

@@ -321,8 +321,8 @@ skip it.
           .square → π₁∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
           .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
-            ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
-            ·· sym (⟨⟩-unique refl refl)
+            ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
+            ∙∙ sym (⟨⟩-unique refl refl)
           .p₂∘universal → π₁∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
@@ -332,8 +332,8 @@ skip it.
           .square → π₂∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
           .p₁∘universal {p = p} → ⟨⟩∘ _
-            ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
-            ·· sym (⟨⟩-unique refl p)
+            ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
+            ∙∙ sym (⟨⟩-unique refl p)
           .p₂∘universal → π₂∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique
             (sym (ap (π₁ ∘_) (sym q) ∙ pulll π₁∘⟨⟩ ∙ ap (_∘ lim') (idl _)))

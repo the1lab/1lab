@@ -66,7 +66,7 @@ Initial-quasigroup-is-strict
   : is-strict-initial (Quasigroups ℓ) Initial-quasigroup
 Initial-quasigroup-is-strict =
   make-is-strict-initial (Quasigroups _) Initial-quasigroup $ λ A f → ext λ a →
-  absurd (Lift.lower (f # a))
+  absurd (Lift.lower (f · a))
 ```
 
 <!--

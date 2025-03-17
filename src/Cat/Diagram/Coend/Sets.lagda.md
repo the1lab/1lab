@@ -95,7 +95,7 @@ to the family associated to the cowedge `W`.
     coend .cowedge = universal-cowedge
     coend .factor W = factoring W
     coend .commutes = refl
-    coend .unique {W = W} p = ext λ X x → p #ₚ x
+    coend .unique {W = W} p = ext λ X x → p ·ₚ x
 ```
 
 This construction is actually functorial! Given any functor
@@ -114,8 +114,8 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
   Coends .F₁ α =
     Coeq-rec (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
       (X , Y , f , Fxy) →
-        (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ··
-        glue (X , Y , f , α .η (X , Y) Fxy) ··
+        (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ∙∙
+        glue (X , Y , f , α .η (X , Y) Fxy) ∙∙
         (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
   Coends .F-id = trivial!
   Coends .F-∘ f g = trivial!

@@ -114,7 +114,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 ```agda
   Algebra-on-pathp
     : ∀ {F} {M : Monad-on F} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
-    → PathP (λ i → C.Hom (F # p i) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
+    → PathP (λ i → C.Hom (F · p i) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
     → PathP (λ i → Algebra-on M (p i)) A B
   Algebra-on-pathp over mults i .Algebra-on.ν = mults i
   Algebra-on-pathp {M = M} over {A} {B} mults i .Algebra-on.ν-unit =
@@ -131,7 +131,7 @@ instance
     : ∀ {o ℓ ℓr} {C : Precategory o ℓ} {F : Functor C C} {M : Monad-on F}
     → (let open Precategory C)
     → ∀ {X}
-    → ⦃ sa : Extensional (Hom (F # X) X) ℓr ⦄
+    → ⦃ sa : Extensional (Hom (F · X) X) ℓr ⦄
     → Extensional (Algebra-on M X) ℓr
   Extensional-Algebra-on {C = C} ⦃ sa ⦄ =
     injection→extensional! (Algebra-on-pathp refl) sa
@@ -493,12 +493,12 @@ module _ {o h : _} {C : Precategory o h} {F G : Functor C C} {M : Monad-on F} {N
 
   Monad-on-path
     : (p0 : F ≡ G)
-    → (∀ x → PathP (λ i → C.Hom x (p0 i # x)) (M.η x) (N.η x))
-    → (∀ x → PathP (λ i → C.Hom (p0 i # (p0 i # x)) (p0 i # x)) (M.μ x) (N.μ x))
+    → (∀ x → PathP (λ i → C.Hom x (p0 i · x)) (M.η x) (N.η x))
+    → (∀ x → PathP (λ i → C.Hom (p0 i · (p0 i · x)) (p0 i · x)) (M.μ x) (N.μ x))
     → PathP (λ i → Monad-on (p0 i)) M N
   Monad-on-path M=N punit pmult = path where
-    p0 : ∀ x → F # x ≡ G # x
-    p0 x i = M=N i # x
+    p0 : ∀ x → F · x ≡ G · x
+    p0 x i = M=N i · x
 
     p1 : ∀ {x y} (f : C.Hom x y) → PathP (λ i → C.Hom (p0 x i) (p0 y i)) (M.M₁ f) (N.M₁ f)
     p1 f i = M=N i .Functor.F₁ f

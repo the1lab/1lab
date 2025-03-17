@@ -147,8 +147,8 @@ composite, rather than displayed directly over a composite.
     → m₁' ≡[ q ] m₂'
   uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp⁻ $
        unique m₁' (from-pathp⁻ α)
-    ·· from-pathp⁻ (universalp p q r _)
-    ·· ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
+    ∙∙ from-pathp⁻ (universalp p q r _)
+    ∙∙ ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
 ```
 
 Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,

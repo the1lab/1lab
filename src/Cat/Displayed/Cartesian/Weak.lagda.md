@@ -697,6 +697,6 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{\id}(-,u^{*}(-))$.
       from-pathp (π*.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       sym (apr' (happly (into-iso.to .is-natural _ _ v₁') u'))
-      ·· sym (happly (from-iso.to .is-natural _ _ v₂') (hom[ idr _ ] (u' ∘' v₁')))
-      ·· ap (into-iso.to .η _) (smashr _ _ ∙ reindex _ _ )
+      ∙∙ sym (happly (from-iso.to .is-natural _ _ v₂') (hom[ idr _ ] (u' ∘' v₁')))
+      ∙∙ ap (into-iso.to .η _) (smashr _ _ ∙ reindex _ _ )
 ```

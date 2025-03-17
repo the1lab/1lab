@@ -399,8 +399,8 @@ coreflexive-comm
   → f ∘ g ≡ g ∘ f
 coreflexive-comm f-corefl g-corefl =
   coreflexive-∘-∩ f-corefl g-corefl
-  ·· ∩-comm
-  ·· sym (coreflexive-∘-∩ g-corefl f-corefl)
+  ∙∙ ∩-comm
+  ∙∙ sym (coreflexive-∘-∩ g-corefl f-corefl)
 ```
 
 # Functional morphisms

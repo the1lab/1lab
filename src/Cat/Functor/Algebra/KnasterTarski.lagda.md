@@ -145,9 +145,9 @@ the proofs that $f x \leq x$.
 
 ```agda
     Idx : Type o
-    Idx = Σ[ x ∈ Ob ] (□ (f # x ≤ x))
+    Idx = Σ[ x ∈ Ob ] (□ (f · x ≤ x))
 
-    soln : Idx → Σ[ x ∈ Ob ] (f # x ≤ x)
+    soln : Idx → Σ[ x ∈ Ob ] (f · x ≤ x)
     soln (x , lt) = x , (□-out! lt)
 
     is-soln-set : is-weak-initial-fam (FAlg (monotone→functor f)) soln

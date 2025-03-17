@@ -148,8 +148,8 @@ maps we want to compute with.</summary>
       path = σ-uniq₂ eps
         (ext λ x → sym $
             B.pulll (σ-comm ηₚ x)
-          ·· B.pullr (sym (σ unit-nt .is-natural _ _ _))
-          ·· B.cancell (σ-comm ηₚ x))
+          ∙∙ B.pullr (sym (σ unit-nt .is-natural _ _ _))
+          ∙∙ B.cancell (σ-comm ηₚ x))
         (ext λ _ → B.intror refl)
 
   Codensity .μ-assoc {x = x} = path ηₚ x where
@@ -176,8 +176,8 @@ maps we want to compute with.</summary>
           ∙ Ext.pullr (σ-comm ηₚ x))
         (ext λ x → sym $
              B.pulll (σ-comm ηₚ x)
-          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
-          ·· B.pulll (σ-comm ηₚ x)
+          ∙∙ B.pullr (sym (σ mult-nt .is-natural _ _ _))
+          ∙∙ B.pulll (σ-comm ηₚ x)
            ∙ Ext.pullr refl)
 ```
 </details>

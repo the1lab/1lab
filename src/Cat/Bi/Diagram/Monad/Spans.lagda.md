@@ -209,11 +209,11 @@ having to munge paths sometimes. This is one of those times:
     ( ap (μ .map) (ap (f .fst ,_) (Σ-prop-path!
         (ap (μ .map) (ap (g .fst ,_)
           (Σ-prop-path! (refl {x = h .fst}))))))
-    ·· happly (ap map μ-assoc)
+    ∙∙ happly (ap map μ-assoc)
         ( f .fst , (g .fst , h .fst , g .snd .fst ∙ sym (h .snd .snd))
         , f .snd .fst ∙ sym (g .snd .snd)
         )
-    ·· ap (μ .map) (Σ-pathp (ap (μ .map) (ap (f .fst ,_)
+    ∙∙ ap (μ .map) (Σ-pathp (ap (μ .map) (ap (f .fst ,_)
         (Σ-prop-path! refl)))
            (Σ-pathp refl (is-prop→pathp (λ _ → hlevel 1) _ _))))
 ```

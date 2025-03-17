@@ -217,7 +217,7 @@ the rest of the data.
 
   to-is-colimitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eta : D => K F∘ !F}
-    → (mk : make-is-colimit D (K # tt))
+    → (mk : make-is-colimit D (K · tt))
     → (∀ {j} → to-cocone mk .η j ≡ eta .η j)
     → is-lan !F D K eta
   to-is-colimitp {D} {K} {eta} mkcolim p =

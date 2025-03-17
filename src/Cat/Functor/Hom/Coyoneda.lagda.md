@@ -217,7 +217,7 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
       g' .hom = g
       g' .commutes o = sym $ ext $ unext $ sep $ NT
         (λ i a → P.₁ a (o .section))
-        (λ x y h → ext λ a → P.F-∘ _ _ # o .section)
+        (λ x y h → ext λ a → P.F-∘ _ _ · o .section)
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to

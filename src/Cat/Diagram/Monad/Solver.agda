@@ -330,7 +330,7 @@ abstract
     → ⦃ “X” : Monad-ob X ⦄ ⦃ “Y” : Monad-ob Y ⦄
     → ⦃ “f” : Monad-hom f ⦄ ⦃ “g” : Monad-hom g ⦄
     → ⟦ eval (“hom” f) ⟧ ≡ ⟦ eval (“hom” g) ⟧ → ⟦ “hom” f ⟧ ≡ ⟦ “hom” g ⟧
-  solve-monad monad f g p = sym (NbE.eval-sound monad (“hom” f)) ·· p ·· NbE.eval-sound monad (“hom” g)
+  solve-monad monad f g p = sym (NbE.eval-sound monad (“hom” f)) ∙∙ p ∙∙ NbE.eval-sound monad (“hom” g)
 
 macro
   monad! : ∀ {o h} {C : Precategory o h} {F : Functor C C} → Monad-on F → Term → TC ⊤

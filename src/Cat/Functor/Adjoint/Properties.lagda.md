@@ -126,7 +126,7 @@ omit the (nearly identical) proofs.
 
   right-reflects-epis→counit-epic R-reflect {x} =
     R-reflect λ f g p →
-      C.intror zag ·· C.extendl p ·· C.elimr zag
+      C.intror zag ∙∙ C.extendl p ∙∙ C.elimr zag
 ```
 -->
 

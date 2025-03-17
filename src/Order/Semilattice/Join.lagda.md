@@ -106,39 +106,39 @@ record
 
 ```agda
   field
-    ∪-≤   : ∀ x y → f # (x Pₗ.∪ y) Q.≤ (f # x) Qₗ.∪ (f # y)
-    bot-≤ : f # Pₗ.bot Q.≤ Qₗ.bot
+    ∪-≤   : ∀ x y → f · (x Pₗ.∪ y) Q.≤ f · x Qₗ.∪ f · y
+    bot-≤ : f · Pₗ.bot Q.≤ Qₗ.bot
 ```
 
 <!--
 ```agda
-  pres-∪ : ∀ x y → f # (x Pₗ.∪ y) ≡ (f # x) Qₗ.∪ (f # y)
-  pres-∪ x y = Q.≤-antisym (∪-≤ x y) $ Qₗ.∪-universal (f # (x Pₗ.∪ y))
+  pres-∪ : ∀ x y → f · (x Pₗ.∪ y) ≡ f · x Qₗ.∪ f · y
+  pres-∪ x y = Q.≤-antisym (∪-≤ x y) $ Qₗ.∪-universal (f · (x Pₗ.∪ y))
     (f .pres-≤ Pₗ.l≤∪)
     (f .pres-≤ Pₗ.r≤∪)
 
-  pres-bot : f # Pₗ.bot ≡ Qₗ.bot
+  pres-bot : f · Pₗ.bot ≡ Qₗ.bot
   pres-bot = Q.≤-antisym bot-≤ Qₗ.¡
 
   pres-joins
     : ∀ {x y m}
     → is-join P x y m
-    → is-join Q (f # x) (f # y) (f # m)
+    → is-join Q (f · x) (f · y) (f · m)
   pres-joins join .is-join.l≤join = f .pres-≤ (join .l≤join)
   pres-joins join .is-join.r≤join = f .pres-≤ (join .r≤join)
   pres-joins {x = x} {y = y} {m = m} join .is-join.least lb fx≤lb fy≤lb =
-    f # m            Q.≤⟨ f .pres-≤ (join .least (x Pₗ.∪ y) Pₗ.l≤∪ Pₗ.r≤∪) ⟩
-    f # (x Pₗ.∪ y)   Q.≤⟨ ∪-≤ x y ⟩
-    f # x Qₗ.∪ f # y Q.≤⟨ Qₗ.∪-universal lb fx≤lb fy≤lb ⟩
+    f · m            Q.≤⟨ f .pres-≤ (join .least (x Pₗ.∪ y) Pₗ.l≤∪ Pₗ.r≤∪) ⟩
+    f · (x Pₗ.∪ y)   Q.≤⟨ ∪-≤ x y ⟩
+    f · x Qₗ.∪ f · y Q.≤⟨ Qₗ.∪-universal lb fx≤lb fy≤lb ⟩
     lb               Q.≤∎
 
   pres-bottoms
     : ∀ {b}
     → is-bottom P b
-    → is-bottom Q (f # b)
+    → is-bottom Q (f · b)
   pres-bottoms {b = b} b-bot x =
-    f # b      Q.≤⟨ f .pres-≤ (b-bot Pₗ.bot) ⟩
-    f # Pₗ.bot Q.≤⟨ bot-≤ ⟩
+    f · b      Q.≤⟨ f .pres-≤ (b-bot Pₗ.bot) ⟩
+    f · Pₗ.bot Q.≤⟨ bot-≤ ⟩
     Qₗ.bot     Q.≤⟨ Qₗ.¡ ⟩
     x          Q.≤∎
 
@@ -176,7 +176,7 @@ id-join-slat-hom {P = P} _ .∪-≤ _ _ = P .≤-refl
 id-join-slat-hom {P = P} _ .bot-≤   = P .≤-refl
 
 ∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∪-≤ x y =
-  R .≤-trans (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g # x) (g # y))
+  R .≤-trans (f .pres-≤ (g-pres .∪-≤ x y)) (f-pres .∪-≤ (g · x) (g · y))
 ∘-join-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .bot-≤ =
   R .≤-trans (f .pres-≤ (g-pres .bot-≤)) (f-pres .bot-≤)
 

@@ -110,7 +110,7 @@ as in the nondisplayed case.
       ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] D) }
       ni .eta∘inv _ = ext λ _ → D'.idl _
       ni .inv∘eta _ = ext λ _ → D'.idl _
-      ni .natural x y f = ext λ _ → D'.idr _ ·· D'.pushl (F-∘↓ (y .fst)) ·· D'.introl refl
+      ni .natural x y f = ext λ _ → D'.idr _ ∙∙ D'.pushl (F-∘↓ (y .fst)) ∙∙ D'.introl refl
 ```
 -->
 
@@ -145,7 +145,7 @@ the structural isomorphisms being identities.
   Disp[] .associator = assoc
   Disp[] .triangle {C = C} f g = ext λ _ → Cat.idr (Fibre C _) _
   Disp[] .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
-    (E.eliml (ap (f .F₁') (ap (g .F₁') (h .F-id')) ·· ap (f .F₁') (g .F-id') ·· f .F-id'))
+    (E.eliml (ap (f .F₁') (ap (g .F₁') (h .F-id')) ∙∙ ap (f .F₁') (g .F-id') ∙∙ f .F-id'))
     (E.elimr (E.eliml (f .F-id')))
     where module E {x} = Cat (Fibre E x) using (_∘_ ; eliml ; elimr)
 ```

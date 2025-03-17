@@ -208,7 +208,7 @@ to show that it's actually a proper embedding:
     Σ-pathp (quot (ls.from (sym q))) (commutes→square coh)
     where abstract
       coh : ls.to (ls.from (sym q)) ∙ q ≡ refl ∙ refl
-      coh = ap (_∙ q) (ls.ε (sym q)) ·· ∙-invl q ·· sym (∙-idl refl)
+      coh = ap (_∙ q) (ls.ε (sym q)) ∙∙ ∙-invl q ∙∙ sym (∙-idl refl)
 
   embed-is-embedding : is-embedding embed
   embed-is-embedding = embedding-lemma embed-is-embedding'

@@ -135,7 +135,7 @@ form, if the overall rectangle commutes, then the upper square commutes.
        → G.₁ k C.∘ h ≡ f C.∘ F.₁ j)
     → is-cartesian (Comma F G) (u , v) p
   pasting→comma-cartesian p paste .is-cartesian.universal _ outer =
-    paste (C.pulll (sym $ G.F-∘ _ _) ·· outer ·· ap₂ C._∘_ refl (F.F-∘ _ _))
+    paste (C.pulll (sym $ G.F-∘ _ _) ∙∙ outer ∙∙ ap₂ C._∘_ refl (F.F-∘ _ _))
   pasting→comma-cartesian p paste .is-cartesian.commutes _ _ = prop!
   pasting→comma-cartesian p paste .is-cartesian.unique _ _ = prop!
 
@@ -148,7 +148,7 @@ form, if the overall rectangle commutes, then the upper square commutes.
        → G.₁ k C.∘ h ≡ f C.∘ F.₁ j
   comma-cartesian→pasting p p-cart outer =
     is-cartesian.universal p-cart _ $
-      C.pushl (G.F-∘ _ _) ·· outer ·· ap₂ C._∘_ refl (sym $ F.F-∘ _ _)
+      C.pushl (G.F-∘ _ _) ∙∙ outer ∙∙ ap₂ C._∘_ refl (sym $ F.F-∘ _ _)
 ```
 
 Moreover, a square is [[cocartesian|cocartesian-morphism]] when it satisfies
@@ -179,12 +179,12 @@ the dual pasting lemma.
 
 ```agda
   pasting→comma-cocartesian p paste .is-cocartesian.universal _ outer =
-    paste (C.pulll (sym $ G.F-∘ _ _) ·· outer ·· ap₂ C._∘_ refl (F.F-∘ _ _))
+    paste (C.pulll (sym $ G.F-∘ _ _) ∙∙ outer ∙∙ ap₂ C._∘_ refl (F.F-∘ _ _))
   pasting→comma-cocartesian p paste .is-cocartesian.commutes _ _ = prop!
   pasting→comma-cocartesian p paste .is-cocartesian.unique _ _ = prop!
 
   comma-cocartesian→pasting p p-cocart outer =
     is-cocartesian.universal p-cocart _ $
-      C.pushl (G.F-∘ _ _) ·· outer ·· ap₂ C._∘_ refl (sym $ F.F-∘ _ _)
+      C.pushl (G.F-∘ _ _) ∙∙ outer ∙∙ ap₂ C._∘_ refl (sym $ F.F-∘ _ _)
 ```
 </details>

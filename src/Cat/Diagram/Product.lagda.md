@@ -173,15 +173,15 @@ the projections.
       p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
       p1→p2→p1 =
         p2.unique₂
-          (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘⟨⟩ ·· p1.π₁∘⟨⟩)
-          (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘⟨⟩ ·· p1.π₂∘⟨⟩)
+          (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₁∘⟨⟩ ∙∙ p1.π₁∘⟨⟩)
+          (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₂∘⟨⟩ ∙∙ p1.π₂∘⟨⟩)
           (idr _) (idr _)
 
       p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
       p2→p1→p2 =
         p1.unique₂
-          (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘⟨⟩ ·· p2.π₁∘⟨⟩)
-          (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘⟨⟩ ·· p2.π₂∘⟨⟩)
+          (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₁∘⟨⟩ ∙∙ p2.π₁∘⟨⟩)
+          (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₂∘⟨⟩ ∙∙ p2.π₂∘⟨⟩)
           (idr _) (idr _)
 
   is-product-iso

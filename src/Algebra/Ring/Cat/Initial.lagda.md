@@ -220,11 +220,11 @@ evaluates to on $n$. So we're done!
   module _ (f : Rings.Hom Liftℤ R) where
     private module f = is-ring-hom (f .preserves)
 
-    f-pos : ∀ x → e x ≡ f .hom (lift (pos x))
+    f-pos : ∀ x → e x ≡ f · lift (pos x)
     f-pos zero = sym f.pres-0
     f-pos (suc x) = e-suc x ∙ sym (f.pres-+ (lift 1) (lift (pos x)) ∙ ap₂ R._+_ f.pres-id (sym (f-pos x)))
 
-    lemma : (i : Int) → z→r # lift i ≡ f # lift i
+    lemma : (i : Int) → z→r · lift i ≡ f · lift i
     lemma (pos x) = f-pos x
     lemma (negsuc x) = sym (f.pres-neg {lift (possuc x)} ∙ ap R.-_ (sym (f-pos (suc x))))
 ```

@@ -120,25 +120,25 @@ proofs. Therefore, they're hidden away down here.</summary>
                ≡[ α ] path→vertical-iso q .to' ∘' f' ∘' path→vertical-iso p .from')
       (to-pathp⁻ (sym
         (ap hom[] (from-pathp⁻ (eliml' refl (transport-refl _) {q = B.idl _})
-                ·· ap hom[] (from-pathp⁻ (elimr' refl (transport-refl _) {q = B.idr f}))
-                ·· hom[]-∙ _ _)
-        ·· hom[]-∙ _ _
-        ·· reindex _ _)))
+                ∙∙ ap hom[] (from-pathp⁻ (elimr' refl (transport-refl _) {q = B.idr f}))
+                ∙∙ hom[]-∙ _ _)
+        ∙∙ hom[]-∙ _ _
+        ∙∙ reindex _ _)))
       p q
 
   Hom[]-pathp-refll-iso e-cat α p f' g' β = to-pathp $
        from-pathp⁻ (Hom[]-transport (sym (B.idl _ ∙ α)) (vertical-iso→path e-cat p) refl f')
-    ·· ap hom[] (
+    ∙∙ ap hom[] (
         ap₂ (λ a b → a ∘' f' ∘' b) (transport-refl _)
           (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from'))
         ∙ from-pathp⁻ (idl' (f' ∘' p .from')))
-    ·· (hom[]-∙ _ _ ·· reindex _ _ ·· from-pathp β)
+    ∙∙ (hom[]-∙ _ _ ∙∙ reindex _ _ ∙∙ from-pathp β)
 
   Hom[]-pathp-iso e-cat α p q f' g' β = to-pathp $
        from-pathp⁻ (Hom[]-transport (sym α) (vertical-iso→path e-cat p) (vertical-iso→path e-cat q) f')
-    ·· ap hom[] (ap₂ (λ a b → a ∘' f' ∘' b)
+    ∙∙ ap hom[] (ap₂ (λ a b → a ∘' f' ∘' b)
         (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over q i .to'))
         (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from')))
-    ·· from-pathp β
+    ∙∙ from-pathp β
 ```
 </details>

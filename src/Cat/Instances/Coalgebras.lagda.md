@@ -136,7 +136,7 @@ $W$-coalgebra homomorphism.
     Coalgebras-over .Hom[_]-set f α β = hlevel 2
 
     Coalgebras-over .id'      = eliml W-id ∙ intror refl
-    Coalgebras-over ._∘'_ p q = pushl (W-∘ _ _) ·· ap (W₁ _ ∘_) q ·· extendl p
+    Coalgebras-over ._∘'_ p q = pushl (W-∘ _ _) ∙∙ ap (W₁ _ ∘_) q ∙∙ extendl p
 
     Coalgebras-over .idr' f'         = prop!
     Coalgebras-over .idl' f'         = prop!

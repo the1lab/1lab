@@ -80,14 +80,14 @@ that `path`{.Agda} is a group homomorphism. More specifically,
 ~~~
 
 Using the `uniqueness result for double composition`{.Agda
-ident=··-unique}, we derive that `path`{.Agda} is a homomorphism in the
+ident=∙∙-unique}, we derive that `path`{.Agda} is a homomorphism in the
 traditional sense:
 
 ```agda
   abstract
     path-∙ : ∀ x y → path (x ⋆ y) ≡ path x ∙ path y
     path-∙ x y i j =
-      ··-unique refl (path x) (path y)
+      ∙∙-unique refl (path x) (path y)
         (path (x ⋆ y)    , path-sq x y)
         (path x ∙ path y , ∙-filler _ _)
         i .fst j
@@ -341,7 +341,7 @@ multiplication in $\pi_1(\B G)$ is commutative as well.
 ```agda
     ∙-comm : (p q : Path (Deloop G) base base) → p ∙ q ≡ q ∙ p
     ∙-comm p q = encode.injective G
-      (encode.pres-⋆ G _ _ ·· ab _ _ ·· sym (encode.pres-⋆ G _ _))
+      (encode.pres-⋆ G _ _ ∙∙ ab _ _ ∙∙ sym (encode.pres-⋆ G _ _))
 ```
 
 We'll construct a function that computes the "`winding`{.Agda} number"

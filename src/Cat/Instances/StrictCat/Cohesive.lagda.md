@@ -98,7 +98,7 @@ Disc⊣Γ = adj where
     lemma {A = A} {x = x} =
       J' (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
                   ≡ subst (X.Hom _) f X.id X.∘ subst (X.Hom _) g X.id)
-        λ x g → (subst-∙ (X.Hom _) g refl _ ·· transport-refl _ ·· sym (X.idl _))
+        λ x g → (subst-∙ (X.Hom _) g refl _ ∙∙ transport-refl _ ∙∙ sym (X.idl _))
               ∙ ap₂ X._∘_ (sym (transport-refl _)) refl
       where module X = Precategory (A .fst)
 ```
@@ -141,8 +141,8 @@ identity map suffices.
            (J' (λ x y p → subst (Y.Hom _) (ap (f .F₀) p) Y.id
                         ≡ f .F₁ (subst (X.Hom _) p X.id))
                λ _ → transport-refl _
-                  ·· sym (f .F-id)
-                  ·· ap (f .F₁) (sym (transport-refl _)))
+                  ∙∙ sym (f .F-id)
+                  ∙∙ ap (f .F₁) (sym (transport-refl _)))
          where
            module X = Precategory (x .fst)
            module Y = Precategory (y .fst)
@@ -252,7 +252,7 @@ using our path helpers, `Functor-path`{.Agda} and `trivial!`{.Agda}.
 
 ```agda
     g : GlobalSections => Γ
-    g .η x f = f # lift tt
+    g .η x f = f · lift tt
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt

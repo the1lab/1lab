@@ -195,7 +195,7 @@ We have also to make note of the following fact: absolutely all functors
 preserve isomorphisms, and, more generally, preserve invertibility.
 
 ```agda
-  F-map-iso : ∀ {x y} → x C.≅ y → F # x D.≅ F # y
+  F-map-iso : ∀ {x y} → x C.≅ y → F · x D.≅ F · y
   F-map-iso x .to       = F .F₁ (x .to)
   F-map-iso x .from     = F .F₁ (x .from)
   F-map-iso x .inverses =
@@ -207,8 +207,8 @@ preserve isomorphisms, and, more generally, preserve invertibility.
   F-map-invertible : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F .F₁ f)
   F-map-invertible inv =
     D.make-invertible (F .F₁ _)
-      (sym (F .F-∘ _ _) ·· ap (F .F₁) x.invl ·· F .F-id)
-      (sym (F .F-∘ _ _) ·· ap (F .F₁) x.invr ·· F .F-id)
+      (sym (F .F-∘ _ _) ∙∙ ap (F .F₁) x.invl ∙∙ F .F-id)
+      (sym (F .F-∘ _ _) ∙∙ ap (F .F₁) x.invr ∙∙ F .F-id)
     where module x = C.is-invertible inv
 ```
 
@@ -223,16 +223,16 @@ already coherent enough to ensure that these actions agree:
   F-map-path
     : (ccat : is-category C) (dcat : is-category D)
     → ∀ {x y} (i : x C.≅ y)
-    → ap# F (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso i)
+    → ap· F (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso i)
   F-map-path ccat dcat {x} = Univalent.J-iso ccat P pr where
     P : (b : C.Ob) → C.Isomorphism x b → Type _
-    P b im = ap# F (Univalent.iso→path ccat im)
+    P b im = ap· F (Univalent.iso→path ccat im)
            ≡ Univalent.iso→path dcat (F-map-iso im)
 
     pr : P x C.id-iso
     pr =
-      ap# F (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap# F) (Univalent.iso→path-id ccat) ⟩
-      ap# F refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
+      ap· F (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap· F) (Univalent.iso→path-id ccat) ⟩
+      ap· F refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
       dcat .to-path D.id-iso                   ≡⟨ ap (dcat .to-path) (ext (sym (F .F-id))) ⟩
       dcat .to-path (F-map-iso C.id-iso)       ∎
 ```
@@ -241,15 +241,15 @@ already coherent enough to ensure that these actions agree:
 ```agda
   ap-F₀-to-iso
     : ∀ {y z}
-    → (p : y ≡ z) → path→iso (ap# F p) ≡ F-map-iso (path→iso p)
+    → (p : y ≡ z) → path→iso (ap· F p) ≡ F-map-iso (path→iso p)
   ap-F₀-to-iso {y} =
-    J (λ _ p → path→iso (ap# F p) ≡ F-map-iso (path→iso p))
+    J (λ _ p → path→iso (ap· F p) ≡ F-map-iso (path→iso p))
       (D.≅-pathp (λ _ → F .F₀ y) (λ _ → F .F₀ y)
         (Regularity.fast! (sym (F .F-id))))
 
   ap-F₀-iso
     : ∀ (cc : is-category C) {y z : C.Ob}
-    → (p : y C.≅ z) → path→iso (ap# F (cc .to-path p)) ≡ F-map-iso p
+    → (p : y C.≅ z) → path→iso (ap· F (cc .to-path p)) ≡ F-map-iso p
   ap-F₀-iso cc p = ap-F₀-to-iso (cc .to-path p)
                  ∙ ap F-map-iso (Univalent.iso→path→iso cc p)
 

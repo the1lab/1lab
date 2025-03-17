@@ -160,7 +160,7 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors .F₁ f .η = f
   Families→functors .F₁ {X} {Y} f .is-natural x y =
     J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)
-      (ap (f x ∘_) (lift-f X .F-id) ·· id-comm ·· ap (_∘ f x) (sym (lift-f Y .F-id)))
+      (ap (f x ∘_) (lift-f X .F-id) ∙∙ id-comm ∙∙ ap (_∘ f x) (sym (lift-f Y .F-id)))
   Families→functors .F-id = trivial!
   Families→functors .F-∘ f g =
     ap (Families→functors .F₁) (transport-refl _) ∙ trivial!
@@ -328,7 +328,7 @@ Strict→Family-generic-object ob-set = gobj where
   gobj .classify-cartesian _ .universal _ h' = h'
   gobj .classify-cartesian _ .commutes _ h' = funext λ _ → idl _
   gobj .classify-cartesian _ .unique m' p = funext λ x →
-    sym (idl _) ∙ p # x
+    sym (idl _) ∙ p · x
 ```
 
 ### Skeletal generic objects

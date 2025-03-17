@@ -130,10 +130,10 @@ a (unique) map $\coker (\ker f) \to X$ s.t. the triangle above commutes!
         path =
           other .y .snd _ _ $ sym $
                 pulll (other .map .commutes)
-            ·· Ker.equal f
-            ·· ∅.zero-∘r _
-            ·· 0m-unique
-            ·· sym (ap₂ _∘_ refl ∘-zero-r ∙ ∘-zero-r)
+            ∙∙ Ker.equal f
+            ∙∙ ∅.zero-∘r _
+            ∙∙ 0m-unique
+            ∙∙ sym (ap₂ _∘_ refl ∘-zero-r ∙ ∘-zero-r)
 ```
 
 To satisfy that equation, observe that since $i'$ is monic, it suffices
@@ -157,8 +157,8 @@ is the image of $f$.
     factor .sq = /-Hom-path $ sym $ other .y .snd _ _ $
       pulll (factor .β .commutes)
       ∙ the-img .map .commutes
-      ·· sym (other .map .commutes)
-      ·· ap (other .y .fst .map ∘_) (intror refl)
+      ∙∙ sym (other .map .commutes)
+      ∙∙ ap (other .y .fst .map ∘_) (intror refl)
 
     unique : ∀ x → factor ≡ x
     unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .snd _ _ $

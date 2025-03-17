@@ -93,7 +93,7 @@ unquoteDecl H-Level-Marked-graph-hom = declare-record-hlevel 2 H-Level-Marked-gr
 
 instance
   Funlike-Marked-graph-hom : Funlike (Marked-graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
-  Funlike-Marked-graph-hom .Funlike._#_ = vertex
+  Funlike-Marked-graph-hom .Funlike._·_ = vertex
 
 Marked-graph-hom-pathp
   : {G : I → Marked-graph o ℓ} {H : I → Marked-graph o' ℓ'}

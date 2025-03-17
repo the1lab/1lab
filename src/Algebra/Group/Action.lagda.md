@@ -140,7 +140,7 @@ of $G$ on the object $F(\bull)$!
 
     Action→functor : {X : C.Ob} (A : Action G X) → Functor BG C
     Action→functor {X = X} A .F₀ _ = X
-    Action→functor A .F₁ e = (A # e) .C.to
+    Action→functor A .F₁ e = (A · e) .C.to
     Action→functor A .F-id = ap C.to (is-group-hom.pres-id (A .preserves))
     Action→functor A .F-∘ f g = ap C.to (is-group-hom.pres-⋆ (A .preserves) _ _)
 ```

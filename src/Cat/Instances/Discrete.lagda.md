@@ -159,8 +159,8 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
     path =
       J' (λ y z f → ∀ {x} (g : x ≡ y) → go (g ∙ f) ≡ go f C.∘ go g)
         (λ x g → subst-∙ (C .Hom (F _) ⊙ F) _ _ _
-              ·· transport-refl _
-              ·· C.introl (transport-refl _))
+              ∙∙ transport-refl _
+              ∙∙ C.introl (transport-refl _))
         f {x} g
 
 Disc-into

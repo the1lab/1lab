@@ -181,7 +181,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
 
   abstract
     solve : (e1 e2 : Expr n) → (ρ : Vec A n) → ⟦ eval e1 ⟧ᵥ ρ ≡ ⟦ eval e2 ⟧ᵥ ρ → ⟦ e1 ⟧ₑ ρ ≡ ⟦ e2 ⟧ₑ ρ
-    solve e1 e2 ρ p = sym (eval-sound e1 ρ) ·· p ·· eval-sound e2 ρ
+    solve e1 e2 ρ p = sym (eval-sound e1 ρ) ∙∙ p ∙∙ eval-sound e2 ρ
 
   expand : (e : Expr n) → Vec A n → A
   expand e ρ = ⟦ eval e ⟧ᵥ ρ

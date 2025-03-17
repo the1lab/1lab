@@ -257,7 +257,7 @@ a macro, which is critical for performance.
 ```agda
   abstract
     solve : ∀ X Y → (e1 e2 : Expr X Y) → nf X Y e1 ≡ nf X Y e2 → ⟦ e1 ⟧ₑ ≡ ⟦ e2 ⟧ₑ
-    solve X Y e1 e2 p = sym (sound X Y e1) ·· p ·· sound X Y e2
+    solve X Y e1 e2 p = sym (sound X Y e1) ∙∙ p ∙∙ sound X Y e2
 ```
 
 # Reflection

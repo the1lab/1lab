@@ -79,24 +79,24 @@ morphisms gives isomorphisms in the respective functor categories:
     adj' .unit   = counit⁻¹
     adj' .counit = unit⁻¹
     adj' .zig {a} = zig' where abstract
-      p : unit⁻¹ .η (F⁻¹ # a) ≡ F⁻¹ .F₁ (adj.ε _)
+      p : unit⁻¹ .η (F⁻¹ · a) ≡ F⁻¹ .F₁ (adj.ε _)
       p =
         unit⁻¹ .η _                                      ≡⟨ C.introl adj.zag ⟩
         (F⁻¹ .F₁ (adj.ε _) C.∘ adj.η _) C.∘ unit⁻¹ .η _  ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
         F⁻¹ .F₁ (adj.ε _)                                ∎
 
-      zig' : unit⁻¹ .η (F⁻¹ # a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
-      zig' = ap₂ C._∘_ p refl ·· sym (F⁻¹ .F-∘ _ _) ·· ap (F⁻¹ .F₁) (counit-iso _ .D.is-invertible.invl) ∙ F⁻¹ .F-id
+      zig' : unit⁻¹ .η (F⁻¹ · a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
+      zig' = ap₂ C._∘_ p refl ∙∙ sym (F⁻¹ .F-∘ _ _) ∙∙ ap (F⁻¹ .F₁) (counit-iso _ .D.is-invertible.invl) ∙ F⁻¹ .F-id
 
     adj' .zag {b} = zag' where abstract
-      p : counit⁻¹ .η (F # b) ≡ F .F₁ (adj.η b)
+      p : counit⁻¹ .η (F · b) ≡ F .F₁ (adj.η b)
       p =
         counit⁻¹ .η _                                  ≡⟨ D.intror adj.zig ⟩
         counit⁻¹ .η _ D.∘ adj.ε _ D.∘ F .F₁ (adj.η b)  ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
         F .F₁ (adj.η b)                                ∎
 
-      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F # b) ≡ D.id
-      zag' = ap₂ D._∘_ refl p ·· sym (F .F-∘ _ _) ·· ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id
+      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F · b) ≡ D.id
+      zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id
 
   inverse-equivalence : is-equivalence F⁻¹
   inverse-equivalence = record
@@ -216,7 +216,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 ```agda
   ff+split-eso→unit : Id => (G F∘ F)
   ff+split-eso→unit .η x = ff⁻¹ (f*x-iso .di.from)
-    where open Σ (eso (F # x)) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso (F · x)) renaming (fst to f*x ; snd to f*x-iso)
 ```
 
 <details>
@@ -460,9 +460,9 @@ indeed the same path:
 
 ```agda
     abstract
-      square : ap# F x≡y ≡ Fx≡Fy
+      square : ap· F x≡y ≡ Fx≡Fy
       square =
-        ap# F x≡y                         ≡⟨ F-map-path F ccat dcat x≅y ⟩
+        ap· F x≡y                         ≡⟨ F-map-path F ccat dcat x≅y ⟩
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
@@ -580,8 +580,8 @@ module
     .is-iso.rinv x →
       D.invertible→monic (F-map-invertible F (e.unit-iso _)) _ _ $
         ap₂ D._∘_ refl (F .F-∘ _ _)
-      ·· D.cancell (F.annihilate (e.unit-iso _ .C.is-invertible.invl))
-      ·· D.invertible→monic (e.counit-iso _) _ _
+      ∙∙ D.cancell (F.annihilate (e.unit-iso _ .C.is-invertible.invl))
+      ∙∙ D.invertible→monic (e.counit-iso _) _ _
           (R-L-adjunct e.F⊣F⁻¹ x ∙ sym (D.cancell e.zig))
     .is-iso.linv x →
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))

@@ -170,7 +170,7 @@ $R$):
 
 ```agda
   is-sheaf-factor
-    : ∀ {U} (s : Sieve C U) (c : J # U)
+    : ∀ {U} (s : Sieve C U) (c : J · U)
     → (∀ {V} (f : Hom V U) → f ∈ J .cover c → f ∈ s)
     → is-sheaf₁ A s
   is-sheaf-factor s c c⊆s ps = done where
@@ -216,7 +216,7 @@ above!
 
 ```agda
   is-sheaf-pullback
-    : ∀ {V U} (c : J # U) (f : Hom V U) → is-sheaf₁ A (pullback f (J .cover c))
+    : ∀ {V U} (c : J · U) (f : Hom V U) → is-sheaf₁ A (pullback f (J .cover c))
   is-sheaf-pullback c f p = ∥-∥-out! do
     (c' , sub) ← J .stable c f
     pure (is-sheaf-factor (pullback f (J .cover c)) c' sub p)

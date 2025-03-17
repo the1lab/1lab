@@ -76,7 +76,7 @@ module _ {o o' ℓ ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'} where
     → Monotone R P
     → Monotone R Q
     → Monotone R (P ×ᵖ Q)
-  pairᵖ f g .hom      x = f # x , g # x
+  pairᵖ f g .hom      x = f · x , g · x
   pairᵖ f g .pres-≤ x≤y = f .pres-≤ x≤y , g .pres-≤ x≤y
 ```
 
@@ -91,7 +91,7 @@ Posets-has-products P Q .has-is-product .⟨_,_⟩     = pairᵖ
 Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = trivial!
 Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = trivial!
 Posets-has-products P Q .has-is-product .unique α β =
-  ext λ x → α #ₚ x ,ₚ β #ₚ x
+  ext λ x → α ·ₚ x ,ₚ β ·ₚ x
 ```
 
 As a related observation, we can show that the unique partial order on

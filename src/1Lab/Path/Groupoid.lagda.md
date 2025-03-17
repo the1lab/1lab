@@ -258,14 +258,14 @@ more than a handful of intermediate steps:
 
   ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
               → p ∙ q ≡ p ∙ r → q ≡ r
-  ∙-cancel'-l p q r sq = sym (∙-cancell p q) ·· ap (sym p ∙_) sq ·· ∙-cancell p r
+  ∙-cancel'-l p q r sq = sym (∙-cancell p q) ∙∙ ap (sym p ∙_) sq ∙∙ ∙-cancell p r
 
   ∙-cancel'-r : {x y z : A} (p : y ≡ z) (q r : x ≡ y)
               → q ∙ p ≡ r ∙ p → q ≡ r
   ∙-cancel'-r p q r sq =
        sym (∙-cancelr q (sym p))
-    ·· ap (_∙ sym p) sq
-    ·· ∙-cancelr r (sym p)
+    ∙∙ ap (_∙ sym p) sq
+    ∙∙ ∙-cancelr r (sym p)
 ```
 
 While [[connections]] give us degenerate squares where two adjacent faces are

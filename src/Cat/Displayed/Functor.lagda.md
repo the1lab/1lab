@@ -702,13 +702,13 @@ to be preserved.
   _∘nt↓_ {F = F} {G = G} {H = H} f g .is-natural' {f = b} x' y' f' =
     let open DR ℱ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r) in to-pathp (
         ap hom[] (whisker-l (idl id))
-    ·· sym (duplicate (ap (_∘ b) (idl id) ∙ id-comm-sym) _ _)
-    ·· ap hom[] (from-pathp⁻ (pullr' id-comm-sym (g .is-natural' _ _ _)
+    ∙∙ sym (duplicate (ap (_∘ b) (idl id) ∙ id-comm-sym) _ _)
+    ∙∙ ap hom[] (from-pathp⁻ (pullr' id-comm-sym (g .is-natural' _ _ _)
           {q = ap (_∘ b) (idl id) ∙ id-comm-sym ∙ introl refl}))
-    ·· sym (duplicate (eliml refl) _ _)
-    ·· ap hom[] (from-pathp⁻ (extendl' id-comm-sym (f .is-natural' x' y' f') {q = extendl id-comm-sym}))
-    ·· sym (duplicate (ap (b ∘_) (idl id)) (eliml refl) _)
-    ·· unwhisker-r _ _)
+    ∙∙ sym (duplicate (eliml refl) _ _)
+    ∙∙ ap hom[] (from-pathp⁻ (extendl' id-comm-sym (f .is-natural' x' y' f') {q = extendl id-comm-sym}))
+    ∙∙ sym (duplicate (ap (b ∘_) (idl id)) (eliml refl) _)
+    ∙∙ unwhisker-r _ _)
 
 module _
   {ob ℓb oc ℓc od ℓd oe ℓe}
@@ -728,13 +728,13 @@ module _
   _◆↓_ .η' x' = G .F₁' (β .η' _) E.∘ α .η' _
   _◆↓_ .is-natural' x' y' f' = to-pathp (
       ap hom[] (whisker-l (idl id))
-      ·· sym (duplicate (ap (_∘ _) (idl id) ∙ id-comm-sym) _ _)
-      ·· ap hom[] (from-pathp⁻ (pullr' _ (α .is-natural' _ _ _) {q = pullr id-comm-sym}))
-      ·· sym (duplicate (eliml refl) _ _)
-      ·· ap hom[] (from-pathp⁻
+      ∙∙ sym (duplicate (ap (_∘ _) (idl id) ∙ id-comm-sym) _ _)
+      ∙∙ ap hom[] (from-pathp⁻ (pullr' _ (α .is-natural' _ _ _) {q = pullr id-comm-sym}))
+      ∙∙ sym (duplicate (eliml refl) _ _)
+      ∙∙ ap hom[] (from-pathp⁻
         (extendl' _ (symP (G .F-∘') ∙[] (apd (λ i → G .F₁') (β .is-natural' _ _ _) ∙[] G .F-∘'))
           {q = extendl id-comm-sym}))
-      ·· sym (duplicate (ap (_ ∘_) (idl id)) _ _) ·· unwhisker-r _ _)
+      ∙∙ sym (duplicate (ap (_ ∘_) (idl id)) _ _) ∙∙ unwhisker-r _ _)
     where
       open DR ℰ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r)
       open Displayed ℰ using (_∙[]_)

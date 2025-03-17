@@ -84,7 +84,7 @@ module is-restriction-functor
 
 ```agda
   F-total : ∀ {x y} {f : C.Hom x y} → C.is-total f → D.is-total (F .F₁ f)
-  F-total {f = f} f-total = sym (F↓ f) ·· ap (F .F₁) f-total ·· F .F-id
+  F-total {f = f} f-total = sym (F↓ f) ∙∙ ap (F .F₁) f-total ∙∙ F .F-id
 
   F-restrict-idem
     : ∀ {x} {f : C.Hom x x}

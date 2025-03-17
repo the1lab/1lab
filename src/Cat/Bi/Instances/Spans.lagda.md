@@ -403,7 +403,7 @@ variables and) satisfy the triangle and pentagon identities.
           (pulll (pb _ _ .p₂∘universal) ∙ pullr (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal))
           ∙ ap₂ C._∘_ refl (pulll (pb _ _ .p₁∘universal)) ∙ pulll (pb _ _ .p₂∘universal) ∙ sym (assoc _ _ _)))
       ( pulll (pb _ _ .p₂∘universal)
-      ·· pullr (pb _ _ .p₂∘universal)
-      ·· sym (idl _ ·· pulll (pb _ _ .p₂∘universal) ·· sym (assoc _ _ _)))
+      ∙∙ pullr (pb _ _ .p₂∘universal)
+      ∙∙ sym (idl _ ∙∙ pulll (pb _ _ .p₂∘universal) ∙∙ sym (assoc _ _ _)))
 ```
 </details>

@@ -32,7 +32,7 @@ directly: it is given by **conjugation** with $p$.
 ```agda
 opaque
   conj : ∀ {ℓ} {A : Type ℓ} {x y : A} → y ≡ x → y ≡ y → x ≡ x
-  conj p q = sym p ·· q ·· p
+  conj p q = sym p ∙∙ q ∙∙ p
 ```
 
 <!--
@@ -58,7 +58,7 @@ opaque
 
 ```agda
   conj-refl : (l : x ≡ x) → conj refl l ≡ l
-  conj-refl l = conj-defn _ _ ·· ∙-idl _ ·· ∙-idr _
+  conj-refl l = conj-defn _ _ ∙∙ ∙-idl _ ∙∙ ∙-idr _
 
   conj-∙ : (p : x ≡ y) (q : y ≡ z) (r : x ≡ x)
             → conj q (conj p r) ≡ conj (p ∙ q) r
@@ -69,7 +69,7 @@ opaque
 
 ```agda
   conj-of-refl : (p : y ≡ x) → conj p refl ≡ refl
-  conj-of-refl p = conj-defn _ _ ·· ap (sym p ∙_) (∙-idl p) ·· ∙-invl p
+  conj-of-refl p = conj-defn _ _ ∙∙ ap (sym p ∙_) (∙-idl p) ∙∙ ∙-invl p
 
   conj-of-∙ : (p : y ≡ x) (q r : y ≡ y) → conj p (q ∙ r) ≡ conj p q ∙ conj p r
   conj-of-∙ = J (λ x p → ∀ q r → conj p (q ∙ r) ≡ conj p q ∙ conj p r) λ q r →
@@ -84,7 +84,7 @@ opaque
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {x y : A}
     → (f : A → B) (p : y ≡ x) (q : y ≡ y)
     → ap f (conj p q) ≡ conj (ap f p) (ap f q)
-  ap-conj f p q = ap-·· f _ _ _
+  ap-conj f p q = ap-∙∙ f _ _ _
 ```
 
 ```agda
@@ -92,8 +92,8 @@ opaque
   conj⁻conj : conj (sym p) (conj p q) ≡ q
   conj⁻conj {p = p} {q = q} =
        ap (conj _) (conj-defn' _ _)
-    ·· conj-defn' _ _
-    ·· transport⁻transport (λ i → p i ≡ p i) q
+    ∙∙ conj-defn' _ _
+    ∙∙ transport⁻transport (λ i → p i ≡ p i) q
 ```
 
 ```agda
@@ -107,7 +107,7 @@ opaque
 ```agda
 opaque
   conj-commutative : {p q : x ≡ x} → q ∙ p ≡ p ∙ q → conj p q ≡ q
-  conj-commutative α = conj-defn _ _ ·· ap₂ _∙_ refl α ·· ∙-cancell _ _
+  conj-commutative α = conj-defn _ _ ∙∙ ap₂ _∙_ refl α ∙∙ ∙-cancell _ _
 ```
 
 ```agda

@@ -331,7 +331,7 @@ Coeq≃quotient {B = B} f g = Iso→Equiv is where
   is : Iso (Coeq f g) (B / span→R f g)
   is .fst = Coeq-rec inc λ a → quot (a , refl)
   is .snd .inv = Coeq-rec inc λ (_ , _ , a , p) →
-    sym (ap (inc ∘ fst) p) ·· glue a ·· ap (inc ∘ snd) p
+    sym (ap (inc ∘ fst) p) ∙∙ glue a ∙∙ ap (inc ∘ snd) p
   is .snd .rinv = elim! λ _ → refl
   is .snd .linv = elim! λ _ → refl
 ```

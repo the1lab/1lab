@@ -97,7 +97,7 @@ is-colimit→is-coproduct {a} {b} {K} {eta} colim = coprod where
     true → p
     false → q
 
-Coproduct→Colimit : ∀ {F : Functor 2-object-category C} → Coproduct C (F # true) (F # false) → Colimit F
+Coproduct→Colimit : ∀ {F : Functor 2-object-category C} → Coproduct C (F · true) (F · false) → Colimit F
 Coproduct→Colimit coprod = to-colimit (is-coproduct→is-colimit {eta = 2-object-nat-trans _ _} (has-is-coproduct coprod))
 
 Colimit→Coproduct : ∀ {a b} → Colimit (2-object-diagram a b) → Coproduct C a b

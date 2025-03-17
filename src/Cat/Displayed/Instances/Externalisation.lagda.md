@@ -296,7 +296,7 @@ some tedious calculations.
   small .has-generic-ob .classify-cartesian x' .unique {m = m} m' p =
     Internal-hom-path $
       sym (ap ihom (idli m'))
-      ·· ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
-      ·· ap ihom p
+      ∙∙ ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
+      ∙∙ ap ihom p
 ```
 </details>

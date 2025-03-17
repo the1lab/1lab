@@ -191,7 +191,7 @@ $$
 
 ```agda
   A→im : Groups.Hom A A/ker[_]
-  A→im .hom x = f # x , inc (x , refl)
+  A→im .hom x = f · x , inc (x , refl)
   A→im .preserves .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
@@ -266,7 +266,7 @@ elide the zero composite $e' \circ 0$.
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
       → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
-      ∥-∥-rec-set (F .snd .Group-on.has-is-set) ((e' #_) ⊙ fst) const where abstract
+      ∥-∥-rec-set (F .snd .Group-on.has-is-set) (apply e' ⊙ fst) const where abstract
       module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
@@ -279,11 +279,11 @@ homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
 ```agda
       const' : ∀ (x y : fibre (apply f) x)
-             → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
+             → e' · x .fst F.— e' · y .fst ≡ F.unit
       const' (y , q) (z , r) =
-        (e' # y) F.— (e' # z)  ≡˘⟨ e'.pres-diff ⟩
-        e' # (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
-        e' # A.unit            ≡⟨ e'.pres-id ⟩
+        (e' · y) F.— (e' · z)  ≡˘⟨ e'.pres-diff ⟩
+        e' · (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
+        e' · A.unit            ≡⟨ e'.pres-id ⟩
         F.unit                 ∎
         where
 ```
@@ -293,14 +293,14 @@ specific subset" to "show that $f(y - z) = 0$ when $f(y) = f(z) = x$";
 But that's just algebra, hence uninteresting:
 
 ```agda
-          aux : f # (y A.— z) ≡ B.unit
+          aux : f · (y A.— z) ≡ B.unit
           aux =
-            f # (y A.— z)     ≡⟨ f.pres-diff ⟩
-            f # y B.— f # z   ≡⟨ ap₂ B._—_ q r ⟩
+            f · (y A.— z)     ≡⟨ f.pres-diff ⟩
+            f · y B.— f · z   ≡⟨ ap₂ B._—_ q r ⟩
             x B.— x           ≡⟨ B.inverser ⟩
             B.unit            ∎
 
-      const : ∀ (x y : fibre (apply f) x) → e' # (x .fst) ≡ e' # (y .fst)
+      const : ∀ (x y : fibre (apply f) x) → e' · x .fst ≡ e' · y .fst
       const a b = F.zero-diff (const' a b)
 ```
 
@@ -329,7 +329,7 @@ will compute.
     coeq .factors = Grp↪Sets-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
-      ap# colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
+      ap· colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
 ```
 
 ## Representing kernels
@@ -364,7 +364,7 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
 
   has-⋆ : ∀ {x y} → fibre kerf x → fibre kerf y → fibre kerf (x A.⋆ y)
   has-⋆ ((a , p) , q) ((b , r) , s) =
-    (a A.⋆ b , f.pres-⋆ _ _ ·· ap₂ B._⋆_ p r ·· B.idl) ,
+    (a A.⋆ b , f.pres-⋆ _ _ ∙∙ ap₂ B._⋆_ p r ∙∙ B.idl) ,
     ap₂ A._⋆_ q s
 ```
 
@@ -378,12 +378,12 @@ f(yy\inv) = f(1) = 1$$.
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
   has-conjugate {x} {y} ((a , p) , q) = (_ , path) , refl where
     path =
-      f # (y A.⋆ (x A.— y))         ≡⟨ ap (f #_) A.associative ⟩
-      f # ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
-      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
-      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) refl ⟩
-      f # y B.— f # y               ≡˘⟨ f.pres-diff ⟩
-      f # (y A.— y)                 ≡⟨ ap (f #_) A.inverser ∙ f.pres-id ⟩
+      f · (y A.⋆ (x A.— y))         ≡⟨ ap· f A.associative ⟩
+      f · ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
+      ⌜ f · (y A.⋆ x) ⌝ B.— f · y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
+      ⌜ f · y B.⋆ f · x ⌝ B.— f · y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap· f (sym q) ∙ p) ∙ B.idr) refl ⟩
+      f · y B.— f · y               ≡˘⟨ f.pres-diff ⟩
+      f · (y A.— y)                 ≡⟨ ap· f A.inverser ∙ f.pres-id ⟩
       B.unit                        ∎
 ```
 

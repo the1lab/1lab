@@ -43,7 +43,7 @@ is-sheaf₁-limit
   → ∀ (F : Functor D (PSh ℓ C)) L ψ
   → is-limit F L ψ
   → ∀ {U} (R : Sieve C U)
-  → (∀ d → is-sheaf₁ (F # d) R)
+  → (∀ d → is-sheaf₁ (F · d) R)
   → is-sheaf₁ L R
 is-sheaf₁-limit {C = C} {D} F L ψ lim {U} R F-sheaf ps = from-is-separated₁ L sep sec where
   open Precategory C
@@ -62,7 +62,7 @@ is-sheaf₁-limit {C = C} {D} F L ψ lim {U} R F-sheaf ps = from-is-separated₁
         ψ .η j .η _ (L.₁ f x)   ≡⟨ ψ .η j .is-natural _ _ _ $ₚ _ ⟩
         F.₁ j f (ψ .η j .η U x) ∎))
 
-  ps' : ∀ j → Section (F # j) (map-patch (ψ .η j) ps)
+  ps' : ∀ j → Section (F · j) (map-patch (ψ .η j) ps)
   ps' j = F-sheaf j (map-patch (ψ .η j) ps) .centre
 
   elts : ∀ j → よ₀ C U => F .F₀ j
@@ -98,7 +98,7 @@ is-sheaf-limit
   : ∀ {o ℓ o' ℓ' ℓj} {C : Precategory o ℓ} {J : Coverage C ℓj} {D : Precategory o' ℓ'}
       {F : Functor D (PSh ℓ C)} {L} {ψ}
   → is-limit F L ψ
-  → ((d : ⌞ D ⌟) → is-sheaf J (F # d))
+  → ((d : ⌞ D ⌟) → is-sheaf J (F · d))
   → is-sheaf J L
 is-sheaf-limit lim dshf = from-is-sheaf₁ λ c → is-sheaf₁-limit _ _ _ lim _ λ d → to-is-sheaf₁ (dshf d) _
 ```
