@@ -189,8 +189,8 @@ formally dual to the case above, we will not dwell on it.
     let s = F-∘ _ _ ∙ 𝒟.pushl q ∙ ap₂ 𝒟._∘_ refl p ∙ 𝒟.pulll (sym r) ∙ sym (F-∘ _ _)
     pure $ 𝒟.iso→monic (i 𝒟.Iso⁻¹) f g $
       sym q
-      ·· ap F₁ (a-epic f* g* (ff→faithful {F = F} ff s))
-      ·· r
+      ∙∙ ap F₁ (a-epic f* g* (ff→faithful {F = F} ff s))
+      ∙∙ r
 ```
 
 </details>

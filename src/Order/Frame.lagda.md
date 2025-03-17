@@ -168,9 +168,9 @@ record
 
 ```agda
   field
-    ∩-≤   : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
-    top-≤ : Qᶠ.top Q.≤ f # Pᶠ.top
-    ⋃-≤   : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
+    ∩-≤   : ∀ x y → f · x Qᶠ.∩ f · y Q.≤ f · (x Pᶠ.∩ y)
+    top-≤ : Qᶠ.top Q.≤ f · Pᶠ.top
+    ⋃-≤   : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f · Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
 ```
 
 If $f$ is a frame homomorphism, then it is also a homomorphism of [[meet
@@ -188,7 +188,7 @@ Furthermore, we can actually show from the inequality required above
 that $f$ preserves all joins up to equality.
 
 ```agda
-  pres-⋃ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) ≡ Qᶠ.⋃ (apply f ⊙ k)
+  pres-⋃ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f · Pᶠ.⋃ k) ≡ Qᶠ.⋃ (apply f ⊙ k)
   pres-⋃ k =
     Q.≤-antisym
       (⋃-≤ k)
@@ -197,11 +197,11 @@ that $f$ preserves all joins up to equality.
   pres-lubs
     : ∀ {I : Type o} {k : I → ⌞ P ⌟} {l}
     → is-lub P k l
-    → is-lub Q (apply f ⊙ k) (f # l)
+    → is-lub Q (apply f ⊙ k) (f · l)
   pres-lubs {k = k} {l = l} l-lub .fam≤lub i = f .pres-≤ (l-lub .fam≤lub i)
   pres-lubs {k = k} {l = l} l-lub .least ub p =
-    f # l              Q.≤⟨ f .pres-≤ (l-lub .least _ Pᶠ.⋃-inj) ⟩
-    f # Pᶠ.⋃ k         Q.≤⟨ ⋃-≤ k ⟩
+    f · l              Q.≤⟨ f .pres-≤ (l-lub .least _ Pᶠ.⋃-inj) ⟩
+    f · Pᶠ.⋃ k         Q.≤⟨ ⋃-≤ k ⟩
     Qᶠ.⋃ (apply f ⊙ k) Q.≤⟨ Qᶠ.⋃-universal ub p ⟩
     ub                 Q.≤∎
 ```
@@ -255,11 +255,11 @@ Furthermore, frame homomorphisms are closed under composition.
   → is-frame-hom g Pₗ Qₗ
   → is-frame-hom (f ∘ₘ g) Pₗ Rₗ
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .∩-≤ x y =
-  R .Poset.≤-trans (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
+  R .Poset.≤-trans (f-pres .∩-≤ (g · x) (g · y)) (f .pres-≤ (g-pres .∩-≤ x y))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .top-≤ =
   R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .⋃-≤ k =
-  R .Poset.≤-trans (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g # k i))
+  R .Poset.≤-trans (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g · k i))
 ```
 
 This means that we can define the category of frames as a [[subcategory]]

@@ -253,8 +253,8 @@ straightforward to wrap up:
     p = map-out-unique (encode base ∘ loopⁿ)
       (ap (encode base) (map-out-point _ _) ∙ transport-refl point)
       (λ x → ap (encode base) {y = loopⁿ x ∙ loop} (map-out-rotate _ _ _)
-          ·· subst-∙ Cover (loopⁿ x) loop point
-          ·· uaβ rotate (subst Cover (loopⁿ x) point))
+          ∙∙ subst-∙ Cover (loopⁿ x) loop point
+          ∙∙ uaβ rotate (subst Cover (loopⁿ x) point))
       n
 
   ΩS¹≃integers : (base ≡ base) ≃ ℤ

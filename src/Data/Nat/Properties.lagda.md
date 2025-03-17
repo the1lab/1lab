@@ -118,7 +118,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
 
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
-*-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ·· p ·· *-commutative (suc k) y)
+*-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ∙∙ p ∙∙ *-commutative (suc k) y)
 
 *-injr : ∀ k x y .⦃ _ : Positive k ⦄ → x * k ≡ y * k → x ≡ y
 *-injr (suc k) x y p = *-suc-inj k x y p

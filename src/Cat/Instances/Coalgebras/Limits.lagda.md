@@ -228,8 +228,8 @@ To show that $\eps \nu = \id$, it will suffice to show that $\psi_j \eps
         ∙ pullr (sym (L.eps .is-natural _ _ f) ∙ elimr L.Ext.F-id)))
       (λ j → W.extendl ν-β ∙ ap₂ _∘_ refl ν-β)
       (λ j → pulll (sym (comult.is-natural _ _ _))
-          ·· pullr ν-β
-          ·· extendl (sym (F.₀ j .snd .ρ-comult)))
+          ∙∙ pullr ν-β
+          ∙∙ extendl (sym (F.₀ j .snd .ρ-comult)))
 
   open Ran
   open is-ran

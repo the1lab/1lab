@@ -28,7 +28,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
       _ → def₀ (quote iso→isoⁿ)
         ##ₙ vlam "" (def₀ (quote id-iso) ##ₙ raise 1 `D)
         ##ₙ vlam ""
-          (def₀ (quote _··_··_)
+          (def₀ (quote _∙∙_∙∙_)
             ##ₙ (def₀ (quote idr) ##ₙ raise 1 `D ##ₙ unknown)
             ##ₙ def₀ (quote trivial!)
             ##ₙ (def₀ (quote sym)

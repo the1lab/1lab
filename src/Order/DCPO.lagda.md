@@ -287,13 +287,13 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
   mono : Posets.Hom D.poset E.poset
   mono = Subcat-hom.hom f
 
-  monotone : ∀ {x y} → x D.≤ y → f # x E.≤ f # y
+  monotone : ∀ {x y} → x D.≤ y → f · x E.≤ f · y
   monotone = mono .pres-≤
 
   opaque
     pres-directed-lub
       : ∀ {Ix} (s : Ix → D.Ob) → is-directed-family D.poset s
-      → ∀ x → is-lub (D .fst) s x → is-lub (E .fst) (apply f ⊙ s) (f # x)
+      → ∀ x → is-lub (D .fst) s x → is-lub (E .fst) (apply f ⊙ s) (f · x)
     pres-directed-lub = Subcat-hom.witness f
 
     directed
@@ -303,7 +303,7 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
 
     pres-⋃
       : ∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
-      → f # (D.⋃ s dir) ≡ E.⋃ (apply f ⊙ s) (directed dir)
+      → f · (D.⋃ s dir) ≡ E.⋃ (apply f ⊙ s) (directed dir)
     pres-⋃ s dir =
       E.≤-antisym
         (is-lub.least (pres-directed-lub s dir (D.⋃ s dir) (D.⋃.has-lub s dir))

@@ -132,7 +132,7 @@ paths in `Hom`{.Agda}-sets.
     → h ∘ path→iso p .from ≡ h'
     → PathP (λ i → Hom (p i) B) h h'
   Hom-pathp-refll prf =
-    Hom-pathp (ap₂ _∘_ (transport-refl id) refl ·· idl _ ·· prf)
+    Hom-pathp (ap₂ _∘_ (transport-refl id) refl ∙∙ idl _ ∙∙ prf)
 
   Hom-pathp-reflr
     : ∀ {A B D} {q : B ≡ D} {h : Hom A B} {h' : Hom A D}
@@ -140,8 +140,8 @@ paths in `Hom`{.Agda}-sets.
     → PathP (λ i → Hom A (q i)) h h'
   Hom-pathp-reflr {q = q} prf =
     Hom-pathp (ap (path→iso q .to ∘_) (ap₂ _∘_ refl (transport-refl _))
-            ·· ap₂ _∘_ refl (idr _)
-            ·· prf)
+            ∙∙ ap₂ _∘_ refl (idr _)
+            ∙∙ prf)
 
   Hom-pathp-id
     : ∀ {A B C} {p : B ≡ A} {q : B ≡ C} {h' : Hom A C}
@@ -151,7 +151,7 @@ paths in `Hom`{.Agda}-sets.
     J' (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
                 → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
                 → path→iso q .to ∘ path→iso p .from ≡ h')
-      (λ x q prf → ap₂ _∘_ refl (transport-refl _) ·· idr _ ·· from-pathp prf)
+      (λ x q prf → ap₂ _∘_ refl (transport-refl _) ∙∙ idr _ ∙∙ from-pathp prf)
       p q prf
 
   path→to-∙
@@ -171,8 +171,8 @@ paths in `Hom`{.Agda}-sets.
   path→from-∙ {A = A} p q =
     J (λ B p → ∀ {C} (q : B ≡ C) → path→iso (p ∙ q) .from ≡ path→iso p .from ∘ path→iso q .from)
       (λ q → subst-∙ (λ e → Hom e _) refl q _
-          ·· ap (subst (λ e → Hom e _) q) (transport-refl id)
-          ·· sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
+          ∙∙ ap (subst (λ e → Hom e _) q) (transport-refl id)
+          ∙∙ sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
       )
       p q
 

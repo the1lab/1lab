@@ -83,7 +83,7 @@ module _ {o h ℓs} {C : Precategory o h} where instance
   Membership-Topology = record { _∈_ = λ S T → T .covering _ S }
 
   Funlike-Topology : Funlike (Topology C ℓs) ⌞ C ⌟ λ U → Sieve C U → Type ℓs
-  Funlike-Topology .Funlike._#_ T = T .covering
+  Funlike-Topology .Funlike._·_ T = T .covering
 
 Closure-topology : ∀ {o h ℓs} {C : Precategory o h} → Coverage C ℓs → Topology C (o ⊔ h ⊔ ℓs)
 Closure-topology J .covering _ R = J ∋ R

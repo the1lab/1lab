@@ -174,8 +174,8 @@ commutativity and uniqueness requirements.
 ```agda
         comm₂ : π₂ .hom ∘ ν ≡ p2 .hom
         comm₂ = pulll (sym (counit.is-natural _ _ _))
-             ·· pullr p'.p₂∘universal
-             ·· cancell β.ρ-counit
+             ∙∙ pullr p'.p₂∘universal
+             ∙∙ cancell β.ρ-counit
 ```
 -->
 
@@ -211,8 +211,8 @@ so $\nu$ was indeed the map we were looking for!
       factor .hom       = ν
       factor .preserves = p'.unique₂ {p = wit'} step₁
         (  pulll (W.weave (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₂∘universal))
-        ·· pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p2 .preserves))
-        ·· W.cancell β.ρ-counit)
+        ∙∙ pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p2 .preserves))
+        ∙∙ W.cancell β.ρ-counit)
         step₂
         (pulll (π₂ .preserves) ∙ pullr comm₂)
 
@@ -340,8 +340,8 @@ formalised proof is a bit annoying, it's hidden in this
     coalg .ρ-counit =
       p.unique₂
         {p = pulll (sym (counit.is-natural _ _ _))
-          ·· pullr wit
-          ·· extendl (counit.is-natural _ _ _)}
+          ∙∙ pullr wit
+          ∙∙ extendl (counit.is-natural _ _ _)}
         (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₁∘universal)
         (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₂∘universal)
         (idr _ ∙ sym (cancell α.ρ-counit))
@@ -349,14 +349,14 @@ formalised proof is a bit annoying, it's hidden in this
     coalg .ρ-comult =
       is-pullback.unique₂ rem₂
         {p = W.extendl (f .preserves)
-          ·· ap₂ _∘_ refl wit
-          ·· W.extendl (sym (g .preserves))}
+          ∙∙ ap₂ _∘_ refl wit
+          ∙∙ W.extendl (sym (g .preserves))}
         (pulll (W.weave p'.p₁∘universal) ∙ pullr p'.p₁∘universal)
         (pulll (W.weave p'.p₂∘universal) ∙ pullr p'.p₂∘universal)
-        (pulll (sym (comult.is-natural _ _ _)) ·· pullr p'.p₁∘universal ·· extendl (sym α.ρ-comult))
+        (pulll (sym (comult.is-natural _ _ _)) ∙∙ pullr p'.p₁∘universal ∙∙ extendl (sym α.ρ-comult))
         (  pulll (sym (comult.is-natural _ _ _))
-        ·· pullr p'.p₂∘universal
-        ·· extendl (sym β.ρ-comult))
+        ∙∙ pullr p'.p₂∘universal
+        ∙∙ extendl (sym β.ρ-comult))
 ```
 
 </details>

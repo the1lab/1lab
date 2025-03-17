@@ -117,10 +117,10 @@ hom-sets, then they represent the same morphism.
 ```agda
   abstract
     solve : (f g : Expr A B) → nf f ≡ nf g → ⟦ f ⟧ ≡ ⟦ g ⟧
-    solve f g p = sym (eval-sound f) ·· p ·· (eval-sound g)
+    solve f g p = sym (eval-sound f) ∙∙ p ∙∙ (eval-sound g)
 
     solve-filler : (f g : Expr A B) → (p : nf f ≡ nf g) → Square (eval-sound f) p (solve f g p) (eval-sound g)
-    solve-filler f g p j i = ··-filler (sym (eval-sound f)) p (eval-sound g) j i
+    solve-filler f g p j i = ∙∙-filler (sym (eval-sound f)) p (eval-sound g) j i
 ```
 
 # The cursed part

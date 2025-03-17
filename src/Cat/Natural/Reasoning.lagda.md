@@ -48,12 +48,12 @@ lets you move the natural transformation left.
 naturall
   : η _ 𝒟.∘ F.₁ a ≡ η _ 𝒟.∘ F.₁ b
   → G.₁ a 𝒟.∘ η _ ≡ G.₁ b 𝒟.∘ η _
-naturall p = sym (is-natural _ _ _) ·· p ·· is-natural _ _ _
+naturall p = sym (is-natural _ _ _) ∙∙ p ∙∙ is-natural _ _ _
 
 naturalr
   : G.₁ a 𝒟.∘ η _ ≡ G.₁ b 𝒟.∘ η _
   → η _ 𝒟.∘ F.₁ a ≡ η _ 𝒟.∘ F.₁ b
-naturalr p = is-natural _ _ _ ·· p ·· sym (is-natural _ _ _)
+naturalr p = is-natural _ _ _ ∙∙ p ∙∙ sym (is-natural _ _ _)
 ```
 
 We also provide a pair of combinators that simultaneously apply naturality

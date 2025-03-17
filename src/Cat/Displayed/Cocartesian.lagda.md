@@ -137,8 +137,8 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
           → m₁' ≡[ q ] m₂'
   uniquep₂ p q r {h' = h'} m₁' m₂' α β = to-pathp⁻ $
        unique m₁' (from-pathp⁻ α)
-    ·· from-pathp⁻ (universalp p q r _)
-    ·· ap hom[] (sym (unique m₂' (from-pathp⁻ β)))
+    ∙∙ from-pathp⁻ (universalp p q r _)
+    ∙∙ ap hom[] (sym (unique m₂' (from-pathp⁻ β)))
 
   universalv : ∀ {b''} (f'' : Hom[ f ] a' b'') → Hom[ id ] b' b''
   universalv f'' = universal' (idl _) f''

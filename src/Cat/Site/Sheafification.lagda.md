@@ -387,7 +387,7 @@ in $B(U)$ is $J$-local.
     (λ {v} x → univ G shf eta .η v x ≡ eps .η v x)
     (λ {U} x → hlevel 1)
     (λ x → sym (comm _ x))
-    (λ c x l → is-sheaf.separate shf c (λ f hf → l f hf ∙ eps .is-natural _ _ _ # _))
+    (λ c x l → is-sheaf.separate shf c (λ f hf → l f hf ∙ eps .is-natural _ _ _ · _))
 ```
 
 <!--

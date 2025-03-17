@@ -58,15 +58,15 @@ ConcreteGroups-products X Y = prod where
   prod .apex = Direct-product-concrete X Y
   prod .π₁ = fst∙
   prod .π₂ = snd∙
-  prod .has-is-product .⟨_,_⟩ f g .fst x = f # x , g # x
+  prod .has-is-product .⟨_,_⟩ f g .fst x = f · x , g · x
   prod .has-is-product .⟨_,_⟩ f g .snd = f .snd ,ₚ g .snd
   prod .has-is-product .π₁∘⟨⟩ = funext∙ (λ _ → refl) (∙-idr _)
   prod .has-is-product .π₂∘⟨⟩ = funext∙ (λ _ → refl) (∙-idr _)
   prod .has-is-product .unique {Q} {f} {g} {u} p1 p2 =
-    funext∙ (λ x → p1 #ₚ x ,ₚ p2 #ₚ x) (fix ◁ square)
+    funext∙ (λ x → p1 ·ₚ x ,ₚ p2 ·ₚ x) (fix ◁ square)
     where
       square : Square
-        (p1 #ₚ pt Q ,ₚ p2 #ₚ pt Q) ((fst∙ ∘∙ u) .snd ,ₚ (snd∙ ∘∙ u) .snd)
+        (p1 ·ₚ pt Q ,ₚ p2 ·ₚ pt Q) ((fst∙ ∘∙ u) .snd ,ₚ (snd∙ ∘∙ u) .snd)
         (f .snd ,ₚ g .snd) refl
       square i = p1 i .snd ,ₚ p2 i .snd
 

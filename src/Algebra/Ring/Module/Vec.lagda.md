@@ -115,7 +115,7 @@ Fin-vec-is-product .π i .hom k = k i
 Fin-vec-is-product .π i .preserves .linear r m n = refl
 Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
   assemble : R-Mod.Hom Y (Fin-vec-module n)
-  assemble .hom yob ix = f ix # yob
+  assemble .hom yob ix = f ix · yob
   assemble .preserves .linear r m n = funext λ i → f i .preserves .linear _ _ _
 Fin-vec-is-product .has-is-ip .commute = trivial!
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =

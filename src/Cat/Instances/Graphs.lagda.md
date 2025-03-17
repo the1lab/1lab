@@ -148,7 +148,7 @@ Graph-hom-path {G = G} {H = H} p0 p1 =
 
 instance
   Funlike-Graph-hom : Funlike (Graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
-  Funlike-Graph-hom .Funlike._#_ = vertex
+  Funlike-Graph-hom .Funlike._·_ = vertex
 
 Graph-hom-id : {G : Graph o ℓ} → Graph-hom G G
 Graph-hom-id .vertex v = v
@@ -182,8 +182,8 @@ module _ {o ℓ : Level} where
   graph-iso-is-ff {x} {y} h inv {s} {t} = is-iso→is-equiv (iso from ir il) where
     module h = Graphs.is-invertible inv
 
-    from : ∀ {s t} → y .Edge (h # s) (h # t) → x .Edge s t
-    from e = subst₂ (x .Edge) (ap vertex h.invr # _) (ap vertex h.invr # _) (h.inv .edge e)
+    from : ∀ {s t} → y .Edge (h · s) (h · t) → x .Edge s t
+    from e = subst₂ (x .Edge) (ap vertex h.invr · _) (ap vertex h.invr · _) (h.inv .edge e)
 
     ir : is-right-inverse from (h .edge)
     ir e =
@@ -191,11 +191,11 @@ module _ {o ℓ : Level} where
         lemma = J₂
           (λ s'' t'' p q → ∀ e
             → h .edge (subst₂ (x .Edge) p q e)
-            ≡ subst₂ (y .Edge) (ap# h p) (ap# h q) (h .edge e))
+            ≡ subst₂ (y .Edge) (ap· h p) (ap· h q) (h .edge e))
           (λ e → ap (h .edge) (transport-refl _) ∙ sym (transport-refl _))
       in lemma _ _ (h.inv .edge e)
-      ·· ap₂ (λ p q → subst₂ (y .Edge) {b' = h .vertex t} p q (h .edge (h.inv .edge e))) prop! prop!
-      ·· from-pathp (λ i → h.invl i .edge e)
+      ∙∙ ap₂ (λ p q → subst₂ (y .Edge) {b' = h .vertex t} p q (h .edge (h.inv .edge e))) prop! prop!
+      ∙∙ from-pathp (λ i → h.invl i .edge e)
 
     il : is-left-inverse from (h .edge)
     il e = from-pathp λ i → h.invr i .edge e
@@ -275,13 +275,13 @@ equivalent as this category is self-dual.
          (lift ⊙ fst ⊙ snd)
   graph→presheaf .F₁ f =
     Fork-nt {u = λ (s , t , e) → f .vertex s , f .vertex t , f .edge e }
-            {v = λ { (lift v) → lift (f # v) } } refl refl
+            {v = λ { (lift v) → lift (f · v) } } refl refl
   graph→presheaf .F-id = Nat-path λ { true → refl ; false → refl }
   graph→presheaf .F-∘ G H = Nat-path λ { true → refl ; false → refl }
 
   g→p-is-ff : is-fully-faithful graph→presheaf
   g→p-is-ff {x = x} {y = y} = is-iso→is-equiv (iso from ir il) where
-    from : graph→presheaf # x => graph→presheaf # y → Graph-hom x y
+    from : graph→presheaf · x => graph→presheaf · y → Graph-hom x y
     from h .vertex v = h .η true (lift v) .lower
     from h .edge e =
       let
@@ -306,13 +306,14 @@ equivalent as this category is self-dual.
 private module _ {ℓ : Level} where
 
   presheaf→graph : ⌞ PSh ℓ ·⇇· ⌟ → Graph ℓ ℓ
-  presheaf→graph F = g
-    where module F = Functor F
-          g : Graph ℓ ℓ
-          g .Vertex = ⌞ F # true ⌟
-          g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ false e ≡ s × F.₁ true e ≡ d
-          g .Vertex-is-set = hlevel 2
-          g .Edge-is-set = hlevel 2
+  presheaf→graph F = g where
+    module F = Functor F
+
+    g : Graph ℓ ℓ
+    g .Vertex = ⌞ F · true ⌟
+    g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ false e ≡ s × F.₁ true e ≡ d
+    g .Vertex-is-set = hlevel 2
+    g .Edge-is-set = hlevel 2
 
   open is-precat-iso
   open is-iso
@@ -331,10 +332,10 @@ private module _ {ℓ : Level} where
           ; true → n-ua (lower
                         , (is-iso→is-equiv (iso lift (λ _ → refl) (λ _ → refl))))
           })
-      λ { {false} {false} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {false} # _))
+      λ { {false} {false} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {false} · _))
         ; {false} {true} false → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym p)
         ; {false} {true} true → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym q)
-        ; {true} {true} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {true} # _)) }
+        ; {true} {true} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {true} · _)) }
     F₀-iso .linv G = let
       eqv : Lift ℓ ⌞ G ⌟ ≃ ⌞ G ⌟
       eqv = Lift-≃

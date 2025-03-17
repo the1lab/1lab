@@ -101,7 +101,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {S : Subcat C o' ℓ'} where
     Funlike-Subcat-hom
       : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y}
       → ⦃ _ : Funlike (Hom (x .fst) (y .fst)) A B ⦄ → Funlike (Subcat-hom S x y) A B
-    Funlike-Subcat-hom ⦃ i ⦄ = record { _#_ = λ f x → apply (f .hom) x }
+    Funlike-Subcat-hom ⦃ i ⦄ = record { _·_ = λ f x → apply (f .hom) x }
 
     H-Level-Subcat-hom : ∀ {x y n} → H-Level (Subcat-hom S x y) (2 + n)
     H-Level-Subcat-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv $
@@ -179,8 +179,8 @@ to those that lie in the image of $F$.
     {f = f} {g = g} {x , x-es} {y , y-es} {z , z-es} (h , p) (i , q) =
     (h C.∘ i) ,
     D.push-inner (F-∘ h i)
-    ·· D.insert-inner (D.invr y-es)
-    ·· ap₂ D._∘_ (sym (D.assoc _ _ _) ∙ p) q
+    ∙∙ D.insert-inner (D.invr y-es)
+    ∙∙ ap₂ D._∘_ (sym (D.assoc _ _ _) ∙ p) q
 ```
 
 There is an equivalence between canonical subcategory associated

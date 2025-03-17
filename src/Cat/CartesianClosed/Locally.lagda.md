@@ -282,6 +282,6 @@ equivalence $(\cC/B)/f \cong \cC/A$.
     rem₂ .inv∘eta x = ext (idr _)
     rem₂ .natural x y f = ext $
          idr _
-      ·· ap (pullbacks _ _ .universal) prop!
-      ·· sym (idl _)
+      ∙∙ ap (pullbacks _ _ .universal) prop!
+      ∙∙ sym (idl _)
 ```

@@ -79,10 +79,10 @@ The identity morphism is monic and epic.
 
 ```agda
 id-monic : ∀ {a} → is-monic (id {a})
-id-monic g h p = sym (idl _) ·· p ·· idl _
+id-monic g h p = sym (idl _) ∙∙ p ∙∙ idl _
 
 id-epic : ∀ {a} → is-epic (id {a})
-id-epic g h p = sym (idr _) ·· p ·· idr _
+id-epic g h p = sym (idr _) ∙∙ p ∙∙ idr _
 ```
 
 Both monos and epis are closed under composition.
@@ -93,14 +93,14 @@ monic-∘
   → is-monic f
   → is-monic g
   → is-monic (f ∘ g)
-monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ·· α ·· sym (assoc _ _ _)))
+monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
 
 epic-∘
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-epic f
   → is-epic g
   → is-epic (f ∘ g)
-epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ·· α ·· (assoc _ _ _)))
+epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
 
 _∘Mono_ : ∀ {a b c} → b ↪ c → a ↪ b → a ↪ c
 (f ∘Mono g) .mor = f .mor ∘ g .mor
@@ -119,7 +119,7 @@ monic-cancell
   → is-monic (f ∘ g)
   → is-monic g
 monic-cancell {f = f} fg-monic h h' p = fg-monic h h' $
-  sym (assoc _ _ _) ·· ap (f ∘_) p ·· assoc _ _ _
+  sym (assoc _ _ _) ∙∙ ap (f ∘_) p ∙∙ assoc _ _ _
 ```
 
 Dually, if $f \circ g$ is epic, then $f$ must also be epic.
@@ -130,7 +130,7 @@ epic-cancelr
   → is-epic (f ∘ g)
   → is-epic f
 epic-cancelr {g = g} fg-epic h h' p = fg-epic h h' $
-  assoc _ _ _ ·· ap (_∘ g) p ·· sym (assoc _ _ _)
+  assoc _ _ _ ∙∙ ap (_∘ g) p ∙∙ sym (assoc _ _ _)
 ```
 
 Postcomposition with a mono is an embedding.
@@ -163,7 +163,7 @@ subst-is-monic
   → is-monic f
   → is-monic g
 subst-is-monic f=g f-monic h i p =
-  f-monic h i (ap (_∘ h) f=g ·· p ·· ap (_∘ i) (sym f=g))
+  f-monic h i (ap (_∘ h) f=g ∙∙ p ∙∙ ap (_∘ i) (sym f=g))
 
 subst-is-epic
   : ∀ {a b} {f g : Hom a b}
@@ -171,7 +171,7 @@ subst-is-epic
   → is-epic f
   → is-epic g
 subst-is-epic f=g f-epic h i p =
-  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym f=g))
+  f-epic h i (ap (h ∘_) f=g ∙∙ p ∙∙ ap (i ∘_) (sym f=g))
 ```
 -->
 
@@ -495,7 +495,7 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   g≡h : g.inv ≡ h.inv
   g≡h =
     g.inv             ≡⟨ sym (idr _) ∙ ap₂ _∘_ refl (sym h.invl) ⟩
-    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invr refl ·· idl _ ⟩
+    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ∙∙ ap₂ _∘_ g.invr refl ∙∙ idl _ ⟩
     h.inv             ∎
 
   p : g ≡ h
@@ -1064,8 +1064,8 @@ invertible-precomp-equiv
   → is-equiv {A = Hom b c} (_∘ f)
 invertible-precomp-equiv {f = f} f-inv = is-iso→is-equiv $
   iso (λ h → h ∘ f-inv.inv)
-    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invr ·· idr h)
-    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invl ·· idr h)
+    (λ h → sym (assoc _ _ _) ∙∙ ap (h ∘_) f-inv.invr ∙∙ idr h)
+    (λ h → sym (assoc _ _ _) ∙∙ ap (h ∘_) f-inv.invl ∙∙ idr h)
   where module f-inv = is-invertible f-inv
 
 invertible-postcomp-equiv
@@ -1074,7 +1074,7 @@ invertible-postcomp-equiv
   → is-equiv {A = Hom a b} (f ∘_)
 invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
   iso (λ h → f-inv.inv ∘ h)
-    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invl ·· idl h)
-    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invr ·· idl h)
+    (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invl ∙∙ idl h)
+    (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invr ∙∙ idl h)
   where module f-inv = is-invertible f-inv
 ```

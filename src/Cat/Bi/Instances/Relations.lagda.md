@@ -480,16 +480,16 @@ but keep in mind that they are not commented.
       {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
       ( pullr (pulll (sym (β .sq) ∙ idl _))
       ∙ sym (pullr (pulll (sym (α .sq) ∙ idl _))
-      ∙ (assoc _ _ _ ·· sym (∘-rel.inter r s .square) ·· sym (assoc _ _ _))))}
+      ∙ (assoc _ _ _ ∙∙ sym (∘-rel.inter r s .square) ∙∙ sym (assoc _ _ _))))}
     (Product.unique₂ (lex.products _ _)
       (π₁∘⟨⟩ ∙ pullr refl)
       (π₂∘⟨⟩ ∙ pullr refl)
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
-      ·· pulll π₁∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₁∘universal)
-      ·· pullr (pulll (sym (β .sq) ∙ idl _)))
+      ∙∙ pulll π₁∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₁∘universal)
+      ∙∙ pullr (pulll (sym (β .sq) ∙ idl _)))
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
-      ·· pulll π₂∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₂∘universal)
-      ·· pullr (pulll (sym (α .sq) ∙ idl _))))
+      ∙∙ pulll π₂∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₂∘universal)
+      ∙∙ pullr (pulll (sym (α .sq) ∙ idl _))))
 
 ∘-rel-idr f = Sub-antisym fid≤f f≤fid where
   fid≤f : ∘-rel f id-rel ≤ₘ f

@@ -78,12 +78,12 @@ give the unit, both on the left and on the right:
       where
         p : (x * y) * (inverse y — x) ≡ unit
         p = associative has-is-monoid
-         ·· ap₂ _*_
+         ∙∙ ap₂ _*_
               (  sym (associative has-is-monoid)
-              ·· ap₂ _*_ refl inverser
-              ·· has-is-monoid .is-monoid.idr)
+              ∙∙ ap₂ _*_ refl inverser
+              ∙∙ has-is-monoid .is-monoid.idr)
               refl
-         ·· inverser
+         ∙∙ inverser
 
     zero-diff : ∀ {x y} → x — y ≡ unit → x ≡ y
     zero-diff {x = x} {y = y} p =
@@ -211,7 +211,7 @@ identity and inverses:
   pres-inv : ∀ {x} → e (A.inverse x) ≡ B.inverse (e x)
   pres-inv {x} =
     monoid-inverse-unique B.has-is-monoid (e x) _ _
-      (sym (pres-⋆ _ _) ·· ap e A.inversel ·· pres-id)
+      (sym (pres-⋆ _ _) ∙∙ ap e A.inversel ∙∙ pres-id)
       B.inverser
 
   pres-diff : ∀ {x y} → e (x A.— y) ≡ e x B.— e y

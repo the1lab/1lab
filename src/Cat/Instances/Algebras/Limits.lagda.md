@@ -197,17 +197,17 @@ more complicated.
 ```agda
     apex-algebra .ν-unit = lim-over.unique₂ _ lim-over.commutes
       (λ j → C.pulll (lim-over.factors _ _)
-          ·· C.pullr (sym $ M.unit.is-natural _ _ _)
-          ·· C.cancell (FAlg.ν-unit j))
+          ∙∙ C.pullr (sym $ M.unit.is-natural _ _ _)
+          ∙∙ C.cancell (FAlg.ν-unit j))
       (λ j → C.idr _)
     apex-algebra .ν-mult = lim-over.unique₂ _
       (λ f → C.pulll $ C.pulll (F.₁ f .preserves)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.commutes f)))
       (λ j → C.pulll (lim-over.factors _ _)
-          ·· C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)
-          ·· C.extendl (FAlg.ν-mult j)
-          ·· ap (FAlg.ν j C.∘_) (M.mult.is-natural _ _ _)
-          ·· C.assoc _ _ _)
+          ∙∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)
+          ∙∙ C.extendl (FAlg.ν-mult j)
+          ∙∙ ap (FAlg.ν j C.∘_) (M.mult.is-natural _ _ _)
+          ∙∙ C.assoc _ _ _)
       (λ j → C.pulll (lim-over.factors _ _))
 ```
 

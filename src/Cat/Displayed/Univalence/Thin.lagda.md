@@ -136,7 +136,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
 
   Homomorphism-monic
     : ∀ {x y : So.Ob} (f : So.Hom x y)
-    → (∀ {x y} (p : f # x ≡ f # y) → x ≡ y)
+    → (∀ {x y} (p : f · x ≡ f · y) → x ≡ y)
     → Som.is-monic f
   Homomorphism-monic f wit g h p = ext λ x → wit (ap hom p $ₚ x)
 
@@ -172,11 +172,11 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
   ∫-Path
     : ∀ {a b : So.Ob}
     → (f : So.Hom a b)
-    → is-equiv (f #_)
+    → is-equiv (f ·_)
     → a ≡ b
   ∫-Path {a = a} {b = b} f eqv = Univalent.iso→path
     (Structured-objects-is-category spec)
-    (total-iso ((f #_) , eqv) (f .preserves))
+    (total-iso ((f ·_) , eqv) (f .preserves))
 
 open is-equational ⦃ ... ⦄ public
 ```

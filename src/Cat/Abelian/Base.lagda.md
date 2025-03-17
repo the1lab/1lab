@@ -412,9 +412,9 @@ monomorphism].
         where abstract
           path : f ∘ kernel f .Kernel.kernel ≡ f ∘ 0m
           path = Ker.equal f
-            ·· ∅.zero-∘r _
-            ·· ap₂ _∘_ (∅.has⊥ _ .paths 0m) refl
-            ·· ∘-zero-l ·· sym ∘-zero-r
+            ∙∙ ∅.zero-∘r _
+            ∙∙ ap₂ _∘_ (∅.has⊥ _ .paths 0m) refl
+            ∙∙ ∘-zero-l ∙∙ sym ∘-zero-r
 ```
 -->
 
@@ -518,8 +518,8 @@ coequalisers are epic to make progress.
         lemma =
           is-coequaliser→is-epic (Coker.coeq _) (Coker.has-is-coeq _) _ _ $
                pullr (Coker.factors _)
-            ·· elimr refl
-            ·· (decompose f .snd ∙ assoc _ _ _)
+            ∙∙ elimr refl
+            ∙∙ (decompose f .snd ∙ assoc _ _ _)
 
         path =
           invertible→epic (coker-ker≃ker-coker _) _ _ $

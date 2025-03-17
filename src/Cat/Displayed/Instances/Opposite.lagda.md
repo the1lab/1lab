@@ -186,7 +186,7 @@ private abstract
     : ∀ {a b} {f : Hom a b} {x : Ob[ b ]}
     → adjust {x = x} (λ i → f) ≡ id'
   adjust-refl = π*.uniquep₂ (idr _) refl (idr _) (adjust refl) id'
-    (to-pathp (ap E.hom[] (π*.commutes _ _) ·· E.hom[]-∙ _ _ ·· E.liberate _))
+    (to-pathp (ap E.hom[] (π*.commutes _ _) ∙∙ E.hom[]-∙ _ _ ∙∙ E.liberate _))
     (idr' _)
 ```
 -->

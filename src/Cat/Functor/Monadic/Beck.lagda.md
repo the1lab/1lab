@@ -237,8 +237,8 @@ far $\cD$ is from being the category of $T$-algebras.
   Comparison-EM⁻¹ .F-id {X} = sym $ has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
   Comparison-EM⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $
        D.pullr (has-coeq X .factors)
-    ·· D.pulll (has-coeq _ .factors)
-    ·· F.pullr refl
+    ∙∙ D.pulll (has-coeq _ .factors)
+    ∙∙ F.pullr refl
 
   open _⊣_
 ```
@@ -277,8 +277,8 @@ readers.
   Comparison-EM⁻¹⊣Comparison-EM .counit .is-natural x y f =
       has-coeq (F₀ (Comparison-EM F⊣G) x) .unique
         {p = ap₂ D._∘_ (F⊣G .counit.is-natural _ _ _) refl
-          ·· D.pullr (F⊣G .counit.is-natural _ _ _)
-          ·· D.pulll (sym (F⊣G .counit.is-natural _ _ _))}
+          ∙∙ D.pullr (F⊣G .counit.is-natural _ _ _)
+          ∙∙ D.pulll (sym (F⊣G .counit.is-natural _ _ _))}
         (D.pullr (has-coeq _ .factors) ∙ D.pulll (has-coeq _ .factors))
     ∙ sym (has-coeq _ .unique (D.pullr (has-coeq _ .factors) ∙ sym (F⊣G .counit.is-natural _ _ _)))
   Comparison-EM⁻¹⊣Comparison-EM .zig =

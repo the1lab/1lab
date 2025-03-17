@@ -189,7 +189,7 @@ through $k$:
       → {p : m ∘ i ≡ f}
       → universal m M i p ∘ corestrict ≡ i
     universal-commutes {m = m} {ism} {i} {p} =
-      M .snd ism _ _ (pulll universal-factors ·· image-factors ·· sym p)
+      M .snd ism _ _ (pulll universal-factors ∙∙ image-factors ∙∙ sym p)
 ```
 
 <!--

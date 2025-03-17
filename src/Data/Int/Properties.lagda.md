@@ -72,7 +72,7 @@ no further comments.
   negℤ-negℤ (negsuc x)    = refl
 
   negℤ-injective : ∀ x y → negℤ x ≡ negℤ y → x ≡ y
-  negℤ-injective x y p = sym (negℤ-negℤ x) ·· ap negℤ p ·· negℤ-negℤ y
+  negℤ-injective x y p = sym (negℤ-negℤ x) ∙∙ ap negℤ p ∙∙ negℤ-negℤ y
 
   negℤ-predℤ : ∀ x → negℤ (predℤ x) ≡ sucℤ (negℤ x)
   negℤ-predℤ posz             = refl
@@ -220,16 +220,16 @@ no further comments.
   +ℤ-commutative (negsuc x) (negsuc y) = ap negsuc (ap suc (+-commutative x y))
 
   +ℤ-sucl : ∀ x y → sucℤ x +ℤ y ≡ sucℤ (x +ℤ y)
-  +ℤ-sucl x y = rot-is-add (sucℤ x) y ·· rot-sucl x y ·· ap sucℤ (sym (rot-is-add x y))
+  +ℤ-sucl x y = rot-is-add (sucℤ x) y ∙∙ rot-sucl x y ∙∙ ap sucℤ (sym (rot-is-add x y))
 
   +ℤ-sucr : ∀ x y → x +ℤ sucℤ y ≡ sucℤ (x +ℤ y)
-  +ℤ-sucr x y = +ℤ-commutative x (sucℤ y) ·· +ℤ-sucl y x ·· ap sucℤ (+ℤ-commutative y x)
+  +ℤ-sucr x y = +ℤ-commutative x (sucℤ y) ∙∙ +ℤ-sucl y x ∙∙ ap sucℤ (+ℤ-commutative y x)
 
   +ℤ-predl : ∀ x y → predℤ x +ℤ y ≡ predℤ (x +ℤ y)
-  +ℤ-predl x y = rot-is-add (predℤ x) y ·· rot-predl x y ·· ap predℤ (sym (rot-is-add x y))
+  +ℤ-predl x y = rot-is-add (predℤ x) y ∙∙ rot-predl x y ∙∙ ap predℤ (sym (rot-is-add x y))
 
   +ℤ-predr : ∀ x y → x +ℤ predℤ y ≡ predℤ (x +ℤ y)
-  +ℤ-predr x y = +ℤ-commutative x (predℤ y) ·· +ℤ-predl y x ·· ap predℤ (+ℤ-commutative y x)
+  +ℤ-predr x y = +ℤ-commutative x (predℤ y) ∙∙ +ℤ-predl y x ∙∙ ap predℤ (+ℤ-commutative y x)
 
   +ℤ-onel : ∀ x → 1 +ℤ x ≡ sucℤ x
   +ℤ-onel x = +ℤ-sucl 0 x ∙ ap sucℤ (+ℤ-zerol x)
@@ -240,28 +240,28 @@ no further comments.
   +ℤ-injectiver : ∀ k x y → k +ℤ x ≡ k +ℤ y → x ≡ y
   +ℤ-injectiver k x y p =
       sym (+ℤ-zerol x)
-    ·· ap (_+ℤ x) (sym (+ℤ-invl k))
-    ·· sym (+ℤ-assoc (negℤ k) k x)
-    ·· ap (negℤ k +ℤ_) p
-    ·· +ℤ-assoc (negℤ k) k y
-    ·· ap (_+ℤ y) (+ℤ-invl k)
-    ·· +ℤ-zerol y
+    ∙∙ ap (_+ℤ x) (sym (+ℤ-invl k))
+    ∙∙ sym (+ℤ-assoc (negℤ k) k x)
+    ∙∙ ap (negℤ k +ℤ_) p
+    ∙∙ +ℤ-assoc (negℤ k) k y
+    ∙∙ ap (_+ℤ y) (+ℤ-invl k)
+    ∙∙ +ℤ-zerol y
 
   +ℤ-injectivel : ∀ k x y → x +ℤ k ≡ y +ℤ k → x ≡ y
   +ℤ-injectivel k x y p = +ℤ-injectiver k x y $
-    +ℤ-commutative k x ·· p ·· +ℤ-commutative y k
+    +ℤ-commutative k x ∙∙ p ∙∙ +ℤ-commutative y k
 
   negℤ-distrib : ∀ x y → negℤ (x +ℤ y) ≡ (negℤ x) +ℤ (negℤ y)
   negℤ-distrib x y =
       ap negℤ (rot-is-add x y)
-    ·· negℤ-distrib-rot x y
-    ·· sym (rot-is-add (negℤ x) (negℤ y))
+    ∙∙ negℤ-distrib-rot x y
+    ∙∙ sym (rot-is-add (negℤ x) (negℤ y))
 
   negℤ-+ℤ-negsuc : ∀ a b → negℤ (pos a) +ℤ negsuc b ≡ negsuc (a + b)
   negℤ-+ℤ-negsuc a b =
       +ℤ-commutative (negℤ (pos a)) (negsuc b)
-    ·· sym (negℤ-distrib (possuc b) (pos a))
-    ·· ap negsuc (+-commutative b a)
+    ∙∙ sym (negℤ-distrib (possuc b) (pos a))
+    ∙∙ ap negsuc (+-commutative b a)
 
   pos-pos : ∀ a b → pos a -ℤ pos b ≡ a ℕ- b
   pos-pos a zero = +ℤ-zeror _
@@ -271,16 +271,16 @@ no further comments.
   -ℤ-swapl a b c p =
       sym (+ℤ-zeror _)
     ∙ ap (a +ℤ_) (sym (+ℤ-invr b))
-    ·· +ℤ-assoc a _ _
-    ·· ap (_+ℤ negℤ b) p
+    ∙∙ +ℤ-assoc a _ _
+    ∙∙ ap (_+ℤ negℤ b) p
 
   private
     distrib-lemma
       : ∀ x y z w → (x +ℤ y) +ℤ (z +ℤ w) ≡ (x +ℤ z) +ℤ (y +ℤ w)
     distrib-lemma x y z w =
         +ℤ-assoc (x +ℤ y) z w
-      ·· ap (_+ℤ w) (sym (+ℤ-assoc x y z) ·· ap (x +ℤ_) (+ℤ-commutative y z) ·· +ℤ-assoc x z y)
-      ·· sym (+ℤ-assoc (x +ℤ z) y w)
+      ∙∙ ap (_+ℤ w) (sym (+ℤ-assoc x y z) ∙∙ ap (x +ℤ_) (+ℤ-commutative y z) ∙∙ +ℤ-assoc x z y)
+      ∙∙ sym (+ℤ-assoc (x +ℤ z) y w)
 
   -ℤ-cancelr : ∀ k x y → (x +ℤ k) -ℤ (y +ℤ k) ≡ x -ℤ y
   -ℤ-cancelr k x y =
@@ -428,14 +428,14 @@ no further comments.
   *ℤ-distribl : ∀ x y z → x *ℤ (y +ℤ z) ≡ (x *ℤ y) +ℤ (x *ℤ z)
   *ℤ-distribl x y z =
       sym (dot-is-mul x (y +ℤ z))
-    ·· dot-distribr y z x
-    ·· ap₂ _+ℤ_ (dot-is-mul x y) (dot-is-mul x z)
+    ∙∙ dot-distribr y z x
+    ∙∙ ap₂ _+ℤ_ (dot-is-mul x y) (dot-is-mul x z)
 
   *ℤ-distribr : ∀ x y z → (y +ℤ z) *ℤ x ≡ (y *ℤ x) +ℤ (z *ℤ x)
   *ℤ-distribr x y z =
       *ℤ-commutative (y +ℤ z) x
-    ·· *ℤ-distribl x y z
-    ·· ap₂ _+ℤ_ (*ℤ-commutative x y) (*ℤ-commutative x z)
+    ∙∙ *ℤ-distribl x y z
+    ∙∙ ap₂ _+ℤ_ (*ℤ-commutative x y) (*ℤ-commutative x z)
 
   *ℤ-distribr-minus : ∀ x y z → (y -ℤ z) *ℤ x ≡ (y *ℤ x) -ℤ (z *ℤ x)
   *ℤ-distribr-minus x y z = *ℤ-distribr x y (negℤ z) ∙ ap (y *ℤ x +ℤ_) (*ℤ-negl z x)
@@ -449,14 +449,14 @@ no further comments.
 
   *ℤ-injectiver-possuc : ∀ k x y → x *ℤ possuc k ≡ y *ℤ possuc k → x ≡ y
   *ℤ-injectiver-possuc k (pos x) (pos y) p =
-    ap pos (*-suc-inj k x y (pos-injective (sym (assign-pos _) ·· p ·· assign-pos _)))
+    ap pos (*-suc-inj k x y (pos-injective (sym (assign-pos _) ∙∙ p ∙∙ assign-pos _)))
   *ℤ-injectiver-possuc k (pos x) (negsuc y) p = absurd (pos≠negsuc (sym (assign-pos (x * suc k)) ∙ p))
   *ℤ-injectiver-possuc k (negsuc x) (pos y) p = absurd (negsuc≠pos (p ∙ assign-pos (y * suc k)))
   *ℤ-injectiver-possuc k (negsuc x) (negsuc y) p =
     ap (assign neg) (*-suc-inj k (suc x) (suc y) (ap suc (negsuc-injective p)))
 
   *ℤ-injectiver-negsuc : ∀ k x y → x *ℤ negsuc k ≡ y *ℤ negsuc k → x ≡ y
-  *ℤ-injectiver-negsuc k (pos x) (pos y) p = ap pos (*-suc-inj k x y (pos-injective (negℤ-injective _ _ (sym (assign-neg _) ·· p ·· assign-neg _))))
+  *ℤ-injectiver-negsuc k (pos x) (pos y) p = ap pos (*-suc-inj k x y (pos-injective (negℤ-injective _ _ (sym (assign-neg _) ∙∙ p ∙∙ assign-neg _))))
   *ℤ-injectiver-negsuc k posz (negsuc y) p = absurd (zero≠suc (pos-injective p))
   *ℤ-injectiver-negsuc k (possuc x) (negsuc y) p = absurd (negsuc≠pos p)
   *ℤ-injectiver-negsuc k (negsuc x) posz p = absurd (suc≠zero (pos-injective p))

@@ -57,20 +57,20 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
 -->
 
 ```agda
-  make-ab-on-hom .mul f g .hom x = f # x B.* g # x
+  make-ab-on-hom .mul f g .hom x = f · x B.* g · x
   make-ab-on-hom .mul f g .preserves .pres-⋆ x y =
-    f # (x A.* y) B.* g # (x A.* y)          ≡⟨ ap₂ B._*_ (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y) ⟩
-    (f # x B.* f # y) B.* (g # x B.* g # y)  ≡⟨ B.pullr (B.pulll refl)  ⟩
-    f # x B.* (f # y B.* g # x) B.* g # y    ≡⟨ (λ i → f # x B.* B.commutes {x = f # y} {y = g # x} i B.* (g # y)) ⟩
-    f # x B.* (g # x B.* f # y) B.* g # y    ≡⟨ B.pushr (B.pushl refl) ⟩
-    (f # x B.* g # x) B.* (f # y B.* g # y)  ∎
+    f · (x A.* y) B.* g · (x A.* y)          ≡⟨ ap₂ B._*_ (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y) ⟩
+    (f · x B.* f · y) B.* (g · x B.* g · y)  ≡⟨ B.pullr (B.pulll refl)  ⟩
+    f · x B.* (f · y B.* g · x) B.* g · y    ≡⟨ (λ i → f · x B.* B.commutes {x = f · y} {y = g · x} i B.* (g · y)) ⟩
+    f · x B.* (g · x B.* f · y) B.* g · y    ≡⟨ B.pushr (B.pushl refl) ⟩
+    (f · x B.* g · x) B.* (f · y B.* g · y)  ∎
 
-  make-ab-on-hom .inv f .hom x = B._⁻¹ (f # x)
+  make-ab-on-hom .inv f .hom x = B._⁻¹ (f · x)
   make-ab-on-hom .inv f .preserves .pres-⋆ x y =
-    f # (x A.* y) B.⁻¹            ≡⟨ ap B._⁻¹ (f .preserves .pres-⋆ x y) ⟩
-    (f # x B.* f # y) B.⁻¹        ≡⟨ B.inv-comm ⟩
-    (f # y B.⁻¹) B.* (f # x B.⁻¹) ≡⟨ B.commutes ⟩
-    (f # x B.⁻¹) B.* (f # y B.⁻¹) ∎
+    f · (x A.* y) B.⁻¹            ≡⟨ ap B._⁻¹ (f .preserves .pres-⋆ x y) ⟩
+    (f · x B.* f · y) B.⁻¹        ≡⟨ B.inv-comm ⟩
+    (f · y B.⁻¹) B.* (f · x B.⁻¹) ≡⟨ B.commutes ⟩
+    (f · x B.⁻¹) B.* (f · y B.⁻¹) ∎
 
   make-ab-on-hom .1g .hom x = B.1g
   make-ab-on-hom .1g .preserves .pres-⋆ x y = B.introl refl

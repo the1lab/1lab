@@ -773,8 +773,8 @@ canonicalise-injective
   → x ≡ y
 canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q →
      sym (canonicalise (diff a b) .snd .snd)
-  ·· ap₂ diff p q
-  ·· canonicalise (diff x y) .snd .snd
+  ∙∙ ap₂ diff p q
+  ∙∙ canonicalise (diff x y) .snd .snd
 
 instance
   Discrete-Int : Discrete Int

@@ -180,13 +180,13 @@ closed category" to "CCC".
     make-iso (exp2 .ƛ ev) (exp1 .ƛ ev')
       (unique₂ exp2 (exp2 .ƛ ev ∘ exp1 .ƛ ev') id
         (  ap (ev' ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
-        ·· pulll (exp2 .commutes _)
-        ·· exp1 .commutes _)
+        ∙∙ pulll (exp2 .commutes _)
+        ∙∙ exp1 .commutes _)
         (elimr (×-functor .F-id)))
       (unique₂ exp1 (exp1 .ƛ ev' ∘ exp2 .ƛ ev) id
         (  ap (ev ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
-        ·· pulll (exp1 .commutes _)
-        ·· exp2 .commutes _)
+        ∙∙ pulll (exp1 .commutes _)
+        ∙∙ exp2 .commutes _)
         (elimr (×-functor .F-id)))
 
   ƛ-∘
@@ -248,7 +248,7 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
     ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
     (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
     g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
-    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
+    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙∙ π₁∘⟨⟩ ∙∙ idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
   product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
@@ -321,8 +321,8 @@ exponentiability of $B$ by a condition on the slice category $C/B$.
   -^B .F-id = ap ƛ (idl ev) ∙ lambda-ev _
   -^B .F-∘ f g = sym $ Exponential.unique (exp _) _
     (  ap₂ _∘_ refl (ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _)
-    ·· pulll (Exponential.commutes (exp _) _)
-    ·· extendr (Exponential.commutes (exp _) _))
+    ∙∙ pulll (Exponential.commutes (exp _) _)
+    ∙∙ extendr (Exponential.commutes (exp _) _))
 ```
 
 Recall the [[constant families]] functor $\Delta_B : \cC \to \cC/B$,
@@ -376,7 +376,7 @@ omit it from the page.
       (sym (eliml (-^B .F-id) ∙ intror refl)) (sym (!-unique _))
 
     f .F-∘ f g = sym $ pb _ _ .Pullback.unique
-      (pulll (pb _ _ .p₁∘universal) ·· pullr (pb _ _ .p₁∘universal) ·· pulll (sym (-^B .F-∘ _ _)))
+      (pulll (pb _ _ .p₁∘universal) ∙∙ pullr (pb _ _ .p₁∘universal) ∙∙ pulll (sym (-^B .F-∘ _ _)))
       (sym (!-unique _))
 
   exponentiable→constant-family⊣product
@@ -412,8 +412,8 @@ f$, over $B$.
          → (ƛ (f .map ∘ ev) ∘ q ≡ ƛ π₂ ∘ !)
          ≃ (f .map ∘ app q ≡ π₂)
     coh₁ f h = prop-ext!
-      (λ p → Equiv.injective (_ , lambda-is-equiv _) (sym (ƛ-∘ (has-is-exp _)) ·· p ·· done))
-      (λ p → ƛ-∘ (has-is-exp _) ·· ap ƛ p ·· sym done)
+      (λ p → Equiv.injective (_ , lambda-is-equiv _) (sym (ƛ-∘ (has-is-exp _)) ∙∙ p ∙∙ done))
+      (λ p → ƛ-∘ (has-is-exp _) ∙∙ ap ƛ p ∙∙ sym done)
 ```
 
 <!--
@@ -422,8 +422,8 @@ f$, over $B$.
         done : ƛ π₂ ∘ ! ≡ ƛ π₂
         done = Exponential.unique (exp _) _ $
              ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
-          ·· pulll (Exponential.commutes (exp _) _)
-          ·· (π₂∘⟨⟩ ∙ idl _)
+          ∙∙ pulll (Exponential.commutes (exp _) _)
+          ∙∙ (π₂∘⟨⟩ ∙ idl _)
 
     opaque
       rem₁ : ∀ {X} (f : /-Obj B)

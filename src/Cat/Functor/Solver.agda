@@ -135,7 +135,7 @@ module NbE {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : 
 
   abstract
     solve : (e1 e2 : DExpr X Y) → undvalue (deval e1) ≡ undvalue (deval e2) → undexpr e1 ≡ undexpr e2
-    solve e1 e2 p  = sym (deval-sound e1) ·· p ·· (deval-sound e2)
+    solve e1 e2 p  = sym (deval-sound e1) ∙∙ p ∙∙ (deval-sound e2)
 
 module Reflection where
 

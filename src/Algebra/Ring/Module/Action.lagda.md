@@ -94,11 +94,11 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
 ```
 
 ```agda
-  Hom→Action G rhom .Ring-action._⋆_ x y = rhom # x # y
-  Hom→Action G rhom .Ring-action.⋆-distribl r x y = (rhom # r) .preserves .is-group-hom.pres-⋆ _ _
-  Hom→Action G rhom .Ring-action.⋆-distribr r s x = rhom .preserves .is-ring-hom.pres-+ r s #ₚ x
-  Hom→Action G rhom .Ring-action.⋆-assoc r s x    = sym (rhom .preserves .is-ring-hom.pres-* r s #ₚ x)
-  Hom→Action G rhom .Ring-action.⋆-id x           = rhom .preserves .is-ring-hom.pres-id #ₚ x
+  Hom→Action G rhom .Ring-action._⋆_ x y = rhom · x · y
+  Hom→Action G rhom .Ring-action.⋆-distribl r x y = (rhom · r) .preserves .is-group-hom.pres-⋆ _ _
+  Hom→Action G rhom .Ring-action.⋆-distribr r s x = rhom .preserves .is-ring-hom.pres-+ r s ·ₚ x
+  Hom→Action G rhom .Ring-action.⋆-assoc r s x    = sym (rhom .preserves .is-ring-hom.pres-* r s ·ₚ x)
+  Hom→Action G rhom .Ring-action.⋆-id x           = rhom .preserves .is-ring-hom.pres-id ·ₚ x
 
   Action→Hom G act .hom r .hom = act .Ring-action._⋆_ r
   Action→Hom G act .hom r .preserves .is-group-hom.pres-⋆ x y = act .Ring-action.⋆-distribl r x y

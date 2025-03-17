@@ -241,7 +241,7 @@ factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s�
       prime-divisor-lt p q n (composite .p-prime) (composite .factors)
   in record
     { primes    = p ∷ ps
-    ; factors   = ap (p *_) path ·· *-commutative p q ·· composite .factors
+    ; factors   = ap (p *_) path ∙∙ *-commutative p q ∙∙ composite .factors
     ; is-primes = composite .p-prime ∷ primes
     }
 

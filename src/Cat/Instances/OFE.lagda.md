@@ -276,7 +276,7 @@ Lists X-set .has-is-ofe .≈-sym   n p   = sym p
 Lists X-set .has-is-ofe .≈-trans n p q = q ∙ p
 Lists X-set .has-is-ofe .bounded x y   = refl
 
-Lists X-set .has-is-ofe .limit x y wit = sym rem₁ ·· agree ·· rem₂ where
+Lists X-set .has-is-ofe .limit x y wit = sym rem₁ ∙∙ agree ∙∙ rem₂ where
   enough = max (length x) (length y)
   agree : take enough x ≡ take enough y
   agree = wit enough

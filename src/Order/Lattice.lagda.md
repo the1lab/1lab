@@ -131,10 +131,10 @@ record
 
 ```agda
   field
-    top-≤ : T.top Q.≤ f # S.top
-    bot-≤ : f # S.bot Q.≤ T.bot
-    ∩-≤ : ∀ {x y} → f # x T.∩ f # y Q.≤ f # (x S.∩ y)
-    ∪-≤ : ∀ {x y} → f # (x S.∪ y) Q.≤ f # x T.∪ f # y
+    top-≤ : T.top Q.≤ f · S.top
+    bot-≤ : f · S.bot Q.≤ T.bot
+    ∩-≤ : ∀ {x y} → f · x T.∩ f · y Q.≤ f · (x S.∩ y)
+    ∪-≤ : ∀ {x y} → f · (x S.∪ y) Q.≤ f · x T.∪ f · y
 ```
 
 <!--

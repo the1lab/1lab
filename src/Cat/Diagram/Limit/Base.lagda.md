@@ -345,13 +345,13 @@ limit:
   unmake-limit
     : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
     → is-ran !F D F eps
-    → make-is-limit D (F # tt)
+    → make-is-limit D (F · tt)
 ```
 
 <!--
 ```agda
   unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
-    a = F # tt
+    a = F · tt
     module eps = _=>_ eps
     open is-ran lim
     open Functor D

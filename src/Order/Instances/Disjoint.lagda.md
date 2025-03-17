@@ -92,7 +92,7 @@ function for mapping _out_, by cases:
     : ∀ {o ℓ} {R : Poset o ℓ}
     → (∀ i → Monotone (F i) R)
     → Monotone (Disjoint I F) R
-  matchᵖ cases .hom    (i , x)       = cases i # x
+  matchᵖ cases .hom    (i , x)       = cases i · x
   matchᵖ cases .pres-≤ (reflᵢ , x≤y) =
     cases _ .pres-≤ (x≤y reflᵢ)
 ```
@@ -110,7 +110,7 @@ Posets-has-set-indexed-coproducts I F = mk where
   mk .ι  = injᵖ
   mk .has-is-ic .match      = matchᵖ
   mk .has-is-ic .commute    = trivial!
-  mk .has-is-ic .unique f p = ext λ i x → p i #ₚ x
+  mk .has-is-ic .unique f p = ext λ i x → p i ·ₚ x
 ```
 
 ## Binary coproducts are a special case of indexed coproducts

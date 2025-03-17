@@ -75,11 +75,11 @@ from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
 -- categories.
 record Funlike {ℓ ℓ' ℓ''} (A : Type ℓ) (arg : Type ℓ') (out : arg → Type ℓ'') : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where
   field
-    _#_ : A → (x : arg) → out x
-  infixl 999 _#_
+    _·_ : A → (x : arg) → out x
+  infixl 999 _·_
 
-open Funlike ⦃ ... ⦄ using (_#_) public
-{-# DISPLAY Funlike._#_ _ f x = f # x #-}
+open Funlike ⦃ ... ⦄ using (_·_) public
+{-# DISPLAY Funlike._·_ _ f x = f · x #-}
 
 -- Sections of the _#_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta
@@ -89,36 +89,36 @@ apply
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
   → ⦃ _ : Funlike F A B ⦄
   → F → (x : A) → B x
-apply = _#_
+apply = _·_
 
 -- Shortcut for ap (apply ...)
-ap#
+ap·
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
   → ⦃ _ : Funlike F A B ⦄
-  → (f : F) {x y : A} (p : x ≡ y) → PathP (λ i → B (p i)) (f # x) (f # y)
-ap# f = ap (apply f)
+  → (f : F) {x y : A} (p : x ≡ y) → PathP (λ i → B (p i)) (f · x) (f · y)
+ap· f = ap (apply f)
 
 -- Generalised happly.
-_#ₚ_
+_·ₚ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {F : Type ℓ''}
   → ⦃ _ : Funlike F A B ⦄
-  → {f g : F} → f ≡ g → (x : A) → f # x ≡ g # x
-f #ₚ x = ap₂ _#_ f refl
+  → {f g : F} → f ≡ g → (x : A) → f · x ≡ g · x
+f ·ₚ x = ap₂ _·_ f refl
 
 instance
   Funlike-Π : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Funlike ((x : A) → B x) A B
-  Funlike-Π = record { _#_ = id }
+  Funlike-Π = record { _·_ = id }
 
   Funlike-Homotopy
     : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {f g : ∀ x → B x}
     → Funlike (f ≡ g) A (λ x → f x ≡ g x)
-  Funlike-Homotopy = record { _#_ = happly }
+  Funlike-Homotopy = record { _·_ = happly }
 
   Funlike-Σ
     : ∀ {ℓ ℓ' ℓx ℓp} {A : Type ℓ} {B : A → Type ℓ'} {X : Type ℓx} {P : X → Type ℓp}
     → ⦃ Funlike X A B ⦄
     → Funlike (Σ X P) A B
-  Funlike-Σ = record { _#_ = λ (f , _) → f #_ }
+  Funlike-Σ = record { _·_ = λ (f , _) → f ·_ }
   {-# OVERLAPPABLE Funlike-Σ #-}
 
 -- Generalised "sections" (e.g. of a presheaf) notation.
@@ -127,7 +127,7 @@ _ʻ_
   → ⦃ _ : Funlike F A B ⦄
   → F → (x : A) → ⦃ _ : Underlying (B x) ⦄
   → Type _
-F ʻ x = ⌞ F # x ⌟
+F ʻ x = ⌞ F · x ⌟
 
 infix 999 _ʻ_
 

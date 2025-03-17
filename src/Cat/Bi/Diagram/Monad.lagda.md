@@ -122,8 +122,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
       ∙ M.μ-unitl ηₚ x
     monad' .μ-assoc {x} =
         ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
-     ·· M.μ-assoc ηₚ x
-     ·· ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
+     ∙∙ M.μ-assoc ηₚ x
+     ∙∙ ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
   Monad→bicat-monad (M , monad) = monad' where
@@ -135,8 +135,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' .η = M.unit
     monad' .μ-assoc = ext λ _ →
         ap (M.μ _ C.∘_) (C.elimr refl)
-     ·· M.μ-assoc
-     ·· ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
+     ∙∙ M.μ-assoc
+     ∙∙ ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
     monad' .μ-unitr = ext λ _ →
         ap (M.μ _ C.∘_) (C.elimr refl)
       ∙ M.μ-unitr

@@ -147,7 +147,7 @@ whence the name **horizontal composition**.
 
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ⊗ g = compose # (f , g)
+  f ⊗ g = compose · (f , g)
 
   -- vertical 2-cell composition
   _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
@@ -344,7 +344,7 @@ Cat o ℓ = pb where
     ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
     ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
     ni .make-natural-iso.natural x y f = ext λ _ →
-      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
+      D.idr _ ∙∙ D.pushl (y .fst .F-∘ _ _) ∙∙ D.introl refl
 ```
 -->
 
@@ -394,7 +394,7 @@ directly:
 
   pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
   pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
-    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
+    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ∙∙ ap (f .F₁) (g .F-id) ∙∙ f .F-id))
     (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
 ```

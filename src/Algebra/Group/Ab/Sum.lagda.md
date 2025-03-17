@@ -79,11 +79,11 @@ limits][rapl]).
 
   open is-product
   Direct-sum-is-product : is-product (Ab ℓ) {A = G} {H} {G ⊕ H} ⊕-proj₁ ⊕-proj₂
-  Direct-sum-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
+  Direct-sum-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
   Direct-sum-is-product .⟨_,_⟩ f g .preserves .pres-⋆ x y =
     Σ-pathp (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y)
 
   Direct-sum-is-product .π₁∘⟨⟩ = trivial!
   Direct-sum-is-product .π₂∘⟨⟩ = trivial!
-  Direct-sum-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
+  Direct-sum-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
 ```

@@ -177,7 +177,7 @@ make-free-group S .fold = fold-free-group
 make-free-group S .commute = refl
 make-free-group S .unique {H} g p =
   ext $ Free-elim-prop _ (λ _ → hlevel 1)
-    (p #ₚ_)
+    (p ·ₚ_)
     (λ a p b q → g.pres-⋆ a b ∙ ap₂ H._⋆_ p q)
     (λ a p → g.pres-inv ∙ ap H.inverse p)
     g.pres-id

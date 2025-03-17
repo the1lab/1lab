@@ -109,44 +109,44 @@ record
 
 ```agda
   field
-    ∩-≤   : ∀ x y → (f # x) Qₗ.∩ (f # y) Q.≤ f # (x Pₗ.∩ y)
-    top-≤ : Qₗ.top Q.≤ f # Pₗ.top
+    ∩-≤   : ∀ x y → f · x Qₗ.∩ f · y Q.≤ f · (x Pₗ.∩ y)
+    top-≤ : Qₗ.top Q.≤ f · Pₗ.top
 ```
 
 <!--
 ```agda
-  pres-∩ : ∀ x y → f # (x Pₗ.∩ y) ≡ f # x Qₗ.∩ f # y
+  pres-∩ : ∀ x y → f · (x Pₗ.∩ y) ≡ f · x Qₗ.∩ f · y
   pres-∩ x y =
     Q.≤-antisym
-      (Qₗ.∩-universal (f # (x Pₗ.∩ y))
+      (Qₗ.∩-universal (f · (x Pₗ.∩ y))
         (f .pres-≤ Pₗ.∩≤l)
         (f .pres-≤ Pₗ.∩≤r))
       (∩-≤ x y)
 
-  pres-top : f # Pₗ.top ≡ Qₗ.top
+  pres-top : f · Pₗ.top ≡ Qₗ.top
   pres-top = Q.≤-antisym Qₗ.! top-≤
 
   pres-meets
     : ∀ {x y m}
     → is-meet P x y m
-    → is-meet Q (f # x) (f # y) (f # m)
+    → is-meet Q (f · x) (f · y) (f · m)
   pres-meets meet .is-meet.meet≤l = f .pres-≤ (meet .meet≤l)
   pres-meets meet .is-meet.meet≤r = f .pres-≤ (meet .meet≤r)
   pres-meets {x = x} {y = y} {m = m} meet .is-meet.greatest ub ub≤fx ub≤fy =
     ub                   Q.≤⟨ Qₗ.∩-universal ub ub≤fx ub≤fy ⟩
-    (f # x) Qₗ.∩ (f # y) Q.≤⟨ ∩-≤ x y ⟩
-    f # (x Pₗ.∩ y)       Q.≤⟨ f .pres-≤ (meet .greatest (x Pₗ.∩ y) Pₗ.∩≤l Pₗ.∩≤r) ⟩
-    f # m                Q.≤∎
+    (f · x) Qₗ.∩ (f · y) Q.≤⟨ ∩-≤ x y ⟩
+    f · (x Pₗ.∩ y)       Q.≤⟨ f .pres-≤ (meet .greatest (x Pₗ.∩ y) Pₗ.∩≤l Pₗ.∩≤r) ⟩
+    f · m                Q.≤∎
 
   pres-tops
     : ∀ {t}
     → is-top P t
-    → is-top Q (f # t)
+    → is-top Q (f · t)
   pres-tops {t = t} t-top x =
     x          Q.≤⟨ Qₗ.! ⟩
     Qₗ.top     Q.≤⟨ top-≤ ⟩
-    f # Pₗ.top Q.≤⟨ f .pres-≤ (t-top Pₗ.top) ⟩
-    f # t      Q.≤∎
+    f · Pₗ.top Q.≤⟨ f .pres-≤ (t-top Pₗ.top) ⟩
+    f · t      Q.≤∎
 
 open is-meet-slat-hom
 
@@ -169,7 +169,7 @@ id-meet-slat-hom {P = P} _ .top-≤ = Poset.≤-refl P
   → is-meet-slat-hom g Pₗ Qₗ
   → is-meet-slat-hom (f ∘ₘ g) Pₗ Rₗ
 ∘-meet-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .∩-≤ x y =
-  R .Poset.≤-trans (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
+  R .Poset.≤-trans (f-pres .∩-≤ (g · x) (g · y)) (f .pres-≤ (g-pres .∩-≤ x y))
 ∘-meet-slat-hom {R = R} {f = f} {g = g} f-pres g-pres .top-≤ =
   R .Poset.≤-trans (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ```

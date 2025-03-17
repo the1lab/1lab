@@ -306,8 +306,8 @@ transformation $\eta : F \To G$ at its one component $\eta_* : F(*) \to
 G(*)$.
 
 ```agda
-  sets .L .F₀ F    = F # _
-  sets .L .F₁ nt   = nt # _
+  sets .L .F₀ F    = F · _
+  sets .L .F₁ nt   = nt · _
   sets .L .F-id    = refl
   sets .L .F-∘ f g = refl
 ```
@@ -336,10 +336,10 @@ limits directly for efficiency concerns. </summary>
     pb' : is-pullback (Sets κ) _ _ _ _
     pb' .square = pb .square ηₚ _
     pb' .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
-      pb .universal {P' = incl # P'}
-        {p₁' = NT (λ _ → p₁') (λ _ _ _ → funext λ _ → sym (X .F-id # _))}
-        {p₂' = NT (λ _ → p₂') (λ _ _ _ → funext λ _ → sym (Y .F-id # _))}
-        (Nat-pathp _ _ (λ x → p)) # lift tt
+      pb .universal {P' = incl · P'}
+        {p₁' = NT (λ _ → p₁') (λ _ _ _ → funext λ _ → sym (X .F-id · _))}
+        {p₂' = NT (λ _ → p₂') (λ _ _ _ → funext λ _ → sym (Y .F-id · _))}
+        (Nat-pathp _ _ (λ x → p)) · lift tt
 
     pb' .p₁∘universal = pb .p₁∘universal ηₚ _
     pb' .p₂∘universal = pb .p₂∘universal ηₚ _

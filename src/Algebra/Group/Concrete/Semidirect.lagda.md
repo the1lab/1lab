@@ -127,7 +127,7 @@ The following constructions work in this general setting.
 
     align-refl
       : ∀ {a : A} (q : f a ≡ f a)
-      → align (λ _ → a) # q ≡ q
+      → align (λ _ → a) · q ≡ q
     align-refl {a} = unext $
       J-refl (λ a' p → PathP (λ i → B (p i)) (f a) (f a') ≃ (f a' ≡ f a')) id≃
 
@@ -173,8 +173,8 @@ operations by double path induction.
       : ∀ {a₀ a₁ a₂ : A}
       → (p  : (a₀ , f a₀) ≡ (a₁ , f a₁))
       → (p' : (a₁ , f a₁) ≡ (a₂ , f a₂))
-      → Σ-align # (p ∙ p')
-      ≡ Σ-align # p ∙⋉ Σ-align # p'
+      → Σ-align · (p ∙ p')
+      ≡ Σ-align · p ∙⋉ Σ-align · p'
 ```
 </summary>
 
@@ -183,15 +183,15 @@ operations by double path induction.
       (λ a₀ a₂ p⁻¹ p' →
         ∀ (q : PathP (λ i → B (p⁻¹ (~ i))) (f a₀) (f a₁))
         → (q' : PathP (λ i → B (p' i)) (f a₁) (f a₂))
-        → Σ-align # ((sym p⁻¹ ,ₚ q) ∙ (p' ,ₚ q'))
-        ≡ Σ-align # (sym p⁻¹ ,ₚ q) ∙⋉ Σ-align # (p' ,ₚ q'))
+        → Σ-align · ((sym p⁻¹ ,ₚ q) ∙ (p' ,ₚ q'))
+        ≡ Σ-align · (sym p⁻¹ ,ₚ q) ∙⋉ Σ-align · (p' ,ₚ q'))
       (λ q q' →
-        Σ-align # ((refl ,ₚ q) ∙ (refl ,ₚ q'))                      ≡˘⟨ ap# Σ-align (ap-∙ (a₁ ,_) q q') ⟩
-        Σ-align # (refl ,ₚ q ∙ q')                                  ≡⟨⟩
-        refl        , align refl # (q ∙ q')                         ≡⟨ refl ,ₚ align-refl (q ∙ q') ⟩
+        Σ-align · ((refl ,ₚ q) ∙ (refl ,ₚ q'))                      ≡˘⟨ ap· Σ-align (ap-∙ (a₁ ,_) q q') ⟩
+        Σ-align · (refl ,ₚ q ∙ q')                                  ≡⟨⟩
+        refl        , align refl · (q ∙ q')                         ≡⟨ refl ,ₚ align-refl (q ∙ q') ⟩
         refl        , q ∙ q'                                        ≡˘⟨ refl ,ₚ ap₂ _∙_ (align-refl q) (align-refl q') ⟩
-        refl        , align refl # q ∙ align refl # q'              ≡˘⟨ ∙-idl _ ,ₚ ap (_∙ align refl # q') (conjP-refl (align refl # q)) ⟩
-        refl ∙ refl , conjP refl (align refl # q) ∙ align refl # q' ∎)
+        refl        , align refl · q ∙ align refl · q'              ≡˘⟨ ∙-idl _ ,ₚ ap (_∙ align refl · q') (conjP-refl (align refl · q)) ⟩
+        refl ∙ refl , conjP refl (align refl · q) ∙ align refl · q' ∎)
       (ap fst (sym p)) (ap fst p') (ap snd p) (ap snd p')
 ```
 </details>

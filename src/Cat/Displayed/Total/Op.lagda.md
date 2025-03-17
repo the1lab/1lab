@@ -154,7 +154,7 @@ fibre-functor-total-op F .F₀ = F .F₀
 fibre-functor-total-op F .F₁ = F .F₁
 fibre-functor-total-op F .F-id = F .F-id
 fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
-  ap (F .F₁) (DR.reindex ℰ _ _ ) ·· F .F-∘ g f ·· DR.reindex ℰ _ _
+  ap (F .F₁) (DR.reindex ℰ _ _ ) ∙∙ F .F-∘ g f ∙∙ DR.reindex ℰ _ _
 ```
 
 <!--

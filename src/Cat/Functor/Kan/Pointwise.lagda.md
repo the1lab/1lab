@@ -210,8 +210,8 @@ constraints are satisfied.
       F' .F₁ f = ↓colim.universal _
         (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
         (λ f → ↓colim.commutes _ (↓hom {β = f .β} (C'.pullr (f .sq)
-            ·· C'.elim-inner refl
-            ·· sym (C'.idl _))))
+            ∙∙ C'.elim-inner refl
+            ∙∙ sym (C'.idl _))))
 ```
 <!--
 ```agda
@@ -624,10 +624,10 @@ module _
       (λ j → G .F₁ (ff.from (j .map)))
       (λ f → collapse G $ ff→faithful {F = F} ff $
            F .F-∘ _ _
-        ·· ap₂ C'._∘_ (ff.ε _) refl
-        ·· f .sq
-        ·· C'.idl _
-        ·· sym (ff.ε _))
+        ∙∙ ap₂ C'._∘_ (ff.ε _) refl
+        ∙∙ f .sq
+        ∙∙ C'.idl _
+        ∙∙ sym (ff.ε _))
     ni .eta∘inv x = ↓colim.unique₂ _ _
       (λ f → ↓colim.commutes _ f)
       (λ j → D.pullr (↓colim.factors _ _ _)

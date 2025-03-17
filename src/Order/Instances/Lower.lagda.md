@@ -110,7 +110,7 @@ operator automatically propositionally truncates.
 <!--
 ```agda
   Lower-sets-meets : (a b : Lower-set P) → Meet (Lower-sets P) a b
-  Lower-sets-meets a b .Meet.glb .hom i = (a # i) ∧Ω (b # i)
+  Lower-sets-meets a b .Meet.glb .hom i = (a · i) ∧Ω (b · i)
   Lower-sets-meets a b .Meet.glb .pres-≤ j≤i (aj , bj) =
     a .pres-≤ j≤i aj , b .pres-≤ j≤i bj
   Lower-sets-meets a b .Meet.has-meet .is-meet.meet≤l _ = fst
@@ -119,7 +119,7 @@ operator automatically propositionally truncates.
     (f x x∈lb') , (g x x∈lb')
 
   Lower-sets-joins : (a b : Lower-set P) → Join (Lower-sets P) a b
-  Lower-sets-joins a b .Join.lub .hom i = (a # i) ∨Ω (b # i)
+  Lower-sets-joins a b .Join.lub .hom i = (a · i) ∨Ω (b · i)
   Lower-sets-joins a b .Join.lub .pres-≤ j≤i =
     ∥-∥-map [ (inl ⊙ a .pres-≤ j≤i) , inr ⊙ b .pres-≤ j≤i ]
   Lower-sets-joins a b .Join.has-join .is-join.l≤join x x∈a = inc (inl x∈a)

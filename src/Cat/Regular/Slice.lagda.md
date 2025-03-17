@@ -70,7 +70,7 @@ private
   pres-mono {a = A} h .monic a b p = ap map $ h .C/y.monic
     {c = cut (A .map ∘ a)}
     (record { commutes = refl })
-    (record { commutes = pushl (sym (h .mor .commutes)) ·· ap₂ _∘_ refl (sym p) ·· pulll (h .mor .commutes) })
+    (record { commutes = pushl (sym (h .mor .commutes)) ∙∙ ap₂ _∘_ refl (sym p) ∙∙ pulll (h .mor .commutes) })
     (ext p)
 ```
 -->

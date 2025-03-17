@@ -362,7 +362,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   *ₚₙ-hom c (p *x+ d) x ρ with c ==ₙ 0n
   ... | just c=0 = sym (ap₂ R._*_ refl (ap (λ e → En e ρ) c=0 ∙ 0n-hom ρ) ∙ R.*-zeror)
   ... | nothing  =
-      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl *-commutes ∙ R.*-associative)
+      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ∙∙ sym R.*-associative ∙∙ ap₂ R._*_ refl *-commutes ∙ R.*-associative)
         (*ₙ-hom d c ρ)
     ∙ sym R.*-distribr
 
@@ -403,7 +403,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   solve
     : ∀ {n} (p q : Polynomial n) (r : Vec R n)
     → En (normal p) r ≡ En (normal q) r → ⟦ p ⟧ r ≡ ⟦ q ⟧ r
-  solve p q r prf = sym (sound p r) ·· prf ·· sound q r
+  solve p q r prf = sym (sound p r) ∙∙ prf ∙∙ sound q r
 
   private
     test-distrib : ∀ x y z → x R.* (y R.+ z) ≡ y R.* x R.+ z R.* x

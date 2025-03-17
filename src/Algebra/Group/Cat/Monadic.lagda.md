@@ -180,10 +180,10 @@ but the other direction is by induction on "words".
     go = funext $ Free-elim-prop _ (λ _ → hlevel 1)
       (λ x → sym (happly (alg .ν-unit) x))
       (λ x p y q → rec .preserves .is-group-hom.pres-⋆ x y
-                ·· ap₂ G._⋆_ p q
-                ·· happly (alg .ν-mult) (inc _ ◆ inc _))
+                ∙∙ ap₂ G._⋆_ p q
+                ∙∙ happly (alg .ν-mult) (inc _ ◆ inc _))
       (λ x p → is-group-hom.pres-inv (rec .preserves) {x = x}
-              ·· ap G.inverse p
-              ·· sym (is-group-hom.pres-inv alg-gh {x = x}))
+              ∙∙ ap G.inverse p
+              ∙∙ sym (is-group-hom.pres-inv alg-gh {x = x}))
       refl
 ```

@@ -92,8 +92,8 @@ But this result relies on the cocontinuity of meets.
 ⋃-distribr : ∀ {I} (f : I → Ob) x → ⋃ f ∩ x ≡ ⋃ λ i → f i ∩ x
 ⋃-distribr f x =
   ∩-comm
-  ·· ⋃-distribl x f
-  ·· ap ⋃ (funext λ _ → ∩-comm)
+  ∙∙ ⋃-distribl x f
+  ∙∙ ap ⋃ (funext λ _ → ∩-comm)
 ```
 -->
 

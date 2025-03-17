@@ -291,7 +291,7 @@ Furthermore, these equivalences are natural.
     → R.₁ f C.∘ p1 ≡ R.₁ g C.∘ p2
     → f D.∘ R-adjunct p1 ≡ g D.∘ R-adjunct p2
   R-adjunct-square sq =
-    sym (R-adjunct-naturalr _ _) ·· ap R-adjunct sq ·· R-adjunct-naturalr _ _
+    sym (R-adjunct-naturalr _ _) ∙∙ ap R-adjunct sq ∙∙ R-adjunct-naturalr _ _
 ```
 -->
 

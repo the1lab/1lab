@@ -57,17 +57,17 @@ from-∘ : from (w D.∘ x) ≡ from w C.∘ from x
 from-∘ = injective (ε _ ∙ sym (F-∘ _ _ ∙ ap₂ D._∘_ (ε _) (ε _)))
 
 ipushr : x D.∘ F₁ g ≡ x' → from (w D.∘ x) C.∘ g ≡ from (w D.∘ x')
-ipushr p = injective (F-∘ _ _ ·· ap₂ D._∘_ (ε _) refl ·· D.pullr p ∙ sym (ε _))
+ipushr p = injective (F-∘ _ _ ∙∙ ap₂ D._∘_ (ε _) refl ∙∙ D.pullr p ∙ sym (ε _))
 
 ε-lswizzle : w D.∘ x ≡ D.id → w D.∘ F₁ (from (x D.∘ y)) ≡ y
 ε-lswizzle = D.lswizzle (ε _)
 
 ε-expand : w D.∘ x ≡ y → F₁ (from w C.∘ from x) ≡ y
-ε-expand p = F-∘ _ _ ·· ap₂ D._∘_ (ε _) (ε _) ·· p
+ε-expand p = F-∘ _ _ ∙∙ ap₂ D._∘_ (ε _) (ε _) ∙∙ p
 
 ε-twist : F₁ f D.∘ x ≡ y D.∘ F₁ g → f C.∘ from x ≡ from y C.∘ g
 ε-twist {f = f} {g = g} p = injective $ swap $
-  ap (F₁ f D.∘_) (ε _) ·· p ·· ap (D._∘ F₁ g) (sym (ε _))
+  ap (F₁ f D.∘_) (ε _) ∙∙ p ∙∙ ap (D._∘ F₁ g) (sym (ε _))
 
 inv∘l : x D.∘ F₁ f ≡ y → from x C.∘ f ≡ from y
 inv∘l x = sym (ε-twist (D.eliml F-id ∙ sym x)) ∙ C.idl _

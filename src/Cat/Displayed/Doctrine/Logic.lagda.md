@@ -380,8 +380,8 @@ $$
     rem₁ .p₁∘universal = π₁∘⟨⟩
     rem₁ .p₂∘universal {p = p} =
         ⟨⟩∘ _
-      ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
-      ·· sym (⟨⟩∘ _)
+      ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
+      ∙∙ sym (⟨⟩∘ _)
       ∙ eliml (sym (⟨⟩-unique (idr _) (idr _)))
     rem₁ .unique q r = ⟨⟩-unique q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
 ```
@@ -408,8 +408,8 @@ sub-prop-∘
   : ∀ {Φ} (ρ : Sub Γ Δ) (σ : Sub Δ Φ) (φ : Formula Φ)
   → ⟦ sub-prop ρ (sub-prop σ φ) ⟧ᵖ ≡  ⟦ φ ⟧ᵖ [ ⟦ σ ⟧ˢ ∘ ⟦ ρ ⟧ˢ ]
 sub-prop-∘ ρ σ φ = sub-prop-correct ρ (sub-prop σ φ)
-                ·· ap (_[ ⟦ ρ ⟧ˢ ]) (sub-prop-correct σ φ)
-                ·· subst-∘ _ _
+                ∙∙ ap (_[ ⟦ ρ ⟧ˢ ]) (sub-prop-correct σ φ)
+                ∙∙ subst-∘ _ _
 
 private variable
   Φ Ψ φ ψ θ φ' ψ' : Formula Γ

@@ -88,14 +88,14 @@ module _ (p : f ∘i h ≡ g ∘i i) where abstract
   extendli : f ∘i (h ∘i b) ≡ g ∘i (i ∘i b)
   extendli {b = b} =
     associ _ _ _
-    ·· ap (_∘i b) p
-    ·· sym (associ _ _ _)
+    ∙∙ ap (_∘i b) p
+    ∙∙ sym (associ _ _ _)
 
   extendri : (a ∘i f) ∘i h ≡ (a ∘i g) ∘i i
   extendri {a = a} =
     sym (associ _ _ _)
-    ·· ap (a ∘i_) p
-    ·· associ _ _ _
+    ∙∙ ap (a ∘i_) p
+    ∙∙ associ _ _ _
 
   extend-inneri : a ∘i f ∘i h ∘i b ≡ a ∘i g ∘i i ∘i b
   extend-inneri {a = a} = ap (a ∘i_) extendli

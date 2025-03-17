@@ -95,26 +95,26 @@ module
 
   open is-join-slat-hom hom
 
-  pres-⋃ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (⋃ᶠ Pl k) ≡ ⋃ᶠ Ql (apply f ⊙ k)
+  pres-⋃ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f · (⋃ᶠ Pl k) ≡ ⋃ᶠ Ql (apply f ⊙ k)
   pres-⋃ᶠ {n = 0} k = pres-bot
   pres-⋃ᶠ {n = 1} k = refl
   pres-⋃ᶠ {n = suc (suc n)} k =
-    f # (k fzero Pₗ.∪ ⋃ᶠ Pl (k ⊙ fsuc))       ≡⟨ pres-∪ _ _ ⟩
-    f # (k fzero) Qₗ.∪ f # (⋃ᶠ Pl (k ⊙ fsuc)) ≡⟨ ap₂ Qₗ._∪_ refl (pres-⋃ᶠ (k ⊙ fsuc)) ⟩
+    f · (k fzero Pₗ.∪ ⋃ᶠ Pl (k ⊙ fsuc))       ≡⟨ pres-∪ _ _ ⟩
+    f · (k fzero) Qₗ.∪ f · (⋃ᶠ Pl (k ⊙ fsuc)) ≡⟨ ap₂ Qₗ._∪_ refl (pres-⋃ᶠ (k ⊙ fsuc)) ⟩
     ⋃ᶠ Ql (apply f ⊙ k)                       ∎
 
   pres-fin-lub
     : ∀ {n} (k : Fin n → ⌞ P ⌟) (x : ⌞ P ⌟)
     → is-lub P k x
-    → is-lub Q (λ x → f # (k x)) (f # x)
+    → is-lub Q (λ x → f · (k x)) (f · x)
   pres-fin-lub k x lub = done where
     rem₁ : x ≡ ⋃ᶠ Pl k
     rem₁ = lub-unique lub (Finite-lubs Pl k .has-lub)
 
-    rem₂ : f # x ≡ ⋃ᶠ Ql (apply f ⊙ k)
+    rem₂ : f · x ≡ ⋃ᶠ Ql (apply f ⊙ k)
     rem₂ = ap (apply f) rem₁ ∙ pres-⋃ᶠ k
 
-    done : is-lub Q (λ x → f # k x) (f # x)
+    done : is-lub Q (λ x → f · k x) (f · x)
     done = subst (is-lub Q (apply f ⊙ k)) (sym rem₂) (Finite-lubs Ql _ .has-lub)
 
   pres-finite-lub
@@ -123,7 +123,7 @@ module
     → (k : I → ⌞ P ⌟)
     → (x : ⌞ P ⌟)
     → is-lub P k x
-    → is-lub Q (λ x → f # (k x)) (f # x)
+    → is-lub Q (λ x → f · (k x)) (f · x)
   pres-finite-lub I-finite k x P-lub = case I-finite .enumeration of λ enum →
     cast-is-lub (enum e⁻¹) (λ _ → refl) $
     pres-fin-lub (k ⊙ Equiv.from enum) x $
@@ -140,7 +140,7 @@ finitely-indexed sets.
     → (k : I → ⌞ P ⌟)
     → (x : ⌞ P ⌟)
     → is-lub P k x
-    → is-lub Q (λ x → f # (k x)) (f # x)
+    → is-lub Q (λ x → f · (k x)) (f · x)
   pres-finitely-indexed-lub I-fin-indexed k x P-lub = case I-fin-indexed of λ cov →
     cover-reflects-is-lub (Finite-cover.is-cover cov) $
     pres-fin-lub (k ⊙ Finite-cover.cover cov) x $

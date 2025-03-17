@@ -483,7 +483,7 @@ abstract
   solve : ∀ e₁ e₂ → (env : Vec Nat n)
         → (⟦ ↓ e₁ ⟧ₚ env ≡ ⟦ ↓ e₂ ⟧ₚ env)
         → ⟦ e₁ ⟧ₑ env    ≡ ⟦ e₂ ⟧ₑ env
-  solve e₁ e₂ env p = sym (sound e₁ env) ·· p ·· sound e₂ env
+  solve e₁ e₂ env p = sym (sound e₁ env) ∙∙ p ∙∙ sound e₂ env
 ```
 
 We also expose a function for "simplifying" expressions. In reality this

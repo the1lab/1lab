@@ -488,8 +488,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
     pb' .universal p = pb .universal
       {p₁' = record { commutes = refl }}
       {p₂' = record { commutes = sym (pulll (g .commutes))
-                              ·· sym (ap (_ ∘_) p)
-                              ·· pulll (f .commutes) }}
+                              ∙∙ sym (ap (_ ∘_) p)
+                              ∙∙ pulll (f .commutes) }}
       (ext p) .map
     pb' .p₁∘universal = ap map $ pb .p₁∘universal
     pb' .p₂∘universal = ap map $ pb .p₂∘universal
@@ -534,8 +534,8 @@ statements above are just putting things together. We leave them in this
     pb .p₁ = record { commutes = refl }
     pb .p₂ = record { commutes =
          sym (pushl (sym (f .commutes))
-      ·· ap₂ _∘_ refl (pullbacks _ _ .square)
-      ·· pulll (g .commutes)) }
+      ∙∙ ap₂ _∘_ refl (pullbacks _ _ .square)
+      ∙∙ pulll (g .commutes)) }
     pb .has-is-pb = pullback-above→pullback-below $
       pullbacks (f .map) (g .map) .has-is-pb
 
@@ -615,7 +615,7 @@ dependent function is automatically a natural transformation.
     from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
     from mp = nt where
       eta : ∀ i → F ʻ i → G ʻ i
-      eta i j = subst (G ʻ_) (mp .commutes # _) (mp .map (i , j) .snd)
+      eta i j = subst (G ʻ_) (mp .commutes · _) (mp .map (i , j) .snd)
 
       nt : F => G
       nt .η = eta

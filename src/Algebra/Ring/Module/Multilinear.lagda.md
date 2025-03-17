@@ -115,8 +115,8 @@ to denote `updateₚ α i x` that fits well in the mathematical prose.
     ≡ applyᶠ map (updateₚ xs i x) + applyᶠ map (updateₚ xs i y)
   pres-+-at i xs x y =
       ap (λ e → applyᶠ map (updateₚ xs i (e + y))) (sym (⋆-id _))
-    ·· linear-at i xs R.1r x y
-    ·· ap₂ _+_ (⋆-id _) refl
+    ∙∙ linear-at i xs R.1r x y
+    ∙∙ ap₂ _+_ (⋆-id _) refl
 
   is-group-hom-at
     : ∀ i (xs : Πᶠ λ j → ⌞ Ms j ⌟)
@@ -131,8 +131,8 @@ to denote `updateₚ α i x` that fits well in the mathematical prose.
     ≡ r ⋆ applyᶠ map (updateₚ xs i x)
   pres-⋆-at i xs r x =
       ap (λ e → applyᶠ map (updateₚ xs i e)) (sym +-idr)
-    ·· linear-at i xs r x 0g
-    ·· (ap₂ _+_ refl (is-group-hom.pres-id (is-group-hom-at i xs)) ∙ +-idr)
+    ∙∙ linear-at i xs r x 0g
+    ∙∙ (ap₂ _+_ refl (is-group-hom.pres-id (is-group-hom-at i xs)) ∙ +-idr)
 
 -- XXX: Since we're already squishing down a type whose universe level
 -- Agda dislikes, one might wonder if we have to use the finitary
@@ -241,19 +241,19 @@ spotlight.</summary>
   invm : Multilinear-map n Ms N → Multilinear-map n Ms N
   invm f .map     = mapᶠ N.-_ (f .map)
   invm f .linearₚ = tabulateₚ λ i xs r x y →
-    apply-mapᶠ _ _ _ ·· ap N.-_ (linear-at f i xs r x y)
-    ·· N.neg-comm
-    ·· N.+-comm
-    ·· sym (ap₂ N._+_ N.⋆-invr refl)
+    apply-mapᶠ _ _ _ ∙∙ ap N.-_ (linear-at f i xs r x y)
+    ∙∙ N.neg-comm
+    ∙∙ N.+-comm
+    ∙∙ sym (ap₂ N._+_ N.⋆-invr refl)
      ∙ sym (ap₂ N._+_ (ap (r N.⋆_) (apply-mapᶠ _ _ _)) (apply-mapᶠ _ _ _))
 
   scale : ⌞ R ⌟ → Multilinear-map n Ms N → Multilinear-map n Ms N
   scale r f .map = mapᶠ (r N.⋆_) (f .map)
   scale r f .linearₚ = tabulateₚ λ i xs s x y →
     apply-mapᶠ _ _ _
-    ·· ap (r N.⋆_) (linear-at f i xs s x y)
-    ·· ⋆-distribl _ _ _
-     ∙ ap₂ N._+_ (N.⋆-assoc _ _ _ ·· ap₂ N._⋆_ cr refl ·· sym (N.⋆-assoc _ _ _) ∙ ap (s N.⋆_) (sym (apply-mapᶠ _ _ _)))
+    ∙∙ ap (r N.⋆_) (linear-at f i xs s x y)
+    ∙∙ ⋆-distribl _ _ _
+     ∙ ap₂ N._+_ (N.⋆-assoc _ _ _ ∙∙ ap₂ N._⋆_ cr refl ∙∙ sym (N.⋆-assoc _ _ _) ∙ ap (s N.⋆_) (sym (apply-mapᶠ _ _ _)))
                  (sym (apply-mapᶠ _ _ _))
 
   open make-module hiding (_+_ ; _⋆_)
@@ -275,13 +275,13 @@ spotlight.</summary>
   -- Group laws
   mk .+-assoc x y z = Multilinear-map-path $ funextᶠ λ as →
         apply-zipᶠ _ _ _ as
-    ·· ap₂ N._+_ refl (apply-zipᶠ _ _ _ _)
-    ·· N.+-assoc ∙ ap₂ N._+_ (sym (apply-zipᶠ N._+_ _ _ _)) refl
+    ∙∙ ap₂ N._+_ refl (apply-zipᶠ _ _ _ _)
+    ∙∙ N.+-assoc ∙ ap₂ N._+_ (sym (apply-zipᶠ N._+_ _ _ _)) refl
      ∙ sym (apply-zipᶠ N._+_ _ _ _)
   mk .+-invl x = Multilinear-map-path $ funextᶠ λ as →
        apply-zipᶠ _ _ _ _
-    ·· ap₂ N._+_ (apply-mapᶠ _ _ _) refl
-    ·· N.+-invl
+    ∙∙ ap₂ N._+_ (apply-mapᶠ _ _ _) refl
+    ∙∙ N.+-invl
      ∙ sym (apply-constᶠ _ _)
   mk .+-idl x = Multilinear-map-path $ funextᶠ λ as →
     apply-zipᶠ _ _ _ _ ∙ N.ab.eliml (apply-constᶠ _ _)
@@ -291,19 +291,19 @@ spotlight.</summary>
   -- Action laws
   mk .⋆-distribl r x y = Multilinear-map-path $ funextᶠ λ as →
         apply-mapᶠ _ _ _
-    ·· ap (r N.⋆_) (apply-zipᶠ _ _ _ _)
-    ·· N.⋆-distribl _ _ _
-    ·· sym (ap₂ N._+_ (apply-mapᶠ _ _ _) (apply-mapᶠ _ _ _))
-    ·· sym (apply-zipᶠ N._+_ _ _ _)
+    ∙∙ ap (r N.⋆_) (apply-zipᶠ _ _ _ _)
+    ∙∙ N.⋆-distribl _ _ _
+    ∙∙ sym (ap₂ N._+_ (apply-mapᶠ _ _ _) (apply-mapᶠ _ _ _))
+    ∙∙ sym (apply-zipᶠ N._+_ _ _ _)
   mk .⋆-distribr r x y = Multilinear-map-path $ funextᶠ λ as →
         apply-mapᶠ _ _ _
-    ·· N.⋆-distribr _ _ _
-    ·· sym (ap₂ N._+_ (apply-mapᶠ (r N.⋆_) _ _) (apply-mapᶠ (x N.⋆_) _ _))
+    ∙∙ N.⋆-distribr _ _ _
+    ∙∙ sym (ap₂ N._+_ (apply-mapᶠ (r N.⋆_) _ _) (apply-mapᶠ (x N.⋆_) _ _))
       ∙ sym (apply-zipᶠ N._+_ _ _ _)
   mk .⋆-assoc r s x = Multilinear-map-path $ funextᶠ λ as →
         apply-mapᶠ _ _ _
-    ·· ap (r N.⋆_) (apply-mapᶠ _ _ _)
-    ·· N.⋆-assoc _ _ _
+    ∙∙ ap (r N.⋆_) (apply-mapᶠ _ _ _)
+    ∙∙ N.⋆-assoc _ _ _
       ∙ sym (apply-mapᶠ _ _ _)
   mk .⋆-id x = Multilinear-map-path $ funextᶠ λ as → apply-mapᶠ _ _ _ ∙ N.⋆-id _
 ```
@@ -357,8 +357,8 @@ proofs of linearity.
     ml .map x = lin .map x .map
     ml .linearₚ = tabulateₚ λ i xs r x y → case fin-view i of λ where
       zero → ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
-        ·· apply-zipᶠ _ _ _ _
-        ·· ap₂ N._+_ (apply-mapᶠ _ _ _) refl
+        ∙∙ apply-zipᶠ _ _ _ _
+        ∙∙ ap₂ N._+_ (apply-mapᶠ _ _ _) refl
       (suc i) → linear-at (lin .map (xs .fst)) i (xs .snd) r x y
 
   uncurry-multilinear-map

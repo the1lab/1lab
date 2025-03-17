@@ -235,8 +235,8 @@ split
   → hom[ ap₂ B._∘_ p q ] (f' E.∘' g') ≡ hom[ p ] f' E.∘' hom[ q ] g'
 split p q =
      reindex _ (ap₂ B._∘_ p refl ∙ ap₂ B._∘_ refl q)
-  ·· sym (hom[]-∙ _ _)
-  ·· ap hom[ _ ] (sym (whisker-l p)) ∙ sym (whisker-r q)
+  ∙∙ sym (hom[]-∙ _ _)
+  ∙∙ ap hom[ _ ] (sym (whisker-l p)) ∙ sym (whisker-r q)
 
 liberate
   : ∀ {a b x y} {f : B.Hom a b} {f' : E.Hom[ f ] x y}
@@ -304,8 +304,8 @@ pulll-indexr
   → (f' E.∘' g' ≡ fg')
   → f' E.∘' hom[ p ] (g' E.∘' h') ≡ hom[ B.pullr p ] (fg' E.∘' h')
 pulll-indexr p q = whisker-r _ ∙
-  sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ·· sym (hom[]-∙ _ _)
-    ·· ap hom[] ( ap hom[] (ap (E._∘' _) (sym q))
+  sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ∙∙ sym (hom[]-∙ _ _)
+    ∙∙ ap hom[] ( ap hom[] (ap (E._∘' _) (sym q))
                 ∙ from-pathp (symP (E.assoc' _ _ _))))
 ```
 

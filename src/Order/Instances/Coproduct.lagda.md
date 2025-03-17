@@ -115,8 +115,8 @@ define a map out of the coproduct by cases:
   inrᵖ .pres-≤ x≤y = lift x≤y
 
   matchᵖ : ∀ {o ℓ} {R : Poset o ℓ} → Monotone P R → Monotone Q R → Monotone (P ⊎ᵖ Q) R
-  matchᵖ f g .hom (inl x) = f # x
-  matchᵖ f g .hom (inr x) = g # x
+  matchᵖ f g .hom (inl x) = f · x
+  matchᵖ f g .hom (inr x) = g · x
   matchᵖ f g .pres-≤ {inl x} {inl y} (lift α) = f .pres-≤ α
   matchᵖ f g .pres-≤ {inr x} {inr y} (lift β) = g .pres-≤ β
 ```
@@ -133,8 +133,8 @@ Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = matchᵖ
 Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₁ = trivial!
 Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₂ = trivial!
 Posets-has-coproducts P Q .has-is-coproduct .unique α β = ext λ where
-  (inl x) → α #ₚ x
-  (inr x) → β #ₚ x
+  (inl x) → α ·ₚ x
+  (inr x) → β ·ₚ x
 ```
 
 As a related fact, we can show that the empty poset is the [[initial

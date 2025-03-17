@@ -72,7 +72,7 @@ module _ {P : Functor (C ^op) (Sets κ)} where
 
   slice-ob→presheaf sl .F₁ eh (i , p) =
       sl .domain .F₁ (eh .hom) i
-    , happly (sl .map .is-natural _ _ _) _ ·· ap (P.₁ _) p ·· eh .commute
+    , happly (sl .map .is-natural _ _ _) _ ∙∙ ap (P.₁ _) p ∙∙ eh .commute
 ```
 
 <!--
@@ -116,8 +116,8 @@ projection `fst`{.Agda}:
     obj .domain .F-∘ f g = funext λ { (x , p) →
       Σ-path (happly (P.F-∘ f g) x)
         ( lemma y _
-        ·· ap (λ e → y .F₁ (elem-hom (g C.∘ f) e) p) (P.₀ _ .is-tr _ _ _ _)
-        ·· happly (y .F-∘ (elem-hom f refl) (elem-hom g refl)) _) }
+        ∙∙ ap (λ e → y .F₁ (elem-hom (g C.∘ f) e) p) (P.₀ _ .is-tr _ _ _ _)
+        ∙∙ happly (y .F-∘ (elem-hom f refl) (elem-hom g refl)) _) }
     obj .map .is-natural _ _ _ = refl
 ```
 -->

@@ -102,7 +102,7 @@ module _ (c≡ab : c ≡ a 𝒞.∘ b) where
 
 module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
   weave : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d
-  weave = sym (F-∘ a c) ·· ap F₁ p ·· F-∘ b d
+  weave = sym (F-∘ a c) ∙∙ ap F₁ p ∙∙ F-∘ b d
 
   extendl : F₁ a 𝒟.∘ (F₁ c 𝒟.∘ f) ≡ F₁ b 𝒟.∘ (F₁ d 𝒟.∘ f)
   extendl = 𝒟.extendl weave
@@ -116,7 +116,7 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
 
 module _ (p : a 𝒞.∘ b 𝒞.∘ c ≡ a' 𝒞.∘ b' 𝒞.∘ c') where
   weave3 : F₁ a 𝒟.∘ F₁ b 𝒟.∘ F₁ c ≡ F₁ a' 𝒟.∘ F₁ b' 𝒟.∘ F₁ c'
-  weave3 = ap (_ 𝒟.∘_) (sym (F-∘ b c)) ·· weave p ·· ap (_ 𝒟.∘_) (F-∘ b' c')
+  weave3 = ap (_ 𝒟.∘_) (sym (F-∘ b c)) ∙∙ weave p ∙∙ ap (_ 𝒟.∘_) (F-∘ b' c')
 
   extendl3 : F₁ a 𝒟.∘ (F₁ b 𝒟.∘ (F₁ c 𝒟.∘ f)) ≡ F₁ a' 𝒟.∘ (F₁ b' 𝒟.∘ (F₁ c' 𝒟.∘ f))
   extendl3 = 𝒟.extendl3 weave3
@@ -126,7 +126,7 @@ module _ (p : a 𝒞.∘ b 𝒞.∘ c ≡ a' 𝒞.∘ b' 𝒞.∘ c') where
 
 module _ (p : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d) where
   swap : F₁ (a 𝒞.∘ c) ≡ F₁ (b 𝒞.∘ d)
-  swap = F-∘ a c ·· p ·· sym (F-∘  b d)
+  swap = F-∘ a c ∙∙ p ∙∙ sym (F-∘  b d)
 
 popl : f 𝒟.∘ F₁ a ≡ g → f 𝒟.∘ F₁ (a 𝒞.∘ b) ≡ g 𝒟.∘ F₁ b
 popl p = 𝒟.pushr (F-∘ _ _) ∙ ap₂ 𝒟._∘_ p refl

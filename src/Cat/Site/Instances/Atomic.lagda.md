@@ -262,7 +262,7 @@ $u$ acts to give $A(v)(p_0)$.
         cohy : is-support A u (A ⟪ v ⟫ p₀)
         cohy g h q =
           A ⟪ g ⟫ (A ⟪ v ⟫ p₀) ≡⟨ A.collapse refl ⟩
-          A ⟪ v ∘ g ⟫ p₀       ≡⟨ patch→support A hf₀ p _ _ (pulll sq ·· pullr q ·· extendl (sym sq)) ⟩
+          A ⟪ v ∘ g ⟫ p₀       ≡⟨ patch→support A hf₀ p _ _ (pulll sq ∙∙ pullr q ∙∙ extendl (sym sq)) ⟩
           A ⟪ v ∘ h ⟫ p₀       ≡⟨ A.expand refl ⟩
           A ⟪ h ⟫ (A ⟪ v ⟫ p₀) ∎
 

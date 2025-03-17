@@ -282,7 +282,7 @@ proposition.
 is-constant→image-is-prop bset f fconst (a , x) (b , y) =
   Σ-prop-path (λ _ → squash)
     (∥-∥-elim₂ (λ _ _ → bset _ _)
-      (λ { (f*a , p) (f*b , q) → sym p ·· fconst f*a f*b ·· q }) x y)
+      (λ { (f*a , p) (f*b , q) → sym p ∙∙ fconst f*a f*b ∙∙ q }) x y)
 ```
 
 Using the image factorisation, we can project from a propositional
