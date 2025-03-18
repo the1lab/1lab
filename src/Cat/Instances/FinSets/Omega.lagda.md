@@ -33,7 +33,7 @@ cardinality of $m^*(x)$.
 
 ```agda
 fin-name : ∀ {X} → Subobject X → Fin X → Fin 2
-fin-name {X = X} so m with cardinality {T = fibre (so .map) m}
+fin-name {X = X} so m with cardinality {A = fibre (so .map) m}
 ... | zero  = 0
 ... | suc x = 1
 ```
@@ -58,12 +58,12 @@ are embeddings).
 
 ```agda
 from-name : ∀ {X} (m : Subobject X) x → fin-name m x ≡ 1 → fibre (m .map) x
-from-name m x p with cardinality {T = fibre (m .map) x} | enumeration {T = fibre (m .map) x}
+from-name m x p with cardinality {A = fibre (m .map) x} | enumeration {A = fibre (m .map) x}
 ... | zero  | e = absurd (fzero≠fsuc p)
 ... | suc x | e = ∥-∥-out (injective→is-embedding! (inj m) _) (case e of λ eqv → pure (Equiv.from eqv 0))
 
 to-name : ∀ {X} (m : Subobject X) x → fibre (m .map) x → fin-name m x ≡ 1
-to-name m x p with cardinality {T = fibre (m .map) x} | enumeration {T = fibre (m .map) x}
+to-name m x p with cardinality {A = fibre (m .map) x} | enumeration {A = fibre (m .map) x}
 ... | zero  | e = absurd (case e of λ eqv → Fin-absurd (Equiv.to eqv p))
 ... | suc x | e = refl
 ```
@@ -92,7 +92,7 @@ we then have $n(x) = n(mx') = 1$ as needed.
 ```agda
 FinSets-omega .Subobject-classifier.generic .unique {m = m} {nm} pb = ext uniq where
   uniq : ∀ x → nm x ≡ fin-name m x
-  uniq x with cardinality {T = fibre (m .map) x} | enumeration {T = fibre (m .map) x} | from-name m x
+  uniq x with cardinality {A = fibre (m .map) x} | enumeration {A = fibre (m .map) x} | from-name m x
   ... | suc n | e | f with (x' , α) ← f refl = ap nm (sym α) ∙ happly (pb .square) _
 ```
 
