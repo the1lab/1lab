@@ -349,12 +349,12 @@ that $u$ is a listing of $A$.
     { centre = from (member a .is-tr .centre)
     ; paths  = split-surjection→is-hlevel 0 from split (member a .is-tr) .paths
     }
-
-{-# INLINE retract→listing.constructor #-}
 ```
 
 <!--
 ```agda
+{-# INLINE retract→listing.constructor #-}
+
 open Listing using (univ ; has-member)
 open retract→listing renaming (univ to members) hiding (has-member)
 ```
@@ -386,13 +386,13 @@ instance
 
 <details>
 <summary>
-We can apply the same technique to show that listings are closed under
-non-dependent sum, and under `Maybe`{.Agda}.
-
 ```agda
   Listing-⊎     : ⦃ _ : Listing A ⦄ ⦃ _ : Listing B ⦄ → Listing (A ⊎ B)
   Listing-Maybe : ⦃ _ : Listing A ⦄ → Listing (Maybe A)
 ```
+
+We can apply the same technique to show that listings are closed under
+non-dependent sum, and under `Maybe`{.Agda}.
 </summary>
 
 ```agda

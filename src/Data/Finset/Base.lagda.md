@@ -33,6 +33,13 @@ generating equations which allow removing duplicates and reordering
 elements. Note that we must also truncate the resulting type to make
 sure we end up with something homotopically coherent.
 
+As the name of the module implies, this is an alternative presentation
+of [[finitely indexed sets]], i.e.  subsets admitting a surjection from
+some [[standard finite set]], which makes working with the elements more
+convenient --- as long as we can express the operation we're doing with
+the subsets is invariant under repetition and swapping (i.e. we're
+mapping into a [[join semilattice]]).
+
 ```agda
 infixr 20 _∷_
 
@@ -465,25 +472,10 @@ finite set.
 
 ```agda
     go : (xs : Finset A) → Dec (x ∈ xs)
-    go []             = no ¬mem-[]
-    go (y ∷ xs)       = cons-mem y xs (x ≡ᵢ? y) (go xs)
+    go = Finset-elim-prop _
+      (no ¬mem-[])
+      (λ y {xs} rest → cons-mem y xs (x ≡ᵢ? y) rest)
 ```
-
-<details>
-<summary>It then suffices to remind Agda that all the path cases are
-automatic.</summary>
-
-```agda
-    go (∷-dup y xs i) = is-prop→pathp (λ i → p (∷-dup y xs i))
-      (cons-mem y (y ∷ xs) (x ≡ᵢ? y) (cons-mem y xs (x ≡ᵢ? y) (go xs)))
-      (cons-mem y xs (x ≡ᵢ? y) (go xs)) i
-    go (∷-swap y z xs i) = is-prop→pathp (λ i → p (∷-swap y z xs i))
-      (cons-mem y (z ∷ xs) (x ≡ᵢ? y) (cons-mem z xs (x ≡ᵢ? z) (go xs)))
-      (cons-mem z (y ∷ xs) (x ≡ᵢ? z) (cons-mem y xs (x ≡ᵢ? y) (go xs))) i
-    go (squash x y q r i j) = is-prop→squarep (λ i j → p (squash x y q r i j)) (λ i → go x) (λ i → go (q i)) (λ i → go (r i)) (λ i → go y) i j
-```
-
-</details>
 
 ## Cardinality
 
