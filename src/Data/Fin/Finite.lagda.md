@@ -105,7 +105,7 @@ exists|propositional truncation]]. Therefore, we could define the type
 of finite sets as
 
 $$
-\sum_{X : Type} \left\| \sum_{n : \bN} [n] \equiv X \right\|\text{,}
+\sum_{X : Type} \left\| \sum_{n : \bN} [n] \simeq X \right\|\text{,}
 $$
 
 truncating the equivalence. However, this definition turns out to be
