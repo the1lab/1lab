@@ -174,8 +174,8 @@ listing→equiv-fin l = Equiv.inverse (listing→fin-equiv l)
 In particular, any listed type is [[discrete]].
 
 ```agda
-Listing→discrete : Listing A → Discrete A
-Listing→discrete {A = A} li = go auto where
+Listing→Discrete : Listing A → Discrete A
+Listing→Discrete {A = A} li = go auto where
   module ix = Equiv (listing→equiv-fin li)
 
   go : ∀ {x y} → Dec (ix.to x ≡ ix.to y) → Dec (x ≡ y)
@@ -186,7 +186,7 @@ Listing→discrete {A = A} li = go auto where
 <!--
 ```agda
 Listing→is-set : Listing A → is-set A
-Listing→is-set x = Discrete→is-set (Listing→discrete x)
+Listing→is-set x = Discrete→is-set (Listing→Discrete x)
 
 Equiv→listing : A ≃ B → Listing A → Listing B
 Equiv→listing {A = A} {B = B} f li = record
@@ -307,7 +307,7 @@ complicated.</summary>
   Listing-PathP : ∀ {A : I → Type ℓ} ⦃ _ : Listing (A i1) ⦄ {x y} → Listing (PathP A x y)
   Listing-PathP {A = A} ⦃ li ⦄ {x} {y} = Listing-prop ⦃ auto ⦄ ⦃ auto ⦄ where instance
     d : ∀ {x y} → Dec (PathP A x y)
-    d {x} {y} with Listing→discrete li {coe A i0 i1 x} {y}
+    d {x} {y} with Listing→Discrete li {coe A i0 i1 x} {y}
     ... | yes a = yes (to-pathp {A = A} a)
     ... | no ¬a = no λ a → ¬a (from-pathp a)
 
@@ -423,7 +423,7 @@ non-dependent sum, and under `Maybe`{.Agda}.
   Listing-Maybe {A = A} ⦃ li ⦄ = record { retract→listing mk } where
     instance
       s : ∀ {n} → H-Level A (2 + n)
-      s = basic-instance 2 (Discrete→is-set (Listing→discrete li))
+      s = basic-instance 2 (Discrete→is-set (Listing→Discrete li))
 
     mk : retract→listing (Maybe A)
     mk .members = nothing ∷ map just (li .univ)
@@ -689,8 +689,8 @@ listed type, since distinct listings of $A$ can differ only in their
 order (and not their length).
 
 ```agda
-cardinality : Finite A → Nat
-cardinality {A = A} = ∥-∥-rec-set (hlevel 2) (λ l → length (l .univ)) con where abstract
+cardinality : ⦃ fin : Finite A ⦄ → Nat
+cardinality {A = A} ⦃ is ⦄ = ∥-∥-rec-set (hlevel 2) (λ l → length (l .univ)) con is where abstract
   con : (l1 l2 : Listing A) → length (l1 .univ) ≡ length (l2 .univ)
   con l1 l2 = Fin-injective $
     Fin (length (univ l1)) ≃⟨ Listing.listing→fin-equiv l1 ⟩
@@ -700,10 +700,41 @@ cardinality {A = A} = ∥-∥-rec-set (hlevel 2) (λ l → length (l .univ)) con
 
 <!--
 ```agda
-enumeration : (f : Finite A) → ∥ A ≃ Fin (cardinality f) ∥
-enumeration (inc l) = pure (listing→equiv-fin l)
-enumeration {A = A} (squash x y i) = is-prop→pathp
-  (λ i → ∥_∥.squash {A = A ≃ Fin (cardinality (squash x y i))})
-  (enumeration x) (enumeration y) i
+enumeration : ⦃ f : Finite A ⦄ → ∥ A ≃ Fin (cardinality ⦃ f ⦄) ∥
+enumeration ⦃ inc l ⦄ = pure (listing→equiv-fin l)
+enumeration {A = A} ⦃ squash x y i ⦄ = is-prop→pathp
+  (λ i → ∥_∥.squash {A = A ≃ Fin (cardinality ⦃ squash x y i ⦄)})
+  (enumeration ⦃ x ⦄) (enumeration ⦃ y ⦄) i
+
+Finite→H-Level : ∀ {n} ⦃ _ : Finite A ⦄ → H-Level A (2 + n)
+Finite→H-Level ⦃ f ⦄ = basic-instance 2 (case f of Listing→is-set)
+
+Finite→Discrete : ⦃ _ : Finite A ⦄ → Discrete A
+Finite→Discrete ⦃ f ⦄ =
+  let instance _ = Finite→H-Level {n = 0} ⦃ f ⦄
+   in case f of λ l → Listing→Discrete l
+
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ fb : Finite B ⦄ (e : ∥ A ≃ B ∥) (f : A → B) where
+  Finite-injection→equiv : injective f → is-equiv f
+  Finite-injection→equiv inj = ∥-∥-out! do
+    e ← e
+    eb ← enumeration ⦃ fb ⦄
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-injection→equiv _
+      $ Equiv.injective (eb e⁻¹ ∙e e e⁻¹) ∘ inj ∘ Equiv.injective eb
+
+  Finite-surjection→equiv : is-surjective f → is-equiv f
+  Finite-surjection→equiv surj = ∥-∥-out! do
+    e ← e
+    eb ← enumeration ⦃ fb ⦄
+    pure
+      $ equiv-cancell (eb .snd)
+      $ equiv-cancelr ((eb e⁻¹ ∙e e e⁻¹) .snd)
+      $ Fin-surjection→equiv _
+      $ ∘-is-surjective (is-equiv→is-surjective (eb .snd))
+      $ ∘-is-surjective surj
+      $ is-equiv→is-surjective ((eb e⁻¹ ∙e e e⁻¹) .snd)
 ```
 -->
