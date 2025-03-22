@@ -107,17 +107,17 @@ diagram "relativize" to each $\hom$-set.</summary>
 
 ```agda
     hom-mon .⋆-assoc f g h =
-      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
+      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! prod ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
-      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! C prod ⟩
+      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! prod ⟩
       mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
     hom-mon .⋆-idl f =
-      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! prod ⟩
       mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
       π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
       f                                   ∎
     hom-mon .⋆-idr f =
-      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! C prod ⟩
+      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! prod ⟩
       mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
       π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
       f                                   ∎
@@ -211,7 +211,7 @@ homomorphism.... which it is!
     n-mon .η ∘ !     ∎
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-⋆ g h =
     f ∘ m-mon .μ ∘ ⟨ g , h ⟩       ≡⟨ extendl (hom .pres-μ) ⟩
-    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! C prod ⟩
+    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! prod ⟩
     n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩   ∎
 ```
 
@@ -280,31 +280,31 @@ functor is also [[fully faithful]].
   Nat→internal-mon-hom
     : ∀ {m n} {m-mon : C-Monoid m} {n-mon : C-Monoid n}
     → (α : Mon→PshMon m-mon => Mon→PshMon n-mon)
-    → C-Monoid-hom (α .η m # id) m-mon n-mon
+    → C-Monoid-hom (α .η m · id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
-    (α .η m # id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-    α .η top # (id ∘ m-mon .η) ≡⟨ ap (α .η _ #_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
-    α .η top # (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
+    (α .η m · id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η top · (id ∘ m-mon .η) ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
+    α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
     n-mon .η ∘ !               ≡⟨ elimr (!-unique _) ⟩
     n-mon .η                   ∎
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-μ =
-    α .η m # id ∘ (m-mon .μ)                               ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-    α .η (m ⊗₀ m) # (id ∘ m-mon .μ)                        ≡⟨ ap (α .η _ #_) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
-    α .η (m ⊗₀ m) # (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
-    n-mon .μ ∘ ⟨ α .η _ # π₁ , α .η _ # π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ #_) (idl _)) (ap (α .η _ #_) (idl _))) ⟩
-    n-mon .μ ∘ ⟨ α .η _ # (id ∘ π₁) , α .η _ # (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
-    n-mon .μ ∘ (α .η m # id ⊗₁ α .η m # id)                ∎
+    α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η (m ⊗₀ m) · (id ∘ m-mon .μ)                        ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
+    α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
+    n-mon .μ ∘ ⟨ α .η _ · π₁ , α .η _ · π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ ·_) (idl _)) (ap (α .η _ ·_) (idl _))) ⟩
+    n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
+    n-mon .μ ∘ (α .η m · id ⊗₁ α .η m · id)                ∎
 
   open is-iso
 
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
-    .inv α .hom       → α .η _ # id
+    .inv α .hom       → α .η _ · id
     .inv α .preserves → Nat→internal-mon-hom α
     .rinv α → ext λ _ f →
-      α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-      α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
-      α .η _ # f        ∎
+      α .η _ · id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+      α .η _ · (id ∘ f) ≡⟨ ap (α .η _ ·_) (idl f) ⟩
+      α .η _ · f        ∎
     .linv h → total-hom-path _ (idr _) prop!
 ```
 

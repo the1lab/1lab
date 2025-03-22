@@ -163,18 +163,18 @@ Fin-permutations-suc
   : ∀ n → (Fin (suc n) ≃ Fin (suc n)) ≃ (Fin (suc n) × (Fin n ≃ Fin n))
 Fin-permutations-suc n = to , is-iso→is-equiv is where
   to : (Fin (suc n) ≃ Fin (suc n)) → Fin (suc n) × (Fin n ≃ Fin n)
-  to e .fst = e # 0
-  to e .snd .fst i = avoid (e # 0) (e # (fsuc i)) λ p →
+  to e .fst = e · 0
+  to e .snd .fst i = avoid (e · 0) (e · fsuc i) λ p →
     zero≠suc (ap lower (Equiv.injective e p))
   to e .snd .snd = Fin-injection→equiv _ λ p →
-    fsuc-inj (Equiv.injective e (avoid-injective (e # 0) p))
+    fsuc-inj (Equiv.injective e (avoid-injective (e · 0) p))
 
   is : is-iso to
   is .is-iso.inv (n , e) = record { fst = fun ; snd = Fin-injection→equiv _ inj  } module inv where
     fun : Fin (suc _) → Fin (suc _)
     fun i with fin-view i
     ... | zero  = n
-    ... | suc x = skip n (e # x)
+    ... | suc x = skip n (e · x)
 
     inj : injective fun
     inj {i} {j} p with fin-view i | fin-view j
@@ -182,12 +182,12 @@ Fin-permutations-suc n = to , is-iso→is-equiv is where
     ... | zero  | suc y = absurd (skip-skips n _ (sym p))
     ... | suc i | zero  = absurd (skip-skips n _ p)
     ... | suc i | suc j = ap fsuc (Equiv.injective e (skip-injective n _ _ p))
-  is .is-iso.rinv (n , e) = Σ-pathp refl (ext λ i → avoid-skip n (e # i))
+  is .is-iso.rinv (n , e) = Σ-pathp refl (ext λ i → avoid-skip n (e · i))
   is .is-iso.linv e = ext p where
-    p : ∀ x → inv.fun (e # 0) (to e .snd) x ≡ e .fst x
+    p : ∀ x → inv.fun (e · 0) (to e .snd) x ≡ e · x
     p x with fin-view x
     ... | zero  = refl
-    ... | suc i = skip-avoid (e # 0) (e # fsuc i)
+    ... | suc i = skip-avoid (e · 0) (e · fsuc i)
 ```
 
 We can now show that $([n] \simeq [n]) \simeq [n!]$ by induction.

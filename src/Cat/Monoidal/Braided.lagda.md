@@ -123,7 +123,7 @@ braiding.
   β←-α← = inverse-unique refl refl
     (◀.F-map-iso β≅ ∙Iso α≅ ∙Iso ▶.F-map-iso β≅)
     (α≅ ∙Iso β≅ ∙Iso α≅)
-    (sym (assoc _ _ _) ·· braiding-α→ ·· assoc _ _ _)
+    (sym (assoc _ _ _) ∙∙ braiding-α→ ∙∙ assoc _ _ _)
 ```
 -->
 

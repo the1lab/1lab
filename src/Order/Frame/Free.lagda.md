@@ -144,8 +144,8 @@ equal $\top_B$:
 ```agda
     mkhom .witness .top-≤ =
       B.top                   B.≤⟨ f.top-≤ ⟩
-      f # A.top               B.≤⟨ B.⋃-inj (A.top , tt) ⟩
-      B.⋃ (λ i → f # fst i)   B.≤∎
+      f · A.top               B.≤⟨ B.⋃-inj (A.top , tt) ⟩
+      B.⋃ (λ i → f · fst i)   B.≤∎
 ```
 
 Slightly harder, but still a bit of algebra, is computing that binary
@@ -155,9 +155,9 @@ binary meets.
 
 ```agda
     mkhom .witness .∩-≤ S T =
-      B.⋃ (λ i → f # fst i) B.∩ B.⋃ (λ i → f # fst i)   B.=⟨ B.⋃-∩-product (λ i → hom f # fst i) (λ i → hom f # fst i) ⟩
-      B.⋃ (λ i → f # fst (fst i) B.∩ f # fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
-      B.⋃ (λ i → f # fst i)                             B.≤∎
+      B.⋃ (λ i → f · fst i) B.∩ B.⋃ (λ i → f · fst i)   B.=⟨ B.⋃-∩-product (λ i → hom f · fst i) (λ i → hom f · fst i) ⟩
+      B.⋃ (λ i → f · fst (fst i) B.∩ f · fst (snd i))   B.≤⟨ B.⋃≤⋃-over meet-section (λ i → f.∩-≤ _ _) ⟩
+      B.⋃ (λ i → f · fst i)                             B.≤∎
       where
         meet-section : ∫ₚ S × ∫ₚ T → ∫ₚ (λ x → x ∈ S × x ∈ T)
         meet-section ((x , p) , (y , q)) =
@@ -168,7 +168,7 @@ It's also free from the definition of cocompletions that the extended
 map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
-    mkcomm : ∀ x → mkhom # (↓ (A .fst) x) ≡ f # x
+    mkcomm : ∀ x → mkhom · (↓ (A .fst) x) ≡ f · x
     mkcomm x =
       (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```
@@ -212,14 +212,14 @@ cocontinuous extensions to tie everything up:
   go .unit = the-unit A
   go .fold {B} f = Mk.mkhom B f
   go .commute {B} {f} = ext (Mk.mkcomm B f)
-  go .unique {B} {f} g wit = ext (p #ₚ_) where
+  go .unique {B} {f} g wit = ext (p ·ₚ_) where
     open Mk B f
 
     gᵐ : Monotone (Lower-sets (A .fst)) (B .fst)
-    gᵐ .hom x = g # x
+    gᵐ .hom x = g · x
     gᵐ .pres-≤ {x} {y} w = g .hom .pres-≤ w
 
     p = Lan↓-unique B.⋃-lubs (f .hom) gᵐ
       (is-frame-hom.pres-⋃ (g .witness))
-      (wit #ₚ_)
+      (wit ·ₚ_)
 ```

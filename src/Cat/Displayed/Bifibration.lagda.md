@@ -125,7 +125,7 @@ module _ (fib : Cartesian-fibration) where
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → Cocartesian-fibration
   left-adjoint-base-change→opfibration L adj =
-    cartesian+weak-opfibration→opfibration fib $
+    fibration+weak-opfibration→opfibration fib $
     hom-iso→weak-opfibration L λ u →
       adjunct-hom-iso-from (adj u) _ ni⁻¹ ∘ni fibration→hom-iso-from fib u
 ```
@@ -154,7 +154,7 @@ then $L$ is a left adjoint to $f^{*}$.
   cocartesian→left-adjoint-base-change
     : ∀ {x y} {L : Functor (Fibre ℰ x) (Fibre ℰ y)} {f : Hom x y}
     → (L-unit : Id => base-change f F∘ L)
-    → (∀ x → is-cocartesian (f ∘ id) (has-lift.lifting f (L .F₀ x) ∘' L-unit .η x))
+    → (∀ x → is-cocartesian (f ∘ id) (π* f (L .F₀ x) ∘' L-unit .η x))
     → L ⊣ base-change f
 ```
 
@@ -201,31 +201,31 @@ equivalence.
         : ∀ {x' : Ob[ x ]} {y' : Ob[ y ]}
         → is-equiv {A = Hom[ id ] (L .F₀ x') y'} (λ v → f*.₁ v Fib.∘ L-unit .η x')
       precompose-equiv {x'} {y'} = is-iso→is-equiv $ iso
-        (λ v → cocart.universalv _ (has-lift.lifting f _ ∘' v))
-        (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _
-          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+        (λ v → cocart.universalv _ (π* f _ ∘' v))
+        (λ v → π*.uniquep₂ _ _ refl _ _
+          (Fib.pulllf (π*.commutesp id-comm _)
           ∙[] symP (assoc' _ _ _)
           ∙[] cocart.commutesv x' _)
           refl)
         (λ v → symP $ cocart.uniquep x' _ _ _ _ $
           assoc' _ _ _
-          ∙[] Fib.pushlf (symP $ has-lift.commutesp f _ id-comm _))
+          ∙[] Fib.pushlf (symP $ π*.commutesp id-comm _))
 ```
 
 <details>
-<summary>Futhermore, this equivalence is natural, but that's a very tedious proof.
+<summary>Furthermore, this equivalence is natural, but that's a very tedious proof.
 </summary>
 
 ```agda
       equiv-natural
         : hom-iso-natural {L = L} {R = base-change f} (λ v → f*.₁ v Fib.∘ L-unit .η _)
       equiv-natural g h k =
-        has-lift.uniquep₂ _ _ _ _ _ _ _
-          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+        π*.uniquep₂ _ _ _ _ _
+          (Fib.pulllf (π*.commutesp id-comm _)
            ∙[] pushl[] _ (pushl[] _ (to-pathp⁻ (smashr _ _))))
-          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
-           ∙[] extendr[] _ (Fib.pulllf (Fib.pulllf (has-lift.commutesp f _ id-comm _)))
+          (Fib.pulllf (π*.commutesp id-comm _)
+           ∙[] extendr[] _ (Fib.pulllf (Fib.pulllf (π*.commutesp id-comm _)))
            ∙[] extendr[] _ (pullr[] _ (to-pathp (L-unit .is-natural _ _ h)))
-           ∙[] pullr[] _ (Fib.pulllf (extendr[] _ (has-lift.commutesp f _ id-comm _))))
+           ∙[] pullr[] _ (Fib.pulllf (extendr[] _ (π*.commutesp id-comm _))))
 ```
 </details>

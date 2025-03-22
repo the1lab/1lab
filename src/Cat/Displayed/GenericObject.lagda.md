@@ -27,7 +27,7 @@ open Functor
 ```
 -->
 
-# Generic objects
+# Generic objects {defines="generic-object"}
 
 There are 2 perspectives one can take on generic objects. The first is a
 purely logical one: generic objects provide us a tool for giving
@@ -102,7 +102,7 @@ record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
 <!--
 ```agda
 module _ (fib : Cartesian-fibration E) where
-  open Cartesian-fibration fib
+  open Cartesian-fibration E fib
 ```
 -->
 
@@ -126,26 +126,25 @@ complexity of this sentence is a bit high, so please refer to the code:
 ```agda
   vertical-iso→Generic-object {t} t' viso = gobj where
     open Generic-object
-    open has-lift
 
     module viso {x} (x' : Ob[ x ]) = _≅[_]_ (viso x' .snd)
 
     gobj : Generic-object t'
     gobj .classify x' = viso x' .fst
     gobj .classify' x' =
-      hom[ idr _ ] (has-lift.lifting _ t' ∘' viso.from' x')
+      hom[ idr _ ] (π* _ t' ∘' viso.from' x')
     gobj .classify-cartesian x' .is-cartesian.universal m h' =
-      hom[ idl _ ] (viso.to' x' ∘' universal (viso x' .fst) t' m h')
+      hom[ idl _ ] (viso.to' x' ∘' π*.universal m h')
     gobj .classify-cartesian x' .is-cartesian.commutes m h' =
-      hom[] (lifting _ _ ∘' viso.from' x') ∘' hom[] (viso.to' x' ∘' universal _ _ _ _) ≡˘⟨ split _ _ ⟩
-      hom[] ((lifting _ _ ∘' viso.from' x') ∘' (viso.to' x' ∘' universal _ _ _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr' x')) ⟩
-      hom[] (lifting _ _ ∘' universal _ _ _ _)                                         ≡⟨ shiftl _ (has-lift.commutes _ _ _ _) ⟩
+      hom[] (π* _ _ ∘' viso.from' x') ∘' hom[] (viso.to' x' ∘' π*.universal _ _) ≡˘⟨ split _ _ ⟩
+      hom[] ((π* _ _ ∘' viso.from' x') ∘' (viso.to' x' ∘' π*.universal _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr' x')) ⟩
+      hom[] (π* _ _ ∘' π*.universal _ _)                                         ≡⟨ shiftl _ (π*.commutes _ _) ⟩
       h' ∎
     gobj .classify-cartesian x' .is-cartesian.unique {m = m} {h' = h'} m' p =
       m'                                                            ≡⟨ shiftr (sym (idl _) ∙ sym (idl _)) (insertl' _ (viso.invl' x')) ⟩
       hom[] (viso.to' x' ∘' viso.from' x' ∘' m')                    ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (idl _) (idl _))  ∙ ap hom[] (unwhisker-r (idl _) (idl _)) ⟩
-      hom[] (viso.to' x' ∘' ⌜ hom[ idl _ ] (viso.from' x' ∘' m') ⌝) ≡⟨ ap! (unique _ _ _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
-      hom[] (viso.to' x' ∘' universal _ _ _ h') ∎
+      hom[] (viso.to' x' ∘' ⌜ hom[ idl _ ] (viso.from' x' ∘' m') ⌝) ≡⟨ ap! (π*.unique _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
+      hom[] (viso.to' x' ∘' π*.universal _ h') ∎
 ```
 -->
 

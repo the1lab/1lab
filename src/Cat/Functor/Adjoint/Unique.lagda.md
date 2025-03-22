@@ -80,10 +80,10 @@ in the other direction is exactly analogous, and so was omitted.
 ```agda
     make-G≅G' .eta∘inv x =
           C.extendl (C.pullr (a'.unit.is-natural _ _ _))
-        ·· ap₂ C._∘_ refl (C.pushl (sym (a'.unit.is-natural _ _ _)))
-        ·· C.extend-inner (a'.unit.is-natural _ _ _)
-        ·· G'.extendl (a.counit.is-natural _ _ _)
-        ·· ap₂ C._∘_ refl ( ap₂ C._∘_ refl (a'.unit.is-natural _ _ _)
+        ∙∙ ap₂ C._∘_ refl (C.pushl (sym (a'.unit.is-natural _ _ _)))
+        ∙∙ C.extend-inner (a'.unit.is-natural _ _ _)
+        ∙∙ G'.extendl (a.counit.is-natural _ _ _)
+        ∙∙ ap₂ C._∘_ refl ( ap₂ C._∘_ refl (a'.unit.is-natural _ _ _)
                           ∙ G'.cancell a.zig)
         ∙ a'.zag
 ```

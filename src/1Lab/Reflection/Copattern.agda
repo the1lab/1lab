@@ -141,7 +141,7 @@ define-copattern nm {A = A} x = do
   make-copattern false nm `x `A
 
 {-
-There is a slight caveat with level-polymorphic defintions, as
+There is a slight caveat with level-polymorphic definitions, as
 they cannot be quoted into any `Type ℓ`. With this in mind,
 we also provide a pair of macros that work over `Typeω` instead.
 -}

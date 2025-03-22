@@ -103,6 +103,9 @@ private module P where
   -- "blocking" constraints.
     noConstraints : ∀ {a} {A : Type a} → TC A → TC A
 
+  -- Run the given computation at the type level, allowing use of erased things.
+    work-on-types : ∀ {a} {A : Type a} → TC A → TC A
+
   -- Run the given TC action and return the first component. Resets to
   -- the old TC state if the second component is 'false', or keep the
   -- new TC state if it is 'true'.
@@ -158,6 +161,7 @@ private module P where
   {-# BUILTIN AGDATCMASKEXPANDLAST     askExpandLast              #-}
   {-# BUILTIN AGDATCMASKREDUCEDEFS     askReduceDefs              #-}
   {-# BUILTIN AGDATCMNOCONSTRAINTS     noConstraints              #-}
+  {-# BUILTIN AGDATCMWORKONTYPES       work-on-types              #-}
   {-# BUILTIN AGDATCMRUNSPECULATIVE    run-speculative            #-}
   {-# BUILTIN AGDATCMGETINSTANCES      get-instances              #-}
   {-# BUILTIN AGDATCMDECLAREDATA       declareData                #-}
@@ -297,8 +301,11 @@ reduceB tm = do
     (just b) → blockTC b
     nothing  → pure tm'
 
-unapply-path : Term → TC (Maybe (Term × Term × Term))
-unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
+-- The first argument decides whether we want a PathP.
+unapply-path' : Bool → Term → TC (Maybe (Term × Term × Term))
+unapply-path' true red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
+  pure (just (T , x , y))
+unapply-path' false red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
   domain ← new-meta (def (quote Type) (l v∷ []))
   ty ← pure (def (quote Path) (domain v∷ x v∷ y v∷ []))
   debugPrint "tactic" 50
@@ -310,7 +317,21 @@ unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
   unify red ty
   pure (just (domain , x , y))
 
-unapply-path tm = reduce tm >>= λ where
+unapply-path' true tm = reduce tm >>= λ where
+  tm@(meta _ _) → do
+    (Tmv , T) ← new-meta' (pi (argN (quoteTerm I)) (abs "i" (def (quote Type) (unknown v∷ []))))
+    l ← new-meta (meta Tmv (quoteTerm i0 v∷ []))
+    r ← new-meta (meta Tmv (quoteTerm i1 v∷ []))
+    unify tm (def (quote PathP) (T v∷ l v∷ r v∷ []))
+    traverse wait-for-type (l ∷ r ∷ [])
+    pure (just (T , l , r))
+
+  red@(def (quote PathP) (T v∷ l v∷ r v∷ [])) → do
+    pure (just (T , l , r))
+
+  _ → pure nothing
+
+unapply-path' pathp tm = reduce tm >>= λ where
   tm@(meta _ _) → do
     dom ← new-meta (def (quote Type) (unknown v∷ []))
     l ← new-meta dom
@@ -333,6 +354,10 @@ unapply-path tm = reduce tm >>= λ where
     unify red ty
     pure (just (domain , x , y))
   _ → pure nothing
+
+unapply-path unapply-pathp : Term → TC (Maybe (Term × Term × Term))
+unapply-path = unapply-path' false
+unapply-pathp = unapply-path' true
 
 get-boundary : Term → TC (Maybe (Term × Term))
 get-boundary tm = unapply-path tm >>= λ where

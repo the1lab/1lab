@@ -52,8 +52,8 @@ Curry {C = C} {D = D} {E = E} F = curried where
   curried .F₀ = Right
   curried .F₁ x→y = NT (λ f → first x→y) λ x y f →
        sym (F .F-∘ _ _)
-    ·· ap (F .F₁) (Σ-pathp (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
-    ·· F .F-∘ _ _
+    ∙∙ ap (F .F₁) (Σ-pathp (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
+    ∙∙ F .F-∘ _ _
   curried .F-id = ext λ x → F .F-id
   curried .F-∘ f g = ext λ x →
     ap (λ x → F .F₁ (_ , x)) (sym (D .idl _)) ∙ F .F-∘ _ _

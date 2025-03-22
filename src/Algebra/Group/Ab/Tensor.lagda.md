@@ -97,7 +97,7 @@ module _ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ
   instance
     Extensional-bilinear
       : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Bilinear A B C) ℓr
-    Extensional-bilinear ⦃ ef ⦄ = injection→extensional! (λ h → Bilinear-path (λ x y → h # x # y)) ef
+    Extensional-bilinear ⦃ ef ⦄ = injection→extensional! (λ h → Bilinear-path (λ x y → h · x · y)) ef
 
 module _ {ℓ} (A B C : Abelian-group ℓ) where
 ```
@@ -120,9 +120,9 @@ homomorphisms $A \to [B,C]$.
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
     morp : is-iso curry-bilinear
-    morp .is-iso.inv uc .Bilinear.map x y = uc # x # y
-    morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_# _) (uc .preserves .is-group-hom.pres-⋆ _ _)
-    morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc # _) .preserves .is-group-hom.pres-⋆ _ _
+    morp .is-iso.inv uc .Bilinear.map x y = uc · x · y
+    morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_· _) (uc .preserves .is-group-hom.pres-⋆ _ _)
+    morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc · _) .preserves .is-group-hom.pres-⋆ _ _
     morp .is-iso.rinv uc = trivial!
     morp .is-iso.linv uc = trivial!
 ```
@@ -284,7 +284,7 @@ an equivalence requires appealing to an induction principle of
 
 ```agda
   to-bilinear-map : Ab.Hom (A ⊗ B) C → Bilinear A B C
-  to-bilinear-map gh .Bilinear.map x y = gh # (x , y)
+  to-bilinear-map gh .Bilinear.map x y = gh · (x , y)
   to-bilinear-map gh .Bilinear.pres-*l x y z =
     ap (apply gh) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
   to-bilinear-map gh .Bilinear.pres-*r x y z =
@@ -347,9 +347,9 @@ Ab-tensor-functor : Functor (Ab ℓ ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-tensor-functor .F₀ (A , B) = A ⊗ B
 Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin : Bilinear _ _ _
-  bilin .Bilinear.map x y       = f # x , g # y
-  bilin .Bilinear.pres-*l x y z = ap (_, g # z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
-  bilin .Bilinear.pres-*r x y z = ap (f # x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
+  bilin .Bilinear.map x y       = f · x , g · y
+  bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
+  bilin .Bilinear.pres-*r x y z = ap (f · x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
 Ab-tensor-functor .F-id    = trivial!
 Ab-tensor-functor .F-∘ f g = trivial!
 

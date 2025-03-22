@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Copattern
+
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
@@ -72,6 +74,7 @@ $y'g = fx' = y'h$, then, since $y'$ is a mono, $g = h$.
 
 <!--
 ```agda
+{-# INLINE Subobject.constructor #-}
 ≤-over-is-prop
   : ∀ {x y} {f : Hom x y} {a : Subobject x} {b : Subobject y}
   → (p q : ≤-over f a b)
@@ -115,9 +118,7 @@ Subobjects .idr' _       = prop!
 Subobjects .idl' _       = prop!
 Subobjects .assoc' _ _ _ = prop!
 
-open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
-open Cartesian-fibration
 open is-weak-cocartesian
 open Cartesian-lift
 open is-cartesian
@@ -158,28 +159,38 @@ pulling $y'$ back along $f$; this base change remains a monomorphism.
 Now given the data in red, we verify that the dashed arrow exists, which
 is enough for its uniqueness.
 
+<!--
 ```agda
-Subobject-fibration
-  : has-pullbacks B
-  → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y' = l where
-  it : Pullback _ _ _
-  it = pb (y' .map) f
-  l : Cartesian-lift Subobjects f y'
+module with-pullbacks (pb : has-pullbacks B) where
+```
+-->
 
+```agda
   -- The blue square:
-  l .x' .domain = it .apex
-  l .x' .map    = it .p₂
-  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
-  l .lifting .map = it .p₁
-  l .lifting .sq  = sym (it .square)
+  pullback-subobject
+    : ∀ {X Y} (h : Hom X Y) (g : Subobject Y)
+    → Subobject X
+  pullback-subobject h g .domain = pb h (g .map) .apex
+  pullback-subobject h g .map = pb h (g .map) .p₁
+  pullback-subobject h g .monic = is-monic→pullback-is-monic
+    (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
 
-  -- The dashed red arrow:
-  l .cartesian .universal {u' = u'} m h' = λ where
-    .map → it .Pullback.universal (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
-    .sq  → sym (it .p₂∘universal)
-  l .cartesian .commutes _ _ = prop!
-  l .cartesian .unique _ _   = prop!
+  Subobject-fibration : Cartesian-fibration Subobjects
+  Subobject-fibration f y' = l where
+    it : Pullback _ _ _
+    it = pb (y' .map) f
+    l : Cartesian-lift Subobjects f y'
+
+    l .x' = pullback-subobject f y'
+    l .lifting .map = pb f (y' .map) .p₂
+    l .lifting .sq  = pb f (y' .map) .square
+
+    -- The dashed red arrow:
+    l .cartesian .universal {u' = u'} m h' = λ where
+      .map → pb f (y' .map) .universal (pushr refl ∙ h' .sq)
+      .sq  → sym (pb f (y' .map) .p₁∘universal)
+    l .cartesian .commutes _ _ = prop!
+    l .cartesian .unique _ _   = prop!
 ```
 
 ## As a (weak) cocartesian fibration
@@ -192,8 +203,8 @@ fibration.
 ```agda
 Subobject-weak-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
-  → is-weak-cocartesian-fibration Subobjects
-Subobject-weak-opfibration ims .weak-lift f x' = l where
+  → Weak-cocartesian-fibration Subobjects
+Subobject-weak-opfibration ims f x' = l where
   module im = Image B (ims (f ∘ x' .map))
 ```
 
@@ -263,8 +274,8 @@ Subobject-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
   → (pb : has-pullbacks B)
   → Cocartesian-fibration Subobjects
-Subobject-opfibration images pb = cartesian+weak-opfibration→opfibration _
-  (Subobject-fibration pb)
+Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
+  (with-pullbacks.Subobject-fibration pb)
   (Subobject-weak-opfibration images)
 ```
 
@@ -275,16 +286,22 @@ the subobject fibration. However, we use a purpose-built transport
 function to cut down on the number of coherences required to work with
 $\Sub(y)$ at use-sites.
 
+<!--
 ```agda
-Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = Fibre' Subobjects y re coh where
-  re : ∀ {a b} → ≤-over (id ∘ id) a b → ≤-over id a b
+private
+  re : ∀ {x} {a b : Subobject x} → ≤-over (id ∘ id) a b → ≤-over id a b
   re x .map = x .map
   re x .sq  = ap₂ _∘_ (introl refl) refl ∙ x .sq
 
   abstract
-    coh : ∀ {a b} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
+    coh : ∀ {x} {a b : Subobject x} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
     coh f = prop!
+```
+-->
+
+```agda
+Sub : Ob → Precategory (o ⊔ ℓ) ℓ
+unquoteDef Sub = define-copattern Sub (λ y → Fibre' Subobjects y re coh)
 
 module Sub {y} = Cr (Sub y)
 ```

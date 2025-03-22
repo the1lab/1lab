@@ -119,10 +119,10 @@ Representation-is-prop {F = F} c-cat x y = path where
         {A = F .F₀ a} {q = λ i → el! (C.Hom a (objs i))}
         (funext λ x →
            ap (λ e → e .Sets.to) (ap-F₀-iso (Hom-from C a) c-cat _) $ₚ _
-        ·· sym (Y.rep.to .is-natural _ _ _) $ₚ _
-        ·· ap Y.Rep.from (sym (X.rep.from .is-natural _ _ _ $ₚ _)
-                       ·· ap X.Rep.to (C.idl _)
-                       ·· X.Rep.ε _)))
+        ∙∙ sym (Y.rep.to .is-natural _ _ _) $ₚ _
+        ∙∙ ap Y.Rep.from (sym (X.rep.from .is-natural _ _ _ $ₚ _)
+                       ∙∙ ap X.Rep.to (C.idl _)
+                       ∙∙ X.Rep.ε _)))
      i
 ```
 
@@ -306,10 +306,10 @@ Corepresentation-is-prop {F = F} c-cat X Y = path where
          {A = F .F₀ a} {q = λ i → el! (C.Hom (objs i) a)}
          (funext λ x →
            ap (λ e → e .Sets.to) (ap-F₀-iso (Hom-into C a) (opposite-is-category c-cat) _) $ₚ _
-           ·· sym (corep.to Y .is-natural _ _ _ $ₚ _)
-           ·· ap (Corep.from Y) (sym (corep.from X .is-natural _ _ _ $ₚ _)
-                                 ·· ap (Corep.to X) (C.idr _)
-                                 ·· Corep.ε X _)))
+           ∙∙ sym (corep.to Y .is-natural _ _ _ $ₚ _)
+           ∙∙ ap (Corep.from Y) (sym (corep.from X .is-natural _ _ _ $ₚ _)
+                                 ∙∙ ap (Corep.to X) (C.idr _)
+                                 ∙∙ Corep.ε X _)))
        i
 ```
 </details>

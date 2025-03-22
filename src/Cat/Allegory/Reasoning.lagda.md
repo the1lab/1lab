@@ -106,7 +106,7 @@ modular' f g h =
   ⌜ ((f † ∘ g †) ∩ h †) ⌝ †       ≤⟨ dual-≤ (modular (g †) (f †) (h †)) ⟩
   (f † ∘ (g † ∩ (f † † ∘ h †))) † =⟨ dual-∘ ⟩
   (g † ∩ (f † † ∘ h †)) † ∘ f † † =⟨ ap₂ _∘_ (dual-∩ A) (dual f) ⟩
-  (g † † ∩ (f † † ∘ h †) †) ∘ f   =⟨ ap₂ _∘_ (ap₂ _∩_ (dual g) (ap _† (ap₂ _∘_ (dual f) refl) ·· dual-∘ ·· ap (_∘ f †) (dual h))) refl ⟩
+  (g † † ∩ (f † † ∘ h †) †) ∘ f   =⟨ ap₂ _∘_ (ap₂ _∩_ (dual g) (ap _† (ap₂ _∘_ (dual f) refl) ∙∙ dual-∘ ∙∙ ap (_∘ f †) (dual h))) refl ⟩
   (g ∩ h ∘ f †) ∘ f               ≤∎
 ```
 

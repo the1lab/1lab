@@ -198,7 +198,7 @@ exactly what we want.
     fp-unique : is-prop (Σ A λ x → f .map x ≡ x)
     fp-unique (a , p) (b , q) =
       Σ-prop-path (λ x → from-ofe-on P .fst .is-tr _ _)
-        (sym p ·· P.limit _ _ climb ·· q) where
+        (sym p ∙∙ P.limit _ _ climb ∙∙ q) where
       climb : ∀ n → f .map a ≈[ n ] f .map b
       climb zero    = P.bounded _ _
       climb (suc n) = transport (λ i → f .map (p i) ≈[ suc n ] f .map (q i)) (f .contract n (climb n))

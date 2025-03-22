@@ -201,7 +201,7 @@ Relational composition is again given by the familiar formula: The
 composite of $R$ and $S$ is given by the relation which "bridges the
 gap", i.e. $(R \circ S)(x, z)$ iff. there exists some $y$ such that
 $R(x, y)$ and $S(y, z)$. I'm not sure how surprising this will be to
-some of you --- embarassingly, it was fairly surprising to me --- but
+some of you --- embarrassingly, it was fairly surprising to me --- but
 the identity relation is.. the identity relation:
 
 ```agda
@@ -220,8 +220,8 @@ y) \simeq R(a, y)$, and we're done.
 
 ```agda
 Rel ℓ .cat .idr {A} {B} R = ext λ x y → Ω-ua
-  (rec! λ a b w → subst (λ e → ∣ R e y ∣) (sym b) w)
-  λ w → inc (x , inc refl , w)
+  (rec! (λ a b w → subst (λ e → ∣ R e y ∣) (sym b) w))
+  (λ w → inc (x , inc refl , w))
 ```
 
 The other interesting bits of the construction are meets, the dual, and
@@ -253,7 +253,7 @@ automatic proof search: that speaks to how contentful it is.</summary>
 Rel ℓ .cat .Hom-set x y = hlevel 2
 Rel ℓ .cat .idl R = ext λ x y → Ω-ua
   (rec! λ z x~z z=y → subst (λ e → ∣ R x e ∣) z=y x~z)
-  λ w → inc (y , w , inc refl)
+  (λ w → inc (y , w , inc refl))
 
 Rel ℓ .cat .assoc T S R = ext λ x y → Ω-ua
   (rec! λ a b r s t → inc (b , r , inc (a , s , t)))

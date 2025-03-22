@@ -61,7 +61,7 @@ _ = ⊤
 ```agda
 möbius : S¹ → Type
 möbius base = Bool
-möbius (loop i) = ua (not , not-is-equiv) i
+möbius (loop i) = ua not≃ i
 ```
 
 When pattern matching on the circle, we are asked to provide a basepoint
@@ -230,7 +230,7 @@ face has a dotted boundary.
 
 ```agda
   decode (loop i) n j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → loopⁿ (unglue (∂ i) n) j
+    k (k = i0) → loopⁿ (unglue n) j
     k (i = i0) → ∙→square (loopⁿ⁺¹ n) (~ k) j
     k (i = i1) → loopⁿ n j
     k (j = i0) → base
@@ -253,8 +253,8 @@ straightforward to wrap up:
     p = map-out-unique (encode base ∘ loopⁿ)
       (ap (encode base) (map-out-point _ _) ∙ transport-refl point)
       (λ x → ap (encode base) {y = loopⁿ x ∙ loop} (map-out-rotate _ _ _)
-          ·· subst-∙ Cover (loopⁿ x) loop point
-          ·· uaβ rotate (subst Cover (loopⁿ x) point))
+          ∙∙ subst-∙ Cover (loopⁿ x) loop point
+          ∙∙ uaβ rotate (subst Cover (loopⁿ x) point))
       n
 
   ΩS¹≃integers : (base ≡ base) ≃ ℤ

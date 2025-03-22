@@ -90,8 +90,8 @@ is-limit→is-equaliser F {K} {eps} lim = eq where
     lim.unique _ _ _ λ where
       true →
         ap (_∘ other) (intror (K .F-id) ∙ eps .is-natural false true true)
-        ·· pullr q
-        ·· sym p
+        ∙∙ pullr q
+        ∙∙ sym p
       false → q
 
 Equaliser→Limit : ∀ {F : Functor ·⇉· C} → Equaliser C (forkl F) (forkr F) → Limit F

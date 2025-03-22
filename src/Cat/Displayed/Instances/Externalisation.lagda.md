@@ -230,20 +230,20 @@ the lift of $u$ is then simply the (internal) identity morphism.
 
 ```agda
 Externalisation-fibration : Cartesian-fibration Externalise
-Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
+Externalisation-fibration u y = u-lift where
   open Cartesian-lift
 
-  cart-lift : Cartesian-lift Externalise u y
-  cart-lift .x' = y ∘ u
-  cart-lift .lifting = idi _
-  cart-lift .cartesian .is-cartesian.universal m h' =
+  u-lift : Cartesian-lift Externalise u y
+  u-lift .x' = y ∘ u
+  u-lift .lifting = idi _
+  u-lift .cartesian .is-cartesian.universal m h' =
     adjusti refl (assoc _ _ _) h'
-  cart-lift .cartesian .is-cartesian.commutes m h' =
+  u-lift .cartesian .is-cartesian.commutes m h' =
     Internal-hom-path $
       (⌜ idi _ [ m ] ⌝ ∘i _) .ihom ≡⟨ ap! (idi-nat m) ⟩
       (idi _ ∘i _) .ihom           ≡⟨ ap ihom (idli _) ⟩
       h' .ihom ∎
-  cart-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
+  u-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
     Internal-hom-path $
       m' .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
       (⌜ idi _ ⌝ ∘i m') .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩
@@ -255,7 +255,7 @@ Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
 
 The externalisation is always globally small. We shall use the object of
 objects $C_0$ as the base for our generic object, and the identity
-morphism $id : C_0 \to C_0$ as the upstairs portion. Classifying maps
+morphism $\id : C_0 \to C_0$ as the upstairs portion. Classifying maps
 in the base are given by interpreting using a object $\cC(\Gamma, C_0)$ in
 the externalisation as a morphism in the base, and the displayed
 classifying map is the internal identity morphism, which is always
@@ -296,7 +296,7 @@ some tedious calculations.
   small .has-generic-ob .classify-cartesian x' .unique {m = m} m' p =
     Internal-hom-path $
       sym (ap ihom (idli m'))
-      ·· ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
-      ·· ap ihom p
+      ∙∙ ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
+      ∙∙ ap ihom p
 ```
 </details>

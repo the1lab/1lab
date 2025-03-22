@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Sheaves.Omega
+open import Cat.Instances.Sheaf.Omega
 open import Cat.Site.Grothendieck
 open import Cat.Functor.Constant
 open import Cat.Diagram.Sieve
@@ -262,7 +262,7 @@ $u$ acts to give $A(v)(p_0)$.
         cohy : is-support A u (A ⟪ v ⟫ p₀)
         cohy g h q =
           A ⟪ g ⟫ (A ⟪ v ⟫ p₀) ≡⟨ A.collapse refl ⟩
-          A ⟪ v ∘ g ⟫ p₀       ≡⟨ patch→support A hf₀ p _ _ (pulll sq ·· pullr q ·· extendl (sym sq)) ⟩
+          A ⟪ v ∘ g ⟫ p₀       ≡⟨ patch→support A hf₀ p _ _ (pulll sq ∙∙ pullr q ∙∙ extendl (sym sq)) ⟩
           A ⟪ v ∘ h ⟫ p₀       ≡⟨ A.expand refl ⟩
           A ⟪ h ⟫ (A ⟪ v ⟫ p₀) ∎
 
@@ -366,7 +366,7 @@ proposition $P$ to the sieve which contains any $h$ iff $P$.
 
     m2 .η x P .fst .closed hf _ = hf
     m2 .η x P .snd h y = case Atomic.unsaturate C sq y of λ _ _ α → α
-    m2 .is-natural x y f = ext λ P → Σ-prop-path! $ ext λ {V} f → refl
+    m2 .is-natural x y f = ext λ P → Σ-prop-path! trivial!
 ```
 -->
 
@@ -380,5 +380,5 @@ direction is definitional, and the other is not much more complicated.
       q = ext λ i X cl → Σ-prop-path! $ ext λ x → Ω-ua
         (λ p → subst (_∈ X) (idl _) (X .closed p _))
         (λ p → cl id (inc (_ , inc (_ , _ , subst (_∈ X) id-comm (X .closed p id)))))
-    in Sh.make-iso m1 m2 (ext λ _ _ → refl) q
+    in Sh.make-iso m1 m2 trivial! q
 ```

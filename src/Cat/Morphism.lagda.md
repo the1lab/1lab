@@ -50,6 +50,8 @@ open _↪_ public
 
 <!--
 ```agda
+Factors : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Type _
+Factors f g = Σ[ h ∈ Hom _ _ ] (f ≡ g ∘ h)
 ```
 -->
 
@@ -79,10 +81,10 @@ The identity morphism is monic and epic.
 
 ```agda
 id-monic : ∀ {a} → is-monic (id {a})
-id-monic g h p = sym (idl _) ·· p ·· idl _
+id-monic g h p = sym (idl _) ∙∙ p ∙∙ idl _
 
 id-epic : ∀ {a} → is-epic (id {a})
-id-epic g h p = sym (idr _) ·· p ·· idr _
+id-epic g h p = sym (idr _) ∙∙ p ∙∙ idr _
 ```
 
 Both monos and epis are closed under composition.
@@ -93,14 +95,14 @@ monic-∘
   → is-monic f
   → is-monic g
   → is-monic (f ∘ g)
-monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ·· α ·· sym (assoc _ _ _)))
+monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
 
 epic-∘
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-epic f
   → is-epic g
   → is-epic (f ∘ g)
-epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ·· α ·· (assoc _ _ _)))
+epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
 
 _∘Mono_ : ∀ {a b c} → b ↪ c → a ↪ b → a ↪ c
 (f ∘Mono g) .mor = f .mor ∘ g .mor
@@ -119,7 +121,7 @@ monic-cancell
   → is-monic (f ∘ g)
   → is-monic g
 monic-cancell {f = f} fg-monic h h' p = fg-monic h h' $
-  sym (assoc _ _ _) ·· ap (f ∘_) p ·· assoc _ _ _
+  sym (assoc _ _ _) ∙∙ ap (f ∘_) p ∙∙ assoc _ _ _
 ```
 
 Dually, if $f \circ g$ is epic, then $f$ must also be epic.
@@ -130,7 +132,7 @@ epic-cancelr
   → is-epic (f ∘ g)
   → is-epic f
 epic-cancelr {g = g} fg-epic h h' p = fg-epic h h' $
-  assoc _ _ _ ·· ap (_∘ g) p ·· sym (assoc _ _ _)
+  assoc _ _ _ ∙∙ ap (_∘ g) p ∙∙ sym (assoc _ _ _)
 ```
 
 Postcomposition with a mono is an embedding.
@@ -163,7 +165,7 @@ subst-is-monic
   → is-monic f
   → is-monic g
 subst-is-monic f=g f-monic h i p =
-  f-monic h i (ap (_∘ h) f=g ·· p ·· ap (_∘ i) (sym f=g))
+  f-monic h i (ap (_∘ h) f=g ∙∙ p ∙∙ ap (_∘ i) (sym f=g))
 
 subst-is-epic
   : ∀ {a b} {f g : Hom a b}
@@ -171,14 +173,14 @@ subst-is-epic
   → is-epic f
   → is-epic g
 subst-is-epic f=g f-epic h i p =
-  f-epic h i (ap (h ∘_) f=g ·· p ·· ap (i ∘_) (sym f=g))
+  f-epic h i (ap (h ∘_) f=g ∙∙ p ∙∙ ap (i ∘_) (sym f=g))
 ```
 -->
 
 ## Sections {defines=section}
 
 A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
-when $r \cdot s = id$. The intuition for this name is that $s$ picks
+when $r \cdot s = \id$. The intuition for this name is that $s$ picks
 out a cross-section of $a$ from $b$. For instance, $r$ could map
 animals to their species; a section of this map would have to pick out
 a canonical representative of each species from the set of all animals.
@@ -272,7 +274,7 @@ subst-section p s .is-section = ap₂ _∘_ (sym p) refl ∙ s .is-section
 ## Retracts {defines="retract"}
 
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
-when $r \cdot s = id$. Note that this is the same equation involved
+when $r \cdot s = \id$. Note that this is the same equation involved
 in the definition of a section; retracts and sections always come in
 pairs. If sections solve a sort of "curation problem" where we are
 asked to pick out canonical representatives, then retracts solve a
@@ -495,7 +497,7 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   g≡h : g.inv ≡ h.inv
   g≡h =
     g.inv             ≡⟨ sym (idr _) ∙ ap₂ _∘_ refl (sym h.invl) ⟩
-    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invr refl ·· idl _ ⟩
+    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ∙∙ ap₂ _∘_ g.invr refl ∙∙ idl _ ⟩
     h.inv             ∎
 
   p : g ≡ h
@@ -600,6 +602,18 @@ make-iso f g p q ._≅_.inverses .Inverses.invr = q
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
+
+_≅⟨_⟩_ : ∀ (x : Ob) {y z} → x ≅ y → y ≅ z → x ≅ z
+x ≅⟨ p ⟩ q = q ∘Iso p
+
+_≅˘⟨_⟩_ : ∀ (x : Ob) {y z} → y ≅ x → y ≅ z → x ≅ z
+x ≅˘⟨ p ⟩ q = q ∘Iso p Iso⁻¹
+
+_≅∎ : (x : Ob) → x ≅ x
+x ≅∎ = id-iso
+
+infixr 2 _≅⟨_⟩_ _≅˘⟨_⟩_
+infix  3 _≅∎
 
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =
@@ -862,19 +876,30 @@ inverses→from-has-retract inv .is-retract = Inverses.invl inv
 
 <!--
 ```agda
-invertible→to-has-section : is-invertible f → has-section f
-invertible→to-has-section f-inv .section = is-invertible.inv f-inv
-invertible→to-has-section f-inv .is-section = is-invertible.invl f-inv
+module _ {f : Hom a b} (f-inv : is-invertible f) where
+  private module f = is-invertible f-inv
+  invertible→to-has-section : has-section f
+  invertible→to-has-section .section = f.inv
+  invertible→to-has-section .is-section = f.invl
 
-invertible→to-has-retract : is-invertible f → has-retract f
-invertible→to-has-retract f-inv .retract = is-invertible.inv f-inv
-invertible→to-has-retract f-inv .is-retract = is-invertible.invr f-inv
+  invertible→to-has-retract : has-retract f
+  invertible→to-has-retract .retract = f.inv
+  invertible→to-has-retract .is-retract = f.invr
 
-invertible→to-split-monic : is-invertible f → is-split-monic f
-invertible→to-split-monic f-inv = pure (invertible→to-has-retract f-inv)
+  invertible→to-split-monic : is-split-monic f
+  invertible→to-split-monic = pure invertible→to-has-retract
 
-invertible→to-split-epic : is-invertible f → is-split-epic f
-invertible→to-split-epic f-inv = pure (invertible→to-has-section f-inv)
+  invertible→to-split-epic : is-split-epic f
+  invertible→to-split-epic = pure invertible→to-has-section
+
+  invertible→from-has-section : has-section f.inv
+  invertible→from-has-section .section = f
+  invertible→from-has-section .is-section = f.invr
+
+  invertible→from-has-retract : has-retract f.inv
+  invertible→from-has-retract .retract = f
+  invertible→from-has-retract .is-retract = f.invl
+
 
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from
@@ -1053,8 +1078,8 @@ invertible-precomp-equiv
   → is-equiv {A = Hom b c} (_∘ f)
 invertible-precomp-equiv {f = f} f-inv = is-iso→is-equiv $
   iso (λ h → h ∘ f-inv.inv)
-    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invr ·· idr h)
-    (λ h → sym (assoc _ _ _) ·· ap (h ∘_) f-inv.invl ·· idr h)
+    (λ h → sym (assoc _ _ _) ∙∙ ap (h ∘_) f-inv.invr ∙∙ idr h)
+    (λ h → sym (assoc _ _ _) ∙∙ ap (h ∘_) f-inv.invl ∙∙ idr h)
   where module f-inv = is-invertible f-inv
 
 invertible-postcomp-equiv
@@ -1063,7 +1088,7 @@ invertible-postcomp-equiv
   → is-equiv {A = Hom a b} (f ∘_)
 invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
   iso (λ h → f-inv.inv ∘ h)
-    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invl ·· idl h)
-    (λ h → assoc _ _ _ ·· ap (_∘ h) f-inv.invr ·· idl h)
+    (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invl ∙∙ idl h)
+    (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invr ∙∙ idl h)
   where module f-inv = is-invertible f-inv
 ```

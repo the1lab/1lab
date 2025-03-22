@@ -36,4 +36,4 @@ module _ {o ℓ} {C : Precategory o ℓ} where instance
     : ∀ {ℓ' ℓ''} {A : Type ℓ'} {B : A → Type ℓ''}
     → ∀ {a b} ⦃ i : Funlike (Hom C a b) A B ⦄
     → Funlike (_≅_ C a b) A B
-  Funlike-≅ .Funlike._#_ f x = f .to # x
+  Funlike-≅ .Funlike._·_ f x = f .to · x

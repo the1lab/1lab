@@ -139,8 +139,8 @@ $F(g') = g \circ i$.
 
 ```agda
 module _ (ff : is-fully-faithful F) (eso : is-eso F) where
-  ff+eso→preserves-mono : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
-  ff+eso→preserves-mono {a = a} a-monic {x} f g p = ∥-∥-out! do
+  ff+eso→is-monic : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
+  ff+eso→is-monic {a = a} a-monic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
     (f* , q) ← ff→full {F = F} ff (f 𝒟.∘ 𝒟.to i)
     (g* , r) ← ff→full {F = F} ff (g 𝒟.∘ 𝒟.to i)
@@ -181,16 +181,16 @@ formally dual to the case above, we will not dwell on it.
 </summary>
 
 ```agda
-  ff+eso→preserves-epi : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
-  ff+eso→preserves-epi {a = a} a-epic {x} f g p = ∥-∥-out! do
+  ff+eso→is-epic : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
+  ff+eso→is-epic {a = a} a-epic {x} f g p = ∥-∥-out! do
     (x* , i) ← eso x
     (f* , q) ← ff→full {F = F} ff (𝒟.from i 𝒟.∘ f)
     (g* , r) ← ff→full {F = F} ff (𝒟.from i 𝒟.∘ g)
     let s = F-∘ _ _ ∙ 𝒟.pushl q ∙ ap₂ 𝒟._∘_ refl p ∙ 𝒟.pulll (sym r) ∙ sym (F-∘ _ _)
     pure $ 𝒟.iso→monic (i 𝒟.Iso⁻¹) f g $
       sym q
-      ·· ap F₁ (a-epic f* g* (ff→faithful {F = F} ff s))
-      ·· r
+      ∙∙ ap F₁ (a-epic f* g* (ff→faithful {F = F} ff s))
+      ∙∙ r
 ```
 
 </details>
@@ -219,8 +219,8 @@ module _ {L : Functor 𝒟 𝒞} (L⊣F : L ⊣ F) where
 -->
 
 ```agda
-  right-adjoint→preserves-monos : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
-  right-adjoint→preserves-monos {a = a} a-monic f g p =
+  right-adjoint→is-monic : 𝒞.is-monic a → 𝒟.is-monic (F₁ a)
+  right-adjoint→is-monic {a = a} a-monic f g p =
     R-adjunct.injective L⊣F $
     a-monic _ _ $
     a 𝒞.∘ ε _ 𝒞.∘ L.₁ f            ≡⟨ 𝒞.pulll (sym (counit.is-natural _ _ _)) ⟩
@@ -241,8 +241,8 @@ module _ {R : Functor 𝒟 𝒞} (F⊣R : F ⊣ R) where
     module R = Cat.Functor.Reasoning R
   open _⊣_ F⊣R
 
-  left-adjoint→preserves-epis : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
-  left-adjoint→preserves-epis {a = a} a-epic f g p =
+  left-adjoint→is-epic : 𝒞.is-epic a → 𝒟.is-epic (F₁ a)
+  left-adjoint→is-epic {a = a} a-epic f g p =
     L-adjunct.injective F⊣R $
     a-epic _ _ $
     𝒞.pullr (unit.is-natural _ _ _)

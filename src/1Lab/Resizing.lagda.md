@@ -4,6 +4,7 @@ open import 1Lab.Function.Surjection
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
+open import 1Lab.Extensionality
 open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection using (arg ; typeError)
@@ -91,7 +92,8 @@ instance
 ```
 -->
 
-We can also prove a univalence principle for `Ω`{.Agda}:
+We can also prove a univalence principle for `Ω`{.Agda}: if $A, B :
+\Omega$ are logically equivalent, then they are equal.
 
 ```agda
 Ω-ua : {A B : Ω} → (∣ A ∣ → ∣ B ∣) → (∣ B ∣ → ∣ A ∣) → A ≡ B
@@ -105,7 +107,7 @@ instance abstract
   H-Level-Ω = basic-instance 2 $ retract→is-hlevel 2
     (λ r → el ∣ r ∣ (r .is-tr))
     (λ r → el ∣ r ∣ (r .is-tr))
-    (λ x → Ω-ua (λ x → x) λ x → x)
+    (λ x → Ω-ua id id)
     (n-Type-is-hlevel {lzero} 1)
 ```
 
@@ -208,7 +210,7 @@ to-is-true
   : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
   → ∣ P ∣
   → P ≡ Q
-to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) λ _ → prf
 
 tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
 tr-□ (inc x) = inc x
@@ -223,7 +225,7 @@ tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
 ## Connectives
 
 The universe of small propositions contains true, false, conjunctions,
-disjunctions, and implications.
+disjunctions, and (bi)implications.
 
 <!--
 ```agda
@@ -273,6 +275,16 @@ land in `Ω`.
 syntax ∃Ω A (λ x → B) = ∃Ω[ x ∈ A ] B
 syntax ∀Ω A (λ x → B) = ∀Ω[ x ∈ A ] B
 ```
+
+<!--
+```agda
+instance
+  Extensional-Σ-□
+    : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : A → Type ℓ'}
+    → ⦃ ea : Extensional A ℓr ⦄ → Extensional (Σ A λ x → □ (B x)) ℓr
+  Extensional-Σ-□ ⦃ ea ⦄ = Σ-prop-extensional (λ x → hlevel 1) ea
+```
+-->
 
 These connectives and quantifiers are only provided for completeness;
 if you find yourself building nested propositions, it is generally a good

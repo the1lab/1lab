@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Bi.Instances.Terminal
 open import Cat.Bi.Base
 open import Cat.Prelude
 
@@ -14,7 +16,8 @@ module Cat.Bi.Diagram.Monad  where
 
 <!--
 ```agda
-open _=>_
+open _=>_ hiding (η)
+open Functor
 
 module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
   private module B = Prebicategory B
@@ -100,45 +103,104 @@ compatibility paths have to be adjusted slightly. Check it out below:
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Cat.Monad
+  open Cat.Monad-on
   open Monad
   private module C = Cr C
 
   Bicat-monad→monad : Monad (Cat _ _) C → Cat.Monad C
-  Bicat-monad→monad monad = monad' where
+  Bicat-monad→monad monad = _ , monad' where
     private module M = Monad monad
 
-    monad' : Cat.Monad C
-    monad' .M = M.M
+    monad' : Cat.Monad-on M.M
     monad' .unit = M.η
     monad' .mult = M.μ
-    monad' .left-ident {x} =
-        ap (M.μ .η x C.∘_) (C.intror refl)
+    monad' .μ-unitr {x} =
+        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
       ∙ M.μ-unitr ηₚ x
-    monad' .right-ident {x} =
-        ap (M.μ .η x C.∘_) (C.introl (M.M .Functor.F-id))
+    monad' .μ-unitl {x} =
+        ap (M.μ ._=>_.η x C.∘_) (C.introl (M.M .Functor.F-id))
       ∙ M.μ-unitl ηₚ x
-    monad' .mult-assoc {x} =
-        ap (M.μ .η x C.∘_) (C.intror refl)
-     ·· M.μ-assoc ηₚ x
-     ·· ap (M.μ .η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
+    monad' .μ-assoc {x} =
+        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
+     ∙∙ M.μ-assoc ηₚ x
+     ∙∙ ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
-  Monad→bicat-monad monad = monad' where
-    private module M = Cat.Monad monad
+  Monad→bicat-monad (M , monad) = monad' where
+    private module M = Cat.Monad-on (monad)
 
     monad' : Monad (Cat _ _) C
-    monad' .M = M.M
+    monad' .Monad.M = M
     monad' .μ = M.mult
     monad' .η = M.unit
     monad' .μ-assoc = ext λ _ →
         ap (M.μ _ C.∘_) (C.elimr refl)
-     ·· M.mult-assoc
-     ·· ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
+     ∙∙ M.μ-assoc
+     ∙∙ ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
     monad' .μ-unitr = ext λ _ →
         ap (M.μ _ C.∘_) (C.elimr refl)
-      ∙ M.left-ident
+      ∙ M.μ-unitr
     monad' .μ-unitl = ext λ _ →
         ap (M.μ _ C.∘_) (C.eliml M.M-id)
-      ∙ M.right-ident
+      ∙ M.μ-unitl
+```
+
+<!--
+```agda
+module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
+  private
+    open module B = Prebicategory B
+```
+-->
+# Monads as lax functors
+
+Suppose that we have a [[lax functor]] $P$ from the [[terminal bicategory]] to $\cB$.
+Then $P$ identifies a single object $a=P_0(*)$ as well as a morphism $M:a\to a$
+given by $P_1(\id_*)$. The composition operation is a natural transformation
+$$ P_1(\id_*) P_1(\id_*)\To P_1(\id_*) $$
+i.e. a natural transformation $\mu :M M\To M$. Finally, the unitor gives
+$\eta:\id\To M$.
+Altogether, this is exactly the same data as an object $a\in\cB$ and a [[monad in]]
+$\cB$ on $a$.
+
+```agda
+  monad→lax-functor : Σ[ a ∈ B.Ob ] Monad B a → Lax-functor ⊤Bicat B
+  monad→lax-functor (a , monad) = P where
+    open Monad monad
+    open Lax-functor
+    P : Lax-functor ⊤Bicat B
+    P .P₀ _ = a
+    P .P₁ = !Const M
+    P .compositor ._=>_.η _ = μ
+    P .compositor .is-natural _ _ _ = B.Hom.elimr (B.compose .F-id) ∙ sym (B.Hom.idl _)
+    P .unitor = η
+    P .hexagon _ _ _ =
+      Hom.id ∘ μ ∘ (μ ◀ M)                ≡⟨ Hom.pulll (Hom.idl _) ⟩
+      μ ∘ (μ ◀ M)                         ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
+      (μ ∘ μ ◀ M) ∘ (α← M M M ∘ α→ M M M) ≡⟨ cat! (Hom a a) ⟩
+      (μ ∘ μ ◀ M ∘ α← M M M) ∘ α→ M M M   ≡˘⟨ Hom.pulll μ-assoc ⟩
+      μ ∘ (M ▶ μ) ∘ (α→ M  M  M)          ∎
+    P .right-unit _ = Hom.id ∘ μ ∘ M ▶ η  ≡⟨ Hom.idl _ ∙ μ-unitr ⟩ ρ← M ∎
+    P .left-unit _ = Hom.id ∘ μ ∘ (η ◀ M) ≡⟨ Hom.idl _ ∙ μ-unitl ⟩ λ← M ∎
+
+  lax-functor→monad : Lax-functor ⊤Bicat B → Σ[ a ∈ B.Ob ] Monad B a
+  lax-functor→monad P = (a , record { monad }) where
+    open Lax-functor P
+
+    a : B.Ob
+    a = P₀ tt
+
+    module monad where
+      M = P₁.F₀ _
+      μ = γ→ _ _
+      η = unitor
+      μ-assoc =
+        μ ∘ M ▶ μ                           ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
+        (μ ∘ M ▶ μ) ∘ (α→ M M M ∘ α← M M M) ≡⟨ cat! (Hom a a) ⟩
+        (μ ∘ M ▶ μ ∘ α→ M M M) ∘ α← M M M   ≡˘⟨ hexagon _ _ _ Hom.⟩∘⟨refl ⟩
+        (P₁.F₁ _ ∘ μ ∘ μ ◀ M) ∘ α← M M M    ≡⟨ ( P₁.F-id Hom.⟩∘⟨refl) Hom.⟩∘⟨refl  ⟩
+        (Hom.id ∘ μ ∘ μ ◀ M) ∘ α← M M M     ≡⟨ cat! (Hom a a) ⟩
+        μ ∘ μ ◀ M ∘ α← M M M ∎
+      μ-unitr = P₁.introl refl ∙ right-unit _
+      μ-unitl = P₁.introl refl ∙ left-unit _
 ```

@@ -21,7 +21,6 @@ module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
 
 <!--
 ```agda
-open Cartesian-fibration
 open Cartesian-lift
 open Displayed
 open is-cartesian
@@ -288,7 +287,7 @@ to $\underline{\cB}$ regarded as a Cartesian fibration as the
 Codomain-fibration
   : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
   → Cartesian-fibration Slices
-Codomain-fibration pullbacks .has-lift f y' = lift-f where
+Codomain-fibration pullbacks f y' = lift-f where
   module pb = Pullback (pullbacks f (y' .map))
 
   lift-f : Cartesian-lift Slices f y'
@@ -311,23 +310,23 @@ Codomain-fibration→pullbacks
   : ∀ {x y z} (f : Hom x y) (g : Hom z y)
   → Cartesian-fibration Slices
   → Pullback B f g
-Codomain-fibration→pullbacks f g lifts = pb where
-  open Pullback
+Codomain-fibration→pullbacks f g slices-fib = pb where
+  open Cartesian-fibration Slices slices-fib
   open is-pullback
-  module the-lift = Cartesian-lift (lifts .has-lift f (cut g))
+  open Pullback
 
   pb : Pullback B f g
-  pb .apex = the-lift.x' .domain
-  pb .p₁ = the-lift.x' .map
-  pb .p₂ = the-lift.lifting .to
-  pb .has-is-pb .square = the-lift.lifting .commute
+  pb .apex = (f ^* cut g) .domain
+  pb .p₁ = (f ^* cut g) .map
+  pb .p₂ = π* f (cut g) .to
+  pb .has-is-pb .square = π* f (cut g) .commute
   pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
-    the-lift.cartesian .universal {u' = cut id}
+    π*.universal {u' = cut id}
       p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
   pb .has-is-pb .p₁∘universal =
-    sym (the-lift.universal _ _ .commute) ∙ idr _
-  pb .has-is-pb .p₂∘universal = ap to (the-lift.cartesian .commutes _ _)
-  pb .has-is-pb .unique p q = ap to $ the-lift.cartesian .unique
+    sym (π*.universal _ _ .commute) ∙ idr _
+  pb .has-is-pb .p₂∘universal = ap to (π*.commutes _ _)
+  pb .has-is-pb .unique p q = ap to $ π*.unique
     (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q)
 ```
 
@@ -347,7 +346,7 @@ that do not lie in the image of $f$.
 
 ```agda
 Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration .Cocartesian-fibration.has-lift f x' = lift-f where
+Codomain-opfibration f x' = lift-f where
 
   lift-f : Cocartesian-lift Slices f x'
   lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)

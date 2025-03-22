@@ -476,8 +476,8 @@ module _
     ran' .σ β = inv ∘nt ran.σ β
     ran' .σ-comm {M} {β} = ext λ j →
       sym ((ran.σ-comm ηₚ _) D.⟩∘⟨refl)
-      ·· D.cancel-inner (invl ηₚ _)
-      ·· (ran.σ-comm ηₚ _)
+      ∙∙ D.cancel-inner (invl ηₚ _)
+      ∙∙ (ran.σ-comm ηₚ _)
     ran' .σ-uniq {M} {β} {σ'} p = ext λ j →
       (D.refl⟩∘⟨ ran.σ-uniq {σ' = ran.σ eps' ∘nt σ'} (ext λ j → p ηₚ j ∙ D.pushl (sym (ran.σ-comm ηₚ j))) ηₚ _)
       ∙ D.cancell (invr ηₚ _)
@@ -567,7 +567,7 @@ module _
         (natural-iso-of→is-ran (natural-iso-along→is-ran ran p-iso)
         F-iso)
       G-iso)
-    (ext λ c → sym (D.assoc _ _ _) ·· ap₂ D._∘_ refl (sym $ D.assoc _ _ _) ·· p ηₚ _)
+    (ext λ c → sym (D.assoc _ _ _) ∙∙ ap₂ D._∘_ refl (sym $ D.assoc _ _ _) ∙∙ p ηₚ _)
 
 module _
     {p p' : Functor C C'} {F F' : Functor C D}

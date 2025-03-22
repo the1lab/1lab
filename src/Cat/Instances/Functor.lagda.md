@@ -99,8 +99,8 @@ module
              → F DE.≅ F' → (F F∘ G) CE.≅ (F' F∘ G)
     F∘-iso-l {F} {F'} {G} isom =
       CE.make-iso (isom.to ◂ G) (isom.from ◂ G)
-        (ext λ x → isom.invl #ₚ _)
-        (ext λ x → isom.invr #ₚ _)
+        (ext λ x → isom.invl ·ₚ _)
+        (ext λ x → isom.invr ·ₚ _)
       where
         module isom = DE._≅_ isom
 

@@ -181,8 +181,8 @@ jointly-monic-∘
 jointly-monic-∘ {h = h} fg-joint-mono h-mono k₁ k₂ p q =
   h-mono k₁ k₂ $
   fg-joint-mono (h ∘ k₁) (h ∘ k₂)
-    (assoc _ _ _ ·· p ·· sym (assoc _ _ _))
-    (assoc _ _ _ ·· q ·· sym (assoc _ _ _))
+    (assoc _ _ _ ∙∙ p ∙∙ sym (assoc _ _ _))
+    (assoc _ _ _ ∙∙ q ∙∙ sym (assoc _ _ _))
 ```
 
 Moreover, if $f \circ h$ and $g \circ h$ are jointly monic, then
@@ -209,7 +209,7 @@ jointly-monic-fam-∘
 jointly-monic-fam-∘ {g = g} fᵢ-joint-mono g-mono k₁ k₂ p =
   g-mono k₁ k₂ $
   fᵢ-joint-mono (g ∘ k₁) (g ∘ k₂) λ i →
-    assoc _ _ _ ·· p i ·· sym (assoc _ _ _)
+    assoc _ _ _ ∙∙ p i ∙∙ sym (assoc _ _ _)
 
 jointly-monic-fam-cancell
   : ∀ {ℓ'} {I : Type ℓ'} {x y} {zᵢ : I → Ob}

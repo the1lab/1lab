@@ -235,15 +235,17 @@ private
           -- Otherwise, add m : T to the telescope and replace the corresponding
           -- constructor with m henceforth.
           method ← ("P" <>_) <$> render-name c
+          q ← get-con-quantity c
+          let argC = arg (arginfo visible (modality relevant q))
           let
             ps = raise 1 ps
             P = raise 1 P
             rs = (c' , var 0 []) ∷ raise 1 rs
-          extend-context method (argN methodT) (go ps P rs cs) <&>
-            ×-map₁₂ ((method , argN methodT) ∷_) (α ∷_)
+          extend-context method (argC methodT) (go ps P rs cs) <&>
+            ×-map₁₂ ((method , argC methodT) ∷_) (α ∷_)
 
 make-elim-with : Elim-options → Name → Name → TC ⊤
-make-elim-with opts elim D = withNormalisation true do
+make-elim-with opts elim D = work-on-types $ withNormalisation true do
   DT ← get-type D >>= normalise -- D : (ps : Γ) (is : Ξ) → Type _
   data-type pars cs ← get-definition D
     where _ → typeError [ "not a data type: " , nameErr D ]

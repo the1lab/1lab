@@ -27,7 +27,7 @@ open Functor
 
 # Functors
 
-This module defines the most important clases of functors: Full,
+This module defines the most important classes of functors: full,
 faithful, fully faithful (abbreviated ff), _split_ essentially
 surjective and ("_merely_") essentially surjective.
 
@@ -62,7 +62,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   faithful→iso-fibre-prop
     : ∀ (F : Functor C D)
     → is-faithful F
-    → ∀ {x y} → (f : F # x D.≅ F # y)
+    → ∀ {x y} → (f : F · x D.≅ F · y)
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
     Σ-prop-path! $ ext (faithful (ap D.to (p ∙ sym q)))
@@ -186,7 +186,7 @@ $y$.
 
 ```agda
 Essential-fibre : Functor C D → D .Ob → Type _
-Essential-fibre {C = C} {D = D} F y = Σ[ x ∈ C ] (F # x ≅ y)
+Essential-fibre {C = C} {D = D} F y = Σ[ x ∈ C ] (F · x ≅ y)
   where open import Cat.Morphism D
 ```
 
@@ -305,8 +305,8 @@ and $F$ covers every object of $\cD$.
       let module Fc≅d = D._≅_ Fc≅d
       pure $
         A.make-invertible (G.₁ Fc≅d.to A.∘ α⁻¹.η c A.∘ H.₁ Fc≅d.from)
-          (α.pulll (A.cancell (α⁻¹.invl #ₚ c)) ∙ H.annihilate Fc≅d.invl)
-          (A.pullr (α.cancelr (α⁻¹.invr #ₚ c)) ∙ G.annihilate Fc≅d.invl)
+          (α.pulll (A.cancell (α⁻¹.invl ·ₚ c)) ∙ H.annihilate Fc≅d.invl)
+          (A.pullr (α.cancelr (α⁻¹.invr ·ₚ c)) ∙ G.annihilate Fc≅d.invl)
     where
       module A = Cat.Reasoning A
       module F = Cat.Functor.Reasoning F

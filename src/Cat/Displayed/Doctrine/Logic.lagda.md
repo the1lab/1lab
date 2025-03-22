@@ -380,8 +380,8 @@ $$
     rem₁ .p₁∘universal = π₁∘⟨⟩
     rem₁ .p₂∘universal {p = p} =
         ⟨⟩∘ _
-      ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
-      ·· sym (⟨⟩∘ _)
+      ∙∙ ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ p) π₂∘⟨⟩
+      ∙∙ sym (⟨⟩∘ _)
       ∙ eliml (sym (⟨⟩-unique (idr _) (idr _)))
     rem₁ .unique q r = ⟨⟩-unique q (sym (ap (π₂ ∘_) (sym r) ∙ pulll π₂∘⟨⟩))
 ```
@@ -408,8 +408,8 @@ sub-prop-∘
   : ∀ {Φ} (ρ : Sub Γ Δ) (σ : Sub Δ Φ) (φ : Formula Φ)
   → ⟦ sub-prop ρ (sub-prop σ φ) ⟧ᵖ ≡  ⟦ φ ⟧ᵖ [ ⟦ σ ⟧ˢ ∘ ⟦ ρ ⟧ˢ ]
 sub-prop-∘ ρ σ φ = sub-prop-correct ρ (sub-prop σ φ)
-                ·· ap (_[ ⟦ ρ ⟧ˢ ]) (sub-prop-correct σ φ)
-                ·· subst-∘ _ _
+                ∙∙ ap (_[ ⟦ ρ ⟧ˢ ]) (sub-prop-correct σ φ)
+                ∙∙ subst-∘ _ _
 
 private variable
   Φ Ψ φ ψ θ φ' ψ' : Formula Γ
@@ -583,8 +583,8 @@ too.</summary>
         φ⊢ψ)
 
   `∃-intro {Γ = Γ} {Φ = Φ} {ψ = ψ} {t = t} α = hom[ cancell π₁∘⟨⟩ ] $
-         cocartesian.has-lift.lifting π₁ ⟦ ψ ⟧ᵖ
-    ℙ.∘' cartesian.has-lift.lifting ⟨ id , ⟦ t ⟧ᵉ ⟩ ⟦ ψ ⟧ᵖ
+         ι! π₁ ⟦ ψ ⟧ᵖ
+    ℙ.∘' π* ⟨ id , ⟦ t ⟧ᵉ ⟩ ⟦ ψ ⟧ᵖ
     ℙ.∘' p
     where
     p : ⟦ Φ ⟧ᵖ ≤ (⟦ ψ ⟧ᵖ [ ⟨ id , ⟦ t ⟧ᵉ ⟩ ])
@@ -600,9 +600,9 @@ too.</summary>
 ```agda
   =-refl : entails φ (t =ᵖ t)
   =-refl {t = t} =
-    cartesian.has-lift.universal _ _ _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
-          cocartesian.has-lift.lifting ⟨ id , id ⟩ aye
-    ℙ.∘' cartesian.has-lift.lifting _ _
+    π*.universal _ $ hom[ pulll (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (idl _) (idl _)) ] $
+          ι! ⟨ id , id ⟩ aye
+    ℙ.∘' π* _ _
     ℙ.∘' subst-! ⟦ t ⟧ᵉ
 ```
 -->

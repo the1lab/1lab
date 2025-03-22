@@ -146,7 +146,7 @@ abstract
 
   /ℚ-negatel
     : ∀ {q d} ⦃ p : Nonzero d ⦄ → -ℚ (q /ℚ d) ≡ (-ℚ q) /ℚ d
-  /ℚ-negatel = ap -ℚ_ /ℚ-def ·· sym *ℚ-negatel ·· sym /ℚ-def
+  /ℚ-negatel = ap -ℚ_ /ℚ-def ∙∙ sym *ℚ-negatel ∙∙ sym /ℚ-def
 
   /ℚ-def-+ℚ
     : ∀ {q q' d d'} ⦃ p : Nonzero d ⦄ ⦃ p' : Nonzero d' ⦄

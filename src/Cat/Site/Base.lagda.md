@@ -217,6 +217,7 @@ elements-which-are-sections, so they also get a record type.
 
   open Patch
 
+  {-# INLINE Patch.constructor #-}
   is-section : ∀ {U} {T : Sieve C U} → A ʻ U → Patch T → Type _
   is-section {T = T} p x = pre.is-section C A.₁ T p (x .part)
 ```
@@ -460,7 +461,7 @@ open Coverage hiding (Membership-covers) public
 
 instance
   Funlike-Coverage : Funlike (Coverage C ℓc) ⌞ C ⌟ (λ _ → Type ℓc)
-  Funlike-Coverage = record { _#_ = λ C U → C .covers U }
+  Funlike-Coverage = record { _·_ = λ C U → C .covers U }
 
   Membership-Coverage : ∀ {U} → Membership (Coverage C ℓc) (Sieve C U) _
   Membership-Coverage = record { _∈_ = λ C S → fibre (C .cover) S }

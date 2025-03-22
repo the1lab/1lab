@@ -63,7 +63,7 @@ expressions which are easy to cancel using naturality and functoriality:
   yo-is-equiv = is-iso→is-equiv λ where
     .is-iso.inv  n → unyo n
     .is-iso.rinv x → ext λ i h →
-      yo (unyo x) .η i h ≡˘⟨ x .is-natural _ _ _ # _ ⟩
+      yo (unyo x) .η i h ≡˘⟨ x .is-natural _ _ _ · _ ⟩
       x .η i (id ∘ h)    ≡⟨ ap (x .η i) (idl h) ⟩
       x .η i h           ∎
     .is-iso.linv x →
@@ -122,7 +122,7 @@ as natural transformations $\cC(-,U) \To B$, for any $x : A(U)$.
   yo-natl
     : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {y : B ʻ U} {h : A => B}
     → h .η U x ≡ y → h ∘nt yo {C = C} A x ≡ yo B y
-  yo-natl {B = B} {h = h} p = ext λ i f → h .is-natural _ _ _ # _ ∙ PSh.ap B p
+  yo-natl {B = B} {h = h} p = ext λ i f → h .is-natural _ _ _ · _ ∙ PSh.ap B p
 
   yo-naturall
     : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {h : A => B}

@@ -129,7 +129,7 @@ module
 
   is-reflective→unit-G-is-iso : ∀ {o} → C.is-invertible (unit.η (G.₀ o))
   is-reflective→unit-G-is-iso {o} = C.make-invertible (g-ff.to (ε _))
-    (unit.is-natural _ _ _ ·· ap₂ C._∘_ refl η-comonad-commute ·· GF.annihilate zag)
+    (unit.is-natural _ _ _ ∙∙ ap₂ C._∘_ refl η-comonad-commute ∙∙ GF.annihilate zag)
     zag
 
   is-reflective→F-unit-is-iso : ∀ {o} → D.is-invertible (F.₁ (unit.η o))
@@ -207,7 +207,7 @@ is.
         unit.is-natural _ _ _
       ∙ ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
       ∙ sym (G.F-∘ _ _)
-      ∙ ap G.₁ (sym (F.F-∘ _ _) ·· ap F.₁ (alg .ν-unit) ·· F.F-id)
+      ∙ ap G.₁ (sym (F.F-∘ _ _) ∙∙ ap F.₁ (alg .ν-unit) ∙∙ F.F-id)
       ∙ sym (ap₂ C._∘_ refl (sym (η-comonad-commute adj g-ff)) ∙ zag ∙ sym G.F-id)
 
     isom : Comp.₀ (F.₀ ob) EM.≅ (ob , alg)
@@ -215,10 +215,10 @@ is.
       (ext (alg .ν-unit))
       (ext (
           unit.is-natural _ _ _
-        ·· ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
-        ·· sym (G.F-∘ _ _)
-        ·· ap G.₁ (sym (F.F-∘ _ _) ·· ap F.₁ (alg .ν-unit) ·· F.F-id)
-        ·· G.F-id))
+        ∙∙ ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
+        ∙∙ sym (G.F-∘ _ _)
+        ∙∙ ap G.₁ (sym (F.F-∘ _ _) ∙∙ ap F.₁ (alg .ν-unit) ∙∙ F.F-id)
+        ∙∙ G.F-id))
 
   eqv : is-equivalence Comp
   eqv = ff+split-eso→is-equivalence comp-ff comp-seso

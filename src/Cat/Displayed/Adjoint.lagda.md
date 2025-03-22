@@ -119,8 +119,8 @@ module _
     : Type lvl where
     no-eta-equality
     field
-      unit' : IdVf =>f↓ R Vf∘ L
-      counit' : L Vf∘ R =>f↓ IdVf
+      unit' : IdVf =>f↓ R ∘Vf L
+      counit' : L ∘Vf R =>f↓ IdVf
 
     module unit' = _=>↓_ unit'
     module counit' = _=>↓_ counit' renaming (η' to ε')

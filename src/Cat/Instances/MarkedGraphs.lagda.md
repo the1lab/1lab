@@ -93,7 +93,7 @@ unquoteDecl H-Level-Marked-graph-hom = declare-record-hlevel 2 H-Level-Marked-gr
 
 instance
   Funlike-Marked-graph-hom : Funlike (Marked-graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
-  Funlike-Marked-graph-hom .Funlike._#_ = vertex
+  Funlike-Marked-graph-hom .Funlike._·_ = vertex
 
 Marked-graph-hom-pathp
   : {G : I → Marked-graph o ℓ} {H : I → Marked-graph o' ℓ'}
@@ -282,7 +282,7 @@ module _ (G : Marked-graph o ℓ) where
 -->
 
 In this section, we will detail how to freely construct a category
-from a marked graph $G$. Intuitvely, this works by freely generating
+from a marked graph $G$. Intuitively, this works by freely generating
 a category from $G$, and then identifying all marked pairs.
 However, there is a slight subtlety here: the marked pairs of $G$
 may not respect path concatenation, and may not even form an equivalence

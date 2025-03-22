@@ -77,13 +77,13 @@ OFE-Product A B .π₁ .preserves .pres-≈ = fst
 OFE-Product A B .π₂ .hom = snd
 OFE-Product A B .π₂ .preserves .pres-≈ = snd
 
-OFE-Product A B .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
+OFE-Product A B .has-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
 OFE-Product A B .has-is-product .⟨_,_⟩ f g .preserves .pres-≈ p =
   f .preserves .pres-≈ p , g .preserves .pres-≈ p
 
 OFE-Product A B .has-is-product .π₁∘⟨⟩ = trivial!
 OFE-Product A B .has-is-product .π₂∘⟨⟩ = trivial!
-OFE-Product A B .has-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
+OFE-Product A B .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
 ```
 
 <!--
@@ -175,10 +175,10 @@ OFE-Indexed-product F .ΠF = from-ofe-on $
 OFE-Indexed-product F .π i .hom f = f i
 OFE-Indexed-product F .π i .preserves .pres-≈ α =
   □-out! ((_$ i) <$> α .lower)
-OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i # x
+OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i · x
 OFE-Indexed-product F .has-is-ip .tuple f .preserves .pres-≈ wit =
   lift $ inc λ i → f i .preserves .pres-≈ wit
 OFE-Indexed-product F .has-is-ip .commute = trivial!
 OFE-Indexed-product F .has-is-ip .unique f prf =
-  ext λ x y → prf y #ₚ x
+  ext λ x y → prf y ·ₚ x
 ```

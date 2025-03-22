@@ -105,7 +105,7 @@ private
 
   -- Create the clause of shows-prec for a constructor.
   show-clause : Constructor → TC Clause
-  show-clause (conhead conm _ args _) = do
+  show-clause (conhead conm _ _ args _) = do
     let
       -- We'll only show the visible arguments to the constructor.
       -- Moreover, since Agda can infer the types in the telescope

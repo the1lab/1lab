@@ -351,7 +351,7 @@ $$g \circ e_i \circ r_i \circ f_i = h \circ e_i \circ r_i \circ f_i$$
 
 by our hypothesis. Finally, we can use the fact that $f_i$ and $r_i$
 are a section/retraction pair to observe that $g \circ e_i = f \circ e_i$,
-completeing the proof
+completing the proof
 
 ```agda
 retracts+separating-family→separator

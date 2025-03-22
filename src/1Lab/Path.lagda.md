@@ -17,7 +17,7 @@ module 1Lab.Path where
 ```agda
 open Prim.Extension public
 open Prim.Interval public
-open Prim.Kan public
+open Prim.Kan hiding (module hcomp-sys ; module comp-sys) public
 
 -- Slightly ugly type to demonstrate the algebraic properties of the
 -- interval.
@@ -1464,26 +1464,33 @@ face for the [square] at the start of this section.
 [square]: 1Lab.Path.html#composition
 
 ```agda
-_··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+_∙∙_∙∙_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
         → w ≡ x → x ≡ y → y ≡ z
         → w ≡ z
-(p ·· q ·· r) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → r j
-  j (j = i0) → q i
+(p ∙∙ q ∙∙ r) i = hcomp (∂ i) sys module ∙∙-sys where
+  sys : ∀ j → Partial (∂ i ∨ ~ j) _
+  sys j (i = i0) = p (~ j)
+  sys j (i = i1) = r j
+  sys j (j = i0) = q i
 ```
+
+<!--
+```agda
+{-# DISPLAY hcomp _ (∙∙-sys.sys {ℓ} {A} {w} {x} {y} {z} p q r i) = _∙∙_∙∙_ {ℓ} {A} {w} {x} {y} {z} p q r i #-}
+```
+-->
 
 Since it will be useful later, we also give an explicit name for the
 *filler* of the double composition square. Since `Square`{.Agda}
 expresses an equation between paths, we can read the type of
-`··-filler`{.Agda} as saying that $p\inv \cdot (p \dcomp q \dcomp r) = q
+`∙∙-filler`{.Agda} as saying that $p\inv \cdot (p \dcomp q \dcomp r) = q
 \cdot r$.
 
 ```agda
-··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+∙∙-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
           → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-          → Square (sym p) q (p ·· q ·· r) r
-··-filler p q r i j = hfill (∂ j) i λ where
+          → Square (sym p) q (p ∙∙ q ∙∙ r) r
+∙∙-filler p q r i j = hfill (∂ j) i λ where
   k (j = i0) → p (~ k)
   k (j = i1) → r k
   k (k = i0) → q j
@@ -1518,12 +1525,12 @@ for the single composition, whose type we read as saying that $\refl
 ```agda
 _∙_
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
-p ∙ q = refl ·· p ·· q
+p ∙ q = refl ∙∙ p ∙∙ q
 
 ∙-filler
   : ∀ {ℓ} {A : Type ℓ} {x y z : A}
   → (p : x ≡ y) (q : y ≡ z) → Square refl p (p ∙ q) q
-∙-filler {x = x} {y} {z} p q = ··-filler refl p q
+∙-filler {x = x} {y} {z} p q = ∙∙-filler refl p q
 
 infixr 30 _∙_
 ```
@@ -1685,7 +1692,7 @@ answer, fortunately, is no: we can show that any triple of paths has a
 *square* whose boundary includes the two *lines* we're comparing.
 
 ```agda
-··-unique
+∙∙-unique
   : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
   → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
   → (α β : Σ[ s ∈ (w ≡ z) ] Square (sym p) q s r)
@@ -1699,7 +1706,7 @@ Note that the proof of this involves filling a cube in a context that
 *already* has an interval variable in scope - a hypercube!
 
 ```agda
-··-unique {w = w} {x} {y} {z} p q r (α , α-fill) (β , β-fill) =
+∙∙-unique {w = w} {x} {y} {z} p q r (α , α-fill) (β , β-fill) =
   λ i → (λ j → square i j) , (λ j k → cube i j k)
   where
     cube : (i j : I) → p (~ j) ≡ r j
@@ -1776,17 +1783,17 @@ edges going up rather than down. This is to match the direction of the
 3D diagram above. The colours are also matching.
 
 Readers who are already familiar with the notion of h-level will have
-noticed that the proof `··-unique`{.Agda} expresses that the type of
-double composites `p ·· q ·· r` is a _proposition_, not that it is
-contractible. However, since it is inhabited (by `_··_··_`{.Agda} and
+noticed that the proof `∙∙-unique`{.Agda} expresses that the type of
+double composites `p ∙∙ q ∙∙ r` is a _proposition_, not that it is
+contractible. However, since it is inhabited (by `_∙∙_∙∙_`{.Agda} and
 its filler), it is contractible:
 
 ```agda
-··-contract : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+∙∙-contract : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
             → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
             → (β : Σ[ s ∈ (w ≡ z) ] Square (sym p) q s r)
-            → (p ·· q ·· r , ··-filler p q r) ≡ β
-··-contract p q r β = ··-unique p q r _ β
+            → (p ∙∙ q ∙∙ r , ∙∙-filler p q r) ≡ β
+∙∙-contract p q r β = ∙∙-unique p q r _ β
 ```
 
 <!--
@@ -1797,13 +1804,13 @@ its filler), it is contractible:
   → Square refl p r q
   → r ≡ p ∙ q
 ∙-unique {p = p} {q} r square i =
-  ··-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
+  ∙∙-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
 
-··-unique' : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+∙∙-unique' : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
            → {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} {s : w ≡ z}
            → (β : Square (sym p) q s r)
-           → s ≡ p ·· q ·· r
-··-unique' β i = ··-contract _ _ _ (_ , β) (~ i) .fst
+           → s ≡ p ∙∙ q ∙∙ r
+∙∙-unique' β i = ∙∙-contract _ _ _ (_ , β) (~ i) .fst
 ```
 -->
 
@@ -1843,7 +1850,7 @@ ap-square f α i j = f (α i j)
 
 Despite the nightmare type (to allow `f` to be a dependent function),
 the definition is just as straightforward as that of `ap`{.Agda}. Using
-this with `··filler`{.Agda}, we get a square with boundary
+this with `∙∙filler`{.Agda}, we get a square with boundary
 
 ~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
@@ -1857,19 +1864,19 @@ this with `··filler`{.Agda}, we get a square with boundary
 \end{tikzcd}\]
 ~~~
 
-but note that our lemma `··-unique'`{.Agda} says precisely that, for
+but note that our lemma `∙∙-unique'`{.Agda} says precisely that, for
 every square with this boundary, we can get a square connecting the red
 path $\ap{f}{(p \dcomp q \dcomp r)}$ and the composition $\ap{f}{p} \dcomp
 \ap{f}{q} \dcomp \ap{f}{r}$.
 
 ```agda
-ap-·· : (f : A → B) {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-      → ap f (p ·· q ·· r) ≡ ap f p ·· ap f q ·· ap f r
-ap-·· f p q r = ··-unique' (ap-square f (··-filler p q r))
+ap-∙∙ : (f : A → B) {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
+      → ap f (p ∙∙ q ∙∙ r) ≡ ap f p ∙∙ ap f q ∙∙ ap f r
+ap-∙∙ f p q r = ∙∙-unique' (ap-square f (∙∙-filler p q r))
 
 ap-∙ : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
       → ap f (p ∙ q) ≡ ap f p ∙ ap f q
-ap-∙ f p q = ap-·· f refl p q
+ap-∙ f p q = ap-∙∙ f refl p q
 ```
 
 ## Dependent paths, continued
@@ -2072,7 +2079,7 @@ with weird names are defined:
   → (q : x ≡ y)
   → (r : y ≡ z)
   → w ≡ z
-≡⟨⟩≡⟨⟩-syntax w x p q r = p ·· q ·· r
+≡⟨⟩≡⟨⟩-syntax w x p q r = p ∙∙ q ∙∙ r
 
 infixr 2 ≡⟨⟩-syntax
 syntax ≡⟨⟩-syntax x q p = x ≡⟨ p ⟩ q
@@ -2226,7 +2233,7 @@ double-composite
   : ∀ {ℓ} {A : Type ℓ}
   → {x y z w : A}
   → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-  → p ·· q ·· r ≡ p ∙ q ∙ r
+  → p ∙∙ q ∙∙ r ≡ p ∙ q ∙ r
 double-composite p q r i j =
   hcomp (i ∨ ∂ j) λ where
     k (i = i1) → ∙-filler' p (q ∙ r) k j
@@ -2258,7 +2265,7 @@ to adjust the path by a bunch of transports:
 
 ```agda
   where
-    lemma : _ ≡ (sym left ·· p ·· right)
+    lemma : _ ≡ (sym left ∙∙ p ∙∙ right)
     lemma i j = hcomp (~ i ∨ ∂ j) λ where
       k (k = i0) → transp (λ j → A) i (p j)
       k (i = i0) → hfill (∂ j) k λ where
@@ -2332,10 +2339,10 @@ infixl 32 _▷_
 Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}
           → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
-          → Square p q s r ≡ (sym p ·· q ·· r ≡ s)
+          → Square p q s r ≡ (sym p ∙∙ q ∙∙ r ≡ s)
 Square≡double-composite-path {p = p} {q} {s} {r} k =
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
-    (··-filler (sym p) q r k) s
+    (∙∙-filler (sym p) q r k) s
 
 J' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
      (P : (x y : A) → x ≡ y → Type ℓ₂)

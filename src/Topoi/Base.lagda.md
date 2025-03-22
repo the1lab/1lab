@@ -3,6 +3,7 @@
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Instances.Algebras.Limits
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Shape.Terminal
@@ -13,7 +14,6 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Monad.Limits
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
@@ -45,7 +45,7 @@ open _=>_
 ```
 -->
 
-# Grothendieck topoi
+# Grothendieck topoi {defines="topos topoi"}
 
 Topoi are an abstraction introduced by Alexander Grothendieck in the
 1960s as a generalisation of [topological spaces], suitable for his work
@@ -306,8 +306,8 @@ transformation $\eta : F \To G$ at its one component $\eta_* : F(*) \to
 G(*)$.
 
 ```agda
-  sets .L .F₀ F    = F # _
-  sets .L .F₁ nt   = nt # _
+  sets .L .F₀ F    = F · _
+  sets .L .F₁ nt   = nt · _
   sets .L .F-id    = refl
   sets .L .F-∘ f g = refl
 ```
@@ -336,10 +336,10 @@ limits directly for efficiency concerns. </summary>
     pb' : is-pullback (Sets κ) _ _ _ _
     pb' .square = pb .square ηₚ _
     pb' .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
-      pb .universal {P' = incl # P'}
-        {p₁' = NT (λ _ → p₁') (λ _ _ _ → funext λ _ → sym (X .F-id # _))}
-        {p₂' = NT (λ _ → p₂') (λ _ _ _ → funext λ _ → sym (Y .F-id # _))}
-        (Nat-pathp _ _ (λ x → p)) # lift tt
+      pb .universal {P' = incl · P'}
+        {p₁' = NT (λ _ → p₁') (λ _ _ _ → funext λ _ → sym (X .F-id · _))}
+        {p₂' = NT (λ _ → p₂') (λ _ _ _ → funext λ _ → sym (Y .F-id · _))}
+        (Nat-pathp _ _ (λ x → p)) · lift tt
 
     pb' .p₁∘universal = pb .p₁∘universal ηₚ _
     pb' .p₂∘universal = pb .p₂∘universal ηₚ _
@@ -410,7 +410,7 @@ categories are complete, and those are complete because $\Sets$ is.)
 module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
   open Topos T
 
-  Sheafify : Monad (PSh κ site)
+  Sheafify : Monad-on _
   Sheafify = Adjunction→Monad L⊣ι
 
   Sheafify-monadic : is-monadic L⊣ι
@@ -419,7 +419,7 @@ module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
   Topos-is-complete : is-complete κ κ 𝓣
   Topos-is-complete = equivalence→complete
     (is-equivalence.inverse-equivalence Sheafify-monadic)
-    (Eilenberg-Moore-is-complete
+    (Eilenberg-Moore-is-complete _
       (Functor-cat-is-complete (Sets-is-complete {ι = κ} {κ} {κ})))
 ```
 

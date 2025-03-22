@@ -70,14 +70,14 @@ cast-cod-idr : ∀ {x x' y : Ob} → (f : Hom x y) → (p : x' ≡ x)
         → f ∘ cast-cod p id ≡ cast-dom (sym p) f
 cast-cod-idr {y = y} f p =
   J (λ x p → ∀ (f : Hom x y) → f ∘ cast-cod p id ≡ cast-dom (sym p) f)
-    (λ f →  ap (f ∘_) (transport-refl _) ·· idr _ ·· sym (transport-refl _))
+    (λ f →  ap (f ∘_) (transport-refl _) ∙∙ idr _ ∙∙ sym (transport-refl _))
     p f
 
 cast-dom-idl : ∀ {x y y' : Ob} → (f : Hom x y) → (p : y' ≡ y)
         → cast-dom p id ∘ f ≡ cast-cod (sym p) f
 cast-dom-idl {x = x} f p =
   J (λ y p → ∀ (f : Hom x y) → cast-dom p id ∘ f ≡ cast-cod (sym p) f)
-    (λ f → ap (_∘ f) (transport-refl _) ·· idl _ ·· sym (transport-refl _))
+    (λ f → ap (_∘ f) (transport-refl _) ∙∙ idl _ ∙∙ sym (transport-refl _))
     p f
 ```
 

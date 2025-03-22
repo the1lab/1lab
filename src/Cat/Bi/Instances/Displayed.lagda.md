@@ -1,0 +1,151 @@
+<!--
+```agda
+open import Cat.Functor.Naturality
+open import Cat.Displayed.Functor
+open import Cat.Instances.Product
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Bi.Base
+open import Cat.Prelude
+
+import Cat.Displayed.Reasoning as Disp
+import Cat.Reasoning as Cat
+```
+-->
+
+```agda
+module Cat.Bi.Instances.Displayed where
+```
+
+<!--
+```agda
+private variable
+  o ℓ o' ℓ' o'' ℓ'' : Level
+  B : Precategory o ℓ
+
+```
+-->
+
+# The bicategory of displayed categories over a base
+
+Since [[displayed categories]] provide a natural setting for "relative
+category theory", i.e. the study of categories *relative to a base*, we
+should expect that the collection of displayed categories $\cE \liesover
+\cB$ assembles into a [[bicategory]], relativising the bicategory of
+categories. And, indeed, this is the case: fixing a base $\cB$, we can
+put together a bicategory where the objects are categories displayed
+over $\cB$, the 1-cells are [[vertical functors]] over $\cB$, and the
+2-cells are [[vertical natural transformations]] over $\cB$.
+
+<!--
+```agda
+module _ where
+  open Precategory
+```
+-->
+
+The first step is to construct an ordinary category of vertical functors
+over $\cB$. This is very straightforward, since composition of vertical
+natural transformations happens at the level of [[fibre categories]].
+
+```agda
+  Vertical-functors : Displayed B o' ℓ' → Displayed B o'' ℓ'' → Precategory _ _
+  Vertical-functors E F .Ob  = Vertical-functor E F
+  Vertical-functors E F .Hom G H = G =>↓ H
+  Vertical-functors E F .Hom-set _ _ = hlevel 2
+  Vertical-functors E F .id  = idnt↓
+  Vertical-functors E F ._∘_ = _∘nt↓_
+  Vertical-functors E F .idr f = ext λ x → Cat.idr (Fibre F _) _
+  Vertical-functors E F .idl f = ext λ x → Cat.idl (Fibre F _) _
+  Vertical-functors E F .assoc f g h = ext λ x → Cat.assoc (Fibre F _) _ _ _
+```
+
+<!--
+```agda
+module _ {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) where
+  open Prebicategory
+
+  private
+    Vf : Displayed B o' ℓ' → Displayed B o'' ℓ'' → Precategory _ _
+    Vf = Vertical-functors
+
+  open Vertical-functor
+  open make-natural-iso
+  open Functor
+  open _=>↓_
+```
+-->
+
+We can then extend the *whiskering* operation between vertical natural
+transformations to the action of a "composition" functor between
+vertical functor categories, with the functoriality condition precisely
+as in the nondisplayed case.
+
+```agda
+  ∘V-functor : ∀ {E F G : Displayed B o' ℓ'} → Functor (Vf F G ×ᶜ Vf E F) (Vf E G)
+  ∘V-functor .F₀ (G , F) = G ∘V F
+  ∘V-functor .F₁ (f , g) = f ◆↓ g
+  ∘V-functor {G = 𝒢} .F-id {F , G} = ext λ x → ap₂ G._∘_ (F .F-id') refl ∙ G.idr _ where
+    module G {x} = Cat (Fibre 𝒢 x)
+  ∘V-functor {F = ℱ} {G = 𝒢} .F-∘ {X , Y} {Z , W} {U , V} (α , β) (δ , γ) = ext λ x →
+    U .F₁' (β .η' x F.∘ γ .η' x) G.∘ (α .η' _ G.∘ δ .η' _)          ≡⟨ G.pushl (F-∘↓ U) ⟩
+    U .F₁' (β .η' x) G.∘ U .F₁' (γ .η' x) G.∘ α .η' _ G.∘ δ .η' _   ≡⟨ G.extend-inner (sym (is-natural↓ α _ _ _)) ⟩
+    U .F₁' (β .η' x) G.∘ α .η' _ G.∘ Z .F₁' (γ .η' _) G.∘ δ .η' _   ≡⟨ G.pulll refl ⟩
+    (U .F₁' (β .η' _) G.∘ α .η' _) G.∘ Z .F₁' (γ .η' _) G.∘ δ .η' _ ∎
+    where
+      module G {x} = Cat (Fibre 𝒢 x) using (_∘_ ; pushl ; extend-inner ; pulll)
+      module F {x} = Cat (Fibre ℱ x) using (_∘_)
+```
+
+<!--
+```agda
+  private
+    assoc : Associator-for Vf ∘V-functor
+    assoc {D = D} = to-natural-iso ni where
+      module D = Displayed D
+      module D' {x} = Cat (Fibre D x) using (_∘_ ; idl ; idr ; elimr ; pushl ; introl)
+
+      ni : make-natural-iso {D = Vf _ _} _ _
+      ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] D) }
+      ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] D) }
+      ni .eta∘inv _ = ext λ _ → D'.idl _
+      ni .inv∘eta _ = ext λ _ → D'.idl _
+      ni .natural x y f = ext λ _ → D'.idr _ ∙∙ D'.pushl (F-∘↓ (y .fst)) ∙∙ D'.introl refl
+```
+-->
+
+Finally, we can put together the bicategory structure itself. This is,
+again, exactly as in the nondisplayed case, with all the components of
+the structural isomorphisms being identities.
+
+```agda
+  Disp[] : Prebicategory (o ⊔ ℓ ⊔ lsuc (o' ⊔ ℓ')) (o ⊔ ℓ ⊔ o' ⊔ ℓ') (o ⊔ ℓ ⊔ o' ⊔ ℓ')
+  Disp[] .Ob = Displayed B o' ℓ'
+  Disp[] .Hom = Vertical-functors
+  Disp[] .id = Displayed-functor→Vertical-functor Id'
+  Disp[] .compose = ∘V-functor
+  Disp[] .unitor-l {B = B} = to-natural-iso ni where
+    module B = Displayed B
+    ni : make-natural-iso {D = Vf _ _} _ _
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] B) }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] B) }
+    ni .eta∘inv _ = ext λ _ → Cat.idl (Fibre B _) _
+    ni .inv∘eta _ = ext λ _ → Cat.idl (Fibre B _) _
+    ni .natural x y f = ext λ _ → Cat.elimr (Fibre B _) refl ∙ Cat.id-comm (Fibre B _)
+  Disp[] .unitor-r {B = B} = to-natural-iso ni where
+    module B = Displayed B
+    module B' {x} = Cat (Fibre B x) using (_∘_ ; idl ; elimr)
+
+    ni : make-natural-iso {D = Vf _ _} _ _
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] B) }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → to-pathp (Disp.id-comm[] B) }
+    ni .eta∘inv _ = ext λ _ → B'.idl _
+    ni .inv∘eta _ = ext λ _ → B'.idl _
+    ni .natural x y f = ext λ _ → B'.elimr refl ∙ ap₂ B'._∘_ (y .F-id') refl
+  Disp[] .associator = assoc
+  Disp[] .triangle {C = C} f g = ext λ _ → Cat.idr (Fibre C _) _
+  Disp[] .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
+    (E.eliml (ap (f .F₁') (ap (g .F₁') (h .F-id')) ∙∙ ap (f .F₁') (g .F-id') ∙∙ f .F-id'))
+    (E.elimr (E.eliml (f .F-id')))
+    where module E {x} = Cat (Fibre E x) using (_∘_ ; eliml ; elimr)
+```

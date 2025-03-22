@@ -44,7 +44,7 @@ of two morphisms in $\cC$.
 ```agda
   2-object-nat-trans
     : ∀ {F G : Functor 2-object-category C}
-    → Hom (F # true) (G # true) → Hom (F # false) (G # false)
+    → Hom (F · true) (G · true) → Hom (F · false) (G · false)
     → F => G
   2-object-nat-trans f g = Disc-natural λ where
     true  → f
@@ -58,7 +58,7 @@ defined above.
 ```agda
   canonical-functors
     : ∀ (F : Functor 2-object-category C)
-    → F ≡ 2-object-diagram (F # true) (F # false)
+    → F ≡ 2-object-diagram (F · true) (F · false)
   canonical-functors F = Functor-path p q where
     p : ∀ x → _
     p false = refl

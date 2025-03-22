@@ -60,8 +60,7 @@ propositions to each inhabitant of $X$.
 ```agda
 ℙ-ext : {A B : ℙ X}
       → A ⊆ B → B ⊆ A → A ≡ B
-ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x →
-  Ω-ua (A⊆B x) (B⊂A x)
+ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x → Ω-ua (A⊆B x) (B⊂A x)
 ```
 
 ## Lattice structure

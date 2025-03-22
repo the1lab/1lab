@@ -553,17 +553,17 @@ instance
   Funlike-Functor
     : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     → Funlike (Functor C D) ⌞ C ⌟ (λ x → ⌞ D ⌟)
-  Funlike-Functor = record { _#_ = Functor.F₀ }
+  Funlike-Functor = record { _·_ = Functor.F₀ }
 
   Funlike-natural-transformation
     : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D}
-    → Funlike (F => G) ⌞ C ⌟ (λ x → D .Precategory.Hom (F # x) (G # x))
-  Funlike-natural-transformation = record { _#_ = _=>_.η }
+    → Funlike (F => G) ⌞ C ⌟ (λ x → D .Precategory.Hom (F · x) (G · x))
+  Funlike-natural-transformation = record { _·_ = _=>_.η }
 
   Extensional-natural-transformation
     : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     → {F G : Functor C D}
-    → ⦃ sa : {x : ⌞ C ⌟} → Extensional (D .Hom (F # x) (G # x)) ℓr ⦄
+    → ⦃ sa : {x : ⌞ C ⌟} → Extensional (D .Hom (F · x) (G · x)) ℓr ⦄
     → Extensional (F => G) (o ⊔ ℓr)
   Extensional-natural-transformation ⦃ sa ⦄ .Pathᵉ f g = ∀ i → Pathᵉ sa (f .η i) (g .η i)
   Extensional-natural-transformation ⦃ sa ⦄ .reflᵉ x i = reflᵉ sa (x .η i)
@@ -576,7 +576,7 @@ _⟪_⟫_
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → (F : Functor C D) {U V : ⌞ C ⌟}
   → C .Precategory.Hom U V
-  → D .Precategory.Hom (F # U) (F # V)
+  → D .Precategory.Hom (F · U) (F · V)
 _⟪_⟫_ F f = Functor.F₁ F f
 ```
 -->

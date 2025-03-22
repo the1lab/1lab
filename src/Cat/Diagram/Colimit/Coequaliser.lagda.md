@@ -91,8 +91,8 @@ is-colimit→is-coequaliser F {K} {eta} colim = co where
       true → q
       false →
         ap (other ∘_) (introl (K .F-id) ∙ sym (eta .is-natural false true true))
-        ·· pulll q
-        ·· sym p
+        ∙∙ pulll q
+        ∙∙ sym p
 
 Coequaliser→Colimit : ∀ {F : Functor ·⇉· C} → Coequaliser C (forkl F) (forkr F) → Colimit F
 Coequaliser→Colimit {F = F} coeq = to-colimit (is-coequaliser→is-colimit F (has-is-coeq coeq))

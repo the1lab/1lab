@@ -143,7 +143,7 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
     lim : is-ran !F (F F∘ G) (F F∘ !Const o) (nat-assoc-from (F ▸ unwhisker eps'))
     lim = natural-isos→is-ran idni idni
       (!const-isoⁿ is)
-      (ext λ j → D.idl _ ·· (D.refl⟩∘⟨ D.eliml (Lim .Ext .F-id)) ·· sym (F.ε _))
+      (ext λ j → D.idl _ ∙∙ (D.refl⟩∘⟨ D.eliml (Lim .Ext .F-id)) ∙∙ sym (F.ε _))
       (Lim .has-ran)
 
   ff→reflects-Colimit

@@ -99,7 +99,7 @@ is-limit→is-product {a} {b} {K} {eps} lim = prod where
     true → p
     false → q
 
-Product→Limit : ∀ {F : Functor 2-object-category C} → Product C (F # true) (F # false) → Limit F
+Product→Limit : ∀ {F : Functor 2-object-category C} → Product C (F · true) (F · false) → Limit F
 Product→Limit prod = to-limit (is-product→is-limit {eps = 2-object-nat-trans _ _} (has-is-product prod))
 
 Limit→Product : ∀ {a b} → Limit (2-object-diagram a b) → Product C a b

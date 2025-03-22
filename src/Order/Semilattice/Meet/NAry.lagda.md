@@ -93,11 +93,11 @@ module
 
   open is-meet-slat-hom hom
 
-  pres-⋂ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f # (⋂ᶠ Pl k) ≡ ⋂ᶠ Ql (apply f ⊙ k)
+  pres-⋂ᶠ : ∀ {n} (k : Fin n → ⌞ P ⌟) → f · (⋂ᶠ Pl k) ≡ ⋂ᶠ Ql (apply f ⊙ k)
   pres-⋂ᶠ {n = 0} k = pres-top
   pres-⋂ᶠ {n = 1} k = refl
   pres-⋂ᶠ {n = suc (suc n)} k =
-    f # (k fzero Pₗ.∩ ⋂ᶠ Pl (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
-    f # (k fzero) Qₗ.∩ f # ⋂ᶠ Pl (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
+    f · (k fzero Pₗ.∩ ⋂ᶠ Pl (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
+    f · (k fzero) Qₗ.∩ f · ⋂ᶠ Pl (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
     ⋂ᶠ Ql (apply f ⊙ k)                      ∎
 ```

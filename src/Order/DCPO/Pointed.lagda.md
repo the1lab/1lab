@@ -158,7 +158,7 @@ $f^n(\bot)$.
 ```agda
     fⁿ : Nat → Ob → Ob
     fⁿ zero x = x
-    fⁿ (suc n) x = f # (fⁿ n x)
+    fⁿ (suc n) x = f · (fⁿ n x)
 
     fⁿ-mono : ∀ {i j} → i Nat.≤ j → fⁿ i bot ≤ fⁿ j bot
     fⁿ-mono Nat.0≤x = ¡
@@ -179,25 +179,25 @@ namely for any $y$ such that $f y \le y$, $\bigcup (f^{n}(\bot)) \le y$.
 This follows from som quick induction.
 
 ```agda
-    fⁿ⊥≤fix : ∀ (y : Ob) → f # y ≤ y → ∀ n → fⁿ⊥ n ≤ y
+    fⁿ⊥≤fix : ∀ (y : Ob) → f · y ≤ y → ∀ n → fⁿ⊥ n ≤ y
     fⁿ⊥≤fix y p (lift zero) = ¡
     fⁿ⊥≤fix y p (lift (suc n)) =
-      f # (fⁿ n bot)   ≤⟨ f.monotone (fⁿ⊥≤fix y p (lift n)) ⟩
-      f # y            ≤⟨ p ⟩
+      f · (fⁿ n bot)   ≤⟨ f.monotone (fⁿ⊥≤fix y p (lift n)) ⟩
+      f · y            ≤⟨ p ⟩
       y                ≤∎
 
-    least-fix : ∀ (y : Ob) → f # y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
+    least-fix : ∀ (y : Ob) → f · y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
     least-fix y p = ⋃.least _ _ _ (fⁿ⊥≤fix y p)
 ```
 
-Now, let's show that $\bigcup (f^{n}(\bot))$ is actuall a fixpoint.
+Now, let's show that $\bigcup (f^{n}(\bot))$ is actually a fixpoint.
 First, the forward direction: $\bigcup (f^{n}(\bot)) \le f (\bigcup (f^{n}(\bot)))$.
 This follows directly from Scott-continuity of $f$.
 
 ```agda
-    roll : f # (⋃ fⁿ⊥ fⁿ⊥-dir) ≤ ⋃ fⁿ⊥ fⁿ⊥-dir
+    roll : f · (⋃ fⁿ⊥ fⁿ⊥-dir) ≤ ⋃ fⁿ⊥ fⁿ⊥-dir
     roll =
-      f # (⋃ fⁿ⊥ _)        =⟨ f.pres-⋃ fⁿ⊥ fⁿ⊥-dir ⟩
+      f · (⋃ fⁿ⊥ _)        =⟨ f.pres-⋃ fⁿ⊥ fⁿ⊥-dir ⟩
       ⋃ (apply f ⊙ fⁿ⊥) _  ≤⟨ ⋃.least _ _ _ (λ (lift n) → ⋃.fam≤lub _ _ (lift (suc n))) ⟩
       ⋃ fⁿ⊥ _              ≤∎
 ```
@@ -208,8 +208,8 @@ We can then apply monotonicity of $f$, and then use the forward direction
 to finish off the proof.
 
 ```agda
-    unroll : ⋃ fⁿ⊥ fⁿ⊥-dir ≤ f # (⋃ fⁿ⊥ fⁿ⊥-dir)
-    unroll = least-fix (f # (⋃ fⁿ⊥ fⁿ⊥-dir)) $
+    unroll : ⋃ fⁿ⊥ fⁿ⊥-dir ≤ f · (⋃ fⁿ⊥ fⁿ⊥-dir)
+    unroll = least-fix (f · (⋃ fⁿ⊥ fⁿ⊥-dir)) $
       f.monotone roll
 ```
 
@@ -240,14 +240,14 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
 ```agda
   is-strictly-scott-continuous : (f : DCPOs.Hom D E) → Type _
   is-strictly-scott-continuous f =
-    ∀ (x : D.Ob) → is-bottom D.poset x → is-bottom E.poset (f # x)
+    ∀ (x : D.Ob) → is-bottom D.poset x → is-bottom E.poset (f · x)
 ```
 
 ```agda
   is-strictly-scott-is-prop
     : (f : DCPOs.Hom D E) → is-prop (is-strictly-scott-continuous f)
   is-strictly-scott-is-prop f = Π-is-hlevel² 1 λ x _ →
-    is-bottom-is-prop E.poset (f # x)
+    is-bottom-is-prop E.poset (f · x)
 ```
 
 
@@ -266,7 +266,7 @@ strict-scott-∘
   → is-strictly-scott-continuous f → is-strictly-scott-continuous g
   → is-strictly-scott-continuous (f DCPOs.∘ g)
 strict-scott-∘ f g f-strict g-strict x x-bot =
-  f-strict (g # x) (g-strict x x-bot)
+  f-strict (g · x) (g-strict x x-bot)
 ```
 
 Pointed DCPOs and strictly Scott-continuous functions form a subcategory
@@ -446,20 +446,20 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
   open Scott scott public
 
   opaque
-    pres-bottoms : ∀ x → is-bottom D.poset x → is-bottom E.poset (f # x)
+    pres-bottoms : ∀ x → is-bottom D.poset x → is-bottom E.poset (f · x)
     pres-bottoms = Subcat-hom.witness f
 
-    pres-⊥ : f # D.bottom ≡ E.bottom
+    pres-⊥ : f · D.bottom ≡ E.bottom
     pres-⊥ = bottom-unique E.poset (pres-bottoms D.bottom D.bottom≤x) E.bottom≤x
 
     pres-adjoin-lub
       : ∀ {s : Ix → D.Ob} {x : D.Ob}
       → is-semidirected-family D.poset s
-      → is-lub D.poset (D.adjoin s) x → is-lub E.poset (E.adjoin (apply f ⊙ s)) (f # x)
+      → is-lub D.poset (D.adjoin s) x → is-lub E.poset (E.adjoin (apply f ⊙ s)) (f · x)
     pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.fam≤lub (just i) =
       monotone (is-lub.fam≤lub x-lub (just i))
     pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.fam≤lub nothing =
-      E.bottom≤x (f # x)
+      E.bottom≤x (f · x)
     pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.least y le =
       is-lub.least
         (pres-directed-lub (D.adjoin s) (D.adjoin-directed s sdir) x x-lub) y λ where
@@ -468,24 +468,24 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
 
     pres-semidirected-lub
       : ∀ {Ix} (s : Ix → D.Ob) → is-semidirected-family D.poset s
-      → ∀ x → is-lub D.poset s x → is-lub E.poset (apply f ⊙ s) (f # x)
+      → ∀ x → is-lub D.poset s x → is-lub E.poset (apply f ⊙ s) (f · x)
     pres-semidirected-lub s sdir x x-lub =
       E.adjoin-lub→lub (pres-adjoin-lub sdir (D.lub→adjoin-lub x-lub))
 
     pres-⋃-prop
       : ∀ {Ix} (s : Ix → D.Ob) (p q : is-prop Ix)
-      → f # (D.⋃-prop s p) ≡ E.⋃-prop (apply f ⊙ s) q
+      → f · (D.⋃-prop s p) ≡ E.⋃-prop (apply f ⊙ s) q
     pres-⋃-prop s p q =
       lub-unique
         (pres-semidirected-lub _
           (prop-indexed→semidirected D.poset s p) (D.⋃-prop s p) (D.⋃-prop-lub s p))
         (E.⋃-prop-lub _ _)
 
-    bottom-bounded : ∀ {x y} → x D.≤ y → f # y ≡ E.bottom → f # x ≡ E.bottom
+    bottom-bounded : ∀ {x y} → x D.≤ y → f · y ≡ E.bottom → f · x ≡ E.bottom
     bottom-bounded {x = x} {y = y} p y-bot =
       E.≤-antisym
-        (f # x    E.≤⟨ monotone p ⟩
-         f # y    E.=⟨ y-bot ⟩
+        (f · x    E.≤⟨ monotone p ⟩
+         f · y    E.=⟨ y-bot ⟩
          E.bottom E.≤∎)
         (E.bottom≤x _)
 ```

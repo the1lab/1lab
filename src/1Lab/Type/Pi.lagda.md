@@ -186,6 +186,40 @@ hetero-homotopy≃homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
 
 <!--
 ```agda
+funext≃ : ∀ {a b} {A : Type a} {B : A → Type b}
+          {f g : (x : A) → B x}
+        → ((x : A) → f x ≡ g x) ≃ (f ≡ g)
+funext≃ .fst = funext
+funext≃ .snd .is-eqv H .centre = strict-fibres happly H .fst
+funext≃ .snd .is-eqv H .paths = strict-fibres happly H .snd
+
+funextP'
+  : ∀ {A : Type ℓ} {B : A → I → Type ℓ₁}
+  → {f : ∀ {a} → B a i0} {g : ∀ {a} → B a i1}
+  → (∀ {a} → PathP (B a) (f {a}) (g {a}))
+  → PathP (λ i → ∀ {a} → B a i) f g
+funextP' p i {x} = p {x} i
+
+funext-dep-i0
+  : ∀ {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁} {f g}
+  → ( ∀ (x : A i0)
+    → PathP (λ i → B i (coe0→i A i x)) (f x) (g (coe0→1 A x)))
+  → PathP (λ i → (x : A i) → B i x) f g
+funext-dep-i0 {A = A} {B} {f} {g} h = funext-dep λ {x₀} {x₁} p →
+  subst (λ (p : (i : I) → A i) → PathP (λ i → B i (p i)) (f (p i0)) (g (p i1)))
+    (λ j i → coe-path A (λ i → p i) i0 i j)
+    (h x₀)
+
+funext-dep-i1
+  : ∀ {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁} {f g}
+  → ( ∀ (x : A i1)
+    → PathP (λ i → B i (coe1→i A i x)) (f (coe1→0 A x)) (g x))
+  → PathP (λ i → (x : A i) → B i x) f g
+funext-dep-i1 {A = A} {B} {f} {g} h = funext-dep λ {x₀} {x₁} p →
+  subst (λ (p : (i : I) → A i) → PathP (λ i → B i (p i)) (f (p i0)) (g (p i1)))
+    (λ j i → coe-path A (λ i → p i) i1 i j)
+    (h x₁)
+
 funext²
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : ∀ x → B x → Type ℓ''}
       {f g : ∀ x y → C x y}

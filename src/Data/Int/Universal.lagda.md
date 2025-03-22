@@ -92,8 +92,8 @@ equivalences $P(n) \simeq P(n + 1)$.
     ≡ Equiv.from r (map-out p r i)
   map-out-rotate-inv p r i =
       sym (Equiv.η r _)
-    ·· ap (Equiv.from r) (sym (map-out-rotate p r _))
-    ·· ap (Equiv.from r ∘ map-out p r) (Equiv.ε rotate i)
+    ∙∙ ap (Equiv.from r) (sym (map-out-rotate p r _))
+    ∙∙ ap (Equiv.from r ∘ map-out p r) (Equiv.ε rotate i)
 ```
 -->
 
@@ -191,11 +191,11 @@ assumptions, the other cases follow by induction (on naturals).
       unique-neg zero = path
       unique-neg (suc k) =
            sym (Equiv.η rot _)
-        ·· ap (Equiv.from rot) (
+        ∙∙ ap (Equiv.from rot) (
                sym (htpy (HIT.diff 0 (suc k)))
-            ·· ap f (sym (HIT.quot 0 k))
-            ·· unique-neg k)
-        ·· sym (map-out.negatives⁻¹ rot k _)
+            ∙∙ ap f (sym (HIT.quot 0 k))
+            ∙∙ unique-neg k)
+        ∙∙ sym (map-out.negatives⁻¹ rot k _)
 ```
 
 ## Inductive integers are integers
@@ -246,8 +246,8 @@ Int-integers = r where
 
     map-pred : ∀ n → f (Ind.predℤ n) ≡ Equiv.from rot (f n)
     map-pred n = sym (Equiv.η rot _)
-              ·· ap (Equiv.from rot) (sym (fr _))
-              ·· ap (Equiv.from rot ∘ f) (Ind.suc-predℤ n)
+              ∙∙ ap (Equiv.from rot) (sym (fr _))
+              ∙∙ ap (Equiv.from rot ∘ f) (Ind.suc-predℤ n)
 
     neg : ∀ n → f (Ind.negsuc n) ≡ map-out.neg rot n .fst p
     neg zero = map-pred (Ind.pos 0) ∙ ap (Equiv.from rot) fz

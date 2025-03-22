@@ -25,7 +25,7 @@ module _
     `D ← quoteTC D
     `G' ← quoteTC G'
     unify hole $ def₀ (quote Nat-path)
-      ##ₙ vlam "c" (def₀ (quote _··_··_)
+      ##ₙ vlam "c" (def₀ (quote _∙∙_∙∙_)
         ##ₙ (def₀ (quote eliml)
           ##ₙ raise 1 `D
           ##ₙ (def₀ (quote eliml)

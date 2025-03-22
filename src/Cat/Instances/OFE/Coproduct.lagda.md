@@ -153,8 +153,8 @@ OFE-Coproduct A B = mk where
   it = from-ofe-on (⊎-OFE (A .snd) (B .snd))
 
   disj : ∀ {Q} → OFEs.Hom A Q → OFEs.Hom B Q → OFEs.Hom it Q
-  disj f g .hom (inl x) = f # x
-  disj f g .hom (inr x) = g # x
+  disj f g .hom (inl x) = f · x
+  disj f g .hom (inr x) = g · x
   disj {Q = Q} f g .preserves .pres-≈ {n = zero} _ = OFE-on.bounded (Q .snd) _ _
   disj f g .preserves .pres-≈ {inl x} {inl y} {suc n} (lift α) =
     f .preserves .pres-≈ α
@@ -191,6 +191,6 @@ unique: but it suffices to reason at the level of sets.
   mk .has-is-coproduct .[]∘ι₁ = trivial!
   mk .has-is-coproduct .[]∘ι₂ = trivial!
   mk .has-is-coproduct .unique p q = ext λ where
-    (inl x) → p #ₚ x
-    (inr x) → q #ₚ x
+    (inl x) → p ·ₚ x
+    (inr x) → q ·ₚ x
 ```

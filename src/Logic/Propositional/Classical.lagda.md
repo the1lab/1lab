@@ -505,7 +505,7 @@ opaque
 -->
 
 We also define a notion of semantic entailment, wherein `ψ` semantically
-entails `P` when for every assigment of variables `ρ`, if `⟦ ψ ⟧ ρ ≡
+entails `P` when for every assignment of variables `ρ`, if `⟦ ψ ⟧ ρ ≡
 true`, then `⟦ P ⟧ ρ ≡ true`.
 
 ```agda

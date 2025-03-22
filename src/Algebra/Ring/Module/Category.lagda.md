@@ -163,9 +163,9 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
 
   grp : make-abelian-group (R-Mod.Hom A B)
   grp .ab-is-set = R-Mod.Hom-set _ _
-  grp .mul f g .hom x = f # x + g # x
+  grp .mul f g .hom x = f · x + g · x
   grp .mul f g .preserves = +-is-linear-map A B (f .preserves) (g .preserves)
-  grp .inv f .hom x = - f # x
+  grp .inv f .hom x = - f · x
   grp .inv f .preserves = neg-is-linear-map A B (f .preserves)
   grp .1g .hom x = 0g
   grp .1g .preserves = 0-is-linear-map A B
@@ -256,12 +256,12 @@ path-mangling, but it's nothing _too_ bad:
   prod .π₁ .preserves .linear r s t = refl
   prod .π₂ .hom = snd
   prod .π₂ .preserves .linear r s t = refl
-  prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
+  prod .has-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
   prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
   prod .has-is-product .π₁∘⟨⟩ = trivial!
   prod .has-is-product .π₂∘⟨⟩ = trivial!
-  prod .has-is-product .unique p q = ext λ x → p #ₚ x ,ₚ q #ₚ x
+  prod .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
 ```
 
 <!-- [TODO: Amy, 2022-09-15]

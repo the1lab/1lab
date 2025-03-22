@@ -23,7 +23,7 @@ module Cat.CartesianClosed.Lambda
         (cc : Cartesian-closed C fp term)
         where
 
-open Binary-products C fp hiding (unique₂)
+open Binary-products C fp
 open Cartesian-closed cc
 open Cat.Reasoning C
 ```
@@ -676,7 +676,7 @@ exprᵖ {h = h} (`λ f) ρ σ {m} a = tyᵖ⟨ fixup ⟩ (exprᵖ f
   where abstract
   fixup : ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡ ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩
   fixup = sym $
-    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· eliml refl)) ⟩
+    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙∙ pullr π₂∘⟨⟩ ∙∙ eliml refl)) ⟩
     ev ∘ ⟦ `λ f ⟧ᵉ ⊗₁ id ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡⟨ pulll (is-exponential.commutes has-is-exp _) ⟩
     ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩               ∎
 ```
@@ -690,7 +690,7 @@ neutral value, we get a normal form!
 id-subᵖ : ∀ Γ → Subᵖ Γ Γ id
 id-subᵖ ∅     = ∅
 id-subᵖ (Γ , x) =
-    subᵖ⟨ idl _ ·· idl _ ·· sym (idr _) ⟩ (ren-subᵖ (drop stop) (id-subᵖ Γ))
+    subᵖ⟨ idl _ ∙∙ idl _ ∙∙ sym (idr _) ⟩ (ren-subᵖ (drop stop) (id-subᵖ Γ))
   , tyᵖ⟨ sym (idr _) ⟩  (reflectᵖ (var stop))
 
 nf : Expr Γ τ → Nf Γ τ
@@ -736,7 +736,7 @@ module _ {a b : Ob} where private
 <!--
 ```agda
 solve : (e e' : Expr Γ τ) → nf e ≡ nf e' → ⟦ e ⟧ᵉ ≡ ⟦ e' ⟧ᵉ
-solve e e' prf = sym (nf-sound e) ·· ap ⟦_⟧ₙ prf ·· nf-sound e'
+solve e e' prf = sym (nf-sound e) ∙∙ ap ⟦_⟧ₙ prf ∙∙ nf-sound e'
 ```
 -->
 

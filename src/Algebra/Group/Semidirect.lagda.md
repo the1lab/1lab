@@ -71,28 +71,28 @@ actions instead would be $(a \star_A a', b \star_B \varphi_{a}(b'))$.
     A⋉B : make-group (⌞ A ⌟ × ⌞ B ⌟)
     A⋉B .group-is-set = hlevel 2
     A⋉B .unit = A.unit , B.unit
-    A⋉B .mul (a , b) (a' , b') = a A.⋆ a' , (φ # a' # b) B.⋆ b'
+    A⋉B .mul (a , b) (a' , b') = a A.⋆ a' , (φ · a' · b) B.⋆ b'
 ```
 
 The definition of the inverses is then forced, and we easily check that
 the group axioms are verified.
 
 ```agda
-    A⋉B .inv (a , b) = a A.⁻¹ , (φ # (a A.⁻¹) # b) B.⁻¹
+    A⋉B .inv (a , b) = a A.⁻¹ , (φ · (a A.⁻¹) · b) B.⁻¹
     A⋉B .assoc (ax , bx) (ay , by) (az , bz) = Σ-pathp A.associative $
-      ⌜ φ # (ay A.⋆ az) # bx ⌝ B.⋆ φ # az # by B.⋆ bz ≡⟨ ap! (unext (φ .preserves .pres-⋆ _ _) _) ⟩
-      φ # az # (φ # ay # bx) B.⋆ φ # az # by B.⋆ bz   ≡⟨ B.associative ⟩
-      (φ # az # (φ # ay # bx) B.⋆ φ # az # by) B.⋆ bz ≡˘⟨ ap (B._⋆ bz) ((φ # az) .Groups.to .preserves .pres-⋆ _ _) ⟩
-      φ # az # (φ # ay # bx B.⋆ by) B.⋆ bz            ∎
+      ⌜ φ · (ay A.⋆ az) · bx ⌝ B.⋆ φ · az · by B.⋆ bz ≡⟨ ap! (unext (φ .preserves .pres-⋆ _ _) _) ⟩
+      φ · az · (φ · ay · bx) B.⋆ φ · az · by B.⋆ bz   ≡⟨ B.associative ⟩
+      (φ · az · (φ · ay · bx) B.⋆ φ · az · by) B.⋆ bz ≡˘⟨ ap (B._⋆ bz) ((φ · az) .Groups.to .preserves .pres-⋆ _ _) ⟩
+      φ · az · (φ · ay · bx B.⋆ by) B.⋆ bz            ∎
     A⋉B .invl (a , b) = Σ-pathp A.inversel $
-      φ # a # ⌜ (φ # (a A.⁻¹) # b) B.⁻¹ ⌝ B.⋆ b ≡˘⟨ ap¡ (pres-inv ((φ # _) .Groups.to .preserves)) ⟩
-      φ # a # (φ # (a A.⁻¹) # (b B.⁻¹)) B.⋆ b   ≡˘⟨ ap (B._⋆ b) (unext (pres-⋆ (φ .preserves) _ _) _) ⟩
-      φ # ⌜ a A.⁻¹ A.⋆ a ⌝ # (b B.⁻¹) B.⋆ b     ≡⟨ ap! A.inversel ⟩
-      φ # A.unit # (b B.⁻¹) B.⋆ b               ≡⟨ ap (B._⋆ b) (unext (pres-id (φ .preserves)) _) ⟩
+      φ · a · ⌜ (φ · (a A.⁻¹) · b) B.⁻¹ ⌝ B.⋆ b ≡˘⟨ ap¡ (pres-inv ((φ · _) .Groups.to .preserves)) ⟩
+      φ · a · (φ · (a A.⁻¹) · (b B.⁻¹)) B.⋆ b   ≡˘⟨ ap (B._⋆ b) (unext (pres-⋆ (φ .preserves) _ _) _) ⟩
+      φ · ⌜ a A.⁻¹ A.⋆ a ⌝ · (b B.⁻¹) B.⋆ b     ≡⟨ ap! A.inversel ⟩
+      φ · A.unit · (b B.⁻¹) B.⋆ b               ≡⟨ ap (B._⋆ b) (unext (pres-id (φ .preserves)) _) ⟩
       b B.⁻¹ B.⋆ b                              ≡⟨ B.inversel ⟩
       B.unit                                    ∎
     A⋉B .idl (a , b) = Σ-pathp A.idl $
-      φ # a # B.unit B.⋆ b ≡⟨ ap (B._⋆ b) (pres-id ((φ # a) .Groups.to .preserves)) ⟩
+      φ · a · B.unit B.⋆ b ≡⟨ ap (B._⋆ b) (pres-id ((φ · a) .Groups.to .preserves)) ⟩
       B.unit B.⋆ b         ≡⟨ B.idl ⟩
       b                    ∎
 ```

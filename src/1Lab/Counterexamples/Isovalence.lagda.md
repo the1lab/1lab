@@ -93,7 +93,7 @@ that four copies of the identity path are identical to a single copy:
 ```agda
     at-id : P A id-iso
     at-id = ap (iso id (λ x → refl)) $ funext λ x →
-      refl ∙ refl ∙ refl ∙ refl ≡⟨ (∙-idl _ ·· ∙-idl _ ·· ∙-idl _) ⟩
+      refl ∙ refl ∙ refl ∙ refl ≡⟨ (∙-idl _ ∙∙ ∙-idl _ ∙∙ ∙-idl _) ⟩
       refl                      ∎
 ```
 

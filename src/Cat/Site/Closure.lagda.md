@@ -170,7 +170,7 @@ $R$):
 
 ```agda
   is-sheaf-factor
-    : ∀ {U} (s : Sieve C U) (c : J # U)
+    : ∀ {U} (s : Sieve C U) (c : J · U)
     → (∀ {V} (f : Hom V U) → f ∈ J .cover c → f ∈ s)
     → is-sheaf₁ A s
   is-sheaf-factor s c c⊆s ps = done where
@@ -216,7 +216,7 @@ above!
 
 ```agda
   is-sheaf-pullback
-    : ∀ {V U} (c : J # U) (f : Hom V U) → is-sheaf₁ A (pullback f (J .cover c))
+    : ∀ {V U} (c : J · U) (f : Hom V U) → is-sheaf₁ A (pullback f (J .cover c))
   is-sheaf-pullback c f p = ∥-∥-out! do
     (c' , sub) ← J .stable c f
     pure (is-sheaf-factor (pullback f (J .cover c)) c' sub p)
@@ -280,7 +280,7 @@ sieve belongs to the saturation in at most one way.
       : ∀ {J : Coverage C ℓs} {U} {R S : Sieve C U}
       → J ∋ R → J ∋ S → J ∋ (R ∩S S)
     ∋-intersect {J = J} {R = R} {S = S} α β = local β
-      (λ {V} f hf → subst (J ∋_) (ext (λ h → Ω-ua (λ fhR → fhR , S .closed hf _) fst)) (pull f α))
+      (λ {V} f hf → subst (J ∋_) (ext λ h → Ω-ua (λ fhR → fhR , S .closed hf _) fst) (pull f α))
 ```
 -->
 

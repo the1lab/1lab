@@ -147,8 +147,8 @@ composite, rather than displayed directly over a composite.
     → m₁' ≡[ q ] m₂'
   uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp⁻ $
        unique m₁' (from-pathp⁻ α)
-    ·· from-pathp⁻ (universalp p q r _)
-    ·· ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
+    ∙∙ from-pathp⁻ (universalp p q r _)
+    ∙∙ ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
 ```
 
 Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
@@ -338,6 +338,17 @@ invertible→cartesian
     hom[] (f'-inv.inv' ∘' f' ∘' m') ≡⟨ apr' p ⟩
     hom[] (f'-inv.inv' ∘' h')       ∎
 ```
+
+<!--
+```agda
+iso→cartesian
+  : ∀ {x y x' y'} {f : x ≅ y}
+  → (f' : x' ≅[ f ] y')
+  → is-cartesian (f .to) (f' .to')
+iso→cartesian {f = f} f' =
+  invertible→cartesian (iso→invertible f) (iso[]→invertible[] f')
+```
+-->
 
 If $f$ is cartesian, it's also a [weak monomorphism].
 
@@ -632,31 +643,43 @@ Thus, we do not dwell on the distinction.
 
 :::{.definition #fibred-category alias="cartesian-fibration fibration"}
 ```agda
-record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
-  no-eta-equality
-  field
-    has-lift : ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
+Cartesian-fibration : Type _
+Cartesian-fibration = ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
 
-  module has-lift {x y} (f : Hom x y) (y' : Ob[ y ]) =
-    Cartesian-lift (has-lift f y')
+module Cartesian-fibration (fib : Cartesian-fibration) where
 ```
 :::
+
+<!--
+```agda
+
+  module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
+    open Cartesian-lift (fib f y')
+      using ()
+      renaming (x' to _^*_; lifting to π*)
+      public
+
+  module π* {x y} {f : Hom x y} {y' : Ob[ y ]} where
+    open Cartesian-lift (fib f y')
+      hiding (x'; lifting)
+      public
+```
+-->
 
 Note that if $\cE$ is a fibration, we can define an operation that
 allows us to move vertical morphisms between fibres. This actually
 extends to a collection of functors, called [base change functors].
-This operation is also definable for [weak fibrations], as it only
+This operation is also definable for [[weak cartesian fibrations]], as it only
 uses the universal property that yields a vertical morphism.
 
 [base change functors]: Cat.Displayed.Cartesian.Indexing.html
-[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
 
 ```agda
   rebase : ∀ {x y y' y''} → (f : Hom x y)
            → Hom[ id ] y' y''
-           → Hom[ id ] (has-lift.x' f y') (has-lift.x' f y'')
+           → Hom[ id ] (f ^* y') (f ^* y'')
   rebase f vert =
-    has-lift.universal' f _ id-comm (vert ∘' has-lift.lifting f _)
+    π*.universal' id-comm (vert ∘' π* f _)
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for

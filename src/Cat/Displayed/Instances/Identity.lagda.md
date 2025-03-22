@@ -46,9 +46,9 @@ This fibration is obviously a discrete fibration; in fact, it's about as
 discrete as you can get!
 
 ```agda
-IdD-discrete-fibration : Discrete-fibration IdD
-IdD-discrete-fibration .Discrete-fibration.fibre-set _ = hlevel 2
-IdD-discrete-fibration .Discrete-fibration.lifts _ _ = hlevel 0
+IdD-discrete-fibration : is-discrete-cartesian-fibration IdD
+IdD-discrete-fibration .is-discrete-cartesian-fibration.fibre-set _ = hlevel 2
+IdD-discrete-fibration .is-discrete-cartesian-fibration.cart-lift _ _ = hlevel 0
 ```
 
 Every morphism in the identity fibration is trivially cartesian and
@@ -80,14 +80,14 @@ IdD-bifibration : is-bifibration IdD
 ```
 <!--
 ```agda
-IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.x' = tt
-IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.lifting = tt
-IdD-fibration .Cartesian-fibration.has-lift f y' .Cartesian-lift.cartesian =
+IdD-fibration f y' .Cartesian-lift.x' = tt
+IdD-fibration f y' .Cartesian-lift.lifting = tt
+IdD-fibration f y' .Cartesian-lift.cartesian =
   idd-is-cartesian
 
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.y' = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.lifting = tt
-IdD-opfibration .Cocartesian-fibration.has-lift f x' .Cocartesian-lift.cocartesian =
+IdD-opfibration f x' .Cocartesian-lift.y' = tt
+IdD-opfibration f x' .Cocartesian-lift.lifting = tt
+IdD-opfibration f x' .Cocartesian-lift.cocartesian =
   idd-is-cocartesian
 
 IdD-bifibration .is-bifibration.fibration = IdD-fibration

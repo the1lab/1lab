@@ -165,7 +165,7 @@ from-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = case L.≈→≈' p o
     (inr xt-ys=0) → ℤ.zero-diff xt-ys=0
 
 to-same-rational : {x y : Fraction} → x .↑ *ℤ y .↓ ≡ y .↑ *ℤ x .↓ → x ≈ y
-to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (recover (sym (*ℤ-associative 1 x t) ·· ap (1 *ℤ_) p ·· *ℤ-associative 1 y s))
+to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (recover (sym (*ℤ-associative 1 x t) ∙∙ ap (1 *ℤ_) p ∙∙ *ℤ-associative 1 y s))
 
 Dec-same-rational : (x y : Fraction) → Dec (x ≈ y)
 Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
@@ -637,8 +637,8 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
       rats=as : rats ≡ as
       rats=as = extₚ λ i →
         indexₚ-mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums) i
-        ·· ap (λ e → toℚ (e / d [ d≠0 ])) (indexₚ-tabulateₚ nums i)
-        ·· sym (quotℚ (same' i)) ∙ same i
+        ∙∙ ap (λ e → toℚ (e / d [ d≠0 ])) (indexₚ-tabulateₚ nums i)
+        ∙∙ sym (quotℚ (same' i)) ∙ same i
 
     pure (subst (applyᶠ P) rats=as p₀)
 

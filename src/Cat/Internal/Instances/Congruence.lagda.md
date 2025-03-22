@@ -74,12 +74,12 @@ composition by transitivity.
     has-trans ∘ pullback.universal _ _ (f .has-src ∙ sym (g .has-tgt))
   icat .has-internal-cat ._∘i_ f g .has-src =
        pulll trans-p₁
-    ·· pullr R×R.p₂∘universal
-    ·· g .has-src
+    ∙∙ pullr R×R.p₂∘universal
+    ∙∙ g .has-src
   icat .has-internal-cat ._∘i_ f g .has-tgt =
        pulll trans-p₂
-    ·· pullr R×R.p₁∘universal
-    ·· f .has-tgt
+    ∙∙ pullr R×R.p₁∘universal
+    ∙∙ f .has-tgt
 ```
 
 <details>

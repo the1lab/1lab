@@ -272,7 +272,7 @@ The following construction is adapted from [@Symmetry, §4.10]:
     field
       y : ⌞ H ⌟
       p : pt G ≡ x → pt H ≡ y
-      f-p : (ω : pt G ≡ pt G) (α : pt G ≡ x) → p (ω ∙ α) ≡ f # ω ∙ p α
+      f-p : (ω : pt G ≡ pt G) (α : pt G ≡ x) → p (ω ∙ α) ≡ f · ω ∙ p α
 ```
 
 Our family sends a point $x : \B{G}$ to a point $y : \B{H}$ with a function $p$ that
@@ -298,10 +298,10 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     pt≡y : pt H ≡ y
     pt≡y = p refl
 
-    f≡p : ∀ ω → Square refl (f # ω) (p ω) (p refl)
-    f≡p ω = ∙-filler (f # ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
+    f≡p : ∀ ω → Square refl (f · ω) (p ω) (p refl)
+    f≡p ω = ∙-filler (f · ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
-    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f # ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
+    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
     □≡□ = is-prop→pathp (λ i → hlevel 1) _ _
 ```
 
@@ -319,7 +319,7 @@ We can now apply the elimination principle and unpack our data:
 
   p {x} = c x .C.p
 
-  f-p : (ω : pt G ≡ pt G) (α : pt G ≡ pt G) → p (ω ∙ α) ≡ f # ω ∙ p α
+  f-p : (ω : pt G ≡ pt G) (α : pt G ≡ pt G) → p (ω ∙ α) ≡ f · ω ∙ p α
   f-p = c (pt G) .C.f-p
 ```
 
@@ -338,12 +338,12 @@ Since $g$ is pointed by $p(\refl)$, this lets us conclude that we have found a
 right inverse to $\Pi_1$:
 
 ```agda
-  f≡apg : (ω : pt G ≡ pt G) → Square (p refl) (f # ω) (ap (g .fst) ω) (p refl)
+  f≡apg : (ω : pt G ≡ pt G) → Square (p refl) (f · ω) (ap (g .fst) ω) (p refl)
   f≡apg ω = commutes→square $
     p refl ∙ ap (g .fst) ω ≡˘⟨ p-g refl ω ⟩
     p (refl ∙ ω)           ≡˘⟨ ap p ∙-id-comm ⟩
     p (ω ∙ refl)           ≡⟨ f-p ω refl ⟩
-    f # ω ∙ p refl         ∎
+    f · ω ∙ p refl         ∎
 
   rinv : π₁F .F₁ {G} {H} g ≡ f
   rinv = ext λ ω → pathp→conj (symP (f≡apg ω))

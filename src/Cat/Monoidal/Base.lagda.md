@@ -328,7 +328,7 @@ As a consequence, we get that the two unitors $1 \otimes 1 \to 1$ agree:
   λ≡ρ : λ← {Unit} ≡ ρ← {Unit}
   λ≡ρ = push-eqⁿ (unitor-r ni⁻¹) $
     (λ← ⊗₁ id)            ≡˘⟨ triangle-λ← ⟩
-    λ← ∘ α→ _ _ _         ≡⟨ (insertl (λ≅ .invl) ·· refl⟩∘⟨ sym (unitor-l .Isoⁿ.from .is-natural _ _ _) ·· cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
+    λ← ∘ α→ _ _ _         ≡⟨ (insertl (λ≅ .invl) ∙∙ refl⟩∘⟨ sym (unitor-l .Isoⁿ.from .is-natural _ _ _) ∙∙ cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
     (id ⊗₁ λ←) ∘ α→ _ _ _ ≡⟨ triangle-α→ ⟩
     (ρ← ⊗₁ id)            ∎
 ```

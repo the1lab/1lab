@@ -60,7 +60,7 @@ tupleᵖ
   : ∀ {ℓ ℓₐ ℓₐ' ℓᵣ ℓᵣ'} {I : Type ℓ} {P : I → Poset ℓₐ ℓᵣ} {R : Poset ℓₐ' ℓᵣ'}
   → (∀ i → Monotone R (P i))
   → Monotone R (Pointwise I P)
-tupleᵖ f .hom x i = f i # x
+tupleᵖ f .hom x i = f i · x
 tupleᵖ f .pres-≤ x≤y i = f i .pres-≤ x≤y
 
 prjᵖ
@@ -92,7 +92,7 @@ Poset[_,_] P Q = po module Poset[_,_] where
 
   po : Poset _ _
   po .Poset.Ob      = Monotone P Q
-  po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f # x ≤ g # x
+  po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f · x ≤ g · x
 
   po .Poset.≤-thin   = hlevel 1
   po .Poset.≤-refl _ = ≤-refl
@@ -113,7 +113,7 @@ Posets-has-indexed-products F = mk where
   mk .π  = prjᵖ
   mk .has-is-ip .tuple   = tupleᵖ
   mk .has-is-ip .commute = trivial!
-  mk .has-is-ip .unique f g = ext λ y i → g i #ₚ y
+  mk .has-is-ip .unique f g = ext λ y i → g i ·ₚ y
 ```
 
 ## Binary products are a special case of indexed products

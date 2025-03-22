@@ -310,7 +310,7 @@ open Graph
 -->
 
 Let $G$ be a graph, $\cC$ a strict category, and $f : G \to \cC$
-a [[graph homomorphism]] between $G$ and the underying graph of
+a [[graph homomorphism]] between $G$ and the underlying graph of
 $\cC$. We can extend $f$ to a function $fold(f)$ from paths in $G$ to morphisms
 in $\cC$ via induction.
 
@@ -418,7 +418,7 @@ the innocent reader.
 ```
 </details>
 
-With these lemmas out of the way, we can return to our orginal goal.
+With these lemmas out of the way, we can return to our original goal.
 The unit of the free object is given by the graph homomorphism that
 takes an edge to a singleton path, the universal morphism is given
 by our functor `PathF`{.Agda} from earlier, and the universal property
@@ -458,7 +458,7 @@ path-map
   : ∀ {x y}
   → (f : Graph-hom G H)
   → Path-in G x y
-  → Path-in H (f # x) (f # y)
+  → Path-in H (f · x) (f · y)
 path-map f nil = nil
 path-map f (cons e p) = cons (f .edge e) (path-map f p)
 

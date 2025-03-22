@@ -125,7 +125,7 @@ We're done!
       q : PathP (λ i → A C.≅ A≡B i) C.id-iso isom
       q = C.≅-pathp refl A≡B $ Hom-pathp-reflr C $
            C.idr _
-        ·· path→to-∙ C _ _
-        ·· ap₂ C._∘_ refl (sym (path→to-sym C (ap fst (p .snd))))
+        ∙∙ path→to-∙ C _ _
+        ∙∙ ap₂ C._∘_ refl (sym (path→to-sym C (ap fst (p .snd))))
          ∙ Hom-pathp-id C (ap (snd ⊙ snd) (p .snd))
 ```

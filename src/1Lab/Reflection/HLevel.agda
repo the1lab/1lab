@@ -84,7 +84,7 @@ record hlevel-projection (proj : Name) : Type where
     -- this name to the argument (see get-argument below); arg specs are
     -- not supported.
     get-level : Term → TC Term
-    -- ^ Given an application of underlying-type, what h-level does this
+    -- ^ Given an application of proj, what h-level does this
     -- type have? Necessary for computing lifts.
     get-argument : List (Arg Term) → TC Term
     -- ^ Extract the argument out from under the application.
@@ -98,19 +98,17 @@ neutral
 
   n = def (quote X) as
 
-in order, every 'hlevel-projection' instance definition will be tried;
-Let us call a generic instance I. If I.underlying-type == X, then we'll
-use this instance, otherwise, we fail (i.e. backtrack and try another
-projection).
+In order, every 'hlevel-projection X' instance definition will be tried;
+Let us call a generic instance I.
 
 To use this instance, the get-level and get-argument functions are
 involved; get-argument must take 'as' and return some representative
 sub-expression e. get-level will receive e's inferred type and must
 return the h-level of the type n. Finally, we return
 
-  I.has-level (get-argument e),
+  I.has-level (get-argument as),
 
-possibly wrapped in (k - get-level (get-argument e)) applications of
+possibly wrapped in (k - get-level (get-argument as)) applications of
 is-hlevel-suc.
 -}
 

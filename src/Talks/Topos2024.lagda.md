@@ -376,7 +376,7 @@ groups,
 
 ```agda
   _ : {G H : Group lzero} {f g : Groups.Hom G H}
-    → ((x : ⌞ G ⌟) → f # x ≡ g # x) → f ≡ g
+    → ((x : ⌞ G ⌟) → f · x ≡ g · x) → f ≡ g
   _ = ext
 ```
 
@@ -385,7 +385,7 @@ or abelian group homomorphisms from a tensor product,
 
 ```agda
   _ : {A B C : Abelian-group lzero} {f g : Ab.Hom (A ⊗ B) C}
-    → ((x : ⌞ A ⌟) (y : ⌞ B ⌟) → f # (x , y) ≡ g # (x , y))
+    → ((x : ⌞ A ⌟) (y : ⌞ B ⌟) → f · (x , y) ≡ g · (x , y))
     → f ≡ g
   _ = ext
 ```

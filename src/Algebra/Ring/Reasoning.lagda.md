@@ -41,11 +41,11 @@ private variable
 
 *-negatel : (- x) * y ≡ - (x * y)
 *-negatel {x} {y} = monoid-inverse-unique a.has-is-monoid (x * y) ((- x) * y) (- (x * y))
-  (sym *-distribr ·· ap (_* y) a.inversel ·· *-zerol)
+  (sym *-distribr ∙∙ ap (_* y) a.inversel ∙∙ *-zerol)
   a.inverser
 
 *-negater : x * (- y) ≡ - (x * y)
 *-negater {x} {y} = monoid-inverse-unique a.has-is-monoid (x * y) (x * (- y)) (- (x * y))
-  (sym *-distribl ·· ap (x *_) a.inversel ·· *-zeror)
+  (sym *-distribl ∙∙ ap (x *_) a.inversel ∙∙ *-zeror)
   a.inverser
 ```

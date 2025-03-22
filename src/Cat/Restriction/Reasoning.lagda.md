@@ -223,8 +223,8 @@ restriction-idem-comm
   → f ∘ g ≡ g ∘ f
 restriction-idem-comm f-dom g-dom =
   ap₂ _∘_ (sym f-dom) (sym g-dom)
-  ·· ↓-comm _ _
-  ·· ap₂ _∘_ g-dom f-dom
+  ∙∙ ↓-comm _ _
+  ∙∙ ap₂ _∘_ g-dom f-dom
 ```
 
 ## Restricted monics
@@ -269,7 +269,7 @@ restricted-monic-∘ {f = f} {g = g} f-rmonic g-rmonic h1 h2 p =
   (f ∘ g) ↓ ∘ h2 ∎
   where
     p-assoc : f ∘ g ∘ h1 ≡ f ∘ g ∘ h2
-    p-assoc = assoc _ _ _ ·· p ·· sym (assoc _ _ _)
+    p-assoc = assoc _ _ _ ∙∙ p ∙∙ sym (assoc _ _ _)
 
     g-lemma : g ∘ (f ∘ g) ↓ ∘ h1 ≡ g ∘ (f ∘ g) ↓ ∘ h2
     g-lemma =
@@ -290,7 +290,7 @@ restricted-monic-cancell
   → is-restricted-monic g
 restricted-monic-cancell {f = f} {g = g} fg-rmonic f-total h1 h2 p =
   g ↓ ∘ h1           ≡⟨ ap (_∘ h1) (sym (total-smashl f-total)) ⟩
-  (f ∘ g) ↓ ∘ h1     ≡⟨ fg-rmonic h1 h2 (sym (assoc _ _ _) ·· ap (f ∘_) p ·· assoc _ _ _) ⟩
+  (f ∘ g) ↓ ∘ h1     ≡⟨ fg-rmonic h1 h2 (sym (assoc _ _ _) ∙∙ ap (f ∘_) p ∙∙ assoc _ _ _) ⟩
   (f ∘ g) ↓ ∘ h2     ≡⟨ ap (_∘ h2) (total-smashl f-total) ⟩
   g ↓ ∘ h2           ∎
 ```

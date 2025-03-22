@@ -53,7 +53,7 @@ module Distributive where
 ```agda
   module from-∩ (∩-distribl : ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)) where abstract
     ∩-distribr : ∀ {x y z} → (y ∪ z) ∩ x ≡ (y ∩ x) ∪ (z ∩ x)
-    ∩-distribr = ∩-comm ·· ∩-distribl ·· ap₂ _∪_ ∩-comm ∩-comm
+    ∩-distribr = ∩-comm ∙∙ ∩-distribl ∙∙ ap₂ _∪_ ∩-comm ∩-comm
 
     ∪-distribl : ∀ {x y z} → x ∪ (y ∩ z) ≡ (x ∪ y) ∩ (x ∪ z)
     ∪-distribl {x} {y} {z} = sym $
@@ -65,7 +65,7 @@ module Distributive where
       x ∪ (y ∩ z)                   ∎
 
     ∪-distribr : ∀ {x y z} → (y ∩ z) ∪ x ≡ (y ∪ x) ∩ (z ∪ x)
-    ∪-distribr = ∪-comm ·· ∪-distribl ·· ap₂ _∩_ ∪-comm ∪-comm
+    ∪-distribr = ∪-comm ∙∙ ∪-distribl ∙∙ ap₂ _∩_ ∪-comm ∪-comm
 ```
 
 <details>
@@ -75,7 +75,7 @@ formally dual.</summary>
 ```agda
   module from-∪ (∪-distribl : ∀ {x y z} → x ∪ (y ∩ z) ≡ (x ∪ y) ∩ (x ∪ z)) where abstract
     ∪-distribr : ∀ {x y z} → (y ∩ z) ∪ x ≡ (y ∪ x) ∩ (z ∪ x)
-    ∪-distribr = ∪-comm ·· ∪-distribl ·· ap₂ _∩_ ∪-comm ∪-comm
+    ∪-distribr = ∪-comm ∙∙ ∪-distribl ∙∙ ap₂ _∩_ ∪-comm ∪-comm
 
     ∩-distribl : ∀ {x y z} → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
     ∩-distribl {x} {y} {z} = sym $
@@ -87,7 +87,7 @@ formally dual.</summary>
       x ∩ (y ∪ z)                   ∎
 
     ∩-distribr : ∀ {x y z} → (y ∪ z) ∩ x ≡ (y ∩ x) ∪ (z ∩ x)
-    ∩-distribr = ∩-comm ·· ∩-distribl ·· ap₂ _∪_ ∩-comm ∩-comm
+    ∩-distribr = ∩-comm ∙∙ ∩-distribl ∙∙ ap₂ _∪_ ∩-comm ∩-comm
 ```
 
 </details>

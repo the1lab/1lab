@@ -774,7 +774,7 @@ module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) whe
   open is-iso f-iso renaming (inverse to inverse-iso)
 
   injective : ∀ {x y} → f x ≡ f y → x ≡ y
-  injective p = sym (linv _) ·· ap inv p ·· linv _
+  injective p = sym (linv _) ∙∙ ap inv p ∙∙ linv _
 
   inverse : Iso B A
   inverse = inv , inverse-iso
@@ -846,7 +846,7 @@ for which constructing equivalences is easy are the [[propositions]]. If
 $P$ and $Q$ are propositions, then any map $P \to P$ (resp. $Q \to Q$)
 must be homotopic to the identity, and consequently any pair of
 functions $P \to Q$ and $Q \to P$ is a pair of inverses. Put another
-way, any *biimplication* between propositions is an equivalence.
+way, any biimplication between propositions is an equivalence.
 
 ```agda
   biimp-is-equiv : (f : P → Q) → (Q → P) → is-equiv f
@@ -891,8 +891,8 @@ precomposition with $p\inv$.
   ∙-pre-equiv p .fst q = p ∙ q
   ∙-pre-equiv p .snd = is-iso→is-equiv λ where
     .inv q  → sym p ∙ q
-    .rinv q → ∙-assoc p _ _       ·· ap (_∙ q) (∙-invr p) ·· ∙-idl q
-    .linv q → ∙-assoc (sym p) _ _ ·· ap (_∙ q) (∙-invl p) ·· ∙-idl q
+    .rinv q → ∙-assoc p _ _       ∙∙ ap (_∙ q) (∙-invr p) ∙∙ ∙-idl q
+    .linv q → ∙-assoc (sym p) _ _ ∙∙ ap (_∙ q) (∙-invl p) ∙∙ ∙-idl q
 ```
 
 Similarly, *post*composition with $p$ is inverted on both sides by
@@ -903,8 +903,8 @@ postcomposition with $p\inv$, so it too is an equivalence.
   ∙-post-equiv p .fst q = q ∙ p
   ∙-post-equiv p .snd = is-iso→is-equiv λ where
     .inv q  → q ∙ sym p
-    .rinv q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invl p) ·· ∙-idr q
-    .linv q → sym (∙-assoc q _ _) ·· ap (q ∙_) (∙-invr p) ·· ∙-idr q
+    .rinv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invl p) ∙∙ ∙-idr q
+    .linv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invr p) ∙∙ ∙-idr q
 ```
 
 ### The Lift type

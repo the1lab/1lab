@@ -49,8 +49,8 @@ _object of composable pairs_.
   {C_1} && {C_0}
   \arrow[from=1-1, to=1-3]
   \arrow[from=1-1, to=3-1]
-  \arrow["tgt", from=1-3, to=3-3]
-  \arrow["src"', from=3-1, to=3-3]
+  \arrow["\tgt", from=1-3, to=3-3]
+  \arrow["\src"', from=3-1, to=3-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}
 ~~~
@@ -66,7 +66,7 @@ constraints.
   \\
   \\
   {C_1 \times_{C_0} C_1} &&& {C_1}
-  \arrow["{id \times c}"', from=1-1, to=4-1]
+  \arrow["{\id \times c}"', from=1-1, to=4-1]
   \arrow["c"', from=4-1, to=4-4]
   \arrow["{\langle c \circ \langle \pi_1, \pi_1 \circ \pi_2 \rangle , \pi_2 \circ \pi_2\rangle}", from=1-1, to=1-4]
   \arrow["c", from=1-4, to=4-4]
@@ -115,11 +115,11 @@ making the following diagram commute.
   \\
   & {C_1} \\
   {C_0} && {C_0}
-  \arrow["hom"{description}, from=1-2, to=3-2]
+  \arrow["\mathrm{hom}"{description}, from=1-2, to=3-2]
   \arrow["x"', curve={height=6pt}, from=1-2, to=4-1]
   \arrow["y", curve={height=-6pt}, from=1-2, to=4-3]
-  \arrow["src"{description}, from=3-2, to=4-1]
-  \arrow["tgt"{description}, from=3-2, to=4-3]
+  \arrow["\src"{description}, from=3-2, to=4-1]
+  \arrow["\tgt"{description}, from=3-2, to=4-3]
 \end{tikzcd}
 ~~~
 

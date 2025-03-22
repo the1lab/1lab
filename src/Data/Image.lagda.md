@@ -93,7 +93,7 @@ non-trivial path.
 ```agda
   Cover : Im1 {A = ⊤} {⊤} (λ { tt → tt }) → Type
   Cover (inc x)          = Bool
-  Cover (quot tt tt _ i) = ua (not , not-is-equiv) i
+  Cover (quot tt tt _ i) = ua not≃ i
 
   Im1-nontriv : subst Cover (quot tt tt refl) true ≡ false
   Im1-nontriv = refl
@@ -208,7 +208,7 @@ to show that it's actually a proper embedding:
     Σ-pathp (quot (ls.from (sym q))) (commutes→square coh)
     where abstract
       coh : ls.to (ls.from (sym q)) ∙ q ≡ refl ∙ refl
-      coh = ap (_∙ q) (ls.ε (sym q)) ·· ∙-invl q ·· sym (∙-idl refl)
+      coh = ap (_∙ q) (ls.ε (sym q)) ∙∙ ∙-invl q ∙∙ sym (∙-idl refl)
 
   embed-is-embedding : is-embedding embed
   embed-is-embedding = embedding-lemma embed-is-embedding'

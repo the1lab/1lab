@@ -79,14 +79,14 @@ is-iso→chaotic-cartesian {f = f} {g = g} is-inv = cart
       inv J.∘ h             ∎
 ```
 
-This implies that the chaotic fibration is a fibration, as $id$ is
+This implies that the chaotic fibration is a fibration, as $\id$ is
 invertible, and also lies above every morphism in $\cB$. We could
 use our lemmas from before to show this, but doing it by hand lets
 us avoid an extra `id` composite when constructing the universal map.
 
 ```agda
 Chaotic-fibration : Cartesian-fibration Chaotic
-Chaotic-fibration .Cartesian-fibration.has-lift f y = cart-lift where
+Chaotic-fibration f y = cart-lift where
   open Cartesian-lift
   open is-cartesian
 
@@ -129,7 +129,7 @@ is-iso→chaotic-cocartesian {f = f} {g = g} is-inv = cocart
       h J.∘ inv       ∎
 
 Chaotic-opfibration : Cocartesian-fibration Chaotic
-Chaotic-opfibration .Cocartesian-fibration.has-lift f x' = cocart-lift where
+Chaotic-opfibration f x' = cocart-lift where
   open Cocartesian-lift
   open is-cocartesian
 

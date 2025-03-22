@@ -92,7 +92,7 @@ module _ (pq≡s : p ∙ q ≡ s) where
   ∙-pulll : p ∙ q ∙ r ≡ s ∙ r
   ∙-pulll {r = r} = ∙-assoc p q r ∙ ap (_∙ r) pq≡s
 
-  double-left : p ·· q ·· r ≡ s ∙ r
+  double-left : p ∙∙ q ∙∙ r ≡ s ∙ r
   double-left {r = r} = double-composite p q r ∙ ∙-pulll
 
   ∙-pullr : (r ∙ p) ∙ q ≡ r ∙ s
@@ -122,28 +122,28 @@ module _ (s≡pq : s ≡ p ∙ q) where
 
 module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
   ∙-extendl : p ∙ (q ∙ t) ≡ r ∙ (s ∙ t)
-  ∙-extendl {t = t} = ∙-assoc _ _ _ ·· ap (_∙ t) pq≡rs ·· sym (∙-assoc _ _ _)
+  ∙-extendl {t = t} = ∙-assoc _ _ _ ∙∙ ap (_∙ t) pq≡rs ∙∙ sym (∙-assoc _ _ _)
 
   ∙-extendr : (t ∙ p) ∙ q ≡ (t ∙ r) ∙ s
-  ∙-extendr {t = t} = sym (∙-assoc _ _ _) ·· ap (t ∙_) pq≡rs ·· ∙-assoc _ _ _
+  ∙-extendr {t = t} = sym (∙-assoc _ _ _) ∙∙ ap (t ∙_) pq≡rs ∙∙ ∙-assoc _ _ _
 
-··-stack : (sym p' ·· (sym p ·· q ·· r) ·· r') ≡ (sym (p ∙ p') ·· q ·· (r ∙ r'))
-··-stack = ··-unique' (··-filler _ _ _ ∙₂ ··-filler _ _ _)
+∙∙-stack : (sym p' ∙∙ (sym p ∙∙ q ∙∙ r) ∙∙ r') ≡ (sym (p ∙ p') ∙∙ q ∙∙ (r ∙ r'))
+∙∙-stack = ∙∙-unique' (∙∙-filler _ _ _ ∙₂ ∙∙-filler _ _ _)
 
-··-chain : (sym p ·· q ·· r) ∙ (sym r ·· q' ·· s) ≡ sym p ·· (q ∙ q') ·· s
-··-chain {p = p} {q = q} {r = r} {q' = q'} {s = s} = sym (∙-unique _ square) where
-  square : Square refl (sym p ·· q ·· r) (sym p ·· (q ∙ q') ·· s) (sym r ·· q' ·· s)
+∙∙-chain : (sym p ∙∙ q ∙∙ r) ∙ (sym r ∙∙ q' ∙∙ s) ≡ sym p ∙∙ (q ∙ q') ∙∙ s
+∙∙-chain {p = p} {q = q} {r = r} {q' = q'} {s = s} = sym (∙-unique _ square) where
+  square : Square refl (sym p ∙∙ q ∙∙ r) (sym p ∙∙ (q ∙ q') ∙∙ s) (sym r ∙∙ q' ∙∙ s)
   square i j = hcomp (~ j ∨ (j ∧ (i ∨ ~ i))) λ where
     k (k = i0) → ∙-filler q q' i j
     k (j = i0) → p k
     k (j = i1) (i = i0) → r k
     k (j = i1) (i = i1) → s k
 
-··-∙-assoc : p ·· q ·· (r ∙ s) ≡ (p ·· q ·· r) ∙ s
-··-∙-assoc {p = p} {q = q} {r = r} {s = s} = sym (··-unique' square) where
-  square : Square (sym p) q ((p ·· q ·· r) ∙ s) (r ∙ s)
+∙∙-∙-assoc : p ∙∙ q ∙∙ (r ∙ s) ≡ (p ∙∙ q ∙∙ r) ∙ s
+∙∙-∙-assoc {p = p} {q = q} {r = r} {s = s} = sym (∙∙-unique' square) where
+  square : Square (sym p) q ((p ∙∙ q ∙∙ r) ∙ s) (r ∙ s)
   square i j = hcomp (~ i ∨ ~ j ∨ (i ∧ j)) λ where
-    k (k = i0) → ··-filler p q r i j
+    k (k = i0) → ∙∙-filler p q r i j
     k (i = i0) → q j
     k (j = i0) → p (~ i)
     k (i = i1) (j = i1) → s k

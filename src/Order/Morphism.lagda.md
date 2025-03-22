@@ -113,10 +113,10 @@ Q \to P$, then $f$ is an order-reflection:
     → is-right-inverse f (g .hom)
     → is-order-reflection P Q f
   section→order-reflection f g sect {x = x} {y = y} fx≤fy =
-    x           P.=˘⟨ sect x ⟩
-    g # (f x)   P.≤⟨ g .pres-≤ fx≤fy ⟩
-    g # (f y)   P.=⟨ sect y ⟩
-    y           P.≤∎
+    x         P.=˘⟨ sect x ⟩
+    g · f x   P.≤⟨ g .pres-≤ fx≤fy ⟩
+    g · f y   P.=⟨ sect y ⟩
+    y         P.≤∎
 ```
 
 As a corollary, if $f : P \to Q$ in the setup above _is_ monotone, then
@@ -151,14 +151,14 @@ module _ {o ℓ} {P Q : Poset o ℓ} where
     → Posets.has-retract f
     → is-order-reflection P Q (apply f)
   has-retract→is-order-reflection f f-ret =
-    section→order-reflection (apply f) (f-ret .retract) (λ x → f-ret .is-retract #ₚ x)
+    section→order-reflection (apply f) (f-ret .retract) (λ x → f-ret .is-retract ·ₚ x)
 
   has-retract→is-order-embedding
     : (f : Hom P Q)
     → Posets.has-retract f
     → is-order-embedding P Q (apply f)
   has-retract→is-order-embedding f f-ret =
-    section→order-embedding f (f-ret .retract) (λ x → f-ret .is-retract #ₚ x)
+    section→order-embedding f (f-ret .retract) (λ x → f-ret .is-retract ·ₚ x)
 ```
 -->
 

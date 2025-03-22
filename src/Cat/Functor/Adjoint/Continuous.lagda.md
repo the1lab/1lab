@@ -3,6 +3,7 @@ description: We establish that right adjoints preserve limits.
 ---
 <!--
 ```agda
+open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
@@ -14,6 +15,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
 ```
 -->
 
@@ -31,8 +33,8 @@ module _
   private
     module L = Func L
     module R = Func R
-    module C = Precategory C
-    module D = Precategory D
+    module C = Cat C
+    module D = Cat D
     module adj = _⊣_ L⊣R
     open _=>_
 ```
