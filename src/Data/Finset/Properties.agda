@@ -160,6 +160,25 @@ abstract
     → map f (map g xs) ≡ map (f ∘ g) xs
   map-map = Finset-elim-prop _ (λ f g → refl) (λ x ih f g → ap (f (g x) ∷_) (ih f g))
 
+delete : ⦃ _ : Discrete A ⦄ → A → Finset A → Finset A
+delete x xs = filter (x ≠_) xs
+
+abstract
+  cons-delete : ⦃ _ : Discrete A ⦄ (x : A) (xs : Finset A) → x ∈ xs → x ∷ delete x xs ≡ xs
+  cons-delete x xs m = finset-ext to from where
+    to : ∀ a → a ∈ᶠˢ (x ∷ delete x xs) → a ∈ᶠˢ xs
+    to a = ∈ᶠˢ-split
+      (λ a=x → substᵢ (_∈ᶠˢ xs) (symᵢ a=x) m)
+      (λ w → ∈ᶠˢ-filter xs w .fst)
+
+    from : ∀ a → a ∈ᶠˢ xs → a ∈ᶠˢ (x ∷ delete x xs)
+    from a h with a ≡ᵢ? x
+    ... | yes a=x = hereₛ' a=x
+    ... | no a≠x  = thereₛ (filter-∈ᶠˢ xs h λ x=a → a≠x (Id≃path.from (sym x=a)))
+
+no-members→is-[] : (a : Finset A) (ha : (e : A) → e ∉ a) → a ≡ᵢ []
+no-members→is-[] = Finset-elim-prop _ (λ _ → reflᵢ) (λ x {xs} _ h → absurd (h x hereₛ))
+
 private
   powercons : A → Finset (Finset A) → Finset (Finset A)
   powercons x xs = xs <> map (x ∷_) xs
@@ -205,12 +224,8 @@ powerset (squash x y p q i j) = hlevel 2 (powerset x) (powerset y) (λ i → pow
   λ x {xs} ih ys mem → case ∈ᶠˢ-union _ (powerset xs) (map (x ∷_) (powerset xs)) mem of λ where
     (inl h) y m → thereₛ (ih ys h y m)
     (inr t) y m → case ∈ᶠˢ-map (x ∷_) (powerset xs) t of λ where
-      ys' p n → ∈ᶠˢ-split {P = λ _ → y ∈ᶠˢ (x ∷ xs)} hereₛ'
-        (λ w → thereₛ (ih ys' n y w))
-        (substᵢ (y ∈ᶠˢ_) (symᵢ p) m)
-
-delete : ⦃ _ : Discrete A ⦄ → A → Finset A → Finset A
-delete x xs = filter (x ≠_) xs
+      ys' p n → ∈ᶠˢ-case (substᵢ (y ∈ᶠˢ_) (symᵢ p) m)
+        hereₛ' (λ w → thereₛ (ih ys' n y w))
 
 powerset-∈ᶠˢ : ⦃ _ : Discrete A ⦄ (xs ys : Finset A) → ys ⊆ xs → ys ∈ powerset xs
 powerset-∈ᶠˢ = Finset-elim-prop _
@@ -220,15 +235,109 @@ powerset-∈ᶠˢ = Finset-elim-prop _
       let
         ys' = delete x ys
 
-        p : x ∷ ys' ≡ ys
-        p = finset-ext
-          (λ a m → ∈ᶠˢ-split {P = λ _ → a ∈ ys} (λ p → substᵢ (_∈ ys) (symᵢ p) x∈ys) (λ w → case ∈ᶠˢ-filter {P = x ≠_} ys w of λ p _ → p) m)
-          λ a b → case a ≡ᵢ? x of λ { (yes p) → hereₛ' p ; (no ¬q) → thereₛ (filter-∈ᶠˢ ys b λ a → ¬q (Id≃path.from (sym a))) }
-
         s' : delete x ys ⊆ xs
-        s' a m =
-          let (m' , a≠x) = ∈ᶠˢ-filter ys m
-           in ∈ᶠˢ-split {P = λ _ → a ∈ xs} (λ p → case a≠x of λ ¬x=a → absurd (¬x=a (Id≃path.to (symᵢ p)))) (λ w → w) (sube a m')
-      in unionr-∈ᶠˢ _ (powerset xs) _ $ map-∈ᶠˢ' (x ∷_) (powerset xs) p (ih ys' s')
+        s' a m = let (m' , a≠x) = ∈ᶠˢ-filter ys m in ∈ᶠˢ-case (sube a m')
+          (λ p → case a≠x of λ ¬x=a → absurd (¬x=a (Id≃path.to (symᵢ p))))
+          (λ w → w)
+      in unionr-∈ᶠˢ _ (powerset xs) _ $ map-∈ᶠˢ' (x ∷_) (powerset xs) (cons-delete x ys x∈ys) (ih ys' s')
     (no x∉ys) → unionl-∈ᶠˢ _ (powerset xs) _ $ ih ys λ a m → ∈ᶠˢ-split {P = λ _ → a ∈ xs}
       (λ a=x → absurd (x∉ys (substᵢ (_∈ ys) a=x m))) (λ w → w) (sube a m)
+
+-- List of finite subsets of elements drawn from a given list. Best
+-- behaved when the list is nubbed.
+
+powerlist : List A → List (Finset A)
+powerlist [] = [] ∷ []
+powerlist (x ∷ xs) using p ← powerlist xs =
+  map (x ∷_) p <> p
+
+-- If a finset belongs to the powerlist of a nubbed list, then it's a
+-- subset of the list. The list must be nubbed if we want to get a
+-- proper index `e ∈ xs` instead of the weaker ∥ e ∈ xs ∥.
+
+member-powerlist
+  : {xs : List A} (hxs : is-nubbed xs) {ys : Finset A}
+  → ys ∈ₗ powerlist xs → (e : A) → e ∈ ys → e ∈ xs
+member-powerlist {xs = []} hxs {ys} (here reflᵢ) e me = absurd (¬mem-[] me)
+member-powerlist {xs = x ∷ xs} hxxs {ys} mys e me
+  using (_ , hxs) ← uncons-is-nubbed hxxs
+  with member-++-view _ (powerlist xs) mys
+
+... | inl (a , _) with ((ays' , reflᵢ) , b) ← member-map (x ∷_) (powerlist xs) a =
+  ∈ᶠˢ-case ⦃ prop-instance (hxxs _) ⦄ me here λ w →
+    there (member-powerlist hxs b e w)
+
+... | inr (a , _) = there (member-powerlist hxs a e me)
+
+-- Conversely, if we know that a finset ys is a subset of a given list
+-- xs, we can find an index for it in the powerlist of xs as long as we
+-- can decide memberhsip in ys. This lets us find which 'branches' of the
+-- powerlist the finset takes.
+
+powerlist-member
+  : ⦃ _ : Discrete A ⦄ (xs : List A) (ys : Finset A)
+  → ((e : A) → e ∈ ys → e ∈ xs)
+  → ys ∈ₗ powerlist xs
+powerlist-member [] ys ys⊆[] = here $ no-members→is-[] ys λ e he →
+  case ys⊆[] e he of λ ()
+
+powerlist-member {A = A} (x ∷ xs) ys ys⊆xxs with holds? (x ∈ᶠˢ ys)
+... | yes x∈ys =
+  ++-memberₗ {ys = powerlist xs} $ map-member' (x ∷_) (powerlist xs) let
+    drop : (e : A) → e ∈ᶠˢ delete x ys → e ∈ₗ xs
+    drop e he = let (m , x≠e) = ∈ᶠˢ-filter ys he in case ys⊆xxs e m of λ where
+      (here reflᵢ) → absurd (case x≠e of λ f → f refl)
+      (there x)    → x
+  in (delete x ys , Id≃path.from (cons-delete x ys x∈ys))
+   , powerlist-member xs (delete x ys) drop
+
+... | no  x∉ys =
+  ++-memberᵣ {ys = powerlist xs} let
+    drop : (e : A) → e ∈ ys → e ∈ xs
+    drop e he = case ys⊆xxs e he of λ where
+      (here p)  → absurd (x∉ys (substᵢ (_∈ᶠˢ ys) p he))
+      (there x) → x
+  in powerlist-member xs ys drop
+
+powerlist-is-nubbed : ⦃ _ : Discrete A ⦄ (xs : List A) → is-nubbed xs → is-nubbed (powerlist xs)
+powerlist-is-nubbed [] _ ys (here p) (here p') = ap here prop!
+powerlist-is-nubbed {A = A} (x ∷ xs) hxxs =
+  ++-is-nubbed
+    (map-is-nubbed (x ∷_)
+      (λ b f f' p q → Σ-prop-path! (work b (f , p) ∙ sym (work b (f' , q))))
+      hpxs)
+    hpxs disj
+  where
+  open Σ (uncons-is-nubbed hxxs) renaming (fst to x∉xs ; snd to hxs)
+  hpxs = powerlist-is-nubbed xs hxs
+
+  disj : (ys : Finset A) (h : ys ∈ₗ map (x ∷_) (powerlist xs)) → ys ∉ powerlist xs
+  disj ys hx ¬hx with ((ys' , reflᵢ) , _) ← member-map (x ∷_) (powerlist xs) hx =
+    x∉xs (member-powerlist hxs ¬hx x hereₛ)
+
+  work
+    : (ys : Finset A) (zs : Σ[ f ∈ fibreᵢ (x ∷_) ys ] (f .fst ∈ₗ powerlist xs))
+    → zs .fst .fst ≡ delete x ys
+  work ys ((zs , reflᵢ) , pxs) = finset-ext to from where
+    from : (a : A) → a ∈ delete x (x ∷ zs) → a ∈ zs
+    from a m using (m' , a≠x) ← ∈ᶠˢ-filter ys m = ∈ᶠˢ-case m'
+      (λ { reflᵢ → case a≠x of λ a≠a → absurd (a≠a refl) })
+      (λ w → w)
+
+    to : (a : A) → a ∈ zs → a ∈ delete x ys
+    to a azs with holds? (x ≠ x)
+    ... | yes x≠x = absurd (x≠x refl)
+    ... | no  x=x  =
+      let a∈xs = member-powerlist hxs pxs a azs
+        in filter-∈ᶠˢ zs azs λ x=a → x∉xs (subst (_∈ xs) (sym x=a) a∈xs)
+
+module _ ⦃ l : Listing A ⦄ where instance
+  private
+    module l = Listing l
+    instance _ = Listing→Discrete l
+  open Listing
+
+  Listing-Finset : Listing (Finset A)
+  Listing-Finset .univ = powerlist l.univ
+  Listing-Finset .has-member a .centre = powerlist-member l.univ a λ _ _ → l.find _
+  Listing-Finset .has-member a .paths  = powerlist-is-nubbed l.univ (λ _ → is-contr→is-prop (l.has-member _)) a _

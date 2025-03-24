@@ -50,6 +50,12 @@ data _∈ₗ_ {ℓ} {A : Type ℓ} (x : A) : List A → Type ℓ where
 ```agda
 here≠there : ∀ {A : Type ℓ} {xs : List A} {x y : A} {p : x ≡ᵢ y} {q : x ∈ₗ xs} → here p ≠ there q
 here≠there p = subst (λ { (here _) → ⊤ ; (there _) → ⊥ }) p tt
+
+there-injective : ∀ {A : Type ℓ} {xs : List A} {x y : A} {p q : x ∈ₗ xs} → Path (x ∈ₗ (y ∷ xs)) (there p) (there q) → p ≡ q
+there-injective {xs = xs} {x} {y} {p} = ap unthere where
+  unthere : (x ∈ₗ (y ∷ xs)) → x ∈ₗ xs
+  unthere (there p) = p
+  unthere _ = p
 ```
 -->
 
@@ -163,9 +169,16 @@ appears at most once. Second, membership is (logically) preserved when
 to new indices is not injective, since all occurrences of an element
 will be mapped to the same (first) occurrence in the deduplicated list.
 
+<!--
 ```agda
-member-nub-is-prop
-  : ∀ ⦃ _ : Discrete A ⦄ {x : A} (xs : List A) → is-prop (x ∈ nub xs)
+is-nubbed : List A → Type _
+is-nubbed xs = ∀ e → is-prop (e ∈ₗ xs)
+```
+-->
+
+```agda
+nub-is-nubbed
+  : ∀ ⦃ _ : Discrete A ⦄ (xs : List A) → is-nubbed (nub xs)
 member→member-nub
   : ∀ ⦃ _ : Discrete A ⦄ {x : A} {xs : List A} → x ∈ xs → x ∈ nub xs
 ```
@@ -174,12 +187,12 @@ member→member-nub
 <summary>The proofs here are also straightforward inductive arguments.</summary>
 
 ```agda
-member-nub-is-prop (x ∷ xs) p1 p2 with elem? x (nub xs) | p1 | p2
-... | yes p | p1 | p2 = member-nub-is-prop xs p1 p2
+nub-is-nubbed (x ∷ xs) e p1 p2 with elem? x (nub xs) | p1 | p2
+... | yes p | p1 | p2 = nub-is-nubbed xs _ p1 p2
 ... | no ¬p | here  p1 | here  p2 = ap _∈ₗ_.here (is-set→is-setᵢ (Discrete→is-set auto) _ _ p1 p2)
 ... | no ¬p | here  p1 | there p2 = absurd (¬p (substᵢ (_∈ nub xs) p1 p2))
 ... | no ¬p | there p1 | here  p2 = absurd (¬p (substᵢ (_∈ nub xs) p2 p1))
-... | no ¬p | there p1 | there p2 = ap there (member-nub-is-prop xs p1 p2)
+... | no ¬p | there p1 | there p2 = ap there (nub-is-nubbed xs _ p1 p2)
 
 member→member-nub {xs = x ∷ xs} (here p) with elem? x (nub xs)
 ... | yes x∈nub = substᵢ (_∈ nub xs) (symᵢ p) x∈nub
@@ -296,6 +309,38 @@ member-++-view (x ∷ xs) _ (here p)  = inl (here p , refl)
 member-++-view (x ∷ xs) _ (there p) with member-++-view xs _ p
 ... | inl (p , q) = inl (there p , ap there q)
 ... | inr (p , q) = inr (p , ap there q)
+```
+-->
+
+<!--
+```agda
+uncons-is-nubbed : {x : A} {xs : List A} (hxs : is-nubbed (x ∷ xs)) → (x ∉ xs) × is-nubbed xs
+uncons-is-nubbed hxs = record
+  { fst = λ x∈xs  → absurd (here≠there (hxs _ (here reflᵢ) (there x∈xs)))
+  ; snd = λ e a b → there-injective (hxs e (there a) (there b))
+  }
+
+++-is-nubbed
+  : {xs ys : List A} (hxs : is-nubbed xs) (hys : is-nubbed ys)
+  → ((e : A) → e ∈ xs → e ∉ ys)
+  → is-nubbed (xs <> ys)
+++-is-nubbed {xs = xs} hxs hys disj e a b with member-++-view xs _ a | member-++-view xs _ b
+... | inl (a , α) | inl (b , β) = sym α ∙∙ ap ++-memberₗ (hxs _ a b) ∙∙ β
+... | inr (a , α) | inr (b , β) = sym α ∙∙ ap ++-memberᵣ (hys _ a b) ∙∙ β
+... | inl (a , α) | inr (b , β) = absurd (disj _ a b)
+... | inr (a , α) | inl (b , β) = absurd (disj _ b a)
+
+-- For `map f xs` to be nubbed when `xs` is, it suffices that `f` be an
+-- embedding on fibres which belong to `xs`.
+
+map-is-nubbed
+  : {A : Type ℓ} {B : Type ℓ'} {xs : List A} (f : A → B)
+  → ((b : B) (f f' : fibreᵢ f b) → f .fst ∈ₗ xs → f' .fst ∈ₗ xs → f ≡ f')
+  → is-nubbed xs → is-nubbed (map f xs)
+map-is-nubbed {xs = xs} f hf hxs e a b =
+     sym (member-map→fibre→member f xs a)
+  ∙∙ ap (map-member' f xs) (Σ-prop-path (λ _ → hxs _) (hf e (member-map f xs a .fst) (member-map f xs b .fst) (member-map f xs a .snd) (member-map f xs b .snd)))
+  ∙∙ member-map→fibre→member f xs b
 ```
 -->
 

@@ -125,6 +125,10 @@ Finite→is-finitely-indexed ⦃ eqv ⦄ = do
   pure (covering _ (is-equiv→is-surjective (Equiv.inverse eqv .snd)))
 ```
 
+**Note:** The Kuratowski-finite subsets of a type $A$ also admit a
+higher inductive presentation, as lists modulo duplication and
+reordering. This is the type [`Finset`](Data.Finset.Base.html).
+
 ## Finitely-indexed subsets
 
 We now turn to the question of finitely-indexed _subsets_. A subset $P :

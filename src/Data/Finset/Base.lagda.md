@@ -27,18 +27,18 @@ private variable
 
 # Finitely indexed subsets
 
-We define a type of finite(ly indexed) subsets of a type $A$, as a
+We define a type of Kuratowski-finite subsets of a type $A$, as a
 higher inductive type mirroring the definition of lists, but with
 generating equations which allow removing duplicates and reordering
 elements. Note that we must also truncate the resulting type to make
 sure we end up with something homotopically coherent.
 
 As the name of the module implies, this is an alternative presentation
-of [[finitely indexed sets]], i.e.  subsets admitting a surjection from
-some [[standard finite set]], which makes working with the elements more
-convenient --- as long as we can express the operation we're doing with
-the subsets is invariant under repetition and swapping (i.e. we're
-mapping into a [[join semilattice]]).
+of [[Kuratowski finite subsets]] of $A$, i.e. subsets of $A$ whose total
+space admits a surjection from some [[standard finite set]], which makes
+working with the elements more convenient --- as long as we can express
+the operation we're doing with the subsets is invariant under repetition
+and swapping (i.e. we're mapping into a [[join semilattice]]).
 
 ```agda
 infixr 20 _∷_
@@ -409,6 +409,11 @@ opaque
 there-cons-if : (d : Dec B) (x y : A) (xs : Finset A) → y ∈ xs → y ∈ cons-if d x xs
 there-cons-if (yes a) x y xs p = thereₛ p
 there-cons-if (no ¬a) x y xs p = p
+
+∈ᶠˢ-case
+  : ∀ {ℓp} {x y : A} {xs} {P : Type ℓp} ⦃ _ : H-Level P 1 ⦄
+  → (w : x ∈ᶠˢ (y ∷ xs)) → ((p : x ≡ᵢ y) → P) → ((w : x ∈ᶠˢ xs) → P) → P
+∈ᶠˢ-case {P = P} w f g = ∈ᶠˢ-split {P = λ _ → P} f g w
 ```
 -->
 
