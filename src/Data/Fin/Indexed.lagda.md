@@ -95,6 +95,12 @@ covered, and subtypes are K-finite when their total space is
 finitely-indexed.
 :::
 
+::: note
+The Kuratowski-finite subsets of a type $A$ also admit a
+higher inductive presentation, as lists modulo duplication and
+reordering. This is the type [`Finset`](Data.Finset.Base.html).
+:::
+
 ## Closure properties
 
 As mentioned above, the key property that distinguishes the
@@ -124,10 +130,6 @@ Finite→is-finitely-indexed ⦃ eqv ⦄ = do
   let eqv = listing→equiv-fin li
   pure (covering _ (is-equiv→is-surjective (Equiv.inverse eqv .snd)))
 ```
-
-**Note:** The Kuratowski-finite subsets of a type $A$ also admit a
-higher inductive presentation, as lists modulo duplication and
-reordering. This is the type [`Finset`](Data.Finset.Base.html).
 
 ## Finitely-indexed subsets
 
