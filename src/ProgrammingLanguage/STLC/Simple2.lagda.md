@@ -425,15 +425,12 @@ data α-equiv' : (f : Nat → Nat) → {is-swap f} → Expr → Expr → Type wh
           s ≡ single-swap x y →
           (is : is-swap s) →
           α-equiv' (s) {is} (` x) (` y) 
-  α-lam : ∀ {x y : Nat} {b₁ b₂ f sf}
-          {r : _} →
-          α-equiv' f {sf} b₁ b₂ →
+  α-lam : ∀ {x y : Nat} {a b f sf r} →
+          α-equiv' f {sf} a b →
+          (m : swap-compat f (single-swap x y)) →
           r ≡ fst (remove f x sf) →
           (is : is-swap r) →
-          (f x ≡ y ⊎ (f x ≡ x × f y ≡ y)) →
-          α-equiv' r 
-                  {is} 
-                  (`λ x b₁) (`λ y b₂)
+          α-equiv' r {is} (`λ x a) (`λ y b)
   α-app : ∀ {q₁ q₂ x₁ x₂ f g sf sg m} →
           α-equiv' f {sf} q₁ q₂ →
           α-equiv' g {sg} x₁ x₂ →
@@ -473,15 +470,14 @@ single-swap-id-is-id x = funext h
 
 α-equiv'-self : ∀ (e : Expr) → α-equiv' id {id-is-swap} e e
 α-equiv'-self (` x) = α-var (sym (single-swap-id-is-id x)) id-is-swap
-α-equiv'-self (`λ x e) = α-lam (α-equiv'-self e) (sym (funext (rem x))) id-is-swap (inl refl)
+α-equiv'-self (`λ p e) = α-lam (α-equiv'-self e) refl (funext go) id-is-swap
   where
-    rem : ∀ y k → fst (remove id y id-is-swap) k ≡ id k
-    rem y k with k ≡? y 
-    ... | yes k=y = sym k=y
-    ... | no ¬k=y with k ≡? y 
-    ... | yes k=y = absurd (¬k=y k=y)
-    ... | no ¬k=y = refl
-
+    go : ∀ z → id z ≡ fst (remove id p id-is-swap) z
+    go z with z ≡? p 
+    ... | yes z=p = z=p
+    ... | no ¬z=p with z ≡? p 
+    ... | yes z=p = absurd (¬z=p z=p)
+    ... | no ¬z=p = refl
 α-equiv'-self (f `$ x) = α-app (α-equiv'-self f) (α-equiv'-self x) refl prop!
 α-equiv'-self `⟨ a , b ⟩ = α-pair (α-equiv'-self a) (α-equiv'-self b) refl prop!
 α-equiv'-self (`π₁ e) = α-pi₁ (α-equiv'-self e)
@@ -504,69 +500,134 @@ max-in+1 (`π₁ e) = max-in+1 e
 max-in+1 (`π₂ e) = max-in+1 e
 max-in+1 `tt = 1
 
-α-self-respect : ∀ (e : Expr) (n : Nat) f sf → 
-                 α-equiv' f {sf} e (up n e) →
-                 ∀ x → f x ≡ (n + x) ⊎ (f x ≡ x × f (n + x) ≡ n + x)
-α-self-respect (` x₁) n f sf (α-var x₂ .sf) x = subst (λ f → f x ≡ n + x ⊎ Σ (f x ≡ x) (λ _ → f (n + x) ≡ n + x)) 
-               (sym x₂)
-               go
-    where
-      go : (single-swap x₁ (n + x₁) x) ≡
-            n + x
-            ⊎
-            Σ
-            ((single-swap x₁ (n + x₁) x) ≡ x)
-            (λ _ →
-               (single-swap x₁ (n + x₁) (n + x))
-               ≡ n + x)
-      go with x ≡? x₁ 
-      ... | yes a = inl (subst (λ w → n + w ≡ n + x) a refl)
-      ... | no ¬a with x ≡? n + x₁ 
-      go | no ¬a | yes a = {!!}
-      go | no ¬a | no ¬a₁ with n + x ≡? x₁ 
-      ... | yes a = {!!}
-      ... | no ¬a₂ = {!!}
+max-comp : ∀ {a b} → 1 ≤ a → 1 ≤ b → 1 ≤ max a b
+max-comp {suc a} {suc b} 1a 1b = s≤s 0≤x
 
-α-self-respect (`λ x₁ e) n f sf aph x = {!!}
-α-self-respect (e `$ e₁) n f sf aph x = {!!}
-α-self-respect `⟨ e , e₁ ⟩ n f sf aph x = {!!}
-α-self-respect (`π₁ e) n f sf aph x = {!!}
-α-self-respect (`π₂ e) n f sf aph x = {!!}
-α-self-respect `tt n f sf aph x = {!!}
+max-in-≤ : ∀ (e : Expr) → 1 ≤ max-in+1 e 
+max-in-≤ (` x) = s≤s 0≤x
+max-in-≤ (`λ x e) = max-comp (s≤s 0≤x) (max-in-≤ e)
+max-in-≤ (f `$ x) = max-comp (max-in-≤ f) (max-in-≤ x)
+max-in-≤ `⟨ a , b ⟩ = max-comp (max-in-≤ a) (max-in-≤ b)
+max-in-≤ (`π₁ e) = max-in-≤ e
+max-in-≤ (`π₂ e) = max-in-≤ e
+max-in-≤ `tt = s≤s 0≤x
 
-α-lift' : ∀ (e : Expr) (n : Nat) → max-in+1 e ≤ n → Σ _ λ f 
-          → Σ (is-swap f) λ sf → α-equiv' f {sf} e (up n e)
-α-lift' (` x) n max .fst = single-swap x (n + x)
-α-lift' (` x) n max .snd .fst = single-is-swap x (n + x)
-α-lift' (` x) n max .snd .snd = α-var refl (α-lift' (` x) n max .snd .fst)
-α-lift' (`λ x e) n max =
-  let f : Σ (Nat → Nat) (λ f → Σ (is-swap f) (λ sf → α-equiv' f e (up n e)))
-      f = α-lift' e n (≤-trans (max-≤r (suc x) (max-in+1 e)) max)
-  in
-  fst (remove (f .fst) x (f .snd .fst)) , 
-  is-swap→is-swap-remove (fst f) x (f .snd .fst) ,   
-  α-lam (f .snd .snd) refl (is-swap→is-swap-remove (fst f) x (f .snd .fst)) go
-    where
-      f = α-lift' e n (≤-trans (max-≤r (suc x) (max-in+1 e)) max)
 
-      go : f .fst x ≡
-            n + x
-            ⊎
-            Σ
-            (f .fst x ≡
-             x)
-            (λ _ →
-               f .fst
-               (n + x)
-               ≡ n + x)
-      go = α-self-respect e n (f .fst) (f .snd .fst) (f .snd . snd) x
-α-lift' (e `$ e₁) n max = {!!}
-α-lift' `⟨ e , e₁ ⟩ n max = {!!}
-α-lift' (`π₁ e) n max = α-lift' e n max .fst ,
-                         α-lift' e n max .snd .fst , α-pi₁ (α-lift' e n max .snd .snd)
-α-lift' (`π₂ e) n max = α-lift' e n max .fst ,
-                         α-lift' e n max .snd .fst , α-pi₂ (α-lift' e n max .snd .snd)
-α-lift' `tt n max = id , id-is-swap , α-tt
+α-equiv'-up-helper-low : ∀ (e : Expr) (n : Nat) f sf →
+                     α-equiv' f {sf} e (up n e) →
+                     ∀ y → suc y ≤ n → (f y ≡ n + y ⊎ f y ≡ y)
+
+α-equiv'-up-helper-low (` x) n f sf (α-var x₁ .sf) y y≤ = 
+  subst (λ w → w y ≡ n + y ⊎ w y ≡ y) (sym x₁) g
+  where
+    g : single-swap x (n + x) y ≡ n + y ⊎ single-swap x (n + x) y ≡ y
+    g with y ≡? x 
+    ... | yes a = inl (subst (λ w → n + w ≡ n + y) a refl)
+    ... | no ¬a with y ≡? n + x 
+    ... | no c = inr refl
+    ... | yes c = absurd (¬sucx≤x n (≤-trans two one))
+      where
+        one : suc (n + x) ≤ n
+        one = subst (λ w → suc w ≤ n) c y≤ 
+
+        two : suc n ≤ suc (n + x) 
+        two = s≤s (+-≤l n x)
+α-equiv'-up-helper-low (`λ x e) n f sf (α-lam {f = f₁} {sf = sf₁} aph m x₁ .sf) y y≤ = 
+  subst (λ w → w y ≡ n + y ⊎ w y ≡ y) (sym x₁) g
+  where
+    hm : f₁ y ≡ n + y ⊎ f₁ y ≡ y
+    hm = α-equiv'-up-helper-low e n f₁ sf₁ aph y y≤
+
+    g : fst (remove f₁ x sf₁) y ≡ n + y ⊎ fst (remove f₁ x sf₁) y ≡ y
+    g with y ≡? x 
+    ... | yes a = inr (sym a)
+    ... | no ¬a with y ≡? f₁ x 
+    ... | yes a = inr (sym a)
+    ... | no ¬a₁ = hm
+α-equiv'-up-helper-low (a `$ b) n f sf (α-app {f = f₁} {g = g} {sf = sf₁} {sg = sg} aph aph₁ s x) y y≤ = final
+  where
+    note₁ : f₁ y ≡ n + y ⊎ f₁ y ≡ y
+    note₁ = α-equiv'-up-helper-low a n f₁ sf₁ aph y y≤
+
+    note₂ : g y ≡ n + y ⊎ g y ≡ y
+    note₂ = α-equiv'-up-helper-low b n g sg aph₁ y y≤ 
+
+    final : (f₁ ∘ g) y ≡ n + y ⊎ (f₁ ∘ g) y ≡ y
+    final with note₁
+    final | inl p with note₂ 
+    ... | inl p₁ = inr (subst (λ w → f₁ w ≡ y) (p ∙ sym p₁) (sf₁ y))
+    ... | inr p₁ = inl (subst (λ w → f₁ w ≡ n + y) (sym p₁) p)
+    final | inr p with note₂
+    ... | inl p₁ = inl (subst (λ w → w ≡ n + y) (sym (happly s y)) (subst (λ w → g w ≡ n + y) (sym p) p₁))
+    ... | inr p₁ = inr (subst (λ w → f₁ w ≡ y) (sym p₁) p)
+α-equiv'-up-helper-low `⟨ a , b ⟩ n f sf (α-pair {f = f₁} {g = g} {sf = sf₁} {sg = sg} aph aph₁ s x) y y≤ = final
+  where
+    note₁ : f₁ y ≡ n + y ⊎ f₁ y ≡ y
+    note₁ = α-equiv'-up-helper-low a n f₁ sf₁ aph y y≤
+
+    note₂ : g y ≡ n + y ⊎ g y ≡ y
+    note₂ = α-equiv'-up-helper-low b n g sg aph₁ y y≤ 
+
+    final : (f₁ ∘ g) y ≡ n + y ⊎ (f₁ ∘ g) y ≡ y
+    final with note₁
+    final | inl p with note₂ 
+    ... | inl p₁ = inr (subst (λ w → f₁ w ≡ y) (p ∙ sym p₁) (sf₁ y))
+    ... | inr p₁ = inl (subst (λ w → f₁ w ≡ n + y) (sym p₁) p)
+    final | inr p with note₂
+    ... | inl p₁ = inl (subst (λ w → w ≡ n + y) (sym (happly s y)) (subst (λ w → g w ≡ n + y) (sym p) p₁))
+    ... | inr p₁ = inr (subst (λ w → f₁ w ≡ y) (sym p₁) p)
+α-equiv'-up-helper-low (`π₁ e) n f sf (α-pi₁ aph) y y≤ = α-equiv'-up-helper-low e n f sf aph y y≤
+α-equiv'-up-helper-low (`π₂ e) n f sf (α-pi₂ aph) y y≤ = α-equiv'-up-helper-low e n f sf aph y y≤
+α-equiv'-up-helper-low `tt n f sf α-tt y y≤ = inr (id-is-swap y)
+
+
+        
+α-equiv'-up-helper-high : ∀ (e : Expr) f sf →
+                     ∀ n → (max-in+1 e) ≤ n →
+                     α-equiv' f {sf} e (up n e) →
+                     ∀ y → n ≤ y → (f (n + y) ≡ y ⊎ f (n + y) ≡ (n + y))
+α-equiv'-up-helper-high e f sf n max≤ aph y ≤y = {!!}
+
+        
+α-equiv'-self-up : ∀ (e : Expr) (n : Nat) → (max-in+1 e) ≤ n → Σ _ λ f → Σ _ λ sf → α-equiv' f {sf} e (up n e)
+α-equiv'-self-up (` x) n n≤ .fst = single-swap x (n + x)
+α-equiv'-self-up (` x) n n≤ .snd .fst = single-is-swap x (n + x)
+α-equiv'-self-up (` x) n n≤ .snd .snd = α-var refl (single-is-swap x (n + x))
+α-equiv'-self-up (`λ x e) n n≤ = 
+                               fst (remove f x sf)
+                               , is-swap→is-swap-remove f x sf 
+                               , α-lam equiv respects refl (is-swap→is-swap-remove f x sf)
+  where
+    g : Σ _ λ f → Σ _ λ sf → α-equiv' f {sf} e (up n e)
+    g = α-equiv'-self-up e n (≤-trans ((max-≤r (suc x) (max-in+1 e))) n≤)
+  
+    f : Nat → Nat
+    f = g .fst
+
+    sf : is-swap f
+    sf = g .snd .fst
+
+    equiv : α-equiv' f {sf} e (up n e)
+    equiv = g .snd .snd
+
+    hm : (y : Nat) →
+          (f ∘ single-swap x (n + x)) y ≡ (single-swap x (n + x) ∘ f) y
+    hm y with ≤-dec n y
+    hm y | yes a with α-equiv'-up-helper-high e f sf n (≤-trans (max-≤r (suc x) (max-in+1 e)) n≤) equiv y a
+    ... | inl p = {!!}
+    ... | inr p = {!!}
+    hm y | no ¬a = {!!}
+  
+    respects : swap-compat f (single-swap x (n + x))
+    respects = funext hm
+
+α-equiv'-self-up (e `$ e₁) n n≤ = {!!}
+α-equiv'-self-up `⟨ e , e₁ ⟩ n n≤ = {!!}
+α-equiv'-self-up (`π₁ e) n n≤ = {!!}
+α-equiv'-self-up (`π₂ e) n n≤ = {!!}
+α-equiv'-self-up `tt n n≤ = {!!}
+
+
 ```
             
 <!--
