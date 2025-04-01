@@ -217,6 +217,36 @@ is-cartesian-is-prop {f' = f'} cart cart' = worker where
 ```
 </details>
 
+<!--
+```agda
+instance
+  H-Level-is-cartesian
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Hom[ f ] x' y'} {n}
+    → H-Level (is-cartesian f f') (suc n)
+  H-Level-is-cartesian = prop-instance is-cartesian-is-prop
+
+subst-is-cartesian
+  : ∀ {x y x' y'} {f g : Hom x y} {f' : Hom[ f ] x' y'} {g' : Hom[ g ] x' y'}
+  → (p : f ≡ g) (p' : f' ≡[ p ] g')
+  → is-cartesian f f'
+  → is-cartesian g g'
+subst-is-cartesian {g = g} {f' = f'} {g' = g'} p p' f-cart = g-cart where
+  module f' = is-cartesian f-cart
+  open is-cartesian
+
+  g-cart : is-cartesian g g'
+  g-cart .universal m h' =
+    f'.universal' (ap (_∘ m) p) h'
+  g-cart .commutes m h' =
+    cast[] $
+      g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
+      f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
+      h' ∎
+  g-cart .unique m' q =
+    f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
+```
+-->
+
 We also provide a bundled form of cartesian morphisms.
 
 ```agda
@@ -360,10 +390,8 @@ cartesian→weak-monic
   → ∀ {x' y'} {f' : Hom[ f ] x' y'}
   → is-cartesian f f'
   → is-weak-monic f'
-cartesian→weak-monic {f' = f'} f-cart g' g'' p =
-  g'                     ≡⟨ unique g' p ⟩
-  universal _ (f' ∘' g'') ≡˘⟨ unique g'' refl ⟩
-  g''                     ∎
+cartesian→weak-monic {f = f} {f' = f'} f-cart g' g'' p p' =
+  uniquep₂ (ap (f ∘_) p) p refl g' g'' p' refl
   where
     open is-cartesian f-cart
 ```
@@ -438,28 +466,29 @@ cartesian-domain-unique
 cartesian-domain-unique {f' = f'} {f'' = f''} f'-cart f''-cart =
   make-iso[ id-iso ] to* from* invl* invr*
   where
-    open is-cartesian
+    module f' = is-cartesian f'-cart
+    module f'' = is-cartesian f''-cart
 
-    to* = universal' f''-cart (B .Precategory.idr _) f'
-    from* = universal' f'-cart (B .Precategory.idr _) f''
+    to* = f''.universalv f'
+    from* = f'.universalv f''
 
     invl* : to* ∘' from* ≡[ idl id ] id'
-    invl* = to-pathp⁻ $ cartesian→weak-monic f''-cart _ _ $
-      f'' ∘' to* ∘' from*        ≡⟨ shiftr (assoc _ _ _) (pulll' _ (f''-cart .commutes _ _)) ⟩
-      hom[] (hom[] f' ∘' from*) ≡⟨ smashl _ _ ⟩
-      hom[] (f' ∘' from*)       ≡⟨ (hom[]⟩⟨ f'-cart .commutes _ _) ∙ hom[]-∙ _ _ ⟩
-      hom[] f''                  ≡⟨ weave _ (sym $ idr _) (ap (_ ∘_) (sym $ idl _)) (symP $ idr' f'') ⟩
-      hom[] (f'' ∘' id')         ≡˘⟨ whisker-r _ ⟩
-      f'' ∘' hom[] id' ∎
+    invl* =
+      cartesian→weak-monic f''-cart (to* ∘' from*) id' (idl id) $
+      cast[] $
+        f'' ∘' to* ∘' from* ≡[]⟨ pulll[] _ (f''.commutesv f') ⟩
+        f' ∘' from*         ≡[]⟨ f'.commutesv f'' ⟩
+        f''                 ≡[]˘⟨ idr' f'' ⟩
+        f'' ∘' id'          ∎
 
     invr* : from* ∘' to* ≡[ idl id ] id'
-    invr* = to-pathp⁻ $ cartesian→weak-monic f'-cart _ _ $
-      f' ∘' from* ∘' to*      ≡⟨ shiftr (assoc _ _ _) (pulll' _ (f'-cart .commutes _ _)) ⟩
-      hom[] (hom[] f'' ∘' to*) ≡⟨ smashl _ _ ⟩
-      hom[] (f'' ∘' to*)       ≡⟨ (hom[]⟩⟨ f''-cart .commutes _ _) ∙ hom[]-∙ _ _ ⟩
-      hom[] f'                ≡⟨ weave _ (sym $ idr _) (ap (_ ∘_) (sym $ idl _)) (symP $ idr' f') ⟩
-      hom[] (f' ∘' id')       ≡˘⟨ whisker-r _ ⟩
-      f' ∘' hom[] id' ∎
+    invr* =
+      cartesian→weak-monic f'-cart (from* ∘' to*) id' (idl id) $
+      cast[] $
+        f' ∘' from* ∘' to* ≡[]⟨ pulll[] _ (f'.commutesv f'') ⟩
+        f'' ∘' to*         ≡[]⟨ f''.commutesv f' ⟩
+        f'                 ≡[]˘⟨ idr' f' ⟩
+        f' ∘' id'          ∎
 ```
 
 Cartesian morphisms are also stable under vertical retractions.
@@ -503,28 +532,45 @@ cartesian-vertical-retraction-stable {f' = f'} {f''} {ϕ} f-cart ϕ-sect factor 
         h' ∎
 ```
 
-We also have the following extremely useful pasting lemma, which
+If $f' \circ g'$ is cartesian and $f'$ is a [[weak monomorphism]],
+then $g'$ is cartesian.
+
+```agda
+cartesian-weak-monic-cancell
+  : ∀ {x y z} {f : Hom y z} {g : Hom x y}
+  → ∀ {x' y' z'} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
+  → is-weak-monic f'
+  → is-cartesian (f ∘ g) (f' ∘' g')
+  → is-cartesian g g'
+cartesian-weak-monic-cancell {f = f} {g = g} {f' = f'} {g' = g'} f-weak-mono fg-cart = g-cart where
+  module fg = is-cartesian fg-cart
+  open is-cartesian
+
+  g-cart : is-cartesian g g'
+  g-cart .universal m h' =
+    fg.universal' (sym (assoc f g m)) (f' ∘' h')
+  g-cart .commutes m h' =
+    f-weak-mono (g' ∘' fg.universal' _ (f' ∘' h')) h' refl $
+    cast[] $
+      f' ∘' g' ∘' fg.universal' _ (f' ∘' h')   ≡[]⟨ assoc' _ _ _ ⟩
+      (f' ∘' g') ∘' fg.universal' _ (f' ∘' h') ≡[]⟨ fg.commutesp (sym (assoc f g m)) (f' ∘' h') ⟩
+      f' ∘' h'                                 ∎
+  g-cart .unique {m = m} m' p =
+    fg.uniquep (sym (assoc f g m)) refl (sym (assoc f g m)) m' (pullr' refl p)
+```
+
+As a corollary, we get the following useful pasting lemma, which
 generalizes the [[pasting law for pullbacks]].
 
 ```agda
-cartesian-pasting
+cartesian-cancell
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
   → ∀ {x' y' z'} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → is-cartesian f f'
   → is-cartesian (f ∘ g) (f' ∘' g')
   → is-cartesian g g'
-cartesian-pasting {f = f} {g = g} {f' = f'} {g' = g'} f-cart fg-cart = g-cart where
-  open is-cartesian
-
-  g-cart : is-cartesian g g'
-  g-cart .universal m h' =
-    universal' fg-cart (sym (assoc _ _ _)) (f' ∘' h')
-  g-cart .commutes m h' =
-    g' ∘' universal' fg-cart (sym (assoc _ _ _)) (f' ∘' h')  ≡⟨ f-cart .unique _ (from-pathp⁻ (assoc' _ _ _) ∙ from-pathp (commutesp fg-cart _ _)) ⟩
-    f-cart .universal _ (f' ∘' h')                           ≡˘⟨ f-cart .unique h' refl ⟩
-    h'                                                       ∎
-  g-cart .unique {m = m} {h' = h'} m' p =
-    uniquep fg-cart (sym (assoc _ _ _)) refl (sym (assoc _ _ _)) m' (pullr' refl p)
+cartesian-cancell f-cart fg-cart =
+  cartesian-weak-monic-cancell (cartesian→weak-monic f-cart) fg-cart
 ```
 
 We can prove a similar fact for bundled cartesian morphisms.
@@ -543,15 +589,9 @@ cart-paste {x' = x'} {y' = y'} {f = f} {g = g} f' fg' = g' where
 
   g' : Cartesian-morphism g x' y'
   g' .hom' = f'.universal g (fg' .hom')
-  g' .cartesian .universal m h' =
-    fg'.universal' (sym (assoc _ _ _)) (f' .hom' ∘' h')
-  g' .cartesian .commutes m h' =
-    f'.uniquep₂ _ _ (assoc _ _ _) _ _
-      (pulll[] _ (f'.commutes _ _) ∙[] fg'.commutes _ _)
-      (to-pathp refl)
-  g' .cartesian .unique m' p =
-    fg'.uniquep _ refl (sym (assoc _ _ _)) m'
-      (ap (_∘' m') (symP (f'.commutes _ _)) ∙[] pullr[] _ p)
+  g' .cartesian =
+    cartesian-cancell (f' .cartesian) $
+    subst-is-cartesian refl (sym (f'.commutes g (fg' .hom'))) (fg' .cartesian)
 ```
 
 If a morphism is both vertical and cartesian, then it must be an
