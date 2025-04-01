@@ -117,38 +117,39 @@ composite, rather than displayed directly over a composite.
   universal' {u' = u'} p h' =
     universal _ (coe1→0 (λ i → Hom[ p i ] u' b') h')
 
-  commutesp : ∀ {u u'} {m : Hom u a} {k : Hom u b}
-            → (p : f ∘ m ≡ k) (h' : Hom[ k ] u' b')
-            → f' ∘' universal' p h' ≡[ p ] h'
-  commutesp {u' = u'} p h' =
-    to-pathp⁻ $ commutes _ (coe1→0 (λ i → Hom[ p i ] u' b') h')
+  abstract
+    commutesp : ∀ {u u'} {m : Hom u a} {k : Hom u b}
+              → (p : f ∘ m ≡ k) (h' : Hom[ k ] u' b')
+              → f' ∘' universal' p h' ≡[ p ] h'
+    commutesp {u' = u'} p h' =
+      to-pathp⁻ $ commutes _ (coe1→0 (λ i → Hom[ p i ] u' b') h')
 
-  universalp : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
-          → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
-          → (h' : Hom[ k ] u' b')
-          → universal' p h' ≡[ q ] universal' r h'
-  universalp {u = u} p q r h' i =
-    universal' (is-set→squarep (λ _ _ → Hom-set u b) (ap (f ∘_) q) p r refl i) h'
+    universalp : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
+            → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+            → (h' : Hom[ k ] u' b')
+            → universal' p h' ≡[ q ] universal' r h'
+    universalp {u = u} p q r h' i =
+      universal' (is-set→squarep (λ _ _ → Hom-set u b) (ap (f ∘_) q) p r refl i) h'
 
-  uniquep : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
-          → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
-          → {h' : Hom[ k ] u' b'}
-          → (m' : Hom[ m₁ ] u' a')
-          → f' ∘' m' ≡[ p ] h' → m' ≡[ q ] universal' r h'
-  uniquep p q r {h' = h'} m' s =
-    to-pathp⁻ (unique m' (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h'))
+    uniquep : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
+            → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+            → {h' : Hom[ k ] u' b'}
+            → (m' : Hom[ m₁ ] u' a')
+            → f' ∘' m' ≡[ p ] h' → m' ≡[ q ] universal' r h'
+    uniquep p q r {h' = h'} m' s =
+      to-pathp⁻ (unique m' (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h'))
 
-  uniquep₂
-    : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
-    → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
-    → {h' : Hom[ k ] u' b'} (m₁' : Hom[ m₁ ] u' a') (m₂' : Hom[ m₂ ] u' a')
-    → f' ∘' m₁' ≡[ p ] h'
-    → f' ∘' m₂' ≡[ r ] h'
-    → m₁' ≡[ q ] m₂'
-  uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp⁻ $
-       unique m₁' (from-pathp⁻ α)
-    ∙∙ from-pathp⁻ (universalp p q r _)
-    ∙∙ ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
+    uniquep₂
+      : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
+      → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+      → {h' : Hom[ k ] u' b'} (m₁' : Hom[ m₁ ] u' a') (m₂' : Hom[ m₂ ] u' a')
+      → f' ∘' m₁' ≡[ p ] h'
+      → f' ∘' m₂' ≡[ r ] h'
+      → m₁' ≡[ q ] m₂'
+    uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp⁻ $
+         unique m₁' (from-pathp⁻ α)
+      ∙∙ from-pathp⁻ (universalp p q r _)
+      ∙∙ ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
 ```
 
 Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
@@ -302,15 +303,15 @@ cartesian-∘ {f = f} {g = g} {f' = f'} {g' = g'} f-cart g-cart = fg-cart where
   fg-cart .is-cartesian.universal m h' =
     g'.universal m (f'.universal' (assoc f g m) h')
   fg-cart .is-cartesian.commutes m h' =
-    (f' ∘' g') ∘' g'.universal m (f'.universal' (assoc f g m) h') ≡⟨ shiftr (sym $ assoc _ _ _) (pullr' refl (g'.commutes m _)) ⟩
-    hom[] (f' ∘' f'.universal' (assoc f g m) h')                  ≡⟨ hom[]⟩⟨ f'.commutes _ _ ⟩
-    hom[] (hom[] h')                                              ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
-    h'                                                            ∎
+    cast[] $
+      (f' ∘' g') ∘' g'.universal m (f'.universal' _ h') ≡[]⟨ pullr[] _ (g'.commutes _ _) ⟩
+      f' ∘' f'.universal' _ h'                          ≡[]⟨ f'.commutesp (assoc f g m) h' ⟩
+      h'                                                ∎
   fg-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    g'.unique m' $ f'.unique (g' ∘' m') $
-      f' ∘' g' ∘' m'           ≡⟨ from-pathp⁻ (assoc' f' g' m') ⟩
-      hom[] ((f' ∘' g') ∘' m') ≡⟨ weave _ _ _ p ⟩
-      hom[] h' ∎
+    g'.unique m' $ f'.uniquep _ _ _ (g' ∘' m') $
+      f' ∘' g' ∘' m'   ≡[]⟨ assoc' f' g' m' ⟩
+      (f' ∘' g') ∘' m' ≡[]⟨ p ⟩
+      h'               ∎
 
 _∘cart_
   : ∀ {x y z x' y' z'} {f : Hom y z} {g : Hom x y}
@@ -351,22 +352,22 @@ invertible→cartesian
   → is-cartesian f f'
 invertible→cartesian
  {f = f} {f' = f'} f-inv f'-inv = f-cart where
-  module f-inv = is-invertible f-inv
-  module f'-inv = is-invertible[_] f'-inv
+  module f = is-invertible f-inv
+  module f' = is-invertible[_] f'-inv
 
   f-cart : is-cartesian f f'
   f-cart .is-cartesian.universal m h' =
-    hom[ cancell f-inv.invr ] (f'-inv.inv' ∘' h')
+    hom[ cancell f.invr ] (f'.inv' ∘' h')
   f-cart .is-cartesian.commutes m h' =
-    f' ∘' hom[ cancell f-inv.invr ] (f'-inv.inv' ∘' h') ≡⟨ whisker-r _ ⟩
-    hom[] (f' ∘' f'-inv.inv' ∘' h') ≡⟨ revive₁ (cancell' f-inv.invl f'-inv.invl' {q = cancell f-inv.invl}) ⟩
-    hom[] h'                        ≡⟨ liberate _ ⟩
-    h' ∎
+    cast[] $
+      f' ∘' hom[] (f'.inv' ∘' h') ≡[]⟨ unwrapr _ ⟩
+      f' ∘' f'.inv' ∘' h'         ≡[]⟨ cancell[] _ f'.invl' ⟩
+      h' ∎
   f-cart .is-cartesian.unique {h' = h'} m' p =
-    m'                              ≡˘⟨ liberate _ ⟩
-    hom[] m'                        ≡⟨ weave refl (insertl f-inv.invr) (cancell f-inv.invr) (insertl' _ f'-inv.invr') ⟩
-    hom[] (f'-inv.inv' ∘' f' ∘' m') ≡⟨ apr' p ⟩
-    hom[] (f'-inv.inv' ∘' h')       ∎
+    cast[] $
+      m'                    ≡[]⟨ introl[] f.invr f'.invr' ∙[] pullr[] _ p ⟩
+      f'.inv' ∘' h'         ≡[]⟨ wrap (cancell f.invr) ⟩
+      hom[] (f'.inv' ∘' h') ∎
 ```
 
 <!--
@@ -503,33 +504,28 @@ cartesian-vertical-retraction-stable
   → is-cartesian f f''
 cartesian-vertical-retraction-stable {f' = f'} {f''} {ϕ} f-cart ϕ-sect factor = f''-cart where
   open is-cartesian f-cart
-  module ϕ-sect = has-section[_] ϕ-sect
+  module ϕ = has-section[_] ϕ-sect
 
   f''-cart : is-cartesian _ f''
   f''-cart .is-cartesian.universal m h' =
     hom[ idl m ] (ϕ ∘' universal m h')
   f''-cart .is-cartesian.commutes m h' =
-    f'' ∘' hom[] (ϕ ∘' universal m h') ≡⟨ whisker-r _ ⟩
-    hom[] (f'' ∘' ϕ ∘' universal m h') ≡⟨ revive₁ {p = ap (_ ∘_) (idl m)} (pulll' (idr _) factor) ⟩
-    hom[] (f' ∘' universal m h')      ≡⟨ (hom[]⟩⟨ commutes m h') ∙ liberate _ ⟩
-    h' ∎
+    cast[] $
+    f'' ∘' hom[] (ϕ ∘' universal m h') ≡[]⟨ unwrapr _ ⟩
+    f'' ∘' ϕ ∘' universal m h'         ≡[]⟨ pulll[] _ factor ⟩
+    f' ∘' universal m h'               ≡[]⟨ commutes m h' ⟩
+    h'                                 ∎
   f''-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    m'                                   ≡⟨ shiftr (sym (eliml (idl _))) (introl' (idl _) ϕ-sect.is-section') ⟩
-    hom[] ((ϕ ∘' ϕ-sect.section') ∘' m') ≡⟨ weave _ (pullr (idl _)) _ (pullr' (idl _) (to-pathp (unique _ unique-path))) ⟩
-    hom[] (ϕ ∘' universal m h')          ∎
+    from-pathp⁻ $ post-section' ϕ-sect $
+    uniquep₂ _ (idl m) refl (ϕ.section' ∘' m') (universal m h')
+      unique-lemma
+      (commutes m h')
     where
-      sect-commute : f' ∘' ϕ-sect.section' ≡[ idr _ ] f''
-      sect-commute = to-pathp⁻ $
-        f' ∘' ϕ-sect.section'                ≡⟨ shiftr _ (λ i → factor (~ i) ∘' ϕ-sect.section') ⟩
-        hom[] ((f'' ∘' ϕ) ∘' ϕ-sect.section') ≡⟨ weave _ (idr _ ∙ idr _) _ (cancelr' (idl _) ϕ-sect.is-section') ⟩
-        hom[] f'' ∎
-
-      unique-path : f' ∘' hom[ idl m ] (ϕ-sect.section' ∘' m') ≡ h'
-      unique-path =
-        f' ∘' hom[ idl m ] (ϕ-sect.section' ∘' m') ≡⟨ whisker-r _ ⟩
-        hom[] (f' ∘' ϕ-sect.section' ∘' m')        ≡⟨ shiftl _ (pulll' (idr _) sect-commute) ⟩
-        f'' ∘' m' ≡⟨ p ⟩
-        h' ∎
+      unique-lemma : f' ∘' ϕ.section' ∘' m' ≡[ _ ] h'
+      unique-lemma =
+        f' ∘' ϕ.section' ∘' m' ≡[]⟨ pulll[] _ (symP (pre-section[] ϕ-sect factor)) ⟩
+        f'' ∘' m'              ≡[]⟨ p ⟩
+        h'                     ∎
 ```
 
 If $f' \circ g'$ is cartesian and $f'$ is a [[weak monomorphism]],
@@ -617,10 +613,10 @@ vertical+cartesian→invertible {x' = x'} {x'' = x''} {f' = f'} f-cart =
     path = cancell' (idl _) (commutesp (idl _) id')
 
     f'-invr : f⁻¹' ∘' f' ≡[ idl _ ] id'
-    f'-invr = to-pathp⁻ $
-      f⁻¹' ∘' f'                    ≡⟨ shiftr _ (uniquep _ (idl _) (idl _) (f⁻¹' ∘' f') path) ⟩
-      hom[] (universal' (idl _) f') ≡⟨ weave _ _ _ (symP $ uniquep (idr _) refl (idl _) id' (idr' _)) ⟩
-      hom[] id' ∎
+    f'-invr =
+      uniquep₂ _ _ _ (f⁻¹' ∘' f') id'
+        (cancell[] _ f'-invl)
+        (idr' f')
 ```
 
 Furthermore, $f' : x' \to_{f} y'$ is cartesian if and only if the
