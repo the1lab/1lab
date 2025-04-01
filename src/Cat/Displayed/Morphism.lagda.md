@@ -89,18 +89,17 @@ is-weak-monic
   → Hom[ f ] a' b'
   → Type _
 is-weak-monic {a = a} {a' = a'} {f = f} f' =
-  ∀ {c c'} {g : Hom c a}
-  → (g' g'' : Hom[ g ] c' a')
-  → f' ∘' g' ≡ f' ∘' g''
-  → g' ≡ g''
+  ∀ {c c'} {g h : Hom c a}
+  → (g' : Hom[ g ] c' a') (h' : Hom[ h ] c' a')
+  → (p : g ≡ h)
+  → f' ∘' g' ≡[ ap (f ∘_) p ] f' ∘' h'
+  → g' ≡[ p ] h'
 
 is-weak-monic-is-prop
   : ∀ {a' : Ob[ a ]} {b' : Ob[ b ]} {f : Hom a b}
   → (f' : Hom[ f ] a' b')
   → is-prop (is-weak-monic f')
-is-weak-monic-is-prop f' mono mono' i g' g'' p =
-  is-prop→pathp (λ i → Hom[ _ ]-set _ _ g' g'')
-    (mono g' g'' p) (mono' g' g'' p) i
+is-weak-monic-is-prop f' = hlevel 1
 
 record weak-mono-over
   {a b} (f : Hom a b) (a' : Ob[ a ]) (b' : Ob[ b ])
@@ -122,10 +121,12 @@ weak-monic-∘
   : is-weak-monic f'
   → is-weak-monic g'
   → is-weak-monic (f' ∘' g')
-weak-monic-∘ {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p =
-  g'-weak-monic h' k' $ f'-weak-monic (g' ∘' h') (g' ∘' k') $ cast[] $
+weak-monic-∘ {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p p' =
+  g'-weak-monic h' k' p $
+  f'-weak-monic (g' ∘' h') (g' ∘' k') (ap₂ _∘_ refl p) $
+  cast[] $
     f' ∘' g' ∘' h'   ≡[]⟨ assoc' f' g' h' ⟩
-    (f' ∘' g') ∘' h' ≡[]⟨ p ⟩
+    (f' ∘' g') ∘' h' ≡[]⟨ p' ⟩
     (f' ∘' g') ∘' k' ≡[]˘⟨ assoc' f' g' k' ⟩
     f' ∘' g' ∘' k'   ∎
 
@@ -133,8 +134,8 @@ is-monic[]→is-weak-monic
   : {f-monic : is-monic f}
   → is-monic[ f-monic ] f'
   → is-weak-monic f'
-is-monic[]→is-weak-monic f'-monic g' h' p =
-  cast[] $ f'-monic g' h' refl p
+is-monic[]→is-weak-monic f'-monic g' h' p p' =
+  cast[] $ f'-monic g' h' (ap₂ _∘_ refl p) p'
 ```
 
 If $f' \circ g'$ is weakly monic, then so is $g'$.
@@ -143,8 +144,8 @@ If $f' \circ g'$ is weakly monic, then so is $g'$.
 weak-monic-cancell
   : is-weak-monic (f' ∘' g')
   → is-weak-monic g'
-weak-monic-cancell {f' = f'} {g' = g'} fg-weak-monic h' k' p =
-  fg-weak-monic h' k' $ extendr' refl p
+weak-monic-cancell {f' = f'} {g' = g'} fg-weak-monic h' k' p p' =
+  fg-weak-monic h' k' p (extendr' _ p')
 ```
 
 Moreover, postcomposition with a weak monomorphism is an [[embedding]].
@@ -158,7 +159,7 @@ weak-monic-postcomp-embedding
   → is-weak-monic f'
   → is-embedding {A = Hom[ g ] a' b'} (f' ∘'_)
 weak-monic-postcomp-embedding {f' = f'} f'-weak-monic =
-  injective→is-embedding (hlevel 2) (f' ∘'_) λ {g'} {h'} → f'-weak-monic g' h'
+  injective→is-embedding (hlevel 2) (f' ∘'_) λ {g'} {h'} → f'-weak-monic g' h' refl
 ```
 
 ### Jointly weak monos
@@ -178,10 +179,11 @@ is-jointly-weak-monic
   → (fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix))
   → Type _
 is-jointly-weak-monic {a = a} {a' = a'} {fᵢ = fᵢ} fᵢ' =
-  ∀ {x x'} {g : Hom x a}
-  → (g' g'' : Hom[ g ] x' a')
-  → (∀ ix → fᵢ' ix ∘' g' ≡ fᵢ' ix ∘' g'')
-  → g' ≡ g''
+  ∀ {x x'} {g h : Hom x a}
+  → (g' : Hom[ g ] x' a') (h' : Hom[ h ] x' a')
+  → (p : g ≡ h)
+  → (∀ ix → fᵢ' ix ∘' g' ≡[ ap (fᵢ ix ∘_) p ] fᵢ' ix ∘' h')
+  → g' ≡[ p ] h'
 ```
 
 Jointly weak monic families are closed under precomposition
@@ -194,12 +196,12 @@ jointly-weak-monic-∘
   → is-jointly-weak-monic fᵢ'
   → is-weak-monic g'
   → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
-jointly-weak-monic-∘ {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p =
-  g'-joint-mono h' h'' $
-  fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') λ ix →
+jointly-weak-monic-∘ {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p p' =
+  g'-joint-mono h' h'' p $
+  fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') (ap₂ _∘_ refl p) λ ix →
   cast[] $
     fᵢ' ix ∘' g' ∘' h'    ≡[]⟨ assoc' (fᵢ' ix) g' h' ⟩
-    (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ p ix ⟩
+    (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ p' ix ⟩
     (fᵢ' ix ∘' g') ∘' h'' ≡[]˘⟨ assoc' (fᵢ' ix) g' h'' ⟩
     fᵢ' ix ∘' g' ∘' h''   ∎
 ```
@@ -213,8 +215,8 @@ jointly-weak-monic-cancell
   → {fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix)}
   → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
   → is-weak-monic g'
-jointly-weak-monic-cancell fᵢ'-joint-mono h' h'' p =
-  fᵢ'-joint-mono h' h'' λ _ → extendr' refl p
+jointly-weak-monic-cancell fᵢ'-joint-mono h' h'' p p' =
+  fᵢ'-joint-mono h' h'' p λ _ → extendr' (ap₂ _∘_ refl p) p'
 ```
 
 ## Epis
@@ -266,18 +268,17 @@ is-weak-epic
   → Hom[ f ] a' b'
   → Type _
 is-weak-epic {b = b} {b' = b'} {f = f} f' =
-  ∀ {c c'} {g : Hom b c}
-  → (g' g'' : Hom[ g ] b' c')
-  → g' ∘' f' ≡ g'' ∘' f'
-  → g' ≡ g''
+  ∀ {c c'} {g h : Hom b c}
+  → (g' : Hom[ g ] b' c') (h' : Hom[ h ] b' c')
+  → (p : g ≡ h)
+  → g' ∘' f' ≡[ ap (_∘ f) p ] h' ∘' f'
+  → g' ≡[ p ] h'
 
 is-weak-epic-is-prop
   : ∀ {a' : Ob[ a ]} {b' : Ob[ b ]} {f : Hom a b}
   → (f' : Hom[ f ] a' b')
-  → is-prop (is-weak-monic f')
-is-weak-epic-is-prop f' epi epi' i g' g'' p =
-  is-prop→pathp (λ i → Hom[ _ ]-set _ _ g' g'')
-    (epi g' g'' p) (epi' g' g'' p) i
+  → is-prop (is-weak-epic f')
+is-weak-epic-is-prop f' = hlevel 1
 
 record weak-epi-over
   {a b} (f : Hom a b) (a' : Ob[ a ]) (b' : Ob[ b ])
