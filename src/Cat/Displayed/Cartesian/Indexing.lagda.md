@@ -148,7 +148,7 @@ base along a composite.
   : ∀ {a b c} {f : Hom b c} {g : Hom a b} {x y : Ob[ c ]} (f' : Hom[ id ] x y)
   → rebase g (rebase f f') Fib.∘ ^*-comp-to ≡ ^*-comp-to Fib.∘ rebase (f ∘ g) f'
 ^*-comp-to-natural {f = f} {g = g} f' =
-  ap hom[] $ cartesian→weak-monic E (π*.cartesian) _ _ $ cast[] $
+  ap hom[] $ cartesian→weak-monic E (π*.cartesian) _ _ _ $ cast[] $
     pulll[] _ (π*.commutesp id-comm _)
     ∙[] pullr[] _ (π*.commutesv _)
     ∙[] π*.uniquep₂ _ id-comm-sym _ _ _
