@@ -633,7 +633,8 @@ module _ {a' : Hom[ a ] y' x'} {b' : Hom[ b ] x' y'}
     → (f' ∘' a') ∘' (b' ∘' g') ≡[ q ] f' ∘' g'
   cancel-inner' = cast[] $ pullr[] _ cancell[]
 
-  cancel-inner[] : ∀ {f' : Hom[ f ] x' z'} {g' : Hom[ g ] w' x'}
+  cancel-inner[]
+    : ∀ {f' : Hom[ f ] x' z'} {g' : Hom[ g ] w' x'}
     → (f' ∘' a') ∘' (b' ∘' g') ≡[ cancel-inner p ] f' ∘' g'
   cancel-inner[] = cancel-inner'
 
@@ -656,4 +657,39 @@ module _ {a' : Hom[ a ] y' x'} {b' : Hom[ b ] x' y'}
     : ∀ {f' : Hom[ f ] x' z'}
     → f' ≡[ insertr p ] (f' ∘' a') ∘' b'
   insertr[] = insertr'
+
+abstract
+  lswizzle'
+    : ∀ {f' : Hom[ f ] z' y'} {g' : Hom[ g ] x' z'} {h' : Hom[ h ] y' z'} {i' : Hom[ i ] x' y'}
+    → (p : g ≡ h ∘ i) (q : f ∘ h ≡ id) {r : f ∘ g ≡ i}
+    → g' ≡[ p ] h' ∘' i'
+    → f' ∘' h' ≡[ q ] id'
+    → f' ∘' g' ≡[ r ] i'
+  lswizzle' {f' = f'} p q p' q' =
+    cast[] (apd (λ i g' → f' ∘' g') p' ∙[] cancell[] q q')
+
+  lswizzle[]
+    : ∀ {f' : Hom[ f ] z' y'} {g' : Hom[ g ] x' z'} {h' : Hom[ h ] y' z'} {i' : Hom[ i ] x' y'}
+    → (p : g ≡ h ∘ i) (q : f ∘ h ≡ id)
+    → g' ≡[ p ] h' ∘' i'
+    → f' ∘' h' ≡[ q ] id'
+    → f' ∘' g' ≡[ lswizzle p q ] i'
+  lswizzle[] p q p' q' = lswizzle' p q p' q'
+
+  rswizzle'
+    : {f' : Hom[ f ] y' x'} {g' : Hom[ g ] x' z'} {h' : Hom[ h ] x' y'} {i' : Hom[ i ] y' z'}
+    → (p : g ≡ i ∘ h) (q : h ∘ f ≡ id) {r : g ∘ f ≡ i}
+    → g' ≡[ p ] i' ∘' h'
+    → h' ∘' f' ≡[ q ] id'
+    → g' ∘' f' ≡[ r ] i'
+  rswizzle' {f' = f'} p q p' q' =
+    cast[] (apd (λ i g' → g' ∘' f') p' ∙[] cancelr[] q q')
+
+  rswizzle[]
+    : {f' : Hom[ f ] y' x'} {g' : Hom[ g ] x' z'} {h' : Hom[ h ] x' y'} {i' : Hom[ i ] y' z'}
+    → (p : g ≡ i ∘ h) (q : h ∘ f ≡ id)
+    → g' ≡[ p ] i' ∘' h'
+    → h' ∘' f' ≡[ q ] id'
+    → g' ∘' f' ≡[ rswizzle p q ] i'
+  rswizzle[] {f' = f'} p q p' q' = rswizzle' p q p' q'
 ```

@@ -547,3 +547,50 @@ iso[]→from-has-retract[]
 iso[]→from-has-retract[] f' .retract' = f' .to'
 iso[]→from-has-retract[] f' .is-retract' = f' .invl'
 ```
+
+<!--
+```agda
+module _
+  {f : Hom a b} {f' : Hom[ f ] a' b'}
+  {f-section : has-section f}
+  (f-section' : has-section[ f-section ] f')
+  where abstract
+  private
+    module f = has-section f-section
+    module f' = has-section[_] f-section'
+
+  pre-section'
+    : ∀ {h₁ : Hom b c} {h₂ : Hom a c}
+    → {p : h₁ ∘ f ≡ h₂} {q : h₁ ≡ h₂ ∘ f.section}
+    → {h₁' : Hom[ h₁ ] b' c'} {h₂' : Hom[ h₂ ] a' c'}
+    → h₁' ∘' f' ≡[ p ] h₂'
+    → h₁' ≡[ q ] h₂' ∘' f'.section'
+  pre-section' {p = p} {q = q} {h₁' = h₁'} {h₂' = h₂'} p' =
+    symP (rswizzle' (sym p) f.is-section (symP p') f'.is-section')
+
+  pre-section[]
+    : ∀ {h₁ : Hom b c} {h₂ : Hom a c}
+    → {p : h₁ ∘ f ≡ h₂}
+    → {h₁' : Hom[ h₁ ] b' c'} {h₂' : Hom[ h₂ ] a' c'}
+    → h₁' ∘' f' ≡[ p ] h₂'
+    → h₁' ≡[ pre-section f-section p ] h₂' ∘' f'.section'
+  pre-section[] = pre-section'
+
+  post-section'
+    : ∀ {h₁ : Hom c b} {h₂ : Hom c a}
+    → {p : f.section ∘ h₁ ≡ h₂} {q : h₁ ≡ f ∘ h₂}
+    → {h₁' : Hom[ h₁ ] c' b'} {h₂' : Hom[ h₂ ] c' a'}
+    → f'.section' ∘' h₁' ≡[ p ] h₂'
+    → h₁' ≡[ q ] f' ∘' h₂'
+  post-section' {p = p} {q = q} {h₁' = h₁'} {h₂' = h₂'} p' =
+    symP (lswizzle' (sym p) f.is-section (symP p') f'.is-section')
+
+  post-section[]
+    : ∀ {h₁ : Hom c b} {h₂ : Hom c a}
+    → {p : f.section ∘ h₁ ≡ h₂}
+    → {h₁' : Hom[ h₁ ] c' b'} {h₂' : Hom[ h₂ ] c' a'}
+    → f'.section' ∘' h₁' ≡[ p ] h₂'
+    → h₁' ≡[ post-section f-section p ] f' ∘' h₂'
+  post-section[] = post-section'
+```
+-->
