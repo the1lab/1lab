@@ -22,9 +22,14 @@ open Displayed ℰ
 open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
 private variable
+  ℓi : Level
+  Ix : Type ℓi
   a b c d : Ob
-  f : Hom a b
+  aᵢ bᵢ cᵢ : Ix → Ob
+  f g h : Hom a b
   a' b' c' : Ob[ a ]
+  aᵢ'  bᵢ' cᵢ' : (ix : Ix) → Ob[ bᵢ ix ]
+  f' g' h' : Hom[ f ] a' b'
 ```
 -->
 
@@ -71,7 +76,7 @@ record _↪[_]_
 open _↪[_]_ public
 ```
 
-## Weak monos
+## Weak monos {defines="weak-monomorphism"}
 
 When working in a displayed setting, we also have weaker versions of
 the morphism classes we are familiar with, wherein we can only left/right
@@ -107,6 +112,109 @@ record weak-mono-over
     weak-monic : is-weak-monic mor'
 
 open weak-mono-over public
+```
+
+Weak monomorphisms are closed under composition, and every displayed
+monomorphism is weakly monic.
+
+```agda
+weak-monic-∘
+  : is-weak-monic f'
+  → is-weak-monic g'
+  → is-weak-monic (f' ∘' g')
+weak-monic-∘ {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p =
+  g'-weak-monic h' k' $ f'-weak-monic (g' ∘' h') (g' ∘' k') $ cast[] $
+    f' ∘' g' ∘' h'   ≡[]⟨ assoc' f' g' h' ⟩
+    (f' ∘' g') ∘' h' ≡[]⟨ p ⟩
+    (f' ∘' g') ∘' k' ≡[]˘⟨ assoc' f' g' k' ⟩
+    f' ∘' g' ∘' k'   ∎
+
+is-monic[]→is-weak-monic
+  : {f-monic : is-monic f}
+  → is-monic[ f-monic ] f'
+  → is-weak-monic f'
+is-monic[]→is-weak-monic f'-monic g' h' p =
+  cast[] $ f'-monic g' h' refl p
+```
+
+If $f' \circ g'$ is weakly monic, then so is $g'$.
+
+```agda
+weak-monic-cancell
+  : is-weak-monic (f' ∘' g')
+  → is-weak-monic g'
+weak-monic-cancell {f' = f'} {g' = g'} fg-weak-monic h' k' p =
+  fg-weak-monic h' k' $ extendr' refl p
+```
+
+Moreover, postcomposition with a weak monomorphism is an [[embedding]].
+This suggests that weak monomorphisms are the "right" notion of
+monomorphisms in displayed categories.
+
+```agda
+weak-monic-postcomp-embedding
+  : {f : Hom b c} {g : Hom a b}
+  → {f' : Hom[ f ] b' c'}
+  → is-weak-monic f'
+  → is-embedding {A = Hom[ g ] a' b'} (f' ∘'_)
+weak-monic-postcomp-embedding {f' = f'} f'-weak-monic =
+  injective→is-embedding (hlevel 2) (f' ∘'_) λ {g'} {h'} → f'-weak-monic g' h'
+```
+
+### Jointly weak monos
+
+We can generalize the notion of weak monomorphisms to families of morphisms, which
+yields a displayed version of a [[jointly monic family]].
+
+:::{.definition #jointly-weak-monic-family}
+A family of displayed morphisms $f_{i}' : A' \to_{f_{i}} B_{i}'$ is *jointly monic*
+if for all $g', g'' : X' \to_{g} A'$, $g' = g''$ if $f_{i}' \circ g' = f_{i} \circ g''$
+for all $i : I$.
+:::
+
+```agda
+is-jointly-weak-monic
+  : {fᵢ : (ix : Ix) → Hom a (bᵢ ix)}
+  → (fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix))
+  → Type _
+is-jointly-weak-monic {a = a} {a' = a'} {fᵢ = fᵢ} fᵢ' =
+  ∀ {x x'} {g : Hom x a}
+  → (g' g'' : Hom[ g ] x' a')
+  → (∀ ix → fᵢ' ix ∘' g' ≡ fᵢ' ix ∘' g'')
+  → g' ≡ g''
+```
+
+Jointly weak monic families are closed under precomposition
+with weak monos.
+
+```agda
+jointly-weak-monic-∘
+  : {fᵢ : (ix : Ix) → Hom a (bᵢ ix)}
+  → {fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix)}
+  → is-jointly-weak-monic fᵢ'
+  → is-weak-monic g'
+  → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
+jointly-weak-monic-∘ {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p =
+  g'-joint-mono h' h'' $
+  fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') λ ix →
+  cast[] $
+    fᵢ' ix ∘' g' ∘' h'    ≡[]⟨ assoc' (fᵢ' ix) g' h' ⟩
+    (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ p ix ⟩
+    (fᵢ' ix ∘' g') ∘' h'' ≡[]˘⟨ assoc' (fᵢ' ix) g' h'' ⟩
+    fᵢ' ix ∘' g' ∘' h''   ∎
+```
+
+Similarly, if $f_{i}' \circ g'$ is a jointly weak monic family, then
+$g'$ must be a weak mono.
+
+```agda
+jointly-weak-monic-cancell
+  : {fᵢ : (ix : Ix) → Hom a (bᵢ ix)}
+  → {fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix)}
+  → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
+  → is-weak-monic g'
+jointly-weak-monic-cancell fᵢ'-joint-mono h' h'' p =
+  fᵢ'-joint-mono h' h'' λ _ → extendr' refl p
 ```
 
 ## Epis
