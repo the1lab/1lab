@@ -261,6 +261,17 @@ has-section→epic {f = f} f-sect g h p =
 
 <!--
 ```agda
+has-section-precomp-embedding
+  : ∀ {a b c} {f : Hom a b}
+  → has-section f
+  → is-embedding {A = Hom b c} (_∘ f)
+has-section-precomp-embedding f-section =
+  epic-precomp-embedding (has-section→epic f-section)
+```
+-->
+
+<!--
+```agda
 subst-section
   : ∀ {a b} {f g : Hom a b}
   → f ≡ g
@@ -332,7 +343,6 @@ retract-cancelr {f = f} r .retract = r .retract ∘ f
 retract-cancelr {f = f} r .is-retract = sym (assoc _ _ _) ∙ r .is-retract
 ```
 
-
 If $f$ has a retract, then $f$ is monic.
 
 ```agda
@@ -350,6 +360,17 @@ has-retract→monic {f = f} f-ret g h p =
   id ∘ h                   ≡⟨ idl _ ⟩
   h                        ∎
 ```
+
+<!--
+```agda
+has-retract-postcomp-embedding
+  : ∀ {a b c} {f : Hom b c}
+  → has-retract f
+  → is-embedding {A = Hom a b} (f ∘_)
+has-retract-postcomp-embedding f-retract =
+  monic-postcomp-embedding (has-retract→monic f-retract)
+```
+-->
 
 A section that is also epic is a retract.
 

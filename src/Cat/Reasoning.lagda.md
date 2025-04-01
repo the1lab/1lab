@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Function.Embedding
+open import 1Lab.Function.Embedding renaming (_↪_ to _↣_)
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (id; _∘_)
@@ -314,6 +314,37 @@ swizzle {f = f} {g = g} {h = h} {i = i} {g' = g'} {h' = h'} p q r =
   lswizzle (sym (assoc _ _ _ ∙ rswizzle (sym p) q)) r
 ```
 
+## Sections and Retracts
+
+We can repackage our "swizzling" lemmas to move around sections and
+retracts.
+
+```agda
+module _
+  {f : Hom x y}
+  (f-section : has-section f)
+  where abstract
+  private module f = has-section f-section
+
+  pre-section : a ∘ f ≡ b → a ≡ b ∘ f.section
+  pre-section {a = a} {b = b} p = sym (rswizzle (sym p) f.is-section)
+
+  post-section : f.section ∘ a ≡ b → a ≡ f ∘ b
+  post-section {a = a} {b = b} p = sym (lswizzle (sym p) f.is-section)
+
+module _
+  {f : Hom x y}
+  (f-retract : has-retract f)
+  where abstract
+  private module f = has-retract f-retract
+
+  pre-retract : a ∘ f.retract ≡ b → a ≡ b ∘ f
+  pre-retract {a = a} {b = b} p = sym (rswizzle (sym p) f.is-retract)
+
+  post-retract : f ∘ a ≡ b → a ≡ f.retract ∘ b
+  post-retract {a = a} {b = b} p = sym (lswizzle (sym p) f.is-retract)
+```
+
 ## Isomorphisms
 
 These lemmas are useful for proving that partial inverses to an
@@ -396,7 +427,6 @@ module _
   module pre-invl = Equiv pre-invl
   module post-invl = Equiv post-invl
 ```
-
 
 If we have a commuting triangle of isomorphisms, then we
 can flip one of the sides to obtain a new commuting triangle
