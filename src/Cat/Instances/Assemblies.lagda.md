@@ -51,7 +51,9 @@ record Assembly ℓ : Type (lsuc ℓ ⊔ ℓA) where
 
 <!--
 ```agda
-open Assembly
+  module _ {x : Ob} where open ℙ⁺ (realisers x) using (defined) public
+
+open Assembly public
 
 private variable
   X Y Z : Assembly ℓ
@@ -63,11 +65,15 @@ instance
   hlevel-proj-asm : hlevel-projection (quote Assembly.Ob)
   hlevel-proj-asm .hlevel-projection.has-level = quote Assembly.has-is-set
   hlevel-proj-asm .hlevel-projection.get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-asm .hlevel-projection.get-argument (_ ∷ c v∷ _) = pure c
+  hlevel-proj-asm .hlevel-projection.get-argument (_ ∷ _ ∷ _ ∷ _ ∷ _ ∷ _ ∷ c v∷ []) = pure c
+  hlevel-proj-asm .hlevel-projection.get-argument (_ ∷ c v∷ []) = pure c
   {-# CATCHALL #-}
   hlevel-proj-asm .hlevel-projection.get-argument _ = typeError []
 
 module _ (X : Assembly ℓ) (a : ↯ A) (x : ⌞ X ⌟) where open Ω (X .realisers x .mem a) renaming (∣_∣ to [_]_⊩_) public
+
+subst⊩ : (X : Assembly ℓ) {x : ⌞ X ⌟} {p q : ↯ A} → [ X ] p ⊩ x → q ≡ p → [ X ] q ⊩ x
+subst⊩ X {x} hx p = subst (_∈ X .realisers x) (sym p) hx
 ```
 -->
 
