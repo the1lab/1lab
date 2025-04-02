@@ -36,9 +36,7 @@ open Displayed E
 A family of morphisms $f_{i} : \cE_{u_i}(A', B'_{i})$ over $u_{i} : \cB(A, B_{i})$
 is **jointly cartesian** if it satisfies a familial version of the universal
 property of a [[cartesian]] map.
-
 :::
-
 
 ```agda
 record is-jointly-cartesian
@@ -168,6 +166,13 @@ private variable
   fᵢ fᵢ' gᵢ : ∀ (ix : Ix) → Hom[ uᵢ ix ] a' (bᵢ' ix)
 ```
 -->
+
+::: warning
+Some sources ([@Adamek-Herrlich-Strecker:2004], [@Dubuc-Espanol:2006])
+refer to jointly cartesian families as "initial families". We opt to
+avoid this terminology, as it leads to unnecessary conflicts with
+[[initial objects]].
+:::
 
 At first glance, jointly cartesian families appear very similar to cartesian maps.
 However, replacing a single map with a family of maps has some very strong
