@@ -35,7 +35,7 @@ open Displayed E
 :::{.definition #jointly-cartesian-family}
 A family of morphisms $f_{i} : \cE_{u_i}(A', B'_{i})$ over $u_{i} : \cB(A, B_{i})$
 is **jointly cartesian** if it satisfies a familial version of the universal
-property of a [[cartesian]] map.
+property of a [[cartesian|cartesian-morphism]] map.
 :::
 
 ```agda
@@ -369,7 +369,7 @@ jointly-cartesian-vertical-retraction-stable
 
 ## Cancellation properties of jointly cartesian families
 
-Every jointly cartesian family is a [[weakly monic family]].
+Every jointly cartesian family is a [[jointly weak monic family]].
 
 ```agda
 jointly-cartesian→jointly-weak-monic

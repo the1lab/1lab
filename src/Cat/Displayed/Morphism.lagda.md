@@ -76,7 +76,7 @@ record _↪[_]_
 open _↪[_]_ public
 ```
 
-## Weak monos {defines="weak-monomorphism"}
+## Weak monos {defines="weak-monomorphism weakly-monic"}
 
 When working in a displayed setting, we also have weaker versions of
 the morphism classes we are familiar with, wherein we can only left/right
