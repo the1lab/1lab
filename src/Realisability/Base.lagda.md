@@ -16,7 +16,7 @@ import Realisability.Data.Sum as sums
 
 ```agda
 module Realisability.Base
-  {ℓ} {𝔸 : Type ℓ} (_%_ : ↯ 𝔸 → ↯ 𝔸 → ↯ 𝔸) (p : is-pca _%_)
+  {ℓ} {𝔸 : Type ℓ} {_%_ : ↯ 𝔸 → ↯ 𝔸 → ↯ 𝔸} (p : is-pca _%_)
   where
 ```
 
