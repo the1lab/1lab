@@ -186,9 +186,14 @@ by studying prototypical examples of jointly cartesian families:
 
 - If we view the category of topological spaces as a [[displayed category]],
 then the jointly cartesian maps are precisely the initial topologies.
+
 - Jointly cartesian maps in the [[subobject fibration]] of $\Sets$
 arise from pulling back a family of subsets $A_{i} \subset Y_{i}$ along
 maps $u_{i} : X \to Y_{i}$, and then taking their intersection.
+
+- When $\cB$ is considered as a displayed category over the [[terminal category]],
+the jointly cartesian families are precisely the [[indexed products]].
+In contrast, the cartesian maps are the invertible maps.
 
 ## Relating cartesian maps and jointly cartesian families
 

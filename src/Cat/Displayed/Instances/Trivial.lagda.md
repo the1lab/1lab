@@ -1,7 +1,9 @@
 <!--
 ```agda
+open import Cat.Displayed.Cartesian.Joint
 open import Cat.Functor.Equivalence.Path
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Product.Indexed
 open import Cat.Displayed.Bifibration
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
@@ -10,6 +12,9 @@ open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
+
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 ```
 -->
 
@@ -21,13 +26,19 @@ module Cat.Displayed.Instances.Trivial
 
 <!--
 ```agda
-open Precategory 𝒞
+open Cat.Reasoning 𝒞
 open Functor
 open Total-hom
+
+private variable
+  a b : Ob
+  f g : Hom a b
+
+private module ⊤Cat = Cat.Reasoning ⊤Cat
 ```
 -->
 
-# The trivial bifibration
+# The trivial bifibration {defines="trivial-bifibration"}
 
 Any category $\ca{C}$ can be regarded as being displayed over the
 [[terminal category]] $\top$.
@@ -43,6 +54,30 @@ Trivial .Displayed.idr' = idr
 Trivial .Displayed.idl' = idl
 Trivial .Displayed.assoc' = assoc
 ```
+
+<!--
+```agda
+module Trivial where
+  open Cat.Displayed.Morphism Trivial public
+
+
+trivial-invertible→invertible
+  : ∀ {tt-inv : ⊤Cat.is-invertible tt}
+  → Trivial.is-invertible[ tt-inv ] f
+  → is-invertible f
+trivial-invertible→invertible f-inv =
+  make-invertible f.inv' f.invl' f.invr'
+  where module f = Trivial.is-invertible[_] f-inv
+
+invertible→trivial-invertible
+  : ∀ {tt-inv : ⊤Cat.is-invertible tt}
+  → is-invertible f
+  → Trivial.is-invertible[ tt-inv ] f
+invertible→trivial-invertible {tt-inv = tt-inv} f-inv =
+  Trivial.make-invertible[ tt-inv ] f.inv f.invl f.invr
+  where module f = is-invertible f-inv
+```
+-->
 
 All morphisms in the trivial [[displayed category]] are vertical over
 the same object, so producing cartesian lifts is extremely easy: just
@@ -75,6 +110,90 @@ Trivial-bifibration : is-bifibration Trivial
 Trivial-bifibration .is-bifibration.fibration = Trivial-fibration
 Trivial-bifibration .is-bifibration.opfibration = Trivial-opfibration
 ```
+
+The joint cartesian morphisms in the trivial displayed category
+are precisely the projections out of [[indexed products]].
+
+```agda
+trivial-joint-cartesian→product
+  : ∀ {κ} {Ix : Type κ}
+  → {∏xᵢ : Ob} {xᵢ : Ix → Ob} {π : (i : Ix) → Hom ∏xᵢ (xᵢ i)}
+  → is-jointly-cartesian Trivial (λ _ → tt) π
+  → is-indexed-product 𝒞 xᵢ π
+
+product→trivial-joint-cartesian
+  : ∀ {κ} {Ix : Type κ}
+  → {∏xᵢ : Ob} {xᵢ : Ix → Ob} {π : (i : Ix) → Hom ∏xᵢ (xᵢ i)}
+  → is-indexed-product 𝒞 xᵢ π
+  → is-jointly-cartesian Trivial (λ _ → tt) π
+```
+
+<details>
+<summary>The proofs are basically just shuffling data around,
+so we will not describe the details.
+</summary>
+
+```agda
+trivial-joint-cartesian→product {xᵢ = xᵢ} {π = π} π-cart =
+  π-product
+  where
+    module π = is-jointly-cartesian π-cart
+    open is-indexed-product
+
+    π-product : is-indexed-product 𝒞 xᵢ π
+    π-product .tuple fᵢ = π.universal tt fᵢ
+    π-product .commute = π.commutes tt _ _
+    π-product .unique fᵢ p = π.unique _ p
+
+product→trivial-joint-cartesian {xᵢ = xᵢ} {π = π} π-product =
+  π-cart
+  where
+    module π = is-indexed-product π-product
+    open is-jointly-cartesian
+
+    π-cart : is-jointly-cartesian Trivial (λ _ → tt) π
+    π-cart .universal tt fᵢ = π.tuple fᵢ
+    π-cart .commutes tt fᵢ ix = π.commute
+    π-cart .unique other p = π.unique _ p
+```
+</details>
+
+In contrast, the cartesian morphisms in the trivial displayed category
+are the invertible morphisms.
+
+```agda
+invertible→trivial-cartesian
+  : ∀ {a b} {f : Hom a b}
+  → is-invertible f
+  → is-cartesian Trivial tt f
+
+trivial-cartesian→invertible
+  : ∀ {a b} {f : Hom a b}
+  → is-cartesian Trivial tt f
+  → is-invertible f
+```
+
+The forward direction is easy: every invertible morphism is cartesian,
+and the invertible morphisms in the trivial displayed category on $\cC$ are
+the invertible maps in $\cC$.
+
+```agda
+invertible→trivial-cartesian f-inv =
+  invertible→cartesian Trivial
+    (⊤Cat-is-pregroupoid tt)
+    (invertible→trivial-invertible f-inv)
+```
+
+For the reverse direction, recall that all vertical cartesian morphisms
+are invertible. Every morphism in the trivial displayed category is vertical,
+so cartesianness implies invertibility.
+
+```agda
+trivial-cartesian→invertible f-cart =
+  trivial-invertible→invertible $
+  vertical+cartesian→invertible Trivial f-cart
+```
+
 
 Furthermore, the [[total category]] of the trivial bifibration is *isomorphic*
 to the category we started with.
