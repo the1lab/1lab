@@ -207,6 +207,9 @@ part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
 
 <!--
 ```agda
+is-always : {A : Type ℓ} (a : ↯ A) (x : ⌞ a ⌟) → a ≡ always (a .elt x)
+is-always a x = part-ext (λ _ → tt) (λ z → x) λ _ _ → ↯-indep a
+
 instance
   ↯-Map : Map (eff ↯)
   ↯-Map .Map.map = part-map
@@ -219,6 +222,18 @@ instance
   ↯-Bind : Bind (eff ↯)
   ↯-Bind .Bind._>>=_      = part-bind
   ↯-Bind .Bind.Idiom-bind = ↯-Idiom
+
+-- This class lets us define syntax sugar for e.g. lifted binary
+-- operators which automatically lifts values from the base type
+record To-part {ℓ'} (X : Type ℓ') (A : Type ℓ) : Type (ℓ ⊔ ℓ') where
+  field to-part : X → ↯ A
+
+instance
+  part-to-part : To-part (↯ A) A
+  part-to-part = record { to-part = λ x → x }
+
+  pure-to-part : To-part A A
+  pure-to-part = record { to-part = always }
 ```
 -->
 
