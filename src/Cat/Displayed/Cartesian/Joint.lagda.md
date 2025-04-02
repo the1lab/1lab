@@ -212,7 +212,7 @@ cartesian→jointly-cartesian {u = u} {f = f} ix-contr f-cart = f-joint-cart whe
     f.unique other (p (ix-contr .centre))
 ```
 
-Conversely, if the constant family $\lambda i\. f$ is a jointly cartesian
+Conversely, if the constant family $\lambda i.\; f$ is a jointly cartesian
 $I$-indexed family over a merely inhabited type $I$, then $f$ is cartesian.
 
 ```agda
