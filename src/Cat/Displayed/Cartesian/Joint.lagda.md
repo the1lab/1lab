@@ -154,16 +154,19 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
 <!--
 ```agda
 private variable
-  ℓi : Level
-  Ix Ix' : Type ℓi
+  ℓi ℓj : Level
+  Ix : Type ℓi
+  Jx : Ix → Type ℓj
   a b c : Ob
   bᵢ cᵢ : Ix → Ob
+  cᵢⱼ : (i : Ix) → Jx i → Ob
   a' b' c' : Ob[ a ]
   bᵢ' cᵢ' : (ix : Ix) → Ob[ bᵢ ix ]
+  cᵢⱼ' : (i : Ix) → (j : Jx i) → Ob[ cᵢⱼ i j ]
   u v : Hom a b
-  uᵢ vᵢ : ∀ (ix : Ix) → Hom a (bᵢ ix)
+  uᵢ uⱼ vᵢ vⱼ : ∀ (ix : Ix) → Hom a (bᵢ ix)
   f g : Hom[ u ] a' b'
-  fᵢ fᵢ' gᵢ : ∀ (ix : Ix) → Hom[ uᵢ ix ] a' (bᵢ' ix)
+  fᵢ fⱼ fᵢ' gᵢ gⱼ : ∀ (ix : Ix) → Hom[ uᵢ ix ] a' (bᵢ' ix)
 ```
 -->
 
@@ -252,13 +255,79 @@ empty-jointly-cartesian→discrete ¬ix fᵢ-cart v x' =
 
 ## Closure properties of jointly cartesian families
 
-Jointly cartesian families are closed under precomposition with [[cartesian maps]].
+If $g_{i} : X' \to_{v_i} Y_{i}'$ is an $I$-indexed jointly cartesian family, and
+$f_{i,j} : Y_{i}' \to_{u_{i,j}} Z_{i,j}'$ is an $I$-indexed family of $J_{i}$-indexed
+jointly cartesian families, then their composite is a $\Sigma (i : I).\; J_i$-indexed
+jointly cartesian family.
+
+```agda
+jointly-cartesian-∘
+  : {uᵢⱼ : (i : Ix) → (j : Jx i) → Hom (bᵢ i) (cᵢⱼ i j)}
+  → {fᵢⱼ : (i : Ix) → (j : Jx i) → Hom[ uᵢⱼ i j ] (bᵢ' i) (cᵢⱼ' i j)}
+  → {vᵢ : (i : Ix) → Hom a (bᵢ i)}
+  → {gᵢ : (i : Ix) → Hom[ vᵢ i ] a' (bᵢ' i)}
+  → (∀ i → is-jointly-cartesian (uᵢⱼ i) (fᵢⱼ i))
+  → is-jointly-cartesian vᵢ gᵢ
+  → is-jointly-cartesian
+      (λ ij → uᵢⱼ (ij .fst) (ij .snd) ∘ vᵢ (ij .fst))
+      (λ ij → fᵢⱼ (ij .fst) (ij .snd) ∘' gᵢ (ij .fst))
+```
+
+<!--
+```agda
+_ = cartesian-∘
+```
+-->
+
+Despite the high quantifier complexity of the statement, the proof
+follows the exact same plan that we use to show that `cartesian maps compose`{.Agda ident=cartesian-∘}.
+
+```agda
+jointly-cartesian-∘ {Ix = Ix} {uᵢⱼ = uᵢⱼ} {fᵢⱼ = fᵢⱼ} {vᵢ = vᵢ} {gᵢ = gᵢ} fᵢⱼ-cart gᵢ-cart =
+  fᵢⱼ∘gᵢ-cart
+  where
+    module fᵢⱼ (i : Ix) = is-jointly-cartesian (fᵢⱼ-cart i)
+    module gᵢ = is-jointly-cartesian gᵢ-cart
+    open is-jointly-cartesian
+
+    fᵢⱼ∘gᵢ-cart
+      : is-jointly-cartesian
+          (λ ij → uᵢⱼ (ij .fst) (ij .snd) ∘ vᵢ (ij .fst))
+          (λ ij → fᵢⱼ (ij .fst) (ij .snd) ∘' gᵢ (ij .fst))
+    fᵢⱼ∘gᵢ-cart .universal v hᵢⱼ =
+      gᵢ.universal v λ i →
+      fᵢⱼ.universal' i (λ j → assoc (uᵢⱼ i j) (vᵢ i) v) λ j →
+      hᵢⱼ (i , j)
+    fᵢⱼ∘gᵢ-cart .commutes w hᵢⱼ (i , j) =
+      cast[] $
+        (fᵢⱼ i j ∘' gᵢ i) ∘' gᵢ.universal _ (λ i → fᵢⱼ.universal' i _ (λ j → hᵢⱼ (i , j))) ≡[]⟨ pullr[] _ (gᵢ.commutes w _ i) ⟩
+        fᵢⱼ i j ∘' fᵢⱼ.universal' i _ (λ j → hᵢⱼ (i , j))                                  ≡[]⟨ fᵢⱼ.commutesp i _ _ j ⟩
+        hᵢⱼ (i , j) ∎
+    fᵢⱼ∘gᵢ-cart .unique {hᵢ = hᵢⱼ} other p =
+      gᵢ.unique other $ λ i →
+      fᵢⱼ.uniquep i _ _ _ (gᵢ i ∘' other) λ j →
+        fᵢⱼ i j ∘' gᵢ i ∘' other   ≡[]⟨ assoc' (fᵢⱼ i j) (gᵢ i) other ⟩
+        (fᵢⱼ i j ∘' gᵢ i) ∘' other ≡[]⟨ p (i , j) ⟩
+        hᵢⱼ (i , j)                ∎
+```
+
+As a nice corollary, we get that jointly cartesian families compose with
+[[cartesian maps]], as cartesian maps are precisely the singleton jointly cartesian
+families.
 
 ```agda
 jointly-cartesian-cartesian-∘
   : is-jointly-cartesian uᵢ fᵢ
   → is-cartesian v g
   → is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
+```
+
+<details>
+<summary>We actually opt to prove this corollary by hand to get nicer
+definitional behaviour of the resulting universal maps.
+</summary>
+
+```agda
 jointly-cartesian-cartesian-∘ {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ-cart g-cart = fᵢ∘g-cart
   where
     module fᵢ = is-jointly-cartesian fᵢ-cart
@@ -278,6 +347,7 @@ jointly-cartesian-cartesian-∘ {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ
       fᵢ.uniquep _ _ _ (g ∘' other) λ ix →
         assoc' (fᵢ ix) g other ∙[] pᵢ ix
 ```
+</details>
 
 Similarly, if $f_{i}$ is a family of maps with each $f_{i}$ individually
 cartesian, and $g_{i}$ is jointly cartesian, then the composite $f_{i} \circ g_{i}$
@@ -288,6 +358,12 @@ pointwise-cartesian-jointly-cartesian-∘
   : (∀ ix → is-cartesian (uᵢ ix) (fᵢ ix))
   → is-jointly-cartesian vᵢ gᵢ
   → is-jointly-cartesian (λ ix → uᵢ ix ∘ vᵢ ix) (λ ix → fᵢ ix ∘' gᵢ ix)
+```
+
+<details>
+<summary>We again prove this by hand to get better definitional behaviour.
+</summary>
+```agda
 pointwise-cartesian-jointly-cartesian-∘
   {uᵢ = uᵢ} {fᵢ = fᵢ} {vᵢ = vᵢ} {gᵢ = gᵢ} fᵢ-cart gᵢ-cart = fᵢ∘gᵢ-cart where
   module fᵢ ix = is-cartesian (fᵢ-cart ix)
@@ -307,6 +383,7 @@ pointwise-cartesian-jointly-cartesian-∘
     fᵢ.uniquep ix _ _ _ (gᵢ ix ∘' other)
       (assoc' (fᵢ ix) (gᵢ ix) other ∙[] p ix)
 ```
+</details>
 
 Like their non-familial counterparts, jointly cartesian maps are stable
 under vertical retractions.
@@ -334,7 +411,8 @@ so we omit the details.
 </summary>
 ```agda
 jointly-cartesian-vertical-retraction-stable
-  {uᵢ = uᵢ} {fᵢ = fᵢ} {fᵢ' = fᵢ'} {ϕ = ϕ} fᵢ-cart ϕ-sect factor = fᵢ'-cart
+  {uᵢ = uᵢ} {fᵢ = fᵢ} {fᵢ' = fᵢ'} {ϕ = ϕ} fᵢ-cart ϕ-sect factor
+  = fᵢ'-cart
   where
     module fᵢ = is-jointly-cartesian fᵢ-cart
     module ϕ = has-section[_] ϕ-sect
@@ -369,7 +447,9 @@ jointly-cartesian-vertical-retraction-stable
 
 ## Cancellation properties of jointly cartesian families
 
-Every jointly cartesian family is a [[jointly weak monic family]].
+Every jointly cartesian family is a [[jointly weak monic family]];
+this follows immediately from the uniqueness portion of the
+universal property.
 
 ```agda
 jointly-cartesian→jointly-weak-monic
@@ -380,16 +460,105 @@ jointly-cartesian→jointly-weak-monic {fᵢ = fᵢ} fᵢ-cart {g = w} g h p p' 
   where module fᵢ = is-jointly-cartesian fᵢ-cart
 ```
 
-If $f_{i} \circ g_{i}$ is jointly cartesian, and each $f_{i}$ is
-[[weakly monic]], then $g_{i}$ must be jointly cartesian.
+If $f_{i,j}$ is an $I$-indexed family of $J_{i}$-indexed
+[[jointly weak monic families]] and $f_{i,j} \circ g_{i}$ is a
+$\Sigma (i : I).\; J_{i}$-indexed jointly cartesian family, then
+$g_{i}$ must be a $I$-indexed jointly cartesian family.
+
+```agda
+jointly-cartesian-weak-monic-cancell
+  : {uᵢⱼ : (i : Ix) → (j : Jx i) → Hom (bᵢ i) (cᵢⱼ i j)}
+  → {fᵢⱼ : (i : Ix) → (j : Jx i) → Hom[ uᵢⱼ i j ] (bᵢ' i) (cᵢⱼ' i j)}
+  → {vᵢ : (i : Ix) → Hom a (bᵢ i)}
+  → {gᵢ : (i : Ix) → Hom[ vᵢ i ] a' (bᵢ' i)}
+  → (∀ i → is-jointly-weak-monic (fᵢⱼ i))
+  → is-jointly-cartesian
+      (λ ij → uᵢⱼ (ij .fst) (ij .snd) ∘ vᵢ (ij .fst))
+      (λ ij → fᵢⱼ (ij .fst) (ij .snd) ∘' gᵢ (ij .fst))
+  → is-jointly-cartesian vᵢ gᵢ
+```
+
+Like the general composition lemma for jointly cartesian families,
+the statement is more complicated than the proof, which follows from
+some short calculations.
+
+```agda
+jointly-cartesian-weak-monic-cancell
+  {uᵢⱼ = uᵢⱼ} {fᵢⱼ} {vᵢ} {gᵢ} fᵢⱼ-weak-mono fᵢⱼ∘gᵢ-cart
+  = gᵢ-cart
+  where
+    module fᵢⱼ∘gᵢ = is-jointly-cartesian fᵢⱼ∘gᵢ-cart
+    open is-jointly-cartesian
+
+    gᵢ-cart : is-jointly-cartesian vᵢ gᵢ
+    gᵢ-cart .universal w hᵢ =
+      fᵢⱼ∘gᵢ.universal' (λ (i , j) → sym (assoc (uᵢⱼ i j) (vᵢ i) w)) λ (i , j) →
+        fᵢⱼ i j ∘' hᵢ i
+    gᵢ-cart .commutes w hᵢ i =
+      fᵢⱼ-weak-mono i _ _ refl $ λ j →
+      cast[] $
+        fᵢⱼ i j ∘' gᵢ i ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i)   ≡[]⟨ assoc' _ _ _ ⟩
+        (fᵢⱼ i j ∘' gᵢ i) ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i) ≡[]⟨ fᵢⱼ∘gᵢ.commutesp _ _ (i , j) ⟩
+        fᵢⱼ i j ∘' hᵢ i                                                        ∎
+    gᵢ-cart .unique other p =
+      fᵢⱼ∘gᵢ.uniquep _ _ _ other λ (i , j) →
+        pullr[] _ (p i)
+```
+
+As an immediate corollary, we get a left cancellation property
+for composites of joint cartesian families.
+
+```agda
+jointly-cartesian-cancell
+  : {uᵢⱼ : (i : Ix) → (j : Jx i) → Hom (bᵢ i) (cᵢⱼ i j)}
+  → {fᵢⱼ : (i : Ix) → (j : Jx i) → Hom[ uᵢⱼ i j ] (bᵢ' i) (cᵢⱼ' i j)}
+  → {vᵢ : (i : Ix) → Hom a (bᵢ i)}
+  → {gᵢ : (i : Ix) → Hom[ vᵢ i ] a' (bᵢ' i)}
+  → (∀ i → is-jointly-cartesian (uᵢⱼ i) (fᵢⱼ i))
+  → is-jointly-cartesian
+      (λ ij → uᵢⱼ (ij .fst) (ij .snd) ∘ vᵢ (ij .fst))
+      (λ ij → fᵢⱼ (ij .fst) (ij .snd) ∘' gᵢ (ij .fst))
+  → is-jointly-cartesian vᵢ gᵢ
+jointly-cartesian-cancell fᵢⱼ-cart fᵢⱼ∘gᵢ-cart =
+  jointly-cartesian-weak-monic-cancell
+    (λ i → jointly-cartesian→jointly-weak-monic (fᵢⱼ-cart i))
+    fᵢⱼ∘gᵢ-cart
+```
+
+We also obtain a further set of corollaries that describe some special
+cases of the general cancellation property.
 
 ```agda
 jointly-cartesian-pointwise-weak-monic-cancell
   : (∀ ix → is-weak-monic (fᵢ ix))
   → is-jointly-cartesian (λ ix → uᵢ ix ∘ vᵢ ix) (λ ix → fᵢ ix ∘' gᵢ ix)
   → is-jointly-cartesian vᵢ gᵢ
+
+jointly-cartesian-jointly-weak-monic-cancell
+  : is-jointly-weak-monic fᵢ
+  → is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
+  → is-cartesian v g
+
+jointly-cartesian-pointwise-cartesian-cancell
+  : (∀ ix → is-cartesian (uᵢ ix) (fᵢ ix))
+  → is-jointly-cartesian (λ ix → uᵢ ix ∘ vᵢ ix) (λ ix → fᵢ ix ∘' gᵢ ix)
+  → is-jointly-cartesian vᵢ gᵢ
+
+jointly-cartesian-cartesian-cancell
+  : is-jointly-cartesian uᵢ fᵢ
+  → is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
+  → is-cartesian v g
+```
+
+<details>
+<summary>As before, we opt to prove these results by hand to get nicer
+definitional behaviour.
+</summary>
+
+```agda
 jointly-cartesian-pointwise-weak-monic-cancell
-  {uᵢ = uᵢ} {fᵢ = fᵢ} {vᵢ = vᵢ} {gᵢ = gᵢ} fᵢ-weak-monic fᵢ∘gᵢ-cart = gᵢ-cart
+  {uᵢ = uᵢ} {fᵢ = fᵢ} {vᵢ = vᵢ} {gᵢ = gᵢ} fᵢ-weak-monic fᵢ∘gᵢ-cart
+  = gᵢ-cart
   where
     module fᵢ∘gᵢ = is-jointly-cartesian fᵢ∘gᵢ-cart
     open is-jointly-cartesian
@@ -406,19 +575,10 @@ jointly-cartesian-pointwise-weak-monic-cancell
         fᵢ ix ∘' hᵢ ix                                                 ∎
     gᵢ-cart .unique other p =
       fᵢ∘gᵢ.uniquep _ _ _ other (λ ix → pullr[] _ (p ix))
-```
 
-We can sharpen the previous result when $g_{i}$ is a constant family.
-In particular, if $f_{i} \circ g$ is jointly cartesian, and $f_{i}$ is a
-[[jointly weak monic family]], then $g$ must be cartesian.
-
-```agda
 jointly-cartesian-jointly-weak-monic-cancell
-  : is-jointly-weak-monic fᵢ
-  → is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
-  → is-cartesian v g
-jointly-cartesian-jointly-weak-monic-cancell
-  {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ-weak-monic fᵢ∘g-cart = g-cart
+  {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ-weak-monic fᵢ∘g-cart
+  = g-cart
   where
     module fᵢ∘g = is-jointly-cartesian fᵢ∘g-cart
     open is-cartesian
@@ -434,30 +594,19 @@ jointly-cartesian-jointly-weak-monic-cancell
         fᵢ ix ∘' h                                            ∎
     g-cart .unique other p =
       fᵢ∘g.uniquep _ _ _ other (λ ix → pullr[] _ p)
-```
 
-As corollaries, we get a pair of cancellation properties for jointly
-cartesian families.
-
-```agda
-jointly-cartesian-pointwise-cartesian-cancell
-  : (∀ ix → is-cartesian (uᵢ ix) (fᵢ ix))
-  → is-jointly-cartesian (λ ix → uᵢ ix ∘ vᵢ ix) (λ ix → fᵢ ix ∘' gᵢ ix)
-  → is-jointly-cartesian vᵢ gᵢ
 jointly-cartesian-pointwise-cartesian-cancell fᵢ-cart fᵢ∘gᵢ-cart =
   jointly-cartesian-pointwise-weak-monic-cancell
     (λ ix → cartesian→weak-monic (fᵢ-cart ix))
     fᵢ∘gᵢ-cart
 
-jointly-cartesian-cartesian-cancell
-  : is-jointly-cartesian uᵢ fᵢ
-  → is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
-  → is-cartesian v g
 jointly-cartesian-cartesian-cancell fᵢ-cart fᵢ∘g-cart =
   jointly-cartesian-jointly-weak-monic-cancell
     (jointly-cartesian→jointly-weak-monic fᵢ-cart)
     fᵢ∘g-cart
+
 ```
+</details>
 
 ## Universal properties
 
@@ -565,7 +714,7 @@ cartesian fibrations, but is a bit verbose.
     where
     open Joint-cartesian-lift (fib Ix uᵢ yᵢ')
       using ()
-      renaming (x' to ⋂*)
+      renaming (x' to ∏*)
       public
 
   module _
@@ -595,7 +744,7 @@ spaces arising from lifts of empty families.
 ```agda
   opaque
     Disc* : ∀ (x : Ob) → Ob[ x ]
-    Disc* x = ⋂* (Lift _ ⊥) {yᵢ = λ ()} (λ ()) (λ ())
+    Disc* x = ∏* (Lift _ ⊥) {yᵢ = λ ()} (λ ()) (λ ())
 
     disc*
       : ∀ {x y : Ob}
