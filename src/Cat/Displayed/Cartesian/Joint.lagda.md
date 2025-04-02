@@ -154,8 +154,8 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
 <!--
 ```agda
 private variable
-  ℓi ℓj : Level
-  Ix : Type ℓi
+  ℓi ℓi' ℓj : Level
+  Ix Ix' : Type ℓi
   Jx : Ix → Type ℓj
   a b c : Ob
   bᵢ cᵢ : Ix → Ob
@@ -186,7 +186,7 @@ by studying prototypical examples of jointly cartesian families:
 
 - If we view the category of topological spaces as a [[displayed category]],
 then the jointly cartesian maps are precisely the initial topologies.
-- Jointly cartesian maps in the [[subobject fibration]] of $\Sets$ are
+- Jointly cartesian maps in the [[subobject fibration]] of $\Sets$
 arise from pulling back a family of subsets $A_{i} \subset Y_{i}$ along
 maps $u_{i} : X \to Y_{i}$, and then taking their intersection.
 
@@ -235,22 +235,71 @@ const-jointly-cartesian→cartesian {Ix = Ix} {u = u} {f = f} ∥ix∥ f-joint-c
     f-cart ix .unique other p = f.unique other (λ _ → p)
 ```
 
-Jointly cartesian families over empty types act more like discrete objects
+Jointly cartesian families over empty types act more like codiscrete objects
 than pullbacks, as the space of maps into the shared domain of the family
 is unique for any $v : \cE{B}(X, A)$ and $X' \liesover X$. In the displayed
 category of topological spaces, such maps are precisely the discrete spaces.
 
 ```agda
-empty-jointly-cartesian→discrete
+empty-jointly-cartesian→codiscrete
   : ∀ {uᵢ : (ix : Ix) → Hom a (bᵢ ix)} {fᵢ : (ix : Ix) → Hom[ uᵢ ix ] a' (bᵢ' ix)}
   → ¬ Ix
   → is-jointly-cartesian uᵢ fᵢ
   → ∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → is-contr (Hom[ v ] x' a')
-empty-jointly-cartesian→discrete ¬ix fᵢ-cart v x' =
+empty-jointly-cartesian→codiscrete ¬ix fᵢ-cart v x' =
   contr (fᵢ.universal v λ ix → absurd (¬ix ix)) λ other →
     sym (fᵢ.unique other λ ix → absurd (¬ix ix))
   where
     module fᵢ = is-jointly-cartesian fᵢ-cart
+```
+
+In the other direction, let $f : \cE_{u}(A', B')$ be some map.
+If the constant family $\lambda b.\; f : 2 \to \cE_{u}(A', B')$
+is jointly cartesian as a family over the booleans,
+then the type of morphisms $\cE_{u \circ v}(X', A')$ is a [[proposition]]
+for every $v : \cB(X, A)$ and $X' \liesover X$.
+
+```agda
+const-pair-joint-cartesian→thin
+  : ∀ {u : Hom a b} {f : Hom[ u ] a' b'}
+  → is-jointly-cartesian {Ix = Bool} (λ _ → u) (λ _ → f)
+  → ∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → is-prop (Hom[ u ∘ v ] x' b')
+```
+
+Let $g, h : \cE_{u \circ v}(X', A')$ be a pair of parallel maps in $\cE$.
+We can view the the pair $(g, h)$ as a `Bool`{.Agda} indexed family of
+maps over $u \circ v$, so by the universal property of jointly cartesian
+families, there must be a universal map $\alpha$ such that $g = f \circ \alpha$
+and $h = f \circ \alpha$; thus $f = g$.
+
+
+```agda
+const-pair-joint-cartesian→thin {b' = b'} {u = u} {f = f} f-cart v x' g h =
+  cast[] $
+    g                   ≡[]˘⟨ commutes v gh true ⟩
+    f ∘' universal v gh ≡[]⟨ commutes v gh false ⟩
+    h                   ∎
+  where
+    open is-jointly-cartesian f-cart
+
+    gh : Bool → Hom[ u ∘ v ] x' b'
+    gh true = g
+    gh false = h
+```
+
+As a corollary, if $(id_{A'}, id_{A'})$ is a jointly cartesian family, then
+every hom set $\cE_{u}(X',A')$ is a proposition.
+
+```agda
+id-pair-joint-cartesian→thin
+  : is-jointly-cartesian {Ix = Bool} (λ _ → id {a}) (λ _ → id' {a} {a'})
+  → ∀ {x} (u : Hom x a) → (x' : Ob[ x ]) → is-prop (Hom[ u ] x' a')
+id-pair-joint-cartesian→thin id²-cart u x' f g =
+  cast[] $
+    f       ≡[]⟨ wrap (sym (idl u)) ⟩
+    hom[] f ≡[]⟨ const-pair-joint-cartesian→thin id²-cart u x' (hom[ idl u ]⁻ f) (hom[ idl u ]⁻ g) ⟩
+    hom[] g ≡[]⟨ unwrap (sym (idl u)) ⟩
+    g ∎
 ```
 
 ## Closure properties of jointly cartesian families
@@ -444,7 +493,6 @@ jointly-cartesian-vertical-retraction-stable
 ```
 </details>
 
-
 ## Cancellation properties of jointly cartesian families
 
 Every jointly cartesian family is a [[jointly weak monic family]];
@@ -608,6 +656,63 @@ jointly-cartesian-cartesian-cancell fᵢ-cart fᵢ∘g-cart =
 ```
 </details>
 
+## Extending jointly cartesian families
+
+This section characterises when we can extend an $I'$-indexed jointly
+cartesian family $f_{i}$ to a $I$-indexed cartesian family along a map
+$e : I' \to I$. Though seemingly innocent, being able to extend every family
+$f_{i} : \cE_{u_i}(A', B_{i}')$ is equivalent to the displayed category
+being thin!
+
+For the forward direction, let $f_{i} : \cE{u_i}(A', B_{i}')$ be a
+family such that the restriction of $f_{i}$ along a map $e : I' \to I$
+thin. We can then easily extend the family $f_{i}$ along an arbitrary map
+by ignoring every single equality, as all hom sets involved are thin.
+
+```agda
+thin→jointly-cartesian-extend
+  : ∀ {u : (i : Ix) → Hom a (bᵢ i)} {fᵢ : (i : Ix) → Hom[ uᵢ i ] a' (bᵢ' i)}
+  → (∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → ∀ (i : Ix) → is-prop (Hom[ uᵢ i ∘ v ] x' (bᵢ' i)))
+  → (e : Ix' → Ix)
+  → is-jointly-cartesian (λ i' → uᵢ (e i')) (λ i' → fᵢ (e i'))
+  → is-jointly-cartesian (λ i → uᵢ i) (λ i → fᵢ i)
+thin→jointly-cartesian-extend {uᵢ = uᵢ} {fᵢ = fᵢ} uᵢ∘v-thin e fₑᵢ-cart = fᵢ-cart where
+  module fₑᵢ = is-jointly-cartesian fₑᵢ-cart
+  open is-jointly-cartesian
+
+  fᵢ-cart : is-jointly-cartesian (λ i' → uᵢ i') (λ i' → fᵢ i')
+  fᵢ-cart .universal v hᵢ =
+    fₑᵢ.universal v (λ i' → hᵢ (e i'))
+  fᵢ-cart .commutes {x} {x'} v hᵢ i =
+    uᵢ∘v-thin v x' i (fᵢ i ∘' fₑᵢ.universal v (λ i' → hᵢ (e i'))) (hᵢ i)
+  fᵢ-cart .unique {x} {x'} {v} {hᵢ} other p =
+    fₑᵢ.unique other λ i' → uᵢ∘v-thin v x' (e i') (fᵢ (e i') ∘' other) (hᵢ (e i'))
+```
+
+For the reverse direction, suppose we could extend arbitrary families.
+In particular, this means that we can extend singleton families to constant
+families, which lets us transfer a proof that a morphism is cartesian to
+a proof that a constant family is jointly cartesian.
+
+In particular, this means that the pair $(\id, \id)$ is jointly cartesian,
+which means that the hom set is thin!
+
+```agda
+jointly-cartesian-extend→thin
+  : ∀ (extend
+    : ∀ {Ix' Ix : Type} {bᵢ : Ix → Ob} {bᵢ' : (i : Ix) → Ob[ bᵢ i ]}
+    → {uᵢ : (i : Ix) → Hom a (bᵢ i)} {fᵢ : (i : Ix) → Hom[ uᵢ i ] a' (bᵢ' i)}
+    → (e : Ix' → Ix)
+    → is-jointly-cartesian (λ i' → uᵢ (e i')) (λ i' → fᵢ (e i'))
+    → is-jointly-cartesian (λ i → uᵢ i) (λ i → fᵢ i))
+  → ∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → is-prop (Hom[ v ] x' a')
+jointly-cartesian-extend→thin extend v x' =
+  id-pair-joint-cartesian→thin
+    (extend (λ _ → true)
+      (cartesian→jointly-cartesian ⊤-is-contr cartesian-id))
+    v x'
+```
+
 ## Universal properties
 
 Jointly cartesian families have an alternative presentation of their
@@ -738,24 +843,24 @@ cartesian fibrations, but is a bit verbose.
 ```
 </details>
 
-Every jointly cartesian fibration has objects that act like discrete
+Every jointly cartesian fibration has objects that act like codiscrete
 spaces arising from lifts of empty families.
 
 ```agda
   opaque
-    Disc* : ∀ (x : Ob) → Ob[ x ]
-    Disc* x = ∏* (Lift _ ⊥) {yᵢ = λ ()} (λ ()) (λ ())
+    Codisc* : ∀ (x : Ob) → Ob[ x ]
+    Codisc* x = ∏* (Lift _ ⊥) {yᵢ = λ ()} (λ ()) (λ ())
 
-    disc*
+    codisc*
       : ∀ {x y : Ob}
       → (u : Hom x y) (x' : Ob[ x ])
-      → Hom[ u ] x' (Disc* y)
-    disc* u x' = π*.universal u (λ ())
+      → Hom[ u ] x' (Codisc* y)
+    codisc* u x' = π*.universal u (λ ())
 
-    disc*-unique
+    codisc*-unique
       : ∀ {x y : Ob}
       → {u : Hom x y} {x' : Ob[ x ]}
-      → (other : Hom[ u ] x' (Disc* y))
-      → other ≡ disc* u x'
-    disc*-unique other = π*.unique other (λ ())
+      → (other : Hom[ u ] x' (Codisc* y))
+      → other ≡ codisc* u x'
+    codisc*-unique other = π*.unique other (λ ())
 ```
