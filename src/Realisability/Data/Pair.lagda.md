@@ -43,6 +43,12 @@ private variable
 `snd = val ⟨ p ⟩ p `· `false
 
 abstract
+  `true↓₁ : ⌞ a ⌟ → ⌞ `true ⋆ a ⌟
+  `true↓₁ x = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , x) ∷ []))) (abs↓ _ _)
+
+  `false↓₁ : ⌞ a ⌟ → ⌞ `false .fst % a ⌟
+  `false↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , ah) ∷ []))) (abs↓ _ _)
+
   `false-β : ⌞ a ⌟ → ⌞ b ⌟ → `false ⋆ a ⋆ b ≡ b
   `false-β {a} {b} ah bh = abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ [])
 
