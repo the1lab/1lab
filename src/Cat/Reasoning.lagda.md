@@ -93,6 +93,13 @@ module _ (a≡id : a ≡ id) where abstract
 
   intro-inner : f ∘ h ≡ f ∘ a ∘ h
   intro-inner {f = f} = ap (f ∘_) introl
+
+module _ (a≡id : a ≡ id) (b≡id : b ≡ id) where abstract
+  elim-outer : a ∘ f ∘ b ≡ f
+  elim-outer = eliml a≡id ∙ elimr b≡id
+
+  intro-outer : f ≡ a ∘ f ∘ b
+  intro-outer = intror b≡id ∙ introl a≡id
 ```
 
 ## Reassocations
@@ -203,6 +210,20 @@ module _ (p : a ∘ b ∘ c ≡ d ∘ f ∘ g) where abstract
 module _ (p : a ∘ b ∘ c ∘ d ≡ e ∘ f ∘ g ∘ h) where abstract
   extendl4 : a ∘ b ∘ c ∘ d ∘ i ≡ e ∘ f ∘ g ∘ h ∘ i
   extendl4 = pulll4 p ∙ sym (pulll4 refl)
+
+module _ (p : a ≡ c ∘ d) (q : b ≡ e ∘ f) where abstract
+  push-outer : a ∘ h ∘ b ≡ c ∘ (d ∘ h ∘ e) ∘ f
+  push-outer {h = h} =
+    a ∘ h ∘ b           ≡⟨ pushl p ⟩
+    c ∘ d ∘ h ∘ b       ≡⟨ ap (c ∘_) (pushr (pushr q)) ⟩
+    c ∘ (d ∘ h ∘ e) ∘ f ∎
+
+module _ (p : a ∘ b ≡ e) (q : c ∘ d ≡ f) where abstract
+  pull-outer : a ∘ (b ∘ h ∘ c) ∘ d ≡ e ∘ h ∘ f
+  pull-outer {h = h} =
+    a ∘ (b ∘ h ∘ c) ∘ d ≡⟨ ap (a ∘_) (pullr (pullr q)) ⟩
+    a ∘ b ∘ h ∘ f       ≡⟨ pulll p ⟩
+    e ∘ h ∘ f           ∎
 ```
 
 We also define some useful combinators for performing repeated pulls/pushes.
