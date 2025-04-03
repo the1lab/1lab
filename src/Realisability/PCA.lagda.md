@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.display:60 #-}
 open import 1Lab.Prelude
 
 open import Data.Partial.Total
@@ -78,4 +79,20 @@ record is-pca (_%_ : ↯ A → ↯ A → ↯ A) : Type (level-of A) where
       → (eval (absₙ k e) ρ %ₙ as) ≡ eval e (as ++ ρ)
     abs-βₙ ρ [] = refl
     abs-βₙ {e = e} ρ (x ∷ as) = ap (_% x .fst) (abs-βₙ ρ as) ∙ abs-β _ (as ++ ρ) x ∙ eval-inst e x (as ++ ρ)
+
+record PCA-on (A : Type ℓ) : Type ℓ where
+  infixl 25 _%_
+
+  field
+    has-is-set : is-set A
+    _%_        : ↯ A → ↯ A → ↯ A
+    has-is-pca : is-pca _%_
+
+  open is-pca has-is-pca public
+
+PCA : (ℓ : Level) → Type (lsuc ℓ)
+PCA ℓ = Σ[ X ∈ Set ℓ ] PCA-on ∣ X ∣
+
+module PCA {ℓ} (A : PCA ℓ) where
+  open PCA-on (A .snd) public
 ```
