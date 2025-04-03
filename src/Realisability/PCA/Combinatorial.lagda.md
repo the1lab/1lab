@@ -83,5 +83,6 @@ module _ {A : Type ℓ} {_%_ : ↯ A → ↯ A → ↯ A} (pca : has-ski _%_) (l
       (eval (inst f (const a)) ρ % eval (inst x (const a)) ρ) ∎
 
   has-ski→is-pca : is-pca _%_
+  {-# INLINE has-ski→is-pca #-}
   has-ski→is-pca = record { abs = abs ; abs↓ = abs↓ ; abs-β = abs-β }
 ```
