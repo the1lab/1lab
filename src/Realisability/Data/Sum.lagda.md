@@ -8,50 +8,49 @@ open import Data.Vec.Base
 
 open import Realisability.PCA
 
-import Realisability.Data.Pair as pairs
-import Realisability.PCA.Sugar as S
+import Realisability.Data.Pair
+import Realisability.PCA.Sugar
 ```
 -->
 
 ```agda
-module Realisability.Data.Sum
+module Realisability.Data.Sum {ℓ} (𝔸 : PCA ℓ) where
 ```
 
 <!--
 ```agda
-  {ℓ} {A : Type ℓ} {_%_ : ↯ A → ↯ A → ↯ A} (pca : is-pca _%_)
-  (let infixl 8 _%_; _%_ = _%_)
-  where
+open Realisability.PCA.Sugar 𝔸
+open Realisability.Data.Pair 𝔸
 
-open S pca
-open pairs pca
+private variable
+  x f g : ↯ ⌞ 𝔸 ⌟
 ```
 -->
 
 # Sums in a PCA
 
 ```agda
-`inl : ↯⁺ A
+`inl : ↯⁺ ⌞ 𝔸 ⌟
 `inl = val ⟨ x ⟩ `pair `· `true `· x
 
-`inr : ↯⁺ A
+`inr : ↯⁺ ⌞ 𝔸 ⌟
 `inr = val ⟨ x ⟩ `pair `· `false `· x
 
-`match : ↯⁺ A
+`match : ↯⁺ ⌞ 𝔸 ⌟
 `match = val ⟨ f ⟩ ⟨ g ⟩ ⟨ s ⟩ `fst `· s `· f `· g `· (`snd `· s)
 
 abstract
-  `inl↓₁ : {x : ↯ A} → ⌞ x ⌟ → ⌞ `inl ⋆ x ⌟
+  `inl↓₁ : ⌞ x ⌟ → ⌞ `inl ⋆ x ⌟
   `inl↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ [] (x , hx))) (`pair↓₂ (`true .snd) hx)
 
-  `inr↓₁ : {x : ↯ A} → ⌞ x ⌟ → ⌞ `inr ⋆ x ⌟
+  `inr↓₁ : ⌞ x ⌟ → ⌞ `inr ⋆ x ⌟
   `inr↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ [] (x , hx))) (`pair↓₂ (`false .snd) hx)
 
-  `match↓₂ : {f g : ↯ A} → ⌞ f ⌟ → ⌞ g ⌟ → ⌞ `match ⋆ f ⋆ g ⌟
+  `match↓₂ : ⌞ f ⌟ → ⌞ g ⌟ → ⌞ `match ⋆ f ⋆ g ⌟
   `match↓₂ {f = f} {g} hf hg = subst ⌞_⌟ (sym (abs-βₙ [] ((g , hg) ∷ (f , hf) ∷ []))) (abs↓ _ _)
 
   `match-βl
-    : {x f g : ↯ A} → ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
+    : ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
     → `match ⋆ f ⋆ g ⋆ (`inl ⋆ x) ≡ f ⋆ x
   `match-βl {x = x} {f} {g} hx hf hg =
     `match ⋆ f ⋆ g ⋆ (`inl ⋆ x)                                        ≡⟨ abs-βₙ [] ((`inl ⋆ x , `inl↓₁ hx) ∷ (g , hg) ∷ (f , hf) ∷ []) ⟩
@@ -61,7 +60,7 @@ abstract
     f ⋆ x                                                              ∎
 
   `match-βr
-    : ∀ {x f g : ↯ A} → ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
+    : ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
     → `match ⋆ f ⋆ g ⋆ (`inr ⋆ x) ≡ g ⋆ x
   `match-βr {x = x} {f} {g} hx hf hg =
     `match ⋆ f ⋆ g ⋆ (`inr ⋆ x)                                          ≡⟨ abs-βₙ [] ((`inr ⋆ x , `inr↓₁ hx) ∷ (g , hg) ∷ (f , hf) ∷ []) ⟩
