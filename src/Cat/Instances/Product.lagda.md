@@ -160,3 +160,34 @@ module
       Σ-pathp (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
               (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
+
+## Opposites
+
+The [[opposite category]] of a product category is the product of opposite categories.
+
+```agda
+×ᶜ^op≡^op×ᶜ^op
+  : ∀ {oc ℓc od ℓd}
+  → {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  → (C ×ᶜ D) ^op ≡ C ^op ×ᶜ D ^op
+×ᶜ^op≡^op×ᶜ^op {C = C} {D = D} = path where
+  module C = Precategory C
+  module D = Precategory D
+
+  open Precategory
+  path : (C ×ᶜ D) ^op ≡ C ^op ×ᶜ D ^op
+  path i .Ob = C.Ob × D.Ob
+  path i .Hom (c₁ , d₁) (c₂ , d₂) = C.Hom c₂ c₁ × D .Hom d₂ d₁
+  path i .Hom-set (c₁ , d₁) (c₂ , d₂) = hlevel 2
+  path i .id = C.id , D.id
+  path i ._∘_ (f₁ , f₂) (g₁ , g₂) = g₁ C.∘ f₁ , g₂ D.∘ f₂
+  path i .idr (f₁ , f₂) = C.idl f₁ ,ₚ D.idl f₂
+  path i .idl (f₁ , f₂) = C.idr f₁ ,ₚ D.idr f₂
+  path i .assoc (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) = sym (C.assoc h₁ g₁ f₁) ,ₚ sym (D.assoc h₂ g₂ f₂)
+```
+
+<!--
+```agda
+{-# REWRITE ×ᶜ^op≡^op×ᶜ^op #-}
+```
+-->
