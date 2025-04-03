@@ -133,6 +133,12 @@ module _ (abc≡d : a ∘ b ∘ c ≡ d) where abstract
     f ∘ a ∘ b ∘ c     ≡⟨ ap (f ∘_) abc≡d ⟩
     f ∘ d ∎
 
+  pull-inner3 : (f ∘ a) ∘ b ∘ (c ∘ g) ≡ f ∘ d ∘ g
+  pull-inner3 {f = f} {g = g} =
+    (f ∘ a) ∘ b ∘ (c ∘ g) ≡˘⟨ assoc _ _ _ ⟩
+    f ∘ a ∘ b ∘ c ∘ g     ≡⟨ ap (f ∘_) pulll3 ⟩
+    f ∘ d ∘ g ∎
+
 module _ (abcd≡e : a ∘ b ∘ c ∘ d ≡ e) where abstract
   pulll4 : a ∘ (b ∘ (c ∘ (d ∘ f))) ≡ e ∘ f
   pulll4 {f = f} =
@@ -158,6 +164,12 @@ module _ (d≡abc : d ≡ a ∘ b ∘ c) where abstract
 
   pushr3 : f ∘ d ≡ ((f ∘ a) ∘ b) ∘ c
   pushr3 = sym (pullr3 (sym d≡abc))
+
+  push-inner3 : f ∘ d ∘ g ≡ (f ∘ a) ∘ b ∘ (c ∘ g)
+  push-inner3 {f = f} {g = g} =
+    f ∘ d ∘ g             ≡⟨ ap (f ∘_) pushl3 ⟩
+    f ∘ a ∘ b ∘ c ∘ g     ≡⟨ assoc _ _ _ ⟩
+    (f ∘ a) ∘ b ∘ (c ∘ g) ∎
 
 module _ (e≡abcd : e ≡ a ∘ b ∘ c ∘ d) where abstract
   pushl4 : e ∘ f ≡ a ∘ (b ∘ (c ∘ (d ∘ f)))
