@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Assemblies
+open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
@@ -14,8 +15,6 @@ open import Realisability.PCA
 import Realisability.Data.Pair
 import Realisability.PCA.Sugar
 import Realisability.Base
-
-open Realisability.Base using ([_]_⊢_)
 ```
 -->
 
@@ -27,13 +26,13 @@ module Cat.Instances.Assemblies.Limits {ℓA} (𝔸 : PCA ℓA) where
 ```agda
 open Realisability.Data.Pair 𝔸
 open Realisability.PCA.Sugar 𝔸
-open Realisability.Base 𝔸 hiding ([_]_⊢_)
+open Realisability.Base 𝔸
 
+open is-equaliser
 open is-product
+open Equaliser
 open Terminal
 open Product
-
-open [_]_⊢_
 
 private variable
   ℓ ℓ' : Level
@@ -91,7 +90,7 @@ Assemblies-products X Y .has-is-product .⟨_,_⟩ {Q = Q} f g = record where
 
       tracks x a qx = inc
         ( rf ⋆ a , rg ⋆ a , abs-β _ _ (a , Q .defined qx)
-        , rf .tracks _ a qx , rg .tracks _ a qx )
+        , rf .tracks qx , rg .tracks qx )
 
 Assemblies-products X Y .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
 Assemblies-products X Y .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
@@ -112,5 +111,31 @@ Assemblies-terminal .has⊤ X .centre = to-assembly-hom record where
   tracks x a ha = subst ⌞_⌟ (sym (abs-β _ [] (a , X .defined ha))) (X .defined ha)
 
 Assemblies-terminal .has⊤ X .paths x = trivial!
+```
 
+```agda
+Equ-asm : (f g : Assembly-hom X Y) → Assembly 𝔸 _
+Equ-asm {X = X} f g .Ob = Σ[ x ∈ X ] (f · x ≡ g · x)
+Equ-asm {X = X} f g .has-is-set = hlevel 2
+Equ-asm {X = X} f g .realisers (x , _) = X .realisers x
+Equ-asm {X = X} f g .realised  (x , _) = X .realised x
+
+Assemblies-equalisers : has-equalisers (Assemblies 𝔸 ℓ)
+Assemblies-equalisers f g .apex = Equ-asm f g
+Assemblies-equalisers {a = A} f g .equ = to-assembly-hom record where
+  map (x , _)   = x
+  realiser      = val ⟨ x ⟩ x
+  tracks x a ha = subst⊩ A ha (abs-β _ [] (a , A .defined ha))
+
+Assemblies-equalisers f g .has-is-eq .equal = ext λ x p → p
+Assemblies-equalisers {a = A} f g .has-is-eq .universal {e' = e'} p =
+  record where
+    map x  = e' · x , ap map p · x
+    tracked = do
+      et ← e' .tracked
+      inc record { [_]_⊢_ et }
+
+Assemblies-equalisers f g .has-is-eq .factors = trivial!
+Assemblies-equalisers f g .has-is-eq .unique p = ext λ a →
+  Σ-prop-path! (ap map p · a)
 ```
