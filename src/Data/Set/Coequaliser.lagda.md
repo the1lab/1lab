@@ -290,6 +290,12 @@ quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R
 quot r = glue (_ , _ , r)
 ```
 
+<!--
+```agda
+{-# DISPLAY Coeq (/-left {_} {A} {_} {R}) /-right = A / R #-}
+```
+-->
+
 Using `Coeq-elim`{.Agda}, we can recover the elimination principle for
 quotients:
 

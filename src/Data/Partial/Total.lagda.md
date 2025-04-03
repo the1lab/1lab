@@ -21,8 +21,8 @@ private variable
 # Total partial elements
 
 ```agda
-↯⁺ : Type ℓ → Type ℓ
-↯⁺ A = Σ[ a ∈ ↯ A ] ⌞ a ⌟
+↯⁺ : ∀ {ℓ} {X : Type ℓ} ⦃ u : Underlying X ⦄ → X → Type _
+↯⁺ A = Σ[ a ∈ ↯ ⌞ A ⌟ ] ⌞ a ⌟
 ```
 
 <!--
@@ -59,27 +59,41 @@ from-total-is-equiv : is-equiv (from-total {A = A})
 from-total-is-equiv = is-iso→is-equiv (iso pure (λ _ → refl) λ (x , a) → Σ-prop-path! (sym (is-always x a)))
 ```
 
+<!--
 ```agda
-record ℙ⁺ (A : Type ℓ) : Type ℓ where
-  field
-    mem     : ↯ A → Ω
-    defined : ∀ {a} → ⌞ mem a ⌟ → ⌞ a ⌟
+private module def where
+```
+-->
+
+```agda
+  record ℙ⁺ (A : Type ℓ) : Type ℓ where
+    field
+      mem     : ↯ A → Ω
+      defined : ∀ {a} → ⌞ mem a ⌟ → ⌞ a ⌟
 ```
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote ℙ⁺)
-open ℙ⁺ public
+private unquoteDecl eqv = declare-record-iso eqv (quote def.ℙ⁺)
+
+ℙ⁺ : ∀ {ℓ} {X : Type ℓ} ⦃ u : Underlying X ⦄ → X → Type _
+ℙ⁺ X = def.ℙ⁺ ⌞ X ⌟
+
+open def using (module ℙ⁺) public
+open def.ℙ⁺ public
+
+{-# DISPLAY def.ℙ⁺ X = ℙ⁺ X #-}
+
 open is-iso
 
 instance
-  Membership-ℙ⁺ : ⦃ _ : To-part X A ⦄ → Membership X (ℙ⁺ A) _
+  Membership-ℙ⁺ : ⦃ _ : To-part X A ⦄ → Membership X (def.ℙ⁺ A) _
   Membership-ℙ⁺ = record { _∈_ = λ a p → ⌞ p .mem (to-part a) ⌟ } where open To-part ⦃ ... ⦄
 
-  Extensional-ℙ⁺ : ∀ {ℓr} ⦃ _ : Extensional (↯ A → Ω) ℓr ⦄ → Extensional (ℙ⁺ A) ℓr
+  Extensional-ℙ⁺ : ∀ {ℓr} ⦃ _ : Extensional (↯ A → Ω) ℓr ⦄ → Extensional (def.ℙ⁺ A) ℓr
   Extensional-ℙ⁺ ⦃ e ⦄ = injection→extensional! (λ p → Iso.injective eqv (Σ-prop-path! p)) e
 
-  H-Level-ℙ⁺ : ∀ {n} → H-Level (ℙ⁺ A) (2 + n)
+  H-Level-ℙ⁺ : ∀ {n} → H-Level (def.ℙ⁺ A) (2 + n)
   H-Level-ℙ⁺ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
 ```
 -->
