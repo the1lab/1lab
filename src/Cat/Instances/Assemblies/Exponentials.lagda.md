@@ -18,7 +18,6 @@ import Realisability.Data.Pair
 import Realisability.PCA.Sugar
 import Realisability.Base
 
-open Realisability.Base using ([_]_⊢_)
 open is-exponential
 open Exponential
 ```
@@ -32,7 +31,7 @@ module Cat.Instances.Assemblies.Exponentials {ℓA} (𝔸 : PCA ℓA) where
 ```agda
 open Realisability.Data.Pair 𝔸
 open Realisability.PCA.Sugar 𝔸
-open Realisability.Base 𝔸 hiding ([_]_⊢_)
+open Realisability.Base 𝔸
 
 open Cat.Instances.Assemblies.Limits 𝔸
 
