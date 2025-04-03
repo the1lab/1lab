@@ -14,8 +14,6 @@ open import Realisability.PCA
 import Realisability.PCA.Sugar
 import Realisability.Data.Sum
 import Realisability.Base
-
-open Realisability.Base using ([_]_⊢_)
 ```
 -->
 
@@ -27,12 +25,10 @@ module Cat.Instances.Assemblies.Colimits {ℓA} (𝔸 : PCA ℓA) where
 ```agda
 open Realisability.PCA.Sugar 𝔸
 open Realisability.Data.Sum 𝔸
-open Realisability.Base 𝔸 hiding ([_]_⊢_)
+open Realisability.Base 𝔸
 
 open is-coproduct
 open Coproduct
-
-open [_]_⊢_
 
 private variable
   ℓ ℓ' : Level
@@ -94,18 +90,19 @@ Assembly-coproducts A B .has-is-coproduct .[_,_] {Q = Q} f g = record where
     let
       f↓ = ft .realiser .snd
       g↓ = gt .realiser .snd
-    inc λ where
-      .realiser → `match ⋆ ft ⋆ gt , `match↓₂ f↓ g↓
+    inc record where
+      realiser = `match ⋆ ft ⋆ gt , `match↓₂ f↓ g↓
 
-      .tracks (inl x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
-        (e , α , e⊩x) ← ha
-        pure $ subst⊩ Q (ft .tracks _ _ e⊩x) $
-          ap₂ _%_ refl α ∙ `match-βl (A .defined e⊩x) f↓ g↓
+      tracks = λ where
+        (inl x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
+          (e , α , e⊩x) ← ha
+          pure $ subst⊩ Q (ft .tracks e⊩x) $
+            ap₂ _%_ refl α ∙ `match-βl (A .defined e⊩x) f↓ g↓
 
-      .tracks (inr x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
-        (e , α , e⊩x) ← ha
-        pure $ subst⊩ Q (gt .tracks _ _ e⊩x) $
-          ap₂ _%_ refl α ∙ `match-βr (B .defined e⊩x) f↓ g↓
+        (inr x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
+          (e , α , e⊩x) ← ha
+          pure $ subst⊩ Q (gt .tracks e⊩x) $
+            ap₂ _%_ refl α ∙ `match-βr (B .defined e⊩x) f↓ g↓
 
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₁ = trivial!
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₂ = trivial!
