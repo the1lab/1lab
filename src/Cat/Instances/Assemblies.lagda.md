@@ -37,13 +37,62 @@ private variable
 
 # Assemblies over a PCA
 
+When working over a [[partial combinatory algebra]] $\bA$, it's often
+the case that we're interested in programs $\tt{p} : \bA$ as concrete
+*implementations* of some mathematical datum $x : X$. For example, we
+can implement the successor function on natural numbers to be
+$$
+\tt{suc} = \langle n \rangle \langle f \rangle \langle x \rangle\ f(nfx)
+$$,
+representing a numeral $n : \bN$ as a *Church numeral*, taking the
+defining property of $\operatorname{suc} n$ to be that if we have some
+iterable process $f : A \to A$ starting at $x : A$, then the
+$(\operatorname{suc} n)$-th iteration is $f$ applied to the $n$th
+iteration; But we could just as well implement
+$$
+\tt{suc} = \langle n \rangle\ \tt{pair}(\tt{false}, n)
+$$
+representing a numeral $n : \bN$ as a *Curry numeral*, a pair containing
+the information of whether the number is zero and its predecessor (if
+any). These implementations are extensionally identical, in that they
+both denote the same actual natural number, but for a concrete pca $\bA$,
+they might genuinely be different --- we could imagine measuring the
+time complexity of the predecessor function, which is $O(1)$ for Curry
+numbers and $O(n)$ for Church numbers. Therefore, if we are to
+investigate the computational content of constructive mathematics, we
+need a way to track the connection between the mathematical elements $x
+: X$ and the programs $\tt{p} : \bA$ which denote them.
+
+:::{.definition #assembly}
+An **assembly** over a pca $\bA$ is a [[set]] $X$ equipped with a
+[[propositional|proposition]] relation $\tt{p} \Vdash x$ between
+programs $\tt{p} : \bA$ and elements $x : X$; when this holds, we say
+$\tt{p}$ **realises** $x$. Moreover, for every $x : X$, we require that
+there be at least one $\tt{p}$ which realises it.
+:::
+
+A prototypical example is the assembly of booleans, `𝟚`{.Agda}, defined
+[below](#the-assembly-of-booleans). Its set of elements is
+`Bool`{.Agda}, and we fix realisers
+$$
+\begin{align*}
+\left(\langle x \rangle \langle y \rangle\ x\right) \Vdash&\ \rm{true}\\
+\left(\langle x \rangle \langle y \rangle\ y\right) \Vdash&\ \rm{false;}
+\end{align*}
+$$
+see [[pairs in a PCA]] for the details of the construction. This is not
+the only possible choice: we could, for example, invert the realisers,
+and say that the value `true`{.Agda} is implemented by the *program*
+$\tt{false}$ (and vice-versa). This results in a genuinely different
+assembly, though with the same denotational data.
+
 ```agda
 record Assembly (𝔸 : PCA ℓA) ℓ : Type (lsuc ℓ ⊔ ℓA) where
   no-eta-equality
   field
     Ob         : Type ℓ
     has-is-set : is-set Ob
-    realisers  : Ob → ℙ⁺ ⌞ 𝔸 ⌟
+    realisers  : Ob → ℙ⁺ 𝔸
     realised   : ∀ x → ∃[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (a ∈ realisers x)
 ```
 
@@ -79,6 +128,15 @@ subst⊩ : {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) {x : ⌞ X ⌟} {p q : ↯ 
 subst⊩ X {x} hx p = subst (_∈ X .realisers x) (sym p) hx
 ```
 -->
+
+To understand the difference --- and similarity --- between the ordinary
+assembly of booleans and the swapped booleans, we define a morphism of
+assemblies $(X, \Vdash_X) \to (Y, \Vdash_Y)$ to be a function $f : X \to
+Y$ satisfying the [[*property*|propositional truncation]] that there
+exists a program $\tt{f} : \bA$ which sends realisers of $x : X$ to
+realisers of $f(x) : Y$. Note the force of the propositional truncation
+in this definition: maps of assemblies are identical *when they have the
+same underlying function*, regardless of what program implements them.
 
 ```agda
 record Assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
@@ -136,6 +194,10 @@ module _ (𝔸 : PCA ℓA) where
 ```
 -->
 
+This consideration is necessary for assemblies and assembly morphisms to
+be a category: in an arbitrary PCA $\bA$, composition of programs need
+not be unital or associative.
+
 ```agda
   Assemblies : ∀ ℓ → Precategory (lsuc ℓ ⊔ ℓA) (ℓA ⊔ ℓ)
   Assemblies ℓ .Ob      = Assembly 𝔸 ℓ
@@ -192,7 +254,7 @@ module _ (𝔸 : PCA ℓA) where
   Forget⊣∇ .zag = ext λ _ → refl
 ```
 
-  ## The assembly of booleans
+## The assembly of booleans
 
 ```agda
   𝟚 : Assembly 𝔸 lzero
