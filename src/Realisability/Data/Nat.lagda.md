@@ -9,6 +9,7 @@ open import Data.Vec.Base
 open import Realisability.PCA
 
 import Realisability.PCA.Fixpoint
+import Realisability.Data.Bool
 import Realisability.Data.Pair
 import Realisability.PCA.Sugar
 ```
@@ -23,6 +24,7 @@ module Realisability.Data.Nat {ℓ} (𝔸 : PCA ℓ) where
 open Realisability.PCA.Fixpoint 𝔸
 open Realisability.PCA.Sugar 𝔸
 open Realisability.Data.Pair 𝔸
+open Realisability.Data.Bool 𝔸
 ```
 -->
 

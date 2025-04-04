@@ -8,13 +8,16 @@ open import Cat.Prelude
 open import Data.Partial.Total
 open import Data.Partial.Base
 
+open import Realisability.PCA.Trivial
 open import Realisability.PCA
 
 import 1Lab.Reflection as R
 
-import Realisability.Data.Pair as Pair
-import Realisability.PCA.Sugar as Sugar
-import Realisability.Base as Logic
+import Cat.Reasoning as Cat
+
+import Realisability.Data.Bool
+import Realisability.PCA.Sugar
+import Realisability.Base
 
 open R hiding (def ; absurd)
 open Functor
@@ -37,13 +40,76 @@ private variable
 
 # Assemblies over a PCA
 
+When working over a [[partial combinatory algebra]] $\bA$, it's often
+the case that we're interested in programs $\tt{p} : \bA$ as concrete
+*implementations* of some mathematical datum $x : X$. For example, we
+can implement the successor function on natural numbers to be
+$$
+\tt{suc} = \langle n \rangle \langle f \rangle \langle x \rangle\ f(nfx)
+$$,
+representing a numeral $n : \bN$ as a *Church numeral*, taking the
+defining property of $\operatorname{suc} n$ to be that if we have some
+iterable process $f : A \to A$ starting at $x : A$, then the
+$(\operatorname{suc} n)$-th iteration is $f$ applied to the $n$th
+iteration; But we could just as well implement
+$$
+\tt{suc} = \langle n \rangle\ \tt{pair}(\tt{false}, n)
+$$
+representing a numeral $n : \bN$ as a *Curry numeral*, a pair containing
+the information of whether the number is zero and its predecessor (if
+any). These implementations are extensionally identical, in that they
+both denote the same actual natural number, but for a concrete pca $\bA$,
+they might genuinely be different --- we could imagine measuring the
+time complexity of the predecessor function, which is $O(1)$ for Curry
+numbers and $O(n)$ for Church numbers. Therefore, if we are to
+investigate the computational content of constructive mathematics, we
+need a way to track the connection between the mathematical elements $x
+: X$ and the programs $\tt{p} : \bA$ which denote them.
+
+:::{.definition #assembly}
+An **assembly** over a pca $\bA$ is a [[set]] $X$ equipped with a
+[[propositional|proposition]] relation $\tt{p} \Vdash x$ between
+programs $\tt{p} : \bA$ and elements $x : X$; when this holds, we say
+$\tt{p}$ **realises** $x$. Moreover, for every $x : X$, we require that
+there be at least one $\tt{p}$ which realises it.
+:::
+
+::: warning
+The construction of assemblies over $\bA$, and the category
+$\thecat{Asm}(\bA)$, works regardless of *which* pca $\bA$ we choose ---
+but we only get something *interesting* if $\bA$ is [[nontrivial|trivial
+pca]]: the category $\thecat{Asm}(*)$ over the trivial pca is the
+category $\Sets$.
+
+Therefore, when making natural-language statements about
+$\thecat{Asm}(\bA)$, we generally assume that $\bA$ is nontrivial. A
+statement like "the category $\thecat{Asm}(\bA)$ is not
+[[univalent|univalent category]]" should be read as saying "univalence
+of $\thecat{Asm}(\bA)$ implies $\bA$ is trivial."
+:::
+
+A prototypical example is the assembly of booleans, `𝟚`{.Agda}, defined
+[below](#the-assembly-of-booleans). Its set of elements is
+`Bool`{.Agda}, and we fix realisers
+$$
+\begin{align*}
+\left(\langle x \rangle \langle y \rangle\ x\right) \Vdash&\ \rm{true}\\
+\left(\langle x \rangle \langle y \rangle\ y\right) \Vdash&\ \rm{false;}
+\end{align*}
+$$
+see [[booleans in a pca]] for the details of the construction. This is not
+the only possible choice: we could, for example, invert the realisers,
+and say that the value `true`{.Agda} is implemented by the *program*
+$\tt{false}$ (and vice-versa). This results in a genuinely different
+assembly over `Bool`{.Agda}, though with the same denotational data.
+
 ```agda
 record Assembly (𝔸 : PCA ℓA) ℓ : Type (lsuc ℓ ⊔ ℓA) where
   no-eta-equality
   field
     Ob         : Type ℓ
     has-is-set : is-set Ob
-    realisers  : Ob → ℙ⁺ ⌞ 𝔸 ⌟
+    realisers  : Ob → ℙ⁺ 𝔸
     realised   : ∀ x → ∃[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (a ∈ realisers x)
 ```
 
@@ -68,21 +134,42 @@ instance
   {-# CATCHALL #-}
   hlevel-proj-asm .hlevel-projection.get-argument _ = typeError []
 
-module _ (X : Assembly 𝔸 ℓ) (a : ↯ ⌞ 𝔸 ⌟) (x : ⌞ X ⌟) where open Ω (X .realisers x .mem a) renaming (∣_∣ to [_]_⊩_) public
+module _ (X : Assembly 𝔸 ℓ) (a : ↯ ⌞ 𝔸 ⌟) (x : ⌞ X ⌟) where
+  open Ω (X .realisers x .mem a) renaming (∣_∣ to [_]_⊩_) public
 
 -- This module can't be parametrised so this display form can fire
 -- (otherwise it gets closed over pattern variables that aren't solvable
 -- from looking at the expression, like the level and the PCA):
 {-# DISPLAY realisers X x .ℙ⁺.mem a = [ X ] a ⊩ x #-}
 
-subst⊩ : {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) {x : ⌞ X ⌟} {p q : ↯ ⌞ 𝔸 ⌟} → [ X ] p ⊩ x → q ≡ p → [ X ] q ⊩ x
+subst⊩
+  : {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) {x : ⌞ X ⌟} {p q : ↯ ⌞ 𝔸 ⌟}
+  → [ X ] p ⊩ x → q ≡ p → [ X ] q ⊩ x
 subst⊩ X {x} hx p = subst (_∈ X .realisers x) (sym p) hx
 ```
 -->
 
+To understand the difference --- and similarity --- between the ordinary
+assembly of booleans and the swapped booleans, we define a morphism of
+assemblies $(X, \Vdash_X) \to (Y, \Vdash_Y)$ to be a function $f : X \to
+Y$ satisfying the [[*property*|propositional truncation]] that there
+exists a program $\tt{f} : \bA$ which sends realisers of $x : X$ to
+realisers of $f(x) : Y$.
+
+Note the force of the propositional truncation in this definition: maps
+of assemblies are identical *when they have the same underlying
+function*, regardless of which programs potentially implement them.
+Since we can not, for a general $\bA$, show that the programs
+$\mathtt{f}$ and
+$$
+\langle a \rangle\ f\ a
+$$
+are identical, $\thecat{Asm}(\bA)$ would not be a category if the choice
+of realiser mattered for identity of computable maps.
+
 ```agda
 record Assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
-  open Logic 𝔸 using ([_]_⊢_)
+  open Realisability.Base 𝔸 using ([_]_⊢_)
 
   field
     map     : ⌞ X ⌟ → ⌞ Y ⌟
@@ -97,7 +184,9 @@ instance
   H-Level-Assembly-hom : ∀ {n} → H-Level (Assembly-hom X Y) (2 + n)
   H-Level-Assembly-hom = basic-instance 2 $ Iso→is-hlevel 2 eqv (hlevel 2)
 
-  Extensional-Assembly-hom : ∀ {ℓr} ⦃ _ : Extensional (⌞ X ⌟ → ⌞ Y ⌟) ℓr ⦄ → Extensional (Assembly-hom X Y) ℓr
+  Extensional-Assembly-hom
+    : ∀ {ℓr} ⦃ _ : Extensional (⌞ X ⌟ → ⌞ Y ⌟) ℓr ⦄
+    → Extensional (Assembly-hom X Y) ℓr
   Extensional-Assembly-hom ⦃ e ⦄ = injection→extensional! (λ p → Iso.injective eqv (Σ-prop-path! p)) e
 
   Funlike-Assembly-hom : Funlike (Assembly-hom X Y) ⌞ X ⌟ λ _ → ⌞ Y ⌟
@@ -110,11 +199,11 @@ instance
 -- all visible arguments to work with `record where` syntax.
 
 record make-assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
-  open PCA 𝔸 using (_%_)
+  open Realisability.PCA.Sugar 𝔸 using (_⋆_)
   field
     map      : ⌞ X ⌟ → ⌞ Y ⌟
     realiser : ↯⁺ 𝔸
-    tracks   : (x : ⌞ X ⌟) (a : ↯ ⌞ 𝔸 ⌟) (ah : [ X ] a ⊩ x) → [ Y ] realiser .fst % a ⊩ map x
+    tracks   : (x : ⌞ X ⌟) (a : ↯ ⌞ 𝔸 ⌟) (ah : [ X ] a ⊩ x) → [ Y ] realiser ⋆ a ⊩ map x
 
 open Assembly-hom public
 
@@ -127,14 +216,18 @@ to-assembly-hom
 to-assembly-hom f = record { make-assembly-hom f using (map) ; tracked = inc record { make-assembly-hom f } }
 
 module _ (𝔸 : PCA ℓA) where
-  open Logic 𝔸
-  open Sugar 𝔸
-  open Pair 𝔸
+  open Realisability.Base 𝔸
+  open Realisability.PCA.Sugar 𝔸
+  open Realisability.Data.Bool 𝔸
 
   open Assembly-hom
   open Precategory
 ```
 -->
+
+This consideration is necessary for assemblies and assembly morphisms to
+be a category: in an arbitrary pca $\bA$, composition of programs need
+not be unital or associative.
 
 ```agda
   Assemblies : ∀ ℓ → Precategory (lsuc ℓ ⊔ ℓA) (ℓA ⊔ ℓ)
@@ -152,7 +245,74 @@ module _ (𝔸 : PCA ℓA) where
   Assemblies ℓ .assoc f g h = ext λ _ → refl
 ```
 
-## Classical assemblies
+::: warning
+Unlike most other categories constructed on the 1Lab, the category of
+assemblies is not [[univalent|univalent category]]. This is essentially
+*because* of the existence of assemblies such as `𝟚`{.Agda} and its
+"flipped" counterpart, described above: the identity map is a computable
+isomorphism between them, realised by the `` `not ``{.Agda} program, but
+there is no path in `Assembly`{.Agda} between them with first component
+projecting to the identity map.
+:::
+
+However, these two assemblies *are* still identical in the type
+`Assembly`{.Agda}, where we allow the identification between the sets to
+be nontrivial --- their realisability relations are identical over the
+`not`{.Agda} equivalence --- hence the comment above about these being
+non-trivial assemblies "over bool".
+
+<!--
+```agda
+  _ = not
+  _ = `not
+```
+-->
+
+## The assembly of booleans
+
+The assembly of booleans, $\tt{2}$, is the simplest example of an
+assembly which contains actual computability data. Its construction is
+entirely straightforward:
+
+```agda
+  𝟚 : Assembly 𝔸 lzero
+  𝟚 .Ob          = Bool
+  𝟚 .has-is-set  = hlevel 2
+  𝟚 .realisers true  = singleton⁺ `true
+  𝟚 .realisers false = singleton⁺ `false
+  𝟚 .realised  true  = inc (`true .fst , inc refl)
+  𝟚 .realised  false = inc (`false .fst , inc refl)
+```
+
+We define the realisability relation as a function from `Bool`{.Agda},
+by cases: the only option for realising the boolean `true`{.Agda} is
+with the `` `true ``{.Agda} program, and similarly the `false`{.Agda}
+boolean is realised by the `` `false ``{.Agda} program. Both elements
+have those respective programs as their realisers.
+
+## Indiscrete assemblies
+
+However, the *assembly* of booleans is not the only assembly we can
+construct on the *type* of booleans. As mentioned above, we could also
+have inverted which program realises each boolean; but this is *still*
+an assembly with nontrivial computability data. Now, we show that the
+"ambient" world of sets and functions embeds [[fully faithful|fully
+faithful functor]] into the category of assemblies over any pca $\bA$.
+
+This is, perhaps, a bit surprising: maps of assemblies are computable by
+definition, but arbitrary functions between sets need not be! The catch
+is that, when equipping a set with the structure of an assembly, *we*
+get to choose which programs compute each elements; and, above, we have
+made a sensible choice. But we can always make an *adversarial* choice,
+letting *every* program at all realise any element.
+
+::: terminology
+We denote the **indiscrete assembly** on a set $X$ as $\nabla X$,
+following the literature. Note however that Bauer
+[-@Bauer:Realisability] refers to these as *constant assemblies*, while
+de Jong [-@deJong:Realisability] does not assign them a name but merely
+singles them out as embedding classical logic in $\thecat{Asm}(\bA)$.
+:::
 
 ```agda
   ∇ : ∀ {ℓ} (X : Type ℓ) ⦃ _ : H-Level X 2 ⦄ → Assembly 𝔸 ℓ
@@ -163,7 +323,22 @@ module _ (𝔸 : PCA ℓA) where
     ; defined = λ x → x
     }
   ∇ X .realised x = inc (expr ⟨ x ⟩ x , abs↓ _ _)
+```
 
+The important thing to know about these is that any function of sets $X
+\to Y$ extends to a computable map of assemblies $(X, \Vdash) \to \nabla
+Y$ --- this is because the only requirement for $e \Vdash_{\nabla Y} f
+x$ is that $e$ is defined, and assemblies are defined so that if $e
+\Vdash_X x$ then $e$ is defined.
+
+<details>
+<summary>Following the general logic of [[adjoint functors]], this means
+that $\nabla (-)$ is a functor $\Sets \to \thecat{Asm}(\bA)$, for any
+$\bA$ at all --- and moreover that $\nabla$ is a [[right adjoint]] to
+the functor $\Gamma : \thecat{Asm}(\bA) \to \Sets$ which projects the
+underlying set of each assembly.</summary>
+
+```agda
   Cofree : Functor (Sets ℓ) (Assemblies ℓ)
   Cofree .F₀ X = ∇ ⌞ X ⌟
   Cofree .F₁ f = to-assembly-hom record where
@@ -192,29 +367,19 @@ module _ (𝔸 : PCA ℓA) where
   Forget⊣∇ .zag = ext λ _ → refl
 ```
 
-  ## The assembly of booleans
+</details>
 
-```agda
-  𝟚 : Assembly 𝔸 lzero
-  𝟚 .Ob = Bool
-  𝟚 .has-is-set  = hlevel 2
-  𝟚 .realisers true  = record
-    { mem     = λ x → elΩ (`true .fst ≡ x)
-    ; defined = rec! λ p → subst ⌞_⌟ p (`true .snd)
-    }
-  𝟚 .realisers false = record
-    { mem     = λ x → elΩ (`false .fst ≡ x)
-    ; defined = rec! λ p → subst ⌞_⌟ p (`false .snd)
-    }
-  𝟚 .realised true  = inc (`true .fst , inc refl)
-  𝟚 .realised false = inc (`false .fst , inc refl)
-```
+The indiscrete assemblies $\nabla X$ are generally poor as *domains* for
+computable functions, since a realiser for $f : \nabla X \to (Y,
+\Vdash)$ would have to choose realisers for $f(x)$ given no information
+about $x$. Indeed, we can show that if there are non-constant maps
+$\nabla \{0, 1\} \to \tt{2}$, then $\bA$ is [[trivial|trivial pca]].
 
 ```agda
   non-constant-nabla-map
     : (f : Assembly-hom (∇ Bool) 𝟚)
     → f · true ≠ f · false
-    → `true .fst ≡ `false .fst
+    → is-trivial-pca 𝔸
   non-constant-nabla-map f x = case f .tracked of λ where
     record { realiser = (fp , f↓) ; tracks = t } →
       let
@@ -232,3 +397,9 @@ module _ (𝔸 : PCA ℓA) where
           false false p → rec! λ rb rb' f≠f → absurd (f≠f refl)
       in cases (f · true) (f · false) _ a b x
 ```
+
+<!--
+```agda
+module Asm {ℓA ℓ} {𝔸 : PCA ℓA} = Cat (Assemblies 𝔸 ℓ)
+```
+-->

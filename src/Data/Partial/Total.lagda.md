@@ -109,3 +109,9 @@ from-total-predicate-is-equiv = is-iso→is-equiv λ where
   .rinv P → ext λ a → Ω-ua (rec! (λ ha → subst (_∈ P) (sym (is-always a ha)))) λ pa → P .defined pa , subst (_∈ P) (is-always a _) pa
   .linv P → ext λ a → Ω-ua snd (tt ,_)
 ```
+
+```agda
+singleton⁺ : ↯⁺ A → ℙ⁺ A
+singleton⁺ x .mem y = elΩ (x .fst ≡ y)
+singleton⁺ x .defined = rec! λ p → subst ⌞_⌟ p (x .snd)
+```

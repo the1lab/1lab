@@ -14,7 +14,7 @@ open import Data.Vec.Base
 module Realisability.PCA where
 ```
 
-# Partial combinatory algebras
+# Partial combinatory algebras {defines="partial-combinatory-algebra"}
 
 <!--
 ```agda

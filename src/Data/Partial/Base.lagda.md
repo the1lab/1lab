@@ -210,6 +210,14 @@ part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
 is-always : {A : Type ℓ} (a : ↯ A) (x : ⌞ a ⌟) → a ≡ always (a .elt x)
 is-always a x = part-ext (λ _ → tt) (λ z → x) λ _ _ → ↯-indep a
 
+always-injective : {A : Type ℓ} {x y : A} → always x ≡ always y → x ≡ y
+always-injective p = ap₂ unalways p q where
+  unalways : (x : ↯ A) → ⌞ x ⌟ → A
+  unalways = elt
+
+  q : PathP (λ i → ⌞ p i ⌟) tt tt
+  q = is-prop→pathp (λ i → p i .def .is-tr) tt tt
+
 instance
   ↯-Map : Map (eff ↯)
   ↯-Map .Map.map = part-map
