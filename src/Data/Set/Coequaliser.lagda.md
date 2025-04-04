@@ -292,6 +292,12 @@ quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R
 quot r = glue (_ , _ , r)
 ```
 
+<!--
+```agda
+{-# DISPLAY Coeq (/-left {_} {A} {_} {R}) /-right = A / R #-}
+```
+-->
+
 Using `Coeq-elim`{.Agda}, we can recover the elimination principle for
 quotients:
 
@@ -561,7 +567,7 @@ surjection→is-quotient {A = A} {B} b-set (f , surj) =
   _ , injective-surjective→is-equiv! g'-inj g'-surj
   where
 
-  private module c = Congruence (Kernel-pair b-set f)
+  module c = Congruence (Kernel-pair b-set f)
 ```
 -->
 
