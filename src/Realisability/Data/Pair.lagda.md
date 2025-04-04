@@ -24,7 +24,7 @@ private variable
 ```
 -->
 
-# Pairs in a PCA
+# Pairs in a PCA {defines="pairs-in-a-pca"}
 
 ```agda
 `true : ↯⁺ 𝔸
