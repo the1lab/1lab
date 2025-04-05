@@ -9,6 +9,7 @@ open import Cat.Displayed.Base
 open import Cat.Instances.Product
 open import Cat.Prelude
 
+import Cat.Displayed.Morphism
 import Cat.Reasoning
 ```
 -->
@@ -19,115 +20,101 @@ module Cat.Double.Base where
 # Double precategories
 
 ```agda
-record Double-precategory (o ℓv ℓh ℓ2 : Level) : Type (lsuc (o ⊔ ℓv ⊔ ℓh ⊔ ℓ2)) where
-  field
-    -- Think of the vertical bit as a "normal" category
-    V : Precategory o ℓv
+record Double-precategory-on
+  {o ℓ₀ ℓ₁ ℓ₂}
+  {D₀ : Precategory o ℓ₀}
+  (D₁ : Displayed (D₀ ×ᶜ D₀) ℓ₁ ℓ₂)
+  : Type (o ⊔ ℓ₀ ⊔ ℓ₁ ⊔ ℓ₂)
+  where
+  private
+    module D₀ = Cat.Reasoning D₀
+    module D₁ = Displayed D₁
 
-    -- Horizontal data is given by a doubly-displayed category.
-    -- We want to think of the objects of H as horizontal morphisms,
-    -- and the morphisms of H as some sort of 2-cell.
-    H : Displayed (V ×ᶜ V) ℓh ℓ2
+  open D₀ renaming (Hom to Tight; Hom-set to Tight-set) public
 
+  Loose : Ob → Ob → Type ℓ₁
+  Loose x y = D₁.Ob[ x , y ]
+
+  Cell : ∀ {a b x y} → Tight a b → Loose a x → Loose b y → Tight x y → Type _
+  Cell u f g v = D₁.Hom[ u , v ] f g
 ```
 
 ```agda
-  module V = Cat.Reasoning V
-  module H = Displayed H
-  -- Let's unpack some data and give things nicer names.
-  open V
-    using (Ob)
-    renaming
-      ( Hom to Vert
-      ; Hom-set to Vert-set
-      ; id to idᵛ
-      ; _∘_ to _∘ᵛ_
-      ; idl to idlᵛ
-      ; idr to idrᵛ
-      ; assoc to assocᵛ
-      )
+  id₂ : ∀ {x y} {f : Loose x y} → Cell id f f id
+  id₂ = D₁.id'
 
-  -- Horizontal morphisms are given by objects of H.
-  Horiz : Ob → Ob → Type ℓh
-  Horiz x y = H.Ob[ x , y ]
-
-  -- 2-cells are morphisms of H.
-  Cell : ∀ {a b x y} → Vert a b → Horiz b y → Horiz a x → Vert x y → Type ℓ2
-  Cell u f g v = H.Hom[ u , v ] g f
-
-  -- Just from the category structure of H we get identity 2-cells in the horizontal direction
-  idᵛ² : ∀ {x y} {f : Horiz x y} → Cell idᵛ f f idᵛ
-  idᵛ² = H.id'
-
-  -- Composition of 2-cells
-  _∘_
+  _∘₂_
     : ∀ {a0 b0 c0 a1 b1 c1}
-    → {u : Vert b0 c0} {v : Vert b1 c1} {w : Vert a0 b0} {x : Vert a1 b1}
-    → {f : Horiz c0 c1} {g : Horiz b0 b1} {h : Horiz a0 a1}
-    → Cell u f g v → Cell w g h x
-    → Cell (u ∘ᵛ w) f h (v ∘ᵛ x)
-  _∘_ = H._∘'_
+    → {f : Tight b0 c0} {g : Tight a0 b0} {h : Tight b1 c1} {k : Tight a1 b1}
+    → {p : Loose a0 a1} {q : Loose b0 b1} {r : Loose c0 c1}
+    → Cell f q r h
+    → Cell g p q k
+    → Cell (f ∘ g) p r (h ∘ k)
+  _∘₂_ = D₁._∘'_
 
-  -- We don't need to spend the time giving these types for intuition.
-  open H
-    renaming (Hom[_]-set to Cell-set; idl' to idlᵛ²; idr' to idrᵛ²; assoc' to assocᵛ²)
+  open D₁
+    hiding (id'; _∘'_)
+    renaming (Hom[_]-set to Cell-set; idl' to ∘-idl; idr' to ∘-idr; assoc' to ∘-assoc)
+  open Cat.Displayed.Morphism D₁
+```
 
+```agda
   field
-    idʰ : ∀ {x} → Horiz x x
-    _∘ʰ_ : ∀ {x y z} → Horiz y z → Horiz x y → Horiz x z
-    idlʰ
-      : ∀ {x y} (f : Horiz x y)
-      → idʰ ∘ʰ f ≡ f
-    idrʰ
-      : ∀ {x y} (f : Horiz x y)
-      → f ∘ʰ idʰ ≡ f
-    assocʰ
-      : ∀ {w x y z} (f : Horiz y z) (g : Horiz x y) (h : Horiz w x)
-      → f ∘ʰ (g ∘ʰ h) ≡ (f ∘ʰ g) ∘ʰ h
+    id⇸₁ : ∀ {x} → Loose x x
+    id⇸₂ : ∀ {x y} {f : Tight x y} → Cell f id⇸₁ id⇸₁ f
+    id-interchange : ∀ {x} → id⇸₂ {x} ≡ id₂ {x}
+```
 
-
-    idʰ² : ∀ {x y} {u : Vert x y} → Cell u idʰ idʰ u
-    _◆_
+```agda
+  field
+    _⊗₁_ : ∀ {x y z} → Loose x y → Loose y z → Loose x z
+    _⊗₂_
       : ∀ {a0 b0 a1 b1 a2 b2}
-      → {u : Vert a0 b0} {v : Vert a1 b1} {w : Vert a2 b2}
-      → {f : Horiz b1 b2} {g : Horiz b0 b1} {h : Horiz a1 a2} {i : Horiz a0 a1}
-      → Cell v f h w → Cell u g i v
-      → Cell u (f ∘ʰ g) (h ∘ʰ i) w
-
-    idlʰ²
-      : ∀ {a0 b0 a1 b1}
-      → {u : Vert a0 b0} {v : Vert a1 b1}
-      → {f : Horiz b0 b1} {g : Horiz a0 a1}
-      → (α : Cell u f g v)
-      → PathP (λ i → Cell u (idlʰ f i) (idlʰ g i) v) (idʰ² ◆ α) α
-    idrʰ²
-      : ∀ {a0 b0 a1 b1}
-      → {u : Vert a0 b0} {v : Vert a1 b1}
-      → {f : Horiz b0 b1} {g : Horiz a0 a1}
-      → (α : Cell u f g v)
-      → PathP (λ i → Cell u (idrʰ f i) (idrʰ g i) v) (α ◆ idʰ²) α
-    assocʰ²
-      : ∀ {a0 b0 a1 b1 a2 b2 a3 b3}
-      → {u0 : Vert a0 b0} {u1 : Vert a1 b1} {u2 : Vert a2 b2} {u3 : Vert a3 b3}
-      → {f0 : Horiz b0 b1} {f1 : Horiz b1 b2} {f2 : Horiz b2 b3}
-      → {g0 : Horiz a0 a1} {g1 : Horiz a1 a2} {g2 : Horiz a2 a3}
-      → (α : Cell u2 f2 g2 u3) (β : Cell u1 f1 g1 u2) (γ : Cell u0 f0 g0 u1)
-      → PathP (λ i → Cell u0 (assocʰ f2 f1 f0 i) (assocʰ g2 g1 g0 i) u3) (α ◆ (β ◆ γ)) ((α ◆ β) ◆ γ)
-
-    id-interchange
-      : ∀ {x}
-      → Path (Cell {x} idᵛ idʰ idʰ idᵛ) idᵛ² idʰ²
+      → {f : Tight a0 b0} {g : Tight a1 b1} {h : Tight a2 b2}
+      → {p : Loose a0 a1} {q : Loose a1 a2} {r : Loose b0 b1} {s : Loose b1 b2}
+      → Cell f p r g
+      → Cell g q s h
+      → Cell f (p ⊗₁ q) (r ⊗₁ s) h
     interchange
       : ∀ {a0 b0 c0 a1 b1 c1 a2 b2 c2}
-      → {u0 : Vert a0 b0} {v0 : Vert b0 c0}
-      → {u1 : Vert a1 b1} {v1 : Vert b1 c1}
-      → {u2 : Vert a2 b2} {v2 : Vert b2 c2}
-      → {f0 : Horiz c0 c1} {f1 : Horiz c1 c2}
-      → {g0 : Horiz b0 b1} {g1 : Horiz b1 b2}
-      → {h0 : Horiz a0 a1} {h1 : Horiz a1 a2}
-      → (α : Cell v1 f1 g1 v2)
-      → (β : Cell u1 g1 h1 u2)
-      → (γ : Cell v0 f0 g0 v1)
-      → (δ : Cell u0 g0 h0 u1)
-      → (α ∘ β) ◆ (γ ∘ δ) ≡ (α ◆ γ) ∘ (β ◆ δ)
+      → {f0 : Tight b0 c0} {g0 : Tight a0 b0}
+      → {f1 : Tight b1 c1} {g1 : Tight a1 b1}
+      → {f2 : Tight b2 c2} {g2 : Tight a2 b2}
+      → {p0 : Loose a0 a1} {p1 : Loose a1 a2}
+      → {q0 : Loose b0 b1} {q1 : Loose b1 b2}
+      → {r0 : Loose c0 c1} {r1 : Loose c1 c2}
+      → (α : Cell f0 q0 r0 f1)
+      → (β : Cell g0 p0 q0 g1)
+      → (γ : Cell f1 q1 r1 f2)
+      → (δ : Cell g1 p1 q1 g2)
+      → (α ∘₂ β) ⊗₂ (γ ∘₂ δ) ≡ (α ⊗₂ γ) ∘₂ (β ⊗₂ δ)
+```
+
+```agda
+  field
+    unitorl : ∀ {x y} (f : Loose x y) → (id⇸₁ ⊗₁ f) ≅↓ f
+    unitorr : ∀ {x y} (f : Loose x y) → (f ⊗₁ id⇸₁) ≅↓ f
+    associator : ∀ {w x y z} (f : Loose w x) (g : Loose x y) (h : Loose y z) → (f ⊗₁ (g ⊗₁ h)) ≅↓ ((f ⊗₁ g) ⊗₁ h)
+
+  module λ⇸ {x y} (f : Loose x y) = _≅[_]_ (unitorl f)
+  module ρ⇸ {x y} (f : Loose x y) = _≅[_]_ (unitorr f)
+  module α⇸ {w x y z} (f : Loose w x) (g : Loose x y) (h : Loose y z) = _≅[_]_ (associator f g h)
+
+  infixr 20 _⊗₁_
+  infixr 40 _⊗₂_
+  infixr 20 _∘₂_
+```
+
+```agda
+  field
+    triangle
+      : ∀ {x}
+      → PathP (λ i → Cell {x} (idl id i) (id⇸₁ ⊗₁ (id⇸₁ ⊗₁ id⇸₁)) ((id⇸₁ ⊗₁ id⇸₁) ⊗₁ id⇸₁) (idl id i))
+        (ρ⇸.from' (id⇸₁ ⊗₁ id⇸₁) ∘₂ λ⇸.to' (id⇸₁ ⊗₁ id⇸₁))
+        (α⇸.to' id⇸₁ id⇸₁ id⇸₁)
+    pentagon
+      : ∀ {v w x y z} {p : Loose v w} {q : Loose w x} {r : Loose x y} {s : Loose y z}
+      → PathP (λ i → Cell (idl (id ∘ id) i) (p ⊗₁ (q ⊗₁ (r ⊗₁ s))) (((p ⊗₁ q) ⊗₁ r) ⊗₁ s) (idl (id ∘ id) i))
+        (α⇸.to' p q r ⊗₂ id₂ ∘₂ α⇸.to' p (q ⊗₁ r) s ∘₂ id₂ ⊗₂ α⇸.to' q r s)
+        (α⇸.to' (p ⊗₁ q) r s ∘₂ α⇸.to' p q (r ⊗₁ s))
 ```
