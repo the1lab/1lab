@@ -104,10 +104,10 @@ from-total-predicate P .mem x = el (Σ[ hx ∈ x ] x .elt hx ∈ P) (hlevel 1)
 from-total-predicate P .defined (hx , _) = hx
 
 from-total-predicate-is-equiv : is-equiv (from-total-predicate {A = A})
-from-total-predicate-is-equiv = is-iso→is-equiv λ where
-  .inv P a → P .mem (always a)
-  .rinv P → ext λ a → Ω-ua (rec! (λ ha → subst (_∈ P) (sym (is-always a ha)))) λ pa → P .defined pa , subst (_∈ P) (is-always a _) pa
-  .linv P → ext λ a → Ω-ua snd (tt ,_)
+from-total-predicate-is-equiv = is-iso→is-equiv record where
+  from P a = P .mem (always a)
+  rinv P = ext λ a → Ω-ua (rec! (λ ha → subst (_∈ P) (sym (is-always a ha)))) λ pa → P .defined pa , subst (_∈ P) (is-always a _) pa
+  linv P = ext λ a → Ω-ua snd (tt ,_)
 ```
 
 ```agda

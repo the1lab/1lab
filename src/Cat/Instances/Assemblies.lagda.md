@@ -247,13 +247,16 @@ not be unital or associative.
 
 ::: warning
 Unlike most other categories constructed on the 1Lab, the category of
-assemblies is not [[univalent|univalent category]]. This is essentially
-*because* of the existence of assemblies such as `𝟚`{.Agda} and its
-"flipped" counterpart, described above: the identity map is a computable
-isomorphism between them, realised by the `` `not ``{.Agda} program, but
-there is no path in `Assembly`{.Agda} between them with first component
-projecting to the identity map.
+assemblies is not [[univalent|univalent category]]; see [univalence of
+categories of assemblies](Cat.Instances.Assemblies.Univalence.html).[^univalence]
 :::
+
+[^univalence]:
+    This is essentially *because* of of assemblies such as `𝟚`{.Agda}
+    and its "flipped" counterpart, described above. The identity map is
+    a computable isomorphism between them, realised by the `` `not
+    ``{.Agda} program, which does not extend to a path (unless $\bA$ is
+    trivial).
 
 However, these two assemblies *are* still identical in the type
 `Assembly`{.Agda}, where we allow the identification between the sets to
