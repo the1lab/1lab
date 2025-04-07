@@ -8,7 +8,8 @@ open import Data.Vec.Base
 
 open import Realisability.PCA
 
-import Realisability.PCA.Sugar as S
+import Realisability.Data.Bool
+import Realisability.PCA.Sugar
 ```
 -->
 
@@ -18,7 +19,8 @@ module Realisability.Data.Pair {ℓ} (𝔸@(A , _) : PCA ℓ) where
 
 <!--
 ```agda
-open S 𝔸
+open Realisability.PCA.Sugar 𝔸
+open Realisability.Data.Bool 𝔸
 private variable
   a b : ↯ ⌞ 𝔸 ⌟
 ```
@@ -27,12 +29,6 @@ private variable
 # Pairs in a PCA {defines="pairs-in-a-pca"}
 
 ```agda
-`true : ↯⁺ 𝔸
-`true = val ⟨ x ⟩ ⟨ y ⟩ x
-
-`false : ↯⁺ 𝔸
-`false = val ⟨ x ⟩ ⟨ y ⟩ y
-
 `pair : ↯⁺ 𝔸
 `pair = val ⟨ a ⟩ ⟨ b ⟩ ⟨ i ⟩ i `· a `· b
 
@@ -43,18 +39,6 @@ private variable
 `snd = val ⟨ p ⟩ p `· `false
 
 abstract
-  `true↓₁ : ⌞ a ⌟ → ⌞ `true ⋆ a ⌟
-  `true↓₁ x = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , x) ∷ []))) (abs↓ _ _)
-
-  `false↓₁ : ⌞ a ⌟ → ⌞ `false .fst % a ⌟
-  `false↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , ah) ∷ []))) (abs↓ _ _)
-
-  `false-β : ⌞ a ⌟ → ⌞ b ⌟ → `false ⋆ a ⋆ b ≡ b
-  `false-β {a} {b} ah bh = abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ [])
-
-  `true-β : ⌞ a ⌟ → ⌞ b ⌟ → `true ⋆ a ⋆ b ≡ a
-  `true-β {a} {b} ah bh = abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ [])
-
   `pair↓₂ : ⌞ a ⌟ → ⌞ b ⌟ → ⌞ `pair .fst % a % b ⌟
   `pair↓₂ {a} {b} ah bh = subst ⌞_⌟ (sym (abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ []))) (abs↓ _ ((b , bh) ∷ (a , ah) ∷ []))
 
