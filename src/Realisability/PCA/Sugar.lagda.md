@@ -26,7 +26,7 @@ open PCA 𝔸 public
 ```
 -->
 
-# Sugar for programming in PCAs
+# Sugar for programming in PCAs {defines="syntax-sugar-for-pcas"}
 
 ```agda
 _⋆_ : ∀ {X : Type ℓ'} {Y : Type ℓ''} ⦃ _ : To-part X ⌞ 𝔸 ⌟ ⦄ ⦃ _ : To-part Y ⌞ 𝔸 ⌟ ⦄ → X → Y → ↯ ⌞ 𝔸 ⌟
