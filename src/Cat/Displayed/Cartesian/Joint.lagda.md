@@ -243,7 +243,7 @@ const-jointly-cartesian→cartesian {Ix = Ix} {u = u} {f = f} ∥ix∥ f-joint-c
 Jointly cartesian families over empty types act more like codiscrete objects
 than pullbacks, as the space of maps into the shared domain of the family
 is unique for any $v : \cE{B}(X, A)$ and $X' \liesover X$. In the displayed
-category of topological spaces, such maps are precisely the discrete spaces.
+category of topological spaces, such maps are precisely the codiscrete spaces.
 
 ```agda
 empty-jointly-cartesian→codiscrete
@@ -669,9 +669,10 @@ $e : I' \to I$. Though seemingly innocent, being able to extend every family
 $f_{i} : \cE_{u_i}(A', B_{i}')$ is equivalent to the displayed category
 being thin!
 
-For the forward direction, let $f_{i} : \cE{u_i}(A', B_{i}')$ be a
-family such that the restriction of $f_{i}$ along a map $e : I' \to I$
-thin. We can then easily extend the family $f_{i}$ along an arbitrary map
+For the forward direction, suppose that $\cE$ is thin.
+Let $f_{i} : \cE{u_i}(A', B_{i}')$ be a family such that the restriction
+of $f_{i}$ along a map $e : I' \to I$ is jointly cartesian.
+We can then easily extend the family $f_{i}$ along an arbitrary map
 by ignoring every single equality, as all hom sets involved are thin.
 
 ```agda
