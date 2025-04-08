@@ -322,39 +322,40 @@ inverses, of right inverses, and for proving that any left inverse must
 match any right inverse.
 
 ```agda
-module _ {y z} (f : y ≅ z) where abstract
+module _ {y z} (f : y ≅ z) where
   open _≅_
 
-  left-inv-unique
-    : ∀ {g h}
-    → g ∘ f .to ≡ id → h ∘ f .to ≡ id
-    → g ≡ h
-  left-inv-unique {g = g} {h = h} p q =
-    g                   ≡⟨ intror (f .invl) ⟩
-    g ∘ f .to ∘ f .from ≡⟨ extendl (p ∙ sym q) ⟩
-    h ∘ f .to ∘ f .from ≡⟨ elimr (f .invl) ⟩
-    h                   ∎
+  abstract
+    left-inv-unique
+      : ∀ {g h}
+      → g ∘ f .to ≡ id → h ∘ f .to ≡ id
+      → g ≡ h
+    left-inv-unique {g = g} {h = h} p q =
+      g                   ≡⟨ intror (f .invl) ⟩
+      g ∘ f .to ∘ f .from ≡⟨ extendl (p ∙ sym q) ⟩
+      h ∘ f .to ∘ f .from ≡⟨ elimr (f .invl) ⟩
+      h                   ∎
 
-  left-right-inv-unique
-    : ∀ {g h}
-    → g ∘ f .to ≡ id → f .to ∘ h ≡ id
-    → g ≡ h
-  left-right-inv-unique {g = g} {h = h} p q =
-    g                    ≡⟨ intror (f .invl) ⟩
-    g ∘ f .to ∘ f .from  ≡⟨ cancell p ⟩
-    f .from              ≡⟨ intror q ⟩
-    f .from ∘ f .to ∘ h  ≡⟨ cancell (f .invr) ⟩
-    h                    ∎
+    left-right-inv-unique
+      : ∀ {g h}
+      → g ∘ f .to ≡ id → f .to ∘ h ≡ id
+      → g ≡ h
+    left-right-inv-unique {g = g} {h = h} p q =
+      g                    ≡⟨ intror (f .invl) ⟩
+      g ∘ f .to ∘ f .from  ≡⟨ cancell p ⟩
+      f .from              ≡⟨ intror q ⟩
+      f .from ∘ f .to ∘ h  ≡⟨ cancell (f .invr) ⟩
+      h                    ∎
 
-  right-inv-unique
-    : ∀ {g h}
-    → f .to ∘ g ≡ id → f .to ∘ h ≡ id
-    → g ≡ h
-  right-inv-unique {g = g} {h} p q =
-    g                     ≡⟨ introl (f .invr) ⟩
-    (f .from ∘ f .to) ∘ g ≡⟨ pullr (p ∙ sym q) ⟩
-    f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
-    h                     ∎
+    right-inv-unique
+      : ∀ {g h}
+      → f .to ∘ g ≡ id → f .to ∘ h ≡ id
+      → g ≡ h
+    right-inv-unique {g = g} {h} p q =
+      g                     ≡⟨ introl (f .invr) ⟩
+      (f .from ∘ f .to) ∘ g ≡⟨ pullr (p ∙ sym q) ⟩
+      f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
+      h                     ∎
 ```
 
 ### Lenses for isomorphisms

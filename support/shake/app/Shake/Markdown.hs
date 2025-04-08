@@ -12,6 +12,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Monad.State
 import Control.Applicative
+import Control.Monad
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
@@ -23,6 +24,7 @@ import qualified Data.Set as Set
 
 import Data.Digest.Pure.SHA
 import Data.Foldable
+import Data.Monoid (Ap(..))
 import Data.Aeson (encodeFile)
 import Data.Maybe
 import Data.Text (Text)

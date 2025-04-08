@@ -109,7 +109,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
   Bicat-monad→monad : Monad (Cat _ _) C → Cat.Monad C
   Bicat-monad→monad monad = _ , monad' where
-    private module M = Monad monad
+    module M = Monad monad
 
     monad' : Cat.Monad-on M.M
     monad' .unit = M.η
@@ -127,7 +127,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
   Monad→bicat-monad (M , monad) = monad' where
-    private module M = Cat.Monad-on (monad)
+    module M = Cat.Monad-on (monad)
 
     monad' : Monad (Cat _ _) C
     monad' .Monad.M = M

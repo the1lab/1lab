@@ -152,7 +152,7 @@ in $\cC/y$, too.
 slice-is-regular : is-regular (Slice C y)
 slice-is-regular .factor {a} {b} f = fact' where
   fact = r.factor (f .map)
-  private module f = Factorisation fact
+  module f = Factorisation fact
 
   fact' : Factorisation C/y (StrongEpi C/y) (Mono C/y) f
   fact' .mediating = cut (b .map ∘ f.forget)

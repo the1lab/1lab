@@ -6,6 +6,7 @@ module Shake.AgdaCompile (agdaRules) where
 import System.FilePath
 
 import Control.Monad.Except
+import Control.Monad
 
 import qualified Data.List.NonEmpty as List1
 import qualified Data.HashMap.Strict as Hm

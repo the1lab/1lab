@@ -561,7 +561,7 @@ surjection→is-quotient {A = A} {B} b-set (f , surj) =
   _ , injective-surjective→is-equiv! g'-inj g'-surj
   where
 
-  private module c = Congruence (Kernel-pair b-set f)
+  module c = Congruence (Kernel-pair b-set f)
 ```
 -->
 

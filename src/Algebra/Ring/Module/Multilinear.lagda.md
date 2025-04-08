@@ -174,29 +174,28 @@ Multilinear-maps
       {N : Module R ℓn}
   → Module-on R (Multilinear-map n Ms N)
 Multilinear-maps {n = n} {Ms = Ms} {N = N} = to-module-on mk where
-  private
-    module Ms i = Module-on (Ms i .snd)
-    module N    = Module-on (N .snd)
-    instance
-      _ = module-notation N
-      _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
-      _ = module-notation (Ms _)
+  module Ms i = Module-on (Ms i .snd)
+  module N    = Module-on (N .snd)
+  instance
+    _ = module-notation N
+    _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
+    _ = module-notation (Ms _)
 
-    -- Normally there would be no way in hell these helpers would ever
-    -- be useful... except this module needs lossy-unification for
-    -- performance reasonsl so we might as well abuse it for style!
-    _⟨_⟩
-      : Multilinear-map n Ms N
-      → {_ : Πᶠ (λ i → ⌞ Ms i ⌟)} {i : Fin n} → ⌞ Ms i ⌟ → ⌞ N ⌟
-    _⟨_⟩ f {xs} {i} x = applyᶠ (f .map) (updateₚ xs i x)
+  -- Normally there would be no way in hell these helpers would ever
+  -- be useful... except this module needs lossy-unification for
+  -- performance reasonsl so we might as well abuse it for style!
+  _⟨_⟩
+    : Multilinear-map n Ms N
+    → {_ : Πᶠ (λ i → ⌞ Ms i ⌟)} {i : Fin n} → ⌞ Ms i ⌟ → ⌞ N ⌟
+  _⟨_⟩ f {xs} {i} x = applyᶠ (f .map) (updateₚ xs i x)
 
-    _⟨_⟩ᵤ
-      : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
-      → Arrᶠ P X → {_ : Πᶠ P} {i : Fin n} → P i → X
-    _⟨_⟩ᵤ f {xs} {i} x = applyᶠ f (updateₚ xs i x)
+  _⟨_⟩ᵤ
+    : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
+    → Arrᶠ P X → {_ : Πᶠ P} {i : Fin n} → P i → X
+  _⟨_⟩ᵤ f {xs} {i} x = applyᶠ f (updateₚ xs i x)
 
-    infix 300 _⟨_⟩
-    infix 300 _⟨_⟩ᵤ
+  infix 300 _⟨_⟩
+  infix 300 _⟨_⟩ᵤ
 ```
 -->
 
