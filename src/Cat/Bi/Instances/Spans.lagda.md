@@ -149,10 +149,10 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
       module x = Pullback (pb (x1 .left) (x2 .right))
       module y = Pullback (pb (y1 .left) (y2 .right))
 
+      open Pullback
       x→y : Hom x.apex y.apex
       x→y = y.universal {p₁' = f .map ∘ x.p₁} {p₂' = g .map ∘ x.p₂} comm
         where abstract
-          open Pullback
           comm : y1 .left ∘ f .map ∘ x.p₁ ≡ y2 .right ∘ g .map ∘ x.p₂
           comm = pulll (sym (f .left)) ∙ x.square ∙ pushl (g .right)
 

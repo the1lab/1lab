@@ -187,35 +187,34 @@ into a subobject.]
   → (χ : a ↬ b)
   → (∘-rel φ (∘-rel ψ χ)) Sub.≅ (∘-rel (∘-rel φ ψ) χ)
 ∘-rel-assoc {a} {b} {c} {d} r s t = done where
-  private
-    module rs = ∘-rel r s
-    module st = ∘-rel s t
-    module [rs]t = ∘-rel (∘-rel r s) t
-    module r[st] = ∘-rel r (∘-rel s t)
-    v₂ = rs.inter .p₂
-    v₁ = rs.inter .p₁
+  module rs = ∘-rel r s
+  module st = ∘-rel s t
+  module [rs]t = ∘-rel (∘-rel r s) t
+  module r[st] = ∘-rel r (∘-rel s t)
+  v₂ = rs.inter .p₂
+  v₁ = rs.inter .p₁
 
-    u₂ = st.inter .p₂
-    u₁ = st.inter .p₁
-    open Relation r renaming (src to r₁ ; tgt to r₂) hiding (rel)
-    open Relation s renaming (src to s₁ ; tgt to s₂) hiding (rel)
-    open Relation t renaming (src to t₁ ; tgt to t₂) hiding (rel)
+  u₂ = st.inter .p₂
+  u₁ = st.inter .p₁
+  open Relation r renaming (src to r₁ ; tgt to r₂) hiding (rel)
+  open Relation s renaming (src to s₁ ; tgt to s₂) hiding (rel)
+  open Relation t renaming (src to t₁ ; tgt to t₂) hiding (rel)
 
-    i : ∀ {x y} {f : Hom x y} → Hom im[ f ] y
-    i = factor _ .forget
+  i : ∀ {x y} {f : Hom x y} → Hom im[ f ] y
+  i = factor _ .forget
 
-    q : ∀ {x y} {f : Hom x y} → Hom x im[ f ]
-    q = factor _ .mediate
+  q : ∀ {x y} {f : Hom x y} → Hom x im[ f ]
+  q = factor _ .mediate
 
-    ξ₁ = [rs]t.inter .p₁
-    ξ₂ = [rs]t.inter .p₂
+  ξ₁ = [rs]t.inter .p₁
+  ξ₂ = [rs]t.inter .p₂
 
-    ζ₁ = r[st].inter .p₁
-    ζ₂ = r[st].inter .p₂
+  ζ₁ = r[st].inter .p₁
+  ζ₂ = r[st].inter .p₂
 
   X : Pullback C (rs.inter .p₁) (st.inter .p₂)
   X = lex.pullbacks (rs.inter .p₁) (st.inter .p₂)
-  private module X = Pullback X renaming (p₂ to x₁ ; p₁ to x₂)
+  module X = Pullback X renaming (p₂ to x₁ ; p₁ to x₂)
   open X using (x₂ ; x₁)
 ```
 -->

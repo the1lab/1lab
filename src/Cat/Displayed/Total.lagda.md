@@ -122,17 +122,17 @@ isomorphisms in $B$ and $E$.
 
   total-iso→iso : ∀ {x y} → x ∫E.≅ y → x .fst ≅ y .fst
   total-iso→iso f = make-iso
-      (∫E._≅_.to f .hom)
-      (∫E._≅_.from f .hom)
-      (ap hom $ ∫E._≅_.invl f)
-      (ap hom $ ∫E._≅_.invr f)
+    (∫E._≅_.to f .hom)
+    (∫E._≅_.from f .hom)
+    (ap hom $ ∫E._≅_.invl f)
+    (ap hom $ ∫E._≅_.invr f)
 
   total-iso→iso[] : ∀ {x y} → (f : x ∫E.≅ y) → x .snd ≅[ total-iso→iso f ] y .snd
   total-iso→iso[] f = make-iso[ total-iso→iso f ]
-      (∫E._≅_.to f .preserves)
-      (∫E._≅_.from f .preserves)
-      (ap preserves $ ∫E._≅_.invl f)
-      (ap preserves $ ∫E._≅_.invr f)
+    (∫E._≅_.to f .preserves)
+    (∫E._≅_.from f .preserves)
+    (ap preserves $ ∫E._≅_.invl f)
+    (ap preserves $ ∫E._≅_.invr f)
 ```
 
 ## Pullbacks in the total category

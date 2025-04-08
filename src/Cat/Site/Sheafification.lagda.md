@@ -345,7 +345,7 @@ the path constructors are all handled by the corresponding laws in $B$.
 ```agda
   univ : (B : Functor (C ^op) (Sets ℓ)) → is-sheaf J B → A => B → Sheafify A => B
   univ {A = A} G shf eta = nt where
-    private module G = Psh G
+    module G = Psh G
     go : ∀ U → Sheafify₀ A U → G ʻ U
     go U (inc x)   = eta .η U x
     go U (map f x) = G ⟪ f ⟫ (go _ x)

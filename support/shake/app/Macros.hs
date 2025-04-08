@@ -16,6 +16,7 @@ module Macros
 import Control.Monad.Writer.Strict
 import Control.Applicative
 import Control.DeepSeq
+import Control.Monad
 
 import qualified Data.Text as T
 import Data.Char (isDigit, isLetter)

@@ -17,6 +17,7 @@ import Prelude hiding ((!!), concatMap)
 import Control.Monad.Identity
 import Control.Monad.Except
 import Control.Monad.Reader
+import Control.Monad
 
 import qualified Data.HashMap.Strict as Hm
 import qualified Data.Map.Strict as Map

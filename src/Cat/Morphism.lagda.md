@@ -498,8 +498,13 @@ record _≅_ (a b : Ob) : Type h where
 
   open Inverses inverses public
 
-open _≅_ public
 ```
+<!--
+```agda
+open _≅_ public
+{-# INLINE _≅_.constructor #-}
+```
+-->
 
 A given map is invertible in at most one way: If you have $f : A \to B$
 with two _inverses_ $g : B \to A$ and $h : B \to A$, then not only are
@@ -615,10 +620,8 @@ make-invertible g p q .is-invertible.inverses .invl = p
 make-invertible g p q .is-invertible.inverses .invr = q
 
 make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → a ≅ b
-make-iso f g p q ._≅_.to = f
-make-iso f g p q ._≅_.from = g
-make-iso f g p q ._≅_.inverses .Inverses.invl = p
-make-iso f g p q ._≅_.inverses .Inverses.invr = q
+{-# INLINE make-iso #-}
+make-iso f g p q = record { to = f ; from = g ; inverses = record { invl = p ; invr = q }}
 
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _

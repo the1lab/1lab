@@ -449,7 +449,7 @@ this witness lives in a proposition (it is a pair of propositions), so
 it survives automatically.
 
 ```agda
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-cartesian-fibration)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-cartesian-fibration)
     hl : ∀ x → is-prop _
     hl x = Iso→is-hlevel! 1 eqv
 ```

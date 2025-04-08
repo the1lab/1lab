@@ -397,7 +397,7 @@ Day-bifunctor-cowedge
   → Y => Y'
   → Cowedge (Day-diagram X Y i)
 Day-bifunctor-cowedge {X} {Y} {X'} {Y'} {i} F G = go where
-  private module D = Day X' Y'
+  module D = Day X' Y'
   go : Cowedge (Day-diagram X Y i)
   go .nadir           = D.nadir i
   go .ψ c (h , x , y) = D.day h (F .η _ x) (G .η _ y)
