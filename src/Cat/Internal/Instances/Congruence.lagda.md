@@ -47,7 +47,7 @@ are congruent.
 EquivRel : ∀ {A} → Congruence-on A → Internal-cat
 EquivRel {A} cong = icat where
   open Congruence-on cong
-  private module R×R = Pullback (fc.pullbacks rel₁ rel₂)
+  module R×R = Pullback (fc.pullbacks rel₁ rel₂)
 ```
 
 The object of objects of the internal category will simply be $A$, and

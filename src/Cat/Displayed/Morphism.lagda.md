@@ -299,9 +299,14 @@ record _≅[_]_
     inverses' : Inverses[ i .inverses ] to' from'
 
   open Inverses[_] inverses' public
-
-open _≅[_]_ public
 ```
+
+<!--
+```agda
+open _≅[_]_ public
+{-# INLINE _≅[_]_.constructor #-}
+```
+-->
 
 Since isomorphisms over the identity map will be of particular
 importance, we also define their own type: they are the _vertical
@@ -374,10 +379,8 @@ make-iso[_]
   → f' ∘' g' ≡[ iso .invl ] id'
   → g' ∘' f' ≡[ iso .invr ] id'
   → a' ≅[ iso ] b'
-make-iso[ inv ] f' g' p q .to' = f'
-make-iso[ inv ] f' g' p q .from' = g'
-make-iso[ inv ] f' g' p q .inverses' .Inverses[_].invl' = p
-make-iso[ inv ] f' g' p q .inverses' .Inverses[_].invr' = q
+{-# INLINE make-iso[_] #-}
+make-iso[ inv ] f' g' p q = record { to' = f' ; from' = g' ; inverses' = record { invl' = p ; invr' = q }}
 
 make-invertible[_]
   : ∀ {a b a' b'} {f : Hom a b} {f' : Hom[ f ] a' b'}

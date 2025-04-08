@@ -217,9 +217,8 @@ record Ran (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
 module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p} where
   is-lan-is-prop : is-prop (is-lan p F G eta)
   is-lan-is-prop a b = path where
-    private
-      module a = is-lan a
-      module b = is-lan b
+    module a = is-lan a
+    module b = is-lan b
 
     σ≡ : {M : Functor _ _} (α : F => M F∘ p) → a.σ α ≡ b.σ α
     σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)
@@ -243,9 +242,8 @@ module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F
 module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F} where
   is-ran-is-prop : is-prop (is-ran p F G eps)
   is-ran-is-prop a b = path where
-    private
-      module a = is-ran a
-      module b = is-ran b
+    module a = is-ran a
+    module b = is-ran b
 
     σ≡ : {M : Functor _ _} (α : M F∘ p => F) → a.σ α ≡ b.σ α
     σ≡ α = ext (a.σ-uniq (sym b.σ-comm) ηₚ_)

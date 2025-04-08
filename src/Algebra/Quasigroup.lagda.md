@@ -245,7 +245,7 @@ is-right-quasigroup-hom-is-prop {T = T} =
   Iso→is-hlevel! 1 eqv
   where
     open Right-quasigroup-on T
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-right-quasigroup-hom)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-right-quasigroup-hom)
 
 instance
   H-Level-is-right-quasigroup-hom
@@ -424,7 +424,7 @@ is-left-quasigroup≃op-is-right-quasigroup =
         let open is-left-quasigroup ⋆-left-quasi in
         Iso.injective eqv (refl ,ₚ prop!))
     where
-      private unquoteDecl eqv = declare-record-iso eqv (quote is-left-quasigroup)
+      unquoteDecl eqv = declare-record-iso eqv (quote is-left-quasigroup)
 ```
 </details>
 
@@ -537,7 +537,7 @@ is-left-quasigroup-hom-is-prop {T = T} =
   Iso→is-hlevel! 1 eqv
   where
     open Left-quasigroup-on T
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-left-quasigroup-hom)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-left-quasigroup-hom)
 
 instance
   H-Level-is-left-quasigroup-hom
@@ -771,7 +771,7 @@ is-quasigroup-hom-is-prop {T = T} =
   Iso→is-hlevel! 1 eqv
   where
     open Quasigroup-on T
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-quasigroup-hom)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-quasigroup-hom)
 
 instance
   H-Level-is-quasigroup-hom
