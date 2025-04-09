@@ -150,7 +150,7 @@ together to establish `G ≡ (base ≡ base)`.
 
 We'll want to define the family `Code` by induction on `Deloop`. First,
 since we have to map into a [[groupoid]], we'll map into the type
-$\set$, rather than $\ty$. This takes care of the truncation
+$\set$, rather than $\type$. This takes care of the truncation
 constructor (which is hidden from the page since it is entirely
 formulaic): let's tackle the rest in order. We can also handle the
 `base`{.Agda} case, since `Code base = G` was already a part of our

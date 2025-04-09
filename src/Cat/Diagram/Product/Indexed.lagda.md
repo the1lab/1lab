@@ -60,7 +60,7 @@ record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
 ```
 
 A category $\cC$ **admits indexed products** (of level $\ell$) if,
-for any type $I : \ty\ \ell$ and family $F : I \to \cC$, there is an
+for any type $I : \type\ \ell$ and family $F : I \to \cC$, there is an
 indexed product of $F$.
 
 ```agda
