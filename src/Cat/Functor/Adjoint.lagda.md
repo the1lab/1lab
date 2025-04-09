@@ -393,7 +393,7 @@ this to an *operations-and-properties* presentation, we could say that:
 * for every $f$ and $g$, if $U(g)\eta = f$, then $g = \operatorname{fold} f$.
 
 If these conditions are satisfied, we refer to $\eta$ as a **universal
-morphism from $X$ into $F$**.
+morphism from $X$ into $U$**.
 :::
 
 ```agda
