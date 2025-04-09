@@ -27,8 +27,11 @@ module Algebra.Group.Concrete.Abelian where
 
 # Concrete abelian groups {defines="concrete-abelian-group"}
 
-A **concrete [[abelian group]]** is, unsurprisingly, a [[concrete group]] in which
-concatenation of loops at the base point is commutative.
+::: {.popup .keep}
+A **concrete [[abelian group]]** is, unsurprisingly, a [[concrete
+group]] in which concatenation of loops at the base point is
+commutative.
+:::
 
 ```agda
 module _ {ℓ} (G : ConcreteGroup ℓ) where

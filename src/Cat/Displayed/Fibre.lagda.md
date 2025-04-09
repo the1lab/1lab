@@ -74,6 +74,13 @@ $\id\circ\id=\id$ from the base category, implies that the
 set of vertical arrows over an object $x$ contain identities and are
 closed under composition, the **fibre (pre)category over $x$**.
 
+::: popup
+The **fibre category** $\cE^*(X)$ of a [[displayed category]] $\cE
+\liesover \cB$ over an object $X : \cB$ is the category with type of
+objects $\cE(X)$, and with morphisms $$\hom(x, y) = \cE_{\id}(x, y)$$
+the set of **vertical maps** between $x$ and $y$.
+:::
+
 ```agda
 Fibre'
   : (X : Ob)

@@ -31,12 +31,11 @@ consider the case of algebraic structures, we often want to think about
 "a monoid" as a singular thing, as opposed to structure imposed atop
 some set.
 
-Constructing the total category does exactly this. The objects
-are pairs of an object from the base, an object from the displayed
-category that lives over it.
-
-Note that we use a sigma type here instead of a record for technical
-reasons: this makes it simpler to work with algebraic structures.
+Constructing the total category does exactly this. The objects are pairs
+of an object from the base, an object from the displayed category that
+lives over it. Note that we use a sigma type here instead of a record
+for technical reasons: this makes it simpler to work with algebraic
+structures.
 
 ```agda
   Total : Type (o ⊔ o')
@@ -101,6 +100,14 @@ With all that in place, we can construct the total category!
   ∫ .Precategory.idl _ = ∫Hom-path (idl _) (idl' _)
   ∫ .Precategory.assoc _ _ _ = ∫Hom-path (assoc _ _ _) (assoc' _ _ _)
 ```
+
+::: popup
+The [[total category]] of a [[displayed category]] $\cE \liesover \cB$
+is the precategory $\int \cE$ with type of objects $\Sigma_{(x : \cB)}
+\cE(x)$, and with the morphisms $$\hom((x, x'), (y, y')) = \sum_{f :
+\cB(x, y)} \cE_f(x', y')$$ being pairs of a map in $\cB$ and a map in
+$\cE$ over that.
+:::
 
 <!--
 ```agda

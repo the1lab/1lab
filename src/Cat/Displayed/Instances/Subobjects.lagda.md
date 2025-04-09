@@ -42,6 +42,19 @@ _subobjects_ over $\cB$. This is, in essence, a restriction of the
 [[codomain fibration]] of $\cB$, but with our attention restricted to
 the monomorphisms $a \mono b$ rather than arbitrary maps $a \to b$.
 
+::: popup
+A **subobject** of $Y : \cC$ is simply a [[monomorphism]] into $Y$ in
+$\cC$.
+
+The **preorder of subobjects** of $\cC$ is the [[thin|thin category]]
+[[displayed category]] $\Sub(-) \liesover \cC$ with objects over $X$
+the subobjects of $X$, and where we let $(A, m) \to_f (B, n)$ if there
+is a (necessarily unique) $g : A \to B$ with $f \circ m = n \circ g$.
+
+If $\cC$ is a [[univalent category]], each fibre $\cC(-)$ is a
+[[poset]].
+:::
+
 ```agda
 record Subobject (y : Ob) : Type (o ⊔ ℓ) where
   no-eta-equality

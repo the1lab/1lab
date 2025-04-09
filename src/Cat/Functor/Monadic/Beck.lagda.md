@@ -52,42 +52,33 @@ open ∫Hom
 
 Let $F : \cC \to \cD$ be a functor admitting a [[right adjoint]]
 $U : \cD \to \cC$. Recall that every adjunction [induces] a
-[monad] $UF$ (which we will call $T$ for short) on the category
+[[monad]] $UF$ (which we will call $T$ for short) on the category
 $\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
 the [Eilenberg-Moore category] of $T$. In this module we will lay out a
 sufficient condition for the functor $K$ to have a left adjoint, which
 we call $K\inv$ (`Comparison-EM⁻¹`). Let us first establish a result about
-the presentation of $T$-[algebras] by "generators and relations".
+the presentation of $T$-[[algebras|monad algebra]] by "generators and relations".
 
-[monad]: Cat.Diagram.Monad.html
 [induces]: Cat.Functor.Adjoint.Monad.html
 [comparison]: Cat.Functor.Adjoint.Monadic.html
-[algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
 
 Suppose that we are given a $T$-algebra $(A, \nu)$. Note that $(TA,
 \mu)$ is also a $T$-algebra, namely the free $T$-algebra on the object
 $A$. Let us illustrate this with a concrete example: Suppose we have the
 cyclic group $\bb{Z}/n\bb{Z}$, for some natural number $n$, which we
-regard as a quotient group of $\bb{Z}$. The corresponding algebra $(TA, \mu)$
-would be the [free group] on $n$ generators
-whence^[I was feeling pretentious when I wrote this sentence] we
-conclude that, in general, this "free-on-underlying" $(TA, \mu)$ algebra
-is very far from being the $(A, \nu)$ algebra we started with.
-
-[free group]: Algebra.Group.Free.html
+regard as a quotient group of $\bb{Z}$. The corresponding algebra $(TA,
+\mu)$ would be the [[free group]] on $n$ generators, whence we conclude
+that, in general, this "free-on-underlying" $(TA, \mu)$ algebra is very
+far from being the $(A, \nu)$ algebra we started with.
 
 Still, motivated by our $\bb{Z}/n\bb{Z}$ example, it feels like we
-should be able to [quotient] the algebra $(TA, \mu)$ by some set of
+should be able to [[quotient]] the algebra $(TA, \mu)$ by some set of
 _relations_ and get back the algebra $(A, \nu)$ we started with. This is
 absolutely true, and it's true even when the category of $T$-algebras is
 lacking in quotients! In particular, we have the following theorem:
 
-[quotient]: Data.Set.Coequaliser.html#quotients
-
-**Theorem**. Every $T$-algebra $(A, \nu)$ is the [coequaliser] of the diagram
-
-[coequaliser]: Cat.Diagram.Coequaliser.html
+**Theorem**. Every $T$-algebra $(A, \nu)$ is the [[coequaliser]] of the diagram
 
 ~~~{.quiver}
 \[\begin{tikzcd}

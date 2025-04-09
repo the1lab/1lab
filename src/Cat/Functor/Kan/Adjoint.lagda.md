@@ -31,11 +31,9 @@ private
 One way to think about [[Kan extensions]] is that, when they exist, they
 allow us to "compose" two functors when one of them is going the wrong
 way: given a span
-
 $$
 D \xot{F} C \xto{H} E
 $$
-
 we get a "composite" $\Lan_F(H) : D \to E$. With this perspective in
 mind, it's reasonable to expect that, if $F$ has an [inverse] $G : D \to
 C$, the composite we get should be the actual composite $H \circ G$.

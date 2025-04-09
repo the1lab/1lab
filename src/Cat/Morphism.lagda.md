@@ -28,6 +28,7 @@ can be found in a category: **monomorphisms**, **epimorphisms**, and
 
 ## Monos {defines="monomorphism monic"}
 
+::: {.popup .keep}
 A morphism is said to be **monic** when it is left-cancellable. A
 **monomorphism** from $A$ to $B$, written $A \mono B$, is a monic
 morphism.
@@ -35,7 +36,10 @@ morphism.
 ```agda
 is-monic : Hom a b → Type _
 is-monic {a = a} f = ∀ {c} → (g h : Hom c a) → f ∘ g ≡ f ∘ h → g ≡ h
+```
+:::
 
+```agda
 is-monic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-monic f)
 is-monic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
@@ -55,16 +59,20 @@ Factors f g = Σ[ h ∈ Hom _ _ ] (f ≡ g ∘ h)
 ```
 -->
 
-Conversely, a morphism is said to be **epic** when it is
-right-cancellable.  An **epimorphism** from $A$ to $B$, written $A \epi
-B$, is an epic morphism.
-
 ## Epis {defines="epimorphism epic"}
+
+::: {.popup .keep}
+Conversely, a morphism is said to be **epic** when it is
+right-cancellable. An **epimorphism** from $A$ to $B$, written $A \epi
+B$, is an epic morphism.
 
 ```agda
 is-epic : Hom a b → Type _
 is-epic {b = b} f = ∀ {c} → (g h : Hom b c) → g ∘ f ≡ h ∘ f → g ≡ h
+```
+:::
 
+```agda
 is-epic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-epic f)
 is-epic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
@@ -464,11 +472,13 @@ split-epic→epic = rec! has-section→epic
 
 ## Isos {defines="isomorphism invertible"}
 
+::: {.popup .keep}
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
 \circ g$ and $g \circ f$ both equal to the identity. A map $f : A \to B$
 **is invertible** (or **is an isomorphism**) when there exists a $g$ for
 which $f$ and $g$ are inverses. An **isomorphism** $A \cong B$ is a
 choice of map $A \to B$, together with a specified inverse.
+:::
 
 ```agda
 record Inverses (f : Hom a b) (g : Hom b a) : Type h where

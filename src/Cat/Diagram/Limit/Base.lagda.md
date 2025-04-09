@@ -32,6 +32,13 @@ assumes some familiarity with some concrete examples, in particular
 It might be a good idea to check out those pages before continuing!
 :::
 
+::: popup
+The **limit** of a diagram $F : \cJ \to \cC$ is the [[right Kan
+extension]] of $F$ along the functor $! : \cJ \to \{*\}$. Concretely, a
+limit for $F$ is the [[terminal]] object $X : \cC$ equipped with maps
+$\psi_j : X \to F(j)$, i.e. the terminal [[cone]] under $F$.
+:::
+
 ## Idea
 
 To motivate limits, note how all the above examples have roughly the

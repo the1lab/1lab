@@ -19,7 +19,7 @@ open import Data.Dec.Base
 module 1Lab.Path.IdentitySystem where
 ```
 
-# Identity systems
+# Identity systems {defines="identity-system"}
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full
@@ -54,7 +54,7 @@ record
 open is-identity-system public
 ```
 
-:::{.definition .summary #identity-system}
+::: popup
 A type family $R : A \to A \to \type$, equipped with reflexivity
 witness $r : \forall\ a,\ R\ a\ a$, is an **identity system** when we are
 given a map

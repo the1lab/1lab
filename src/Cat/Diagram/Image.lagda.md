@@ -70,18 +70,18 @@ $M$-image of $f$ be the smallest $M$-subobject through which $f$
 factors.
 
 Since keeping track of all the factorisations by hand would be fiddly,
-we formalise the idea of image here using [comma categories], namely the
-idea of [[universal morphisms]] as in the construction of adjoints. Fix a
-morphism $f : a \to b$, and consider it as an object of the [slice
-category] $\cC/b$.
+we formalise the idea of image here using [[comma categories]], namely
+the idea of [[universal morphisms]] as in the construction of adjoints.
+Fix a morphism $f : a \to b$, and consider it as an object of the [[slice
+category]] $\cC/b$.
 
-[comma categories]: Cat.Instances.Comma.html
-[slice category]: Cat.Instances.Slice.html
-
-For a given subclass of monomorphisms $M$, there is a full subcategory
-of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
---- admitting an evident [[fully faithful]] inclusion $F : M/b \mono \cC/b$. An
-**$M$-image of $f$** is a universal morphism from $f$ to $F$.
+::: {.popup .keep}
+For a given subclass of monomorphisms $M$, there is a [[full
+subcategory]] of $\cC/b$ spanned by those maps in $M$ --- let us call it
+$M/b$ --- admitting an evident [[fully faithful]] inclusion $F : M/b
+\mono \cC/b$. An **$M$-image of $f$** is a universal morphism from $f$
+to $F$.
+:::
 
 <!--
 [TODO: Reed M, 24/03/2024] Port to use free objects

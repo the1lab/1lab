@@ -13,7 +13,7 @@ open import Cat.Prelude
 module Algebra.Group.Ab.Abelianisation where
 ```
 
-# Abelianisations {defines=abelianisation}
+# Abelianisations
 
 <!--
 ```agda
@@ -25,11 +25,17 @@ module _ {ℓ} (Grp : Group ℓ) where
 ```
 -->
 
-We define the **abelianisation** of a group $G$, $G^{ab}$. Rather than
-defining it a quotient group (by the commutator subgroup $[G,G]$), we
-directly define a group structure on a set-coequaliser. To emphasise the
-difference between the groups and their underlying sets, we'll write
-$G_0$ and $G^{ab}_0$ in the prose.
+:::{.definition #abelianisation}
+The **abelianisation** $G^{ab}$ of a [[group]] $G$ is the
+[[universal|free object]] [[abelian group]] with a map from $G$: that
+is, the [[reflection|reflective subcategory]] of $G$ into the category
+of abelian groups.
+:::
+
+Rather than constructing $G^{ab}$ as quotient group (by the commutator
+subgroup $[G,G]$), we directly define a group structure on a
+set-coequaliser. To emphasise the difference between the groups and
+their underlying sets, we'll write $G_0$ and $G^{ab}_0$ in the prose.
 
 ```agda
   G^ab : Type ℓ

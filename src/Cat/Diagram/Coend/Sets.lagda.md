@@ -15,7 +15,7 @@ module Cat.Diagram.Coend.Sets where
 
 # Coends in Sets {defines="coends-in-sets"}
 
-We can give an explicit construction of [coends] in the category of sets
+We can give an explicit construction of [[coends]] in the category of sets
 by taking a [coequaliser]. Intuitively, the coend should be the
 "sum of the diagonal" of a functor $\cC\op \times \cC \to \Sets$,
 which translates directly to the sigma type `Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣`.
@@ -25,8 +25,6 @@ More importantly, we run into an immediate issue when we try to prove
 that this is extranatural; we need to show that
 `F₁ (f , id) Fyx ≡ F₁ (id , f) Fyx` for all `f : Hom Y X` and
 `∣ Fyx : F₀ (X , Y) ∣`.
-
-[coends]: Cat.Diagram.Coend.html
 
 However, if we take a [coequaliser] of `Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣` both
 of these problems immediately disappear. In particular, we want to take

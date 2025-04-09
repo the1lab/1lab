@@ -24,14 +24,15 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
 
 # The covariant category of elements {defines="covariant-category-of-elements"}
 
-While the [[category of elements]] comes up most often in the context of presheaves
-(i.e., contravariant functors into $\Sets$), the construction makes sense for
-covariant functors as well.
+While the [[category of elements]] comes up most often in the context of
+presheaves (i.e., contravariant functors into $\Sets$), the construction
+makes sense for covariant functors as well.
 
 Sadly, we cannot simply reuse the contravariant construction,
 instantiating $\cC$ as $\cC\op$: the resulting category would be the
-[[opposite|opposite category]] of what we want. Indeed, in both the covariant and
-contravariant cases, we want the projection $\pi : \int F \to \cC$ to be covariant.
+[[opposite|opposite category]] of what we want. Indeed, in both the
+covariant and contravariant cases, we want the projection $\pi : \int F
+\to \cC$ to be covariant.
 
 Thus we proceed to dualise the whole construction.
 

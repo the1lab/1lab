@@ -77,6 +77,12 @@ beyond sets! We refer to a "self-isomorphism" as an
 
 [isomorphisms]: Cat.Morphism.html#isos
 
+::: popup
+The **automorphism group** of an object $X$ in some category $\cC$ is
+the [[set]] of all [[isomorphisms]] $X \cong X$, with the group
+operation being composition.
+:::
+
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ) where
   private module C = Cat C

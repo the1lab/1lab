@@ -23,13 +23,16 @@ module Order.Semilattice.Meet where
 
 # Meet semilattices {defines=meet-semilattice}
 
+::: {.popup .keep}
 A **meet semilattice** is a [[partially ordered set]] which has all
 finite [[meets]]. This means, in particular, that it has a [[top
-element]], since that is the meet of the empty family. Note that, even
-though meet-semilattices are presented as _being equipped with_ a binary
-operation $a \cap b$, this is not actual *structure* on the
-partially-ordered set: meets are uniquely determined, so "being a
-meet-semilattice" is always a [[proposition]].
+element]], since that is the meet of the empty family.
+
+Note that, even though meet-semilattices are presented as _being
+equipped with_ a binary operation $a \cap b$, this is not actual
+*structure* on the partially-ordered set: meets are uniquely determined,
+so "being a meet-semilattice" is always a [[proposition]].
+:::
 
 ```agda
 record is-meet-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where

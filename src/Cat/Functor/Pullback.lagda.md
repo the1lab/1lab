@@ -42,10 +42,12 @@ open /-Hom
 
 # Base change {defines="pullback-functor"}
 
+::: {.popup .keep}
 Let $\cC$ be a category with all [[pullbacks]], and $f : Y \to X$ a
 morphism in $\cC$. Then we have a functor $f^* : \cC/X \to \cC/Y$, called
 the **base change**, where the action on objects is given by pulling
 back along $f$.
+:::
 
 On objects, the functor maps as in the diagram below. It's a bit busy,
 so look at it in parts: On the left we have the object $K \xto{g} X$ of

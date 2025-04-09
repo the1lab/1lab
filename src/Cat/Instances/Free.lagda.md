@@ -255,13 +255,11 @@ module _ {o ℓ} (G : Graph o ℓ) where
   Path-category .assoc f g h = ++-assoc h g f
 ```
 
-Moreover, free categories are always _[gaunt]_: they are automatically
+Moreover, free categories are always _[[gaunt]]_: they are automatically
 strict and, as can be seen with a bit of work, univalent. Univalence
 follows because any non-trivial isomorphism would have to arise as a
 `cons`{.Agda}, but `cons`{.Agda} can never be `nil`{.Agda} --- which
 would be required for a composition to equal the identity.
-
-[gaunt]: Cat.Gaunt.html
 
 While types prevent us from directly stating "if a map is invertible, it
 is `nil`{.Agda}", we can nevertheless pass around some equalities to

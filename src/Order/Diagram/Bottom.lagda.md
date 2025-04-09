@@ -26,9 +26,11 @@ open Lub
 
 # Bottom elements {defines="bottom-element"}
 
-A **bottom element** in a partial order $(P, \le)$ is an element $\bot :
-P$ that is smaller than any other element of $P$. This is the same as
-being a least upper upper bound for the empty family $\bot \to P$.
+::: {.popup .keep}
+A **bottom element** in a [[partial order]] $(P, \le)$ is an element
+$\bot : P$ that is smaller than any other element of $P$. This is the
+same as being a [[least upper bound]] for the empty family $\bot \to P$.
+:::
 
 ```agda
 is-bottom : Ob → Type _
@@ -90,9 +92,9 @@ Bottom≃Lub = biimp-is-equiv! _ Lub→Bottom
 
 ## As initial objects
 
-Bottoms are the decategorifcation of [[initial objects]]; we don't need to
-require the uniqueness of the universal morphism, as we've replaced our
-hom-sets with hom-props!
+Bottom elements are the decategorifcation of [[initial objects]]; we
+don't need to require the uniqueness of the universal morphism, as we've
+replaced our hom-sets with hom-props!
 
 ```agda
 is-bottom→initial : ∀ {x} → is-bottom x → is-initial (poset→category P) x

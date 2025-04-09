@@ -47,6 +47,12 @@ under identifications (by definition), this means that any two putative
 constructions $x, y : T$ are indistinguishable --- they're really the
 same **proof**.
 
+::: popup
+A type $P$ is a **proposition** (or **of h-level $1$**, or a
+**$(-1)$-type**) when all of its inhabitants are identical, i.e. when we
+have a function $p : (a\ b : P) \to a \is b$.
+:::
+
 ```agda
 is-prop : ∀ {ℓ} → Type ℓ → Type ℓ
 is-prop T = (x y : T) → x ≡ y
@@ -82,6 +88,11 @@ proposition. Types for which this statement holds are called **sets**. A
 proof that a type $T$ is a set is a licence to stop caring about *how*
 we show that $x, y : T$ are identified --- we even say that they're just
 **equal**.
+
+::: popup
+A type $A$ is a **set** (or **of h-level $2$**, or **a $0$-type**) when,
+for every $x, y : A$, the type $x \is y$ is a [[proposition]].
+:::
 
 ```agda
 is-set : ∀ {ℓ} → Type ℓ → Type ℓ
@@ -128,6 +139,12 @@ below that every proposition is a set, which means that, since the
 identity types of a proposition are all pointed, they are all
 *contractible*. Thus, the contractible types naturally fit into the
 hierarchy of h-levels.
+
+::: popup
+A type $A$ is **contractible** when there is a point $x : A$, the
+**centre of contraction**, and a function $p : (y : A) \to x \is y$
+assigning paths from $x$ to any other point; in other words, when $A$ is
+an inhabited [[proposition]].
 :::
 
 ```agda
@@ -139,6 +156,7 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
 
 open is-contr public
 ```
+:::
 
 <!--
 ```agda
@@ -157,21 +175,26 @@ is-hlevel : ∀ {ℓ} → Type ℓ → Nat → Type _
 is-hlevel A 0       = is-contr A
 is-hlevel A 1       = is-prop A
 is-hlevel A (suc n) = (x y : A) → is-hlevel (Path A x y) n
+
+_ : is-set A ≡ is-hlevel A 2
+_ = refl
 ```
 
 :::{.definition #groupoid}
 The recursive definition above agrees with `is-set`{.Agda} at level 2.
 We can also take this opportunity to define the groupoids as the types
 for which `is-hlevel`{.Agda} holds at level 3.
+
+::: popup
+A type $A$ is a **groupoid** (or **of h-level $3$**, or **a $1$-type**)
+when, for every $x, y : A$, the type $x \is y$ is a [[set]].
 :::
 
 ```agda
-_ : is-set A ≡ is-hlevel A 2
-_ = refl
-
 is-groupoid : ∀ {ℓ} → Type ℓ → Type ℓ
 is-groupoid A = is-hlevel A 3
 ```
+:::
 
 ::: warning
 The traditional numbering for h-levels says that the *sets* are at level
@@ -188,6 +211,16 @@ $n$** if `is-hlevel T n`{.Agda ident=is-hlevel} holds and, when using
 the traditional numbering, we will say that $T$ is an **$(n-2)$-type**,
 or is **$(n-2)$-truncated**. For example, sets are *of h-level $2$,* but
 are $0$-types, or $0$-truncated.
+:::
+
+::: popup
+A type $A$ is of **h-level $0$** if it is contractible; of **h-level
+$1$** if it is a [[proposition]]; and, for numbers starting from two,
+of **h-level $n$** if all of its identity types are of h-level $(n-1)$.
+
+If $A$ is of h-level $(n + 2)$, we also say that $A$ is
+**$n$-truncated,** or an **$n$-type**. For example, the sets (types of
+h-level $2$) are the $0$-types, or $0$-truncated types.
 :::
 
 ## Examples

@@ -22,8 +22,10 @@ module _ {o h} (C : Precategory o h) where
 
 # Zero objects {defines="zero-object"}
 
-In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
+::: {.popup .keep}
+In some categories, [[initial]] and [[terminal]] objects
 coincide. When this occurs, we call the object a **zero object**.
+:::
 
 ```agda
   record is-zero (ob : Ob) : Type (o ⊔ h) where
@@ -49,9 +51,10 @@ coincide. When this occurs, we call the object a **zero object**.
 ```
 
 ::: {.definition #zero-morphism}
-A curious fact about zero objects is that their existence implies that
-every hom set is inhabited! Between any objects $x$ and $y$ the morphism
-$0 = ¡ \circ ! : x \to y$ is called the **zero morphism**.
+If $\cC$ has a [[zero object]] $\emptyset$, then every $\hom$-set
+$\cC(x, y)$ is [[pointed]], by the composite $$x \xto{!} \emptyset
+\xto{¡} y$$; we refer to a map which factors through a zero object as a
+**zero morphism**.
 :::
 
 ```agda

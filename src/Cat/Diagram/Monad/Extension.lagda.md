@@ -45,16 +45,18 @@ that characterises a monad. This has a couple of immediate benefits:
    systems as a special case of relative extension systems!].
 
 With that bit of motivation out of the way, we shall proceed to define
-extension systems. An extension system consists of:
+extension systems. An extension system consists of
 
-1. A mapping of objects, $M : \cC \to \cC$; and
+::: popup
+An **extension system** on a category $\cC$ consists of
 
-2. A family of morphisms $\eta_X : \cC(X, MX)$, called the **unit**
+1. a mapping of objects, $M : \cC \to \cC$; and
+2. a family of morphisms $\eta_X : \cC(X, MX)$, called the **unit**
    of the extension system; and
-
-3. The extension operation, $(-)^{M} : \cC(X,MY) \to \cC(MX, MY)$.
-Gesturing towards the "monads" found in functional programming, we will
-call this operation `bind`.
+3. the extension operation, $(-)^{M} : \cC(X,MY) \to \cC(MX, MY)$.
+   Gesturing towards the "monads" found in functional programming, we will
+   call this operation **bind**.
+:::
 
 Note that we do not require the mapping of objects to be functorial, nor
 the do we require the unit to be natural. Instead, we impose 3 equations
@@ -62,10 +64,16 @@ on this structure:^[contrast this with the 7 equations required for a
 monad: 2 for functoriality, 2 for naturality, and 3 for
 unitality/associativity]
 
+::: popup
+
+These operations must obey the following laws:
+
 1. For every $X : \cC$, we must have $(\eta_X)^M = \id_{MX}$;
 2. For every $f : \cC(X, MY)$, we must have $f^M \circ \eta_X = f$; and
 3. For every $f : \cC(Y, MX)$, and $g : \cC(X, MY)$, we must have
    $f^M \circ g^M = (f^M \circ g)^M$.
+
+:::
 
 For reasons of generality, we shall define extension systems as
 [[relative extension systems]], along the identity functor. Even though
@@ -241,8 +249,16 @@ $\nu : \cC(A, X) \to \cC(MA, X)$. Intuitively, this operation lets us
 
 This operation must satisfy a pair of equations:
 
+::: popup
+
+An **algebra over the extension system** $E$ is an object $X : \cC$
+equipped with a function $\cC(A, X) \to \cC(MA, X)$ satisfying the
+equations
+
 1. For every $f : \cC(A, X)$, we have $\nu(f) \circ \eta_{A} = f$; and
 2. For every $f : \cC(B, X)$, and $g : \cC(A, MB)$, we have $\nu(f) \circ g^M = \nu(\nu f \circ g)$.
+
+:::
 
 As with extension systems, we define extension algebras in terms of
 [[relative extension algebras]].

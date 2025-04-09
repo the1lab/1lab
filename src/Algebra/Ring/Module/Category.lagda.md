@@ -183,11 +183,11 @@ R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = ext λ x →
 
 ## Finite biproducts
 
-Let's now prove that $R$-Mod is a preadditive category. This is exactly
-as in $\Ab$: The zero object is the zero group, equipped with its unique
-choice of $R$-module structure, and direct products $M \oplus N$ are
-given by direct products of the underlying groups $M_G \oplus N_G$ with
-the canonical choice of $R$-module structure.
+Let's now prove that $R$-Mod is an [[additive category]]. This is
+exactly as in $\Ab$: The [[zero object]] is the [[zero group]], equipped
+with its unique choice of $R$-module structure, and direct products $M
+\oplus N$ are given by direct products of the underlying groups $M_G
+\oplus N_G$ with the canonical choice of $R$-module structure.
 
 The zero object is simple, because the unit type is so well-behaved^[and
 `Lift` types, too] when it comes to definitional equality: Everything is

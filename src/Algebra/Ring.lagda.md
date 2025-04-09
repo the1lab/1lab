@@ -34,12 +34,20 @@ include square matrices (with values in a ring) and the integral
 cohomology ring of a topological space: that these are so far from being
 "number-like" indicates the incredible generality of rings.
 
+::: {.popup .keep}
 A **ring** is an [[abelian group]] $R$ (which we call the **additive
 group** of $R$), together with the data of a monoid on $R$ (the
 **multiplicative monoid**), where the multiplication of the monoid
-_distributes over_ the addition. We'll see why this compatibility
-condition is required afterwards. Check out what it means for a triple
-$(1, *, +)$ to be a ring structure on a type:
+_distributes over_ the addition, i.e. where we have
+$$\begin{align*}
+x(y + z) &= xy + xz \\
+(y + z)x &= yx + zx\text{.}
+\end{align*}$$
+:::
+
+We'll see why this compatibility condition is required afterwards. Check
+out what it means for a triple $(1, *, +)$ to be a ring structure on a
+type:
 
 ```agda
 record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type ℓ where

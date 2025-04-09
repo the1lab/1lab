@@ -109,12 +109,19 @@ unquoteDef Free-elim-prop = make-elim-with (default-elim-visible into 1)
 
 We now prove the universal property of `Free-group`{.Agda}, or, more
 specifically, of the map `inc`{.Agda}: It gives a [[universal way of
-mapping|universal-morphism]] from the category of sets to an object in the category of
-groups, in that any map from a set to (the underlying set of) a group
-factors uniquely through `inc`{.Agda}. To establish this result, we
-first implement a helper function, `fold-free-group`{.Agda}, which,
-given the data of where to send the generators of a free group,
-determines a group homomorphism.
+mapping|universal-morphism]] from the category $\Sets$ to an object in
+the category of [[groups]], in that any map from a set to (the
+underlying set of) a group factors uniquely through `inc`{.Agda}. To
+establish this result, we first implement a helper function,
+`fold-free-group`{.Agda}, which, given the data of where to send the
+generators of a free group, determines a [[group homomorphism]].
+
+::: popup
+The **free group** on a [[set]] $X$ is the [[universal|universal
+morphism]] group $F(X)$ with a function `inc`{.Agda} sending $X \to
+F(X)$. In particular, any [[group homomorphism]] $h : F(X) \to G$
+factors uniquely through `inc`{.Agda}.
+:::
 
 ```agda
 fold-free-group

@@ -22,13 +22,17 @@ module _ {o h} (C : Precategory o h) where
 
 # Terminal objects {defines="terminal-object terminal"}
 
+::: {.popup .keep}
 An object $\top$ of a category $\mathcal{C}$ is said to be **terminal**
-if it admits a _unique_ map from any other object:
+if it admits a _unique_ map $! : X \to \top$ into any other object.
 
 ```agda
   is-terminal : Ob → Type _
   is-terminal ob = ∀ x → is-contr (Hom x ob)
+```
+:::
 
+```agda
   record Terminal : Type (o ⊔ h) where
     field
       top : Ob

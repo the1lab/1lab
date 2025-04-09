@@ -29,10 +29,12 @@ module _ {o κ : _} (C : Precategory o κ) (c : ⌞ C ⌟) where
 
 # Sieves {defines="sieve"}
 
+::: {.popup .keep}
 Given a category $\cC$, a **sieve** $S$ on an object $c$ is a subset of
 the maps $a \to c$ closed under composition: if $f \in S$, then $(f
 \circ g) \in S$. The data of a sieve on $c$ corresponds to the data of a
 subobject of $\yo(c)$, considered as an object of $\psh(\cC)$.
+:::
 
 Here, the subset is represented as the function `arrows`{.agda}, which,
 given an arrow $f : a \to c$ (and its domain), yields a proposition

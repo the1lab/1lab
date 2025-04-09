@@ -11,7 +11,10 @@ module 1Lab.Type.Pointed where
 
 ## Pointed types {defines="pointed pointed-type pointed-map pointed-homotopy"}
 
-A **pointed type** is a type $A$ equipped with a choice of base point $\point{A}$.
+:::{.popup .keep}
+A **pointed type** is a type $A$ equipped with a choice of base point
+$\point{A}$.
+:::
 
 ```agda
 Type∙ : ∀ ℓ → Type (lsuc ℓ)

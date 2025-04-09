@@ -115,6 +115,16 @@ using `is-set→squarep`{.Agda}.
          i j
 ```
 
+:::{.popup .summary}
+The **set truncation** $\| A \|_0$ of a type $A$ is the universal
+[[set]] equipped with a map `inc`{.Agda} mapping $A \to \| A \|$.
+
+Its elimination principle says that if $P(-)$ is a family of sets over
+$\| A \|_0$, then any function $f : (a : A) \to P(\operatorname{inc} a)$
+can be extended to a section $f' : (a : \| A \|_0) \to P(a)$ satisfying
+$f'(\operatorname{inc} a) = f(a)$.
+:::
+
 # Paths in the set truncation
 
 ```agda

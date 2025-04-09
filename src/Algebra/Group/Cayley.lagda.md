@@ -16,12 +16,14 @@ open Group-on (G .snd) renaming (underlying-set to G-set)
 
 # Cayley's theorem {defines="cayleys-theorem"}
 
-Cayley's theorem says that any group $G$ admits a representation as a
-subgroup of a [[symmetric group]], specifically the symmetric group acting
-on the underlying set of $G$.
+::: {.popup .keep}
+Cayley's theorem says that any [[group]] $G$ admits a representation as a
+subgroup of a [[symmetric group]], specifically the symmetric group
+acting on the underlying [[set]] of $G$.
+:::
 
-First, recall that we get a family of equivalences $G \simeq G$ by multiplication
-on the left, the [[principal action]] of $G$ on itself:
+First, recall that we get a family of equivalences $G \simeq G$ by
+multiplication on the left, the [[principal action]] of $G$ on itself:
 
 ```agda
 Cayley : ⌞ G ⌟ → ⌞ G ⌟ ≃ ⌞ G ⌟

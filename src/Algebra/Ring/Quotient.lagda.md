@@ -28,7 +28,7 @@ private module R = Kit R
 
 # Quotient rings
 
-Let $R$ be a [[ring]] and $I \sube R$ be an ideal. Because rings have an
+Let $R$ be a [[ring]] and $I \sube R$ be an [[ideal]]. Because rings have an
 underlying [[abelian group]], the ideal $I \sube R$ determines a normal
 subgroup $I$ of $R$'s additive group, so that we may form the quotient
 group $R/I$. And since ideals are closed under multiplication^[recall

@@ -25,13 +25,16 @@ module Order.Semilattice.Join where
 
 # Join semilattices {defines=join-semilattice}
 
+::: {.popup .keep}
 A **join semilattice** is a [[partially ordered set]] which has all
 finite [[joins]]. This means, in particular, that it has a [[bottom
-element]], since that is the join of the empty family. Note that, even
-though join-semilattices are presented as _being equipped with_ a binary
-operation $a \cup b$, this is not actual *structure* on the
-partially-ordered set: joins are uniquely determined, so "being a
-join-semilattice" is always a [[proposition]].
+element]], since that is the join of the empty family.
+
+Note that, even though join-semilattices are presented as _being
+equipped with_ a binary operation $a \cup b$, this is not actual
+*structure* on the partially-ordered set: joins are uniquely determined,
+so "being a join-semilattice" is always a [[proposition]].
+:::
 
 ```agda
 record is-join-semilattice {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where

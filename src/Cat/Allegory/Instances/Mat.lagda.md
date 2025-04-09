@@ -18,11 +18,10 @@ module Cat.Allegory.Instances.Mat where
 
 Let $L$ be a [frame]: it could be the frame of opens of a locale, for
 example. It turns out that $L$ has enough structure that we can define
-an [allegory], where the objects are sets, and the morphisms $A \rel B$
+an [[allegory]], where the objects are sets, and the morphisms $A \rel B$
 are given by $A \times B$-matrices valued in $L$.
 
 [frame]: Order.Frame.html
-[allegory]: Cat.Allegory.Base.html
 
 <!--
 ```agda

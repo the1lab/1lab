@@ -18,13 +18,15 @@ module Cat.Gaunt where
 
 # Gaunt (pre)categories {defines="gaunt"}
 
+::: {.popup .keep}
 A precategory $\cC$ is **gaunt** if it is [[univalent|univalent
-category]] and [strict]: its type of objects $\rm{Ob}(\cC)$ is a set,
-and identity in $\rm{Ob}$ is equivalent to isomorphism in $\cC$. This is
-a truncation condition on the isomorphisms $a \cong b : \cC$, which must
-all be trivial.
+category]] and [[strict|strict category]]: its type of objects
+$\rm{Ob}(\cC)$ is a [[set]], and identity in $\rm{Ob}$ is equivalent to
+[[isomorphism]] in $\cC$.
 
-[strict]: Cat.Strict.html
+This imposes a truncation condition on the types of isomorphisms $a
+\cong b : \cC$, which must all be [[proposition]].
+:::
 
 ```agda
 record is-gaunt {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where

@@ -59,9 +59,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 -->
 
 One of the reasons skeletality is unnatural is it implies the category
-is [strict].
-
-[strict]: Cat.Strict.html
+is [[strict|strict category]].
 
 ```agda
   skeletal→strict : is-skeletal C → is-strict C
@@ -71,7 +69,6 @@ is [strict].
 Furthermore, skeletality does *not* imply univalence, as objects in
 $\cC$ may have non-trivial automorphisms. The [walking involution] is
 the simplest example of a non-univalent, skeletal precategory. In
-general, we prefer to work with [gaunt], not skeletal, categories.
+general, we prefer to work with [[gaunt]], not skeletal, categories.
 
 [walking involution]: Cat.Instances.Shape.Involution.html
-[gaunt]: Cat.Gaunt.html

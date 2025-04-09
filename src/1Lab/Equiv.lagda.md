@@ -34,6 +34,7 @@ that page has a formalisation of its failure.
 
 [provably not the case]: 1Lab.Counterexamples.IsIso.html
 
+:::{.definition #good-notion-of-equivalence}
 We must therefore define a property of functions which refines being an
 isomorphism but *is* an isomorphism: functions satisfying this property
 will be called equivalences. More specifically, we're looking for a
@@ -51,6 +52,7 @@ family $\isequiv(f)$ which
   and its inverse map.
 
 - and finally, is an actual [[proposition]].
+:::
 
 Put concisely, we're looking to define a [[propositional truncation]] of
 $\isiso(f)$ --- one which allows us to conveniently project out the
@@ -83,6 +85,7 @@ up by defining, and proving basic things about, isomorphisms. First, we
 define what it means for functions to be inverses of eachother, on both
 the left and the right.
 
+::: {.popup .keep}
 ```agda
 is-left-inverse : (B → A) → (A → B) → Type _
 is-left-inverse g f = (x : _) → g (f x) ≡ x
@@ -94,6 +97,7 @@ is-right-inverse g f = (x : _) → f (g x) ≡ x
 A function $g$ which is both a left- and right inverse to $f$ is called
 a **two-sided inverse** (to $f$). To say that a function is an
 isomorphism is to equip it with a two-sided inverse.
+:::
 
 ::: warning
 Despite the name `is-iso`{.Agda}, a two-sided inverse is actual *data*
@@ -213,12 +217,17 @@ conjunction of the assertions above, just packaged in a way that does
 not require us to first define [[propositional truncations]]. A function
 is an **equivalence** if all of its fibres are contractible:
 
+::: popup
+A function $f : A \to B$ is an **equivalence** if the [[fibre]] $f^*(y)$
+over each point $y : B$ is [[contractible]].
+
 ```agda
 record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   field
     is-eqv : (y : B) → is-contr (fibre f y)
 ```
+:::
 
 <!--
 ```agda

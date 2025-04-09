@@ -30,6 +30,13 @@ private variable
 
 # Colimits {defines=colimit}
 
+::: popup
+The **colimit** of a diagram $F : \cJ \to \cC$ is the [[left Kan
+extension]] of $F$ along the functor $! : \cJ \to \{*\}$. Concretely, a
+colimit for $F$ is the [[initial]] object $X : \cC$ equipped with maps
+$\psi_j : F(j) \to X$, i.e. the initial [[cocone]] under $F$.
+:::
+
 ## Idea
 
 Colimits are dual to [[limits]]; much like their duals, they generalize

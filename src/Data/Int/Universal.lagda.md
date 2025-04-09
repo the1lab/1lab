@@ -15,11 +15,19 @@ module Data.Int.Universal where
 
 # Universal property of the integers {defines="universal-property-of-the-integers"}
 
-We define and prove a type-theoretic universal property of the integers,
-which characterises them as the initial pointed set equipped with an
-auto-equivalence, in much the same way that the natural numbers are
-characterised as being the initial pointed type equipped with an
-endomorphism.
+::: popup
+The **universal property of the [[integers]]** says that the type $\bZ$
+is the [[initial]] [[pointed]] type with an auto-[[equivalence]], in
+that if $(X, *, e)$ is another such type, the space of maps $f : \bZ \to
+X$ equipped with [[paths]] $p : f(0) = *$ and [[homotopies]] $f \circ
+\operatorname{suc} = e \circ f$ is [[contractible]].
+:::
+
+We define and prove a type-theoretic universal property of the
+[[integers]], which characterises them as the [[initial]] [[pointed]]
+[[set]] equipped with an auto-[[equivalence]], in much the same way that
+the natural numbers are characterised as being the initial pointed type
+equipped with an endomorphism.
 
 ```agda
 record Integers (ℤ : Type) : Typeω where

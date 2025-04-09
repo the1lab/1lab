@@ -29,13 +29,14 @@ private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ
 ```
 -->
 
-# Subgroups
+# Subgroups {defines="subgroup"}
 
-A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
-that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since group
-homomorphisms are injective exactly when their underlying function is an
-[[embedding]], we can alternatively describe this as a condition on a
-predicate $G \to \prop$.
+::: {.popup .keep}
+A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xmono{m} G$,
+that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since
+[[group homomorphisms]] are injective exactly when their underlying
+function is an [[embedding]], we can alternatively describe this as a
+condition on a predicate $G \to \prop$.
 
 ```agda
 Subgroup : Group ℓ → Type (lsuc ℓ)
@@ -45,6 +46,7 @@ Subgroup {ℓ = ℓ} G = Subobject G
 A proposition $H : G \to \prop$ of a group $(G, \star)$ **represents a
 subgroup** if it contains the group `unit`{.Agda}, is closed under
 multiplication, and is closed under inverses.
+:::
 
 ```agda
 record represents-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where

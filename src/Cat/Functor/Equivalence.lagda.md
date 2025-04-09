@@ -24,13 +24,13 @@ open _=>_ hiding (op)
 
 # Equivalences {defines="equivalence-of-categories equivalences-of-categories"}
 
+::: {.popup .keep}
 A functor $F : \cC \to \cD$ is an **equivalence of categories**
 when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and
-counit natural transformations being [natural isomorphisms]. This
+counit natural transformations being [[natural isomorphisms]]. This
 immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
-
-[natural isomorphisms]: Cat.Functor.Naturality.html
+:::
 
 ```agda
 record is-equivalence (F : Functor C D) : Type (adj-level C D) where
@@ -518,10 +518,11 @@ is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
 
 ## Isomorphisms {defines="isomorphism-of-precategories"}
 
+::: {.popup .keep}
 Another, more direct way of proving that a functor is an equivalence of
 precategories is proving that it is an **isomorphism of precategories**:
-It's fully faithful, thus a typal equivalence of morphisms, and in
-addition its action on objects is an equivalence of types.
+It's [[fully faithful]], thus a typal equivalence of morphisms, and in
+addition its action on objects is an [[equivalence]] of types.
 
 ```agda
 record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
@@ -531,6 +532,7 @@ record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
     has-is-ff  : is-fully-faithful F
     has-is-iso : is-equiv (F .F₀)
 ```
+:::
 
 Such a functor is (immediately) fully faithful, and the inverse
 `has-is-iso`{.Agda} means that it is split essentially surjective; For

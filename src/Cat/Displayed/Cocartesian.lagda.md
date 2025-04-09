@@ -179,10 +179,8 @@ record Cocartesian-morphism
 
 As noted before, cocartesian maps the are duals to [[cartesian maps]].
 We can make this correspondence precise by showing that cartesian maps
-in the [total opposite] of $\ca{E}$ are cocartesian maps, and vice
+in the [[total opposite]] of $\ca{E}$ are cocartesian maps, and vice
 versa.
-
-[total opposite]: Cat.Displayed.Total.Op.html
 
 ```agda
 co-cartesian→cocartesian

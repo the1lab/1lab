@@ -54,6 +54,7 @@ notion of equivalence that still satisfies the three conditions? The
 answer is yes! Paradoxically, adding _more_ data to `is-iso`{.Agda}
 leaves us with a good notion of equivalence.
 
+::: {.popup .keep}
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
 A$ equipped with a [[homotopy]] $g \circ f \sim \id$. Symmetrically, a
 **right inverse** to $f$ is a function $h : B \to A$ equipped with a
@@ -68,10 +69,9 @@ rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
 ```
 
 A map $f$ equipped with a choice of left- and right- inverse is said to
-be **biinvertible**. Perhaps surprisingly, `is-biinv`{.Agda} is a [good
-notion of equivalence].
-
-[good notion of equivalence]: 1Lab.Equiv.html#equivalences
+be **biinvertible**. Perhaps surprisingly, `is-biinv`{.Agda} is a [[good
+notion of equivalence]].
+:::
 
 ```agda
 is-biinv : (A → B) → Type _

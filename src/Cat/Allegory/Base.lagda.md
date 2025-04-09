@@ -112,6 +112,18 @@ monoids.^[as a hint: _joins_ in your lattice become composition]
       → (g ∘ f) ∩ h ≤ g ∘ (f ∩ (g † ∘ h))
 ```
 
+:::{.popup .summary}
+An **allegory** $\cA$ is a locally [[thin|thin category]] [[bicategory]]
+where each of the [[posets]] $\hom_\cA(x, y)$ has [[binary meets|meet]];
+we write $x \rel y$ for $\hom_\cA(x, y)$. Additionally, $\cA$ must be
+equipped with an [[order-preserving|monotone map]] **duality**
+involution $(-)\dag$, sending $x \rel y$ to $y \rel x$, compatible with
+composition, and which satisfies the **modular law**
+$$
+(g \circ f) \cap h \le g \circ (f \cap (g\dag \circ h))
+$$.
+:::
+
 ## Quick theorems
 
 The first thing we observe about allegories is a Yoneda-type lemma for

@@ -53,9 +53,12 @@ point and an endomap $X \to X$, the functor $X \mapsto A \times X + 1$
 adds an extra point and a copy of $A$, etc. Consequently, a map $\cC(F(A), A)$
 picks out a suitably structured $A$; e.g. writing a map $\cC(A + 1, A)$
 requires $A$ to be equipped with a global element and an endomap $\cC(A,A)$.
-In analogy to [[monad algebras]], a map $\cC(F(A),A)$ is called an
+
+:::{.popup .keep}
+In analogy with [[monad algebras]], a map $\cC(F(A),A)$ is called an
 **F-algebra** on $A$^[Alternatively, we can view $F$-algebras as monad
 algebras over functors that lack algebraic structure.].
+:::
 
 Likewise, a map $f : \cC(A,B)$ between two $F$-algebras $\alpha : \cC(F(A),A)$
 and $\beta : \cC(F(B), B)$ is an **F-algebra homomorphism** if it commutes
@@ -176,7 +179,7 @@ $\Sets$, this initial algebra is the natural numbers! In general, initial
 $F$-algebras are how we give a categorical semantics to non-indexed
 inductive datatypes like `Nat`{.Agda} or `List`{.Agda}.
 
-## Adámek's fixpoint theorem {defines="adameks-theorem"}
+## Adámek's fixpoint theorem
 
 Note that initial $F$-algebras need not exist for a given functor $F$.
 Nevertheless, **Adámek's fixpoint theorem** lets us construct some

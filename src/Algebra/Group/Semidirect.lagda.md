@@ -18,11 +18,12 @@ module Algebra.Group.Semidirect {ℓ} where
 
 # Semidirect products of groups {defines="semidirect-product"}
 
-Given a [[group]] $A$ [[acting|group action]] on another group $B$ (that is,
-equipped with a [[group homomorphism]] $\varphi : A \to \rm{Aut}(B)$ from $A$ to
-the [[automorphism group]] of $B$), we define the **semidirect product**
-$A \ltimes B$ as a variant of the [[direct product|direct product of groups]] $A \times B$ in which
-the $A$ component influences the multiplication of the $B$ component.
+Given a [[group]] $A$ [[acting|group action]] on another group $B$ (that
+is, equipped with a [[group homomorphism]] $\varphi : A \to \rm{Aut}(B)$
+from $A$ to the [[automorphism group]] of $B$), we define the
+**semidirect product** $A \ltimes B$ as a variant of the [[direct
+product|direct product of groups]] $A \times B$ in which the $A$
+component influences the multiplication of the $B$ component.
 
 To motivate the concept, let's consider some examples:
 

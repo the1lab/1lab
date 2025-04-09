@@ -16,12 +16,19 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Cone where
 ```
 
-# Limits via cones
+# Limits via cones {defines="cone"}
 
-As noted in the main page on [limits], most introductory material defines
+As noted in the main page on [[limits]], most introductory material defines
 limits via a mathematical widget called a **cone**.
 
-[limits]: Cat.Diagram.Limit.Base.html
+::: popup
+A **cone** over a diagram $F : \cJ \to \cC$ is an object $X : \cC$
+(the **apex**) equipped with maps $\psi_j : X \to F(j)$ such that, given
+$f : \cJ(x, y)$, we have $$F(f) \circ \psi_x = \psi_y$$.
+
+A **morphism of cones** $(X, \psi) \to (Y, \phi)$ consists of a map $f :
+X \to Y$ satisfying $$\psi_x \circ f = \phi_x$ for every $x : \cJ$.
+:::
 
 <!--
 ```agda

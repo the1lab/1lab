@@ -80,6 +80,17 @@ associativity laws exactly analogous to those of a monoid.
 
 # Algebras over a monad {defines="monad-algebra algebra-over-a-monad algebras-over-a-monad"}
 
+::: popup
+An **algebra** over a [[monad]] $M$ is an object $A : \cC$ equipped with
+an "evaluation" map $\nu : MA \to A$ satisfying the equations
+$$\begin{align*}
+  \nu \circ \eta &= \id \\
+  \nu \circ M\nu &= \nu \circ \mu
+\end{align*}$$
+expressing compatibility of $\nu$ with $M$'s unit and multiplication
+maps, respectively.
+:::
+
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the
 signature for the theory of monoids, and the [[free group|free group

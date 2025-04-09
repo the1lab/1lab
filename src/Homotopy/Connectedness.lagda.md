@@ -25,8 +25,10 @@ private variable
 
 # Connectedness {defines="connected connectedness connectivity simply-connected"}
 
+::: {.popup .keep}
 We say that a type is **$n$-connected** if its $n$-[[truncation]] is
 [[contractible]].
+:::
 
 While being $n$-[[truncated]] expresses that all homotopy groups above
 $n$ are trivial, being $n$-connected means that all homotopy groups
@@ -56,8 +58,10 @@ is-n-connected-is-prop 2     = is-contr-is-prop
 is-n-connected-is-prop (suc (suc (suc n))) = is-contr-is-prop
 ```
 
+::: {.popup .keep}
 For short, we say that a type is **connected** if it is $0$-connected, and
 **simply connected** if it is $1$-connected:
+:::
 
 ```agda
 is-connected : ∀ {ℓ} → Type ℓ → Type _

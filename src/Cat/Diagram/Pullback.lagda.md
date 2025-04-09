@@ -22,11 +22,35 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
+::: {.popup .keep}
 A **pullback** $X \times_Z Y$ of $f : X \to Z$ and $g : Y \to Z$ is the
-[[product]] of $f$ and $g$ in the category $\cC/Z$, the category of
-objects fibred over $Z$. We note that the fibre of $X \times_Z Y$ over
-some element $x$ of $Z$ is the product of the fibres of $f$ and $g$ over
-$x$; Hence the pullback is also called the **fibred product**.
+[[product]] of $f$ and $g$ in the [[slice category]] $\cC/Z$, the
+category of objects fibred over $Z$. We note that the [[fibre]] of $X
+\times_Z Y$ over some element $x$ of $Z$ is the product of the fibres of
+$f$ and $g$ over $x$; Hence the pullback is also called the **fibred
+product**.
+:::
+
+::: popup-only
+Put another way, the pullback $X \times_Z Y$ is the [[terminal]] object
+of $\cC$ equipped with maps $X \xot{p} X \times_Z Y \xto{q} Y$ making
+the square
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  {X \times_Z Y} \&\& X \\
+  \\
+  X \&\& Z
+  \arrow["p", from=1-1, to=1-3]
+  \arrow["q"', from=1-1, to=3-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  \arrow["f", from=1-3, to=3-3]
+  \arrow["g"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+commute.
+:::
 
 ```agda
   record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)

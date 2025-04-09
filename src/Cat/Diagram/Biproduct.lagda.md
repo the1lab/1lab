@@ -46,19 +46,29 @@ and are written $A \oplus B$.
 ~~~
 
 Following [@KarvonenBiproducts], we can define what it means to be a
-biproduct in a general category:
-we say that a diagram like the one above is a biproduct diagram if
-$(A \oplus B, \pi_1, \pi_2)$ is a product diagram, $(A \oplus B, \iota_1, \iota_2)$
-is a coproduct diagram, and the following equations relating the product
-projections and coproduct injections hold:
+biproduct in a general category: we say that a diagram like the one
+above is a biproduct diagram if $(A \oplus B, \pi_1, \pi_2)$ is a
+product diagram, $(A \oplus B, \iota_1, \iota_2)$ is a coproduct
+diagram, and the following equations relating the product projections
+and coproduct injections hold:
+
+::: popup
+A **biproduct** of objects $A$ and $B$ consists of an object $A \oplus
+B$ equipped with projections $\pi_1 : A \otimes B \to A$ (resp. $\pi_2 :
+A \otimes B \to B$) and coprojections $\iota_1 : A \to A \otimes B$
+(resp. $\iota_2 : B \to A \otimes B$), compatible in the sense that the
+equations
 
 $$
 \begin{align*}
-\pi_1 \circ \iota_1 &\equiv \id_A \\
-\pi_2 \circ \iota_2 &\equiv \id_B \\
-\iota_1 \circ \pi_1 \circ \iota_2 \circ \pi_2 &\equiv \iota_2 \circ \pi_2 \circ \iota_1 \circ \pi_1
+\pi_1 \circ \iota_1 &= \id_A \\
+\pi_2 \circ \iota_2 &= \id_B \\
+\iota_1 \circ \pi_1 \circ \iota_2 \circ \pi_2 &= \iota_2 \circ \pi_2 \circ \iota_1 \circ \pi_1
 \end{align*}
 $$
+
+are satisfied.
+:::
 
 ```agda
   record is-biproduct {A B P}
@@ -118,9 +128,10 @@ biproducts) is called **semiadditive**.
 ```
 
 As the name hints, every [[additive category]] is semiadditive.
-However, quite surprisingly, it turns out that the structure^[Really *property*, in a univalent category.]
-of a semiadditive category is already enough to define an enrichment of
-$\cC$ in *commutative monoids*!
+However, quite surprisingly, it turns out that the structure^[Really
+*property*, in a univalent category.] of a semiadditive category is
+already enough to define an enrichment of $\cC$ in *commutative
+monoids*!
 
 <!--
 ```agda
