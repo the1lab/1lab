@@ -31,6 +31,14 @@ div.hover-popup, div.hover-popup.sourceCode {
   width: fit-content;
 
   margin-left: 1.25em;
+
+  > *, > div.diagram-container {
+    margin-block: 0.5em;
+  }
+
+  div.diagram-container img.diagram {
+    height: calc(0.75 * var(--height));
+  }
 }
 
 

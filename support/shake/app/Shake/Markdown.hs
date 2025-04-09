@@ -282,11 +282,13 @@ buildMarkdown modname input output = do
     Text.writeFile output $ renderHTML5 tags
     encodeFile ("_build/search" </> modname <.> "json") search
 
-  for_ (Map.toList defs <> Map.toList defs') \(key, bs) -> traced "writing fragment" do
-    text <- either (fail . show) pure =<<
-      runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
+  for_ (Map.toList defs <> Map.toList defs') \(key, bs) -> do
+    (key, _) <- getWikiLinkUrl key
+    traced "writing fragment" do
+      text <- either (fail . show) pure =<<
+        runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
 
-    Text.writeFile ("_build/html/fragments" </> Text.unpack (getMangled key) <.> "html") text
+      Text.writeFile ("_build/html/fragments" </> Text.unpack key <.> "html") text
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -345,7 +347,7 @@ patchInline _ h = pure h
 data MarkdownState = MarkdownState
   { mdReferences  :: [Val Text]
     -- ^ List of references extracted from Pandoc's "reference" div.
-  , mdFragments   :: Map.Map Mangled [Block]
+  , mdFragments   :: Map.Map Text [Block]
     -- ^ List of definition blocks
   }
   deriving (Show)
@@ -377,7 +379,7 @@ patchBlock _ _ (Header i a@(ident, _, kv) inl) = do
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
 patchBlock _ mod (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
-    digest = take 12 . showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
+    digest = shortDigest contents
     title = fromMaybe "commutative diagram" (lookup "title" attrs)
 
     lfn = mod </> digest <.> "light.svg"
@@ -430,28 +432,37 @@ patchBlock _ _ (Div ("refs", _, _) body) = do
 
 patchBlock _ _ b@(Div (id, cls, kv) bs) | "definition" `elem` cls, not (Text.null id) = do
   let
-    isfn (Note _) = True
-    isfn _        = False
 
-    sel (Div (_, cls, _) bs) | "popup" `elem` cls = Unfurl True bs
+    sel (Div (_, cls, _) bs)
+      | "popup" `elem` cls || "popup-only" `elem` cls = Unfurl True bs
     sel x@Para{} = Unfurl False []
     sel x        = Unfurl False [x]
 
     Unfurl hasU blks = foldMap sel bs
-    frag = walk (filter (not . isfn)) if hasU then blks else bs
+    frag = walk (filter (not . isFootnote)) if hasU then blks else bs
 
   Div (id, cls, kv) bs <$
-    tell mempty { mdFragments = Map.singleton (mangleLink id) frag }
+    tell mempty { mdFragments = Map.singleton id frag }
 
 patchBlock _ _ h = pure h
+
+isFootnote :: Inline -> Bool
+isFootnote (Note _) = True
+isFootnote _        = False
 
 -- | Remove any paragraphs that occur under a div with class @popup@.
 blankPopup :: [Block] -> [Block]
 blankPopup = concatMap go where
-  ispara (Para _) = True
-  ispara _        = False
+  ispara Para{} = True
+  ispara _      = False
 
-  go (Div (_, [cls], _) bs) | "popup" == cls = filter (not . ispara) bs
+  iscode CodeBlock{} = True
+  iscode _ = False
+
+  go (Div (_, [cls], _) bs)
+    | "popup"      == cls = filter (not . ispara) bs
+    | "popup-only" == cls, any iscode bs = error "code block can not appear under popup-only div."
+    | "popup-only" == cls = []
   go b = pure b
 
 
@@ -605,15 +616,15 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
   renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
 
 -- | Collect fragments associated with popups.
-headerPopups :: [Block] -> Map.Map Mangled [Block]
+headerPopups :: [Block] -> Map.Map Text [Block]
 headerPopups = go Nothing where
   go h (Header _ (id, _, kv) _:bs)
-    | isJust (lookup "defines" kv) = go (Just id) bs
-    | otherwise                    = go h bs
+    | Just k <- lookup "defines" kv, w:_ <- Text.words k = go (Just w) bs
+    | otherwise                     = go h bs
 
   go hdr (Div (_, cls, []) bs:bss)
-    | Just hdr <- hdr, "popup" `elem` cls
-    = Map.insertWith (<>) (mangleLink hdr) bs $ go (Just hdr) bss
+    | Just hdr <- hdr, "popup" `elem` cls || "popup-only" `elem` cls
+    = Map.insertWith (<>) hdr (walk (filter (not . isFootnote)) bs) $ go (Just hdr) bss
 
     | otherwise = go hdr bss
 

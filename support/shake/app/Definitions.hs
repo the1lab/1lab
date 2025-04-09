@@ -17,16 +17,20 @@ import Agda.Utils.Impossible
 import Control.Monad.IO.Class
 import Control.DeepSeq
 import Control.Arrow (first)
+import Control.Monad
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+import qualified Data.Set as Set
+import Data.Traversable
 import Data.Map.Strict (Map)
 import Data.Function
 import Data.Hashable
 import Data.Foldable
 import Data.Monoid ( Endo(..) )
 import Data.Binary ( Binary )
+import Data.Maybe
 import Data.List (intersperse, sortOn, groupBy)
 import Data.Text (Text)
 import Data.Char
@@ -43,6 +47,7 @@ import Text.Pandoc.Walk
 import Text.Pandoc
 
 import {-# SOURCE #-} Shake.Markdown (readLabMarkdown)
+import Shake.Digest (shortDigest)
 
 newtype Mangled = Mangled { getMangled :: Text }
   deriving (Show, Eq, Ord, Generic)
@@ -154,7 +159,9 @@ glossaryRules = do
   _ <- addOracle \(LinkTargetQ target) -> do
     glo <- getEntries <$> askOracle GlossaryQ
     case Map.lookup (mangleLink target) glo of
-      Just def -> pure (definitionAnchor def, definitionTarget def)
+      Just def ->
+        let trg = definitionTarget def
+         in pure (Text.pack (shortDigest trg), definitionTarget def)
       Nothing  -> error $
         "Unknown wiki-link target: " ++ Text.unpack target
 
@@ -182,6 +189,17 @@ glossaryRules = do
     liftIO $ for_ entries $ \(mod, defs) -> do
       Text.putStr $ Text.pack (dropExtension mod) <> ":\n"
         <> Text.unlines (aliases <$> bykey defs)
+
+  phony "popup-todo" do
+    entries <- Map.elems . getEntries <$> askOracle GlossaryQ
+
+    keep <- for entries \def -> do
+      let d = shortDigest (definitionTarget def)
+      x <- doesFileExist $ "_build/html/fragments" </> d <.> "html"
+      pure $ definitionTarget def <$ guard (not x)
+
+    liftIO . Text.writeFile "todo" $ Text.unlines $ Set.toList $
+      foldMap (foldMap Set.singleton) (keep :: [Maybe Text])
 
   pure ()
 
