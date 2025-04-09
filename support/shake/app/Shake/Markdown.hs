@@ -253,9 +253,10 @@ buildMarkdown modname input output = do
   baseUrl <- getBaseUrl
 
   filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl modname)) blocks
-  let (bs, mss)                     = unzip filtered
-      MarkdownState references defs = fold mss
-      markdown                      = Pandoc meta bs
+  let
+    (bs, fold -> MarkdownState references defs) = unzip filtered
+    defs'    = headerPopups bs
+    markdown = walk blankPopup $ Pandoc meta bs
 
   digest <- do
     cssDigest     <- getFileDigest "_build/html/css/default.css"
@@ -281,7 +282,7 @@ buildMarkdown modname input output = do
     Text.writeFile output $ renderHTML5 tags
     encodeFile ("_build/search" </> modname <.> "json") search
 
-  for_ (Map.toList defs) \(key, bs) -> traced "writing fragment" do
+  for_ (Map.toList defs <> Map.toList defs') \(key, bs) -> traced "writing fragment" do
     text <- either (fail . show) pure =<<
       runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
 
@@ -344,9 +345,10 @@ patchInline _ h = pure h
 data MarkdownState = MarkdownState
   { mdReferences  :: [Val Text]
     -- ^ List of references extracted from Pandoc's "reference" div.
-  , mdDefinitions :: Map.Map Mangled [Block]
+  , mdFragments   :: Map.Map Mangled [Block]
     -- ^ List of definition blocks
   }
+  deriving (Show)
 
 instance Semigroup MarkdownState where
   MarkdownState a b <> MarkdownState a' b' = MarkdownState (a <> a') (b <> b')
@@ -366,10 +368,11 @@ patchBlock
   -> Block
   -> f Block
 -- Make all headers links, and add an anchor emoji.
-patchBlock _ _ (Header i a@(ident, _, _) inl) = pure $ Header i a
-  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
-  : inl
-  ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
+patchBlock _ _ (Header i a@(ident, _, kv) inl) = do
+  pure $ Header i a $
+    htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
+    : inl
+    ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
 
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
 patchBlock _ mod (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
@@ -425,13 +428,40 @@ patchBlock _ _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock _ _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
+patchBlock _ _ b@(Div (id, cls, kv) bs) | "definition" `elem` cls, not (Text.null id) = do
   let
     isfn (Note _) = True
-    isfn _ = False
-  b <$ tell (MarkdownState mempty (Map.singleton (mangleLink id) (walk (filter (not . isfn)) bs)))
+    isfn _        = False
+
+    sel (Div (_, cls, _) bs) | "popup" `elem` cls = Unfurl True bs
+    sel x@Para{} = Unfurl False []
+    sel x        = Unfurl False [x]
+
+    Unfurl hasU blks = foldMap sel bs
+    frag = walk (filter (not . isfn)) if hasU then blks else bs
+
+  Div (id, cls, kv) bs <$
+    tell mempty { mdFragments = Map.singleton (mangleLink id) frag }
 
 patchBlock _ _ h = pure h
+
+-- | Remove any paragraphs that occur under a div with class @popup@.
+blankPopup :: [Block] -> [Block]
+blankPopup = concatMap go where
+  ispara (Para _) = True
+  ispara _        = False
+
+  go (Div (_, [cls], _) bs) | "popup" == cls = filter (not . ispara) bs
+  go b = pure b
+
+
+data Unfurl = Unfurl { hasUnfurl :: Bool, popupBlocks :: [Block] }
+
+instance Semigroup Unfurl where
+  Unfurl h b <> Unfurl h' b' = Unfurl (h || h') (b <> b')
+
+instance Monoid Unfurl where
+  mempty = Unfurl False []
 
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown
@@ -573,6 +603,22 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
   -- point, that's exactly what we want!
   write = writePlain def{ writerExtensions = enableExtension Ext_raw_html (writerExtensions def) }
   renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
+
+-- | Collect fragments associated with popups.
+headerPopups :: [Block] -> Map.Map Mangled [Block]
+headerPopups = go Nothing where
+  go h (Header _ (id, _, kv) _:bs)
+    | isJust (lookup "defines" kv) = go (Just id) bs
+    | otherwise                    = go h bs
+
+  go hdr (Div (_, cls, []) bs:bss)
+    | Just hdr <- hdr, "popup" `elem` cls
+    = Map.insertWith (<>) (mangleLink hdr) bs $ go (Just hdr) bss
+
+    | otherwise = go hdr bss
+
+  go hdr (b:bs) = go hdr bs
+  go hdr []     = mempty
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"

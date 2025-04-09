@@ -26,9 +26,9 @@ div.hover-popup, div.hover-popup.sourceCode {
 }
 
 .text-popup {
-  min-width: 22em;
-  max-width: 26em;
-  width: min-content;
+  min-width: #{$text-popup-width};
+  max-width: #{$text-popup-width * $text-popup-grow};
+  width: fit-content;
 
   margin-left: 1.25em;
 }
