@@ -258,7 +258,7 @@ projecting the corresponding components from the given $W$-algebra.
 -->
 
 We will now show that `W'` satisfies the induction principle of $W_A B$.
-To that end, suppose we have a predicate $P : W' \to \ty$, the
+To that end, suppose we have a predicate $P : W' \to \type$, the
 *motive* for induction, and a function — the *method* $m$ — showing
 $P(\rm{sup}(a, f))$ given the data of the constructor $a : A$, $f :
 (b : B\, a) \to W'$, and the induction hypotheses $f' : (b : B\, a) \to

@@ -105,8 +105,8 @@ OFEs: because Agda is, by default, a predicative theory, we run into
 some issues with universe levels when defining the indexed product.
 Let's see them:
 
-Suppose we have an index type $I : \ty$ in the $i$th universe, and
-a family $P_i : \ty$, valued now in the $p$th universe. Moreover,
+Suppose we have an index type $I : \type$ in the $i$th universe, and
+a family $P_i : \type$, valued now in the $p$th universe. Moreover,
 the family $P_i$ should be pointwise an OFE, with nearness relation
 living in, let's say, the $r$th universe. We will define the relation on
 $\prod P$ to be

@@ -49,7 +49,6 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
-:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
@@ -57,7 +56,6 @@ isomorphism at the 0-level, and what's generally referred to as
 relations, by making some components directed: This starts at the level
 of categories, where "directing" an equivalence gives us the concept of
 **adjunction**.
-:::
 
 An _equivalence of categories_ between $\cC$ and $\cD$ is given by
 a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
@@ -128,6 +126,15 @@ commutative diagrams:
 ~~~
 
 </div>
+
+:::{.definition .summary #adjoint-functor alias="adjunction left-adjoint right-adjoint adjoint"}
+A pair of functors $F : \cC \to \cD$, $G : \cD \to \cC$ are
+**adjoints**, written $F \dashv G$, when we have natural transformations
+$\eta : \Id \To GF$ and $\eps : FG \To \Id$ satisfying the **triangle
+identities** $\eps \circ F\eta = \id$ and $R\eps \circ \eta = \id$. In
+this situation, $F$ is the **left adjoint** and $G$ is the **right
+adjoint**.
+:::
 
 <!--
 ```agda

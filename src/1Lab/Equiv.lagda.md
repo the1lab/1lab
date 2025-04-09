@@ -910,17 +910,17 @@ postcomposition with $p\inv$, so it too is an equivalence.
 ### The Lift type
 
 Because Agda's universes are not *cumulative*, we can not freely move a
-type $A : \ty_0$ to conclude that $A : \ty_1$, or to higher universes.
+type $A : \type_0$ to conclude that $A : \type_1$, or to higher universes.
 To work around this, we have a `Lift`{.Agda} type, which, given a small
-type $A : \ty_i$ and some universe $j \gt i$, gives us a _name_ for $A$
-in $\ty_j$. To know that this operation is coherent, we can prove that
+type $A : \type_i$ and some universe $j \gt i$, gives us a _name_ for $A$
+in $\type_j$. To know that this operation is coherent, we can prove that
 the lifting map
 
 $$
 A \to \operatorname{Lift}_j A
 $$
 
-is an equivalence: the name of $A$ in $\ty_j$ really is equivalent to
+is an equivalence: the name of $A$ in $\type_j$ really is equivalent to
 the type we started with. Because `Lift`{.Agda} is a very well-behaved
 record type, the proof that this is an equivalence looks very similar to
 the proof that the identity function is an equivalence:

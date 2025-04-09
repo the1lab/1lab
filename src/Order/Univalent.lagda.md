@@ -63,7 +63,7 @@ constructed. We do this by an explicit cubical construction. It will
 suffice to construct a term
 
 $$
-i : \bI, x : \rm{ob}(i), y : \rm{ob}(i) \vdash \rm{order}_i(x,y) : \ty
+i : \bI, x : \rm{ob}(i), y : \rm{ob}(i) \vdash \rm{order}_i(x,y) : \type
 $$
 
 which reduces to $x \le_P y$ when $i = i0$ (resp. $x \le_Q y$ when $i =

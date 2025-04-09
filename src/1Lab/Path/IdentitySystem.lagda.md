@@ -19,7 +19,7 @@ open import Data.Dec.Base
 module 1Lab.Path.IdentitySystem where
 ```
 
-# Identity systems {defines=identity-system}
+# Identity systems
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full
@@ -53,6 +53,17 @@ record
 
 open is-identity-system public
 ```
+
+:::{.definition .summary #identity-system}
+A type family $R : A \to A \to \type$, equipped with reflexivity
+witness $r : \forall\ a,\ R\ a\ a$, is an **identity system** when we are
+given a map
+$$
+\operatorname{to-path} : \forall\ a\ b,\ R\ a\ b \to a \is b
+$$
+and for every $p : R\ a\ b$ an identification, over
+$\operatorname{to-path}(p)$, between $r(a)$ and $p$.
+:::
 
 As mentioned before, the data of an identity system gives us exactly
 what is required to prove J for the relation $R$. This is essentially

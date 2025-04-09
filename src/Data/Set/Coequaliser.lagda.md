@@ -253,7 +253,7 @@ instance
 
 With dependent sums, we can recover quotients as a special case of
 coequalisers. Observe that, by taking the total space of a relation $R :
-A \to A \to \ty$, we obtain two projection maps which have as image all
+A \to A \to \type$, we obtain two projection maps which have as image all
 of the possible related elements in $A$. By coequalising these
 projections, we obtain a space where any related objects are identified:
 the **quotient** $A/R$.
@@ -362,7 +362,7 @@ Quot-op₂ Rr Sr op resp =
 
 ## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
-The most well-behaved case of quotients is when $R : A \to A \to \ty$
+The most well-behaved case of quotients is when $R : A \to A \to \type$
 takes values in propositions, is reflexive, transitive and symmetric (an
 equivalence relation). In this case, we have that the quotient $A / R$
 is **effective**: The map `quot`{.Agda} is an equivalence.

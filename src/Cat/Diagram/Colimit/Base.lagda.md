@@ -549,8 +549,8 @@ prove that any non-thin categories have arbitrary colimits.
 
 Instead, categories are cocomplete _with respect to_ a pair of
 universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
-for any diagram indexed by a precategory with objects in $\ty\ o$ and
-morphisms in $\ty\ \ell$.
+for any diagram indexed by a precategory with objects in $\type\ o$ and
+morphisms in $\type\ \ell$.
 
 ```agda
 is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _

@@ -667,7 +667,7 @@ prove that any non-thin categories have arbitrary limits.
 
 Instead, categories are complete _with respect to_ a pair of universes:
 A category is **$(o, \ell)$-complete** if it has limits for any diagram
-indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
+indexed by a precategory with objects in $\type\ o$ and morphisms in $\type\
 \ell$.
 
 ```agda

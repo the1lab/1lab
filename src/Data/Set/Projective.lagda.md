@@ -83,8 +83,8 @@ sets-projective→surjections-split A-set A-pro E-set f =
 
 ## Closure of set-projectivity
 
-Set-projective types are closed under Σ-types. Suppose that $A : \ty$ is a
-set-projective type, and that $B : A \to \ty$ is a family of set-projective
+Set-projective types are closed under Σ-types. Suppose that $A : \type$ is a
+set-projective type, and that $B : A \to \type$ is a family of set-projective
 types, and let $P : \Sigma\ A\ B \to \set$ be a family of merely inhabited sets.
 Note that $(b : B(a)) \to P(a, b)$ is a $B(a)$-indexed family of merely
 inhabited sets for every $a$, so its product must also be inhabited by projectivity

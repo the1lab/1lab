@@ -175,7 +175,7 @@ turn out to be very useful: they're **dependent paths**. We'll have
 them with another emergent notion of dependent path, but it's important
 to mention the primitive notion now.
 
-If we have a *line* of types $A : \bI \to \ty$, and inhabitants $a :
+If we have a *line* of types $A : \bI \to \type$, and inhabitants $a :
 A(\iZ)$ and $b : A(\iO)$, we can form the **dependent** path space
 between them: the type $\PathP{A}{a}{b}$, which in the code is written
 `PathP A a b`. Here, inferring the line $A$ is basically always
@@ -246,7 +246,7 @@ below.
 \draw plot[smooth cycle] coordinates
   {(0, -1.5) (-3, -0.75) (-2.5, 0.25) (3, 1.25) (3.5, 0.25)};
 
-\node at (2.75, -1) {$\ty$};
+\node at (2.75, -1) {$\type$};
 
 \node (A) at (0.275, -0.375) {$A$};
 

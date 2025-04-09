@@ -323,8 +323,8 @@ $$,
 
 using [image resizing] to work around the following slight size issue:
 the traditional construction of images lives in the largest universe
-between the domain and codomain of the function. Since $A : \ty_\ell$
-and $V : \ty_{\rm{lsuc}\ \ell}$, the image of $f$ would live in
+between the domain and codomain of the function. Since $A : \type_\ell$
+and $V : \type_{\rm{lsuc}\ \ell}$, the image of $f$ would live in
 $\rm{lsuc}\ \ell$, which would preclude it from being the type of
 members of a set.
 

@@ -222,11 +222,11 @@ $$
 $$
 
 so we will, for every $x : A$, define a type family $\mathrm{code}(x) :
-\|A\|_{2+n} \to \ty$, where the fibre of $\mathrm{code}(x)$ over
+\|A\|_{2+n} \to \type$, where the fibre of $\mathrm{code}(x)$ over
 $\rm{inc}(y)$ should be $\|x \equiv y\|_{1+n}$. However, the induction
 principle for $\|A\|_{2+n}$ only allows us to map into $(2+n)$-types,
-while $\ty$ itself is not an $n$-type for any $n$. We salvage our
-definition by instead mapping into $(1+n)\text{-}\ty$, which _is_ a
+while $\type$ itself is not an $n$-type for any $n$. We salvage our
+definition by instead mapping into $(1+n)\text{-}\type$, which _is_ a
 $(2+n)$-type.
 
 ```agda

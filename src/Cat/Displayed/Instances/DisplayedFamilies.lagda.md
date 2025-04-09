@@ -50,7 +50,7 @@ If we wish to generalize some 1-categorical phenomena, we will need
 a version of the family fibration that represents families
 **internal** to a fibration, where objects should be $\cB$-indexed
 families of $\cE$ objects. To construct such a fibration, we recall
-that every family $P : X \to \ty$ is equivalent to the total space
+that every family $P : X \to \type$ is equivalent to the total space
 of its fibres (see [here] for more details). It's quite rare for
 $\cB$ to have something that looks like a universe, but it **does**
 have enough structure to talk about fibres! We can consider a morphism

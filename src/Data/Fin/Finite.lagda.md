@@ -81,7 +81,7 @@ $n!$ equivalences $A \simeq [n]$. This isn't an idle concern: if we
 define the type of finite sets to be, e.g.,
 
 $$
-\sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
+\sum_{X : \type} \sum_{n : \NN}\ [n] \simeq X
 $$
 
 then we end up with something with the incorrect homotopy type! We'd
