@@ -289,7 +289,7 @@ cocartesian-vertical-section-stable
   → ϕ ∘' f'' ≡[ idl _ ] f'
   → is-cocartesian f f''
 
-cocartesian-pasting
+cocartesian-cancelr
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
   → ∀ {x' y' z'} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → is-cocartesian g g'
@@ -337,9 +337,9 @@ cocartesian-vertical-section-stable cocart ret factor =
     (vertical-retract→vertical-co-section ret)
     factor
 
-cocartesian-pasting g-cocart fg-cocart =
+cocartesian-cancelr g-cocart fg-cocart =
   co-cartesian→cocartesian $
-  cartesian-pasting (ℰ ^total-op)
+  cartesian-cancell (ℰ ^total-op)
     (cocartesian→co-cartesian g-cocart)
     (cocartesian→co-cartesian fg-cocart)
 
