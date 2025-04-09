@@ -37,14 +37,16 @@ private variable
 
 # Concrete groups {defines="concrete-group"}
 
-In homotopy type theory, we can give an alternative definition of [[groups]]:
-they are the [[pointed|pointed type]], [[connected]] [[groupoids]].
-The idea is that those groupoids contain exactly the same information as their
-[[fundamental group]].
+:::{.popup .keep}
+In homotopy type theory, we can give an alternative definition of
+[[groups]]: they are the [[pointed|pointed type]], [[connected]]
+[[groupoids]]. The idea is that those groupoids contain exactly the same
+information as their [[fundamental group]].
 
-Such groups are dubbed **concrete**, because they represent the groups of symmetries
-of a given object (the base point); by opposition, "algebraic" `Group`{.Agda}s are
-called **abstract**.
+Such groups are dubbed **concrete**, because they represent the groups
+of symmetries of a given object (the base point); by opposition,
+"algebraic" `Group`{.Agda}s are called **abstract**.
+:::
 
 ```agda
 record ConcreteGroup ℓ : Type (lsuc ℓ) where
@@ -59,13 +61,14 @@ record ConcreteGroup ℓ : Type (lsuc ℓ) where
   pt = B .snd
 ```
 
-Given a concrete group $G$, the underlying pointed type is denoted $\B{G}$, by analogy
-with the [[delooping]] of an abstract group; note that, here, the delooping *is* the
-chosen representation of $G$, so `B`{.Agda} is just a record field.
-We write $\point{G}$ for the base point.
+Given a concrete group $G$, the underlying pointed type is denoted
+$\B{G}$, by analogy with the [[delooping]] of an abstract group; note
+that, here, the delooping *is* the chosen representation of $G$, so
+`B`{.Agda} is just a record field.  We write $\point{G}$ for the base
+point.
 
-Concrete groups are pointed connected types, so they enjoy the following elimination
-principle, which will be useful later:
+Concrete groups are pointed connected types, so they enjoy the following
+elimination principle, which will be useful later:
 
 ```agda
   B-elim-contr : {P : ⌞ B ⌟ → Type ℓ'}
@@ -99,8 +102,8 @@ ConcreteGroup-path {G = G} {H} p = go prop! prop! where
 ```
 -->
 
-The [[delooping]] of a group is a concrete group. In fact, we will prove later that
-*all* concrete groups arise as deloopings.
+The [[delooping]] of a group is a concrete group. In fact, we will prove
+later that *all* concrete groups arise as deloopings.
 
 ```agda
 Concrete : ∀ {ℓ} → Group ℓ → ConcreteGroup ℓ
@@ -109,8 +112,8 @@ Concrete G .has-is-connected = Deloop-is-connected
 Concrete G .has-is-groupoid = squash
 ```
 
-Another important example of a concrete group is the [[circle]]: the delooping of
-the [[integers]].
+Another important example of a concrete group is the [[circle]]: the
+delooping of the [[integers]].
 
 ```agda
 opaque
@@ -125,11 +128,12 @@ S¹-concrete .has-is-groupoid = S¹-is-groupoid
 
 ## The category of concrete groups
 
-The notion of group *homomorphism* between two groups $G$ and $H$ gets translated
-to, on the "concrete" side, [[*pointed* maps]] $\B{G} \to^\bullet \B{H}$.
+The notion of group *homomorphism* between two groups $G$ and $H$ gets
+translated to, on the "concrete" side, [[*pointed* maps]] $\B{G}
+\to^\bullet \B{H}$.
 
-The pointedness condition ensures that these maps behave like abstract group
-homomorphisms; in particular, that they form a *set*.
+The pointedness condition ensures that these maps behave like abstract
+group homomorphisms; in particular, that they form a *set*.
 
 ```agda
 ConcreteGroups-Hom-set
@@ -160,8 +164,9 @@ ConcreteGroups _ .Hom-set = ConcreteGroups-Hom-set
 
 <details>
 <summary>
-The rest of the categorical structure is inherited from pointed functions, and
-univalence follows from the [[univalence]] of the universe of groupoids.
+The rest of the categorical structure is inherited from pointed
+functions, and univalence follows from the [[univalence]] of the
+universe of groupoids.
 </summary>
 
 ```agda
@@ -190,12 +195,12 @@ ConcreteGroups-is-category {ℓ} .to-path-over im = ≅-pathp (ConcreteGroups �
 
 ## Concrete vs. abstract
 
-Our goal is now to prove that concrete groups and abstract groups are equivalent,
-in the sense that there is an [[equivalence of categories]] between `ConcreteGroups`{.Agda}
-and `Groups`{.Agda}.
+Our goal is now to prove that concrete groups and abstract groups are
+equivalent, in the sense that there is an [[equivalence of categories]]
+between `ConcreteGroups`{.Agda} and `Groups`{.Agda}.
 
-Since we're dealing with groupoids, we can use the alternative definition of
-the fundamental group that avoids set truncations.
+Since we're dealing with groupoids, we can use the alternative
+definition of the fundamental group that avoids set truncations.
 
 ```agda
 module _ (G : ConcreteGroup ℓ) where
@@ -204,11 +209,12 @@ module _ (G : ConcreteGroup ℓ) where
     public
 ```
 
-We define a [[functor]] from concrete groups to abstract groups.
-The object mapping is given by taking the `fundamental group`{.Agda ident=π₁B}.
-Given a pointed map $f : \B{G} \to^\bullet \B{H}$, we can `ap`{.Agda}ply it to a loop
-on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
-is pointed to get a loop on $\point{H}$ by [[conjugation]].
+We define a [[functor]] from concrete groups to abstract groups.  The
+object mapping is given by taking the `fundamental group`{.Agda
+ident=π₁B}.  Given a pointed map $f : \B{G} \to^\bullet \B{H}$, we can
+`ap`{.Agda}ply it to a loop on $\point{G}$ to get a loop on
+$f(\point{G})$; then, we use the fact that $f$ is pointed to get a loop
+on $\point{H}$ by [[conjugation]].
 
 ```agda
 π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)
@@ -216,8 +222,8 @@ is pointed to get a loop on $\point{H}$ by [[conjugation]].
 π₁F .F₁ (f , ptf) .fst x = conj ptf (ap f x)
 ```
 
-By some simple path yoga, this preserves multiplication, and the construction is
-functorial:
+By some simple path yoga, this preserves multiplication, and the
+construction is functorial:
 
 ```agda
 π₁F .F₁ (f , ptf) .snd .pres-⋆ x y =
@@ -232,10 +238,10 @@ functorial:
   conj ptf (ap f (conj ptg (ap g x)))         ∎
 ```
 
-We start by showing that `π₁F`{.Agda} is [[split essentially surjective]]. This is the
-easy part: to build a concrete group out of an abstract group, we simply take its
-`Deloop`{.Agda}ing, and use the fact that the fundamental group of the delooping
-recovers the original group.
+We start by showing that `π₁F`{.Agda} is [[split essentially
+surjective]]. This is the easy part: to build a concrete group out of an
+abstract group, we simply take its `Deloop`{.Agda}ing, and use the fact
+that the fundamental group of the delooping recovers the original group.
 
 <!--
 ```agda
@@ -249,22 +255,24 @@ _ = Deloop
 π₁F-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
 ```
 
-We now tackle the hard part: to prove that `π₁F`{.Agda} is [[fully faithful]].
-In order to show that the action on morphisms is an equivalence, we need a way
-of "delooping" a group homomorphism $f : \pi_1(\B{G}) \to \pi_1(\B{H})$ into a
-pointed map $\B{G} \to^\bullet \B{H}$.
+We now tackle the hard part: to prove that `π₁F`{.Agda} is [[fully
+faithful]].  In order to show that the action on morphisms is an
+equivalence, we need a way of "delooping" a group homomorphism $f :
+\pi_1(\B{G}) \to \pi_1(\B{H})$ into a pointed map $\B{G} \to^\bullet
+\B{H}$.
 
 ```agda
 module Deloop-Hom {G H : ConcreteGroup ℓ} (f : Groups ℓ .Hom (π₁B G) (π₁B H)) where
   open ConcreteGroup H using (H-Level-B)
 ```
 
-How can we build such a map? All we know about $\B{G}$ is that it is a pointed connected
-groupoid, and thus that it comes with the elimination principle `B-elim-contr`{.Agda}.
-This suggests that we need to define a type family $C : \B{G} \to \type$ such that
-$C(\point{G})$ is contractible, conclude that $\forall x. C(x)$ holds
-and extract a map $\B{G} \to^\bullet \B{H}$ from that.
-The following construction is adapted from [@Symmetry, §4.10]:
+How can we build such a map? All we know about $\B{G}$ is that it is a
+pointed connected groupoid, and thus that it comes with the elimination
+principle `B-elim-contr`{.Agda}.  This suggests that we need to define a
+type family $C : \B{G} \to \type$ such that $C(\point{G})$ is
+contractible, conclude that $\forall x. C(x)$ holds and extract a map
+$\B{G} \to^\bullet \B{H}$ from that.  The following construction is
+adapted from [@Symmetry, §4.10]:
 
 ```agda
   record C (x : ⌞ G ⌟) : Type ℓ where
@@ -275,13 +283,13 @@ The following construction is adapted from [@Symmetry, §4.10]:
       f-p : (ω : pt G ≡ pt G) (α : pt G ≡ x) → p (ω ∙ α) ≡ f · ω ∙ p α
 ```
 
-Our family sends a point $x : \B{G}$ to a point $y : \B{H}$ with a function $p$ that
-sends based paths ending at $x$ to based paths ending at $y$, with the additional
-constraint that $p$ must "extend" $f$, in the sense that a loop on the left can be
-factored out using $f$.
+Our family sends a point $x : \B{G}$ to a point $y : \B{H}$ with a
+function $p$ that sends based paths ending at $x$ to based paths ending
+at $y$, with the additional constraint that $p$ must "extend" $f$, in
+the sense that a loop on the left can be factored out using $f$.
 
-For the centre of contraction, we simply pick $p$ to be $f$, sending loops on
-$\point{G}$ to loops on $\point{H}$.
+For the centre of contraction, we simply pick $p$ to be $f$, sending
+loops on $\point{G}$ to loops on $\point{H}$.
 
 ```agda
   C-contr : is-contr (C (pt G))
@@ -323,9 +331,10 @@ We can now apply the elimination principle and unpack our data:
   f-p = c (pt G) .C.f-p
 ```
 
-In order to show that this is a delooping of $f$ (i.e. that $\Pi_1(g) \equiv f$),
-we need one more thing: that $p$ extends $g$ on the *right*. We get this essentially
-for free, by path induction, because $p(α)$ ends at $g(x)$ by definition.
+In order to show that this is a delooping of $f$ (i.e. that $\Pi_1(g)
+\equiv f$), we need one more thing: that $p$ extends $g$ on the *right*.
+We get this essentially for free, by path induction, because $p(α)$ ends
+at $g(x)$ by definition.
 
 ```agda
   p-g : (α : pt G ≡ pt G) {x' : ⌞ G ⌟} (l : pt G ≡ x')
@@ -334,8 +343,8 @@ for free, by path induction, because $p(α)$ ends at $g(x)$ by definition.
     (ap p (∙-idr _) ∙ sym (∙-idr _))
 ```
 
-Since $g$ is pointed by $p(\refl)$, this lets us conclude that we have found a
-right inverse to $\Pi_1$:
+Since $g$ is pointed by $p(\refl)$, this lets us conclude that we have
+found a right inverse to $\Pi_1$:
 
 ```agda
   f≡apg : (ω : pt G ≡ pt G) → Square (p refl) (f · ω) (ap (g .fst) ω) (p refl)
@@ -349,11 +358,13 @@ right inverse to $\Pi_1$:
   rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
 ```
 
-We are most of the way there. In order to get a proper equivalence, we must check that
-delooping $\Pi_1(f)$ gives us back the same pointed map $f$.
+We are most of the way there. In order to get a proper equivalence, we
+must check that delooping $\Pi_1(f)$ gives us back the same pointed map
+$f$.
 
-We use the same trick, building upon what we've done before: start by defining
-a family that asserts that $p_x$ agrees with $f$ *all the way*, not just on loops:
+We use the same trick, building upon what we've done before: start by
+defining a family that asserts that $p_x$ agrees with $f$ *all the way*,
+not just on loops:
 
 ```agda
 module Deloop-Hom-π₁F {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
@@ -379,8 +390,8 @@ This is a [[property]], and $\point{G}$ has it:
     sym (∙-unique _ (transpose (eq-paths refl)))
 ```
 
-Using the elimination principle again, we get enough information about `g` to conclude
-that it is equal to `f`, so that we have a left inverse.
+Using the elimination principle again, we get enough information about
+`g` to conclude that it is equal to `f`, so that we have a left inverse.
 
 ```agda
   c' : ∀ x → C' x
@@ -390,8 +401,8 @@ that it is equal to `f`, so that we have a left inverse.
   g≡f x = sym (c' x .fst)
 ```
 
-The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C'-contr}, but we
-need to bend the path into a `Square`{.Agda}:
+The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C'-contr},
+but we need to bend the path into a `Square`{.Agda}:
 
 ```agda
   β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
@@ -419,8 +430,8 @@ At last, `π₁F`{.Agda} is fully faithful.
   (Deloop-Hom-π₁F.linv {G = G} {H})
 ```
 
-We've shown that `π₁F`{.Agda} is fully faithful and essentially surjective;
-this lets us conclude with the desired equivalence.
+We've shown that `π₁F`{.Agda} is fully faithful and essentially
+surjective; this lets us conclude with the desired equivalence.
 
 ```agda
 π₁F-is-equivalence : is-equivalence (π₁F {ℓ})

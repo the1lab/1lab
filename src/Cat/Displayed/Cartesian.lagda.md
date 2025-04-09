@@ -649,10 +649,12 @@ cartesian→postcompose-equiv cart =
 
 ## Cartesian lifts {defines="cartesian-lift"}
 
-We call an object $y'$ over $y$ together with a Cartesian arrow $f' : x'
-\to y'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
-property as they are, are unique when they exist, so that "having
-Cartesian lifts" is a _property_, not a structure.
+::: {.popup .keep}
+We call an object $y'$ over $y$ together with a [[Cartesian morphism]]
+$f' : x' \to y'$ a **Cartesian lift** of $f$. Cartesian lifts, defined
+by universal property as they are, are unique when they exist, so that
+"having Cartesian lifts" is a [[property]], not structure.
+:::
 
 ```agda
 record

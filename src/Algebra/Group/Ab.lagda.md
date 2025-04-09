@@ -26,6 +26,11 @@ have self-explicative names in mathematics. It's the law.
 
 [a person]: https://en.wikipedia.org/wiki/Niels_Henrik_Abel
 
+::: popup
+A [[group]] $(G, \star)$ is called **abelian** if the operation $\star$
+is commutative, that is if $x \star y = y \star x$ for every $x, y : G$.
+:::
+
 <!--
 ```agda
 private variable

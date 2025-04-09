@@ -138,6 +138,11 @@ instance
 
 ## Opposites {defines="opposite-category"}
 
+::: popup
+The **opposite category** $\cC\op$ of $\cC$ has the same type of objects
+as $\cC$, but with $\hom_{C\op}(x, y) = \hom_{C}(y, x)$.
+:::
+
 A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
 inverted". To make this formal, we introduce the idea of _opposite
@@ -262,9 +267,9 @@ between Hom-sets.
 ```
 
 A Functor $F : C \to D$ consists of a `function between the object
-sets`{.Agda ident="F₀"} - $F_0 : \rm{Ob}(C) \to \rm{Ob}(D)$, and
-a `function between Hom-sets`{.Agda ident="F₁"} - which takes $f : x \to
-y \in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
+sets`{.Agda ident="F₀"}, $F_0 : \rm{Ob}(C) \to \rm{Ob}(D)$, and a
+`function between Hom-sets`{.Agda ident="F₁"} which takes $f : x \to y
+\in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
 
 ```agda
   field

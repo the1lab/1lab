@@ -594,10 +594,14 @@ type is finite if it is merely listed. This is a proposition, and
 (because listed types satisfy choice) inherits all the closure
 properties above.
 
+::: popup
+A type $A$ is **finite** if it is [[merely]] [[listing]].
+
 ```agda
 Finite : Type ℓ → Type ℓ
 Finite A = ∥ Listing A ∥
 ```
+:::
 
 ```agda
 instance
