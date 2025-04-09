@@ -98,7 +98,7 @@ equiv→total always-eqv .is-eqv y =
 ## Equivalences over {defines="equivalence-over"}
 
 We can generalise the notion of fibrewise equivalence to families
-$P : A \to \ty$, $Q : B \to \ty$ over *different* base types,
+$P : A \to \type$, $Q : B \to \type$ over *different* base types,
 provided we have an equivalence $e : A \simeq B$. In that case, we
 say that $P$ and $Q$ are **equivalent over** $e$ if $P(a) \simeq Q(b)$
 whenever $a : A$ and $b : B$ are identified [[over|path over]] $e$.

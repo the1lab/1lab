@@ -598,8 +598,8 @@ classifier is exactly the category of sets.
 </details>
 
 Thus we might hope to find, in addition to a subobject classifier, we
-could have a general **object classifier**, an object $\ty$ such that
-maps $B \to \ty$ correspond to _arbitrary_ maps $A \to B$. Let's specify
+could have a general **object classifier**, an object $\type$ such that
+maps $B \to \type$ correspond to _arbitrary_ maps $A \to B$. Let's specify
 this notion better using the language of higher category theory:
 
 A **subobject classifier** is a [[representing object|representable
@@ -635,14 +635,14 @@ $\hom_{\cE}(-, U)$!
 The issue does eventually resolve itself, if we're very persistent: if
 we have an $\infty$-category $\cE$, where $\hom(-,-)$ can be a genuine
 $\infty$-groupoid, then it's actually perfectly possible for there to be
-an object $\ty$ with an isomorphism $\cE/- \cong \hom(-, \ty)$ --- well,
+an object $\type$ with an isomorphism $\cE/- \cong \hom(-, \type)$ --- well,
 at least as long as we restrict ourselves to $\rm{Core}(\cE/-)$. We've
 finally found a setting where object classifiers can exist: $\io$-categories!
 
 Again, the importance of object classifiers is that they let us talk
-about arbitrary objects as if they were points of an object $\ty$.
+about arbitrary objects as if they were points of an object $\type$.
 Specifically, any object $B$ has a _name_, a map $\ulcorner B \urcorner
-: * \to \ty$, which represents the unique map $B \to *$. To make this
+: * \to \type$, which represents the unique map $B \to *$. To make this
 connection clearer, let's pass back to a syntactic presentation of type
 theory, to see what universes look like "from the inside".
 
@@ -652,7 +652,7 @@ Inside type theory, object classifiers present themselves as types which
 contain types, which we call **universes**. Every type is contained in
 some universe, but it is not the case that there is a universe
 containing all types; In fact, if we did have some magical universe
-$\ty_\infty : \ty_\infty$, we could reproduce Russell's paradox, as is
+$\type_\infty : \type_\infty$, we could reproduce Russell's paradox, as is
 done [here].
 
 [here]: 1Lab.Counterexamples.Russell.html
@@ -663,7 +663,7 @@ the collection of all "large" objects being "huge", etc. On the semantic
 side, a $\io$-topos has a sequence of object classifiers for maps with
 $\kappa$-compact fibres, where $\kappa$ is a regular cardinal;
 Syntactically, this is reflected much more simply as having a _tower_ of
-universes with $\ty_i : \ty_{1+i}$. So, in Agda, we have:
+universes with $\type_i : \type_{1+i}$. So, in Agda, we have:
 
 <!--
 ```agda
@@ -693,29 +693,29 @@ higher universes:
 To avoid having `Lift`{.Agda} everywhere, universes are indexed by a
 (small) type of countable ordinals, called `Level`, and constructions
 can be parametrised by the level(s) of types they deal with. The
-collection of all $\ell$-level types is $\ty_{\rm{lsuc}\ \ell}$, which
+collection of all $\ell$-level types is $\type_{\rm{lsuc}\ \ell}$, which
 is itself a type in the next universe up, etc. Since levels are
 themselves inhabitants of a type, we do in fact have a definable
-function $\lambda \ell.\ \ty_\ell$. To avoid further Russellian
+function $\lambda \ell.\ \type_\ell$. To avoid further Russellian
 paradoxes, functions out of Level must be _very big_, so they live in
-the "first infinite universe", $\ty_\omega$. There is another hierarchy
-of infinite universes, with $\ty_{\omega+i}$ inhabiting
-$\ty_{\omega+(1+i)}$. To avoid having even more towers of universes, you
-can't quantify over the indices $i$ in $\ty_{\omega+i}$. To summarize,
+the "first infinite universe", $\type_\omega$. There is another hierarchy
+of infinite universes, with $\type_{\omega+i}$ inhabiting
+$\type_{\omega+(1+i)}$. To avoid having even more towers of universes, you
+can't quantify over the indices $i$ in $\type_{\omega+i}$. To summarize,
 we have:
 
 $$
-\ty : \ty_1 : \ty_2 : \cdots \ty_{\omega} : \ty_{\omega+1} : \ty_{\omega+2} : \cdots
+\type : \type_1 : \type_2 : \cdots \type_{\omega} : \type_{\omega+1} : \type_{\omega+2} : \cdots
 $$
 
 To represent a collection of types varying over an value of $A$, we use
 a function type into a universe, called a **type family** for
-convenience: A type family over $A$ is a function $A \to \ty_i$, for
+convenience: A type family over $A$ is a function $A \to \type_i$, for
 some choice of level $i$. An example of a type family are the _finite
-types_, regarded as a family $\rm{Fin} : \bb{N} \to \ty$ --- where
+types_, regarded as a family $\rm{Fin} : \bb{N} \to \type$ --- where
 $\rm{Fin}(n)$ is a type with $n$ elements. Type families are also used
 to model **type constructors**, which are familiar to programmers as
-being the _generic types_. And finally, if we have a type $B : \ty_i$,
+being the _generic types_. And finally, if we have a type $B : \type_i$,
 we can consider the **constant family** at $B$, defined to be the
 function $\lambda (x : A).\ B$.
 
@@ -763,7 +763,7 @@ universes (or strongly inaccessible cardinals) within the first few
 sections. Working in a proof assistant forces us to be honest about the
 size of our constructions: Correspondingly, we try to be precise in our
 prose as well. As mentioned above, Agda universes are stratified into a
-pair of hierarchies $\ty_\kappa$ and $\ty_{\omega+n}$, where we're using
+pair of hierarchies $\type_\kappa$ and $\type_{\omega+n}$, where we're using
 $\kappa$ to stand for a variable of `Level`{.Agda} type. The
 `Level`{.Agda} is a built-in type which contains a constant representing
 $0$, is closed under taking successors, and is closed under taking
@@ -807,7 +807,7 @@ above. In the 1Lab, the objects we manipulate are _higher groupoids_
 rather than sets, and so very few categories will be internal to a
 category of sets. Instead, when we describe a category $\cC$ is
 $\kappa$-small, we mean that the type of objects of $\cC$ is an
-inhabitant of the universe $\ty_\kappa$, and that the $\hom_\cC(-,-)$
+inhabitant of the universe $\type_\kappa$, and that the $\hom_\cC(-,-)$
 family is valued in $\Sets_\kappa$. Our shorthand for the traditional
 notion is a "**[strict] $\kappa$-small**" category.
 :::
@@ -1084,8 +1084,8 @@ former, $\sum$! Indeed, the short discussion there also made some
 mention of the introduction rule, but let's reiterate with more clarity
 here.
 
-If we have some index type $A : \ty_\ell$, and a family of types $B : A \to
-\ty_{\ell'}$, then we can form the **dependent sum type** $\sum_{(x
+If we have some index type $A : \type_\ell$, and a family of types $B : A \to
+\type_{\ell'}$, then we can form the **dependent sum type** $\sum_{(x
 : A)} B$. When the index is clear from context, we let ourselves omit
 the variable, and write $\sum B$. Since $\sum B$ is a type, it lives in
 a universe; Since it admits a projection onto $A$ and a projection onto
@@ -1144,7 +1144,7 @@ module _ where private
 
 Taking the dependent sum of this family gives us the type of pointed
 magmas, where inhabitants can be described as triples $(T,i,m)$ where $T
-: \ty$ is the _underlying type_, $i : T$ is the distinguished point, and
+: \type$ is the _underlying type_, $i : T$ is the distinguished point, and
 $m : T \to T \to T$ is the binary operation. Note that, to be entirely
 precise, the pair would have to be written $(T,(i,m))$, but since by far
 the most common of nested pairs is with the nesting on the right, we
@@ -1155,10 +1155,10 @@ allow ourselves to omit the inner parentheses in this case.
   Pointed-magma = Σ Type Pointed-magma-on
 ```
 
-Note that, since we fixed the family to $\ty \to \ty$, and recalling
-that $\ty : \ty_1$ are the first two universes, the type of all pointed
-magmas in $\ty$ lives in the next universe, $\ty_1$. If the type of all
-pointed magmas were in $\ty$, then we could _again_ reproduce Russell's
+Note that, since we fixed the family to $\type \to \type$, and recalling
+that $\type : \type_1$ are the first two universes, the type of all pointed
+magmas in $\type$ lives in the next universe, $\type_1$. If the type of all
+pointed magmas were in $\type$, then we could _again_ reproduce Russell's
 paradox.
 
 Just like functions, pairs enjoy a uniqueness principle, which (since
@@ -1179,10 +1179,10 @@ _categories_ rather than just groupoids.
 * **$\mathbf{\Sigma}$-type**, named after its shape;
 
 * **Disjoint union**, since if we take $A$ to be the 2-point type, then
-the dependent sum $\sum B$ of $B : 2 → \ty$ is exactly the disjoint
+the dependent sum $\sum B$ of $B : 2 → \type$ is exactly the disjoint
 union $B(0) \uplus B(1)$;
 
-* Thinking homotopically, you can consider a type family $B : A \to \ty$
+* Thinking homotopically, you can consider a type family $B : A \to \type$
 to be a _fibration_, since as we shall see later it satisfies the path
 lifting property; In that sense, $\sum B$ gives the **total space**, and
 the actual fibration is the first projection map $x \mapsto
@@ -1191,9 +1191,9 @@ x\rm{.fst}$.
 This last correspondence will be particularly important later, and it
 inspires much of the terminology we use in HoTT. Since universes are
 object classifiers, we know that there is an equivalence between type
-families $F : B \to \ty$ and maps into $B$.  Dependent sums and paths
+families $F : B \to \type$ and maps into $B$.  Dependent sums and paths
 let us be more precise about this equivalence: We can turn any type
-family $F : B \to \ty$ into a map $\rm{fst} : \sum F \to B$, and looking
+family $F : B \to \type$ into a map $\rm{fst} : \sum F \to B$, and looking
 at the fibre of first over a point $y$ recovers $F(y)$. We thus blur
 this distinction a bit and refer to $F(x)$ for some $x : B$ as a fibre
 of $F$, and we say that something happens _fibrewise_ if it happens for
@@ -1321,7 +1321,7 @@ to be a _subsingleton_ if there is a term
 $$f : (xy : A \times A) \to (xy\rm{.fst} \equiv xy\rm{.snd})$$
 
 An $f$ of this type can be seen as a section of the type family $F : A
-\times A \to \ty$ defined by the rule
+\times A \to \type$ defined by the rule
 
 $$
 F(x,y) \mapsto (x \equiv y)

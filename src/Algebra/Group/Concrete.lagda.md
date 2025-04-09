@@ -261,7 +261,7 @@ module Deloop-Hom {G H : ConcreteGroup ℓ} (f : Groups ℓ .Hom (π₁B G) (π�
 
 How can we build such a map? All we know about $\B{G}$ is that it is a pointed connected
 groupoid, and thus that it comes with the elimination principle `B-elim-contr`{.Agda}.
-This suggests that we need to define a type family $C : \B{G} \to \ty$ such that
+This suggests that we need to define a type family $C : \B{G} \to \type$ such that
 $C(\point{G})$ is contractible, conclude that $\forall x. C(x)$ holds
 and extract a map $\B{G} \to^\bullet \B{H}$ from that.
 The following construction is adapted from [@Symmetry, §4.10]:

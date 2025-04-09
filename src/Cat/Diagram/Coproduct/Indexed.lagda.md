@@ -57,7 +57,7 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
 ```
 
 A category $\cC$ **admits indexed coproducts** (of level $\ell$) if,
-for any type $I : \ty\ \ell$ and family $F : I \to \cC$, there is an
+for any type $I : \type\ \ell$ and family $F : I \to \cC$, there is an
 indexed coproduct of $F$.
 
 ```agda

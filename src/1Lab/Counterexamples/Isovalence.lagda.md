@@ -42,7 +42,7 @@ fact will be crucial in the proof below.
 
 We say that **isovalence holds** if the isomorphisms, equipped with the
 natural choice of identity, form an identity system on every universe
-$\ty_j$.
+$\type_j$.
 
 ```agda
 Isovalence : Typeω
