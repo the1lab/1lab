@@ -75,8 +75,9 @@ export class Hover {
 
     el.classList.remove('popup-hidden');
 
-    const selfRect = this.anchor.getBoundingClientRect();
+    const selfRect  = this.anchor.getBoundingClientRect();
     const hoverRect = el.getBoundingClientRect();
+    const textRect  = document.querySelector("div#post-toc-container > article")!.getBoundingClientRect();
 
     if (selfRect.bottom + hoverRect.height + 48 > window.innerHeight) {
       // Tooltip placed above anchor
@@ -88,7 +89,7 @@ export class Hover {
       this.fadeDirection = 'up';
     }
 
-    if (selfRect.left + hoverRect.width > window.innerWidth) {
+    if (selfRect.left + hoverRect.width > textRect.right) {
       el.style.left = `calc(${selfRect.right - hoverRect.width}px)`;
     } else {
       el.style.left = `${selfRect.left}px`;

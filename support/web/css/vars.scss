@@ -6,8 +6,16 @@ $desktop-layout-width: 95rem;
 
 // Distance and width between a "left-bordered block" (think <details>)
 // and the actual border.
-$left-border-distance: 1em;
+$left-border-distance: 0.75em;
 $left-border-width: 5px;
 
 // Size of rulers (e.g. <hr>, border of the navbar list)
 $ruler-size: 2px;
+
+// How much larger icons should be relative to the size of a capital
+// letter.
+$highlight-icon-scale: 1.2;
+
+// Minimum width of a text popup and how much it's allowed to grow.
+$text-popup-width: 25em;
+$text-popup-grow:  1.25;

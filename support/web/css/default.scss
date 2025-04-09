@@ -10,6 +10,7 @@
 @import "components/modal.scss";
 @import "components/popup.scss";
 @import "components/toc.scss";
+@import "components/highlight.scss";
 
 @import "code.scss";
 
@@ -65,11 +66,6 @@ main {
   box-sizing: border-box;
 }
 
-@include highlight(warning,     theme(--warning-bg),     theme(--warning-icon));
-@include highlight(note,        theme(--note-bg),        theme(--note-icon));
-@include highlight(terminology, theme(--terminology-bg), theme(--terminology-icon));
-@include highlight(source,      theme(--source-bg),      theme(--source-icon));
-
 figure {
   overflow-x: auto;
   overflow-y: clip;
@@ -102,6 +98,10 @@ span.katex {
 
   span.mord.text > span.mord.textrm {
     font-family: var(--serif), var(--sans-serif);
+  }
+
+  strong & span.mord.text > span.mord.textrm {
+    font-weight: bold;
   }
 }
 

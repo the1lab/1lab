@@ -1,0 +1,49 @@
+@use 'sass:math';
+
+@import "../vars.scss";
+
+@mixin highlight($name) {
+  div.#{$name}, span.#{$name}, details.#{$name} {
+    .highlight-header {
+      fill:  theme(--#{$name}-icon);
+      color: theme(--#{$name}-text);
+    }
+  }
+
+  div.#{$name}, details.#{$name} {
+    @include material(theme(--#{$name}-bg));
+    > :nth-child(2) {
+      margin-block-start: 0.25em;
+    }
+  }
+}
+
+
+span.highlight-header {
+  display: flex;
+  gap: 0.75ch;
+  align-items: baseline;
+
+  > span.highlight-icon {
+    display: block;
+    min-height: 100%;
+
+    svg {
+      position: relative;
+      top:      #{math.div($highlight-icon-scale - 1, 2)}cap;
+
+      height:  #{$highlight-icon-scale}cap;
+      width:   #{$highlight-icon-scale}cap;
+    }
+  }
+
+  > span.highlight-text {
+    font-weight: bold;
+  }
+}
+
+@include highlight(warning);
+@include highlight(note);
+@include highlight(terminology);
+@include highlight(source);
+@include highlight(summary);
