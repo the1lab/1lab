@@ -415,9 +415,15 @@ ua-pathp≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-pathp→path eqv) 
 
 # The “axiom” {defines=univalence-axiom}
 
+::: popup
+The **univalence axiom**, as stated in the HoTT book, says that the map
+$$ p \mapsto \operatorname{subst}\ (\lambda b. A \equiv b)\ p\ \id $$,
+of type $A \is B \to A \equiv B$, is an [[equivalence]].
+:::
+
 The actual “univalence axiom”, as stated in the HoTT book, says that the
 canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
-map is `id→equiv`{.Agda}, defined right above. In more intuitive terms,
+map is `id→equiv`{.Agda}, defined right below. In more intuitive terms,
 it's "casting" the identity equivalence `A ≃ A` along a proof that `A ≡
 B` to get an equivalence `A ≃ B`.
 

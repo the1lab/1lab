@@ -21,7 +21,7 @@ module Cat.Displayed.Instances.Opposite
   where
 ```
 
-# The opposite of a fibration
+# The opposite of a fibration {defines="fibrewise-opposite"}
 
 <!--
 ```agda
@@ -261,6 +261,17 @@ about coherence morphisms in a pseudofunctor, the proofs are... no more
 than reasoning about coherence morphisms in a pseudofunctor --- which is
 to say, boring algebra. Let us make concrete note of the *data* of the
 fibrewise opposite before tackling the properties:
+
+::: popup
+The **fibrewise opposite** $\cE\op \liesover \cB$ of a [[fibration]]
+$\cE \liesover \cB$ a [[displayed category]] with the same objects as
+$\cE$, but with $$\cE\op_f(x, y) = \cE_{\id}(f^*y, x)$$. It is again a
+fibration, and the [[fibre category]] $(\cE\op)^*(X)$ is the [[opposite
+category]] of the fibre $\cE^*(X)$.
+
+Contrast with the [[total opposite]], which lies over the opposite
+category $\cB$.
+:::
 
 ```agda
 _^op' : Displayed B o' ℓ'

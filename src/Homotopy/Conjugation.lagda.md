@@ -29,6 +29,11 @@ usual way. However, since we know ahead-of-time what transport in a type
 of paths computes to, we can take a short-cut and define the equivalence
 directly: it is given by **conjugation** with $p$.
 
+::: popup
+The **conjugation** of a [[path]] $q : y \is y$ by a path $p : y \is x$
+is the composite $p\inv \dcomp q \dcomp p$.
+:::
+
 ```agda
 opaque
   conj : ∀ {ℓ} {A : Type ℓ} {x y : A} → y ≡ x → y ≡ y → x ≡ x

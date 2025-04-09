@@ -88,10 +88,17 @@ really want to _not_ care about _how_ a function is a subtype inclusion,
 only that it is, we define **embeddings** as those functions which have
 propositional fibres:
 
+::: popup
+A function $f : A \to B$ is an **embedding** if the [[fibre]] $f^*(y)$
+over each $y : B$ is a [[proposition]].
+
 ```agda
 is-embedding : (A → B) → Type _
 is-embedding f = ∀ x → is-prop (fibre f x)
+```
+:::
 
+```agda
 _↪_ : Type ℓ → Type ℓ₁ → Type _
 A ↪ B = Σ[ f ∈ (A → B) ] is-embedding f
 ```

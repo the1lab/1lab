@@ -27,9 +27,8 @@ private variable
 -->
 
 :::{.definition #set-projective}
-A type $A$ is **set-projective** if we can commute [[propositional truncation]]
-past $A$-indexed families.
-:::
+A type $A$ is **set-projective** if we can commute [[propositional
+truncation]] past the product of an $A$-indexed family of [[sets]].
 
 ```agda
 is-set-projective : ∀ {ℓ} (A : Type ℓ) → (κ : Level) → Type _
@@ -39,12 +38,12 @@ is-set-projective A κ =
   → (∀ a → ∥ P a ∥)
   → ∥ (∀ a → P a) ∥
 ```
+:::
 
 Intuitively, a type $A$ is set-projective if it validates a sort of
-$A$-indexed version of the [[axiom of choice]].
-
-If $A$ is a set, then $A$ is set-projective if and only if every
-surjection $E \to A$ from a set $E$ splits.
+$A$-indexed version of the [[axiom of choice]]. If $A$ is a set, then
+$A$ is set-projective if and only if every surjection $E \to A$ from a
+set $E$ splits.
 
 ```agda
 surjections-split→set-projective
