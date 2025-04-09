@@ -90,7 +90,7 @@ definitionBlock inp fp = go where
 
   addMany id = foldMap (add id) . Text.words
 
-  go (Div (id, [only], keys) _blocks) | "definition" == only, not (Text.null id) =
+  go (Div (id, cls, keys) _blocks) | "definition" `elem` cls, not (Text.null id) =
     let aliases = foldMap (addMany id) (lookup "alias" keys)
     in add id id <> aliases
 

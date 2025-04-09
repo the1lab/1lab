@@ -48,8 +48,10 @@ renderHighlights stream = do
     iconSpan icn = do
       (icon, name') <- readIcon icn
       let name = TagText name'
-      pure $ TagBranch "span" [("class", "highlight-icon")]
-        (icon ++ [ TagBranch "span" [] [TagLeaf name] ])
+      pure $ TagBranch "span" [("class", "highlight-header")]
+        [ TagBranch "span" [("class", "highlight-icon")] icon
+        , TagBranch "span" [("class", "highlight-text")] [TagLeaf name]
+        ]
 
     go :: TagTree Text -> Action (TagTree Text)
     go (TagBranch "div" attr children)
