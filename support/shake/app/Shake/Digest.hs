@@ -2,9 +2,11 @@
 
 -- | Compute a truncated hash of a file, useful for computing cache-busters
 -- (or other unique ids) for a file.
-module Shake.Digest (digestRules, getFileDigest) where
+module Shake.Digest (digestRules, getFileDigest, shortDigest) where
 
 import qualified Data.ByteString.Lazy as LazyBS
+import qualified Data.Text.Encoding as Text
+import qualified Data.Text as Text
 import Data.Digest.Pure.SHA
 import Data.Typeable
 
@@ -21,9 +23,12 @@ digestRules :: Rules ()
 digestRules = versioned 1 do
   _ <- addOracle \(FileDigest f) -> do
     need [f]
-    take 8 . showDigest . sha256 <$> liftIO (LazyBS.readFile f)
+    take 12 . showDigest . sha256 <$> liftIO (LazyBS.readFile f)
   pure ()
 
 -- | Compute a short digest of a file.
 getFileDigest :: FilePath -> Action String
 getFileDigest = askOracle . FileDigest
+
+shortDigest :: Text.Text -> [Char]
+shortDigest = take 12 . showDigest . sha1 . LazyBS.fromStrict . Text.encodeUtf8
