@@ -2,6 +2,8 @@
   inNixShell ? false
   # Do we want the full Agda package for interactive use? Set to false in CI
 , interactive ? true
+  # Do we only want GHC?
+, ghcOnly ? false
 , system ? builtins.currentSystem
 }:
 let
@@ -68,7 +70,7 @@ in
         ".github"
       ] ./.;
 
-    nativeBuildInputs = deps;
+    nativeBuildInputs = if ghcOnly then [ our-ghc ] else deps;
 
     shellHook = ''
       export out=_build/site

@@ -563,6 +563,7 @@ x_1$. This square _also_ has a filler, connecting $\pi_0$ and $\pi_1$
 over the line $g\ y ≡ \pi\ i$.
 
 <div class=mathpar>
+
 ~~~{.quiver}
 \[\begin{tikzcd}
   {g\ y} && {g\ y} \\

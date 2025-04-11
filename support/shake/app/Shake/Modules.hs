@@ -1,12 +1,14 @@
 -- | Rules for working with our Agda modules.
 
-{-# LANGUAGE BlockArguments, TypeFamilies, DeriveGeneric #-}
+{-# LANGUAGE BlockArguments, TypeFamilies, DeriveGeneric, LambdaCase #-}
 module Shake.Modules
   ( ModName
   , ModKind(..)
   , moduleRules
   , getOurModules
   , getAllModules
+  , markdownSource
+  , moduleName
   ) where
 
 import qualified Data.Map.Strict as Map
@@ -16,12 +18,12 @@ import Development.Shake.Classes
 import Development.Shake.FilePath
 import Development.Shake
 
+import Data.List
+
 import GHC.Generics (Generic)
 
-import HTML.Backend (moduleName)
-
-import Shake.Git
 import Shake.Options
+import Shake.Git
 
 type ModName = String
 
@@ -42,7 +44,7 @@ instance Hashable ModKind where
 instance Binary ModKind where
 instance NFData ModKind where
 
-newtype ModulesA = ModulesA { unModulesA :: Map ModName ModKind }
+newtype ModulesA = ModulesA { unModulesA :: Map ModName (String, ModKind) }
   deriving (Eq, Ord, Show, Typeable, Generic)
 
 instance Hashable ModulesA where
@@ -66,15 +68,15 @@ moduleRules = do
         else getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
 
       toOut x | takeExtensions x == ".lagda.md"
-              = (moduleName (dropExtensions x), WithText)
-      toOut x = (moduleName (dropExtensions x), CodeOnly)
+              = (moduleName (dropExtensions x), ("src" </> x, WithText))
+      toOut x = (moduleName (dropExtensions x), ("src" </> x, CodeOnly))
 
     ModulesA . Map.fromList . map toOut <$> getFiles
   pure ()
 
 -- | Get all 1Lab modules.
 getOurModules :: Action (Map ModName ModKind)
-getOurModules = unModulesA <$> askOracle ModulesQ
+getOurModules = fmap snd . unModulesA <$> askOracle ModulesQ
 
 -- | Get all Agda modules used within the project.
 getAllModules :: Action (Map ModName ModKind)
@@ -82,3 +84,13 @@ getAllModules = do
   our <- getOurModules
   pure $ Map.singleton "all-pages" CodeOnly
       <> our
+
+markdownSource :: ModName -> Action FilePath
+markdownSource mod = fmap (Map.lookup mod . unModulesA) (askOracle ModulesQ) >>= \case
+  Just (fp, WithText) -> pure fp
+  Just (fp, CodeOnly) -> error $ "Not a markdown module: " <> mod
+  Nothing -> error $ "Not a module: " <> mod
+
+-- | Determine the name of a module from a file like @1Lab/HIT/Torus@.
+moduleName :: FilePath -> String
+moduleName = intercalate "." . splitDirectories

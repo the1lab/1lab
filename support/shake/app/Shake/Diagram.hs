@@ -1,16 +1,26 @@
-{-# LANGUAGE TemplateHaskellQuotes, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskellQuotes, OverloadedStrings, ScopedTypeVariables, BlockArguments, LambdaCase #-}
 
-module Shake.Diagram (buildDiagram, diagramHeight) where
+module Shake.Diagram (diagramRules, diagramHeight) where
+
+import Control.Monad
 
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
 
+import Text.Pandoc.Definition
 import Text.HTML.TagSoup
+import Text.Pandoc.Walk
 
 import Development.Shake.FilePath
 import Development.Shake
+
+import Shake.Modules (markdownSource)
+import Shake.Digest
+import Shake.KaTeX (getPreambleFor)
+
+import qualified System.Directory as Dir
 
 -- | Render a LaTeX diagram to SVG. This renders the diagram using the
 -- @support/diagram.tex@ template, and then uses pdflatex and pdftocairo
@@ -72,3 +82,45 @@ maybeDarken True = Text.unlines . map mkdark . Text.lines where
 
 templatePath :: FilePath
 templatePath = "support/diagram.tex"
+
+diagramRules :: (FilePath -> Action Pandoc) -> Rules ()
+diagramRules reader = do
+  -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
+  "_build/html/**/*.light.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
+    need [inp]
+    buildDiagram (getPreambleFor False) inp out False
+
+  "_build/html/**/*.dark.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
+    need [inp]
+    buildDiagram (getPreambleFor True) inp out True
+
+  -- Extract the diagram with the given digest from the module source
+  -- file; even if the module uses many diagrams, only one will be written.
+  --
+  -- It's faster to traverse the markdown many times looking for each of
+  -- the needed diagrams than it is to lock the folder associated with
+  -- the module (since we process blocks in parallel when rendering a
+  -- file).
+  "_build/diagrams/*/*.tex" %> \out -> do
+    let
+      mod  = takeFileName (takeDirectory out)
+      want = dropExtensions (takeFileName out)
+
+    md <- markdownSource mod
+    need [ md ]
+
+    liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> mod
+
+    reader md >>= query \case
+      (CodeBlock (_, classes, _) contents) | "quiver" `elem` classes -> do
+        when (shortDigest contents == want) . liftIO $
+          Text.writeFile ("_build/diagrams" </> mod </> want <.> "tex") contents
+      _ -> mempty

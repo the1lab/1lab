@@ -5,13 +5,15 @@
 post-processing steps and rendered to HTML using the
 @support/web/template.html@ template.
 -}
-module Shake.Markdown (buildMarkdown, readLabMarkdown) where
+module Shake.Markdown (buildMarkdown) where
 
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Monad.State
 import Control.Applicative
+import Control.Exception
+import Control.DeepSeq
 import Control.Monad
 
 import qualified Data.ByteString.Lazy as LazyBS
@@ -35,12 +37,15 @@ import qualified System.Directory as Dir
 import Development.Shake.FilePath
 import Development.Shake
 
+import GHC.Generics (Generic)
+
 import qualified Citeproc as Cite
 import Text.DocTemplates
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
 
+import qualified Text.DocLayout as Doclayout
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
@@ -48,6 +53,7 @@ import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Walk
 import Text.Pandoc
 
+import Shake.Markdown.Reader
 import Shake.LinkReferences
 import Shake.SearchData
 import Shake.Highlights
@@ -58,153 +64,29 @@ import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 
-import HTML.Emit
-
 import Definitions
 
-import System.IO.Unsafe
 import Text.Show.Pretty (ppShow)
+import Debug.Trace (traceEventIO)
 
-labReaderOptions :: ReaderOptions
-labReaderOptions =
-  let
-    good = [ Ext_wikilinks_title_before_pipe ]
-    bad  = [Ext_definition_lists, Ext_compact_definition_lists]
-    exts = foldr disableExtension
-      (foldr enableExtension (getDefaultExtensions "markdown") good)
-      bad
-  in def { readerExtensions = exts }
-
-readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
-readLabMarkdown fp = liftIO cont where
-
-  unParaMath :: Block -> Block
-  unParaMath (Para [Math DisplayMath m]) = Plain [Math DisplayMath m]
-  unParaMath x = x
-
-  cont :: IO Pandoc
-  cont = do
-    contents <- mangleMarkdown <$> Text.readFile fp
-    either (fail . show) pure =<< runIO do
-      doc <- readMarkdown labReaderOptions [(fp, contents)]
-      pure $ walk unParaMath $ walk postParseInlines doc
-
--- | Patch a sequence of inline elements. `patchInline' should be preferred
--- where possible, this is only useful when you cannot modify inlines in
--- isolation.
-postParseInlines :: [Inline] -> [Inline]
-
--- Float text that occurs directly after a mathematics span *inside* the
--- span. This allows the entire expression to reflow but preserves the
--- intended semantics of having e.g. `$n$-connected` be a single logical
--- unit (which should be line-wrapped together).
---
--- The text is attached naïvely, so if the entire expression is a single
--- group (i.e. something like `${foo}$`), it will probably not work.
--- However, the naïve solution does have the benefit of automatically
--- attaching the non-wrapping text to the last "horizontal unit" in the
--- span.
---
--- However, note that the glue between the original mathematics and the
--- attached text is treated as an opening delimiter. This is to have
--- correct spacing in case the maths ends with an operatorname, e.g. id.
-postParseInlines (Math ty mtext:s@(Str txt):xs)
-  | not (Text.isPrefixOf " " txt)
-  =
-    let
-      glue   = "\\mathopen{\\nobreak}\\textnormal{" <> txt <> "}"
-      mtext' = Text.stripEnd mtext <> glue
-    in postParseInlines (Math ty mtext':xs)
-
--- Parse the contents of wikilinks as markdown. While Pandoc doesn't
--- read the title part of a wikilink, it will always consist of a single
--- Str span. We call the Pandoc parser in a pure context to read the
--- title part as an actual list of inlines.
-postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
-  link' `seq` link':postParseInlines xs where
-
-  try  = either (const Nothing) Just . runPure
-  fail = error $
-    "Failed to parse contents of wikilink as Markdown:" <> Text.unpack contents
-
-  link' = fromMaybe fail do
-    -- The contents of a link are valid if they consist of a single list
-    -- of inlines. Pandoc doesn't let us parse a list of inlines, but we
-    -- can still parse it as a document and ensure that (a) everything
-    -- got bunched in the same paragraph and (b) there was no metadata.
-    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown labReaderOptions contents)
-    guard (null m) -- I don't foresee this ever failing.
-
-    -- Rendering the contents as plain text will strip all the
-    -- decorations, thus recovering the "underlying page" that was meant
-    -- to be linked to. Of course, we should only try changing the
-    -- target if the link looks like [[foo]], rather than [[foo|bar]].
-    let
-      target = if url == contents
-        then stringify parsed
-        else url
-
-    -- Note that Pandoc doesn't distinguish between [[foo]] and
-    -- [[foo|foo]], so really the only way is checking whether the URL
-    -- is equal to the contents string. If that was the case, then
-    -- stripping formatting is the right thing, otherwise e.g. [[*path
-    -- induction*]] would fail since the target "*path-induction*"
-    -- doesn't exist.
-    pure (Link attr is (target, "wikilink"))
-
-postParseInlines (x:xs) = x:postParseInlines xs
-postParseInlines [] = []
-
--- | Pandoc's wiki-link extension does not support splitting the guts of
--- a wikilink over multiple lines. The function 'mangleMarkdown'
--- pre-processes the input file so that any invalid space characters
--- inside a wikilink are replaced by the safe ASCII space @ @.
-mangleMarkdown :: Text -> Text
-mangleMarkdown = Text.pack . toplevel . Text.unpack where
-  toplevel ('[':'[':cs)         = '[':'[':wikilink toplevel cs
-  toplevel ('<':'!':'-':'-':cs) = startcomment cs
-  toplevel (c:cs)               = c:toplevel cs
-  toplevel []                   = []
-
-  startcomment ('[':'T':'O':'D':'O':cs) = comment False 1 cs
-  startcomment (c:cs)
-    | isSpace c       = startcomment cs
-    | otherwise       = "<div class=\"commented-out\">\n" ++ comment True 1 (c:cs)
-  startcomment []     = error "Unterminated comment"
-
-  comment e 0 cs                   = concat ["\n</div>" | e] ++ toplevel cs
-  comment e n []                   = error "Unterminated comment"
-
-  comment e n ('-':'-':'>':cs)     = comment e (n - 1) cs
-  comment e n ('<':'!':'-':'-':cs) = comment e (n + 1) cs
-
-  comment True n ('[':'[':cs)      = '[':'[':wikilink (comment True n) cs
-  comment e n (c:cs)
-    | e         = c:comment e n cs
-    | otherwise = comment e n cs
-
-  wikilink k (']':']':cs) = ']':']':k cs
-
-  wikilink k ('\n':cs)    = ' ':wikilink k cs
-  wikilink k ('\t':cs)    = ' ':wikilink k cs
-  wikilink k ('\f':cs)    = ' ':wikilink k cs
-  wikilink k ('\r':cs)    = ' ':wikilink k cs
-
-  wikilink k (c:cs)       = c:wikilink k cs
-  wikilink k []           = []
-
-buildMarkdown :: String   -- ^ The name of the Agda module.
-              -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
-              -> FilePath -- ^ Output HTML file.
-              -> Action ()
-buildMarkdown modname input output = do
+buildMarkdown
+  :: Action (Context Text)
+  -> (FilePath -> Action Pandoc)
+  -> String   -- ^ The name of the Agda module.
+  -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
+  -> FilePath -- ^ Output HTML file.
+  -> Action ()
+buildMarkdown digest reader modname input output = do
+  liftIO $ traceEventIO $ "start buildMarkdown " <> modname
   gitCommit <- gitCommit
   skipAgda <- getSkipAgda
+  digest <- digest
 
   need [bibliographyName, input]
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
+
   let
     permalink = gitCommit </> modulePath
 
@@ -222,13 +104,11 @@ buildMarkdown modname input output = do
       . Map.insert "link-citations" (MetaBool True)
       . unMeta
 
-  (markdown, references) <- traced "pandoc" do
-    Pandoc meta markdown <- readLabMarkdown input
+  Pandoc meta markdown <- reader input
+  (markdown, references) <- traced "citeproc" do
     let pandoc = addPageTitle (Pandoc (patchMeta meta) markdown)
     either (fail . show) pure =<< runIO do
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
-
-  liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> modname
 
   let
     refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
@@ -254,28 +134,16 @@ buildMarkdown modname input output = do
 
   filtered <- parallel $ map (runWriterT . walkM (patchBlock baseUrl modname)) blocks
   let
-    (bs, fold -> MarkdownState references defs) = unzip filtered
+    (bs, fold -> MarkdownState references defs) = unzip $!! filtered
     defs'    = headerPopups bs
     markdown = walk blankPopup $ Pandoc meta bs
-
-  digest <- do
-    cssDigest     <- getFileDigest "_build/html/css/default.css"
-    startJsDigest <- getFileDigest "_build/html/start.js"
-    mainJsDigest  <- getFileDigest "_build/html/main.js"
-    pure . Context . Map.fromList $
-      [ ("css",       toVal (Text.pack cssDigest))
-      , ("start-js",  toVal (Text.pack startJsDigest))
-      , ("main-js",   toVal (Text.pack mainJsDigest))
-      ]
 
   text <- liftIO $ either (fail . show) pure =<<
     runIO (renderMarkdown authors references modname baseUrl digest markdown)
 
-  let tags = foldEquations False (parseTags text)
-  tags <- renderHighlights tags
-  traverse_ (checkMarkup input) tags
+  tags <- renderHighlights input $ foldEquations False $ parseTags text
 
-  traced "writing" do
+  traced "writing" $ do
     Dir.createDirectoryIfMissing False "_build/html/fragments"
     Dir.createDirectoryIfMissing False "_build/search"
 
@@ -289,6 +157,7 @@ buildMarkdown modname input output = do
         runIO (renderMarkdown authors references modname baseUrl digest (Pandoc mempty bs))
 
       Text.writeFile ("_build/html/fragments" </> Text.unpack key <.> "html") text
+  liftIO $ traceEventIO $ "end buildMarkdown " <> modname
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -350,17 +219,32 @@ data MarkdownState = MarkdownState
   , mdFragments   :: Map.Map Text [Block]
     -- ^ List of definition blocks
   }
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance NFData MarkdownState where
+  rnf (MarkdownState refs frags) = rnf frags `seq` go refs where
+    go [] = ()
+    go (v:vs) = case v of
+      SimpleVal d -> rnf (Doclayout.render Nothing d) `seq` go vs
+      ListVal vs' -> go (vs' ++ vs)
+      MapVal ctx  -> go (Map.elems (unContext ctx) ++ vs)
+      BoolVal b   -> rnf b
+      NullVal     -> ()
+
+instance NFData a => NFData (Tag a) where
+  rnf = \case
+    TagOpen a b -> rnf a `seq` rnf b
+    TagClose a -> rnf a
+    TagText a -> rnf a
+    TagComment a -> rnf a
+    TagWarning a -> rnf a
+    TagPosition a b -> rnf a `seq` rnf b
 
 instance Semigroup MarkdownState where
   MarkdownState a b <> MarkdownState a' b' = MarkdownState (a <> a') (b <> b')
 
 instance Monoid MarkdownState where
   mempty = MarkdownState mempty mempty
-
-diagramResource :: Resource
-diagramResource = unsafePerformIO $ newResourceIO "diagram" 1
-{-# NOINLINE diagramResource #-}
 
 -- | Patch a Pandoc block element.
 patchBlock
@@ -392,9 +276,6 @@ patchBlock _ mod (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` cla
     -- This isn't the best in terms of atomicity, but it does preserve
     -- the nice property that diagrams are globally shared by their
     -- contents.
-    withResource diagramResource 1 $ liftIO do
-      Text.writeFile ("_build/diagrams" </> mod </> digest <.> "tex") contents
-
     need [ "_build/html" </> lfn, "_build/html" </> dfn ]
     diagramHeight ("_build/html" </> lfn)
 
@@ -630,6 +511,11 @@ headerPopups = go Nothing where
 
   go hdr (b:bs) = go hdr bs
   go hdr []     = mempty
+
+-- | Write a HTML file, correctly handling the closing of some tags.
+renderHTML5 :: [Tag Text] -> Text
+renderHTML5 = renderTagsOptions renderOptions{ optMinimize = min } where
+  min = flip elem ["br", "meta", "link", "img", "hr"]
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"

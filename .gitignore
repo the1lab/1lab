@@ -29,6 +29,10 @@ hie.yaml
 *.o-boot
 /rubtmp*
 
+*.eventlog
+*.prof
+*.html
+
 # LaTeX stuff that occasionally gets generated
 *.log
 *.synctex.gz

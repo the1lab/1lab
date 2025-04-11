@@ -66,6 +66,24 @@ export class Hover {
   private fadeDirection?: 'up' | 'down';
 
   /**
+   * Fade the popup into the specified state.
+   */
+  private async fade(state: 'in' | 'out') {
+    if (this.ephemeral) return;
+
+    const el = await this.element, other = state === 'in' ? 'out' : 'in';
+
+    // Have to remove the fade class for *both* of the other states
+    // otherwise a popup that has changed direction will flash when
+    // fading in (since it'll have both e.g. `popup-fade-out-down` and
+    // `popup-fade-in-up` classes).
+    el.classList.remove(`popup-fade-${other}-up`);
+    el.classList.remove(`popup-fade-${other}-down`);
+
+    el.classList.add(`popup-fade-${state}-${this.fadeDirection}`);
+  }
+
+  /**
    * Show the popup and decide on the positioning, hence in which
    * direction the popup will fade.
    */
@@ -77,11 +95,13 @@ export class Hover {
 
     const selfRect  = this.anchor.getBoundingClientRect();
     const hoverRect = el.getBoundingClientRect();
-    const textRect  = document.querySelector("div#post-toc-container > article")!.getBoundingClientRect();
+    const textRect  = document.querySelector("div#post-toc-container > article");
+
+    let right = textRect?.getBoundingClientRect().right ?? window.innerWidth;
 
     if (selfRect.bottom + hoverRect.height + 48 > window.innerHeight) {
       // Tooltip placed above anchor
-      el.style.top = `calc(${window.scrollY + selfRect.top - hoverRect.height}px - 1.3rem)`;
+      el.style.top = `calc(${window.scrollY + selfRect.top - hoverRect.height}px)`;
       this.fadeDirection = 'down';
     } else {
       // Tooltip placed below anchor
@@ -89,16 +109,13 @@ export class Hover {
       this.fadeDirection = 'up';
     }
 
-    if (selfRect.left + hoverRect.width > textRect.right) {
+    if (selfRect.left + hoverRect.width > right) {
       el.style.left = `calc(${selfRect.right - hoverRect.width}px)`;
     } else {
       el.style.left = `${selfRect.left}px`;
     }
 
-    if (!this.ephemeral) {
-      el.classList.remove(`popup-fade-out-${this.fadeDirection}`);
-      el.classList.add(`popup-fade-in-${this.fadeDirection}`);
-    }
+    this.fade('in');
 
     // Instead of having a boolean to indicate what's been shown, we use
     // the closing signal as a sentinel instead.
@@ -142,15 +159,12 @@ export class Hover {
     if (this.shown) this.shown();
     delete this.shown;
 
-    if (!this.ephemeral) {
-      el.classList.remove(`popup-fade-in-${this.fadeDirection}`);
-      el.classList.add(`popup-fade-out-${this.fadeDirection}`);
-    }
+    this.fade('out');
 
     this.closing = new Timeout(this.ephemeral ? 0 : 250, `displace ${this.anchor}`);
 
     await this.closing.start();
-    el.classList.add('popup-hidden')
+    el.classList.add('popup-hidden');
 
     delete this.closing;
 
