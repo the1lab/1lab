@@ -22,16 +22,22 @@ module 1Lab.Classical where
 While we do not assume any classical principles in the 1Lab, we can still state
 them and explore their consequences.
 
-The **law of excluded middle** (LEM) is the defining principle of classical logic,
-which states that any proposition is either true or false (in other words,
-[[decidable]]). Of course, assuming this as an axiom requires giving up canonicity:
-we could prove that, for example, any Turing machine either halts or does not halt,
-but this would not give us any computational information.
+The **law of excluded middle** (LEM) is the defining principle of
+classical logic, which states that any proposition is either true or
+false (in other words, [[decidable]]). Of course, assuming this as an
+axiom requires giving up canonicity: we could prove that, for example,
+any Turing machine either halts or does not halt, but this would not
+give us any computational information.
+
+::: popup
+The **law of excluded middle** says that every [[proposition]] is
+[[decidable]].
 
 ```agda
 LEM : Type
 LEM = ∀ (P : Ω) → Dec ∣ P ∣
 ```
+:::
 
 Note that we cannot do without the assumption that $P$ is a proposition: the statement
 that all types are decidable is [[inconsistent with univalence|LEM-infty]].
@@ -65,14 +71,16 @@ LEM≃DNE = prop-ext LEM-is-prop DNE-is-prop LEM→DNE DNE→LEM
 
 ## Weak excluded middle {defines="weak-excluded-middle"}
 
+::: {.popup .keep}
 The **weak law of excluded middle** (WLEM) is a slightly weaker variant
-of excluded middle which asserts that every proposition is either false
-or not false.
+of [[excluded middle]], which asserts that every proposition is either
+false or not false.
 
 ```agda
 WLEM : Type
 WLEM = ∀ (P : Ω) → Dec (¬ ∣ P ∣)
 ```
+:::
 
 As the name suggests, the law of excluded middle implies the weak law
 of excluded middle.
@@ -91,8 +99,11 @@ WLEM-is-prop = hlevel 1
 
 ## The axiom of choice {defines="axiom-of-choice"}
 
-The **axiom of choice** is a stronger classical principle which allows us to commute
-propositional truncations past Π types.
+::: {.popup .keep}
+The **axiom of choice** is a stronger classicality principle, which says
+we can commute [[propositional truncations]] over dependent product
+types (over [[sets]]).
+:::
 
 ```agda
 Axiom-of-choice : Typeω
@@ -112,9 +123,9 @@ _ = Fibration-equiv
 ```
 -->
 
-An equivalent and sometimes useful statement is that all surjections between sets
-merely have a section. This is essentially jumping to the other side of the
-`fibration equivalence`{.Agda ident=Fibration-equiv}.
+An equivalent and sometimes useful statement is that all surjections
+between sets merely have a section. This is essentially jumping to the
+other side of the `fibration equivalence`{.Agda ident=Fibration-equiv}.
 
 ```agda
 Surjections-split : Typeω

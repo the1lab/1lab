@@ -36,21 +36,23 @@ abelian categories: Ab-enriched categories, pre-additive categories,
 pre-abelian categories, and abelian categories. Each concept builds on
 the last by adding a new categorical property on top of a precategory.
 
-## Ab-enriched categories {defines="ab-enriched-category"}
+## Ab-enriched categories
 
+:::{.definition #ab-enriched-category}
 An $\Ab$-enriched category is one where each $\hom$ set carries the
 structure of an [[Abelian group]], such that the composition map is
 _bilinear_, hence extending to an Abelian group homomorphism
-
 $$
 \hom(b, c) \otimes \hom(a, b) \to \hom(a, c)
 $$,
-
 where the term on the left is the [[tensor product|tensor product of
-abelian groups]] of the corresponding $\hom$-groups. As the name
-implies, every such category has a canonical $\Ab$-enrichment (made
-monoidal using $- \otimes -$), but we do not use the language of
-enriched category theory in our development of Abelian categories.
+abelian groups]] of the corresponding $\hom$-groups.
+:::
+
+As the name implies, every such category has a canonical
+$\Ab$-enrichment (made monoidal using $- \otimes -$), but we do not use
+the language of enriched category theory in our development of Abelian
+categories.
 
 [zero object]: Cat.Diagram.Zero.html
 
@@ -184,6 +186,11 @@ module _ where
 
 ## Additive categories {defines="additive-category"}
 
+::: popup
+An [[$\Ab$-category|ab-enriched category]] $\cC$ is **additive** when
+$\cC$ has finite [[biproducts]] and a [[zero object]].
+:::
+
 An $\Ab$-category is **additive** when its underlying category has a
 [[terminal object]] and finite [[products]]; By the yoga above, this
 implies that the terminal object is also a zero object, and the finite
@@ -211,27 +218,23 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
 Coincidence of finite products and finite coproducts leads to an object
 commonly called a (finite) **[[biproduct]]**. The coproduct coprojections
 are given by the pair of maps
-
 $$
 \begin{align*}
 &\langle \id , 0 \rangle : A \to A \times B \\
 &\langle 0 , \id \rangle : B \to A \times B\text{,}
 \end{align*}
 $$
-
 respectively, and the comultiplication of $f$ and $g$ is given by
 $f\pi_1 + g\pi_2$. We can calculate, for the first coprojection followed
 by comultiplication,
-
 $$
 \begin{align*}
-& (f\pi_1+g\pi_2) \langle \id , 0 \rangle \\
-=& f\pi_1\langle \id , 0 \rangle + g\pi_2\langle \id , 0 \rangle \\
-=& f\id + g0 \\
-=& f\text{,}
+(f\pi_1+g\pi_2) \langle \id , 0 \rangle
+  & = f\pi_1\langle \id , 0 \rangle + g\pi_2\langle \id , 0 \rangle \\
+  & = f\id + g0 \\
+  & = f\text{,}
 \end{align*}
 $$
-
 and analogously for the second coprojection followed by
 comultiplication.
 

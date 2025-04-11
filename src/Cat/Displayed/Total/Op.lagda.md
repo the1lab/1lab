@@ -26,6 +26,16 @@ The most obvious construction is to construct a new displayed category
 over $\ca{B}\op$; we call this category the **total opposite** of
 $\ca{E}$.
 
+::: popup
+The **total opposite** $\cE\op \liesover \cB\op$ of a displayed category
+$\cE \liesover \cB$ a the displayed category with the same space of
+objects as $\cE$, but with $$\cE\op_f(x, y) = \cE_f(y, x)$$. Note that
+this is only well-typed because $\cE\op$ is displayed over the
+[[opposite category]] of $\cB$.
+
+Contrast with the [[fibrewise opposite]], which lies over the same base.
+:::
+
 ```agda
 module _ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ') where
   open Precategory ℬ

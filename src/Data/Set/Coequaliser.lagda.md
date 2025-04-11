@@ -255,10 +255,24 @@ instance
 
 With dependent sums, we can recover quotients as a special case of
 coequalisers. Observe that, by taking the total space of a relation $R :
-A \to A \to \ty$, we obtain two projection maps which have as image all
+A \to A \to \type$, we obtain two projection maps which have as image all
 of the possible related elements in $A$. By coequalising these
 projections, we obtain a space where any related objects are identified:
 the **quotient** $A/R$.
+
+::: popup
+The ([[set]]) **quotient** of a type $A$ by a relation $R$ is the type
+$A/R$ equipped with a constructor `inc`{.Agda} and a generating path
+`quot`{.Agda} sending $R(x, y)$ to $\operatorname{inc} x =
+\operatorname{inc} y$, in the sense that if $f : A \to B$ is a function
+into a set $B$ which "respects $R$" in that we have
+$$ \forall\ a\ b,\ R(a, b) \to f(a) = f(b) $$, then there is a unique
+$f' : A/R \to B$ satisfying $f'(\operatorname{inc} x) = f(x)$.
+
+It can be constructed as the [[set coequaliser]] of the two projections
+onto $A$ from the total space $\Sigma_{(a, b) : A \times A} R(a, b)$ of
+$R$.
+:::
 
 ```agda
 private
@@ -365,7 +379,7 @@ Quot-op₂ Rr Sr op resp =
 
 ## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
-The most well-behaved case of quotients is when $R : A \to A \to \ty$
+The most well-behaved case of quotients is when $R : A \to A \to \type$
 takes values in propositions, is reflexive, transitive and symmetric (an
 equivalence relation). In this case, we have that the quotient $A / R$
 is **effective**: The map `quot`{.Agda} is an equivalence.

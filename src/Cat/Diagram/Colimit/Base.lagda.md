@@ -29,6 +29,13 @@ private variable
 
 # Colimits {defines=colimit}
 
+::: popup
+The **colimit** of a diagram $F : \cJ \to \cC$ is the [[left Kan
+extension]] of $F$ along the functor $! : \cJ \to \{*\}$. Concretely, a
+colimit for $F$ is the [[initial]] object $X : \cC$ equipped with maps
+$\psi_j : F(j) \to X$, i.e. the initial [[cocone]] under $F$.
+:::
+
 ## Idea
 
 Colimits are dual to [[limits]]; much like their duals, they generalize
@@ -650,8 +657,8 @@ prove that any non-thin categories have arbitrary colimits.
 
 Instead, categories are cocomplete _with respect to_ a pair of
 universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
-for any diagram indexed by a precategory with objects in $\ty\ o$ and
-morphisms in $\ty\ \ell$.
+for any diagram indexed by a precategory with objects in $\type\ o$ and
+morphisms in $\type\ \ell$.
 
 ```agda
 is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
