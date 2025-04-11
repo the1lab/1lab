@@ -25,8 +25,8 @@ import Debug.Trace
 -- icon under @support/web/highlights@ is supported; the @definition@
 -- icon will additionally include the principal label being defined (the
 -- id of the element) in the text.
-renderHighlights :: [Tag Text] -> Action [Tag Text]
-renderHighlights stream = do
+renderHighlights :: FilePath -> [Tag Text] -> Action [Tag Text]
+renderHighlights input stream = do
   let tree = tagTree stream
 
   icons <- fmap (Text.pack . map toLower . dropExtension)

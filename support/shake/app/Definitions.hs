@@ -41,12 +41,11 @@ import Development.Shake
 
 import GHC.Generics (Generic)
 
-import HTML.Backend (moduleName)
 
 import Text.Pandoc.Walk
 import Text.Pandoc
 
-import {-# SOURCE #-} Shake.Markdown (readLabMarkdown)
+import Shake.Modules (moduleName, getOurModules, ModKind (WithText), markdownSource)
 import Shake.Digest (shortDigest)
 
 newtype Mangled = Mangled { getMangled :: Text }
@@ -66,9 +65,9 @@ mangleLink = doit where
   wordChar '[' = True
   wordChar c = isAsciiLower c || isDigit c
 
-parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
-parseDefinitions anchor input = liftIO do
-  Pandoc _meta markdown <- readLabMarkdown input
+parseDefinitions :: MonadIO m => (FilePath -> m Pandoc) -> FilePath -> FilePath -> m Glossary
+parseDefinitions read anchor input = do
+  Pandoc _meta markdown <- read input
   pure $ appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
 
 data Definition = Definition
@@ -138,17 +137,18 @@ addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False ke
 definitionTarget :: Definition -> Text
 definitionTarget def = Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
 
-glossaryRules :: Rules ()
-glossaryRules = do
+glossaryRules :: (FilePath -> Action Pandoc) -> Rules ()
+glossaryRules read = do
   _ <- addOracleCache \(ModuleGlossaryQ fp) -> do
     need [fp]
     let modn = moduleName (dropExtensions (dropDirectory1 fp)) <.> "html"
-    traced "parsing definitions" (parseDefinitions modn fp)
+    parseDefinitions read modn fp
 
   _ <- addOracle \GlossaryQ -> do
-    md   <- fmap ("src" </>) <$> getDirectoryFiles "src" ["**/*.lagda.md"]
-    need md
-    outs <- askOracles (ModuleGlossaryQ <$> md)
+    mods <- Map.keys . Map.filter (== WithText) <$> getOurModules
+    files <- traverse markdownSource mods
+    need files
+    outs <- askOracles (ModuleGlossaryQ <$> files)
 
     let
       alldefs :: [(Mangled, Definition)]
