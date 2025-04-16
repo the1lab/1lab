@@ -349,7 +349,7 @@ module _ where
           -- Easier to just do this by hand.
           isom : Iso (↓Obj (!Const X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
           isom .fst α = ↓Obj.y α , ↓Obj.map α
-          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.from (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
           isom .snd .is-iso.linv _ = ↓Obj-path (!Const X) T refl refl refl
 
@@ -364,7 +364,7 @@ module _ where
           -- Easier to just do this by hand.
           isom : Iso (↓Obj T (!Const Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
           isom .fst α = ↓Obj.x α , ↓Obj.map α
-          isom .snd .is-iso.inv (Y , f) = ↓obj f
+          isom .snd .is-iso.from (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
           isom .snd .is-iso.linv _ = ↓Obj-path T (!Const Y) refl refl refl
 ```

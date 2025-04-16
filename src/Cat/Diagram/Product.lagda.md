@@ -382,7 +382,7 @@ the reverse direction by the universal property of products.
     → Hom x (Product.apex prod) ≃ (Hom x a × Hom x b)
   product-repr prod x = Iso→Equiv λ where
       .fst f → π₁ ∘ f , π₂ ∘ f
-      .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
+      .snd .is-iso.from (f , g) → ⟨ f , g ⟩
       .snd .is-iso.rinv (f , g) → π₁∘⟨⟩ ,ₚ π₂∘⟨⟩
       .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
     where open Product prod

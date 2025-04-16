@@ -31,15 +31,17 @@ The first thing we prove is that _paths in sigmas are sigmas of paths_.
 The type signatures make it clearer:
 
 ```agda
-Σ-pathp-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
-              {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
-            → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
-                    (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
-                  (PathP (λ i → Σ (A i) (B i)) x y)
+Σ-pathp-iso
+  : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
+    {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
+  → Iso
+      (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
+        (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
+      (PathP (λ i → Σ (A i) (B i)) x y)
 
-Σ-path-iso : {x y : Σ A B}
-           → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
-                 (x ≡ y)
+Σ-path-iso
+  : {x y : Σ A B}
+  → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd)) (x ≡ y)
 ```
 
 The first of these, using a dependent path, is easy to prove directly,
@@ -49,10 +51,11 @@ first, using the fact  that `PathPs and paths over a transport are the
 same`{.Agda ident=PathP≡Path}.
 
 ```agda
-fst Σ-pathp-iso (p , q) i = p i , q i
-is-iso.inv (snd Σ-pathp-iso) p = (λ i → p i .fst) , (λ i → p i .snd)
-is-iso.rinv (snd Σ-pathp-iso) x = refl
-is-iso.linv (snd Σ-pathp-iso) x = refl
+Σ-pathp-iso .fst (p , q) i = p i , q i
+Σ-pathp-iso .snd = record where
+  from p = (λ i → p i .fst) , (λ i → p i .snd)
+  linv p = refl
+  rinv p = refl
 
 Σ-path-iso {B = B} {x} {y} =
   transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
@@ -82,15 +85,15 @@ types _in the same universe_. Thus, we provide `Σ-ap-fst`{.Agda},
 they are included for completeness. </summary>
 
 ```agda
-Σ-ap-snd {A = A} {P = P} {Q = Q} pointwise = Iso→Equiv morp where
-  pwise : (x : A) → Iso (P x) (Q x)
-  pwise x = _ , is-equiv→is-iso (pointwise x .snd)
+Σ-ap-snd {A = A} {P = P} {Q = Q} pointwise = eqv where
+  module pwise {i} = Equiv (pointwise i)
 
-  morp : Iso (Σ _ P) (Σ _ Q)
-  fst morp (i , x) = i , pointwise i .fst x
-  is-iso.inv (snd morp) (i , x) = i , pwise i .snd .is-iso.inv x
-  is-iso.rinv (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .is-iso.rinv _)
-  is-iso.linv (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .is-iso.linv _)
+  eqv : (Σ _ P) ≃ (Σ _ Q)
+  eqv .fst (i , x) = i , pwise.to x
+  eqv .snd = is-iso→is-equiv record where
+    from (i , x) = i , pwise.from x
+    linv (i , x) = ap₂ _,_ refl (pwise.η _)
+    rinv (i , x) = ap₂ _,_ refl (pwise.ε _)
 
 Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro
  where
@@ -116,8 +119,8 @@ they are included for completeness. </summary>
 
     isCtr : ∀ y → ctr ≡ y
     isCtr ((r , s) , p) = λ i → (a≡r i , b!≡s i) , Σ-pathp (α≡ρ i) (coh i) where
-      open Σ (Σ-pathp-iso .snd .is-iso.inv p) renaming (fst to ρ; snd to σ)
-      open Σ (Σ-pathp-iso .snd .is-iso.inv (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
+      open Σ (Σ-pathp-iso .snd .is-iso.from p) renaming (fst to ρ; snd to σ)
+      open Σ (Σ-pathp-iso .snd .is-iso.from (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
 
       b!≡s : PB (ap (e .fst) a≡r) ctrB s
       b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (∂ i) λ where
@@ -134,15 +137,19 @@ they are included for completeness. </summary>
 Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
         → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
 Σ-assoc .fst (x , y , z) = (x , y) , z
-Σ-assoc .snd .is-eqv y .centre = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .fst
-Σ-assoc .snd .is-eqv y .paths = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .snd
+Σ-assoc .snd = is-iso→is-equiv record where
+  from ((x , y) , z) = x , y , z
+  linv p = refl
+  rinv p = refl
 
 Σ-Π-distrib : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
             → ((x : A) → Σ[ y ∈ B x ] C x y)
             ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
 Σ-Π-distrib .fst f = (λ x → f x .fst) , λ x → f x .snd
-Σ-Π-distrib .snd .is-eqv y .centre = strict-fibres (λ f x → f .fst x , f .snd x) y .fst
-Σ-Π-distrib .snd .is-eqv y .paths = strict-fibres (λ f x → f .fst x , f .snd x) y .snd
+Σ-Π-distrib .snd = is-iso→is-equiv record where
+  from (f , r) x = f x , r x
+  linv p = refl
+  rinv p = refl
 ```
 </details>
 
@@ -155,11 +162,12 @@ subtype is characterised uniquely by identification of the first
 projections:
 
 ```agda
-Σ-prop-path : {B : A → Type ℓ}
-            → (∀ x → is-prop (B x))
-            → {x y : Σ _ B}
-            → (x .fst ≡ y .fst) → x ≡ y
-Σ-prop-path bp {x} {y} p i = p i , is-prop→pathp (λ i → bp (p i)) (x .snd) (y .snd) i
+Σ-prop-path
+  : {B : A → Type ℓ} (bp : ∀ x → is-prop (B x))
+  → {x y : Σ _ B}
+  → (x .fst ≡ y .fst) → x ≡ y
+Σ-prop-path bp {x} {y} p i =
+  p i , is-prop→pathp (λ i → bp (p i)) (x .snd) (y .snd) i
 ```
 
 The proof that this is an equivalence uses a cubical argument, but the
@@ -173,24 +181,23 @@ from the input, or from `Σ≡Path`{.Agda}.
   → (bp : ∀ x → is-prop (B x))
   → {x y : Σ _ B}
   → is-equiv (Σ-prop-path bp {x} {y})
-Σ-prop-path-is-equiv bp {x} {y} = is-iso→is-equiv isom where
-  isom : is-iso _
-  isom .is-iso.inv = ap fst
-  isom .is-iso.linv p = refl
+Σ-prop-path-is-equiv bp {x} {y} = is-iso→is-equiv record where
+  from   = ap fst
+  linv p = refl
 ```
 
-The `inverse`{.Agda ident=is-iso.inv} is the `action on paths`{.Agda
+The `inverse`{.Agda ident=is-iso.from} is the `action on paths`{.Agda
 ident=ap} of the `first projection`{.Agda ident=fst}, which lets us
 conclude `x .fst ≡ y .fst` from `x ≡ y`. This is a left inverse to
 `Σ-prop-path`{.Agda} on the nose. For the other direction, we have the
 aforementioned cubical argument:
 
 ```agda
-  isom .is-iso.rinv p i j =
-    p j .fst , is-prop→pathp (λ k → Path-is-hlevel 1 (bp (p k .fst))
-                                      {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
-                                      {y = p k .snd})
-                             refl refl j i
+  rinv p i j = p j .fst , is-prop→pathp
+    (λ k → Path-is-hlevel 1 (bp (p k .fst))
+       {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
+       {y = p k .snd})
+    refl refl j i
 ```
 
 Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its
@@ -201,10 +208,11 @@ There is also a convenient packaging of the previous two definitions
 into an equivalence:
 
 ```agda
-Σ-prop-path≃ : {B : A → Type ℓ}
-             → (∀ x → is-prop (B x))
-             → {x y : Σ _ B}
-             → (x .fst ≡ y .fst) ≃ (x ≡ y)
+Σ-prop-path≃
+  : {B : A → Type ℓ}
+  → (∀ x → is-prop (B x))
+  → {x y : Σ _ B}
+  → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ-prop-path≃ bp = Σ-prop-path bp , Σ-prop-path-is-equiv bp
 ```
 
@@ -245,7 +253,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-contract bcontr = Iso→Equiv the-iso where
   the-iso : Iso _ _
   the-iso .fst (a , b) = a
-  the-iso .snd .is-iso.inv x = x , bcontr _ .centre
+  the-iso .snd .is-iso.from x = x , bcontr _ .centre
   the-iso .snd .is-iso.rinv x = refl
   the-iso .snd .is-iso.linv (a , b) i = a , bcontr a .paths b i
 ```
@@ -317,10 +325,10 @@ infixr 4 _,ₚ_
   → (c : is-contr A)
   → (Σ A B) ≃ B (c .centre)
 Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
-Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
-  .is-iso.inv x → _ , x
-  .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
-  .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv record where
+  from x = _ , x
+  rinv x = ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
+  linv x = Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
 ```
 -->
 

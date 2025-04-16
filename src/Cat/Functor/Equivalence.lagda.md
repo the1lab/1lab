@@ -575,15 +575,15 @@ module
     module F = Fr F
 
   is-equivalence→is-ff : is-fully-faithful F
-  is-equivalence→is-ff = is-iso→is-equiv λ where
-    .is-iso.inv x → e.unit⁻¹ .η _ C.∘ L-adjunct e.F⊣F⁻¹ x
-    .is-iso.rinv x →
+  is-equivalence→is-ff = is-iso→is-equiv record where
+    from x = e.unit⁻¹ .η _ C.∘ L-adjunct e.F⊣F⁻¹ x
+    rinv x =
       D.invertible→monic (F-map-invertible F (e.unit-iso _)) _ _ $
         ap₂ D._∘_ refl (F .F-∘ _ _)
       ∙∙ D.cancell (F.annihilate (e.unit-iso _ .C.is-invertible.invl))
       ∙∙ D.invertible→monic (e.counit-iso _) _ _
           (R-L-adjunct e.F⊣F⁻¹ x ∙ sym (D.cancell e.zig))
-    .is-iso.linv x →
+    linv x =
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
       ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
 

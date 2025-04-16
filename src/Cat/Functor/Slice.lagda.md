@@ -73,15 +73,14 @@ the sliced functors are also [[fully faithful]].
   Sliced-faithful faith p = ext (faith (ap map p))
 
   Sliced-ff : is-fully-faithful F → is-fully-faithful (Sliced F X)
-  Sliced-ff eqv = is-iso→is-equiv isom where
-    isom : is-iso _
-    isom .is-iso.inv sh = record
+  Sliced-ff eqv = is-iso→is-equiv record where
+    from sh = record
       { map = equiv→inverse eqv (sh .map)
       ; commutes = ap fst $ is-contr→is-prop (eqv .is-eqv _)
         (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→counit eqv _) ∙ sh .commutes) (_ , refl)
       }
-    isom .is-iso.rinv x = ext (equiv→counit eqv _)
-    isom .is-iso.linv x = ext (equiv→unit eqv _)
+    rinv x = ext (equiv→counit eqv _)
+    linv x = ext (equiv→unit eqv _)
 ```
 
 # Left exactness

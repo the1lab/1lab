@@ -112,7 +112,7 @@ opaque
 
 ```agda
 conj-is-iso : (p : y ≡ x) → is-iso (conj p)
-conj-is-iso p .inv  q = conj (sym p) q
+conj-is-iso p .from q = conj (sym p) q
 conj-is-iso p .rinv q = conj⁻conj
 conj-is-iso p .linv q = conj⁻conj
 ```

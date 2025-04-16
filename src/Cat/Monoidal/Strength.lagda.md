@@ -228,7 +228,7 @@ is extremely tedious, so we leave the details to the curious reader.
         F₁ β→ ∘ σ ∘ (id ⊗₁ (F₁ β→ ∘ σ)) ∘ β← ∘ (β← ⊗₁ id) ∘ α← _ _ _         ≡⟨ pushr (pushr (extendl (sym (β←.is-natural _ _ _)))) ⟩
         (F₁ β→ ∘ σ ∘ β←) ∘ ((F₁ β→ ∘ σ) ⊗₁ id) ∘ (β← ⊗₁ id) ∘ α← _ _ _       ≡⟨ refl⟩∘⟨ ◀.pulll (sym (assoc _ _ _)) ⟩
         (F₁ β→ ∘ σ ∘ β←) ∘ ((F₁ β→ ∘ σ ∘ β←) ⊗₁ id) ∘ α← _ _ _               ∎
-    left≃right .snd .inv r = l where
+    left≃right .snd .from r = l where
       open Right-strength r
       open Left-strength
       l : Left-strength
@@ -292,7 +292,7 @@ module _ {o ℓ} {C : Precategory o ℓ}
       ; right-strength-ρ← = left-strength-λ←
       ; right-strength-α← = left-strength-α→
       } where open Left-strength l
-    is .snd .inv r = record
+    is .snd .from r = record
       { left-strength = NT (λ _ → τ) λ _ _ _ → τ.is-natural _ _ _
       ; left-strength-λ← = right-strength-ρ←
       ; left-strength-α→ = right-strength-α←

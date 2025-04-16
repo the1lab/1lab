@@ -1059,36 +1059,38 @@ iso→hom-equiv f g = Iso→Equiv $
 dom-iso→hom-equiv
   : ∀ {a a' b} → a ≅ a'
   → Hom a b ≃ Hom a' b
-dom-iso→hom-equiv f = Iso→Equiv $
-  (λ h → h ∘ f .from) ,
-  iso (λ h → h ∘ f .to )
-    (λ h →
-      (h ∘ f .to) ∘ f .from ≡⟨ sym (assoc _ _ _) ⟩
-      h ∘ (f .to ∘ f .from) ≡⟨ ap (h ∘_) (f .invl) ⟩
-      h ∘ id                ≡⟨ idr _ ⟩
-      h ∎)
-    (λ h →
-      (h ∘ f .from) ∘ f .to ≡⟨ sym (assoc _ _ _) ⟩
-      h ∘ (f .from ∘ f .to) ≡⟨ ap (h ∘_) (f .invr) ⟩
-      h ∘ id                ≡⟨ idr _ ⟩
-      h ∎)
+dom-iso→hom-equiv f .fst h = h ∘ f .from
+dom-iso→hom-equiv f .snd = is-iso→is-equiv record
+  { from = _∘ f .to
+  ; rinv = λ h →
+    (h ∘ f .to) ∘ f .from ≡⟨ sym (assoc _ _ _) ⟩
+    h ∘ (f .to ∘ f .from) ≡⟨ ap (h ∘_) (f .invl) ⟩
+    h ∘ id                ≡⟨ idr _ ⟩
+    h ∎
+  ; linv = λ h →
+    (h ∘ f .from) ∘ f .to ≡⟨ sym (assoc _ _ _) ⟩
+    h ∘ (f .from ∘ f .to) ≡⟨ ap (h ∘_) (f .invr) ⟩
+    h ∘ id                ≡⟨ idr _ ⟩
+    h ∎
+  }
 
-cod-iso→Hom-equiv
+cod-iso→hom-equiv
   : ∀ {a b b'} → b ≅ b'
   → Hom a b ≃ Hom a b'
-cod-iso→Hom-equiv f = Iso→Equiv $
-  (λ h → f .to ∘ h) ,
-  iso (λ h → f .from ∘ h)
-    (λ h →
-      f .to ∘ f .from ∘ h   ≡⟨ assoc _ _ _ ⟩
-      (f .to ∘ f .from) ∘ h ≡⟨ ap (_∘ h) (f .invl) ⟩
-      id ∘ h                ≡⟨ idl _ ⟩
-      h ∎)
-    (λ h →
-      f .from ∘ f .to ∘ h   ≡⟨ assoc _ _ _ ⟩
-      (f .from ∘ f .to) ∘ h ≡⟨ ap (_∘ h) (f .invr) ⟩
-      id ∘ h                ≡⟨ idl _ ⟩
-      h ∎)
+cod-iso→hom-equiv f .fst h = f .to ∘ h
+cod-iso→hom-equiv f .snd = is-iso→is-equiv record
+  { from = f .from ∘_
+  ; rinv = λ h →
+    f .to ∘ f .from ∘ h   ≡⟨ assoc _ _ _ ⟩
+    (f .to ∘ f .from) ∘ h ≡⟨ ap (_∘ h) (f .invl) ⟩
+    id ∘ h                ≡⟨ idl _ ⟩
+    h ∎
+  ; linv = λ h →
+    f .from ∘ f .to ∘ h   ≡⟨ assoc _ _ _ ⟩
+    (f .from ∘ f .to) ∘ h ≡⟨ ap (_∘ h) (f .invr) ⟩
+    id ∘ h                ≡⟨ idl _ ⟩
+    h ∎
+  }
 ```
 -->
 
