@@ -16,9 +16,9 @@ module Cat.Instances.Shape.Join where
 
 # Join of categories
 
-The **join** $\cC \star \cD$ of two categories is the category
-obtained by "bridging" the disjoint union $\cC \coprod \cD$ with a
-_unique_ morphism between each object of $\cC$ and each object of $\cD$.
+The **join** $\cC \star \cD$ of two categories is the category obtained
+by "bridging" the disjoint union $\cC \coprod \cD$ with a _unique_
+morphism between each object of $\cC$ and each object of $\cD$.
 
 ```agda
 module _ {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ') where
@@ -106,10 +106,13 @@ module _ {oc ℓc od ℓd oe ℓe}
   ⋆-mapr F .F-∘ {inr x} {inr y} {inr z} f g = ap lift (F .F-∘ _ _)
 ```
 
-## Adjoining a terminal object {defines="adjoined-terminal-object"}
+## Adjoining a terminal object
 
-Given a category $\cJ$, we can freely adjoin a [[terminal object]] to $\cJ$ by taking
-the join $\cJ^\triangleright = \cJ \star \top$ with the [[terminal category]].
+::: {.definition #adjoined-terminal-object}
+Given a category $\cJ$, we can freely adjoin a [[terminal object]] to
+$\cJ$ by taking the join $\cJ^\triangleright = \cJ \star \top$ with the
+[[terminal category]].
+:::
 
 ```agda
 _▹ : ∀ {o ℓ} → Precategory o ℓ → Precategory o ℓ

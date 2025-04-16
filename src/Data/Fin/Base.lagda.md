@@ -24,6 +24,7 @@ module Data.Fin.Base where
 
 # Finite sets {defines=standard-finite-set}
 
+::: {.popup .keep}
 The type $\operatorname{Fin}(n)$ is the type with exactly $n$ elements.
 We define it as a record type, packaging a natural number $k$ with a
 proof that $k \lt n$.
@@ -35,6 +36,7 @@ record Fin (n : Nat) : Type where
     lower       : Nat
     ⦃ bounded ⦄ : Irr (lower Nat.< n)
 ```
+:::
 
 While the type $k \lt n$ is a [[homotopy proposition|proposition]], we
 would like to enforce that constructions on $\operatorname{Fin}(n)$

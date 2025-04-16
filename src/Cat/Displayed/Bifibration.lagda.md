@@ -45,11 +45,13 @@ private
 
 # Bifibrations {defines="bifibration"}
 
+::: {.popup .keep}
 A [[displayed category]] $\cE \liesover \cB$ is a **bifibration** if is
-it both a [[fibration|cartesian fibration]] and an opfibration. This
-means that $\cE$ is equipped with both [reindexing] and [opreindexing]
-functors, which allows us to both restrict and extend along morphisms $X
-\to Y$ in the base.
+it both a [[fibration|cartesian fibration]] and an
+[[opfibration|cocartesian fibration]]. This means that $\cE$ is equipped
+with both [reindexing] and [opreindexing] functors, which allows us to
+both restrict and extend along morphisms $X \to Y$ in the base.
+:::
 
 Note that a bifibration is *not* the same as a "profunctor valued in
 categories". Those are a distinct concept, called **two-sided
@@ -66,7 +68,7 @@ when that page is written.
 ```agda
 record is-bifibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   field
-    fibration : Cartesian-fibration
+    fibration   : Cartesian-fibration
     opfibration : Cocartesian-fibration
 
   module fibration = Cartesian-fibration fibration

@@ -3,10 +3,10 @@ import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, 
 
 // This is pretty evil, but a loose <script> tag assigns these to the
 // window object in the HTML template.
-const links: { baseURL: string, source: string } = window as any;
+const links: { baseUrl: string, source: string } = window as any;
 
 function Button(props: { label: Content, icon?: string, click: ((ev: MouseEvent) => void) | string, ['class']?: string }): HTMLButtonElement {
-  const style = `background-image: url('${links.baseURL}/static/icons/${props.icon}.svg');`;
+  const style = `background-image: url('${links.baseUrl}/static/icons/${props.icon}.svg');`;
 
   const ic: HTMLElement = typeof props.click === 'string' ?
     <a class="icon" style={style} href={props.click} /> :
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   line.parentElement!.insertBefore(
     <div id="controls">
       <Button icon="github" label="Link to source" click={`https://github.com/the1lab/1lab/blob/${links.source}`} />
-      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
+      <Button icon="all-pages" label="View all pages" click={`${links.baseUrl}/all-pages.html`} />
 
       <div class="dropdown">
         <Button icon="view-controls" label="View controls" click={(e) => {

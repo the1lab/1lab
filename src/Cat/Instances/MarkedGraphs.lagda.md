@@ -317,7 +317,7 @@ instead, which we encode in Agda via the following higher-inductive type.
       → Marking p q → Marking r s
       → Marking (p ++ r) (q ++ s)
     trunc : ∀ {x y} {p q : Path-in G.graph x y} → is-prop (Marking p q)
-  ```
+```
 
 <!--
 ```agda
