@@ -359,7 +359,7 @@ This map has an inverse given by joining up the pairs:
 
 ```agda
   isom : is-iso f
-  isom .inv (a , b) = Coeq-rec₂ squash (λ x y → inc (x , y))
+  isom .from (a , b) = Coeq-rec₂ squash (λ x y → inc (x , y))
     (λ a (x , y , r) i → glue ((x , a) , (y , a) , r , Precategory.id D) i)
     (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i)
     a b

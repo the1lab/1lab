@@ -52,7 +52,6 @@ following manner:
 total-fibres : {f : (x : A) → P x → Q x} {x : A} {v : Q x}
              → Iso (fibre (f x) v) (fibre (total f) (x , v))
 total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
-  open is-iso
 
   to : {x : A} {v : Q x} → fibre (f x) v → fibre (total f) (x , v)
   to (v' , p) = (_ , v') , λ i → _ , p i
@@ -62,7 +61,7 @@ total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
 
   the-iso : {x : A} {v : Q x} → Iso (fibre (f x) v) (fibre (total f) (x , v))
   the-iso .fst = to
-  the-iso .snd .is-iso.inv = from
+  the-iso .snd .is-iso.from = from
   the-iso .snd .is-iso.rinv ((x , v) , p) =
     J (λ { _ p → to (from ((x , v) , p)) ≡ ((x , v) , p) })
       (ap to (J-refl {A = Σ A Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl)))
@@ -77,13 +76,14 @@ From this, we immediately get that a fibrewise transformation is an
 equivalence iff. it induces an equivalence of total spaces by `total`.
 
 ```agda
-total→equiv : {f : (x : A) → P x → Q x}
-            → is-equiv (total f)
-            → {x : A} → is-equiv (f x)
-total→equiv eqv {x} .is-eqv y =
-  iso→is-hlevel 0 (total-fibres .snd .is-iso.inv)
-                  (is-iso.inverse (total-fibres .snd))
-                  (eqv .is-eqv (x , y))
+total→equiv
+  : {f : (x : A) → P x → Q x}
+  → is-equiv (total f)
+  → {x : A} → is-equiv (f x)
+total→equiv eqv {x} .is-eqv y = iso→is-hlevel 0
+  (total-fibres .snd .is-iso.from)
+  (is-iso.inverse (total-fibres .snd))
+  (eqv .is-eqv (x , y))
 
 equiv→total : {f : (x : A) → P x → Q x}
             → ({x : A} → is-equiv (f x))

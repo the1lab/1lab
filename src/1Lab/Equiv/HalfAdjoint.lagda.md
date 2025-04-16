@@ -59,7 +59,7 @@ is-iso→is-half-adjoint-equiv
 is-iso→is-half-adjoint-equiv {A = A} {B} {f} iiso =
   g , η , ε' , λ x → sym (zig x)
   where
-    open is-iso iiso renaming (inv to g ; linv to η ; rinv to ε)
+    open is-iso iiso renaming (from to g ; linv to η ; rinv to ε)
 ```
 
 For $g$ and $\eta$, we can take the values provided by `is-iso`{.Agda}.

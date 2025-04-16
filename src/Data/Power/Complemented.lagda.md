@@ -125,7 +125,7 @@ process is inverse to taking fibres over $\mathtt{true}$.
 
   eqv = Iso→Equiv λ where
     .fst → to
-    .snd .is-iso.inv p x → from p x .fst
+    .snd .is-iso.from p x → from p x .fst
     .snd .is-iso.rinv pred → Σ-prop-path! $ ℙ-ext
       (λ x w → from pred x .snd .fst w)
       (λ x p → Equiv.from (from pred x .snd) p)

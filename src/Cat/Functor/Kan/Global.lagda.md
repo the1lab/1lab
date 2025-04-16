@@ -83,7 +83,7 @@ adjoint to the [precomposition] functor $- \circ p$.
     open is-iso
 
     eqv : ∀ {x} {y} → is-iso (f {x} {y})
-    eqv {x} {y} .inv θ = has-lan _ .σ θ
+    eqv {x} {y} .from θ = has-lan _ .σ θ
     eqv {x} {y} .rinv θ = has-lan x .σ-comm
     eqv {x} {y} .linv θ = has-lan _ .σ-uniq refl
 

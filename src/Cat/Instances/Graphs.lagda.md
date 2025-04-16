@@ -321,7 +321,7 @@ private module _ {ℓ : Level} where
   g→p-is-iso .has-is-ff = g→p-is-ff
   g→p-is-iso .has-is-iso = is-iso→is-equiv F₀-iso where
     F₀-iso : is-iso (graph→presheaf .F₀)
-    F₀-iso .inv = presheaf→graph
+    F₀-iso .from = presheaf→graph
     F₀-iso .rinv F = Functor-path
       (λ { false  → n-ua (Iso→Equiv (
             (λ (_ , _ , x , _ , _) → x) , iso
@@ -348,8 +348,8 @@ private module _ {ℓ : Level} where
       from : (u v : ⌞ G ⌟) → E' (lift u) (lift v) → G .Edge u v
       from u v ((u' , v' , e) , p , q) = subst₂ (G .Edge) (ap lower p) (ap lower q) e
 
-      frome : (u v : ⌞ G ⌟) → is-iso (from u v)
-      frome u v = iso (λ e → ((_ , _ , e) , refl , refl)) (λ x → transport-refl _)
+      from-is : (u v : ⌞ G ⌟) → is-iso (from u v)
+      from-is u v = iso (λ e → ((_ , _ , e) , refl , refl)) (λ x → transport-refl _)
         (λ ((u' , v' , e) , p , q) i →
           ( p (~ i) .lower , q (~ i) .lower
           , coe0→i (λ i → G .Edge (p i .lower) (q i .lower)) (~ i) e )
@@ -357,7 +357,7 @@ private module _ {ℓ : Level} where
           , (λ j → q (~ i ∨ j)))
       in Graph-path (ua eqv) λ i x y → Glue (G .Edge (ua-unglue eqv i x)
                                                      (ua-unglue eqv i y)) λ where
-        (i = i0) → E' x y , from (x .lower) (y .lower) , is-iso→is-equiv (frome _ _)
+        (i = i0) → E' x y , from (x .lower) (y .lower) , is-iso→is-equiv (from-is _ _)
         (i = i1) → G .Edge x y , _ , id-equiv
 ```
 -->

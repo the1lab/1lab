@@ -166,7 +166,7 @@ without comment.
   slice→total-is-iso .has-is-iso = is-iso→is-equiv isom where
     open is-iso
     isom : is-iso slice-ob→presheaf
-    isom .inv = presheaf→slice-ob
+    isom .from = presheaf→slice-ob
 ```
 
 Proving that the constructions `presheaf→slice-ob`{.Agda} and

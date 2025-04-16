@@ -116,7 +116,7 @@ similarities in structure.</summary>
   open is-iso
 
   iso-pf : is-iso Susp→Pushout-⊤←A→⊤
-  iso-pf .inv = Pushout-⊤←A→⊤-to-Susp
+  iso-pf .from = Pushout-⊤←A→⊤-to-Susp
   iso-pf .rinv (inl x) = refl
   iso-pf .rinv (inr x) = refl
   iso-pf .rinv (commutes c i) = refl
@@ -195,7 +195,7 @@ and again mostly reduces to `refl`{.Agda}.
   Cocone→Pushout t (inr x) = fst (snd t) x
   Cocone→Pushout t (commutes c i) = snd (snd t) c i
 
-  iso-pc .inv = Cocone→Pushout
+  iso-pc .from = Cocone→Pushout
   iso-pc .rinv _ = refl
   iso-pc .linv _ = funext (λ { (inl y) → refl;
                                 (inr y) → refl;
