@@ -299,8 +299,8 @@ functor is also [[fully faithful]].
 
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
-    .inv α .hom       → α .η _ · id
-    .inv α .preserves → Nat→internal-mon-hom α
+    .from α .hom       → α .η _ · id
+    .from α .preserves → Nat→internal-mon-hom α
     .rinv α → ext λ _ f →
       α .η _ · id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ · (id ∘ f) ≡⟨ ap (α .η _ ·_) (idl f) ⟩

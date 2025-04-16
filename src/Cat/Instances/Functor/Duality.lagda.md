@@ -48,8 +48,8 @@ op-functor-is-iso = isom where
   isom : is-precat-iso _
   isom .has-is-ff = is-iso→is-equiv ff where
     ff : is-iso (F₁ op-functor→)
-    ff .inv nt .η = nt .η
-    ff .inv nt .is-natural x y f = sym (nt .is-natural y x f)
+    ff .from nt .η = nt .η
+    ff .from nt .is-natural x y f = sym (nt .is-natural y x f)
     ff .rinv x = trivial!
     ff .linv x = trivial!
   isom .has-is-iso = is-iso→is-equiv (iso Functor.op

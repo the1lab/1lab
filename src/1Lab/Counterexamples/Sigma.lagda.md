@@ -49,12 +49,11 @@ A$, independent of $f$:
 
 ```agda
 image≃domain : {f : A → B} → image f ≃ A
-image≃domain {f = f} = Iso→Equiv the-iso where
-  the-iso : Iso _ _
-  the-iso .fst (y , x , p) = x
-  the-iso .snd .is-iso.inv x = f x , x , refl
-  the-iso .snd .is-iso.rinv x = refl
-  the-iso .snd .is-iso.linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
+image≃domain .fst (y , x , p) = x
+image≃domain {f = f} .snd = is-iso→is-equiv record where
+  from x = f x , x , refl
+  rinv x = refl
+  linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
 ```
 
 This is a direct cubical interpretation of the following argument, which

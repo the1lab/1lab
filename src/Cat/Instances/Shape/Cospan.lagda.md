@@ -100,7 +100,7 @@ instance
     i .fst cs-a = 0
     i .fst cs-b = 1
     i .fst cs-c = 2
-    i .snd .is-iso.inv = indexₚ (cs-a , cs-b , cs-c , tt)
+    i .snd .is-iso.from = indexₚ (cs-a , cs-b , cs-c , tt)
     i .snd .is-iso.rinv = indexₚ (refl , refl , refl , tt)
     i .snd .is-iso.linv cs-a = refl
     i .snd .is-iso.linv cs-b = refl

@@ -76,10 +76,10 @@ structure.
   unlambda m = ev ∘ m ⊗₁ id
 
   lambda-is-equiv : ∀ {C} → is-equiv (ƛ {C})
-  lambda-is-equiv = is-iso→is-equiv λ where
-    .is-iso.inv    → unlambda
-    .is-iso.rinv x → sym (unique x refl)
-    .is-iso.linv x → commutes x
+  lambda-is-equiv = is-iso→is-equiv record where
+    from   = unlambda
+    rinv x = sym (unique x refl)
+    linv x = commutes x
 ```
 
 <!--

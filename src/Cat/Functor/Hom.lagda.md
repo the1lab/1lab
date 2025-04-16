@@ -130,14 +130,13 @@ embedding functor is [[fully faithful]].
 
 ```agda
 よ-is-fully-faithful : is-fully-faithful よ
-よ-is-fully-faithful = is-iso→is-equiv isom where
-  open is-iso
-
-  isom : is-iso よ₁
-  isom .inv nt = nt .η _ id
-  isom .rinv nt = ext λ c g →
-    happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
-  isom .linv _ = idr _
+よ-is-fully-faithful = is-iso→is-equiv record where
+  from nt = nt .η _ id
+  rinv nt = ext λ c g →
+    nt .η _ id ∘ g   ≡⟨ sym (nt .is-natural _ _ _) $ₚ _ ⟩
+    nt .η c (id ∘ g) ≡⟨ ap (nt .η c) (idl g) ⟩
+    nt .η c g        ∎
+  linv _  = idr _
 ```
 
 <!--
@@ -172,14 +171,10 @@ As expected, the covariant yoneda embedding is also fully faithful.
 
 ```agda
 よcov-is-fully-faithful : is-fully-faithful よcov
-よcov-is-fully-faithful = is-iso→is-equiv isom where
-  open is-iso
-
-  isom : is-iso よcov₁
-  isom .inv nt = nt .η _ id
-  isom .rinv nt = ext λ c g →
-    sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
-  isom .linv _ = idl _
+よcov-is-fully-faithful = is-iso→is-equiv record where
+  from nt = nt .η _ id
+  rinv nt = ext λ c g → sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
+  linv h  = idl h
 ```
 
 <!--

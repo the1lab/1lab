@@ -15,8 +15,6 @@ open import Data.Irr
 open import Data.Sum
 
 open import Meta.Invariant
-
-open is-iso
 ```
 -->
 
@@ -243,7 +241,7 @@ product (suc n) f = f fzero * product n (f ∘ fsuc)
 Finite-product : (B : Fin n → Nat) → (∀ x → Fin (B x)) ≃ Fin (product n B)
 Finite-product {zero} B .fst _ = fzero
 Finite-product {zero} B .snd = is-iso→is-equiv λ where
-  .is-iso.inv  _ ()
+  .is-iso.from _ ()
   .is-iso.linv _ → funext λ ()
 
   .is-iso.rinv fzero                      → refl
@@ -276,7 +274,7 @@ Fin-permutations-suc n = to , is-iso→is-equiv is where
     fsuc-inj (Equiv.injective e (avoid-injective (e · 0) p))
 
   is : is-iso to
-  is .is-iso.inv (n , e) = record { fst = fun ; snd = Fin-injection→equiv _ inj  } module inv where
+  is .is-iso.from (n , e) = record { fst = fun ; snd = Fin-injection→equiv _ inj  } module inv where
     fun : Fin (suc _) → Fin (suc _)
     fun i with fin-view i
     ... | zero  = n
@@ -395,7 +393,7 @@ the quotient remains unchanged.
   go ⦃ yes (i , r) ⦄ .snd = n/R₁ .snd ∙e Iso→Equiv is where
     is : Iso (Fin n / R₁._∼_) (Fin (suc n) / R._∼_)
     is .fst = Coeq-rec (λ x → inc (fsuc x)) λ (x , y , s) → quot s
-    is .snd .inv = Coeq-rec fn λ (i , j , s) → resp i j s where
+    is .snd .is-iso.from = Coeq-rec fn λ (i , j , s) → resp i j s where
       fn : Fin (suc n) → Fin n / R₁._∼_
       fn j with fin-view j
       ... | zero  = inc i
@@ -407,8 +405,8 @@ the quotient remains unchanged.
       ... | zero  | suc y = quot (R.symᶜ r R.∙ᶜ s)
       ... | suc x | zero  = quot (s R.∙ᶜ r)
       ... | suc x | suc y = quot s
-    is .snd .rinv = elim! (Fin-cases (quot (R.symᶜ r)) (λ _ → refl))
-    is .snd .linv = elim! λ _ → refl
+    is .snd .is-iso.rinv = elim! (Fin-cases (quot (R.symᶜ r)) (λ _ → refl))
+    is .snd .is-iso.linv = elim! λ _ → refl
 ```
 
 Otherwise, $0$ creates a new equivalence class for itself.
@@ -431,11 +429,11 @@ Otherwise, $0$ creates a new equivalence class for itself.
     is : Iso (⊤ ⊎ (Fin n / R₁._∼_)) (Fin (suc n) / R._∼_)
     is .fst (inl tt) = inc 0
     is .fst (inr x) = Coeq-rec (λ x → inc (fsuc x)) (λ (x , y , s) → quot s) x
-    is .snd .inv = Coeq-rec to λ (x , y , r) → resp x y r
-    is .snd .rinv = elim! (Fin-cases refl (λ _ → refl))
-    is .snd .linv (inl tt) = refl
-    is .snd .linv (inr x) = elim x where
-      elim : ∀ x → is .snd .inv (is .fst (inr x)) ≡ inr x
+    is .snd .is-iso.from = Coeq-rec to λ (x , y , r) → resp x y r
+    is .snd .is-iso.rinv = elim! (Fin-cases refl (λ _ → refl))
+    is .snd .is-iso.linv (inl tt) = refl
+    is .snd .is-iso.linv (inr x) = elim x where
+      elim : ∀ x → is .snd .is-iso.from (is .fst (inr x)) ≡ inr x
       elim = elim! λ _ → refl
 ```
 

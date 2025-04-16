@@ -172,12 +172,10 @@ assumption that $G$ is ff.
 
 ```agda
   comp-ff : is-fully-faithful Comp
-  comp-ff {x} {y} = is-iso→is-equiv isom where
-    open is-iso
-    isom : is-iso _
-    isom .inv alg = equiv→inverse g-ff (alg .hom)
-    isom .rinv x = ext (equiv→counit g-ff _)
-    isom .linv x = equiv→unit g-ff _
+  comp-ff {x} {y} = is-iso→is-equiv record where
+    from alg = equiv→inverse g-ff (alg .hom)
+    rinv x = ext (equiv→counit g-ff _)
+    linv x = equiv→unit g-ff _
 
 ```
 

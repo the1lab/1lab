@@ -81,10 +81,10 @@ overall square has to commute.
     pullback-univ
       : ∀ {O} → Hom O P ≃ (Σ (Hom O X) λ h → Σ (Hom O Y) λ h' → f ∘ h ≡ g ∘ h')
     pullback-univ .fst h = p₁ ∘ h , p₂ ∘ h , extendl square
-    pullback-univ .snd = is-iso→is-equiv λ where
-      .is-iso.inv (f , g , α) → universal α
-      .is-iso.rinv x → Σ-pathp p₁∘universal $ Σ-prop-pathp (λ _ _ → hlevel 1) p₂∘universal
-      .is-iso.linv x → sym (unique refl refl)
+    pullback-univ .snd = is-iso→is-equiv record where
+      from (f , g , α) = universal α
+      rinv x = Σ-pathp p₁∘universal $ Σ-prop-pathp (λ _ _ → hlevel 1) p₂∘universal
+      linv x = sym (unique refl refl)
 ```
 -->
 

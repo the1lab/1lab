@@ -470,11 +470,11 @@ is mechanical.
 </summary>
 
 ```agda
-  shuffle = Iso→Equiv λ where
-    .fst      g a         → g (f a) (a , refl)
-    .snd .inv g b (a , p) → subst P p (g a)
-    .snd .rinv g → funext λ a → transport-refl _
-    .snd .linv g → funext λ b → funext λ { (a , p) →
+  shuffle .fst g a = g (f a) (a , refl)
+  shuffle .snd = is-iso→is-equiv record where
+    from g b (a , p) = subst P p (g a)
+    rinv g = funext λ a → transport-refl _
+    linv g = funext λ b → funext λ { (a , p) →
       J (λ b p → subst P p (g (f a) (a , refl)) ≡ g b (a , p))
         (transport-refl _) p }
 ```

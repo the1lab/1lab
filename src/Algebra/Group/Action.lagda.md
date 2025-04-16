@@ -157,12 +157,12 @@ applying the right helpers for pushing paths inwards, we're left with
 
 ```agda
     Functor≃action : is-equiv {B = Σ _ (Action G)} λ i → _ , Functor→action i
-    Functor≃action = is-iso→is-equiv λ where
-      .is-iso.inv (x , act) → Action→functor act
-      .is-iso.rinv x → Σ-pathp refl $
+    Functor≃action = is-iso→is-equiv record where
+      from (x , act) = Action→functor act
+      linv x = Functor-path (λ _ → refl) λ _ → refl
+      rinv x = Σ-pathp refl $
         total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
           (is-prop→pathp (λ i → is-group-hom-is-prop) _ _)
-      .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
 ```
 
 # Examples of actions
@@ -207,7 +207,7 @@ of $G$ that arises from conjugation with an element of $G$ is called an
 ```agda
   conjugation-action : Action (Groups ℓ) G G
   conjugation-action .hom x = total-iso
-    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∙-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
+    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∘-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
     (record { pres-⋆ = λ y z → group! G })
   conjugation-action .preserves .pres-⋆ x y = ext λ z → group! G
 ```
