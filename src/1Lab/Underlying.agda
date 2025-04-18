@@ -81,7 +81,7 @@ record Funlike {ℓ ℓ' ℓ''} (A : Type ℓ) (arg : Type ℓ') (out : arg → 
 open Funlike ⦃ ... ⦄ using (_·_) public
 {-# DISPLAY Funlike._·_ _ f x = f · x #-}
 
--- Sections of the _#_ operator tend to be badly-behaved since they
+-- Sections of the _·_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta
 -- "mutually blocks" the Funlike instance meta. Use the prefix version
 -- instead.
