@@ -32,7 +32,7 @@ context, indexed by types which are not sets.
 That's where $I$-indexed products come in: Rather than having a
 _functor_ giving the objects to take the limit over, we have an
 arbitrary map $F$ from $I$ to the space of objects of $\cC$. An _indexed
-product_ for this "diagram" is then an object admitting an universal
+product_ for this "diagram" is then an object admitting a universal
 family of maps $\pi_i : (\prod F) \to F_i$.
 
 ```agda
@@ -286,8 +286,8 @@ lying over our isomorphism.
 ## Properties
 
 Let $X : \Sigma A B \to \cC$ be a family of objects in $\cC$. If the
-the indexed products $\Pi_{a, b : \Sigma A B} X_{a,b}$ and
-$\Pi_{a : A} \Pi_{b : B(a)} X_{a, b}$ exists, then they are isomorphic.
+indexed products $\Pi_{a, b : \Sigma A B} X_{a,b}$ and
+$\Pi_{a : A} \Pi_{b : B(a)} X_{a, b}$ exist, then they are isomorphic.
 
 ```agda
 is-indexed-product-assoc
