@@ -114,8 +114,7 @@ which, _a priori_, might not be a proposition: we have not included the
 assumption that `Ob`{.Agda} is actually a set. Therefore, it might be
 the case that an identification between posets does _not_ correspond to
 an identification of the underlying types and one of the relation.
-However, since the "symmetric part" of $\le$, the relation
-iff.
+However, since the "symmetric part" of $\le$, the relation defined by
 
 $$
 x \sim y = (x \le y) \land (y \le x)

@@ -11,6 +11,7 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 open import Order.Base
+open import Order.Cat
 
 import Cat.Displayed.Reasoning as Disp
 import Cat.Reasoning as Cat
@@ -67,24 +68,28 @@ predicates; we therefore write $\phi \vdash_\Gamma \psi$.
 However, having an entire _category_ of predicates is hard to make
 well-behaved: that would lend itself more to an interpretation of
 dependent type theory, rather than the first-order logic we are
-concerned with. Therefore, we impose the following three restrictions on
+concerned with. Therefore, we impose the following two restrictions on
 $\bP$:
 
 ```agda
   field
-    has-is-set     : ∀ Γ → is-set ℙ.Ob[ Γ ]
     has-is-thin    : ∀ {x y} {f : Hom x y} x' y' → is-prop (ℙ.Hom[ f ] x' y')
     has-univalence : ∀ x → is-category (Fibre ℙ x)
 ```
 
-First, the space of predicates over $\Gamma$ must be a [[set]]. Second,
-the entailment relation $\phi \vdash_\Gamma \psi$ must be a
+First, the entailment relation $\phi \vdash_\Gamma \psi$ must be a
 [[proposition]], rather than an arbitrary set --- which we will use as
-justification to omit the names of its inhabitants. Finally, each
+justification to omit the names of its inhabitants. Second, each
 [[fibre category]] $\bP(\Gamma)$ must be [[univalent|univalent
 category]]. In light of the previous restriction, this means that each
 fibre satisfies _antisymmetry_, or, specialising to logic, that
-inter-derivable propositions are indistinguishable.
+inter-derivable propositions are indistinguishable. To put it more
+concisely, this means that every fibre $\bP(\Gamma)$ is a [[poset]]:
+
+```agda
+  ≤-Poset : ∀ {x : Ob} → Poset o' ℓ'
+  ≤-Poset {x = x} = thin→poset (Fibre ℙ x) has-is-thin (has-univalence x)
+```
 
 Next, each fibre $\bP(\Gamma)$ must be [[finitely complete]]. The binary
 products interpret conjunction, and the terminal object interprets the
@@ -92,6 +97,7 @@ true proposition; since we are working with posets, these two shapes of
 limit suffice to have full finite completeness.
 
 ```agda
+  field
     fibrewise-meet : ∀ {x} x' y' → Product (Fibre ℙ x) x' y'
     fibrewise-top  : ∀ x → Terminal (Fibre ℙ x)
 ```
@@ -242,14 +248,9 @@ the Beck-Chevalley condition.
 
 <!--
 ```agda
-  ≤-Poset : ∀ {x : Ob} → Poset o' ℓ'
-  ≤-Poset {x = x} .Poset.Ob = ℙ.Ob[ x ]
-  ≤-Poset {x = x} .Poset._≤_ = ℙ.Hom[ id ]
-  ≤-Poset {x = x} .Poset.≤-thin = has-is-thin _ _
-  ≤-Poset {x = x} .Poset.≤-refl = ℙ.id'
-  ≤-Poset {x = x} .Poset.≤-trans α β = Precategory._∘_ (Fibre ℙ _) β α
-  ≤-Poset {x = x} .Poset.≤-antisym α β = has-univalence _ .to-path $
-      Cat.make-iso (Fibre ℙ _) α β (has-is-thin _ _ _ _) (has-is-thin _ _ _ _)
+  abstract
+    has-is-set : ∀ Γ → is-set ℙ.Ob[ Γ ]
+    has-is-set Γ = Poset.Ob-is-set ≤-Poset
 
   module _ {x} where
     open Order.Reasoning (≤-Poset {x}) hiding (Ob-is-set ; Ob) public

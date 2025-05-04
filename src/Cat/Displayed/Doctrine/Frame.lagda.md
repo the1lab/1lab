@@ -193,7 +193,6 @@ We're ready to put everything together. By construction, we have a
 ```agda
   idx : Regular-hyperdoctrine (Sets κ) _ _
   idx .ℙ                = disp
-  idx .has-is-set  x    = Π-is-hlevel 2 λ _ → F.Ob-is-set
   idx .has-is-thin f g  = hlevel 1
   idx .has-univalence S = set-identity-system
     (λ _ _ _ _ → Cat.≅-path (Fibre disp _) prop!)
