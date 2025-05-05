@@ -61,6 +61,7 @@ Link targets, called definitions, can be introduced in two ways:
   ```
   ::: {.definition #anchor-1 alias="anchor-2"}
   [the definition]
+  :::
   ```
 
 Wikilink targets are case insensitive, and get "mangled" for whitespace:
@@ -68,6 +69,32 @@ the anchor `least-upper-bound` can be referred to as `[[least upper
 bound]]`, or `[[lub|least upper bound]]` if different textual content is
 required, or `[[lub|least-upper-bound]]`. White space **should** be used
 instead of dashes at use sites.
+
+### Definition popups
+
+Definition links can have associated "popup" information which is
+displayed when the reader hovers over that link. Popup information is
+collected according to the following rules:
+
+* If the definition is associated with a header, **the content of all
+  top-level `div.popup`{.css} before the next header** will be
+  concatenated to make up the popup.
+
+* If the definition is associated with a `div`{.html} *and* that div
+  directly contains `div.popup`{.css}s, **their contents and those of
+  other blocks directly under the definition** will be concatenated to
+  make up the popup.
+
+  This means that **non-paragraph, non-`popup`** content under a
+  definition will always be rendered on both the page and in popups.
+
+  Otherwise, the content of the popup is just the literal content of the
+  div.
+
+Note that any paragraphs contained within divs with
+`class="popup"`{.html} will be removed from the page entirely; other
+elements (e.g. code) will be preserved. Divs that have other classes
+will be preserved.
 
 ## Linking identifiers
 

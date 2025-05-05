@@ -40,3 +40,4 @@ sequence
       {a : Type ℓ}
   → F.₀ (M.₀ a) → M.₀ (F.₀ a)
 sequence = traverse id
+```

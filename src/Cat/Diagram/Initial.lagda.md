@@ -19,13 +19,17 @@ module _ {o h} (C : Precategory o h) where
 
 # Initial objects {defines="initial-object initial"}
 
+::: {.popup .keep}
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
-if there exists a _unique_ map to any other object:
+if there exists a _unique_ map from $\bot$ to any other object:
 
 ```agda
   is-initial : Ob → Type _
   is-initial ob = ∀ x → is-contr (Hom ob x)
+```
+:::
 
+```agda
   record Initial : Type (o ⊔ h) where
     field
       bot  : Ob
@@ -95,14 +99,18 @@ a proposition:
 
 ## Strictness {defines="strict-initial-object"}
 
-An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
-This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
+::: {.popup .keep}
+An [[initial object]] $\bot$ is said to be **strict** if every morphism
+$f : X \to \bot$ into it is [[invertible]].
+
+This generalises to an arbitrary $\cC$ the observation that if one can
+write a function of [[sets]] $X \to \emptyset$ then $X$ must itself be
+empty.
+:::
 
 This is an instance of the more general notion of [van Kampen colimits].
 
-[strict]: https://ncatlab.org/nlab/show/strict+initial+object
 [van Kampen colimits]: https://ncatlab.org/nlab/show/van+Kampen+colimit
-
 
 ```agda
   is-strict-initial : Initial → Type _

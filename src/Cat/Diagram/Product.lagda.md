@@ -18,9 +18,8 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-# Products
+# Products {defines="product"}
 
-:::{.definition #product}
 The **product** $P$ of two objects $A$ and $B$, if it exists, is the
 smallest object equipped with "projection" maps $P \to A$ and $P \to B$.
 This situation can be visualised by putting the data of a product into a
@@ -28,7 +27,12 @@ commutative diagram, as the one below: To express that $P$ is the
 _smallest_ object with projections to $A$ and $B$, we ask that any other
 object $Q$ with projections through $A$ and $B$ factors uniquely through
 $P$:
-:::
+
+::: popup
+The **product** $P$ of two objects $A, B : \cC$ is the [[terminal]]
+object equipped with maps $A \xot{p} P \xto{q} Q$, i.e. such that if $Q$
+is as in the diagram below, there exists a [[unique|contractible]]
+dotted arrow making both outer triangles commute.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -41,10 +45,11 @@ $P$:
   \arrow[from=1-2, to=2-3]
 \end{tikzcd}\]
 ~~~
+:::
 
 In the sense that [[(univalent) categories|univalent category]]
 generalise posets, the product of $A$ and $B$ --- if it exists ---
-generalises the binary meet $A \wedge B$. Since products are
+generalises the binary [[meet]] $A \wedge B$. Since products are
 [unique](#uniqueness) when they exist, we may safely denote any product
 of $A$ and $B$ by $A \times B$.
 

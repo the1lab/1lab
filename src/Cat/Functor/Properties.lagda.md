@@ -180,22 +180,23 @@ the domain category to serve as an inverse for $f$:
 
 ## Essential fibres {defines="essential-fibre"}
 
-The **essential fibre** of a functor $F : C \to D$ over an object $y :
-D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
-$y$.
+::: {.popup .keep}
+The **essential fibre** of a [[functor]] $F : C \to D$ over an object $y
+: D$ is the space of objects of $C$ which $F$ takes, up to
+[[isomorphism]], to $y$.
 
 ```agda
 Essential-fibre : Functor C D → D .Ob → Type _
 Essential-fibre {C = C} {D = D} F y = Σ[ x ∈ C ] (F · x ≅ y)
   where open import Cat.Morphism D
 ```
+:::
 
 :::{.definition #split-eso-functor alias="eso-functor essentially-surjective essential-surjection split-essential-surjection split-essentially-surjective"}
 A functor is **split essentially surjective** (abbreviated **split
 eso**) if there is a procedure for finding points in the essential fibre
 over any object. It's **essentially surjective** if this procedure
-_merely_, i.e. truncatedly, finds a point:
-:::
+[[merely]] finds a point:
 
 ```agda
 is-split-eso : Functor C D → Type _
@@ -204,6 +205,7 @@ is-split-eso F = ∀ y → Essential-fibre F y
 is-eso : Functor C D → Type _
 is-eso F = ∀ y → ∥ Essential-fibre F y ∥
 ```
+:::
 
 <!--
 ```agda

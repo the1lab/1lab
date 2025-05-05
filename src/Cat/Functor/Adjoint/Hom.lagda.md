@@ -40,13 +40,22 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
 
 # Adjoints as hom-isomorphisms {defines="adjoints-as-hom-isomorphisms"}
 
+::: popup
+An [[adjunction]] between functors $F : \cC \to \cD$ and $G : \cC \to
+\cD$ can also be defined as a [[natural isomorphism]] of [[$\hom$
+functors]]
+$$
+a : \hom_\cC(F(-), -) \cong \hom_\cD(-, G(-))
+$$
+whence the adjunction unit and counit are given componentwise as the
+[[adjuncts]] of identity morphisms.
+:::
+
 Recall from the page on [[adjoint functors|adjuncts]] that an adjoint pair $L
 \dashv R$ induces an isomorphism
-
 $$
 \hom_\cC(L(x), y) \cong \hom_\cD(x, R(y))
 $$
-
 of $\hom$-sets, sending each morphism to its left and right _adjuncts_,
 respectively. What that page does not mention is that any functors $L,
 R$ with such a correspondence --- as long as the isomorphism is

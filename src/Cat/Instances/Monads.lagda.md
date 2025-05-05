@@ -29,12 +29,14 @@ private variable
 
 # Categories of monads {defines="category-of-monads"}
 
+::: {.popup}
 The **category of monads** of a category $\cC$ consists of [[monads]]
-on $\cC$ and natural transformations preserving the monadic structure.
+on $\cC$, and natural transformations preserving the monadic structure.
 In terms of the bicategory of [[monads in $\Cat$|monad in]], a morphism
 in the 1-categorical version always has the identity functor as the
 underlying 1-cell. That is, this 1-category of monads on $\cC$ is the
 fibre of the displayed bicategory of monads in $\Cat$ over $\cC$.
+:::
 
 <!--
 ```agda
