@@ -29,18 +29,37 @@ private variable
 ```
 -->
 
-# Sums in a PCA
+# Sums in a PCA {defines="sums-in-a-pca"}
+
+We define an encoding for [[sum types]] in a [[partial combinatory
+algebra]] in terms of the encoding for [[booleans|booleans in a PCA]]
+and [[pairs in a PCA]]. The constructors will be defined to simply pair
+a value with a distinguishable tag.
 
 ```agda
 `inl : ↯⁺ ⌞ 𝔸 ⌟
-`inl = val ⟨ x ⟩ `pair `· `true `· x
+`inl = val ⟨ x ⟩ (`true `, x)
 
 `inr : ↯⁺ ⌞ 𝔸 ⌟
-`inr = val ⟨ x ⟩ `pair `· `false `· x
+`inr = val ⟨ x ⟩ (`false `, x)
+```
 
+We can define a 'pattern-matching' program by conditional. Note the
+slightly fancy 'higher-order' nature of this definition, which computes
+the *function to apply* by conditional. Of course, when given enough
+arguments, this is equivalent to pushing the application onto the
+branches.
+
+```agda
 `match : ↯⁺ ⌞ 𝔸 ⌟
-`match = val ⟨ f ⟩ ⟨ g ⟩ ⟨ s ⟩ `fst `· s `· f `· g `· (`snd `· s)
+`match = val ⟨ f ⟩ ⟨ g ⟩ ⟨ s ⟩ (`if (`fst `· s) then f else g) `· (`snd `· s)
+```
 
+As usual we can prove that the constructors are defined when applied to
+an argument, as is the matching function when applied to two, and that
+pattern matching computes as expected.
+
+```agda
 abstract
   `inl↓₁ : ⌞ x ⌟ → ⌞ `inl ⋆ x ⌟
   `inl↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ [] (x , hx))) (`pair↓₂ (`true .snd) hx)

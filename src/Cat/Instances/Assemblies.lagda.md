@@ -69,9 +69,9 @@ need a way to track the connection between the mathematical elements $x
 :::{.definition #assembly}
 An **assembly** over a pca $\bA$ is a [[set]] $X$ equipped with a
 [[propositional|proposition]] relation $\tt{p} \Vdash x$ between
-programs $\tt{p} : \bA$ and elements $x : X$; when this holds, we say
-$\tt{p}$ **realises** $x$. Moreover, for every $x : X$, we require that
-there be at least one $\tt{p}$ which realises it.
+[[values|values in a pca]] $\tt{p} : \bA$ and elements $x : X$; when
+this holds, we say $\tt{p}$ **realises** $x$. Moreover, for every $x :
+X$, we require that there be at least one $\tt{p}$ which realises it.
 :::
 
 ::: warning
@@ -149,12 +149,21 @@ subst⊩ X {x} hx p = subst (_∈ X .realisers x) (sym p) hx
 ```
 -->
 
-To understand the difference --- and similarity --- between the ordinary
+To understand the difference--- and similarity--- between the ordinary
 assembly of booleans and the swapped booleans, we define a morphism of
 assemblies $(X, \Vdash_X) \to (Y, \Vdash_Y)$ to be a function $f : X \to
 Y$ satisfying the [[*property*|propositional truncation]] that there
 exists a program $\tt{f} : \bA$ which sends realisers of $x : X$ to
 realisers of $f(x) : Y$.
+
+```agda
+record Assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
+  open Realisability.Base 𝔸 using ([_]_⊢_)
+
+  field
+    map     : ⌞ X ⌟ → ⌞ Y ⌟
+    tracked : ∥ [ map ] X .realisers ⊢ Y .realisers ∥
+```
 
 Note the force of the propositional truncation in this definition: maps
 of assemblies are identical *when they have the same underlying
@@ -166,15 +175,6 @@ $$
 $$
 are identical, $\thecat{Asm}(\bA)$ would not be a category if the choice
 of realiser mattered for identity of computable maps.
-
-```agda
-record Assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
-  open Realisability.Base 𝔸 using ([_]_⊢_)
-
-  field
-    map     : ⌞ X ⌟ → ⌞ Y ⌟
-    tracked : ∥ [ map ] X .realisers ⊢ Y .realisers ∥
-```
 
 <!--
 ```agda
@@ -195,15 +195,14 @@ instance
 {-# DISPLAY Assembly-hom.map f x = f · x #-}
 
 -- Helper record for constructing an assembly map when the realiser is
--- known/does not depend on other truncated data; the 'tracks' field has
--- all visible arguments to work with `record where` syntax.
+-- known/does not depend on other truncated data.
 
 record make-assembly-hom {𝔸 : PCA ℓA} (X : Assembly 𝔸 ℓ) (Y : Assembly 𝔸 ℓ') : Type (ℓA ⊔ ℓ ⊔ ℓ') where
   open Realisability.PCA.Sugar 𝔸 using (_⋆_)
   field
     map      : ⌞ X ⌟ → ⌞ Y ⌟
     realiser : ↯⁺ 𝔸
-    tracks   : (x : ⌞ X ⌟) (a : ↯ ⌞ 𝔸 ⌟) (ah : [ X ] a ⊩ x) → [ Y ] realiser ⋆ a ⊩ map x
+    tracks   : {x : ⌞ X ⌟} {a : ↯ ⌞ 𝔸 ⌟} (ah : [ X ] a ⊩ x) → [ Y ] realiser ⋆ a ⊩ map x
 
 open Assembly-hom public
 
@@ -252,7 +251,7 @@ categories of assemblies](Cat.Instances.Assemblies.Univalence.html).[^univalence
 :::
 
 [^univalence]:
-    This is essentially *because* of of assemblies such as `𝟚`{.Agda}
+    This is essentially *because* of assemblies such as `𝟚`{.Agda}
     and its "flipped" counterpart, described above. The identity map is
     a computable isomorphism between them, realised by the `` `not
     ``{.Agda} program, which does not extend to a path (unless $\bA$ is
@@ -345,9 +344,9 @@ underlying set of each assembly.</summary>
   Cofree : Functor (Sets ℓ) (Assemblies ℓ)
   Cofree .F₀ X = ∇ ⌞ X ⌟
   Cofree .F₁ f = to-assembly-hom record where
-    map           = f
-    realiser      = val ⟨ x ⟩ x
-    tracks x a ha = subst ⌞_⌟ (sym (abs-β _ [] (a , ha))) ha
+    map       = f
+    realiser  = val ⟨ x ⟩ x
+    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , ha))) ha
   Cofree .F-id    = ext λ _ → refl
   Cofree .F-∘ f g = ext λ _ → refl
 
@@ -359,9 +358,9 @@ underlying set of each assembly.</summary>
 
   Forget⊣∇ : Forget {ℓ} ⊣ Cofree
   Forget⊣∇ .unit .η X = to-assembly-hom record where
-    map x         = x
-    realiser      = val ⟨ x ⟩ x
-    tracks x a ha = subst ⌞_⌟ (sym (abs-β _ [] (a , X .defined ha))) (X .defined ha)
+    map x     = x
+    realiser  = val ⟨ x ⟩ x
+    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .defined ha))) (X .defined ha)
 
   Forget⊣∇ .unit .is-natural x y f = ext λ _ → refl
   Forget⊣∇ .counit .η X a = a
@@ -386,8 +385,8 @@ $\nabla \{0, 1\} \to \tt{2}$, then $\bA$ is [[trivial|trivial pca]].
   non-constant-nabla-map f x = case f .tracked of λ where
     record { realiser = (fp , f↓) ; tracks = t } →
       let
-        a = t true  (`true .fst) (`true .snd)
-        b = t false (`true .fst) (`true .snd)
+        a = t {true}  {`true .fst} (`true .snd)
+        b = t {false} {`true .fst} (`true .snd)
 
         cases
           : ∀ b b' (x : ↯ ⌞ 𝔸 ⌟)

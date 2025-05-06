@@ -43,32 +43,66 @@ private variable
 
 # Exponentials in assemblies
 
+Since we have a good handle on [[product assemblies]], and [[partial
+combinatory algebras]] model *higher-order* (untyped) programming, we
+should also expect to have an understanding of [[exponential objects]]
+in assemblies. Indeed, they are simple to describe:
+
+:::{.definition #exponential-assembly}
+The **exponential assembly** $[X, Y]$ has underlying set the type of
+assembly morphisms $X \to Y$. We let $\sf{e} \Vdash f$ if $\sf{e}$ is a
+realiser for $f$ considered as a function of sets, i.e. $\sf{e}$ is
+defined and
+$$
+\forall\, (x : X)\, (a : \bA),\ \sf{a} \Vdash x \to (\sf{e}\, \sf{a}) \Vdash f(x)
+$$.
+:::
+
 ```agda
 _⇒Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 _
 (X ⇒Asm Y) .Ob         = Assembly-hom X Y
 (X ⇒Asm Y) .has-is-set = hlevel 2
-(X ⇒Asm Y) .realisers f = record
-  { mem     = λ e → el (⌞ e ⌟ × □ ((x : ⌞ X ⌟) (a : ↯ ⌞ 𝔸 ⌟) (ah : [ X ] a ⊩ x) → [ Y ] e % a ⊩ f · x)) (hlevel 1)
-  ; defined = fst
-  }
+(X ⇒Asm Y) .realisers f = record where
+  mem e = record where
+    ∣_∣ = ⌞ e ⌟ × □
+      ( (x : ⌞ X ⌟) (a : ↯ ⌞ 𝔸 ⌟)
+      → [ X ] a ⊩ x → [ Y ] e % a ⊩ f · x)
+    is-tr = hlevel 1
+  defined = fst
+```
+
+Of course, every assembly morphism has *some* realiser by definition, so
+every element of $[X, Y]$ is realised.
+
+```agda
 (X ⇒Asm Y) .realised f = do
   record { realiser = r ; tracks = t } ← f .tracked
-  pure (r .fst , r .snd , inc t)
+  inc (r .fst , r .snd , inc λ x a → t {x} {a})
 ```
+
+The evaluation morphism is, at the level of sets, defined as simply
+application. It is tracked by the function which takes a pair and
+applies its first component to its second. A typical calculation in
+$\bA$ shows that this is a realiser.
 
 ```agda
 asm-ev : Assembly-hom ((X ⇒Asm Y) ×Asm X) Y
 asm-ev {X = X} {Y = Y} = to-assembly-hom record where
-  map (f , x) = (f · x)
+  map (f , x) = f · x
 
   realiser = val ⟨ u ⟩ `fst `· u `· (`snd `· u)
 
-  tracks   = elim! λ f a x p q α pp p⊩f q⊩a → subst⊩ Y (p⊩f _ _ q⊩a) $
+  tracks {a = x} = elim! λ p q α pp p⊩f q⊩a → subst⊩ Y (p⊩f _ _ q⊩a) $
     (val ⟨ u ⟩ `fst `· u `· (`snd `· u)) ⋆ x           ≡⟨ abs-β _ [] (_ , subst ⌞_⌟ (sym α) (`pair↓₂ pp (X .defined q⊩a))) ⟩
     `fst ⋆ ⌜ x ⌝ ⋆ (`snd ⋆ ⌜ x ⌝)                      ≡⟨ ap! α ⟩
     `fst ⋆ (`pair ⋆ p ⋆ q) ⋆ (`snd ⋆ (`pair ⋆ p ⋆ q))  ≡⟨ ap₂ _%_ (`fst-β pp (X .defined q⊩a)) (`snd-β pp (X .defined q⊩a)) ⟩
     p ⋆ q                                              ∎
 ```
+
+The currying of an assembly map is slightly more involved to formalise,
+since we have multiple realisability relations to contend with. However,
+conceptually, it suffices to consider the 'outermost' level, i.e.
+realisability in $[Y,Z]$.
 
 ```agda
 curry-asm : Assembly-hom (X ×Asm Y) Z → Assembly-hom X (Y ⇒Asm Z)
@@ -85,10 +119,18 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .map x = record where
     inc record where
       realiser = val ⟨ v ⟩ `h `· (`pair `· const (u , X .defined u⊩x) `· v)
 
-      tracks x a a⊩x = subst⊩ Z (t _ _ (inc (u , a , refl , u⊩x , a⊩x))) $
+      tracks a⊩x = subst⊩ Z (t (inc (u , _ , refl , u⊩x , a⊩x))) $
         abs-β _ [] (_ , Y .defined a⊩x)
 ```
 -->
+
+This turns out to be very simple, since the currying of an assembly
+morphism $X \times Y \to Z$ (with realiser, say, $\sf{h}$) is realised
+by the currying-*qua*-program of $h$, i.e.
+$$
+\langle u \rangle \langle v \rangle h\ (u,\, v)
+$$. A very simple computation in $\bA$ shows that this is indeed a
+realiser.
 
 ```agda
 curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do
@@ -96,10 +138,10 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do
   inc record where
     realiser = val ⟨ u ⟩ ⟨ v ⟩ `h `· (`pair `· u `· v)
 
-    tracks x a a⊩x = record where
+    tracks a⊩x = record where
       fst = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , X .defined a⊩x) ∷ []))) (abs↓ _ _)
-      snd = inc λ y b b⊩y → subst⊩ Z (t _ _ (inc (_ , _ , refl , a⊩x , b⊩y))) $
-        abs-βₙ [] ((b , Y .defined b⊩y) ∷ (a , X .defined a⊩x) ∷ [])
+      snd = inc λ y b b⊩y → subst⊩ Z (t (inc (_ , _ , refl , a⊩x , b⊩y))) $
+        abs-βₙ [] ((b , Y .defined b⊩y) ∷ (_ , X .defined a⊩x) ∷ [])
 ```
 
 <details>

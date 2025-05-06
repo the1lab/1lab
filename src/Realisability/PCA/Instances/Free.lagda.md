@@ -143,14 +143,14 @@ transitivity we also have $x \succ W$ and $z \succ W$, showing $x \sim
 z$.
 
 ```agda
-conv : Congruence SK _
-conv .Congruence._∼_ = _∼_
-conv .has-is-prop x y = hlevel 1
-conv .reflᶜ = inc (_ , stop , stop)
-conv ._∙ᶜ_ = rec! λ U x→u y→u V y→v z→v →
+SK-conversion : Congruence SK _
+SK-conversion .Congruence._∼_ = _∼_
+SK-conversion .has-is-prop x y = hlevel 1
+SK-conversion .reflᶜ = inc (_ , stop , stop)
+SK-conversion ._∙ᶜ_ = rec! λ U x→u y→u V y→v z→v →
   let (W , u→w , v→w) = ≻*-diamond y→u y→v
    in inc (W , ≻*-trans x→u u→w , ≻*-trans z→v v→w)
-conv .symᶜ = rec! (λ W p q → inc (W , q , p))
+SK-conversion .symᶜ = rec! (λ W p q → inc (W , q , p))
 ```
 
 Finally, another case bash shows that the application constructor
@@ -165,13 +165,14 @@ the PCA we are defining.
 ≻*-resp-`· stop (step x q) = step (stop `· x) (≻*-resp-`· stop q)
 ≻*-resp-`· stop stop = stop
 
-module conv = Congruence conv
+private
+  module conv = Congruence SK-conversion
 
-appl : conv.quotient → conv.quotient → conv.quotient
-appl = conv.op₂ _`·_ resp where abstract
-  resp : ∀ u v u' v' → u ∼ u' → v ∼ v' → u `· v ∼ u' `· v'
-  resp u v u' v' = rec! λ W u→w u'→w X v→x v'→x → inc
-    (_ , ≻*-resp-`· u→w v→x , ≻*-resp-`· u'→w v'→x)
+  appl : conv.quotient → conv.quotient → conv.quotient
+  appl = conv.op₂ _`·_ resp where abstract
+    resp : ∀ u v u' v' → u ∼ u' → v ∼ v' → u `· v ∼ u' `· v'
+    resp u v u' v' = rec! λ W u→w u'→w X v→x v'→x → inc
+      (_ , ≻*-resp-`· u→w v→x , ≻*-resp-`· u'→w v'→x)
 ```
 
 <details>
@@ -204,14 +205,24 @@ SK-is-pca = has-ski→is-pca record
 
 </details>
 
+<!--
+```agda
+SK-PCA : PCA lzero
+SK-PCA .fst = el! conv.quotient
+SK-PCA .snd .PCA-on.has-is-set = hlevel 2
+SK-PCA .snd .PCA-on._%_ = _
+SK-PCA .snd .PCA-on.has-is-pca = SK-is-pca
+```
+-->
+
 To show nontriviality, we argue by cases that `S`{.Agda} and `K`{.Agda}
 have no common reducts.
 
 ```agda
-sk-not-equal : ∀ x → K ≻* x → S ≻* x → ⊥
-sk-not-equal x (step stop p) q    = sk-not-equal x p q
-sk-not-equal x stop (step stop q) = sk-not-equal _ stop q
+S-K-no-common-reduct : ∀ x → K ≻* x → S ≻* x → ⊥
+S-K-no-common-reduct x (step stop p) q    = S-K-no-common-reduct x p q
+S-K-no-common-reduct x stop (step stop q) = S-K-no-common-reduct _ stop q
 
 SK-nontriv : ¬ Path conv.quotient (inc K) (inc S)
-SK-nontriv w = case conv.effective w of sk-not-equal
+SK-nontriv w = case conv.effective w of S-K-no-common-reduct
 ```
