@@ -46,7 +46,7 @@ undo-clause : Name × List Name → Clause
 undo-clause (r-field , sel-path) = clause
   (("sig" , argN unknown) ∷ [])
   [ argN (proj (quote snd))
-  , argN (proj (quote is-iso.inv))
+  , argN (proj (quote is-iso.from))
   , argN (var 0)
   , argN (proj r-field)
   ]

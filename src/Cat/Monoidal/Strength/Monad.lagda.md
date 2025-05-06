@@ -368,7 +368,7 @@ category]] the tensor product.
       ; right-strength-η = left-strength-η
       ; right-strength-μ = left-strength-μ
       } where open Left-monad-strength l
-    is .snd .inv r = record
+    is .snd .from r = record
       { functor-strength = Equiv.from (strength^rev Cᵐ M) functor-strength
       ; left-strength-η = right-strength-η
       ; left-strength-μ = right-strength-μ

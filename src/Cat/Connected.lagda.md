@@ -120,7 +120,7 @@ a zigzag.
 
     is : Iso (quotient R) (π₀ ʻ C)
     is .fst = Coeq-rec inc (elim! λ x y → Meander-rec-≡ (π₀ C) inc quot)
-    is .snd .is-iso.inv = Coeq-rec inc λ (x , y , f) →
+    is .snd .is-iso.from = Coeq-rec inc λ (x , y , f) →
       quot (inc (zig f []))
     is .snd .is-iso.rinv = elim! λ _ → refl
     is .snd .is-iso.linv = elim! λ _ → refl

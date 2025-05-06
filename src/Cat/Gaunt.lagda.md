@@ -117,7 +117,7 @@ skeletal+trivial-automorphisms→gaunt {C = C} skel trivial-aut =
 
     path-iso : ∀ {x y} → Iso (Isomorphism C x y) (x ≡ y)
     path-iso .fst f = skel .to-path (inc f)
-    path-iso .snd .is-iso.inv f = path→iso f
+    path-iso .snd .is-iso.from f = path→iso f
     path-iso .snd .is-iso.rinv _ =
       skeletal→strict C skel _ _ _ _
 ```

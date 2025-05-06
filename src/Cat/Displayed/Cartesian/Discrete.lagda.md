@@ -382,7 +382,7 @@ a discrete fibration and back is the identity.
   open is-iso
 
   presheaf≃discrete : ∀ {κ} → is-iso (presheaf→discrete {κ = κ})
-  presheaf≃discrete .inv  (d , f) = discrete→presheaf d f
+  presheaf≃discrete .from (d , f) = discrete→presheaf d f
   presheaf≃discrete .linv x       = Functor-path (λ _ → n-path refl) λ _ → refl
 ```
 
@@ -438,7 +438,7 @@ is immediate.
     ∫≡dx : ∫ B (discrete→presheaf P p-disc) ≡ P
     ∫≡dx = Displayed-path pieces (λ _ → id-equiv) (is-iso→is-equiv p) where
       p : ∀ {a b} {f : B.Hom a b} {a'} {b'} → is-iso (pieces .F₁' {f = f} {a'} {b'})
-      p .inv f  = ap fst $ cart-lift _ _ .paths (_ , f)
+      p .from f = ap fst $ cart-lift _ _ .paths (_ , f)
       p .rinv p = from-pathp (ap snd (cart-lift _ _ .paths _))
       p .linv p = fibre-set _ _ _ _ _
 ```

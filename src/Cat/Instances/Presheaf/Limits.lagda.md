@@ -192,8 +192,8 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
     open is-iso
 
     iiso : ∀ {x : Set ℓ} {y : ⌞ PSh ℓ C ⌟} → is-iso {A = clo c · x => y} (λ f x → f .η c (x , id))
-    iiso {y = y} .inv f .η x (a , g) = y ⟪ g ⟫ (f a)
-    iiso {y = y} .inv f .is-natural x z g = ext λ a h → PSh.expand y refl
+    iiso {y = y} .from f .η x (a , g) = y ⟪ g ⟫ (f a)
+    iiso {y = y} .from f .is-natural x z g = ext λ a h → PSh.expand y refl
     iiso {y = y} .rinv x = ext λ a → PSh.F-id y
     iiso {y = y} .linv x = ext (λ i y h → sym (x .is-natural _ _ _ $ₚ _) ∙ ap (x .η i) (refl ,ₚ idl h))
 ```

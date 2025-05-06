@@ -153,11 +153,11 @@ equivalence, having a two-sided inverse, is a split surjection.
 ```agda
 iso→is-hlevel : (n : Nat) (f : A → B) → is-iso f → is-hlevel A n → is-hlevel B n
 iso→is-hlevel n f im = retract→is-hlevel n f g h
-  where open is-iso im renaming (inv to g ; rinv to h)
+  where open is-iso im renaming (from to g ; rinv to h)
 
 Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
 Iso→is-hlevel n (f , im) = retract→is-hlevel n g f h
-  where open is-iso im renaming (inv to g ; linv to h)
+  where open is-iso im renaming (from to g ; linv to h)
 
 equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n → is-hlevel B n
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)

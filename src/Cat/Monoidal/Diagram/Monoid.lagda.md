@@ -278,11 +278,11 @@ into an identification.
   open is-iso
 
   fiso : ∀ a → is-iso (F .F₀' {a})
-  fiso T .inv m .η _ = m .identity
-  fiso T .inv m .μ (a , b) = m ._⋆_ a b
-  fiso T .inv m .μ-unitl = funext λ _ → m .idl
-  fiso T .inv m .μ-unitr = funext λ _ → m .idr
-  fiso T .inv m .μ-assoc = funext λ _ → m .associative
+  fiso T .from m .η _ = m .identity
+  fiso T .from m .μ (a , b) = m ._⋆_ a b
+  fiso T .from m .μ-unitl = funext λ _ → m .idl
+  fiso T .from m .μ-unitr = funext λ _ → m .idr
+  fiso T .from m .μ-assoc = funext λ _ → m .associative
   fiso T .rinv x = Mon.Monoid-structure _ .id-hom-unique
     (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })
     (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })

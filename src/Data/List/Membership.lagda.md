@@ -114,10 +114,10 @@ member→lookup→member (there p)    = ap there (member→lookup→member p)
 
 member≃lookup : ∀ {x : A} {xs} → (x ∈ₗ xs) ≃ fibreᵢ (xs !_) x
 member≃lookup .fst = member→lookup
-member≃lookup .snd = is-iso→is-equiv λ where
-  .is-iso.inv  p → lookup→member p
-  .is-iso.rinv p → lookup→member→lookup p
-  .is-iso.linv p → sym (member→lookup→member p)
+member≃lookup .snd = is-iso→is-equiv record where
+  from p = lookup→member p
+  rinv p = lookup→member→lookup p
+  linv p = sym (member→lookup→member p)
 ```
 -->
 

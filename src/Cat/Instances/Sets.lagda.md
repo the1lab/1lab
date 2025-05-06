@@ -123,21 +123,20 @@ First we show that isomorphism is invariant under `^op`{.Agda}.
 
 ```agda
   iso-op-invariant : ∀ {A B : Set ℓ} → (A Sets^op.≅ B) ≃ (A Sets.≅ B)
-  iso-op-invariant {A} {B} = Iso→Equiv the-iso
-    where
-      open import Cat.Morphism
-      open Inverses
-      the-iso : Iso (A Sets^op.≅ B) (A Sets.≅ B)
-      the-iso .fst i .to = i .from
-      the-iso .fst i .from = i .to
-      the-iso .fst i .inverses .invl = i .invl
-      the-iso .fst i .inverses .invr = i .invr
-      the-iso .snd .is-iso.inv i .to = i .from
-      the-iso .snd .is-iso.inv i .from = i .to
-      the-iso .snd .is-iso.inv i .inverses .invl = i .invl
-      the-iso .snd .is-iso.inv i .inverses .invr = i .invr
-      the-iso .snd .is-iso.rinv _ = refl
-      the-iso .snd .is-iso.linv _ = refl
+  iso-op-invariant {A} {B} = Iso→Equiv the-iso where
+    open import Cat.Morphism
+    open Inverses
+    the-iso : Iso (A Sets^op.≅ B) (A Sets.≅ B)
+    the-iso .fst i .to = i .from
+    the-iso .fst i .from = i .to
+    the-iso .fst i .inverses .invl = i .invl
+    the-iso .fst i .inverses .invr = i .invr
+    the-iso .snd .is-iso.from i .to = i .from
+    the-iso .snd .is-iso.from i .from = i .to
+    the-iso .snd .is-iso.from i .inverses .invl = i .invl
+    the-iso .snd .is-iso.from i .inverses .invr = i .invr
+    the-iso .snd .is-iso.rinv _ = refl
+    the-iso .snd .is-iso.linv _ = refl
 ```
 
 This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.Agda}. Some calculation gives us `to-path-over`{.Agda}.

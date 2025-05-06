@@ -57,7 +57,7 @@ T²≃S¹×S¹ = ua (T²→S¹×S¹ , is-iso→is-equiv iso-pf) where
   S¹×S¹→T² (loop i , loop j) = square i j
 
   iso-pf : is-iso T²→S¹×S¹
-  iso-pf .inv = S¹×S¹→T²
+  iso-pf .from = S¹×S¹→T²
   iso-pf .rinv (base , base) = refl
   iso-pf .rinv (base , loop j) = refl
   iso-pf .rinv (loop i , base) = refl

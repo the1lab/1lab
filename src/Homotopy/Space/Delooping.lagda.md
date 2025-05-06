@@ -177,7 +177,7 @@ one is canonical: the [[Yoneda embedding]] map, sending $x$ to $y
     path-case : ⌞ G ⌟ → base-case ≡ base-case
     path-case x = n-ua eqv module path-case where
       rem₁ : is-iso (_⋆ x)
-      rem₁ .inv = _⋆ x ⁻¹
+      rem₁ .from = _⋆ x ⁻¹
       rem₁ .rinv x = cancelr inversel
       rem₁ .linv x = cancelr inverser
 
@@ -287,7 +287,7 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≡π₁B = ∫-Path
     (total-hom (λ x → inc (path x))
       record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
-    (∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
+    (∘-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
 ```
 
 Since `Deloop`{.Agda} is a groupoid, each of its loop spaces is

@@ -254,8 +254,8 @@ both possibilities for quantification or substitution agree:
     open is-iso
 
     eqv : ∀ i → Iso (c.img D A h (λ x → α (k x)) i) (c.img B C g α (f i))
-    eqv i .fst      (e , p) = e , □-map (λ { (d , p , q) → k d , sym (pb.square $ₚ _) ∙ ap f p , q }) p
-    eqv i .snd .inv (e , p) = e , □-map (λ { (b , p , q) →
+    eqv i .fst       (e , p) = e , □-map (λ { (d , p , q) → k d , sym (pb.square $ₚ _) ∙ ap f p , q }) p
+    eqv i .snd .from (e , p) = e , □-map (λ { (b , p , q) →
       let
         it : ⌞ D ⌟
         it = pb.universal {P' = el! (Lift _ ⊤)}

@@ -120,9 +120,9 @@ homomorphisms $A \to [B,C]$.
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
     morp : is-iso curry-bilinear
-    morp .is-iso.inv uc .Bilinear.map x y = uc · x · y
-    morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_· _) (uc .preserves .is-group-hom.pres-⋆ _ _)
-    morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc · _) .preserves .is-group-hom.pres-⋆ _ _
+    morp .is-iso.from uc .Bilinear.map x y = uc · x · y
+    morp .is-iso.from uc .Bilinear.pres-*l x y z = ap (_· _) (uc .preserves .is-group-hom.pres-⋆ _ _)
+    morp .is-iso.from uc .Bilinear.pres-*r x y z = (uc · _) .preserves .is-group-hom.pres-⋆ _ _
     morp .is-iso.rinv uc = trivial!
     morp .is-iso.linv uc = trivial!
 ```
@@ -293,7 +293,7 @@ an equivalence requires appealing to an induction principle of
   from-bilinear-map-is-equiv : is-equiv from-bilinear-map
   from-bilinear-map-is-equiv = is-iso→is-equiv morp where
     morp : is-iso from-bilinear-map
-    morp .is-iso.inv = to-bilinear-map
+    morp .is-iso.from = to-bilinear-map
     morp .is-iso.rinv hom = ext $ Tensor-elim-prop A B (λ x → C.has-is-set _ _)
       (λ x y → refl)
       (λ x y → ap₂ C._*_ x y ∙ sym (hom .preserves .is-group-hom.pres-⋆ _ _))
@@ -359,7 +359,7 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
   to f = curry-bilinear _ _ _ (to-bilinear-map _ _ _ f)
 
   to-eqv : ∀ {x y} → is-equiv (to {x} {y})
-  to-eqv = ∙-is-equiv
+  to-eqv = ∘-is-equiv
     (Hom≃Bilinear _ _ _ .snd)
     (curry-bilinear-is-equiv _ _ _)
 

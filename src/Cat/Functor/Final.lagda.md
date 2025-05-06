@@ -205,7 +205,7 @@ these formulae are mutually inverse:
 ```agda
     open is-iso
     extend-cocone-is-iso : ∀ {coapex} → is-iso (extend-cocone {coapex})
-    extend-cocone-is-iso .inv = restrict-cocone
+    extend-cocone-is-iso .from = restrict-cocone
     extend-cocone-is-iso .rinv K = ext λ o →
       extend-cocone-elim (restrict-cocone K) o
         (λ ex → ex ≡ K .η o)

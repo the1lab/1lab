@@ -429,7 +429,7 @@ strong monad; all that remains is to check that it makes the monad
 structure monoidal.
 
 ```agda
-    is .snd .inv (s , s-comm) = m where
+    is .snd .from (s , s-comm) = m where
       open Monad-strength s
       open Monoidal-monad-on
       open Lax-monoidal-functor-on
@@ -568,13 +568,13 @@ both verifications are straightforward.
           (Right-strength-path Cᵐ M (sym r))))
       where
         open Monad-strength s
-        l : left-strength ≡ is .fst (is .snd .inv (s , s-comm)) .fst .Monad-strength.left-strength
+        l : left-strength ≡ is .fst (is .snd .from (s , s-comm)) .fst .Monad-strength.left-strength
         l = ext λ (A , B) →
           σ                              ≡⟨ insertl μ-unitl ⟩
           μ _ ∘ η _ ∘ σ                  ≡⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
           μ _ ∘ M₁ σ ∘ η _               ≡˘⟨ pullr (pullr right-strength-η) ⟩
           (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ id) ∎
-        r : right-strength ≡ is .fst (is .snd .inv (s , s-comm)) .fst .Monad-strength.right-strength
+        r : right-strength ≡ is .fst (is .snd .from (s , s-comm)) .fst .Monad-strength.right-strength
         r = ext λ (A , B) →
           τ                                     ≡⟨ insertl μ-unitr ⟩
           μ _ ∘ M₁ (η _) ∘ τ                    ≡˘⟨ refl⟩∘⟨ M.pulll left-strength-η ⟩

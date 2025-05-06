@@ -47,7 +47,7 @@ SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
   S⁰→SuspS⁻¹ false = S
 
   iso-pf : is-iso SuspS⁻¹→S⁰
-  iso-pf .inv = S⁰→SuspS⁻¹
+  iso-pf .from = S⁰→SuspS⁻¹
   iso-pf .rinv false = refl
   iso-pf .rinv true = refl
   iso-pf .linv N = refl
@@ -110,7 +110,7 @@ using lemmas on transport in pathspaces. </summary>
 
 ```agda
   iso-pf : is-iso SuspS⁰→S¹
-  iso-pf .inv = S¹→SuspS⁰
+  iso-pf .from = S¹→SuspS⁰
   iso-pf .rinv base = refl
   iso-pf .rinv (loop i) =
     ap (λ p → p i)

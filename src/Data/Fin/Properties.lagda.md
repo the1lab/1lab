@@ -189,7 +189,7 @@ Fin-suc-Π
 Fin-suc-Π = Iso→Equiv λ where
   .fst f → f fzero , (λ x → f (fsuc x))
 
-  .snd .is-iso.inv (z , s) → fin-cons z s
+  .snd .is-iso.from (z , s) → fin-cons z s
 
   .snd .is-iso.rinv x → refl
 
