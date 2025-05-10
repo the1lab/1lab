@@ -282,6 +282,13 @@ Simple-fibration f Y .cartesian .unique {m = g} {h' = h} h' p =
 
 # Comprehension structure
 
+<!--
+```agda
+open Vertical-functor
+open is-fibred-functor
+```
+-->
+
 The simple fibration admits a [[fibred functor]] into the [[codomain
 fibration]] that maps an object $X$ over $\Gamma$ to the projection
 $\pi_1 : \Gamma \times X \to \Gamma$.
@@ -290,7 +297,6 @@ $\pi_1 : \Gamma \times X \to \Gamma$.
 Simple→Slices
   : Vertical-functor Simple (Slices B)
 Simple→Slices = func where
-  open Vertical-functor
   open /-Obj
   open Slice-hom
 
@@ -317,8 +323,8 @@ universal map for the pullback.
 
 ```agda
 Simple→Slices-fibred
-  : is-vertical-fibred Simple→Slices
-Simple→Slices-fibred {f = f} f' cart =
+  : is-fibred-functor Simple→Slices
+Simple→Slices-fibred .F-cartesian {f = f} {f' = f'} cart =
   pullback→cartesian B pb
   where
     open is-pullback
@@ -367,7 +373,7 @@ encodes the structure of a non-dependent type theory.
 [comprehension structure]: Cat.Displayed.Comprehension.html
 
 ```agda
-Simple-comprehension : Comprehension Simple
-Simple-comprehension .Vertical-fibred-functor.vert = Simple→Slices
-Simple-comprehension .Vertical-fibred-functor.F-cartesian = Simple→Slices-fibred
+Simple-comprehension : Comprehension-structure Simple
+Simple-comprehension .Comprehension-structure.Comprehend = Simple→Slices
+Simple-comprehension .Comprehension-structure.Comprehend-is-fibred = Simple→Slices-fibred
 ```

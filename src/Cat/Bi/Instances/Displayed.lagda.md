@@ -122,7 +122,7 @@ the structural isomorphisms being identities.
   Disp[] : Prebicategory (o ⊔ ℓ ⊔ lsuc (o' ⊔ ℓ')) (o ⊔ ℓ ⊔ o' ⊔ ℓ') (o ⊔ ℓ ⊔ o' ⊔ ℓ')
   Disp[] .Ob = Displayed B o' ℓ'
   Disp[] .Hom = Vertical-functors
-  Disp[] .id = Displayed-functor→Vertical-functor Id'
+  Disp[] .id = Id'
   Disp[] .compose = ∘V-functor
   Disp[] .unitor-l {B = B} = to-natural-iso ni where
     module B = Displayed B

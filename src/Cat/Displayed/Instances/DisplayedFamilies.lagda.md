@@ -27,6 +27,7 @@ module Cat.Displayed.Instances.DisplayedFamilies
 open Cat.Reasoning B
 open Displayed E
 open Cat.Displayed.Reasoning E
+open is-fibred-functor
 open Functor
 
 open Total-hom
@@ -200,8 +201,8 @@ ConstDispFam .Vertical-functor.F-∘' =
 This functor is in fact fibred, though the proof is somewhat involved!
 
 ```agda
-ConstDispFam-fibred : is-vertical-fibred ConstDispFam
-ConstDispFam-fibred {a = a} {b} {a'} {b'} {f = f} f' f'-cart = cart where
+ConstDispFam-fibred : is-fibred-functor ConstDispFam
+ConstDispFam-fibred .F-cartesian {a = a} {b} {a'} {b'} {f} {f'} f'-cart = cart where
   open Vertical-functor ConstDispFam
   module f' = is-cartesian f'-cart
   open is-cartesian
@@ -255,12 +256,4 @@ Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
       f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
       hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
       map-tot' h'               ∎
-```
-
-We also provide a bundled version of this functor.
-
-```agda
-ConstDispFamVf : Vertical-fibred-functor E Disp-family
-ConstDispFamVf .Vertical-fibred-functor.vert = ConstDispFam
-ConstDispFamVf .Vertical-fibred-functor.F-cartesian = ConstDispFam-fibred
 ```

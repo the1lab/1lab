@@ -68,7 +68,7 @@ that projects out the data of $\cE$ from the composite.
 πᵈ : ∀ {o ℓ o' ℓ' o'' ℓ''}
     → {ℬ : Precategory o ℓ}
     → {ℰ : Displayed ℬ o' ℓ'} {ℱ : Displayed (∫ ℰ) o'' ℓ''}
-    → Displayed-functor (ℰ D∘ ℱ) ℰ Id
+    → Displayed-functor Id (ℰ D∘ ℱ) ℰ
 πᵈ .Displayed-functor.F₀' = fst
 πᵈ .Displayed-functor.F₁' = fst
 πᵈ .Displayed-functor.F-id' = refl
