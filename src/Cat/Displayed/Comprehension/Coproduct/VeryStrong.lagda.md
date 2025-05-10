@@ -45,7 +45,7 @@ module _
   {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
   {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
   {D-fib : Cartesian-fibration D} {E-fib : Cartesian-fibration E}
-  (P : Comprehension D) {Q : Comprehension E}
+  (P : Comprehension-structure D) {Q : Comprehension-structure E}
   (coprods : has-comprehension-coproducts D-fib E-fib Q)
   where
   private
@@ -71,7 +71,7 @@ module very-strong-comprehension-coproducts
   {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
   {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
   {D-fib : Cartesian-fibration D} {E-fib : Cartesian-fibration E}
-  (P : Comprehension D) {Q : Comprehension E}
+  (P : Comprehension-structure D) {Q : Comprehension-structure E}
   (coprods : has-comprehension-coproducts D-fib E-fib Q)
   (vstrong : very-strong-comprehension-coproducts P coprods)
   where
@@ -162,7 +162,7 @@ module _
   {ob ℓb oe ℓe} {B : Precategory ob ℓb}
   {E : Displayed B oe ℓe}
   {E-fib : Cartesian-fibration E}
-  {P : Comprehension E}
+  {P : Comprehension-structure E}
   (coprods : has-comprehension-coproducts E-fib E-fib P)
   where
 ```

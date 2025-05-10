@@ -19,7 +19,7 @@ module Cat.Displayed.Comprehension.Coproduct
   {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
   {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
   (D-fib : Cartesian-fibration D) (E-fib : Cartesian-fibration E)
-  (P : Comprehension E)
+  (P : Comprehension-structure E)
   where
 ```
 
