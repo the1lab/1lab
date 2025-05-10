@@ -447,7 +447,7 @@ module
 Just like we have defined a displayed functor
 $\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$
 we can define a displayed natural transformation.
-Assume $\bf{F}, \bf{G} : \cE \to \cF$ are [displayed functors][disfct]
+Assume $\bf{F}, \bf{G} : \cE \to \cF$ are displayed functors
 over $F : \cA \to \cB$ resp. $G : \cA \to \cB$ and we have a
 natural transformation $\eta : F \To G$. Than one can define a
 **displayed natural transformation** $\bf{\eta} : \bf{F} \To \bf{G}$
