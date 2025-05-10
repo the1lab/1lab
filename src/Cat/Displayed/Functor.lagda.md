@@ -1,11 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Cartesian
+open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning as DR
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning as CR
@@ -102,37 +103,80 @@ functors", i.e., those lying over the identity functor.
 :::{.definition #fibred-functor}
 Note that, if $\cE$ and $\cF$ are [[fibred categories]] over their bases
 (rather than just _displayed_ categories), then the appropriate notion
-of 1-cell are displayed functors that take [[Cartesian morphisms]] to
-Cartesian morphisms:
+of 1-cell are displayed functors that take [[cartesian morphisms]] to
+cartesian morphisms.
 :::
 
 <!--
 ```agda
 module
-  _ {o ℓ o' ℓ' o₂ ℓ₂ o₂' ℓ₂'}
-    {A : Precategory o ℓ}
-    {B : Precategory o₂ ℓ₂}
-    {ℰ : Displayed A o' ℓ'}
-    {ℱ : Displayed B o₂' ℓ₂'}
+  _ {oa ℓa ob ℓb oe ℓe of ℓf}
+    {A : Precategory oa ℓa}
+    {B : Precategory ob ℓb}
+    {ℰ : Displayed A oe ℓe}
+    {ℱ : Displayed B of ℓf}
     {F : Functor A B}
   where
   private
     module F = Functor F
     module A = CR A
     module B = CR B
-    module ℰ = Displayed ℰ
-    module ℱ = Displayed ℱ
+    module ℰ where
+      open Displayed ℰ public
+      open Cat.Displayed.Cartesian ℰ public
+    module ℱ where
+      open Displayed ℱ public
+      open Cat.Displayed.Cartesian ℱ public
+
+    lvl : Level
+    lvl = oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
 ```
 -->
 
 ```agda
-  is-fibred-functor : Displayed-functor F ℰ ℱ → Type _
-  is-fibred-functor F' =
-    ∀ {a b a' b'} {f : A.Hom a b}
-    → (f' : ℰ.Hom[ f ] a' b')
-    → is-cartesian ℰ f f' → is-cartesian ℱ (F.₁ f) (F₁' f')
-    where open Displayed-functor F'
+  record is-fibred-functor (F' : Displayed-functor F ℰ ℱ) : Type lvl where
+    no-eta-equality
+    open Displayed-functor F'
+    field
+      F-cartesian
+        : ∀ {a b a' b'} {f : A.Hom a b} {f' : ℰ.Hom[ f ] a' b'}
+        → ℰ.is-cartesian f f'
+        → ℱ.is-cartesian (F.₁ f) (F₁' f')
 ```
+
+Note that being fibred is a *property* of a functor.
+
+```agda
+  is-fibred-functor-is-hlevel
+    : ∀ {F' : Displayed-functor F ℰ ℱ}
+    → (n : Nat)
+    → is-hlevel (is-fibred-functor F') (suc n)
+```
+
+<details>
+<summary>The agda proof of this fact is somewhat unenlightening. The key
+insight is that "being cartesian" is a property of a morphism: the rest
+is the usual h-level arguments.
+</summary>
+
+```agda
+  is-fibred-functor-is-hlevel n = Iso→is-hlevel (suc n) eqv (hlevel (suc n))
+    where
+      open ℱ
+      private unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
+```
+</details>
+
+<!--
+```agda
+  instance
+    H-Level-is-fibred-functor
+      : ∀ {F' : Displayed-functor F ℰ ℱ}
+      → {n : Nat}
+      → H-Level (is-fibred-functor F') (suc n)
+    H-Level-is-fibred-functor {n = n} = hlevel-instance (is-fibred-functor-is-hlevel n)
+```
+-->
 
 One can also define the composition of displayed functors,
 which lies over the composition of the underlying functors.
@@ -162,6 +206,7 @@ module
 
     open DR ℋ
     open Displayed-functor
+    open is-fibred-functor
 
   infixr 30 _F∘'_
 ```
@@ -193,7 +238,8 @@ The composite of two fibred functors is a fibred functor.
     : ∀ {F' : Displayed-functor F ℱ ℋ} {G' : Displayed-functor G ℰ ℱ}
     → is-fibred-functor F' → is-fibred-functor G'
     → is-fibred-functor (F' F∘' G')
-  F∘'-fibred F'-fibred G'-fibred f' f'-cart = F'-fibred _ (G'-fibred _ f'-cart)
+  F∘'-fibred F'-fibred G'-fibred .F-cartesian f'-cart =
+    F'-fibred .F-cartesian (G'-fibred .F-cartesian f'-cart)
 ```
 
 Furthermore, there is a displayed identity functor that lies over
@@ -207,6 +253,7 @@ module _
   {ℰ : Displayed B oe ℓe}
   where
   open Displayed-functor
+  open is-fibred-functor
 ```
 -->
 
@@ -222,7 +269,7 @@ The identity functor is obviously fibred.
 
 ```agda
   Id'-fibred : is-fibred-functor Id'
-  Id'-fibred f cart = cart
+  Id'-fibred .F-cartesian f'-cart = f'-cart
 ```
 
 <!--
@@ -316,6 +363,7 @@ module _
   {ℋ : Displayed B oh ℓh}
   where
   open Displayed-functor
+  open is-fibred-functor
 
   infixr 30 _∘V_
 ```
@@ -329,13 +377,28 @@ module _
   (F' ∘V G') .F-∘' = ap (F' .F₁') (G' .F-∘') ∙ (F' .F-∘')
 ```
 
-Furthermore, the composite of vertical fibred functors is also fibred.
+General and vertical composition of vertical functors definitionnally agree on
+both the actions on objects and morphisms: the only difference is in how the
+result is indexed.
+
+```agda
+  F∘'-∘V-pathp
+    : ∀ {F' : Vertical-functor ℱ ℋ} {G' : Vertical-functor ℰ ℱ}
+    → PathP (λ i → Displayed-functor (F∘-id2 i) ℰ ℋ) (F' F∘' G') (F' ∘V G')
+  F∘'-∘V-pathp =
+    Displayed-functor-pathp (λ i → F∘-id2 i)
+      (λ x' → refl)
+      (λ f' → refl)
+```
+
+As such, the composite of vertical fibred functors is also fibred.
 
 ```agda
   ∘V-fibred
-    : ∀ (F' : Vertical-functor ℱ ℋ) (G' : Vertical-functor ℰ ℱ)
+    : ∀ {F' : Vertical-functor ℱ ℋ} {G' : Vertical-functor ℰ ℱ}
     → is-fibred-functor F' → is-fibred-functor G' → is-fibred-functor (F' ∘V G')
-  ∘V-fibred F' G' F'-fib G'-fib f' cart = F'-fib (G' .F₁' f') (G'-fib f' cart)
+  ∘V-fibred F'-fib G'-fib .F-cartesian cart =
+    F'-fib .F-cartesian (G'-fib .F-cartesian cart)
 ```
 
 <!--
@@ -376,7 +439,6 @@ module
             → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
     → F ≡ G
   Vertical-functor-path = Displayed-functor-pathp refl
-
 ```
 -->
 
