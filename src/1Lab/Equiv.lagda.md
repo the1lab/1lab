@@ -773,13 +773,20 @@ module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
     }
 
 module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) where
-  open is-iso f-iso renaming (inverse to inverse-iso)
+  open is-iso f-iso renaming (inverse to inverse-iso) public
 
   injective : ∀ {x y} → f x ≡ f y → x ≡ y
   injective p = sym (linv _) ∙∙ ap from p ∙∙ linv _
 
   inverse : Iso B A
   inverse = from , inverse-iso
+
+injectiveP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'} (f : ∀ i → Iso (A i) (B i)) {x y}
+  → PathP (λ i → B i) (f i0 .fst x) (f i1 .fst y)
+  → PathP (λ i → A i) x y
+injectiveP f {x} {y} p =
+  sym (Iso.linv (f i0) x) ◁ apd (λ i → Iso.from (f i)) p ▷ Iso.linv (f i1) y
 ```
 -->
 

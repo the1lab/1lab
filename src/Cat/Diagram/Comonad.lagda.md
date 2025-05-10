@@ -65,32 +65,14 @@ module _ {o h : _} {C : Precategory o h} {F G : Functor C C} {M : Comonad-on F} 
     module C = Cat.Reasoning C
     module M = Comonad-on M
     module N = Comonad-on N
+    unquoteDecl eqv = declare-record-iso eqv (quote Comonad-on)
 
   Comonad-on-path
     : (p0 : F ≡ G)
     → (∀ x → PathP (λ i → C.Hom (p0 i · x) x) (M.ε x) (N.ε x))
     → (∀ x → PathP (λ i → C.Hom (p0 i · x) (p0 i · (p0 i · x))) (M.δ x) (N.δ x))
     → PathP (λ i → Comonad-on (p0 i)) M N
-  Comonad-on-path M=N pcounit pcomult = path where
-    p0 : ∀ x → F · x ≡ G · x
-    p0 x i = M=N i · x
-
-    p1 : ∀ {x y} (f : C.Hom x y) → PathP (λ i → C.Hom (p0 x i) (p0 y i)) (M.W₁ f) (N.W₁ f)
-    p1 f i = M=N i .Functor.F₁ f
-
-    path : PathP (λ i → Comonad-on (M=N i)) M N
-    path i .Comonad-on.counit =
-      Nat-pathp M=N refl {a = M.counit} {b = N.counit} pcounit i
-    path i .Comonad-on.comult =
-      Nat-pathp M=N (ap₂ _F∘_ M=N M=N) {a = M.comult} {b = N.comult} pcomult i
-    path i .Comonad-on.δ-unitl {x = x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (p1 (pcounit x i) i C.∘ pcomult x i) C.id)
-        M.δ-unitl N.δ-unitl i
-    path i .Comonad-on.δ-unitr {x = x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (pcounit (p0 x i) i C.∘ pcomult x i) C.id)
-        M.δ-unitr N.δ-unitr i
-    path i .Comonad-on.δ-assoc {x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 (p0 (p0 x i) i) i) (p1 (pcomult x i) i C.∘ pcomult x i) (pcomult (p0 x i) i C.∘ pcomult x i))
-        M.δ-assoc N.δ-assoc i
+  Comonad-on-path M=N pcounit pcomult = injectiveP (λ _ → eqv) $
+    Nat-pathp M=N refl pcounit ,ₚ Nat-pathp M=N (ap₂ _F∘_ M=N M=N) pcomult ,ₚ prop!
 ```
 -->
