@@ -365,7 +365,7 @@ adjoint to the functor that forgets $F$-algebras.
       open Functor
 ```
 
-This adjunction [[induces a monad|monad-from-adjunction]] on $\cC$, which
+This adjunction [[induces a monad|monad from an adjunction]] on $\cC$, which
 we will call the **algebraically free monad** on $F$.
 
 ```agda
