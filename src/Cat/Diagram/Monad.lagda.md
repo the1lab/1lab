@@ -220,7 +220,7 @@ over $f$ is a proposition.
 </details>
 
 The [[total category]] of this displayed category is referred
-to as the **Eilenberg Moore** category of $M$.
+to as the **Eilenberg-Moore** category of $M$.
 
 ```agda
   Eilenberg-Moore : Precategory (o ⊔ ℓ) ℓ

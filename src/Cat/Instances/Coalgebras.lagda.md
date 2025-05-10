@@ -144,11 +144,20 @@ $W$-coalgebra homomorphism.
 ```
 
 The [[total category]] of this displayed category is referred to as the
-**Eilenberg Moore** category of $W$.
+**Eilenberg-Moore** category of $W$.
 
 ```agda
   Coalgebras : Precategory (o ⊔ ℓ) ℓ
   Coalgebras = ∫ Coalgebras-over
+
+  private
+    module CoEM = Cat.Reasoning Coalgebras
+
+  Coalgebra : Type _
+  Coalgebra = CoEM.Ob
+
+  Coalgebra-hom : (X Y : Coalgebra) → Type _
+  Coalgebra-hom X Y = CoEM.Hom X Y
 ```
 
 <!--
