@@ -168,18 +168,13 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} wh
   private
     module C = Cat.Reasoning C
     module W = Comonad-on W
+    unquoteDecl eqv = declare-record-iso eqv (quote Coalgebra-on)
 
   Coalgebra-on-pathp
     : ∀ {X Y} (p : X ≡ Y) {A : Coalgebra-on W X} {B : Coalgebra-on W Y}
     → PathP (λ i → C.Hom (p i) (F · p i)) (A .Coalgebra-on.ρ) (B .Coalgebra-on.ρ)
     → PathP (λ i → Coalgebra-on W (p i)) A B
-  Coalgebra-on-pathp over comults i .Coalgebra-on.ρ = comults i
-  Coalgebra-on-pathp over {A} {B} comults i .Coalgebra-on.ρ-counit =
-    is-prop→pathp (λ i → C.Hom-set _ _ (W.ε _ C.∘ comults i) (C.id {x = over i}))
-      (A .Coalgebra-on.ρ-counit) (B .Coalgebra-on.ρ-counit) i
-  Coalgebra-on-pathp over {A} {B} comults i .Coalgebra-on.ρ-comult =
-    is-prop→pathp (λ i → C.Hom-set _ _ (W.W₁ (comults i) C.∘ comults i) (W.δ _ C.∘ comults i))
-      (A .Coalgebra-on.ρ-comult) (B .Coalgebra-on.ρ-comult) i
+  Coalgebra-on-pathp over comults = injectiveP (λ _ → eqv) (comults ,ₚ prop!)
 
   instance
     Extensional-Coalgebra-on
