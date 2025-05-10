@@ -72,7 +72,7 @@ Once we have a solution set, the theorem pops open like a walnut submerged
 in water:
 
 * First, $\cC$ is small-complete, so the category of $F$-algebras must also
-  be small-complete, as [[limits of algebras]] are computed by limits
+  be small-complete, as [[limits of $F$-algebras]] are computed by limits
   in $\cC$.
 * In particular, the category of $F$-algebras has all small [[equalisers]],
   so we can upgrade our weakly initial family to an [[initial object]].

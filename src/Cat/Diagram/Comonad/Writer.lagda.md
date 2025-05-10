@@ -22,7 +22,7 @@ open _=>_
 module Cat.Diagram.Comonad.Writer where
 ```
 
-# Writer (co)monads
+# Writer (co)monads {defines="writer-comonad"}
 
 If $A$ is an object in a [[Cartesian monoidal category]] $\cC$, then the
 functor "product with $A$" functor, $A \times (-)$, can naturally be
@@ -76,10 +76,10 @@ them in this `<details>`{.html} block for the curious reader.</summary>
   Writer-comonad .comult .is-natural x y f = unique₂
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ idl _)
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
-  Writer-comonad .δ-idl = unique₂
+  Writer-comonad .δ-unitl = unique₂
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
     (idr _) (idr _)
-  Writer-comonad .δ-idr = π₂∘⟨⟩
+  Writer-comonad .δ-unitr = π₂∘⟨⟩
   Writer-comonad .δ-assoc = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ refl (pullr π₂∘⟨⟩ ∙ id-comm) ∙ sym (⟨⟩∘ _)
 ```
 

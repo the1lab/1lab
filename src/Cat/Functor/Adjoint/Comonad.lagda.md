@@ -62,13 +62,13 @@ right identity law is exactly the `zig`{.Agda ident="adj.zag"}
 identity.
 
 ```agda
-Adjunction→Comonad .δ-idr {x} = adj.zig
+Adjunction→Comonad .δ-unitr {x} = adj.zig
 ```
 
 The others are slightly more involved.
 
 ```agda
-Adjunction→Comonad .δ-idl {x} = path where abstract
+Adjunction→Comonad .δ-unitl {x} = path where abstract
   path : L.₁ (R.₁ (adj.ε x)) D.∘ L.₁ (adj.η (R.F₀ x)) ≡ D.id
   path =
     L.₁ (R.₁ (adj.ε _)) D.∘ L.₁ (adj.η _) ≡⟨ sym (L.F-∘ _ _) ⟩

@@ -164,11 +164,39 @@ The [[total category]] of this displayed category is referred to as the
 ```agda
   module Coalgebras = Cat.Reasoning Coalgebras
 
-module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where instance
-  Extensional-coalgebra-hom
-    : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
-    → Extensional (Coalgebras.Hom W x y) ℓr
-  Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where
+  private
+    module C = Cat.Reasoning C
+    module W = Comonad-on W
+
+  Coalgebra-on-pathp
+    : ∀ {X Y} (p : X ≡ Y) {A : Coalgebra-on W X} {B : Coalgebra-on W Y}
+    → PathP (λ i → C.Hom (p i) (F · p i)) (A .Coalgebra-on.ρ) (B .Coalgebra-on.ρ)
+    → PathP (λ i → Coalgebra-on W (p i)) A B
+  Coalgebra-on-pathp over comults i .Coalgebra-on.ρ = comults i
+  Coalgebra-on-pathp over {A} {B} comults i .Coalgebra-on.ρ-counit =
+    is-prop→pathp (λ i → C.Hom-set _ _ (W.ε _ C.∘ comults i) (C.id {x = over i}))
+      (A .Coalgebra-on.ρ-counit) (B .Coalgebra-on.ρ-counit) i
+  Coalgebra-on-pathp over {A} {B} comults i .Coalgebra-on.ρ-comult =
+    is-prop→pathp (λ i → C.Hom-set _ _ (W.W₁ (comults i) C.∘ comults i) (W.δ _ C.∘ comults i))
+      (A .Coalgebra-on.ρ-comult) (B .Coalgebra-on.ρ-comult) i
+
+  instance
+    Extensional-Coalgebra-on
+      : ∀ {ℓr X}
+      → ⦃ sa : Extensional (C.Hom X (F · X)) ℓr ⦄
+      → Extensional (Coalgebra-on W X) ℓr
+    Extensional-Coalgebra-on ⦃ sa ⦄ =
+      injection→extensional! (Coalgebra-on-pathp refl) sa
+
+  instance
+    Extensional-coalgebra-hom
+      : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
+      → Extensional (Coalgebras.Hom W x y) ℓr
+    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+
+Comonad : ∀ {o ℓ} (C : Precategory o ℓ) → Type _
+Comonad C = Σ[ F ∈ Functor C C ] (Comonad-on F)
 
 module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (W : Comonad-on F) where
   open Cat.Reasoning C
@@ -190,7 +218,7 @@ gives us **cofree coalgebras**.
   Cofree-coalgebra : Ob → Coalgebras.Ob W
   Cofree-coalgebra A .fst = W₀ A
   Cofree-coalgebra A .snd .ρ = δ _
-  Cofree-coalgebra A .snd .ρ-counit = δ-idr
+  Cofree-coalgebra A .snd .ρ-counit = δ-unitr
   Cofree-coalgebra A .snd .ρ-comult = δ-assoc
 
   Cofree : Functor C (Coalgebras W)
@@ -216,7 +244,7 @@ the forgetful functor, we get a right adjoint!
   Forget⊣Cofree .counit .is-natural x y f = W.counit.is-natural _ _ _
 
   Forget⊣Cofree .zig {A , α} = α .ρ-counit
-  Forget⊣Cofree .zag         = ext δ-idl
+  Forget⊣Cofree .zag         = ext δ-unitl
 ```
 
 <!--

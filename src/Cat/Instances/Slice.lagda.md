@@ -1,12 +1,20 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Comonadic
+open import Cat.Functor.Adjoint.Comonad
+open import Cat.Diagram.Comonad.Writer
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
+open import Cat.Instances.Coalgebras
+open import Cat.Functor.Equivalence
+open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Comonad
 open import Cat.Diagram.Product
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
@@ -14,6 +22,10 @@ open import Cat.Prelude
 open import Data.Sum
 
 import Cat.Reasoning
+
+open Coalgebra-on
+open is-pullback
+open Total-hom
 ```
 -->
 
@@ -728,42 +740,44 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
 
 We can observe that this really is a _constant families_ functor by
 performing the following little calculation: If we have a map $h : Y \to
-B$, then the fibre of $\Delta_B(A)$ over $h$, given by the pullback
+B$, then the fibre of $\Delta_B(A)$ over $h$ is isomorphic to $A \times Y$;
+that is, we have the following pullback square:
 
 ~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
-  {Y \times_B \Delta(A)} \&\& Y \\
+  {A \times Y} \&\& {A \times B} \\
   \\
-  {A \times B} \&\& {B\text{.}}
-  \arrow[from=1-1, to=3-1]
-  \arrow["{\pi_2}"', from=3-1, to=3-3]
-  \arrow[from=1-1, to=1-3]
-  \arrow["h", from=1-3, to=3-3]
+  Y \&\& {B\text{.}}
+  \arrow["{\pi_2}"', from=1-1, to=3-1]
+  \arrow["h"', from=3-1, to=3-3]
+  \arrow["{A \times h}", from=1-1, to=1-3]
+  \arrow["{\pi_2}", from=1-3, to=3-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
-is isomorphic to $A \times Y$. The extra generality makes it a bit
+The extra generality makes it a bit
 harder to see the constancy, but if $h$ were a point $h : \top \to B$,
 the fibre over $h$ would correspondingly be isomorphic to $A \times \top
 \cong A$.
 
 ```agda
   constant-family-fibre
-    : (pb : has-pullbacks C)
-    → ∀ {A Y} (h : Hom Y B)
-    → pb (constant-family .F₀ A .map) h .Pullback.apex ≅ (A ⊗₀ Y)
-  constant-family-fibre pb {A} h = make-iso
-    ⟨ π₁ ∘ p₁ , p₂ ⟩ (universal {p₁' = ⟨ π₁ , h ∘ π₂ ⟩} {p₂' = π₂} π₂∘⟨⟩)
-    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _)
-      (idr _ ∙ sym (pullr p₁∘universal ∙ π₁∘⟨⟩))
-      (idr _ ∙ sym p₂∘universal)))
-    (Pullback.unique₂ (pb _ _) {p = π₂∘⟨⟩ ∙ square}
-      (pulll p₁∘universal ∙ ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₁∘⟨⟩ (pullr π₂∘⟨⟩ ∙ sym square))
-      (pulll p₂∘universal ∙ π₂∘⟨⟩)
-      (idr _ ∙ Product.unique (prod _ _) refl refl)
-      (idr _))
-    where open Pullback (pb (constant-family .F₀ A .map) h)
+    : ∀ {A Y} (h : Hom Y B)
+    → is-pullback C π₂ h (id {A} ⊗₁ h) π₂
+  constant-family-fibre {A} h .square =
+    sym π₂∘⟨⟩
+  constant-family-fibre {A} h .universal {p₁' = p₁'} {p₂' = p₂'} sq =
+    ⟨ π₁ ∘ p₂' , p₁' ⟩
+  constant-family-fibre {A} h .p₁∘universal = π₂∘⟨⟩
+  constant-family-fibre {A} h .p₂∘universal {p = p} =
+    ⟨⟩∘ _ ∙ sym (⟨⟩-unique
+      (sym (idl _) ∙ pushr (sym π₁∘⟨⟩))
+      (sym p ∙ pushr (sym π₂∘⟨⟩)))
+  constant-family-fibre {A} h .unique c₁ c₂ =
+    ⟨⟩-unique
+      (sym (idl _) ∙ extendl (sym π₁∘⟨⟩) ∙ (refl⟩∘⟨ c₂))
+      c₁
 ```
 
 The constant families functor is a [[right adjoint]] to the projection
@@ -774,7 +788,7 @@ functor $\cC \to \cC/B$ that is just the constant families functor.
 On the other hand, the "dependent sum" functor sends a map $A \to B$
 to the unique composite $A \to B \to \top$: it simply `Forget/`{.Agda}s the
 map. Thus the following adjunction is a special case of the
-adjunction between dependent sum and base change.
+adjunction between [[dependent sum]] and base change.
 
 ```agda
   Forget⊣constant-family : Forget/ ⊣ constant-family
@@ -795,6 +809,52 @@ adjunction between dependent sum and base change.
     (idr _))
 ```
 
-<!--
-[TODO: Naïm, 24/06/2024] this adjunction is comonadic!
--->
+Furthermore, this adjunction is [[comonadic]]! First, notice
+that the [[induced comonad|comonad from an adjunction]] $U \circ \Delta$
+on $\cC$ is none other than the [[writer comonad]] $B \times -$, up to
+swapping.
+
+```agda
+  UΔ≡Writer : Forget/ F∘ constant-family ≅ⁿ Writer C B (prod B)
+  UΔ≡Writer = iso→isoⁿ
+    (λ _ → invertible→iso swap swap-is-iso)
+    λ f → (ap ⟨_, f ∘ π₂ ⟩ (sym (idl _)) ⟩∘⟨refl)
+       ∙∙ swap-natural (f , id)
+       ∙∙ (refl⟩∘⟨ ap ⟨ f ∘ π₁ ,_⟩ (idl _))
+```
+
+It remains to ponder what a $U\Delta$-coalgebra on $A$ is: this should
+consist of a map $\langle f, g \rangle : A \to A \times B$ obeying some
+laws. In particular, the `counit law`{.Agda ident=ρ-counit} implies that
+$f = \id$, so that we are left with $g : A \to B$, an object of $\cC/B$!
+
+```agda
+  Forget/-comonadic : is-comonadic Forget⊣constant-family
+  Forget/-comonadic = is-precat-iso→is-equivalence
+    (iso (is-iso→is-equiv ff) (is-iso→is-equiv eso))
+    where
+      open is-iso
+
+      eso : is-iso (Comparison-CoEM Forget⊣constant-family .F₀)
+      eso .from (X , c) = cut (π₂ ∘ c .ρ)
+      eso .rinv (X , c) = refl ,ₚ ext (sym (⟨⟩-unique (c .ρ-counit) refl))
+      eso .linv _ = /-Obj-path refl π₂∘⟨⟩
+```
+
+A short computation shows that morphisms of $U\Delta$-coalgebras also
+precisely correspond to commuting triangles, so we get an [[isomorphism
+of precategories]] between the category of $U\Delta$-coalgebras and
+$\cC/B$.
+
+```agda
+      ff : ∀ {x y} → is-iso (Comparison-CoEM Forget⊣constant-family .F₁ {x} {y})
+      ff .from f .map = f .hom
+      ff {x} {y} .from f .commutes =
+        y .map ∘ f .hom                             ≡˘⟨ pulll π₂∘⟨⟩ ⟩
+        π₂ ∘ ⟨ id , y .map ⟩ ∘ f .hom               ≡˘⟨ refl⟩∘⟨ f .preserves ⟩
+        π₂ ∘ ⟨ f .hom ∘ π₁ , π₂ ⟩ ∘ ⟨ id , x .map ⟩ ≡⟨ pulll π₂∘⟨⟩ ⟩
+        π₂ ∘ ⟨ id , x .map ⟩                        ≡⟨ π₂∘⟨⟩ ⟩
+        x .map                                      ∎
+      ff .rinv _ = trivial!
+      ff .linv _ = trivial!
+```
