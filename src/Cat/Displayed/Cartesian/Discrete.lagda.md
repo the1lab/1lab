@@ -410,7 +410,7 @@ map $a'' \to_f b$ --- so we can take the canonical $f' : a' \to_f b$ and
 transport it over the given $a'' = a'$.
 
 ```agda
-    pieces : Displayed-functor (∫ B (discrete→presheaf P p-disc)) P Id
+    pieces : Vertical-functor (∫ B (discrete→presheaf P p-disc)) P
     pieces .F₀' x = x
     pieces .F₁' {f = f} {a'} {b'} x =
       subst (λ e → Hom[ f ] e b') x $ cart-lift f b' .centre .snd
