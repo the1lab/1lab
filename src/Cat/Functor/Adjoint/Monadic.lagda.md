@@ -24,7 +24,7 @@ open _=>_
 
 # Monadic adjunctions {defines="monadic-adjunction monadic-functor monadic"}
 
-An adjunction $F \dashv G$ between functors $F : C \to D$ and $G : D \to
+An adjunction $L \dashv R$ between functors $L : C \to D$ and $R : D \to
 C$ is _monadic_ if the induced `comparison functor`{.Agda
 ident=Comparison-EM} $D \to C^{R \circ L}$ (where the right-hand side is
 the `Eilenberg-Moore`{.Agda} category of the [monad of the
@@ -51,26 +51,24 @@ private
   module R = Cat.Functor.Reasoning R
   module adj = _⊣_ L⊣R
 
-L∘R : Monad-on _
-L∘R = Adjunction→Monad L⊣R
+R∘L : Monad-on _
+R∘L = Adjunction→Monad L⊣R
 
-open Monad-on L∘R
+open Monad-on R∘L
 
-private
-  module Kleisli = Cat.Reasoning (Kleisli L∘R)
-  module EM = Cat.Reasoning (Eilenberg-Moore L∘R)
+_ = Algebra
 ```
 -->
 
 The composition of `R.₁`{.Agda} with the `adjunction counit`{.Agda
 ident="adj.counit.ε"} natural transformation gives `R`{.Agda} an
-`Algebra`{.Agda} structure, thus extending `R` to a functor $D \to C^{L
-\circ R}$.
+`Algebra`{.Agda} structure, thus extending `R` to a functor $D \to C^{R
+\circ L}$.
 
 ```agda
-Comparison-EM : Functor D (Eilenberg-Moore L∘R)
+Comparison-EM : Functor D (Eilenberg-Moore R∘L)
 Comparison-EM .F₀ x = R.₀ x , alg where
-  alg : Algebra-on L∘R (R.₀ x)
+  alg : Algebra-on R∘L (R.₀ x)
   alg .Algebra-on.ν = R.₁ (adj.counit.ε _)
   alg .Algebra-on.ν-unit = adj.zag
   alg .Algebra-on.ν-mult = R.weave (adj.counit.is-natural _ _ _)
@@ -87,10 +85,8 @@ Comparison-EM .F-∘ f g = ext (R.F-∘ _ _)
 ```
 </details>
 
-An adjunction is _monadic_ if `Comparison-EM`{.Agda} is an [equivalence of
-categories], thus exhibiting $C$ as the category of $R\circ L$-algebras:
-
-[equivalence of categories]: Cat.Functor.Equivalence.html
+An adjunction is _monadic_ if `Comparison-EM`{.Agda} is an [[equivalence of
+categories]], thus exhibiting $C$ as the category of $R \circ L$-algebras:
 
 ```agda
 is-monadic : Type _
