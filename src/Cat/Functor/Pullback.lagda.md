@@ -1,16 +1,23 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Comonadic
+open import Cat.Instances.Coalgebras
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
+open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
+
+open Coalgebra-on
+open Total-hom
 ```
 -->
 
@@ -120,7 +127,8 @@ adjoint directly, then give the unit and counit, and finally prove the
 triangle identities.
 
 :::{.definition #dependent-sum}
-The [[left adjoint]], called _dependent sum_ and written $\sum_f$, is given
+The [[left adjoint]], called _dependent sum_ and written $\sum_f : \cC/Y
+\to \cC/X$, is given
 on objects by precomposition with $f$, and on morphisms by what is
 essentially the identity function --- only the witness of commutativity
 must change.
@@ -215,6 +223,59 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
       (pulll pb.p₂∘universal ∙ pb'.p₂∘universal))) where
     module pb = Pullback (pullbacks (B .map) f)
     module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
+```
+
+This adjunction is [[comonadic]]; this generalises the [[fact|constant
+family]] that the forgetful functor $\cC/Y \to \cC$ is comonadic,
+which we recover by taking $f : Y \to \top$.
+
+The idea is the same, only with more dependent types: thinking of $Y$ as
+a family of types over $X$, the comonad $\sum_f \circ f^* : \cC/X \to
+\cC/X$ sends a map $A \to X$ to the projection map $A \times_X Y \to X$.
+Therefore, a coalgebra for this comonad consists of a map $\langle g, h
+\rangle : A \to A \times_X Y$ over $X$; but the coalgebra laws force
+$g$ to be the identity on $A$, so all that is left is the map $h$, an
+object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
+
+```agda
+  Σf-comonadic : is-comonadic Σf⊣f*
+  Σf-comonadic = is-precat-iso→is-equivalence
+    (iso (is-iso→is-equiv ff) (is-iso→is-equiv eso))
+    where
+      open is-iso
+
+      eso : is-iso (Comparison-CoEM Σf⊣f* .F₀)
+      eso .from (A , c) = cut (pb.p₂ ∘ c .ρ .map)
+        where module pb = Pullback (pullbacks (A .map) f)
+      eso .rinv (A , c) =
+          Σ-pathp (/-Obj-path refl path)
+        $ Coalgebra-on-pathp _ $ /-Hom-pathp _ _
+        $ symP $ Hom-pathp-reflr C $ pb≡.unique i0
+          (pulll (from-pathp-to' C _ λ i → pb≡.p₁ i) ∙ unext (c .ρ-counit))
+          (pulll (from-pathp-to' C _ λ i → pb≡.p₂ i))
+        where
+          module pb = Pullback (pullbacks (A .map) f)
+
+          path : f ∘ pb.p₂ ∘ c .ρ .map ≡ A .map
+          path = assoc _ _ _ ∙ unext (c .ρ .commutes)
+
+          module pb≡ i = Pullback (pullbacks (path i) f)
+      eso .linv p = /-Obj-path refl pb.p₂∘universal
+        where module pb = Pullback (pullbacks (f ∘ p .map) f)
+
+      ff : ∀ {x y} → is-iso (Comparison-CoEM Σf⊣f* .F₁ {x} {y})
+      ff .from g .map = g .hom .map
+      ff {x} {y} .from g .commutes =
+        y .map ∘ g .hom .map                       ≡˘⟨ pulll pby.p₂∘universal ⟩
+        pby.p₂ ∘ pby.universal _ ∘ g .hom .map     ≡˘⟨ refl⟩∘⟨ unext (g .preserves) ⟩
+        pby.p₂ ∘ pby.universal _ ∘ pbx.universal _ ≡⟨ pulll pby.p₂∘universal ⟩
+        pbx.p₂ ∘ pbx.universal _                   ≡⟨ pbx.p₂∘universal ⟩
+        x .map                                     ∎
+        where
+          module pbx = Pullback (pullbacks (f ∘ x .map) f)
+          module pby = Pullback (pullbacks (f ∘ y .map) f)
+      ff .rinv _ = trivial!
+      ff .linv _ = trivial!
 ```
 
 ## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}
