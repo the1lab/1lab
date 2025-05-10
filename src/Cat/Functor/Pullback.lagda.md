@@ -119,10 +119,12 @@ The base change functor is a right adjoint. We construct the left
 adjoint directly, then give the unit and counit, and finally prove the
 triangle identities.
 
+:::{.definition #dependent-sum}
 The [[left adjoint]], called _dependent sum_ and written $\sum_f$, is given
 on objects by precomposition with $f$, and on morphisms by what is
 essentially the identity function --- only the witness of commutativity
 must change.
+:::
 
 ```agda
 module _ {X Y : Ob} (f : Hom Y X) where

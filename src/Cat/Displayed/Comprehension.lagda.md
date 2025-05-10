@@ -463,9 +463,9 @@ is given by duplication.
     total-hom δᶜ δᶜ'
   comonad .comult .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
     total-hom-path E dup-extend dup-extend'
-  comonad .δ-idl =
+  comonad .δ-unitl =
     total-hom-path E extend-proj-dup extend-proj-dup'
-  comonad .δ-idr =
+  comonad .δ-unitr =
     total-hom-path E proj-dup proj-dup'
   comonad .δ-assoc =
     total-hom-path E extend-dup² extend-dup²'

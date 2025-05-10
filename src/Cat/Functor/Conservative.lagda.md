@@ -48,7 +48,7 @@ By the universal property of $L$, there exists a map $\eta$ from the apex of $K$
 to the apex of $L$ in $\cC$. Furthermore, as $F(K)$ is a limit in $\cD$, $F(\eta)$
 becomes an isomorphism in $\cD$.
 The situation is summarised by the following diagram, which shows how $F$
-maps cones in $\cC$ to cones in $\cD$ (the coloured cones are assumes to
+maps cones in $\cC$ to cones in $\cD$ (the coloured cones are assumed to
 be limiting).
 
 ~~~{.quiver}
