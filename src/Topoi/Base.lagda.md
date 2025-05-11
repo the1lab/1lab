@@ -386,13 +386,7 @@ Presheaf {κ} C = psh where
   psh .L = Id
   psh .L-lex .is-lex.pres-⊤ c = c
   psh .L-lex .is-lex.pres-pullback pb = pb
-  psh .L⊣ι = adj where
-    open _⊣_
-    adj : Id ⊣ Id
-    adj .unit = NT (λ _ → idnt) λ x y f → trivial!
-    adj .counit = NT (λ _ → idnt) λ x y f → trivial!
-    adj .zig = trivial!
-    adj .zag = trivial!
+  psh .L⊣ι = Id⊣Id
 ```
 
 # Properties of topoi

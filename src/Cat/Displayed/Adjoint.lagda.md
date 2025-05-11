@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Equivalence
 open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
@@ -64,9 +65,9 @@ module _
 
 ```agda
   record _⊣[_]_
-    (L' : Displayed-functor ℰ ℱ L)
+    (L' : Displayed-functor L ℰ ℱ)
     (adj : L ⊣ R)
-    (R' : Displayed-functor ℱ ℰ R )
+    (R' : Displayed-functor R ℱ ℰ)
     : Type lvl where
     no-eta-equality
     open _⊣_ adj
@@ -91,6 +92,11 @@ that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF
 \to cF$ are **fibred adjoint functors** if they are displayed adjoint
 functors, and the unit and counit are vertical natural transformations.
 
+Unlike vertical functors and vertical natural transformations, we have to
+define fibred adjunctions as a separate type: general displayed adjunctions
+use composition of displayed functors for the unit and counit, whereas fibred
+adjunctions use vertical composition instead.
+
 <!--
 ```agda
 module _
@@ -103,7 +109,7 @@ module _
     open Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
-    open Vertical-fibred-functor
+    open Vertical-functor
 
     lvl : Level
     lvl = ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
@@ -114,13 +120,13 @@ module _
 
 ```agda
   record _⊣↓_
-    (L : Vertical-fibred-functor ℰ ℱ)
-    (R : Vertical-fibred-functor ℱ ℰ)
+    (L : Vertical-functor ℰ ℱ)
+    (R : Vertical-functor ℱ ℰ)
     : Type lvl where
     no-eta-equality
     field
-      unit' : IdVf =>f↓ R ∘Vf L
-      counit' : L ∘Vf R =>f↓ IdVf
+      unit' : Id' =>↓ R ∘V L
+      counit' : L ∘V R =>↓ Id'
 
     module unit' = _=>↓_ unit'
     module counit' = _=>↓_ counit' renaming (η' to ε')

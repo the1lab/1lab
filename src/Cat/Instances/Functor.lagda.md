@@ -86,6 +86,11 @@ F∘-idr
   → F F∘ Id ≡ F
 F∘-idr = Functor-path (λ x → refl) λ x → refl
 
+F∘-id2
+  : ∀ {o ℓ} {C : Precategory o ℓ}
+  → Id {C = C} F∘ Id {C = C} ≡ Id
+F∘-id2 = Functor-path (λ _ → refl) (λ _ → refl)
+
 module
   _ {o ℓ o' ℓ' o'' ℓ''}
     {C : Precategory o ℓ} {D : Precategory o' ℓ'} {E : Precategory o'' ℓ''}

@@ -22,13 +22,19 @@ module Cat.Displayed.Cartesian.Right
   {ℬ : Precategory o ℓ}
   (ℰ : Displayed ℬ o' ℓ')
   where
+```
+
+<!--
+```agda
 
 open Cat.Reasoning ℬ
 open Displayed ℰ
 open Cat.Displayed.Cartesian ℰ
 open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Reasoning ℰ
+open is-fibred-functor
 ```
+-->
 
 # Right fibrations
 
@@ -137,13 +143,12 @@ functor+right-fibration→fibred
   → {ℱ : Displayed 𝒟 o₂' ℓ₂'}
   → {F : Functor 𝒟 ℬ}
   → Right-fibration
-  → (F' : Displayed-functor ℱ ℰ F)
-  → Fibred-functor ℱ ℰ F
-functor+right-fibration→fibred rfib F' .Fibred-functor.disp =
-  F'
-functor+right-fibration→fibred rfib F' .Fibred-functor.F-cartesian f' _ =
+  → (F' : Displayed-functor F ℱ ℰ)
+  → is-fibred-functor F'
+functor+right-fibration→fibred rfib F' .F-cartesian {f' = f'} _ =
   Right-fibration.cartesian rfib (F₁' f')
-  where open Displayed-functor F'
+  where
+    open Displayed-functor F'
 ```
 
 Specifically, this implies that all displayed functors into a discrete
@@ -157,8 +162,8 @@ functor+discrete→fibred
   → {ℱ : Displayed 𝒟 o₂' ℓ₂'}
   → {F : Functor 𝒟 ℬ}
   → is-discrete-cartesian-fibration ℰ
-  → (F' : Displayed-functor ℱ ℰ F)
-  → Fibred-functor ℱ ℰ F
+  → (F' : Displayed-functor F ℱ ℰ)
+  → is-fibred-functor F'
 functor+discrete→fibred disc F' =
   functor+right-fibration→fibred (discrete→right-fibration disc) F'
 ```
