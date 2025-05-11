@@ -21,15 +21,13 @@ module Cat.Regular where
 
 A **regular category** is a category with [[pullback]]-stable [[image
 factorisations]]. To define regular categories, we use the theory of
-[orthogonal morphisms], specifically [strong epimorphisms]: A regular
+[orthogonal morphisms], specifically [[strong epimorphisms]]: A regular
 category is one where every morphism factors as a strong epimorphism
 followed by a monomorphism, and strong epimorphisms are stable under
 pullback.
 
-[image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [orthogonal morphisms]: Cat.Morphism.Orthogonal.html
-[strong epimorphisms]: Cat.Morphism.Strong.Epi.html
 
 At face value, it's a bit weird to take the definition of regular
 categories to talk about strong, rather than _regular_, epimorphisms.

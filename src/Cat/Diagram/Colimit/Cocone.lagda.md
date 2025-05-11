@@ -52,6 +52,15 @@ module _ {J : Precategory o ℓ} {C : Precategory o' ℓ'} (F : Functor J C) whe
       commutes : ∀ {x y} (f : J.Hom x y) → ψ y C.∘ F.₁ f ≡ ψ x
 ```
 
+::: popup
+A **cocone** under a diagram $F : \cJ \to \cC$ is an object $X : \cC$
+(the **coapex**) equipped with maps $\psi_j : F(j) \to X$ such that, given
+$f : \cJ(x, y)$, we have $$\psi_y \circ F(f) = \psi_x$$.
+
+A **morphism of cocones** $(X, \psi) \to (Y, \phi)$ consists of a map $f
+: X \to Y$ satisfying $$f \circ \psi_x = \phi_x$ for every $x : \cJ$.
+:::
+
 <!--
 ```agda
   open Cocone

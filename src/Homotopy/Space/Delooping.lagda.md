@@ -30,6 +30,17 @@ annoying way that questions like these tend to be answered: Given any
 group $G$, we construct a type $\B{G}$ with $\pi_1(\B{G}) \equiv G$. We
 call $\B{G}$ the **delooping** of $G$.
 
+::: popup
+The **delooping** of a [[group]] $G$ is the [[groupoid]] $\B{G}$ with
+[[fundamental group]] $\pi_1(\B{G}) = G$. As it is [[pointed]] and
+[[connected]], $\B{G}$ is a [[concrete group]].
+
+It can be constructed as the 1-truncated higher inductive type
+`Deloop`{.Agda} with a generating `path`{.Agda} for each $x : G$, and a
+square connecting $\operatorname{path}(xy) = \operatorname{path}(x)
+\cdot \operatorname{path}(y)$.
+:::
+
 <!--
 ```agda
 module _ {ℓ} (G : Group ℓ) where
@@ -150,7 +161,7 @@ together to establish `G ≡ (base ≡ base)`.
 
 We'll want to define the family `Code` by induction on `Deloop`. First,
 since we have to map into a [[groupoid]], we'll map into the type
-$\set$, rather than $\ty$. This takes care of the truncation
+$\set$, rather than $\type$. This takes care of the truncation
 constructor (which is hidden from the page since it is entirely
 formulaic): let's tackle the rest in order. We can also handle the
 `base`{.Agda} case, since `Code base = G` was already a part of our

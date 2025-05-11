@@ -47,3 +47,4 @@ open P public renaming
 instance
   Discrete-Char : Discrete Char
   Discrete-Char = Discrete-inj' _ (primCharToNatInjective _ _)
+```

@@ -31,7 +31,8 @@ private variable
 A function $f : F \to G \to H$, where all types involved are equipped
 with [[abelian group]] structures, is called **bilinear** when it
 satisfies $f(x + y, z) = f(x, z) + f(y, z)$ and $f(x, y + z) = f(x, y) +
-f(x, z)$: it is a group homomorphism in each of its arguments.
+f(x, z)$: it is a [[group homomorphism]] separately in each of its
+arguments.
 
 ```agda
 record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-group ℓ'') : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where

@@ -44,8 +44,6 @@ $\thecat{LH}$. Each slice $\thecat{LH}/X$ is Cartesian closed ---
 they're even topoi --- but $\thecat{LH}$ has no terminal object.
 
 
-[base change]: Cat.Functor.Pullback.html
-
 ```agda
 record Locally-cartesian-closed {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   field

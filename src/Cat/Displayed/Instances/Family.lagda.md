@@ -415,10 +415,9 @@ Skeletal→Family-skeletal-generic-object skel {f' = f'} cart =
 
 Let $\cC$ be a strict category, and again recall that the set of objects
 of $\cC$ forms a generic object. This generic object is a [gaunt generic
-object] if and only if $\cC$ is a [gaunt precategory].
+object] if and only if $\cC$ is a [[gaunt precategory|gaunt]].
 
 [gaunt generic object]: Cat.Displayed.GenericObject.html#gaunt-generic-objects
-[gaunt precategory]: Cat.Gaunt.html
 
 We begin with the forward direction. Recall that a category is gaunt
 if it is skeletal and all automorphisms are trivial. Gaunt generic

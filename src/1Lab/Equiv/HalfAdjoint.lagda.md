@@ -25,17 +25,19 @@ module 1Lab.Equiv.HalfAdjoint where
 
 # Adjoint equivalences {defines="half-adjoint-equivalence"}
 
-An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
-\varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
-[triangle identities], thus witnessing $f$ and $g$ as [[adjoint
-functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
-equivalence - satisfying only _one_ of the triangle identities - as a
-[good notion of equivalence].
+:::{.popup .keep}
+An **adjoint equivalence** is an [[isomorphism|quasi-inverse]] $(f, g,
+\eta, \varepsilon)$ where the [[homotopies]] ($\eta$, $\varepsilon$)
+satisfy the triangle identities, thus witnessing $f$ and $g$ as
+[[adjoint functors]].
 
-[isomorphism]: 1Lab.Equiv.html#improving-isomorphisms
-[homotopies]: 1Lab.Path.html#π-types
-[triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
-[good notion of equivalence]: 1Lab.Equiv.html#equivalences
+A **half-adjoint equivalence** $f : A \to B$ is equipped with an inverse
+$g : B \to A$, the homotopies $\eta, \eps$, and a witness for
+*one* of the triangle identities. These data imply that the other
+triangle identity is also satisfied, but most importantly they are a
+[[property]] of $f$, making half-adjoint equivalences into a [[good
+notion of equivalence]].
+:::
 
 ```agda
 is-half-adjoint-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _

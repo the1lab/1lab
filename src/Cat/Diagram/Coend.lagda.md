@@ -28,23 +28,21 @@ private
 
 # Coends {defines=coend}
 
-Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the
-general yoga of [bifunctors] we think of as combining a contravariant
-action $F(-,x) : \cC\op \to \cD$ and a covariant action $F(x,-) :
-\cC \to \cD$ of $\cC$ on $\cD$[^action]. As a concrete
-example, we could take $\cC = \bf{B}R$, the 1-object [$\Ab$-category]
-associated to a [ring] $R$ --- then the functors $F(-,x)$ and $F(x,-)$
+Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the general
+yoga of [bifunctors] we think of as combining a contravariant action
+$F(-,x) : \cC\op \to \cD$ and a covariant action $F(x,-) : \cC \to \cD$
+of $\cC$ on $\cD$[^action]. As a concrete example, we could take $\cC =
+\bf{B}R$, the 1-object [[$\Ab$-category|Ab-enriched category]]
+associated to a [[ring]] $R$ --- then the functors $F(-,x)$ and $F(x,-)$
 would be left- and right- $R$-modules, respectively. In fact, let us
 focus on this case and consider two modules $A$ and $B$, incarnated as a
 pair of functors $A : \bf{B}R\op \to \Ab$ and $B : \bf{B}R \to \Ab$.
 
 [^action]: "Action" here is meant evoke the idea of e.g. [group
-actions], and does not refer to a specific concept
+actions], and does not refer to a specific concept.
 
 [bifunctors]: Cat.Functor.Bifunctor.html
 [group actions]: Algebra.Group.Action.html
-[$\Ab$-category]: Cat.Abelian.Base.html#ab-enriched-categories
-[ring]: Algebra.Ring.html
 
 In this situation, we may study the **tensor product** (of modules!) $A
 \otimes_R B$ as being an "universal object where the actions of $A$ and
@@ -55,13 +53,11 @@ $$
 A \otimes R \otimes B \tto A \otimes B \epi A \otimes_R B
 $$,
 
-where the undecorated $A \otimes B$ stands for the [tensor product of
-abelian groups], and the two maps are given by the $R$-actions of $A$
+where the undecorated $A \otimes B$ stands for the [[tensor product of
+abelian groups]], and the two maps are given by the $R$-actions of $A$
 and $B$. More explicitly, letting $a \otimes b$ stand for a tensor, the
 equation $a\otimes rb = ar\otimes b$ holds in $A \otimes_R B$, and the
 tensor product is the universal object where this is forced to hold.
-
-[tensor product of abelian groups]: Algebra.Group.Ab.Tensor.html
 
 Going back to the absurd generality of a bifunctor $F : \cC\op \times
 \cC \to \cD$, we may still wish to consider these sorts of
@@ -73,12 +69,9 @@ Kan extensions][lan] as certain colimits has this form!
 [lan]: Cat.Functor.Kan.Pointwise.html#computing-pointwise-extensions
 
 We call such an object a **coend** of the functor $F$, and denote it by
-$\int^c F(c,c)$ (or $\int F$ for short). Being a type of [colimit],
-coends are [initial objects] in a particular category, but we will
+$\int^c F(c,c)$ (or $\int F$ for short). Being a type of [[colimit]],
+coends are [[initial objects]] in a particular category, but we will
 unpack the definition here and talk about **cowedges** instead.
-
-[colimit]: Cat.Diagram.Colimit.Base.html
-[initial objects]: Cat.Diagram.Initial.html
 
 ## Formalisation {defines="cowedge"}
 

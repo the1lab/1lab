@@ -23,25 +23,31 @@ module Cat.Diagram.Coproduct.Copower where
 
 # Copowers {defines="copower copowered"}
 
-Let $\cC$ be a category admitting [$\kappa$-small] [indexed
-coproducts], for example a $\kappa$-[cocomplete] category. In the same
-way that (in ordinary arithmetic) the iterated product of a bunch of
-copies of the same factor
+Let $\cC$ be a category admitting [$\kappa$-small] [[indexed
+coproducts]], for example a $\kappa$-[[cocomplete category]]. In the
+same way that (in ordinary arithmetic) the iterated product of a bunch
+of copies of the same factor
 
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
-[indexed coproducts]: Cat.Diagram.Coproduct.Indexed.html
-[cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 $$
 \underbrace{a \times a \times \dots \times a}_{n}
 $$
 
 is called a "power", we refer to the coproduct $\coprod_{X} A$ of many
-copies of an object $X$ indexed by a $\kappa$-small set $X$ as the
+copies of an object $A$ indexed by a $\kappa$-small set $X$ as the
 **copower** of $A$ by $X$, and alternatively denote it $X \otimes A$. If
 $\cC$ does indeed admit coproducts indexed by _any_ $\kappa$-small
 set, then the copowering construction extends to a functor $\Sets_\kappa
 \times \cC \to \cC$.
+
+::: popup
+The **copower** $X \otimes A$ of an object $A : \cC$ by a [[set]] $X$,
+if it exists, is the [[indexed coproduct]] of $X$-many copies of $A$.
+The object $X \otimes A$ [[represents|representing object]] the functor
+$$B \mapsto \hom_\cC(A, B)^X$$, i.e. we have a [[natural isomorphism]]
+$$\hom_\cC(X \otimes A, -) \cong \hom_\cC(A, -)^X$$.
+:::
 
 The notion of copowering gives us slick terminology for a category which
 admits all $\kappa$-small coproducts, but not necessarily all
@@ -68,10 +74,11 @@ module Copowers
   X ⊗ A = coprods X (λ _ → A) .ΣF
 ```
 
-Copowers satisfy a universal property: $X \otimes A$ is a [[representing object]]
-for the functor that takes an object $B$ to the $X$th power of the set of morphisms
-from $A$ to $B$; in other words, we have a natural isomorphism
-$\hom_\cC(X \otimes A, -) \cong \hom_{\Sets}(X, \hom_\cC(A, -))$.
+Copowers satisfy a universal property: $X \otimes A$ is a [[representing
+object]] for the functor that takes an object $B$ to the $X$th power of
+the set of morphisms from $A$ to $B$; in other words, we have a
+[[natural isomorphism]] $\hom_\cC(X \otimes A, -) \cong \hom_{\Sets}(X,
+\hom_\cC(A, -))$.
 
 ```agda
   copower-hom-iso
