@@ -4,13 +4,20 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Kan.Reflection
+open import Cat.Functor.Conservative
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
+open import Cat.Functor.Kan.Base
 open import Cat.Displayed.Total
 open import Cat.Functor.Algebra
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
 import Cat.Reasoning
+
+open lifts-limit
 ```
 -->
 ```agda
@@ -20,12 +27,9 @@ module Cat.Functor.Algebra.Limits where
 # Limits in categories of F-algebras {defines="limits-of-f-algebras"}
 
 This short note details the construction of [[limits]] in categories of
-[[F-algebras]] from limits in the underlying category.
-
-<!-- [TODO: Reed M, 17/10/2024]
-This should really be about creation of limits/display, but I don't want to deal
-with that at the moment!
--->
+[[F-algebras]] from limits in the underlying category; it is similar
+to the construction of [[limits in categories of algebras]] for a
+[[monad]].
 
 <!--
 ```agda
@@ -45,17 +49,17 @@ module _
 
 Let $F : \cC \to \cC$ be an endofunctor, and $K : \cJ \to \FAlg{F}$ be a
 diagram of $F$-algebras. If $\cC$ has a limit $L$ of $\pi \circ K$, then
-$F(L)$ is the limit of $K$ in $\FAlg{F}$.
-
+$L$ can be equipped with an $F$-algebra structure that makes it the limit
+of $K$ in $\FAlg{F}$.
 
 ```agda
-  Forget-algebra-lift-limit : Limit (πᶠ (F-Algebras F) F∘ K) → Limit K
-  Forget-algebra-lift-limit L = to-limit (to-is-limit L') where
+  Forget-algebra-lifts-limit : Limit (πᶠ (F-Algebras F) F∘ K) → Limit K
+  Forget-algebra-lifts-limit L = to-limit (to-is-limit L') where
     module L = Limit L
     open make-is-limit
 ```
 
-As noted earlier, the underlying object of the limit is $F(L)$. The algebra
+As noted earlier, the underlying object of the limit is $L$. The algebra
 $F(L) \to L$ is constructed via the universal property of $L$: to
 give a map $F(L) \to L$, it suffices to give maps $F(L) \to K(j)$ for
 every $j : \cJ$, which we can construct by composing the projection
@@ -106,6 +110,29 @@ commute.
 <!--
 ```agda
 module _
+  {o ℓ oj ℓj} {C : Precategory o ℓ}
+  (F : Functor C C)
+  {J : Precategory oj ℓj}
+  where
+```
+-->
+
+Packaging this together, we have that the forgetful functor from the
+category of $F$-algebras to $C$ [[creates limits]].
+
+```agda
+  Forget-algebra-lifts-limits : lifts-limits-of J (πᶠ (F-Algebras F))
+  Forget-algebra-lifts-limits lim .lifted = Forget-algebra-lifts-limit F _ lim
+  Forget-algebra-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
+
+  Forget-algebra-creates-limits : creates-limits-of J (πᶠ (F-Algebras F))
+  Forget-algebra-creates-limits = conservative+lifts→creates-limits
+    Forget-algebra-is-conservative Forget-algebra-lifts-limits
+```
+
+<!--
+```agda
+module _
   {o ℓ oκ ℓκ} {C : Precategory o ℓ}
   (complete : is-complete oκ ℓκ C)
   where
@@ -117,5 +144,6 @@ then $\FAlg{F}$ is also $\kappa$ complete.
 
 ```agda
   FAlg-is-complete : (F : Functor C C) → is-complete oκ ℓκ (FAlg F)
-  FAlg-is-complete F K = Forget-algebra-lift-limit F K (complete (πᶠ (F-Algebras F) F∘ K))
+  FAlg-is-complete F = lifts-limits→complete (πᶠ (F-Algebras F))
+    (Forget-algebra-lifts-limits F) complete
 ```
