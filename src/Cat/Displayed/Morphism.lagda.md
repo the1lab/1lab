@@ -18,7 +18,6 @@ module Cat.Displayed.Morphism
 
 <!--
 ```agda
-open Displayed ℰ
 open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
 private variable
@@ -124,11 +123,11 @@ weak-monic-∘
 weak-monic-∘ {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p p' =
   g'-weak-monic h' k' p $
   f'-weak-monic (g' ∘' h') (g' ∘' k') (ap₂ _∘_ refl p) $
-  cast[] $
-    f' ∘' g' ∘' h'   ≡[]⟨ assoc' f' g' h' ⟩
-    (f' ∘' g') ∘' h' ≡[]⟨ p' ⟩
-    (f' ∘' g') ∘' k' ≡[]˘⟨ assoc' f' g' k' ⟩
-    f' ∘' g' ∘' k'   ∎
+  begin[]
+    f' ∘' g' ∘' h'   ≡[]⟨ ∫.assoc _ _ _ ⟩
+    (f' ∘' g') ∘' h' ≡[]⟨ path! p' ⟩
+    (f' ∘' g') ∘' k' ≡[]˘⟨ ∫.assoc _ _ _ ⟩
+    f' ∘' g' ∘' k'   ∎[]
 
 is-monic[]→is-weak-monic
   : {f-monic : is-monic f}
@@ -145,7 +144,10 @@ weak-monic-cancell
   : is-weak-monic (f' ∘' g')
   → is-weak-monic g'
 weak-monic-cancell {f' = f'} {g' = g'} fg-weak-monic h' k' p p' =
-  fg-weak-monic h' k' p (extendr' _ p')
+  fg-weak-monic h' k' p $
+  begin[]
+    (f' ∘' g') ∘' h' ≡[]⟨ ∫.extendr (path! p') ⟩
+    (f' ∘' g') ∘' k' ∎[]
 ```
 
 Moreover, postcomposition with a weak monomorphism is an [[embedding]].
@@ -199,11 +201,11 @@ jointly-weak-monic-∘
 jointly-weak-monic-∘ {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p p' =
   g'-joint-mono h' h'' p $
   fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') (ap₂ _∘_ refl p) λ ix →
-  cast[] $
-    fᵢ' ix ∘' g' ∘' h'    ≡[]⟨ assoc' (fᵢ' ix) g' h' ⟩
-    (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ p' ix ⟩
-    (fᵢ' ix ∘' g') ∘' h'' ≡[]˘⟨ assoc' (fᵢ' ix) g' h'' ⟩
-    fᵢ' ix ∘' g' ∘' h''   ∎
+  begin[]
+    fᵢ' ix ∘' g' ∘' h'    ≡[]⟨ ∫.assoc _ _ _ ⟩
+    (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ path! (p' ix) ⟩
+    (fᵢ' ix ∘' g') ∘' h'' ≡[]˘⟨ ∫.assoc _ _ _ ⟩
+    fᵢ' ix ∘' g' ∘' h''   ∎[]
 ```
 
 Similarly, if $f_{i}' \circ g'$ is a jointly weak monic family, then
@@ -216,7 +218,7 @@ jointly-weak-monic-cancell
   → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
   → is-weak-monic g'
 jointly-weak-monic-cancell fᵢ'-joint-mono h' h'' p p' =
-  fᵢ'-joint-mono h' h'' p λ _ → extendr' (ap₂ _∘_ refl p) p'
+  fᵢ'-joint-mono h' h'' p λ _ → begin[] (∫.extendr (path! p'))
 ```
 
 ## Epis
@@ -467,10 +469,10 @@ is-invertible[]-is-prop inv f' p q = path where
 
   inv≡inv' : p.inv' ≡ q.inv'
   inv≡inv' =
-    p.inv'                           ≡⟨ shiftr (insertr inv.invl) (insertr' _ q.invl') ⟩
-    hom[] ((p.inv' ∘' f') ∘' q.inv') ≡⟨ weave _ (eliml inv.invr) refl (eliml' _ p.invr') ⟩
-    hom[] q.inv'                     ≡⟨ liberate _ ⟩
-    q.inv' ∎
+    begin[]
+      p.inv'                   ≡[]⟨ ∫.insertr (path! q.invl') ⟩
+      (p.inv' ∘' f') ∘' q.inv' ≡[]⟨ ∫.eliml (path! p.invr') ⟩
+      q.inv' ∎[]
 
   path : p ≡ q
   path i .is-invertible[_].inv' = inv≡inv' i
@@ -488,8 +490,8 @@ make-iso[_]
   → f' ∘' g' ≡[ iso .invl ] id'
   → g' ∘' f' ≡[ iso .invr ] id'
   → a' ≅[ iso ] b'
-{-# INLINE make-iso[_] #-}
 make-iso[ inv ] f' g' p q = record { to' = f' ; from' = g' ; inverses' = record { invl' = p ; invr' = q }}
+{-# INLINE make-iso[_] #-}
 
 make-invertible[_]
   : ∀ {a b a' b'} {f : Hom a b} {f' : Hom[ f ] a' b'}
@@ -632,8 +634,7 @@ module _
 
   invertible[]→monic[] : is-monic[ invertible→monic f-inv ] f'
   invertible[]→monic[] g' h' p p' =
-    cast[] $ introl[] _ f'.invr' ∙[] extendr[] _ p' ∙[] eliml[] _ f'.invr'
-
+    begin[] (∫.introl (path! f'.invr') ∙ ∫.extendr (path! p') ∙ ∫.eliml (path! f'.invr'))
 
 iso[]→to-has-section[]
   : {f : a ≅ b} → (f' : a' ≅[ f ] b')
@@ -678,7 +679,7 @@ module _
     → h₁' ∘' f' ≡[ p ] h₂'
     → h₁' ≡[ q ] h₂' ∘' f'.section'
   pre-section' {p = p} {q = q} {h₁' = h₁'} {h₂' = h₂'} p' =
-    symP (rswizzle' (sym p) f.is-section (symP p') f'.is-section')
+    begin[] (sym (∫.rswizzle (sym (path! p')) (path! f'.is-section')))
 
   pre-section[]
     : ∀ {h₁ : Hom b c} {h₂ : Hom a c}
@@ -695,7 +696,7 @@ module _
     → f'.section' ∘' h₁' ≡[ p ] h₂'
     → h₁' ≡[ q ] f' ∘' h₂'
   post-section' {p = p} {q = q} {h₁' = h₁'} {h₂' = h₂'} p' =
-    symP (lswizzle' (sym p) f.is-section (symP p') f'.is-section')
+    begin[] (sym (∫.lswizzle (sym (path! p')) (path! f'.is-section')))
 
   post-section[]
     : ∀ {h₁ : Hom c b} {h₂ : Hom c a}

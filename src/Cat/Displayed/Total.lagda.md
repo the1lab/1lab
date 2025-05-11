@@ -5,7 +5,6 @@ open import Cat.Diagram.Pullback
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
 ```

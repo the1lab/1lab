@@ -1,10 +1,10 @@
 <!--
 ```agda
+open import Cat.Displayed.Solver
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as Dr
-import Cat.Displayed.Solver as Ds
+import Cat.Displayed.Reasoning
 ```
 -->
 
@@ -15,9 +15,7 @@ module Cat.Displayed.Fibre
   where
 
 open Precategory B
-open Displayed E
-open Ds
-open Dr E
+open Cat.Displayed.Reasoning E
 ```
 
 ## Fibre categories {defines="fibre-category fibre-categories"}
@@ -107,7 +105,7 @@ would still pile up.
 ```agda
 Fibre' X fix coh .Precategory.idr f =
   fix (f ∘' id')           ≡⟨ coh (f ∘' id') ⟩
-  hom[ idl id ] (f ∘' id') ≡⟨ Ds.disp! E ⟩
+  hom[ idl id ] (f ∘' id') ≡⟨ disp! E ⟩
   f                        ∎
 Fibre' X fix coh .Precategory.idl f =
   fix (id' ∘' f)           ≡⟨ coh (id' ∘' f) ⟩
@@ -115,7 +113,7 @@ Fibre' X fix coh .Precategory.idl f =
   f                        ∎
 Fibre' X fix coh .Precategory.assoc f g h =
   fix (f ∘' fix (g ∘' h))                     ≡⟨ ap (λ e → fix (f ∘' e)) (coh _) ∙ coh _ ⟩
-  hom[ idl id ] (f ∘' hom[ idl id ] (g ∘' h)) ≡⟨ Ds.disp! E ⟩
+  hom[ idl id ] (f ∘' hom[ idl id ] (g ∘' h)) ≡⟨ disp! E ⟩
   hom[ idl id ] (hom[ idl id ] (f ∘' g) ∘' h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘' h)) (sym (coh _)) ⟩
   fix (fix (f ∘' g) ∘' h)                     ∎
 ```

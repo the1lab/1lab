@@ -1,8 +1,11 @@
 <!--
 ```agda
 open import 1Lab.Reflection.HLevel
+open import 1Lab.Inductive
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
+open import 1Lab.HLevel
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
@@ -103,38 +106,26 @@ over the equalities in the base.
 For convenience, we also introduce displayed analogues for equational chain reasoning:
 
 ```agda
-  _∙[]_ : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
-        → {f' : Hom[ f ] x y} {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-        → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
-  _∙[]_ {x = x} {y = y} p' q' = _∙P_ {B = λ f → Hom[ f ] x y} p' q'
-
-  ∙[-]-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
-        → {f' : Hom[ f ] x y} {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-        → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
-  ∙[-]-syntax {x = x} {y = y} p p' q' = _∙P_ {B = λ f → Hom[ f ] x y} p' q'
-
-  ≡[]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
-               → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-               → g' ≡[ q ] h' → f' ≡[ p ] g' → f' ≡[ p ∙ q ] h'
-  ≡[]⟨⟩-syntax f' q' p' = p' ∙[] q'
-
-  ≡[-]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
-               → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-               → g' ≡[ q ] h' → f' ≡[ p ] g' → f' ≡[ p ∙ q ] h'
-  ≡[-]⟨⟩-syntax f' p q' p' = p' ∙[] q'
-
-  _≡[]˘⟨_⟩_ : ∀ {a b x y} {f g h : Hom a b} {p : g ≡ f} {q : g ≡ h}
-            → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-            → g' ≡[ p ] f' → g' ≡[ q ] h' → f' ≡[ sym p ∙ q ] h'
-  f' ≡[]˘⟨ p' ⟩ q' = symP p' ∙[] q'
-
-  syntax ∙[-]-syntax p p' q' = p' ∙[ p ] q'
-  syntax ≡[]⟨⟩-syntax f' q' p' = f' ≡[]⟨ p' ⟩ q'
-  syntax ≡[-]⟨⟩-syntax p f' q' p' = f' ≡[ p ]⟨ p' ⟩ q'
-
-  infixr 30 _∙[]_ ∙[-]-syntax
-  infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
 ```
+
+<!--
+```agda
+  hom[_] : ∀ {a b x y} {f g : Hom a b} → f ≡ g → Hom[ f ] x y → Hom[ g ] x y
+  hom[ p ] f' = subst (λ h → Hom[ h ] _ _) p f'
+
+  hom[_]⁻ : ∀ {a b x y} {f g : Hom a b} → g ≡ f → Hom[ f ] x y → Hom[ g ] x y
+  hom[ p ]⁻ f' = hom[ sym p ] f'
+
+  cast[]
+    : ∀ {a b x y} {f g : Hom a b} {f' : Hom[ f ] x y} {g' : Hom[ g ] x y}
+    → {p q : f ≡ g}
+    → f' ≡[ p ] g'
+    → f' ≡[ q ] g'
+  cast[] {f = f} {g = g} {f' = f'} {g' = g'} {p = p} {q = q} r =
+    coe0→1 (λ i → f' ≡[ Hom-set _ _ f g p q i ] g') r
+
+```
+-->
 
 <!--
 ```agda
@@ -161,3 +152,70 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
   _ = hlevel 2
 ```
 -->
+
+# Total categories
+
+```agda
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
+  open Precategory B
+  open Displayed E
+
+  Total : Type (o ⊔ o')
+  Total = Σ[ Carrier ∈ Ob ] Ob[ Carrier ]
+
+  record Total-hom (X Y : Total) : Type (ℓ ⊔ ℓ') where
+    constructor total-hom
+    field
+      hom       : Hom (X .fst) (Y .fst)
+      preserves : Hom[ hom ] (X .snd) (Y .snd)
+
+open Total-hom
+
+unquoteDecl H-Level-Total-hom = declare-record-hlevel 2 H-Level-Total-hom (quote Total-hom)
+
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
+  open Precategory B
+  open Displayed E
+
+  total-hom-pathp
+    : ∀ {X X' Y Y' : Total E} {f : Total-hom E X Y} {g : Total-hom E X' Y'}
+    → (p : X ≡ X') (q : Y ≡ Y')
+    → (r : PathP (λ z → Hom (p z .fst) (q z .fst)) (f .hom) (g .hom))
+    → PathP (λ z → Hom[ r z ] (p z .snd) (q z .snd)) (f .preserves) (g .preserves)
+    → PathP (λ i → Total-hom E (p i) (q i)) f g
+  total-hom-pathp p q r s i .hom = r i
+  total-hom-pathp p q r s i .preserves = s i
+
+  total-hom-path
+    : ∀ {X Y : Total E} {f g : Total-hom E X Y}
+    → (p : f .hom ≡ g .hom) → f .preserves ≡[ p ] g .preserves → f ≡ g
+  total-hom-path p q = total-hom-pathp refl refl p q
+
+  instance
+    Inductive-total-hom-path
+      : ∀ {ℓm} {X' Y'} {f g : Total-hom E X' Y'}
+      → {p : f .hom ≡ g .hom}
+      → ⦃ _ : Inductive (PathP (λ i → Hom[ p i ] (X' .snd) (Y' .snd)) (f .preserves) (g .preserves)) ℓm ⦄
+      → Inductive (f ≡ g) ℓm
+    Inductive-total-hom-path {p = p} ⦃ ind ⦄ .Inductive.methods = Inductive.methods ind
+    Inductive-total-hom-path {p = p} ⦃ ind ⦄ .Inductive.from mthds =
+      total-hom-path p (ind .Inductive.from mthds)
+
+    {-# OVERLAPPABLE Inductive-total-hom-path #-}
+
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
+  open Precategory B
+  open Displayed E
+
+  ∫ : Precategory (o ⊔ o') (ℓ ⊔ ℓ')
+  ∫ .Precategory.Ob = Total E
+  ∫ .Precategory.Hom = Total-hom E
+  ∫ .Precategory.Hom-set _ _ = hlevel 2
+  ∫ .Precategory.id .hom = id
+  ∫ .Precategory.id .preserves = id'
+  ∫ .Precategory._∘_ f g .hom = f .hom ∘ g .hom
+  ∫ .Precategory._∘_ f g .preserves = f .preserves ∘' g .preserves
+  ∫ .Precategory.idr _ = total-hom-path (idr _) (idr' _)
+  ∫ .Precategory.idl _ = total-hom-path (idl _) (idl' _)
+  ∫ .Precategory.assoc _ _ _ = total-hom-path (assoc _ _ _) (assoc' _ _ _)
+```
