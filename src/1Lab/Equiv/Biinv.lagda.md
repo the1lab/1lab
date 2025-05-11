@@ -97,17 +97,19 @@ is-equiv→post-is-equiv : {f : A → B} → is-equiv f → is-equiv {A = B → 
 `is-iso→is-equiv`{.Agda}. Nothing too clever. </summary>
 
 ```agda
-is-equiv→pre-is-equiv {f = f} f-eqv = is-iso→is-equiv record where
-  module f = Equiv (f , f-eqv)
-  from f x   = f.from (f x)
-  rinv f i x = f.ε (f x) i
-  linv f i x = f.η (f x) i
+is-equiv→pre-is-equiv {f = f} f-eqv =
+  is-iso→is-equiv λ where
+    .is-iso.from f x   → f.from (f x)
+    .is-iso.rinv f i x → f.ε (f x) i
+    .is-iso.linv f i x → f.η (f x) i
+  where module f = Equiv (f , f-eqv)
 
-is-equiv→post-is-equiv {f = f} f-eqv = is-iso→is-equiv record where
-  module f = Equiv (f , f-eqv)
-  from f x   = f (f.from x)
-  rinv f i x = f (f.η x i)
-  linv f i x = f (f.ε x i)
+is-equiv→post-is-equiv {f = f} f-eqv =
+  is-iso→is-equiv λ where
+    .is-iso.from f x   → f (f.from x)
+    .is-iso.rinv f i x → f (f.η x i)
+    .is-iso.linv f i x → f (f.ε x i)
+  where module f = Equiv (f , f-eqv)
 ```
 </details>
 

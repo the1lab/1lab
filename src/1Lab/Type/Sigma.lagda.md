@@ -52,10 +52,11 @@ same`{.Agda ident=PathP≡Path}.
 
 ```agda
 Σ-pathp-iso .fst (p , q) i = p i , q i
-Σ-pathp-iso .snd = record where
-  from p = (λ i → p i .fst) , (λ i → p i .snd)
-  linv p = refl
-  rinv p = refl
+Σ-pathp-iso .snd = record
+  { from = λ p → (λ i → p i .fst) , (λ i → p i .snd)
+  ; rinv = λ p → refl
+  ; linv = λ p → refl
+  }
 
 Σ-path-iso {B = B} {x} {y} =
   transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
@@ -90,10 +91,10 @@ they are included for completeness. </summary>
 
   eqv : (Σ _ P) ≃ (Σ _ Q)
   eqv .fst (i , x) = i , pwise.to x
-  eqv .snd = is-iso→is-equiv record where
-    from (i , x) = i , pwise.from x
-    linv (i , x) = ap₂ _,_ refl (pwise.η _)
-    rinv (i , x) = ap₂ _,_ refl (pwise.ε _)
+  eqv .snd = is-iso→is-equiv λ where
+    .is-iso.from (i , x) → i , pwise.from x
+    .is-iso.linv (i , x) → ap₂ _,_ refl (pwise.η _)
+    .is-iso.rinv (i , x) → ap₂ _,_ refl (pwise.ε _)
 
 Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro
  where
@@ -137,19 +138,19 @@ they are included for completeness. </summary>
 Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
         → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
 Σ-assoc .fst (x , y , z) = (x , y) , z
-Σ-assoc .snd = is-iso→is-equiv record where
-  from ((x , y) , z) = x , y , z
-  linv p = refl
-  rinv p = refl
+Σ-assoc .snd = is-iso→is-equiv λ where
+  .is-iso.from ((x , y) , z) → x , y , z
+  .is-iso.linv p → refl
+  .is-iso.rinv p → refl
 
 Σ-Π-distrib : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
             → ((x : A) → Σ[ y ∈ B x ] C x y)
             ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
 Σ-Π-distrib .fst f = (λ x → f x .fst) , λ x → f x .snd
-Σ-Π-distrib .snd = is-iso→is-equiv record where
-  from (f , r) x = f x , r x
-  linv p = refl
-  rinv p = refl
+Σ-Π-distrib .snd = is-iso→is-equiv λ where
+  .is-iso.from (f , r) x → f x , r x
+  .is-iso.linv p → refl
+  .is-iso.rinv p → refl
 ```
 </details>
 
@@ -181,9 +182,9 @@ from the input, or from `Σ≡Path`{.Agda}.
   → (bp : ∀ x → is-prop (B x))
   → {x y : Σ _ B}
   → is-equiv (Σ-prop-path bp {x} {y})
-Σ-prop-path-is-equiv bp {x} {y} = is-iso→is-equiv record where
-  from   = ap fst
-  linv p = refl
+Σ-prop-path-is-equiv bp {x} {y} = is-iso→is-equiv λ where
+  .is-iso.from   → ap fst
+  .is-iso.linv p → refl
 ```
 
 The `inverse`{.Agda ident=is-iso.from} is the `action on paths`{.Agda
@@ -193,7 +194,7 @@ conclude `x .fst ≡ y .fst` from `x ≡ y`. This is a left inverse to
 aforementioned cubical argument:
 
 ```agda
-  rinv p i j = p j .fst , is-prop→pathp
+  .is-iso.rinv p i j → p j .fst , is-prop→pathp
     (λ k → Path-is-hlevel 1 (bp (p k .fst))
        {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
        {y = p k .snd})
@@ -325,10 +326,10 @@ infixr 4 _,ₚ_
   → (c : is-contr A)
   → (Σ A B) ≃ B (c .centre)
 Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
-Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv record where
-  from x = _ , x
-  rinv x = ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
-  linv x = Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+  .is-iso.from x → _ , x
+  .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
+  .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
 ```
 -->
 

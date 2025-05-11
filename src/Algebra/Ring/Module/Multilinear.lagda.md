@@ -381,10 +381,10 @@ definitionally isomorphisms.
 
 ```agda
   uncurry-ml-is-equiv : is-equiv uncurry-multilinear-map
-  uncurry-ml-is-equiv = is-iso→is-equiv record where
-    from   = curry-multilinear-map
-    rinv x = ext λ x → Multilinear-map-path refl
-    linv x = Multilinear-map-path $ funextᶠ λ as → refl
+  uncurry-ml-is-equiv = is-iso→is-equiv λ where
+    .is-iso.from   → curry-multilinear-map
+    .is-iso.rinv x → ext λ x → Multilinear-map-path refl
+    .is-iso.linv x → Multilinear-map-path $ funextᶠ λ as → refl
 
   module
     Uncurry = Equiv (_ , uncurry-ml-is-equiv)

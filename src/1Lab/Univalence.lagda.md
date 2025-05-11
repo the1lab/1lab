@@ -409,10 +409,10 @@ of non-dependent paths.
 ua-pathp≃path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
               → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
 ua-pathp≃path eqv .fst = path→ua-pathp eqv
-ua-pathp≃path eqv .snd = is-iso→is-equiv record where
-  inv    = ua-pathp→path eqv
-  linv x = refl
-  rinv x = refl
+ua-pathp≃path eqv .snd = is-iso→is-equiv λ where
+  .is-iso.from   → ua-pathp→path eqv
+  .is-iso.linv x → refl
+  .is-iso.rinv x → refl
 ```
 
 # The “axiom” {defines=univalence-axiom}
@@ -514,10 +514,10 @@ ident=lift} is still an equivalence:
 univalence-lift
   : ∀ {A B : Type ℓ} ℓ'
   → is-equiv (λ e → lift {ℓ = ℓ'} (path→equiv {A = A} {B} e))
-univalence-lift {ℓ = ℓ} ℓ' = is-iso→is-equiv record where
-  from x = ua (x .lower)
-  rinv x = ap lift (Path≃Equiv .snd .is-iso.rinv _)
-  linv x = Path≃Equiv .snd .is-iso.linv _
+univalence-lift {ℓ = ℓ} ℓ' = is-iso→is-equiv λ where
+  .is-iso.from x → ua (x .lower)
+  .is-iso.rinv x → ap lift (Path≃Equiv .snd .is-iso.rinv _)
+  .is-iso.linv x → Path≃Equiv .snd .is-iso.linv _
 ```
 
 ## Equivalence induction {defines="equivalence-induction"}
@@ -629,10 +629,10 @@ structure on the interval, and the “spread” operation `coe1→i`{.Agda}.
 Fibre-equiv : (B : A → Type ℓ') (a : A)
             → fibre (fst {B = B}) a ≃ B a
 Fibre-equiv B a .fst ((x , y) , p) = subst B p y
-Fibre-equiv B a .snd = is-iso→is-equiv record where
-  from x = (a , x) , refl
-  rinv x i =  coe1→i (λ _ → B a) i x
-  linv ((x , y) , p) i =
+Fibre-equiv B a .snd = is-iso→is-equiv λ where
+  .is-iso.from x   → (a , x) , refl
+  .is-iso.rinv x i → coe1→i (λ _ → B a) i x
+  .is-iso.linv ((x , y) , p) i →
     (p (~ i) , coe1→i (λ j → B (p (~ i ∧ ~ j))) i y) , λ j → p (~ i ∨ j)
 ```
 
@@ -646,10 +646,10 @@ to `Σ`{.Agda} the "total space" of a type family.
 ```agda
 Total-equiv : (p : E → B) → E ≃ Σ B (fibre p)
 Total-equiv p .fst x = p x , x , refl
-Total-equiv p .snd = is-iso→is-equiv record where
-  from (_ , x , _)   = x
-  rinv (b , x , q) i = q i , x , λ j → q (i ∧ j)
-  linv x             = refl
+Total-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from (_ , x , _)   → x
+  .is-iso.rinv (b , x , q) i → q i , x , λ j → q (i ∧ j)
+  .is-iso.linv x             → refl
 ```
 
 Putting these together, we get the promised theorem: The space of maps
@@ -668,10 +668,10 @@ Fibration-equiv
   → (Σ[ E ∈ Type (ℓ ⊔ ℓ') ] (E → B))
   ≃ (B → Type (ℓ ⊔ ℓ'))
 Fibration-equiv {B = B} .fst (E , p) = fibre p
-Fibration-equiv {B = B} .snd = is-iso→is-equiv record where
-  from p⁻¹ = Σ _ p⁻¹ , fst
-  rinv prep i x = ua (Fibre-equiv prep x) i
-  linv (E , p) i =
+Fibration-equiv {B = B} .snd = is-iso→is-equiv λ where
+  .is-iso.from p⁻¹       → Σ _ p⁻¹ , fst
+  .is-iso.rinv prep i x  → ua (Fibre-equiv prep x) i
+  .is-iso.linv (E , p) i →
     let e = Total-equiv p
      in ua e (~ i) , λ x → ua-unglue e (~ i) x .fst
 ```

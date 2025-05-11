@@ -326,11 +326,11 @@ Coeq≃quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
   → Coeq f g ≃ B / span→R f g
 Coeq≃quotient f g .fst = Coeq-rec inc λ a → quot (a , refl)
-Coeq≃quotient f g .snd = is-iso→is-equiv record where
-  from = Coeq-rec inc λ (_ , _ , a , p) →
+Coeq≃quotient f g .snd = is-iso→is-equiv λ where
+  .is-iso.from → Coeq-rec inc λ (_ , _ , a , p) →
     sym (ap (inc ∘ fst) p) ∙∙ glue a ∙∙ ap (inc ∘ snd) p
-  rinv = elim! λ _ → refl
-  linv = elim! λ _ → refl
+  .is-iso.rinv → elim! λ _ → refl
+  .is-iso.linv → elim! λ _ → refl
 ```
 
 <!--
@@ -673,10 +673,10 @@ Closure-quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ')
   → A / R ≃ A / Closure R
 Closure-quotient {A = A} R .fst = Coeq-rec inc λ (a , b , r) → quot (inc r)
-Closure-quotient {A = A} R .snd = is-iso→is-equiv record where
-  from = Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
-  rinv = elim! λ _ → refl
-  linv = elim! λ _ → refl
+Closure-quotient {A = A} R .snd = is-iso→is-equiv λ where
+  .is-iso.from → Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
+  .is-iso.rinv → elim! λ _ → refl
+  .is-iso.linv → elim! λ _ → refl
 ```
 
 <!--

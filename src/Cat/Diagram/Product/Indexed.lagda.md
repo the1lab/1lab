@@ -53,10 +53,10 @@ record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
   unique₂ {g = g} {h} eq = eta g ∙ ap tuple (funext eq) ∙ sym (eta h)
 
   hom-iso : ∀ {Y} → C.Hom Y P ≃ (∀ i → C.Hom Y (F i))
-  hom-iso = (λ f i → π i C.∘ f) , is-iso→is-equiv record where
-    from = tuple
-    rinv x = funext λ i → commute
-    linv x = sym (unique _ λ _ → refl)
+  hom-iso = (λ f i → π i C.∘ f) , is-iso→is-equiv λ where
+    .is-iso.from   → tuple
+    .is-iso.rinv x → funext λ i → commute
+    .is-iso.linv x → sym (unique _ λ _ → refl)
 ```
 
 A category $\cC$ **admits indexed products** (of level $\ell$) if,

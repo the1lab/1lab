@@ -172,11 +172,10 @@ assumption that $G$ is ff.
 
 ```agda
   comp-ff : is-fully-faithful Comp
-  comp-ff {x} {y} = is-iso→is-equiv record where
-    from alg = equiv→inverse g-ff (alg .hom)
-    rinv x = ext (equiv→counit g-ff _)
-    linv x = equiv→unit g-ff _
-
+  comp-ff {x} {y} = is-iso→is-equiv λ where
+    .is-iso.from alg → equiv→inverse g-ff (alg .hom)
+    .is-iso.rinv x → ext (equiv→counit g-ff _)
+    .is-iso.linv x → equiv→unit g-ff _
 ```
 
 To show that the comparison functor is split essentially surjective,

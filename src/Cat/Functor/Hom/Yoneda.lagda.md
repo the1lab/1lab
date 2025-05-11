@@ -60,13 +60,13 @@ expressions which are easy to cancel using naturality and functoriality:
 
 ```agda
   yo-is-equiv : ∀ {U} → is-equiv (yo {U})
-  yo-is-equiv = is-iso→is-equiv record where
-    from = unyo
-    rinv x = ext λ i h →
+  yo-is-equiv = is-iso→is-equiv λ where
+    .is-iso.from   → unyo
+    .is-iso.rinv x → ext λ i h →
       yo (unyo x) .η i h ≡˘⟨ x .is-natural _ _ _ · _ ⟩
       x .η i (id ∘ h)    ≡⟨ ap (x .η i) (idl h) ⟩
       x .η i h           ∎
-    linv x =
+    .is-iso.linv x →
       A ⟪ id ⟫ x ≡⟨ A.elim refl ⟩
       x          ∎
 ```
