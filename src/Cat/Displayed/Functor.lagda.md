@@ -100,6 +100,38 @@ functors", i.e., those lying over the identity functor.
     ₁' = F₁'
 ```
 
+<!--
+```agda
+module
+  _ {oa ℓa ob ℓb oe ℓe of ℓf}
+    {A : Precategory oa ℓa}
+    {B : Precategory ob ℓb}
+    {ℰ : Displayed A oe ℓe}
+    {ℱ : Displayed B of ℓf}
+  where
+  private
+    module A = Precategory A
+    module B = Precategory B
+    module ℰ = Displayed ℰ
+    module ℱ = Displayed ℱ
+
+  open Functor
+  open Displayed-functor
+  private unquoteDecl eqv = declare-record-iso eqv (quote Displayed-functor)
+
+  Displayed-functor-pathp
+    : {F G : Functor A B}
+    → {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+    → (p : F ≡ G)
+    → (q0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Ob[ p i .F₀ x ]) (F' .F₀' x') (G' .F₀' x'))
+    → (q1 : ∀ {x y x' y'} {f : A.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
+            → PathP (λ i → ℱ.Hom[ p i .F₁ f ] (q0 x' i) (q0 y' i)) (F' .F₁' f') (G' .F₁' f'))
+    → PathP (λ i → Displayed-functor (p i) ℰ ℱ) F' G'
+  Displayed-functor-pathp {F = F} {G = G} {F' = F'} {G' = G'} p q0 q1 =
+    injectiveP (λ _ → eqv) ((λ i x' → q0 x' i) ,ₚ (λ i f' → q1 f' i) ,ₚ prop!)
+```
+-->
+
 :::{.definition #fibred-functor}
 Note that, if $\cE$ and $\cF$ are [[fibred categories]] over their bases
 (rather than just _displayed_ categories), then the appropriate notion
@@ -144,29 +176,6 @@ module
         → ℱ.is-cartesian (F.₁ f) (F₁' f')
 ```
 
-Note that being fibred is a *property* of a functor.
-
-```agda
-  is-fibred-functor-is-hlevel
-    : ∀ {F' : Displayed-functor F ℰ ℱ}
-    → (n : Nat)
-    → is-hlevel (is-fibred-functor F') (suc n)
-```
-
-<details>
-<summary>The agda proof of this fact is somewhat unenlightening. The key
-insight is that "being cartesian" is a property of a morphism: the rest
-is the usual h-level arguments.
-</summary>
-
-```agda
-  is-fibred-functor-is-hlevel n = Iso→is-hlevel (suc n) eqv (hlevel (suc n))
-    where
-      open ℱ
-      private unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
-```
-</details>
-
 <!--
 ```agda
   instance
@@ -174,7 +183,11 @@ is the usual h-level arguments.
       : ∀ {F' : Displayed-functor F ℰ ℱ}
       → {n : Nat}
       → H-Level (is-fibred-functor F') (suc n)
-    H-Level-is-fibred-functor {n = n} = hlevel-instance (is-fibred-functor-is-hlevel n)
+    H-Level-is-fibred-functor {n = n} =
+      hlevel-instance (Iso→is-hlevel (suc n) eqv (hlevel (suc n)))
+      where
+        private unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
+        open ℱ -- Needed for the is-cartesian H-Level instances.
 ```
 -->
 
@@ -271,53 +284,6 @@ The identity functor is obviously fibred.
   Id'-fibred : is-fibred-functor Id'
   Id'-fibred .F-cartesian f'-cart = f'-cart
 ```
-
-<!--
-```agda
-module
-  _ {oa ℓa ob ℓb oe ℓe of ℓf}
-    {A : Precategory oa ℓa}
-    {B : Precategory ob ℓb}
-    {ℰ : Displayed A oe ℓe}
-    {ℱ : Displayed B of ℓf}
-  where
-  private
-    module A = Precategory A
-    module B = Precategory B
-    module ℰ = Displayed ℰ
-    module ℱ = Displayed ℱ
-
-  open Functor
-  open Displayed-functor
-
-  Displayed-functor-pathp
-    : {F G : Functor A B}
-    → {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
-    → (p : F ≡ G)
-    → (q0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Ob[ p i .F₀ x ]) (F' .F₀' x') (G' .F₀' x'))
-    → (q1 : ∀ {x y x' y'} {f : A.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
-            → PathP (λ i → ℱ.Hom[ p i .F₁ f ] (q0 x' i) (q0 y' i)) (F' .F₁' f') (G' .F₁' f'))
-    → PathP (λ i → Displayed-functor (p i) ℰ ℱ) F' G'
-  Displayed-functor-pathp {F = F} {G = G} {F' = F'} {G' = G'} p q0 q1 = path where
-    path : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F' G'
-    path i .F₀' x' = q0 x' i
-    path i .F₁' f' = q1 f' i
-    path i .F-id' {x} {x'} j =
-      is-set→squarep (λ i j → ℱ.Hom[ p i .F-id j ]-set (q0 x' i) (q0 x' i))
-        (q1 ℰ.id')
-        (F' .F-id')
-        (G' .F-id')
-        (λ i → ℱ.id')
-        i j
-    path i .F-∘' {f = f} {g = g} {a' = a'} {c' = c'} {f' = f'} {g' = g'} j =
-      is-set→squarep (λ i j → ℱ.Hom[ (p i .F-∘ f g j) ]-set (q0 a' i) (q0 c' i))
-        (q1 (f' ℰ.∘' g'))
-        (F' .F-∘')
-        (G' .F-∘')
-        (λ i → q1 f' i ℱ.∘' q1 g' i)
-        i j
-```
--->
 
 ## Vertical functors {defines="vertical-functor"}
 
