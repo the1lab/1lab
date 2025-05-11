@@ -3,6 +3,7 @@
 open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
+open import Cat.Functor.Kan.Reflection
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Equaliser
@@ -153,7 +154,7 @@ a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
 <!--
 ```agda
 private variable
-  o₁ o₂ o₃ h₁ h₂ h₃ : Level
+  o₁ o₂ o₃ o₄ h₁ h₂ h₃ h₄ : Level
 ```
 -->
 
@@ -492,8 +493,8 @@ it exists, is unique up to isomorphism. This follows directly from
 [uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
 
 We show a slightly more general result first: if there exist a pair of
-maps $f$, $g$ between the apexes of the 2 limits, and these maps commute
-with the 2 limits, then $f$ and $g$ are inverses.
+maps $f$, $g$ between the apexes of the two limits, and these maps commute
+with the two limits, then $f$ and $g$ are inverses.
 
 ```agda
   limits→inversesp
@@ -589,9 +590,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       q
 ```
 
-Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
-$Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
-apex of $L$ is also a limit of $Dia'$.
+Another useful fact is that if $L$ is a limit of some diagram $\rm{Dia}$, and
+$\rm{Dia}$ is naturally isomorphic to some other diagram $\rm{Dia}'$, then the
+apex of $L$ is also a limit of $\rm{Dia}'$.
 
 ```agda
   natural-iso-diagram→is-limitp
@@ -654,125 +655,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```agda
   Limit-is-prop : is-category C → is-prop (Limit Diagram)
   Limit-is-prop cat = Ran-is-prop cat
-```
-
-
-# Preservation of limits {defines="preserved-limit"}
-
-<!--
-```agda
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) (Diagram : Functor J C) where
-```
--->
-
-Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
-**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
-More precisely, we say a functor preserves limits of $\rm{Dia}$ if it
-takes limiting *cones* "upstairs" to limiting cones "downstairs".
-
-This definition is necessary because $\cD$ will not, in general,
-possess an operation assigning a limit to every diagram --- therefore,
-there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
-compare $F(L)$ to. However, since limits are described by a universal
-property (in particular, being terminal), we don't _need_ such an
-object! Any limit is as good as any other.
-
-```agda
-  preserves-limit : Type _
-  preserves-limit =
-    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → (lim : is-ran !F Diagram K eps)
-    → preserves-ran F lim
-```
-
-## Reflection of limits {defines="reflected-limit"}
-
-Using the terminology from before, we say a functor **reflects limits**
-if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":
-this is the converse implication from preservation of limits.
-More concretely, if we have a cone over $\rm{Dia}$ whose image under $F$
-is a limiting cone over $F \circ \rm{Dia}$, then $F$ reflects this limit
-if we _already_ had a limiting cone to begin with!
-
-```agda
-  reflects-limit : Type _
-  reflects-limit =
-    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
-    → reflects-ran F ran
-```
-
-<!--
-```agda
-module preserves-limit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-  {F : Functor C D} {Dia : Functor J C}
-  (preserves : preserves-limit F Dia)
-  {K : Functor ⊤Cat C} {eps : K F∘ !F => Dia}
-  (lim : is-ran !F Dia K eps)
-  where
-  private
-    module D = Precategory D
-    module C = Precategory C
-    module J = Precategory J
-    module F = Func F
-    module Dia = Func Dia
-
-    module lim = is-limit lim
-    module F-lim = is-limit (preserves lim)
-
-  universal
-    : {x : C.Ob}
-    → {eps : (j : J.Ob) → C.Hom x (Dia.F₀ j)}
-    → {p : ∀ {i j} (f : J.Hom i j) → Dia.F₁ f C.∘ eps i ≡ eps j}
-    → F.F₁ (lim.universal eps p) ≡ F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
-  universal = F-lim.unique _ _ _ (λ j → F.collapse (lim.factors _ _))
-
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         {F F' : Functor C D} {Dia : Functor J C} where
-
-  private
-    module D = Cat.Reasoning D
-    open Func
-    open _=>_
-
-  natural-iso→preserves-limits
-    : F ≅ⁿ F'
-    → preserves-limit F Dia
-    → preserves-limit F' Dia
-  natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
-    natural-isos→is-ran
-      idni (α ◂ni Dia) (α ◂ni K)
-        (ext λ j →
-          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
-          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
-          (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
-          F' .F₁ (eps .η j)                                                         ∎)
-        (F-preserves lim)
-    where
-      module α = Isoⁿ α
-```
--->
-
-## Continuity {defines="continuous-functor"}
-
-```agda
-is-continuous
-  : ∀ (oshape hshape : Level)
-      {C : Precategory o₁ h₁}
-      {D : Precategory o₂ h₂}
-  → Functor C D → Type _
-```
-
-A continuous functor is one that --- for every shape of diagram `J`, and
-every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
-limit for that diagram.
-
-```agda
-is-continuous oshape hshape {C = C} F =
-  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → preserves-limit F Diagram
 ```
 
 # Completeness {defines="complete-category"}
@@ -938,4 +820,337 @@ all limits.
       (λ _ → Lift-Indexed-product C ℓj (has-prod _))
       (λ _ → has-prod _)
       has-eq
+```
+
+# Preservation of limits {defines="preserved-limit preserves-limits"}
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
+```
+-->
+
+Suppose you have a limit $L$ of a diagram $\rm{Dia}$ in $\cC$. We say that $F$
+**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$ in $\cD$.
+More precisely, we say a functor preserves limits of $\rm{Dia}$ if it
+takes limiting *cones* "upstairs" to limiting cones "downstairs".
+
+This definition is necessary because $\cD$ will not, in general,
+possess an operation assigning a limit to every diagram --- therefore,
+there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
+compare $F(L)$ to. However, since limits are described by a universal
+property (in particular, being terminal), we don't _need_ such an
+object! Any limit is as good as any other.
+
+```agda
+  preserves-limit : Type _
+  preserves-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (lim : is-ran !F Diagram K eps)
+    → preserves-ran F lim
+```
+
+## Reflection of limits {defines="reflected-limit reflects-limits"}
+
+Using the terminology from before, we say a functor **reflects limits**
+if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":
+this is the converse implication from preservation of limits.
+More concretely, if we have a cone over $\rm{Dia}$ in $\cC$ whose image under $F$
+is a limiting cone over $F \circ \rm{Dia}$ in $\cD$, then $F$ reflects this limit
+if we _already_ had a limiting cone in $\cC$ to begin with!
+
+```agda
+  reflects-limit : Type _
+  reflects-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
+    → reflects-ran F ran
+```
+
+<!--
+```agda
+module preserves-limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {F : Functor C D} {Dia : Functor J C}
+  (preserves : preserves-limit F Dia)
+  {K : Functor ⊤Cat C} {eps : K F∘ !F => Dia}
+  (lim : is-ran !F Dia K eps)
+  where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+    module Dia = Func Dia
+
+    module lim = is-limit lim
+    module F-lim = is-limit (preserves lim)
+
+  universal
+    : {x : C.Ob}
+    → {eps : (j : J.Ob) → C.Hom x (Dia.F₀ j)}
+    → {p : ∀ {i j} (f : J.Hom i j) → Dia.F₁ f C.∘ eps i ≡ eps j}
+    → F.F₁ (lim.universal eps p) ≡ F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+  universal = F-lim.unique _ _ _ (λ j → F.collapse (lim.factors _ _))
+
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         {F F' : Functor C D} {Dia : Functor J C} where
+
+  private
+    module D = Cat.Reasoning D
+    open Func
+    open _=>_
+
+  natural-iso→preserves-limits
+    : F ≅ⁿ F'
+    → preserves-limit F Dia
+    → preserves-limit F' Dia
+  natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
+    natural-isos→is-ran
+      idni (α ◂ni Dia) (α ◂ni K)
+        (ext λ j →
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+          (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+          F' .F₁ (eps .η j)                                                         ∎)
+        (F-preserves lim)
+    where
+      module α = Isoⁿ α
+```
+-->
+
+## Continuity {defines="continuous-functor"}
+
+```agda
+is-continuous
+  : ∀ (oshape hshape : Level)
+      {C : Precategory o₁ h₁}
+      {D : Precategory o₂ h₂}
+  → Functor C D → Type _
+```
+
+A continuous functor is one that --- for every shape of diagram `J`, and
+every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
+limit for that diagram.
+
+```agda
+is-continuous oshape hshape {C = C} F =
+  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+  → preserves-limit F Diagram
+```
+
+## Lifting and creation of limits {defines="lifted-limit lifts-limits created-limit creates-limits"}
+
+Preserving and reflecting aren't the only interesting things a functor
+can do to a limit. Suppose we have a diagram $\rm{Dia}$ such that $F
+\circ \rm{Dia}$ has a limiting cone $K$ in $\cD$. We say that $F$ **lifts**
+this limit if $\rm{Dia}$ already had a limiting cone $K'$ in $\cC$, and
+furthermore $F$ sends this cone to $K$ (up to isomorphism). Equivalently,
+since limits are unique, we can simply ask for $F$ to [[preserve|preserved
+limit]] $K'$.
+
+Note the difference with [[reflected limits]]: whereas reflecting a
+limit requires already having a cone in $\cC$, lifting a limit *gives*
+us a limiting cone in $\cC$ from a limiting cone in $\cD$. As an example,
+$F$ reflecting [[terminal objects]] means that, if $F(x)$ is terminal in
+$\cD$, then $x$ was already terminal in $\cC$; by contrast, $F$ *lifting*
+terminal objects means that, if $\cD$ has a terminal object, then so does
+$\cC$ and $F(\top_\cC) \cong \top_\cD$ (equivalently, $F(\top_\cC)$ is
+terminal).
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) {Diagram : Functor J C} where
+```
+-->
+
+```agda
+  record lifts-limit (lim : Limit (F F∘ Diagram)) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    no-eta-equality
+    field
+      lifted : Limit Diagram
+      preserved : preserves-ran F (Limit.has-ran lifted)
+
+    lifts→preserves-limit : preserves-limit F Diagram
+    lifts→preserves-limit = preserves-ran→preserves-all F
+      (Limit.has-ran lifted) preserved
+```
+
+If furthermore $F$ *reflects* limits of $\rm{Dia}$, then we say that
+$F$ **creates** those limits.
+This means equivalently that, for every limiting cone over $F \circ
+\rm{Dia}$, there is a *unique* (up to isomorphism) cone in $\cC$ over it,
+and furthermore this cone is limiting.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
+```
+-->
+
+```agda
+  record creates-limit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    no-eta-equality
+    field
+      has-lifts-limit : (lim : Limit (F F∘ Diagram)) → lifts-limit F lim
+      reflects : reflects-limit F Diagram
+```
+
+::: terminology
+The definitions we have given here are standard, but one sometimes
+encounters the following [alternative definition]:
+
+> "$F$ creates limits of $\rm{Dia}$ if it preserves and reflects limits
+> of $\rm{Dia}$, and furthermore if $F \circ \rm{Dia}$ has a
+> limit then $\rm{Dia}$ has a limit."
+
+While this may seem equivalent at first glance, there is a subtle
+difference: this definition says that $F$ unconditionally preserves
+limits of $\rm{Dia}$, whereas our definition only says that $F$
+preserves the limits *that it creates*; in other words, $F$ only
+preserves limits of $\rm{Dia}$ if $F \circ \rm{Dia}$ has a limit to
+begin with.
+
+To see the difference, take $F : \top \to \twocat$ to be one of the
+inclusions of the [[terminal category]] into the [[two-object category]].
+Since $\twocat$ does not have a terminal object, $F$ *vacuously* creates
+terminal objects; on the other hand, $F$ does *not* preserve terminal
+objects, since the unique object of $\top$, which is terminal, is taken
+to a non-terminal object in $\twocat$.
+
+Because of this quirk, some authors write things like "$F$ creates all
+limits that exist in its codomain" to be fully explicit. Using our
+definition, this side condition is redundant, so we will omit it.
+:::
+
+[alternative definition]: https://ncatlab.org/nlab/show/created+limit#creation_of_nonexisting_limits
+
+We say that $F$ lifts (resp. creates) limits of shape $\cJ$ if it lifts
+(resp. creates) limits of every diagram $\cJ \to \cC$.
+
+<!--
+```agda
+module _ (J : Precategory o₁ h₁) {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) where
+```
+-->
+
+```agda
+  lifts-limits-of : Type _
+  lifts-limits-of =
+    ∀ {Diagram : Functor J C} (lim : Limit (F F∘ Diagram))
+    → lifts-limit F lim
+
+  creates-limits-of : Type _
+  creates-limits-of =
+    ∀ {Diagram : Functor J C}
+    → creates-limit F Diagram
+```
+
+A useful observation is that, if $F$ lifts limits and $\cD$ is complete,
+then so is $\cC$.
+
+<!--
+```agda
+module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} (F : Functor C D) where
+```
+-->
+
+```agda
+  lifts-limits→complete
+    : ∀ {oj ℓj}
+    → (∀ {J : Precategory oj ℓj} → lifts-limits-of J F)
+    → is-complete oj ℓj D
+    → is-complete oj ℓj C
+  lifts-limits→complete lifts dcomp Diagram =
+    lifts (dcomp (F F∘ Diagram)) .lifts-limit.lifted
+```
+
+## Stability under composition
+
+We conclude this section by proving that the properties above ---
+preservation, reflection, lifting and creation of limits --- are stable
+under functor composition.
+
+<!--
+```agda
+module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} {E : Precategory o₄ h₄}
+         {F : Functor C D} {G : Functor D E} where
+  open lifts-limit
+  open creates-limit
+
+  private
+    fixup
+      : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+      → {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+      → is-ran !F (G F∘ F F∘ Diagram) (G F∘ F F∘ K) (nat-assoc-from (G ▸ nat-assoc-from (F ▸ eps)))
+      ≃ is-ran !F ((G F∘ F) F∘ Diagram) ((G F∘ F) F∘ K) (nat-assoc-from ((G F∘ F) ▸ eps))
+    fixup = trivial-ran-equiv!
+```
+-->
+
+First, if $F : \cC \to \cD$ preserves limits of $\rm{Dia}$ and $G : \cD
+\to \cE$ preserves limits of $F \circ \rm{Dia}$, then $G \circ F$
+preserves limits of $\rm{Dia}$; conversely, if $F$ and $G$ *reflect*
+those limits, then so does $G \circ F$.
+
+```agda
+  F∘-preserves-limits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+    → preserves-limit F Diagram
+    → preserves-limit G (F F∘ Diagram)
+    → preserves-limit (G F∘ F) Diagram
+  F∘-preserves-limits F-preserves G-preserves =
+    Equiv.to fixup ⊙ G-preserves ⊙ F-preserves
+
+  F∘-reflects-limits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+    → reflects-limit F Diagram
+    → reflects-limit G (F F∘ Diagram)
+    → reflects-limit (G F∘ F) Diagram
+  F∘-reflects-limits F-reflects G-reflects =
+    F-reflects ⊙ G-reflects ⊙ Equiv.from fixup
+```
+
+Now, assume $F$ and $G$ both lift limits of shape $\cJ$, and we have a
+limit of $G \circ F \circ \rm{Dia}$ in $\cE$. $G$ lifts this to a limit
+of $F \circ \rm{Dia}$ in $\cD$; in turn, $F$ lifts this to a limit of
+$\rm{Dia}$ in $\cC$. The fact that $G \circ F$ preserves this limit
+follows from the previous result.
+
+```agda
+  F∘-lifts-limits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → lifts-limits-of J F
+    → lifts-limits-of J G
+    → lifts-limits-of J (G F∘ F)
+  F∘-lifts-limits F-lifts G-lifts lim = λ where
+      .lifted → lim''
+      .preserved → F∘-preserves-limits
+        (lifts→preserves-limit lifted-lim')
+        (lifts→preserves-limit lifted-lim)
+        (Ran.has-ran lim'')
+    where
+      lifted-lim = G-lifts (natural-iso→limit (ni-assoc ni⁻¹) lim)
+      lim' = lifted-lim .lifted
+      lifted-lim' = F-lifts lim'
+      lim'' = lifted-lim' .lifted
+```
+
+Since lifting and reflection of limits are closed under composition,
+so is creation.
+
+```agda
+  F∘-creates-limits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → creates-limits-of J F
+    → creates-limits-of J G
+    → creates-limits-of J (G F∘ F)
+  F∘-creates-limits F-creates G-creates .has-lifts-limit =
+    F∘-lifts-limits (F-creates .has-lifts-limit) (G-creates .has-lifts-limit)
+  F∘-creates-limits F-creates G-creates .reflects =
+    F∘-reflects-limits (F-creates .reflects) (G-creates .reflects)
 ```

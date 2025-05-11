@@ -3,6 +3,7 @@
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Reflection
 open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
@@ -53,7 +54,7 @@ long run.
 <!--
 ```agda
 private variable
-  o₁ o₂ o₃ h₁ h₂ h₃ : Level
+  o₁ o₂ o₃ o₄ h₁ h₂ h₃ h₄ : Level
 ```
 -->
 
@@ -442,7 +443,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     module J = Precategory J
     module C = Cat.Reasoning C
     module D = Functor D
-    open is-ran
     open Functor
     open _=>_
 
@@ -535,107 +535,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```agda
   Colimit-is-prop : is-category C → is-prop (Colimit Diagram)
   Colimit-is-prop cat = Lan-is-prop cat
-```
-
-
-# Preservation and reflection of colimits {defines="preserved-colimit reflected-colimit"}
-
-The definitions here are the same idea as [[preservation of
-limits|preserved limit]], just dualised.
-
-<!--
-```agda
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) (Diagram : Functor J C) where
-```
--->
-
-```agda
-  preserves-colimit : Type _
-  preserves-colimit =
-     ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
-     → (colim : is-lan !F Diagram K eta)
-     → preserves-lan F colim
-
-  reflects-colimit : Type _
-  reflects-colimit =
-    ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
-    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eta)))
-    → reflects-lan F lan
-```
-
-<!--
-```agda
-module preserves-colimit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-  {F : Functor C D} {Dia : Functor J C}
-  (preserves : preserves-colimit F Dia)
-
-  where
-  private
-    module D = Precategory D
-    module C = Precategory C
-    module J = Precategory J
-    module F = Func F
-    module Dia = Func Dia
-
-  universal
-    : {x : C.Ob}
-    → {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
-    → {eta' : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
-    → {p : ∀ {i j} (f : J.Hom i j) → eta' j C.∘ Dia.F₁ f ≡ eta' i}
-    → (colim : is-lan !F Dia K eta)
-    → F.F₁ (is-colimit.universal colim eta' p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eta' j)) (λ f → F.collapse (p f))
-  universal colim =
-    is-colimit.unique (preserves colim) _ _ _
-      (λ j → F.collapse (is-colimit.factors colim _ _))
-
-  colimit : Colimit Dia → Colimit (F F∘ Dia)
-  colimit colim = to-colimit (preserves (Colimit.has-colimit colim))
-
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         {F F' : Functor C D} {Dia : Functor J C} where
-
-  private
-    module D = Cat.Reasoning D
-    open Func
-    open _=>_
-
-  natural-iso→preserves-colimits
-    : F ≅ⁿ F'
-    → preserves-colimit F Dia
-    → preserves-colimit F' Dia
-  natural-iso→preserves-colimits α F-preserves {K = K} {eta} colim =
-    natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
-      (ext λ j →
-        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
-        α.to .η _ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
-        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eta .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
-        F' .F₁ (eta .η j) ∎)
-      (F-preserves colim)
-    where
-      module α = Isoⁿ α
-```
--->
-
-## Cocontinuity {defines="cocontinuous"}
-
-```agda
-is-cocontinuous
-  : ∀ (oshape hshape : Level)
-      {C : Precategory o₁ h₁}
-      {D : Precategory o₂ h₂}
-  → Functor C D → Type _
-```
-
-A cocontinuous functor is one that, for every shape of diagram `J`,
-and every diagram `diagram`{.Agda} of shape `J` in `C`, preserves the
-colimit for that diagram.
-
-```agda
-is-cocontinuous oshape hshape {C = C} F =
-  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → preserves-colimit F Diagram
 ```
 
 # Cocompleteness {defines="cocomplete-category"}
@@ -784,4 +683,243 @@ all colimits.
       (λ _ → Lift-Indexed-coproduct C ℓj (has-cop _))
       (λ _ → has-cop _)
       has-coeq
+```
+
+# Preservation and reflection of colimits {defines="preserved-colimit preserves-colimits reflected-colimit reflects-colimits"}
+
+The definitions here are the same idea as [[preservation of
+limits|preserved limit]], just dualised.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
+```
+-->
+
+```agda
+  preserves-colimit : Type _
+  preserves-colimit =
+     ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+     → (colim : is-lan !F Diagram K eta)
+     → preserves-lan F colim
+
+  reflects-colimit : Type _
+  reflects-colimit =
+    ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eta)))
+    → reflects-lan F lan
+```
+
+<!--
+```agda
+module preserves-colimit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {F : Functor C D} {Dia : Functor J C}
+  (preserves : preserves-colimit F Dia)
+
+  where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+    module Dia = Func Dia
+
+  universal
+    : {x : C.Ob}
+    → {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
+    → {eta' : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
+    → {p : ∀ {i j} (f : J.Hom i j) → eta' j C.∘ Dia.F₁ f ≡ eta' i}
+    → (colim : is-lan !F Dia K eta)
+    → F.F₁ (is-colimit.universal colim eta' p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eta' j)) (λ f → F.collapse (p f))
+  universal colim =
+    is-colimit.unique (preserves colim) _ _ _
+      (λ j → F.collapse (is-colimit.factors colim _ _))
+
+  colimit : Colimit Dia → Colimit (F F∘ Dia)
+  colimit colim = to-colimit (preserves (Colimit.has-colimit colim))
+
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         {F F' : Functor C D} {Dia : Functor J C} where
+
+  private
+    module D = Cat.Reasoning D
+    open Func
+    open _=>_
+
+  natural-iso→preserves-colimits
+    : F ≅ⁿ F'
+    → preserves-colimit F Dia
+    → preserves-colimit F' Dia
+  natural-iso→preserves-colimits α F-preserves {K = K} {eta} colim =
+    natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
+      (ext λ j →
+        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
+        α.to .η _ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eta .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+        F' .F₁ (eta .η j) ∎)
+      (F-preserves colim)
+    where
+      module α = Isoⁿ α
+```
+-->
+
+## Cocontinuity {defines="cocontinuous"}
+
+```agda
+is-cocontinuous
+  : ∀ (oshape hshape : Level)
+      {C : Precategory o₁ h₁}
+      {D : Precategory o₂ h₂}
+  → Functor C D → Type _
+```
+
+A cocontinuous functor is one that, for every shape of diagram `J`,
+and every diagram `diagram`{.Agda} of shape `J` in `C`, preserves the
+colimit for that diagram.
+
+```agda
+is-cocontinuous oshape hshape {C = C} F =
+  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+  → preserves-colimit F Diagram
+```
+
+## Lifting and creation of colimits {defines="lifted-colimit lifts-colimits created-colimit creates-colimits"}
+
+**Lifted colimits** and **created colimits** dualise the notions of
+[[lifted limits]] and [[created limits]]; see there for definitions and
+explanations.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) {Diagram : Functor J C} where
+```
+-->
+
+```agda
+  record lifts-colimit (colim : Colimit (F F∘ Diagram)) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    no-eta-equality
+    field
+      lifted : Colimit Diagram
+      preserved : preserves-lan F (Colimit.has-lan lifted)
+
+    lifts→preserves-colimit : preserves-colimit F Diagram
+    lifts→preserves-colimit = preserves-lan→preserves-all F
+      (Colimit.has-lan lifted) preserved
+```
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
+```
+-->
+
+```agda
+  record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    no-eta-equality
+    field
+      has-lifts-colimit : (colim : Colimit (F F∘ Diagram)) → lifts-colimit F colim
+      reflects : reflects-colimit F Diagram
+```
+
+<!--
+```agda
+module _ (J : Precategory o₁ h₁) {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) where
+```
+-->
+
+```agda
+  lifts-colimits-of : Type _
+  lifts-colimits-of =
+    ∀ {Diagram : Functor J C} (colim : Colimit (F F∘ Diagram))
+    → lifts-colimit F colim
+
+  creates-colimits-of : Type _
+  creates-colimits-of =
+    ∀ {Diagram : Functor J C}
+    → creates-colimit F Diagram
+```
+
+<!--
+```agda
+module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} (F : Functor C D) where
+```
+-->
+
+```agda
+  lifts-colimits→cocomplete
+    : ∀ {oj ℓj}
+    → (∀ {J : Precategory oj ℓj} → lifts-colimits-of J F)
+    → is-cocomplete oj ℓj D
+    → is-cocomplete oj ℓj C
+  lifts-colimits→cocomplete lifts dcomp Diagram =
+    lifts (dcomp (F F∘ Diagram)) .lifts-colimit.lifted
+```
+
+## Stability under composition
+
+<!--
+```agda
+module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} {E : Precategory o₄ h₄}
+         {F : Functor C D} {G : Functor D E} where
+  open lifts-colimit
+  open creates-colimit
+
+  private
+    fixup
+      : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+      → {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+      → is-lan !F (G F∘ F F∘ Diagram) (G F∘ F F∘ K) (nat-assoc-to (G ▸ nat-assoc-to (F ▸ eta)))
+      ≃ is-lan !F ((G F∘ F) F∘ Diagram) ((G F∘ F) F∘ K) (nat-assoc-to ((G F∘ F) ▸ eta))
+    fixup = trivial-lan-equiv!
+```
+-->
+
+```agda
+  F∘-preserves-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+    → preserves-colimit F Diagram
+    → preserves-colimit G (F F∘ Diagram)
+    → preserves-colimit (G F∘ F) Diagram
+  F∘-preserves-colimits F-preserves G-preserves =
+    Equiv.to fixup ⊙ G-preserves ⊙ F-preserves
+
+  F∘-reflects-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
+    → reflects-colimit F Diagram
+    → reflects-colimit G (F F∘ Diagram)
+    → reflects-colimit (G F∘ F) Diagram
+  F∘-reflects-colimits F-reflects G-reflects =
+    F-reflects ⊙ G-reflects ⊙ Equiv.from fixup
+
+  F∘-lifts-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → lifts-colimits-of J F
+    → lifts-colimits-of J G
+    → lifts-colimits-of J (G F∘ F)
+  F∘-lifts-colimits F-lifts G-lifts colim = λ where
+      .lifted → colim''
+      .preserved → F∘-preserves-colimits
+        (lifts→preserves-colimit lifted-colim')
+        (lifts→preserves-colimit lifted-colim)
+        (Lan.has-lan colim'')
+    where
+      lifted-colim = G-lifts (natural-iso→colimit (ni-assoc ni⁻¹) colim)
+      colim' = lifted-colim .lifted
+      lifted-colim' = F-lifts colim'
+      colim'' = lifted-colim' .lifted
+
+  F∘-creates-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → creates-colimits-of J F
+    → creates-colimits-of J G
+    → creates-colimits-of J (G F∘ F)
+  F∘-creates-colimits F-creates G-creates .has-lifts-colimit =
+    F∘-lifts-colimits (F-creates .has-lifts-colimit) (G-creates .has-lifts-colimit)
+  F∘-creates-colimits F-creates G-creates .reflects =
+    F∘-reflects-colimits (F-creates .reflects) (G-creates .reflects)
 ```

@@ -1,11 +1,13 @@
 <!--
 ```agda
+open import Cat.Functor.Conservative
 open import Cat.Diagram.Comonad
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 
 open Functor
@@ -165,9 +167,12 @@ The [[total category]] of this displayed category is referred to as the
   module Coalgebras = Cat.Reasoning Coalgebras
 
 module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where
+  open Coalgebra-on
   private
     module C = Cat.Reasoning C
     module W = Comonad-on W
+    module F = Cat.Functor.Reasoning F
+    module CoEM = Cat.Reasoning (Coalgebras W)
     unquoteDecl eqv = declare-record-iso eqv (quote Coalgebra-on)
 
   Coalgebra-on-pathp
@@ -189,6 +194,20 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} wh
       : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
       → Extensional (Coalgebras.Hom W x y) ℓr
     Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → ∫Hom-path (Coalgebras-over W) p prop!) e
+
+  Forget-CoEM-is-conservative : is-conservative (πᶠ (Coalgebras-over W))
+  Forget-CoEM-is-conservative {A , α} {B , β} {f} f-inv =
+    CoEM.make-invertible f-coalg-inv (ext invl) (ext invr)
+    where
+      open C.is-invertible f-inv
+
+      f-coalg-inv : Coalgebra-hom W (B , β) (A , α)
+      f-coalg-inv .fst = inv
+      f-coalg-inv .snd =
+        W.W₁ inv C.∘ β .ρ                           ≡⟨ (C.refl⟩∘⟨ C.intror invl) ⟩
+        W.W₁ inv C.∘ β .ρ C.∘ f .fst C.∘ inv        ≡⟨ (C.refl⟩∘⟨ C.extendl (sym (f .snd))) ⟩
+        W.W₁ inv C.∘ W.W₁ (f .fst) C.∘ α .ρ C.∘ inv ≡⟨ C.cancell (F.annihilate invr) ⟩
+        α .ρ C.∘ inv                                ∎
 
 Comonad : ∀ {o ℓ} (C : Precategory o ℓ) → Type _
 Comonad C = Σ[ F ∈ Functor C C ] (Comonad-on F)

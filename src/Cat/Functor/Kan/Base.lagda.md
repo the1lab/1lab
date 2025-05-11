@@ -357,6 +357,14 @@ We can define dual notions for right Kan extensions as well.
 
 <!--
 ```agda
+to-ran
+  : ∀ {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eps : L F∘ p => F}
+  → is-ran p F L eps
+  → Ran p F
+to-ran {L = L} ran .Ran.Ext = L
+to-ran {eps = eps} ran .Ran.eps = eps
+to-ran ran .Ran.has-ran = ran
+
 to-lan
   : ∀ {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eta : F => L F∘ p}
   → is-lan p F L eta

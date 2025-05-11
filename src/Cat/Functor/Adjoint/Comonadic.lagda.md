@@ -6,12 +6,16 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Equivalence.Properties
+open import Cat.Instances.Coalgebras.Colimits
 open import Cat.Functor.Adjoint.Comonad
+open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Coalgebras
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Comonad
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
@@ -26,7 +30,7 @@ open _=>_
 # Comonadic adjunctions {defines="comonadic-adjunction comonadic-functor comonadic"}
 
 An adjunction $L \dashv R$ between functors $L : C \to D$ and $R : D \to
-C$ is _comonadic_ if the induced `comparison functor`{.Agda
+C$ is **comonadic** if the induced `comparison functor`{.Agda
 ident=Comparison-CoEM} $C \to C^{L \circ R}$ (where the right-hand side is
 the category of `Coalgebras`{.Agda} of the [[comonad of the
 adjunction|comonad from an adjunction]]) is an equivalence of
@@ -86,10 +90,42 @@ Comparison-CoEM .F-∘ f g = ext (L.F-∘ _ _)
 ```
 </details>
 
-An adjunction is _comonadic_ if `Comparison-CoEM`{.Agda} is an [[equivalence of
-categories]], thus exhibiting $C$ as the category of $L \circ R$-coalgebras:
+By construction, the composition of the comparison functor with the
+forgetful functor is equal to $L$.
+
+```agda
+Forget∘Comparison≡L : πᶠ (Coalgebras-over L∘R) F∘ Comparison-CoEM ≡ L
+Forget∘Comparison≡L = Functor-path (λ _ → refl) (λ _ → refl)
+```
+
+An adjunction is **comonadic** if `Comparison-CoEM`{.Agda} is an [[equivalence of
+categories]], thus exhibiting $C$ as the category of $(L \circ R)$-coalgebras:
 
 ```agda
 is-comonadic : Type _
 is-comonadic = is-equivalence Comparison-CoEM
+```
+
+We also say that the left adjoint $L$ is a **comonadic functor**.
+
+## Comonadic functors create colimits {defines="comonadic-functors-create-colimits"}
+
+By the description of [[colimits in categories of coalgebras]],
+the forgetful functor `πᶠ`{.Agda} [[creates colimits]]. Furthermore, if
+the adjunction $L \dashv R$ is comonadic, then `Comparison-CoEM`{.Agda}
+is an equivalence of categories, so it also creates colimits. Since this
+property is closed under composition, comonadic functors creates colimits.
+
+<!--
+```agda
+module _ (comonadic : is-comonadic) where
+```
+-->
+
+```agda
+  comonadic→creates-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj} → creates-colimits-of J L
+  comonadic→creates-colimits = subst (creates-colimits-of _) Forget∘Comparison≡L $
+    F∘-creates-colimits (equivalence→creates-colimits comonadic)
+      (Forget-CoEM-creates-colimits L∘R)
 ```

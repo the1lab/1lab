@@ -1,11 +1,18 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Reflection
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
+open import Cat.Functor.Kan.Base
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cat
+
+open lifts-limit
 ```
 -->
 
@@ -84,6 +91,27 @@ F$ into $L$ componentwise, and these satisfy the universal property.
     lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap β (q j))
 ```
 
+To summarise, the functor $\operatorname{cod} : d \swarrow F \to \cC$
+[[lifts limits]].
+
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {d}
+    (F : Functor C D) {lo lℓ} (F-cont : is-continuous lo lℓ F)
+    {J : Precategory lo lℓ}
+    where
+  private
+    module C = Cat C
+```
+-->
+
+```agda
+  Cod-lifts-limits : lifts-limits-of J (Cod (!Const d) F)
+  Cod-lifts-limits lim .lifted = Cod-lift-limit F F-cont lim
+  Cod-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
+```
+
 As an easy corollary, we get: if $\cC$ is small-complete and $F$
 small-continuous, then $d \swarrow F$ is small-complete as well.
 
@@ -102,5 +130,6 @@ module
 
 ```agda
   comma-is-complete : ∀ {d} → is-complete ℓ ℓ (d ↙ F)
-  comma-is-complete G = Cod-lift-limit F F-cont (c-compl (Cod _ F F∘ G))
+  comma-is-complete = lifts-limits→complete (Cod _ F)
+    (Cod-lifts-limits F F-cont) c-compl
 ```

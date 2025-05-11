@@ -1,14 +1,17 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Comonadic
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Conservative
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Kan.Base
+open import Cat.Diagram.Product
 open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Reasoning
 
+open lifts-colimit
 open Functor
 open /-Obj
 open /-Hom
@@ -25,34 +28,15 @@ module Cat.Instances.Slice.Colimit
 # Colimits in slices {defines="colimits-in-slice-categories"}
 
 Unlike [[limits in slice categories]], [[colimits]] in a [[slice category]]
-are computed just like colimits in the base category. That is, if we are
-given a diagram $F : \cJ \to \cC/c$ such that $U \circ F$ has a
-colimit in $\cC$ (where $U$ is the `forgetful`{.Agda ident=Forget/} functor $\cC/c
-\to \cC$), we can conclude:
+are computed just like colimits in the base category; more precisely,
+the `Forget/`{.Agda}ful functor $U : \cC/c \to \cC$ [[creates colimits]].
+
+That is, if we are given a diagram $F : \cJ \to \cC/c$ such that $U
+\circ F$ has a colimit in $\cC$, we can conclude:
 
 - that $F$ has a colimit in $\cC/c$;
 - that this colimit is [[preserved|preserved colimit]] by $U$;
-- and that $U$ [[reflects|reflected colimit]] colimits of $F$.
-
-In summary, we say that $U$ *creates* the colimits that exist in $\cC$.
-To understand why the assumption that the colimit exists in $\cC$ is
-necessary, consider the case where $\cC$ is a [[poset]], and we're
-interested in computing [[bottom elements]] ([[initial objects]], i.e.
-colimits of the empty diagram).
-Note that the existence of a bottom element in $\cC/c$ only means that
-there is a least element *that is less than $c$*, but does not imply
-the existence of a global bottom element. For example, the poset
-pictured below has an initial object $a$ in the slice over $c$, but
-no global initial object.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  c & d \\
-  a & b
-  \arrow[from=2-1, to=1-1]
-  \arrow[from=2-2, to=1-2]
-\end{tikzcd}\]
-~~~
+- and that $U$ [[reflects colimits]] of $F$.
 
 <!--
 ```agda
@@ -74,7 +58,7 @@ module
 ```
 -->
 
-Back to categories, let's consider the case of coproducts, as in the
+As a guiding example, let us consider the case of coproducts, as in the
 diagram below. We are given a binary diagram $a \to c \ot b$ in $\cC/c$
 and a colimiting cocone $a \to a + b \ot b$ in $\cC$.
 
@@ -94,8 +78,8 @@ The first observation is that there is a unique map $a + b \to c$ that
 turns this into a cocone in $\cC/c$:
 
 ```agda
-  Forget/-lifts-colimits : Colimit (U F∘ F) → Colimit F
-  Forget/-lifts-colimits UF-colim = to-colimit K-colim
+  Forget/-lifts-colimit : Colimit (U F∘ F) → Colimit F
+  Forget/-lifts-colimit UF-colim = to-colimit K-colim
     module Forget/-lifts where
       module UF-colim = Colimit UF-colim
       K : C/c.Ob
@@ -126,34 +110,31 @@ the universal map.
 
       K-colim : is-colimit F K (to-cocone mk)
       K-colim = to-is-colimit mk
-
-      preserved : preserves-lan U K-colim
-      preserved = generalize-colimitp UF-colim.has-colimit refl
 ```
 
 The colimit thus constructed is preserved by $U$ *by construction*, as
-we haven't touched the "top" part of the diagram. We can generalise this
-to all colimits of $F$.
+we haven't touched the "top" part of the diagram. This shows that $U$
+[[lifts colimits]].
 
 ```agda
-  Forget/-preserves-colimits : Colimit (U F∘ F) → preserves-colimit U F
-  Forget/-preserves-colimits UF-colim =
-    preserves-lan→preserves-all U K-colim preserved
-    where open Forget/-lifts UF-colim
+      K-colim-preserved : preserves-lan U K-colim
+      K-colim-preserved = generalize-colimitp UF-colim.has-colimit refl
+
+module _ {oj ℓj} {J : Precategory oj ℓj} where
+  Forget/-lifts-colimits : lifts-colimits-of J U
+  Forget/-lifts-colimits colim .lifted =
+    Forget/-lifts-colimit _ colim
+  Forget/-lifts-colimits colim .preserved =
+    Forget/-lifts.K-colim-preserved _ colim
 ```
 
-Finally, $U$ is [[conservative]], hence it reflects the colimits that it
-preserves, provided they exist in $\cC/c$. We can use the fact that
-$U$ lifts limits to satisfy the hypotheses.
+Finally, since $U$ is [[conservative]], it automatically reflects the
+colimits that it preserves, hence it [[creates colimits]].
 
 ```agda
-  Forget/-reflects-colimits : reflects-colimit U F
-  Forget/-reflects-colimits UK-colim = conservative-reflects-colimits
-    Forget/-is-conservative
-    (Forget/-lifts-colimits UF-colim)
-    (Forget/-preserves-colimits UF-colim)
-    UK-colim
-    where UF-colim = to-colimit UK-colim
+  Forget/-creates-colimits : creates-colimits-of J U
+  Forget/-creates-colimits = conservative+lifts→creates-colimits
+    Forget/-is-conservative Forget/-lifts-colimits
 ```
 
 In particular, if a category $\cC$ is cocomplete, then so are its slices:
@@ -163,10 +144,22 @@ is-cocomplete→slice-is-cocomplete
   : ∀ {o' ℓ'}
   → is-cocomplete o' ℓ' C
   → is-cocomplete o' ℓ' (Slice C c)
-is-cocomplete→slice-is-cocomplete colims F =
-  Forget/-lifts-colimits F (colims (U F∘ F))
+is-cocomplete→slice-is-cocomplete =
+  lifts-colimits→cocomplete Forget/ Forget/-lifts-colimits
 ```
 
-If $\cC$ has binary products with $c$, then this result is a consequence
+::: note
+If $\cC$ has binary [[products]] with $c$, then this result is a consequence
 of `Forget/`{.Agda} [[being comonadic|constant family]], since [[comonadic
-functors create limits|limits in categories of algebras]].
+functors create colimits]]! However, this result is more general as it
+does not require any products.
+
+```agda
+products→Forget/-creates-colimits
+  : has-products C
+  → ∀ {o' ℓ'} {J : Precategory o' ℓ'}
+  → creates-colimits-of J U
+products→Forget/-creates-colimits prods = comonadic→creates-colimits
+  (Forget⊣constant-family prods) (Forget/-comonadic prods)
+```
+:::
