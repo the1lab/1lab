@@ -702,10 +702,10 @@ isomorphism has contractible fibres:
 ```agda
   is-iso→is-equiv : is-equiv f
   {-# INLINE is-iso→is-equiv #-}
-  is-iso→is-equiv = record where
-    is-eqv y = record where
-      centre = record { fst = g y ; snd = s y }
-      paths z = is-iso→fibre-is-prop y (g y) (z .fst) (s y) (z .snd)
+  is-iso→is-equiv = record
+    { is-eqv = λ y → record
+      { centre = g y , s y
+      ; paths = λ z → is-iso→fibre-is-prop y (g y) (z .fst) (s y) (z .snd) } }
 ```
 
 If we package this differently, then we can present it as a map between
@@ -799,10 +799,10 @@ types is an equivalence.
 
 ```agda
 is-contr→is-equiv : is-contr A → is-contr B → {f : A → B} → is-equiv f
-is-contr→is-equiv cA cB = is-iso→is-equiv record where
-  from _ = cA .centre
-  linv _ = is-contr→is-prop cA _ _
-  rinv _ = is-contr→is-prop cB _ _
+is-contr→is-equiv cA cB = is-iso→is-equiv λ where
+  .is-iso.from _ → cA .centre
+  .is-iso.linv _ → is-contr→is-prop cA _ _
+  .is-iso.rinv _ → is-contr→is-prop cB _ _
 ```
 
 Pairing this with the "canonical" function, we obtain an equivalence
@@ -851,10 +851,10 @@ way, any biimplication between propositions is an equivalence.
 
 ```agda
   biimp-is-equiv : (f : P → Q) → (Q → P) → is-equiv f
-  biimp-is-equiv f g = is-iso→is-equiv record where
-    from x = g x
-    linv x = pprop (g (f x)) x
-    rinv x = qprop (f (g x)) x
+  biimp-is-equiv f g = is-iso→is-equiv λ where
+    .is-iso.from x → g x
+    .is-iso.linv x → pprop (g (f x)) x
+    .is-iso.rinv x → qprop (f (g x)) x
 
   prop-ext : (P → Q) → (Q → P) → P ≃ Q
   prop-ext p→q q→p .fst = p→q
@@ -882,10 +882,10 @@ precomposition with $p\inv$.
 ```agda
 ∙-pre-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → (y ≡ z) ≃ (x ≡ z)
 ∙-pre-equiv p .fst q = p ∙ q
-∙-pre-equiv p .snd = is-iso→is-equiv record where
-  from q = sym p ∙ q
-  rinv q = ∙-assoc p _ _       ∙∙ ap (_∙ q) (∙-invr p) ∙∙ ∙-idl q
-  linv q = ∙-assoc (sym p) _ _ ∙∙ ap (_∙ q) (∙-invl p) ∙∙ ∙-idl q
+∙-pre-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from q → sym p ∙ q
+  .is-iso.rinv q → ∙-assoc p _ _       ∙∙ ap (_∙ q) (∙-invr p) ∙∙ ∙-idl q
+  .is-iso.linv q → ∙-assoc (sym p) _ _ ∙∙ ap (_∙ q) (∙-invl p) ∙∙ ∙-idl q
 ```
 
 Similarly, *post*composition with $p$ is inverted on both sides by
@@ -894,10 +894,10 @@ postcomposition with $p\inv$, so it too is an equivalence.
 ```agda
 ∙-post-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → y ≡ z → (x ≡ y) ≃ (x ≡ z)
 ∙-post-equiv p .fst q = q ∙ p
-∙-post-equiv p .snd = is-iso→is-equiv record where
-  from q = q ∙ sym p
-  rinv q = sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invl p) ∙∙ ∙-idr q
-  linv q = sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invr p) ∙∙ ∙-idr q
+∙-post-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from q → q ∙ sym p
+  .is-iso.rinv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invl p) ∙∙ ∙-idr q
+  .is-iso.linv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invr p) ∙∙ ∙-idr q
 ```
 
 ### The Lift type

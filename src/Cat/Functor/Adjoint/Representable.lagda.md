@@ -115,14 +115,14 @@ module _ {o'} {D : Precategory o' ℓ}
       F .F-∘ f g = ext refl
 
       F-is-precat-iso : is-precat-iso F
-      F-is-precat-iso .has-is-iso = is-iso→is-equiv record where
-        from e = ↓obj (e .Element.section)
-        rinv e = refl
-        linv e = ↓Obj-path _ _ refl refl refl
-      F-is-precat-iso .has-is-ff = is-iso→is-equiv record where
-        from h = ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
-        rinv h = ext refl
-        linv h = ↓Hom-path _ _ refl refl
+      F-is-precat-iso .has-is-iso = is-iso→is-equiv λ where
+        .is-iso.from e → ↓obj (e .Element.section)
+        .is-iso.rinv e → refl
+        .is-iso.linv e → ↓Obj-path _ _ refl refl refl
+      F-is-precat-iso .has-is-ff = is-iso→is-equiv λ where
+        .is-iso.from h → ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
+        .is-iso.rinv h → ext refl
+        .is-iso.linv h → ↓Hom-path _ _ refl refl
 ```
 </details>
 

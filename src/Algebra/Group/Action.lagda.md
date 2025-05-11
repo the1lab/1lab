@@ -157,10 +157,10 @@ applying the right helpers for pushing paths inwards, we're left with
 
 ```agda
     Functor≃action : is-equiv {B = Σ _ (Action G)} λ i → _ , Functor→action i
-    Functor≃action = is-iso→is-equiv record where
-      from (x , act) = Action→functor act
-      linv x = Functor-path (λ _ → refl) λ _ → refl
-      rinv x = Σ-pathp refl $
+    Functor≃action = is-iso→is-equiv λ where
+      .is-iso.from (x , act) → Action→functor act
+      .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
+      .is-iso.rinv x → Σ-pathp refl $
         total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
           (is-prop→pathp (λ i → is-group-hom-is-prop) _ _)
 ```
