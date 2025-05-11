@@ -109,7 +109,7 @@ Fibre' X fix coh .Precategory.idr f =
   f                        ∎
 Fibre' X fix coh .Precategory.idl f =
   fix (id' ∘' f)           ≡⟨ coh (id' ∘' f) ⟩
-  hom[ idl id ] (id' ∘' f) ≡⟨ from-pathp (idl' f) ⟩
+  hom[ idl id ] (id' ∘' f) ≡⟨ over[] (unwrapped.to (∫.idl _)) ⟩
   f                        ∎
 Fibre' X fix coh .Precategory.assoc f g h =
   fix (f ∘' fix (g ∘' h))                     ≡⟨ ap (λ e → fix (f ∘' e)) (coh _) ∙ coh _ ⟩

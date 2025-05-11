@@ -4,23 +4,22 @@ open import Data.List
 
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Solver
-open import 1Lab.Prelude hiding (id; _∘_; ⟦_⟧)
+open import 1Lab.Prelude hiding (id; _∘_; ⟦_⟧; _⟩∘⟨_; refl⟩∘⟨_; _⟩∘⟨refl)
 
 open import Cat.Base
 open import Cat.Displayed.Base
 
 import Cat.Solver
 
-import Cat.Displayed.Reasoning as Dr
+import Cat.Displayed.Reasoning
 
 module NbE {o' ℓ' o'' ℓ''}
            {B : Precategory o' ℓ'}
            (E : Displayed B o'' ℓ'')
            where
 
-  open Displayed E
+  open Cat.Displayed.Reasoning E
   module B = Precategory B
-  open Dr E
   open Cat.Solver.NbE
 
   private variable
@@ -29,7 +28,7 @@ module NbE {o' ℓ' o'' ℓ''}
     a' b' c' d' e' : Ob[ a ]
     f' g' h' i' j' : Hom[ f ] a' b'
 
-  data Expr[_] : ∀ {a b} (f : Expr B a b) (a' : Ob[ a ]) (b' : Ob[ b ]) → Type (o' ⊔ ℓ' ⊔ o'' ⊔ ℓ'') where
+  data Expr[_] : ∀ {a b} (f : Expr B a b) (a' : Ob[ a ]) (b' : Ob[ b ]) → Typeω where
     `id  : {a' : Ob[ a ]} → Expr[ `id ] a' a'
     _`∘_ : ∀ {a' b' c'} {f : Expr B b c} {g : Expr B a b}
            → Expr[ f ] b' c' → Expr[ g ] a' b' → Expr[ f `∘ g ] a' c'
@@ -42,11 +41,11 @@ module NbE {o' ℓ' o'' ℓ''}
   unexpr[ d `∘ d₁ ] (e `∘ e₁) = unexpr[ d ] e ∘' unexpr[ d₁ ] e₁
   unexpr[ _ ] (hom ↑)         = hom
 
-  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Type (o' ⊔ ℓ' ⊔ o'' ⊔ ℓ'') where
+  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Typeω where
     [] : ∀ {a} {a' : Ob[ a ]} → Stack[ B.id ] a' a'
     _∷_ : ∀ {a b c a' b' c'} {f : B.Hom b c} {g : B.Hom a b} → Hom[ f ] b' c' → Stack[ g ] a' b' → Stack[ f B.∘ g ] a' c'
 
-  record Value[_] {a b} (f : B.Hom a b) (a' : Ob[ a ]) (b' : Ob[ b ]) : Type (o' ⊔ ℓ' ⊔ o'' ⊔ ℓ'') where
+  record Value[_] {a b} (f : B.Hom a b) (a' : Ob[ a ]) (b' : Ob[ b ]) : Typeω where
     constructor vsubst
     field
       {mor} : B.Hom a b
@@ -84,17 +83,23 @@ module NbE {o' ℓ' o'' ℓ''}
   ⟦ vsubst path homs ⟧ = hom[ path ] (stack→map homs)
 
   vid-sound : ⟦ vid {a' = a'} ⟧ ≡ id'
-  vid-sound = transport-refl _
+  vid-sound = unwrap _
 
   vcomp'-sound
     : (f' : Hom[ f ] b' c') (v : Value[ g ] a' b')
     → ⟦ vcomp' f' v ⟧ ≡ f' ∘' ⟦ v ⟧
-  vcomp'-sound f' v = sym (whisker-r _)
+  vcomp'-sound f' v =
+    begin[]
+      ⟦ vcomp' f' v ⟧ ≡[]⟨ path! (unwrap _ ∙[] apd (λ i → f' ∘'_) (wrap _)) ⟩
+      f' ∘' ⟦ v ⟧     ∎[]
 
   vhom-sound
     : (p : f ≡ g) (v : Value[ f ] a' b')
     → ⟦ vhom[ p ] v ⟧ ≡[ sym p ] ⟦ v ⟧
-  vhom-sound p v = to-pathp⁻ (sym (hom[]-∙ _ _))
+  vhom-sound p v =
+    begin[]
+      ⟦ vhom[ p ] v ⟧ ≡[]⟨ path! (reindex _ _) ⟩
+      ⟦ v ⟧           ∎[]
 
   nf' : ∀ {f : Expr B a b} → Expr[ f ] a' b' → Hom[ nf B f ] a' b'
   nf' f = ⟦ eval' f vid ⟧
@@ -105,22 +110,28 @@ module NbE {o' ℓ' o'' ℓ''}
       → ⟦ eval' e' v ⟧ ≡[ eval-sound-k B e f ] unexpr[ e ] e' ∘' ⟦ v ⟧
     eval'-sound-k `id v = symP (idl' ⟦ v ⟧)
     eval'-sound-k {e = f `∘ g} (f' `∘ g') v =
-      ⟦ eval' f' (eval' g' v) ⟧                 ≡[]⟨ eval'-sound-k f' _ ⟩
-      unexpr[ f ] f' ∘' ⟦ eval' g' v ⟧          ≡[]⟨ (λ i → unexpr[ f ] f' ∘' eval'-sound-k g' v i) ⟩
-      unexpr[ f ] f' ∘' unexpr[ g ] g' ∘' ⟦ v ⟧ ≡[]⟨ assoc' _ _ _ ⟩
-      unexpr[ f `∘ g ] (f' `∘ g') ∘' ⟦ v ⟧      ∎
-    eval'-sound-k (x ↑) v = vhom-sound _ (vcomp' x v) ▷ vcomp'-sound x v
-    eval'-sound-k (`hom[_]_ {f = f} {g = g} p e') v = cast[] $
-      ⟦ vhom[ adjust-k {f = f} {g = g} p ] (eval' e' v) ⟧ ≡[]⟨ vhom-sound (adjust-k {f = f} {g = g} p) (eval' e' v) ⟩
-      ⟦ eval' e' v ⟧                                      ≡[]⟨ eval'-sound-k e' v ⟩
-      unexpr[ f ] e' ∘' ⟦ v ⟧                             ≡[]⟨ to-pathp (sym (whisker-l p)) ⟩
-      hom[ p ] (unexpr[ f ] e') ∘' ⟦ v ⟧                  ∎
+      begin[]
+        ⟦ eval' (f' `∘ g') v ⟧                    ≡[]⟨ path! (eval'-sound-k f' _) ⟩
+        unexpr[ f ] f' ∘' ⟦ eval' g' v ⟧          ≡[]⟨ ∫.refl⟩∘⟨ path! (eval'-sound-k g' v) ⟩
+        unexpr[ f ] f' ∘' unexpr[ g ] g' ∘' ⟦ v ⟧ ≡[]⟨ ∫.assoc _ _ _ ⟩
+        unexpr[ f `∘ g ] (f' `∘ g') ∘' ⟦ v ⟧      ∎[]
+    eval'-sound-k (x ↑) v =
+      vhom-sound _ (vcomp' x v) ▷ vcomp'-sound x v
+    eval'-sound-k (`hom[_]_ {f = f} {g = g} p e') v =
+      begin[]
+        ⟦ vhom[ adjust-k {f = f} {g = g} p ] (eval' e' v) ⟧ ≡[]⟨ path! (vhom-sound (adjust-k {f = f} {g = g} p) (eval' e' v)) ⟩
+        ⟦ eval' e' v ⟧                                      ≡[]⟨ path! (eval'-sound-k e' v) ⟩
+        unexpr[ f ] e' ∘' ⟦ v ⟧                             ≡[]⟨ path! (wrap p) ∫.⟩∘⟨refl ⟩
+        unexpr[ g ] (`hom[ p ] e') ∘' ⟦ v ⟧                 ∎[]
 
     eval'-sound
       : (e : Expr B a b) (e' : Expr[ e ] a' b')
       → nf' e' ≡[ eval-sound B e ] unexpr[ e ] e'
-    eval'-sound e e' = eval'-sound-k e' vid
-      ∙[] ap (unexpr[ e ] e' ∘'_) vid-sound ◁ idr' _
+    eval'-sound e e' =
+      begin[]
+        nf' e'                    ≡[]⟨ path! (eval'-sound-k e' vid) ⟩
+        unexpr[ e ] e' ∘' ⟦ vid ⟧ ≡[]⟨ ∫.elimr (path! (unwrap _)) ⟩
+        unexpr[ e ] e'            ∎[]
 
   abstract
     solve' : ∀ {f g : Expr B a b} (f' : Expr[ f ] a' b') (g' : Expr[ g ] a' b')
@@ -128,11 +139,12 @@ module NbE {o' ℓ' o'' ℓ''}
              → (p : nf B f ≡ nf B g)
              → nf' f' ≡[ p ] nf' g'
              → unexpr[ f ] f' ≡[ q ] unexpr[ g ] g'
-    solve' {f = f} {g = g} f' g' p p' = cast[] $
-      unexpr[ f ] f' ≡[]˘⟨ eval'-sound f f' ⟩
-      nf' f'         ≡[]⟨ p' ⟩
-      nf' g'         ≡[]⟨ eval'-sound g g' ⟩
-      unexpr[ g ] g' ∎
+    solve' {f = f} {g = g} f' g' p p' =
+      begin[]
+        unexpr[ f ] f' ≡[]˘⟨ path! (eval'-sound f f') ⟩
+        nf' f'         ≡[]⟨ path! p' ⟩
+        nf' g'         ≡[]⟨ path! (eval'-sound g g') ⟩
+        unexpr[ g ] g' ∎[]
 
 module Reflection where
   module Cat = Cat.Solver.Reflection
@@ -160,7 +172,7 @@ module Reflection where
 
   -- This p has type 'f ≡ g', but we need 'embed (build-expr f) ≡ embed (build-expr g)'
   pattern “hom[]” f g p f'  =
-    def (quote Dr.hom[_]) (displayed-fn-args (ob[] ob[] (f h∷ g h∷ p v∷ f' v∷ [])))
+    def (quote Displayed.hom[_]) (displayed-fn-args (ob[] ob[] (f h∷ g h∷ p v∷ f' v∷ [])))
 
   mk-displayed-fn : Term → List (Arg Term) → List (Arg Term)
   mk-displayed-fn disp args = unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ disp v∷ args
@@ -168,7 +180,7 @@ module Reflection where
   invoke-solver : Term → Term → Term → Term
   invoke-solver disp lhs rhs =
     def (quote NbE.solve') (mk-displayed-fn disp (infer-hidden 6 $ lhs v∷ rhs v∷ “refl” v∷ “reindex” v∷ []))
-    where “reindex” = def (quote Dr.reindex) (disp v∷ unknown v∷ unknown v∷ [])
+    where “reindex” = def (quote Displayed.cast[]) (disp v∷ def (quote Cat.Displayed.Reasoning.reindex) (disp v∷ unknown v∷ unknown v∷ []) v∷ [])
 
   invoke-normaliser : Term → Term → Term
   invoke-normaliser disp tm = def (quote NbE.nf') (mk-displayed-fn disp (infer-hidden 5 $ tm v∷ []))
@@ -194,7 +206,7 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce =
     quote Precategory.id ∷ quote Precategory._∘_ ∷
-    quote Displayed.id' ∷ quote Displayed._∘'_ ∷ quote Dr.hom[_] ∷ []
+    quote Displayed.id' ∷ quote Displayed._∘'_ ∷ quote Displayed.hom[_] ∷ []
 
   displayed-solver : Term → SimpleSolver
   displayed-solver disp .SimpleSolver.dont-reduce = dont-reduce
@@ -226,8 +238,7 @@ macro
 
 private module Test {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   open Precategory B
-  open Displayed E
-  open Dr E
+  open Cat.Displayed.Reasoning E
 
   private variable
     x y z : Ob

@@ -109,6 +109,7 @@ infixr 30 _∙[]_
 
 ```agda
 opaque
+  unfolding hom[_]
   wrap
     : ∀ {f g : B.Hom x y} {f' : Hom[ f ] x' y'}
     → (p : f ≡ g)
@@ -128,4 +129,21 @@ opaque
     → hom[ p ] f' ≡[ sym p ∙ q ] hom[ q ] f'
   reindex p q =
     unwrap p ∙[] wrap q
+
+module _ {x y x' y'} {u v w : B.Hom x y} where
+
+  unwrapped
+    : (f' : Hom[ u ] x' y') (g' : Hom[ w ] x' y')
+    → (p : u ≡ v)
+    → (f' ∫≡ g') ≃ (hom[ p ] f' ∫≡ g')
+  unwrapped f' g' p = ∙-pre-equiv (path! (unwrap _))
+
+  wrapped
+    : (f' : Hom[ u ] x' y') (g' : Hom[ v ] x' y')
+    → (p : v ≡ w)
+    → (f' ∫≡ g') ≃ (f' ∫≡ hom[ p ] g')
+  wrapped f' g' p = ∙-post-equiv (path! (wrap _))
+
+  module unwrapped {f' : Hom[ u ] x' y'} {g' : Hom[ w ] x' y'} {p : u ≡ v} = Equiv (unwrapped f' g' p)
+  module wrapped {f' : Hom[ u ] x' y'} {g' : Hom[ v ] x' y'} {p : v ≡ w} = Equiv (wrapped f' g' p)
 ```

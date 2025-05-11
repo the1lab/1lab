@@ -110,8 +110,9 @@ For convenience, we also introduce displayed analogues for equational chain reas
 
 <!--
 ```agda
-  hom[_] : ∀ {a b x y} {f g : Hom a b} → f ≡ g → Hom[ f ] x y → Hom[ g ] x y
-  hom[ p ] f' = subst (λ h → Hom[ h ] _ _) p f'
+  opaque
+    hom[_] : ∀ {a b x y} {f g : Hom a b} → f ≡ g → Hom[ f ] x y → Hom[ g ] x y
+    hom[ p ] f' = subst (λ h → Hom[ h ] _ _) p f'
 
   hom[_]⁻ : ∀ {a b x y} {f g : Hom a b} → g ≡ f → Hom[ f ] x y → Hom[ g ] x y
   hom[ p ]⁻ f' = hom[ sym p ] f'
