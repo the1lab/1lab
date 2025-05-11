@@ -218,10 +218,10 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F
     → ∀ {X Y} → is-equiv (F-map-iso F {x = X} {Y})
-  is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv record where
-    from   = is-ff→essentially-injective {F = F} ff
-    rinv x = ext (equiv→counit ff _)
-    linv x = ext (equiv→unit ff _)
+  is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv λ where
+    .is-iso.from   → is-ff→essentially-injective {F = F} ff
+    .is-iso.rinv x → ext (equiv→counit ff _)
+    .is-iso.linv x → ext (equiv→unit ff _)
 ```
 -->
 

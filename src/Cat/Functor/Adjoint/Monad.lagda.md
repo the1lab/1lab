@@ -13,7 +13,7 @@ open _=>_
 ```
 -->
 
-# The monad from an adjunction {defines="monad-from-adjunction"}
+# The monad from an adjunction {defines="monad-from-an-adjunction"}
 
 ```agda
 module
@@ -37,14 +37,14 @@ private
 ```
 -->
 
-Every adjunction $L \dashv R$ gives rise to a monad, where the
+Every [[adjunction]] $L \dashv R$ gives rise to a [[monad]], where the
 underlying functor is $R \circ L$.
 
 ```agda
 Adjunction→Monad : Monad-on (R F∘ L)
 ```
 
-The unit of the monad is just adjunction monad, and the multiplication
+The unit of the monad is just the adjunction unit, and the multiplication
 comes from the counit.
 
 ```agda
@@ -57,7 +57,7 @@ Adjunction→Monad .mult = NT (λ x → R.₁ (adj.ε (L.₀ x))) λ x y f →
 ```
 
 The monad laws follow from the zig-zag identities. In fact, the
-`right-ident`{.Agda}ity law is exactly the `zag`{.Agda ident="adj.zag"}
+left identity law is exactly the `zag`{.Agda ident="adj.zag"}
 identity.
 
 ```agda

@@ -64,9 +64,8 @@ in $\cC$, then $(L, \phi)$ is the limit of $F$ in $\cC_W$.
 
 ```agda
   is-limit-coalgebra
-    : ∀ (F : Functor I (Coalgebras W)) {K phi}
-    → (l : is-ran !F (πᶠ _ F∘ F) (πᶠ _ F∘ K) (nat-assoc-from (πᶠ _ ▸ phi)))
-    → reflects-ran (πᶠ (Coalgebras-over W)) l
+    : ∀ (F : Functor I (Coalgebras W))
+    → reflects-limit (πᶠ (Coalgebras-over W)) F
   is-limit-coalgebra F {K} {phi} l = to-is-limitp mk fixup where
 ```
 

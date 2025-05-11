@@ -50,10 +50,10 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   unique₂ {g = g} {h} eq = eta g ∙ ap match (funext eq) ∙ sym (eta h)
 
   hom-iso : ∀ {Y} → C.Hom S Y ≃ (∀ i → C.Hom (F i) Y)
-  hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv record where
-    from   = match
-    rinv x = funext λ i → commute
-    linv x = sym (unique _ λ _ → refl)
+  hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv λ where
+    .is-iso.from   → match
+    .is-iso.rinv x → funext λ i → commute
+    .is-iso.linv x → sym (unique _ λ _ → refl)
 ```
 
 A category $\cC$ **admits indexed coproducts** (of level $\ell$) if,

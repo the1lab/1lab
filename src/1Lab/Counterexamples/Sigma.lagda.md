@@ -50,10 +50,10 @@ A$, independent of $f$:
 ```agda
 image≃domain : {f : A → B} → image f ≃ A
 image≃domain .fst (y , x , p) = x
-image≃domain {f = f} .snd = is-iso→is-equiv record where
-  from x = f x , x , refl
-  rinv x = refl
-  linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
+image≃domain {f = f} .snd = is-iso→is-equiv λ where
+  .is-iso.from x → f x , x , refl
+  .is-iso.rinv x → refl
+  .is-iso.linv (y , x , p) i → p i , x , λ j → p (i ∧ j)
 ```
 
 This is a direct cubical interpretation of the following argument, which

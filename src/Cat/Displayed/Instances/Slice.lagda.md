@@ -160,10 +160,10 @@ Fibre→slice .F-id = trivial!
 Fibre→slice .F-∘ f g = ext (transport-refl _)
 
 Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
-Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv record where
-  from hom = slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
-  rinv x = ext refl
-  linv x = Slice-pathp refl refl
+Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv λ where
+  .is-iso.from hom → slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
+  .is-iso.rinv x → ext refl
+  .is-iso.linv x → Slice-pathp refl refl
 
 Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
 Fibre→slice-is-equiv = is-precat-iso→is-equivalence $

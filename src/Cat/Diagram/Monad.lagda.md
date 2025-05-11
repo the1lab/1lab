@@ -112,19 +112,14 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 
 <!--
 ```agda
+  private
+    unquoteDecl eqv = declare-record-iso eqv (quote Algebra-on)
+
   Algebra-on-pathp
     : ∀ {F} {M : Monad-on F} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
     → PathP (λ i → C.Hom (F · p i) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
     → PathP (λ i → Algebra-on M (p i)) A B
-  Algebra-on-pathp over mults i .Algebra-on.ν = mults i
-  Algebra-on-pathp {M = M} over {A} {B} mults i .Algebra-on.ν-unit =
-    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.η _) (C.id {x = over i}))
-      (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
-    where module M = Monad-on M
-  Algebra-on-pathp {M = M} over {A} {B} mults i .Algebra-on.ν-mult =
-    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.μ _))
-      (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
-    where module M = Monad-on M
+  Algebra-on-pathp over mults = injectiveP (λ _ → eqv) (mults ,ₚ prop!)
 
 instance
   Extensional-Algebra-on
@@ -220,7 +215,7 @@ over $f$ is a proposition.
 </details>
 
 The [[total category]] of this displayed category is referred
-to as the **Eilenberg Moore** category of $M$.
+to as the **Eilenberg-Moore** category of $M$.
 
 ```agda
   Eilenberg-Moore : Precategory (o ⊔ ℓ) ℓ
@@ -490,32 +485,14 @@ module _ {o h : _} {C : Precategory o h} {F G : Functor C C} {M : Monad-on F} {N
     module C = Cat.Reasoning C
     module M = Monad-on M
     module N = Monad-on N
+    unquoteDecl eqv = declare-record-iso eqv (quote Monad-on)
 
   Monad-on-path
     : (p0 : F ≡ G)
     → (∀ x → PathP (λ i → C.Hom x (p0 i · x)) (M.η x) (N.η x))
     → (∀ x → PathP (λ i → C.Hom (p0 i · (p0 i · x)) (p0 i · x)) (M.μ x) (N.μ x))
     → PathP (λ i → Monad-on (p0 i)) M N
-  Monad-on-path M=N punit pmult = path where
-    p0 : ∀ x → F · x ≡ G · x
-    p0 x i = M=N i · x
-
-    p1 : ∀ {x y} (f : C.Hom x y) → PathP (λ i → C.Hom (p0 x i) (p0 y i)) (M.M₁ f) (N.M₁ f)
-    p1 f i = M=N i .Functor.F₁ f
-
-    path : PathP (λ i → Monad-on (M=N i)) M N
-    path i .Monad-on.unit =
-      Nat-pathp refl M=N {a = M.unit} {b = N.unit} punit i
-    path i .Monad-on.mult =
-      Nat-pathp (ap₂ _F∘_ M=N M=N) M=N {a = M.mult} {b = N.mult} pmult i
-    path i .Monad-on.μ-unitr {x = x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (pmult x i C.∘ p1 (punit x i) i) C.id)
-        M.μ-unitr N.μ-unitr i
-    path i .Monad-on.μ-unitl {x = x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 x i) (p0 x i) (pmult x i C.∘ punit (p0 x i) i) C.id)
-        M.μ-unitl N.μ-unitl i
-    path i .Monad-on.μ-assoc {x} =
-      is-prop→pathp (λ i → C.Hom-set (p0 (p0 (p0 x i) i) i) (p0 x i) (pmult x i C.∘ p1 (pmult x i) i) (pmult x i C.∘ pmult (p0 x i) i))
-        M.μ-assoc N.μ-assoc i
+  Monad-on-path M=N punit pmult = injectiveP (λ _ → eqv) $
+    Nat-pathp refl M=N punit ,ₚ Nat-pathp (ap₂ _F∘_ M=N M=N) M=N pmult ,ₚ prop!
 ```
 -->

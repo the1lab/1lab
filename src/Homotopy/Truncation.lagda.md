@@ -262,10 +262,10 @@ n-Tr-univ
   → is-hlevel B (suc n)
   → (n-Tr A (suc n) → B) ≃ (A → B)
 n-Tr-univ n b-hl .fst f = f ∘ inc
-n-Tr-univ n b-hl .snd = is-iso→is-equiv record where
-  from f = n-Tr-rec b-hl f
-  rinv f = refl
-  linv f = funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
+n-Tr-univ n b-hl .snd = is-iso→is-equiv λ where
+  .is-iso.from f → n-Tr-rec b-hl f
+  .is-iso.rinv f → refl
+  .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
 ```
 
 ```agda

@@ -113,16 +113,16 @@ following data:
 
   to-natural-iso : ∀ {F G} → make-natural-iso F G → F ≅ⁿ G
   {-# INLINE to-natural-iso #-}
-  to-natural-iso {F = F} {G = G} mk = record where
-    to = record where
-      η = mk .eta
-      is-natural x y f = sym (mk .natural x y f)
-    from = record where
-      η = mk .inv
-      is-natural = inverse-is-natural {F} {G} to (mk .inv) (mk .eta∘inv) (mk .inv∘eta)
-    inverses = record where
-      invl = ext (mk .eta∘inv)
-      invr = ext (mk .inv∘eta)
+  to-natural-iso {F = F} {G = G} mk =
+    let to = record { η = mk .eta ; is-natural = λ x y f → sym (mk .natural x y f) } in
+    record
+      { to = to
+      ; from = record
+        { η = mk .inv
+        ; is-natural = inverse-is-natural {F} {G} to (mk .inv) (mk .eta∘inv) (mk .inv∘eta) }
+      ; inverses = record
+        { invl = ext (mk .eta∘inv)
+        ; invr = ext (mk .inv∘eta) } }
 ```
 
 Moreover, the following family of functions project out the

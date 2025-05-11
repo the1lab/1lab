@@ -46,16 +46,16 @@ codomain of a dependent function by an equivalence across universe levels:
 
 Π-dom≃ : (e : B ≃ A) → ((x : A) → P x) ≃ ((x : B) → P (e .fst x))
 Π-dom≃ e .fst k x = k (e .fst x)
-Π-dom≃ {P = P} e .snd = is-iso→is-equiv record where
-  module e = Equiv e
-
-  from k x = subst P (e.ε x) (k (e.from x))
-  rinv k = funext λ x →
-      ap₂ (subst P) (sym (e.zig x)) (sym (from-pathp (symP (ap k (e.η x)))))
-    ∙ transport⁻transport (ap P (ap (e .fst) (sym (e.η x)))) (k x)
-  linv k = funext λ x →
-      ap (subst P _) (sym (from-pathp (symP (ap k (e.ε x)))))
-    ∙ transport⁻transport (sym (ap P (e.ε x))) _
+Π-dom≃ {P = P} e .snd =
+  is-iso→is-equiv λ where
+    .is-iso.from k x → subst P (e.ε x) (k (e.from x))
+    .is-iso.rinv k   → funext λ x →
+        ap₂ (subst P) (sym (e.zig x)) (sym (from-pathp (symP (ap k (e.η x)))))
+      ∙ transport⁻transport (ap P (ap (e .fst) (sym (e.η x)))) (k x)
+    .is-iso.linv k   → funext λ x →
+        ap (subst P _) (sym (from-pathp (symP (ap k (e.ε x)))))
+      ∙ transport⁻transport (sym (ap P (e.ε x))) _
+  where module e = Equiv e
 
 Π-impl-cod≃ : ((x : A) → P x ≃ Q x) → ({x : A} → P x) ≃ ({x : A} → Q x)
 Π-impl-cod≃ k .fst f {x} = k x .fst (f {x})
@@ -73,13 +73,14 @@ codomain:
 ```agda
 function≃ : (A ≃ B) → (C ≃ D) → (A → C) ≃ (B → D)
 function≃ dom rng .fst f x = rng .fst (f (Equiv.from dom x))
-function≃ dom rng .snd = is-iso→is-equiv record where
-  module dom = Equiv dom
-  module rng = Equiv rng
-
-  from f x = rng.from (f (dom .fst x))
-  linv f = funext λ x → rng.η _ ∙ ap f (dom.η _)
-  rinv f = funext λ x → rng.ε _ ∙ ap f (dom.ε _)
+function≃ dom rng .snd =
+  is-iso→is-equiv λ where
+    .is-iso.from f x → rng.from (f (dom .fst x))
+    .is-iso.linv f   → funext λ x → rng.η _ ∙ ap f (dom.η _)
+    .is-iso.rinv f   → funext λ x → rng.ε _ ∙ ap f (dom.ε _)
+  where
+    module dom = Equiv dom
+    module rng = Equiv rng
 
 equiv≃ : (A ≃ B) → (C ≃ D) → (A ≃ C) ≃ (B ≃ D)
 equiv≃ x y = Σ-ap (function≃ x y) λ f → prop-ext
@@ -236,20 +237,17 @@ funext-square p i j a = p a i j
   : ∀ {ℓ ℓ'} {B : Lift ℓ ⊤ → Type ℓ'}
   → (∀ a → B a) ≃ B _
 Π-⊤-eqv .fst b = b _
-Π-⊤-eqv .snd = is-iso→is-equiv record where
-  from b _ = b
-  rinv b = refl
-  linv b = refl
+Π-⊤-eqv .snd = is-iso→is-equiv (iso (λ z a → z) (λ _ → refl) (λ _ → refl))
 
 Π-contr-eqv
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (c : is-contr A)
   → (∀ a → B a) ≃ B (c .centre)
 Π-contr-eqv c .fst b = b (c .centre)
-Π-contr-eqv {B = B} c .snd = is-iso→is-equiv record where
-  from b = λ a → subst B (c .paths a) b
-  rinv b = ap (λ e → subst B e b) (is-contr→is-set c _ _ _ _) ∙ transport-refl b
-  linv b = funext λ a → from-pathp (ap b (c .paths a))
+Π-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+  .is-iso.from b a → subst B (c .paths a) b
+  .is-iso.rinv b → ap (λ e → subst B e b) (is-contr→is-set c _ _ _ _) ∙ transport-refl b
+  .is-iso.linv b → funext λ a → from-pathp (ap b (c .paths a))
 
 flip
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}

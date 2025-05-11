@@ -205,10 +205,10 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       contr (x , refl) λ (y , p) i → p (~ i) , λ j → p (~ i ∨ j)
 
   embedding→cancellable : is-embedding f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
-  embedding→cancellable emb {x} {y} = is-iso→is-equiv record where
-    from p = ap fst (emb (f y) (x , p) (y , refl))
-    rinv p = flatten-∨-square (ap snd (emb (f y) (x , p) (y , refl)))
-    linv = J (λ y p → ap fst (emb (f y) (x , ap f p) (y , refl)) ≡ p)
+  embedding→cancellable emb {x} {y} = is-iso→is-equiv λ where
+    .is-iso.from p → ap fst (emb (f y) (x , p) (y , refl))
+    .is-iso.rinv p → flatten-∨-square (ap snd (emb (f y) (x , p) (y , refl)))
+    .is-iso.linv → J (λ y p → ap fst (emb (f y) (x , ap f p) (y , refl)) ≡ p)
       (ap-square fst (is-prop→is-set (emb (f x)) _ _ (emb (f x) (x , refl) (x , refl)) refl))
 
   equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)

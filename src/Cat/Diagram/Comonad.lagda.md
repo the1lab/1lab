@@ -53,7 +53,26 @@ Unsurprisingly, these are dual to the equations of a monad.
 
 ```agda
     field
-      δ-idl   : ∀ {x} → W₁ (ε x) ∘ δ x ≡ id
-      δ-idr   : ∀ {x} → ε (W₀ x) ∘ δ x ≡ id
+      δ-unitl : ∀ {x} → W₁ (ε x) ∘ δ x ≡ id
+      δ-unitr : ∀ {x} → ε (W₀ x) ∘ δ x ≡ id
       δ-assoc : ∀ {x} → W₁ (δ x) ∘ δ x ≡ δ (W₀ x) ∘ δ x
 ```
+
+<!--
+```agda
+module _ {o h : _} {C : Precategory o h} {F G : Functor C C} {M : Comonad-on F} {N : Comonad-on G} where
+  private
+    module C = Cat.Reasoning C
+    module M = Comonad-on M
+    module N = Comonad-on N
+    unquoteDecl eqv = declare-record-iso eqv (quote Comonad-on)
+
+  Comonad-on-path
+    : (p0 : F ≡ G)
+    → (∀ x → PathP (λ i → C.Hom (p0 i · x) x) (M.ε x) (N.ε x))
+    → (∀ x → PathP (λ i → C.Hom (p0 i · x) (p0 i · (p0 i · x))) (M.δ x) (N.δ x))
+    → PathP (λ i → Comonad-on (p0 i)) M N
+  Comonad-on-path M=N pcounit pcomult = injectiveP (λ _ → eqv) $
+    Nat-pathp M=N refl pcounit ,ₚ Nat-pathp M=N (ap₂ _F∘_ M=N M=N) pcomult ,ₚ prop!
+```
+-->

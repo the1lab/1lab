@@ -414,10 +414,10 @@ the functor $\cD(X,U(-))$.
 
 ```agda
     fold-is-equiv : ∀ B → is-equiv (fold {B})
-    fold-is-equiv B = is-iso→is-equiv record where
-      from f = U.₁ f D.∘ unit
-      rinv _ = sym (unique _ refl)
-      linv _ = commute
+    fold-is-equiv B = is-iso→is-equiv λ where
+      .is-iso.from f → U.₁ f D.∘ unit
+      .is-iso.rinv _ → sym (unique _ refl)
+      .is-iso.linv _ → commute
 ```
 
 <!--
