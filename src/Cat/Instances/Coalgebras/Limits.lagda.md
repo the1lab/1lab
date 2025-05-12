@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Reflection
 open import Cat.Instances.Coalgebras
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
@@ -16,6 +17,9 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+
+open creates-limit
+open lifts-limit
 ```
 -->
 
@@ -46,7 +50,7 @@ This module concerns itself with the more general construction of
 focused) construction of [[finite limits of coalgebras]]. Namely, if
 $(W, \eps, \delta)$ is a [[comonad]] on $\cC$ which, as a functor,
 preserves $\cI$-shaped limits, then the forgetful functor $U : \cC_W \to
-\cC$ preserves _and_ reflects those same limits.
+\cC$ *[[creates|created limit]]* those same limits.
 
 <!--
 ```agda
@@ -274,3 +278,16 @@ i.e., the defining property of $\nu$!
       .natural x y f → eliml refl ∙ intror (lim .Ext .Functor.F-id)
 ```
 -->
+
+Putting our results together, we obtain that the forgetful functor
+$U : \cC_W \to \cC$ creates limits of shape $\cI$, as promised.
+
+```agda
+  πᶠ-lifts-limits : lifts-limits-of I (πᶠ (Coalgebras-over W))
+  πᶠ-lifts-limits lim .lifted = Coalgebra-limit _ lim
+  πᶠ-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
+
+  πᶠ-creates-limits : creates-limits-of I (πᶠ (Coalgebras-over W))
+  πᶠ-creates-limits .has-lifts-limit = πᶠ-lifts-limits
+  πᶠ-creates-limits .reflects = is-limit-coalgebra _
+```

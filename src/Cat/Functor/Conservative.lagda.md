@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Base
 open import Cat.Morphism.Duality
 open import Cat.Morphism
 open import Cat.Prelude hiding (J)
@@ -22,6 +23,10 @@ private variable
   C D J : Precategory o h
 open Precategory
 open Functor
+open lifts-limit
+open creates-limit
+open lifts-colimit
+open creates-colimit
 ```
 -->
 
@@ -107,6 +112,14 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
           (FK-lim.unique₂ _ (λ j → FK-lim.commutes j)
             (λ j → D.pulll (FK-lim.factors _ _) ∙ F.collapse (L-lim.factors _ _))
             (λ j → D.idr _))
+
+  conservative→lifts→creates-limits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → lifts-limits-of J F → creates-limits-of J F
+  conservative→lifts→creates-limits F-lifts .has-lifts-limit = F-lifts
+  conservative→lifts→creates-limits F-lifts .reflects lim =
+    conservative-reflects-limits (lifted-lim .lifted) (lifts→preserves-limit lifted-lim) lim
+    where lifted-lim = F-lifts (to-ran lim)
 ```
 
 <!--
@@ -166,5 +179,13 @@ about colimits follows by duality.
           (FC-colim.unique₂ _ (λ j → FC-colim.commutes j)
             (λ j → F.pullr (C-colim.factors _ _) ∙ FK-colim.factors _ _)
             (λ j → D.idl _))
+
+  conservative→lifts→creates-colimits
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → lifts-colimits-of J F → creates-colimits-of J F
+  conservative→lifts→creates-colimits F-lifts .has-lifts-colimit = F-lifts
+  conservative→lifts→creates-colimits F-lifts .reflects colim =
+    conservative-reflects-colimits (lifted-colim .lifted) (lifts→preserves-colimit lifted-colim) colim
+    where lifted-colim = F-lifts (to-lan colim)
 ```
 </details>

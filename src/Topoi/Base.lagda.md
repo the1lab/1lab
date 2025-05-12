@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Equivalence.Properties
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Algebras.Limits

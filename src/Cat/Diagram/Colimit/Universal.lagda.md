@@ -24,6 +24,8 @@ open import Data.Sum
 
 import Cat.Reasoning
 
+open creates-colimit
+open lifts-colimit
 open Functor
 open _=>_
 ```
@@ -373,8 +375,8 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
         → is-colimit▹ (cocone▹→cocone/ F) ≃ is-colimit▹ (F F∘ ▹-in)
       colim/≃colim F =
         prop-ext!
-          (Forget/-preserves-colimits _ (J-colims _))
-          (Forget/-reflects-colimits _)
+          (lifts→preserves-colimit (Forget/-lifts-colimits (J-colims _)))
+          (Forget/-creates-colimits .reflects)
         ∙e trivial-colimit-equiv!
 
       step2≃3 : step2 ≃ step3

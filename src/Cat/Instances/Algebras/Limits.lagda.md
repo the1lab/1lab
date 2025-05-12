@@ -1,12 +1,10 @@
 <!--
 ```agda
-open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Equivalence.Properties
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Conservative
-open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
 open import Cat.Displayed.Total
 open import Cat.Diagram.Monad
@@ -128,7 +126,8 @@ $\cC$ later.
 
 This key lemma also doubles as a proof that the underlying object
 functor $U$ reflects limits: We already had an algebra structure
-"upstairs"!
+"upstairs"! In fact this follows automatically from $U$ being
+[[conservative]] and lifting limits, so we will not need this lemma.
 
 ```agda
   Forget-reflects-limits : reflects-limit Forget-EM F
@@ -138,7 +137,7 @@ functor $U$ reflects limits: We already had an algebra structure
 ```
 
 Having shown that $U$ reflects the property of _being a limit_, we now
-turn to showing it reflects limits in general. Using our key lemma, it
+turn to showing it [[*lifts* limits]] in general. Using our key lemma, it
 will suffice to construct an algebra structure on $\lim_j UF(j)$, then
 show that the projection maps $\psi_j : (\lim_j UF(j)) \to UF(j)$ extend
 to algebra homomorphisms.
@@ -170,8 +169,8 @@ on each $F(j)$, we can "tuple" them into a big map $\nu = \langle \nu_j
     apex-algebra .ν =
       lim-over.universal (λ j → FAlg.ν j C.∘ M.M₁ (lim-over.ψ j)) comm where abstract
       comm : ∀ {x y} (f : J.Hom x y)
-            → F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
-            ≡ FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)
+           → F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
+           ≡ FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)
       comm {x} {y} f =
         F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .preserves) ⟩
         FAlg.ν y C.∘ M.M₁ (F.₁ f .hom) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
@@ -213,13 +212,33 @@ more complicated.
 
 </details>
 
-Putting our previous results together, we conclude by observing that, if
-$\cC$ is a complete category, then so is $\cC^M$, regardless of how
-ill-behaved the monad $M$ might be.
+We can package our results together into the concise statement that
+`Forget-EM`{.Agda} [[creates limits]].
+
+<!--
+```agda
+module _ {jo jℓ} {J : Precategory jo jℓ} where
+  open lifts-limit
+  open creates-limit
+```
+-->
+
+```agda
+  Forget-EM-lifts-limits : lifts-limits-of J Forget-EM
+  Forget-EM-lifts-limits lim .lifted = Forget-lift-limit _ lim
+  Forget-EM-lifts-limits lim .preserved =
+    Forget-EM-preserves-limits _ (Ran.has-ran (Forget-lift-limit _ lim))
+
+  Forget-EM-creates-limits : creates-limits-of J Forget-EM
+  Forget-EM-creates-limits = conservative→lifts→creates-limits
+    Forget-EM-is-conservative Forget-EM-lifts-limits
+```
+
+As a consequence, if $\cC$ is a complete category, then so is $\cC^M$,
+regardless of how ill-behaved the monad $M$ might be.
 
 ```agda
 Eilenberg-Moore-is-complete
   : ∀ {a b} → is-complete a b C → is-complete a b (Eilenberg-Moore M)
-Eilenberg-Moore-is-complete complete F =
-  Forget-lift-limit F (complete _)
+Eilenberg-Moore-is-complete = lifts-limits→complete Forget-EM Forget-EM-lifts-limits
 ```
