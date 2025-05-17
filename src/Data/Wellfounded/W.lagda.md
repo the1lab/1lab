@@ -602,7 +602,7 @@ the equivalence between paths and codes in a single shot.
       ≃∎
 ```
 
-We can then establish an [[hlevel]] bound on codes: if the type of
+We can then establish an [[h-level]] bound on codes: if the type of
 labels `A` is an $n+1$-type, then the type of codes must be an $n$-type.
 
 ```agda
@@ -618,7 +618,7 @@ labels `A` is an $n+1$-type, then the type of codes must be an $n$-type.
 ```
 
 We can translate this along our equivalence between paths and codes
-to get an hlevel bound on W-types.
+to get an h-level bound on W-types.
 
 <!--
 ```agda
@@ -638,8 +638,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
         Equiv→is-hlevel n (WPath.Path≃Code w v) (WPath.Code-is-hlevel n ahl)
 ```
 
-Though incredibly useful, the above hlevel bound does not completely describe the
-hlevels of W-types. In particular, it does not describe when a W-type
+Though incredibly useful, the above h-level bound does not completely describe the
+h-levels of W-types. In particular, it does not describe when a W-type
 is [[contractible]].
 
 A good first guess would be that `W A B` is contractible if `A` is contractible.
