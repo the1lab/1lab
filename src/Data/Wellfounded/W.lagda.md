@@ -30,10 +30,17 @@ data W {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') : Type (ℓ ⊔ ℓ') whe
 
 <!--
 ```agda
-W-elim : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → Type ℓ''}
-       → ({a : A} {f : B a → W A B} → (∀ ba → C (f ba)) → C (sup a f))
-       → (w : W A B) → C w
+W-elim
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → Type ℓ''}
+  → ({a : A} {f : B a → W A B} → (∀ ba → C (f ba)) → C (sup a f))
+  → (w : W A B) → C w
 W-elim {C = C} ps (sup a f) = ps (λ ba → W-elim {C = C} ps (f ba))
+
+W-elim₂
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → W A B → Type ℓ''}
+  → ({x y : A} {f : B x → W A B} {g : B y → W A B} → (∀ bx by → C (f bx) (g by)) → C (sup x f) (sup y g))
+  → (w₁ w₂ : W A B) → C w₁ w₂
+W-elim₂ {C = C} ps (sup x f) (sup y g) = ps (λ bx by → W-elim₂ {C = C} ps (f bx) (g by))
 ```
 -->
 
