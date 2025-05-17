@@ -517,3 +517,170 @@ and the resulting contradiction.
                 apd (λ i → subtree (w=v i)) $
                 is-set→cast-pathp B (Discrete→is-set auto) (λ i → bx)
 ```
+
+## Path spaces of W-types
+
+We can also use W-types to give a generic characterisation of path
+spaces of inductive types.
+
+<!--
+```agda
+module WPath {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+Typically, we prove results about path spaces of inductive types via
+**encode-decode** arguments. The general idea is that if a type `T` is
+an inductive type, then we can construct a type family `Code : T → T → Type`
+via recursion on `T` which describe the equality type between each
+pair of constructors. We then construct a pair of maps
+
+- `encode : ∀ (x y : T) → x ≡ y → Code x y`
+- `decode : ∀ (x y : T) → Code x y → x ≡ y`
+
+which translate between paths in `T` and our recursively defined family.
+The final step is to show `encode` and `decode` are inverses, which gives
+us an equivalence between paths in `T` and our alternative representation
+of the path space.
+
+Our characterisation of paths in W-types will follow a similar trajectory.
+We start by observing that a path `p : w ≡ v` between two trees `w, v : W A B`
+consists of the following data:
+
+- A path `label-path p : label w ≡ label v` between labels.
+- A path `f bw ≡ g bv` for every `bw : B (label w)` and `by : B (label v)`
+  that are connected by a `PathP`{.Agda} over `label-path p`.
+
+```agda
+  private
+    label-path : ∀ {w v : W A B} → w ≡ v → label w ≡ label v
+    label-path p = ap label p
+
+    subtree-path
+      : ∀ {w v : W A B}
+      → (p : w ≡ v)
+      → ∀ {bw : B (label w)} {bv : B (label v)}
+      → PathP (λ i → B (label-path p i)) bw bv
+      → subtree w bw ≡ subtree v bv
+    subtree-path p q = apd (λ i → subtree (p i)) q
+```
+
+We can then turn this observation on its head, and *define* our type of
+codes recursively as trees of paths between constructors whose branching
+factor is given by the type `PathP`s over the constructor paths.
+
+```agda
+  Code : W A B → W A B → Type (ℓ ⊔ ℓ')
+  Code (sup x f) (sup y g) =
+    Σ[ p ∈ (x ≡ y) ] (∀ {bx by} (q : PathP (λ i → B (p i)) bx by) → Code (f bx) (g by))
+```
+
+Instead of building `encode` and `decode` maps by hand, we shall construct
+the equivalence between paths and codes in a single shot.
+
+```agda
+  Path≃Code : ∀ (w v : W A B) → (w ≡ v) ≃ Code w v
+  Path≃Code (sup x f) (sup y g) =
+    sup x f ≡ sup y g
+      ≃⟨ ap-equiv W-fixpoint ⟩
+    (x , f) ≡ (y , g)
+      ≃˘⟨ Iso→Equiv Σ-pathp-iso ⟩
+    Σ[ p ∈ (x ≡ y) ] PathP (λ i → B (p i) → W A B) f g
+      ≃˘⟨ Σ-ap-snd (λ p → funext-dep≃) ⟩
+    Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → f bw ≡ g bv)
+      ≃⟨ Σ-ap-snd (λ p → Π-impl-cod≃ λ bw → Π-impl-cod≃ λ bv → Π-cod≃ (λ q → Path≃Code (f bw) (g bv))) ⟩
+    Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → Code (f bw) (g bv))
+      ≃⟨⟩
+    Code (sup x f) (sup y g)
+      ≃∎
+```
+
+We can then establish an [[hlevel]] bound on codes: if the type of
+labels `A` is an $n+1$-type, then the type of codes must be an $n$-type.
+
+```agda
+  Code-is-hlevel
+    : ∀ {w v : W A B}
+    → (n : Nat)
+    → is-hlevel A (suc n)
+    → is-hlevel (Code w v) n
+  Code-is-hlevel {w = sup x f} {v = sup y g} n ahl =
+    Σ-is-hlevel n (Path-is-hlevel' n ahl x y) λ p →
+    Π-is-hlevel²' n λ bx by → Π-is-hlevel n λ q →
+    Code-is-hlevel {w = f bx} {v = g by} n ahl
+```
+
+We can translate this along our equivalence between paths and codes
+to get an hlevel bound on W-types.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+```agda
+  opaque
+    W-is-hlevel
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+      → (n : Nat)
+      → is-hlevel A (suc n)
+      → is-hlevel (W A B) (suc n)
+    W-is-hlevel n ahl =
+      Path-is-hlevel→is-hlevel n λ w v →
+        Equiv→is-hlevel n (WPath.Path≃Code w v) (WPath.Code-is-hlevel n ahl)
+```
+
+Though incredibly useful, the above hlevel bound does not completely describe the
+hlevels of W-types. In particular, it does not describe when a W-type
+is [[contractible]].
+
+A good first guess would be that `W A B` is contractible if `A` is contractible.
+However, there is a slight problem: if the branching factor `B x` is merely
+inhabited for every `x : A`, then the resulting W-type `W A B` must be empty!
+
+```agda
+  W-always-branch-empty
+    : (∀ (x : A) → ∥ B x ∥)
+    → ¬ (W A B)
+```
+
+Such a W-type would only contain infinitely deep trees, which lets
+us perform an infinite descent.
+
+```agda
+  W-always-branch-empty B-inhab (sup x f) = do
+    rec! (λ bx → W-always-branch-empty B-inhab (f bx))
+      (B-inhab x)
+```
+
+This means that even if `A` is contractible, the W-type `W A B` may
+be a prop. However, if `A` is contractible *and* `B` is empty, then
+`W A B` is contractible.
+
+To show this, we start with a simple lemma: if `B x` is empty for every
+`x : A`, then the W-type `W A B` is equivalent to `A`.
+
+```agda
+  W-no-branch-≃
+    : (∀ x → ¬ (B x))
+    → W A B ≃ A
+  W-no-branch-≃ ¬B =
+    W A B                    ≃⟨ W-fixpoint ⟩
+    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contract (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
+    A                        ≃∎
+```
+
+This means that if `A` is contractible and `B` is empty at the centre of contraction,
+then `W A B` is equivalent to `A`, and thus also contractible.
+
+```agda
+  W-is-contr
+    : (A-contr : is-contr A)
+    → ¬ (B (A-contr .centre))
+    → is-contr (W A B)
+  W-is-contr A-contr ¬B =
+    Equiv→is-hlevel 0
+      (W-no-branch-≃ (Equiv.from (Π-contr-eqv A-contr) ¬B))
+      A-contr
+```
