@@ -4,6 +4,9 @@ open import 1Lab.Prelude
 
 open import Data.Wellfounded.Properties
 open import Data.Wellfounded.Base
+open import Data.Fin.Finite
+open import Data.Dec.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -412,3 +415,105 @@ and some stock facts about substitution.
         (sym h) dt
 ```
 -->
+
+## Discrete W-types
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+As shown in the previous section, W-types allow us to encode every
+non-indexed inductive type with a single construct. This encoding
+turns out to be a very powerful tool: it lets us unify collections of
+ad-hoc results into single theorems about W-types!
+
+A canonical example of this is proving that inductive types have
+[[decidable equality|discrete]]. A typical proof involves showing
+that the constructors of an inductive type are all pairwise disjoint,
+followed by a massive case bash. For an inductive with $n$ constructors,
+this strategy requires $O(n^2)$ cases, which quickly becomes infeasible.
+
+In contrast, it is relatively easy to prove that a W-type $W\; A\; B$
+has decidable equality. It suffices to show that
+
+- The type of labels $A$ has decidable equality; and
+- for every $x : A$, the branching factor $B(x)$ is [[finite]].
+
+
+```agda
+  instance
+    Discrete-W
+      : ⦃ _ : Discrete A ⦄
+      → ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → Discrete (W A B)
+```
+
+Let `w` and `v` be a pair of elements of `W A B`. The obvious
+first move is to check if the labels of `w` and `v` are equal.
+Note that we use the [[inductive identity type|inductive-identity]] here:
+the reason for this will become evident shortly.
+
+```agda
+    Discrete-W {x = w@(sup x f)} {y = v@(sup y g)} =
+      case x ≡ᵢ? y of λ where
+```
+
+If the two labels are distinct, then `w` and `v` must be distinct.
+
+```agda
+        (no x≠y) →
+          no (λ w=v → x≠y (Id≃path.from (ap label w=v)))
+```
+
+Conversely, suppose the two labels `x` and `y` are equal. Our next move
+is to exhaustively check that all the subtrees are equal, which is possible
+as all branching factors are finite.
+
+However, there is a minor snag here: we want to compare equality of
+`f : B x → W A B` and `g : B y → W A B`, yet their types differ: `f`
+expects branches taken from `B x`, yet `g` expects branches taken from
+`B y`. We know that `x` and `y` are equal, but this isn't a judgmental
+equality, so some sort of transport is required. Luckily, we have
+anticipated this problem: by using inductive equality, we can simply
+pattern match on the proof that `x ≡ᵢ y`, so we only
+need to consider the case where `x` and `y` are judgmentally equal.
+
+```agda
+        (yes reflᵢ) →
+          case holds? (∀ bx → f bx ≡ g bx) of λ where
+```
+
+If all the subtrees are equal, we can conclude that `w` and `v` are
+themselves equal.
+
+```agda
+            (yes f=g) →
+              yes (ap (sup x) (ext f=g))
+```
+
+Finally, if not all the subtrees are equal, then the original trees
+`w` and `v` are not equal.
+
+This is surprisingly fiddly to show. Aiming for a contradiction, assume that
+we have a path `w=v : w ≡ v` and an arbitrary `bx : B x`: our goal is to
+show that `subtree w bx ≡ subtree v bx`.
+
+The obvious move is to use `ap` to get a path between subtrees of `w` and `v`,
+but this doesn't *quite* work due to dependencies. Instead, we get a
+`PathP (λ i → B (label (w=v i)) → W A B) (subtree w) (subtree v)` over a
+path between the labels of `w` and `v`.
+
+However, our previous match on `reflᵢ`{.Agda} means that this path is
+actually a loop. Additionally, the type of labels `A` has decidable equality,
+so it must be a set. This lets us contract the problematic loop down
+to reflexivity, which gives us our desired proof that `subtree w bx ≡ subtree v bx`
+and the resulting contradiction.
+
+```agda
+            (no ¬f=g) →
+              no λ w=v → ¬f=g λ bx →
+                apd (λ i → subtree (w=v i)) $
+                is-set→cast-pathp B (Discrete→is-set auto) (λ i → bx)
+```
