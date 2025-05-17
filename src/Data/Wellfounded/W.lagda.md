@@ -186,6 +186,33 @@ Luckily, this is completely straightforward.
     coherent = transpose (flip₁ (∙-filler _ _))
 ```
 
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+Initiality of W-types also lets us show that $W\; A\; B$ is a fixpoint of the functor
+$X \mapsto \Sigma (a : A).\; B(a) \to X$. This is a consequence of [[Lambek's lemma]],
+but this is easy enough to prove by hand.
+
+```agda
+  W-fixpoint : W A B ≃ (Σ[ a ∈ A ] (B a → W A B))
+  W-fixpoint = Iso→Equiv (to , iso from invr invl)
+    where
+      to : W A B → Σ[ a ∈ A ] (B a → W A B)
+      to w = label w , subtree w
+
+      from : (Σ[ a ∈ A ] (B a → W A B)) → W A B
+      from (l , f) = sup l f
+
+      invr : is-right-inverse from to
+      invr (l , f) = refl
+
+      invl : is-left-inverse from to
+      invl (sup l f) = refl
+```
+
 ## Initial algebras are inductive types
 
 We will now show the other direction of the correspondence: given an
