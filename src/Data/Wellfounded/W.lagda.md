@@ -42,8 +42,15 @@ by the "is a subtree of" relation!
 
 ```agda
 module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+
+  label : W A B → A
+  label (sup l f) = l
+
+  subtree : (w : W A B) → B (label w) → W A B
+  subtree (sup l f) b = f b
+
   _<_ : W A B → W A B → Type _
-  x < sup i f = ∃[ j ∈ B i ] (f j ≡ x)
+  w < v = ∃[ j ∈ B (label v) ] (subtree v j ≡ w)
 ```
 
 This order is actually well-founded: if we want to prove a property of
