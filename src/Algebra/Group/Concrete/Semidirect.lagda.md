@@ -134,7 +134,7 @@ The following constructions work in this general setting.
     Σ-align
       : ∀ {a a' : A}
       → ((a , f a) ≡ (a' , f a')) ≃ ((a ≡ a') × (f a' ≡ f a'))
-    Σ-align = Iso→Equiv Σ-pathp-iso e⁻¹ ∙e Σ-ap-snd align
+    Σ-align = Σ-pathp≃ e⁻¹ ∙e Σ-ap-snd align
 ```
 
 It remains to show that this equivalence is a [[group homomorphism]]

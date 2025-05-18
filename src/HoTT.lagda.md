@@ -171,11 +171,11 @@ _ = _∙e_
 
 <!--
 ```agda
-_ = Σ-pathp-iso
+_ = Σ-pathp≃
 ```
 -->
 
-* Theorem 2.7.2: `Σ-pathp-iso`{.Agda}
+* Theorem 2.7.2: `Σ-pathp≃`{.Agda}
 * Theorem 2.7.3: Agda has definitional η equality for records.
 
 ### 2.9: Π-types and function extensionality
