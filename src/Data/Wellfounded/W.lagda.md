@@ -474,9 +474,16 @@ If the two labels are distinct, then `w` and `v` must be distinct.
           no (λ w=v → x≠y (Id≃path.from (ap label w=v)))
 ```
 
-Conversely, suppose the two labels `x` and `y` are equal. Our next move
+On the other hand, suppose the two labels `x` and `y` are equal. Our next move
 is to exhaustively check that all the subtrees are equal, which is possible
-as all branching factors are finite.
+as all branching factors are finite[^1].
+
+[^1]: This call to `holds? (∀ bx → f bx ≡ g bx)` involves a few
+layers of instance resolution. Agda starts by using the `Listing→Π-dec`
+instance, which transforms the goal to `Dec (f bx ≡ g bx)`. We can
+then recursively use the instance we are currently writing to determine
+if `f bx ≡ g bx`: this passes the termination checker, as `f bx` and `g bx`
+are structurally recursive calls.
 
 However, there is a minor snag here: we want to compare equality of
 `f : B x → W A B` and `g : B y → W A B`, yet their types differ: `f`
@@ -539,7 +546,7 @@ module WPath {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
 Typically, we prove results about path spaces of inductive types via
 **encode-decode** arguments. The general idea is that if a type `T` is
 an inductive type, then we can construct a type family `Code : T → T → Type`
-via recursion on `T` which describe the equality type between each
+via recursion on `T` which describes the equality type between each
 pair of constructors. We then construct a pair of maps
 
 - `encode : ∀ (x y : T) → x ≡ y → Code x y`
@@ -574,7 +581,7 @@ consists of the following data:
 
 We can then turn this observation on its head, and *define* our type of
 codes recursively as trees of paths between constructors whose branching
-factor is given by the type `PathP`s over the constructor paths.
+factor is given by `PathP`s over the constructor paths.
 
 ```agda
   Code : W A B → W A B → Type (ℓ ⊔ ℓ')
