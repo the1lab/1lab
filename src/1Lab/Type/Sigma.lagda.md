@@ -28,41 +28,25 @@ organised in any way.
 ## Groupoid structure
 
 The first thing we prove is that _paths in sigmas are sigmas of paths_.
-The type signatures make it clearer:
+The type signatures make it clearer, and this is easy to prove directly,
+because paths in cubical type theory _automatically_ inherit the
+structure of their domain types:
 
 ```agda
-Σ-pathp-iso
+Σ-pathp≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
-  → Iso
-      (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
-        (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
-      (PathP (λ i → Σ (A i) (B i)) x y)
+  → (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
+      (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
+  ≃ (PathP (λ i → Σ (A i) (B i)) x y)
 
-Σ-path-iso
-  : {x y : Σ A B}
-  → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd)) (x ≡ y)
-```
+Σ-pathp≃ .fst = λ (p , q) i → p i , q i
+Σ-pathp≃ .snd = is-iso→is-equiv λ where
+  .is-iso.from p → (λ i → p i .fst) , λ i → p i .snd
+  .is-iso.linv p → refl
+  .is-iso.rinv p → refl
 
-The first of these, using a dependent path, is easy to prove directly,
-because paths in cubical type theory _automatically_ inherit the
-structure of their domain types. The second is a consequence of the
-first, using the fact  that `PathPs and paths over a transport are the
-same`{.Agda ident=PathP≡Path}.
-
-```agda
-Σ-pathp-iso .fst (p , q) i = p i , q i
-Σ-pathp-iso .snd = record
-  { from = λ p → (λ i → p i .fst) , (λ i → p i .snd)
-  ; rinv = λ p → refl
-  ; linv = λ p → refl
-  }
-
-Σ-path-iso {B = B} {x} {y} =
-  transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
-                         (PathP≡Path (λ j → B (p j)) (x .snd) (y .snd) i))
-                       (x ≡ y))
-            Σ-pathp-iso
+module Σ-pathp {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'} {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)} = Equiv (Σ-pathp≃ {A = A} {B} {x} {y})
 ```
 
 ## Closure under equivalences
@@ -96,8 +80,7 @@ they are included for completeness. </summary>
     .is-iso.linv (i , x) → ap₂ _,_ refl (pwise.η _)
     .is-iso.rinv (i , x) → ap₂ _,_ refl (pwise.ε _)
 
-Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro
- where
+Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro where
   intro : Σ _ (B ∘ e .fst) → Σ _ B
   intro (a , b) = e .fst a , b
 
@@ -120,8 +103,8 @@ they are included for completeness. </summary>
 
     isCtr : ∀ y → ctr ≡ y
     isCtr ((r , s) , p) = λ i → (a≡r i , b!≡s i) , Σ-pathp (α≡ρ i) (coh i) where
-      open Σ (Σ-pathp-iso .snd .is-iso.from p) renaming (fst to ρ; snd to σ)
-      open Σ (Σ-pathp-iso .snd .is-iso.from (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
+      open Σ (Σ-pathp.from p) renaming (fst to ρ; snd to σ)
+      open Σ (Σ-pathp.from (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
 
       b!≡s : PB (ap (e .fst) a≡r) ctrB s
       b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (∂ i) λ where
