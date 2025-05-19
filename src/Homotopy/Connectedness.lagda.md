@@ -77,7 +77,7 @@ is-n-connected-map f n = ∀ x → is-n-connected (fibre f x) n
 ```
 :::
 
-## Pointed connected types {defined="pointed-connected-type"}
+## Pointed connected types {defines="pointed-connected-type"}
 
 In the case of [[pointed types]], there is an equivalent definition of
 being connected that is sometimes easier to work with: a pointed type is
