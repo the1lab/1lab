@@ -253,9 +253,18 @@ is-split-surjective : (A → B) → Type _
 is-split-surjective f = ∥ surjective-splitting f ∥
 ```
 
-Split surjectivity is much a much stronger property than surjectivity in constructive
-settings: the statement that every surjective function splits is
-[[equivalent to the axiom of choice|axiom-of-choice]]!
+Every split surjective map is surjective.
+
+```agda
+is-split-surjective→is-surjective : is-split-surjective f → is-surjective f
+is-split-surjective→is-surjective f-split-surj b = do
+  f-splitting ← f-split-surj
+  pure (f-splitting b)
+```
+
+Note that we do not have a converse to this constructively: the statement that
+every surjective function between [[sets]] splits is [[equivalent to the axiom of choice|axiom-of-choice]]!
+
 
 ## Split surjective functions and sections
 
@@ -368,6 +377,22 @@ is-split-surjective-cancelr fg-split =
   map surjective-splitting-cancelr fg-split
 ```
 </details>
+
+A function is an equivalence if and only if it is a split-surjective
+[[embedding]].
+
+```agda
+embedding-split-surjective≃is-equiv
+  : {f : A → B}
+  → (is-embedding f × is-split-surjective f) ≃ is-equiv f
+embedding-split-surjective≃is-equiv {f = f} =
+  prop-ext!
+    (λ (f-emb , f-split-surj) →
+      embedding-surjective→is-equiv
+        f-emb
+        (is-split-surjective→is-surjective f-split-surj))
+    (λ f-equiv → is-equiv→is-embedding f-equiv , is-equiv→is-split-surjective f-equiv)
+```
 
 # Surjectivity and connectedness
 
