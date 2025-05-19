@@ -4,7 +4,6 @@ description: |
 ---
 <!--
 ```agda
-open import 1Lab.Classical
 open import 1Lab.Prelude
 
 open import Data.Dec
@@ -28,7 +27,7 @@ private variable
 
 :::{.definition #set-projective}
 A type $A$ is **set-projective** if we can commute [[propositional truncation]]
-past $A$-indexed families.
+past $A$-indexed families of [[sets]].
 :::
 
 ```agda
@@ -46,22 +45,31 @@ $A$-indexed version of the [[axiom of choice]].
 If $A$ is a set, then $A$ is set-projective if and only if every
 surjection $E \to A$ from a set $E$ splits.
 
+<!-- [TODO: Reed M, 19/05/2025]
+  This could be made into a more elegant argument via a chain of equivalences:
+  The crux is really that Fibre-equiv step!
+-->
+
 ```agda
+set-surjections-split : (A : Type ℓ) → (κ : Level) → Type _
+set-surjections-split {ℓ = ℓ} A κ =
+  ∀ (E : Type κ)
+  → is-set E
+  → (f : E → A)
+  → is-surjective f
+  → is-split-surjective f
+
 surjections-split→set-projective
-  : ∀ {ℓ ℓ'} {A : Type ℓ}
+  : ∀ {ℓ κ} {A : Type ℓ}
   → is-set A
-  → (∀ (E : Type (ℓ ⊔ ℓ')) → is-set E
-     → (f : E → A) → is-surjective f
-     → ∥ (∀ a → fibre f a) ∥)
-  → is-set-projective A (ℓ ⊔ ℓ')
+  → set-surjections-split A (ℓ ⊔ κ)
+  → is-set-projective A (ℓ ⊔ κ)
 
 sets-projective→surjections-split
-  : ∀ {ℓ ℓ'} {A : Type ℓ}
+  : ∀ {ℓ κ} {A : Type ℓ}
   → is-set A
-  → is-set-projective A (ℓ ⊔ ℓ')
-  → ∀ {E : Type ℓ'} → is-set E
-  → (f : E → A) → is-surjective f
-  → ∥ (∀ a → fibre f a) ∥
+  → is-set-projective A (ℓ ⊔ κ)
+  → set-surjections-split A (ℓ ⊔ κ)
 ```
 
 <details>
@@ -76,7 +84,7 @@ surjections-split→set-projective {A = A} A-set surj-split P P-set ∥P∥ =
     (surj-split (Σ[ x ∈ A ] (P x)) (Σ-is-hlevel 2 A-set P-set) fst λ x →
       ∥-∥-map (Equiv.from (Fibre-equiv P x)) (∥P∥ x))
 
-sets-projective→surjections-split A-set A-pro E-set f =
+sets-projective→surjections-split A-set A-pro E E-set f =
   A-pro (fibre f) (λ x → fibre-is-hlevel 2 E-set A-set f x)
 ```
 </details>
