@@ -104,6 +104,19 @@ is-equiv→is-surjective : {f : A → B} → is-equiv f → is-surjective f
 is-equiv→is-surjective eqv x = inc (eqv .is-eqv x .centre)
 ```
 
+Surjections also are closed under a weaker form of [[two-out-of-three]]:
+if $f circ g$ is surjective, then $f$ must also be surjective.
+
+```agda
+is-surjective-cancelr
+  : {f : B → C} {g : A → B}
+  → is-surjective (f ∘ g)
+  → is-surjective f
+is-surjective-cancelr {g = g} fgs c = do
+  (fg*x , p) ← fgs c
+  pure (g fg*x , p)
+```
+
 <!--
 ```agda
 Equiv→Cover : A ≃ B → A ↠ B
@@ -149,6 +162,39 @@ injective-surjective→is-equiv! =
   injective-surjective→is-equiv (hlevel 2)
 ```
 -->
+
+## Surjectivity and images
+
+A map $f : A \to B$ if and only if the inclusion of the image of $f$ into $B$
+is an [[equivalence]].
+
+```agda
+surjective-iff-image-equiv
+  : ∀ {f : A → B}
+  → is-surjective f ≃ is-equiv {A = image f} fst
+```
+
+The forward direction is almost immediate: surjectivity of $f$ means
+that $B$ includes into its image, so it must be an equivalence. For the
+reverse direction, suppose that the inclusion of the image of $f$ is an
+equivalence. This lets us find some point in the image of $f$ for every $b : B$.
+Moreover, this point in the image must lie in a fibre of $b$, as the inclusion is
+an equivalence.
+
+```agda
+surjective-iff-image-equiv {f = f} = prop-ext! to from where
+
+  to : is-surjective f → is-equiv fst
+  to f-surj =
+    is-iso→is-equiv $
+      iso (λ b → b , f-surj b)
+        (λ _ → refl)
+        (λ _ → Σ-prop-path! refl)
+
+  from : is-equiv fst → is-surjective f
+  from im-eqv b = subst (λ b → ∥ fibre f b ∥) (equiv→counit im-eqv b) (snd (equiv→inverse im-eqv b))
+```
+
 # Split surjective functions
 
 :::{.definition #surjective-splitting}
@@ -326,3 +372,28 @@ is-split-surjective-cancelr fg-split =
   map surjective-splitting-cancelr fg-split
 ```
 </details>
+
+# Surjectivity and connectedness
+
+If $f : A \to B$ is a function out of a [[contractible]] type $A$,
+then $f$ is surjective if and only if $B$ is a [[pointed connected type]], where
+the basepoint of $B$ is given by $f$ applied to the centre of contraction of $A$.
+
+```agda
+contr-dom-surjective-iff-connected-cod
+  : ∀ {f : A → B}
+  → (A-contr : is-contr A)
+  → is-surjective f ≃ ((x : B) → ∥ x ≡ f (A-contr .centre) ∥)
+```
+
+To see this, note that the type of fibres of $f$ over $x$ is equivalent
+to the type of paths $x = f(a_{bullet})$, where $a_{\bullet}$ is the centre
+of contraction of $A$.
+
+```agda
+contr-dom-surjective-iff-connected-cod {A = A} {B = B} {f = f} A-contr =
+  Π-cod≃ (λ b → ∥-∥-ap (Σ-contr-eqv A-contr ∙e sym-equiv))
+```
+
+This correspondence is not a coincidence: surjective maps are a special case
+of a more general family of maps called [[connected maps]].
