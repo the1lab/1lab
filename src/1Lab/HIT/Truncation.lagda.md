@@ -12,6 +12,7 @@ open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
 open import 1Lab.Inductive
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -154,6 +155,13 @@ truncation extends to a functor:
 ∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
 ```
 
+This means that propositional trunctation preserves equivalences.
+
+```agda
+∥-∥-ap : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → ∥ A ∥ ≃ ∥ B ∥
+∥-∥-ap f = prop-ext! (∥-∥-map (Equiv.to f)) (∥-∥-map (Equiv.from f))
+```
+
 <!--
 ```agda
 ∥-∥-map₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
@@ -161,6 +169,7 @@ truncation extends to a functor:
 ∥-∥-map₂ f (inc x) (inc y)  = inc (f x y)
 ∥-∥-map₂ f (squash x y i) z = squash (∥-∥-map₂ f x z) (∥-∥-map₂ f y z) i
 ∥-∥-map₂ f x (squash y z i) = squash (∥-∥-map₂ f x y) (∥-∥-map₂ f x z) i
+
 ```
 -->
 
@@ -206,6 +215,24 @@ is-prop≃equiv∥-∥ {P = P} =
     eqv-prop x y = Σ-path (λ i p → squash (x .fst p) (y .fst p) i)
                           (is-equiv-is-prop _ _ _)
 ```
+
+This is closely related to the principle of **unique choice**, which
+states that if $A$ is [[contractible]], then the type of functions
+`A → ∥ B x ∥` is equivalent to `∥ A → B x ∥`[^1].
+
+[^1] In other words, unique choice states that contractible types are [[projective|set-projective]].
+
+```agda
+unique-choice≃
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → is-contr A
+  → (∀ (x : A) → ∥ B x ∥) ≃ ∥ (∀ (x : A) → B x) ∥
+unique-choice≃ {A = A} {B = B} A-contr =
+  ((x : A) → ∥ B x ∥)     ≃⟨ Π-contr-eqv A-contr ⟩
+  ∥ B (A-contr .centre) ∥ ≃˘⟨ ∥-∥-ap (Π-contr-eqv A-contr) ⟩
+  ∥ ((x : A) → B x) ∥     ≃∎
+```
+
 
 :::{.definition #merely alias="mere"}
 Throughout the 1Lab, we use the words "mere" and "merely" to modify a
