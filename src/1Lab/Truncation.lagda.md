@@ -220,7 +220,7 @@ This is closely related to the principle of **unique choice**, which
 states that if $A$ is [[contractible]], then the type of functions
 `A → ∥ B x ∥` is equivalent to `∥ A → B x ∥`[^1].
 
-[^1] In other words, unique choice states that contractible types are [[projective|set-projective]].
+[^1]: In other words, unique choice states that contractible types are [[projective|set-projective]].
 
 ```agda
 unique-choice≃
