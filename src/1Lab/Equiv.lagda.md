@@ -1093,7 +1093,9 @@ syntax ≃⟨⟩-syntax x q p = x ≃⟨ p ⟩ q
 ## Some useful equivalences
 
 We can extend `subst`{.Agda} to an equivalence between `Σ[ y ∈ A ] (y ≡ x × P y)`
-and `P x` for every `x : A` and `P : A → Type`.
+and `P x` for every `x : A` and `P : A → Type`. In informal mathematical practice,
+applying this equivalence is sometimes called "contracting $y$ away", alluding to
+the [[contractibility of singletons]].
 
 ```agda
 subst≃
