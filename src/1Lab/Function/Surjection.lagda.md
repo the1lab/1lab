@@ -170,20 +170,21 @@ surjective-iff-image-equiv
   → is-surjective f ≃ is-equiv {A = image f} fst
 ```
 
-First, note that asking for the [[mere]] existence of a fibre of $f$
-is equivalent to asking that the the type of mere fibres be [[contractible]],
-as the type of mere fibres is a [[proposition]]. Moreover, the type
-of mere fibres of $f$ is equivalent to the fibres of the inclusion of
-the image of $f$. This means that we have a choice of mere fibres
-of $f^*(b)$ for every $b$ exactly when the fibres of the image inclusion
-are contractible, i.e. the image inclusion is an equivalence.
+First, note that the fibre of the inclusion of the image of $f$ at $b$
+is the [[propositional truncation]] of the fibre of $f$ at $b$, by
+construction. Asking for this inclusion to be an equivalence is the same as
+asking for those fibres to be [[contractible]], which thus amounts to
+asking for the fibres of $f$ to be [[merely]] inhabited, which is the
+definition of $f$ being surjective.
 
 ```agda
 surjective-iff-image-equiv {A = A} {B = B} {f = f} =
-  (∀ b → ∃[ a ∈ A ] (f a ≡ b))            ≃˘⟨ Π-cod≃ (λ b → is-prop→is-contr-iff-inhabited (hlevel 1)) ⟩
-  (∀ b → is-contr (∃[ a ∈ A ] (f a ≡ b))) ≃˘⟨ Π-cod≃ (λ b → is-hlevel-ap 0 (Fibre-equiv _ _)) ⟩
-  (∀ b → is-contr (fibre fst b))          ≃˘⟨ is-equiv≃fibre-is-contr ⟩
-  is-equiv fst                            ≃∎
+  begin-≃⁻¹
+    is-equiv fst                            ≃⟨ is-equiv≃fibre-is-contr ⟩
+    (∀ b → is-contr (fibre fst b))          ≃⟨ Π-cod≃ (λ b → is-hlevel-ap 0 (Fibre-equiv _ _)) ⟩
+    (∀ b → is-contr (∃[ a ∈ A ] (f a ≡ b))) ≃⟨ Π-cod≃ (λ b → is-prop→is-contr-iff-inhabited (hlevel 1)) ⟩
+    (∀ b → ∃[ a ∈ A ] (f a ≡ b))            ≃⟨⟩
+    is-surjective f                         ≃∎
 ```
 
 # Split surjective functions
@@ -210,10 +211,10 @@ cod-contr→surjective-splitting≃dom
   → surjective-splitting f ≃ A
 ```
 
-First, recall that functions out of contractible types are equivalences, so
-a choice of fibres $(b : B) \to f^*(b)$ is equivalent to a single fibre
-at the centre of contraction of $B$. Moreover, the type of paths in $B$ is
-also contractible, so the type of fibres of $f : A \to B$ is equivalent to $A$.
+First, recall that dependent functions $(a : A) \to B(a)$ out of a contractible type are
+equivalent to an element of $B$ at the centre of contraction, so $(b : B) \to f^*(b)$ is
+equivalent to an element of the fibre of $f$ at the centre of contraction of $B$. Moreover,
+the type of paths in $B$ is also contractible, so that fibre is equivalent to $A$.
 
 ```agda
 cod-contr→surjective-splitting≃dom {A = A} f B-contr =
@@ -336,7 +337,7 @@ is-equiv→is-split-surjective
 ```
 
 This follows immediately from the definition of equivalences: if the
-type of fibres is contractible, then we can pluck the fibre we need
+type of fibres is contractible, then we can pluck the element we need
 out of the centre of contraction!
 
 ```agda
@@ -401,7 +402,7 @@ contr-dom-surjective-iff-connected-cod
   → is-surjective f ≃ ((x : B) → ∥ x ≡ f (A-contr .centre) ∥)
 ```
 
-To see this, note that the type of fibres of $f$ over $x$ is equivalent
+To see this, note that the fibre of $f$ over $x$ is equivalent
 to the type of paths $x = f(a_{\bullet})$, where $a_{\bullet}$ is the centre
 of contraction of $A$.
 
