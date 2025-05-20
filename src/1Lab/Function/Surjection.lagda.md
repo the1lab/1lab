@@ -180,14 +180,16 @@ an equivalence.
 surjective-iff-image-equiv {f = f} = prop-ext! to from where
 
   to : is-surjective f → is-equiv fst
-  to f-surj =
-    is-iso→is-equiv $
-      iso (λ b → b , f-surj b)
-        (λ _ → refl)
-        (λ _ → Σ-prop-path! refl)
+  to f-surj = is-iso→is-equiv $ iso
+     (λ b → b , f-surj b)
+     (λ _ → refl)
+     (λ _ → Σ-prop-path! refl)
 
   from : is-equiv fst → is-surjective f
-  from im-eqv b = subst (λ b → ∥ fibre f b ∥) (equiv→counit im-eqv b) (snd (equiv→inverse im-eqv b))
+  from im-eqv b =
+    subst (λ b → ∥ fibre f b ∥)
+      (equiv→counit im-eqv b)
+      (equiv→inverse im-eqv b .snd)
 ```
 
 # Split surjective functions
@@ -235,7 +237,7 @@ cod-contr→is-surjective-iff-dom-inhab
   → is-contr B
   → is-surjective f ≃ ∥ A ∥
 cod-contr→is-surjective-iff-dom-inhab {A = A} f B-contr =
-  (∀ b → ∥ fibre f b ∥) ≃⟨ unique-choice≃ B-contr ⟩
+  (∀ b → ∥ fibre f b ∥) ≃⟨ unique-choice B-contr ⟩
   ∥ (∀ b → fibre f b) ∥ ≃⟨ ∥-∥-ap (cod-contr→surjective-splitting≃dom f B-contr) ⟩
   ∥ A ∥                 ≃∎
 ```
