@@ -175,7 +175,7 @@ is equivalent to asking that the the type of mere fibres be [[contractible]],
 as the type of mere fibres is a [[proposition]]. Moreover, the type
 of mere fibres of $f$ is equivalent to the fibres of the inclusion of
 the image of $f$. This means that we have a choice of mere fibres
-of $f^{-1}(b)$ for every $b$ exactly when the fibres of the image inclusion
+of $f^*(b)$ for every $b$ exactly when the fibres of the image inclusion
 are contractible, i.e. the image inclusion is an equivalence.
 
 ```agda
@@ -211,7 +211,7 @@ cod-contr→surjective-splitting≃dom
 ```
 
 First, recall that functions out of contractible types are equivalences, so
-a choice of fibres $(b : B) \to f^{-1}(b)$ is equivalent to a single fibre
+a choice of fibres $(b : B) \to f^*(b)$ is equivalent to a single fibre
 at the centre of contraction of $B$. Moreover, the type of paths in $B$ is
 also contractible, so the type of fibres of $f : A \to B$ is equivalent to $A$.
 
