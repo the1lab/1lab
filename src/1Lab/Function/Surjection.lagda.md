@@ -101,7 +101,7 @@ is-equiv→is-surjective eqv x = inc (eqv .is-eqv x .centre)
 ```
 
 Surjections also are closed under a weaker form of [[two-out-of-three]]:
-if $f circ g$ is surjective, then $f$ must also be surjective.
+if $f \circ g$ is surjective, then $f$ must also be surjective.
 
 ```agda
 is-surjective-cancelr
@@ -161,8 +161,8 @@ injective-surjective→is-equiv! =
 
 ## Surjectivity and images
 
-A map $f : A \to B$ if and only if the inclusion of the image of $f$ into $B$
-is an [[equivalence]].
+A map $f : A \to B$ is surjective if and only if the inclusion of the
+image of $f$ into $B$ is an [[equivalence]].
 
 ```agda
 surjective-iff-image-equiv
@@ -176,7 +176,7 @@ as the type of mere fibres is a [[proposition]]. Moreover, the type
 of mere fibres of $f$ is equivalent to the fibres of the inclusion of
 the image of $f$. This means that we have a choice of mere fibres
 of $f^{-1}(b)$ for every $b$ exactly when the fibres of the image inclusion
-are contractible, EG: the image inclusion is an equivalence.
+are contractible, i.e. the image inclusion is an equivalence.
 
 ```agda
 surjective-iff-image-equiv {A = A} {B = B} {f = f} =
@@ -264,7 +264,7 @@ every surjective function between [[sets]] splits is [[equivalent to the axiom o
 ## Split surjective functions and sections
 
 The type of surjective splittings of a function $f : A \to B$ is equivalent
-to the type of sections of $f$, EG: functions $s : B \to A$ with $f \circ s = \id$.
+to the type of sections of $f$, i.e. functions $s : B \to A$ with $f \circ s = \id$.
 
 ```agda
 section≃surjective-splitting
@@ -319,7 +319,6 @@ Like their non-split counterparts, split surjective functions are closed under c
   in g*f*c , ap f q ∙ p
 
 ∘-is-split-surjective fs gs = ⦇ ∘-surjective-splitting fs gs ⦈
-
 ```
 </details>
 
@@ -403,7 +402,7 @@ contr-dom-surjective-iff-connected-cod
 ```
 
 To see this, note that the type of fibres of $f$ over $x$ is equivalent
-to the type of paths $x = f(a_{bullet})$, where $a_{\bullet}$ is the centre
+to the type of paths $x = f(a_{\bullet})$, where $a_{\bullet}$ is the centre
 of contraction of $A$.
 
 ```agda
@@ -411,5 +410,7 @@ contr-dom-surjective-iff-connected-cod {A = A} {B = B} {f = f} A-contr =
   Π-cod≃ (λ b → ∥-∥-ap (Σ-contr-eqv A-contr ∙e sym-equiv))
 ```
 
-This correspondence is not a coincidence: surjective maps are a special case
-of a more general family of maps called [[connected maps]].
+This correspondence is not a coincidence: surjective maps fit into
+a larger family of maps known as [[connected maps]]. In particular,
+a map is surjective exactly when it is (-1)-connected, and this lemma is
+a special case of `is-n-connected-point`{.Agda}.
