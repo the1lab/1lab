@@ -48,7 +48,7 @@ typed version of the universal property of [[products]].
 
 ## Groupoid structure
 
-The first thing we prove is that _paths in sigmas are sigmas of paths_
+The first thing we prove is that _paths in sigmas are sigmas of paths_.
 The type signatures make it clearer:
 
 ```agda

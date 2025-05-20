@@ -223,15 +223,22 @@ states that if $A$ is [[contractible]], then the type of functions
 [^1]: In other words, unique choice states that contractible types are [[projective|set-projective]].
 
 ```agda
-unique-choice≃
+unique-choice
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → is-contr A
   → (∀ (x : A) → ∥ B x ∥) ≃ ∥ (∀ (x : A) → B x) ∥
-unique-choice≃ {A = A} {B = B} A-contr =
+unique-choice {A = A} {B = B} A-contr =
   ((x : A) → ∥ B x ∥)     ≃⟨ Π-contr-eqv A-contr ⟩
   ∥ B (A-contr .centre) ∥ ≃˘⟨ ∥-∥-ap (Π-contr-eqv A-contr) ⟩
   ∥ ((x : A) → B x) ∥     ≃∎
 ```
+
+<!--
+```agda
+module unique-choice {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} (A-contr : is-contr A) =
+  Equiv (unique-choice {B = B} A-contr)
+```
+-->
 
 
 :::{.definition #merely alias="mere"}
