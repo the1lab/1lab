@@ -1126,6 +1126,26 @@ subst≃ {A = A} {P = P} x = Iso→Equiv (to , iso from invr invl)
 
 <!--
 ```agda
+is-equiv≃fibre-is-contr
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → {f : A → B}
+  → is-equiv f ≃ (∀ x → is-contr (fibre f x))
+is-equiv≃fibre-is-contr {f = f} =
+  prop-ext
+    (is-equiv-is-prop f)
+    (λ f g i x → is-contr-is-prop (f x) (g x) i)
+    is-eqv
+    (λ fib-contr → record { is-eqv = fib-contr })
+
+-- This ideally would go in 1Lab.HLevel, but we don't have equivalences
+-- defined that early in the bootrapping process.
+is-prop→is-contr-iff-inhabited
+  : ∀ {ℓ} {A : Type ℓ}
+  → is-prop A
+  → is-contr A ≃ A
+is-prop→is-contr-iff-inhabited A-prop =
+  prop-ext is-contr-is-prop A-prop centre (is-prop∙→is-contr A-prop)
+
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A}
   → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b → a ≡ b
