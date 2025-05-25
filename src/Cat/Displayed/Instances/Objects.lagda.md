@@ -22,8 +22,8 @@ module Cat.Displayed.Instances.Objects
 open Cat.Reasoning B
 open Displayed E
 open Cartesian-morphism
-open Vertical-fibred-functor
 open Vertical-functor
+open is-fibred-functor
 ```
 -->
 
@@ -55,12 +55,14 @@ back to $\cE$.
 [fibred]: Cat.Displayed.Functor.html
 
 ```agda
-Objects-forget : Vertical-fibred-functor Objects E
-Objects-forget .vert .F₀' x = x
-Objects-forget .vert .F₁' f' = f' .hom'
-Objects-forget .vert .F-id' = refl
-Objects-forget .vert .F-∘' = refl
-Objects-forget .F-cartesian f' _ = f' .cartesian
+Objects-forget : Vertical-functor Objects E
+Objects-forget .F₀' x = x
+Objects-forget .F₁' f' = f' .hom'
+Objects-forget .F-id' = refl
+Objects-forget .F-∘' = refl
+
+Objects-forget-is-fibred : is-fibred-functor Objects-forget
+Objects-forget-is-fibred .F-cartesian {f' = f'} _ = f' .cartesian
 ```
 
 
@@ -130,31 +132,36 @@ module _
   (R-right : Right-fibration R)
   where
   private
-    open Vertical-fibred-functor
+    open Vertical-functor
     module R-right = Right-fibration R-right
 ```
 -->
 
 ```agda
   Objects-universal
-    : (F : Vertical-fibred-functor R E)
-    → Vertical-fibred-functor R Objects
-  Objects-universal F .vert .F₀' x = F .F₀' x
-  Objects-universal F .vert .F₁' f' .hom' = F .F₁' f'
-  Objects-universal F .vert .F₁' f' .cartesian =
-    F .F-cartesian f' (R-right.cartesian f')
-  Objects-universal F .vert .F-id' =
+    : (F : Vertical-functor R E)
+    → is-fibred-functor F
+    → Vertical-functor R Objects
+  Objects-universal F F-fib .F₀' x = F .F₀' x
+  Objects-universal F F-fib .F₁' f' .hom' = F .F₁' f'
+  Objects-universal F F-fib .F₁' f' .cartesian = F-fib .F-cartesian (R-right.cartesian f')
+  Objects-universal F F-fib .F-id' =
     Cartesian-morphism-pathp E (F .F-id')
-  Objects-universal F .vert .F-∘' =
+  Objects-universal F F-fib .F-∘' =
     Cartesian-morphism-pathp E (F .F-∘')
-  Objects-universal F .F-cartesian f' cart =
-    Objects-cartesian _
+
+  Objects-universal-fibred
+    : (F : Vertical-functor R E)
+    → (F-fib : is-fibred-functor F)
+    → is-fibred-functor (Objects-universal F F-fib)
+  Objects-universal-fibred F F-fib .F-cartesian cart = Objects-cartesian _
 
   Objects-factors
-    : (F : Vertical-fibred-functor R E)
-    → F ≡ Objects-forget ∘Vf Objects-universal F
-  Objects-factors F =
-    Vertical-fibred-functor-path (λ _ → refl) (λ _ → refl)
+    : (F : Vertical-functor R E)
+    → (F-fib : is-fibred-functor F)
+    → F ≡ Objects-forget ∘V Objects-universal F F-fib
+  Objects-factors F F-fib =
+    Vertical-functor-path (λ _ → refl) (λ _ → refl)
 ```
 
 <!-- [TODO: Reed M, 06/05/2023] This is actually part of a biadjunction
