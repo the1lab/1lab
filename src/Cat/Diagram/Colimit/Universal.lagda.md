@@ -304,7 +304,7 @@ colimits, we get that $F$ is colimiting.
           (pulll (eq _ .p₁∘universal) ∙ pb _ _ .Pullback.p₂∘universal)
           (pulll (eq _ .p₂∘universal) ∙ pb _ _ .Pullback.p₁∘universal))
 
-      f*G-colim : preserves-lan (Base-change pb f) G-colim
+      f*G-colim : preserves-is-lan (Base-change pb f) G-colim
       f*G-colim = u f _ G-colim
 
       F-colim : is-colimit▹ (cocone▹→cocone/ F)

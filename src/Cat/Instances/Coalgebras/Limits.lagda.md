@@ -56,7 +56,7 @@ preserves $\cI$-shaped limits, then the forgetful functor $U : \cC_W \to
 ```agda
 module
   _ {oi ℓi} {I : Precategory oi ℓi}
-    (pres : ∀ (G : Functor I C) {X η} (l : is-ran !F G X η) → preserves-ran F l)
+    (pres : ∀ (G : Functor I C) → preserves-limit F G)
   where
 ```
 -->

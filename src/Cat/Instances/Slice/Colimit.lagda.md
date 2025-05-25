@@ -117,7 +117,7 @@ we haven't touched the "top" part of the diagram. This shows that $U$
 [[lifts colimits]].
 
 ```agda
-      K-colim-preserved : preserves-lan U K-colim
+      K-colim-preserved : preserves-is-lan U K-colim
       K-colim-preserved = generalize-colimitp UF-colim.has-colimit refl
 
 module _ {oj ℓj} {J : Precategory oj ℓj} where

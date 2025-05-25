@@ -72,11 +72,11 @@ module _
 ```agda
   is-pointwise-lan : ∀ {eta : G => E F∘ F} → is-lan F G E eta → Type _
   is-pointwise-lan lan =
-    ∀ (x : D.Ob) → preserves-lan (Functor.op (Hom-into D x)) lan
+    ∀ (x : D.Ob) → preserves-is-lan (Functor.op (Hom-into D x)) lan
 
   is-pointwise-ran : ∀ {eps : E F∘ F => G} → is-ran F G E eps → Type _
   is-pointwise-ran ran =
-    ∀ (x : D.Ob) → preserves-ran (Hom-from D x) ran
+    ∀ (x : D.Ob) → preserves-is-ran (Hom-from D x) ran
 ```
 
 Absolute Kan extensions are trivially pointwise, since they are
@@ -341,7 +341,7 @@ end up being off by a bunch of natural isomorphisms.
     → (colimits : is-cocomplete ℓ ℓ D)
     → (H : Functor D E)
     → is-cocontinuous ℓ ℓ H
-    → preserves-lan H (Lan.has-lan (cocomplete→lan F G colimits))
+    → preserves-is-lan H (Lan.has-lan (cocomplete→lan F G colimits))
   preserves-colimits→preserves-pointwise-lan {E = E} colimits H cocont =
     natural-isos→is-lan idni idni HF'-cohere fixup $
       comma-colimits→lan.has-lan F (H F∘ G) H-↓colim

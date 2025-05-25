@@ -92,6 +92,12 @@ on a single object.
         j (i = i0) → F .F-id (~ j)
         j (i = i1) → G .F-id (~ j)
         j (j = i0) → C.id)
+
+  !Const-is-equiv : is-equiv !Const
+  !Const-is-equiv = is-iso→is-equiv λ where
+    .is-iso.from F → F .F₀ tt
+    .is-iso.rinv F → !Const-η _ _ refl
+    .is-iso.linv c → refl
 ```
 
 Natural isomorphisms between functors $\top \to \cC$

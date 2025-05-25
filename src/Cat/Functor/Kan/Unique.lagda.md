@@ -320,13 +320,12 @@ As a consequence of uniqueness, if a functor preserves a given Kan
 extension, then it preserves *all* extensions for the same diagram.
 
 ```agda
-preserves-lan→preserves-all
+preserves-is-lan→preserves-lan
   : ∀ (H : Functor D E) {p : Functor C C'} {F : Functor C D}
   → ∀ {G} {eta : F => G F∘ p} (lan : is-lan p F G eta)
-  → preserves-lan H lan
-  → ∀ {G'} {eta' : F => G' F∘ p} (lan' : is-lan p F G' eta')
-  → preserves-lan H lan'
-preserves-lan→preserves-all {E = E} {C' = C'} H lan pres {G'} lan' =
+  → preserves-is-lan H lan
+  → preserves-lan p F H
+preserves-is-lan→preserves-lan {E = E} {C' = C'} H lan pres {G'} lan' =
   natural-isos→is-lan idni idni
     (F∘-iso-r One.unique)
     (ext λ c →
@@ -588,13 +587,12 @@ module _
     (natural-isos→is-ran (p-iso ni⁻¹) (F-iso ni⁻¹) (G-iso ni⁻¹)
       (lswizzle (rswizzle (sym q ∙ assoc _ _ _) (◆.annihilate (G-iso .Isoⁿ.invr ,ₚ p-iso .Isoⁿ.invr))) (F-iso .Isoⁿ.invr)))
 
-preserves-ran→preserves-all
+preserves-is-ran→preserves-ran
   : ∀ (H : Functor D E) {p : Functor C C'} {F : Functor C D}
   → ∀ {G} {eps : G F∘ p => F} (ran : is-ran p F G eps)
-  → preserves-ran H ran
-  → ∀ {G'} {eps' : G' F∘ p => F} (ran' : is-ran p F G' eps')
-  → preserves-ran H ran'
-preserves-ran→preserves-all {E = E} {C' = C'} H {G = G} ran pres ran' =
+  → preserves-is-ran H ran
+  → preserves-ran p F H
+preserves-is-ran→preserves-ran {E = E} {C' = C'} H {G = G} ran pres ran' =
   natural-isos→is-ran idni idni
     (F∘-iso-r One.unique)
     (ext λ c →
@@ -633,5 +631,25 @@ Ran-is-prop {C = C} {C' = C'} {D = D} {p = p} {F = F} d-cat R₁ R₂ = path whe
   path i .has-ran =
     is-prop→pathp (λ i → is-ran-is-prop {p = p} {F} {fp i} {εp i})
       R₁.has-ran R₂.has-ran i
+
+lifts→preserves-lan
+  : ∀ {H : Functor D E} {p : Functor C C'} {F : Functor C D}
+  → {Lan : Lan p (H F∘ F)}
+  → lifts-lan H Lan
+  → preserves-lan p F H
+lifts→preserves-lan {H = H} lifts =
+  preserves-is-lan→preserves-lan H
+    (Lan.has-lan lifted) preserved
+  where open lifts-lan lifts
+
+lifts→preserves-ran
+  : ∀ {H : Functor D E} {p : Functor C C'} {F : Functor C D}
+  → {Ran : Ran p (H F∘ F)}
+  → lifts-ran H Ran
+  → preserves-ran p F H
+lifts→preserves-ran {H = H} lifts =
+  preserves-is-ran→preserves-ran H
+    (Ran.has-ran lifted) preserved
+  where open lifts-ran lifts
 ```
 -->
