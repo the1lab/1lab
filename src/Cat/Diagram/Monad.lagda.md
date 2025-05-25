@@ -78,7 +78,7 @@ associativity laws exactly analogous to those of a monoid.
       μ-assoc : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
 ```
 
-# Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
+# Algebras over a monad {defines="monad-algebra algebra-over-a-monad algebras-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the
@@ -254,7 +254,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {M : Monad-on F} wher
 
 By projecting the underlying object of the algebras, and the underlying
 morphisms of the homomorphisms between them, we can define a functor
-from `Eilenberg-Moore`{.Agda} back to the underlying category:
+from `Eilenberg-Moore`{.Agda} back to the underlying category.
+In prose, we denote this functor as $U : \cC^M \to \cC$.
 
 ```agda
   Forget-EM : Functor (Eilenberg-Moore M) C

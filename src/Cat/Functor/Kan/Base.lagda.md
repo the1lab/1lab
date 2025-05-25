@@ -20,6 +20,10 @@ private
   variable
     o ℓ : Level
     C C' D E : Precategory o ℓ
+
+  cat-lvl : ∀ {o ℓ} (C : Precategory o ℓ) → Level
+  cat-lvl {a} {b} _ = a ⊔ b
+
   kan-lvl : ∀ {o ℓ o' ℓ' o'' ℓ''} {C : Precategory o ℓ} {C' : Precategory o' ℓ'} {D : Precategory o'' ℓ''}
           → Functor C D → Functor C C' → Level
   kan-lvl {a} {b} {c} {d} {e} {f} _ _ = a ⊔ b ⊔ c ⊔ d ⊔ e ⊔ f
@@ -266,7 +270,7 @@ module _ {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p
 ```
 -->
 
-# Preservation and reflection of Kan extensions
+# Preservation and reflection of Kan extensions {defines="preserved-kan-extension"}
 
 Let $(G : C' \to D, \eta : F \to G \circ p)$ be the left Kan extension
 of $F : C \to D$ along $p : C \to C'$, and suppose that $H : D \to E$ is
@@ -297,8 +301,8 @@ module _
 -->
 
 ```agda
-  preserves-lan : (H : Functor D E) → is-lan p F G eta → Type _
-  preserves-lan H _ =
+  preserves-is-lan : (H : Functor D E) → is-lan p F G eta → Type _
+  preserves-is-lan H _ =
     is-lan p (H F∘ F) (H F∘ G) (nat-assoc-to (H ▸ eta))
 ```
 
@@ -313,20 +317,7 @@ functors|adjoints are kan extensions]].
 ```agda
   is-absolute-lan : is-lan p F G eta → Typeω
   is-absolute-lan lan =
-    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-lan H lan
-```
-
-It may also be the case that $(HG, H\eta)$ is already a left kan
-extension of $HF$ along $p$. We say that $H$ reflects this Kan extension
-if $G, \eta$ is a also a left extension of $F$ along $p$.
-
-```agda
-  reflects-lan
-    : (H : Functor D E)
-    → is-lan p (H F∘ F) (H F∘ G) (nat-assoc-to (H ▸ eta))
-    → Type _
-  reflects-lan _ _ =
-    is-lan p F G eta
+    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-is-lan H lan
 ```
 
 <!--
@@ -339,21 +330,138 @@ module _
 We can define dual notions for right Kan extensions as well.
 
 ```agda
-  preserves-ran : (H : Functor D E) → is-ran p F G eps → Type _
-  preserves-ran H _ =
+  preserves-is-ran : (H : Functor D E) → is-ran p F G eps → Type _
+  preserves-is-ran H _ =
     is-ran p (H F∘ F) (H F∘ G) (nat-assoc-from (H ▸ eps))
 
   is-absolute-ran : is-ran p F G eps → Typeω
   is-absolute-ran ran =
-    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-ran H ran
+    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-is-ran H ran
+```
+
+<!--
+```agda
+module _ (p : Functor C C') (F : Functor C D) where
+
+  preserves-lan
+    : (H : Functor D E)
+    → Type _
+  preserves-lan H =
+    ∀ {G : Functor C' D} {eta : F => G F∘ p}
+    → (lan : is-lan p F G eta)
+    → preserves-is-lan H lan
+
+  preserves-ran
+    : (H : Functor D E)
+    → Type _
+  preserves-ran H =
+    ∀ {G : Functor C' D} {eps : G F∘ p => F}
+    → (ran : is-ran p F G eps)
+    → preserves-is-ran H ran
+```
+-->
+
+It may also be the case that $(HG, H\eta)$ is already a Kan
+extension of $HF$ along $p$. We say that $H$ **reflects** this Kan extension
+if $G, \eta$ is a also an extension of $F$ along $p$.
+
+```agda
+  reflects-lan
+    : (H : Functor D E)
+    → Type _
+  reflects-lan H =
+    ∀ {G : Functor C' D} {eta : F => G F∘ p}
+    → is-lan p (H F∘ F) (H F∘ G) (nat-assoc-to (H ▸ eta))
+    → is-lan p F G eta
 
   reflects-ran
     : (H : Functor D E)
-    → is-ran p (H F∘ F) (H F∘ G) (nat-assoc-from (H ▸ eps))
     → Type _
-  reflects-ran _ _ =
-    is-ran p F G eps
+  reflects-ran H =
+    ∀ {G : Functor C' D} {eps : G F∘ p => F}
+    → is-ran p (H F∘ F) (H F∘ G) (nat-assoc-from (H ▸ eps))
+    → is-ran p F G eps
 ```
+
+## Lifting and creation of Kan extensions {defines="lifts-kan-extensions creates-kan-extensions lifts-left-kan-extensions creates-left-kan-extensions lifts-right-kan-extensions creates-right-kan-extensions"}
+
+While the notions of [[lifted|lifted limit]] and [[created limits]] are
+commonplace in the literature on category theory, their evident
+generalisations to Kan extensions are less often encountered. We define
+those here, but refer the reader to the page about limits for more details.
+
+<!--
+```agda
+module _ (H : Functor D E) {p : Functor C C'} {F : Functor C D} where
+```
+-->
+
+Given a Kan extension of $H \circ F$ along $p$, we say that $H$ **lifts**
+this extension if there is a Kan extension of $F$ along $p$ that is
+preserved by $H$.
+
+```agda
+  record lifts-lan (lan : Lan p (H F∘ F)) : Type (kan-lvl p F ⊔ cat-lvl E) where
+    no-eta-equality
+    field
+      lifted : Lan p F
+      preserved : preserves-is-lan H (Lan.has-lan lifted)
+
+  record lifts-ran (ran : Ran p (H F∘ F)) : Type (kan-lvl p F ⊔ cat-lvl E) where
+    no-eta-equality
+    field
+      lifted : Ran p F
+      preserved : preserves-is-ran H (Ran.has-ran lifted)
+```
+
+<!--
+```agda
+module _ (H : Functor D E) (p : Functor C C') (F : Functor C D) where
+```
+-->
+
+We say that $H$ **creates** Kan extensions of $F$ along $p$ if it lifts
+them and reflects them.
+
+```agda
+  record creates-lan : Type (kan-lvl p F ⊔ cat-lvl E) where
+    no-eta-equality
+    field
+      has-lifts-lan : (lan : Lan p (H F∘ F)) → lifts-lan H lan
+      reflects : reflects-lan p F H
+
+  record creates-ran : Type (kan-lvl p F ⊔ cat-lvl E) where
+    no-eta-equality
+    field
+      has-lifts-ran : (ran : Ran p (H F∘ F)) → lifts-ran H ran
+      reflects : reflects-ran p F H
+```
+
+<!--
+```agda
+module _ (p : Functor C C') (H : Functor D E) where
+
+  lifts-lan-along : Type _
+  lifts-lan-along =
+    ∀ {F : Functor C D} (lan : Lan p (H F∘ F))
+    → lifts-lan H lan
+
+  creates-lan-along : Type _
+  creates-lan-along =
+    ∀ {F : Functor C D}
+    → creates-lan H p F
+
+  lifts-ran-along : Type _
+  lifts-ran-along =
+    ∀ {F : Functor C D} (ran : Ran p (H F∘ F))
+    → lifts-ran H ran
+
+  creates-ran-along : Type _
+  creates-ran-along =
+    ∀ {F : Functor C D}
+    → creates-ran H p F
+```
+-->
 
 <!--
 ```agda

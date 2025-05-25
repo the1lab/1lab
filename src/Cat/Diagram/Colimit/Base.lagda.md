@@ -699,16 +699,10 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 
 ```agda
   preserves-colimit : Type _
-  preserves-colimit =
-     ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
-     → (colim : is-lan !F Diagram K eta)
-     → preserves-lan F colim
+  preserves-colimit = preserves-lan !F Diagram F
 
   reflects-colimit : Type _
-  reflects-colimit =
-    ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
-    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eta)))
-    → reflects-lan F lan
+  reflects-colimit = reflects-lan !F Diagram F
 ```
 
 <!--
@@ -752,7 +746,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     : F ≅ⁿ F'
     → preserves-colimit F Dia
     → preserves-colimit F' Dia
-  natural-iso→preserves-colimits α F-preserves {K = K} {eta} colim =
+  natural-iso→preserves-colimits α F-preserves {G = K} {eta} colim =
     natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
       (ext λ j →
         ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
@@ -803,10 +797,10 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     no-eta-equality
     field
       lifted : Colimit Diagram
-      preserved : preserves-lan F (Colimit.has-lan lifted)
+      preserved : preserves-is-lan F (Colimit.has-lan lifted)
 
     lifts→preserves-colimit : preserves-colimit F Diagram
-    lifts→preserves-colimit = preserves-lan→preserves-all F
+    lifts→preserves-colimit = preserves-is-lan→preserves-lan F
       (Colimit.has-lan lifted) preserved
 ```
 

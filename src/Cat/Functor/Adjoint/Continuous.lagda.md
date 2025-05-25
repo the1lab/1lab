@@ -47,22 +47,18 @@ adjoint]] $L \dashv R$ preserves every limit which exists in $\cD$. We
 then instantiate this theorem to the "canonical" shapes of limit:
 [[terminal objects]], [[products]], [[pullback]] and [[equalisers]].
 
-This follows directly from the fact that [adjoints preserve Kan
-extensions].
-
-[adjoints preserve Kan extensions]: Cat.Functor.Adjoint.Kan.html
+This follows directly from the fact that [[adjoints preserve Kan
+extensions]].
 
 
 ```agda
   right-adjoint-is-continuous
     : ∀ {os ℓs} → is-continuous os ℓs R
-  right-adjoint-is-continuous lim =
-    right-adjoint→right-extension lim L⊣R
+  right-adjoint-is-continuous = right-adjoint→preserves-ran L⊣R
 
   left-adjoint-is-cocontinuous
     : ∀ {os ℓs} → is-cocontinuous os ℓs L
-  left-adjoint-is-cocontinuous colim =
-    left-adjoint→left-extension colim L⊣R
+  left-adjoint-is-cocontinuous = left-adjoint→preserves-lan L⊣R
 
   module _ {od ℓd} {J : Precategory od ℓd} where
     right-adjoint-limit : ∀ {F : Functor J D} → Limit F → Limit (R F∘ F)

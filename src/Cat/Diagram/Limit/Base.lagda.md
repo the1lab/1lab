@@ -845,10 +845,7 @@ object! Any limit is as good as any other.
 
 ```agda
   preserves-limit : Type _
-  preserves-limit =
-    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → (lim : is-ran !F Diagram K eps)
-    → preserves-ran F lim
+  preserves-limit = preserves-ran !F Diagram F
 ```
 
 ## Reflection of limits {defines="reflected-limit reflects-limits"}
@@ -862,10 +859,7 @@ if we _already_ had a limiting cone in $\cC$ to begin with!
 
 ```agda
   reflects-limit : Type _
-  reflects-limit =
-    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
-    → reflects-ran F ran
+  reflects-limit = reflects-ran !F Diagram F
 ```
 
 <!--
@@ -906,7 +900,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     : F ≅ⁿ F'
     → preserves-limit F Dia
     → preserves-limit F' Dia
-  natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
+  natural-iso→preserves-limits α F-preserves {G = K} {eps} lim =
     natural-isos→is-ran
       idni (α ◂ni Dia) (α ◂ni K)
         (ext λ j →
@@ -971,10 +965,10 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     no-eta-equality
     field
       lifted : Limit Diagram
-      preserved : preserves-ran F (Limit.has-ran lifted)
+      preserved : preserves-is-ran F (Limit.has-ran lifted)
 
     lifts→preserves-limit : preserves-limit F Diagram
-    lifts→preserves-limit = preserves-ran→preserves-all F
+    lifts→preserves-limit = preserves-is-ran→preserves-ran F
       (Limit.has-ran lifted) preserved
 ```
 
