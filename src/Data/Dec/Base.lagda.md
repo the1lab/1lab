@@ -58,8 +58,11 @@ dec→dne ⦃ no ¬x ⦄ ¬¬x = absurd (¬¬x ¬x)
 A type is _discrete_ if it has decidable equality.
 
 ```agda
-Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
-Discrete A = {x y : A} → Dec (x ≡ y)
+record Discrete {ℓ} (A : Type ℓ) : Type ℓ where
+  constructor lift
+  field
+    decide : (x y : A) → Dec (x ≡ y)
+open Discrete public
 ```
 
 <!--
@@ -67,6 +70,10 @@ Discrete A = {x y : A} → Dec (x ≡ y)
 private variable
   ℓ ℓ' : Level
   A B : Type ℓ
+
+instance
+  Discrete→Dec : ⦃ _ : Discrete A ⦄ {x y : A} → Dec (x ≡ y)
+  Discrete→Dec ⦃ d ⦄ {x} {y} = d .decide x y
 ```
 -->
 
@@ -89,8 +96,8 @@ Discrete-inj
   : (f : A → B)
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Discrete B → Discrete A
-Discrete-inj f inj eq? {x} {y} =
-  invmap inj (ap f) (eq? {f x} {f y})
+Discrete-inj f inj eq? .decide x y =
+  invmap inj (ap f) (eq? .decide (f x) (f y))
 ```
 
 ## Programming with decisions
@@ -111,6 +118,12 @@ x ≡? y = holds? (x ≡ y)
 
 infix 3 _≡?_
 ```
+
+<!--
+```agda
+{-# DISPLAY decide _ x y = x ≡? y #-}
+```
+-->
 
 And the following operators, which combine instance search with case
 analysis:

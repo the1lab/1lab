@@ -457,7 +457,8 @@ This is known as **Hedberg's theorem**.
 
 opaque
   Discrete→is-set : ∀ {ℓ} {A : Type ℓ} → Discrete A → is-set A
-  Discrete→is-set {A = A} dec = identity-system→hlevel 1
-    (¬¬-stable-identity-system (dec→dne ⦃ dec ⦄))
+  Discrete→is-set {A = A} dec =
+    let instance _ = dec in identity-system→hlevel 1
+    (¬¬-stable-identity-system dec→dne)
     λ x y f g → funext λ h → absurd (g h)
 ```

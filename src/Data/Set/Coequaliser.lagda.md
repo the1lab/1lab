@@ -461,8 +461,7 @@ Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong rdec {x} {y} =
-  elim! {P = λ x → ∀ y → Dec (x ≡ y)} go _ _ where
+Discrete-quotient cong rdec .decide = elim! go where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)

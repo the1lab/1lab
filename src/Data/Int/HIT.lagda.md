@@ -778,7 +778,7 @@ canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q �
 
 instance
   Discrete-Int : Discrete Int
-  Discrete-Int = go _ _ where
+  Discrete-Int .decide = go where
     go₀ : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
     go₀ a b x y with a + y ≡? b + x
     ... | yes p  = yes (same-difference p)

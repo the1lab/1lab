@@ -138,10 +138,10 @@ they match, we can compare the underlying natural numbers:
 ```agda
 instance
   Discrete-Int : Discrete Int
-  Discrete-Int {pos x} {pos y} with x ≡? y
+  Discrete-Int .decide (pos x) (pos y) with x ≡? y
   ... | yes p = yes (ap pos p)
   ... | no ¬p = no λ path → ¬p (pos-injective path)
-  Discrete-Int {negsuc x} {negsuc y} with x ≡? y
+  Discrete-Int .decide (negsuc x) (negsuc y) with x ≡? y
   ... | yes p = yes (ap negsuc p)
   ... | no ¬p = no λ path → ¬p (negsuc-injective path)
 ```
@@ -149,8 +149,8 @@ instance
 If they're mismatched, we have pre-existing refutations.
 
 ```agda
-  Discrete-Int {pos x} {negsuc y} = no pos≠negsuc
-  Discrete-Int {negsuc x} {pos y} = no negsuc≠pos
+  Discrete-Int .decide (pos x) (negsuc y) = no pos≠negsuc
+  Discrete-Int .decide (negsuc x) (pos y) = no negsuc≠pos
 ```
 
 <!--
