@@ -135,7 +135,7 @@ abstract
 
 instance
   Discrete-Finset : ⦃ _ : Discrete A ⦄ → Discrete (Finset A)
-  Discrete-Finset {x = xs} {ys} = case holds? (All (_∈ᶠˢ ys) xs × All (_∈ᶠˢ xs) ys) of λ where
+  Discrete-Finset .decide xs ys = case holds? (All (_∈ᶠˢ ys) xs × All (_∈ᶠˢ xs) ys) of λ where
     (yes (s1 , s2)) → yes $ finset-ext (λ a → from-all _ s1) (λ a → from-all _ s2)
     (no ¬sub)       → no λ p → ¬sub (to-all xs (λ a → subst (a ∈_) p) , to-all ys (λ a → subst (a ∈_) (sym p)))
 

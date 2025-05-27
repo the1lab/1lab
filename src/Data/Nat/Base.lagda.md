@@ -94,12 +94,14 @@ private module _ where private
 
 ```agda
   Discrete-Nat : Discrete Nat
-  Discrete-Nat {zero} {zero}  = yes refl
-  Discrete-Nat {zero} {suc y} = no λ zero≡suc → absurd (zero≠suc zero≡suc)
-  Discrete-Nat {suc x} {zero} = no λ suc≡zero → absurd (suc≠zero suc≡zero)
-  Discrete-Nat {suc x} {suc y} with Discrete-Nat {x} {y}
-  ... | yes x≡y = yes (ap suc x≡y)
-  ... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)
+  Discrete-Nat .decide = go where
+    go : ∀ x y → Dec (x ≡ y)
+    go zero zero    = yes refl
+    go zero (suc y) = no λ zero≡suc → absurd (zero≠suc zero≡suc)
+    go (suc x) zero = no λ suc≡zero → absurd (suc≠zero suc≡zero)
+    go (suc x) (suc y) with go x y
+    ... | yes x≡y = yes (ap suc x≡y)
+    ... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)
 ```
 
 <!--
@@ -123,7 +125,7 @@ abstract
 
 instance
   Discrete-Nat : Discrete Nat
-  Discrete-Nat {x} {y} with oh? (x == y)
+  Discrete-Nat .decide x y with oh? (x == y)
   ... | yes p = yes (from-prim-eq p)
   ... | no ¬p = no (¬p ∘ to-prim-eq)
 ```
