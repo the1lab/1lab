@@ -28,11 +28,11 @@ private variable
 
 # Homotopy groups {defines="homotopy-group fundamental-group"}
 
-Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
-$a = a$ as the **loop space of $A$**, and refer to it in short as
-$\Omega A$. Since we always have $\refl : a = a$, $\Omega A$ is
-_itself_ a pointed type, the construction can be iterated, a process
-which we denote $\Omega^n A$.
+:::{.definition #loop-space}
+Given a [[pointed type]] $(A, a)$ we refer to the type $a = a$ as the
+**loop space of $A$**, and refer to it in short as $\Omega A$. Since we
+always have $\refl : a = a$, $\Omega A$ is _itself_ a pointed type, the
+construction can be iterated, a process which we denote $\Omega^n A$.
 
 ```agda
 Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
@@ -40,6 +40,16 @@ which we denote $\Omega^n A$.
 Ωⁿ (suc n) (A , x) with Ωⁿ n (A , x)
 ... | (T , x) = Path T x x , refl
 ```
+:::
+
+::: popup
+The **$n$th homotopy group** $\pi_n(A)$ of a [[pointed type]] $A$ is the
+[[set truncation]] of the [[loop space]] $\Omega^n(A)$, made into a
+[[group]] under composition of loops.
+
+The first homotopy group $\pi_1(A)$ is also called the **fundamental
+group** of $A$.
+:::
 
 For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
 obtained by [[truncating|set-truncation]] the higher groupoid structure

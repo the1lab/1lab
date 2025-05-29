@@ -39,14 +39,15 @@ private variable
 ```
 -->
 
-# Actions of functors on morphisms {defines="preserves-monos preserves-epis reflects-monos reflects-epis"}
+# Actions of functors on morphisms
 
 This module describes how various classes of functors act on designated
 collections of morphisms.
 
-First, some general definitions. Let $H$ be a collection of morphisms in $\cC$.
-A functor $F : \cC \to \cD$ **preserves** $H$-morphisms if $f \in H$ implies
-that $F(f) \in H$.
+::: {.definition defines="preserves-monos preserves-epis"}
+First, some general definitions. Let $H$ be a collection of morphisms in
+$\cC$. A functor $F : \cC \to \cD$ **preserves** $H$-morphisms if $f \in
+H$ implies that $F(f) \in H$.
 
 ```agda
 preserves-monos : Type _
@@ -57,6 +58,7 @@ preserves-epis : Type _
 preserves-epis =
   ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒞.is-epic f → 𝒟.is-epic (F₁ f)
 ```
+:::
 
 <!--
 ```agda
@@ -66,8 +68,9 @@ preserves-strong-epis =
 ```
 -->
 
-Likewise, a functor $F : \cC \to \cD$ **reflects** $H$-morphisms
-if $F(f) \in H$ implies that $f \in H$.
+::: {.definition defines="reflects-monos reflects-epis"}
+Likewise, a functor $F : \cC \to \cD$ **reflects** $H$-morphisms if
+$F(f) \in H$ implies that $f \in H$.
 
 ```agda
 reflects-monos : Type _
@@ -78,6 +81,7 @@ reflects-epis : Type _
 reflects-epis =
   ∀ {a b : 𝒞.Ob} {f : 𝒞.Hom a b} → 𝒟.is-epic (F₁ f) → 𝒞.is-epic f
 ```
+:::
 
 Functors that reflect invertible morphisms are called [[conservative]],
 and are notable enough to deserve their own name and page!

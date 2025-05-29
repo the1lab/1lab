@@ -26,9 +26,16 @@ private variable
 
 # Meets {defines="meet"}
 
-As mentioned before, in the binary case, we refer to glbs as **meets**:
-The meet of $a$ and $b$ is, if it exists, the greatest element
-satisfying $(a \cap b) \le a$ and $(a \cap b) \le b$.
+As mentioned before, in the binary case, we refer to [[greatest lower
+bounds]] as **meets**: The meet of $a$ and $b$ is, if it exists, the
+greatest element satisfying $(a \cap b) \le a$ and $(a \cap b) \le b$.
+
+::: popup
+The **meet** $a \land b$ of elements $a, b$ of a [[poset]] $P$ is the
+greatest element satisfying $a \land b \le a$ and $a \land b \le b$,
+i.e. it is such that if we have $q$ with $q \le a$ and $q \le b$, then
+indeed $q \le a \land b$.
+:::
 
 ```agda
 record is-meet (P : Poset o ℓ) (a b glb : ⌞ P ⌟) : Type (o ⊔ ℓ) where

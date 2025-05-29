@@ -207,11 +207,21 @@ is-prop≃equiv∥-∥ {P = P} =
                           (is-equiv-is-prop _ _ _)
 ```
 
-:::{.definition #merely alias="mere"}
+:::{.definition .terminology #merely alias="mere"}
 Throughout the 1Lab, we use the words "mere" and "merely" to modify a
 type to mean its propositional truncation. This terminology is adopted
 from the HoTT book. For example, a type $X$ is said _merely equivalent_
 to $Y$ if the type $\| X \equiv Y \|$ is inhabited.
+:::
+
+:::{.popup .summary}
+The **propositional truncation** $\| A \|$ of a type $A$ is the
+universal [[proposition]] equipped with a map `inc`{.Agda} mapping $A
+\to \| A \|$.
+
+Its recursion principle says that, if $P$ is a proposition, then any map
+$f : A \to P$ can be extended to $f' : \| A \| \to P$ satisfying
+$f'(\operatorname{inc} x) = f(x)$.
 :::
 
 ## Maps into sets

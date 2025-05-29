@@ -27,9 +27,8 @@ private variable
 -->
 
 :::{.definition #set-projective}
-A type $A$ is **set-projective** if we can commute [[propositional truncation]]
-past $A$-indexed families.
-:::
+A type $A$ is **set-projective** if we can commute [[propositional
+truncation]] past the product of an $A$-indexed family of [[sets]].
 
 ```agda
 is-set-projective : ∀ {ℓ} (A : Type ℓ) → (κ : Level) → Type _
@@ -39,12 +38,12 @@ is-set-projective A κ =
   → (∀ a → ∥ P a ∥)
   → ∥ (∀ a → P a) ∥
 ```
+:::
 
 Intuitively, a type $A$ is set-projective if it validates a sort of
-$A$-indexed version of the [[axiom of choice]].
-
-If $A$ is a set, then $A$ is set-projective if and only if every
-surjection $E \to A$ from a set $E$ splits.
+$A$-indexed version of the [[axiom of choice]]. If $A$ is a set, then
+$A$ is set-projective if and only if every surjection $E \to A$ from a
+set $E$ splits.
 
 ```agda
 surjections-split→set-projective
@@ -83,8 +82,8 @@ sets-projective→surjections-split A-set A-pro E-set f =
 
 ## Closure of set-projectivity
 
-Set-projective types are closed under Σ-types. Suppose that $A : \ty$ is a
-set-projective type, and that $B : A \to \ty$ is a family of set-projective
+Set-projective types are closed under Σ-types. Suppose that $A : \type$ is a
+set-projective type, and that $B : A \to \type$ is a family of set-projective
 types, and let $P : \Sigma\ A\ B \to \set$ be a family of merely inhabited sets.
 Note that $(b : B(a)) \to P(a, b)$ is a $B(a)$-indexed family of merely
 inhabited sets for every $a$, so its product must also be inhabited by projectivity

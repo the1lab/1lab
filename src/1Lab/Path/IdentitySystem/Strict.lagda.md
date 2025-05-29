@@ -45,7 +45,7 @@ set-identity-is-prop {R = R} {a = a} {b = b} ids set =
 ```
 
 This immediately gives us the K eliminator for an identity system over a
-set: Given a type family $P : R(a, a) \to \ty$ and a witness $w :
+set: Given a type family $P : R(a, a) \to \type$ and a witness $w :
 P(r(a))$, since $R(-,-)$ is a proposition, we can transport $w$ to
 $P(s)$ for an arbitrary $s : R(a,a)$.
 

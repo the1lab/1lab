@@ -35,6 +35,16 @@ directed, bicategorical analogue of a [[pullback]] square. It consists
 of maps in $\cC$ which all have their domain in the image of $F$, and
 codomain in the image of $G$.
 
+::: popup
+The **comma category** of two functors $F : \cA \to \cC$ and $G : \cB
+\to \cC$ has as objects $(A, B, f)$ with $A : \cA$, $B : \cB$, and $f :
+\cC(Fa, Gb)$.
+
+The morphisms $(A, B, f) \to (A', B', f')$ are pairs of morphisms
+$\alpha : \cA(A, A')$ and $\beta : \cB(B, B')$ satisfying $$f' \circ F
+\alpha = G \beta \circ f$$.
+:::
+
 The comma category is the universal way of completing a [cospan] of
 functors $A \to C \ot B$ to a square, like the one below, which commutes
 _up to a natural transformation_ $\theta$. Note the similarity with a

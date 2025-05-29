@@ -221,11 +221,22 @@ module _
 # Algebras over a relative extension system {defines=relative-extension-algebra}
 
 A **relative extension algebra** over $E$ is the relative extension
-system analog of an [[algebra over a monad]]. Following the general
-theme of extension operations, a relative extension algebra on $X : \cC$
-is given by an operation $\nu : \cC(FA, X) \to \cC(MA, X)$.
+system analog of an [[algebra over a monad]], and the relativisation of
+[[algebras over an extension system|extension algebra]]. Following the
+general theme of extension operations, a relative extension algebra on
+$X : \cC$ is given by an operation $\nu : \cC(FA, X) \to \cC(MA, X)$.
 Intuitively, this operation lets us "evaluate" any $M$, so long as the
 codomain of the evaluation is $X$.
+
+::: popup
+An **algebra over the [[relative extension system]]** $(E,
+\operatorname{pure}, \operatorname{bind})$ is a map $\nu : \cC(FA, X)
+\to \cC(MA, X)$ satisfying the equations
+$$\begin{align*}
+  \nu(f) \circ \operatorname{unit}    &= f \\
+  \nu(f) \circ \operatorname{bind}(g) &= \nu\ (\nu f \circ g).
+\end{align*}$$
+:::
 
 <!--
 ```agda

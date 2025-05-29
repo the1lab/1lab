@@ -31,6 +31,13 @@ assumes some familiarity with some concrete examples, in particular
 It might be a good idea to check out those pages before continuing!
 :::
 
+::: popup
+The **limit** of a diagram $F : \cJ \to \cC$ is the [[right Kan
+extension]] of $F$ along the functor $! : \cJ \to \{*\}$. Concretely, a
+limit for $F$ is the [[terminal]] object $X : \cC$ equipped with maps
+$\psi_j : X \to F(j)$, i.e. the terminal [[cone]] under $F$.
+:::
+
 ## Idea
 
 To motivate limits, note how all the above examples have roughly the
@@ -785,7 +792,7 @@ prove that any non-thin categories have arbitrary limits.
 
 Instead, categories are complete _with respect to_ a pair of universes:
 A category is **$(o, \ell)$-complete** if it has limits for any diagram
-indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
+indexed by a precategory with objects in $\type\ o$ and morphisms in $\type\
 \ell$.
 
 ```agda

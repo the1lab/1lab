@@ -21,29 +21,26 @@ import Algebra.Ring.Reasoning as Ringr
 module Algebra.Ring.Ideal where
 ```
 
-# Ideals in rings
+# Ideals in rings {defines="ideal"}
 
-An **ideal** in a ring $R$ is the [$\Ab$-enriched] analogue of a
-[sieve], when $R$ is considered as an $\Ab$-category with a single
-object, in that it picks out a sub-[$R$-module] of $R$, considered as a
-[representable module], in exactly the same way that a sieve on an
-object $x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that
-$\baut R$'s composition is given by $R$'s multiplication, and sieves are
-subsets closed under precomposition, we instantly deduce that ideals are
-closed under multiplication.
+An **ideal** in a ring $R$ is the [[$\Ab$-enriched|Ab-enriched
+category]] analogue of a [[sieve]], when $R$ is considered as an
+$\Ab$-category with a single object, in that it picks out a
+sub-[[$R$-module|module]] of $R$, considered as a [representable module], in
+exactly the same way that a sieve on an object $x : \cC$ picks out a
+subfunctor of $\yo(x)$. Since we know that $\baut R$'s composition is
+given by $R$'s multiplication, and sieves are subsets closed under
+precomposition, we instantly deduce that ideals are closed under
+multiplication.
 
-[$\Ab$-enriched]: Cat.Abelian.Base.html#ab-enriched-categories
-[sieve]: Cat.Diagram.Sieve.html
-[$R$-module]: Algebra.Ring.Module.html#modules
 [representable module]: Algebra.Ring.Module.html#representable-modules
 
 In the $\Ab$-enriched setting, however, there are some more operations
-that leaves us in the same $\hom$-group: addition! More generally, the
+that leave us in the same $\hom$-group: addition! More generally, the
 [[abelian group]] operations, i.e. addition, inverse, and the zero
 morphism.  Putting these together we conclude that an ideal in $R$ is a
 subset of $R$ containing the identity, which is closed under
 multiplication and addition.
-
 
 ```agda
 module _ {ℓ} (R : Ring ℓ) where
@@ -59,7 +56,14 @@ module _ {ℓ} (R : Ring ℓ) where
       has-*ᵣ : ∀ x {y} → y ∈ 𝔞 → (y R.* x) ∈ 𝔞
 ```
 
-:::{.note}
+::: popup
+An **ideal** of a [[ring]] $R$ (generally [[commutative|ring]]) is a
+subset $I \sube R$ which is a [[subgroup]] of $R$'s additive group, and
+is furthermore closed under multiplication: if $y \in I$, then so are
+$xy$ and $yx$.
+:::
+
+::: note
 Since most of the rings over which we want to consider ideals
 are _commutative_ rings, we will limit ourselves to the definition of
 _two-sided_ ideals: Those for which we have, for $y \in \mathfrak{a}$
@@ -82,12 +86,10 @@ and any element $x : R$, $xy \in \mathfrak{a}$ and $yx \in
 ```
 -->
 
-Since an ideal is a [subgroup] of $R$'s additive group, its total space
+Since an ideal is a [[subgroup]] of $R$'s additive group, its total space
 inherits a group structure, and since multiplication in $R$ distributes
 over addition in $R$, the group structure induced on $\mathfrak{a}$
 carries a canonical $R$-module structure.
-
-[subgroup]: Algebra.Group.Subgroup.html
 
 ```agda
   ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module R ℓ
