@@ -120,6 +120,7 @@ g) \circ h = f \circ (g \circ h)$.
 
 <!--
 ```agda
+{-# INLINE Precategory.constructor #-}
 open hlevel-projection
 private
   hom-set : ∀ {o ℓ} (C : Precategory o ℓ) {x y} → is-set (C .Precategory.Hom x y)

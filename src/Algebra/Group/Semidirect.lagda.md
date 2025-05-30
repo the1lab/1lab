@@ -80,19 +80,19 @@ the group axioms are verified.
 ```agda
     A⋉B .inv (a , b) = a A.⁻¹ , (φ · (a A.⁻¹) · b) B.⁻¹
     A⋉B .assoc (ax , bx) (ay , by) (az , bz) = Σ-pathp A.associative $
-      ⌜ φ · (ay A.⋆ az) · bx ⌝ B.⋆ φ · az · by B.⋆ bz ≡⟨ ap! (unext (φ .preserves .pres-⋆ _ _) _) ⟩
+      ⌜ φ · (ay A.⋆ az) · bx ⌝ B.⋆ φ · az · by B.⋆ bz ≡⟨ ap! (unext (φ .snd .pres-⋆ _ _) _) ⟩
       φ · az · (φ · ay · bx) B.⋆ φ · az · by B.⋆ bz   ≡⟨ B.associative ⟩
-      (φ · az · (φ · ay · bx) B.⋆ φ · az · by) B.⋆ bz ≡˘⟨ ap (B._⋆ bz) ((φ · az) .Groups.to .preserves .pres-⋆ _ _) ⟩
+      (φ · az · (φ · ay · bx) B.⋆ φ · az · by) B.⋆ bz ≡˘⟨ ap (B._⋆ bz) ((φ · az) .Groups.to .snd .pres-⋆ _ _) ⟩
       φ · az · (φ · ay · bx B.⋆ by) B.⋆ bz            ∎
     A⋉B .invl (a , b) = Σ-pathp A.inversel $
-      φ · a · ⌜ (φ · (a A.⁻¹) · b) B.⁻¹ ⌝ B.⋆ b ≡˘⟨ ap¡ (pres-inv ((φ · _) .Groups.to .preserves)) ⟩
-      φ · a · (φ · (a A.⁻¹) · (b B.⁻¹)) B.⋆ b   ≡˘⟨ ap (B._⋆ b) (unext (pres-⋆ (φ .preserves) _ _) _) ⟩
+      φ · a · ⌜ (φ · (a A.⁻¹) · b) B.⁻¹ ⌝ B.⋆ b ≡˘⟨ ap¡ (pres-inv ((φ · _) .Groups.to .snd)) ⟩
+      φ · a · (φ · (a A.⁻¹) · (b B.⁻¹)) B.⋆ b   ≡˘⟨ ap (B._⋆ b) (unext (pres-⋆ (φ .snd) _ _) _) ⟩
       φ · ⌜ a A.⁻¹ A.⋆ a ⌝ · (b B.⁻¹) B.⋆ b     ≡⟨ ap! A.inversel ⟩
-      φ · A.unit · (b B.⁻¹) B.⋆ b               ≡⟨ ap (B._⋆ b) (unext (pres-id (φ .preserves)) _) ⟩
+      φ · A.unit · (b B.⁻¹) B.⋆ b               ≡⟨ ap (B._⋆ b) (unext (pres-id (φ .snd)) _) ⟩
       b B.⁻¹ B.⋆ b                              ≡⟨ B.inversel ⟩
       B.unit                                    ∎
     A⋉B .idl (a , b) = Σ-pathp A.idl $
-      φ · a · B.unit B.⋆ b ≡⟨ ap (B._⋆ b) (pres-id ((φ · a) .Groups.to .preserves)) ⟩
+      φ · a · B.unit B.⋆ b ≡⟨ ap (B._⋆ b) (pres-id ((φ · a) .Groups.to .snd)) ⟩
       B.unit B.⋆ b         ≡⟨ B.idl ⟩
       b                    ∎
 ```
@@ -103,8 +103,8 @@ component (can you see why?).
 
 ```agda
   ⋉-proj : Groups.Hom Semidirect-product A
-  ⋉-proj .hom = fst
-  ⋉-proj .preserves .pres-⋆ _ _ = refl
+  ⋉-proj .fst = fst
+  ⋉-proj .snd .pres-⋆ _ _ = refl
 ```
 
 When the action of $A$ on $B$ is [[trivial|trivial action]], i.e. $\varphi_a$ is the
@@ -125,7 +125,7 @@ module _ (A : Group ℓ) (B : Group ℓ) where
   Semidirect-trivial
     : Semidirect-product A B (trivial-action A B) ≡ Direct-product A B
   Semidirect-trivial = ∫-Path
-    (total-hom (λ x → x) (record { pres-⋆ = λ _ _ → refl }))
+    (∫hom (λ x → x) (record { pres-⋆ = λ _ _ → refl }))
     id-equiv
 ```
 

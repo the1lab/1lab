@@ -50,7 +50,7 @@ private
 open _⊣_ F⊣U
 open _=>_
 open Algebra-on
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -180,8 +180,8 @@ we're seeking.
 
 ```agda
     η⁻¹ : C.Hom (U.₀ (coapex (has-coeq o))) (o .fst)
-    η⁻¹η : adj.unit.η _ .hom C.∘ η⁻¹ ≡ C.id
-    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .hom ≡ C.id
+    η⁻¹η : adj.unit.η _ .fst C.∘ η⁻¹ ≡ C.id
+    ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .fst ≡ C.id
 
     η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
 
@@ -203,8 +203,8 @@ is a calculation reusing the established proof that $\eta\inv\eta =
 
 ```agda
     inverse : C^T.Hom (U.₀ _ , _) o
-    inverse .hom = η⁻¹
-    inverse .preserves =
+    inverse .fst = η⁻¹
+    inverse .snd =
       η⁻¹ C.∘ U.₁ (counit.ε _)                                                              ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.intror (F.annihilate (C.assoc _ _ _ ∙ η⁻¹η))) ⟩
       η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coeq)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
       η⁻¹ C.∘ U.₁ (has-coeq o .coeq D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩

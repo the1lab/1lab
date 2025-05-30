@@ -201,13 +201,13 @@ open Free-object
 ```agda
 make-free-abelian : ∀ {ℓ} (G : Group ℓ) → Free-object Ab↪Grp G
 make-free-abelian G .free = Abelianise G
-make-free-abelian G .unit .hom =  inc^ab G
-make-free-abelian G .unit .preserves .is-group-hom.pres-⋆ x y = refl
-make-free-abelian G .fold {H} f .hom =
+make-free-abelian G .unit .fst =  inc^ab G
+make-free-abelian G .unit .snd .is-group-hom.pres-⋆ x y = refl
+make-free-abelian G .fold {H} f .fst =
   Coeq-elim (λ _ → H.has-is-set) (apply f) (λ (a , b , c) → resp a b c) where
   module G = Group-on (G .snd)
   module H = Abelian-group-on (H .snd)
-  open is-group-hom (f .preserves)
+  open is-group-hom (f .snd)
   abstract
     resp : ∀ a b c → f · (a G.⋆ (b G.⋆ c)) ≡ f · (a G.⋆ (c G.⋆ b))
     resp a b c =
@@ -217,8 +217,8 @@ make-free-abelian G .fold {H} f .hom =
       f · a H.* (f · c H.* f · b) ≡˘⟨ ap (f · a H.*_) (pres-⋆ _ _) ⟩
       f · a H.* f · (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
       f · (a G.⋆ (c G.⋆ b))       ∎
-make-free-abelian G .fold {H} f .preserves .is-group-hom.pres-⋆ =
-  elim! λ _ _ → f .preserves .is-group-hom.pres-⋆ _ _
+make-free-abelian G .fold {H} f .snd .is-group-hom.pres-⋆ =
+  elim! λ _ _ → f .snd .is-group-hom.pres-⋆ _ _
 make-free-abelian G .commute = trivial!
 make-free-abelian G .unique f p = ext (p ·ₚ_)
 ```

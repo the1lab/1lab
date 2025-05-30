@@ -120,7 +120,7 @@ determines a group homomorphism.
 fold-free-group
   : {A : Type ℓ} {G : Group ℓ}
   → (A → ⌞ G ⌟) → Groups.Hom (Free-Group A) G
-fold-free-group {A = A} {G = G , ggrp} map = total-hom go go-hom where
+fold-free-group {A = A} {G = G , ggrp} map = ∫hom go go-hom where
   module G = Group-on ggrp
 ```
 
@@ -183,7 +183,7 @@ make-free-group S .unique {H} g p =
     g.pres-id
   where
     module H = Group-on (H .snd)
-    module g = is-group-hom (g .preserves)
+    module g = is-group-hom (g .snd)
 
 module Free-groups {ℓ} (S : Set ℓ) = Free-object (make-free-group S)
 ```

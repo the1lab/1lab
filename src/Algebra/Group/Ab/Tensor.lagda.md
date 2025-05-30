@@ -112,17 +112,17 @@ homomorphisms $A \to [B,C]$.
 
 ```agda
   curry-bilinear : Bilinear A B C → Ab.Hom A Ab[ B , C ]
-  curry-bilinear f .hom a .hom       = f .Bilinear.map a
-  curry-bilinear f .hom a .preserves = Bilinear.fixl-is-group-hom f a
-  curry-bilinear f .preserves .is-group-hom.pres-⋆ x y = ext λ z →
+  curry-bilinear f .fst a .fst = f .Bilinear.map a
+  curry-bilinear f .fst a .snd = Bilinear.fixl-is-group-hom f a
+  curry-bilinear f .snd .is-group-hom.pres-⋆ x y = ext λ z →
     f .Bilinear.pres-*l _ _ _
 
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
     morp : is-iso curry-bilinear
     morp .is-iso.from uc .Bilinear.map x y = uc · x · y
-    morp .is-iso.from uc .Bilinear.pres-*l x y z = ap (_· _) (uc .preserves .is-group-hom.pres-⋆ _ _)
-    morp .is-iso.from uc .Bilinear.pres-*r x y z = (uc · _) .preserves .is-group-hom.pres-⋆ _ _
+    morp .is-iso.from uc .Bilinear.pres-*l x y z = ap (_· _) (uc .snd .is-group-hom.pres-⋆ _ _)
+    morp .is-iso.from uc .Bilinear.pres-*r x y z = (uc · _) .snd .is-group-hom.pres-⋆ _ _
     morp .is-iso.rinv uc = trivial!
     morp .is-iso.linv uc = trivial!
 ```
@@ -272,8 +272,8 @@ module _ {ℓ} (A B C : Abelian-group ℓ) where
 
 ```agda
   from-bilinear-map : Bilinear A B C → Ab.Hom (A ⊗ B) C
-  from-bilinear-map bilin .hom = bilinear-map→function A B C bilin
-  from-bilinear-map bilin .preserves .is-group-hom.pres-⋆ x y = refl
+  from-bilinear-map bilin .fst = bilinear-map→function A B C bilin
+  from-bilinear-map bilin .snd .is-group-hom.pres-⋆ x y = refl
 ```
 
 It's also easy to construct a function in the opposite direction,
@@ -286,9 +286,9 @@ an equivalence requires appealing to an induction principle of
   to-bilinear-map : Ab.Hom (A ⊗ B) C → Bilinear A B C
   to-bilinear-map gh .Bilinear.map x y = gh · (x , y)
   to-bilinear-map gh .Bilinear.pres-*l x y z =
-    ap (apply gh) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*l ∙ gh .snd .is-group-hom.pres-⋆ _ _
   to-bilinear-map gh .Bilinear.pres-*r x y z =
-    ap (apply gh) t-pres-*r ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*r ∙ gh .snd .is-group-hom.pres-⋆ _ _
 
   from-bilinear-map-is-equiv : is-equiv from-bilinear-map
   from-bilinear-map-is-equiv = is-iso→is-equiv morp where
@@ -296,9 +296,9 @@ an equivalence requires appealing to an induction principle of
     morp .is-iso.from = to-bilinear-map
     morp .is-iso.rinv hom = ext $ Tensor-elim-prop A B (λ x → C.has-is-set _ _)
       (λ x y → refl)
-      (λ x y → ap₂ C._*_ x y ∙ sym (hom .preserves .is-group-hom.pres-⋆ _ _))
-      (λ x → ap C._⁻¹ x ∙ sym (is-group-hom.pres-inv (hom .preserves)))
-      (sym (is-group-hom.pres-id (hom .preserves)))
+      (λ x y → ap₂ C._*_ x y ∙ sym (hom .snd .is-group-hom.pres-⋆ _ _))
+      (λ x → ap C._⁻¹ x ∙ sym (is-group-hom.pres-inv (hom .snd)))
+      (sym (is-group-hom.pres-id (hom .snd)))
     morp .is-iso.linv x = trivial!
 ```
 
@@ -318,7 +318,7 @@ module _ {ℓ} {A B C : Abelian-group ℓ} where instance
     : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Ab.Hom (A ⊗ B) C) ℓr
   Extensional-tensor-hom ⦃ ef ⦄ =
     injection→extensional!
-      {f = λ f x y → f .hom (x , y)}
+      {f = λ f x y → f .fst (x , y)}
       (λ {x} p → Hom≃Bilinear.injective _ _ _ (ext (subst (ef .Pathᵉ _) p (ef .reflᵉ _))))
       auto
   {-# OVERLAPS Extensional-tensor-hom #-}
@@ -348,8 +348,8 @@ Ab-tensor-functor .F₀ (A , B) = A ⊗ B
 Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin : Bilinear _ _ _
   bilin .Bilinear.map x y       = f · x , g · y
-  bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
-  bilin .Bilinear.pres-*r x y z = ap (f · x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
+  bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
+  bilin .Bilinear.pres-*r x y z = ap (f · x ,_) (g .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
 Ab-tensor-functor .F-id    = trivial!
 Ab-tensor-functor .F-∘ f g = trivial!
 

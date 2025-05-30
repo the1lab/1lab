@@ -147,8 +147,8 @@ Group-is-monadic = is-precat-iso→is-equivalence
   open Algebra-on
 
   k₁inv : ∀ {G H} → Algebra-hom T (K.₀ G) (K.₀ H) → Groups.Hom G H
-  k₁inv f .hom = f .hom
-  k₁inv f .preserves .is-group-hom.pres-⋆ x y = happly (f .preserves) (inc x ◆ inc y)
+  k₁inv f .fst = f .fst
+  k₁inv f .snd .is-group-hom.pres-⋆ x y = happly (f .snd) (inc x ◆ inc y)
 
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → trivial!)
@@ -165,7 +165,7 @@ but the other direction is by induction on "words".
   isom : is-iso K.₀
   isom .is-iso.from (A , alg) = A , Algebra-on→group-on alg
   isom .is-iso.linv x = ∫-Path
-    (total-hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
+    (∫hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
     id-equiv
   isom .is-iso.rinv x = Σ-pathp refl (Algebra-on-pathp _ go) where
     alg = x .snd
@@ -176,13 +176,13 @@ but the other direction is by induction on "words".
     alg-gh : is-group-hom (Free-Group ⌞ x ⌟ .snd) grp (x .snd .ν)
     alg-gh .is-group-hom.pres-⋆ x y = sym (happly (alg .ν-mult) (inc _ ◆ inc _))
 
-    go : rec .hom ≡ x .snd .ν
+    go : rec .fst ≡ x .snd .ν
     go = funext $ Free-elim-prop _ (λ _ → hlevel 1)
       (λ x → sym (happly (alg .ν-unit) x))
-      (λ x p y q → rec .preserves .is-group-hom.pres-⋆ x y
+      (λ x p y q → rec .snd .is-group-hom.pres-⋆ x y
                 ∙∙ ap₂ G._⋆_ p q
                 ∙∙ happly (alg .ν-mult) (inc _ ◆ inc _))
-      (λ x p → is-group-hom.pres-inv (rec .preserves) {x = x}
+      (λ x p → is-group-hom.pres-inv (rec .snd) {x = x}
               ∙∙ ap G.inverse p
               ∙∙ sym (is-group-hom.pres-inv alg-gh {x = x}))
       refl

@@ -30,7 +30,7 @@ open Cat.Displayed.Reasoning E
 open is-fibred-functor
 open Functor
 
-open Total-hom
+open ∫Hom
 open /-Obj
 open Slice-hom
 ```
@@ -94,7 +94,7 @@ takes the domain of a morphism in the arrow category (which **is** the
 ```agda
 Dom : Functor (∫ (Slices B)) B
 Dom .F₀ f = f .snd .domain
-Dom .F₁ sq = sq .preserves .to
+Dom .F₁ sq = sq .snd .to
 Dom .F-id = refl
 Dom .F-∘ _ _ = refl
 

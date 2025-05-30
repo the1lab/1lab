@@ -8,8 +8,8 @@ open import Cat.Prelude
 
 import Cat.Reasoning
 
-open Total-hom
 open Functor
+open ∫Hom
 open _=>_
 open _⊣_
 ```
@@ -188,7 +188,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} wh
     Extensional-coalgebra-hom
       : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
       → Extensional (Coalgebras.Hom W x y) ℓr
-    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → ∫Hom-path (Coalgebras-over W) p prop!) e
 
 Comonad : ∀ {o ℓ} (C : Precategory o ℓ) → Type _
 Comonad C = Σ[ F ∈ Functor C C ] (Comonad-on F)
@@ -219,8 +219,8 @@ gives us **cofree coalgebras**.
   Cofree : Functor C (Coalgebras W)
   Cofree .F₀ = Cofree-coalgebra
 
-  Cofree .F₁ h .hom       = W₁ h
-  Cofree .F₁ h .preserves = sym (comult.is-natural _ _ h)
+  Cofree .F₁ h .fst = W₁ h
+  Cofree .F₁ h .snd = sym (comult.is-natural _ _ h)
 
   Cofree .F-id    = ext W-id
   Cofree .F-∘ f g = ext (W-∘ _ _)
@@ -231,9 +231,9 @@ the forgetful functor, we get a right adjoint!
 
 ```agda
   Forget⊣Cofree : πᶠ (Coalgebras-over W) ⊣ Cofree
-  Forget⊣Cofree .unit .η (x , α) .hom       = α .ρ
-  Forget⊣Cofree .unit .η (x , α) .preserves = α .ρ-comult
-  Forget⊣Cofree .unit .is-natural x y f = ext (sym (f .preserves))
+  Forget⊣Cofree .unit .η (x , α) .fst = α .ρ
+  Forget⊣Cofree .unit .η (x , α) .snd = α .ρ-comult
+  Forget⊣Cofree .unit .is-natural x y f = ext (sym (f .snd))
 
   Forget⊣Cofree .counit .η x              = W.ε x
   Forget⊣Cofree .counit .is-natural x y f = W.counit.is-natural _ _ _

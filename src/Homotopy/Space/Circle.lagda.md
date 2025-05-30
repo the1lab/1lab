@@ -300,7 +300,7 @@ loopⁿ-+ a = Integers.induction Int-integers
 
 π₁S¹≡ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid ≡ ℤ
 π₁S¹≡ℤ = sym $ ∫-Path
-  (total-hom (Equiv.from ΩS¹≃integers)
+  (∫hom (Equiv.from ΩS¹≃integers)
     (record { pres-⋆ = loopⁿ-+ }))
   ((ΩS¹≃integers e⁻¹) .snd)
 ```

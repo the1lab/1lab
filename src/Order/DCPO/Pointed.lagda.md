@@ -497,7 +497,7 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
   private
     module D = Pointed-dcpo D
     module E = Pointed-dcpo E
-  open Total-hom
+  open ∫Hom
   open is-directed-family
 ```
 -->

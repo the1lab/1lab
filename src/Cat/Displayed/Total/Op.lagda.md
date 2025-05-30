@@ -15,7 +15,7 @@ import Cat.Displayed.Reasoning as DR
 module Cat.Displayed.Total.Op where
 
 open Functor
-open Total-hom
+open ∫Hom
 ```
 
 # Total opposites {defines="total-opposite"}
@@ -48,11 +48,11 @@ on displayed categories.
 ```agda
 total-op-involution
   : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
-  → (ℰ ^total-op) ^total-op ≡ ℰ
+  → PathP (λ i → Displayed (C^op^op≡C {C = ℬ} i) o' ℓ') ((ℰ ^total-op) ^total-op) ℰ
 total-op-involution {ℰ = ℰ} = path where
   open Displayed
 
-  path : (ℰ ^total-op) ^total-op ≡ ℰ
+  path : PathP (λ i → Displayed _ _ _) ((ℰ ^total-op) ^total-op) ℰ
   path i .Ob[_] = ℰ .Ob[_]
   path i .Hom[_] = ℰ .Hom[_]
   path i .Hom[_]-set = ℰ .Hom[_]-set
@@ -63,12 +63,6 @@ total-op-involution {ℰ = ℰ} = path where
   path i .assoc' = ℰ .assoc'
 
 ```
-
-<!--
-```agda
-{-# REWRITE total-op-involution #-}
-```
--->
 
 ## The total opposites and total categories
 
@@ -83,13 +77,13 @@ equality reasons.
 ```agda
 total-op→total-hom
   : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
-  → ∀ {x y} → Total-hom (ℰ ^total-op) x y → Total-hom ℰ y x
-total-op→total-hom f = total-hom (f .hom) (f .preserves)
+  → ∀ {x y} → ∫Hom (ℰ ^total-op) x y → ∫Hom ℰ y x
+total-op→total-hom f = ∫hom (f .fst) (f .snd)
 
 total-hom→total-op
   : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
-  → ∀ {x y} → Total-hom ℰ y x → Total-hom (ℰ ^total-op) x y
-total-hom→total-op f = total-hom (f .hom) (f .preserves)
+  → ∀ {x y} → ∫Hom ℰ y x → ∫Hom (ℰ ^total-op) x y
+total-hom→total-op f = ∫hom (f .fst) (f .snd)
 ```
 
 Furthermore, these two maps constitute an equivalence, and thus yield
@@ -104,7 +98,7 @@ total-op→total-hom-is-equiv =
 
 total-op≡total-hom
   : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
-  → ∀ {x y} → Total-hom (ℰ ^total-op) x y ≡ Total-hom ℰ y x
+  → ∀ {x y} → ∫Hom (ℰ ^total-op) x y ≡ ∫Hom ℰ y x
 total-op≡total-hom = ua $ total-op→total-hom , total-op→total-hom-is-equiv
 ```
 
@@ -156,23 +150,3 @@ fibre-functor-total-op F .F-id = F .F-id
 fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
   ap (F .F₁) (DR.reindex ℰ _ _ ) ∙∙ F .F-∘ g f ∙∙ DR.reindex ℰ _ _
 ```
-
-<!--
-```agda
-fibre-functor-total-op-total-op
-  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'} {x y}
-  → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
-  → fibre-functor-total-op (fibre-functor-total-op F) ≡ F
-fibre-functor-total-op-total-op {F = F} i .F₀ = F .F₀
-fibre-functor-total-op-total-op {F = F} i .F₁ = F .F₁
-fibre-functor-total-op-total-op  {F = F} i .F-id = F .F-id
-fibre-functor-total-op-total-op {ℰ = ℰ} {y = y} {F = F} i .F-∘ f g =
-  is-prop→pathp (λ i → Hom-set  _ _ _ (F .F₁ f ∘ F .F₁ g))
-    ((fibre-functor-total-op (fibre-functor-total-op F)) .F-∘ f g)
-    (F .F-∘ f g)
-    i
-    where open Precategory (Fibre ℰ y)
-
-{-# REWRITE fibre-functor-total-op-total-op #-}
-```
--->
