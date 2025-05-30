@@ -133,7 +133,7 @@ $\rm{inr}(x) \within{0} \rm{inr}(y)$ is uninformative.
 ```agda
 open Coproduct
 open is-coproduct
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -153,13 +153,13 @@ OFE-Coproduct A B = mk where
   it = from-ofe-on (⊎-OFE (A .snd) (B .snd))
 
   disj : ∀ {Q} → OFEs.Hom A Q → OFEs.Hom B Q → OFEs.Hom it Q
-  disj f g .hom (inl x) = f · x
-  disj f g .hom (inr x) = g · x
-  disj {Q = Q} f g .preserves .pres-≈ {n = zero} _ = OFE-on.bounded (Q .snd) _ _
-  disj f g .preserves .pres-≈ {inl x} {inl y} {suc n} (lift α) =
-    f .preserves .pres-≈ α
-  disj f g .preserves .pres-≈ {inr x} {inr y} {suc n} (lift α) =
-    g .preserves .pres-≈ α
+  disj f g .fst (inl x) = f · x
+  disj f g .fst (inr x) = g · x
+  disj {Q = Q} f g .snd .pres-≈ {n = zero} _ = OFE-on.bounded (Q .snd) _ _
+  disj f g .snd .pres-≈ {inl x} {inl y} {suc n} (lift α) =
+    f .snd .pres-≈ α
+  disj f g .snd .pres-≈ {inr x} {inr y} {suc n} (lift α) =
+    g .snd .pres-≈ α
 ```
 
 We can then define the coprojections: since we must now produce an
@@ -168,14 +168,14 @@ produce a trivial datum.
 
 ```agda
   in0 : OFEs.Hom A it
-  in0 .hom = inl
-  in0 .preserves .pres-≈ {n = zero}  _ = lift tt
-  in0 .preserves .pres-≈ {n = suc n} α = lift α
+  in0 .fst = inl
+  in0 .snd .pres-≈ {n = zero}  _ = lift tt
+  in0 .snd .pres-≈ {n = suc n} α = lift α
 
   in1 : OFEs.Hom B it
-  in1 .hom = inr
-  in1 .preserves .pres-≈ {n = zero}  _ = lift tt
-  in1 .preserves .pres-≈ {n = suc n} α = lift α
+  in1 .fst = inr
+  in1 .snd .pres-≈ {n = zero}  _ = lift tt
+  in1 .snd .pres-≈ {n = suc n} α = lift α
 ```
 
 It suffices to show that all the relevant diagrams in the definition of

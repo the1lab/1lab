@@ -269,7 +269,7 @@ corepresentation-unique
 
 ```agda
 corepresentation-unique X Y =
-  is-ff→essentially-injective {F = Functor.op (よcov C)}
+  is-ff→essentially-injective {F = record { Functor (Functor.op (よcov C)) }}
     (よcov-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where

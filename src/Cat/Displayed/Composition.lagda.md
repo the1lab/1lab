@@ -45,10 +45,10 @@ _D∘_ {ℬ = ℬ} ℰ ℱ = disp where
   Displayed.Ob[ disp ] X =
     Σ[ X' ∈ ℰ.Ob[ X ] ] ℱ.Ob[ X , X' ]
   Displayed.Hom[ disp ] f X Y =
-    Σ[ f' ∈ ℰ.Hom[ f ] (X .fst) (Y .fst) ] ℱ.Hom[ total-hom f f' ] (X .snd) (Y .snd)
+    Σ[ f' ∈ ℰ.Hom[ f ] (X .fst) (Y .fst) ] ℱ.Hom[ ∫hom f f' ] (X .snd) (Y .snd)
   Displayed.Hom[ disp ]-set f x y =
     Σ-is-hlevel 2 (ℰ.Hom[ f ]-set (x .fst) (y .fst)) λ f' →
-    ℱ.Hom[ total-hom f f' ]-set (x .snd) (y .snd)
+    ℱ.Hom[ ∫hom f f' ]-set (x .snd) (y .snd)
   disp .Displayed.id' =
     ℰ.id' , ℱ.id'
   disp .Displayed._∘'_ f' g' =
@@ -122,8 +122,8 @@ this is exactly how we construct the liftings.
     ℰ∘ℱ-fib f (y' , y'') = f-lift where
 
       f-lift : Cartesian-lift (ℰ D∘ ℱ) f (y' , y'')
-      f-lift .x' = f ℰ.^* y' , total-hom f (ℰ.π* f y') ℱ.^* y''
-      f-lift .lifting = ℰ.π* f y' , ℱ.π* (total-hom f (ℰ.π* f y')) y''
+      f-lift .x' = f ℰ.^* y' , ∫hom f (ℰ.π* f y') ℱ.^* y''
+      f-lift .lifting = ℰ.π* f y' , ℱ.π* (∫hom f (ℰ.π* f y')) y''
 
 ```
 
@@ -139,14 +139,14 @@ universal.
 ```agda
       f-lift .cartesian .is-cartesian.universal m (h' , h'') =
         ℰ.π*.universal m h' ,
-        ℱ.π*.universal' (total-hom-path ℰ refl (ℰ.π*.commutes m h')) h''
+        ℱ.π*.universal' (∫Hom-path ℰ refl (ℰ.π*.commutes m h')) h''
       f-lift .cartesian .is-cartesian.commutes m h' =
         ℰ.π*.commutes m (h' .fst) ,ₚ
         ℱ.π*.commutesp _ (h' .snd)
       f-lift .cartesian .is-cartesian.unique m' p =
         ℰ.π*.unique (m' .fst) (ap fst p) ,ₚ
         ℱ.π*.uniquep _ _
-          (total-hom-path ℰ refl (ℰ.π*.commutes _ _))
+          (∫Hom-path ℰ refl (ℰ.π*.commutes _ _))
           (m' .snd)
           (ap snd p)
 ```

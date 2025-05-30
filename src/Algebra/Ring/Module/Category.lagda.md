@@ -28,7 +28,7 @@ private module R = Ring-on (R .snd)
 open Ab-category hiding (_+_)
 open is-additive hiding (_+_)
 open make-abelian-group
-open Total-hom
+open ∫Hom
 
 open Module-notation ⦃ ... ⦄
 open Additive-notation ⦃ ... ⦄
@@ -163,12 +163,12 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
 
   grp : make-abelian-group (R-Mod.Hom A B)
   grp .ab-is-set = R-Mod.Hom-set _ _
-  grp .mul f g .hom x = f · x + g · x
-  grp .mul f g .preserves = +-is-linear-map A B (f .preserves) (g .preserves)
-  grp .inv f .hom x = - f · x
-  grp .inv f .preserves = neg-is-linear-map A B (f .preserves)
-  grp .1g .hom x = 0g
-  grp .1g .preserves = 0-is-linear-map A B
+  grp .mul f g .fst x = f · x + g · x
+  grp .mul f g .snd = +-is-linear-map A B (f .snd) (g .snd)
+  grp .inv f .fst x = - f · x
+  grp .inv f .snd = neg-is-linear-map A B (f .snd)
+  grp .1g .fst x = 0g
+  grp .1g .snd = 0-is-linear-map A B
 
   grp .idl f       = ext λ x → +-idl
   grp .assoc f g h = ext λ x → +-assoc
@@ -177,7 +177,7 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
 
 R-Mod-ab-category .∘-linear-l f g h = trivial!
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = ext λ x →
-  sym (is-linear-map.pres-+ (f .preserves) _ _)
+  sym (is-linear-map.pres-+ (f .snd) _ _)
 ```
 -->
 
@@ -209,8 +209,8 @@ R-Mod-is-additive .has-terminal = term where
 
   term : Terminal (R-Mod R _)
   term .Terminal.top = ∅ᴹ
-  term .Terminal.has⊤ x .centre .hom _ = lift tt
-  term .Terminal.has⊤ x .centre .preserves .linear r s t = refl
+  term .Terminal.has⊤ x .centre .fst _ = lift tt
+  term .Terminal.has⊤ x .centre .snd .linear r s t = refl
   term .Terminal.has⊤ x .paths r = trivial!
 ```
 
@@ -252,13 +252,13 @@ path-mangling, but it's nothing _too_ bad:
 
   prod : Product (R-Mod _ _) M N
   prod .apex = M⊕ᵣN
-  prod .π₁ .hom = fst
-  prod .π₁ .preserves .linear r s t = refl
-  prod .π₂ .hom = snd
-  prod .π₂ .preserves .linear r s t = refl
-  prod .has-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
-  prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
-    Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
+  prod .π₁ .fst = fst
+  prod .π₁ .snd .linear r s t = refl
+  prod .π₂ .fst = snd
+  prod .π₂ .snd .linear r s t = refl
+  prod .has-is-product .⟨_,_⟩ f g .fst x = f · x , g · x
+  prod .has-is-product .⟨_,_⟩ f g .snd .linear r m s =
+    Σ-pathp (f .snd .linear _ _ _) (g .snd .linear _ _ _)
   prod .has-is-product .π₁∘⟨⟩ = trivial!
   prod .has-is-product .π₂∘⟨⟩ = trivial!
   prod .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x

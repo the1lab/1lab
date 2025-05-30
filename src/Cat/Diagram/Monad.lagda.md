@@ -16,8 +16,8 @@ import Cat.Reasoning
 
 open _=>_ using (is-natural)
 open Displayed
-open Total-hom
 open Functor
+open ∫Hom
 ```
 -->
 
@@ -248,7 +248,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {M : Monad-on F} wher
       → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
       → Extensional (Algebra-hom M (a , A) (b , B)) ℓr
     Extensional-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
-      (λ p → total-hom-path (Monad-algebras M) p prop!) sa
+      (λ p → ∫Hom-path (Monad-algebras M) p prop!) sa
 ```
 -->
 
@@ -280,11 +280,11 @@ routine algebra.
       open C.is-invertible f-inv
 
       f-alg-inv : Algebra-hom M (Y , β) (X , α)
-      f-alg-inv .hom = inv
-      f-alg-inv .preserves =
+      f-alg-inv .fst = inv
+      f-alg-inv .snd =
         inv C.∘ β .ν                                 ≡⟨ ap₂ C._∘_ refl (C.intror (MR.annihilate invl)) ⟩
-        inv C.∘ β .ν C.∘ M₁ (f .hom) C.∘ M.M₁ inv    ≡⟨ ap₂ C._∘_ refl (C.extendl (sym (f .preserves))) ⟩
-        inv C.∘ f .hom C.∘ α .ν C.∘ M.M₁ inv         ≡⟨ C.cancell invr ⟩
+        inv C.∘ β .ν C.∘ M₁ (f .fst) C.∘ M.M₁ inv    ≡⟨ ap₂ C._∘_ refl (C.extendl (sym (f .snd))) ⟩
+        inv C.∘ f .fst C.∘ α .ν C.∘ M.M₁ inv         ≡⟨ C.cancell invr ⟩
         α .ν C.∘ M₁ inv                              ∎
 ```
 
@@ -363,8 +363,8 @@ algebraic action:
 ~~~
 
 ```agda
-  Free-EM .F₁ f .hom = M₁ f
-  Free-EM .F₁ f .preserves = sym $ mult.is-natural _ _ _
+  Free-EM .F₁ f .fst = M₁ f
+  Free-EM .F₁ f .snd = sym $ mult.is-natural _ _ _
   Free-EM .F-id = ext M-id
   Free-EM .F-∘ f g = ext (M-∘ f g)
 ```
@@ -383,8 +383,8 @@ $\cC^M$.
   Free-EM⊣Forget-EM .unit =
     NT M.η M.unit.is-natural
   Free-EM⊣Forget-EM .counit =
-    NT (λ x → total-hom (x .snd .ν) (sym (x .snd .ν-mult)))
-      (λ x y f → ext (sym (f .preserves)))
+    NT (λ x → ∫hom (x .snd .ν) (sym (x .snd .ν-mult)))
+      (λ x y f → ext (sym (f .snd)))
   Free-EM⊣Forget-EM .zig = ext μ-unitr
   Free-EM⊣Forget-EM .zag {x} = x .snd .ν-unit
 ```
@@ -456,9 +456,9 @@ Eilenberg-Moore category can be restricted to the Kleisli category.
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit ._=>_.η = η
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit .is-natural = unit.is-natural
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit ._=>_.η ((X , α) , free) =
-    total-hom (α .ν) (sym (α .ν-mult))
+    ∫hom (α .ν) (sym (α .ν-mult))
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit .is-natural _ _ f =
-    ext (sym (f .preserves))
+    ext (sym (f .snd))
   Free-Kleisli⊣Forget-Kleisli ._⊣_.zig = ext μ-unitr
   Free-Kleisli⊣Forget-Kleisli ._⊣_.zag {(X , α) , free} =
     α . ν-unit

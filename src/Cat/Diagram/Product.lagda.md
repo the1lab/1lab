@@ -154,35 +154,32 @@ $P$, and symmetrically for $P' \to P$.
 
 ```agda
   ×-Unique : (p1 p2 : Product C A B) → apex p1 ≅ apex p2
-  ×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
-    where
-      module p1 = Product p1
-      module p2 = Product p2
+  ×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2 where
+    module p1 = Product p1
+    module p2 = Product p2
 
-      p1→p2 : Hom (apex p1) (apex p2)
-      p1→p2 = p2.⟨ p1.π₁ , p1.π₂ ⟩
+    p1→p2 : Hom (apex p1) (apex p2)
+    p1→p2 = p2.⟨ p1.π₁ , p1.π₂ ⟩
 
-      p2→p1 : Hom (apex p2) (apex p1)
-      p2→p1 = p1.⟨ p2.π₁ , p2.π₂ ⟩
+    p2→p1 : Hom (apex p2) (apex p1)
+    p2→p1 = p1.⟨ p2.π₁ , p2.π₂ ⟩
 ```
 
 These are unique because they are maps into products which commute with
 the projections.
 
 ```agda
-      p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
-      p1→p2→p1 =
-        p2.unique₂
-          (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₁∘⟨⟩ ∙∙ p1.π₁∘⟨⟩)
-          (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₂∘⟨⟩ ∙∙ p1.π₂∘⟨⟩)
-          (idr _) (idr _)
+    p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
+    p1→p2→p1 = p2.unique₂
+      (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₁∘⟨⟩ ∙∙ p1.π₁∘⟨⟩)
+      (assoc _ _ _ ∙∙ ap (_∘ _) p2.π₂∘⟨⟩ ∙∙ p1.π₂∘⟨⟩)
+      (idr _) (idr _)
 
-      p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
-      p2→p1→p2 =
-        p1.unique₂
-          (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₁∘⟨⟩ ∙∙ p2.π₁∘⟨⟩)
-          (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₂∘⟨⟩ ∙∙ p2.π₂∘⟨⟩)
-          (idr _) (idr _)
+    p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
+    p2→p1→p2 = p1.unique₂
+      (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₁∘⟨⟩ ∙∙ p2.π₁∘⟨⟩)
+      (assoc _ _ _ ∙∙ ap (_∘ _) p1.π₂∘⟨⟩ ∙∙ p2.π₂∘⟨⟩)
+      (idr _) (idr _)
 
   is-product-iso
     : ∀ {A A' B B' P} {π₁ : Hom P A} {π₂ : Hom P B}

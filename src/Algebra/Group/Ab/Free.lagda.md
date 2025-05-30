@@ -56,7 +56,7 @@ module _ {ℓ} (T : Type ℓ) (t-set : is-set T) where
   function→free-ab-hom G fn = morp where
     module G = Abelian-group-on (G .snd)
     go₀ : Free-group T → ⌞ G ⌟
-    go₀ = fold-free-group {G = G .fst , G.Abelian→Group-on} fn .hom
+    go₀ = fold-free-group {G = G .fst , G.Abelian→Group-on} fn .fst
 
     go : ⌞ Free-abelian T ⌟ → ⌞ G ⌟
     go (inc x)              = go₀ x
@@ -65,7 +65,7 @@ module _ {ℓ} (T : Type ℓ) (t-set : is-set T) where
       G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 
     morp : Ab.Hom (Free-abelian T) G
-    morp .hom = go
-    morp .preserves .pres-⋆ = elim! λ x y → refl
+    morp .fst = go
+    morp .snd .pres-⋆ = elim! λ x y → refl
 ```
 -->

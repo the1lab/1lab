@@ -46,11 +46,11 @@ and $g$.
       universal  : ∀ {F} {e' : Hom B F} (p : e' ∘ f ≡ e' ∘ g) → Hom E F
       factors    : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g}
                  → universal p ∘ coeq ≡ e'
-  
+
       unique     : ∀ {F} {e' : Hom B F} {p : e' ∘ f ≡ e' ∘ g} {colim : Hom E F}
                  → colim ∘ coeq ≡ e'
                  → colim ≡ universal p
-  
+
     unique₂
       : ∀ {F} {e' : Hom B F}  {o1 o2 : Hom E F}
       → (e' ∘ f ≡ e' ∘ g)
@@ -58,7 +58,7 @@ and $g$.
       → o2 ∘ coeq ≡ e'
       → o1 ≡ o2
     unique₂ p q r = unique {p = p} q ∙ sym (unique r)
-  
+
     id-coequalise : id ≡ universal coequal
     id-coequalise = unique (idl _)
 ```
@@ -72,7 +72,7 @@ its codomain:
       {coapex}  : Ob
       coeq      : Hom B coapex
       has-is-coeq : is-coequaliser f g coeq
-  
+
     open is-coequaliser has-is-coeq public
 ```
 
@@ -101,18 +101,17 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     universal (extendr coequal) ≡˘⟨ unique refl ⟩
     i                            ∎
     where open is-coequaliser equalises
-  
+
   coequaliser-unique
     : ∀ {E E'} {c1 : Hom A E} {c2 : Hom A E'}
     → is-coequaliser C f g c1
     → is-coequaliser C f g c2
     → E ≅ E'
-  coequaliser-unique {c1 = c1} {c2} co1 co2 =
-    make-iso
-      (co1 .universal {e' = c2} (co2 .coequal))
-      (co2 .universal {e' = c1} (co1 .coequal))
-      (unique₂ co2 (co2 .coequal) (pullr (co2 .factors) ∙ co1 .factors) (idl _))
-      (unique₂ co1 (co1 .coequal) (pullr (co1 .factors) ∙ co2 .factors) (idl _))
+  coequaliser-unique {c1 = c1} {c2} co1 co2 = make-iso
+    (co1 .universal {e' = c2} (co2 .coequal))
+    (co2 .universal {e' = c1} (co1 .coequal))
+    (unique₂ co2 (co2 .coequal) (pullr (co2 .factors) ∙ co1 .factors) (idl _))
+    (unique₂ co1 (co1 .coequal) (pullr (co1 .factors) ∙ co2 .factors) (idl _))
     where open is-coequaliser
 ```
 

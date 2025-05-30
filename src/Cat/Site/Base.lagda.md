@@ -579,8 +579,7 @@ $\psh(\cC)$'s good categorical properties --- we refer to it as the
   Sheaf = Σ[ p ∈ Functor (C ^op) (Sets ℓs) ] is-sheaf J p
 
   Sheaves : Precategory (o ⊔ ℓ ⊔ ℓc ⊔ lsuc ℓs) (o ⊔ ℓ ⊔ ℓs)
-  unquoteDef Sheaves = define-copattern Sheaves $
-    Restrict {C = PSh ℓs C} (is-sheaf J)
+  Sheaves with c ← Restrict {C = PSh ℓs C} (is-sheaf J) = record { Precategory c }
 
   forget-sheaf : Functor Sheaves (PSh ℓs C)
   forget-sheaf .F₀ (S , _) = S

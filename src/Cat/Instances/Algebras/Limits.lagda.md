@@ -28,7 +28,7 @@ private
   module M = Monad-on M
 
 open Algebra-on
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -108,20 +108,20 @@ $\cC$ later.
 
 ```agda
     em-lim : make-is-limit F _
-    em-lim .ψ j .hom = lim.ψ j
-    em-lim .ψ j .preserves = comm j
+    em-lim .ψ j .fst = lim.ψ j
+    em-lim .ψ j .snd = comm j
     em-lim .commutes f    = ext (lim.commutes f)
-    em-lim .universal eps p .hom =
-      lim.universal (λ j → eps j .hom) (λ f i → p f i .hom)
+    em-lim .universal eps p .fst =
+      lim.universal (λ j → eps j .fst) (λ f i → p f i .fst)
     em-lim .factors eps p =
       ext (lim.factors _ _)
     em-lim .unique eps p other q =
-      ext (lim.unique _ _ _ λ j i → q j i .hom)
-    em-lim .universal eps p .preserves = lim.unique₂ _
-      (λ f → C.pulll (F.F₁ f .preserves)
-           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap hom (p f))))
+      ext (lim.unique _ _ _ λ j i → q j i .fst)
+    em-lim .universal eps p .snd = lim.unique₂ _
+      (λ f → C.pulll (F.F₁ f .snd)
+           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap fst (p f))))
       (λ j → C.pulll (lim.factors _ _)
-           ∙ eps j .preserves)
+           ∙ eps j .snd)
       (λ j → C.pulll (comm j)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim.factors _ _)))
 ```
@@ -133,7 +133,7 @@ functor $U$ reflects limits: We already had an algebra structure
 ```agda
   Forget-reflects-limits : reflects-limit Forget-EM F
   Forget-reflects-limits {K} {eps} lim = to-is-limitp
-    (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .preserves))
+    (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .snd))
     trivial!
 ```
 
@@ -170,12 +170,12 @@ on each $F(j)$, we can "tuple" them into a big map $\nu = \langle \nu_j
     apex-algebra .ν =
       lim-over.universal (λ j → FAlg.ν j C.∘ M.M₁ (lim-over.ψ j)) comm where abstract
       comm : ∀ {x y} (f : J.Hom x y)
-            → F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
+            → F.₁ f .fst C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
             ≡ FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)
       comm {x} {y} f =
-        F.₁ f .hom C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .preserves) ⟩
-        FAlg.ν y C.∘ M.M₁ (F.₁ f .hom) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
-        FAlg.ν y C.∘ M.M₁ (F.₁ f .hom C.∘ lim-over.ψ x)        ≡⟨ C.refl⟩∘⟨ ap M.M₁ (lim-over.commutes f) ⟩
+        F.₁ f .fst C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .snd) ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .fst) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .fst C.∘ lim-over.ψ x)        ≡⟨ C.refl⟩∘⟨ ap M.M₁ (lim-over.commutes f) ⟩
         FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)                            ∎
 ```
 
@@ -201,7 +201,7 @@ more complicated.
           ∙∙ C.cancell (FAlg.ν-unit j))
       (λ j → C.idr _)
     apex-algebra .ν-mult = lim-over.unique₂ _
-      (λ f → C.pulll $ C.pulll (F.₁ f .preserves)
+      (λ f → C.pulll $ C.pulll (F.₁ f .snd)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.commutes f)))
       (λ j → C.pulll (lim-over.factors _ _)
           ∙∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)

@@ -90,8 +90,8 @@ must lift it.
 
 ```agda
     pow-hom : Groups.Hom (LiftGroup ℓ ℤ) G
-    pow-hom .hom (lift i) = pow i
-    pow-hom .preserves .pres-⋆ (lift a) (lift b) = pow-+ a b
+    pow-hom .fst (lift i) = pow i
+    pow-hom .snd .pres-⋆ (lift a) (lift b) = pow-+ a b
 ```
 
 This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
@@ -99,10 +99,10 @@ This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
 ```agda
     pow-unique : (g : Groups.Hom (LiftGroup ℓ ℤ) G) → g · 1 ≡ x → g ≡ pow-hom
     pow-unique g g1≡x = ext $ ℤ.map-out-unique (λ i → g · lift i)
-      (pres-id (g .preserves))
+      (pres-id (g .snd))
       λ y →
         g · lift ⌜ sucℤ y ⌝ ≡⟨ ap! (sym (+ℤ-oner y)) ⟩
-        g · lift (y +ℤ 1)   ≡⟨ g .preserves .pres-⋆ (lift y) 1 ⟩
+        g · lift (y +ℤ 1)   ≡⟨ g .snd .pres-⋆ (lift y) 1 ⟩
         g · lift y ⋆ g · 1  ≡⟨ ap (g · lift y ⋆_) g1≡x ⟩
         g · lift y ⋆ x      ∎
 

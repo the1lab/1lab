@@ -18,7 +18,7 @@ module Cat.Displayed.Diagram.Total.Product where
 
 <!--
 ```agda
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -197,8 +197,8 @@ to a product diagram in the [[total category]] of $\cE$.
   is-total-product→total-is-product
     : ∀ {x y p} {x' : Ob[ x ]} {y' : Ob[ y ]} {p' : Ob[ p ]}
     → {π₁ : ∫E.Hom (p , p') (x , x')} {π₂ : ∫E.Hom (p , p') (y , y')}
-    → {prod : is-product B (π₁ .hom) (π₂ .hom)}
-    → is-total-product E prod (π₁ .preserves) (π₂ .preserves)
+    → {prod : is-product B (π₁ .fst) (π₂ .fst)}
+    → is-total-product E prod (π₁ .snd) (π₂ .snd)
     → is-product (∫ E) π₁ π₂
 ```
 
@@ -212,15 +212,15 @@ to a product diagram in the [[total category]] of $\cE$.
 
     ∫prod : is-product (∫ E) π₁ π₂
     ∫prod .is-product.⟨_,_⟩ f g =
-      total-hom ⟨ f .hom , g .hom ⟩ ⟨ f .preserves , g .preserves ⟩'
+      ∫hom ⟨ f .fst , g .fst ⟩ ⟨ f .snd , g .snd ⟩'
     ∫prod .is-product.π₁∘⟨⟩ =
-      total-hom-path E π₁∘⟨⟩ π₁∘⟨⟩'
+      ∫Hom-path E π₁∘⟨⟩ π₁∘⟨⟩'
     ∫prod .is-product.π₂∘⟨⟩ =
-      total-hom-path E π₂∘⟨⟩ π₂∘⟨⟩'
+      ∫Hom-path E π₂∘⟨⟩ π₂∘⟨⟩'
     ∫prod .is-product.unique p1 p2 =
-      total-hom-path E
-        (unique (ap hom p1) (ap hom p2))
-        (unique' (ap preserves p1) (ap preserves p2))
+      ∫Hom-path E
+        (unique (ap fst p1) (ap fst p2))
+        (unique' (ap snd p1) (ap snd p2))
 ```
 </details>
 

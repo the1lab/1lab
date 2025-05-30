@@ -17,7 +17,7 @@ open import Cat.Prelude
 import Cat.Reasoning
 
 open Coalgebra-on
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -164,7 +164,7 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   Σ-seso : is-split-eso func
   Σ-seso y = cut (isom.inv ∘ y .map)
-           , Sl.make-iso into from' (ext (eliml refl)) (ext (eliml refl))
+           , Sl.make-iso! into from' (eliml refl) (eliml refl)
     where
     into : /-Hom _ _
     into .map = id
@@ -264,10 +264,10 @@ object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
         where module pb = Pullback (pullbacks (f ∘ p .map) f)
 
       ff : ∀ {x y} → is-iso (Comparison-CoEM Σf⊣f* .F₁ {x} {y})
-      ff .from g .map = g .hom .map
+      ff .from g .map = g .fst .map
       ff {x} {y} .from g .commutes =
-        y .map ∘ g .hom .map                       ≡˘⟨ pulll pby.p₂∘universal ⟩
-        pby.p₂ ∘ pby.universal _ ∘ g .hom .map     ≡˘⟨ refl⟩∘⟨ unext (g .preserves) ⟩
+        y .map ∘ g .fst .map                       ≡˘⟨ pulll pby.p₂∘universal ⟩
+        pby.p₂ ∘ pby.universal _ ∘ g .fst .map     ≡˘⟨ refl⟩∘⟨ unext (g .snd) ⟩
         pby.p₂ ∘ pby.universal _ ∘ pbx.universal _ ≡⟨ pulll pby.p₂∘universal ⟩
         pbx.p₂ ∘ pbx.universal _                   ≡⟨ pbx.p₂∘universal ⟩
         x .map                                     ∎

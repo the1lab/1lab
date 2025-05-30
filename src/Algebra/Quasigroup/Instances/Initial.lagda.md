@@ -25,7 +25,7 @@ The empty type trivially forms a [[quasigroup]].
 private variable
   ℓ : Level
 
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -50,8 +50,8 @@ of quasigroups, as there is a unique function out of the empty type.
 
 ```agda
 Empty-quasigroup-is-initial : is-initial (Quasigroups ℓ) Empty-quasigroup
-Empty-quasigroup-is-initial A .centre .hom ()
-Empty-quasigroup-is-initial A .centre .preserves .is-quasigroup-hom.pres-⋆ ()
+Empty-quasigroup-is-initial A .centre .fst ()
+Empty-quasigroup-is-initial A .centre .snd .is-quasigroup-hom.pres-⋆ ()
 Empty-quasigroup-is-initial A .paths f = ext λ ()
 
 Initial-quasigroup : Initial (Quasigroups ℓ)

@@ -161,12 +161,12 @@ prove that $\Sigma P$ is also discrete. Since the path type $N \equiv S$ in $\Si
 is equivalent to $P$, this concludes the proof.
 
 ```agda
-  Discrete-ΣP : Discrete (Susp ∣ P ∣)
-  Discrete-ΣP = ∥-∥-rec (Dec-is-hlevel 1 (Susp-prop-is-set (hlevel 1) _ _))
-    (λ f → Discrete-inj (fst ∘ f) (right-inverse→injective 2→Σ (snd ∘ f))
-                        Discrete-Bool)
-    section
+  instance
+    Discrete-ΣP : Discrete (Susp ∣ P ∣)
+    Discrete-ΣP = case section of λ f → Discrete-inj (fst ∘ f)
+      (right-inverse→injective 2→Σ (snd ∘ f))
+      Discrete-Bool
 
   AC→LEM : Dec ∣ P ∣
-  AC→LEM = Susp-prop-path (hlevel 1) <≃> Discrete-ΣP
+  AC→LEM = Susp-prop-path (hlevel 1) <≃> auto
 ```

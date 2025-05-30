@@ -21,7 +21,7 @@ module Cat.Displayed.Instances.Identity
 open Precategory B
 open Displayed
 open Functor
-open Total-hom
+open ∫Hom
 ```
 
 ## The identity bifibration
@@ -120,13 +120,13 @@ itself.
 ```agda
 IdDTotal : Functor B (∫ IdD)
 IdDTotal .F₀ x = x , tt
-IdDTotal .F₁ f = total-hom f (tt)
-IdDTotal .F-id = total-hom-path _ refl refl
-IdDTotal .F-∘ _ _ = total-hom-path _ refl refl
+IdDTotal .F₁ f = ∫hom f (tt)
+IdDTotal .F-id = ∫Hom-path _ refl refl
+IdDTotal .F-∘ _ _ = ∫Hom-path _ refl refl
 
 IdDTotal-is-iso : is-precat-iso IdDTotal
 IdDTotal-is-iso .is-precat-iso.has-is-ff =
-  is-iso→is-equiv (iso hom (λ _ → total-hom-path _ refl refl) (λ _ → refl))
+  is-iso→is-equiv (iso fst (λ _ → ∫Hom-path _ refl refl) (λ _ → refl))
 IdDTotal-is-iso .is-precat-iso.has-is-iso =
   is-iso→is-equiv (iso fst (λ _ → refl) (λ _ → refl))
 ```

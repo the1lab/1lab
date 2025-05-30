@@ -58,7 +58,7 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
 ```agda
 open Product
 open is-product
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -71,15 +71,15 @@ the argument is immediate:
 ```agda
 OFE-Product : ∀ {ℓ ℓ'} A B → Product (OFEs ℓ ℓ') A B
 OFE-Product A B .apex = from-ofe-on (×-OFE (A .snd) (B .snd))
-OFE-Product A B .π₁ .hom = fst
-OFE-Product A B .π₁ .preserves .pres-≈ = fst
+OFE-Product A B .π₁ .fst = fst
+OFE-Product A B .π₁ .snd .pres-≈ = fst
 
-OFE-Product A B .π₂ .hom = snd
-OFE-Product A B .π₂ .preserves .pres-≈ = snd
+OFE-Product A B .π₂ .fst = snd
+OFE-Product A B .π₂ .snd .pres-≈ = snd
 
-OFE-Product A B .has-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
-OFE-Product A B .has-is-product .⟨_,_⟩ f g .preserves .pres-≈ p =
-  f .preserves .pres-≈ p , g .preserves .pres-≈ p
+OFE-Product A B .has-is-product .⟨_,_⟩ f g .fst x = f · x , g · x
+OFE-Product A B .has-is-product .⟨_,_⟩ f g .snd .pres-≈ p =
+  f .snd .pres-≈ p , g .snd .pres-≈ p
 
 OFE-Product A B .has-is-product .π₁∘⟨⟩ = trivial!
 OFE-Product A B .has-is-product .π₂∘⟨⟩ = trivial!
@@ -172,12 +172,12 @@ OFE-Indexed-product
   → Indexed-product (OFEs ℓo ℓr) F
 OFE-Indexed-product F .ΠF = from-ofe-on $
   Π-OFE (λ i → ∣ F i .fst ∣) (λ i → F i .snd)
-OFE-Indexed-product F .π i .hom f = f i
-OFE-Indexed-product F .π i .preserves .pres-≈ α =
+OFE-Indexed-product F .π i .fst f = f i
+OFE-Indexed-product F .π i .snd .pres-≈ α =
   □-out! ((_$ i) <$> α .lower)
-OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i · x
-OFE-Indexed-product F .has-is-ip .tuple f .preserves .pres-≈ wit =
-  lift $ inc λ i → f i .preserves .pres-≈ wit
+OFE-Indexed-product F .has-is-ip .tuple f .fst x i = f i · x
+OFE-Indexed-product F .has-is-ip .tuple f .snd .pres-≈ wit =
+  lift $ inc λ i → f i .snd .pres-≈ wit
 OFE-Indexed-product F .has-is-ip .commute = trivial!
 OFE-Indexed-product F .has-is-ip .unique f prf =
   ext λ x y → prf y ·ₚ x

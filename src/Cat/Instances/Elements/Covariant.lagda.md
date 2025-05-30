@@ -112,9 +112,9 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   contravariant functor on $\cC\op$ (thus a functor $(\cC\op)\op = \cC \to \Sets$).
 
   ```agda
-  co-∫ : ∫ ≡ Contra.∫ (C ^op) P ^op
+  co-∫ : ∫ ≡ Contra.∫ (C ^op) (record { Functor P }) ^op
   co-∫ = Precategory-path F F-is-precat-iso where
-    F : Functor ∫ (Contra.∫ (C ^op) P ^op)
+    F : Functor ∫ (Contra.∫ (C ^op) (record { Functor P }) ^op)
     F .F₀ e = Contra.elem (e .ob) (e .section)
     F .F₁ h = Contra.elem-hom (h .hom) (h .commute)
     F .F-id = refl

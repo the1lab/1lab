@@ -465,8 +465,7 @@ cartesian-domain-unique
   → is-cartesian f f''
   → x' ≅↓ x''
 cartesian-domain-unique {f' = f'} {f'' = f''} f'-cart f''-cart =
-  make-iso[ id-iso ] to* from* invl* invr*
-  where
+  make-iso[ id-iso ] to* from* invl* invr* where
     module f' = is-cartesian f'-cart
     module f'' = is-cartesian f''-cart
 

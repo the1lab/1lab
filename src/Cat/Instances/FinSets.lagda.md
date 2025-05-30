@@ -18,6 +18,7 @@ open import Cat.Skeletal
 open import Cat.Prelude
 
 open import Data.Fin.Closure
+open import Data.Dec.Base
 open import Data.Fin
 open import Data.Nat
 

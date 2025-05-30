@@ -198,8 +198,8 @@ If `A` and `B` are [[discrete]], then so is `A ⊎ B`.
 ```agda
 instance
   Discrete-⊎ : ⦃ _ : Discrete A ⦄ ⦃ _ : Discrete B ⦄ → Discrete (A ⊎ B)
-  Discrete-⊎ {x = inl x} {inl y} = invmap (ap inl) inl-inj (x ≡? y)
-  Discrete-⊎ {x = inl x} {inr y} = no inl≠inr
-  Discrete-⊎ {x = inr x} {inl y} = no inr≠inl
-  Discrete-⊎ {x = inr x} {inr y} = invmap (ap inr) inr-inj (x ≡? y)
+  Discrete-⊎ .decide (inl x) (inl y) = invmap (ap inl) inl-inj (x ≡? y)
+  Discrete-⊎ .decide (inl x) (inr y) = no inl≠inr
+  Discrete-⊎ .decide (inr x) (inl y) = no inr≠inl
+  Discrete-⊎ .decide (inr x) (inr y) = invmap (ap inr) inr-inj (x ≡? y)
 ```

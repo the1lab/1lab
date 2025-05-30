@@ -118,9 +118,9 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
     : {𝔞 : ℙ ⌞ R ⌟} (idl : is-ideal 𝔞)
     → ideal→module 𝔞 idl R-Mod.↪ representable-module R
   ideal→submodule {𝔞 = 𝔞} idl = record
-    { mor   = total-hom fst (record { linear = λ _ _ _ → refl })
+    { mor   = ∫hom fst (record { linear = λ _ _ _ → refl })
     ; monic = λ {c = c} g h x → Structured-hom-path (R-Mod-structure R) $
-      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .hom) (h .hom) (ap hom x)
+      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .fst) (h .fst) (ap fst x)
     }
 ```
 

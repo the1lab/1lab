@@ -102,10 +102,10 @@ just-inj {x = x} = ap (from-just x)
 
 instance
   Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
-  Discrete-Maybe {x = just x} {just y}   = invmap (ap just) just-inj (x ≡? y)
-  Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
-  Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
-  Discrete-Maybe {x = nothing} {nothing} = yes refl
+  Discrete-Maybe .decide (just x) (just y) = invmap (ap just) just-inj (x ≡? y)
+  Discrete-Maybe .decide (just x) nothing  = no just≠nothing
+  Discrete-Maybe .decide nothing (just x)  = no nothing≠just
+  Discrete-Maybe .decide nothing nothing   = yes refl
 ```
 -->
 

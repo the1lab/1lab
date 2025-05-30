@@ -450,11 +450,10 @@ has decidable equality. It suffices to show that
 
 
 ```agda
-  instance
-    Discrete-W
-      : ⦃ _ : Discrete A ⦄
-      → ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
-      → Discrete (W A B)
+  mutual instance
+    Discrete-W'
+      : ⦃ _ : Discrete A ⦄ ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → {x y : W A B} → Dec (x ≡ y)
 ```
 
 Let `w` and `v` be a pair of elements of `W A B`. The obvious
@@ -463,7 +462,7 @@ Note that we use the [[inductive identity type|inductive-identity]] here:
 the reason for this will become evident shortly.
 
 ```agda
-    Discrete-W {x = w@(sup x f)} {y = v@(sup y g)} with x ≡ᵢ? y
+    Discrete-W' {x = w@(sup x f)} {y = v@(sup y g)} with x ≡ᵢ? y
 ```
 
 If the two labels are distinct, then `w` and `v` must be distinct.
@@ -526,6 +525,16 @@ w bx ≡ subtree v bx` and the resulting contradiction.
       apd (λ i → subtree (w=v i)) $
       is-set→cast-pathp B (Discrete→is-set auto) (λ i → bx)
 ```
+
+<!--
+```agda
+    Discrete-W
+      : ⦃ _ : Discrete A ⦄ ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → Discrete (W A B)
+    Discrete-W = lift λ x y → Discrete-W' {x} {y}
+    {-# OVERLAPPING Discrete-W' #-}
+```
+-->
 
 ## Path spaces of W-types
 

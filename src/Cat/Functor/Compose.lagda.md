@@ -180,14 +180,14 @@ module _ {F G : Functor C D} where
   open Cat.Functor.Reasoning
 
   _◂ni_ : F ≅ⁿ G → (H : Functor B C) → (F F∘ H) ≅ⁿ (G F∘ H)
-  (α ◂ni H) = make-iso _ (α .to ◂ H) (α .from ◂ H)
-    (ext λ _ → α .invl ηₚ _)
-    (ext λ _ → α .invr ηₚ _)
+  (α ◂ni H) = make-iso! _ (α .to ◂ H) (α .from ◂ H)
+    (λ _ → α .invl ηₚ _)
+    (λ _ → α .invr ηₚ _)
 
   _▸ni_ : (H : Functor D E) → F ≅ⁿ G → (H F∘ F) ≅ⁿ (H F∘ G)
-  (H ▸ni α) = make-iso _ (H ▸ α .to) (H ▸ α .from)
-    (ext λ _ → annihilate H (α .invl ηₚ _))
-    (ext λ _ → annihilate H (α .invr ηₚ _))
+  (H ▸ni α) = make-iso! _ (H ▸ α .to) (H ▸ α .from)
+    (λ _ → annihilate H (α .invl ηₚ _))
+    (λ _ → annihilate H (α .invr ηₚ _))
 ```
 -->
 
