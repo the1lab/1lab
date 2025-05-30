@@ -24,7 +24,7 @@ module Cat.Displayed.Univalence.Thin where
 ```agda
 open Cat.Displayed.Total public
 open Cat.Displayed.Base public
-open Total-hom public
+open ∫Hom public
 open Precategory
 open Displayed
 open Cat.Displayed.Morphism
@@ -120,7 +120,7 @@ By construction, such a category of structured objects admits a
   Forget-structure = πᶠ Thin-structure-over
 
   Structured-hom-path : is-faithful Forget-structure
-  Structured-hom-path p = total-hom-path Thin-structure-over p prop!
+  Structured-hom-path p = ∫Hom-path Thin-structure-over p prop!
 
 module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S} where
   private
@@ -138,7 +138,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     : ∀ {x y : So.Ob} (f : So.Hom x y)
     → (∀ {x y} (p : f · x ≡ f · y) → x ≡ y)
     → Som.is-monic f
-  Homomorphism-monic f wit g h p = ext λ x → wit (ap hom p $ₚ x)
+  Homomorphism-monic f wit g h p = ext λ x → wit (ap fst p $ₚ x)
 
 record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-structure ℓ' S) : Type (lsuc ℓ ⊔ o' ⊔ ℓ') where
   field
@@ -164,8 +164,8 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
     → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
     → a Som.≅ b
   total-iso f e = Som.make-iso
-    (total-hom (Equiv.to f) e)
-    (total-hom (Equiv.from f) (equiv-hom→inverse-hom f e))
+    (∫hom (Equiv.to f) e)
+    (∫hom (Equiv.from f) (equiv-hom→inverse-hom f e))
     (ext (Equiv.ε f))
     (ext (Equiv.η f))
 
@@ -176,7 +176,7 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
     → a ≡ b
   ∫-Path {a = a} {b = b} f eqv = Univalent.iso→path
     (Structured-objects-is-category spec)
-    (total-iso ((f ·_) , eqv) (f .preserves))
+    (total-iso ((f ·_) , eqv) (f .snd))
 
 open is-equational ⦃ ... ⦄ public
 ```

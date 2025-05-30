@@ -70,18 +70,18 @@ limits][rapl]).
 
 ```agda
   ⊕-proj₁ : Ab.Hom (G ⊕ H) G
-  ⊕-proj₁ .hom = fst
-  ⊕-proj₁ .preserves .pres-⋆ x y = refl
+  ⊕-proj₁ .fst = fst
+  ⊕-proj₁ .snd .pres-⋆ x y = refl
 
   ⊕-proj₂ : Ab.Hom (G ⊕ H) H
-  ⊕-proj₂ .hom = snd
-  ⊕-proj₂ .preserves .pres-⋆ x y = refl
+  ⊕-proj₂ .fst = snd
+  ⊕-proj₂ .snd .pres-⋆ x y = refl
 
   open is-product
   Direct-sum-is-product : is-product (Ab ℓ) {A = G} {H} {G ⊕ H} ⊕-proj₁ ⊕-proj₂
-  Direct-sum-is-product .⟨_,_⟩ f g .hom x = f · x , g · x
-  Direct-sum-is-product .⟨_,_⟩ f g .preserves .pres-⋆ x y =
-    Σ-pathp (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y)
+  Direct-sum-is-product .⟨_,_⟩ f g .fst x = f · x , g · x
+  Direct-sum-is-product .⟨_,_⟩ f g .snd .pres-⋆ x y =
+    Σ-pathp (f .snd .pres-⋆ x y) (g .snd .pres-⋆ x y)
 
   Direct-sum-is-product .π₁∘⟨⟩ = trivial!
   Direct-sum-is-product .π₂∘⟨⟩ = trivial!

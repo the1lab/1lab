@@ -130,11 +130,11 @@ $C\op$. We prove these correspondences here:
     → is-pullback (C ^op) p1 f p2 g → is-pushout C f p1 g p2
   is-co-pullback→is-pushout pb =
     record
-      { square = pb.square
-      ; universal = pb.universal
+      { square       = pb.square
+      ; universal    = pb.universal
       ; universal∘i₁ = pb.p₁∘universal
       ; universal∘i₂ = pb.p₂∘universal
-      ; unique = pb.unique
+      ; unique       = pb.unique
       }
     where module pb = is-pullback pb
 
@@ -143,11 +143,11 @@ $C\op$. We prove these correspondences here:
     → is-pushout C f p1 g p2 → is-pullback (C ^op) p1 f p2 g
   is-pushout→is-co-pullback po =
     record
-      { square      = po.square
+      { square       = po.square
       ; universal    = po.universal
       ; p₁∘universal = po.universal∘i₁
       ; p₂∘universal = po.universal∘i₂
-      ; unique      = po.unique
+      ; unique       = po.unique
       }
     where module po = is-pushout po
 ```
@@ -194,8 +194,7 @@ $C\op$. We prove these correspondences here:
       : ∀ {x y}
       → Cocone-hom F x y
       → Cone-hom F^op (Cocone→Co-cone y) (Cocone→Co-cone x)
-    Cocone-hom→Co-cone-hom ch .hom = ch .hom
-    Cocone-hom→Co-cone-hom ch .commutes = ch .commutes
+    Cocone-hom→Co-cone-hom ch = record { Cocone-hom ch }
 ```
 
 ## Co/limits

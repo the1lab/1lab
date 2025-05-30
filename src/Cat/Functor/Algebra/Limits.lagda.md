@@ -39,7 +39,7 @@ module _
     module J = Cat.Reasoning J
     module F = Cat.Functor.Reasoning F
     module K = Cat.Functor.Reasoning K
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -67,10 +67,10 @@ $F(\psi_{j}) : F(L) \to F(K(j))$ with the algebra $F(K(j)) \to K(j)$.
     apex .snd = L.universal (λ j → K.₀ j .snd ∘ F.₁ (L.ψ j)) comm where abstract
       comm
         : ∀ {i j : J.Ob} (f : J.Hom i j)
-        → K.₁ f .hom ∘ K.₀ i .snd ∘ F.₁ (L.ψ i) ≡ K.₀ j .snd ∘ F.₁ (L.ψ j)
+        → K.₁ f .fst ∘ K.₀ i .snd ∘ F.₁ (L.ψ i) ≡ K.₀ j .snd ∘ F.₁ (L.ψ j)
       comm {i} {j} f =
-        K.₁ f .hom ∘ K.₀ i .snd ∘ F.₁ (L.ψ i)         ≡⟨ pulll (K.₁ f .preserves) ⟩
-        (K.₀ j .snd ∘ F.₁ (K.₁ f .hom)) ∘ F.₁ (L.ψ i) ≡⟨ F.pullr (L.commutes f) ⟩
+        K.₁ f .fst ∘ K.₀ i .snd ∘ F.₁ (L.ψ i)         ≡⟨ pulll (K.₁ f .snd) ⟩
+        (K.₀ j .snd ∘ F.₁ (K.₁ f .fst)) ∘ F.₁ (L.ψ i) ≡⟨ F.pullr (L.commutes f) ⟩
         K.₀ j .snd ∘ F.₁ (L.ψ j)                      ∎
 ```
 
@@ -79,14 +79,14 @@ associated to $L$ are $F$-algebra homomorphisms.
 
 ```agda
     L' : make-is-limit K apex
-    L' .ψ j .hom = L.ψ j
-    L' .ψ j .preserves = L.factors _ _
-    L' .universal eps p .hom =
-      L.universal (λ j → eps j .hom) (λ f → ap hom (p f))
-    L' .universal eps p .preserves =
-      L.unique₂ (λ j → K.F₀ j .snd ∘ F.₁ (eps j .hom))
-        (λ f → pulll (K.₁ f .preserves) ∙ F.pullr (ap hom (p f)))
-        (λ j → pulll (L.factors _ _) ∙ eps j .preserves)
+    L' .ψ j .fst = L.ψ j
+    L' .ψ j .snd = L.factors _ _
+    L' .universal eps p .fst =
+      L.universal (λ j → eps j .fst) (λ f → ap fst (p f))
+    L' .universal eps p .snd =
+      L.unique₂ (λ j → K.F₀ j .snd ∘ F.₁ (eps j .fst))
+        (λ f → pulll (K.₁ f .snd) ∙ F.pullr (ap fst (p f)))
+        (λ j → pulll (L.factors _ _) ∙ eps j .snd)
         (λ j → pulll (L.factors _ _) ∙ F.pullr (L.factors _ _))
 ```
 
@@ -96,11 +96,11 @@ commute.
 
 ```agda
     L' .commutes f =
-      total-hom-path (F-Algebras F) (L.commutes f) prop!
+      ∫Hom-path (F-Algebras F) (L.commutes f) prop!
     L' .factors eps p =
-      total-hom-path (F-Algebras F) (L.factors _ _) prop!
+      ∫Hom-path (F-Algebras F) (L.factors _ _) prop!
     L' .unique eps p other q =
-      total-hom-path (F-Algebras F) (L.unique _ _ _ λ j → ap hom (q j)) prop!
+      ∫Hom-path (F-Algebras F) (L.unique _ _ _ λ j → ap fst (q j)) prop!
 ```
 
 <!--

@@ -194,10 +194,10 @@ paper, following the ring laws.
     ℤ↪R (negsuc x) R.* ℤ↪R (negsuc y)   ∎
 
   z→r : Rings.Hom Liftℤ R
-  z→r .hom (lift x) = ℤ↪R x
-  z→r .preserves .pres-id = refl
-  z→r .preserves .pres-+ (lift x) (lift y) = z-add x y
-  z→r .preserves .pres-* (lift x) (lift y) = z-mul x y
+  z→r .fst (lift x) = ℤ↪R x
+  z→r .snd .pres-id = refl
+  z→r .snd .pres-+ (lift x) (lift y) = z-add x y
+  z→r .snd .pres-* (lift x) (lift y) = z-mul x y
 ```
 
 The last thing we must show is that this is the _unique_ ring
@@ -218,7 +218,7 @@ evaluates to on $n$. So we're done!
 
 ```agda
   module _ (f : Rings.Hom Liftℤ R) where
-    private module f = is-ring-hom (f .preserves)
+    private module f = is-ring-hom (f .snd)
 
     f-pos : ∀ x → e x ≡ f · lift (pos x)
     f-pos zero = sym f.pres-0

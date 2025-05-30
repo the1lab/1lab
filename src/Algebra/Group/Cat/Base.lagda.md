@@ -96,8 +96,8 @@ LiftGroup {ℓ} ℓ' G = G' where
   G' .snd .has-is-group .inverser = ap lift G.inverser
 
 G→LiftG : ∀ {ℓ} (G : Group ℓ) → Groups.Hom G (LiftGroup lzero G)
-G→LiftG G .hom = lift
-G→LiftG G .preserves .pres-⋆ _ _ = refl
+G→LiftG G .fst = lift
+G→LiftG G .snd .pres-⋆ _ _ = refl
 ```
 -->
 

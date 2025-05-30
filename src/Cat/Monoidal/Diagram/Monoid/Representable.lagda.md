@@ -52,7 +52,7 @@ module _
   open Monoid-hom
   open Functor
   open _=>_
-  open Total-hom
+  open ∫Hom
   open Representation
 ```
 -->
@@ -161,8 +161,8 @@ is to show functoriality, which follows immediately:
   Mon→PshMon {m} mon .F₀ x .fst = el! (Hom x m)
   Mon→PshMon {m} mon .F₀ x .snd = Mon→Hom-mon x mon
 
-  Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
-  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
+  Mon→PshMon {m} mon .F₁ f .fst = _∘ f
+  Mon→PshMon {m} mon .F₁ f .snd = precompose-hom-mon-hom {mon = mon} f
 
   Mon→PshMon {m} mon .F-id    = ext idr
   Mon→PshMon {m} mon .F-∘ f g = ext λ h → assoc h g f
@@ -260,13 +260,13 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
   Mon→RepPShMon .F₀ (m , mon) .fst = Mon→PshMon mon
   Mon→RepPShMon .F₀ (m , mon) .snd = Mon→PshMon-rep mon
 
-  Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
-  Mon→RepPShMon .F₁ f .η x .preserves =
-    internal-mon-hom→hom-mon-hom (f .preserves)
-  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F₁ f .η x .fst = f .fst ∘_
+  Mon→RepPShMon .F₁ f .η x .snd =
+    internal-mon-hom→hom-mon-hom (f .snd)
+  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .fst) h g
 
   Mon→RepPShMon .F-id = ext λ x f → idl f
-  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .hom) (g .hom) h)
+  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .fst) (g .fst) h)
 ```
 
 This functor is a simultaneous restriction and corestriction of the
@@ -282,30 +282,30 @@ functor is also [[fully faithful]].
     → (α : Mon→PshMon m-mon => Mon→PshMon n-mon)
     → C-Monoid-hom (α .η m · id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
-    (α .η m · id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    (α .η m · id) ∘ (m-mon .η) ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩
     α .η top · (id ∘ m-mon .η) ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
-    α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
+    α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .snd .pres-id ⟩
     n-mon .η ∘ !               ≡⟨ elimr (!-unique _) ⟩
     n-mon .η                   ∎
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-μ =
-    α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩
     α .η (m ⊗₀ m) · (id ∘ m-mon .μ)                        ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
-    α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
+    α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .snd .pres-⋆ _ _ ⟩
     n-mon .μ ∘ ⟨ α .η _ · π₁ , α .η _ · π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ ·_) (idl _)) (ap (α .η _ ·_) (idl _))) ⟩
-    n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
+    n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap fst (α .is-natural _ _ _) $ₚ _) (ap fst (α .is-natural _ _ _) $ₚ _)) ⟩
     n-mon .μ ∘ (α .η m · id ⊗₁ α .η m · id)                ∎
 
   open is-iso
 
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
-    .from α .hom       → α .η _ · id
-    .from α .preserves → Nat→internal-mon-hom α
+    .from α .fst → α .η _ · id
+    .from α .snd → Nat→internal-mon-hom α
     .rinv α → ext λ _ f →
-      α .η _ · id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+      α .η _ · id ∘ f   ≡˘⟨ ap fst (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ · (id ∘ f) ≡⟨ ap (α .η _ ·_) (idl f) ⟩
       α .η _ · f        ∎
-    .linv h → total-hom-path _ (idr _) prop!
+    .linv h → ∫Hom-path _ (idr _) prop!
 ```
 
 # Internalizing presheaves of monoids
@@ -472,7 +472,7 @@ substitution.
       → η* x ∘ f ≡ η* w
     η*-nat {w} {x} f =
       (η* x) ∘ f                  ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
-      gen (P .F₁ f .hom identity) ≡⟨ ap gen (P .F₁ f .preserves .pres-id) ⟩
+      gen (P .F₁ f .fst identity) ≡⟨ ap gen (P .F₁ f .snd .pres-id) ⟩
       η* w ∎
 
     μ*-nat
@@ -480,9 +480,9 @@ substitution.
       → μ* f g ∘ h ≡ μ* (f ∘ h) (g ∘ h)
     μ*-nat f g h =
       μ* f g ∘ h                                            ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
-      gen (P .F₁ h .hom ((elt f) ⋆ (elt g)))                ≡⟨ ap gen (P .F₁ h .preserves .pres-⋆ _ _) ⟩
-      gen ((P .F₁ h .hom (elt f)) ⋆ (P .F₁ h .hom (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (repr.from .is-natural _ _ _ $ₚ _) (repr.from .is-natural _ _ _ $ₚ _)) ⟩
-      μ* (f ∘ h) (g ∘ h) ∎
+      gen (P .F₁ h .fst ((elt f) ⋆ (elt g)))                ≡⟨ ap gen (P .F₁ h .snd .pres-⋆ _ _) ⟩
+      gen ((P .F₁ h .fst (elt f)) ⋆ (P .F₁ h .fst (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (repr.from .is-natural _ _ _ $ₚ _) (repr.from .is-natural _ _ _ $ₚ _)) ⟩
+      μ* (f ∘ h) (g ∘ h)                                    ∎
 ```
 
 We now have a construction mapping representable presheaves to monoid
@@ -506,21 +506,21 @@ expand this `<details>` element.</summary>
 
 ```agda
     ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon P pm)) P
-    ni .eta x .hom = repr.from .η x
-    ni .inv x .hom = repr.to .η x
+    ni .eta x .fst = repr.from .η x
+    ni .inv x .fst = repr.to .η x
 
-    ni .eta x .preserves .pres-id =
+    ni .eta x .snd .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
       elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
       identity                   ∎
-    ni .eta x .preserves .pres-⋆ f g =
+    ni .eta x .snd .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
       elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
       (elt f ⋆ elt g)                            ∎
 
-    ni .inv x .preserves .pres-id = sym (η*-nat _)
-    ni .inv x .preserves .pres-⋆ f g =
+    ni .inv x .snd .pres-id = sym (η*-nat _)
+    ni .inv x .snd .pres-⋆ f g =
       gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩

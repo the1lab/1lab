@@ -88,32 +88,29 @@ module _ where
 
 ```agda
   +-Unique : (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
-  +-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
-    where
-      module c1 = Coproduct c1
-      module c2 = Coproduct c2
+  +-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2 where
+    module c1 = Coproduct c1
+    module c2 = Coproduct c2
 
-      c1→c2 : Hom (coapex c1) (coapex c2)
-      c1→c2 = c1.[ c2.ι₁ , c2.ι₂ ]
+    c1→c2 : Hom (coapex c1) (coapex c2)
+    c1→c2 = c1.[ c2.ι₁ , c2.ι₂ ]
 
-      c2→c1 : Hom (coapex c2) (coapex c1)
-      c2→c1 = c2.[ c1.ι₁ , c1.ι₂ ]
+    c2→c1 : Hom (coapex c2) (coapex c1)
+    c2→c1 = c2.[ c1.ι₁ , c1.ι₂ ]
 ```
 
 ```agda
-      c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
-      c1→c2→c1 =
-        c2.unique₂
-          (pullr c2.[]∘ι₁ ∙ c1.[]∘ι₁)
-          (pullr c2.[]∘ι₂ ∙ c1.[]∘ι₂)
-          (idl _) (idl _)
+    c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
+    c1→c2→c1 = c2.unique₂
+      (pullr c2.[]∘ι₁ ∙ c1.[]∘ι₁)
+      (pullr c2.[]∘ι₂ ∙ c1.[]∘ι₂)
+      (idl _) (idl _)
 
-      c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
-      c2→c1→c2 =
-        c1.unique₂
-          (pullr c1.[]∘ι₁ ∙ c2.[]∘ι₁)
-          (pullr c1.[]∘ι₂ ∙ c2.[]∘ι₂)
-          (idl _) (idl _)
+    c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
+    c2→c1→c2 = c1.unique₂
+      (pullr c1.[]∘ι₁ ∙ c2.[]∘ι₁)
+      (pullr c1.[]∘ι₂ ∙ c2.[]∘ι₂)
+      (idl _) (idl _)
 ```
 
 # Categories with all binary coproducts

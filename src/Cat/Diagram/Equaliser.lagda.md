@@ -120,10 +120,10 @@ of equalisers, and uniqueness ensures that these maps form an isomorphism.
     → is-equaliser C f g e
     → is-equaliser C f g e'
     → E ≅ E'
-  is-equaliser→iso {e = e} {e' = e'} eq eq' =
-    make-iso (eq' .universal (eq .equal)) (eq .universal (eq' .equal))
-      (unique₂ eq' (eq' .equal) (pulll (eq' .factors) ∙ eq .factors) (idr _))
-      (unique₂ eq (eq .equal) (pulll (eq .factors) ∙ eq' .factors) (idr _))
+  is-equaliser→iso {e = e} {e' = e'} eq eq' = make-iso
+    (eq' .universal (eq .equal)) (eq .universal (eq' .equal))
+    (unique₂ eq' (eq' .equal) (pulll (eq' .factors) ∙ eq .factors) (idr _))
+    (unique₂ eq (eq .equal) (pulll (eq .factors) ∙ eq' .factors) (idr _))
     where open is-equaliser
 ```
 

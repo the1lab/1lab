@@ -304,7 +304,7 @@ private
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-unquoteDef Sub = define-copattern Sub (λ y → Fibre' Subobjects y re coh)
+Sub y = record { Precategory (Fibre' Subobjects y re coh) }
 
 module Sub {y} = Cr (Sub y)
 ```

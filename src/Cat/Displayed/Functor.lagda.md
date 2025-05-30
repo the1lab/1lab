@@ -186,7 +186,7 @@ module
     H-Level-is-fibred-functor {n = n} =
       hlevel-instance (Iso→is-hlevel (suc n) eqv (hlevel (suc n)))
       where
-        private unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
+        unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
         open ℱ -- Needed for the is-cartesian H-Level instances.
 ```
 -->

@@ -25,7 +25,7 @@ private
 
 open Functor
 open Displayed
-open Total-hom
+open ∫Hom
 ```
 
 # The chaotic bifibration
@@ -172,17 +172,17 @@ The [[total category]] of the chaotic bifibration is isomorphic to the
 product of $\cB$ and $\cJ$.
 
 ```agda
-ChaoticTotal : Functor (B ×ᶜ J) (∫ Chaotic)
-ChaoticTotal .F₀ bj = bj
-ChaoticTotal .F₁ (f , g) = total-hom f g
-ChaoticTotal .F-id = total-hom-path Chaotic refl refl
-ChaoticTotal .F-∘ f g = total-hom-path Chaotic refl refl
+Chaotic-total : Functor (B ×ᶜ J) (∫ Chaotic)
+Chaotic-total .F₀ bj = bj
+Chaotic-total .F₁ (f , g) = ∫hom f g
+Chaotic-total .F-id = ∫Hom-path Chaotic refl refl
+Chaotic-total .F-∘ f g = ∫Hom-path Chaotic refl refl
 
-ChaoticTotal-is-iso : is-precat-iso ChaoticTotal
-ChaoticTotal-is-iso .is-precat-iso.has-is-ff =
+Chaotic-total-is-iso : is-precat-iso Chaotic-total
+Chaotic-total-is-iso .is-precat-iso.has-is-ff =
   is-iso→is-equiv
-    (iso (λ f → f .hom , f .preserves)
-    (λ _ → total-hom-path Chaotic refl refl)
+    (iso (λ f → f .fst , f .snd)
+    (λ _ → ∫Hom-path Chaotic refl refl)
     (λ _ → refl))
-ChaoticTotal-is-iso .is-precat-iso.has-is-iso = id-equiv
+Chaotic-total-is-iso .is-precat-iso.has-is-iso = id-equiv
 ```

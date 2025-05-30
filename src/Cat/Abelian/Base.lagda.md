@@ -21,7 +21,7 @@ import Algebra.Group.Ab.Hom as Ab
 
 import Cat.Reasoning as Cat
 
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -179,7 +179,7 @@ module _ where
   Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
   Ab-ab-category .∘-linear-l f g h = trivial!
   Ab-ab-category .∘-linear-r f g h = ext λ _ →
-    sym (f .preserves .is-group-hom.pres-⋆ _ _)
+    sym (f .snd .is-group-hom.pres-⋆ _ _)
 ```
 
 ## Additive categories {defines="additive-category"}

@@ -100,7 +100,7 @@ module _ {P Q : Poset o ℓ} where
     module Q = Poset Q
 
   open is-directed-family
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -179,7 +179,7 @@ P$ is a directed family, then $fs : I \to Q$ is still a directed family.
 <!--
 ```agda
 module _ where
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -322,7 +322,7 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
     module E = DCPO E
 
   open is-directed-family
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
