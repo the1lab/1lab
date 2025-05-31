@@ -181,8 +181,9 @@ contravariant, this means that the assignment $U \mapsto
 This presheaf has an important universal property: the natural
 transformations $X \to \operatorname{Sieves}$ correspond naturally to
 the [[subobjects|poset of subobjects]] of $X$. Categorically, we say
-that $\operatorname{Sieves}$ is a **subobject classifier** in the
-category $\psh(\cC)$.
+that $\operatorname{Sieves}$ is a [[subobject classifier]] in the
+category $\psh(\cC)$; for more details see [[subobject classifier
+presheaf]].
 
 ```agda
   Sieves : Functor (C ^op) (Sets (o ⊔ ℓ))

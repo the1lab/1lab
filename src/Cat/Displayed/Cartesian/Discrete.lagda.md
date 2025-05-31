@@ -333,7 +333,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
     open is-discrete-cartesian-fibration disc
 ```
 
-For each object in $X : \cB$, we take the set of objects $E$ that
+For each object $X : \cB$, we take the set of objects $E$ that
 lie over $X$. The functorial action of `f : Hom X Y` is then constructed
 by taking the domain of the lift of `f`. Functoriality follows by
 uniqueness of the lifts.

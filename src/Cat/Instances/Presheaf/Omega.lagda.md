@@ -29,12 +29,12 @@ open is-pullback
 module Cat.Instances.Presheaf.Omega {ℓ} (C : Precategory ℓ ℓ) where
 ```
 
-# The subobject classifier presheaf
+# The subobject classifier presheaf {defines="subobject-classifier-presheaf"}
 
 The purpose of this module is to prove that the category $\psh(\cC)$
 over a small precategory $\cC$ has a [[subobject classifier]]: the
 object $\Omega$ is the presheaf of [[sieves]] and the generic subobject
-$top$ sends each $U : \cC$ to the maximal sieve on $U$.
+$\top$ sends each $U : \cC$ to the maximal sieve on $U$.
 
 <!--
 ```agda
@@ -47,7 +47,7 @@ open _=>_
 -->
 
 ```agda
-tru : Terminal.top PSh-terminal => Sieves {C = C}
+tru : ⊤PSh => Sieves {C = C}
 tru .η x _            = maximal'
 tru .is-natural x y f = ext λ a {V} f → Ω-ua _ _
 ```
