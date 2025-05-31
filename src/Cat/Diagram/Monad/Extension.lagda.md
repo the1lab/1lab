@@ -323,7 +323,7 @@ that we shall omit.
       (α.ν ∘ M₁ f) ∘ bind g                    ≡⟨ pullr (bind-naturall _ _) ⟩
       α.ν ∘ bind ⌜ M₁ f ∘ g ⌝                  ≡⟨ ap! (insertl (bind-unit-∘ id)) ⟩
       α.ν ∘ bind (join ∘ unit ∘ M₁ f ∘ g)      ≡⟨ pushr (sym (bind-∘ _ _)) ⟩
-      (α.ν ∘ join) ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ pushl (sym $ α.ν-mult) ⟩
+      (α.ν ∘ join) ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ pushl α.ν-mult ⟩
       α.ν ∘ M₁ α.ν ∘ bind (unit ∘ M₁ f ∘ g)    ≡⟨ ap (α.ν ∘_) (bind-naturall _ _) ⟩
       α.ν ∘ bind ⌜ M₁ α.ν ∘ unit ∘ M₁ f ∘ g ⌝  ≡⟨ ap! (centralizel (sym $ unit-natural _)) ⟩
       α.ν ∘ bind (unit ∘ (α.ν ∘ M₁ f) ∘ g)     ∎
@@ -350,10 +350,10 @@ The proofs of the monad algebra laws are mercifully short.
 ```agda
     alg .ν-unit = α.ν-unit id
     alg .ν-mult =
-      α.ν id ∘ M₁ (α.ν id) ≡⟨ α.ν-natural _ _ ⟩
-      α.ν (id ∘ α.ν id)    ≡⟨ ap α.ν (idl _) ⟩
-      α.ν (α.ν id)         ≡˘⟨ α.ν-join id ⟩
-      α.ν id ∘ join ∎
+      α.ν id ∘ join        ≡⟨ α.ν-join id ⟩
+      α.ν (α.ν id)         ≡˘⟨ ap α.ν (idl _) ⟩
+      α.ν (id ∘ α.ν id)    ≡˘⟨ α.ν-natural _ _ ⟩
+      α.ν id ∘ M₁ (α.ν id) ∎
 ```
 
 As expected, these two functions constitute an equivalence between monad

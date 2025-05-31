@@ -89,12 +89,12 @@ module _
     c .fst alg → λ where
       .α → !constⁿ (alg .ν)
       .α-unit → ext λ _ → alg .ν-unit
-      .α-mult → ext λ _ → sym (alg .ν-mult)
+      .α-mult → ext λ _ → alg .ν-mult
     c .snd → is-iso→is-equiv λ where
       .is-iso.from act → λ where
         .ν → act .α .η tt
         .ν-unit → act .α-unit ηₚ tt
-        .ν-mult → sym (act .α-mult ηₚ tt)
+        .ν-mult → act .α-mult ηₚ tt
       .is-iso.rinv act → ext λ _ → refl
       .is-iso.linv alg → ext refl
 ```
@@ -124,7 +124,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Functor C C} (Mᵐ : Monad-on M) w
   Forget-EM-action .α .η (_ , alg) = alg .ν
   Forget-EM-action .α .is-natural _ _ f = sym (f .snd)
   Forget-EM-action .α-unit = ext λ (_ , alg) → alg .ν-unit
-  Forget-EM-action .α-mult = ext λ (_ , alg) → sym (alg .ν-mult)
+  Forget-EM-action .α-mult = ext λ (_ , alg) → alg .ν-mult
 ```
 
 And, second, that this left $M$-action is universal in the sense that
@@ -144,7 +144,7 @@ functors $\cB \to \cC$.
     EM-universal {A = A} act .F₀ b .fst = A .F₀ b
     EM-universal {A = A} act .F₀ b .snd .ν = act .α .η b
     EM-universal {A = A} act .F₀ b .snd .ν-unit = act .α-unit ηₚ b
-    EM-universal {A = A} act .F₀ b .snd .ν-mult = sym (act .α-mult ηₚ b)
+    EM-universal {A = A} act .F₀ b .snd .ν-mult = act .α-mult ηₚ b
     EM-universal {A = A} act .F₁ f .fst = A .F₁ f
     EM-universal {A = A} act .F₁ f .snd = sym (act .α .is-natural _ _ f)
     EM-universal {A = A} act .F-id = ext (A .F-id)
@@ -156,7 +156,7 @@ functors $\cB \to \cC$.
     EM→Action A^M .α .η b = A^M .F₀ b .snd .ν
     EM→Action A^M .α .is-natural _ _ f = sym (A^M .F₁ f .snd)
     EM→Action A^M .α-unit = ext λ b → A^M .F₀ b .snd .ν-unit
-    EM→Action A^M .α-mult = ext λ b → sym (A^M .F₀ b .snd .ν-mult)
+    EM→Action A^M .α-mult = ext λ b → A^M .F₀ b .snd .ν-mult
 ```
 
 Note that the universal action itself is induced by the identity

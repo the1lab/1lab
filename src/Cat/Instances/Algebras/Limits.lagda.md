@@ -202,12 +202,12 @@ more complicated.
     apex-algebra .ν-mult = lim-over.unique₂ _
       (λ f → C.pulll $ C.pulll (F.₁ f .snd)
            ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.commutes f)))
+      (λ j → C.pulll (lim-over.factors _ _))
       (λ j → C.pulll (lim-over.factors _ _)
           ∙∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)
-          ∙∙ C.extendl (FAlg.ν-mult j)
+          ∙∙ C.extendl (sym (FAlg.ν-mult j))
           ∙∙ ap (FAlg.ν j C.∘_) (M.mult.is-natural _ _ _)
           ∙∙ C.assoc _ _ _)
-      (λ j → C.pulll (lim-over.factors _ _))
 ```
 
 </details>

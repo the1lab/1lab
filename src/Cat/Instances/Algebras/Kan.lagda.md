@@ -130,7 +130,7 @@ property and some tedious computations.
           eq = ext λ j →
             eps .η j C.∘ Ext-action .α .η (p.₀ j) C.∘ M.M₁ (Ext-action .α .η (p.₀ j)) ≡⟨ C.extendl (σ-comm ηₚ j) ⟩
             G.₀ j .snd .ν C.∘ M.M₁ (eps .η j) C.∘ M.M₁ (Ext-action .α .η (p.₀ j))     ≡⟨ C.refl⟩∘⟨ MR.weave (σ-comm ηₚ j) ⟩
-            G.₀ j .snd .ν C.∘ M.M₁ (G.₀ j .snd .ν) C.∘ M.M₁ (M.M₁ (eps .η j))         ≡⟨ C.extendl (G.₀ j .snd .ν-mult) ⟩
+            G.₀ j .snd .ν C.∘ M.M₁ (G.₀ j .snd .ν) C.∘ M.M₁ (M.M₁ (eps .η j))         ≡˘⟨ C.extendl (G.₀ j .snd .ν-mult) ⟩
             G.₀ j .snd .ν C.∘ M.μ (G.₀ j .fst) C.∘ M.M₁ (M.M₁ (eps .η j))             ≡⟨ C.refl⟩∘⟨ M.mult .is-natural _ _ _ ⟩
             G.₀ j .snd .ν C.∘ M.M₁ (eps .η j) C.∘ M.μ (Ext.₀ (p.₀ j))                 ≡˘⟨ C.extendl (σ-comm ηₚ j) ⟩
             eps .η j C.∘ Ext-action .α .η (p.₀ j) C.∘ M.μ (Ext.₀ (p.₀ j))             ∎
