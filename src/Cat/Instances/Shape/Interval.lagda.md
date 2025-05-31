@@ -166,8 +166,8 @@ its "space of arrows". A point in this space is a "free-standing arrow":
 it comes equipped with its own domain and codomain. We note that, since
 a precategory has no upper bound on the h-level of its space of objects,
 its space of arrows also need not be particularly truncated. However,
-for a thin category it is a set, and for a [[univalent category]] it is a
-groupoid.
+for a [[univalent category]] it is a groupoid, and for a [[poset|posets
+as categories]] it is a set.
 
 An equivalent description of the space of arrows is as the collection of
 functors $[ \intcat, \cC ]$: a functor out of $\intcat$ corresponds
