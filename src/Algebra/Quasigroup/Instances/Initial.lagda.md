@@ -6,6 +6,7 @@ description: |
 ```agda
 open import Algebra.Quasigroup
 
+open import Cat.Diagram.Initial.Strict
 open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
 open import Cat.Prelude hiding (_/_)

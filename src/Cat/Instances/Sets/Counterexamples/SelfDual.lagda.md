@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Sets.Cocomplete using (Sets-initial)
+open import Cat.Diagram.Initial.Strict
 open import Cat.Diagram.Initial
 open import Cat.Instances.Sets using (Sets^op-is-category)
 open import Cat.Morphism
@@ -56,10 +57,9 @@ _ = ⊥
 ```
 -->
 
-Now we can observe an interesting property of the initial object of $\Sets$: it is *[strict]*, meaning every morphism into it is in fact an *iso*morphism.
+Now we can observe an interesting property of the initial object of $\Sets$: it is
+[[strict|strict initial object]], meaning every morphism into it is in fact an *iso*morphism.
 Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be empty.
-
-[strict]: Cat.Diagram.Initial.html#strictness
 
 ```agda
 Sets-strict-initial : Strict-initial (Sets ℓ)
