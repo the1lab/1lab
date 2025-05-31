@@ -24,6 +24,8 @@ open import Data.Sum
 
 import Cat.Reasoning
 
+open creates-colimit
+open lifts-colimit
 open Functor
 open _=>_
 ```
@@ -302,7 +304,7 @@ colimits, we get that $F$ is colimiting.
           (pulll (eq _ .p₁∘universal) ∙ pb _ _ .Pullback.p₂∘universal)
           (pulll (eq _ .p₂∘universal) ∙ pb _ _ .Pullback.p₁∘universal))
 
-      f*G-colim : preserves-lan (Base-change pb f) G-colim
+      f*G-colim : preserves-is-lan (Base-change pb f) G-colim
       f*G-colim = u f _ G-colim
 
       F-colim : is-colimit▹ (cocone▹→cocone/ F)
@@ -373,8 +375,8 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
         → is-colimit▹ (cocone▹→cocone/ F) ≃ is-colimit▹ (F F∘ ▹-in)
       colim/≃colim F =
         prop-ext!
-          (Forget/-preserves-colimits _ (J-colims _))
-          (Forget/-reflects-colimits _)
+          (lifts→preserves-colimit (Forget/-lifts-colimits (J-colims _)))
+          (Forget/-creates-colimits .reflects)
         ∙e trivial-colimit-equiv!
 
       step2≃3 : step2 ≃ step3

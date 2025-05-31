@@ -92,16 +92,16 @@ is indeed a group structure, which is an incredibly boring calculation.
     assoc : ∀ x y z → mult x (mult y z) ≡ mult (mult x y) z
     assoc x y z = sym $
       ν (inc (ν (inc x ◆ inc y)) ◆ inc z)                ≡⟨ (λ i → ν (inc (ν (inc x ◆ inc y)) ◆ inc (ν-unit (~ i) z))) ⟩
-      ν (inc (ν (inc x ◆ inc y)) ◆ inc (ν (inc z)))      ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
+      ν (inc (ν (inc x ◆ inc y)) ◆ inc (ν (inc z)))      ≡˘⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (T.mult.η G (inc (inc x ◆ inc y) ◆ inc (inc z))) ≡˘⟨ ap ν (f-assoc _ _ _) ⟩
-      ν (T.mult.η G (inc (inc x) ◆ inc (inc y ◆ inc z))) ≡˘⟨ happly ν-mult (inc _ ◆ inc _) ⟩
+      ν (T.mult.η G (inc (inc x) ◆ inc (inc y ◆ inc z))) ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (inc (ν (inc x)) ◆ inc (ν (inc y ◆ inc z)))      ≡⟨ (λ i → ν (inc (ν-unit i x) ◆ inc (ν (inc y ◆ inc z)))) ⟩
       ν (inc x ◆ inc (ν (inc y ◆ inc z)))                ∎
 
     invl : ∀ x → mult (ν (inv (inc x))) x ≡ ν nil
     invl x =
       ν (inc (ν (inv (inc x))) ◆ inc x)                ≡⟨ (λ i → ν (inc (ν (inv (inc x))) ◆ inc (ν-unit (~ i) x))) ⟩
-      ν (inc (ν (inv (inc x))) ◆ inc (ν (inc x)))      ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
+      ν (inc (ν (inv (inc x))) ◆ inc (ν (inc x)))      ≡˘⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (T.mult.η G (inc (inv (inc x)) ◆ inc (inc x))) ≡⟨ ap ν (f-invl _) ⟩
       ν (T.mult.η G (inc nil))                         ≡⟨⟩
       ν nil                                            ∎
@@ -109,7 +109,7 @@ is indeed a group structure, which is an incredibly boring calculation.
     idl' : ∀ x → mult (ν nil) x ≡ x
     idl' x =
       ν (inc (ν nil) ◆ inc x)            ≡⟨ (λ i → ν (inc (ν nil) ◆ inc (ν-unit (~ i) x))) ⟩
-      ν (inc (ν nil) ◆ inc (ν (inc x)))  ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
+      ν (inc (ν nil) ◆ inc (ν (inc x)))  ≡˘⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (T.mult.η G (nil ◆ inc (inc x))) ≡⟨ ap ν (f-idl _) ⟩
       ν (inc x)                          ≡⟨ happly ν-unit x ⟩
       x                                  ∎
@@ -174,14 +174,14 @@ but the other direction is by induction on "words".
     module G = Group-on grp
 
     alg-gh : is-group-hom (Free-Group ⌞ x ⌟ .snd) grp (x .snd .ν)
-    alg-gh .is-group-hom.pres-⋆ x y = sym (happly (alg .ν-mult) (inc _ ◆ inc _))
+    alg-gh .is-group-hom.pres-⋆ x y = happly (alg .ν-mult) (inc _ ◆ inc _)
 
     go : rec .hom ≡ x .snd .ν
     go = funext $ Free-elim-prop _ (λ _ → hlevel 1)
       (λ x → sym (happly (alg .ν-unit) x))
       (λ x p y q → rec .preserves .is-group-hom.pres-⋆ x y
                 ∙∙ ap₂ G._⋆_ p q
-                ∙∙ happly (alg .ν-mult) (inc _ ◆ inc _))
+                ∙∙ sym (happly (alg .ν-mult) (inc _ ◆ inc _)))
       (λ x p → is-group-hom.pres-inv (rec .preserves) {x = x}
               ∙∙ ap G.inverse p
               ∙∙ sym (is-group-hom.pres-inv alg-gh {x = x}))

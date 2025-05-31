@@ -296,19 +296,19 @@ these data assembles into a monoid:
         { has-is-magma = record { has-is-set = A .is-tr }
         ; associative  = λ {x} {y} {z} →
           alg .ν (⌜ x ⌝ ∷ alg .ν (y ∷ z ∷ []) ∷ [])               ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])     ≡⟨ happly (alg .ν-mult) _ ⟩
-          alg .ν (x ∷ y ∷ z ∷ [])                                 ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])     ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (x ∷ y ∷ z ∷ [])                                 ≡⟨ happly (alg .ν-mult) _ ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ ⌜ alg .ν (z ∷ []) ⌝ ∷ []) ≡⟨ ap! (happly (alg .ν-unit) z) ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                   ∎
         }
       has-is-m .idl {x} =
         alg .ν (alg .ν [] ∷ ⌜ x ⌝ ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-        alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡˘⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
       has-is-m .idr {x} =
         alg .ν (⌜ x ⌝ ∷ alg .ν [] ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-        alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡˘⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
 ```
@@ -322,7 +322,7 @@ can show by induction on the list:
     recover []       = refl
     recover (x ∷ xs) =
       alg .ν (x ∷ fold _ xs ∷ [])               ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
-      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ []) ≡⟨ happly (alg .ν-mult) _ ⟩
+      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ []) ≡˘⟨ happly (alg .ν-mult) _ ⟩
       alg .ν (x ∷ xs ++ [])                     ≡⟨ ap (alg .ν) (++-idr _) ⟩
       alg .ν (x ∷ xs)                           ∎
 ```
