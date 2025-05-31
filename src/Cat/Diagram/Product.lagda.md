@@ -102,8 +102,6 @@ A product of $A$ and $B$ is an explicit choice of product diagram:
     open is-product has-is-product public
 ```
 
-## Uniqueness {defines="uniqueness-of-products"}
-
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
@@ -111,8 +109,25 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
   private variable
     A B a b c d : Ob
+
+  is-product-is-prop : ∀ {X Y P} {p₁ : Hom P X} {p₂ : Hom P Y} → is-prop (is-product C p₁ p₂)
+  is-product-is-prop {X = X} {Y = Y} {p₁ = p₁} {p₂} x y = q where
+    open is-product
+    p : Path (∀ {P'} → Hom P' X → Hom P' Y → _) (x .⟨_,_⟩) (y .⟨_,_⟩)
+    p i p1 p2 = y .unique {p1 = p1} {p2} (x .π₁∘⟨⟩) (x .π₂∘⟨⟩) i
+    q : x ≡ y
+    q i .⟨_,_⟩ = p i
+    q i .π₁∘⟨⟩ {p1 = p1} {p2} = is-prop→pathp (λ i → Hom-set _ _ (p₁ ∘ p i p1 p2) p1) (x .π₁∘⟨⟩) (y .π₁∘⟨⟩) i
+    q i .π₂∘⟨⟩ {p1 = p1} {p2} = is-prop→pathp (λ i → Hom-set _ _ (p₂ ∘ p i p1 p2) p2) (x .π₂∘⟨⟩) (y .π₂∘⟨⟩) i
+    q i .unique {p1 = p1} {p2} {other} c₁ c₂ = is-prop→pathp (λ i → Hom-set _ _ other (p i p1 p2)) (x .unique c₁ c₂) (y .unique c₁ c₂) i
+
+  instance
+    H-Level-is-product : ∀ {X Y P} {p₁ : Hom P X} {p₂ : Hom P Y} {n} → H-Level (is-product C p₁ p₂) (suc n)
+    H-Level-is-product = prop-instance is-product-is-prop
 ```
 -->
+
+## Uniqueness {defines="uniqueness-of-products"}
 
 Products, when they exist, are unique. It's easiest to see this with a
 diagrammatic argument: If we have product diagrams $A \ot P \to B$ and
