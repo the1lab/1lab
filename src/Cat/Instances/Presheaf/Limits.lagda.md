@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Subterminal
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
@@ -41,7 +42,9 @@ the value of e.g. $(A \times B)(c)$ being the set $A(c) \times B(c)$.
 Therefore, the constructions below are mostly rote.
 
 First, the [[terminal]] presheaf is constantly the unit set, and all the
-laws (functoriality, naturality, universality) are trivial:
+laws (functoriality, naturality, universality) are trivial. More
+generally, a presheaf is [[terminal]] if it is valued in [[contractible]]
+types, and [[subterminal]] if it is valued in [[propositions]].
 
 ```agda
 ⊤PSh : ⌞ PSh κ C ⌟
@@ -50,12 +53,22 @@ laws (functoriality, naturality, universality) are trivial:
 ⊤PSh .F-id = refl
 ⊤PSh .F-∘ _ _ = refl
 
+contr→is-terminal-PSh
+  : ∀ (T : ⌞ PSh κ C ⌟)
+  → ⦃ ∀ {c n} → H-Level ⌞ T .F₀ c ⌟ n ⦄
+  → is-terminal (PSh κ C) T
+contr→is-terminal-PSh T _ .centre .η _ _ = hlevel 0 .centre
+contr→is-terminal-PSh T _ .centre .is-natural _ _ _ = prop!
+contr→is-terminal-PSh T _ .paths _ = ext λ _ _ → prop!
+
+prop→is-subterminal-PSh
+  : ∀ (T : ⌞ PSh κ C ⌟)
+  → ⦃ ∀ {c} → H-Level ⌞ T .F₀ c ⌟ 1 ⦄
+  → is-subterminal (PSh κ C) T
+prop→is-subterminal-PSh T _ _ _ = ext λ _ _ → prop!
+
 PSh-terminal : Terminal (PSh κ C)
-PSh-terminal = record { has⊤ = uniq } where
-  uniq : is-terminal (PSh κ C) ⊤PSh
-  uniq x .centre .η _ _ = lift tt
-  uniq x .centre .is-natural _ _ _ = refl
-  uniq x .paths f = trivial!
+PSh-terminal = record { has⊤ = contr→is-terminal-PSh ⊤PSh }
 ```
 
 The product presheaf is as described in the introduction, now with all
