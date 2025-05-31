@@ -458,7 +458,7 @@ the algebraically free monad via extension along $\mathrm{fold}$.
     lift-alg {a = a} α .ν = fold α
     lift-alg {a = a} α .ν-unit = zag
     lift-alg {a = a} α .ν-mult =
-      ap fst $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
+      ap fst $ sym $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
 ```
 
 Likewise, we can extract an $F$-algebra out of a monad algebra by
@@ -500,7 +500,7 @@ clear, but proving it involves quite a bit of algebra.
     alg* {a = a} α .snd =
       α .ν ∘ roll a                                            ≡⟨ intror (F.annihilate zag) ⟩
       (α .ν ∘ roll a) ∘ (F.₁ (mult a) ∘ F.₁ (unit.η _))        ≡⟨ pull-inner (sym $ fold-roll (roll a)) ⟩
-      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (sym $ α .ν-mult) ⟩
+      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (α .ν-mult) ⟩
       α .ν ∘ Free.₁ (α .ν) .fst ∘ roll (F* a) ∘ F.₁ (unit.η _) ≡⟨ extend-inner (map*-roll (α .ν)) ⟩
       α .ν ∘ roll a ∘ F.₁ (map* (α .ν)) ∘ F.₁ (unit.η _)       ≡⟨ centralizer (F.weave (sym (unit.is-natural _ _ _))) ⟩
       α .ν ∘ (roll a ∘ F.₁ (unit.η _)) ∘ F.₁ (α .ν)            ≡⟨ assoc _ _ _ ⟩
