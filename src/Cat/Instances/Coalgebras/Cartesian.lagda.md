@@ -351,12 +351,12 @@ formalised proof is a bit annoying, it's hidden in this
         {p = W.extendl (f .preserves)
           ∙∙ ap₂ _∘_ refl wit
           ∙∙ W.extendl (sym (g .preserves))}
-        (pulll (W.weave p'.p₁∘universal) ∙ pullr p'.p₁∘universal)
-        (pulll (W.weave p'.p₂∘universal) ∙ pullr p'.p₂∘universal)
-        (pulll (sym (comult.is-natural _ _ _)) ∙∙ pullr p'.p₁∘universal ∙∙ extendl (sym α.ρ-comult))
+        (pulll (sym (comult.is-natural _ _ _)) ∙∙ pullr p'.p₁∘universal ∙∙ extendl α.ρ-comult)
         (  pulll (sym (comult.is-natural _ _ _))
         ∙∙ pullr p'.p₂∘universal
-        ∙∙ extendl (sym β.ρ-comult))
+        ∙∙ extendl β.ρ-comult)
+        (pulll (W.weave p'.p₁∘universal) ∙ pullr p'.p₁∘universal)
+        (pulll (W.weave p'.p₂∘universal) ∙ pullr p'.p₂∘universal)
 ```
 
 </details>

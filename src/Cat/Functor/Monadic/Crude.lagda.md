@@ -183,7 +183,7 @@ we're seeking.
     η⁻¹η : adj.unit.η _ .hom C.∘ η⁻¹ ≡ C.id
     ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .hom ≡ C.id
 
-    η⁻¹ = preserved .universal {e' = o .snd .ν} (o .snd .ν-mult)
+    η⁻¹ = preserved .universal {e' = o .snd .ν} (sym (o .snd .ν-mult))
 
     η⁻¹η = is-coequaliser.unique₂ preserved
       {e' = U.₁ (has-coeq o .coeq)}

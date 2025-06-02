@@ -738,7 +738,7 @@ _ = is-lan
 _ = is-ran
 _ = cocomplete→lan
 _ = ff→pointwise-lan-ext
-_ = left-adjoint→left-extension
+_ = left-adjoint→preserves-lan
 _ = is-initial-cocone→is-colimit
 _ = is-colimit→is-initial-cocone
 _ = is-colimit→is-initial-cocone
@@ -750,7 +750,7 @@ _ = adjoint→is-absolute-lan
 * Definition 3.7.1: `is-lan`{.Agda}
 * Theorem 3.7.2: `cocomplete→lan`{.Agda}
 * Proposition 3.7.3: `ff→pointwise-lan-ext`{.Agda}
-* Proposition 3.7.4: `left-adjoint→left-extension`{.Agda}
+* Proposition 3.7.4: `left-adjoint→preserves-lan`{.Agda}
 * Proposition 3.7.5:
   * (⇒) `is-initial-cocone→is-colimit`{.Agda}
   * (⇐) `is-colimit→is-initial-cocone`{.Agda}

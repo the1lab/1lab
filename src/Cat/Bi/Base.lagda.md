@@ -316,7 +316,7 @@ module _ (B : Prebicategory o ℓ ℓ') where
 ```
 -->
 
-## The bicategory of categories {defines="Cat"}
+## The bicategory of categories {defines="Cat bicategory-of-categories"}
 
 Just like the prototypal example of categories is the category of sets,
 the prototypal example of bicategory is the bicategory of categories. We
