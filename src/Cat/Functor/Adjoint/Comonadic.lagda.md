@@ -76,7 +76,7 @@ Comparison-CoEM .F₀ x = L.₀ x , alg where
   alg : Coalgebra-on L∘R (L.₀ x)
   alg .Coalgebra-on.ρ = L.₁ (adj.unit.η _)
   alg .Coalgebra-on.ρ-counit = adj.zig
-  alg .Coalgebra-on.ρ-comult = L.weave (sym (adj.unit.is-natural _ _ _))
+  alg .Coalgebra-on.ρ-comult = L.weave (adj.unit.is-natural _ _ _)
 ```
 
 <details>

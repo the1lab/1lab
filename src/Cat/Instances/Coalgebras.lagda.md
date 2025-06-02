@@ -58,7 +58,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {W : Functor C C} (cm : Comonad-on W) w
     field
       ρ        : Hom A (W₀ A)
       ρ-counit : W.ε A ∘ ρ ≡ id
-      ρ-comult : W₁ ρ ∘ ρ ≡ δ A ∘ ρ
+      ρ-comult : δ A ∘ ρ ≡ W₁ ρ ∘ ρ
 ```
 
 This definition is rather abstract, but has a nice intuition in terms of
@@ -233,7 +233,7 @@ gives us **cofree coalgebras**.
   Cofree-coalgebra A .fst = W₀ A
   Cofree-coalgebra A .snd .ρ = δ _
   Cofree-coalgebra A .snd .ρ-counit = δ-unitr
-  Cofree-coalgebra A .snd .ρ-comult = δ-assoc
+  Cofree-coalgebra A .snd .ρ-comult = sym δ-assoc
 
   Cofree : Functor C (Coalgebras W)
   Cofree .F₀ = Cofree-coalgebra
@@ -251,7 +251,7 @@ the forgetful functor, we get a right adjoint!
 ```agda
   Forget⊣Cofree : πᶠ (Coalgebras-over W) ⊣ Cofree
   Forget⊣Cofree .unit .η (x , α) .fst = α .ρ
-  Forget⊣Cofree .unit .η (x , α) .snd = α .ρ-comult
+  Forget⊣Cofree .unit .η (x , α) .snd = sym (α .ρ-comult)
   Forget⊣Cofree .unit .is-natural x y f = ext (sym (f .snd))
 
   Forget⊣Cofree .counit .η x              = W.ε x
