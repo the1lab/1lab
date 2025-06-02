@@ -109,12 +109,12 @@ module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Coalgebras W)) wher
     coapex-coalgebra .ρ-comult = colim-over.unique₂ _
       (λ f → C.pullr $ C.pullr (sym (F.₁ f .snd))
            ∙ C.pulll (sym (W.W-∘ _ _) ∙ ap W.W₁ (colim-over.commutes f)))
-      (λ j → C.pullr (colim-over.factors _ _))
       (λ j → C.pullr (colim-over.factors _ _)
            ∙ sym (C.pulll (sym (W.W-∘ _ _) ∙ ap W.W₁ (colim-over.factors _ _) ∙ W.W-∘ _ _)
-               ∙∙ C.extendr (FAlg.ρ-comult j)
+               ∙∙ C.extendr (sym (FAlg.ρ-comult j))
                ∙∙ ap (C._∘ FAlg.ρ j) (sym (W.comult.is-natural _ _ _))
                 ∙ sym (C.assoc _ _ _)))
+      (λ j → C.pullr (colim-over.factors _ _))
 ```
 
 <!--
