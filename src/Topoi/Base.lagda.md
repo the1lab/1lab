@@ -295,7 +295,7 @@ sufficient (and necessary) to conclude fully-faithfulness.
   sets .has-ff {x} {y} = is-iso→is-equiv isic where
     open is-iso
     isic : is-iso (incl .F₁ {x} {y})
-    isic .inv  nt = nt .η _
+    isic .from nt = nt .η _
     isic .rinv nt = trivial!
     isic .linv f  = refl
 ```
@@ -386,13 +386,7 @@ Presheaf {κ} C = psh where
   psh .L = Id
   psh .L-lex .is-lex.pres-⊤ c = c
   psh .L-lex .is-lex.pres-pullback pb = pb
-  psh .L⊣ι = adj where
-    open _⊣_
-    adj : Id ⊣ Id
-    adj .unit = NT (λ _ → idnt) λ x y f → trivial!
-    adj .counit = NT (λ _ → idnt) λ x y f → trivial!
-    adj .zig = trivial!
-    adj .zag = trivial!
+  psh .L⊣ι = Id⊣Id
 ```
 
 # Properties of topoi
@@ -575,7 +569,7 @@ functor.
   Slice-topos : Topos ℓ (Slice C X)
   Slice-topos .site = ∫ T.site (T.ι.F₀ X)
   Slice-topos .ι = slice→total F∘ Sliced (T.ι) X
-  Slice-topos .has-ff = ∙-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
+  Slice-topos .has-ff = ∘-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
   Slice-topos .L = (Σf (T .L⊣ι.counit.ε _) F∘ Sliced (T.L) (T.ι.F₀ X)) F∘ total→slice
 
   Slice-topos .L-lex =
@@ -704,7 +698,7 @@ record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o' ℓ') : Type (lvl
 Geometric-embeddings-compose : Geom[ F ↪ G ] → Geom[ E ↪ F ] → Geom[ E ↪ G ]
 Geometric-embeddings-compose f g =
   record { morphism = f .morphism G∘ g .morphism
-         ; has-ff = ∙-is-equiv (g .has-ff) (f .has-ff) }
+         ; has-ff = ∘-is-equiv (g .has-ff) (f .has-ff) }
   where open Geom[_↪_]
 
 Topos→geometric-embedding : (T : Topos κ E) → Geom[ E ↪ PSh κ (T .Topos.site) ]

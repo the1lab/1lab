@@ -189,7 +189,7 @@ Fin-suc-Π
 Fin-suc-Π = Iso→Equiv λ where
   .fst f → f fzero , (λ x → f (fsuc x))
 
-  .snd .is-iso.inv (z , s) → fin-cons z s
+  .snd .is-iso.from (z , s) → fin-cons z s
 
   .snd .is-iso.rinv x → refl
 
@@ -432,4 +432,7 @@ from-ℕ< (i , p) = fin i ⦃ forget p ⦄
 
 to-ℕ< : ∀ {n} → Fin n → ℕ< n
 to-ℕ< (fin i ⦃ forget p ⦄) = i , recover p
+
+fsuc-is-embedding : ∀ {n} → is-embedding (fsuc {n})
+fsuc-is-embedding = injective→is-embedding! fsuc-inj
 ```

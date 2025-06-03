@@ -200,6 +200,22 @@ paths in `Hom`{.Agda}-sets.
   from-pathp-from {C = C} p q = ap₂ _∘_ (path→to-sym (sym p)) refl
                               ∙ from-pathp-to p q
 
+  from-pathp-from'
+    : ∀ {A B C} (p : A ≡ B) {f g}
+    → PathP (λ i → Hom (p i) C) f g
+    → f ∘ path→iso p .from ≡ g
+  from-pathp-from' {C = C} p q =
+    J (λ B p → ∀ {f g} → PathP (λ i → Hom (p i) C) f g
+             → f ∘ path→iso p .from ≡ g)
+      (λ q → elimr (transport-refl _) ∙ q) p q
+
+  from-pathp-to'
+    : ∀ {A B C} (p : A ≡ B) {f g}
+    → PathP (λ i → Hom (p i) C) f g
+    → f ∘ path→iso (sym p) .to ≡ g
+  from-pathp-to' {C = C} p q = ap₂ _∘_ refl (sym (path→to-sym p))
+                             ∙ from-pathp-from' p q
+
 module Univalent {o h} {C : Precategory o h} (r : is-category C) where
   open Univalent' r public
 

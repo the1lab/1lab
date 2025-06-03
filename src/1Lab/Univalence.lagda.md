@@ -93,10 +93,8 @@ open import 1Lab.Equiv.FromPath
 -->
 
 ```agda
-Glue : (A : Type ℓ)
-     → {φ : I}
-     → (Te : Partial φ (Σ[ T ∈ Type ℓ' ] T ≃ A))
-     → Type ℓ'
+Glue
+  : (A : Type ℓ) {φ : I} (Te : Partial φ (Σ[ T ∈ Type ℓ' ] T ≃ A)) → Type ℓ'
 ```
 
 The public interface of `Glue`{.Agda} demands a type $A$, called the
@@ -227,10 +225,10 @@ generalisation of the uniqueness of path compositions: Any open box has
 a contractible space of fillers.
 
 ```agda
-hcomp≡Glue : ∀ {ℓ} {φ} (u : ∀ i → Partial (φ ∨ ~ i) (Type ℓ))
-           → hcomp φ u
-           ≡ Glue (u i0 1=1)
-              (λ { (φ = i1) → u i1 1=1 , line→equiv (λ j → u (~ j) 1=1) })
+hcomp≡Glue
+  : ∀ {ℓ} {φ} (u : ∀ i → Partial (φ ∨ ~ i) (Type ℓ))
+  → hcomp φ u
+  ≡ Glue (u i0 1=1) λ { (φ = i1) → u i1 1=1 , line→equiv (λ j → u (~ j) 1=1) }
 hcomp≡Glue {φ = φ} u = hcomp-unique φ u (glue-hfill φ u)
 ```
 
@@ -364,9 +362,10 @@ mentioning extensions: A path `x ≡ y` over `ua e` induces a path `e .fst
 x ≡ y`.
 
 ```agda
-ua-pathp→path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
-              → PathP (λ i → ua e i) x y
-              → e .fst x ≡ y
+ua-pathp→path
+  : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+  → PathP (λ i → ua e i) x y
+  → e .fst x ≡ y
 ua-pathp→path e p i = ua-unglue e i (p i)
 ```
 
@@ -379,10 +378,10 @@ can complete this to a path in $\rm{ua}(e)$, which agrees with $x$ and
 $y$ where these are defined.
 
 ```agda
-ua-glue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I)
-            (x : Partial (~ i) A)
-            (y : B [ _ ↦ (λ { (i = i0) → e .fst (x 1=1) }) ])
-          → ua e i
+ua-glue
+  : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : Partial (~ i) A)
+      (y : B [ _ ↦ (λ { (i = i0) → e .fst (x 1=1) }) ])
+  → ua e i
 ua-glue e i x y = prim^glue {φ = i ∨ ~ i}
   (λ { (i = i0) → x 1=1
      ; (i = i1) → outS y })
@@ -395,9 +394,10 @@ equivalence $e$. Factoring in the type of the interval, we get the
 promised map between dependent paths over `ua`{.Agda} and paths in B.
 
 ```agda
-path→ua-pathp : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
-              → e .fst x ≡ y
-              → PathP (λ i → ua e i) x y
+path→ua-pathp
+  : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+  → e .fst x ≡ y
+  → PathP (λ i → ua e i) x y
 path→ua-pathp e {x = x} p i = ua-glue e i (λ { (i = i0) → x }) (inS (p i))
 ```
 
@@ -409,8 +409,10 @@ of non-dependent paths.
 ua-pathp≃path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
               → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
 ua-pathp≃path eqv .fst = path→ua-pathp eqv
-ua-pathp≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-pathp→path eqv) y .fst
-ua-pathp≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-pathp→path eqv) y .snd
+ua-pathp≃path eqv .snd = is-iso→is-equiv λ where
+  .is-iso.from   → ua-pathp→path eqv
+  .is-iso.linv x → refl
+  .is-iso.rinv x → refl
 ```
 
 # The “axiom” {defines=univalence-axiom}
@@ -475,7 +477,7 @@ univalence⁻¹ : {A B : Type ℓ} → is-equiv (ua {A = A} {B})
 
 Path≃Equiv {A = A} {B = B} = path→equiv , iiso where
   iiso : is-iso path→equiv
-  iiso .is-iso.inv = ua
+  iiso .is-iso.from = ua
 ```
 
 We show that `path→equiv` inverts `ua`{.Agda}, which means proving that
@@ -500,7 +502,7 @@ equivalence to `refl`{.Agda} (`ua-id-equiv`{.Agda}).
     J (λ _ p → ua (path→equiv p) ≡ p)
       (ap ua path→equiv-refl ∙ ua-id-equiv)
 
-univalence {A = A} {B} = is-iso→is-equiv (Path≃Equiv .snd)
+univalence   {A = A} {B} = is-iso→is-equiv (Path≃Equiv .snd)
 univalence⁻¹ {A = A} {B} = is-iso→is-equiv (is-iso.inverse (Path≃Equiv .snd))
 ```
 
@@ -509,14 +511,13 @@ In some situations, it is helpful to have a proof that
 ident=lift} is still an equivalence:
 
 ```agda
-univalence-lift : {A B : Type ℓ} → is-equiv (λ e → lift (path→equiv {A = A} {B} e))
-univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
-  morp : is-iso (λ e → lift {ℓ = lsuc ℓ} (path→equiv e))
-  morp .is-iso.inv x = ua (x .lower)
-  morp .is-iso.rinv x =
-    lift (path→equiv (ua (x .lower))) ≡⟨ ap lift (Path≃Equiv .snd .is-iso.rinv _) ⟩
-    x                                 ∎
-  morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
+univalence-lift
+  : ∀ {A B : Type ℓ} ℓ'
+  → is-equiv (λ e → lift {ℓ = ℓ'} (path→equiv {A = A} {B} e))
+univalence-lift {ℓ = ℓ} ℓ' = is-iso→is-equiv λ where
+  .is-iso.from x → ua (x .lower)
+  .is-iso.rinv x → ap lift (Path≃Equiv .snd .is-iso.rinv _)
+  .is-iso.linv x → Path≃Equiv .snd .is-iso.linv _
 ```
 
 ## Equivalence induction {defines="equivalence-induction"}
@@ -550,8 +551,8 @@ EquivJ : ∀ {ℓ ℓ'} {A : Type ℓ}
        → P A (_ , id-equiv)
        → {B : Type ℓ} (e : A ≃ B)
        → P B e
-EquivJ P pid eqv =
-  subst (λ e → P (e .fst) (e .snd)) (Equiv-is-contr _ .is-contr.paths (_ , eqv)) pid
+EquivJ P pid eqv = subst (λ e → P (e .fst) (e .snd))
+  (Equiv-is-contr _ .is-contr.paths (_ , eqv)) pid
 ```
 
 [^2]: Not the fundamental theorem of engineering!
@@ -562,10 +563,10 @@ equivalences. For example, if $f$ is an equivalence, then so is its
 
 ```agda
 private
-  is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
-                        → (f : A → B) → is-equiv f
-                        → {x y : A}
-                        → is-equiv (ap f {x = x} {y = y})
+  is-equiv→is-embedding
+    : ∀ {ℓ} {A B : Type ℓ} (f : A → B) → is-equiv f
+    → {x y : A}
+    → is-equiv (ap f {x = x} {y = y})
   is-equiv→is-embedding f eqv =
     EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
 ```
@@ -627,12 +628,11 @@ structure on the interval, and the “spread” operation `coe1→i`{.Agda}.
 -- HoTT book lemma 4.8.1
 Fibre-equiv : (B : A → Type ℓ') (a : A)
             → fibre (fst {B = B}) a ≃ B a
-Fibre-equiv B a = Iso→Equiv isom where
-  isom : Iso _ _
-  isom .fst ((x , y) , p) = subst B p y
-  isom .snd .inv x        = (a , x) , refl
-  isom .snd .rinv x i     = coe1→i (λ _ → B a) i x
-  isom .snd .linv ((x , y) , p) i =
+Fibre-equiv B a .fst ((x , y) , p) = subst B p y
+Fibre-equiv B a .snd = is-iso→is-equiv λ where
+  .is-iso.from x   → (a , x) , refl
+  .is-iso.rinv x i → coe1→i (λ _ → B a) i x
+  .is-iso.linv ((x , y) , p) i →
     (p (~ i) , coe1→i (λ j → B (p (~ i ∧ ~ j))) i y) , λ j → p (~ i ∨ j)
 ```
 
@@ -645,12 +645,11 @@ to `Σ`{.Agda} the "total space" of a type family.
 
 ```agda
 Total-equiv : (p : E → B) → E ≃ Σ B (fibre p)
-Total-equiv p = Iso→Equiv isom where
-  isom : Iso _ (Σ _ (fibre p))
-  isom .fst x                   = p x , x , refl
-  isom .snd .inv (_ , x , _)    = x
-  isom .snd .rinv (b , x , q) i = q i , x , λ j → q (i ∧ j)
-  isom .snd .linv x             = refl
+Total-equiv p .fst x = p x , x , refl
+Total-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from (_ , x , _)   → x
+  .is-iso.rinv (b , x , q) i → q i , x , λ j → q (i ∧ j)
+  .is-iso.linv x             → refl
 ```
 
 Putting these together, we get the promised theorem: The space of maps
@@ -664,17 +663,17 @@ taking fibres and taking total spaces are inverses. Without `ua`{.Agda},
 we could only get an "isomorphism-up-to-equivalence" of types.
 
 ```agda
-Fibration-equiv : ∀ {ℓ ℓ'} {B : Type ℓ}
-                → (Σ[ E ∈ Type (ℓ ⊔ ℓ') ] (E → B))
-                ≃ (B → Type (ℓ ⊔ ℓ'))
-Fibration-equiv {B = B} = Iso→Equiv isom where
-  isom : Iso (Σ[ E ∈ Type _ ] (E → B)) (B → Type _)
-  isom .fst (E , p)       = fibre p
-  isom .snd .inv p⁻¹      = Σ _ p⁻¹ , fst
-  isom .snd .rinv prep i x = ua (Fibre-equiv prep x) i
-  isom .snd .linv (E , p) i
-    = ua e (~ i) , λ x → fst (ua-unglue e (~ i) x)
-    where e = Total-equiv p
+Fibration-equiv
+  : ∀ {ℓ ℓ'} {B : Type ℓ}
+  → (Σ[ E ∈ Type (ℓ ⊔ ℓ') ] (E → B))
+  ≃ (B → Type (ℓ ⊔ ℓ'))
+Fibration-equiv {B = B} .fst (E , p) = fibre p
+Fibration-equiv {B = B} .snd = is-iso→is-equiv λ where
+  .is-iso.from p⁻¹       → Σ _ p⁻¹ , fst
+  .is-iso.rinv prep i x  → ua (Fibre-equiv prep x) i
+  .is-iso.linv (E , p) i →
+    let e = Total-equiv p
+     in ua e (~ i) , λ x → ua-unglue e (~ i) x .fst
 ```
 
 To solidify the explanation that object classifiers generalise the
@@ -728,7 +727,7 @@ Map-classifier
   : ∀ {ℓ ℓ' ℓ''} {B : Type ℓ'} (P : Type (ℓ ⊔ ℓ') → Type ℓ'')
   → (ℓ /[ P ] B) ≃ (B → Σ _ P)
 Map-classifier {ℓ = ℓ} {B = B} P =
-  (Σ _ λ A → Σ _ λ f → (x : B) → P (fibre f x))     ≃⟨ Σ-assoc ⟩
+  (Σ _ λ A → Σ _ λ f → (x : B) → P (fibre f x))   ≃⟨ Σ-assoc ⟩
   (Σ _ λ { (x , f) → (x : B) → P (fibre f x) })   ≃⟨ Σ-ap-fst (Fibration-equiv {ℓ' = ℓ}) ⟩
   (Σ _ λ A → (x : B) → P (A x))                   ≃⟨ Σ-Π-distrib e⁻¹ ⟩
   (B → Σ _ P)                                     ≃∎

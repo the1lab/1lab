@@ -95,12 +95,12 @@ Cospan-hom cs-c cs-c = Lift _ ⊤ -- identity on c
 
 instance
   Finite-Cospan-ob : ∀ {ℓ} → Finite (Cospan-ob ℓ)
-  Finite-Cospan-ob = fin {cardinality = 3} (inc (Iso→Equiv i)) where
+  Finite-Cospan-ob = inc (Equiv→listing (Equiv.inverse (Iso→Equiv i)) (Listing-Fin {n = 3})) where
     i : Iso _ _
     i .fst cs-a = 0
     i .fst cs-b = 1
     i .fst cs-c = 2
-    i .snd .is-iso.inv = indexₚ (cs-a , cs-b , cs-c , tt)
+    i .snd .is-iso.from = indexₚ (cs-a , cs-b , cs-c , tt)
     i .snd .is-iso.rinv = indexₚ (refl , refl , refl , tt)
     i .snd .is-iso.linv cs-a = refl
     i .snd .is-iso.linv cs-b = refl

@@ -77,7 +77,7 @@ structure.
 
   lambda-is-equiv : ∀ {C} → is-equiv (ƛ {C})
   lambda-is-equiv = is-iso→is-equiv λ where
-    .is-iso.inv    → unlambda
+    .is-iso.from   → unlambda
     .is-iso.rinv x → sym (unique x refl)
     .is-iso.linv x → commutes x
 ```

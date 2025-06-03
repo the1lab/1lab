@@ -2,9 +2,14 @@
 ```agda
 open import Cat.Prelude
 
+open import Data.Finset.Properties
 open import Data.Fin.Indexed
+open import Data.Finset.Base
 open import Data.Fin.Finite
 open import Data.Fin.Base using (Fin ; suc ; zero ; fsuc ; fzero ; fin-view)
+open import Data.Sum.Base
+
+open import Meta.Idiom
 
 open import Order.Semilattice.Join
 open import Order.Diagram.Bottom
@@ -12,7 +17,7 @@ open import Order.Diagram.Join
 open import Order.Diagram.Lub
 open import Order.Base
 
-import Order.Diagram.Join.Reasoning as Joins
+import Order.Semilattice.Join.Reasoning as Joins
 ```
 -->
 
@@ -26,8 +31,7 @@ open is-lub
 open Lub
 
 module _ {o ℓ} {P : Poset o ℓ} (l : is-join-semilattice P) where
-  open is-join-semilattice l
-  open Poset P
+  open Joins l
 ```
 -->
 
@@ -38,7 +42,7 @@ elements of $P$. We can compute joins of $f$ in $P$ via induction on the
 size of the family.
 
 ```agda
-  ⋃ᶠ : ∀ {n} (f : Fin n → Ob) → Ob
+  ⋃ᶠ : ∀ {n} (f : Fin n → ⌞ P ⌟) → ⌞ P ⌟
   ⋃ᶠ {0}           f = bot
   ⋃ᶠ {1}           f = f fzero
   ⋃ᶠ {suc (suc n)} f = f fzero ∪ ⋃ᶠ (λ i → f (fsuc i))
@@ -68,6 +72,43 @@ Let $I$ be a finitely indexed set with enumeration $e$, and let $f : I \to P$
 be an $I$-indexed family in $P$. $f \circ e$ is a finite family in $P$, so it must
 have a least upper bound. Furthermore, $e$ is surjective, so it must reflect the
 least upper bound.
+
+<!--
+```agda
+  ⋃ᶠˢ : Finset ⌞ P ⌟ → ⌞ P ⌟
+  ⋃ᶠˢ []       = bot
+  ⋃ᶠˢ (x ∷ xs) = x ∪ ⋃ᶠˢ xs
+  ⋃ᶠˢ (∷-dup x xs i) = along i $
+    x ∪ x ∪ ⋃ᶠˢ xs ≡⟨ ∪.pulll ∪-idem ⟩
+    x ∪ ⋃ᶠˢ xs     ∎
+  ⋃ᶠˢ (∷-swap x y xs i) = along i $
+    x ∪ y ∪ ⋃ᶠˢ xs ≡⟨ ∪.extendl ∪-comm ⟩
+    y ∪ x ∪ ⋃ᶠˢ xs ∎
+  ⋃ᶠˢ (squash x y p q i j) = hlevel 2 (⋃ᶠˢ x) (⋃ᶠˢ y) (λ i → ⋃ᶠˢ (p i)) (λ i → ⋃ᶠˢ (q i)) i j
+
+  abstract
+    ⋃ᶠˢ-inj : {x : ⌞ P ⌟} (xs : Finset ⌞ P ⌟) → x ∈ xs → x ≤ ⋃ᶠˢ xs
+    ⋃ᶠˢ-inj {x} xs = ∈ᶠˢ-elim (λ xs _ → x ≤ ⋃ᶠˢ xs) l≤∪ (λ q r → ≤-trans r r≤∪) xs
+
+    ⋃ᶠˢ-univ
+      : (xs : Finset ⌞ P ⌟) {o : ⌞ P ⌟}
+      → ((x : ⌞ P ⌟) → x ∈ᶠˢ xs → x ≤ o)
+      → ⋃ᶠˢ xs ≤ o
+    ⋃ᶠˢ-univ xs {o} = Finset-elim-prop (λ xs → ((x : ⌞ P ⌟) → x ∈ᶠˢ xs → x ≤ o) → ⋃ᶠˢ xs ≤ o)
+      (λ _ → ¡)
+      (λ x ih le → ∪-universal o (le x hereₛ) (ih (λ y w → le y (thereₛ w))))
+      xs
+
+    ⋃ᶠˢ-union : (xs ys : Finset ⌞ P ⌟) → ⋃ᶠˢ (xs <> ys) ≡ (⋃ᶠˢ xs ∪ ⋃ᶠˢ ys)
+    ⋃ᶠˢ-union xs ys = ≤-antisym
+      (⋃ᶠˢ-univ (xs <> ys) λ x m → case ∈ᶠˢ-union _ xs ys m of λ where
+        (inl x) → ≤-trans (⋃ᶠˢ-inj xs x) l≤∪
+        (inr x) → ≤-trans (⋃ᶠˢ-inj ys x) r≤∪)
+      (∪-universal _
+        (⋃ᶠˢ-univ xs λ x m → ⋃ᶠˢ-inj (xs <> ys) (unionl-∈ᶠˢ _ xs ys m))
+        (⋃ᶠˢ-univ ys λ x m → ⋃ᶠˢ-inj (xs <> ys) (unionr-∈ᶠˢ _ xs ys m)))
+```
+-->
 
 ```agda
   opaque
@@ -103,6 +144,9 @@ module
     f · (k fzero) Qₗ.∪ f · (⋃ᶠ Pl (k ⊙ fsuc)) ≡⟨ ap₂ Qₗ._∪_ refl (pres-⋃ᶠ (k ⊙ fsuc)) ⟩
     ⋃ᶠ Ql (apply f ⊙ k)                       ∎
 
+  pres-⋃ᶠˢ : ∀ xs → f · ⋃ᶠˢ Pl xs ≡ ⋃ᶠˢ Ql (map (f ·_) xs)
+  pres-⋃ᶠˢ = Finset-elim-prop _ pres-bot (λ x ih → pres-∪ _ _ ∙ ap₂ Qₗ._∪_ refl ih)
+
   pres-fin-lub
     : ∀ {n} (k : Fin n → ⌞ P ⌟) (x : ⌞ P ⌟)
     → is-lub P k x
@@ -123,11 +167,14 @@ module
     → (k : I → ⌞ P ⌟)
     → (x : ⌞ P ⌟)
     → is-lub P k x
-    → is-lub Q (λ x → f · (k x)) (f · x)
-  pres-finite-lub I-finite k x P-lub = case I-finite .enumeration of λ enum →
-    cast-is-lub (enum e⁻¹) (λ _ → refl) $
-    pres-fin-lub (k ⊙ Equiv.from enum) x $
-    cast-is-lub enum (λ x → sym (ap k (Equiv.η enum x))) P-lub
+    → is-lub Q (λ x → f · k x) (f · x)
+  pres-finite-lub I-finite k x P-lub = ∥-∥-out! do
+    li ← I-finite
+    let enum = listing→equiv-fin li
+    pure $
+      cast-is-lub (enum e⁻¹) (λ _ → refl) $
+      pres-fin-lub (k ⊙ Equiv.from enum) x $
+      cast-is-lub enum (λ x → sym (ap k (Equiv.η enum x))) P-lub
 ```
 
 As a corollary, join semilattice homomorphisms must also preserve joins of
@@ -140,7 +187,7 @@ finitely-indexed sets.
     → (k : I → ⌞ P ⌟)
     → (x : ⌞ P ⌟)
     → is-lub P k x
-    → is-lub Q (λ x → f · (k x)) (f · x)
+    → is-lub Q (λ x → f · k x) (f · x)
   pres-finitely-indexed-lub I-fin-indexed k x P-lub = case I-fin-indexed of λ cov →
     cover-reflects-is-lub (Finite-cover.is-cover cov) $
     pres-fin-lub (k ⊙ Finite-cover.cover cov) x $

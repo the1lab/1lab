@@ -61,7 +61,7 @@ expressions which are easy to cancel using naturality and functoriality:
 ```agda
   yo-is-equiv : ∀ {U} → is-equiv (yo {U})
   yo-is-equiv = is-iso→is-equiv λ where
-    .is-iso.inv  n → unyo n
+    .is-iso.from   → unyo
     .is-iso.rinv x → ext λ i h →
       yo (unyo x) .η i h ≡˘⟨ x .is-natural _ _ _ · _ ⟩
       x .η i (id ∘ h)    ≡⟨ ap (x .η i) (idl h) ⟩

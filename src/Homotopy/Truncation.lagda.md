@@ -261,11 +261,11 @@ n-Tr-univ
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} n
   → is-hlevel B (suc n)
   → (n-Tr A (suc n) → B) ≃ (A → B)
-n-Tr-univ n b-hl = Iso→Equiv λ where
-  .fst              f → f ∘ inc
-  .snd .is-iso.inv  f → n-Tr-rec b-hl f
-  .snd .is-iso.rinv f → refl
-  .snd .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
+n-Tr-univ n b-hl .fst f = f ∘ inc
+n-Tr-univ n b-hl .snd = is-iso→is-equiv λ where
+  .is-iso.from f → n-Tr-rec b-hl f
+  .is-iso.rinv f → refl
+  .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
 ```
 
 ```agda
@@ -291,7 +291,7 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv where
   open is-iso
 
   distrib-is-iso : is-iso distrib
-  distrib-is-iso .inv (x , y)  = pair x y
+  distrib-is-iso .from (x , y)  = pair x y
   distrib-is-iso .rinv = elim! λ x y → refl
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 
@@ -303,7 +303,7 @@ n-Tr-Σ
 n-Tr-Σ {A = A} {B} {n} = Iso→Equiv is where
   is : Iso _ _
   is .fst = n-Tr-map (Σ-map id inc)
-  is .snd .is-iso.inv = n-Tr-rec! λ (a , b) → n-Tr-map (a ,_) b
+  is .snd .is-iso.from = n-Tr-rec! λ (a , b) → n-Tr-map (a ,_) b
   is .snd .is-iso.rinv = n-Tr-elim! _ λ (a , b) → n-Tr-elim! (λ b → n-Tr-map (Σ-map id inc) (n-Tr-map (a ,_) b) ≡ inc (a , b)) (λ _ → refl) b
   is .snd .is-iso.linv = n-Tr-elim! _ λ _ → refl
 
@@ -313,7 +313,7 @@ n-Tr-≃
 n-Tr-≃ e = Iso→Equiv is where
   is : Iso _ _
   is .fst = n-Tr-map (e .fst)
-  is .snd .is-iso.inv = n-Tr-map (Equiv.from e)
+  is .snd .is-iso.from = n-Tr-map (Equiv.from e)
   is .snd .is-iso.rinv = elim! λ _ → ap inc (Equiv.ε e _)
   is .snd .is-iso.linv = elim! λ _ → ap inc (Equiv.η e _)
 ```

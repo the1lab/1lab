@@ -6,8 +6,6 @@ open import 1Lab.Prelude
 
 open import Data.List.Base
 open import Data.Dec
-
-open is-iso
 ```
 -->
 
@@ -327,13 +325,12 @@ by this relation.
 Coeq≃quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
   → Coeq f g ≃ B / span→R f g
-Coeq≃quotient {B = B} f g = Iso→Equiv is where
-  is : Iso (Coeq f g) (B / span→R f g)
-  is .fst = Coeq-rec inc λ a → quot (a , refl)
-  is .snd .inv = Coeq-rec inc λ (_ , _ , a , p) →
+Coeq≃quotient f g .fst = Coeq-rec inc λ a → quot (a , refl)
+Coeq≃quotient f g .snd = is-iso→is-equiv λ where
+  .is-iso.from → Coeq-rec inc λ (_ , _ , a , p) →
     sym (ap (inc ∘ fst) p) ∙∙ glue a ∙∙ ap (inc ∘ snd) p
-  is .snd .rinv = elim! λ _ → refl
-  is .snd .linv = elim! λ _ → refl
+  .is-iso.rinv → elim! λ _ → refl
+  .is-iso.linv → elim! λ _ → refl
 ```
 
 <!--
@@ -561,7 +558,7 @@ surjection→is-quotient {A = A} {B} b-set (f , surj) =
   _ , injective-surjective→is-equiv! g'-inj g'-surj
   where
 
-  private module c = Congruence (Kernel-pair b-set f)
+  module c = Congruence (Kernel-pair b-set f)
 ```
 -->
 
@@ -675,12 +672,11 @@ module _ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') where
 Closure-quotient
   : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ')
   → A / R ≃ A / Closure R
-Closure-quotient {A = A} R = Iso→Equiv is where
-  is : Iso (A / R) (A / Closure R)
-  is .fst = Coeq-rec inc λ (a , b , r) → quot (inc r)
-  is .snd .inv = Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
-  is .snd .rinv = elim! λ _ → refl
-  is .snd .linv = elim! λ _ → refl
+Closure-quotient {A = A} R .fst = Coeq-rec inc λ (a , b , r) → quot (inc r)
+Closure-quotient {A = A} R .snd = is-iso→is-equiv λ where
+  .is-iso.from → Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
+  .is-iso.rinv → elim! λ _ → refl
+  .is-iso.linv → elim! λ _ → refl
 ```
 
 <!--
@@ -696,7 +692,7 @@ Coeq-ap
       {f g : A → B} {f' g' : A' → B'} (ea : A ≃ A') (eb : B ≃ B')
   → (p : f' ≡ Equiv.to eb ∘ f ∘ Equiv.from ea) (q : g' ≡ Equiv.to eb ∘ g ∘ Equiv.from ea)
   → Coeq f g ≃ Coeq f' g'
-Coeq-ap {f = f} {g} {f'} {g'} ea eb p q = Iso→Equiv (to , iso from (happly ri) (happly li)) where
+Coeq-ap {f = f} {g} {f'} {g'} ea eb p q = to , to-is where
   module ea = Equiv ea
   module eb = Equiv eb
 
@@ -723,5 +719,8 @@ Coeq-ap {f = f} {g} {f'} {g'} ea eb p q = Iso→Equiv (to , iso from (happly ri)
 
   ri : to ∘ from ≡ λ x → x
   ri = ext λ x → ap inc (eb.ε _)
+
+  to-is : is-equiv to
+  to-is = is-iso→is-equiv (iso from (happly ri) (happly li))
 ```
 -->

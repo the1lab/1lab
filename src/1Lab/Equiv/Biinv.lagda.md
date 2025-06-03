@@ -97,29 +97,19 @@ is-equiv→post-is-equiv : {f : A → B} → is-equiv f → is-equiv {A = B → 
 `is-iso→is-equiv`{.Agda}. Nothing too clever. </summary>
 
 ```agda
-is-equiv→pre-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
-  f-iso : is-iso f
-  f-iso = is-equiv→is-iso f-eqv
+is-equiv→pre-is-equiv {f = f} f-eqv =
+  is-iso→is-equiv λ where
+    .is-iso.from f x   → f.from (f x)
+    .is-iso.rinv f i x → f.ε (f x) i
+    .is-iso.linv f i x → f.η (f x) i
+  where module f = Equiv (f , f-eqv)
 
-  f⁻¹ : _
-  f⁻¹ = f-iso .is-iso.inv
-
-  isiso : is-iso (_∘_ f)
-  isiso .is-iso.inv f x = f⁻¹ (f x)
-  isiso .is-iso.rinv f = funext λ x → f-iso .is-iso.rinv _
-  isiso .is-iso.linv f = funext λ x → f-iso .is-iso.linv _
-
-is-equiv→post-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
-  f-iso : is-iso f
-  f-iso = is-equiv→is-iso f-eqv
-
-  f⁻¹ : _
-  f⁻¹ = f-iso .is-iso.inv
-
-  isiso : is-iso _
-  isiso .is-iso.inv f x = f (f⁻¹ x)
-  isiso .is-iso.rinv f = funext λ x → ap f (f-iso .is-iso.linv _)
-  isiso .is-iso.linv f = funext λ x → ap f (f-iso .is-iso.rinv _)
+is-equiv→post-is-equiv {f = f} f-eqv =
+  is-iso→is-equiv λ where
+    .is-iso.from f x   → f (f.from x)
+    .is-iso.rinv f i x → f (f.η x i)
+    .is-iso.linv f i x → f (f.ε x i)
+  where module f = Equiv (f , f-eqv)
 ```
 </details>
 
@@ -187,6 +177,6 @@ right- inverse.
 
 ```agda
 is-iso→is-biinv : {f : A → B} → is-iso f → is-biinv f
-is-iso→is-biinv iiso .fst = iiso .is-iso.inv , funext (iiso .is-iso.linv)
-is-iso→is-biinv iiso .snd = iiso .is-iso.inv , funext (iiso .is-iso.rinv)
+is-iso→is-biinv iiso .fst = iiso .is-iso.from , funext (iiso .is-iso.linv)
+is-iso→is-biinv iiso .snd = iiso .is-iso.from , funext (iiso .is-iso.rinv)
 ```

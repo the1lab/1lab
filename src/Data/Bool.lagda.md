@@ -333,8 +333,8 @@ Now we classify the isomorphism by looking at what it does to
 `not`{.Agda} to `true`{.Agda}.
 
 ```agda
-  the-iso .snd .is-iso.inv (lift false) = refl
-  the-iso .snd .is-iso.inv (lift true)  = ua not≃
+  the-iso .snd .is-iso.from (lift false) = refl
+  the-iso .snd .is-iso.from (lift true)  = ua not≃
 ```
 
 The inverse is determined by the same rule, but backwards. That's why

@@ -261,6 +261,17 @@ has-section→epic {f = f} f-sect g h p =
 
 <!--
 ```agda
+has-section-precomp-embedding
+  : ∀ {a b c} {f : Hom a b}
+  → has-section f
+  → is-embedding {A = Hom b c} (_∘ f)
+has-section-precomp-embedding f-section =
+  epic-precomp-embedding (has-section→epic f-section)
+```
+-->
+
+<!--
+```agda
 subst-section
   : ∀ {a b} {f g : Hom a b}
   → f ≡ g
@@ -332,7 +343,6 @@ retract-cancelr {f = f} r .retract = r .retract ∘ f
 retract-cancelr {f = f} r .is-retract = sym (assoc _ _ _) ∙ r .is-retract
 ```
 
-
 If $f$ has a retract, then $f$ is monic.
 
 ```agda
@@ -350,6 +360,17 @@ has-retract→monic {f = f} f-ret g h p =
   id ∘ h                   ≡⟨ idl _ ⟩
   h                        ∎
 ```
+
+<!--
+```agda
+has-retract-postcomp-embedding
+  : ∀ {a b c} {f : Hom b c}
+  → has-retract f
+  → is-embedding {A = Hom a b} (f ∘_)
+has-retract-postcomp-embedding f-retract =
+  monic-postcomp-embedding (has-retract→monic f-retract)
+```
+-->
 
 A section that is also epic is a retract.
 
@@ -477,8 +498,13 @@ record _≅_ (a b : Ob) : Type h where
 
   open Inverses inverses public
 
-open _≅_ public
 ```
+<!--
+```agda
+open _≅_ public
+{-# INLINE _≅_.constructor #-}
+```
+-->
 
 A given map is invertible in at most one way: If you have $f : A \to B$
 with two _inverses_ $g : B \to A$ and $h : B \to A$, then not only are
@@ -594,10 +620,8 @@ make-invertible g p q .is-invertible.inverses .invl = p
 make-invertible g p q .is-invertible.inverses .invr = q
 
 make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → a ≅ b
-make-iso f g p q ._≅_.to = f
-make-iso f g p q ._≅_.from = g
-make-iso f g p q ._≅_.inverses .Inverses.invl = p
-make-iso f g p q ._≅_.inverses .Inverses.invr = q
+{-# INLINE make-iso #-}
+make-iso f g p q = record { to = f ; from = g ; inverses = record { invl = p ; invr = q }}
 
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
@@ -1035,36 +1059,38 @@ iso→hom-equiv f g = Iso→Equiv $
 dom-iso→hom-equiv
   : ∀ {a a' b} → a ≅ a'
   → Hom a b ≃ Hom a' b
-dom-iso→hom-equiv f = Iso→Equiv $
-  (λ h → h ∘ f .from) ,
-  iso (λ h → h ∘ f .to )
-    (λ h →
-      (h ∘ f .to) ∘ f .from ≡⟨ sym (assoc _ _ _) ⟩
-      h ∘ (f .to ∘ f .from) ≡⟨ ap (h ∘_) (f .invl) ⟩
-      h ∘ id                ≡⟨ idr _ ⟩
-      h ∎)
-    (λ h →
-      (h ∘ f .from) ∘ f .to ≡⟨ sym (assoc _ _ _) ⟩
-      h ∘ (f .from ∘ f .to) ≡⟨ ap (h ∘_) (f .invr) ⟩
-      h ∘ id                ≡⟨ idr _ ⟩
-      h ∎)
+dom-iso→hom-equiv f .fst h = h ∘ f .from
+dom-iso→hom-equiv f .snd = is-iso→is-equiv record
+  { from = _∘ f .to
+  ; rinv = λ h →
+    (h ∘ f .to) ∘ f .from ≡⟨ sym (assoc _ _ _) ⟩
+    h ∘ (f .to ∘ f .from) ≡⟨ ap (h ∘_) (f .invl) ⟩
+    h ∘ id                ≡⟨ idr _ ⟩
+    h ∎
+  ; linv = λ h →
+    (h ∘ f .from) ∘ f .to ≡⟨ sym (assoc _ _ _) ⟩
+    h ∘ (f .from ∘ f .to) ≡⟨ ap (h ∘_) (f .invr) ⟩
+    h ∘ id                ≡⟨ idr _ ⟩
+    h ∎
+  }
 
-cod-iso→Hom-equiv
+cod-iso→hom-equiv
   : ∀ {a b b'} → b ≅ b'
   → Hom a b ≃ Hom a b'
-cod-iso→Hom-equiv f = Iso→Equiv $
-  (λ h → f .to ∘ h) ,
-  iso (λ h → f .from ∘ h)
-    (λ h →
-      f .to ∘ f .from ∘ h   ≡⟨ assoc _ _ _ ⟩
-      (f .to ∘ f .from) ∘ h ≡⟨ ap (_∘ h) (f .invl) ⟩
-      id ∘ h                ≡⟨ idl _ ⟩
-      h ∎)
-    (λ h →
-      f .from ∘ f .to ∘ h   ≡⟨ assoc _ _ _ ⟩
-      (f .from ∘ f .to) ∘ h ≡⟨ ap (_∘ h) (f .invr) ⟩
-      id ∘ h                ≡⟨ idl _ ⟩
-      h ∎)
+cod-iso→hom-equiv f .fst h = f .to ∘ h
+cod-iso→hom-equiv f .snd = is-iso→is-equiv record
+  { from = f .from ∘_
+  ; rinv = λ h →
+    f .to ∘ f .from ∘ h   ≡⟨ assoc _ _ _ ⟩
+    (f .to ∘ f .from) ∘ h ≡⟨ ap (_∘ h) (f .invl) ⟩
+    id ∘ h                ≡⟨ idl _ ⟩
+    h ∎
+  ; linv = λ h →
+    f .from ∘ f .to ∘ h   ≡⟨ assoc _ _ _ ⟩
+    (f .from ∘ f .to) ∘ h ≡⟨ ap (_∘ h) (f .invr) ⟩
+    id ∘ h                ≡⟨ idl _ ⟩
+    h ∎
+  }
 ```
 -->
 

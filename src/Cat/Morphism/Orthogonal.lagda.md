@@ -102,7 +102,6 @@ $!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
 <!--
 ```agda
   open Terminal
-  open is-iso
 ```
 -->
 

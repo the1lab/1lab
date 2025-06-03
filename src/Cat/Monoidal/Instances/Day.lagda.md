@@ -176,20 +176,20 @@ isomorphism, but this turns out to be too strong: we can simply take the
 product with the $\hom$-set into the product:
 
 $$
-(F \otimes^D G)(x) = \int^{c_1, c_2 : \cC} \hom_{\cC}(c, c_1 \otimes c_2) \times X(c_1) \times Y(c_2)
+(F \otimes^D G)(x) = \int^{x_1, x_2 : \cC} \hom_{\cC}(x, x_1 \otimes x_2) \times F(x_1) \times G(x_2)
 $$
 
 ::: warning
 It's worth taking a second to read the formalised definition, below, if
 you are unfamiliar with coends. We must express the "integrand" as a
 functor $(C \times C)\op \times C \times C$. This provides us with
-"polarised" versions of the variables $c_1, c_2$, which we write
-$c_1^-/c_1^+$ and $c_2^-/c_2^+$.
+"polarised" versions of the variables $x_1, x_2$, which we write
+$x_1^-/x_1^+$ and $x_2^-/x_2^+$.
 
 We then distribute these variables according to the polarities of each
 functor. Since $\hom$ is covariant in its second argument, it sees
 $c_1^+ \otimes c_2^+$; but the presheaves are contravariant, so we have
-factors $X(c_1^-)$ and $Y(c_2^-)$.
+factors $F(x_1^-)$ and $G(x_2^-)$.
 :::
 
 ```agda
@@ -397,7 +397,7 @@ Day-bifunctor-cowedge
   → Y => Y'
   → Cowedge (Day-diagram X Y i)
 Day-bifunctor-cowedge {X} {Y} {X'} {Y'} {i} F G = go where
-  private module D = Day X' Y'
+  module D = Day X' Y'
   go : Cowedge (Day-diagram X Y i)
   go .nadir           = D.nadir i
   go .ψ c (h , x , y) = D.day h (F .η _ x) (G .η _ y)

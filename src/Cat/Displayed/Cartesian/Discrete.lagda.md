@@ -382,7 +382,7 @@ a discrete fibration and back is the identity.
   open is-iso
 
   presheaf≃discrete : ∀ {κ} → is-iso (presheaf→discrete {κ = κ})
-  presheaf≃discrete .inv  (d , f) = discrete→presheaf d f
+  presheaf≃discrete .from (d , f) = discrete→presheaf d f
   presheaf≃discrete .linv x       = Functor-path (λ _ → n-path refl) λ _ → refl
 ```
 
@@ -410,7 +410,7 @@ map $a'' \to_f b$ --- so we can take the canonical $f' : a' \to_f b$ and
 transport it over the given $a'' = a'$.
 
 ```agda
-    pieces : Displayed-functor (∫ B (discrete→presheaf P p-disc)) P Id
+    pieces : Vertical-functor (∫ B (discrete→presheaf P p-disc)) P
     pieces .F₀' x = x
     pieces .F₁' {f = f} {a'} {b'} x =
       subst (λ e → Hom[ f ] e b') x $ cart-lift f b' .centre .snd
@@ -438,7 +438,7 @@ is immediate.
     ∫≡dx : ∫ B (discrete→presheaf P p-disc) ≡ P
     ∫≡dx = Displayed-path pieces (λ _ → id-equiv) (is-iso→is-equiv p) where
       p : ∀ {a b} {f : B.Hom a b} {a'} {b'} → is-iso (pieces .F₁' {f = f} {a'} {b'})
-      p .inv f  = ap fst $ cart-lift _ _ .paths (_ , f)
+      p .from f = ap fst $ cart-lift _ _ .paths (_ , f)
       p .rinv p = from-pathp (ap snd (cart-lift _ _ .paths _))
       p .linv p = fibre-set _ _ _ _ _
 ```
@@ -449,7 +449,7 @@ this witness lives in a proposition (it is a pair of propositions), so
 it survives automatically.
 
 ```agda
-    private unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-cartesian-fibration)
+    unquoteDecl eqv = declare-record-iso eqv (quote is-discrete-cartesian-fibration)
     hl : ∀ x → is-prop _
     hl x = Iso→is-hlevel! 1 eqv
 ```

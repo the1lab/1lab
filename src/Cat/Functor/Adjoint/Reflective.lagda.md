@@ -151,7 +151,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
 
 <!--
 ```agda
-  module EM = Cat.Reasoning (Eilenberg-Moore (L∘R adj))
+  module EM = Cat.Reasoning (Eilenberg-Moore (R∘L adj))
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
   module F = Functor F
@@ -159,7 +159,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
   open Algebra-on
   open _⊣_ adj
 
-  Comp : Functor D (Eilenberg-Moore (L∘R adj))
+  Comp : Functor D (Eilenberg-Moore (R∘L adj))
   Comp = Comparison-EM adj
   module Comp = Functor Comp
 ```
@@ -172,13 +172,10 @@ assumption that $G$ is ff.
 
 ```agda
   comp-ff : is-fully-faithful Comp
-  comp-ff {x} {y} = is-iso→is-equiv isom where
-    open is-iso
-    isom : is-iso _
-    isom .inv alg = equiv→inverse g-ff (alg .hom)
-    isom .rinv x = ext (equiv→counit g-ff _)
-    isom .linv x = equiv→unit g-ff _
-
+  comp-ff {x} {y} = is-iso→is-equiv λ where
+    .is-iso.from alg → equiv→inverse g-ff (alg .hom)
+    .is-iso.rinv x → ext (equiv→counit g-ff _)
+    .is-iso.linv x → equiv→unit g-ff _
 ```
 
 To show that the comparison functor is split essentially surjective,
@@ -197,11 +194,11 @@ is.
 ```agda
   comp-seso : is-split-eso Comp
   comp-seso (ob , alg) = F.₀ ob , isom where
-    Fo→o : Algebra-hom (L∘R adj) (Comp.₀ (F.₀ ob)) (ob , alg)
+    Fo→o : Algebra-hom (R∘L adj) (Comp.₀ (F.₀ ob)) (ob , alg)
     Fo→o .hom = alg .ν
     Fo→o .preserves = sym (alg .ν-mult)
 
-    o→Fo : Algebra-hom (L∘R adj) (ob , alg) (Comp.₀ (F.₀ ob))
+    o→Fo : Algebra-hom (R∘L adj) (ob , alg) (Comp.₀ (F.₀ ob))
     o→Fo .hom = unit.η _
     o→Fo .preserves =
         unit.is-natural _ _ _

@@ -174,29 +174,28 @@ Multilinear-maps
       {N : Module R ℓn}
   → Module-on R (Multilinear-map n Ms N)
 Multilinear-maps {n = n} {Ms = Ms} {N = N} = to-module-on mk where
-  private
-    module Ms i = Module-on (Ms i .snd)
-    module N    = Module-on (N .snd)
-    instance
-      _ = module-notation N
-      _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
-      _ = module-notation (Ms _)
+  module Ms i = Module-on (Ms i .snd)
+  module N    = Module-on (N .snd)
+  instance
+    _ = module-notation N
+    _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
+    _ = module-notation (Ms _)
 
-    -- Normally there would be no way in hell these helpers would ever
-    -- be useful... except this module needs lossy-unification for
-    -- performance reasonsl so we might as well abuse it for style!
-    _⟨_⟩
-      : Multilinear-map n Ms N
-      → {_ : Πᶠ (λ i → ⌞ Ms i ⌟)} {i : Fin n} → ⌞ Ms i ⌟ → ⌞ N ⌟
-    _⟨_⟩ f {xs} {i} x = applyᶠ (f .map) (updateₚ xs i x)
+  -- Normally there would be no way in hell these helpers would ever
+  -- be useful... except this module needs lossy-unification for
+  -- performance reasonsl so we might as well abuse it for style!
+  _⟨_⟩
+    : Multilinear-map n Ms N
+    → {_ : Πᶠ (λ i → ⌞ Ms i ⌟)} {i : Fin n} → ⌞ Ms i ⌟ → ⌞ N ⌟
+  _⟨_⟩ f {xs} {i} x = applyᶠ (f .map) (updateₚ xs i x)
 
-    _⟨_⟩ᵤ
-      : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
-      → Arrᶠ P X → {_ : Πᶠ P} {i : Fin n} → P i → X
-    _⟨_⟩ᵤ f {xs} {i} x = applyᶠ f (updateₚ xs i x)
+  _⟨_⟩ᵤ
+    : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
+    → Arrᶠ P X → {_ : Πᶠ P} {i : Fin n} → P i → X
+  _⟨_⟩ᵤ f {xs} {i} x = applyᶠ f (updateₚ xs i x)
 
-    infix 300 _⟨_⟩
-    infix 300 _⟨_⟩ᵤ
+  infix 300 _⟨_⟩
+  infix 300 _⟨_⟩ᵤ
 ```
 -->
 
@@ -381,14 +380,14 @@ components relevant to equality, currying and uncurrying are
 definitionally isomorphisms.
 
 ```agda
-  uncurry-ml-is-iso : is-iso uncurry-multilinear-map
-  uncurry-ml-is-iso = λ where
-    .is-iso.inv    → curry-multilinear-map
+  uncurry-ml-is-equiv : is-equiv uncurry-multilinear-map
+  uncurry-ml-is-equiv = is-iso→is-equiv λ where
+    .is-iso.from   → curry-multilinear-map
     .is-iso.rinv x → ext λ x → Multilinear-map-path refl
     .is-iso.linv x → Multilinear-map-path $ funextᶠ λ as → refl
 
   module
-    Uncurry = Equiv (_ , is-iso→is-equiv uncurry-ml-is-iso)
+    Uncurry = Equiv (_ , uncurry-ml-is-equiv)
 ```
 
 <!--

@@ -107,8 +107,8 @@ Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
 ```agda
-  the-iso .snd .is-iso.inv (f , g) (inl x) = f x
-  the-iso .snd .is-iso.inv (f , g) (inr x) = g x
+  the-iso .snd .is-iso.from (f , g) (inl x) = f x
+  the-iso .snd .is-iso.from (f , g) (inr x) = g x
 
   the-iso .snd .is-iso.rinv x = refl
   the-iso .snd .is-iso.linv f i (inl x) = f (inl x)
@@ -144,21 +144,21 @@ equivalences in both arguments, across levels.
 
 ```agda
 ⊎-ap : A ≃ B → C ≃ D → (A ⊎ C) ≃ (B ⊎ D)
-⊎-ap (f , f-eqv) (g , g-eqv) = Iso→Equiv cong where
-  f-iso = is-equiv→is-iso f-eqv
-  g-iso = is-equiv→is-iso g-eqv
+⊎-ap f g = Iso→Equiv cong where
+  module f = Equiv f
+  module g = Equiv g
 
   cong : Iso _ _
-  cong .fst = ⊎-map f g
+  cong .fst = ⊎-map (f .fst) (g .fst)
 
-  cong .snd .is-iso.inv (inl x) = inl (f-iso .is-iso.inv x)
-  cong .snd .is-iso.inv (inr x) = inr (g-iso .is-iso.inv x)
+  cong .snd .is-iso.from (inl x) = inl (f.from x)
+  cong .snd .is-iso.from (inr x) = inr (g.from x)
 
-  cong .snd .is-iso.rinv (inl x) = ap inl (f-iso .is-iso.rinv x)
-  cong .snd .is-iso.rinv (inr x) = ap inr (g-iso .is-iso.rinv x)
+  cong .snd .is-iso.rinv (inl x) = ap inl (f.ε x)
+  cong .snd .is-iso.rinv (inr x) = ap inr (g.ε x)
 
-  cong .snd .is-iso.linv (inl x) = ap inl (f-iso .is-iso.linv x)
-  cong .snd .is-iso.linv (inr x) = ap inr (g-iso .is-iso.linv x)
+  cong .snd .is-iso.linv (inl x) = ap inl (f.η x)
+  cong .snd .is-iso.linv (inr x) = ap inr (g.η x)
 
 ⊎-apl : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
 ⊎-apl f = ⊎-ap f (id , id-equiv)
@@ -180,8 +180,8 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl x) = inr x
   i .fst (inr x) = inl x
 
-  i .snd .is-iso.inv (inl x) = inr x
-  i .snd .is-iso.inv (inr x) = inl x
+  i .snd .is-iso.from (inl x) = inr x
+  i .snd .is-iso.from (inr x) = inl x
 
   i .snd .is-iso.rinv (inl x) = refl
   i .snd .is-iso.rinv (inr x) = refl
@@ -195,9 +195,9 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl (inr x)) = inr (inl x)
   i .fst (inr x)       = inr (inr x)
 
-  i .snd .is-iso.inv (inl x)       = inl (inl x)
-  i .snd .is-iso.inv (inr (inl x)) = inl (inr x)
-  i .snd .is-iso.inv (inr (inr x)) = inr x
+  i .snd .is-iso.from (inl x)       = inl (inl x)
+  i .snd .is-iso.from (inr (inl x)) = inl (inr x)
+  i .snd .is-iso.from (inr (inr x)) = inr x
 
   i .snd .is-iso.rinv (inl x) = refl
   i .snd .is-iso.rinv (inr (inl x)) = refl
@@ -222,8 +222,8 @@ to finite types, the coproduct is exactly the same as addition.
   i : Iso _ _
   i .fst (inl x , y) = inl (x , y)
   i .fst (inr x , y) = inr (x , y)
-  i .snd .is-iso.inv (inl (x , y)) = inl x , y
-  i .snd .is-iso.inv (inr (x , y)) = inr x , y
+  i .snd .is-iso.from (inl (x , y)) = inl x , y
+  i .snd .is-iso.from (inr (x , y)) = inr x , y
   i .snd .is-iso.rinv (inl x) = refl
   i .snd .is-iso.rinv (inr x) = refl
   i .snd .is-iso.linv (inl x , _) = refl

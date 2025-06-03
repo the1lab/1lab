@@ -5,6 +5,7 @@ import Control.Concurrent.STM
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Exception
+import Control.Monad
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set

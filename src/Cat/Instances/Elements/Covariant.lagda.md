@@ -122,11 +122,11 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
 
     F-is-precat-iso : is-precat-iso F
     F-is-precat-iso .is-precat-iso.has-is-iso = is-iso→is-equiv λ where
-      .is-iso.inv e → elem (e .Contra.Element.ob) (e .Contra.Element.section)
+      .is-iso.from e → elem (e .Contra.Element.ob) (e .Contra.Element.section)
       .is-iso.rinv e → refl
       .is-iso.linv e → refl
     F-is-precat-iso .is-precat-iso.has-is-ff = is-iso→is-equiv λ where
-      .is-iso.inv h → elem-hom (h .Contra.Element-hom.hom) (h .Contra.Element-hom.commute)
+      .is-iso.from h → elem-hom (h .Contra.Element-hom.hom) (h .Contra.Element-hom.commute)
       .is-iso.rinv h → ext refl
       .is-iso.linv h → ext refl
 ```

@@ -54,7 +54,7 @@ module _
   {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
   {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
   {D-fib : Cartesian-fibration D} {E-fib : Cartesian-fibration E}
-  (P : Comprehension D) {Q : Comprehension E}
+  (P : Comprehension-structure D) {Q : Comprehension-structure E}
   (coprods : has-comprehension-coproducts D-fib E-fib Q)
   where
   private
@@ -122,7 +122,7 @@ module strong-comprehension-coproducts
   {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
   {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
   {D-fib : Cartesian-fibration D} {E-fib : Cartesian-fibration E}
-  (P : Comprehension D) {Q : Comprehension E}
+  (P : Comprehension-structure D) {Q : Comprehension-structure E}
   (coprods : has-comprehension-coproducts D-fib E-fib Q)
   (strong : strong-comprehension-coproducts P coprods)
   where

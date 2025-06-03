@@ -112,14 +112,17 @@ following data:
   open make-natural-iso
 
   to-natural-iso : ∀ {F G} → make-natural-iso F G → F ≅ⁿ G
-  to-natural-iso mk .Isoⁿ.to .η                = mk .eta
-  to-natural-iso mk .Isoⁿ.to .is-natural x y f = sym (mk .natural x y f)
-  to-natural-iso mk .Isoⁿ.from .η = mk .inv
-  to-natural-iso {F = F} {G} mk .Isoⁿ.from .is-natural =
-    inverse-is-natural {F} {G} (NT _ (λ x y f → sym (mk .natural x y f)))
-      (mk .inv) (mk .eta∘inv) (mk .inv∘eta)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invl = ext (mk .eta∘inv)
-  to-natural-iso mk .Isoⁿ.inverses .Inversesⁿ.invr = ext (mk .inv∘eta)
+  {-# INLINE to-natural-iso #-}
+  to-natural-iso {F = F} {G = G} mk =
+    let to = record { η = mk .eta ; is-natural = λ x y f → sym (mk .natural x y f) } in
+    record
+      { to = to
+      ; from = record
+        { η = mk .inv
+        ; is-natural = inverse-is-natural {F} {G} to (mk .inv) (mk .eta∘inv) (mk .inv∘eta) }
+      ; inverses = record
+        { invl = ext (mk .eta∘inv)
+        ; invr = ext (mk .inv∘eta) } }
 ```
 
 Moreover, the following family of functions project out the

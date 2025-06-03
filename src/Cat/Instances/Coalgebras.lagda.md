@@ -144,22 +144,54 @@ $W$-coalgebra homomorphism.
 ```
 
 The [[total category]] of this displayed category is referred to as the
-**Eilenberg Moore** category of $W$.
+**Eilenberg-Moore** category of $W$.
 
 ```agda
   Coalgebras : Precategory (o ⊔ ℓ) ℓ
   Coalgebras = ∫ Coalgebras-over
+
+  private
+    module CoEM = Cat.Reasoning Coalgebras
+
+  Coalgebra : Type _
+  Coalgebra = CoEM.Ob
+
+  Coalgebra-hom : (X Y : Coalgebra) → Type _
+  Coalgebra-hom X Y = CoEM.Hom X Y
 ```
 
 <!--
 ```agda
   module Coalgebras = Cat.Reasoning Coalgebras
 
-module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where instance
-  Extensional-coalgebra-hom
-    : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
-    → Extensional (Coalgebras.Hom W x y) ℓr
-  Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where
+  private
+    module C = Cat.Reasoning C
+    module W = Comonad-on W
+    unquoteDecl eqv = declare-record-iso eqv (quote Coalgebra-on)
+
+  Coalgebra-on-pathp
+    : ∀ {X Y} (p : X ≡ Y) {A : Coalgebra-on W X} {B : Coalgebra-on W Y}
+    → PathP (λ i → C.Hom (p i) (F · p i)) (A .Coalgebra-on.ρ) (B .Coalgebra-on.ρ)
+    → PathP (λ i → Coalgebra-on W (p i)) A B
+  Coalgebra-on-pathp over comults = injectiveP (λ _ → eqv) (comults ,ₚ prop!)
+
+  instance
+    Extensional-Coalgebra-on
+      : ∀ {ℓr X}
+      → ⦃ sa : Extensional (C.Hom X (F · X)) ℓr ⦄
+      → Extensional (Coalgebra-on W X) ℓr
+    Extensional-Coalgebra-on ⦃ sa ⦄ =
+      injection→extensional! (Coalgebra-on-pathp refl) sa
+
+  instance
+    Extensional-coalgebra-hom
+      : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
+      → Extensional (Coalgebras.Hom W x y) ℓr
+    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+
+Comonad : ∀ {o ℓ} (C : Precategory o ℓ) → Type _
+Comonad C = Σ[ F ∈ Functor C C ] (Comonad-on F)
 
 module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (W : Comonad-on F) where
   open Cat.Reasoning C
@@ -181,7 +213,7 @@ gives us **cofree coalgebras**.
   Cofree-coalgebra : Ob → Coalgebras.Ob W
   Cofree-coalgebra A .fst = W₀ A
   Cofree-coalgebra A .snd .ρ = δ _
-  Cofree-coalgebra A .snd .ρ-counit = δ-idr
+  Cofree-coalgebra A .snd .ρ-counit = δ-unitr
   Cofree-coalgebra A .snd .ρ-comult = δ-assoc
 
   Cofree : Functor C (Coalgebras W)
@@ -207,7 +239,7 @@ the forgetful functor, we get a right adjoint!
   Forget⊣Cofree .counit .is-natural x y f = W.counit.is-natural _ _ _
 
   Forget⊣Cofree .zig {A , α} = α .ρ-counit
-  Forget⊣Cofree .zag         = ext δ-idl
+  Forget⊣Cofree .zag         = ext δ-unitl
 ```
 
 <!--

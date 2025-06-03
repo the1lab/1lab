@@ -6,9 +6,12 @@ open import Cat.Prelude
 
 open import Order.Base
 
+import Cat.Reasoning
+
 import Order.Reasoning
 
 open Precategory
+open Poset
 ```
 -->
 
@@ -19,7 +22,7 @@ module Order.Cat where
 # Posets as categories {defines="posets-as-categories"}
 
 We have already remarked a [[poset]] is a special kind of [[category]]: a
-*thin* category, i.e. one that has propositional $\hom$ sets.
+*thin* [[univalent category]], i.e. one that has propositional $\hom$ sets.
 
 ```agda
 is-thin : ∀ {ℓ ℓ'} → Precategory ℓ ℓ' → Type (ℓ ⊔ ℓ')
@@ -51,6 +54,13 @@ poset→category P = cat module poset-to-category where
 
 poset→thin : ∀ {ℓ ℓ'} (P : Poset ℓ ℓ') → is-thin (poset→category P)
 poset→thin P _ _ = P.≤-thin where module P = Poset P
+
+poset→univalent : ∀ {ℓ ℓ'} (P : Poset ℓ ℓ') → is-category (poset→category P)
+poset→univalent P = set-identity-system (λ _ _ → ≅-is-prop P.≤-thin)
+  λ is → P.≤-antisym (is .to) (is .from)
+  where
+    module P = Poset P
+    open Cat.Reasoning (poset→category P)
 ```
 
 Our functor into $\strcat$ is similarly easy to describe: Monotonicity
@@ -92,4 +102,29 @@ module
   thin-functor f f₁ .F₁ = f₁
   thin-functor f f₁ .F-id = D-thin _ _ _ _
   thin-functor f f₁ .F-∘ _ _ = D-thin _ _ _ _
+```
+
+## Thin categories as posets
+
+We can go in the other direction as well: a thin univalent category
+gives rise to a poset with the same set of objects and $a \leq b$ if
+and only if there is a morphism $a \to b$.
+
+```agda
+thin→poset
+  : ∀ {ℓ ℓ'} (C : Precategory ℓ ℓ')
+  → is-thin C
+  → is-category C
+  → Poset ℓ ℓ'
+thin→poset C thin cat = pos where
+  module C = Cat.Reasoning C
+
+  pos : Poset _ _
+  pos .Ob = C.Ob
+  pos ._≤_ = C.Hom
+  pos .≤-thin = thin _ _
+  pos .≤-refl = C.id
+  pos .≤-trans f g = g C.∘ f
+  pos .≤-antisym f f⁻¹ = cat .to-path $
+    C.make-iso f f⁻¹ (thin _ _ _ _) (thin _ _ _ _)
 ```

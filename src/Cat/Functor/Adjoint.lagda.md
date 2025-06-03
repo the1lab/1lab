@@ -415,7 +415,7 @@ the functor $\cD(X,U(-))$.
 ```agda
     fold-is-equiv : ∀ B → is-equiv (fold {B})
     fold-is-equiv B = is-iso→is-equiv λ where
-      .is-iso.inv  f → U.₁ f D.∘ unit
+      .is-iso.from f → U.₁ f D.∘ unit
       .is-iso.rinv _ → sym (unique _ refl)
       .is-iso.linv _ → commute
 ```

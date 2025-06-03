@@ -54,7 +54,7 @@ open is-group-hom
 module _ {ℓ} (T : Type ℓ) (t-set : is-set T) where
   function→free-ab-hom : (G : Abelian-group ℓ) → (T → ⌞ G ⌟) → Ab.Hom (Free-abelian T) G
   function→free-ab-hom G fn = morp where
-    private module G = Abelian-group-on (G .snd)
+    module G = Abelian-group-on (G .snd)
     go₀ : Free-group T → ⌞ G ⌟
     go₀ = fold-free-group {G = G .fst , G.Abelian→Group-on} fn .hom
 

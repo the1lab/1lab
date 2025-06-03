@@ -15,6 +15,9 @@ open import Cat.Displayed.Base
 open import Cat.Diagram.Image
 open import Cat.Prelude
 
+open import Order.Base
+open import Order.Cat
+
 import Cat.Reasoning as Cr
 ```
 -->
@@ -32,7 +35,7 @@ open Displayed
 ```
 -->
 
-# The fibration of subobjects {defines="poset-of-subobjects subobject"}
+# The fibration of subobjects {defines="poset-of-subobjects subobject subobject-fibration"}
 
 Given a base category $\cB$, we can define the [[displayed category]] of
 _subobjects_ over $\cB$. This is, in essence, a restriction of the
@@ -382,7 +385,7 @@ Sub-products {y} pb a b = prod where
 
 ## Univalence
 
-Since identity of $m, n : \Sub(y)$ is given by identity of they
+Since identity of $m, n : \Sub(y)$ is given by identity of the
 underlying objects and identity-over of the corresponding morphisms, if
 $\cB$ is univalent, we can conclude that $\Sub(y)$ is, too. Since
 $\Sub(y)$ is always thin, we can summarise the situation by saying that
@@ -399,4 +402,13 @@ Sub-is-category b-cat .to-path {a} {b} x =
     i = make-iso (x .Sub.to .map) (x .Sub.from .map) (ap map (Sub.invl x)) (ap map (Sub.invr x))
 Sub-is-category b-cat .to-path-over p =
   Sub.≅-pathp refl _ prop!
+```
+
+As a consequence, the collection of subobjects of any object of a
+univalent category forms a [[set]].
+
+```agda
+Subobject-is-set : is-category B → ∀ {A} → is-set (Subobject A)
+Subobject-is-set b-cat {A} = Poset.Ob-is-set $
+  thin→poset (Sub A) (λ _ _ → ≤-over-is-prop) (Sub-is-category b-cat)
 ```

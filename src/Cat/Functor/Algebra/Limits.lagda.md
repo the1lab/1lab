@@ -17,7 +17,7 @@ import Cat.Reasoning
 module Cat.Functor.Algebra.Limits where
 ```
 
-# Limits in categories of algebras {defines="limits-of-algebras"}
+# Limits in categories of F-algebras {defines="limits-of-f-algebras"}
 
 This short note details the construction of [[limits]] in categories of
 [[F-algebras]] from limits in the underlying category.

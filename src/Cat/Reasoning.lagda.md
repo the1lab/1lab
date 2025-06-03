@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Function.Embedding
+open import 1Lab.Function.Embedding renaming (_↪_ to _↣_)
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (id; _∘_)
@@ -314,6 +314,37 @@ swizzle {f = f} {g = g} {h = h} {i = i} {g' = g'} {h' = h'} p q r =
   lswizzle (sym (assoc _ _ _ ∙ rswizzle (sym p) q)) r
 ```
 
+## Sections and Retracts
+
+We can repackage our "swizzling" lemmas to move around sections and
+retracts.
+
+```agda
+module _
+  {f : Hom x y}
+  (f-section : has-section f)
+  where abstract
+  private module f = has-section f-section
+
+  pre-section : a ∘ f ≡ b → a ≡ b ∘ f.section
+  pre-section {a = a} {b = b} p = sym (rswizzle (sym p) f.is-section)
+
+  post-section : f.section ∘ a ≡ b → a ≡ f ∘ b
+  post-section {a = a} {b = b} p = sym (lswizzle (sym p) f.is-section)
+
+module _
+  {f : Hom x y}
+  (f-retract : has-retract f)
+  where abstract
+  private module f = has-retract f-retract
+
+  pre-retract : a ∘ f.retract ≡ b → a ≡ b ∘ f
+  pre-retract {a = a} {b = b} p = sym (rswizzle (sym p) f.is-retract)
+
+  post-retract : f ∘ a ≡ b → a ≡ f.retract ∘ b
+  post-retract {a = a} {b = b} p = sym (lswizzle (sym p) f.is-retract)
+```
+
 ## Isomorphisms
 
 These lemmas are useful for proving that partial inverses to an
@@ -322,39 +353,40 @@ inverses, of right inverses, and for proving that any left inverse must
 match any right inverse.
 
 ```agda
-module _ {y z} (f : y ≅ z) where abstract
+module _ {y z} (f : y ≅ z) where
   open _≅_
 
-  left-inv-unique
-    : ∀ {g h}
-    → g ∘ f .to ≡ id → h ∘ f .to ≡ id
-    → g ≡ h
-  left-inv-unique {g = g} {h = h} p q =
-    g                   ≡⟨ intror (f .invl) ⟩
-    g ∘ f .to ∘ f .from ≡⟨ extendl (p ∙ sym q) ⟩
-    h ∘ f .to ∘ f .from ≡⟨ elimr (f .invl) ⟩
-    h                   ∎
+  abstract
+    left-inv-unique
+      : ∀ {g h}
+      → g ∘ f .to ≡ id → h ∘ f .to ≡ id
+      → g ≡ h
+    left-inv-unique {g = g} {h = h} p q =
+      g                   ≡⟨ intror (f .invl) ⟩
+      g ∘ f .to ∘ f .from ≡⟨ extendl (p ∙ sym q) ⟩
+      h ∘ f .to ∘ f .from ≡⟨ elimr (f .invl) ⟩
+      h                   ∎
 
-  left-right-inv-unique
-    : ∀ {g h}
-    → g ∘ f .to ≡ id → f .to ∘ h ≡ id
-    → g ≡ h
-  left-right-inv-unique {g = g} {h = h} p q =
-    g                    ≡⟨ intror (f .invl) ⟩
-    g ∘ f .to ∘ f .from  ≡⟨ cancell p ⟩
-    f .from              ≡⟨ intror q ⟩
-    f .from ∘ f .to ∘ h  ≡⟨ cancell (f .invr) ⟩
-    h                    ∎
+    left-right-inv-unique
+      : ∀ {g h}
+      → g ∘ f .to ≡ id → f .to ∘ h ≡ id
+      → g ≡ h
+    left-right-inv-unique {g = g} {h = h} p q =
+      g                    ≡⟨ intror (f .invl) ⟩
+      g ∘ f .to ∘ f .from  ≡⟨ cancell p ⟩
+      f .from              ≡⟨ intror q ⟩
+      f .from ∘ f .to ∘ h  ≡⟨ cancell (f .invr) ⟩
+      h                    ∎
 
-  right-inv-unique
-    : ∀ {g h}
-    → f .to ∘ g ≡ id → f .to ∘ h ≡ id
-    → g ≡ h
-  right-inv-unique {g = g} {h} p q =
-    g                     ≡⟨ introl (f .invr) ⟩
-    (f .from ∘ f .to) ∘ g ≡⟨ pullr (p ∙ sym q) ⟩
-    f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
-    h                     ∎
+    right-inv-unique
+      : ∀ {g h}
+      → f .to ∘ g ≡ id → f .to ∘ h ≡ id
+      → g ≡ h
+    right-inv-unique {g = g} {h} p q =
+      g                     ≡⟨ introl (f .invr) ⟩
+      (f .from ∘ f .to) ∘ g ≡⟨ pullr (p ∙ sym q) ⟩
+      f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
+      h                     ∎
 ```
 
 ### Lenses for isomorphisms
@@ -396,7 +428,6 @@ module _
   module pre-invl = Equiv pre-invl
   module post-invl = Equiv post-invl
 ```
-
 
 If we have a commuting triangle of isomorphisms, then we
 can flip one of the sides to obtain a new commuting triangle

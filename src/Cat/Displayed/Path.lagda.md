@@ -177,7 +177,7 @@ isomorphisms of precategories.
 module
   _ {o ℓ o' ℓ'} {B C : Precategory o ℓ} (F : Functor B C)
     {ℰ : Displayed B o' ℓ'} {ℱ : Displayed C o' ℓ'}
-    (G : Displayed-functor ℰ ℱ F)
+    (G : Displayed-functor F ℰ ℱ)
   where
   private
     module ℰ = Displayed ℰ
@@ -297,7 +297,7 @@ I won't comment on it. You can't make me.</summary>
 ```agda
 module
   _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {ℰ ℱ : Displayed B o' ℓ'}
-    (F : Displayed-functor ℰ ℱ Id)
+    (F : Displayed-functor Id ℰ ℱ)
   where
   private
     module F = Displayed-functor F

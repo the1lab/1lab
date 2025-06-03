@@ -279,7 +279,7 @@ the necessary paths for showing that $F_0$ is an equivalence of types.
       eqv→iso : is-precat-iso F
       eqv→iso .has-is-ff = is-equivalence→is-ff F eqv
       eqv→iso .has-is-iso = is-iso→is-equiv λ where
-        .is-iso.inv    → eqv .F⁻¹ .F₀
+        .is-iso.from   → eqv .F⁻¹ .F₀
         .is-iso.rinv x → dcat .to-path       $ isoⁿ→iso (F∘F⁻¹≅Id eqv) _
         .is-iso.linv x → sym $ ccat .to-path $ isoⁿ→iso (Id≅F⁻¹∘F eqv) _
 ```

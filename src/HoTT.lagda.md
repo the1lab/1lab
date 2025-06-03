@@ -46,7 +46,7 @@ open import Cat.Gaunt
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
 open import Data.Set.Material
-open import Data.Fin.Finite using (Finite-choice)
+open import Data.Fin.Finite using (Listing→choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
@@ -171,11 +171,11 @@ _ = _∙e_
 
 <!--
 ```agda
-_ = Σ-pathp-iso
+_ = Σ-pathp≃
 ```
 -->
 
-* Theorem 2.7.2: `Σ-pathp-iso`{.Agda}
+* Theorem 2.7.2: `Σ-pathp≃`{.Agda}
 * Theorem 2.7.3: Agda has definitional η equality for records.
 
 ### 2.9: Π-types and function extensionality
@@ -398,7 +398,7 @@ _ = LEM≃DNE
 _ = ℕ-well-ordered
 _ = Σ-contr-eqv
 _ = is-prop≃equiv∥-∥
-_ = Finite-choice
+_ = Listing→choice
 ```
 -->
 

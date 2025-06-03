@@ -4,6 +4,9 @@ open import 1Lab.Prelude
 
 open import Data.Wellfounded.Properties
 open import Data.Wellfounded.Base
+open import Data.Fin.Finite
+open import Data.Dec.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -27,10 +30,17 @@ data W {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') : Type (ℓ ⊔ ℓ') whe
 
 <!--
 ```agda
-W-elim : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → Type ℓ''}
-       → ({a : A} {f : B a → W A B} → (∀ ba → C (f ba)) → C (sup a f))
-       → (w : W A B) → C w
+W-elim
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → Type ℓ''}
+  → ({a : A} {f : B a → W A B} → (∀ ba → C (f ba)) → C (sup a f))
+  → (w : W A B) → C w
 W-elim {C = C} ps (sup a f) = ps (λ ba → W-elim {C = C} ps (f ba))
+
+W-elim₂
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → W A B → Type ℓ''}
+  → ({x y : A} {f : B x → W A B} {g : B y → W A B} → (∀ bx by → C (f bx) (g by)) → C (sup x f) (sup y g))
+  → (w₁ w₂ : W A B) → C w₁ w₂
+W-elim₂ {C = C} ps (sup x f) (sup y g) = ps (λ bx by → W-elim₂ {C = C} ps (f bx) (g by))
 ```
 -->
 
@@ -42,8 +52,15 @@ by the "is a subtree of" relation!
 
 ```agda
 module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+
+  label : W A B → A
+  label (sup l f) = l
+
+  subtree : (w : W A B) → B (label w) → W A B
+  subtree (sup l f) b = f b
+
   _<_ : W A B → W A B → Type _
-  x < sup i f = ∃[ j ∈ B i ] (f j ≡ x)
+  w < v = ∃[ j ∈ B (label v) ] (subtree v j ≡ w)
 ```
 
 This order is actually well-founded: if we want to prove a property of
@@ -177,6 +194,33 @@ Luckily, this is completely straightforward.
 ```agda
     coherent : Square (λ i → unique i ∘ W-algebra .snd) refl hom (λ i → c ∘ P₁ (unique i))
     coherent = transpose (flip₁ (∙-filler _ _))
+```
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+Initiality of W-types also lets us show that $W\; A\; B$ is a fixpoint
+of the functor $X \mapsto \Sigma (a : A).\; B(a) \to X$. This is a
+consequence of [[Lambek's lemma]], but this is easy enough to prove by
+hand.
+
+```agda
+  W-fixpoint : W A B ≃ (Σ[ a ∈ A ] (B a → W A B))
+  W-fixpoint = Iso→Equiv (to , iso from invr invl) where
+    to : W A B → Σ[ a ∈ A ] (B a → W A B)
+    to w = label w , subtree w
+
+    from : (Σ[ a ∈ A ] (B a → W A B)) → W A B
+    from (l , f) = sup l f
+
+    invr : is-right-inverse from to
+    invr (l , f) = refl
+
+    invl : is-left-inverse from to
+    invl (sup l f) = refl
 ```
 
 ## Initial algebras are inductive types
@@ -378,3 +422,272 @@ and some stock facts about substitution.
         (sym h) dt
 ```
 -->
+
+## Discrete W-types
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+As shown in the previous section, W-types allow us to encode every
+non-indexed inductive type with a single construct. This encoding
+turns out to be a very powerful tool: it lets us unify collections of
+ad-hoc results into single theorems about W-types!
+
+A canonical example of this is proving that inductive types have
+[[decidable equality|discrete]]. A typical proof involves showing
+that the constructors of an inductive type are all pairwise disjoint,
+followed by a massive case bash. For an inductive with $n$ constructors,
+this strategy requires $O(n^2)$ cases, which quickly becomes infeasible.
+
+In contrast, it is relatively easy to prove that a W-type $W\; A\; B$
+has decidable equality. It suffices to show that
+
+- The type of labels $A$ has decidable equality; and
+- for every $x : A$, the branching factor $B(x)$ is [[finite]].
+
+
+```agda
+  instance
+    Discrete-W
+      : ⦃ _ : Discrete A ⦄
+      → ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → Discrete (W A B)
+```
+
+Let `w` and `v` be a pair of elements of `W A B`. The obvious
+first move is to check if the labels of `w` and `v` are equal.
+Note that we use the [[inductive identity type|inductive-identity]] here:
+the reason for this will become evident shortly.
+
+```agda
+    Discrete-W {x = w@(sup x f)} {y = v@(sup y g)} with x ≡ᵢ? y
+```
+
+If the two labels are distinct, then `w` and `v` must be distinct.
+
+```agda
+    ... | no x≠y = no λ w=v → x≠y (Id≃path.from (ap label w=v))
+```
+
+On the other hand, suppose the two labels `x` and `y` are equal. Our next move
+is to exhaustively check that all the subtrees are equal, which is possible
+as all branching factors are finite[^1].
+
+[^1]: This call to `holds? (∀ bx → f bx ≡ g bx)` involves a few
+layers of instance resolution. Agda starts by using the `Listing→Π-dec`
+instance, which transforms the goal to `Dec (f bx ≡ g bx)`. We can
+then recursively use the instance we are currently writing to determine
+if `f bx ≡ g bx`: this passes the termination checker, as `f bx` and `g bx`
+are structurally recursive calls.
+
+However, there is a minor snag here: we want to compare equality of
+`f : B x → W A B` and `g : B y → W A B`, yet their types differ: `f`
+expects branches taken from `B x`, yet `g` expects branches taken from
+`B y`. We know that `x` and `y` are equal, but this isn't a judgmental
+equality, so some sort of transport is required. Luckily, we have
+anticipated this problem: by using inductive equality, we can simply
+pattern match on the proof that `x ≡ᵢ y`, so we only
+need to consider the case where `x` and `y` are judgmentally equal.
+
+```agda
+    ... | yes reflᵢ with holds? (∀ bx → f bx ≡ g bx)
+```
+
+If all the subtrees are equal, we can conclude that `w` and `v` are
+themselves equal.
+
+```agda
+    ... | yes f=g = yes (ap (sup x) (ext f=g))
+```
+
+Finally, if not all the subtrees are equal, then the original trees
+`w` and `v` are not equal.
+
+This is surprisingly fiddly to show. Aiming for a contradiction, assume
+that we have a path `w=v : w ≡ v` and an arbitrary `bx : B x`: our goal
+is to show that `subtree w bx ≡ subtree v bx`.
+
+The obvious move is to use `ap` to get a path between subtrees of `w`
+and `v`, but this doesn't *quite* work due to dependencies. Instead, we
+get a `PathP (λ i → B (label (w=v i)) → W A B) (subtree w) (subtree v)`
+over a path between the labels of `w` and `v`.
+
+However, our previous match on `reflᵢ`{.Agda} means that this path is
+actually a loop. Additionally, the type of labels `A` has decidable
+equality, so it must be a set. This lets us contract the problematic
+loop down to reflexivity, which gives us our desired proof that `subtree
+w bx ≡ subtree v bx` and the resulting contradiction.
+
+```agda
+    ... | no f≠g = no λ w=v → f≠g λ bx →
+      apd (λ i → subtree (w=v i)) $
+      is-set→cast-pathp B (Discrete→is-set auto) (λ i → bx)
+```
+
+## Path spaces of W-types
+
+We can also use W-types to give a generic characterisation of path
+spaces of inductive types.
+
+<!--
+```agda
+module WPath {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+Typically, we prove results about path spaces of inductive types via
+**encode-decode** arguments. The general idea is that if a type `T` is
+an inductive type, then we can construct a type family `Code : T → T →
+Type` via recursion on `T` which describes the equality type between
+each pair of constructors. We then construct a pair of maps
+
+- `encode : ∀ (x y : T) → x ≡ y → Code x y`
+- `decode : ∀ (x y : T) → Code x y → x ≡ y`
+
+which translate between paths in `T` and our recursively defined family.
+The final step is to show `encode` and `decode` are inverses, which
+gives us an equivalence between paths in `T` and our alternative
+representation of the path space.
+
+Our characterisation of paths in W-types will follow a similar
+trajectory.  We start by observing that a path `p : w ≡ v` between two
+trees `w, v : W A B` consists of the following data:
+
+- A path `label-path p : label w ≡ label v` between labels.
+- A path `f bw ≡ g bv` for every `bw : B (label w)` and `by : B (label v)`
+  that are connected by a `PathP`{.Agda} over `label-path p`.
+
+```agda
+  private
+    label-path : ∀ {w v : W A B} → w ≡ v → label w ≡ label v
+    label-path p = ap label p
+
+    subtree-path
+      : ∀ {w v : W A B}
+      → (p : w ≡ v)
+      → ∀ {bw : B (label w)} {bv : B (label v)}
+      → PathP (λ i → B (label-path p i)) bw bv
+      → subtree w bw ≡ subtree v bv
+    subtree-path p q = apd (λ i → subtree (p i)) q
+```
+
+We can then turn this observation on its head, and *define* our type of
+codes recursively as trees of paths between constructors whose branching
+factor is given by `PathP`s over the constructor paths.
+
+```agda
+  Code : W A B → W A B → Type (ℓ ⊔ ℓ')
+  Code (sup x f) (sup y g) = Σ[ p ∈ x ≡ y ]
+    (∀ {bx by} (q : PathP (λ i → B (p i)) bx by) → Code (f bx) (g by))
+```
+
+Instead of building `encode` and `decode` maps by hand, we shall construct
+the equivalence between paths and codes in a single shot.
+
+```agda
+  Path≃Code : ∀ (w v : W A B) → (w ≡ v) ≃ Code w v
+  Path≃Code (sup x f) (sup y g) =
+    sup x f ≡ sup y g
+      ≃⟨ ap-equiv W-fixpoint ⟩
+    (x , f) ≡ (y , g)
+      ≃˘⟨ Σ-pathp≃ ⟩
+    Σ[ p ∈ (x ≡ y) ] PathP (λ i → B (p i) → W A B) f g
+      ≃˘⟨ Σ-ap-snd (λ p → funext-dep≃) ⟩
+    Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → f bw ≡ g bv)
+      ≃⟨ Σ-ap-snd (λ p → Π-impl-cod≃ λ bw → Π-impl-cod≃ λ bv → Π-cod≃ (λ q → Path≃Code (f bw) (g bv))) ⟩
+    Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → Code (f bw) (g bv))
+      ≃⟨⟩
+    Code (sup x f) (sup y g)
+      ≃∎
+```
+
+We can then establish an [[h-level]] bound on codes: if the type of
+labels `A` is an $n+1$-type, then the type of codes must be an $n$-type.
+
+```agda
+  Code-is-hlevel
+    : ∀ {w v : W A B}
+    → (n : Nat)
+    → is-hlevel A (suc n)
+    → is-hlevel (Code w v) n
+  Code-is-hlevel {w = sup x f} {v = sup y g} n ahl =
+    Σ-is-hlevel n (Path-is-hlevel' n ahl x y) λ p →
+    Π-is-hlevel²' n λ bx by → Π-is-hlevel n λ q →
+    Code-is-hlevel {w = f bx} {v = g by} n ahl
+```
+
+We can translate this along our equivalence between paths and codes
+to get an h-level bound on W-types.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
+```
+-->
+
+```agda
+  opaque
+    W-is-hlevel
+      : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+      → (n : Nat)
+      → is-hlevel A (suc n)
+      → is-hlevel (W A B) (suc n)
+    W-is-hlevel n ahl =
+      Path-is-hlevel→is-hlevel n λ w v →
+        Equiv→is-hlevel n (WPath.Path≃Code w v) (WPath.Code-is-hlevel n ahl)
+```
+
+Though incredibly useful, the above h-level bound does not completely describe the
+h-levels of W-types. In particular, it does not describe when a W-type
+is [[contractible]].
+
+A good first guess would be that `W A B` is contractible if `A` is contractible.
+However, there is a slight problem: if the branching factor `B x` is merely
+inhabited for every `x : A`, then the resulting W-type `W A B` must be empty!
+
+```agda
+  W-always-branch-empty
+    : (∀ (x : A) → ∥ B x ∥)
+    → ¬ (W A B)
+```
+
+Such a W-type would only contain infinitely deep trees, which lets
+us perform an infinite descent.
+
+```agda
+  W-always-branch-empty B-inhab (sup x f) = case B-inhab x of λ where
+    bx → W-always-branch-empty B-inhab (f bx)
+```
+
+This means that even if `A` is contractible, the W-type `W A B` may be a
+proposition. However, if `A` is contractible *and* `B` is empty, then `W
+A B` is contractible. To show this, we start with a simple lemma: if `B
+x` is empty for every `x : A`, then the W-type `W A B` is equivalent to
+`A`.
+
+```agda
+  W-no-branch-≃
+    : (∀ x → ¬ (B x))
+    → W A B ≃ A
+  W-no-branch-≃ ¬B =
+    W A B                    ≃⟨ W-fixpoint ⟩
+    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contract (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
+    A                        ≃∎
+```
+
+This means that if `A` is contractible and `B` is empty at the centre of contraction,
+then `W A B` is equivalent to `A`, and thus also contractible.
+
+```agda
+  W-is-contr
+    : (A-contr : is-contr A)
+    → ¬ (B (A-contr .centre))
+    → is-contr (W A B)
+  W-is-contr A-contr ¬B =
+    Equiv→is-hlevel 0
+      (W-no-branch-≃ (Equiv.from (Π-contr-eqv A-contr) ¬B))
+      A-contr
+```

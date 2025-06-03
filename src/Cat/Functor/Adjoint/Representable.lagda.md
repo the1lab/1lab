@@ -115,16 +115,14 @@ module _ {o'} {D : Precategory o' ℓ}
       F .F-∘ f g = ext refl
 
       F-is-precat-iso : is-precat-iso F
-      F-is-precat-iso .has-is-iso = is-iso→is-equiv is where
-        is : is-iso (F .F₀)
-        is .is-iso.inv e = ↓obj (e .Element.section)
-        is .is-iso.rinv e = refl
-        is .is-iso.linv o = ↓Obj-path _ _ refl refl refl
-      F-is-precat-iso .has-is-ff = is-iso→is-equiv is where
-        is : is-iso (F .F₁)
-        is .is-iso.inv h = ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
-        is .is-iso.rinv h = ext refl
-        is .is-iso.linv h = ↓Hom-path _ _ refl refl
+      F-is-precat-iso .has-is-iso = is-iso→is-equiv λ where
+        .is-iso.from e → ↓obj (e .Element.section)
+        .is-iso.rinv e → refl
+        .is-iso.linv e → ↓Obj-path _ _ refl refl refl
+      F-is-precat-iso .has-is-ff = is-iso→is-equiv λ where
+        .is-iso.from h → ↓hom (D.idr _ ∙ sym (h .Element-hom.commute))
+        .is-iso.rinv h → ext refl
+        .is-iso.linv h → ↓Hom-path _ _ refl refl
 ```
 </details>
 

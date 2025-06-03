@@ -166,3 +166,7 @@ is-cocomplete→slice-is-cocomplete
 is-cocomplete→slice-is-cocomplete colims F =
   Forget/-lifts-colimits F (colims (U F∘ F))
 ```
+
+If $\cC$ has binary products with $c$, then this result is a consequence
+of `Forget/`{.Agda} [[being comonadic|constant family]], since [[comonadic
+functors create limits|limits in categories of algebras]].

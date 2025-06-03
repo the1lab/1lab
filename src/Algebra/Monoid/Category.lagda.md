@@ -278,7 +278,7 @@ $[x,y]$.
   it's-eso : is-split-eso comparison
   it's-eso (A , alg) = monoid , the-iso where
     open Algebra-on
-    import Cat.Reasoning (Eilenberg-Moore (L∘R (Free-monoid⊣Forget {ℓ}))) as R
+    import Cat.Reasoning (Eilenberg-Moore (R∘L (Free-monoid⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
     monoid .fst = A

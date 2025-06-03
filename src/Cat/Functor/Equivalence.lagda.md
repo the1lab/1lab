@@ -576,7 +576,7 @@ module
 
   is-equivalence→is-ff : is-fully-faithful F
   is-equivalence→is-ff = is-iso→is-equiv λ where
-    .is-iso.inv x → e.unit⁻¹ .η _ C.∘ L-adjunct e.F⊣F⁻¹ x
+    .is-iso.from x → e.unit⁻¹ .η _ C.∘ L-adjunct e.F⊣F⁻¹ x
     .is-iso.rinv x →
       D.invertible→monic (F-map-invertible F (e.unit-iso _)) _ _ $
         ap₂ D._∘_ refl (F .F-∘ _ _)

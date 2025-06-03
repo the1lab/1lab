@@ -3,7 +3,9 @@
 open import 1Lab.Classical
 open import 1Lab.Prelude
 
+open import Data.List.Membership
 open import Data.Fin.Indexed
+open import Data.List.Base
 open import Data.Power
 open import Data.Bool
 open import Data.Dec
@@ -110,65 +112,46 @@ We will set the `<details>`{.html} aside for the curious reader.
 </summary>
 
 ```agda
-  finitely-consistent ϕs' sub (fin {zero} ∥enum∥) =
-    pure $ (λ _ → true) , λ ϕ ϕ∈ϕs' → absurd (card-zero→empty ∥enum∥ (ϕ , ϕ∈ϕs'))
-  finitely-consistent ϕs' sub (fin {suc zero} ∥enum∥) = do
-    enum ← ∥enum∥
-    let module enum = Equiv enum
-    let (ϕ , ϕ∈ϕs') = enum.from 0
-    sub ϕ ϕ∈ϕs' <&> λ where
-      (inl xp) →
-        (λ _ → true) , λ ϕ' ϕ'∈ϕs' → ∥-∥-out! do
-          sub ϕ' ϕ'∈ϕs' >>= λ where
-            (inl xp') → □-tr do
-              (x=ϕ' , _) ← xp'
-              pure (subst (λ e → ⟦ e ⟧ (λ _ → true) ≡ true) x=ϕ' refl)
-            (inr ¬xp') → □-tr do
-              (_ , p) ← xp
-              (_ , ¬p) ← ¬xp'
-              absurd (¬p p)
-      (inr ¬xp) →
-        (λ _ → false) , λ ϕ' ϕ'∈ϕs' → ∥-∥-out! do
-          sub ϕ' ϕ'∈ϕs' >>= λ where
-            (inl xp') → □-tr do
-              (_ , ¬p) ← ¬xp
-              (_ , p) ← xp'
-              absurd (¬p p)
-            (inr ¬xp') → □-tr do
-              (¬x=ϕ' , _) ← ¬xp'
-              pure (subst (λ e → ⟦ e ⟧ (λ _ → false) ≡ true) ¬x=ϕ' refl)
-  finitely-consistent ϕs' sub (fin {suc (suc n)} ∥enum∥) = do
-    enum ← ∥enum∥
-    let module enum = Equiv enum
-    let (ϕ , ϕ∈ϕs') = enum.from 0
-    let (ϕ' , ϕ'∈ϕs') = enum.from 1
-    sub ϕ ϕ∈ϕs' >>= λ where
-      (inl xp) → sub ϕ' ϕ'∈ϕs' >>= λ where
-        (inl xp') → □-tr do
-          (x=ϕ , _) ← xp
-          (x=ϕ' , _) ← xp'
-          absurd
-            (fzero≠fsuc $
-              sym (enum.ε 0)
-              ∙ ap enum.to (Σ-prop-path! (sym x=ϕ ∙ x=ϕ'))
-              ∙ enum.ε 1)
-        (inr ¬xp') → □-tr do
-          (_ , p) ← xp
-          (_ , ¬p) ← ¬xp'
-          absurd (¬p p)
-      (inr ¬xp) → sub ϕ' ϕ'∈ϕs' >>= λ where
-        (inl xp') → □-tr do
-          (_ , ¬p) ← ¬xp
-          (_ , p) ← xp'
-          absurd (¬p p)
-        (inr ¬xp') → □-tr do
-          (x=ϕ , _) ← ¬xp
-          (x=ϕ' , _) ← ¬xp'
-          absurd
-            (fzero≠fsuc $
-              sym (enum.ε 0)
-              ∙ ap enum.to (Σ-prop-path! (sym x=ϕ ∙ x=ϕ'))
-              ∙ enum.ε 1)
+  finitely-consistent ϕs' sub p = do
+    li ← p
+    let
+      it = case li .Listing.univ return (λ v → (∀ x → is-contr (x ∈ₗ v)) → subset-is-sat ϕs') of λ where
+        []              h → pure ((λ _ → true) , λ ϕ m → case h (ϕ , m) of λ ())
+
+        ((p , hp) ∷ []) h → case sub p hp of λ where
+          (inl a) → case a of λ where
+            tr _ → pure ((λ _ → true) , λ φ hφ → case h (φ , hφ) .centre of λ where
+              (here reflᵢ) → subst (λ e → ⟦ e ⟧ (λ _ → true) ≡ true) tr refl)
+          (inr a) → case a of λ where
+            tr _ → pure ((λ _ → false) , λ φ hφ → case h (φ , hφ) .centre of λ where
+              (here reflᵢ) → subst (λ e → ⟦ e ⟧ (λ _ → false) ≡ true) tr refl)
+
+        ((p , hp) ∷ (q , hq) ∷ ps) → case sub p hp , sub q hq of λ where
+          (inl a) (inl b) h → do
+            (a , _) ← □-tr a
+            (b , _) ← □-tr b
+            pure
+              let
+                q = Id≃path.from (Σ-prop-path! (sym a ∙ b))
+                it = is-contr→is-prop (h (p , hp)) (here reflᵢ) (there (here q))
+              in absurd (here≠there it)
+          (inl a) (inr b) h → □-tr do
+            (_ , a)  ← a
+            (_ , ¬a) ← b
+            absurd (¬a a)
+          (inr a) (inl b) h → □-tr do
+            (_ , ¬a) ← a
+            (_ , a)  ← b
+            absurd (¬a a)
+          (inr a) (inr b) h → do
+            (a , _) ← □-tr a
+            (b , _) ← □-tr b
+            pure
+              let
+                q = Id≃path.from (Σ-prop-path! (sym a ∙ b))
+                it = is-contr→is-prop (h (p , hp)) (here reflᵢ) (there (here q))
+              in absurd (here≠there it)
+    it (λ a → li .Listing.has-member a)
 ```
 
 </details>

@@ -106,9 +106,9 @@ record is-iso (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   constructor iso
   field
-    inv  : B → A
-    rinv : is-right-inverse inv f
-    linv : is-left-inverse inv f
+    from : B → A
+    rinv : is-right-inverse from f
+    linv : is-left-inverse from f
 ```
 
 It's immediate from the symmetry of the definition that if $g$ is a
@@ -116,8 +116,8 @@ two-sided inverse to $f$, then $f$ also inverts $g$: an isomorphism's
 inverse is again an isomorphism.
 
 ```agda
-  inverse : is-iso inv
-  inverse .inv  = f
+  inverse : is-iso from
+  inverse .from = f
   inverse .rinv = linv
   inverse .linv = rinv
 ```
@@ -140,13 +140,13 @@ the opposite order is sometimes humorously referred to as the
 
 ```agda
   ∘-is-iso : {f : B → C} {g : A → B} → is-iso f → is-iso g → is-iso (f ∘ g)
-  ∘-is-iso f-im g-im .inv x = g-im .inv (f-im .inv x)
+  ∘-is-iso f-im g-im .from x = g-im .from (f-im .from x)
   ∘-is-iso {f = f} {g = g} f-im g-im .rinv x =
-    f (g (g-im .inv (f-im .inv x))) ≡⟨ ap f (g-im .rinv _) ⟩
-    f (f-im .inv x)                 ≡⟨ f-im .rinv _ ⟩
-    x                               ∎
+    f (g (g-im .from (f-im .from x))) ≡⟨ ap f (g-im .rinv _) ⟩
+    f (f-im .from x)                  ≡⟨ f-im .rinv _ ⟩
+    x                                 ∎
   ∘-is-iso {g = g} f-im g-im .linv x =
-    ap (g-im .inv) (f-im .linv (g x)) ∙ g-im .linv x
+    ap (g-im .from) (f-im .linv (g x)) ∙ g-im .linv x
 ```
 
 Finally, the identity map is its own two-sided inverse, so it is an
@@ -158,7 +158,7 @@ more about the specific type, there might be other ways.
 ```agda
   private
     id-iso : is-iso {A = A} id
-    id-iso .inv    = id
+    id-iso .from   = id
     id-iso .rinv x = refl
     id-iso .linv x = refl
 ```
@@ -222,6 +222,7 @@ record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
 
 <!--
 ```agda
+{-# INLINE is-equiv.constructor #-}
 open is-equiv public
 
 _≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
@@ -421,7 +422,7 @@ above into a proof that every equivalence is an isomorphism:
 
 ```agda
 is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
-is-equiv→is-iso eqv .is-iso.inv  = equiv→inverse eqv
+is-equiv→is-iso eqv .is-iso.from = equiv→inverse eqv
 is-equiv→is-iso eqv .is-iso.rinv = equiv→counit eqv
 is-equiv→is-iso eqv .is-iso.linv = equiv→unit eqv
 ```
@@ -446,7 +447,7 @@ would imply that `is-iso`{.Agda} is a proposition, which, again, is
 
 ```agda
 module _ {f : A → B} (i : is-iso f) where
-  open is-iso i renaming (inv to g ; rinv to s ; linv to t)
+  open is-iso i renaming (from to g ; rinv to s ; linv to t)
 ```
 
 We want to show that, for any $y$, the `fibre`{.Agda} of $f$ over $y$ is
@@ -700,10 +701,11 @@ isomorphism has contractible fibres:
 
 ```agda
   is-iso→is-equiv : is-equiv f
-  is-iso→is-equiv .is-eqv y .centre .fst = g y
-  is-iso→is-equiv .is-eqv y .centre .snd = s y
-  is-iso→is-equiv .is-eqv y .paths z =
-    is-iso→fibre-is-prop y (g y) (fst z) (s y) (snd z)
+  {-# INLINE is-iso→is-equiv #-}
+  is-iso→is-equiv = record
+    { is-eqv = λ y → record
+      { centre = g y , s y
+      ; paths = λ z → is-iso→fibre-is-prop y (g y) (z .fst) (s y) (z .snd) } }
 ```
 
 If we package this differently, then we can present it as a map between
@@ -711,7 +713,8 @@ the types of isomorphisms $A \to B$ and equivalences $A \simeq B$.
 
 ```agda
 Iso→Equiv : Iso A B → A ≃ B
-Iso→Equiv (f , is-iso) = f , is-iso→is-equiv is-iso
+{-# INLINE Iso→Equiv #-}
+Iso→Equiv (f , is-iso) = record { fst = f ; snd = is-iso→is-equiv is-iso }
 ```
 
 <!--
@@ -735,7 +738,7 @@ inverse-is-equiv {A = A} {B = B} {f = f} eqv .is-eqv x .paths (y , p) = q where
     k (j = i1) → η (p k) (i ∨ k)
 
 module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
-  to = f .fst
+  to   = f .fst
   from = equiv→inverse (f .snd)
   η    = equiv→unit (f .snd)
   ε    = equiv→counit (f .snd)
@@ -758,26 +761,32 @@ module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
   adjunctr : ∀ {x y} → x ≡ from y → to x ≡ y
   adjunctr p = ap to p ∙ ε _
 
-  open is-iso
-
   adjunct : ∀ {x y} → (to x ≡ y) ≃ (x ≡ from y)
   adjunct {x} {y} .fst = adjunctl
-  adjunct {x} {y} .snd = is-iso→is-equiv λ where
-    .inv    → adjunctr
-    .rinv p → J (λ _ p → sym (η _) ∙ ap from (ap to (sym p) ∙ ε _) ≡ sym p)
+  adjunct {x} {y} .snd = is-iso→is-equiv record
+    { from = adjunctr
+    ; rinv = λ p → J (λ _ p → sym (η _) ∙ ap from (ap to (sym p) ∙ ε _) ≡ sym p)
       (sym (∙-swapl (∙-idr _ ∙ sym (zag _) ∙ sym (∙-idl _) ∙ sym (ap-∙ from _ _))))
       (sym p)
-    .linv → J (λ _ p → ap to (sym (η _) ∙ ap from p) ∙ ε _ ≡ p)
+    ; linv = J (λ _ p → ap to (sym (η _) ∙ ap from p) ∙ ε _ ≡ p)
       (sym (∙-swapr (∙-idl _ ∙ ap sym (sym (zig _)) ∙ sym (∙-idr _) ∙ sym (ap-∙ to _ _))))
+    }
 
 module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) where
-  open is-iso f-iso renaming (inverse to inverse-iso)
+  open is-iso f-iso renaming (inverse to inverse-iso) public
 
   injective : ∀ {x y} → f x ≡ f y → x ≡ y
-  injective p = sym (linv _) ∙∙ ap inv p ∙∙ linv _
+  injective p = sym (linv _) ∙∙ ap from p ∙∙ linv _
 
   inverse : Iso B A
-  inverse = inv , inverse-iso
+  inverse = from , inverse-iso
+
+injectiveP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'} (f : ∀ i → Iso (A i) (B i)) {x y}
+  → PathP (λ i → B i) (f i0 .fst x) (f i1 .fst y)
+  → PathP (λ i → A i) x y
+injectiveP f {x} {y} p =
+  sym (Iso.linv (f i0) x) ◁ apd (λ i → Iso.from (f i)) p ▷ Iso.linv (f i1) y
 ```
 -->
 
@@ -797,11 +806,10 @@ types is an equivalence.
 
 ```agda
 is-contr→is-equiv : is-contr A → is-contr B → {f : A → B} → is-equiv f
-is-contr→is-equiv cA cB = is-iso→is-equiv f-is-iso where
-  f-is-iso : is-iso _
-  f-is-iso .is-iso.inv  _ = cA .centre
-  f-is-iso .is-iso.rinv _ = is-contr→is-prop cB _ _
-  f-is-iso .is-iso.linv _ = is-contr→is-prop cA _ _
+is-contr→is-equiv cA cB = is-iso→is-equiv λ where
+  .is-iso.from _ → cA .centre
+  .is-iso.linv _ → is-contr→is-prop cA _ _
+  .is-iso.rinv _ → is-contr→is-prop cB _ _
 ```
 
 Pairing this with the "canonical" function, we obtain an equivalence
@@ -850,11 +858,10 @@ way, any biimplication between propositions is an equivalence.
 
 ```agda
   biimp-is-equiv : (f : P → Q) → (Q → P) → is-equiv f
-  biimp-is-equiv f g .is-eqv y .centre .fst = g y
-  biimp-is-equiv f g .is-eqv y .centre .snd = qprop (f (g y)) y
-  biimp-is-equiv f g .is-eqv y .paths (p' , path) = Σ-pathp
-    (pprop (g y) p')
-    (is-prop→squarep (λ _ _ → qprop) _ _ _ _)
+  biimp-is-equiv f g = is-iso→is-equiv λ where
+    .is-iso.from x → g x
+    .is-iso.linv x → pprop (g (f x)) x
+    .is-iso.rinv x → qprop (f (g x)) x
 
   prop-ext : (P → Q) → (Q → P) → P ≃ Q
   prop-ext p→q q→p .fst = p→q
@@ -863,22 +870,15 @@ way, any biimplication between propositions is an equivalence.
 
 ### Groupoid operations
 
-<!--
-```agda
-module _ where
-  open is-iso
-```
--->
-
 Since [[types are higher groupoids]], we have certain algebraic laws
 regarding the behaviour of path operations which can be expressed as
 saying that they form equivalences. First, the *inverse path* operation
 is definitionally involutive, so it's its own two-sided inverse:
 
 ```agda
-  sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
-  sym-equiv .fst = sym
-  sym-equiv .snd = is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
+sym-equiv .fst = sym
+sym-equiv .snd = is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
 ```
 
 If we have a path $p : x = y$, then $p\inv pq = q$, and $pp\inv r = r$.
@@ -887,24 +887,24 @@ Viewing this as a function of $q$, it says that the operation
 precomposition with $p\inv$.
 
 ```agda
-  ∙-pre-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → (y ≡ z) ≃ (x ≡ z)
-  ∙-pre-equiv p .fst q = p ∙ q
-  ∙-pre-equiv p .snd = is-iso→is-equiv λ where
-    .inv q  → sym p ∙ q
-    .rinv q → ∙-assoc p _ _       ∙∙ ap (_∙ q) (∙-invr p) ∙∙ ∙-idl q
-    .linv q → ∙-assoc (sym p) _ _ ∙∙ ap (_∙ q) (∙-invl p) ∙∙ ∙-idl q
+∙-pre-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → x ≡ y → (y ≡ z) ≃ (x ≡ z)
+∙-pre-equiv p .fst q = p ∙ q
+∙-pre-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from q → sym p ∙ q
+  .is-iso.rinv q → ∙-assoc p _ _       ∙∙ ap (_∙ q) (∙-invr p) ∙∙ ∙-idl q
+  .is-iso.linv q → ∙-assoc (sym p) _ _ ∙∙ ap (_∙ q) (∙-invl p) ∙∙ ∙-idl q
 ```
 
 Similarly, *post*composition with $p$ is inverted on both sides by
 postcomposition with $p\inv$, so it too is an equivalence.
 
 ```agda
-  ∙-post-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → y ≡ z → (x ≡ y) ≃ (x ≡ z)
-  ∙-post-equiv p .fst q = q ∙ p
-  ∙-post-equiv p .snd = is-iso→is-equiv λ where
-    .inv q  → q ∙ sym p
-    .rinv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invl p) ∙∙ ∙-idr q
-    .linv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invr p) ∙∙ ∙-idr q
+∙-post-equiv : ∀ {ℓ} {A : Type ℓ} {x y z : A} → y ≡ z → (x ≡ y) ≃ (x ≡ z)
+∙-post-equiv p .fst q = q ∙ p
+∙-post-equiv p .snd = is-iso→is-equiv λ where
+  .is-iso.from q → q ∙ sym p
+  .is-iso.rinv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invl p) ∙∙ ∙-idr q
+  .is-iso.linv q → sym (∙-assoc q _ _) ∙∙ ap (q ∙_) (∙-invr p) ∙∙ ∙-idr q
 ```
 
 ### The Lift type
@@ -974,7 +974,7 @@ module _ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂} 
 -->
 
 ```agda
-  ∙-is-equiv    : is-equiv f → is-equiv g → is-equiv (g ∘ f)
+  ∘-is-equiv    : is-equiv f → is-equiv g → is-equiv (g ∘ f)
   equiv-cancell : is-equiv g → is-equiv (g ∘ f) → is-equiv f
   equiv-cancelr : is-equiv f → is-equiv (g ∘ f) → is-equiv g
 ```
@@ -996,7 +996,7 @@ proofs are just calculations, we will not comment on them.
 instructive exercise to work these out for yourself!</summary>
 
 ```agda
-  ∙-is-equiv ef eg = is-iso→is-equiv (∘-is-iso (is-equiv→is-iso eg) (is-equiv→is-iso ef))
+  ∘-is-equiv ef eg = is-iso→is-equiv (∘-is-iso (is-equiv→is-iso eg) (is-equiv→is-iso ef))
 
   equiv-cancell eg egf = is-iso→is-equiv (iso inv right left) where
     inv : B → A
@@ -1056,7 +1056,7 @@ id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
 id≃ = id , id-equiv
 
 _∙e_ : A ≃ B → B ≃ C → A ≃ C
-_∙e_ (f , ef) (g , eg) = g ∘ f , ∙-is-equiv ef eg
+_∙e_ (f , ef) (g , eg) = g ∘ f , ∘-is-equiv ef eg
 
 _e⁻¹ : A ≃ B → B ≃ A
 ((f , ef) e⁻¹) = equiv→inverse ef , inverse-is-equiv ef

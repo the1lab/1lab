@@ -2,15 +2,22 @@
 ```agda
 open import Cat.Prelude
 
+open import Data.Finset.Properties
 open import Data.Fin.Indexed
+open import Data.Finset.Base
 open import Data.Fin.Finite
 open import Data.Fin.Base using (Fin ; fsuc ; fzero ; suc ; zero ; fin-view)
+open import Data.Sum.Base
+
+open import Meta.Idiom
 
 open import Order.Semilattice.Meet
 open import Order.Diagram.Meet
 open import Order.Diagram.Glb
 open import Order.Diagram.Top
 open import Order.Base
+
+import Order.Semilattice.Meet.Reasoning as Meets
 ```
 -->
 
@@ -24,8 +31,7 @@ open is-glb
 open Glb
 
 module _ {o ℓ} {P : Poset o ℓ} (l : is-meet-semilattice P) where
-  open is-meet-semilattice l
-  open Poset P
+  open Meets l
 ```
 -->
 
@@ -60,6 +66,43 @@ size of the family.
   Finite-glbs f .Glb.has-glb .is-glb.glb≤fam = ⋂ᶠ-proj
   Finite-glbs f .Glb.has-glb .is-glb.greatest = ⋂ᶠ-universal
 ```
+
+<!--
+```agda
+  ⋂ᶠˢ : Finset ⌞ P ⌟ → ⌞ P ⌟
+  ⋂ᶠˢ []       = top
+  ⋂ᶠˢ (x ∷ xs) = x ∩ ⋂ᶠˢ xs
+  ⋂ᶠˢ (∷-dup x xs i) = along i $
+    x ∩ x ∩ ⋂ᶠˢ xs ≡⟨ ∩.pulll ∩-idem ⟩
+    x ∩ ⋂ᶠˢ xs     ∎
+  ⋂ᶠˢ (∷-swap x y xs i) = along i $
+    x ∩ y ∩ ⋂ᶠˢ xs ≡⟨ ∩.extendl ∩-comm ⟩
+    y ∩ x ∩ ⋂ᶠˢ xs ∎
+  ⋂ᶠˢ (squash x y p q i j) = hlevel 2 (⋂ᶠˢ x) (⋂ᶠˢ y) (λ i → ⋂ᶠˢ (p i)) (λ i → ⋂ᶠˢ (q i)) i j
+
+  abstract
+    ⋂ᶠˢ-proj : {x : ⌞ P ⌟} (xs : Finset ⌞ P ⌟) → x ∈ xs → ⋂ᶠˢ xs ≤ x
+    ⋂ᶠˢ-proj {x} xs = ∈ᶠˢ-elim (λ xs _ → ⋂ᶠˢ xs ≤ x) ∩≤l (λ q r → ≤-trans ∩≤r r) xs
+
+    ⋂ᶠˢ-univ
+      : (xs : Finset ⌞ P ⌟) {o : ⌞ P ⌟}
+      → ((x : ⌞ P ⌟) → x ∈ᶠˢ xs → o ≤ x)
+      → o ≤ ⋂ᶠˢ xs
+    ⋂ᶠˢ-univ xs {o} = Finset-elim-prop (λ xs → ((x : ⌞ P ⌟) → x ∈ᶠˢ xs → o ≤ x) → o ≤ ⋂ᶠˢ xs)
+      (λ _ → !)
+      (λ x ih le → ∩-universal o (le x hereₛ) (ih (λ y w → le y (thereₛ w))))
+      xs
+
+    ⋂ᶠˢ-union : (xs ys : Finset ⌞ P ⌟) → ⋂ᶠˢ (xs <> ys) ≡ (⋂ᶠˢ xs ∩ ⋂ᶠˢ ys)
+    ⋂ᶠˢ-union xs ys = ≤-antisym
+      (∩-universal _
+        (⋂ᶠˢ-univ xs λ x m → ⋂ᶠˢ-proj (xs <> ys) (unionl-∈ᶠˢ _ xs ys m))
+        (⋂ᶠˢ-univ ys λ y m → ⋂ᶠˢ-proj (xs <> ys) (unionr-∈ᶠˢ _ xs ys m)))
+      (⋂ᶠˢ-univ (xs <> ys) λ x m → case ∈ᶠˢ-union _ xs ys m of λ where
+        (inl x) → ≤-trans ∩≤l (⋂ᶠˢ-proj xs x)
+        (inr x) → ≤-trans ∩≤r (⋂ᶠˢ-proj ys x))
+```
+-->
 
 Furthermore, $P$ must also have meets of [[finitely indexed sets]].
 Let $I$ be a finitely indexed set with enumeration $e$, and let $f : I \to P$
@@ -100,4 +143,7 @@ module
     f · (k fzero Pₗ.∩ ⋂ᶠ Pl (k ⊙ fsuc))      ≡⟨ pres-∩ _ _ ⟩
     f · (k fzero) Qₗ.∩ f · ⋂ᶠ Pl (k ⊙ fsuc)  ≡⟨ ap₂ Qₗ._∩_ refl (pres-⋂ᶠ (k ⊙ fsuc)) ⟩
     ⋂ᶠ Ql (apply f ⊙ k)                      ∎
+
+  pres-⋂ᶠˢ : ∀ xs → f · ⋂ᶠˢ Pl xs ≡ ⋂ᶠˢ Ql (map (f ·_) xs)
+  pres-⋂ᶠˢ = Finset-elim-prop _ pres-top (λ x ih → pres-∩ _ _ ∙ ap₂ Qₗ._∩_ refl ih)
 ```

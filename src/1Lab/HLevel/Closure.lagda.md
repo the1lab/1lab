@@ -134,6 +134,15 @@ left, and `path` on the right.
       path                                      ∎
 ```
 
+<!--
+```agda
+split-surjection→is-hlevel
+  : ∀ n (f : A → B) (s : (b : B) → fibre f b)
+  → is-hlevel A n → is-hlevel B n
+split-surjection→is-hlevel n f s = retract→is-hlevel n f (λ x → s x .fst) (λ x → s x .snd)
+```
+-->
+
 ### Isomorphisms and equivalences
 
 Even though we know that [[univalence]] implies that $n$-types are
@@ -144,11 +153,11 @@ equivalence, having a two-sided inverse, is a split surjection.
 ```agda
 iso→is-hlevel : (n : Nat) (f : A → B) → is-iso f → is-hlevel A n → is-hlevel B n
 iso→is-hlevel n f im = retract→is-hlevel n f g h
-  where open is-iso im renaming (inv to g ; rinv to h)
+  where open is-iso im renaming (from to g ; rinv to h)
 
 Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
 Iso→is-hlevel n (f , im) = retract→is-hlevel n g f h
-  where open is-iso im renaming (inv to g ; linv to h)
+  where open is-iso im renaming (from to g ; linv to h)
 
 equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n → is-hlevel B n
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
@@ -236,8 +245,14 @@ fun-is-hlevel n hl = Π-is-hlevel n λ _ → hl
 ## Sums of n-types
 
 A similar argument, using the fact that `paths between pairs are pairs
-of paths`{.Agda ident=Σ-path-iso}, shows that dependent sums are also
+of paths`{.Agda ident=Σ-pathp≃} shows that dependent sums are also
 closed under h-levels.
+
+<!--
+```agda
+_ = Σ-pathp≃
+```
+-->
 
 ```agda
 Σ-is-hlevel
@@ -255,8 +270,8 @@ closed under h-levels.
   aprop a a' i , is-prop→pathp (λ i → bprop (aprop a a' i)) b b' i
 
 Σ-is-hlevel {B = B} (suc (suc n)) h1 h2 (x , p) (y , q) =
-  iso→is-hlevel (suc n) _ (Σ-path-iso .snd) $
-    Σ-is-hlevel (suc n) (h1 x y) λ x → h2 y (subst B x p) q
+  Equiv→is-hlevel (suc n) Σ-pathp.inverse $
+    Σ-is-hlevel (suc n) (h1 x y) λ x → PathP-is-hlevel' (suc n) (h2 y) p q
 ```
 
 Analogous to the case of dependent products and functions, a
