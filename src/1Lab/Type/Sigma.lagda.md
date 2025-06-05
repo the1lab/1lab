@@ -14,9 +14,10 @@ module 1Lab.Type.Sigma where
 <!--
 ```agda
 private variable
-  ℓ ℓ₁ : Level
-  A A' X X' Y Y' Z Z' : Type ℓ
+  ℓ ℓ' ℓ'' : Level
+  T A A' X X' Y Y' Z Z' : Type ℓ
   B P Q : A → Type ℓ
+  C : (x : A) → B x → Type ℓ
 ```
 -->
 
@@ -34,7 +35,7 @@ structure of their domain types:
 
 ```agda
 Σ-pathp≃
-  : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
+  : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ'}
     {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
   → (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
       (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
@@ -117,23 +118,6 @@ they are included for completeness. </summary>
         k (i = i0) → ctrP (~ k)
         k (i = i1) → σ (~ k)
         k (k = i0) → b
-
-Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
-        → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
-Σ-assoc .fst (x , y , z) = (x , y) , z
-Σ-assoc .snd = is-iso→is-equiv λ where
-  .is-iso.from ((x , y) , z) → x , y , z
-  .is-iso.linv p → refl
-  .is-iso.rinv p → refl
-
-Σ-Π-distrib : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
-            → ((x : A) → Σ[ y ∈ B x ] C x y)
-            ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
-Σ-Π-distrib .fst f = (λ x → f x .fst) , λ x → f x .snd
-Σ-Π-distrib .snd = is-iso→is-equiv λ where
-  .is-iso.from (f , r) x → f x , r x
-  .is-iso.linv p → refl
-  .is-iso.rinv p → refl
 ```
 </details>
 
@@ -252,9 +236,6 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 
-⟨_,_⟩ : (X → Y) → (X → Z) → X → Y × Z
-⟨ f , g ⟩ x = f x , g x
-
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
 
@@ -316,13 +297,73 @@ infixr 4 _,ₚ_
 ```
 -->
 
-<!--
-```agda
-module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → Y x → Type ℓ''} where
-  curry : ((p : Σ X Y) → Z (p .fst) (p .snd)) → (x : X) → (y : Y x) → Z x y
-  curry f a b = f (a , b)
+## The universal property of sigma types {defines="universal-property-of-sigma-types"}
 
-  uncurry : ((x : X) → (y : Y x) → Z x y) → (p : Σ X Y) → Z (p .fst) (p .snd)
-  uncurry f (a , b) = f a b
+Like all good type formers, $\Sigma$ types obey a universal property.
+First, observe that every pair of functions $f : (x : A) \to B\; x$,
+$g : (x : A) \to C\; x\; (f\; x)$ induces a map
+$$\langle f , g \rangle : (x : A) \to \Sigma\; (B\; x)\; (C\; x\; (f\; x))$$
+
+```agda
+⟨_,_⟩
+  : (f : (x : A) → B x)
+  → (g : (x : A) → C x (f x))
+  → (x : A) → Σ (B x) (C x)
+⟨ f , g ⟩ x = f x , g x
 ```
--->
+
+Moreover, this map is part of an equivalence between functions
+$(x : A) \to \Sigma\; (B\; x)\; (C\; x\; (f\; x)$ into a $\Sigma$ type
+and pairs of functions into the components of the $\Sigma$ type.
+
+```agda
+Σ-Π-distrib
+  : ((x : A) → Σ[ y ∈ B x ] C x y)
+  ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
+Σ-Π-distrib .fst f = (λ x → f x .fst) , (λ x → f x .snd)
+Σ-Π-distrib .snd = is-iso→is-equiv λ where
+  .is-iso.from (f , g) → ⟨ f , g ⟩
+  .is-iso.linv p → refl
+  .is-iso.rinv p → refl
+```
+
+However, this isn't the only universal property that $\Sigma$ types enjoy.
+Our previous universal property let us characterise maps *into* $\Sigma$
+types: we also have a universal characterisation of maps *out* of $\Sigma$ types.
+
+First, observe that we can pass between functions $(ab : \Sigma\; A\; B) \to C\; (\pi_1\; ab)\; (\pi_2\; ab)$
+and functions $(a : A) \to (b : B\; a) \to C\; a\; b$.
+
+```agda
+curry : ((ab : Σ A B) → C (ab .fst) (ab .snd)) → (x : A) → (y : B x) → C x y
+curry f a b = f (a , b)
+
+uncurry : ((x : A) → (y : B x) → C x y) → (ab : Σ A B) → C (ab .fst) (ab .snd)
+uncurry f (a , b) = f a b
+```
+
+We can then assemble these two maps into an equivalence.
+
+```agda
+Π-Σ-distrib
+  : ((ab : Σ A B) → C (ab .fst) (ab .snd))
+  ≃ (((x : A) → (y : B x) → C x y))
+Π-Σ-distrib .fst = curry
+Π-Σ-distrib .snd = is-iso→is-equiv λ where
+  .is-iso.from → uncurry
+  .is-iso.rinv f → refl
+  .is-iso.linv f → refl
+```
+
+## The type arithmetic of sigma types
+
+$\Simga$ types are associative up to equivalence.
+
+```agda
+Σ-assoc : (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
+Σ-assoc .fst (x , y , z) = (x , y) , z
+Σ-assoc .snd = is-iso→is-equiv λ where
+  .is-iso.from ((x , y) , z) → x , y , z
+  .is-iso.linv p → refl
+  .is-iso.rinv p → refl
+```
