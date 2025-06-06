@@ -17,6 +17,7 @@ private variable
   ℓ ℓ₁ : Level
   A A' X X' Y Y' Z Z' : Type ℓ
   B P Q : A → Type ℓ
+  C : (x : A) → B x → Type ℓ
 ```
 -->
 
@@ -24,6 +25,26 @@ private variable
 
 This module contains properties of $\Sigma$ types, not necessarily
 organised in any way.
+
+## Universal property
+
+If we have a pair of maps $f : (x : A) \to B(x)$ and $g : (x : A) \to C(x, f(x))$,
+then there exists a unique universal map $\langle f , g \rangle : (x : A) \to \Sigma (B x) (C x)$
+that commutes with the projections. This is essentially a dependently
+typed version of the universal property of [[products]].
+
+```agda
+⟨_,_⟩ : (f : (x : A) → B x) → (g : (x : A) → C x (f x)) → (x : A) → Σ (B x) (C x)
+⟨ f , g ⟩ x = f x , g x
+
+⟨⟩-unique
+  : ∀ {f : (x : A) → B x} {g : (x : A) → C x (f x)}
+  → (h : (x : A) → Σ (B x) (C x))
+  → (p : fst ∘ h ≡ f)
+  → PathP (λ i → (x : A) → C x (p i x)) (snd ∘ h) g
+  → h ≡ ⟨ f , g ⟩
+⟨⟩-unique h p q i x = p i x , q i x
+```
 
 ## Groupoid structure
 
@@ -121,19 +142,15 @@ they are included for completeness. </summary>
 Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
         → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
 Σ-assoc .fst (x , y , z) = (x , y) , z
-Σ-assoc .snd = is-iso→is-equiv λ where
-  .is-iso.from ((x , y) , z) → x , y , z
-  .is-iso.linv p → refl
-  .is-iso.rinv p → refl
+Σ-assoc .snd .is-eqv ((x , y), z) = contr (fib .fst) (fib .snd)
+  where fib = strict-fibres _ ((x , y) , z)
 
 Σ-Π-distrib : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
             → ((x : A) → Σ[ y ∈ B x ] C x y)
             ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
-Σ-Π-distrib .fst f = (λ x → f x .fst) , λ x → f x .snd
-Σ-Π-distrib .snd = is-iso→is-equiv λ where
-  .is-iso.from (f , r) x → f x , r x
-  .is-iso.linv p → refl
-  .is-iso.rinv p → refl
+Σ-Π-distrib .fst f = (fst ∘ f) , (snd ∘ f)
+Σ-Π-distrib .snd .is-eqv (f , r) = contr (fib .fst) (fib .snd)
+  where fib = strict-fibres (λ h → ⟨ h .fst , h .snd ⟩) (f , r)
 ```
 </details>
 
@@ -251,9 +268,6 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
-
-⟨_,_⟩ : (X → Y) → (X → Z) → X → Y × Z
-⟨ f , g ⟩ x = f x , g x
 
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
