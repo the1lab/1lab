@@ -491,7 +491,7 @@ morphism most certainly is!
   comp-comonad .Comprehension-comonad.comonad = comonad
   comp-comonad .Comprehension-comonad.counit-cartesian = πᶜ'-cartesian
   comp-comonad .Comprehension-comonad.cartesian-pullback cart =
-    cartesian+pullback→total-pullback E
+    cartesian+pullback→total-pullback
       πᶜ'-cartesian πᶜ'-cartesian
       (sub-pullback cart)
       (cast[] (symP (sub-proj' _)))
@@ -540,7 +540,7 @@ cartesian, which finishes off the proof.
   fibred : is-fibred-functor vert
   fibred .F-cartesian {f = σ} {f' = f'} cart =
     pullback→cartesian B $
-    cartesian+total-pullback→pullback E fib
+    cartesian+total-pullback→pullback fib
       counit-cartesian counit-cartesian
       (cartesian-pullback cart)
 
