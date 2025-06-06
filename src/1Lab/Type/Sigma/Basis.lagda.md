@@ -111,6 +111,12 @@ Equiv→Σ-basis f .Σ-basis.has-basis = is-equiv→is-Σ-basis (f .snd)
 
 <!--
 ```agda
+is-iso→is-Σ-basis
+  : {p₁ : X → A} {p₂ : (x : X) → B (p₁ x)}
+  → is-iso {B = Σ A B} ⟨ p₁ , p₂ ⟩
+  → is-Σ-basis X A B p₁ p₂
+is-iso→is-Σ-basis isom .is-Σ-basis.⟨⟩-equiv = is-iso→is-equiv isom
+
 is-Σ-basis→Σ-basis
   : {p₁ : X → A} {p₂ : (x : X) → B (p₁ x)}
   → is-Σ-basis X A B p₁ p₂
@@ -320,6 +326,7 @@ is-Σ-basis→identity-system {p₁ = p₁} {p₂ = p₂} ΣX =
   (⟨ ap p₁ , ap p₂ ⟩ , ap-is-Σ-basis ΣX .is-Σ-basis.⟨⟩-equiv) e⁻¹
 ```
 
+## Reasoning
 
 ```agda
 module _ {ℓx ℓa ℓb} {X : Type ℓx} {A : Type ℓa} {B : A → Type ℓb} where
@@ -340,13 +347,10 @@ module _ {ℓx ℓa ℓb} {X : Type ℓx} {A : Type ℓa} {B : A → Type ℓb} 
 
   via-Σ-basis
     : {a a' : A} {b : B a} {b' : B a'}
-    → ⦃ _ : H-Level A 2 ⦄
     → (ΣX : Σ-basis X A B)
-    → (p : a ≡ a')
-    → Σ-basis-path ΣX b b'
-    → PathP (λ i → B (p i)) b b'
-  via-Σ-basis ΣX p q =
-    is-set→cast-pathp B (hlevel 2) $ over q
+    → (p : Σ-basis-path ΣX b b')
+    → PathP (λ i → B (base p i)) b b'
+  via-Σ-basis ΣX p = over p
 
   Σ-basis-path-step
     : {ΣX : Σ-basis X A B}
