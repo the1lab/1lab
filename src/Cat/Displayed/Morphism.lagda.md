@@ -704,3 +704,43 @@ module _
   post-section[] = post-section'
 ```
 -->
+
+<!--
+```agda
+Inverses[]-Σ-basis
+  : ∀ {Γ Δ x y}
+  → {u : Hom Γ Δ} {v : Hom Δ Γ}
+  → {f : Hom[ u ] x y} {g : Hom[ v ] y x}
+  → {uv-inv : Inverses u v}
+  → (let module uv = Inverses uv-inv)
+  → Σ-basis (Inverses[ uv-inv ] f g)
+      (f ∘' g ≡[ uv.invl ] id')
+      (λ _ → g ∘' f ≡[ uv.invr ] id')
+Inverses[]-Σ-basis = Iso→Σ-basis eqv
+  where private unquoteDecl eqv = declare-record-iso eqv (quote Inverses[_])
+
+is-invertible[]-Σ-basis
+  : ∀ {Γ Δ x y} {u : Hom Γ Δ} {f : Hom[ u ] x y}
+  → {u-inv : is-invertible u}
+  → (let module u = is-invertible u-inv)
+  → Σ-basis (is-invertible[ u-inv ] f)
+      (Hom[ u.inv ] y x)
+      (λ f⁻¹ → Inverses[ u.inverses ] f f⁻¹)
+is-invertible[]-Σ-basis = Iso→Σ-basis eqv
+  where private unquoteDecl eqv = declare-record-iso eqv (quote is-invertible[_])
+
+≅[]-Σ-basis
+  : ∀ {Γ Δ x y}
+  → {u : Γ ≅ Δ}
+  → (let module u = _≅_ u)
+  → Σ-basis (x ≅[ u ] y)
+      (Hom[ u.to ] x y)
+      (λ f → is-invertible[ iso→invertible u ] f)
+≅[]-Σ-basis {u = u} =
+  Iso→Σ-basis λ where
+    .fst f → f .to' , iso[]→invertible[] f
+    .snd .is-iso.from (f , f-inv) → invertible[]→iso[] f-inv
+    .snd .is-iso.rinv (f , f-inv) → Σ-prop-path (is-invertible[]-is-prop (iso→invertible u)) refl
+    .snd .is-iso.linv f → ≅[]-path refl
+```
+-->
