@@ -357,7 +357,7 @@ We can then assemble these two maps into an equivalence.
 
 ## The type arithmetic of sigma types
 
-$\Simga$ types are associative up to equivalence.
+$\Sigma$ types are associative up to equivalence.
 
 ```agda
 Σ-assoc : (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
