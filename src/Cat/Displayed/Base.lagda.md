@@ -134,6 +134,14 @@ For convenience, we also introduce displayed analogues for equational chain reas
 
   infixr 30 _∙[]_ ∙[-]-syntax
   infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
+
+  cast[]
+    : ∀ {a b x y} {f g : Hom a b} {f' : Hom[ f ] x y} {g' : Hom[ g ] x y}
+    → {p q : f ≡ g}
+    → f' ≡[ p ] g'
+    → f' ≡[ q ] g'
+  cast[] {a = a} {b = b} {x = x} {y = y} r =
+    is-set→cast-pathp (λ f → Hom[ f ] x y) (Hom-set a b) r
 ```
 
 <!--

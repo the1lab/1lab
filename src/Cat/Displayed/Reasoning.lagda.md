@@ -59,14 +59,6 @@ reindex
   : ∀ {a b x y} {f g : B.Hom a b} (p q : f ≡ g) {f' : E.Hom[ f ] x y}
   → hom[ p ] f' ≡ hom[ q ] f'
 reindex p q {f'} = ap (λ e → hom[ e ] f') (B.Hom-set _ _ _ _ p q)
-
-cast[]
-  : ∀ {a b x y} {f g : B.Hom a b} {f' : E.Hom[ f ] x y} {g' : E.Hom[ g ] x y}
-  → {p q : f ≡ g}
-  → f' E.≡[ p ] g'
-  → f' E.≡[ q ] g'
-cast[] {f = f} {g = g} {f' = f'} {g' = g'} {p = p} {q = q} r =
-  coe0→1 (λ i → f' E.≡[ B.Hom-set _ _ f g p q i ] g') r
 ```
 
 
