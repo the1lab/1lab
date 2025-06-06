@@ -205,7 +205,6 @@ is an equivalence, which is exactly our hypothesis.
     is-equiv ⟨ p₁ , p₂ ⟩       ←⟨ ΣY .⟨⟩-equiv ⟩∎
 ```
 
-
 ## Combining Σ-bases
 
 The following series of lemmas describe various ways we can combine
@@ -299,6 +298,10 @@ us re-arrange the components of those decompositions back into place.
 module _ where
   open Σ-basis
 
+  Σ-Σ-basis : Σ-basis (Σ A B) A B
+  Σ-Σ-basis = is-Σ-basis→Σ-basis fst-snd-is-Σ-basis
+  {-# INLINE Σ-Σ-basis #-}
+
   Path-Σ-basis
     : {x y : X}
     → (ΣX : Σ-basis X A B)
@@ -310,20 +313,117 @@ module _ where
 ```
 -->
 
-## Σ-bases and identity systems
+## Σ-bases and h-levels
 
-Every $\Sigma$-basis for a type induces an identity system on $X$.
+A $\Sigma$-basis is an encoding of an equivalence $X \simeq \Sigma~ A~ B$,
+so we can use them to characterise the [[h-levels]] of types.
 
 ```agda
-is-Σ-basis→identity-system
-  : {p₁ : X → A} {p₂ : (x : X) → B (p₁ x)}
-  → is-Σ-basis X A B p₁ p₂
-  → is-identity-system
-      (λ x y → Σ[ p ∈ p₁ x ≡ p₁ y ] PathP (λ i → B (p i)) (p₂ x) (p₂ y))
-      (λ x → refl , refl)
-is-Σ-basis→identity-system {p₁ = p₁} {p₂ = p₂} ΣX =
-  equiv-path→identity-system $
-  (⟨ ap p₁ , ap p₂ ⟩ , ap-is-Σ-basis ΣX .is-Σ-basis.⟨⟩-equiv) e⁻¹
+  Σ-basis→is-hlevel
+    : (n : Nat)
+    → Σ-basis X A B
+    → (is-hlevel A n)
+    → (∀ (a : A) → is-hlevel (B a) n)
+    → is-hlevel X n
+
+  Σ-basis→is-contr
+    : Σ-basis X A B
+    → (A-contr : is-contr A)
+    → (B-contr : is-contr (B (A-contr .centre)))
+    → is-contr X
+```
+
+The proofs of these facts are straightforward: h-levels are invariant
+under equivalences, and we can characterise the h-levels of $\Sigma$
+types via their components.
+
+```agda
+  Σ-basis→is-hlevel n ΣX A-hl B-hl =
+    Equiv→is-hlevel n (basis ΣX) $
+    Σ-is-hlevel n A-hl B-hl
+
+  Σ-basis→is-contr ΣX A-contr B-contr =
+    Equiv→is-hlevel 0 (basis ΣX) (Σ-is-contr A-contr B-contr)
+```
+
+## Σ-bases and identity systems
+
+Every $(A,B)$ $\Sigma$-basis for a type induces an [[identity system]] on $X$, where
+paths are coded by a path in $A$ and a path over that path in $B$.
+
+```agda
+  is-Σ-basis→identity-system
+    : {p₁ : X → A} {p₂ : (x : X) → B (p₁ x)}
+    → is-Σ-basis X A B p₁ p₂
+    → is-identity-system
+        (λ x y → Σ[ p ∈ p₁ x ≡ p₁ y ] PathP (λ i → B (p i)) (p₂ x) (p₂ y))
+        (λ x → refl , refl)
+  is-Σ-basis→identity-system {p₁ = p₁} {p₂ = p₂} ΣX =
+    equiv-path→identity-system $
+    (⟨ ap p₁ , ap p₂ ⟩ , ap-is-Σ-basis ΣX .is-Σ-basis.⟨⟩-equiv) e⁻¹
+```
+
+<!--
+```agda
+module _
+  {R : X → X → Type ℓ} {S : A → A → Type ℓ'} {T : ∀ {a a'} → B a → B a' → S a a' → Type ℓ''}
+  {r : (x : X) → R x x} {s : (a : A) → S a a}
+  where
+  open Σ-basis
+```
+-->
+
+We can generalize the previous lemma to get a general strategy for forming
+identity systems via $\Sigma$-bases. To start, let $X$ be a type with
+an $(A,B)$ $\Sigma$-basis, and $R : X \to X \to \ty$ be a correspondence
+on $X$ that has an $(S~ (p_1~ x) (p_1~ y), T~ (p_1~ x)~ (p_1~ y) (p_2~ x)~ (p_2 y))$
+$\Sigma$-basis, where $S : A \to A \to \ty$ and $T : (a a' : A) \to B~ a \to B~ a' \to S~ a~ a' \to \ty$.
+
+If there is some $s : (a : A) \to S~ a~ a$ such that $(S,s)$ is an identity system
+and $\Sigma~ (b' : B~ a'), T~ a~ a'~ b~ b'~ p$ is a [[proposition]] for all
+$a, a' : A$ and $p : S~ a~ a'$, then $(R, r)$ is an identity system on $X$.
+
+```agda
+  Σ-basis→total-identity-system
+    : (ΣX : Σ-basis X A B)
+    → (ΣR : ∀ {x y} → Σ-basis (R x y) (S (ΣX .proj₁ x) (ΣX .proj₁ y)) (T (ΣX .proj₂ x) (ΣX .proj₂ y)))
+    → is-identity-system S s
+    → (∀ {a a'} → (p : S a a') (b : B a) → is-prop (Σ[ b' ∈ B a' ] T b b' p))
+    → is-identity-system R r
+```
+
+The type signature of this lemma is scarier than the proof. To start,
+recall that $(R, r)$ is an identity system on $X$ if and only if the
+type $\Sigma~ (y : X), (R~ x~ y)$ is a [[proposition]] for every $x : X$.
+We shall proceed by constructing a $\Sigma$ basis on $\Sigma~ (y : X), (R~ x~ y)$.
+
+Our assumptions state that $X$ has a $\Sigma$-basis, and $R~ x~ y$ has a
+$\Sigma$-base for every $y : X$. Moreover, the first component of the basis
+of $R~ x~ y$ is $S~ (p_1 x)~ (p_1 y)$, which does not depend on the second
+component of the basis of $X$. This means that
+$$(\Sigma~ (a : A)~, (S~ (p_1~ x)~ a)), \lambda (a, p) \to \Sigma~ (b : B~ a)~, (T~ (p_1~ x)~ a~ (p_2~ x)~ b~ p)$$
+forms a $\Sigma$-basis for $\Sigma~ (y : X), R~ x~ y$. Finally,
+$(\Sigma~ (a : A)~, (S~ (p_1~ x)~ a))$ is contractible, as $(S,s)$ is
+an identity system, and $\Sigma~ (b : B~ a)~, (T~ (p_1~ x)~ (p_1 x)~ (p_2~ x)~ (p_2~ x)~ (s~ (p_1 x)))$
+is a proposition by our assumptions, so
+$$(\Sigma~ (a : A)~, (S~ (p_1~ x)~ a)), \lambda (a, p) \to \Sigma~ (b : B~ a)~, (T~ (p_1~ x)~ a~ (p_2~ x)~ b~ p)$$
+must be a proposition, which in turn implies that must $\Sigma~ (y : X), R~ x~ y$
+also be a proposition.
+
+```agda
+  Σ-basis→total-identity-system ΣX ΣR ids idt =
+    singleton-prop→identity-system λ {x} →
+    Σ-basis→is-hlevel 1
+      (R-singleton-Σ-basis x)
+      (is-contr→is-prop (is-contr-ΣR ids))
+      (λ as → idt (as .snd) (ΣX .proj₂ x))
+    where
+      R-singleton-Σ-basis
+        : ∀ (x : X)
+        → Σ-basis (Σ X (R x))
+           (Σ[ a ∈ A ] S (ΣX .proj₁ x) a)
+           (λ (a , c) → Σ[ b ∈ B a ] T (ΣX .proj₂ x) b c)
+      R-singleton-Σ-basis x = Σ-basis-swap₂ ΣX (λ y → ΣR {x} {y})
 ```
 
 ## Reasoning
