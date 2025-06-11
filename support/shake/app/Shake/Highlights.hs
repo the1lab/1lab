@@ -1,12 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ViewPatterns #-}
 module Shake.Highlights (renderHighlights) where
 
 import Control.Monad.Trans
 
 import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 import qualified Data.Text as Text
 import Data.Traversable
 import Data.Map.Strict (Map)
+import Data.Set (Set)
 import Data.Text (Text)
 import Data.Maybe
 import Data.Char
@@ -20,6 +23,37 @@ import Development.Shake
 import Definitions
 
 import Debug.Trace
+
+-- | Make some 'Text' title-cased.
+titleCase :: Text -> Text
+titleCase txt =
+  case Text.uncons txt of
+    Just (c, cs) -> Text.cons (toUpper c) cs
+    Nothing -> ""
+
+-- | Construct a title for a highlighting block.
+-- The rules for titles are:
+-- 1. If the highlighting icon has an @aria-label@, then we use that as the root of the label.
+-- 2. If there is no @aria-label@, then we title-case the highlighting class name.
+-- 3. If the highlighting block has an @id@ attribute, then title case it, and concatenate it on.
+--    This is used to display the definition name in @definition@ blocks.
+highlightText
+  :: Text
+  -- ^ Highlighting class of the block.
+  -> [TagTree Text]
+  -- ^ The highlight SVG for the block.
+  -> [Attribute Text]
+  -- ^ Highlight block attributes.
+  -> Text
+highlightText clz svg attr =
+  fromMaybe (titleCase clz) ariaLabel <>
+  maybe "" (": " <>) (lookup "id" attr)
+  where
+    ariaLabel :: Maybe Text
+    ariaLabel =
+      case svg of
+        (TagBranch _ svgAttr _:_) -> lookup "aria-label" svgAttr
+        _ -> Nothing
 
 -- | Expands away @<div class="warning">@ and @<details warning>@. Any
 -- icon under @support/web/highlights@ is supported; the @definition@
@@ -40,17 +74,18 @@ renderHighlights input stream = do
     isHighlight (xs, "") = isIcon xs
     isHighlight _ = Nothing
 
-    readIcon icn = do
-      tree <- parseTree . Text.pack <$> readFile' ("support/web/highlights" </> Text.unpack icn -<.> "svg")
-      case tree of
-        (TagBranch _ attr _:_) | Just label <- lookup "aria-label" attr -> pure (tree, label)
-        _ -> pure (tree, Text.cons (toUpper (Text.head icn)) (Text.tail icn))
-    iconSpan icn = do
-      (icon, name') <- readIcon icn
-      let name = TagText name'
+    titleCase (Text.uncons -> Just (c, cs)) = Text.cons (toUpper c) cs
+    titleCase _ = ""
+
+    readIcon icn =
+      parseTree . Text.pack <$> readFile' ("support/web/highlights" </> Text.unpack icn -<.> "svg")
+
+    highlightSpan icn attr = do
+      svg <- readIcon icn
+      let text = TagText (highlightText icn svg attr)
       pure $ TagBranch "span" [("class", "highlight-header")]
-        [ TagBranch "span" [("class", "highlight-icon")] icon
-        , TagBranch "span" [("class", "highlight-text")] [TagLeaf name]
+        [ TagBranch "span" [("class", "highlight-icon")] svg
+        , TagBranch "span" [("class", "highlight-text")] [TagLeaf text]
         ]
 
     go :: TagTree Text -> Action (TagTree Text)
@@ -59,7 +94,7 @@ renderHighlights input stream = do
         let clzs = Text.words clz,
         [icn] <- mapMaybe isIcon clzs
       = do
-      icon <- iconSpan icn
+      icon <- highlightSpan icn attr
       children <- traverse go children
       pure $ TagBranch "div" (("class", "highlighted " <> clz):attr) $ icon:children
 
@@ -67,7 +102,7 @@ renderHighlights input stream = do
       | Just (sattr, schild, rest) <- summary children
       , [icn] <- mapMaybe isHighlight attr
       = do
-      icon <- iconSpan icn
+      icon <- highlightSpan icn attr
       schild <- traverse go schild
       rest <- traverse go rest
       pure $ TagBranch "details" (("class", icn):attr) $

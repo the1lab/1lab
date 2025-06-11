@@ -52,6 +52,12 @@ $theme: (
     text: (light: $cyan-700, dark: $cyan-600),
   ),
 
+  definition: (
+    bg:   (light: $bluegray-600, dark: $bluegray-400),
+    icon: (light: $bluegray-700, dark: $bluegray-300),
+    text: (light: $bluegray-700, dark: $bluegray-300),
+  ),
+
   commit: (
     bg: (light: $violet-500, dark: $violet-400),
   ),
