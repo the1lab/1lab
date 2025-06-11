@@ -175,11 +175,11 @@ dec-reduced (x ∷ y ∷ xs) with x ≡? opp y | dec-reduced (y ∷ xs)
 <!--
 ```agda
 instance
-  _ : ∀ {n} → H-Level (Reduced xs) (suc n)
-  _ = prop-instance reduced-is-prop
+  H-Level-Reduced : ∀ {n} → H-Level (Reduced xs) (suc n)
+  H-Level-Reduced = prop-instance reduced-is-prop
 
-  _ : ∀ {xs} → Dec (Reduced xs)
-  _ = dec-reduced _
+  Dec-Reduced : ∀ {xs} → Dec (Reduced xs)
+  Dec-Reduced = dec-reduced _
 ```
 -->
 
