@@ -140,7 +140,7 @@ SIP : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ 
 SIP {S = S} {σ = σ} is-univ {X} {Y} =
   X ≃[ σ ] Y                                                       ≃⟨⟩
   Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence⁻¹) is-univ ⟩
-  Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
+  Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Σ-pathp≃ ⟩
   (X ≡ Y)                                                          ≃∎
 ```
 
@@ -149,7 +149,7 @@ The proof of the `SIP`{.Agda} follows essentially from
 respect equivalences`{.Agda ident=Σ-ap}. In one fell swoop, we convert
 from the type of homomorphic equivalences to a dependent pair of paths.
 By the characterisation of `path spaces of Σ types`{.Agda
-ident=Σ-pathp-iso}, this latter pair is equivalent to `X ≡ Y`.
+ident=Σ-pathp≃}, this latter pair is equivalent to `X ≡ Y`.
 
 ```agda
 sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ σ ] Y) → (X ≡ Y)
@@ -216,7 +216,7 @@ Product-str-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
                       → is-univalent (Product-str σ τ)
 Product-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ {X , x , y} {Y , x' , y'} f =
   (σ .is-hom (X , x) (Y , x') _ × τ .is-hom (X , y) (Y , y') _) ≃⟨ Σ-ap (θ₁ f) (λ _ → θ₂ f) ⟩
-  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
+  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Σ-pathp≃ ⟩
   PathP (λ i → S (ua f i) × T (ua f i)) (x , y) (x' , y')       ≃∎
 ```
 
@@ -637,8 +637,8 @@ reasoning concludes what we wanted: `Axiom-str`{.Agda} is univalent.
       PathP (λ i → S (ua f i)) s t
         ≃⟨ Σ-contract (λ x → PathP-is-hlevel 0 (contr b (axioms-prop b))) e⁻¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
-        ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
-      _
+        ≃⟨ Σ-pathp≃ ⟩
+      PathP (λ i → Σ (S (ua f i)) (λ v → axioms (ua f i) v)) (s , a) (t , b)
         ≃∎
 ```
 

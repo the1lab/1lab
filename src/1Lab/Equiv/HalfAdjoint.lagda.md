@@ -102,12 +102,18 @@ cancel:
       ap f (η x)                                                  ∎
 ```
 
-The notion of `half-adjoint equivalence`{.Agda ident=is-half-adjoint-equiv} is a useful
-stepping stone in writing a more comprehensible proof that `isomorphisms
-are equivalences`{.Agda ident=Iso→Equiv}. Since this result is
-fundamental, the proof we actually use is written with efficiency of
-computation in mind - hence, cubically. The proof here is intended to be
-more educational.
+The notion of `half-adjoint equivalence`{.Agda
+ident=is-half-adjoint-equiv} is a useful stepping stone in writing a
+more comprehensible proof that `isomorphisms are equivalences`{.Agda
+ident=Iso→Equiv}. Since this result is fundamental, the proof we
+actually use is written with efficiency of computation in mind - hence,
+cubically. The proof here is intended to be more educational.
+
+<!--
+```agda
+_ = Iso→Equiv
+```
+-->
 
 First, we give an equivalent characterisation of paths in
 `fibre`{.Agda}s, which will be used in proving that `half adjoint
@@ -127,7 +133,8 @@ completeness:</summary>
 
 ```agda
 fibre-paths {f = f} {y} {f1} {f2} =
-  Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-path-iso e⁻¹ ⟩
+  Path (fibre f y) f1 f2                                                       ≃⟨ Σ-pathp.inverse ⟩
+  (Σ[ γ ∈ (f1 .fst ≡ f2 .fst) ] PathP (λ i → f (γ i) ≡ y) (f1 .snd) (f2 .snd)) ≃⟨ Σ-ap-snd (λ x → path→equiv (PathP≡Path _ _ _)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → path→equiv (lemma x)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))                    ≃∎
   where

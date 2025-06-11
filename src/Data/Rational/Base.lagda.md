@@ -177,11 +177,11 @@ Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
 ```agda
 private
   _≡ℚ?_ : (x y : ⌞ L.S⁻¹R ⌟) → Dec (x ≡ y)
-  x ≡ℚ? y = Discrete-quotient L.Fraction-congruence Dec-same-rational {x} {y}
+  x ≡ℚ? y = Discrete-quotient L.Fraction-congruence Dec-same-rational .decide x y
 
 instance
   Discrete-ℚ : Discrete ℚ
-  Discrete-ℚ {inc x} {inc y} with x ≡ℚ? y
+  Discrete-ℚ .decide (inc x) (inc y) with x ≡ℚ? y
   ... | yes p = yes (ap ℚ.inc p)
   ... | no ¬p = no (¬p ∘ ap unℚ)
 ```

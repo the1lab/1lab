@@ -29,7 +29,7 @@ open Finitely-complete fc
 open Cat.Reasoning C
 open is-lex lex
 
-open Total-hom
+open ∫Hom
 
 open Coalgebra-on
 open Comonad-on W
@@ -84,7 +84,7 @@ we'll use to construct pullbacks in $\cC_W$.
     : ∀ {(P , π) : Coalgebras.Ob W}
         {π₁ : Coalgebras.Hom W (P , π) (A , α')}
         {π₂ : Coalgebras.Hom W (P , π) (B , β')}
-    → is-pullback C (π₁ .hom) (f .hom) (π₂ .hom) (g .hom)
+    → is-pullback C (π₁ .fst) (f .fst) (π₂ .fst) (g .fst)
     → is-pullback (Coalgebras W) π₁ f π₂ g
   is-pullback-coalgebra {P , π'} {π₁} {π₂} pb = pb' where
 ```
@@ -118,7 +118,7 @@ pullback in $\cC_W$.
       _ {(Q , χ') : Coalgebras.Ob W}
         (p1 : Coalgebras.Hom W (Q , χ') (A , α'))
         (p2 : Coalgebras.Hom W (Q , χ') (B , β'))
-        (wit : f .hom ∘ p1 .hom ≡ g .hom ∘ p2 .hom)
+        (wit : f .fst ∘ p1 .fst ≡ g .fst ∘ p2 .fst)
       where
       module χ = Coalgebra-on χ'
       open χ renaming (ρ to χ) using ()
@@ -145,22 +145,22 @@ the formalisation below.
 
 ```agda
       abstract
-        wit' : W₁ (f .hom) ∘ α ∘ p1 .hom ≡ W₁ (g .hom) ∘ β ∘ p2 .hom
-        wit' = W₁ (f .hom) ∘ α ∘ p1 .hom   ≡⟨ pulll (f .preserves) ⟩
-               (ξ ∘ f .hom) ∘ p1 .hom      ≡⟨ pullr wit ⟩
-               ξ ∘ g .hom ∘ p2 .hom        ≡⟨ extendl (sym (g .preserves)) ⟩
-               W₁ (g .hom) ∘ β ∘ p2 .hom   ∎
+        wit' : W₁ (f .fst) ∘ α ∘ p1 .fst ≡ W₁ (g .fst) ∘ β ∘ p2 .fst
+        wit' = W₁ (f .fst) ∘ α ∘ p1 .fst   ≡⟨ pulll (f .snd) ⟩
+               (ξ ∘ f .fst) ∘ p1 .fst      ≡⟨ pullr wit ⟩
+               ξ ∘ g .fst ∘ p2 .fst        ≡⟨ extendl (sym (g .snd)) ⟩
+               W₁ (g .fst) ∘ β ∘ p2 .fst   ∎
 
       ν : Hom Q P
       ν = counit.ε _ ∘ p'.universal wit'
 
       abstract
-        comm₁ : π₁ .hom ∘ ν ≡ p1 .hom
+        comm₁ : π₁ .fst ∘ ν ≡ p1 .fst
         comm₁ =
-          π₁ .hom ∘ ν                                    ≡⟨ pulll (sym (counit.is-natural _ _ _)) ⟩
-          (counit.ε _ ∘ W₁ (π₁ .hom)) ∘ p'.universal _  ≡⟨ pullr p'.p₁∘universal ⟩
-          counit.ε _ ∘ α ∘ p1 .hom                       ≡⟨ cancell α.ρ-counit ⟩
-          p1 .hom                                        ∎
+          π₁ .fst ∘ ν                                    ≡⟨ pulll (sym (counit.is-natural _ _ _)) ⟩
+          (counit.ε _ ∘ W₁ (π₁ .fst)) ∘ p'.universal _  ≡⟨ pullr p'.p₁∘universal ⟩
+          counit.ε _ ∘ α ∘ p1 .fst                       ≡⟨ cancell α.ρ-counit ⟩
+          p1 .fst                                        ∎
 ```
 
 Since equality of morphisms in $\cC_W$ is entirely tested downstairs in
@@ -172,7 +172,7 @@ commutativity and uniqueness requirements.
 
 <!--
 ```agda
-        comm₂ : π₂ .hom ∘ ν ≡ p2 .hom
+        comm₂ : π₂ .fst ∘ ν ≡ p2 .fst
         comm₂ = pulll (sym (counit.is-natural _ _ _))
              ∙∙ pullr p'.p₂∘universal
              ∙∙ cancell β.ρ-counit
@@ -185,21 +185,21 @@ Since these are both maps into a pullback, namely $WP$, we can do so
 componentwise. Therefore, we calculate
 
 ```agda
-      step₁ : W₁ (π₁ .hom) ∘ W₁ ν ∘ χ ≡ α ∘ p1 .hom
+      step₁ : W₁ (π₁ .fst) ∘ W₁ ν ∘ χ ≡ α ∘ p1 .fst
       step₁ =
-        W₁ (π₁ .hom) ∘ W₁ ν ∘ χ                    ≡⟨ pulll (W.weave (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₁∘universal)) ⟩
-        (W₁ (counit.ε _) ∘ W₁ (α ∘ p1 .hom)) ∘ χ   ≡⟨ pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p1 .preserves)) ⟩
-        W₁ (counit.ε _) ∘ W₁ α ∘ α ∘ p1 .hom       ≡⟨ W.cancell α.ρ-counit ⟩
-        α ∘ p1 .hom                                ∎
+        W₁ (π₁ .fst) ∘ W₁ ν ∘ χ                    ≡⟨ pulll (W.weave (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₁∘universal)) ⟩
+        (W₁ (counit.ε _) ∘ W₁ (α ∘ p1 .fst)) ∘ χ   ≡⟨ pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p1 .snd)) ⟩
+        W₁ (counit.ε _) ∘ W₁ α ∘ α ∘ p1 .fst       ≡⟨ W.cancell α.ρ-counit ⟩
+        α ∘ p1 .fst                                ∎
 ```
 
 and
 
 ```agda
-      step₂ : W₁ (π₁ .hom) ∘ π ∘ ν ≡ α ∘ p1 .hom
-      step₂ = W₁ (π₁ .hom) ∘ π ∘ ν ≡⟨ pulll (π₁ .preserves) ⟩
-              (α ∘ π₁ .hom) ∘ ν    ≡⟨ pullr comm₁ ⟩
-              α ∘ p1 .hom          ∎
+      step₂ : W₁ (π₁ .fst) ∘ π ∘ ν ≡ α ∘ p1 .fst
+      step₂ = W₁ (π₁ .fst) ∘ π ∘ ν ≡⟨ pulll (π₁ .snd) ⟩
+              (α ∘ π₁ .fst) ∘ ν    ≡⟨ pullr comm₁ ⟩
+              α ∘ p1 .fst          ∎
 ```
 
 with very similar, but symmetric, proofs for the second projection ---
@@ -208,13 +208,13 @@ so $\nu$ was indeed the map we were looking for!
 <!--
 ```agda
       factor : Coalgebras.Hom W (Q , χ') (P , π')
-      factor .hom       = ν
-      factor .preserves = p'.unique₂ {p = wit'} step₁
+      factor .fst = ν
+      factor .snd = p'.unique₂ {p = wit'} step₁
         (  pulll (W.weave (pulll (sym (counit.is-natural _ _ _)) ∙ pullr p'.p₂∘universal))
-        ∙∙ pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p2 .preserves))
+        ∙∙ pullr (ap₂ _∘_ (W-∘ _ _) refl ∙ pullr (p2 .snd))
         ∙∙ W.cancell β.ρ-counit)
         step₂
-        (pulll (π₂ .preserves) ∙ pullr comm₂)
+        (pulll (π₂ .snd) ∙ pullr comm₂)
 
 ```
 -->
@@ -222,17 +222,17 @@ so $\nu$ was indeed the map we were looking for!
 ```agda
     pb' : is-pullback (Coalgebras W) π₁ f π₂ g
     pb' .square = ext p.square
-    pb' .universal {p₁' = p₁'} {p₂'} x = factor p₁' p₂' (ap hom x)
-    pb' .p₁∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₁ p₁' p₂' (ap hom p)
-    pb' .p₂∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₂ p₁' p₂' (ap hom p)
+    pb' .universal {p₁' = p₁'} {p₂'} x = factor p₁' p₂' (ap fst x)
+    pb' .p₁∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₁ p₁' p₂' (ap fst p)
+    pb' .p₂∘universal {p₁' = p₁'} {p₂'} {p} = ext $ comm₂ p₁' p₂' (ap fst p)
     pb' .unique {p₁' = p₁'} {p₂'} {p} q r = ext $ p.unique₂
-      {p = ap hom p} (ap hom q) (ap hom r)
-      (comm₁ p₁' p₂' (ap hom p)) (comm₂ p₁' p₂' (ap hom p))
+      {p = ap fst p} (ap fst q) (ap fst r)
+      (comm₁ p₁' p₂' (ap fst p)) (comm₂ p₁' p₂' (ap fst p))
 ```
 
 ```agda
   Coalgebra-on-pullback
-    : (p : Pullback C (f .hom) (g .hom))
+    : (p : Pullback C (f .fst) (g .fst))
     → Coalgebra-on W (Pullback.apex p)
   Coalgebra-on-pullback p = coalg where
 ```
@@ -274,11 +274,11 @@ that this indeed satisfies the aforementioned compatibility condition.
 
 ```agda
     abstract
-      wit : W₁ (f .hom) ∘ α ∘ p.p₁ ≡ W₁ (g .hom) ∘ β ∘ p.p₂
-      wit = W₁ (f .hom) ∘ α ∘ p.p₁  ≡⟨ pulll (f .preserves) ⟩
-            (ξ ∘ f .hom) ∘ p.p₁     ≡⟨ pullr p.square ⟩
-            ξ ∘ g .hom ∘ p.p₂       ≡⟨ extendl (sym (g .preserves)) ⟩
-            W₁ (g .hom) ∘ β ∘ p.p₂  ∎
+      wit : W₁ (f .fst) ∘ α ∘ p.p₁ ≡ W₁ (g .fst) ∘ β ∘ p.p₂
+      wit = W₁ (f .fst) ∘ α ∘ p.p₁  ≡⟨ pulll (f .snd) ⟩
+            (ξ ∘ f .fst) ∘ p.p₁     ≡⟨ pullr p.square ⟩
+            ξ ∘ g .fst ∘ p.p₂       ≡⟨ extendl (sym (g .snd)) ⟩
+            W₁ (g .fst) ∘ β ∘ p.p₂  ∎
 
     coalg : Coalgebra-on W p.apex
     coalg .ρ = p'.universal wit
@@ -348,9 +348,9 @@ formalised proof is a bit annoying, it's hidden in this
         (idr _ ∙ sym (cancell β.ρ-counit))
     coalg .ρ-comult =
       is-pullback.unique₂ rem₂
-        {p = W.extendl (f .preserves)
+        {p = W.extendl (f .snd)
           ∙∙ ap₂ _∘_ refl wit
-          ∙∙ W.extendl (sym (g .preserves))}
+          ∙∙ W.extendl (sym (g .snd))}
         (pulll (W.weave p'.p₁∘universal) ∙ pullr p'.p₁∘universal)
         (pulll (W.weave p'.p₂∘universal) ∙ pullr p'.p₂∘universal)
         (pulll (sym (comult.is-natural _ _ _)) ∙∙ pullr p'.p₁∘universal ∙∙ extendl (sym α.ρ-comult))
@@ -372,18 +372,18 @@ Pullback-coalgebra
 <!--
 ```agda
 Pullback-coalgebra f g = pb' where
-  pb = pullbacks (f .hom) (g .hom)
+  pb = pullbacks (f .fst) (g .fst)
   rem₁ = pres-pullback (pb .has-is-pb)
 
   pb' : Pullback (Coalgebras W) _ _
   pb' .apex .fst = _
   pb' .apex .snd = Coalgebra-on-pullback f g pb
 
-  pb' .p₁ .hom       = Pullback.p₁ pb
-  pb' .p₁ .preserves = rem₁ .p₁∘universal
+  pb' .p₁ .fst = Pullback.p₁ pb
+  pb' .p₁ .snd = rem₁ .p₁∘universal
 
-  pb' .p₂ .hom       = Pullback.p₂ pb
-  pb' .p₂ .preserves = rem₁ .p₂∘universal
+  pb' .p₂ .fst = Pullback.p₂ pb
+  pb' .p₂ .snd = rem₁ .p₂∘universal
 
   pb' .has-is-pb = is-pullback-coalgebra f g (pb .has-is-pb)
 

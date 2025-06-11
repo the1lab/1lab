@@ -25,7 +25,7 @@ import Cat.Reasoning
 
 open Coalgebra-on
 open is-pullback
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -848,11 +848,11 @@ $\cC/B$.
 
 ```agda
       ff : ∀ {x y} → is-iso (Comparison-CoEM Forget⊣constant-family .F₁ {x} {y})
-      ff .from f .map = f .hom
+      ff .from f .map = f .fst
       ff {x} {y} .from f .commutes =
-        y .map ∘ f .hom                             ≡˘⟨ pulll π₂∘⟨⟩ ⟩
-        π₂ ∘ ⟨ id , y .map ⟩ ∘ f .hom               ≡˘⟨ refl⟩∘⟨ f .preserves ⟩
-        π₂ ∘ ⟨ f .hom ∘ π₁ , π₂ ⟩ ∘ ⟨ id , x .map ⟩ ≡⟨ pulll π₂∘⟨⟩ ⟩
+        y .map ∘ f .fst                             ≡˘⟨ pulll π₂∘⟨⟩ ⟩
+        π₂ ∘ ⟨ id , y .map ⟩ ∘ f .fst               ≡˘⟨ refl⟩∘⟨ f .snd ⟩
+        π₂ ∘ ⟨ f .fst ∘ π₁ , π₂ ⟩ ∘ ⟨ id , x .map ⟩ ≡⟨ pulll π₂∘⟨⟩ ⟩
         π₂ ∘ ⟨ id , x .map ⟩                        ≡⟨ π₂∘⟨⟩ ⟩
         x .map                                      ∎
       ff .rinv _ = trivial!

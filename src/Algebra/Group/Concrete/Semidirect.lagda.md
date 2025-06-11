@@ -82,8 +82,8 @@ involve a `sym` to align them up.
 
 ```agda
   π₁-φ : Action (Groups ℓ) (π₁B G) (π₁B H)
-  π₁-φ .hom p = path→iso (ap (π₁B ⊙ φ) p)
-  π₁-φ .preserves .pres-⋆ p q =
+  π₁-φ .fst p = path→iso (ap (π₁B ⊙ φ) p)
+  π₁-φ .snd .pres-⋆ p q =
     path→iso (ap (π₁B ⊙ φ) (p ∙ q))                          ≡⟨ ap path→iso (ap-∙ (π₁B ⊙ φ) p q) ⟩
     path→iso (ap (π₁B ⊙ φ) p ∙ ap (π₁B ⊙ φ) q)               ≡⟨ path→iso-∙ (Groups ℓ) _ _ ⟩
     path→iso (ap (π₁B ⊙ φ) p) ∙Iso path→iso (ap (π₁B ⊙ φ) q) ∎
@@ -134,7 +134,7 @@ The following constructions work in this general setting.
     Σ-align
       : ∀ {a a' : A}
       → ((a , f a) ≡ (a' , f a')) ≃ ((a ≡ a') × (f a' ≡ f a'))
-    Σ-align = Iso→Equiv Σ-pathp-iso e⁻¹ ∙e Σ-ap-snd align
+    Σ-align = Σ-pathp≃ e⁻¹ ∙e Σ-ap-snd align
 ```
 
 It remains to show that this equivalence is a [[group homomorphism]]
@@ -203,7 +203,7 @@ between abstract and concrete groups.
 ```agda
   Semidirect-concrete-abstract : π₁B Semidirect-concrete ≡ π₁BG⋉π₁BH
   Semidirect-concrete-abstract = ∫-Path
-    (total-hom (Σ-align (pt ⊙ φ) .fst)
+    (∫hom (Σ-align (pt ⊙ φ) .fst)
       (record { pres-⋆ = Σ-align-∙ (pt ⊙ φ) }))
     (Σ-align (pt ⊙ φ) .snd)
 ```

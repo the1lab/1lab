@@ -29,7 +29,7 @@ module Cat.Diagram.Monad.Kleisli where
 
 <!--
 ```agda
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -91,8 +91,8 @@ from the category of Kleisli maps into the [[Kleisli category]] of $M$.
 ```agda
   Kleisli-maps→Kleisli : Functor Kleisli-maps (Kleisli M)
   Kleisli-maps→Kleisli .Functor.F₀ X = Free.₀ X , inc (X , EM.id-iso)
-  Kleisli-maps→Kleisli .Functor.F₁ f .hom = μ _ ∘ M₁ f
-  Kleisli-maps→Kleisli .Functor.F₁ f .preserves = monad! M
+  Kleisli-maps→Kleisli .Functor.F₁ f .fst = μ _ ∘ M₁ f
+  Kleisli-maps→Kleisli .Functor.F₁ f .snd = monad! M
 ```
 
 <details>
@@ -114,7 +114,7 @@ A bit of quick algebra shows us that this functor is faithful.
   Kleisli-maps→Kleisli-is-faithful : is-faithful Kleisli-maps→Kleisli
   Kleisli-maps→Kleisli-is-faithful {_} {_} {f} {g} p =
     f                   ≡⟨ monad! M ⟩
-    (μ _ ∘ M₁ f) ∘ η _  ≡⟨ ap₂ _∘_ (ap hom p) refl ⟩
+    (μ _ ∘ M₁ f) ∘ η _  ≡⟨ ap₂ _∘_ (ap fst p) refl ⟩
     (μ _ ∘ M₁ g) ∘ η _  ≡⟨ monad! M ⟩
     g                   ∎
 ```
@@ -125,14 +125,12 @@ into a Kleisli map by precomposing with the unit of the monad.
 
 ```agda
   Kleisli-maps→Kleisli-is-full : is-full Kleisli-maps→Kleisli
-  Kleisli-maps→Kleisli-is-full {X} {Y} f =
-    pure ((f .hom ∘ η _) , ext lemma)
-    where
-      lemma : μ Y ∘ M₁ (f .hom ∘ η X) ≡ f .hom
-      lemma =
-        μ _ ∘ M₁ (f .hom ∘ η _)   ≡⟨ MR.popl (sym (f .preserves)) ⟩
-        (f .hom ∘ μ _) ∘ M₁ (η _) ≡⟨ cancelr μ-unitr ⟩
-        f .hom                    ∎
+  Kleisli-maps→Kleisli-is-full {X} {Y} f = pure ((f .fst ∘ η _) , ext lemma) where
+    lemma : μ Y ∘ M₁ (f .fst ∘ η X) ≡ f .fst
+    lemma =
+      μ _ ∘ M₁ (f .fst ∘ η _)   ≡⟨ MR.popl (sym (f .snd)) ⟩
+      (f .fst ∘ μ _) ∘ M₁ (η _) ≡⟨ cancelr μ-unitr ⟩
+      f .fst                    ∎
 ```
 
 <!--

@@ -16,8 +16,8 @@ open import Cat.Prelude
 import Cat.Functor.Reasoning
 import Cat.Reasoning
 
-open Total-hom
 open Functor
+open ∫Hom
 open _=>_
 ```
 -->
@@ -78,8 +78,8 @@ Comparison-EM .F₀ x = R.₀ x , alg where
 <summary> Construction of the functorial action of `Comparison-EM`{.Agda} </summary>
 
 ```agda
-Comparison-EM .F₁ x .hom = R.₁ x
-Comparison-EM .F₁ x .preserves = R.weave (sym (adj.counit.is-natural _ _ _))
+Comparison-EM .F₁ x .fst = R.₁ x
+Comparison-EM .F₁ x .snd = R.weave (sym (adj.counit.is-natural _ _ _))
 Comparison-EM .F-id    = ext R.F-id
 Comparison-EM .F-∘ f g = ext (R.F-∘ _ _)
 ```

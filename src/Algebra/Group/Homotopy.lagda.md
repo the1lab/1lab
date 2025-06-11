@@ -163,6 +163,6 @@ module π₁Groupoid {ℓ} ((T , t) : Type∙ ℓ) (grpd : is-groupoid T) where
 
   π₁≡π₀₊₁ : π₁ ≡ πₙ₊₁ 0 (T , t)
   π₁≡π₀₊₁ = ∫-Path
-    (total-hom inc (record { pres-⋆ = λ _ _ → refl }))
+    (∫hom inc (record { pres-⋆ = λ _ _ → refl }))
     (∥-∥₀-idempotent (grpd _ _))
 ```

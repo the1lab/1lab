@@ -333,7 +333,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
     open is-discrete-cartesian-fibration disc
 ```
 
-For each object in $X : \cB$, we take the set of objects $E$ that
+For each object $X : \cB$, we take the set of objects $E$ that
 lie over $X$. The functorial action of `f : Hom X Y` is then constructed
 by taking the domain of the lift of `f`. Functoriality follows by
 uniqueness of the lifts.
@@ -410,7 +410,7 @@ map $a'' \to_f b$ --- so we can take the canonical $f' : a' \to_f b$ and
 transport it over the given $a'' = a'$.
 
 ```agda
-    pieces : Displayed-functor (∫ B (discrete→presheaf P p-disc)) P Id
+    pieces : Vertical-functor (∫ B (discrete→presheaf P p-disc)) P
     pieces .F₀' x = x
     pieces .F₁' {f = f} {a'} {b'} x =
       subst (λ e → Hom[ f ] e b') x $ cart-lift f b' .centre .snd

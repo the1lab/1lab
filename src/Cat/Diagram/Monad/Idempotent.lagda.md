@@ -141,7 +141,7 @@ which is just the naturality of $\eta$.
 ```agda
 idempotent→reflective : is-idempotent-monad → is-reflective Free-EM⊣Forget-EM
 idempotent→reflective idem = full+faithful→ff Forget-EM
-  (λ {(A , a)} {(B , b)} f → inc (total-hom f
+  (λ {(A , a)} {(B , b)} f → inc (∫hom f
     (sym (swizzle (sym (unit.is-natural _ _ _))
       (η≡Mη→algebra-invertible (idempotent→η≡Mη idem) (A , a) .is-invertible.invr)
       (b .ν-unit)))

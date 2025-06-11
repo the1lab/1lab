@@ -28,11 +28,11 @@ module Cat.Displayed.Comprehension
 open Cat.Reasoning B
 open Cat.Displayed.Reasoning E
 open Displayed E
+open Slice-hom
 open Functor
 open _=>_
-open Total-hom
+open ∫Hom
 open /-Obj
-open Slice-hom
 ```
 -->
 
@@ -111,8 +111,11 @@ We call such a [[fibred functor]] a **comprehension structure** on $\cE$[^1].
 but this is a bit of a misnomer, as they are structures on fibrations!
 
 ```agda
-Comprehension : Type _
-Comprehension = Vertical-fibred-functor E (Slices B)
+record Comprehension-structure : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+  no-eta-equality
+  field
+    Comprehend : Vertical-functor E (Slices B)
+    Comprehend-is-fibred : is-fibred-functor Comprehend
 ```
 
 Now, let's make all that earlier intuition formal. Let $\cE$ be a fibration,
@@ -121,9 +124,14 @@ context extensions, along with their associated projections.
 
 
 ```agda
-module Comprehension (fib : Cartesian-fibration E) (P : Comprehension) where opaque
-  open Vertical-fibred-functor P
-  open Cartesian-fibration E fib
+module Comprehension
+  (E-fib : Cartesian-fibration E)
+  (P : Comprehension-structure)
+  where opaque
+  open Comprehension-structure P
+  open is-fibred-functor Comprehend-is-fibred
+  open Vertical-functor Comprehend
+  open Cartesian-fibration E E-fib
 
   _⨾_ : ∀ Γ → Ob[ Γ ] → Ob
   Γ ⨾ x = F₀' x .domain
@@ -131,7 +139,7 @@ module Comprehension (fib : Cartesian-fibration E) (P : Comprehension) where opa
   infixl 5 _⨾_
 
   _[_] : ∀ {Γ Δ} → Ob[ Δ ] → Hom Γ Δ → Ob[ Γ ]
-  x [ σ ] =  base-change E fib σ .F₀ x
+  x [ σ ] = σ ^* x
 
   πᶜ : ∀ {Γ x} → Hom (Γ ⨾ x) Γ
   πᶜ {x = x} = F₀' x .map
@@ -177,7 +185,7 @@ Crucially, when $f$ is cartesian, then the above square is a pullback.
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
     → is-cartesian E σ f
     → is-pullback B πᶜ σ (σ ⨾ˢ f) πᶜ
-  sub-pullback {f = f} cart = cartesian→pullback B (F-cartesian f cart)
+  sub-pullback {f = f} cart = cartesian→pullback B (F-cartesian cart)
 
   module sub-pullback
     {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
@@ -363,7 +371,7 @@ $(\Gamma, A)$ to $\Gamma.A$
 ```agda
   Extend : Functor (∫ E) B
   Extend .F₀ (Γ , x) = Γ ⨾ x
-  Extend .F₁ (total-hom σ f) = σ ⨾ˢ f
+  Extend .F₁ (∫hom σ f) = σ ⨾ˢ f
   Extend .F-id = ap to F-id'
   Extend .F-∘ f g = ap to F-∘'
 ```
@@ -375,7 +383,7 @@ of is a projection $\Gamma.A \to \Gamma$.
 ```agda
   proj : Extend => πᶠ E
   proj .η (Γ , x) = πᶜ
-  proj .is-natural (Γ , x) (Δ , y) (total-hom σ f) =
+  proj .is-natural (Γ , x) (Δ , y) (∫hom σ f) =
     sub-proj f
 ```
 
@@ -414,13 +422,13 @@ record Comprehension-comonad : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
 
   field
     counit-cartesian
-      : ∀ {Γ x} → is-cartesian E (counit.ε (Γ , x) .hom) (counit.ε (Γ , x) .preserves)
+      : ∀ {Γ x} → is-cartesian E (counit.ε (Γ , x) .fst) (counit.ε (Γ , x) .snd)
     cartesian-pullback
       : (∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
       → is-cartesian E σ f
       → is-pullback (∫ E)
-          (counit.ε (Γ , x)) (total-hom σ f)
-          (W₁ (total-hom σ f)) (counit.ε (Δ , y)))
+          (counit.ε (Γ , x)) (∫hom σ f)
+          (W₁ (∫hom σ f)) (counit.ε (Δ , y)))
 ```
 
 As promised, comprehension structures on $\cE$ yield comprehension
@@ -429,7 +437,7 @@ comonads.
 ```agda
 Comprehension→comonad
   : Cartesian-fibration E
-  → Comprehension
+  → Comprehension-structure
   → Comprehension-comonad
 Comprehension→comonad fib P = comp-comonad where
   open Cartesian-fibration E fib
@@ -444,10 +452,10 @@ of $X$.
 ```agda
   comprehend : Functor (∫ E) (∫ E)
   comprehend .F₀ (Γ , x) = Γ ⨾ x , weaken x x
-  comprehend .F₁ (total-hom σ f) = total-hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
-  comprehend .F-id = total-hom-path E sub-id sub-id'
-  comprehend .F-∘ (total-hom σ f) (total-hom δ g) =
-    total-hom-path E sub-∘ sub-∘'
+  comprehend .F₁ (∫hom σ f) = ∫hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
+  comprehend .F-id = ∫Hom-path E sub-id sub-id'
+  comprehend .F-∘ (∫hom σ f) (∫hom δ g) =
+    ∫Hom-path E sub-∘ sub-∘'
 ```
 
 The counit is given by the projection substitution, and comultiplication
@@ -456,19 +464,19 @@ is given by duplication.
 ```agda
   comonad : Comonad-on comprehend
   comonad .counit .η (Γ , x) =
-    total-hom πᶜ πᶜ'
-  comonad .counit .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E (sub-proj f) (sub-proj' f)
+    ∫hom πᶜ πᶜ'
+  comonad .counit .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
+    ∫Hom-path E (sub-proj f) (sub-proj' f)
   comonad .comult .η (Γ , x) =
-    total-hom δᶜ δᶜ'
-  comonad .comult .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E dup-extend dup-extend'
+    ∫hom δᶜ δᶜ'
+  comonad .comult .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
+    ∫Hom-path E dup-extend dup-extend'
   comonad .δ-unitl =
-    total-hom-path E extend-proj-dup extend-proj-dup'
+    ∫Hom-path E extend-proj-dup extend-proj-dup'
   comonad .δ-unitr =
-    total-hom-path E proj-dup proj-dup'
+    ∫Hom-path E proj-dup proj-dup'
   comonad .δ-assoc =
-    total-hom-path E extend-dup² extend-dup²'
+    ∫Hom-path E extend-dup² extend-dup²'
 ```
 
 To see that this comonad is a comprehension comonad, note that the
@@ -495,7 +503,7 @@ We also show that comprehension comonads yield comprehension structures.
 Comonad→comprehension
   : Cartesian-fibration E
   → Comprehension-comonad
-  → Comprehension
+  → Comprehension-structure
 ```
 
 We begin by constructing a [vertical functor] $\cE \to B^{\to}$ that maps
@@ -507,16 +515,18 @@ $\eps : W(\Gamma, X) \to (\Gamma, X)$.
 ```agda
 Comonad→comprehension fib comp-comonad = comprehension where
   open Comprehension-comonad comp-comonad
+  open Comprehension-structure
+  open is-fibred-functor
   open Vertical-functor
   open is-pullback
 
   vert : Vertical-functor E (Slices B)
-  vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .hom)
+  vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .fst)
   vert .F₁' {f = σ} f =
-    slice-hom (W₁ (total-hom σ f) .hom)
-      (sym (ap hom (counit.is-natural _ _ _)))
-  vert .F-id' = Slice-path B (ap hom W-id)
-  vert .F-∘' = Slice-path B (ap hom (W-∘ _ _))
+    slice-hom (W₁ (∫hom σ f) .fst)
+      (sym (ap fst (counit.is-natural _ _ _)))
+  vert .F-id' = Slice-path B (ap fst W-id)
+  vert .F-∘' = Slice-path B (ap fst (W-∘ _ _))
 ```
 
 To see that this functor is fibred, recall that pullbacks in the
@@ -527,14 +537,14 @@ square in $\cB$. As the comonad is a comprehension comonad, counit is
 cartesian, which finishes off the proof.
 
 ```agda
-  fibred : is-vertical-fibred vert
-  fibred {f = σ} f cart =
+  fibred : is-fibred-functor vert
+  fibred .F-cartesian {f = σ} {f' = f'} cart =
     pullback→cartesian B $
     cartesian+total-pullback→pullback E fib
       counit-cartesian counit-cartesian
       (cartesian-pullback cart)
 
-  comprehension : Comprehension
-  comprehension .Vertical-fibred-functor.vert = vert
-  comprehension .Vertical-fibred-functor.F-cartesian = fibred
+  comprehension : Comprehension-structure
+  comprehension .Comprehend = vert
+  comprehension .Comprehend-is-fibred = fibred
 ```

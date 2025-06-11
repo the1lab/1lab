@@ -162,7 +162,7 @@ decidable ordering to decide equality.
 ```agda
   private
     was-discrete-anyways : Discrete ⌞ P ⌟
-    was-discrete-anyways {x} {y} with holds? (x ≤ y) | holds? (y ≤ x)
+    was-discrete-anyways .decide x y with holds? (x ≤ y) | holds? (y ≤ x)
     ... | yes x≤y | yes y≤x = yes (≤-antisym x≤y y≤x)
     ... | yes x≤y | no ¬y≤x = no λ x=y → ¬y≤x (≤-refl' (sym x=y))
     ... | no ¬x≤y | _       = no λ x=y → ¬x≤y (≤-refl' x=y)

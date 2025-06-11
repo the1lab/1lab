@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Instances.Presheaf.Limits
+open import Cat.Diagram.Subterminal
 open import Cat.Instances.Functor
 open import Cat.Instances.Slice
 open import Cat.Functor.Hom
@@ -10,6 +12,7 @@ open import Data.Power
 import Cat.Reasoning
 
 open /-Obj
+open /-Hom
 ```
 -->
 
@@ -26,8 +29,8 @@ module _ {o κ : _} (C : Precategory o κ) (c : ⌞ C ⌟) where
 
 # Sieves {defines="sieve"}
 
-Given a category $\cC$, a **sieve** on an object $c$ Is a subset of
-the maps $a \to c$ closed under composition: If $f \in S$, then $(f
+Given a category $\cC$, a **sieve** $S$ on an object $c$ is a subset of
+the maps $a \to c$ closed under composition: if $f \in S$, then $(f
 \circ g) \in S$. The data of a sieve on $c$ corresponds to the data of a
 subobject of $\yo(c)$, considered as an object of $\psh(\cC)$.
 
@@ -178,8 +181,9 @@ contravariant, this means that the assignment $U \mapsto
 This presheaf has an important universal property: the natural
 transformations $X \to \operatorname{Sieves}$ correspond naturally to
 the [[subobjects|poset of subobjects]] of $X$. Categorically, we say
-that $\operatorname{Sieves}$ is a **subobject classifier** in the
-category $\psh(\cC)$.
+that $\operatorname{Sieves}$ is a [[subobject classifier]] in the
+category $\psh(\cC)$; for more details see [[subobject classifier
+presheaf]].
 
 ```agda
   Sieves : Functor (C ^op) (Sets (o ⊔ ℓ))
@@ -253,3 +257,90 @@ write `⟦ cov ⟧` instead of `cover→sieve cov`.
     ⟦⟧-Cover = brackets _ cover→sieve
 ```
 -->
+
+## Sieves in a category {defines="sieve-in"}
+
+We have defined sieves *on* an object above, but there is also a notion
+of sieve *in* a category $\cC$: a subcollection $S$ of the objects of
+$\cC$ such that if $f : X \to Y$ is a morphism and $Y \in S$, then
+$X \in S$.
+
+<!--
+```agda
+module _ {o ℓ : _} (C : Precategory o ℓ) where
+  private module C = Precategory C
+```
+-->
+
+```agda
+  record Sieve-in : Type (o ⊔ ℓ) where
+    no-eta-equality
+    field
+      objects : ℙ C.Ob
+      closed : ∀ {x y} (hy : y ∈ objects) (f : C.Hom x y) → x ∈ objects
+  open Sieve-in public
+```
+
+The two notions are related as follows:
+
+- A sieve *on* an object $c : \cC$ is a sieve *in* the [[slice category]]
+  $\cC/c$.
+- If $\cC$ has a [[terminal object]] $\top$, then a sieve *in* $\cC$ is
+  a sieve *on* $\top$.
+
+<!--
+```agda
+module _ {o ℓ : _} {C : Precategory o ℓ} where
+
+  Sieve-in-path : ∀ {s s' : Sieve-in C} → s .objects ≡ s' .objects → s ≡ s'
+  Sieve-in-path p i .objects = p i
+  Sieve-in-path {s = s} {s'} p i .closed {x = x} {y = y} hy f =
+    is-prop→pathp (λ i → fun-is-hlevel {A = ⌞ p i y ⌟} 1 (p i x .is-tr)) (λ w → s .closed w f) (λ w → s' .closed w f) i hy
+
+module _ {o ℓ : _} (C : Precategory o ℓ) (c : ⌞ C ⌟) where
+```
+-->
+
+```agda
+  Sieve→Sieve-in/c : Sieve C c → Sieve-in (Slice C c)
+  Sieve→Sieve-in/c s .objects (cut f) = s .arrows f
+  Sieve→Sieve-in/c s .closed hy f = subst (_∈ s .arrows) (f .commutes)
+    (s .closed hy (f .map))
+
+  Sieve-in/c→Sieve : Sieve-in (Slice C c) → Sieve C c
+  Sieve-in/c→Sieve s .arrows f = s .objects (cut f)
+  Sieve-in/c→Sieve s .closed hf g = s .closed hf λ where
+    .map → g
+    .commutes → refl
+
+  Sieve≃Sieve-in/c : Sieve C c ≃ Sieve-in (Slice C c)
+  Sieve≃Sieve-in/c .fst = Sieve→Sieve-in/c
+  Sieve≃Sieve-in/c .snd = is-iso→is-equiv (iso Sieve-in/c→Sieve
+    (λ s → Sieve-in-path refl) (λ s → Sieve-path refl))
+```
+
+Furthermore, just as sieves *on* $c : \cC$ correspond to subobjects of
+the representable functor $\yo(c)$, sieves *in* $\cC$ correspond to
+subobjects of the terminal presheaf, i.e. [[subterminal]] presheaves.
+
+<!--
+```agda
+module _ {o ℓ : _} {C : Precategory o ℓ} where
+  open Functor
+  private
+    module C = Precategory C
+    module PSh = Cat.Reasoning (PSh lzero C)
+```
+-->
+
+```agda
+  Sieve-in→presheaf : Sieve-in C → PSh.Ob
+  Sieve-in→presheaf s .F₀ c = el! (c ∈ s .objects)
+  Sieve-in→presheaf s .F₁ f hx = s .closed hx f
+  Sieve-in→presheaf s .F-id = prop!
+  Sieve-in→presheaf s .F-∘ _ _ = prop!
+
+  Sieve-in→subterminal
+    : ∀ {S : Sieve-in C} → is-subterminal (PSh lzero C) (Sieve-in→presheaf S)
+  Sieve-in→subterminal {S} = prop→is-subterminal-PSh _ C (Sieve-in→presheaf S)
+```

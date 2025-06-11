@@ -257,8 +257,14 @@ fun-is-hlevel n hl = Π-is-hlevel n λ _ → hl
 ## Sums of n-types
 
 A similar argument, using the fact that `paths between pairs are pairs
-of paths`{.Agda ident=Σ-path-iso}, shows that dependent sums are also
+of paths`{.Agda ident=Σ-pathp≃} shows that dependent sums are also
 closed under h-levels.
+
+<!--
+```agda
+_ = Σ-pathp≃
+```
+-->
 
 ```agda
 Σ-is-hlevel
@@ -276,8 +282,8 @@ closed under h-levels.
   aprop a a' i , is-prop→pathp (λ i → bprop (aprop a a' i)) b b' i
 
 Σ-is-hlevel {B = B} (suc (suc n)) h1 h2 (x , p) (y , q) =
-  iso→is-hlevel (suc n) _ (Σ-path-iso .snd) $
-    Σ-is-hlevel (suc n) (h1 x y) λ x → h2 y (subst B x p) q
+  Equiv→is-hlevel (suc n) Σ-pathp.inverse $
+    Σ-is-hlevel (suc n) (h1 x y) λ x → PathP-is-hlevel' (suc n) (h2 y) p q
 ```
 
 Analogous to the case of dependent products and functions, a

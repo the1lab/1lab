@@ -35,7 +35,7 @@ private variable
   F G : Functor C D
 open Functor
 open _=>_
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -173,7 +173,7 @@ assumption that $G$ is ff.
 ```agda
   comp-ff : is-fully-faithful Comp
   comp-ff {x} {y} = is-iso→is-equiv λ where
-    .is-iso.from alg → equiv→inverse g-ff (alg .hom)
+    .is-iso.from alg → equiv→inverse g-ff (alg .fst)
     .is-iso.rinv x → ext (equiv→counit g-ff _)
     .is-iso.linv x → equiv→unit g-ff _
 ```
@@ -195,12 +195,12 @@ is.
   comp-seso : is-split-eso Comp
   comp-seso (ob , alg) = F.₀ ob , isom where
     Fo→o : Algebra-hom (R∘L adj) (Comp.₀ (F.₀ ob)) (ob , alg)
-    Fo→o .hom = alg .ν
-    Fo→o .preserves = sym (alg .ν-mult)
+    Fo→o .fst = alg .ν
+    Fo→o .snd = sym (alg .ν-mult)
 
     o→Fo : Algebra-hom (R∘L adj) (ob , alg) (Comp.₀ (F.₀ ob))
-    o→Fo .hom = unit.η _
-    o→Fo .preserves =
+    o→Fo .fst = unit.η _
+    o→Fo .snd =
         unit.is-natural _ _ _
       ∙ ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
       ∙ sym (G.F-∘ _ _)

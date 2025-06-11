@@ -21,7 +21,7 @@ module Cat.Instances.Poly where
 <!--
 ```agda
 open Functor
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -74,7 +74,7 @@ poly-maps
   → Iso
       (Poly.Hom A B)
       (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] (∀ x → B .snd ʻ f x → A .snd ʻ x))
-unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
+unquoteDef poly-maps = define-record-iso poly-maps (quote ∫Hom)
 ```
 
 We also derive a convenient characterisation of paths between $\thecat{Poly}$ morphisms
@@ -83,11 +83,11 @@ using regularity:
 ```agda
 poly-map-path
   : ∀ {ℓ ℓ'} {A B : Poly.Ob ℓ ℓ'} {f g : Poly.Hom A B}
-  → (hom≡ : f .hom ≡ g .hom)
-  → (pre≡ : ∀ a b → f .preserves a (subst (λ hom → B .snd ʻ hom a) (sym hom≡) b)
-                  ≡ g .preserves a b)
+  → (hom≡ : f .fst ≡ g .fst)
+  → (pre≡ : ∀ a b → f .snd a (subst (λ hom → B .snd ʻ hom a) (sym hom≡) b)
+                  ≡ g .snd a b)
   → f ≡ g
-poly-map-path hom≡ pre≡ = total-hom-path _ hom≡
+poly-map-path hom≡ pre≡ = ∫Hom-path _ hom≡
   (to-pathp (ext λ a b → Regularity.precise! (pre≡ a b)))
 ```
 

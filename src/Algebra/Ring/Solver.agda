@@ -33,7 +33,7 @@ import Algebra.Ring.Reasoning as Kit
 
 import Data.Int.Base as B
 
-open Total-hom
+open ∫Hom
 
 module Algebra.Ring.Solver where
 
@@ -45,15 +45,15 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     module R = Kit R'
 
     ℤ↪R-rh = Int-is-initial R' .centre
-    module ℤ↪R = is-ring-hom (ℤ↪R-rh .preserves)
+    module ℤ↪R = is-ring-hom (ℤ↪R-rh .snd)
 
     open CRing-on cring using (*-commutes)
 
   embed-coe : Int → R
-  embed-coe x = ℤ↪R-rh .hom (lift x)
+  embed-coe x = ℤ↪R-rh .fst (lift x)
 
   embed-lemma : {h' : Int → R} → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower) → ∀ x → embed-coe x ≡ h' x
-  embed-lemma p x = happly (ap Total-hom.hom (Int-is-initial R' .paths (total-hom _ p))) (lift x)
+  embed-lemma p x = Int-is-initial R' .paths (∫hom _ p) ·ₚ lift x
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ

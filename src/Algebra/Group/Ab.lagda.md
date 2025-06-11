@@ -200,18 +200,15 @@ open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
 Ab↪Grp .F₀ = Abelian→Group
-Ab↪Grp .F₁ f .hom = f .hom
-Ab↪Grp .F₁ f .preserves = f .preserves
+Ab↪Grp .F₁ f = record { ∫Hom f }
 Ab↪Grp .F-id = trivial!
 Ab↪Grp .F-∘ f g = trivial!
 
 Ab↪Grp-is-ff : ∀ {ℓ} → is-fully-faithful (Ab↪Grp {ℓ})
 Ab↪Grp-is-ff {x = A} {B} = is-iso→is-equiv $ iso
-  promote (λ _ → trivial!) (λ _ → trivial!)
-  where
-    promote : Groups.Hom (Abelian→Group A) (Abelian→Group B) → Ab.Hom A B
-    promote f .hom = f .hom
-    promote f .preserves = f .preserves
+  (λ f → record { ∫Hom f })
+  (λ _ → ext λ _ → refl)
+  (λ _ → ext λ _ → refl)
 
 Ab↪Sets : ∀ {ℓ} → Functor (Ab ℓ) (Sets ℓ)
 Ab↪Sets = Grp↪Sets F∘ Ab↪Grp

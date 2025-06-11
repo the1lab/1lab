@@ -213,14 +213,14 @@ is pointed to get a loop on $\point{H}$ by [[conjugation]].
 ```agda
 π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)
 π₁F .F₀ = π₁B
-π₁F .F₁ (f , ptf) .hom x = conj ptf (ap f x)
+π₁F .F₁ (f , ptf) .fst x = conj ptf (ap f x)
 ```
 
 By some simple path yoga, this preserves multiplication, and the construction is
 functorial:
 
 ```agda
-π₁F .F₁ (f , ptf) .preserves .pres-⋆ x y =
+π₁F .F₁ (f , ptf) .snd .pres-⋆ x y =
   conj ptf ⌜ ap f (x ∙ y) ⌝             ≡⟨ ap! (ap-∙ f _ _) ⟩
   conj ptf (ap f x ∙ ap f y)            ≡⟨ conj-of-∙ _ _ _ ⟩
   conj ptf (ap f x) ∙ conj ptf (ap f y) ∎
@@ -286,8 +286,8 @@ $\point{G}$ to loops on $\point{H}$.
 ```agda
   C-contr : is-contr (C (pt G))
   C-contr .centre .C.y = pt H
-  C-contr .centre .C.p = f .hom
-  C-contr .centre .C.f-p = f .preserves .pres-⋆
+  C-contr .centre .C.p = f .fst
+  C-contr .centre .C.f-p = f .snd .pres-⋆
 ```
 
 As it turns out, such a structure is entirely determined by the pair
@@ -301,7 +301,7 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     f≡p : ∀ ω → Square refl (f · ω) (p ω) (p refl)
     f≡p ω = ∙-filler (f · ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
-    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
+    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .snd .pres-⋆) f-p
     □≡□ = is-prop→pathp (λ i → hlevel 1) _ _
 ```
 

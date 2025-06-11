@@ -25,7 +25,7 @@ private variable
 private module Mod {ℓ} (R : Ring ℓ) where
   private module R = Ring-on (R .snd)
   open Displayed
-  open Total-hom
+  open ∫Hom
   open Functor
 ```
 -->
@@ -446,15 +446,15 @@ hom→linear-map
   : ∀ {ℓ ℓm} {R : Ring ℓ} {M N : Module R ℓm}
   → R-Mod.Hom M N
   → Linear-map M N
-hom→linear-map h .map = h .hom
-hom→linear-map h .lin = h .preserves
+hom→linear-map h .map = h .fst
+hom→linear-map h .lin = h .snd
 
 linear-map→hom
   : ∀ {ℓ ℓm} {R : Ring ℓ} {M N : Module R ℓm}
   → Linear-map M N
   → R-Mod.Hom M N
-linear-map→hom h .hom       = h .map
-linear-map→hom h .preserves = h .lin
+linear-map→hom h .fst = h .map
+linear-map→hom h .snd = h .lin
 
 extensional-mod-hom
   : ∀ {ℓ ℓrel} {R : Ring ℓ} {M : Module R ℓm} {N : Module R ℓm}

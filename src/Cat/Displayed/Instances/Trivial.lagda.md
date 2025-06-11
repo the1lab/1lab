@@ -28,7 +28,7 @@ module Cat.Displayed.Instances.Trivial
 ```agda
 open Cat.Reasoning 𝒞
 open Functor
-open Total-hom
+open ∫Hom
 
 private variable
   a b : Ob
@@ -201,21 +201,17 @@ to the category we started with.
 ```agda
 trivial-total : Functor (∫ Trivial) 𝒞
 trivial-total .F₀ = snd
-trivial-total .F₁ = preserves
+trivial-total .F₁ = snd
 trivial-total .F-id = refl
 trivial-total .F-∘ _ _ = refl
 
 trivial-total-iso : is-precat-iso trivial-total
-trivial-total-iso .is-precat-iso.has-is-ff =
-  is-iso→is-equiv $
-    iso (total-hom tt)
-        (λ _ → refl)
-        (λ _ → total-hom-pathp Trivial refl refl refl refl)
-trivial-total-iso .is-precat-iso.has-is-iso =
-  is-iso→is-equiv $
-    iso (tt ,_)
-        (λ _ → refl)
-        (λ _ → refl ,ₚ refl)
+trivial-total-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso (∫hom tt)
+  (λ _ → refl)
+  (λ _ → ext refl)
+trivial-total-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso (tt ,_)
+  (λ _ → refl)
+  (λ _ → refl ,ₚ refl)
 ```
 
 As the trivial bifibration only has one fibre, this fibre is also

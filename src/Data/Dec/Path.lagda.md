@@ -63,4 +63,11 @@ instance
   H-Level-Dec : ∀ {n} {ℓ} {A : Type ℓ} ⦃ hl : H-Level A n ⦄
               → H-Level (Dec A) n
   H-Level-Dec {n} = hlevel-instance (Dec-is-hlevel n (hlevel n))
+
+  H-Level-Discrete : ∀ {n} {ℓ} {A : Type ℓ} → H-Level (Discrete A) (suc n)
+  H-Level-Discrete {A = A} = prop-instance λ x y →
+    let
+      instance _ : H-Level A 2
+      _ = basic-instance 2 (Discrete→is-set x)
+    in ap {B = λ _ → Discrete _} lift prop!
 ```

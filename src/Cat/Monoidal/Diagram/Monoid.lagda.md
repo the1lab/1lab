@@ -261,7 +261,7 @@ of paths of displayed categories will take care of turning this data
 into an identification.
 
 ```agda
-  F : Displayed-functor Mon[ Setsₓ ] Mon Id
+  F : Vertical-functor Mon[ Setsₓ ] Mon
   F .F₀' o .identity = o .η (lift tt)
   F .F₀' o ._⋆_ x y = o .μ (x , y)
   F .F₀' o .has-is-monoid .has-is-semigroup =
@@ -329,7 +329,7 @@ We can phrase this nicely as a [[displayed functor]] $\rm{Mon}_1(F) :
 \rm{Mon}(\cC) \to \rm{Mon}(\cD)$ over $F$:
 
 ```agda
-  Mon₁[_] : Displayed-functor Mon[ MC ] Mon[ MD ] F
+  Mon₁[_] : Displayed-functor F Mon[ MC ] Mon[ MD ]
   Mon₁[_] .F₀' m .η = F₁ (m .η) ∘ ε
   Mon₁[_] .F₀' m .μ = F₁ (m .μ) ∘ φ
 ```

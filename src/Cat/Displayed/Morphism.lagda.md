@@ -515,12 +515,10 @@ invertible[]→iso[]
   → {i : is-invertible f}
   → is-invertible[ i ] f'
   → a' ≅[ invertible→iso f i ] b'
-invertible[]→iso[] {f' = f'} i =
-  make-iso[ _ ]
-    f'
-    (is-invertible[_].inv' i)
-    (is-invertible[_].invl' i)
-    (is-invertible[_].invr' i)
+invertible[]→iso[] {f' = f'} i = make-iso[ _ ] f'
+  (is-invertible[_].inv' i)
+  (is-invertible[_].invl' i)
+  (is-invertible[_].invr' i)
 
 iso[]→invertible[]
   : ∀ {a b a' b'}

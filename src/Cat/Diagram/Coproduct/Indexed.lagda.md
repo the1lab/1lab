@@ -352,18 +352,10 @@ otherwise we use $f_j$.
       ... | no ¬i=j = fⱼ j ¬i=j
 
       probe-yes : probe i ≡ tᵢ
-      probe-yes with i ≡? i
-      ... | yes i=i =
-        is-set→subst-refl
-          (λ j → C.Hom (P j) X)
-          (Discrete→is-set Idx-Discrete)
-          i=i tᵢ
-      ... | no ¬i=i = absurd (¬i=i refl)
+      probe-yes rewrite ≡?-yes i = transport-refl _
 
-      probe-no : ∀ j → (¬i=j : ¬ (i ≡ j)) → probe j ≡ fⱼ j ¬i=j
-      probe-no j ¬i=j with i ≡? j
-      ... | yes i=j = absurd (¬i=j i=j)
-      ... | no _ = ap (fⱼ j) prop!
+      probe-no : ∀ j → (¬i=j : i ≠ j) → probe j ≡ fⱼ j ¬i=j
+      probe-no j ¬i=j rewrite ≡?-no ¬i=j = refl
 ```
 
 Moreover, we observe that our newly created map interacts nicely

@@ -1057,7 +1057,8 @@ id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
 id≃ = id , id-equiv
 
 _∙e_ : A ≃ B → B ≃ C → A ≃ C
-_∙e_ (f , ef) (g , eg) = g ∘ f , ∘-is-equiv ef eg
+{-# INLINE _∙e_ #-}
+_∙e_ (f , ef) (g , eg) = record { fst = g ∘ f ; snd = ∘-is-equiv ef eg }
 
 _e⁻¹ : A ≃ B → B ≃ A
 ((f , ef) e⁻¹) = equiv→inverse ef , inverse-is-equiv ef

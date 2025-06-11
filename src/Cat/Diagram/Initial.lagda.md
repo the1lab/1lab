@@ -54,11 +54,11 @@ The intuition here is that we ought to think about an initial object as
 having "the least amount of structure possible", insofar that it can be
 mapped _into_ any other object. For the category of `Sets`{.Agda}, this
 is the empty set; there is no required structure beyond "being a set",
-so the empty set sufficies.
+so the empty set suffices.
 
 <!--
 [TODO: Reed M, 15/02/2022] Link to the categories in question
-(once the exist!)
+(once they exist!)
 -->
 
 In more structured categories, the situation becomes a bit more
@@ -91,47 +91,6 @@ a proposition:
       (λ i → is-contr-is-prop
         {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
       (x1 .has⊥ ob) (x2 .has⊥ ob) i
-```
-
-## Strictness {defines="strict-initial-object"}
-
-An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
-This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
-
-This is an instance of the more general notion of [van Kampen colimits].
-
-[strict]: https://ncatlab.org/nlab/show/strict+initial+object
-[van Kampen colimits]: https://ncatlab.org/nlab/show/van+Kampen+colimit
-
-
-```agda
-  is-strict-initial : Initial → Type _
-  is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
-
-  record Strict-initial : Type (o ⊔ h) where
-    field
-      initial : Initial
-      has-is-strict : is-strict-initial initial
-```
-
-Strictness is a property of, not structure on, an initial object.
-
-```agda
-  is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-  is-strict-initial-is-prop i = hlevel 1
-```
-
-As maps out of initial objects are unique, it suffices to show that
-every map $\text{!`} \circ f = \id$ for every $f : X \to \bot$ to establish that $\bot$ is a
-strict initial object.
-
-```agda
-  make-is-strict-initial
-    : (i : Initial)
-    → (∀ x → (f : Hom x (i .bot)) → (¡ i) ∘ f ≡ id)
-    → is-strict-initial i
-  make-is-strict-initial i p x f =
-    make-invertible (¡ i) (¡-unique₂ i (f ∘ ¡ i) id) (p x f)
 ```
 
 <!--

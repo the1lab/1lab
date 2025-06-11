@@ -623,6 +623,15 @@ make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id →
 {-# INLINE make-iso #-}
 make-iso f g p q = record { to = f ; from = g ; inverses = record { invl = p ; invr = q }}
 
+make-iso!
+  : ∀ {ℓr ℓs} (f : Hom a b) (g : Hom b a)
+  → ⦃ r : Extensional (Hom a a) ℓr ⦄ ⦃ s : Extensional (Hom b b) ℓs ⦄
+  → Pathᵉ s (f ∘ g) id
+  → Pathᵉ r (g ∘ f) id
+  → a ≅ b
+{-# INLINE make-iso! #-}
+make-iso! f g p q = record { to = f ; from = g ; inverses = record { invl = ext p ; invr = ext q }}
+
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x

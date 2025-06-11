@@ -196,7 +196,7 @@ also has decidable equality.
 ```agda
 instance
   Discrete-Fin : ∀ {n} → Discrete (Fin n)
-  Discrete-Fin {x = x} {y} with x .lower ≡? y .lower
+  Discrete-Fin .decide x y with x .lower ≡? y .lower
   ... | yes p = yes (fin-ap p)
   ... | no ¬p = no λ p → ¬p (ap lower p)
 ```

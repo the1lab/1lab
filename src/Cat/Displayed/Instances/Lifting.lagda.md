@@ -21,7 +21,7 @@ module Cat.Displayed.Instances.Lifting where
 ```agda
 open Functor
 open _=>_
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -111,9 +111,9 @@ Liftings of a functor $F : \cJ \to \cB$ yield functors from $\cJ$ to the
 ```agda
   Lifting→Functor : ∀ {F : Functor J B} → Lifting F → Functor J (∫ E)
   Lifting→Functor {F} F' .F₀ j = F .F₀ j , F' .F₀' j
-  Lifting→Functor {F} F' .F₁ f = total-hom (F .F₁ f) (F' .F₁' f)
-  Lifting→Functor {F} F' .F-id = total-hom-path E (F .F-id) (F' .F-id')
-  Lifting→Functor {F} F' .F-∘ f g = total-hom-path E (F .F-∘ f g) (F' .F-∘' f g)
+  Lifting→Functor {F} F' .F₁ f = ∫hom (F .F₁ f) (F' .F₁' f)
+  Lifting→Functor {F} F' .F-id = ∫Hom-path E (F .F-id) (F' .F-id')
+  Lifting→Functor {F} F' .F-∘ f g = ∫Hom-path E (F .F-∘ f g) (F' .F-∘' f g)
 ```
 
 Furthermore, such liftings commute *extremely strictly*. Not only are
@@ -231,10 +231,10 @@ transformations between the associated functors.
   Nat-lift→Nat
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → F' =[ α ]=>l G' → Lifting→Functor E F' => Lifting→Functor E G'
-  Nat-lift→Nat {α = α} α' .η x .hom = α .η x
-  Nat-lift→Nat {α = α} α' .η x .preserves = α' .η' x
+  Nat-lift→Nat {α = α} α' .η x .fst = α .η x
+  Nat-lift→Nat {α = α} α' .η x .snd = α' .η' x
   Nat-lift→Nat {α = α} α' .is-natural x y f =
-    total-hom-path E (α .is-natural x y f) (α' .is-natural' x y f)
+    ∫Hom-path E (α .is-natural x y f) (α' .is-natural' x y f)
 ```
 
 As liftings are definitional, any natural transformation $F \to G$ is
@@ -440,29 +440,29 @@ their types, we omit the definitions from the page entirely.
 <!--
 ```agda
   ∫Functor→Lifting F .F₀' j = F .F₀ j .snd
-  ∫Functor→Lifting F .F₁' f = F .F₁ f .preserves
-  ∫Functor→Lifting F .F-id' = cast[] (ap preserves (F .F-id))
-  ∫Functor→Lifting F .F-∘' f g = cast[] (ap preserves (F .F-∘ f g))
+  ∫Functor→Lifting F .F₁' f = F .F₁ f .snd
+  ∫Functor→Lifting F .F-id' = cast[] (ap snd (F .F-id))
+  ∫Functor→Lifting F .F-∘' f g = cast[] (ap snd (F .F-∘ f g))
 
   Functor+Lifting→∫Functor F F' .F₀ x .fst = F .F₀ x
   Functor+Lifting→∫Functor F F' .F₀ x .snd = F' .F₀' x
-  Functor+Lifting→∫Functor F F' .F₁ f .hom = F .F₁ f
-  Functor+Lifting→∫Functor F F' .F₁ f .preserves = F' .F₁' f
+  Functor+Lifting→∫Functor F F' .F₁ f .fst = F .F₁ f
+  Functor+Lifting→∫Functor F F' .F₁ f .snd = F' .F₁' f
   Functor+Lifting→∫Functor F F' .F-id =
-    total-hom-path E (F .F-id) (F' .F-id')
+    ∫Hom-path E (F .F-id) (F' .F-id')
   Functor+Lifting→∫Functor F F' .F-∘ f g =
-    total-hom-path E (F .F-∘ f g) (F' .F-∘' f g)
+    ∫Hom-path E (F .F-∘ f g) (F' .F-∘' f g)
 
-  ∫Nat→Nat α .η x = α .η x .hom
-  ∫Nat→Nat α .is-natural x y f = ap hom (α .is-natural x y f)
+  ∫Nat→Nat α .η x = α .η x .fst
+  ∫Nat→Nat α .is-natural x y f = ap fst (α .is-natural x y f)
 
-  Nat+Nat-lift→∫Nat α α' .η x .hom = α .η x
-  Nat+Nat-lift→∫Nat α α' .η x .preserves = α' .η' x
+  Nat+Nat-lift→∫Nat α α' .η x .fst = α .η x
+  Nat+Nat-lift→∫Nat α α' .η x .snd = α' .η' x
   Nat+Nat-lift→∫Nat α α' .is-natural x y f =
-    total-hom-path E (α .is-natural x y f) (α' .is-natural' x y f)
+    ∫Hom-path E (α .is-natural x y f) (α' .is-natural' x y f)
 
-  ∫Nat→Nat-lift α .η' x = α .η x .preserves
-  ∫Nat→Nat-lift α .is-natural' x y f = ap preserves (α .is-natural x y f)
+  ∫Nat→Nat-lift α .η' x = α .η x .snd
+  ∫Nat→Nat-lift α .is-natural' x y f = ap snd (α .is-natural x y f)
 ```
 -->
 
@@ -474,12 +474,12 @@ Using these repackagings, we can define the promised functor from $[\cJ,
   Functors→Liftings .F₀ F .fst = πᶠ E F∘ F
   Functors→Liftings .F₀ F .snd = ∫Functor→Lifting F
 
-  Functors→Liftings .F₁ α .hom       = ∫Nat→Nat α
-  Functors→Liftings .F₁ α .preserves = ∫Nat→Nat-lift α
+  Functors→Liftings .F₁ α .fst = ∫Nat→Nat α
+  Functors→Liftings .F₁ α .snd = ∫Nat→Nat-lift α
 
-  Functors→Liftings .F-id = total-hom-path Liftings (ext λ _ → refl)
+  Functors→Liftings .F-id = ∫Hom-path Liftings (ext λ _ → refl)
     (Nat-lift-pathp (λ _ → refl))
-  Functors→Liftings .F-∘ f g = total-hom-path Liftings (ext (λ _ → refl))
+  Functors→Liftings .F-∘ f g = ∫Hom-path Liftings (ext (λ _ → refl))
     (Nat-lift-pathp (λ _ → refl))
 ```
 
@@ -491,11 +491,11 @@ appeal to some extensionality lemmas.
 ```agda
   Functors→Liftings-is-iso : is-precat-iso Functors→Liftings
   Functors→Liftings-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
-    (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
-    (λ _ → total-hom-path Liftings
+    (λ α → Nat+Nat-lift→∫Nat (α .fst) (α .snd))
+    (λ _ → ∫Hom-path Liftings
       (ext            λ _ → refl)
       (Nat-lift-pathp λ _ → refl))
-    (λ _ → ext λ _ → total-hom-path E refl refl)
+    (λ _ → ext λ _ → ∫Hom-path E refl refl)
   Functors→Liftings-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
     (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
     (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ

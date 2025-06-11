@@ -78,8 +78,8 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   it : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
-  it .hom = fst
-  it .preserves .is-group-hom.pres-⋆ x y = refl
+  it .fst = fst
+  it .snd .is-group-hom.pres-⋆ x y = refl
 
   ism : Groups.is-monic it
   ism = Homomorphism-monic it λ p → Σ-prop-path! p
@@ -127,7 +127,7 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   private
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
-    module f = is-group-hom (f .preserves)
+    module f = is-group-hom (f .snd)
 
     Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path! p
@@ -191,12 +191,12 @@ $$
 
 ```agda
   A→im : Groups.Hom A A/ker[_]
-  A→im .hom x = f · x , inc (x , refl)
-  A→im .preserves .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
+  A→im .fst x = f · x , inc (x , refl)
+  A→im .snd .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
-  im→B .hom (b , _) = b
-  im→B .preserves .is-group-hom.pres-⋆ x y = refl
+  im→B .fst (b , _) = b
+  im→B .snd .is-group-hom.pres-⋆ x y = refl
 ```
 
 When this monomorphism is taken as primary, we refer to $A/\ker(f)$ as
@@ -267,7 +267,7 @@ elide the zero composite $e' \circ 0$.
       → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
       ∥-∥-rec-set (F .snd .Group-on.has-is-set) (apply e' ⊙ fst) const where abstract
-      module e' = is-group-hom (e' .preserves)
+      module e' = is-group-hom (e' .snd)
       module F = Group-on (F .snd)
 ```
 
@@ -282,7 +282,7 @@ homomorphisms + the assumed identity $0 = e' \circ \ker f$;
              → e' · x .fst F.— e' · y .fst ≡ F.unit
       const' (y , q) (z , r) =
         (e' · y) F.— (e' · z)  ≡˘⟨ e'.pres-diff ⟩
-        e' · (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
+        e' · (y A.— z)         ≡⟨ happly (sym (ap fst p)) (y A.— z , aux) ⟩
         e' · A.unit            ≡⟨ e'.pres-id ⟩
         F.unit                 ∎
         where
@@ -317,11 +317,11 @@ will compute.
 
     coeq .universal {F = F} {e' = e'} p = gh where
       module F = Group-on (F .snd)
-      module e' = is-group-hom (e' .preserves)
+      module e' = is-group-hom (e' .snd)
 
       gh : Groups.Hom _ _
-      gh .hom (x , t) = elim {e' = e'} p t
-      gh .preserves .is-group-hom.pres-⋆ (x , q) (y , r) =
+      gh .fst (x , t) = elim {e' = e'} p t
+      gh .snd .is-group-hom.pres-⋆ (x , q) (y , r) =
         ∥-∥-elim₂
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
@@ -329,7 +329,7 @@ will compute.
     coeq .factors = Grp↪Sets-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = ext λ x y p →
-      ap· colim (Σ-prop-path! (sym p)) ∙ happly (ap hom prf) y
+      ap· colim (Σ-prop-path! (sym p)) ∙ happly (ap fst prf) y
 ```
 
 ## Representing kernels
@@ -352,12 +352,12 @@ inverses, though we shall not make note of that here.
 ```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
   module Ker[f] = Kernel (Ker f)
-  module f = is-group-hom (f .preserves)
+  module f = is-group-hom (f .snd)
   module A = Group-on (A .snd)
   module B = Group-on (B .snd)
 
   kerf : ⌞ Ker[f].ker ⌟ → ⌞ A ⌟
-  kerf = Ker[f].kernel .hom
+  kerf = Ker[f].kernel .fst
 
   has-zero : fibre kerf A.unit
   has-zero = (A.unit , f.pres-id) , refl
@@ -502,8 +502,8 @@ rather directly:
   _/ᴳ_ = to-group Group-on-G/H
 
   incl : Groups.Hom Grp _/ᴳ_
-  incl .hom = inc
-  incl .preserves .is-group-hom.pres-⋆ x y = refl
+  incl .fst = inc
+  incl .snd .is-group-hom.pres-⋆ x y = refl
 ```
 
 Before we show that the kernel of the quotient map is isomorphic to the
@@ -560,13 +560,13 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
   Ker[incl]≅H-group : Ker[incl].ker Groups.≅ H-g
   Ker[incl]≅H-group = Groups.make-iso to from il ir where
     to : Groups.Hom _ _
-    to .hom (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
+    to .fst (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
       x-0∈H = /ᴳ-effective p
-    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
+    to .snd .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
     from : Groups.Hom _ _
-    from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
-    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
+    from .fst (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
+    from .snd .is-group-hom.pres-⋆ _ _ = Σ-prop-path! refl
 
     il = ext λ x x∈H → Σ-prop-path! refl
     ir = ext λ x x∈H → Σ-prop-path! refl

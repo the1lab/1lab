@@ -50,10 +50,10 @@ or true y = true
 ```agda
 instance
   Discrete-Bool : Discrete Bool
-  Discrete-Bool {false} {false} = yes refl
-  Discrete-Bool {false} {true}  = no false≠true
-  Discrete-Bool {true}  {false} = no true≠false
-  Discrete-Bool {true}  {true}  = yes refl
+  Discrete-Bool .decide false false = yes refl
+  Discrete-Bool .decide false true  = no false≠true
+  Discrete-Bool .decide true  false = no true≠false
+  Discrete-Bool .decide true  true  = yes refl
 ```
 
 <!--
