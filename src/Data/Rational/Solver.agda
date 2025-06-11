@@ -81,8 +81,8 @@ module Impl where
     _:+_ _:*_ _:-_ _:/_ : Exp n → Exp n → Exp n
     neg inv : Exp n → Exp n
 
-  Wf : ∀ {n} (e : Exp n) (env : Vec ℚ n) → Type
-  embed : ∀ {n} (e : Exp n) (env : Vec ℚ n) → Wf e env → ℚ
+  Wf : ∀ {n} (e : Exp n) (env : Vec Ratio n) → Type
+  embed : ∀ {n} (e : Exp n) (env : Vec Ratio n) → Wf e env → Ratio
 
   Wf (var x) env  = ⊤
   Wf (con x) env  = ⊤
@@ -118,11 +118,11 @@ module Impl where
     .pres-+ (lift x) (lift y) → quotℚ (to-same-rational (ℤs.solve 2 (λ x y → (x ℤs.:+ y) ℤs.:* 1 ℤs.≔ (x ℤs.:* 1 ℤs.:+ y ℤs.:* 1) ℤs.:* 1) x y refl))
     .pres-* (lift x) (lift y) → refl
 
-  module _ {n} (env : Vec ℚ n) where
-    ↑e : Exp n → ℚ
+  module _ {n} (env : Vec Ratio n) where
+    ↑e : Exp n → Ratio
     ↑e e = ⟦ split e .fst ⟧ env
 
-    ↓e : Exp n → ℚ
+    ↓e : Exp n → Ratio
     ↓e e = ⟦ split e .snd ⟧ env
 
     split-denom-nz : ∀ e → Wf e env → Nonzero (↓e e)
@@ -208,7 +208,7 @@ module Impl where
         nz1 = split-denom-nz e ewf
         nz2 = /ℚ-nonzero-num {↑e e} {↓e e} (subst Nonzero (sym (split-sound e ewf)) enz)
 
-  module _ {n} (x y : Exp n) (env : Vec ℚ n) where abstract
+  module _ {n} (x y : Exp n) (env : Vec Ratio n) where abstract
     open Σ (split x) renaming (fst to ↑x ; snd to ↓x)
     open Σ (split y) renaming (fst to ↑y ; snd to ↓y)
 
@@ -227,8 +227,8 @@ module Impl where
         nz2 : Nonzero (↓e env y)
         nz2 = split-denom-nz env y wfy
 
-build : Variables ℚ → Term → TC (Term × Variables ℚ)
-build vars (con (quote ℚ.inc)
+build : Variables Ratio → Term → TC (Term × Variables Ratio)
+build vars (con (quote Ratio.inc)
   (con (quote Coeq.inc) (_ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ f v∷ []) v∷ [])) =
   pure (con (quote Impl.con) (f v∷ []) , vars)
 
@@ -290,7 +290,7 @@ macro
   rational! : Term → TC ⊤
   rational! = rational!-worker
 
-module _ (a b c : ℚ) ⦃ pa : Nonzero a ⦄ ⦃ pb : Nonzero b ⦄ ⦃ pc : Nonzero c ⦄ where
+module _ (a b c : Ratio) ⦃ pa : Nonzero a ⦄ ⦃ pb : Nonzero b ⦄ ⦃ pc : Nonzero c ⦄ where
   _ : (a /ℚ 3) +ℚ (a /ℚ 3) ≡ ((a *ℚ 2) /ℚ 3)
   _ = rational!
 
