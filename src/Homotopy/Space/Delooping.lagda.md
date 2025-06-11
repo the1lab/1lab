@@ -79,9 +79,9 @@ that `path`{.Agda} is a group homomorphism. More specifically,
 \end{tikzcd}\]
 ~~~
 
-Using the `uniqueness result for double composition`{.Agda
-ident=∙∙-unique}, we derive that `path`{.Agda} is a homomorphism in the
-traditional sense:
+Using the `uniqueness result for composition`{.Agda
+ident=triangle→commutes}, we derive that `path`{.Agda} is a homomorphism
+in the traditional sense:
 
 ```agda
   abstract

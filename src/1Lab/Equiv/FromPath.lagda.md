@@ -266,8 +266,8 @@ The idea behind the diagram is to piece together the three squares we
 have constructed, `θ`{.Agda}, `θ₀`{.Agda} and `θ₁`{.Agda}, with the
 intent of getting a composite `β₀ ≡ β₁`. The purpleish square behind is
 `θ`{.Agda}; The brownish square in front is `δ`{.Agda}. Finally, putting
-together the `proof of inhabitation`{.Agda ident=hasFib} and the `proof
-of propositionality`{.Agda ident=fibProp}, we get the desired:
+together the `proof of inhabitation`{.Agda ident=has-fib} and the `proof
+of propositionality`{.Agda ident=fib-is-prop}, we get the desired:
 `f`{.Agda} is an equivalence.
 
 ```agda
