@@ -21,7 +21,7 @@ let
       collection-latex
       xcolor
       preview
-      pgf tikz-cd braids
+      pgf tikz-cd braids pgfplots
       mathpazo
       varwidth xkeyval standalone;
   };
