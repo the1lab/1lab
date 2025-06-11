@@ -52,7 +52,7 @@ abstract
 ## Nonzero rationals
 
 ```agda
-  /ℚ-def : {x y : ℚ} ⦃ p : Nonzero y ⦄ → (x /ℚ y) ≡ x *ℚ invℚ y
+  /ℚ-def : {x y : Ratio} ⦃ p : Nonzero y ⦄ → (x /ℚ y) ≡ x *ℚ invℚ y
   /ℚ-def {inc x} {inc y} = refl
 
   *ℚ-nonzero : ∀ {x y} → Nonzero x → Nonzero y → Nonzero (x *ℚ y)
@@ -80,7 +80,7 @@ abstract
       (ℤ.possuc d) ⦃ ℤ.pos .d ⦄ (ℤ.negsuc x) ⦃ inc α ⦄ → to-nonzero-frac ℤ.negsuc≠pos
 
   instance
-    Nonzero-*ℚ : ∀ {x y : ℚ} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x *ℚ y)
+    Nonzero-*ℚ : ∀ {x y : Ratio} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x *ℚ y)
     Nonzero-*ℚ ⦃ p ⦄ ⦃ q ⦄ = *ℚ-nonzero p q
 
     Nonzero-invℚ : ∀ {x} ⦃ p : Nonzero x ⦄ → Nonzero (invℚ x)
