@@ -253,6 +253,9 @@ abstract
   *ℤ-cancel-≤r {possuc x} {y = negsuc y} {negsuc z} ⦃ pos _ ⦄ p = neg≤neg
     (Nat.*-cancel-≤r (suc x) (Nat.+-reflects-≤l (z * suc x) (y * suc x) x (unneg≤neg p)))
 
+  *ℤ-cancel-≤l : ∀ {x y z} ⦃ _ : Positive x ⦄ → (x *ℤ y) ≤ (x *ℤ z) → y ≤ z
+  *ℤ-cancel-≤l {x} {y} {z} p = *ℤ-cancel-≤r {x} {y} {z} (≤-trans (≤-refl' (*ℤ-commutative y x)) (≤-trans p (≤-refl' (*ℤ-commutative x z))))
+
   *ℤ-preserves-≤r : ∀ {x y} z ⦃ _ : Positive z ⦄ → x ≤ y → (x *ℤ z) ≤ (y *ℤ z)
   *ℤ-preserves-≤r {pos x} {pos y} (possuc z) ⦃ pos z ⦄ p = apos≤apos {x * suc z} {y * suc z} (Nat.*-preserves-≤r x y (suc z) (unpos≤pos p))
   *ℤ-preserves-≤r {negsuc x} {pos y} (possuc z) ⦃ pos z ⦄ p = ≤-trans neg≤pos (≤-refl' (sym (assign-pos (y * suc z))))

@@ -17,7 +17,9 @@ private variable
   ℓ ℓ' ℓ'' : Level
   A B C : Type ℓ
 
-∈ᶠˢ-map : (f : A → B) {x : B} (xs : Finset A) → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs
+∈ᶠˢ-map
+  : {A : Type ℓ} {B : Type ℓ'} (f : A → B) {x : B}
+  → (xs : Finset A) → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs
 ∈ᶠˢ-map f {x} xs w = Finset-elim-prop (λ xs → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs)
   (λ w → absurd (¬mem-[] w))
   (λ y ind → ∈ᶠˢ-split (λ { p → inc ((y , symᵢ p) , hereₛ) }) λ w → case ind w of λ x p h → inc ((x , p) , thereₛ h))

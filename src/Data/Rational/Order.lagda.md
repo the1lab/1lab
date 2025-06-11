@@ -383,6 +383,12 @@ abstract
   ... | inl x=y = absurd (x≠y x=y)
   ... | inr x<y = x<y
 
+  *ℚ-cancel-<l : ∀ {x y r} ⦃ _ : Positive r ⦄ → (r *ℚ x) < (r *ℚ y) → x < y
+  unquoteDef *ℚ-cancel-<l = do
+    by-elim-ℚ *ℚ-cancel-<l λ d x y r ⦃ rpos ⦄ α →
+      let instance _ = rpos .lower in
+      common-denom-< (ℤ.*ℤ-cancel-<l {x = r} (<-common-denom ⦃ _ ⦄ α))
+
 absℚ : ℚ → ℚ
 absℚ (inc x) = ℚ.inc $ ℚ-rec absᶠ absᶠ-resp (inc x) where
   absᶠ : Fraction → _
