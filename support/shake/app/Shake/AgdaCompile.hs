@@ -28,7 +28,7 @@ import Agda.Interaction.FindFile (SourceFile(..))
 import Agda.TypeChecking.Monad.Base (srcFromPath)
 import Agda.TypeChecking.Pretty.Warning
 import Agda.TypeChecking.Errors
-import Agda.Interaction.Imports
+import Agda.Interaction.Imports hiding (getInterface)
 import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
 import Agda.Syntax.Common.Pretty

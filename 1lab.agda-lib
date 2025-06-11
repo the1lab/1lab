@@ -12,3 +12,4 @@ flags:
   --guardedness
   --two-level
   -W noUnsupportedIndexedMatch
+  --experimental-lazy-instances
