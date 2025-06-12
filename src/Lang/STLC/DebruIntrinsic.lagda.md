@@ -18,9 +18,9 @@ module Lang.STLC.DebruIntrinsic where
 
 # The simply typed lambda calculus, fancier-er
 
-You may have noticed last time <insert link> that the typing
-derevations looks suspiciously similar to the terms themselves.
-What if we could just make the terms the typing derevations at the
+You may have noticed that last time, the typing
+derivations looks suspiciously similar to the terms themselves.
+What if we could just make the terms the typing derivations at the
 same time?
 
 ```agda
@@ -47,7 +47,7 @@ We need a slightly more high tech membership. This time, having a type
 in a context is a proof instead of just a lookup.
 
 We could call these constructors `here` and `there`, but we'll call them
-`Z` and `S` because they correspond to de bruijn indexes.
+`Z` and `S` because they correspond to de Bruijn indexes.
 
 ```agda
 infix 10 _∋_
@@ -58,8 +58,9 @@ data _∋_ : Con → Ty → Type where
          Γ ∋ A →
          Γ ,, B ∋ A
 ```
-Now we write only one judgement, instead of both terms and types. We
-will call it `_⊢_`{.Agda}.
+
+Now we write only one judgement, instead of both terms and typing
+judgements seperately. We will call it `_⊢_`{.Agda}.
 
 ```agda
 infix 10 _⊢_
@@ -99,17 +100,24 @@ The others follow roughly as they did in the extrinsic de bruijn presentation.
 
 Let's try some terms:
 
-```agda
-id' : ∅ ⊢ `⊤ `⇒ `⊤
-id' = `λ (` Z)
 
-proj' : ∅ ⊢ `⊤
-proj' = `π₁ `⟨ `tt , `tt ⟩
+<!--
+```agda
+module Example-1 where
+```
+-->
+
+```agda
+  id' : ∅ ⊢ `⊤ `⇒ `⊤
+  id' = `λ (` Z)
+
+  proj' : ∅ ⊢ `⊤
+  proj' = `π₁ `⟨ `tt , `tt ⟩
 ```
 
 
 Substitution time! Using very similar ideas to the 
-simultanious substituion in the previous.
+simultaneous substitution in the previous.
 
 ```agda
 exts : ∀ {Γ Δ} → (∀ {A}   → Γ ∋ A      → Δ ∋ A) 
@@ -158,8 +166,7 @@ _[_] {Γ} {A} {B} x y = simsub {Γ ,, B} {Γ} f x
 ```
 
 That was pretty easy, aye? And we don't need to prove any additional 
-theorems, because they're built into the definition of the substitution! 
-
+theorems, because they're built into the definition of substitution!
 
 ```agda
 data Value : ∀ {Γ A} → Γ ⊢ A → Type where

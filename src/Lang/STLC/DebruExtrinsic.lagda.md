@@ -45,7 +45,7 @@ De Bruijn indexes are a naming scheme that does not rely on names, instead
 referring to bound variables with natural numbers. The number $0$
 represents the most recently bound term; $1$ the second most, etc.  
 
-A term is indexed by a natural number representing the maxmimum of how many
+A term is indexed by a natural number representing the maximum of how many
 **unbound** variables it contains. For example, the term $0$ has one
 unbound variable, but $\lambda. 0$ has none.
 
@@ -156,7 +156,7 @@ consider substitution of every free variable at once. This is called
 "simultaneous substitution."
 
 We start by defining a particular extension of a renaming function.
-This extension is important as it leaves the "bottommost" variable
+This extension is important as it leaves the "bottom-most" variable
 untouched (as is desired when working under binders.)
  
 ```agda
@@ -227,7 +227,7 @@ incr~ Γ x {t} {n} p = rename~ Γ (n ∷ Γ) fsuc (λ f → refl) x p
 Now we can consider not just renaming, but substitutions, which
 we model as functions from free variables to terms. 
 The following extending of a substitution function is 
-similar to our `exts`{.Agda} from renaming. It leaves the new bottommost
+similar to our `exts`{.Agda} from renaming. It leaves the new bottom-most
 variable unchanged, so that variables under a binder are not modified.
 
 ```agda
