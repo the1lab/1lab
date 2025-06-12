@@ -13,7 +13,7 @@ open import Data.Sum
 -->
 
 ```agda
-module ProgrammingLanguage.STLC.Named where
+module Lang.STLC.Named where
 ```
 
 # The simply-typed lambda calculus
@@ -668,7 +668,7 @@ Then, progress, noting that the expression must be well typed. We
 define progress as a datatype, as it's much nicer to work with.
 
 ```agda
-data Progress (M : Expr): Type where
+data Progress (M : Expr) : Type where
   going : ∀ {N} →
                Step M N →
                Progress M

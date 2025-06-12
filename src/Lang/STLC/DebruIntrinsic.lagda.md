@@ -13,7 +13,7 @@ open import Data.Sum
 -->
 
 ```agda
-module ProgrammingLanguage.STLC.DebruIntrinsic where
+module Lang.STLC.DebruIntrinsic where
 ```
 
 # The simply typed lambda calculus, fancier-er
@@ -31,7 +31,12 @@ data Ty : Type where
   `⊤ : Ty
   _`×_ : Ty → Ty → Ty
   _`⇒_ : Ty → Ty → Ty
+```
 
+We need slightly fancier contexts this time. We could import and use
+lists, but this definition is more beneficial to understanding.
+
+```agda
 infixl 20 _,,_
 data Con : Type where
   ∅ : Con
@@ -107,7 +112,7 @@ Substitution time! Using very similar ideas to the
 simultanious substituion in the previous.
 
 ```agda
-exts : ∀ {Γ Δ} → (∀ {A} → Γ ∋ A → Δ ∋ A) 
+exts : ∀ {Γ Δ} → (∀ {A}   → Γ ∋ A      → Δ ∋ A) 
                 → ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ∋ A
 exts f Z = Z
 exts f (S x) = S f x
@@ -122,7 +127,7 @@ rename f (`π₁ x) = `π₁ (rename f x)
 rename f (`π₂ x) = `π₂ (rename f x)
 rename f `tt = `tt
 
-extnd : ∀ {Γ Δ} → (∀ {A} → Γ ∋ A → Δ ⊢ A) →
+extnd : ∀ {Γ Δ} → (∀ {A}   → Γ ∋ A      → Δ ⊢ A) →
                    ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ⊢ A
 extnd f Z = ` Z
 extnd f (S x) = rename S_ (f x)

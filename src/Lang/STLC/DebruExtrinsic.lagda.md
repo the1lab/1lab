@@ -14,7 +14,7 @@ open import Data.Sum
 -->
 
 ```agda
-module ProgrammingLanguage.STLC.DebruExtrinsic where
+module Lang.STLC.DebruExtrinsic where
 ```
 
 # The simply typed lambda calculus, fancier
@@ -38,26 +38,34 @@ $\Gamma\ n$ contains $n$ elements.
 ```agda
 Con : Nat → Type
 Con n = Vec Ty n
-
-_#_ : ∀ {n k} → Con n → Con k → Con (n + k)
-[] # Δ = Δ
-(x ∷ Γ) # Δ = x ∷ (Γ # Δ)
 ```
 
-Now for terms. First, we must explain Debrujin indexes:
+Now for terms. First however, we must explain deb Bruijn indexes.
+De Bruijn indexes are a naming scheme that does not rely on names, instead
+referring to bound variables with natural numbers. The number $0$
+represents the most recently bound term; $1$ the second most, etc.  
 
-<insert prose>
-
-A term is indexed by a natural number representing how many 
+A term is indexed by a natural number representing the maxmimum of how many
 **unbound** variables it contains. For example, the term $0$ has one
 unbound variable, but $\lambda. 0$ has none.
+
+
+```agda
+data Expr : Nat → Type where
+```
+
+We use this index in our variable constructor, such that a term of 
+type `Expr n`{.Agda} may only reference $n$ different variables. 
+`Fin n`{.Agda} is a type containing $n$ elements, and is therefore suitable. 
+
+```agda
+  ` : ∀ {n} → Fin n → Expr n
+```
 
 In order to decrease this level when encountering lambdas, we require
 the body to have a level one higher than the constructed term.
 
 ```agda
-data Expr : Nat → Type where
-  ` : ∀ {n} → Fin n → Expr n
   `λ : ∀ {n} → Expr (suc n) → Expr n
   _`$_ : ∀ {n} → Expr n → Expr n → Expr n
   `⟨_,_⟩ : ∀ {n} → Expr n → Expr n → Expr n
@@ -66,7 +74,8 @@ data Expr : Nat → Type where
   `tt : ∀ {n} → Expr n
 ``` 
 
-We note that you can freely raise the level of a term, if you so wish.
+We note that you can freely raise the level of a term
+without modifying it, if you so wish.
 
 ```agda
 raise : ∀ {n} → Expr n → Expr (suc n)
@@ -192,8 +201,10 @@ rename~ {n} {k} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro ex
 
     ex : ty ∷ Δ ⊢ rename (exts ren) x ⦂ _
     ex = rename~ (ty ∷ Γ) (ty ∷ Δ) (exts ren) help x p
-rename~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = `⇒-elim (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
-rename~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ {ty} (`×-intro p p₁) = `×-intro (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
+rename~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = 
+  `⇒-elim (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
+rename~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ {ty} (`×-intro p p₁) = 
+  `×-intro (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
 rename~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (rename~ Γ Δ ren ren~ x p)
 rename~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (rename~ Γ Δ ren ren~ x p)
 rename~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
@@ -201,21 +212,23 @@ rename~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
 ```
 
 This particular renaming increases every free variable in an expression by one.
+Note that we can add on whatever type we'd like.
 
 ```agda
 incr : ∀ {n} → Expr n → Expr (suc n)
 incr x = rename fsuc x
 
-incr~ : ∀ {n} (Γ : Con n) x {t₁ t₂} →
-        Γ ⊢ x ⦂ t₂ →
-        t₁ ∷ Γ ⊢ incr x ⦂ t₂
-incr~ Γ x {t₁} {t₂} p = rename~ Γ (t₁ ∷ Γ) fsuc (λ f → refl) x p
+incr~ : ∀ {n} (Γ : Con n) x {t n} →
+        Γ ⊢ x ⦂ t →
+        n ∷ Γ ⊢ incr x ⦂ t
+incr~ Γ x {t} {n} p = rename~ Γ (n ∷ Γ) fsuc (λ f → refl) x p
 ```
 
-Now we can consider not just renaminging, but substitutions, which
-we model as functions from free variables to terms. This extending of
-a substitution function functions similarly to our `exts`{.Agda} from
-renaming.
+Now we can consider not just renaming, but substitutions, which
+we model as functions from free variables to terms. 
+The following extending of a substitution function is 
+similar to our `exts`{.Agda} from renaming. It leaves the new bottommost
+variable unchanged, so that variables under a binder are not modified.
 
 ```agda
 extnd : ∀ {n k} → (Fin n → Expr k) → Fin (suc n) → Expr (suc k)
@@ -224,7 +237,7 @@ extnd f x with fin-view x
 ... | suc i = incr (f i)
 ```
 
-Now substitution:
+Now substitution itself:
 
 ```agda
 simsub : ∀ {n k} → (Fin n → Expr k) → Expr n → Expr k
@@ -260,8 +273,10 @@ simsub~ {n} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro ex
 
     ex : _ ∷ Δ ⊢ simsub (extnd ren) x ⦂ _
     ex = simsub~ (ty ∷ Γ) (_ ∷ Δ) (extnd ren) rest x p
-simsub~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = `⇒-elim (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
-simsub~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ (`×-intro p p₁) = `×-intro (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
+simsub~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = 
+  `⇒-elim (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
+simsub~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ (`×-intro p p₁) = 
+  `×-intro (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
 simsub~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (simsub~ Γ Δ ren ren~ x p)
 simsub~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (simsub~ Γ Δ ren ren~ x p)
 simsub~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
