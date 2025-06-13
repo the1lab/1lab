@@ -147,9 +147,21 @@ compileAgda stateVar = do
 
     -- On the initial build, always build everything. Otherwise try to only
     -- rebuild the files which have changed.
-    (target, state) <- case oldState of
-      Nothing -> (["_build/all-pages.agda"],) <$> initStateIO
-      Just state -> pure (if watching then changed else ["_build/all-pages.agda"], state)
+    let (target, state) =
+          case oldState of
+            Nothing ->
+              -- HACK: As of https://github.com/agda/agda/pull/7719, Agda has the
+              -- Agda data directory baked into the binary. This causes massive headaches
+              -- when working with nix, as that path points to the read-only nix store.
+              -- Moreover, we don't even *need* anything in the data directory, as
+              -- we always use --no-load-primitives.
+              --
+              -- Unfortunately, initStateIO checks for the existence of the data directory,
+              -- even if we will never actually use it. We do have to pass in *something* though,
+              -- so we just use the build directory: it's the closest 'AbsolutePath' we have at hand.
+              (["_build/all-pages.agda"], initState baseDir)
+            Just state | watching -> (changed, state)
+                       | otherwise -> (["_build/all-pages.agda"], state)
 
     ((), state) <- runTCMPrettyErrors initEnv state do
       -- We preserve the old modules and restore them at the end, as otherwise
