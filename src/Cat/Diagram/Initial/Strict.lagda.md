@@ -22,8 +22,10 @@ module _ {o h} (C : Precategory o h) where
 
 # Strict initial objects {defines="strict-initial-object strict-initial"}
 
+::: {.popup .keep}
 An [[initial object]] is said to be *[strict]* if every morphism into it is an *iso*morphism.
 This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
+:::
 
 This is an instance of the more general notion of [van Kampen colimits].
 

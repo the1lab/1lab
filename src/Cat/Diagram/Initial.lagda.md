@@ -97,51 +97,6 @@ a proposition:
       (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```
 
-## Strictness {defines="strict-initial-object"}
-
-::: {.popup .keep}
-An [[initial object]] $\bot$ is said to be **strict** if every morphism
-$f : X \to \bot$ into it is [[invertible]].
-
-This generalises to an arbitrary $\cC$ the observation that if one can
-write a function of [[sets]] $X \to \emptyset$ then $X$ must itself be
-empty.
-:::
-
-This is an instance of the more general notion of [van Kampen colimits].
-
-[van Kampen colimits]: https://ncatlab.org/nlab/show/van+Kampen+colimit
-
-```agda
-  is-strict-initial : Initial → Type _
-  is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
-
-  record Strict-initial : Type (o ⊔ h) where
-    field
-      initial : Initial
-      has-is-strict : is-strict-initial initial
-```
-
-Strictness is a property of, not structure on, an initial object.
-
-```agda
-  is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-  is-strict-initial-is-prop i = hlevel 1
-```
-
-As maps out of initial objects are unique, it suffices to show that
-every map $\text{!`} \circ f = \id$ for every $f : X \to \bot$ to establish that $\bot$ is a
-strict initial object.
-
-```agda
-  make-is-strict-initial
-    : (i : Initial)
-    → (∀ x → (f : Hom x (i .bot)) → (¡ i) ∘ f ≡ id)
-    → is-strict-initial i
-  make-is-strict-initial i p x f =
-    make-invertible (¡ i) (¡-unique₂ i (f ∘ ¡ i) id) (p x f)
-```
-
 <!--
 ```agda
 module _ {o h} {C : Precategory o h} where
