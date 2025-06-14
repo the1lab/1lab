@@ -40,27 +40,6 @@
   margin-block: 1em;
 }
 
-@mixin highlight($name, $bg, $icon) {
-  div.#{$name}, span.#{$name}, details.#{$name} {
-    .highlight-icon {
-      fill: $icon;
-      color: $icon;
-
-      display: flex;
-      gap: 0.5em;
-      align-items: center;
-      margin-bottom: 0.3em;
-    }
-  }
-
-  div.#{$name}, details.#{$name} {
-    @include material($bg);
-    > :nth-child(2) {
-      margin-block-start: 0.25em;
-    }
-  }
-}
-
 @mixin centered-contents {
   display: flex;
   flex-direction: column;

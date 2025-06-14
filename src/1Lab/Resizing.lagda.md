@@ -29,6 +29,16 @@ module 1Lab.Resizing where
 
 # Propositional resizing {defines="propositional-resizing"}
 
+::: popup
+The principle of **propositional resizing** says that every
+[[proposition]] $A$ in an arbitrary [[universe]] $\type_\ell$ is
+equivalent to a *small* $(\Box A) : \type_0$.
+
+Moreover, we take propositional resizing to mean that there exists a
+small type $\Omega : \type_0$ of $\type_0$-propositions, which, taken
+together with $\Box$, becomes a type of *all* propositions.
+:::
+
 Ordinarily, the collection of all $\kappa$-small predicates on
 $\kappa$-small types lives in the next universe up, $\kappa^+$. This is
 because _predicates_ are not special in type theory: they are ordinary

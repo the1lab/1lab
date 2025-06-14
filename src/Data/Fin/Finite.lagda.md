@@ -81,7 +81,7 @@ $n!$ equivalences $A \simeq [n]$. This isn't an idle concern: if we
 define the type of finite sets to be, e.g.,
 
 $$
-\sum_{X : \ty} \sum_{n : \NN}\ [n] \simeq X
+\sum_{X : \type} \sum_{n : \NN}\ [n] \simeq X
 $$
 
 then we end up with something with the incorrect homotopy type! We'd
@@ -594,10 +594,14 @@ type is finite if it is merely listed. This is a proposition, and
 (because listed types satisfy choice) inherits all the closure
 properties above.
 
+::: popup
+A type $A$ is **finite** if it is [[merely]] [[listing]].
+
 ```agda
 Finite : Type ℓ → Type ℓ
 Finite A = ∥ Listing A ∥
 ```
+:::
 
 ```agda
 instance
