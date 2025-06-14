@@ -40,10 +40,10 @@ module _ {ℓ} (G : Group ℓ) where
 
 ```agda
   data Deloop : Type ℓ where
-    base    : Deloop
-    path    : ⌞ G ⌟ → base ≡ base
-    path-sq : (x y : ⌞ G ⌟) → Square refl (path x) (path (x ⋆ y)) (path y)
-    squash  : is-groupoid Deloop
+    base   : Deloop
+    path   : ⌞ G ⌟ → base ≡ base
+    pathᵀ  : (x y : ⌞ G ⌟) → Triangle (path x) (path (x ⋆ y)) (path y)
+    squash : is-groupoid Deloop
 
   Deloop∙ : Type∙ ℓ
   Deloop∙ = Deloop , base
@@ -79,18 +79,14 @@ that `path`{.Agda} is a group homomorphism. More specifically,
 \end{tikzcd}\]
 ~~~
 
-Using the `uniqueness result for double composition`{.Agda
-ident=∙∙-unique}, we derive that `path`{.Agda} is a homomorphism in the
-traditional sense:
+Using the `uniqueness result for composition`{.Agda
+ident=triangle→commutes}, we derive that `path`{.Agda} is a homomorphism
+in the traditional sense:
 
 ```agda
   abstract
     path-∙ : ∀ x y → path (x ⋆ y) ≡ path x ∙ path y
-    path-∙ x y i j =
-      ∙∙-unique refl (path x) (path y)
-        (path (x ⋆ y)    , path-sq x y)
-        (path x ∙ path y , ∙-filler _ _)
-        i .fst j
+    path-∙ x y = triangle→commutes (pathᵀ x y)
 ```
 
 <details>
@@ -124,7 +120,7 @@ cases become automatic.
     → (p : P base)
     → (ploop : ∀ x → PathP (λ i → P (path x i)) p p)
     → ( ∀ x y
-        → SquareP (λ i j → P (path-sq x y i j))
+        → SquareP (λ i j → P (pathᵀ x y i j))
                   (λ _ → p) (ploop x) (ploop (x ⋆ y)) (ploop y))
     → ∀ x → P x
 ```
@@ -192,11 +188,8 @@ Finally, we can satisfy the coherence case `path-sq`{.Agda} by an
 algebraic calculation on paths:
 
 ```agda
-    coh : ∀ x y → Square refl (path-case x) (path-case (x ⋆ y)) (path-case y)
-    coh x y = n-Type-square $ transport (sym Square≡double-composite-path) $
-      ua (eqv x) ∙ ua (eqv y) ≡˘⟨ ua∙ ⟩
-      ua (eqv x ∙e eqv y)     ≡⟨ ap ua (Σ-prop-path! (funext λ _ → sym associative)) ⟩
-      ua (eqv (x ⋆ y))        ∎
+    coh : ∀ x y → Triangle (path-case x) (path-case (x ⋆ y)) (path-case y)
+    coh x y = n-ua-triangle (ext λ z → associative)
 ```
 
 <!--
@@ -204,7 +197,7 @@ algebraic calculation on paths:
     go : Deloop → Set ℓ
     go base = base-case
     go (path x i) = path-case x i
-    go (path-sq x y i j) = coh x y i j
+    go (pathᵀ x y i j) = coh x y i j
     go (squash x y p q α β i j k) =
       n-Type-is-hlevel 2 (Code x) (Code y)
         (λ i → Code (p i))     (λ i → Code (q i))
@@ -228,7 +221,7 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
     coh : ∀ x → PathP (λ i → Code ʻ path x i → base ≡ path x i) path path
     coh x i c j = hcomp (∂ i ∨ ∂ j) λ where
       k (k = i0) → path (unglue c) j
-      k (i = i0) → path-sq c x (~ k) j
+      k (i = i0) → pathᵀ c x (~ k) j
       k (i = i1) → path c j
       k (j = i0) → base
       k (j = i1) → path x (i ∨ ~ k)
@@ -236,8 +229,8 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
     go : ∀ x → Code ʻ x → base ≡ x
     go base c = path c
     go (path x i) c = coh x i c
-    go (path-sq x y i j) = is-set→squarep
-      (λ i j → fun-is-hlevel {A = Code ʻ path-sq x y i j} 2 (Deloop.squash base (path-sq x y i j)) )
+    go (pathᵀ x y i j) = is-set→squarep
+      (λ i j → fun-is-hlevel {A = Code ʻ pathᵀ x y i j} 2 (Deloop.squash base (pathᵀ x y i j)) )
       (λ i → path) (coh x) (coh (x ⋆ y)) (coh y) i j
     go (squash x y p q α β i j k) =
       is-hlevel→is-hlevel-dep {B = λ x → Code ʻ x → base ≡ x} 2 (λ x → hlevel 3)
@@ -423,7 +416,7 @@ again. That finishes the construction:
 
 <!--
 ```agda
-      go (path-sq x y i j) = is-set→squarep (λ i j → hl (path-sq x y i j))
+      go (pathᵀ x y i j) = is-set→squarep (λ i j → hl (pathᵀ x y i j))
         (λ j → encode G base) (coh x) (coh (x ⋆ y)) (coh y)
         i j
       go (squash x y p q α β i j k) =
@@ -484,8 +477,8 @@ We can then obtain a nice interface for working with `winding`{.Agda}.
   _ : pathᵇ base ≡ path
   _ = refl -- MUST check!
 
-  pathᵇ-sq : ∀ (x : Deloop G) g h → Square refl (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
-  pathᵇ-sq = Deloop-elim-prop G _ (λ x → hlevel 1) λ g h → path-sq g h
+  pathᵇᵀ : ∀ (x : Deloop G) g h → Triangle (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
+  pathᵇᵀ = Deloop-elim-prop G _ (λ x → hlevel 1) λ g h → pathᵀ g h
 
 Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
 Deloop-is-connected = Deloop-elim-prop _ _ (λ _ → hlevel 1) (inc refl)

@@ -584,7 +584,7 @@ that square. As an intermediate step, we define $\theta$ to be the
 filler for the square above.
 
 ```agda
-    θ : Square refl π₀ π₁ π
+    θ : Triangle π₀ π₁ π
     θ i j = hfill (∂ i) j λ where
       k (i = i1) → π₁ k
       k (i = i0) → π₀ k

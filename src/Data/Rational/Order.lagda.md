@@ -79,7 +79,7 @@ above, so we'll leave this in a `<details>`{.html} block.
 
 ```agda
 private
-  leℚ : ℚ → ℚ → Prop lzero
+  leℚ : Ratio → Ratio → Prop lzero
   leℚ (inc x) (inc y) =
     Coeq-rec₂ (hlevel 2) work
       (λ a (x , y , r) → r2 x y a r)
@@ -108,7 +108,7 @@ nasty definition, whereas an application of a record name is always a
 normal form.
 
 ```agda
-record _≤_ (x y : ℚ) : Type where
+record _≤_ (x y : Ratio) : Type where
   constructor inc
   field
     lower : ⌞ leℚ x y ⌟
@@ -129,7 +129,7 @@ reflexive, transitive, and antisymmetric.
 
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
-  Dec-≤ {inc x} {inc y} = elim! {P = λ x → ∀ y → Dec (ℚ.inc x ≤ inc y)} go x y where
+  Dec-≤ {inc x} {inc y} = elim! {P = λ x → ∀ y → Dec (Ratio.inc x ≤ inc y)} go x y where
     go : ∀ x y → Dec (toℚ x ≤ toℚ y)
     go x@record{} y@record{} with holds? ((↑ x *ℤ ↓ y) ℤ.≤ (↑ y *ℤ ↓ x))
     ... | yes p = yes (inc p)
@@ -204,14 +204,14 @@ rational numbers. A fraction is positive if its numerator is positive.
 
 ```agda
 private
-  positiveℚ : ℚ → Prop lzero
+  positiveℚ : Ratio → Prop lzero
   positiveℚ (inc x) = Coeq-rec (λ f → el! (ℤ.Positive (↑ f))) (λ (x , y , p) → r x y p) x where
     r : ∀ x y → x ≈ y → el! (ℤ.Positive (↑ x)) ≡ el! (ℤ.Positive (↑ y))
     r (x / s [ ps ]) (y / t [ pt ]) r with r ← from-same-rational r = n-ua (prop-ext!
       (λ px → ℤ.*ℤ-positive-cancel ps (subst ℤ.Positive (r ∙ ℤ.*ℤ-commutative y s) (ℤ.*ℤ-positive px pt)))
       λ py → ℤ.*ℤ-positive-cancel pt (subst ℤ.Positive (sym r ∙ ℤ.*ℤ-commutative x t) (ℤ.*ℤ-positive py ps)))
 
-record Positive (q : ℚ) : Type where
+record Positive (q : Ratio) : Type where
   constructor inc
   field
     lower : ⌞ positiveℚ q ⌟
@@ -294,7 +294,7 @@ dance as to make this into something definitionally injective.</summary>
 
 ```agda
 private
-  ltℚ : ℚ → ℚ → Prop lzero
+  ltℚ : Ratio → Ratio → Prop lzero
   ltℚ (inc x) (inc y) = Coeq-rec₂ (hlevel 2) work (λ u (x , y , r) → r2 x y u r) (λ u (x , y , r) → r1 u x y r) x y where
     work : Fraction → Fraction → Prop lzero
     ∣ work x y ∣ = x <ᶠ y
@@ -310,7 +310,7 @@ private
       (λ α → <ᶠ-respl {x} {y} {u} p' α)
       (λ α → <ᶠ-respl {y} {x} {u} (≈.symᶜ p') α))
 
-record _<_ (x y : ℚ) : Type where
+record _<_ (x y : Ratio) : Type where
   constructor inc
   field
     lower : ⌞ ltℚ x y ⌟
@@ -389,8 +389,8 @@ abstract
       let instance _ = rpos .lower in
       common-denom-< (ℤ.*ℤ-cancel-<l {x = r} (<-common-denom ⦃ _ ⦄ α))
 
-absℚ : ℚ → ℚ
-absℚ (inc x) = ℚ.inc $ ℚ-rec absᶠ absᶠ-resp (inc x) where
+absℚ : Ratio → Ratio
+absℚ (inc x) = Ratio.inc $ ℚ-rec absᶠ absᶠ-resp (inc x) where
   absᶠ : Fraction → _
   absᶠ (x / s [ p ]) = inc (pos (abs x) / s [ p ])
 
@@ -399,4 +399,8 @@ absℚ (inc x) = ℚ.inc $ ℚ-rec absᶠ absᶠ-resp (inc x) where
   absᶠ-resp (pos x / possuc s [ p ]) (negsuc y / possuc t [ q ]) α = absurd (pos≠negsuc (sym (ℤ.assign-pos (x * suc t)) ∙ from-same-rational α))
   absᶠ-resp (negsuc x / possuc s [ p ]) (pos y / possuc t [ q ]) α = absurd (negsuc≠pos (from-same-rational α ∙ ℤ.assign-pos (y * suc s)))
   absᶠ-resp (negsuc x / possuc s [ p ]) (negsuc y / possuc t [ q ]) α = quot (to-same-rational (ap possuc (negsuc-injective (from-same-rational α))))
+
+≤-is-weakly-total : ∀ x y → ¬ (x ≤ y) → y ≤ x
+≤-is-weakly-total = elim! λ where
+  f@record{} f'@record{} ¬α → inc (ℤ.≤-is-weakly-total _ _ λ α → ¬α (inc α))
 ```
