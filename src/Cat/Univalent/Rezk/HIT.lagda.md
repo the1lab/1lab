@@ -48,7 +48,7 @@ that this constructor respects composition, filling the diagram
   \\
   \&\& {\rm{inc}\ z\text{.}}
   \arrow["{\rm{glue}\ f}", equals, from=1-1, to=1-3]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{glue}\ (f\circ g)}"', equals, from=1-1, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{glue}\ (g \circ f)}"', equals, from=1-1, to=3-3]
   \arrow["{\rm{glue}\ g}", equals, from=1-3, to=3-3]
   \arrow["{\rm{glue}^T\ f\ g}"{description}, draw=none, from=0, to=1-3]
 \end{tikzcd}\]
@@ -150,7 +150,7 @@ record C^-corr {ℓ'} (P : Type ℓ') : Type (o ⊔ ℓ ⊔ ℓ') where
 Then, we must give actions of the isomorphisms $x \cong_\cC x'$ on both
 the left and the right of $f$, making it into a sort of "profunctor";
 and, correspondingly, these actions must be "profunctorial". In
-particular, they should respect composition and commute past eachother,
+particular, they should respect composition and commute past each other,
 which we can state concisely in terms of triangles and squares.
 
 ```agda
@@ -279,7 +279,7 @@ they are conceptually very simple.
 
 For a worked-out example, the necessary coherence for lifting the
 identity morphisms from $\cC$ to $\widehat{\cC}$ asks simply that if $j
-: x \cong y$, then we have $j \id j\inv = \id$, which is a short
+: x \cong y$, then we have $j \circ \id \circ j\inv = \id$, which is a short
 calculation.
 
 ```agda
