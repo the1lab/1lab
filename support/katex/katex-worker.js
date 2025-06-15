@@ -14,18 +14,18 @@ process.stdin.on('data', (chunk) => {
     const jobs = chunk.split('\x1C');
     jobs[0] = partialJob + jobs[0];
     partialJob = jobs.pop() || "";
-    process.stderr.write(JSON.stringify(jobs));
     jobs.forEach((job) => {
+	// Instead of trying to catch errors in node and re-report them back
+	// to the haskell side, we take a more laissez-faire approach and
+	// just let the node process die.
         job = JSON.parse(job);
-        try {
-            const html = katex.renderToString(job.equation, job.options);
-            process.stdout.write("Ok:" + html + '\x1C');
-        } catch(e) {
-	    process.stdout.write("Katex compilation failed for:\n" + job.equation + "\nError:\n" + e.message + '\^');
-        }
+        const html = katex.renderToString(job.equation, job.options);
+        process.stdout.write(html + '\x1C');
     });
 });
 
-process.stdin.on('end', (chunk) => {
-    console.error("Input ended with non-terminated equation:\n", partialEquation);
+process.stdin.on('end', () => {
+    if (partialJob) {
+	console.error("Input ended with non-terminated equation:\n", partialJob);
+    }
 });

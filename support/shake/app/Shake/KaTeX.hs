@@ -162,26 +162,21 @@ katexRules = versioned 3 do
 
   _ <- versioned 3 $ addOracleCache \(LatexEquation (display, tex)) -> do
     pre <- askOracle (ParsedPreamble ())
-    result <-
-      traced "katex" $
-      withKatexWorker workerQueue \KatexWorker{..} ->
-      handle (\(SomeException e) -> pure (T.pack $ displayException e)) $ do
-        -- [HACK: File Separator Control Characters].
-        -- Instead of trying to do some fiddly JSON streaming, we opt to
-        -- use a little known feature of ASCII to delimit our requests.
-        -- The control character 0x1C in ASCII encodes a file-separator,
-        -- which is left up to applications to interpret. We can rely on this never showing up
-        -- in our JSON, so it is safe to use this to delimit requests.
-        let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\FS"
-        LBS.hPutStr katexWorkerIn job
-        hFlush katexWorkerIn
-        -- We can't use 'LBS.takeWhile (0x1c /=)' here, as the output can contain utf8-encoded
-        -- text. To avoid this, we first decode to utf8.
-        LT.toStrict <$> LT.takeWhile ('\FS' /=) <$> LT.decodeUtf8With T.strictDecode <$> LBS.hGetContents katexWorkerOut
-    case T.stripPrefix "Ok:" result of
-      Just html -> pure (T.strip html)
-      Nothing -> error (T.unpack result)
-
+    traced "katex" $ withKatexWorker workerQueue \KatexWorker{..} -> do
+      -- [HACK: File Separator Control Characters].
+      -- Instead of trying to do some fiddly JSON streaming, we opt to
+      -- use a little known feature of ASCII to delimit our requests.
+      -- The control character 0x1C in ASCII encodes a file-separator,
+      -- which is left up to applications to interpret. We can rely on this never showing up
+      -- in our JSON, so it is safe to use this to delimit requests.
+      let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\FS"
+      putStrLn ("Writing job: " <> show job)
+      LBS.hPutStr katexWorkerIn job
+      hFlush katexWorkerIn
+      -- We can't use 'LBS.takeWhile (0x1c /=)' here, as the output can contain utf8-encoded
+      -- text. To avoid this, we first decode to utf8.
+      bytes <- LBS.hGetContents katexWorkerOut
+      pure $ T.stripEnd $ LT.toStrict $ LT.takeWhile ('\FS' /=) $ LT.decodeUtf8With T.strictDecode bytes
   pure ()
 
 darkSettings :: Text
