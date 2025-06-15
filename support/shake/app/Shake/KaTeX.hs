@@ -96,6 +96,13 @@ spawnKatexWorker :: IO KatexWorker
 spawnKatexWorker =
   Process.createProcess workerSpec >>= \case
   (Just katexWorkerIn, Just katexWorkerOut, _, katexProcessHandle) -> do
+    -- We are going to be delimiting requests with the file separator control
+    -- char (See [HACK: File Separator Control Characters]), so we can eek out a bit
+    -- more performance by using block buffering over line buffering.
+    hSetBuffering katexWorkerIn (BlockBuffering (Just 0x2000))
+    hSetBuffering katexWorkerOut (BlockBuffering (Just 0x2000))
+    -- We will only ever read/write bytestrings, so we don't need to
+    -- worry about setting handle encodings or dealing with newline conversion.
     pure (KatexWorker { .. })
   _ -> fail "Spawning katex-worker process failed."
   where
@@ -126,8 +133,8 @@ withKatexWorker
   :: Chan KatexWorker
   -> (KatexWorker -> IO a)
   -> IO a
-withKatexWorker workerQueue =
-  bracket (readChan workerQueue) (writeChan workerQueue)
+withKatexWorker katexWorkerQueue =
+  bracket (readChan katexWorkerQueue) (writeChan katexWorkerQueue)
 
 -- | Encode a 'LatexEquation' into a @katex-worker@ job.
 encodeKatexJob :: Bool -> Text -> Aeson.Value
@@ -146,8 +153,7 @@ encodeKatexJob display tex =
 katexRules :: Rules ()
 katexRules = versioned 3 do
   numThreads <- shakeThreads <$> getShakeOptionsRules
-  workerQueue <- liftIO $ createKatexWorkerQueue numThreads
-
+  katexPool <- liftIO $ createKatexWorkerQueue numThreads
   _ <- addOracle \(ParsedPreamble _) -> do
     need ["src/preamble.tex"]
     t <- liftIO $ T.readFile "src/preamble.tex"
@@ -162,7 +168,7 @@ katexRules = versioned 3 do
 
   _ <- versioned 3 $ addOracleCache \(LatexEquation (display, tex)) -> do
     pre <- askOracle (ParsedPreamble ())
-    traced "katex" $ withKatexWorker workerQueue \KatexWorker{..} -> do
+    traced "katex" $ withKatexWorker katexPool \KatexWorker{..} -> do
       -- [HACK: File Separator Control Characters].
       -- Instead of trying to do some fiddly JSON streaming, we opt to
       -- use a little known feature of ASCII to delimit our requests.
@@ -170,13 +176,14 @@ katexRules = versioned 3 do
       -- which is left up to applications to interpret. We can rely on this never showing up
       -- in our JSON, so it is safe to use this to delimit requests.
       let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\FS"
-      putStrLn ("Writing job: " <> show job)
-      LBS.hPutStr katexWorkerIn job
+      -- Aeson will always encode as utf8, so there is no work required on our end.
+      LBS.hPut katexWorkerIn job
       hFlush katexWorkerIn
       -- We can't use 'LBS.takeWhile (0x1c /=)' here, as the output can contain utf8-encoded
       -- text. To avoid this, we first decode to utf8.
       bytes <- LBS.hGetContents katexWorkerOut
-      pure $ T.stripEnd $ LT.toStrict $ LT.takeWhile ('\FS' /=) $ LT.decodeUtf8With T.strictDecode bytes
+      -- Make sure to force the output to avoid holding onto the handle buffer for too long.
+      pure $! LT.toStrict $ LT.stripEnd $ LT.takeWhile ('\FS' /=) $ LT.decodeUtf8With T.strictDecode bytes
   pure ()
 
 darkSettings :: Text
