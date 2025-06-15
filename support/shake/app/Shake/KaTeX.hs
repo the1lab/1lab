@@ -41,6 +41,7 @@ import Control.Concurrent.Chan
 import Control.Exception
 
 import System.Process qualified as Process
+import System.Process (ProcessHandle)
 import System.IO
 
 import Shake.Utils
@@ -86,8 +87,7 @@ data KatexWorker = KatexWorker
   -- ^ Stdin of the katex-worker process.
   , katexWorkerOut :: Handle
   -- ^ Stdout of the katex-worker process.
-  , katexWorkerErr :: Handle
-  -- ^ Stderr of the katex-worker process.
+  , katexProcessHandle :: ProcessHandle
   }
 
 -- | Spawn a single katex-worker process.
@@ -95,17 +95,17 @@ data KatexWorker = KatexWorker
 spawnKatexWorker :: IO KatexWorker
 spawnKatexWorker =
   Process.createProcess workerSpec >>= \case
-  (Just katexWorkerIn, Just katexWorkerOut, Just katexWorkerErr, _) ->
+  (Just katexWorkerIn, Just katexWorkerOut, _, katexProcessHandle) -> do
     pure (KatexWorker { .. })
   _ -> fail "Spawning katex-worker process failed."
   where
     workerSpec =
-      -- FIXME: This aint the right way to do this.
-      (Process.proc "./support/katex/katex-worker.js" [])
-        { Process.cwd = Nothing
-        , Process.std_in = Process.CreatePipe
+      (nodeProc "./support/katex/katex-worker.js" [])
+        { Process.std_in = Process.CreatePipe
         , Process.std_out = Process.CreatePipe
-        , Process.std_err = Process.CreatePipe
+        , Process.std_err = Process.Inherit
+        -- We'd like to report fatal errors to the shake output directly,
+        -- so we inherit stderr instead of creating a new pipe.
         }
 
 -- | Create a FIFO queue of katex-worker processes.
@@ -126,8 +126,8 @@ withKatexWorker
   :: Chan KatexWorker
   -> (KatexWorker -> IO a)
   -> IO a
-withKatexWorker workerQueue k =
-  bracket (readChan workerQueue) (writeChan workerQueue) k
+withKatexWorker workerQueue =
+  bracket (readChan workerQueue) (writeChan workerQueue)
 
 -- | Encode a 'LatexEquation' into a @katex-worker@ job.
 encodeKatexJob :: Bool -> Text -> Aeson.Value
