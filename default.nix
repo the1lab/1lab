@@ -76,7 +76,7 @@ in
 
     LANG = "C.UTF-8";
     buildPhase = ''
-      1lab-shake all -j
+      1lab-shake all -j --git-only
     '';
 
     installPhase = ''
