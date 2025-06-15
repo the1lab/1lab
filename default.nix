@@ -48,7 +48,7 @@ let
     shakefile our-ghc
 
     # For building the text and maths:
-    gitMinimal nodePackages.sass
+    gitMinimal nodePackages.sass nodejs
 
     # For building diagrams:
     poppler_utils our-texlive
