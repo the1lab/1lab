@@ -20,13 +20,13 @@ const katexHtml = new Transform({
         while (end !== -1) {
             const job = JSON.parse(chunk.toString('utf8', start, end));
             const html = katex.renderToString(job.equation, job.options);
-	    // Allocate an extra byte for our buffer for the null terminator.
-	    // We can use `unsafeAlloc` here, as we are going to be overwritting
-	    // all of the contents ourselves.
-	    const nbytes = Buffer.byteLength(html);
-	    const output = Buffer.allocUnsafe(nbytes + 1);
-	    output.write(html);
-	    output[nbytes] = 0x00;
+            // Allocate an extra byte for our buffer for the null terminator.
+            // We can use `unsafeAlloc` here, as we are going to be overwritting
+            // all of the contents ourselves.
+            const nbytes = Buffer.byteLength(html);
+            const output = Buffer.allocUnsafe(nbytes + 1);
+            output.write(html);
+            output[nbytes] = 0x00;
             this.push(output);
             start = end + 1;
             end = chunk.indexOf(0x00, start);
@@ -35,17 +35,17 @@ const katexHtml = new Transform({
         if (start < chunk.length) {
             this.trailingChunk = chunk.subarray(start);
         } else {
-	    this.trailingChunk = Buffer.alloc(0);
-	}
+            this.trailingChunk = Buffer.alloc(0);
+        }
         done();
     },
 
     flush(done) {
-	if (this.trailingChunk.length != 0) {
-	    done("KaTeX worker closing with partially written job: " + trailingChunk.toString());
-	} else {
-	    done();
-	}
+        if (this.trailingChunk.length != 0) {
+            done("KaTeX worker closing with partially written job: " + trailingChunk.toString());
+        } else {
+            done();
+        }
     }
 });
 
