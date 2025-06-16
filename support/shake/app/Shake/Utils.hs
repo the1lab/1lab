@@ -38,13 +38,7 @@ nodeProc
   -- ^ Arguments to pass to the node script.
   -> CreateProcess
 nodeProc path opts =
-  let nodeBinPath =
-#ifdef NODE_BIN_PATH
-        NODE_BIN_PATH
-#else
-        "node_modules/.bin"
-#endif
-      nodeLibPath =
+  let nodeLibPath =
 #ifdef NODE_LIB_PATH
         NODE_LIB_PATH
 #else
@@ -52,7 +46,7 @@ nodeProc path opts =
 #endif
   in
   (Process.proc "node" (path:opts))
-  { Process.env = Just [("PATH", nodeBinPath <> ":" <> "$PATH"), ("NODE_PATH", nodeLibPath)]
+  { Process.env = Just [("NODE_PATH", nodeLibPath)]
   }
 
 -- | Read and decode JSON from a file, tracking it as a dependency.
