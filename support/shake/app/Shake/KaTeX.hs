@@ -169,21 +169,18 @@ katexRules = versioned 3 do
   _ <- versioned 3 $ addOracleCache \(LatexEquation (display, tex)) -> do
     pre <- askOracle (ParsedPreamble ())
     traced "katex" $ withKatexWorker katexPool \KatexWorker{..} -> do
-      -- [HACK: File Separator Control Characters].
+      -- [NOTE: Delimiting KaTeX jobs].
       -- Instead of trying to do some fiddly JSON streaming, we opt to
-      -- use a little known feature of ASCII to delimit our requests.
-      -- The control character 0x1C in ASCII encodes a file-separator,
-      -- which is left up to applications to interpret. We can rely on this never showing up
-      -- in our JSON, so it is safe to use this to delimit requests.
-      let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\FS"
+      -- delimit our requests with null bytes. This lets us avoid having to
+      -- decode to unicode to determine where a job starts and ends, as 0x00 does not
+      -- show up in any multibyte characters.
+      let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\NUL"
       -- Aeson will always encode as utf8, so there is no work required on our end.
       LBS.hPut katexWorkerIn job
       hFlush katexWorkerIn
-      -- We can't use 'LBS.takeWhile (0x1c /=)' here, as the output can contain utf8-encoded
-      -- text. To avoid this, we first decode to utf8.
       bytes <- LBS.hGetContents katexWorkerOut
       -- Make sure to force the output to avoid holding onto the handle buffer for too long.
-      pure $! LT.toStrict $ LT.stripEnd $ LT.takeWhile ('\FS' /=) $ LT.decodeUtf8With T.strictDecode bytes
+      pure $! LT.toStrict $ LT.stripEnd $ LT.decodeUtf8With T.strictDecode $ LBS.takeWhile (0x00 /=) bytes
   pure ()
 
 darkSettings :: Text
