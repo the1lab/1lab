@@ -32,7 +32,7 @@ import Data.Aeson (FromJSON(..), (.:), (.=))
 import Data.Text (Text)
 import Data.Generics
 import Data.Foldable
-
+import Data.IORef
 
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
@@ -85,8 +85,8 @@ getParsedPreamble = askOracle $ ParsedPreamble ()
 data KatexWorker = KatexWorker
   { katexWorkerIn :: Handle
   -- ^ Stdin of the katex-worker process.
-  , katexWorkerOut :: Handle
-  -- ^ Stdout of the katex-worker process.
+  , katexWorkerResults :: IORef [Text]
+  -- ^ Lazily produced stream of HTML chunks from the katex worker.
   , katexProcessHandle :: ProcessHandle
   }
 
@@ -101,6 +101,14 @@ spawnKatexWorker =
     -- more performance by using block buffering over line buffering.
     hSetBuffering katexWorkerIn (BlockBuffering (Just 0x2000))
     hSetBuffering katexWorkerOut (BlockBuffering (Just 0x2000))
+    -- [NOTE: Delimiting KaTeX jobs].
+    -- Instead of trying to do some fiddly JSON streaming, we opt to
+    -- delimit our requests with null bytes. This lets us avoid having to
+    -- decode to unicode to determine where a job starts and ends, as 0x00 does not
+    -- show up in any multibyte characters.
+    bytes <- LBS.hGetContents katexWorkerOut
+    let chunks = LT.toStrict . LT.stripEnd . LT.decodeUtf8With T.strictDecode <$> LBS.split 0x00 bytes
+    katexWorkerResults <- newIORef chunks
     -- We will only ever read/write bytestrings, so we don't need to
     -- worry about setting handle encodings or dealing with newline conversion.
     pure (KatexWorker { .. })
@@ -126,8 +134,7 @@ createKatexWorkerQueue numWorkers = do
     writeChan workers worker
   pure workers
 
--- | Remove a worker from a worker queue for a given job type
--- and run the provided IO action with that worker.
+-- | Remove a worker from a worker queue for a and run the provided IO action with that worker.
 -- Once completed, return the worker to the queue.
 withKatexWorker
   :: Chan KatexWorker
@@ -135,6 +142,34 @@ withKatexWorker
   -> IO a
 withKatexWorker katexWorkerQueue =
   bracket (readChan katexWorkerQueue) (writeChan katexWorkerQueue)
+
+-- | Submit a KaTeX rendering job to a worker.
+submitKatexJob
+  :: KatexWorker
+  -- ^ Katex worker to pass the request to.
+  -> Preamble
+  -- ^ LaTeX preamble.
+  -> LatexEquation
+  -- ^ LaTeX to be rendered.
+  -> IO ()
+submitKatexJob KatexWorker{..} pre (LatexEquation (display, tex)) = do
+  LBS.hPut katexWorkerIn $ Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\NUL"
+  hFlush katexWorkerIn
+
+-- | Await the results of a KaTeX rendering job submitted via @submitKatexJob@.
+-- If the KaTeX worker exited, return @Nothing@. Otherwise,
+-- return a @Just@ containing the result.
+awaitKatexResult
+  :: KatexWorker
+  -- ^ Katex worker we are waiting to respond.
+  -> IO (Maybe Text)
+awaitKatexResult KatexWorker{..} =
+  -- Make sure to force the result text so we don't
+  -- hold onto any portion of the output buffer of the process
+  -- longer than we have to.
+  atomicModifyIORef katexWorkerResults \case
+    [] -> ([], Nothing)
+    ((!r):rs) -> (rs, Just r)
 
 -- | Encode a 'LatexEquation' into a @katex-worker@ job.
 encodeKatexJob :: Bool -> Text -> Aeson.Value
@@ -166,21 +201,16 @@ katexRules = versioned 3 do
     let dark = if bool then darkSettings else mempty
     pure (preambleToLatex pre <> T.pack "\n" <> dark)
 
-  _ <- versioned 3 $ addOracleCache \(LatexEquation (display, tex)) -> do
+  _ <- versioned 3 $ addOracleCache \latex -> do
     pre <- askOracle (ParsedPreamble ())
-    traced "katex" $ withKatexWorker katexPool \KatexWorker{..} -> do
-      -- [NOTE: Delimiting KaTeX jobs].
-      -- Instead of trying to do some fiddly JSON streaming, we opt to
-      -- delimit our requests with null bytes. This lets us avoid having to
-      -- decode to unicode to determine where a job starts and ends, as 0x00 does not
-      -- show up in any multibyte characters.
-      let job = Aeson.encode (encodeKatexJob display (applyPreamble pre tex)) <> "\NUL"
-      -- Aeson will always encode as utf8, so there is no work required on our end.
-      LBS.hPut katexWorkerIn job
-      hFlush katexWorkerIn
-      bytes <- LBS.hGetContents katexWorkerOut
-      -- Make sure to force the output to avoid holding onto the handle buffer for too long.
-      pure $! LT.toStrict $ LT.stripEnd $ LT.decodeUtf8With T.strictDecode $ LBS.takeWhile (0x00 /=) bytes
+    result <-
+      traced "katex" $ withKatexWorker katexPool \katexWorker -> do
+      submitKatexJob katexWorker pre latex
+      awaitKatexResult katexWorker
+    case result of
+      Just html -> pure html
+      Nothing -> fail "KaTeX worker exited unexpectedly."
+
   pure ()
 
 darkSettings :: Text
