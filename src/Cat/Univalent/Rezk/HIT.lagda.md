@@ -331,16 +331,16 @@ Rzk .P.Hom-set x y = hlevel 2
 Rzk .P.id  {x}             = lift (id^ x)
 Rzk .P._∘_ {w} {x} {y} f g = lift (∘^ w x y (f .lower) (g .lower))
 
-Rzk .P.idr {x} {y} (lift f) = ap lift (idr^ x y f) where
+Rzk .P.idr {x} {y} (lift f) = ap lift (idr^ x y f) where abstract
   idr^ : ∀ x y (f : hom^ x y) → ∘^ x x y f (id^ x) ≡ f
   idr^ = elim! λ x y f → idr f
 
-Rzk .P.idl {x} {y} (lift f) = ap lift (idl^ x y f) where
+Rzk .P.idl {x} {y} (lift f) = ap lift (idl^ x y f) where abstract
   idl^ : ∀ x y (f : hom^ x y) → ∘^ x y y (id^ y) f ≡ f
   idl^ = elim! λ x y f → idl f
 
 Rzk .P.assoc {w} {x} {y} {z} (lift f) (lift g) (lift h) =
-  ap lift (assoc^ w x y z f g h) where
+  ap lift (assoc^ w x y z f g h) where abstract
   assoc^ : ∀ w x y z (f : hom^ y z) (g : hom^ x y) (h : hom^ w x)
          → ∘^ w y z f (∘^ w x y g h) ≡ ∘^ w x z (∘^ x y z f g) h
   assoc^ = elim! λ w x y z f g h → assoc f g h
