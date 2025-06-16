@@ -5,7 +5,7 @@ process.stdin.setEncoding('utf8');
 
 // An equation might be split across two chunks
 // of input. If this happens, we store the first
-// part of the equation in `partialEquation`.
+// part of the equation in `partialJob`.
 let partialJob = "";
 
 process.stdin.on('data', (chunk) => {
