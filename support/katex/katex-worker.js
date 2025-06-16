@@ -1,31 +1,52 @@
-#!/usr/bin/env node
+const { Transform } = require('node:stream');
+const { Buffer } = require('node:buffer');
 const katex = require('katex');
 
-process.stdin.setEncoding('utf8');
+// Stream transformer that consumes JSON-encoded job
+// requests delimited by null bytes, and writes
+// HTML responses that are similarly delimited by
+// null bytes.
+// See [NOTE: Delimiting KaTeX jobs] for more information.
+const katexHtml = new Transform({
+    construct(done) {
+        this.trailingChunk = Buffer.alloc(0);
+        done();
+    },
 
-// An equation might be split across two chunks
-// of input. If this happens, we store the first
-// part of the equation in `partialJob`.
-let partialJob = "";
+    transform(chunk, _encoding, done) {
+        chunk = Buffer.concat([this.trailingChunk, chunk]);
+        let start = 0;
+        let end = chunk.indexOf(0x00, start);;
+        while (end !== -1) {
+            const job = JSON.parse(chunk.toString('utf8', start, end));
+            const html = katex.renderToString(job.equation, job.options);
+	    // Allocate an extra byte for our buffer for the null terminator.
+	    // We can use `unsafeAlloc` here, as we are going to be overwritting
+	    // all of the contents ourselves.
+	    const nbytes = Buffer.byteLength(html);
+	    const output = Buffer.allocUnsafe(nbytes + 1);
+	    output.write(html);
+	    output[html.length] = 0x00;
+            this.push(output);
+            start = end + 1;
+            end = chunk.indexOf(0x00, start);
+        }
+        // Handle any incomplete chunks.
+        if (start < chunk.length) {
+            this.trailingChunk = chunk.subarray(start);
+        } else {
+	    this.trailingChunk = Buffer.alloc(0);
+	}
+        done();
+    },
 
-process.stdin.on('data', (chunk) => {
-    // See [HACK: File Separator Control Characters] for
-    // explanation of '\x1C'.
-    const jobs = chunk.split('\x1C');
-    jobs[0] = partialJob + jobs[0];
-    partialJob = jobs.pop() || "";
-    jobs.forEach((job) => {
-	// Instead of trying to catch errors in node and re-report them back
-	// to the haskell side, we take a more laissez-faire approach and
-	// just let the node process die.
-        job = JSON.parse(job);
-        const html = katex.renderToString(job.equation, job.options);
-        process.stdout.write(html + '\x1C');
-    });
-});
-
-process.stdin.on('end', () => {
-    if (partialJob) {
-	console.error("Input ended with non-terminated equation:\n", partialJob);
+    flush(done) {
+	if (this.trailingChunk.length != 0) {
+	    done("KaTeX worker closing with partially written job: " + trailingChunk.toString());
+	} else {
+	    done();
+	}
     }
 });
+
+process.stdin.pipe(katexHtml).pipe(process.stdout);
