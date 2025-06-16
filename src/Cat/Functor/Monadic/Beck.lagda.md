@@ -141,9 +141,9 @@ proof, and any adjunction presenting $T$ will do.
   open is-coequaliser
   algebra-is-coequaliser
     : is-coequaliser C^T {A = TTA} {B = TA} {E = Aalg}
-      mult fold (∫hom A.ν (sym A.ν-mult))
+      mult fold (∫hom A.ν A.ν-mult)
   algebra-is-coequaliser .coequal = ext $
-    A.ν C.∘ T.mult .η _ ≡˘⟨ A.ν-mult ⟩
+    A.ν C.∘ T.mult .η _ ≡⟨ A.ν-mult ⟩
     A.ν C.∘ T.M₁ A.ν    ∎
 ```
 

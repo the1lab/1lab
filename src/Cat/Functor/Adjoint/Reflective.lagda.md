@@ -61,12 +61,10 @@ adjunction
 When this is the case, we refer to the [[left adjoint]] functor $L$ as the
 **reflector**, and $\iota$ exhibits $\cC$ as a **reflective
 subcategory** of $\cD$. Reflective subcategory inclusions are of
-particular importance because they are [monadic functors]: They exhibit
+particular importance because they are [[monadic functors]]: They exhibit
 $\cC$ as the category of algebras for an ([[idempotent|idempotent monad]])
 monad on $\cD$.
 :::
-
-[monadic functors]: Cat.Functor.Adjoint.Monadic.html
 
 ```agda
 is-reflective : F ⊣ G → Type _
@@ -196,7 +194,7 @@ is.
   comp-seso (ob , alg) = F.₀ ob , isom where
     Fo→o : Algebra-hom (R∘L adj) (Comp.₀ (F.₀ ob)) (ob , alg)
     Fo→o .fst = alg .ν
-    Fo→o .snd = sym (alg .ν-mult)
+    Fo→o .snd = alg .ν-mult
 
     o→Fo : Algebra-hom (R∘L adj) (ob , alg) (Comp.₀ (F.₀ ob))
     o→Fo .fst = unit.η _

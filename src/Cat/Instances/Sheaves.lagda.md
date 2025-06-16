@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Instances.Presheaf.Exponentials
+open import Cat.Functor.Equivalence.Properties
 open import Cat.Instances.Sheaf.Limits.Finite
-open import Cat.Functor.Equivalence.Complete
 open import Cat.Instances.Sheaf.Exponentials
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective

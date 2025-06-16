@@ -152,15 +152,15 @@ paper, following the ring laws.
 
   open is-ring-hom
 
-  z-natdiff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
-  z-natdiff x zero = R.intror R.inv-unit
-  z-natdiff zero (suc y) = R.introl refl
-  z-natdiff (suc x) (suc y) = z-natdiff x y ∙ e-tr x y
+  z-nat-diff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
+  z-nat-diff x zero = R.intror R.inv-unit
+  z-nat-diff zero (suc y) = R.introl refl
+  z-nat-diff (suc x) (suc y) = z-nat-diff x y ∙ e-tr x y
 
   z-add : ∀ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y
   z-add (pos x) (pos y) = e-add x y
-  z-add (pos x) (negsuc y) = z-natdiff x (suc y)
-  z-add (negsuc x) (pos y) = z-natdiff y (suc x) ∙ R.+-commutes
+  z-add (pos x) (negsuc y) = z-nat-diff x (suc y)
+  z-add (negsuc x) (pos y) = z-nat-diff y (suc x) ∙ R.+-commutes
   z-add (negsuc x) (negsuc y) =
     R.- (e 1 R.+ e (suc x Nat.+ y))         ≡⟨ ap R.-_ (ap₂ R._+_ refl (e-add (suc x) y) ∙ R.extendl R.+-commutes) ⟩
     R.- (e (suc x) R.+ (e 1 R.+ e y))       ≡⟨ R.a.inv-comm ⟩

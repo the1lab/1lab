@@ -16,7 +16,7 @@ import Cat.Reasoning as Cr
 module Cat.Functor.Adjoint.Kan where
 ```
 
-# Adjoints preserve Kan extensions
+# Adjoints preserve Kan extensions {defines="adjoints-preserve-kan-extensions"}
 
 Let $L \adj R$ be a pair of [[adjoint functors]]. It's well-known that
 right adjoints preserve limits[^rapl], and dually that left adjoints
@@ -65,15 +65,11 @@ module
     {A : Precategory oa ℓa}
     {p : Functor C C'}
     {F : Functor C D}
-    {G : Functor C' D}
-    {eta : F => G F∘ p}
-    (lan : is-lan p F G eta)
     {L : Functor D A} {R : Functor A D}
     (adj : L ⊣ R)
   where
   private
     open _⊣_ adj
-    module l = is-lan lan
     open is-lan
     open _=>_
     module A = Cr A
@@ -81,25 +77,27 @@ module
     module L = Fr L
     module R = Fr R
     module F = Functor F
-    module G = Functor G
     module p = Functor p
 
     LF = L F∘ F
-    LG = L F∘ G
     RL = R F∘ L
     module RL = Functor RL
     module LF = Functor LF
-    module LG = Functor LG
 ```
 -->
 
 ```agda
-  left-adjoint→left-extension : preserves-lan L lan
-  left-adjoint→left-extension = pres where
+  left-adjoint→preserves-lan : preserves-lan p F L
+  left-adjoint→preserves-lan {G} {eta} lan = pres where
 ```
 
 <!--
 ```agda
+    module l = is-lan lan
+    module G = Functor G
+    LG = L F∘ G
+    module LG = Functor LG
+
     fixup : ∀ {M : Functor C' A} → (LF => M F∘ p) → F => (R F∘ M) F∘ p
     fixup α .η x = L-adjunct adj (α .η x)
     fixup {M = M} α .is-natural x y f =
@@ -184,19 +182,18 @@ By duality, right adjoints preserve right extensions.
 module
   _ {oc ℓc oc' ℓc' od ℓd oa ℓa}
     {C : Precategory oc ℓc} {C' : Precategory oc' ℓc'} {D : Precategory od ℓd}
-    {A : Precategory oa ℓa} {p : Functor C C'} {F : Functor C D} {G : Functor C' D}
-    {eps : G F∘ p => F} (ran : is-ran p F G eps) {L : Functor A D} {R : Functor D A}
-    (adj : L ⊣ R)
+    {A : Precategory oa ℓa} {p : Functor C C'} {F : Functor C D}
+    {L : Functor A D} {R : Functor D A} (adj : L ⊣ R)
   where
 ```
 -->
 
 ```agda
-  right-adjoint→right-extension : preserves-ran R ran
-  right-adjoint→right-extension = fixed where
-    pres-lan = left-adjoint→left-extension
-      (is-ran→is-co-lan _ _ ran)
+  right-adjoint→preserves-ran : preserves-ran p F R
+  right-adjoint→preserves-ran {G} {eps} ran = fixed where
+    pres-lan = left-adjoint→preserves-lan
       (opposite-adjunction adj)
+      (is-ran→is-co-lan _ _ ran)
 
     module p = is-lan pres-lan
     open is-ran

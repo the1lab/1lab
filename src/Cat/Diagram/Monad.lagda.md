@@ -78,7 +78,7 @@ associativity laws exactly analogous to those of a monoid.
       μ-assoc : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
 ```
 
-# Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
+# Algebras over a monad {defines="monad-algebra algebra-over-a-monad algebras-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the
@@ -107,7 +107,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 
 ```agda
       ν-unit : ν C.∘ η ob ≡ C.id
-      ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ μ ob
+      ν-mult : ν C.∘ μ ob ≡ ν C.∘ M₁ ν
 ```
 
 <!--
@@ -254,7 +254,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {M : Monad-on F} wher
 
 By projecting the underlying object of the algebras, and the underlying
 morphisms of the homomorphisms between them, we can define a functor
-from `Eilenberg-Moore`{.Agda} back to the underlying category:
+from `Eilenberg-Moore`{.Agda} back to the underlying category.
+In prose, we denote this functor as $U : \cC^M \to \cC$.
 
 ```agda
   Forget-EM : Functor (Eilenberg-Moore M) C
@@ -340,7 +341,7 @@ become those of the $M$-action.
   Free-EM : Functor C (Eilenberg-Moore M)
   Free-EM .F₀ A .fst = M₀ A
   Free-EM .F₀ A .snd .ν = μ A
-  Free-EM .F₀ A .snd .ν-mult = μ-assoc
+  Free-EM .F₀ A .snd .ν-mult = sym μ-assoc
   Free-EM .F₀ A .snd .ν-unit = μ-unitl
 ```
 
@@ -383,7 +384,7 @@ $\cC^M$.
   Free-EM⊣Forget-EM .unit =
     NT M.η M.unit.is-natural
   Free-EM⊣Forget-EM .counit =
-    NT (λ x → ∫hom (x .snd .ν) (sym (x .snd .ν-mult)))
+    NT (λ x → ∫hom (x .snd .ν) (x .snd .ν-mult))
       (λ x y f → ext (sym (f .snd)))
   Free-EM⊣Forget-EM .zig = ext μ-unitr
   Free-EM⊣Forget-EM .zag {x} = x .snd .ν-unit
@@ -456,7 +457,7 @@ Eilenberg-Moore category can be restricted to the Kleisli category.
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit ._=>_.η = η
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit .is-natural = unit.is-natural
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit ._=>_.η ((X , α) , free) =
-    ∫hom (α .ν) (sym (α .ν-mult))
+    ∫hom (α .ν) (α .ν-mult)
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit .is-natural _ _ f =
     ext (sym (f .snd))
   Free-Kleisli⊣Forget-Kleisli ._⊣_.zig = ext μ-unitr

@@ -140,6 +140,12 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
 open is-contr public
 ```
 
+<!--
+```agda
+{-# INLINE contr #-}
+```
+-->
+
 We can now write down the definition of `is-hlevel`{.Agda}, as a
 function of the type *and* the specific level. Note that, even though
 that being a proposition is equivalent to having contractible identity

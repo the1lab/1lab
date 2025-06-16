@@ -9,6 +9,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Monad.Relative
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
@@ -457,7 +458,7 @@ the algebraically free monad via extension along $\mathrm{fold}$.
     lift-alg {a = a} α .ν = fold α
     lift-alg {a = a} α .ν-unit = zag
     lift-alg {a = a} α .ν-mult =
-      ap fst $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
+      ap fst $ sym $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
 ```
 
 Likewise, we can extract an $F$-algebra out of a monad algebra by
@@ -499,7 +500,7 @@ clear, but proving it involves quite a bit of algebra.
     alg* {a = a} α .snd =
       α .ν ∘ roll a                                            ≡⟨ intror (F.annihilate zag) ⟩
       (α .ν ∘ roll a) ∘ (F.₁ (mult a) ∘ F.₁ (unit.η _))        ≡⟨ pull-inner (sym $ fold-roll (roll a)) ⟩
-      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (sym $ α .ν-mult) ⟩
+      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (α .ν-mult) ⟩
       α .ν ∘ Free.₁ (α .ν) .fst ∘ roll (F* a) ∘ F.₁ (unit.η _) ≡⟨ extend-inner (map*-roll (α .ν)) ⟩
       α .ν ∘ roll a ∘ F.₁ (map* (α .ν)) ∘ F.₁ (unit.η _)       ≡⟨ centralizer (F.weave (sym (unit.is-natural _ _ _))) ⟩
       α .ν ∘ (roll a ∘ F.₁ (unit.η _)) ∘ F.₁ (α .ν)            ≡⟨ assoc _ _ _ ⟩
@@ -635,3 +636,36 @@ if $F$ lacks any free algebras.
     Free-alg.fold β f FAlg.∘ Free-alg.fold α g   ≡˘⟨ Free-alg.fold-natural α (Free-alg.fold β f) g ⟩
     Free-alg.fold α (Free-alg.fold β f .fst ∘ g) ∎
 ```
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} where
+  private
+    module C = Cat.Reasoning C
+    module F = Cat.Functor.Reasoning F
+
+  open ∫Hom
+
+  instance
+    Extensional-F-Algebra-Hom
+      : ∀ {ℓr} {(a , A) : FAlg.Ob F} {(b , B) : FAlg.Ob F}
+      → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
+      → Extensional (FAlg.Hom F (a , A) (b , B)) ℓr
+    Extensional-F-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
+      (λ p → ∫Hom-path (F-Algebras F) p prop!) sa
+
+  Forget-algebra-is-conservative : is-conservative (πᶠ (F-Algebras F))
+  Forget-algebra-is-conservative {A , α} {B , β} {f} f-inv =
+    FAlg.make-invertible F f-alg-inv (ext invl) (ext invr)
+    where
+      open C.is-invertible f-inv
+
+      f-alg-inv : FAlg.Hom F (B , β) (A , α)
+      f-alg-inv .fst = inv
+      f-alg-inv .snd =
+        inv C.∘ β                              ≡⟨ (C.refl⟩∘⟨ C.intror (F.annihilate invl)) ⟩
+        inv C.∘ β C.∘ F.₁ (f .fst) C.∘ F.₁ inv ≡⟨ (C.refl⟩∘⟨ C.extendl (sym (f .snd))) ⟩
+        inv C.∘ f .fst C.∘ α C.∘ F.₁ inv       ≡⟨ C.cancell invr ⟩
+        α C.∘ F.₁ inv                          ∎
+```
+-->

@@ -96,9 +96,8 @@ _*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 -- The requirement of having a proper match means we can't use a record
 -- (even a no-eta pattern record), since Agda doesn't count those as
 -- proper. Therefore, we have to use a data type.
-private
-  unℚ : ℚ → ⌞ L.S⁻¹R ⌟
-  unℚ (inc x) = x
+unℚ : ℚ → ⌞ L.S⁻¹R ⌟
+unℚ (inc x) = x
 ```
 -->
 
