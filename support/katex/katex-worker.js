@@ -26,7 +26,7 @@ const katexHtml = new Transform({
 	    const nbytes = Buffer.byteLength(html);
 	    const output = Buffer.allocUnsafe(nbytes + 1);
 	    output.write(html);
-	    output[html.length] = 0x00;
+	    output[nbytes] = 0x00;
             this.push(output);
             start = end + 1;
             end = chunk.indexOf(0x00, start);
