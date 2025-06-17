@@ -252,7 +252,6 @@ is-split-surjective→is-surjective f-split-surj b = do
 Note that we do not have a converse to this constructively: the statement that
 every surjective function between [[sets]] splits is [[equivalent to the axiom of choice|axiom-of-choice]]!
 
-
 ## Split surjective functions and sections
 
 The type of surjective splittings of a function $f : A \to B$ is equivalent
@@ -304,6 +303,7 @@ Like their non-split counterparts, split surjective functions are closed under c
 <details>
 <summary> The proof is essentially identical to the non-split case.
 </summary>
+
 ```agda
 ∘-surjective-splitting {f = f} f-split g-split c =
   let (f*c , p) = f-split c
@@ -354,6 +354,7 @@ is-split-surjective-cancelr
 <details>
 <summary>These proofs are also essentially identical to the non-split versions.
 </summary>
+
 ```agda
 surjective-splitting-cancelr {g = g} fg-split c =
   let (fg*c , p) = fg-split c
