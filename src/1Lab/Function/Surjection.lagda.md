@@ -205,10 +205,11 @@ look at functions into [[contractible]] types: if $B$ is contractible,
 then the type of surjective splittings of a function $f : A \to B$ is equivalent to $A$.
 
 ```agda
-cod-contr→surjective-splitting≃dom
-  : (f : A → B)
-  → is-contr B
-  → surjective-splitting f ≃ A
+private
+  split-surjective-is-structure
+    : (f : A → B)
+    → is-contr B
+    → surjective-splitting f ≃ A
 ```
 
 First, recall that dependent functions $(a : A) \to B(a)$ out of a contractible type are
@@ -217,24 +218,10 @@ equivalent to an element of the fibre of $f$ at the centre of contraction of $B$
 the type of paths in $B$ is also contractible, so that fibre is equivalent to $A$.
 
 ```agda
-cod-contr→surjective-splitting≃dom {A = A} f B-contr =
-  (∀ b → fibre f b)         ≃⟨ Π-contr-eqv B-contr ⟩
-  fibre f (B-contr .centre) ≃⟨ Σ-contract (λ _ → Path-is-hlevel 0 B-contr) ⟩
-  A                         ≃∎
-```
-
-In contrast, if $B$ is contractible, then $f : A \to B$ is surjective if and only
-if $A$ is merely inhabited.
-
-```agda
-cod-contr→is-surjective-iff-dom-inhab
-  : (f : A → B)
-  → is-contr B
-  → is-surjective f ≃ ∥ A ∥
-cod-contr→is-surjective-iff-dom-inhab {A = A} f B-contr =
-  (∀ b → ∥ fibre f b ∥) ≃⟨ unique-choice B-contr ⟩
-  ∥ (∀ b → fibre f b) ∥ ≃⟨ ∥-∥-ap (cod-contr→surjective-splitting≃dom f B-contr) ⟩
-  ∥ A ∥                 ≃∎
+  split-surjective-is-structure {A = A} f B-contr =
+    (∀ b → fibre f b)         ≃⟨ Π-contr-eqv B-contr ⟩
+    fibre f (B-contr .centre) ≃⟨ Σ-contract (λ _ → Path-is-hlevel 0 B-contr) ⟩
+    A                         ≃∎
 ```
 
 In light of this, we provide the following definition.
