@@ -1076,9 +1076,6 @@ x ≃⟨⟩ x≡y = x≡y
 
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
 x ≃∎ = id≃
-
-begin-≃⁻¹_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → B ≃ A
-begin-≃⁻¹_ = _e⁻¹
 ```
 
 <!--
@@ -1086,7 +1083,6 @@ begin-≃⁻¹_ = _e⁻¹
 infixr 30 _∙e_
 infix 31 _e⁻¹
 
-infix 1 begin-≃⁻¹_
 infixr 2 ≃⟨⟩-syntax _≃⟨⟩_ _≃˘⟨_⟩_
 infix  3 _≃∎
 infix 21 _≃_

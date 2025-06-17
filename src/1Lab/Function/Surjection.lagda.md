@@ -183,7 +183,7 @@ definition of $f$ being surjective.
 
 ```agda
 surjective-iff-image-equiv {A = A} {B = B} {f = f} =
-  begin-≃⁻¹
+  Equiv.inverse $
     is-equiv fst                            ≃⟨ is-equiv≃fibre-is-contr ⟩
     (∀ b → is-contr (fibre fst b))          ≃⟨ Π-cod≃ (λ b → is-hlevel-ap 0 (Fibre-equiv _ _)) ⟩
     (∀ b → is-contr (∃[ a ∈ A ] (f a ≡ b))) ≃⟨ Π-cod≃ (λ b → is-prop→is-contr-iff-inhabited (hlevel 1)) ⟩
