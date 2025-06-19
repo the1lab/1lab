@@ -36,7 +36,7 @@ private variable
 :::{.definition #graph}
 A **graph** (really, an $(o, \ell)$-graph^[and, even more pedantically,
 a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \Sets_o$ of
-**vertices** and, for each pair of elements $x, y : V$, a set of
+**nodes** and, for each pair of elements $x, y : V$, a set of
 **edges** $E(x, y) : \Sets_\ell$ from $x$ to $y$. That's it: a set $V$
 and a family of sets over $V \times V$.
 :::
@@ -46,10 +46,11 @@ and a family of sets over $V \times V$.
 record Graph (o ℓ : Level) : Type (lsuc o ⊔ lsuc ℓ) where
   no-eta-equality
   field
-    Vertex : Type o
-    Edge : Vertex → Vertex → Type ℓ
-    Vertex-is-set : is-set Vertex
-    Edge-is-set : ∀ {x y} → is-set (Edge x y)
+    Node : Type o
+    Edge : Node → Node → Type ℓ
+
+    Node-set : is-set Node
+    Edge-set : ∀ {x y} → is-set (Edge x y)
 ```
 
 <!--
@@ -59,17 +60,17 @@ open hlevel-projection
 
 instance
   Underlying-Graph : Underlying (Graph o ℓ)
-  Underlying-Graph = record { ⌞_⌟ = Graph.Vertex }
+  Underlying-Graph = record { ⌞_⌟ = Graph.Node }
 
-  hlevel-proj-vertex : hlevel-projection (quote Graph.Vertex)
-  hlevel-proj-vertex .has-level = quote Graph.Vertex-is-set
-  hlevel-proj-vertex .get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-vertex .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
+  hlevel-proj-node : hlevel-projection (quote Graph.Node)
+  hlevel-proj-node .has-level = quote Graph.Node-set
+  hlevel-proj-node .get-level _ = pure (quoteTerm (suc (suc zero)))
+  hlevel-proj-node .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
   {-# CATCHALL #-}
-  hlevel-proj-vertex .get-argument _ = typeError []
+  hlevel-proj-node .get-argument _ = typeError []
 
   hlevel-proj-edge : hlevel-projection (quote Graph.Edge)
-  hlevel-proj-edge .has-level = quote Graph.Edge-is-set
+  hlevel-proj-edge .has-level = quote Graph.Edge-set
   hlevel-proj-edge .get-level _ = pure (quoteTerm (suc (suc zero)))
   hlevel-proj-edge .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
   {-# CATCHALL #-}
@@ -78,7 +79,7 @@ instance
 -->
 
 :::{.definition #graph-homomorphism}
-A **graph homomorphism** $G \to H$ consists of a mapping of vertices
+A **graph homomorphism** $G \to H$ consists of a mapping of nodes
 $f_v : G \to H$, along with a mapping of edges $f_e : G(x, y) \to H(f_v(x), f_v(y))$.
 :::
 
@@ -87,8 +88,8 @@ $f_v : G \to H$, along with a mapping of edges $f_e : G(x, y) \to H(f_v(x), f_v(
 record Graph-hom (G : Graph o ℓ) (H : Graph o' ℓ') : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
   no-eta-equality
   field
-    vertex : ⌞ G ⌟ → ⌞ H ⌟
-    edge : ∀ {x y} → G .Edge x y → H .Edge (vertex x) (vertex y)
+    node : ⌞ G ⌟ → ⌞ H ⌟
+    edge : ∀ {x y} → G .Edge x y → H .Edge (node x) (node y)
 ```
 
 <!--
@@ -100,45 +101,49 @@ open Graph-hom
 
 unquoteDecl H-Level-Graph-hom = declare-record-hlevel 2 H-Level-Graph-hom (quote Graph-hom)
 
+instance
+  Funlike-Graph-hom : Funlike (Graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
+  Funlike-Graph-hom .Funlike._·_ = node
+
 Graph-hom-pathp
   : {G : I → Graph o ℓ} {H : I → Graph o' ℓ'}
   → {f : Graph-hom (G i0) (H i0)} {g : Graph-hom (G i1) (H i1)}
-  → (p0 : ∀ (x : ∀ i → G i .Vertex)
-          → PathP (λ i → H i .Vertex)
-              (f .vertex (x i0)) (g .vertex (x i1)))
-  → (p1 : ∀ {x y : ∀ i → G i .Vertex}
+  → (p0 : ∀ (x : ∀ i → G i .Node)
+          → PathP (λ i → H i .Node)
+              (f · x i0) (g · x i1))
+  → (p1 : ∀ {x y : ∀ i → G i .Node}
           → (e : ∀ i → G i .Edge (x i) (y i))
           → PathP (λ i → H i .Edge (p0 x i) (p0 y i))
               (f .edge (e i0)) (g .edge (e i1)))
   → PathP (λ i → Graph-hom (G i) (H i)) f g
 Graph-hom-pathp {G = G} {H = H} {f = f} {g = g} p0 p1 = pathp where
-  vertex* : I → Type _
-  vertex* i = (G i) .Vertex
+  node* : I → Type _
+  node* i = (G i) .Node
 
-  edge* : (i : I) → vertex* i → vertex* i → Type _
+  edge* : (i : I) → node* i → node* i → Type _
   edge* i x y = (G i) .Edge x y
 
   pathp : PathP (λ i → Graph-hom (G i) (H i)) f g
-  pathp i .vertex x = p0 (λ j → coe vertex* i j x) i
+  pathp i .node x = p0 (λ j → coe node* i j x) i
   pathp i .edge {x} {y} e =
-    p1 {x = λ j → coe vertex* i j x} {y = λ j → coe vertex* i j y}
-      (λ j → coe (λ j → edge* j (coe vertex* i j x) (coe vertex* i j y)) i j (e* j)) i
+    p1 {x = λ j → coe node* i j x} {y = λ j → coe node* i j y}
+      (λ j → coe (λ j → edge* j (coe node* i j x) (coe node* i j y)) i j (e* j)) i
     where
 
-      x* y* : (j : I) → vertex* i
-      x* j = coei→i vertex* i x (~ j ∨ i)
-      y* j = coei→i vertex* i y (~ j ∨ i)
+      x* y* : (j : I) → node* i
+      x* j = coei→i node* i x (~ j ∨ i)
+      y* j = coei→i node* i y (~ j ∨ i)
 
-      e* : (j : I) → edge* i (coe vertex* i i x) (coe vertex* i i y)
+      e* : (j : I) → edge* i (coe node* i i x) (coe node* i i y)
       e* j =
-        comp (λ j → edge* i (x* j) (y* j)) ((~ i ∧ ~ j) ∨ (i ∧ j)) λ where
+        comp (λ j → edge* i (x* j) (y* j)) (I-eq i j) λ where
           k (k = i0) → e
           k (i = i0) (j = i0) → e
           k (i = i1) (j = i1) → e
 
 Graph-hom-path
   : {f g : Graph-hom G H}
-  → (p0 : ∀ x → f .vertex x ≡ g .vertex x)
+  → (p0 : ∀ x → f .node x ≡ g .node x)
   → (p1 : ∀ {x y} → (e : Graph.Edge G x y) → PathP (λ i → Graph.Edge H (p0 x i) (p0 y i)) (f .edge e) (g .edge e))
   → f ≡ g
 Graph-hom-path {G = G} {H = H} p0 p1 =
@@ -146,12 +151,8 @@ Graph-hom-path {G = G} {H = H} p0 p1 =
     (λ x i → p0 (x i) i)
     (λ e i → p1 (e i) i)
 
-instance
-  Funlike-Graph-hom : Funlike (Graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
-  Funlike-Graph-hom .Funlike._·_ = vertex
-
 Graph-hom-id : {G : Graph o ℓ} → Graph-hom G G
-Graph-hom-id .vertex v = v
+Graph-hom-id .node v = v
 Graph-hom-id .edge e = e
 
 ```
@@ -165,7 +166,7 @@ Graphs o ℓ .Precategory.Ob = Graph o ℓ
 Graphs o ℓ .Precategory.Hom = Graph-hom
 Graphs o ℓ .Precategory.Hom-set _ _ = hlevel 2
 Graphs o ℓ .Precategory.id = Graph-hom-id
-Graphs o ℓ .Precategory._∘_ f g .vertex v = f .vertex (g .vertex v)
+Graphs o ℓ .Precategory._∘_ f g .node v = f .node (g .node v)
 Graphs o ℓ .Precategory._∘_ f g .edge e = f .edge (g .edge e)
 Graphs o ℓ .Precategory.idr _ = Graph-hom-path (λ _ → refl) (λ _ → refl)
 Graphs o ℓ .Precategory.idl _ = Graph-hom-path (λ _ → refl) (λ _ → refl)
@@ -183,44 +184,42 @@ module _ {o ℓ : Level} where
     module h = Graphs.is-invertible inv
 
     from : ∀ {s t} → y .Edge (h · s) (h · t) → x .Edge s t
-    from e = subst₂ (x .Edge) (ap vertex h.invr · _) (ap vertex h.invr · _) (h.inv .edge e)
+    from e = subst₂ (x .Edge) (ap node h.invr · _) (ap node h.invr · _) (h.inv .edge e)
 
     ir : is-right-inverse from (h .edge)
     ir e =
-      let
-        lemma = J₂
-          (λ s'' t'' p q → ∀ e
-            → h .edge (subst₂ (x .Edge) p q e)
-            ≡ subst₂ (y .Edge) (ap· h p) (ap· h q) (h .edge e))
-          (λ e → ap (h .edge) (transport-refl _) ∙ sym (transport-refl _))
-      in lemma _ _ (h.inv .edge e)
-      ∙∙ ap₂ (λ p q → subst₂ (y .Edge) {b' = h .vertex t} p q (h .edge (h.inv .edge e))) prop! prop!
-      ∙∙ from-pathp (λ i → h.invl i .edge e)
+      h .edge (subst₂ (x .Edge) _ _ (h.inv .edge e))
+        ≡˘⟨ subst₂-fibrewise {C' = λ a b → y .Edge (h .node a) (h .node b)} (λ _ _ → h .edge) _ _ _ ⟩
+      subst₂ (y .Edge) _ _ (h .edge (h.inv .edge e))
+        ≡⟨ ap₂ (λ a b → subst₂ (y .Edge) {b' = h .node t} a b (h .edge (h.inv .edge e))) prop! prop! ⟩
+      subst₂ (y .Edge) _ _ (h .edge (h.inv .edge e))
+        ≡⟨ from-pathp (λ i → h.invl i .edge e) ⟩
+      e ∎
 
     il : is-left-inverse from (h .edge)
     il e = from-pathp λ i → h.invr i .edge e
 
   Graph-path
     : ∀ {x y : Graph o ℓ}
-    → (p : x .Vertex ≡ y .Vertex)
+    → (p : x .Node ≡ y .Node)
     → (PathP (λ i → p i → p i → Type ℓ) (x .Edge) (y .Edge))
     → x ≡ y
-  Graph-path {x = x} {y} p q i .Vertex = p i
+  Graph-path {x = x} {y} p q i .Node = p i
   Graph-path {x = x} {y} p q i .Edge = q i
-  Graph-path {x = x} {y} p q i .Vertex-is-set = is-prop→pathp
-    (λ i → is-hlevel-is-prop {A = p i} 2) (x .Vertex-is-set) (y .Vertex-is-set) i
-  Graph-path {x = x} {y} p q i .Edge-is-set {s} {t} =
+  Graph-path {x = x} {y} p q i .Node-set = is-prop→pathp
+    (λ i → is-hlevel-is-prop {A = p i} 2) (x .Node-set) (y .Node-set) i
+  Graph-path {x = x} {y} p q i .Edge-set {s} {t} =
     is-prop→pathp
       (λ i → Π-is-hlevel 1 λ x → Π-is-hlevel 1 λ y → is-hlevel-is-prop {A = q i x y} 2)
-      (λ a b → x .Edge-is-set {a} {b}) (λ a b → y .Edge-is-set {a} {b}) i s t
+      (λ a b → x .Edge-set {a} {b}) (λ a b → y .Edge-set {a} {b}) i s t
 
   graph-path : ∀ {x y : Graph o ℓ} (h : x Graphs.≅ y) → x ≡ y
   graph-path {x = x} {y = y} h = Graph-path (ua v) (λ i → E i ) module graph-path where
     module h = Graphs._≅_ h
     v : ⌞ x ⌟ ≃ ⌞ y ⌟
     v = record
-      { fst = h.to .vertex
-      ; snd = is-iso→is-equiv (iso (h.from .vertex) (happly (ap vertex h.invl)) (happly (ap vertex h.invr)))
+      { fst = h.to .node
+      ; snd = is-iso→is-equiv (iso (h.from .node) (happly (ap node h.invl)) (happly (ap node h.invr)))
       }
 
     E : (i : I) → ua v i → ua v i → Type ℓ
@@ -238,10 +237,10 @@ In particular, $\Graphs$ is a [[univalent category]].
   Graphs-is-category .to-path-over {a} {b} p = Graphs.≅-pathp _ _ $ Graph-hom-pathp pv pe where
     open graph-path p
 
-    pv : (h : I → a .Vertex) → PathP (λ i → ua v i) (h i0) (h.to .vertex (h i1))
-    pv h i = ua-glue v i (λ { (i = i0) → h i }) (inS (h.to .vertex (h i)))
+    pv : (h : I → a .Node) → PathP (λ i → ua v i) (h i0) (h.to .node (h i1))
+    pv h i = ua-glue v i (λ { (i = i0) → h i }) (inS (h.to .node (h i)))
 
-    pe : {x y : I → a .Vertex} (e : ∀ i → a .Edge (x i) (y i))
+    pe : {x y : I → a .Node} (e : ∀ i → a .Edge (x i) (y i))
        → PathP (λ i → graph-path p i .Edge (pv x i) (pv y i)) (e i0) (h.to .edge (e i1))
     pe {x} {y} e i = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS (h.to .edge (e i)))
 ```
@@ -260,7 +259,7 @@ A graph $(V, E)$ may equivalently be seen as a diagram
 
 of sets.
 
-That is, a graph $G$^[whose edges and vertices live in the same
+That is, a graph $G$^[whose edges and nodes live in the same
 universe] is the same as functor from the [[walking parallel arrows]]
 category to $\Sets$. Furthermore, presheaves and functors to $\Sets$ are
 equivalent as this category is self-dual.
@@ -269,12 +268,12 @@ equivalent as this category is self-dual.
 ```agda
   graph→presheaf : Functor (Graphs o ℓ) (PSh (o ⊔ ℓ) ·⇇·)
   graph→presheaf .F₀ G =
-    Fork {a = el! $ Σ[ s ∈ G .Vertex ] Σ[ t ∈ G .Vertex ] G .Edge s t }
+    Fork {a = el! $ Σ[ s ∈ G ] Σ[ t ∈ G ] G .Edge s t }
          {el! $ Lift ℓ ⌞ G ⌟}
          (lift ⊙ fst)
          (lift ⊙ fst ⊙ snd)
   graph→presheaf .F₁ f =
-    Fork-nt {u = λ (s , t , e) → f .vertex s , f .vertex t , f .edge e }
+    Fork-nt {u = λ (s , t , e) → f .node s , f .node t , f .edge e }
             {v = λ { (lift v) → lift (f · v) } } refl refl
   graph→presheaf .F-id = Nat-path λ { true → refl ; false → refl }
   graph→presheaf .F-∘ G H = Nat-path λ { true → refl ; false → refl }
@@ -282,7 +281,7 @@ equivalent as this category is self-dual.
   g→p-is-ff : is-fully-faithful graph→presheaf
   g→p-is-ff {x = x} {y = y} = is-iso→is-equiv (iso from ir il) where
     from : graph→presheaf · x => graph→presheaf · y → Graph-hom x y
-    from h .vertex v = h .η true (lift v) .lower
+    from h .node v = h .η true (lift v) .lower
     from h .edge e =
       let
         (s' , t' , e') = h .η false (_ , _ , e)
@@ -310,10 +309,10 @@ private module _ {ℓ : Level} where
     module F = Functor F
 
     g : Graph ℓ ℓ
-    g .Vertex = ⌞ F · true ⌟
+    g .Node = ⌞ F · true ⌟
     g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ false e ≡ s × F.₁ true e ≡ d
-    g .Vertex-is-set = hlevel 2
-    g .Edge-is-set = hlevel 2
+    g .Node-set = hlevel 2
+    g .Edge-set   = hlevel 2
 
   open is-precat-iso
   open is-iso
@@ -375,19 +374,19 @@ Thus, $\Graphs$ are presheaves and are thereby a [[topos]].
 
 ## The underlying graph of a strict category {defines="underlying-graph underlying-graph-functor"}
 
-Note that every [[strict category]] has an underlying graph, where
-the vertices are given by objects, and edges by morphisms. Moreover,
-functors between strict categories give rise to graph homomorphisms
-between underlying graphs. This gives rise to a functor from the
-[[category of strict categories]] to the category of graphs.
+Note that every [[strict category]] has an underlying graph, where the
+nodes are given by objects, and edges by morphisms. Moreover, functors
+between strict categories give rise to graph homomorphisms between
+underlying graphs. This gives rise to a functor from the [[category of
+strict categories]] to the category of graphs.
 
 ```agda
 Strict-cats↪Graphs : Functor (Strict-cats o ℓ) (Graphs o ℓ)
-Strict-cats↪Graphs .F₀ (C , C-strict) .Vertex = Precategory.Ob C
+Strict-cats↪Graphs .F₀ (C , C-strict) .Node = Precategory.Ob C
 Strict-cats↪Graphs .F₀ (C , C-strict) .Edge = Precategory.Hom C
-Strict-cats↪Graphs .F₀ (C , C-strict) .Vertex-is-set = C-strict
-Strict-cats↪Graphs .F₀ (C , C-strict) .Edge-is-set = Precategory.Hom-set C _ _
-Strict-cats↪Graphs .F₁ F .vertex = F .F₀
+Strict-cats↪Graphs .F₀ (C , C-strict) .Node-set = C-strict
+Strict-cats↪Graphs .F₀ (C , C-strict) .Edge-set = hlevel 2
+Strict-cats↪Graphs .F₁ F .node = F .F₀
 Strict-cats↪Graphs .F₁ F .edge = F .F₁
 Strict-cats↪Graphs .F-id = Graph-hom-path (λ _ → refl) (λ _ → refl)
 Strict-cats↪Graphs .F-∘ F G = Graph-hom-path (λ _ → refl) (λ _ → refl)
@@ -400,6 +399,6 @@ with extra properties.
 Strict-cats↪Graphs-faithful : is-faithful (Strict-cats↪Graphs {o} {ℓ})
 Strict-cats↪Graphs-faithful p =
   Functor-path
-    (λ x i → p i .vertex x)
+    (λ x i → p i .node x)
     (λ e i → p i .edge e)
 ```

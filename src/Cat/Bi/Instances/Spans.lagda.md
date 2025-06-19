@@ -25,7 +25,7 @@ open C
 
 Let $\cC$ be a [precategory]. By a span in $\cC$ (from an object
 $A : \cC$ to an object $B : \cC$), we mean a diagram of the form
-$A \ot C \to B$. Note that the "vertex" of this span, the object $C$, is
+$A \ot C \to B$. Note that the "apex" of this span, the object $C$, is
 part of the data, so that the collection of "spans in $\cC$" will not
 be [a set] (unless $\cC$ is [strict]) --- so we can not construct a
 category where $\hom(a,b)$ is the collection of spans from $a$ to $b$.
@@ -35,7 +35,7 @@ category where $\hom(a,b)$ is the collection of spans from $a$ to $b$.
 [strict]: Cat.Instances.StrictCat.html
 
 However, we can make spans in $\cC$ the _objects_ of a category, and
-the hom-sets are the maps in $\cC$ between the vertices which
+the hom-sets are the maps in $\cC$ between the apices which
 "commute with the legs". Diagrammatically, a map between spans is the
 dashed line in
 
@@ -95,7 +95,7 @@ Span-hom-path {x = x} {y} {f} {g} p i .right j =
 -->
 
 The category $\Spans_\cC(A, B)$ of spans between $A$ and $B$ admits a
-[[faithful functor]] to $\cC$ (projecting the vertex and the "middle
+[[faithful functor]] to $\cC$ (projecting the apex and the "middle
 map", respectively), so that equality of maps of spans can be compared
 at the level of maps in $\cC$.
 
