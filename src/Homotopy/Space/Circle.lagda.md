@@ -213,9 +213,17 @@ promised above. Note that, while this is a path type, both of the
 endpoints are fixed (here, to be constructors), so we can not directly
 use path induction. Instead, we will mimic the construction of
 [[induction from initiality]], turning our induction methods into a
-*total algebra* and then fixing up its type to get what we want.
-However, since we do not have initiality, we'll have to replace the
-coherence with something handcrafted.
+*total algebra* $\sum_{x : \Omega S^1} P(x)$, which can be mapped into
+universally.
+
+Applying the universal map at $l : \Omega S^1$ then gives us a pair of
+an index $l' : \Omega S^1$ and a proof in $P(l')$. If we have a proper
+initial object, we could then show that the composite
+$$\Omega S^1 \to \left(\sum_{x : \Omega S^1} P(x)\right) \xto{\pi_1} \Omega S^1$$
+which defines $l'$ is an algebra map $\Omega S^1 \to \Omega S^1$, so it
+must be the identity; thus $l' = l$ and we have the desired $P(l)$.
+Here, however, we're trying to *show* initiality, so we'll need a
+hand-crafted coherence.
 
 We note that the induction methods for `ΩS¹-elim`{.Agda} fit together
 into a basepoint and auto-equivalence of the type $\sum_{l : \Omega S^1}
