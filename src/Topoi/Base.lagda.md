@@ -194,7 +194,7 @@ category is a _directed multigraph_, and maps between presheaves
 _preserve adjacency_.
 
 Our statement about "gluing primitive shapes" now becomes the rather
-pedestrian statement "graphs are made up of vertices and edges". For
+pedestrian statement "graphs are made up of nodes and edges". For
 instance, the graph $\bull \to \bull \to \bull$ can be considered as a
 disjoint union of two edges, which is then glued together in a way such
 that the target of the first is the source of the second. The maps $s, t
