@@ -20,6 +20,14 @@ open import Data.Int
 module Homotopy.Space.Circle where
 ```
 
+<!--
+```agda
+private variable
+  ℓ ℓ' : Level
+  X : Type ℓ
+```
+-->
+
 # Spaces: The circle {defines="circle"}
 
 The first example of nontrivial space one typically encounters when
@@ -113,165 +121,194 @@ always-loop = S¹-elim loop (double-connection loop loop)
 
 ## Fundamental group {defines="loop-space-of-the-circle"}
 
-We now calculate the loop space of the circle, relative to an
-_arbitrary_ implementation of the integers: any type that satisfies
-their type-theoretic universal property. We call this a _HoTT take_: the
-integers are the homotopy-initial space with a point and an
-automorphism. What we'd like to do is prove that the loop space of the
-circle is _also_ an implementation of the integers, but it's non-trivial
-to show that it is a set _directly_.
+We will now calculate that the first [[loop space]] of the circle at the
+basepoint is *a* type of integers, i.e. it satisfies the [[universal
+property of the integers]]. First, we generalise the construction of
+`möbius`{.Agda} to turn equivalence on an arbitrary type into a type
+family over `S¹`{.Agda}. Transport over this family will be the
+universal map $\Omega S^1 \to X$ associated with an equivalence $e : X
+\simeq X$ and basepoint $x_0 : X$.
 
 ```agda
-module S¹Path {ℤ} (univ : Integers ℤ) where
-  open Integers univ
+equiv→family : X ≃ X → S¹ → Type _
+equiv→family {X = X} eqv base = X
+equiv→family eqv (loop i)     = ua eqv i
 ```
 
-We start by defining a type family that we'll later find out is the
-_universal cover_ of the circle. For now, it serves a humbler purpose: A
-value in $\rm{Cover}(x)$ gives a concrete representation to a path
-$\rm{base} \equiv x$ in the circle. We want to show that $(\rm{base}
-\equiv \rm{base}) \simeq \bb{Z}$, so we set the fibre over the basepoint
-to be the integers:
+We will later need the "action" associated with an equivalence valued at
+a path with free endpoint $y : S^1$. Taking $y = \rm{base}$ recovers a
+more vanilla notion of "action on $X$".
 
 ```agda
-  Cover : S¹ → Type
-  Cover base     = ℤ
-  Cover (loop i) = ua rotate i
+equiv→action : ∀ {y} (e : X ≃ X) → base ≡ y → X → equiv→family e y
+equiv→action e p x = subst (equiv→family e) p x
+
+_ : X ≃ X → base ≡ base → X → X
+_ = equiv→action {y = base}
 ```
 
-We can define a function from paths $\rm{base} \equiv \rm{base}$ to
-integers --- or, more precisely, a function from $\rm{base} \equiv x$ to
-$\rm{Cover}(x)$. Note that the path $\rm{base} \equiv x$ induces a path
-$\bb{Z} \equiv \rm{Cover}(x)$, and since $\bb{Z}$ is equipped with a
-choice of point, then is $\rm{Cover}(x)$.
+<!--
+```agda
+open Integers
+interleaved mutual
+```
+-->
+
+The first thing we will do is assume an elimination principle for
+$\Omega S^1$, which will be used in showing uniqueness of the universal
+map $\Omega S^1 \to X$ associated to an equivalence $e : X \simeq X$.
+We must also equip $\Omega S^1$ with an auto-equivalence, which
+corresponds in some way to taking successors: since `loop`{.Agda}
+corresponds to "the number 1", the equivalence we go with is thus
+"adding 1": postcomposition with the `loop`{.Agda}.
 
 ```agda
-  encode : ∀ x → base ≡ x → Cover x
-  encode x p = subst Cover p point
+  ΩS¹-elim
+    : ∀ {ℓ} (P : Path S¹ base base → Type ℓ)
+    → (pr : P refl)
+    → (pl : P ≃[ ∙-post-equiv loop ] P)
+    → ∀ x → P x
+
+  private
+    rotΩS¹ : (base ≡ base) ≃ (base ≡ base)
+    rotΩS¹ = ∙-post-equiv {x = base} loop
+
+  ΩS¹-integers : Integers (Path S¹ base base)
+  ΩS¹-integers .point   = refl
+  ΩS¹-integers .rotate  = rotΩS¹
 ```
 
-Let us now define the inverse function: one from integer to paths. By
-the mapping-out property of the integers, we must give an equivalence
-from $(\rm{base} \equiv \rm{base})$ to itself. Since $(\rm{base} \equiv
-\rm{base})$ is a group, any element $e$ induces such an equivalence, by
-postcomposition $x \mapsto x \cdot e$. We take $e$ to be the generating
-non-trivial path, $e = \rm{loop}$.
+It is easy to see that transporting the basepoint along the family
+associated to an automorphism of $X$ commutes with our chosen
+automorphism of $\Omega S^1$: modulo a tactic application, it is
+`refl`{.Agda}.
 
 ```agda
-  loopⁿ : ℤ → base ≡ base
-  loopⁿ n = map-out refl (∙-post-equiv loop) n
-
-  loopⁿ⁺¹ : (n : ℤ) → loopⁿ (rotate .fst n) ≡ loopⁿ n ∙ loop
-  loopⁿ⁺¹ n = map-out-rotate _ _ _
+  ΩS¹-integers .map-out        x e l = equiv→action e l x
+  ΩS¹-integers .map-out-point  x e   = Regularity.precise! refl
+  ΩS¹-integers .map-out-rotate x e l = Regularity.precise! refl
 ```
 
-To prove that the map $n \mapsto \rm{loop}^n$ is an equivalence, we
-shall need to extend it to a map defined fibrewise on the cover. We
-shall do so cubically, i.e., by directly pattern-matching on the
-argument $x$.
-
-When we're at the base point, we already know what we want to do: we
-_have_ a function $\rm{loop}^{-} : \bb{Z} \to (\rm{base} \equiv
-\rm{base})$ already, so we can use that.
+The difficult part of the proof is showing that `equiv→action`{.Agda} is
+the unique map $\Omega S^1 \to X$ with these properties. We will show
+this is the case assuming first that we have an elimination principle
+for $\Omega S^1$.
 
 ```agda
-  decode : ∀ x → Cover x → base ≡ x
-  decode base = loopⁿ
+  ΩS¹-integers .map-out-unique f {p} {r} frefl floop = ΩS¹-elim _
+    (Regularity.precise! frefl) $ over-left→over rotΩS¹ λ a →
+      (f a ≡ go a)                    ≃⟨ ap-equiv r ⟩
+      (r .fst (f a) ≡ r .fst (go a))  ≃⟨ ∙-pre-equiv (floop a) ⟩
+      (f (a ∙ loop) ≡ r .fst (go a))  ≃⟨ ∙-post-equiv (Regularity.precise! refl) ⟩
+      (f (a ∙ loop) ≡ go (a ∙ loop))  ≃∎
+    where
+      go : _ → _
+      go l = equiv→action r l p
 ```
 
-For the other case, we must
-provide a path $\rm{loop}^{-} \equiv \rm{loop}^{-}$ laying over the
-loop, which we can picture as the boundary of a square.  Namely,
+### Induction for loops
 
-~~~{.quiver}
-\[\begin{tikzcd}
-  {\rm{base}} && {\rm{base}} \\
-  \\
-  {\rm{base}} && {\rm{base}}
-  \arrow["{\rm{loop}^n}", from=1-3, to=3-3]
-  \arrow["{\rm{loop}}"', from=3-1, to=3-3]
-  \arrow["{\refl}", from=1-1, to=1-3]
-  \arrow["{\rm{loop}^n}"', from=1-1, to=3-1]
-\end{tikzcd}\]
-~~~
+We must now show the elimination principle for $\Omega S^1$ that was
+promised above. Note that, while this is a path type, both of the
+endpoints are fixed (here, to be constructors), so we can not directly
+use path induction. Instead, we will mimic the construction of
+[[induction from initiality]], turning our induction methods into a
+*total algebra* and then fixing up its type to get what we want.
+However, since we do not have initiality, we'll have to replace the
+coherence with something handcrafted.
 
-While it doesn't *look* like this square commutes, note that $n$ is an inhabitant
-of `ua rotate i`{.Agda}, so that its values on the endpoints of `i`{.Agda} are off
-by one.
-If we `unglue`{.Agda} $n$, we get an integer whose incarnation at `i = i0`{.Agda}
-is $1 + n$ (adjusting for the rotation offset) while at `i = i1`{.Agda} it is just $n$.
-
-We can provide such a square as sketching out an open _cube_ whose
-missing face has the boundary above. Here's such a cube: the missing
-face has a dotted boundary.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  {\rm{base}} &&&& {\rm{base}} \\
-  & {\rm{base}} && {\rm{base}} \\
-  \\
-  & {\rm{base}} && {\rm{base}} \\
-  {\rm{base}} &&&& {\rm{base}}
-  \arrow["{\rm{refl}}", from=2-2, to=2-4]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{loop}^{1+n}}"', from=2-2, to=4-2]
-  \arrow["{\rm{refl}}"', from=4-2, to=4-4]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\rm{loop}^n}", from=2-4, to=4-4]
-  \arrow["{\rm{refl}}"{description}, dashed, from=1-1, to=1-5]
-  \arrow["{\rm{loop}^n}"', dashed, from=1-1, to=5-1]
-  \arrow["{\rm{loop}}"{description}, dashed, from=5-1, to=5-5]
-  \arrow["{\rm{loop}^n}", dashed, from=1-5, to=5-5]
-  \arrow["{\rm{refl}}"{pos=0.2}, from=2-2, to=1-1]
-  \arrow["{\rm{refl}}"'{pos=0.3}, from=2-4, to=1-5]
-  \arrow["{\rm{loop}\inv}"'{pos=0.1}, from=4-2, to=5-1]
-  \arrow["{\rm{refl}}"{pos=0.2}, from=4-4, to=5-5]
-  \arrow["{\rm{loop}^{\rm{unglue}(n)}}"{marking, allow upside down}, draw=none, from=0, to=1]
-\end{tikzcd}\]
-~~~
+We note that the induction methods for `ΩS¹-elim`{.Agda} fit together
+into a basepoint and auto-equivalence of the type $\sum_{l : \Omega S^1}
+P(l)$. The family associated to this action will be called
+`totl`{.Agda}, and we will also need a name for the family associated to
+`rotΩS¹`{.Agda}.
 
 ```agda
-  decode (loop i) n j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → loopⁿ (unglue n) j
-    k (i = i0) → ∙→square (loopⁿ⁺¹ n) (~ k) j
-    k (i = i1) → loopⁿ n j
-    k (j = i0) → base
-    k (j = i1) → loop (i ∨ ~ k)
+  ΩS¹-elim P pr pl l = subst P (pathβ base l) attempt where
+    base≡ totl : S¹ → Type _
+    base≡ = equiv→family rotΩS¹
+    totl  = equiv→family (over→total rotΩS¹ pl)
 ```
 
-We understand this as a particularly annoying commutative diagram. For
-example, the left face expresses the equation
-$\mathrm{loop}^n \bullet \mathrm{loop} = \mathrm{loop}^{1+n}$. The proof is now
-straightforward to wrap up:
+By rotating the basepoint (given by the method $pr : P\ \rm{base}$), we
+get a value in $P$, but its type appears to be way off. Essentially, to
+show that our `attempt`{.Agda} landed in the right fibre, we would like
+to reduce to the case where $l = \refl$, since there the index is
+essentially trivially correct.
+
+However, our statement depends critically on $l$ being a loop,
+preventing us from using path induction. Instead, we will take a detour
+and construct two different fibrewise transformations into
+`base≡`{.Agda} at an arbitrary $y : S^1$; at the basepoint, we will
+arrange for one of these transformations to be definitionally the
+identity, and for the other to be the first projection from the total
+space of $P$. We can then apply path induction to show that, if these
+agree at $\refl$, they agree at any $p : \rm{base} \is y$, and then we
+may specialise with $p = l$.
 
 ```agda
-  encode-decode : ∀ x (p : base ≡ x) → decode x (encode x p) ≡ p
-  encode-decode _ = J (λ x p → decode x (encode x p) ≡ p) $
-    ap loopⁿ (transport-refl point) ∙ map-out-point _ _
-
-  encode-loopⁿ : (n : ℤ) → encode base (loopⁿ n) ≡ n
-  encode-loopⁿ n = p ∙ ℤ-η n where
-    p : encode base (loopⁿ n) ≡ map-out point rotate n
-    p = map-out-unique (encode base ∘ loopⁿ)
-      (ap (encode base) (map-out-point _ _) ∙ transport-refl point)
-      (λ x → ap (encode base) {y = loopⁿ x ∙ loop} (map-out-rotate _ _ _)
-          ∙∙ subst-∙ Cover (loopⁿ x) loop point
-          ∙∙ uaβ rotate (subst Cover (loopⁿ x) point))
-      n
-
-  ΩS¹≃integers : (base ≡ base) ≃ ℤ
-  ΩS¹≃integers = Iso→Equiv $
-    encode base , iso loopⁿ encode-loopⁿ (encode-decode base)
-
-open S¹Path Int-integers public
+    attempt : P (subst totl l (refl , pr) .fst)
+    attempt = subst totl l (refl , pr) .snd
 ```
 
-It immediately follows from this that the circle is a [[groupoid]], since its
-loop space is a set.
+First, we extend the identity function. This incurs a minor proof
+obligation, namely that if we have $x_0, x_1 : \Omega S^1$ which are
+identical as elements of $y \mapsto \rm{base} \is y$ *over* the
+`loop`{.Agda}, i.e. that $x_1 = x_0 \cdot \rm{loop}$, then these are
+also identified in `base≡`{.Agda} over the `loop`{.Agda}, which by
+definition is the same thing.
+
+```agda
+    to-base≡ : ∀ y → base ≡ y → base≡ y
+    to-base≡ = S¹-elim (λ x → x) $ funext-dep λ {x₀} {x₁} α →
+      let
+        have : x₁ ≡ x₀ ∙ loop
+        have = sym (from-pathp α) ∙ subst-path-right _ _
+
+        want : PathP (λ i → ua (∙-post-equiv loop) i) x₀ x₁
+        want = path→ua-pathp (∙-post-equiv loop) (sym have)
+      in want
+```
+
+Next, we extend the first projection from the total algebra $\sum_{x :
+\Omega S^1} P(x)$ to a map between arbitrary fibres of `totl`{.Agda} and
+`base≡`{.Agda}. Here the coherence is even easier: we have an
+identification in some total space and we want an identification in its
+base; modulo the use of some `ua`{.Agda}-related helpers, this turns out
+to be `refl`{.Agda}.
+
+```agda
+    path : ∀ y → totl y → base≡ y
+    path = S¹-elim fst $ ua→ λ _ → path→ua-pathp _ refl
+```
+
+Finally, we can use path induction to show that the two ways of mapping
+a loop into `base≡`{.Agda} agree, where one is the identity and the
+other is the first projection from rotating our basepoint. This
+completes the proof of the elimination principle, and indeed of the
+universal property.
+
+```agda
+    pathβ : ∀ y l → path y (subst totl l (refl , pr)) ≡ to-base≡ y l
+    pathβ y = J (λ y l → path y (subst totl l (refl , pr)) ≡ to-base≡ y l)
+      (transport-refl refl)
+  ```
+
+```agda
+ΩS¹≃Int : (base ≡ base) ≃ Int
+ΩS¹≃Int = Integers-unique ΩS¹-integers Int-integers
+
+open Equiv ΩS¹≃Int renaming (from to loopⁿ) using ()
+```
+
+It immediately follows from this that the circle is a [[groupoid]],
+since it is connected and its loop space is a set.
 
 ```agda
 opaque
   S¹-is-groupoid : is-groupoid S¹
   S¹-is-groupoid = S¹-elim (S¹-elim
-    (Equiv→is-hlevel 2 ΩS¹≃integers (hlevel 2)) prop!) prop!
+    (Equiv→is-hlevel 2 ΩS¹≃Int (hlevel 2)) prop!) prop!
 ```
 
 <!--
@@ -279,6 +316,10 @@ opaque
 instance
   H-Level-S¹ : ∀ {k} → H-Level S¹ (3 + k)
   H-Level-S¹ = basic-instance 3 S¹-is-groupoid
+
+opaque
+  loopⁿ⁺¹ : (n : Int) → loopⁿ (sucℤ n) ≡ loopⁿ n ∙ loop
+  loopⁿ⁺¹ n = Int-integers .map-out-rotate refl rotΩS¹ n
 ```
 -->
 
@@ -300,9 +341,9 @@ loopⁿ-+ a = Integers.induction Int-integers
 
 π₁S¹≡ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid ≡ ℤ
 π₁S¹≡ℤ = sym $ ∫-Path
-  (∫hom (Equiv.from ΩS¹≃integers)
+  (∫hom (Equiv.from ΩS¹≃Int)
     (record { pres-⋆ = loopⁿ-+ }))
-  ((ΩS¹≃integers e⁻¹) .snd)
+  ((ΩS¹≃Int e⁻¹) .snd)
 ```
 
 Furthermore, since the loop space of the circle is a set, we automatically
