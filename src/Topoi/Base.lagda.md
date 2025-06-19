@@ -189,7 +189,7 @@ Let's make this more concrete by considering an example: Take $\cC =
 call them $V$ and $E$ --- and two arrows $s, t : V \to E$. A presheaf
 $F$ on this category is given by a set $F_0(V)$, a set $F_0(E)$, and two
 functions $F_1(s), F_1(t) : F_0(E) \to F_0(V)$. We call $F_0(V)$ the
-vertex set, and $F_0(E)$ the edge set. Indeed, a presheaf on this
+node set, and $F_0(E)$ the edge set. Indeed, a presheaf on this
 category is a _directed multigraph_, and maps between presheaves
 _preserve adjacency_.
 
@@ -198,7 +198,7 @@ pedestrian statement "graphs are made up of vertices and edges". For
 instance, the graph $\bull \to \bull \to \bull$ can be considered as a
 disjoint union of two edges, which is then glued together in a way such
 that the target of the first is the source of the second. The maps $s, t
-: V \to E$ exhibit the two ways that a vertex can be considered "part
+: V \to E$ exhibit the two ways that a node can be considered "part
 of" an edge.
 
 ## As "logically nice" categories
