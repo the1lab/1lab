@@ -73,23 +73,15 @@ are also [[join-semilattices]].
   open Top has-top using (top; !) public
   open Lubs P ⋃-lubs public
 
-  has-meet-slat : is-meet-semilattice P
-  has-meet-slat .is-meet-semilattice._∩_ = _∩_
-  has-meet-slat .is-meet-semilattice.∩-meets = ∩-meets
-  has-meet-slat .is-meet-semilattice.has-top = has-top
+module _ {o ℓ} {P : Poset o ℓ} (f : is-frame P) where
+  is-frame→is-meet-slat : is-meet-semilattice P
+  is-frame→is-meet-slat = record { is-frame f }
 
-  has-join-slat : is-join-semilattice P
-  has-join-slat .is-join-semilattice._∪_ = _∪_
-  has-join-slat .is-join-semilattice.∪-joins = ∪-joins
-  has-join-slat .is-join-semilattice.has-bottom = has-bottom
+  is-frame→is-join-slat : is-join-semilattice P
+  is-frame→is-join-slat = record { is-frame f }
 
-  has-lattice : is-lattice P
-  has-lattice .is-lattice._∩_ = _∩_
-  has-lattice .is-lattice.∩-meets = ∩-meets
-  has-lattice .is-lattice._∪_ = _∪_
-  has-lattice .is-lattice.∪-joins = ∪-joins
-  has-lattice .is-lattice.has-top = has-top
-  has-lattice .is-lattice.has-bottom = has-bottom
+  is-frame→is-lattice : is-lattice P
+  is-frame→is-lattice = record { is-frame f }
 
 private variable
   o ℓ o' ℓ' : Level
@@ -177,7 +169,7 @@ If $f$ is a frame homomorphism, then it is also a homomorphism of [[meet
 semilattices]].
 
 ```agda
-  has-meet-slat-hom : is-meet-slat-hom f Pᶠ.has-meet-slat Qᶠ.has-meet-slat
+  has-meet-slat-hom : is-meet-slat-hom f record { Pᶠ } record { Qᶠ }
   has-meet-slat-hom .is-meet-slat-hom.∩-≤ = ∩-≤
   has-meet-slat-hom .is-meet-slat-hom.top-≤ = top-≤
 
@@ -213,7 +205,7 @@ semilattices]].
   opaque
     unfolding Lubs.∪-joins Lubs.has-bottom
 
-    has-join-slat-hom : is-join-slat-hom f Pᶠ.has-join-slat Qᶠ.has-join-slat
+    has-join-slat-hom : is-join-slat-hom f record { Pᶠ } record { Qᶠ }
     has-join-slat-hom .is-join-slat-hom.∪-≤ x y =
       Q.≤-trans (⋃-≤ _) $ Qᶠ.⋃-universal _ λ where
         (lift true) → Qᶠ.⋃-inj (lift true)
