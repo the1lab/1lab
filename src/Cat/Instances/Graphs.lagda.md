@@ -312,7 +312,7 @@ private module _ {ℓ : Level} where
     g .Node = ⌞ F · true ⌟
     g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ false e ≡ s × F.₁ true e ≡ d
     g .Node-set = hlevel 2
-    g .Edge-set   = hlevel 2
+    g .Edge-set = hlevel 2
 
   open is-precat-iso
   open is-iso
@@ -374,8 +374,8 @@ Thus, $\Graphs$ are presheaves and are thereby a [[topos]].
 
 ## The underlying graph of a strict category {defines="underlying-graph underlying-graph-functor"}
 
-Note that every [[strict category]] has an underlying graph, where the
-nodes are given by objects, and edges by morphisms. Moreover, functors
+Note that every [[strict category]] has an underlying graph where the
+nodes are given by objects and edges by morphisms. Moreover, functors
 between strict categories give rise to graph homomorphisms between
 underlying graphs. This gives rise to a functor from the [[category of
 strict categories]] to the category of graphs.
