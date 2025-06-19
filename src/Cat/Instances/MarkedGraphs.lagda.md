@@ -62,7 +62,7 @@ open hlevel-projection
 
 instance
   Underlying-Marked-graph : Underlying (Marked-graph o ℓ)
-  Underlying-Marked-graph = record { ⌞_⌟ = Vertex }
+  Underlying-Marked-graph = record { ⌞_⌟ = Node }
 ```
 -->
 
@@ -93,15 +93,15 @@ unquoteDecl H-Level-Marked-graph-hom = declare-record-hlevel 2 H-Level-Marked-gr
 
 instance
   Funlike-Marked-graph-hom : Funlike (Marked-graph-hom G H) ⌞ G ⌟ λ _ → ⌞ H ⌟
-  Funlike-Marked-graph-hom .Funlike._·_ = vertex
+  Funlike-Marked-graph-hom .Funlike._·_ = node
 
 Marked-graph-hom-pathp
   : {G : I → Marked-graph o ℓ} {H : I → Marked-graph o' ℓ'}
   → {f : Marked-graph-hom (G i0) (H i0)} {g : Marked-graph-hom (G i1) (H i1)}
-  → (p0 : ∀ (x : ∀ i → G i .Vertex)
-          → PathP (λ i → H i .Vertex)
-              (f .vertex (x i0)) (g .vertex (x i1)))
-  → (p1 : ∀ {x y : ∀ i → G i .Vertex}
+  → (p0 : ∀ (x : ∀ i → G i .Node)
+          → PathP (λ i → H i .Node)
+              (f .node (x i0)) (g .node (x i1)))
+  → (p1 : ∀ {x y : ∀ i → G i .Node}
           → (e : ∀ i → G i .Edge (x i) (y i))
           → PathP (λ i → H i .Edge (p0 x i) (p0 y i))
               (f .edge (e i0)) (g .edge (e i1)))
@@ -117,8 +117,8 @@ Marked-graph-hom-pathp {G = G} {H = H} {f = f} {g = g} p0 p1 = comm-path where
   comm-path i .hom = hom-path i
   comm-path i .pres-marked {x} {y} {p} {q} =
     is-prop→pathp (λ i →
-        Π-is-hlevel {A = G i .Vertex} 1 λ x →
-        Π-is-hlevel {A = G i .Vertex} 1 λ y →
+        Π-is-hlevel {A = G i .Node} 1 λ x →
+        Π-is-hlevel {A = G i .Node} 1 λ y →
         Π-is-hlevel {A = Path-in (G i .graph) x y} 1 λ p →
         Π-is-hlevel {A = Path-in (G i .graph) x y} 1 λ q →
         Π-is-hlevel {A = ∣ G i .Marked p q ∣} 1 λ _ →
@@ -129,7 +129,7 @@ Marked-graph-hom-pathp {G = G} {H = H} {f = f} {g = g} p0 p1 = comm-path where
 
 Marked-graph-hom-path
   : {f g : Marked-graph-hom G H}
-  → (p0 : ∀ x → f .vertex x ≡ g .vertex x)
+  → (p0 : ∀ x → f .node x ≡ g .node x)
   → (p1 : ∀ {x y} → (e : G .Edge x y) → PathP (λ i → H .Edge (p0 x i) (p0 y i)) (f .edge e) (g .edge e))
   → f ≡ g
 Marked-graph-hom-path {G = G} {H = H} p0 p1 =
@@ -220,7 +220,7 @@ relabeling data.
 Strict-cats↪Marked-graphs-faithful
   : is-faithful (Strict-cats↪Marked-graphs {o} {ℓ})
 Strict-cats↪Marked-graphs-faithful p =
-  Functor-path (λ x i → p i .vertex x) (λ f i → p i .edge f)
+  Functor-path (λ x i → p i .node x) (λ f i → p i .edge f)
 ```
 
 More surprisingly this functor is also [[full]]!
@@ -244,7 +244,7 @@ Strict-cats↪Marked-graphs-full {x = C} {y = D} f =
     module D = Precategory (D .fst)
 
     functor : Functor (C .fst) (D .fst)
-    functor .F₀ = f .vertex
+    functor .F₀ = f .node
     functor .F₁ = f .edge
 ```
 
@@ -326,12 +326,12 @@ instead, which we encode in Agda via the following higher-inductive type.
 -->
 
 The resulting category is not too difficult to construct:
-the objects are the vertices of $G$, and the morphisms are paths in
+the objects are the nodes of $G$, and the morphisms are paths in
 $G$ quotiented by the aforementioned closure.
 
 ```agda
   Marked-path-category : Precategory o (o ⊔ ℓ)
-  Marked-path-category .Precategory.Ob = G.Vertex
+  Marked-path-category .Precategory.Ob = G.Node
   Marked-path-category .Precategory.Hom x y =
     Path-in G.graph x y / Marking
   Marked-path-category .Precategory.Hom-set _ _ = hlevel 2
@@ -397,7 +397,7 @@ paths.
   comm-path-fold
     : (f : Marked-graph-hom G ∣C∣)
     → ∀ {x y} → Path-in (G .graph) x y / Marking G
-    → C.Hom (f .vertex x) (f .vertex y)
+    → C.Hom (f .node x) (f .node y)
   comm-path-fold f =
     Quot-elim (λ _ → hlevel 2)
       (path-fold C (f .hom))
@@ -411,7 +411,7 @@ to $\cC$.
   MarkedF
     : Marked-graph-hom G ∣C∣
     → Functor (Marked-path-category G) (C .fst)
-  MarkedF f .F₀ = f .vertex
+  MarkedF f .F₀ = f .node
   MarkedF f .F₁ = comm-path-fold f
   MarkedF f .F-id = refl
   MarkedF f .F-∘ = elim! λ p q → path-fold-++ C q p
@@ -474,7 +474,7 @@ Marked-free-category
 Marked-free-category G .Free-object.free = Marked-path-category G , hlevel 2
 ```
 
-The unit of the free object takes vertices to themselves, and edges
+The unit of the free object takes nodes to themselves, and edges
 to singleton paths. We need to do a bit of work to show that this construction
 preserves markings but it's not too difficult.
 
@@ -487,7 +487,7 @@ Marked-free-category G .Free-object.unit = unit-comm where
   ∣G*∣ = Strict-cats↪Graphs .F₀ G*
 
   unit : Graph-hom (G .graph) ∣G*∣
-  unit .Graph-hom.vertex x = x
+  unit .Graph-hom.node x = x
   unit .Graph-hom.edge e = inc (cons e nil)
 
   unit-comm : Marked-graph-hom G (Strict-cats↪Marked-graphs .F₀ G*)
@@ -512,7 +512,7 @@ Marked-free-category G .Free-object.commute {Y = C} =
   where open Precategory (C .fst)
 Marked-free-category G .Free-object.unique {Y = C} F p =
   Marked-path-category-functor-path
-    (λ x i → p i .vertex x)
+    (λ x i → p i .node x)
     (λ e → to-pathp (from-pathp (λ i → p i .edge e) ∙ sym (idl _)))
   where open Precategory (C .fst)
 ```
