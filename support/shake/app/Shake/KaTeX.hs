@@ -96,8 +96,8 @@ spawnKatexWorker :: IO KatexWorker
 spawnKatexWorker =
   Process.createProcess workerSpec >>= \case
   (Just katexWorkerIn, Just katexWorkerOut, _, katexProcessHandle) -> do
-    -- We are going to be delimiting requests with the file separator control
-    -- char (See [HACK: File Separator Control Characters]), so we can eek out a bit
+    -- We are going to be delimiting requests with null bytes
+    -- (See [NOTE: Delimiting KaTeX jobs]), so we can eek out a bit
     -- more performance by using block buffering over line buffering.
     hSetBuffering katexWorkerIn (BlockBuffering (Just 0x2000))
     hSetBuffering katexWorkerOut (BlockBuffering (Just 0x2000))
