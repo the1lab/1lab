@@ -4,7 +4,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
-open import Data.List.Base hiding (lookup ; tabulate)
+open import Data.List.Base hiding (lookup ; tabulate ; _++_)
 open import Data.Fin.Base
 open import Data.Nat.Base
 ```
@@ -85,6 +85,10 @@ tabulate {suc n} f = f fzero ∷ tabulate (λ x → f (fsuc x))
 map : (A → B) → Vec A n → Vec B n
 map f [] = []
 map f (x ∷ xs) = f x ∷ map f xs
+
+_++_ : ∀ {n k} → Vec A n → Vec A k → Vec A (n + k)
+[] ++ ys = ys
+(x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
 zip-with : (A → B → C) → Vec A n → Vec B n → Vec C n
 zip-with f [] [] = []
