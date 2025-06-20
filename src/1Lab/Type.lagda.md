@@ -134,6 +134,29 @@ case x return P of f = f x
 {-# INLINE case_of_        #-}
 {-# INLINE case_return_of_ #-}
 
+←⟨⟩-syntax
+  : ∀ {ℓa ℓb} {A : Type ℓa}
+  → (B : Type ℓb)
+  → (x : A)
+  → (f : A → B)
+  → B
+←⟨⟩-syntax B x f = f x
+
+←⟨⟩∎-syntax
+  : ∀ {ℓa}
+  → (A : Type ℓa)
+  → A
+  → A
+←⟨⟩∎-syntax A x = x
+
+{-# INLINE ←⟨⟩-syntax #-}
+{-# INLINE ←⟨⟩∎-syntax #-}
+
+syntax ←⟨⟩-syntax B x f = B ←⟨ f ⟩ x
+syntax ←⟨⟩∎-syntax A x = A ←⟨ x ⟩∎
+infixr 2 ←⟨⟩-syntax
+infix 3 ←⟨⟩∎-syntax
+
 instance
   Number-Lift : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ Number A ⦄ → Number (Lift ℓ' A)
   Number-Lift {ℓ' = ℓ'} ⦃ a ⦄ .Number.Constraint n = Lift ℓ' (a .Number.Constraint n)

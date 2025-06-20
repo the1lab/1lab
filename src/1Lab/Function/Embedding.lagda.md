@@ -211,7 +211,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
     .is-iso.linv → J (λ y p → ap fst (emb (f y) (x , ap f p) (y , refl)) ≡ p)
       (ap-square fst (is-prop→is-set (emb (f x)) _ _ (emb (f x) (x , refl) (x , refl)) refl))
 
-  equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
+  equiv→cancellable : ∀ {x y} → is-equiv f → is-equiv {B = f x ≡ f y} (ap f)
   equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
 ```
 

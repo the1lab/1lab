@@ -282,6 +282,25 @@ non-dependent sum is a product.
 ×-is-hlevel n ahl bhl = Σ-is-hlevel n ahl (λ _ → bhl)
 ```
 
+We can also give a more refined characterisation of contractibility
+of $\Sigma$ types: if $A$ is contractible and $B$ is contractible
+at the centre of contraction of $A$, then $\Sigma~ A~ B$ is contractible.
+
+```agda
+Σ-is-contr
+  : {A : Type ℓ} {B : A → Type ℓ'}
+  → (A-contr : is-contr A)
+  → (B-contr : is-contr (B (A-contr .centre)))
+  → is-contr (Σ A B)
+Σ-is-contr {A = A} {B = B} A-contr B-contr .centre =
+  A-contr .centre , B-contr .centre
+Σ-is-contr {A = A} {B = B} A-contr B-contr .paths (a , b) =
+  A-contr .paths a ,ₚ
+  is-contr→pathp (λ i → coe0→i (λ i → is-contr (B (A-contr .paths a i))) i B-contr)
+    (B-contr .centre)
+    b
+```
+
 Similarly, `Lift`{.Agda} does not induce a change of h-levels, i.e. if
 $A$ is an $n$-type in a universe $U$, then it's also an $n$-type in any
 successor universe:

@@ -119,21 +119,32 @@ to-path-over-refl {a = a} ids = ap (ap snd) $ to-path-refl-coh ids a
 Note that for any $(R, r)$, the type of identity system data on $(R, r)$
 is a [[proposition]]. This is because it is exactly equivalent to the type
 $\sum_a (R a)$ being contractible for every $a$, which is a proposition
-by standard results. One direction is `is-contr-ΣR`{.Agda}; we prove
-the converse direction now.
+by standard results.
+
+First, a general observation: $(R, r)$ is an identity system if the type
+$\Sigma~ A~ (R a)$ of "$R$-singletons" is a proposition for every $a : A$.
+
+```agda
+singleton-prop→identity-system
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
+  → (∀ {a} → is-prop (Σ A (R a)))
+  → is-identity-system R r
+singleton-prop→identity-system {r = r} fib-prop .to-path {a = a} {b = b} p =
+  ap fst (fib-prop (a , r a) (b , p))
+singleton-prop→identity-system {r = r} fib-prop .to-path-over {a = a} {b = b} p =
+  ap snd (fib-prop (a , r a) (b , p))
+```
+
+Every contractible type is a proposition, so the converse direction
+of our equivalence follows immediately.
 
 ```agda
 contr→identity-system
   : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
-  → (∀ {a} → is-contr (Σ _ (R a)))
+  → (∀ {a} → is-contr (Σ A (R a)))
   → is-identity-system R r
-contr→identity-system {R = R} {r} c = ids where
-  paths' : ∀ {a} (p : Σ _ (R a)) → (a , r a) ≡ p
-  paths' _ = is-contr→is-prop c _ _
-
-  ids : is-identity-system R r
-  ids .to-path p = ap fst (paths' (_ , p))
-  ids .to-path-over p = ap snd (paths' (_ , p))
+contr→identity-system {R = R} {r} c =
+  singleton-prop→identity-system (is-contr→is-prop c)
 ```
 
 If we have a relation $R$ together with reflexivity witness $r$, then
