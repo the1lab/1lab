@@ -62,12 +62,14 @@ module _ (F : Functor C D) where
 ```
 -->
 
+::: {.popup .keep}
 Let $f$ be an identity, i.e. it is such that $(a, b, f) \cong (c, c,
 \id)$. Any functor $F$ induces an identification $(Fa, Fb, Ff) \cong
 (Fc, Fc, id)$, meaning that it _preserves being an identity_. A functor
 is **amnestic** if it additionally _reflects_ being an identity: the
 natural map we have implicitly defined above (called `action`{.Agda}) is
 an equivalence.
+:::
 
 ```agda
   action : ∀ {a b : C.Ob} (f : C.Hom a b)

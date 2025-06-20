@@ -29,15 +29,15 @@ private variable
 
 # Surjections {defines=surjection}
 
+::: {.popup .keep}
 A function $f : A \to B$ is a **surjection** if, for each $b : B$, we
 have $\| f^*b \|$: that is, all of its [[fibres]] are inhabited. Using
 the notation for [[mere existence|merely]], we may write this as
-
 $$
 \forall (b : B),\ \exists (a : A),\ f(a) = b
 $$.
-
 which is evidently the familiar notion of surjection.
+:::
 
 ```agda
 is-surjective : (A → B) → Type _

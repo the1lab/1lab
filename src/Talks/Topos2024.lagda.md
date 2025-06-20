@@ -397,7 +397,7 @@ embeddings, monotone maps, &c., &c.
 
 # Structure (and) identity
 
-Same setup: when are types $A, B : \ty$ identical? <br>
+Same setup: when are types $A, B : \type$ identical? <br>
 Ideal answer: when they are *indistinguishable*. <br>
 What distinguishes types?
 
@@ -763,7 +763,7 @@ We can present a concrete, univalent category as a displayed category.
 
 These data amount to:
 
-1. A type family of *structures* $F : \ty \to \ty$;
+1. A type family of *structures* $F : \type \to \type$;
 
 2. A proposition $\operatorname{Hom}[f](S, T)$, given $f : A \to B$, $S : F(A)$, $T : F(B)$.
 

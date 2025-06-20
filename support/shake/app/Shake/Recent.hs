@@ -16,7 +16,7 @@ import Development.Shake
 
 import HTML.Backend
 
-import Shake.Modules (getOurModules)
+import Shake.Modules (getOurModules, moduleName)
 import Shake.Git (gitCommand)
 
 import qualified Text.Blaze.Html5.Attributes as A

@@ -20,7 +20,7 @@ private variable
 
 # Monoids {defines="monoid"}
 
-A **monoid** is a semigroup equipped with a _two-sided identity_
+A **monoid** is a [[semigroup]] equipped with a _two-sided identity_
 element: An element $e \in M$ such that $e \star x = x = x \star e$. For
 any particular choice of binary operator $\star$, if a two-sided
 identity exists, then it is unique; In this sense, "being a monoid"

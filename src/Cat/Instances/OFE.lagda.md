@@ -148,7 +148,7 @@ to be the definition of morphism of OFEs: the type of OFEs is equivalent
 to a $\Sigma$-type that starts
 
 $$
-\Sigma (X : \ty) \Sigma (R : X \to \bN \to X \to \ty) \Sigma ...
+\Sigma (X : \type) \Sigma (R : X \to \bN \to X \to \type) \Sigma ...
 $$,
 
 where all the components in $...$ are propositional. Its identity type

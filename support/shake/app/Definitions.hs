@@ -17,16 +17,20 @@ import Agda.Utils.Impossible
 import Control.Monad.IO.Class
 import Control.DeepSeq
 import Control.Arrow (first)
+import Control.Monad
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+import qualified Data.Set as Set
+import Data.Traversable
 import Data.Map.Strict (Map)
 import Data.Function
 import Data.Hashable
 import Data.Foldable
 import Data.Monoid ( Endo(..) )
 import Data.Binary ( Binary )
+import Data.Maybe
 import Data.List (intersperse, sortOn, groupBy)
 import Data.Text (Text)
 import Data.Char
@@ -37,12 +41,12 @@ import Development.Shake
 
 import GHC.Generics (Generic)
 
-import HTML.Backend (moduleName)
 
 import Text.Pandoc.Walk
 import Text.Pandoc
 
-import {-# SOURCE #-} Shake.Markdown (readLabMarkdown)
+import Shake.Modules (moduleName, getOurModules, ModKind (WithText), markdownSource)
+import Shake.Digest (shortDigest)
 
 newtype Mangled = Mangled { getMangled :: Text }
   deriving (Show, Eq, Ord, Generic)
@@ -61,9 +65,9 @@ mangleLink = doit where
   wordChar '[' = True
   wordChar c = isAsciiLower c || isDigit c
 
-parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
-parseDefinitions anchor input = liftIO do
-  Pandoc _meta markdown <- readLabMarkdown input
+parseDefinitions :: MonadIO m => (FilePath -> m Pandoc) -> FilePath -> FilePath -> m Glossary
+parseDefinitions read anchor input = do
+  Pandoc _meta markdown <- read input
   pure $ appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
 
 data Definition = Definition
@@ -90,7 +94,7 @@ definitionBlock inp fp = go where
 
   addMany id = foldMap (add id) . Text.words
 
-  go (Div (id, [only], keys) _blocks) | "definition" == only, not (Text.null id) =
+  go (Div (id, cls, keys) _blocks) | "definition" `elem` cls, not (Text.null id) =
     let aliases = foldMap (addMany id) (lookup "alias" keys)
     in add id id <> aliases
 
@@ -133,17 +137,18 @@ addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False ke
 definitionTarget :: Definition -> Text
 definitionTarget def = Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
 
-glossaryRules :: Rules ()
-glossaryRules = do
+glossaryRules :: (FilePath -> Action Pandoc) -> Rules ()
+glossaryRules read = do
   _ <- addOracleCache \(ModuleGlossaryQ fp) -> do
     need [fp]
     let modn = moduleName (dropExtensions (dropDirectory1 fp)) <.> "html"
-    traced "parsing definitions" (parseDefinitions modn fp)
+    parseDefinitions read modn fp
 
   _ <- addOracle \GlossaryQ -> do
-    md   <- fmap ("src" </>) <$> getDirectoryFiles "src" ["**/*.lagda.md"]
-    need md
-    outs <- askOracles (ModuleGlossaryQ <$> md)
+    mods <- Map.keys . Map.filter (== WithText) <$> getOurModules
+    files <- traverse markdownSource mods
+    need files
+    outs <- askOracles (ModuleGlossaryQ <$> files)
 
     let
       alldefs :: [(Mangled, Definition)]
@@ -154,7 +159,9 @@ glossaryRules = do
   _ <- addOracle \(LinkTargetQ target) -> do
     glo <- getEntries <$> askOracle GlossaryQ
     case Map.lookup (mangleLink target) glo of
-      Just def -> pure (definitionAnchor def, definitionTarget def)
+      Just def ->
+        let trg = definitionTarget def
+         in pure (Text.pack (shortDigest trg), definitionTarget def)
       Nothing  -> error $
         "Unknown wiki-link target: " ++ Text.unpack target
 
@@ -182,6 +189,17 @@ glossaryRules = do
     liftIO $ for_ entries $ \(mod, defs) -> do
       Text.putStr $ Text.pack (dropExtension mod) <> ":\n"
         <> Text.unlines (aliases <$> bykey defs)
+
+  phony "popup-todo" do
+    entries <- Map.elems . getEntries <$> askOracle GlossaryQ
+
+    keep <- for entries \def -> do
+      let d = shortDigest (definitionTarget def)
+      x <- doesFileExist $ "_build/html/fragments" </> d <.> "html"
+      pure $ definitionTarget def <$ guard (not x)
+
+    liftIO . Text.writeFile "todo" $ Text.unlines $ Set.toList $
+      foldMap (foldMap Set.singleton) (keep :: [Maybe Text])
 
   pure ()
 
