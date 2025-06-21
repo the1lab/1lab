@@ -270,6 +270,7 @@ composition: it is `∙-filler`{.Agda}.
   \arrow["{\rm{loop}}", from=1-3, to=3-3]
   \arrow["{a\bullet\rm{loop}}"', from=3-1, to=3-3]
 \end{tikzcd}\]
+~~~
 
 ```agda
     path : ∀ y → totl y → base ≡ y
