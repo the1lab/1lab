@@ -124,8 +124,8 @@ always-loop = S¹-elim loop (double-connection loop loop)
 We will now calculate that the first [[loop space]] of the circle at the
 basepoint is *a* type of integers, i.e. it satisfies the [[universal
 property of the integers]]. First, we generalise the construction of
-`möbius`{.Agda} to turn equivalence on an arbitrary type into a type
-family over `S¹`{.Agda}. Transport over this family will be the
+`möbius`{.Agda} to turn an equivalence on an arbitrary type into a type
+family over `S¹`{.Agda}. Transport over this family will give the
 universal map $\Omega S^1 \to X$ associated with an equivalence $e : X
 \simeq X$ and basepoint $x_0 : X$.
 
@@ -206,7 +206,7 @@ for $\Omega S^1$.
       go l = equiv→action r l p
 ```
 
-### Induction for loops
+## Loop induction
 
 We must now show the elimination principle for $\Omega S^1$ that was
 promised above. Note that, while this is a path type, both of the
@@ -228,79 +228,66 @@ hand-crafted coherence.
 We note that the induction methods for `ΩS¹-elim`{.Agda} fit together
 into a basepoint and auto-equivalence of the type $\sum_{l : \Omega S^1}
 P(l)$. The family associated to this action will be called
-`totl`{.Agda}, and we will also need a name for the family associated to
-`rotΩS¹`{.Agda}.
+`totl`{.Agda}.
 
 ```agda
   ΩS¹-elim P pr pl l = subst P (pathβ base l) attempt where
-    base≡ totl : S¹ → Type _
-    base≡ = equiv→family rotΩS¹
-    totl  = equiv→family (over→total rotΩS¹ pl)
+    totl : S¹ → Type _
+    totl = equiv→family (over→total rotΩS¹ pl)
 ```
 
-By rotating the basepoint (given by the method $pr : P\ \rm{base}$), we
-get a value in $P$, but its type appears to be way off. Essentially, to
-show that our `attempt`{.Agda} landed in the right fibre, we would like
-to reduce to the case where $l = \refl$, since there the index is
-essentially trivially correct.
-
-However, our statement depends critically on $l$ being a loop,
-preventing us from using path induction. Instead, we will take a detour
-and construct two different fibrewise transformations into
-`base≡`{.Agda} at an arbitrary $y : S^1$; at the basepoint, we will
-arrange for one of these transformations to be definitionally the
-identity, and for the other to be the first projection from the total
-space of $P$. We can then apply path induction to show that, if these
-agree at $\refl$, they agree at any $p : \rm{base} \is y$, and then we
-may specialise with $p = l$.
+By rotating the basepoint (given by the method $\rm{pr} : P\
+\rm{base}$), we get a value in $P$, but its type appears to be way off.
+Essentially, to show that our `attempt`{.Agda} landed in the right
+fibre, we would like to reduce to the case where $l = \refl$, since
+there the index is essentially trivially correct.
 
 ```agda
     attempt : P (subst totl l (refl , pr) .fst)
     attempt = subst totl l (refl , pr) .snd
 ```
 
-First, we extend the identity function. This incurs a minor proof
-obligation, namely that if we have $x_0, x_1 : \Omega S^1$ which are
-identical as elements of $y \mapsto \rm{base} \is y$ *over* the
-`loop`{.Agda}, i.e. that $x_1 = x_0 \cdot \rm{loop}$, then these are
-also identified in `base≡`{.Agda} over the `loop`{.Agda}, which by
-definition is the same thing.
+However, this statement depends critically on $l$ being a loop,
+preventing us from using path induction: if $l$ is instead a path
+$\rm{base} \is y$, then transport takes us to a fibre of `totl`{.Agda}
+which is not a sigma type, hence not something we can project from.
+To generalise this, we must define a fibrewise transformation from
+`totl`{.Agda} to the based path space of $S^1$, which, at the basepoint,
+is the first projection function.
+
+This turns out to be pretty easy: using the helper function `ua→`{.Agda}
+to simplify the coherence condition, we are left with filling a square
+with the boundary below, which we have by the definition of path
+composition: it is `∙-filler`{.Agda}.
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  {\rm{base}} \&\& {\rm{base}} \\
+  \\
+  {\rm{base}} \&\& {\rm{base}}
+  \arrow["a", from=1-1, to=1-3]
+  \arrow["{\rm{refl}}"', from=1-1, to=3-1]
+  \arrow["{\rm{loop}}", from=1-3, to=3-3]
+  \arrow["{a\bullet\rm{loop}}"', from=3-1, to=3-3]
+\end{tikzcd}\]
 
 ```agda
-    to-base≡ : ∀ y → base ≡ y → base≡ y
-    to-base≡ = S¹-elim (λ x → x) $ funext-dep λ {x₀} {x₁} α →
-      let
-        have : x₁ ≡ x₀ ∙ loop
-        have = sym (from-pathp α) ∙ subst-path-right _ _
-
-        want : PathP (λ i → ua (∙-post-equiv loop) i) x₀ x₁
-        want = path→ua-pathp (∙-post-equiv loop) (sym have)
-      in want
+    path : ∀ y → totl y → base ≡ y
+    path = S¹-elim fst $ ua→ λ _ → ∙-filler _ loop
 ```
 
-Next, we extend the first projection from the total algebra $\sum_{x :
-\Omega S^1} P(x)$ to a map between arbitrary fibres of `totl`{.Agda} and
-`base≡`{.Agda}. Here the coherence is even easier: we have an
-identification in some total space and we want an identification in its
-base; modulo the use of some `ua`{.Agda}-related helpers, this turns out
-to be `refl`{.Agda}.
+Now we have a statement which is sufficiently general to prove by path
+induction: projecting the index using `path`{.Agda} from the result of
+applying our universal map, even at an arbitrary based path $l :
+\rm{base} \is y$, is the identity function; And, by construction, when
+$y = \rm{base}$, this statement reduces to precisely the identification
+between indices we were looking for.
 
 ```agda
-    path : ∀ y → totl y → base≡ y
-    path = S¹-elim fst $ ua→ λ _ → path→ua-pathp _ refl
-```
-
-Finally, we can use path induction to show that the two ways of mapping
-a loop into `base≡`{.Agda} agree, where one is the identity and the
-other is the first projection from rotating our basepoint. This
-completes the proof of the elimination principle, and indeed of the
-universal property.
-
-```agda
-    pathβ : ∀ y l → path y (subst totl l (refl , pr)) ≡ to-base≡ y l
-    pathβ y = J (λ y l → path y (subst totl l (refl , pr)) ≡ to-base≡ y l)
+    pathβ : ∀ y l → path y (subst totl l (refl , pr)) ≡ l
+    pathβ y = J (λ y l → path y (subst totl l (refl , pr)) ≡ l)
       (transport-refl refl)
-  ```
+```
 
 ```agda
 ΩS¹≃Int : (base ≡ base) ≃ Int
