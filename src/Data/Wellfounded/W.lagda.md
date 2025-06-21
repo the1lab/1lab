@@ -223,7 +223,7 @@ hand.
     invl (sup l f) = refl
 ```
 
-## Initial algebras are inductive types
+## Initial algebras are inductive types {defines="induction-from-initiality"}
 
 We will now show the other direction of the correspondence: given an
 initial $W$-algebra, we *recover* the type $W_A B$ *and its induction

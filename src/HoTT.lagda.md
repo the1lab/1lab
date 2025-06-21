@@ -776,23 +776,13 @@ fundamental group of the circle.
 
 <!--
 ```agda
-_ = S¹Path.Cover
-_ = S¹Path.encode
-_ = S¹Path.decode
-_ = S¹Path.encode-decode
-_ = S¹Path.encode-loopⁿ
-_ = ΩS¹≃integers
+_ = ΩS¹≃Int
 _ = π₁S¹≡ℤ
 _ = πₙ₊₂S¹≡0
 ```
 -->
 
-* Definition 8.1.1: `S¹Path.Cover`{.Agda}
-* Definition 8.1.5: `S¹Path.encode`{.Agda}
-* Definition 8.1.6: `S¹Path.decode`{.Agda}
-* Lemma 8.1.7: `S¹Path.encode-decode`{.Agda}
-* Lemma 8.1.8: `S¹Path.encode-loopⁿ`{.Agda}
-* Corollary 8.1.10: `ΩS¹≃integers`{.Agda}
+* Corollary 8.1.10: `ΩS¹≃Int`{.Agda}
 * Corollary 8.1.11: `π₁S¹≡ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
 
 ### 8.2: Connectedness of suspensions
