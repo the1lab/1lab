@@ -237,7 +237,7 @@ P(l)$. The family associated to this action will be called
 ```
 
 By rotating the basepoint (given by the method $\rm{pr} : P\
-\rm{base}$), we get a value in $P$, but its type appears to be way off.
+\rm{refl}$), we get a value in $P$, but its type appears to be way off.
 Essentially, to show that our `attempt`{.Agda} landed in the right
 fibre, we would like to reduce to the case where $l = \refl$, since
 there the index is essentially trivially correct.
