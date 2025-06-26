@@ -2,8 +2,8 @@
 ```agda
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
-open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
+open import 1Lab.Truncation
 open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -82,11 +82,7 @@ The class of surjections contains the identity --- and thus every
 equivalence --- and is closed under composition.
 
 ```agda
-∘-is-surjective
-  : {f : B → C} {g : A → B}
-  → is-surjective f
-  → is-surjective g
-  → is-surjective (f ∘ g)
+∘-is-surjective : ∘-closed is-surjective
 ∘-is-surjective {f = f} fs gs x = do
   (f*x , p) ← fs x
   (g*fx , q) ← gs f*x

@@ -2,10 +2,10 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Id.Base
-open import Data.Bool
 
 open import Meta.Traversable
 open import Meta.Idiom

@@ -2,8 +2,8 @@
 ```agda
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
-open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
+open import 1Lab.Truncation
 open import 1Lab.Inductive
 open import 1Lab.HLevel
 open import 1Lab.Equiv

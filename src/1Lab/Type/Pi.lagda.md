@@ -35,18 +35,18 @@ types _in the same universe_. Thus, there are functions to perturb the
 codomain of a dependent function by an equivalence across universe levels:
 
 ```agda
-Π-cod≃ : ((x : A) → P x ≃ Q x) → ((x : A) → P x) ≃ ((x : A) → Q x)
-Π-cod≃ k .fst f x = k x .fst (f x)
-Π-cod≃ k .snd .is-eqv f .centre .fst x   = equiv-centre (k x) (f x) .fst
-Π-cod≃ k .snd .is-eqv f .centre .snd i x = equiv-centre (k x) (f x) .snd i
-Π-cod≃ k .snd .is-eqv f .paths (g , p) i .fst x =
+Π-ap-cod : ((x : A) → P x ≃ Q x) → ((x : A) → P x) ≃ ((x : A) → Q x)
+Π-ap-cod k .fst f x = k x .fst (f x)
+Π-ap-cod k .snd .is-eqv f .centre .fst x   = equiv-centre (k x) (f x) .fst
+Π-ap-cod k .snd .is-eqv f .centre .snd i x = equiv-centre (k x) (f x) .snd i
+Π-ap-cod k .snd .is-eqv f .paths (g , p) i .fst x =
   equiv-path (k x) (f x) (g x , λ j → p j x) i .fst
-Π-cod≃ k .snd .is-eqv f .paths (g , p) i .snd j x =
+Π-ap-cod k .snd .is-eqv f .paths (g , p) i .snd j x =
   equiv-path (k x) (f x) (g x , λ k → p k x) i .snd j
 
-Π-dom≃ : (e : B ≃ A) → ((x : A) → P x) ≃ ((x : B) → P (e .fst x))
-Π-dom≃ e .fst k x = k (e .fst x)
-Π-dom≃ {P = P} e .snd =
+Π-ap-dom : (e : B ≃ A) → ((x : A) → P x) ≃ ((x : B) → P (e .fst x))
+Π-ap-dom e .fst k x = k (e .fst x)
+Π-ap-dom {P = P} e .snd =
   is-iso→is-equiv λ where
     .is-iso.from k x → subst P (e.ε x) (k (e.from x))
     .is-iso.rinv k   → funext λ x →
@@ -57,13 +57,13 @@ codomain of a dependent function by an equivalence across universe levels:
       ∙ transport⁻transport (sym (ap P (e.ε x))) _
   where module e = Equiv e
 
-Π-impl-cod≃ : ((x : A) → P x ≃ Q x) → ({x : A} → P x) ≃ ({x : A} → Q x)
-Π-impl-cod≃ k .fst f {x} = k x .fst (f {x})
-Π-impl-cod≃ k .snd .is-eqv f .centre .fst {x}   = equiv-centre (k x) (f {x}) .fst
-Π-impl-cod≃ k .snd .is-eqv f .centre .snd i {x} = equiv-centre (k x) (f {x}) .snd i
-Π-impl-cod≃ k .snd .is-eqv f .paths (g , p) i .fst {x} =
+Π'-ap-cod : ((x : A) → P x ≃ Q x) → ({x : A} → P x) ≃ ({x : A} → Q x)
+Π'-ap-cod k .fst f {x} = k x .fst (f {x})
+Π'-ap-cod k .snd .is-eqv f .centre .fst {x}   = equiv-centre (k x) (f {x}) .fst
+Π'-ap-cod k .snd .is-eqv f .centre .snd i {x} = equiv-centre (k x) (f {x}) .snd i
+Π'-ap-cod k .snd .is-eqv f .paths (g , p) i .fst {x} =
   equiv-path (k x) (f {x}) (g {x} , λ j → p j {x}) i .fst
-Π-impl-cod≃ k .snd .is-eqv f .paths (g , p) i .snd j {x} =
+Π'-ap-cod k .snd .is-eqv f .paths (g , p) i .snd j {x} =
   equiv-path (k x) (f {x}) (g {x} , λ k → p k {x}) i .snd j
 ```
 
@@ -71,9 +71,9 @@ For non-dependent functions, we can easily perturb both domain and
 codomain:
 
 ```agda
-function≃ : (A ≃ B) → (C ≃ D) → (A → C) ≃ (B → D)
-function≃ dom rng .fst f x = rng .fst (f (Equiv.from dom x))
-function≃ dom rng .snd =
+→-ap : (A ≃ B) → (C ≃ D) → (A → C) ≃ (B → D)
+→-ap dom rng .fst f x = rng .fst (f (Equiv.from dom x))
+→-ap dom rng .snd =
   is-iso→is-equiv λ where
     .is-iso.from f x → rng.from (f (dom .fst x))
     .is-iso.linv f   → funext λ x → rng.η _ ∙ ap f (dom.η _)
@@ -82,10 +82,10 @@ function≃ dom rng .snd =
     module dom = Equiv dom
     module rng = Equiv rng
 
-equiv≃ : (A ≃ B) → (C ≃ D) → (A ≃ C) ≃ (B ≃ D)
-equiv≃ x y = Σ-ap (function≃ x y) λ f → prop-ext
+≃-ap : (A ≃ B) → (C ≃ D) → (A ≃ C) ≃ (B ≃ D)
+≃-ap x y = Σ-ap (→-ap x y) λ f → prop-ext
   (is-equiv-is-prop _) (is-equiv-is-prop _)
-  (λ e → ∘-is-equiv (∘-is-equiv ((x e⁻¹) .snd) e) (y .snd))
+  (λ e → ∘-is-equiv (y .snd) (∘-is-equiv e ((x e⁻¹) .snd)))
   λ e → equiv-cancelr ((x e⁻¹) .snd) (equiv-cancell (y .snd) e)
 ```
 

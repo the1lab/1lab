@@ -457,8 +457,8 @@ we have the following chain of equivalences suffices.
 
 ```agda
   rem₁ =
-    ((b : B) → P b)                             ≃⟨ Π-cod≃ (λ x → Π-contr-eqv {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
-    ((b : B) → n-Tr (fibre f b) (suc n) → P b)  ≃⟨ Π-cod≃ (λ x → n-Tr-univ n (phl _)) ⟩
+    ((b : B) → P b)                             ≃⟨ Π-ap-cod (λ x → Π-contr-eqv {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
+    ((b : B) → n-Tr (fibre f b) (suc n) → P b)  ≃⟨ Π-ap-cod (λ x → n-Tr-univ n (phl _)) ⟩
     ((b : B) → fibre f b → P b)                 ≃⟨ shuffle ⟩
     ((a : A) → P (f a))                         ≃∎
 ```

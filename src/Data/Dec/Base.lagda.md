@@ -78,6 +78,11 @@ private variable
 instance
   Discrete→Dec : ⦃ _ : Discrete A ⦄ {x y : A} → Dec (x ≡ y)
   Discrete→Dec ⦃ d ⦄ {x} {y} = d .decide x y
+
+  Discrete-Lift : ⦃ _ : Discrete A ⦄ → Discrete (Lift ℓ A)
+  Discrete-Lift ⦃ d ⦄ .decide x y with d .decide (x .lower) (y .lower)
+  ... | yes p = yes (ap lift p)
+  ... | no ¬p = no λ p → ¬p (ap lower p)
 ```
 -->
 

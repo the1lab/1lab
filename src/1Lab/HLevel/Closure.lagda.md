@@ -166,6 +166,17 @@ Equiv→is-hlevel : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
 Equiv→is-hlevel n f = equiv→is-hlevel n _ (Equiv.inverse f .snd)
 ```
 
+<!--
+```agda
+is-hlevel-ap : ∀ n → A ≃ B → is-hlevel A n ≃ is-hlevel B n
+is-hlevel-ap n f = prop-ext
+  (is-hlevel-is-prop n)
+  (is-hlevel-is-prop n)
+  (Equiv→is-hlevel n (f e⁻¹))
+  (Equiv→is-hlevel n f)
+```
+-->
+
 ## Functions into n-types
 
 We can now prove that the $n$-types are closed under all type formers

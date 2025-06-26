@@ -360,8 +360,8 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
 
   to-eqv : ∀ {x y} → is-equiv (to {x} {y})
   to-eqv = ∘-is-equiv
-    (Hom≃Bilinear _ _ _ .snd)
     (curry-bilinear-is-equiv _ _ _)
+    (Hom≃Bilinear _ _ _ .snd)
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
   nat f g h = trivial!

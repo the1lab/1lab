@@ -72,7 +72,7 @@ will not dwell on the details.
 ```agda
 surjections-split→set-projective {A = A} A-set surj-split P P-set ∥P∥ =
   ∥-∥-map
-    (Equiv.to (Π-cod≃ (Fibre-equiv P)))
+    (Equiv.to (Π-ap-cod (Fibre-equiv P)))
     (surj-split (Σ[ x ∈ A ] (P x)) (Σ-is-hlevel 2 A-set P-set) fst λ x →
       ∥-∥-map (Equiv.from (Fibre-equiv P x)) (∥P∥ x))
 

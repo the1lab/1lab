@@ -91,6 +91,16 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
     λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
 ```
 
+<!--
+```agda
+≃-is-hlevelˡ : (n : Nat) → is-hlevel A (suc n) → is-hlevel (A ≃ B) (suc n)
+≃-is-hlevelˡ n ahl = is-hlevel-join n λ e → ≃-is-hlevel (suc n) ahl (Equiv→is-hlevel (suc n) (Equiv.inverse e) ahl)
+
+≃-is-hlevelʳ : (n : Nat) → is-hlevel B (suc n) → is-hlevel (A ≃ B) (suc n)
+≃-is-hlevelʳ n bhl = is-hlevel-join n λ e → ≃-is-hlevel (suc n) (Equiv→is-hlevel (suc n) e bhl) bhl
+```
+-->
+
 ## h-Levels of paths
 
 Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.

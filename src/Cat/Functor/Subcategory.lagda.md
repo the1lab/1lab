@@ -63,7 +63,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} (subcat : Subcat C o' ℓ') whe
     constructor sub-hom
     field
       hom : Hom (x .fst) (y .fst)
-      witness : subcat .is-hom hom (x .snd) (y .snd)
+      witness : is-hom hom (x .snd) (y .snd)
 
 open Subcat-hom
 ```
@@ -233,7 +233,7 @@ the forgetful functor is pseudomonic.
 ```agda
   is-pseudomonic-Forget-subcat
     : (∀ {x y} {f : Hom x y} {px : x ∈ S} {py : y ∈ S}
-       → is-invertible f → S .is-hom f px py)
+       → is-invertible f → is-hom f px py)
     → is-pseudomonic Forget-subcat
   is-pseudomonic-Forget-subcat invert .is-pseudomonic.faithful =
     is-faithful-Forget-subcat
