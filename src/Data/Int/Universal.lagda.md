@@ -25,7 +25,6 @@ endomorphism.
 record Integers (ℤ : Type) : Typeω where
   no-eta-equality
   field
-    ℤ-is-set : is-set ℤ
     point  : ℤ
     rotate : ℤ ≃ ℤ
 ```
@@ -166,7 +165,6 @@ cancelling the $f\inv f$ critical pair in the middle.
 
 ```agda
   r : Integers HIT.Int
-  r .ℤ-is-set = hlevel 2
   r .point = 0
   r .rotate = HIT.sucℤ , HIT.sucℤ-is-equiv
   r .map-out point rot int = map-out.go rot int .fst point
@@ -228,7 +226,6 @@ Int-integers = r where
     to (Ind.negsuc x) = neg x
 
   r : Integers Ind.Int
-  r .ℤ-is-set = Discrete→is-set Ind.Discrete-Int
   r .point = Ind.pos 0
   r .rotate = Ind.suc-equiv
   r .map-out p e i = map-out.to e i .fst p
@@ -257,3 +254,38 @@ Int-integers = r where
     go (Ind.pos x) = pos x
     go (Ind.negsuc x) = neg x
 ```
+
+<!--
+```agda
+module _ {A B : Type} (ia : Integers A) (ib : Integers B) where
+  private
+    module A = Integers ia
+    module B = Integers ib
+
+    to : A → B
+    to = A.map-out B.point B.rotate
+
+    from : B → A
+    from = B.map-out A.point A.rotate
+
+    to-from : ∀ x → to (from x) ≡ x
+    to-from x =
+      B.map-out-unique (λ x → to (from x)) {r = B.rotate}
+        (ap to (B.map-out-point _ _) ∙ A.map-out-point _ _)
+        (λ x → ap to (B.map-out-rotate A.point A.rotate _) ∙ A.map-out-rotate _ _ _)
+        x
+      ∙ sym (B.map-out-unique (λ x → x) refl (λ x → refl) x)
+
+    from-to : ∀ x → from (to x) ≡ x
+    from-to x =
+      A.map-out-unique (λ x → from (to x)) {r = A.rotate}
+        (ap from (A.map-out-point _ _) ∙ B.map-out-point _ _)
+        (λ x → ap from (A.map-out-rotate B.point B.rotate _) ∙ B.map-out-rotate _ _ _)
+        x
+      ∙ sym (A.map-out-unique (λ x → x) refl (λ x → refl) x)
+
+  Integers-unique : A ≃ B
+  Integers-unique .fst = to
+  Integers-unique .snd = is-iso→is-equiv (iso from to-from from-to)
+```
+-->
