@@ -12,10 +12,10 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Nat.Base
 open import Data.Id.Base
-open import Data.Bool
 
 open import Meta.Foldable
 
@@ -191,7 +191,7 @@ instance
   h-level-is-prop ⦃ s≤s _ ⦄ = hlevel-instance (is-prop→is-hlevel-suc is-prop-is-prop)
 
   H-Level-Singleton : ∀ {ℓ} {A : Type ℓ} {a : A} {n : Nat} → H-Level (Singleton a) n
-  H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n (contr _ Singleton-is-contr))
+  H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n Singleton-is-contr)
 
   {-# INCOHERENT H-Level-projection #-}
   {-# OVERLAPPING h-level-is-prop #-}

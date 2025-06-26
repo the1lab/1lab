@@ -829,8 +829,9 @@ these types are both equivalent to maps $X \to Y$ over $f$.
     f-cobase-change-adj =
       hom-iso→adjoints
         (λ f' → π*.universalv (hom[ idl _ ] (f' ∘' ι! _)))
-        (∘-is-equiv (weak-cocartesian→precompose-equiv (weak-cocartesian _))
-          (fibration→universal-is-equiv ℰ fib f))
+        (∘-is-equiv
+          (fibration→universal-is-equiv ℰ fib f)
+          (weak-cocartesian→precompose-equiv (weak-cocartesian _)))
         universalv-natural
 ```
 

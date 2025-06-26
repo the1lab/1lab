@@ -122,6 +122,13 @@ f $ₛ x = f x
 ```agda
 open import Prim.Literals public
 
+∘-closed
+  : (∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type (ℓ ⊔ ℓ')) → Typeω
+∘-closed P =
+  ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+    {f : B → C} {g : A → B}
+  → P f → P g → P (f ∘ g)
+
 auto : ∀ {ℓ} {A : Type ℓ} → ⦃ A ⦄ → A
 auto ⦃ a ⦄ = a
 

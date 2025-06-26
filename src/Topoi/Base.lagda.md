@@ -569,7 +569,7 @@ functor.
   Slice-topos : Topos ℓ (Slice C X)
   Slice-topos .site = ∫ T.site (T.ι.F₀ X)
   Slice-topos .ι = slice→total F∘ Sliced (T.ι) X
-  Slice-topos .has-ff = ∘-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
+  Slice-topos .has-ff = ∘-is-equiv slice→total-is-ff (Sliced-ff {F = T.ι} (T.has-ff))
   Slice-topos .L = (Σf (T .L⊣ι.counit.ε _) F∘ Sliced (T.L) (T.ι.F₀ X)) F∘ total→slice
 
   Slice-topos .L-lex =
@@ -698,7 +698,7 @@ record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o' ℓ') : Type (lvl
 Geometric-embeddings-compose : Geom[ F ↪ G ] → Geom[ E ↪ F ] → Geom[ E ↪ G ]
 Geometric-embeddings-compose f g =
   record { morphism = f .morphism G∘ g .morphism
-         ; has-ff = ∘-is-equiv (g .has-ff) (f .has-ff) }
+         ; has-ff = ∘-is-equiv (f .has-ff) (g .has-ff) }
   where open Geom[_↪_]
 
 Topos→geometric-embedding : (T : Topos κ E) → Geom[ E ↪ PSh κ (T .Topos.site) ]

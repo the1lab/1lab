@@ -1,15 +1,10 @@
 <!--
 ```agda
-open import 1Lab.Path.IdentitySystem
-open import 1Lab.HLevel.Closure
-open import 1Lab.Univalence
-open import 1Lab.HLevel
-open import 1Lab.Equiv
-open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Prelude
 
 open import Data.Dec.Base
 open import Data.Sum.Base
+open import Data.Id.Base
 
 open is-equiv
 open is-contr
@@ -147,9 +142,6 @@ All the properties above hold both in classical and constructive mathematics, ev
 as the law of noncontradiction. However, the boolean operations satisfy both of these laws:
 
 ```agda
-not-involutive : (x : Bool) → not (not x) ≡ x
-not-involutive false i = false
-not-involutive true i = true
 
 not-and≡or-not : (x y : Bool) → not (and x y) ≡ or (not x) (not y)
 not-and≡or-not false y = refl
@@ -237,22 +229,6 @@ imp-not-or false y = refl
 imp-not-or true y = refl
 ```
 
-## The "not" equivalence
-
-The construction of `not`{.Agda} as an equivalence factors through
-showing that `not` is an isomorphism. In particular, `not`{.Agda} is its
-own inverse, so we need a proof that it's involutive, as is proven in
-`not-involutive`{.Agda}.  With this, we can get a proof that it's an
-equivalence:
-
-```agda
-not-is-equiv : is-equiv not
-not-is-equiv = is-involutive→is-equiv not-involutive
-
-not≃ : Bool ≃ Bool
-not≃ = not , not-is-equiv
-```
-
 <!--
 ```agda
 not-inj : ∀ {x y} → not x ≡ not y → x ≡ y
@@ -260,6 +236,12 @@ not-inj {x = true}  {y = true}  p = refl
 not-inj {x = true}  {y = false} p = sym p
 not-inj {x = false} {y = true}  p = sym p
 not-inj {x = false} {y = false} p = refl
+
+ne→is-not : ∀ {x y} → x ≠ y → x ≡ not y
+ne→is-not {true}  {true}  p = absurd (p refl)
+ne→is-not {true}  {false} p = refl
+ne→is-not {false} {true}  p = refl
+ne→is-not {false} {false} p = absurd (p refl)
 ```
 -->
 
@@ -274,133 +256,59 @@ identity equivalence or the "not" equivalence by seeing how it acts on
 the constructors.
 
 ```agda
+module _ (e : Bool ≃ Bool) where
+  private module e = Equiv e
+
+  bool-equiv-id : ∀ x y → e.to x ≡ x → e.to y ≡ y
+  bool-equiv-id true  true  α = α
+  bool-equiv-id false false α = α
+  bool-equiv-id true  false α with e.to false in β
+  ... | false = refl
+  ... | true  = absurd (true≠false (e.injective₂ α (Id≃path.to β)))
+  bool-equiv-id false true α with e.to true in β
+  ... | false = absurd (false≠true (e.injective₂ α (Id≃path.to β)))
+  ... | true  = refl
+
+  bool-equiv-not : ∀ x y → e.to x ≡ not x → e.to y ≡ not y
+  bool-equiv-not true  true  α = α
+  bool-equiv-not false false α = α
+  bool-equiv-not true  false α with e.to false in β
+  ... | true  = refl
+  ... | false = absurd (true≠false (e.injective₂ α (Id≃path.to β)))
+  bool-equiv-not false true  α with e.to true in β
+  ... | false = refl
+  ... | true  = absurd (false≠true (e.injective₂ α (Id≃path.to β)))
+
+  bool-equiv-not' : ∀ x y → e.to x ≠ x → e.to y ≡ not y
+  bool-equiv-not' x y α = bool-equiv-not x y (ne→is-not α)
+```
+
+```agda
 private
-  idLemma : (p : Bool ≃ Bool)
-          → p .fst true ≡ true
-          → p .fst false ≡ false
-          → p ≡ (_ , id-equiv)
-  idLemma p p1 p2 = Σ-path (funext lemma) (is-equiv-is-prop _ _ _) where
-    lemma : (x : Bool) → _
-    lemma false = p2
-    lemma true = p1
+  classify : Bool ≃ Bool → Bool
+  classify e with e .fst true ≡? true
+  ... | yes _ = true
+  ... | no  _ = false
+
+  named : Bool → Bool ≃ Bool
+  named = if_then id≃ else not≃
+
+  classify-named : (x : Bool) → classify (named x) ≡ x
+  classify-named true  = refl
+  classify-named false = refl
+
+  named-classify : (e : Bool ≃ Bool) → ∀ x → named (classify e) .fst x ≡ e .fst x
+  named-classify e x with e .fst true ≡? true
+  ... | yes p = sym (bool-equiv-id e true x p)
+  ... | no ¬p = sym (bool-equiv-not e true x (ne→is-not ¬p))
+
+
+Bool-automorphisms : (Bool ≃ Bool) ≃ Bool
+Bool-automorphisms .fst = classify
+Bool-automorphisms .snd = is-iso→is-equiv record
+  { from = named
+  ; rinv = classify-named
+  ; linv = λ e → Σ-pathp (funext (named-classify e))
+    (is-prop→pathp (λ _ → is-equiv-is-prop _) _ _)
+  }
 ```
-
-If it quacks like the identity equivalence, then it must be. Otherwise
-we're looking at the `not`{.Agda} equivalence.
-
-```agda
-  notLemma : (p : Bool ≃ Bool)
-           → p .fst true ≡ false
-           → p .fst false ≡ true
-           → p ≡ not≃
-  notLemma p p1 p2 = Σ-path (funext lemma) (is-equiv-is-prop _ _ _) where
-    lemma : (x : Bool) → _
-    lemma false = p2
-    lemma true = p1
-```
-
-With these two lemmas, we can proceed to classify the automorphisms of
-`Bool`{.Agda}. For this, we'll need another lemma: If a function `Bool →
-Bool` _doesn't_ map `f x ≡ x`, then it maps `f x ≡ not x`.
-
-```agda
-Bool-aut≡2 : (Bool ≡ Bool) ≡ Lift _ Bool
-Bool-aut≡2 = Iso→Path the-iso where
-  lemma : (f : Bool → Bool) {x : Bool} → ¬ f x ≡ x → f x ≡ not x
-  lemma f {false} x = caseᵈ (f false ≡ true) of λ where
-    (yes p) → p
-    (no ¬p) → absurd (¬p (x≠false→x≡true _ x))
-  lemma f {true} x = caseᵈ (f true ≡ false) of λ where
-    (yes p) → p
-    (no ¬p) → absurd (¬p (x≠true→x≡false _ x))
-```
-
-This lemma is slightly annoying to prove, but it's not too complicated.
-It's essentially two case splits: first on the boolean, and second on
-whether we're looking at `f x ≡ not x`. If we are, then it's fine (those
-are the `yes p = p` cases) - otherwise that contradicts what we've been told.
-
-```agda
-  the-iso : Iso (Bool ≡ Bool) (Lift _ Bool)
-
-  fst the-iso path = caseᵈ (transport path true ≡ true) of λ where
-    (yes path) → lift false
-    (no ¬path) → lift true
-```
-
-Now we classify the isomorphism by looking at what it does to
-`true`{.Agda}. We arbitrarily map `refl`{.Agda} to `false`{.Agda} and
-`not`{.Agda} to `true`{.Agda}.
-
-```agda
-  the-iso .snd .is-iso.from (lift false) = refl
-  the-iso .snd .is-iso.from (lift true)  = ua not≃
-```
-
-The inverse is determined by the same rule, but backwards. That's why
-it's an inverse! Everything computes in a way that lines up to this
-function being a `right inverse`{.Agda ident=is-iso.rinv} on the nose.
-
-```agda
-  the-iso .snd .is-iso.rinv (lift false) = refl
-  the-iso .snd .is-iso.rinv (lift true)  = refl
-```
-
-The left inverse is a lot more complicated to prove. We examine how the
-path acts on both `true` and `false`. There are four cases:
-
-```agda
-  the-iso .snd .is-iso.linv path with transport path true  ≡? true
-                                    | transport path false ≡? false
-  ... | yes true→true | yes false→false =
-    refl                  ≡⟨ sym (Path≃Equiv .snd .linv _) ⟩
-    ua (path→equiv refl) ≡⟨ ap ua path→equiv-refl ⟩
-    ua (_ , id-equiv)      ≡⟨ ap ua (sym (idLemma _ true→true false→false)) ⟩
-    ua (path→equiv path) ≡⟨ Path≃Equiv .snd .linv _ ⟩
-    path                  ∎
-```
-
-In the case where the path quacks like reflexivity, we use the
-[[univalence axiom]] to show that we must be looking at the reflexivity
-path. For this, we use `idLemma` to show that `path→equiv path` must be
-the identity equivalence.
-
-```agda
-  ... | yes true→true | no false→true' =
-    let
-      false→true = lemma (transport path) false→true'
-      fibres = is-contr→is-prop (path→equiv path .snd .is-eqv true)
-        (true , true→true) (false , false→true)
-    in absurd (true≠false (ap fst fibres))
-```
-
-The second case is when both booleans map to `true`{.Agda}. This is a
-contradiction - transport along a path is an equivalence, and
-equivalences have contractible fibres; Since we have two fibres over
-`true`{.Agda}, that means we must have `true ≡ false`.
-
-```agda
-  ... | no true→false' | yes false→false =
-    let
-      true→false = lemma (transport path) true→false'
-      fibres = is-contr→is-prop (path→equiv path .snd .is-eqv false)
-                              (true , true→false) (false , false→false)
-    in absurd (true≠false (ap fst fibres))
-```
-
-The other case is analogous.
-
-```agda
-  ... | no true→false' | no false→true' =
-    ua not≃
-      ≡⟨ ap ua (sym (notLemma _
-        (lemma (transport path) true→false')
-        (lemma (transport path) false→true')))
-      ⟩
-    ua (path→equiv path)  ≡⟨ Path≃Equiv .snd .linv _ ⟩
-    path                   ∎
-```
-
-The last case is when the path quacks like `ua (not, _)` - in that case,
-we use the `notLemma`{.Agda} to show it _must_ be `ua (not, _)`, and the
-univalence axiom finishes the job.

@@ -113,7 +113,7 @@ strong-mono-∘
   → is-strong-mono g
   → is-strong-mono (f ∘ g)
 strong-mono-∘ f g (f-mono , f-str) (g-mono , g-str) =
-  lifts→is-strong-mono (monic-∘ f-mono g-mono) λ e → ∘r-lifts-against C
+  lifts→is-strong-mono (∘-is-monic f-mono g-mono) λ e → ∘r-lifts-against C
     (orthogonal→lifts-against C (f-str e))
     (orthogonal→lifts-against C (g-str e))
 ```

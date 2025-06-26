@@ -90,27 +90,27 @@ id-epic g h p = sym (idr _) ∙∙ p ∙∙ idr _
 Both monos and epis are closed under composition.
 
 ```agda
-monic-∘
+∘-is-monic
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-monic f
   → is-monic g
   → is-monic (f ∘ g)
-monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
+∘-is-monic fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
 
-epic-∘
+∘-is-epic
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-epic f
   → is-epic g
   → is-epic (f ∘ g)
-epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
+∘-is-epic fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
 
 _∘Mono_ : ∀ {a b c} → b ↪ c → a ↪ b → a ↪ c
 (f ∘Mono g) .mor = f .mor ∘ g .mor
-(f ∘Mono g) .monic = monic-∘ (f .monic) (g .monic)
+(f ∘Mono g) .monic = ∘-is-monic (f .monic) (g .monic)
 
 _∘Epi_ : ∀ {a b c} → b ↠ c → a ↠ b → a ↠ c
 (f ∘Epi g) .mor = f .mor ∘ g .mor
-(f ∘Epi g) .epic = epic-∘ (f .epic) (g .epic)
+(f ∘Epi g) .epic = ∘-is-epic (f .epic) (g .epic)
 ```
 
 If $f \circ g$ is monic, then $g$ must also be monic.

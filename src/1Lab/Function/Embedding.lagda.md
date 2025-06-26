@@ -124,20 +124,16 @@ Subset-proj-embedding {B = B} Bprop x = Equiv→is-hlevel 1 (Fibre-equiv B x) (B
 
 <!--
 ```agda
-∙-is-embedding
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
-  → {f : A → B} {g : B → C}
-  → is-embedding f → is-embedding g → is-embedding (g ∘ f)
-∙-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c =
-  Equiv→is-hlevel 1
-    (fibre-∘-≃ c)
-    (Σ-is-hlevel 1 (g-emb c) (λ g-fib → f-emb (g-fib .fst)))
+∘-is-embedding : ∘-closed is-embedding
+∘-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c = Equiv→is-hlevel 1
+  (fibre-∘-≃ c)
+  (Σ-is-hlevel 1 (f-emb c) (λ f-fib → g-emb (f-fib .fst)))
 
 _∙emb_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
   → A ↪ B → B ↪ C → A ↪ C
 (f ∙emb g) .fst = g .fst ∘ f .fst
-(f ∙emb g) .snd = ∙-is-embedding (f .snd) (g .snd)
+(f ∙emb g) .snd = ∘-is-embedding (g .snd) (f .snd)
 
 infixr 30 _∙emb_
 
@@ -222,6 +218,9 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
     → is-embedding f
   cancellable→embedding' i p = embedding-lemma λ x → contr (x , refl) λ where
     (x , q) → Σ-pathp (i (sym q)) (commutes→square (ap (_∙ q) (p _) ∙∙ ∙-invl _ ∙∙ sym (∙-idr _)))
+
+  embedding-lemma' : (∀ x y → Path (fibre f (f x)) (x , refl) y) → is-embedding f
+  embedding-lemma' cffx = embedding-lemma λ x → contr (x , refl) (cffx x)
 
   abstract
     embedding→is-hlevel

@@ -135,7 +135,7 @@ AC→Surjections-split ac Aset Bset f =
 
 Surjections-split→AC : Surjections-split → Axiom-of-choice
 Surjections-split→AC ss {P = P} Bset Pset h = ∥-∥-map
-  (Equiv.to (Π-cod≃ (Fibre-equiv P)))
+  (Equiv.to (Π-ap-cod (Fibre-equiv P)))
   (ss (Σ-is-hlevel 2 Bset Pset) Bset fst λ b →
     ∥-∥-map (Equiv.from (Fibre-equiv P b)) (h b))
 ```

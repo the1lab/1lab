@@ -217,6 +217,18 @@ _ = λ t → record
   }
 ```
 
+<!--
+```agda
+Singleton-is-contr : {x : A} → is-contr (Singleton x)
+Singleton-is-contr {x = x} .centre = x , refl
+Singleton-is-contr {x = x} .paths (y , p) i = p i , λ j → p (i ∧ j)
+
+Singleton'-is-contr : {x : A} → is-contr (Σ[ y ∈ A ] y ≡ x)
+Singleton'-is-contr {x = x} .centre = x , refl
+Singleton'-is-contr {x = x} .paths (y , p) i = p (~ i) , λ j → p (~ i ∨ j)
+```
+-->
+
 This provides an example of a type that is not literally *defined* to be
 of a certain h-level, but there are also geometric examples. One is the
 unit interval, defined as a higher inductive type, which has *two*
@@ -506,6 +518,14 @@ is-prop∙→is-contr : ∀ {ℓ} {A : Type ℓ} → is-prop A → A → is-cont
 is-prop∙→is-contr prop x .centre = x
 is-prop∙→is-contr prop x .paths y = prop x y
 ```
+
+<!--
+```agda
+is-hlevel-join : ∀ {ℓ} {A : Type ℓ} (n : Nat) → (A → is-hlevel A (suc n)) → is-hlevel A (suc n)
+is-hlevel-join zero p x y = p x x y
+is-hlevel-join (suc n) p x y = p x x y
+```
+-->
 
 ### Propositionality of truncatedness
 

@@ -173,12 +173,12 @@ If $f, g$ are jointly monic and $h$ is monic, then
 $f \circ h$ and $g \circ h$ are jointly monic.
 
 ```agda
-jointly-monic-∘
+∘-is-jointly-monic
   : ∀ {w x y z} {f : Hom x y} {g : Hom x z} {h : Hom w x}
   → is-jointly-monic f g
   → is-monic h
   → is-jointly-monic (f ∘ h) (g ∘ h)
-jointly-monic-∘ {h = h} fg-joint-mono h-mono k₁ k₂ p q =
+∘-is-jointly-monic {h = h} fg-joint-mono h-mono k₁ k₂ p q =
   h-mono k₁ k₂ $
   fg-joint-mono (h ∘ k₁) (h ∘ k₂)
     (assoc _ _ _ ∙∙ p ∙∙ sym (assoc _ _ _))

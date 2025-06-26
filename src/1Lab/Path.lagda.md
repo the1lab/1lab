@@ -1058,9 +1058,10 @@ $(x, \refl) \is (y, p)$, we have to produce an identification $x \is y$
 (we can use $p$), and, over this, an identification of $\refl$ and $p$.
 
 ```agda
-Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
-                   → Path (Singleton x) (x , refl) y
-Singleton-is-contr {x = x} (y , p) =
+Singleton-contract
+  : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
+  → Path (Singleton x) (x , refl) y
+Singleton-contract {x = x} (y , p) =
 ```
 
 Writing out the dependency explicitly, we see that the second component
@@ -1084,7 +1085,7 @@ p)$, then transport our assumption over that.
 J {x = x} P prefl {y} p =
   let
     pull : (x , refl) ≡ (y , p)
-    pull = Singleton-is-contr (y , p)
+    pull = Singleton-contract (y , p)
   in subst₂ P (ap fst pull) (ap snd pull) prefl
 ```
 
