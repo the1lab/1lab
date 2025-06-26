@@ -1,6 +1,6 @@
 open import 1Lab.HLevel.Universe
-open import 1Lab.HIT.Truncation hiding (∃-syntax)
 open import 1Lab.HLevel.Closure
+open import 1Lab.Truncation hiding (∃-syntax)
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path

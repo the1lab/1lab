@@ -250,7 +250,7 @@ right-cancellation of epis to deduce that $R(L(e))$ must be epic.
       RL[e]-epic =
         C.epic-cancelr $
         C.subst-is-epic (unit.is-natural _ _ _) $
-        C.epic-∘
+        C.∘-is-epic
           (C.invertible→epic unit-im-invertible)
           (□-out! e-epi)
 ```
@@ -294,7 +294,7 @@ so it must also be an epi.
       unit-epic : C.is-epic (η x)
       unit-epic =
         C.subst-is-epic (sym factors) $
-        C.epic-∘
+        C.∘-is-epic
           (C.invertible→epic m-invertible)
           (□-out! e-epi)
 ```
@@ -337,7 +337,7 @@ diagram chase; we will spare the innocent reader the details.
       unit-mono =
         C.monic-cancell $
         C.subst-is-monic (unit.is-natural _ _ _) $
-        C.monic-∘
+        C.∘-is-monic
           (C.invertible→monic (is-reflective→unit-G-is-iso L⊣R reflective))
           f-mono
 

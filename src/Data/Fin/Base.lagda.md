@@ -259,6 +259,9 @@ Fin-cases p0 ps n with fin-view n
 
 fin-cons  : ∀ {ℓ} {n} {P : Fin (suc n) → Type ℓ} → P 0 → (∀ x → P (fsuc x)) → ∀ x → P x
 fin-cons = Fin-cases
+
+fin-nil : ∀ {ℓ} {P : Fin 0 → Type ℓ} → ∀ x → P x
+fin-nil x = absurd (Fin-absurd x)
 ```
 -->
 

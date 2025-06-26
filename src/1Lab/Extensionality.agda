@@ -3,9 +3,9 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
+open import 1Lab.Truncation
 open import 1Lab.Type.Sigma
 open import 1Lab.Type.Pi
 open import 1Lab.HLevel

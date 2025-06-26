@@ -280,7 +280,7 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≡π₁B = ∫-Path
     (∫hom (λ x → inc (path x))
       record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
-    (∘-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
+    (∘-is-equiv (∥-∥₀-idempotent (squash base base)) (G≃ΩB .snd))
 ```
 
 Since `Deloop`{.Agda} is a groupoid, each of its loop spaces is

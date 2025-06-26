@@ -235,7 +235,7 @@ Str-function-str-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
                            → is-univalent σ → is-univalent τ
                            → is-univalent (Str-function-str σ τ)
 Str-function-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
-  Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funext-dep≃
+  Π'-ap-cod (λ s → Π'-ap-cod λ t → →-ap (θ₁ eqv) (θ₂ eqv)) ∙e funext-dep≃
 ```
 
 ## Example: magmas
@@ -302,7 +302,7 @@ structures, one given by conjunction, one by disjunction, and prove that
 
 <div class=mathpar>
 ```agda
-  open import Data.Bool
+  open import Data.Bool.Base
 ```
 </pre></div>
 
@@ -503,7 +503,7 @@ Function-str-univalent
   → (τ : Structure ℓ T) → is-univalent τ
   → is-univalent (Function-str α τ)
 Function-str-univalent {S = S} {T = T} α α-tr τ τ-univ {X , f} {Y , g} eqv =
-  ((s : S X) → τ .is-hom (X , f s) (Y , _) eqv)     ≃⟨ Π-cod≃ (λ s → τ-univ eqv ∙e path→equiv (ap (PathP (λ i → T (ua eqv i)) (f s) ∘ g) (α-tr _ _))) ⟩
+  ((s : S X) → τ .is-hom (X , f s) (Y , _) eqv)     ≃⟨ Π-ap-cod (λ s → τ-univ eqv ∙e path→equiv (ap (PathP (λ i → T (ua eqv i)) (f s) ∘ g) (α-tr _ _))) ⟩
   ((s : S X) → PathP (λ i → T (ua eqv i)) (f s) _)  ≃⟨ (hetero-homotopy≃homotopy e⁻¹) ∙e funext-dep≃ ⟩
   _                                                 ≃∎
 ```
@@ -574,7 +574,7 @@ Product-action-is-transport α-tr β-tr e s =
   Σ-pathp (α-tr e (s .fst)) (β-tr e (s .snd))
 
 Function-action : Equiv-action S → Equiv-action T → Equiv-action (λ X → S X → T X)
-Function-action actx acty eqv = function≃ (actx eqv) (acty eqv)
+Function-action actx acty eqv = →-ap (actx eqv) (acty eqv)
 
 Function-action-is-transport
   : {α : Equiv-action S} {β : Equiv-action T}

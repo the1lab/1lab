@@ -237,7 +237,7 @@ pullback of $\rm{incl}$ along $\rm{incr}$ by general
 
 module _ ⦃ aset : H-Level A 2 ⦄ (f : C → A) (g : C → B) (g-emb : is-embedding g) where
   g-inj→incl-inj : is-embedding {A = A} {B = Pushout f g} incl
-  g-inj→incl-inj = ∙-is-embedding
+  g-inj→incl-inj = ∘-is-embedding
     (f-inj→incr-inj g f g-emb)
     (is-equiv→is-embedding swap-pushout-is-equiv)
 ```

@@ -258,11 +258,11 @@ restricted-monic+total→monic {f = f} f-rmonic f-total g1 g2 p =
 Restricted monics are closed under composition.
 
 ```agda
-restricted-monic-∘
+∘-is-restricted-monic
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
   → is-restricted-monic f → is-restricted-monic g
   → is-restricted-monic (f ∘ g)
-restricted-monic-∘ {f = f} {g = g} f-rmonic g-rmonic h1 h2 p =
+∘-is-restricted-monic {f = f} {g = g} f-rmonic g-rmonic h1 h2 p =
   (f ∘ g) ↓ ∘ h1         ≡⟨ pushl (sym (↓-cancell f g)) ⟩
   g ↓ ∘ (f ∘ g) ↓ ∘ h1   ≡⟨ g-rmonic _ _ g-lemma ⟩
   (g ↓) ∘ (f ∘ g) ↓ ∘ h2 ≡⟨ pulll (↓-cancell f g) ⟩

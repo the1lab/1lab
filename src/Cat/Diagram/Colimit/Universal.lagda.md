@@ -380,8 +380,8 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
         ∙e trivial-colimit-equiv!
 
       step2≃3 : step2 ≃ step3
-      step2≃3 = Π-cod≃ λ F → Π-cod≃ λ G → Π-cod≃ λ α → Π-cod≃ λ eq →
-        function≃ (colim/≃colim G) (colim/≃colim F)
+      step2≃3 = Π-ap-cod λ F → Π-ap-cod λ G → Π-ap-cod λ α → Π-ap-cod λ eq →
+        →-ap (colim/≃colim G) (colim/≃colim F)
 ```
 
 Finally, we show that this is equivalent to $\cC$ having universal colimits.
@@ -390,7 +390,7 @@ retracts onto $\cJ^\triangleright$.
 
 ```agda
     step3→4 : step3 → has-universal-colimits J C
-    step3→4 u F G α eq = Equiv.to (function≃ (▹-retract G) (▹-retract F))
+    step3→4 u F G α eq = Equiv.to (→-ap (▹-retract G) (▹-retract F))
       (u _ _ (α ◂ ▹-join) (◂-equifibred ▹-join α eq))
       where
         ▹-retract

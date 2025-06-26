@@ -6,10 +6,10 @@ open import 1Lab.Type hiding (absurd)
 
 open import Data.Product.NAry
 open import Data.String.Show
+open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Vec.Base
-open import Data.Bool
 
 open import Meta.Append
 ```
@@ -30,8 +30,8 @@ open import Meta.Alt public
 open Data.Product.NAry using ([_]) public
 open Data.List.Base hiding (lookup ; tabulate) public
 open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
+open Data.Bool.Base public
 open Data.Dec.Base public
-open Data.Bool public
 
 open import Data.Reflection.Fixity   public
 open import Data.Reflection.Name     public

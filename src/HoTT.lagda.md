@@ -369,7 +369,7 @@ _ = ∥-∥-out
 _ = is-contr
 _ = is-contr-is-prop
 _ = retract→is-contr
-_ = Singleton-is-contr
+_ = Singleton-contract
 _ = Σ-contract
 _ = Σ-contr-eqv
 ```
@@ -378,7 +378,7 @@ _ = Σ-contr-eqv
 * Definition 3.11.1: `is-contr`{.Agda}
 * Definition 3.11.4: `is-contr-is-prop`{.Agda}
 * Definition 3.11.7: `retract→is-contr`{.Agda}
-* Definition 3.11.8: `Singleton-is-contr`{.Agda}
+* Definition 3.11.8: `Singleton-contract`{.Agda}
 * Lemma 3.11.9: `Σ-contract`{.Agda}, `Σ-contr-eqv`{.Agda}
 
 ### Exercises
