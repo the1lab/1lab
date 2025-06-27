@@ -70,19 +70,19 @@ hiding, we wrap it as a distinct type constructor. This lets consumers
 of the type $\bQ$ forget that it's implemented as a localisation.
 
 ```agda
-data ℚ : Type where
-  inc : ⌞ L.S⁻¹R ⌟ → ℚ
+data Ratio : Type where
+  inc : ⌞ L.S⁻¹R ⌟ → Ratio
 
-toℚ : Fraction → ℚ
+toℚ : Fraction → Ratio
 toℚ x = inc (inc x)
 
-_+ℚ_ : ℚ → ℚ → ℚ
+_+ℚ_ : Ratio → Ratio → Ratio
 _+ℚ_ (inc x) (inc y) = inc (x L.+ₗ y)
 
-_*ℚ_ : ℚ → ℚ → ℚ
+_*ℚ_ : Ratio → Ratio → Ratio
 _*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 
--ℚ_ : ℚ → ℚ
+-ℚ_ : Ratio → Ratio
 -ℚ_ (inc x) = inc (L.-ₗ x)
 ```
 
@@ -96,7 +96,7 @@ _*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 -- The requirement of having a proper match means we can't use a record
 -- (even a no-eta pattern record), since Agda doesn't count those as
 -- proper. Therefore, we have to use a data type.
-unℚ : ℚ → ⌞ L.S⁻¹R ⌟
+unℚ : Ratio → ⌞ L.S⁻¹R ⌟
 unℚ (inc x) = x
 ```
 -->
@@ -108,7 +108,7 @@ over $\bQ$, it suffices to do so at the fractions.
 
 ```agda
 ℚ-elim-prop
-  : ∀ {ℓ} {P : ℚ → Type ℓ} (pprop : ∀ x → is-prop (P x))
+  : ∀ {ℓ} {P : Ratio → Type ℓ} (pprop : ∀ x → is-prop (P x))
   → (f : ∀ x → P (toℚ x))
   → ∀ x → P x
 ℚ-elim-prop pprop f (inc (inc x)) = f x
@@ -127,7 +127,7 @@ over $\bQ$, it suffices to do so at the fractions.
   : ∀ {ℓ} {P : Type ℓ} ⦃ _ : H-Level P 2 ⦄
   → (f : Fraction → P)
   → (∀ x y → x ≈ y → f x ≡ f y)
-  → ℚ → P
+  → Ratio → P
 ℚ-rec f p (inc x) = Coeq-rec f (λ (x , y , r) → p x y r) x
 ```
 -->
@@ -138,7 +138,7 @@ the converse is true as well:
 ```agda
 abstract
   quotℚ : ∀ {x y} → x ≈ y → toℚ x ≡ toℚ y
-  quotℚ p = ap ℚ.inc (quot p)
+  quotℚ p = ap Ratio.inc (quot p)
 
   unquotℚ : ∀ {x y} → toℚ x ≡ toℚ y → x ≈ y
   unquotℚ p = ≈.effective (ap unℚ p)
@@ -179,9 +179,9 @@ private
   x ≡ℚ? y = Discrete-quotient L.Fraction-congruence Dec-same-rational .decide x y
 
 instance
-  Discrete-ℚ : Discrete ℚ
+  Discrete-ℚ : Discrete Ratio
   Discrete-ℚ .decide (inc x) (inc y) with x ≡ℚ? y
-  ... | yes p = yes (ap ℚ.inc p)
+  ... | yes p = yes (ap Ratio.inc p)
   ... | no ¬p = no (¬p ∘ ap unℚ)
 ```
 -->
@@ -194,39 +194,39 @@ so we do not remark on them any further.
 </summary>
 
 ```agda
-_-ℚ_ : ℚ → ℚ → ℚ
+_-ℚ_ : Ratio → Ratio → Ratio
 (inc x) -ℚ (inc y) = inc (x L.+ₗ L.-ₗ y)
 
 infixl 8 _+ℚ_ _-ℚ_
 infixl 9 _*ℚ_
 infix 10 -ℚ_
 
-_/_ : (x y : Int) ⦃ _ : Positive y ⦄ → ℚ
+_/_ : (x y : Int) ⦃ _ : Positive y ⦄ → Ratio
 _/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
 
 infix 11 _/_
 
-{-# DISPLAY ℚ.inc (Coeq.inc (_/_[_] x y _)) = x / y #-}
+{-# DISPLAY Ratio.inc (Coeq.inc (_/_[_] x y _)) = x / y #-}
 {-# DISPLAY _/_ x (Int.pos 1) = x #-}
 
-_/1 : Int → ℚ
+_/1 : Int → Ratio
 x /1 = x / 1
 
 instance
-  H-Level-ℚ : ∀ {n} → H-Level ℚ (2 + n)
+  H-Level-ℚ : ∀ {n} → H-Level Ratio (2 + n)
   H-Level-ℚ = basic-instance 2 (Discrete→is-set auto)
 
-  Number-ℚ : Number ℚ
+  Number-ℚ : Number Ratio
   Number-ℚ .Number.Constraint _ = ⊤
   Number-ℚ .Number.fromNat x = pos x /1
 
-  Negative-ℚ : Negative ℚ
+  Negative-ℚ : Negative Ratio
   Negative-ℚ .Negative.Constraint _ = ⊤
   Negative-ℚ .Negative.fromNeg 0 = 0
   Negative-ℚ .Negative.fromNeg (suc x) = negsuc x /1
 
   Inductive-ℚ
-    : ∀ {ℓ ℓm} {P : ℚ → Type ℓ}
+    : ∀ {ℓ ℓm} {P : Ratio → Type ℓ}
     → ⦃ _ : Inductive ((x : Fraction) → P (toℚ x)) ℓm ⦄
     → ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
     → Inductive (∀ x → P x) ℓm
@@ -238,13 +238,13 @@ abstract
   +ℚ-idl (inc x) = ap inc (L.+ₗ-idl x)
 
   +ℚ-idr : ∀ x → x +ℚ 0 ≡ x
-  +ℚ-idr (inc x) = ap ℚ.inc (CRing.+-idr L.S⁻¹R)
+  +ℚ-idr (inc x) = ap Ratio.inc (CRing.+-idr L.S⁻¹R)
 
   +ℚ-invl : ∀ x → (-ℚ x) +ℚ x ≡ 0
-  +ℚ-invl (inc x) = ap ℚ.inc (CRing.+-invl L.S⁻¹R {x})
+  +ℚ-invl (inc x) = ap Ratio.inc (CRing.+-invl L.S⁻¹R {x})
 
   +ℚ-invr : ∀ x → x +ℚ (-ℚ x) ≡ 0
-  +ℚ-invr (inc x) = ap ℚ.inc (L.+ₗ-invr x)
+  +ℚ-invr (inc x) = ap Ratio.inc (L.+ₗ-invr x)
 
   +ℚ-associative : ∀ x y z → x +ℚ (y +ℚ z) ≡ (x +ℚ y) +ℚ z
   +ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.+ₗ-assoc x y z)
@@ -256,7 +256,7 @@ abstract
   *ℚ-idl (inc x) = ap inc (L.*ₗ-idl x)
 
   *ℚ-idr : ∀ x → x *ℚ 1 ≡ x
-  *ℚ-idr (inc x) = ap ℚ.inc (CRing.*-idr L.S⁻¹R)
+  *ℚ-idr (inc x) = ap Ratio.inc (CRing.*-idr L.S⁻¹R)
 
   *ℚ-associative : ∀ x y z → x *ℚ (y *ℚ z) ≡ (x *ℚ y) *ℚ z
   *ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.*ₗ-assoc x y z)
@@ -265,13 +265,13 @@ abstract
   *ℚ-commutative (inc x) (inc y) = ap inc (L.*ₗ-comm x y)
 
   *ℚ-zerol : ∀ x → 0 *ℚ x ≡ 0
-  *ℚ-zerol (inc x) = ap ℚ.inc (CRing.*-zerol L.S⁻¹R {x})
+  *ℚ-zerol (inc x) = ap Ratio.inc (CRing.*-zerol L.S⁻¹R {x})
 
   *ℚ-zeror : ∀ x → x *ℚ 0 ≡ 0
-  *ℚ-zeror (inc x) = ap ℚ.inc (CRing.*-zeror L.S⁻¹R {x})
+  *ℚ-zeror (inc x) = ap Ratio.inc (CRing.*-zeror L.S⁻¹R {x})
 
   *ℚ-distribl : ∀ x y z → x *ℚ (y +ℚ z) ≡ x *ℚ y +ℚ x *ℚ z
-  *ℚ-distribl (inc x) (inc y) (inc z) = ap ℚ.inc (L.*ₗ-distribl x y z)
+  *ℚ-distribl (inc x) (inc y) (inc z) = ap Ratio.inc (L.*ₗ-distribl x y z)
 
   *ℚ-distribr : ∀ x y z → (y +ℚ z) *ℚ x ≡ y *ℚ x +ℚ z *ℚ x
   *ℚ-distribr x y z = *ℚ-commutative (y +ℚ z) x ∙ *ℚ-distribl x y z ∙ ap₂ _+ℚ_ (*ℚ-commutative x y) (*ℚ-commutative x z)
@@ -283,11 +283,11 @@ abstract
 *ℚ-monoid = record { has-is-semigroup = record { has-is-magma = record { has-is-set = hlevel 2 } ; associative = λ {x} {y} {z} → *ℚ-associative x y z } ; idl = *ℚ-idl _ ; idr = *ℚ-idr _ }
 
 ℚ-ring : CRing lzero
-∣ ℚ-ring .fst ∣ = ℚ
+∣ ℚ-ring .fst ∣ = Ratio
 ℚ-ring .fst .is-tr = hlevel 2
 ℚ-ring .snd .CRing-on.has-ring-on = to-ring-on mk where
   open make-ring
-  mk : make-ring ℚ
+  mk : make-ring Ratio
   mk .ring-is-set = hlevel 2
   mk .0R = 0
   mk .make-ring._+_ = _+ℚ_
@@ -316,10 +316,10 @@ type of inverses is a proposition --- it suffices to show this at the
 more concrete level of integer fractions.
 
 ```agda
-inverseℚ : (x : ℚ) → x ≠ 0 → Σ[ y ∈ ℚ ] (x *ℚ y ≡ 1)
+inverseℚ : (x : Ratio) → x ≠ 0 → Σ[ y ∈ Ratio ] (x *ℚ y ≡ 1)
 inverseℚ = ℚ-elim-prop is-p go where
   abstract
-    is-p : (x : ℚ) → is-prop (x ≠ 0 → Σ[ y ∈ ℚ ] (x *ℚ y ≡ 1))
+    is-p : (x : Ratio) → is-prop (x ≠ 0 → Σ[ y ∈ Ratio ] (x *ℚ y ≡ 1))
     is-p x = Π-is-hlevel 1 λ _ (y , p) (z , q) → Σ-prop-path! (monoid-inverse-unique *ℚ-monoid x y z (*ℚ-commutative y x ∙ p) q)
 
     rem₁ : ∀ x y → 1 *ℤ (x *ℤ y) *ℤ 1 ≡ 1 *ℤ (y *ℤ x)
@@ -334,7 +334,7 @@ fraction $y/x$. It's then routine to show that $(x/y)(y/x) = 1$ holds in
 $\bQ$.
 
 ```agda
-  go : (x : Fraction) → toℚ x ≠ 0 → Σ[ y ∈ ℚ ] (toℚ x *ℚ y ≡ 1)
+  go : (x : Fraction) → toℚ x ≠ 0 → Σ[ y ∈ Ratio ] (toℚ x *ℚ y ≡ 1)
   go (posz / y [ _ ]) nz = absurd (nz (quotℚ (L.inc 1 decide! refl)))
   go (x@(possuc x') / y [ _ ]) nz = y / x , quotℚ (L.inc 1 decide! (rem₁ x y))
   go (x@(negsuc x') / y [ p ]) nz with y | p
@@ -553,10 +553,10 @@ integer-frac-splits = record
 ```agda
 private module split = is-split-congruence integer-frac-splits
 
-reduceℚ : ℚ → Fraction
+reduceℚ : Ratio → Fraction
 reduceℚ (inc x) = split.choose x
 
-splitℚ : (x : ℚ) → fibre toℚ x
+splitℚ : (x : Ratio) → fibre toℚ x
 splitℚ (inc x) = record
   { fst = split.choose x
   -- The use of 'recover' here replaces the calculated proof that
@@ -603,17 +603,17 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
 -- don't generally get any easier by assuming a common denominator.
 
 ℚ-elim-propⁿ
-  : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → ℚ) (Type ℓ)}
-  → ⦃ _ : {as : Πᶠ (λ i → ℚ)} → H-Level (applyᶠ P as) 1 ⦄
+  : ∀ (n : Nat) {ℓ} {P : Arrᶠ {n = n} (λ _ → Ratio) (Type ℓ)}
+  → ⦃ _ : {as : Πᶠ (λ i → Ratio)} → H-Level (applyᶠ P as) 1 ⦄
   → ( (d : Int) ⦃ p : Positive d ⦄
     → ∀ᶠ n (λ i → Int) (λ as → applyᶠ P (mapₚ (λ i n → toℚ (n / d [ p ])) as)))
-  → ∀ᶠ n (λ _ → ℚ) λ as → applyᶠ P as
+  → ∀ᶠ n (λ _ → Ratio) λ as → applyᶠ P as
 
 ℚ-elim-propⁿ n {P = P} work = curry-∀ᶠ go where abstract
-  reps : ∀ n → (qs : Fin n → ℚ) → ∥ ((i : Fin n) → fibre toℚ (qs i)) ∥
+  reps : ∀ n → (qs : Fin n → Ratio) → ∥ ((i : Fin n) → fibre toℚ (qs i)) ∥
   reps n qs = finite-choice n (λ i → ℚ-elim-prop {P = λ x → ∥ fibre toℚ x ∥} (λ _ → squash) (λ x → inc (x , refl)) (qs i))
 
-  go : (as : Πᶠ (λ i → ℚ)) → applyᶠ P as
+  go : (as : Πᶠ (λ i → Ratio)) → applyᶠ P as
   go as = ∥-∥-out! do
     fracs' ← reps _ (indexₚ as)
 
@@ -627,7 +627,7 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
     (d , d≠0 , nums , same') ← pure (common-denominator _ fracs)
 
     let
-      rats : Πᶠ (λ i → ℚ)
+      rats : Πᶠ (λ i → Ratio)
       rats = mapₚ (λ i n → toℚ (n / d [ d≠0 ])) (tabulateₚ nums)
 
       p₀ : applyᶠ P rats
@@ -645,7 +645,7 @@ same-frac : Fraction → Fraction → Prop lzero
 same-frac f@record{} g@record{} = el! (f .↑ *ℤ g .↓ ≡ g .↑ *ℤ f .↓)
 
 private
-  eqℚ : ℚ → ℚ → Prop lzero
+  eqℚ : Ratio → Ratio → Prop lzero
   eqℚ (inc x) (inc y) = Coeq-rec₂ (hlevel 2) same-frac
     (λ { f@(x / s [ p ]) (g@(y / t [ q ]) , h@(z / u [ r ]) , α) → n-ua (prop-ext!
       (λ β → from-same-rational {h} {f} (≈.symᶜ α ≈.∙ᶜ to-same-rational β))
@@ -658,7 +658,7 @@ private
 open Extensional
 
 instance
-  Extensional-ℚ : Extensional ℚ lzero
+  Extensional-ℚ : Extensional Ratio lzero
   Extensional-ℚ .Pathᵉ x y = ⌞ eqℚ x y ⌟
   Extensional-ℚ .reflᵉ = ℚ-elim-prop (λ _ → hlevel 1) λ { record{} → refl }
   Extensional-ℚ .idsᵉ .to-path {a} {b} = go a b where
@@ -666,7 +666,7 @@ instance
     go = ℚ-elim-propⁿ 2 (λ d a b p → quotℚ (to-same-rational p))
   Extensional-ℚ .idsᵉ .to-path-over p = prop!
 
-record Nonzero (x : ℚ) : Type where
+record Nonzero (x : Ratio) : Type where
   constructor inc
   -- It's important that Nonzero is a strict proposition, living in
   -- Type, so that it doesn't matter what instance gets selected when we
@@ -705,17 +705,17 @@ instance
 
 -- Since we want invℚ to be injective as well, we re-wrap the result on
 -- the RHS, to make sure the clause is headed by a constructor.
-invℚ : (x : ℚ) ⦃ p : Nonzero x ⦄ → ℚ
+invℚ : (x : Ratio) ⦃ p : Nonzero x ⦄ → Ratio
 invℚ (inc x) ⦃ inc α ⦄ = inc (unℚ (inverseℚ (inc x) (λ p → absurd (α p)) .fst))
 
-*ℚ-invr : {x : ℚ} {p : Nonzero x} → x *ℚ invℚ x ⦃ p ⦄ ≡ 1
+*ℚ-invr : {x : Ratio} {p : Nonzero x} → x *ℚ invℚ x ⦃ p ⦄ ≡ 1
 *ℚ-invr {inc x} {inc α} with inverseℚ (inc x) (λ p → absurd (α p))
 ... | (inc x , p) = p
 
 -ℚ-def : ∀ x y → x +ℚ (-ℚ y) ≡ x -ℚ y
 -ℚ-def (inc x) (inc y) = refl
 
-_/ℚ_ : (x y : ℚ) ⦃ p : Nonzero y ⦄ → ℚ
+_/ℚ_ : (x y : Ratio) ⦃ p : Nonzero y ⦄ → Ratio
 inc x /ℚ inc y = inc x *ℚ invℚ (inc y)
 
 abstract

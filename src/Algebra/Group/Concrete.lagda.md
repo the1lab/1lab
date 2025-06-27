@@ -298,7 +298,7 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     pt≡y : pt H ≡ y
     pt≡y = p refl
 
-    f≡p : ∀ ω → Square refl (f · ω) (p ω) (p refl)
+    f≡p : ∀ ω → Triangle (f · ω) (p ω) (p refl)
     f≡p ω = ∙-filler (f · ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
     □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .snd .pres-⋆) f-p
