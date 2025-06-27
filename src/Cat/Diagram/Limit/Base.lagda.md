@@ -51,7 +51,7 @@ of the [single object category with one morphism] into some category
 $\cC$. If we look at the image of such a functor, we can see that it
 picks out a single object; the single morphism must be taken to the
 identity morphism due to functoriality. We can scale this example up
-to functors from [discrete category] with $n$ elements; if we look at
+to functors from the [discrete category] with $n$ elements; if we look at
 the image of such a functor, we shall see that it selects out $n$ objects
 of $\cC$.
 
@@ -74,7 +74,7 @@ consists of a pair of objects; these diagrams correspond to functors
 out of the category with 2 objects and only identity morphisms.
 Equalisers are defined over a diagram that consists of a pair of parallel
 morphisms; such diagrams are given by functors out of the aforementioned
-parallel arrows category. Pullbacks defined over a diagram of the shape,
+parallel arrows category. Pullbacks are defined over a diagram of the shape,
 $\bullet \to \bullet \leftarrow \bullet$; again, these diagrams are
 given by functors out of the category with that exact shape. Terminal
 objects may seem to break this trend, but we can think of them as
