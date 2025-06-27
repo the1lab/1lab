@@ -93,9 +93,9 @@ square below (this is the `comp`{.Agda} term):
 ~~~
 
 ```agda
-  hasFib : (y : B) → fibre f y
-  hasFib y .fst = g y
-  hasFib y .snd i = comp P (∂ i) λ where
+  has-fib : (y : B) → fibre f y
+  has-fib y .fst = g y
+  has-fib y .snd i = comp P (∂ i) λ where
     j (i = i1) → v j y
     j (i = i0) → u j (g y)
     j (j = i0) → g y
@@ -108,10 +108,10 @@ dependent, and thus none of the path operations (especially
 to construct:
 
 ```agda
-  fibProp : (y : B) → is-prop (fibre f y)
-  fibProp y (x₀ , β₀) (x₁ , β₁) k = ω k , λ j → δ k (~ j) where
+  fib-is-prop : (y : B) → is-prop (fibre f y)
+  fib-is-prop y (x₀ , β₀) (x₁ , β₁) k = ω k , λ j → δ k (~ j) where
     ω : x₀ ≡ x₁
-    δ : Square refl (sym β₀) (sym β₁) (ap f ω)
+    δ : Triangle (sym β₀) (sym β₁) (ap f ω)
 ```
 
 While `ω`{.Agda} is a line, `δ`{.Agda} is a _square_. Namely, by looking
@@ -212,7 +212,7 @@ below:
       j (k = i1) → ω₁ j
       j (j = i0) → g y
 
-    θ : Square refl ω₀ ω₁ ω
+    θ : Triangle ω₀ ω₁ ω
     θ k i = hfill (∂ k) i λ where
       j (k = i0) → ω₀ j
       j (k = i1) → ω₁ j
@@ -266,14 +266,14 @@ The idea behind the diagram is to piece together the three squares we
 have constructed, `θ`{.Agda}, `θ₀`{.Agda} and `θ₁`{.Agda}, with the
 intent of getting a composite `β₀ ≡ β₁`. The purpleish square behind is
 `θ`{.Agda}; The brownish square in front is `δ`{.Agda}. Finally, putting
-together the `proof of inhabitation`{.Agda ident=hasFib} and the `proof
-of propositionality`{.Agda ident=fibProp}, we get the desired:
+together the `proof of inhabitation`{.Agda ident=has-fib} and the `proof
+of propositionality`{.Agda ident=fib-is-prop}, we get the desired:
 `f`{.Agda} is an equivalence.
 
 ```agda
 line→is-equiv : is-equiv f
-line→is-equiv .is-eqv y .centre = hasFib y
-line→is-equiv .is-eqv y .paths = fibProp y _
+line→is-equiv .is-eqv y .centre = has-fib y
+line→is-equiv .is-eqv y .paths = fib-is-prop y _
 
 line→equiv : A ≃ B
 line→equiv .fst = f

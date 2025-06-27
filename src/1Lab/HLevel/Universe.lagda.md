@@ -210,5 +210,19 @@ n-Type-square sq i j .∣_∣ = sq i j
 n-Type-square {p = p} {q} {s} {r} sq i j .is-tr =
   is-prop→squarep (λ i j → is-hlevel-is-prop {A = sq i j} _)
     (ap is-tr p) (ap is-tr q) (ap is-tr s) (ap is-tr r) i j
+
+n-ua-square
+  : ∀ {ℓ} {n}
+  → {w x y z : n-Type ℓ n}
+  → {p : ∣ x ∣ ≃ ∣ w ∣} {q : ∣ x ∣ ≃ ∣ y ∣} {s : ∣ w ∣ ≃ ∣ z ∣} {r : ∣ y ∣ ≃ ∣ z ∣}
+  → Path (∣ x ∣ → ∣ z ∣) (λ a → s .fst (p .fst a)) (λ a → r .fst (q .fst a))
+  → Square (n-ua {X = x} {w} p) (n-ua {X = x} {y} q) (n-ua {X = w} {z} s) (n-ua r)
+n-ua-square x = n-Type-square (ua-square x)
+
+n-ua-triangle
+  : ∀ {ℓ n} {A B C : n-Type ℓ n} {e : ∣ A ∣ ≃ ∣ B ∣} {f : ∣ A ∣ ≃ ∣ C ∣} {g : ∣ B ∣ ≃ ∣ C ∣}
+  → Path (∣ A ∣ → ∣ C ∣) (f .fst) (λ x → g .fst (e .fst x))
+  → Triangle (n-ua {X = A} {B} e) (n-ua {Y = C} f) (n-ua g)
+n-ua-triangle α = n-Type-square (ua-triangle α)
 ```
 -->

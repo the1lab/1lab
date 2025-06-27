@@ -337,7 +337,7 @@ _[_≔_]
   : ∀ {ℓ} {A : Type ℓ} {n}
   → (Fin n → A) → Fin (suc n) → A
   → Fin (suc n) → A
-_[_≔_] {n = n} p i a j with fin-view i | fin-view j
+_[_≔_] {n = n} ρ i a j with fin-view i | fin-view j
 _[_≔_] {n = n} ρ fzero a fzero             | zero  | zero  = a
 _[_≔_] {n = n} ρ fzero a .(fsuc j)         | zero  | suc j = ρ j
 _[_≔_] {n = suc n} ρ .(fsuc i) a .fzero    | suc i | zero  = ρ fzero

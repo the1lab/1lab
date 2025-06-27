@@ -279,12 +279,9 @@ from this page. You can unfold it below if you dare:
     -- link between these two splits.
 
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
-    ... | inl x<y | inl (s≤s x<y') = Σ-pathp refl $ Σ-pathp refl $
-      commutes→square (∙-idl _)
-    ... | inr (inl x>y) | inr (inl (s≤s x>y')) = Σ-pathp refl $ Σ-pathp refl $
-      commutes→square (∙-idl _)
-    ... | inr (inr x≡y) | inr (inr x≡y') = Σ-pathp refl $ Σ-pathp refl $
-      commutes→square (∙-idl _)
+    ... | inl x<y | inl (s≤s x<y')             = refl ,ₚ refl ,ₚ ∙-filler _ _
+    ... | inr (inl x>y) | inr (inl (s≤s x>y')) = refl ,ₚ refl ,ₚ ∙-filler _ _
+    ... | inr (inr x≡y) | inr (inr x≡y')       = refl ,ₚ refl ,ₚ ∙-filler _ _
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda

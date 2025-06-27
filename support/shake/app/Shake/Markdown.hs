@@ -148,6 +148,8 @@ buildMarkdown digest reader modname input output = do
     Dir.createDirectoryIfMissing False "_build/search"
 
     Text.writeFile output $ renderHTML5 tags
+
+  traced "search" do
     encodeFile ("_build/search" </> modname <.> "json") search
 
   for_ (Map.toList defs <> Map.toList defs') \(key, bs) -> do

@@ -246,6 +246,12 @@ more than a handful of intermediate steps:
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
 
+  commutes→triangle : {p : x ≡ y} {q : x ≡ z} {r : y ≡ z} → q ≡ p ∙ r → Triangle p q r
+  commutes→triangle α = commutes→square (∙-idl _ ∙ α)
+
+  triangle→commutes : {p : x ≡ y} {q : x ≡ z} {r : y ≡ z} → Triangle p q r → q ≡ p ∙ r
+  triangle→commutes α = ∙-unique _ α
+
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
     → Square p q s r → p ∙ s ≡ q ∙ r

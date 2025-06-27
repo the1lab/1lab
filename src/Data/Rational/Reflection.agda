@@ -28,7 +28,7 @@ private
   strip-leading-impl-ℚs : Term → Telescope × Term
   strip-leading-impl-ℚs it@(pi (arg i ty) (abs nm b)) = go (i .ArgInfo.arg-vis) ty module spi where
     go : Visibility → Term → Telescope × Term
-    go hidden (def₀ (quote ℚ)) with (etel , tm') ← strip-leading-impl-ℚs b =
+    go hidden (def₀ (quote Ratio)) with (etel , tm') ← strip-leading-impl-ℚs b =
       (nm , arg (set-visibility visible i) ty) ∷ etel , tm'
     go _ ty = [] , it
   strip-leading-impl-ℚs tm = [] , tm

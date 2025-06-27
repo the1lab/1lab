@@ -26,7 +26,7 @@ private variable
 ```
 -->
 
-# Homotopy groups {defines="homotopy-group fundamental-group"}
+# Homotopy groups {defines="homotopy-group fundamental-group loop-space"}
 
 :::{.definition #loop-space}
 Given a [[pointed type]] $(A, a)$ we refer to the type $a = a$ as the

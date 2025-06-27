@@ -558,6 +558,12 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p q : Path A a b} where private
 
 <!--
 ```agda
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+  → Type ℓ
+Triangle p q r = Square refl p q r
+
 SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
   {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
@@ -1535,7 +1541,7 @@ p ∙ q = refl ∙∙ p ∙∙ q
 
 ∙-filler
   : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-  → (p : x ≡ y) (q : y ≡ z) → Square refl p (p ∙ q) q
+  → (p : x ≡ y) (q : y ≡ z) → Triangle p (p ∙ q) q
 ∙-filler {x = x} {y} {z} p q = ∙∙-filler refl p q
 
 infixr 30 _∙_
@@ -1807,7 +1813,7 @@ its filler), it is contractible:
 ∙-unique
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} {p : x ≡ y} {q : y ≡ z}
   → (r : x ≡ z)
-  → Square refl p r q
+  → Triangle p r q
   → r ≡ p ∙ q
 ∙-unique {p = p} {q} r square i =
   ∙∙-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
