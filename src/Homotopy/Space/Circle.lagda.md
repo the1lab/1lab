@@ -294,7 +294,7 @@ between indices we were looking for.
 ΩS¹≃Int : (base ≡ base) ≃ Int
 ΩS¹≃Int = Integers-unique ΩS¹-integers Int-integers
 
-open Equiv ΩS¹≃Int renaming (from to loopⁿ) using ()
+open Equiv ΩS¹≃Int renaming (from to loopⁿ) using () public
 ```
 
 It immediately follows from this that the circle is a [[groupoid]],

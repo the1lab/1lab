@@ -635,7 +635,7 @@ reasoning concludes what we wanted: `Axiom-str`{.Agda} is univalent.
       σ .is-hom (A , s) (B , t) f
         ≃⟨ univ f ⟩
       PathP (λ i → S (ua f i)) s t
-        ≃⟨ Σ-contract (λ x → PathP-is-hlevel 0 (contr b (axioms-prop b))) e⁻¹ ⟩
+        ≃⟨ Σ-contr-snd (λ x → PathP-is-hlevel 0 (contr b (axioms-prop b))) e⁻¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
         ≃⟨ Σ-pathp≃ ⟩
       PathP (λ i → Σ (S (ua f i)) (λ v → axioms (ua f i) v)) (s , a) (t , b)

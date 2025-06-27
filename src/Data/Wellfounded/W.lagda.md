@@ -683,7 +683,7 @@ x` is empty for every `x : A`, then the W-type `W A B` is equivalent to
     → W A B ≃ A
   W-no-branch-≃ ¬B =
     W A B                    ≃⟨ W-fixpoint ⟩
-    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contract (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
+    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contr-snd (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
     A                        ≃∎
 ```
 
