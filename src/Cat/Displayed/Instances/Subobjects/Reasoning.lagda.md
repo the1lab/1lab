@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.display.top:100 #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Pullback.Along
 open import Cat.Displayed.Cartesian

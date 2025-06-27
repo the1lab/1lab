@@ -246,7 +246,7 @@ $\|\Sigma_{a : A} B(a)\|_n \simeq \|\Sigma_{a : A} \|B(a)\|_n\|_n
   : ∀ n → is-n-connected A n → (∀ a → is-n-connected (P a) n) → is-n-connected (Σ A P) n
 Σ-is-n-connected 0 = _
 Σ-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ Equiv→is-hlevel 0
-  (n-Tr-Σ ∙e n-Tr-≃ (Σ-contract λ _ → n-connected.to n (b-conn _)))
+  (n-Tr-Σ ∙e n-Tr-≃ (Σ-contr-snd λ _ → n-connected.to n (b-conn _)))
   (n-connected.to n a-conn)
 ```
 
