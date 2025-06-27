@@ -103,7 +103,7 @@ trying to construct a map into a functor. What are maps into functors?
 Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
 transformation $\eps : {!_x} \circ \mathord{!} \to D$, where $!_x : \top
-\to \cC$ denotes the constant functor that maps object to $x$ and every
+\to \cC$ denotes the constant functor that maps every object to $x$ and every
 morphism to $\id$, and $! : \cJ \to \top$ denotes the unique functor into
 the [[terminal category]]. The components of such a natural
 transformation yield maps from $x \to D(j)$ for every $j : \cJ$, and
