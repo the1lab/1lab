@@ -621,14 +621,14 @@ _ = T²
 _ = Pushout
 _ = Cocone
 _ = Pushout-is-universal-cocone
-_ = Susp≡Pushout-⊤←A→⊤
+_ = Susp≃pushout
 ```
 -->
 
 * The pushout: `Pushout`{.Agda}
 * Definition 6.8.1: `Cocone`{.Agda}
 * Lemma 6.8.2: `Pushout-is-universal-cocone`{.Agda}
-* Observation: `Susp≡Pushout-⊤←A→⊤`{.Agda}
+* Observation: `Susp≃pushout`{.Agda}
 
 ### 6.9: Truncations
 
