@@ -10,10 +10,12 @@ import Cat.Reasoning
 module Cat.Groupoid where
 ```
 
-# Groupoids {defines="pregroupoid"}
+# Groupoids
 
+:::{.definition #pregroupoid}
 A category $\cC$ is a (pre)**groupoid** if every morphism of $\cC$ is
 invertible.
+:::
 
 ```agda
 is-pregroupoid : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)

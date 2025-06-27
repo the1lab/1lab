@@ -51,11 +51,10 @@ The fundamental example of an [[abelian group]] is the group of
 
 We show that $\ZZ$ is the [[free group]] on one generator, i.e. the
 [[free object]] on $\top$ relative to the forgetful functor from groups
-to sets, `Grp↪Sets`{.Agda}.
-
-We start by defining the [[group homomorphism]] $\ZZ \to G$ that sends
-$n$ to $x^n$ (or, in additive notation, $n \cdot x$), where $G$ is a group
-and $x$ is an element of $G$, using the [[universal property of the integers]].
+to sets, `Grp↪Sets`{.Agda}. We start by defining the [[group
+homomorphism]] $\ZZ \to G$ that sends $n$ to $x^n$ (or, in additive
+notation, $n \cdot x$), where $G$ is a group and $x$ is an element of
+$G$, using the [[universal property of the integers]].
 
 <!--
 ```agda

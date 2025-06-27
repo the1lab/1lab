@@ -20,14 +20,16 @@ module Algebra.Group where
 
 # Groups {defines=group}
 
+::: {.popup .keep}
 A **group** is a [monoid] that has inverses for every element. The
 inverse for an element is, [necessarily, unique]; thus, to say that "$(G,
 \star)$ is a group" is a statement about $(G, \star)$ having a certain
 _property_ (namely, being a group), not _structure_ on $(G, \star)$.
+:::
 
-Furthermore, since [[group homomorphisms]]
-automatically preserve this structure, we are justified in calling this
-_property_ rather than _property-like structure_.
+Furthermore, since [[group homomorphisms]] automatically preserve this
+structure, we are justified in calling this _property_ rather than
+_property-like structure_.
 
 [monoid]: Algebra.Monoid.html
 [necessarily, unique]: Algebra.Monoid.html#inverses
@@ -151,6 +153,13 @@ instance
 ```
 
 # Group homomorphisms {defines="group-homomorphism"}
+
+::: popup
+A **[[group]] homomorphism** $f : (G, \star) \to (H, \cdot)$ is a
+function $f : G \to H$ between their underlying [[sets]] which preserves
+multiplication, i.e. which satisfies $$ f(x \star y) = f(x) \cdot f(y)
+$$ for every $x, y : G$.
+:::
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
