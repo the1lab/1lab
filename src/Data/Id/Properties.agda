@@ -17,7 +17,6 @@ symᵢ-symᵢ reflᵢ = refl
 symᵢ-from : ∀ {ℓ} {A : Type ℓ} {x y : A} (p : x ≡ y) → symᵢ (Id≃path.from p) ≡ Id≃path.from (sym p)
 symᵢ-from = J (λ y p → symᵢ (Id≃path.from p) ≡ Id≃path.from (sym p)) (ap symᵢ (transport-refl reflᵢ) ∙ sym (transport-refl reflᵢ))
 
-
 apᵢ-from : (f : A → B) {x y : A} (p : x ≡ y) → apᵢ f (Id≃path.from p) ≡ Id≃path.from (ap f p)
 apᵢ-from f = J (λ y p → apᵢ f (Id≃path.from p) ≡ Id≃path.from (ap f p)) (ap (apᵢ f) (transport-refl reflᵢ) ∙ sym (transport-refl reflᵢ))
 
