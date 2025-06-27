@@ -7,11 +7,11 @@ open import 1Lab.Type
   hiding (Σ-syntax ; case_of_ ; case_return_of_)
   public
 
-open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
+open import 1Lab.Path public
 
-open import 1Lab.Path.IdentitySystem public
 open import 1Lab.Path.IdentitySystem.Interface public
+open import 1Lab.Path.IdentitySystem public
 
 open import Meta.Brackets public
 open import Meta.Append public

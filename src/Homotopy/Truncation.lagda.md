@@ -52,7 +52,7 @@ hubs-and-spokes→hlevel
 
 <!--
 ```agda
-hlevel→hubs-and-spokes 0 prop sph = sph N , λ x → prop (sph x) (sph N)
+hlevel→hubs-and-spokes 0 prop sph = sph north , λ x → prop (sph x) (sph north)
 hlevel→hubs-and-spokes {A = A} (suc n) h =
   helper λ x y → hlevel→hubs-and-spokes n (h x y)
   where
@@ -60,22 +60,22 @@ hlevel→hubs-and-spokes {A = A} (suc n) h =
     : ((a b : A) → (sph : Sⁿ⁻¹ (1 + n) → a ≡ b) → Σ _ λ hub → ∀ x → sph x ≡ hub)
     → (sph : Sⁿ⁻¹ (2 + n) → A)
     → Σ _ λ hub → ∀ x → sph x ≡ hub
-  helper h f = f N , sym ∘ r where
-    r : (x : Sⁿ⁻¹ (2 + n)) → f N ≡ f x
-    r N = refl
-    r S = h (f N) (f S) (λ x i → f (merid x i)) .fst
+  helper h f = f north , sym ∘ r where
+    r : (x : Sⁿ⁻¹ (2 + n)) → f north ≡ f x
+    r north = refl
+    r south = h (f north) (f south) (λ x i → f (merid x i)) .fst
     r (merid x i) j = hcomp (∂ i ∨ ∂ j) λ where
-       k (i = i0) → f N
-       k (i = i1) → h (f N) (f S) (λ x i → f (merid x i)) .snd x k j
-       k (j = i0) → f N
+       k (i = i0) → f north
+       k (i = i1) → h (f north) (f south) (λ x i → f (merid x i)) .snd x k j
+       k (j = i0) → f north
        k (j = i1) → f (merid x i)
        k (k = i0) → f (merid x (i ∧ j))
 
 hubs-and-spokes→hlevel {A = A} zero spheres x y
-  = spheres go .snd N ∙ sym (spheres go .snd S) where
+  = spheres go .snd north ∙ sym (spheres go .snd south) where
     go : Sⁿ⁻¹ 1 → A
-    go N = x
-    go S = y
+    go north = x
+    go south = y
 hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
   hubs-and-spokes→hlevel n $ helper spheres x y where
   helper
@@ -85,20 +85,20 @@ hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
     → Σ _ λ hub → ∀ x → sph x ≡ hub
   helper h x y f = _ , r  where
     f' : Sⁿ⁻¹ (2 + n) → A
-    f' N = x
-    f' S = y
+    f' north = x
+    f' south = y
     f' (merid u i) = f u i
 
-    r : (s : Sⁿ⁻¹ (1 + n)) → f s ≡ h f' .snd N ∙ sym (h f' .snd S)
+    r : (s : Sⁿ⁻¹ (1 + n)) → f s ≡ h f' .snd north ∙ sym (h f' .snd south)
     r s i j = hcomp (∂ i ∨ ∂ j) λ where
-      k (k = i0) → h f' .snd N (~ i ∨ j)
+      k (k = i0) → h f' .snd north (~ i ∨ j)
       k (i = i0) → h f' .snd (merid s j) (~ k)
       k (i = i1) → hfill (∂ j) k λ where
         l (j = i0) → x
-        l (j = i1) → h f' .snd S (~ l)
-        l (l = i0) → h f' .snd N j
-      k (j = i0) → h f' .snd N (~ i ∧ ~ k)
-      k (j = i1) → h f' .snd S (~ k)
+        l (j = i1) → h f' .snd south (~ l)
+        l (l = i0) → h f' .snd north j
+      k (j = i0) → h f' .snd north (~ i ∧ ~ k)
+      k (j = i1) → h f' .snd south (~ k)
 ```
 -->
 

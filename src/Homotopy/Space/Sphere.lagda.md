@@ -39,19 +39,19 @@ open is-iso
 SuspS⁻¹≃S⁰ : Susp S⁻¹ ≡ S⁰
 SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
   SuspS⁻¹→S⁰ : Susp S⁻¹ → S⁰
-  SuspS⁻¹→S⁰ N = true
-  SuspS⁻¹→S⁰ S = false
+  SuspS⁻¹→S⁰ north = true
+  SuspS⁻¹→S⁰ south = false
 
   S⁰→SuspS⁻¹ : S⁰ → Susp S⁻¹
-  S⁰→SuspS⁻¹ true = N
-  S⁰→SuspS⁻¹ false = S
+  S⁰→SuspS⁻¹ true = north
+  S⁰→SuspS⁻¹ false = south
 
   iso-pf : is-iso SuspS⁻¹→S⁰
   iso-pf .from = S⁰→SuspS⁻¹
   iso-pf .rinv false = refl
   iso-pf .rinv true = refl
-  iso-pf .linv N = refl
-  iso-pf .linv S = refl
+  iso-pf .linv north = refl
+  iso-pf .linv south = refl
 ```
 
 # n-Spheres {defines="sphere"}
@@ -86,10 +86,10 @@ to a definition:
 
 ```agda
   SuspS⁰→S¹ : Sⁿ⁻¹ 2 → S¹
-  SuspS⁰→S¹ N = base
-  SuspS⁰→S¹ S = base
-  SuspS⁰→S¹ (merid N i) = base
-  SuspS⁰→S¹ (merid S i) = loop i
+  SuspS⁰→S¹ north = base
+  SuspS⁰→S¹ south = base
+  SuspS⁰→S¹ (merid north i) = base
+  SuspS⁰→S¹ (merid south i) = loop i
 ```
 
 In the other direction, we send `base` to `N`, and then need to send
@@ -99,8 +99,8 @@ both meridians.
 
 ```agda
   S¹→SuspS⁰ : S¹ → Sⁿ⁻¹ 2
-  S¹→SuspS⁰ base = N
-  S¹→SuspS⁰ (loop i) = (merid S ∙ sym (merid N)) i
+  S¹→SuspS⁰ base = north
+  S¹→SuspS⁰ (loop i) = (merid south ∙ sym (merid north)) i
 ```
 
 <details> <summary> We then verify that these maps are inverse equivalences.
@@ -114,24 +114,24 @@ using lemmas on transport in pathspaces. </summary>
   iso-pf .rinv base = refl
   iso-pf .rinv (loop i) =
     ap (λ p → p i)
-      (ap SuspS⁰→S¹ (merid S ∙ sym (merid N)) ≡⟨ ap-∙ SuspS⁰→S¹ (merid S) (sym (merid N))⟩
-      loop ∙ refl                             ≡⟨ ∙-idr _ ⟩
-      loop                                    ∎)
-  iso-pf .linv N = refl
-  iso-pf .linv S = merid N
-  iso-pf .linv (merid N i) j = merid N (i ∧ j)
-  iso-pf .linv (merid S i) j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → merid S i
-    k (i = i0) → N
-    k (i = i1) → merid N (j ∨ ~ k)
-    k (j = i0) → ∙-filler (merid S) (sym (merid N)) k i
-    k (j = i1) → merid S i
+      (ap SuspS⁰→S¹ (merid south ∙ sym (merid north)) ≡⟨ ap-∙ SuspS⁰→S¹ (merid south) (sym (merid north))⟩
+      loop ∙ refl                                     ≡⟨ ∙-idr _ ⟩
+      loop                                            ∎)
+  iso-pf .linv north = refl
+  iso-pf .linv south = merid north
+  iso-pf .linv (merid north i) j = merid north (i ∧ j)
+  iso-pf .linv (merid south i) j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → merid south i
+    k (i = i0) → north
+    k (i = i1) → merid north (j ∨ ~ k)
+    k (j = i0) → ∙-filler (merid south) (sym (merid north)) k i
+    k (j = i1) → merid south i
 ```
 </details>
 
 <!--
 ```agda
 Sⁿ : Nat → Type∙ lzero
-Sⁿ n = Sⁿ⁻¹ (suc n) , N
+Sⁿ n = Sⁿ⁻¹ (suc n) , north
 ```
 -->

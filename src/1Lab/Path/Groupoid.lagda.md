@@ -188,12 +188,15 @@ square expresses the equation we're looking for. Thankfully, we only
 have to do this once!
 
 ```agda
-  ∙-invr : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
-  ∙-invr {x = x} p i j = hcomp (∂ j ∨ i) λ where
-    k (k = i0) → p (j ∧ ~ i)
-    k (i = i1) → x
+  ∙-invr-filler : ∀ {x y : A} (p : x ≡ y) → I → I → I → A
+  ∙-invr-filler {x = x} p i j k = hfill (∂ j ∨ i) k λ where
+    k (k = i0) → p j
+    k (i = i1) → p (~ k ∧ j)
     k (j = i0) → x
-    k (j = i1) → p (~ k ∧ ~ i)
+    k (j = i1) → p (~ k)
+
+  ∙-invr : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
+  ∙-invr p i j = ∙-invr-filler p i j i1
 ```
 
 For the other direction, we use the fact that `p` is definitionally
