@@ -61,12 +61,12 @@ algebra.
 ```agda
 module _ {ℓ ℓ'} {A∙@(A , a₀) : Type∙ ℓ} {B∙@(B , b₀) : Type∙ ℓ'} where
   Σ-map∙→loops : (Σ∙ A∙ →∙ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
-  Σ-map∙→loops f .fst   = f .fst S
+  Σ-map∙→loops f .fst   = f .fst south
   Σ-map∙→loops f .snd a = sym (f .snd) ∙ ap (f .fst) (merid a)
 
   loops→Σ-map∙ : (Σ _ λ bs → A → b₀ ≡ bs) → (Σ∙ A∙ →∙ B∙)
-  loops→Σ-map∙ pair .fst N           = b₀
-  loops→Σ-map∙ pair .fst S           = pair .fst
+  loops→Σ-map∙ pair .fst north       = b₀
+  loops→Σ-map∙ pair .fst south       = pair .fst
   loops→Σ-map∙ pair .fst (merid x i) = pair .snd x i
   loops→Σ-map∙ pair .snd = refl
 ```
@@ -98,8 +98,8 @@ equivalences is not very interesting, so I've kept it hidden.</summary>
     invl : is-left-inverse loops→Σ-map∙ Σ-map∙→loops
     invl (f , pres) i = funext f' i , λ j → pres (~ i ∨ j) where
       f' : (a : Susp A) → loops→Σ-map∙ (Σ-map∙→loops (f , pres)) .fst a ≡ f a
-      f' N = sym pres
-      f' S = refl
+      f' north = sym pres
+      f' south = refl
       f' (merid x i) j = ∙-filler₂ (sym pres) (ap f (merid x)) j i
 
   loops≃map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) ≃ (A∙ →∙ Ω∙ B∙)
@@ -168,20 +168,20 @@ at either point) are the same thing as points of $A$.
 ```agda
 Ωⁿ≃Sⁿ-map : ∀ {ℓ} {A : Type∙ ℓ} n → (Sⁿ n →∙ A) ≃ Ωⁿ n A .fst
 Ωⁿ≃Sⁿ-map {A = A} zero    = Iso→Equiv (from , iso to (λ _ → refl) invr) where
-  to : A .fst → ((Susp ⊥ , N) →∙ A)
-  to x .fst N = A .snd
-  to x .fst S = x
+  to : A .fst → ((Susp ⊥ , north) →∙ A)
+  to x .fst north = A .snd
+  to x .fst south = x
   to x .snd = refl
 
-  from : ((Susp ⊥ , N) →∙ A) → A .fst
-  from f = f .fst S
+  from : ((Susp ⊥ , north) →∙ A) → A .fst
+  from f = f .fst south
 
   invr : is-right-inverse from to
-  invr (x , p) = Σ-pathp (funext (λ { N → sym p ; S → refl })) λ i j → p (~ i ∨ j)
+  invr (x , p) = Σ-pathp (funext (λ { north → sym p ; south → refl })) λ i j → p (~ i ∨ j)
 
 Ωⁿ≃Sⁿ-map {A = A} (suc n) =
-  (Σ∙ (Susp _ , N) →∙ A)          ≃⟨ Σ-map∙≃map∙-Ω ⟩
-  ((Susp (Sⁿ⁻¹ n) , N) →∙ Ωⁿ 1 A) ≃⟨ Ωⁿ≃Sⁿ-map n ⟩
+  (Σ∙ (Susp _ , north) →∙ A)          ≃⟨ Σ-map∙≃map∙-Ω ⟩
+  ((Susp (Sⁿ⁻¹ n) , north) →∙ Ωⁿ 1 A) ≃⟨ Ωⁿ≃Sⁿ-map n ⟩
   Ωⁿ n (Ωⁿ 1 A) .fst              ≃⟨ path→equiv (ap fst (reassoc-Ω n)) ⟩
   Ωⁿ (suc n) A .fst               ≃∎
 ```
