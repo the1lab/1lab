@@ -370,8 +370,8 @@ _ = is-contr
 _ = is-contr-is-prop
 _ = retract→is-contr
 _ = Singleton-contract
-_ = Σ-contract
-_ = Σ-contr-eqv
+_ = Σ-contr-snd
+_ = Σ-contr-fst
 ```
 -->
 
@@ -379,7 +379,7 @@ _ = Σ-contr-eqv
 * Definition 3.11.4: `is-contr-is-prop`{.Agda}
 * Definition 3.11.7: `retract→is-contr`{.Agda}
 * Definition 3.11.8: `Singleton-contract`{.Agda}
-* Lemma 3.11.9: `Σ-contract`{.Agda}, `Σ-contr-eqv`{.Agda}
+* Lemma 3.11.9: `Σ-contr-snd`{.Agda}, `Σ-contr-fst`{.Agda}
 
 ### Exercises
 
@@ -396,7 +396,7 @@ _ = ¬global-choice
 _ = ∥-∥-elim
 _ = LEM≃DNE
 _ = ℕ-well-ordered
-_ = Σ-contr-eqv
+_ = Σ-contr-fst
 _ = is-prop≃equiv∥-∥
 _ = Listing→choice
 ```
@@ -412,7 +412,7 @@ _ = Listing→choice
 * Exercise 3.17: `∥-∥-elim`{.Agda}
 * Exercise 3.18: `LEM≃DNE`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
-* Exercise 3.20: `Σ-contr-eqv`{.Agda}
+* Exercise 3.20: `Σ-contr-fst`{.Agda}
 * Exercise 3.21: `is-prop≃equiv∥-∥`{.Agda}
 * Exercise 3.22: `Finite-choice`{.Agda}
 
