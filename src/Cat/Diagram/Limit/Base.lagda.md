@@ -102,9 +102,9 @@ Luckily, we can! If we take a step back, we can notice that we are
 trying to construct a map into a functor. What are maps into functors?
 Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
-transformation $\eps : {!x} \circ \mathord{!} \to D$, where $!x : \top
+transformation $\eps : {!x} \circ \mathord{!} \to D$, where $!x : \{*\}
 \to \cC$ denotes the constant functor that maps object to $x$ and every
-morphism to $\id$, and $! : \cJ \to \top$ denotes the unique functor into
+morphism to $\id$, and $! : \cJ \to \{*\}$ denotes the unique functor into
 the [[terminal category]]. The components of such a natural
 transformation yield maps from $x \to D(j)$ for every $j : \cJ$, and
 naturality ensures that these maps must commute with the rest of the
@@ -115,8 +115,8 @@ diagram. We can describe this situation diagrammatically like so:
   && \{*\} \\
   \\
   {\cJ} &&& {} & {\cC}
-  \arrow[from=3-1, to=1-3]
-  \arrow["{!X}"', from=1-3, to=3-5]
+  \arrow["{!}", from=3-1, to=1-3]
+  \arrow["{!x}"', from=1-3, to=3-5]
   \arrow[""{name=0, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
 \end{tikzcd}
@@ -135,7 +135,7 @@ instead.
   && {\{*\}} \\
   \\
   {\cJ} &&& {} & {\cC}
-  \arrow[from=3-1, to=1-3]
+  \arrow["{!}", from=3-1, to=1-3]
   \arrow[""{name=0, anchor=center, inner sep=0}, "{!x}"', from=1-3, to=3-5]
   \arrow[""{name=1, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "K", curve={height=-18pt}, from=1-3, to=3-5]
