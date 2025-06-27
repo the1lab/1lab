@@ -102,9 +102,9 @@ Luckily, we can! If we take a step back, we can notice that we are
 trying to construct a map into a functor. What are maps into functors?
 Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
-transformation $\eps : {!x} \circ \mathord{!} \to D$, where $!x : \{*\}
+transformation $\eps : {!_x} \circ \mathord{!} \to D$, where $!_x : \top
 \to \cC$ denotes the constant functor that maps object to $x$ and every
-morphism to $\id$, and $! : \cJ \to \{*\}$ denotes the unique functor into
+morphism to $\id$, and $! : \cJ \to \top$ denotes the unique functor into
 the [[terminal category]]. The components of such a natural
 transformation yield maps from $x \to D(j)$ for every $j : \cJ$, and
 naturality ensures that these maps must commute with the rest of the
@@ -112,31 +112,31 @@ diagram. We can describe this situation diagrammatically like so:
 
 ~~~{.quiver}
 \begin{tikzcd}
-  && \{*\} \\
+  && \top \\
   \\
   {\cJ} &&& {} & {\cC}
-  \arrow["{!}", from=3-1, to=1-3]
-  \arrow["{!x}"', from=1-3, to=3-5]
+  \arrow["{!}"', from=3-1, to=1-3]
+  \arrow["{!_x}"', from=1-3, to=3-5]
   \arrow[""{name=0, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
 \end{tikzcd}
 ~~~
 
 All that remains is the universal property. If we translate this into
-our existing machinery, that means that $!x$ must be the universal
+our existing machinery, that means that $!_x$ must be the universal
 functor equipped with a natural transformation $\eps$; that is, for any
-other $K : \{*\} \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
-D$, we have a unique natural transformation $\sigma : K \to {!x}$ that
+other $K : \top \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
+D$, we have a unique natural transformation $\sigma : K \to {!_x}$ that
 factors $\tau$. This is a bit of a mouthful, so let's look at a diagram
 instead.
 
 ~~~{.quiver}
 \begin{tikzcd}
-  && {\{*\}} \\
+  && {\top} \\
   \\
   {\cJ} &&& {} & {\cC}
-  \arrow["{!}", from=3-1, to=1-3]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{!x}"', from=1-3, to=3-5]
+  \arrow["{!}"', from=3-1, to=1-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{!_x}"', from=1-3, to=3-5]
   \arrow[""{name=1, anchor=center, inner sep=0}, from=3-1, to=3-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "K", curve={height=-18pt}, from=1-3, to=3-5]
   \arrow["\eps"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
@@ -148,8 +148,8 @@ We might be tempted to stop here and call it a day, but we can go one
 step further. It turns out that these universal functors have a name:
 they are [[right Kan extensions]]. This allows for an extremely concise
 definition of limits: $x : \cC$ is the limit of a diagram
-$D : \cJ \to \cC$ when the constant functor $!x : \{*\} \to \cC$ is
-a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
+$D : \cJ \to \cC$ when the constant functor $!_x : \top \to \cC$ is
+a right Kan extension of $! : \cJ \to \top$ along $D$.
 
 <!--
 ```agda
@@ -171,7 +171,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
 
 In a "bundled" form, we may define the _type of limits_ for a diagram
 $D$ as the type of right extensions of $D$ along the terminating functor
-$\mathord{!} : \cJ \to \{*\}$.
+$\mathord{!} : \cJ \to \top$.
 
 ```agda
   Limit : Type _
@@ -437,9 +437,9 @@ extension functor.
 Furthermore, we can show that the apex is the limit, in the sense of
 `is-limit`{.Agda}, of the diagram. You'd think this is immediate, but
 unfortunately, proof assistants: `is-limit`{.Agda} asks for _the_
-constant functor functor $\{*\} \to \cC$ with value `apex` to be a Kan
+constant functor functor $\top \to \cC$ with value `apex` to be a Kan
 extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
-packages an _arbitrary_ functor $\{*\} \to \cC$.
+packages an _arbitrary_ functor $\top \to \cC$.
 
 Since Agda does not compare functors for $\eta$-equality, we have to
 shuffle our data around manually. Fortunately, this isn't a very long
