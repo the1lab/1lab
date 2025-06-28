@@ -1,7 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Equiv.Pointed
 open import 1Lab.Prelude
 
+open import Algebra.Group.Homotopy
+
+open import Data.Nat.Properties
+open import Data.Set.Truncation
+open import Data.Nat.Order
 open import Data.Nat.Base
 open import Data.List using (_∷_ ; [])
 
@@ -307,13 +313,75 @@ n-Tr-Σ {A = A} {B} {n} = Iso→Equiv is where
   is .snd .is-iso.rinv = n-Tr-elim! _ λ (a , b) → n-Tr-elim! (λ b → n-Tr-map (Σ-map id inc) (n-Tr-map (a ,_) b) ≡ inc (a , b)) (λ _ → refl) b
   is .snd .is-iso.linv = n-Tr-elim! _ λ _ → refl
 
-n-Tr-≃
+n-Tr-ap
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → (e : A ≃ B) → n-Tr A (suc n) ≃ n-Tr B (suc n)
-n-Tr-≃ e = Iso→Equiv is where
+n-Tr-ap e = Iso→Equiv is where
   is : Iso _ _
   is .fst = n-Tr-map (e .fst)
   is .snd .is-iso.from = n-Tr-map (Equiv.from e)
   is .snd .is-iso.rinv = elim! λ _ → ap inc (Equiv.ε e _)
   is .snd .is-iso.linv = elim! λ _ → ap inc (Equiv.η e _)
 ```
+
+<!--
+```agda
+n-Tr∙ : ∀ {ℓ} (A∙ : Type∙ ℓ) n → Type∙ ℓ
+n-Tr∙ (A , a₀) n = n-Tr A n , inc a₀
+
+n-Tr-prop : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ ≃ n-Tr A 1
+n-Tr-prop .fst = elim! n-Tr.inc
+n-Tr-prop .snd = is-iso→is-equiv (iso (elim! ∥_∥.inc) (elim! λ _ → refl) (elim! λ _ → refl))
+
+n-Tr-set : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥₀ ≃ n-Tr A 2
+n-Tr-set .fst = elim! n-Tr.inc
+n-Tr-set .snd = is-iso→is-equiv (iso (elim! ∥_∥₀.inc) (elim! λ _ → refl) (elim! λ _ → refl))
+
+n-Tr-Tr : ∀ {ℓ} {A : Type ℓ} n k → k ≤ n → n-Tr (n-Tr A (suc n)) (suc k) ≃ n-Tr A (suc k)
+n-Tr-Tr n k p .fst = let instance _ = p in rec! inc
+n-Tr-Tr n k p .snd = let instance _ = p in is-iso→is-equiv λ where
+  .is-iso.from → n-Tr-rec! (n-Tr.inc ∘ n-Tr.inc)
+  .is-iso.rinv → elim! λ x → refl
+  .is-iso.linv → elim! λ x → refl
+
+n-Tr-reindex : ∀ {ℓ} {A : Type ℓ} n k → n ≡ k → n-Tr A (suc n) ≃ n-Tr A (suc k)
+n-Tr-reindex {A = A} n k p = done where
+  instance
+    _ : n ≤ k
+    _ = ≤-refl' p
+
+    _ : k ≤ n
+    _ = ≤-refl' (sym p)
+
+  done : n-Tr A (suc n) ≃ n-Tr A (suc k)
+  done .fst = elim! inc
+  done .snd = is-iso→is-equiv λ where
+    .is-iso.from → elim! inc
+    .is-iso.rinv → elim! λ x → refl
+    .is-iso.linv → elim! λ x → refl
+
+Ω-step : ∀ {ℓ} (A : Type∙ ℓ) n → n-Tr∙ (Ωⁿ 1 A) (1 + n) ≃∙ Ωⁿ 1 (n-Tr∙ A (2 + n))
+Ω-step A n = Equiv.inverse n-Tr-path-equiv , refl
+
+Ω-stepⁿ
+  : ∀ {ℓ} (A : Type∙ ℓ) n k
+  → n-Tr∙ (Ωⁿ k A) (1 + n) ≃∙ Ωⁿ k (n-Tr∙ A (k + suc n))
+
+Ω-stepⁿ A n 0    = id≃ , refl
+Ω-stepⁿ A n 1    = Ω-step A n
+Ω-stepⁿ A n (suc (suc k)) =
+  let
+    fixup = n-Tr-reindex (k + (2 + n)) (suc k + suc n) (+-sucr k (suc n))
+    f2    = Ωⁿ-ap (2 + k) (fixup , refl)
+  in
+    n-Tr∙ (Ωⁿ (2 + k) A) (suc n)                  ≃∙⟨⟩
+    n-Tr∙ (Ωⁿ 1 (Ωⁿ (suc k) A)) (suc n)           ≃∙⟨ Ω-step (Ωⁿ (suc k) A) n ⟩
+    Ωⁿ 1 (n-Tr∙ (Ωⁿ (suc k) A) (2 + n))           ≃∙⟨ Ωⁿ-ap 1 (Ω-stepⁿ A (suc n) (suc k)) ⟩
+    Ωⁿ 1 (Ωⁿ (1 + k) (n-Tr∙ A (suc k + (2 + n)))) ≃∙⟨⟩
+    Ωⁿ (2 + k) (n-Tr∙ A (suc k + (2 + n)))        ≃∙⟨ f2 ⟩
+    Ωⁿ (2 + k) (n-Tr∙ A (2 + k + suc n))          ≃∙∎
+
+πₙ-def : ∀ {ℓ} (A : Type∙ ℓ) n → (⌞ πₙ₊₁ n A ⌟ , inc refl) ≃∙ Ωⁿ (suc n) (n-Tr∙ A (suc (n + 2)))
+πₙ-def A n = n-Tr-set ∙e Ω-stepⁿ A 1 (suc n) .fst , Ω-stepⁿ A 1 (suc n) .snd
+```
+-->

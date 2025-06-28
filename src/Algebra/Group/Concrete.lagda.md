@@ -246,7 +246,7 @@ _ = Deloop
 ```agda
 π₁F-is-split-eso : is-split-eso (π₁F {ℓ})
 π₁F-is-split-eso G .fst = Concrete G
-π₁F-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
+π₁F-is-split-eso G .snd = G≅π₁B _ Groups.Iso⁻¹ Groups.∘Iso π₁B≡π₀₊₁ (Concrete G)
 ```
 
 We now tackle the hard part: to prove that `π₁F`{.Agda} is [[fully faithful]].

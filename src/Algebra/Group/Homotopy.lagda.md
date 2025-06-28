@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
+open import 1Lab.Equiv.Pointed
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
@@ -11,6 +12,8 @@ open import Algebra.Group
 open import Algebra.Magma
 
 open import Data.Set.Truncation
+
+open import Homotopy.Conjugation
 ```
 -->
 
@@ -35,11 +38,35 @@ _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
 ```agda
+Ωⁿ-ty : Nat → Type∙ ℓ → Type ℓ
+Ωⁿ-pt : (n : Nat) (A : Type∙ ℓ) → Ωⁿ-ty n A
+
+Ωⁿ-ty zero    (A , _) = A
+Ωⁿ-ty (suc x) A       = Path (Ωⁿ-ty x A) (Ωⁿ-pt x A) (Ωⁿ-pt x A)
+
+Ωⁿ-pt zero    A = A .snd
+Ωⁿ-pt (suc n) A = refl
+
 Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
-Ωⁿ zero A    = A
-Ωⁿ (suc n) (A , x) with Ωⁿ n (A , x)
-... | (T , x) = Path T x x , refl
+Ωⁿ n A = Ωⁿ-ty n A , Ωⁿ-pt n A
 ```
+
+<!--
+```agda
+Ωⁿ-ap
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (e : A ≃∙ B)
+  → Ωⁿ n A ≃∙ Ωⁿ n B
+Ωⁿ-ap zero    (e , p) = e , p
+
+Ωⁿ-ap (suc n) (e , p) .fst = ap-equiv (Ωⁿ-ap n (e , p) .fst) ∙e (_ , conj-is-equiv (Ωⁿ-ap n (e , p) .snd))
+Ωⁿ-ap (suc n) (e , p) .snd = conj-of-refl _
+
+Ωⁿ-suc : ∀ (A : Type∙ ℓ) n → Ωⁿ (suc n) A ≃∙ Ωⁿ n (Ωⁿ 1 A)
+Ωⁿ-suc A zero    = id≃ , refl
+Ωⁿ-suc A (suc n) = Ωⁿ-ap 1 (Ωⁿ-suc A n)
+
+```
+-->
 
 For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
 obtained by [[truncating|set-truncation]] the higher groupoid structure
@@ -68,6 +95,16 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
   omega .make-group.invl = elim! λ x i → inc (∙-invl x i)
   omega .make-group.idl = elim! λ x i → inc (∙-idl x i)
 ```
+
+<!--
+```agda
+πₙ₊₁-ap
+  : ∀ {ℓ} {A B : Type∙ ℓ} n (e : A ≃∙ B)
+  → πₙ₊₁ n A Groups.≅ πₙ₊₁ n B
+πₙ₊₁-ap n e = total-iso (∥-∥₀-ap (Ωⁿ-ap (suc n) e .fst)) record
+  { pres-⋆ = elim! λ q r → ap ∥_∥₀.inc (ap₂ conj refl (ap-∙ (Ωⁿ-ap n e ·_) q r) ∙ conj-of-∙ (Ωⁿ-ap n e .snd) _ _) }
+```
+-->
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
 that path concatenation for $\Omega^{n + 2} A$ is
@@ -161,8 +198,6 @@ module π₁Groupoid {ℓ} ((T , t) : Type∙ ℓ) (grpd : is-groupoid T) where
   π₁ : Group ℓ
   π₁ = to-group mk
 
-  π₁≡π₀₊₁ : π₁ ≡ πₙ₊₁ 0 (T , t)
-  π₁≡π₀₊₁ = ∫-Path
-    (∫hom inc (record { pres-⋆ = λ _ _ → refl }))
-    (∥-∥₀-idempotent (grpd _ _))
+  π₁≡π₀₊₁ : π₁ Groups.≅ πₙ₊₁ 0 (T , t)
+  π₁≡π₀₊₁ = total-iso (inc , ∥-∥₀-idempotent (grpd _ _)) (record { pres-⋆ = λ x y → refl })
 ```

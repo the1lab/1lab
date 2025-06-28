@@ -97,3 +97,21 @@ The suspension operation [[increases|connectedness of suspensions]] the
 $(1+n)$-connected. Unfolding this a bit further, if $A$ is a type whose
 homotopy groups below $n$ are trivial, then $\Susp A$ will have trivial
 homotopy groups below $1 + n$.
+
+
+<!--
+```agda
+Susp-ap : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → Susp A ≃ Susp B
+Susp-ap e .fst = λ where
+  north       → north
+  south       → south
+  (merid x i) → merid (e .fst x) i
+Susp-ap e .snd = is-iso→is-equiv λ where
+  .is-iso.from → Susp-elim _ north south (λ x → merid (Equiv.from e x))
+  .is-iso.rinv → Susp-elim _ refl refl λ x i j → merid (Equiv.ε e x j) i
+  .is-iso.linv → Susp-elim _ refl refl λ x i j → merid (Equiv.η e x j) i
+
+suspend : ∀ {ℓ} (A∙ : Type∙ ℓ) → ⌞ A∙ ⌟ → Path (Susp ⌞ A∙ ⌟) north north
+suspend (_ , a₀) x = merid x ∙ sym (merid a₀)
+```
+-->

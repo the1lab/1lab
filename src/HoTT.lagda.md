@@ -594,14 +594,14 @@ _ = ap-square
 <!--
 ```agda
 _ = Susp
-_ = SuspS⁰≡S¹
+_ = SuspS⁰≃S¹
 _ = Sⁿ⁻¹
 _ = Σ-map∙≃map∙-Ω
 ```
 -->
 
 * The suspension: `Susp`{.Agda}
-* Lemma 6.5.1: `SuspS⁰≡S¹`{.Agda}
+* Lemma 6.5.1: `SuspS⁰≃S¹`{.Agda}
 * Definition 6.5.2: `Sⁿ⁻¹`{.Agda}
 * Lemma 6.5.4: `Σ-map∙≃map∙-Ω`{.Agda}
 
@@ -777,13 +777,13 @@ fundamental group of the circle.
 <!--
 ```agda
 _ = ΩS¹≃Int
-_ = π₁S¹≡ℤ
+_ = π₁S¹≅ℤ
 _ = πₙ₊₂S¹≡0
 ```
 -->
 
 * Corollary 8.1.10: `ΩS¹≃Int`{.Agda}
-* Corollary 8.1.11: `π₁S¹≡ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
+* Corollary 8.1.11: `π₁S¹≅ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
 
 ### 8.2: Connectedness of suspensions
 
