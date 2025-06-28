@@ -9,6 +9,7 @@ open import Algebra.Group.Concrete
 open import Algebra.Group.Ab
 
 open import Cat.Functor.Equivalence
+open import Cat.Univalent
 open import Cat.Morphism
 
 open import Data.Set.Truncation
@@ -79,7 +80,8 @@ For example, the circle is abelian, being the delooping of $\mathbb{Z}$.
 
 ```agda
 S¹-concrete-abelian : is-concrete-abelian S¹-concrete
-S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ π₁S¹≡ℤ)
+S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ
+  (Univalent.iso→path (Structured-objects-is-category _) π₁S¹≅ℤ))
   (Abelian→Group-on-abelian (ℤ-ab .snd))
 ```
 

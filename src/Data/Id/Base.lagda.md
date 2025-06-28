@@ -88,8 +88,9 @@ module _ where private
 ```agda
 _ = _≡_
 Id≃path : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ᵢ y) ≃ (x ≡ y)
-Id≃path {ℓ} {A} {x} {y} =
-  identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y}
+Id≃path .fst p = Id-identity-system .to-path p
+Id≃path {ℓ} {A} {x} {y} .snd =
+  identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y} .snd
 
 module Id≃path {ℓ} {A : Type ℓ} = Ids (Id-identity-system {A = A})
 
@@ -219,6 +220,8 @@ symᵢ reflᵢ = reflᵢ
 
 _∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
 reflᵢ ∙ᵢ q = q
+
+infixr 30 _∙ᵢ_
 
 apdᵢ
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y : A} (f : (x : A) → B x)

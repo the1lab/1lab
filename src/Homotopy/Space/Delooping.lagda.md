@@ -276,11 +276,10 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
   G≃ΩB = Iso→Equiv (decode base , iso (encode base) encode→decode (decode→encode base))
 
-  G≡π₁B : G ≡ πₙ₊₁ 0 (Deloop , base)
-  G≡π₁B = ∫-Path
-    (∫hom (λ x → inc (path x))
-      record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
-    (∘-is-equiv (∥-∥₀-idempotent (squash base base)) (G≃ΩB .snd))
+  G≅π₁B : G Groups.≅ πₙ₊₁ 0 (Deloop , base)
+  G≅π₁B = total-iso (_ , ∘-is-equiv (∥-∥₀-idempotent (squash base base)) (G≃ΩB .snd))
+    record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) }
+
 ```
 
 Since `Deloop`{.Agda} is a groupoid, each of its loop spaces is

@@ -45,7 +45,7 @@ $P(-,-)$ must be $(n+m)$-truncated.
     (n m : Nat)
     (a-conn : is-n-connected A (2 + n))
     (b-conn : is-n-connected B (2 + m))
-    (p-hl : ∀ x y → is-hlevel (P x y) (2 + n + m))
+    (p-hl : ∀ x y → is-hlevel (P x y) (suc n + suc m))
 ```
 
 Provided that everything fits together, we can actually give the data of
@@ -70,7 +70,7 @@ a direct transcription of the proof in [@HoTT, §8.6.2].</summary>
     rem₂' : (x : A) → is-hlevel (fibre (_∘ (λ _ → b₀)) (λ _ → f x)) (1 + n)
     rem₂' a = relative-n-type-const-plus {A = ⊤} (P a) (λ _ → b₀) (suc m) (suc n)
       (point-is-n-connected b₀ m b-conn)
-      (λ b → subst (is-hlevel (P a b)) (sym (ap suc (+-sucr n m))) (p-hl a b))
+      (λ b → p-hl a b)
       (λ _ → f a)
 
     opaque

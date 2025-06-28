@@ -335,11 +335,11 @@ loopⁿ-+ a = Integers.induction Int-integers
     loopⁿ (sucℤ (a +ℤ b)) ≡ loopⁿ a ∙ loopⁿ (sucℤ b)   ≃⟨ ∙-pre-equiv (ap loopⁿ (+ℤ-sucr a b)) ⟩
     loopⁿ (a +ℤ sucℤ b) ≡ loopⁿ a ∙ loopⁿ (sucℤ b)     ≃∎
 
-π₁S¹≡ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid ≡ ℤ
-π₁S¹≡ℤ = sym $ ∫-Path
-  (∫hom (Equiv.from ΩS¹≃Int)
-    (record { pres-⋆ = loopⁿ-+ }))
-  ((ΩS¹≃Int e⁻¹) .snd)
+π₁S¹≅ℤ : π₁Groupoid.π₁ S¹∙ S¹-is-groupoid Groups.≅ ℤ
+π₁S¹≅ℤ = total-iso ΩS¹≃Int $
+  equiv-hom→inverse-hom {a = ℤ} {b = π₁Groupoid.π₁ S¹∙ S¹-is-groupoid}
+    (Equiv.inverse ΩS¹≃Int)
+    (record { pres-⋆ = loopⁿ-+ })
 ```
 
 Furthermore, since the loop space of the circle is a set, we automatically

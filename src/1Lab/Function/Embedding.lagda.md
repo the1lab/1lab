@@ -208,7 +208,18 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       (ap-square fst (is-prop→is-set (emb (f x)) _ _ (emb (f x) (x , refl) (x , refl)) refl))
 
   equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
-  equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
+  equiv→cancellable eqv {x} {y} =
+    is-iso→is-equiv λ where
+      .is-iso.from p → sym (f.η _) ∙∙ ap f.from p ∙∙ f.η _
+      .is-iso.rinv α →
+          ap-∙∙ f _ _ _
+        ∙ ap₂ (λ a b → _∙∙_∙∙_ {z = f y} a (ap f (ap f.from α)) b) (ap sym (f.zig _)) (f.zig y)
+        ∙ double-composite _ _ _ ∙ ap₂ _∙_ refl (sym (homotopy-natural f.ε α))
+        ∙ ∙-cancell _ _
+      .is-iso.linv α → double-composite _ _ _
+        ∙ ap₂ _∙_ refl (sym (homotopy-natural f.η α))
+        ∙ ∙-cancell _ _
+    where module f = Equiv (_ , eqv)
 ```
 
 <!--

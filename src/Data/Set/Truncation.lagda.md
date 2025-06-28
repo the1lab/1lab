@@ -150,5 +150,12 @@ is-contr→∥-∥₀-is-contr h = Equiv→is-hlevel 0 ((_ , ∥-∥₀-idempote
 
 is-prop→∥-∥₀-is-prop : ∀ {ℓ} {A : Type ℓ} → is-prop A → is-prop ∥ A ∥₀
 is-prop→∥-∥₀-is-prop h = Equiv→is-hlevel 1 ((_ , ∥-∥₀-idempotent (is-prop→is-set h)) e⁻¹) h
+
+∥-∥₀-ap : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → ∥ A ∥₀ ≃ ∥ B ∥₀
+∥-∥₀-ap e .fst = ∥-∥₀-map (e .fst)
+∥-∥₀-ap e .snd = is-iso→is-equiv λ where
+  .is-iso.from → ∥-∥₀-map (Equiv.from e)
+  .is-iso.rinv → elim! λ x → ap inc (Equiv.ε e x)
+  .is-iso.linv → elim! λ x → ap inc (Equiv.η e x)
 ```
 -->

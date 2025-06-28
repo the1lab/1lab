@@ -74,8 +74,8 @@ A slightly less trivial example of definitions lining up is the verification
 that `Sⁿ⁻¹ 2` is equivalent to our previous definition of `S¹`:
 
 ```agda
-SuspS⁰≡S¹ : Sⁿ⁻¹ 2 ≡ S¹
-SuspS⁰≡S¹ = ua (SuspS⁰→S¹ , is-iso→is-equiv iso-pf) where
+SuspS⁰≃S¹ : Sⁿ⁻¹ 2 ≃ S¹
+SuspS⁰≃S¹ = (SuspS⁰→S¹ , is-iso→is-equiv iso-pf) where
 ```
 
 In `Sⁿ⁻¹ 2`, we have two point constructors joined by two paths, while in
