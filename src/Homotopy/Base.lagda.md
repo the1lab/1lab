@@ -131,7 +131,7 @@ equivalences is not very interesting, so I've kept it hidden.</summary>
 Composing these equivalences, we get the adjunction:
 
 $$
-(\Sigma A \to_* B) \simeq (A \to* \Omega B).
+(\Sigma A \to_* B) \simeq (A \to_* \Omega B).
 $$
 
 ```agda
