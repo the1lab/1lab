@@ -260,5 +260,16 @@ flip
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → (∀ a b → C a b) → (∀ b a → C a b)
 flip f b a = f a b
+
+precompose-is-equiv
+  : {f : B → C}
+  → is-equiv f
+  → is-equiv {A = A → B} (f ∘_)
+precompose-is-equiv {f = f} f-eqv =
+  is-iso→is-equiv λ where
+    .is-iso.from → f.from ∘_
+    .is-iso.rinv g → funext λ x → f.ε (g x)
+    .is-iso.linv g → funext λ x → f.η (g x)
+  where module f = Equiv (f , f-eqv)
 ```
 -->

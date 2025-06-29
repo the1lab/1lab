@@ -99,24 +99,8 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
 
 ```agda
   is-category-total : is-category (∫ E)
-  is-category-total = total-cat where
-    wrapper
-      : ∀ {x y} (p : x B.≅ y) (A : Ob[ x ]) (B : Ob[ y ]) (f : A ≅[ p ] B)
-      → Path (Σ _ ((x , A) ∫E.≅_))
-        ((x , A) , ∫E.id-iso)
-        ((y , B) , piece-together p f)
-    wrapper p A =
-      Univalent.J-iso base-c
-        (λ y p → (B : Ob[ y ]) (f : A ≅[ p ] B)
-               → ((_ , A) , ∫E.id-iso) ≡ (((y , B) , piece-together p f)))
-        contract-vertical-iso
-        p
-
-    total-cat : is-category (∫ E)
-    total-cat .to-path p = ap fst $
-        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
-    total-cat .to-path-over p = ap snd $
-        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
+  is-category-total =
+    Σ-basis→total-identity-system Σ-Σ-basis ∫-≅-Σ-basis base-c disp-c
 ```
 
 ## Fibrewise univalent categories

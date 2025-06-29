@@ -656,14 +656,20 @@ invertible→iso f x =
     ; inverses = x .is-invertible.inverses
     }
 
+
 is-invertible-inverse
   : {f : Hom a b} (g : is-invertible f) → is-invertible (g .is-invertible.inv)
 is-invertible-inverse g =
   record { inv = _ ; inverses = record { invl = invr g ; invr = invl g } }
   where open Inverses (g .is-invertible.inverses)
 
-iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
-iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
+iso→invertible : (i : a ≅ b) → is-invertible (i .to)
+iso→invertible i = record { inv = i .from ; inverses = i ._≅_.inverses }
+{-# INLINE iso→invertible #-}
+
+iso→from-invertible : (i : a ≅ b) → is-invertible (i .from)
+iso→from-invertible i = record { inv = i .to ; inverses = record { invl = i .invr ; invr = i .invl } }
+{-# INLINE iso→from-invertible #-}
 
 private
   ≅-pathp-internal
@@ -1127,3 +1133,49 @@ invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
     (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invr ∙∙ idl h)
   where module f-inv = is-invertible f-inv
 ```
+
+<!--
+```agda
+-- Σ-bases for morphisms.
+invl-invr-is-Σ-basis
+  : {f : Hom a b} {g : Hom b a}
+  → is-Σ-basis (Inverses f g) (f ∘ g ≡ id) (λ _ → g ∘ f ≡ id)
+      Inverses.invl
+      Inverses.invr
+invl-invr-is-Σ-basis .is-Σ-basis.⟨⟩-equiv .is-eqv (p , q) = contr (fib .fst) (fib .snd)
+  where fib = strict-fibres _ (p , q)
+
+Inverses-Σ-basis
+  : {f : Hom a b} {g : Hom b a}
+  → Σ-basis (Inverses f g) (f ∘ g ≡ id) (λ _ → g ∘ f ≡ id)
+Inverses-Σ-basis = is-Σ-basis→Σ-basis invl-invr-is-Σ-basis
+
+inv-inverses-is-Σ-basis
+  : {f : Hom a b}
+  → is-Σ-basis (is-invertible f) (Hom b a)
+      (Inverses f)
+      is-invertible.inv
+      is-invertible.inverses
+inv-inverses-is-Σ-basis .is-Σ-basis.⟨⟩-equiv .is-eqv (f , p) = contr (fib .fst) (fib .snd)
+  where fib = strict-fibres _ (f , p)
+
+is-invertible-Σ-basis
+  : {f : Hom a b}
+  → Σ-basis (is-invertible f) (Hom b a) (Inverses f)
+is-invertible-Σ-basis = is-Σ-basis→Σ-basis inv-inverses-is-Σ-basis
+
+to-invertible-is-Σ-basis
+  : ∀ {a b}
+  → is-Σ-basis (a ≅ b) (Hom a b) is-invertible
+      to
+      iso→invertible
+to-invertible-is-Σ-basis =
+  is-iso→is-Σ-basis λ where
+    .is-iso.from → uncurry invertible→iso
+    .is-iso.rinv (f , f-inv) → Σ-prop-path (λ f → is-invertible-is-prop) refl
+    .is-iso.linv f → ≅-path refl
+
+≅-Σ-basis : Σ-basis (a ≅ b) (Hom a b) is-invertible
+≅-Σ-basis = is-Σ-basis→Σ-basis to-invertible-is-Σ-basis
+```
+-->

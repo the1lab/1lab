@@ -5,9 +5,9 @@ open import Cat.Diagram.Pullback
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as DR
-import Cat.Displayed.Morphism as DM
-import Cat.Reasoning as CR
+import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 ```
 -->
 
@@ -15,10 +15,10 @@ import Cat.Reasoning as CR
 module Cat.Displayed.Total where
 
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
-  open CR B
+  open Cat.Reasoning B
   open Displayed E
-  open DR E
-  open DM E
+  open Cat.Displayed.Reasoning E
+  open Cat.Displayed.Morphism E
 ```
 
 # The total category of a displayed category {defines=total-category}
@@ -53,7 +53,7 @@ base category along with a morphism that lives above it.
       fst : Hom (X .fst) (Y .fst)
       snd : Hom[ fst ] (X .snd) (Y .snd)
 
-  open ∫Hom
+  open ∫Hom public
 ```
 
 <!--
@@ -67,8 +67,9 @@ the bundled morphisms form an hset, and another characterizing
 the paths between morphisms.
 
 ```agda
-  ∫Hom-path : ∀ {X Y : Total} {f g : ∫Hom X Y}
-                 → (p : f .fst ≡ g .fst) → f .snd ≡[ p ] g .snd → f ≡ g
+  ∫Hom-path
+    : ∀ {X Y : Total} {f g : ∫Hom X Y}
+    → (p : f .fst ≡ g .fst) → f .snd ≡[ p ] g .snd → f ≡ g
   ∫Hom-path p p' i .fst = p i
   ∫Hom-path {f = f} {g = g} p p' i .snd = p' i
 ```
@@ -83,6 +84,23 @@ the paths between morphisms.
     → PathP (λ i → ∫Hom (p i) (q i)) f g
   ∫Hom-pathp p q r s i .fst = r i
   ∫Hom-pathp p q r s i .snd = s i
+
+  ∫-fst-snd-is-Σ-basis
+    : ∀ {x y : Total}
+    → is-Σ-basis (∫Hom x y)
+        (Hom (x .fst) (y .fst))
+        (λ u → Hom[ u ] (x .snd) (y .snd))
+        fst
+        snd
+  ∫-fst-snd-is-Σ-basis .is-Σ-basis.⟨⟩-equiv .is-eqv (u , f) = contr (fib .fst) (fib .snd)
+    where fib = strict-fibres (uncurry ∫hom) (u , f)
+
+  ∫Hom-Σ-basis
+    : ∀ {x y : Total}
+    → Σ-basis (∫Hom x y)
+        (Hom (x .fst) (y .fst))
+        (λ u → Hom[ u ] (x .snd) (y .snd))
+  ∫Hom-Σ-basis = is-Σ-basis→Σ-basis ∫-fst-snd-is-Σ-basis
 ```
 -->
 
@@ -112,30 +130,77 @@ With all that in place, we can construct the total category!
 ```
 -->
 
+<!--
+```agda
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
+  private
+    module B = Cat.Reasoning B
+    module E where
+      open Cat.Displayed.Morphism E public
+      open Displayed E public
+    module ∫E = Cat.Reasoning (∫ E)
+```
+-->
+
+```agda
+```
+
+
 ## Morphisms in the total category
 
 Isomorphisms in the total category of $E$ consist of pairs of
 isomorphisms in $B$ and $E$.
 
 ```agda
-  private module ∫E = CR ∫
+  ∫-Inverses-Σ-basis
+    : ∀ {x y : Total E} {f : ∫E.Hom x y} {g : ∫E.Hom y x}
+    → Σ-basis (∫E.Inverses f g)
+        (B.Inverses (f .fst) (g .fst))
+        (λ inv → E.Inverses[ inv ] (f .snd) (g .snd))
+  ∫-Inverses-Σ-basis =
+    Σ-basis-shuffle ∫E.Inverses-Σ-basis B.Inverses-Σ-basis E.Inverses[]-Σ-basis
+      (Path-Σ-basis (∫Hom-Σ-basis E))
+      (Path-Σ-basis (∫Hom-Σ-basis E))
 
-  total-iso→iso : ∀ {x y} → x ∫E.≅ y → x .fst ≅ y .fst
-  total-iso→iso f = make-iso
-    (∫E._≅_.to f .fst)
-    (∫E._≅_.from f .fst)
-    (ap fst $ ∫E._≅_.invl f)
-    (ap fst $ ∫E._≅_.invr f)
+  ∫-is-invertible-Σ-basis
+    : ∀ {x y : Total E} {f : ∫E.Hom x y}
+    → Σ-basis (∫E.is-invertible f)
+        (B.is-invertible (f .fst))
+        (λ inv → E.is-invertible[ inv ] (f .snd))
+  ∫-is-invertible-Σ-basis =
+    Σ-basis-shuffle ∫E.is-invertible-Σ-basis B.is-invertible-Σ-basis E.is-invertible[]-Σ-basis
+      (∫Hom-Σ-basis E)
+      ∫-Inverses-Σ-basis
 
-  total-iso→iso[] : ∀ {x y} → (f : x ∫E.≅ y) → x .snd ≅[ total-iso→iso f ] y .snd
-  total-iso→iso[] f = make-iso[ total-iso→iso f ]
-    (∫E._≅_.to f .snd)
-    (∫E._≅_.from f .snd)
-    (ap snd $ ∫E._≅_.invl f)
-    (ap snd $ ∫E._≅_.invr f)
+  ∫-≅-Σ-basis
+    : {x y : Total E}
+    → Σ-basis (x ∫E.≅ y)
+        (x .fst B.≅ y .fst)
+        (λ f → x .snd E.≅[ f ] y .snd)
+  ∫-≅-Σ-basis =
+    Σ-basis-shuffle ∫E.≅-Σ-basis B.≅-Σ-basis E.≅[]-Σ-basis
+      (∫Hom-Σ-basis E)
+      ∫-is-invertible-Σ-basis
 ```
 
 ## Pullbacks in the total category
+
+<!--
+```agda
+module _
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'}
+  (let open Cat.Reasoning B) (let open Displayed E)
+  {p x y z p' x' y' z'}
+  {p₁ : Hom p x} {f : Hom x z} {p₂ : Hom p y} {g : Hom y z}
+  {p₁' : Hom[ p₁ ] p' x'} {f' : Hom[ f ] x' z'}
+  {p₂' : Hom[ p₂ ] p' y'} {g' : Hom[ g ] y' z'}
+  where
+  private
+    open Cat.Reasoning B
+    open Cat.Displayed.Morphism E
+    module ∫E = Cat.Reasoning (∫ E)
+```
+-->
 
 [[Pullbacks]] in the total category of $\cE$ have a particularly nice
 characterization. Consider the following pair of commuting squares.
@@ -167,16 +232,12 @@ $\cE$.
 
 ```agda
   cartesian+pullback→total-pullback
-    : ∀ {p x y z p' x' y' z'}
-    → {p₁ : Hom p x} {f : Hom x z} {p₂ : Hom p y} {g : Hom y z}
-    → {p₁' : Hom[ p₁ ] p' x'} {f' : Hom[ f ] x' z'}
-    → {p₂' : Hom[ p₂ ] p' y'} {g' : Hom[ g ] y' z'}
-    → is-cartesian E p₁ p₁'
+    : is-cartesian E p₁ p₁'
     → is-cartesian E g g'
     → (pb : is-pullback B p₁ f p₂ g)
     → (open is-pullback pb)
     → f' ∘' p₁' ≡[ square ] g' ∘' p₂'
-    → is-pullback ∫
+    → is-pullback (∫ E)
         (∫hom p₁ p₁') (∫hom f f')
         (∫hom p₂ p₂') (∫hom g g')
 ```
@@ -195,21 +256,23 @@ Uniqueness follows from the fact that $p_1'$ is cartesian.
     module p₁' = is-cartesian p₁-cart
     module g' = is-cartesian g-cart
 
-    total-pb : is-pullback ∫ _ _ _ _
-    total-pb .square = ∫Hom-path (pb .square) square'
+    total-pb : is-pullback (∫ E) _ _ _ _
+    total-pb .square = ∫Hom-path E (pb .square) square'
     total-pb .universal {a , a'} {p₁''} {p₂''} p =
       ∫hom (pb .universal (ap fst p))
         (p₁'.universal' (pb .p₁∘universal) (p₁'' .snd))
     total-pb .p₁∘universal =
-      ∫Hom-path (pb .p₁∘universal) (p₁'.commutesp _ _)
-    total-pb .p₂∘universal {p = p} =
-      ∫Hom-path (pb .p₂∘universal) $
-        g'.uniquep₂ _ _ _ _ _
-          (pulll[] _ (symP square')
-          ∙[] pullr[] _ (p₁'.commutesp (pb .p₁∘universal) _))
-          (symP $ ap snd p)
+      ∫Hom-path E (pb .p₁∘universal) (p₁'.commutesp _ _)
+    total-pb .p₂∘universal {p₁' = q₁} {p₂' = q₂} {p = p}  =
+      ∫Hom-path E (pb .p₂∘universal) $
+      cartesian→weak-monic E g-cart _ _ (p₂∘universal pb) $ cast[] $
+      via-Σ-basis (∫Hom-Σ-basis E) $
+        g' ∘' (p₂' ∘' p₁'.universal' _ (q₁ .snd)) ≡Σ⟨ ∫E.pulll (∫Hom-path E _ (symP square')) ⟩
+        (f' ∘' p₁') ∘' p₁'.universal' _ (q₁ .snd) ≡Σ⟨ ∫E.pullr (∫Hom-path E (pb .p₁∘universal) (p₁'.commutesp _ (q₁ .snd))) ⟩
+        (f' ∘' q₁ .snd)                           ≡Σ⟨ p ⟩
+        (g' ∘' q₂ .snd)                           ∎Σ
     total-pb .unique p q =
-      ∫Hom-path (pb .unique (ap fst p) (ap fst q)) $
+      ∫Hom-path E (pb .unique (ap fst p) (ap fst q)) $
         p₁'.uniquep _ _ (pb .p₁∘universal) _ (ap snd p)
 ```
 
@@ -217,14 +280,10 @@ We can also show the converse, provided that $\cE$ is a [[fibration|cartesian fi
 
 ```agda
   cartesian+total-pullback→pullback
-    : ∀ {p x y z p' x' y' z'}
-    → {p₁ : Hom p x} {f : Hom x z} {p₂ : Hom p y} {g : Hom y z}
-    → {p₁' : Hom[ p₁ ] p' x'} {f' : Hom[ f ] x' z'}
-    → {p₂' : Hom[ p₂ ] p' y'} {g' : Hom[ g ] y' z'}
-    → Cartesian-fibration E
+    : Cartesian-fibration E
     → is-cartesian E p₁ p₁'
     → is-cartesian E g g'
-    → is-pullback ∫
+    → is-pullback (∫ E)
         (∫hom p₁ p₁') (∫hom f f')
         (∫hom p₂ p₂') (∫hom g g')
     → is-pullback B p₁ f p₂ g
@@ -238,9 +297,7 @@ to obtain a cone in $\cE$. From here, we use the fact that $p_1'$ and
 $g'$ are cartesian to construct the relevant paths.
 
 ```agda
-  cartesian+total-pullback→pullback
-    {p} {x} {y} {z}
-    {p₁ = p₁} {f} {p₂} {g} {p₁'} {f'} {p₂'} {g'} fib p₁-cart g-cart total-pb = pb where
+  cartesian+total-pullback→pullback fib p₁-cart g-cart total-pb = pb where
     open is-pullback
     open ∫Hom
     open Cartesian-fibration E fib
@@ -253,23 +310,26 @@ $g'$ are cartesian to construct the relevant paths.
       total-pb .universal
         {p₁' = ∫hom p₁'' (π* p₁'' _)}
         {p₂' = ∫hom p₂'' (g'.universal' (sym sq) (f' ∘' π* p₁'' _))}
-        (∫Hom-path sq (symP (g'.commutesp (sym sq) _))) .fst
+        (∫Hom-path E sq (symP (g'.commutesp (sym sq) _))) .fst
     pb .p₁∘universal =
       ap fst $ total-pb .p₁∘universal
     pb .p₂∘universal =
       ap fst $ total-pb .p₂∘universal
     pb .unique {p = p} q r =
       ap fst $ total-pb .unique
-        (∫Hom-path q (p₁'.commutesp q _))
-        (∫Hom-path r (g'.uniquep _ _ (sym $ p) _
-          (pulll[] _ (symP $ ap snd (total-pb .square))
-          ∙[] pullr[] _ (p₁'.commutesp q _))))
+        (∫Hom-path E q (p₁'.commutesp q _))
+        (∫Hom-path E r $
+          g'.uniquep _ _ _ _ $
+          via-Σ-basis (∫Hom-Σ-basis E) $
+            g' ∘' (p₂' ∘' p₁'.universal' q (π* _ x')) ≡Σ⟨ ∫E.pulll (sym $ total-pb .square) ⟩
+            (f' ∘' p₁') ∘' p₁'.universal' q (π* _ x') ≡Σ⟨ ∫E.pullr (∫Hom-path E q (p₁'.commutesp q (π* _ x'))) ⟩
+            (f' ∘' π* _ x')                           ∎Σ)
 ```
 
 <!--
 ```agda
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
-  open CR B
+  open Cat.Reasoning B
 
   instance
     Funlike-∫Hom
