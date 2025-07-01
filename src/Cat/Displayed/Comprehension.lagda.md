@@ -47,7 +47,7 @@ Before giving a definition, it is worth pondering what context extension
 *does*. Consider some context $\Gamma$, and type
 $\Gamma \vdash A\; \mathrm{type}$; context extension yields a new context
 $\Gamma.A$ extended with a fresh variable of type $A$,
-along with a substitution $\pi : \Gamma.A \to A$ that forgets this fresh
+along with a substitution $\pi : \Gamma.A \to \Gamma$ that forgets this fresh
 variable.
 
 We also have a notion of substitution extension: Given any substitution
