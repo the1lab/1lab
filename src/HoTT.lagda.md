@@ -199,7 +199,7 @@ _ = univalence
 _ = ua
 _ = uaβ
 _ = ua-id-equiv
-_ = ua∙
+_ = ∙-ua
 _ = sym-ua
 ```
 -->
@@ -207,7 +207,7 @@ _ = sym-ua
 * Lemma 2.10.1: `path→equiv`{.Agda}
 * Theorem 2.10.3: `univalence`{.Agda}
   * `ua`{.Agda}, `uaβ`{.Agda}
-  * `ua-id-equiv`{.Agda}, `ua∙`{.Agda}, `sym-ua`{.Agda}
+  * `ua-id-equiv`{.Agda}, `∙-ua`{.Agda}, `sym-ua`{.Agda}
 
 ### 2.11: Identity type
 
