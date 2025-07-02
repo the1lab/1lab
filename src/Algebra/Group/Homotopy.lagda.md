@@ -38,14 +38,15 @@ _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
 ```agda
-Ωⁿ-ty : Nat → Type∙ ℓ → Type ℓ
-Ωⁿ-pt : (n : Nat) (A : Type∙ ℓ) → Ωⁿ-ty n A
+interleaved mutual
+  Ωⁿ-ty : Nat → Type∙ ℓ → Type ℓ
+  Ωⁿ-pt : (n : Nat) (A : Type∙ ℓ) → Ωⁿ-ty n A
 
-Ωⁿ-ty zero    (A , _) = A
-Ωⁿ-ty (suc x) A       = Path (Ωⁿ-ty x A) (Ωⁿ-pt x A) (Ωⁿ-pt x A)
+  Ωⁿ-ty zero (A , pt) = A
+  Ωⁿ-pt zero (A , pt) = pt
 
-Ωⁿ-pt zero    A = A .snd
-Ωⁿ-pt (suc n) A = refl
+  Ωⁿ-ty (suc x) A = Path (Ωⁿ-ty x A) (Ωⁿ-pt x A) (Ωⁿ-pt x A)
+  Ωⁿ-pt (suc n) A = refl
 
 Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
 Ωⁿ n A = Ωⁿ-ty n A , Ωⁿ-pt n A
@@ -53,6 +54,14 @@ which we denote $\Omega^n A$.
 
 <!--
 ```agda
+Ωⁿ-map
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (e : A →∙ B)
+  → Ωⁿ n A →∙ Ωⁿ n B
+Ωⁿ-map zero    (e , p) = e , p
+
+Ωⁿ-map (suc n) (e , p) .fst α = conj (Ωⁿ-map n (e , p) .snd) (ap (Ωⁿ-map n (e , p) .fst) α)
+Ωⁿ-map (suc n) (e , p) .snd = conj-of-refl _
+
 Ωⁿ-ap
   : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (e : A ≃∙ B)
   → Ωⁿ n A ≃∙ Ωⁿ n B
@@ -64,7 +73,6 @@ which we denote $\Omega^n A$.
 Ωⁿ-suc : ∀ (A : Type∙ ℓ) n → Ωⁿ (suc n) A ≃∙ Ωⁿ n (Ωⁿ 1 A)
 Ωⁿ-suc A zero    = id≃ , refl
 Ωⁿ-suc A (suc n) = Ωⁿ-ap 1 (Ωⁿ-suc A n)
-
 ```
 -->
 
@@ -92,8 +100,8 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
 
 ```agda
   omega .make-group.assoc = elim! λ x y z i → inc (∙-assoc x y z i)
-  omega .make-group.invl = elim! λ x i → inc (∙-invl x i)
-  omega .make-group.idl = elim! λ x i → inc (∙-idl x i)
+  omega .make-group.invl  = elim! λ x i → inc (∙-invl x i)
+  omega .make-group.idl   = elim! λ x i → inc (∙-idl x i)
 ```
 
 <!--
@@ -103,6 +111,11 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
   → πₙ₊₁ n A Groups.≅ πₙ₊₁ n B
 πₙ₊₁-ap n e = total-iso (∥-∥₀-ap (Ωⁿ-ap (suc n) e .fst)) record
   { pres-⋆ = elim! λ q r → ap ∥_∥₀.inc (ap₂ conj refl (ap-∙ (Ωⁿ-ap n e ·_) q r) ∙ conj-of-∙ (Ωⁿ-ap n e .snd) _ _) }
+
+πₙ₊₁-map
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type ℓ'} n (f : ⌞ A ⌟ → B)
+  → ⌞ πₙ₊₁ n A ⌟ → ⌞ πₙ₊₁ n (B , f (A .snd)) ⌟
+πₙ₊₁-map n f = ∥-∥₀-map (Ωⁿ-map (suc n) (f , refl) .fst)
 ```
 -->
 

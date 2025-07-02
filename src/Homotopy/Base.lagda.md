@@ -149,21 +149,10 @@ $$
 $$
 
 thus characterising $n$-fold loop spaces as basepoint-preserving maps
-out of $S^n$, the $n$-dimensional sphere.
-
-<!--
-```agda
-reassoc-Ω : ∀ {ℓ} {A : Type∙ ℓ} n → Ωⁿ n (Ω∙ A) ≡ Ωⁿ (suc n) A
-reassoc-Ω zero = refl
-reassoc-Ω {A = A} (suc n) =
-  Ωⁿ 1 (Ωⁿ n (Ωⁿ 1 A)) ≡⟨ ap (Ωⁿ 1) (reassoc-Ω n) ⟩
-  Ωⁿ 1 (Ωⁿ (suc n) A)  ∎
-```
--->
-
-As a special case, in the zeroth dimension, we conclude that $(2 \to_*
-A) \equiv A$, i.e., basepoint-preserving maps from the booleans (based
-at either point) are the same thing as points of $A$.
+out of $S^n$, the $n$-dimensional sphere. As a special case, in the
+zeroth dimension, we conclude that $(2 \to_* A) \equiv A$, i.e.,
+basepoint-preserving maps from the booleans (based at either point) are
+the same thing as points of $A$.
 
 ```agda
 Ωⁿ≃Sⁿ-map : ∀ {ℓ} {A : Type∙ ℓ} n → (Sⁿ n →∙ A) ≃ Ωⁿ n A .fst
@@ -182,6 +171,6 @@ at either point) are the same thing as points of $A$.
 Ωⁿ≃Sⁿ-map {A = A} (suc n) =
   (Σ∙ (Susp _ , north) →∙ A)          ≃⟨ Σ-map∙≃map∙-Ω ⟩
   ((Susp (Sⁿ⁻¹ n) , north) →∙ Ωⁿ 1 A) ≃⟨ Ωⁿ≃Sⁿ-map n ⟩
-  Ωⁿ n (Ωⁿ 1 A) .fst              ≃⟨ path→equiv (ap fst (reassoc-Ω n)) ⟩
-  Ωⁿ (suc n) A .fst               ≃∎
+  Ωⁿ n (Ωⁿ 1 A) .fst                  ≃⟨ Equiv.inverse (Ωⁿ-suc _ n .fst) ⟩
+  Ωⁿ (suc n) A .fst                   ≃∎
 ```

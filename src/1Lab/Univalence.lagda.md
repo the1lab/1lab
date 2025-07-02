@@ -795,9 +795,8 @@ ua-triangle
   → Triangle (ua e) (ua f) (ua g)
 ua-triangle α = transpose (sym ua-id-equiv ◁ transpose (ua-square α))
 
-
-ua∙ : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
-ua∙ {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
+∙-ua : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
+∙-ua {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
   (i = i0) → ua f j , (λ x → g .fst (ua-unglue f j x)) ,
     is-prop→pathp (λ j → is-equiv-is-prop (λ x → g .fst (ua-unglue f j x)))
       ((f ∙e g) .snd) (g .snd) j
