@@ -1,5 +1,8 @@
+open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Pointed
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
+open import 1Lab.Type.Pi
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -14,11 +17,17 @@ ua∙ (e , p) i .fst = ua e i
 ua∙ (e , p) i .snd = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS (p i))
 
 module Equiv∙ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} (e : A ≃∙ B) where
+  to∙ : A →∙ B
+  to∙ = e .fst .fst , e .snd
+
   open Equiv (e .fst) hiding (inverse) public
 
   inverse : B ≃∙ A
   inverse .fst = Equiv.inverse (e .fst)
   inverse .snd = Equiv.injective (e .fst) (Equiv.ε (e .fst) _ ∙ sym (e .snd))
+
+  from∙ : B →∙ A
+  from∙ = inverse .fst .fst , inverse .snd
 
 id≃∙ : ∀ {ℓ} {A : Type∙ ℓ} → A ≃∙ A
 id≃∙ = id≃ , refl
@@ -42,3 +51,23 @@ infix  3 _≃∙∎
 infix 21 _≃∙_
 
 syntax ≃∙⟨⟩-syntax x q p = x ≃∙⟨ p ⟩ q
+
+instance
+  Path-homogeneous : ∀ {ℓ} {A : Type ℓ} {x y : A} → Homogeneous (Path A x y)
+  Path-homogeneous {x = _} {_} {p} {q} =
+    ua∙ (∙-pre-equiv (q ∙ sym p) , ∙-cancelr q p)
+
+ua∙-id-equiv : ∀ {ℓ} {A : Type∙ ℓ} → ua∙ {A = A} id≃∙ ≡ refl
+ua∙-id-equiv {A = A , a₀} i j .fst = ua-id-equiv {A = A} i j
+ua∙-id-equiv {A = A , a₀} i j .snd = attach (∂ j ∨ i) (λ { (j = i0) → a₀ ; (j = i1) → a₀ ; (i = i1) → a₀ }) (inS a₀)
+
+Equiv∙J
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} (P : (B : Type∙ ℓ) → A ≃∙ B → Type ℓ')
+  → P A id≃∙
+  → ∀ {B} e → P B e
+Equiv∙J P x e = subst₂ P (ua∙ e)
+  (Σ-pathp
+    (Σ-prop-pathp (λ _ _ → is-equiv-is-prop _)
+      (funextP (λ a → path→ua-pathp (e .fst) refl)))
+    λ i j → attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → _ }) (inS (e .snd (i ∧ j))))
+  x
