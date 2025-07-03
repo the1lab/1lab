@@ -13,6 +13,7 @@ open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
+open import Homotopy.Loopspace
 ```
 -->
 

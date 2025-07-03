@@ -1131,5 +1131,14 @@ fibre-∘-≃ {f = f} {g = g} c .snd = is-iso→is-equiv (iso bwd invl invr) whe
 
 is-empty→≃ : ¬ A → ¬ B → A ≃ B
 is-empty→≃ ¬a ¬b = is-empty→≃⊥ ¬a ∙e is-empty→≃⊥ ¬b e⁻¹
+
+flip-equiv-square
+  : (e : A ≃ A') (e' : B ≃ B') (f : A → B) (f' : A' → B')
+  → Equiv.to e' ∘ f ∘ Equiv.from e ≡ f'
+  → f ≡ Equiv.from e' ∘ f' ∘ Equiv.to e
+flip-equiv-square e e' f f' p = funext λ z →
+  Equiv.injective e' (sym
+    ( Equiv.ε e' _
+    ∙ happly (sym p) (e .fst z) ∙ ap (e' .fst ∘ f) (Equiv.η e _)))
 ```
 -->

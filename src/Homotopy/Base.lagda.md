@@ -9,6 +9,7 @@ open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
+open import Homotopy.Loopspace
 ```
 -->
 
@@ -32,11 +33,8 @@ A helper that will come in handy is `Σ∙`{.Agda}, which attaches the
 north pole as the basepoint of the suspended space.
 
 ```agda
-Σ∙ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
-Σ∙ A = Susp∙ (A .fst)
-
-Ω∙ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
-Ω∙ (A , a) = Path A a a , refl
+Σ¹ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
+Σ¹ A = Susp∙ ⌞ A ⌟
 ```
 
 ## The suspension-loop space adjunction
@@ -60,11 +58,11 @@ algebra.
 
 ```agda
 module _ {ℓ ℓ'} {A∙@(A , a₀) : Type∙ ℓ} {B∙@(B , b₀) : Type∙ ℓ'} where
-  Σ-map∙→loops : (Σ∙ A∙ →∙ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
+  Σ-map∙→loops : (Σ¹ A∙ →∙ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
   Σ-map∙→loops f .fst   = f .fst south
   Σ-map∙→loops f .snd a = sym (f .snd) ∙ ap (f .fst) (merid a)
 
-  loops→Σ-map∙ : (Σ _ λ bs → A → b₀ ≡ bs) → (Σ∙ A∙ →∙ B∙)
+  loops→Σ-map∙ : (Σ _ λ bs → A → b₀ ≡ bs) → (Σ¹ A∙ →∙ B∙)
   loops→Σ-map∙ pair .fst north       = b₀
   loops→Σ-map∙ pair .fst south       = pair .fst
   loops→Σ-map∙ pair .fst (merid x i) = pair .snd x i
@@ -76,11 +74,11 @@ basepoint-preserving map into $\Omega B$ is even simpler, perhaps
 because these are almost definitionally the same thing.
 
 ```agda
-  loops→map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) → (A∙ →∙ Ω∙ B∙)
+  loops→map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) → (A∙ →∙ Ω¹ B∙)
   loops→map∙-Ω (b , l) .fst a = l a ∙ sym (l a₀)
   loops→map∙-Ω (b , l) .snd   = ∙-invr (l a₀)
 
-  map∙-Ω→loops : (A∙ →∙ Ω∙ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
+  map∙-Ω→loops : (A∙ →∙ Ω¹ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
   map∙-Ω→loops (f , _) .fst = b₀
   map∙-Ω→loops (f , _) .snd = f
 ```
@@ -90,7 +88,7 @@ because these are almost definitionally the same thing.
 equivalences is not very interesting, so I've kept it hidden.</summary>
 
 ```agda
-  Σ-map∙≃loops : (Σ∙ A∙ →∙ B∙) ≃ (Σ _ λ b → A → b₀ ≡ b)
+  Σ-map∙≃loops : (Σ¹ A∙ →∙ B∙) ≃ (Σ _ λ b → A → b₀ ≡ b)
   Σ-map∙≃loops = Iso→Equiv (Σ-map∙→loops , iso loops→Σ-map∙ invr invl) where
     invr : is-right-inverse loops→Σ-map∙ Σ-map∙→loops
     invr (p , q) = Σ-pathp refl $ funext λ a → ∙-idl (q a)
@@ -102,7 +100,7 @@ equivalences is not very interesting, so I've kept it hidden.</summary>
       f' south = refl
       f' (merid x i) j = ∙-filler₂ (sym pres) (ap f (merid x)) j i
 
-  loops≃map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) ≃ (A∙ →∙ Ω∙ B∙)
+  loops≃map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) ≃ (A∙ →∙ Ω¹ B∙)
   loops≃map∙-Ω = Iso→Equiv (loops→map∙-Ω , iso map∙-Ω→loops invr invl) where
     lemma' : ∀ {ℓ} {A : Type ℓ} {x : A} (q : x ≡ x) (r : refl ≡ q)
            → ap (λ p → q ∙ sym p) r ∙ ∙-invr q ≡ ∙-idr q ∙ sym r
@@ -135,7 +133,7 @@ $$
 $$
 
 ```agda
-  Σ-map∙≃map∙-Ω : (Σ∙ A∙ →∙ B∙) ≃ (A∙ →∙ Ωⁿ 1 B∙)
+  Σ-map∙≃map∙-Ω : (Σ¹ A∙ →∙ B∙) ≃ (A∙ →∙ Ωⁿ 1 B∙)
   Σ-map∙≃map∙-Ω = Σ-map∙≃loops ∙e loops≃map∙-Ω
 ```
 
@@ -169,7 +167,7 @@ the same thing as points of $A$.
   invr (x , p) = Σ-pathp (funext (λ { north → sym p ; south → refl })) λ i j → p (~ i ∨ j)
 
 Ωⁿ≃Sⁿ-map {A = A} (suc n) =
-  (Σ∙ (Susp _ , north) →∙ A)          ≃⟨ Σ-map∙≃map∙-Ω ⟩
+  (Σ¹ (Susp _ , north) →∙ A)          ≃⟨ Σ-map∙≃map∙-Ω ⟩
   ((Susp (Sⁿ⁻¹ n) , north) →∙ Ωⁿ 1 A) ≃⟨ Ωⁿ≃Sⁿ-map n ⟩
   Ωⁿ n (Ωⁿ 1 A) .fst                  ≃⟨ Equiv.inverse (Ωⁿ-suc _ n .fst) ⟩
   Ωⁿ (suc n) A .fst                   ≃∎

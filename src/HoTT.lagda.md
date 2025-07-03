@@ -58,6 +58,7 @@ open import Homotopy.Space.Circle
 open import Homotopy.Space.Sphere
 open import Homotopy.Space.Torus
 open import Homotopy.Truncation
+open import Homotopy.Loopspace
 open import Homotopy.Pushout
 open import Homotopy.Wedge
 open import Homotopy.Base
@@ -96,7 +97,7 @@ _ = ∙-idr
 _ = ∙-invl
 _ = ∙-invr
 _ = ∙-assoc
-_ = Ωⁿ⁺²-is-abelian-group
+_ = Ωⁿ⁺²-is-abelian
 _ = Type∙
 _ = Ωⁿ
 ```
@@ -109,7 +110,7 @@ _ = Ωⁿ
   ii. `∙-invl`{.Agda}, `∙-invr`{.Agda}
   iii. _Definitional in cubical type theory_
   iv. `∙-assoc`{.Agda}
-* Theorem 2.1.6: `Ωⁿ⁺²-is-abelian-group`{.Agda}
+* Theorem 2.1.6: `Ωⁿ⁺²-is-abelian`{.Agda}
 * Definition 2.1.7: `Type∙`{.Agda}
 * Definition 2.1.8: `Ωⁿ`{.Agda}
 

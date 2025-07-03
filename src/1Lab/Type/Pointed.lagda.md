@@ -75,3 +75,40 @@ fst∙ = fst , refl
 snd∙ : A ×∙ B →∙ B
 snd∙ = snd , refl
 ```
+
+```agda
+zero∙ : A →∙ B
+zero∙ {B = B} .fst _ = B .snd
+zero∙ .snd = refl
+
+Maps∙ : Type∙ ℓ → Type∙ ℓ' → Type∙ (ℓ ⊔ ℓ')
+Maps∙ A B .fst = A →∙ B
+Maps∙ A B .snd = zero∙
+
+Homogeneous : Type ℓ → Type _
+Homogeneous A = ∀ {x y} → Path (Type∙ _) (A , x) (A , y)
+
+homogeneous-funext∙
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'}
+  → ⦃ _ : Homogeneous (B .fst) ⦄
+  → ∀ {f g : A →∙ B} (h : ∀ x → f .fst x ≡ g .fst x)
+  → f ≡ g
+homogeneous-funext∙ {A = A} {B = B , b₀} {f = f∙@(f , f*)} {g∙@(g , g*)} h =
+  subst (λ b → PathP (λ i → A →∙ b i) f∙ g∙) fix bad where
+    hom : ∀ x → Path (Type∙ _) (B , b₀) (B , x)
+    hom x = auto
+
+    fg* = sym f* ∙∙ h (A .snd) ∙∙ g*
+
+    bad : PathP (λ i → A →∙ B , fg* i) f∙ g∙
+    bad i .fst x = h x i
+    bad i .snd j = ∙∙-filler (sym f*) (h (A .snd)) g* j i
+
+    fix : Square {A = Type∙ _} refl (λ i → B , fg* i) refl refl
+    fix i j = hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → B , b₀
+      k (i = i0) → hom (fg* j) k
+      k (i = i1) → hom b₀ k
+      k (j = i0) → hom b₀ k
+      k (j = i1) → hom b₀ k
+```

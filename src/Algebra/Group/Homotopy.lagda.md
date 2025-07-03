@@ -14,6 +14,7 @@ open import Algebra.Magma
 open import Data.Set.Truncation
 
 open import Homotopy.Conjugation
+open import Homotopy.Loopspace
 ```
 -->
 
@@ -24,64 +25,19 @@ module Algebra.Group.Homotopy where
 <!--
 ```agda
 private variable
-  ℓ : Level
-  A : Type ℓ
+  ℓ     : Level
+  A B C : Type∙ ℓ
 ```
 -->
 
-# Homotopy groups {defines="homotopy-group fundamental-group loop-space"}
+# Homotopy groups {defines="homotopy-group fundamental-group"}
 
-Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
-$a = a$ as the **loop space of $A$**, and refer to it in short as
-$\Omega A$. Since we always have $\refl : a = a$, $\Omega A$ is
-_itself_ a pointed type, the construction can be iterated, a process
-which we denote $\Omega^n A$.
-
-```agda
-interleaved mutual
-  Ωⁿ-ty : Nat → Type∙ ℓ → Type ℓ
-  Ωⁿ-pt : (n : Nat) (A : Type∙ ℓ) → Ωⁿ-ty n A
-
-  Ωⁿ-ty zero (A , pt) = A
-  Ωⁿ-pt zero (A , pt) = pt
-
-  Ωⁿ-ty (suc x) A = Path (Ωⁿ-ty x A) (Ωⁿ-pt x A) (Ωⁿ-pt x A)
-  Ωⁿ-pt (suc n) A = refl
-
-Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
-Ωⁿ n A = Ωⁿ-ty n A , Ωⁿ-pt n A
-```
-
-<!--
-```agda
-Ωⁿ-map
-  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (e : A →∙ B)
-  → Ωⁿ n A →∙ Ωⁿ n B
-Ωⁿ-map zero    (e , p) = e , p
-
-Ωⁿ-map (suc n) (e , p) .fst α = conj (Ωⁿ-map n (e , p) .snd) (ap (Ωⁿ-map n (e , p) .fst) α)
-Ωⁿ-map (suc n) (e , p) .snd = conj-of-refl _
-
-Ωⁿ-ap
-  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (e : A ≃∙ B)
-  → Ωⁿ n A ≃∙ Ωⁿ n B
-Ωⁿ-ap zero    (e , p) = e , p
-
-Ωⁿ-ap (suc n) (e , p) .fst = ap-equiv (Ωⁿ-ap n (e , p) .fst) ∙e (_ , conj-is-equiv (Ωⁿ-ap n (e , p) .snd))
-Ωⁿ-ap (suc n) (e , p) .snd = conj-of-refl _
-
-Ωⁿ-suc : ∀ (A : Type∙ ℓ) n → Ωⁿ (suc n) A ≃∙ Ωⁿ n (Ωⁿ 1 A)
-Ωⁿ-suc A zero    = id≃ , refl
-Ωⁿ-suc A (suc n) = Ωⁿ-ap 1 (Ωⁿ-suc A n)
-```
--->
-
-For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
-obtained by [[truncating|set-truncation]] the higher groupoid structure
-that $A$ is equipped with. We call the sequence $\pi_n(A)$ the
-**homotopy groups** of $A$, but remark that the indexing used by
-`πₙ₊₁`{.Agda} is off by 1: `πₙ₊₁ 0 A` is the **fundamental group**
-$\pi_1(A)$.
+For positive $n$, we can give the iterated [[loop space]] $\Omega^n A$ a
+`Group`{.Agda} structure, obtained by [[truncating|set-truncation]] the
+higher groupoid structure that $A$ is equipped with. We call the
+sequence $\pi_n(A)$ the **homotopy groups** of $A$, but remark that the
+indexing used by `πₙ₊₁`{.Agda} is off by 1: `πₙ₊₁ 0 A` is the
+**fundamental group** $\pi_1(A)$.
 
 ```agda
 πₙ₊₁ : Nat → Type∙ ℓ → Group ℓ
@@ -110,24 +66,24 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
   : ∀ {ℓ} {A B : Type∙ ℓ} n (e : A ≃∙ B)
   → πₙ₊₁ n A Groups.≅ πₙ₊₁ n B
 πₙ₊₁-ap n e = total-iso (∥-∥₀-ap (Ωⁿ-ap (suc n) e .fst)) record
-  { pres-⋆ = elim! λ q r → ap ∥_∥₀.inc (ap₂ conj refl (ap-∙ (Ωⁿ-ap n e ·_) q r) ∙ conj-of-∙ (Ωⁿ-ap n e .snd) _ _) }
+  { pres-⋆ = elim! λ q r → ap ∥_∥₀.inc (Ωⁿ-map-∙ n (Equiv∙.to∙ e) _ _) }
 
 πₙ₊₁-map
-  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type ℓ'} n (f : ⌞ A ⌟ → B)
-  → ⌞ πₙ₊₁ n A ⌟ → ⌞ πₙ₊₁ n (B , f (A .snd)) ⌟
-πₙ₊₁-map n f = ∥-∥₀-map (Ωⁿ-map (suc n) (f , refl) .fst)
+  : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (f : A →∙ B)
+  → ⌞ πₙ₊₁ n A ⌟ → ⌞ πₙ₊₁ n B ⌟
+πₙ₊₁-map n f = ∥-∥₀-map (Ωⁿ-map (suc n) f .fst)
 ```
 -->
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
-that path concatenation for $\Omega^{n + 2} A$ is
-commutative, independent of $A$.
+that path concatenation for $\Omega^{n + 2} A$ is commutative,
+independent of $A$.
 
 ```agda
-Ωⁿ⁺²-is-abelian-group
+Ωⁿ⁺²-is-abelian
   : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) (p q : Ωⁿ (2 + n) A .fst)
   → p ∙ q ≡ q ∙ p
-Ωⁿ⁺²-is-abelian-group n p q =
+Ωⁿ⁺²-is-abelian n p q =
   transport
     (λ k → ap (λ x → ∙-idr x k) p ∙ ap (λ x → ∙-idl x k) q
          ≡ ap (λ x → ∙-idl x k) q ∙ ap (λ x → ∙-idr x k) p)
@@ -186,12 +142,12 @@ $\pi_{n+2}$ is an [[Abelian group]]:
 πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat)
                       → Group-on-is-abelian (πₙ₊₁ (1 + n) A .snd)
 πₙ₊₂-is-abelian-group {A = A} n =
-  elim! λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i)
+  elim! λ x y i → inc (Ωⁿ⁺²-is-abelian n x y i)
 ```
 
-We can give an alternative construction of the fundamental group $\pi_1$ for types
-that are known to be [[groupoids]]: in that case, we can avoid using a set truncation
-since the loop space is already a set.
+We can give an alternative construction of the fundamental group $\pi_1$
+for types that are known to be [[groupoids]]: in that case, we can avoid
+using a set truncation since the loop space is already a set.
 
 ```agda
 module π₁Groupoid {ℓ} ((T , t) : Type∙ ℓ) (grpd : is-groupoid T) where

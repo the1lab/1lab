@@ -13,6 +13,8 @@ open import Data.Set.Truncation
 open import Data.Int.Universal
 open import Data.Bool
 open import Data.Int
+
+open import Homotopy.Loopspace
 ```
 -->
 
