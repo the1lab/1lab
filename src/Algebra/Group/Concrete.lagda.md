@@ -346,7 +346,7 @@ right inverse to $\Pi_1$:
     f · ω ∙ p refl         ∎
 
   rinv : π₁F .F₁ {G} {H} g ≡ f
-  rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
+  rinv = ext λ ω → square→conj (symP (f≡apg ω))
 ```
 
 We are most of the way there. In order to get a proper equivalence, we must check that

@@ -406,7 +406,7 @@ again. That finishes the construction:
 ```agda
       abstract
         coh b = funext-dep λ {x₀} {x₁} p → ap deg $ sym $
-          x₁               ≡˘⟨ pathp→conj p ⟩
+          x₁               ≡˘⟨ square→conj p ⟩
           conj (path b) x₀ ≡⟨ conj-commutative (∙-comm x₀ (path b)) ⟩
           x₀               ∎
 
