@@ -68,15 +68,14 @@ append [] y = y
 append (xs ∷c x) y = (append xs y) ∷c x
 ```
 
-
 We also note some minor lemmas around indexing:
-
 
 ```agda
 index-immediate : ∀ {Γ n t} → index (Γ ∷c (n , t)) n ≡ just t
-index-duplicate : ∀ {Γ n k t₁ t₂ ρ} →
-                  index (Γ ∷c (n , t₁)) k ≡ just ρ →
-                  index ((Γ ∷c (n , t₂)) ∷c (n , t₁)) k ≡ just ρ
+index-duplicate 
+  : ∀ {Γ n k t₁ t₂ ρ} 
+  → index (Γ ∷c (n , t₁)) k ≡ just ρ 
+  → index ((Γ ∷c (n , t₂)) ∷c (n , t₁)) k ≡ just ρ
 ```
 
 <details>
@@ -179,7 +178,7 @@ data Expr : Type where
 </details>
 
 We must then define a relation to assign types to expressions, which
-we will notate `Γ ⊢ tm ⦂ ty`{.Agda}, for "a term $tm$ has type $ty$
+we will notate `Γ ⊢ tm ⦂ ty`{.Agda}, for "a term $\rm{tm}$ has type $\rm{ty}$
 in the context $\Gamma$":
 
 <!--
@@ -196,9 +195,10 @@ We say that a variable $n$ has a type $\tau$ in context $\Gamma$
 if `index Γ n ≡ just τ`{.Agda}.
 
 ```agda
-  `var-intro : ∀ {Γ τ} (n : Nat) →
-       index Γ n ≡ just τ →
-       Γ ⊢ ` n ⦂ τ
+  `var-intro 
+    : ∀ {Γ τ} (n : Nat) 
+    → index Γ n ≡ just τ 
+    → Γ ⊢ ` n ⦂ τ
 ```
 
 For lambda abstraction, if an expression $\text{body}$ extended with a variable $v$
@@ -249,7 +249,7 @@ program has some given type, for example:
 
 <!--
 ```agda
-module Example-1 where
+private module Example-1 where
 ```
 -->
 
@@ -282,8 +282,6 @@ Our next goal is to now define a "step" relation,
 which dictates that a term $x$ may, through a reduction, step to
 another expression $x'$ that represents one "step" of evaluation.
 
-
-        
 This is how we will
 define the evaluation of our expressions. Before we can define
 stepping, we need to define substitution, so that we may turn an
@@ -457,7 +455,7 @@ reduces properly:
 
 <!--
 ```agda
-module Example-2 where
+private module Example-2 where
 ```
 -->
 
@@ -475,7 +473,7 @@ module Example-2 where
   id-app-step = β-λ v-⟨,⟩
 ```
 
-TODO: Refl Trans closure of Step
+<!-- [TODO: Wren, 13/06/2025]  Refl Trans closure of Step -->
 
 ## The big two properties
 
@@ -495,9 +493,10 @@ same type, then any term with a type under $\Gamma$ has the same
 type under $\Delta$.
 
 ```agda
-rename : ∀ {Γ Δ} →
-         (∀ n ty → index Γ n ≡ just ty → index Δ n ≡ just ty) →
-         (∀ tm ty → Γ ⊢ tm ⦂ ty → Δ ⊢ tm ⦂ ty)
+rename 
+  : ∀ {Γ Δ} 
+  → (∀ n ty → index Γ n ≡ just ty → index Δ n ≡ just ty) 
+  → ∀ tm ty → Γ ⊢ tm ⦂ ty → Δ ⊢ tm ⦂ ty
 ```
 
 Variables are fairly straightforward - we simply apply our renaming
@@ -539,13 +538,15 @@ Another few lemmas! This time about shuffling and dropping names
 in the context.
 
 ```agda
-duplicates-are-ok : ∀ {Γ n t₁ t₂ bd typ} →
-                        Γ ∷c (n , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ →
-                        Γ ∷c (n , t₁) ⊢ bd ⦂ typ
-variable-swap : ∀ {Γ n k t₁ t₂ bd typ} →
-                ¬ n ≡ k →
-                Γ ∷c (n , t₁) ∷c (k , t₂) ⊢ bd ⦂ typ →
-                Γ ∷c (k , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ
+duplicates-are-ok 
+  : ∀ {Γ n t₁ t₂ bd typ} 
+  → Γ ∷c (n , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ 
+  → Γ ∷c (n , t₁) ⊢ bd ⦂ typ
+variable-swap 
+  : ∀ {Γ n k t₁ t₂ bd typ} 
+  → ¬ n ≡ k 
+  → Γ ∷c (n , t₁) ∷c (k , t₂) ⊢ bd ⦂ typ 
+  → Γ ∷c (k , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ
                     
 ```
 
@@ -592,9 +593,10 @@ absurdity from considering that `index [] n ≡ just τ`{.Agda}, for any $n$
 and $\tau$.
 
 ```agda
-weakening : ∀ {Γ tm ty} →
-              [] ⊢ tm ⦂ ty →
-              Γ  ⊢ tm ⦂ ty
+weakening 
+  : ∀ {Γ tm ty} 
+  → [] ⊢ tm ⦂ ty 
+  → Γ  ⊢ tm ⦂ ty
 weakening {Γ} {tm} {ty} []⊢ = rename f tm ty []⊢
   where
     f : (n : Nat) (τ : Ty) → index [] n ≡ just τ → index Γ n ≡ just τ
@@ -606,10 +608,11 @@ preserves types. Note that the substitute's type must exist in
 the empty context, to prevent conflicts of variables.
 
 ```agda
-subst-pres : ∀ {Γ n t bd typ s} →
-               [] ⊢ s ⦂ t → 
-               Γ ∷c (n , t) ⊢ bd ⦂ typ →
-               Γ ⊢ bd [ n := s ] ⦂ typ
+subst-pres 
+  : ∀ {Γ n t bd typ s} 
+  → [] ⊢ s ⦂ t 
+  → Γ ∷c (n , t) ⊢ bd ⦂ typ 
+  → Γ ⊢ bd [ n := s ] ⦂ typ
 ```
 
 In the case of variables, we use weakening for the substitution itself,
@@ -650,10 +653,11 @@ We'll do preservation first, which follows very easily from the
 lemmas we've already defined:
 
 ```agda
-preservation : ∀ {x₁ x₂ typ} →
-               Step x₁ x₂ →
-               [] ⊢ x₁ ⦂ typ →
-               [] ⊢ x₂ ⦂ typ
+preservation 
+  : ∀ {x₁ x₂ typ} 
+  → Step x₁ x₂ 
+  → [] ⊢ x₁ ⦂ typ 
+  → [] ⊢ x₂ ⦂ typ
                
 preservation (β-λ p) (`⇒-elim (`⇒-intro ⊢f) ⊢x) = subst-pres ⊢x ⊢f
 preservation β-π₁ (`×-elim₁ (`×-intro ⊢a ⊢b)) = ⊢a
@@ -669,19 +673,14 @@ define progress as a datatype, as it's much nicer to work with.
 
 ```agda
 data Progress (M : Expr) : Type where
-  going : ∀ {N} →
-               Step M N →
-               Progress M
+  going : ∀ {N} → Step M N → Progress M
   done : Value M → Progress M
 ```
 
 Then, progress reduces to mostly a lot of case analysis.
 
 ```agda
-progress : ∀ {x ty} →
-           [] ⊢ x ⦂ ty →
-           Progress x
-           
+progress : ∀ {x ty} → [] ⊢ x ⦂ ty → Progress x
 progress (`var-intro n n∈) = absurd (nothing≠just n∈)
 progress (`⇒-intro {n = n} {body = body} ⊢x) = done v-λ
 progress (`⇒-elim ⊢f ⊢x) with progress ⊢f
@@ -714,9 +713,7 @@ We do this with the help of a lemma that states values do not step to
 anything.
 
 ```agda
-value-¬step : ∀ {x y} →
-              Value x →
-              ¬ (Step x y)
+value-¬step : ∀ {x y} → Value x → ¬ (Step x y)
 ```
 
 <details>
@@ -728,11 +725,12 @@ value-¬step v-⊤ ()
 </details>
 
 ```agda
-deterministic : ∀ {x ty x₁ x₂} →
-                [] ⊢ x ⦂ ty →
-                Step x x₁ →
-                Step x x₂ →
-                x₁ ≡ x₂
+deterministic 
+  : ∀ {x ty x₁ x₂} 
+  → [] ⊢ x ⦂ ty 
+  → Step x x₁ 
+  → Step x x₂ 
+  → x₁ ≡ x₂
                 
 deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
 deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬step vx b)
