@@ -1,9 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Equiv.Pointed
 open import 1Lab.Prelude
-
-open import Algebra.Group.Homotopy
 
 open import Data.Nat.Properties
 open import Data.Set.Truncation
@@ -21,19 +18,27 @@ open import Homotopy.Loopspace
 module Homotopy.Truncation where
 ```
 
+<!--
+```agda
+private variable
+  ℓ ℓ'  : Level
+  A B C : Type ℓ
+  n k   : Nat
+```
+-->
+
 # General truncations
 
-Inspired by the [equivalence] between loop spaces and maps out of spheres,
-although _not_ using it
-directly, we can characterise [h-levels] in terms of maps of spheres,
-too. The idea is that, since a map $f : S^n \to A$ is equivalently
-_some_ loop in $A$[^someloop], we can characterise the _trivial_ loops as
-the constant functions $S^n \to A$. Correspondingly, if every function
-$S^n \to A$ is trivial, this means that all $n$-loops in $A$ are
-trivial, so that $A$ is $(n+1)$-truncated!
+Inspired by the [equivalence] between loop spaces and maps out of
+spheres, although _not_ using it directly, we can characterise
+[[h-levels]] in terms of maps of spheres, too. The idea is that, since a
+map $f : S^n \to A$ is equivalently _some_ loop in $A$[^someloop], we
+can characterise the _trivial_ loops as the constant functions $S^n \to
+A$. Correspondingly, if every function $S^n \to A$ is trivial, this
+means that all $n$-loops in $A$ are trivial, so that $A$ is
+$(n+1)$-truncated!
 
 [equivalence]: Homotopy.Base.html#loop-spaces-are-equivalently-based-maps-out-of-spheres
-[h-levels]: 1Lab.HLevel.html
 [^someloop]: Any map $f : S^n \to A$ can be made basepoint-preserving by
 letting $A$ be based at $f(N)$.
 
@@ -195,6 +200,15 @@ n-Tr-map
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → (A → B) → n-Tr A (suc n) → n-Tr B (suc n)
 n-Tr-map f = n-Tr-rec! (inc ∘ f)
+
+n-Tr-ap
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
+  → (e : A ≃ B) → n-Tr A (suc n) ≃ n-Tr B (suc n)
+n-Tr-ap e .fst = n-Tr-map (e .fst)
+n-Tr-ap e .snd = is-iso→is-equiv λ where
+  .is-iso.from → n-Tr-map (Equiv.from e)
+  .is-iso.rinv → elim! λ _ → ap inc (Equiv.ε e _)
+  .is-iso.linv → elim! λ _ → ap inc (Equiv.η e _)
 ```
 -->
 
@@ -263,6 +277,10 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
        , iso (decode' _ (inc _)) (rinv _ (inc _)) (linv _ (inc _))
 ```
 
+We can also phrase the recursion principle as an equivalence between
+functions out of $\| A \|_n$ and functions out of $A$, as long as the
+codomain is appropriately truncated.
+
 ```agda
 n-Tr-univ
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} n
@@ -275,15 +293,25 @@ n-Tr-univ n b-hl .snd = is-iso→is-equiv λ where
   .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
 ```
 
+## Closure properties
+
+We can prove that $n$-truncation commutes with (binary) products by
+pattern-matching. The benefit of writing out all the clauses is that we
+end up with much shorter neutral forms; and, while there are quite a
+few, they are very simple.
+
 ```agda
 n-Tr-product
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → n-Tr (A × B) (suc n) ≃ (n-Tr A (suc n) × n-Tr B (suc n))
 n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv where
+
   distrib : n-Tr (A × B) (suc n) → n-Tr A (suc n) × n-Tr B (suc n)
   distrib (inc (x , y)) = inc x , inc y
+
   distrib (hub r) .fst = hub λ s → distrib (r s) .fst
   distrib (hub r) .snd = hub λ s → distrib (r s) .snd
+
   distrib (spokes r x i) .fst = spokes (λ s → distrib (r s) .fst) x i
   distrib (spokes r x i) .snd = spokes (λ s → distrib (r s) .snd) x i
 
@@ -294,56 +322,63 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv where
 
   pair (hub r) y        = hub λ s → pair (r s) y
   pair (spokes r x i) y = spokes (λ s → pair (r s) y) x i
-
-  open is-iso
-
-  distrib-is-iso : is-iso distrib
-  distrib-is-iso .from (x , y)  = pair x y
-  distrib-is-iso .rinv = elim! λ x y → refl
-  distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
-
-  distrib-is-equiv = is-iso→is-equiv distrib-is-iso
-
-n-Tr-Σ
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {n}
-  → n-Tr (Σ A B) (suc n) ≃ n-Tr (Σ A λ a → n-Tr (B a) (suc n)) (suc n)
-n-Tr-Σ {A = A} {B} {n} = Iso→Equiv is where
-  is : Iso _ _
-  is .fst = n-Tr-map (Σ-map id inc)
-  is .snd .is-iso.from = n-Tr-rec! λ (a , b) → n-Tr-map (a ,_) b
-  is .snd .is-iso.rinv = n-Tr-elim! _ λ (a , b) → n-Tr-elim! (λ b → n-Tr-map (Σ-map id inc) (n-Tr-map (a ,_) b) ≡ inc (a , b)) (λ _ → refl) b
-  is .snd .is-iso.linv = n-Tr-elim! _ λ _ → refl
-
-n-Tr-ap
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
-  → (e : A ≃ B) → n-Tr A (suc n) ≃ n-Tr B (suc n)
-n-Tr-ap e = Iso→Equiv is where
-  is : Iso _ _
-  is .fst = n-Tr-map (e .fst)
-  is .snd .is-iso.from = n-Tr-map (Equiv.from e)
-  is .snd .is-iso.rinv = elim! λ _ → ap inc (Equiv.ε e _)
-  is .snd .is-iso.linv = elim! λ _ → ap inc (Equiv.η e _)
 ```
 
 <!--
 ```agda
-n-Tr∙ : ∀ {ℓ} (A∙ : Type∙ ℓ) n → Type∙ ℓ
-n-Tr∙ (A , a₀) n = n-Tr A n , inc a₀
+  open is-iso
 
-n-Tr-prop : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ ≃ n-Tr A 1
-n-Tr-prop .fst = elim! n-Tr.inc
-n-Tr-prop .snd = is-iso→is-equiv (iso (elim! ∥_∥.inc) (elim! λ _ → refl) (elim! λ _ → refl))
+  distrib-is-equiv : is-equiv distrib
+  distrib-is-equiv = is-iso→is-equiv λ where
+    .from (x , y) → pair x y
+    .rinv         → elim! λ x y → refl
+    .linv         → elim! λ x y → refl
+```
+-->
 
-n-Tr-set : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥₀ ≃ n-Tr A 2
-n-Tr-set .fst = elim! n-Tr.inc
-n-Tr-set .snd = is-iso→is-equiv (iso (elim! ∥_∥₀.inc) (elim! λ _ → refl) (elim! λ _ → refl))
+For `Σ`{.Agda} types, the situation is slightly worse: the best we can
+do is show that
+$$
+\left\| \sum_{x : A} B(x) \right\|_n
+  \simeq
+\left\| \sum_{x : A} \left\| B(x) \right\|_n \right\|_n
+$$.
 
-n-Tr-Tr : ∀ {ℓ} {A : Type ℓ} n k → k ≤ n → n-Tr (n-Tr A (suc n)) (suc k) ≃ n-Tr A (suc k)
-n-Tr-Tr n k p .fst = let instance _ = p in rec! inc
-n-Tr-Tr n k p .snd = let instance _ = p in is-iso→is-equiv λ where
+```agda
+n-Tr-Σ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {n}
+  → n-Tr (Σ A B) (suc n) ≃ n-Tr (Σ A λ a → n-Tr (B a) (suc n)) (suc n)
+n-Tr-Σ .fst = n-Tr-map (Σ-map id inc)
+n-Tr-Σ .snd = is-iso→is-equiv λ where
+  .is-iso.from → rec! λ a b → inc (a , b)
+  .is-iso.rinv → elim! λ a b → refl
+  .is-iso.linv → elim! λ a b → refl
+```
+
+Moreover, we can show that if $k \le n$, then $k$-truncating the
+$n$-truncation of a type $A$ is the same as directly $k$-truncating $A$.
+
+```agda
+n-Tr-Tr : k ≤ n → n-Tr (n-Tr A (suc n)) (suc k) ≃ n-Tr A (suc k)
+n-Tr-Tr p .fst = let instance _ = p in rec! inc
+n-Tr-Tr p .snd = let instance _ = p in is-iso→is-equiv λ where
   .is-iso.from → n-Tr-rec! (n-Tr.inc ∘ n-Tr.inc)
   .is-iso.rinv → elim! λ x → refl
   .is-iso.linv → elim! λ x → refl
+```
+
+<!--
+```agda
+n-Tr∙ : ∀ (A∙ : Type∙ ℓ) n → Type∙ ℓ
+n-Tr∙ (A , a₀) n = n-Tr A n , inc a₀
+
+n-Tr-prop : ∥ A ∥ ≃ n-Tr A 1
+n-Tr-prop .fst = elim! n-Tr.inc
+n-Tr-prop .snd = is-iso→is-equiv (iso (elim! ∥_∥.inc) (elim! λ _ → refl) (elim! λ _ → refl))
+
+n-Tr-set : ∥ A ∥₀ ≃ n-Tr A 2
+n-Tr-set .fst = elim! n-Tr.inc
+n-Tr-set .snd = is-iso→is-equiv (iso (elim! ∥_∥₀.inc) (elim! λ _ → refl) (elim! λ _ → refl))
 
 n-Tr-reindex : ∀ {ℓ} {A : Type ℓ} n k → n ≡ k → n-Tr A (suc n) ≃ n-Tr A (suc k)
 n-Tr-reindex {A = A} n k p = done where
@@ -360,29 +395,39 @@ n-Tr-reindex {A = A} n k p = done where
     .is-iso.from → elim! inc
     .is-iso.rinv → elim! λ x → refl
     .is-iso.linv → elim! λ x → refl
+```
+-->
 
-Ω-step : ∀ {ℓ} (A : Type∙ ℓ) n → n-Tr∙ (Ωⁿ 1 A) (1 + n) ≃∙ Ωⁿ 1 (n-Tr∙ A (2 + n))
-Ω-step A n = Equiv.inverse n-Tr-path-equiv , refl
+Above, we established that truncations of paths are paths in
+truncations; this extends to a [[pointed equivalence]] between the
+$n$-truncation of the [[loop space]] $\Omega A$ and the loop space of
+the $(1+n)$-truncation of $A$.
 
-Ω-stepⁿ
+```agda
+n-Tr-Ω¹ : ∀ {ℓ} (A : Type∙ ℓ) n → n-Tr∙ (Ωⁿ 1 A) (1 + n) ≃∙ Ωⁿ 1 (n-Tr∙ A (2 + n))
+n-Tr-Ω¹ A n = Equiv.inverse n-Tr-path-equiv , refl
+```
+
+We can iterate this to show that the $n$-truncation of the $k$-fold loop
+space $\| \Omega^k A \|_n$ is the $k$-fold loop space of the $(k +
+n)$-truncation of $A$.
+
+```agda
+n-Tr-Ωⁿ
   : ∀ {ℓ} (A : Type∙ ℓ) n k
   → n-Tr∙ (Ωⁿ k A) (1 + n) ≃∙ Ωⁿ k (n-Tr∙ A (k + suc n))
 
-Ω-stepⁿ A n 0    = id≃ , refl
-Ω-stepⁿ A n 1    = Ω-step A n
-Ω-stepⁿ A n (suc (suc k)) =
+n-Tr-Ωⁿ A n 0    = id≃ , refl
+n-Tr-Ωⁿ A n 1    = n-Tr-Ω¹ A n
+n-Tr-Ωⁿ A n (suc (suc k)) =
   let
     fixup = n-Tr-reindex (k + (2 + n)) (suc k + suc n) (+-sucr k (suc n))
     f2    = Ωⁿ-ap (2 + k) (fixup , refl)
   in
     n-Tr∙ (Ωⁿ (2 + k) A) (suc n)                  ≃∙⟨⟩
-    n-Tr∙ (Ωⁿ 1 (Ωⁿ (suc k) A)) (suc n)           ≃∙⟨ Ω-step (Ωⁿ (suc k) A) n ⟩
-    Ωⁿ 1 (n-Tr∙ (Ωⁿ (suc k) A) (2 + n))           ≃∙⟨ Ωⁿ-ap 1 (Ω-stepⁿ A (suc n) (suc k)) ⟩
+    n-Tr∙ (Ωⁿ 1 (Ωⁿ (suc k) A)) (suc n)           ≃∙⟨ n-Tr-Ω¹ (Ωⁿ (suc k) A) n ⟩
+    Ωⁿ 1 (n-Tr∙ (Ωⁿ (suc k) A) (2 + n))           ≃∙⟨ Ωⁿ-ap 1 (n-Tr-Ωⁿ A (suc n) (suc k)) ⟩
     Ωⁿ 1 (Ωⁿ (1 + k) (n-Tr∙ A (suc k + (2 + n)))) ≃∙⟨⟩
     Ωⁿ (2 + k) (n-Tr∙ A (suc k + (2 + n)))        ≃∙⟨ f2 ⟩
     Ωⁿ (2 + k) (n-Tr∙ A (2 + k + suc n))          ≃∙∎
-
-πₙ-def : ∀ {ℓ} (A : Type∙ ℓ) n → (⌞ πₙ₊₁ n A ⌟ , inc refl) ≃∙ Ωⁿ (suc n) (n-Tr∙ A (suc (n + 2)))
-πₙ-def A n = n-Tr-set ∙e Ω-stepⁿ A 1 (suc n) .fst , Ω-stepⁿ A 1 (suc n) .snd
 ```
--->

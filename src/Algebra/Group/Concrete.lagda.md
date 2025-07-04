@@ -17,6 +17,7 @@ open import Homotopy.Space.Delooping
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Conjugation
+open import Homotopy.Loopspace
 
 open is-group-hom
 open Precategory
@@ -204,38 +205,25 @@ module _ (G : ConcreteGroup ℓ) where
     public
 ```
 
-We define a [[functor]] from concrete groups to abstract groups.
-The object mapping is given by taking the `fundamental group`{.Agda ident=π₁B}.
-Given a pointed map $f : \B{G} \to^\bullet \B{H}$, we can `ap`{.Agda}ply it to a loop
-on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
-is pointed to get a loop on $\point{H}$ by [[conjugation]].
+We define a [[functor]] from concrete groups to abstract groups.  The
+object mapping is given by taking the `fundamental group`{.Agda
+ident=π₁B}. Since the type underlying a concrete group is a groupoid,
+this is precisely the [[loop space]] construction, which we already know
+is functorial--- and takes pointed maps to group homomorphisms.
 
 ```agda
 π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)
 π₁F .F₀ = π₁B
-π₁F .F₁ (f , ptf) .fst x = conj ptf (ap f x)
+π₁F .F₁ f .fst x       = Ω¹-map f · x
+π₁F .F₁ f .snd .pres-⋆ = Ω¹-map-∙ f
+π₁F .F-id    = ext λ x → Ω¹-map-id ·ₚ x
+π₁F .F-∘ f g = ext λ x → sym (Ω¹-map-∘ f g) ·ₚ x
 ```
 
-By some simple path yoga, this preserves multiplication, and the construction is
-functorial:
-
-```agda
-π₁F .F₁ (f , ptf) .snd .pres-⋆ x y =
-  conj ptf ⌜ ap f (x ∙ y) ⌝             ≡⟨ ap! (ap-∙ f _ _) ⟩
-  conj ptf (ap f x ∙ ap f y)            ≡⟨ conj-of-∙ _ _ _ ⟩
-  conj ptf (ap f x) ∙ conj ptf (ap f y) ∎
-
-π₁F .F-id = ext conj-refl
-π₁F .F-∘ (f , ptf) (g , ptg) = ext λ x →
-  conj (ap f ptg ∙ ptf) (ap (f ⊙ g) x)        ≡˘⟨ conj-∙ _ _ _ ⟩
-  conj ptf ⌜ conj (ap f ptg) (ap (f ⊙ g) x) ⌝ ≡˘⟨ ap¡ (ap-conj f _ _) ⟩
-  conj ptf (ap f (conj ptg (ap g x)))         ∎
-```
-
-We start by showing that `π₁F`{.Agda} is [[split essentially surjective]]. This is the
-easy part: to build a concrete group out of an abstract group, we simply take its
-`Deloop`{.Agda}ing, and use the fact that the fundamental group of the delooping
-recovers the original group.
+We start by showing that `π₁F`{.Agda} is [[split essentially
+surjective]]. This is the easy part: to build a concrete group out of an
+abstract group, we simply take its `Deloop`{.Agda}ing, and use the fact
+that the fundamental group of the delooping recovers the original group.
 
 <!--
 ```agda

@@ -59,12 +59,15 @@ class=shaded>shaded</span> region. In the type theory, we can't really
 "see" this copy of $A$: we only see its _ghost_, as something keeping
 all the meridians from collapsing.
 
-By convention, we see the suspension as a [[pointed type]] with the *north*
-pole as the base point.
+By convention, we see the suspension as a [[pointed type]] with the
+*north* pole as the base point.
 
 ```agda
-Susp∙ : ∀ {ℓ} (A : Type ℓ) → Type∙ ℓ
-Susp∙ A = Susp A , north
+Σ∙ : ∀ {ℓ} (A : Type ℓ) → Type∙ ℓ
+Σ∙ A = Susp A , north
+
+Σ¹ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
+Σ¹ (A , _) = Σ∙ A
 ```
 
 ```agda
@@ -111,7 +114,7 @@ Susp-ap e .snd = is-iso→is-equiv λ where
   .is-iso.rinv → Susp-elim _ refl refl λ x i j → merid (Equiv.ε e x j) i
   .is-iso.linv → Susp-elim _ refl refl λ x i j → merid (Equiv.η e x j) i
 
-suspend : ∀ {ℓ} (A∙ : Type∙ ℓ) → ⌞ A∙ ⌟ → Path (Susp ⌞ A∙ ⌟) north north
+suspend : ∀ {ℓ} (A∙ : Type∙ ℓ) → ⌞ A∙ ⌟ → Path ⌞ Σ¹ A∙ ⌟ north north
 suspend (_ , a₀) x = merid x ∙ sym (merid a₀)
 ```
 -->

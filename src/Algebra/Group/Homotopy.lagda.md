@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Induction
-open import 1Lab.Equiv.Pointed
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
@@ -14,6 +13,7 @@ open import Algebra.Magma
 open import Data.Set.Truncation
 
 open import Homotopy.Conjugation
+open import Homotopy.Truncation
 open import Homotopy.Loopspace
 ```
 -->
@@ -72,6 +72,9 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
   : ∀ {ℓ ℓ'} {A : Type∙ ℓ} {B : Type∙ ℓ'} n (f : A →∙ B)
   → ⌞ πₙ₊₁ n A ⌟ → ⌞ πₙ₊₁ n B ⌟
 πₙ₊₁-map n f = ∥-∥₀-map (Ωⁿ-map (suc n) f .fst)
+
+πₙ-def : ∀ {ℓ} (A : Type∙ ℓ) n → (⌞ πₙ₊₁ n A ⌟ , inc refl) ≃∙ Ωⁿ (suc n) (n-Tr∙ A (suc (n + 2)))
+πₙ-def A n = n-Tr-set ∙e n-Tr-Ωⁿ A 1 (suc n) .fst , n-Tr-Ωⁿ A 1 (suc n) .snd
 ```
 -->
 
