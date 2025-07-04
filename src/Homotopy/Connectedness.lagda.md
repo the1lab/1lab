@@ -603,6 +603,7 @@ is-n-connected-map→is-equiv-tr
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) n
   → is-n-connected-map f (suc n)
   → is-equiv {A = n-Tr A (suc n)} {B = n-Tr B (suc n)} (n-Tr-map f)
+{-# INLINE is-n-connected-map→is-equiv-tr #-}
 is-n-connected-map→is-equiv-tr {A = A} {B = B} f n p = is-iso→is-equiv λ where
   .is-iso.from → elim! (λ x → case is-n-connected-Tr n (p x) of λ x → n-Tr-map fst (x .centre))
   .is-iso.rinv → elim! λ x →
