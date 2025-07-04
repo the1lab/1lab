@@ -12,7 +12,7 @@ open import Homotopy.Connectedness
 module Homotopy.Wedge where
 ```
 
-# Wedge connectivity
+# Wedge connectivity {defines="wedge-connectivity"}
 
 The **wedge connectivity** lemma gives a set of sufficient conditions
 for constructing a section

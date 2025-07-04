@@ -148,6 +148,24 @@ module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
     k (j = i0) → p (~ i)
     k (i = i1) (j = i1) → s k
 
+∙∙-introl
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
+  → p ≡ q ∙∙ sym q ∙∙ p
+∙∙-introl p q i j = hcomp (∂ j ∨ ~ i) λ where
+  k (k = i0) → q (~ j ∧ i)
+  k (i = i0) → p (k ∧ j)
+  k (j = i0) → q (~ k ∧ i)
+  k (j = i1) → p k
+
+∙∙-intror
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
+  → p ≡ p ∙∙ q ∙∙ sym q
+∙∙-intror p q i j = hcomp (∂ j ∨ ~ i) λ where
+  k (k = i0) → q (i ∧ j)
+  k (i = i0) → p (j ∨ ~ k)
+  k (j = i0) → p (~ k)
+  k (j = i1) → q (~ k ∧ i)
+
 module _ {p q : x ≡ y} where
   ∨-square : p ≡ q → Square p q refl refl
   ∨-square sq i j = hcomp (∂ i ∨ ∂ j) λ where

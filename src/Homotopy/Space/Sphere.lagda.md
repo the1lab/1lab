@@ -2,8 +2,8 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Homotopy.Space.Circle.Base
 open import Homotopy.Space.Suspension
-open import Homotopy.Space.Circle
 ```
 -->
 

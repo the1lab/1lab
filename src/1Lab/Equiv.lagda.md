@@ -1140,5 +1140,44 @@ flip-equiv-square e e' f f' p = funext λ z →
   Equiv.injective e' (sym
     ( Equiv.ε e' _
     ∙ happly (sym p) (e .fst z) ∙ ap (e' .fst ∘ f) (Equiv.η e _)))
+
+is-equiv-join : (f : A → B) → (B → is-equiv f) → is-equiv f
+{-# INLINE is-equiv-join #-}
+is-equiv-join f fe = record { is-eqv = λ y → fe y .is-eqv y }
+
+module _ {ℓ} {A : Type ℓ} {x y : A} {p q : x ≡ y} where
+  ∨-square≃ : (p ≡ q) ≃ Square p q refl refl
+  ∨-square≃ .fst = ∨-square
+  ∨-square≃ .snd = is-iso→is-equiv λ where
+    .is-iso.from → flatten-∨-square
+    .is-iso.rinv → J
+      (λ y p → ∀ q (α : Square p q refl refl) → ∨-square (flatten-∨-square α) ≡ α)
+      (λ q α → J (λ q α → ∨-square (flatten-∨-square (sym α)) ≡ sym α)
+        ( ap ∨-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)) (sym α))
+      p q
+    .is-iso.linv → J
+      (λ y p → ∀ q (α : p ≡ q) → flatten-∨-square (∨-square α) ≡ α)
+      (λ _ → J (λ q α → flatten-∨-square (∨-square α) ≡ α)
+        ( ap flatten-∨-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      p q
+
+  ∧-square≃ : (p ≡ q) ≃ Square refl refl p q
+  ∧-square≃ .fst = ∧-square
+  ∧-square≃ .snd = is-iso→is-equiv λ where
+    .is-iso.from → flatten-∧-square
+    .is-iso.rinv → J
+      (λ y q → ∀ p (α : Square refl refl p q) → ∧-square (flatten-∧-square α) ≡ α)
+      (λ q → J (λ q α → ∧-square (flatten-∧-square α) ≡ α)
+        ( ap ∧-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      q p
+    .is-iso.linv → J
+      (λ y p → ∀ q (α : p ≡ q) → flatten-∧-square (∧-square α) ≡ α)
+      (λ _ → J (λ q α → flatten-∧-square (∧-square α) ≡ α)
+        ( ap flatten-∧-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      p q
 ```
 -->

@@ -21,21 +21,12 @@ module Homotopy.Base where
 
 This module contains the basic definitions for the study of synthetic
 homotopy theory. Synthetic homotopy theory is the name given to studying
-$\infty$-groupoids in their own terms, i.e., the application of homotopy type
-theory to computing homotopy invariants of spaces. Central to the theory
-is the concept of [[pointed type]] and [[pointed map]]. After all, [homotopy
-groups] are no more than the set-truncations of n-fold iterated loop
-spaces, and loop spaces are always relative to a basepoint.
-
-[homotopy groups]: Algebra.Group.Homotopy.html
-
-A helper that will come in handy is `Σ∙`{.Agda}, which attaches the
-north pole as the basepoint of the suspended space.
-
-```agda
-Σ¹ : ∀ {ℓ} → Type∙ ℓ → Type∙ ℓ
-Σ¹ A = Susp∙ ⌞ A ⌟
-```
+$\infty$-groupoids in their own terms, i.e., the application of homotopy
+type theory to computing homotopy invariants of spaces. Central to the
+theory is the concept of [[pointed type]] and [[pointed map]]. After
+all, [[homotopy groups]] are no more than the set-truncations of n-fold
+iterated loop spaces, and loop spaces are always relative to a
+basepoint.
 
 ## The suspension-loop space adjunction
 
@@ -46,11 +37,9 @@ _into_ a loop space. We construct the equivalence in two steps, but both
 halves are constructed in elementary terms.
 
 First, we'll prove that
-
 $$
 (\Sigma A \to_* B) \simeq \left(\sum_{b_s : B} A \to b_0 \equiv b_s\right),
 $$
-
 which is slightly involved, but not too much. The actual equivalence is
 very straightforward to construct, but proving that the two maps
 `Σ-map→loops` and `loops→Σ-map` are inverses involves nontrivial path
