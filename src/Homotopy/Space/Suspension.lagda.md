@@ -21,10 +21,10 @@ data Susp {ℓ} (A : Type ℓ) : Type ℓ where
   merid : A → north ≡ south
 ```
 
-The names `N`{.Agda} and `S`{.Agda} are meant to evoke the *n*orth and
-*s*outh poles of a sphere, respectively, and the name `merid`{.Agda}
-should evoke the *merid*ians. Indeed, we can picture a suspension like a
-sphere[^diamond]:
+The names `north`{.Agda} and `south`{.Agda} are meant to evoke the
+*n*orth and *s*outh poles of a sphere, respectively, and the name
+`merid`{.Agda} should evoke the *merid*ians. Indeed, we can picture a
+suspension like a sphere[^diamond]:
 
 [^diamond]: Diagrams are hard, okay?!
 
@@ -113,8 +113,5 @@ Susp-ap e .snd = is-iso→is-equiv λ where
   .is-iso.from → Susp-elim _ north south (λ x → merid (Equiv.from e x))
   .is-iso.rinv → Susp-elim _ refl refl λ x i j → merid (Equiv.ε e x j) i
   .is-iso.linv → Susp-elim _ refl refl λ x i j → merid (Equiv.η e x j) i
-
-suspend : ∀ {ℓ} (A∙ : Type∙ ℓ) → ⌞ A∙ ⌟ → Path ⌞ Σ¹ A∙ ⌟ north north
-suspend (_ , a₀) x = merid x ∙ sym (merid a₀)
 ```
 -->

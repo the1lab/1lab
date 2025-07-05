@@ -51,6 +51,7 @@ open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Space.Suspension.Freudenthal
 open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
@@ -804,11 +805,17 @@ _ = Sⁿ⁻¹-is-connected
 ```agda
 _ = relative-n-type-const-plus
 _ = Wedge.elim
+_ = suspend-is-n-connected
+_ = freudenthal.code
+_ = freudenthal-equivalence
 ```
 -->
 
 * Lemma 8.6.1: `relative-n-type-const-plus`{.Agda}
 * Lemma 8.6.2: `Wedge.elim`{.Agda}
+* Theorem 8.6.4: `suspend-is-n-connected`{.Agda}
+* Definition 8.6.5: `freudenthal.code`{.Agda}
+* Corollary 8.6.14: `freudenthal-equivalence`{.Agda}
 
 ## Chapter 9: Category theory
 
