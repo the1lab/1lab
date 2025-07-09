@@ -73,7 +73,7 @@ abelian≃abelian = prop-over-ext Concrete≃Abstract
   (λ {G} → is-concrete-abelian-is-prop G)
   (λ {G} → Group-on-is-abelian-is-prop (G .snd))
   (λ G G-ab → G-ab)
-  (λ G G-ab → ∙-comm _ G-ab)
+  (λ G G-ab → Deloop-ab.∙-comm _ G-ab)
 ```
 
 For example, the circle is abelian, being the delooping of $\mathbb{Z}$.
