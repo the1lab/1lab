@@ -7,6 +7,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Homotopy.Space.Delooping
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Conjugation
 ```
@@ -37,17 +38,41 @@ record HSpace {ℓ} (A* : Type∙ ℓ) : Type ℓ where
     id-coh : idl a₀ ≡ idr a₀
 ```
 
-Here, we're interested in the case where each $\mu(-, x)$ is an
-[[equivalence]], so we're really discussing **right-invertible
-h-spaces.** We note that if $A$ is [[connected]] then
-any of its H-space structures is automatically both left- and
-right-invertible. This is because, since "being an equivalence" is a
-[[proposition]], it would suffice to check invertibility when $x$ is the
-basepoint, but in this case $\mu(-,a_0)$ is the identity.
+Here, we're interested in the case where each $\mu(x,-)$ and $\mu(-, x)$
+is an [[equivalence]], so we're really discussing **invertible
+h-spaces.** We note that if $A$ is [[connected]] then any of its H-space
+structures is automatically both left- and right-invertible. This is
+because, since "being an equivalence" is a [[proposition]], it would
+suffice to check invertibility when $x$ is the basepoint, but in this
+case $\mu(-,a_0)$ is the identity.
 
 ```agda
-    inv : ∀ x → is-equiv (λ y → μ y x)
+    μ-invl : ∀ y → is-equiv (μ y)
+    μ-invr : ∀ y → is-equiv (flip μ y)
 ```
+
+<!--
+```agda
+  module _ (a b : ⌞ A* ⌟) where
+    open Σ (μ-invl a .is-eqv b .centre) renaming (fst to _\\_) public
+    open Σ (μ-invr a .is-eqv b .centre) renaming (fst to _//_) public
+
+  μ-\\-l : ∀ a b → μ a (a \\ b) ≡ b
+  μ-\\-l a b = Equiv.ε (_ , μ-invl a) b
+
+  μ-\\-r : ∀ a b → a \\ μ a b ≡ b
+  μ-\\-r a b = Equiv.η (_ , μ-invl a) b
+
+  μ-zig : ∀ a b → ap (μ a) (μ-\\-r a b) ≡ μ-\\-l a (μ a b)
+  μ-zig a b = Equiv.zig (_ , μ-invl a) b
+
+  μ-//-l : ∀ a b → μ (a // b) a ≡ b
+  μ-//-l a b = Equiv.ε (_ , μ-invr a) b
+
+  μ-//-r : ∀ a b → a // μ b a ≡ b
+  μ-//-r a b = Equiv.η (_ , μ-invr a) b
+```
+-->
 
 Using either unit law (we choose $\lambda$), we can show that $\mu$
 extends to a secondary 'composition' operation on the [[loop space]]
@@ -125,6 +150,7 @@ module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
 ```
 -->
 
+
 ## H-Space structures on deloopings
 
 We can define an H-space structure on the [[delooping]] $\B G$ of an
@@ -181,11 +207,13 @@ to showing the identity function is an equivalence.
   HSpace-BG .idl x  = refl
   HSpace-BG .idr    = mul-idr
   HSpace-BG .id-coh = refl
-  HSpace-BG .inv    = Deloop-elim-prop G _ (λ _ → hlevel 1) $
-    subst is-equiv (sym (funext mul-idr)) id-equiv
+  HSpace-BG .μ-invl = Deloop-elim-prop _ _ (λ _ → hlevel 1)
+    id-equiv
+  HSpace-BG .μ-invr = Deloop-elim-prop _ _ (λ _ → hlevel 1)
+    (subst is-equiv (ext (sym ∘ mul-idr)) id-equiv)
 ```
 
-## On the circle
+### On the circle
 
 We can specialise the discussion above to the [[circle]], in which case
 we already have many of the components ready. All that remains is to
@@ -195,7 +223,9 @@ $S^1$.
 
 ```agda
 mulS¹ : S¹ → S¹ → S¹
-mulS¹ = S¹-elim (λ x → x) (funext always-loop)
+mulS¹ base     y        = y
+mulS¹ (loop i) base     = loop i
+mulS¹ (loop i) (loop j) = double-connection loop loop i j
 
 invS¹ : S¹ → S¹
 invS¹ base     = base
@@ -204,25 +234,39 @@ invS¹ (loop i) = loop (~ i)
 
 <!--
 ```agda
-private
-  mulS¹-idr : ∀ x → mulS¹ x base ≡ x
-  mulS¹-idr = S¹-elim refl (λ i j → loop i)
+mulS¹-idr : ∀ x → mulS¹ x base ≡ x
+mulS¹-idr = S¹-elim refl (λ i j → loop i)
+
+mulS¹-comm : ∀ x y → mulS¹ x y ≡ mulS¹ y x
+mulS¹-comm = S¹-elim (λ y → sym (mulS¹-idr y)) (funextP (S¹-elim (λ i j → loop i) prop!))
+
+mulS¹-invl : ∀ x → mulS¹ (invS¹ x) x ≡ base
+mulS¹-invl = S¹-elim refl λ i j → hcomp {A = S¹} (∂ i ∨ ∂ j) λ where
+  k (k = i0) → base
+  k (i = i0) → base
+  k (i = i1) → base
+  k (j = i0) → hfill (∂ i) k (λ { k (k = i0) → base ; k (i = i0) → loop (~ i ∨ k) ; k (i = i1) → loop (~ i ∧ k) })
+  k (j = i1) → base
+
+mulS¹-invr : ∀ x → mulS¹ x (invS¹ x) ≡ base
+mulS¹-invr x = mulS¹-comm x (invS¹ x) ∙ mulS¹-invl x
+
+mulS¹-assoc : ∀ x y z → mulS¹ x (mulS¹ y z) ≡ mulS¹ (mulS¹ x y) z
+mulS¹-assoc = S¹-elim (λ y z → refl) (funextP (S¹-elim (funextP (S¹-elim (λ i j → loop i) prop!)) prop!))
 
 HSpace-S¹ : HSpace (S¹ , base)
 HSpace-S¹ .μ      = mulS¹
 HSpace-S¹ .idl x  = refl
 HSpace-S¹ .idr    = mulS¹-idr
 HSpace-S¹ .id-coh = refl
-HSpace-S¹ .inv x =
+HSpace-S¹ .μ-invr x =
   is-iso→is-equiv λ where
     .is-iso.from y → mulS¹ (invS¹ x) y
-    .is-iso.rinv y → p x y
-    .is-iso.linv y → r (invS¹ x) y x ∙ p x y
-  where
-    p : ∀ x y → mulS¹ (mulS¹ (invS¹ x) y) x ≡ y
-    p = S¹-elim mulS¹-idr (funextP (S¹-elim (λ i j → hfill (∂ i) (~ j) (λ { k (k = i0) → base ; k (i = i0) → loop (~ i ∨ k) ; k (i = i1) → loop (~ i ∧ k) })) prop!))
-
-    r : ∀ x y z → mulS¹ x (mulS¹ y z) ≡ mulS¹ (mulS¹ x y) z
-    r = S¹-elim (λ y z → refl) (funextP (S¹-elim (funextP (S¹-elim (λ i j → loop i) prop!)) prop!))
+    .is-iso.rinv y → ap₂ mulS¹ (mulS¹-comm (invS¹ x) y) refl ∙ sym (mulS¹-assoc y (invS¹ x) x) ∙ ap (mulS¹ y) (mulS¹-invl x) ∙ mulS¹-idr y
+    .is-iso.linv y → ap (mulS¹ (invS¹ x)) (mulS¹-comm y x) ∙ mulS¹-assoc (invS¹ x) x y ∙ ap (flip mulS¹ y) (mulS¹-invl x)
+HSpace-S¹ .μ-invl x = is-iso→is-equiv λ where
+  .is-iso.from y → mulS¹ (invS¹ x) y
+  .is-iso.rinv y → mulS¹-assoc x (invS¹ x) y ∙ ap (flip mulS¹ y) (mulS¹-invr x)
+  .is-iso.linv y → mulS¹-assoc (invS¹ x) x y ∙ ap (flip mulS¹ y) (mulS¹-invl x)
 ```
 -->

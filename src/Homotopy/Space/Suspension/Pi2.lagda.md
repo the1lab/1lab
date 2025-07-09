@@ -17,28 +17,35 @@ open import Homotopy.Truncation
 open import Homotopy.Loopspace
 open import Homotopy.HSpace
 open import Homotopy.Wedge
+open import Homotopy.Join
 
 open ConcreteGroup
 ```
 -->
 
 ```agda
-module Homotopy.Space.Suspension.Pi2 {ℓ} (G : ConcreteGroup ℓ) (hg : HSpace (G .B)) where
+module Homotopy.Space.Suspension.Pi2 {ℓ} (grp : ConcreteGroup ℓ) (hg : HSpace (grp .B)) where
 ```
 
 # π₂ of a suspension
 
 <!--
 ```agda
-open ConcreteGroup G renaming (B to BG ; pt to G₀) using ()
-open HSpace hg
+open ConcreteGroup grp renaming (B to BG ; pt to G₀) using ()
+open HSpace {ℓ = ℓ} {A* = BG} hg
 
 private
+  G : Type ℓ
+  G = ⌞ grp ⌟
+
   ΣG : Type ℓ
-  ΣG = Susp ⌞ G ⌟
+  ΣG = Susp G
 
   ∥_∥₁ : Type ℓ → Type ℓ
   ∥ X ∥₁ = n-Tr X 3
+
+  μr : ∀ a → ⌞ G ⌟ ≃ ⌞ G ⌟
+  μr a = _ , μ-invr a
 ```
 -->
 
@@ -47,18 +54,25 @@ We will prove that the second [[homotopy group]] $\pi_2(\Susp G)$ of the
 [[abelian|concrete abelian group]] [[concrete group]]) $G$ with an
 [[h-space]] structure is $\Omega G$.
 
-We start by defining a type family `codes`{.Agda} over $\Susp G$ which
-is $G$ on both poles and sends the $x$th `merid`{.Agda}ian to the
-H-space multiplication $\mu(-,x)$ on the right, which is an equivalence
-by assumption. We will show, by an encode-decode argument, that the
+We start by defining a type family `Hopf`{.Agda} over $\Susp G$ which is
+$G$ on both poles and sends the $x$th `merid`{.Agda}ian to the H-space
+multiplication $\mu(-,x)$ on the right, which is an equivalence by
+assumption. We will show, by an encode-decode argument, that the
 groupoid [[truncation]] $\| \rm{north} \is x \|_1$ is equivalent to the
-fibre of `codes`{.Agda} over $x$.
+fibre of `Hopf`{.Agda} over $x$.
+
+As the name implies, the `Hopf`{.Agda} type family is the synthetic
+equivalent of the classic Hopf fibration, though here we have evidently
+generalised it beyond a map $S^3 \to S^1$. [Below] we prove that the
+total space of the `Hopf`{.Agda} is the [[join|join of types]] $G * G$.
+
+[Below]: #the-hopf-fibration
 
 ```agda
-codes : ΣG → Type _
-codes north       = ⌞ G ⌟
-codes south       = ⌞ G ⌟
-codes (merid x i) = ua (flip μ x , inv x) i
+Hopf : ΣG → Type _
+Hopf north       = G
+Hopf south       = G
+Hopf (merid x i) = ua (μr x) i
 ```
 
 To encode, we use truncation recursion, since `codes`{.Agda} is a family
@@ -67,10 +81,10 @@ of groupoids by construction, and since we have $G_0 :
 $\rm{north} \is x$ to get a point in an arbitrary fibre.
 
 ```agda
-encode' : ∀ x → ∥ north ≡ x ∥₁ → codes x
-encode' x = n-Tr-rec (tr x) λ p → subst codes p G₀ where
-  tr : ∀ x → is-groupoid (codes x)
-  tr = Susp-elim-prop (λ s → hlevel 1) (G .has-is-groupoid) (G .has-is-groupoid)
+encode' : ∀ x → ∥ north ≡ x ∥₁ → Hopf x
+encode' x = n-Tr-rec (tr x) λ p → subst Hopf p G₀ where
+  tr : ∀ x → is-groupoid (Hopf x)
+  tr = Susp-elim-prop (λ s → hlevel 1) (grp .has-is-groupoid) (grp .has-is-groupoid)
 ```
 
 To decode an element of `codes`{.Agda} we use suspension recursion. On
@@ -81,12 +95,12 @@ can reduce this to a coherence lemma relating the composition of
 meridians and the H-space multiplication.
 
 ```agda
-decode' : ∀ x → codes x → ∥ north ≡ x ∥₁
-decode' = Susp-elim _ (n-Tr.inc ∘ suspend (G .B)) (n-Tr.inc ∘ merid) λ x → ua→ λ a → to-pathp $
-  inc (subst (north ≡_) (merid x) (suspend (G .B) a)) ≡⟨ ap n-Tr.inc (subst-path-right (suspend (G .B) a) (merid x)) ⟩
-  inc ((merid a ∙ sym (merid G₀)) ∙ merid x)          ≡˘⟨ ap n-Tr.inc (∙-assoc _ _ _) ⟩
-  inc (merid a ∙ sym (merid G₀) ∙ merid x)            ≡⟨ merid-μ a x ⟩
-  inc (merid (μ a x))                                 ∎
+decode' : ∀ x → Hopf x → ∥ north ≡ x ∥₁
+decode' = Susp-elim _ (n-Tr.inc ∘ suspend BG) (n-Tr.inc ∘ merid) λ x → ua→ λ a → to-pathp $
+  inc (subst (north ≡_) (merid x) (suspend BG a)) ≡⟨ ap n-Tr.inc (subst-path-right (suspend BG a) (merid x)) ⟩
+  inc ((merid a ∙ sym (merid G₀)) ∙ merid x)      ≡˘⟨ ap n-Tr.inc (∙-assoc _ _ _) ⟩
+  inc (merid a ∙ sym (merid G₀) ∙ merid x)        ≡⟨ merid-μ a x ⟩
+  inc (merid (μ a x))                             ∎
   where
 ```
 
@@ -132,7 +146,7 @@ path is refl; In that case, they agree definitionally.
         (ap sym (J (λ y p → ∙∙-intror p (sym p) ≡ ∙∙-introl p p) refl α))
         (ap (ap merid ∘ sym) (sym id-coh))
 
-      c = is-connected∙→is-connected (G .has-is-connected)
+      c = is-connected∙→is-connected (grp .has-is-connected)
     in Wedge.elim {A∙ = BG} {BG} 0 0 c c (λ _ _ → hlevel 2) p1 p2 coh
 ```
 
@@ -144,7 +158,7 @@ then show that these are inverses, which, in both direction, are simple
 calculations.
 
 ```agda
-π₁ΩΣG≃G : ∥ north ≡ north ∥₁ ≃ ⌞ G ⌟
+π₁ΩΣG≃G : ∥ north ≡ north ∥₁ ≃ G
 π₁ΩΣG≃G .fst = encode' north
 ```
 
@@ -154,9 +168,9 @@ calculations.
 π₁ΩΣG≃G .snd = is-iso→is-equiv (iso (decode' north) invl (invr north)) where
   invl : ∀ a → encode' north (decode' north a) ≡ a
   invl a = Regularity.fast! (
-    Equiv.from (flip μ (pt G) , inv G₀) (μ (pt G) a) ≡⟨ ap (λ e → Equiv.from e (μ (pt G) a)) {x = _ , inv G₀} {y = id≃} (ext idr) ⟩
-    μ (pt G) a                                       ≡⟨ idl a ⟩
-    a                                                ∎)
+    Equiv.from (flip μ G₀ , μ-invr G₀) (μ G₀ a) ≡⟨ ap (λ e → Equiv.from e (μ G₀ a)) {x = _ , μ-invr G₀} {y = id≃} (ext idr) ⟩
+    μ G₀ a                                      ≡⟨ idl a ⟩
+    a                                           ∎)
 ```
 
 To show that decoding inverts encoding, we use the extra generality
@@ -181,11 +195,11 @@ shows that this equivalence preserves path composition, i.e. it is an
 isomorphism of groups.
 
 ```agda
-π₂ΣG≅ΩG : πₙ₊₁ 1 (Σ¹ BG) Groups.≅ π₁Groupoid.π₁ BG (G .has-is-groupoid)
+π₂ΣG≅ΩG : πₙ₊₁ 1 (Σ¹ BG) Groups.≅ π₁Groupoid.π₁ BG (grp .has-is-groupoid)
 Ω²ΣG≃ΩG =
   ∥ ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ ∥₀                        ≃⟨ n-Tr-set ⟩
   n-Tr ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ 2                      ≃˘⟨ n-Tr-path-equiv {n = 1} ⟩
-  ⌞ Ω¹ (∥ ⌞ Ωⁿ 1 (Σ¹ BG) ⌟ ∥₁ , inc refl) ⌟    ≃⟨ _ , equiv→cancellable (π₁ΩΣG≃G .snd) ⟩
+  ⌞ Ω¹ (∥ ⌞ Ωⁿ 1 (Σ¹ BG) ⌟ ∥₁ , inc refl) ⌟    ≃⟨ ap-equiv π₁ΩΣG≃G ⟩
   ⌞ Ω¹ (⌞ G ⌟ , transport refl G₀) ⌟           ≃⟨ _ , conj-is-equiv (transport-refl _) ⟩
   ⌞ Ω¹ BG ⌟                                    ≃∎
 ```
@@ -196,7 +210,7 @@ isomorphism of groups.
   open Σ Ω²ΣG≃ΩG renaming (fst to f0) using ()
   instance
     _ : ∀ {n} → H-Level ⌞ G ⌟ (3 + n)
-    _ = basic-instance 3 (G .has-is-groupoid)
+    _ = basic-instance 3 (grp .has-is-groupoid)
 
   f1 : n-Tr (refl ≡ refl) 2 → inc refl ≡ inc refl
   f1 = Equiv.from (n-Tr-path-equiv {n = 1})
@@ -204,7 +218,7 @@ isomorphism of groups.
   f2 : inc refl ≡ inc refl → transport refl G₀ ≡ transport refl G₀
   f2 = ap· π₁ΩΣG≃G
 
-  f3 : transport refl G₀ ≡ transport refl G₀ → pt G ≡ pt G
+  f3 : transport refl G₀ ≡ transport refl G₀ → G₀ ≡ G₀
   f3 = conj (transport-refl _)
 
   coh : (p q : refl ≡ refl) → f0 (inc (p ∙ q)) ≡ f0 (inc p) ∙ f0 (inc q)
@@ -213,3 +227,59 @@ isomorphism of groups.
     ∙∙ conj-of-∙ (transport-refl _) _ _
 ```
 -->
+
+## The Hopf fibration
+
+We can now prove that the total space of the Hopf fibration defined
+above is the [[join]] of $G$ with itself.
+
+```agda
+join→hopf : (G ∗ G) → Σ _ Hopf
+join→hopf (inl x) = north , x
+join→hopf (inr x) = south , x
+join→hopf (join a b i) = record
+  { fst = merid (a \\ b) i
+  ; snd = attach (∂ i) (λ { (i = i0) → a ; (i = i1) → b })
+    (inS (μ-\\-l a b i))
+  }
+```
+
+```agda
+join→hopf-split : ∀ x p → fibre join→hopf (x , p)
+join→hopf-split = Susp-elim _
+  (λ p → inl p , refl)
+  (λ p → inr p , refl)
+  (λ x i → filler x i i1)
+
+  module surj where module _ (x : fst BG) where
+    coh : ∀ a → PathP
+      (λ i → fibre join→hopf (merid x i , ua-inc (μr x) a i))
+      (inl a , refl) (inr (μ a x) , refl)
+    coh a i .fst = join a (μ a x) i
+    coh a i .snd j .fst = merid (μ-\\-r a x j) i
+    coh a i .snd j .snd = attach (∂ i)
+      (λ { (i = i0) → a ; (i = i1) → μ a x })
+      (inS (∨-square (μ-zig a x) j i))
+
+    open ua→ {e = μr x} {B = λ i z → fibre join→hopf (merid x i , z)} {f₀ = λ p → inl p , refl} {f₁ = λ p → inr p , refl} coh public
+
+hopf→join : (Σ _ Hopf) → G ∗ G
+hopf→join a = uncurry join→hopf-split a .fst
+
+hopf→join→hopf : is-right-inverse hopf→join join→hopf
+hopf→join→hopf a = uncurry join→hopf-split a .snd
+
+join→hopf→join : is-left-inverse hopf→join join→hopf
+join→hopf→join (inl x) = refl
+join→hopf→join (inr x) = refl
+join→hopf→join (join a b i) =
+  let it = attach (∂ i) (λ { (i = i0) → a ; (i = i1) → b }) (inS (μ-\\-l a b i)) in
+  comp (λ l → surj.filler (a \\ b) i l it .fst ≡ join a b i) (∂ i) λ where
+    j (j = i0) → λ k → join a (μ-\\-l a b (i ∨ k)) (~ k ∨ i)
+    j (i = i0) → λ k → join a (μ-\\-l a b k) (~ j ∧ ~ k)
+    j (i = i1) → λ k → inr b
+
+∫Hopf≃join : Σ _ Hopf ≃ (⌞ G ⌟ ∗ ⌞ G ⌟)
+∫Hopf≃join .fst = hopf→join
+∫Hopf≃join .snd = is-iso→is-equiv (iso join→hopf join→hopf→join hopf→join→hopf)
+```
