@@ -316,7 +316,7 @@ instance
 
 <!--
 ```agda
-module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
+module Deloop-ab {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
   open Group-on (G .snd)
   open is-group-hom
 

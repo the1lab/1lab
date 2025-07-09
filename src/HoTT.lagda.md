@@ -53,6 +53,7 @@ open import Data.Sum
 
 open import Homotopy.Space.Suspension.Freudenthal
 open import Homotopy.Space.Suspension.Properties
+open import Homotopy.Space.Sphere.Properties
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
@@ -808,6 +809,8 @@ _ = Wedge.elim
 _ = suspend-is-n-connected
 _ = freudenthal.code
 _ = freudenthal-equivalence
+_ = Sⁿ-stability-worker
+_ = πₙSⁿ≃Int
 ```
 -->
 
@@ -816,6 +819,8 @@ _ = freudenthal-equivalence
 * Theorem 8.6.4: `suspend-is-n-connected`{.Agda}
 * Definition 8.6.5: `freudenthal.code`{.Agda}
 * Corollary 8.6.14: `freudenthal-equivalence`{.Agda}
+* Corollary 8.6.15: `Sⁿ-stability-worker`{.Agda}
+* Theorem 8.6.17: `πₙSⁿ≃Int`{.Agda}
 
 ## Chapter 9: Category theory
 

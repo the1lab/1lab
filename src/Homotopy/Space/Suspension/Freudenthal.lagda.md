@@ -19,7 +19,7 @@ open import Homotopy.Wedge
 module Homotopy.Space.Suspension.Freudenthal where
 ```
 
-# Freudenthal suspension theorem
+# Freudenthal suspension theorem {defines="freudenthal-suspension-theorem"}
 
 The `merid`{.Agda} constructor of the [[suspension]] $\Sigma A$
 generates a path between the `north`{.Agda} and `south`{.Agda} poles,
