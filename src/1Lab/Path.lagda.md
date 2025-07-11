@@ -760,7 +760,7 @@ preserves identity and composition of *functions*, too.
   ap-id = refl
 ```
 
-## Transport
+## Transport {defines="transport"}
 
 We've established that every function preserves paths, but this is not
 *quite* enough for a notion of sameness. The key principle that
