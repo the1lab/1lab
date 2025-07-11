@@ -3,11 +3,11 @@ open import 1Lab.Type
 
 open import Data.String.Base
 open import Data.String.Show
+open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Id.Base
-open import Data.Bool
 
 module Data.Reflection.Meta where
 

@@ -95,7 +95,7 @@ univalence, equivalent to the natural numbers:
 naïve-fin-is-nat : (Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X) ≃ Nat
 naïve-fin-is-nat =
   Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X ≃⟨ Σ-swap₂ ⟩
-  Σ[ n ∈ Nat ] Σ[ X ∈ Type ] Fin n ≃ X ≃⟨ Σ-contract (λ x → Equiv-is-contr (Fin x)) ⟩
+  Σ[ n ∈ Nat ] Σ[ X ∈ Type ] Fin n ≃ X ≃⟨ Σ-contr-snd (λ x → Equiv-is-contr (Fin x)) ⟩
   Nat                                  ≃∎
 ```
 
@@ -467,7 +467,7 @@ instance
 
     eqv =
       Pi la.univ P                       ≃⟨ Iso→Equiv (to-pi' P , iso (from-pi' P) (from-to-pi' P) (to-from-pi' P)) ⟩
-      ((x : A) (a : x ∈ₗ la.univ) → P x) ≃⟨ Π-cod≃ (λ x → Π-contr-eqv (la.has-member x)) ⟩
+      ((x : A) (a : x ∈ₗ la.univ) → P x) ≃⟨ Π-ap-cod (λ x → Π-contr-eqv (la.has-member x)) ⟩
       ((x : A) → P x)                    ≃∎
 
     li : Listing (∀ x → P x)

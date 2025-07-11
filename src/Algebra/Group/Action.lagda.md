@@ -207,7 +207,7 @@ of $G$ that arises from conjugation with an element of $G$ is called an
 ```agda
   conjugation-action : Action (Groups ℓ) G G
   conjugation-action .fst x = total-iso
-    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∘-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
+    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∘-is-equiv (G.⋆-equivl (x G.⁻¹)) (G.⋆-equivr x))
     (record { pres-⋆ = λ y z → group! G })
   conjugation-action .snd .pres-⋆ x y = ext λ z → group! G
 ```

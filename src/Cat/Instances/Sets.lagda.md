@@ -108,8 +108,8 @@ We then use [univalence for $n$-types] to directly establish that $(A
 ```agda
   is-category'-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
   is-category'-Sets {A} {B} =
-    (A ≡ B)         ≃⟨ n-univalence e⁻¹ ⟩
-    (∣ A ∣ ≃ ∣ B ∣) ≃⟨ equiv≃iso e⁻¹ ⟩
+    (A ≡ B)         ≃˘⟨ n-univalence ⟩
+    (∣ A ∣ ≃ ∣ B ∣) ≃˘⟨ equiv≃iso ⟩
     (A Sets.≅ B)    ≃∎
 ```
 

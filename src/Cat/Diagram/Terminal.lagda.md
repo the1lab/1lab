@@ -108,7 +108,7 @@ to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
   module _ (x : Ob) (adj : !F ⊣ !Const {C = C} x) where
     inclusion-is-right-adjoint→is-terminal : is-terminal x
     inclusion-is-right-adjoint→is-terminal y = Equiv→is-hlevel 0
-      (Σ-contract (λ _ → hlevel 0) e⁻¹)
+      (Σ-contr-snd (λ _ → hlevel 0) e⁻¹)
       (R-adjunct-is-equiv adj .is-eqv _)
 ```
 

@@ -121,6 +121,14 @@ abstract instance
       aq=bq = *-injl p q q' (*-commutative p q ∙ a .factors ∙ sym (b .factors) ∙ ap (q' *_) (sym ap=bp) ∙ *-commutative q' p)
     in Equiv.injective (Iso→Equiv eqv') (Σ-pathp ap=bp (Σ-prop-pathp! aq=bq))
 
+prime-not-composite : ∀ n → is-prime n → ¬ is-composite n
+prime-not-composite n x@record{ primality = α } y@record{ p = p ; q = q ; factors = β } with α _ (fibre→∣ (p , *-commutative p q ∙ β))
+... | inl p=1 = case subst (2 ≤_) p=1 (y .q-proper) of λ { (s≤s ()) }
+... | inr p=n =
+  let
+    1=p = *-injl n 1 p (*-oner n ∙∙ sym β ∙∙ ap (_* p) p=n)
+  in y .p-prime .prime≠1 (sym 1=p)
+
 prime-divisor-lt : ∀ p q n .⦃ _ : Positive n ⦄ → is-prime p → q * p ≡ n → q < n
 prime-divisor-lt p q n pprime div with ≤-strengthen (m∣n→m≤n {q} {n} (fibre→∣ (p , *-commutative p q ∙ div)))
 ... | inr less = less

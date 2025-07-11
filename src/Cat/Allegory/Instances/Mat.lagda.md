@@ -61,13 +61,13 @@ that this is, indeed, a category:
     ⋃ (λ k → ⋃ (λ _ → top) ∩ M k j) ≡⟨ ⋃-apᶠ (λ k → ∩-comm ∙ ⋃-distribl _ _) ⟩
     ⋃ (λ k → ⋃ (λ _ → M k j ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ i → ∩-idr) ⟩
     ⋃ (λ k → ⋃ (λ _ → M k j))       ≡⟨ ⋃-twice _ ⟩
-    ⋃ (λ (k , _) → M k j)           ≡⟨ ⋃-singleton (contr _ Singleton-is-contr) ⟩
+    ⋃ (λ (k , _) → M k j)           ≡⟨ ⋃-singleton Singleton-is-contr ⟩
     M i j                           ∎
   Mat .idl M = ext λ i j →
     ⋃ (λ k → M i k ∩ ⋃ (λ _ → top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-distribl _ _) ⟩
     ⋃ (λ k → ⋃ (λ _ → M i k ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ j → ∩-idr) ⟩
     ⋃ (λ x → ⋃ (λ _ → M i x))       ≡⟨ ⋃-twice _ ⟩
-    ⋃ (λ (k , _) → M i k)           ≡⟨ ⋃-singleton (contr _ (λ p i → p .snd (~ i) , λ j → p .snd (~ i ∨ j))) ⟩
+    ⋃ (λ (k , _) → M i k)           ≡⟨ ⋃-singleton Singleton'-is-contr ⟩
     M i j                           ∎
 
   Mat .assoc M N O = ext λ i j →

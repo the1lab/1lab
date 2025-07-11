@@ -276,11 +276,10 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
   G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
   G≃ΩB = Iso→Equiv (decode base , iso (encode base) encode→decode (decode→encode base))
 
-  G≡π₁B : G ≡ πₙ₊₁ 0 (Deloop , base)
-  G≡π₁B = ∫-Path
-    (∫hom (λ x → inc (path x))
-      record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) })
-    (∘-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
+  G≅π₁B : G Groups.≅ πₙ₊₁ 0 (Deloop , base)
+  G≅π₁B = total-iso (_ , ∘-is-equiv (∥-∥₀-idempotent (squash base base)) (G≃ΩB .snd))
+    record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) }
+
 ```
 
 Since `Deloop`{.Agda} is a groupoid, each of its loop spaces is
@@ -317,7 +316,7 @@ instance
 
 <!--
 ```agda
-module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
+module Deloop-ab {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
   open Group-on (G .snd)
   open is-group-hom
 
@@ -407,7 +406,7 @@ again. That finishes the construction:
 ```agda
       abstract
         coh b = funext-dep λ {x₀} {x₁} p → ap deg $ sym $
-          x₁               ≡˘⟨ pathp→conj p ⟩
+          x₁               ≡˘⟨ square→conj p ⟩
           conj (path b) x₀ ≡⟨ conj-commutative (∙-comm x₀ (path b)) ⟩
           x₀               ∎
 

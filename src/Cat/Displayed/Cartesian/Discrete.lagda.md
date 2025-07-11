@@ -362,10 +362,8 @@ from the contractibilty of singletons.
     module P = Functor P
 
     discrete : is-discrete-cartesian-fibration (∫ B P)
-    discrete .is-discrete-cartesian-fibration.fibre-set X =
-      P.₀ X .is-tr
-    discrete .is-discrete-cartesian-fibration.cart-lift f P[Y] =
-      contr (P.₁ f P[Y] , refl) Singleton-is-contr
+    discrete .is-discrete-cartesian-fibration.fibre-set X = hlevel 2
+    discrete .is-discrete-cartesian-fibration.cart-lift f P[Y] = hlevel 0
 ```
 
 We conclude by proving that the two maps defined above are, in fact,

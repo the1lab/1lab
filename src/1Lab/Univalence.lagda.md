@@ -775,11 +775,11 @@ ua-square
 ua-square {W = W} {X} {Y} {Z} {f} {g} {g'} {f'} p j k =
   Glue Z λ where
     (j = i0) → ua g  k , _ ,
-      is-prop→pathp (λ j → is-equiv-is-prop {A = ua g  j} λ x → f' .fst (unattach (∂ j) x)) (∘-is-equiv (g .snd) (f' .snd)) (f' .snd) k
+      is-prop→pathp (λ j → is-equiv-is-prop {A = ua g  j} λ x → f' .fst (unattach (∂ j) x)) (∘-is-equiv (f' .snd) (g .snd)) (f' .snd) k
     (j = i1) → ua g' k , _ ,
       is-prop→pathp (λ i → is-equiv-is-prop {A = ua g' i} λ x → unattach (∂ i) x) (g' .snd) id-equiv k
     (k = i0) → ua f  j , _ ,
-      is-prop→pathp (λ i → is-equiv-is-prop {A = ua f  i} λ x → p'' i x) (∘-is-equiv (g .snd) (f' .snd)) (g' .snd) j
+      is-prop→pathp (λ i → is-equiv-is-prop {A = ua f  i} λ x → p'' i x) (∘-is-equiv (f' .snd) (g .snd)) (g' .snd) j
     (k = i1) → ua f' j , _ ,
       is-prop→pathp (λ i → is-equiv-is-prop {A = ua f' i} λ x → unattach (∂ i) x) (f' .snd) id-equiv j
   where
@@ -795,9 +795,8 @@ ua-triangle
   → Triangle (ua e) (ua f) (ua g)
 ua-triangle α = transpose (sym ua-id-equiv ◁ transpose (ua-square α))
 
-
-ua∙ : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
-ua∙ {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
+∙-ua : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
+∙-ua {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
   (i = i0) → ua f j , (λ x → g .fst (ua-unglue f j x)) ,
     is-prop→pathp (λ j → is-equiv-is-prop (λ x → g .fst (ua-unglue f j x)))
       ((f ∙e g) .snd) (g .snd) j

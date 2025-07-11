@@ -606,7 +606,7 @@ the equivalence between paths and codes in a single shot.
     Σ[ p ∈ (x ≡ y) ] PathP (λ i → B (p i) → W A B) f g
       ≃˘⟨ Σ-ap-snd (λ p → funext-dep≃) ⟩
     Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → f bw ≡ g bv)
-      ≃⟨ Σ-ap-snd (λ p → Π-impl-cod≃ λ bw → Π-impl-cod≃ λ bv → Π-cod≃ (λ q → Path≃Code (f bw) (g bv))) ⟩
+      ≃⟨ Σ-ap-snd (λ p → Π'-ap-cod λ bw → Π'-ap-cod λ bv → Π-ap-cod (λ q → Path≃Code (f bw) (g bv))) ⟩
     Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → Code (f bw) (g bv))
       ≃⟨⟩
     Code (sup x f) (sup y g)
@@ -683,7 +683,7 @@ x` is empty for every `x : A`, then the W-type `W A B` is equivalent to
     → W A B ≃ A
   W-no-branch-≃ ¬B =
     W A B                    ≃⟨ W-fixpoint ⟩
-    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contract (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
+    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contr-snd (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
     A                        ≃∎
 ```
 

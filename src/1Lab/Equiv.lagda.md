@@ -72,7 +72,7 @@ Here in the 1Lab, we formalise three acceptable notions of equivalence:
 ```agda
 private variable
   ℓ₁ ℓ₂ : Level
-  A B C : Type ℓ₁
+  A A' B B' C : Type ℓ₁
 ```
 -->
 
@@ -139,7 +139,7 @@ the opposite order is sometimes humorously referred to as the
 *socks-and-shoes principle*.
 
 ```agda
-  ∘-is-iso : {f : B → C} {g : A → B} → is-iso f → is-iso g → is-iso (f ∘ g)
+  ∘-is-iso : ∘-closed is-iso
   ∘-is-iso f-im g-im .from x = g-im .from (f-im .from x)
   ∘-is-iso {f = f} {g = g} f-im g-im .rinv x =
     f (g (g-im .from (f-im .from x))) ≡⟨ ap f (g-im .rinv _) ⟩
@@ -969,14 +969,14 @@ if any two are an equivalence, then so is the third:
 
 <!--
 ```agda
-module _ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂} {f : A → B} {g : B → C} where
+module _ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f : B → C} {g : A → B} where
 ```
 -->
 
 ```agda
-  ∘-is-equiv    : is-equiv f → is-equiv g → is-equiv (g ∘ f)
-  equiv-cancell : is-equiv g → is-equiv (g ∘ f) → is-equiv f
-  equiv-cancelr : is-equiv f → is-equiv (g ∘ f) → is-equiv g
+  ∘-is-equiv    : is-equiv f → is-equiv g → is-equiv (f ∘ g)
+  equiv-cancell : is-equiv f → is-equiv (f ∘ g) → is-equiv g
+  equiv-cancelr : is-equiv g → is-equiv (f ∘ g) → is-equiv f
 ```
 
 We have already shown the first of these, when the individual functions
@@ -996,33 +996,40 @@ proofs are just calculations, we will not comment on them.
 instructive exercise to work these out for yourself!</summary>
 
 ```agda
-  ∘-is-equiv ef eg = is-iso→is-equiv (∘-is-iso (is-equiv→is-iso eg) (is-equiv→is-iso ef))
+  ∘-is-equiv ef eg = is-iso→is-equiv (∘-is-iso (is-equiv→is-iso ef) (is-equiv→is-iso eg))
 
-  equiv-cancell eg egf = is-iso→is-equiv (iso inv right left) where
+  equiv-cancell ef egf = is-iso→is-equiv (iso inv right left) where
     inv : B → A
-    inv x = equiv→inverse egf (g x)
+    inv x = equiv→inverse egf (f x)
     opaque
-      right : is-right-inverse inv f
+      right : is-right-inverse inv g
       right x =
-        f (equiv→inverse egf (g x))                        ≡˘⟨ equiv→unit eg _ ⟩
-        equiv→inverse eg (g (f (equiv→inverse egf (g x)))) ≡⟨ ap (equiv→inverse eg) (equiv→counit egf _) ⟩
-        equiv→inverse eg (g x)                             ≡⟨ equiv→unit eg _ ⟩
+        g (equiv→inverse egf (f x))                        ≡˘⟨ equiv→unit ef _ ⟩
+        equiv→inverse ef (f (g (equiv→inverse egf (f x)))) ≡⟨ ap (equiv→inverse ef) (equiv→counit egf _) ⟩
+        equiv→inverse ef (f x)                             ≡⟨ equiv→unit ef _ ⟩
         x                                                  ∎
-      left : is-left-inverse inv f
+      left : is-left-inverse inv g
       left x = equiv→unit egf x
 
-  equiv-cancelr ef egf = is-iso→is-equiv (iso inv right left) where
+  equiv-cancelr eg egf = is-iso→is-equiv (iso inv right left) where
     inv : C → B
-    inv x = f (equiv→inverse egf x)
-    right : is-right-inverse inv g
+    inv x = g (equiv→inverse egf x)
+    right : is-right-inverse inv f
     right x = equiv→counit egf x
-    left : is-left-inverse inv g
+    left : is-left-inverse inv f
     left x =
-      f (equiv→inverse egf (g x))                        ≡˘⟨ ap (f ∘ equiv→inverse egf ∘ g) (equiv→counit ef _) ⟩
-      f (equiv→inverse egf (g (f (equiv→inverse ef x)))) ≡⟨ ap f (equiv→unit egf _) ⟩
-      f (equiv→inverse ef x)                             ≡⟨ equiv→counit ef _ ⟩
+      g (equiv→inverse egf (f x))                        ≡˘⟨ ap (g ∘ equiv→inverse egf ∘ f) (equiv→counit eg _) ⟩
+      g (equiv→inverse egf (f (g (equiv→inverse eg x)))) ≡⟨ ap g (equiv→unit egf _) ⟩
+      g (equiv→inverse eg x)                             ≡⟨ equiv→counit eg _ ⟩
       x                                                  ∎
 ```
+
+<!--
+```agda
+_ : ∘-closed is-equiv
+_ = ∘-is-equiv
+```
+-->
 
 </details>
 
@@ -1057,7 +1064,7 @@ id≃ = id , id-equiv
 
 _∙e_ : A ≃ B → B ≃ C → A ≃ C
 {-# INLINE _∙e_ #-}
-_∙e_ (f , ef) (g , eg) = record { fst = g ∘ f ; snd = ∘-is-equiv ef eg }
+_∙e_ (f , ef) (g , eg) = record { fst = g ∘ f ; snd = ∘-is-equiv eg ef }
 
 _e⁻¹ : A ≃ B → B ≃ A
 ((f , ef) e⁻¹) = equiv→inverse ef , inverse-is-equiv ef
@@ -1098,31 +1105,79 @@ fibre-∘-≃
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
   → {f : B → C} {g : A → B}
   → ∀ c → fibre (f ∘ g) c ≃ (Σ[ (b , _) ∈ fibre f c ] fibre g b)
-fibre-∘-≃ {f = f} {g = g} c = Iso→Equiv (fwd , iso bwd invl invr)
-    where
-      fwd : fibre (f ∘ g) c → Σ[ (b , _) ∈ fibre f c ] fibre g b
-      fwd (a , p) = ((g a) , p) , (a , refl)
+fibre-∘-≃ {f = f} {g = g} c .fst (a , p) = (g a , p) , a , refl
+fibre-∘-≃ {f = f} {g = g} c .snd = is-iso→is-equiv (iso bwd invl invr) where
+  fwd : fibre (f ∘ g) c → Σ[ (b , _) ∈ fibre f c ] fibre g b
+  fwd (a , p) = ((g a) , p) , (a , refl)
 
-      bwd : Σ[ (b , _) ∈ fibre f c ] fibre g b → fibre (f ∘ g) c
-      bwd ((b , p) , (a , q)) = a , ap f q ∙ p
+  bwd : Σ[ (b , _) ∈ fibre f c ] fibre g b → fibre (f ∘ g) c
+  bwd ((b , p) , (a , q)) = a , ap f q ∙ p
 
-      invl : ∀ x → fwd (bwd x) ≡ x
-      invl ((b , p) , (a , q)) i .fst .fst = q i
-      invl ((b , p) , (a , q)) i .fst .snd j =
-        hcomp (∂ i ∨ ∂ j) λ where
-          k (i = i0) → ∙-filler (ap f q) p k j
-          k (i = i1) → p (j ∧ k)
-          k (j = i0) → f (q i)
-          k (j = i1) → p k
-          k (k = i0) → f (q (i ∨ j))
-      invl ((b , p) , a , q) i .snd .fst = a
-      invl ((b , p) , a , q) i .snd .snd j = q (i ∧ j)
+  invl : ∀ x → fwd (bwd x) ≡ x
+  invl ((b , p) , (a , q)) i .fst .fst = q i
+  invl ((b , p) , (a , q)) i .fst .snd j =
+    hcomp (∂ i ∨ ∂ j) λ where
+      k (i = i0) → ∙-filler (ap f q) p k j
+      k (i = i1) → p (j ∧ k)
+      k (j = i0) → f (q i)
+      k (j = i1) → p k
+      k (k = i0) → f (q (i ∨ j))
+  invl ((b , p) , a , q) i .snd .fst = a
+  invl ((b , p) , a , q) i .snd .snd j = q (i ∧ j)
 
-      invr : ∀ x → bwd (fwd x) ≡ x
-      invr (a , p) i .fst = a
-      invr (a , p) i .snd = ∙-idl p i
+  invr : ∀ x → bwd (fwd x) ≡ x
+  invr (a , p) i .fst = a
+  invr (a , p) i .snd = ∙-idl p i
 
 is-empty→≃ : ¬ A → ¬ B → A ≃ B
 is-empty→≃ ¬a ¬b = is-empty→≃⊥ ¬a ∙e is-empty→≃⊥ ¬b e⁻¹
+
+flip-equiv-square
+  : (e : A ≃ A') (e' : B ≃ B') (f : A → B) (f' : A' → B')
+  → Equiv.to e' ∘ f ∘ Equiv.from e ≡ f'
+  → f ≡ Equiv.from e' ∘ f' ∘ Equiv.to e
+flip-equiv-square e e' f f' p = funext λ z →
+  Equiv.injective e' (sym
+    ( Equiv.ε e' _
+    ∙ happly (sym p) (e .fst z) ∙ ap (e' .fst ∘ f) (Equiv.η e _)))
+
+is-equiv-join : (f : A → B) → (B → is-equiv f) → is-equiv f
+{-# INLINE is-equiv-join #-}
+is-equiv-join f fe = record { is-eqv = λ y → fe y .is-eqv y }
+
+module _ {ℓ} {A : Type ℓ} {x y : A} {p q : x ≡ y} where
+  ∨-square≃ : (p ≡ q) ≃ Square p q refl refl
+  ∨-square≃ .fst = ∨-square
+  ∨-square≃ .snd = is-iso→is-equiv λ where
+    .is-iso.from → flatten-∨-square
+    .is-iso.rinv → J
+      (λ y p → ∀ q (α : Square p q refl refl) → ∨-square (flatten-∨-square α) ≡ α)
+      (λ q α → J (λ q α → ∨-square (flatten-∨-square (sym α)) ≡ sym α)
+        ( ap ∨-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)) (sym α))
+      p q
+    .is-iso.linv → J
+      (λ y p → ∀ q (α : p ≡ q) → flatten-∨-square (∨-square α) ≡ α)
+      (λ _ → J (λ q α → flatten-∨-square (∨-square α) ≡ α)
+        ( ap flatten-∨-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      p q
+
+  ∧-square≃ : (p ≡ q) ≃ Square refl refl p q
+  ∧-square≃ .fst = ∧-square
+  ∧-square≃ .snd = is-iso→is-equiv λ where
+    .is-iso.from → flatten-∧-square
+    .is-iso.rinv → J
+      (λ y q → ∀ p (α : Square refl refl p q) → ∧-square (flatten-∧-square α) ≡ α)
+      (λ q → J (λ q α → ∧-square (flatten-∧-square α) ≡ α)
+        ( ap ∧-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      q p
+    .is-iso.linv → J
+      (λ y p → ∀ q (α : p ≡ q) → flatten-∧-square (∧-square α) ≡ α)
+      (λ _ → J (λ q α → flatten-∧-square (∧-square α) ≡ α)
+        ( ap flatten-∧-square (λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x))
+        ∙ λ i j k → hcomp (∂ k ∨ ∂ j ∨ i) (λ _ _ → x)))
+      p q
 ```
 -->

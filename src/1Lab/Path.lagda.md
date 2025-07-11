@@ -760,7 +760,7 @@ preserves identity and composition of *functions*, too.
   ap-id = refl
 ```
 
-## Transport
+## Transport {defines="transport"}
 
 We've established that every function preserves paths, but this is not
 *quite* enough for a notion of sameness. The key principle that
@@ -1058,9 +1058,10 @@ $(x, \refl) \is (y, p)$, we have to produce an identification $x \is y$
 (we can use $p$), and, over this, an identification of $\refl$ and $p$.
 
 ```agda
-Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
-                   → Path (Singleton x) (x , refl) y
-Singleton-is-contr {x = x} (y , p) =
+Singleton-contract
+  : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
+  → Path (Singleton x) (x , refl) y
+Singleton-contract {x = x} (y , p) =
 ```
 
 Writing out the dependency explicitly, we see that the second component
@@ -1084,7 +1085,7 @@ p)$, then transport our assumption over that.
 J {x = x} P prefl {y} p =
   let
     pull : (x , refl) ≡ (y , p)
-    pull = Singleton-is-contr (y , p)
+    pull = Singleton-contract (y , p)
   in subst₂ P (ap fst pull) (ap snd pull) prefl
 ```
 
@@ -1885,6 +1886,26 @@ ap-∙ : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
 ap-∙ f p q = ap-∙∙ f refl p q
 ```
 
+<!--
+```agda
+ap₂-∙∙
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → (f : A → B → C)
+  → {a b c d : A} (α : a ≡ b) (β : b ≡ c) (γ : c ≡ d)
+  → {w x y z : B} (ξ : w ≡ x) (ψ : x ≡ y) (ω : y ≡ z)
+  → ap₂ f (α ∙∙ β ∙∙ γ) (ξ ∙∙ ψ ∙∙ ω) ≡ ap₂ f α ξ ∙∙ ap₂ f β ψ ∙∙ ap₂ f γ ω
+ap₂-∙∙ f α β γ ξ ψ ω = ∙∙-unique' λ i j → f (∙∙-filler α β γ i j) (∙∙-filler ξ ψ ω i j)
+
+ap₂-∙
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → (f : A → B → C)
+  → {a b c : A} (α : a ≡ b) (β : b ≡ c)
+  → {w x y : B} (ξ : w ≡ x) (ψ : x ≡ y)
+  → ap₂ f (α ∙ β) (ξ ∙ ψ) ≡ ap₂ f α ξ ∙ ap₂ f β ψ
+ap₂-∙ f α β ξ ψ = ap₂-∙∙ f refl α β refl ξ ψ
+```
+-->
+
 ## Dependent paths, continued
 
 Armed with the transport and composition operations, we can continue the
@@ -2141,13 +2162,10 @@ Try pressing it!
 # Basics of groupoid structure
 
 A large part of the study of HoTT is the _characterisation of path
-spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
-theorem] says that for types with decidable equality, it's boring. For
-[the circle], we can prove its loop space is the integers --- we have
-`Path S¹ base base ≡ Int`.
-
-[Hedberg's theorem]: 1Lab.Path.IdentitySystem.html
-[the circle]: Homotopy.Space.Circle.html
+spaces_. Given a type `A`, what does `Path A x y` look like? [[Hedberg's
+theorem]] says that for types with decidable equality, it's boring. For
+the [[circle]], we can prove its [[loop space]] is the [[integers]]---
+$\Omega S^1 \cong \bZ$.
 
 Most of these characterisations need machinery that is not in this
 module to be properly stated. Even then, we can begin to outline a few

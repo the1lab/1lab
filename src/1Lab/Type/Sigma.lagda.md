@@ -233,8 +233,8 @@ into an equivalence:
 If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 ```agda
-Σ-contract : {B : A → Type ℓ} → (∀ x → is-contr (B x)) → Σ _ B ≃ A
-Σ-contract bcontr = Iso→Equiv the-iso where
+Σ-contr-snd : {B : A → Type ℓ} → (∀ x → is-contr (B x)) → Σ _ B ≃ A
+Σ-contr-snd bcontr = Iso→Equiv the-iso where
   the-iso : Iso _ _
   the-iso .fst (a , b) = a
   the-iso .snd .is-iso.from x = x , bcontr _ .centre
@@ -304,12 +304,12 @@ infixr 4 _,ₚ_
 ×-swap .snd .is-eqv y = contr (f .fst) (f .snd) where
   f = strict-fibres _ y
 
-Σ-contr-eqv
+Σ-contr-fst
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (c : is-contr A)
   → (Σ A B) ≃ B (c .centre)
-Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
-Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+Σ-contr-fst {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
+Σ-contr-fst {B = B} c .snd = is-iso→is-equiv λ where
   .is-iso.from x → _ , x
   .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
   .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))

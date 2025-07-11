@@ -450,7 +450,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
         Hom X (Π.₀ f)
           ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
-          ≃⟨ Σ-ap-snd (λ x → Σ-contr-eqv (has⊤ X)) ⟩
+          ≃⟨ Σ-ap-snd (λ x → Σ-contr-fst (has⊤ X)) ⟩
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
         Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)

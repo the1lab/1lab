@@ -6,9 +6,9 @@ open import 1Lab.Type
 
 open import Data.Product.NAry
 open import Data.Maybe.Base
+open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Fin.Base
-open import Data.Bool
 
 open import Meta.Traversable
 open import Meta.Foldable

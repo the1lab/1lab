@@ -149,7 +149,7 @@ equiv-path→identity-system
   → is-identity-system R r
 equiv-path→identity-system eqv = contr→identity-system $
   Equiv→is-hlevel 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
-    (contr _ Singleton-is-contr)
+    Singleton-is-contr
 ```
 
 Conversely, any identity system $(R, r)$ implies an equivalence
