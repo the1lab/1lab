@@ -40,10 +40,8 @@ universe of propositions that can accommodate all predicates, we would
 still like for universes to be closed under power-sets.
 
 Using some of Agda's more suspicious features, we can achieve this in a
-way which does not break computation too much. Specifically, we'll use a
-combination of `NO_UNIVERSE_CHECK`, postulates, and rewrite rules.
-
-We start with the `NO_UNIVERSE_CHECK` part: We define the **small type
+way which does not break closed computation too much.  Specifically, we
+can use the evil `NO_UNIVERSE_CHECK` pragma: We define the **small type
 of propositions**, `Ω`, to be a record containing a `Type` (together
 with an irrelevant proof that this type is a proposition), but contrary
 to the universe checker, which would like us to put `Ω : Type₁`, we
@@ -61,8 +59,8 @@ open Ω public
 
 This type, a priori, only contains the propositions whose underlying
 type lives in the first universe. However, we can populate it using a
-`NO_UNIVERSE_CHECK`-powered higher inductive type, the "small
-[[propositional truncation]]":
+second `NO_UNIVERSE_CHECK` pragma, this time forcing the [[propositional
+truncation]] of an arbitrary type into the first universe.
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}
@@ -73,9 +71,9 @@ data □ {ℓ} (A : Type ℓ) : Type where
 
 Just like the ordinary propositional truncation, every type can be
 squashed, but unlike the ordinary propositional truncation, the
-`□`{.Agda}-squashing of a type always lives in the lowest universe.  If
-$T$ is a proposition in any universe, $\Box T$ is its name in the zeroth
-universe.
+`□`{.Agda}-squashing of a type always lives in the lowest universe. Thus
+if $T$ is a proposition in any universe, $\Box T$ is its name in the
+zeroth universe.
 
 <!--
 ```agda
