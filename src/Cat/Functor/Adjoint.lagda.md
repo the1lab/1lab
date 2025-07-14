@@ -38,7 +38,7 @@ adj-level {o₁ = o₁} {h₁} {o₂} {h₂} _ _ = o₁ ⊔ o₂ ⊔ h₁ ⊔ h�
 ```
 -->
 
-# Adjoint functors
+# Adjoint functors {defines="adjoint-functor adjunction left-adjoint right-adjoint adjoint"}
 
 Category theory is, in general, the study of how things can be related.
 For instance, structures at the level of sets (e.g. the collection of
@@ -49,7 +49,6 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
-:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
@@ -57,7 +56,6 @@ isomorphism at the 0-level, and what's generally referred to as
 relations, by making some components directed: This starts at the level
 of categories, where "directing" an equivalence gives us the concept of
 **adjunction**.
-:::
 
 An _equivalence of categories_ between $\cC$ and $\cD$ is given by
 a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
@@ -129,6 +127,16 @@ commutative diagrams:
 
 </div>
 
+:::{.popup .summary}
+A pair of functors $F : \cC \to \cD$, $G : \cD \to \cC$ are
+**adjoints**, written $F \dashv G$, when we have natural transformations
+$\eta : \Id \To GF$ and $\eps : FG \To \Id$ satisfying the **triangle
+identities** $\eps \circ F\eta = \id$ and $R\eps \circ \eta = \id$.
+
+In this situation, $F$ is the **left adjoint** and $G$ is the **right
+adjoint**.
+:::
+
 <!--
 ```agda
 {-
@@ -187,6 +195,17 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 ```
 -->
 
+::: popup
+If $L \dashv R$ are [[adjoint functors]], the **adjunct** of a morphism
+$f : \hom_\cD(La, b)$ is the composite $$ a \xto{\eta} RLx \xto{R(f)} Rb
+$$. Symmetrically, the adjunct of a morphism $g : \hom_\cD(a, Rb)$ is
+the composite $$ La \xto{L(g)} LRb \xto{\eps} b $$.
+
+These assignments are [[natural|natural transformation]] inverse
+[[equivalences]] between the $\hom$-functors $$\hom_\cC(L(-), -) \cong
+\hom_\cD(-, R(-))$$.
+:::
+
 ```agda
   L-adjunct : ∀ {a b} → D.Hom (L.₀ a) b → C.Hom a (R.₀ b)
   L-adjunct f = R.₁ f C.∘ adj.η _
@@ -194,6 +213,7 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   R-adjunct : ∀ {a b} → C.Hom a (R.₀ b) → D.Hom (L.₀ a) b
   R-adjunct f = adj.ε _ D.∘ L.₁ f
 ```
+:::
 
 The important part that the actual data of an adjunction gets you is
 these functions are inverse _equivalences_ between the hom-sets
@@ -362,15 +382,18 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U :
 ```
 -->
 
-::: {.definition #free-object}
+::: {.definition .popup #free-object}
 A **free object** on $X : \cC$, relative to $U : \cD \to \cC$, consists
 of an object $F(X) : \cD$ and an arrow $\eta : X \to UF(X)$, such that
 every $f : X \to UY$, $f$ factors uniquely through $\eta$. Expanding
-this to an *operations-and"properties" presentation, we could say that:
+this to an *operations-and-properties* presentation, we could say that:
 
 * There is a map `fold`{.Agda} from $\cD(X, UY)$ to $\cC(FX, Y)$, and
 * for every $f$, we have $U(\operatorname{fold} f)\eta = f$, and
 * for every $f$ and $g$, if $U(g)\eta = f$, then $g = \operatorname{fold} f$.
+
+If these conditions are satisfied, we refer to $\eta$ as a **universal
+morphism from $X$ into $U$**.
 :::
 
 ```agda

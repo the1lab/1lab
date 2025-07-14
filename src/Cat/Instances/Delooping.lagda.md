@@ -25,7 +25,8 @@ private variable
 -->
 
 Given a monoid $M$, we build a pointed, [[connected|connected category]]
-precategory $\B{M}$, where the endomorphism monoid of the point recovers $M$.
+precategory $\B{M}$, where the endomorphism monoid of the point recovers
+$M$.
 
 ```agda
 module _ {ℓ} {M : Type ℓ} (mm : Monoid-on M) where

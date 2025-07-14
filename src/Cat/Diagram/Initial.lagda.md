@@ -19,13 +19,17 @@ module _ {o h} (C : Precategory o h) where
 
 # Initial objects {defines="initial-object initial"}
 
+::: {.popup .keep}
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
-if there exists a _unique_ map to any other object:
+if there exists a _unique_ map from $\bot$ to any other object:
 
 ```agda
   is-initial : Ob → Type _
   is-initial ob = ∀ x → is-contr (Hom ob x)
+```
+:::
 
+```agda
   record Initial : Type (o ⊔ h) where
     field
       bot  : Ob

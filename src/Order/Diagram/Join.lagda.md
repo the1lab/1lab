@@ -26,9 +26,16 @@ private variable
 
 # Joins {defines="join"}
 
-In the binary case, a least upper bound is called a **join**. A short
-computation shows that being a join is _precisely_ being the lub of a
-family of two elements.
+In the binary case, a [[least upper bound]] is called a **join**. A
+short computation shows that being a join is _precisely_ being the lub
+of a family of two elements.
+
+::: popup
+The **join** $a \lor b$ of elements $a, b$ of a [[poset]] $P$ is the
+least element satisfying $a \le a \lor b$ and $b \le a \lor b$, i.e. it
+is such that if we have $q$ with $a \le q$ and $b \le q$, then indeed $a
+\lor b \le q$.
+:::
 
 ```agda
 record is-join (P : Poset o ℓ) (a b lub : ⌞ P ⌟) : Type (o ⊔ ℓ) where

@@ -15,8 +15,12 @@ module Algebra.Group.Instances.Symmetric where
 
 # Symmetric groups {defines="symmetric-group"}
 
-If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
-set, and it forms the carrier for a [[group]]: The _symmetric group_ on $X$.
+::: {.popup .keep}
+If $X$ is a [[set]], then the type of all [[bijections|equivalence]] $X
+\simeq X$ is also a set, and it forms the carrier for a [[group]]: the
+**symmetric group** on $X$. This is precisely the [[automorphism group]]
+of $X$ as an object of the category $\Sets$.
+:::
 
 ```agda
 Sym : ∀ {ℓ} (X : Set ℓ) → Group-on (∣ X ∣ ≃ ∣ X ∣)

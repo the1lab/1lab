@@ -16,7 +16,7 @@ open Precategory using (Ob)
 module Cat.Univalent where
 ```
 
-# (Univalent) categories {defines="univalent-categories univalent-category"}
+# (Univalent) categories
 
 In much the same way that a [[partial order]] is a preorder where $x \le
 y \land y \le x \to x = y$, a **category** is a precategory where
@@ -25,13 +25,15 @@ isomorphic objects are identified. This is a generalisation of the
 in the same way: asking for a canonically defined map to be an
 equivalence.
 
-We define a precategory to be univalent when it can be equipped when its
-family of isomorphisms is an [[identity system]].
+:::{.definition #univalent-category}
+We define a precategory $\cC$ to be **univalent** when the family of
+isomorphisms is an [[identity system]] on the type of objects of $\cC$.
 
 ```agda
 is-category : ∀ {o h} (C : Precategory o h) → Type (o ⊔ h)
 is-category C = is-identity-system (Isomorphism C) (λ a → id-iso C)
 ```
+:::
 
 This notion of univalent category corresponds to the usual notion ---
 which is having the canonical map from paths to isomorphisms be an
