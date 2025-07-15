@@ -221,11 +221,11 @@ toTopLevel :: TCState -> T.Text -> TopLevelModuleName
 toTopLevel tcState name =
   let
     qname = List1.fromList (T.split (== '.') name)
-    raw = RawTopLevelModuleName noRange qname
+    raw = RawTopLevelModuleName noRange qname False
     hash = BiMap.lookup raw (tcState ^. stTopLevelModuleNames)
     hash' = fromMaybe (hashRawTopLevelModuleName raw) hash
   in
-  TopLevelModuleName noRange hash' qname
+  TopLevelModuleName noRange hash' qname False
 
 getInterface :: TCState -> TopLevelModuleName -> Interface
 getInterface tcState name =
