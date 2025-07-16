@@ -400,6 +400,12 @@ $\nabla \{0, 1\} \to \tt{2}$, then $\bA$ is [[trivial|trivial pca]].
       in cases (f · true) (f · false) _ a b x
 ```
 
+We think of this as a version of **Rice's theorem**: Since the realisers
+of $\nabla \rm{Bool}$ are completely arbitrary elements of $\bA$---
+hence completely arbitrary [[programs|values in a pca]] in $\bA$--- a
+non-constant map from $\nabla \rm{Bool}$ to $\mathbb{2}$ constitutes
+exactly a "non-trivial $\bA$-decidable property of programs in $\bA$".
+
 <!--
 ```agda
 module Asm {ℓA ℓ} {𝔸 : PCA ℓA} = Cat (Assemblies 𝔸 ℓ)
