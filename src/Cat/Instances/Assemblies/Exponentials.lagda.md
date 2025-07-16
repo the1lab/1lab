@@ -53,7 +53,7 @@ _⇒Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 _
   }
 (X ⇒Asm Y) .realised f = do
   record { realiser = r ; tracks = t } ← f .tracked
-  pure (r .fst , r .snd , inc t)
+  inc (r .fst , r .snd , inc λ x a → t {x} {a})
 ```
 
 ```agda
@@ -63,7 +63,7 @@ asm-ev {X = X} {Y = Y} = to-assembly-hom record where
 
   realiser = val ⟨ u ⟩ `fst `· u `· (`snd `· u)
 
-  tracks   = elim! λ f a x p q α pp p⊩f q⊩a → subst⊩ Y (p⊩f _ _ q⊩a) $
+  tracks {a = x} = elim! λ p q α pp p⊩f q⊩a → subst⊩ Y (p⊩f _ _ q⊩a) $
     (val ⟨ u ⟩ `fst `· u `· (`snd `· u)) ⋆ x           ≡⟨ abs-β _ [] (_ , subst ⌞_⌟ (sym α) (`pair↓₂ pp (X .defined q⊩a))) ⟩
     `fst ⋆ ⌜ x ⌝ ⋆ (`snd ⋆ ⌜ x ⌝)                      ≡⟨ ap! α ⟩
     `fst ⋆ (`pair ⋆ p ⋆ q) ⋆ (`snd ⋆ (`pair ⋆ p ⋆ q))  ≡⟨ ap₂ _%_ (`fst-β pp (X .defined q⊩a)) (`snd-β pp (X .defined q⊩a)) ⟩
@@ -85,7 +85,7 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .map x = record where
     inc record where
       realiser = val ⟨ v ⟩ `h `· (`pair `· const (u , X .defined u⊩x) `· v)
 
-      tracks x a a⊩x = subst⊩ Z (t _ _ (inc (u , a , refl , u⊩x , a⊩x))) $
+      tracks a⊩x = subst⊩ Z (t (inc (u , _ , refl , u⊩x , a⊩x))) $
         abs-β _ [] (_ , Y .defined a⊩x)
 ```
 -->
@@ -96,10 +96,10 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do
   inc record where
     realiser = val ⟨ u ⟩ ⟨ v ⟩ `h `· (`pair `· u `· v)
 
-    tracks x a a⊩x = record where
+    tracks a⊩x = record where
       fst = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , X .defined a⊩x) ∷ []))) (abs↓ _ _)
-      snd = inc λ y b b⊩y → subst⊩ Z (t _ _ (inc (_ , _ , refl , a⊩x , b⊩y))) $
-        abs-βₙ [] ((b , Y .defined b⊩y) ∷ (a , X .defined a⊩x) ∷ [])
+      snd = inc λ y b b⊩y → subst⊩ Z (t (inc (_ , _ , refl , a⊩x , b⊩y))) $
+        abs-βₙ [] ((b , Y .defined b⊩y) ∷ (_ , X .defined a⊩x) ∷ [])
 ```
 
 <details>

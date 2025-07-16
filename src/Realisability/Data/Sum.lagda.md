@@ -29,7 +29,7 @@ private variable
 ```
 -->
 
-# Sums in a PCA
+# Sums in a PCA {defines="sums-in-a-pca"}
 
 ```agda
 `inl : ↯⁺ ⌞ 𝔸 ⌟

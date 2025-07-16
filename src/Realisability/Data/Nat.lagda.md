@@ -28,7 +28,7 @@ open Realisability.Data.Bool 𝔸
 ```
 -->
 
-# Natural numbers in a PCA
+# Natural numbers in a PCA {defines="numbers-in-a-pca"}
 
 ```agda
 `zero : ↯⁺ 𝔸

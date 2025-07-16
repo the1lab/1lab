@@ -87,15 +87,15 @@ satisfying the conditions of the theorem above.
     map      = λ x → x
     realiser = `not
     tracks   = λ where
-      true  _ p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βt))
-      false _ p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βf))
+      {true}  p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βt))
+      {false} p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βf))
 
   from = to-assembly-hom record where
     map      = λ x → x
     realiser = `not
     tracks   = λ where
-      true  _ p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βf))
-      false _ p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βt))
+      {true}  p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βf))
+      {false} p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βt))
 
 Assemblies-not-univalent
   : is-category (Assemblies 𝔸 lzero) → is-trivial-pca 𝔸

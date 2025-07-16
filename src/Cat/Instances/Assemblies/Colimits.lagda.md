@@ -53,25 +53,25 @@ _⊎Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 (ℓ ⊔ �
 
 (X ⊎Asm Y) .realised (inl x) = do
   (p , rx) ← X .realised x
-  pure (`inl ⋆ p , inc (p , refl , rx))
+  inc (`inl ⋆ p , inc (p , refl , rx))
 
 (X ⊎Asm Y) .realised (inr x) = do
   (p , rx) ← Y .realised x
-  pure (`inr ⋆ p , inc (p , refl , rx))
+  inc (`inr ⋆ p , inc (p , refl , rx))
 ```
 
 ```agda
 asm-inl : Assembly-hom X (X ⊎Asm Y)
 asm-inl = to-assembly-hom record where
-  map      = inl
-  realiser = `inl
-  tracks x a ha = inc (a , refl , ha)
+  map       = inl
+  realiser  = `inl
+  tracks ha = inc (_ , refl , ha)
 
 asm-inr : Assembly-hom Y (X ⊎Asm Y)
 asm-inr = to-assembly-hom record where
-  map      = inr
-  realiser = `inr
-  tracks x a ha = inc (a , refl , ha)
+  map       = inr
+  realiser  = `inr
+  tracks ha = inc (_ , refl , ha)
 ```
 
 ```agda
@@ -94,12 +94,12 @@ Assembly-coproducts A B .has-is-coproduct .[_,_] {Q = Q} f g = record where
       realiser = `match ⋆ ft ⋆ gt , `match↓₂ f↓ g↓
 
       tracks = λ where
-        (inl x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
+        {inl x} ha → □-out (Q .realisers _ .mem _ .is-tr) do
           (e , α , e⊩x) ← ha
           pure $ subst⊩ Q (ft .tracks e⊩x) $
             ap₂ _%_ refl α ∙ `match-βl (A .defined e⊩x) f↓ g↓
 
-        (inr x) a ha → □-out (Q .realisers _ .mem _ .is-tr) do
+        {inr x} ha → □-out (Q .realisers _ .mem _ .is-tr) do
           (e , α , e⊩x) ← ha
           pure $ subst⊩ Q (gt .tracks e⊩x) $
             ap₂ _%_ refl α ∙ `match-βr (B .defined e⊩x) f↓ g↓

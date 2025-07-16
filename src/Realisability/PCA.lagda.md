@@ -71,11 +71,32 @@ type of our application operators is
 ```
 :::
 
-::: terminology
+## The inhabitants of a PCA
+
 If $\bA$ is a partial combinatory algebra (or, more generally, a partial
-applicative structure), we refer to the type $\bA$ as its type of
-**values**, and to the type $\zap \bA$ as its type of **computations**.
+applicative structure), the inhabitants of the type $x : \bA$ often
+serve dual purposes: they can be **values** or they can be **programs**.
+Of course, since PCAs implement a simple higher-order programming
+language, programs are a type of value. However, there are still
+situations where it is important to be clear *which* of these two roles
+a given $x : \bA$ is serving.
+
+Applying a program to a given value may not result in a value---
+execution could diverge, for example. We think of an arbitrary
+application like $\tt{f}~ \tt{x}$ as a **computation**, which may or may
+not produce a value--- if it does produce a value, then it comes from
+exactly one value in $\bA$.
+
+:::{.definition #values-in-a-pca}
+If $\bA$ is a [[partial combinatory algebra]], we refer to the type
+$\bA$ as the type of **values in $\bA$**, or **programs in $\bA$**,
+depending on the role that each inhabitant is playing.
+
+We also refer to the type $\zap \bA$ as the type of **computations in
+$\bA$**.
 :::
+
+## Abstraction elimination
 
 The type of terms over $\bA$ with $n$ free variables is defined
 inductively: A term is either one of the variables, a value drawn from
