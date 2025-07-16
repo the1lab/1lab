@@ -251,7 +251,7 @@ categories of assemblies](Cat.Instances.Assemblies.Univalence.html).[^univalence
 :::
 
 [^univalence]:
-    This is essentially *because* of of assemblies such as `𝟚`{.Agda}
+    This is essentially *because* of assemblies such as `𝟚`{.Agda}
     and its "flipped" counterpart, described above. The identity map is
     a computable isomorphism between them, realised by the `` `not
     ``{.Agda} program, which does not extend to a path (unless $\bA$ is
