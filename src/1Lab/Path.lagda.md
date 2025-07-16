@@ -1428,11 +1428,18 @@ $(n+1)$-dimensional problem.
 hfill : ∀ {ℓ} {A : Type ℓ} (φ : I) → I
       → ((i : I) → Partial (φ ∨ ~ i) A)
       → A
-hfill φ i u = hcomp (φ ∨ ~ i) λ where
-  j (φ = i1) → u (i ∧ j) 1=1
-  j (i = i0) → u i0 1=1
-  j (j = i0) → u i0 1=1
+hfill φ i u = hcomp (φ ∨ ~ i) sys module hfill where
+  sys : ∀ j → Partial (φ ∨ ~ i ∨ ~ j) _
+  sys j (φ = i1) = u (i ∧ j) 1=1
+  sys j (i = i0) = u i0 1=1
+  sys j (j = i0) = u i0 1=1
 ```
+
+<!--
+```agda
+{-# DISPLAY hcomp {ℓ} {A} _ (hfill.sys φ i u) = hfill {ℓ} {A} φ i u #-}
+```
+-->
 
 :::{.note}
 While every inhabitant of `Type`{.Agda} has a composition operation, not
