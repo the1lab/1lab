@@ -46,7 +46,7 @@ find possible contributions!]
 
 <!--
 ```agda
-_ = FG-iso→is-reflective
+_ = LR-iso→is-reflective
 _ = crude-monadicity
 _ = ∫
 _ = Karoubi-is-completion
@@ -155,4 +155,3 @@ _ = Sh[]-cc
   * *Reflectivity*: `Sheafification-is-reflective`{.Agda}
   * *Completeness*: `Sh[]-is-complete`{.Agda}
   * *Cocompleteness*: `Sh[]-is-cocomplete`{.Agda}
-  * *Cartesian closure*: `Sh[]-cc`{.Agda}
