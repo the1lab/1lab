@@ -23,7 +23,7 @@ module 1Lab.Equiv.Fibrewise where
 
 In HoTT, a type family `P : A → Type` can be seen as a [_fibration_]
 with total space `Σ P`, with the fibration being the projection
-`fst`{.Agda}. Because of this, a function with type `(X : _) → P x → Q
+`fst`{.Agda}. Because of this, a function with type `(x : _) → P x → Q
 x` can be referred as a _fibrewise map_.
 
 [_fibration_]: https://ncatlab.org/nlab/show/fibration

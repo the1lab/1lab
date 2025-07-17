@@ -354,7 +354,7 @@ In a context with two interval variables, we can move in two dimensions
 *one* dimension, we must either *discard* one of $i$ or $j$, or find a
 way to *combine* them. Discarding is the easier option. Depending on
 what dimension we ignore, we get one of two squares, both of which have
-two $p$ faces *across* from eachother. Note that the square
+two $p$ faces *across* from each other. Note that the square
 `drop-i`{.Agda} is just the reflexivity path `refl`{.Agda}.
 
 ```agda

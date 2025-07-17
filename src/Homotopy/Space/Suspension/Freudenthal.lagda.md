@@ -81,8 +81,8 @@ and then show that $\operatorname{code}(\rm{south}, p)$ is contractible
 at each $p$. We will start by giving a family of equivalences $i_a$,
 over $a : A$, between the truncated fibres $\| \sigma^*(p) \|_{2(n -
 1)}$ and $\| \sigma_a^*(p) \|_{2(n - 1)}$ over some $p : \rm{north} \is
-\rm{north}$.  We start by constructing such a fibre under the
-assumptions that $a, b : A$ and $q : \sigma(b) = p$. By the [[wedge
+\rm{north}$. We start by constructing an element of the latter fibre under the
+assumptions that $b : A$ and $q : \sigma(b) = p$. By the [[wedge
 connectivity]] lemma, it will suffice to do so when $a = a_0$ and $b =
 a_0$, as long as our constructions agree when $a = a_0 = b$. When $b =
 a_0$, we can show

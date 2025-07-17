@@ -50,9 +50,9 @@ private
 -->
 
 We will prove that the second [[homotopy group]] $\pi_2(\Susp G)$ of the
-[[suspension]] of a [[pointed]] [[connected]] [[groupoid]] (hence an
-[[abelian|concrete abelian group]] [[concrete group]]) $G$ with an
-[[h-space]] structure is $\Omega G$.
+[[suspension]] of a [[pointed]] [[connected]] [[groupoid]] $G$ with an
+[[H-space]] structure (hence an [[abelian|concrete abelian group]]
+[[concrete group]]) is $\Omega G$.
 
 We start by defining a type family `Hopf`{.Agda} over $\Susp G$ which is
 $G$ on both poles and sends the $x$th `merid`{.Agda}ian to the H-space
@@ -75,9 +75,9 @@ Hopf south       = G
 Hopf (merid x i) = ua (μr x) i
 ```
 
-To encode, we use truncation recursion, since `codes`{.Agda} is a family
+To encode, we use truncation recursion, since `Hopf`{.Agda} is a family
 of groupoids by construction, and since we have $G_0 :
-\operatorname{codes}(\rm{north})$ we can transport it along a
+\operatorname{Hopf}(\rm{north})$ we can transport it along a
 $\rm{north} \is x$ to get a point in an arbitrary fibre.
 
 ```agda
@@ -87,7 +87,7 @@ encode' x = n-Tr-rec (tr x) λ p → subst Hopf p G₀ where
   tr = Susp-elim-prop (λ s → hlevel 1) (grp .has-is-groupoid) (grp .has-is-groupoid)
 ```
 
-To decode an element of `codes`{.Agda} we use suspension recursion. On
+To decode an element of `Hopf`{.Agda} we use suspension recursion. On
 the north pole we can use the suspension homomorphism $\sigma : A \to_*
 \Omega \Sigma A$; on the south pole this is just a meridian; and on the
 meridians we must prove that these agree. Through a short calculation we
@@ -130,7 +130,7 @@ which is easy to do with the pre-existence coherence lemmas
 
       p2 : ∀ b → P G₀ b
       p2 b = ap n-Tr.inc $
-          sym (double-composite _ _ _)
+           sym (double-composite _ _ _)
         ∙∙ sym (∙∙-introl (merid b) α)
         ∙∙ ap merid (sym (idl b))
 ```
@@ -152,20 +152,20 @@ path is refl; In that case, they agree definitionally.
 
 <details>
 <summary>
-We have thus constructed maps between $\operatorname{codes}(x)$ and the
+We have thus constructed maps between $\operatorname{Hopf}(x)$ and the
 truncation of the based path space $\| \rm{north} \is x \|_1$. We must
-then show that these are inverses, which, in both direction, are simple
+then show that these are inverses, which, in both directions, are simple
 calculations.
 
 ```agda
-π₁ΩΣG≃G : ∥ north ≡ north ∥₁ ≃ G
-π₁ΩΣG≃G .fst = encode' north
+ΩΣG≃G : ∥ north ≡ north ∥₁ ≃ G
+ΩΣG≃G .fst = encode' north
 ```
 
 </summary>
 
 ```agda
-π₁ΩΣG≃G .snd = is-iso→is-equiv (iso (decode' north) invl (invr north)) where
+ΩΣG≃G .snd = is-iso→is-equiv (iso (decode' north) invl (invr north)) where
   invl : ∀ a → encode' north (decode' north a) ≡ a
   invl a = Regularity.fast! (
     Equiv.from (flip μ G₀ , μ-invr G₀) (μ G₀ a) ≡⟨ ap (λ e → Equiv.from e (μ G₀ a)) {x = _ , μ-invr G₀} {y = id≃} (ext idr) ⟩
@@ -187,19 +187,19 @@ afforded by the $x$ parameter to apply path induction.
 
 </details>
 
-Finally, we can use some pre-existing lemmas to show that our result
-above, about the groupoid truncation $\| \Omega \Sigma G \|_1$, transfer
-to the homotopy group $\pi_2(\Sigma G)$, which is a [[set truncation]]
-of a double [[loop space]]. Another short calculation which we omit
-shows that this equivalence preserves path composition, i.e. it is an
-isomorphism of groups.
+Finally, we can apply $\Omega$ to the equivalence above and use some
+pre-existing lemmas to show that the [[set truncation]] of the double
+[[loop space]] $\Omega^2 \Sigma G$ is equivalent to $\Omega G$.
+Another short calculation which we omit shows that this equivalence
+preserves path composition, i.e. it is an isomorphism of homotopy groups
+$\pi_2(\Sigma G) \cong \pi_1(G)$.
 
 ```agda
 π₂ΣG≅ΩG : πₙ₊₁ 1 (Σ¹ BG) Groups.≅ π₁Groupoid.π₁ BG (grp .has-is-groupoid)
 Ω²ΣG≃ΩG =
   ∥ ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ ∥₀                        ≃⟨ n-Tr-set ⟩
   n-Tr ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ 2                      ≃˘⟨ n-Tr-path-equiv {n = 1} ⟩
-  ⌞ Ω¹ (∥ ⌞ Ωⁿ 1 (Σ¹ BG) ⌟ ∥₁ , inc refl) ⌟    ≃⟨ ap-equiv π₁ΩΣG≃G ⟩
+  ⌞ Ω¹ (∥ ⌞ Ωⁿ 1 (Σ¹ BG) ⌟ ∥₁ , inc refl) ⌟    ≃⟨ ap-equiv ΩΣG≃G ⟩
   ⌞ Ω¹ (⌞ G ⌟ , transport refl G₀) ⌟           ≃⟨ _ , conj-is-equiv (transport-refl _) ⟩
   ⌞ Ω¹ BG ⌟                                    ≃∎
 ```
@@ -216,14 +216,14 @@ isomorphism of groups.
   f1 = Equiv.from (n-Tr-path-equiv {n = 1})
 
   f2 : inc refl ≡ inc refl → transport refl G₀ ≡ transport refl G₀
-  f2 = ap· π₁ΩΣG≃G
+  f2 = ap· ΩΣG≃G
 
   f3 : transport refl G₀ ≡ transport refl G₀ → G₀ ≡ G₀
   f3 = conj (transport-refl _)
 
   coh : (p q : refl ≡ refl) → f0 (inc (p ∙ q)) ≡ f0 (inc p) ∙ f0 (inc q)
   coh p q = ap f3 (ap f2 (ap-∙ n-Tr.inc p q))
-    ∙∙ ap f3 (ap-∙ (π₁ΩΣG≃G .fst) (f1 (inc p)) (f1 (inc q)))
+    ∙∙ ap f3 (ap-∙ (ΩΣG≃G .fst) (f1 (inc p)) (f1 (inc q)))
     ∙∙ conj-of-∙ (transport-refl _) _ _
 ```
 -->

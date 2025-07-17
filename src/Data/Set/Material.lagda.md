@@ -174,7 +174,7 @@ instance
 ## Extensionality
 
 We can now prove our material sets satisfy the axiom of extensionality: if
-$A$ and $B$ are subsets of eachother, they must be the same set. By
+$A$ and $B$ are subsets of each other, they must be the same set. By
 induction (now using our elimination principle), it suffices to show
 this when $A = \rm{set}(A,f)$ and $B = \rm{set}(B,f)$ are literal sets.
 
