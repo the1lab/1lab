@@ -215,23 +215,20 @@ to showing the identity function is an equivalence.
 
 ### On the circle
 
-<!--
-```agda
-_ = always-loop
-```
--->
-
 We can specialise the discussion above to the [[circle]], in which case
-we already have many of the components ready. All that remains is to
-parametrise `always-loop`{.Agda} by an extra argument of circle type,
-promoting it to a 'multiplication'; and to define the 'inverse' map on
-$S^1$.
+we already have many of the components we need. Note that
+`always-loop`{.Agda} gives us, for every point $y : S^1$, a loop at $y$;
+but loops are nothing but maps from $S^1$, so we get a 'multiplication'
+on the circle. We also define the 'inverse' map on $S^1$.^[
+If one thinks of the circle as the set of unit
+complex numbers with base point $1$, it is useful to think of
+`mulS¹`{.Agda} as complex multiplication and of `invS¹`{.Agda} as
+complex conjugation.]
 
 ```agda
 mulS¹ : S¹ → S¹ → S¹
-mulS¹ base     y        = y
-mulS¹ (loop i) base     = loop i
-mulS¹ (loop i) (loop j) = double-connection loop loop i j
+mulS¹ base     y = y
+mulS¹ (loop i) y = always-loop y i
 
 invS¹ : S¹ → S¹
 invS¹ base     = base
