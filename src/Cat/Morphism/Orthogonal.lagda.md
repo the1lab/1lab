@@ -407,7 +407,7 @@ the object. Given a map $a : a \to \iota X$,
       Σ-prop-path! (h≡k factors factors') }
     where
       module rf = D.is-invertible rf-inv
-      module η⁻¹ {a} = C.is-invertible (is-reflective→unit-G-is-iso r⊣ι ι-ff {a})
+      module η⁻¹ {a} = C.is-invertible (is-reflective→unit-right-is-iso r⊣ι ι-ff {a})
 ```
 
 Observe that, since $r \dashv \iota$ is a reflective subcategory, every
@@ -469,7 +469,7 @@ k$.
         rh≡rk : r.₁ h ≡ r.₁ k
         rh≡rk = D.invertible→epic rf-inv (r.₁ h) (r.₁ k) (r.weave (p ∙ sym q))
 
-        h≡k = C.invertible→monic (is-reflective→unit-G-is-iso r⊣ι ι-ff) _ _ $
+        h≡k = C.invertible→monic (is-reflective→unit-right-is-iso r⊣ι ι-ff) _ _ $
           unit.η (ι.₀ X) C.∘ h ≡⟨ unit.is-natural _ _ _ ⟩
           ιr.₁ h C.∘ unit.η B  ≡⟨ ap ι.₁ rh≡rk C.⟩∘⟨refl ⟩
           ιr.₁ k C.∘ unit.η B  ≡˘⟨ unit.is-natural _ _ _ ⟩
@@ -505,5 +505,5 @@ which $\eta$ is an isomorphism.
   in-subcategory→orthogonal-to-ηs inv =
     m⊥-iso C (unit.η _) (C.invertible→iso _ (C.is-invertible-inverse inv))
       (in-subcategory→orthogonal-to-inverted
-        (is-reflective→F-unit-is-iso r⊣ι ι-ff))
+        (is-reflective→left-unit-is-iso r⊣ι ι-ff))
 ```
