@@ -22,7 +22,7 @@ private variable
 
 Given a [[pointed type]] $A$ (with basepoint $a_0$), we refer to the
 type $a_0 \is a_0$ as the **loop space of $A$**, and write it $\Omega
-A$. Since we always have $\refl_{a_0} : \Omega A$, this is type is
+A$. Since we always have $\refl_{a_0} : \Omega A$, this type is
 itself naturally pointed.
 
 ```agda
@@ -82,6 +82,19 @@ zero map.
 Ω¹-map∙ : Maps∙ A B →∙ Maps∙ (Ω¹ A) (Ω¹ B)
 Ω¹-map∙ .fst = Ω¹-map
 Ω¹-map∙ .snd = Ω¹-map-zero
+
+Ω-Maps∙ : Ω¹ (Maps∙ A B) ≃∙ Maps∙ A (Ω¹ B)
+Ω-Maps∙ .fst = twist , eqv where
+  twist : Ω¹ (Maps∙ _ _) .fst → Maps∙ _ (Ω¹ _) .fst
+  twist p .fst x i = p i .fst x
+  twist p .snd i j = p j .snd i
+
+  eqv : is-equiv twist
+  eqv = is-iso→is-equiv λ where
+    .is-iso.from f i → (λ x → f .fst x i) , (λ j → f .snd j i)
+    .is-iso.rinv x → refl
+    .is-iso.linv x → refl
+Ω-Maps∙ {B = B} .snd i = (λ x j → B .snd) , λ j k → B .snd
 ```
 -->
 
@@ -243,18 +256,3 @@ abstract
         Ω-suc-naturalP n f i .fst (coe1→i (λ i → ⌞ Ωⁿ-sucP A n i ⌟) i x)
 ```
 -->
-
-```agda
-Ω-Maps∙ : Ω¹ (Maps∙ A B) ≃∙ Maps∙ A (Ω¹ B)
-Ω-Maps∙ .fst = twist , eqv where
-  twist : Ω¹ (Maps∙ _ _) .fst → Maps∙ _ (Ω¹ _) .fst
-  twist p .fst x i = p i .fst x
-  twist p .snd i j = p j .snd i
-
-  eqv : is-equiv twist
-  eqv = is-iso→is-equiv λ where
-    .is-iso.from f i → (λ x → f .fst x i) , (λ j → f .snd j i)
-    .is-iso.rinv x → refl
-    .is-iso.linv x → refl
-Ω-Maps∙ {B = B} .snd i = (λ x j → B .snd) , λ j k → B .snd
-```

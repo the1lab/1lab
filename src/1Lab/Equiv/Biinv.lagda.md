@@ -154,7 +154,7 @@ is-biinv→is-iso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h�
       x               ∎
 ```
 
-Finally, we can show that being biinvertible is [[proposition]]. Since
+Finally, we can show that being biinvertible is a [[proposition]]. Since
 propositions are those types which are `contractible if inhabited`{.Agda
 ident=is-contr-if-inhabited→is-prop} suffices to show that
 `is-biinv`{.Agda} is contractible when it is inhabited:

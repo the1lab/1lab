@@ -80,7 +80,7 @@ private variable
 
 Before we set about defining and working with equivalences, we'll warm
 up by defining, and proving basic things about, isomorphisms. First, we
-define what it means for functions to be inverses of eachother, on both
+define what it means for functions to be inverses of each other, on both
 the left and the right.
 
 ```agda
@@ -252,7 +252,7 @@ id-equiv .is-eqv y .paths (x , p) i = p (~ i) , λ j → p (~ i ∨ j)
 
 <!--
 ```agda
--- This helper is for functions f, g that cancel eachother, up to
+-- This helper is for functions f, g that cancel each other, up to
 -- definitional equality, without any case analysis on the argument:
 
 strict-fibres : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} (g : B → A) (b : B)

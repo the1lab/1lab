@@ -40,7 +40,7 @@ record HSpace {ℓ} (A* : Type∙ ℓ) : Type ℓ where
 
 Here, we're interested in the case where each $\mu(x,-)$ and $\mu(-, x)$
 is an [[equivalence]], so we're really discussing **invertible
-h-spaces.** We note that if $A$ is [[connected]] then any of its H-space
+H-spaces.** We note that if $A$ is [[connected]] then any of its H-space
 structures is automatically both left- and right-invertible. This is
 because, since "being an equivalence" is a [[proposition]], it would
 suffice to check invertibility when $x$ is the basepoint, but in this
@@ -160,7 +160,7 @@ turn a $g : G$ into a $\rm{base} \is \rm{base}$, and to show that this
 is commutative.
 
 ```agda
-    mul₀ : (x : ⌞ G ⌟) (y : Deloop G) → y ≡ y
+    mul₀ : (g : ⌞ G ⌟) (y : Deloop G) → y ≡ y
     mul₀ g = Deloop-elim-set G _ (λ d → hlevel 2)
       (path g)
       (λ z → commutes→square (Deloop-ab.∙-comm G ab _ _))
@@ -214,6 +214,12 @@ to showing the identity function is an equivalence.
 ```
 
 ### On the circle
+
+<!--
+```agda
+_ = always-loop
+```
+-->
 
 We can specialise the discussion above to the [[circle]], in which case
 we already have many of the components ready. All that remains is to
