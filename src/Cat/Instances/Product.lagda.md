@@ -107,6 +107,9 @@ Cat⟨ F , G ⟩ = f where
   f .F-id i = F .F-id i , G .F-id i
   f .F-∘ f g i = F .F-∘ f g i , G .F-∘ f g i
 
+Swap : Functor (C ×ᶜ D) (D ×ᶜ C)
+Swap = Cat⟨ Snd , Fst ⟩
+
 _F×_ : Functor B D → Functor C E → Functor (B ×ᶜ C) (D ×ᶜ E)
 _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
   module F× where
