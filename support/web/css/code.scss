@@ -54,9 +54,9 @@ pre.Agda, div.sourceCode > pre {
   overflow-x: auto;
   overflow-y: clip;
 
-  // The margin should be 1rem (the width of the padding for paragraphs
+  // The horizontal margin should be 1rem (the width of the padding for paragraphs
   // with borders) *plus* 5px. This was measured empirically.
-  margin: 0.25rem var(--code-margin);
+  margin: 1em var(--code-margin);
 
   background-color: theme(--text-bg);
   color:            theme(--text-fg);
