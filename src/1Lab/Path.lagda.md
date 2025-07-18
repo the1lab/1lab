@@ -520,9 +520,7 @@ Square p q s r = PathP (λ i → p i ≡ r i) q s
 
 To start building some intuition, we can rewrite the dimension-raising
 operations we named above so that their types are given in terms of
-`Square`{.Agda}. We also ask Agda to check that a square with left/right
-faces `refl`{.Agda}, but top/bottom faces $p$ and $q$ respectively, is
-the same thing as a path between paths.
+`Square`{.Agda}.
 
 <!--
 ```agda
@@ -542,9 +540,10 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
 
   ∨-conn : Square p p refl refl
   ∨-conn i j = p (i ∨ j)
-
 ```
 
+We also ask Agda to check that a square with left/right
+faces `refl`{.Agda} is the same thing as a path between paths.
 
 <!--
 ```agda
