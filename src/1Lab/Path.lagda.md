@@ -497,7 +497,7 @@ with faces $p$, $q$, $r$, and $s$, as in the diagram below.
 Intuitively, we may read this square as saying that the *composites* $q
 \cdot r$ and $p \cdot s$ are identified.[^comm-to-square] In the 1Lab,
 we define the type `Square`{.Agda} so that the arguments are given in
-the order $p$-$q$-$s$-$r$, i.e. top-left-right-bottom. This choice is
+the order $p$-$q$-$s$-$r$, i.e. left-top-bottom-right. This choice is
 basically arbitrary, but it matters when reading out the (graphical)
 boundary from the type of a term.
 
@@ -520,9 +520,9 @@ Square p q s r = PathP (λ i → p i ≡ r i) q s
 
 To start building some intuition, we can rewrite the dimension-raising
 operations we named above so that their types are given in terms of
-`Square`{.Agda}. We also ask Agda to check that a square with top/bottom
-faces `refl`{.Agda}, but left/right faces $p$, is the same thing as a
-path between paths.
+`Square`{.Agda}. We also ask Agda to check that a square with left/right
+faces `refl`{.Agda}, but top/bottom faces $p$ and $q$ respectively, is
+the same thing as a path between paths.
 
 <!--
 ```agda
@@ -542,6 +542,7 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
 
   ∨-conn : Square p p refl refl
   ∨-conn i j = p (i ∨ j)
+
 ```
 
 
@@ -1044,7 +1045,7 @@ has to be free: if it weren't, our path might get snagged on something!
 This identification comes up very often when working in homotopy type
 theory, so it has its own name: **contractibility of singletons**. A
 type of singletons is something like $\Sigma_{y : A} (x \is y)$: the
-type of elements of $A$ which are identical to $y$. Read
+type of elements of $A$ which are identical to $x$. Read
 set-theoretically, it makes sense that this would only have one
 inhabitant!
 
@@ -1279,7 +1280,7 @@ private
   refl-extends i = inS (refl {x = true} i)
 ```
 
-Slightly more preicsely, the constructor `inS` expresses that _any_
+Slightly more precisely, the constructor `inS` expresses that _any_
 totally-defined cube $u$ can be seen as a partial cube, which simply
 agrees with $u$ for any choice of formula $\phi$. To introduce elements
 of *specific* extensions, we use the fact that partial elements are
