@@ -160,5 +160,14 @@ subst-fibrewise
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''} (g : ∀ x → B x → B' x)
   → {x y : A} (p : x ≡ y) (h : B x) → subst B' p (g x h) ≡ g y (subst B p h)
 subst-fibrewise {B = B} {B'} g {x} p h = J (λ y p → subst B' p (g x h) ≡ g y (subst B p h)) (transport-refl _ ∙ ap (g x) (sym (transport-refl _))) p
+
+subst₂-fibrewise
+  : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Type ℓ} {B : A → Type ℓ'}
+  → {C : (x : A) → B x → Type ℓ''} {C' : (x : A) → B x → Type ℓ'''}
+  → (g : ∀ x y → C x y → C' x y)
+  → {x y : A} (p : x ≡ y) {α : B x} {β : B y} (q : PathP (λ i → B (p i)) α β) (e : C x α)
+  → subst₂ C' p q (g x α e) ≡ g y β (subst₂ C p q e)
+subst₂-fibrewise {A = A} {B} {C} {C'} g {x} p {α} q e =
+  subst-fibrewise {A = Σ A B} {uncurry C} {uncurry C'} (λ (x , y) v → g x y v) (Σ-pathp p q) e
 ```
 -->
