@@ -94,8 +94,8 @@ must be explicitly applied to the category in which the morphisms live.
 Thus, we define three distinct predicates expressing orthogonality:
 `m⊥m`{.Agda} ("map-map"), `m⊥o`{.Agda} ("map-object"), and `o⊥m`
 ("object-map"). If the ambient category $\cC$ has enough co/limits,
-being orthogonal to an object is equivalent to being orthogonal to an
-object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
+being orthogonal to an object is equivalent to being orthogonal to a
+morphism. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
 $!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
 :::
 
@@ -160,13 +160,13 @@ itself, then it is an isomorphism:
 ```
 
 For the next few lemmas, consider a square of the following form, where
-$l$ and $k$ are both lifts of the outer square.
+$l$ and $k$ are both lifts of the outer square
 
 ~~~{.quiver}
 \begin{tikzcd}
   a && b \\
   \\
-  c && d
+  c && d.
   \arrow["f", from=1-1, to=1-3]
   \arrow["u"', from=1-1, to=3-1]
   \arrow["l"', shift right, from=1-3, to=3-1]
@@ -232,7 +232,7 @@ diagonal:
 \begin{tikzcd}
   a && b \\
   \\
-  c && d
+  c && d.
   \arrow["f", from=1-1, to=1-3]
   \arrow["u"', from=1-1, to=3-1]
   \arrow["{u \circ f^{-1}}"{description}, from=1-3, to=3-1]
