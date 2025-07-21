@@ -6,10 +6,10 @@ open import 1Lab.Prelude
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Concrete
 open import Algebra.Group.Homotopy
+open import Algebra.Group
 
 open import Data.Set.Truncation
 
-open import Homotopy.Space.Suspension.Freudenthal
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Conjugation
@@ -17,6 +17,7 @@ open import Homotopy.Truncation
 open import Homotopy.Loopspace
 open import Homotopy.HSpace
 open import Homotopy.Wedge
+open import Homotopy.Base
 open import Homotopy.Join
 
 open ConcreteGroup
@@ -52,7 +53,7 @@ private
 We will prove that the second [[homotopy group]] $\pi_2(\Susp G)$ of the
 [[suspension]] of a [[pointed]] [[connected]] [[groupoid]] $G$ with an
 [[H-space]] structure (hence an [[abelian|concrete abelian group]]
-[[concrete group]]) is $\Omega G$.
+[[concrete group]]) is $\Loop G$.
 
 We start by defining a type family `Hopf`{.Agda} over $\Susp G$ which is
 $G$ on both poles and sends the $x$th `merid`{.Agda}ian to the H-space
@@ -88,8 +89,8 @@ encode' x = n-Tr-rec (tr x) λ p → subst Hopf p G₀ where
 ```
 
 To decode an element of `Hopf`{.Agda} we use suspension recursion. On
-the north pole we can use the suspension homomorphism $\sigma : A \to_*
-\Omega \Sigma A$; on the south pole this is just a meridian; and on the
+the north pole we can use the suspension map $\sigma : A \to_*
+\Loop \Susp A$; on the south pole this is just a meridian; and on the
 meridians we must prove that these agree. Through a short calculation we
 can reduce this to a coherence lemma relating the composition of
 meridians and the H-space multiplication.
@@ -105,12 +106,12 @@ decode' = Susp-elim _ (n-Tr.inc ∘ suspend BG) (n-Tr.inc ∘ merid) λ x → ua
 ```
 
 To show this coherence, we can use the [[wedge connectivity]] lemma. It
-will suffice to do so when, in turn, $b = G_0$, when $a = G_0$, and then
+will suffice to do so, in turn, when $b = G_0$, when $a = G_0$, and then
 to show that these agree. In either case we must show something like
 $$
-\merid{a}\cdot (\merid{G_0})\inv \cdot \merid{\mu(a,G_0)}
+\merid{a}\cdot (\merid{G_0})\inv \cdot \merid{G_0} = \merid{\mu(a,G_0)}
 $$,
-which is easy to do with the pre-existence coherence lemmas
+which is easy to do with the pre-existing coherence lemmas
 `∙∙-introl`{.Agda} and `∙∙-intror`{.Agda}, and the H-space unit laws.
 
 ```agda
@@ -158,75 +159,109 @@ then show that these are inverses, which, in both directions, are simple
 calculations.
 
 ```agda
-ΩΣG≃G : ∥ north ≡ north ∥₁ ≃ G
-ΩΣG≃G .fst = encode' north
+opaque
+  ΩΣG≃G : ∥ north {A = fst BG} ≡ north ∥₁ ≃ G
+  ΩΣG≃G .fst = encode' north
 ```
 
 </summary>
 
 ```agda
-ΩΣG≃G .snd = is-iso→is-equiv (iso (decode' north) invl (invr north)) where
-  invl : ∀ a → encode' north (decode' north a) ≡ a
-  invl a = Regularity.fast! (
-    Equiv.from (flip μ G₀ , μ-invr G₀) (μ G₀ a) ≡⟨ ap (λ e → Equiv.from e (μ G₀ a)) {x = _ , μ-invr G₀} {y = id≃} (ext idr) ⟩
-    μ G₀ a                                      ≡⟨ idl a ⟩
-    a                                           ∎)
+  ΩΣG≃G .snd = is-iso→is-equiv (iso (decode' north) invl (invr north)) where abstract
+    invl : ∀ a → encode' north (decode' north a) ≡ a
+    invl a = Regularity.fast! (
+      Equiv.from (flip μ G₀ , μ-invr G₀) (μ G₀ a) ≡⟨ ap (λ e → Equiv.from e (μ G₀ a)) {x = _ , μ-invr G₀} {y = id≃} (ext idr) ⟩
+      μ G₀ a                                      ≡⟨ idl a ⟩
+      a                                           ∎)
 ```
 
 To show that decoding inverts encoding, we use the extra generality
 afforded by the $x$ parameter to apply path induction.
 
 ```agda
-  invr : (x : ΣG) (p : ∥ north ≡ x ∥₁) → decode' x (encode' x p) ≡ p
-  invr x = n-Tr-elim! _ $ J
-    (λ x p → decode' x (encode' x (inc p)) ≡ inc p)
-    (ap n-Tr.inc
-      ( ap₂ _∙_ (ap merid (transport-refl _)) refl
-      ∙ ∙-invr (merid G₀)))
+    invr : (x : ΣG) (p : ∥ north ≡ x ∥₁) → decode' x (encode' x p) ≡ p
+    invr x = n-Tr-elim! _ $ J
+      (λ x p → decode' x (encode' x (inc p)) ≡ inc p)
+      (ap n-Tr.inc
+        ( ap₂ _∙_ (ap merid (transport-refl _)) refl
+        ∙ ∙-invr (merid G₀)))
 ```
-
 </details>
 
-Finally, we can apply $\Omega$ to the equivalence above and use some
-pre-existing lemmas to show that the [[set truncation]] of the double
-[[loop space]] $\Omega^2 \Sigma G$ is equivalent to $\Omega G$.
-Another short calculation which we omit shows that this equivalence
-preserves path composition, i.e. it is an isomorphism of homotopy groups
-$\pi_2(\Sigma G) \cong \pi_1(G)$.
+This equivalence is pointed, almost by definition.
 
 ```agda
-π₂ΣG≅ΩG : πₙ₊₁ 1 (Σ¹ BG) Groups.≅ π₁Groupoid.π₁ BG (grp .has-is-groupoid)
+  ΩΣG≃∙G : n-Tr∙ (Ω¹ (Σ¹ BG)) 3 ≃∙ BG
+  ΩΣG≃∙G = ΩΣG≃G , transport-refl _
+```
+
+Furthermore, note that, by construction, the inverse pointed map
+$G \to_* \| \Loop \Susp G \|_1$ of this equivalence is none other than
+`suspend∙`{.Agda} followed by the inclusion into the groupoid truncation.
+
+```agda
+  ΩΣG≃∙G-inv : Equiv∙.from∙ ΩΣG≃∙G ≡ inc∙ ∘∙ suspend∙ BG
+  ΩΣG≃∙G-inv = homogeneous-funext∙ λ _ → refl
+```
+
+Finally, we can apply $\Loop$ to the equivalence above and use some
+pre-existing lemmas to show that the [[set truncation]] of the double
+[[loop space]] $\Loop^2 \Susp G$ is equivalent to $\Loop G$.
+A couple more short calculations which we omit show that this equivalence
+preserves path composition, i.e. is an isomorphism of homotopy groups
+$\pi_2(\Susp G) \cong \pi_1(G)$, and that the inverse map is the
+expected suspension map $\Loop \sigma$ up to truncation.
+
+```agda
+Ω²ΣG≃ΩG : ∥ ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ ∥₀ ≃ ⌞ Ω¹ BG ⌟
 Ω²ΣG≃ΩG =
-  ∥ ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ ∥₀                        ≃⟨ n-Tr-set ⟩
-  n-Tr ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ 2                      ≃˘⟨ n-Tr-path-equiv {n = 1} ⟩
-  ⌞ Ω¹ (∥ ⌞ Ωⁿ 1 (Σ¹ BG) ⌟ ∥₁ , inc refl) ⌟    ≃⟨ ap-equiv ΩΣG≃G ⟩
-  ⌞ Ω¹ (⌞ G ⌟ , transport refl G₀) ⌟           ≃⟨ _ , conj-is-equiv (transport-refl _) ⟩
-  ⌞ Ω¹ BG ⌟                                    ≃∎
+  ⌞ πₙ₊₁ 1 (Σ¹ BG) ⌟            ≃⟨ n-Tr-set ⟩
+  ⌞ n-Tr∙ (Ωⁿ 2 (Σ¹ BG)) 2 ⌟    ≃⟨ n-Tr-Ω¹ (Ω¹ (Σ¹ BG)) 1 .fst ⟩
+  ⌞ Ω¹ (n-Tr∙ (Ω¹ (Σ¹ BG)) 3) ⌟ ≃⟨ Ω¹-ap ΩΣG≃∙G .fst ⟩
+  ⌞ Ω¹ BG ⌟                     ≃∎
+
+opaque
+  unfolding Ω¹-ap
+
+  Ω²ΣG≃ΩG-pres : is-group-hom
+    (πₙ₊₁ 1 (Σ¹ BG) .snd)
+    (π₁Groupoid.π₁ BG (grp .has-is-groupoid) .snd)
+    (Ω²ΣG≃ΩG .fst)
+
+  Ω²ΣG≃ΩG-inv
+    : ∀ (l : ⌞ Ω¹ BG ⌟)
+    → Equiv.from Ω²ΣG≃ΩG l ≡ inc (Ω¹-map (suspend∙ BG) .fst l)
 ```
 
 <!--
 ```agda
-π₂ΣG≅ΩG = total-iso Ω²ΣG≃ΩG (record { pres-⋆ = elim! coh }) where
-  open Σ Ω²ΣG≃ΩG renaming (fst to f0) using ()
-  instance
-    _ : ∀ {n} → H-Level ⌞ G ⌟ (3 + n)
-    _ = basic-instance 3 (grp .has-is-groupoid)
+  Ω²ΣG≃ΩG-pres = record { pres-⋆ = elim! λ p q → trace p q .snd } where
+    open Σ Ω²ΣG≃ΩG renaming (fst to f0) using ()
+    instance
+      _ : ∀ {n} → H-Level ⌞ G ⌟ (3 + n)
+      _ = basic-instance 3 (grp .has-is-groupoid)
 
-  f1 : n-Tr (refl ≡ refl) 2 → inc refl ≡ inc refl
-  f1 = Equiv.from (n-Tr-path-equiv {n = 1})
+    trace : (p q : refl ≡ refl) → (∥ ⌞ Ωⁿ 2 (Σ¹ BG) ⌟ ∥₀ , inc (p ∙ q)) ≃∙ (⌞ Ω¹ BG ⌟ , f0 (inc p) ∙ f0 (inc q))
+    trace p q =
+      ⌞ πₙ₊₁ 1 (Σ¹ BG) ⌟ , inc (p ∙ q)         ≃∙⟨ n-Tr-set , refl ⟩
+      ⌞ n-Tr∙ (Ωⁿ 2 (Σ¹ BG)) 2 ⌟ , inc (p ∙ q) ≃∙⟨ n-Tr-Ω¹ _ 1 .fst , n-Tr-Ω¹-∙ _ 1 p q ⟩
+      ⌞ Ω¹ (n-Tr∙ (Ω¹ (Σ¹ BG)) 3) ⌟ , _        ≃∙⟨ Ω¹-ap ΩΣG≃∙G .fst , Ω¹-map-∙ (Equiv∙.to∙ ΩΣG≃∙G) (n-Tr-Ω¹ _ 1 · inc p) (n-Tr-Ω¹ _ 1 · inc q) ⟩
+      ⌞ Ω¹ BG ⌟ , f0 (inc p) ∙ f0 (inc q)      ≃∙∎
 
-  f2 : inc refl ≡ inc refl → transport refl G₀ ≡ transport refl G₀
-  f2 = ap· ΩΣG≃G
-
-  f3 : transport refl G₀ ≡ transport refl G₀ → G₀ ≡ G₀
-  f3 = conj (transport-refl _)
-
-  coh : (p q : refl ≡ refl) → f0 (inc (p ∙ q)) ≡ f0 (inc p) ∙ f0 (inc q)
-  coh p q = ap f3 (ap f2 (ap-∙ n-Tr.inc p q))
-    ∙∙ ap f3 (ap-∙ (ΩΣG≃G .fst) (f1 (inc p)) (f1 (inc q)))
-    ∙∙ conj-of-∙ (transport-refl _) _ _
+  Ω²ΣG≃ΩG-inv l = trace .snd where
+    trace : (⌞ Ω¹ BG ⌟ , l) ≃∙ (⌞ πₙ₊₁ 1 (Σ¹ BG) ⌟ , inc (Ω¹-map (suspend∙ BG) · l))
+    trace =
+      ⌞ Ω¹ BG ⌟                     , l                                ≃∙⟨ Ω¹-ap ΩΣG≃∙G .fst e⁻¹ , (Ω¹-ap-inv ΩΣG≃∙G ·ₚ l) ∙ ap (λ x → Ω¹-map x · l) ΩΣG≃∙G-inv ⟩
+      ⌞ Ω¹ (n-Tr∙ (Ω¹ (Σ¹ BG)) 3) ⌟ , Ω¹-map (inc∙ ∘∙ suspend∙ BG) · l ≃∙˘⟨ n-Tr-Ω¹ _ 1 .fst , (n-Tr-Ω¹-inc _ 1 ·ₚ _) ∙ (Ω¹-map-∘ inc∙ (suspend∙ BG) ·ₚ l) ⟩
+      ⌞ n-Tr∙ (Ωⁿ 2 (Σ¹ BG)) 2 ⌟    , inc (Ω¹-map (suspend∙ BG) · l)   ≃∙˘⟨ n-Tr-set , refl ⟩
+      ⌞ πₙ₊₁ 1 (Σ¹ BG) ⌟            , inc (Ω¹-map (suspend∙ BG) · l)   ≃∙∎
 ```
 -->
+
+```agda
+π₂ΣG≅ΩG : πₙ₊₁ 1 (Σ¹ BG) Groups.≅ π₁Groupoid.π₁ BG (grp .has-is-groupoid)
+π₂ΣG≅ΩG = total-iso Ω²ΣG≃ΩG Ω²ΣG≃ΩG-pres
+```
 
 ## The Hopf fibration
 

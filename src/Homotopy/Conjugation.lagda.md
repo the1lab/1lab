@@ -139,9 +139,8 @@ opaque
 
 <!--
 ```agda
-opaque
-  conj-is-equiv : (p : y ≡ x) → is-equiv (conj p)
-  conj-is-equiv p = is-iso→is-equiv (conj-is-iso p)
+conj-is-equiv : (p : y ≡ x) → is-equiv (conj p)
+conj-is-equiv p = is-iso→is-equiv (conj-is-iso p)
 
 module conj {ℓ} {A : Type ℓ} {x y : A} (p : y ≡ x) = Equiv (conj p , conj-is-equiv p)
 ```

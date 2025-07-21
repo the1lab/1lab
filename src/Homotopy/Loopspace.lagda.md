@@ -49,9 +49,10 @@ us to state and prove several annoying higher coherences involving
 conjugation.
 
 ```agda
-Ω¹-map : (A →∙ B) → Ω¹ A →∙ Ω¹ B
-Ω¹-map (f , pt) .fst α = conj pt (ap f α)
-Ω¹-map (f , pt) .snd   = conj-of-refl pt
+opaque
+  Ω¹-map : (A →∙ B) → Ω¹ A →∙ Ω¹ B
+  Ω¹-map (f , pt) .fst α = conj pt (ap f α)
+  Ω¹-map (f , pt) .snd   = conj-of-refl pt
 ```
 
 However, path (and thus loop) spaces are [[*homogeneous*]], so we can
@@ -62,19 +63,19 @@ much pain that $\Omega(-)$ preserves identities, composition, and the
 zero map.
 
 ```agda
-Ω¹-map-id : Ω¹-map {A = A} id∙ ≡ id∙
-Ω¹-map-id = homogeneous-funext∙ λ α →
-  conj refl (ap id α) ≡⟨ conj-refl α ⟩
-  α                   ∎
+  Ω¹-map-id : Ω¹-map {A = A} id∙ ≡ id∙
+  Ω¹-map-id = homogeneous-funext∙ λ α →
+    conj refl (ap id α) ≡⟨ conj-refl α ⟩
+    α                   ∎
 
-Ω¹-map-∘ : (f : B →∙ C) (g : A →∙ B) → Ω¹-map f ∘∙ Ω¹-map g ≡ Ω¹-map (f ∘∙ g)
-Ω¹-map-∘ (f , f*) (g , g*) = homogeneous-funext∙ λ α →
-  conj f* (ap f (conj g* (ap g α)))        ≡⟨ ap (conj f*) (ap-conj f g* (ap g α)) ⟩
-  conj f* (conj (ap f g*) (ap (f ∘ g) α))  ≡⟨ conj-∙ _ _ _ ⟩
-  conj (ap f g* ∙ f*) (ap (f ∘ g) α)       ∎
+  Ω¹-map-∘ : (f : B →∙ C) (g : A →∙ B) → Ω¹-map f ∘∙ Ω¹-map g ≡ Ω¹-map (f ∘∙ g)
+  Ω¹-map-∘ (f , f*) (g , g*) = homogeneous-funext∙ λ α →
+    conj f* (ap f (conj g* (ap g α)))        ≡⟨ ap (conj f*) (ap-conj f g* (ap g α)) ⟩
+    conj f* (conj (ap f g*) (ap (f ∘ g) α))  ≡⟨ conj-∙ _ _ _ ⟩
+    conj (ap f g* ∙ f*) (ap (f ∘ g) α)       ∎
 
-Ω¹-map-zero : Ω¹-map (zero∙ {A = A} {B = B}) ≡ zero∙
-Ω¹-map-zero {B = B} = Σ-pathp (funext λ _ → conj-refl _) conj-refl-square
+  Ω¹-map-zero : Ω¹-map (zero∙ {A = A} {B = B}) ≡ zero∙
+  Ω¹-map-zero {B = B} = Σ-pathp (funext λ _ → conj-refl _) conj-refl-square
 ```
 
 <!--
@@ -103,21 +104,44 @@ itself an equivalence, and so is conjugation, the functorial action of
 $\Omega(-)$ defined above carries equivalences to equivalences.
 
 ```agda
-Ω¹-ap : A ≃∙ B → Ω¹ A ≃∙ Ω¹ B
-Ω¹-ap f .fst .fst = Ω¹-map (Equiv∙.to∙ f) .fst
-Ω¹-ap f .fst .snd = ∘-is-equiv (conj-is-equiv (f .snd)) (ap-equiv (f .fst) .snd)
-Ω¹-ap f .snd = Ω¹-map (Equiv∙.to∙ f) .snd
+opaque
+  unfolding Ω¹-map
+
+  Ω¹-ap : A ≃∙ B → Ω¹ A ≃∙ Ω¹ B
+  Ω¹-ap f .fst .fst = Ω¹-map (Equiv∙.to∙ f) .fst
+  Ω¹-ap f .fst .snd = ∘-is-equiv (conj-is-equiv (f .snd)) (ap-equiv (f .fst) .snd)
+  Ω¹-ap f .snd = Ω¹-map (Equiv∙.to∙ f) .snd
 ```
+
+<!--
+```agda
+opaque
+  unfolding Ω¹-ap conj
+
+  Ω¹-ap-inv : (e : A ≃∙ B) → Equiv∙.inverse (Ω¹-ap e) ≡ Ω¹-ap (Equiv∙.inverse e)
+  Ω¹-ap-inv (e , pt) = ≃∙-ext $ homogeneous-funext∙ λ l →
+    let e⁻¹ = Equiv.from e in
+    conj (Equiv.η e _) ⌜ ap e⁻¹ (conj (sym pt) l) ⌝        ≡⟨ ap! (ap-conj e⁻¹ _ _) ⟩
+    conj (Equiv.η e _) (conj (ap e⁻¹ (sym pt)) (ap e⁻¹ l)) ≡⟨ conj-∙ _ _ _ ⟩
+    conj ⌜ _ ⌝ (ap e⁻¹ l)                                  ≡˘⟨ ap¡ (sym-∙ _ _) ⟩
+    conj (sym (Equiv.adjunctl e pt)) (ap e⁻¹ l)            ∎
+```
+-->
 
 Finally, since both conjugation and $\ap{f}(-)$ do so, $\Omega(f)$
 preserves path composition.
 
 ```agda
-Ω¹-map-∙ : ∀ (f : A →∙ B) p q → Ω¹-map f · (p ∙ q) ≡ Ω¹-map f · p ∙ Ω¹-map f · q
-Ω¹-map-∙ (f , f*) p q =
-  conj f* (ap f (p ∙ q))              ≡⟨ ap (conj f*) (ap-∙ f _ _) ⟩
-  conj f* (ap f p ∙ ap f q)           ≡⟨ conj-of-∙ f* _ _ ⟩
-  conj f* (ap f p) ∙ conj f* (ap f q) ∎
+opaque
+  unfolding Ω¹-map
+
+  Ω¹-map-∙
+    : ∀ (f : A →∙ B) p q
+    → Ω¹-map f · (p ∙ q) ≡ Ω¹-map f · p ∙ Ω¹-map f · q
+  Ω¹-map-∙ (f , f*) p q =
+    conj f* (ap f (p ∙ q))              ≡⟨ ap (conj f*) (ap-∙ f _ _) ⟩
+    conj f* (ap f p ∙ ap f q)           ≡⟨ conj-of-∙ f* _ _ ⟩
+    conj f* (ap f p) ∙ conj f* (ap f q) ∎
 ```
 
 ## Higher loop spaces {defines="higher-loop-space"}
@@ -177,9 +201,12 @@ functorial. This gives us the following battery of lemmas:
 
 <!--
 ```agda
-Ωⁿ-map-equiv : ∀ n (f : A →∙ B) → is-equiv (f .fst) → is-equiv (Ωⁿ-map n f .fst)
-Ωⁿ-map-equiv zero    f e = e
-Ωⁿ-map-equiv (suc n) f e = Ω¹-ap ((_ , Ωⁿ-map-equiv n f e) , _) .fst .snd
+opaque
+  unfolding Ω¹-ap
+
+  Ωⁿ-map-equiv : ∀ n (f : A →∙ B) → is-equiv (f .fst) → is-equiv (Ωⁿ-map n f .fst)
+  Ωⁿ-map-equiv zero    f e = e
+  Ωⁿ-map-equiv (suc n) f e = Ω¹-ap ((_ , Ωⁿ-map-equiv n f e) , _) .fst .snd
 
 Ωⁿ-map∙ : ∀ n → Maps∙ A B →∙ Maps∙ (Ωⁿ n A) (Ωⁿ n B)
 Ωⁿ-map∙ n .fst = Ωⁿ-map n
@@ -201,7 +228,7 @@ functorial. This gives us the following battery of lemmas:
 
 ## Loop spaces at successors
 
-Note that, unlike the HoTT book [-@HoTT], we have defined loop iterated
+Note that, unlike the HoTT book [-@HoTT], we have defined iterated loop
 spaces so that they satisfy the recurrence
 $$\Omega^{1 + n}(A) = \Omega \Omega^n(A)$$,
 rather than

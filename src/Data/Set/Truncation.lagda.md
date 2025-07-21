@@ -1,8 +1,10 @@
 <!--
 ```agda
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
+open import 1Lab.Type.Pointed
 open import 1Lab.Truncation
 open import 1Lab.Inductive
 open import 1Lab.HLevel
@@ -157,5 +159,16 @@ is-prop→∥-∥₀-is-prop h = Equiv→is-hlevel 1 ((_ , ∥-∥₀-idempotent
   .is-iso.from → ∥-∥₀-map (Equiv.from e)
   .is-iso.rinv → elim! λ x → ap inc (Equiv.ε e x)
   .is-iso.linv → elim! λ x → ap inc (Equiv.η e x)
+
+instance
+  ∥-∥₀-homogeneous : ∀ {ℓ} {A : Type ℓ} → ⦃ _ : Homogeneous A ⦄ → Homogeneous ∥ A ∥₀
+  ∥-∥₀-homogeneous {A = A} ⦃ h ⦄ {x} {y} =
+    ∥-∥₀-elim {B = λ x → ∀ y → (∥ A ∥₀ , x) ≡ (∥ A ∥₀ , y)}
+      (λ _ → Π-is-hlevel 2 λ _ → Type∙-path-is-hlevel 1)
+      (λ x → ∥-∥₀-elim
+        (λ _ → Type∙-path-is-hlevel 1)
+        (λ y → let e , pt = path→equiv∙ h
+               in ua∙ (∥-∥₀-ap e , ap ∥_∥₀.inc pt)))
+      x y
 ```
 -->

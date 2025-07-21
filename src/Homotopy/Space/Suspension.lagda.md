@@ -9,6 +9,15 @@ open import 1Lab.Prelude
 module Homotopy.Space.Suspension where
 ```
 
+<!--
+```agda
+private variable
+  ℓ : Level
+  A B C : Type ℓ
+  A∙ B∙ C∙ : Type∙ ℓ
+```
+-->
+
 # Suspension {defines="suspension"}
 
 Given a type $A$, its **(reduced) suspension** $\Susp A$ is the
@@ -90,28 +99,48 @@ Every suspension admits a surjection from the booleans:
 2→Σ true  = north
 2→Σ false = south
 
-2→Σ-surjective : ∀ {ℓ} {A : Type ℓ} → is-surjective (2→Σ {A = A})
+2→Σ-surjective : is-surjective (2→Σ {A = A})
 2→Σ-surjective = Susp-elim-prop (λ _ → hlevel 1)
   (inc (true , refl)) (inc (false , refl))
 ```
 
-The suspension operation [[increases|connectedness of suspensions]] the
-[[connectedness]] of spaces: if $A$ is $n$-connected, then $\Susp A$ is
-$(1+n)$-connected. Unfolding this a bit further, if $A$ is a type whose
-homotopy groups below $n$ are trivial, then $\Susp A$ will have trivial
-homotopy groups below $1 + n$.
+Suspension extends to a functor in the evident way.
 
+```agda
+Susp-map : (A → B) → Susp A → Susp B
+Susp-map f north = north
+Susp-map f south = south
+Susp-map f (merid x i) = merid (f x) i
+
+Susp-map∙ : (A∙ →∙ B∙) → Σ¹ A∙ →∙ Σ¹ B∙
+Susp-map∙ (f , pt) = Susp-map f , refl
+
+Susp-map∙-id : Susp-map∙ {A∙ = A∙} id∙ ≡ id∙
+Susp-map∙-id = funext∙ (Susp-elim _ refl refl λ x i j → merid x i) refl
+
+Susp-map∙-∘
+  : (f : B∙ →∙ C∙) (g : A∙ →∙ B∙)
+  → Susp-map∙ (f ∘∙ g) ≡ Susp-map∙ f ∘∙ Susp-map∙ g
+Susp-map∙-∘ (f , _) (g , _) =
+  funext∙ (Susp-elim _ refl refl (λ x i j → merid (f (g x)) i)) (sym (∙-idl _))
+
+Susp-map∙-zero : Susp-map∙ (zero∙ {A = A∙} {B = B∙}) ≡ zero∙
+Susp-map∙-zero {B∙ = B , b₀} =
+  funext∙ (Susp-elim _ refl (sym (merid b₀)) λ a i j → merid b₀ (i ∧ ~ j)) refl
+```
 
 <!--
 ```agda
-Susp-ap : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → Susp A ≃ Susp B
-Susp-ap e .fst = λ where
-  north       → north
-  south       → south
-  (merid x i) → merid (e .fst x) i
-Susp-ap e .snd = is-iso→is-equiv λ where
+Susp-Maps∙ : Maps∙ A∙ B∙ →∙ Maps∙ (Σ¹ A∙) (Σ¹ B∙)
+Susp-Maps∙ .fst = Susp-map∙
+Susp-Maps∙ {A∙ = A∙} {B∙ = B∙} .snd = Susp-map∙-zero {A∙ = A∙} {B∙ = B∙}
+
+Susp-ap : A∙ ≃∙ B∙ → Σ¹ A∙ ≃∙ Σ¹ B∙
+Susp-ap (e , pt) .fst .fst = Susp-map (e .fst)
+Susp-ap (e , pt) .fst .snd = is-iso→is-equiv λ where
   .is-iso.from → Susp-elim _ north south (λ x → merid (Equiv.from e x))
   .is-iso.rinv → Susp-elim _ refl refl λ x i j → merid (Equiv.ε e x j) i
   .is-iso.linv → Susp-elim _ refl refl λ x i j → merid (Equiv.η e x j) i
+Susp-ap (e , pt) .snd = refl
 ```
 -->
