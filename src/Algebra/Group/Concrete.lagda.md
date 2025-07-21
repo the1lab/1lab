@@ -333,8 +333,11 @@ right inverse to $\Pi_1$:
     p (ω ∙ refl)           ≡⟨ f-p ω refl ⟩
     f · ω ∙ p refl         ∎
 
-  rinv : π₁F .F₁ {G} {H} g ≡ f
-  rinv = ext λ ω → square→conj (symP (f≡apg ω))
+  opaque
+    unfolding Ω¹-map
+
+    rinv : π₁F .F₁ {G} {H} g ≡ f
+    rinv = ext λ ω → square→conj (symP (f≡apg ω))
 ```
 
 We are most of the way there. In order to get a proper equivalence, we must check that
@@ -356,34 +359,37 @@ module Deloop-Hom-π₁F {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
 This is a [[property]], and $\point{G}$ has it:
 
 ```agda
-  C'-contr : is-contr (C' (pt G))
-  C'-contr .centre .fst = f .snd ∙ sym (g .snd)
-  C'-contr .centre .snd α = commutes→square $
-    f .snd ∙ p ⌜ α ⌝                                ≡˘⟨ ap¡ (∙-idr _) ⟩
-    f .snd ∙ ⌜ p (α ∙ refl) ⌝                       ≡⟨ ap! (f-p α refl) ⟩
-    f .snd ∙ conj (f .snd) (ap (f .fst) α) ∙ p refl ≡˘⟨ ∙-extendl (∙-swapl (sym (conj-defn _ _))) ⟩
-    ap (f .fst) α ∙ f .snd ∙ p refl                 ∎
-  C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
-    sym (∙-unique _ (transpose (eq-paths refl)))
+  opaque
+    unfolding Ω¹-map
+
+    C'-contr : is-contr (C' (pt G))
+    C'-contr .centre .fst = f .snd ∙ sym (g .snd)
+    C'-contr .centre .snd α = commutes→square $
+      f .snd ∙ p ⌜ α ⌝                                ≡˘⟨ ap¡ (∙-idr _) ⟩
+      f .snd ∙ ⌜ p (α ∙ refl) ⌝                       ≡⟨ ap! (f-p α refl) ⟩
+      f .snd ∙ conj (f .snd) (ap (f .fst) α) ∙ p refl ≡˘⟨ ∙-extendl (∙-swapl (sym (conj-defn _ _))) ⟩
+      ap (f .fst) α ∙ f .snd ∙ p refl                 ∎
+    C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
+      sym (∙-unique _ (transpose (eq-paths refl)))
 ```
 
 Using the elimination principle again, we get enough information about `g` to conclude
 that it is equal to `f`, so that we have a left inverse.
 
 ```agda
-  c' : ∀ x → C' x
-  c' = B-elim-contr G C'-contr
+    c' : ∀ x → C' x
+    c' = B-elim-contr G C'-contr
 
-  g≡f : ∀ x → g .fst x ≡ f .fst x
-  g≡f x = sym (c' x .fst)
+    g≡f : ∀ x → g .fst x ≡ f .fst x
+    g≡f x = sym (c' x .fst)
 ```
 
 The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C'-contr}, but we
 need to bend the path into a `Square`{.Agda}:
 
 ```agda
-  β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
-  β = ap (sym ⊙ fst) (sym (C'-contr .paths (c' (pt G))))
+    β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
+    β = ap (sym ⊙ fst) (sym (C'-contr .paths (c' (pt G))))
 
   ptg≡ptf : Square (g≡f (pt G)) (g .snd) (f .snd) refl
   ptg≡ptf i j = hcomp (∂ i ∨ ∂ j) λ where

@@ -1,6 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Reflection.HLevel
+open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
@@ -31,7 +33,7 @@ Type∙ ℓ = Σ (Type ℓ) (λ A → A)
 ```agda
 private variable
   ℓ ℓ' : Level
-  A B C : Type∙ ℓ
+  A B C D : Type∙ ℓ
 ```
 -->
 
@@ -113,7 +115,7 @@ equivalent to asking for a proof that $\phi \is h(a_0)\cdot \gamma$.
 ~~~
 
 <!--
-````agda
+```agda
 module
   _ {ℓ ℓ'} {A@(_ , a₀) : Type∙ ℓ} {B@(_ , b₀) : Type∙ ℓ'}
     {f∙@(f , φ) g∙@(g , γ) : A →∙ B}
@@ -132,13 +134,30 @@ module
   _ = λ h α → funext∙ h (flip₁ (∙→square' α))
 ```
 
+<!--
+```agda
+∘∙-idl : (f : A →∙ B) → id∙ ∘∙ f ≡ f
+∘∙-idl f = funext∙ (λ _ → refl) (∙-idr _)
+
+∘∙-idr : (f : A →∙ B) → f ∘∙ id∙ ≡ f
+∘∙-idr f = funext∙ (λ _ → refl) (∙-idl _)
+
+∘∙-assoc : (f : C →∙ D) (g : B →∙ C) (h : A →∙ B)
+         → (f ∘∙ g) ∘∙ h ≡ f ∘∙ (g ∘∙ h)
+∘∙-assoc (f , f') (g , g') (h , h') = funext∙ (λ _ → refl) $
+  ap (f ∘ g) h' ∙ ap f g' ∙ f'   ≡⟨ ∙-assoc _ _ _ ⟩
+  (ap (f ∘ g) h' ∙ ap f g') ∙ f' ≡˘⟨ ap-∙ f _ _ ⟩∙⟨refl ⟩
+  ap f (ap g h' ∙ g') ∙ f'       ∎
+```
+-->
+
 ## Pointed equivalences {defines="pointed-equivalence"}
 
 Combining our [[univalent|univalence]] understanding of paths in the
-universe, and our understanding of paths in $\Sigma$ types, it stands to
+universe and our understanding of paths in $\Sigma$ types, it stands to
 reason that identifications $(A, a_0) \is (B, b_0)$ in the space of
 pointed types are given by equivalences $e : A \simeq B$ which carry
-$a_0$ to $b_0$. We call these a **pointed equivalence** from $(A, a_0)$
+$a_0$ to $b_0$. We call these **pointed equivalences** from $(A, a_0)$
 to $(B, b_0)$; and, as expected, we can directly use cubical primitives
 to turn a pointed equivalence into a path of pointed types.
 
@@ -169,10 +188,7 @@ module Equiv∙ {ℓ ℓ'} {A@(_ , a₀) : Type∙ ℓ} {B@(_ , b₀) : Type∙ 
 
   inverse : B ≃∙ A
   inverse .fst = Equiv.inverse (e .fst)
-  inverse .snd = injective $
-    e · from b₀ ≡⟨ Equiv.ε (e .fst) _ ⟩
-    b₀          ≡˘⟨ e .snd ⟩
-    e · a₀      ∎
+  inverse .snd = sym (Equiv.adjunctl (e .fst) (e .snd))
 ```
 
 <!--
@@ -183,13 +199,17 @@ module Equiv∙ {ℓ ℓ'} {A@(_ , a₀) : Type∙ ℓ} {B@(_ , b₀) : Type∙ 
 id≃∙ : ∀ {ℓ} {A : Type∙ ℓ} → A ≃∙ A
 id≃∙ = id≃ , refl
 
+_∙e∙_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type∙ ℓ} {B : Type∙ ℓ₁} {C : Type∙ ℓ₂}
+      → A ≃∙ B → B ≃∙ C → A ≃∙ C
+(f , pt) ∙e∙ (g , pt') = f ∙e g , ap (g .fst) pt ∙ pt'
+
 ≃∙⟨⟩-syntax : ∀ {ℓ ℓ₁ ℓ₂} (A : Type∙ ℓ) {B : Type∙ ℓ₁} {C : Type∙ ℓ₂}
             → B ≃∙ C → A ≃∙ B → A ≃∙ C
-≃∙⟨⟩-syntax A (g , pt) (f , pt') = f ∙e g , ap (g .fst) pt' ∙ pt
+≃∙⟨⟩-syntax A g f = f ∙e∙ g
 
 _≃∙˘⟨_⟩_ : ∀ {ℓ ℓ₁ ℓ₂} (A : Type∙ ℓ) {B : Type∙ ℓ₁} {C : Type∙ ℓ₂}
         → B ≃∙ A → B ≃∙ C → A ≃∙ C
-A ≃∙˘⟨ f ⟩ g = ≃∙⟨⟩-syntax _ g (Equiv∙.inverse f)
+A ≃∙˘⟨ f ⟩ g = Equiv∙.inverse f ∙e∙ g
 
 _≃∙⟨⟩_ : ∀ {ℓ ℓ₁} (A : Type∙ ℓ) {B : Type∙ ℓ₁} → A ≃∙ B → A ≃∙ B
 x ≃∙⟨⟩ x≡y = x≡y
@@ -197,11 +217,17 @@ x ≃∙⟨⟩ x≡y = x≡y
 _≃∙∎ : ∀ {ℓ} (A : Type∙ ℓ) → A ≃∙ A
 x ≃∙∎ = id≃∙
 
+infixr 30 _∙e∙_
+
 infixr 2 ≃∙⟨⟩-syntax _≃∙⟨⟩_ _≃∙˘⟨_⟩_
 infix  3 _≃∙∎
 infix 21 _≃∙_
 
 syntax ≃∙⟨⟩-syntax x q p = x ≃∙⟨ p ⟩ q
+
+≃∙-ext
+  : {f g : A ≃∙ B} → Equiv∙.to∙ f ≡ Equiv∙.to∙ g → f ≡ g
+≃∙-ext p = Σ-pathp (Σ-prop-path! (ap fst p)) (ap snd p)
 
 path→equiv∙ : A ≡ B → A ≃∙ B
 path→equiv∙ p .fst = path→equiv (ap fst p)
@@ -313,3 +339,15 @@ homogeneous-funext∙ {A = A} {B = B , b₀} {f = f∙@(f , f*)} {g∙@(g , g*)}
       k (j = i0) → hom b₀ k
       k (j = i1) → hom b₀ k
 ```
+
+<!--
+```agda
+Type∙-path-is-hlevel
+  : ∀ {ℓ} {A : Type ℓ} {x y : A} n
+  → ⦃ _ : H-Level A (suc n) ⦄ ⦃ _ : H-Level A (suc (suc n)) ⦄
+  → is-hlevel (Path (Type∙ ℓ) (A , x) (A , y)) (suc n)
+Type∙-path-is-hlevel {A = A} n = Equiv→is-hlevel (suc n)
+  (identity-system-gives-path univalence∙-identity-system e⁻¹)
+  (hlevel (suc n))
+```
+-->

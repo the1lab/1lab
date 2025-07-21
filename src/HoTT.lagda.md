@@ -809,7 +809,7 @@ _ = Wedge.elim
 _ = suspend-is-n-connected
 _ = freudenthal.code
 _ = freudenthal-equivalence
-_ = Sⁿ-stability-worker
+_ = Sⁿ-stability
 _ = πₙSⁿ≃Int
 ```
 -->
@@ -819,7 +819,7 @@ _ = πₙSⁿ≃Int
 * Theorem 8.6.4: `suspend-is-n-connected`{.Agda}
 * Definition 8.6.5: `freudenthal.code`{.Agda}
 * Corollary 8.6.14: `freudenthal-equivalence`{.Agda}
-* Corollary 8.6.15: `Sⁿ-stability-worker`{.Agda}
+* Corollary 8.6.15: `Sⁿ-stability`{.Agda}
 * Theorem 8.6.17: `πₙSⁿ≃Int`{.Agda}
 
 ## Chapter 9: Category theory

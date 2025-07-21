@@ -22,8 +22,11 @@ module Homotopy.Space.Suspension.Properties where
 
 ## Connectedness {defines="connectedness-of-suspensions"}
 
-This section contains the aforementioned proof that suspension increases
-the [[connectedness]] of a space.
+The suspension operation increases the
+[[connectedness]] of spaces: if $A$ is $n$-connected, then $\Susp A$ is
+$(1+n)$-connected. Unfolding this a bit further, if $A$ is a type whose
+homotopy groups below $n$ are trivial, then $\Susp A$ will have trivial
+homotopy groups below $1 + n$.
 
 ```agda
 Susp-is-connected

@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
 open import Data.Nat.Properties
@@ -10,6 +11,7 @@ open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
+open import Homotopy.Conjugation
 open import Homotopy.Loopspace
 ```
 -->
@@ -138,9 +140,10 @@ proving that one can eliminate from it to $n$-types, we use the
 characterisations of truncation in terms of hubs-and-spokes.
 
 ```agda
-n-Tr-is-hlevel
-  : ∀ {ℓ} {A : Type ℓ} n → is-hlevel (n-Tr A (suc n)) (suc n)
-n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
+abstract
+  n-Tr-is-hlevel
+    : ∀ {ℓ} {A : Type ℓ} n → is-hlevel (n-Tr A (suc n)) (suc n)
+  n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
 
 instance
   H-Level-n-Tr : ∀ {ℓ} {A : Type ℓ} {n k} ⦃ _ : suc n ≤ k ⦄ → H-Level (n-Tr A (suc n)) k
@@ -372,6 +375,9 @@ n-Tr-Tr p .snd = let instance _ = p in is-iso→is-equiv λ where
 n-Tr∙ : ∀ (A∙ : Type∙ ℓ) n → Type∙ ℓ
 n-Tr∙ (A , a₀) n = n-Tr A n , inc a₀
 
+inc∙ : ∀ {A∙ : Type∙ ℓ} {n} → A∙ →∙ n-Tr∙ A∙ n
+inc∙ = inc , refl
+
 n-Tr-prop : ∥ A ∥ ≃ n-Tr A 1
 n-Tr-prop .fst = elim! n-Tr.inc
 n-Tr-prop .snd = is-iso→is-equiv (iso (elim! ∥_∥.inc) (elim! λ _ → refl) (elim! λ _ → refl))
@@ -380,14 +386,17 @@ n-Tr-set : ∥ A ∥₀ ≃ n-Tr A 2
 n-Tr-set .fst = elim! n-Tr.inc
 n-Tr-set .snd = is-iso→is-equiv (iso (elim! ∥_∥₀.inc) (elim! λ _ → refl) (elim! λ _ → refl))
 
-n-Tr-reindex : ∀ {ℓ} {A : Type ℓ} n k → n ≡ k → n-Tr A (suc n) ≃ n-Tr A (suc k)
-n-Tr-reindex {A = A} n k p = done where
+n-Tr-reindex : ∀ {ℓ} {A : Type ℓ} n k → n ≡ k → n-Tr A n ≃ n-Tr A k
+n-Tr-reindex zero zero p = id≃
+n-Tr-reindex zero (suc k) p = absurd (zero≠suc p)
+n-Tr-reindex (suc n) zero p = absurd (suc≠zero p)
+n-Tr-reindex {A = A} (suc n) (suc k) p = done where
   instance
     _ : n ≤ k
-    _ = ≤-refl' p
+    _ = ≤-refl' (suc-inj p)
 
     _ : k ≤ n
-    _ = ≤-refl' (sym p)
+    _ = ≤-refl' (suc-inj (sym p))
 
   done : n-Tr A (suc n) ≃ n-Tr A (suc k)
   done .fst = elim! inc
@@ -395,6 +404,39 @@ n-Tr-reindex {A = A} n k p = done where
     .is-iso.from → elim! inc
     .is-iso.rinv → elim! λ x → refl
     .is-iso.linv → elim! λ x → refl
+
+n-Tr-reindex-inc
+  : ∀ {ℓ} {A : Type ℓ} n k (p : n ≡ k) (x : A)
+  → n-Tr-reindex n k p .fst (inc x) ≡ inc x
+n-Tr-reindex-inc zero zero p x = refl
+n-Tr-reindex-inc zero (suc k) p x = absurd (zero≠suc p)
+n-Tr-reindex-inc (suc n) zero p x = absurd (suc≠zero p)
+n-Tr-reindex-inc (suc n) (suc k) p x = refl
+
+n-Tr∙-reindex : ∀ {ℓ} {A : Type∙ ℓ} n k → n ≡ k → n-Tr∙ A n ≃∙ n-Tr∙ A k
+n-Tr∙-reindex n k p = n-Tr-reindex n k p , n-Tr-reindex-inc n k p _
+
+n-Tr∙-reindex-inc
+  : ∀ {ℓ} {A : Type∙ ℓ} n k (p : n ≡ k)
+  → Equiv∙.to∙ (n-Tr∙-reindex n k p) ∘∙ inc∙ ≡ inc∙ {A∙ = A}
+n-Tr∙-reindex-inc n k p = funext∙
+  (n-Tr-reindex-inc n k p)
+  (flip₁ (∙→square' (∙-idl _ ∙ sym (∙-idr _))))
+
+instance
+  n-Tr-homogeneous
+    : ∀ {ℓ} {A : Type ℓ} {n}
+    → ⦃ _ : Homogeneous A ⦄
+    → Homogeneous (n-Tr A (suc n))
+  n-Tr-homogeneous {A = A} {n} ⦃ h ⦄ {x} {y} =
+    n-Tr-elim
+      (λ x → ∀ y → (n-Tr A (suc n) , x) ≡ (n-Tr A (suc n) , y))
+      (λ x → Π-is-hlevel (suc n) λ _ → Type∙-path-is-hlevel n)
+      (λ x → n-Tr-elim _
+        (λ _ → Type∙-path-is-hlevel n)
+        (λ y → let e , pt =  path→equiv∙ h
+               in ua∙ (n-Tr-ap e , ap n-Tr.inc pt)))
+      x y
 ```
 -->
 
@@ -403,10 +445,38 @@ truncations; this extends to a [[pointed equivalence]] between the
 $n$-truncation of the [[loop space]] $\Omega A$ and the loop space of
 the $(1+n)$-truncation of $A$.
 
+<!--
 ```agda
-n-Tr-Ω¹ : ∀ {ℓ} (A : Type∙ ℓ) n → n-Tr∙ (Ωⁿ 1 A) (1 + n) ≃∙ Ωⁿ 1 (n-Tr∙ A (2 + n))
-n-Tr-Ω¹ A n = Equiv.inverse n-Tr-path-equiv , refl
+opaque
+  unfolding Ω¹-map
 ```
+-->
+
+```agda
+  n-Tr-Ω¹
+    : ∀ {ℓ} (A : Type∙ ℓ) n
+    → n-Tr∙ (Ω¹ A) (1 + n) ≃∙ Ω¹ (n-Tr∙ A (2 + n))
+  n-Tr-Ω¹ A n = Equiv.inverse n-Tr-path-equiv , refl
+```
+
+<!--
+```agda
+  n-Tr-Ω¹-inc
+    : ∀ {ℓ} (A : Type∙ ℓ) n
+    → Equiv∙.to∙ (n-Tr-Ω¹ A n) ∘∙ inc∙ ≡ Ω¹-map inc∙
+  n-Tr-Ω¹-inc A n = homogeneous-funext∙ (λ _ → sym (conj-refl _))
+
+  n-Tr-Ω¹-inv-inc
+    : ∀ {ℓ} (A : Type∙ ℓ) n (l : ⌞ Ω¹ A ⌟)
+    → Equiv.from (n-Tr-Ω¹ A n .fst) (Ω¹-map inc∙ .fst l) ≡ inc l
+  n-Tr-Ω¹-inv-inc A n l = sym (Equiv.adjunctl (n-Tr-Ω¹ A n .fst) (n-Tr-Ω¹-inc A n ·ₚ l))
+
+  n-Tr-Ω¹-∙
+    : ∀ {ℓ} (A : Type∙ ℓ) n (p q : ⌞ Ω¹ A ⌟)
+    → n-Tr-Ω¹ A n · inc (p ∙ q) ≡ (n-Tr-Ω¹ A n · inc p) ∙ (n-Tr-Ω¹ A n · inc q)
+  n-Tr-Ω¹-∙ A n p q = ap-∙ inc p q
+```
+-->
 
 We can iterate this to show that the $n$-truncation of the $k$-fold loop
 space $\| \Omega^k A \|_n$ is the $k$-fold loop space of the $(k +
@@ -416,18 +486,90 @@ n)$-truncation of $A$.
 n-Tr-Ωⁿ
   : ∀ {ℓ} (A : Type∙ ℓ) n k
   → n-Tr∙ (Ωⁿ k A) (1 + n) ≃∙ Ωⁿ k (n-Tr∙ A (k + suc n))
-
 n-Tr-Ωⁿ A n 0    = id≃ , refl
-n-Tr-Ωⁿ A n 1    = n-Tr-Ω¹ A n
-n-Tr-Ωⁿ A n (suc (suc k)) =
+n-Tr-Ωⁿ A n (suc k) =
   let
-    fixup = n-Tr-reindex (k + (2 + n)) (suc k + suc n) (+-sucr k (suc n))
-    f2    = Ωⁿ-ap (2 + k) (fixup , refl)
+    fixup = Ωⁿ-ap (1 + k) (n-Tr∙-reindex (k + (2 + n)) (suc k + suc n) (+-sucr k (suc n)))
   in
-    n-Tr∙ (Ωⁿ (2 + k) A) (suc n)                  ≃∙⟨⟩
-    n-Tr∙ (Ωⁿ 1 (Ωⁿ (suc k) A)) (suc n)           ≃∙⟨ n-Tr-Ω¹ (Ωⁿ (suc k) A) n ⟩
-    Ωⁿ 1 (n-Tr∙ (Ωⁿ (suc k) A) (2 + n))           ≃∙⟨ Ωⁿ-ap 1 (n-Tr-Ωⁿ A (suc n) (suc k)) ⟩
-    Ωⁿ 1 (Ωⁿ (1 + k) (n-Tr∙ A (suc k + (2 + n)))) ≃∙⟨⟩
-    Ωⁿ (2 + k) (n-Tr∙ A (suc k + (2 + n)))        ≃∙⟨ f2 ⟩
-    Ωⁿ (2 + k) (n-Tr∙ A (2 + k + suc n))          ≃∙∎
+    n-Tr∙ (Ωⁿ (1 + k) A) (suc n)         ≃∙⟨⟩
+    n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n)          ≃∙⟨ n-Tr-Ω¹ (Ωⁿ k A) n ⟩
+    Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n))          ≃∙⟨ Ωⁿ-ap 1 (n-Tr-Ωⁿ A (suc n) k) ⟩
+    Ω¹ (Ωⁿ k (n-Tr∙ A (k + (2 + n))))    ≃∙⟨⟩
+    Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n)))   ≃∙⟨ fixup ⟩
+    Ωⁿ (1 + k) (n-Tr∙ A (1 + k + suc n)) ≃∙∎
 ```
+
+<!--
+```agda
+opaque
+  unfolding Ω¹-ap
+
+  -- The following lemmas demonstrate a useful proof technique: when showing
+  -- an identity of the form (f ∘ g ∘ h) x ≡ y, we can proceed step
+  -- by step by exhibiting a chain of *pointed* maps (in this case,
+  -- pointed equivalences) from (X , x) to (Y , y) whose underlying
+  -- function is f ∘ g ∘ h.
+  -- This still involves some duplication, but at least it isn't
+  -- quadratic in the number of functions.
+
+  -- n-Tr-Ωⁿ respects path composition.
+
+  n-Tr-Ωⁿ-∙
+    : ∀ {ℓ} (A : Type∙ ℓ) n k
+    → (p q : ⌞ Ωⁿ (suc k) A ⌟)
+    → n-Tr-Ωⁿ A n (suc k) · inc (p ∙ q)
+    ≡ n-Tr-Ωⁿ A n (suc k) · inc p ∙ n-Tr-Ωⁿ A n (suc k) · inc q
+  n-Tr-Ωⁿ-∙ A n k p q = trace .snd
+    where
+      trace
+        :  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc (p ∙ q))
+        ≃∙ (Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst
+           , n-Tr-Ωⁿ A n (suc k) · inc p ∙ n-Tr-Ωⁿ A n (suc k) · inc q)
+      trace =
+        ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc (p ∙ q)
+          ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-∙ _ _ p q ⟩
+        ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , _
+          ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , Ω¹-map-∙ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) _ _ ⟩
+        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , _
+          ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , Ωⁿ-map-∙ k _ _ _ ⟩
+        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (suc k + suc n)) ⌟ , _
+          ≃∙∎
+
+  -- n-Tr-Ωⁿ commutes with the obvious inclusions.
+
+  n-Tr-Ωⁿ-inc
+    : ∀ {ℓ} (A : Type∙ ℓ) n k
+    → Equiv∙.to∙ (n-Tr-Ωⁿ A n k) ∘∙ inc∙ ≡ Ωⁿ-map k inc∙
+  n-Tr-Ωⁿ-inc A n zero = ∘∙-idl inc∙
+  n-Tr-Ωⁿ-inc A n (suc k) = homogeneous-funext∙ λ l → trace l .snd
+    where
+      trace
+        : (l : ⌞ Ωⁿ (suc k) A ⌟)
+        →  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc l)
+        ≃∙ (Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst , Ωⁿ-map (suc k) inc∙ .fst l)
+      trace l =
+        ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc l ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-inc _ n ·ₚ l ⟩
+        ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , l¹    ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , pt1 ⟩
+        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , lᵏ    ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , pt2 ⟩
+        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (1 + k + suc n)) ⌟ , lᵏ    ≃∙∎
+        where
+          l¹ : Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) .fst
+          l¹ = Ω¹-map inc∙ .fst l
+
+          lᵏ : ∀ {n} → ⌞ Ωⁿ (suc k) (n-Tr∙ A n) ⌟
+          lᵏ = Ωⁿ-map (1 + k) inc∙ .fst l
+
+          pt1 : Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) · l¹ ≡ lᵏ
+          pt1 =
+            Ω¹-map (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) .fst l¹
+              ≡⟨ Ω¹-map-∘ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) inc∙ ·ₚ l ⟩
+            Ω¹-map ⌜ Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k) ∘∙ inc∙ ⌝ .fst l
+              ≡⟨ ap! (n-Tr-Ωⁿ-inc A (suc n) k) ⟩
+            Ω¹-map (Ωⁿ-map k inc∙) .fst l
+              ∎
+
+          pt2 : Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ (+-sucr k (suc n))) · lᵏ ≡ lᵏ
+          pt2 = (Ωⁿ-map-∘ (1 + k) _ inc∙ ·ₚ l)
+              ∙ ap (λ x → Ωⁿ-map (1 + k) x .fst l) (n-Tr∙-reindex-inc (k + (2 + n)) _ _)
+```
+-->
