@@ -149,7 +149,7 @@ module _
   (wraps : x^ pos n ≡ unit)
   where
 
-  ℤ/-out : Groups.Hom (LiftGroup ℓ (ℤ/ n)) G
+  ℤ/-out : Groups.Hom (Lift-group ℓ (ℤ/ n)) G
   ℤ/-out .fst (lift i) = Coeq-rec (apply x^- ⊙ lift) (λ (a , b , n∣a-b) → zero-diff $
     let k , k*n≡a-b = ∣ℤ→fibre n∣a-b in
     x^ a — x^ b          ≡˘⟨ pres-diff (x^- .snd) {lift a} {lift b} ⟩
