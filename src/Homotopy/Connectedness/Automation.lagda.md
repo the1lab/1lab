@@ -30,6 +30,9 @@ record Connected {ℓ} (T : Type ℓ) (n : Nat) : Type ℓ where
 n-connected : ∀ {ℓ} {T : Type ℓ} n ⦃ x : Connected T n ⦄ → is-n-connected T n
 n-connected n ⦃ c ⦄ = Connected.has-n-connected c
 
+connected∙ : ∀ {ℓ} {T : Type∙ ℓ} ⦃ x : Connected ⌞ T ⌟ 2 ⦄ → is-connected∙ T
+connected∙ = is-connected→is-connected∙ (n-connected 2)
+
 basic-conn-instance
   : ∀ {ℓ} {T : Type ℓ} n {k}
   → is-n-connected T (n + k) → Connected T n

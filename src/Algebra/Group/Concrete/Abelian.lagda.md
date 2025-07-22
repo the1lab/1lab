@@ -85,7 +85,7 @@ S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ
   (Abelian→Group-on-abelian (ℤ-ab .snd))
 ```
 
-## First abelian group cohomology
+## First abelian group cohomology {defines="first-abelian-group-cohomology"}
 
 When $H$ is a concrete abelian group, something interesting happens: for any
 other concrete group $G$, the set of pointed maps $\B{G} \to^\bullet \B{H}$ (i.e.
