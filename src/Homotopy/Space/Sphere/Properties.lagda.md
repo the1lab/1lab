@@ -288,12 +288,12 @@ opaque
     → πₙSⁿ≃Int (suc n) · inc (Ωⁿ-suspend (suc n) (Sⁿ (suc n)) · l)
     ≡ πₙSⁿ≃Int n · inc l
   πₙSⁿ≃Int-suspend zero l =
-    ΩS¹≃Int · (Ω²ΣG≃ΩG · inc (Ωⁿ-map 2 (Susp-map∙ SuspS⁰→∙S¹) · (Ωⁿ-suspend 1 (Sⁿ 1) · l)))
-      ≡⟨ ap (ΩS¹≃Int .fst ⊙ Ω²ΣG≃ΩG .fst ⊙ inc) (Ωⁿ-suspend-natural 1 SuspS⁰→∙S¹ ·ₚ l) ⟩
-    ΩS¹≃Int · (Ω²ΣG≃ΩG · inc ⌜ Ωⁿ-suspend 1 _ · (Ω¹-map SuspS⁰→∙S¹ · l) ⌝)
-      ≡⟨ ap (ΩS¹≃Int .fst ⊙ Ω²ΣG≃ΩG .fst ⊙ inc) (transport-refl _) ⟩
-    ΩS¹≃Int · ⌜ Ω²ΣG≃ΩG · inc (Ω¹-map (suspend∙ _) · (Ω¹-map SuspS⁰→∙S¹ · l)) ⌝
-      ≡⟨ ap (ΩS¹≃Int .fst) (Equiv.adjunctr Ω²ΣG≃ΩG (sym (Ω²ΣG≃ΩG-inv (Ω¹-map SuspS⁰→∙S¹ · l)))) ⟩
+    ΩS¹≃Int · (Ω²ΣG≃ΩG · ∥_∥₀.inc ⌜ Ωⁿ-map 2 (Susp-map∙ SuspS⁰→∙S¹) · (Ωⁿ-suspend 1 (Sⁿ 1) · l) ⌝)
+      ≡⟨ ap! (Ωⁿ-suspend-natural 1 SuspS⁰→∙S¹ ·ₚ l) ⟩
+    ΩS¹≃Int · (Ω²ΣG≃ΩG · ∥_∥₀.inc ⌜ Ωⁿ-suspend 1 _ · (Ω¹-map SuspS⁰→∙S¹ · l) ⌝)
+      ≡⟨ ap! (transport-refl _) ⟩
+    ΩS¹≃Int · ⌜ Ω²ΣG≃ΩG · ∥_∥₀.inc (Ω¹-map (suspend∙ _) · (Ω¹-map SuspS⁰→∙S¹ · l)) ⌝
+      ≡⟨ ap! (Equiv.adjunctr Ω²ΣG≃ΩG (sym (Ω²ΣG≃ΩG-inv (Ω¹-map SuspS⁰→∙S¹ · l)))) ⟩
     ΩS¹≃Int · (Ω¹-map SuspS⁰→∙S¹ · l)
       ∎
   πₙSⁿ≃Int-suspend (suc n) l =
