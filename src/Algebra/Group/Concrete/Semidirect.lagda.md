@@ -95,7 +95,7 @@ involve a `sym` to align them up.
 ```
 
 ::: source
-The following proof is adapted from Symmetry [-@Symmetry, §4.14].
+The following proof is adapted from Symmetry [-@Symmetry, §7.2].
 :::
 
 The first step is to construct an equivalence between the underlying

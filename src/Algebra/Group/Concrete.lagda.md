@@ -252,7 +252,7 @@ groupoid, and thus that it comes with the elimination principle `B-elim-contr`{.
 This suggests that we need to define a type family $C : \B{G} \to \ty$ such that
 $C(\point{G})$ is contractible, conclude that $\forall x. C(x)$ holds
 and extract a map $\B{G} \to^\bullet \B{H}$ from that.
-The following construction is adapted from [@Symmetry, §4.10]:
+The following construction is adapted from [@Symmetry, §6.5]:
 
 ```agda
   record C (x : ⌞ G ⌟) : Type ℓ where
