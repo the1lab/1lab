@@ -38,7 +38,7 @@ basepoint is *a* type of integers, i.e. it satisfies the [[universal
 property of the integers]]. First, we generalise the construction of
 `möbius`{.Agda} to turn an equivalence on an arbitrary type into a type
 family over `S¹`{.Agda}. Transport over this family will give the
-universal map $\Omega S^1 \to X$ associated with an equivalence $e : X
+universal map $\Loop S^1 \to X$ associated with an equivalence $e : X
 \simeq X$ and basepoint $x_0 : X$.
 
 ```agda
@@ -67,9 +67,9 @@ interleaved mutual
 -->
 
 The first thing we will do is assume an elimination principle for
-$\Omega S^1$, which will be used in showing uniqueness of the universal
-map $\Omega S^1 \to X$ associated to an equivalence $e : X \simeq X$.
-We must also equip $\Omega S^1$ with an auto-equivalence, which
+$\Loop S^1$, which will be used in showing uniqueness of the universal
+map $\Loop S^1 \to X$ associated to an equivalence $e : X \simeq X$.
+We must also equip $\Loop S^1$ with an auto-equivalence, which
 corresponds in some way to taking successors: since `loop`{.Agda}
 corresponds to "the number 1", the equivalence we go with is thus
 "adding 1": postcomposition with the `loop`{.Agda}.
@@ -92,7 +92,7 @@ corresponds to "the number 1", the equivalence we go with is thus
 
 It is easy to see that transporting the basepoint along the family
 associated to an automorphism of $X$ commutes with our chosen
-automorphism of $\Omega S^1$: modulo a tactic application, it is
+automorphism of $\Loop S^1$: modulo a tactic application, it is
 `refl`{.Agda}.
 
 ```agda
@@ -102,9 +102,9 @@ automorphism of $\Omega S^1$: modulo a tactic application, it is
 ```
 
 The difficult part of the proof is showing that `equiv→action`{.Agda} is
-the unique map $\Omega S^1 \to X$ with these properties. We will show
+the unique map $\Loop S^1 \to X$ with these properties. We will show
 this is the case assuming first that we have an elimination principle
-for $\Omega S^1$.
+for $\Loop S^1$.
 
 ```agda
   ΩS¹-integers .map-out-unique f {p} {r} frefl floop = ΩS¹-elim _
@@ -120,25 +120,25 @@ for $\Omega S^1$.
 
 # Loop induction
 
-We must now show the elimination principle for $\Omega S^1$ that was
+We must now show the elimination principle for $\Loop S^1$ that was
 promised above. Note that, while this is a path type, both of the
 endpoints are fixed (here, to be constructors), so we can not directly
 use path induction. Instead, we will mimic the construction of
 [[induction from initiality]], turning our induction methods into a
-*total algebra* $\sum_{x : \Omega S^1} P(x)$, which can be mapped into
+*total algebra* $\sum_{x : \Loop S^1} P(x)$, which can be mapped into
 universally.
 
-Applying the universal map at $l : \Omega S^1$ then gives us a pair of
-an index $l' : \Omega S^1$ and a proof in $P(l')$. If we have a proper
+Applying the universal map at $l : \Loop S^1$ then gives us a pair of
+an index $l' : \Loop S^1$ and a proof in $P(l')$. If we have a proper
 initial object, we could then show that the composite
-$$\Omega S^1 \to \left(\sum_{x : \Omega S^1} P(x)\right) \xto{\pi_1} \Omega S^1$$
-which defines $l'$ is an algebra map $\Omega S^1 \to \Omega S^1$, so it
+$$\Loop S^1 \to \left(\sum_{x : \Loop S^1} P(x)\right) \xto{\pi_1} \Loop S^1$$
+which defines $l'$ is an algebra map $\Loop S^1 \to \Loop S^1$, so it
 must be the identity; thus $l' = l$ and we have the desired $P(l)$.
 Here, however, we're trying to *show* initiality, so we'll need a
 hand-crafted coherence.
 
 We note that the induction methods for `ΩS¹-elim`{.Agda} fit together
-into a basepoint and auto-equivalence of the type $\sum_{l : \Omega S^1}
+into a basepoint and auto-equivalence of the type $\sum_{l : \Loop S^1}
 P(l)$. The family associated to this action will be called
 `totl`{.Agda}.
 

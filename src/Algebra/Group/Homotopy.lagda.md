@@ -32,7 +32,7 @@ private variable
 
 # Homotopy groups {defines="homotopy-group fundamental-group"}
 
-For positive $n$, we can give the iterated [[loop space]] $\Omega^n A$ a
+For positive $n$, we can give the iterated [[loop space]] $\Loop^n A$ a
 `Group`{.Agda} structure, obtained by [[truncating|set-truncation]] the
 higher groupoid structure that $A$ is equipped with. We call the
 sequence $\pi_n(A)$ the **homotopy groups** of $A$, but remark that the
@@ -93,7 +93,7 @@ opaque
 -->
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
-that path concatenation for $\Omega^{n + 2} A$ is commutative,
+that path concatenation for $\Loop^{n + 2} A$ is commutative,
 independent of $A$.
 
 ```agda
@@ -109,7 +109,7 @@ independent of $A$.
 ```
 
 The proof can be visualized with the following diagram, where the
-vertices are in $\Omega^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
+vertices are in $\Loop^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
 q ∙ p`, which is filled by transporting the two inner squares using
 `∙-idr`{.Agda} on `p j` and `∙-idl`{.Agda} on `q j`. Note that
 `∙-idr refl` and `∙-idl refl` are definitionally equal.  In the two
