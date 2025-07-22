@@ -27,7 +27,7 @@ module Cat.Instances.Graphs where
 <!--
 ```agda
 private variable
-  o o' ℓ ℓ' : Level
+  o o' o'' ℓ ℓ' ℓ'' : Level
 ```
 -->
 
@@ -40,7 +40,6 @@ a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \Sets_o$ of
 **edges** $E(x, y) : \Sets_\ell$ from $x$ to $y$. That's it: a set $V$
 and a family of sets over $V \times V$.
 :::
-
 
 ```agda
 record Graph (o ℓ : Level) : Type (lsuc o ⊔ lsuc ℓ) where
@@ -94,6 +93,7 @@ record Graph-hom (G : Graph o ℓ) (H : Graph o' ℓ') : Type (o ⊔ o' ⊔ ℓ 
 
 <!--
 ```agda
+{-# INLINE Graph-hom.constructor #-}
 private variable
   G H K : Graph o ℓ
 
@@ -151,10 +151,48 @@ Graph-hom-path {G = G} {H = H} p0 p1 =
     (λ x i → p0 (x i) i)
     (λ e i → p1 (e i) i)
 
-Graph-hom-id : {G : Graph o ℓ} → Graph-hom G G
-Graph-hom-id .node v = v
-Graph-hom-id .edge e = e
+module _ {o o' ℓ ℓ' ℓr} {G : Graph o ℓ} {H : Graph o' ℓ'} ⦃ rel : Extensional (⌞ G ⌟ → ⌞ H ⌟) ℓr ⦄ where
+  record Graph-hom∼ (f g : Graph-hom G H) : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ' ⊔ ℓr) where
+    field
+      node : rel .Pathᵉ (f .node) (g .node)
+      edge
+        : ∀ {x y} (e : G .Edge x y)
+        → PathP (λ i → H .Edge (rel .idsᵉ .to-path node i x) (rel .idsᵉ .to-path node i y))
+            (f .edge {x} {y} e) (g .edge {x} {y} e)
 
+  open Graph-hom∼ public
+
+  private unquoteDecl eqv = declare-record-iso eqv (quote Graph-hom∼)
+
+  instance
+    Extensional-graph-hom : Extensional (Graph-hom G H) (o ⊔ o' ⊔ ℓ ⊔ ℓ' ⊔ ℓr)
+    Extensional-graph-hom .Pathᵉ = Graph-hom∼
+    Extensional-graph-hom .reflᵉ x .node   = rel .reflᵉ (x .node)
+    Extensional-graph-hom .reflᵉ x .edge {a} {b} e = to-pathp
+      (ap₂ (λ α β → subst₂ (H .Edge) {b' = x .node b} α β (x .edge e))
+        (λ i j → to-path-refl {a = x .node} (rel .idsᵉ) i j · a)
+        (λ i j → to-path-refl {a = x .node} (rel .idsᵉ) i j · b)
+      ∙ transport-refl _)
+    Extensional-graph-hom .idsᵉ .to-path p i .node = rel .idsᵉ .to-path (p .node) i
+    Extensional-graph-hom .idsᵉ .to-path p i .edge e = p .edge e i
+    Extensional-graph-hom .idsᵉ .to-path-over p = is-prop→pathp
+      (λ i → Iso→is-hlevel 1 eqv (Σ-is-hlevel 1
+        (Equiv→is-hlevel 1 (identity-system-gives-path (rel .idsᵉ)) (hlevel 1))
+        (λ x → hlevel 1)))
+      _ _
+
+macro
+  trivialᴳ! : Term → TC ⊤
+  trivialᴳ! goal = unify goal (def (quote Graph-hom-path) (lam visible (abs "_" (def (quote refl) [])) v∷ lam visible (abs "_" (def (quote refl) [])) v∷ []))
+
+idᴳ : {G : Graph o ℓ} → Graph-hom G G
+idᴳ .node v = v
+idᴳ .edge e = e
+
+_∘ᴳ_ : ∀ {G : Graph o ℓ} {H : Graph o' ℓ'} {I : Graph o'' ℓ''}
+  → Graph-hom H I → Graph-hom G H → Graph-hom G I
+(f ∘ᴳ h) .node x = f .node (h .node x)
+(f ∘ᴳ h) .edge x = f .edge (h .edge x)
 ```
 -->
 
@@ -165,13 +203,13 @@ Graphs : ∀ o ℓ → Precategory (lsuc (o ⊔ ℓ)) (o ⊔ ℓ)
 Graphs o ℓ .Precategory.Ob = Graph o ℓ
 Graphs o ℓ .Precategory.Hom = Graph-hom
 Graphs o ℓ .Precategory.Hom-set _ _ = hlevel 2
-Graphs o ℓ .Precategory.id = Graph-hom-id
-Graphs o ℓ .Precategory._∘_ f g .node v = f .node (g .node v)
-Graphs o ℓ .Precategory._∘_ f g .edge e = f .edge (g .edge e)
-Graphs o ℓ .Precategory.idr _ = Graph-hom-path (λ _ → refl) (λ _ → refl)
-Graphs o ℓ .Precategory.idl _ = Graph-hom-path (λ _ → refl) (λ _ → refl)
-Graphs o ℓ .Precategory.assoc _ _ _ = Graph-hom-path (λ _ → refl) (λ _ → refl)
+Graphs o ℓ .Precategory.id  = idᴳ
+Graphs o ℓ .Precategory._∘_ = _∘ᴳ_
+Graphs o ℓ .Precategory.idr _ = trivialᴳ!
+Graphs o ℓ .Precategory.idl _ = trivialᴳ!
+Graphs o ℓ .Precategory.assoc _ _ _ = trivialᴳ!
 ```
+
 <!--
 ```agda
 open Functor
@@ -267,16 +305,19 @@ equivalent as this category is self-dual.
 <!--
 ```agda
   graph→presheaf : Functor (Graphs o ℓ) (PSh (o ⊔ ℓ) ·⇇·)
-  graph→presheaf .F₀ G =
-    Fork {a = el! $ Σ[ s ∈ G ] Σ[ t ∈ G ] G .Edge s t }
-         {el! $ Lift ℓ ⌞ G ⌟}
-         (lift ⊙ fst)
-         (lift ⊙ fst ⊙ snd)
-  graph→presheaf .F₁ f =
-    Fork-nt {u = λ (s , t , e) → f .node s , f .node t , f .edge e }
-            {v = λ { (lift v) → lift (f · v) } } refl refl
-  graph→presheaf .F-id = Nat-path λ { true → refl ; false → refl }
-  graph→presheaf .F-∘ G H = Nat-path λ { true → refl ; false → refl }
+  graph→presheaf .F₀ G = Fork {a = el! $ Σ[ s ∈ G ] Σ[ t ∈ G ] G .Edge s t }
+    {el! $ Lift ℓ ⌞ G ⌟}
+    (lift ⊙ fst) (lift ⊙ fst ⊙ snd)
+  graph→presheaf .F₁ f = Fork-nt
+    {u = λ (s , t , e) → f .node s , f .node t , f .edge e }
+    {v = λ { (lift v) → lift (f · v) } }
+    refl refl
+  graph→presheaf .F-id = ext λ where
+    true  x → refl
+    false x → refl
+  graph→presheaf .F-∘ G H = ext λ where
+    true  x → refl
+    false x → refl
 
   g→p-is-ff : is-fully-faithful graph→presheaf
   g→p-is-ff {x = x} {y = y} = is-iso→is-equiv (iso from ir il) where
@@ -285,8 +326,8 @@ equivalent as this category is self-dual.
     from h .edge e =
       let
         (s' , t' , e') = h .η false (_ , _ , e)
-        ps = ap lower (sym (h .is-natural false true false $ₚ (_ , _ , e)))
-        pt = ap lower (sym (h .is-natural false true true $ₚ (_ , _ , e)))
+        ps = ap lower (sym (h .is-natural _ _ inl $ₚ (_ , _ , e)))
+        pt = ap lower (sym (h .is-natural _ _ inr $ₚ (_ , _ , e)))
       in subst₂ (y .Edge) ps pt e'
 
     ir : is-right-inverse from (graph→presheaf .F₁)
@@ -294,8 +335,8 @@ equivalent as this category is self-dual.
       true x          → refl
       false (s , t , e) →
         let
-          ps = ap lower (h .is-natural false true false $ₚ (s , t , e))
-          pt = ap lower (h .is-natural false true true $ₚ (s , t , e))
+          ps = ap lower (h .is-natural _ _ inl $ₚ (s , t , e))
+          pt = ap lower (h .is-natural _ _ inr $ₚ (s , t , e))
           s' , t' , e' = h .η false (_ , _ , e)
         in Σ-pathp ps (Σ-pathp pt λ i → coe1→i (λ j → y .Edge (ps j) (pt j)) i e')
 
@@ -310,7 +351,7 @@ private module _ {ℓ : Level} where
 
     g : Graph ℓ ℓ
     g .Node = ⌞ F · true ⌟
-    g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ false e ≡ s × F.₁ true e ≡ d
+    g .Edge s d = Σ[ e ∈ ∣ F.₀ false ∣ ]  F.₁ inl e ≡ s × F.₁ inr e ≡ d
     g .Node-set = hlevel 2
     g .Edge-set = hlevel 2
 
@@ -328,13 +369,12 @@ private module _ {ℓ : Level} where
             (λ _ → refl)
             (λ (_ , _ , s , p , q) i → p i , q i , s
                                      , (λ j → p (i ∧ j)) , (λ j → q (i ∧ j)))))
-          ; true → n-ua (lower
-                        , (is-iso→is-equiv (iso lift (λ _ → refl) (λ _ → refl))))
+          ; true → n-ua (lower , is-iso→is-equiv (iso lift (λ _ → refl) (λ _ → refl)))
           })
-      λ { {false} {false} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {false} · _))
-        ; {false} {true} false → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym p)
-        ; {false} {true} true → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym q)
-        ; {true} {true} e → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {true} · _)) }
+      λ { {false} {false} idh → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {false} · _))
+        ; {false} {true}  inl → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym p)
+        ; {false} {true}  inr → ua→ λ (_ , _ , s , p , q) → path→ua-pathp _ (sym q)
+        ; {true}  {true}  idh → ua→ λ _ → path→ua-pathp _ (sym (F .F-id {true} · _)) }
     F₀-iso .linv G = let
       eqv : Lift ℓ ⌞ G ⌟ ≃ ⌞ G ⌟
       eqv = Lift-≃

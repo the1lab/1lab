@@ -11,7 +11,7 @@ open import Data.Sum
 module Cat.Instances.Graphs.Box where
 ```
 
-# The box product of graphs
+# The box product of graphs {defines="box-product"}
 
 The **box product** of two [[graphs]] $G$ and $H$ is the graph with node
 [[set]] $G \times H$, and, provided that there are edges $x_0 \to x_1$
