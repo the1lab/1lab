@@ -311,4 +311,9 @@ Bool-automorphisms .snd = is-iso→is-equiv record
   ; linv = λ e → Σ-pathp (funext (named-classify e))
     (is-prop→pathp (λ _ → is-equiv-is-prop _) _ _)
   }
+
+Bool-equiv-elim : ∀ {ℓ} (P : Bool ≃ Bool → Type ℓ) → P id≃ → P not≃ → ∀ e → P e
+Bool-equiv-elim P pid pnot e with inspect (e .fst true)
+... | true  , p = subst P (ext λ x → sym (bool-equiv-id  e true x p))  pid
+... | false , p = subst P (ext λ x → sym (bool-equiv-not e true x p)) pnot
 ```

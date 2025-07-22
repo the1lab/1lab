@@ -43,18 +43,13 @@ is-coequaliser→is-colimit {e} F {coequ} is-coeq =
     mc : make-is-colimit F e
     mc .ψ true = coequ
     mc .ψ false = coequ ∘ forkl F
-    mc .commutes {true} {true} tt = elimr (F .F-id)
-    mc .commutes {false} {true} true = sym (is-coeq .coequal)
-    mc .commutes {false} {true} false = refl
-    mc .commutes {false} {false} tt = elimr (F .F-id)
-    mc .universal eta p =
-      is-coeq.universal (p {false} {true} false ∙ sym (p {false} {true} true))
-    mc .factors {true} eta p =
-      is-coeq.factors
-    mc .factors {false} eta p =
-      pulll is-coeq.factors ∙ p {false} {true} false
-    mc .unique eta p other q =
-      is-coeq.unique (q true)
+    mc .commutes idh = elimr (F .F-id)
+    mc .commutes inr = sym (is-coeq .coequal)
+    mc .commutes inl = refl
+    mc .universal eta p = is-coeq.universal (p inl ∙ sym (p inr))
+    mc .factors {true}  eta p = is-coeq.factors
+    mc .factors {false} eta p = pulll is-coeq.factors ∙ p inl
+    mc .unique eta p other q = is-coeq.unique (q true)
 
 is-colimit→is-coequaliser
   : ∀ (F : Functor ·⇉· C) {K : Functor ⊤Cat C}
@@ -75,24 +70,20 @@ is-colimit→is-coequaliser F {K} {eta} colim = co where
     → e' ∘ forkl F ≡ e' ∘ forkr F
     → ∀ i j → (h : ·⇉· .Precategory.Hom i j)
     → parallel e' j ∘ F .F₁ {i} {j} h ≡ parallel e' i
-  parallel-commutes p true true tt = elimr (F .F-id)
-  parallel-commutes p false true true = sym p
-  parallel-commutes p false true false = refl
-  parallel-commutes p false false tt = elimr (F .F-id)
+  parallel-commutes p _ _ idh = elimr (F .F-id)
+  parallel-commutes p _ _ inr = sym p
+  parallel-commutes p _ _ inl = refl
 
   co : is-coequaliser C (forkl F) (forkr F) (eta .η true)
-  co .coequal =
-    eta .is-natural false true false ∙ sym (eta .is-natural false true true)
+  co .coequal = eta .is-natural _ _ inl ∙ sym (eta .is-natural _ _ inr)
   co .universal {e' = e'} p =
     colim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   co .factors = colim.factors {j = true} _ _
-  co .unique {p = p} {colim = other} q =
-    colim.unique _ _ _ λ where
-      true → q
-      false →
-        ap (other ∘_) (introl (K .F-id) ∙ sym (eta .is-natural false true true))
-        ∙∙ pulll q
-        ∙∙ sym p
+  co .unique {p = p} {colim = other} q = colim.unique _ _ _ λ where
+    true → q
+    false → ap (other ∘_) (introl (K .F-id) ∙ sym (eta .is-natural _ _ inr))
+         ∙∙ pulll q
+         ∙∙ sym p
 
 Coequaliser→Colimit : ∀ {F : Functor ·⇉· C} → Coequaliser C (forkl F) (forkr F) → Colimit F
 Coequaliser→Colimit {F = F} coeq = to-colimit (is-coequaliser→is-colimit F (has-is-coeq coeq))
