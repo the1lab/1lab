@@ -1,15 +1,22 @@
 <!--
 ```agda
+open import Algebra.Group.Instances.Integers
+open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab.Hom
 open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Naturality
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Monoidal.Base
+open import Cat.Bi.Base
 open import Cat.Prelude
+
+open import Data.Int.Base
 
 import Cat.Functor.Bifunctor as Bifunctor
 ```
@@ -315,12 +322,12 @@ an equivalence requires appealing to an induction principle of
 
 module _ {ℓ} {A B C : Abelian-group ℓ} where instance
   Extensional-tensor-hom
-    : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Ab.Hom (A ⊗ B) C) ℓr
+    : ∀ {ℓr} ⦃ ef : Extensional (Ab.Hom A Ab[ B , C ]) ℓr ⦄ → Extensional (Ab.Hom (A ⊗ B) C) ℓr
   Extensional-tensor-hom ⦃ ef ⦄ =
     injection→extensional!
-      {f = λ f x y → f .fst (x , y)}
-      (λ {x} p → Hom≃Bilinear.injective _ _ _ (ext (subst (ef .Pathᵉ _) p (ef .reflᵉ _))))
-      auto
+      {f = λ h → curry-bilinear _ _ _ (Hom≃Bilinear.to _ _ _ h)}
+      (λ {x} p → Hom≃Bilinear.injective _ _ _ (Equiv.injective (_ , curry-bilinear-is-equiv _ _ _) p))
+      ef
   {-# OVERLAPS Extensional-tensor-hom #-}
 ```
 -->
@@ -365,4 +372,60 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
   nat f g h = ext λ _ _ → refl
+
+open make-natural-iso
+open Bilinear
+
+assc : Associator-for {O = ⊤} (λ _ _ → Ab ℓ) Ab-tensor-functor
+assc = to-natural-iso mk where
+  mk : make-natural-iso _ _
+  mk .eta (G , H , I) = R-adjunct (Tensor⊣Hom _) $ from-bilinear-map _ _ _ λ where
+    .map g h → ∫hom (λ i → g , (h , i))
+      record { pres-⋆ = λ x y → ap₂ Tensor._,_ refl t-pres-*r ∙ t-pres-*r }
+    .pres-*l x y z → ext λ i → t-pres-*l ∙ refl
+    .pres-*r x y z → ext λ i → ap₂ Tensor._,_ refl t-pres-*l ∙ t-pres-*r
+
+  mk .inv (G , H , I) = R-adjunct (Tensor⊣Hom _) record where
+    fst g = from-bilinear-map _ _ _ λ where
+      .map h i → (g , h) , i
+      .pres-*l x y z → ap₂ Tensor._,_ t-pres-*r refl ∙ t-pres-*l
+      .pres-*r x y z → t-pres-*r
+    snd = record { pres-⋆ = λ x y → ext λ h i → ap₂ Tensor._,_ t-pres-*l refl ∙ t-pres-*l }
+
+  mk .eta∘inv _     = ext λ _ _ _ → refl
+  mk .inv∘eta _     = ext λ _ _ _ → refl
+  mk .natural x y f = ext λ _ _ _ → refl
+
+open Monoidal-category
+
+Ab-monoidal : Monoidal-category (Ab ℓ)
+Ab-monoidal .-⊗-  = Ab-tensor-functor
+Ab-monoidal .Unit = Lift-ab _ ℤ-ab
+
+Ab-monoidal .unitor-l = to-natural-iso λ where
+  .eta G → ∫hom (λ x → 1 , x) record { pres-⋆ = λ x y → t-pres-*r }
+  .inv G → R-adjunct (Tensor⊣Hom G)
+    let
+      h : Groups.Hom (Lift-group _ ℤ) (Abelian→Group Ab[ G , G ])
+      h = (pow-hom (Abelian→Group Ab[ G , G ]) Ab.id)
+    in ∫hom (h .fst) record { is-group-hom (h .snd) }
+
+  .eta∘inv G     → ext λ _ → refl
+  .inv∘eta G     → ext λ _ → refl
+  .natural x y f → ext λ _ → refl
+
+Ab-monoidal .unitor-r = to-natural-iso λ where
+  .eta G → ∫hom (λ x → x , 1) record { pres-⋆ = λ x y → t-pres-*l }
+  .inv G → R-adjunct (Tensor⊣Hom (Lift-ab _ ℤ-ab)) record where
+    fst g = ∫hom (λ a → pow (Abelian→Group G) g (a .lower)) record
+      { pres-⋆ = λ x y → pow-+ (Abelian→Group G) g (x .lower) (y .lower) }
+    snd = record { pres-⋆ = λ x y → ext refl }
+
+  .eta∘inv G     → ext λ _ → refl
+  .inv∘eta G     → ext λ _ → refl
+  .natural x y f → ext λ _ → refl
+
+Ab-monoidal .associator = assc
+Ab-monoidal .triangle = ext λ _ _     → refl
+Ab-monoidal .pentagon = ext λ _ _ _ _ → refl
 ```

@@ -196,6 +196,19 @@ Grp→Ab→Grp G c = Σ-pathp refl go where
 
 open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-is-abelian-group ; to-abelian-group-on ; to-ab) public
 
+Lift-ab : ∀ ℓ' → ⌞ Ab ℓ ⌟ → ⌞ Ab (ℓ ⊔ ℓ') ⌟
+Lift-ab ℓ' G .fst = el! (Lift ℓ' ⌞ G ⌟)
+Lift-ab ℓ' G .snd = to-abelian-group-on record where
+  module G = Abelian-group-on (G .snd)
+  ab-is-set = hlevel 2
+  mul (lift x) (lift y) = lift (x G.* y)
+  inv (lift x) = lift (G._⁻¹ x)
+  1g = lift G.1g
+  idl x       = ap lift G.idl
+  assoc x y z = ap lift G.associative
+  invl x      = ap lift G.inversel
+  comm x y    = ap lift G.commutes
+
 open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
