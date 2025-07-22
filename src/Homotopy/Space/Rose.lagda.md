@@ -60,7 +60,7 @@ by the list of petals we have taken, subject to the relation that
 walking backwards and then forwards along the same petal does not
 contribute anything to the list. This is a combinatorial description of
 the [[free group]] on a discrete type, and indeed the purpose of this
-section is to show that $\Omega (\bigvee_A S^1) = F(A)$.
+section is to show that $\Loop (\bigvee_A S^1) = F(A)$.
 
 <!--
 ```agda

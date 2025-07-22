@@ -434,7 +434,7 @@ equivalence is a proposition, if we want to show $\rm{winding}_x$ is an
 equivalence for arbitrary $x$, it suffices to do so for
 $\rm{winding}_{\rm{base}} = \rm{encode}$; but we've already shown
 _that's_ an equivalence! A similar remark allows us to conclude that
-$\rm{winding}_x$ is a group homomorphism $\Omega (\B G, x) \to G$.
+$\rm{winding}_x$ is a group homomorphism $\Loop (\B G, x) \to G$.
 
 ```agda
   opaque

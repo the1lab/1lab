@@ -76,7 +76,7 @@ case $\mu(-,a_0)$ is the identity.
 
 Using either unit law (we choose $\lambda$), we can show that $\mu$
 extends to a secondary 'composition' operation on the [[loop space]]
-$\Omega A$. This operation is also unital on both the left and the
+$\Loop A$. This operation is also unital on both the left and the
 right, with the side we *didn't* choose having a slightly more
 complicated argument that involves the coherence $\lambda_{a_0} =
 \rho_{a_0}$.
@@ -98,7 +98,7 @@ complicated argument that involves the coherence $\lambda_{a_0} =
 Moreover, this new operation satisfies an 'interchange' law, in that it
 preserves path composition in both variables. By an incoherent version
 of the [[Eckmann-Hilton argument]], this means that composition of loops
-in $\Omega A$ is commutative. This implies that the only connected
+in $\Loop A$ is commutative. This implies that the only connected
 [[groupoids]] with H-space structures are the [[deloopings]] of
 [[abelian groups]].
 

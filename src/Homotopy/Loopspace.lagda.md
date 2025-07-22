@@ -21,8 +21,8 @@ private variable
 # Loop spaces {defines="loop-space"}
 
 Given a [[pointed type]] $A$ (with basepoint $a_0$), we refer to the
-type $a_0 \is a_0$ as the **loop space of $A$**, and write it $\Omega
-A$. Since we always have $\refl_{a_0} : \Omega A$, this type is
+type $a_0 \is a_0$ as the **loop space of $A$**, and write it $\Loop
+A$. Since we always have $\refl_{a_0} : \Loop A$, this type is
 itself naturally pointed.
 
 ```agda
@@ -30,17 +30,17 @@ itself naturally pointed.
 Ω¹ (A , a₀) = Path A a₀ a₀ , refl
 ```
 
-If $(f, p) : A \to_* B$ is a [[pointed map]] and $\alpha : \Omega A$,
+If $(f, p) : A \to_* B$ is a [[pointed map]] and $\alpha : \Loop A$,
 then we have $\ap{f}{\alpha} : f(a_0) \is f(a_0)$, which, while a loop
-in the type underlying $B$, does not belong to $\Omega B$. However,
-[[conjugation]] by $p$ is an equivalence from $\Omega (B, f(a_0))$ to
-$\Omega B$, so that $p\inv \cdot \ap{f}{\alpha} \cdot p$ lands in the
+in the type underlying $B$, does not belong to $\Loop B$. However,
+[[conjugation]] by $p$ is an equivalence from $\Loop (B, f(a_0))$ to
+$\Loop B$, so that $p\inv \cdot \ap{f}{\alpha} \cdot p$ lands in the
 right type. Since we have $p\inv \cdot \refl \cdot p \is \refl$, we see
 that
 $$\alpha \mapsto p\inv \cdot \ap{f}{\alpha} \cdot p$$
-is itself a pointed map $\Omega A \to_* \Omega B$. Conjugating by $p$,
+is itself a pointed map $\Loop A \to_* \Loop B$. Conjugating by $p$,
 while necessary, introduces some complications in showing that this
-makes $\Omega(-)$ into a functor --- if we could "get away with" only
+makes $\Loop(-)$ into a functor --- if we could "get away with" only
 using $\ap{f}(-)$, then this would be definitional.
 
 Moreover, it initially looks as though we will have to identify the
@@ -59,7 +59,7 @@ However, path (and thus loop) spaces are [[*homogeneous*]], so we can
 obtain pointed homotopies from unpointed ones. This doesn't prevent us
 from having to do path algebra with conjugation, but it does mean we
 don't accumulate coherences on our coherences. We can thus show without
-much pain that $\Omega(-)$ preserves identities, composition, and the
+much pain that $\Loop(-)$ preserves identities, composition, and the
 zero map.
 
 ```agda
@@ -101,7 +101,7 @@ zero map.
 
 In passing, we note that since $\ap{e}(-)$ of a (pointed) equivalence is
 itself an equivalence, and so is conjugation, the functorial action of
-$\Omega(-)$ defined above carries equivalences to equivalences.
+$\Loop(-)$ defined above carries equivalences to equivalences.
 
 ```agda
 opaque
@@ -128,7 +128,7 @@ opaque
 ```
 -->
 
-Finally, since both conjugation and $\ap{f}(-)$ do so, $\Omega(f)$
+Finally, since both conjugation and $\ap{f}(-)$ do so, $\Loop(f)$
 preserves path composition.
 
 ```agda
@@ -146,10 +146,10 @@ opaque
 
 ## Higher loop spaces {defines="higher-loop-space"}
 
-Since $\Omega$ is an endofunctor of pointed types, it can be iterated,
-producing the **higher loop spaces** $\Omega^n A$ of $A$, with the
-convention that $\Omega^0 A$ is simply $A$. We can also equip
-$\Omega^n(-)$ with a functorial action by iterating that of $\Omega(-)$.
+Since $\Loop$ is an endofunctor of pointed types, it can be iterated,
+producing the **higher loop spaces** $\Loop^n A$ of $A$, with the
+convention that $\Loop^0 A$ is simply $A$. We can also equip
+$\Loop^n(-)$ with a functorial action by iterating that of $\Loop(-)$.
 
 ```agda
 Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
@@ -165,7 +165,7 @@ $\Omega^n(-)$ with a functorial action by iterating that of $\Omega(-)$.
 <summary>
 
 To show that this is a pointed functorial action preserving path
-composition, we simply iterate the proofs that $\Omega(-)$ is
+composition, we simply iterate the proofs that $\Loop(-)$ is
 functorial. This gives us the following battery of lemmas:
 
 ```agda
@@ -230,20 +230,20 @@ opaque
 
 Note that, unlike the HoTT book [-@HoTT], we have defined iterated loop
 spaces so that they satisfy the recurrence
-$$\Omega^{1 + n}(A) = \Omega \Omega^n(A)$$,
+$$\Loop^{1 + n}(A) = \Loop \Loop^n(A)$$,
 rather than
-$$\Omega^{1 + n}(A) = \Omega^n \Omega(A)$$. This has the benefit of
-definitionally "exposing" that $\Omega^{k + n}(A)$ is a $k$-fold
+$$\Loop^{1 + n}(A) = \Loop^n \Loop(A)$$. This has the benefit of
+definitionally "exposing" that $\Loop^{k + n}(A)$ is a $k$-fold
 iterated path type as soon as $k$ is a literal number, but it does
-significantly complicate showing that the lifting $\Omega^{1 + n}(f)$
-agrees with $\Omega^n(\Omega f)$--- they don't even live in the same
+significantly complicate showing that the lifting $\Loop^{1 + n}(f)$
+agrees with $\Loop^n(\Loop f)$--- they don't even live in the same
 type--- and this identification turns out to be a key component in
 Whitehead's lemma.
 
-We can, however, recursively identify $\Omega^{1+n}(A)$ with
-$\Omega^n(\Omega A)$, and this identification naturally generates a
+We can, however, recursively identify $\Loop^{1+n}(A)$ with
+$\Loop^n(\Loop A)$, and this identification naturally generates a
 pointed equivalence. If desired, we could define the "book" version of
-$\Omega^n$ and use this identification to prove that it agrees with
+$\Loop^n$ and use this identification to prove that it agrees with
 ours.
 
 ```agda
@@ -256,8 +256,8 @@ ours.
 ```
 
 Over this identification (on both the domain and codomain) we can then,
-and once again recursively, identify $\Omega^{1 + n}(f)$ with
-$\Omega^n(\Omega f)$.
+and once again recursively, identify $\Loop^{1 + n}(f)$ with
+$\Loop^n(\Loop f)$.
 
 ```agda
 Ω-suc-naturalP

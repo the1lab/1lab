@@ -23,7 +23,7 @@ module Homotopy.Space.Suspension.Freudenthal where
 # Freudenthal suspension theorem {defines="freudenthal-suspension-theorem"}
 
 Recall that, if $A$ is a [[pointed type]][^point], the unit of the
-[[suspension–loop space adjunction]] is a map $\sigma : A \to \Omega
+[[suspension–loop space adjunction]] is a map $\sigma : A \to \Loop
 \Susp A$, denoted `suspend`{.Agda} in code. If we're considering $A$
 based at some other point $x : A$, we will write $\sigma_x$ instead.
 
@@ -35,9 +35,9 @@ based at some other point $x : A$, we will write $\sigma_x$ instead.
 The **Freudenthal suspension theorem** gives a bound on the failure of
 this map to be an isomorphism. Precisely, it says that if $A$ is
 $n$-[[connected]] with $n \ge 2$ then the suspension map $\sigma : A \to
-\Omega \Susp A$ is $2(n - 1)$-connected. As a corollary, it induces an
+\Loop \Susp A$ is $2(n - 1)$-connected. As a corollary, it induces an
 [[equivalence]] of $2(n - 1)$-[[truncations]]
-$$\| A \|_{2(n - 1)} \simeq \| \Omega \Susp A \|_{2(n - 1)}$$.
+$$\| A \|_{2(n - 1)} \simeq \| \Loop \Susp A \|_{2(n - 1)}$$.
 
 <!--
 ```agda

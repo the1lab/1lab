@@ -442,7 +442,7 @@ instance
 
 Above, we established that truncations of paths are paths in
 truncations; this extends to a [[pointed equivalence]] between the
-$n$-truncation of the [[loop space]] $\Omega A$ and the loop space of
+$n$-truncation of the [[loop space]] $\Loop A$ and the loop space of
 the $(1+n)$-truncation of $A$.
 
 <!--
@@ -479,7 +479,7 @@ opaque
 -->
 
 We can iterate this to show that the $n$-truncation of the $k$-fold loop
-space $\| \Omega^k A \|_n$ is the $k$-fold loop space of the $(k +
+space $\| \Loop^k A \|_n$ is the $k$-fold loop space of the $(k +
 n)$-truncation of $A$.
 
 ```agda
