@@ -95,7 +95,7 @@ group homomorphisms from $G$ to $H$) turns out to be equivalent to the
 This is a special case of a theorem that relates this set truncation with the set
 of orbits of the action of the *inner automorphism group* of $H$ on the set of group
 homomorphisms $\B{G} \to^\bullet \B{H}$. We do not prove this here, but see
-[@Symmetry, theorem 5.12.2]. In the special case that $H$ is abelian, its inner
+[@Symmetry, theorem 8.10.2]. In the special case that $H$ is abelian, its inner
 automorphism group is trivial, and we can avoid quotienting.
 
 In even fancier language, it is also a computation of the first *cohomology group*
