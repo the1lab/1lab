@@ -214,7 +214,7 @@ degree : ∀ n → (⌞ Sⁿ (suc n) ⌟ → ⌞ Sⁿ (suc n) ⌟) → Int
 degree n f = ∥-∥₀-rec (hlevel 2) (degree∙ n)
   (Equiv.from (Sⁿ-pointed≃unpointed n) (inc f))
 
-degree∙≡degree : ∀ n f∙ → degree n (f∙ .fst) ≡ degree∙ n f∙
-degree∙≡degree n f∙ = ap (∥-∥₀-rec _ _)
+degree≡degree∙ : ∀ n f∙ → degree n (f∙ .fst) ≡ degree∙ n f∙
+degree≡degree∙ n f∙ = ap (∥-∥₀-rec _ _)
   (Equiv.η (Sⁿ-pointed≃unpointed n) (inc f∙))
 ```

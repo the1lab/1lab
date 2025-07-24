@@ -110,4 +110,7 @@ constantly `refl`{.Agda}.
 ```agda
 always-loop : (x : S¹) → x ≡ x
 always-loop = S¹-elim loop (double-connection loop loop)
+
+never-refl : (x : S¹) → always-loop x ≠ refl
+never-refl = S¹-elim (refl≠loop ∘ sym) prop!
 ```

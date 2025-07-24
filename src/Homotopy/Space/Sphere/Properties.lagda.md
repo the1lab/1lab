@@ -88,6 +88,38 @@ private opaque
 ```
 -->
 
+Note that the [[Hopf fibration]] defined for an arbitrary [[H-space]]
+specialises in this case to the classical Hopf fibration over $S^2$,
+with fibre $S^1$ and total space $S^3$. We prove that the Hopf fibration
+does not have a section.
+
+```agda
+Hopf-nontrivial : ¬ ∀ x → Hopf x
+Hopf-nontrivial s = never-refl _ loop≡refl where
+```
+
+First, observe what happens when we `ap`{.Agda}ply a section $s :
+(x : S^2) \to \mathrm{Hopf}(x)$ to the meridian $N \is S$ passing through
+$y : S^1$: we get a dependent path connecting $s(N)$ to $s(S)$ over the
+automorphism of the circle given by `multiplication`{.Agda ident=mulS¹}
+with $y$, i.e. an identification $\mu(y, s(N)) \is s(S)$ in $S^1$.
+
+```agda
+  f : (y : S¹) → mulS¹ y (s north) ≡ s south
+  f y = mulS¹-comm y _ ∙ ua-pathp→path _ (ap s (merid y))
+```
+
+In turn, applying this function $f$ to the `loop`{.Agda} in $S^1$
+yields, after cancelling out $f(\rm{base})$, an equality
+$\rm{loop}_{s(N)} \is \rm{refl}_{s(N)}$, which is impossible as these
+have different winding numbers.
+
+```agda
+  loop≡refl : always-loop (s north) ≡ refl
+  loop≡refl = sym (square→conj (transpose (flip₂ (ap f loop))))
+            ∙ conj-of-refl _
+```
+
 ## Stability for spheres {defines="stability-for-spheres"}
 
 Applying the unit of the [[suspension–loop space adjunction]] $\sigma :
