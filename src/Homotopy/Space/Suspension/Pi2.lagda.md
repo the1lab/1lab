@@ -28,7 +28,7 @@ open ConcreteGroup
 module Homotopy.Space.Suspension.Pi2 {ℓ} (grp : ConcreteGroup ℓ) (hg : HSpace (grp .B)) where
 ```
 
-# π₂ of a suspension
+# π₂ of a suspension {defines="hopf-fibration"}
 
 <!--
 ```agda
@@ -65,7 +65,8 @@ fibre of `Hopf`{.Agda} over $x$.
 As the name implies, the `Hopf`{.Agda} type family is the synthetic
 equivalent of the classic Hopf fibration, though here we have evidently
 generalised it beyond a map $S^3 \to S^1$. [Below] we prove that the
-total space of the `Hopf`{.Agda} is the [[join|join of types]] $G * G$.
+total space of the `Hopf`{.Agda} fibration is the [[join|join of types]]
+$G * G$.
 
 [Below]: #the-hopf-fibration
 
