@@ -100,7 +100,7 @@ record Prebicategory o ℓ ℓ' : Type (lsuc (o ⊔ ℓ ⊔ ℓ')) where
     Ob  : Type o
     Hom : Ob → Ob → Precategory ℓ ℓ'
 
-  module Hom {A} {B} = Cr (Hom A B)
+  module Hom {A} {B} = Precategory (Hom A B)
 ```
 
 Zooming out to consider the whole bicategory, we see that each object
@@ -115,7 +115,7 @@ sets for maps of precategories, i.e., functors.
     id      : ∀ {A} → ⌞ Hom A A ⌟
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
-  module compose {a} {b} {c} = Fr (compose {a} {b} {c})
+  module compose {a} {b} {c} = Functor (compose {a} {b} {c})
 ```
 
 Before moving on to the isomorphisms witnessing identity and
@@ -337,7 +337,7 @@ Cat o ℓ = pb where
 ```agda
   assoc : Associator-for Cat[_,_] F∘-functor
   assoc {D = D} = to-natural-iso ni where
-    module D = Cr D
+    module D = Cr D using (id ; idl ; id-comm-sym ; idr ; pushl ; introl)
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
@@ -372,7 +372,7 @@ directly:
 
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where
-    module B = Cr B
+    module B = Cr B using (id ; _∘_ ; idl ; idr ; id-comm-sym)
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
@@ -382,7 +382,7 @@ directly:
       ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
 
   pb .unitor-l {B = B} = to-natural-iso ni where
-    module B = Cr B
+    module B = Cr B using (id ; idl ; idr ; id-comm ; id-comm-sym)
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
@@ -396,7 +396,7 @@ directly:
   pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
     (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ∙∙ ap (f .F₁) (g .F-id) ∙∙ f .F-id))
     (E.elimr (E.eliml (f .F-id)))
-    where module E = Cr E
+    where module E = Cr E using (_∘_ ; eliml ; elimr)
 ```
 
 # Lax functors {defines="lax-functor"}
@@ -444,7 +444,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 <!--
 ```agda
-  module P₁ {A} {B} = Fr (P₁ {A} {B})
+  module P₁ {A} {B} = Functor (P₁ {A} {B})
 
   ₀ : B.Ob → C.Ob
   ₀ = P₀
@@ -524,9 +524,9 @@ record
 
   field
     unitor-inv
-      : ∀ {a} → C.Hom.is-invertible (unitor {a})
+      : ∀ {a} → Cr.is-invertible (C.Hom _ _) (unitor {a})
     compositor-inv
-      : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → C.Hom.is-invertible (γ→ f g)
+      : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (γ→ f g)
 
   γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
     → ₁ (f B.⊗ g) C.⇒ ₁ f C.⊗ ₁ g
@@ -625,7 +625,7 @@ A lax transformation with invertible naturator is called a
     open Lax-transfor lax public
 
     field
-      naturator-inv : ∀ {a b} (f : a B.↦ b) → C.Hom.is-invertible (ν→ f)
+      naturator-inv : ∀ {a b} (f : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (ν→ f)
 
     ν← : ∀ {a b} (f : a B.↦ b) → σ b C.⊗ F.₁ f C.⇒ G.₁ f C.⊗ σ a
     ν← f = naturator-inv f .Cr.is-invertible.inv
