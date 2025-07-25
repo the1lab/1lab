@@ -26,6 +26,7 @@ open import Homotopy.Truncation
 open import Homotopy.Loopspace
 open import Homotopy.HSpace
 open import Homotopy.Base
+open import Homotopy.Join
 
 import Cat.Reasoning
 
@@ -52,7 +53,7 @@ opaque
   π₂S²≅ℤ : πₙ₊₁ 1 (Sⁿ 2) Groups.≅ ℤ
   π₂S²≅ℤ = π₁S¹≅ℤ
     Groups.∘Iso π₂ΣG≅ΩG
-    Groups.∘Iso πₙ₊₁-ap 1 (Susp-ap SuspS⁰≃∙S¹)
+    Groups.∘Iso πₙ₊₁-ap 1 (Susp-ap∙ SuspS⁰≃∙S¹)
 ```
 
 The inverse to this equivalence, turning integers into 2-loops on the
@@ -118,6 +119,37 @@ have different winding numbers.
   loop≡refl : always-loop (s north) ≡ refl
   loop≡refl = sym (square→conj (transpose (flip₂ (ap f loop))))
             ∙ conj-of-refl _
+```
+
+We can also characterise more precisely the total space of the Hopf
+fibration, $S^1 \join S^1$. Recall the equivalence $S^0 \join A \simeq
+\Susp A$ between the [[join|join of types]] with a two-element type and the
+[[suspension]]. Iterating this and remembering that the join of types
+is associative, we find that $S^n$ is equivalent to the join of $n+1$
+copies of $S^0$; hence, that $S^n \join S^m$ is equivalent to $S^{n+m+1}$.
+
+```agda
+join-of-spheres : ∀ {n m} → ⌞ Sⁿ n ⌟ ∗ ⌞ Sⁿ m ⌟ ≃ ⌞ Sⁿ (1 + n + m) ⌟
+join-of-spheres {zero} {m} =
+  ⌞ Sⁿ 0 ⌟ ∗ ⌞ Sⁿ m ⌟ ≃⟨ join-ap SuspS⁻¹≃S⁰ id≃ ⟩
+  S⁰ ∗ ⌞ Sⁿ m ⌟       ≃⟨ 2∗≡Susp ⟩
+  ⌞ Sⁿ (1 + m) ⌟      ≃∎
+join-of-spheres {suc n} {m} =
+  ⌞ Sⁿ (suc n) ⌟ ∗ ⌞ Sⁿ m ⌟  ≃˘⟨ join-ap 2∗≡Susp id≃ ⟩
+  (S⁰ ∗ ⌞ Sⁿ n ⌟) ∗ ⌞ Sⁿ m ⌟ ≃⟨ join-associative ⟩
+  S⁰ ∗ (⌞ Sⁿ n ⌟ ∗ ⌞ Sⁿ m ⌟) ≃⟨ join-ap id≃ (join-of-spheres {n} {m}) ⟩
+  S⁰ ∗ ⌞ Sⁿ (1 + n + m) ⌟    ≃⟨ 2∗≡Susp ⟩
+  ⌞ Sⁿ (2 + n + m) ⌟         ≃∎
+```
+
+We conclude that the total space of the Hopf fibration is $S^3$.
+
+```agda
+S¹∗S¹≃S³ : S¹ ∗ S¹ ≃ ⌞ Sⁿ 3 ⌟
+S¹∗S¹≃S³ = join-ap SuspS⁰≃S¹ SuspS⁰≃S¹ e⁻¹ ∙e join-of-spheres
+
+∫Hopf≃S³ : Σ _ Hopf ≃ ⌞ Sⁿ 3 ⌟
+∫Hopf≃S³ = ∫Hopf≃join ∙e S¹∗S¹≃S³
 ```
 
 ## Stability for spheres {defines="stability-for-spheres"}

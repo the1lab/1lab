@@ -135,12 +135,15 @@ Susp-Maps∙ : Maps∙ A∙ B∙ →∙ Maps∙ (Σ¹ A∙) (Σ¹ B∙)
 Susp-Maps∙ .fst = Susp-map∙
 Susp-Maps∙ {A∙ = A∙} {B∙ = B∙} .snd = Susp-map∙-zero {A∙ = A∙} {B∙ = B∙}
 
-Susp-ap : A∙ ≃∙ B∙ → Σ¹ A∙ ≃∙ Σ¹ B∙
-Susp-ap (e , pt) .fst .fst = Susp-map (e .fst)
-Susp-ap (e , pt) .fst .snd = is-iso→is-equiv λ where
+Susp-ap : A ≃ B → Susp A ≃ Susp B
+Susp-ap e .fst = Susp-map (e .fst)
+Susp-ap e .snd = is-iso→is-equiv λ where
   .is-iso.from → Susp-elim _ north south (λ x → merid (Equiv.from e x))
-  .is-iso.rinv → Susp-elim _ refl refl λ x i j → merid (Equiv.ε e x j) i
-  .is-iso.linv → Susp-elim _ refl refl λ x i j → merid (Equiv.η e x j) i
-Susp-ap (e , pt) .snd = refl
+  .is-iso.rinv → Susp-elim _ refl refl (λ x i j → merid (Equiv.ε e x j) i)
+  .is-iso.linv → Susp-elim _ refl refl (λ x i j → merid (Equiv.η e x j) i)
+
+Susp-ap∙ : A∙ ≃∙ B∙ → Σ¹ A∙ ≃∙ Σ¹ B∙
+Susp-ap∙ (e , pt) .fst = Susp-ap e
+Susp-ap∙ (e , pt) .snd = refl
 ```
 -->

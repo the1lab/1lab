@@ -16,7 +16,7 @@ open is-iso
 module Data.Bool where
 ```
 
-# The booleans
+# The booleans {defines="boolean"}
 
 ```agda
 open import Data.Bool.Base public
