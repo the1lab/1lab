@@ -130,29 +130,33 @@ The join operation is also commutative; luckily, this is much more
 straightforward.
 
 ```agda
+join-swap : X ∗ Y → Y ∗ X
+join-swap (inl x) = inr x
+join-swap (inr x) = inl x
+join-swap (join a b i) = join b a (~ i)
+
 join-commutative : X ∗ Y ≃ Y ∗ X
-join-commutative .fst = Pushout-elim inr inl (λ (x , y) → sym (join y x))
-join-commutative .snd = is-iso→is-equiv λ where
-  .is-iso.from → Pushout-elim inr inl λ (y , x) → sym (join x y)
-  .is-iso.rinv → Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
-  .is-iso.linv → Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
+join-commutative .fst = join-swap
+join-commutative .snd = is-iso→is-equiv record where
+  from = join-swap
+  rinv = Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
+  linv = Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
 ```
 
 <!--
 ```agda
 join-map : (A → B) → (X → Y) → A ∗ X → B ∗ Y
-join-map f g = Pushout-elim (inl ∘ f) (inr ∘ g)
-  λ (a , x) → join (f a) (g x)
+join-map f g (inl x) = inl (f x)
+join-map f g (inr x) = inr (g x)
+join-map f g (join a b i) = join (f a) (g b) i
 
 join-ap : (A ≃ B) → (X ≃ Y) → A ∗ X ≃ B ∗ Y
 join-ap f g .fst = join-map (f .fst) (g .fst)
-join-ap f g .snd = is-iso→is-equiv λ where
-  .is-iso.from → join-map (Equiv.from f) (Equiv.from g)
-  .is-iso.rinv →
-    Pushout-elim (λ b → ap inl (Equiv.ε f b)) (λ y → ap inr (Equiv.ε g y))
+join-ap f g .snd = is-iso→is-equiv record where
+  from = join-map (Equiv.from f) (Equiv.from g)
+  rinv = Pushout-elim (λ b → ap inl (Equiv.ε f b)) (λ y → ap inr (Equiv.ε g y))
       λ (b , y) i j → join (Equiv.ε f b j) (Equiv.ε g y j) i
-  .is-iso.linv →
-    Pushout-elim (λ a → ap inl (Equiv.η f a)) (λ x → ap inr (Equiv.η g x))
+  linv = Pushout-elim (λ a → ap inl (Equiv.η f a)) (λ x → ap inr (Equiv.η g x))
       λ (a , x) i j → join (Equiv.η f a j) (Equiv.η g x j) i
 ```
 -->
@@ -169,21 +173,20 @@ lives in the meridians.
 
 ```agda
 2∗≡Susp : Bool ∗ A ≃ Susp A
-2∗≡Susp .fst = Pushout-elim
-  (if_then north else south)
-  (λ _ → south)
-  λ { (true , a) → merid a
-    ; (false , a) → refl }
-2∗≡Susp .snd = is-iso→is-equiv λ where
-  .is-iso.from → Susp-elim _ (inl true) (inl false)
-    λ a → join true a ∙ sym (join false a)
-  .is-iso.rinv → Susp-elim _ refl refl λ a →
+2∗≡Susp .fst (inl true)  = north
+2∗≡Susp .fst (inl false) = south
+2∗≡Susp .fst (inr x) = south
+2∗≡Susp .fst (join true  a i) = merid a i
+2∗≡Susp .fst (join false _ i) = south
+
+2∗≡Susp .snd = is-iso→is-equiv record where
+  from = Susp-elim _ (inl true) (inl false) λ a → join true a ∙ sym (join false a)
+  rinv = Susp-elim _ refl refl λ a →
     transpose (ap-∙  (2∗≡Susp .fst) (join true a) (sym (join false a)) ∙ ∙-idr _)
-  .is-iso.linv →
-    Pushout-elim
-      (λ { true → refl
-         ; false → refl })
-      (λ a → join false a)
-      λ { (true , a) → transpose (flip₁ (∙-filler _ _))
-        ; (false , a) i j → join false a (i ∧ j) }
+  linv = Pushout-elim
+    (λ { true → refl
+        ; false → refl })
+    (λ a → join false a)
+    λ { (true , a) → transpose (flip₁ (∙-filler _ _))
+      ; (false , a) i j → join false a (i ∧ j) }
 ```
