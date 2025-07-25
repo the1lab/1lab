@@ -106,7 +106,7 @@ module _ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ
       : ∀ {ℓr} ⦃ ef : Extensional (⌞ A ⌟ → ⌞ B ⌟ → ⌞ C ⌟) ℓr ⦄ → Extensional (Bilinear A B C) ℓr
     Extensional-bilinear ⦃ ef ⦄ = injection→extensional! (λ h → Bilinear-path (λ x y → h · x · y)) ef
 
-module _ {ℓ} (A B C : Abelian-group ℓ) where
+module _ {ℓ} {A B C : Abelian-group ℓ} where
 ```
 -->
 
@@ -268,7 +268,7 @@ _definitionally_ a group homomorphism.
 
 <!--
 ```agda
-module _ {ℓ} (A B C : Abelian-group ℓ) where
+module _ {ℓ} {A B C : Abelian-group ℓ} where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -325,8 +325,8 @@ module _ {ℓ} {A B C : Abelian-group ℓ} where instance
     : ∀ {ℓr} ⦃ ef : Extensional (Ab.Hom A Ab[ B , C ]) ℓr ⦄ → Extensional (Ab.Hom (A ⊗ B) C) ℓr
   Extensional-tensor-hom ⦃ ef ⦄ =
     injection→extensional!
-      {f = λ h → curry-bilinear _ _ _ (Hom≃Bilinear.to _ _ _ h)}
-      (λ {x} p → Hom≃Bilinear.injective _ _ _ (Equiv.injective (_ , curry-bilinear-is-equiv _ _ _) p))
+      {f = λ h → curry-bilinear (Hom≃Bilinear.to h)}
+      (λ {x} p → Hom≃Bilinear.injective (Equiv.injective (_ , curry-bilinear-is-equiv) p))
       ef
   {-# OVERLAPS Extensional-tensor-hom #-}
 ```
@@ -352,7 +352,7 @@ action of $\otimes$.
 ```agda
 Ab-tensor-functor : Functor (Ab ℓ ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-tensor-functor .F₀ (A , B) = A ⊗ B
-Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
+Ab-tensor-functor .F₁ (f , g) = from-bilinear-map bilin where
   bilin : Bilinear _ _ _
   bilin .Bilinear.map x y       = f · x , g · y
   bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
@@ -363,59 +363,99 @@ Ab-tensor-functor .F-∘ f g = ext λ _ _ → refl
 Tensor⊣Hom : (A : Abelian-group ℓ) → Bifunctor.Left Ab-tensor-functor A ⊣ Bifunctor.Right Ab-hom-functor A
 Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
   to : ∀ {x y} → Ab.Hom (x ⊗ A) y → Ab.Hom x Ab[ A , y ]
-  to f = curry-bilinear _ _ _ (to-bilinear-map _ _ _ f)
+  to f = curry-bilinear (to-bilinear-map f)
 
   to-eqv : ∀ {x y} → is-equiv (to {x} {y})
-  to-eqv = ∘-is-equiv
-    (curry-bilinear-is-equiv _ _ _)
-    (Hom≃Bilinear _ _ _ .snd)
+  to-eqv = ∘-is-equiv curry-bilinear-is-equiv (Hom≃Bilinear .snd)
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
   nat f g h = ext λ _ _ → refl
+```
 
+<!--
+```agda
+open Monoidal-category
 open make-natural-iso
 open Bilinear
+```
+-->
 
-assc : Associator-for {O = ⊤} (λ _ _ → Ab ℓ) Ab-tensor-functor
-assc = to-natural-iso mk where
-  mk : make-natural-iso _ _
-  mk .eta (G , H , I) = R-adjunct (Tensor⊣Hom _) $ from-bilinear-map _ _ _ λ where
-    .map g h → ∫hom (λ i → g , (h , i))
-      record { pres-⋆ = λ x y → ap₂ Tensor._,_ refl t-pres-*r ∙ t-pres-*r }
-    .pres-*l x y z → ext λ i → t-pres-*l ∙ refl
-    .pres-*r x y z → ext λ i → ap₂ Tensor._,_ refl t-pres-*l ∙ t-pres-*r
+## As a monoidal category
 
-  mk .inv (G , H , I) = R-adjunct (Tensor⊣Hom _) record where
-    fst g = from-bilinear-map _ _ _ λ where
-      .map h i → (g , h) , i
-      .pres-*l x y z → ap₂ Tensor._,_ t-pres-*r refl ∙ t-pres-*l
-      .pres-*r x y z → t-pres-*r
-    snd = record { pres-⋆ = λ x y → ext λ h i → ap₂ Tensor._,_ t-pres-*l refl ∙ t-pres-*l }
+We can construct associators and unitors for the tensor product $A
+\otimes B$ and show that these are coherent, thus making $\Ab$ into a
+[[monoidal category]]. While the construction is *tedious*, it is not
+complicated. We start with the associator, which, componentwise, is
+given by sending the triple $((x, y), z)$ to $(x, (y, z))$. We
+have to show that this is linear in every variable to construct this
+map, but since we're simply mapping back into a tensor product, this is
+by construction.
 
-  mk .eta∘inv _     = ext λ _ _ _ → refl
-  mk .inv∘eta _     = ext λ _ _ _ → refl
-  mk .natural x y f = ext λ _ _ _ → refl
+```agda
+private
+  assc : Associator-for {O = ⊤} (λ _ _ → Ab ℓ) Ab-tensor-functor
+  assc = to-natural-iso mk where
+    mk : make-natural-iso _ _
+    mk .eta (G , H , I) = R-adjunct (Tensor⊣Hom _) $ from-bilinear-map λ where
+      .map g h → ∫hom (λ i → g , (h , i))
+        record { pres-⋆ = λ x y → ap₂ Tensor._,_ refl t-pres-*r ∙ t-pres-*r }
+      .pres-*l x y z → ext λ i → t-pres-*l ∙ refl
+      .pres-*r x y z → ext λ i → ap₂ Tensor._,_ refl t-pres-*l ∙ t-pres-*r
 
-open Monoidal-category
+    mk .inv (G , H , I) = R-adjunct (Tensor⊣Hom _) record where
+      fst g = from-bilinear-map λ where
+        .map h i → (g , h) , i
+        .pres-*l x y z → ap₂ Tensor._,_ t-pres-*r refl ∙ t-pres-*l
+        .pres-*r x y z → t-pres-*r
+      snd = record where
+        pres-⋆ x y = ext λ h i → ap₂ Tensor._,_ t-pres-*l refl ∙ t-pres-*l
+```
 
+In what will become a theme, the proofs that these constructions are
+natural inverses are all by trivial computations.
+
+```agda
+    mk .eta∘inv _     = ext λ _ _ _ → refl
+    mk .inv∘eta _     = ext λ _ _ _ → refl
+    mk .natural x y f = ext λ _ _ _ → refl
+```
+
+Let us now construct the unit, and the unitors. Recall that the [[group
+of integers]] is the free (Abelian) group on one generator, i.e. that we
+have a natural equivalence between elements of $G$ and maps $\bZ \to G$.
+We will take $\bZ$ as the tensor unit. The left unitor sends $x : G$ to
+the pair $(1, x) : \bZ \otimes G$. To construct a map in the other
+direction, observe that it suffices to give a $\bZ \to G^G$, for which
+it suffices to give any $G^G$: the only natural choice is the identity
+map.
+
+```agda
 Ab-monoidal : Monoidal-category (Ab ℓ)
 Ab-monoidal .-⊗-  = Ab-tensor-functor
 Ab-monoidal .Unit = Lift-ab _ ℤ-ab
 
 Ab-monoidal .unitor-l = to-natural-iso λ where
   .eta G → ∫hom (λ x → 1 , x) record { pres-⋆ = λ x y → t-pres-*r }
+
   .inv G → R-adjunct (Tensor⊣Hom G)
     let
       h : Groups.Hom (Lift-group _ ℤ) (Abelian→Group Ab[ G , G ])
-      h = (pow-hom (Abelian→Group Ab[ G , G ]) Ab.id)
+      h = pow-hom (Abelian→Group Ab[ G , G ]) Ab.id
     in ∫hom (h .fst) record { is-group-hom (h .snd) }
 
   .eta∘inv G     → ext λ _ → refl
   .inv∘eta G     → ext λ _ → refl
   .natural x y f → ext λ _ → refl
+```
 
+For the other unitor, to give a map $G \otimes \bZ \to G$ it suffices to
+give a map $G \to G^\bZ$, and we choose $(g, n) \mapsto g^n$. Again,
+that these are inverses follows by computation.
+
+```agda
 Ab-monoidal .unitor-r = to-natural-iso λ where
   .eta G → ∫hom (λ x → x , 1) record { pres-⋆ = λ x y → t-pres-*l }
+
   .inv G → R-adjunct (Tensor⊣Hom (Lift-ab _ ℤ-ab)) record where
     fst g = ∫hom (λ a → pow (Abelian→Group G) g (a .lower)) record
       { pres-⋆ = λ x y → pow-+ (Abelian→Group G) g (x .lower) (y .lower) }
@@ -424,7 +464,11 @@ Ab-monoidal .unitor-r = to-natural-iso λ where
   .eta∘inv G     → ext λ _ → refl
   .inv∘eta G     → ext λ _ → refl
   .natural x y f → ext λ _ → refl
+```
 
+Finally, the triangle and pentagon coherences are also trivial computations.
+
+```agda
 Ab-monoidal .associator = assc
 Ab-monoidal .triangle = ext λ _ _     → refl
 Ab-monoidal .pentagon = ext λ _ _ _ _ → refl
