@@ -143,7 +143,8 @@ module _
 
     F'-lim : Limit F'
     F'-lim = functor-limit
-      (λ f → subst Limit F^op^op≡F (Colimit→Co-limit (has-D-colims (Functor.op f))))
+      (λ f → subst Limit (Functor-path (λ _ → refl) (λ _ → refl))
+        (Colimit→Co-limit (has-D-colims (unopF f))))
       F'
 
     LF'' : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))

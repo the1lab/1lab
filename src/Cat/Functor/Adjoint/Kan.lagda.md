@@ -200,11 +200,9 @@ module
     open _=>_
 
     fixed : is-ran p (R F∘ F) (R F∘ G) (nat-assoc-from (R ▸ eps))
-    fixed .is-ran.σ {M = M} α = σ' where
-      unquoteDecl α' = dualise-into α'
-        (Functor.op R F∘ Functor.op F => Functor.op M F∘ Functor.op p)
-        α
-      unquoteDecl σ' = dualise-into σ' (M => R F∘ G) (p.σ α')
+    fixed .is-ran.σ {M = M} α = record { opN (p.σ α') } where
+      α' : Functor.op R F∘ Functor.op F => Functor.op M F∘ Functor.op p
+      α' = record { opN α }
 
     fixed .is-ran.σ-comm = ext λ x → p.σ-comm ηₚ _
     fixed .is-ran.σ-uniq {M = M} {σ' = σ'} p =

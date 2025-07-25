@@ -305,13 +305,19 @@ equivalent as this category is self-dual.
 <!--
 ```agda
   graph→presheaf : Functor (Graphs o ℓ) (PSh (o ⊔ ℓ) ·⇇·)
-  graph→presheaf .F₀ G = Fork {a = el! $ Σ[ s ∈ G ] Σ[ t ∈ G ] G .Edge s t }
-    {el! $ Lift ℓ ⌞ G ⌟}
-    (lift ⊙ fst) (lift ⊙ fst ⊙ snd)
-  graph→presheaf .F₁ f = Fork-nt
-    {u = λ (s , t , e) → f .node s , f .node t , f .edge e }
-    {v = λ { (lift v) → lift (f · v) } }
-    refl refl
+  graph→presheaf .F₀ G =
+    let
+      it = Fork {a = el! $ Σ[ s ∈ G ] Σ[ t ∈ G ] G .Edge s t }
+        {el! $ Lift ℓ ⌞ G ⌟}
+        (lift ⊙ fst) (lift ⊙ fst ⊙ snd)
+    in opFˡ (opFˡ it)
+
+  graph→presheaf .F₁ f .η true  a = lift (f .node (a .lower))
+  graph→presheaf .F₁ f .η false a = _ , _ , f .edge (a .snd .snd)
+  graph→presheaf .F₁ f .is-natural x y idh = refl
+  graph→presheaf .F₁ f .is-natural x y inl = refl
+  graph→presheaf .F₁ f .is-natural x y inr = refl
+
   graph→presheaf .F-id = ext λ where
     true  x → refl
     false x → refl
@@ -344,7 +350,6 @@ equivalent as this category is self-dual.
     il h = Graph-hom-path (λ _ → refl) (λ e → transport-refl _)
 
 private module _ {ℓ : Level} where
-
   presheaf→graph : ⌞ PSh ℓ ·⇇· ⌟ → Graph ℓ ℓ
   presheaf→graph F = g where
     module F = Functor F
