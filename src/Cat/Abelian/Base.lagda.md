@@ -79,12 +79,10 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
       → (f ∘ g) + (f ∘ h) ≡ f ∘ (g + h)
 
   ∘map : ∀ {A B C} → Ab.Hom (Hom-grp B C ⊗ Hom-grp A B) (Hom-grp A C)
-  ∘map {A} {B} {C} =
-    from-bilinear-map (Hom-grp B C) (Hom-grp A B) (Hom-grp A C)
-      (record { map     = _∘_
-              ; pres-*l = λ x y z → sym (∘-linear-l x y z)
-              ; pres-*r = λ x y z → sym (∘-linear-r x y z)
-              })
+  ∘map {A} {B} {C} = from-bilinear-map record where
+    map           = _∘_
+    pres-*l x y z = sym (∘-linear-l x y z)
+    pres-*r x y z = sym (∘-linear-r x y z)
 ```
 
 <details>
