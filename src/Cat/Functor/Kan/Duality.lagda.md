@@ -37,25 +37,26 @@ module _ (p : Functor C C') (F : Functor C D) where
   co-unit→counit
     : ∀ {G : Functor (C' ^op) (D ^op)}
     → Functor.op F => G F∘ Functor.op p
-    → Functor.op G F∘ p => F
+    → unopF G F∘ p => F
+  co-unit→counit α = record { opN α }
+
   co-unit←counit
     : ∀ {G : Functor C' D}
     → G F∘ p => F
     → Functor.op F => Functor.op G F∘ Functor.op p
+  co-unit←counit α = record { opN α }
 
   counit→co-unit
     : ∀ {G : Functor (C' ^op) (D ^op)}
     → G F∘ Functor.op p => Functor.op F
-    → F => Functor.op G F∘ p
+    → F => unopF G F∘ p
+  counit→co-unit α = record { opN α }
+
   counit←co-unit
     : ∀ {G : Functor C' D}
     → F => G F∘ p
     → Functor.op G F∘ Functor.op p => Functor.op F
-
-  unquoteDef co-unit→counit = define-dualiser co-unit→counit
-  unquoteDef co-unit←counit = define-dualiser co-unit←counit
-  unquoteDef counit→co-unit = define-dualiser counit→co-unit
-  unquoteDef counit←co-unit = define-dualiser counit←co-unit
+  counit←co-unit α = record { opN α }
 ```
 -->
 
@@ -63,15 +64,14 @@ module _ (p : Functor C C') (F : Functor C D) where
   is-co-lan'→is-ran
     : ∀ {G : Functor (C' ^op) (D ^op)} {eta : Functor.op F => G F∘ Functor.op p}
     → is-lan (Functor.op p) (Functor.op F) G eta
-    → is-ran p F (Functor.op G) (co-unit→counit eta)
+    → is-ran p F (unopF G) (co-unit→counit eta)
   is-co-lan'→is-ran {G = G} {eta = eta} is-lan = ran where
     module lan = is-lan is-lan
 
-    ran : is-ran p F (Functor.op G) (co-unit→counit eta)
-    ran .σ {M = M} α = op (lan.σ α') where
-      unquoteDecl α' = dualise-into α'
-        (Functor.op F => Functor.op M F∘ Functor.op p)
-        α
+    ran : is-ran p F (unopF G) (co-unit→counit eta)
+    ran .σ {M = M} α = record { opN (lan.σ α') } where
+      α' : Functor.op F => Functor.op M F∘ Functor.op p
+      α' = record { opN α }
 
     ran .σ-comm = ext (lan.σ-comm ηₚ_)
     ran .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
@@ -90,10 +90,9 @@ module _ (p : Functor C C') (F : Functor C D) where
     module lan = is-lan lan
 
     ran : is-ran p F G eps
-    ran .σ {M = M} α = op (lan.σ α') where
-      unquoteDecl α' = dualise-into α'
-        (Functor.op F => Functor.op M F∘ Functor.op p)
-        α
+    ran .σ {M = M} α = record { opN (lan.σ α') } where
+      α' : (Functor.op F => Functor.op M F∘ Functor.op p)
+      α' = record { _=>_ (_=>_.op α) }
     ran .σ-comm = ext (lan.σ-comm ηₚ_)
     ran .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
       lan.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
@@ -107,15 +106,18 @@ module _ (p : Functor C C') (F : Functor C D) where
 
     lan : is-lan (Functor.op p) (Functor.op F) (Functor.op Ext) _
     lan .σ {M = M} α = σ' where
-      unquoteDecl α' = dualise-into α' (Functor.op M F∘ p => F) α
-      unquoteDecl σ' = dualise-into σ' (Functor.op Ext => M) (ran.σ α')
+      α' : (unopF M F∘ p => F)
+      α' = record { opN α }
+
+      σ' : (Functor.op Ext => M)
+      σ' = record { opN (ran.σ α') }
 
     lan .σ-comm = ext (ran.σ-comm ηₚ_)
     lan .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
       ran.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
 
   Co-lan→Ran : Lan (Functor.op p) (Functor.op F) → Ran p F
-  Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
+  Co-lan→Ran lan .Ext     = unopF (lan .Ext)
   Co-lan→Ran lan .eps     = co-unit→counit (lan .eta)
   Co-lan→Ran lan .has-ran = is-co-lan'→is-ran (lan .has-lan)
 
@@ -127,15 +129,14 @@ module _ (p : Functor C C') (F : Functor C D) where
   is-co-ran'→is-lan
     : {G : Functor (C' ^op) (D ^op)} {eps : G F∘ Functor.op p => Functor.op F}
     → is-ran (Functor.op p) (Functor.op F) G eps
-    → is-lan p F (Functor.op G) (counit→co-unit eps)
+    → is-lan p F (unopF G) (counit→co-unit eps)
   is-co-ran'→is-lan {G = G} {eps} is-ran = lan where
     module ran = is-ran is-ran
 
-    lan : is-lan p F (Functor.op G) (counit→co-unit eps)
-    lan .σ {M = M} β = op (ran.σ β') where
-      unquoteDecl β' = dualise-into β'
-        (Functor.op M F∘ Functor.op p => Functor.op F)
-        β
+    lan : is-lan p F (unopF G) (counit→co-unit eps)
+    lan .σ {M = M} β = record { opN (ran.σ β') } where
+      β' : Functor.op M F∘ Functor.op p => Functor.op F
+      β' = record { opN β }
     lan .σ-comm = ext (ran.σ-comm ηₚ_)
     lan .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
       ran.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
@@ -148,10 +149,9 @@ module _ (p : Functor C C') (F : Functor C D) where
     module ran = is-ran is-ran
 
     lan : is-lan p F G eta
-    lan .σ {M = M} β = op (ran.σ β') where
-      unquoteDecl β' = dualise-into β'
-        (Functor.op M F∘ Functor.op p => Functor.op F)
-        β
+    lan .σ {M = M} β = record { opN (ran.σ β') } where
+      β' : Functor.op M F∘ Functor.op p => Functor.op F
+      β' = record { opN β }
     lan .σ-comm = ext (ran.σ-comm ηₚ_)
     lan .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
       ran.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
@@ -165,14 +165,18 @@ module _ (p : Functor C C') (F : Functor C D) where
 
     ran : is-ran (Functor.op p) (Functor.op F) (Functor.op G) _
     ran .σ {M = M} β = σ' where
-      unquoteDecl β' = dualise-into β' (F => Functor.op M F∘ p) β
-      unquoteDecl σ' = dualise-into σ' (M => Functor.op G) (lan.σ β')
+      β' : F => unopF M F∘ p
+      β' = record { opN β }
+
+      σ' : M => Functor.op G
+      σ' = record { opN (lan.σ β') }
+
     ran .σ-comm = ext (lan.σ-comm ηₚ_)
     ran .σ-uniq {M = M} {σ' = σ'} p = ext λ x →
       lan.σ-uniq {σ' = dualise! σ'} (reext! p) ηₚ x
 
   Co-ran→Lan : Ran (Functor.op p) (Functor.op F) → Lan p F
-  Co-ran→Lan ran .Ext = Functor.op (ran .Ext)
+  Co-ran→Lan ran .Ext = unopF (ran .Ext)
   Co-ran→Lan ran .eta = counit→co-unit (ran .eps)
   Co-ran→Lan ran .has-lan = is-co-ran'→is-lan (ran .has-ran)
 

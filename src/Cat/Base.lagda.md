@@ -196,12 +196,6 @@ C^op^op≡C {C = C} i = precat i where
   precat i .assoc = C .assoc
 ```
 
-<!--
-```agda
-{-# REWRITE C^op^op≡C #-}
-```
--->
-
 ## The precategory of Sets {defines="category-of-sets"}
 
 Given a [[universe level|universe]], we can consider the collection of
@@ -302,14 +296,26 @@ C\op \to D\op$.
 
 <!--
 ```agda
-F^op^op≡F : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
-          → Functor.op (Functor.op F) ≡ F
-F^op^op≡F {F = F} i .Functor.F₀ = F .Functor.F₀
-F^op^op≡F {F = F} i .Functor.F₁ = F .Functor.F₁
-F^op^op≡F {F = F} i .Functor.F-id = F .Functor.F-id
-F^op^op≡F {F = F} i .Functor.F-∘ = F .Functor.F-∘
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
+  open Functor
 
-{-# REWRITE F^op^op≡F #-}
+  unopF : Functor (C ^op) (D ^op) → Functor C D
+  unopF F .F₀   = F .F₀
+  unopF F .F₁   = F .F₁
+  unopF F .F-id = F .F-id
+  unopF F .F-∘ f g = F .F-∘ g f
+
+  opFˡ : Functor C (D ^op) → Functor (C ^op) D
+  opFˡ F .F₀      = F .F₀
+  opFˡ F .F₁      = F .F₁
+  opFˡ F .F-id    = F .F-id
+  opFˡ F .F-∘ f g = F .F-∘ g f
+
+  opFʳ : Functor (C ^op) D → Functor C (D ^op)
+  opFʳ F .F₀      = F .F₀
+  opFʳ F .F₁      = F .F₁
+  opFʳ F .F-id    = F .F-id
+  opFʳ F .F-∘ f g = F .F-∘ g f
 ```
 -->
 
@@ -572,6 +578,23 @@ instance
     sa .idsᵉ .to-path (x i)
   Extensional-natural-transformation {D = D} ⦃ sa ⦄ .idsᵉ .to-path-over h =
     is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
+
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
+  open _=>_
+
+  module opN {F G : Functor C D} (eta : F => G) = _=>_ (_=>_.op eta)
+
+  unopN : {F G : Functor (C ^op) (D ^op)} → F => G → unopF G => unopF F
+  unopN eta .η = eta .η
+  unopN eta .is-natural x y f = sym (eta .is-natural y x f)
+
+  opNˡ : {F G : Functor C (D ^op)} → F => G → opFˡ G => opFˡ F
+  opNˡ eta .η = eta .η
+  opNˡ eta .is-natural x y f = sym (eta .is-natural y x f)
+
+  opNʳ : {F G : Functor (C ^op) D} → F => G → opFʳ G => opFʳ F
+  opNʳ eta .η = eta .η
+  opNʳ eta .is-natural x y f = sym (eta .is-natural y x f)
 
 _⟪_⟫_
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}

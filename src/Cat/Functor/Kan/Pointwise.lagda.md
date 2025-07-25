@@ -72,7 +72,7 @@ module _
 ```agda
   is-pointwise-lan : ∀ {eta : G => E F∘ F} → is-lan F G E eta → Type _
   is-pointwise-lan lan =
-    ∀ (x : D.Ob) → preserves-is-lan (Functor.op (Hom-into D x)) lan
+    ∀ (x : D.Ob) → preserves-is-lan (opFʳ (Hom-into D x)) lan
 
   is-pointwise-ran : ∀ {eps : E F∘ F => G} → is-ran F G E eps → Type _
   is-pointwise-ran ran =
@@ -412,7 +412,7 @@ words, the extension we constructed is pointwise.
     → is-pointwise-lan (Lan.has-lan (cocomplete→lan F G colim))
   cocomplete→pointwise-lan colim d =
     preserves-colimits→preserves-pointwise-lan
-      colim (Functor.op (Hom-into D d))
+      colim (opFʳ (Hom-into D d))
       (よ-reverses-colimits d)
 ```
 
@@ -487,7 +487,7 @@ representability nonsense to get there.
       represent-↓cocone
         : ∀ (d : D.Ob)
         → F F∘ Dom p (!Const c') => Const d
-        → Functor.op (よ₀ D d) F∘ F => Functor.op (よ₀ C' c') F∘ p
+        → opFʳ (よ₀ D d) F∘ F => opFʳ (よ₀ C' c') F∘ p
       represent-↓cocone d α .η c f = α .η (↓obj f)
       represent-↓cocone d α .is-natural _ _ f = funext λ g →
         α .is-natural (↓obj (g C'.∘ p .F₁ f)) (↓obj g) (↓hom (sym (C'.idl _)))
@@ -496,7 +496,7 @@ representability nonsense to get there.
       pointwise-↓cocone
         : ∀ (d : D.Ob)
         → (α : F F∘ Dom p (!Const c') => Const d)
-        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+        → opFʳ (Hom-into D d) F∘ L => opFʳ (Hom-into C' c')
       pointwise-↓cocone d α = pointwise.σ d (represent-↓cocone d α)
 ```
 
@@ -508,7 +508,7 @@ the usual Yoneda-like argument.
       inv .η d α =
         pointwise-↓cocone d α .η c' C'.id
       inv .is-natural x y f = funext λ α →
-        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
+        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (opNʳ (よ₁ D f) ◂ L)}
           (ext λ c g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
 ```
 
@@ -529,7 +529,7 @@ _pointwise_, and remember that we're working with a Kan extension.
 
       vaguely-yoneda
         : ∀ {d : D.Ob} (α : D.Hom (L .F₀ c') d)
-        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+        → opFʳ (Hom-into D d) F∘ L => opFʳ (Hom-into C' c')
       vaguely-yoneda α .η c'' f = α D.∘ L .F₁ f
       vaguely-yoneda α .is-natural x y f =
         funext λ g → D.pullr (sym (L .F-∘ _ _))

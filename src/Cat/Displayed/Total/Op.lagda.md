@@ -42,28 +42,6 @@ module _ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ')
   _^total-op .Displayed.assoc' f' g' h' = symP $ assoc' h' g' f'
 ```
 
-Much like the opposite of categories, the total opposite is an involution
-on displayed categories.
-
-```agda
-total-op-involution
-  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
-  → PathP (λ i → Displayed (C^op^op≡C {C = ℬ} i) o' ℓ') ((ℰ ^total-op) ^total-op) ℰ
-total-op-involution {ℰ = ℰ} = path where
-  open Displayed
-
-  path : PathP (λ i → Displayed _ _ _) ((ℰ ^total-op) ^total-op) ℰ
-  path i .Ob[_] = ℰ .Ob[_]
-  path i .Hom[_] = ℰ .Hom[_]
-  path i .Hom[_]-set = ℰ .Hom[_]-set
-  path i .id' = ℰ .id'
-  path i ._∘'_ = ℰ ._∘'_
-  path i .idr' = ℰ .idr'
-  path i .idl' = ℰ .idl'
-  path i .assoc' = ℰ .assoc'
-
-```
-
 ## The total opposites and total categories
 
 The reason we refer to this construction as the total opposite is that
