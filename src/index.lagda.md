@@ -302,6 +302,7 @@ open import 1Lab.Extensionality
   -- to the data that matters.
 
 open import 1Lab.Reflection.Induction
+open import 1Lab.Reflection.Induction.Examples
   -- While Agda natively supports inductive types and pattern matching,
   -- it's often useful to have explicit elimination principles. This
   -- tactic automatically writes them.
