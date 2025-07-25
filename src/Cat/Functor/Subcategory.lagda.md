@@ -242,7 +242,7 @@ the forgetful functor is pseudomonic.
       (sub-hom (f .to)   (invert (iso→invertible f)))
       (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
       (ext (f .invl))
-      (ext (f .invr)) , trivial!
+      (ext (f .invr)) , ext refl
 ```
 
 ## Univalent subcategories

@@ -133,7 +133,7 @@ functor $U$ reflects limits: We already had an algebra structure
   Forget-reflects-limits : reflects-limit Forget-EM F
   Forget-reflects-limits {K} {eps} lim = to-is-limitp
     (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .snd))
-    trivial!
+    (ext refl)
 ```
 
 Having shown that $U$ reflects the property of _being a limit_, we now

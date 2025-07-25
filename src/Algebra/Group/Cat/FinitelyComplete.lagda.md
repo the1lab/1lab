@@ -73,7 +73,7 @@ Zero-group-is-initial (_ , G) .paths x =
 Zero-group-is-terminal : is-terminal (Groups ℓ) Zero-group
 Zero-group-is-terminal _ .centre =
   ∫hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
-Zero-group-is-terminal _ .paths x = trivial!
+Zero-group-is-terminal _ .paths x = ext λ _ → refl
 
 Zero-group-is-zero : is-zero (Groups ℓ) Zero-group
 Zero-group-is-zero = record

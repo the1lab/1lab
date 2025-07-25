@@ -87,9 +87,9 @@ Posets-has-products : ∀ {o ℓ} → has-products (Posets o ℓ)
 Posets-has-products P Q .apex = P ×ᵖ Q
 Posets-has-products P Q .π₁ = fstᵖ
 Posets-has-products P Q .π₂ = sndᵖ
-Posets-has-products P Q .has-is-product .⟨_,_⟩     = pairᵖ
-Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = trivial!
-Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = trivial!
+Posets-has-products P Q .has-is-product .⟨_,_⟩ = pairᵖ
+Posets-has-products P Q .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
+Posets-has-products P Q .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
 Posets-has-products P Q .has-is-product .unique α β =
   ext λ x → α ·ₚ x ,ₚ β ·ₚ x
 ```
@@ -102,5 +102,5 @@ Posets-terminal : ∀ {o ℓ} → Terminal (Posets o ℓ)
 Posets-terminal .top = 𝟙ᵖ
 Posets-terminal .has⊤ P .centre .hom    _ = lift tt
 Posets-terminal .has⊤ P .centre .pres-≤ _ = lift tt
-Posets-terminal .has⊤ P .paths f = trivial!
+Posets-terminal .has⊤ P .paths f = ext λ _ → refl
 ```

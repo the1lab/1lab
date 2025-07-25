@@ -276,8 +276,8 @@ value $X$.
 
   incl .F₁ f = NT (λ _ → f) (λ _ _ _ → refl)
 
-  incl .F-id    = trivial!
-  incl .F-∘ f g = trivial!
+  incl .F-id    = ext λ _ _ → refl
+  incl .F-∘ f g = ext λ _ _ → refl
 
   sets : Topos κ (Sets κ)
   sets .site = Lift-cat κ κ ⊤Cat
@@ -296,7 +296,7 @@ sufficient (and necessary) to conclude fully-faithfulness.
     open is-iso
     isic : is-iso (incl .F₁ {x} {y})
     isic .from nt = nt .η _
-    isic .rinv nt = trivial!
+    isic .rinv nt = ext λ _ _ → refl
     isic .linv f  = refl
 ```
 
@@ -358,13 +358,13 @@ components and constructing identity natural transformations.
 ```agda
   sets .L⊣ι .unit .η _ .η _ f            = f
   sets .L⊣ι .unit .η F .is-natural _ _ _ = F .F-id
-  sets .L⊣ι .unit .is-natural _ _ _      = trivial!
+  sets .L⊣ι .unit .is-natural _ _ _      = ext λ _ _ → refl
 
   sets .L⊣ι .counit .η _ x            = x
   sets .L⊣ι .counit .is-natural _ _ _ = refl
 
   sets .L⊣ι .zig = refl
-  sets .L⊣ι .zag = trivial!
+  sets .L⊣ι .zag = ext λ _ _ → refl
 ```
 
 More canonical examples are given by any presheaf category, where both

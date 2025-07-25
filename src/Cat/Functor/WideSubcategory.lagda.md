@@ -229,7 +229,7 @@ should be part of the definition of a wide subcategory, but it isn't
           (wide f.from (P-invert (C.iso→invertible (f C.Iso⁻¹))))
           (ext f.invl)
           (ext f.invr) ,
-        trivial!
+        ext refl
       where module f = C._≅_ f
 
     is-split-eso-Forget-wide-subcat : is-split-eso Forget-wide-subcat

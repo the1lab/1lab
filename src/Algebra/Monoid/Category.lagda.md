@@ -261,10 +261,10 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = trivial!
+    from∘to x = ext λ _ → refl
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = trivial!
+    to∘from x = ext λ _ → refl
 ```
 
 Showing that the functor is essentially surjective is significantly more
@@ -343,5 +343,5 @@ recovered monoid has the same underlying type as the List-algebra!
       funext (λ x → sym (recover x) ∙ ap (fold _) (sym (map-id x)))
 
     the-iso : comparison.₀ monoid R.≅ (A , alg)
-    the-iso = R.make-iso into from trivial! trivial!
+    the-iso = R.make-iso into from (ext λ _ → refl) (ext λ _ → refl)
 ```

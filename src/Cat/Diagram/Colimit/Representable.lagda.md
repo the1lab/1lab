@@ -73,7 +73,7 @@ conditions.
     colim .σ-comm {M} {α} = ext λ j → unext nat-inv.invl _ _ j
     colim .σ-uniq {M} {α} {σ'} q = ext λ j →
       nat-inv.inv .η _ (to-coconeⁿ ⌜ α ⌝)                  ≡⟨ ap! q ⟩
-      nat-inv.inv .η _ ⌜ to-coconeⁿ ((σ' ◂ !F) ∘nt eta) ⌝  ≡⟨ ap! trivial! ⟩
+      nat-inv.inv .η _ ⌜ to-coconeⁿ ((σ' ◂ !F) ∘nt eta) ⌝  ≡⟨ ap! (ext λ i → refl) ⟩
       nat-inv.inv .η _ ((!constⁿ (σ' .η tt) ◂ !F) ∘nt eta) ≡⟨ unext nat-inv.invr _ _ ⟩
       σ' .η tt                                             ∎
 ```

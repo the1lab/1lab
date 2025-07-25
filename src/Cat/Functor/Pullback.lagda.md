@@ -139,8 +139,8 @@ module _ {X Y : Ob} (f : Hom Y X) where
   Σf : Functor (Slice C Y) (Slice C X)
   Σf .F₀ o = cut (f ∘ o .map)
   Σf .F₁ dh = record { map = dh .map ; commutes = pullr (dh .commutes) }
-  Σf .F-id = trivial!
-  Σf .F-∘ f g = trivial!
+  Σf .F-id    = ext refl
+  Σf .F-∘ f g = ext refl
 
   open _⊣_
 ```
@@ -157,7 +157,7 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   func = Σf f
   Σ-ff : ∀ {x y} → is-equiv (func .F₁ {x} {y})
-  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → trivial!) λ x → trivial!) where
+  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → ext refl) (λ x → ext refl)) where
     ∘inv : /-Hom _ _ → /-Hom _ _
     ∘inv o .map = o .map
     ∘inv o .commutes = invertible→monic isom _ _ (assoc _ _ _ ∙ o .commutes)
@@ -274,8 +274,8 @@ object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
         where
           module pbx = Pullback (pullbacks (f ∘ x .map) f)
           module pby = Pullback (pullbacks (f ∘ y .map) f)
-      ff .rinv _ = trivial!
-      ff .linv _ = trivial!
+      ff .rinv _ = ext refl
+      ff .linv _ = ext refl
 ```
 
 ## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}

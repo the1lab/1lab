@@ -57,8 +57,8 @@ DiscF : ∀ {ℓ} → Functor (Sets ℓ) (Posets ℓ ℓ)
 DiscF .F₀ = Disc
 DiscF .F₁ f .hom = f
 DiscF .F₁ f .pres-≤ = ap f
-DiscF .F-id = trivial!
-DiscF .F-∘ f g = trivial!
+DiscF .F-id    = ext λ _ → refl
+DiscF .F-∘ f g = ext λ _ → refl
 ```
 
 Furthermore, this functor is a [[left adjoint]] to the forgetful functor
@@ -70,8 +70,8 @@ DiscF⊣Forget .unit .η A x = x
 DiscF⊣Forget .unit .is-natural _ _ _ = refl
 DiscF⊣Forget .counit .η P .hom x  = x
 DiscF⊣Forget .counit .η P .pres-≤ = Poset.≤-refl' P
-DiscF⊣Forget .counit .is-natural P Q f = trivial!
-DiscF⊣Forget .zig = trivial!
+DiscF⊣Forget .counit .is-natural P Q f = ext λ _ → refl
+DiscF⊣Forget .zig = ext λ _ → refl
 DiscF⊣Forget .zag = refl
 ```
 

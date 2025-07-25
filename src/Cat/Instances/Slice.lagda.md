@@ -602,8 +602,8 @@ fast:
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
   Total-space .F₁ nt .commutes    = refl
 
-  Total-space .F-id    = trivial!
-  Total-space .F-∘ _ _ = trivial!
+  Total-space .F-id    = ext λ _ _ → refl
+  Total-space .F-∘ _ _ = ext λ _ _ → refl
 ```
 
 Since the construction of the functor itself is straightforward, we turn
@@ -855,6 +855,6 @@ $\cC/B$.
         π₂ ∘ ⟨ f .fst ∘ π₁ , π₂ ⟩ ∘ ⟨ id , x .map ⟩ ≡⟨ pulll π₂∘⟨⟩ ⟩
         π₂ ∘ ⟨ id , x .map ⟩                        ≡⟨ π₂∘⟨⟩ ⟩
         x .map                                      ∎
-      ff .rinv _ = trivial!
-      ff .linv _ = trivial!
+      ff .rinv _ = ext refl
+      ff .linv _ = ext refl
 ```

@@ -409,13 +409,13 @@ Day-bifunctor-cowedge {X} {Y} {X'} {Y'} {i} F G = go where
 
 Day-map : ∀ {X X' Y Y'} (F : X => X') (G : Y => Y') → X ⊗ᴰ Y => X' ⊗ᴰ Y'
 Day-map F G .η i = Day-rec (Day-bifunctor-cowedge F G)
-Day-map F G .is-natural x y f = trivial!
+Day-map F G .is-natural x y f = ext λ _ _ _ → refl
 
 Day-bifunctor : Functor (PSh ℓ C ×ᶜ PSh ℓ C) (PSh ℓ C)
 Day-bifunctor .F₀ (X , Y) = X ⊗ᴰ Y
 Day-bifunctor .F₁ (F , G) = Day-map F G
-Day-bifunctor .F-id    = trivial!
-Day-bifunctor .F-∘ f g = trivial!
+Day-bifunctor .F-id    = ext λ _ _ _ _ → refl
+Day-bifunctor .F-∘ f g = ext λ _ _ _ _ → refl
 ```
 
 </details>
@@ -621,21 +621,21 @@ Day-monoidal .M.unitor-l = to-natural-iso mk-λ where
   mk-λ .inv x = Day-idl x .Isoⁿ.to
   mk-λ .eta∘inv x = Day-idl x .Isoⁿ.invr
   mk-λ .inv∘eta x = Day-idl x .Isoⁿ.invl
-  mk-λ .natural x y f = trivial!
+  mk-λ .natural x y f = ext λ _ _ → refl
 Day-monoidal .M.unitor-r = to-natural-iso mk-ρ where
   mk-ρ : make-natural-iso _ _
   mk-ρ .eta x = Day-idr x .Isoⁿ.from
   mk-ρ .inv x = Day-idr x .Isoⁿ.to
   mk-ρ .eta∘inv x = Day-idr x .Isoⁿ.invr
   mk-ρ .inv∘eta x = Day-idr x .Isoⁿ.invl
-  mk-ρ .natural x y f = trivial!
+  mk-ρ .natural x y f = ext λ _ _ → refl
 Day-monoidal .M.associator = to-natural-iso mk-α where
   mk-α : make-natural-iso _ _
   mk-α .eta (x , y , z) = Day-assoc x y z .Isoⁿ.to
   mk-α .inv (x , y , z) = Day-assoc x y z .Isoⁿ.from
   mk-α .eta∘inv (x , y , z) = Day-assoc x y z .Isoⁿ.invl
   mk-α .inv∘eta (x , y , z) = Day-assoc x y z .Isoⁿ.invr
-  mk-α .natural x y f = trivial!
+  mk-α .natural x y f = ext λ _ _ _ _ _ _ → refl
 Day-monoidal .M.triangle {A} {B} = day-triangle
 Day-monoidal .M.pentagon {A} {B} {C} {D} = day-pentagon
 ```

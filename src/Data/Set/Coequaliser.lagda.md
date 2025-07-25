@@ -169,7 +169,7 @@ Coeq-univ {C = C} {f = f} {g = g} =
     cr' (f , f-coeqs) = Coeq-rec f (happly f-coeqs)
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
-    islinv f = trivial!
+    islinv f = ext λ _ → refl
 ```
 
 </div>
