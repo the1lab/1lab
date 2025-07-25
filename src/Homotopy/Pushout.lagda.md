@@ -1,6 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --hidden-argument-puns #-}
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
 open import Homotopy.Space.Suspension
@@ -42,6 +43,12 @@ data Pushout (C : Type ℓ) (f : C → A) (g : C → B) : Type (level-of A ⊔ l
   inr  : B → Pushout C f g
   glue : ∀ c → inl (f c) ≡ inr (g c)
 ```
+
+<!--
+```agda
+unquoteDecl Pushout-elim = make-elim Pushout-elim (quote Pushout)
+```
+-->
 
 These combine to give the following:
 

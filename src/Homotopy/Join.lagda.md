@@ -2,6 +2,9 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Bool
+
+open import Homotopy.Space.Suspension
 open import Homotopy.Pushout
 ```
 -->
@@ -16,16 +19,18 @@ module Homotopy.Join where
 ```agda
 private variable
   ℓ ℓ' : Level
-  X Y Z : Type ℓ
+  A B C X Y Z : Type ℓ
 ```
 -->
 
-The **join** of two types $A$ and $B$ is the pushout under the diagram
-$$A \ot (A \times B) \to B$$.
+The **join** of two types $A$ and $B$, written $A \join B$ is the pushout
+under the diagram $$A \ot (A \times B) \to B$$.
 
 ```agda
 _∗_ : Type ℓ → Type ℓ' → Type (ℓ ⊔ ℓ')
 A ∗ B = Pushout (A × B) fst snd
+
+infixr 30 _∗_
 
 pattern join x y i = glue (x , y) i
 ```
@@ -35,3 +40,150 @@ pattern join x y i = glue (x , y) i
 open Homotopy.Pushout using (inl ; inr) public
 ```
 -->
+
+<details>
+<summary>
+We show that the join operation is associative by a direct cubical
+computation due to Loïc Pujet. A more conceptual proof is given in
+[@HoTT, lemma 8.5.9].
+
+```agda
+join-associative : (X ∗ Y) ∗ Z ≃ X ∗ (Y ∗ Z)
+```
+</summary>
+
+```agda
+join-associative .fst (inl (inl x)) = inl x
+join-associative .fst (inl (inr y)) = inr (inl y)
+join-associative .fst (inl (join x y i)) = join x (inl y) i
+join-associative .fst (inr z) = inr (inr z)
+join-associative .fst (join (inl x) z i) = join x (inr z) i
+join-associative .fst (join (inr y) z i) = inr (join y z i)
+join-associative .fst (join (join x y i) z j) =
+  hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → join x (join y z j) i
+    k (i = i0) → join x (inr z) (j ∧ k)
+    k (i = i1) → inr (join y z j)
+    k (j = i0) → join x (inl y) i
+    k (j = i1) → join x (inr z) (i ∨ k)
+
+join-associative {X = X} {Y = Y} {Z = Z} .snd = is-iso→is-equiv λ where
+  .is-iso.from (inl x) → inl (inl x)
+  .is-iso.from (inr (inl y)) → inl (inr y)
+  .is-iso.from (inr (inr z)) → inr z
+  .is-iso.from (inr (join y z i)) → join (inr y) z i
+  .is-iso.from (join x (inl y) i) → inl (join x y i)
+  .is-iso.from (join x (inr z) i) → join (inl x) z i
+  .is-iso.from (join x (join y z j) i) →
+    hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → join (join x y i) z j
+      k (i = i0) → join (inl x) z (j ∧ ~ k)
+      k (i = i1) → join (inr y) z j
+      k (j = i0) → inl (join x y i)
+      k (j = i1) → join (inl x) z (i ∨ ~ k)
+
+  .is-iso.rinv (inl x) → refl
+  .is-iso.rinv (inr (inl y)) → refl
+  .is-iso.rinv (inr (inr z)) → refl
+  .is-iso.rinv (inr (join y z i)) → refl
+  .is-iso.rinv (join x (inl y) i) → refl
+  .is-iso.rinv (join x (inr z) i) → refl
+  .is-iso.rinv (join x (join y z j) i) l →
+    comp (λ _ → X ∗ (Y ∗ Z)) (∂ i ∨ ∂ j ∨ l) λ where
+      k (k = i0) → hcomp (∂ i ∨ ∂ j ∨ l) λ where
+        k (k = i0) → join x (join y z j) i
+        k (i = i0) → join x (inr z) (j ∧ (k ∧ ~ l))
+        k (i = i1) → inr (join y z j)
+        k (j = i0) → join x (inl y) i
+        k (j = i1) → join x (inr z) (i ∨ (k ∧ ~ l))
+        k (l = i1) → join x (join y z j) i
+      k (i = i0) → join x (inr z) (j ∧ (~ k ∧ ~ l))
+      k (i = i1) → inr (join y z j)
+      k (j = i0) → join x (inl y) i
+      k (j = i1) → join x (inr z) (i ∨ (~ k ∧ ~ l))
+      k (l = i1) → join x (join y z j) i
+
+  .is-iso.linv (inl (inl x)) → refl
+  .is-iso.linv (inl (inr y)) → refl
+  .is-iso.linv (inl (join x y i)) → refl
+  .is-iso.linv (inr z) → refl
+  .is-iso.linv (join (inl x) z i) → refl
+  .is-iso.linv (join (inr y) z i) → refl
+  .is-iso.linv (join (join x y i) z j) l →
+    comp (λ _ → (X ∗ Y) ∗ Z) (∂ i ∨ ∂ j ∨ l) λ where
+      k (k = i0) → hcomp (∂ i ∨ ∂ j ∨ l) λ where
+        k (k = i0) → join (join x y i) z j
+        k (i = i0) → join (inl x) z (j ∧ (~ k ∨ l))
+        k (i = i1) → join (inr y) z j
+        k (j = i0) → inl (join x y i)
+        k (j = i1) → join (inl x) z (i ∨ (~ k ∨ l))
+        k (l = i1) → join (join x y i) z j
+      k (i = i0) → join (inl x) z (j ∧ (k ∨ l))
+      k (i = i1) → join (inr y) z j
+      k (j = i0) → inl (join x y i)
+      k (j = i1) → join (inl x) z (i ∨ (k ∨ l))
+      k (l = i1) → join (join x y i) z j
+```
+</details>
+
+The join operation is also commutative; luckily, this is much more
+straightforward.
+
+```agda
+join-commutative : X ∗ Y ≃ Y ∗ X
+join-commutative .fst = Pushout-elim inr inl (λ (x , y) → sym (join y x))
+join-commutative .snd = is-iso→is-equiv λ where
+  .is-iso.from → Pushout-elim inr inl λ (y , x) → sym (join x y)
+  .is-iso.rinv → Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
+  .is-iso.linv → Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
+```
+
+<!--
+```agda
+join-map : (A → B) → (X → Y) → A ∗ X → B ∗ Y
+join-map f g = Pushout-elim (inl ∘ f) (inr ∘ g)
+  λ (a , x) → join (f a) (g x)
+
+join-ap : (A ≃ B) → (X ≃ Y) → A ∗ X ≃ B ∗ Y
+join-ap f g .fst = join-map (f .fst) (g .fst)
+join-ap f g .snd = is-iso→is-equiv λ where
+  .is-iso.from → join-map (Equiv.from f) (Equiv.from g)
+  .is-iso.rinv →
+    Pushout-elim (λ b → ap inl (Equiv.ε f b)) (λ y → ap inr (Equiv.ε g y))
+      λ (b , y) i j → join (Equiv.ε f b j) (Equiv.ε g y j) i
+  .is-iso.linv →
+    Pushout-elim (λ a → ap inl (Equiv.η f a)) (λ x → ap inr (Equiv.η g x))
+      λ (a , x) i j → join (Equiv.η f a j) (Equiv.η g x j) i
+```
+-->
+
+## Suspensions as joins
+
+The [[suspension]] of $A$ is equivalently the join of $A$ with the
+[[booleans]]: the two booleans correspond to the poles, and the
+meridian passing through $a$ corresponds to the composite path
+$\mathrm{true} \is a \is \mathrm{false}$. Notice that the map $2 \join A
+\to \Susp A$ sends every $a : A$ to the south pole. This is arbitrary,
+and we could just as well have chosen the north pole; all the information
+lives in the meridians.
+
+```agda
+2∗≡Susp : Bool ∗ A ≃ Susp A
+2∗≡Susp .fst = Pushout-elim
+  (if_then north else south)
+  (λ _ → south)
+  λ { (true , a) → merid a
+    ; (false , a) → refl }
+2∗≡Susp .snd = is-iso→is-equiv λ where
+  .is-iso.from → Susp-elim _ (inl true) (inl false)
+    λ a → join true a ∙ sym (join false a)
+  .is-iso.rinv → Susp-elim _ refl refl λ a →
+    transpose (ap-∙  (2∗≡Susp .fst) (join true a) (sym (join false a)) ∙ ∙-idr _)
+  .is-iso.linv →
+    Pushout-elim
+      (λ { true → refl
+         ; false → refl })
+      (λ a → join false a)
+      λ { (true , a) → transpose (flip₁ (∙-filler _ _))
+        ; (false , a) i j → join false a (i ∧ j) }
+```

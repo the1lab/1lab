@@ -36,8 +36,8 @@ the proof look rather tautologous.
 ```agda
 open is-iso
 
-SuspS⁻¹≃S⁰ : Susp S⁻¹ ≡ S⁰
-SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
+SuspS⁻¹≃S⁰ : Susp S⁻¹ ≃ S⁰
+SuspS⁻¹≃S⁰ = SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf where
   SuspS⁻¹→S⁰ : Susp S⁻¹ → S⁰
   SuspS⁻¹→S⁰ north = true
   SuspS⁻¹→S⁰ south = false
