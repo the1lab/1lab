@@ -5,6 +5,7 @@ open import Cat.Bi.Instances.Terminal
 open import Cat.Bi.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Fr
 import Cat.Diagram.Monad as Cat
 import Cat.Reasoning as Cr
 ```
@@ -149,7 +150,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
 module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
   private
-    open module B = Prebicategory B
+    open module B = Prebicategory B hiding (module Hom)
+    module Hom {A} {B} = Cr (B.Hom A B) using (elimr ; idl ; id ; pulll ; intror ; _⟩∘⟨refl)
 ```
 -->
 # Monads as lax functors
@@ -172,7 +174,7 @@ $\cB$ on $a$.
     P .P₀ _ = a
     P .P₁ = !Const M
     P .compositor ._=>_.η _ = μ
-    P .compositor .is-natural _ _ _ = B.Hom.elimr (B.compose .F-id) ∙ sym (B.Hom.idl _)
+    P .compositor .is-natural _ _ _ = Hom.elimr (B.compose .F-id) ∙ sym (Hom.idl _)
     P .unitor = η
     P .hexagon _ _ _ =
       Hom.id ∘ μ ∘ (μ ◀ M)                ≡⟨ Hom.pulll (Hom.idl _) ⟩
@@ -201,6 +203,6 @@ $\cB$ on $a$.
         (P₁.F₁ _ ∘ μ ∘ μ ◀ M) ∘ α← M M M    ≡⟨ ( P₁.F-id Hom.⟩∘⟨refl) Hom.⟩∘⟨refl  ⟩
         (Hom.id ∘ μ ∘ μ ◀ M) ∘ α← M M M     ≡⟨ cat! (Hom a a) ⟩
         μ ∘ μ ◀ M ∘ α← M M M ∎
-      μ-unitr = P₁.introl refl ∙ right-unit _
-      μ-unitl = P₁.introl refl ∙ left-unit _
+      μ-unitr = Fr.introl P₁ refl ∙ right-unit _
+      μ-unitl = Fr.introl P₁ refl ∙ left-unit _
 ```
