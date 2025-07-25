@@ -182,7 +182,7 @@ lives in the meridians.
 2∗≡Susp .snd = is-iso→is-equiv record where
   from = Susp-elim _ (inl true) (inl false) λ a → join true a ∙ sym (join false a)
   rinv = Susp-elim _ refl refl λ a →
-    transpose (ap-∙  (2∗≡Susp .fst) (join true a) (sym (join false a)) ∙ ∙-idr _)
+    transpose (ap-∙ (2∗≡Susp .fst) (join true a) (sym (join false a)) ∙ ∙-idr _)
   linv = Pushout-elim
     (λ { true → refl
         ; false → refl })

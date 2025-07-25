@@ -1570,6 +1570,29 @@ _∙P_ {B = B} {x' = x'} {p = p} {q = q} p' q' i =
     j (j = i0) → p' i
 ```
 
+We also define versions of `_∙P_`{.Agda} specialised to composing with
+a non-dependent path on one side, abstracting the common pattern of
+a two-dimensional `hcomp`{.Agda} with one side constant.
+
+```agda
+_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
+    → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
+(p ◁ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p (~ j)
+  j (i = i1) → q i1
+  j (j = i0) → q i
+
+_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
+    → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+(p ▷ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p i0
+  j (i = i1) → q j
+  j (j = i0) → p i
+
+infixr 31 _◁_
+infixl 32 _▷_
+```
+
 <!--
 ```agda
 ∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
@@ -2350,23 +2373,6 @@ subst-path-both p adj = transport-path p adj adj
 
 <!--
 ```agda
-_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
-  → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
-(p ◁ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → q i1
-  j (j = i0) → q i
-
-_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
-  → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
-(p ▷ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p i0
-  j (i = i1) → q j
-  j (j = i0) → p i
-
-infixr 31 _◁_
-infixl 32 _▷_
-
 Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}
           → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
