@@ -88,7 +88,7 @@ PSh-omega .Subobject-classifier.Ω = Sieves {C = C}
 
 PSh-omega .Subobject-classifier.true .Sub.domain      = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
-PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
+PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = ext λ _ _ → refl
 
 PSh-omega .generic .name = psh-name
 ```
@@ -169,7 +169,7 @@ pullback.</summary>
     in emb _ (square→pt p _) (_ , r)
 
   pb .p₁∘universal {p = p} = ext λ a b → square→pt p b .snd
-  pb .p₂∘universal = trivial!
+  pb .p₂∘universal = ext λ _ _ → refl
   pb .unique {p = p} q r = ext λ a b → ap fst $
     emb _ (_ , q ηₚ a $ₚ b) (square→pt p _)
 ```

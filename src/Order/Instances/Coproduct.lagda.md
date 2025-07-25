@@ -130,8 +130,8 @@ Posets-has-coproducts P Q .coapex = P ⊎ᵖ Q
 Posets-has-coproducts P Q .ι₁ = inlᵖ
 Posets-has-coproducts P Q .ι₂ = inrᵖ
 Posets-has-coproducts P Q .has-is-coproduct .is-coproduct.[_,_] = matchᵖ
-Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₁ = trivial!
-Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₂ = trivial!
+Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
+Posets-has-coproducts P Q .has-is-coproduct .[]∘ι₂ = ext λ _ → refl
 Posets-has-coproducts P Q .has-is-coproduct .unique α β = ext λ where
   (inl x) → α ·ₚ x
   (inr x) → β ·ₚ x

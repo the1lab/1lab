@@ -199,10 +199,10 @@ open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab 
 open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
-Ab↪Grp .F₀ = Abelian→Group
-Ab↪Grp .F₁ f = record { ∫Hom f }
-Ab↪Grp .F-id = trivial!
-Ab↪Grp .F-∘ f g = trivial!
+Ab↪Grp .F₀      = Abelian→Group
+Ab↪Grp .F₁ f    = record { ∫Hom f }
+Ab↪Grp .F-id    = ext λ _ → refl
+Ab↪Grp .F-∘ f g = ext λ _ → refl
 
 Ab↪Grp-is-ff : ∀ {ℓ} → is-fully-faithful (Ab↪Grp {ℓ})
 Ab↪Grp-is-ff {x = A} {B} = is-iso→is-equiv $ iso

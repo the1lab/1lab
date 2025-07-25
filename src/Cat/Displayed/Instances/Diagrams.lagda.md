@@ -194,7 +194,7 @@ Again, this isomorphism is *almost* definitional.
   Fibrewise-diagram-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
     (ConstL-natl→Diagram-nat)
     (λ α' → Nat-lift-pathp (λ _ → refl))
-    (λ α → trivial!)
+    (λ α → ext (λ i → refl))
   Fibrewise-diagram-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
     ConstL→Diagram
     (λ F' → Lifting-pathp E refl (λ _ → refl) (λ _ → refl))

@@ -37,8 +37,8 @@ op-functor→ : Functor (Cat[ C , D ] ^op) Cat[ C ^op , D ^op ]
 op-functor→ .F₀ = Functor.op
 op-functor→ .F₁ nt .η = nt .η
 op-functor→ .F₁ nt .is-natural x y f = sym (nt .is-natural y x f)
-op-functor→ .F-id = trivial!
-op-functor→ .F-∘ f g = trivial!
+op-functor→ .F-id    = ext λ i → refl
+op-functor→ .F-∘ f g = ext λ i → refl
 
 op-functor-is-iso : is-precat-iso (op-functor→ {C = C} {D = D})
 op-functor-is-iso = isom where
@@ -50,8 +50,8 @@ op-functor-is-iso = isom where
     ff : is-iso (F₁ op-functor→)
     ff .from nt .η = nt .η
     ff .from nt .is-natural x y f = sym (nt .is-natural y x f)
-    ff .rinv x = trivial!
-    ff .linv x = trivial!
+    ff .rinv x = ext λ _ → refl
+    ff .linv x = ext λ _ → refl
   isom .has-is-iso = is-iso→is-equiv $ iso unopF
     (λ x → Functor-path (λ x → refl) (λ x → refl))
     (λ x → Functor-path (λ x → refl) (λ x → refl))

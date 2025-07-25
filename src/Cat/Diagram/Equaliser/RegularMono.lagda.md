@@ -213,7 +213,7 @@ the code below demonstrates.
       hom : ↓Hom _ _ itself other
       hom .α = tt
       hom .β = other .map
-      hom .sq = trivial!
+      hom .sq = ext refl
 
       unique : ∀ x → hom ≡ x
       unique x = ↓Hom-path _ _ refl

@@ -123,8 +123,8 @@ homomorphisms $A \to [B,C]$.
     morp .is-iso.from uc .Bilinear.map x y = uc · x · y
     morp .is-iso.from uc .Bilinear.pres-*l x y z = ap (_· _) (uc .snd .is-group-hom.pres-⋆ _ _)
     morp .is-iso.from uc .Bilinear.pres-*r x y z = (uc · _) .snd .is-group-hom.pres-⋆ _ _
-    morp .is-iso.rinv uc = trivial!
-    morp .is-iso.linv uc = trivial!
+    morp .is-iso.rinv uc = ext λ _ _ → refl
+    morp .is-iso.linv uc = ext λ _ _ → refl
 ```
 
 ## The tensor product {defines="tensor-product-of-abelian-groups"}
@@ -299,7 +299,7 @@ an equivalence requires appealing to an induction principle of
       (λ x y → ap₂ C._*_ x y ∙ sym (hom .snd .is-group-hom.pres-⋆ _ _))
       (λ x → ap C._⁻¹ x ∙ sym (is-group-hom.pres-inv (hom .snd)))
       (sym (is-group-hom.pres-id (hom .snd)))
-    morp .is-iso.linv x = trivial!
+    morp .is-iso.linv x = ext λ _ _ → refl
 ```
 
 <!--
@@ -350,8 +350,8 @@ Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin .Bilinear.map x y       = f · x , g · y
   bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
   bilin .Bilinear.pres-*r x y z = ap (f · x ,_) (g .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
-Ab-tensor-functor .F-id    = trivial!
-Ab-tensor-functor .F-∘ f g = trivial!
+Ab-tensor-functor .F-id    = ext λ _ _ → refl
+Ab-tensor-functor .F-∘ f g = ext λ _ _ → refl
 
 Tensor⊣Hom : (A : Abelian-group ℓ) → Bifunctor.Left Ab-tensor-functor A ⊣ Bifunctor.Right Ab-hom-functor A
 Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
@@ -364,5 +364,5 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
     (Hom≃Bilinear _ _ _ .snd)
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
-  nat f g h = trivial!
+  nat f g h = ext λ _ _ → refl
 ```

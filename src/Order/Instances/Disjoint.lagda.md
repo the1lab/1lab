@@ -109,7 +109,7 @@ Posets-has-set-indexed-coproducts I F = mk where
   mk .ΣF = Disjoint I F
   mk .ι  = injᵖ
   mk .has-is-ic .match      = matchᵖ
-  mk .has-is-ic .commute    = trivial!
+  mk .has-is-ic .commute    = ext λ _ → refl
   mk .has-is-ic .unique f p = ext λ i x → p i ·ₚ x
 ```
 

@@ -316,8 +316,8 @@ because it contains *every* morphism:
 Sh[]-true : Subobject (Sheaves J ℓ) ΩJ
 Sh[]-true .domain                = Terminal.top (Sh[]-terminal J)
 Sh[]-true .map .η _ _            = maximal' , (λ _ _ → tt)
-Sh[]-true .map .is-natural x y f = trivial!
-Sh[]-true .monic g h x           = trivial!
+Sh[]-true .map .is-natural x y f = ext λ _ _ → refl
+Sh[]-true .monic g h x           = ext λ _ _ → refl
 ```
 
 <details>
@@ -332,7 +332,8 @@ Sh[]-true-is-generic : is-generic-subobject (Sheaves J ℓ) Sh[]-true
 Sh[]-true-is-generic .name         = sheaf-name
 Sh[]-true-is-generic .classifies m = record { has-is-pb = pb' } where
   rem : is-pullback-along (PSh ℓ C) (m .map) (ΩJ=>Ω ∘nt sheaf-name m) (ΩJ=>Ω ∘nt Sh[]-true .map)
-  rem = record { has-is-pb = subst-is-pullback refl trivial! refl trivial!
+  rem = record { has-is-pb = subst-is-pullback
+    refl (ext λ _ _ _ → refl) refl (ext λ _ _ _ → refl)
     (ΩPSh.classifies (sheaf-name.sub' m) .has-is-pb) }
 
   pb' : is-pullback (Sheaves J ℓ) (m .map) (sheaf-name m) (rem .top) (Sh[]-true .map)

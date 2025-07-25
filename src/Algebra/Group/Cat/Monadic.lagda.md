@@ -151,8 +151,9 @@ Group-is-monadic = is-precat-iso→is-equivalence
   k₁inv f .snd .is-group-hom.pres-⋆ x y = happly (f .snd) (inc x ◆ inc y)
 
   ff : is-fully-faithful K
-  ff = is-iso→is-equiv $ iso k₁inv (λ x → trivial!)
-                                   (λ x → Grp.Grp↪Sets-is-faithful refl)
+  ff = is-iso→is-equiv $ iso k₁inv
+    (λ x → ext λ _ → refl)
+    (λ x → Grp.Grp↪Sets-is-faithful refl)
 ```
 
 To show that the object mapping of the comparison functor is invertible,

@@ -94,12 +94,11 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
     (funext (equiv→unit f-eqv))
 
   equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (∣ A ∣ ≃ ∣ B ∣)
-  equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q) where
-    p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
-    p x = trivial!
-
-    q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
-    q x = trivial!
+  equiv≃iso .fst = iso→equiv
+  equiv≃iso .snd = is-iso→is-equiv record where
+    from   = equiv→iso
+    linv f = ext λ _ → refl
+    rinv f = ext λ _ → refl
 ```
 
 We then use [univalence for $n$-types] to directly establish that $(A

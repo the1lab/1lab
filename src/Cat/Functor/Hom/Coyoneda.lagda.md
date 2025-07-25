@@ -211,7 +211,7 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
     where
       f' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
       f' .hom = f
-      f' .commutes o = trivial!
+      f' .commutes o = ext λ i x → refl
 
       g' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
       g' .hom = g

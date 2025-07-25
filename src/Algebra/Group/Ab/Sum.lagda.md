@@ -83,7 +83,7 @@ limits][rapl]).
   Direct-sum-is-product .⟨_,_⟩ f g .snd .pres-⋆ x y =
     Σ-pathp (f .snd .pres-⋆ x y) (g .snd .pres-⋆ x y)
 
-  Direct-sum-is-product .π₁∘⟨⟩ = trivial!
-  Direct-sum-is-product .π₂∘⟨⟩ = trivial!
+  Direct-sum-is-product .π₁∘⟨⟩ = ext λ _ → refl
+  Direct-sum-is-product .π₂∘⟨⟩ = ext λ _ → refl
   Direct-sum-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
 ```

@@ -68,8 +68,8 @@ Free-DCPO .F₁ f =
   const-inhabited-fam→is-lub
     (λ ix → ap f (disc-is-lub→const x-lub ix))
     (dir .elt)
-Free-DCPO .F-id = trivial!
-Free-DCPO .F-∘ _ _ = trivial!
+Free-DCPO .F-id    = ext λ _ → refl
+Free-DCPO .F-∘ _ _ = ext λ _ → refl
 ```
 
 Furthermore, this functor is left adjoint to the forgetful functor
@@ -90,8 +90,8 @@ Free-DCPO⊣Forget-DCPO .counit .η D =
           y   ≤∎)
         (dir .elt)
    where open DCPO D
-Free-DCPO⊣Forget-DCPO .counit .is-natural x y f = trivial!
-Free-DCPO⊣Forget-DCPO .zig = trivial!
+Free-DCPO⊣Forget-DCPO .counit .is-natural x y f = ext λ _ → refl
+Free-DCPO⊣Forget-DCPO .zig = ext λ _ → refl
 Free-DCPO⊣Forget-DCPO .zag = refl
 ```
 

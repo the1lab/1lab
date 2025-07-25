@@ -248,7 +248,7 @@ essentially independent of the coordinate.
 In the opposite direction, the natural transformation is defined by
 evaluating at the point. These natural transformations compose to the
 identity almost definitionally, but Agda does need some convincing,
-using our path helpers, `Functor-path`{.Agda} and `trivial!`{.Agda}.
+using our path helpers, `Functor-path`{.Agda} and `ext`{.Agda}.
 
 ```agda
     g : GlobalSections => Γ
@@ -259,7 +259,7 @@ using our path helpers, `Functor-path`{.Agda} and `trivial!`{.Agda}.
     f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (x .F-id)
 
     g∘f : g ∘nt f ≡ idnt
-    g∘f = trivial!
+    g∘f = ext λ _ _ → refl
 ```
 
 # Connected components {defines="connected-component"}
@@ -322,13 +322,13 @@ the same set we started with.
 
 ```agda
   adj .counit .η X = Quot-elim (λ _ → X .is-tr) (λ x → x) λ x y r → r
-  adj .counit .is-natural x y f = trivial!
+  adj .counit .is-natural x y f = ext λ _ → refl
 ```
 
 The triangle identities are again straightforwardly checked.
 
 ```agda
-  adj .zig {x} = trivial!
+  adj .zig {x} = ext λ _ → refl
   adj .zag = Functor-path (λ x → refl) λ f → refl
 ```
 

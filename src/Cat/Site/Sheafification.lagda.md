@@ -398,7 +398,7 @@ in $B(U)$ is $J$-local.
   make-free-sheaf F .fo.free = Sheafify F , Sheafify-is-sheaf F
   make-free-sheaf F .fo.unit = unit
   make-free-sheaf F .fo.fold {G , shf} = univ G shf
-  make-free-sheaf F .fo.commute = trivial!
+  make-free-sheaf F .fo.commute = ext λ _ _ → refl
   make-free-sheaf F .fo.unique {G , shf} _ p = sym $
     unique G shf _ _ λ U x → p ηₚ _ $ₚ _
 ```

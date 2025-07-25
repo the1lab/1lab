@@ -137,8 +137,8 @@ module _ (p : Functor C C') where
   precompose : Functor Cat[ C' , D ] Cat[ C , D ]
   precompose .F₀ G    = G F∘ p
   precompose .F₁ θ    = θ ◂ p
-  precompose .F-id    = trivial!
-  precompose .F-∘ f g = trivial!
+  precompose .F-id    = ext λ _ → refl
+  precompose .F-∘ f g = ext λ _ → refl
 
   postcompose : Functor Cat[ D , C ] Cat[ D , C' ]
   postcompose .F₀ G    = p F∘ G
@@ -194,7 +194,7 @@ module _ {F G : Functor C D} where
 <!--
 ```agda
 ◂-distribl : (α ∘nt β) ◂ H ≡ (α ◂ H) ∘nt (β ◂ H)
-◂-distribl = trivial!
+◂-distribl = ext λ _ → refl
 
 ▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
 ▸-distribr {F = F} = ext λ _ → F .F-∘ _ _

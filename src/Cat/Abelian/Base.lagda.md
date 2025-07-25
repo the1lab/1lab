@@ -177,7 +177,7 @@ module _ where
   open Ab-category
   Ab-ab-category : ∀ {ℓ} → Ab-category (Ab ℓ)
   Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
-  Ab-ab-category .∘-linear-l f g h = trivial!
+  Ab-ab-category .∘-linear-l f g h = ext λ _ → refl
   Ab-ab-category .∘-linear-r f g h = ext λ _ →
     sym (f .snd .is-group-hom.pres-⋆ _ _)
 ```

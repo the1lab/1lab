@@ -44,8 +44,8 @@ ident=is-equiv-is-prop}.
 The associativity and identity laws hold definitionally.
 
 ```agda
-  group-str .assoc _ _ _ = trivial!
-  group-str .idl _ = trivial!
+  group-str .assoc _ _ _ = ext λ _ → refl
+  group-str .idl _       = ext λ _ → refl
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and

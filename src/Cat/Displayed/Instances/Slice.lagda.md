@@ -156,7 +156,7 @@ Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
 Fibre→slice .F₀ x = x
 Fibre→slice .F₁ f ./-Hom.map = f .to
 Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
-Fibre→slice .F-id = trivial!
+Fibre→slice .F-id = ext refl
 Fibre→slice .F-∘ f g = ext (transport-refl _)
 
 Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})

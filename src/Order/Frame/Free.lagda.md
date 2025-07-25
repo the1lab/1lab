@@ -49,8 +49,8 @@ Frame↪SLat .F₀ (_ , A) = Frm.meets A
 
 Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .witness = has-meet-slat-hom (f .witness)
-Frame↪SLat .F-id    = trivial!
-Frame↪SLat .F-∘ f g = trivial!
+Frame↪SLat .F-id    = ext λ _ → refl
+Frame↪SLat .F-∘ f g = ext λ _ → refl
 ```
 
 The question this module seeks to answer is: is there a way to freely

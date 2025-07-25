@@ -575,7 +575,7 @@ giving us the appropriate universal property for an algebraically free monad.
     FAlg≅Free-EM : is-precat-iso FAlg→Free-EM
     FAlg≅Free-EM .is-precat-iso.has-is-ff =
       is-iso→is-equiv $ iso lower-alg-hom
-        (λ _ → trivial!)
+        (λ _ → ext refl)
         (λ _ → ∫Hom-path F-Algebras refl prop!)
     FAlg≅Free-EM .is-precat-iso.has-is-iso =
       Σ-ap-snd f-algebra≃free-monad-algebra .snd

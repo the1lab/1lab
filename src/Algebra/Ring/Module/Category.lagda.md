@@ -175,7 +175,7 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp .invl f      = ext λ x → +-invl
   grp .comm f g    = ext λ x → +-comm _ _
 
-R-Mod-ab-category .∘-linear-l f g h = trivial!
+R-Mod-ab-category .∘-linear-l f g h = ext λ _ → refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = ext λ x →
   sym (is-linear-map.pres-+ (f .snd) _ _)
 ```
@@ -211,7 +211,7 @@ R-Mod-is-additive .has-terminal = term where
   term .Terminal.top = ∅ᴹ
   term .Terminal.has⊤ x .centre .fst _ = lift tt
   term .Terminal.has⊤ x .centre .snd .linear r s t = refl
-  term .Terminal.has⊤ x .paths r = trivial!
+  term .Terminal.has⊤ x .paths r = ext λ _ → refl
 ```
 
 For the direct products, on the other hand, we have to do a bit more
@@ -259,8 +259,8 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .⟨_,_⟩ f g .fst x = f · x , g · x
   prod .has-is-product .⟨_,_⟩ f g .snd .linear r m s =
     Σ-pathp (f .snd .linear _ _ _) (g .snd .linear _ _ _)
-  prod .has-is-product .π₁∘⟨⟩ = trivial!
-  prod .has-is-product .π₂∘⟨⟩ = trivial!
+  prod .has-is-product .π₁∘⟨⟩ = ext λ _ → refl
+  prod .has-is-product .π₂∘⟨⟩ = ext λ _ → refl
   prod .has-is-product .unique p q = ext λ x → p ·ₚ x ,ₚ q ·ₚ x
 ```
 

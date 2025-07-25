@@ -188,8 +188,8 @@ unique: but it suffices to reason at the level of sets.
   mk .ι₁ = in0
   mk .ι₂ = in1
   mk .has-is-coproduct .is-coproduct.[_,_] {Q = Q} f g = disj f g
-  mk .has-is-coproduct .[]∘ι₁ = trivial!
-  mk .has-is-coproduct .[]∘ι₂ = trivial!
+  mk .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
+  mk .has-is-coproduct .[]∘ι₂ = ext λ _ → refl
   mk .has-is-coproduct .unique p q = ext λ where
     (inl x) → p ·ₚ x
     (inr x) → q ·ₚ x

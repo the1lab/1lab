@@ -156,8 +156,8 @@ The universal property of the pushout is easy to verify.
     go (squash x y α β i j) =
       Q.has-is-set (go x) (go y) (λ i → go (α i)) (λ i → go (β i)) i j
   Groups-pushout .universal comm .snd .pres-⋆ _ _ = refl
-  Groups-pushout .universal∘i₁ = trivial!
-  Groups-pushout .universal∘i₂ = trivial!
+  Groups-pushout .universal∘i₁ = ext λ _ → refl
+  Groups-pushout .universal∘i₂ = ext λ _ → refl
   Groups-pushout .unique {Q = Q} {colim' = u} comm₁ comm₂ = ext $
     Amalgamated-elim-prop (λ _ → hlevel 1)
       (λ x p y q → u .snd .pres-⋆ x y ∙ ap₂ Q._⋆_ p q)

@@ -112,7 +112,7 @@ Posets-has-indexed-products F = mk where
   mk .ΠF = Pointwise _ F
   mk .π  = prjᵖ
   mk .has-is-ip .tuple   = tupleᵖ
-  mk .has-is-ip .commute = trivial!
+  mk .has-is-ip .commute = ext λ _ → refl
   mk .has-is-ip .unique f g = ext λ y i → g i ·ₚ y
 ```
 

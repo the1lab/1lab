@@ -161,13 +161,13 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors .F₁ {X} {Y} f .is-natural x y =
     J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)
       (ap (f x ∘_) (lift-f X .F-id) ∙∙ id-comm ∙∙ ap (_∘ f x) (sym (lift-f Y .F-id)))
-  Families→functors .F-id = trivial!
+  Families→functors .F-id = ext λ _ → refl
   Families→functors .F-∘ f g =
-    ap (Families→functors .F₁) (transport-refl _) ∙ trivial!
+    ap (Families→functors .F₁) (transport-refl _) ∙ ext (λ i → refl)
 
   Families→functors-is-ff : is-fully-faithful Families→functors
   Families→functors-is-ff = is-iso→is-equiv
-    (iso η (λ x → trivial!) λ x → refl)
+    (iso η (λ x → ext λ i → refl) λ x → refl)
 
   open is-precat-iso
   Families→functors-is-iso : is-precat-iso Families→functors

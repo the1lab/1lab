@@ -95,8 +95,8 @@ PSh-products A B = prod where
   prod .has-is-product .⟨_,_⟩ f g =
     NT (λ i x → f .η i x , g .η i x) λ x y h i a →
       f .is-natural x y h i a , g .is-natural x y h i a
-  prod .has-is-product .π₁∘⟨⟩ = trivial!
-  prod .has-is-product .π₂∘⟨⟩ = trivial!
+  prod .has-is-product .π₁∘⟨⟩ = ext λ _ _ → refl
+  prod .has-is-product .π₂∘⟨⟩ = ext λ _ _ → refl
   prod .has-is-product .unique p q = ext λ i x → unext p i x ,ₚ unext q i x
 ```
 
@@ -150,8 +150,8 @@ componentwise.
   pb .has-is-pb .universal path .η idx arg = _ , _ , unext path _ _
   pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f = funext λ x →
     pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
-  pb .has-is-pb .p₁∘universal = trivial!
-  pb .has-is-pb .p₂∘universal = trivial!
+  pb .has-is-pb .p₁∘universal = ext λ _ _ → refl
+  pb .has-is-pb .p₂∘universal = ext λ _ _ → refl
   pb .has-is-pb .unique p q = ext λ _ _ →
     pb-path (unext p _ _) (unext q _ _)
 ```
@@ -197,8 +197,8 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
 
   clo c .F₁ f .η i (a , g) = f a , g
   clo c .F₁ f .is-natural x y g = refl
-  clo c .F-id = trivial!
-  clo c .F-∘ f g = trivial!
+  clo c .F-id    = ext λ _ _ _ → refl
+  clo c .F-∘ f g = ext λ _ _ _ → refl
 
   clo⊣ev : (c : ⌞ C ⌟) → clo {ℓ} c ⊣ ev c
   clo⊣ev c = hom-iso→adjoints (λ f x → f .η _ (x , id)) (is-iso→is-equiv iiso) λ g h x → refl where

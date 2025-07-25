@@ -259,9 +259,9 @@ Posets o ℓ .Precategory.Hom-set _ _ = hlevel 2
 Posets o ℓ .Precategory.id  = idₘ
 Posets o ℓ .Precategory._∘_ = _∘ₘ_
 
-Posets o ℓ .Precategory.idr f       = trivial!
-Posets o ℓ .Precategory.idl f       = trivial!
-Posets o ℓ .Precategory.assoc f g h = trivial!
+Posets o ℓ .Precategory.idr f       = ext λ _ → refl
+Posets o ℓ .Precategory.idl f       = ext λ _ → refl
+Posets o ℓ .Precategory.assoc f g h = ext λ _ → refl
 ```
 
 <!--

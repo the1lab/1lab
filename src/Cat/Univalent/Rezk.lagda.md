@@ -163,7 +163,7 @@ functor is fully faithful, that's equivalent to what we want.
           (Functor-is-category Sets-is-category)
           (よim.embed , よim.embed-is-embedding))
         (λ x y → Rezk↪PSh.iso-equiv e⁻¹)
-        λ x → trivial!
+        λ x → ext (λ _ _ → refl)
 ```
 
 It remains to show that the functor $\cA \to \widehat{\cA}$ is a

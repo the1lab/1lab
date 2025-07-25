@@ -114,13 +114,13 @@ Note that the twisted arrow category is equivalently the
     F : Functor Twisted (∫ Hom[-,-])
     F .F₀ a    = elem (a .fst) (a .snd)
     F .F₁ f    = elem-hom (f .before , f .after) (f .commutes)
-    F .F-id    = trivial!
-    F .F-∘ f g = trivial!
+    F .F-id    = ext refl
+    F .F-∘ f g = ext refl
 
     F-precat-iso : is-precat-iso F
     F-precat-iso .has-is-ff = injective-surjective→is-equiv!
       (λ p → Twist-path (ap (fst ⊙ hom) p) (ap (snd ⊙ hom) p))
-      λ f → inc (twist (f .hom .fst) (f .hom .snd) (f .commute) , trivial!)
+      λ f → inc (twist (f .hom .fst) (f .hom .snd) (f .commute) , ext refl)
     F-precat-iso .has-is-iso = is-iso→is-equiv (iso
       (λ e → e .ob , e .section)
       (λ e → refl) λ e → refl)

@@ -630,7 +630,7 @@ A similar result holds for a system of free objects.
   free-objects→left-adjoint→free-objects
     : ∀ (free-objects : ∀ x → Free-object U x)
     → left-adjoint→free-objects (free-objects→left-adjoint free-objects) ≡ free-objects
-  free-objects→left-adjoint→free-objects free-objects = trivial!
+  free-objects→left-adjoint→free-objects free-objects = ext (λ x → refl)
 ```
 
 This yields an equivalence between systems of free objects and left adjoints.
