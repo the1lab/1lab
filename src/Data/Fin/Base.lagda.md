@@ -53,7 +53,9 @@ Instead, we would like the `subst`{.Agda} operation on `Fin`{.Agda} to
 definitionally commute with the constructors, and (if possible) to
 definitionally preserve the underlying numeric value. Defining
 `Fin`{.Agda} as an indexed type with an irrelevant proof field achieves
-exactly this:
+exactly this. Moreover, if we're substituting over a loop, even at a
+neutral number, transport at `Fin`{.Agda} is definitionally the identity
+function.
 
 ```agda
 private
@@ -64,6 +66,9 @@ private
     }
 
   _ : ∀ {m n} {p : m ≡ n} {x : Fin m} → subst Fin p x ≡ cast p x
+  _ = refl
+
+  _ : ∀ {m} {p : m ≡ m} {x : Fin m} → subst Fin p x ≡ x
   _ = refl
 ```
 
