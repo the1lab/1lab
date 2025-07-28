@@ -39,7 +39,7 @@ $\top$ sends each $U : \cC$ to the maximal sieve on $U$.
 <!--
 ```agda
 open Lim ℓ C
-open Sub {C = PSh ℓ C} PSh-pullbacks
+open Sub PSh-pullbacks
 open Functor
 open Cat C
 open _=>_
@@ -47,7 +47,7 @@ open _=>_
 -->
 
 ```agda
-tru : ⊤PSh => Sieves {C = C}
+tru : ⊤PSh => Sieves
 tru .η x _            = maximal'
 tru .is-natural x y f = ext λ a {V} f → Ω-ua _ _
 ```
@@ -66,7 +66,7 @@ and naturality, while the proof of naturality for the overall
 construction is just functoriality of $P$.
 
 ```agda
-psh-name : {A : ⌞ PSh ℓ C ⌟} → Subobject A → A => Sieves {C = C}
+psh-name : {A : ⌞ PSh ℓ C ⌟} → Subobject A → A => Sieves
 psh-name {A} P .η x e .arrows {y} h = elΩ (fibre (P .map .η y) (A ⟪ h ⟫ e))
 psh-name {A} P .η x e .closed {f = f} = elim! λ x p g →
   let
@@ -84,7 +84,7 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 <!--
 ```agda
 PSh-omega : Subobject-classifier (PSh ℓ C)
-PSh-omega .Subobject-classifier.Ω = Sieves {C = C}
+PSh-omega .Subobject-classifier.Ω = Sieves
 
 PSh-omega .Subobject-classifier.true .Sub.domain      = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
@@ -121,6 +121,7 @@ map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
 PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
+  emb : ∀ {x} → is-embedding (P .map .η x)
   emb = is-monic→is-embedding-at (P .monic)
 
   square→pt
@@ -154,7 +155,7 @@ means that, by construction, it satisfies the universal property of a
 pullback.</summary>
 
 ```agda
-  pb : is-pullback (PSh ℓ C) _ _ (NT (λ _ _ → _) (λ x y f → refl)) _
+  pb : is-pullback (PSh ℓ C) (P .map) (psh-name P) (NT (λ _ _ → _) (λ x y f → refl)) tru
   pb .square = ext λ i x {V} f → to-is-true (inc (_ , P .map .is-natural _ _ _ $ₚ _))
 
   pb .universal path .η i e = square→pt path e .fst

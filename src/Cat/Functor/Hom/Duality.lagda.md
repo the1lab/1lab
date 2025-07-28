@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Functor.Hom.Representable
 open import Cat.Functor.Naturality
 open import Cat.Functor.Base

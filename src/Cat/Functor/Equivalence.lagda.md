@@ -7,7 +7,7 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
-import Cat.Reasoning
+import Cat.Reasoning as Cat
 
 module Cat.Functor.Equivalence where
 ```
@@ -17,6 +17,11 @@ module Cat.Functor.Equivalence where
 private variable
   o h : Level
   C D E : Precategory o h
+
+private module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat C using (_∘Iso_ ; _Iso⁻¹ ; invl ; invr) public
+  open Cat.is-invertible C using (invl ; invr) public
+
 open Functor hiding (op)
 open _=>_ hiding (op)
 ```
@@ -35,10 +40,8 @@ adjoint triple $F \dashv G \dashv F$.
 ```agda
 record is-equivalence (F : Functor C D) : Type (adj-level C D) where
   private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-    module [C,C] = Cat.Reasoning Cat[ C , C ]
-    module [D,D] = Cat.Reasoning Cat[ D , D ]
+    [C,C] = Cat[ C , C ]
+    [D,D] = Cat[ D , D ]
 
   field
     F⁻¹      : Functor D C
@@ -47,26 +50,25 @@ record is-equivalence (F : Functor C D) : Type (adj-level C D) where
   open _⊣_ F⊣F⁻¹ hiding (η ; ε) public
 
   field
-    unit-iso   : ∀ x → C.is-invertible (unit.η x)
-    counit-iso : ∀ x → D.is-invertible (counit.ε x)
+    unit-iso   : ∀ x → Cat.is-invertible C (unit.η x)
+    counit-iso : ∀ x → Cat.is-invertible D (counit.ε x)
 ```
 
 The first thing we note is that having a natural family of invertible
 morphisms gives isomorphisms in the respective functor categories:
 
 ```agda
-  F∘F⁻¹≅Id : (F F∘ F⁻¹) [D,D].≅ Id
-  F∘F⁻¹≅Id =
-    [D,D].invertible→iso counit
-      (invertible→invertibleⁿ _ counit-iso)
+  F∘F⁻¹≅Id : Cat.Isomorphism [D,D] (F F∘ F⁻¹) Id
+  F∘F⁻¹≅Id = Cat.invertible→iso [D,D]
+    counit
+    (invertible→invertibleⁿ _ counit-iso)
 
-  Id≅F⁻¹∘F : Id [C,C].≅ (F⁻¹ F∘ F)
-  Id≅F⁻¹∘F =
-    [C,C].invertible→iso unit
-      (invertible→invertibleⁿ _ unit-iso)
+  Id≅F⁻¹∘F : Cat.Isomorphism [C,C] Id (F⁻¹ F∘ F)
+  Id≅F⁻¹∘F = Cat.invertible→iso [C,C]
+    unit (invertible→invertibleⁿ _ unit-iso)
 
-  unit⁻¹ = [C,C]._≅_.from Id≅F⁻¹∘F
-  counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
+  unit⁻¹   = Cat.from Id≅F⁻¹∘F
+  counit⁻¹ = Cat.from F∘F⁻¹≅Id
 ```
 
 <!--
@@ -75,6 +77,10 @@ morphisms gives isomorphisms in the respective functor categories:
   F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
     open _⊣_
+
+    module C = Cat C using (id ; _∘_ ; cancelr ; introl)
+    module D = Cat D using (id ; _∘_ ; cancell ; intror)
+
     adj' : F⁻¹ ⊣ F
     adj' .unit   = counit⁻¹
     adj' .counit = unit⁻¹
@@ -82,27 +88,27 @@ morphisms gives isomorphisms in the respective functor categories:
       p : unit⁻¹ .η (F⁻¹ · a) ≡ F⁻¹ .F₁ (adj.ε _)
       p =
         unit⁻¹ .η _                                      ≡⟨ C.introl adj.zag ⟩
-        (F⁻¹ .F₁ (adj.ε _) C.∘ adj.η _) C.∘ unit⁻¹ .η _  ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
+        (F⁻¹ .F₁ (adj.ε _) C.∘ adj.η _) C.∘ unit⁻¹ .η _  ≡⟨ C.cancelr (unit-iso _ .invl) ⟩
         F⁻¹ .F₁ (adj.ε _)                                ∎
 
       zig' : unit⁻¹ .η (F⁻¹ · a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
-      zig' = ap₂ C._∘_ p refl ∙∙ sym (F⁻¹ .F-∘ _ _) ∙∙ ap (F⁻¹ .F₁) (counit-iso _ .D.is-invertible.invl) ∙ F⁻¹ .F-id
+      zig' = ap₂ C._∘_ p refl ∙∙ sym (F⁻¹ .F-∘ _ _) ∙∙ ap (F⁻¹ .F₁) (counit-iso _ .invl) ∙ F⁻¹ .F-id
 
     adj' .zag {b} = zag' where abstract
       p : counit⁻¹ .η (F · b) ≡ F .F₁ (adj.η b)
       p =
         counit⁻¹ .η _                                  ≡⟨ D.intror adj.zig ⟩
-        counit⁻¹ .η _ D.∘ adj.ε _ D.∘ F .F₁ (adj.η b)  ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
+        counit⁻¹ .η _ D.∘ adj.ε _ D.∘ F .F₁ (adj.η b)  ≡⟨ D.cancell (counit-iso _ .invr) ⟩
         F .F₁ (adj.η b)                                ∎
 
       zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F · b) ≡ D.id
-      zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id
+      zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .invr) ∙ F .F-id
 
   inverse-equivalence : is-equivalence F⁻¹
   inverse-equivalence = record
     { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
-    ; unit-iso   = λ x → D.is-invertible-inverse (counit-iso _)
-    ; counit-iso = λ x → C.is-invertible-inverse (unit-iso _)
+    ; unit-iso   = λ x → Cat.is-invertible-inverse D (counit-iso _)
+    ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
 -->
@@ -267,8 +273,8 @@ again pick the given isomorphism.
 ```agda
   ff+split-eso→counit .is-natural x y f =
     fty D.∘ ⌜ F .F₁ (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ⌝ ≡⟨ ap! (ff.ε _) ⟩
-    fty D.∘ ffy D.∘ f D.∘ ftx                   ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
-    f D.∘ ftx                                   ∎
+    fty D.∘ ffy D.∘ f D.∘ ftx                    ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
+    f D.∘ ftx                                    ∎
     where
       open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
       open Σ (eso y) renaming (fst to f*y ; snd to f*y-iso)
@@ -398,8 +404,7 @@ module
     (ff : is-fully-faithful F)
   where
   private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
+    module D = Cat D using (cancell)
 ```
 
 So, suppose we have categories $\cC$ and $\cD$, together with a
@@ -422,10 +427,10 @@ ident=is-ff→essentially-injective} $x \cong y$ in $\cC$, which $F$
 sends back to $i \circ j\inv$.
 
 ```agda
-    Fx≅Fy : F .F₀ x D.≅ F .F₀ y
-    Fx≅Fy = j D.Iso⁻¹ D.∘Iso i
+    Fx≅Fy : Cat.Isomorphism D (F · x) (F · y)
+    Fx≅Fy = j Iso⁻¹ ∘Iso i
 
-    x≅y : x C.≅ y
+    x≅y : Cat.Isomorphism C x y
     x≅y = is-ff→essentially-injective {F = F} ff Fx≅Fy
 ```
 
@@ -449,9 +454,9 @@ because we can use the helper `Hom-pathp-reflr-iso`{.Agda} to establish
 the result with far less computation:
 
 ```agda
-    over' : PathP (λ i → Fx≡Fy i D.≅ z) i j
-    over' = D.≅-pathp Fx≡Fy refl
-      (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
+    over' : PathP (λ i → Cat.Isomorphism D (Fx≡Fy i) z) i j
+    over' = Cat.≅-pathp _ Fx≡Fy refl
+      (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .invl)))
 ```
 
 We must then connect $\ap{F}{p}$ with this path $F(x) \cong F(y)$. But
@@ -466,8 +471,8 @@ indeed the same path:
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
-    over : PathP (λ i → F .F₀ (x≡y i) D.≅ z) i j
-    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over'
+    over : PathP (λ i → Cat.Isomorphism D (F · x≡y i) z) i j
+    over = transport (λ l → PathP (λ m → Cat.Isomorphism D (square (~ l) m) z) i j) over'
 ```
 
 Hence --- blink and you'll miss it --- the essential fibres of $F$ over
@@ -508,11 +513,9 @@ is-cat-equivalence→equiv-on-objects
 is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
   is-iso→is-equiv $
     iso (e.F⁻¹ .F₀)
-      (λ d → dcat .to-path (D.invertible→iso _ (e.counit-iso d)))
-      (λ c → sym $ ccat .to-path (C.invertible→iso _ (e.unit-iso c)))
+      (λ d → dcat .to-path (Cat.invertible→iso _ _ (e.counit-iso d)))
+      (λ c → sym $ ccat .to-path (Cat.invertible→iso _ _ (e.unit-iso c)))
   where
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
     module e = is-equivalence eqv
 ```
 
@@ -570,8 +573,8 @@ module
   where
   private
     module e = is-equivalence eqv
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
+    module C = Cat C using (_∘_ ; cancell)
+    module D = Cat D using (invertible→monic ; cancell ; _∘_)
     module F = Fr F
 
   is-equivalence→is-ff : is-fully-faithful F
@@ -580,21 +583,21 @@ module
     .is-iso.rinv x →
       D.invertible→monic (F-map-invertible F (e.unit-iso _)) _ _ $
         ap₂ D._∘_ refl (F .F-∘ _ _)
-      ∙∙ D.cancell (F.annihilate (e.unit-iso _ .C.is-invertible.invl))
+      ∙∙ D.cancell (F.annihilate (e.unit-iso _ .invl))
       ∙∙ D.invertible→monic (e.counit-iso _) _ _
           (R-L-adjunct e.F⊣F⁻¹ x ∙ sym (D.cancell e.zig))
     .is-iso.linv x →
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
-      ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
+      ∙ C.cancell (e.unit-iso _ .invr)
 
   is-equivalence→is-split-eso : is-split-eso F
   is-equivalence→is-split-eso y =
     (e.F⁻¹ .F₀ y) ,
-    D.invertible→iso (e.counit .η y) (e.counit-iso y)
+    Cat.invertible→iso D (e.counit .η y) (e.counit-iso y)
 
   is-equivalence→is-eso : is-eso F
   is-equivalence→is-eso y =
-    inc ((e.F⁻¹ .F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y))
+    inc ((e.F⁻¹ .F₀ y) , Cat.invertible→iso D (e.counit .η y) (e.counit-iso y))
 
   open is-precat-iso
   open is-iso
@@ -637,8 +640,8 @@ module _
   {D : Precategory od ℓd}
   where
   private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
+    module C = Precategory C using (Hom)
+    module D = Precategory D using (Hom)
 ```
 -->
 
@@ -650,7 +653,7 @@ module _
     → ∀ d d' → Σ[ c ∈ C ] Σ[ c' ∈ C ] (C.Hom c c' ≃ D.Hom d d')
   ff+split-eso→hom-equiv F ff split-eso d d' =
     d-fib .fst , d'-fib .fst ,
-    (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
+    (F .F₁ , ff) ∙e Cat.iso→hom-equiv D (d-fib .snd) (d'-fib .snd)
     where
       d-fib = split-eso d
       d'-fib = split-eso d'
@@ -663,7 +666,7 @@ module _
   ff+eso→hom-equiv F ff eso d d' = do
       (c , Fc≅d) ← eso d
       (c' , Fc'≅d') ← eso d'
-      pure (c , c' , (F .F₁ , ff) ∙e D.iso→hom-equiv Fc≅d Fc'≅d')
+      pure (c , c' , (F .F₁ , ff) ∙e Cat.iso→hom-equiv D Fc≅d Fc'≅d')
 ```
 
 This allows us to prove a very useful little lemma: if $F : \cC \to \cD$ is a
@@ -756,8 +759,8 @@ is-equivalence-natural-iso
   → is-equivalence F → is-equivalence G
 is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv where
   open is-equivalence
-  module C = Cat.Reasoning C
-  module D = Cat.Reasoning D
+  module C = Cat C using (invertible-∘ ; id-invertible)
+  module D = Cat D using (invertible-∘ ; _invertible⁻¹)
 
   G-eqv : is-equivalence G
   G-eqv .F⁻¹ = F-eqv .F⁻¹
@@ -797,8 +800,8 @@ is-equivalence-∘
 is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
   module F-eqv = is-equivalence F-eqv
   module G-eqv = is-equivalence G-eqv
-  module C = Cat.Reasoning C
-  module E = Cat.Reasoning E
+  module C = Cat C using (invertible-∘)
+  module E = Cat E using (invertible-∘)
 
   FG-eqv : is-equivalence (F F∘ G)
   FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
@@ -831,9 +834,9 @@ Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .is-natural x y f = C .idl _ ∙ s
 Id-is-equivalence {C = C} .F⊣F⁻¹ .zig = C .idl _
 Id-is-equivalence {C = C} .F⊣F⁻¹ .zag = C .idl _
 Id-is-equivalence {C = C} .unit-iso x =
-  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+  Cat.make-invertible C (C .id) (C .idl _) (C .idl _)
 Id-is-equivalence {C = C} .counit-iso x =
-  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+  Cat.make-invertible C (C .id) (C .idl _) (C .idl _)
 ```
 
 ### Preserving invertibility
@@ -852,8 +855,8 @@ module
     {L : Functor C D} {R : Functor D C} (L⊣R : L ⊣ R)
   where
   private
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
+    module C = Cat C using (is-invertible ; invertible-cancelr ; id ; id-invertible)
+    module D = Cat D using (is-invertible ; invertible-cancell ; id ; id-invertible)
     module L = Fr L
     module R = Fr R
 ```
@@ -893,8 +896,6 @@ module
   where
   private
     module e = is-equivalence eqv
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
     module F = Fr F
     module F⁻¹ = Fr e.F⁻¹
 ```
@@ -905,6 +906,6 @@ module
   equivalence→preserves-invertibility = prop-over-ext
     (adjunct-hom-equiv e.F⊣F⁻¹)
     (hlevel 1) (hlevel 1)
-    (λ f inv → C.invertible-∘ (F⁻¹.F-map-invertible inv) (e.unit-iso _))
-    (λ f inv → D.invertible-∘ (e.counit-iso _) (F.F-map-invertible inv))
+    (λ f inv → Cat.invertible-∘ _ (F⁻¹.F-map-invertible inv) (e.unit-iso _))
+    (λ f inv → Cat.invertible-∘ _ (e.counit-iso _) (F.F-map-invertible inv))
 ```

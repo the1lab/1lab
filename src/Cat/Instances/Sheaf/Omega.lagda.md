@@ -221,7 +221,7 @@ Finally, we can use this to show that $S'$ is closed.
 
 open _=>_
 
-ΩJ=>Ω : ΩJ .fst => Sieves {C = C}
+ΩJ=>Ω : ΩJ .fst => Sieves
 ΩJ=>Ω .η U              = fst
 ΩJ=>Ω .is-natural x y f = refl
 ```
@@ -255,7 +255,7 @@ sheaf-name {A} A' = nm module sheaf-name where
   emb : ∀ {i} → is-embedding (A' .map .η i)
   emb = is-monic→is-embedding-at ℓ C (sub' .monic)
 
-  nm' : A .fst => Sieves {C = C}
+  nm' : A .fst => Sieves
   nm' = psh-name sub'
 ```
 
@@ -276,17 +276,16 @@ work, this extends to a patch over $h^*(\name{A'} x)$.
 
 ```agda
   name-is-closed : {U : ⌞ C ⌟} (x : A ʻ U) → is-closed (nm' .η U x)
-  name-is-closed {U} x {V} h pb =
-    let
-      it = sat.split (A' .domain .snd) pb record
-        { part  = λ {W} f hf → □-out (emb _) hf .fst
-        ; patch = λ f hf g hgf → ap fst $ emb _
-          (_ , (A' .map .η _ (A' .domain .fst ⟪ g ⟫ (□-out (emb _) hf .fst))  ≡⟨ A' .map .is-natural _ _ _ $ₚ _ ⟩
-                (A .fst ⟪ g ⟫ (A' .map .η _ (□-out (emb _) hf .fst)))         ≡⟨ ap (A .fst .F₁ g) (□-out (emb _) hf .snd) ⟩
-                (A .fst ⟪ g ⟫ (A .fst ⟪ h ∘ f ⟫ x))                           ≡⟨ sym (A .fst .F-∘ _ _ $ₚ _) ⟩
-                (A .fst ⟪ (h ∘ f) ∘ g ⟫ x)                                    ∎))
-          (_ , □-out (emb _) hgf .snd ∙ ap₂ (A .fst .F₁) (assoc _ _ _) refl)
-        }
+  name-is-closed {U} x {V} h pb = inc (it .whole , prf) where
+    it = sat.split (A' .domain .snd) pb record where
+      part f hf = □-out (emb _) hf .fst
+      patch f hf g hgf = ap fst $ emb _
+        (_ , (A' .map .η _ (A' .domain .fst ⟪ g ⟫ (□-out (emb _) hf .fst))  ≡⟨ A' .map .is-natural _ _ _ $ₚ _ ⟩
+              (A .fst ⟪ g ⟫ (A' .map .η _ (□-out (emb _) hf .fst)))         ≡⟨ ap (A .fst .F₁ g) (□-out (emb _) hf .snd) ⟩
+              (A .fst ⟪ g ⟫ (A .fst ⟪ h ∘ f ⟫ x))                           ≡⟨ sym (A .fst .F-∘ _ _ $ₚ _) ⟩
+              (A .fst ⟪ (h ∘ f) ∘ g ⟫ x)                                    ∎))
+        (_ , □-out (emb _) hgf .snd ∙ ap₂ (A .fst .F₁) (assoc _ _ _) refl)
+
 ```
 
 We must then show that this is indeed a fibre of $A' \mono A$ over
@@ -295,13 +294,12 @@ so locally along $h^*(\name{A'} x)$, at which point we know that this is
 true by construction.
 
 ```agda
-      prf = sat.separate (A .snd) pb λ f hf →
-        A .fst ⟪ f ⟫ A' .map .η V (it .whole)          ≡˘⟨ A' .map .is-natural _ _ _ $ₚ _ ⟩
-        A' .map .η _ (A' .domain .fst ⟪ f ⟫ it .whole) ≡⟨ ap (A' .map .η _) (it .glues f hf) ⟩
-        A' .map .η _ (□-out (emb _) hf .fst)           ≡⟨ □-out (emb _) hf .snd ⟩
-        A .fst ⟪ h ∘ f ⟫ x                             ≡⟨ A .fst .F-∘ _ _ $ₚ _ ⟩
-        A .fst ⟪ f ⟫ (A .fst ⟪ h ⟫ x)                  ∎
-    in inc (it .whole , prf)
+    prf = sat.separate (A .snd) pb λ f hf →
+      A .fst ⟪ f ⟫ A' .map .η V (it .whole)          ≡˘⟨ A' .map .is-natural _ _ _ $ₚ _ ⟩
+      A' .map .η _ (A' .domain .fst ⟪ f ⟫ it .whole) ≡⟨ ap (A' .map .η _) (it .glues f hf) ⟩
+      A' .map .η _ (□-out (emb _) hf .fst)           ≡⟨ □-out (emb _) hf .snd ⟩
+      A .fst ⟪ h ∘ f ⟫ x                             ≡⟨ A .fst .F-∘ _ _ $ₚ _ ⟩
+      A .fst ⟪ f ⟫ (A .fst ⟪ h ⟫ x)                  ∎
 
   nm : A .fst => ΩJ .fst
   nm .η U x = record { fst = nm' .η U x ; snd = name-is-closed x }

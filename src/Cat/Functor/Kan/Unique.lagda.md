@@ -17,6 +17,13 @@ import Cat.Reasoning
 module Cat.Functor.Kan.Unique where
 ```
 
+<!--
+```agda
+private module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C using (module _≅_ ; module Inverses ; module is-invertible ; make-inverses ; inverses→invertible ; invertible→iso) public
+```
+-->
+
 # Uniqueness of Kan extensions
 
 [[Kan extensions]] (both left and [[right|right Kan extension]]) are
@@ -60,11 +67,7 @@ module
   private
     module l₁ = is-lan l₁
     module l₂ = is-lan l₂
-    module D = Cat.Reasoning D
-    module C'D = Cat.Reasoning Cat[ C' , D ]
-
-  open C'D._≅_
-  open C'D.Inverses
+    module D = Cat.Reasoning D using (pullr ; idl)
 ```
 -->
 
@@ -107,7 +110,7 @@ isomorphism.
     → (α ◂ p) ∘nt η₁ ≡ η₂
     → (β ◂ p) ∘nt η₂ ≡ η₁
     → Inversesⁿ α β
-  σ-inversesp α-factor β-factor = C'D.make-inverses
+  σ-inversesp α-factor β-factor = make-inverses
     (l₂.σ-uniq₂ η₂
       (ext λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
       (ext λ j → sym (D.idl _)))
@@ -123,7 +126,7 @@ isomorphism.
     → (α ◂ p) ∘nt η₁ ≡ η₂
     → is-invertibleⁿ α
   σ-is-invertiblep {α = α} α-factor =
-    C'D.inverses→invertible (σ-inversesp {α} α-factor l₂.σ-comm)
+    inverses→invertible (σ-inversesp {α} α-factor l₂.σ-comm)
 
   σ-inverses : Inversesⁿ (l₁.σ η₂) (l₂.σ η₁)
   σ-inverses = σ-inversesp l₁.σ-comm l₂.σ-comm
@@ -132,7 +135,7 @@ isomorphism.
   σ-is-invertible = σ-is-invertiblep l₁.σ-comm
 
   unique : G₁ ≅ⁿ G₂
-  unique = C'D.invertible→iso (l₁.σ η₂) (σ-is-invertiblep l₁.σ-comm)
+  unique = invertible→iso (l₁.σ η₂) (σ-is-invertiblep l₁.σ-comm)
 ```
 -->
 
@@ -154,8 +157,7 @@ module _
 
   private
     module lan = is-lan lan
-    module D = Cat.Reasoning D
-    module C'D = Cat.Reasoning Cat[ C' , D ]
+    module D = Cat.Reasoning D using (_∘_ ; refl⟩∘⟨_ ; _⟩∘⟨refl ; cancel-inner ; cancelr ; pushr ; pullr ; pulll ; deleter ; elimr ; pushl ; assoc)
     open _=>_
 ```
 -->
@@ -173,7 +175,7 @@ left extension of $F$ along $p$.
     → is-lan p F G' eta'
   is-invertible→is-lan {G' = G'} {eta'} invert = lan' where
     open is-lan
-    open C'D.is-invertible invert
+    open is-invertible invert
 
     lan' : is-lan p F G' eta'
     lan' .σ α = lan.σ α ∘nt inv
@@ -263,8 +265,7 @@ module _
     {G G' : Functor C' D} {eps eps'}
     where
   private
-    module C' = Cat.Reasoning C'
-    module D = Cat.Reasoning D
+    module D = Cat.Reasoning D using (extendl ; pulll)
     open Cat.Functor.Reasoning
     open _=>_
 ```
@@ -299,7 +300,7 @@ module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  open Cat.Reasoning Cat[ C , D ]
+  open Cat.Reasoning Cat[ C , D ] using (lswizzle ; rswizzle ; assoc)
   private module ◆ = Cat.Functor.Reasoning (F∘-functor {B = C'} {C = D} {A = C})
 
   natural-isos→lan-equiv
@@ -334,10 +335,10 @@ preserves-is-lan→preserves-lan {E = E} {C' = C'} H lan pres {G'} lan' =
       H.₁ _                                           ∎)
     pres
   where
-    module C' = Cat.Reasoning C'
-    module E = Cat.Reasoning E
-    module H = Cat.Functor.Reasoning H
-    module G' = Cat.Functor.Reasoning G'
+    module G' = Functor G' using (F-id ; ₁)
+    module C' = Precategory C' using (id)
+    module E  = Cat.Reasoning E using (id ; _∘_ ; idr ; pullr)
+    module H  = Cat.Functor.Reasoning H using (₁ ; eliml ; pulll)
     module One = Lan-unique lan lan'
 ```
 
@@ -410,32 +411,27 @@ module
   private
     module r₁ = is-ran r₁
     module r₂ = is-ran r₂
-    module D = Cat.Reasoning D
-    module C'D = Cat.Reasoning Cat[ C' , D ]
-
-  open C'D._≅_
-  open C'D.Inverses
+    module D = Cat.Reasoning D using (pulll ; idr ; idl)
 
   σ-inversesp
     : ∀ {α : G₂ => G₁} {β : G₁ => G₂}
     → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
     → (ε₂ ∘nt (β ◂ p)) ≡ ε₁
     → Inversesⁿ α β
-  σ-inversesp α-factor β-factor =
-    C'D.make-inverses
-      (r₁.σ-uniq₂ ε₁
-        (ext λ j → sym (D.pulll (α-factor ηₚ j) ∙ β-factor ηₚ j))
-        (ext λ j → sym (D.idr _)))
-      (r₂.σ-uniq₂ ε₂
-        (ext λ j → sym (D.pulll (β-factor ηₚ j) ∙ α-factor ηₚ j))
-        (ext λ j → sym (D.idr _)))
+  σ-inversesp α-factor β-factor = make-inverses
+    (r₁.σ-uniq₂ ε₁
+      (ext λ j → sym (D.pulll (α-factor ηₚ j) ∙ β-factor ηₚ j))
+      (ext λ j → sym (D.idr _)))
+    (r₂.σ-uniq₂ ε₂
+      (ext λ j → sym (D.pulll (β-factor ηₚ j) ∙ α-factor ηₚ j))
+      (ext λ j → sym (D.idr _)))
 
   σ-is-invertiblep
     : ∀ {α : G₂ => G₁}
     → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
     → is-invertibleⁿ α
   σ-is-invertiblep {α} α-factor =
-    C'D.inverses→invertible (σ-inversesp {α} α-factor r₂.σ-comm)
+    inverses→invertible (σ-inversesp {α} α-factor r₂.σ-comm)
 
   σ-inverses : Inversesⁿ (r₁.σ ε₂) (r₂.σ ε₁)
   σ-inverses = σ-inversesp r₁.σ-comm r₂.σ-comm
@@ -444,7 +440,7 @@ module
   σ-is-invertible = σ-is-invertiblep r₁.σ-comm
 
   unique : G₁ ≅ⁿ G₂
-  unique = C'D.invertible→iso (r₁.σ ε₂) (σ-is-invertiblep r₁.σ-comm) ni⁻¹
+  unique = invertible→iso (r₁.σ ε₂) (σ-is-invertiblep r₁.σ-comm) ni⁻¹
 
   counit : ε₁ ∘nt (r₁.σ ε₂ ◂ p) ≡ ε₂
   counit = r₁.σ-comm
@@ -457,8 +453,7 @@ module _
 
   private
     module ran = is-ran ran
-    module D = Cat.Reasoning D
-    module C'D = Cat.Reasoning Cat[ C' , D ]
+    module D = Cat.Reasoning D using (_⟩∘⟨refl ; refl⟩∘⟨_ ; cancel-inner ; cancell ; pushl ; pulll ; pullr ; deletel ; pushr ; assoc ; eliml)
     open _=>_
 
   -- These are more annoying to do via duality then it is to do by hand,
@@ -469,7 +464,7 @@ module _
     → is-ran p F G' eps'
   is-invertible→is-ran {G' = G'} {eps'} invert = ran' where
     open is-ran
-    open C'D.is-invertible invert
+    open is-invertible invert
 
     ran' : is-ran p F G' eps'
     ran' .σ β = inv ∘nt ran.σ β
@@ -550,7 +545,7 @@ module _
     {G G' : Functor C' D} {eps eps'}
     where
   private
-    module D = Cat.Reasoning D
+    module D = Precategory D using (_∘_ ; assoc)
     open _=>_
 
   natural-isos→is-ran
@@ -572,8 +567,8 @@ module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  open Cat.Reasoning Cat[ C , D ]
-  private module ◆ = Cat.Functor.Reasoning (F∘-functor {B = C'} {C = D} {A = C})
+  open Cat.Reasoning Cat[ C , D ] using (lswizzle ; rswizzle ; assoc)
+  private module ◆ = Cat.Functor.Reasoning (F∘-functor {B = C'} {C = D} {A = C}) using (annihilate)
 
   natural-isos→ran-equiv
     : (p-iso : p ≅ⁿ p')
@@ -601,10 +596,10 @@ preserves-is-ran→preserves-ran {E = E} {C' = C'} H {G = G} ran pres ran' =
       H.₁ _                                        ∎)
     pres
   where
-    module C' = Cat.Reasoning C'
-    module E = Cat.Reasoning E
-    module H = Cat.Functor.Reasoning H
-    module G = Cat.Functor.Reasoning G
+    module G  = Functor G using (F-id ; ₁)
+    module C' = Precategory C'
+    module E  = Cat.Reasoning E using (id ; _∘_ ; idl ; refl⟩∘⟨_)
+    module H  = Cat.Functor.Reasoning H using (collapse ; eliml ; ₁)
     module One = Ran-unique ran ran'
 
 Ran-is-prop

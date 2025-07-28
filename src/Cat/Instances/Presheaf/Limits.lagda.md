@@ -217,11 +217,12 @@ above and from the observation that being a monomorphism is a limit
 property.
 
 ```agda
-is-monic→is-embedding-at
-  : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
-  → Cat.is-monic (PSh ℓ C) m
-  → ∀ {i} → is-embedding (m .η i)
-is-monic→is-embedding-at {Y = Y} {m} mono {i} =
-  monic→is-embedding (hlevel 2) λ {C} g h →
-    right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
+abstract
+  is-monic→is-embedding-at
+    : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
+    → Cat.is-monic (PSh ℓ C) m
+    → ∀ {i} → is-embedding (m .η i)
+  is-monic→is-embedding-at {Y = Y} {m} mono {i} =
+    monic→is-embedding (hlevel 2) λ {C} g h →
+      right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
 ```
