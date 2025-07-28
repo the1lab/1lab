@@ -121,18 +121,18 @@ as natural transformations $\cC(-,U) \To B$, for any $x : A(U)$.
 ```agda
   yo-natl
     : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {y : B ʻ U} {h : A => B}
-    → h .η U x ≡ y → h ∘nt yo {C = C} A x ≡ yo B y
+    → h .η U x ≡ y → h ∘nt yo A x ≡ yo B y
   yo-natl {B = B} {h = h} p = ext λ i f → h .is-natural _ _ _ · _ ∙ PSh.ap B p
 
   yo-naturall
     : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {h : A => B}
-    → h ∘nt yo {C = C} A x ≡ yo B (h .η U x)
+    → h ∘nt yo A x ≡ yo B (h .η U x)
   yo-naturall = yo-natl refl
 ```
 
 <!--
 ```agda
-  unyo-path : ∀ {U : ⌞ C ⌟} {x y : A ʻ U} → yo {C = C} A x ≡ yo A y → x ≡ y
+  unyo-path : ∀ {U : ⌞ C ⌟} {x y : A ʻ U} → yo A x ≡ yo A y → x ≡ y
   unyo-path {x = x} {y} p =
     x          ≡⟨ A.intro refl ⟩
     A ⟪ id ⟫ x ≡⟨ unext p _ id ⟩

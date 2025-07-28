@@ -174,17 +174,14 @@ into an object, it's representable!
 ```agda
   Mon→PshMon-rep
     : ∀ {m} → (mon : C-Monoid m)
-    → Representation {C = C} (Mon↪Sets F∘ Mon→PshMon mon)
+    → Representation (Mon↪Sets F∘ Mon→PshMon mon)
   Mon→PshMon-rep {m = m} mon .rep = m
-  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
-    open make-natural-iso
-
-    ni : make-natural-iso (Mon↪Sets F∘ Mon→PshMon mon) (Hom-into C m)
-    ni .eta _ f   = f
-    ni .inv _ f   = f
-    ni .eta∘inv _ = refl
-    ni .inv∘eta _ = refl
-    ni .natural _ _ _ = refl
+  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso record where
+    eta     _ f = f
+    inv     _ f = f
+    eta∘inv _ = refl
+    inv∘eta _ = refl
+    natural _ _ _ = refl
 ```
 
 Now, suppose we have a pair of monoid objects, $M$ and $N$, together
@@ -239,7 +236,7 @@ externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
   PShMon κ = Cat[ C ^op , Monoids κ ]
 
   RepPShMon : Precategory (o ⊔ lsuc ℓ) (o ⊔ ℓ)
-  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Mon↪Sets F∘ P))
+  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation (Mon↪Sets F∘ P))
 ```
 -->
 
@@ -381,7 +378,7 @@ object $M : \cC$.
 ```agda
   RepPshMon→Mon
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
-    → (P-rep : Representation {C = C} (Mon↪Sets F∘ P))
+    → (P-rep : Representation (Mon↪Sets F∘ P))
     → C-Monoid (P-rep .rep)
   RepPshMon→Mon P P-rep = Hom-mon→Mon (λ x → to-monoid-on (hom-mon x)) η*-nat μ*-nat
     module RepPshMon→Mon where

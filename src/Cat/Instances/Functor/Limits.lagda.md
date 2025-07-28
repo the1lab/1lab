@@ -58,9 +58,9 @@ limits.
 
 ```agda
     F-uncurried : Functor (D ×ᶜ E) C
-    F-uncurried = Uncurry {C = D} {D = E} {E = C} F
+    F-uncurried = Uncurry F
 
-    import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F'
+    import Cat.Functor.Bifunctor F-uncurried as F'
     module D-lim x = Limit (has-D-lims (F'.Left x))
 ```
 
@@ -147,7 +147,7 @@ module _
         (Colimit→Co-limit (has-D-colims (unopF f))))
       F'
 
-    LF'' : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))
+    LF'' : Limit (op-functor← F∘ (op-functor→ F∘ Functor.op F))
     LF'' = right-adjoint-limit (is-equivalence.F⊣F⁻¹ op-functor-is-equiv) F'-lim
 
     LFop : Limit (Functor.op F)

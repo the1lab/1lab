@@ -59,7 +59,7 @@ this essentially fixes the value of $B^A(c)$.
 ```agda
   _ : ∀ x → ⌞ B^A .F₀ x ⌟ ≃ ((よ₀ C x ⊗₀ A) => B)
   _ = λ x →
-    ⌞ B^A .F₀ x ⌟       ≃⟨ yo {C = C} B^A , yo-is-equiv _ ⟩
+    ⌞ B^A .F₀ x ⌟       ≃⟨ yo B^A , yo-is-equiv _ ⟩
     (よ₀ C x => B^A)    ≃˘⟨ ƛ , lambda-is-equiv ⟩
     (よ₀ C x ⊗₀ A) => B ≃∎
 ```
