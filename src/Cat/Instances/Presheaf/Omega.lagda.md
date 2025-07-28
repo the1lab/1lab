@@ -121,9 +121,8 @@ map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
 PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
-  abstract
-    emb : ∀ {x} → is-embedding (P .map .η x)
-    emb = is-monic→is-embedding-at (P .monic)
+  emb : ∀ {x} → is-embedding (P .map .η x)
+  emb = is-monic→is-embedding-at (P .monic)
 
   square→pt
     : ∀ {P'} {p₁' : P' => A} {p₂' : P' => ⊤PSh}
