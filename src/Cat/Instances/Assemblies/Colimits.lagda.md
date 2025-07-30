@@ -55,7 +55,7 @@ _⊎Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 (ℓ ⊔ �
 
 (X ⊎Asm Y) .realisers (inl x) = record
   { mem     = λ e → elΩ (Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (e ≡ `inl ⋆ a × [ X ] a ⊩ x))
-  ; defined = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inl↓₁(X .defined p))
+  ; defined = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inl↓₁ (X .defined p))
   }
 
 (X ⊎Asm Y) .realisers (inr x) = record

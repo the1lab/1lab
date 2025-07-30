@@ -55,7 +55,7 @@ data _≻_ : SK → SK → Type where
 ```
 
 We then say that two terms $t$ and $t'$ are **convertible** if there
-exists a term $W$ and a sequence of reductions $t \succ W$ and $t' \succ
+exists a term $W$ and a sequence of reductions $t \succ^* W$ and $t' \succ^*
 W$. The rest of this module is devoted to showing that this is an
 [[equivalence relation|congruence]], so that we can quotient `SK`{.Agda}
 by convertibility.
@@ -86,7 +86,7 @@ inv-≻-s stop = _ , _ , reflᵢ , stop , stop
 
 To this end, we show that `_≻_`{.Agda} satisfies the *diamond property*:
 if $u$ reduces to a pair of terms $v$, $v'$, then there is a common term
-$w$ with $v \succ W$ and $v' \succ W$. We read this as saying that, if
+$w$ with $v \succ^* W$ and $v' \succ^* W$. We read this as saying that, if
 the evaluation of $u$ can "diverge" into paths $v$ and $v'$, then in
 another step these paths again converge to a common term. The proof is a
 giant case bash.
@@ -134,13 +134,13 @@ giant case bash.
 ```
 -->
 
-As is typical in rewrite theory, the diamond property for a single-step
+As is typical in rewriting theory, the diamond property for a single-step
 relation implies it for a multi-step relation. This shows transitivity
-of convertibility: if we have $x \sim y$, meaning $x \succ U$ and $y
-\succ U$, and $y \sim v$, meaning $y \succ V$ and $z \succ V$, then we
-can find a common $W$ with $U \succ W$ and $V \succ W$, so by
-transitivity we also have $x \succ W$ and $z \succ W$, showing $x \sim
-z$.
+of convertibility: if we have $x \sim y$, meaning $x \succ^* U$ and $y
+\succ^* U$, and $y \sim v$, meaning $y \succ^* V$ and $z \succ^* V$, then we
+can find a common $W$ with $U \succ^* W$ and $V \succ^* W$, so by
+transitivity of $\succ^*$ we also have $x \succ^* W$ and $z \succ^* W$,
+showing $x \sim z$.
 
 ```agda
 SK-conversion : Congruence SK _

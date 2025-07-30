@@ -78,7 +78,7 @@ this holds, we say $\tt{p}$ **realises** $x$. Moreover, for every $x :
 X$, we require that there be at least one $\tt{p}$ which realises it.
 :::
 
-::: warning
+::: note
 The construction of assemblies over $\bA$, and the category
 $\thecat{Asm}(\bA)$, works regardless of *which* pca $\bA$ we choose ---
 but we only get something *interesting* if $\bA$ is [[nontrivial|trivial
@@ -297,8 +297,7 @@ entirely straightforward:
 We define the realisability relation as a function from `Bool`{.Agda},
 by cases: the only option for realising the boolean `true`{.Agda} is
 with the `` `true ``{.Agda} program, and similarly the `false`{.Agda}
-boolean is realised by the `` `false ``{.Agda} program. Both elements
-have those respective programs as their realisers.
+boolean is realised by the `` `false ``{.Agda} program.
 
 ## Indiscrete assemblies
 
@@ -312,7 +311,7 @@ faithful functor]] into the category of assemblies over any pca $\bA$.
 This is, perhaps, a bit surprising: maps of assemblies are computable by
 definition, but arbitrary functions between sets need not be! The catch
 is that, when equipping a set with the structure of an assembly, *we*
-get to choose which programs compute each elements; and, above, we have
+get to choose which programs compute which elements; and, above, we have
 made a sensible choice. But we can always make an *adversarial* choice,
 letting *every* program at all realise any element.
 
@@ -337,7 +336,7 @@ singles them out as embedding classical logic in $\thecat{Asm}(\bA)$.
 
 The important thing to know about these is that any function of sets $X
 \to Y$ extends to a computable map of assemblies $(X, \Vdash) \to \nabla
-Y$ --- this is because the only requirement for $e \Vdash_{\nabla Y} f
+Y$ --- this is because the only requirement for $e \Vdash_{\nabla Y} f\,
 x$ is that $e$ is defined, and assemblies are defined so that if $e
 \Vdash_X x$ then $e$ is defined.
 

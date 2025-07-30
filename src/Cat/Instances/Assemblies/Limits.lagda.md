@@ -38,7 +38,6 @@ open Product
 private variable
   ℓ ℓ' : Level
   X Y Z : Assembly 𝔸 ℓ
-
 ```
 -->
 

@@ -33,7 +33,7 @@ $\tt{K}$ and $\tt{S}$ satisfying the rules $\tt{K}\ a\ b = a$ and
 $\tt{S}\ f\ g\ x = f\ x\ (g\ x)$. Unfortunately, working with this
 notion of pca in Agda is very inconvenient:
 
-* To start with, we have to explicitly write out and the requirements
+* To start with, we have to explicitly write out the requirements
   that the constants $\tt{K}$ and $\tt{S}$ are defined; and that the
   application $\tt{K}\ a$ is defined when $a$ is defined, and similarly
   for $\tt{S}\ f$, $\tt{S}\ g$, and $\tt{S}\ f\ g$.
@@ -148,7 +148,7 @@ are similarly easy.
     abs↓ (app f x) ρ = S↓₂ (abs↓ f ρ) (abs↓ x ρ)
 ```
 
-Finally, we must prove that `abs`{.Agda} commutes with `inst`{.Agda};
+Finally, we must prove that `abs`{.Agda} satisfies $\beta$-reduction;
 this is entirely calculational, and we write out all the cases for
 clarity.
 

@@ -47,8 +47,8 @@ predicate over $X$ and $Q$ a predicate over $Y$.^[If we think of $X$ and
 $Y$ as *contexts* for the definitions of $P$ and $Q$, then this 3-place
 entailment relation is defined relative to a *substitution* $X \to Y$.]
 We define the type of entailment witnesses $P \vdash_f Q$ to consist of
-programs $\tt{r} : \bA$ [[programs|values in a pca]] which associate to
-each $P$-realiser $a$ of $x$ a $Q$-realiser $\tt{r}~ \tt{a}$ of $f x$.
+[[programs|values in a pca]] $\tt{r} : \bA$ which associate to
+each $P$-realiser $a$ of $x$ a $Q$-realiser $\tt{r}~ \tt{a}$ of $f\, x$.
 
 ```agda
 record
@@ -140,7 +140,7 @@ $$.
 
 ```agda
 _∧T_ : (P Q : X → ℙ⁺ 𝔸) → X → ℙ⁺ 𝔸
-(P ∧T Q) x .mem a = elΩ do
+(P ∧T Q) x .mem a = elΩ $
   Σ[ u ∈ ↯ ⌞ 𝔸 ⌟ ] Σ[ v ∈ ↯ ⌞ 𝔸 ⌟ ]
     a ≡ `pair ⋆ u ⋆ v × u ∈ P x × v ∈ Q x
 (P ∧T Q) x .defined = rec! λ u v α rx ry →

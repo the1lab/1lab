@@ -35,7 +35,7 @@ most useful of these will be the `` `Z ``{.Agda} combinator, which
 satisfies
 
 $$
-\tt{Z}\, \sf{f}\, \sf{a} = \sf{f}\, (\tt{Z}\, \sf{f}) \sf{a}
+\tt{Z}\, \sf{f}\, \sf{a} = \sf{f}\, (\tt{Z}\, \sf{f})\, \sf{a}
 $$,
 
 and is always defined when applied to a single argument --- that is, it

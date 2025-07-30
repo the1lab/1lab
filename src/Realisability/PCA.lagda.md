@@ -155,7 +155,7 @@ have an operation `abs`{.Agda} sending terms $t$ in $n + 1$ variables to
 terms $\langle x \rangle t$ in $n$ variables which behave, under
 evaluation, as "functions of $x$". In particular, functions should
 always be defined values (`abs↓`{.Agda}), and we have a
-restricted $\beta$-reduction law (`absβ`{.Agda}) saying that applying a
+restricted $\beta$-reduction law (`abs-β`{.Agda}) saying that applying a
 function to a value should be the same as evaluating the body of the
 function instantiated with that value, or equivalently in an environment
 extended with that value.
