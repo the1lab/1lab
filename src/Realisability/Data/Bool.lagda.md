@@ -31,9 +31,11 @@ private variable
 We construct [[booleans]] in a [[partial combinatory algebra]] by
 defining boolean values to be functions which select one of their two
 arguments. In effect, we are defining booleans so that the program
+
 $$
 \tt{if}\ b\ \tt{then}\ x\ \tt{else}\ y
 $$
+
 is simply $b\, x\, y$. Therefore, we have:
 
 ```agda

@@ -115,12 +115,14 @@ abstract
 We define a recursor for natural numbers using the `` `Z ``{.Agda}
 fixed-point combinator. This will be a program $\tt{primrec}$ which
 satisfies
+
 $$
 \begin{align*}
 \tt{primrec}\, z\, s\, \tt{zero}      =&\ z\\
 \tt{primrec}\, z\, s\, (\tt{suc}\, x) =&\ s\ x\ (\tt{primrec}\, z\, s\, x)\text{.}
 \end{align*}
 $$
+
 First we define a worker function which is parametrised over both the
 'recursive reference' and all the arguments of the recursor (the zero
 and successor 'cases' and the number itself). We can then apply `` `Z

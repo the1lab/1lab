@@ -175,6 +175,7 @@ Traditional texts on realisability (e.g. de Jong op. cit., see also
 Bauer [-@Bauer:Realisability]) define partial combinatory algebras in
 terms of *combinators*, typically $\tt{S}$ and $\tt{K}$. These can be
 defined using the abstraction operator in the typical way, e.g.
+
 $$ \tt{K} = \langle x \rangle \langle y \rangle x $$.
 
 We prefer taking the abstraction elimination procedure as a primitive

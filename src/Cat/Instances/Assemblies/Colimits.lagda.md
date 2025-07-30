@@ -40,6 +40,7 @@ We can define the [[coproduct]] of [[assemblies]] $X, Y$ over a
 [[partial combinatory algebra]] $\bA$ using our encoding of [[sums in a
 PCA]]. The underlying set is simply the [[sum type]] $X \uplus Y$, and
 we define the realisability relation by
+
 $$
 \begin{align*}
 \tt{inl}\, \sf{x} &\Vdash \operatorname{inl} x &\textit{iff}\enspace &\sf{x} \Vdash x \\

@@ -40,8 +40,7 @@ notion of pca in Agda is very inconvenient:
 
 * Because we generally write programs using [[functional
   notation|syntax sugar for pcas]], it is important that the normal form
-  of a program like
-  $$\langle x \rangle \langle y \rangle\ y$$
+  of a program like $\langle x \rangle \langle y \rangle\ y$
   is compact, both for performance reasons and so that we can actually
   work with them. However, the normal forms of programs in terms of
   combinators are huge monsters.

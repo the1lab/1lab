@@ -44,17 +44,21 @@ When working over a [[partial combinatory algebra]] $\bA$, it's often
 the case that we're interested in programs $\tt{p} : \bA$ as concrete
 *implementations* of some mathematical datum $x : X$. For example, we
 can implement the successor function on natural numbers to be
+
 $$
 \tt{suc} = \langle n \rangle \langle f \rangle \langle x \rangle\ f(nfx)
 $$,
+
 representing a numeral $n : \bN$ as a *Church numeral*, taking the
 defining property of $\operatorname{suc} n$ to be that if we have some
 iterable process $f : A \to A$ starting at $x : A$, then the
 $(\operatorname{suc} n)$-th iteration is $f$ applied to the $n$th
 iteration; But we could just as well implement
+
 $$
 \tt{suc} = \langle n \rangle\ \tt{pair}(\tt{false}, n)
 $$
+
 representing a numeral $n : \bN$ as a *Curry numeral*, a pair containing
 the information of whether the number is zero and its predecessor (if
 any). These implementations are extensionally identical, in that they
@@ -91,12 +95,14 @@ of $\thecat{Asm}(\bA)$ implies $\bA$ is trivial."
 A prototypical example is the assembly of booleans, `𝟚`{.Agda}, defined
 [below](#the-assembly-of-booleans). Its set of elements is
 `Bool`{.Agda}, and we fix realisers
+
 $$
 \begin{align*}
 \left(\langle x \rangle \langle y \rangle\ x\right) \Vdash&\ \rm{true}\\
 \left(\langle x \rangle \langle y \rangle\ y\right) \Vdash&\ \rm{false;}
 \end{align*}
 $$
+
 see [[booleans in a pca]] for the details of the construction. This is not
 the only possible choice: we could, for example, invert the realisers,
 and say that the value `true`{.Agda} is implemented by the *program*
@@ -170,9 +176,11 @@ of assemblies are identical *when they have the same underlying
 function*, regardless of which programs potentially implement them.
 Since we can not, for a general $\bA$, show that the programs
 $\mathtt{f}$ and
+
 $$
 \langle a \rangle\ f\ a
 $$
+
 are identical, $\thecat{Asm}(\bA)$ would not be a category if the choice
 of realiser mattered for identity of computable maps.
 

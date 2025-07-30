@@ -91,6 +91,7 @@ We define *non*triviality to simply be the negation of triviality. Note
 that $\bA$ is nontrivial as soon as it contains two distinct programs,
 since if we are given $x, y : \bA$, then if $\bA$ were trivial in the
 sense above we would have
+
 $$
 \begin{align*}
 x &= \tt{true}\  x\ y \\
@@ -98,6 +99,7 @@ x &= \tt{true}\  x\ y \\
   &= y\text{,}
 \end{align*}
 $$
+
 which contradicts $x \ne y$.
 
 ```agda
