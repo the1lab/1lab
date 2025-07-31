@@ -125,15 +125,30 @@ span.katex-display {
   //
   // The solution is to position display maths closer to the elements
   // around it on the block axis, and to make up with *padding* instead.
-  // Padding the bounding box by 0.5em; is slightly absurd, but it does
-  // guarantee that we won't have clipping issues unless KaTeX well and
-  // truly screws up the character metrics.
+  // Padding the bounding box by $katex-margin in each direction is
+  // slightly absurd, but it does guarantee that we won't have clipping
+  // issues unless KaTeX well and truly screws up the character metrics.
 
-  margin-block: -0.25em;
+  // 2025-07-31: Only do this trick for inline maths that appears inside
+  // a paragraph since the margin between paragraphs is already big to
+  // avoid clipping enough and we don't want to make it 1/4em bigger.
+  p > & {
+    margin-block: calc(-0.5 * $katex-margin);
 
-  > span.katex {
-    white-space: normal;
-    padding-block-start: 0.5em;
+    > span.katex {
+      white-space:   normal;
+      padding-block: $katex-margin;
+    }
+
+    // In Chrome the spacing fix will result in display maths that's at
+    // the start/end of a paragraph giving the paragraph an extra-tall
+    // forehead/chin. In Firefox we can disable the spacing fix in that
+    // direction to fix it.
+    //
+    // We could fix this everywhere by marking these in Pandoc.
+    // I do not care about Chrome users that much.
+    &:-moz-first-node > span.katex { padding-block-start: 0; }
+    &:-moz-last-node  > span.katex { padding-block-end:   0; }
   }
 }
 

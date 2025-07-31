@@ -33,11 +33,9 @@ computation, we can import the definition of **fixed-point combinators**
 from untyped lambda calculus to arbitrary [[programs in a PCA]]. The
 most useful of these will be the `` `Z ``{.Agda} combinator, which
 satisfies
-
 $$
 \tt{Z}\, \sf{f}\, \sf{a} = \sf{f}\, (\tt{Z}\, \sf{f})\, \sf{a}
 $$,
-
 and is always defined when applied to a single argument --- that is, it
 lets us compute 'functions of at least one argument' by arbitrary
 recursion, such that *the recursive function itself* is always

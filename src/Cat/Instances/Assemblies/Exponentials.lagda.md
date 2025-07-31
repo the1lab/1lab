@@ -53,7 +53,6 @@ The **exponential assembly** $[X, Y]$ has underlying set the type of
 assembly morphisms $X \to Y$. We let $\sf{e} \Vdash f$ if $\sf{e}$ is a
 realiser for $f$ considered as a function of sets, i.e. $\sf{e}$ is
 defined and
-
 $$
 \forall\, (x : X)\, (a : \bA),\ \sf{a} \Vdash x \to (\sf{e}\, \sf{a}) \Vdash f(x)
 $$.
@@ -127,14 +126,9 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .map x = record where
 
 This turns out to be very simple, since the currying of an assembly
 morphism $X \times Y \to Z$ (with realiser, say, $\sf{h}$) is realised
-by the currying-*qua*-program of $h$, i.e.
-
-$$
-\langle u \rangle \langle v \rangle h\ (u,\, v)
-$$.
-
-A very simple computation in $\bA$ shows that this is indeed a
-realiser.
+by the currying-*qua*-program of $h$, i.e. $\langle u \rangle \langle v
+\rangle\ h\ (u,\, v)$. A very simple computation in $\bA$ shows that this
+is indeed a realiser.
 
 ```agda
 curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do

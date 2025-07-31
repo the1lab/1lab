@@ -33,11 +33,9 @@ private variable
 We define an encoding for pairs in a [[partial combinatory algebra]] in
 terms of the encoding of [[booleans in a PCA]]. The pairing of $a$ and
 $b$ is the function
-
 $$
 \langle i \rangle \tt{if}\ i\ \tt{then}\ a\ \tt{else}\ b
 $$,
-
 and the pairing *function* is this abstracted over $a$ and $b$.
 
 ```agda

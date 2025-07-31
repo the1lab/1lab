@@ -11,3 +11,7 @@ $left-border-width: 5px;
 
 // Size of rulers (e.g. <hr>, border of the navbar list)
 $ruler-size: 2px;
+
+// Extra spacing around intra-paragraph display maths to fix clipping
+// issues
+$katex-margin: 0.3em;

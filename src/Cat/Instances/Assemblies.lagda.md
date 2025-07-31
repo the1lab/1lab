@@ -44,21 +44,17 @@ When working over a [[partial combinatory algebra]] $\bA$, it's often
 the case that we're interested in programs $\tt{p} : \bA$ as concrete
 *implementations* of some mathematical datum $x : X$. For example, we
 can implement the successor function on natural numbers to be
-
 $$
 \tt{suc} = \langle n \rangle \langle f \rangle \langle x \rangle\ f(nfx)
 $$,
-
 representing a numeral $n : \bN$ as a *Church numeral*, taking the
-defining property of $\operatorname{suc} n$ to be that if we have some
+defining property of $\tt{suc}\, n$ to be that if we have some
 iterable process $f : A \to A$ starting at $x : A$, then the
 $(\operatorname{suc} n)$-th iteration is $f$ applied to the $n$th
 iteration; But we could just as well implement
-
 $$
 \tt{suc} = \langle n \rangle\ \tt{pair}(\tt{false}, n)
 $$
-
 representing a numeral $n : \bN$ as a *Curry numeral*, a pair containing
 the information of whether the number is zero and its predecessor (if
 any). These implementations are extensionally identical, in that they

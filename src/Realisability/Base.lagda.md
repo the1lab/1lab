@@ -92,11 +92,9 @@ that entailment is reflexive (the 'axiom' rule) and transitive (the
 'cut' rule). These are witnessed by the identity *program* and, if
 $\tt{f}$ witnesses $Q \vdash R$ and $\tt{g}$ witnesses $P \vdash Q$,
 then the composition
-
 $$
 \langle x \rangle \tt{f}~ (\tt{g}~ x)
 $$
-
 witnesses $P \vdash R$.
 
 ```agda
@@ -121,11 +119,9 @@ As a representative example of logical realisability connective, we can
 define the conjunction of $\bA$-predicates over a common base type.
 Fixing $P, Q : X \to \bP(\bA)$, we define the set of $(P \land
 Q)$-realisers for $x$ to be
-
 $$
 \{ \tt{pair}~ u~ v\ |\ u, v : \bA, u \in P(x), v \in Q(x) \}
 $$
-
 that is, a value $p : \bA$ witnesses $(P \land Q)(x)$ if it is a pair
 and its first component witnesses $P(x)$ and its second component
 witnesses $Q(x)$. We think of this as a *strict* definition, since it
@@ -133,7 +129,6 @@ demands the witness to be literally, syntactically, a $\tt{pair}$; we
 could also have a *lazy* definition, where all we ask is that the
 witness be defined and its first and second *projections* witness $P$
 and $Q$ respectively, i.e. the set
-
 $$
 \{ e \ |\ \tt{fst}~ e \in P(x), \tt{snd}~ e \in Q(x) \}
 $$.
