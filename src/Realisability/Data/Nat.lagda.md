@@ -45,7 +45,16 @@ thus encodes whether the number is zero.
 
 `suc : ↯⁺ 𝔸
 `suc = val ⟨ x ⟩ `false `, x
+```
 
+Note that while the identity function may not *look like* a pair, since
+in our encoding projection from $p$ is implemented by applying *$p$
+itself* to either `` `true ``{.Agda} (for the first component) or ``
+`false ``{.Agda} (for the second), the identity function actually
+behaves extensionally like the pairing of `` `true ``{.Agda} and ``
+`false ``{.Agda}.
+
+```agda
 `iszero : ↯⁺ 𝔸
 `iszero = `fst
 ```
