@@ -63,7 +63,7 @@ record
 <!--
 ```agda
   realiser↓ : ∀ {x} {a : ↯ ⌞ 𝔸 ⌟} (ah : a ∈ P x) → ⌞ realiser ⋆ a ⌟
-  realiser↓ ah = Q _ .defined (tracks  ah)
+  realiser↓ ah = Q _ .def (tracks  ah)
 
 private unquoteDecl eqv' = declare-record-iso eqv' (quote [_]_⊢_)
 
@@ -104,14 +104,14 @@ id⊢ : [ id ] P ⊢ P
 id⊢ {P = P} = record where
   realiser = val ⟨ x ⟩ x
 
-  tracks ha = subst-∈ (P _) ha (abs-β _ [] (_ , P _ .defined ha))
+  tracks ha = subst-∈ (P _) ha (abs-β _ [] (_ , P _ .def ha))
 
 _∘⊢_ : ∀ {f g} → [ g ] Q ⊢ R → [ f ] P ⊢ Q → [ g ∘ f ] P ⊢ R
 _∘⊢_ {R = R} {P = P} α β = record where
   realiser = val ⟨ x ⟩ α `· (β `· x)
 
   tracks {a = a} ha = subst-∈ (R _) (α .tracks (β .tracks ha)) $
-    (val ⟨ x ⟩ α `· (β `· x)) ⋆ a ≡⟨ abs-β _ [] (a , P _ .defined ha) ⟩
+    (val ⟨ x ⟩ α `· (β `· x)) ⋆ a ≡⟨ abs-β _ [] (a , P _ .def ha) ⟩
     α ⋆ (β ⋆ a)                   ∎
 ```
 
@@ -143,8 +143,8 @@ _∧T_ : (P Q : X → ℙ⁺ 𝔸) → X → ℙ⁺ 𝔸
 (P ∧T Q) x .mem a = elΩ $
   Σ[ u ∈ ↯ ⌞ 𝔸 ⌟ ] Σ[ v ∈ ↯ ⌞ 𝔸 ⌟ ]
     a ≡ `pair ⋆ u ⋆ v × u ∈ P x × v ∈ Q x
-(P ∧T Q) x .defined = rec! λ u v α rx ry →
-  subst ⌞_⌟ (sym α) (`pair↓₂ (P _ .defined rx) (Q _ .defined ry))
+(P ∧T Q) x .def = rec! λ u v α rx ry →
+  subst ⌞_⌟ (sym α) (`pair↓₂ (P _ .def rx) (Q _ .def ry))
 ```
 
 With this strict definition, we can show that the conjunction implies
@@ -158,7 +158,7 @@ both conjuncts, and these implications are tracked by the `` `fst
 
   tracks {a = a} = elim! λ p q α pp qq → subst-∈ (P _) pp $
     `fst ⋆ a               ≡⟨ ap (`fst ⋆_) α ⟩
-    `fst ⋆ (`pair ⋆ p ⋆ q) ≡⟨ `fst-β (P _ .defined pp) (Q _ .defined qq) ⟩
+    `fst ⋆ (`pair ⋆ p ⋆ q) ≡⟨ `fst-β (P _ .def pp) (Q _ .def qq) ⟩
     p                      ∎
 
 π₂⊢ : [ id ] (P ∧T Q) ⊢ Q
@@ -167,6 +167,6 @@ both conjuncts, and these implications are tracked by the `` `fst
 
   tracks {a = a} = elim! λ p q α pp qq → subst-∈ (Q _) qq $
     `snd ⋆ a               ≡⟨ ap (`snd ⋆_) α ⟩
-    `snd ⋆ (`pair ⋆ p ⋆ q) ≡⟨ `snd-β (P _ .defined pp) (Q _ .defined qq) ⟩
+    `snd ⋆ (`pair ⋆ p ⋆ q) ≡⟨ `snd-β (P _ .def pp) (Q _ .def qq) ⟩
     q                      ∎
 ```

@@ -53,15 +53,14 @@ _⊎Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 (ℓ ⊔ �
 (X ⊎Asm Y) .Ob         = ⌞ X ⌟ ⊎ ⌞ Y ⌟
 (X ⊎Asm Y) .has-is-set = hlevel 2
 
-(X ⊎Asm Y) .realisers (inl x) = record
-  { mem     = λ e → elΩ (Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (e ≡ `inl ⋆ a × [ X ] a ⊩ x))
-  ; defined = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inl↓₁ (X .defined p))
-  }
+(X ⊎Asm Y) .realisers (inl x) = record where
+  mem e = elΩ (Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (e ≡ `inl ⋆ a × [ X ] a ⊩ x))
+  def   = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inl↓₁ (X .def p))
 
-(X ⊎Asm Y) .realisers (inr x) = record
-  { mem     = λ e → elΩ (Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (e ≡ `inr ⋆ a × [ Y ] a ⊩ x))
-  ; defined = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inr↓₁ (Y .defined p))
-  }
+
+(X ⊎Asm Y) .realisers (inr x) = record where
+  mem e = elΩ (Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (e ≡ `inr ⋆ a × [ Y ] a ⊩ x))
+  def   = rec! λ _ a p → subst ⌞_⌟ (sym a) (`inr↓₁ (Y .def p))
 ```
 
 <!--
@@ -130,12 +129,12 @@ with precisely with the assumptions that $f$ and $g$ are tracked.
         {inl x} ha → □-out (Q .realisers _ .mem _ .is-tr) do
           (e , α , e⊩x) ← ha
           pure $ subst⊩ Q (ft .tracks e⊩x) $
-            ap₂ _%_ refl α ∙ `match-βl (A .defined e⊩x) f↓ g↓
+            ap₂ _%_ refl α ∙ `match-βl (A .def e⊩x) f↓ g↓
 
         {inr x} ha → □-out (Q .realisers _ .mem _ .is-tr) do
           (e , α , e⊩x) ← ha
           pure $ subst⊩ Q (gt .tracks e⊩x) $
-            ap₂ _%_ refl α ∙ `match-βr (B .defined e⊩x) f↓ g↓
+            ap₂ _%_ refl α ∙ `match-βr (B .def e⊩x) f↓ g↓
 
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₁ = ext λ _ → refl
 Assembly-coproducts A B .has-is-coproduct .[]∘ι₂ = ext λ _ → refl

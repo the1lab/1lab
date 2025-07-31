@@ -47,9 +47,9 @@ identity is reflexivity: intuitively, the type of assemblies is too
 notᴬ : 𝟚 𝔸 Asm.≅ 𝟚 𝔸
 notᴬ = Asm.involution→iso to (ext not-involutive) where
   to = to-assembly-hom record where
-    map = not
+    map      = not
     realiser = `not
-    tracks = λ where
+    tracks   = λ where
       {true}  p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βt))
       {false} p → inc (sym (ap (`not ⋆_) (sym (□-out! p)) ∙ `not-βf))
 ```

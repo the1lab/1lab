@@ -78,7 +78,7 @@ this holds, we say $\tt{p}$ **realises** $x$. Moreover, for every $x :
 X$, we require that there be at least one $\tt{p}$ which realises it.
 :::
 
-::: note
+::: warning
 The construction of assemblies over $\bA$, and the category
 $\thecat{Asm}(\bA)$, works regardless of *which* pca $\bA$ we choose ---
 but we only get something *interesting* if $\bA$ is [[nontrivial|trivial
@@ -92,6 +92,16 @@ statement like "the category $\thecat{Asm}(\bA)$ is not
 of $\thecat{Asm}(\bA)$ implies $\bA$ is trivial."
 :::
 
+```agda
+record Assembly (𝔸 : PCA ℓA) ℓ : Type (lsuc ℓ ⊔ ℓA) where
+  no-eta-equality
+  field
+    Ob         : Type ℓ
+    has-is-set : is-set Ob
+    realisers  : Ob → ℙ⁺ 𝔸
+    realised   : ∀ x → ∃[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (a ∈ realisers x)
+```
+
 A prototypical example is the assembly of booleans, `𝟚`{.Agda}, defined
 [below](#the-assembly-of-booleans). Its set of elements is
 `Bool`{.Agda}, and we fix realisers
@@ -103,25 +113,26 @@ $$
 \end{align*}
 $$
 
-see [[booleans in a pca]] for the details of the construction. This is not
-the only possible choice: we could, for example, invert the realisers,
-and say that the value `true`{.Agda} is implemented by the *program*
-$\tt{false}$ (and vice-versa). This results in a genuinely different
-assembly over `Bool`{.Agda}, though with the same denotational data.
+see [[booleans in a pca]] for the details of the construction. This is
+not the only possible choice: we could, for example, say that the value
+`true`{.Agda} is implemented by the *program* $\tt{false}$ (and
+vice-versa). This results in a genuinely different assembly *over
+`Bool`{.Agda}*[^bool], though with the same denotational data.
 
-```agda
-record Assembly (𝔸 : PCA ℓA) ℓ : Type (lsuc ℓ ⊔ ℓA) where
-  no-eta-equality
-  field
-    Ob         : Type ℓ
-    has-is-set : is-set Ob
-    realisers  : Ob → ℙ⁺ 𝔸
-    realised   : ∀ x → ∃[ a ∈ ↯ ⌞ 𝔸 ⌟ ] (a ∈ realisers x)
-```
+[^bool]:
+    The assembly `𝟚`{.Agda} and its "flipped" variant obtained by
+    swapping which boolean program realises each boolean value *are*
+    isomorphic (even identical) in the category of assemblies, since the
+    `` `not ``{.Agda} program is a computable involution.
+
+    They are only distinct if considered as "assemblies over
+    `Bool`{.Agda}", where (following the logic of [[vertical maps|fibre
+    category]]) we restrict our attention to the isomorphisms with
+    underlying function the identity.
 
 <!--
 ```agda
-  module _ {x : Ob} where open ℙ⁺ (realisers x) using (defined) public
+  module _ {x : Ob} where open ℙ⁺ (realisers x) using (def) public
 
 open Assembly public
 
@@ -175,14 +186,13 @@ Note the force of the propositional truncation in this definition: maps
 of assemblies are identical *when they have the same underlying
 function*, regardless of which programs potentially implement them.
 Since we can not, for a general $\bA$, show that the programs
-$\mathtt{f}$ and
+$\mathtt{f}$ and $\langle a \rangle \tt{f}\, a$ are identical,
+$\thecat{Asm}(\bA)$ would not be a category if the choice of realiser
+mattered for identity of computable maps.
 
-$$
-\langle a \rangle\ f\ a
-$$
-
-are identical, $\thecat{Asm}(\bA)$ would not be a category if the choice
-of realiser mattered for identity of computable maps.
+This consideration is necessary for assemblies and assembly morphisms to
+be a category: in an arbitrary pca $\bA$, composition of programs need
+not be unital or associative.
 
 <!--
 ```agda
@@ -232,10 +242,6 @@ module _ (𝔸 : PCA ℓA) where
 ```
 -->
 
-This consideration is necessary for assemblies and assembly morphisms to
-be a category: in an arbitrary pca $\bA$, composition of programs need
-not be unital or associative.
-
 ```agda
   Assemblies : ∀ ℓ → Precategory (lsuc ℓ ⊔ ℓA) (ℓA ⊔ ℓ)
   Assemblies ℓ .Ob      = Assembly 𝔸 ℓ
@@ -255,21 +261,8 @@ not be unital or associative.
 ::: warning
 Unlike most other categories constructed on the 1Lab, the category of
 assemblies is not [[univalent|univalent category]]; see [univalence of
-categories of assemblies](Cat.Instances.Assemblies.Univalence.html).[^univalence]
+categories of assemblies](Cat.Instances.Assemblies.Univalence.html).
 :::
-
-[^univalence]:
-    This is essentially *because* of assemblies such as `𝟚`{.Agda}
-    and its "flipped" counterpart, described above. The identity map is
-    a computable isomorphism between them, realised by the `` `not
-    ``{.Agda} program, which does not extend to a path (unless $\bA$ is
-    trivial).
-
-However, these two assemblies *are* still identical in the type
-`Assembly`{.Agda}, where we allow the identification between the sets to
-be nontrivial --- their realisability relations are identical over the
-`not`{.Agda} equivalence --- hence the comment above about these being
-non-trivial assemblies "over bool".
 
 <!--
 ```agda
@@ -327,11 +320,8 @@ singles them out as embedding classical logic in $\thecat{Asm}(\bA)$.
   ∇ : ∀ {ℓ} (X : Type ℓ) ⦃ _ : H-Level X 2 ⦄ → Assembly 𝔸 ℓ
   ∇ X .Ob          = X
   ∇ X .has-is-set  = hlevel 2
-  ∇ X .realisers x = record
-    { mem     = def
-    ; defined = λ x → x
-    }
-  ∇ X .realised x = inc (expr ⟨ x ⟩ x , abs↓ _ _)
+  ∇ X .realisers x = defineds
+  ∇ X .realised  x = inc (expr ⟨ x ⟩ x , abs↓ _ _)
 ```
 
 The important thing to know about these is that any function of sets $X
@@ -339,6 +329,16 @@ The important thing to know about these is that any function of sets $X
 Y$ --- this is because the only requirement for $e \Vdash_{\nabla Y} f\,
 x$ is that $e$ is defined, and assemblies are defined so that if $e
 \Vdash_X x$ then $e$ is defined.
+
+```agda
+  extend
+    : ∀ {ℓ ℓ'} {X : Assembly 𝔸 ℓ} {Y : Type ℓ'} ⦃ _ : H-Level Y 2 ⦄
+    → (⌞ X ⌟ → Y) → Assembly-hom X (∇ Y)
+  extend {X = X} f = to-assembly-hom record where
+    map x     = f x
+    realiser  = val ⟨ x ⟩ x
+    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .def ha))) (X .def ha)
+```
 
 <details>
 <summary>Following the general logic of [[adjoint functors]], this means
@@ -349,11 +349,8 @@ underlying set of each assembly.</summary>
 
 ```agda
   Cofree : Functor (Sets ℓ) (Assemblies ℓ)
-  Cofree .F₀ X = ∇ ⌞ X ⌟
-  Cofree .F₁ f = to-assembly-hom record where
-    map       = f
-    realiser  = val ⟨ x ⟩ x
-    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , ha))) ha
+  Cofree .F₀ X    = ∇ ⌞ X ⌟
+  Cofree .F₁ f    = extend f
   Cofree .F-id    = ext λ _ → refl
   Cofree .F-∘ f g = ext λ _ → refl
 
@@ -364,11 +361,7 @@ underlying set of each assembly.</summary>
   Forget .F-∘ f g = refl
 
   Forget⊣∇ : Forget {ℓ} ⊣ Cofree
-  Forget⊣∇ .unit .η X = to-assembly-hom record where
-    map x     = x
-    realiser  = val ⟨ x ⟩ x
-    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .defined ha))) (X .defined ha)
-
+  Forget⊣∇ .unit .η X = extend λ x → x
   Forget⊣∇ .unit .is-natural x y f = ext λ _ → refl
   Forget⊣∇ .counit .η X a = a
   Forget⊣∇ .counit .is-natural x y f = refl

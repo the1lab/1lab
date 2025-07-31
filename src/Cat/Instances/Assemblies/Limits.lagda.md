@@ -69,9 +69,9 @@ _×Asm_ : Assembly 𝔸 ℓ → Assembly 𝔸 ℓ' → Assembly 𝔸 (ℓ ⊔ �
     Σ[ a ∈ ↯ ⌞ 𝔸 ⌟ ] Σ[ b ∈ ↯ ⌞ 𝔸 ⌟ ]
       p ≡ `pair ⋆ a ⋆ b × [ X ] a ⊩ x × [ Y ] b ⊩ y
 
-  defined : {a : ↯ ⌞ 𝔸 ⌟} → a ∈ mem → ⌞ a ⌟
-  defined = rec! λ a b p rx ry →
-    subst ⌞_⌟ (sym p) (`pair↓₂ (X .defined rx) (Y .defined ry))
+  def : {a : ↯ ⌞ 𝔸 ⌟} → a ∈ mem → ⌞ a ⌟
+  def = rec! λ a b p rx ry →
+    subst ⌞_⌟ (sym p) (`pair↓₂ (X .def rx) (Y .def ry))
 ```
 
 Of course, every pair is realised because both the first and second
@@ -100,7 +100,7 @@ trivial computations.
   realiser       = `fst
   tracks {a = a} = elim! λ p q α rx ry → subst⊩ X rx $
     `fst ⋆ a                ≡⟨ ap (`fst ⋆_) α ⟩
-    `fst ⋆ (`pair ⋆ p ⋆ q)  ≡⟨ `fst-β (X .defined rx) (Y .defined ry) ⟩
+    `fst ⋆ (`pair ⋆ p ⋆ q)  ≡⟨ `fst-β (X .def rx) (Y .def ry) ⟩
     p                       ∎
 
 π₂Asm : Assembly-hom (X ×Asm Y) Y
@@ -108,7 +108,7 @@ trivial computations.
   map (_ , x)    = x
   realiser       = `snd
   tracks {a = a} = elim! λ p q α rx ry → subst⊩ Y ry $
-    ap (`snd ⋆_) α ∙ `snd-β (X .defined rx) (Y .defined ry)
+    ap (`snd ⋆_) α ∙ `snd-β (X .def rx) (Y .def ry)
 
 ⟨_,_⟩Asm : Assembly-hom Z X → Assembly-hom Z Y → Assembly-hom Z (X ×Asm Y)
 ⟨_,_⟩Asm {Z = Z} f g = record where
@@ -121,7 +121,7 @@ trivial computations.
       realiser = val ⟨ x ⟩ (rf `· x `, rg `· x)
 
       tracks {a = a} qx = inc
-        ( rf ⋆ a , rg ⋆ a , abs-β _ _ (a , Z .defined qx)
+        ( rf ⋆ a , rg ⋆ a , abs-β _ _ (a , Z .def qx)
         , rf .tracks qx , rg .tracks qx )
 ```
 
@@ -150,14 +150,14 @@ tracked by the constant function with value $\sf{x}$.
 ⊤Asm : Assembly 𝔸 ℓ
 ⊤Asm .Ob          = Lift _ ⊤
 ⊤Asm .has-is-set  = hlevel 2
-⊤Asm .realisers _ = record { mem = def ; defined = λ x → x }
+⊤Asm .realisers _ = defineds
 ⊤Asm .realised  _ = inc (val ⟨ x ⟩ x)
 
 !Asm : Assembly-hom X (⊤Asm {ℓ})
 !Asm {X = X} = to-assembly-hom record where
   map    _  = lift tt
   realiser  = val ⟨ x ⟩ x
-  tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .defined ha))) (X .defined ha)
+  tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .def ha))) (X .def ha)
 ```
 
 <!--
@@ -194,7 +194,7 @@ Assemblies-equalisers f g .apex = Equ-asm f g
 Assemblies-equalisers {a = A} f g .equ = to-assembly-hom record where
   map (x , _) = x
   realiser    = val ⟨ x ⟩ x
-  tracks ha   = subst⊩ A ha (abs-β _ [] (_ , A .defined ha))
+  tracks ha   = subst⊩ A ha (abs-β _ [] (_ , A .def ha))
 Assemblies-equalisers f g .has-is-eq .equal = ext λ x p → p
 ```
 

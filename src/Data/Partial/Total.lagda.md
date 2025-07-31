@@ -112,8 +112,8 @@ even those which are not *a priori* known to be defined.
 ```agda
   record ℙ⁺ (A : Type ℓ) : Type ℓ where
     field
-      mem     : ↯ A → Ω
-      defined : ∀ {a} → ⌞ mem a ⌟ → ⌞ a ⌟
+      mem : ↯ A → Ω
+      def : ∀ {a} → ⌞ mem a ⌟ → ⌞ a ⌟
 ```
 
 <!--
@@ -150,14 +150,14 @@ construction, every member of $P'$ is defined.
 ```agda
 from-total-predicate : ℙ A → ℙ⁺ A
 from-total-predicate P .mem x = el (Σ[ hx ∈ x ] x .elt hx ∈ P) (hlevel 1)
-from-total-predicate P .defined (hx , _) = hx
+from-total-predicate P .def (hx , _) = hx
 
 from-total-predicate-is-equiv : is-equiv (from-total-predicate {A = A})
 from-total-predicate-is-equiv = is-iso→is-equiv record where
   from P a = P .mem (always a)
   rinv P = ext λ a → Ω-ua
     (rec! λ ha → subst (_∈ P) (sym (is-always a ha)))
-    (λ pa → P .defined pa , subst (_∈ P) (is-always a _) pa)
+    (λ pa → P .def pa , subst (_∈ P) (is-always a _) pa)
   linv P = ext λ a → Ω-ua snd (tt ,_)
 ```
 
@@ -165,6 +165,10 @@ from-total-predicate-is-equiv = is-iso→is-equiv record where
 ```agda
 singleton⁺ : ↯⁺ A → ℙ⁺ A
 singleton⁺ x .mem y = elΩ (x .fst ≡ y)
-singleton⁺ x .defined = rec! λ p → subst ⌞_⌟ p (x .snd)
+singleton⁺ x .def = rec! λ p → subst ⌞_⌟ p (x .snd)
+
+defineds : ℙ⁺ A
+defineds .mem p = p .def
+defineds .def x = x
 ```
 -->
