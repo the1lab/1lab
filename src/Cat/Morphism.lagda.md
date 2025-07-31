@@ -636,6 +636,18 @@ inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
 
+involution→invertible
+  : (f : Hom a a)
+  → f ∘ f ≡ id
+  → is-invertible f
+involution→invertible f inv = make-invertible f inv inv
+
+involution→iso
+  : (f : Hom a a)
+  → f ∘ f ≡ id
+  → a ≅ a
+involution→iso f inv = make-iso f f inv inv
+
 _≅⟨_⟩_ : ∀ (x : Ob) {y z} → x ≅ y → y ≅ z → x ≅ z
 x ≅⟨ p ⟩ q = q ∘Iso p
 
