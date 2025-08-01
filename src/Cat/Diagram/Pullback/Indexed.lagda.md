@@ -27,10 +27,14 @@ private
 
 # Wide pullabacks {defines="wide-pullback indexed-pullback"}
 
-```agda
-is-ｐｕｌｌｂａｃｋ : {c : C.Ob} (F : Idx → /-Obj c) (π : ∀ i → /-Hom (cut C.id) (F i)) → Type (o ⊔ ℓ ⊔ level-of Idx)
-is-ｐｕｌｌｂａｃｋ {c = c} = is-indexed-product (Slice C c)
+Just as [[products in a slice]] category are pullbacks in $\cC$,
+pullbacks of arbitrary cardinary may be seen as indexed products in its
+slice category.
 
-Ｐｕｌｌｂａｃｋ : {c : C.Ob} (F : Idx → /-Obj c) → Type (o ⊔ ℓ ⊔ level-of Idx)
-Ｐｕｌｌｂａｃｋ {c = c} = Indexed-product (Slice C c)
+```agda
+is-wide-pullback : {c : C.Ob} (F : Idx → /-Obj c) (π : ∀ i → /-Hom (cut C.id) (F i)) → Type (o ⊔ ℓ ⊔ level-of Idx)
+is-wide-pullback {c = c} = is-indexed-product (Slice C c)
+
+Wide-pullback : {c : C.Ob} (F : Idx → /-Obj c) → Type (o ⊔ ℓ ⊔ level-of Idx)
+Wide-pullback {c = c} = Indexed-product (Slice C c)
 ```
