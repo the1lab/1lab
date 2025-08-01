@@ -66,7 +66,7 @@ module _
     unquoteDecl eqv = declare-record-iso eqv (quote Action-on)
 
   Action-on-pathp
-    : ∀ {o' ℓ'} {B : Precategory o' ℓ'} {X Y : Functor B C} (p : X ≡ Y) {A : Action-on Mᵐ X} {B : Action-on Mᵐ Y}
+    : ∀ {o' ℓ'} {B : Precategory o' ℓ'} {X Y : Functor B C} (p : X ≡ Y) {A : Action-on Mᵐ X} {B : Action-on Mᵐ Y}
     → PathP (λ i → M F∘ p i => p i) (A .α) (B .α)
     → PathP (λ i → Action-on Mᵐ (p i)) A B
   Action-on-pathp over mults = injectiveP (λ _ → eqv) (mults ,ₚ prop!)

@@ -354,7 +354,7 @@ auxiliary notion: **free objects**.
 
 <!--
 ```agda
-module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D

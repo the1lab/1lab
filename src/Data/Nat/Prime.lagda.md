@@ -213,7 +213,7 @@ record Factorisation (n : Nat) : Type where
 
   find-prime-factor : ∀ {x} → is-prime x → x ∣ n → x ∈ₗ primes
   find-prime-factor {num} x d =
-    work _ primes x (λ _ → all-∈ is-primes) (subst (num ∣_) (sym factors) d)
+    work _ primes x (λ _ → all-∈ is-primes) (subst (num ∣_) (sym factors) d)
     where
     work : ∀ x xs → is-prime x → (∀ x → x ∈ₗ xs → is-prime x) → x ∣ product xs → x ∈ₗ xs
     work x [] xp ps xd = absurd (prime≠1 xp (∣-1 xd))
