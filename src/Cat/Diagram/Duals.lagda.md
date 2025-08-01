@@ -283,8 +283,8 @@ We could work around this, but it's easier to just do the proofs by hand.
       mc .unique eta p other q = lim.unique eta p other q
 
 module _ {o ℓ} {C : Precategory o ℓ} where
-  co-is-cocomplete→is-cocomplete : is-complete o' ℓ' (C ^op) → is-cocomplete o' ℓ' C
-  co-is-cocomplete→is-cocomplete co-complete F = Co-limit→Colimit $ co-complete $ Functor.op F
+  co-is-complete→is-cocomplete : is-complete o' ℓ' (C ^op) → is-cocomplete o' ℓ' C
+  co-is-complete→is-cocomplete co-complete F = Co-limit→Colimit $ co-complete $ Functor.op F
 
   is-cocomplete→co-is-complete : is-cocomplete o' ℓ' (C ^op) → is-complete o' ℓ' C
   is-cocomplete→co-is-complete cocomplete F = to-limit (to-is-limit ml) where
