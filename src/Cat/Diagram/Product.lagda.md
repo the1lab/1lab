@@ -124,6 +124,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   instance
     H-Level-is-product : ∀ {X Y P} {p₁ : Hom P X} {p₂ : Hom P Y} {n} → H-Level (is-product C p₁ p₂) (suc n)
     H-Level-is-product = prop-instance is-product-is-prop
+
+  unquoteDecl Product-path = declare-record-path Product-path (quote Product)
 ```
 -->
 
@@ -236,6 +238,20 @@ the projections.
     prod' .unique p q = sym $ lswizzle
       (sym (prod .unique (pulll f-π₁ ∙ p) (pulll f-π₂ ∙ q))) fi.invr
 ```
+
+<!--
+```agda
+  Product-is-prop
+    : ∀ {A B}
+    → is-category C
+    → is-prop (Product C A B)
+  Product-is-prop cat p1 p2 = Product-path
+    (cat .to-path (×-Unique p1 p2))
+    (Univalent.Hom-pathp-refll-iso cat (p1 .π₁∘⟨⟩))
+    (Univalent.Hom-pathp-refll-iso cat (p1 .π₂∘⟨⟩))
+    prop!
+```
+-->
 
 # Categories with all binary products
 

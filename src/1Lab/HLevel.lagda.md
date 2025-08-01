@@ -615,6 +615,22 @@ is-prop→pathp
 is-prop→pathp {B = B} hB b0 b1 = to-pathp (hB _ _ _)
 ```
 
+<!--
+```agda
+is-prop-i0→pathp
+  : ∀ {B : I → Type ℓ} → is-prop (B i0)
+  → ∀ b0 b1 → PathP (λ i → B i) b0 b1
+is-prop-i0→pathp {B = B} hB b0 b1 =
+  is-prop→pathp (λ i → coe0→i (λ i → is-prop (B i)) i hB) b0 b1
+
+is-prop-i1→pathp
+  : ∀ {B : I → Type ℓ} → is-prop (B i1)
+  → ∀ b0 b1 → PathP (λ i → B i) b0 b1
+is-prop-i1→pathp {B = B} hB b0 b1 =
+  is-prop→pathp (λ i → coe1→i (λ i → is-prop (B i)) i hB) b0 b1
+```
+-->
+
 The base case is usefully phrased as the helper lemma
 `is-prop→pathp`{.Agda} above: if we have a *line of types* $B(i)$ over
 $i : \bI$ which is a proposition everywhere, then we can construct a
