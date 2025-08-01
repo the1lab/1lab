@@ -32,7 +32,7 @@ module Cat.Functor.Kan.Nerve where
 <!--
 ```agda
 private
-  variable o κ : Level
+  variable o' o κ : Level
 open Func
 open _=>_
 open is-lan
@@ -79,7 +79,7 @@ X)$.
 <!--
 ```agda
 module _
-  {o κ} {C : Precategory κ κ} {D : Precategory o κ}
+  {o' o κ} {C : Precategory o' κ} {D : Precategory o κ}
   (F : Functor C D)
   where
     private

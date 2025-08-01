@@ -89,7 +89,6 @@ PSh-omega .Subobject-classifier.Ω = Sieves
 PSh-omega .Subobject-classifier.true .Sub.dom         = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
 PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = ext λ _ _ → refl
-
 PSh-omega .generic .name = psh-name
 ```
 -->

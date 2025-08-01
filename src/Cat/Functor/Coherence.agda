@@ -83,13 +83,21 @@ nat-unassoc-to   : f ⇒ (g ⊗ h) ⊗ i → f ⇒ g ⊗ h ⊗ i
 nat-unassoc-from : (f ⊗ g) ⊗ h ⇒ i → f ⊗ g ⊗ h ⇒ i
 nat-idl-to       : f ⇒ Id ⊗ g → f ⇒ g
 nat-idl-from     : Id ⊗ f ⇒ g → f ⇒ g
+nat-unidl-to   : f ⇒ g → f ⇒ Id ⊗ g
+nat-unidl-from   : f ⇒ g → Id ⊗ f ⇒ g
+nat-unidr-to   : f ⇒ g → f ⇒ g ⊗ Id
+nat-unidr-from   : f ⇒ g → f ⊗ Id ⇒ g
 op-compose-into  : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
 
-unquoteDef nat-assoc-to nat-assoc-from nat-unassoc-to nat-unassoc-from nat-idl-to nat-idl-from op-compose-into = do
+unquoteDef nat-assoc-to nat-assoc-from nat-unassoc-to nat-unassoc-from nat-idl-to nat-idl-from nat-unidl-to nat-unidl-from nat-unidr-to nat-unidr-from op-compose-into = do
   define-eta-expansion nat-assoc-to
   define-eta-expansion nat-assoc-from
   define-eta-expansion nat-unassoc-to
   define-eta-expansion nat-unassoc-from
   define-eta-expansion nat-idl-to
   define-eta-expansion nat-idl-from
+  define-eta-expansion nat-unidl-to
+  define-eta-expansion nat-unidl-from
+  define-eta-expansion nat-unidr-to
+  define-eta-expansion nat-unidr-from
   define-eta-expansion op-compose-into

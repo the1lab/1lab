@@ -24,7 +24,7 @@ there for motivation and exposition.
 
 <!--
 ```agda
-import Cat.Reasoning C as C
+open import Cat.Reasoning C as C
 private variable
   o' ℓ' : Level
   Idx : Type ℓ'

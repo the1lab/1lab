@@ -50,6 +50,16 @@ terminal category is a [[pregroupoid]].
 
 <!--
 ```agda
+⊤Cat-idemp : ⊤Cat ^op ≡ ⊤Cat
+⊤Cat-idemp _ .Ob = ⊤
+⊤Cat-idemp _ .Hom _ _ = ⊤
+⊤Cat-idemp _ .Hom-set _ _ _ _ _ _ _ _ = tt
+⊤Cat-idemp _ .Precategory.id = tt
+⊤Cat-idemp _ .Precategory._∘_ _ _ = tt
+⊤Cat-idemp _ .idr _ _ = tt
+⊤Cat-idemp _ .idl _ _ = tt
+⊤Cat-idemp _ .assoc _ _ _ _ = tt
+
 module _ {o h} {C : Precategory o h} where
   private module C = Cat.Reasoning C
   open Functor

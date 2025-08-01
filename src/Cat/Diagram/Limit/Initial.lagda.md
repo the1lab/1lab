@@ -15,7 +15,7 @@ open Initial
 module Cat.Diagram.Limit.Initial where
 ```
 
-# Initial objects as limits
+# Initial objects as limits {defines="initial-objects-are-limits"}
 
 This module provides a characterisation of [[initial objects]] as
 [[*limits*]], rather than as [[colimits]]. Namely, while an initial

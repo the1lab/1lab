@@ -1,9 +1,15 @@
 <!--
 ```agda
+open import Cat.Instances.Sets.Cocomplete
+open import Cat.Instances.Functor.Limits
+open import Cat.Instances.Sets.Complete
+open import Cat.Diagram.Colimit.Finite
+open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Coproduct
 open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Pushout
 open import Cat.Prelude
 
 open import Data.Sum
@@ -117,4 +123,16 @@ PSh-coequaliser {X = X} {Y = Y} f g = coequ where
     e' .is-natural _ _ _ $ₚ _
   coequ .has-is-coeq .factors = ext λ _ _ → refl
   coequ .has-is-coeq .unique {F = F} p = reext! p
+
+Psh-finitely-cocomplete : Finitely-cocomplete (PSh κ C)
+Psh-finitely-cocomplete = with-coequalisers (PSh κ C) PSh-initial PSh-coproducts PSh-coequaliser
+
+PSh-pushouts : ∀ {F G H} (α : F => G) (β : F => H) → Pushout (PSh κ C) α β
+PSh-pushouts = Psh-finitely-cocomplete .Finitely-cocomplete.pushouts
 ```
+<!--
+```agda
+Psh-cocomplete : is-cocomplete κ κ (PSh κ C)
+Psh-cocomplete = Functor-cat-is-cocomplete $ Sets-is-cocomplete {ι = κ} {κ} {κ}
+```
+-->

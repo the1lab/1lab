@@ -1,7 +1,13 @@
 <!--
 ```agda
+open import Cat.Displayed.Instances.Subobjects
+open import Cat.Diagram.Product.Indexed
 open import Cat.Instances.Comma.Limits
+open import Cat.Diagram.Limit.Initial
+open import Cat.Diagram.Limit.Product
+open import Cat.Diagram.Product.Power
 open import Cat.Diagram.Initial.Weak
+open import Cat.Diagram.Coseparator
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
@@ -9,6 +15,7 @@ open import Cat.Instances.Comma
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
+import Cat.Morphism as Morb
 ```
 -->
 
@@ -120,4 +127,13 @@ the sea has risen above it:
         (comma-is-complete F c-compl F-cont)
         (solution-set→family-is-weak-initial (ss x))
     in _ , universal-maps→left-adjoint init
+```
+
+# The "Kan" adjoint functor theorem
+
+```agda
+module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ} (F : Functor C D) (F-cont : is-continuous (o ⊔ ℓ) ℓ F) where
+  formal-aft : (a-pres-comma-limits : ∀ {x} (Q : Functor (x ↙ F) C) → Limit Q) → Σ[ G ∈ Functor D C ] G ⊣ F
+  formal-aft a-pres .fst = _
+  formal-aft a-pres .snd = universal-maps→left-adjoint λ x → Id-limit→Initial $ Cod-lift-limit F F-cont $ a-pres _
 ```
