@@ -642,7 +642,7 @@ common-denominator (suc sz) fs with (c , c≠0 , nums , prfs) ← common-denomin
     pure (subst (applyᶠ P) rats=as p₀)
 
 same-frac : Fraction → Fraction → Prop lzero
-same-frac f@record{} g@record{} = el! (f .↑ *ℤ g .↓ ≡ g .↑ *ℤ f .↓)
+same-frac f@record{} g@record{} = el! (f .↑ *ℤ g .↓ ≡ g .↑ *ℤ f .↓)
 
 private
   eqℚ : Ratio → Ratio → Prop lzero

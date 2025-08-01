@@ -271,7 +271,7 @@ abstract
   -ℕ-nonnegative {x} {y} Nat.0≤x = pos≤pos Nat.0≤x
   -ℕ-nonnegative {suc x} {suc y} (Nat.s≤s p) = -ℕ-nonnegative p
 
-  -ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → y ≤ x → 0 ≤ (x -ℤ y)
+  -ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → y ≤ x → 0 ≤ (x -ℤ y)
   -ℤ-nonnegative {posz} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
   -ℤ-nonnegative {possuc x} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
   -ℤ-nonnegative {possuc x} {possuc y} (pos≤pos p) (pos≤pos q) (pos≤pos r) = -ℕ-nonnegative (Nat.≤-peel r)
