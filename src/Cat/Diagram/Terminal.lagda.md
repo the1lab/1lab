@@ -73,11 +73,11 @@ Hence, if $C$ is additionally a category, it has a propositional space of
 terminal objects:
 
 ```agda
-  ⊤-contractible : is-category C → is-prop Terminal
-  ⊤-contractible ccat x1 x2 i .top =
+  ⊤-is-prop : is-category C → is-prop Terminal
+  ⊤-is-prop ccat x1 x2 i .top =
     ccat .to-path (⊤-unique x1 x2) i
 
-  ⊤-contractible ccat x1 x2 i .has⊤ ob =
+  ⊤-is-prop ccat x1 x2 i .has⊤ ob =
     is-prop→pathp
       (λ i → is-contr-is-prop {A = Hom _
         (ccat .to-path (⊤-unique x1 x2) i)})
