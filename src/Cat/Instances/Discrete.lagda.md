@@ -1,5 +1,8 @@
 <!--
 ```agda
+open import 1Lab.HLevel.Closure
+
+open import Cat.Functor.Naturality
 open import Cat.Instances.Product
 open import Cat.Groupoid
 open import Cat.Morphism
@@ -145,16 +148,16 @@ computations with equalities and a whole waterfall of absurd cases:
 
 <!--
 ```agda
-Disc-adjunct
-  : ∀ {iss : is-groupoid X}
+Disc'-adjunct
+  : ∀ { iss : is-groupoid X}
   → (X → Ob C)
   → Functor (Disc X iss) C
-Disc-adjunct {C = C} F .F₀ = F
-Disc-adjunct {C = C} F .F₁ p = subst (C .Hom (F _) ⊙ F) p (C .id)
-Disc-adjunct {C = C} F .F-id = transport-refl _
-Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
+Disc'-adjunct {C = C} F .F₀ = F
+Disc'-adjunct {C = C} F .F₁ p = subst (C .Hom (F _) ⊙ F) p (C .id)
+Disc'-adjunct {C = C} F .F-id = transport-refl _
+Disc'-adjunct {C = C} {iss} F .F-∘ {x} {y} {z} f g = path where
   import Cat.Reasoning C as C
-  go = Disc-adjunct {C = C} {iss} F .F₁
+  go = Disc'-adjunct {C = C} {iss} F .F₁
   abstract
     path : go (g ∙ f) ≡ C ._∘_ (go f) (go g)
     path =
@@ -163,6 +166,12 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
               ∙∙ transport-refl _
               ∙∙ C.introl (transport-refl _))
         f {x} g
+
+Disc-adjunct
+  : ∀ ⦃ iss : H-Level {ℓ} X 3 ⦄
+  → (X → Ob C)
+  → Functor (Disc X (hlevel 3)) C
+Disc-adjunct = Disc'-adjunct {iss = hlevel 3}
 
 Disc-into
   : ∀ {ℓ} (X : Set ℓ)
@@ -203,5 +212,15 @@ Disc-natural₂ {C = C} {F = F} {G = G} fam .is-natural x y (p , q) =
     (C.elimr (F .F-id) ∙ C.introl (G .F-id))
     (Σ-pathp p q)
   where module C = Cat.Reasoning C
+
+open _≅_
+open Inverses
+Disc-natural-iso : ∀ {X : Set ℓ}
+  → {F G : Functor (Disc' X) C}
+  → (∀ x → Isomorphism C (F .F₀ x) (G .F₀ x))
+  → F ≅ⁿ G
+Disc-natural-iso isos .to = Disc-natural λ x → isos x .to
+Disc-natural-iso isos .from = Disc-natural λ x → isos x .from
+Disc-natural-iso isos .inverses = to-inversesⁿ (λ x → isos x .inverses .invl ) (λ x → isos x .inverses .invr)
 ```
 -->

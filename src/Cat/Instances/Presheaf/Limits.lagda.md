@@ -1,9 +1,12 @@
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
+open import Cat.Instances.Functor.Limits
+open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Subterminal
 open import Cat.Functor.Adjoint.Hom
+open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -232,3 +235,9 @@ abstract
     monic→is-embedding (hlevel 2) λ {C} g h →
       right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
 ```
+<!--
+```agda
+Psh-complete : is-complete κ κ (PSh κ C)
+Psh-complete = Functor-cat-is-complete $ Sets-is-complete {ι = κ} {κ} {κ}
+```
+-->
