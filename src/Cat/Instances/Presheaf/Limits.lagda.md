@@ -57,7 +57,7 @@ contr→is-terminal-PSh
   : ∀ (T : ⌞ PSh κ C ⌟)
   → ⦃ ∀ {c n} → H-Level ⌞ T .F₀ c ⌟ n ⦄
   → is-terminal (PSh κ C) T
-contr→is-terminal-PSh T _ .centre .η _ _ = hlevel 0 .centre
+contr→is-terminal-PSh T _ .centre .η _ _ = hlevel!
 contr→is-terminal-PSh T _ .centre .is-natural _ _ _ = prop!
 contr→is-terminal-PSh T _ .paths _ = ext λ _ _ → prop!
 

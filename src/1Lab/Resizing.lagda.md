@@ -208,7 +208,7 @@ to-is-true
   : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
   → ∣ P ∣
   → P ≡ Q
-to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) λ _ → prf
+to-is-true prf = Ω-ua (λ _ → hlevel!) λ _ → prf
 
 tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
 tr-□ (inc x) = inc x

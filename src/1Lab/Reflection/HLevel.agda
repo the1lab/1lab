@@ -291,7 +291,7 @@ prop-over-ext! e = prop-over-ext e (hlevel 1) (hlevel 1)
 prop!
   : ∀ {ℓ} {A : I → Type ℓ} ⦃ aip : ∀ {i} → H-Level (A i) 1 ⦄ {x y}
   → PathP (λ i → A i) x y
-prop! {A = A} {x} {y} = is-prop→pathp (λ _ → hlevel 1) x y
+prop! = hlevel!
 
 injective→is-embedding!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ bset : H-Level B 2 ⦄ {f : A → B}

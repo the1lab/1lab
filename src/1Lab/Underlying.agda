@@ -68,7 +68,7 @@ from-is-true
   : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Underlying A ⦄ {P Q : A} ⦃ _ : H-Level ⌞ Q ⌟ 0 ⦄
   → P ≡ Q
   → ⌞ P ⌟
-from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
+from-is-true prf = subst ⌞_⌟ (sym prf) hlevel!
 
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
