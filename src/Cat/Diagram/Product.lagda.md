@@ -125,7 +125,13 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     H-Level-is-product : ∀ {X Y P} {p₁ : Hom P X} {p₂ : Hom P Y} {n} → H-Level (is-product C p₁ p₂) (suc n)
     H-Level-is-product = prop-instance is-product-is-prop
 
-  unquoteDecl Product-path = declare-record-path Product-path (quote Product)
+unquoteDecl Product-path = declare-record-path Product-path (quote Product)
+
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
+  private variable
+    A B a b c d : Ob
 ```
 -->
 
@@ -249,7 +255,6 @@ the projections.
     (cat .to-path (×-Unique p1 p2))
     (Univalent.Hom-pathp-refll-iso cat (p1 .π₁∘⟨⟩))
     (Univalent.Hom-pathp-refll-iso cat (p1 .π₂∘⟨⟩))
-    prop!
 ```
 -->
 

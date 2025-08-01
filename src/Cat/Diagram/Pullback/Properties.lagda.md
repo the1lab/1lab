@@ -331,7 +331,6 @@ A similar result holds for isomorphisms.
       apices
       (Univalent.Hom-pathp-refll-iso c-cat (x .p₁∘universal))
       (Univalent.Hom-pathp-refll-iso c-cat (x .p₂∘universal))
-      prop!
     where
       open Pullback
       apices = c-cat .to-path (invertible→iso _ (Equiv.from (pullback-unique (y .has-is-pb) (x .square)) (x .has-is-pb)))
