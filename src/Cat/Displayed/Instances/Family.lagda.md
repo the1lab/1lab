@@ -152,11 +152,11 @@ the family fibration is fibrewise univalent whenever $\cC$ is.
 ```agda
 module _ {ℓ} (X : Set ℓ) where
   private
-    lift-f = Disc-adjunct {C = C} {iss = is-hlevel-suc 2 (X .is-tr)}
+    lift-f = Disc'-adjunct {C = C} {iss = is-hlevel-suc 2 (X .is-tr)}
     module F = Cat.Reasoning (Fibre Family X)
 
   Families→functors : Functor (Fibre Family X) Cat[ Disc' X , C ]
-  Families→functors .F₀ = Disc-adjunct
+  Families→functors .F₀ = Disc'-adjunct
   Families→functors .F₁ f .η = f
   Families→functors .F₁ {X} {Y} f .is-natural x y =
     J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)

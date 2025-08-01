@@ -2,11 +2,15 @@
 ```agda
 open import Cat.Functor.Kan.Duality
 open import Cat.Functor.Kan.Global
+open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Prelude
+
+import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 
@@ -105,3 +109,49 @@ Even more dually, we can flip the span above to get a *cospan* of
 functors, giving rise to the theory of **Kan lifts**. We then get
 analogous statements: left (resp. right) adjoints are absolute left
 (resp. right) Kan lifts along the identity.
+
+# Kan extensions are adjoints {defines="kan-extensions-are-adjoints"}
+
+Conversely, any absolute kan extension over the identity is a pair
+of adjoint functors.
+
+```agda
+module _ {F : Functor C D} {G : Functor D C} {nt : Id => G F∘ F} {lan : is-lan F Id G nt} (is-absolute : is-absolute-lan lan) where
+```
+<!--
+```agda
+  open is-lan lan
+  module is-absolute {E : Precategory o ℓ} (H : Functor C E) where
+    open is-lan (is-absolute H) public
+  open _⊣_
+  private
+    module F = Cat.Functor.Reasoning F
+    module G = Cat.Functor.Reasoning G
+    module D = Cat.Reasoning D
+    α : F F∘ Id => Id F∘ F
+    α = cohere! (idnt {F = F})
+    ϵ-nt : F F∘ G => Id
+    ϵ-nt = is-absolute.σ F α
+    ϵ : ∀ x → D.Hom (F.₀ (G.₀ x)) x
+    ϵ x = ϵ-nt .η x
+  open Cat.Reasoning C
+```
+-->
+```agda
+  is-absolute-lan→adjoint : F ⊣ G
+  is-absolute-lan→adjoint .unit = nt
+  is-absolute-lan→adjoint .counit = ϵ-nt
+  is-absolute-lan→adjoint .zig {A} = is-absolute.σ-comm F {α = α} ηᵈ A
+  is-absolute-lan→adjoint .zag {B} =
+    σ-uniq₂ nt
+      {σ₁' = cohere! ((G ▸ ϵ-nt) ∘nt nat-unassoc-to (nt ◂ G))}
+      {σ₂' = idnt}
+      (ext λ _ → sym p)
+      (ext λ _ → sym $ idl _)
+      ηᵈ B where
+    p : ∀ {c} → (G.₁ (ϵ (F.₀ c)) ∘ nt .η (G.₀ (F.₀ c))) ∘ nt .η c ≡ nt .η c
+    p {c} =
+      (G.₁ (ϵ (F.₀ c)) ∘ nt .η (G.₀ (F.₀ c))) ∘ nt .η c ≡⟨ pullr (nt .is-natural c _ _) ⟩
+      G.₁ (ϵ (F.₀ c)) ∘ (G.₁ (F.₁ (nt .η c))) ∘ nt .η c ≡⟨ G.cancell (is-absolute-lan→adjoint .zig {c}) ⟩
+      nt .η c                                           ∎
+```
