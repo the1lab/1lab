@@ -1,10 +1,14 @@
 {-# OPTIONS -v refl:20 #-}
 open import 1Lab.Reflection.Signature
+open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
+open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Nat.Base
 
 open import Meta.Foldable
 open import Meta.Append
@@ -43,31 +47,48 @@ record→iso namen unfolded = go [] =<< normalise =<< get-type namen where
     let rec = def namen (reverse (map-up (λ n i → arg i (var n [])) 0 acc))
     pure $ def (quote Iso) (rec v∷ unfolded v∷ [])
 
-  go _ _ = typeError [ "Not a record type name: " , nameErr namen ]
+  go _ _ = typeError [ "Unsupported record type: " , nameErr namen ]
 
 -- Given the name of a record type, generate the type of the
--- corresponding path constructor.
+-- corresponding path constructor, with paths in propositions omitted.
 -- Example: ∀ {xs : Δ} {r1 r2 : R xs} p1 p2 p3 → r1 ≡ r2
-record→path : Name → List (Arg Name) → TC Term
-record→path namen fields = go [] =<< normalise =<< get-type namen where
-  go : List ArgInfo → Term → TC Term
-  go acc (pi argu@(arg i argTy) (abs s ty)) = do
-    -- If `go` ever needs the TC context to be correct, uncomment the
-    -- following line.
-    r ← -- extend-context "arg" argu $
-        go (i ∷ acc) ty
-    pure $ pi (argH argTy) (abs s r)
+-- The second output is a list of booleans indicating which fields are
+-- propositions.
+record→path : Name → List (Arg Name) → Term → Term → TC (Term × List Bool)
+record→path namen fields `R-ty con-ty = go [] `R-ty con-ty where
+  go' : Nat → Term → TC (Term × List Bool)
+  go' m (pi argu@(arg i fTy) (abs s ty)) = do
+    prop? ←
+      (do
+        `m ← new-meta (def (quote H-Level) (fTy v∷ lit (nat 1) v∷ []))
+        unify `m $ def (quote auto) []
+        pure true)
+      <|> pure false
+    extend-context "" argu $ case prop? of λ where
+      false → do
+        r , ps ← go' (suc m) ty
+        pure $ pi (argN unknown) (abs "p" r) , true ∷ ps
+      true → do
+        r , ps ← go' m ty
+        pure $ r , false ∷ ps
+  go' m (def _ _) = do
+    pure (def (quote _≡_) (var (suc m) [] v∷ var m [] v∷ []) , [])
+  go' _ _ = typeError [ "Unsupported record type: " , nameErr namen ]
 
-  go acc (agda-sort _) = do
-    let rec = def namen (reverse (map-up (λ n i → arg i (var n [])) 0 acc))
-    let n = length fields
-    pure $ pi (argH rec) $ abs "r1"
-         $ pi (argH (raise 1 rec)) $ abs "r2"
-         $ foldr (λ _ x → pi (argN unknown) (abs "p" x))
-          (def (quote _≡_) (var (suc n) [] v∷ var n [] v∷ []))
-          fields
+  go : List ArgInfo → Term → Term → TC (Term × List Bool)
+  go acc (pi argu@(arg i argTy) (abs s ty)) (pi _ (abs _ con-ty)) = do
+    r , ps ← extend-context "arg" argu $ go (i ∷ acc) ty con-ty
+    pure $ pi (argH argTy) (abs s r) , ps
 
-  go _ _ = typeError [ "Not a record type name: " , nameErr namen ]
+  go acc (agda-sort _) con-ty = do
+    ty , ps ← go' 0 con-ty
+    let recTy = def namen (reverse (map-up (λ n i → arg i (var n [])) 0 acc))
+        ty = pi (argH recTy) $ abs "r1"
+           $ pi (argH (raise 1 recTy)) $ abs "r2"
+           $ ty
+    pure (ty , ps)
+
+  go _ _ _ = typeError [ "Unsupported record type: " , nameErr namen ]
 
 -- Generate the clauses of the isomorphism corresponding to the given field.
 undo-clause : Name × List Name → Clause
@@ -114,11 +135,18 @@ instantiate' (pi _ (abs _ xs)) (pi _ (abs _ b)) = instantiate' xs b
 instantiate' (agda-sort _) tm = tm
 instantiate' _ tm = tm
 
--- Assemble the last n variables into a path in a Σ-type.
-Σ-pathpⁿ : Nat → Term
-Σ-pathpⁿ zero = unknown -- empty record types are not supported
-Σ-pathpⁿ (suc zero) = var zero []
-Σ-pathpⁿ (suc (suc n)) = def (quote Σ-pathp) (var (suc n) [] v∷ Σ-pathpⁿ (suc n) v∷ [])
+-- [true, false, true] ↦ [var 1, prop!, var 0]
+bools→terms : Nat → List Bool → List Term
+bools→terms zero [] = []
+bools→terms (suc n) (true ∷ l) = var n [] ∷ bools→terms n l
+bools→terms n (false ∷ l) = def (quote prop!) [] ∷ bools→terms n l
+bools→terms _ _ = []
+
+-- [a, b, c] ↦ Σ-pathp a (Σ-pathp b c)
+Σ-pathpⁿ : List Term → Term
+Σ-pathpⁿ [] = unknown -- empty record types are not supported
+Σ-pathpⁿ (p ∷ []) = p
+Σ-pathpⁿ (p ∷ p' ∷ ps) = def (quote Σ-pathp) (p v∷ Σ-pathpⁿ (p' ∷ ps) v∷ [])
 
 make-record-iso-sigma : Bool → Name → Name → TC ⊤
 make-record-iso-sigma declare? nm `R = do
@@ -172,21 +200,24 @@ define-record-iso = make-record-iso-sigma false
 
 make-record-path : Bool → Name → Name → TC ⊤
 make-record-path declare? nm `R = do
+  `R-con , fields ← get-record-type `R
   eqv ← helper-function-name nm "eqv"
   declare-record-iso eqv `R
-  `R-con , fields ← get-record-type `R
-  let n = length fields
+
+  `R-ty ← normalise =<< get-type `R
+  con-ty ← normalise =<< get-type `R-con
+  ty , ps ← record→path `R fields `R-ty con-ty
+  let ps' = filter id ps
+      n = length ps'
 
   when declare? do
-    `R-ty ← normalise =<< get-type `R
-    ty ← record→path `R fields
     declare (argN nm) ty
 
   define-function nm
     [ clause
-      (map (λ _ → "p" , argN unknown) fields)
-      (map-up (λ i _ → argN (var (n - i))) 1 fields)
-      (def (quote Iso.injective) (def eqv [] v∷ Σ-pathpⁿ n v∷ []))
+      (map (λ _ → "p" , argN unknown) ps')
+      (map-up (λ i _ → argN (var (n - i))) 1 ps')
+      (def (quote Iso.injective) (def eqv [] v∷ Σ-pathpⁿ (bools→terms n ps) v∷ []))
     ]
 
 declare-record-path : Name → Name → TC ⊤
@@ -194,6 +225,51 @@ declare-record-path = make-record-path true
 
 define-record-path : Name → Name → TC ⊤
 define-record-path = make-record-path false
+
+{-
+Metaprogram for defining instances of H-Level (R x) n, where R x is a
+record type whose components can all immediately be seen to have h-level
+n.
+
+That is, this works for things like Cat.Morphism._↪_, since the H-Level
+automation already works for showing that its representation as a Σ-type
+has hlevel 2, but it does not work for Algebra.Group.is-group, since
+that requires specific knowledge about is-group to work.
+
+Can be used either for unquoteDecl or unquoteDef. In the latter case, it
+is possible to give the generated instance a more specific context which
+might help to automatically derive instances for more types.
+-}
+
+private
+  record-hlevel-instance
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (n : Nat) ⦃ _ : H-Level A n ⦄
+    → Iso B A
+    → ∀ {k} ⦃ p : n ≤ k ⦄
+    → H-Level B k
+  record-hlevel-instance n im ⦃ p ⦄ = hlevel-instance $
+    Iso→is-hlevel _ im (is-hlevel-le _ _ p (hlevel _))
+
+declare-record-hlevel : (n : Nat) → Name → Name → TC ⊤
+declare-record-hlevel lvl inst rec = do
+  (rec-tele , _) ← pi-view <$> get-type rec
+
+  eqv ← helper-function-name rec "isom"
+  declare-record-iso eqv rec
+
+  let
+    args    = reverse $ map-up (λ n (_ , arg i _) → arg i (var₀ n)) 2 (reverse rec-tele)
+
+    head-ty = it H-Level ##ₙ def rec args ##ₙ var₀ 1
+
+    inst-ty = unpi-view (map (λ (nm , arg _ ty) → nm , argH ty) rec-tele) $
+      pi (argH (it Nat)) $ abs "n" $
+      pi (argI (it _≤_ ##ₙ lit (nat lvl) ##ₙ var₀ 0)) $ abs "le" $
+      head-ty
+
+  declare (argI inst) inst-ty
+  define-function inst
+    [ clause [] [] (it record-hlevel-instance ##ₙ lit (nat lvl) ##ₙ def₀ eqv) ]
 
 private
   module _ {ℓ} (A : Type ℓ) where
