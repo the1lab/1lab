@@ -1,18 +1,32 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality.Reflection
+open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
+open import Cat.Functor.Kan.Duality
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Equaliser
+open import Cat.Functor.Coherence
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Constant
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
 open import Cat.Diagram.Pushout
 open import Cat.Prelude
+open import Cat.Base
+
+import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 
@@ -22,8 +36,15 @@ module Cat.Diagram.Duals where
 
 <!--
 ```agda
+private
+  variable
+    o' ℓ' : Level
+    Idx : Type ℓ'
 module _ {o ℓ} {C : Precategory o ℓ} where
-  private module C = Precategory C
+  private
+    module C = Cat.Reasoning C
+    variable
+      S : C.Ob
 ```
 -->
 
@@ -71,6 +92,16 @@ $C\op$. We prove these correspondences here:
     where module iscop = is-coproduct iscop
 ```
 
+## Indexed Co/products
+
+```agda
+  is-indexed-co-product→is-indexed-coproduct : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-product (C ^op) F ι → is-indexed-coproduct C F ι
+  is-indexed-co-product→is-indexed-coproduct prod = record { is-indexed-product prod renaming (tuple to match) }
+
+  is-indexed-coproduct→is-indexed-co-product : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-coproduct C F ι → is-indexed-product (C ^op) F ι
+  is-indexed-coproduct→is-indexed-co-product coprod = record { is-indexed-coproduct coprod renaming (match to tuple) }
+```
+
 ## Co/equalisers
 
 ```agda
@@ -109,17 +140,33 @@ $C\op$. We prove these correspondences here:
     : ∀ {A} → is-terminal (C ^op) A → is-initial C A
   is-coterminal→is-initial x = x
 
+  is-terminal→is-coinitial
+    : ∀ {A} → is-terminal C A → is-initial (C ^op) A
+  is-terminal→is-coinitial x = x
+
   is-initial→is-coterminal
     : ∀ {A} → is-initial C A → is-terminal (C ^op) A
   is-initial→is-coterminal x = x
+
+  is-coinitial→is-terminal
+    : ∀ {A} → is-initial (C ^op) A → is-terminal C A
+  is-coinitial→is-terminal x = x
 
   Coterminal→Initial : Terminal (C ^op) → Initial C
   Coterminal→Initial term .bot = term .top
   Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has⊤)
 
+  Terminal→Coinitial : Terminal C → Initial (C ^op)
+  Terminal→Coinitial term .bot = term .top
+  Terminal→Coinitial term .has⊥ = is-terminal→is-coinitial (term .has⊤)
+
   Initial→Coterminal : Initial C → Terminal (C ^op)
   Initial→Coterminal init .top = init .bot
   Initial→Coterminal init .has⊤ = is-initial→is-coterminal (init .has⊥)
+
+  CoInitial→terminal : Initial (C ^op) → Terminal C
+  CoInitial→terminal init .top = init .bot
+  CoInitial→terminal init .has⊤ = is-coinitial→is-terminal (init .has⊥)
 ```
 
 ## Pullback/pushout
@@ -157,6 +204,7 @@ $C\op$. We prove these correspondences here:
 ```agda
   module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
     open Functor F renaming (op to F^op)
+    private module F = Cat.Functor.Reasoning F
 
     open Cocone-hom
     open Cone-hom
@@ -233,4 +281,14 @@ We could work around this, but it's easier to just do the proofs by hand.
       mc .universal eta p = lim.universal eta p
       mc .factors eta p = lim.factors eta p
       mc .unique eta p other q = lim.unique eta p other q
+
+module _ {o ℓ} {C : Precategory o ℓ} where
+  co-is-cocomplete→is-cocomplete : is-complete o' ℓ' (C ^op) → is-cocomplete o' ℓ' C
+  co-is-cocomplete→is-cocomplete co-complete F = Co-limit→Colimit $ co-complete $ Functor.op F
+
+  is-cocomplete→co-is-complete : is-cocomplete o' ℓ' (C ^op) → is-complete o' ℓ' C
+  is-cocomplete→co-is-complete cocomplete F = to-limit (to-is-limit ml) where
+    dual = Colimit→Co-limit $ cocomplete $ Functor.op F
+    ml : make-is-limit F $ Limit.apex dual
+    ml = record { Limit dual }
 ```
