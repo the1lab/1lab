@@ -121,6 +121,14 @@ the identity when staying at a variable point in the interval.
 
 <!--
 ```agda
+happly-dep
+  : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
+    {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
+  → PathP (λ i → (x : A i) → B i x) f g
+  → {x₀ : A i0} {x₁ : A i1} (p : PathP A x₀ x₁)
+  → PathP (λ i → B i (p i)) (f x₀) (g x₁)
+happly-dep q p i = q i (p i)
+
 funext-dep≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
@@ -137,7 +145,7 @@ funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
   open is-iso
   isom : Iso _ _
   isom .fst = funext-dep
-  isom .snd .is-iso.from q p i = q i (p i)
+  isom .snd .is-iso.from = happly-dep
 
   isom .snd .rinv q m i x =
     transp (λ k → B i (coei→i A i x (k ∨ m))) (m ∨ i ∨ ~ i) (q i (coei→i A i x m))
