@@ -128,6 +128,8 @@ maps:
 
 <!--
 ```agda
+unquoteDecl Pullback-path = declare-record-path Pullback-path (quote Pullback)
+
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C
   private variable
