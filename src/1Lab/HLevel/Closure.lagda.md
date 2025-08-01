@@ -348,6 +348,14 @@ hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
 hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
 ```
 
+We also provide a helper for finding a value of any contractible type,
+such as the $n$-fold iterated path type of a type of h-level $n$.
+
+```agda
+hlevel! : ∀ {ℓ} {T : Type ℓ} → ⦃ H-Level T 0 ⦄ → T
+hlevel! ⦃ c ⦄ = c .H-Level.has-hlevel .centre
+```
+
 <!--
 ```agda
 private variable

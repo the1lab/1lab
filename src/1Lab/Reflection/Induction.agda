@@ -205,8 +205,7 @@ private
     (do
       maybe→alt into-hlevel
       m ← new-meta T
-      unify m $ def (quote centre) $
-        def (quote hlevel) (unknown h∷ T h∷ lit (nat 0) v∷ []) v∷ []
+      unify m $ def (quote hlevel!) []
       pure (just m))
     <|> pure nothing
 
@@ -228,7 +227,7 @@ private
         (just m) → do
           -- The type of the method is solvable by hlevel (i.e. contractible):
           -- we can omit that type from the telescope and replace the method with
-          -- a call to `hlevel 0 .centre`.
+          -- a call to `hlevel!`.
           let rs = (c' , m) ∷ rs
           go ps P rs cs <&> ×-map₁₂ id (α ∷_)
         nothing → do
