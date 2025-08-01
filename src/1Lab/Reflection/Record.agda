@@ -1,5 +1,6 @@
 {-# OPTIONS -v refl:20 #-}
 open import 1Lab.Reflection.Signature
+open import 1Lab.Reflection.Subst
 open import 1Lab.Reflection
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -13,35 +14,62 @@ import Prim.Data.Nat as N
 
 module 1Lab.Reflection.Record where
 
-field-names→sigma : ∀ {ℓ} {A : Type ℓ} → List A → Term
-field-names→sigma [] = def (quote ⊤) []
-field-names→sigma (_ ∷ []) = unknown
-field-names→sigma (_ ∷ xs) =
-  def (quote Σ) (lam visible (abs "_" (field-names→sigma xs)) v∷ [])
-
 Fields : Type
 Fields = List (Name × List Name)
 
+-- Annotate a list of field names with a "projection path" to access
+-- them in the corresponding Σ-type.
+-- Example: [f1, f2, f3] ↦ [(f1, .fst), (f2, .snd .fst), (f3, .snd .snd)]
 field-names→paths : List (Arg Name) → Fields
 field-names→paths [] = []
 field-names→paths (arg _ nm ∷ []) = (nm , []) ∷ []
 field-names→paths (arg _ x  ∷ (y ∷ ys)) with field-names→paths (y ∷ ys)
 ... | fields = (x , quote fst ∷ []) ∷ map (λ (f , p) → f , quote snd ∷ p) fields
 
-record→iso : Name → (List (Arg Term) → TC Term) → TC Term
-record→iso namen unfolded = go [] =<< normalise =<< infer-type (def namen []) where
+-- Given the name of a record type and the corresponding Σ-type, generate
+-- the type of the corresponding iso helper.
+-- Example: ∀ {xs : Δ} → Iso (R xs) (Σ A (Σ B C))
+record→iso : Name → Term → TC Term
+record→iso namen unfolded = go [] =<< normalise =<< get-type namen where
   go : List ArgInfo → Term → TC Term
   go acc (pi argu@(arg i argTy) (abs s ty)) = do
-    r ← extend-context "arg" argu $ go (i ∷ acc) ty
+    -- If `go` ever needs the TC context to be correct, uncomment the
+    -- following line.
+    r ← -- extend-context "arg" argu $
+        go (i ∷ acc) ty
     pure $ pi (argH argTy) (abs s r)
 
   go acc (agda-sort _) = do
     let rec = def namen (reverse (map-up (λ n i → arg i (var n [])) 0 acc))
-    unfolded ← unfolded (reverse (map-up (λ n _ → argH (var n [])) 0 acc))
     pure $ def (quote Iso) (rec v∷ unfolded v∷ [])
 
   go _ _ = typeError [ "Not a record type name: " , nameErr namen ]
 
+-- Given the name of a record type, generate the type of the
+-- corresponding path constructor.
+-- Example: ∀ {xs : Δ} {r1 r2 : R xs} p1 p2 p3 → r1 ≡ r2
+record→path : Name → List (Arg Name) → TC Term
+record→path namen fields = go [] =<< normalise =<< get-type namen where
+  go : List ArgInfo → Term → TC Term
+  go acc (pi argu@(arg i argTy) (abs s ty)) = do
+    -- If `go` ever needs the TC context to be correct, uncomment the
+    -- following line.
+    r ← -- extend-context "arg" argu $
+        go (i ∷ acc) ty
+    pure $ pi (argH argTy) (abs s r)
+
+  go acc (agda-sort _) = do
+    let rec = def namen (reverse (map-up (λ n i → arg i (var n [])) 0 acc))
+    let n = length fields
+    pure $ pi (argH rec) $ abs "r1"
+         $ pi (argH (raise 1 rec)) $ abs "r2"
+         $ foldr (λ _ x → pi (argN unknown) (abs "p" x))
+          (def (quote _≡_) (var (suc n) [] v∷ var n [] v∷ []))
+          fields
+
+  go _ _ = typeError [ "Not a record type name: " , nameErr namen ]
+
+-- Generate the clauses of the isomorphism corresponding to the given field.
 undo-clause : Name × List Name → Clause
 undo-clause (r-field , sel-path) = clause
   (("sig" , argN unknown) ∷ [])
@@ -72,6 +100,8 @@ redo-undo-clause (r-field , sel-path) = clause
   <> map (argN ∘ proj) sel-path)
   (foldr (λ n t → def n (t v∷ [])) (var 1 []) (reverse sel-path))
 
+-- Transform the type of a record constructor into a Σ-type isomorphic
+-- to the record.
 pi-term→sigma : Term → TC Term
 pi-term→sigma (pi (arg _ x) (abs n (def n' _))) = pure x
 pi-term→sigma (pi (arg _ x) (abs n y)) = do
@@ -84,30 +114,31 @@ instantiate' (pi _ (abs _ xs)) (pi _ (abs _ b)) = instantiate' xs b
 instantiate' (agda-sort _) tm = tm
 instantiate' _ tm = tm
 
-make-record-iso-sigma : Bool → TC Name → Name → TC Name
-make-record-iso-sigma declare? getName `R = do
+-- Assemble the last n variables into a path in a Σ-type.
+Σ-pathpⁿ : Nat → Term
+Σ-pathpⁿ zero = unknown -- empty record types are not supported
+Σ-pathpⁿ (suc zero) = var zero []
+Σ-pathpⁿ (suc (suc n)) = def (quote Σ-pathp) (var (suc n) [] v∷ Σ-pathpⁿ (suc n) v∷ [])
+
+make-record-iso-sigma : Bool → Name → Name → TC ⊤
+make-record-iso-sigma declare? nm `R = do
   `R-con , fields ← get-record-type `R
 
   let fields = field-names→paths fields
 
-  `R-ty ← get-type `R
-  con-ty ← get-type `R-con
-  ty ← record→iso `R λ args → do
+  when declare? do
+    `R-ty ← normalise =<< get-type `R
+    con-ty ← normalise =<< get-type `R-con
     let con-ty = instantiate' `R-ty con-ty
-    `S ← pi-term→sigma con-ty
-    pure `S
-
-  nm ← getName
-  case declare? of λ where
-    true → declare (argN nm) ty
-    false → pure tt
+    unfolded ← pi-term→sigma con-ty
+    ty ← record→iso `R unfolded
+    declare (argN nm) ty
 
   define-function nm
     ( map redo-clause fields ++
       map undo-clause fields ++
       map redo-undo-clause fields ++
       map undo-redo-clause fields)
-  pure nm
 
 {-
 Usage: slap
@@ -123,17 +154,46 @@ is defined, and in a different module altogether.
 All features of non-recursive records are supported, including
 no-eta-equality, implicit and instance fields, and fields with implicit
 arguments as types.
+
+You can also use
+
+  unquoteDecl R-path = declare-record-path R-path (quote R)
+
+to define a "path constructor" helper for building a path between two
+elements of R. Defining PathPs over paths in the record's parameters is
+not (yet) supported.
 -}
 
 declare-record-iso : Name → Name → TC ⊤
-declare-record-iso nm rec = do
-  make-record-iso-sigma true (pure nm) rec
-  pure tt
+declare-record-iso = make-record-iso-sigma true
 
 define-record-iso : Name → Name → TC ⊤
-define-record-iso nm rec = do
-  make-record-iso-sigma false (pure nm) rec
-  pure tt
+define-record-iso = make-record-iso-sigma false
+
+make-record-path : Bool → Name → Name → TC ⊤
+make-record-path declare? nm `R = do
+  eqv ← helper-function-name nm "eqv"
+  declare-record-iso eqv `R
+  `R-con , fields ← get-record-type `R
+  let n = length fields
+
+  when declare? do
+    `R-ty ← normalise =<< get-type `R
+    ty ← record→path `R fields
+    declare (argN nm) ty
+
+  define-function nm
+    [ clause
+      (map (λ _ → "p" , argN unknown) fields)
+      (map-up (λ i _ → argN (var (n - i))) 1 fields)
+      (def (quote Iso.injective) (def eqv [] v∷ Σ-pathpⁿ n v∷ []))
+    ]
+
+declare-record-path : Name → Name → TC ⊤
+declare-record-path = make-record-path true
+
+define-record-path : Name → Name → TC ⊤
+define-record-path = make-record-path false
 
 private
   module _ {ℓ} (A : Type ℓ) where
@@ -153,6 +213,11 @@ private
 
   _ : {ℓ : Level} {A : Type ℓ} → Iso (T A) (S.Σ A (λ fp → S.Σ (A → A) (λ f → f fp ≡ fp)))
   _ = eqv-outside
+
+  unquoteDecl T-path = declare-record-path T-path (quote T)
+
+  _ : {ℓ : Level} {A : Type ℓ} {t1 t2 : T A} → ∀ a b c → t1 ≡ t2
+  _ = T-path
 
   module _ (x : Nat) where
     unquoteDecl eqv-extra = declare-record-iso eqv-extra (quote T)

@@ -44,7 +44,7 @@ open import 1Lab.Truncation
 
 open import 1Lab.Reflection.Marker public
 open import 1Lab.Reflection.Record
-  using (declare-record-iso)
+  using (declare-record-iso; declare-record-path)
   public
 open import 1Lab.Reflection.HLevel public
 open import 1Lab.Reflection.Regularity public
