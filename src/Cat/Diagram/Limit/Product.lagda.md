@@ -177,14 +177,31 @@ by the [[fundamental pregroupoid]] of $I$.
     Limit→IP lim .Indexed-product.π  = _
     Limit→IP lim .Indexed-product.has-is-ip = is-limit→is-indexed-product $
       Limit.has-limit lim
+```
 
-module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'} {F : Functor C D} {idx : Type ℓ} ⦃ i-is-grpd : H-Level idx 3 ⦄ (d : idx → C .Precategory.Ob) (F-cont : is-continuous ℓ ℓ F) where
+### Preservation of indexed products
+
+As indexed products are limits, they are preserved by continuous
+functors.
+
+<!--
+```agda
+module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'}
+    {F : Functor C D} {idx : Type ℓ} ⦃ i-is-grpd : H-Level idx 3 ⦄
+    (d : idx → C .Precategory.Ob) (F-cont : is-continuous ℓ ℓ F) where
+
   private
     module F = Cat.Functor.Reasoning F
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
+```
+-->
 
-  is-continuous→pres-indexed-product : ∀ {x} {π : ∀ i → C.Hom x (d i)} → is-indexed-product C d π → is-indexed-product D (λ i → F.₀ (d i)) (λ i → F.₁ (π i))
+```agda
+  is-continuous→pres-indexed-product
+    : ∀ {x} {π : ∀ i → C.Hom x (d i)}
+    → is-indexed-product C d π
+    → is-indexed-product D (λ i → F.₀ (d i)) (λ i → F.₁ (π i))
   is-continuous→pres-indexed-product {x} {π} prod = record where
     lim = F-cont $ is-indexed-product→is-limit _ _ prod
     module lim = make-is-limit (unmake-limit lim)

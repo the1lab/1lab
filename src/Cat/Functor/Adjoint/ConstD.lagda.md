@@ -17,7 +17,9 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Functor.Adjoint.ConstD {o ℓ} {C : Precategory o ℓ}  where
-
+```
+<!--
+```agda
 open _=>_
 private
   variable
@@ -27,6 +29,7 @@ private
   open module C = Cat.Reasoning C
 
 ```
+-->
 
 # (Partial) adjoints to the diagonal functor
 

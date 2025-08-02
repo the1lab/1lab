@@ -116,7 +116,8 @@ Conversely, any absolute kan extension over the identity is a pair
 of adjoint functors.
 
 ```agda
-module _ {F : Functor C D} {G : Functor D C} {nt : Id => G F∘ F} {lan : is-lan F Id G nt} (is-absolute : is-absolute-lan lan) where
+module _ {F : Functor C D} {G : Functor D C} {nt : Id => G F∘ F}
+         {lan : is-lan F Id G nt} (is-absolute : is-absolute-lan lan) where
 ```
 <!--
 ```agda
