@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Diagram.Product.Solver
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Terminal
@@ -80,7 +81,7 @@ data Var : Cx → Ty → Type o where
 ```agda
 ⟦_⟧ᵗ : Ty → Ob
 ⟦_⟧ᶜ : Cx → Ob
-data Expr (Γ : Cx) : Ty → Typeω
+data Expr (Γ : Cx) : Ty → Type (o ⊔ ℓ)
 ```
 -->
 
@@ -213,8 +214,9 @@ variable. Therefore, we define mutually inductive types of **normal
 forms** and **neutral forms**.
 
 ```agda
-data Nf : Cx → Ty → Type (o ⊔ ℓ)
-data Ne : Cx → Ty → Type (o ⊔ ℓ)
+data Nf           : Cx → Ty → Type (o ⊔ ℓ)
+data Ne           : Cx → Ty → Type (o ⊔ ℓ)
+data Sub (Γ : Cx) : Cx → Type (o ⊔ ℓ)
 ```
 
 A **normal form** is indeed one for which no more reduction is possible:
@@ -235,15 +237,20 @@ data Ne where
   app  : Ne Γ (τ `⇒ σ) → Nf Γ τ → Ne Γ σ
   fstₙ : Ne Γ (τ `× σ) → Ne Γ τ
   sndₙ : Ne Γ (τ `× σ) → Ne Γ σ
-  hom  : ∀ {o} → Hom ⟦ Γ ⟧ᶜ o → Ne Γ (` o)
+  hom  : ∀ {Δ a} → Hom ⟦ Δ ⟧ᶜ a → Sub Γ Δ → Ne Γ (` a)
+
+data Sub Γ where
+  ∅   : Sub Γ ∅
+  _,_ : Sub Γ Δ → Nf Γ τ → Sub Γ (Δ , τ)
 ```
 
 By a fairly obvious recursion, renamings act on neutrals and normals,
 thus making these, too, into presheaves.
 
 ```agda
-ren-ne : ∀ {Γ Δ τ} → Ren Δ Γ → Ne Γ τ → Ne Δ τ
-ren-nf : ∀ {Γ Δ τ} → Ren Δ Γ → Nf Γ τ → Nf Δ τ
+ren-ne  : ∀ {Γ Δ τ} → Ren Δ Γ → Ne Γ τ → Ne Δ τ
+ren-nf  : ∀ {Γ Δ τ} → Ren Δ Γ → Nf Γ τ → Nf Δ τ
+ren-sub : ∀ {Γ Δ Θ} → Ren Δ Γ → Sub Γ Θ → Sub Δ Θ
 ```
 
 This is the only case that requires attention: to rename a morphism of
@@ -253,7 +260,7 @@ of pending renamings at each `hom`{.Agda}, which could then be optimised
 before composing at the end.
 
 ```agda
-ren-ne σ (hom h)   = hom  (h ∘ ⟦ σ ⟧ʳ)
+ren-ne σ (hom h a) = hom h (ren-sub σ a)
 ```
 
 <!--
@@ -266,6 +273,9 @@ ren-ne σ (sndₙ a)  = sndₙ (ren-ne σ a)
 ren-nf σ (lam n)    = lam  (ren-nf (keep σ) n)
 ren-nf σ (pair a b) = pair (ren-nf σ a) (ren-nf σ b)
 ren-nf σ (ne x)     = ne   (ren-ne σ x)
+
+ren-sub ρ ∅       = ∅
+ren-sub ρ (σ , x) = ren-sub ρ σ , ren-nf ρ x
 ```
 -->
 
@@ -273,8 +283,9 @@ Normals and neutrals also have a straightforward denotation given by the
 Cartesian closed structure.
 
 ```agda
-⟦_⟧ₙ  : Nf Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
-⟦_⟧ₛ  : Ne Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦_⟧ₙ  : Nf  Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦_⟧ₛ  : Ne  Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦_⟧ᵣ  : Sub Γ Δ → Hom ⟦ Γ ⟧ᶜ ⟦ Δ ⟧ᶜ
 
 ⟦ lam h    ⟧ₙ = ƛ ⟦ h ⟧ₙ
 ⟦ pair a b ⟧ₙ = ⟨ ⟦ a ⟧ₙ , ⟦ b ⟧ₙ ⟩
@@ -284,7 +295,10 @@ Cartesian closed structure.
 ⟦ app f x ⟧ₛ = ev ∘ ⟨ ⟦ f ⟧ₛ , ⟦ x ⟧ₙ ⟩
 ⟦ fstₙ h  ⟧ₛ = π₁ ∘ ⟦ h ⟧ₛ
 ⟦ sndₙ h  ⟧ₛ = π₂ ∘ ⟦ h ⟧ₛ
-⟦ hom h   ⟧ₛ = h
+⟦ hom h a ⟧ₛ = h ∘ ⟦ a ⟧ᵣ
+
+⟦ ∅     ⟧ᵣ = Terminal.! term
+⟦ σ , n ⟧ᵣ = ⟨ ⟦ σ ⟧ᵣ , ⟦ n ⟧ₙ ⟩
 ```
 
 We also have to prove a few hateful lemmas about how renamings, and its
@@ -299,6 +313,7 @@ the semantics in $\cC$ or apply a renaming.
 ren-⟦⟧ⁿ : (ρ : Ren Δ Γ) (v : Var Γ τ) → ⟦ ren-var ρ v ⟧ⁿ ≡ ⟦ v ⟧ⁿ ∘ ⟦ ρ ⟧ʳ
 ren-⟦⟧ₛ : (ρ : Ren Δ Γ) (t : Ne Γ τ)  → ⟦ ren-ne ρ t  ⟧ₛ ≡ ⟦ t ⟧ₛ ∘ ⟦ ρ ⟧ʳ
 ren-⟦⟧ₙ : (ρ : Ren Δ Γ) (t : Nf Γ τ)  → ⟦ ren-nf ρ t  ⟧ₙ ≡ ⟦ t ⟧ₙ ∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ᵣ : (ρ : Ren Δ Γ) (σ : Sub Γ Θ) → ⟦ ren-sub ρ σ ⟧ᵣ ≡ ⟦ σ ⟧ᵣ ∘ ⟦ ρ ⟧ʳ
 ```
 
 <details>
@@ -327,7 +342,7 @@ ren-⟦⟧ₛ ρ (app f x) = ap₂ _∘_ refl
   ∙ pulll refl
 ren-⟦⟧ₛ ρ (fstₙ t) = pushr (ren-⟦⟧ₛ ρ t)
 ren-⟦⟧ₛ ρ (sndₙ t) = pushr (ren-⟦⟧ₛ ρ t)
-ren-⟦⟧ₛ ρ (hom x) = refl
+ren-⟦⟧ₛ ρ (hom x a) = pushr (ren-⟦⟧ᵣ ρ a)
 
 ren-⟦⟧ₙ ρ (lam t) =
     ap ƛ (ren-⟦⟧ₙ (keep ρ) t)
@@ -338,6 +353,9 @@ ren-⟦⟧ₙ ρ (lam t) =
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
+
+ren-⟦⟧ᵣ ρ ∅       = Terminal.!-unique term _
+ren-⟦⟧ᵣ ρ (σ , n) = ap₂ ⟨_,_⟩ (ren-⟦⟧ᵣ ρ σ) (ren-⟦⟧ₙ ρ n) ∙ sym (⟨⟩∘ _)
 ```
 </details>
 
@@ -630,6 +648,18 @@ varᵖ stop    (_ , x) = x
 varᵖ (pop v) (c , _) = tyᵖ⟨ assoc _ _ _ ⟩ (varᵖ v c)
 ```
 
+<!--
+```agda
+from-subᵖ : ∀ {h} → Subᵖ Δ Γ h → Sub Γ Δ
+from-subᵖ ∅       = ∅
+from-subᵖ (ρ , x) = from-subᵖ ρ , reifyᵖ x
+
+from-subᵖ-is : ∀ {h} (σ : Subᵖ Δ Γ h) → ⟦ from-subᵖ σ ⟧ᵣ ≡ h
+from-subᵖ-is ∅       = Terminal.!-unique term _
+from-subᵖ-is (ρ , x) = sym (Product.unique (fp _ _) (sym (from-subᵖ-is ρ)) (sym (reifyᵖ-correct x)))
+```
+-->
+
 We must interpret morphisms from the model category in a type-directed
 way, and eta-expand as we go. That's because we made the decision to
 only have morphisms as neutrals _at base type_. Therefore, if a morphism
@@ -647,7 +677,7 @@ baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.uniq
   (baseᵖ (ev ∘ ⟨ h ∘ π₁ , π₂ ⟩) (
     subᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-subᵖ ρ c), tyᵖ⟨ sym π₂∘⟨⟩ ⟩ a))
 
-baseᵖ {τ = ` t} x c = hom (x ∘ ⟦ c ⟧ˢ) , ap (x ∘_) (⟦⟧ˢ-correct c)
+baseᵖ {τ = ` t} x c = hom x (from-subᵖ c) , ap (x ∘_) (from-subᵖ-is c)
 ```
 
 Those are the hard bits, we can now interpret everything else by a
@@ -770,5 +800,5 @@ canonicity {a = a} e = go (nf e) (nf-sound e) where
   go (ne (app f _)) p = absurd (no-functions f)
   go (ne (fstₙ x)) p  = absurd (no-pairs x)
   go (ne (sndₙ x)) p  = absurd (no-pairs x)
-  go (ne (hom x)) p   = x , sym p
+  go (ne (hom x m)) p = x ∘ ⟦ m ⟧ᵣ , sym p
 ```
