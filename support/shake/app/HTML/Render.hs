@@ -11,6 +11,7 @@ import Agda.Syntax.Common.Pretty
 
 import Agda.Utils.Impossible (__IMPOSSIBLE__)
 import Agda.Utils.Function
+import Agda.Utils.DocTree
 
 import Control.DeepSeq
 import Control.Monad
@@ -38,41 +39,15 @@ import qualified Text.Blaze.Html5.Attributes as Attr
 import Text.Blaze.Html.Renderer.Text ( renderHtml )
 import Text.Blaze.Html5 as Html hiding (map)
 
-data DocTree = Node Aspects [DocTree] | Text Text.Text | Mark (Maybe Aspects)
-
 renderToHtml :: Doc -> Text
-renderToHtml = finish . Ppr.fullRenderAnn Ppr.PageMode 100 1.5 cont [] where
-  consText (Ppr.Chr c) (Text t:ts) = Text (c `Text.cons` t):ts
-  consText (Ppr.Str c) (Text t:ts) = Text (Text.pack c <> t):ts
-  consText (Ppr.PStr c) (Text t:ts) = Text (Text.pack c <> t):ts
-  consText (Ppr.Chr c) ts = Text (Text.singleton c):ts
-  consText (Ppr.Str c) ts = Text (Text.pack c):ts
-  consText (Ppr.PStr c) ts = Text (Text.pack c):ts
-
-  annotate acc (Mark (Just t):ts) = Node t (reverse acc):ts
-  annotate acc (Mark Nothing:ts) = reverse acc <> ts
-  annotate acc (t:ts) = annotate (t:acc) ts
-  annotate acc [] = __IMPOSSIBLE__
-
-  cont :: Ppr.AnnotDetails Aspects -> [DocTree] -> [DocTree]
-  cont ann acc = case ann of
-    Ppr.AnnotStart  -> annotate [] acc
-    Ppr.NoAnnot d _ -> consText d acc
-    Ppr.AnnotEnd a
-      | _:_ <- toAtoms a -> Mark (Just a):acc
-      | otherwise -> Mark Nothing:acc -- uncurry (<>) (break acc)
-
-  toBlaze :: DocTree -> Html
-  toBlaze (Mark _)   = __IMPOSSIBLE__
-  toBlaze (Text t)   = Html.text t
-  toBlaze (Node a t) = Html.span do
-    aspectsToHtml Nothing mempty Nothing a $
-      traverse_ toBlaze t
+renderToHtml = finish . renderTree' Html.text toblaze . renderToTree where
+  toblaze a t = Html.span do
+    aspectsToHtml Nothing mempty Nothing a t
     unless (null (note a)) do
       Html.span (string (note a)) !! [Attr.class_ "Note"]
 
   finish = Tl.toStrict . renderHtml . wrapper
-  wrapper = (!! [Attr.class_ "Agda"]) . Html.pre . traverse_ toBlaze
+  wrapper = (!! [Attr.class_ "Agda"]) . Html.pre
 
 -- | Data about an identifier
 data Identifier = Identifier
