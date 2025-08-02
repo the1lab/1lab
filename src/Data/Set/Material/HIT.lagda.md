@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import 1Lab.Prelude hiding (ext)
 
 open import Data.Sum.Base
@@ -10,10 +9,10 @@ open import Data.Bool
 -->
 
 ```agda
-module Data.Set.Material where
+module Data.Set.Material.HIT where
 ```
 
-# The cumulative hierarchy
+# The cumulative hierarchy as a HIT
 
 This module defines the cumulative hierarchy of material sets, as a
 recursive higher inductive type, following §10.5 of the HoTT book. We
@@ -36,14 +35,13 @@ data V ℓ : Type (lsuc ℓ) where
   squash : is-set (V ℓ)
 ```
 
-The type `V`{.Agda} resembles a [W-type]: the constructor `set`{.Agda}
+The type `V`{.Agda} resembles a [[W-type]]: the constructor `set`{.Agda}
 corresponds to the "supremum" of a family of sets, where the "branching
 factor" of the family is allowed to be any type in the universe $\ell$.
 Of course, if we could take the supremum of `V`{.Agda}-many sets, we
 could reproduce [Russell's paradox], so Agda rightly forces us to put V
 in $\ell$'s successor universe.
 
-[W-type]: Data.Wellfounded.W.html
 [Russell's paradox]: 1Lab.Counterexamples.Russell.html
 
 The [[mere]] fibres in the extensionality constructor, as we'll see in a
@@ -648,27 +646,27 @@ predicate on $[a]$ to one on V$, we can appeal to separation in our
 construction of power set.
 
 ```agda
-  predicate→class : ∀ {a} (p : Members.members a → Ω) → V ℓ → Ω
-  predicate→class {a = a} p i =
+  predicate→class : ∀ a (p : Members.members a → Ω) → V ℓ → Ω
+  predicate→class a p i =
     elΩ (Σ (fibre (Members.elem a) i) λ f → f .fst ∈ p)
 
   subset-separation
-    : ∀ {a} (p : Members.members a → Ω) x
-    → x ∈ subset a (predicate→class p)
+    : ∀ a (p : Members.members a → Ω) x
+    → x ∈ subset a (predicate→class a p)
     ≃ (Σ (fibre (Members.elem a) x) λ f → f .fst ∈ p)
 ```
 
 <!--
 ```agda
-  subset-separation {a} p x =
-    x ∈ subset a (predicate→class p)                ≃⟨ separation _ (predicate→class p) x ⟩
-    x ∈ a × (x ∈ predicate→class p)                 ≃⟨ deduplicate ⟩
-    Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p) ≃∎
+  subset-separation a p x =
+    x ∈ subset a (predicate→class a p)                ≃⟨ separation a (predicate→class a p) x ⟩
+    x ∈ a × (x ∈ predicate→class a p)                 ≃⟨ deduplicate ⟩
+    Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p)   ≃∎
     where
       hp = Σ-is-hlevel 1 (Members.embeds a x) λ f → p (f .fst) .is-tr
 
       deduplicate
-        : (x ∈ a × x ∈ predicate→class p)
+        : (x ∈ a × x ∈ predicate→class a p)
         ≃ Σ (fibre (Members.elem a) x) (λ f → f .fst ∈ p)
       deduplicate = prop-ext (hlevel 1) hp
         (λ { (_ , pcx) → □-rec hp id pcx })
@@ -678,7 +676,7 @@ construction of power set.
 
 ```agda
   power : V ℓ → V ℓ
-  power a = set (Members.members a → Ω) λ p → subset a (predicate→class p)
+  power a = set (Members.members a → Ω) λ p → subset a (predicate→class a p)
 
   power-set : ∀ a i → i ∈ power a ≃ (i ⊆ a)
   power-set a i = done where
@@ -691,11 +689,11 @@ comes from separating a `subset`{.Agda}, and the axiom of separation
 guarantees that these are actually subsets.
 
 ```agda
-    p1 : fibre (subset a ∘ predicate→class) i → i ⊆ a
+    p1 : fibre (subset a ∘ predicate→class a) i → i ⊆ a
     p1 (pred , p) =
       let
-        worker : subset a (predicate→class pred) ⊆ a
-        worker a∈sub wit = Equiv.to (separation _ (predicate→class pred) _) wit .fst
+        worker : subset a (predicate→class a pred) ⊆ a
+        worker a∈sub wit = Equiv.to (separation a (predicate→class a pred) _) wit .fst
       in subst (_⊆ a) p worker
 ```
 
@@ -706,7 +704,7 @@ consequence of separation, we have an equivalence
 $(x \in B) \simeq (\sum_{(k, _)} : m_a^*(x)) m_a(k) \in i$.
 
 ```agda
-    p2 : i ⊆ a → ∥ fibre (subset a ∘ predicate→class) i ∥
+    p2 : i ⊆ a → ∥ fibre (subset a ∘ predicate→class a) i ∥
     p2 i⊆a = inc (belongs , extensionality _ _ to fro) where
       belongs : Members.members a → Ω
       belongs m = elΩ (Members.elem a m ∈ i)
@@ -717,11 +715,11 @@ By transporting this last proof along the middle path, we conclude $x
 \in i$.
 
 ```agda
-      to : subset a (predicate→class belongs) ⊆ i
+      to : subset a (predicate→class a belongs) ⊆ i
       to e e∈sub = subst (_∈ i)
-        (Equiv.to (subset-separation belongs e) e∈sub .fst .snd)
+        (Equiv.to (subset-separation a belongs e) e∈sub .fst .snd)
         (□-rec (is-member _ i .is-tr) id
-          (Equiv.to (subset-separation belongs e) e∈sub .snd))
+          (Equiv.to (subset-separation a belongs e) e∈sub .snd))
 ```
 
 In the other direction, we're given $x \in i$. Since $i \sube a$, we can
@@ -730,8 +728,8 @@ m_a^*(x)$. It remains to show $m_a(k) \in i$; but this is equal to $x
 \in i$ by $p$, concluding the argument.
 
 ```agda
-      fro : i ⊆ subset a (predicate→class belongs)
-      fro e e∈i = Equiv.from (subset-separation belongs _)
+      fro : i ⊆ subset a (predicate→class a belongs)
+      fro e e∈i = Equiv.from (subset-separation a belongs _)
         ( Members.memb.to a (i⊆a _ e∈i)
         , inc (subst (_∈ i) (sym (Members.memb.to a (i⊆a _ e∈i) .snd)) e∈i))
 

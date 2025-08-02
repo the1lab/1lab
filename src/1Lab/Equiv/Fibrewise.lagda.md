@@ -7,6 +7,8 @@ description: |
 ```agda
 open import 1Lab.Equiv.FromPath
 open import 1Lab.HLevel.Closure
+open import 1Lab.Path.Reasoning
+open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -33,7 +35,7 @@ A function like this can be lifted to a function on total spaces:
 <!--
 ```agda
 private variable
-  ℓ : Level
+  ℓ ℓ' ℓ'' : Level
   A B : Type ℓ
   P Q : A → Type ℓ
 ```
@@ -169,5 +171,102 @@ subst₂-fibrewise
   → subst₂ C' p q (g x α e) ≡ g y β (subst₂ C p q e)
 subst₂-fibrewise {A = A} {B} {C} {C'} g {x} p {α} q e =
   subst-fibrewise {A = Σ A B} {uncurry C} {uncurry C'} (λ (x , y) v → g x y v) (Σ-pathp p q) e
+
+map-over≃fibrewise-map
+  : {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} (f : A → C) (g : B → C)
+  → (Σ[ e ∈ (A → B) ] (∀ x → f x ≡ g (e x)))
+  ≃ ((c : C) → fibre f c → fibre g c)
+map-over≃fibrewise-map {A = A} {B = B} {C = C} f g = Iso→Equiv (to , iso from ri li)
+  module map-over≃fibrewise-map where
+  T = Σ[ e ∈ (A → B) ] (∀ x → f x ≡ g (e x))
+
+  to : T → (c : C) → fibre f c → fibre g c
+  to (e , α) c (x , p) = e x , sym (α x) ∙ p
+
+  from : ((c : C) → fibre f c → fibre g c) → T
+  from h = (λ a → h (f a) (a , refl) .fst) , λ x → sym (h (f x) (x , refl) .snd)
+
+  ri : is-right-inverse from to
+  ri h = funext λ f → funext λ (x , p) →
+    J (λ c p → curry (to (from h) c) x p ≡ curry (h c) x p)
+      (Σ-pathp refl (∙-idr _))
+      p
+
+  li : is-left-inverse from to
+  li f = Σ-pathp refl $ funext λ x → ∙-idr _
+
+equiv-over≃fibrewise-equiv
+  : {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} (f : A → C) (g : B → C)
+  → (Σ[ e ∈ (A ≃ B) ] (∀ x → f x ≡ g (e .fst x)))
+  ≃ ((c : C) → fibre f c ≃ fibre g c)
+equiv-over≃fibrewise-equiv {A = A} {B = B} {C = C} f g = Iso→Equiv (to , iso from ri li) where
+  module t = map-over≃fibrewise-map f g
+  module f = map-over≃fibrewise-map g f
+  T' = Σ[ e ∈ (A ≃ B) ] (∀ x → f x ≡ g (e .fst x))
+
+  to : T' → (c : C) → fibre f c ≃ fibre g c
+  to (e , α) c = to' c , done where
+    module e = Equiv e
+
+    to' : ∀ c → fibre f c → fibre g c
+    to' = t.to (e .fst , α)
+
+    from' : ∀ c → fibre g c → fibre f c
+    from' c = f.to (e.from , λ x → ap g (sym (e.ε x)) ∙ sym (α (e.from x))) c
+
+    coh₁ : (x : B) → to' (g x) (from' (g x) (x , refl)) ≡ (x , refl)
+    coh₁ x = Σ-pathp (e.ε x) $ commutes→square $ ap (_∙ refl) $ sym $
+      sym (α (e.from x)) ∙ sym (ap g (sym (e.ε x)) ∙ sym (α (e.from x))) ∙ refl
+        ≡⟨ ap₂ _∙_ refl (∙-idr _ ∙ sym-∙ _ _) ⟩
+      sym (α (e.from x)) ∙ α (e.from x) ∙ ap g (e.ε x)
+        ≡⟨ ∙-cancell _ _ ⟩
+      ap g (e.ε x) ∎
+
+    coh₂ : (x : A) → from' (f x) (to' (f x) (x , refl)) ≡ (x , refl)
+    coh₂ x = Σ-pathp (e.η x) $ commutes→square $ ap (_∙ refl) $ sym $
+      sym (ap g (sym (e.ε _)) ∙ sym (α (e.from _))) ∙ sym (α x) ∙ refl ≡⟨ ap₂ _∙_ (sym-∙ _ _) (∙-idr _) ⟩
+      (α (e.from _) ∙ ap g (e.ε _)) ∙ sym (α x)                        ≡⟨ ap (λ e → (α (e.from _) ∙ ap g e) ∙ sym (α x)) (sym (e.zig x)) ⟩
+      (α (e.from _) ∙ ap g (ap (e .fst) (e.η x))) ∙ sym (α x)          ≡⟨ ∙-pullr (sym (homotopy-natural (λ x → sym (α x)) (e.η _))) ⟩
+      α (e.from _) ∙ sym (α (e.from _)) ∙ ap f (e.η x)                 ≡⟨ ∙-cancell _ _ ⟩
+      ap f (e.η x)                                                     ∎
+
+    done : is-equiv (to' c)
+    done = is-iso→is-equiv (iso (from' c)
+      (λ (x , p) → J (λ c p → to' c (from' c (x , p)) ≡ (x , p)) (coh₁ x) p)
+      (λ (x , p) → J (λ c p → from' c (to' c (x , p)) ≡ (x , p)) (coh₂ x) p))
+
+  from : ((c : C) → fibre f c ≃ fibre g c) → T'
+  from e = (to' .fst , done) , to' .snd where
+    module e (c : C) = Equiv (e c)
+    to' : t.T
+    to' = t.from λ c → e.to c
+
+    from' : f.T
+    from' = f.from λ c → e.from c
+
+    coh₁ : is-right-inverse (from' .fst) (to' .fst)
+    coh₁ x =
+      e.to (f (e.from (g x) (x , refl) .fst)) ((e.from (g x) (x , refl) .fst) , refl) .fst
+        ≡⟨ ap₂ (λ a b → e.to a (e.from (g x) (x , refl) .fst , b) .fst) _ (λ i j → e.from (g x) (x , refl) .snd (i ∧ j)) ⟩
+      e.to (g x) (e.from (g x) (x , refl)) .fst
+        ≡⟨ ap fst (e.ε (g x) (x , refl)) ⟩
+      x ∎
+
+    coh₂ : is-left-inverse (from' .fst) (to' .fst)
+    coh₂ x =
+      e.from (g (e.to (f x) (x , refl) .fst)) (e.to (f x) (x , refl) .fst , refl) .fst
+        ≡⟨ ap₂ (λ a b → e.from a (e.to (f x) (x , refl) .fst , b) .fst) _ (λ i j → e.to (f x) (x , refl) .snd (i ∧ j)) ⟩
+      e.from (f x) (e.to (f x) (x , refl)) .fst
+        ≡⟨ ap fst (e.η (f x) _) ⟩
+      x ∎
+
+    done : is-equiv (to' .fst)
+    done = is-iso→is-equiv (iso (from' .fst) coh₁ coh₂)
+
+  ri : is-right-inverse from to
+  ri h = funext λ c → Σ-prop-path is-equiv-is-prop (happly (t.ri (λ c → h c .fst)) c)
+
+  li : is-left-inverse from to
+  li f = Σ-pathp (Σ-prop-path is-equiv-is-prop refl) (funext λ x → ∙-idr _)
 ```
 -->
