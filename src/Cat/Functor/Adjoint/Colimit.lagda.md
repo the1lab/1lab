@@ -25,7 +25,8 @@ module Cat.Functor.Adjoint.Colimit where
 private variable
   o ℓ : Level
   C D J : Precategory o ℓ
-module _ (U : Functor C D) (ff : is-fully-faithful U) {diagram : Functor J C} (colim : Colimit {C = D} (U F∘ diagram)) where
+module _ (U : Functor C D) (ff : is-fully-faithful U) {diagram : Functor J C}
+         (colim : Colimit {C = D} (U F∘ diagram)) where
   open Colimit colim
   private
     module C = Precategory C
@@ -39,10 +40,10 @@ module _ (U : Functor C D) (ff : is-fully-faithful U) {diagram : Functor J C} (c
 
 ### Free objects and colimits
 
-
 ```agda
   module _ (ob : Free-object U coapex) where
-    open module ob = Free-object ob
+    private
+      open module ob = Free-object ob
     free-object→make-is-colimit : make-is-colimit diagram free
     free-object→make-is-colimit .ψ j = U.from (unit D.∘ colim.ψ j)
     free-object→make-is-colimit .commutes {x} {y} f = U.ipushr (colim.commutes f)
@@ -51,8 +52,9 @@ module _ (U : Functor C D) (ff : is-fully-faithful U) {diagram : Functor J C} (c
       fold (colim.universal _ _) C.∘ U.from (unit D.∘ colim.ψ j) ≡⟨ U.pouncer (D.pulll ob.commute) ⟩
       U.from (colim.universal _ _ D.∘ colim.ψ j)                 ≡⟨ U.fromn't (colim.factors (U.₁ ⊙ eta) (U.collapse ⊙ p)) ⟩
       eta j                                                      ∎
-    free-object→make-is-colimit .unique {y} eta p other p' =
-      ob.unique {y} other $ colim.unique (U.₁ ⊙ eta) (U.collapse ⊙ p) (U.₁ other D.∘ unit) λ j → sym (D.assoc _ _ _) ∙ U.unwhackr (p' j)
+    free-object→make-is-colimit .unique {y} eta p other p' = ob.unique {y} other $
+      colim.unique (U.₁ ⊙ eta) (U.collapse ⊙ p) (U.₁ other D.∘ unit)
+        λ j → sym (D.assoc _ _ _) ∙ U.unwhackr (p' j)
 
     free-object→is-colimit : is-colimit diagram free _
     free-object→is-colimit = to-is-colimit free-object→make-is-colimit

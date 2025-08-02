@@ -125,7 +125,7 @@ $F : I \to \cC$ is the same thing as a limit over $F$, considered as
 a functor $\rm{Disc}{I} \to \cC$. We can not lift this restriction: If
 $I$ is not a groupoid, then its path spaces $x = y$ are not necessarily
 sets, and so the `Disc`{.Agda} construction does not apply to it.
-
+<!--
 ```agda
   module _ {ℓ} {I : Type ℓ} ⦃ i-is-grpd : H-Level I 3 ⦄ (F : I → Ob) where
     open _=>_
@@ -137,7 +137,10 @@ sets, and so the `Disc`{.Agda} construction does not apply to it.
       J (λ j p →  π j ∘ id ≡ subst (Hom (F i) ⊙ F) p id ∘ π i)
         (idr _ ∙ introl (transport-refl id))
         p
+```
+-->
 
+```agda
     is-indexed-product→is-limit
       : ∀ {x} {π : ∀ i → Hom x (F i)}
       → is-indexed-product C F π
@@ -187,13 +190,26 @@ sets, and so the `Disc`{.Agda} construction does not apply to it.
     Limit→IP lim .Indexed-product.π = _
     Limit→IP lim .Indexed-product.has-is-ip =
       is-limit→is-indexed-product (Limit.has-limit lim)
+```
 
-module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'} {F : Functor C D} {idx : Type ℓ} ⦃ i-is-grpd : H-Level idx 3 ⦄ (d : idx → C .Precategory.Ob) (F-cont : is-continuous ℓ ℓ F) where
+### Preservation of indexed products
+
+As indexed products are limits, they are preserved by continuous
+functors.
+<!--
+```agda
+module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'}
+    {F : Functor C D} {idx : Type ℓ} ⦃ i-is-grpd : H-Level idx 3 ⦄
+    (d : idx → C .Precategory.Ob) (F-cont : is-continuous ℓ ℓ F) where
   private
     module F = Cat.Functor.Reasoning F
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
-  is-continuous→pres-indexed-product : ∀ {x} {π : ∀ i → C.Hom x (d i)} → is-indexed-product C d π → is-indexed-product D (λ i → F.₀ (d i)) (λ i → F.₁ (π i))
+    module C = Precategory C
+    module D = Precategory D
+```
+-->
+```agda
+  is-continuous→pres-indexed-product : ∀ {x} {π : ∀ i → C.Hom x (d i)} →
+    is-indexed-product C d π → is-indexed-product D (λ i → F.₀ (d i)) (λ i → F.₁ (π i))
   is-continuous→pres-indexed-product {x} {π} prod = record where
     lim = F-cont $ is-indexed-product→is-limit _ _ prod
     module lim = make-is-limit (unmake-limit lim)

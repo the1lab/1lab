@@ -56,7 +56,9 @@ particular, we have the following pairs of "redundant" definitions:
 
 [agda-categories]: https://arxiv.org/abs/2005.07059
 
-- [[Products]] and coproducts
+- [[Products]] and coproducts (and their [[indexed|indexed product]]
+versions)
+- [[Pullbacks]] and pushouts
 - [[Pullbacks]] and pushouts
 - [[Equalisers]] and coequalisers
 - [[Terminal objects]] and initial objects
