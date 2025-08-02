@@ -85,11 +85,9 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 ```agda
 PSh-omega : Subobject-classifier (PSh ℓ C)
 PSh-omega .Subobject-classifier.Ω = Sieves
-
 PSh-omega .Subobject-classifier.true .Sub.domain      = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
 PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = ext λ _ _ → refl
-
 PSh-omega .generic .name = psh-name
 ```
 -->
