@@ -67,7 +67,7 @@ record is-total : Type (o ⊔ lsuc ℓ) where
 
 Before we investigate the properties of a total category, it's worth
 considering the action of such a functor on objects, if it exists. Given
-some presheaf $$F\in\psh(\cC)$$, an object could be $\sa(F)$ if it is [[free|free object]]
+some presheaf $F\in\psh(\cC)$, an object could be $\sa(F)$ if it is [[free|free object]]
 with respect to $\yo$.
 
 <!--
