@@ -21,7 +21,7 @@ module Cat.Diagram.Colimit.Terminal {o ℓ} {C : Precategory o ℓ} where
 
 # Terminal objects as colimits
 
-This module provides a characterisation of [[initial objects]] as
+This module provides a characterisation of [[terminal objects]] as
 [[*colimits*]] rather than as [[limits]]. Namely, while an terminal
 object is the limit of the empty diagram, it is the *co*limit of the
 identity functor, considered as a diagram.

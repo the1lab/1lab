@@ -81,16 +81,19 @@ module _ (F : Functor (C ^op) (Sets ℓ)) (c : Free-object よ F) where
 Since $F$ is a presheaf, it can be written as a colimit of representable
 functors by the [[coyoneda lemma]].
 
+```agda
+    F-is-colimit : is-colimit (よ F∘ πₚ C F) F _
+    F-is-colimit = coyoneda _ F
+```
+
 As left adjoints preserve colimits, we can imagine that a *partial* left
 adjoint (a [[free object]]) of a colimit should also be a colimit.
-Indeed this is true as $\yo$ is fully failthful.
+Indeed this is true as $\yo$ is fully faithful.
 
 We call a free object with respect to $\yo$ a **realising object** for
 $F$.
 
 ```agda
-    F-is-colimit : is-colimit (よ F∘ πₚ C F) F _
-    F-is-colimit = coyoneda _ F
   free-is-colimit : is-colimit (πₚ C F) free _
   free-is-colimit = free-object→is-colimit よ よ-is-fully-faithful (to-colimit F-is-colimit) c
 ```
