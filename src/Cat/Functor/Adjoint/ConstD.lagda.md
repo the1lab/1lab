@@ -45,10 +45,8 @@ then $x$ is a colimit of $F$.
 
 colim→Δfree : Colimit F → Free-object ConstD F
 colim→Δfree {F} colim = record where
-  -- causes crash
-  --open module colim = Colimit colim using (coapex; cocone)
-  open Colimit colim using (coapex; cocone)
-  open make-is-colimit (unmake-colimit (Colimit.has-colimit colim))
+  open module colim = Colimit colim using (coapex; cocone)
+  open make-is-colimit (unmake-colimit colim.has-colimit)
   free = coapex
   unit = cocone
   fold eta = universal (eta .η) λ f → eta .is-natural _ _ f ∙ idl _
@@ -83,7 +81,8 @@ lim→Δcofree {F} lim = record where
 
 ## The (Co)limit functor
 
-Any functor which is a right (resp: left) colimit to $\Delta_J$ computes as (co)limits.
+Any functor which is a right (resp: left) colimit to $\Delta_J$ computes
+as (co)limits.
 
 ```agda
 Δadj→has-colimits-of-shape : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J}) → ∀ (F : Functor J C) → Colimit F
@@ -93,7 +92,9 @@ Any functor which is a right (resp: left) colimit to $\Delta_J$ computes as (co)
 Δadj→has-limits-of-shape has-adj = Δcofree→lim ⊙ right-adjoint→cofree-objects has-adj
 ```
 
-Thus, any category which has adjoints to its generalized diagonal functor $\Delta_J$ for any $J$ is (co)complete.
+Thus, any category which has adjoints to its generalized diagonal
+functor $\Delta_J$ for any $J$ is (co)complete.
+
 ```agda
 has-Δadjs→is-cocomplete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Colim ∈ Functor _ C ] Colim ⊣ ConstD {C = C} {J = J}) → is-cocomplete o' ℓ' C
 has-Δadjs→is-cocomplete adjs = Δadj→has-colimits-of-shape (adjs .snd)
