@@ -105,6 +105,8 @@ _·ₚ_
   → {f g : F} → f ≡ g → (x : A) → f · x ≡ g · x
 f ·ₚ x = ap₂ _·_ f refl
 
+infixl 999 _·ₚ_
+
 instance
   Funlike-Π : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Funlike ((x : A) → B x) A B
   Funlike-Π = record { _·_ = id }
