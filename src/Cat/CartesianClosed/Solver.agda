@@ -1,11 +1,10 @@
 open import Cat.Diagram.Product.Solver
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Adjoint.Hom
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
-open import Cat.Prelude
-
-open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint
+open import Cat.Prelude
 
 import Cat.CartesianClosed.Lambda as L
 import Cat.Functor.Bifunctor as Bifunctor
