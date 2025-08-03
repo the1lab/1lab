@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Diagram.Product.Solver
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Terminal
