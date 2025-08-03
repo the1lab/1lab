@@ -4,6 +4,9 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
 
+open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Adjoint
+
 import Cat.CartesianClosed.Lambda as L
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
@@ -25,7 +28,7 @@ private variable
   τ σ ρ : Ty
 
 data Mor : Ty → Ty → Type (o ⊔ ℓ) where
-  `_    : ∀ {x y} → Hom x y → Mor (` x) (` y)
+  `_    : ∀ {x y} → Hom ⟦ x ⟧ᵗ ⟦ y ⟧ᵗ → Mor x y
   `id   : Mor σ σ
   _`∘_  : Mor σ ρ → Mor τ σ → Mor τ ρ
   `π₁   : Mor (τ `× σ) τ
@@ -33,6 +36,10 @@ data Mor : Ty → Ty → Type (o ⊔ ℓ) where
   _`,_  : Mor τ σ → Mor τ ρ → Mor τ (σ `× ρ)
   app   : Mor ((τ `⇒ σ) `× τ) σ
   lam   : Mor (τ `× σ) ρ → Mor τ (σ `⇒ ρ)
+
+infixr 20 _`∘_
+infixr 19 _`,_
+infix 21 `_
 
 ⟦_⟧ᵐ : Mor τ σ → Hom ⟦ τ ⟧ᵗ ⟦ σ ⟧ᵗ
 ⟦ ` x ⟧ᵐ     = x
@@ -44,8 +51,17 @@ data Mor : Ty → Ty → Type (o ⊔ ℓ) where
 ⟦ app ⟧ᵐ     = ev
 ⟦ lam m ⟧ᵐ   = ƛ ⟦ m ⟧ᵐ
 
+tickᵖ : ∀ {x y h} (m : Hom ⟦ x ⟧ᵗ ⟦ y ⟧ᵗ) → Tyᵖ x Γ h → Tyᵖ y Γ (m ∘ h)
+
+tickᵖ {y = τ L.`× σ} m a = tyᵖ⟨ pullr refl ⟩ (tickᵖ (π₁ ∘ m) a) , tyᵖ⟨ pullr refl ⟩ (tickᵖ (π₂ ∘ m) a)
+
+tickᵖ {x = x} {y = τ L.`⇒ σ} m a ρ y = tyᵖ⟨ pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
+  (tickᵖ {x = x `× τ} (ev ∘ ⟨ m ∘ π₁ , π₂ ⟩) (tyᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-tyᵖ ρ a) , tyᵖ⟨ sym π₂∘⟨⟩ ⟩ y))
+
+tickᵖ {x = x} {y = L.` τ}    m a = hom {Δ = ∅ , x} (m ∘ π₂) (∅ , reifyᵖ a) , pullr π₂∘⟨⟩ ∙ ap (m ∘_) (reifyᵖ-correct a)
+
 morᵖ : ∀ {h} (e : Mor τ σ) (ρ : Tyᵖ τ Γ h) → Tyᵖ σ Γ (⟦ e ⟧ᵐ ∘ h)
-morᵖ (` x) (n , p) = hom {Δ = ∅ , _} (x ∘ π₂) (∅ L., (ne n)) , pullr π₂∘⟨⟩ ∙ ap (x ∘_) p
+morᵖ (` x) = tickᵖ x
 
 morᵖ `id         ρ = tyᵖ⟨ introl refl ⟩ ρ
 morᵖ (f `∘ g)    ρ = tyᵖ⟨ pulll refl ⟩ (morᵖ f (morᵖ g ρ))
@@ -79,10 +95,44 @@ module _ (S : Ob) where
 
   open _=>_
 
-  unit : Id => T
-  unit .η x        = ƛ (ev ∘ ⟨ π₂ , π₁ ⟩)
-  unit .is-natural x y f = worker {τ = ` x} {σ = ((` y) `⇒ (` S)) `⇒ (` S)}
-    (lam (app `∘ (`π₂ `, `π₁)) `∘ (` f))
-    (lam (`id `∘ (app `∘ (`π₁ `, (lam (`id `∘ (app `∘ (`π₁ `, ((` f) `∘ `π₂)))) `∘ `π₂))))
-      `∘ (lam (app `∘ (`π₂ `, `π₁))))
-    refl
+  test : ∀ {X Y Z} → (f : Hom X (Y ⊗₀ Z)) → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
+  test {X} {Y} {Z} f = let `f = ` f in worker {τ = ` X} {σ = (` Y) `× (` Z)} `f (`π₁ `∘ `f `, `π₂ `∘ `f) refl
+
+  test' : ∀ {X Y Z} → (f : Hom X (Exp.B^A Y Z)) → f ≡ ƛ (unlambda f)
+  test' {X} {Y} {Z} f = worker {τ = ` X} {σ = (` Y) `⇒ (` Z)} (` f) (lam (app `∘ (` f `∘ `π₁ `, `id `∘ `π₂))) refl
+
+  adj : opFʳ (Bifunctor.Left ([-,-] C fp term cc) S) ⊣ Bifunctor.Left ([-,-] C fp term cc) S
+  adj = hom-iso→adjoints tr a λ {a} {b} {c} {d} g h x →
+    let
+      `h : Mor (` c) (` d)
+      `h = ` h
+      `g : Mor (` b) (` a)
+      `g = ` g
+    in
+    worker
+      (`tr ((lam (`id `∘ app `∘ (`π₁ `, `h `∘ `π₂)) `∘ ` x) `∘ `g))
+      (lam (`id `∘ app `∘ (`π₁ `, `g `∘ `π₂)) `∘ `tr (` x) `∘ `h)
+      refl
+    where
+    `tr : ∀ {x y} → Mor y (x `⇒ (` S)) → Mor x (y `⇒ (` S))
+    `tr f = lam (app `∘ (f `∘ `π₂ `, `π₁ ))
+
+    tr : ∀ {x y} → Hom y (Exp.B^A x S) → Hom x (Exp.B^A y S)
+    tr {x} {y} f = ⟦ `tr {x = ` x} {y = ` y} (` f) ⟧ᵐ
+
+    a : ∀ {x y} → is-equiv (tr {x} {y})
+    a {x} {y} = is-iso→is-equiv record where
+      from   = tr
+      linv m = worker (`tr (`tr {x = ` x} {` y} (` m))) (` m) refl
+      rinv m = worker (`tr (`tr {x = ` y} {` x} (` m))) (` m) refl
+
+    -- b : hom-iso-natural tr
+    -- b = {!   !}
+
+  -- unit : Id => T
+  -- unit .η x        = ƛ (ev ∘ ⟨ π₂ , π₁ ⟩)
+  -- unit .is-natural x y f = worker {τ = ` x} {σ = ((` y) `⇒ (` S)) `⇒ (` S)}
+  --   (lam (app `∘ (`π₂ `, `π₁)) `∘ (` f))
+  --   (lam (`id `∘ (app `∘ (`π₁ `, (lam (`id `∘ (app `∘ (`π₁ `, ((` f) `∘ `π₂)))) `∘ `π₂))))
+  --     `∘ (lam (app `∘ (`π₂ `, `π₁))))
+  --   {!   !}
