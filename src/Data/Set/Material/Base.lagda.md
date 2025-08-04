@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path.Reasoning
-open import 1Lab.Reflection hiding (_!_ ; absurd)
+open import 1Lab.Reflection hiding (_!_ ; absurd ; lookup)
 open import 1Lab.Prelude
 
 open import Data.Fin.Properties
@@ -10,6 +10,7 @@ open import Data.Fin.Closure
 open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Fin.Base
+open import Data.Sum.Base
 open import Data.Bool
 
 open hlevel-projection
@@ -103,10 +104,26 @@ principle.
 
 </details>
 
+If we are to carve out a subtype of `V'`{.Agda} which is a [[set]],
+then, it will suffice to find one for which the membership
+correspondence is valued in [[propositions]], i.e. is a relation. The
+fibrewise-propositional functions are called [[embeddings]], so it
+suffices to consider the subtype `V`{.Agda} of `V'`{.Agda} consisting of
+the multisets which are everywhere embeddings: the **iterative
+embeddings**.
+
 ```agda
 is-iterative-embedding : V' ℓ → Type (lsuc ℓ)
 is-iterative-embedding (sup x f) = is-embedding f × (∀ y → is-iterative-embedding (f y))
+```
 
+By induction, being an iterative embedding is a proposition, because it
+pairs a proposition (the outermost `subtree`{.Agda}-assigning function
+is an embedding) with a product of propositions (each subtree is an
+iterative embedding).
+
+<!--
+```agda
 is-iterative-embedding-is-prop : (x : V' ℓ) → is-prop (is-iterative-embedding x)
 
 instance
@@ -117,14 +134,24 @@ instance
   hlevel-proj-is-iterative-embedding .get-argument _              = typeError []
 
 is-iterative-embedding-is-prop (sup x f) = hlevel 1
+```
+-->
 
+:::{.definition #material-set}
+A **material set** is an element of `V`{.Agda}.
+
+```agda
 record V (l : Level) : Type (lsuc l) where
   no-eta-equality
   constructor set
   field
     tree : V' l
     uniq : is-iterative-embedding tree
+```
+:::
 
+<!--
+```agda
 {-# INLINE V.constructor #-}
 
 open V
@@ -136,7 +163,13 @@ ap-set {x = x} {y} α i .uniq = is-prop→pathp (λ i → is-iterative-embedding
 private
   prj : (w : V' ℓ) → is-iterative-embedding w → is-embedding (subtree w)
   prj (sup _ _) (p , _) = p
+```
+-->
 
+We can then prove that  `V`{.Agda} is a set, since `veq`{.Agda} for
+iterative embeddings is a proposition.
+
+```agda
 instance abstract
   H-Level-V : ∀ {ℓ n} → H-Level (V ℓ) (2 + n)
   H-Level-V = basic-instance 2 $ retract→is-hlevel 2
@@ -145,7 +178,10 @@ instance abstract
       (Σ-is-hlevel 1 (Equiv→is-hlevel 1 (path≃veq x y)
       (Π-is-hlevel 1 (λ v → ≃-is-hlevel 1 (prj _ α _) (prj _ β _))))
       λ _ → hlevel 1)
+```
 
+<!--
+```agda
 abstract
   tree-is-embedding : is-embedding {A = V ℓ} V.tree
   tree-is-embedding x (s , α) (t , β) = Σ-prop-path
@@ -155,27 +191,26 @@ abstract
 
 open V
 
-private
-  -- we redefine these so we can be precise about the hlevel-projection
-  -- instance for El on V (we need an explicit matching function instead
-  -- of using a with-abstraction to refer to it by name) instead of
-  -- thinking that *every* label must be a set because it comes from V
-  -- and then having a really mysterious error message
-  v-label : V' ℓ → Type ℓ
-  v-label (sup x f) = x
+-- We redefine these so we can be precise about the hlevel-projection
+-- instance for El on V (we need an explicit matching function instead
+-- of using a with-abstraction to refer to it by name) instead of
+-- thinking that *every* label must be a set because it comes from V
+-- and then having a really mysterious error message.
+--
+-- They can't be private because they're used in the Automation module.
 
+v-label : V' ℓ → Type ℓ
+v-label (sup x f) = x
+
+pattern v-label-args x = _ h∷ def (quote tree) (_ h∷ x v∷ []) v∷ []
+
+private
   v-subtree : (x : V' ℓ) → v-label x → V' ℓ
   v-subtree (sup x f) = f
-
-  pattern v-label-args x = _ h∷ def (quote tree) (_ h∷ x v∷ []) v∷ []
 
 instance
   Underlying-V : Underlying (V ℓ)
   Underlying-V = record { ⌞_⌟ = λ v → v-label (v .tree) }
-
-_!_ : (S : V ℓ) → ⌞ S ⌟ → V ℓ
-_!_ {ℓ = ℓ} S x with S .tree | S .uniq
-... | sup A f | _ , φ = set (f x) (φ x)
 
 _∈ⱽ_ : (x y : V ℓ) → Type (lsuc ℓ)
 x ∈ⱽ y with y .tree
@@ -184,17 +219,35 @@ x ∈ⱽ y with y .tree
 instance
   Membership-V : Membership (V ℓ) (V ℓ) _
   Membership-V = record { _∈_ = _∈ⱽ_ }
+```
+-->
 
-!-inj : (S : V ℓ) {x y : ⌞ S ⌟} → S ! x ≡ S ! y → x ≡ y
-!-inj S α with S .tree | S .uniq
-... | sup x f | φ , _ = ap fst (φ _ (_ , ap tree α) (_ , refl))
+We can define a 'constructor' for `V`{.Agda} which takes the supremum of
+an embedding into `V`{.Agda}. We could then go on to show that
+`supⱽ`{.Agda} actually *does* generate `V`{.Agda}, i.e. exhibit an
+induction principle saying that covering `supⱽ`{.Agda} suffices to cover
+all of `V`{.Agda}, but this will not be necessary.
 
-supv : (T : Type ℓ) (f : T ↪ V ℓ) → V ℓ
-{-# INLINE supv #-}
-supv T f = record
+```agda
+supⱽ : (T : Type ℓ) (f : T ↪ V ℓ) → V ℓ
+{-# INLINE supⱽ #-}
+supⱽ T f = record
   { tree = sup T (λ x → f .fst x .tree)
   ; uniq = ∘-is-embedding tree-is-embedding (f .snd) , λ y → f .fst y .uniq
   }
+```
+
+<details>
+<summary>When formalising constructions with material sets, it will be
+convenient to have syntax for `supⱽ`{.Agda} where the function is only
+assumed to be an injection (which suffices since `V`{.Agda}) is a set,
+and which lets us specify this data separately from the
+function.</summary>
+
+```agda
+-- Efficiency note: because composing embeddings generates pretty
+-- horrible stuff, this module *needs* the function above (and mkⱽ
+-- below) to be INLINE, so the normal forms of codes in V are compact.
 
 record mkV ℓ : Type (lsuc ℓ) where
   field
@@ -202,58 +255,22 @@ record mkV ℓ : Type (lsuc ℓ) where
     idx : Elt → V ℓ
     inj : injective idx
 
-  mkv : V ℓ
-  {-# INLINE mkv #-}
-  mkv = supv Elt (idx , injective→is-embedding! inj)
+  mkⱽ : V ℓ
+  {-# INLINE mkⱽ #-}
+  mkⱽ = supⱽ Elt (idx , injective→is-embedding! inj)
 
-open mkV
+open mkV public
+```
 
-subset : (S : V ℓ) → ⌞ S ⌟ ↪ V ℓ
-subset S .fst = S !_
-subset S .snd = injective→is-embedding! (!-inj S)
+</details>
 
-El : V ℓ → Type ℓ
-El V = ⌞ V ⌟
+We will, however, define a principle of "$\in$-induction", saying that,
+if you can show $P(a)$ under the assumption that $P(x)$ for every $x \in
+a$, then $P$ holds of arbitrary sets--- in order words, that the $\in$
+relation is [[well-founded]]. As usual, this implies that the membership
+relation is irreflexive.
 
-abstract
-  El-is-set : (x : V ℓ) → is-set ⌞ x ⌟
-  El-is-set x = embedding→is-hlevel 1 (subset x .snd) (hlevel 2)
-
-instance
-  hlevel-projection-v-label : hlevel-projection (quote v-label)
-  hlevel-projection-v-label .has-level    = quote El-is-set
-  hlevel-projection-v-label .get-level _  = pure (lit (nat 2))
-  hlevel-projection-v-label .get-argument a with a
-  ... | v-label-args x = pure x
-  ... | _              = typeError []
-
-private
-  _ : {x : V ℓ} → is-set ⌞ x ⌟
-  _ = hlevel 2
-
-∅ⱽ : V ℓ
-∅ⱽ = supv (Lift _ ⊥) ((λ ()) , (λ { _ (() , _) }))
-
-one : V ℓ → V ℓ
-one v = mkv λ where
-  .Elt → Lift _ ⊤
-  .idx _ → v
-  .inj _ → refl
-
-one-inj : {x y : V ℓ} → one x ≡ one y → x ≡ y
-one-inj x = ap-set (ap₂ (λ e y → (e ! y) .tree) x (to-pathp refl))
-
-two : (x y : V ℓ) → x ≠ y → V ℓ
-two  x y d = mkv λ where
-  .Elt → Lift _ Bool
-  .idx (lift true)  → x
-  .idx (lift false) → y
-
-  .inj {lift true}  {lift true}  p → refl
-  .inj {lift true}  {lift false} p → absurd (d p)
-  .inj {lift false} {lift true}  p → absurd (d (sym p))
-  .inj {lift false} {lift false} p → refl
-
+```agda
 ∈-induction
   : ∀ {ℓ'} (P : V ℓ → Type ℓ')
   → ({a : V ℓ} → ({x : V ℓ} → x ∈ a → x ∈ P) → a ∈ P)
@@ -265,50 +282,173 @@ two  x y d = mkv λ where
 
 ∈-irrefl : (x : V ℓ) → x ∈ x → ⊥
 ∈-irrefl = ∈-induction _ λ {a} ind a∈a → ind a∈a a∈a
+```
 
-x≠[x] : (x : V ℓ) → x ≡ one x → ⊥
-x≠[x] x p = ∈-irrefl x (subst (x ∈_) (sym p) (lift tt , refl))
+Finally, we can also define pattern-matching functions to project the
+"label" and "subtree" from a material set. The subtree function
+`_!_`{.Agda} is, by construction, an embedding (hence, an injection),
+and we can pair it with that proof to obtain for each material set an
+embedding `lookup`{.Agda} from its type of members back into the
+cumulative hierarchy.
+
+```agda
+_!_ : (S : V ℓ) → ⌞ S ⌟ → V ℓ
+_!_ {ℓ = ℓ} S x with S .tree | S .uniq
+... | sup A f | _ , φ = set (f x) (φ x)
+
+!-inj : (S : V ℓ) {x y : ⌞ S ⌟} → S ! x ≡ S ! y → x ≡ y
+!-inj S α with S .tree | S .uniq
+... | sup x f | φ , _ = ap fst (φ _ (_ , ap tree α) (_ , refl))
+
+lookup : (S : V ℓ) → ⌞ S ⌟ ↪ V ℓ
+lookup S .fst = S !_
+lookup S .snd = injective→is-embedding! (!-inj S)
+```
+
+## $V$ as a universe
+
+The "type-of-members" projection from $V$ allows us to think of it as a
+*universe* of [[h-sets|set]], though one which, unlike the built-in
+universes of Agda, requires us to explicitly *decode* an element of the
+universe into a type[^tarski]. To make this interpretation explicit, we
+will sometimes refer to the type-of-members projection by `El`{.Agda},
+which is the traditional name for the decoding family of a Tarski
+universe.
+
+[^tarski]:
+    In the type-theoretic literature, these universes are termed "à la
+    Tarski", or simply "Tarski universes".
+
+    If there is no decoding type family, and the elements of a universe
+    are *literally* types, then they are called "à la Russell", or
+    "Russell universes".
+
+```agda
+El : V ℓ → Type ℓ
+El V = ⌞ V ⌟
+
+abstract
+  El-is-set : (x : V ℓ) → is-set (El x)
+  El-is-set x = embedding→is-hlevel 1 (lookup x .snd) (hlevel 2)
+```
+
+From this perspective, we think of constructing a material set with a
+specific type of members as showing that `V`{.Agda} is closed under a
+specific type-theoretic connective. To this end, the following
+"realignment" principle will be useful: it says that if $x$ is a
+material set and $f : T \mono \El x$ is an injection, we can obtain a
+material set which definitionally decodes to $T$.
+
+```agda
+realignⱽ : (x : V ℓ) {T : Type ℓ} (e : T → El x) → injective e → V ℓ
+{-# INLINE realignⱽ #-}
+realignⱽ x {T} f α = mkⱽ λ where
+  .Elt   → T
+  .idx i → x ! f i
+  .inj i → α (!-inj x i)
+
+_ : ∀ {x : V ℓ} {T} {e : T → El x} {p : injective e}
+  → El (realignⱽ x e p) ≡ T
+_ = refl
+```
+
+<!--
+```agda
+-- We defined the v-label wrapper to write *this* instance, since if we
+-- just reused 'label' it would spuriously be applied to the type of
+-- labels of an arbitrary W-type (and then fail when the thing it's
+-- applied to isn't the 'tree' projection from a V-set).
+
+instance
+  hlevel-projection-v-label : hlevel-projection (quote v-label)
+  hlevel-projection-v-label .has-level    = quote El-is-set
+  hlevel-projection-v-label .get-level _  = pure (lit (nat 2))
+  hlevel-projection-v-label .get-argument a with a
+  ... | v-label-args x = pure x
+  ... | _              = typeError []
+
+-- Test that the instance works:
+private
+  _ : {x : V ℓ} → is-set ⌞ x ⌟
+  _ = hlevel 2
 
 lookup→member : (S : V ℓ) {x : V ℓ} {j : ⌞ S ⌟} → (S ! j) ≡ x → x ∈ S
 lookup→member S p with S .tree | S .uniq
 ... | sup x f | _ = _ , ap tree p
+```
+-->
 
-open import Data.Sum
+## Constructing material sets
 
-sucv : V ℓ → V ℓ
-sucv x = mkv λ where
-  .Elt → ⊤ ⊎ El x
+Since the empty function is an embedding, the empty *type* has a code in
+`V`{.Agda}, which is 'the empty set' --- it has no members.
 
-  .idx (inl tt) → x
-  .idx (inr j)  → subset x .fst j
+```agda
+∅ⱽ : V ℓ
+∅ⱽ = supⱽ (Lift _ ⊥) ((λ ()) , (λ { _ (() , _) }))
+```
 
-  .inj {inl _} {inl _} p → refl
-  .inj {inl _} {inr _} p → absurd (∈-irrefl x (lookup→member x (sym p)))
-  .inj {inr _} {inl _} p → absurd (∈-irrefl x (lookup→member x p))
-  .inj {inr _} {inr _} p → ap inr (ap fst (subset x .snd _ (_ , p) (_ , refl)))
+Similarly, since any function from the unit type is injective, if you
+already have a material set $x$, you can construct the set $\{x\}$. Note
+that this is *itself* an embedding into `V`{.Agda}.
 
-Natⱽ : V lzero
-Natⱽ = mkv (mkV.constructor _ encoden encoden-inj) where
-  encoden : Nat → V ℓ
-  encoden zero    = ∅ⱽ
-  encoden (suc x) = sucv (encoden x)
+```agda
+oneⱽ : V ℓ → V ℓ
+oneⱽ v = mkⱽ λ where
+  .Elt   → Lift _ ⊤
+  .idx _ → v
+  .inj _ → refl
 
-  encoden-inj : ∀ {ℓ} → injective (encoden {ℓ})
-  encoden-inj {ℓ} p = Fin-injective (Equiv.inverse (lemma _) ∙e path→equiv (ap El p) ∙e lemma _) where
-    lemma : ∀ n → El (encoden {ℓ} n) ≃ Fin n
-    lemma zero    = (λ ()) , record { is-eqv = λ x → absurd (Fin-absurd x) }
-    lemma (suc n) = ⊎-ap id≃ (lemma n) ∙e Equiv.inverse Finite-successor
+one-inj : {x y : V ℓ} → oneⱽ x ≡ oneⱽ y → x ≡ y
+one-inj x = ap-set (ap₂ (λ e y → (e ! y) .tree) x (to-pathp refl))
+```
 
+Moreover, we can prove that $x$ is distinct from $\{x\}$ by showing that
+identifying them would contradict irreflexivity of the $\in$-relation.
+
+```agda
+x≠[x] : (x : V ℓ) → x ≡ oneⱽ x → ⊥
+x≠[x] x p = ∈-irrefl x (subst (x ∈_) (sym p) (lift tt , refl))
+```
+
+We can't, in general, write a function that puts *two* arguments into a
+material set: if you fed it the same set twice, it would end up
+constructing "$\{x, x\}$", and we can not show that the `member`{.Agda}
+function for this pathological example is an injection. However, we
+*can* write a function that packs two *distinct* values into a material
+set--- forming $\{x, y\}$ under the assumption that $x \ne y$.
+
+```agda
+twoⱽ : (x y : V ℓ) → x ≠ y → V ℓ
+twoⱽ x y d = mkⱽ λ where
+  .Elt → Lift _ Bool
+  .idx (lift true)  → x
+  .idx (lift false) → y
+
+  .inj {lift true}  {lift true}  p → refl
+  .inj {lift true}  {lift false} p → absurd (d p)
+  .inj {lift false} {lift true}  p → absurd (d (sym p))
+  .inj {lift false} {lift false} p → refl
+```
+
+<details>
+<summary>
+We will need later that `two`{.Agda} is *almost* an injection, i.e. that
+if you have $x_1 \ne y_0$ then $\{x_0,y_0\} = \{x_1,y_1\}$ implies $x_0
+= x_1$ and $y_0 = y_1$.
+</summary>
+
+```agda
 two-inj
   : {x₀ x₁ y₀ y₁ : V ℓ} {p : x₀ ≠ y₀} {q : x₁ ≠ y₁} (r : x₁ ≠ y₀)
-  → two x₀ y₀ p ≡ two x₁ y₁ q
+  → twoⱽ x₀ y₀ p ≡ twoⱽ x₁ y₁ q
   → (x₀ ≡ x₁) × (y₀ ≡ y₁)
 two-inj {x₀ = x₀} {x₁} {y₀} {y₁} {d₀} {d₁} ah α = done where
   p : Lift _ Bool ≡ Lift _ Bool
   p = ap El α
 
   q : {a b : Lift _ Bool} → transport p a ≡ b
-    → subtree (two x₀ y₀ d₀ .tree) a ≡ subtree (two x₁ y₁ d₁ .tree) b
+    → subtree (twoⱽ x₀ y₀ d₀ .tree) a ≡ subtree (twoⱽ x₁ y₁ d₁ .tree) b
   q a i = v-subtree (α i .tree) (to-pathp {A = λ i → p i} a i)
 
   rem₁ : ∀ x → transport p (lift x) ≡ lift x
@@ -323,34 +463,114 @@ two-inj {x₀ = x₀} {x₁} {y₀} {y₁} {d₀} {d₁} ah α = done where
   abstract
     done : (x₀ ≡ x₁) × (y₀ ≡ y₁)
     done = ap-set (q (rem₁ true)) , ap-set (q (rem₁ false))
+```
 
+</details>
+
+We can construct a *successor* operation on material sets, too, such
+that $y \in \operatorname{suc}(x)$ if $y = x$ or $y \in x$. This is a
+legitimate construction because $x$ is distinct from all of its members.
+
+```agda
+sucⱽ : V ℓ → V ℓ
+sucⱽ x = mkⱽ λ where
+  .Elt → ⊤ ⊎ El x
+
+  .idx (inl tt) → x
+  .idx (inr j)  → x ! j
+
+  .inj {inl _} {inl _} p → refl
+  .inj {inl _} {inr _} p → absurd (∈-irrefl x (lookup→member x (sym p)))
+  .inj {inr _} {inl _} p → absurd (∈-irrefl x (lookup→member x p))
+  .inj {inr _} {inr _} p → ap inr (!-inj x p)
+```
+
+By iterating successors of the empty set, we can accurately encode the
+natural numbers. We note that the type of members of `encoden`{.Agda} at
+$n$ is equivalent to $\operatorname{Fin}(n)$, and, since `Fin`{.Agda} is
+also injective, we can show `encoden`{.Agda} is itself injective.
+
+```agda
+Natⱽ : V lzero
+Natⱽ = mkⱽ (mkV.constructor _ encoden encoden-inj) where
+  encoden : Nat → V ℓ
+  encoden zero    = ∅ⱽ
+  encoden (suc x) = sucⱽ (encoden x)
+
+  encoden-inj : ∀ {ℓ} → injective (encoden {ℓ})
+  encoden-inj {ℓ} p = Fin-injective (Equiv.inverse (lemma _) ∙e path→equiv (ap El p) ∙e lemma _) where
+    lemma : ∀ n → El (encoden {ℓ} n) ≃ Fin n
+    lemma zero    = (λ ()) , record { is-eqv = λ x → absurd (Fin-absurd x) }
+    lemma (suc n) = ⊎-ap id≃ (lemma n) ∙e Equiv.inverse Finite-successor
+```
+
+## Pairing
+
+Using the constructors `∅ⱽ`{.Agda}, `oneⱽ`{.Agda} and `twoⱽ`{.Agda}, we
+can construct the ordered pairing of any two material sets $a$, $b$, by
+wrapping them in sufficient brackets to make them distinct.
+Specifically, we code for $(a, b)$ as $$\{\{\{a\},\emptyset\},\{\{b\}\}\}$$.
+
+<details>
+<summary>This construction requires a few annoying lemmas distinguishing
+`∅ⱽ`{.Agda}, `oneⱽ`{.Agda} and `twoⱽ`{.Agda}, which are all by how we
+can distinguish their types of members.</summary>
+
+```agda
 abstract
-  one≠∅ : {x : V ℓ} → one x ≠ ∅ⱽ
+  one≠∅ : {x : V ℓ} → oneⱽ x ≠ ∅ⱽ
   one≠∅ p = subst ⌞_⌟ (ap El p) (lift tt) .lower
 
-  one≠two : ∀ {x y z : V ℓ} {p} → one x ≠ two y z p
+  one≠two : ∀ {x y z : V ℓ} {p} → oneⱽ x ≠ twoⱽ y z p
   one≠two p = true≠false (ap lower (subst is-prop (ap El p) (hlevel 1) _ _))
+```
 
+</details>
+
+```agda
 pair : V ℓ → V ℓ → V ℓ
 pair a b =
-  two
-    (two (one a) ∅ⱽ one≠∅)
-    (one (one b))
+  twoⱽ
+    (twoⱽ (oneⱽ a) ∅ⱽ one≠∅)
+    (oneⱽ (oneⱽ b))
   (one≠two ∘ sym)
+```
 
+The absurd number of brackets is required to meet the side-condition for
+`two-inj`{.Agda}, which lets us show that this is an injection from $V
+\times V$ into $V$.
+
+```agda
 abstract
-  pair-inj : {x x' y y' : V ℓ} → pair x y ≡ pair x' y' → Path (V ℓ × V ℓ) (x , y) (x' , y')
+  pair-inj
+    : {x x' y y' : V ℓ}
+    → pair x y ≡ pair x' y' → Path (V ℓ × V ℓ) (x , y) (x' , y')
   pair-inj α =
     let
       (p1 , p2) = two-inj (one≠two ∘ sym) α
       (p1' , _) = two-inj one≠∅ p1
     in one-inj p1' ,ₚ one-inj (one-inj p2)
+```
 
+Using this ordered pairing structure, we can show that $V$ is closed
+under dependent sum: if $X$ is a $V$-set and $Y$ is a family of $V$-sets
+over $X$, the type $\sum_{i : \El X} \El (Y(i))$ injects into $V$ by
+sending each $(a,b)$ to $\{a, b\}$. The proof that this is an injection
+is slightly complicated by the type dependency, but it's not
+unmanageable.
+
+```agda
 Σⱽ : (X : V ℓ) (Y : El X → V ℓ) → V ℓ
-Σⱽ x y = mkv λ where
-  .Elt         → Σ[ i ∈ x ] El (y i)
+Σⱽ x y = mkⱽ λ where
+  .Elt         → Σ[ i ∈ El x ] El (y i)
   .idx (a , b) → pair (x ! a) (y a ! b)
+```
 
+<detaills>
+<summary>We leave the proof that this is an injection in this
+`<details>`{.html} block.</summary>
+
+```agda
   .inj {a , b} {a' , b'} α →
     let
       p1 , p2 = Σ-pathp.from (pair-inj α)
@@ -358,96 +578,133 @@ abstract
       p : a ≡ a'
       p = !-inj x p1
 
-      aum = subst₂ (λ e b' → (y a ! b) ≡ (y e ! b')) (sym p) (to-pathp refl) p2
-    in Σ-pathp (!-inj x p1) (to-pathp⁻ (!-inj (y a) aum))
+      q : (y a ! b) ≡ (y a ! subst (El ∘ y) (sym p) b')
+      q = subst₂ (λ e b' → (y a ! b) ≡ (y e ! b')) (sym p) (to-pathp refl) p2
+    in Σ-pathp (!-inj x p1) (to-pathp⁻ (!-inj (y a) q))
+```
 
-module _ {A : Type ℓ} {B : A → Type ℓ} where
-  is-functional : (Σ[ a ∈ A ] B a → Ω) → Ω
-  is-functional R = elΩ ((a : A) → is-contr (Σ[ b ∈ B a ] ((a , b) ∈ R)))
+</details>
 
-  graph
-    : (∀ x → is-set (B x))
-    → (∀ x → B x)
-    → ∫ₚ is-functional
-  graph bset f = (λ (x , y) → elΩ (f x ≡ y)) , inc (λ a → contr (f a , inc refl) (elim! λ y p → Σ-prop-path! p))
-    where instance
-      _ : ∀ {x} → H-Level (B x) 2
-      _ = hlevel-instance (bset _)
+```agda
+_ : ∀ {A : V ℓ} {B} → El (Σⱽ A B) ≡ (Σ[ a ∈ El A ] El (B a))
+_ = refl
+```
 
-  graph-inj
-    : (p : ∀ x → is-set (B x)) (f g : (x : A) → B x)
-    → graph p f ≡ graph p g → f ≡ g
-  graph-inj bset f g α = funext λ a → case subst (λ e → (a , f a) ∈ e) (ap fst α) (inc refl) of sym
-    where instance
-      _ : ∀ {x} → H-Level (B x) 2
-      _ = hlevel-instance (bset _)
+## Separation and power sets
 
+Under our assumption of [[propositional resizing]], we can show that any
+property $P$ of a $V$-set $x$ is *separable*: we have a set $\name{P} =
+\{e \in x\, |\, P(e)\}$ whose elements are precisely the elements of $x$
+that satisfy $P$.
+
+```agda
 subsetⱽ : (x : V ℓ) → (El x → Ω) → V ℓ
-subsetⱽ v f = mkv λ where
+subsetⱽ v f = mkⱽ λ where
   .Elt         → Σ[ i ∈ v ] (i ∈ f)
   .idx (x , _) → v ! x
   .inj α       → Σ-prop-path! (!-inj v α)
+```
 
+More importantly, if we fix $x$, then we can *recover* the proposition
+$P(e)$ we started with as "$e \in \name{P}$". This shows that, if $x$ is
+held fixed, then `subsetⱽ`{.Agda} is an injection of $x \to \Omega$ into
+$V$, and the entire [[power set]] of $x$ has a $V$-code.
+
+```agda
 subsetⱽ-inj : (x : V ℓ) (p q : El x → Ω) → subsetⱽ x p ≡ subsetⱽ x q → p ≡ q
 subsetⱽ-inj x p q α = funext λ ex →
   let
-    hum : ∀ {a b} (p : PathP (λ i → El (α i)) a b) → a .fst ≡ b .fst
-    hum p = !-inj x (ap-set (λ i → (α i ! p i) .tree))
+    same-ix : ∀ {a b} (p : PathP (λ i → El (α i)) a b) → a .fst ≡ b .fst
+    same-ix p = !-inj x (ap-set (λ i → (α i ! p i) .tree))
   in Ω-ua
     (λ a →
       let (ix , pix) = subst El α (ex , a)
-       in subst (_∈ q) (sym (hum {ex , a} {ix , pix} (to-pathp refl))) pix)
+       in subst (_∈ q) (sym (same-ix {ex , a} {ix , pix} (to-pathp refl))) pix)
     (λ a →
       let (ix , pix) = subst El (sym α) (ex , a)
-       in subst (_∈ p) (hum {ix , pix} {ex , a} (to-pathp⁻ refl)) pix)
+       in subst (_∈ p) (same-ix {ix , pix} {ex , a} (to-pathp⁻ refl)) pix)
 
 ℙⱽ : V ℓ → V ℓ
-ℙⱽ x = mkv λ where
+ℙⱽ x = mkⱽ λ where
   .Elt           → El x → Ω
   .idx p         → subsetⱽ x p
   .inj {p} {q} α → subsetⱽ-inj _ _ _ α
+```
 
-realignⱽ : (x : V ℓ) {T : Type ℓ} (e : T → El x) → injective e → V ℓ
-{-# INLINE realignⱽ #-}
-realignⱽ x {T} f α = mkv λ where
-  .Elt   → T
-  .idx i → x ! f i
-  .inj i → α (!-inj x i)
+## Function sets
 
+To encode function sets, we will make use of `realignⱽ`{.Agda} and
+closure of $V$ under power sets. When the codomain is a (family of)
+[[sets]], the (dependent) function type $(x : A) \to B(x)$ embeds into
+the type of predicates on $\sum_{x : A}B(x)$ by the map which sends each
+function to its `graph`{.Agda}.
+
+```agda
+module _ {A : Type ℓ} {B : A → Type ℓ} where
+  graph : (∀ x → B x) → (Σ[ a ∈ A ] B a → Ω)
+  graph f (x , y) = elΩ (f x ≡ y)
+
+  graph-inj
+    : (p : ∀ x → is-set (B x)) (f g : (x : A) → B x)
+    → graph f ≡ graph g → f ≡ g
+  graph-inj bset f g α = funext λ a →
+    case subst (λ e → (a , f a) ∈ e) α (inc refl) of sym
+    where instance
+      _ : ∀ {x} → H-Level (B x) 2
+      _ = hlevel-instance (bset _)
+```
+
+The realignment principle then lets us obtain a definitional encoding
+for dependent function types as a subset of the encoding of relations.
+
+```agda
 Πⱽ : (A : V ℓ) (B : El A → V ℓ) → V ℓ
 Πⱽ A B = realignⱽ
-  (subsetⱽ (ℙⱽ (Σⱽ A B)) is-functional)
-  (graph λ x → El-is-set (B x))
-  (graph-inj _ _ _)
+  (ℙⱽ (Σⱽ A B))
+  (graph)
+  (graph-inj (λ x → hlevel 2) _ _)
 
-Lift-inj : ∀ {ℓ} ℓ' → is-embedding {A = Type ℓ} (Lift ℓ')
-Lift-inj ℓ' = cancellable→embedding λ {x} {y} →
-  Lift ℓ' x ≡ Lift ℓ' y ≃⟨ _ , univalence ⟩
-  Lift ℓ' x ≃ Lift ℓ' y ≃⟨ ≃-ap Lift-≃ Lift-≃ ⟩
-  x ≃ y                 ≃⟨ _ , univalence⁻¹ ⟩
-  x ≡ y                 ≃∎
+_ : ∀ {A : V ℓ} {B} → El (Πⱽ A B) ≡ ((x : El A) → El (B x))
+_ = refl
+```
 
-raise : ∀ ℓ' → V ℓ → V (ℓ ⊔ ℓ')
-raise {ℓ = ℓ} ℓ' = wrap module raise where
-  raise' : V' ℓ → V' (ℓ ⊔ ℓ')
-  raise' (sup x f) = sup (Lift ℓ' x) (λ (lift i) → raise' (f i))
+## Lifting and a $V$-code for $V$
 
-  module l {x} {y} = Equiv (ap (Lift {ℓ} ℓ') {x} {y} , embedding→cancellable (Lift-inj ℓ'))
+Agda universes are not cumulative, but we can define a `Lift`{.Agda}ing
+operation which codes for a type $X : \ty_\ell$ in some higher-levelled
+universe, which we generically write as being $\ell \sqcup \ell'$. By
+inserting these `Lift`{.Agda}s at every `sup`{.Agda} of a $V$-set, we
+can also lift $V$-sets.
+
+```agda
+liftⱽ : ∀ ℓ' → V ℓ → V (ℓ ⊔ ℓ')
+liftⱽ {ℓ = ℓ} ℓ' = wrap module liftⱽ where
+  liftⱽ' : V' ℓ → V' (ℓ ⊔ ℓ')
+  liftⱽ' (sup x f) = sup (Lift ℓ' x) (λ (lift i) → liftⱽ' (f i))
+```
+
+<details>
+<summary>Using that `Lift`{.Agda} is an embedding, we can prove by an
+inductive calculation that the recursive lifting `liftⱽ'`{.Agda} is also
+an embedding.</summary>
+
+```agda
+  module l {x} {y} = Equiv (ap (Lift {ℓ} ℓ') {x} {y} , embedding→cancellable (Lift-is-embedding ℓ'))
 
   abstract
-    inj' : (x y : V' ℓ) → (raise' x ≡ raise' y) ≃ (x ≡ y)
+    inj' : (x y : V' ℓ) → (liftⱽ' x ≡ liftⱽ' y) ≃ (x ≡ y)
     inj' (sup x f) (sup y g) =
-      raise' (sup x f) ≡ raise' (sup y g)
+      liftⱽ' (sup x f) ≡ liftⱽ' (sup y g)
         ≃⟨ ap-equiv W-fixpoint ⟩
-      (Lift ℓ' x , raise' ∘ f ∘ lower) ≡ (Lift ℓ' y , raise' ∘ g ∘ lower)
+      (Lift ℓ' x , liftⱽ' ∘ f ∘ lower) ≡ (Lift ℓ' y , liftⱽ' ∘ g ∘ lower)
         ≃˘⟨ Σ-pathp≃ ⟩
-      (Σ (Lift ℓ' x ≡ Lift ℓ' y) (λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (raise' ∘ f ∘ lower) (raise' ∘ g ∘ lower)))
+      (Σ (Lift ℓ' x ≡ Lift ℓ' y) (λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f ∘ lower) (liftⱽ' ∘ g ∘ lower)))
         ≃˘⟨ Σ-ap-fst (Equiv.inverse l.inverse) ⟩
-      (Σ (x ≡ y) λ p → PathP (λ i → Lift ℓ' (p i) → V' (ℓ ⊔ ℓ')) (raise' ∘ f ∘ lower) (raise' ∘ g ∘ lower))
+      (Σ (x ≡ y) λ p → PathP (λ i → Lift ℓ' (p i) → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f ∘ lower) (liftⱽ' ∘ g ∘ lower))
         ≃⟨ Σ-ap-snd (λ p → (λ p i x → p i (lift x)) , is-iso→is-equiv (iso _ (λ x → refl) λ x → refl)) ⟩
-      (Σ (x ≡ y) λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (raise' ∘ f) (raise' ∘ g))
+      (Σ (x ≡ y) λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f) (liftⱽ' ∘ g))
         ≃⟨ Σ-ap-snd
-            (λ p → J (λ y p → {g : y → V' ℓ} → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (raise' ∘ f) (raise' ∘ g) ≃ PathP (λ i → p i → V' ℓ) f g)
+            (λ p → J (λ y p → {g : y → V' ℓ} → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f) (liftⱽ' ∘ g) ≃ PathP (λ i → p i → V' ℓ) f g)
               (Equiv.inverse funext≃ ∙e Π-ap-cod (λ x → inj' (f x) _) ∙e funext≃)
             p)
           ⟩
@@ -458,13 +715,18 @@ raise {ℓ = ℓ} ℓ' = wrap module raise where
       sup x f ≡ sup y g
         ≃∎
 
-  emb : is-embedding raise'
+  emb : is-embedding liftⱽ'
   emb = cancellable→embedding (inj' _ _)
+```
 
-  go : (w : V' ℓ) (u : is-iterative-embedding w) → V (ℓ ⊔ ℓ')
-  goβ : (w : V' ℓ) (u : is-iterative-embedding w) → go w u .tree ≡ raise' w
+Because of our definition of $V$, we need a wrapper saying that
+`liftⱽ'`{.Agda} sends iterative embeddings to iterative embeddings.
 
-  go (sup x f) (φ , r) .tree = raise' (sup x f)
+```agda
+  go  : (w : V' ℓ) (u : is-iterative-embedding w) → V (ℓ ⊔ ℓ')
+  goβ : (w : V' ℓ) (u : is-iterative-embedding w) → go w u .tree ≡ liftⱽ' w
+
+  go (sup x f) (φ , r) .tree = liftⱽ' (sup x f)
   go (sup x f) (φ , r) .uniq =
     ∘-is-embedding (∘-is-embedding emb φ) (is-equiv→is-embedding (Lift-≃ .snd))
     , λ (lift y) → let it = go (f y) (r y) .uniq in subst is-iterative-embedding (goβ (f y) (r y)) it
@@ -483,12 +745,19 @@ raise {ℓ = ℓ} ℓ' = wrap module raise where
 
   unraise : ∀ x → El (wrap x) ≃ El x
   unraise x = ungo (x .tree) (x .uniq)
-
   module unraise x = Equiv (unraise x)
+```
 
+</details>
+
+Since `liftⱽ`{.Agda} is itself an embedding of $V_\ell$ onto $V_{\ell'}$
+for any $\ell' > \ell$, we can obtain a definitional $V_{(1 + \ell)}$-code
+for $V_\ell$.
+
+```agda
 Vⱽ : ∀ {ℓ} → V (lsuc ℓ)
-Vⱽ {ℓ} = mkv λ where
+Vⱽ {ℓ} = mkⱽ λ where
   .Elt → V ℓ
-  .idx → raise _
-  .inj → raise.is-inj _
+  .idx → liftⱽ _
+  .inj → liftⱽ.is-inj _
 ```

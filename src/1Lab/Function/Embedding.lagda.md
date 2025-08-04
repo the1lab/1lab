@@ -14,6 +14,7 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -245,5 +246,12 @@ ap-equiv
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B) {x y : A}
   → (x ≡ y) ≃ (e .fst x ≡ e .fst y)
 ap-equiv e = _ , equiv→cancellable (e .snd)
+
+Lift-is-embedding : ∀ {ℓ} ℓ' → is-embedding {A = Type ℓ} (Lift ℓ')
+Lift-is-embedding ℓ' = cancellable→embedding λ {x} {y} →
+  Lift ℓ' x ≡ Lift ℓ' y ≃⟨ _ , univalence ⟩
+  Lift ℓ' x ≃ Lift ℓ' y ≃⟨ ≃-ap Lift-≃ Lift-≃ ⟩
+  x ≃ y                 ≃⟨ _ , univalence⁻¹ ⟩
+  x ≡ y                 ≃∎
 ```
 -->
