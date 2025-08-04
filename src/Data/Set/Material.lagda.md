@@ -18,7 +18,7 @@ open hlevel-projection
 -->
 
 ```agda
-module Data.Set.Material.Base where
+module Data.Set.Material where
 ```
 
 # The cumulative hierarchy as a subtype
@@ -154,7 +154,7 @@ record V (l : Level) : Type (lsuc l) where
 ```agda
 {-# INLINE V.constructor #-}
 
-open V
+open V public
 
 ap-set : {x y : V ℓ} → x .tree ≡ y .tree → x ≡ y
 ap-set α i .tree = α i
@@ -189,8 +189,6 @@ abstract
       ≃-is-hlevelˡ 0 (prj _ (y .uniq) _)))
     (ap-set (α ∙ sym β))
 
-open V
-
 -- We redefine these so we can be precise about the hlevel-projection
 -- instance for El on V (we need an explicit matching function instead
 -- of using a with-abstraction to refer to it by name) instead of
@@ -198,19 +196,33 @@ open V
 -- and then having a really mysterious error message.
 --
 -- They can't be private because they're used in the Automation module.
+--
+-- It's also defined for an entire S : V with a named local helper
+-- (instead of for S .tree : V') so we can write a DISPLAY form to print
+-- v-label as El.
+--
+-- It's important that S is bound in the lhs of v-label
+-- (thus again in the λ-lifting of v-label.impl) so the normal form of
+-- v-label looks like
+--
+--    v-label.impl {ℓ} S (S .tree)
+-- whence we can recover ℓ and S with a display form.
 
-v-label : V' ℓ → Type ℓ
-v-label (sup x f) = x
+v-label : V ℓ → Type ℓ
+v-label {ℓ = ℓ} S = impl (S .tree) module v-label where
+  impl : V' ℓ → Type ℓ
+  impl (sup x f) = x
 
-pattern v-label-args x = _ h∷ def (quote tree) (_ h∷ x v∷ []) v∷ []
+pattern v-label-args S = _ h∷ S v∷ def (quote tree) _ v∷ []
 
 private
-  v-subtree : (x : V' ℓ) → v-label x → V' ℓ
-  v-subtree (sup x f) = f
+  v-subtree : (x : V ℓ) → v-label x → V' ℓ
+  v-subtree S with S .tree
+  ... | sup x f = f
 
 instance
   Underlying-V : Underlying (V ℓ)
-  Underlying-V = record { ⌞_⌟ = λ v → v-label (v .tree) }
+  Underlying-V = record { ⌞_⌟ = λ v → v-label v }
 
 _∈ⱽ_ : (x y : V ℓ) → Type (lsuc ℓ)
 x ∈ⱽ y with y .tree
@@ -360,12 +372,19 @@ _ = refl
 -- applied to isn't the 'tree' projection from a V-set).
 
 instance
-  hlevel-projection-v-label : hlevel-projection (quote v-label)
+  hlevel-projection-v-label : hlevel-projection (quote v-label.impl)
   hlevel-projection-v-label .has-level    = quote El-is-set
   hlevel-projection-v-label .get-level _  = pure (lit (nat 2))
   hlevel-projection-v-label .get-argument a with a
   ... | v-label-args x = pure x
-  ... | _              = typeError []
+  ... | _              = do
+    `a ← quoteTC a >>= normalise
+    typeError [ termErr `a ]
+
+-- We also need the wrapper for this display form, since we can't write
+-- a display form for v-label (S .tree).
+{-# DISPLAY v-label.impl {ℓ} S _ = El {ℓ} S #-}
+{-# DISPLAY v-label {ℓ} S = El {ℓ} S #-} -- for printing in Simplified or Instantiated rewriting levels
 
 -- Test that the instance works:
 private
@@ -449,7 +468,7 @@ two-inj {x₀ = x₀} {x₁} {y₀} {y₁} {d₀} {d₁} ah α = done where
 
   q : {a b : Lift _ Bool} → transport p a ≡ b
     → subtree (twoⱽ x₀ y₀ d₀ .tree) a ≡ subtree (twoⱽ x₁ y₁ d₁ .tree) b
-  q a i = v-subtree (α i .tree) (to-pathp {A = λ i → p i} a i)
+  q a i = v-subtree (α i) (to-pathp {A = λ i → p i} a i)
 
   rem₁ : ∀ x → transport p (lift x) ≡ lift x
   rem₁ x =
@@ -739,7 +758,7 @@ Because of our definition of $V$, we need a wrapper saying that
   is-inj : injective wrap
   is-inj α = ap-set (ap fst (emb _ (_ , sym (goβ _ _) ∙ ap tree α ∙ goβ _ _) (_ , refl)))
 
-  ungo : (w : V' ℓ) (u : is-iterative-embedding w) → v-label (go w u .tree) ≃ v-label w
+  ungo : (w : V' ℓ) (u : is-iterative-embedding w) → v-label (go w u) ≃ v-label (set w u)
   ungo (sup x f) u .fst = lower
   ungo (sup x f) u .snd = is-iso→is-equiv (iso lift (λ _ → refl) λ _ → refl)
 

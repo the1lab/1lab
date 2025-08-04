@@ -5,9 +5,9 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Reflection hiding (_!_ ; absurd)
 open import 1Lab.Prelude
 
-open import Data.Set.Material.Base
 open import Data.Fin.Properties
 open import Data.Wellfounded.W
+open import Data.Set.Material
 open import Data.Fin.Closure
 open import Data.Bool.Base
 open import Data.Dec.Base
@@ -182,6 +182,9 @@ instance
   Materialise-V : ∀ {ℓ} → Materialise (V ℓ)
   Materialise-V = record { code = Vⱽ ; codes = id≃ }
 
+  Materialise-Ω : Materialise Ω
+  Materialise-Ω = basic (realignⱽ (ℙⱽ (materialise! ⊤)) (λ w _ → w) (_·ₚ tt))
+
   Materialise-lift : ⦃ _ : Materialise A ⦄ → Materialise (Lift ℓ A)
   Materialise-lift {ℓ = ℓ} ⦃ m ⦄ = basic $ realignⱽ (liftⱽ ℓ (m .code))
     (λ x → liftⱽ.unraise.from ℓ (m .code) (m .codes .fst (x .lower)))
@@ -217,7 +220,7 @@ performance penalty.
 private
   materialise-el : ∀ {ℓ} (A : Type ℓ) → Term → TC ⊤
   materialise-el A goal = quoteTC A >>= reduce >>= λ where
-    (def (quote v-label) (v-label-args x)) → unify goal (it basic ##ₙ x)
+    (def (quote v-label.impl) (v-label-args x)) → unify goal (it basic ##ₙ x)
     a → typeError
       [ "Materialise: don't know how to come up with instance for\n  "
       , termErr a
