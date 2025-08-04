@@ -38,7 +38,7 @@ Hom-spaces of $\mathcal{C}$.
 
 In a neutral presentation of [[displayed category]] theory, the collection
 of objects over $S$ would be given by the space of functors
-$[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
+$[\rm{Disc}(S),C]$, regarding $S$ as a [[discrete category]]. This is
 essentially an $S$-indexed family of objects of $C$, hence the name
 "family fibration". To reduce the noise, however, in HoTT we can (ab)use
 the fact that all precategories have a _space of objects_, and say that
