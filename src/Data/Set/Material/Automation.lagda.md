@@ -41,7 +41,7 @@ equivalence $A \simeq \El c$.
 record Materialise {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
   field
     code  : V ℓ
-    codes : A ≃ El code
+    codes : A ≃ Elⱽ code
 
   open Equiv codes using (to ; from ; η ; ε ; injective) public
 ```
@@ -82,7 +82,7 @@ future.
 materialise! : ∀ {ℓ} (A : Type ℓ) ⦃ m : Materialise A ⦄ → V (level-of A)
 materialise! A ⦃ m ⦄ = realignⱽ (m .code) (Materialise.to m) (Materialise.injective m)
 
-_ : ∀ {ℓ} {A : Type ℓ} ⦃ m : Materialise A ⦄ → El (materialise! A) ≡ A
+_ : ∀ {ℓ} {A : Type ℓ} ⦃ m : Materialise A ⦄ → Elⱽ (materialise! A) ≡ A
 _ = refl
 ```
 
@@ -92,7 +92,7 @@ between $B$ and some materialised type $A$, we can also use that to
 materialise $B$.
 
 ```agda
-basic : (X : V ℓ) → Materialise (El X)
+basic : (X : V ℓ) → Materialise (Elⱽ X)
 basic X = record { code = X ; codes = id≃ }
 
 Iso→materialisation
@@ -142,11 +142,11 @@ instance
     codes = Σ-ap (m.codes ∙e r.inverse) λ x →
       B x
         ≃⟨ b .codes ⟩
-      El (b {x} .code)
-        ≃⟨ path→equiv (ap (λ e → El (b {e} .code)) (sym (ap (Materialise.from a) (liftⱽ.unraise.ε ℓ' (a .code) _) ∙ Materialise.η a _))) ⟩
-      El (b {m.from (r.to (r.from (m.to x)))} .code)
+      Elⱽ (b {x} .code)
+        ≃⟨ path→equiv (ap (λ e → Elⱽ (b {e} .code)) (sym (ap (Materialise.from a) (liftⱽ.unraise.ε ℓ' (a .code) _) ∙ Materialise.η a _))) ⟩
+      Elⱽ (b {m.from (r.to (r.from (m.to x)))} .code)
         ≃⟨ liftⱽ.unraise.inverse ℓ (b .code) ⟩
-      El (liftⱽ ℓ (b {m.from (r.to (r.from (m.to x)))} .code))
+      Elⱽ (liftⱽ ℓ (b {m.from (r.to (r.from (m.to x)))} .code))
         ≃∎
 
     code = Σⱽ
@@ -164,11 +164,11 @@ instance
     codes =
       ((x : A) → B x)
         ≃⟨ Π-ap-dom (liftⱽ.unraise ℓ' m.code ∙e Equiv.inverse m.codes) ⟩
-      ((x : El (liftⱽ ℓ' m.code)) → B (m.from (r.to x)))
+      ((x : Elⱽ (liftⱽ ℓ' m.code)) → B (m.from (r.to x)))
         ≃⟨ Π-ap-cod (λ x → b .codes) ⟩
-      ((x : El (liftⱽ ℓ' m.code)) → El (b {m.from (r.to x)} .code))
+      ((x : Elⱽ (liftⱽ ℓ' m.code)) → Elⱽ (b {m.from (r.to x)} .code))
         ≃⟨ Π-ap-cod (λ x → liftⱽ.unraise.inverse ℓ (b .code)) ⟩
-      ((x : El (liftⱽ ℓ' m.code)) → El (liftⱽ ℓ (b {m.from (r.to x)} .code)))
+      ((x : Elⱽ (liftⱽ ℓ' m.code)) → Elⱽ (liftⱽ ℓ (b {m.from (r.to x)} .code)))
         ≃∎
 
     code  = Πⱽ (liftⱽ ℓ' m.code) λ i → liftⱽ ℓ (b {m.from (r.to i)} .code)
@@ -280,7 +280,7 @@ private
 
   instance unquoteDecl demo = materialise-record demo (quote VCat)
 
-  _ : El (materialise! (VCat lzero lzero)) ≡ VCat lzero lzero
+  _ : Elⱽ (materialise! (VCat lzero lzero)) ≡ VCat lzero lzero
   _ = refl
 
   open VCat

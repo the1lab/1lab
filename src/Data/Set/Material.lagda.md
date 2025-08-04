@@ -21,7 +21,7 @@ open hlevel-projection
 module Data.Set.Material where
 ```
 
-# The cumulative hierarchy as a subtype
+# The cumulative hierarchy of iterative sets
 
 <!--
 ```agda
@@ -55,10 +55,12 @@ private
   V' l = W (Type l) (λ x → x)
 ```
 
-We have a good understanding of paths in W-types, but for this specific
-construction, univalence lets us do better: the type of identities
-between multisets $w, w' : V'$ is given by the **fibrewise
+We have a good understanding of [paths in W-types], but for this
+specific construction, univalence lets us do better: the type of
+identities between multisets $w, w' : V'$ is given by the **fibrewise
 equivalences** between their `subtree`{.Agda}s.
+
+[paths in W-types]: Data.Wellfounded.W.html#path-spaces-of-w-types
 
 ```agda
   veq : V' ℓ → V' ℓ → Type _
@@ -166,7 +168,7 @@ private
 ```
 -->
 
-We can then prove that  `V`{.Agda} is a set, since `veq`{.Agda} for
+We can then prove that `V`{.Agda} is a set, since `veq`{.Agda} for
 iterative embeddings is a proposition.
 
 ```agda
@@ -252,7 +254,7 @@ supⱽ T f = record
 <details>
 <summary>When formalising constructions with material sets, it will be
 convenient to have syntax for `supⱽ`{.Agda} where the function is only
-assumed to be an injection (which suffices since `V`{.Agda}) is a set,
+assumed to be an injection (which suffices since `V`{.Agda} is a set),
 and which lets us specify this data separately from the
 function.</summary>
 
@@ -305,7 +307,7 @@ cumulative hierarchy.
 
 ```agda
 _!_ : (S : V ℓ) → ⌞ S ⌟ → V ℓ
-_!_ {ℓ = ℓ} S x with S .tree | S .uniq
+S ! x with S .tree | S .uniq
 ... | sup A f | _ , φ = set (f x) (φ x)
 
 !-inj : (S : V ℓ) {x y : ⌞ S ⌟} → S ! x ≡ S ! y → x ≡ y
@@ -329,18 +331,16 @@ universe.
 
 [^tarski]:
     In the type-theoretic literature, these universes are termed "à la
-    Tarski", or simply "Tarski universes".
-
-    If there is no decoding type family, and the elements of a universe
-    are *literally* types, then they are called "à la Russell", or
-    "Russell universes".
+    Tarski", or simply "Tarski universes". If there is no decoding type
+    family, and the elements of a universe are *literally* types, then
+    they are called "à la Russell", or "Russell universes".
 
 ```agda
-El : V ℓ → Type ℓ
-El V = ⌞ V ⌟
+Elⱽ : V ℓ → Type ℓ
+Elⱽ V = ⌞ V ⌟
 
 abstract
-  El-is-set : (x : V ℓ) → is-set (El x)
+  El-is-set : (x : V ℓ) → is-set (Elⱽ x)
   El-is-set x = embedding→is-hlevel 1 (lookup x .snd) (hlevel 2)
 ```
 
@@ -352,15 +352,15 @@ material set and $f : T \mono \El x$ is an injection, we can obtain a
 material set which definitionally decodes to $T$.
 
 ```agda
-realignⱽ : (x : V ℓ) {T : Type ℓ} (e : T → El x) → injective e → V ℓ
+realignⱽ : (x : V ℓ) {T : Type ℓ} (e : T → Elⱽ x) → injective e → V ℓ
 {-# INLINE realignⱽ #-}
 realignⱽ x {T} f α = mkⱽ λ where
   .Elt   → T
   .idx i → x ! f i
   .inj i → α (!-inj x i)
 
-_ : ∀ {x : V ℓ} {T} {e : T → El x} {p : injective e}
-  → El (realignⱽ x e p) ≡ T
+_ : ∀ {x : V ℓ} {T} {e : T → Elⱽ x} {p : injective e}
+  → Elⱽ (realignⱽ x e p) ≡ T
 _ = refl
 ```
 
@@ -383,8 +383,8 @@ instance
 
 -- We also need the wrapper for this display form, since we can't write
 -- a display form for v-label (S .tree).
-{-# DISPLAY v-label.impl {ℓ} S _ = El {ℓ} S #-}
-{-# DISPLAY v-label {ℓ} S = El {ℓ} S #-} -- for printing in Simplified or Instantiated rewriting levels
+{-# DISPLAY v-label.impl {ℓ} S _ = Elⱽ {ℓ} S #-}
+{-# DISPLAY v-label {ℓ} S = Elⱽ {ℓ} S #-} -- for printing in Simplified or Instantiated rewriting levels
 
 -- Test that the instance works:
 private
@@ -464,7 +464,7 @@ two-inj
   → (x₀ ≡ x₁) × (y₀ ≡ y₁)
 two-inj {x₀ = x₀} {x₁} {y₀} {y₁} {d₀} {d₁} ah α = done where
   p : Lift _ Bool ≡ Lift _ Bool
-  p = ap El α
+  p = ap Elⱽ α
 
   q : {a b : Lift _ Bool} → transport p a ≡ b
     → subtree (twoⱽ x₀ y₀ d₀ .tree) a ≡ subtree (twoⱽ x₁ y₁ d₁ .tree) b
@@ -493,7 +493,7 @@ legitimate construction because $x$ is distinct from all of its members.
 ```agda
 sucⱽ : V ℓ → V ℓ
 sucⱽ x = mkⱽ λ where
-  .Elt → ⊤ ⊎ El x
+  .Elt → ⊤ ⊎ Elⱽ x
 
   .idx (inl tt) → x
   .idx (inr j)  → x ! j
@@ -517,8 +517,8 @@ Natⱽ = mkⱽ (mkV.constructor _ encoden encoden-inj) where
   encoden (suc x) = sucⱽ (encoden x)
 
   encoden-inj : ∀ {ℓ} → injective (encoden {ℓ})
-  encoden-inj {ℓ} p = Fin-injective (Equiv.inverse (lemma _) ∙e path→equiv (ap El p) ∙e lemma _) where
-    lemma : ∀ n → El (encoden {ℓ} n) ≃ Fin n
+  encoden-inj {ℓ} p = Fin-injective (Equiv.inverse (lemma _) ∙e path→equiv (ap Elⱽ p) ∙e lemma _) where
+    lemma : ∀ n → Elⱽ (encoden {ℓ} n) ≃ Fin n
     lemma zero    = (λ ()) , record { is-eqv = λ x → absurd (Fin-absurd x) }
     lemma (suc n) = ⊎-ap id≃ (lemma n) ∙e Equiv.inverse Finite-successor
 ```
@@ -538,10 +538,10 @@ can distinguish their types of members.</summary>
 ```agda
 abstract
   one≠∅ : {x : V ℓ} → oneⱽ x ≠ ∅ⱽ
-  one≠∅ p = subst ⌞_⌟ (ap El p) (lift tt) .lower
+  one≠∅ p = subst ⌞_⌟ (ap Elⱽ p) (lift tt) .lower
 
   one≠two : ∀ {x y z : V ℓ} {p} → oneⱽ x ≠ twoⱽ y z p
-  one≠two p = true≠false (ap lower (subst is-prop (ap El p) (hlevel 1) _ _))
+  one≠two p = true≠false (ap lower (subst is-prop (ap Elⱽ p) (hlevel 1) _ _))
 ```
 
 </details>
@@ -579,13 +579,13 @@ is slightly complicated by the type dependency, but it's not
 unmanageable.
 
 ```agda
-Σⱽ : (X : V ℓ) (Y : El X → V ℓ) → V ℓ
+Σⱽ : (X : V ℓ) (Y : Elⱽ X → V ℓ) → V ℓ
 Σⱽ x y = mkⱽ λ where
-  .Elt         → Σ[ i ∈ El x ] El (y i)
+  .Elt         → Σ[ i ∈ Elⱽ x ] Elⱽ (y i)
   .idx (a , b) → pair (x ! a) (y a ! b)
 ```
 
-<detaills>
+<details>
 <summary>We leave the proof that this is an injection in this
 `<details>`{.html} block.</summary>
 
@@ -597,7 +597,7 @@ unmanageable.
       p : a ≡ a'
       p = !-inj x p1
 
-      q : (y a ! b) ≡ (y a ! subst (El ∘ y) (sym p) b')
+      q : (y a ! b) ≡ (y a ! subst (Elⱽ ∘ y) (sym p) b')
       q = subst₂ (λ e b' → (y a ! b) ≡ (y e ! b')) (sym p) (to-pathp refl) p2
     in Σ-pathp (!-inj x p1) (to-pathp⁻ (!-inj (y a) q))
 ```
@@ -605,7 +605,7 @@ unmanageable.
 </details>
 
 ```agda
-_ : ∀ {A : V ℓ} {B} → El (Σⱽ A B) ≡ (Σ[ a ∈ El A ] El (B a))
+_ : ∀ {A : V ℓ} {B} → Elⱽ (Σⱽ A B) ≡ (Σ[ a ∈ Elⱽ A ] Elⱽ (B a))
 _ = refl
 ```
 
@@ -617,7 +617,7 @@ property $P$ of a $V$-set $x$ is *separable*: we have a set $\name{P} =
 that satisfy $P$.
 
 ```agda
-subsetⱽ : (x : V ℓ) → (El x → Ω) → V ℓ
+subsetⱽ : (x : V ℓ) → (Elⱽ x → Ω) → V ℓ
 subsetⱽ v f = mkⱽ λ where
   .Elt         → Σ[ i ∈ v ] (i ∈ f)
   .idx (x , _) → v ! x
@@ -630,22 +630,22 @@ held fixed, then `subsetⱽ`{.Agda} is an injection of $x \to \Omega$ into
 $V$, and the entire [[power set]] of $x$ has a $V$-code.
 
 ```agda
-subsetⱽ-inj : (x : V ℓ) (p q : El x → Ω) → subsetⱽ x p ≡ subsetⱽ x q → p ≡ q
+subsetⱽ-inj : (x : V ℓ) (p q : Elⱽ x → Ω) → subsetⱽ x p ≡ subsetⱽ x q → p ≡ q
 subsetⱽ-inj x p q α = funext λ ex →
   let
-    same-ix : ∀ {a b} (p : PathP (λ i → El (α i)) a b) → a .fst ≡ b .fst
+    same-ix : ∀ {a b} (p : PathP (λ i → Elⱽ (α i)) a b) → a .fst ≡ b .fst
     same-ix p = !-inj x (ap-set (λ i → (α i ! p i) .tree))
   in Ω-ua
     (λ a →
-      let (ix , pix) = subst El α (ex , a)
+      let (ix , pix) = subst Elⱽ α (ex , a)
        in subst (_∈ q) (sym (same-ix {ex , a} {ix , pix} (to-pathp refl))) pix)
     (λ a →
-      let (ix , pix) = subst El (sym α) (ex , a)
+      let (ix , pix) = subst Elⱽ (sym α) (ex , a)
        in subst (_∈ p) (same-ix {ix , pix} {ex , a} (to-pathp⁻ refl)) pix)
 
 ℙⱽ : V ℓ → V ℓ
 ℙⱽ x = mkⱽ λ where
-  .Elt           → El x → Ω
+  .Elt           → Elⱽ x → Ω
   .idx p         → subsetⱽ x p
   .inj {p} {q} α → subsetⱽ-inj _ _ _ α
 ```
@@ -664,26 +664,21 @@ module _ {A : Type ℓ} {B : A → Type ℓ} where
   graph f (x , y) = elΩ (f x ≡ y)
 
   graph-inj
-    : (p : ∀ x → is-set (B x)) (f g : (x : A) → B x)
-    → graph f ≡ graph g → f ≡ g
-  graph-inj bset f g α = funext λ a →
+    : ⦃ _ : ∀ {x} → H-Level (B x) 2 ⦄
+    → (f g : (x : A) → B x) → graph f ≡ graph g → f ≡ g
+  graph-inj f g α = funext λ a →
     case subst (λ e → (a , f a) ∈ e) α (inc refl) of sym
-    where instance
-      _ : ∀ {x} → H-Level (B x) 2
-      _ = hlevel-instance (bset _)
 ```
 
 The realignment principle then lets us obtain a definitional encoding
 for dependent function types as a subset of the encoding of relations.
 
 ```agda
-Πⱽ : (A : V ℓ) (B : El A → V ℓ) → V ℓ
-Πⱽ A B = realignⱽ
-  (ℙⱽ (Σⱽ A B))
-  (graph)
-  (graph-inj (λ x → hlevel 2) _ _)
+Πⱽ : (A : V ℓ) (B : Elⱽ A → V ℓ) → V ℓ
+Πⱽ A B = realignⱽ (ℙⱽ (Σⱽ A B))
+  graph (graph-inj _ _)
 
-_ : ∀ {A : V ℓ} {B} → El (Πⱽ A B) ≡ ((x : El A) → El (B x))
+_ : ∀ {A : V ℓ} {B} → Elⱽ (Πⱽ A B) ≡ ((x : Elⱽ A) → Elⱽ (B x))
 _ = refl
 ```
 
@@ -762,7 +757,7 @@ Because of our definition of $V$, we need a wrapper saying that
   ungo (sup x f) u .fst = lower
   ungo (sup x f) u .snd = is-iso→is-equiv (iso lift (λ _ → refl) λ _ → refl)
 
-  unraise : ∀ x → El (wrap x) ≃ El x
+  unraise : ∀ x → Elⱽ (wrap x) ≃ Elⱽ x
   unraise x = ungo (x .tree) (x .uniq)
   module unraise x = Equiv (unraise x)
 ```
