@@ -285,15 +285,8 @@ exists-section-iff-split-surjective f =
 Like their non-split counterparts, split surjective functions are closed under composition.
 
 ```agda
-∘-surjective-splitting
-  : surjective-splitting f
-  → surjective-splitting g
-  → surjective-splitting (f ∘ g)
-
-∘-is-split-surjective
-  : is-split-surjective f
-  → is-split-surjective g
-  → is-split-surjective (f ∘ g)
+∘-surjective-splitting : ∘-closed surjective-splitting
+∘-is-split-surjective : ∘-closed is-split-surjective
 ```
 
 <details>
