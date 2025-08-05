@@ -181,8 +181,8 @@ definition of $f$ being surjective.
 surjective-iff-image-equiv {A = A} {B = B} {f = f} =
   Equiv.inverse $
     is-equiv fst                            ≃⟨ is-equiv≃fibre-is-contr ⟩
-    (∀ b → is-contr (fibre fst b))          ≃⟨ Π-cod≃ (λ b → is-hlevel-ap 0 (Fibre-equiv _ _)) ⟩
-    (∀ b → is-contr (∃[ a ∈ A ] (f a ≡ b))) ≃⟨ Π-cod≃ (λ b → is-prop→is-contr-iff-inhabited (hlevel 1)) ⟩
+    (∀ b → is-contr (fibre fst b))          ≃⟨ Π-ap-cod (λ b → is-hlevel-ap 0 (Fibre-equiv _ _)) ⟩
+    (∀ b → is-contr (∃[ a ∈ A ] (f a ≡ b))) ≃⟨ Π-ap-cod (λ b → is-prop→is-contr-iff-inhabited (hlevel 1)) ⟩
     (∀ b → ∃[ a ∈ A ] (f a ≡ b))            ≃⟨⟩
     is-surjective f                         ≃∎
 ```
@@ -220,7 +220,7 @@ the type of paths in $B$ is also contractible, so that fibre is equivalent to $A
 ```agda
   split-surjective-is-structure {A = A} f B-contr =
     (∀ b → fibre f b)         ≃⟨ Π-contr-eqv B-contr ⟩
-    fibre f (B-contr .centre) ≃⟨ Σ-contract (λ _ → Path-is-hlevel 0 B-contr) ⟩
+    fibre f (B-contr .centre) ≃⟨ Σ-contr-snd (λ _ → Path-is-hlevel 0 B-contr) ⟩
     A                         ≃∎
 ```
 
@@ -396,7 +396,7 @@ of contraction of $A$.
 
 ```agda
 contr-dom-surjective-iff-connected-cod {A = A} {B = B} {f = f} A-contr =
-  Π-cod≃ (λ b → ∥-∥-ap (Σ-contr-eqv A-contr ∙e sym-equiv))
+  Π-ap-cod (λ b → ∥-∥-ap (Σ-contr-fst A-contr ∙e sym-equiv))
 ```
 
 This correspondence is not a coincidence: surjective maps fit into
