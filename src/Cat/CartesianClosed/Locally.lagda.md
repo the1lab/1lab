@@ -43,7 +43,6 @@ category is Cartesian closed.
 $\thecat{LH}$. Each slice $\thecat{LH}/X$ is Cartesian closed ---
 they're even topoi --- but $\thecat{LH}$ has no terminal object.
 
-
 [base change]: Cat.Functor.Pullback.html
 
 ```agda
@@ -51,8 +50,7 @@ record Locally-cartesian-closed {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ �
   field
     has-is-lex : Finitely-complete C
     slices-cc  : ∀ A → Cartesian-closed (Slice C A)
-      (Slice-products (Finitely-complete.pullbacks has-is-lex))
-      Slice-terminal-object
+      (Slice-cartesian (Finitely-complete.pullbacks has-is-lex))
 ```
 
 <!--
@@ -207,8 +205,8 @@ each slice of $\cC$ is Cartesian closed.
     → (f*⊣Πf : ∀ {a b} (f : Hom a b) → Base-change pullbacks f ⊣ Πf f)
     → Locally-cartesian-closed C
   dependent-product→lcc Πf adj = record { has-is-lex = fp ; slices-cc = slice-cc } where
-    slice-cc : (A : Ob) → Cartesian-closed (Slice C A) _ _
-    slice-cc A = product-adjoint→cartesian-closed (Slice C A) _ _
+    slice-cc : (A : Ob) → Cartesian-closed (Slice C A) _
+    slice-cc A = product-adjoint→cartesian-closed (Slice C A) _
       (λ f → Πf (f .map) F∘ Base-change pullbacks (f .map))
       λ A → adjoint-natural-isol (to-natural-iso Slice-product-functor)
               (LF⊣GR (adj _) (Σf⊣f* _ _))
@@ -251,7 +249,7 @@ becomes a functor $\Pi_f : \cC/A \to \cC/B$, of the right type.
   lcc→dependent-product
     : ∀ {a b} (f : Hom a b) → Functor (Slice C a) (Slice C b)
   lcc→dependent-product {a} {b} f =
-       exponentiable→product _ _ _ _ (has-exp b (cut f)) pullback/
+       exponentiable→product _ _ _ (has-exp b (cut f)) pullback/
     F∘ Slice-twice f
 ```
 
@@ -269,8 +267,8 @@ equivalence $(\cC/B)/f \cong \cC/A$.
   lcc→pullback⊣dependent-product {b = b} f = adjoint-natural-isol
     (to-natural-iso rem₂) (LF⊣GR rem₁ (Twice⊣Slice f))
     where
-    rem₁ : constant-family prod/ ⊣ exponentiable→product (Slice C _) _ _ _ _ _
-    rem₁ = exponentiable→constant-family⊣product _ _ _ _ _ _
+    rem₁ : constant-family prod/ ⊣ exponentiable→product (Slice C _) _ _ _ _
+    rem₁ = exponentiable→constant-family⊣product _ _ _ _ _
 
     rem₂ : make-natural-iso (Twice-slice f F∘ constant-family prod/)
                             (Base-change pullbacks f)

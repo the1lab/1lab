@@ -4,6 +4,7 @@ open import Cat.Diagram.Product.Solver
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
@@ -19,13 +20,11 @@ module Cat.CartesianClosed.Lambda
 
 <!--
 ```agda
-  {o ℓ} (C : Precategory o ℓ) (fp : has-products C) (term : Terminal C)
-        (cc : Cartesian-closed C fp term)
+  {o ℓ} (C : Precategory o ℓ) (cart : Cartesian-category C) (cc : Cartesian-closed C cart)
         where
 
-open Binary-products C fp
+open Cartesian-category cart
 open Cartesian-closed cc
-open Cat.Reasoning C
 ```
 -->
 
@@ -47,9 +46,9 @@ contexts are simply lists of types.
 
 ```agda
 data Ty : Type o where
-  _`×_ : Ty → Ty → Ty
-  _`⇒_ : Ty → Ty → Ty
-  `_   : Ob → Ty
+  _`×_ _`⇒_ : Ty → Ty → Ty
+  `_        : Ob → Ty
+  `⊤        : Ty
 
 data Cx : Type o where
   ∅   : Cx
@@ -99,6 +98,7 @@ data Expr Γ where
   `⟨_,_⟩  : Expr Γ τ → Expr Γ σ → Expr Γ (τ `× σ)
   `λ      : Expr (Γ , τ) σ      → Expr Γ (τ `⇒ σ)
   `$      : Expr Γ (τ `⇒ σ)     → Expr Γ τ → Expr Γ σ
+  `unit   : Expr Γ `⊤
   `_      : Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ   → Expr Γ τ
 ```
 
@@ -110,11 +110,12 @@ variable is given by the second projection map $\Gamma \times A \to A$.
 
 ```agda
 ⟦ X `× Y ⟧ᵗ = ⟦ X ⟧ᵗ ⊗₀ ⟦ Y ⟧ᵗ
-⟦ X `⇒ Y ⟧ᵗ = Exp.B^A ⟦ X ⟧ᵗ ⟦ Y ⟧ᵗ
+⟦ X `⇒ Y ⟧ᵗ = [ ⟦ X ⟧ᵗ , ⟦ Y ⟧ᵗ ]
+⟦ `⊤  ⟧ᵗ    = top
 ⟦ ` X ⟧ᵗ    = X
 
 ⟦ Γ , τ ⟧ᶜ = ⟦ Γ ⟧ᶜ ⊗₀ ⟦ τ ⟧ᵗ
-⟦ ∅ ⟧ᶜ     = Terminal.top term
+⟦ ∅ ⟧ᶜ     = top
 
 ⟦_⟧ⁿ : Var Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
 ⟦ stop ⟧ⁿ  = π₂
@@ -127,6 +128,7 @@ variable is given by the second projection map $\Gamma \times A \to A$.
 ⟦ `⟨ a , b ⟩ ⟧ᵉ = ⟨ ⟦ a ⟧ᵉ , ⟦ b ⟧ᵉ ⟩
 ⟦ `λ e       ⟧ᵉ = ƛ ⟦ e ⟧ᵉ
 ⟦ `$ f x     ⟧ᵉ = ev ∘ ⟨ ⟦ f ⟧ᵉ , ⟦ x ⟧ᵉ ⟩
+⟦ `unit      ⟧ᵉ = !
 ⟦ ` x        ⟧ᵉ = x
 ```
 
@@ -229,6 +231,7 @@ setting, we also consider the base terms as neutral _at base types_.
 data Nf where
   lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
   pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  unit :                      Nf Γ `⊤
   ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
 
 data Ne where
@@ -272,6 +275,7 @@ ren-ne σ (sndₙ a)  = sndₙ (ren-ne σ a)
 ren-nf σ (lam n)    = lam  (ren-nf (keep σ) n)
 ren-nf σ (pair a b) = pair (ren-nf σ a) (ren-nf σ b)
 ren-nf σ (ne x)     = ne   (ren-ne σ x)
+ren-nf σ unit       = unit
 
 ren-sub ρ ∅       = ∅
 ren-sub ρ (σ , x) = ren-sub ρ σ , ren-nf ρ x
@@ -289,6 +293,7 @@ Cartesian closed structure.
 ⟦ lam h    ⟧ₙ = ƛ ⟦ h ⟧ₙ
 ⟦ pair a b ⟧ₙ = ⟨ ⟦ a ⟧ₙ , ⟦ b ⟧ₙ ⟩
 ⟦ ne x     ⟧ₙ = ⟦ x ⟧ₛ
+⟦ unit     ⟧ₙ = !
 
 ⟦ var x   ⟧ₛ = ⟦ x ⟧ⁿ
 ⟦ app f x ⟧ₛ = ev ∘ ⟨ ⟦ f ⟧ₛ , ⟦ x ⟧ₙ ⟩
@@ -296,7 +301,7 @@ Cartesian closed structure.
 ⟦ sndₙ h  ⟧ₛ = π₂ ∘ ⟦ h ⟧ₛ
 ⟦ hom h a ⟧ₛ = h ∘ ⟦ a ⟧ᵣ
 
-⟦ ∅     ⟧ᵣ = Terminal.! term
+⟦ ∅     ⟧ᵣ = !
 ⟦ σ , n ⟧ᵣ = ⟨ ⟦ σ ⟧ᵣ , ⟦ n ⟧ₙ ⟩
 ```
 
@@ -326,7 +331,7 @@ tag.
 ⟦⟧-∘ʳ (drop ρ) σ = pushl (⟦⟧-∘ʳ ρ σ)
 ⟦⟧-∘ʳ (keep ρ) stop = introl refl
 ⟦⟧-∘ʳ (keep ρ) (drop σ) = pushl (⟦⟧-∘ʳ ρ σ) ∙ sym (pullr π₁∘⟨⟩)
-⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (fp _ _)
+⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ Product.unique (products _ _)
   (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ pulll (sym (⟦⟧-∘ʳ ρ σ)))
   (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl _)
 
@@ -352,8 +357,9 @@ ren-⟦⟧ₙ ρ (lam t) =
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
+ren-⟦⟧ₙ ρ unit   = !-unique _
 
-ren-⟦⟧ᵣ ρ ∅       = Terminal.!-unique term _
+ren-⟦⟧ᵣ ρ ∅       = !-unique _
 ren-⟦⟧ᵣ ρ (σ , n) = ap₂ ⟨_,_⟩ (ren-⟦⟧ᵣ ρ σ) (ren-⟦⟧ₙ ρ n) ∙ sym (⟨⟩∘ _)
 ```
 </details>
@@ -509,6 +515,12 @@ tracking information: a neutral $n$ tracks $h$ iff. $\sem{n} = h$.
 Tyᵖ (` x)    Γ h = Σ (Ne Γ (` x)) λ n → ⟦ n ⟧ₛ ≡ h
 ```
 
+<!--
+```agda
+Tyᵖ `⊤ Γ h = Lift _ ⊤
+```
+-->
+
 To work on open contexts, we can define (now by induction), the presheaf
 of _parallel substitutions_, which are decorated sequences of terms.
 These also have a morphism of $\cC$ attached, but keep in mind that a
@@ -528,6 +540,7 @@ tyᵖ⟨_⟩ {τ `× σ} p (a , b)   = tyᵖ⟨ ap (π₁ ∘_) p ⟩ a , tyᵖ�
 tyᵖ⟨_⟩ {τ `⇒ σ} p ν ρ x     = tyᵖ⟨ ap (λ e → ev ∘ ⟨ e ∘ ⟦ ρ ⟧ʳ , _ ⟩) p ⟩ (ν ρ x)
 tyᵖ⟨_⟩ {` x} p (n , q) .fst = n
 tyᵖ⟨_⟩ {` x} p (n , q) .snd = q ∙ p
+tyᵖ⟨_⟩ {`⊤}  p (lift tt)    = lift tt
 
 subᵖ⟨_⟩ : ∀ {Γ Δ h h'} → h ≡ h' → Subᵖ Γ Δ h → Subᵖ Γ Δ h'
 subᵖ⟨_⟩ p ∅       = ∅
@@ -552,6 +565,7 @@ ren-tyᵖ {τ = τ `× σ} r (a , b)   =
 ren-tyᵖ {τ = τ `⇒ σ} r t {Θ} ρ {α} a =
   tyᵖ⟨ ap (λ e → ev ∘ ⟨ e , α ⟩) (pushr (⟦⟧-∘ʳ ρ r)) ⟩ (t (ρ ∘ʳ r) a)
 ren-tyᵖ {τ = ` x} r (f , p) = ren-ne r f , ren-⟦⟧ₛ r f ∙ ap₂ _∘_ p refl
+ren-tyᵖ {τ = `⊤} r (lift tt) = lift tt
 
 ren-subᵖ r ∅       = ∅
 ren-subᵖ r (c , x) =
@@ -578,11 +592,13 @@ reifyᵖ-correct : ∀ {h} (v : Tyᵖ τ Γ h) → ⟦ reifyᵖ v ⟧ₙ ≡ h
 reifyᵖ {τ = τ `× s} (a , b) = pair (reifyᵖ a) (reifyᵖ b)
 reifyᵖ {τ = τ `⇒ s} f       = lam (reifyᵖ (f (drop stop) (reflectᵖ (var stop))))
 reifyᵖ {τ = ` x} d          = ne (d .fst)
+reifyᵖ {τ = `⊤} d           = unit
 
 reflectᵖ {τ = τ `× σ} n     = reflectᵖ (fstₙ n) , reflectᵖ (sndₙ n)
 reflectᵖ {τ = τ `⇒ σ} n ρ a = tyᵖ⟨ ap₂ (λ e f → ev ∘ ⟨ e , f ⟩) (ren-⟦⟧ₛ ρ n) (reifyᵖ-correct a) ⟩
   (reflectᵖ (app (ren-ne ρ n) (reifyᵖ a)))
 reflectᵖ {τ = ` x}    n     = n , refl
+reflectᵖ {τ = `⊤}     _     = lift tt
 ```
 
 The interesting cases deal with function types: To reify a lambda ---
@@ -610,7 +626,7 @@ establishing that $\sem{\reify v} = h$ when $v$ tracks $h$.
 
 ```agda
 reifyᵖ-correct {τ = τ `× σ} (a , b) = sym $
-  Product.unique (fp _ _) (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
+  Product.unique (products _ _) (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
 reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
   let
     p : ⟦ reifyᵖ (ν (drop stop) (reflectᵖ (var stop))) ⟧ₙ ≡ ev ∘ ⟨ h ∘ id ∘ π₁ , π₂ ⟩
@@ -618,17 +634,18 @@ reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
   in ap ƛ p
    ∙ sym (unique _ (ap₂ _∘_ refl (ap₂ ⟨_,_⟩ (sym (pulll (elimr refl))) (eliml refl))))
 reifyᵖ-correct {τ = ` x} d = d .snd
+reifyᵖ-correct {τ = `⊤}  d = !-unique _
 ```
 
 <!--
 ```agda
 ⟦_⟧ˢ : ∀ {Γ Δ h} → Subᵖ Γ Δ h → Hom ⟦ Δ ⟧ᶜ ⟦ Γ ⟧ᶜ
-⟦_⟧ˢ ∅       = Terminal.! term
+⟦_⟧ˢ ∅       = !
 ⟦_⟧ˢ (c , x) = ⟨ ⟦ c ⟧ˢ , ⟦ reifyᵖ x ⟧ₙ ⟩
 
 ⟦⟧ˢ-correct : ∀ {Γ Δ h} (ρ : Subᵖ Γ Δ h) → ⟦ ρ ⟧ˢ ≡ h
-⟦⟧ˢ-correct ∅       = Terminal.!-unique term _
-⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (fp _ _) (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
+⟦⟧ˢ-correct ∅       = !-unique _
+⟦⟧ˢ-correct (ρ , x) = sym (Product.unique (products _ _) (sym (⟦⟧ˢ-correct ρ)) (sym (reifyᵖ-correct x)))
 ```
 -->
 
@@ -654,8 +671,8 @@ from-subᵖ ∅       = ∅
 from-subᵖ (ρ , x) = from-subᵖ ρ , reifyᵖ x
 
 from-subᵖ-is : ∀ {h} (σ : Subᵖ Δ Γ h) → ⟦ from-subᵖ σ ⟧ᵣ ≡ h
-from-subᵖ-is ∅       = Terminal.!-unique term _
-from-subᵖ-is (ρ , x) = sym (Product.unique (fp _ _) (sym (from-subᵖ-is ρ)) (sym (reifyᵖ-correct x)))
+from-subᵖ-is ∅       = !-unique _
+from-subᵖ-is (ρ , x) = sym (Product.unique (products _ _) (sym (from-subᵖ-is ρ)) (sym (reifyᵖ-correct x)))
 ```
 -->
 
@@ -672,11 +689,12 @@ baseᵖ {τ = τ `× τ₁} x c     =
     tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₁ ∘ x) c)
   , tyᵖ⟨ sym (assoc _ _ _) ⟩ (baseᵖ (π₂ ∘ x) c)
 
-baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
+baseᵖ {τ = τ `⇒ σ} {h' = h'} h c ρ {α} a = tyᵖ⟨ pullr (Product.unique (products _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
   (baseᵖ (ev ∘ ⟨ h ∘ π₁ , π₂ ⟩) (
     subᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-subᵖ ρ c), tyᵖ⟨ sym π₂∘⟨⟩ ⟩ a))
 
 baseᵖ {τ = ` t} x c = hom x (from-subᵖ c) , ap (x ∘_) (from-subᵖ-is c)
+baseᵖ {τ = `⊤}  x c = lift tt
 ```
 
 Those are the hard bits, we can now interpret everything else by a
@@ -687,14 +705,20 @@ our argument lives in the same context].
 
 ```agda
 exprᵖ : ∀ {h} (e : Expr Δ τ) (ρ : Subᵖ Δ Γ h) → Tyᵖ τ Γ (⟦ e ⟧ᵉ ∘ h)
-exprᵖ (`var x)   c = varᵖ x c
+exprᵖ (`var x) c = varᵖ x c
+
 exprᵖ (`π₁ p)    c = tyᵖ⟨ assoc _ _ _ ⟩ (exprᵖ p c .fst)
 exprᵖ (`π₂ p)    c = tyᵖ⟨ assoc _ _ _ ⟩ (exprᵖ p c .snd)
 exprᵖ `⟨ a , b ⟩ c =
-  tyᵖ⟨ sym (pulll π₁∘⟨⟩) ⟩ (exprᵖ a c) , tyᵖ⟨ sym (pulll π₂∘⟨⟩) ⟩ (exprᵖ b c)
+  tyᵖ⟨ sym (pulll π₁∘⟨⟩) ⟩ (exprᵖ a c) ,
+  tyᵖ⟨ sym (pulll π₂∘⟨⟩) ⟩ (exprᵖ b c)
+
 exprᵖ {h = h} (`$ f a) c = tyᵖ⟨ ap (ev ∘_) (ap₂ ⟨_,_⟩ (idr _) refl ∙ sym (⟨⟩∘ h)) ∙ assoc _ _ _ ⟩
   (exprᵖ f c stop (exprᵖ a c))
-exprᵖ (` x)      c = baseᵖ x c
+
+exprᵖ `unit c = lift tt
+exprᵖ (` x) c = baseᵖ x c
+
 exprᵖ {h = h} (`λ f) ρ σ {m} a = tyᵖ⟨ fixup ⟩ (exprᵖ f
   ( subᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-subᵖ σ ρ)
   , tyᵖ⟨ sym π₂∘⟨⟩ ⟩  a ))
@@ -705,7 +729,7 @@ exprᵖ {h = h} (`λ f) ρ σ {m} a = tyᵖ⟨ fixup ⟩ (exprᵖ f
   where abstract
   fixup : ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡ ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩
   fixup = sym $
-    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙∙ pullr π₂∘⟨⟩ ∙∙ eliml refl)) ⟩
+    ev ∘ ⟨ (⟦ `λ f ⟧ᵉ ∘ h) ∘ ⟦ σ ⟧ʳ , m ⟩     ≡˘⟨ ap₂ _∘_ refl (Product.unique (products _ _) (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙∙ pullr π₂∘⟨⟩ ∙∙ eliml refl)) ⟩
     ev ∘ ⟦ `λ f ⟧ᵉ ⊗₁ id ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩ ≡⟨ pulll (is-exponential.commutes has-is-exp _) ⟩
     ⟦ f ⟧ᵉ ∘ ⟨ h ∘ ⟦ σ ⟧ʳ , m ⟩               ∎
 ```
@@ -762,13 +786,6 @@ module _ {a b : Ob} where private
   -- ran for over an hour before our patience ran out.
 ```
 
-<!--
-```agda
-solve : (e e' : Expr Γ τ) → nf e ≡ nf e' → ⟦ e ⟧ᵉ ≡ ⟦ e' ⟧ᵉ
-solve e e' prf = sym (nf-sound e) ∙∙ ap ⟦_⟧ₙ prf ∙∙ nf-sound e'
-```
--->
-
 ## An application
 
 The normalisation algorithm serves to decide the semantic equality of
@@ -782,7 +799,7 @@ non-function types we have included from the category $\cC$, then there
 is a global element $h : \hom(\top, A)$ which $e$ denotes.
 
 ```agda
-canonicity : ∀ {a} → (e : Expr ∅ (` a)) → Σ (Hom (Terminal.top term) a) λ h → ⟦ e ⟧ᵉ ≡ h
+canonicity : ∀ {a} → (e : Expr ∅ (` a)) → Σ (Hom top a) λ h → ⟦ e ⟧ᵉ ≡ h
 canonicity {a = a} e = go (nf e) (nf-sound e) where
   no-functions : ∀ {a b} → Ne ∅ (a `⇒ b) → ⊥
   no-pairs     : ∀ {a b} → Ne ∅ (a `× b) → ⊥
@@ -795,7 +812,7 @@ canonicity {a = a} e = go (nf e) (nf-sound e) where
   no-pairs (fstₙ x)  = no-pairs x
   no-pairs (sndₙ x)  = no-pairs x
 
-  go : (nf : Nf ∅ (` a)) → ⟦ nf ⟧ₙ ≡ ⟦ e ⟧ᵉ → Σ (Hom (Terminal.top term) a) λ h → ⟦ e ⟧ᵉ ≡ h
+  go : (nf : Nf ∅ (` a)) → ⟦ nf ⟧ₙ ≡ ⟦ e ⟧ᵉ → Σ (Hom top a) λ h → ⟦ e ⟧ᵉ ≡ h
   go (ne (app f _)) p = absurd (no-functions f)
   go (ne (fstₙ x)) p  = absurd (no-pairs x)
   go (ne (sndₙ x)) p  = absurd (no-pairs x)

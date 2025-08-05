@@ -147,14 +147,14 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do
 inverses, which is true at the level of the underlying sets.</summary>
 
 ```agda
-Assemblies-exp : ∀ A B → Exponential (Assemblies 𝔸 ℓA) Assemblies-products Assemblies-terminal A B
+Assemblies-exp : ∀ A B → Exponential (Assemblies 𝔸 ℓA) Assemblies-cartesian A B
 Assemblies-exp A B .B^A = A ⇒Asm B
 Assemblies-exp A B .ev = asm-ev
 Assemblies-exp A B .has-is-exp .ƛ = curry-asm
 Assemblies-exp A B .has-is-exp .commutes m = ext λ x y → refl
 Assemblies-exp A B .has-is-exp .unique m' p = ext λ x y → ap map p · (x , y)
 
-Assemblies-cc : Cartesian-closed (Assemblies 𝔸 ℓA) _ _
+Assemblies-cc : Cartesian-closed (Assemblies 𝔸 ℓA) _
 Assemblies-cc = record { has-exp = Assemblies-exp }
 ```
 

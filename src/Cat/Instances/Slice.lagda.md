@@ -17,6 +17,7 @@ open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
+open import Cat.Cartesian
 open import Cat.Prelude
 
 open import Data.Sum
@@ -556,6 +557,12 @@ statements above are just putting things together. We leave them in this
   Slice-lex pb = with-pullbacks (Slice C _)
     Slice-terminal-object
     (Slice-pullbacks pb)
+
+  Slice-cartesian : ∀ {b} → has-pullbacks C → Cartesian-category (Slice C b)
+  Slice-cartesian pb = record
+    { terminal = Slice-terminal-object
+    ; products = Slice-products pb
+    }
 ```
 
 </details>

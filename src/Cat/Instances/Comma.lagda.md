@@ -123,6 +123,9 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 
 <!--
 ```agda
+  {-# INLINE ↓obj #-}
+  {-# INLINE ↓hom #-}
+
   ↓Hom-pathp : ∀ {x x' y y'} {p : x ≡ x'} {q : y ≡ y'}
              → {f : ↓Hom x y} {g : ↓Hom x' y'}
              → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
