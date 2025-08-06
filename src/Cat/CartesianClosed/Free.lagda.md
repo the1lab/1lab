@@ -742,6 +742,8 @@ rne .η Γ σ = ⟦ σ ⟧ₛ
 rne .is-natural x y f = ext (λ s → ren-⟦⟧ₛ f s)
 ```
 
+</details>
+
 Note that since `Tm`{.Agda} is a composition of two Cartesian functors,
 it is itself Cartesian. We can thus glue the properly Cartesian closed
 category $\psh{\rm{Ren}}$ against the syntactic category $\rm{Syn}$
