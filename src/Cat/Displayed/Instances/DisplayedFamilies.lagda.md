@@ -24,9 +24,8 @@ module Cat.Displayed.Instances.DisplayedFamilies
 
 <!--
 ```agda
-open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Reasoning E
+open Cat.Reasoning B
 open is-fibred-functor
 open Functor
 

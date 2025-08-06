@@ -1,0 +1,826 @@
+<!--
+```agda
+open import Cat.Displayed.Diagram.Total.Exponential
+open import Cat.Displayed.Diagram.Total.Terminal
+open import Cat.Displayed.Diagram.Total.Product
+open import Cat.Diagram.Exponential
+open import Cat.Functor.Naturality
+open import Cat.Displayed.Section
+open import Cat.Functor.Kan.Nerve
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Instances.Graphs
+open import Cat.Diagram.Product
+open import Cat.Instances.Comma
+open import Cat.Instances.Slice
+open import Cat.Displayed.Base
+open import Cat.Functor.Base
+open import Cat.Functor.Hom
+open import Cat.Cartesian
+open import Cat.Prelude
+
+open import Data.List.Properties
+open import Data.Dec.Base
+open import Data.List using (List ; [] ; _∷_)
+
+import Cat.Instances.Presheaf.Exponentials as Pe
+import Cat.Displayed.Instances.Gluing as Glu
+import Cat.Instances.Presheaf.Limits as Pl
+import Cat.Displayed.Reasoning
+import Cat.Functor.Bifunctor as Bifunctor
+import Cat.Reasoning
+
+open Functor
+open _=>_
+```
+-->
+
+```agda
+module Cat.CartesianClosed.Free {o ℓ} (G : Graph o ℓ) where
+```
+
+# Free cartesian closed categories
+
+```agda
+open Graph G
+
+data Ty : Type (o ⊔ ℓ) where
+  `⊤        : Ty
+  `_        : Node → Ty
+  _`×_ _`⇒_ : Ty → Ty → Ty
+
+private
+  variable τ σ ρ : Ty
+
+  same-ty : Ty → Ty → Prop o
+  same-ty `⊤ `⊤ = el! (Lift _ ⊤)
+  same-ty `⊤ _  = el! (Lift _ ⊥)
+
+  same-ty (` x) (` y) = el! (x ≡ y)
+  same-ty (` x) _     = el! (Lift _ ⊥)
+
+  same-ty (a `× x) (b `× y) = el! (⌞ same-ty a b ⌟ × ⌞ same-ty x y ⌟)
+  same-ty (a `× x) _        = el! (Lift _ ⊥)
+
+  same-ty (a `⇒ x) (b `⇒ y) = el! (⌞ same-ty a b ⌟ × ⌞ same-ty x y ⌟)
+  same-ty (a `⇒ x) _        = el! (Lift _ ⊥)
+
+  refl-same-ty : ∀ x → ⌞ same-ty x x ⌟
+  refl-same-ty `⊤       = lift tt
+  refl-same-ty (` x)    = refl
+  refl-same-ty (a `× b) = refl-same-ty a , refl-same-ty b
+  refl-same-ty (a `⇒ b) = refl-same-ty a , refl-same-ty b
+
+  from-same-ty : ∀ x y → ⌞ same-ty x y ⌟ → x ≡ y
+  from-same-ty `⊤       `⊤       p = refl
+  from-same-ty (` x)    (` y)    p = ap `_ p
+  from-same-ty (a `× x) (b `× y) p = ap₂ _`×_ (from-same-ty a b (p .fst)) (from-same-ty x y (p .snd))
+  from-same-ty (a `⇒ x) (b `⇒ y) p = ap₂ _`⇒_ (from-same-ty a b (p .fst)) (from-same-ty x y (p .snd))
+
+instance
+  H-Level-Ty : ∀ {n} → H-Level Ty (2 + n)
+  H-Level-Ty = basic-instance 2 $ set-identity-system→hlevel
+    (λ x y → ⌞ same-ty x y ⌟) refl-same-ty (λ x y → hlevel 1) from-same-ty
+
+data Mor : Ty → Ty → Type (o ⊔ ℓ)
+
+private variable
+  f g h : Mor τ σ
+
+infixr 20 _`∘_
+infixr 19 _`,_
+
+data Mor where
+  `_    : ∀ {x y} → Edge x y → Mor (` x) (` y)
+
+  `id   : Mor σ σ
+  _`∘_  : Mor σ ρ → Mor τ σ → Mor τ ρ
+
+  `idr   : f `∘ `id ≡ f
+  `idl   : `id `∘ f ≡ f
+  `assoc : f `∘ g `∘ h ≡ (f `∘ g) `∘ h
+
+  `!    : Mor τ `⊤
+  `!-η  : (h : Mor τ `⊤) → `! ≡ h
+
+  `π₁   : Mor (τ `× σ) τ
+  `π₂   : Mor (τ `× σ) σ
+  _`,_  : Mor τ σ → Mor τ ρ → Mor τ (σ `× ρ)
+
+  `π₁β  : `π₁ `∘ (f `, g) ≡ f
+  `π₂β  : `π₂ `∘ (f `, g) ≡ g
+  `πη   : f ≡ (`π₁ `∘ f `, `π₂ `∘ f)
+
+  `ev  : Mor ((τ `⇒ σ) `× τ) σ
+  `ƛ   : Mor (τ `× σ) ρ → Mor τ (σ `⇒ ρ)
+
+  `ƛβ : `ev `∘ (`ƛ f `∘ `π₁ `, `id `∘ `π₂) ≡ f
+  `ƛη : f ≡ `ƛ (`ev `∘ (f `∘ `π₁ `, `id `∘ `π₂))
+
+  squash : is-set (Mor τ σ)
+
+instance
+  H-Level-Mor : ∀ {x y n} → H-Level (Mor x y) (2 + n)
+  H-Level-Mor = basic-instance 2 squash
+
+module _ where
+  open Precategory
+
+  Free-ccc : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
+  Free-ccc .Ob          = Ty
+  Free-ccc .Hom         = Mor
+  Free-ccc .Hom-set _ _ = squash
+  Free-ccc .id          = `id
+  Free-ccc ._∘_         = _`∘_
+  Free-ccc .idr   _     = `idr
+  Free-ccc .idl   _     = `idl
+  Free-ccc .assoc _ _ _ = `assoc
+
+  open Cartesian-closed
+  open is-exponential
+  open Exponential
+  open is-product
+  open Terminal
+  open Product
+
+  free-prods : has-products Free-ccc
+  free-prods a b .apex = a `× b
+  free-prods a b .π₁ = `π₁
+  free-prods a b .π₂ = `π₂
+  free-prods a b .has-is-product .⟨_,_⟩ f g = f `, g
+  free-prods a b .has-is-product .π₁∘⟨⟩ = `π₁β
+  free-prods a b .has-is-product .π₂∘⟨⟩ = `π₂β
+  free-prods a b .has-is-product .unique p q = `πη ∙ ap₂ _`,_ p q
+
+  free-term : Terminal Free-ccc
+  free-term .top    = `⊤
+  free-term .has⊤ x = contr `! `!-η
+
+  open Cartesian-category using (products ; terminal)
+  free-cartesian : Cartesian-category Free-ccc
+  free-cartesian .products = free-prods
+  free-cartesian .terminal = free-term
+
+  free-cc : Cartesian-closed Free-ccc free-cartesian
+  free-cc .has-exp A B .B^A = A `⇒ B
+  free-cc .has-exp A B .ev = `ev
+  free-cc .has-exp A B .has-is-exp .ƛ = `ƛ
+  free-cc .has-exp A B .has-is-exp .commutes m = `ƛβ
+  free-cc .has-exp A B .has-is-exp .unique m' x = `ƛη ∙ ap `ƛ x
+
+private module Syn = Cartesian-category free-cartesian
+
+data Cx : Type (o ⊔ ℓ) where
+  ∅   : Cx
+  _,_ : Cx → Ty → Cx
+
+instance
+  H-Level-Cx : ∀ {n} → H-Level Cx (2 + n)
+  H-Level-Cx = basic-instance 2 (retract→is-hlevel 2 l→c c→l c→l→c (hlevel 2)) where
+    l→c : List Ty → Cx
+    l→c []       = ∅
+    l→c (x ∷ xs) = l→c xs , x
+
+    c→l : Cx → List Ty
+    c→l ∅        = []
+    c→l (xs , x) = x ∷ c→l xs
+
+    c→l→c : ∀ x → l→c (c→l x) ≡ x
+    c→l→c ∅        = refl
+    c→l→c (xs , x) = ap₂ Cx._,_ (c→l→c xs) refl
+
+private variable
+  Γ Δ Θ : Cx
+
+data Ren : Cx → Cx → Type (o ⊔ ℓ) where
+  stop : Ren Γ Γ
+  drop : Ren Γ Δ → Ren (Γ , τ) Δ
+  keep : Ren Γ Δ → Ren (Γ , τ) (Δ , τ)
+
+_∘ʳ_ : ∀ {Γ Δ Θ} → Ren Γ Δ → Ren Δ Θ → Ren Γ Θ
+stop   ∘ʳ ρ      = ρ
+drop σ ∘ʳ ρ      = drop (σ ∘ʳ ρ)
+keep σ ∘ʳ stop   = keep σ
+keep σ ∘ʳ drop ρ = drop (σ ∘ʳ ρ)
+keep σ ∘ʳ keep ρ = keep (σ ∘ʳ ρ)
+
+private
+  same-cx : Cx → Cx → Prop (o ⊔ ℓ)
+  same-cx ∅       ∅ = el! (Lift _ ⊤)
+  same-cx ∅       _ = el! (Lift _ ⊥)
+  same-cx (Γ , τ) (Δ , σ) = el! (⌞ same-cx Γ Δ ⌟ × ⌞ same-ty τ σ ⌟)
+  same-cx (Γ , τ) _       = el! (Lift _ ⊥)
+
+  from-same-cx : ∀ Γ Γ' → ⌞ same-cx Γ Γ' ⌟ → Γ ≡ Γ'
+  from-same-cx ∅       ∅        p = refl
+  from-same-cx (Γ , x) (Γ' , y) p = ap₂ _,_ (from-same-cx Γ Γ' (p .fst)) (from-same-ty x y (p .snd))
+
+  refl-same-cx : ∀ Γ → ⌞ same-cx Γ Γ ⌟
+  refl-same-cx ∅       = lift tt
+  refl-same-cx (Γ , x) = (refl-same-cx Γ) , (refl-same-ty x)
+
+  same-ren
+    : ∀ {Γ' Δ'} (p : ⌞ same-cx Γ Γ' ⌟) (q : ⌞ same-cx Δ Δ' ⌟)
+    → Ren Γ Δ → Ren Γ' Δ' → Prop (o ⊔ ℓ)
+
+  same-ren p q stop stop         = el! (Lift _ ⊤)
+  same-ren p q (drop x) (drop y) = same-ren (p .fst) q x y
+  same-ren p q (keep x) (keep y) = same-ren (p .fst) (q .fst) x y
+
+  same-ren p q stop (drop y)     = el! (Lift _ ⊥)
+  same-ren p q stop (keep y)     = el! (Lift _ ⊥)
+  same-ren p q (drop x) stop     = el! (Lift _ ⊥)
+  same-ren p q (drop x) (keep y) = el! (Lift _ ⊥)
+  same-ren p q (keep x) stop     = el! (Lift _ ⊥)
+  same-ren p q (keep x) (drop y) = el! (Lift _ ⊥)
+
+  from-same-ren
+    : ∀ {Γ Δ Γ' Δ'} (p : ⌞ same-cx Γ Γ' ⌟) (q : ⌞ same-cx Δ Δ' ⌟) x y
+    → ⌞ same-ren p q x y ⌟
+    → PathP (λ i → Ren (from-same-cx Γ Γ' p i) (from-same-cx Δ Δ' q i)) x y
+  from-same-ren {Γ = Γ} {Γ' = Γ'} p q stop stop α =
+    is-set→cast-pathp {x = Γ , Γ} {y = Γ' , Γ'} {from-same-cx _ _ p ,ₚ _} {_ ,ₚ _}
+      (uncurry Ren) (hlevel 2) λ i → stop
+  from-same-ren p q (drop x) (drop y) α = λ i → drop (from-same-ren _ _ x y α i)
+  from-same-ren {Γ , τ} {Δ , τ} {Γ' , τ'} {Δ' , τ'} p q (keep x) (keep y) α =
+    is-set→cast-pathp {x = _} {y = _} {from-same-cx _ _ (p .fst , q .snd) ,ₚ from-same-cx (Δ , τ) (Δ' , τ') q} {_ ,ₚ _}
+      (uncurry Ren) (hlevel 2) λ i → keep (from-same-ren _ _ x y α i)
+
+  refl-same-ren : ∀ {Γ Δ} (x : Ren Γ Δ) → ⌞ same-ren (refl-same-cx Γ) (refl-same-cx Δ) x x ⌟
+  refl-same-ren stop     = lift tt
+  refl-same-ren (drop x) = refl-same-ren x
+  refl-same-ren (keep x) = refl-same-ren x
+
+instance
+  H-Level-Ren : ∀ {n} → H-Level (Ren Γ Δ) (2 + n)
+  H-Level-Ren {Γ} {Δ} = basic-instance 2 $
+    set-identity-system→hlevel
+      (λ x y → ⌞ same-ren (refl-same-cx Γ) (refl-same-cx Δ) x y ⌟)
+      refl-same-ren
+      (λ x y → hlevel 1)
+      (λ x y p → is-set→cast-pathp {x = Γ , Δ} {y = Γ , Δ} {_ ,ₚ _} {refl} (uncurry Ren) (hlevel 2)
+        (from-same-ren (refl-same-cx Γ) (refl-same-cx Δ) x y p))
+
+ren-idr : (ρ : Ren Δ Θ) → ρ ∘ʳ stop ≡ ρ
+ren-idr stop     = refl
+ren-idr (drop ρ) = ap drop (ren-idr ρ)
+ren-idr (keep ρ) = refl
+
+Rens : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
+Rens .Precategory.Ob          = Cx
+Rens .Precategory.Hom         = Ren
+Rens .Precategory.Hom-set X Y = hlevel 2
+Rens .Precategory.id  = stop
+Rens .Precategory._∘_ f g = g ∘ʳ f
+Rens .Precategory.idr f = refl
+Rens .Precategory.idl f = ren-idr f
+Rens .Precategory.assoc f g h = assc f g h where
+  assc
+    : ∀ {w x y z} (f : Ren y z) (g : Ren x y) (h : Ren w x)
+    → ((h ∘ʳ g) ∘ʳ f) ≡ (h ∘ʳ (g ∘ʳ f))
+  assc f g stop = refl
+  assc f g (drop h) = ap drop (assc f g h)
+  assc f stop (keep h) = refl
+  assc f (drop g) (keep h) = ap drop (assc f g h)
+  assc stop (keep g) (keep h) = refl
+  assc (drop f) (keep g) (keep h) = ap drop (assc f g h)
+  assc (keep f) (keep g) (keep h) = ap keep (assc f g h)
+
+data Var : Cx → Ty → Type (o ⊔ ℓ) where
+  stop : Var (Γ , τ) τ
+  pop  : Var Γ τ → Var (Γ , σ) τ
+
+ren-var : ∀ {Γ Δ τ} → Ren Γ Δ → Var Δ τ → Var Γ τ
+ren-var stop     v       = v
+ren-var (drop σ) v       = pop (ren-var σ v)
+ren-var (keep σ) stop    = stop
+ren-var (keep σ) (pop v) = pop (ren-var σ v)
+
+data Nf : Cx → Ty → Type (o ⊔ ℓ)
+data Ne : Cx → Ty → Type (o ⊔ ℓ)
+
+data Nf where
+  lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  unit :                      Nf Γ `⊤
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
+
+data Ne where
+  var  : Var Γ τ       → Ne Γ τ
+  app  : Ne Γ (τ `⇒ σ) → Nf Γ τ → Ne Γ σ
+  fstₙ : Ne Γ (τ `× σ) → Ne Γ τ
+  sndₙ : Ne Γ (τ `× σ) → Ne Γ σ
+  hom  : ∀ {a b} → Edge a b → Nf Γ (` a) → Ne Γ (` b)
+
+private
+  same-var : ∀ {Γ' τ'} → ⌞ same-cx Γ Γ' ⌟ → ⌞ same-ty τ τ' ⌟ → Var Γ τ → Var Γ' τ' → Prop (o ⊔ ℓ)
+  same-var q p stop    stop    = el! (Lift _ ⊤)
+  same-var q p stop    _       = el! (Lift _ ⊥)
+  same-var q p (pop x) (pop y) = same-var (q .fst) p x y
+  same-var q p (pop x) _       = el! (Lift _ ⊥)
+
+  from-same-var
+    : ∀ {Γ' τ'} (p : ⌞ same-cx Γ Γ' ⌟) (q : ⌞ same-ty τ τ' ⌟) x y
+    → ⌞ same-var p q x y ⌟
+    → PathP (λ i → Var (from-same-cx Γ Γ' p i) (from-same-ty τ τ' q i)) x y
+  from-same-var {Γ = Γ , τ} {τ = τ} {Γ' , τ'} {τ'} p q stop    stop    α =
+    subst (λ e → PathP (λ i → Var (from-same-cx Γ Γ' (p .fst) i , from-same-ty τ τ' (p .snd) i) (from-same-ty τ τ' e i)) stop stop)
+      {x = p .snd} {y = q} prop!
+      λ i → stop
+  from-same-var p q (pop x) (pop y) α = λ i → Var.pop (from-same-var (p .fst) q x y α i)
+
+  same-ne  : ∀ {Γ' τ'} → ⌞ same-cx Γ Γ' ⌟ → ⌞ same-ty τ τ' ⌟ → Ne  Γ τ → Ne  Γ' τ' → Prop (o ⊔ ℓ)
+  same-nf  : ∀ {Γ' τ'} → ⌞ same-cx Γ Γ' ⌟ → ⌞ same-ty τ τ' ⌟ → Nf  Γ τ → Nf  Γ' τ' → Prop (o ⊔ ℓ)
+
+  same-nf q p unit       unit       = el! (Lift _ ⊤)
+  same-nf q p unit       _          = el! (Lift _ ⊥)
+  same-nf q p (lam x)    (lam y)    = same-nf (q , p .fst) (p .snd) x y
+  same-nf q p (lam x)    _          = el! (Lift _ ⊥)
+  same-nf q p (pair a b) (pair x y) = el! (⌞ same-nf q (p .fst) a x ⌟ × ⌞ same-nf q (p .snd) b y ⌟)
+  same-nf q p (pair a b) _          = el! (Lift _ ⊥)
+  same-nf q p (ne x)     (ne y)     = same-ne q p x y
+  same-nf q p (ne x)     _          = el! (Lift _ ⊥)
+
+  same-ne {Γ = Γ} {τ = τ} {Γ'} {τ'} q p (var x) (var y) = same-var q p x y
+  same-ne _ _ (var x)   _         = el! (Lift _ ⊥)
+
+  same-ne {Γ = Γ} q p (app {τ = τ} f x) (app {τ = σ} g y) = el! (
+    Σ[ r ∈ same-ty τ σ ] (⌞ same-ne q (r , p) f g ⌟ × ⌞ same-nf q r x y ⌟))
+  same-ne _ _ (app f x) _         = el! (Lift _ ⊥)
+
+  same-ne q p (fstₙ {σ = τ} x) (fstₙ {σ = σ} y) = el! (
+    Σ[ r ∈ same-ty τ σ ] ⌞ same-ne q (p , r) x y ⌟)
+  same-ne _ _ (fstₙ x)  _         = el! (Lift _ ⊥)
+
+  same-ne q p (sndₙ {τ = τ} x) (sndₙ {τ = σ} y) = el! (
+    Σ[ r ∈ same-ty τ σ ] ⌞ same-ne q (r , p) x y ⌟)
+  same-ne _ _ (sndₙ x)  _         = el! (Lift _ ⊥)
+
+  same-ne q p (hom {a = τ} x a) (hom {a = σ} y b) = el! (
+    Σ[ r ∈ τ ≡ σ ]
+      ( PathP (λ i → Edge (r i) (p i)) x y
+      × ⌞ same-nf q r a b ⌟
+      ))
+  same-ne _ _ (hom x a) _         = el! (Lift _ ⊥)
+
+  from-same-ne
+    : ∀ {Γ' τ'} (p : ⌞ same-cx Γ Γ' ⌟) (q : ⌞ same-ty τ τ' ⌟) x y
+    → ⌞ same-ne p q x y ⌟
+    → PathP (λ i → Ne (from-same-cx Γ Γ' p i) (from-same-ty τ τ' q i)) x y
+  from-same-nf
+    : ∀ {Γ' τ'} (p : ⌞ same-cx Γ Γ' ⌟) (q : ⌞ same-ty τ τ' ⌟) x y
+    → ⌞ same-nf p q x y ⌟
+    → PathP (λ i → Nf (from-same-cx Γ Γ' p i) (from-same-ty τ τ' q i)) x y
+
+  from-same-ne p q (var x)   (var y)   α = λ i → var (from-same-var _ _ x y α i)
+  from-same-ne p q (app f x) (app g y) α = λ i → app (from-same-ne _ _ f g (α .snd .fst) i) (from-same-nf _ _ x y (α .snd .snd) i)
+  from-same-ne p q (fstₙ x)  (fstₙ y)  α = λ i → fstₙ (from-same-ne _ _ x y (α .snd) i)
+  from-same-ne p q (sndₙ x)  (sndₙ y)  α = λ i → sndₙ (from-same-ne _ _ x y (α .snd) i)
+  from-same-ne p q (hom f x) (hom g y) α = λ i → hom (α .snd .fst i) (from-same-nf _ _ x y (α .snd .snd) i)
+
+  from-same-nf p q (lam x)    (lam y)    α = λ i → lam (from-same-nf _ _ x y α i)
+  from-same-nf p q (pair a b) (pair x y) α = λ i → pair (from-same-nf _ _ a x (α .fst) i) (from-same-nf _ _ b y (α .snd) i)
+  from-same-nf p q unit       unit       α = λ i → unit
+  from-same-nf p q (ne x)     (ne y)     α = λ i → ne (from-same-ne p q x y α i)
+
+  refl-same-var : (v : Var Γ τ) → ⌞ same-var (refl-same-cx Γ) (refl-same-ty τ) v v ⌟
+  refl-same-var stop    = lift tt
+  refl-same-var (pop v) = refl-same-var v
+
+  refl-same-ne : (v : Ne Γ τ) → ⌞ same-ne (refl-same-cx Γ) (refl-same-ty τ) v v ⌟
+  refl-same-nf : (v : Nf Γ τ) → ⌞ same-nf (refl-same-cx Γ) (refl-same-ty τ) v v ⌟
+  refl-same-ne (var x)            = refl-same-var x
+  refl-same-ne (app  {τ = τ} v x) = refl-same-ty τ , refl-same-ne v , refl-same-nf x
+  refl-same-ne (fstₙ {σ = σ} v)   = refl-same-ty σ , refl-same-ne v
+  refl-same-ne (sndₙ {τ = τ} v)   = refl-same-ty τ , refl-same-ne v
+  refl-same-ne (hom x v)          = refl , refl , refl-same-nf v
+
+  refl-same-nf (lam x)    = refl-same-nf x
+  refl-same-nf (pair a b) = refl-same-nf a , refl-same-nf b
+  refl-same-nf unit       = lift tt
+  refl-same-nf (ne x)     = refl-same-ne x
+
+instance
+  H-Level-Var : ∀ {n} → H-Level (Var Γ τ) (2 + n)
+  H-Level-Var {Γ} {τ} = basic-instance 2 $
+    set-identity-system→hlevel
+      (λ x y → ⌞ same-var (refl-same-cx Γ) (refl-same-ty τ) x y ⌟)
+      refl-same-var
+      (λ x y → hlevel 1)
+      (λ x y p → is-set→cast-pathp {x = Γ , τ} {y = Γ , τ} {_ ,ₚ _} {refl} (uncurry Var) (hlevel 2)
+        (from-same-var (refl-same-cx Γ) (refl-same-ty τ) x y p))
+
+  H-Level-Nf : ∀ {n} → H-Level (Nf Γ τ) (2 + n)
+  H-Level-Nf {Γ} {τ} = basic-instance 2 $
+    set-identity-system→hlevel
+      (λ x y → ⌞ same-nf (refl-same-cx Γ) (refl-same-ty τ) x y ⌟)
+      refl-same-nf
+      (λ x y → hlevel 1)
+      (λ x y p → is-set→cast-pathp {x = Γ , τ} {y = Γ , τ} {_ ,ₚ _} {refl} (uncurry Nf) (hlevel 2)
+        (from-same-nf (refl-same-cx Γ) (refl-same-ty τ) x y p))
+
+  H-Level-Ne : ∀ {n} → H-Level (Ne Γ τ) (2 + n)
+  H-Level-Ne {Γ} {τ} = basic-instance 2 $
+    set-identity-system→hlevel
+      (λ x y → ⌞ same-ne (refl-same-cx Γ) (refl-same-ty τ) x y ⌟)
+      refl-same-ne
+      (λ x y → hlevel 1)
+      (λ x y p → is-set→cast-pathp {x = Γ , τ} {y = Γ , τ} {_ ,ₚ _} {refl} (uncurry Ne) (hlevel 2)
+        (from-same-ne (refl-same-cx Γ) (refl-same-ty τ) x y p))
+
+ren-ne  : ∀ {Γ Δ τ} → Ren Δ Γ → Ne Γ τ → Ne Δ τ
+ren-nf  : ∀ {Γ Δ τ} → Ren Δ Γ → Nf Γ τ → Nf Δ τ
+
+ren-ne σ (var v)   = var  (ren-var σ v)
+ren-ne σ (app f a) = app  (ren-ne σ f) (ren-nf σ a)
+ren-ne σ (fstₙ a)  = fstₙ (ren-ne σ a)
+ren-ne σ (sndₙ a)  = sndₙ (ren-ne σ a)
+ren-ne σ (hom s a) = hom s (ren-nf σ a)
+
+ren-nf σ (lam n)    = lam  (ren-nf (keep σ) n)
+ren-nf σ (pair a b) = pair (ren-nf σ a) (ren-nf σ b)
+ren-nf σ (ne x)     = ne   (ren-ne σ x)
+ren-nf σ unit       = unit
+
+⟦_⟧ᶜ : Cx → Ty
+⟦ ∅     ⟧ᶜ = `⊤
+⟦ Γ , x ⟧ᶜ = ⟦ Γ ⟧ᶜ `× x
+
+⟦_⟧ⁿ : Var Γ τ → Mor ⟦ Γ ⟧ᶜ τ
+⟦ stop  ⟧ⁿ = `π₂
+⟦ pop x ⟧ⁿ = ⟦ x ⟧ⁿ `∘ `π₁
+
+⟦_⟧ʳ : Ren Γ Δ → Mor ⟦ Γ ⟧ᶜ ⟦ Δ ⟧ᶜ
+⟦ stop   ⟧ʳ = `id
+⟦ drop r ⟧ʳ = ⟦ r ⟧ʳ `∘ `π₁
+⟦ keep r ⟧ʳ = ⟦ r ⟧ʳ `∘ `π₁ `, `π₂
+
+⟦_⟧ₙ  : Nf Γ τ → Mor ⟦ Γ ⟧ᶜ τ
+⟦_⟧ₛ  : Ne Γ τ → Mor ⟦ Γ ⟧ᶜ τ
+
+⟦ lam h    ⟧ₙ = `ƛ ⟦ h ⟧ₙ
+⟦ pair a b ⟧ₙ = ⟦ a ⟧ₙ `, ⟦ b ⟧ₙ
+⟦ ne x     ⟧ₙ = ⟦ x ⟧ₛ
+⟦ unit     ⟧ₙ = `!
+
+⟦ var x   ⟧ₛ = ⟦ x ⟧ⁿ
+⟦ app f x ⟧ₛ = `ev `∘ (⟦ f ⟧ₛ `, ⟦ x ⟧ₙ)
+⟦ fstₙ h  ⟧ₛ = `π₁ `∘ ⟦ h ⟧ₛ
+⟦ sndₙ h  ⟧ₛ = `π₂ `∘ ⟦ h ⟧ₛ
+⟦ hom s h ⟧ₛ = (` s) `∘ ⟦ h ⟧ₙ
+
+ren-⟦⟧ⁿ : (ρ : Ren Δ Γ) (v : Var Γ τ) → ⟦ ren-var ρ v ⟧ⁿ ≡ ⟦ v ⟧ⁿ `∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ₛ : (ρ : Ren Δ Γ) (t : Ne Γ τ)  → ⟦ ren-ne ρ t  ⟧ₛ ≡ ⟦ t ⟧ₛ `∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ₙ : (ρ : Ren Δ Γ) (t : Nf Γ τ)  → ⟦ ren-nf ρ t  ⟧ₙ ≡ ⟦ t ⟧ₙ `∘ ⟦ ρ ⟧ʳ
+
+ren-⟦⟧ⁿ stop v           = Syn.intror refl
+ren-⟦⟧ⁿ (drop ρ) v       = Syn.pushl (ren-⟦⟧ⁿ ρ v)
+ren-⟦⟧ⁿ (keep ρ) stop    = sym (Syn.π₂∘⟨⟩) -- sym (Syn.π₂∘⟨⟩ ∙ Syn.idl _)
+ren-⟦⟧ⁿ (keep ρ) (pop v) = Syn.pushl (ren-⟦⟧ⁿ ρ v) ∙ sym (Syn.pullr Syn.π₁∘⟨⟩)
+
+ren-⟦⟧ₛ ρ (var x) = ren-⟦⟧ⁿ ρ x
+ren-⟦⟧ₛ ρ (app f x) = ap₂ _`∘_ refl
+  (ap₂ _`,_ (ren-⟦⟧ₛ ρ f) (ren-⟦⟧ₙ ρ x) ∙ sym (Syn.⟨⟩∘ _))
+  ∙ Syn.pulll refl
+ren-⟦⟧ₛ ρ (fstₙ t)  = Syn.pushr (ren-⟦⟧ₛ ρ t)
+ren-⟦⟧ₛ ρ (sndₙ t)  = Syn.pushr (ren-⟦⟧ₛ ρ t)
+ren-⟦⟧ₛ ρ (hom x a) = Syn.pushr (ren-⟦⟧ₙ ρ a)
+
+ren-⟦⟧ₙ ρ (lam t) =
+    ap `ƛ (ren-⟦⟧ₙ (keep ρ) t)
+  ∙ sym (Cartesian-closed.unique free-cc _ (ap₂ _`∘_ refl rem₁ ∙ Syn.pulll `ƛβ ∙ ap₂ _`∘_ refl (ap₂ _`,_ refl `idl)))
+  where
+  rem₁ : (⟦ lam t ⟧ₙ `∘ ⟦ ρ ⟧ʳ) Syn.⊗₁ `id ≡ (⟦ lam t ⟧ₙ Syn.⊗₁ `id) `∘ ⟦ ρ ⟧ʳ Syn.⊗₁ `id
+  rem₁ = Bifunctor.first∘first Syn.×-functor
+
+ren-⟦⟧ₙ ρ (pair a b) = ap₂ _`,_ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (Syn.⟨⟩∘ _)
+ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
+ren-⟦⟧ₙ ρ unit   = `!-η _
+
+Sem : Type _
+Sem = ⌞ PSh (o ⊔ ℓ) Rens ⌟
+
+module _ where
+  open Functor
+
+  Ren↪Ctx : Functor Rens Free-ccc
+  Ren↪Ctx .F₀   = ⟦_⟧ᶜ
+  Ren↪Ctx .F₁   = ⟦_⟧ʳ
+  Ren↪Ctx .F-id = refl
+  Ren↪Ctx .F-∘ f g = go g f where
+    go : ∀ {Γ Δ Θ} (f : Ren Γ Δ) (g : Ren Δ Θ) → ⟦ f ∘ʳ g ⟧ʳ ≡ ⟦ g ⟧ʳ `∘ ⟦ f ⟧ʳ
+    go stop     g        = sym `idr
+    go (drop f) g        = Syn.pushl (go f g)
+    go (keep f) stop     = sym `idl
+    go (keep f) (drop g) = Syn.pushl (go f g) ∙ sym (Syn.pullr `π₁β)
+    go (keep f) (keep g) = sym (Product.unique (free-prods _ _) (Syn.pulll `π₁β ∙ Syn.pullr `π₁β ∙ Syn.pulll (sym (go f g))) (Syn.pulll `π₂β ∙ `π₂β))
+
+private module Ren↪Ctx = Functor Ren↪Ctx
+
+Tm : Functor Free-ccc (PSh (o ⊔ ℓ) Rens)
+Tm = Nerve Ren↪Ctx
+
+module
+  _ {o' ℓ'} {D : Displayed Free-ccc o' ℓ'} (open Cat.Displayed.Reasoning D)
+    (cart : Cartesian-over D free-cartesian)
+    (cco  : Cartesian-closed-over D cart free-cc)
+    (f : (x : Node) → D ʻ (` x))
+    (h : {x y : Node} (e : Edge x y) → Hom[ (` e) ] (f x) (f y))
+  where
+
+  open Cartesian-closed-over D cart {free-cc} cco
+  open Cartesian-over cart
+
+  private
+    go₀ : (x : Ty) → D ʻ x
+    go₀ `⊤       = terminal' .TerminalP.top'
+    go₀ (` x)    = f x
+    go₀ (τ `× σ) = go₀ τ ⊗₀' go₀ σ
+    go₀ (τ `⇒ σ) = [ go₀ τ , go₀ σ ]'
+
+    go : ∀ {x y} (m : Mor x y) → Hom[ m ] (go₀ x) (go₀ y)
+    go (` x)     = h x
+    go `id       = id'
+    go (f `∘ g) = go f ∘' go g
+    go (`idr {f = f} i) = idr' (go f) i
+    go (`idl {f = f} i) = idl' (go f) i
+    go (`assoc {f = f} {g = g} {h = h} i) = assoc' (go f) (go g) (go h) i
+
+    go `!         = !'
+    go (`!-η e i) = !'-unique₂ {h = !'} {h' = go e} {p = `!-η e} i
+
+    go `π₁        = π₁'
+    go `π₂        = π₂'
+    go (f `, g)   = ⟨ go f , go g ⟩'
+
+    go (`π₁β {f = f} {g = g} i) = π₁∘⟨⟩' {f' = go f} {g' = go g} i
+    go (`π₂β {f = f} {g = g} i) = π₂∘⟨⟩' {f' = go f} {g' = go g} i
+
+    go (`πη {f = f} i) = want i where
+      have : PathP (λ i → Hom[ Syn.⟨⟩-unique refl refl i ] _ _) (go f) ⟨ π₁' ∘' go f , π₂' ∘' go f ⟩'
+      have = ⟨⟩'-unique {other' = go f} refl refl
+
+      want : PathP (λ i → Hom[ `πη i ] _ _) (go f) ⟨ π₁' ∘' go f , π₂' ∘' go f ⟩'
+      want = cast[] have
+
+    go `ev     = ev'
+    go (`ƛ  e) = ƛ' (go e)
+    go (`ƛβ {f = f} i) = want i where
+      want : PathP (λ i → Hom[ `ƛβ {f = f} i ] _ _) (ev' ∘' ⟨ ƛ' (go f) ∘' π₁' , id' ∘' π₂' ⟩') (go f)
+      want = cast[] (commutes' (go f))
+    go (`ƛη {f = f} i) = want i where
+      want : PathP (λ i → Hom[ `ƛη {f = f} i ] _ _) (go f) (ƛ' (ev' ∘' ⟨ go f ∘' π₁' , id' ∘' π₂' ⟩'))
+      want = cast[] (ƛ'-unique {p = refl} (go f) refl)
+
+    go (squash x y p q i j) = is-set→squarep (λ i j → Hom[ squash x y p q i j ]-set (go₀ _) (go₀ _)) (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
+
+  open Section
+  Free-ccc-elim : Section D
+  Free-ccc-elim .S₀      = go₀
+  Free-ccc-elim .S₁      = go
+  Free-ccc-elim .S-id    = refl
+  Free-ccc-elim .S-∘ f g = refl
+
+open Pl (o ⊔ ℓ) Rens
+open Pe Rens
+private module Sem = Cartesian-category {C = PSh (o ⊔ ℓ) Rens} PSh-cartesian
+
+open Cartesian-functor using (×-comparison-is-iso ; pres-terminal)
+
+Tm-cartesian : Cartesian-functor Tm free-cartesian PSh-cartesian
+Tm-cartesian .×-comparison-is-iso a b = Cat.Reasoning.make-invertible (PSh (o ⊔ ℓ) Rens)
+  (NT (elim! (λ a p q → p `, q)) λ x y f → ext λ p q → sym (Syn.⟨⟩∘ _))
+  (ext (λ i a b → `π₁β ,ₚ `π₂β))
+  (ext (λ i x → sym `πη))
+Tm-cartesian .pres-terminal x .centre  = NT (λ _ _ → `!) (λ x y f → ext λ a → `!-η _)
+Tm-cartesian .pres-terminal x .paths a = ext λ i x → `!-η _
+
+open Glu PSh-cartesian free-cartesian Tm-cartesian
+
+private module Tm = Functor Tm
+
+ren-var-∘ʳ : ∀ {Γ Δ Θ} (ρ : Ren Γ Δ) (σ : Ren Δ Θ) (x : Var Θ τ) → ren-var (ρ ∘ʳ σ) x ≡ ren-var ρ (ren-var σ x)
+ren-var-∘ʳ ρ        stop     x       = ap (λ e → ren-var e x) (ren-idr ρ)
+ren-var-∘ʳ stop     (drop σ) x       = refl
+ren-var-∘ʳ (drop ρ) (drop σ) x       = ap pop (ren-var-∘ʳ ρ (drop σ) x)
+ren-var-∘ʳ (keep ρ) (drop σ) x       = ap pop (ren-var-∘ʳ ρ σ x)
+ren-var-∘ʳ stop     (keep σ) x       = refl
+ren-var-∘ʳ (drop ρ) (keep σ) x       = ap pop (ren-var-∘ʳ ρ (keep σ) x)
+ren-var-∘ʳ (keep ρ) (keep σ) stop    = refl
+ren-var-∘ʳ (keep ρ) (keep σ) (pop x) = ap pop (ren-var-∘ʳ ρ σ x)
+
+ren-nf-∘ʳ : ∀ {Γ Δ Θ} (ρ : Ren Γ Δ) (σ : Ren Δ Θ) (x : Nf Θ τ) → ren-nf (ρ ∘ʳ σ) x ≡ ren-nf ρ (ren-nf σ x)
+ren-ne-∘ʳ : ∀ {Γ Δ Θ} (ρ : Ren Γ Δ) (σ : Ren Δ Θ) (x : Ne Θ τ) → ren-ne (ρ ∘ʳ σ) x ≡ ren-ne ρ (ren-ne σ x)
+
+ren-nf-∘ʳ ρ σ (lam x)    = ap lam (ren-nf-∘ʳ (keep ρ) (keep σ) x)
+ren-nf-∘ʳ ρ σ (pair a b) = ap₂ pair (ren-nf-∘ʳ ρ σ a) (ren-nf-∘ʳ ρ σ b)
+ren-nf-∘ʳ ρ σ unit       = refl
+ren-nf-∘ʳ ρ σ (ne x)     = ap ne (ren-ne-∘ʳ ρ σ x)
+ren-ne-∘ʳ ρ σ (var x)    = ap var (ren-var-∘ʳ ρ σ x)
+ren-ne-∘ʳ ρ σ (app f x)  = ap₂ app (ren-ne-∘ʳ ρ σ f) (ren-nf-∘ʳ ρ σ x)
+ren-ne-∘ʳ ρ σ (fstₙ x)   = ap fstₙ (ren-ne-∘ʳ ρ σ x)
+ren-ne-∘ʳ ρ σ (sndₙ x)   = ap sndₙ (ren-ne-∘ʳ ρ σ x)
+ren-ne-∘ʳ ρ σ (hom n x)  = ap (hom n) (ren-nf-∘ʳ ρ σ x)
+
+data Keep : Cx → Cx → Type (o ⊔ ℓ) where
+  stop : Keep Γ Γ
+  keep : Keep Γ Δ → Keep (Γ , τ) (Δ , τ)
+
+keep→ren : Keep Γ Δ → Ren Γ Δ
+keep→ren stop     = stop
+keep→ren (keep x) = keep (keep→ren x)
+
+keep→ctx : Keep Γ Δ → Δ ≡ Γ
+keep→ctx stop     = refl
+keep→ctx (keep x) = ap₂ Cx._,_ (keep→ctx x) refl
+
+ren-var-stop : (ρ : Keep Γ Δ) (x : Var Δ τ) → PathP (λ i → Var (keep→ctx ρ (~ i)) τ) (ren-var (keep→ren ρ) x) x
+ren-var-stop stop     x       = refl
+ren-var-stop (keep ρ) stop    i = stop
+ren-var-stop (keep ρ) (pop x) i = pop (ren-var-stop ρ x i)
+
+ren-nf-stop  : (ρ : Keep Γ Γ) (x : Nf Γ τ) → ren-nf (keep→ren ρ) x ≡ x
+ren-ne-stop  : (ρ : Keep Γ Γ) (x : Ne Γ τ) → ren-ne (keep→ren ρ) x ≡ x
+
+ren-nf-stop ρ (lam x)    = ap lam (ren-nf-stop (keep ρ) x)
+ren-nf-stop ρ (pair a b) = ap₂ pair (ren-nf-stop ρ a) (ren-nf-stop ρ b)
+ren-nf-stop ρ unit       = refl
+ren-nf-stop ρ (ne x)     = ap ne (ren-ne-stop ρ x)
+ren-ne-stop {τ = τ} ρ (var x)    = ap var (from-pathp⁻ (ren-var-stop ρ x) ∙ ap (λ e → subst (λ x → Var x τ) e x) {x = keep→ctx ρ} {y = refl} prop! ∙ transport-refl _)
+ren-ne-stop ρ (app f x)  = ap₂ app (ren-ne-stop ρ f) (ren-nf-stop ρ x)
+ren-ne-stop ρ (fstₙ x)   = ap fstₙ (ren-ne-stop ρ x)
+ren-ne-stop ρ (sndₙ x)   = ap sndₙ (ren-ne-stop ρ x)
+ren-ne-stop ρ (hom x n)  = ap (hom x) (ren-nf-stop ρ n)
+
+Nfs : Ty → Sem
+Nfs τ .F₀   Γ   = el! (Nf Γ τ)
+Nfs τ .F₁   ρ   = ren-nf ρ
+Nfs τ .F-id     = ext (ren-nf-stop stop)
+Nfs τ .F-∘  ρ σ = ext (ren-nf-∘ʳ ρ σ)
+
+rnf : Nfs τ => Tm.₀ τ
+rnf .η Γ σ = ⟦ σ ⟧ₙ
+rnf .is-natural x y f = ext (λ s → ren-⟦⟧ₙ f s)
+
+Nes : Ty → Sem
+Nes τ .F₀   Γ   = el! (Ne Γ τ)
+Nes τ .F₁   ρ   = ren-ne ρ
+Nes τ .F-id     = ext (ren-ne-stop stop)
+Nes τ .F-∘  ρ σ = ext (ren-ne-∘ʳ ρ σ)
+
+rne : Nes τ => Tm.₀ τ
+rne .η Γ σ = ⟦ σ ⟧ₛ
+rne .is-natural x y f = ext (λ s → ren-⟦⟧ₛ f s)
+
+eta : Ren Δ Γ → Ne Γ τ → Nf Δ τ
+eta {τ = `⊤}     ρ x = unit
+eta {τ = ` x₁}   ρ x = ne (ren-ne ρ x)
+eta {τ = τ `× σ} ρ x = pair (eta ρ (fstₙ x)) (eta ρ (sndₙ x))
+eta {τ = τ `⇒ σ} ρ x = lam (eta (keep ρ) (app (ren-ne (drop stop) x) (eta stop (var stop))))
+
+eta-⟦⟧ : (ρ : Ren Δ Γ) (n : Ne Γ τ) → ⟦ eta ρ n ⟧ₙ ≡ (⟦ n ⟧ₛ `∘ ⟦ ρ ⟧ʳ)
+eta-⟦⟧ {τ = `⊤}     ρ n = `!-η _
+eta-⟦⟧ {τ = ` x}    ρ n = ren-⟦⟧ₛ ρ n
+eta-⟦⟧ {τ = τ `× σ} ρ n = ap₂ _`,_ (eta-⟦⟧ ρ (fstₙ n)) (eta-⟦⟧ ρ (sndₙ n)) ∙ sym (Syn.⟨⟩∘ _) ∙ ap₂ _`∘_ (sym `πη) refl
+eta-⟦⟧ {τ = τ `⇒ σ} ρ n =
+  ap `ƛ (eta-⟦⟧ (keep ρ) (app (ren-ne (drop stop) n) (eta stop (var stop))))
+  ∙ ap₂ (λ a b → `ƛ ((`ev `∘ (a `, b)) `∘ (⟦ ρ ⟧ʳ `∘ `π₁ `, `π₂))) (ren-⟦⟧ₛ (drop stop) n) (eta-⟦⟧ stop (var stop))
+  ∙ ap (λ e → `ƛ e) (Syn.pullr (Syn.⟨⟩-unique (Syn.pulll `π₁β ∙ Syn.pullr (ap₂ _`∘_ `idl refl ∙ `π₁β) ∙ Syn.pulll refl) (Syn.pulll `π₂β ∙ Syn.pullr `idl ∙ `π₂β ∙ sym `idl))) ∙ sym `ƛη
+
+ren-eta : (ρ : Ren Γ Δ) (σ : Ren Δ Θ) (x : Ne _ τ) → eta ρ (ren-ne σ x) ≡ ren-nf ρ (eta σ x)
+ren-eta {τ = `⊤}     ρ δ x = refl
+ren-eta {τ = ` e}    ρ δ x = refl
+ren-eta {τ = τ `× σ} ρ δ x = ap₂ pair (ren-eta ρ δ (fstₙ x)) (ren-eta ρ δ (sndₙ x))
+ren-eta {τ = τ `⇒ σ} ρ δ x = ap lam (ap (eta (keep ρ))
+  ( ap₂ app
+    (  sym (ren-ne-∘ʳ (drop stop) δ x)
+    ∙∙ ap₂ ren-ne (ap drop (sym (ren-idr δ))) refl
+    ∙∙ ren-ne-∘ʳ (keep δ) (drop stop) x)
+    (  ren-eta stop (keep δ) (var stop)
+    ∙∙ ren-nf-stop stop (eta (keep δ) (var stop))
+    ∙∙ ren-eta (keep δ) stop (var stop)))
+  ∙ ren-eta (keep ρ) (keep δ) (app (ren-ne (drop stop) x) (eta stop (var stop))))
+
+sec : Section Gl
+sec = Free-ccc-elim Gl-cartesian (Gl-closed PSh-closed free-cc PSh-pullbacks)
+  (λ x₁ → cut (rnf {` x₁}))
+  λ e → (NT (λ Γ a → ne (hom e a)) (λ Γ Δ ρ → refl)) , ext (λ Γ a → refl)
+
+module sec = Section sec
+
+record Nfa {τ : Ty} (P : Gl ʻ τ) : Type (o ⊔ ℓ) where
+  field
+    reifies  : P .domain => Nfs τ
+    reflects : Nes τ => P .domain
+    comm₀ : P .map ∘nt reflects ≡ rne
+    comm₁ : P .map ≡ rnf ∘nt reifies
+
+  ⟦_⟧ₚ : ∀ {Γ} → P .domain ʻ Γ → Mor ⟦ Γ ⟧ᶜ τ
+  ⟦_⟧ₚ {Γ} x = P .map .η Γ x
+
+  reify : ∀ {Γ} → P .domain ʻ Γ → Nf Γ τ
+  reify = reifies .η _
+
+  reflect : ∀ {Γ} → Ne Γ τ → P .domain ʻ Γ
+  reflect = reflects .η _
+
+  reifyₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : P .domain ʻ Δ} → reify (P .domain ⟪ ρ ⟫ x) ≡ ren-nf ρ (reify x)
+  reifyₙ {Γ} {Δ} {ρ} {x} = reifies .is-natural Δ Γ ρ $ₚ x
+
+  reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : Ne Δ τ} → reflect (ren-ne ρ x) ≡ P .domain ⟪ ρ ⟫ (reflect x)
+  reflectₙ {Γ} {Δ} {ρ} {x} = reflects .is-natural Δ Γ ρ $ₚ x
+
+open Nfa
+
+atom-nfa : ∀ {x} → Nfa (sec.S₀ (` x))
+atom-nfa .reifies  = idnt
+atom-nfa .reflects = record where
+  η          Γ     = eta stop
+  is-natural Γ Δ ρ = ext (λ a → ren-eta stop ρ a ∙ ren-nf-stop stop (eta ρ a) ∙ ap (eta ρ) (sym (ren-ne-stop stop a)) ∙ ren-eta ρ stop a)
+atom-nfa .comm₀   = ext (λ i x → ap ⟦_⟧ₛ (ren-ne-stop stop x))
+atom-nfa .comm₁   = Sem.intror refl
+
+open Cartesian-closed-over Gl Gl-cartesian {free-cc} (Gl-closed PSh-closed free-cc PSh-pullbacks) using ([_,_]')
+
+prod-nfa : ∀ {τ σ x y} → Nfa {τ} x → Nfa {σ} y → Nfa (x ×Gl y)
+prod-nfa xnf ynf = record where
+  module x = Nfa xnf
+  module y = Nfa ynf
+
+  reifies  = record
+    { η          = λ Γ (a , b) → pair (x.reify a) (y.reify b)
+    ; is-natural = λ Γ Δ ρ     → ext (λ a b → ap₂ pair x.reifyₙ y.reifyₙ)
+    }
+
+  reflects = Sem.⟨
+      NT (λ Γ x → x.reflect (fstₙ x)) (λ x y f → ext λ a → x.reflectₙ)
+    , NT (λ Γ x → y.reflect (sndₙ x)) (λ x y f → ext λ a → y.reflectₙ)
+    ⟩
+
+  comm₀ = ext λ i x →
+      ap₂ _`,_ (unext x.comm₀ _ _) (unext y.comm₀ _ _)
+    ∙ sym (Syn.⟨⟩∘ _)
+    ∙ Syn.eliml (ap₂ _`,_ (sym `idr) (sym `idr) ∙ sym `πη)
+
+  comm₁ = ext λ i a b → ap₂  _`,_ (unext x.comm₁ _ _) (unext y.comm₁  _ _)
+
+arrow-nfa : ∀ {τ σ x y} → Nfa {τ} x → Nfa {σ} y → Nfa [ x , y ]'
+arrow-nfa {x = x} {y = y} xnf ynf = done where
+  module x = Nfa xnf
+  module y = Nfa ynf
+
+  done : Nfa [ x , y ]'
+  done .reifies   = record
+    { η          = λ Γ (_ , f , _) → lam (y.reify (f .η _ (drop stop , (x.reflect (var stop)))))
+    ; is-natural = λ Γ Δ ρ → ext λ x y p → ap Nf.lam
+      (ap y.reify (ap (λ e → y .η _ e) (ap drop (sym (ren-idr ρ)) ,ₚ x.reflectₙ)
+      ∙ (y .is-natural (Γ , _) (Δ , _) (keep ρ) ·ₚ (drop stop , _)))
+      ∙ y.reifyₙ)
+    }
+  done .reflects = record
+    { η          = λ Γ x →
+        ⟦ x ⟧ₛ
+      , NT (λ Δ (ρ , s) → y.reflect (app (ren-ne ρ x) (x.reify s)))
+           (λ Δ Θ ρ → ext λ σ s → ap y.reflect (ap₂ Ne.app (ren-ne-∘ʳ ρ σ x) x.reifyₙ) ∙ y.reflectₙ)
+      , ext λ Γ ρ s → sym (unext y.comm₀ _ _ ∙ ap₂ (λ a b → `ev `∘ (a `, b)) (ren-⟦⟧ₛ ρ x) (sym (unext x.comm₁ _ _)))
+    ; is-natural = λ Γ Δ ρ → ext (λ n → Σ-pathp (ren-⟦⟧ₛ ρ n) (Σ-prop-pathp! (ext (λ Θ σ s → ap y.reflect (ap₂ app (sym (ren-ne-∘ʳ σ ρ n)) refl)))))
+    }
+  done .comm₀ = ext λ Δ f → refl
+  done .comm₁ = ext λ Γ φ f α → sym (ap `ƛ (sym (unext y.comm₁ _ _) ∙ sym (unext α _ _ _) ∙ ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (unext x.comm₀ _ _ ∙ sym `idl)) ∙ sym `ƛη)
+
+normalisation : ∀ τ → Nfa {τ} (sec.S₀ τ)
+normalisation `⊤       = record
+  { reifies  = NT (λ Γ _ → unit) (λ Γ Δ ρ → refl)
+  ; reflects = Sem.!
+  ; comm₀    = ext λ _ _ → `!-η _
+  ; comm₁    = ext λ _ _ → refl
+  }
+normalisation (` x)    = atom-nfa
+normalisation (τ `× σ) = prod-nfa (normalisation τ) (normalisation σ)
+normalisation (τ `⇒ σ) = arrow-nfa (normalisation τ) (normalisation σ)
+
+nf : ∀ {x y : Ty} (e : Mor x y) → Σ[ n ∈ Nf (∅ , x) y ] e ≡ ⟦ n ⟧ₙ `∘ (`! `, `id)
+nf {x} {y} e = done , sym beta where
+  module x = Nfa (normalisation x)
+  module y = Nfa (normalisation y)
+
+  a0   = x.reflect {Γ = ∅ , x} (var stop)
+  e1   = sec.S₁ e .fst .η (∅ , x) a0
+  done = y.reify e1
+
+  abstract
+    sq : ⟦ done ⟧ₙ ≡ e `∘ `π₂
+    sq =
+      ⟦ done ⟧ₙ                                              ≡⟨ sym (unext y.comm₁ _ _) ⟩
+      y.⟦ sec.S₁ e .fst .η (∅ , x) (x.reflect (var stop)) ⟧ₚ ≡⟨ unext (sec.S₁ e .snd) _ _ ⟩
+      e `∘ x.⟦ x.reflect (var stop) ⟧ₚ                       ≡⟨ ap (e `∘_) (unext x.comm₀ _ _) ⟩
+      e `∘ `π₂                                               ∎
+
+    beta : ⟦ done ⟧ₙ `∘ (`! `, `id) ≡ e
+    beta = Syn.pushl sq ∙ Syn.elimr `π₂β
+
+module _ (A : Node) where
+  _ : nf {x = (` A) `× (` A)} {y = (` A) `× (` A)} `id .fst
+    ≡ pair (ne (fstₙ (var stop))) (ne (sndₙ (var stop)))
+  _ = refl
+```

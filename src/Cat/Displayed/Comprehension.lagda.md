@@ -25,9 +25,8 @@ module Cat.Displayed.Comprehension
 
 <!--
 ```agda
-open Cat.Reasoning B
 open Cat.Displayed.Reasoning E
-open Displayed E
+open Cat.Reasoning B
 open Slice-hom
 open Functor
 open _=>_

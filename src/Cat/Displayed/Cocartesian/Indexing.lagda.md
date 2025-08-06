@@ -20,7 +20,6 @@ module Cat.Displayed.Cocartesian.Indexing
 <!--
 ```agda
 open Precategory ℬ
-open Displayed ℰ
 open Cat.Displayed.Reasoning ℰ
 open Cocartesian-fibration ℰ opfibration
 open Functor

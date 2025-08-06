@@ -123,7 +123,6 @@ module _
   (E : Displayed B o' ℓ')
   where
   open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
 ```
 -->
@@ -158,7 +157,6 @@ module _
   {E : Displayed B o' ℓ'}
   where
   open Cat.Reasoning B
-  open Displayed E
 
   open Cat.Displayed.Reasoning E
   open Cat.Displayed.Morphism E
@@ -682,7 +680,6 @@ module _
   (E : Displayed B o' ℓ')
   where
   open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
 ```
 -->

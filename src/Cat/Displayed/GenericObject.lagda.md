@@ -19,10 +19,9 @@ module Cat.Displayed.GenericObject
 
 <!--
 ```agda
-open Precategory B
-open Cat.Displayed.Morphism E
 open Cat.Displayed.Reasoning E
-open Displayed E
+open Cat.Displayed.Morphism E
+open Precategory B
 open Functor
 ```
 -->

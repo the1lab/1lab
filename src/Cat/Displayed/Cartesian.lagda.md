@@ -13,9 +13,8 @@ import Cat.Reasoning
 module Cat.Displayed.Cartesian
   {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
 
-open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Morphism E
+open Cat.Reasoning B
 open DR E
 ```
 
