@@ -12,6 +12,7 @@ open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
 open import 1Lab.Inductive
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
