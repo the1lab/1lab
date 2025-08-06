@@ -71,8 +71,9 @@ Here in the 1Lab, we formalise three acceptable notions of equivalence:
 <!--
 ```agda
 private variable
-  ℓ₁ ℓ₂ : Level
-  A A' B B' C : Type ℓ₁
+  ℓ ℓ₁ ℓ₂ : Level
+  A A' B B' C : Type ℓ
+  P : A → Type ℓ
 ```
 -->
 
@@ -1094,6 +1095,58 @@ infix  3 _≃∎
 infix 21 _≃_
 
 syntax ≃⟨⟩-syntax x q p = x ≃⟨ p ⟩ q
+```
+-->
+
+## Some useful equivalences
+
+We can extend `subst`{.Agda} to an equivalence between `Σ[ y ∈ A ] (y ≡ x × P y)`
+and `P x` for every `x : A` and `P : A → Type`. In informal mathematical practice,
+applying this equivalence is sometimes called "contracting $y$ away", alluding to
+the [[contractibility of singletons]].
+
+```agda
+subst≃
+  : (x : A) → (Σ[ y ∈ A ] (y ≡ x × P y)) ≃ P x
+subst≃ {A = A} {P = P} x = Iso→Equiv (to , iso from invr invl)
+  where
+    to : Σ[ y ∈ A ] (y ≡ x × P y) → P x
+    to (y , y=x , py) = subst P y=x py
+
+    from : P x → Σ[ y ∈ A ] (y ≡ x × P y)
+    from px = x , refl , px
+
+    invr : is-right-inverse from to
+    invr = transport-refl
+
+    invl : is-left-inverse from to
+    invl (y , y=x , py) i =
+      (y=x (~ i)) ,
+      (λ j → y=x (~ i ∨ j)) ,
+      transp (λ j → P (y=x (~ i ∧ j))) i py
+```
+
+<!--
+```agda
+is-equiv≃fibre-is-contr
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → {f : A → B}
+  → is-equiv f ≃ (∀ x → is-contr (fibre f x))
+is-equiv≃fibre-is-contr {f = f} =
+  prop-ext
+    (is-equiv-is-prop f)
+    (λ f g i x → is-contr-is-prop (f x) (g x) i)
+    is-eqv
+    (λ fib-contr → record { is-eqv = fib-contr })
+
+-- This ideally would go in 1Lab.HLevel, but we don't have equivalences
+-- defined that early in the bootrapping process.
+is-prop→is-contr-iff-inhabited
+  : ∀ {ℓ} {A : Type ℓ}
+  → is-prop A
+  → is-contr A ≃ A
+is-prop→is-contr-iff-inhabited A-prop =
+  prop-ext is-contr-is-prop A-prop centre (is-prop∙→is-contr A-prop)
 
 lift-inj
   : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A}
