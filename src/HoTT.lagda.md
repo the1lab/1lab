@@ -43,9 +43,9 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 open import Cat.Gaunt
 
+open import Data.Set.Material.HIT
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
-open import Data.Set.Material
 open import Data.Fin.Finite using (Listing→choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
