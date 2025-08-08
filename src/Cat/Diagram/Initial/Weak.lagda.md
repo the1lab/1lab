@@ -147,7 +147,7 @@ initial object.
     open Indexed-product
 
     prod : Indexed-product C F
-    prod = Limit→IP C (hlevel 3) F (is-complete-lower κ ℓ κ κ compl _)
+    prod = Limit→IP C F (is-complete-lower κ ℓ κ κ compl _)
 
     prod-is-wi : is-weak-initial (prod .ΠF)
     prod-is-wi = is-wif→is-weak-initial F wif (prod .has-is-ip)
