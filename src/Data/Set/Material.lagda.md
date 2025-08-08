@@ -93,9 +93,9 @@ principle.
       Σ[ e ∈ x ≃ y ] (∀ {x y} → e .fst x ≡ y → WPath.Code (f x) (g y))
         ≃⟨ Σ-ap-snd (λ e → Π'-ap-cod λ x → Π'-ap-cod λ y → Π-ap-cod λ p → Equiv.inverse (WPath.Path≃Code (f x) (g y))) ⟩
       Σ[ e ∈ x ≃ y ] (∀ {x y} → e .fst x ≡ y → f x ≡ g y)
-        ≃⟨ Σ-ap-snd (λ e → Iso→Equiv ((λ α _ _ p → α p) , iso _ (λ x → refl) (λ x → refl))) ⟩
+        ≃˘⟨ Σ-ap-snd (λ e → Π²-impl≃) ⟩
       Σ[ e ∈ x ≃ y ] (∀ x y → e .fst x ≡ y → f x ≡ g y)
-        ≃⟨ Σ-ap-snd (λ e → Π-ap-cod λ x → Iso→Equiv (uncurry , iso curry (λ x → refl) (λ x → refl))) ⟩
+        ≃˘⟨ Σ-ap-snd (λ e → Π-ap-cod λ x → curry≃) ⟩
       Σ[ e ∈ x ≃ y ] (∀ x → ((y , _) : Σ[ y ∈ y ] (e .fst x ≡ y)) → f x ≡ g y)
         ≃⟨ Σ-ap-snd (λ e → Π-ap-cod λ x → Π-contr-eqv (hlevel 0)) ⟩
       Σ[ e ∈ x ≃ y ] (∀ x → f x ≡ g (e .fst x))
@@ -715,13 +715,10 @@ an embedding.</summary>
       (Σ (Lift ℓ' x ≡ Lift ℓ' y) (λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f ∘ lower) (liftⱽ' ∘ g ∘ lower)))
         ≃˘⟨ Σ-ap-fst (Equiv.inverse l.inverse) ⟩
       (Σ (x ≡ y) λ p → PathP (λ i → Lift ℓ' (p i) → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f ∘ lower) (liftⱽ' ∘ g ∘ lower))
-        ≃⟨ Σ-ap-snd (λ p → (λ p i x → p i (lift x)) , is-iso→is-equiv (iso _ (λ x → refl) λ x → refl)) ⟩
+        ≃˘⟨ Σ-ap-snd (λ p → apd-equiv (λ i → Π-ap-dom Lift-≃)) ⟩
       (Σ (x ≡ y) λ p → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f) (liftⱽ' ∘ g))
         ≃⟨ Σ-ap-snd
-            (λ p → J (λ y p → {g : y → V' ℓ} → PathP (λ i → p i → V' (ℓ ⊔ ℓ')) (liftⱽ' ∘ f) (liftⱽ' ∘ g) ≃ PathP (λ i → p i → V' ℓ) f g)
-              (Equiv.inverse funext≃ ∙e Π-ap-cod (λ x → inj' (f x) _) ∙e funext≃)
-            p)
-          ⟩
+            (λ p → funext-dep≃ e⁻¹ ∙e Π'-ap-cod (λ x → Π'-ap-cod λ _ → Π-ap-cod λ _ → inj' (f x) _) ∙e funext-dep≃) ⟩
       (Σ (x ≡ y) λ p → PathP (λ i → p i → V' ℓ) f g)
         ≃⟨ Σ-pathp≃ ⟩
       (x , f) ≡ (y , g)

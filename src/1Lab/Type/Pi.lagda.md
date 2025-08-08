@@ -268,5 +268,19 @@ flip
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → (∀ a b → C a b) → (∀ b a → C a b)
 flip f b a = f a b
+
+Π-impl≃
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : A → Type ℓ'}
+  → (∀ a → P a) ≃ (∀ {a} → P a)
+Π-impl≃ .fst f = f _
+Π-impl≃ .snd .is-eqv f .centre = strict-fibres (λ f _ → f) (λ {a} → f {a}) .fst
+Π-impl≃ .snd .is-eqv f .paths  = strict-fibres (λ f _ → f) (λ {a} → f {a}) .snd
+
+Π²-impl≃
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {P : A → B → Type ℓ''}
+  → (∀ a b → P a b) ≃ (∀ {a} {b} → P a b)
+Π²-impl≃ .fst f = f _ _
+Π²-impl≃ .snd .is-eqv f .centre = strict-fibres (λ f _ _ → f) (λ {a} {b} → f {a} {b}) .fst
+Π²-impl≃ .snd .is-eqv f .paths  = strict-fibres (λ f _ _ → f) (λ {a} {b} → f {a} {b}) .snd
 ```
 -->

@@ -223,6 +223,11 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
     where module f = Equiv (_ , eqv)
 ```
 
+Note that, while `equiv→cancellable`{.Agda} immediately follows by
+composing `is-equiv→is-embedding`{.Agda} and `embedding→cancellable`{.Agda},
+the inverse map we get from that isn't so good, so we define it explicitly
+instead.
+
 <!--
 ```agda
   cancellable→embedding'
@@ -246,6 +251,49 @@ ap-equiv
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B) {x y : A}
   → (x ≡ y) ≃ (e .fst x ≡ e .fst y)
 ap-equiv e = _ , equiv→cancellable (e .snd)
+
+embedding→cancellableP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (f : ∀ i → A i → B i) → (∀ i → is-embedding (f i))
+  → ∀ {x y} → is-equiv {A = PathP A x y} (apd f)
+embedding→cancellableP f emb {x} {y} = is-iso→is-equiv record where
+  from p i = is-prop→pathp (λ i → emb i (p i)) (x , refl) (y , refl) i .fst
+  rinv p j i = is-prop→pathp (λ i → emb i (p i)) (x , refl) (y , refl) i .snd j
+  linv p j i = is-prop→squarep (λ _ i → emb i (apd f p i)) refl
+    (is-prop→pathp (λ i → emb i (apd f p i)) (x , refl) (y , refl))
+    (p ,ₚ λ i → refl)
+    refl j i .fst
+
+-- Same as above, this follows from the previous lemmas but we get a
+-- better inverse this way.
+equiv→cancellableP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (f : ∀ i → A i → B i) → (∀ i → is-equiv (f i))
+  → ∀ {x y} → is-equiv {A = PathP A x y} (apd f)
+equiv→cancellableP f f-eqv {x} {y} = is-iso→is-equiv record where
+  module f i = Equiv (_ , f-eqv i)
+
+  sides : ∀ p i j → Partial (∂ i ∨ ~ j) _
+  sides p i = λ where
+    j (j = i0) → f.from i (p i)
+    j (i = i0) → f.η i0 x j
+    j (i = i1) → f.η i1 y j
+
+  from p i = hcomp (∂ i) (sides p i)
+  linv p j i = hcomp-unique (∂ i) (sides (apd f.to p) i)
+    (λ j → inS (f.η i (p i) j)) j
+  rinv p j i = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → f.to i (f.from i (p i))
+    k (i = i0) → f.zig i0 x j k
+    k (i = i1) → f.zig i1 y j k
+    k (j = i0) → f.to i (hfill (∂ i) k (sides p i))
+    k (j = i1) → f.ε i (p i) k
+
+apd-equiv
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (e : ∀ i → A i ≃ B i)
+  → ∀ {x y} → PathP A x y ≃ PathP B (e i0 .fst x) (e i1 .fst y)
+apd-equiv e = apd (λ i → e i .fst) , equiv→cancellableP _ (λ i → e i .snd)
 
 Lift-is-embedding : ∀ {ℓ} ℓ' → is-embedding {A = Type ℓ} (Lift ℓ')
 Lift-is-embedding ℓ' = cancellable→embedding λ {x} {y} →
