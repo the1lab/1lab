@@ -18,13 +18,13 @@ open import Cat.Prelude
 
 open import Data.Dec.Base
 
+open import Meta.Invariant
+
 import Cat.Instances.Presheaf.Exponentials as Pe
 import Cat.Displayed.Instances.Gluing
 import Cat.Instances.Presheaf.Limits as Pl
 import Cat.Displayed.Reasoning
 import Cat.Functor.Bifunctor as Bifunctor
-
-open import Meta.Invariant
 
 open Functor
 open _=>_
