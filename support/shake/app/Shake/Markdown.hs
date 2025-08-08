@@ -177,8 +177,9 @@ mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) . Text.unpack where
   pos (# l , c #) = "line " ++ show (I# l) ++ ", column " ++ show (I# c)
 
   toplevel :: Mangler
-  toplevel p ('$':cs)             = '$':entermaths p toplevel (eat 1 p) cs
-  toplevel p ('`':'`':'`':cs)     = "```" ++ code p toplevel (eat 3 p) cs
+  toplevel p ('$':cs)                 = '$':       entermaths p toplevel (eat 1 p) cs
+  toplevel p ('`':'`':'`':cs)         = "```"   ++ code       p toplevel (eat 3 p) cs
+  toplevel p ('<':'p':'r':'e':' ':cs) = "<pre " ++ pre        p toplevel (eat 5 p) cs
 
   toplevel p ('[':'[':cs)         = '[':'[':wikilink toplevel (eat 2 p) cs
   toplevel p ('<':'!':'-':'-':cs) = startcomment p (eat 4 p) cs
@@ -198,6 +199,7 @@ mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) . Text.unpack where
       loop p (c:cs)
         | isSpace c = c:loop (adv c p) cs
         | otherwise = c:maths p0 False k (adv c p) cs
+      loop p [] = error $ "End-of-file encountered at " ++ pos p ++ " while reading inline maths started at " ++ pos p0
     in '\n':loop (adv '\n' p) cs
 
   maths p0 d k p (c:cs)       = c:maths p0 d k (adv c p) cs
@@ -215,6 +217,11 @@ mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) . Text.unpack where
   code p0 k p (c:cs)           = c:code p0 k (adv c p) cs
   code p0 k p []               = error $ "Unterminated code block started at " ++ pos p0
 
+  pre :: Posn -> Mangler -> Mangler
+  pre p0 k p ('<':'/':'p':'r':'e':'>':cs) = "</pre>" ++ k (eat 6 p) cs
+  pre p0 k p (c:cs)                       = c:pre p0 k (adv c p) cs
+  pre p0 k p []                           = error $ "Unterminated <pre> block started at " ++ pos p0
+
   comment :: Posn -> Bool -> Int -> Mangler
   comment p0 e 0 p cs = concat ["\n</div>" | e] ++ toplevel p cs
   comment p0 e n p [] = error $ "Unterminated comment started at " ++ pos p0
@@ -222,10 +229,12 @@ mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) . Text.unpack where
   comment p0 e n p ('-':'-':'>':cs)     = comment p0 e (n - 1) (eat 3 p) cs
   comment p0 e n p ('<':'!':'-':'-':cs) = comment p0 e (n + 1) (eat 4 p) cs
 
-  comment p0 True n p ('`':'`':'`':cs) = "```" ++ code p (comment p0 True n) (eat 3 p) cs
-  comment p0 True n p ('[':'[':cs)     = '[':'[':wikilink     (comment p0 True n) (eat 2 p) cs
-  comment p0 True n p ('$':'$':cs)     = '$':'$':maths p True (comment p0 True n) (eat 2 p) cs
-  comment p0 True n p ('$':c:cs)       = '$':maths p False    (comment p0 True n) p (c:cs)
+  comment p0 True n p ('<':'p':'r':'e':' ' :cs)
+    = "<pre " ++ pre p (comment p0 True n) (eat 6 p) cs
+  comment p0 True n p ('`':'`':'`':cs)     = "```" ++ code p (comment p0 True n) (eat 3 p) cs
+  comment p0 True n p ('[':'[':cs)         = '[':'[':wikilink     (comment p0 True n) (eat 2 p) cs
+  comment p0 True n p ('$':'$':cs)         = '$':'$':maths p True (comment p0 True n) (eat 2 p) cs
+  comment p0 True n p ('$':c:cs)           = '$':maths p False    (comment p0 True n) p (c:cs)
 
   comment p0 e n p (c:cs)
     | e         = c:comment p0 e n (adv c p) cs
