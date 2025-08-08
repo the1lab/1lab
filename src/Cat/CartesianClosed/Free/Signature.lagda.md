@@ -12,16 +12,23 @@ module Cat.CartesianClosed.Free.Signature where
 
 <!--
 ```agda
-module types {ℓ} (A : Type ℓ) where
+module types {ℓ} (T : Type ℓ) where
 ```
 -->
+
+:::{.definition #simple-type}
+The type of **simple types** $\operatorname{Ty}(T)$ over a base type $T$
+is the inductive type with a constructor for base types, a nullary
+constructor for the unit type, and binary constructors for products and
+functions.
 
 ```agda
   data Ty : Type ℓ where
     `⊤        : Ty
-    `_        : A → Ty
+    `_        : T → Ty
     _`×_ _`⇒_ : Ty → Ty → Ty
 ```
+:::
 
 <details>
 <summary>We'll need an 'observational' equality on types, both to show
@@ -29,7 +36,7 @@ that the types of a given $\Lambda$-signature are a [[set]], and later
 to show this also of further constructions on syntax.</summary>
 
 ```agda
-  module code ⦃ _ : H-Level A 2 ⦄ where
+  module code ⦃ _ : H-Level T 2 ⦄ where
     same-ty : Ty → Ty → Prop ℓ
     same-ty `⊤ `⊤ = el! (Lift _ ⊤)
     same-ty `⊤ _  = el! (Lift _ ⊥)
@@ -63,10 +70,16 @@ to show this also of further constructions on syntax.</summary>
 
 </details>
 
+<!--
+```agda
+open types using (module Ty ; `_ ; _`×_ ; _`⇒_ ; `⊤) public
+```
+-->
+
 ::: {.definition #lambda-signature}
 A **$\Lambda$-signature** consists of a [[set]] $T$ of **base types**,
-and, for each type $\tau : \tau_T$ and base type $b$, a set of
-**operations** $H(\tau, b)$.
+and, for each [[simple type]] $\tau : \operatorname{Ty}(T)$ and base
+type $b$, a set of **operations** $H(\tau, b)$.
 :::
 
 ```agda
@@ -90,7 +103,7 @@ record Λ-Signature ℓ : Type (lsuc ℓ) where
     H-Level-Hom : ∀ {τ σ n} → H-Level (Hom τ σ) (2 + n)
     H-Level-Hom = basic-instance 2 Hom-is-set
 
-  open types Ob using (Ty ; module Ty ; `_ ; _`×_ ; _`⇒_ ; `⊤) public
+  open types Ob using (Ty) public
   open types.code Ob ⦃ auto ⦄ public
 ```
 -->

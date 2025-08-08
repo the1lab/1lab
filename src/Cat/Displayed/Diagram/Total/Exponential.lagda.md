@@ -26,7 +26,7 @@ open Cartesian-over ecart
 ```
 -->
 
-# Total exponential objects
+# Total exponential objects {defines="total-exponential-object"}
 
 ```agda
 module

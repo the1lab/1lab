@@ -20,6 +20,16 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
 ```
 -->
 
+:::{.definition #section-of-a-displayed-category}
+A **section** of a [[displayed category]] $\cE \liesover \cB$ consists
+of a functorial assignment of objects $S_0(X) \liesover X$ and morphisms
+$S_1(f) : S_0(X) \to_f S_0(Y)$.
+:::
+
+In other words, a section of a displayed category is a [[vertical
+functor]] from the [[identity bifibration]] of $\cB$ to $\cD$. We
+restate the definition in elementary terms to drop the additional unit
+arguments.
 
 ```agda
   record Section : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where

@@ -103,6 +103,10 @@ span.katex {
   span.mord.text > span.mord.textrm {
     font-family: var(--serif), var(--sans-serif);
   }
+
+  .cjk_fallback {
+    font-size: 87.5%; // magic number obtained by staring
+  }
 }
 
 span.abbrev {

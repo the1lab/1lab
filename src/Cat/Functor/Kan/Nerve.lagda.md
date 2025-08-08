@@ -90,18 +90,29 @@ module _
 ```
 -->
 
+<!--
+:::{.definition #nerve}
+The **nerve** $\cD \to \psh(\cC)$ along a functor $F : \cC \to \cD$ is
+the composition
+$$
+\cD \xto{\yo} \psh(\cD) \xto{(- \circ F)} \psh(\cC)
+$$
+of $\cD$'s [[Yoneda embedding]] with precomposition by $F$.
+:::
+-->
+
 ```agda
     Nerve : Functor D (PSh κ C)
-    Nerve .F₀ c = Hom-into D c F∘ Functor.op F
-    Nerve .F₁ f = よ₁ D f ◂ (Functor.op F)
-    Nerve .F-id = ext λ _ _ → D.idl _
+    Nerve .F₀ c    = Hom-into D c F∘ Functor.op F
+    Nerve .F₁ f    = よ₁ D f ◂ (Functor.op F)
+    Nerve .F-id    = ext λ _ _ → D.idl _
     Nerve .F-∘ _ _ = ext λ _ _ → sym (D.assoc _ _ _)
 ```
 
 The action of $F$ on morphisms assembles into a natural transformation
-$\yo_\cC \To \rm{Nerve}(F)F$, which is universal in the following sense:
-the nerve functor associated to $F$ is the [[left Kan extension]] of $\cC$'s
-[yoneda embedding] along $F$.
+$\yo_\cC \To \rm{Nerve}(F) \circ F$, which is universal in the following
+sense: the nerve functor associated to $F$ is the [[left Kan extension]]
+of $\cC$'s [yoneda embedding] along $F$.
 
 ```agda
     coapprox : よ C => Nerve F∘ F

@@ -62,9 +62,9 @@ A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
 \end{tikzcd}
 ~~~
 
-is a **total product diagram** if it satisfies a displayed version of the
-universal property of the product.
-
+is a **total product diagram** if it satisfies a displayed version of
+the universal property of the product.
+:::
 
 ```agda
   record is-product-over
@@ -101,8 +101,8 @@ over $(A, f, g)$, as in the following diagram.
 \end{tikzcd}
 ~~~
 
-$P$ is a product, so there exists a unique $\langle f, g \rangle : A \to P$
-that commutes with $\pi_1$ and $\pi_2$.
+$P$ is a product, so there exists a unique $\langle f, g \rangle : A \to
+P$ that commutes with $\pi_1$ and $\pi_2$.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -127,11 +127,10 @@ that commutes with $\pi_1$ and $\pi_2$.
 \end{tikzcd}
 ~~~
 
-This leaves a conspicuous gap in the upstairs portion of the diagram between
-$A'$ and $P'$; $(P', \pi_1', \pi_2')$ is a total product precisely when we
-have a unique lift of $\langle f, g \rangle$ that commutes with $\pi_1'$
-and $\pi_2'$.
-
+This leaves a conspicuous gap in the upstairs portion of the diagram
+between $A'$ and $P'$; $(P', \pi_1', \pi_2')$ is a total product
+precisely when we have a unique lift of $\langle f, g \rangle$ that
+commutes with $\pi_1'$ and $\pi_2'$.
 
 ```agda
     field
@@ -149,7 +148,6 @@ and $\pi_2'$.
         → (p2' : (π₂' ∘' other') ≡[ p2 ] g')
         → other' ≡[ unique p1 p2 ] ⟨ f' , g' ⟩'
 ```
-:::
 
 <!--
 ```agda
@@ -170,7 +168,7 @@ and $\pi_2'$.
 
 :::{.definition #total-product}
 A **total product** of $A'$ and $B'$ in $\cE$ consists of a choice
-of a total product diagram.
+of a [[total product diagram]].
 :::
 
 ```agda

@@ -24,6 +24,14 @@ private
 
 # Total terminal objects
 
+:::{.definition #total-terminal-object}
+If $\cD \liesover \cB$ is a [[displayed category]] over a base $\cB$
+admitting a [[terminal object]] $\top$ we say that an object $\top'
+\liesover \top$ is a **total terminal object**, if, for every $X'
+\liesover X$, there exists a unique morphism $!' : X' \to_! \top'$
+displayed over $!$.
+:::
+
 ```agda
 record is-terminal-over {top} (term : is-terminal B top) (top' : E ʻ top) : Type (o ⊔ o' ⊔ ℓ') where
   open Terminal {C = B} record{ has⊤ = term } hiding (top)

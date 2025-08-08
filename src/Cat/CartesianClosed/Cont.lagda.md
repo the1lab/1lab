@@ -2,9 +2,9 @@
 ```agda
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Exponential
-open import Cat.Diagram.Monad
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint
+open import Cat.Diagram.Monad
 open import Cat.Cartesian
 open import Cat.Prelude
 

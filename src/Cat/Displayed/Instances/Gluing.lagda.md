@@ -37,7 +37,7 @@ module Cat.Displayed.Instances.Gluing
   where
 ```
 
-# Artin gluing
+# Artin gluing {defines="artin-gluing"}
 
 <!--
 ```agda
