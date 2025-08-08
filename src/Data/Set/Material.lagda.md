@@ -21,7 +21,7 @@ open hlevel-projection
 module Data.Set.Material where
 ```
 
-# The cumulative hierarchy of iterative sets
+# The cumulative hierarchy of iterative sets {defines="cumulative-hierarchy iterative-set"}
 
 <!--
 ```agda

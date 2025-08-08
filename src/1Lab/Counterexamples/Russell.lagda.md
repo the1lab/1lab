@@ -31,12 +31,10 @@ data V : Type where
   set : (A : Type) → (A → V) → V
 ```
 
-The names `V`{.Agda} and `set`{.Agda} are meant to evoke the [cumulative
-hierarchy] of sets. A ZF set is merely a particular type of tree, so we
+The names `V`{.Agda} and `set`{.Agda} are meant to evoke the [[cumulative
+hierarchy]] of sets. A ZF set is merely a particular type of tree, so we
 can represent the cumulative hierarchy as a particular type of trees -
 one where the branching factor of a node is given by a type `A`.
-
-[cumulative hierarchy]: https://en.wikipedia.org/wiki/Von_Neumann_universe
 
 We define the membership predicate `_∈_`{.Agda} by pattern matching,
 using the [[path type|path]] `_≡_`{.Agda}:
