@@ -338,5 +338,10 @@ module _ {ℓ ℓ' ℓ''} {X : Type ℓ} {Y : X → Type ℓ'} {Z : (x : X) → 
 
   uncurry : ((x : X) → (y : Y x) → Z x y) → (p : Σ X Y) → Z (p .fst) (p .snd)
   uncurry f (a , b) = f a b
+
+  curry≃ : ((p : Σ X Y) → Z (p .fst) (p .snd)) ≃ ((x : X) → (y : Y x) → Z x y)
+  curry≃ .fst = curry
+  curry≃ .snd .is-eqv f .centre = strict-fibres uncurry f .fst
+  curry≃ .snd .is-eqv f .paths  = strict-fibres uncurry f .snd
 ```
 -->

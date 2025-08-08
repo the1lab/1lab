@@ -2070,6 +2070,18 @@ hcomp-unique φ u h2 i =
     k (k = i0) → u i0 1=1
     k (i = i1) → outS (h2 k)
     k (φ = i1) → u k 1=1
+
+hlid-unique : ∀ {ℓ} {A : Type ℓ} φ
+               (u : ∀ i → Partial (φ ∨ ~ i) A)
+             → (h1 h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → u i0 1=1
+                                         ; (φ = i1) → u i 1=1 }) ])
+             → outS (h1 i1) ≡ outS (h2 i1)
+hlid-unique φ u h1 h2 i =
+  hcomp (φ ∨ ∂ i) λ where
+    k (k = i0) → u i0 1=1
+    k (i = i0) → outS (h1 k)
+    k (i = i1) → outS (h2 k)
+    k (φ = i1) → u k 1=1
 ```
 -->
 
