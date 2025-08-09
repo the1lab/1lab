@@ -53,29 +53,26 @@ the domains of the slices.
     module I×J = Product I×J
 
     total-prod : ProductP (Slices B) I×J (cut f) (cut g)
-    total-prod .apex' .domain = X×Y.apex
+    total-prod .apex' .dom = X×Y.apex
     total-prod .apex' .map = I×J.⟨ f ∘ X×Y.π₁ , g ∘ X×Y.π₂ ⟩
-    total-prod .π₁' .to = X×Y.π₁
-    total-prod .π₁' .commute = I×J.π₁∘⟨⟩
-    total-prod .π₂' .to = X×Y.π₂
-    total-prod .π₂' .commute = I×J.π₂∘⟨⟩
+    total-prod .π₁' .map = X×Y.π₁
+    total-prod .π₁' .com = sym I×J.π₁∘⟨⟩
+    total-prod .π₂' .map = X×Y.π₂
+    total-prod .π₂' .com = sym I×J.π₂∘⟨⟩
 ```
 
 The universal property follows from a bit of routine algebra involving
 products.
 
 ```agda
-    total-prod .has-is-product' .⟨_,_⟩' f g .to = X×Y.⟨ f. to , g .to ⟩
-    total-prod .has-is-product' .⟨_,_⟩' f g .commute =
-      I×J.unique₂
-        (pulll I×J.π₁∘⟨⟩ ∙ f .commute)
-        (pulll I×J.π₂∘⟨⟩ ∙ g .commute)
-        (pulll I×J.π₁∘⟨⟩ ∙ pullr X×Y.π₁∘⟨⟩)
-        (pulll I×J.π₂∘⟨⟩ ∙ pullr X×Y.π₂∘⟨⟩)
-    total-prod .has-is-product' .π₁∘⟨⟩' =
-      Slice-pathp B _ X×Y.π₁∘⟨⟩
-    total-prod .has-is-product' .π₂∘⟨⟩' =
-      Slice-pathp B _ X×Y.π₂∘⟨⟩
-    total-prod .has-is-product' .unique' p q =
-      Slice-pathp B _ (X×Y.unique (λ i → p i .to) λ i → q i .to)
+    total-prod .has-is-product' .⟨_,_⟩' f g .map = X×Y.⟨ f .map , g .map ⟩
+    total-prod .has-is-product' .⟨_,_⟩' f g .com = sym $ I×J.unique₂
+      (pulll I×J.π₁∘⟨⟩ ∙ sym (f .com))
+      (pulll I×J.π₂∘⟨⟩ ∙ sym (g .com))
+      (pulll I×J.π₁∘⟨⟩ ∙ pullr X×Y.π₁∘⟨⟩)
+      (pulll I×J.π₂∘⟨⟩ ∙ pullr X×Y.π₂∘⟨⟩)
+    total-prod .has-is-product' .π₁∘⟨⟩' = Slice-pathp X×Y.π₁∘⟨⟩
+    total-prod .has-is-product' .π₂∘⟨⟩' = Slice-pathp X×Y.π₂∘⟨⟩
+    total-prod .has-is-product' .unique' p q = Slice-pathp $
+      X×Y.unique (λ i → p i .map) (λ i → q i .map)
 ```

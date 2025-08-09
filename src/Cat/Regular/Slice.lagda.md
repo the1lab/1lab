@@ -56,21 +56,21 @@ private
 
       below : Pullback C/y f g
       below .Pullback.apex = cut (A .map ∘ above .Pullback.p₁)
-      below .Pullback.p₁ .map      = above .Pullback.p₁
-      below .Pullback.p₁ .commutes = refl
-      below .Pullback.p₂ .map      = above .Pullback.p₂
-      below .Pullback.p₂ .commutes =
-        pushl (sym (g .commutes)) ∙ ap₂ _∘_ refl (sym (above .Pullback.square)) ∙ pulll (f .commutes)
+      below .Pullback.p₁ .map = above .Pullback.p₁
+      below .Pullback.p₁ .com = refl
+      below .Pullback.p₂ .map = above .Pullback.p₂
+      below .Pullback.p₂ .com =
+        pushl (sym (g .com)) ∙ ap₂ _∘_ refl (sym (above .Pullback.square)) ∙ pulll (f .com)
       below .Pullback.has-is-pb = pullback-above→pullback-below (above .Pullback.has-is-pb)
 
   pres-mono
     : ∀ {a b} (h : a C/y.↪ b)
-    → a .domain ↪ b .domain
+    → a .dom ↪ b .dom
   pres-mono h .mor = h .mor .map
   pres-mono {a = A} h .monic a b p = ap map $ h .C/y.monic
     {c = cut (A .map ∘ a)}
-    (record { commutes = refl })
-    (record { commutes = pushl (sym (h .mor .commutes)) ∙∙ ap₂ _∘_ refl (sym p) ∙∙ pulll (h .mor .commutes) })
+    (record { com = refl })
+    (record { com = pushl (sym (h .mor .com)) ∙∙ ap₂ _∘_ refl (sym p) ∙∙ pulll (h .mor .com) })
     (ext p)
 ```
 -->
@@ -101,13 +101,13 @@ invertible in $\cC$.
     let
       mono : cut (B .map ∘ m .mor) C/y.↪ B
       mono = record
-        { mor   = record { map = m .mor ; commutes = refl }
+        { mor   = record { map = m .mor ; com = refl }
         ; monic = λ g h p → ext (m .monic _ _ (ap map p))
         }
 
-      inv : C/y.is-invertible (record { map = m .mor ; commutes = refl })
+      inv : C/y.is-invertible (record { map = m .mor ; com = refl })
       inv = extreme mono
-        (record { map = g ; commutes = pullr (sym p) ∙ h .commutes })
+        (record { map = g ; com = pullr (sym p) ∙ h .com })
         (ext p)
     in make-invertible
       (inv .C/y.is-invertible.inv .map)
@@ -132,9 +132,9 @@ calculate that the inverse to $m$ is still a map over $y$.
     let inv = extn (pres-mono m) (g .map) (ap map p)
     in C/y.make-invertible
       (record
-        { map      = inv .is-invertible.inv
-        ; commutes = invertible→epic inv _ _ $
-          cancelr (inv .is-invertible.invr) ∙ sym (m .mor .commutes)
+        { map = inv .is-invertible.inv
+        ; com = invertible→epic inv _ _ $
+          cancelr (inv .is-invertible.invr) ∙ sym (m .mor .com)
         })
       (ext (inv .is-invertible.invl))
       (ext (inv .is-invertible.invr))
@@ -156,9 +156,9 @@ slice-is-regular .factor {a} {b} f = fact' where
 
   fact' : Factorisation C/y (StrongEpi C/y) (Mono C/y) f
   fact' .mediating = cut (b .map ∘ f.forget)
-  fact' .mediate = record { commutes = pullr (sym f.factors) ∙ f .commutes }
-  fact' .forget .map      = f.forget
-  fact' .forget .commutes = refl
+  fact' .mediate = record { com = pullr (sym f.factors) ∙ f .com }
+  fact' .forget .map = f.forget
+  fact' .forget .com = refl
   fact' .mediate∈E = do
     c ← f.mediate∈E
     pure (reflect-cover (fact' .mediate) c)

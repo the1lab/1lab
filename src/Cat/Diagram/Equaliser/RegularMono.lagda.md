@@ -203,21 +203,21 @@ the code below demonstrates.
     module eff = is-effective-mono mon
 
     itself : ↓Obj _ _
-    itself .x = tt
-    itself .y = cut f , eff.is-effective-mono→is-regular-mono
-    itself .map = record { map = id ; commutes = idr _ }
+    itself .dom = tt
+    itself .cod = cut f , eff.is-effective-mono→is-regular-mono
+    itself .map = record { map = id ; com = idr _ }
 
     im : Initial _
     im .bot = itself
     im .has⊥ other = contr hom unique where
       hom : ↓Hom _ _ itself other
-      hom .α = tt
-      hom .β = other .map
-      hom .sq = ext refl
+      hom .top = tt
+      hom .bot = other .map
+      hom .com = ext refl
 
       unique : ∀ x → hom ≡ x
       unique x = ↓Hom-path _ _ refl
-        (ext (intror refl ∙ ap map (x .sq) ∙ elimr refl))
+        (ext (intror refl ∙ ap map (x .com) ∙ elimr refl))
 ```
 
 Hence the characterisation of regular monomorphisms given in the

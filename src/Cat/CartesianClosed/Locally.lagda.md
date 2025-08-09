@@ -181,10 +181,10 @@ isomorphic.
       (Σf (X .map) F∘ Base-change pullbacks (X .map))
       (Bifunctor.Left ×/ X)
 
-    Slice-product-functor .eta x .map      = id
-    Slice-product-functor .eta x .commutes = idr _ ∙ pullbacks _ _ .square
-    Slice-product-functor .inv x .map      = id
-    Slice-product-functor .inv x .commutes = idr _ ∙ sym (pullbacks _ _ .square)
+    Slice-product-functor .eta x .map = id
+    Slice-product-functor .eta x .com = idr _ ∙ pullbacks _ _ .square
+    Slice-product-functor .inv x .map = id
+    Slice-product-functor .inv x .com = idr _ ∙ sym (pullbacks _ _ .square)
     Slice-product-functor .eta∘inv x     = ext $ idl _
     Slice-product-functor .inv∘eta x     = ext $ idl _
     Slice-product-functor .natural x y f = ext $ id-comm ∙ ap (id ∘_) (pullbacks _ _ .unique
@@ -272,10 +272,11 @@ equivalence $(\cC/B)/f \cong \cC/A$.
 
     rem₂ : make-natural-iso (Twice-slice f F∘ constant-family prod/)
                             (Base-change pullbacks f)
-    rem₂ .eta x .map      = id
-    rem₂ .eta x .commutes = idr _
-    rem₂ .inv x .map      = id
-    rem₂ .inv x .commutes = idr _
+    rem₂ .eta x .map = id
+    rem₂ .eta x .com = idr _
+    rem₂ .inv x .map = id
+    rem₂ .inv x .com = idr _
+
     rem₂ .eta∘inv x = ext (idr _)
     rem₂ .inv∘eta x = ext (idr _)
     rem₂ .natural x y f = ext $

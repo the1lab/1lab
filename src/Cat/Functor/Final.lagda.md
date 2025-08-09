@@ -136,17 +136,17 @@ the following diagram:
 ```agda
     module _ {coapex} (cone : D F∘ F => Const coapex) where
       extend : ∀ d → Ob (d ↙ F) → ℰ.Hom (D.₀ d) coapex
-      extend d f = cone .η (f .y) ℰ.∘ D.₁ (f .map)
+      extend d f = cone .η (f .cod) ℰ.∘ D.₁ (f .map)
 
       opaque
         extend-const1
           : ∀ d {f g : Ob (d ↙ F)} (h : ↓Hom _ _ f g)
           → extend d f ≡ extend d g
         extend-const1 d {f} {g} h =
-          cone .η _ ℰ.∘ D.₁ (f .map)                        ≡˘⟨ cone .is-natural _ _ _ ∙ ℰ.idl _ ℰ.⟩∘⟨refl ⟩
-          (cone .η _ ℰ.∘ D.₁ (F.₁ (h .β))) ℰ.∘ D.₁ (f .map) ≡⟨ D.pullr refl ⟩
-          cone .η _ ℰ.∘ D.₁ ⌜ F.₁ (h .β) 𝒟.∘ f .map ⌝       ≡⟨ ap! (sym (h .sq) ∙ 𝒟.idr _) ⟩
-          cone .η _ ℰ.∘ D.₁ (g .map)                        ∎
+          cone .η _ ℰ.∘ D.₁ (f .map)                          ≡˘⟨ cone .is-natural _ _ _ ∙ ℰ.idl _ ℰ.⟩∘⟨refl ⟩
+          (cone .η _ ℰ.∘ D.₁ (F.₁ (h .bot))) ℰ.∘ D.₁ (f .map) ≡⟨ D.pullr refl ⟩
+          cone .η _ ℰ.∘ D.₁ ⌜ F.₁ (h .bot) 𝒟.∘ f .map ⌝       ≡⟨ ap! (sym (h .com) ∙ 𝒟.idr _) ⟩
+          cone .η _ ℰ.∘ D.₁ (g .map)                          ∎
 
       opaque
         extend-const
@@ -305,7 +305,7 @@ implies the existence of zigzags, meditate on the following diagram:
     full+eso→final full eso d .zigzag f g = do
       z , p ← full (g .map 𝒟.∘ 𝒟-grpd (f .map) .inv)
       pure $ zig
-        (↓hom {β = z}
+        (↓hom {bot = z}
           (𝒟.idr _ ∙ sym (𝒟.rswizzle p (𝒟-grpd (f .map) .invr))))
         []
       where open 𝒟.is-invertible
@@ -325,10 +325,10 @@ this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
       let z = Free-groupoid-counit
             (↓-is-pregroupoid _ _ ⊤Cat-is-pregroupoid 𝒞-grpd)
             .F₁ zs
-      pure (z .β , sym (𝒟.idr _) ∙ sym (z .sq) ∙ 𝒟.idr _)
+      pure (z .bot , sym (𝒟.idr _) ∙ sym (z .com) ∙ 𝒟.idr _)
     final→full+eso fin .snd d = do
       fd ← fin d .point
-      pure (fd .y , 𝒟.invertible→iso (fd .map) (𝒟-grpd _) 𝒟.Iso⁻¹)
+      pure (fd .cod , 𝒟.invertible→iso (fd .map) (𝒟-grpd _) 𝒟.Iso⁻¹)
 ```
 
 Another general class of final functors is given by [[right adjoint]]
@@ -390,7 +390,7 @@ which we can compose into an object of $c \swarrow G \circ F$.
   F∘-is-final : is-final (G F∘ F)
   F∘-is-final c .point = do
     g ← gf.point c
-    f ← ff.point (g .y)
+    f ← ff.point (g .cod)
     pure (g ↙> f)
 ```
 
@@ -429,7 +429,7 @@ F$:
     where
       R : Congruence (Ob (c ↙ G)) _
       R ._∼_ f g =
-        ∀ (f' : Ob (f .y ↙ F)) (g' : Ob (g .y ↙ F))
+        ∀ (f' : Ob (f .cod ↙ F)) (g' : Ob (g .cod ↙ F))
         → ∥ Meander (c ↙ G F∘ F) (f ↙> f') (g ↙> g') ∥
       R .has-is-prop _ _ = hlevel 1
 ```
@@ -438,9 +438,9 @@ That this is a congruence is easily checked using the finality of $F$.
 
 ```agda
       R .reflᶜ {f} f' g' =
-        Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .y) f' g'
+        Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .cod) f' g'
       R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
-        g' ← ff.point (g .y)
+        g' ← ff.point (g .cod)
         ∥-∥-map₂ _++_ (gh g' h') (fg f' g')
       R .symᶜ fg g' f' = ∥-∥-map (reverse _) (fg f' g')
 ```
@@ -453,12 +453,12 @@ morphism are related, which again involves the connectedness of $x
 ```agda
       refine1 : ∀ {f g} → Hom (c ↙ G) f g → R ._∼_ f g
       refine1 {f} {g} h f' g' = do
-        z ← ff.zigzag (f .y) f' (↓obj (g' .map 𝒟.∘ h .β))
+        z ← ff.zigzag (f .cod) f' (↓obj (g' .map 𝒟.∘ h .bot))
         let
           z' : Meander (c ↙ G F∘ F) _ _
           z' = Free-groupoid-map (↙-compose f) .F₁ z
-          fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .β) ≡ g ↙> g'
-          fixup = ext $ refl ,ₚ G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .sq) ∙ ℰ.idr _)
+          fixup : f ↙> ↓obj (g' .map 𝒟.∘ h .bot) ≡ g ↙> g'
+          fixup = ext $ refl ,ₚ G.pushl refl ∙ (ℰ.refl⟩∘⟨ sym (h .com) ∙ ℰ.idr _)
         pure (subst (Meander (c ↙ G F∘ F) (f ↙> f')) fixup z')
 
       refine : ∀ {f g} → Meander (c ↙ G) f g → R ._∼_ f g

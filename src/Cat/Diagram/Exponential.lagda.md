@@ -425,7 +425,7 @@ omit it from the page.
       p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (ƛ π₂) .p₁
       p = ƛ π₂ ∘ !                                         ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
           ƛ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
-          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
+          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .com) ⟩∘⟨refl ⟩
           ƛ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
           ƛ (y .map ∘ ev) ∘ ƛ (h .map ∘ ev) ∘ pb _ _ .p₁   ∎
 ```
@@ -468,7 +468,7 @@ which is in turn equivalent to asking that $q$ be a map $\Delta_B(X) \to
 f$, over $B$.
 
 ```agda
-    coh₁ : ∀ {X} (f : /-Obj B) (q : Hom X (-^B₀ (f .domain)))
+    coh₁ : ∀ {X} (f : /-Obj B) (q : Hom X (-^B₀ (f .dom)))
          → (ƛ (f .map ∘ ev) ∘ q ≡ ƛ π₂ ∘ !)
          ≃ (f .map ∘ app q ≡ π₂)
     coh₁ f h = prop-ext!
@@ -509,12 +509,12 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
 ```agda
         Hom X (Π.₀ f)
           ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
+        Σ (Hom X (-^B .F₀ (f .dom))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
           ≃⟨ Σ-ap-snd (λ x → Σ-contr-fst (has⊤ X)) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
+        Σ (Hom X (-^B .F₀ (f .dom))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
-        Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)
-          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → ext refl) (λ _ → ext refl)) ⟩
+        Σ (Hom (X ⊗₀ B) (f .dom)) (λ h → f .map ∘ h ≡ π₂)
+          ≃⟨ Iso→Equiv ((λ x → record { com = x .snd }) , iso (λ x → _ , x .com) (λ _ → ext refl) (λ _ → ext refl)) ⟩
         Slice C B .Precategory.Hom (b.₀ X) f
           ≃∎
 

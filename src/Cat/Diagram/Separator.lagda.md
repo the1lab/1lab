@@ -626,7 +626,7 @@ module _
   {sᵢ : Idx → Ob}
   where
   open ↓Obj using (map)
-  open ↓Hom using (sq)
+  open ↓Hom using (com)
 ```
 -->
 
@@ -649,7 +649,7 @@ that takes an object in slice $\cC(S_i, X)$ to itself.
 
     colim : make-is-colimit (Approx x) x
     colim .ψ x = x .map
-    colim .commutes f = f .sq ∙ idl _
+    colim .commutes f = f .com ∙ idl _
 ```
 
 Moreover, this cocone is universal: given another cocone $\epsilon$ over $Y$,
@@ -663,8 +663,8 @@ separating families.
         (λ f g → sym (p (↓hom (sym (idl _)))))
     colim .factors {j} eps p =
       dense.universal _ _ ∘ colim .ψ j ≡⟨ dense.commute ⟩
-      eps (↓obj (j .map))             ≡⟨ ap eps (↓Obj-path _ _ refl refl refl) ⟩
-      eps j                           ∎
+      eps (↓obj (j .map))              ≡⟨ ap eps (↓Obj-path _ _ refl refl refl) ⟩
+      eps j                            ∎
     colim .unique eta p other q = dense.unique other (λ i fᵢ → q (↓obj fᵢ))
 ```
 
@@ -680,12 +680,9 @@ previous proof in reverse, so we do not comment on it too deeply.
     open is-dense-separating-family
 
     dense : is-dense-separating-family sᵢ
-    dense .universal eta p =
-      colim.universal
-        (λ f → eta _ (f .map))
-        (λ γ → sym (p _ _) ∙ ap (eta _) (γ .sq ∙ idl _))
-    dense .commute {eᵢ = eᵢ} =
-      colim.factors {j = ↓obj eᵢ} _ _
-    dense .unique h p =
-      colim.unique _ _ _ λ j → p _ (j .map)
+    dense .universal eta p = colim.universal
+      (λ f → eta _ (f .map))
+      (λ γ → sym (p _ _) ∙ ap (eta _) (γ .com ∙ idl _))
+    dense .commute {eᵢ = eᵢ} = colim.factors {j = ↓obj eᵢ} _ _
+    dense .unique h p        = colim.unique _ _ _ λ j → p _ (j .map)
 ```

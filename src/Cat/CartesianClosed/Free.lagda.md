@@ -4,6 +4,7 @@ open import Cat.Displayed.Diagram.Total.Exponential
 open import Cat.Displayed.Diagram.Total.Terminal
 open import Cat.Displayed.Diagram.Total.Product
 open import Cat.CartesianClosed.Free.Signature
+open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Displayed.Section
 open import Cat.Functor.Kan.Nerve
@@ -26,6 +27,7 @@ import Cat.Instances.Presheaf.Limits as Pl
 import Cat.Displayed.Reasoning
 import Cat.Functor.Bifunctor as Bifunctor
 
+open Slice-hom
 open Functor
 open _=>_
 ```
@@ -1166,19 +1168,19 @@ algebra structure consists of further natural transformations
 ```agda
 record Nfa {τ : Ty} (P : Gl ʻ τ) : Type ℓ where
   field
-    reifies  : P .domain => Nfs τ
-    reflects : Nes τ => P .domain
+    reifies  : P .dom => Nfs τ
+    reflects : Nes τ => P .dom
 ```
 
 <!--
 ```agda
-  ⟦_⟧ₚ : ∀ {Γ} → P .domain ʻ Γ → Mor ⟦ Γ ⟧ᶜ τ
+  ⟦_⟧ₚ : ∀ {Γ} → P .dom ʻ Γ → Mor ⟦ Γ ⟧ᶜ τ
   ⟦_⟧ₚ {Γ} x = P .map .η Γ x
 
-  reify : ∀ {Γ} → P .domain ʻ Γ → Nf Γ τ
+  reify : ∀ {Γ} → P .dom ʻ Γ → Nf Γ τ
   reify = reifies .η _
 
-  reflect : ∀ {Γ} → Ne Γ τ → P .domain ʻ Γ
+  reflect : ∀ {Γ} → Ne Γ τ → P .dom ʻ Γ
   reflect = reflects .η _
   field
 ```
@@ -1213,16 +1215,16 @@ These are required to make the following triangles commute.
 :::
 
 ```agda
-    comm₀ : {Γ : Cx} (n : Ne Γ τ)        → ⟦ reflect n ⟧ₚ ≡ ⟦ n ⟧ₛ
-    comm₁ : {Γ : Cx} (x : P .domain ʻ Γ) → ⟦ x ⟧ₚ ≡ ⟦ reify x ⟧ₙ
+    com₀ : {Γ : Cx} (n : Ne Γ τ)     → ⟦ reflect n ⟧ₚ ≡ ⟦ n ⟧ₛ
+    com₁ : {Γ : Cx} (x : P .dom ʻ Γ) → ⟦ x ⟧ₚ ≡ ⟦ reify x ⟧ₙ
 ```
 
 <!--
 ```agda
-  reifyₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : P .domain ʻ Δ} → reify (P .domain ⟪ ρ ⟫ x) ≡ ren-nf ρ (reify x)
+  reifyₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : P .dom ʻ Δ} → reify (P .dom ⟪ ρ ⟫ x) ≡ ren-nf ρ (reify x)
   reifyₙ {Γ} {Δ} {ρ} {x} = reifies .is-natural Δ Γ ρ $ₚ x
 
-  reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : Ne Δ τ} → reflect (ren-ne ρ x) ≡ P .domain ⟪ ρ ⟫ (reflect x)
+  reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : Ne Δ τ} → reflect (ren-ne ρ x) ≡ P .dom ⟪ ρ ⟫ (reflect x)
   reflectₙ {Γ} {Δ} {ρ} {x} = reflects .is-natural Δ Γ ρ $ₚ x
 
 open Cartesian-closed-over Gl Gl-cartesian {Free-closed} (Gl-closed PSh-closed Free-closed PSh-pullbacks) using ([_,_]')
@@ -1245,8 +1247,8 @@ base-nfa .reifies  = idnt
 base-nfa .reflects = record where
   η          Γ x   = ne x
   is-natural Γ Δ ρ = ext λ a → refl
-base-nfa .comm₀ x = refl
-base-nfa .comm₁ x = refl
+base-nfa .com₀ x = refl
+base-nfa .com₁ x = refl
 ```
 
 ## Pairs
@@ -1287,13 +1289,13 @@ calculation and the other is a trivial invocation of the corresponding
 triangle for the normalisation algebras we assumed.
 
 ```agda
-  comm₀ x =
-    x.⟦ x.reflect (fstₙ x) ⟧ₚ `, y.⟦ y.reflect (sndₙ x) ⟧ₚ ≡⟨ ap₂ _`,_ (x.comm₀ _) (y.comm₀ _) ⟩
+  com₀ x =
+    x.⟦ x.reflect (fstₙ x) ⟧ₚ `, y.⟦ y.reflect (sndₙ x) ⟧ₚ ≡⟨ ap₂ _`,_ (x.com₀ _) (y.com₀ _) ⟩
     `π₁ `∘ ⟦ x ⟧ₛ `, `π₂ `∘ ⟦ x ⟧ₛ                         ≡˘⟨ Syn.⟨⟩∘ _ ⟩
     (`π₁ `, `π₂) `∘ ⟦ x ⟧ₛ                                 ≡⟨ Syn.eliml (ap₂ _`,_ (sym `idr) (sym `idr) ∙ sym `πη) ⟩
     ⟦ x ⟧ₛ                                                 ∎
 
-  comm₁ (a , b) = ap₂ _`,_ (x.comm₁ _) (y.comm₁ _)
+  com₁ (a , b) = ap₂ _`,_ (x.com₁ _) (y.com₁ _)
 ```
 
 ### Functions
@@ -1322,14 +1324,14 @@ Next come function types, which are trickier but still possible.
         ⟦ x ⟧ₛ
       , NT (λ Δ (ρ , s) → y.reflect (app (ren-ne ρ x) (x.reify s)))
            (λ Δ Θ ρ → ext λ σ s → ap y.reflect (ap₂ Ne.app (ren-ne-∘ʳ ρ σ x) x.reifyₙ) ∙ y.reflectₙ)
-      , ext λ Γ ρ s → sym (y.comm₀ _ ∙ ap₂ (λ a b → `ev `∘ (a `, b)) (ren-⟦⟧ₛ ρ x) (sym (x.comm₁ _)))
+      , ext λ Γ ρ s → sym (y.com₀ _ ∙ ap₂ (λ a b → `ev `∘ (a `, b)) (ren-⟦⟧ₛ ρ x) (sym (x.com₁ _)))
     ; is-natural = λ Γ Δ ρ → ext (λ n → Σ-pathp (ren-⟦⟧ₛ ρ n) (Σ-prop-pathp! (ext (λ Θ σ s → ap y.reflect (ap₂ app (sym (ren-ne-∘ʳ σ ρ n)) refl)))))
     }
 
-  arr .comm₀ f = refl
-  arr .comm₁ (φ , f , α) = sym $
-    `ƛ ⟦ y.reify (f .η _ (drop stop , x.reflect (var stop))) ⟧ₙ  ≡⟨ ap `ƛ (sym (y.comm₁ _) ∙ sym (unext α _ _ _)) ⟩
-    `ƛ (`ev `∘ (φ `∘ `id `∘ `π₁ `, x.⟦ x.reflect (var stop) ⟧ₚ)) ≡⟨ ap `ƛ (ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (x.comm₀ _ ∙ sym `idl)) ⟩
+  arr .com₀ f = refl
+  arr .com₁ (φ , f , α) = sym $
+    `ƛ ⟦ y.reify (f .η _ (drop stop , x.reflect (var stop))) ⟧ₙ  ≡⟨ ap `ƛ (sym (y.com₁ _) ∙ sym (unext α _ _ _)) ⟩
+    `ƛ (`ev `∘ (φ `∘ `id `∘ `π₁ `, x.⟦ x.reflect (var stop) ⟧ₚ)) ≡⟨ ap `ƛ (ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (x.com₀ _ ∙ sym `idl)) ⟩
     `ƛ (`ev `∘ (φ `∘ `π₁ `, `id `∘ `π₂))                         ≡⟨ sym `ƛη ⟩
     φ                                                            ∎
 ```
@@ -1360,8 +1362,8 @@ above--- while the case for the unit type was too simple to get a name.
   normalisation `⊤       = record
     { reifies  = NT (λ Γ _ → unit) (λ Γ Δ ρ → refl)
     ; reflects = Sem.!
-    ; comm₀    = λ _ → `!-η _
-    ; comm₁    = λ _ → refl
+    ; com₀     = λ _ → `!-η _
+    ; com₁     = λ _ → refl
     }
 ```
 
@@ -1378,12 +1380,12 @@ simple type into neutrals, namely `reifies`{.Agda}.
     terms
       : ∀ {x : Ty} {y : Node} (e : Edge x y)
       → Gl.Hom[ (` e) ] (Ty-nf x) (Gl-base y)
-    terms {x = x} {y = y} e .fst =
+    terms {x = x} {y = y} e .map =
           NT (λ Γ x → ne (hom e x)) (λ x y f → refl)
       ∘nt Nfa.reifies (normalisation x)
 
-    terms {x = x} {y = y} e .snd = ext λ Γ ρ →
-      ap ((` e) `∘_) (sym (Nfa.comm₁ (normalisation x) _))
+    terms {x = x} {y = y} e .com = ext λ Γ ρ →
+      ap ((` e) `∘_) (sym (Nfa.com₁ (normalisation x) _))
 ```
 
 We thus have a section of `Gl`{.Agda}, which performs `Normalisation`{.Agda}.
@@ -1418,7 +1420,7 @@ nf {x} {y} e = record { fst = done ; snd = sym beta } where
   module x = Nfa (normalisation x)
   module y = Nfa (normalisation y)
 
-  done = y.reify (⟦ e ⟧₁ .fst .η (∅ , x) (x.reflect (var stop)))
+  done = y.reify (⟦ e ⟧₁ .map .η (∅ , x) (x.reflect (var stop)))
 ```
 
 To show that the denotation of this normal form is the map we started
@@ -1431,9 +1433,9 @@ algebras on the domain and codomain, one each.
   abstract
     sq : ⟦ done ⟧ₙ ≡ e `∘ `π₂
     sq =
-      ⟦ done ⟧ₙ                                            ≡⟨ sym (y.comm₁ _) ⟩
-      y.⟦ ⟦ e ⟧₁ .fst .η (∅ , x) (x.reflect (var stop)) ⟧ₚ ≡⟨ unext (⟦ e ⟧₁ .snd) _ _ ⟩
-      e `∘ x.⟦ x.reflect (var stop) ⟧ₚ                     ≡⟨ ap (e `∘_) (x.comm₀ _) ⟩
+      ⟦ done ⟧ₙ                                            ≡⟨ sym (y.com₁ _) ⟩
+      y.⟦ ⟦ e ⟧₁ .map .η (∅ , x) (x.reflect (var stop)) ⟧ₚ ≡⟨ unext (⟦ e ⟧₁ .com) _ _ ⟩
+      e `∘ x.⟦ x.reflect (var stop) ⟧ₚ                     ≡⟨ ap (e `∘_) (x.com₀ _) ⟩
       e `∘ `π₂                                             ∎
 
     beta : ⟦ done ⟧ₙ `∘ (`! `, `id) ≡ e

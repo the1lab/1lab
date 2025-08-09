@@ -133,7 +133,7 @@ module Comprehension
   open Cartesian-fibration E E-fib
 
   _⨾_ : ∀ Γ → Ob[ Γ ] → Ob
-  Γ ⨾ x = F₀' x .domain
+  Γ ⨾ x = F₀' x .dom
 
   infixl 5 _⨾_
 
@@ -169,12 +169,12 @@ with projections.
 
 ```agda
   _⨾ˢ_ : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → Hom[ σ ] x y → Hom (Γ ⨾ x) (Δ ⨾ y)
-  σ ⨾ˢ f = F₁' f .to
+  σ ⨾ˢ f = F₁' f .map
 
   infixl 8 _⨾ˢ_
 
   sub-proj : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y) → πᶜ ∘ (σ ⨾ˢ f) ≡ σ ∘ πᶜ
-  sub-proj f = sym $ F₁' f .commute
+  sub-proj f = F₁' f .com
 ```
 
 Crucially, when $f$ is cartesian, then the above square is a pullback.
@@ -214,7 +214,7 @@ obtain the identity morphism.
 
 ```agda
   sub-id : ∀ {Γ x} → id {Γ} ⨾ˢ id' {Γ} {x} ≡ id
-  sub-id = ap to F-id'
+  sub-id = ap map F-id'
 
   sub-id' : ∀ {Γ x} → (id ⨾ˢ' id') ≡[ sub-id {Γ} {x} ] id'
   sub-id' = symP $ π*.uniquep _ (symP sub-id) (sub-proj id') id' $
@@ -229,7 +229,7 @@ same as composing the two extensions.
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
     → (σ ∘ δ) ⨾ˢ (f ∘' g) ≡ (σ ⨾ˢ f) ∘ (δ ⨾ˢ g)
-  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘'
+  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap map F-∘'
 
   sub-∘'
     : ∀ {Γ Δ Ψ x y z}
@@ -369,10 +369,10 @@ $(\Gamma, A)$ to $\Gamma.A$
 
 ```agda
   Extend : Functor (∫ E) B
-  Extend .F₀ (Γ , x) = Γ ⨾ x
+  Extend .F₀ (Γ , x)    = Γ ⨾ x
   Extend .F₁ (∫hom σ f) = σ ⨾ˢ f
-  Extend .F-id = ap to F-id'
-  Extend .F-∘ f g = ap to F-∘'
+  Extend .F-id    = ap map F-id'
+  Extend .F-∘ f g = ap map F-∘'
 ```
 
 There is also a natural transformation from this functor into the
@@ -521,11 +521,11 @@ Comonad→comprehension fib comp-comonad = comprehension where
 
   vert : Vertical-functor E (Slices B)
   vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .fst)
-  vert .F₁' {f = σ} f =
-    slice-hom (W₁ (∫hom σ f) .fst)
-      (sym (ap fst (counit.is-natural _ _ _)))
-  vert .F-id' = Slice-path B (ap fst W-id)
-  vert .F-∘' = Slice-path B (ap fst (W-∘ _ _))
+  vert .F₁' {f = σ} f = record where
+    map = W₁ (∫hom σ f) .fst
+    com = ap fst (counit.is-natural _ _ _)
+  vert .F-id' = Slice-path (ap fst W-id)
+  vert .F-∘'  = Slice-path (ap fst (W-∘ _ _))
 ```
 
 To see that this functor is fibred, recall that pullbacks in the

@@ -80,9 +80,9 @@ $x : \cA$, $y : \cB$, and $f : F(x) \to G(y)$.
     no-eta-equality
     constructor ↓obj
     field
-      {x} : Ob A
-      {y} : Ob B
-      map : Hom C (F .F₀ x) (G .F₀ y)
+      {dom} : Ob A
+      {cod} : Ob B
+      map   : Hom C (F .F₀ dom) (G .F₀ cod)
 ```
 
 A morphism from $(x_a, y_a, f_a) \to (x_b, y_b, f_b)$ is given by a pair
@@ -113,9 +113,9 @@ component of a [naturality square].
       module b = ↓Obj b
 
     field
-      {α} : Hom A a.x b.x
-      {β} : Hom B a.y b.y
-      sq : b.map C.∘ F .F₁ α ≡ G .F₁ β C.∘ a.map
+      {top} : Hom A a.dom b.dom
+      {bot} : Hom B a.cod b.cod
+      com   : b.map C.∘ F .F₁ top ≡ G .F₁ bot C.∘ a.map
 ```
 
 We omit routine characterisations of equality in `↓Hom`{.Agda} from the
@@ -128,28 +128,28 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 
   ↓Hom-pathp : ∀ {x x' y y'} {p : x ≡ x'} {q : y ≡ y'}
              → {f : ↓Hom x y} {g : ↓Hom x' y'}
-             → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
-             → (PathP _ (f .↓Hom.β) (g .↓Hom.β))
+             → (PathP _ (f .↓Hom.top) (g .↓Hom.top))
+             → (PathP _ (f .↓Hom.bot) (g .↓Hom.bot))
              → PathP (λ i → ↓Hom (p i) (q i)) f g
-  ↓Hom-pathp p q i .↓Hom.α = p i
-  ↓Hom-pathp p q i .↓Hom.β = q i
-  ↓Hom-pathp {p = p} {q} {f} {g} r s i .↓Hom.sq =
+  ↓Hom-pathp p q i .↓Hom.top = p i
+  ↓Hom-pathp p q i .↓Hom.bot = q i
+  ↓Hom-pathp {p = p} {q} {f} {g} r s i .↓Hom.com =
     is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map (q i) C.∘ F .F₁ (r i))
                                        (G .F₁ (s i) C.∘ ↓Obj.map (p i)))
-      (f .↓Hom.sq) (g .↓Hom.sq) i
+      (f .↓Hom.com) (g .↓Hom.com) i
 
   ↓Hom-path : ∀ {x y} {f g : ↓Hom x y}
-            → (f .↓Hom.α ≡ g .↓Hom.α)
-            → (f .↓Hom.β ≡ g .↓Hom.β)
+            → (f .↓Hom.top ≡ g .↓Hom.top)
+            → (f .↓Hom.bot ≡ g .↓Hom.bot)
             → f ≡ g
   ↓Hom-path = ↓Hom-pathp
 
   ↓Obj-path : {a b : ↓Obj}
-            → (p : a .↓Obj.x ≡ b .↓Obj.x) (q : a .↓Obj.y ≡ b .↓Obj.y)
+            → (p : a .↓Obj.dom ≡ b .↓Obj.dom) (q : a .↓Obj.cod ≡ b .↓Obj.cod)
             → PathP (λ i → Hom C (F .F₀ (p i)) (G .F₀ (q i))) (a .↓Obj.map) (b .↓Obj.map)
             → a ≡ b
-  ↓Obj-path p q r i .↓Obj.x = p i
-  ↓Obj-path p q r i .↓Obj.y = q i
+  ↓Obj-path p q r i .↓Obj.dom = p i
+  ↓Obj-path p q r i .↓Obj.cod = q i
   ↓Obj-path p q r i .↓Obj.map = r i
 
   private unquoteDecl eqv = declare-record-iso eqv (quote ↓Hom)
@@ -166,9 +166,9 @@ Identities and compositions are given componentwise:
 
 ```agda
   ↓id : ∀ {a} → ↓Hom a a
-  ↓id .↓Hom.α = A.id
-  ↓id .↓Hom.β = B.id
-  ↓id .↓Hom.sq = ap (_ C.∘_) (F .F-id) ∙∙ C.id-comm ∙∙ ap (C._∘ _) (sym (G .F-id))
+  ↓id .↓Hom.top = A.id
+  ↓id .↓Hom.bot = B.id
+  ↓id .↓Hom.com = ap (_ C.∘_) (F .F-id) ∙∙ C.id-comm ∙∙ ap (C._∘ _) (sym (G .F-id))
 
   ↓∘ : ∀ {a b c} → ↓Hom b c → ↓Hom a b → ↓Hom a c
   ↓∘ {a} {b} {c} g f = composite where
@@ -181,14 +181,14 @@ Identities and compositions are given componentwise:
     module g = ↓Hom g
 
     composite : ↓Hom a c
-    composite .α = g.α A.∘ f.α
-    composite .β = g.β B.∘ f.β
-    composite .sq =
-      c.map C.∘ F .F₁ (g.α A.∘ f.α)      ≡⟨ ap (_ C.∘_) (F .F-∘ _ _) ⟩
-      c.map C.∘ F .F₁ g.α C.∘ F .F₁ f.α  ≡⟨ C.extendl g.sq ⟩
-      G .F₁ g.β C.∘ b.map C.∘ F .F₁ f.α  ≡⟨ ap (_ C.∘_) f.sq ⟩
-      G .F₁ g.β C.∘ G .F₁ f.β C.∘ a.map  ≡⟨ C.pulll (sym (G .F-∘ _ _)) ⟩
-      G .F₁ (g.β B.∘ f.β) C.∘ a.map      ∎
+    composite .top = g.top A.∘ f.top
+    composite .bot = g.bot B.∘ f.bot
+    composite .com =
+      c.map C.∘ F .F₁ (g.top A.∘ f.top)      ≡⟨ ap (_ C.∘_) (F .F-∘ _ _) ⟩
+      c.map C.∘ F .F₁ g.top C.∘ F .F₁ f.top  ≡⟨ C.extendl g.com ⟩
+      G .F₁ g.bot C.∘ b.map C.∘ F .F₁ f.top  ≡⟨ ap (_ C.∘_) f.com ⟩
+      G .F₁ g.bot C.∘ G .F₁ f.bot C.∘ a.map  ≡⟨ C.pulll (sym (G .F-∘ _ _)) ⟩
+      G .F₁ (g.bot B.∘ f.bot) C.∘ a.map      ∎
 ```
 
 This assembles into a precategory.
@@ -211,19 +211,19 @@ square.
 
 ```agda
   Dom : Functor _↓_ A
-  Dom .F₀ = ↓Obj.x
-  Dom .F₁ = ↓Hom.α
+  Dom .F₀ = ↓Obj.dom
+  Dom .F₁ = ↓Hom.top
   Dom .F-id = refl
   Dom .F-∘ _ _ = refl
 
   Cod : Functor _↓_ B
-  Cod .F₀ = ↓Obj.y
-  Cod .F₁ = ↓Hom.β
+  Cod .F₀ = ↓Obj.cod
+  Cod .F₁ = ↓Hom.bot
   Cod .F-id = refl
   Cod .F-∘ _ _ = refl
 
   θ : (F F∘ Dom) => (G F∘ Cod)
-  θ = NT (λ x → x .↓Obj.map) λ x y f → f .↓Hom.sq
+  θ = NT (λ x → x .↓Obj.map) λ x y f → f .↓Hom.com
 ```
 
 <!--
@@ -234,13 +234,13 @@ square.
     open Inverses
 
     ↓-is-pregroupoid : is-pregroupoid _↓_
-    ↓-is-pregroupoid f .inv .α = A-grpd (f .α) .inv
-    ↓-is-pregroupoid f .inv .β = B-grpd (f .β) .inv
-    ↓-is-pregroupoid f .inv .sq = C.rswizzle
-      (sym (C.lswizzle (f .sq) (G.annihilate (B-grpd (f .β) .invr))) ∙ C.assoc _ _ _)
-      (F.annihilate (A-grpd (f .α) .invl))
-    ↓-is-pregroupoid f .inverses .invl = ↓Hom-path (A-grpd (f .α) .invl) (B-grpd (f .β) .invl)
-    ↓-is-pregroupoid f .inverses .invr = ↓Hom-path (A-grpd (f .α) .invr) (B-grpd (f .β) .invr)
+    ↓-is-pregroupoid f .inv .top = A-grpd (f .top) .inv
+    ↓-is-pregroupoid f .inv .bot = B-grpd (f .bot) .inv
+    ↓-is-pregroupoid f .inv .com = C.rswizzle
+      (sym (C.lswizzle (f .com) (G.annihilate (B-grpd (f .bot) .invr))) ∙ C.assoc _ _ _)
+      (F.annihilate (A-grpd (f .top) .invl))
+    ↓-is-pregroupoid f .inverses .invl = ↓Hom-path (A-grpd (f .top) .invl) (B-grpd (f .bot) .invl)
+    ↓-is-pregroupoid f .inverses .invr = ↓Hom-path (A-grpd (f .top) .invr) (B-grpd (f .bot) .invr)
 
 module _ {A : Precategory ao ah} {B : Precategory bo bh} where
   private
@@ -260,11 +260,11 @@ module _ {A : Precategory ao ah} {B : Precategory bo bh} where
 
   θ↘ : ∀ {X} → F F∘ Dom F (!Const X) => Const X
   θ↘ ._=>_.η f = f .map
-  θ↘ ._=>_.is-natural _ _ γ = γ .sq
+  θ↘ ._=>_.is-natural _ _ γ = γ .com
 
   θ↙ : ∀ {X} → Const X => F F∘ Cod (!Const X) F
   θ↙ ._=>_.η f = f .map
-  θ↙ ._=>_.is-natural _ _ γ = γ .sq
+  θ↙ ._=>_.is-natural _ _ γ = γ .com
 
 
 module ↙-compose
@@ -280,15 +280,15 @@ module ↙-compose
   open ↓Obj
   open ↓Hom
 
-  _↙>_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .y ↙ F) → Ob (d ↙ G F∘ F)
+  _↙>_ : ∀ {d} (g : Ob (d ↙ G)) → Ob (g .cod ↙ F) → Ob (d ↙ G F∘ F)
   g ↙> f = ↓obj (G.₁ (f .map) ℰ.∘ g .map)
 
-  ↙-compose : ∀ {d} (g : Ob (d ↙ G)) → Functor (g .y ↙ F) (d ↙ G F∘ F)
+  ↙-compose : ∀ {d} (g : Ob (d ↙ G)) → Functor (g .cod ↙ F) (d ↙ G F∘ F)
   ↙-compose g .F₀ f = g ↙> f
-  ↙-compose g .F₁ {f} {f'} h = ↓hom {β = h .β} $
+  ↙-compose g .F₁ {f} {f'} h = ↓hom {bot = h .bot} $
     (G.₁ (f' .map) ℰ.∘ g .map) ℰ.∘ ℰ.id          ≡⟨ ℰ.idr _ ⟩
-    G.₁ (f' .map) ℰ.∘ g .map                     ≡⟨ G.pushl (sym (𝒟.idr _) ∙ h .sq) ⟩
-    G.₁ (F.₁ (h .β)) ℰ.∘ G.₁ (f .map) ℰ.∘ g .map ∎
+    G.₁ (f' .map) ℰ.∘ g .map                     ≡⟨ G.pushl (sym (𝒟.idr _) ∙ h .com) ⟩
+    G.₁ (F.₁ (h .bot)) ℰ.∘ G.₁ (f .map) ℰ.∘ g .map ∎
   ↙-compose g .F-id = ↓Hom-path _ _ refl refl
   ↙-compose g .F-∘ _ _ = ↓Hom-path _ _ refl refl
 
@@ -309,7 +309,7 @@ module _ where
       : ∀ {ℓr}
       → {F : Functor A C} {G : Functor B C}
       → {f g : ↓Obj F G}
-      → ⦃ sab : Extensional (A .Hom (f .x) (g .x) × B .Hom (f .y) (g .y)) ℓr ⦄
+      → ⦃ sab : Extensional (A .Hom (f .dom) (g .dom) × B .Hom (f .cod) (g .cod)) ℓr ⦄
       → Extensional (↓Hom F G f g) ℓr
     Extensional-↓Hom {A = A} {B = B} {F = F} {G = G} {f = f} {g = g} ⦃ sab ⦄ =
       injection→extensional! (λ p → ↓Hom-path F G (ap fst p) (ap snd p)) sab
@@ -322,20 +322,20 @@ module _ where
       : ∀ {ℓr}
       → {X : A .Ob} {T : Functor B A}
       → {f g : ↓Obj (!Const X) T}
-      → ⦃ sb : Extensional (B .Hom (f .y) (g .y)) ℓr ⦄
+      → ⦃ sb : Extensional (B .Hom (f .cod) (g .cod)) ℓr ⦄
       → Extensional (↓Hom (!Const X) T f g) ℓr
     Extensional-↙Hom {B = B} {X = X} {T = T} {f = f} {g = g} ⦃ sb ⦄ =
-      injection→extensional! {f = λ sq → sq .β} (λ p → ↓Hom-path (!Const X) T refl p) sb
+      injection→extensional! {f = λ sq → sq .bot} (λ p → ↓Hom-path (!Const X) T refl p) sb
     {-# OVERLAPS Extensional-↙Hom #-}
 
     Extensional-↘Hom
       : ∀ {ℓr}
       → {T : Functor A B} {X : B .Ob}
       → {f g : ↓Obj T (!Const X)}
-      → ⦃ sa : Extensional (A .Hom (f .x) (g .x)) ℓr ⦄
+      → ⦃ sa : Extensional (A .Hom (f .dom) (g .dom)) ℓr ⦄
       → Extensional (↓Hom T (!Const X) f g) ℓr
     Extensional-↘Hom {A = A} {T = T} {X = X} {f = f} {g = g} ⦃ sa ⦄ =
-      injection→extensional! {f = λ sq → sq .α} (λ p → ↓Hom-path T (!Const X) p refl) sa
+      injection→extensional! {f = λ sq → sq .top} (λ p → ↓Hom-path T (!Const X) p refl) sa
     {-# OVERLAPS Extensional-↘Hom #-}
 
 
@@ -351,7 +351,7 @@ module _ where
         where
           -- Easier to just do this by hand.
           isom : Iso (↓Obj (!Const X) T) (Σ[ Y ∈ B .Ob ] (A .Hom X (T .F₀ Y)))
-          isom .fst α = ↓Obj.y α , ↓Obj.map α
+          isom .fst α = ↓Obj.cod α , ↓Obj.map α
           isom .snd .is-iso.from (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
           isom .snd .is-iso.linv _ = ↓Obj-path (!Const X) T refl refl refl
@@ -366,7 +366,7 @@ module _ where
         where
           -- Easier to just do this by hand.
           isom : Iso (↓Obj T (!Const Y)) (Σ[ X ∈ A .Ob ] (B .Hom (T .F₀ X) Y))
-          isom .fst α = ↓Obj.x α , ↓Obj.map α
+          isom .fst α = ↓Obj.dom α , ↓Obj.map α
           isom .snd .is-iso.from (Y , f) = ↓obj f
           isom .snd .is-iso.rinv _ = refl
           isom .snd .is-iso.linv _ = ↓Obj-path T (!Const Y) refl refl refl

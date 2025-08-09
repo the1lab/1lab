@@ -83,12 +83,12 @@ turns this into a cocone in $\cC/c$:
     module Forget/-lifts where
       module UF-colim = Colimit UF-colim
       K : C/c.Ob
-      K .domain = UF-colim.coapex
-      K .map = UF-colim.universal (λ j → F.₀ j .map) (λ f → F.₁ f .commutes)
+      K .dom = UF-colim.coapex
+      K .map = UF-colim.universal (λ j → F.₀ j .map) (λ f → F.₁ f .com)
 
       mk : make-is-colimit F K
       mk .ψ j .map = UF-colim.cocone .η j
-      mk .ψ j .commutes = UF-colim.factors _ _
+      mk .ψ j .com = UF-colim.factors _ _
       mk .commutes f = ext (UF-colim.cocone .is-natural _ _ f ∙ C.idl _)
 ```
 
@@ -102,8 +102,8 @@ the universal map.
       mk .universal eta comm .map = UF-colim.universal
         (λ j → eta j .map)
         (λ f → unext (comm f))
-      mk .universal eta comm .commutes = ext (UF-colim.unique _ _ _ λ j →
-        C.pullr (UF-colim.factors _ _) ∙ eta j .commutes)
+      mk .universal eta comm .com = ext (UF-colim.unique _ _ _ λ j →
+        C.pullr (UF-colim.factors _ _) ∙ eta j .com)
       mk .factors eta comm = ext (UF-colim.factors _ _)
       mk .unique eta comm u fac = ext (UF-colim.unique _ _ _ λ j →
         unext (fac j))

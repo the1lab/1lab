@@ -250,8 +250,8 @@ below we denote `elem`{.Agda}.
 ```agda
     elem : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
          → (arg : P ʻ i) → ↓Obj (よ C) (!Const P)
-    elem P i arg .x = i
-    elem P i arg .y = tt
+    elem P i arg .dom = i
+    elem P i arg .cod = tt
     elem P i arg .map .η j h = P .F₁ h arg
     elem P i arg .map .is-natural _ _ f = ext λ _ → P .F-∘ _ _ $ₚ _
 ```
@@ -287,12 +287,12 @@ from that same naturality:
       where abstract
       comm
         : ∀ {x y} (f : ↓Hom (よ C) (!Const (Nerve F .F₀ ob)) x y)
-        → y .map .η _ C.id D.∘ F.₁ (f .α) ≡ x .map .η _ C.id
+        → y .map .η _ C.id D.∘ F.₁ (f .top) ≡ x .map .η _ C.id
       comm {x} {y} f =
-        y .map .η _ C.id D.∘ F.₁ (f .α) ≡˘⟨ y .map .is-natural _ _ _ $ₚ _ ⟩
-        y .map .η _ (C.id C.∘ f .α)     ≡⟨ ap (y .map .η _) C.id-comm-sym ⟩
-        y .map .η _ (f .α C.∘ C.id)     ≡⟨ f .sq ηₚ _ $ₚ _ ⟩
-        x .map .η (x .↓Obj.x) C.id      ∎
+        y .map .η _ C.id D.∘ F.₁ (f .top) ≡˘⟨ y .map .is-natural _ _ _ $ₚ _ ⟩
+        y .map .η _ (C.id C.∘ f .top)     ≡⟨ ap (y .map .η _) C.id-comm-sym ⟩
+        y .map .η _ (f .top C.∘ C.id)     ≡⟨ f .com ηₚ _ $ₚ _ ⟩
+        x .map .η (x .dom) C.id           ∎
 ```
 
 Naturality of this putative counit follows from the uniqueness of maps
@@ -315,7 +315,7 @@ This proof is hateful.
       (λ {x'} {y'} f →
         D.pullr (sym (y' .map .is-natural _ _ _ $ₚ _)
                   ∙ ap (y' .map .η _) C.id-comm-sym)
-        ∙ ap (_ D.∘_) (f .sq ηₚ _ $ₚ C.id))
+        ∙ ap (_ D.∘_) (f .com ηₚ _ $ₚ C.id))
       (λ j →
         D.pullr (↓colim.factors _ _ _)
         ∙ ↓colim.factors _ _ _)
