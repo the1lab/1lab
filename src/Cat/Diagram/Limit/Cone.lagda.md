@@ -103,7 +103,7 @@ category.
 
 A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
 says -- a map `hom`{.Agda} in the ambient category between the apices,
-such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".
+such that "everything in sight `commutes`{.Agda ident="Cone-hom.com"}".
 Specifically, for any choice of object $o$ in the index category, the
 composition of `hom`{.Agda} with the domain cone's `ψ`{.Agda} (at that
 object) must be equal to the codomain's `ψ`{.Agda}.
