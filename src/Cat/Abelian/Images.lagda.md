@@ -52,9 +52,9 @@ epi] followed by a [regular mono].
 images : ∀ {A B} (f : Hom A B) → Image C f
 images f = im where
   the-img : ↓Obj (!Const (cut f)) Forget-full-subcat
-  the-img .x = tt
-  the-img .y .fst = cut (Ker.kernel (Coker.coeq f))
-  the-img .y .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
+  the-img .dom = tt
+  the-img .cod .fst = cut (Ker.kernel (Coker.coeq f))
+  the-img .cod .snd {c} = kernels-are-subobjects C ∅ _ (Ker.has-is-kernel _)
 ```
 
 Break $f$ down as an epi $p : A \epi \ker (\coker f)$ followed by a mono
@@ -81,7 +81,7 @@ $$.
 
 ```agda
   the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _
-  the-img .map ./-Hom.commutes = pulll (Ker.factors _) ∙ Coker.factors _
+  the-img .map ./-Hom.com = pulll (Ker.factors _) ∙ Coker.factors _
 ```
 
 ## Universality
@@ -113,8 +113,8 @@ commutes.
   im .Initial.bot = the-img
   im .Initial.has⊥ other = contr factor unique where
     factor : ↓Hom (!Const (cut f)) Forget-full-subcat the-img other
-    factor .α = tt
-    factor .β ./-Hom.map =
+    factor .top = tt
+    factor .bot ./-Hom.map =
         Coker.universal (Ker.kernel f) {e' = other .map .map} path
       ∘ coker-ker≃ker-coker f .is-invertible.inv
 ```
@@ -127,13 +127,12 @@ a (unique) map $\coker (\ker f) \to X$ s.t. the triangle above commutes!
 ```agda
       where abstract
         path : other .map .map ∘ 0m ≡ other .map .map ∘ kernel f .Kernel.kernel
-        path =
-          other .y .snd _ _ $ sym $
-                pulll (other .map .commutes)
-            ∙∙ Ker.equal f
-            ∙∙ ∅.zero-∘r _
-            ∙∙ 0m-unique
-            ∙∙ sym (ap₂ _∘_ refl ∘-zero-r ∙ ∘-zero-r)
+        path = other .cod .snd _ _ $ sym $
+             pulll (other .map .com)
+          ∙∙ Ker.equal f
+          ∙∙ ∅.zero-∘r _
+          ∙∙ 0m-unique
+          ∙∙ sym (ap₂ _∘_ refl ∘-zero-r ∙ ∘-zero-r)
 ```
 
 To satisfy that equation, observe that since $i'$ is monic, it suffices
@@ -146,22 +145,22 @@ is the image of $f$.
 <summary>Here's the tedious isomorphism algebra.</summary>
 
 ```agda
-    factor .β ./-Hom.commutes = invertible→epic (coker-ker≃ker-coker f) _ _ $
+    factor .bot ./-Hom.com = invertible→epic (coker-ker≃ker-coker f) _ _ $
       Coker.unique₂ (Ker.kernel f)
         (sym (Ker.equal f ∙ ∅.zero-∘r _ ∙ 0m-unique ∙ sym ∘-zero-r))
         (ap₂ _∘_ ( sym (assoc _ _ _)
                         ∙ ap₂ _∘_ refl (cancelr
                           (coker-ker≃ker-coker f .is-invertible.invr))) refl
-              ∙ pullr (Coker.factors _) ∙ other .map .commutes)
+              ∙ pullr (Coker.factors _) ∙ other .map .com)
         (sym (decompose f .snd ∙ assoc _ _ _))
-    factor .sq = /-Hom-path $ sym $ other .y .snd _ _ $
-      pulll (factor .β .commutes)
-      ∙ the-img .map .commutes
-      ∙∙ sym (other .map .commutes)
-      ∙∙ ap (other .y .fst .map ∘_) (intror refl)
+    factor .com = /-Hom-path $ sym $ other .cod .snd _ _ $
+      pulll (factor .bot .com)
+      ∙ the-img .map .com
+      ∙∙ sym (other .map .com)
+      ∙∙ ap (other .cod .fst .map ∘_) (intror refl)
 
     unique : ∀ x → factor ≡ x
-    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .snd _ _ $
-      sym (x .β .commutes ∙ sym (factor .β .commutes))
+    unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .cod .snd _ _ $
+      sym (x .bot .com ∙ sym (factor .bot .com))
 ```
 </details>

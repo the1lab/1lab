@@ -15,13 +15,16 @@ import Cat.Reasoning
 ```agda
 module Cat.Displayed.Cocartesian
   {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ') where
+```
 
-open Cat.Reasoning ℬ
-open Displayed ℰ
-open Cat.Displayed.Morphism ℰ
+<!--
+```agda
 open Cat.Displayed.Morphism.Duality ℰ
+open Cat.Displayed.Morphism ℰ
+open Cat.Reasoning ℬ
 open DR ℰ
 ```
+-->
 
 # Cocartesian morphisms and opfibrations
 

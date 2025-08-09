@@ -41,7 +41,7 @@ fin-name {X = X} so m with cardinality {A = fibre (so .map) m}
 <!--
 ```agda
 tru : Subobject 2
-tru .domain = 1
+tru .dom   = 1
 tru .map _ = 1
 tru .monic g h x = ext λ e → Fin-cases {P = λ x → x ≡ h e} (Fin-cases {P = λ x → 0 ≡ x} refl (λ ()) (h e)) (λ ()) (g e)
 

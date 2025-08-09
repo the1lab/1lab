@@ -22,22 +22,22 @@ module Cat.Displayed.Morphism.Duality
 <!--
 ```agda
 private
-  module ℬ = Cat.Morphism ℬ
+  module ℬ    = Cat.Morphism ℬ
   module ℬ^op = Cat.Morphism (ℬ ^op)
-  module ℰ = Cat.Displayed.Morphism ℰ
+  module ℰ    = Cat.Displayed.Morphism ℰ
   module ℰ^op = Cat.Displayed.Morphism (ℰ ^total-op)
 
-  open Displayed ℰ
-  open Cat.Morphism.Duality ℬ
   open Cat.Displayed.Reasoning ℰ
+  open Cat.Morphism.Duality ℬ
 
   open Cat.Displayed.Morphism
 
 private variable
   a b c d : ℬ.Ob
-  f g : ℬ.Hom a b
+  f g     : ℬ.Hom a b
+
   a' b' c' d' : Ob[ a ]
-  f' g' : Hom[ f ] a' b'
+  f' g'       : Hom[ f ] a' b'
 ```
 -->
 

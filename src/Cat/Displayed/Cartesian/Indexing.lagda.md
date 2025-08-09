@@ -30,15 +30,14 @@ module Cat.Displayed.Cartesian.Indexing
 
 <!--
 ```agda
-open Cartesian-fibration E cartesian
 open Cat.Displayed.Reasoning E
+open Cartesian-fibration E cartesian
 open Cat.Reasoning B
 open Cartesian-lift
-open Displayed E
 open is-cartesian
 open Functor
-private
-  module Fib = Cat.Displayed.Fibre.Reasoning E
+
+private module Fib = Cat.Displayed.Fibre.Reasoning E
 ```
 -->
 

@@ -304,14 +304,14 @@ module _ {o ℓ : _} (C : Precategory o ℓ) (c : ⌞ C ⌟) where
 ```agda
   Sieve→Sieve-in/c : Sieve C c → Sieve-in (Slice C c)
   Sieve→Sieve-in/c s .objects (cut f) = s .arrows f
-  Sieve→Sieve-in/c s .closed hy f = subst (_∈ s .arrows) (f .commutes)
+  Sieve→Sieve-in/c s .closed hy f = subst (_∈ s .arrows) (f .com)
     (s .closed hy (f .map))
 
   Sieve-in/c→Sieve : Sieve-in (Slice C c) → Sieve C c
   Sieve-in/c→Sieve s .arrows f = s .objects (cut f)
   Sieve-in/c→Sieve s .closed hf g = s .closed hf λ where
     .map → g
-    .commutes → refl
+    .com → refl
 
   Sieve≃Sieve-in/c : Sieve C c ≃ Sieve-in (Slice C c)
   Sieve≃Sieve-in/c .fst = Sieve→Sieve-in/c

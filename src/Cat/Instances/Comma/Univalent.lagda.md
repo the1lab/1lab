@@ -57,11 +57,11 @@ Comma-is-category = record { to-path = objs ; to-path-over = maps } where
   module _ {ob ob'} (isom : F↓G.Isomorphism ob ob') where
     module isom = F↓G._≅_ isom
 
-    x-is-x : ob .x Y.≅ ob' .x
-    y-is-y : ob .y Z.≅ ob' .y
+    x-is-x : ob .dom Y.≅ ob' .dom
+    y-is-y : ob .cod Z.≅ ob' .cod
 
-    x-is-x = Y.make-iso (isom.to .α) (isom.from .α) (ap α isom.invl) (ap α isom.invr)
-    y-is-y = Z.make-iso (isom.to .β) (isom.from .β) (ap β isom.invl) (ap β isom.invr)
+    x-is-x = Y.make-iso (isom.to .top) (isom.from .top) (ap top isom.invl) (ap top isom.invr)
+    y-is-y = Z.make-iso (isom.to .bot) (isom.from .bot) (ap bot isom.invl) (ap bot isom.invr)
 ```
 
 Observe that, over $\^f_\alpha$ and $\^f_\beta$, the map components
@@ -88,18 +88,18 @@ an identification $o \equiv o'$.
 
 ```agda
     objs : ob ≡ ob'
-    objs i .x = yuniv .to-path x-is-x i
-    objs i .y = zuniv .to-path y-is-y i
+    objs i .dom = yuniv .to-path x-is-x i
+    objs i .cod = zuniv .to-path y-is-y i
     objs i .map = lemma' i where
-      lemma' : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
+      lemma' : PathP (λ i → X.Hom (F.₀ (objs i .dom)) (G.₀ (objs i .cod)))
                 (ob .map) (ob' .map)
       lemma' = transport
         (λ i → PathP (λ j → X.Hom (F-map-path F yuniv xuniv x-is-x (~ i) j)
                                   (F-map-path G zuniv xuniv y-is-y (~ i) j))
                     (ob .map) (ob' .map)) $
         Univalent.Hom-pathp-iso xuniv $
-          X.pulll   (sym (isom.to .sq)) ∙
-          X.cancelr (F.annihilate (ap α isom.invl))
+          X.pulll   (sym (isom.to .com)) ∙
+          X.cancelr (F.annihilate (ap top isom.invl))
 ```
 
 It still remains to show that, over this identification, the isomorphism

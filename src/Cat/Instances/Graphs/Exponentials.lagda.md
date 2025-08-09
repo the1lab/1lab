@@ -47,7 +47,7 @@ exponentials: the evaluation and currying maps are as in $\Sets$.
 
 ```agda
 Graphs-closed
-  : ∀ {ℓ} → Cartesian-closed (Graphs ℓ ℓ) Graphs-products Graphs-terminal
+  : ∀ {ℓ} → Cartesian-closed (Graphs ℓ ℓ) Graphs-cartesian
 Graphs-closed .has-exp A B .B^A = Graphs[ A , B ]
 
 Graphs-closed .has-exp A B .ev = record where

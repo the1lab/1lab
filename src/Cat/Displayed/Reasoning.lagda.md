@@ -24,6 +24,8 @@ private
   module E = Displayed E
   module B = Cat B
   _ = Displayed.Hom[_] -- anchor for the reference below
+
+open E public
 ```
 -->
 
@@ -315,7 +317,6 @@ reasoning combinators.
 <!--
 ```agda
 open Cat B
-open Displayed E
 
 private variable
   u w x y z : Ob

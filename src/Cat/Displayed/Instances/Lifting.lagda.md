@@ -59,9 +59,8 @@ module _
   where
   private module J = Precategory J
 
-  open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
+  open Cat.Reasoning B
 ```
 -->
 
@@ -157,9 +156,8 @@ between $F'(j)$ and $G'(j)$.
 module _ {o ℓ o' ℓ' oj ℓj} {B : Precategory o ℓ} {J : Precategory oj ℓj} {E : Displayed B o' ℓ'} where
   private module J = Precategory J
 
-  open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
+  open Cat.Reasoning B
   open Lifting
 ```
 -->
@@ -298,9 +296,8 @@ module _
   where
   private module J = Precategory J
 
-  open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
+  open Cat.Reasoning B
   open Lifting
   open _=[_]=>l_
 ```

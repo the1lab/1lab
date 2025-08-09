@@ -16,6 +16,10 @@ open import Cat.Base
 
 ```agda
 module Cat.Displayed.Instances.TotalProduct
+```
+
+<!--
+```agda
   {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
   (C : Precategory o₁ ℓ₁)
   (D : Precategory o₂ ℓ₂)
@@ -23,6 +27,8 @@ module Cat.Displayed.Instances.TotalProduct
   private module EC = Displayed EC
   private module ED = Displayed ED
 ```
+-->
+
 # The total product of displayed categories
 
 If $\cE\to \cB$ and $q :\cD \to \cC$ are

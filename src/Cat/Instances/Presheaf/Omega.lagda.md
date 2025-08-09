@@ -71,10 +71,10 @@ psh-name {A} P .η x e .arrows {y} h = elΩ (fibre (P .map .η y) (A ⟪ h ⟫ e
 psh-name {A} P .η x e .closed {f = f} = elim! λ x p g →
   let
     q =
-      P .map .η _ (P .domain ⟪ g ⟫ x) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
-      A ⟪ g ⟫ (P .map .η _ x)         ≡⟨ ap₂ (A .F₁) refl p ⟩
-      A ⟪ g ⟫ (A ⟪ f ⟫ e)             ≡⟨ PSh.collapse A refl ⟩
-      A ⟪ f ∘ g ⟫ e                   ∎
+      P .map .η _ (P .dom ⟪ g ⟫ x) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
+      A ⟪ g ⟫ (P .map .η _ x)      ≡⟨ ap₂ (A .F₁) refl p ⟩
+      A ⟪ g ⟫ (A ⟪ f ⟫ e)          ≡⟨ PSh.collapse A refl ⟩
+      A ⟪ f ∘ g ⟫ e                ∎
   in inc (_ , q)
 psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
   (□-map λ (e , p) → e , p ∙ PSh.collapse P refl)
@@ -86,7 +86,7 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 PSh-omega : Subobject-classifier (PSh ℓ C)
 PSh-omega .Subobject-classifier.Ω = Sieves
 
-PSh-omega .Subobject-classifier.true .Sub.domain      = _
+PSh-omega .Subobject-classifier.true .Sub.dom         = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
 PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = ext λ _ _ → refl
 
@@ -133,7 +133,7 @@ PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
       prf : maximal' ≡ psh-name P .η _ (p₁' .η _ b)
       prf = sym (p ηₚ _ $ₚ b)
 
-      memb : Σ[ e ∈ P .domain ʻ a ] P .map .η _ e ≡ (A ⟪ id ⟫ p₁' .η a b)
+      memb : Σ[ e ∈ P .dom ʻ a ] P .map .η _ e ≡ (A ⟪ id ⟫ p₁' .η a b)
       memb = □-out (emb _) (subst (id ∈_) prf tt)
     in memb .fst , memb .snd ∙ PSh.F-id A
 ```
@@ -163,10 +163,10 @@ pullback.</summary>
     let
       (pt , q) = square→pt p a
       r =
-        P .map .η y (P .domain ⟪ f ⟫ pt) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
-        A ⟪ f ⟫ P .map .η x pt           ≡⟨ ap₂ (A .F₁) refl q ⟩
-        A ⟪ f ⟫ (p₁' .η x a)             ≡˘⟨ p₁' .is-natural _ _ _ $ₚ _ ⟩
-        p₁' .η y (P' ⟪ f ⟫ a)            ∎
+        P .map .η y (P .dom ⟪ f ⟫ pt) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
+        A ⟪ f ⟫ P .map .η x pt        ≡⟨ ap₂ (A .F₁) refl q ⟩
+        A ⟪ f ⟫ (p₁' .η x a)          ≡˘⟨ p₁' .is-natural _ _ _ $ₚ _ ⟩
+        p₁' .η y (P' ⟪ f ⟫ a)         ∎
     in emb _ (square→pt p _) (_ , r)
 
   pb .p₁∘universal {p = p} = ext λ a b → square→pt p b .snd
@@ -248,7 +248,7 @@ fibres of $P \mono A$ over $A(f)(x)$.
           nm .η i x .arrows (g ∘ h)     ≡⟨ to-is-true (nm .η i x .closed hg h) ⟩
           ⊤Ω                            ∎
 
-        members→names : to-presheaf (nm .η i x) => P .domain
+        members→names : to-presheaf (nm .η i x) => P .dom
         members→names = pb .universal includes
 
         it = members→names .η U (f , wit)

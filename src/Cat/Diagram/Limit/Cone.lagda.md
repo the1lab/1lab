@@ -103,7 +103,7 @@ category.
 
 A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
 says -- a map `hom`{.Agda} in the ambient category between the apices,
-such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".
+such that "everything in sight `commutes`{.Agda ident="Cone-hom.com"}".
 Specifically, for any choice of object $o$ in the index category, the
 composition of `hom`{.Agda} with the domain cone's `ψ`{.Agda} (at that
 object) must be equal to the codomain's `ψ`{.Agda}.
@@ -111,19 +111,19 @@ object) must be equal to the codomain's `ψ`{.Agda}.
 
 ```agda
     field
-      hom      : C.Hom (Cone.apex x) (Cone.apex y)
-      commutes : ∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o
+      map : C.Hom (Cone.apex x) (Cone.apex y)
+      com : ∀ o → Cone.ψ y o C.∘ map ≡ Cone.ψ x o
 ```
 
 <!--
 ```agda
   private unquoteDecl eqv = declare-record-iso eqv (quote Cone-hom)
 
-  Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
-  Cone-hom-path p i .Cone-hom.hom = p i
-  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes o j =
+  Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.map f ≡ Cone-hom.map g → f ≡ g
+  Cone-hom-path p i .Cone-hom.map = p i
+  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.com o j =
     is-set→squarep (λ i j → C.Hom-set _ _)
-      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes o) (g .Cone-hom.commutes o) refl i j
+      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.com o) (g .Cone-hom.com o) refl i j
 ```
 -->
 
@@ -142,16 +142,16 @@ again preserve _all_ the commutativities.
     compose {x} {y} {z} F G = r where
       open Cone-hom
       r : Cone-hom x z
-      r .hom = hom F C.∘ hom G
-      r .commutes o =
-        Cone.ψ z o C.∘ hom F C.∘ hom G ≡⟨ C.pulll (commutes F o) ⟩
-        Cone.ψ y o C.∘ hom G           ≡⟨ commutes G o ⟩
-        Cone.ψ x o                     ∎
+      r .map = F .map C.∘ G .map
+      r .com o =
+        Cone.ψ z o C.∘ F .map C.∘ G .map ≡⟨ C.pulll (F .com o) ⟩
+        Cone.ψ y o C.∘ G .map            ≡⟨ G .com o ⟩
+        Cone.ψ x o                       ∎
 
     cat : Precategory _ _
     cat .Ob = Cone
     cat .Hom = Cone-hom
-    cat .id = record { hom = C.id ; commutes = λ _ → C.idr _ }
+    cat .id  = record { map = C.id ; com = λ _ → C.idr _ }
     cat ._∘_ = compose
     cat .idr f = Cone-hom-path (C.idr _)
     cat .idl f = Cone-hom-path (C.idl _)
@@ -202,12 +202,12 @@ differently.
       α' .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
 
       nt : M => !Const (K .apex)
-      nt .η x = term α' .centre .hom
+      nt .η x = term α' .centre .map
       nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
-    isl .σ-comm = ext λ x → term _ .centre .commutes _
-    isl .σ-uniq {σ' = σ'} x = ext λ _ → ap hom $ term _ .paths λ where
-      .hom        → σ' .η _
-      .commutes _ → sym (x ηₚ _)
+    isl .σ-comm = ext λ x → term _ .centre .com _
+    isl .σ-uniq {σ' = σ'} x = ext λ _ → ap map $ term _ .paths λ where
+      .map   → σ' .η _
+      .com _ → sym (x ηₚ _)
 ```
 
 The inverse direction of this equivalence also consists of packing and
@@ -224,12 +224,10 @@ unpacking data.
     open Cone-hom
 
     term : is-contr (Cone-hom K _)
-    term .centre .hom =
-      L.universal K.ψ K.commutes
-    term .centre .commutes _ =
-      L.factors K.ψ K.commutes
+    term .centre .map   = L.universal K.ψ K.commutes
+    term .centre .com _ = L.factors K.ψ K.commutes
     term .paths f =
-      Cone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
+      Cone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
 ```
 
 <!--

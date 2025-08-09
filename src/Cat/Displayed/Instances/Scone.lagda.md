@@ -93,14 +93,14 @@ private
 
 ```agda
 scone : ∀ {X} → (U : Set ℓ) → (∣ U ∣ → Hom top X) → Scones.Ob[ X ]
-scone U s = cut {domain = U} s
+scone U s = cut {dom = U} s
 
 scone-hom : ∀ {X Y} {f : Hom X Y} {U V : Set ℓ}
           → {su : ∣ U ∣ → Hom top X} {sv : ∣ V ∣ → Hom top Y}
           → (uv : ∣ U ∣ → ∣ V ∣)
-          → (∀ u → f ∘ (su u) ≡ sv (uv u))
+          → (∀ u → sv (uv u) ≡ f ∘ (su u))
           → Scones.Hom[ f ] (scone U su) (scone V sv)
-scone-hom uv p = slice-hom uv (funext p)
+scone-hom uv p = record { map = uv ; com = funext p }
 ```
 
 ## As a fibration

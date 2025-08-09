@@ -70,9 +70,9 @@ definition.
 
 ```agda
     apex : ⌞ d ↙ F ⌟
-    apex .x = tt
-    apex .y = limf.apex
-    apex .map = flimf.universal (λ j → G.₀ j .map) λ f → sym (G.₁ f .sq) ∙ D.elimr refl
+    apex .dom = tt
+    apex .cod = limf.apex
+    apex .map = flimf.universal (λ j → G.₀ j .map) λ f → sym (G.₁ f .com) ∙ D.elimr refl
 ```
 
 Similarly short calculations show that we can define maps in $d \swarrow
@@ -80,15 +80,15 @@ F$ into $L$ componentwise, and these satisfy the universal property.
 
 ```agda
     lim' : make-is-limit G apex
-    lim' .ψ j .α = tt
-    lim' .ψ j .β = limf.ψ j
-    lim' .ψ j .sq = sym (flimf.factors _ _ ∙ D.intror refl)
+    lim' .ψ j .top = tt
+    lim' .ψ j .bot = limf.ψ j
+    lim' .ψ j .com = sym (flimf.factors _ _ ∙ D.intror refl)
     lim' .commutes f = ext (sym (limf.eps .is-natural _ _ _) ∙ C.elimr limf.Ext.F-id)
-    lim' .universal eta p .α = tt
-    lim' .universal eta p .β = limf.universal (λ j → eta j .β) λ f → ap β (p f)
-    lim' .universal eta p .sq = D.elimr refl ∙ sym (flimf.unique _ _ _ λ j → F.pulll (limf.factors _ _) ∙ sym (eta j .sq) ∙ D.elimr refl)
+    lim' .universal eta p .top = tt
+    lim' .universal eta p .bot = limf.universal (λ j → eta j .bot) λ f → ap bot (p f)
+    lim' .universal eta p .com = D.elimr refl ∙ sym (flimf.unique _ _ _ λ j → F.pulll (limf.factors _ _) ∙ sym (eta j .com) ∙ D.elimr refl)
     lim' .factors eta p = ext (limf.factors _ _)
-    lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap β (q j))
+    lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap bot (q j))
 ```
 
 To summarise, the functor $\operatorname{cod} : d \swarrow F \to \cC$

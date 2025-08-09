@@ -126,7 +126,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (fc : Finitely-complete C) (cat : is-ca
   open Terminal (fc .Finitely-complete.terminal) using (top)
 
   point→subobject : ∀ {A} (it : Hom top A) → Subobject A
-  point→subobject it .domain = top
+  point→subobject it .dom = top
   point→subobject it .map = it
   point→subobject it .monic g h x = Terminal.!-unique₂ (fc .Finitely-complete.terminal) _ _
 ```
@@ -238,9 +238,9 @@ fiddling, but it's nothing outrageous.
   mk .named-name m = Sub-antisym
     record
       { map = λ w → m .map w , lift tt , ap lift (to-is-true (inc (w , refl)))
-      ; sq  = refl
+      ; com = refl
       }
-    record { sq = ext λ x _ p → sym (unbox m (from-is-true p) .snd )}
+    record { com = ext λ x _ p → sym (unbox m (from-is-true p) .snd )}
   mk .name-named h = ext λ a → Ω-ua
     (rec! λ x _ p y=a → from-is-true (ap h (sym y=a) ∙ p))
     (λ ha → inc ((a , lift tt , ap lift (to-is-true ha)) , refl))
@@ -270,11 +270,11 @@ module _ {o ℓ} (C : Precategory o ℓ)  where
     : ∀ {Ω} {tru : Subobject Ω} → is-generic-subobject C tru
     → Generic-object Subobjects tru
   from-generic-subobject gen .classify    = gen .name
-  from-generic-subobject gen .classify' s = record { sq = gen .classifies s .square }
+  from-generic-subobject gen .classify' s = record { com = gen .classifies s .square }
   from-generic-subobject gen .classify-cartesian s = record
     { universal = λ {u} {u'} m a → record
-      { map = gen .classifies s .universal (pulll refl ∙ a .sq)
-      ; sq = sym (gen .classifies s .p₁∘universal)
+      { map = gen .classifies s .universal (pulll refl ∙ a .com)
+      ; com = sym (gen .classifies s .p₁∘universal)
       }
     ; commutes  = λ m h → prop!
     ; unique    = λ m h → prop!
@@ -310,7 +310,7 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
   name-ap : ∀ {A} {m n : Subobject A} → m ≅ₘ n → name m ≡ name n
   name-ap {m = m} im = so .unique record
     { top       = classifies m .top ∘ im .Sub.from .map
-    ; has-is-pb = subst-is-pullback (sym (im .Sub.from .sq) ∙ eliml refl) refl refl refl
+    ; has-is-pb = subst-is-pullback (sym (im .Sub.from .com) ∙ eliml refl) refl refl refl
         (is-pullback-iso (≅ₘ→iso im) (classifies m .has-is-pb))
     }
 
@@ -347,7 +347,7 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
       name ⊤ₘ ∘ id                   ≡⟨ classifies ⊤ₘ .square ⟩
       true .map ∘ classifies ⊤ₘ .top ∎
 
-  true-domain-is-terminal : is-terminal C (true .domain)
+  true-domain-is-terminal : is-terminal C (true .dom)
   true-domain-is-terminal X .centre  = classifies ⊤ₘ .top
   true-domain-is-terminal X .paths h = true .monic _ _ (sym (is-total→factors record
     { inv      = pb _ _ .universal (pullr refl)

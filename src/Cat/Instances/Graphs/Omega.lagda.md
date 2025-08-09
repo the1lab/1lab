@@ -160,7 +160,7 @@ $p'$, $q'$.
     → fibre (mm .edge) (subst₂ (X .Edge) (sym p) (sym q) e)
   from-edge {x} {y} {e} (mx , p) (my , q) w
     using ((mx' , p') , (my' , q') , e⁻¹' , γ) ← □-out {A = Edges e} Edges-is-prop w =
-    record { fst = subst₂ (m .domain .Edge) x⁻¹p y⁻¹p e⁻¹'
+    record { fst = subst₂ (m .dom .Edge) x⁻¹p y⁻¹p e⁻¹'
            ; snd = rem₁
            }
     where abstract
@@ -178,10 +178,10 @@ nodes, and some algebra regarding transports.
     y⁻¹p : my' ≡ my
     y⁻¹p = ap fst (node-emb _ (my' , q') (my , q))
 
-    rem₁ : mm .edge (subst₂ (m .domain .Edge) x⁻¹p y⁻¹p e⁻¹')
+    rem₁ : mm .edge (subst₂ (m .dom .Edge) x⁻¹p y⁻¹p e⁻¹')
          ≡ subst₂ (X .Edge) (sym p) (sym q) e
     rem₁ =
-      mm .edge (subst₂ (m .domain .Edge) x⁻¹p y⁻¹p e⁻¹')
+      mm .edge (subst₂ (m .dom .Edge) x⁻¹p y⁻¹p e⁻¹')
         ≡⟨ sym (subst₂-fibrewise (λ x y → mm .edge {x} {y}) x⁻¹p y⁻¹p e⁻¹') ⟩
       subst₂ (X .Edge) (ap· mm x⁻¹p) (ap· mm y⁻¹p)
         (mm .edge e⁻¹')
@@ -211,7 +211,7 @@ helper functions defined above.
           (ap lift (to-is-true
             (inc ((x , refl) , (y , refl) , e , sym (transport-refl _)))))
           (to-pathp refl)
-      ; sq  = Graph-hom-path (λ x → refl) (λ x → refl)
+      ; com = Graph-hom-path (λ x → refl) (λ x → refl)
       }
     record
       { map = record where
@@ -219,7 +219,7 @@ helper functions defined above.
         edge {x , lift tt , p} {y , lift tt , q} (e , lift tt , pe) = from-edge
           (from-node p) (from-node q)
           (from-is-true (ap lower (apd (λ i → fst) pe))) .fst
-      ; sq = ext λ where
+      ; com = ext λ where
         .node x _ e → sym (from-node e .snd)
         .edge {x , _ , p} {y , _ , q} (e , _ , pe) → to-pathp $ sym $
           from-edge (from-node p) (from-node q)

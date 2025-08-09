@@ -15,8 +15,7 @@ import Cat.Reasoning
 -->
 ```agda
 module Cat.Displayed.Cartesian.Joint
-  {o ℓ o' ℓ'}
-  {B : Precategory o ℓ} (E : Displayed B o' ℓ')
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')
   where
 ```
 
@@ -26,7 +25,6 @@ open Cat.Displayed.Cartesian E
 open Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
 open Cat.Reasoning B
-open Displayed E
 ```
 -->
 

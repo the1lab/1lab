@@ -63,10 +63,8 @@ maps $x' \to_f y'$.
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   private
     module B = Cat.Reasoning B
-    module E = Displayed E
-    open Cat.Displayed.Reasoning E
+    open module E = Cat.Displayed.Reasoning E
     open Cat.Displayed.Morphism E
-    open Displayed E
 ```
 -->
 

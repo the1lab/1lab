@@ -62,7 +62,6 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
     module E = Displayed E
     open Cat.Displayed.Reasoning E
     open Cat.Displayed.Morphism E
-    open Displayed E
 ```
 -->
 

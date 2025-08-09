@@ -10,6 +10,7 @@ open import Cat.Diagram.Terminal
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as PSh
@@ -158,12 +159,17 @@ componentwise.
 
 <!--
 ```agda
+open Cartesian-category using (products ; terminal)
 open Finitely-complete
 PSh-finite-limits : Finitely-complete (PSh κ C)
 PSh-finite-limits = record
   { Finitely-complete (with-pullbacks (PSh κ C) PSh-terminal PSh-pullbacks) hiding (products)
   ; products = PSh-products
   }
+
+PSh-cartesian : Cartesian-category (PSh κ C)
+PSh-cartesian .products = PSh-products
+PSh-cartesian .terminal = PSh-terminal
 ```
 -->
 

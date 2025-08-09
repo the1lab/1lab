@@ -13,13 +13,16 @@ import Cat.Reasoning as CR
 
 ```agda
 module Cat.Displayed.Total where
+```
 
+<!--
+```agda
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   open CR B
-  open Displayed E
   open DR E
   open DM E
 ```
+-->
 
 # The total category of a displayed category {defines=total-category}
 
@@ -68,7 +71,7 @@ the paths between morphisms.
 
 ```agda
   ∫Hom-path : ∀ {X Y : Total} {f g : ∫Hom X Y}
-                 → (p : f .fst ≡ g .fst) → f .snd ≡[ p ] g .snd → f ≡ g
+            → (p : f .fst ≡ g .fst) → f .snd ≡[ p ] g .snd → f ≡ g
   ∫Hom-path p p' i .fst = p i
   ∫Hom-path {f = f} {g = g} p p' i .snd = p' i
 ```

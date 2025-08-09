@@ -274,9 +274,9 @@ strong-epi-mono→image f a→im (_ , str-epi) im→b mono fact = go where
   open ↓Hom
 
   obj : ↓Obj (!Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})
-  obj .x = tt
-  obj .y = cut im→b , mono
-  obj .map = record { map = a→im ; commutes = fact }
+  obj .dom = tt
+  obj .cod = cut im→b , mono
+  obj .map = record { map = a→im ; com = fact }
 ```
 
 Actually, for an image factorisation, we don't need that $a \epi \im(f)$
@@ -292,19 +292,19 @@ in the relevant comma categories.
 
     the-lifting =
       str-epi
-        (record { monic = o.y .snd })
+        (record { monic = o.cod .snd })
         {u = o.map .map}
-        {v = im→b} (sym (o.map .commutes ∙ sym fact))
+        {v = im→b} (sym (o.map .com ∙ sym fact))
 
     dh : ↓Hom (!Const (cut f)) _ obj other
-    dh .α = tt
-    dh .β .map = the-lifting .centre .fst
-    dh .β .commutes = the-lifting .centre .snd .snd
-    dh .sq = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
+    dh .top      = tt
+    dh .bot .map = the-lifting .centre .fst
+    dh .bot .com = the-lifting .centre .snd .snd
+    dh .com      = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
 
     unique : ∀ om → dh ≡ om
     unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
-      om .β .map , sym (ap map (om .sq)) ∙ idr _ , om .β .commutes
+      om .bot .map , sym (ap map (om .com)) ∙ idr _ , om .bot .com
 ```
 
 # In the lex case

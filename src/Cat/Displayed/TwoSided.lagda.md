@@ -38,7 +38,6 @@ module _
     module B = Cat.Reasoning B
     open Cat.Displayed.Reasoning E
     open Cat.Displayed.Morphism E
-    open Displayed E
 ```
 -->
 

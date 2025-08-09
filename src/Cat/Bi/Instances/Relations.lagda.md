@@ -87,7 +87,7 @@ this fibre is a morphism $p : \Gamma \to R$ satisfying $fp = x$ and $gp
 ```agda
 module Relation {a b} (r : _↬_ a b) where
   rel : Ob
-  rel = r .domain
+  rel = r .dom
 
   src : Hom rel a
   src = π₁ ∘ r .map
@@ -102,7 +102,7 @@ The identity relation $\iota : a \rel a$ is tabulated by the pair $(\id,
 
 ```agda
 id-rel : ∀ {a} → a ↬ a
-id-rel {a} .domain = a
+id-rel {a} .dom = a
 id-rel {a} .map = δ
 id-rel {a} .monic g h x = by-π₁ $
   ⟨ g , g ⟩       ≡˘⟨ ⟨⟩∘ g ∙ ap₂ ⟨_,_⟩ (idl g) (idl g) ⟩
@@ -477,18 +477,18 @@ but keep in mind that they are not commented.
     {e = factor _ .mediate ∘ ∘-rel.inter r' s' .universal
       {p₁' = β .map ∘ ∘-rel.inter _ _ .p₁}
       {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
-      ( pullr (pulll (sym (β .sq) ∙ idl _))
-      ∙ sym (pullr (pulll (sym (α .sq) ∙ idl _))
+      ( pullr (pulll (sym (β .com) ∙ idl _))
+      ∙ sym (pullr (pulll (sym (α .com) ∙ idl _))
       ∙ (assoc _ _ _ ∙∙ sym (∘-rel.inter r s .square) ∙∙ sym (assoc _ _ _))))}
-    (Product.unique₂ (lex.products _ _)
+    (⟨⟩-unique₂
       (π₁∘⟨⟩ ∙ pullr refl)
       (π₂∘⟨⟩ ∙ pullr refl)
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
       ∙∙ pulll π₁∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₁∘universal)
-      ∙∙ pullr (pulll (sym (β .sq) ∙ idl _)))
+      ∙∙ pullr (pulll (sym (β .com) ∙ idl _)))
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
       ∙∙ pulll π₂∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₂∘universal)
-      ∙∙ pullr (pulll (sym (α .sq) ∙ idl _))))
+      ∙∙ pullr (pulll (sym (α .com) ∙ idl _))))
 
 ∘-rel-idr f = Sub-antisym fid≤f f≤fid where
   fid≤f : ∘-rel f id-rel ≤ₘ f
@@ -500,7 +500,7 @@ but keep in mind that they are not commented.
   f≤fid .map = factor _ .mediate ∘
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
-  f≤fid .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
+  f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
     (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter _ _ .p₁∘universal))
     (sym (pullr (∘-rel.inter _ _ .p₂∘universal) ∙ idr _))))
 
@@ -514,7 +514,7 @@ but keep in mind that they are not commented.
   f≤idf .map = factor _ .mediate ∘
     ∘-rel.inter id-rel f .universal {p₁' = id} {p₂' = Relation.tgt f}
       (idr _ ∙ sym (eliml π₁∘⟨⟩))
-  f≤idf .sq = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
+  f≤idf .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
     (sym (pullr (∘-rel.inter id-rel f .p₁∘universal) ∙ idr _))
     (sym (pullr (∘-rel.inter id-rel f .p₂∘universal) ∙ eliml π₂∘⟨⟩))))
 

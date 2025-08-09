@@ -12,22 +12,28 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as CR
+
+open is-weak-cartesian
+open Cocartesian-lift
+open Cartesian-lift
+open is-cocartesian
+open is-cartesian
+open is-pullback
+open Displayed
+open Pullback
+open Functor
+open /-Obj
 ```
 -->
 
 ```agda
-module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
+module Cat.Displayed.Instances.Slice where
 ```
 
 <!--
 ```agda
-open Cartesian-lift
-open Displayed
-open is-cartesian
-open is-weak-cartesian
-open Functor
-open CR B
-open /-Obj
+module _ {o ℓ} (B : Precategory o ℓ) where
+  open CR B
 ```
 -->
 
@@ -66,22 +72,22 @@ commuting _squares_, of the form
 where the primed objects and dotted arrows are displayed.
 
 ```agda
-record
-  Slice-hom
-    {x y} (f : Hom x y)
-    (px : /-Obj {C = B} x) (py : /-Obj {C = B} y)
-    : Type ℓ
-  where
-  constructor slice-hom
-  field
-    to      : Hom (px .domain) (py .domain)
-    commute : f ∘ px .map ≡ py .map ∘ to
+  private
+    Ob[] : ⌞ B ⌟ → Type _
+    Ob[] x = /-Obj {C = B} x
 
-open Slice-hom
+  record Slice-hom {x y} (f : Hom x y) (px : Ob[] x) (py : Ob[] y) : Type ℓ where
+    no-eta-equality
+    field
+      map : Hom (px .dom) (py .dom)
+      com : py ./-Obj.map ∘ map ≡ f ∘ px ./-Obj.map
+
+  open Slice-hom public
 ```
 
 <!--
 ```agda
+{-# INLINE Slice-hom.constructor #-}
 private unquoteDecl eqv = declare-record-iso eqv (quote Slice-hom)
 ```
 -->
@@ -101,26 +107,30 @@ reindexing given by $f$.
 
 <!--
 ```agda
-module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
-         {f' : Slice-hom f px py} {g' : Slice-hom g px py} where
+module
+  _ {o ℓ} {B : Precategory o ℓ} (open Precategory B)
+    {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
+    {f' : Slice-hom B f px py} {g' : Slice-hom B g px py}
+  where
 
-  Slice-pathp : (p : f ≡ g) → (f' .to ≡ g' .to) → PathP (λ i → Slice-hom (p i) px py) f' g'
-  Slice-pathp p p' i .to = p' i
-  Slice-pathp p p' i .commute =
-    is-prop→pathp
-      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p' i)))
-      (f' .commute)
-      (g' .commute)
-      i
+  Slice-pathp : ∀ {p : f ≡ g} → f' .map ≡ g' .map → PathP (λ i → Slice-hom B (p i) px py) f' g'
+  Slice-pathp {p = p} p' i .map = p' i
+  Slice-pathp {p = p} p' i .com = is-prop→pathp
+    (λ i → Hom-set _ _ (py .map ∘ p' i) (p i ∘ px .map))
+    (f' .com) (g' .com) i
 
 Slice-path
-  : ∀ {x y} {f : Hom x y} {px : /-Obj x} {py : /-Obj y}
-  → {f' g' : Slice-hom f px py}
-  → (f' .to ≡ g' .to)
+  : ∀ {o ℓ} {B : Precategory o ℓ} (open Precategory B)
+  → ∀ {x y} {f : Hom x y} {px : /-Obj x} {py : /-Obj y}
+  → {f' g' : Slice-hom B f px py}
+  → (f' .map ≡ g' .map)
   → f' ≡ g'
-Slice-path = Slice-pathp refl
+Slice-path = Slice-pathp
 
 unquoteDecl H-Level-Slice-hom = declare-record-hlevel 2 H-Level-Slice-hom (quote Slice-hom)
+
+module _ {o ℓ} (B : Precategory o ℓ) where
+  open CR B
 ```
 -->
 
@@ -129,20 +139,25 @@ slice category and our displayed maps `Slice-hom`{.Agda} into a category
 displayed over $\cB$.
 
 ```agda
-Slices : Displayed B (o ⊔ ℓ) ℓ
-Slices .Ob[_] = /-Obj {C = B}
-Slices .Hom[_] = Slice-hom
-Slices .Hom[_]-set _ _ _ = hlevel 2
-Slices .id' = slice-hom id id-comm-sym
-Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
-  slice-hom (px .to ∘ py .to) $
-    (f ∘ g) ∘ x .map           ≡⟨ pullr (py .commute) ⟩
-    f ∘ (y .map ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
-    z .map ∘ (px .to ∘ py .to) ∎
-Slices .idr' {f = f} f' = Slice-pathp (idr f) (idr (f' .to))
-Slices .idl' {f = f} f' = Slice-pathp (idl f) (idl (f' .to))
-Slices .assoc' {f = f} {g = g} {h = h} f' g' h' =
-  Slice-pathp (assoc f g h) (assoc (f' .to) (g' .to) (h' .to))
+  Slices : Displayed B (o ⊔ ℓ) ℓ
+  Slices .Ob[_]            = /-Obj {C = B}
+  Slices .Hom[_]           = Slice-hom B
+  Slices .Hom[_]-set _ _ _ = hlevel 2
+  Slices .id' = record where
+    map = id
+    com = id-comm
+
+  Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py = record where
+    com =
+      z .map ∘ px .map ∘ py .map ≡⟨ extendl (px .com) ⟩
+      f ∘ y .map ∘ py .map       ≡⟨ pushr (py .com) ⟩
+      (f ∘ g) ∘ x .map           ∎
+    map = px .map ∘ py .map
+
+  Slices .idr' {f = f} f' = Slice-pathp (idr (f' .map))
+  Slices .idl' {f = f} f' = Slice-pathp (idl (f' .map))
+  Slices .assoc' {f = f} {g = g} {h = h} f' g' h' = Slice-pathp $
+    assoc (f' .map) (g' .map) (h' .map)
 ```
 
 It's only slightly more annoying to show that a vertical map in the
@@ -152,24 +167,26 @@ slice category $\cB/x$, gives an equivalence of categories between
 the fibre $\underline{\cB}^*(x)$ and the slice $\cB/x$.
 
 ```agda
-Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
-Fibre→slice .F₀ x = x
-Fibre→slice .F₁ f ./-Hom.map = f .to
-Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
-Fibre→slice .F-id = ext refl
-Fibre→slice .F-∘ f g = ext (transport-refl _)
+  Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
+  Fibre→slice .F₀ x = x
+  Fibre→slice .F₁ f ./-Hom.map = f .map
+  Fibre→slice .F₁ f ./-Hom.com = f .com ∙ eliml refl
+  Fibre→slice .F-id    = ext refl
+  Fibre→slice .F-∘ f g = ext (transport-refl _)
 
-Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
-Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv λ where
-  .is-iso.from hom → slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
-  .is-iso.rinv x → ext refl
-  .is-iso.linv x → Slice-pathp refl refl
+  Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
+  Fibre→slice-is-ff = is-iso→is-equiv λ where
+    .is-iso.from hom → record where
+      map = hom ./-Hom.map
+      com = hom ./-Hom.com ∙ introl refl
+    .is-iso.rinv x → ext refl
+    .is-iso.linv x → Slice-pathp refl
 
-Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
-Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
-  record { has-is-ff = Fibre→slice-is-ff
-         ; has-is-iso = id-equiv
-         }
+  Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
+  Fibre→slice-is-equiv = is-precat-iso→is-equivalence $ record
+    { has-is-ff  = Fibre→slice-is-ff
+    ; has-is-iso = id-equiv
+    }
 ```
 
 ## Cartesian maps
@@ -193,40 +210,37 @@ This follows by a series of relatively straightforward computations, so
 we do not comment too heavily on the proof.
 
 ```agda
-cartesian→pullback
-  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
-  → is-cartesian Slices f f'
-  → is-pullback B (x' .map) f (f' .to) (y' .map)
-cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
-  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
-  pb .is-pullback.square = f' .commute
-  pb .is-pullback.universal p =
-    cart .universal _ (slice-hom _ (idr _ ∙ p)) .to
-  pb .is-pullback.p₁∘universal =
-    sym (cart .universal _ _ .commute) ∙ idr _
-  pb .is-pullback.p₂∘universal =
-    ap Slice-hom.to (cart .commutes _ _)
-  pb .is-pullback.unique p q =
-    ap Slice-hom.to (cart .unique (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q))
+  cartesian→pullback
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-cartesian Slices f f'
+    → is-pullback B (x' .map) f (f' .map) (y' .map)
+  cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+    pb : is-pullback B (x' .map) f (f' .map) (y' .map)
+    pb .square       = sym (f' .com)
+    pb .universal p  = cart .universal _ record { com = sym p ∙ ap₂ _∘_ (intror refl) refl } .map
+    pb .p₁∘universal = cart .universal _ _ .com ∙ eliml refl
+    pb .p₂∘universal = ap map (cart .commutes _ _)
+    pb .unique p q   = ap map $ cart .unique
+      record { com = p ∙ introl refl }
+      (Slice-pathp q)
 
-pullback→cartesian
-  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
-  → is-pullback B (x' .map) f (f' .to) (y' .map)
-  → is-cartesian Slices f f'
-pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
-  module pb = is-pullback pb
+  pullback→cartesian
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-pullback B (x' .map) f (f' .map) (y' .map)
+    → is-cartesian Slices f f'
+  pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
+    module pb = is-pullback pb
 
-  cart : is-cartesian Slices f f'
-  cart .universal m h' .to = pb.universal (assoc _ _ _ ∙ h' .commute)
-  cart .universal m h' .commute = sym pb.p₁∘universal
-  cart .commutes m h' = Slice-pathp refl pb.p₂∘universal
-  cart .unique m' x = Slice-pathp refl $
-    pb.unique (sym (m' .commute)) (ap to x)
+    cart : is-cartesian Slices f f'
+    cart .universal m h' .map = pb.universal (assoc _ _ _ ∙ sym (h' .com))
+    cart .universal m h' .com  = pb.p₁∘universal
+    cart .commutes m h' = Slice-pathp pb.p₂∘universal
+    cart .unique m' x = Slice-pathp $ pb.unique (m' .com) (ap map x)
 ```
 
 <!--
 ```agda
-_ = weak-cartesian→cartesian
+  _ = weak-cartesian→cartesian
 ```
 -->
 
@@ -238,34 +252,32 @@ it is sometimes useful to have both characterisations if we do not want to
 make such an assumption.
 
 ```agda
-weak-cartesian→pullback
-  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
-  → is-weak-cartesian Slices f f'
-  → is-pullback B (x' .map) f (f' .to) (y' .map)
+  weak-cartesian→pullback
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-weak-cartesian Slices f f'
+    → is-pullback B (x' .map) f (f' .map) (y' .map)
 
-pullback→weak-cartesian
-  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
-  → is-pullback B (x' .map) f (f' .to) (y' .map)
-  → is-weak-cartesian Slices f f'
+  pullback→weak-cartesian
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-pullback B (x' .map) f (f' .map) (y' .map)
+    → is-weak-cartesian Slices f f'
 ```
 
 <details>
 <summary>The computation is essentially the same.</summary>
 
 ```agda
-weak-cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
-  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
-  pb .is-pullback.square = f' .commute
-  pb .is-pullback.universal p =
-    cart .universal (slice-hom _ p) .to
-  pb .is-pullback.p₁∘universal =
-    sym (cart .universal _ .commute) ∙ idl _
-  pb .is-pullback.p₂∘universal =
-    apd (λ _ → Slice-hom.to) (cart .commutes _)
-  pb .is-pullback.unique p q =
-    ap Slice-hom.to (cart .unique (slice-hom _ (idl _ ∙ sym p)) (Slice-pathp (idr _) q))
+  weak-cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+    pb : is-pullback B (x' .map) f (f' .map) (y' .map)
+    pb .square       = sym (f' .com)
+    pb .universal p  = cart .universal record{ com = sym p } .map
+    pb .p₁∘universal = cart .universal _ .com ∙ eliml refl
+    pb .p₂∘universal = apd (λ _ → Slice-hom.map) (cart .commutes _)
+    pb .is-pullback.unique p q = ap Slice-hom.map $ cart .unique
+      record{ com = p ∙ introl refl }
+      (Slice-pathp q)
 
-pullback→weak-cartesian pb = cartesian→weak-cartesian _ (pullback→cartesian pb)
+  pullback→weak-cartesian pb = cartesian→weak-cartesian _ (pullback→cartesian pb)
 ```
 </details>
 
@@ -282,17 +294,17 @@ to $\underline{\cB}$ regarded as a Cartesian fibration as the
 **codomain fibration**.
 
 ```agda
-Codomain-fibration
-  : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
-  → Cartesian-fibration Slices
-Codomain-fibration pullbacks f y' = lift-f where
-  module pb = Pullback (pullbacks f (y' .map))
+  Codomain-fibration
+    : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
+    → Cartesian-fibration Slices
+  Codomain-fibration pullbacks f y' = lift-f where
+    module pb = Pullback (pullbacks f (y' .map))
 
-  lift-f : Cartesian-lift Slices f y'
-  lift-f .x' = cut pb.p₁
-  lift-f .lifting .to = pb.p₂
-  lift-f .lifting .commute = pb.square
-  lift-f .cartesian = pullback→cartesian pb.has-is-pb
+    lift-f : Cartesian-lift Slices f y'
+    lift-f .x' = cut pb.p₁
+    lift-f .lifting .map = pb.p₂
+    lift-f .lifting .com = sym pb.square
+    lift-f .cartesian = pullback→cartesian pb.has-is-pb
 ```
 
 [pullbacks]: Cat.Diagram.Pullback.html
@@ -304,28 +316,26 @@ have the converse implication: If $\underline{\cB}$ is a Cartesian
 fibration, then $\cB$ has all pullbacks.
 
 ```agda
-Codomain-fibration→pullbacks
-  : ∀ {x y z} (f : Hom x y) (g : Hom z y)
-  → Cartesian-fibration Slices
-  → Pullback B f g
-Codomain-fibration→pullbacks f g slices-fib = pb where
-  open Cartesian-fibration Slices slices-fib
-  open is-pullback
-  open Pullback
+  Codomain-fibration→pullbacks
+    : ∀ {x y z} (f : Hom x y) (g : Hom z y)
+    → Cartesian-fibration Slices
+    → Pullback B f g
+  Codomain-fibration→pullbacks f g slices-fib = pb where
+    open Cartesian-fibration Slices slices-fib
 
-  pb : Pullback B f g
-  pb .apex = (f ^* cut g) .domain
-  pb .p₁ = (f ^* cut g) .map
-  pb .p₂ = π* f (cut g) .to
-  pb .has-is-pb .square = π* f (cut g) .commute
-  pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
-    π*.universal {u' = cut id}
-      p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
-  pb .has-is-pb .p₁∘universal =
-    sym (π*.universal _ _ .commute) ∙ idr _
-  pb .has-is-pb .p₂∘universal = ap to (π*.commutes _ _)
-  pb .has-is-pb .unique p q = ap to $ π*.unique
-    (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q)
+    pb : Pullback B f g
+    pb .apex = (f ^* cut g) .dom
+    pb .p₁ = (f ^* cut g) .map
+    pb .p₂ = π* f (cut g) .map
+    pb .has-is-pb .square = sym (π* f (cut g) .com)
+    pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
+      π*.universal {u' = cut id}
+        p₁' record{ com = sym p ∙ intror refl } .map
+    pb .has-is-pb .p₁∘universal =
+      π*.universal _ _ .com ∙ elimr refl
+    pb .has-is-pb .p₂∘universal = ap map (π*.commutes _ _)
+    pb .has-is-pb .unique p q = ap map $ π*.unique
+      record{ com = p ∙ intror refl } (Slice-path q)
 ```
 
 Since the fibres of the codomain fibration are given by slice
@@ -343,16 +353,14 @@ to a family over $Y$ by adding in empty fibres for all elements of $Y$
 that do not lie in the image of $f$.
 
 ```agda
-Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration f x' = lift-f where
-
-  lift-f : Cocartesian-lift Slices f x'
-  lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)
-  lift-f .Cocartesian-lift.lifting = slice-hom id (sym (idr _))
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h' =
-    slice-hom (h' .to) (assoc _ _ _ ∙ h' .commute)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h' =
-    Slice-pathp refl (idr _)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m' p =
-    Slice-pathp refl (sym (idr _) ∙ ap to p)
+  Codomain-opfibration : Cocartesian-fibration Slices
+  Codomain-opfibration f x' = lift-f where
+    lift-f : Cocartesian-lift Slices f x'
+    lift-f .y'      = cut (f ∘ x' .map)
+    lift-f .lifting = record{ com = idr _ }
+    lift-f .cocartesian .universal m h' = record where
+      map = h' .map
+      com = h' .com ∙ pullr refl
+    lift-f .cocartesian .commutes m h' = Slice-pathp (idr _)
+    lift-f .cocartesian .unique m' p   = Slice-pathp (sym (idr _) ∙ ap map p)
 ```

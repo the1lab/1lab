@@ -116,11 +116,11 @@ conclude that the category of sheaves on a site is also [[Cartesian
 closed]].
 
 ```agda
-  Sh[]-cc : Cartesian-closed Sh[ C , J ] (Sh[]-products J) (Sh[]-terminal J)
-  Sh[]-cc .has-exp (A , _) (B , bshf) = exp where
+  Sh[]-closed : Cartesian-closed Sh[ C , J ] (Sh[]-cartesian J)
+  Sh[]-closed .has-exp (A , _) (B , bshf) = exp where
     exp' = PSh-closed C .has-exp A B
 
-    exp : Exponential Sh[ C , J ] _ _ _ _
+    exp : Exponential Sh[ C , J ] _ _ _
     exp .B^A .fst = exp' .B^A
     exp .B^A .snd = is-sheaf-exponential J A B bshf
     exp .ev       = exp' .ev

@@ -18,9 +18,9 @@ module Cat.Displayed.Morphism
 
 <!--
 ```agda
-open Displayed ℰ
-open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
+open Cat.Reasoning ℬ
+
 private variable
   ℓi : Level
   Ix : Type ℓi

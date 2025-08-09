@@ -124,10 +124,10 @@ is the image object, and $m$ is the inclusion map:
 
 ```agda
     Im : Ob
-    Im = im .bot .y .fst .domain
+    Im = im .bot .cod .fst .dom
 
     Im→codomain : Hom Im b
-    Im→codomain = im .bot .y .fst .map
+    Im→codomain = im .bot .cod .fst .map
 ```
 
 Furthermore, this map is both an inclusion (since $M$ is a class of
@@ -135,7 +135,7 @@ monomorphisms), and an $M$-inclusion at that:
 
 ```agda
     Im→codomain-is-M : M .fst Im→codomain
-    Im→codomain-is-M = im .bot .y .snd
+    Im→codomain-is-M = im .bot .cod .snd
 
     Im→codomain-is-monic : is-monic Im→codomain
     Im→codomain-is-monic = M .snd Im→codomain-is-M
@@ -150,7 +150,7 @@ comma category. We also have the "morphism" part, which provides our
     corestrict = im .bot .map .map
 
     image-factors : Im→codomain ∘ corestrict ≡ f
-    image-factors = im .bot .map .commutes
+    image-factors = im .bot .map .com
 ```
 
 This is also the _smallest_ factorisation, which takes quite a lot of
@@ -172,17 +172,17 @@ through $k$:
       : ∀ {c} (m : Hom c b) (M-m : M .fst m) (i : Hom a c)
       → m ∘ i ≡ f
       → Hom Im c
-    universal m M i p = im .has⊥ obj .centre .β .map where
+    universal m M i p = im .has⊥ obj .centre .bot .map where
       obj : ↓Obj _ _
-      obj .x = tt
-      obj .y = cut m , M
-      obj .map = record { map = i ; commutes = p }
+      obj .dom = tt
+      obj .cod = cut m , M
+      obj .map = record { map = i ; com = p }
 
     universal-factors
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
       → {p : m ∘ i ≡ f}
       → m ∘ universal m M i p ≡ Im→codomain
-    universal-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .β .commutes
+    universal-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .bot .com
 
     universal-commutes
       : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}

@@ -7,6 +7,7 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
@@ -16,7 +17,7 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Diagram.Exponential
-  {o ℓ} (C : Precategory o ℓ) (fp : has-products C) (term : Terminal C) where
+  {o ℓ} (C : Precategory o ℓ) (cart : Cartesian-category C) where
 ```
 
 # Exponential objects {defines="exponential-object"}
@@ -38,9 +39,7 @@ $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
 
 <!--
 ```agda
-open Binary-products C fp
-open Cat.Reasoning C
-open Terminal term
+open Cartesian-category cart
 open Functor
 open _⊣_
 
@@ -120,10 +119,10 @@ and that this indeed interprets the $\beta$-reduction rule:
 <!--
 ```agda
 module _ where
-  open is-exponential
-
   is-exponential-is-prop : ∀ {B^A} {ev : Hom (B^A ⊗₀ A) B} → is-prop (is-exponential B^A ev)
   is-exponential-is-prop {B^A = B^A} {ev} x y = q where
+    open is-exponential
+
     p : Path (∀ {C} m → Hom C B^A) (x .ƛ) (y .ƛ)
     p i {C} m = y .unique (x .ƛ m) (x .commutes m) i
 
@@ -165,12 +164,73 @@ closed category" to "CCC".
     field has-exp : ∀ A B → Exponential A B
 
     module _ {A} {B} where open Exponential (has-exp A B) hiding (B^A) public
-    module Exp A B = Exponential (has-exp A B)
+    module _ A B     where open Exponential (has-exp A B) renaming (B^A to [_,_]) using () public
 ```
 :::
 
 <!--
 ```agda
+    unlambda-∘ : ∀ {a b c d} (α : Hom a [ c , d ]) (β : Hom b a) → unlambda (α ∘ β) ≡ unlambda α ∘ β ⊗₁ id
+    unlambda-∘ α β = sym (Equiv.adjunctl (ƛ , lambda-is-equiv) (sym (unique (α ∘ β) aux))) where
+      aux =
+        ev ∘ (α ∘ β) ⊗₁ id            ≡⟨ ap (λ x → ev ∘ (α ∘ β) ⊗₁ x) (sym $ idl id) ⟩
+        ev ∘ (α ∘ β) ⊗₁ (id ∘ id) ≡⟨ ap (ev ∘_) (×-functor .F-∘ (α , id) (β , id)) ⟩
+        ev ∘ α ⊗₁ id ∘ β ⊗₁ id      ≡⟨ assoc _ _ _ ⟩
+        (ev ∘ α ⊗₁ id) ∘ β ⊗₁ id    ∎
+
+    ƛ-∘' : ∀ {a a' b b' c} (f : Hom (a ⊗₀ b) c) (g : Hom a' a) (h : Hom b' b)
+        → ƛ (f ∘ g ⊗₁ h) ≡ ƛ (ev ∘ id ⊗₁ h) ∘ ƛ f ∘ g
+    ƛ-∘' f g h = sym (unique _ aux) where
+      aux =
+        unlambda (ƛ (ev ∘ id ⊗₁ h) ∘ ƛ f ∘ g)
+          ≡⟨ unlambda-∘ (ƛ (ev ∘ id ⊗₁ h)) (ƛ f ∘ g) ⟩
+        unlambda (ƛ (ev ∘ id ⊗₁ h)) ∘ (ƛ f ∘ g) ⊗₁ id
+          ≡⟨ pushl (commutes _) ⟩
+        ev ∘ id ⊗₁ h ∘ (ƛ f ∘ g) ⊗₁ id
+          ≡⟨ ap (ev ∘_) (sym (×-functor .F-∘ (id , h) (ƛ f ∘ g , id))) ⟩
+        ev ∘ (id ∘ (ƛ f ∘ g)) ⊗₁ (h ∘ id)
+          ≡⟨ (λ i → ev ∘ idl (ƛ f ∘ g) i ⊗₁ idr h i) ⟩
+        ev ∘ (ƛ f ∘ g) ⊗₁ h
+          ≡⟨ (λ i → ev ∘ (ƛ f ∘ g) ⊗₁ idl h (~ i)) ⟩
+        ev ∘ (ƛ f ∘ g) ⊗₁ (id ∘ h)
+          ≡⟨ ap (ev ∘_) (×-functor .F-∘ (ƛ f , id) (g , h)) ⟩
+        ev ∘ (ƛ f ⊗₁ id) ∘ (g ⊗₁ h)
+          ≡⟨ pulll (commutes _) ⟩
+        f ∘ g ⊗₁ h
+          ∎
+
+    ƛ-∘-idl
+      : ∀ {a b b' c} (f : Hom (a ⊗₀ b) c) (h : Hom b' b)
+      → ƛ (f ∘ id ⊗₁ h) ≡ ƛ (ev ∘ id ⊗₁ h) ∘ ƛ f
+    ƛ-∘-idl f h = ƛ-∘' f id h ∙ ap₂ _∘_ refl (elimr refl)
+
+    ƛ-∘-idr
+      : ∀ {a a' b c} (f : Hom (a ⊗₀ b) c) (g : Hom a' a)
+      → ƛ (f ∘ g ⊗₁ id) ≡ ƛ f ∘ g
+    ƛ-∘-idr f g = ƛ-∘' f g id ∙ eliml (ap ƛ (elimr (Functor.F-id ×-functor)) ∙ lambda-ev)
+
+    ƛ-⊗
+      : ∀ {a b a' b' c} (f : Hom (a ⊗₀ b) c) (g : Hom a' a) (h : Hom b' b)
+      → ƛ (f ∘ id ⊗₁ h) ∘ g ≡ ƛ (f ∘ g ⊗₁ h)
+    ƛ-⊗ f g h = sym (Equiv.adjunctr (ƛ , lambda-is-equiv) (sym aux)) where
+      aux =
+        unlambda (ƛ (f ∘ id ⊗₁ h) ∘ g)
+          ≡⟨ unlambda-∘ _ _ ⟩
+        unlambda (ƛ (f ∘ id ⊗₁ h)) ∘ g ⊗₁ id
+          ≡⟨ pushl (commutes _) ⟩
+        f ∘ id ⊗₁ h ∘ g ⊗₁ id
+          ≡⟨ ap (f ∘_) (sym $ ×-functor .F-∘ (id , h) (g , id)) ⟩
+        f ∘ (id ∘ g) ⊗₁ (h ∘ id)
+          ≡⟨ ap₂ (λ x y → f ∘ x ⊗₁ y) (idl g) (idr h) ⟩
+        f ∘ g ⊗₁ h
+          ∎
+```
+-->
+
+<!--
+```agda
+  open is-exponential
+
   exponential-unique
     : ∀ {A B B^A B^A'} {ev : Hom (B^A ⊗₀ A) B} {ev' : Hom (B^A' ⊗₀ A) B}
     → is-exponential B^A ev
@@ -223,11 +283,11 @@ module _ (cc : Cartesian-closed) where
 -->
 
 ```agda
-  [-,-]₁ : ∀ {a a' b b'} → Hom b b' → Hom a' a → Hom (Exp.B^A a b) (Exp.B^A a' b')
+  [-,-]₁ : ∀ {a a' b b'} → Hom b b' → Hom a' a → Hom [ a , b ] [ a' , b' ]
   [-,-]₁ f g = ƛ (f ∘ ev ∘ ⟨ π₁ , g ∘ π₂ ⟩)
 
   [-,-] : Functor (C ^op ×ᶜ C) C
-  [-,-] .F₀ (A , B) = Exp.B^A A B
+  [-,-] .F₀ (A , B) = [ A , B ]
   [-,-] .F₁ (f , g) = [-,-]₁ g f
 ```
 
@@ -248,7 +308,7 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
     ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
     (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
     g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
-    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) (pulll π₁∘⟨⟩ ∙∙ π₁∘⟨⟩ ∙∙ idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
+    g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (products _ _) (pulll π₁∘⟨⟩ ∙∙ π₁∘⟨⟩ ∙∙ idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
   product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
@@ -365,7 +425,7 @@ omit it from the page.
       p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (ƛ π₂) .p₁
       p = ƛ π₂ ∘ !                                         ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
           ƛ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
-          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
+          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .com) ⟩∘⟨refl ⟩
           ƛ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
           ƛ (y .map ∘ ev) ∘ ƛ (h .map ∘ ev) ∘ pb _ _ .p₁   ∎
 ```
@@ -381,10 +441,10 @@ omit it from the page.
 
   exponentiable→constant-family⊣product
     : (pb : has-pullbacks C)
-    → constant-family fp ⊣ exponentiable→product pb
+    → constant-family products ⊣ exponentiable→product pb
   exponentiable→constant-family⊣product pb =
     hom-iso-inv→adjoints (rem₁ _ .fst) (rem₁ _ .snd) nat where
-    module b = Functor (constant-family fp)
+    module b = Functor (constant-family products)
     module Π = Functor (exponentiable→product pb)
 ```
 -->
@@ -408,7 +468,7 @@ which is in turn equivalent to asking that $q$ be a map $\Delta_B(X) \to
 f$, over $B$.
 
 ```agda
-    coh₁ : ∀ {X} (f : /-Obj B) (q : Hom X (-^B₀ (f .domain)))
+    coh₁ : ∀ {X} (f : /-Obj B) (q : Hom X (-^B₀ (f .dom)))
          → (ƛ (f .map ∘ ev) ∘ q ≡ ƛ π₂ ∘ !)
          ≃ (f .map ∘ app q ≡ π₂)
     coh₁ f h = prop-ext!
@@ -449,12 +509,12 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
 ```agda
         Hom X (Π.₀ f)
           ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
+        Σ (Hom X (-^B .F₀ (f .dom))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
           ≃⟨ Σ-ap-snd (λ x → Σ-contr-fst (has⊤ X)) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
+        Σ (Hom X (-^B .F₀ (f .dom))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
-        Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)
-          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → ext refl) (λ _ → ext refl)) ⟩
+        Σ (Hom (X ⊗₀ B) (f .dom)) (λ h → f .map ∘ h ≡ π₂)
+          ≃⟨ Iso→Equiv ((λ x → record { com = x .snd }) , iso (λ x → _ , x .com) (λ _ → ext refl) (λ _ → ext refl)) ⟩
         Slice C B .Precategory.Hom (b.₀ X) f
           ≃∎
 
@@ -462,7 +522,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
              → Equiv.to (rem₁ f) h .map ≡ app (pb _ _ .p₁ ∘ h)
       rem₁-β f h = refl
 
-    nat : hom-iso-inv-natural {L = constant-family fp} {R = exponentiable→product pb} (rem₁ _ .fst)
+    nat : hom-iso-inv-natural {L = constant-family products} {R = exponentiable→product pb} (rem₁ _ .fst)
     nat g h x = ext $
      rem₁ _ .fst (Π.₁ g ∘ x ∘ h) .map                           ≡⟨ rem₁-β _ _ ⟩
      app (pb _ _ .p₁ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (pb _ _ .p₁∘universal ∙ ƛ-∘ {f = g .map} {g = pb _ _ .p₁} (has-is-exp _))) ⟩

@@ -109,8 +109,8 @@ module _ {o'} {D : Precategory o' ℓ}
       open is-precat-iso
 
       F : Functor (d ↙ R) (∫ (Hom-from D d F∘ R))
-      F .F₀ m = elem (m .↓Obj.y) (m .↓Obj.map)
-      F .F₁ f = elem-hom (f .↓Hom.β) (sym (f .↓Hom.sq) ∙ D.idr _)
+      F .F₀ m = elem (m .↓Obj.cod) (m .↓Obj.map)
+      F .F₁ f = elem-hom (f .↓Hom.bot) (sym (f .↓Hom.com) ∙ D.idr _)
       F .F-id = ext refl
       F .F-∘ f g = ext refl
 

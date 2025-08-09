@@ -205,17 +205,17 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 
 ```agda
   Representables-generate-presheaf {f} {g} sep =
-    ap hom $ is-contr→is-prop
+    ap map $ is-contr→is-prop
       (is-colimit→is-initial-cocone _ (coyoneda X) (Map→cocone-under X f))
       f' g'
     where
       f' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
-      f' .hom = f
-      f' .commutes o = ext λ i x → refl
+      f' .map = f
+      f' .com o = ext λ i x → refl
 
       g' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
-      g' .hom = g
-      g' .commutes o = sym $ ext $ unext $ sep $ NT
+      g' .map = g
+      g' .com o = sym $ ext $ unext $ sep $ NT
         (λ i a → P.₁ a (o .section))
         (λ x y h → ext λ a → P.F-∘ _ _ · o .section)
 ```

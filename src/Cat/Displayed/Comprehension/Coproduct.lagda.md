@@ -31,7 +31,6 @@ private
   module E = Displayed E
 
   module D where
-    open Displayed D public
     open Cat.Displayed.Reasoning D public
     open Cartesian-fibration D D-fib public
 
