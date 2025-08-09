@@ -157,12 +157,23 @@ span.katex-display {
 }
 
 div.mathpar {
-  display: flex;
-  flex-flow: row wrap;
+  display:         flex;
+  flex-flow:       row wrap;
   justify-content: center;
-  align-items: center;
+  align-items:     center;
 
-  gap: 1em;
+  column-gap:   1em;
+  margin-block: 1em;
+
+  > * { margin-block: 0; }
+
+  // KaTeX once again just fucking brilliant at coming up with bounding
+  // boxes so we have to add some padding on the block axis so
+  // vertically-aligned katex spans don't end up inside eachother when
+  // in separate rows
+  > span.katex-display {
+    padding-block: 0.5em;
+  }
 
   > figure {
     max-width: 33%;

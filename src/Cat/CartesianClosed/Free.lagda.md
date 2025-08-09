@@ -437,9 +437,7 @@ $$
   {\Gamma \vdash_\rm{ne} x : \sf{t}}
   {\Gamma \vdash_\rm{nf} x : \sf{t}}
 $$
-:::
 
-::: mathpar
 $$
 \frac{x : \tau \in \Gamma}{\Gamma \vdash_{ne} x : \tau}
 $$
