@@ -1,0 +1,415 @@
+<!--
+```agda
+open import 1Lab.HLevel.Closure
+open import 1Lab.Prelude
+
+open import Data.Vec.Base
+open import Data.Maybe
+open import Data.Bool
+open import Data.Dec
+open import Data.Fin
+open import Data.Nat
+open import Data.Sum
+```
+-->
+
+```agda
+module Lang.STLC.DebruExtrinsic where
+```
+
+# The simply typed lambda calculus, fancier
+
+We're doing the STLC again! This time, however, we are going to use
+a different implementation strategy that makes most of the proofs
+significantly easier, and fixes that pesky substitution issue we had!
+
+First we define types in the same method.
+
+```agda
+data Ty : Type where
+  `⊤ : Ty
+  _`×_ : Ty → Ty → Ty
+  _`⇒_ : Ty → Ty → Ty
+```
+
+This time, contexts are vectors, indexed by their length. A context
+$\Gamma\ n$ contains $n$ elements.
+
+```agda
+Con : Nat → Type
+Con n = Vec Ty n
+```
+
+Now for terms. First however, we must explain deb Bruijn indexes.
+De Bruijn indexes are a naming scheme that does not rely on names, instead
+referring to bound variables with natural numbers. The number $0$
+represents the most recently bound term; $1$ the second most, etc.  
+
+A term is indexed by a natural number representing the maximum of how many
+**unbound** variables it contains. For example, the term $0$ has one
+unbound variable, but $\lambda. 0$ has none.
+
+
+```agda
+data Expr : Nat → Type where
+```
+
+We use this index in our variable constructor, such that a term of 
+type `Expr n`{.Agda} may only reference $n$ different variables. 
+`Fin n`{.Agda} is a type containing $n$ elements, and is therefore suitable. 
+
+```agda
+  ` : ∀ {n} → Fin n → Expr n
+```
+
+In order to decrease this level when encountering lambdas, we require
+the body to have a level one higher than the constructed term.
+
+```agda
+  `λ : ∀ {n} → Expr (suc n) → Expr n
+  _`$_ : ∀ {n} → Expr n → Expr n → Expr n
+  `⟨_,_⟩ : ∀ {n} → Expr n → Expr n → Expr n
+  `π₁ : ∀ {n} → Expr n → Expr n
+  `π₂ : ∀ {n} → Expr n → Expr n
+  `tt : ∀ {n} → Expr n
+``` 
+
+We note that you can freely raise the level of a term
+without modifying it, if you so wish.
+
+```agda
+raise : ∀ {n} → Expr n → Expr (suc n)
+raise (` x) = ` (weaken x)
+raise (`λ x) = `λ (raise x)
+raise (f `$ x) = raise f `$ raise x
+raise `⟨ a , b ⟩ = `⟨ raise a , raise b ⟩
+raise (`π₁ x) = `π₁ (raise x)
+raise (`π₂ x) = `π₂ (raise x)
+raise `tt = `tt
+```
+
+We define similar typing rules as before, this time using our indexed
+contexts and terms. This allows us to have a total index function, so
+we don't have to deal with `Maybe`{.Agda} at all!
+
+<!--
+```agda
+infix 3 _⊢_⦂_
+```
+-->
+
+```agda
+data _⊢_⦂_ : ∀ {n} → Con n → Expr n → Ty → Type where
+  `var-intro : ∀ {n} {Γ : Con n} {k ty} → 
+               lookup Γ k ≡ ty →
+               Γ ⊢ ` k ⦂ ty
+  `⇒-intro : ∀ {n} {Γ : Con n} {bd ret ty} →
+               (ty ∷ Γ) ⊢ bd ⦂ ret →
+               Γ ⊢ `λ bd ⦂ ty `⇒ ret
+  `⇒-elim : ∀ {n} {Γ : Con n} {f x ty ret} →
+               Γ ⊢ f ⦂ ty `⇒ ret →
+               Γ ⊢ x ⦂ ty →
+               Γ ⊢ f `$ x ⦂ ret
+  `×-intro : ∀ {n} {Γ : Con n} {a b at bt} →
+               Γ ⊢ a ⦂ at →
+               Γ ⊢ b ⦂ bt →
+               Γ ⊢ `⟨ a , b ⟩ ⦂ at `× bt
+  `×-elim₁ : ∀ {n} {Γ : Con n} {p at bt} →
+               Γ ⊢ p ⦂ at `× bt →
+               Γ ⊢ `π₁ p ⦂ at
+  `×-elim₂ : ∀ {n} {Γ : Con n} {p at bt} →
+               Γ ⊢ p ⦂ at `× bt →
+               Γ ⊢ `π₂ p ⦂ bt
+  `tt-intro : ∀ {n} {Γ : Con n} →
+               Γ ⊢ `tt ⦂ `⊤
+```
+
+The examples from before:
+
+<!--
+```agda
+module Example-1 where
+```
+-->
+
+```agda
+  const : Expr 0
+  const = `λ (`λ (` 0))
+
+  const-is-`⊤⇒`⊤⇒`⊤ : [] ⊢ const ⦂ `⊤ `⇒ (`⊤ `⇒ `⊤)
+  const-is-`⊤⇒`⊤⇒`⊤ = `⇒-intro (`⇒-intro (`var-intro refl))
+```
+
+Once again we define values:
+
+```agda
+data Value : ∀ {n} → Expr n → Type where
+  v-λ : ∀ {n} {body : Expr (suc n)} → Value (`λ body)
+  v-⟨,⟩ : ∀ {n} {a b : Expr n} → Value (`⟨ a , b ⟩)
+  v-⊤ : ∀ {n} → Value {n} `tt
+```
+
+And now we must do substitution. How awful. 
+
+This time, instead of doing a single substitution, we are going to
+consider substitution of every free variable at once. This is called
+"simultaneous substitution."
+
+We start by defining a particular extension of a renaming function.
+This extension is important as it leaves the "bottom-most" variable
+untouched (as is desired when working under binders.)
+ 
+```agda
+exts : ∀ {n k} → (Fin n → Fin k) → Fin (suc n) → Fin (suc k)
+exts f x with fin-view x
+... | zero = fzero
+... | suc i = fsuc (f i)
+```
+
+Then we can define renaming, which replaces every free variable with another.
+
+```agda
+rename : ∀ {n k} → (Fin n → Fin k) → Expr n → Expr k
+rename f (` x) = ` (f x)
+rename {n} {k} f (`λ x) = `λ (rename (exts f) x)
+rename f (a `$ b) = rename f a `$ rename f b
+rename f `⟨ a , b ⟩ = `⟨ (rename f a) , (rename f b) ⟩
+rename f (`π₁ x) = `π₁ (rename f x)
+rename f (`π₂ x) = `π₂ (rename f x)
+rename f `tt = `tt
+```
+
+We can show that under a particular set of conditions, 
+(namely that the new variables have the same types as the old ones),
+renaming a term keeps its type the same.
+
+```agda
+rename~ : ∀ {n k} (Γ : Con n) (Δ : Con k) → 
+          (ren : Fin n → Fin k) →
+          (ren~ : ∀ (f : Fin n) → lookup Γ f ≡ lookup Δ (ren f)) →
+          ∀ x {ty} →
+          Γ ⊢ x ⦂ ty →
+          Δ ⊢ rename ren x ⦂ ty
+rename~ Γ Δ ren ren~ (` x) (`var-intro p) = `var-intro (sym (ren~ x) ∙ p)
+rename~ {n} {k} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro ex
+  where
+    help : (f : Fin (suc n)) →
+            lookup (ty ∷ Γ) f ≡ lookup (ty ∷ Δ) (exts ren f)
+    help f with fin-view f 
+    ... | zero = refl
+    ... | suc i = ren~ i
+
+    ex : ty ∷ Δ ⊢ rename (exts ren) x ⦂ _
+    ex = rename~ (ty ∷ Γ) (ty ∷ Δ) (exts ren) help x p
+rename~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = 
+  `⇒-elim (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
+rename~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ {ty} (`×-intro p p₁) = 
+  `×-intro (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
+rename~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (rename~ Γ Δ ren ren~ x p)
+rename~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (rename~ Γ Δ ren ren~ x p)
+rename~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
+
+```
+
+This particular renaming increases every free variable in an expression by one.
+Note that we can add on whatever type we'd like.
+
+```agda
+incr : ∀ {n} → Expr n → Expr (suc n)
+incr x = rename fsuc x
+
+incr~ : ∀ {n} (Γ : Con n) x {t n} →
+        Γ ⊢ x ⦂ t →
+        n ∷ Γ ⊢ incr x ⦂ t
+incr~ Γ x {t} {n} p = rename~ Γ (n ∷ Γ) fsuc (λ f → refl) x p
+```
+
+Now we can consider not just renaming, but substitutions, which
+we model as functions from free variables to terms. 
+The following extending of a substitution function is 
+similar to our `exts`{.Agda} from renaming. It leaves the new bottom-most
+variable unchanged, so that variables under a binder are not modified.
+
+```agda
+extnd : ∀ {n k} → (Fin n → Expr k) → Fin (suc n) → Expr (suc k)
+extnd f x with fin-view x 
+... | zero = ` fzero
+... | suc i = incr (f i)
+```
+
+Now substitution itself:
+
+```agda
+simsub : ∀ {n k} → (Fin n → Expr k) → Expr n → Expr k
+simsub f (` x) = f x
+simsub {n} {k} f (`λ x) = `λ (simsub (extnd f) x)
+simsub f (a `$ b) = (simsub f a) `$ (simsub f b)
+simsub f `⟨ a , b ⟩ = `⟨ (simsub f a) , (simsub f b) ⟩
+simsub f (`π₁ x) = `π₁ (simsub f x)
+simsub f (`π₂ x) = `π₂ (simsub f x)
+simsub f `tt = `tt
+
+```
+
+Similarly to showing renaming retains types, we can show that the same
+is true for substitution, assuming every new term has the same type
+as the variable it is replacing.
+
+```agda
+simsub~ : ∀ {n k} (Γ : Con n) (Δ : Con k) →
+           (ren : ∀ (f : Fin n) → Expr k) →
+           (ren~ : ∀ (f : Fin n) {t} → lookup Γ f ≡ t → Δ ⊢ (ren f) ⦂ t) →
+           ∀ (x : Expr n) {ty} →
+           Γ ⊢ x ⦂ ty →
+           Δ ⊢ simsub ren x ⦂ ty
+simsub~ Γ Δ ren ren~ (` x) (`var-intro x₁) = ren~ x x₁
+simsub~ {n} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro ex
+  where
+    rest : (f : Fin (suc n)) {t : Ty} →
+            lookup (ty ∷ Γ) f ≡ t → ty ∷ Δ ⊢ extnd ren f ⦂ t
+    rest f x with fin-view f 
+    ... | zero = `var-intro x
+    ... | suc i = incr~ Δ (ren i) (ren~ i x)
+
+    ex : _ ∷ Δ ⊢ simsub (extnd ren) x ⦂ _
+    ex = simsub~ (ty ∷ Γ) (_ ∷ Δ) (extnd ren) rest x p
+simsub~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) = 
+  `⇒-elim (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
+simsub~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ (`×-intro p p₁) = 
+  `×-intro (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
+simsub~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (simsub~ Γ Δ ren ren~ x p)
+simsub~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (simsub~ Γ Δ ren ren~ x p)
+simsub~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
+```
+
+Then it's simple enough to define "regular" substitution.
+
+```agda
+subst-down : ∀ {n} → Expr n → Fin (suc n) → Expr n
+subst-down x f with fin-view f 
+... | zero = x
+... | suc i = ` i
+
+infix 30 _[_]
+_[_] : ∀ {n} → Expr (suc n) → Expr n → Expr n
+_[_] {n} a s = simsub (subst-down s) a
+
+single-subst-correct : ∀ {n} (Γ : Con n) (f : Expr (suc n)) 
+                         (x : Expr n) {t₁ t₂} →
+                         t₁ ∷ Γ ⊢ f ⦂ t₂ →
+                         Γ ⊢ x ⦂ t₁ →
+                         Γ ⊢ f [ x ] ⦂ t₂
+single-subst-correct {n} Γ f x {t₁} fp xp = 
+                         simsub~ (t₁ ∷ Γ) Γ (subst-down x) rest f fp
+  where
+    rest : (f₁ : Fin (suc n)) {t : Ty} →
+            lookup (t₁ ∷ Γ) f₁ ≡ t → Γ ⊢ subst-down x f₁ ⦂ t
+    rest f₁ x with fin-view f₁ 
+    ... | zero = subst (λ k → _ ⊢ _ ⦂ k) x xp
+    ... | suc i = `var-intro x
+```
+
+Reduction rules.
+
+```agda
+infix 10 _~>_
+data _~>_ : ∀ {n} → Expr n → Expr n → Type where
+     β-λ : ∀ {n} {f : Expr (suc n)} {x : Expr n} →
+           Value x →
+          (`λ f) `$ x ~> f [ x ]
+     β-π₁ : ∀ {n} {a b : Expr n} →
+          `π₁ `⟨ a , b ⟩ ~> a
+     β-π₂ : ∀ {n} {a b : Expr n} →
+          `π₂ `⟨ a , b ⟩ ~> b
+     ξ-π₁ : ∀ {n} {a b : Expr n} →
+           a ~> b →
+           `π₁ a ~> `π₁ b
+     ξ-π₂ : ∀ {n} {a b : Expr n} →
+           a ~> b →
+           `π₂ a ~> `π₂ b
+     ξ-$ₗ : ∀ {n} {f g x : Expr n} →
+           f ~> g →
+           f `$ x ~> g `$ x
+     ξ-$ᵣ : ∀ {n} {f x y : Expr n} →
+           Value f →
+           x ~> y →
+           f `$ x ~> f `$ y
+```
+
+Values don't reduce.
+
+```agda
+value-¬red : ∀ {n} {x y : Expr n} →
+             Value x →
+             ¬ (x ~> y)
+value-¬red v-λ ()
+value-¬red v-⟨,⟩ ()
+value-¬red v-⊤ ()
+```
+
+Reduction preserves types (preservation).
+
+```agda
+red~ : ∀ {n} (Γ : Con n) (x y : Expr n) {ty} →
+         Γ ⊢ x ⦂ ty →
+         x ~> y →
+         Γ ⊢ y ⦂ ty
+red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ₗ r) = `⇒-elim (red~ Γ f _ p r) p₁
+red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ᵣ x₁ r) = `⇒-elim p (red~ Γ x _ p₁ r)
+red~ Γ ((`λ f) `$ x) y (`⇒-elim (`⇒-intro p) p₁) (β-λ k) = 
+     single-subst-correct Γ f x p p₁
+red~ Γ (`π₁ x) y (`×-elim₁ p) (ξ-π₁ r) = `×-elim₁ (red~ Γ x _ p r)
+red~ Γ (`π₂ x) y (`×-elim₂ p) (ξ-π₂ r) = `×-elim₂ (red~ Γ x _ p r)
+red~ Γ (`π₁ x) y (`×-elim₁ (`×-intro p p₁)) β-π₁ = p
+red~ Γ (`π₂ x) y (`×-elim₂ (`×-intro p p₁)) β-π₂ = p₁
+```
+
+Progress.
+
+```agda
+data Progress {n : Nat} (x : Expr n) : Type where
+     going : ∀ {y} →
+                   x ~> y →
+                   Progress x
+     done : Value x → Progress x
+
+progress : ∀ {x : Expr 0} {ty} →
+           [] ⊢ x ⦂ ty →
+           Progress x
+progress (`⇒-intro x) = done v-λ
+progress (`⇒-elim f x) with progress f
+... | going f₁ = going (ξ-$ₗ f₁)
+... | done f₁ with progress x
+... | going x₁ = going (ξ-$ᵣ f₁ x₁)
+... | done x₁ with f₁
+... | v-λ = going (β-λ x₁)
+progress (`×-intro x x₁) = done v-⟨,⟩
+progress (`×-elim₁ x) with progress x 
+... | going x₁ = going (ξ-π₁ x₁)
+... | done v-⟨,⟩ = going β-π₁
+progress (`×-elim₂ x) with progress x 
+... | going x₁ = going (ξ-π₂ x₁)
+... | done v-⟨,⟩ = going β-π₂
+progress `tt-intro = done v-⊤
+```
+
+Reduction in a closed context is deterministic.
+
+```agda
+det : ∀ {x y z : Expr 0} {ty} →
+      [] ⊢ x ⦂ ty →
+      x ~> y →
+      x ~> z →
+      z ≡ y
+det (`⇒-elim ⊢x ⊢x₁) (β-λ l) (β-λ k) = refl
+det (`⇒-elim ⊢x ⊢x₁) (β-λ l) (ξ-$ᵣ x ~z) = absurd (value-¬red l ~z)
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ₗ ~y) (ξ-$ₗ ~z) = ap₂ _`$_ (det ⊢x ~y ~z) refl
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ₗ ~y) (ξ-$ᵣ x ~z) = absurd (value-¬red x ~y)
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x ~y) (β-λ k) = absurd (value-¬red k ~y)
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x ~y) (ξ-$ₗ ~z) = absurd (value-¬red x ~z)
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x ~y) (ξ-$ᵣ x₁ ~z) = ap₂ _`$_ refl (det ⊢x₁ ~y ~z)
+det (`×-elim₁ ⊢x) β-π₁ β-π₁ = refl
+det (`×-elim₁ ⊢x) (ξ-π₁ ~y) (ξ-π₁ ~z) = ap `π₁ (det ⊢x ~y ~z)
+det (`×-elim₂ ⊢x) β-π₂ β-π₂ = refl
+det (`×-elim₂ ⊢x) (ξ-π₂ ~y) (ξ-π₂ ~z) = ap `π₂ (det ⊢x ~y ~z)
+```
