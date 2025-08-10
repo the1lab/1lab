@@ -69,7 +69,7 @@ data Mor where
 
   `idr   : f `∘ `id ≡ f
   `idl   : `id `∘ f ≡ f
-  `assoc : f `∘ g `∘ h ≡ (f `∘ g) `∘ h
+  `assoc : f `∘ (g `∘ h) ≡ (f `∘ g) `∘ h
 
   `!    : Mor τ `⊤
   `!-η  : (h : Mor τ `⊤) → `! ≡ h
@@ -243,7 +243,7 @@ that turns any type $\tau$ into an object $S(\tau) \liesover \tau$.
 <details>
 <summary>Since the base terms in a $\Lambda$-signature have an arbitrary
 `Ty`{.Agda} as input (but a base type as output), we can only state the
-type of our last method after defining `Ty-elim`{.Agda}. It is, however,
+type of our last method after defining `Ty-elim`{.Agda}. This type is, however,
 natural: we ask for a map $S(e) : S(\tau) \to_e f(y)$ lying over every
 basic term $e$.
 
@@ -396,7 +396,7 @@ data Nf where
 ```
 
 A neutral term is a variable, or an elimination form applied to another
-neutral. The 'elimination form' for a base term is *also* application to
+neutral. The "elimination form" for a base term is *also* application to
 a normal form in the domain. For example, we can build a neutral of type
 $\tau$ by projecting the first component from a neutral of type $\tau
 \times \sigma$.
@@ -439,7 +439,7 @@ $$
 $$
 
 $$
-\frac{x : \tau \in \Gamma}{\Gamma \vdash_{ne} x : \tau}
+\frac{x : \tau \in \Gamma}{\Gamma \vdash_\rm{ne} x : \tau}
 $$
 
 $$
@@ -536,7 +536,7 @@ contexts by products). Moreover, this embedding is a Cartesian functor.
 <summary>We then have to prove that all of these constructions are
 [[sets]], since we will be using them to form precategories and
 presheaves. This is bog-standard encode-decode stuff, and so it's
-uncommented in this `<details>`{.Agda} block for space.
+uncommented in this `<details>`{.html} block for space.
 
 While we're here, we also prove that all these type formers preserve
 decidability of equality.</summary>
@@ -1112,7 +1112,7 @@ we write
 $$\bf{Tm} : \thecat{Syn}_\Sigma \to \psh(\thecat{Ren}_\Sigma)$$,
 which is Cartesian since both the aforementioned embedding and the
 Yoneda embedding are, but it fails to be Cartesian closed, so we can not
-appeal to initiality in the sameway. Moreover, just applying the
+appeal to initiality in the same way. Moreover, just applying the
 initiality trick wouldn't bring our `Nf`{.Agda} into the picture,
 either. Even worse, *that's not how we stated the universal property of
 $\thecat{Syn}_\Sigma$!*
@@ -1310,7 +1310,7 @@ Next come function types, which are trickier but still possible.
 ```agda
   arr : Nfa [ x , y ]'
   arr .reifies   = record
-    { η          = λ Γ (_ , f , _) → lam (y.reify (f .η _ (drop stop , (x.reflect (var stop)))))
+    { η          = λ Γ (_ , f , _) → lam (y.reify (f .η _ (drop stop , x.reflect (var stop))))
     ; is-natural = λ Γ Δ ρ → ext λ x y p → ap Nf.lam
       (ap y.reify (ap (λ e → y .η _ e) (ap drop (sym (∘ʳ-idr ρ)) ,ₚ x.reflectₙ)
       ∙ (y .is-natural (Γ , _) (Δ , _) (keep ρ) ·ₚ (drop stop , _)))
@@ -1370,8 +1370,8 @@ possible because (by construction) every base term $e : \tau \to y \in
 \Sigma$ induces a natural transformation $\operatorname{Nf}(\tau) \To
 \operatorname{Nf}(y)$, which is componentwise the constructor
 `hom`{.Agda}, and we've constructed natural transformations
-$\sem{tau} \To \operatorname{Nf}(\tau)$ from the interpretation of a
-simple type into neutrals, namely `reifies`{.Agda}.
+$\sem{\tau} \To \operatorname{Nf}(\tau)$ from the interpretation of a
+simple type into normals, namely `reifies`{.Agda}.
 
 ```agda
   private
@@ -1406,7 +1406,7 @@ Let's see how to use this to actually normalise an element $e$ of
 context $x : \tau$ and `reflect`{.Agda} the zeroth variable; and from
 the resulting element of $\sem{y}$, we can `reify`{.Agda} a normal form
 $$
-x : \tau \vdash_{nf} \operatorname{reify}(\sem{e}(\operatorname{reflect}(x))) : \sigma
+x : \tau \vdash_\rm{nf} \operatorname{reify}(\sem{e}(\operatorname{reflect}(x))) : \sigma
 $$
 which is exactly what we wanted! We're finally `done`{.Agda}.
 
