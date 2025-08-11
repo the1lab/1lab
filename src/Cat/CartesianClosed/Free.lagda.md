@@ -1117,11 +1117,11 @@ Back from the case-bash trenches, the [[nerve]] along the embedding
 $\thecat{Ren}_\Sigma \mono \thecat{Syn}_\Sigma$ is a functor into
 presheaves over renamings which we write
 $$\bf{Tm} : \thecat{Syn}_\Sigma \to \psh(\thecat{Ren}_\Sigma)$$,
-and being a composite of Cartesian functors, $\bf{Tm}$ is also
-Cartesian. It fails to be Cartesian *closed*, though, so we can not
-appeal to initiality in the same way. Moreover, just applying the
-initiality trick again wouldn't bring our `Nf`{.Agda} into the picture,
-either. Even worse, *that's not how we stated the universal property of
+and being a composite of Cartesian functors, $\bf{Tm}$ is also Cartesian.
+It fails to be Cartesian *closed*, though, so we can not appeal to
+initiality in the same way. Moreover, just applying the initiality trick
+again wouldn't bring our `Nf`{.Agda} into the picture, either. Even
+worse, *that's not how we stated the universal property of
 $\thecat{Syn}_\Sigma$*!
 
 ```agda

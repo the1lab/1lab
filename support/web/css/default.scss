@@ -163,9 +163,11 @@ div.mathpar {
   align-items:     center;
 
   column-gap:   1em;
-  margin-block: 1em;
 
-  > * { margin-block: 0; }
+  article > & {
+    > * { margin-block: 0; }
+    margin-block: 1em;
+  }
 
   // KaTeX once again just fucking brilliant at coming up with bounding
   // boxes so we have to add some padding on the block axis so
