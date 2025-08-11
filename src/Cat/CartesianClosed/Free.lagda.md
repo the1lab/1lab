@@ -260,8 +260,8 @@ By a long and uninteresting case bash, we can extend
 </summary>
 
 ```agda
-    go (` x)     = h x
-    go `id       = id'
+    go (` x)    = h x
+    go `id      = id'
     go (f `∘ g) = go f ∘' go g
 
     go (`idr {f = f} i) = idr' (go f) i
@@ -474,18 +474,24 @@ $$
 The key idea behind our normalisation algorithm, following Čubrić et.
 al. [-@Cubric:normalisation], is to work in a category of presheaves
 over the syntax $\thecat{Syn}_\Sigma$, which are a model of the same
-$\Lambda$-theory $\Sigma$. We thus have a (Cartesian closed) functor
-$[\yo] : \thecat{Syn}_\Sigma \to \psh(\thecat{Syn}_\Sigma)$ which is
-defined in terms of the Cartesian closed structure, e.g. we have
-definitional computation rules
+$\Lambda$-theory $\Sigma$, with the interpretation of base types (and
+terms) given by the [[Yoneda embedding]] $\yo : \thecat{Syn}_\Sigma \to
+\psh(\thecat{Syn}_\Sigma)$. We thus have a (Cartesian closed) functor
+$[\yo] : \thecat{Syn}_\Sigma \to \psh(\thecat{Syn}_\Sigma)$, arising
+from initiality, which is thus defined in terms of the Cartesian closed
+structure of $\psh(\thecat{Syn}_\Sigma)$, i.e. we have the following
+(definitional) computation rules.
+
 $$
 \begin{align*}
+[\yo](\sf{t})             &= \yo(\sf{t})                      \\
+[\yo](\top)               &= \top                             \\
 [\yo](\tau \times \sigma) &= [\yo](\tau) \times [\yo](\sigma) \\
 [\yo](\tau \to \sigma)    &= [\yo](\sigma)^{[\yo](\tau)}
 \end{align*}
 $$
 
-The elements of $[\yo](\tau)$ thus do not correspond directly to
+The elements of $[\yo](\tau)$ thus do not correspond *directly* to
 morphisms in the base, but are instead a sort of $\eta$-long interaction
 representation of $\lambda$-terms. Now since the [[Yoneda embedding]] is
 a Cartesian closed functor, the universal property of
@@ -498,10 +504,11 @@ above, a map and its normal form in $\thecat{Syn}$ are identical.
 
 We would like to factor this isomorphism through `Nf`{.Agda} above, but
 `Nf`{.Agda} is not readily made into a presheaf on the entire syntax. We
-instead pass to presheaves of a subcategory of the syntax for which this
-is easily doable: the **renamings**, the smallest subcategory which is
-closed under precomposition by $\pi_1 : \Gamma, \tau \to \Gamma$ and
-under the functorial action
+instead pass to presheaves on a subcategory of the syntax where we *can*
+easily internalise `Nf`{.Agda} and `Ne`{.Agda}: the **renamings**, the
+smallest subcategory of $\thecat{Syn}_\Gamma$ which is closed under
+precomposition by $\pi_1 : \Gamma, \tau \to \Gamma$ and under the
+functorial action
 $$
 (- \times \id)
   :   \thecat{Syn}_\Sigma(\Gamma,\Delta)
@@ -1106,16 +1113,16 @@ rne .is-natural x y f = ext (λ s → ren-⟦⟧ₛ f s)
 
 </details>
 
-Back from the case-bash trenches, the [[nerve]] of the embedding
-$\thecat{Ren}_\Sigma$ is a functor into presheaves over renamings which
-we write
+Back from the case-bash trenches, the [[nerve]] along the embedding
+$\thecat{Ren}_\Sigma \mono \thecat{Syn}_\Sigma$ is a functor into
+presheaves over renamings which we write
 $$\bf{Tm} : \thecat{Syn}_\Sigma \to \psh(\thecat{Ren}_\Sigma)$$,
-which is Cartesian since both the aforementioned embedding and the
-Yoneda embedding are, but it fails to be Cartesian closed, so we can not
+and being a composite of Cartesian functors, $\bf{Tm}$ is also
+Cartesian. It fails to be Cartesian *closed*, though, so we can not
 appeal to initiality in the same way. Moreover, just applying the
-initiality trick wouldn't bring our `Nf`{.Agda} into the picture,
+initiality trick again wouldn't bring our `Nf`{.Agda} into the picture,
 either. Even worse, *that's not how we stated the universal property of
-$\thecat{Syn}_\Sigma$!*
+$\thecat{Syn}_\Sigma$*!
 
 ```agda
 open Cartesian-functor using (×-comparison-is-iso ; pres-terminal)
@@ -1140,13 +1147,13 @@ universal property.
 open Cat.Displayed.Instances.Gluing PSh-cartesian Free-cartesian Tm-cartesian
 ```
 
-Surprisingly though, due to our definition of $\Lambda$-algebras having
-base terms with arbitrary simple types as their domain, we're not quite
-done putting together the induction. We would like to define the model
-of $\Sigma$ in $\thecat{Gl}_\Sigma$ to have the base types interpreted
-by normal forms (equivalently neutrals), but we have to know ahead of
-time how to turn our interpretation of the other simple types into
-neutrals.
+Surprisingly though, due to our definition of $\Lambda$-signatures
+having base terms with arbitrary simple types as their domain, we're not
+quite done putting together the induction. We would like to define the
+model of $\Sigma$ in $\thecat{Gl}_\Sigma$ to have the base types
+interpreted by normal forms (equivalently neutrals), but we have to know
+ahead of time how to turn our interpretation of the other simple types
+into neutrals.
 
 # Normalisation algebras
 
@@ -1160,8 +1167,8 @@ algebra structure consists of further natural transformations
 `reflects`{.Agda} from $\operatorname{Ne}(\tau) \To P.$[^names]
 
 [^names]:
-    In the formalisation we reserve the *verbs* `reify`{.Agda} and
-    `reflect`{.Agda} for the *components* of these transformations.
+    In the formalisation we reserve the imperative forms `reify`{.Agda}
+    and `reflect`{.Agda} for the *components* of these transformations.
 
 ```agda
 record Nfa {τ : Ty} (P : Gl ʻ τ) : Type ℓ where
@@ -1305,34 +1312,105 @@ arrow-nfa {x = x} {y = y} xnf ynf = arr where
   module y = Nfa ynf
 ```
 
-Next come function types, which are trickier but still possible.
+Next come exponential objects in $\thecat{Gl}_\Sigma$, which are
+trickier but still possible in full generality. We will once again
+assume that we have already built normalisation algebras for the domain
+$X$ and codomain $Y$. We start with the implementation of reification.
+
+Recall that the exponentials in $\thecat{Gl}_\Sigma$ are given by a
+certain pullback of $\bf{Tm}(\tau \to \sigma)$ and $Y^X$, so that (at
+context $\Gamma$) they are given by a pair of an expression $\Gamma
+\vdash e : \tau \to \sigma$ and a natural transformation $f$ with components
+$$
+f_\Delta : \operatorname{Ren}(\Delta, \Gamma) \times X(\Delta) \to Y(\Delta)
+$$
+saying that we can get a semantic value in $Y(\Delta)$ from a renaming
+expressing $\Delta$ as an extension of $\Gamma$, and a semantic value in
+the domain $X(\Delta)$. At this point, we do not yet know how to
+normalise the expression $e$ to obtain a normal form, so our hope lies
+with the natural transformation $f$.
+
+We know that a normal form in $\tau \to \sigma$ must be of the form
+$\lambda x.\, e$ for a unique $\Gamma, x : \tau \vdash_\rm{nf} e :
+\sigma$, so that we may reduce to finding a suitable
+$\operatorname{Ren}(\Gamma.\tau, \Gamma)$ and semantic value
+$X(\Gamma.\tau)$--- and, given that we can `reflect`{.Agda} semantic
+values into $X$, we can use the neutral $\Gamma, x : \tau \vdash_\rm{ne}
+x : \tau$. To summarize, the definition of the presheaf exponential over
+renaming gives an evaluation function that is stable under (in
+particular) weakening. We can thus reify a natural transformation by
+applying it to a *fresh variable*, reifying the result, and abstracting
+over that variable, getting a normal form in the right context.
 
 ```agda
   arr : Nfa [ x , y ]'
-  arr .reifies   = record
-    { η          = λ Γ (_ , f , _) → lam (y.reify (f .η _ (drop stop , x.reflect (var stop))))
-    ; is-natural = λ Γ Δ ρ → ext λ x y p → ap Nf.lam
-      (ap y.reify (ap (λ e → y .η _ e) (ap drop (sym (∘ʳ-idr ρ)) ,ₚ x.reflectₙ)
-      ∙ (y .is-natural (Γ , _) (Δ , _) (keep ρ) ·ₚ (drop stop , _)))
-      ∙ y.reifyₙ)
-    }
-
-  arr .reflects = record
-    { η          = λ Γ x →
-        ⟦ x ⟧ₛ
-      , NT (λ Δ (ρ , s) → y.reflect (app (ren-ne ρ x) (x.reify s)))
-           (λ Δ Θ ρ → ext λ σ s → ap y.reflect (ap₂ Ne.app (ren-ne-∘ʳ ρ σ x) x.reifyₙ) ∙ y.reflectₙ)
-      , ext λ Γ ρ s → sym (y.com₀ _ ∙ ap₂ (λ a b → `ev `∘ (a `, b)) (ren-⟦⟧ₛ ρ x) (sym (x.com₁ _)))
-    ; is-natural = λ Γ Δ ρ → ext (λ n → Σ-pathp (ren-⟦⟧ₛ ρ n) (Σ-prop-pathp! (ext (λ Θ σ s → ap y.reflect (ap₂ app (sym (ren-ne-∘ʳ σ ρ n)) refl)))))
-    }
-
-  arr .com₀ f = refl
-  arr .com₁ (φ , f , α) = sym $
-    `ƛ ⟦ y.reify (f .η _ (drop stop , x.reflect (var stop))) ⟧ₙ  ≡⟨ ap `ƛ (sym (y.com₁ _) ∙ sym (unext α _ _ _)) ⟩
-    `ƛ (`ev `∘ (φ `∘ `id `∘ `π₁ `, x.⟦ x.reflect (var stop) ⟧ₚ)) ≡⟨ ap `ƛ (ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (x.com₀ _ ∙ sym `idl)) ⟩
-    `ƛ (`ev `∘ (φ `∘ `π₁ `, `id `∘ `π₂))                         ≡⟨ sym `ƛη ⟩
-    φ                                                            ∎
+  arr .reifies .η Γ (_ , f , p) = lam $ y.reify $
+    f .η _ (drop stop , x.reflect (var stop))
 ```
+
+Reflection takes much less explanation. Given a neutral $\Gamma
+\vdash_\rm{ne} x : \tau \to \sigma$, we can directly take $\sem{x}$ as
+the first component of the glued exponential, since that is the
+operation we are defining. To implement the evaluation natural
+transformation, we see that it suffices to, in an extended context
+$\Delta$ through a renaming $\rho : \operatorname{Ren}(\Delta, \Gamma)$,
+and a semantic value $s : X(\Delta)$, produce a neutral $\Delta
+\vdash_\rm{ne} n : \sigma$, since that reflects into a semantic value
+$Y(\Delta)$.
+
+To this end, we can rename our neutral function $x$ to obtain $\Delta
+\vdash_\rm{ne} x[\rho] : \tau \to \sigma$, and the `app`{.Agda}
+constructor says we can apply neutral functions to normal arguments, so
+we obtain obtain
+$\Delta \vdash_\rm{ne} x[\rho]\, (\operatorname{reify} s) : \sigma$. A
+simple calculation shows that this 'evaluation' map is natural, and that
+it is a definable operation built from $x$, so we are done with the
+construction.
+
+```agda
+  arr .reflects .η Γ x .fst      = ⟦ x ⟧ₛ
+  arr .reflects .η Γ x .snd .fst = record where
+    η Δ (ρ , s)      = y.reflect (app (ren-ne ρ x) (x.reify s))
+    is-natural Δ Θ ρ = ext λ σ s →
+        ap y.reflect (ap₂ Ne.app (ren-ne-∘ʳ ρ σ x) x.reifyₙ)
+      ∙ y.reflectₙ
+  arr .reflects .η Γ x .snd .snd = ext λ Γ ρ s → sym $
+    y.⟦ y.reflect (app (ren-ne ρ x) (x.reify s)) ⟧ₚ ≡⟨ y.com₀ _ ⟩
+    `ev `∘ (⟦ ren-ne ρ x ⟧ₛ `, ⟦ x.reify s ⟧ₙ)      ≡⟨ ap₂ (λ a b → `ev `∘ (a `, b)) (ren-⟦⟧ₛ ρ x) (sym (x.com₁ _)) ⟩
+    `ev `∘ (⟦ x ⟧ₛ `∘ ⟦ ρ ⟧ʳ `, x.⟦ s ⟧ₚ)           ∎
+```
+
+The two triangles commute by a short calculation--- the coherence
+involving `reflect`{.Agda} is definitional, while the one involving
+`reify`{.Agda} uses the pullback condition, the "definability" of the
+natural transformation, to reduce it to something we can do substitution
+algebra on.
+
+```agda
+  arr .com₀ f           = refl
+  arr .com₁ (φ , f , α) = sym $
+    `ƛ ⟦ y.reify (f .η _ (drop stop , x.reflect (var stop))) ⟧ₙ   ≡⟨ ap `ƛ (sym (y.com₁ _) ∙ sym (unext α _ _ _)) ⟩
+    `ƛ (`ev `∘ (φ `∘ `id `∘ `π₁ `, x.⟦ x.reflect (var stop) ⟧ₚ))  ≡⟨ ap `ƛ (ap₂ (λ a b → `ev `∘ (a `, b)) (ap (φ `∘_) `idl) (x.com₀ _ ∙ sym `idl)) ⟩
+    `ƛ (`ev `∘ (φ `∘ `π₁ `, `id `∘ `π₂))                          ≡⟨ sym `ƛη ⟩
+    φ                                                             ∎
+```
+
+Strictly speaking, we must still show that the reification and
+reflection functions we defined above are natural. Since these are all
+defined in terms of other natural operations, the verification is
+straightforward, and so we omit it.
+
+<!--
+```agda
+  arr .reifies .is-natural Γ Δ ρ = ext λ x y p → ap Nf.lam
+    (ap y.reify (ap (λ e → y .η _ e) (ap drop (sym (∘ʳ-idr ρ)) ,ₚ x.reflectₙ)
+    ∙ (y .is-natural (Γ , _) (Δ , _) (keep ρ) ·ₚ (drop stop , _)))
+    ∙ y.reifyₙ)
+
+  arr .reflects .is-natural Γ Δ ρ = ext λ n → Σ-pathp (ren-⟦⟧ₛ ρ n) $ Σ-prop-pathp!
+    (ext λ Θ σ s → ap y.reflect (ap₂ app (sym (ren-ne-∘ʳ σ ρ n)) refl))
+```
+-->
 
 # Normalisation by evaluation
 
@@ -1349,8 +1427,9 @@ module _ where
 
 We're finally ready to construct a section of $\thecat{Gl}_\Sigma$.
 First, we build a normalisation algebra on the denotation of every
-simple type, by a straightforward recursive argument using the cases
-above--- while the case for the unit type was too simple to get a name.
+simple type, by a straightforward recursive argument using the 'methods'
+implemented above--- the case for the unit type is too simple to get a
+name.
 
 ```agda
   normalisation : ∀ τ → Nfa {τ} (Ty-nf τ)
@@ -1401,10 +1480,11 @@ open Section Normalisation renaming (S₁ to ⟦_⟧₁)
 
 Let's see how to use this to actually normalise an element $e$ of
 `Mor`{.Agda}. First, the section of `Gl`{.Agda} turns $e :
-\operatorname{Mor}(x,y)$ into a natural transformation $\sem{e} :
-\sem{x} \To \sem{y}$. To get an element of $\sem{x}$, we can pick the
-context $x : \tau$ and `reflect`{.Agda} the zeroth variable; and from
-the resulting element of $\sem{y}$, we can `reify`{.Agda} a normal form
+\operatorname{Mor}(\tau,\sigma)$ into a natural transformation $\sem{e}
+: \sem{\tau} \To \sem{\sigma}$. To get an element of $\sem{\tau}$, we
+can pick the context $x : \tau$ and `reflect`{.Agda} the zeroth
+variable; and from the resulting element of $\sem{\sigma}$, we can
+`reify`{.Agda} a normal form
 $$
 x : \tau \vdash_\rm{nf} \operatorname{reify}(\sem{e}(\operatorname{reflect}(x))) : \sigma
 $$
@@ -1412,13 +1492,13 @@ which is exactly what we wanted! We're finally `done`{.Agda}.
 
 ```agda
 nf
-  : ∀ {x y : Ty} (e : Mor x y)
-  → Σ[ n ∈ Nf (∅ , x) y ] e ≡ ⟦ n ⟧ₙ `∘ (`! `, `id)
-nf {x} {y} e = record { fst = done ; snd = sym beta } where
-  module x = Nfa (normalisation x)
-  module y = Nfa (normalisation y)
+  : ∀ {τ σ : Ty} (e : Mor τ σ)
+  → Σ[ n ∈ Nf (∅ , τ) σ ] e ≡ ⟦ n ⟧ₙ `∘ (`! `, `id)
+nf {τ} {σ} e = record { fst = done ; snd = sym beta } where
+  module τ = Nfa (normalisation τ)
+  module σ = Nfa (normalisation σ)
 
-  done = y.reify (⟦ e ⟧₁ .map .η (∅ , x) (x.reflect (var stop)))
+  done = σ.reify (⟦ e ⟧₁ .map .η (∅ , τ) (τ.reflect (var stop)))
 ```
 
 To show that the denotation of this normal form is the map we started
@@ -1431,9 +1511,9 @@ algebras on the domain and codomain, one each.
   abstract
     sq : ⟦ done ⟧ₙ ≡ e `∘ `π₂
     sq =
-      ⟦ done ⟧ₙ                                            ≡⟨ sym (y.com₁ _) ⟩
-      y.⟦ ⟦ e ⟧₁ .map .η (∅ , x) (x.reflect (var stop)) ⟧ₚ ≡⟨ unext (⟦ e ⟧₁ .com) _ _ ⟩
-      e `∘ x.⟦ x.reflect (var stop) ⟧ₚ                     ≡⟨ ap (e `∘_) (x.com₀ _) ⟩
+      ⟦ done ⟧ₙ                                            ≡⟨ sym (σ.com₁ _) ⟩
+      σ.⟦ ⟦ e ⟧₁ .map .η (∅ , τ) (τ.reflect (var stop)) ⟧ₚ ≡⟨ unext (⟦ e ⟧₁ .com) _ _ ⟩
+      e `∘ τ.⟦ τ.reflect (var stop) ⟧ₚ                     ≡⟨ ap (e `∘_) (τ.com₀ _) ⟩
       e `∘ `π₂                                             ∎
 
     beta : ⟦ done ⟧ₙ `∘ (`! `, `id) ≡ e
@@ -1449,7 +1529,7 @@ of the `fstₙ`{.Agda} and `sndₙ`{.Agda} projections of the input
 
 ```agda
 module _ (A : Node) where
-  _ : nf {x = (` A) `× (` A)} {y = (` A) `× (` A)} `id .fst
+  _ : nf {τ = (` A) `× (` A)} {σ = (` A) `× (` A)} `id .fst
     ≡ pair (ne (fstₙ (var stop))) (ne (sndₙ (var stop)))
   _ = refl
 ```
