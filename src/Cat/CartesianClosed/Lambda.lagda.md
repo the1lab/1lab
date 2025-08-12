@@ -32,10 +32,10 @@ The **simply typed $\lambda$-calculus** (STLC) is a very small typed
 programming language very strongly associated with [Cartesian closed
 categories]. In this module, we define the syntax for STLC with base
 types, and inhabitants of these, given by the objects and morphisms of
-an arbitrary CCC. This syntax can be used to _reflect_ morphisms of a
-CCC, making the "structural" morphisms explicit. We then build a
+an arbitrary CCC $\cC$. This syntax can be used to _reflect_ morphisms
+of a CCC, making the "structural" morphisms explicit. We then build a
 _normalisation_ procedure, which can be used to effectively compare
-morphisms in the CCC.
+morphisms in $\cC$.
 
 [Cartesian closed categories]: Cat.Diagram.Exponential.html
 
@@ -93,7 +93,7 @@ judgements_. An inhabitant of `Expr Γ τ` is a tree representing a
 complete derivation of something of type `τ`. We insist on the name
 _expression_ rather than _term_ since there are more expressions than
 there are terms: For example, in the context $\varnothing , a : \tau$, the
-expressions $(\lambda b \to b)\; a$ and $a$ denote the same term.
+expressions $(\lambda b.\; b)\; a$ and $a$ denote the same term.
 
 ```agda
 data Expr Γ where
@@ -110,7 +110,7 @@ data Expr Γ where
 Using the Cartesian closed structure, we can interpret types, contexts,
 variables and expressions in terms of the structural morphisms: For
 example, the empty context is interpreted by the terminal object,
-and^[since contexts are built by extension on the _right_] the zeroth
+and, since contexts are built by extension on the _right_, the zeroth
 variable is given by the second projection map $\Gamma \times A \to A$.
 
 ```agda
@@ -775,7 +775,7 @@ abstract
 
 As a demonstration, we can normalise the expression
 $$
-a : A, b : B \vdash e = \pi_1 \langle ((\lambda c \to c) a) , b \rangle : A
+a : A, b : B \vdash e = \pi_1 \langle ((\lambda c.\; c) a) , b \rangle : A
 $$
 which lets Agda reduce it away to be simply the variable $a$ (which is
 the second in the context). Moreover, by appeal to the correctness

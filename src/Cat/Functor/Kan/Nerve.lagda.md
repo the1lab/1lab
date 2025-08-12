@@ -69,12 +69,11 @@ the simplicial nerve of a strict category.
 Since these adjunctions come for very cheap ($\kappa$-cocompleteness of
 the codomain category is all we need), they are built out of very thin
 abstract nonsense: The "realisation" left adjoint is given by the [[left
-Kan extension]] of $F$ along the [Yoneda embedding] $\yo$, which can be
+Kan extension]] of $F$ along the [[Yoneda embedding]] $\yo$, which can be
 [computed] as a particular colimit, and the "nerve" right adjoint is
 given by the _restricted_ Yoneda embedding functor $X \mapsto \hom(F(-),
 X)$.
 
-[Yoneda embedding]: Cat.Functor.Hom.html
 [computed]: Cat.Functor.Kan.Pointwise.html
 
 <!--
@@ -112,7 +111,7 @@ of $\cD$'s [[Yoneda embedding]] with precomposition by $F$.
 The action of $F$ on morphisms assembles into a natural transformation
 $\yo_\cC \To \rm{Nerve}(F) \circ F$, which is universal in the following
 sense: the nerve functor associated to $F$ is the [[left Kan extension]]
-of $\cC$'s [yoneda embedding] along $F$.
+of $\cC$'s [[Yoneda embedding]] along $F$.
 
 ```agda
     coapprox : よ C => Nerve F∘ F

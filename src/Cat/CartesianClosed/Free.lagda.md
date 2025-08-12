@@ -478,7 +478,7 @@ $\Lambda$-theory $\Sigma$, with the interpretation of base types (and
 terms) given by the [[Yoneda embedding]] $\yo : \thecat{Syn}_\Sigma \to
 \psh(\thecat{Syn}_\Sigma)$. We thus have a (Cartesian closed) functor
 $[\yo] : \thecat{Syn}_\Sigma \to \psh(\thecat{Syn}_\Sigma)$, arising
-from initiality, which is thus defined in terms of the Cartesian closed
+from initiality, which is defined in terms of the Cartesian closed
 structure of $\psh(\thecat{Syn}_\Sigma)$, i.e. we have the following
 (definitional) computation rules.
 
@@ -1352,7 +1352,7 @@ Reflection takes much less explanation. Given a neutral $\Gamma
 \vdash_\rm{ne} x : \tau \to \sigma$, we can directly take $\sem{x}$ as
 the first component of the glued exponential, since that is the
 operation we are defining. To implement the evaluation natural
-transformation, we see that it suffices to, in an extended context
+transformation, we see that it suffices to, given an extended context
 $\Delta$ through a renaming $\rho : \operatorname{Ren}(\Delta, \Gamma)$,
 and a semantic value $s : X(\Delta)$, produce a neutral $\Delta
 \vdash_\rm{ne} n : \sigma$, since that reflects into a semantic value
@@ -1361,7 +1361,7 @@ $Y(\Delta)$.
 To this end, we can rename our neutral function $x$ to obtain $\Delta
 \vdash_\rm{ne} x[\rho] : \tau \to \sigma$, and the `app`{.Agda}
 constructor says we can apply neutral functions to normal arguments, so
-we obtain obtain
+we obtain
 $\Delta \vdash_\rm{ne} x[\rho]\, (\operatorname{reify} s) : \sigma$. A
 simple calculation shows that this 'evaluation' map is natural, and that
 it is a definable operation built from $x$, so we are done with the
