@@ -366,7 +366,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : 
 A **free object** on $X : \cC$, relative to $U : \cD \to \cC$, consists
 of an object $F(X) : \cD$ and an arrow $\eta : X \to UF(X)$, such that
 every $f : X \to UY$, $f$ factors uniquely through $\eta$. Expanding
-this to an *operations-and"properties" presentation, we could say that:
+this to an *operations-and-properties* presentation, we could say that:
 
 * There is a map `fold`{.Agda} from $\cD(X, UY)$ to $\cC(FX, Y)$, and
 * for every $f$, we have $U(\operatorname{fold} f)\eta = f$, and

@@ -1,31 +1,55 @@
+@import "../vars.scss";
+
 span.sidenote-baseline-mark {
   width: 0px;
   vertical-align: baseline;
   display: inline-block;
 }
 
+// To correctly align the sidenotes we need a pair of elements, one the
+// height of a line, and one aligned to its baseline. Previously we used
+// the sidenote number as the reference for line top, but this is only
+// correct when the sidenote number font size matches the sidenote text
+// font size.
+//
+// Instead we append this extra span which inherits the sidenote text
+// font size so the measurement is always correct.
+span.sidenote-ascender-mark {
+  position:  absolute;
+  font-size: var(--font-size);
+}
+
 div.sidenote {
   position: absolute;
-  right: 0;
+  width:    100%;
+  right:    0;
 
-  :nth-child(2) { margin-block-start: 0; }
-  :last-child   { margin-block-end: 0; }
+  > *:nth-child(3) { margin-block-start: 0 !important; }
+  > *:last-child   { margin-block-end:   0 !important; }
 
-  font-size: smaller;
-  --code-font-size: 0.85em;
+  // Always justify sidenote content
+  text-align:  justify;
+  hyphens:     auto;
 
-  width: 100%;
-  text-align: justify;
-  hyphens: auto;
+  --font-size:      #{$footnote-font};
+  --code-font-size: #{0.9 * $footnote-font};
+
+  p, ol, ul, h1, h2, h3, h4, h5, h6 {
+    &:not(:first-child) {
+      margin-block: 0.8em;
+    }
+  }
+
+  // Pack block-level elements slightly closer together.
 
   > span.sidenote-number {
     position: absolute;
-    top: -1.5em;
+    width:    100%;
+    top:      -1.5em;
 
     text-align: right;
-    width: 100%;
 
-    border-bottom: 1px dotted black;
+    border-bottom: #{$ruler-size} dotted theme(--text-fg);
   }
 
   a.footnote-back { display: none; }

@@ -35,10 +35,11 @@ function getSidenotes(): Sidenote[] {
     const
       content  = <div class="sidenote" /> as HTMLDivElement,
       lowMark  = <span class="sidenote-baseline-mark" />,
-      highMark = <span class="sidenote-number">{lowMark}{id}</span>,
+      highMark = <span class="sidenote-ascender-mark">{lowMark}</span>,
       children = Array.from(parent.children).map(e => e.cloneNode(true));
 
     children.unshift(highMark);
+    children.unshift(<span class="sidenote-number">{id}</span>);
     content.replaceChildren(...children);
 
     let

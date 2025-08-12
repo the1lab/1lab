@@ -13,6 +13,9 @@ module Cat.CartesianClosed.Free.Signature where
 <!--
 ```agda
 module types {ℓ} (T : Type ℓ) where
+  infixr 22 _`⇒_
+  infixr 20 _`×_
+  infix 25 `_
 ```
 -->
 

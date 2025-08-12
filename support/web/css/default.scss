@@ -89,6 +89,8 @@ figure {
 ol, ul {
   padding-left: 1.2em;
   li {
+    font-size: var(--font-size);
+
     margin-block: 5px;
     p {
       margin-block: 10px;
@@ -137,7 +139,7 @@ span.katex-display {
   // a paragraph since the margin between paragraphs is already big to
   // avoid clipping enough and we don't want to make it 1/4em bigger.
   p > & {
-    margin-block: calc(-0.5 * $katex-margin);
+    margin-block: #{-0.5 * $katex-margin};
 
     > span.katex {
       white-space:   normal;
@@ -456,7 +458,7 @@ kbd {
 
       // The 0 minimum is required to avoid overflow, see
       // https://css-tricks.com/preventing-a-grid-blowout/
-      grid-template-columns: 0.1fr 1fr 0.1fr minmax(0, 3fr) 1fr 0.2fr;
+      grid-template-columns: 0.1fr 1fr 0.1fr minmax(0, 3fr) 1fr 0.1fr;
 
       article {
         grid-column: content;
