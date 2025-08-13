@@ -149,7 +149,7 @@ abstraction.
     open is-exponential has-is-exp public
 ```
 
-:::{.definition #cartesian-closed}
+:::{.definition #cartesian-closed alias="cartesian-closed-category"}
 Since a finite-products category is called [Cartesian monoidal], a
 finite-products category where every pair of objects has an exponential
 is called **Cartesian closed**, and we abbreviate the phrase "Cartesian

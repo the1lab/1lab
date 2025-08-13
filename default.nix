@@ -22,7 +22,7 @@ let
       xcolor
       preview
       pgf tikz-cd braids pgfplots
-      mathpazo
+      stmaryrd mathpazo
       varwidth xkeyval standalone;
   };
 
