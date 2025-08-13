@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Displayed.Diagram.Total.Exponential
 open import Cat.Displayed.Diagram.Total.Terminal
 open import Cat.Displayed.Diagram.Total.Product
@@ -1614,7 +1613,7 @@ stability-var
 </summary>
 
 ```agda
-stability (lam n) = {!ap lam (stability n)!}
+stability (lam n) = ap lam (stability n)
 stability (pair n n') = ap₂ pair (stability n) (stability n')
 stability unit = refl
 stability (ne x) = stability-ne x
@@ -1624,7 +1623,7 @@ stability-ne {Γ = Γ} {τ = τ} (app {τ = σ} n x) =
   ⟦ ⟦ app n x ⟧ₛ ⟧₁ .map .η Γ (idsec Γ)
     ≡⟨⟩
   ⟦ `ev `∘ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ)
-    ≡⟨ {! refl  !} ⟩
+    ≡⟨⟩
   ev' .map .η Γ (⟦ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ))
     ≡⟨⟩
   ev' .map .η Γ (⟦ ⟦ n ⟧ₛ ⟧₁ .map .η Γ (idsec Γ) , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))
