@@ -165,7 +165,7 @@ module _ where
 
 private
   module Syn = Cartesian-category Free-cartesian
-  module Synᵐ = Monoidal-category (Cartesian-monoidal Free-products Free-terminal)
+  module Synᵐ = Monoidal-category (Cartesian-monoidal Free-cartesian)
 ```
 
 </details>

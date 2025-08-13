@@ -10,6 +10,7 @@ open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
 open import Cat.Monoidal.Base
 open import Cat.Diagram.Zero
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -131,7 +132,10 @@ $\cC$ in *commutative monoids*!
     open Binary-products C (λ _ _ → Biprod.product)
     open Binary-coproducts C (λ _ _ → Biprod.coproduct)
 
-    open Monoidal-category (Cartesian-monoidal (λ _ _ → Biprod.product) terminal) using (associator; module ⊗)
+    cartesian : Cartesian-category C
+    cartesian = record { products = λ _ _ → Biprod.product ; terminal = terminal }
+
+    open Monoidal-category (Cartesian-monoidal cartesian) using (associator; module ⊗)
 ```
 -->
 

@@ -3,10 +3,10 @@
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Diagram.Product.Solver
-open import Cat.Diagram.Terminal
 open import Cat.Diagram.Comonad
 open import Cat.Diagram.Product
 open import Cat.Diagram.Monad
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
@@ -94,10 +94,8 @@ with an arbitrary monoid structure.
 
 <!--
 ```agda
-module _ {o ℓ} (C : Precategory o ℓ) (prods : ∀ A B → Product C A B) (term : Terminal C) (A : ⌞ C ⌟) where
-  open Binary-products C prods
-  open Terminal term
-  open Cat C
+module _ {o ℓ} (C : Precategory o ℓ) (cartesian : Cartesian-category C) (A : ⌞ C ⌟) where
+  open Cartesian-category cartesian
 ```
 -->
 
@@ -110,7 +108,7 @@ by juxtaposition.
 
 ```agda
   monoid→writer-monad
-    : Monoid-on (Cartesian-monoidal prods term) A → Monad-on (Writer C A (prods A))
+    : Monoid-on (Cartesian-monoidal cartesian) A → Monad-on (Writer C A (products A))
   monoid→writer-monad monoid = mk where
     module m = Monoid-on monoid
 
@@ -130,7 +128,7 @@ products.
     mk .unit .is-natural x y f = ⟨⟩-unique₂ (pulll π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ idl f)
       (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩ ∙ sym (pullr (sym (!-unique _))))
       (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idr f)
-    mk .mult .is-natural x y f = products! prods
+    mk .mult .is-natural x y f = products! products
     mk .μ-unitr =
       let
         lemma =
@@ -138,7 +136,7 @@ products.
           m.μ ∘ ⟨ id ∘ π₁ , m.η ∘ π₂ ⟩ ∘ ⟨ π₁ , ! ⟩ ≡⟨ pulll m.μ-unitr ⟩
           π₁ ∘ ⟨ π₁ , ! ⟩                           ≡⟨ π₁∘⟨⟩ ⟩
           π₁                                        ∎
-      in ⟨⟩-unique₂ (products! prods ∙ lemma) (products! prods) (idr π₁) (idr π₂)
+      in ⟨⟩-unique₂ (products! products ∙ lemma) (products! products) (idr π₁) (idr π₂)
     mk .μ-unitl =
       let
         lemma =
@@ -146,19 +144,19 @@ products.
           m.μ ∘ ⟨ m.η ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ ! , π₁ ⟩ ≡⟨ pulll m.μ-unitl ⟩
           π₂ ∘ ⟨ ! , π₁ ⟩                           ≡⟨ π₂∘⟨⟩ ⟩
           π₁                                        ∎
-      in ⟨⟩-unique₂ (products! prods ∙ lemma) (products! prods) (idr π₁) (idr π₂)
+      in ⟨⟩-unique₂ (products! products ∙ lemma) (products! products) (idr π₁) (idr π₂)
     mk .μ-assoc {x} =
       let
         lemma =
           π₁ ∘ ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ π₁ , ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₂ ⟩
-            ≡˘⟨ products! prods ⟩
+            ≡˘⟨ products! products ⟩
           m.μ ∘ ⟨ id ∘ π₁ , m.μ ∘ π₂ ⟩ ∘ ⟨ π₁ , ⟨ π₁ , π₁ ∘ π₂ ⟩ ∘ π₂ ⟩
             ≡⟨ extendl m.μ-assoc ⟩
           m.μ ∘ (⟨ m.μ ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ π₁ , ⟨ π₁ , π₁ ∘ π₂ ⟩ ∘ π₂ ⟩
-            ≡⟨ products! prods ⟩
+            ≡⟨ products! products ⟩
           m.μ ∘ ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₁ ∘ π₂ ∘ π₂ ⟩
             ∎
-      in ⟨⟩-unique₂ lemma (products! prods)
+      in ⟨⟩-unique₂ lemma (products! products)
         (pulll π₁∘⟨⟩ ∙ pullr (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)))
         (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 
