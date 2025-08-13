@@ -1,9 +1,11 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Displayed.Diagram.Total.Exponential
 open import Cat.Displayed.Diagram.Total.Terminal
 open import Cat.Displayed.Diagram.Total.Product
 open import Cat.CartesianClosed.Free.Signature
+open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Displayed.Section
@@ -12,9 +14,11 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Cartesian
+open import Cat.Morphism
 open import Cat.Prelude
 
 open import Data.Dec.Base
@@ -37,7 +41,7 @@ open _=>_
 module Cat.CartesianClosed.Free {ℓ} (S : Λ-Signature ℓ) where
 ```
 
-# Free cartesian closed categories
+# Free cartesian closed categories {defines="free-cartesian-closed-category"}
 
 <!--
 ```agda
@@ -160,7 +164,9 @@ module _ where
   Free-closed .has-exp A B .has-is-exp .commutes m = `ƛβ
   Free-closed .has-exp A B .has-is-exp .unique m' x = `ƛη ∙ ap `ƛ x
 
-private module Syn = Cartesian-category Free-cartesian
+private
+  module Syn = Cartesian-category Free-cartesian
+  module Synᵐ = Monoidal-category (Cartesian-monoidal Free-products Free-terminal)
 ```
 
 </details>
@@ -371,8 +377,8 @@ complicated higher-inductive type, this is essentially infeasible to do
 'by hand' by a case bash, which works for ordinary indexed inductive
 types because those have all disjoint constructors.
 
-The strategy will instead be to show that `Mor`{.Agda} is a [[split
-quotient]] of some type that we *can* write a case bash for. That is,
+The strategy will instead be to show that `Mor`{.Agda} is equivalent
+to some type that we *can* write a case bash for. That is,
 we'll write a *sound* normalisation procedure for `Mor`{.Agda}, which
 (by construction) factors through some type that *has* decidable
 equality.[^deceq] Note that since `Mor`{.Agda} is a quotient, and our
@@ -387,7 +393,7 @@ forms is also necessary to actually state normalisation to begin with:
 soundness and completeness together imply that, if normalisation were
 just an endofunction on `Mor`{.Agda}, it would be the identity.
 
-Our notion of normal form is that of the simply-typed lambda calculus.
+Our notion of normal form is that of the [[simply-typed lambda calculus]].
 Note that despite `Mor`{.Agda} working over *types*, we will introduce a
 notion of *context* to be used during the proof of normalisation. The
 normal form of a map $m : \Syn_\Sigma(\tau, \sigma)$ will then live in
@@ -1278,7 +1284,8 @@ These are required to make the following triangles commute.
   reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : Ne Δ τ} → reflect (ren-ne ρ x) ≡ P .dom ⟪ ρ ⟫ (reflect x)
   reflectₙ {Γ} {Δ} {ρ} {x} = reflects .is-natural Δ Γ ρ $ₚ x
 
-open Cartesian-closed-over Gl Gl-cartesian {Free-closed} (Gl-closed PSh-closed Free-closed PSh-pullbacks) using ([_,_]')
+GlTm-closed = Gl-closed PSh-closed Free-closed PSh-pullbacks
+open Cartesian-closed-over Gl Gl-cartesian {Free-closed} GlTm-closed using ([_,_]')
 open Nfa
 ```
 -->
@@ -1464,9 +1471,7 @@ straightforward, and so we omit it.
 ```agda
 module _ where
   open
-    elim Gl-cartesian
-      (Gl-closed PSh-closed Free-closed PSh-pullbacks)
-      Gl-base
+    elim Gl-cartesian GlTm-closed Gl-base
     renaming (Ty-elim to Ty-nf)
 ```
 -->
@@ -1520,51 +1525,141 @@ We thus have a section of `Gl`{.Agda}, which performs `Normalisation`{.Agda}.
 
 <!--
 ```agda
-open Section Normalisation renaming (S₁ to ⟦_⟧₁)
+open Section Normalisation renaming (S₀ to ⟦_⟧₀ ; S₁ to ⟦_⟧₁)
 ```
 -->
 
 Let's see how to use this to actually normalise an element $e$ of
 `Mor`{.Agda}. First, the section of `Gl`{.Agda} turns $e :
-\operatorname{Mor}(\tau,\sigma)$ into a natural transformation $\sem{e}
-: \sem{\tau} \To \sem{\sigma}$. To get an element of $\sem{\tau}$, we
-can pick the context $x : \tau$ and `reflect`{.Agda} the zeroth
-variable; and from the resulting element of $\sem{\sigma}$, we can
-`reify`{.Agda} a normal form
+\operatorname{Mor}(\Gamma,\sigma)$ into a natural transformation $\sem{e}
+: \sem{\Gamma} \To \sem{\sigma}$. To get an element of $\sem{\Gamma}$, we
+can pick the context $\Gamma$ and `reflect`{.Agda} every variable in
+$\Gamma$ to obtain a semantic version of the identity substitution; and
+from the resulting element of $\sem{\sigma}$, we can `reify`{.Agda} a
+normal form
 $$
-x : \tau \vdash_\rm{nf} \operatorname{reify}(\sem{e}(\operatorname{reflect}(x))) : \sigma
+\Gamma \vdash_\rm{nf} \operatorname{reify}(\sem{e}(\operatorname{reflect}(\id_\Gamma))) : \sigma
 $$
 which is exactly what we wanted! We're finally `done`{.Agda}.
 
 ```agda
-nf
-  : ∀ {τ σ : Ty} (e : Mor τ σ)
-  → Σ[ n ∈ Nf (∅ , τ) σ ] e ≡ ⟦ n ⟧ₙ `∘ (`! `, `id)
-nf {τ} {σ} e = record { fst = done ; snd = sym beta } where
-  module τ = Nfa (normalisation τ)
+idsec : (Γ : Cx) → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .dom ʻ Γ
+idsecβ : (Γ : Cx) → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .map .η Γ (idsec Γ) ≡ `id
+```
+
+<!--
+```agda
+idsec ∅       = lift tt
+idsec (Γ , x) = (⟦ ⟦ Γ ⟧ᶜ ⟧₀ .dom ⟪ drop stop ⟫ idsec Γ) , Nfa.reflect (normalisation x) (var stop)
+
+idsecβ ∅       = `!-η _
+idsecβ (Γ , x) = ap₂ _`,_ (Γ'.map .is-natural _ _ _ ·ₚ _ ∙ ap₂ _`∘_ (idsecβ Γ) refl ∙ Syn.cancell `idl ∙ Syn.intror refl) (Nfa.com₀ (normalisation x) (var stop) ∙ Syn.intror refl) ∙ sym `πη
+  where module Γ' = /-Obj ⟦ ⟦ Γ ⟧ᶜ ⟧₀
+```
+-->
+
+```agda
+nfᶜ
+  : ∀ Γ {σ : Ty} (e : Mor ⟦ Γ ⟧ᶜ σ)
+  → Σ[ n ∈ Nf Γ σ ] e ≡ ⟦ n ⟧ₙ
+nfᶜ Γ {σ} e = record { fst = done ; snd = sym sq } where
   module σ = Nfa (normalisation σ)
 
-  done = σ.reify (⟦ e ⟧₁ .map .η (∅ , τ) (τ.reflect (var stop)))
+  done = σ.reify (⟦ e ⟧₁ .map .η Γ (idsec Γ))
 ```
 
 To show that the denotation of this normal form is the map we started
-with, up to a trivial isomorphism between the context $x : \tau$ and the
-type $\tau$, we can calculate with the definition of morphisms in
+with, we can calculate with the definition of morphisms in
 $\thecat{Gl}_\Sigma$ and the two triangles for the normalisation
 algebras on the domain and codomain, one each.
 
 ```agda
   abstract
-    sq : ⟦ done ⟧ₙ ≡ e `∘ `π₂
+    sq : ⟦ done ⟧ₙ ≡ e
     sq =
-      ⟦ done ⟧ₙ                                            ≡⟨ sym (σ.com₁ _) ⟩
-      σ.⟦ ⟦ e ⟧₁ .map .η (∅ , τ) (τ.reflect (var stop)) ⟧ₚ ≡⟨ unext (⟦ e ⟧₁ .com) _ _ ⟩
-      e `∘ τ.⟦ τ.reflect (var stop) ⟧ₚ                     ≡⟨ ap (e `∘_) (τ.com₀ _) ⟩
-      e `∘ `π₂                                             ∎
-
-    beta : ⟦ done ⟧ₙ `∘ (`! `, `id) ≡ e
-    beta = Syn.pushl sq ∙ Syn.elimr `π₂β
+      ⟦ done ⟧ₙ                            ≡⟨ sym (σ.com₁ _) ⟩
+      σ.⟦ ⟦ e ⟧₁ .map .η Γ (idsec Γ) ⟧ₚ    ≡⟨ unext (⟦ e ⟧₁ .com) _ _ ⟩
+      e `∘ ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .map .η Γ (idsec Γ) ≡⟨ Syn.elimr (idsecβ Γ) ⟩
+      e                                    ∎
 ```
+
+Finally, using the trivial isomorphism $\top \times \tau \cong \tau$,
+we can normalise arbitrary morphisms $e : \operatorname{Mor}(\tau, \sigma)$.
+
+```agda
+nf
+  : ∀ {τ σ : Ty} (e : Mor τ σ)
+  → Σ[ n ∈ Nf (∅ , τ) σ ] e ≡ ⟦ n ⟧ₙ `∘ (`! `, `id)
+nf {τ} {σ} e =
+  let n , p = nfᶜ (∅ , τ) (e `∘ `π₂) in
+  n , Equiv.adjunctl (dom-iso→hom-equiv Free-ccc Synᵐ.λ≅) p
+```
+
+## Stability
+
+<details>
+<summary>
+We can go one step further and show that our normalisation procedure
+enjoys *stability*: normalising a normal form leaves it unchanged.
+
+```agda
+stability : (n : Nf Γ τ) → nfᶜ Γ ⟦ n ⟧ₙ .fst ≡ n
+stability-ne
+  : (n : Ne Γ τ)
+  → ⟦ ⟦ n ⟧ₛ ⟧₁ .map .η Γ (idsec Γ) ≡ Nfa.reflect (normalisation τ) n
+stability-var
+  : (x : Var Γ τ)
+  → ⟦ ⟦ x ⟧ⁿ ⟧₁ .map .η Γ (idsec Γ) ≡ Nfa.reflect (normalisation τ) (var x)
+```
+</summary>
+
+```agda
+stability (lam n) = {!ap lam (stability n)!}
+stability (pair n n') = ap₂ pair (stability n) (stability n')
+stability unit = refl
+stability (ne x) = stability-ne x
+
+stability-ne (var x) = stability-var x
+stability-ne {Γ = Γ} {τ = τ} (app {τ = σ} n x) =
+  ⟦ ⟦ app n x ⟧ₛ ⟧₁ .map .η Γ (idsec Γ)
+    ≡⟨⟩
+  ⟦ `ev `∘ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ)
+    ≡⟨ {! refl  !} ⟩
+  ev' .map .η Γ (⟦ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ))
+    ≡⟨⟩
+  ev' .map .η Γ (⟦ ⟦ n ⟧ₛ ⟧₁ .map .η Γ (idsec Γ) , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))
+    ≡⟨ ap (λ a → ev' .map .η Γ (a , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))) (stability-ne n) ⟩
+  ev' .map .η Γ (σ⇒τ.reflect n , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))
+    ≡⟨⟩
+  τ.reflect (app (ren-ne stop n) (nfᶜ Γ ⟦ x ⟧ₙ .fst))
+    ≡⟨ ap τ.reflect (ap₂ app (ren-ne-stop stop n) (stability x)) ⟩
+  τ.reflect (app n x)
+    ∎
+  where
+    module τ = Nfa (normalisation τ)
+    module σ⇒τ = Nfa (normalisation (σ `⇒ τ))
+    open Cartesian-closed-over _ _ {Free-closed} GlTm-closed
+stability-ne (hom x n) = ap (ne ⊙ hom x) (stability n)
+stability-ne (fstₙ n) = ap fst (stability-ne n)
+stability-ne (sndₙ n) = ap snd (stability-ne n)
+
+stability-var stop = refl
+stability-var {Γ = Γ , σ} {τ = τ} (pop x) =
+    (⟦ ⟦ x ⟧ⁿ ⟧₁ .map .is-natural Γ (Γ , σ) (drop stop) $ₚ idsec Γ)
+  ∙ ap (⟦ τ ⟧₀ .dom .F₁ (drop stop)) (stability-var x)
+  ∙ sym (Nfa.reflectₙ (normalisation τ))
+```
+</details>
+
+This lets us conclude with a proper equivalence between morphisms and
+normal forms.
+
+```agda
+nf≃ : Mor ⟦ Γ ⟧ᶜ σ ≃ Nf Γ σ
+nf≃ = Iso→Equiv (fst ⊙ nfᶜ _ , iso ⟦_⟧ₙ stability (sym ⊙ snd ⊙ nfᶜ _))
+```
+
+## Applications
 
 Because we went out of our way to get a universal property for the
 syntax which computes nicely, we can play around with the normalisation
@@ -1614,15 +1709,12 @@ instance
     : ∀ ⦃ _ : Discrete Node ⦄
     → ⦃ _ : ∀ {x y} → Discrete (Edge x y) ⦄
     → ∀ {τ σ} → Discrete (Mor τ σ)
-  Discrete-Mor .decide x y with fn ← nf
-    with ((x' , p) , p') ← inspect (fn x)
-       | ((y' , q) , q') ← inspect (fn y)
-       | x' ≡? y'
-  ... | yes x'=y' = yes (p ∙∙ ap (λ e → ⟦ e ⟧ₙ `∘ (`! `, `id)) x'=y' ∙∙ sym q)
-  ... | no  x'≠y' = no λ x=y → x'≠y' $
-       ap fst (sym p')
-    ∙∙ ap (λ e → fst (fn e)) x=y
-    ∙∙ ap fst q'
+  Discrete-Mor = Discrete-inj (fst ⊙ nf)
+    (λ {x} {y} p →
+         nf x .snd
+      ∙∙ ap (λ e → ⟦ e ⟧ₙ `∘ (`! `, `id)) p
+      ∙∙ sym (nf y .snd))
+    auto
 ```
 
 While most applications of this equality decision procedure rely on
