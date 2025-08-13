@@ -1622,10 +1622,6 @@ stability-ne (var x) = stability-var x
 stability-ne {Γ = Γ} {τ = τ} (app {τ = σ} n x) =
   ⟦ ⟦ app n x ⟧ₛ ⟧₁ .map .η Γ (idsec Γ)
     ≡⟨⟩
-  ⟦ `ev `∘ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ)
-    ≡⟨⟩
-  ev' .map .η Γ (⟦ (⟦ n ⟧ₛ `, ⟦ x ⟧ₙ) ⟧₁ .map .η Γ (idsec Γ))
-    ≡⟨⟩
   ev' .map .η Γ (⟦ ⟦ n ⟧ₛ ⟧₁ .map .η Γ (idsec Γ) , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))
     ≡⟨ ap (λ a → ev' .map .η Γ (a , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))) (stability-ne n) ⟩
   ev' .map .η Γ (σ⇒τ.reflect n , ⟦ ⟦ x ⟧ₙ ⟧₁ .map .η Γ (idsec Γ))
