@@ -6,13 +6,13 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.CartesianClosed.Free.Lambda {ℓ} (S : Λ-Signature ℓ) where
+module Cat.CartesianClosed.Free.Lambda {ℓ} (S : λ-Signature ℓ) where
 ```
 
 <!--
 ```agda
 open import Cat.CartesianClosed.Free S
-open Λ-Signature S renaming (Ob to Node ; Hom to Edge)
+open λ-Signature S renaming (Ob to Node ; Hom to Edge)
 private variable
   Γ Δ Θ : Cx
   τ σ ρ : Ty
@@ -24,7 +24,7 @@ private variable
 The **simply typed $\lambda$-calculus** (STLC) is a very small typed
 programming language very strongly associated with [[Cartesian closed
 categories]]. In this module, we define the syntax for STLC over a
-[[$\Lambda$-signature]] $\Sigma$, and show how it relates to the
+[[$\lambda$-signature]] $\Sigma$, and show how it relates to the
 syntax of the [[free Cartesian closed category]] over $\Sigma$.
 
 We have already defined most of the pieces we need in the construction

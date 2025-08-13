@@ -35,7 +35,7 @@ functions.
 
 <details>
 <summary>We'll need an 'observational' equality on types, both to show
-that the types of a given $\Lambda$-signature are a [[set]], and later
+that the types of a given $\lambda$-signature are a [[set]], and later
 to show this also of further constructions on syntax.</summary>
 
 ```agda
@@ -80,13 +80,13 @@ open types using (module Ty ; `_ ; _`×_ ; _`⇒_ ; `⊤) public
 -->
 
 ::: {.definition #lambda-signature}
-A **$\Lambda$-signature** consists of a [[set]] $T$ of **base types**,
+A **$\lambda$-signature** consists of a [[set]] $T$ of **base types**,
 and, for each [[simple type]] $\tau : \operatorname{Ty}(T)$ and base
 type $b$, a set of **operations** $H(\tau, b)$.
 :::
 
 ```agda
-record Λ-Signature ℓ : Type (lsuc ℓ) where
+record λ-Signature ℓ : Type (lsuc ℓ) where
   field
     Ob         : Type ℓ
     Ob-is-set  : is-set Ob
