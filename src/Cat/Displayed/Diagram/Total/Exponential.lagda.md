@@ -58,6 +58,7 @@ module _ {A B : Ob} (exp : Exponential _ bcart A B) where
   open Exponential exp
 
   record ExponentialP (A' : E ʻ A) (B' : E ʻ B) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+    no-eta-equality
     field
       B^A'                : E ʻ B^A
       ev'                 : Hom[ ev ] (B^A' ⊗₀' A') B'
