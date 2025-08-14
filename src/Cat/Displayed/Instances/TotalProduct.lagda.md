@@ -105,7 +105,7 @@ module _
   open Cat.Functor.Bifunctor F
 ```
 -->
-Using the total product can define displayed versions of these familiar bifunctor constructions.
+Using the total product we can define displayed versions of these familiar bifunctor constructions.
 ```agda
   first' : ∀ {a b a' b'} {f : A.Hom a b} {x} {x' : B'.Ob[ x ]} → A'.Hom[ f ] a' b' → C'.Hom[ first f ] (F₀' (a' , x')) (F₀' (b' , x'))
   first' f' = F₁' (f' , B'.id')

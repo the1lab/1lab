@@ -11,10 +11,13 @@ import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 ```
 -->
-We define displayed versions of the our functor naturality tech.
 ```agda
 module Cat.Displayed.Functor.Naturality where
 ```
+## Natural isomorhisms of displayed functors
+
+We define displayed versions of our functor naturality tech.
+
 <!--
 ```agda
 module _ 

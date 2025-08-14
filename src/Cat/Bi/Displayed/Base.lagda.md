@@ -68,6 +68,7 @@ module _ where
       open DR (H' A' D')
 ```
 -->
+## Displayed bicategories
 Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
 displayed _bi_category $\bf{E} \liesover \bf{B}$ allows us to describe _bi_categorical structure over the _bi_category $\bf{B}$.
 
@@ -172,6 +173,12 @@ The unitors and associator are displayed isomorphims over the unitors and associ
     associator' : ∀ {A B C D} {A' : Ob[ A ]} {B' : Ob[ B ]} {C' : Ob[ C ]} {D' : Ob[ D ]}
                 → _≅[_]_ Disp[ Hom[ C' , D' ] ×ᵀᴰ (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) , Hom[ A' , D' ] ] 
                   (compose-assocˡ' {H' = Hom[_,_]}  compose') associator (compose-assocʳ' {H' = Hom[_,_]}  compose')
+    
+  module unitor-l' {A} {B} {A'} {B'} = _≅[_]_ (unitor-l' {A} {B} {A'} {B'})
+  module unitor-r' {A} {B} {A'} {B'} = _≅[_]_ (unitor-r' {A} {B} {A'} {B'})
+  module associator' {A} {B} {C} {D} {A'} {B'} {C'} {D'} = _≅[_]_ (associator' {A} {B} {C} {D} {A'} {B'} {C'} {D'})
+
+      
 ```
 The associated displayed cell combinators proceed in the same way.
 ```agda
