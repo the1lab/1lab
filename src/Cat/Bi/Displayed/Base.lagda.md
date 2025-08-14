@@ -1,4 +1,4 @@
-
+<!--
 ```agda
 open import Cat.Prelude
 open import Cat.Displayed.Base
@@ -13,8 +13,13 @@ open import Cat.Displayed.Functor.Naturality
 import Cat.Displayed.Reasoning as DR
 
 -- Some reference taken from https://arxiv.org/pdf/1903.01152
+```
+-->
+```agda
 module Cat.Bi.Displayed.Base where
-
+```
+<!--
+```agda
 open Functor
 open Displayed-functor
 open _=[_]=>_
@@ -61,17 +66,28 @@ module _ where
     where
       open Displayed (H' A' D')
       open DR (H' A' D')
+```
+-->
+Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
+displayed _bi_category $\bf{E} \liesover \bf{B}$ allows us to describe _bi_categorical structure over the _bi_category $\bf{B}$.
 
+```agda
 record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type (lsuc (o' ⊔ oh' ⊔ ℓh') ⊔ o ⊔ oh ⊔ ℓh) where
-  no-eta-equality
-  open Prebicategory B
+```
+For each object of the base bicateogry, we have a type of displayed objects indexed over it.
+```agda
   field
     Ob[_] : Ob → Type o'
+```
+For any two displayed objects, we have a category displayed over the $\hom$ category of their bases.
+```agda
     Hom[_,_] : ∀ {A B} → Ob[ A ] → Ob[ B ] → Displayed (Hom A B) oh' ℓh'
 
   module Hom[] {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} = Displayed (Hom[ A' , B' ])
-
-
+```
+The displayed objects of these displayed $\hom$ categories are the _displayed 1-cells_.
+The displayed morphims are the _displayed 2-cells_.
+```agda
   _[_]↦_ : ∀ {A B} → Ob[ A ] → (A ↦ B) → Ob[ B ] → Type _
   A' [ f ]↦ B' = Hom[ A' , B' ] .Displayed.Ob[_] f
 
@@ -81,27 +97,33 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
          → A' [ f ]↦ B' → (f ⇒ g) → A' [ g ]↦ B'
          → Type _
   _[_]⇒_ {A' = A'} {B' = B'} f' α g' = Hom[ A' , B' ] .Displayed.Hom[_] α f' g'
-
-
+```
+We require an indentity 1-cell displayed over the identity 1-cell of the base bicategory.
+```agda 
   field
     ↦id' : ∀ {x} {x' : Ob[ x ]} → x' [ id ]↦ x'
-
+```
+We get displayed identity 2-cells automatically from the displayed $\hom$ structure.
+```agda 
   ⇒id' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]}
       → {f : A ↦ B} {f' : A' [ f ]↦ B'}
       → f' [ Hom.id ]⇒ f'
   ⇒id' = Hom[].id'
-
+```
+The displayed composition functor is between total products of displayed $\hom$ categories, and
+lies over the composition functor of the base bicategory.
+```agda
   field
     compose' : ∀ {A B C} {A' : Ob[ A ]} {B' : Ob[ B ]} {C' : Ob[ C ]} 
               → Displayed-functor compose (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) Hom[ A' , C' ]
     
   module compose' {A} {B} {C} {A'} {B'} {C'} = Displayed-functor (compose' {A} {B} {C} {A'} {B'} {C'})
-
-  -- Displayed 1-cell composition
+```
+Displayed 1-cell and 2-cell composition proceeds in the same way.
+```agda 
   _⊗'_ : ∀ {A B C A' B' C'} {f : B ↦ C} {g : A ↦ B} → (B' [ f ]↦ C') → (A' [ g ]↦ B') → A' [ f ⊗ g ]↦ C'
   _⊗'_ f' g' = compose' · (f' , g') 
 
-  -- Vertical displayed 2-cell composition
   _∘'_ : ∀ {A B A' B'} {f g h : A ↦ B} 
       → {f' : A' [ f ]↦ B'} {g' : A' [ g ]↦ B'} {h' : A' [ h ]↦ B'}
       → {β : g ⇒ h} {α : f ⇒ g} 
@@ -109,8 +131,6 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
       → f' [ β ∘ α ]⇒ h'
   _∘'_ = Hom[]._∘'_
 
-
-  -- Horizontal displayed 2-cell composition
   _◆'_ : ∀ {A B C A' B' C'} 
        → {f₁ f₂ : B ↦ C} {β : f₁ ⇒ f₂} 
        → {g₁ g₂ : A ↦ B} {α : g₁ ⇒ g₂}
@@ -124,8 +144,6 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
   infixr 25 _⊗'_
   infix 35 _◀'_ _▶'_
 
-
-  -- Displayed whiskering on the right
   _▶'_ : ∀ {A B C A' B' C'} {f : B ↦ C} {g₁ g₂ : A ↦ B} {α : g₁ ⇒ g₂}
         → {g₁' : A' [ g₁ ]↦ B'} {g₂' : A' [ g₂ ]↦ B'} 
         → (f' : B' [ f ]↦ C')
@@ -134,7 +152,6 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
   _▶'_ f' α' = compose'.₁' (⇒id' , α')
 
 
-  -- Displayed whiskering on the left
   _◀'_ : ∀ {A B C A' B' C'} {g : A ↦ B} {f₁ f₂ : B ↦ C} {β : f₁ ⇒ f₂}
         → {f₁' : B' [ f₁ ]↦ C'} {f₂' : B' [ f₂ ]↦ C'} 
         → (β' : f₁' [ β ]⇒ f₂')
@@ -142,7 +159,9 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
         → f₁' ⊗' g' [ β ◀ g ]⇒ f₂' ⊗' g'
   _◀'_ β' g' = compose'.₁' (β' , ⇒id')
 
-
+```
+The unitors and associator are displayed isomorphims over the unitors and associator the base bicategory.
+```agda 
   -- Displayed unitor and associator isos
   field
     unitor-l' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → _≅[_]_ Disp[ Hom[ A' , B' ] , Hom[ A' , B' ] ] Id' unitor-l (Right' compose' ↦id')
@@ -151,10 +170,9 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
     associator' : ∀ {A B C D} {A' : Ob[ A ]} {B' : Ob[ B ]} {C' : Ob[ C ]} {D' : Ob[ D ]}
                 → _≅[_]_ Disp[ Hom[ C' , D' ] ×ᵀᴰ (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) , Hom[ A' , D' ] ] 
                   (compose-assocˡ' {H' = Hom[_,_]}  compose') associator (compose-assocʳ' {H' = Hom[_,_]}  compose')
-
-  -- Displayed versions of all the morphism combinators
-  -- The naturality types are crazy lol
-
+```
+The associated displayed cell combinators proceed in the same way.
+```agda
   λ←' : ∀ {A B A' B'} {f : A ↦ B} (f' : A' [ f ]↦ B') → (↦id' ⊗' f') [ λ← f ]⇒ f'
   λ←' = unitor-l' ._≅[_]_.from' .η' 
 
@@ -232,7 +250,9 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
               ((β' ◆' (γ' ◆' δ')) ∘' α→' _ _ _)
   α→nat' β' γ' δ' =
     associator' .to' .is-natural' (_ , _ , _) (_ , _ , _) (β' , γ' , δ')
-
+```
+As do the triangle and pentagon identities.
+```agda
   field
     triangle' 
       : ∀ {A B C A' B' C'} {f : B ↦ C} {g : A ↦ B}
@@ -249,11 +269,17 @@ record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type
       → ((α←' f' g' h' ◀' i') ∘' α←' f' (g' ⊗' h') i' ∘' (f' ▶' α←' g' h' i'))
           Hom[].≡[ pentagon f g h i ]
           (α←' (f' ⊗' g') h' i' ∘' α←' f' g' (h' ⊗' i'))
+```
 
+## The displayed bicategory of displayed categories
 
--- Lets define the displayed bicategory of displayed categories!
-
+Displayed categories naturally assemble into a displayed biacategory over $\bf{Cat}$.
+<!--
+```agda 
 open Bidisplayed hiding (_∘'_)
+```
+-->
+```agda
 Displayed-cat : ∀ o ℓ o' ℓ' → Bidisplayed (Cat o ℓ) _ _ _
 Displayed-cat o ℓ o' ℓ' .Ob[_] C = Displayed C o' ℓ'
 Displayed-cat o ℓ o' ℓ' .Hom[_,_] D E = Disp[ D , E ]
@@ -304,5 +330,4 @@ Displayed-cat o ℓ o' ℓ' .pentagon' {B' = B'} {C' = C'} {D' = D'} {E' = E'} f
     module B' = Displayed B'
     module C' = Displayed C'
     module D' = Displayed D' 
-
 ```
