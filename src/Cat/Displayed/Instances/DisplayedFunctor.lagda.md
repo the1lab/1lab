@@ -1,5 +1,5 @@
-
-
+<!--
+```agda
 open import Cat.Prelude
 open import Cat.Instances.Functor
 open import Cat.Displayed.Base
@@ -8,10 +8,18 @@ open import Cat.Reasoning as CR
 import Cat.Displayed.Reasoning as DR
 open import Cat.Functor.Compose
 open import Cat.Displayed.Instances.TotalProduct
-
+```
+-->
+```agda
 module Cat.Displayed.Instances.DisplayedFunctor where
+```
 
-
+Given two displayed categories $\cD \liesover \cA$ and $\cE \liesover \cB$, we
+can assemble them into a displayed category $$[\cD, \cE] \liesover [\cA, \cB]$.
+The construction mirrors the construction of ordinary functor categories,
+using displayed versions of all the same data.
+<!--
+```agda
 open _=>_
 open _=[_]=>_
 open Functor
@@ -29,11 +37,9 @@ module _
     module E where
       open Displayed E public
       open DR E public
-
-
-
-  module Cat[A,B] = Precategory Cat[ A , B ]
-
+```
+-->
+```agda
   Disp[_,_] : Displayed (Cat[ A , B ]) _ _
   Disp[_,_] .Displayed.Ob[_] f = Displayed-functor f D E
   Disp[_,_] .Displayed.Hom[_] α F' G' = F' =[ α ]=> G'
@@ -44,8 +50,9 @@ module _
   Disp[_,_] .Displayed.idr' _ = Nat'-path λ x' → E.idr' _
   Disp[_,_] .Displayed.idl' _ = Nat'-path λ x' → E.idl' _
   Disp[_,_] .Displayed.assoc' _ _ _ = Nat'-path λ x' → E.assoc' _ _ _
-
-
+```
+<!--
+```agda
 module _ 
   {oa ℓa ob ℓb oc ℓc oa' ℓa' ob' ℓb' oc' ℓc'} 
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
@@ -62,7 +69,12 @@ module _
     module C' where
       open Displayed C' public
       open DR C' public
+```
+-->
+We can also construct a displayed version of the functor composition functor. 
+First we'll define displayed horizontal composition of natural transformations.
 
+```agda
 
   _◆'_ : F' =[ α ]=> G' → H' =[ β ]=> K' → F' F∘' H' =[ α ◆ β ]=> G' F∘' K'
   (α' ◆' β') .η' x' = G' .F₁' (β' .η' _) C'.∘' α' .η' _
@@ -72,8 +84,9 @@ module _
     (G' .F₁' (K' .F₁' f') ∘' G' .F₁' (β' .η' x')) ∘' α' .η' (H' .F₀' x')  ≡[]˘⟨ assoc' _ _ _ ⟩ 
      G' .F₁' (K' .F₁' f') ∘' G' .F₁' (β' .η' x') ∘' α' .η' (H' .F₀' x')   ∎  
     where open C'
-
-
+```
+<!--
+```agda
 module _ 
   {oa ℓa ob ℓb oc ℓc oa' ℓa' ob' ℓb' oc' ℓc'} 
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
@@ -84,7 +97,11 @@ module _
   private 
     module C = Precategory C
     module C' = Displayed C'
+```
+-->
+Armed with this, we can define our displayed composition functor.
 
+```agda
   F∘'-functor : Displayed-functor F∘-functor (Disp[ B' , C' ] ×ᵀᴰ Disp[ A' , B' ]) Disp[ A' , C' ]
   F∘'-functor .F₀' (F' , G') = F' F∘' G' 
   F∘'-functor .F₁' (α' , β') = α' ◆' β'
@@ -96,6 +113,4 @@ module _
         ((extend-inner' _ (symP (α' .is-natural' _ _ _))) C'.∙[] 
         (pulll' refl refl))
       where open DR C'
-
-
-
+```

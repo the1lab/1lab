@@ -513,13 +513,6 @@ module
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
-::: {.definition #vertical-natural-transformation}
-Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
-transformation between $F$ and $G$ is called a **vertical natural
-transformation** if all components of the natural transformation are
-vertical.
-:::
-
 <!--
 ```agda
 {-# INLINE NT' #-}
@@ -565,7 +558,11 @@ module _
            → (∀ {x} (x' : D.Ob[ x ]) → α' .η' x' E.≡[ p ηₚ x ] β' .η' x')
            → PathP (λ i → F' =[ p i ]=> G') α' β'
   Nat'-path = Nat'-pathp refl refl _ refl refl
-
+```
+-->
+We can define displayed versions of the indentity natural transformation and 
+composition of natural transformations.
+```agda 
   idnt' : ∀ {F : Functor A B} {F' : Displayed-functor F D E} → F' =[ idnt ]=> F'
   idnt' .η' x' = E.id'
   idnt' .is-natural' x' y' f' = E.id-comm-sym[]
@@ -588,9 +585,17 @@ module _
       module F' = Displayed-functor F'
       module G' = Displayed-functor G'
       module H' = Displayed-functor H'
+```
+-->
+::: {.definition #vertical-natural-transformation}
+Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
+transformation between $F$ and $G$ is called a **vertical natural
+transformation** if all components of the natural transformation are
+vertical.
+:::
 
-
-
+<!--
+```agda
 module _
   {ob ℓb oe ℓe of ℓf}
   {B : Precategory ob ℓb}
