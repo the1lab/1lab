@@ -1749,3 +1749,7 @@ necessarily form a set. We define a solver in a [separate module][solver],
 based on the same ideas.
 
 [solver]: Cat.CartesianClosed.Solver.html
+
+We also define the [[simply-typed $\lambda$-calculus]] in a separate
+module as an alternative presentation of the free CCC and show how it
+relates to $\Syn_\Sigma$.
