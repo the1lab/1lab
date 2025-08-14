@@ -32,7 +32,7 @@ open _=>_
 ```
 -->
 
-# The Day convolution product
+# The Day convolution product {defines="Day-convolution"}
 
 The **Day convolution** $F \otimes^D G$ [[monoidal structure|monoidal
 category]] on $\psh(\cC)$ is the [[free cocompletion]] of a small

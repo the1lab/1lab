@@ -22,8 +22,8 @@ module Cat.Diagram.Exponential
 
 # Exponential objects {defines="exponential-object"}
 
-In a category $\cC$ with all finite [[products]] (including a [[terminal
-object]]!), where by the usual internal logic dictionary we regard a
+In a [[Cartesian category]] $\cC$, where by the usual internal logic
+dictionary we regard a
 morphism $f : \Gamma \to A$ as an *$A$-term in context $\Gamma$*, the
 notion of **exponential object** captures what it means for an object to
 interpret *function types*. An exponential object for $A$ and $B$ is an
