@@ -431,8 +431,27 @@ module _ {f' : Hom[ f ] x' y'} where abstract
   idr[] : {p : f ∘ id ≡ f} → hom[ p ] (f' ∘' id') ≡ f'
   idr[] {p = p} = reindex p (idr _) ∙ from-pathp (idr' f')
 
-  id-comm[] : {p : id ∘ f ≡ f ∘ id} → hom[ p ] (id' ∘' f') ≡ f' ∘' id'
-  id-comm[] {p = p} = duplicate _ _ _ ∙ ap hom[] (from-pathp (idl' _)) ∙ from-pathp (symP (idr' _))
+  id-comm' : {p : f ∘ id ≡ id ∘ f} → (f' ∘' id') ≡[ p ] id' ∘' f'
+  id-comm' = cast[] (idr' _ ∙[] symP (idl' _))
+
+  id-comm[] : (f' ∘' id') ≡[ id-comm ] id' ∘' f'
+  id-comm[] = id-comm'
+
+  id-comm-sym' : {p : id ∘ f ≡ f ∘ id} → (id' ∘' f') ≡[ p ] f' ∘' id'
+  id-comm-sym' = cast[] (idl' _ ∙[] symP (idr' _))
+
+  id-comm-sym[] : (id' ∘' f') ≡[ id-comm-sym ] f' ∘' id'
+  id-comm-sym[] = id-comm-sym'
+
+
+  id2' : ∀ {a} {x : Ob[ a ]} {p : id ∘ id ≡ id} → id' {x = x} ∘' id' ≡[ p ] id'
+  id2' = cast[] (idl' id')
+
+  id2[] : ∀ {a} {x : Ob[ a ]} → id' {x = x} ∘' id' ≡[ id2 ] id'
+  id2[] = id2'
+
+    
+
 
 assoc[]
   : ∀ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] w' x'}

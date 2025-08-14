@@ -102,17 +102,3 @@ module _
 
 
 
-  -- F∘-functor {C = C} = go module F∘-f where
-  --   private module C = Cat.Reasoning C
-  --   go : Functor _ _
-  --   go .F₀ (F , G) = F F∘ G
-  --   go .F₁ (α , β) = α ◆ β
-
-  --   go .F-id {x} = ext λ _ → C.idr _ ∙ x .fst .F-id
-  --   go .F-∘ {x} {y , _} {z , _} (f , _) (g , _) = ext λ _ →
-  --     z .F₁ _ C.∘ f .η _ C.∘ g .η _                 ≡⟨ C.pushl (z .F-∘ _ _) ⟩
-  --     z .F₁ _ C.∘ z .F₁ _ C.∘ f .η _ C.∘ g .η _     ≡⟨ C.extend-inner (sym (f .is-natural _ _ _)) ⟩
-  --     z .F₁ _ C.∘ f .η _ C.∘ y .F₁ _ C.∘ g .η _     ≡⟨ C.pulll refl ⟩
-  --     (z .F₁ _ C.∘ f .η _) C.∘ (y .F₁ _ C.∘ g .η _) ∎
-
-
