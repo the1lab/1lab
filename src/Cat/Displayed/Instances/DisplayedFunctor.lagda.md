@@ -41,9 +41,9 @@ module _
     unquoteDecl lvl = declare-record-hlevel 2 lvl (quote _=[_]=>_)
   Disp[_,_] .Displayed.id' = idnt'
   Disp[_,_] .Displayed._∘'_ = _∘nt'_
-  Disp[_,_] .Displayed.idr' _ = Nat'-pathp refl refl (Cat[A,B].idr _) refl refl λ x' → E.idr' _
-  Disp[_,_] .Displayed.idl' _ = Nat'-pathp refl refl (Cat[A,B].idl _) refl refl λ x' → E.idl' _
-  Disp[_,_] .Displayed.assoc' _ _ _ = Nat'-pathp refl refl (Cat[A,B].assoc _ _ _) refl refl λ x' → E.assoc' _ _ _
+  Disp[_,_] .Displayed.idr' _ = Nat'-path λ x' → E.idr' _
+  Disp[_,_] .Displayed.idl' _ = Nat'-path λ x' → E.idl' _
+  Disp[_,_] .Displayed.assoc' _ _ _ = Nat'-path λ x' → E.assoc' _ _ _
 
 
 module _ 
@@ -89,12 +89,9 @@ module _
   F∘'-functor .F₀' (F' , G') = F' F∘' G' 
   F∘'-functor .F₁' (α' , β') = α' ◆' β'
   F∘'-functor .F-id' {F , G} {F' , G'} = 
-    Nat'-pathp refl refl _ refl refl
-      λ x' → C'.idr' _ C'.∙[] F' .F-id'
+    Nat'-path λ x' → C'.idr' _ C'.∙[] F' .F-id'
   F∘'-functor .F-∘' {a' = F' , G'} {H' , I'} {J' , K'} {α' , _} {β' , _} =
-    Nat'-pathp refl refl _ refl refl 
-      λ x' → 
-        -- This is just using the same combinators as the F∘-functor proof, but displayed
+    Nat'-path λ x' → 
         pushl[] _ (J' .F-∘')                              C'.∙[] 
         ((extend-inner' _ (symP (α' .is-natural' _ _ _))) C'.∙[] 
         (pulll' refl refl))

@@ -1,4 +1,5 @@
 
+```agda
 open import Cat.Prelude
 open import Cat.Displayed.Base
 open import Cat.Instances.Product
@@ -294,12 +295,14 @@ Displayed-cat o ℓ o' ℓ' .triangle' {B' = B'} {C' = C'} f' g' = Nat'-path λ 
   module C' = Displayed C'
 Displayed-cat o ℓ o' ℓ' .pentagon' {B' = B'} {C' = C'} {D' = D'} {E' = E'} f' g' h' i' = Nat'-path λ x' → cast[] $
   (f' .F₁' (g' .F₁' (h' .F₁' B'.id')) ∘' id') ∘' (id' ∘' f' .F₁' D'.id' ∘' id') ≡[]⟨ idr' _ ⟩∘'⟨ idl' _ ⟩
-  (f' .F₁' (g' .F₁' (h' .F₁' B'.id'))) ∘' (f' .F₁' D'.id' ∘' id') ≡[]⟨ ((apd (λ _ z → f' .F₁' (g' .F₁' z)) (h' .F-id')) ⟩∘'⟨ (idr' _)) ⟩ 
-  (f' .F₁' (g' .F₁' C'.id')) ∘' (f' .F₁' D'.id') ≡[]⟨ ((apd (λ _ → f' .F₁') (g' .F-id') ∙[] f' .F-id') ⟩∘'⟨ f' .F-id') ⟩
-  id' ∘' id' ∎
+  (f' .F₁' (g' .F₁' (h' .F₁' B'.id'))) ∘' (f' .F₁' D'.id' ∘' id')               ≡[]⟨ ((apd (λ _ z → f' .F₁' (g' .F₁' z)) (h' .F-id')) ⟩∘'⟨ (idr' _)) ⟩ 
+  (f' .F₁' (g' .F₁' C'.id')) ∘' (f' .F₁' D'.id')                                ≡[]⟨ ((apd (λ _ → f' .F₁') (g' .F-id') ∙[] f' .F-id') ⟩∘'⟨ f' .F-id') ⟩
+  id' ∘' id'                                                                    ∎
   where
     open Displayed E'
     open DR E'
     module B' = Displayed B'
     module C' = Displayed C'
     module D' = Displayed D' 
+
+```
