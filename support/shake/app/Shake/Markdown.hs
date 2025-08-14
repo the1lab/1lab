@@ -548,7 +548,7 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
 -- | Simple textual list of starting identifiers not to fold
 don'tFold :: Set.Set Text
 don'tFold = Set.fromList
-  [ "`⟨" -- used in CC.Lambda
+  [ "`⟨" -- used for STLC
   , "‶⟨" -- used in Cat.Diagram.Product.Solver
   ]
 

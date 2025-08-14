@@ -351,14 +351,12 @@ open import Cat.Bi.Diagram.Monad.Spans
 
 ### Cartesian closed categories
 
-To a type theorist, a [[Cartesian closed]] category is exactly a
-simply-typed lambda calculus. To cement this connection, we have an
-implementation of normalisation-by-evaluation for STLC, whose
-correctness is established relative to its semantics in an arbitrary
-CCC:
+<!-- TODO -->
 
 ```agda
-open import Cat.CartesianClosed.Lambda
+open import Cat.CartesianClosed.Free
+open import Cat.CartesianClosed.Free.Lambda
+open import Cat.CartesianClosed.Solver
 ```
 
 ### Regular categories

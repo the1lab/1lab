@@ -1741,3 +1741,11 @@ base types can have distinct neutrals.
   _ : ∀ {t : Node} → _≠_ {A = Mor ((` t) `× (` t)) (` t)} `π₁ `π₂
   _ = decide!
 ```
+
+One downside of our categorical approach to normalisation is that we
+cannot directly use it to write a *solver* for morphisms in an arbitrary
+Cartesian closed category, because the collection of objects does not
+necessarily form a set. We define a solver in a [separate module][solver],
+based on the same ideas.
+
+[solver]: Cat.CartesianClosed.Solver.html
