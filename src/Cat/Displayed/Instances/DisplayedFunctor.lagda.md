@@ -1,13 +1,14 @@
 <!--
 ```agda
-open import Cat.Prelude
-open import Cat.Instances.Functor
-open import Cat.Displayed.Base
-open import Cat.Displayed.Functor
-open import Cat.Reasoning as CR
-import Cat.Displayed.Reasoning as DR
-open import Cat.Functor.Compose
 open import Cat.Displayed.Instances.TotalProduct
+open import Cat.Displayed.Functor
+open import Cat.Instances.Functor
+open import Cat.Functor.Compose
+open import Cat.Displayed.Base
+open import Cat.Reasoning as CR
+open import Cat.Prelude
+
+import Cat.Displayed.Reasoning as DR
 ```
 -->
 ```agda

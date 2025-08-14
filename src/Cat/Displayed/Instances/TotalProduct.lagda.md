@@ -5,16 +5,16 @@ open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma
 
 open import Cat.Instances.Sets.Complete
+open import Cat.Displayed.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets
 open import Cat.Prelude
 open import Cat.Base
-open import Cat.Displayed.Functor
-import Cat.Functor.Bifunctor
-import Cat.Displayed.Reasoning as DR
 
+import Cat.Displayed.Reasoning as DR
+import Cat.Functor.Bifunctor
 ```
 -->
 

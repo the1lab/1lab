@@ -1,18 +1,18 @@
 <!--
 ```agda
-open import Cat.Prelude
-open import Cat.Displayed.Base
-open import Cat.Instances.Product
-open import Cat.Bi.Base
-open import Cat.Displayed.Total
-open import Cat.Displayed.Functor
-open import Cat.Displayed.Instances.TotalProduct
-open import Cat.Displayed.Instances.DisplayedFunctor hiding (_◆'_)
-open import Cat.Displayed.Morphism
-open import Cat.Displayed.Functor.Naturality
-import Cat.Displayed.Reasoning as DR
-
 -- Some reference taken from https://arxiv.org/pdf/1903.01152
+open import Cat.Displayed.Instances.DisplayedFunctor hiding (_◆'_)
+open import Cat.Displayed.Instances.TotalProduct
+open import Cat.Displayed.Functor.Naturality
+open import Cat.Displayed.Morphism
+open import Cat.Displayed.Functor
+open import Cat.Instances.Product
+open import Cat.Displayed.Total
+open import Cat.Displayed.Base
+open import Cat.Bi.Base
+open import Cat.Prelude
+
+import Cat.Displayed.Reasoning as DR
 ```
 -->
 ```agda
@@ -73,6 +73,8 @@ displayed _bi_category $\bf{E} \liesover \bf{B}$ allows us to describe _bi_categ
 
 ```agda
 record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type (lsuc (o' ⊔ oh' ⊔ ℓh') ⊔ o ⊔ oh ⊔ ℓh) where
+  no-eta-equality
+  open Prebicategory B
 ```
 For each object of the base bicateogry, we have a type of displayed objects indexed over it.
 ```agda

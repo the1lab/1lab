@@ -1,17 +1,22 @@
-
-open import Cat.Prelude
-open import Cat.Displayed.Base
-open import Cat.Displayed.Functor
+<!--
+```agda
 open import Cat.Displayed.Instances.DisplayedFunctor
 open import Cat.Functor.Naturality
+open import Cat.Displayed.Functor
+open import Cat.Displayed.Base
 open import Cat.Morphism
+open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
-
-
+```
+-->
+We define displayed versions of the our functor naturality tech.
+```agda
 module Cat.Displayed.Functor.Naturality where
-
+```
+<!--
+```agda
 module _ 
   {ob ℓb oc ℓc od ℓd oe ℓe} 
   {B : Precategory ob ℓb} {C : Precategory oc ℓc}
@@ -35,7 +40,9 @@ module _
   open _=>_
   open Displayed-functor
   open _=[_]=>_
-
+```
+-->
+```agda
 
   _≅[_]ⁿ_ : {F G : Functor B C} → Displayed-functor F D E → F ≅ⁿ G → Displayed-functor G D E → Type _
   F ≅[ i ]ⁿ G = F DE.≅[ i ] G
@@ -86,37 +93,9 @@ module _
       ; from' = record { η' = mk .inv' ; is-natural' = inverse-is-natural' i to' (mk .inv') (mk .eta∘inv') (mk .inv∘eta') } 
       ; inverses' = record { invl' = Nat'-path (mk .eta∘inv') ; invr' = Nat'-path (mk .inv∘eta') } 
       }
-
+```
+<!--
+```agda
   {-# INLINE to-natural-iso' #-}
-
-    
-    -- ∀ {F G} → make-natural-iso F G → F ≅ⁿ G
-
-
---   no-eta-equality
---   field
---     eta' : ∀ {x} {x' : Ob[ x ]} → Hom[ η 
-
-  -- record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ') where
-  --   no-eta-equality
-  --   field
-  --     eta : ∀ x → D.Hom (F .F₀ x) (G .F₀ x)
-  --     inv : ∀ x → D.Hom (G .F₀ x) (F .F₀ x)
-  --     eta∘inv : ∀ x → eta x D.∘ inv x ≡ D.id
-  --     inv∘eta : ∀ x → inv x D.∘ eta x ≡ D.id
-  --     natural : ∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f
-
-  -- open make-natural-iso
-
-  -- to-natural-iso : ∀ {F G} → make-natural-iso F G → F ≅ⁿ G
-  -- {-# INLINE to-natural-iso #-}
-  -- to-natural-iso {F = F} {G = G} mk =
-  --   let to = record { η = mk .eta ; is-natural = λ x y f → sym (mk .natural x y f) } in
-  --   record
-  --     { to = to
-  --     ; from = record
-  --       { η = mk .inv
-  --       ; is-natural = inverse-is-natural {F} {G} to (mk .inv) (mk .eta∘inv) (mk .inv∘eta) }
-  --     ; inverses = record
-  --       { invl = ext (mk .eta∘inv)
-  --       ; invr = ext (mk .inv∘eta) } }
+```
+-->
