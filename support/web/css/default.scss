@@ -138,7 +138,7 @@ span.katex-display {
   // 2025-07-31: Only do this trick for inline maths that appears inside
   // a paragraph since the margin between paragraphs is already big to
   // avoid clipping enough and we don't want to make it 1/4em bigger.
-  p > & {
+  p > &, summary > & {
     margin-block: #{-0.5 * $katex-margin};
 
     > span.katex {
@@ -290,8 +290,6 @@ div.diagram-container {
   width: 100%;
   overflow-x: auto;
 
-  margin-block: 1em;
-
   img.diagram {
     margin: auto;
     display: block;
@@ -299,6 +297,10 @@ div.diagram-container {
 
     overflow-x: auto;
   }
+
+  .hover-popup &, &:has(.attach-around) { margin-block:       -1em; }
+  &:has(.attach-above)  { margin-block-start: -1em; }
+  &:has(.attach-below)  { margin-block-end:   -1em; }
 }
 
 main a[href],

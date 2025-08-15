@@ -89,8 +89,7 @@ module _
 ```
 -->
 
-<!--
-:::{.definition #nerve}
+:::{.definition .commented-out #nerve}
 The **nerve** $\cD \to \psh(\cC)$ along a functor $F : \cC \to \cD$ is
 the composition
 $$
@@ -98,7 +97,6 @@ $$
 $$
 of $\cD$'s [[Yoneda embedding]] with precomposition by $F$.
 :::
--->
 
 ```agda
     Nerve : Functor D (PSh κ C)

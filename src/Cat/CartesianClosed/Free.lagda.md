@@ -1176,10 +1176,10 @@ Moreover, just applying the initiality trick again wouldn't bring our
 stated the universal property of $\Syn_\Sigma$*!
 
 ```agda
-open Cartesian-functor using (×-comparison-is-iso ; pres-terminal)
+open Cartesian-functor using (pres-products ; pres-terminal)
 
 Tm-cartesian : Cartesian-functor Tm Free-cartesian PSh-cartesian
-Tm-cartesian .×-comparison-is-iso a b = Sem.make-invertible
+Tm-cartesian .pres-products a b = Sem.make-invertible
   (NT (elim! (λ a p q → p `, q)) λ x y f → ext λ p q → sym (Syn.⟨⟩∘ _))
   (ext (λ i a b → `π₁β ,ₚ `π₂β))
   (ext (λ i x → sym `πη))
@@ -1190,7 +1190,7 @@ Tm-cartesian .pres-terminal x .paths a = ext λ i x → `!-η _
 However, there is an off-the-shelf solution we can reach for: since
 $\psh(\thecat{Ren}_\Sigma)$ is *properly* Cartesian closed (it has
 [[pullbacks]]), the [[Artin gluing]]
-$$\thecat{Gl}_\Sigma = \psh(\thecat{Ren}_\Sigma)\downarrow\bf{Tm}$$
+$$\Gl_\Sigma = \psh(\thecat{Ren}_\Sigma)\downarrow\bf{Tm}$$
 is a Cartesian closed category over the syntax, as required by the
 universal property.
 
@@ -1201,21 +1201,20 @@ open Cat.Displayed.Instances.Gluing PSh-cartesian Free-cartesian Tm-cartesian
 Surprisingly though, due to our definition of $\lambda$-signatures
 having base terms with arbitrary simple types as their domain, we're not
 quite done putting together the induction. We would like to define the
-model of $\Sigma$ in $\thecat{Gl}_\Sigma$ to have the base types
-interpreted by normal forms (equivalently neutrals), but we have to know
-ahead of time how to turn our interpretation of the other simple types
-into neutrals.
+model of $\Sigma$ in $\Gl_\Sigma$ to have the base types interpreted by
+normal forms (equivalently neutrals), but we have to know ahead of time
+how to turn our interpretation of the other simple types into neutrals.
 
 # Normalisation algebras
 
 To actually get normal forms out the other side, we will equip the
-objects of $\thecat{Gl}_\Sigma$ over simple types $\tau$ with a
-structure we refer to as a **normalisation algebra**. Recalling that an
-object in $\thecat{Gl}_{\Sigma}(\tau)$ pairs a presheaf $P$ with a
-natural transformation $⟦-⟧_P : P \To \bf{Tm}(\tau)$, a normalisation
-algebra structure consists of further natural transformations
-`reifies`{.Agda} from $P \To \operatorname{Nf}(\tau)$ and
-`reflects`{.Agda} from $\operatorname{Ne}(\tau) \To P.$[^names]
+objects of $\Gl_\Sigma$ over simple types $\tau$ with a structure we
+refer to as a **normalisation algebra**. Recalling that an object in
+$\Gl_{\Sigma}(\tau)$ pairs a presheaf $P$ with a natural transformation
+$⟦-⟧_P : P \To \bf{Tm}(\tau)$, a normalisation algebra structure
+consists of further natural transformations `reifies`{.Agda} from $P \To
+\operatorname{Nf}(\tau)$ and `reflects`{.Agda} from
+$\operatorname{Ne}(\tau) \To P.$[^names]
 
 [^names]:
     In the formalisation we reserve the imperative forms `reify`{.Agda}
@@ -1290,10 +1289,10 @@ open Nfa
 -->
 
 We start by building a normalisation algebra on the presheaf of normals,
-which we take as the model of base types in $\thecat{Gl}_\Sigma$. This
-is only *slightly* worse than trivial, because building the
-`reflect`{.Agda} map--- embedding neutrals into normals--- is not
-literally the identity function, but an inductive constructor instead.
+which we take as the model of base types in $\Gl_\Sigma$. This is only
+*slightly* worse than trivial, because building the `reflect`{.Agda}
+map--- embedding neutrals into normals--- is not literally the identity
+function, but an inductive constructor instead.
 
 ```agda
 Gl-base : (n : Node) → Gl ʻ (` n)
@@ -1317,7 +1316,7 @@ prod-nfa xnf ynf = record where
   module y = Nfa ynf
 ```
 
-Next, we tackle products in $\thecat{Gl}_\Sigma$. Assume we already have
+Next, we tackle products in $\Gl_\Sigma$. Assume we already have
 normalisation algebras on $X$ and $Y$. We can reify a pair into the
 `pair`{.Agda} normal form, reifying each component in turn, and this
 pairing preserves naturality.
@@ -1364,12 +1363,12 @@ arrow-nfa {x = x} {y = y} xnf ynf = arr where
   module y = Nfa ynf
 ```
 
-Next come exponential objects in $\thecat{Gl}_\Sigma$, which are
+Next come exponential objects in $\Gl_\Sigma$, which are
 trickier but still possible in full generality. We will once again
 assume that we have already built normalisation algebras for the domain
 $X$ and codomain $Y$. We start with the implementation of reification.
 
-Recall that the exponentials in $\thecat{Gl}_\Sigma$ are given by a
+Recall that the exponentials in $\Gl_\Sigma$ are given by a
 certain pullback of $\bf{Tm}(\tau \to \sigma)$ and $Y^X$, so that (at
 context $\Gamma$) they are given by a pair of an expression $\Gamma
 \vdash e : \tau \to \sigma$ and a natural transformation $f$ with components
@@ -1475,11 +1474,10 @@ module _ where
 ```
 -->
 
-We're finally ready to construct a section of $\thecat{Gl}_\Sigma$.
-First, we build a normalisation algebra on the denotation of every
-simple type, by a straightforward recursive argument using the 'methods'
-implemented above--- the case for the unit type is too simple to get a
-name.
+We're finally ready to construct a section of $\Gl_\Sigma$. First, we
+build a normalisation algebra on the denotation of every simple type, by
+a straightforward recursive argument using the 'methods' implemented
+above--- the case for the unit type is too simple to get a name.
 
 ```agda
   normalisation : ∀ τ → Nfa {τ} (Ty-nf τ)
@@ -1494,13 +1492,13 @@ name.
     }
 ```
 
-This lets us model the base *terms* in $\thecat{Gl}_\Sigma$, which is
-possible because (by construction) every base term $e : \tau \to y \in
-\Sigma$ induces a natural transformation $\operatorname{Nf}(\tau) \To
+This lets us model the base *terms* in $\Gl_\Sigma$, which is possible
+because (by construction) every base term $e : \tau \to y \in \Sigma$
+induces a natural transformation $\operatorname{Nf}(\tau) \To
 \operatorname{Nf}(y)$, which is componentwise the constructor
-`hom`{.Agda}, and we've constructed natural transformations
-$\sem{\tau} \To \operatorname{Nf}(\tau)$ from the interpretation of a
-simple type into normals, namely `reifies`{.Agda}.
+`hom`{.Agda}, and we've constructed natural transformations $\sem{\tau}
+\To \operatorname{Nf}(\tau)$ from the interpretation of a simple type
+into normals, namely `reifies`{.Agda}.
 
 ```agda
   private
@@ -1568,9 +1566,9 @@ nfᶜ Γ {σ} e = record { fst = done ; snd = sym sq } where
 ```
 
 To show that the denotation of this normal form is the map we started
-with, we can calculate with the definition of morphisms in
-$\thecat{Gl}_\Sigma$ and the two triangles for the normalisation
-algebras on the domain and codomain, one each.
+with, we can calculate with the definition of morphisms in $\Gl_\Sigma$
+and the two triangles for the normalisation algebras on the domain and
+codomain, one each.
 
 ```agda
   abstract

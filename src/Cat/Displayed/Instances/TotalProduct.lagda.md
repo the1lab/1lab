@@ -39,8 +39,10 @@ which is again a displayed category.
 ```agda
   _×ᵀᴰ_ : Displayed (C ×ᶜ D) (o₃ ⊔ o₄) (ℓ₃ ⊔ ℓ₄)
 ```
+
 If displayed categories are regarded as functors, then the product of
 displayed categories can be regarded as the usual product of functors.
+
 ```agda
   _×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
    EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
@@ -53,11 +55,9 @@ displayed categories can be regarded as the usual product of functors.
 We establish that the hom sets of the product fibration are actually
 sets.
 
-If $x, y : \operatorname{Ob}[C \times D]$
-(so $x = (x_C, x_D), y = (y_C, y_D)$) and
-$f : x \to y$ (so $f$ is $(f_C, f_D)$)
-then for any two morphisms $f_1,f_2$ lying over $f$,
-and any $p, q : f_1 = f_2$, $p=q$.
+If $x, y : \operatorname{Ob}[C \times D]$ (so $x = (x_C, x_D), y = (y_C,
+y_D)$) and $f : x \to y$ (so $f$ is $(f_C, f_D)$) then for any two
+morphisms $f_1,f_2$ lying over $f$, and any $p, q : f_1 = f_2$, $p=q$.
 
 ```agda
   _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2

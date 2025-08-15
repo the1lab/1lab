@@ -25,7 +25,7 @@ open ∫Hom
 ```
 -->
 
-# Total Products
+# Total products
 
 <!--
 ```agda
@@ -41,10 +41,10 @@ module _ {ob ℓb oe ℓe} {B : Precategory ob ℓb} (E : Displayed B oe ℓe) w
 ```
 -->
 
-:::{.definition #total-product-diagram}
-Let $\cE \liesover \cB$ be a [[displayed category]], and
-$P, \pi_1 : P \to X, \pi_2 : P \to Y$ be a [[product diagram|product]] in $\cB$.
-A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
+:::{.definition #total-product-diagram alias="total-product"}
+Let $\cE \liesover \cB$ be a [[displayed category]], and $X \xot{\pi_1}
+P \xto{\pi_2} Y$ be a [[product diagram|product]] in $\cB$. A **total
+diagram** in $\cE$ is a diagram
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -62,8 +62,7 @@ A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
 \end{tikzcd}
 ~~~
 
-is a **total product diagram** if it satisfies a displayed version of
-the universal property of the product.
+satisfying a displayed version of the universal property of products.
 :::
 
 ```agda
@@ -86,7 +85,7 @@ over $(A, f, g)$, as in the following diagram.
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
   && P && Y \\
   &&& X
-  \arrow["{g'}", color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow["{g'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
   \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
   \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
   \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
@@ -111,7 +110,7 @@ P$ that commutes with $\pi_1$ and $\pi_2$.
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
   && P && Y \\
   &&& X
-  \arrow["{g'}", color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow["{g'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
   \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
   \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
   \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
@@ -166,10 +165,8 @@ commutes with $\pi_1'$ and $\pi_2'$.
 ```
 -->
 
-:::{.definition #total-product}
 A **total product** of $A'$ and $B'$ in $\cE$ consists of a choice
 of a [[total product diagram]].
-:::
 
 ```agda
   record
