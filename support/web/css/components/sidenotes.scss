@@ -20,6 +20,8 @@ span.sidenote-ascender-mark {
 }
 
 div.sidenote {
+  @include shrink;
+
   position: absolute;
   width:    100%;
   right:    0;
@@ -34,12 +36,6 @@ div.sidenote {
   --font-size:      #{$footnote-font};
   --code-font-size: #{0.9 * $footnote-font};
 
-  p, ol, ul, h1, h2, h3, h4, h5, h6 {
-    &:not(:first-child) {
-      margin-block: 0.8em;
-    }
-  }
-
   // Pack block-level elements slightly closer together.
 
   > span.sidenote-number {
@@ -53,10 +49,6 @@ div.sidenote {
   }
 
   a.footnote-back { display: none; }
-
-  div.diagram-container img.diagram {
-    height: calc(0.66 * var(--height));
-  }
 }
 
 section.footnotes {
@@ -66,8 +58,10 @@ section.footnotes {
 
 aside#sidenote-container {
   @include widescreen { display: block; }
-
-  display: none;
+  display:  none;
 
   position: relative;
+
+  grid-column: gutter;
+  margin-left: $sidenote-separation;
 }

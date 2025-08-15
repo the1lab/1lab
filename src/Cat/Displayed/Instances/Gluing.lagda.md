@@ -58,7 +58,7 @@ be a [[Cartesian functor]] between them. The **(Artin) gluing** along
 $F$ is the [[pullback|pullback fibration]] of $\cC$'s [[fundamental
 fibration]] along $F$, i.e. the left display map in the diagram
 
-~~~{.quiver}
+~~~{.quiver .attach-above}
 \[\begin{tikzcd}[ampersand replacement=\&]
   {\Gl(F)} \&\& {\underline{\cC}} \\
   \\

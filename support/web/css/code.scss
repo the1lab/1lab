@@ -28,7 +28,7 @@ div.sourceCode {
     flex-grow: 0;
 
     overflow-x: auto;
-    line-height: 1.2;
+    line-height: #{1 + $body-line-height};
 
     code {
       display: block;
@@ -47,8 +47,6 @@ div.sourceCode {
   }
 }
 
-:root { --code-margin: calc(1rem + 5px); }
-
 pre.Agda, div.sourceCode > pre {
   box-shadow: none;
   overflow-x: auto;
@@ -56,7 +54,7 @@ pre.Agda, div.sourceCode > pre {
 
   // The horizontal margin should be 1rem (the width of the padding for paragraphs
   // with borders) *plus* 5px. This was measured empirically.
-  margin: 1em var(--code-margin);
+  margin: var(--parskip) 0 var(--parskip) 1ch;
 
   background-color: theme(--text-bg);
   color:            theme(--text-fg);

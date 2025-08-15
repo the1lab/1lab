@@ -1,4 +1,6 @@
-$nav-height: 48px;
+@use "sass:math";
+
+$nav-height:   48px;
 $page-padding: 3rem;
 
 // "Desktop layout": navigation bar, content, sidenotes.
@@ -6,8 +8,8 @@ $desktop-layout-width: 95rem;
 
 // Distance and width between a "left-bordered block" (think <details>)
 // and the actual border.
-$left-border-distance: 1em;
-$left-border-width: 5px;
+$left-border-distance: 0.625em;
+$left-border-width:    .3ex;
 
 // Size of rulers (e.g. <hr>, border of the navbar list)
 $ruler-size: 2px;
@@ -18,3 +20,20 @@ $katex-margin: 0.3em;
 
 // Font size for sidenotes.
 $footnote-font: 1.15rem;
+
+// Extra spacing around lines, as a fraction of em.
+$body-line-height: 0.2;
+
+// Minimum width of a text popup and how much it's allowed to grow.
+$text-popup-width: 25em;
+$text-popup-grow:  1.25;
+
+// How much paragraph skip and diagrams in a "small" context (popups,
+// sidenotes) should shrink by
+$shrink: math.div(2, 3);
+
+// Default paragraph skip.
+$parskip: 0.85rlh;
+
+// Margin between the end of body text and the start of the sidenotes
+$sidenote-separation: 1.4em;

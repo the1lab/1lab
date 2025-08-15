@@ -1,3 +1,5 @@
+@use "sass:selector";
+
 @mixin left-bordered($bg) {
   border-inline-start:  $left-border-width solid $bg;
   padding-inline-start: $left-border-distance;
@@ -37,7 +39,7 @@
   >:nth-child(1)      { margin-block-start: 0; }
   >:nth-last-child(1) { margin-block-end: 0; }
 
-  margin-block: 1em;
+  margin-block: var(--parskip);
 }
 
 @mixin highlight($name, $bg, $icon) {
@@ -78,5 +80,13 @@
 @mixin widescreen {
   @media only screen and (min-width: $desktop-layout-width) {
     @content;
+  }
+}
+
+@mixin shrink {
+  --parskip: #{$shrink * $parskip};
+
+  div.diagram-container img.diagram {
+    height: calc($shrink * var(--height));
   }
 }
