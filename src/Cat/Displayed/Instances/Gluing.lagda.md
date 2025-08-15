@@ -238,15 +238,16 @@ Gl-closed ccl dcl pullbacks {A} {B} A' B' = done where
 -->
 
 To explain the construction of the exponential $g^f,$[^shorthand] let us
-pretend that $\cD$ the *syntactic category* of some theory with function
-types, $\cC$ is a category of *semantic objects*, and the functor $F$
-embeds syntactic objects into semantic ones. In this situation, we think
-of the maps in each object of $\Gl(F)$ as mapping semantic things to
-witnesses for their *definability* in terms of $\cD$'s syntax. In
-general, the semantic exponential $Y^X$ will contain many "exotic"
-operations which can not be syntactically defined, for example those
-defined by adversarial knowledge of the internal structures of $X$ and
-$Y$, so we have no hope of writing a map $Y^X \to F(B^A)$.
+pretend that $\cD$ is the *syntactic category* of some theory with
+function types, $\cC$ is a category of *semantic objects*, and the
+functor $F$ embeds syntactic objects into semantic ones. In this
+situation, we think of the maps in each object of $\Gl(F)$ as mapping
+semantic things to witnesses for their *definability* in terms of
+$\cD$'s syntax. In general, the semantic exponential $Y^X$ will contain
+many "exotic" operations which can not be syntactically defined, for
+example those defined by adversarial knowledge of the internal
+structures of $X$ and $Y$, so we have no hope of writing a map $Y^X \to
+F(B^A)$.
 
 [^shorthand]:
     In this section, for notational convenience, we will refer to the
