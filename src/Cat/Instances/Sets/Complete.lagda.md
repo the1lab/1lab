@@ -6,6 +6,7 @@ open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Cartesian
 open import Cat.Prelude
 ```
 -->
@@ -117,6 +118,14 @@ Products are given by product sets:
   Sets-products A B .has-is-product .π₂∘⟨⟩ = refl
   Sets-products A B .has-is-product .unique p q i x = p i x , q i x
 ```
+
+<!--
+```agda
+  Sets-cartesian : Cartesian-category (Sets ℓ)
+  Sets-cartesian .Cartesian-category.products = Sets-products
+  Sets-cartesian .Cartesian-category.terminal = Sets-terminal
+```
+-->
 
 Equalisers are given by carving out the subset of $A$ where $f$ and $g$ agree
 using $\Sigma$:

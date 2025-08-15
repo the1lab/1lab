@@ -1,48 +1,89 @@
 <!--
 ```agda
+open import Cat.CartesianClosed.Free.Signature using (module types)
 open import Cat.Diagram.Exponential
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Product
-open import Cat.Functor.Adjoint
 open import Cat.Cartesian
 open import Cat.Prelude
 
-import Cat.CartesianClosed.Lambda as L
-import Cat.Reasoning
+import Cat.Functor.Bifunctor as Bifunctor
 ```
 -->
 
 ```agda
 module Cat.CartesianClosed.Solver
-  {o ℓ} {C : Precategory o ℓ} (cart : Cartesian-category C)
-  (cc : Cartesian-closed C cart)
-  where
+```
+
+# Solver for Cartesian closed categories
+
+<!--
+```agda
+  {o ℓ} {C : Precategory o ℓ} (cart : Cartesian-category C) (cc : Cartesian-closed C cart)
+        where
+
+open Cartesian-category cart
+open Cartesian-closed cc
+open types Ob public
+```
+-->
+
+We can write a *solver* for a [[Cartesian closed]] category $\cC$ --- a
+metaprogram which identifies two morphisms when they differ only by
+applications of the CCC laws --- by re-using the idea for our
+implementation of *normalisation by evaluation* for [[free Cartesian
+closed categories]]: in order to identify two morphisms in $\cC$, it
+suffices to identify their "quoted" versions in the free CCC on $\cC$,
+which we can do automatically by normalising them.
+
+The reason we don't directly re-use the *implementation* is that the
+underlying graph of an arbitrary CCC does not form a
+[[$\lambda$-signature]] unless the category is [[strict|strict category]],
+which is too limiting an assumption. In turn, the requirement that the
+objects form a set is necessary to obtain proper *presheaves* of normals
+and neutrals. Instead, this module takes a slightly "wilder" approach,
+omitting a lot of unnecessary coherence. We also work with an
+*unquotiented* representation of morphisms.
+
+First, recall the definition of [[simple types]]: they are generated from
+the objects of $\cC$ by freely adding product types, function types, and
+a unit type. We define contexts as lists of simple types.
+
+```agda
+data Cx : Type o where
+  ∅   : Cx
+  _,_ : Cx → Ty → Cx
 ```
 
 <!--
 ```agda
-open Cartesian-category cart
-open Cartesian-closed cc
-private open module L' = L C cart cc
-
-open L' using (Ty ; module Ty ; `_ ; _`×_ ; _`⇒_ ; `⊤) public
-
 private variable
   Γ Δ Θ : Cx
   τ σ ρ : Ty
 ```
 -->
 
-# Solver for Cartesian closed categories
+Using the Cartesian closed structure of $\cC$, we can interpret types
+and contexts in terms of the structural morphisms: for
+example, the empty context is interpreted by the terminal object.
 
-We can write a *solver* for a [[Cartesian closed]] category $\cC$--- a
-metaprogram which identifies two morphisms when they differ only by
-applications of the CCC laws--- re-using the infrastructure for our
-implementation of *normalisation by evaluation* for [[simply-typed
-lambda calculus]].
+<!--
+```agda
+⟦_⟧ᵗ : Ty → Ob
+⟦_⟧ᶜ : Cx → Ob
+```
+-->
 
-The idea is to write a faithful representation of the way morphisms in a
-CCC appear in equational goals (in terms of identities, compositions,
+```agda
+⟦ X `× Y ⟧ᵗ = ⟦ X ⟧ᵗ ⊗₀ ⟦ Y ⟧ᵗ
+⟦ X `⇒ Y ⟧ᵗ = [ ⟦ X ⟧ᵗ , ⟦ Y ⟧ᵗ ]
+⟦ `⊤  ⟧ᵗ    = top
+⟦ ` X ⟧ᵗ    = X
+
+⟦ Γ , τ ⟧ᶜ = ⟦ Γ ⟧ᶜ ⊗₀ ⟦ τ ⟧ᵗ
+⟦ ∅ ⟧ᶜ     = top
+```
+
+The idea is then to write a faithful representation of the way morphisms
+in a CCC appear in equational goals (in terms of identities, compositions,
 the evaluation morphism, and so on), then define a sound normalisation
 function for these. Note that since this is a *meta*program, our syntax
 for morphisms does not need to actually respect the laws of a CCC (i.e.
@@ -87,9 +128,7 @@ pattern `unlambda f = `ev `∘ (f `⊗₁ `id)
 
 We can interpret a formal morphism from $\tau$ to $\sigma$ as a map in
 $\cC$, and this interpretation *definitionally* sends each constructor
-to its corresponding operation. This is the benefit of writing a syntax
-for literal morphisms, re-using only the semantics, instead of trying to
-reuse also the syntax for lambda terms.
+to its corresponding operation.
 
 ```agda
 ⟦_⟧ᵐ : Mor τ σ → Hom ⟦ τ ⟧ᵗ ⟦ σ ⟧ᵗ
@@ -104,69 +143,236 @@ reuse also the syntax for lambda terms.
 ⟦ `!      ⟧ᵐ = !
 ```
 
-Formal morphisms from $\tau$ to $\sigma$ then have semantics as *natural
-transformations* between the semantic presheaves of types $\tau$ and
-$\sigma$ --- we are encoding morphisms as their action by
-precomposition. First, we need to handle the case for a generator, a map
-coming from $\cC$. While we have a constructor `hom`{.Agda} which
-constructs neutrals from generators, this is only at base types, while
-here generators can occur at arbitrary types. We thus have to perform
-type-directed $\eta$-expansion of the generator. Since the constructor
-for generators is a backtick `` `_ ``{.Agda}, we call this semantic
-action `tickᵖ`{.Agda}.
+<details>
+<summary>
+The bulk of this module is the implementation of normalisation by
+evaluation for the representation of morphisms above. We refer the
+reader to the same construction for [[free Cartesian closed categories]]
+over a $\lambda$-signature for more details.
+</summary>
 
 ```agda
+data Var : Cx → Ty → Type o where
+  stop : Var (Γ , τ) τ
+  pop  : Var Γ τ → Var (Γ , σ) τ
+
+⟦_⟧ⁿ : Var Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦ stop ⟧ⁿ  = π₂
+⟦ pop x ⟧ⁿ = ⟦ x ⟧ⁿ ∘ π₁
+
+data Ren : Cx → Cx → Type (o ⊔ ℓ) where
+  stop : Ren Γ Γ
+  drop : Ren Γ Δ → Ren (Γ , τ) Δ
+  keep : Ren Γ Δ → Ren (Γ , τ) (Δ , τ)
+
+_∘ʳ_ : ∀ {Γ Δ Θ} → Ren Γ Δ → Ren Δ Θ → Ren Γ Θ
+stop   ∘ʳ ρ      = ρ
+drop σ ∘ʳ ρ      = drop (σ ∘ʳ ρ)
+keep σ ∘ʳ stop   = keep σ
+keep σ ∘ʳ drop ρ = drop (σ ∘ʳ ρ)
+keep σ ∘ʳ keep ρ = keep (σ ∘ʳ ρ)
+
+ren-var : ∀ {Γ Δ τ} → Ren Γ Δ → Var Δ τ → Var Γ τ
+ren-var stop     v       = v
+ren-var (drop σ) v       = pop (ren-var σ v)
+ren-var (keep σ) stop    = stop
+ren-var (keep σ) (pop v) = pop (ren-var σ v)
+
+⟦_⟧ʳ : Ren Γ Δ → Hom ⟦ Γ ⟧ᶜ ⟦ Δ ⟧ᶜ
+⟦ stop   ⟧ʳ = id
+⟦ drop r ⟧ʳ = ⟦ r ⟧ʳ ∘ π₁
+⟦ keep r ⟧ʳ = ⟦ r ⟧ʳ ⊗₁ id
+
+data Nf           : Cx → Ty → Type (o ⊔ ℓ)
+data Ne           : Cx → Ty → Type (o ⊔ ℓ)
+data Sub (Γ : Cx) : Cx → Type (o ⊔ ℓ)
+
+data Nf where
+  lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  unit :                      Nf Γ `⊤
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
+
+data Ne where
+  var  : Var Γ τ → Ne Γ τ
+  app  : Ne Γ (τ `⇒ σ) → Nf Γ τ → Ne Γ σ
+  fstₙ : Ne Γ (τ `× σ) → Ne Γ τ
+  sndₙ : Ne Γ (τ `× σ) → Ne Γ σ
+  hom  : ∀ {Δ a} → Hom ⟦ Δ ⟧ᶜ a → Sub Γ Δ → Ne Γ (` a)
+
+data Sub Γ where
+  ∅   : Sub Γ ∅
+  _,_ : Sub Γ Δ → Nf Γ τ → Sub Γ (Δ , τ)
+
+ren-ne  : ∀ {Γ Δ τ} → Ren Δ Γ → Ne  Γ τ → Ne  Δ τ
+ren-nf  : ∀ {Γ Δ τ} → Ren Δ Γ → Nf  Γ τ → Nf  Δ τ
+ren-sub : ∀ {Γ Δ Θ} → Ren Δ Γ → Sub Γ Θ → Sub Δ Θ
+
+ren-ne σ (hom h a) = hom h (ren-sub σ a)
+
+ren-ne σ (var v)   = var  (ren-var σ v)
+ren-ne σ (app f a) = app  (ren-ne σ f) (ren-nf σ a)
+ren-ne σ (fstₙ a)  = fstₙ (ren-ne σ a)
+ren-ne σ (sndₙ a)  = sndₙ (ren-ne σ a)
+
+ren-nf σ (lam n)    = lam  (ren-nf (keep σ) n)
+ren-nf σ (pair a b) = pair (ren-nf σ a) (ren-nf σ b)
+ren-nf σ (ne x)     = ne   (ren-ne σ x)
+ren-nf σ unit       = unit
+
+ren-sub ρ ∅       = ∅
+ren-sub ρ (σ , x) = ren-sub ρ σ , ren-nf ρ x
+
+⟦_⟧ₙ  : Nf  Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦_⟧ₛ  : Ne  Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
+⟦_⟧ᵣ  : Sub Γ Δ → Hom ⟦ Γ ⟧ᶜ ⟦ Δ ⟧ᶜ
+
+⟦ lam h    ⟧ₙ = ƛ ⟦ h ⟧ₙ
+⟦ pair a b ⟧ₙ = ⟨ ⟦ a ⟧ₙ , ⟦ b ⟧ₙ ⟩
+⟦ ne x     ⟧ₙ = ⟦ x ⟧ₛ
+⟦ unit     ⟧ₙ = !
+
+⟦ var x   ⟧ₛ = ⟦ x ⟧ⁿ
+⟦ app f x ⟧ₛ = ev ∘ ⟨ ⟦ f ⟧ₛ , ⟦ x ⟧ₙ ⟩
+⟦ fstₙ h  ⟧ₛ = π₁ ∘ ⟦ h ⟧ₛ
+⟦ sndₙ h  ⟧ₛ = π₂ ∘ ⟦ h ⟧ₛ
+⟦ hom h a ⟧ₛ = h ∘ ⟦ a ⟧ᵣ
+
+⟦ ∅     ⟧ᵣ = !
+⟦ σ , n ⟧ᵣ = ⟨ ⟦ σ ⟧ᵣ , ⟦ n ⟧ₙ ⟩
+
+⟦⟧-∘ʳ   : (ρ : Ren Γ Δ) (σ : Ren Δ Θ) → ⟦ ρ ∘ʳ σ ⟧ʳ ≡ ⟦ σ ⟧ʳ ∘ ⟦ ρ ⟧ʳ
+
+ren-⟦⟧ⁿ : (ρ : Ren Δ Γ) (v : Var Γ τ) → ⟦ ren-var ρ v ⟧ⁿ ≡ ⟦ v ⟧ⁿ ∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ₛ : (ρ : Ren Δ Γ) (t : Ne Γ τ)  → ⟦ ren-ne ρ t  ⟧ₛ ≡ ⟦ t ⟧ₛ ∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ₙ : (ρ : Ren Δ Γ) (t : Nf Γ τ)  → ⟦ ren-nf ρ t  ⟧ₙ ≡ ⟦ t ⟧ₙ ∘ ⟦ ρ ⟧ʳ
+ren-⟦⟧ᵣ : (ρ : Ren Δ Γ) (σ : Sub Γ Θ) → ⟦ ren-sub ρ σ ⟧ᵣ ≡ ⟦ σ ⟧ᵣ ∘ ⟦ ρ ⟧ʳ
+
+⟦⟧-∘ʳ stop σ = intror refl
+⟦⟧-∘ʳ (drop ρ) σ = pushl (⟦⟧-∘ʳ ρ σ)
+⟦⟧-∘ʳ (keep ρ) stop = introl refl
+⟦⟧-∘ʳ (keep ρ) (drop σ) = pushl (⟦⟧-∘ʳ ρ σ) ∙ sym (pullr π₁∘⟨⟩)
+⟦⟧-∘ʳ (keep ρ) (keep σ) = sym $ ⟨⟩-unique
+  (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ pulll (sym (⟦⟧-∘ʳ ρ σ)))
+  (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl _)
+
+ren-⟦⟧ⁿ stop v           = intror refl
+ren-⟦⟧ⁿ (drop ρ) v       = pushl (ren-⟦⟧ⁿ ρ v)
+ren-⟦⟧ⁿ (keep ρ) stop    = sym (π₂∘⟨⟩ ∙ idl _)
+ren-⟦⟧ⁿ (keep ρ) (pop v) = pushl (ren-⟦⟧ⁿ ρ v) ∙ sym (pullr π₁∘⟨⟩)
+
+ren-⟦⟧ₛ ρ (var x) = ren-⟦⟧ⁿ ρ x
+ren-⟦⟧ₛ ρ (app f x) = ap₂ _∘_ refl
+  (ap₂ ⟨_,_⟩ (ren-⟦⟧ₛ ρ f) (ren-⟦⟧ₙ ρ x) ∙ sym (⟨⟩∘ _))
+  ∙ pulll refl
+ren-⟦⟧ₛ ρ (fstₙ t) = pushr (ren-⟦⟧ₛ ρ t)
+ren-⟦⟧ₛ ρ (sndₙ t) = pushr (ren-⟦⟧ₛ ρ t)
+ren-⟦⟧ₛ ρ (hom x a) = pushr (ren-⟦⟧ᵣ ρ a)
+
+ren-⟦⟧ₙ ρ (lam t) =
+    ap ƛ (ren-⟦⟧ₙ (keep ρ) t)
+  ∙ sym (unique _ (ap₂ _∘_ refl rem₁ ∙ pulll (commutes ⟦ t ⟧ₙ)))
+  where
+  rem₁ : (⟦ lam t ⟧ₙ ∘ ⟦ ρ ⟧ʳ) ⊗₁ id ≡ (⟦ lam t ⟧ₙ ⊗₁ id) ∘ ⟦ ρ ⟧ʳ ⊗₁ id
+  rem₁ = Bifunctor.first∘first ×-functor
+
+ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
+ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
+ren-⟦⟧ₙ ρ unit   = !-unique _
+
+ren-⟦⟧ᵣ ρ ∅       = !-unique _
+ren-⟦⟧ᵣ ρ (σ , n) = ap₂ ⟨_,_⟩ (ren-⟦⟧ᵣ ρ σ) (ren-⟦⟧ₙ ρ n) ∙ sym (⟨⟩∘ _)
+
+Tyᵖ : (τ : Ty) (Γ : Cx) → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ → Type (o ⊔ ℓ)
+Tyᵖ (τ `× σ) Γ h = Tyᵖ τ Γ (π₁ ∘ h) × Tyᵖ σ Γ (π₂ ∘ h)
+Tyᵖ `⊤ Γ h = Lift _ ⊤
+Tyᵖ (τ `⇒ σ) Γ h =
+  ∀ {Δ} (ρ : Ren Δ Γ) {a}
+  → Tyᵖ τ Δ a
+  → Tyᵖ σ Δ (ev ∘ ⟨ h ∘ ⟦ ρ ⟧ʳ , a ⟩)
+Tyᵖ (` x)    Γ h = Σ (Ne Γ (` x)) λ n → ⟦ n ⟧ₛ ≡ h
+
+data Subᵖ : ∀ Γ Δ → Hom ⟦ Δ ⟧ᶜ ⟦ Γ ⟧ᶜ → Type (o ⊔ ℓ) where
+  ∅   : ∀ {i} → Subᵖ ∅ Δ i
+  _,_ : ∀ {h} → Subᵖ Γ Δ (π₁ ∘ h) → Tyᵖ σ Δ (π₂ ∘ h) → Subᵖ (Γ , σ) Δ h
+
+tyᵖ⟨_⟩ : ∀ {τ Γ h h'} → h ≡ h' → Tyᵖ τ Γ h → Tyᵖ τ Γ h'
+tyᵖ⟨_⟩ {τ `× σ} p (a , b)   = tyᵖ⟨ ap (π₁ ∘_) p ⟩ a , tyᵖ⟨ ap (π₂ ∘_) p ⟩ b
+tyᵖ⟨_⟩ {τ `⇒ σ} p ν ρ x     = tyᵖ⟨ ap (λ e → ev ∘ ⟨ e ∘ ⟦ ρ ⟧ʳ , _ ⟩) p ⟩ (ν ρ x)
+tyᵖ⟨_⟩ {` x} p (n , q) .fst = n
+tyᵖ⟨_⟩ {` x} p (n , q) .snd = q ∙ p
+tyᵖ⟨_⟩ {`⊤}  p (lift tt)    = lift tt
+
+subᵖ⟨_⟩ : ∀ {Γ Δ h h'} → h ≡ h' → Subᵖ Γ Δ h → Subᵖ Γ Δ h'
+subᵖ⟨_⟩ p ∅       = ∅
+subᵖ⟨_⟩ p (r , x) = subᵖ⟨ ap (π₁ ∘_) p ⟩ r , tyᵖ⟨ ap (π₂ ∘_) p ⟩ x
+
+ren-tyᵖ  : ∀ {Δ Γ τ m} (ρ : Ren Δ Γ) → Tyᵖ τ Γ m  → Tyᵖ  τ Δ (m ∘ ⟦ ρ ⟧ʳ)
+ren-subᵖ : ∀ {Δ Γ Θ m} (ρ : Ren Θ Δ) → Subᵖ Γ Δ m → Subᵖ Γ Θ (m ∘ ⟦ ρ ⟧ʳ)
+
+ren-tyᵖ {τ = τ `× σ} r (a , b)   =
+    tyᵖ⟨ sym (assoc _ _ _) ⟩ (ren-tyᵖ r a)
+  , tyᵖ⟨ sym (assoc _ _ _) ⟩ (ren-tyᵖ r b)
+ren-tyᵖ {τ = τ `⇒ σ} r t {Θ} ρ {α} a =
+  tyᵖ⟨ ap (λ e → ev ∘ ⟨ e , α ⟩) (pushr (⟦⟧-∘ʳ ρ r)) ⟩ (t (ρ ∘ʳ r) a)
+ren-tyᵖ {τ = ` x} r (f , p) = ren-ne r f , ren-⟦⟧ₛ r f ∙ ap₂ _∘_ p refl
+ren-tyᵖ {τ = `⊤} r (lift tt) = lift tt
+
+ren-subᵖ r ∅       = ∅
+ren-subᵖ r (c , x) =
+    subᵖ⟨ sym (assoc _ _ _) ⟩ (ren-subᵖ r c)
+  , tyᵖ⟨ sym (assoc _ _ _) ⟩ (ren-tyᵖ r x)
+
+reifyᵖ         : ∀ {h}                 → Tyᵖ τ Γ h → Nf Γ τ
+reflectᵖ       : (n : Ne Γ τ)          → Tyᵖ τ Γ ⟦ n ⟧ₛ
+reifyᵖ-correct : ∀ {h} (v : Tyᵖ τ Γ h) → ⟦ reifyᵖ v ⟧ₙ ≡ h
+
+reifyᵖ {τ = τ `× s} (a , b) = pair (reifyᵖ a) (reifyᵖ b)
+reifyᵖ {τ = τ `⇒ s} f       = lam (reifyᵖ (f (drop stop) (reflectᵖ (var stop))))
+reifyᵖ {τ = ` x} d          = ne (d .fst)
+reifyᵖ {τ = `⊤} d           = unit
+
+reflectᵖ {τ = τ `× σ} n     = reflectᵖ (fstₙ n) , reflectᵖ (sndₙ n)
+reflectᵖ {τ = τ `⇒ σ} n ρ a = tyᵖ⟨ ap₂ (λ e f → ev ∘ ⟨ e , f ⟩) (ren-⟦⟧ₛ ρ n) (reifyᵖ-correct a) ⟩
+  (reflectᵖ (app (ren-ne ρ n) (reifyᵖ a)))
+reflectᵖ {τ = ` x}    n     = n , refl
+reflectᵖ {τ = `⊤}     _     = lift tt
+
+reifyᵖ-correct {τ = τ `× σ} (a , b) = sym $
+  ⟨⟩-unique (sym (reifyᵖ-correct a)) (sym (reifyᵖ-correct b))
+reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
+  ƛ ⟦ reifyᵖ (ν (drop stop) (reflectᵖ (var stop))) ⟧ₙ
+    ≡⟨ ap ƛ (reifyᵖ-correct (ν (drop stop) (reflectᵖ (var stop)))) ⟩
+  ƛ (ev ∘ ⟨ h ∘ id ∘ π₁ , π₂ ⟩)
+    ≡⟨ ap₂ (λ a b → ƛ (ev ∘ ⟨ a , b ⟩)) (pulll (elimr refl)) (introl refl) ⟩
+  ƛ (unlambda h)
+    ≡˘⟨ unique _ refl ⟩
+  h ∎
+reifyᵖ-correct {τ = ` x} d = d .snd
+reifyᵖ-correct {τ = `⊤}  d = !-unique _
+
 private
   tickᵖ : ∀ {x y h} (m : Hom ⟦ x ⟧ᵗ ⟦ y ⟧ᵗ) → Tyᵖ x Γ h → Tyᵖ y Γ (m ∘ h)
-  tickᵖ {x = x} {y = L.`⊤}  m a = lift tt
-  tickᵖ {x = x} {y = L.` τ} m a =
+  tickᵖ {x = x} {y = `⊤}  m a = lift tt
+  tickᵖ {x = x} {y = ` τ} m a =
     hom {Δ = ∅ , x} (m ∘ π₂) (∅ , reifyᵖ a) ,
     pullr π₂∘⟨⟩ ∙ ap (m ∘_) (reifyᵖ-correct a)
-```
 
-Note that the $\eta$-expansion procedure at product and function types
-needs to modify the underlying morphism, wrapping them in further CCC
-operations. In general, modifying the generators runs the risk of making
-our solver useless, since the normal form of a generator could in theory
-depend on the details of the evaluation process, but here the
-modification is entirely dependent on the *types*, which do not change
-under evaluation.
-
-```agda
-  tickᵖ {y = τ L.`× σ} m a =
+  tickᵖ {y = τ `× σ} m a =
       tyᵖ⟨ pullr refl ⟩ (tickᵖ (π₁ ∘ m) a)
     , tyᵖ⟨ pullr refl ⟩ (tickᵖ (π₂ ∘ m) a)
 
-  tickᵖ {x = x} {y = τ L.`⇒ σ} m a ρ y =
+  tickᵖ {x = x} {y = τ `⇒ σ} m a ρ y =
     tyᵖ⟨ pullr (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)) ⟩
     (tickᵖ {x = x `× τ} (ev ∘ ⟨ m ∘ π₁ , π₂ ⟩)
       (tyᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-tyᵖ ρ a) , tyᵖ⟨ sym π₂∘⟨⟩ ⟩ y))
-```
 
-The semantics for general formal morphisms are then built in terms of
-the existing infrastructure. We handled the case for generators above.
-
-```agda
   morᵖ : ∀ {h} (e : Mor τ σ) (ρ : Tyᵖ τ Γ h) → Tyᵖ σ Γ (⟦ e ⟧ᵐ ∘ h)
   morᵖ (` x) = tickᵖ x
-```
 
-The semantic actions of identity and composition are given by the
-identity and composition in $\Sets$, i.e. re-using the argument and
-sequential evaluation, up to an adjustment in the types:
-
-```agda
   morᵖ `id      ρ = tyᵖ⟨ introl refl ⟩ ρ
   morᵖ (f `∘ g) ρ = tyᵖ⟨ pulll refl ⟩ (morᵖ f (morᵖ g ρ))
-```
 
-The semantic interpretation of the terminal object is the unit type, so
-there's no choice there. The interpretation for products is, again,
-given pointwise by products in $\Sets$. Note that the definition of our
-semantic presheaves of types guarantees that the projections are already
-type-correct, but the pairing needs slight corrections.
-
-```agda
   morᵖ `!       ρ = lift tt
   morᵖ `π₁      ρ = ρ .fst
   morᵖ `π₂      ρ = ρ .snd
@@ -174,22 +380,13 @@ type-correct, but the pairing needs slight corrections.
     { fst = tyᵖ⟨ sym (pulll π₁∘⟨⟩) ⟩ (morᵖ e ρ)
     ; snd = tyᵖ⟨ sym (pulll π₂∘⟨⟩) ⟩ (morᵖ f ρ)
     }
-```
 
-The semantics of the evaluation morphism and currying are the ones that
-need the most change.
-
-```agda
   morᵖ `ev (f , x) = tyᵖ⟨ ap (ev ∘_) (sym (⟨⟩-unique (intror refl) refl)) ⟩
     (f stop x)
 
   morᵖ {h = h} (`ƛ e) t r {h'} a = tyᵖ⟨ sym p ⟩ (morᵖ e
       ( tyᵖ⟨ sym π₁∘⟨⟩ ⟩ (ren-tyᵖ r t)
       , tyᵖ⟨ sym π₂∘⟨⟩ ⟩ a ))
-```
-
-<!--
-```agda
     where
     p =
       ev ∘ ⟨ ((ƛ ⟦ e ⟧ᵐ) ∘ h) ∘ ⟦ r ⟧ʳ , h' ⟩
@@ -199,15 +396,11 @@ need the most change.
       ⟦ e ⟧ᵐ ∘ ⟨ h ∘ ⟦ r ⟧ʳ , h' ⟩
         ∎
 ```
--->
+</details>
 
-We can then use our existing NbE infrastructure, in the form of
-`reifyᵖ`{.Agda} and `reflectᵖ`{.Agda}, to get a soundness proof for
-free. Note that the normal form of a formal morphism from $\tau$ to
-$\sigma$ lives in the context containing only the type $\tau$--- but
-this is interpreted as a product with the terminal object, and not as
-the literal type, so we need a small correction. This does not affect
-the usability of the solver.
+Putting the NbE pieces together, we get a normalisation function together
+with a proof of soundness, which allows us to write a `solve`{.Agda}
+function.
 
 ```agda
   mor-nf : Mor τ σ → Nf (∅ , τ) σ

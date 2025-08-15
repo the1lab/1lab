@@ -13,12 +13,11 @@ open import Cat.Diagram.Product.Solver
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Instances.Sets
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -40,13 +39,10 @@ open import Cat.Monoidal.Diagram.Monoid
 
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (prod : has-products C)
-  (term : Terminal C)
+  (cartesian : Cartesian-category C)
   where
 
-  open Cat.Reasoning C
-  open Binary-products C prod
-  open Terminal term
+  open Cartesian-category cartesian
   open Monoid-ob
   open internal-monoid-hom
   open Monoid-hom
@@ -82,11 +78,11 @@ $$.
 ```agda
   private
     C-Monoid : Ob → Type ℓ
-    C-Monoid m = Monoid-ob (Cartesian-monoidal prod term) m
+    C-Monoid m = Monoid-ob (Cartesian-monoidal cartesian) m
 
     C-Monoid-hom : ∀ {m n} → Hom m n → C-Monoid m → C-Monoid n → Type ℓ
     C-Monoid-hom f m-mon n-mon =
-      internal-monoid-hom (Cartesian-monoidal prod term) f m-mon n-mon
+      internal-monoid-hom (Cartesian-monoidal cartesian) f m-mon n-mon
 ```
 -->
 
@@ -107,17 +103,17 @@ diagram "relativize" to each $\hom$-set.</summary>
 
 ```agda
     hom-mon .⋆-assoc f g h =
-      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! products ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
-      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! prod ⟩
+      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! products ⟩
       mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
     hom-mon .⋆-idl f =
-      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! products ⟩
       mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
       π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
       f                                   ∎
     hom-mon .⋆-idr f =
-      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! products ⟩
       mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
       π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
       f                                   ∎
@@ -208,7 +204,7 @@ homomorphism.... which it is!
     n-mon .η ∘ !     ∎
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-⋆ g h =
     f ∘ m-mon .μ ∘ ⟨ g , h ⟩       ≡⟨ extendl (hom .pres-μ) ⟩
-    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! prod ⟩
+    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! products ⟩
     n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩   ∎
 ```
 
@@ -230,7 +226,7 @@ externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
 ```agda
   private
     Mon[C] : Precategory (o ⊔ ℓ) (ℓ ⊔ ℓ)
-    Mon[C] = ∫ Mon[ Cartesian-monoidal prod term ]
+    Mon[C] = ∫ Mon[ Cartesian-monoidal cartesian ]
 
   PShMon : ∀ κ → Precategory (o ⊔ ℓ ⊔ lsuc κ) (o ⊔ ℓ ⊔ κ)
   PShMon κ = Cat[ C ^op , Monoids κ ]
