@@ -43,9 +43,12 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 open import Cat.Gaunt
 
+open import Data.Wellfounded.Properties
 open import Data.Set.Material.HIT
+open import Data.Wellfounded.Base
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
+open import Data.Ordinal.Base
 open import Data.Fin.Finite using (Listing→choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
@@ -1071,6 +1074,39 @@ _ = AC→LEM
 * Lemma 10.1.8: `Congruence.is-effective`{.Agda}
 * Lemma 10.1.13: `Susp-prop-is-set`{.Agda}, `Susp-prop-path`{.Agda}
 * Theorem 10.1.14: `AC→LEM`{.Agda}
+
+### 10.3: Ordinal Numbers
+
+<!--
+```agda
+_ = Acc
+_ = Acc-is-prop
+_ = Wf
+_ = Wf-is-prop
+_ = <-wf
+_ = W-well-founded
+_ = is-simulation
+_ = is-simulation.has-injective
+_ = Ordinal-poset
+_ = simulation-unique
+_ = Ordinal
+_ = Ord
+```
+-->
+
+* Definition 10.3.1: `Acc`{.Agda}
+* Lemma 10.3.2: `Acc-is-prop`{.Agda}
+* Definition 10.3.3: `Wf`{.Agda}
+* Lemma 10.3.4: `Wf-is-prop`{.Agda}
+* Example 10.3.5: `<-wf`{.Agda}
+* Example 10.3.6: `W-well-founded`{.Agda}
+* Several theorems about extensional well-founded sets are stated only for ordinals.
+  * Definition 10.3.11: `is-simulation`{.Agda}
+  * Lemma 10.3.12: `is-simulation.has-injective`{.Agda}
+  * Corollary 10.3.15: `Ordinal-poset`{.Agda}
+  * Lemma 10.3.16: `simulation-unique`{.Agda}
+* Definition 10.3.17: `Ordinal`{.Agda}
+* Theorem 10.3.20: `Ord`{.Agda}
 
 ### 10.5: The cumulative hierarchy
 

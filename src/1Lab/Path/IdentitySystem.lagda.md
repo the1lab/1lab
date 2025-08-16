@@ -176,6 +176,18 @@ identity-system-gives-path {R = R} {r = r} ids =
           ∙ transport-refl _ )
 ```
 
+In particular, swapping the arguments of the relation in an identity system
+yields another identity system.
+
+```agda
+flip-identity-system :
+  ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
+  → is-identity-system R r
+  → is-identity-system (flip R) r
+flip-identity-system ids =
+  equiv-path→identity-system $ identity-system-gives-path ids ∙e sym-equiv
+```
+
 ## Based identity systems {defines="based-identity-system unary-identity-system"}
 
 It is sometimes useful to characterise the *based* identity type at
