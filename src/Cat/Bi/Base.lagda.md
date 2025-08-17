@@ -294,25 +294,12 @@ $\bf{B}$, $\bf{C}$.
 ```agda
 module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
-  open Functor
 
   postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
-  postaction f .F₀ g = f ⊗ g
-  postaction f .F₁ g = f ▶ g
-  postaction f .F-id = compose.F-id
-  postaction f .F-∘ g h =
-    f ▶ (g ∘ h)                 ≡˘⟨ ap (_◆ g ∘ h) (Hom.idl Hom.id) ⟩
-    (Hom.id ∘ Hom.id) ◆ (g ∘ h) ≡⟨ compose.F-∘ _ _ ⟩
-    (f ▶ g) ∘ (f ▶ h)           ∎
+  postaction = Bi.Right compose
 
   preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
-  preaction f .F₀ g = g ⊗ f
-  preaction f .F₁ g = g ◀ f
-  preaction f .F-id = compose.F-id
-  preaction f .F-∘ g h =
-    (g ∘ h) ◀ f                 ≡˘⟨ ap (g ∘ h ◆_) (Hom.idl Hom.id) ⟩
-    (g ∘ h) ◆ (Hom.id ∘ Hom.id) ≡⟨ compose.F-∘ _ _ ⟩
-    (g ◀ f) ∘ (h ◀ f)           ∎
+  preaction = Bi.Left compose
 ```
 -->
 
