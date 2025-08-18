@@ -48,7 +48,6 @@ open import Data.Set.Material.HIT
 open import Data.Wellfounded.Base
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
-open import Data.Ordinal.Base
 open import Data.Fin.Finite using (Listing→choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
@@ -68,6 +67,7 @@ open import Homotopy.Pushout
 open import Homotopy.Wedge
 open import Homotopy.Base
 
+open import Order.Ordinal.Base
 open import Order.Base
 
 import Algebra.Monoid.Category as Monoid
