@@ -46,7 +46,7 @@ Let $\cE \liesover \cB$ be a [[displayed category]], and $X \xot{\pi_1}
 P \xto{\pi_2} Y$ be a [[product diagram|product]] in $\cB$. A **total
 diagram** in $\cE$ is a diagram
 
-~~~{.quiver}
+~~~{.quiver .attach-around}
 \begin{tikzcd}
   {P'} && {Y'} \\
   & {X'} \\

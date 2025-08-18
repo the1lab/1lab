@@ -20,10 +20,10 @@ module types {ℓ} (T : Type ℓ) where
 -->
 
 :::{.definition #simple-type}
-The type of **simple types** $\operatorname{Ty}(T)$ over a base type $T$
-is the inductive type with a constructor for base types, a nullary
-constructor for the unit type, and binary constructors for products and
-functions.
+The type of **simple types** $\operatorname{Ty}(T)$ over a type $T$ of
+**base types** is the inductive type with a constructor for base types,
+a nullary constructor for the unit type, and binary constructors for
+products and functions.
 
 ```agda
   data Ty : Type ℓ where

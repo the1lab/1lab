@@ -28,11 +28,9 @@ morphism $f : \Gamma \to A$ as an *$A$-term in context $\Gamma$*, the
 notion of **exponential object** captures what it means for an object to
 interpret *function types*. An exponential object for $A$ and $B$ is an
 object $B^A$ equipped with an **evaluation map**
-
 $$
 \rm{ev} : B^A \times A \to B
 $$
-
 standing for the essence of function application: if I have a function
 $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
 : B$.
@@ -97,12 +95,10 @@ structure.
 As an aside, let us remark that the evaluation map $B^A \times A \to B$
 is sufficient to interpret the more familiar formation rule for function
 application,
-
 $$
 \frac{\Gamma \vdash f : B^A\quad \Gamma \vdash x : A}
      {\Gamma \vdash f(x) : B}
 $$
-
 by relativising to an arbitrary context $\Gamma$ through composition,
 and that this indeed interprets the $\beta$-reduction rule:
 
@@ -150,26 +146,25 @@ abstraction.
 ```
 
 :::{.definition #cartesian-closed alias="cartesian-closed-category"}
-Since a finite-products category is called [Cartesian monoidal], a
-finite-products category where every pair of objects has an exponential
-is called **Cartesian closed**, and we abbreviate the phrase "Cartesian
+Since a finite-products category is called [[Cartesian|cartesian
+category]] [[monoidal|monoidal category]], a finite-products category
+where every pair of objects has an [[exponential|exponential object]] is
+called **Cartesian closed**, and we abbreviate the phrase "Cartesian
 closed category" to "CCC".
-
-[Cartesian monoidal]: Cat.Monoidal.Instances.Cartesian.html
 
 ```agda
   record Cartesian-closed : Type (o ⊔ ℓ) where
     no-eta-equality
 
     field has-exp : ∀ A B → Exponential A B
-
-    module _ {A} {B} where open Exponential (has-exp A B) hiding (B^A) public
-    module _ A B     where open Exponential (has-exp A B) renaming (B^A to [_,_]) using () public
 ```
 :::
 
 <!--
 ```agda
+    module _ {A} {B} where open Exponential (has-exp A B) hiding (B^A) public
+    module _ A B     where open Exponential (has-exp A B) renaming (B^A to [_,_]) using () public
+
     unlambda-∘ : ∀ {a b c d} (α : Hom a [ c , d ]) (β : Hom b a) → unlambda (α ∘ β) ≡ unlambda α ∘ β ⊗₁ id
     unlambda-∘ α β = sym (Equiv.adjunctl (ƛ , lambda-is-equiv) (sym (unique (α ∘ β) aux))) where
       aux =
@@ -453,17 +448,13 @@ It remains to prove that this functor is actually a right adjoint to the
 constant-families functor $\Delta_B : \cC \to \cC/B$ like we had
 claimed. We start with an elementary observation: given maps $f : A \to
 B$ and $q : X \to A^B$, asking for
-
 $$
 \lambda (f \circ \rm{ev}) \circ q = \lambda(\pi_2) \circ \operatorname{!}
 $$
-
 is equivalent to asking for
-
 $$
 f \circ \lambda\inv(q) = \pi_2
 $$,
-
 which is in turn equivalent to asking that $q$ be a map $\Delta_B(X) \to
 f$, over $B$.
 
@@ -496,11 +487,9 @@ This is the last piece that we need to establish an equivalence between
 the $\hom$-sets $\hom_\cC(X, \Pi_B(f))$ and $\hom_{\cC/B}(\Delta_B(X),
 f)$, and even though it factors through the rather complicated path
 displayed below, it definitionally sends $h : \hom_\cC(X, \Pi_B(f))$ to
-
 $$
 \lambda\inv(p_1\circ h)
 $$.
-
 Having this very simple computational description will greatly simplify
 the proof that this meandering equivalence is actually natural --- and
 that naturality is all that stands between us and the adjunction
