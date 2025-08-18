@@ -18,31 +18,42 @@ module Cat.Displayed.Instances.Scone
   {o ℓ} (B : Precategory o ℓ)
   (terminal : Terminal B)
   where
-
-open Precategory B
-open Terminal terminal
-open Hom B
-open /-Obj
 ```
 
-## Sierpinski cones
+<!--
+```agda
+open Precategory B
+open Terminal terminal
+open /-Obj
+open Hom B
+```
+-->
+
+# Sierpinski cones
 
 Given a category $\cB$, we can construct a [[displayed category]] of
-"Sierpinski cones" over $\cB$, or "scones" for short.  Scones provide a
+"Sierpinski cones" over $\cB$, or "scones" for short. Scones provide a
 powerful set of tools for proving various properties of categories that
 we want to think of as somehow "syntactic".
 
-A scone over some object $X : \cB$ consists of a set $U$, along with
-a function $U \to B(\top, X)$. If we think about $\cB$ as some sort
-of category of contexts, then a scone over some context $X$
-is some means of attaching semantic information (the set $U$) to
-$X$, such that we can recover closed terms of $X$ from elements of $U$.
+::: note
+When $\cB$ is a [[Cartesian category]], the scone
+$\operatorname{Scn}(\cB)$ is simply the [[Artin gluing]] along the
+global sections functor. The discussion below generalises it to the case
+where we merely assume that $\cB$ has a [[terminal object]].
+:::
 
-Morphisms behave like they do in an arrow category of $\ca{Sets}$:
-given a map $f : X \to Y$ in $\cB$, a map over $f$ in the category
-between $(U, su : U \to \cB(1, X))$ and $(V, sv : V \to \cB(1, Y))$
-consists of a function $uv : U \to V$, such that for all $u : U$,
-we have $f \circ su(u) = sv (uv u)$.
+A scone over some object $X : \cB$ consists of a set $U$, along with a
+function $U \to B(\top, X)$. If we think about $\cB$ as some sort of
+category of contexts, then a scone over some context $X$ is some means
+of attaching semantic information (the set $U$) to $X$, such that we can
+recover closed terms of $X$ from elements of $U$.
+
+Morphisms behave like they do in an arrow category of $\ca{Sets}$: given
+a map $f : X \to Y$ in $\cB$, a map over $f$ in the category between
+$(U, su : U \to \cB(1, X))$ and $(V, sv : V \to \cB(1, Y))$ consists of
+a function $uv : U \to V$, such that for all $u : U$, we have $f \circ
+su(u) = sv (uv u)$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -56,21 +67,20 @@ we have $f \circ su(u) = sv (uv u)$.
 \end{tikzcd}\]
 ~~~
 
-
 With the exposition out of the way, we can now define the category of
 scones by abstract nonsense: the category of scones over $\cB$ is the
-[[pullback|pullback fibration]] of the [[fundamental fibration]] along the
-global sections functor.
+[[pullback|pullback fibration]] of the [[fundamental fibration]] of
+$\Sets$ along the global sections functor.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {\mathrm{Scn}(\mathcal{B})} && {\mathrm{Arr}(\mathbf{Sets})} \\
+  {\operatorname{Scn}(\mathcal{B})} && {\underline{\mathbf{Sets}}} \\
   \\
   {\mathcal{B}} && {\mathbf{Sets}}
-  \arrow["{\mathrm{Slices}(\mathbf{Sets})}", from=1-3, to=3-3]
+  \arrow[lies over, from=1-3, to=3-3]
   \arrow["{\mathcal{B}(1,-)}"', from=3-1, to=3-3]
   \arrow[lies over, dashed, from=1-1, to=3-1]
-  \arrow[lies over, from=1-1, to=1-3]
+  \arrow[dashed, from=1-1, to=1-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}\]
 ~~~
@@ -85,28 +95,27 @@ objects and morphisms described above.
 
 <!--
 ```agda
-private
-  module Scones = Displayed Scones
-
+private module Scones = Displayed Scones
 ```
 -->
 
 ```agda
-scone : ∀ {X} → (U : Set ℓ) → (∣ U ∣ → Hom top X) → Scones.Ob[ X ]
+scone : ∀ {X} → (U : Set ℓ) → (∣ U ∣ → Hom top X) → Scones ʻ X
 scone U s = cut {dom = U} s
 
-scone-hom : ∀ {X Y} {f : Hom X Y} {U V : Set ℓ}
-          → {su : ∣ U ∣ → Hom top X} {sv : ∣ V ∣ → Hom top Y}
-          → (uv : ∣ U ∣ → ∣ V ∣)
-          → (∀ u → sv (uv u) ≡ f ∘ (su u))
-          → Scones.Hom[ f ] (scone U su) (scone V sv)
+scone-hom
+  : ∀ {X Y} {f : Hom X Y} {U V : Set ℓ}
+  → {su : ∣ U ∣ → Hom top X} {sv : ∣ V ∣ → Hom top Y}
+  → (uv : ∣ U ∣ → ∣ V ∣)
+  → (∀ u → sv (uv u) ≡ f ∘ (su u))
+  → Scones.Hom[ f ] (scone U su) (scone V sv)
 scone-hom uv p = record { map = uv ; com = funext p }
 ```
 
 ## As a fibration
 
-The category of scones over $\cB$ is always a fibration. This is
-where our definition by abstract nonsense begins to shine: base change
+The category of scones over $\cB$ is always a fibration. This is where
+our definition by abstract nonsense begins to shine: base change
 preserves fibrations, and the codomain fibration is a fibration whenever
 the base category has pullbacks, which sets [has]!
 
@@ -116,6 +125,6 @@ the base category has pullbacks, which sets [has]!
 Scones-fibration : Cartesian-fibration Scones
 Scones-fibration =
   Change-of-base-fibration _ _ $
-  Codomain-fibration _ $
+  Codomain-fibration _         $
   Sets-pullbacks
 ```
