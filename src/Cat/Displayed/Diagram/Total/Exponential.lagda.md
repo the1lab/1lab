@@ -26,16 +26,40 @@ open Cartesian-over ecart
 ```
 -->
 
-# Total exponential objects {defines="total-exponential-object"}
+# Total exponential objects
 
+:::{.definition #total-exponential-object}
+Let $\cE \liesover \cB$ be a [[displayed category]] with [[total
+products]] over a [[Cartesian category]] $\cB$, and $\rm{ev} : B^A
+\times A \to B$ be the evaluation map for an [[exponential object]] in
+$\cB$.
+
+A map $\rm{ev}' : [A',B'] \times' A' \to_{\rm{ev}} B'$ is the evaluation
+map for a **total exponential object** in $\cE$ if we have an operation
+assigning to each $m' : (\Gamma' \times' A') \to_{m} B'$ a [[universal
+morphism]] $(\lambda'\, m') : \Gamma' \to_{\lambda\, m} [A',B']$, with
+uniqueness and commutativity lying over those for $\rm{ev}$.
+:::
+
+This definition follows the logic of "total universal constructions",
+where we can display universal constructions in $\cE \liesover \cB$ over
+the corresponding constructions in $\cB$, and this is equivalent to the
+[[total category]] $\int \cE$ having, and the projection functor $\int
+\cE \to \cB$ preserving, those same constructions.
+
+<!--
 ```agda
 module
   _ {A B B^A : Ob} {ev : Hom (B^A ⊗₀ A) B}
     (exp : is-exponential _ bcart B^A ev)
     {A' : E ʻ A} {B' : E ʻ B} (B^A' : E ʻ B^A)
   where
+```
+-->
 
-  record is-exponential-over (ev' : Hom[ ev ] (B^A' ⊗₀' A') B') : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+```agda
+  record is-exponential-over (ev' : Hom[ ev ] (B^A' ⊗₀' A') B')
+    : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     open is-exponential exp
 
     field
@@ -53,7 +77,10 @@ module
         → {m' : Hom[ m ] (Γ' ⊗₀' _) _} (n' : Hom[ n ] Γ' _)
         → ev' ∘' ⟨ n' ∘' π₁' , id' ∘' π₂' ⟩' ≡[ p ] m'
         → n' ≡[ unique n p ] ƛ' m'
+```
 
+<!--
+```agda
 module _ {A B : Ob} (exp : Exponential _ bcart A B) where
   open Exponential exp
 
@@ -75,3 +102,4 @@ module Cartesian-closed-over {cc : Cartesian-closed B bcart} (cco : Cartesian-cl
   module _ {a b : Ob} (a' : E ʻ a) (b' : E ʻ b) where open ExponentialP (cco a' b') renaming (B^A' to [_,_]') using () public
   module _ {a b : Ob} {a' : E ʻ a} {b' : E ʻ b} where open ExponentialP (cco a' b') renaming (unique' to ƛ'-unique) hiding (B^A') public
 ```
+-->
