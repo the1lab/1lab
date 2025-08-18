@@ -21,6 +21,9 @@ aside#toc {
   max-width: 30ch;
   margin-inline-start: auto;
 
+  // There's a mathpar div in the sidebar to align the favicon
+  --parskip: 0;
+
   z-index: 1;
 
   div#toc-container {
