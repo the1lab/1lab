@@ -143,6 +143,31 @@ join-commutative .snd = is-iso→is-equiv record where
   linv = Pushout-elim (λ _ → refl) (λ _ → refl) λ c i j → glue c i
 ```
 
+Finally, if either of the joined types is contractible, so is the join.
+```agda
+join-is-contr-l : is-contr X → is-contr (X ∗ Y)
+join-is-contr-l h .centre = inl (centre h)
+join-is-contr-l h .paths (inl x) = ap inl (paths h x)
+join-is-contr-l h .paths (inr y) = join (centre h) y
+join-is-contr-l h .paths (join x y i) j = hcomp (∂ i ∨ ∂ j) λ where
+  k (k = i0) → join x y (i ∧ j)
+  k (i = i0) → inl (paths h x (~ k ∨ j))
+  k (i = i1) → join (paths h x (~ k)) y j
+  k (j = i0) → inl (paths h x (~ k))
+  k (j = i1) → join x y i
+
+join-is-contr-r : is-contr Y → is-contr (X ∗ Y)
+join-is-contr-r h .centre = inr (centre h)
+join-is-contr-r h .paths (inl x) = sym (join x (centre h))
+join-is-contr-r h .paths (inr y) = ap inr (paths h y)
+join-is-contr-r h .paths (join x y i) j = hcomp (∂ i ∨ ∂ j) λ where
+  k (k = i0) → join x y (i ∨ ~ j)
+  k (i = i0) → join x (paths h y (~ k)) (~ j)
+  k (i = i1) → inr (paths h y (~ k ∨ j))
+  k (j = i0) → inr (paths h y (~ k))
+  k (j = i1) → join x y i
+```
+
 <!--
 ```agda
 join-map : (A → B) → (X → Y) → A ∗ X → B ∗ Y
@@ -189,4 +214,27 @@ lives in the meridians.
     (λ a → join false a)
     λ { (true , a) → transpose (flip₁ (∙-filler _ _))
       ; (false , a) i j → join false a (i ∧ j) }
+```
+
+## Joins of propositions {defines="disjunction logical-or"}
+
+When applied to propositions, the join construction
+acts as logical disjunction. If `X` and `Y` are propositions,
+then `X ∗ Y` is also a proposition, which holds iff
+either `X` or `Y` does.
+
+```agda
+join-elim-prop : {P : X ∗ Y → Type ℓ} (pprop : ∀ x → is-prop (P x))
+  → (f : ∀ x → P (inl x)) (g : ∀ y → P (inr y))
+  → ∀ x → P x
+join-elim-prop h f g =
+  Pushout-elim f g λ c → is-prop→pathp (λ i → h (glue c i)) _ _
+
+join-is-prop : is-prop X → is-prop Y → is-prop (X ∗ Y)
+join-is-prop {X = X} {Y = Y} hx hy = λ x y → go x x y where
+  go : X ∗ Y → is-prop (X ∗ Y)
+  go = join-elim-prop
+    (λ _ → is-prop-is-prop)
+    (λ x → is-contr→is-prop (join-is-contr-l (is-prop∙→is-contr hx x)))
+    (λ y → is-contr→is-prop (join-is-contr-r (is-prop∙→is-contr hy y)))
 ```
