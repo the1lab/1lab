@@ -485,7 +485,7 @@ patchBlock _ _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock _ _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
+patchBlock _ _ b@(Div (id, clz, kv) bs) | "definition" `elem` clz, not (Text.null id) = do
   let
     isfn (Note _) = True
     isfn _ = False
