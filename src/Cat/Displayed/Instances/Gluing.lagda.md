@@ -237,7 +237,8 @@ Gl-closed ccl dcl pullbacks {A} {B} A' B' = done where
 ```
 -->
 
-To explain the construction of the exponential $g^f,$[^shorthand] let us
+To explain the construction of the exponential $g^f$, for $f : X \to F(A)$
+and $g : Y \to F(B)$,[^shorthand] let us
 pretend that $\cD$ is the *syntactic category* of some theory with
 function types, $\cC$ is a category of *semantic objects*, and the
 functor $F$ embeds syntactic objects into semantic ones. In this
@@ -253,14 +254,12 @@ F(B^A)$.
     In this section, for notational convenience, we will refer to the
     objects of $\Gl(F)$ metonymically by their maps.
 
-    In particular, we have $f : X \to F(A)$ and $g : Y \to F(B)$.
-
-Instead, we observe that both the embedding of function types $F(B^A)$
-and the semantic exponential $Y^X$ have natural maps into the
-"half-semantic" exponential $F(B)^X$, with a semantic domain but
-syntactic codomain, so this is a natural place to compare semantic
-operations with those coming from the syntax. The map $\psi : F(B^A) \to
-F(B)^X$ is defined as the exponential transpose of
+Instead, we observe that the commutativity condition for morphisms in
+$\Gl(F)$ described above can be *internalised* using a pullback in $\cD$:
+we want to restrict the exponential $Y^X$ to those maps which fit into
+a commutative square with a map from $F(B^A)$.
+To that end, we define the map $\psi : F(B^A) \to F(B)^X$ as the
+exponential transpose of
 $$
 F(B^A) \times X
   \xto{{\id} \times f}       F(B^A) \times F(A)
