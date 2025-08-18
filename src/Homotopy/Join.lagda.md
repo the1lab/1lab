@@ -144,6 +144,7 @@ join-commutative .snd = is-iso→is-equiv record where
 ```
 
 Finally, if either of the joined types is contractible, so is the join.
+
 ```agda
 join-is-contr-l : is-contr X → is-contr (X ∗ Y)
 join-is-contr-l h .centre = inl (centre h)
