@@ -555,7 +555,10 @@ don'tFold = Set.fromList
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
 foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
-  | t `Set.notMember` don'tFold, Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  | xs@(_:_) <- Text.splitOn "." t, let t = last xs, t `Set.notMember` don'tFold
+  , Text.length t > 1
+  , Text.last t == '⟨'
+  , Just href <- lookup "href" attrs =
   [ TagOpen "span" [("class", "reasoning-step")]
   , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
   , to, tt, tc ] ++ go href rest
