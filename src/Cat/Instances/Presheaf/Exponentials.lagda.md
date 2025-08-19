@@ -45,7 +45,7 @@ category $\cC$, and suppose that the exponential object $B^A$ exists.
 
 ```agda
 module _ (A B : Functor (C ^op) (Sets ℓ))
-         (exp : Exponential Cat[ C ^op , Sets ℓ ] PSh-products PSh-terminal A B)
+         (exp : Exponential Cat[ C ^op , Sets ℓ ] PSh-cartesian A B)
   where
   open Exponential exp
 ```
@@ -97,7 +97,7 @@ functorial in $B$, which is essentially symbol shuffling; and to show
 that this functor is right adjoint to the "product with $A$" functor.
 
 ```agda
-PSh-closed : Cartesian-closed (PSh ℓ C) PSh-products PSh-terminal
+PSh-closed : Cartesian-closed (PSh ℓ C) PSh-cartesian
 PSh-closed = cc where
   cat = PSh ℓ C
 
@@ -124,6 +124,6 @@ PSh-closed = cc where
     adj .zig {A} = ext λ x _ _ → happly (F-id A) _ ,ₚ refl
     adj .zag {A} = ext λ _ x i f g j → x .η i (C.idr f j , g)
 
-  cc : Cartesian-closed (PSh ℓ C) PSh-products PSh-terminal
-  cc = product-adjoint→cartesian-closed (PSh ℓ C) _ _ func adj
+  cc : Cartesian-closed (PSh ℓ C) PSh-cartesian
+  cc = product-adjoint→cartesian-closed (PSh ℓ C) _ func adj
 ```

@@ -253,5 +253,11 @@ from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
 Dec→Bool : ∀ {A : Type ℓ} → Dec A → Bool
 Dec→Bool (yes x) = true
 Dec→Bool (no ¬x) = false
+
+Dec-Σ : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : P → Type ℓ'} → ((x y : P) → x ≡ y) → Dec P → (∀ x → Dec (Q x)) → Dec (Σ P Q)
+Dec-Σ {Q = Q} pprop (yes p) d with d p
+... | yes q = yes (p , q)
+... | no ¬q = no λ (p' , q) → ¬q (subst Q (pprop p' p) q)
+Dec-Σ pprop (no ¬p) _ = no λ (p , _) → ¬p p
 ```
 -->

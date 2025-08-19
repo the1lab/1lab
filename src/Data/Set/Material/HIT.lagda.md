@@ -642,7 +642,7 @@ $$,
 which we've already established is separable. The reason for this dance
 is that $V \to \Omega$ is much too large to use as the branching factor
 of a material set; but $[a] \to \Omega$ is just perfect. By promoting a
-predicate on $[a]$ to one on V$, we can appeal to separation in our
+predicate on $[a]$ to one on $V$, we can appeal to separation in our
 construction of power set.
 
 ```agda
@@ -738,10 +738,10 @@ m_a^*(x)$. It remains to show $m_a(k) \in i$; but this is equal to $x
 
 ## Set induction
 
-The last thing we'll prove about $V$ is the principle of
-$\in$-induction, an easy consequence of our eliminator from $V$ into
-props. If $P$ is a proposition that holds of a material set $a$ as soon
-as it holds for every $x \in a$, then $P$ holds of any material set.
+The last thing we'll prove about $V$ is the principle of $\in$-induction,
+an easy consequence of our eliminator from $V$ into props. If $P$ is a
+proposition that holds of a material set $a$ as soon as it holds for
+every $x \in a$, then $P$ holds of any material set.
 
 ```agda
   ∈-induction

@@ -8,15 +8,17 @@ open import Cat.Prelude
 module Cat.Strict where
 ```
 
-# Strict precategories {defines="strict-category strict-categories"}
+# Strict precategories
 
-We call a precategory **strict** if its type of objects is a `Set`{.Agda
-ident=is-set}.
+:::{.definition #strict-category}
+We call a [[precategory]] **strict** if its type of objects is a
+[[set]].
 
 ```agda
 is-strict : ∀ {o ℓ} → Precategory o ℓ → Type o
 is-strict C = is-set ⌞ C ⌟
 ```
+:::
 
 Strictness is a very strong condition to impose on categories, since it
 classifies the "categories-as-algebras", or _petit_, view on categories,

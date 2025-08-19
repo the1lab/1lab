@@ -1,5 +1,5 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, LambdaCase #-}
-{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingStrategies, UnboxedTuples, MagicHash #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -34,6 +34,8 @@ import qualified System.Directory as Dir
 
 import Development.Shake.FilePath
 import Development.Shake
+
+import GHC.Exts (Int(I#), Int#, (+#))
 
 import qualified Citeproc as Cite
 import Text.DocTemplates
@@ -155,43 +157,99 @@ postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
 postParseInlines (x:xs) = x:postParseInlines xs
 postParseInlines [] = []
 
+type Posn    = (# Int#, Int# #)
+type Mangler = Posn -> String -> String
+
 -- | Pandoc's wiki-link extension does not support splitting the guts of
 -- a wikilink over multiple lines. The function 'mangleMarkdown'
 -- pre-processes the input file so that any invalid space characters
 -- inside a wikilink are replaced by the safe ASCII space @ @.
 mangleMarkdown :: Text -> Text
-mangleMarkdown = Text.pack . toplevel . Text.unpack where
-  toplevel ('[':'[':cs)         = '[':'[':wikilink toplevel cs
-  toplevel ('<':'!':'-':'-':cs) = startcomment cs
-  toplevel (c:cs)               = c:toplevel cs
-  toplevel []                   = []
+mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) . Text.unpack where
+  adv :: Char -> Posn -> Posn
+  adv '\n' (# l, c #) = (# l +# 1#, 1# #)
+  adv _    (# l, c #) = (# l, c +# 1# #)
 
-  startcomment ('[':'T':'O':'D':'O':cs) = comment False 1 cs
-  startcomment (c:cs)
-    | isSpace c       = startcomment cs
-    | otherwise       = "<div class=\"commented-out\">\n" ++ comment True 1 (c:cs)
-  startcomment []     = error "Unterminated comment"
+  eat :: Int -> Posn -> Posn
+  eat (I# n) (# l, c #) = (# l, c +# n #)
 
-  comment e 0 cs                   = concat ["\n</div>" | e] ++ toplevel cs
-  comment e n []                   = error "Unterminated comment"
+  pos :: Posn -> String
+  pos (# l , c #) = "line " ++ show (I# l) ++ ", column " ++ show (I# c)
 
-  comment e n ('-':'-':'>':cs)     = comment e (n - 1) cs
-  comment e n ('<':'!':'-':'-':cs) = comment e (n + 1) cs
+  toplevel :: Mangler
+  toplevel p ('$':cs)                 = '$':       entermaths p toplevel (eat 1 p) cs
+  toplevel p ('`':'`':'`':cs)         = "```"   ++ code       p toplevel (eat 3 p) cs
+  toplevel p ('<':'p':'r':'e':' ':cs) = "<pre " ++ pre        p toplevel (eat 5 p) cs
 
-  comment True n ('[':'[':cs)      = '[':'[':wikilink (comment True n) cs
-  comment e n (c:cs)
-    | e         = c:comment e n cs
-    | otherwise = comment e n cs
+  toplevel p ('[':'[':cs)         = '[':'[':wikilink toplevel (eat 2 p) cs
+  toplevel p ('<':'!':'-':'-':cs) = startcomment p (eat 4 p) cs
+  toplevel p (c:cs)               = c:toplevel (adv c p) cs
+  toplevel p []                   = []
 
-  wikilink k (']':']':cs) = ']':']':k cs
+  entermaths :: Posn -> Mangler -> Mangler
+  entermaths p0 k p ('$':cs) = '$':maths p0 True k (eat 1 p) cs
+  entermaths p0 k p cs       = maths p0 False k p cs
 
-  wikilink k ('\n':cs)    = ' ':wikilink k cs
-  wikilink k ('\t':cs)    = ' ':wikilink k cs
-  wikilink k ('\f':cs)    = ' ':wikilink k cs
-  wikilink k ('\r':cs)    = ' ':wikilink k cs
+  maths :: Posn -> Bool -> Mangler -> Mangler
+  maths p0 True  k p ('$':'$':cs) = '$':'$':k (eat 2 p) cs
+  maths p0 False k p ('$':cs)     = '$':k (eat 1 p) cs
+  maths p0 False k p ('\n':cs)    =
+    let
+      loop p ('\n':cs) = error $ "Paragraph break at " ++ pos p ++ " in inline maths started at " ++ pos p0
+      loop p (c:cs)
+        | isSpace c = c:loop (adv c p) cs
+        | otherwise = c:maths p0 False k (adv c p) cs
+      loop p [] = error $ "End-of-file encountered at " ++ pos p ++ " while reading inline maths started at " ++ pos p0
+    in '\n':loop (adv '\n' p) cs
 
-  wikilink k (c:cs)       = c:wikilink k cs
-  wikilink k []           = []
+  maths p0 d k p (c:cs)       = c:maths p0 d k (adv c p) cs
+  maths p0 d _ p []           = error $ "Unterminated " ++ (if d then "display " else "inline ") ++ "maths started at " ++ pos p0
+
+  startcomment :: Posn -> Mangler
+  startcomment p0 p ('[':'T':'O':'D':'O':cs) = comment p0 False 1 (eat 5 p) cs
+  startcomment p0 p (c:cs)
+    | isSpace c       = startcomment p0 (adv c p) cs
+    | otherwise       = "<div class=\"commented-out\">\n" ++ comment p0 True 1 p (c:cs)
+  startcomment p0 p []   = error $ "Unterminated comment started at " ++ pos p0
+
+  code :: Posn -> Mangler -> Mangler
+  code p0 k p ('`':'`':'`':cs) = "```" ++ k (eat 3 p) cs
+  code p0 k p (c:cs)           = c:code p0 k (adv c p) cs
+  code p0 k p []               = error $ "Unterminated code block started at " ++ pos p0
+
+  pre :: Posn -> Mangler -> Mangler
+  pre p0 k p ('<':'/':'p':'r':'e':'>':cs) = "</pre>" ++ k (eat 6 p) cs
+  pre p0 k p (c:cs)                       = c:pre p0 k (adv c p) cs
+  pre p0 k p []                           = error $ "Unterminated <pre> block started at " ++ pos p0
+
+  comment :: Posn -> Bool -> Int -> Mangler
+  comment p0 e 0 p cs = concat ["\n</div>" | e] ++ toplevel p cs
+  comment p0 e n p [] = error $ "Unterminated comment started at " ++ pos p0
+
+  comment p0 e n p ('-':'-':'>':cs)     = comment p0 e (n - 1) (eat 3 p) cs
+  comment p0 e n p ('<':'!':'-':'-':cs) = comment p0 e (n + 1) (eat 4 p) cs
+
+  comment p0 True n p ('<':'p':'r':'e':' ' :cs)
+    = "<pre " ++ pre p (comment p0 True n) (eat 6 p) cs
+  comment p0 True n p ('`':'`':'`':cs)     = "```" ++ code p (comment p0 True n) (eat 3 p) cs
+  comment p0 True n p ('[':'[':cs)         = '[':'[':wikilink     (comment p0 True n) (eat 2 p) cs
+  comment p0 True n p ('$':'$':cs)         = '$':'$':maths p True (comment p0 True n) (eat 2 p) cs
+  comment p0 True n p ('$':c:cs)           = '$':maths p False    (comment p0 True n) p (c:cs)
+
+  comment p0 e n p (c:cs)
+    | e         = c:comment p0 e n (adv c p) cs
+    | otherwise = comment p0 e n (adv c p) cs
+
+  wikilink :: Mangler -> Mangler
+  wikilink k p (']':']':cs) = ']':']':k (eat 2 p) cs
+
+  wikilink k p ('\n':cs)    = ' ':wikilink k (adv '\n' p) cs
+  wikilink k p ('\t':cs)    = ' ':wikilink k (adv '\t' p) cs
+  wikilink k p ('\f':cs)    = ' ':wikilink k (adv '\f' p) cs
+  wikilink k p ('\r':cs)    = ' ':wikilink k (adv '\r' p) cs
+
+  wikilink k p (c:cs)       = c:wikilink k (adv c p) cs
+  wikilink k p []           = []
 
 buildMarkdown :: String   -- ^ The name of the Agda module.
               -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
@@ -427,7 +485,7 @@ patchBlock _ _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock _ _ b@(Div (id, [only], kv) bs) | "definition" == only, not (Text.null id) = do
+patchBlock _ _ b@(Div (id, clz, kv) bs) | "definition" `elem` clz, not (Text.null id) = do
   let
     isfn (Note _) = True
     isfn _ = False
@@ -490,7 +548,7 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
 -- | Simple textual list of starting identifiers not to fold
 don'tFold :: Set.Set Text
 don'tFold = Set.fromList
-  [ "`⟨" -- used in CC.Lambda
+  [ "`⟨" -- used for STLC
   , "‶⟨" -- used in Cat.Diagram.Product.Solver
   ]
 

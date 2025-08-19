@@ -19,11 +19,11 @@ module Cat.Displayed.Instances.Objects
 
 <!--
 ```agda
+open Cartesian-morphism
+open is-fibred-functor
+open Vertical-functor
 open Cat.Reasoning B
 open Displayed E
-open Cartesian-morphism
-open Vertical-functor
-open is-fibred-functor
 ```
 -->
 

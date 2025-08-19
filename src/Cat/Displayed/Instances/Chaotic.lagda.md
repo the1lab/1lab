@@ -30,14 +30,16 @@ open ∫Hom
 
 # The chaotic bifibration
 
+::: {.definition #chaotic-bifibration}
 Let $\cB$ and $\cJ$ be precategories. We define the
 **chaotic bifibration** of $\cJ$ over $\cB$ to be the [[displayed
 category]] where we trivially fibre $\cJ$ over $\cB$, disregarding the
 structure of $\cB$ entirely.
+:::
 
 ```agda
 Chaotic : Displayed B o' ℓ'
-Chaotic. Ob[_] _ = J.Ob
+Chaotic .Ob[_] _ = J.Ob
 Chaotic .Hom[_] _ = J.Hom
 Chaotic .Hom[_]-set _ = J.Hom-set
 Chaotic .id' = J.id

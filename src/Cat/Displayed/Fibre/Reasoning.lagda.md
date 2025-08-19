@@ -19,9 +19,8 @@ module Cat.Displayed.Fibre.Reasoning
 <!--
 ```agda
 private
-  module B = Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
+  module B = Cat.Reasoning B
   module Fib {x} = Cat.Reasoning (Fibre E x)
 
 open Fib public
@@ -45,8 +44,7 @@ private variable
   p : f ≡ g
 
 opaque
-  to-fibre
-    : f' ∘' g' ≡[ B.idl _ ] f' Fib.∘ g'
+  to-fibre : f' ∘' g' ≡[ B.idl _ ] f' Fib.∘ g'
   to-fibre = to-pathp refl
 
   over-fibre

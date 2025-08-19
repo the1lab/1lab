@@ -9,6 +9,7 @@ module Definitions
   , Glossary(getEntries), GlossaryQ(..)
   , Mangled(getMangled), mangleLink
   , Definition(..), definitionTarget
+  , parseDefinitions
   )
   where
 
@@ -41,6 +42,8 @@ import HTML.Backend (moduleName)
 
 import Text.Pandoc.Walk
 import Text.Pandoc
+
+import Text.Show.Pretty
 
 import {-# SOURCE #-} Shake.Markdown (readLabMarkdown)
 
@@ -90,14 +93,14 @@ definitionBlock inp fp = go where
 
   addMany id = foldMap (add id) . Text.words
 
-  go (Div (id, [only], keys) _blocks) | "definition" == only, not (Text.null id) =
+  go (Div (id, clz, keys) _blocks) | "definition" `elem` clz, not (Text.null id) =
     let aliases = foldMap (addMany id) (lookup "alias" keys)
     in add id id <> aliases
 
   go (Header _ (id, _, keys) _inline) =
     foldMap (addMany id) (lookup "defines" keys)
 
-  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ inp
+  go (CodeBlock (_, [], _) t) = error $ "Code block without class in " ++ inp ++ "\n" ++ show t
 
   go _ = mempty
 
@@ -155,8 +158,7 @@ glossaryRules = do
     glo <- getEntries <$> askOracle GlossaryQ
     case Map.lookup (mangleLink target) glo of
       Just def -> pure (definitionAnchor def, definitionTarget def)
-      Nothing  -> error $
-        "Unknown wiki-link target: " ++ Text.unpack target
+      Nothing  -> error $ "Unknown wiki-link target: " ++ show (Text.unpack target)
 
   -- Debugging target to print all the wikilink targets:
   phony "glossary" do

@@ -5,6 +5,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Instances.Graphs
 open import Cat.Diagram.Product
+open import Cat.Cartesian
 open import Cat.Prelude
 
 open is-pullback
@@ -144,4 +145,7 @@ Graphs-finitely-complete = record
   { Finitely-complete (with-pullbacks (Graphs _ _) Graphs-terminal Graphs-pullbacks) hiding (products)
   ; products = Graphs-products
   }
+
+Graphs-cartesian : Cartesian-category (Graphs o ℓ)
+Graphs-cartesian = record { Finitely-complete Graphs-finitely-complete }
 ```

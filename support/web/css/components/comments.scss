@@ -1,0 +1,29 @@
+.commented-out {
+  display: none;
+  opacity: 0.6;
+
+  > pre.Agda {
+    margin-block: var(--parskip);
+  }
+
+  &.first-comment > pre.Agda {
+    margin-top: 0;
+  }
+
+  @at-root {
+    :root.show-hidden-code & {
+      display: revert;
+    }
+  }
+}
+
+:root {
+  &.show-equations span.reasoning-step {
+    .as-written {
+      display: inline;
+    }
+    .alternate {
+      display: none;
+    }
+  }
+}

@@ -3,6 +3,7 @@
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
+open import 1Lab.Underlying
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
@@ -155,6 +156,9 @@ instance
   {-# CATCHALL #-}
   Hom[]-hlevel-proj .get-argument _ =
     typeError []
+
+  Funlike-Displayed : ∀ {o ℓ o' ℓ'} {B : Precategory o ℓ} → Funlike (Displayed B o' ℓ') ⌞ B ⌟ λ _ → Type o'
+  Funlike-Displayed = record { _·_ = Displayed.Ob[_] }
 
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
   _ : ∀ {x y} {f : B .Precategory.Hom x y} {x' y'} → is-set (E .Displayed.Hom[_] f x' y')

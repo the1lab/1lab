@@ -187,8 +187,8 @@ $C\op$. We prove these correspondences here:
       : ∀ {x y}
       → Cone-hom F^op y x
       → Cocone-hom F (Co-cone→Cocone x) (Co-cone→Cocone y)
-    Co-cone-hom→Cocone-hom ch .hom = ch .hom
-    Co-cone-hom→Cocone-hom ch .commutes o = ch .commutes o
+    Co-cone-hom→Cocone-hom ch .map = ch .map
+    Co-cone-hom→Cocone-hom ch .com o = ch .com o
 
     Cocone-hom→Co-cone-hom
       : ∀ {x y}

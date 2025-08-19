@@ -87,7 +87,7 @@ in $\cC$, then pass back to the slice category.
 
 ```agda
     F' : Functor (J ⋆ ⊤Cat) C
-    F' .F₀ (inl x) = F.₀ x .domain
+    F' .F₀ (inl x) = F.₀ x .dom
     F' .F₀ (inr x) = o
     F' .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
     F' .F₁ {inl x} {inr y} _ = F.₀ x .map
@@ -95,7 +95,7 @@ in $\cC$, then pass back to the slice category.
     F' .F-id {inl x} = ap map F.F-id
     F' .F-id {inr x} = refl
     F' .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
-    F' .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .commutes)
+    F' .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .com)
     F' .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
     F' .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
 
@@ -109,7 +109,7 @@ in $\cC$, then pass back to the slice category.
 
     nadir : (j : J.Ob) → /-Hom apex (F .F₀ j)
     nadir j .map = lims.ψ (inl j)
-    nadir j .commutes = lims.commutes (lift tt)
+    nadir j .com = lims.commutes (lift tt)
 
     module Cone
       {x : C/o.Ob}
@@ -117,7 +117,7 @@ in $\cC$, then pass back to the slice category.
       (p : ∀ {i j : J.Ob} → (f : J.Hom i j) → F .F₁ f C/o.∘ eps i ≡ eps j)
       where
 
-        ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .domain) (F' .F₀ j)
+        ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .dom) (F' .F₀ j)
         ϕ (inl j) = eps j .map
         ϕ (inr _) = x .map
 
@@ -126,7 +126,7 @@ in $\cC$, then pass back to the slice category.
           → (f : ⋆Hom J ⊤Cat i j)
           → F' .F₁ f C.∘ ϕ i ≡ ϕ j
         ϕ-commutes {inl i} {inl j} (lift f) = ap map (p f)
-        ϕ-commutes {inl i} {inr j} (lift f) = eps i .commutes
+        ϕ-commutes {inl i} {inr j} (lift f) = eps i .com
         ϕ-commutes {inr i} {inr x} (lift f) = C.idl _
 
         ϕ-factor
@@ -134,18 +134,19 @@ in $\cC$, then pass back to the slice category.
           → (∀ j → nadir j C/o.∘ other ≡ eps j)
           → (j : J.Ob ⊎ ⊤)
           → lims.ψ j C.∘ other .map ≡ ϕ j
-        ϕ-factor other q (inl j) = ap map (q j)
-        ϕ-factor other q (inr tt) = other .commutes
+        ϕ-factor other q (inl j)  = ap map (q j)
+        ϕ-factor other q (inr tt) = other .com
 
     lim : make-is-limit F apex
-    lim .ψ = nadir
+    lim .ψ          = nadir
     lim .commutes f = ext (lims.commutes (lift f))
-    lim .universal {x} eps p .map =
-      lims.universal (Cone.ϕ eps p) (Cone.ϕ-commutes eps p)
-    lim .universal eps p .commutes =
-      lims.factors _ _
-    lim .factors eps p = ext (lims.factors _ _)
-    lim .unique eps p other q = ext $
+
+    lim .universal {x} eps p .map = lims.universal
+      (Cone.ϕ eps p) (Cone.ϕ-commutes eps p)
+    lim .universal {x} eps p .com = lims.factors _ _
+
+    lim .factors eps p         = ext (lims.factors _ _)
+    lim .unique  eps p other q = ext $
       lims.unique _ _ (other .map) (Cone.ϕ-factor eps p other q)
 ```
 

@@ -14,10 +14,10 @@ module Data.Set.Coequaliser.Split where
 
 Recall that a [[quotient]] of a set $A$ by an equivalence relation $x
 \sim y$ allows us to "replace" the identity type of $A$ by the relation
-$R$, by means of a [[surjection]] $[-] : A \epi A/\sim$ having $[x] =
+$R$, by means of a [[surjection]] $[-] : A \epi A/{\sim}$ having $[x] =
 [y]$ equivalent to $x \sim y$. However, depending on the specifics of
 $R$, we may not need to actually take a quotient after all! It may be
-the case that $A/\sim$ is equivalent to a particular *subset* of $A$.
+the case that $A/{\sim}$ is equivalent to a particular *subset* of $A$.
 When this is the case, we say that the quotient is **split**. This
 module outlines sufficient conditions for a quotient to split, by
 appealing to our intuition about *normal forms*.
@@ -58,8 +58,8 @@ y$, then $n(x) = n(y)$.
 ```
 -->
 
-It turns out that this is just enough to asking for a splitting of the
-quotient map $[-]$: We can define a function sending each $x : A/\sim$
+It turns out that this is just enough to ask for a splitting of the
+quotient map $[-]$: We can define a function sending each $x : A/{\sim}$
 to a fibre of the quotient map over it, by induction. At the points of
 $A$, we take the fibre over $[x]$ to be $n(x)$, and we have $[n(x)] =
 [x]$ by the first assumption. By the second assumption, this procedure
@@ -99,13 +99,13 @@ n(y)$.
 ```
 
 Finally, we show that any splitting of the quotient map generates a
-normalisation procedure in the above sense: if we have a map $c : A/\sim
+normalisation procedure in the above sense: if we have a map $c : A/{\sim}
 \to A$, we define the normalisation procedure to be $n(x) = c[x]$.
 
 ```agda
 split-surjection→is-split-congruence
   : ⦃ _ : H-Level A 2 ⦄ (R : Congruence A ℓ)
-  → (∀ x → fibre {B = Congruence.quotient R} inc x)
+  → surjective-splitting {B = Congruence.quotient R} inc
   → is-split-congruence R
 split-surjection→is-split-congruence R split = record
   { has-is-set = hlevel 2

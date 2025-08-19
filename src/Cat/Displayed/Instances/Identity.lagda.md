@@ -26,9 +26,11 @@ open ∫Hom
 
 ## The identity bifibration
 
+:::{.definition #identity-bifibration}
 Let $\cB$ be a precategory. We can define a [[displayed category]]
 $\mathrm{Id}(\cB)$ over $B$ whose [[total category]] is isomorphic to
 $B$, called the **identity bifibration**.
+:::
 
 ```agda
 IdD : Displayed B lzero lzero

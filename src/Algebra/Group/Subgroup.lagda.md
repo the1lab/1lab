@@ -545,7 +545,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
     module Ker[incl] = Kernel (Ker incl)
     Ker-sg = Ker-subgroup incl
     H-sg = predicate→subgroup H has-rep
-    H-g = H-sg .domain
+    H-g = H-sg .dom
 ```
 -->
 
@@ -584,11 +584,11 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
     ker≤H : Ker-sg ≤ₘ H-sg
     ker≤H .map = to
-    ker≤H .sq = Grp↪Sets-is-faithful refl
+    ker≤H .com = Grp↪Sets-is-faithful refl
 
     H≤ker : H-sg ≤ₘ Ker-sg
     H≤ker .map = from
-    H≤ker .sq = Grp↪Sets-is-faithful refl
+    H≤ker .com = Grp↪Sets-is-faithful refl
 
     done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

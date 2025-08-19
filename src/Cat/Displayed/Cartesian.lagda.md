@@ -13,9 +13,8 @@ import Cat.Reasoning
 module Cat.Displayed.Cartesian
   {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
 
-open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Morphism E
+open Cat.Reasoning B
 open DR E
 ```
 
@@ -201,20 +200,14 @@ is-cartesian-is-prop {f' = f'} cart cart' = worker where
   open is-cartesian
 
   worker : cart ≡ cart'
-  worker i .universal m h' =
-    cart' .unique (cart .universal m h') (cart .commutes _ _) i
-  worker i .commutes m h' =
-    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-      (ap (f' ∘'_) (cart' .unique _ _))
-      (cart .commutes m h')
-      (cart' .commutes m h')
-      refl i
-  worker i .unique m' p =
-    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-      refl
-      (cart .unique m' p)
-      (cart' .unique m' p)
-      (cart' .unique _ _) i
+  worker i .universal m h' = cart' .unique
+    (cart .universal m h')
+    (cart .commutes _ _) i
+  worker i .commutes m h' = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+    (ap (f' ∘'_) (cart' .unique _ _)) (cart .commutes m h')
+    (cart' .commutes m h') refl i
+  worker i .unique m' p = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+    refl (cart .unique m' p) (cart' .unique m' p) (cart' .unique _ _) i
 ```
 </details>
 
@@ -236,15 +229,12 @@ subst-is-cartesian {g = g} {f' = f'} {g' = g'} p p' f-cart = g-cart where
   open is-cartesian
 
   g-cart : is-cartesian g g'
-  g-cart .universal m h' =
-    f'.universal' (ap (_∘ m) p) h'
-  g-cart .commutes m h' =
-    cast[] $
-      g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
-      f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
-      h' ∎
-  g-cart .unique m' q =
-    f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
+  g-cart .universal m h' = f'.universal' (ap (_∘ m) p) h'
+  g-cart .commutes m h' = cast[] $
+    g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
+    f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
+    h' ∎
+  g-cart .unique m' q = f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
 ```
 -->
 

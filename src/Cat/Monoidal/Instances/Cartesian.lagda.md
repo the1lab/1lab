@@ -4,13 +4,10 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Product.Solver
 open import Cat.Monoidal.Diagonals
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Braided
-open import Cat.Diagram.Product
 open import Cat.Monoidal.Base
+open import Cat.Cartesian
 open import Cat.Prelude
-
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -29,20 +26,16 @@ categories**, also known as _finite-products categories_.
 ```agda
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (prods : ∀ A B → Product C A B) (term : Terminal C)
+  (cartesian : Cartesian-category C)
   where
 ```
 
 <!--
 ```agda
   open Monoidal-category hiding (_⊗₁_)
-  open Braided-monoidal
-  open Symmetric-monoidal
   open Diagonals hiding (δ)
   open make-natural-iso
-  open Cr C
-  open Binary-products C prods
-  open Terminal term
+  open Cartesian-category cartesian
 ```
 -->
 
@@ -64,21 +57,21 @@ formal proof requires a _lot_ of calculation, however:
     ni : make-natural-iso _ _
     ni .eta x = ⟨ ! , id ⟩
     ni .inv x = π₂
-    ni .eta∘inv x = Product.unique₂ (prods _ _)
+    ni .eta∘inv x = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙ sym (!-unique _)) (cancell π₂∘⟨⟩) (!-unique₂ _ _) (idr _)
     ni .inv∘eta x = π₂∘⟨⟩
-    ni .natural x y f = Product.unique₂ (prods _ _)
+    ni .natural x y f = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
       (!-unique₂ _ _) (pulll π₂∘⟨⟩ ∙ idl f)
   Cartesian-monoidal .unitor-r = to-natural-iso ni where
     ni : make-natural-iso _ _
     ni .eta x = ⟨ id , ! ⟩
     ni .inv x = π₁
-    ni .eta∘inv x = Product.unique₂ (prods _ _)
+    ni .eta∘inv x = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙ idl _) (pulll π₂∘⟨⟩ ∙ sym (!-unique _))
       (idr _) (sym (!-unique _))
     ni .inv∘eta x = π₁∘⟨⟩
-    ni .natural x y f = Product.unique₂ (prods _ _)
+    ni .natural x y f = ⟨⟩-unique₂
       (pulll π₁∘⟨⟩ ∙∙ pullr π₁∘⟨⟩ ∙∙ idr f)
       (pulll π₂∘⟨⟩ ∙∙ pullr π₂∘⟨⟩ ∙∙ idl !)
       (pulll π₁∘⟨⟩ ∙ idl f)
@@ -87,11 +80,11 @@ formal proof requires a _lot_ of calculation, however:
     ni : make-natural-iso _ _
     ni .eta x = ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩
     ni .inv x = ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩
-    ni .eta∘inv x = products! prods
-    ni .inv∘eta x = products! prods
-    ni .natural x y f = products! prods
-  Cartesian-monoidal .triangle = products! prods
-  Cartesian-monoidal .pentagon = products! prods
+    ni .eta∘inv x = products! products
+    ni .inv∘eta x = products! products
+    ni .natural x y f = products! products
+  Cartesian-monoidal .triangle = products! products
+  Cartesian-monoidal .pentagon = products! products
 ```
 
 Cartesian monoidal categories also inherit a lot of additional structure
@@ -106,7 +99,7 @@ categories]].
     mk .has-braiding = iso→isoⁿ
       (λ _ → invertible→iso swap swap-is-iso) swap-natural
     mk .symmetric = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ∙ ⟨⟩-η
-    mk .has-braiding-α→ = products! prods
+    mk .has-braiding-α→ = products! products
 ```
 
 We also have a system of [[diagonal morphisms|monoidal category with diagonals]]:
@@ -121,6 +114,6 @@ We also have a system of [[diagonal morphisms|monoidal category with diagonals]]
 <!--
 ```agda
 Setsₓ : ∀ {ℓ} → Monoidal-category (Sets ℓ)
-Setsₓ = Cartesian-monoidal Sets-products Sets-terminal
+Setsₓ = Cartesian-monoidal Sets-cartesian
 ```
 -->

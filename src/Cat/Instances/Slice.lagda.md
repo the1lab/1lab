@@ -17,6 +17,7 @@ open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
+open import Cat.Cartesian
 open import Cat.Prelude
 
 open import Data.Sum
@@ -82,8 +83,8 @@ serve as the domain, and a map $f : d \to c$.
   record /-Obj (c : C.Ob) : Type (o ⊔ ℓ) where
     constructor cut
     field
-      {domain} : C.Ob
-      map      : C.Hom domain c
+      {dom} : C.Ob
+      map   : C.Hom dom c
 ```
 
 A map between $f : a \to c$ and $g : b \to c$ is given by a map $h : a
@@ -109,22 +110,22 @@ says that the map $h$ "respects reindexing", or less obliquely
       module a = /-Obj a
       module b = /-Obj b
     field
-      map      : C.Hom a.domain b.domain
-      commutes : b.map C.∘ map ≡ a.map
+      map : C.Hom a.dom b.dom
+      com : b.map C.∘ map ≡ a.map
 ```
 
 <!--
 ```agda
   /-Obj-path : ∀ {c} {x y : /-Obj c}
-             → (p : x ./-Obj.domain ≡ y ./-Obj.domain)
+             → (p : x ./-Obj.dom ≡ y ./-Obj.dom)
              → PathP (λ i → C.Hom (p i) c) (x ./-Obj.map) (y ./-Obj.map)
              → x ≡ y
-  /-Obj-path p q i ./-Obj.domain = p i
+  /-Obj-path p q i ./-Obj.dom = p i
   /-Obj-path p q i ./-Obj.map = q i
 
   /-Hom-pathp : ∀ {c a a' b b'} (p : a ≡ a') (q : b ≡ b')
                 {x : /-Hom {c = c} a b} {y : /-Hom a' b'}
-              → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain))
+              → PathP (λ i → C.Hom (p i ./-Obj.dom) (q i ./-Obj.dom))
                         (x ./-Hom.map) (y ./-Hom.map)
               → PathP (λ i → /-Hom (p i) (q i)) x y
   /-Hom-pathp p q {x} {y} r = path where
@@ -132,11 +133,11 @@ says that the map $h$ "respects reindexing", or less obliquely
 
     path : PathP (λ i → /-Hom (p i) (q i))  x y
     path i .map = r i
-    path i .commutes =
+    path i .com =
       is-prop→pathp
-        (λ i → C.Hom-set (p i ./-Obj.domain) _
+        (λ i → C.Hom-set (p i ./-Obj.dom) _
                          (q i ./-Obj.map C.∘ r i) (p i ./-Obj.map))
-        (x .commutes) (y .commutes) i
+        (x .com) (y .com) i
 
   /-Hom-path : ∀ {c a b} {x y : /-Hom {c = c} a b}
              → x ./-Hom.map ≡ y ./-Hom.map
@@ -145,7 +146,7 @@ says that the map $h$ "respects reindexing", or less obliquely
 
   instance
     Extensional-/-Hom
-      : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.domain a) (/-Obj.domain b)) ℓ ⦄
+      : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.dom a) (/-Obj.dom b)) ℓ ⦄
       → Extensional (/-Hom {c = c} a b) ℓ
     Extensional-/-Hom ⦃ sa ⦄ = injection→extensional! (/-Hom-pathp refl refl) sa
 
@@ -168,8 +169,8 @@ Slice C c = precat where
   precat .Ob = /-Obj {C = C} c
   precat .Hom = /-Hom
   precat .Hom-set x y = hlevel 2
-  precat .id .map      = C.id
-  precat .id .commutes = C.idr _
+  precat .id .map = C.id
+  precat .id .com = C.idr _
 ```
 
 For composition in the slice over $c$, note that if the triangle (the
@@ -197,9 +198,9 @@ commutativity for $g \circ f$).
     module g = /-Hom g
     fog : /-Hom _ _
     fog .map = f.map C.∘ g.map
-    fog .commutes =
-      z .map C.∘ f.map C.∘ g.map ≡⟨ C.pulll f.commutes ⟩
-      y .map C.∘ g.map           ≡⟨ g.commutes ⟩
+    fog .com =
+      z .map C.∘ f.map C.∘ g.map ≡⟨ C.pulll f.com ⟩
+      y .map C.∘ g.map           ≡⟨ g.com ⟩
       x .map                     ∎
   precat .idr f = ext (C.idr _)
   precat .idl f = ext (C.idl _)
@@ -222,7 +223,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c} where
 
 ```agda
   Forget/ : Functor (Slice C c) C
-  Forget/ .F₀ o = o .domain
+  Forget/ .F₀ o = o .dom
   Forget/ .F₁ f = f .map
   Forget/ .F-id = refl
   Forget/ .F-∘ _ _ = refl
@@ -244,7 +245,7 @@ the triangle commute, so that $f$ is invertible in $\cC/c$.
       module i = C.is-invertible i
       f⁻¹ : /-Hom _ _
       f⁻¹ .map = i.inv
-      f⁻¹ .commutes = C.rswizzle (sym (f .commutes)) i.invl
+      f⁻¹ .com = C.rswizzle (sym (f .com)) i.invl
 ```
 
 ## Finite limits
@@ -262,9 +263,9 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : ⌞ C ⌟} where
 
   Slice-terminal-object' : is-terminal (Slice C c) (cut C.id)
   Slice-terminal-object' obj .centre .map = obj .map
-  Slice-terminal-object' obj .centre .commutes = C.idl _
+  Slice-terminal-object' obj .centre .com = C.idl _
   Slice-terminal-object' obj .paths other =
-    ext (sym (other .commutes) ∙ C.idl _)
+    ext (sym (other .com) ∙ C.idl _)
 
   Slice-terminal-object : Terminal (Slice C c)
   Slice-terminal-object .Terminal.top  = _
@@ -320,9 +321,9 @@ definiteness.
 <!--
 ```agda
   module
-    _ {f g : /-Obj c} {Pb : C.Ob} {π₁ : C.Hom Pb (f .domain)}
-                                  {π₂ : C.Hom Pb (g .domain)}
-      (pb : is-pullback C {X = f .domain} {Z = c} {Y = g .domain} {P = Pb}
+    _ {f g : /-Obj c} {Pb : C.Ob} {π₁ : C.Hom Pb (f .dom)}
+                                  {π₂ : C.Hom Pb (g .dom)}
+      (pb : is-pullback C {X = f .dom} {Z = c} {Y = g .dom} {P = Pb}
         π₁ (map {_} {_} {C} {c} f) π₂ (map {_} {_} {C} {c} g))
     where
     private module pb = is-pullback pb
@@ -342,12 +343,12 @@ commutativity of the square gets us.
 
 ```agda
     is-pullback→π₁ : C/c.Hom is-pullback→product-over f
-    is-pullback→π₁ .map      = π₁
-    is-pullback→π₁ .commutes = refl
+    is-pullback→π₁ .map = π₁
+    is-pullback→π₁ .com = refl
 
     is-pullback→π₂ : C/c.Hom is-pullback→product-over g
-    is-pullback→π₂ .map      = π₂
-    is-pullback→π₂ .commutes = sym pb.square
+    is-pullback→π₂ .map = π₂
+    is-pullback→π₂ .com = sym pb.square
 
     open is-product
 ```
@@ -397,10 +398,10 @@ product in $\cC/c.$
       module q = /-Hom q
 
       factor : C/c.Hom Q _
-      factor .map      = pb.universal (p.commutes ∙ sym q.commutes)
-      factor .commutes =
+      factor .map = pb.universal (p.com ∙ sym q.com)
+      factor .com =
         (f .map C.∘ π₁) C.∘ pb.universal _ ≡⟨ C.pullr pb.p₁∘universal ⟩
-        f .map C.∘ p.map                   ≡⟨ p.commutes ⟩
+        f .map C.∘ p.map                   ≡⟨ p.com ⟩
         Q .map                             ∎
 ```
 
@@ -439,15 +440,17 @@ category correspond precisely to pullbacks in the base category.
     open is-pullback
 
     is-fibre-product→is-pullback : is-pullback C (π₁ .map) (f .map) (π₂ .map) (g .map)
-    is-fibre-product→is-pullback .square = π₁ .commutes ∙ sym (π₂ .commutes)
+    is-fibre-product→is-pullback .square = π₁ .com ∙ sym (π₂ .com)
     is-fibre-product→is-pullback .universal {P} {p₁} {p₂} square =
-      prod.⟨ record { map = p₁ ; commutes = refl }
-           , record { map = p₂ ; commutes = sym square } ⟩ .map
+      prod.⟨ record { map = p₁ ; com = refl }
+           , record { map = p₂ ; com = sym square } ⟩ .map
     is-fibre-product→is-pullback .p₁∘universal = ap map prod.π₁∘⟨⟩
     is-fibre-product→is-pullback .p₂∘universal = ap map prod.π₂∘⟨⟩
     is-fibre-product→is-pullback .unique {lim' = lim'} fac₁ fac₂ = ap map $
       prod.unique
-        {other = record { map = lim' ; commutes = ap (C._∘ lim') (sym (π₁ .commutes)) ∙ C.pullr fac₁}}
+        {other = record
+          { map = lim'
+          ; com = ap (C._∘ lim') (sym (π₁ .com)) ∙ C.pullr fac₁ }}
         (ext fac₁) (ext fac₂)
 ```
 
@@ -482,10 +485,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
     pb' : is-pullback (Slice _ _) _ _ _ _
     pb' .square           = ext (pb .square)
     pb' .universal p .map = pb .universal (ap map p)
-    pb' .universal {P'} {p₁' = p₁'} p .commutes =
-      (c .map ∘ pb .universal (ap map p))           ≡˘⟨ pulll (p1 .commutes) ⟩
+    pb' .universal {P'} {p₁' = p₁'} p .com =
+      (c .map ∘ pb .universal (ap map p))           ≡˘⟨ pulll (p1 .com) ⟩
       (P .map ∘ p1 .map ∘ pb .universal (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘universal) ⟩
-      (P .map ∘ p₁' .map)                           ≡⟨ p₁' .commutes ⟩
+      (P .map ∘ p₁' .map)                           ≡⟨ p₁' .com ⟩
       P' .map                                       ∎ {- * -}
     pb' .p₁∘universal = ext (pb .p₁∘universal)
     pb' .p₂∘universal = ext (pb .p₂∘universal)
@@ -498,15 +501,15 @@ module _ {o ℓ} {C : Precategory o ℓ} {X : ⌞ C ⌟}
     pb' : is-pullback _ _ _ _ _
     pb' .square = ap map (pb .square)
     pb' .universal p = pb .universal
-      {p₁' = record { commutes = refl }}
-      {p₂' = record { commutes = sym (pulll (g .commutes))
-                              ∙∙ sym (ap (_ ∘_) p)
-                              ∙∙ pulll (f .commutes) }}
+      {p₁' = record { com = refl }}
+      {p₂' = record { com = sym (pulll (g .com))
+                         ∙∙ sym (ap (_ ∘_) p)
+                         ∙∙ pulll (f .com) }}
       (ext p) .map
     pb' .p₁∘universal = ap map $ pb .p₁∘universal
     pb' .p₂∘universal = ap map $ pb .p₂∘universal
     pb' .unique p q   = ap map $ pb .unique
-      {lim' = record { commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
+      {lim' = record { com = sym (pulll (p1 .com)) ∙ ap (_ ∘_) p }}
       (ext p) (ext q)
 ```
 
@@ -543,11 +546,11 @@ statements above are just putting things together. We leave them in this
   Slice-pullbacks pullbacks {A = A} f g = pb where
     pb : Pullback (Slice C _) _ _
     pb .apex = cut (A .map ∘ pullbacks _ _ .p₁)
-    pb .p₁ = record { commutes = refl }
-    pb .p₂ = record { commutes =
-         sym (pushl (sym (f .commutes))
+    pb .p₁ = record { com = refl }
+    pb .p₂ = record { com =
+         sym (pushl (sym (f .com))
       ∙∙ ap₂ _∘_ refl (pullbacks _ _ .square)
-      ∙∙ pulll (g .commutes)) }
+      ∙∙ pulll (g .com)) }
     pb .has-is-pb = pullback-above→pullback-below $
       pullbacks (f .map) (g .map) .has-is-pb
 
@@ -556,6 +559,12 @@ statements above are just putting things together. We leave them in this
   Slice-lex pb = with-pullbacks (Slice C _)
     Slice-terminal-object
     (Slice-pullbacks pb)
+
+  Slice-cartesian : ∀ {b} → has-pullbacks C → Cartesian-category (Slice C b)
+  Slice-cartesian pb = record
+    { terminal = Slice-terminal-object
+    ; products = Slice-products pb
+    }
 ```
 
 </details>
@@ -596,11 +605,11 @@ fast:
 
 ```agda
   Total-space : Functor Cat[ Disc' I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = el! (Σ _ (∣_∣ ⊙ F₀ F))
-  Total-space .F₀ F .map    = fst
+  Total-space .F₀ F .dom = el! (Σ _ (∣_∣ ⊙ F₀ F))
+  Total-space .F₀ F .map = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
-  Total-space .F₁ nt .commutes    = refl
+  Total-space .F₁ nt .com         = refl
 
   Total-space .F-id    = ext λ _ _ → refl
   Total-space .F-∘ _ _ = ext λ _ _ → refl
@@ -627,7 +636,7 @@ dependent function is automatically a natural transformation.
     from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
     from mp = nt where
       eta : ∀ i → F ʻ i → G ʻ i
-      eta i j = subst (G ʻ_) (mp .commutes · _) (mp .map (i , j) .snd)
+      eta i j = subst (G ʻ_) (mp .com · _) (mp .map (i , j) .snd)
 
       nt : F => G
       nt .η = eta
@@ -640,7 +649,7 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = ext λ y s → Σ-pathp (sym (x .commutes $ₚ _)) (to-pathp⁻ refl)
+    linv x = ext λ y s → Σ-pathp (sym (x .com $ₚ _)) (to-pathp⁻ refl)
 ```
 -->
 
@@ -699,7 +708,7 @@ an identification $(X, f) \equiv (Y, g)$.
   slice-is-category .to-path x = /-Obj-path (isc .to-path $
     C.make-iso (x .to .map) (x .from .map)
       (ap map (C/o._≅_.invl x)) (ap map (C/o._≅_.invr x)))
-    (Univalent.Hom-pathp-refll-iso isc (x .from .commutes))
+    (Univalent.Hom-pathp-refll-iso isc (x .from .com))
   slice-is-category .to-path-over x = C/o.≅-pathp refl _ $
     /-Hom-pathp _ _ (Univalent.Hom-pathp-reflr-iso isc (C.idr _))
 ```
@@ -731,8 +740,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
 
   constant-family : Functor C (Slice C B)
   constant-family .F₀ A = cut (π₂ {a = A})
-  constant-family .F₁ f .map      = ⟨ f ∘ π₁ , π₂ ⟩
-  constant-family .F₁ f .commutes = π₂∘⟨⟩
+  constant-family .F₁ f .map = ⟨ f ∘ π₁ , π₂ ⟩
+  constant-family .F₁ f .com = π₂∘⟨⟩
   constant-family .F-id    = ext (sym (⟨⟩-unique id-comm (idr _)))
   constant-family .F-∘ f g = ext $ sym $
       ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
@@ -793,10 +802,10 @@ adjunction between [[dependent sum]] and base change.
 ```agda
   Forget⊣constant-family : Forget/ ⊣ constant-family
   Forget⊣constant-family .unit .η X .map = ⟨ id , X .map ⟩
-  Forget⊣constant-family .unit .η X .commutes = π₂∘⟨⟩
+  Forget⊣constant-family .unit .η X .com = π₂∘⟨⟩
   Forget⊣constant-family .unit .is-natural _ _ f = ext (⟨⟩-unique₂
     (pulll π₁∘⟨⟩ ∙ id-comm-sym)
-    (pulll π₂∘⟨⟩ ∙ f .commutes)
+    (pulll π₂∘⟨⟩ ∙ f .com)
     (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
     (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩))
   Forget⊣constant-family .counit .η x = π₁
@@ -849,7 +858,7 @@ $\cC/B$.
 ```agda
       ff : ∀ {x y} → is-iso (Comparison-CoEM Forget⊣constant-family .F₁ {x} {y})
       ff .from f .map = f .fst
-      ff {x} {y} .from f .commutes =
+      ff {x} {y} .from f .com =
         y .map ∘ f .fst                             ≡˘⟨ pulll π₂∘⟨⟩ ⟩
         π₂ ∘ ⟨ id , y .map ⟩ ∘ f .fst               ≡˘⟨ refl⟩∘⟨ f .snd ⟩
         π₂ ∘ ⟨ f .fst ∘ π₁ , π₂ ⟩ ∘ ⟨ id , x .map ⟩ ≡⟨ pulll π₂∘⟨⟩ ⟩

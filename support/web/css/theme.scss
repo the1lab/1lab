@@ -23,23 +23,33 @@ $theme: (
   ruler:     (light: #94A3B8, dark: #94A3B8),
 
   warning: (
-    bg:   (light: $yellow-400, dark: $yellow-500),
-    icon: (light: $yellow-700, dark: $yellow-400),
+    bg:   (light: $rose-600, dark: $rose-700),
+    icon: (light: $rose-700, dark: $rose-600),
+    text: (light: $rose-700, dark: $rose-600),
   ),
 
   note: (
-    bg:   (light: $violet-500, dark: $violet-500),
-    icon: (light: $violet-600, dark: $violet-400),
+    bg:   (light: $violet-400, dark: $violet-500),
+    icon: (light: $violet-500, dark: $violet-400),
+    text: (light: $violet-500, dark: $violet-400),
+  ),
+
+  summary: (
+    bg:   (light: $violet-400, dark: $violet-500),
+    icon: (light: $violet-500, dark: $violet-400),
+    text: (light: $violet-500, dark: $violet-400),
   ),
 
   terminology: (
-    bg:   (light: $cyan-600, dark: $cyan-600),
-    icon: (light: $cyan-900, dark: $cyan-700),
+    bg:   (light: $cyan-600, dark: $cyan-700),
+    icon: (light: $cyan-700, dark: $cyan-600),
+    text: (light: $cyan-700, dark: $cyan-600),
   ),
 
   source: (
-    bg:   (light: $cyan-600, dark: $cyan-600),
-    icon: (light: $cyan-900, dark: $cyan-700),
+    bg:   (light: $cyan-600, dark: $cyan-700),
+    icon: (light: $cyan-700, dark: $cyan-600),
+    text: (light: $cyan-700, dark: $cyan-600),
   ),
 
   commit: (
@@ -191,28 +201,16 @@ $-allowed-keys: -flatten-theme($theme);
 :root {
   --serif: "EB Garamond", "Times New Roman", "serif";
   --sans-serif: "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-size: 1.4rem;
-  --code-font-size: calc(0.85 * var(--font-size));
 
-  --sidenote-separation: 2em;
+
+  --font-size:      1.4rem;
+  --code-font-size: calc(0.85 * var(--font-size));
+  --parskip:        #{$parskip};
 
   &.sans-serif {
-    --serif: "";
-    --font-size: 1.3rem;
+    --serif:          "";
+    --font-size:      1.3rem;
     --code-font-size: calc(0.92 * var(--font-size));
-  }
-
-  &.show-equations span.reasoning-step {
-    .as-written {
-      display: inline;
-    }
-    .alternate {
-      display: none;
-    }
-  }
-
-  &.show-hidden-code .commented-out {
-    display: revert;
   }
 
   &.justified article {

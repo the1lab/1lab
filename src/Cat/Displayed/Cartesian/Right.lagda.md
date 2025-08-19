@@ -28,7 +28,6 @@ module Cat.Displayed.Cartesian.Right
 ```agda
 
 open Cat.Reasoning ℬ
-open Displayed ℰ
 open Cat.Displayed.Cartesian ℰ
 open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Reasoning ℰ
