@@ -79,7 +79,7 @@ if the $\hom$-functor $\cC(-,A) : \cC\op \to \Sets$ preserves [[epimorphisms]].
 For the forward direction, recall that in $\Sets$, [[epis are surjective]].
 Moreover, epimorphisms in $\cC\op$ are monomorphisms in $\cC$. This means that if
 $m : X \mono Y$ is a mono in $\cC$, then $- \circ m : \cC(Y,A) \to \cC(X,A)$
-$e \circ - : \cC(P,X) \to \cC(P,Y)$ is surjective, as $\cC(-,A)$ preserves
+is surjective, as $\cC(-,A)$ preserves
 epis. This directly gives us the factorization we need!
 
 ```agda
