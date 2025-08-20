@@ -158,6 +158,17 @@ instance
   → □ A → A
 □-out! = rec! λ x → x
 
+□-out-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {X : Type ℓ'} → is-prop A → (A → X) → □ A → X
+□-out-rec A-prop go x = go (□-out A-prop x)
+
+□-out-elim
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : □ A → Type ℓ'}
+  → is-prop A
+  → (∀ x → P (inc x))
+  → ∀ x → P x
+□-out-elim {P = P} A-prop go x =
+  subst P prop! (go (□-out A-prop x))
+
 □-rec-set
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → is-set B
