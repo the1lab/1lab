@@ -22,7 +22,7 @@ module Cat.Bi.Displayed.Base where
 
 ::: source
 The definition here was adapted from the one given by Ahrens et al.
-in the paper [Bicategories in Univalent Foundations]
+in [Bicategories in Univalent Foundations]
 :::
 
 [Bicategories in Univalent Foundations]: https://arxiv.org/abs/1903.01152
