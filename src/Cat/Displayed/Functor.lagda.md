@@ -618,9 +618,6 @@ module _
     Extensional-=>↓ {F' = F'} {G' = G'}  ⦃ e ⦄  = injection→extensional! {f = _=>↓_.η'}
       (λ p → Iso.injective eqv (Σ-prop-path! p)) e
 
-    H-Level-=>↓ : ∀ {F' G'} {n} → H-Level (F' =>↓ G') (2 + n)
-    H-Level-=>↓ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
-
   open _=>↓_
 
   idnt↓ : ∀ {F} → F =>↓ F
