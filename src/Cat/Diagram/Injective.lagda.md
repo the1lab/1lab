@@ -7,8 +7,8 @@ description: |
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Pullback.Along
-open import Cat.Functor.Morphism
 open import Cat.Diagram.Pullback
+open import Cat.Functor.Morphism
 open import Cat.Diagram.Product
 open import Cat.Diagram.Omega
 open import Cat.Functor.Hom
