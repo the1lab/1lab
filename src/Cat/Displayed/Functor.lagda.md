@@ -424,20 +424,6 @@ module
     → F ≡ G
   Vertical-functor-path = Displayed-functor-pathp refl
 
-  Vertical-functor-path-prop
-    : {F G : Vertical-functor ℰ ℱ}
-    → (∀ {x y x' y'} {f : B.Hom x y} → is-prop (ℱ.Hom[ f ] x' y'))
-    → (p0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → F .F₀' x' ≡ G .F₀' x')
-    → F ≡ G
-  Vertical-functor-path-prop prop p0 = Vertical-functor-path p0 (λ _ → is-prop→pathp (λ _ → prop) _ _)
-
-  Vertical-functor-path-prop! 
-    : {F G : Vertical-functor ℰ ℱ}
-    → ⦃ _ : ∀ {x y x' y'} {f : B.Hom x y} → H-Level (ℱ.Hom[ f ] x' y') 1 ⦄ 
-    → (p0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → F .F₀' x' ≡ G .F₀' x')
-    → F ≡ G
-  Vertical-functor-path-prop! = Vertical-functor-path-prop (hlevel 1)
-  
   Vertical-functor-is-set : (∀ x → is-set ℱ.Ob[ x ]) → is-set (Vertical-functor ℰ ℱ)
   Vertical-functor-is-set fibre-set = Displayed-functor-is-set fibre-set
 ```
