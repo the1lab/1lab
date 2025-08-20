@@ -18,6 +18,19 @@ import Cat.Displayed.Reasoning as DR
 ```agda
 module Cat.Bi.Displayed.Base where
 ```
+
+# Displayed bicategories {defines=displayed-bicategory}
+
+::: source
+The definition here was adapted from the one given by Ahrens et al.
+in the paper [Bicategories in Univalent Foundations]
+:::
+
+[Bicategories in Univalent Foundations]: https://arxiv.org/abs/1903.01152
+
+Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
+**displayed bicategory** $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
+
 <!--
 ```agda
 open Functor
@@ -68,10 +81,6 @@ module _ where
       open DR (H' A' D')
 ```
 -->
-# Displayed bicategories {defines=displayed-bicategory}
-
-Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
-**displayed bicategory** $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
 
 ```agda
 record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type (lsuc (o' ⊔ oh' ⊔ ℓh') ⊔ o ⊔ oh ⊔ ℓh) where
@@ -102,7 +111,7 @@ The displayed morphims are the _displayed 2-cells_.
          → Type _
   _[_]⇒_ {A' = A'} {B' = B'} f' α g' = Hom[ A' , B' ] .Displayed.Hom[_] α f' g'
 ```
-We require an indentity 1-cell displayed over the identity 1-cell of the base bicategory.
+We require an identity 1-cell displayed over the identity 1-cell of the base bicategory.
 ```agda 
   field
     ↦id' : ∀ {x} {x' : Ob[ x ]} → x' [ id ]↦ x'
@@ -282,8 +291,9 @@ As do the triangle and pentagon identities.
 
 ## The displayed bicategory of displayed categories
 
+Displayed categories naturally assemble into a displayed biacategory over $\bf{Cat}$,
+with [[displayed functor categories|displayed-functor-category]] as $\hom$s.
 
-Displayed categories naturally assemble into a displayed biacategory over $\bf{Cat}$.
 <!--
 ```agda 
 open Bidisplayed hiding (_∘'_)

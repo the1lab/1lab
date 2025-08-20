@@ -14,12 +14,14 @@ import Cat.Displayed.Reasoning as DR
 ```agda
 module Cat.Displayed.Instances.DisplayedFunctor where
 ```
+
 # Displayed functor categories {defines=displayed-functor-category}
 
 Given two displayed categories $\cD \liesover \cA$ and $\cE \liesover \cB$, we
 can assemble them into a displayed category $$[\cD, \cE] \liesover [\cA, \cB]$.
 The construction mirrors the construction of ordinary functor categories,
 using displayed versions of all the same data.
+
 <!--
 ```agda
 open _=>_
@@ -45,8 +47,7 @@ module _
   Disp[_,_] : Displayed (Cat[ A , B ]) _ _
   Disp[_,_] .Displayed.Ob[_] f = Displayed-functor f D E
   Disp[_,_] .Displayed.Hom[_] α F' G' = F' =[ α ]=> G'
-  Disp[_,_] .Displayed.Hom[_]-set _ _ _ = hlevel 2 where
-    unquoteDecl lvl = declare-record-hlevel 2 lvl (quote _=[_]=>_)
+  Disp[_,_] .Displayed.Hom[_]-set _ _ _ = hlevel 2
   Disp[_,_] .Displayed.id' = idnt'
   Disp[_,_] .Displayed._∘'_ = _∘nt'_
   Disp[_,_] .Displayed.idr' _ = Nat'-path λ x' → E.idr' _
@@ -73,11 +74,11 @@ module _
       open DR C' public
 ```
 -->
-We can also construct a displayed version of the functor composition functor. 
+
+We can also construct a displayed version of the [[functor composition functor|composition-functor]]. 
 First we'll define displayed horizontal composition of natural transformations.
 
 ```agda
-
   _◆'_ : F' =[ α ]=> G' → H' =[ β ]=> K' → F' F∘' H' =[ α ◆ β ]=> G' F∘' K'
   (α' ◆' β') .η' x' = G' .F₁' (β' .η' _) C'.∘' α' .η' _
   (α' ◆' β') .is-natural' x' y' f' = cast[] $
@@ -101,7 +102,10 @@ module _
     module C' = Displayed C'
 ```
 -->
+
+:::{.definition #displayed-composition-functor}
 Armed with this, we can define our displayed composition functor.
+:::
 
 ```agda
   F∘'-functor : Displayed-functor F∘-functor (Disp[ B' , C' ] ×ᵀᴰ Disp[ A' , B' ]) Disp[ A' , C' ]

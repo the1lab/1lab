@@ -503,6 +503,8 @@ module
 ```agda
 {-# INLINE NT' #-}
 
+unquoteDecl H-Level-=[]=> = declare-record-hlevel 2 H-Level-=[]=> (quote _=[_]=>_)
+
 module _
   {oa ℓa ob ℓb od ℓd oe ℓe}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
