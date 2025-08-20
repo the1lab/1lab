@@ -20,7 +20,9 @@ import Cat.Functor.Bifunctor
 
 ```agda
 module Cat.Displayed.Instances.TotalProduct where
-
+```
+<!--
+```agda
 module _ 
   {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
   {C : Precategory o₁ ℓ₁}

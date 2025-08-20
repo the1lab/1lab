@@ -18,7 +18,7 @@ module Cat.Displayed.Instances.DisplayedFunctor where
 # Displayed functor categories {defines=displayed-functor-category}
 
 Given two displayed categories $\cD \liesover \cA$ and $\cE \liesover \cB$, we
-can assemble them into a displayed category $$[\cD, \cE] \liesover [\cA, \cB]$.
+can assemble them into a displayed category $[\cD, \cE] \liesover [\cA, \cB]$.
 The construction mirrors the construction of ordinary functor categories,
 using displayed versions of all the same data.
 
