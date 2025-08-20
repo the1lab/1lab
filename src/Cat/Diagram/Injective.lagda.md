@@ -70,6 +70,18 @@ is-injective A =
   → ∃[ r ∈ Hom Y A ] (r ∘ m .mor ≡ i)
 ```
 
+Classically, injective objects are usually very easy to find. For example.
+the [[law of excluded middle]] implies that every pointed set is injective
+in the category of sets. To extend a map $i : X \to A$ along an injection $m : X \mono Y$,
+just decide if each $y : Y$ is in the image of $m$. If it is, we can use $i$.
+If it isn't, we can send it to the designated point.
+
+Constructively, injective objects are a bit harder to come by, as we
+can't use excluded middle to decide if some fibre is empty. However,
+they are much more abundant than [[projective objects]]. For example, the type of
+[[partial elements is injective|partial-elements-are-injective]] for every [[set]]
+$A$.
+
 ## A functorial definition
 
 Some authors prefer to define injective objects via a functorial
