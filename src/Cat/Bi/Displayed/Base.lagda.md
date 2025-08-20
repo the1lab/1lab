@@ -70,7 +70,7 @@ module _ where
 -->
 ## Displayed bicategories
 Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
-displayed _bi_category $\bf{E} \liesover \bf{B}$ allows us to describe _bi_categorical structure over the _bi_category $\bf{B}$.
+displayed *bi*category $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
 
 ```agda
 record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type (lsuc (o' ⊔ oh' ⊔ ℓh') ⊔ o ⊔ oh ⊔ ℓh) where
@@ -118,14 +118,14 @@ lies over the composition functor of the base bicategory.
 ```agda
   field
     compose' : ∀ {A B C} {A' : Ob[ A ]} {B' : Ob[ B ]} {C' : Ob[ C ]} 
-              → Displayed-functor compose (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) Hom[ A' , C' ]
+             → Displayed-functor compose (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) Hom[ A' , C' ]
     
   module compose' {A} {B} {C} {A'} {B'} {C'} = Displayed-functor (compose' {A} {B} {C} {A'} {B'} {C'})
 ```
 Displayed 1-cell and 2-cell composition proceeds in the same way.
 ```agda 
   _⊗'_ : ∀ {A B C A' B' C'} {f : B ↦ C} {g : A ↦ B} → (B' [ f ]↦ C') → (A' [ g ]↦ B') → A' [ f ⊗ g ]↦ C'
-  _⊗'_ f' g' = compose' · (f' , g') 
+  _⊗'_ f' g' = compose'.₀' (f' , g') 
 
   _∘'_ : ∀ {A B A' B'} {f g h : A ↦ B} 
       → {f' : A' [ f ]↦ B'} {g' : A' [ g ]↦ B'} {h' : A' [ h ]↦ B'}
@@ -165,7 +165,6 @@ Displayed 1-cell and 2-cell composition proceeds in the same way.
 ```
 The unitors and associator are displayed isomorphims over the unitors and associator the base bicategory.
 ```agda 
-  -- Displayed unitor and associator isos
   field
     unitor-l' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → _≅[_]_ Disp[ Hom[ A' , B' ] , Hom[ A' , B' ] ] Id' unitor-l (Right' compose' ↦id')
     unitor-r' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → _≅[_]_ Disp[ Hom[ A' , B' ] , Hom[ A' , B' ] ] Id' unitor-r (Left'  compose' ↦id')
@@ -180,7 +179,7 @@ The unitors and associator are displayed isomorphims over the unitors and associ
 
       
 ```
-The associated displayed cell combinators proceed in the same way.
+The associated displayed cell combinators proceed in the same way. Fair warning: the types get pretty nasty.
 ```agda
   λ←' : ∀ {A B A' B'} {f : A ↦ B} (f' : A' [ f ]↦ B') → (↦id' ⊗' f') [ λ← f ]⇒ f'
   λ←' = unitor-l' ._≅[_]_.from' .η' 
@@ -281,6 +280,7 @@ As do the triangle and pentagon identities.
 ```
 
 ## The displayed bicategory of displayed categories
+
 
 Displayed categories naturally assemble into a displayed biacategory over $\bf{Cat}$.
 <!--

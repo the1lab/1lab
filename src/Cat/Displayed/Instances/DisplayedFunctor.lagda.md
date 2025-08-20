@@ -14,6 +14,7 @@ import Cat.Displayed.Reasoning as DR
 ```agda
 module Cat.Displayed.Instances.DisplayedFunctor where
 ```
+## Displayed functor categories
 
 Given two displayed categories $\cD \liesover \cA$ and $\cE \liesover \cB$, we
 can assemble them into a displayed category $$[\cD, \cE] \liesover [\cA, \cB]$.

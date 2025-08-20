@@ -586,7 +586,7 @@ composition of natural transformations.
       module G' = Displayed-functor G'
       module H' = Displayed-functor H'
 ```
--->
+
 ::: {.definition #vertical-natural-transformation}
 Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
 transformation between $F$ and $G$ is called a **vertical natural
