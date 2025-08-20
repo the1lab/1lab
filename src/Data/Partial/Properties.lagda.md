@@ -123,27 +123,57 @@ desc↯ X .elt □contr = □-out! □contr .centre
 ## Partial elements are injective types {defines=partial-elements-are-injective}
 
 The type of partial elements $\zap X$ is an [[injective object]] for
-every set $X$.
+every type $X$.
 
 First, observe that we can extend a map $f : X \to \zap A$ along
-an [[embedding]] $e : X \to Y$ by using `assume↯`{.Agda} to cook up
-a fibre of $x$ that we can
+an [[embedding]] $e : X \to Y$ by constructing a map
+a fibre of $y$ that we can pass off to $f$.
 
 ```agda
 extend↯ : (X → ↯ A) → (X ↪ Y) → Y → ↯ A
-extend↯ f e y = do
-  x ← assume↯ (fibre (apply e) y) (e .snd y)
-  f (x .fst)
+extend↯ f e y .def = elΩ (Σ[ y* ∈ fibre (e .fst) y ] ⌞ f (y* .fst) ⌟)
+extend↯ f e y .elt =
+  □-out-rec (Σ-is-hlevel 1 (e .snd y) (λ _ → hlevel 1))
+    (λ ((x , _) , fx↓) → f x .elt fx↓)
 ```
+
+Proving that the extension of $f$ along $e$ with $f$ is a bit of a chore
+due to all of the propositional resizing required. The key idea is that
+both $f$ and its extension have equivalent domains of definition, and
+agree when both are defined essentially by definition.
 
 ```agda
 extends↯
   : ⦃ _ : H-Level A 2 ⦄
   → (f : X → ↯ A) (e : X ↪ Y)
   → ∀ (x : X) → extend↯ f e (e · x) ≡ f x
-extends↯ f e x =
-  part-ext
-    (rec! (λ x' p fx'↓ → subst (λ x → ∣ f x .def ∣) (has-prop-fibres→injective (e .fst) (e .snd) p) fx'↓))
-    (λ fx↓ → (pure (x , refl)) , fx↓)
-    (elim! (λ x' p fx'↓ fx↓ → ap₂ (λ x fx↓ → f x .elt fx↓) (has-prop-fibres→injective (e .fst) (e .snd) p) prop!))
 ```
+
+<details>
+<summary>Unfortunately, proof assistants. The domain of definition
+of `extends↯ f e (e · x)` is always a proposition, but we need to
+truncate it to resize it into `Ω`{.Agda}. This means that we need
+to wrap our proofs in a bunch of eliminators, which makes them quite
+ugly.
+</summary>
+
+```agda
+extends↯ f e x =
+  part-ext to from agree
+  where
+    to : ⌞ extend↯ f e (e · x) ⌟ → ⌞ f x ⌟
+    to = rec! λ x' p fx'↓ →
+      subst (λ x → ∣ f x .def ∣)
+        (has-prop-fibres→injective (e .fst) (e .snd) p)
+        fx'↓
+
+    from : ⌞ f x ⌟ → ⌞ extend↯ f e (e · x) ⌟
+    from fx↓ = pure ((x , refl) , fx↓)
+
+    agree : (fex↓ : ⌞ extend↯ f e (e · x) ⌟) (fx↓ : ⌞ f x ⌟) → extend↯ f e (e · x) .elt fex↓ ≡ f x .elt fx↓
+    agree =
+      □-out-elim (Σ-is-hlevel 1 (e .snd (e · x)) (λ _ → hlevel 1)) λ where
+        ((x' , ex'=ex) , fx'↓) fx↓ →
+          ap₂ (λ x fx↓ → f x .elt fx↓) (has-prop-fibres→injective (e .fst) (e .snd) ex'=ex) prop!
+```
+</details>

@@ -79,8 +79,8 @@ If it isn't, we can send it to the designated point.
 Constructively, injective objects are a bit harder to come by, as we
 can't use excluded middle to decide if some fibre is empty. However,
 they are much more abundant than [[projective objects]]. For example, the type of
-[[partial elements is injective|partial-elements-are-injective]] for every [[set]]
-$A$.
+[[partial elements is injective|partial-elements-are-injective]] for every
+type $A$.
 
 ## A functorial definition
 
