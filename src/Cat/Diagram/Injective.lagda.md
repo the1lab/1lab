@@ -4,15 +4,21 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Product.Indexed
+open import Cat.Diagram.Pullback.Along
 open import Cat.Functor.Morphism
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
+open import Cat.Diagram.Omega
 open import Cat.Functor.Hom
-open import Cat.Prelude
+open import Cat.Prelude hiding (Ω; true)
 
 open import Data.Set.Projective
 open import Data.Set.Surjection
 
+import Cat.Displayed.Instances.Subobjects.Reasoning as Subr
+import Cat.Displayed.Instances.Subobjects as Subobjs
 import Cat.Reasoning
 ```
 -->
@@ -26,6 +32,7 @@ module Cat.Diagram.Injective
 <!--
 ```agda
 open Cat.Reasoning C
+open Subobjs C
 
 private variable
   A X Y : Ob
@@ -225,6 +232,134 @@ section→injective
 section→injective A-inj r s i m = do
   (t , t-factor) ← A-inj (s .section ∘ i) m
   pure (r ∘ t , pullr t-factor ∙ cancell (s .is-section))
+```
+
+If $\cC$ has all [[pullbacks]], then every [[subobject classifier]]
+is injective.
+
+```agda
+Ω-injective
+  : {Ω : Ob} {true : Subobject Ω}
+  → has-pullbacks C
+  → is-generic-subobject C true
+  → is-injective Ω
+```
+
+Let $(\Omega, \mathrm{true})$ be a subobject classifier in $\cC$, and
+consider the following extension problem.
+
+~~~{.quiver}
+\begin{tikzcd}
+  X && \Omega \\
+  \\
+  Y
+  \arrow["i", from=1-1, to=1-3]
+  \arrow["m"', tail, from=1-1, to=3-1]
+  \arrow["{?}"{description}, dashed, from=3-1, to=1-3]
+\end{tikzcd}
+~~~
+
+```agda
+Ω-injective {Ω = Ω} {true = true} pullbacks Ω-subobj {X} {Y} i m =
+  pure extension
+  where
+    open is-generic-subobject Ω-subobj
+    open Pullbacks C pullbacks
+    open props pullbacks (record { true = true ; generic = Ω-subobj })
+```
+
+At first glance, it seems like we might be able to just classify the
+subobject $m$ to get an extension $\mathrm{name}(m) : \cC(Y, \Omega)$. Though this map
+does have the right type, it is not actually an extension of $i$.
+The core of the problem is that $\mathrm{name}(m)$ classifies generalized
+elements of $Y$ that lie within $m$, but we need to classify generalized
+elements of $Y$ that lie within $i$ instead!
+
+We can this by pulling back $i$ along $\mathrm{true}$ to get a subobject $[i]$ of
+$X$, which we can then compose with $m$ to get a subobject of $Y$.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {\mathrm{dom}(i)} && \top \\
+  \\
+  X && \Omega \\
+  \\
+  Y
+  \arrow["{!}", from=1-1, to=1-3]
+  \arrow["{[i]}"', from=1-1, to=3-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  \arrow["{\mathrm{true}}", from=1-3, to=3-3]
+  \arrow["i", from=3-1, to=3-3]
+  \arrow["m"', tail, from=3-1, to=5-1]
+  \arrow["{?}"{description}, dashed, from=5-1, to=3-3]
+\end{tikzcd}
+~~~
+
+```agda
+    [i] : Subobject X
+    [i] = named i
+
+    m∩[i] : Subobject Y
+    m∩[i] = cutₛ (∘-is-monic (m .monic) ([i] .monic))
+```
+
+We can then classify our subobject $m \circ [i]$ to get a map
+$\mathrm{name}(m \circ [i]) : \cC(Y, \Omega)$, which is an
+extension of $i$.
+
+To see this, recall that two maps $f, g : \cC(X,\Omega)$ are equal
+when $[g] : \cC(\mathrm{dom}(g), X)$ is a pullback of $\mathrm{true}$
+along $f$. In our case, this means that we must show that the following
+square is a pullback square.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {\mathrm{dom}(i)} && \top \\
+  \\
+  X && \Omega
+  \arrow["{!}", from=1-1, to=1-3]
+  \arrow["{[i]}"', from=1-1, to=3-1]
+  \arrow["{\mathrm{true}}", from=1-3, to=3-3]
+  \arrow["{\mathrm{name}(m \circ [i]) \circ m}"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+We can re-arrange this square a bit to get the following diagram.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {\mathrm{dom}(i)} && {\mathrm{dom}(i)} && \top \\
+  \\
+  X && Y && \Omega
+  \arrow["\id", from=1-1, to=1-3]
+  \arrow["{[i]}"', from=1-1, to=3-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  \arrow["{!}", from=1-3, to=1-5]
+  \arrow["{m \circ [i]}"{description}, from=1-3, to=3-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-3, to=3-5]
+  \arrow["{\mathrm{true}}", from=1-5, to=3-5]
+  \arrow["m"', from=3-1, to=3-3]
+  \arrow["{\mathrm{name}(m \circ [i])}"', from=3-3, to=3-5]
+\end{tikzcd}
+~~~
+
+The right-hand square is a pullback square, as $\mathrm{name}(m \circ [i])$
+classifies the subobject $m \circ [i]$. Moreover, the left-hand square
+is also a pullback square, as every $f$ is the pullback of $m \circ f$
+along $m$ when $m$ is monic. We can paste these two squares together to
+get our original square, which must also be a pullback by pasting.
+This means that $\mathrm{name}(m \circ [i]) \circ m = i$, which completes
+the proof.
+
+```agda
+    extension : Σ[ i* ∈ Hom Y Ω ] i* ∘ m .mor ≡ i
+    extension .fst = name m∩[i]
+    extension .snd =
+      Ω-unique₂ $
+      paste-is-pullback-along
+        (classifies m∩[i])
+        (is-pullback-along-monic (m .monic))
+        refl
 ```
 
 ## Enough injectives
