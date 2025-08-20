@@ -126,8 +126,9 @@ The type of partial elements $\zap X$ is an [[injective object]] for
 every type $X$.
 
 First, observe that we can extend a map $f : X \to \zap A$ along
-an [[embedding]] $e : X \to Y$ by constructing a map
-a fibre of $y$ that we can pass off to $f$.
+an [[embedding]] $e : X \to Y$ by sending each $y : Y$ to the
+a partial element that is defined when the fibre of $e$ over $y$
+is inhabited by some $x$ such that $f(x)$ is itself defined.
 
 ```agda
 extend↯ : (X → ↯ A) → (X ↪ Y) → Y → ↯ A
