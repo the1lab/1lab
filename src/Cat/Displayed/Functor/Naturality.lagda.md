@@ -14,7 +14,7 @@ import Cat.Displayed.Morphism as DM
 ```agda
 module Cat.Displayed.Functor.Naturality where
 ```
-## Natural isomorhisms of displayed functors
+# Natural isomorhisms of displayed functors
 
 We define displayed versions of our functor naturality tech.
 
