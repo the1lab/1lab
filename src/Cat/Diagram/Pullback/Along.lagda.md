@@ -66,7 +66,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     unquoteDecl eqv = declare-record-iso eqv (quote is-pullback-along)
     variable
       U V W X Y Z : Ob
-      f g h k m n l nm : Hom X Y
+      f g h k m n l nm l₁ b₁ t₁ r₁ l₂ b₂ t₂ r₂ l₃ r₃ : Hom X Y
   abstract
 ```
 -->
@@ -122,4 +122,101 @@ pullback of $l$ along $n \circ m$.
       (rotate-pullback (q .has-is-pb))
       ( extendl (sym (p .is-pullback-along.square))
       ∙ pushr (sym (q .is-pullback-along.square)))))
+```
+
+Similarly, if some $l_2$ is the pullback of $r_2$ along some $t_1$,
+and $t_1$ is the roof of a pullback square $b_1 \circ l_1 = r_1 \circ t_1$,
+then $r_1 \circ r_2$ is the pullback of $l_1 \circ l_2$ along $b_1$.
+This is best understood diagramatically:
+
+~~~{.quiver}
+\begin{tikzcd}
+  A && X \\
+  \\
+  B && Y \\
+  \\
+  C && Z
+  \arrow["{t_2}", from=1-1, to=1-3]
+  \arrow["{l_2}"', from=1-1, to=3-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  \arrow["{r_2}", from=1-3, to=3-3]
+  \arrow["{t_1}"{description}, from=3-1, to=3-3]
+  \arrow["{l_1}"', from=3-1, to=5-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=3-1, to=5-3]
+  \arrow["{r_1}", from=3-3, to=5-3]
+  \arrow["{b_1}"', from=5-1, to=5-3]
+\end{tikzcd}
+~~~
+
+```agda
+  extend-is-pullback-along
+    : is-pullback C l₁ b₁ t₁ r₁
+    → is-pullback-along C l₂ t₁ r₂
+    → l₁ ∘ l₂ ≡ l₃
+    → r₁ ∘ r₂ ≡ r₃
+    → is-pullback-along C l₃ b₁ r₃
+```
+
+<details>
+<summary>This follows immediately from the pasting lemma for
+pullbacks, so we will skip over the details.
+</summary>
+
+```agda
+  extend-is-pullback-along pb₁ pb₂ l-comm r-comm .top = pb₂ .top
+  extend-is-pullback-along pb₁ pb₂ l-comm r-comm .has-is-pb =
+    subst-is-pullback l-comm refl refl r-comm $
+    pasting-left→outer-is-pullback pb₁ (has-is-pb pb₂) $
+    pulll (pb₁ .square) ∙ extendr (pb₂ .is-pullback-along.square)
+```
+</details>
+
+We also note that $f$ is the pullback of itself along $\id$.
+
+```agda
+  is-pullback-along-id : is-pullback-along C f id f
+  is-pullback-along-id .top = id
+  is-pullback-along-id .has-is-pb = rotate-pullback id-is-pullback
+```
+
+If some $m : X \embeds Y$ is monic, then every $f : A \to X$ is the pullback
+of $m \circ f$ along $m$.
+
+```agda
+  is-pullback-along-monic : is-monic m → is-pullback-along C f m (m ∘ f)
+```
+
+This is yet another instance of a pullback pasting. We can arrange our
+morphisms into the following set of squares:
+
+~~~{.quiver}
+\begin{tikzcd}
+  A && A \\
+  \\
+  X && X \\
+  \\
+  X && Y
+  \arrow["\id"{description}, from=1-1, to=1-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+  \arrow["f", from=1-3, to=3-3]
+  \arrow["\id"{description}, from=3-1, to=3-3]
+  \arrow["\id"', from=3-1, to=5-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=3-1, to=5-3]
+  \arrow["m", from=3-3, to=5-3]
+  \arrow["m"', from=5-1, to=5-3]
+\end{tikzcd}
+~~~
+
+The upper square is always a pullback square, as $f$ pulls back to
+itself along $\id$. Moreover, the bottom square is also a pullback,
+as $m$ is monic. This means that the outer square is itself a pullback,
+which completes the proof.
+
+```agda
+  is-pullback-along-monic m-monic =
+    extend-is-pullback-along
+      (is-monic→is-pullback m-monic)
+      is-pullback-along-id
+      (idl _) refl
 ```

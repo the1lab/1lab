@@ -225,26 +225,27 @@ is a monomorphism iff. the square below is a pullback.
 Pullbacks additionally preserve monomorphisms, as shown below:
 
 ```agda
-  is-monic→pullback-is-monic
-    : ∀ {x y z} {f : Hom x z} {g : Hom y z} {p} {p1 : Hom p x} {p2 : Hom p y}
-    → is-monic f
-    → is-pullback C p1 f p2 g
-    → is-monic p2
-  is-monic→pullback-is-monic {f = f} {g} {p1 = p1} {p2} mono pb h j p = eq
-    where
-      module pb = is-pullback pb
-      q : f ∘ p1 ∘ h ≡ f ∘ p1 ∘ j
-      q =
-        f ∘ p1 ∘ h ≡⟨ extendl pb.square ⟩
-        g ∘ p2 ∘ h ≡⟨ ap (g ∘_) p ⟩
-        g ∘ p2 ∘ j ≡˘⟨ extendl pb.square ⟩
-        f ∘ p1 ∘ j ∎
+  abstract
+    is-monic→pullback-is-monic
+      : ∀ {x y z} {f : Hom x z} {g : Hom y z} {p} {p1 : Hom p x} {p2 : Hom p y}
+      → is-monic f
+      → is-pullback C p1 f p2 g
+      → is-monic p2
+    is-monic→pullback-is-monic {f = f} {g} {p1 = p1} {p2} mono pb h j p = eq
+      where
+        module pb = is-pullback pb
+        q : f ∘ p1 ∘ h ≡ f ∘ p1 ∘ j
+        q =
+          f ∘ p1 ∘ h ≡⟨ extendl pb.square ⟩
+          g ∘ p2 ∘ h ≡⟨ ap (g ∘_) p ⟩
+          g ∘ p2 ∘ j ≡˘⟨ extendl pb.square ⟩
+          f ∘ p1 ∘ j ∎
 
-      r : p1 ∘ h ≡ p1 ∘ j
-      r = mono _ _ q
+        r : p1 ∘ h ≡ p1 ∘ j
+        r = mono _ _ q
 
-      eq : h ≡ j
-      eq = pb.unique₂ {p = extendl pb.square} r p refl refl
+        eq : h ≡ j
+        eq = pb.unique₂ {p = extendl pb.square} r p refl refl
 ```
 
 A similar result holds for isomorphisms.
