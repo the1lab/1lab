@@ -1,6 +1,5 @@
 <!--
 ```agda
--- Some reference taken from https://arxiv.org/pdf/1903.01152
 open import Cat.Displayed.Instances.DisplayedFunctor hiding (_◆'_)
 open import Cat.Displayed.Instances.TotalProduct
 open import Cat.Displayed.Functor.Naturality
