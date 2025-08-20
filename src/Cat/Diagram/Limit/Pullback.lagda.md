@@ -54,11 +54,11 @@ Pullback→Terminal-cone {f = f} {g} pb = lim where
   module pb = Pullback pb
   lim : Terminal (Cones _)
   lim .top = Square→Cone _ _ pb.square
-  lim .has⊤ cone .centre .hom      = pb.universal (cone .commutes (lift tt) ∙ sym (cone .commutes {cs-b} {cs-c} (lift tt)))
-  lim .has⊤ cone .centre .commutes cs-a = pb.p₁∘universal
-  lim .has⊤ cone .centre .commutes cs-b = pb.p₂∘universal
-  lim .has⊤ cone .centre .commutes cs-c = pullr pb.p₁∘universal ∙ cone .commutes (lift tt)
-  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .commutes _) (otherhom .commutes _)))
+  lim .has⊤ cone .centre .map      = pb.universal (cone .commutes (lift tt) ∙ sym (cone .commutes {cs-b} {cs-c} (lift tt)))
+  lim .has⊤ cone .centre .com cs-a = pb.p₁∘universal
+  lim .has⊤ cone .centre .com cs-b = pb.p₂∘universal
+  lim .has⊤ cone .centre .com cs-c = pullr pb.p₁∘universal ∙ cone .commutes (lift tt)
+  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .com _) (otherhom .com _)))
 
 Terminal-cone→Pullback
   : ∀ {x y}
@@ -72,17 +72,17 @@ Terminal-cone→Pullback {F = F} lim = pb where
   pb .p₁ = lim.top .ψ cs-a
   pb .p₂ = lim.top .ψ cs-b
   pb .has-is-pb .square = lim.top .commutes _ ∙ sym (lim.top .commutes {cs-b} {cs-c} _)
-  pb .has-is-pb .universal x = lim.has⊤ (Square→Cone _ _ x) .centre .hom
-  pb .has-is-pb .p₁∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .commutes cs-a
-  pb .has-is-pb .p₂∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .commutes cs-b
+  pb .has-is-pb .universal x = lim.has⊤ (Square→Cone _ _ x) .centre .map
+  pb .has-is-pb .p₁∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-a
+  pb .has-is-pb .p₂∘universal {p = p} = lim.has⊤ (Square→Cone _ _ p) .centre .com cs-b
   pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
-    sym (ap hom (lim.has⊤ (Square→Cone _ _ p) .paths other))
+    sym (ap map (lim.has⊤ (Square→Cone _ _ p) .paths other))
     where
       other : Cone-hom _ _ _
-      other .hom = _
-      other .commutes cs-a = a
-      other .commutes cs-b = b
-      other .commutes cs-c =
+      other .map = _
+      other .com cs-a = a
+      other .com cs-b = b
+      other .com cs-c =
         lim.top .ψ cs-c ∘ lim'                         ≡˘⟨ pulll (lim.top .commutes _) ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (_ ∘_) a ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ p₁'                    ∎

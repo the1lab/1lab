@@ -24,9 +24,8 @@ module Cat.Displayed.Instances.DisplayedFamilies
 
 <!--
 ```agda
-open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Reasoning E
+open Cat.Reasoning B
 open is-fibred-functor
 open Functor
 
@@ -93,9 +92,9 @@ takes the domain of a morphism in the arrow category (which **is** the
 
 ```agda
 Dom : Functor (∫ (Slices B)) B
-Dom .F₀ f = f .snd .domain
-Dom .F₁ sq = sq .snd .to
-Dom .F-id = refl
+Dom .F₀ f    = f .snd .dom
+Dom .F₁ sq   = sq .snd .map
+Dom .F-id    = refl
 Dom .F-∘ _ _ = refl
 
 Disp-family : Displayed B (o ⊔ ℓ ⊔ o') (ℓ ⊔ ℓ')
@@ -112,14 +111,14 @@ described above.
 
 ```agda
 fam-over : ∀ {x} → (a : Ob) → Hom a x → Ob[ a ] → Disp-family.Ob[ x ]
-fam-over a f a' .fst .domain = a
+fam-over a f a' .fst .dom = a
 fam-over a f a' .fst .map = f
 fam-over a f a' .snd = a'
 
 module Fam-over {x} (P : Disp-family.Ob[ x ]) where
 
   tot : Ob
-  tot = P .fst .domain
+  tot = P .fst .dom
 
   fam : Hom tot x
   fam = P .fst .map
@@ -143,10 +142,10 @@ module Fam-over-hom
   where
 
   map-tot : Hom (tot P) (tot Q)
-  map-tot = fᵢ .fst .to
+  map-tot = fᵢ .fst .map
 
   fam-square : u ∘ fam P ≡ fam Q ∘ map-tot
-  fam-square = fᵢ .fst .commute
+  fam-square = sym (fᵢ .fst .com)
 
   map-tot' : Hom[ map-tot ] (tot' P) (tot' Q)
   map-tot' = fᵢ .snd
@@ -159,8 +158,8 @@ fam-over-hom
   → u ∘ fam P ≡ fam Q ∘ f
   → Hom[ f ] (tot' P) (tot' Q)
   → Disp-family.Hom[ u ] P Q
-fam-over-hom f p f' .fst .to = f
-fam-over-hom f p f' .fst .commute = p
+fam-over-hom f p f' .fst .map = f
+fam-over-hom f p f' .fst .com = sym p
 fam-over-hom f p f' .snd = f'
 ```
 
@@ -193,9 +192,9 @@ ConstDispFam .Vertical-functor.F₀' {x = x} x' =
 ConstDispFam .Vertical-functor.F₁' {f = f} f' =
   fam-over-hom f id-comm f'
 ConstDispFam .Vertical-functor.F-id' =
-  Slice-pathp B refl refl ,ₚ sym (transport-refl _)
+  Slice-pathp refl ,ₚ sym (transport-refl _)
 ConstDispFam .Vertical-functor.F-∘' =
-  Slice-pathp B refl refl ,ₚ sym (transport-refl _)
+  Slice-pathp refl ,ₚ sym (transport-refl _)
 ```
 
 This functor is in fact fibred, though the proof is somewhat involved!
@@ -246,12 +245,12 @@ Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
 
 ```agda
   cart .commutes {x} {P} m h' =
-    Σ-path (Slice-pathp B _ (coh m h')) $ from-pathp $ cast[] $
+    Σ-pathp (Slice-pathp (coh m h')) $ cast[] $
       hom[] (f' ∘' map-tot' (cart .universal m h')) ≡[]⟨ ap hom[] (f'.commutes _ _) ⟩
       hom[] (hom[] (map-tot' h'))                   ≡[ coh m h' ]⟨ to-pathp⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
       map-tot' h' ∎
   cart .unique {x} {P} {m = m} {h' = h'} m' p =
-    Σ-path (Slice-pathp B refl (sym (fam-square m' ∙ idl _)))
+    Σ-path (Slice-pathp (sym (fam-square m' ∙ idl _)))
     $ f'.unique _ $ from-pathp⁻ $ cast[] {q = coh m h'} $
       f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
       hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩

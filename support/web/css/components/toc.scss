@@ -12,7 +12,7 @@ aside#toc {
   position: sticky;
 
   box-sizing: border-box;
-  top:    $page-padding;
+  top:        $page-padding;
 
   height: calc(100vh - (2 * #{$page-padding}));
 
@@ -20,6 +20,9 @@ aside#toc {
   gap: 0.5rem;
   max-width: 30ch;
   margin-inline-start: auto;
+
+  // There's a mathpar div in the sidebar to align the favicon
+  --parskip: 0;
 
   z-index: 1;
 

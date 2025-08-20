@@ -40,15 +40,15 @@ of [[products]] in $\cC$.
   fam-total-product
     : ∀ {I J : Set κ} {Xᵢ : ⌞ I ⌟ → C.Ob} {Yⱼ : ⌞ J ⌟ → C.Ob}
     → (∀ i j → Product C (Xᵢ i) (Yⱼ j))
-    → Total-product (Family C) (Sets-products I J) Xᵢ Yⱼ
+    → ProductP (Family C) (Sets-products I J) Xᵢ Yⱼ
 ```
 
 All of the relevant morphisms come directly from products in $\cC$.
 
 ```agda
   fam-total-product {I = I} {J = J} {Xᵢ = Xᵢ} {Yⱼ = Yⱼ} C-prods = total-prod where
-    open is-total-product
-    open Total-product
+    open is-product-over
+    open ProductP
 
     module _ i j where
       open Product (C-prods i j) renaming (apex to Xᵢ×Yⱼ) using () public
@@ -56,11 +56,11 @@ All of the relevant morphisms come directly from products in $\cC$.
     module _ {i j} where
       open Product (C-prods i j) hiding (apex) public
 
-    total-prod : Total-product (Family C) (Sets-products I J) Xᵢ Yⱼ
+    total-prod : ProductP (Family C) (Sets-products I J) Xᵢ Yⱼ
     total-prod .apex' (i , j) = Xᵢ×Yⱼ i j
     total-prod .π₁' (i , j) = π₁
     total-prod .π₂' (i , j) = π₂
-    total-prod .has-is-total-product .⟨_,_⟩' fₖ gₖ k = ⟨ fₖ k , gₖ k ⟩
+    total-prod .has-is-product' .⟨_,_⟩' fₖ gₖ k = ⟨ fₖ k , gₖ k ⟩
 ```
 
 The $\beta$ laws are easy applications of function extensionality, but
@@ -68,9 +68,9 @@ the $\eta$ law requires a bit of cubical-fu to get the types to line
 up.
 
 ```agda
-    total-prod .has-is-total-product .π₁∘⟨⟩' = ext (λ k → π₁∘⟨⟩)
-    total-prod .has-is-total-product .π₂∘⟨⟩' = ext (λ k → π₂∘⟨⟩)
-    total-prod .has-is-total-product .unique' {a' = Zₖ} {p1 = p1} {p2 = p2} {other' = other'} p q i k =
+    total-prod .has-is-product' .π₁∘⟨⟩' = ext (λ k → π₁∘⟨⟩)
+    total-prod .has-is-product' .π₂∘⟨⟩' = ext (λ k → π₂∘⟨⟩)
+    total-prod .has-is-product' .unique' {a' = Zₖ} {p1 = p1} {p2 = p2} {other' = other'} p q i k =
       unique
         (coe0→i (λ i → π₁ C.∘ other-line k i ≡ p i k) i refl)
         (coe0→i (λ i → π₂ C.∘ other-line k i ≡ q i k) i refl)

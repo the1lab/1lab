@@ -95,7 +95,7 @@ export class Hover {
     }
 
     if (!this.ephemeral) {
-      el.classList.remove(`popup-fade-out-${this.fadeDirection}`);
+      el.classList.remove('popup-fade-out-up', 'popup-fade-out-down');
       el.classList.add(`popup-fade-in-${this.fadeDirection}`);
     }
 
@@ -142,7 +142,7 @@ export class Hover {
     delete this.shown;
 
     if (!this.ephemeral) {
-      el.classList.remove(`popup-fade-in-${this.fadeDirection}`);
+      el.classList.remove('popup-fade-in-up', 'popup-fade-in-down');
       el.classList.add(`popup-fade-out-${this.fadeDirection}`);
     }
 

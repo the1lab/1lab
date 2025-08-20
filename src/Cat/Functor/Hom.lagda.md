@@ -51,7 +51,7 @@ Hom[ x ,-] .F-id = funext (λ f → idl f)
 Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
 ```
 
-## The Yoneda embedding {defines="yoneda-embedding"}
+## The Yoneda embedding
 
 Abstractly and nonsensically, one could say that the Yoneda embedding
 `よ`{.Agda} is the [exponential transpose] of `flipping`{.Agda
@@ -61,6 +61,17 @@ computational efficiency we build up the functor explicitly.
 
 [exponential transpose]: Cat.Functor.Closed.html
 [bifunctor]: Cat.Functor.Bifunctor.html
+
+:::{.definition .commented-out #yoneda-embedding}
+The **Yoneda embedding** $\yo : \cC \to \psh(\cC)$ from a
+[[precategory]] $\cC$ into its category of [[presheaves]] $\psh(\cC)$ is
+the functor
+$$
+\yo(c) = \cC(-, c)
+$$
+which assigns to each object the partially applied $\hom$-functor of
+morphisms into that object.
+:::
 
 ```agda
 module _ where private

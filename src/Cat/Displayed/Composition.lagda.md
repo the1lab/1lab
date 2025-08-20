@@ -112,7 +112,6 @@ this is exactly how we construct the liftings.
 
     module ℱ where
       open Cartesian-fibration ℱ ℱ-fib public
-      open Displayed ℱ public
       open DR ℱ public
 ```
 -->

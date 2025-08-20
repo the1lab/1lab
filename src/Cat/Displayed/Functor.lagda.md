@@ -63,12 +63,8 @@ module
     module F = FR F
     module A = CR A
     module B = CR B
-    module ℰ where
-      open Displayed ℰ public
-      open DR ℰ public
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℰ = DR ℰ
+    module ℱ = DR ℱ
 ```
 -->
 
@@ -229,11 +225,9 @@ module
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
-    module ℋ where
-      open Displayed ℋ public
-      open DR ℋ public
     module F = Functor F
     module G = Functor G
+    module ℋ = DR ℋ
 
     open DR ℋ
     open Displayed-functor
@@ -395,12 +389,8 @@ module
   where
   private
     module B = Precategory B
-    module ℰ where
-      open Displayed ℰ public
-      open DR ℰ public
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℰ = DR ℰ
+    module ℱ = DR ℱ
 
     module ℰ↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
     module ℱ↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
@@ -593,9 +583,7 @@ module _
   private
     open CR B
     module ℰ = Displayed ℰ
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℱ = DR ℱ
     module ℱ↓ {x} = CR (Fibre ℱ x)
 
     open Displayed-functor

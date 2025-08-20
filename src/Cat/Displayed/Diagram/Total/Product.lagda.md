@@ -4,11 +4,14 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.Diagram.Total.Terminal
 open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
+open import Cat.Cartesian
 open import Cat.Prelude
 
+import Cat.Displayed.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -22,31 +25,28 @@ open ∫Hom
 ```
 -->
 
-# Total Products
+# Total products
 
 <!--
 ```agda
-module _
-  {ob ℓb oe ℓe} {B : Precategory ob ℓb}
-  (E : Displayed B oe ℓe)
-  where
+module _ {ob ℓb oe ℓe} {B : Precategory ob ℓb} (E : Displayed B oe ℓe) where
+  open Cat.Displayed.Reasoning E
   open Cat.Reasoning B
-  open Displayed E
 
   private variable
-    a x y p : Ob
+    a x y p     : Ob
     a' x' y' p' : Ob[ a ]
-    f g other : Hom a x
-    f' g' : Hom[ f ] a' x'
+    f g other   : Hom a x
+    f' g'       : Hom[ f ] a' x'
 ```
 -->
 
-:::{.definition #total-product-diagram}
-Let $\cE \liesover \cB$ be a [[displayed category]], and
-$P, \pi_1 : P \to X, \pi_2 : P \to Y$ be a [[product diagram|product]] in $\cB$.
-A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
+:::{.definition #total-product-diagram alias="total-product"}
+Let $\cE \liesover \cB$ be a [[displayed category]], and $X \xot{\pi_1}
+P \xto{\pi_2} Y$ be a [[product diagram|product]] in $\cB$. A **total
+diagram** in $\cE$ is a diagram
 
-~~~{.quiver}
+~~~{.quiver .attach-around}
 \begin{tikzcd}
   {P'} && {Y'} \\
   & {X'} \\
@@ -62,19 +62,17 @@ A diagram $P', \pi_{1}', \pi_{2}'$ of the shape
 \end{tikzcd}
 ~~~
 
-is a **total product diagram** if it satisfies a displayed version of the
-universal property of the product.
-
+satisfying a displayed version of the universal property of products.
+:::
 
 ```agda
-  record is-total-product
-      {π₁ : Hom p x} {π₂ : Hom p y}
-      (prod : is-product B π₁ π₂)
-      (π₁' : Hom[ π₁ ] p' x') (π₂' : Hom[ π₂ ] p' y')
-      : Type (ob ⊔ ℓb ⊔ oe ⊔ ℓe)
-      where
-      no-eta-equality
-      open is-product prod
+  record is-product-over
+      {π₁ : Hom p x} {π₂ : Hom p y} (prod : is-product B π₁ π₂)
+      (π₁' : Hom[ π₁ ] p' x') (π₂' : Hom[ π₂ ] p' y') : Type (ob ⊔ ℓb ⊔ oe ⊔ ℓe)
+    where
+
+    no-eta-equality
+    open is-product prod
 ```
 
 More explicitly, suppose that we had a triple $(A', f', g')$ displayed
@@ -87,7 +85,7 @@ over $(A, f, g)$, as in the following diagram.
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
   && P && Y \\
   &&& X
-  \arrow["{g'}", color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow["{g'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
   \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
   \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
   \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
@@ -102,8 +100,8 @@ over $(A, f, g)$, as in the following diagram.
 \end{tikzcd}
 ~~~
 
-$P$ is a product, so there exists a unique $\langle f, g \rangle : A \to P$
-that commutes with $\pi_1$ and $\pi_2$.
+$P$ is a product, so there exists a unique $\langle f, g \rangle : A \to
+P$ that commutes with $\pi_1$ and $\pi_2$.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -112,7 +110,7 @@ that commutes with $\pi_1$ and $\pi_2$.
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} &&& {X'} \\
   && P && Y \\
   &&& X
-  \arrow["{g'}", color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
+  \arrow["{g'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=-12pt}, from=1-1, to=2-5]
   \arrow[color={rgb,255:red,92;green,92;blue,214}, lies over, from=1-1, to=3-1]
   \arrow["{f'}"{description}, color={rgb,255:red,92;green,92;blue,214}, curve={height=18pt}, from=1-1, to=3-4]
   \arrow["{\pi_2'}"{description, pos=0.4}, from=2-3, to=2-5]
@@ -128,61 +126,82 @@ that commutes with $\pi_1$ and $\pi_2$.
 \end{tikzcd}
 ~~~
 
-This leaves a conspicuous gap in the upstairs portion of the diagram between
-$A'$ and $P'$; $(P', \pi_1', \pi_2')$ is a total product precisely when we
-have a unique lift of $\langle f, g \rangle$ that commutes with $\pi_1'$
-and $\pi_2'$.
-
+This leaves a conspicuous gap in the upstairs portion of the diagram
+between $A'$ and $P'$; $(P', \pi_1', \pi_2')$ is a total product
+precisely when we have a unique lift of $\langle f, g \rangle$ that
+commutes with $\pi_1'$ and $\pi_2'$.
 
 ```agda
-      field
-        ⟨_,_⟩'
-          : (f' : Hom[ f ] a' x') (g' : Hom[ g ] a' y')
-          → Hom[ ⟨ f , g ⟩ ] a' p'
-        π₁∘⟨⟩'
-          : π₁' ∘' ⟨ f' , g' ⟩' ≡[ π₁∘⟨⟩ ] f'
-        π₂∘⟨⟩'
-          : π₂' ∘' ⟨ f' , g' ⟩' ≡[ π₂∘⟨⟩ ] g'
-        unique'
-          : {p1 : π₁ ∘ other ≡ f} {p2 : π₂ ∘ other ≡ g}
-          → {other' : Hom[ other ] a' p'}
-          → (p1' : (π₁' ∘' other') ≡[ p1 ] f')
-          → (p2' : (π₂' ∘' other') ≡[ p2 ] g')
-          → other' ≡[ unique p1 p2 ] ⟨ f' , g' ⟩'
+    field
+      ⟨_,_⟩'
+        : (f' : Hom[ f ] a' x') (g' : Hom[ g ] a' y')
+        → Hom[ ⟨ f , g ⟩ ] a' p'
+
+      π₁∘⟨⟩' : π₁' ∘' ⟨ f' , g' ⟩' ≡[ π₁∘⟨⟩ ] f'
+      π₂∘⟨⟩' : π₂' ∘' ⟨ f' , g' ⟩' ≡[ π₂∘⟨⟩ ] g'
+
+      unique'
+        : {p1 : π₁ ∘ other ≡ f} {p2 : π₂ ∘ other ≡ g}
+        → {other' : Hom[ other ] a' p'}
+        → (p1' : (π₁' ∘' other') ≡[ p1 ] f')
+        → (p2' : (π₂' ∘' other') ≡[ p2 ] g')
+        → other' ≡[ unique p1 p2 ] ⟨ f' , g' ⟩'
 ```
-:::
 
-:::{.definition #total-product}
+<!--
+```agda
+    opaque
+      ⟨_,_⟩ₚ
+        : (f' : Hom[ π₁ ∘ f ] a' x') (g' : Hom[ π₂ ∘ f ] a' y')
+        → Hom[ f ] a' p'
+      ⟨ f' , g' ⟩ₚ = hom[ sym (unique refl refl) ] ⟨ f' , g' ⟩'
+
+      abstract
+        π₁∘⟨⟩ₚ : π₁' ∘' ⟨ f' , g' ⟩ₚ ≡ f'
+        π₁∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp π₁∘⟨⟩'
+
+        π₂∘⟨⟩ₚ : π₂' ∘' ⟨ f' , g' ⟩ₚ ≡ g'
+        π₂∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp π₂∘⟨⟩'
+```
+-->
+
 A **total product** of $A'$ and $B'$ in $\cE$ consists of a choice
-of a total product diagram.
-:::
-
+of a [[total product diagram]].
 
 ```agda
-  record Total-product
-    {x y}
-    (prod : Product B x y)
-    (x' : Ob[ x ]) (y' : Ob[ y ])
-    : Type (ob ⊔ ℓb ⊔ oe ⊔ ℓe) where
+  record
+    ProductP {x y} (prod : Product B x y) (x' : Ob[ x ]) (y' : Ob[ y ])
+      : Type (ob ⊔ ℓb ⊔ oe ⊔ ℓe) where
+
     no-eta-equality
     open Product prod
+
     field
       apex' : Ob[ apex ]
-      π₁' : Hom[ π₁ ] apex' x'
-      π₂' : Hom[ π₂ ] apex' y'
-      has-is-total-product : is-total-product has-is-product π₁' π₂'
+      π₁'   : Hom[ π₁ ] apex' x'
+      π₂'   : Hom[ π₂ ] apex' y'
+      has-is-product'
+        : is-product-over has-is-product π₁' π₂'
 
-    open is-total-product has-is-total-product
+    open is-product-over has-is-product' public
 ```
+
+<!--
+```agda
+has-products-over
+  : ∀ {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  → Displayed B o' ℓ'
+  → has-products B
+  → Type _
+has-products-over {B = B} E prod = ∀ {a b : ⌞ B ⌟} (x : E ʻ a) (y : E ʻ b) → ProductP E (prod a b) x y
+```
+-->
 
 ## Total products and total categories
 
 <!--
 ```agda
-module _
-  {ob ℓb oe ℓe} {B : Precategory ob ℓb}
-  {E : Displayed B oe ℓe}
-  where
+module _ {ob ℓb oe ℓe} {B : Precategory ob ℓb} {E : Displayed B oe ℓe} where
   open Cat.Reasoning B
   open Displayed E
 
@@ -198,7 +217,7 @@ to a product diagram in the [[total category]] of $\cE$.
     : ∀ {x y p} {x' : Ob[ x ]} {y' : Ob[ y ]} {p' : Ob[ p ]}
     → {π₁ : ∫E.Hom (p , p') (x , x')} {π₂ : ∫E.Hom (p , p') (y , y')}
     → {prod : is-product B (π₁ .fst) (π₂ .fst)}
-    → is-total-product E prod (π₁ .snd) (π₂ .snd)
+    → is-product-over E prod (π₁ .snd) (π₂ .snd)
     → is-product (∫ E) π₁ π₂
 ```
 
@@ -207,8 +226,8 @@ to a product diagram in the [[total category]] of $\cE$.
 </summary>
 ```agda
   is-total-product→total-is-product {π₁ = π₁} {π₂ = π₂} {prod = prod} total-prod = ∫prod where
+    open is-product-over total-prod
     open is-product prod
-    open is-total-product total-prod
 
     ∫prod : is-product (∫ E) π₁ π₂
     ∫prod .is-product.⟨_,_⟩ f g =
@@ -243,3 +262,33 @@ The total category is equivalent to the [[terminal category]], and thus has
 products. However, the base category does not have products, as the uniqueness
 condition fails!
 :::
+
+<!--
+```agda
+module
+  Binary-products'
+    {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} {fp : has-products B}
+    (fp' : has-products-over E fp)
+  where
+
+  open Precategory B
+
+  module _ {a b : Ob} (a' : E ʻ a) (b' : E ʻ b) where open ProductP (fp' a' b') renaming (apex' to _⊗₀'_) using () public
+  module _ {a b : Ob} {a' : E ʻ a} {b' : E ʻ b} where open ProductP (fp' a' b') renaming (unique' to ⟨⟩'-unique) hiding (apex') public
+
+record
+  Cartesian-over
+    {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') (cart : Cartesian-category B)
+    : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
+  where
+
+  private module cart = Cartesian-category cart
+
+  field
+    terminal' : TerminalP E cart.terminal
+    products' : has-products-over E cart.products
+
+  open TerminalP terminal' hiding (has⊤') public
+  open Binary-products' products' public
+```
+-->

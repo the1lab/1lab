@@ -5,6 +5,7 @@ open import Cat.Instances.Assemblies
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Cartesian
 open import Cat.Prelude
 
 open import Data.Partial.Total
@@ -214,4 +215,7 @@ Assemblies-finite-limits = with-equalisers _
   Assemblies-terminal
   Assemblies-products
   Assemblies-equalisers
+
+Assemblies-cartesian : Cartesian-category (Assemblies 𝔸 ℓ)
+Assemblies-cartesian = record { Finitely-complete Assemblies-finite-limits }
 ```

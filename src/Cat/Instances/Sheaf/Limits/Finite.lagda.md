@@ -11,6 +11,7 @@ open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Cartesian
 open import Cat.Site.Base
 open import Cat.Prelude
 ```
@@ -94,3 +95,12 @@ Sh[]-terminal .top .snd .whole _ _     = lift tt
 Sh[]-terminal .top .snd .glues _ _ _ _ = refl
 Sh[]-terminal .top .snd .separate _ _  = refl
 ```
+
+<!--
+```agda
+open Cartesian-category using (products ; terminal)
+Sh[]-cartesian : Cartesian-category (Sheaves J ℓ)
+Sh[]-cartesian .products = Sh[]-products
+Sh[]-cartesian .terminal = Sh[]-terminal
+```
+-->

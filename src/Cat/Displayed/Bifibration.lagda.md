@@ -26,14 +26,13 @@ module Cat.Displayed.Bifibration
 
 <!--
 ```agda
-open Cat.Displayed.Cocartesian ℰ
 open Cat.Displayed.Cocartesian.Weak ℰ
-open Cat.Displayed.Cartesian ℰ
 open Cat.Displayed.Cartesian.Weak ℰ
+open Cat.Displayed.Cocartesian ℰ
+open Cat.Displayed.Cartesian ℰ
 open Cat.Displayed.Reasoning ℰ
 
 open Cat.Reasoning ℬ
-open Displayed ℰ
 open Functor
 open _⊣_
 open _=>_

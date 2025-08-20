@@ -10,17 +10,18 @@ import Cat.Displayed.Solver as Ds
 
 ```agda
 module Cat.Displayed.Fibre
-  {o ℓ o' ℓ'} {B : Precategory o ℓ}
-  (E : Displayed B o' ℓ')
-  where
-
-open Precategory B
-open Displayed E
-open Ds
-open Dr E
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
 ```
 
-## Fibre categories {defines="fibre-category fibre-categories"}
+<!--
+```agda
+open Precategory B
+open Dr E
+open Ds
+```
+-->
+
+# Fibre categories {defines="fibre-category fibre-categories"}
 
 A [[displayed category]] can be thought of as representing data of a
 "family of categories"^[Though note that unless the displayed category

@@ -43,7 +43,7 @@ Sliced F X .F₀ ob = cut (F .F₁ (ob .map))
 Sliced F X .F₁ sh = sh' where
   sh' : /-Hom _ _
   sh' .map = F .F₁ (sh .map)
-  sh' .commutes = sym (F .F-∘ _ _) ∙ ap (F .F₁) (sh .commutes)
+  sh' .com = sym (F .F-∘ _ _) ∙ ap (F .F₁) (sh .com)
 Sliced F X .F-id = ext (F .F-id)
 Sliced F X .F-∘ f g = ext (F .F-∘ _ _)
 ```
@@ -76,8 +76,8 @@ the sliced functors are also [[fully faithful]].
   Sliced-ff eqv = is-iso→is-equiv λ where
     .is-iso.from sh → record
       { map = equiv→inverse eqv (sh .map)
-      ; commutes = ap fst $ is-contr→is-prop (eqv .is-eqv _)
-        (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→counit eqv _) ∙ sh .commutes) (_ , refl)
+      ; com = ap fst $ is-contr→is-prop (eqv .is-eqv _)
+        (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→counit eqv _) ∙ sh .com) (_ , refl)
       }
     .is-iso.rinv x → ext (equiv→counit eqv _)
     .is-iso.linv x → ext (equiv→unit eqv _)
@@ -151,7 +151,7 @@ Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj' where
   adj' .unit .is-natural x y f = ext (adj.unit.is-natural _ _ _)
 
   adj' .counit .η x .map         = adj.ε _
-  adj' .counit .η x .commutes    = sym (adj.counit.is-natural _ _ _)
+  adj' .counit .η x .com         = sym (adj.counit.is-natural _ _ _)
   adj' .counit .is-natural x y f = ext (adj.counit.is-natural _ _ _)
 
   adj' .zig = ext adj.zig
@@ -164,7 +164,7 @@ The hard part is proving that the adjunction unit restricts to a map in
 slice categories, which we can compute:
 
 ```agda
-  adj' .unit .η x .commutes =
+  adj' .unit .η x .com =
     R.₁ (adj.ε _ D.∘ L.₁ (x .map)) C.∘ adj.η _         ≡⟨ C.pushl (R.F-∘ _ _) ⟩
     R.₁ (adj.ε _) C.∘ R.₁ (L.₁ (x .map)) C.∘ adj.η _   ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
     R.₁ (adj.ε _) C.∘ adj.η _ C.∘ x .map               ≡⟨ C.cancell adj.zag ⟩

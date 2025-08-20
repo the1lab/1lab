@@ -54,7 +54,7 @@ module
 ```agda
   dense-cocone : ∀ d → F F∘ Dom F (!Const d) => Const d
   dense-cocone d .η x = x .map
-  dense-cocone d .is-natural _ _ f = f .sq
+  dense-cocone d .is-natural _ _ f = f .com
 
   is-dense : Type _
   is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) d (dense-cocone d)
@@ -75,7 +75,7 @@ the induced [nerve] functor is fully faithful.
     inv nt =
       is-dense.universal _
         (λ j → nt .η _ (j .map))
-        λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .sq ∙ D.idl _)
+        λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .com ∙ D.idl _)
 
     invr : ∀ {x y} (f : Nerve F .F₀ x => Nerve F .F₀ y) → Nerve F .F₁ (inv f) ≡ f
     invr f = ext λ x i → is-dense.factors _ {j = ↓obj i} _ _
