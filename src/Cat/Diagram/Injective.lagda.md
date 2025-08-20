@@ -275,7 +275,7 @@ The core of the problem is that $\mathrm{name}(m)$ classifies generalized
 elements of $Y$ that lie within $m$, but we need to classify generalized
 elements of $Y$ that lie within $i$ instead!
 
-We can this by pulling back $i$ along $\mathrm{true}$ to get a subobject $[i]$ of
+We can do this by pulling back $i$ along $\mathrm{true}$ to get a subobject $[i]$ of
 $X$, which we can then compose with $m$ to get a subobject of $Y$.
 
 ~~~{.quiver}

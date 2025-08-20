@@ -179,7 +179,7 @@ We also note that $f$ is the pullback of itself along $\id$.
   is-pullback-along-id .has-is-pb = rotate-pullback id-is-pullback
 ```
 
-If some $m : X \embeds Y$ is monic, then every $f : A \to X$ is the pullback
+If some $m : X \mono Y$ is monic, then every $f : A \to X$ is the pullback
 of $m \circ f$ along $m$.
 
 ```agda
