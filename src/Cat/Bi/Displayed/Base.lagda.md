@@ -68,9 +68,10 @@ module _ where
       open DR (H' A' D')
 ```
 -->
-## Displayed bicategories
+# Displayed bicategories {defines=displayed-bicategory}
+
 Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
-displayed *bi*category $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
+**displayed bicategory** $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
 
 ```agda
 record Bidisplayed {o oh ℓh} (B : Prebicategory o oh ℓh) o' oh' ℓh' : Type (lsuc (o' ⊔ oh' ⊔ ℓh') ⊔ o ⊔ oh ⊔ ℓh) where
