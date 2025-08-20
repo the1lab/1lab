@@ -29,15 +29,10 @@ module _
     module B = Precategory B
     module C = Precategory C
     module DE where
-      open Displayed Disp[ D , E ] public
       open DR Disp[ D , E ] public 
       open DM Disp[ D , E ] public
-    module D where
-      open Displayed D public
-      open DR D public
-    module E where
-      open Displayed E public
-      open DR E public
+    module D = DR D public
+    module E = DR E public
     
   open Functor
   open _=>_

@@ -504,9 +504,7 @@ module _
     module A = Precategory A
     module B = Precategory B
     module D = Displayed D
-    module E where
-      open Displayed E public
-      open DR E public
+    module E = DR E
 
   open _=>_
   open _=[_]=>_

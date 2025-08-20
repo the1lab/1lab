@@ -38,9 +38,7 @@ module _
     module A = CR A
     module B = CR B
     module D = Displayed D
-    module E where
-      open Displayed E public
-      open DR E public
+    module E = DR E
 ```
 -->
 ```agda
@@ -69,9 +67,7 @@ module _
   where
   private
     module B' = Displayed B'
-    module C' where
-      open Displayed C' public
-      open DR C' public
+    module C' = DR C'
 ```
 -->
 
