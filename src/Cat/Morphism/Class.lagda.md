@@ -99,7 +99,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-Finally, we define classes of morphisms for monos, epis, and isos.
+We also take the time define classes of morphisms for monos, epis, and isos.
 
 ```agda
   Monos : Arrows C (o ⊔ ℓ)
@@ -113,4 +113,12 @@ Finally, we define classes of morphisms for monos, epis, and isos.
   Isos : Arrows C ℓ
   Isos .arrows = is-invertible
   Isos .is-tr = hlevel 1
+```
+
+We can take intersections of morphism classes.
+
+```agda
+  _∩ₐ_ : ∀ {κ κ'} → Arrows C κ → Arrows C κ' → Arrows C (κ ⊔ κ')
+  (S ∩ₐ T) .arrows f = f ∈ S × f ∈ T
+  (S ∩ₐ T) .is-tr = hlevel 1
 ```
