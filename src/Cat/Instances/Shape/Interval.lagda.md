@@ -114,24 +114,24 @@ private variable
 -->
 
 ```agda
-Arrows : Precategory o ℓ → Type (o ⊔ ℓ)
-Arrows C = Σ[ A ∈ C ] Σ[ B ∈ C ] (C.Hom A B)
+Arrow : Precategory o ℓ → Type (o ⊔ ℓ)
+Arrow C = Σ[ A ∈ C ] Σ[ B ∈ C ] (C.Hom A B)
   where module C = Precategory C
 ```
 
 <!--
 ```agda
 module _ (C : Precategory o ℓ) where
-  Hom→Arrow : {a b : Ob C} → Hom C a b → Arrows C
+  Hom→Arrow : {a b : Ob C} → Hom C a b → Arrow C
   Hom→Arrow f = _ , _ , f
 
-  Arrows-path
-    : {a b : Arrows C}
+  Arrow-path
+    : {a b : Arrow C}
     → (p : a .fst ≡ b .fst)
     → (q : a .snd .fst ≡ b .snd .fst)
     → PathP (λ i → Hom C (p i) (q i)) (a .snd .snd) (b .snd .snd)
     → a ≡ b
-  Arrows-path p q r i = p i , q i , r i
+  Arrow-path p q r i = p i , q i , r i
 ```
 -->
 
@@ -143,7 +143,7 @@ arrows $\Arr{\cC}$, as defined above, and the space of functors $[
 module _ {C : Precategory o ℓ} where
   import Cat.Reasoning C as C
 
-  arrow→functor : Arrows C → Functor 0≤1 C
+  arrow→functor : Arrow C → Functor 0≤1 C
   arrow→functor (A , B , f) = fun where
     fun : Functor _ _
     fun .F₀ false = A
@@ -170,7 +170,7 @@ the non-trivial arrow $0 \le 1$ maps to, and the domain/codomain can be
 inferred by Agda.
 
 ```agda
-  functor→arrow : Functor 0≤1 C → Arrows C
+  functor→arrow : Functor 0≤1 C → Arrow C
   functor→arrow F = _ , _ , F .F₁ {false} {true} _
 ```
 
