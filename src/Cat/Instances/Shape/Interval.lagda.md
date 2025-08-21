@@ -11,7 +11,10 @@ open import Data.Bool.Base
 open import Order.Base
 open import Order.Cat
 
+import Cat.Reasoning as Cat
+
 import Order.Reasoning as Poset
+
 ```
 -->
 
@@ -194,10 +197,66 @@ it must preserve identity arrows. The converse direction (going functor
     linv x = refl
 ```
 
-Correspondingly, we _define_ the arrow category $\Arr{\cC}$ as the
-functor category $[ \intcat, \cC ]$.
+Correspondingly, we could _define_ the arrow category $\Arr{\cC}$ as the
+functor category $[ \intcat, \cC ]$, but we prefer a definition in
+components for usability reasons.
+
+<!--
+```agda
+module _ {o ℓ} (C : Precategory o ℓ) where
+  private
+    module C = Precategory C
+    variable a b x y : ⌞ C ⌟
+```
++-->
+
+```agda
+  record Homᵃ (f : C.Hom a b) (g : C.Hom x y) : Type ℓ where
+    no-eta-equality
+
+    field
+      top : C.Hom a x
+      bot : C.Hom b y
+      com : g C.∘ top ≡ bot C.∘ f
+```
+
+<!--
+```agda
+{-# INLINE Homᵃ.constructor #-}
+private unquoteDecl eqv = declare-record-iso eqv (quote Homᵃ)
+open Homᵃ public
+
+module _ {o ℓ} {C : Precategory o ℓ} {a b x y : ⌞ C ⌟} {f : C .Hom a b} {g : C .Hom x y} where instance
+  H-Level-Homᵃ : ∀ {n} → H-Level (Homᵃ C f g) (2 + n)
+  H-Level-Homᵃ = basic-instance 2 $ Iso→is-hlevel 2 eqv (hlevel 2)
+
+  Extensional-Homᵃ
+    : ∀ {ℓr} ⦃ sab : Extensional (C .Hom a x × C .Hom b y) ℓr ⦄
+    → Extensional (Homᵃ C f g) ℓr
+  Extensional-Homᵃ ⦃ sab ⦄ =
+    injection→extensional!
+      (λ p → Iso.injective eqv (Σ-pathp (ap fst p) (Σ-pathp (ap snd p) prop!)))
+      sab
+```
+-->
 
 ```agda
 Arr : Precategory o ℓ → Precategory (o ⊔ ℓ) ℓ
-Arr C = Cat[ 0≤1 , C ]
+Arr C .Ob                          = Arrow C
+Arr C .Hom (_ , _ , f) (_ , _ , g) = Homᵃ C f g
+Arr C .Hom-set _ _ = hlevel 2
+Arr C .id  = record
+  { top = C .id
+  ; bot = C .id
+  ; com = C .idr _ ∙ sym (C .idl _)
+  }
+Arr C ._∘_ sa sb = record where
+  module C = Cat C
+
+  top = sa .top C.∘ sb .top
+  bot = sa .bot C.∘ sb .bot
+  com = C.extendl (sa .com) ∙ C.pushr (sb .com)
+Arr C .idr   f     = ext (C .idr _       ,ₚ C .idr _)
+Arr C .idl   f     = ext (C .idl _       ,ₚ C .idl _)
+Arr C .assoc f g h = ext (C .assoc _ _ _ ,ₚ C .assoc _ _ _)
 ```
