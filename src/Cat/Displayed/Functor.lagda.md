@@ -536,8 +536,10 @@ module _
   Nat'-path = Nat'-pathp refl refl _ refl refl
 ```
 -->
-We can define displayed versions of the indentity natural transformation and 
+
+We can define displayed versions of the identity natural transformation and 
 composition of natural transformations.
+
 ```agda 
   idnt' : ∀ {F : Functor A B} {F' : Displayed-functor F D E} → F' =[ idnt ]=> F'
   idnt' .η' x' = E.id'

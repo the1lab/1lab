@@ -82,6 +82,7 @@ they hold for the components of the ordered pairs.
   _×ᵀᴰ_ .Displayed.assoc' (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) =
     EC.assoc' f₁ g₁ h₁ ,ₚ ED.assoc' f₂ g₂ h₂
 ```
+
 <!--
 ```agda
 module _
@@ -103,7 +104,9 @@ module _
   open Cat.Functor.Bifunctor F
 ```
 -->
+
 Using the total product we can define displayed versions of these familiar bifunctor constructions.
+
 ```agda
   first' : ∀ {a b a' b'} {f : A.Hom a b} {x} {x' : B'.Ob[ x ]} → A'.Hom[ f ] a' b' → C'.Hom[ first f ] (F₀' (a' , x')) (F₀' (b' , x'))
   first' f' = F₁' (f' , B'.id')

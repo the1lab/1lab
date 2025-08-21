@@ -11,9 +11,11 @@ import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 ```
 -->
+
 ```agda
 module Cat.Displayed.Functor.Naturality where
 ```
+
 # Natural isomorhisms of displayed functors
 
 We define displayed versions of our functor naturality tech.
@@ -40,6 +42,7 @@ module _
   open _=[_]=>_
 ```
 -->
+
 ```agda
 
   _≅[_]ⁿ_ : {F G : Functor B C} → Displayed-functor F D E → F ≅ⁿ G → Displayed-functor G D E → Type _
@@ -92,6 +95,7 @@ module _
       ; inverses' = record { invl' = Nat'-path (mk .eta∘inv') ; invr' = Nat'-path (mk .inv∘eta') } 
       }
 ```
+
 <!--
 ```agda
   {-# INLINE to-natural-iso' #-}

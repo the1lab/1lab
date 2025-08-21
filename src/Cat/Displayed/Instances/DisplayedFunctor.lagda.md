@@ -11,6 +11,7 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning as DR
 ```
 -->
+
 ```agda
 module Cat.Displayed.Instances.DisplayedFunctor where
 ```
@@ -41,6 +42,7 @@ module _
     module E = DR E
 ```
 -->
+
 ```agda
   Disp[_,_] : Displayed (Cat[ A , B ]) _ _
   Disp[_,_] .Displayed.Ob[_] f = Displayed-functor f D E
@@ -52,6 +54,7 @@ module _
   Disp[_,_] .Displayed.idl' _ = Nat'-path λ x' → E.idl' _
   Disp[_,_] .Displayed.assoc' _ _ _ = Nat'-path λ x' → E.assoc' _ _ _
 ```
+
 <!--
 ```agda
 module _ 
@@ -84,6 +87,7 @@ First we'll define displayed horizontal composition of natural transformations.
      G' .F₁' (K' .F₁' f') ∘' G' .F₁' (β' .η' x') ∘' α' .η' (H' .F₀' x')   ∎  
     where open C'
 ```
+
 <!--
 ```agda
 module _ 

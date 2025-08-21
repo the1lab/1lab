@@ -444,15 +444,11 @@ module _ {f' : Hom[ f ] x' y'} where abstract
   id-comm-sym[] : (id' ∘' f') ≡[ id-comm-sym ] f' ∘' id'
   id-comm-sym[] = id-comm-sym'
 
-
   id2' : ∀ {a} {x : Ob[ a ]} {p : id ∘ id ≡ id} → id' {x = x} ∘' id' ≡[ p ] id'
   id2' = cast[] (idl' id')
 
   id2[] : ∀ {a} {x : Ob[ a ]} → id' {x = x} ∘' id' ≡[ id2 ] id'
   id2[] = id2'
-
-    
-
 
 assoc[]
   : ∀ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] w' x'}
