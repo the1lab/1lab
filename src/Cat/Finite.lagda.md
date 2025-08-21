@@ -24,7 +24,7 @@ record is-finite-precategory {o ℓ} (D : Precategory o ℓ) : Type (o ⊔ ℓ) 
   constructor finite-cat
   field
     ⦃ has-finite-Ob ⦄ : Finite (Ob D)
-    ⦃ has-finite-Arrows ⦄ : Finite (Arrows D)
+    ⦃ has-finite-Arrow ⦄ : Finite (Arrow D)
 
 open is-finite-precategory
 ```
