@@ -95,9 +95,9 @@ module _
     module A = Precategory A
     module B = Precategory B
     module C = Precategory C
-    module A' = DR A' public
-    module B' = DR B' public
-    module C' = DR C' public
+    module A' = DR A'
+    module B' = DR B'
+    module C' = DR C'
   
   open Displayed-functor F'
   open Cat.Functor.Bifunctor F

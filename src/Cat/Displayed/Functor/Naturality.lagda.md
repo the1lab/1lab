@@ -31,8 +31,8 @@ module _
     module DE where
       open DR Disp[ D , E ] public 
       open DM Disp[ D , E ] public
-    module D = DR D public
-    module E = DR E public
+    module D = DR D
+    module E = DR E
     
   open Functor
   open _=>_

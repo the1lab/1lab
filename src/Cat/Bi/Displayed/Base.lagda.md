@@ -21,8 +21,7 @@ module Cat.Bi.Displayed.Base where
 # Displayed bicategories {defines=displayed-bicategory}
 
 ::: source
-The definition here was adapted from the one given by Ahrens et al.
-in [Bicategories in Univalent Foundations]
+The definition here was adapted from the one given by Ahrens et al. [-@Ahrens-Frumin-Maggesi-Veltre-vanDerWeide:Bicategories]
 :::
 
 [Bicategories in Univalent Foundations]: https://arxiv.org/abs/1903.01152
