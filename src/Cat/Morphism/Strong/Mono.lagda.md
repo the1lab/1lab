@@ -5,6 +5,8 @@ description: |
 <!--
 ```agda
 open import Cat.Morphism.Orthogonal
+open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -43,8 +45,16 @@ has a contractible space of lifts $b \to c$.
 
 ```agda
 is-strong-mono : ∀ {c d} → Hom c d → Type _
-is-strong-mono f = is-monic f × (∀ {a b} (e : a ↠ b) → m⊥m C (e .mor) f)
+is-strong-mono f = is-monic f × Orthogonal C Epis f
 ```
+
+<!--
+```agda
+StrongMonos : Arrows C (o ⊔ ℓ)
+StrongMonos .arrows = is-strong-mono
+StrongMonos .is-tr = hlevel 1
+```
+-->
 
 As it turns out, the contractibility requirement is redundant, as every
 lift of a mono is unique.
@@ -53,12 +63,10 @@ lift of a mono is unique.
 lifts→is-strong-mono
   : ∀ {c d} {f : Hom c d}
   → is-monic f
-  → (∀ {a b} (e : a ↠ b) {u v} → v ∘ e .mor ≡ f ∘ u
-    → Lifting C (e .mor) f u v)
+  → Lifts C Epis f
   → is-strong-mono f
-lifts→is-strong-mono monic lift-it =
-  monic , λ e →
-  right-monic-lift→orthogonal C (e .mor) monic (lift-it e)
+lifts→is-strong-mono monic lifts =
+  monic , right-monic-lift→orthogonal-class C Epis monic lifts
 ```
 
 This condition seems somewhat arbitrary, so let's take a second to do
@@ -91,13 +99,13 @@ invertible→strong-mono
   : ∀ {a b} {f : Hom a b} → is-invertible f → is-strong-mono f
 ```
 
-The argument here is quite straightforward: every iso is monic, and
+-- The argument here is quite straightforward: every iso is monic, and
 isos are right orthogonal to every map.
 
 ```agda
 invertible→strong-mono f-inv =
-  invertible→monic f-inv , λ e →
-  invertible→right-orthogonal C (e .mor) f-inv
+  invertible→monic f-inv ,
+  invertible→right-orthogonal-class C Epis f-inv
 ```
 
 Next, let's show that strong monos compose. This is completely dual
@@ -113,9 +121,10 @@ strong-mono-∘
   → is-strong-mono g
   → is-strong-mono (f ∘ g)
 strong-mono-∘ f g (f-mono , f-str) (g-mono , g-str) =
-  lifts→is-strong-mono (∘-is-monic f-mono g-mono) λ e → ∘r-lifts-against C
-    (orthogonal→lifts-against C (f-str e))
-    (orthogonal→lifts-against C (g-str e))
+  lifts→is-strong-mono (∘-is-monic f-mono g-mono) $
+    ∘r-lifts-class C Epis
+      (orthogonal→lifts-left-class C Epis f-str)
+      (orthogonal→lifts-left-class C Epis g-str)
 ```
 
 Like their non-strong counterparts, strong monomorphisms satisfy a
@@ -141,10 +150,10 @@ strong-mono-cancell f g (fg-mono , fg-str) =
     g-mono : is-monic g
     g-mono = monic-cancell fg-mono
 
-    g-str : ∀ {a b} (e : a ↠ b) {u v} → v ∘ e .mor ≡ g ∘ u → _
-    g-str e {u} {v} ve=gu =
-      let (w , we=u , fgw=fv) = fg-str e (extendr ve=gu) .centre
-      in w , we=u , e .epic (g ∘ w) v (pullr we=u ∙ sym ve=gu)
+    g-str : Lifts C Epis g
+    g-str e e-epi u v ve=gu =
+      let (w , we=u , fgw=fv) = fg-str e e-epi u (f ∘ v) (extendr ve=gu) .centre
+      in pure (w , we=u , e-epi (g ∘ w) v (pullr we=u ∙ sym ve=gu))
 ```
 </details>
 
@@ -155,7 +164,7 @@ itself, and thus invertible.
 strong-mono+epi→invertible
   : ∀ {a b} {f : Hom a b} → is-strong-mono f → is-epic f → is-invertible f
 strong-mono+epi→invertible {f = f} (_ , strong) epi =
-  self-orthogonal→invertible C f (strong (make-epi f epi))
+  self-orthogonal→invertible C f (strong f epi)
 ```
 
 <!--
@@ -166,8 +175,8 @@ subst-is-strong-mono
   → is-strong-mono f
   → is-strong-mono g
 subst-is-strong-mono f=g f-strong-mono =
-  lifts→is-strong-mono (subst-is-monic f=g (f-strong-mono .fst)) λ e vg=mu →
-    let (h , he=u , fh=v) = f-strong-mono .snd e (vg=mu ∙ ap₂ _∘_ (sym f=g) refl) .centre
-    in h , he=u , ap (_∘ h) (sym f=g) ∙ fh=v
+  lifts→is-strong-mono (subst-is-monic f=g (f-strong-mono .fst)) λ e e-epic u v vg=mu →
+    let (h , he=u , fh=v) = f-strong-mono .snd e e-epic u v (vg=mu ∙ ap₂ _∘_ (sym f=g) refl) .centre
+    in pure (h , he=u , ap (_∘ h) (sym f=g) ∙ fh=v)
 ```
 -->

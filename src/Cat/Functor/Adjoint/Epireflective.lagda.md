@@ -10,6 +10,7 @@ open import Cat.Morphism.Factorisation
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
+open import Cat.Morphism.Class
 open import Cat.Prelude
 
 import Cat.Morphism.Strong.Mono
@@ -89,19 +90,6 @@ module _
     module L = Cat.Functor.Reasoning L
     module R = Cat.Functor.Reasoning R
   open _⊣_ L⊣R
-
-  private
-    Epi : ∀ {a b} → C.Hom a b → Ω
-    Epi x = elΩ (C.is-epic x)
-
-    Mono : ∀ {a b} → C.Hom a b → Ω
-    Mono x = elΩ (C.is-monic x)
-
-    StrongEpi : ∀ {a b} → C.Hom a b → Ω
-    StrongEpi f = elΩ (C.is-strong-epi f)
-
-    StrongMono : ∀ {a b} → C.Hom a b → Ω
-    StrongMono f = elΩ (C.is-strong-mono f)
 ```
 -->
 
@@ -168,7 +156,7 @@ that the unit is always epic.
   factor+strong-mono-unit-invertible→epireflective
     : is-reflective L⊣R
     → (∀ {x a} {f : C.Hom x (R.₀ a)} → C.is-strong-mono f → C.is-invertible (η x))
-    → (∀ {x y} → (f : C.Hom x y) → Factorisation C Epi StrongMono f)
+    → (∀ {x y} → (f : C.Hom x y) → Factorisation C Epis C.StrongMonos f)
     → ∀ {x} → C.is-epic (η x)
 ```
 
@@ -199,11 +187,11 @@ diagram:
     unit-epic
     where
       open Factorisation (factor (η x)) renaming
-          ( mediating to im
-          ; forget to m
-          ; mediate to e
-          ; forget∈M to m-strong-mono
-          ; mediate∈E to e-epi
+          ( mid to im
+          ; right to m
+          ; left to e
+          ; right∈R to m-strong-mono
+          ; left∈L to e-epi
           )
 ```
 
@@ -213,7 +201,7 @@ be invertible, as $m : \cC(I, R(L(X)))$ is a strong mono.
 ```agda
       unit-im-invertible : C.is-invertible (η im)
       unit-im-invertible =
-        unit-inv (□-out! m-strong-mono)
+        unit-inv (m-strong-mono)
 ```
 
 Next, observe that $R(L(m)) \circ R(L(e))$ must also be invertible:
@@ -252,7 +240,7 @@ right-cancellation of epis to deduce that $R(L(e))$ must be epic.
         C.subst-is-epic (unit.is-natural _ _ _) $
         C.∘-is-epic
           (C.invertible→epic unit-im-invertible)
-          (□-out! e-epi)
+          e-epi
 ```
 
 We can put the previous two observations together to show that
@@ -296,7 +284,7 @@ so it must also be an epi.
         C.subst-is-epic (sym factors) $
         C.∘-is-epic
           (C.invertible→epic m-invertible)
-          (□-out! e-epi)
+          e-epi
 ```
 
 ## Strong epireflective subcategories and monos
@@ -315,7 +303,7 @@ when $L \dashv R$ is a strong epireflective category.
   factor+mono-unit-invertible→strong-epireflective
     : is-reflective L⊣R
     → (∀ {x a} {f : C.Hom x (R.₀ a)} → C.is-monic f → C.is-invertible (η x))
-    → (∀ {x y} → (f : C.Hom x y) → Factorisation C StrongEpi Mono f)
+    → (∀ {x y} → (f : C.Hom x y) → Factorisation C C.StrongEpis Monos f)
     → ∀ {x} → C.is-strong-epi (η x)
 
 ```
@@ -345,16 +333,16 @@ diagram chase; we will spare the innocent reader the details.
     unit-strong-epi
     where
       open Factorisation (factor (η x)) renaming
-          ( mediating to im
-          ; forget to m
-          ; mediate to e
-          ; forget∈M to m-mono
-          ; mediate∈E to e-strong-epi
+          ( mid to im
+          ; right to m
+          ; left to e
+          ; right∈R to m-mono
+          ; left∈L to e-strong-epi
           )
 
       unit-im-invertible : C.is-invertible (η im)
       unit-im-invertible =
-        unit-inv (□-out! m-mono)
+        unit-inv m-mono
 
       RL[m]∘RL[e]-invertible
         : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
@@ -375,7 +363,7 @@ diagram chase; we will spare the innocent reader the details.
         C.subst-is-strong-epi (unit.is-natural _ _ _) $
         C.strong-epi-∘ _ _
           (C.invertible→strong-epi unit-im-invertible)
-          (□-out! e-strong-epi)
+          e-strong-epi
 
       RL[e]-invertible : C.is-invertible (R.₁ (L.₁ e))
       RL[e]-invertible =
@@ -400,6 +388,6 @@ diagram chase; we will spare the innocent reader the details.
         C.subst-is-strong-epi (sym factors) $
         C.strong-epi-∘ _ _
           (C.invertible→strong-epi m-invertible)
-          (□-out! e-strong-epi)
+          e-strong-epi
 ```
 </details>
