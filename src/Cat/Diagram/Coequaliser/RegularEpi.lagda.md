@@ -143,7 +143,7 @@ module _ {o ℓ oj ℓj}
   {C : Precategory o ℓ} {J : Precategory oj ℓj}
   {F : Functor J C}
   (∐Ob : has-coproducts-indexed-by C ⌞ J ⌟)
-  (∐Hom : has-coproducts-indexed-by C (Arrows J))
+  (∐Hom : has-coproducts-indexed-by C (Arrow J))
   (∐F : Colimit F)
   where
 ```
