@@ -246,6 +246,12 @@ infer-tel tel = (λ (_ , arg ai _) → arg ai unknown) <$> tel
 resetting : ∀ {ℓ} {A : Type ℓ} → TC A → TC A
 resetting k = run-speculative ((_, false) <$> k)
 
+unifies? : Term → Term → TC Bool
+unifies? `x `y = run-speculative ((unify `x `y >> pure (true , true)) <|> pure (false , false))
+
+checks? : Term → Term → TC (Maybe Term)
+checks? tm tp = run-speculative (check-type tm tp <&> (λ tm → (just tm , true)) <|> pure (nothing , false))
+
 all-metas-in : Term → List Blocker
 all-metas-in tm = go tm [] where
   go  : Term → List Blocker → List Blocker
