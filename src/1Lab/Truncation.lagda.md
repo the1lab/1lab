@@ -222,6 +222,13 @@ from the HoTT book. For example, a type $X$ is said _merely equivalent_
 to $Y$ if the type $\| X \equiv Y \|$ is inhabited.
 :::
 
+<!--
+```agda
+is-prop∥∥→is-contr : ∀ {ℓ} {P : Type ℓ} → is-prop P → ∥ P ∥ → is-contr P
+is-prop∥∥→is-contr pprop mp = is-prop∙→is-contr pprop (∥-∥-out pprop mp)
+```
+-->
+
 ## Maps into sets
 
 The elimination principle for $\| A \|$ says that we can only use the
