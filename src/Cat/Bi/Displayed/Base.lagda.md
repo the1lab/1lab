@@ -24,8 +24,6 @@ module Cat.Bi.Displayed.Base where
 The definition here was adapted from the one given by Ahrens et al. [-@Ahrens-Frumin-Maggesi-Veltre-vanDerWeide:Bicategories]
 :::
 
-[Bicategories in Univalent Foundations]: https://arxiv.org/abs/1903.01152
-
 Just as a displayed category $\cE \liesover \cB$ allows us to describe categorical structure over the category $\cB$, a
 **displayed bicategory** $\bf{E} \liesover \bf{B}$ allows us to describe *bi*categorical structure over the *bi*category $\bf{B}$.
 
