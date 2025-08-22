@@ -90,7 +90,9 @@ _◆_ {E = E} {F = F} {G} {H} {K} α β = nat module horizontal-comp where
 ```
 -->
 
+:::{.definition #composition-functor}
 We can now define the composition functor itself.
+:::
 
 ```agda
 F∘-functor : Functor (Cat[ B , C ] ×ᶜ Cat[ A , B ]) Cat[ A , C ]

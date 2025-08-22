@@ -123,8 +123,26 @@ module
     → (q1 : ∀ {x y x' y'} {f : A.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
             → PathP (λ i → ℱ.Hom[ p i .F₁ f ] (q0 x' i) (q0 y' i)) (F' .F₁' f') (G' .F₁' f'))
     → PathP (λ i → Displayed-functor (p i) ℰ ℱ) F' G'
-  Displayed-functor-pathp {F = F} {G = G} {F' = F'} {G' = G'} p q0 q1 =
-    injectiveP (λ _ → eqv) ((λ i x' → q0 x' i) ,ₚ (λ i f' → q1 f' i) ,ₚ prop!)
+  Displayed-functor-pathp {F = F} {F' = F'} {G' = G'} p q0 q1 = dfn where
+    -- We need to define this directly to get nice definitional behavior on the projections
+    dfn : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F' G'
+    dfn i .F₀' x' = q0 x' i
+    dfn i .F₁' f' = q1 f' i
+    dfn i .F-id' {x' = x'} j = 
+      is-set→squarep (λ i j → ℱ.Hom[ F-id (p i) j ]-set (q0 x' i) (q0 x' i)) 
+        (q1 ℰ.id') (F-id' F') (F-id' G') (λ _ → ℱ.id') i j
+    dfn i .F-∘' {f = f} {g = g} {a' = a'} {c' = c'} {f' = f'} {g' = g'} j = 
+      is-set→squarep (λ i j → ℱ.Hom[ F-∘ (p i) f g j ]-set (q0 a' i) (q0 c' i))
+        (q1 (f' ℰ.∘' g')) (F-∘' F') (F-∘' G') (λ k → q1 f' k ℱ.∘' q1 g' k) i j
+
+  Displayed-functor-is-set : {F : Functor A B} → (∀ x → is-set ℱ.Ob[ x ]) → is-set (Displayed-functor F ℰ ℱ)
+  Displayed-functor-is-set fibre-set = Iso→is-hlevel! 2 eqv where instance
+    ℱOb[] : ∀ {x} → H-Level (ℱ.Ob[ x ]) 2
+    ℱOb[] = hlevel-instance (fibre-set _)
+
+  instance
+    Funlike-displayed-functor : ∀ {F : Functor A B} {x} → Funlike (Displayed-functor F ℰ ℱ) (⌞ ℰ.Ob[ x ] ⌟) λ _ → ⌞ ℱ.Ob[ F .F₀ x ] ⌟
+    Funlike-displayed-functor = record { _·_ = λ F x → F .F₀' x }
 ```
 -->
 
@@ -395,6 +413,9 @@ module
             → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
     → F ≡ G
   Vertical-functor-path = Displayed-functor-pathp refl
+
+  Vertical-functor-is-set : (∀ x → is-set ℱ.Ob[ x ]) → is-set (Vertical-functor ℰ ℱ)
+  Vertical-functor-is-set fibre-set = Displayed-functor-is-set fibre-set
 ```
 -->
 
@@ -458,6 +479,7 @@ module
     (G' : Displayed-functor G ℰ ℱ)
     : Type lvl
     where
+    constructor NT'
     no-eta-equality
 
     field
@@ -465,6 +487,82 @@ module
       is-natural'
         : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
+```
+
+<!--
+```agda
+{-# INLINE NT' #-}
+
+unquoteDecl H-Level-=[]=> = declare-record-hlevel 2 H-Level-=[]=> (quote _=[_]=>_)
+
+module _
+  {oa ℓa ob ℓb od ℓd oe ℓe}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {D : Displayed A od ℓd} {E : Displayed B oe ℓe}
+  where
+  private 
+    module A = Precategory A
+    module B = Precategory B
+    module D = Displayed D
+    module E = DR E
+
+  open _=>_
+  open _=[_]=>_
+  open Displayed-functor
+
+  Nat'-pathp : {F₁ F₂ G₁ G₂ : Functor A B} 
+             → {F₁' : Displayed-functor F₁ D E} 
+             → {G₁' : Displayed-functor G₁ D E}
+             → {F₂' : Displayed-functor F₂ D E}
+             → {G₂' : Displayed-functor G₂ D E}
+             → {α : F₁ => G₁} {β : F₂ => G₂}
+             → {α' : F₁' =[ α ]=> G₁'} {β' : F₂' =[ β ]=> G₂'}
+             → (p : F₁ ≡ F₂) (q : G₁ ≡ G₂) 
+             → (r : PathP (λ i → p i => q i) α β)
+             → (p' : PathP (λ i → Displayed-functor (p i) D E) F₁' F₂')
+             → (q' : PathP (λ i → Displayed-functor (q i) D E) G₁' G₂')
+             → (∀ {x} (x' : D.Ob[ x ]) → PathP (λ i → E.Hom[ (r i .η x) ] (p' i .F₀' x') (q' i .F₀' x')) (α' .η' x') (β' .η' x'))
+             → PathP (λ i → (p' i) =[ r i ]=> (q' i)) α' β'
+  Nat'-pathp p q r p' q' w i .η' x' = w x' i
+  Nat'-pathp {α' = α'} {β' = β'} p q r p' q' w i .is-natural' {x = x} {y} {f} x' y' f' j = 
+    is-set→squarep {A = λ i j → E.Hom[ r i .is-natural x y f j ] (F₀' (p' i) x') (F₀' (q' i) y')} (λ _ _ → hlevel 2)
+      (λ i → w y' i E.∘' F₁' (p' i) f') (λ j → is-natural' α' x' y' f' j) (λ j → is-natural' β' x' y' f' j) (λ i → F₁' (q' i) f' E.∘' w x' i) i j
+
+  Nat'-path : {F G : Functor A B} {F' : Displayed-functor F D E} {G' : Displayed-functor G D E}
+           → {α β : F => G} {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'} 
+           → {p : α ≡ β}
+           → (∀ {x} (x' : D.Ob[ x ]) → α' .η' x' E.≡[ p ηₚ x ] β' .η' x')
+           → PathP (λ i → F' =[ p i ]=> G') α' β'
+  Nat'-path = Nat'-pathp refl refl _ refl refl
+```
+-->
+
+We can define displayed versions of the identity natural transformation and 
+composition of natural transformations.
+
+```agda 
+  idnt' : ∀ {F : Functor A B} {F' : Displayed-functor F D E} → F' =[ idnt ]=> F'
+  idnt' .η' x' = E.id'
+  idnt' .is-natural' x' y' f' = E.id-comm-sym[]
+
+  _∘nt'_ : ∀ {F G H : Functor A B} 
+          → {F' : Displayed-functor F D E} 
+          → {G' : Displayed-functor G D E} 
+          → {H' : Displayed-functor H D E} 
+          → {β : G => H} {α : F => G}
+          → G' =[ β ]=> H' → F' =[ α ]=> G' → F' =[ β ∘nt α ]=> H'
+  (β' ∘nt' α') .η' x' = β' .η' x' E.∘' α' .η' x'
+  _∘nt'_ {F' = F'} {G'} {H'} β' α' .is-natural' x' y' f' = E.cast[] $ 
+    (β'.η' y' E.∘' α'.η' y') E.∘' F'.F₁' f'  E.≡[]⟨ E.pullr[] _ (α'.is-natural' _ _ _) ⟩
+      β'.η' y' E.∘' G'.F₁' f' E.∘' α'.η' x'  E.≡[]⟨ E.pulll[] _ (β'.is-natural' _ _ _) ⟩
+    (H'.F₁' f' E.∘' β'.η' x') E.∘' α'.η' x'  E.≡[]˘⟨ E.assoc' _ _ _ ⟩
+      H'.F₁' f' E.∘' β'.η' x' E.∘' α'.η' x'   ∎
+    where
+      module β' = _=[_]=>_ β'
+      module α' = _=[_]=>_ α'
+      module F' = Displayed-functor F'
+      module G' = Displayed-functor G'
+      module H' = Displayed-functor H'
 ```
 
 ::: {.definition #vertical-natural-transformation}
@@ -522,14 +620,11 @@ module _
     Extensional-=>↓ {F' = F'} {G' = G'}  ⦃ e ⦄  = injection→extensional! {f = _=>↓_.η'}
       (λ p → Iso.injective eqv (Σ-prop-path! p)) e
 
-    H-Level-=>↓ : ∀ {F' G'} {n} → H-Level (F' =>↓ G') (2 + n)
-    H-Level-=>↓ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
-
   open _=>↓_
 
   idnt↓ : ∀ {F} → F =>↓ F
   idnt↓ .η' x' = ℱ.id'
-  idnt↓ .is-natural' x' y' f' = to-pathp (DR.id-comm[] ℱ)
+  idnt↓ .is-natural' x' y' f' = DR.id-comm-sym[] ℱ
 
   _∘nt↓_ : ∀ {F G H} → G =>↓ H → F =>↓ G → F =>↓ H
   (f ∘nt↓ g) .η' x' = f .η' _ ℱ↓.∘ g .η' x'
