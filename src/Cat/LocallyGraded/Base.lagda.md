@@ -25,24 +25,23 @@ private variable
 
 There is a striking similarity between [[displayed categories]], enriched categories,
 and actegories. All three of these concepts take the basic algebra of a category and
-replace the hom *sets* with some other notion of morphism taken from some base category
+replace the hom *sets* with some other notion of morphism graded by some base category
 $B$, and then equip those morphisms with an action of $B$.
 
-For a displayed category $\cE$, hom sets are replaced hom *families* indexed by
-some category $B$. The action of $B$ is a bit hard to see initially, but
-becomes painfully clear once you've gotten your hands dirty: it is given
-by transport of hom families.
+For a displayed category $\cE \liesover \cB$, our $\cB$-graded morphisms
+are the displayed hom sets $\cE_{u}(X', Y')$ over indexed over a $u : \cB(X,Y)$.
+The action of $\cB$ is a bit hard to see initially, but becomes painfully
+clear once you've gotten your hands dirty: it is given by transport of hom families.
 
-For an enriched category $\cC$, we replace hom sets with hom *objects* $\cC(X,Y) : \cV$ taken
-from some [[monoidal category]] $V$. The action of $V$ is a bit tricky
-to see at first, but becomes clear when we consider generalized elements
-$\cV(\Gamma, \cC(X,Y))$ of a hom object: it is given via precomposition with
-a morphism $\cC(\Delta, \Gamma)$.
+For an enriched category $\cC$, our $\cV$-graded morphisms are generalized
+elements $\cV(\Gamma, \cC(X,Y))$ for $\Gamma : \cV$. Moreover, $\cV$ acts on
+graded morphisms $\cV(\Gamma, \cC(X,Y))$ via precomposition with a morphism
+$\cV(\Delta, \Gamma)$.
 
 Finally, for an actegory $\cC$ equipped with an action $\oslash : \cV \times \cC \to \cC$,
-the appropriate notion of morphism is not a map $\cC(X,Y)$ in $\cC$, but rather a
-sort of "$\cV$-generalized morphism" $\cC(\Gamma \oslash X, Y)$ where $\Gamma : \cV$.
-The action of $\cV$ on these morphisms is given by functoriality of $\oslash$.
+the appropriate notion of $V$-graded morphism is a sort of sort of "$\cV$-generalized morphism"
+$\cC(\Gamma \oslash X, Y)$ where $\Gamma : \cV$. The action of $\cV$ on these morphisms is given
+by functoriality of $\oslash$ and precomposition.
 
 **Locally graded categories** simultaneously generalize these three related notions
 by combining the indexing of a displayed category with a sort of "directed transport"
@@ -53,7 +52,7 @@ over a [[prebicategory]] $\cB$ consists of:
 - A family of morphisms $\cC_1 : \cB_1(X,Y) \to \cC_0(X) \to \cC_0(Y) \to \set$ indexed
   by the 1-cells of $\cB$.
 - Identity and composite morphisms indexed over the identity 1-cell and composites of 1-cells.
-- An action $[_] : \cB_2(u,v) \to \cC_1(v,X',Y') \to \cC_1(u,X',Y')$ of 2-cells of $\cB$
+- An action $[-] : \cB_2(u,v) \to \cC_1(v,X',Y') \to \cC_1(u,X',Y')$ of 2-cells of $\cB$
   on morphisms of $\cC$.
 
 ```agda
