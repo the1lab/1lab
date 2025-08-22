@@ -37,85 +37,16 @@ diagram like
 ~~~
 
 the space of [[liftings]] $c \to b$ (dashed) which commute with everything is
-[[contractible]].
-
-<!--
-```agda
-private module Impl {o ℓ} {C : Precategory o ℓ} where
-  open Precategory C
-  private
-    variable
-      a b c d : ⌞ C ⌟
-      f g h u v : Hom a b
-```
--->
+[[contractible]]. We will also speak of orthogonality of an object and a
+morphism, a morphism and a class of morphisms, and so on.
 
 :::{.note}
-In the formalisation, we don't write $\bot$ infix, since it
-must be explicitly applied to the category in which the morphisms live.
-Moreover, we don't want to have to define 8 different predicates for
-orthogonality, so we use instance arguments so we can just write `Orthogonal`{.Agda}
-for all 8 notions.
+In the formalisation, we will write `Orthogonal`{.Agda} to denote all of the
+aforementioned orthogonality properties.
 :::
-
-```agda
-  record Orthogonal-against
-    {ℓl ℓr}
-    (L : Type ℓl) (R : Type ℓr)
-    (ℓp : Level)
-    : Type (ℓl ⊔ ℓr ⊔ (lsuc ℓp)) where
-    field
-      orthogonal-prop : L → R → Type ℓp
-
-  open Orthogonal-against
-
-  Orthogonal
-    : ∀ {ℓl ℓr ℓp} {L : Type ℓl} {R : Type ℓr}
-    → L → R → ⦃ _ :  Orthogonal-against L R ℓp ⦄ → Type _
-  Orthogonal l r ⦃ Orth ⦄ = Orth .orthogonal-prop l r
-
-  instance
-    Orthogonal-against-hom-hom : ∀ {a b x y} → Orthogonal-against (Hom a b) (Hom x y) ℓ
-    Orthogonal-against-hom-hom .orthogonal-prop f g = ∀ u v → v ∘ f ≡ g ∘ u → is-contr (Lifting C f g u v)
-```
-
-We also outline concepts of a map being orthogonal to an object, which
-is informally written $f \ortho X$, and an object being orthogonal to a
-map $Y \ortho f$.
-
-```agda
-    Orthogonal-against-ob-hom : ∀ {x y} → Orthogonal-against Ob (Hom x y) ℓ
-    Orthogonal-against-ob-hom {x} {y} .orthogonal-prop a f = ∀ (u : Hom a y) → is-contr (Σ[ h ∈ Hom a x ] f ∘ h ≡ u)
-
-    Orthogonal-against-hom-ob : ∀ {a b} → Orthogonal-against (Hom a b) Ob ℓ
-    Orthogonal-against-hom-ob {a} {b} .orthogonal-prop f x = ∀ (u : Hom a x) → is-contr (Σ[ h ∈ Hom b x ] h ∘ f ≡ u)
-```
-
-An object or morphism is left/right orthogonal to a class of morphisms $M$ if it
-is left/right orthogonal to every map in $M$. Likewise, two classes $L$ and $R$
-are orthogonal to each other if every $l \in L$ is orthogonal to every $r \in R$.
-
-```agda
-    Orthogonal-against-arrows-left
-      : ∀ {ℓr ℓp κ} {R : Type ℓr}
-      → ⦃ _ : ∀ {a b} → Orthogonal-against (Hom a b) R ℓp ⦄
-      → Orthogonal-against (Arrows C κ) R (o ⊔ ℓ ⊔ ℓp ⊔ κ)
-    Orthogonal-against-arrows-left .orthogonal-prop L r = ∀ {a b} → (f : Hom a b) → f ∈ L → Orthogonal f r
-
-    Orthogonal-against-arrows-right
-      : ∀ {ℓl ℓp κ} {L : Type ℓl}
-      → ⦃ _ : ∀ {x y} → Orthogonal-against L (Hom x y) ℓp ⦄
-      → Orthogonal-against L (Arrows C κ) (o ⊔ ℓ ⊔ ℓp ⊔ κ)
-    Orthogonal-against-arrows-right .orthogonal-prop l R = ∀ {x y} → (f : Hom x y) → f ∈ R → Orthogonal l f
-    {-# INCOHERENT Orthogonal-against-arrows-right #-}
-```
 
 <!--
 ```agda
-open Impl hiding (Orthogonal) public
-private open module Reimpl {o ℓ} (C : Precategory o ℓ) = Impl {C = C} using (Orthogonal) public
-{-# DISPLAY Impl.Orthogonal {C = C} L R = Orthogonal C L R #-}
-
 module _ {o ℓ} (C : Precategory o ℓ) where
   open Cat.Reasoning C
   open Terminal
