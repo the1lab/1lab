@@ -10,6 +10,7 @@ open import Cat.Diagram.Pullback.Along
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Product
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Omega
 open import Cat.Functor.Hom
 open import Cat.Prelude hiding (Ω; true)
@@ -65,9 +66,7 @@ relative to monomorphisms in $\cC$.
 
 ```agda
 is-injective : (A : Ob) → Type _
-is-injective A =
-  ∀ {X Y} (i : Hom X A) (m : X ↪ Y)
-  → ∃[ r ∈ Hom Y A ] (r ∘ m .mor ≡ i)
+is-injective A = Lifts C Monos A
 ```
 
 Classically, injective objects are usually very easy to find. For example.
@@ -98,10 +97,10 @@ epis. This directly gives us the factorization we need!
 preserves-epis→injective
   : preserves-epis (Hom-into C A)
   → is-injective A
-preserves-epis→injective {A = A} hom-epi {X = X} {Y = Y} i m =
+preserves-epis→injective {A = A} hom-epi {X} {Y} m m-monic i =
   epi→surjective (el! (Hom Y A)) (el! (Hom X A))
-    (_∘ m .mor)
-    (λ {c} → hom-epi (m .monic) {c = c})
+    (_∘ m)
+    (λ {c} → hom-epi m-monic {c = c})
     i
 ```
 
@@ -122,7 +121,7 @@ injective→preserves-epis inj {f = m} m-mono g h p =
       g (r ∘ m)  ≡⟨ p $ₚ r ⟩
       h (r ∘ m)  ≡⟨ ap h r-retract ⟩
       h k  ∎)
-      (inj k (make-mono m m-mono))
+      (inj m m-mono k)
 ```
 
 ## Closure of injectives
@@ -180,9 +179,9 @@ $\pi_2 \circ \langle r_1 , r_2 \rangle \circ m = r_2 \circ m = i$, so $\langle r
 is a valid extension.
 
 ```agda
-product-injective {π₁ = π₁} {π₂ = π₂} A-inj B-inj prod i m = do
-  (r₁ , r₁-factor) ← A-inj (π₁ ∘ i) m
-  (r₂ , r₂-factor) ← B-inj (π₂ ∘ i) m
+product-injective {π₁ = π₁} {π₂ = π₂} A-inj B-inj prod m m-monic i = do
+  (r₁ , r₁-factor) ← A-inj m m-monic (π₁ ∘ i)
+  (r₂ , r₂-factor) ← B-inj m m-monic (π₂ ∘ i)
   pure (⟨ r₁ , r₂ ⟩ , unique₂ (pulll π₁∘⟨⟩) (pulll π₂∘⟨⟩) (sym r₁-factor) (sym r₂-factor))
   where open is-product prod
 ```
@@ -223,11 +222,11 @@ each extension $r_i$ for each $i : I$, whereas we need the mere existence of
 but we can avoid this by requiring that $I$ be set-projective.
 
 ```agda
-indexed-coproduct-projective {Aᵢ = Aᵢ} {π = π} Idx-pro Aᵢ-inj prod {X = X} {Y = Y} ι m = do
+indexed-coproduct-projective {Aᵢ = Aᵢ} {π = π} Idx-pro Aᵢ-inj prod {X} {Y} m m-monic ι = do
   r ← Idx-pro
-    (λ i → Σ[ rᵢ ∈ Hom Y (Aᵢ i) ] rᵢ ∘ m .mor ≡ π i ∘ ι)
+    (λ i → Σ[ rᵢ ∈ Hom Y (Aᵢ i) ] rᵢ ∘ m ≡ π i ∘ ι)
     (λ _ → hlevel 2)
-    (λ i → Aᵢ-inj i (π i ∘ ι) m)
+    (λ i → Aᵢ-inj i m m-monic (π i ∘ ι))
   pure (tuple (λ i → r i .fst) , unique₂ (λ i → pulll commute ∙ r i .snd))
   where open is-indexed-product prod
 ```
@@ -241,8 +240,8 @@ section→injective
   → (r : Hom A S)
   → has-section r
   → is-injective S
-section→injective A-inj r s i m = do
-  (t , t-factor) ← A-inj (s .section ∘ i) m
+section→injective A-inj r s m m-monic i = do
+  (t , t-factor) ← A-inj m m-monic (s .section ∘ i)
   pure (r ∘ t , pullr t-factor ∙ cancell (s .is-section))
 ```
 
@@ -272,7 +271,7 @@ consider the following extension problem.
 ~~~
 
 ```agda
-Ω-injective {Ω = Ω} {true = true} pullbacks Ω-subobj {X} {Y} i m =
+Ω-injective {Ω = Ω} {true = true} pullbacks Ω-subobj {X} {Y} m m-monic i =
   pure extension
   where
     open is-generic-subobject Ω-subobj
@@ -312,7 +311,7 @@ $X$, which we can then compose with $m$ to get a subobject of $Y$.
     [i] = named i
 
     m∩[i] : Subobject Y
-    m∩[i] = cutₛ (∘-is-monic (m .monic) ([i] .monic))
+    m∩[i] = cutₛ (∘-is-monic m-monic ([i] .monic))
 ```
 
 We can then classify our subobject $m \circ [i]$ to get a map
@@ -364,13 +363,13 @@ This means that $\mathrm{name}(m \circ [i]) \circ m = i$, which completes
 the proof.
 
 ```agda
-    extension : Σ[ i* ∈ Hom Y Ω ] i* ∘ m .mor ≡ i
+    extension : Σ[ i* ∈ Hom Y Ω ] i* ∘ m ≡ i
     extension .fst = name m∩[i]
     extension .snd =
       Ω-unique₂ $
       paste-is-pullback-along
         (classifies m∩[i])
-        (is-pullback-along-monic (m .monic))
+        (is-pullback-along-monic m-monic)
         refl
 ```
 
