@@ -302,13 +302,16 @@ module Sub {y} = Cr (Sub y)
 _≤ₘ_ : ∀ {y} (a b : Subobject y) → Type _
 _≤ₘ_ = ≤-over id
 
-≤ₘ→mono : ∀ {y} {a b : Subobject y} → a ≤ₘ b → a .dom ↪ b .dom
-≤ₘ→mono x .mor = x .map
-≤ₘ→mono {a = a} x .monic g h α = a .monic g h $
-  a .map ∘ g      ≡⟨ ap (_∘ g) (introl refl ∙ x .com) ∙ pullr refl ⟩
-  _ ∘ x .map ∘ g  ≡⟨ ap₂ _∘_ refl α ⟩
-  _ ∘ x .map ∘ h  ≡⟨ pulll (sym (x .com) ∙ idl _) ⟩
+≤ₘ→monic : ∀ {y} {a b : Subobject y} → (f : a ≤ₘ b) → is-monic (f .map)
+≤ₘ→monic {a = a} f g h α = a .monic g h $
+  a .map ∘ g      ≡⟨ ap (_∘ g) (introl refl ∙ f .com) ∙ pullr refl ⟩
+  _ ∘ f .map ∘ g  ≡⟨ ap₂ _∘_ refl α ⟩
+  _ ∘ f .map ∘ h  ≡⟨ pulll (sym (f .com) ∙ idl _) ⟩
   a .map ∘ h      ∎
+
+≤ₘ→mono : ∀ {y} {a b : Subobject y} → a ≤ₘ b → a .dom ↪ b .dom
+≤ₘ→mono f .mor = f .map
+≤ₘ→mono {a = a} f .monic = ≤ₘ→monic f
 
 cutₛ : ∀ {x y} {f : Hom x y} → is-monic f → Subobject y
 cutₛ x .dom   = _
