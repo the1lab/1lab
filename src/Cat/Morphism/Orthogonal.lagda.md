@@ -254,7 +254,6 @@ to every other class.
 
   invertible→right-orthogonal-class : ∀ {κ} (L : Arrows C κ) → is-invertible f → Orthogonal C L f
   invertible→right-orthogonal-class L f-inv l _ = invertible→right-orthogonal l _ f-inv
-
 ```
 -->
 

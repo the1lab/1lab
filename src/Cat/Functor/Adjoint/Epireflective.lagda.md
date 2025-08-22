@@ -156,7 +156,7 @@ that the unit is always epic.
   factor+strong-mono-unit-invertible→epireflective
     : is-reflective L⊣R
     → (∀ {x a} {f : C.Hom x (R.₀ a)} → C.is-strong-mono f → C.is-invertible (η x))
-    → (∀ {x y} → (f : C.Hom x y) → Factorisation C Epis C.StrongMonos f)
+    → (∀ {x y} → (f : C.Hom x y) → Factorisation C C.Epis C.StrongMonos f)
     → ∀ {x} → C.is-epic (η x)
 ```
 
@@ -303,7 +303,7 @@ when $L \dashv R$ is a strong epireflective category.
   factor+mono-unit-invertible→strong-epireflective
     : is-reflective L⊣R
     → (∀ {x a} {f : C.Hom x (R.₀ a)} → C.is-monic f → C.is-invertible (η x))
-    → (∀ {x y} → (f : C.Hom x y) → Factorisation C C.StrongEpis Monos f)
+    → (∀ {x y} → (f : C.Hom x y) → Factorisation C C.StrongEpis C.Monos f)
     → ∀ {x} → C.is-strong-epi (η x)
 
 ```
