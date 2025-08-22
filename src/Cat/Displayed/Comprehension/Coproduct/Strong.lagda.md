@@ -5,6 +5,7 @@ open import Cat.Displayed.Comprehension
 open import Cat.Displayed.Cartesian
 open import Cat.Morphism.Orthogonal
 open import Cat.Displayed.Base
+open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
 import Cat.Reasoning

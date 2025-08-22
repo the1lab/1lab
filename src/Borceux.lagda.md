@@ -90,6 +90,7 @@ open import Cat.Instances.Slice
 open import Cat.Functor.Closed
 open import Cat.Instances.Free
 open import Cat.Instances.Sets
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Monad
 open import Cat.Functor.Final
 open import Cat.Functor.Joint
