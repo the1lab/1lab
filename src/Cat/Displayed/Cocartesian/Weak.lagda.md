@@ -212,7 +212,7 @@ fibration+weak-cocartesian→cocartesian {x} {y} {x'} {y'} {f} {f'} fib weak = c
     module weak = is-weak-cocartesian weak
 ```
 
-To see show this, we need to construct a unique factorisation of some
+To show this, we need to construct a unique factorisation of some
 morphism $h' : x' \to_{mf} u'$, as depicted in the following diagram
 
 ~~~{.quiver}
