@@ -3,6 +3,7 @@
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Orthogonal
 open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
 import Cat.Reasoning
