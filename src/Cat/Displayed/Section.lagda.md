@@ -4,6 +4,9 @@ open import Cat.Displayed.Instances.Identity
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
+
+import Cat.Displayed.Reasoning as Disp
+import Cat.Reasoning as Cat
 ```
 -->
 
@@ -71,3 +74,79 @@ bifibration is a trivial matter of data repackaging.</summary>
     is .is-iso.linv s = Section-path refl refl
 ```
 </details>
+
+<!--
+```agda
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
+  private
+    module E = Displayed E
+    module B = Cat B
+
+  instance
+    Funlike-Section : Funlike (Section E) B.Ob λ x → E.Ob[ x ]
+    Funlike-Section = record { _·_ = λ S e → S .Section.S₀ e }
+```
+-->
+
+We can also specialise the notion of [[vertical natural transformation]]
+to work with sections instead.
+
+```agda
+  record _=>s_ (P Q : Section E) : Type (o ⊔ ℓ ⊔ ℓ') where
+    no-eta-equality
+
+    private
+      module P = Section P
+      module Q = Section Q
+
+    field
+      map : (x : ⌞ B ⌟) → E.Hom[ B.id ] (P · x) (Q · x)
+      com : (x y : ⌞ B ⌟) (f : B.Hom x y)
+          → map y E.∘' P.S₁ f E.≡[ B.id-comm-sym ] Q.S₁ f E.∘' map x
+```
+
+<!--
+```agda
+  {-# INLINE _=>s_.constructor #-}
+
+  private unquoteDecl eqv = declare-record-iso eqv (quote _=>s_)
+
+  instance
+    H-Level-Natₛ : ∀ {P Q n} → H-Level (P =>s Q) (2 + n)
+    H-Level-Natₛ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
+
+    Extensional-Natₛ
+      : ∀ {P Q ℓr} ⦃ _ : Extensional ((x : ⌞ B ⌟) → E.Hom[ B.id ] (P · x) (Q · x)) ℓr ⦄
+      → Extensional (P =>s Q) ℓr
+    Extensional-Natₛ = injection→extensional! (λ p → Iso.injective eqv (p ,ₚ prop!)) auto
+
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
+  open Disp E
+  private
+    module B = Cat B
+
+  open Precategory
+  open Section
+  open _=>s_
+
+  Sections : Precategory (o ⊔ o' ⊔ ℓ ⊔ ℓ') (o ⊔ ℓ ⊔ ℓ')
+  Sections .Ob          = Section E
+  Sections .Hom         = _=>s_
+  Sections .Hom-set X Y = hlevel 2
+  Sections .id      = record { map = λ x → id' ; com = λ x y f → to-pathp[] id-comm[] }
+  Sections ._∘_ {S} {T} {U} f g = record
+    { map = λ x     → hom[ B.idl B.id ] (f .map x ∘' g .map x)
+    ; com = λ x y h → cast[] $
+      hom[] (f .map y ∘' g .map y) ∘' S .S₁ h ≡[]⟨ unwrap _ ⟩∘'⟨refl ⟩
+      (f .map y ∘' g .map y) ∘' S .S₁ h       ≡[ B.pullr B.id-comm-sym   ]⟨ pullr'   (λ i → B.id-comm-sym i) (g .com x y h) ⟩
+      f .map y ∘' T .S₁ h ∘' g .map x         ≡[ B.extendl B.id-comm-sym ]⟨ extendl' (λ i → B.id-comm-sym i) (f .com x y h) ⟩
+      U .S₁ h ∘' f .map x ∘' g .map x         ≡[]⟨ refl⟩∘'⟨ wrap _ ⟩
+      U .S₁ h ∘' hom[] (f .map x ∘' g .map x) ∎
+    }
+  Sections .idr f       = ext λ x → idr[]
+  Sections .idl f       = ext λ x → idl[]
+  Sections .assoc f g h = ext λ x → smashr _ _
+    ∙ ap hom[] (from-pathp⁻ (assoc' _ _ _))
+    ∙ sym (smashl _ _ ∙ sym (weave _ _ _ (to-pathp⁻ refl)))
+```
+-->

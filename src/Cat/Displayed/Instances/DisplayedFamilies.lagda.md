@@ -187,14 +187,12 @@ families that takes each $\cE_{x}$ to the constant family.
 
 ```agda
 ConstDispFam : Vertical-functor E Disp-family
-ConstDispFam .Vertical-functor.F₀' {x = x} x' =
-  fam-over x id x'
-ConstDispFam .Vertical-functor.F₁' {f = f} f' =
-  fam-over-hom f id-comm f'
+ConstDispFam .Vertical-functor.F₀' {x = x} x' = fam-over x id x'
+ConstDispFam .Vertical-functor.F₁' {f = f} f' = fam-over-hom f id-comm f'
 ConstDispFam .Vertical-functor.F-id' =
-  Slice-pathp refl ,ₚ sym (transport-refl _)
+  Slice-pathp refl ,ₚ sym (coh[ refl ] id')
 ConstDispFam .Vertical-functor.F-∘' =
-  Slice-pathp refl ,ₚ sym (transport-refl _)
+  Slice-pathp refl ,ₚ sym (coh[ refl ] _)
 ```
 
 This functor is in fact fibred, though the proof is somewhat involved!
@@ -247,12 +245,15 @@ Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
   cart .commutes {x} {P} m h' =
     Σ-pathp (Slice-pathp (coh m h')) $ cast[] $
       hom[] (f' ∘' map-tot' (cart .universal m h')) ≡[]⟨ ap hom[] (f'.commutes _ _) ⟩
-      hom[] (hom[] (map-tot' h'))                   ≡[ coh m h' ]⟨ to-pathp⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
+      hom[] (hom[] (map-tot' h'))                   ≡[ coh m h' ]⟨ to-pathp[]⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
       map-tot' h' ∎
   cart .unique {x} {P} {m = m} {h' = h'} m' p =
-    Σ-path (Slice-pathp (sym (fam-square m' ∙ idl _)))
-    $ f'.unique _ $ from-pathp⁻ $ cast[] {q = coh m h'} $
-      f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
-      hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
-      map-tot' h'               ∎
+    Σ-path (Slice-pathp (sym (fam-square m' ∙ idl _))) $
+    let
+      p =
+        f'.unique _ $ from-pathp[]⁻ $ cast[] {q = coh m h'} $
+        f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp[] (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
+        hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
+        map-tot' h'               ∎
+    in sym (hom[]-is-subst _ _) ∙ p
 ```

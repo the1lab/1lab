@@ -97,6 +97,8 @@ property (rather than data).
   functor→displayed .idr' f' = Σ-prop-pathp! (E.idr _)
   functor→displayed .idl' f' = Σ-prop-pathp! (E.idl _)
   functor→displayed .assoc' f' g' h' = Σ-prop-pathp! (E.assoc _ _ _)
+  functor→displayed .hom[_] p f = f .fst , (f .snd ∙ ap₂ B._∘_ p refl)
+  functor→displayed .coh[_] p f = Σ-prop-pathp! refl
 ```
 
 We call a functor that gives rise to a Cartesian fibration through this

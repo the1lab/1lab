@@ -58,7 +58,10 @@ _D∘_ {ℬ = ℬ} ℰ ℱ = disp where
   disp .Displayed.idl' f' =
     ℰ.idl' (f' .fst) ,ₚ ℱ.idl' (f' .snd)
   disp .Displayed.assoc' f' g' h' =
-    (ℰ.assoc' (f' .fst) (g' .fst) (h' .fst)) ,ₚ (ℱ.assoc' (f' .snd) (g' .snd) (h' .snd))
+    ℰ.assoc' (f' .fst) (g' .fst) (h' .fst) ,ₚ ℱ.assoc' (f' .snd) (g' .snd) (h' .snd)
+  disp .Displayed.hom[_] p f' = ℰ.hom[ p ] (f' .fst) , ℱ.hom[ ap₂ ∫hom p (ℰ.coh[ p ] (f' .fst)) ] (f' .snd)
+  disp .Displayed.coh[_] p f' = ℰ.coh[ p ] (f' .fst) ,ₚ coh[ (λ i → ∫hom (p i) (ℰ.coh[ p ] (f' .fst) i)) ] (f' .snd)
+    where open DR ℱ
 ```
 
 We also obtain a [[displayed functor]] from $\cE \cdot \cF$ to $\cE$

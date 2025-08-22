@@ -89,6 +89,10 @@ helper module, you see.
                → ∀ {x' y' z'} (f' : homp i f y' z') (g' : homp i g x' y')
                → homp i (B i ._∘_ f g) x' z')
           E._∘'_ F._∘'_
+        hom[]p : PathP
+          (λ i → {a b : B i .Ob} {x : obp i a} {y : obp i b} {f g : B i .Hom a b}
+               → (p : f ≡ g) (f' : homp i f x y) → homp i g x y)
+          E.hom[_] F.hom[_]
 ```
 
 An instance of this record determines a path of displayed categories,
@@ -119,9 +123,9 @@ components are, by definition, unimportant.
 
 ```agda
       go : PathP (λ i → Displayed (B i) o' ℓ') E F
-      Ob[ go i ] x = obp i x
-      Hom[ go i ] = homp i
-      Hom[ go i ]-set {a} {b} f x y = homp-set i a b f x y
+      go i .Ob[_] x = obp i x
+      go i .Hom[_]  = homp i
+      go i .Hom[_]-set {a} {b} f x y = homp-set i a b f x y
       go i .id' = idp i
       go i ._∘'_ = compp i
 ```
@@ -138,7 +142,7 @@ components are, by definition, unimportant.
         (λ i a b x y f f' → f')
         i j a b x y f f'
       go i .idl' {a} {b} {x} {y} {f} f' j = is-set→squarep
-        (λ i j    → Π-is-hlevel³ {A = B i .Ob} {B = λ _ → B i .Ob}      {C = λ a _ → obp i a}      2
+        (λ i j     → Π-is-hlevel³ {A = B i .Ob} {B = λ _ → B i .Ob}      {C = λ a _ → obp i a}      2
           λ a b x  → Π-is-hlevel³ {A = obp i b} {B = λ _ → B i .Hom a b} {C = λ y f → homp i f x y} 2
           λ y f f' → homp-set i a b (B i .idl f j) x y)
         (λ i a b x y f f' → compp i (idp i) f')
@@ -147,7 +151,7 @@ components are, by definition, unimportant.
         (λ i a b x y f f' → f')
         i j a b x y f f'
       go i .assoc' {a} {b} {c} {d} {w} {x} {y} {z} {f} {g} {h} f' g' h' j = is-set→squarep
-        (λ i j    → Π-is-hlevel³ {A = B i .Ob}      {B = λ _ → B i .Ob}      {C = λ _ _ → B i .Ob}      2
+        (λ i j     → Π-is-hlevel³ {A = B i .Ob}      {B = λ _ → B i .Ob}      {C = λ _ _ → B i .Ob}      2
           λ a b c  → Π-is-hlevel³ {A = B i .Ob}      {B = λ _ → obp i a}      {C = λ _ _ → obp i b}      2
           λ d w x  → Π-is-hlevel³ {A = obp i c}      {B = λ _ → obp i d}      {C = λ _ - → B i .Hom c d} 2
           λ y z f  → Π-is-hlevel³ {A = B i .Hom b c} {B = λ _ → B i .Hom a b} {C = λ _ _ → homp i f y z} 2
@@ -158,6 +162,19 @@ components are, by definition, unimportant.
         (λ i a b c d w x y z f g h f' g' h' → F .assoc' f' g' h' i)
         (λ i a b c d w x y z f g h f' g' h' → compp i (compp i f' g') h')
         i j a b c d w x y z f g h f' g' h'
+      go i .hom[_] {a} {b} {x} {y} {f} {g} p f' = hom[]p i p f'
+      go i .coh[_] {a} {b} {x} {y} {f} {g} p f' j = is-set→squarep
+        (λ i j → Π-is-hlevel² {A = B i .Ob} {B = λ _ → B i .Ob} 2
+         λ a b → Π-is-hlevel² {A = obp i a} {B = λ _ → obp i b} 2
+         λ x y → Π-is-hlevel³ {A = B i .Hom a b} {B = λ f → B i .Hom a b} {C = λ f g → f ≡ g} 2
+         λ f g p → Π-is-hlevel {A = homp i f x y} 2 λ f' →
+          homp-set i a b (p j) x y
+         )
+          (λ i x y a b f g p f' → f')
+          (λ i x y a b f g p f' → E.coh[ p ] f' i)
+          (λ i x y a b f g p f' → F.coh[ p ] f' i)
+          (λ i x y a b f g p f' → hom[]p i p f')
+          i j a b x y f g p f'
 ```
 -->
 
@@ -241,7 +258,24 @@ $x$, giving a line of type families `p1`{.Agda} ranging from $\cE[-]
     p2 i {x} {y} f x' y' = Glue (ℱ.Hom[ unglue f ] (unglue x') (unglue y')) λ where
       (i = i0) → ℰ.Hom[ f ] x' y' , G.F₁' , homeqv
       (i = i1) → ℱ.Hom[ f ] x' y' , id≃
+```
 
+<!--
+```agda
+    abstract
+      hom[]-coh
+        : PathP
+          (λ i → (a b : ps i .Ob) (x : p1 i a) (y : p1 i b) (f g : ps i .Hom a b)
+                → (f' : p2 i {a} {b} f x y) → f ≡ g → p2 i {a} {b} g x y)
+          (λ a b x y f g p f' → ℰ.hom[_] {a} {b} {x} {y} {f} {g} f' p)
+          (λ a b x y f g p f' → ℱ.hom[_] {a} {b} {x} {y} {f} {g} f' p)
+      hom[]-coh = ua→ λ a → ua→ λ b → ua→ λ x → ua→ λ y → ua→ λ f → ua→ λ g → ua→ λ f' → funext-dep λ {x₀} {x₁} p →
+        path→ua-pathp _ (J (λ g x₀ → (x₁ : F.₁ f ≡ F.₁ g) → x₁ ≡ ap F.₁ x₀ → G.F₁' (ℰ.hom[ x₀ ] f') ≡ ℱ.hom[ x₁ ] (G.F₁' f'))
+          (λ p r → ap G.F₁' (sym (ℰ.coh[ refl ] f')) ∙ sym (ap₂ ℱ.hom[_] r refl ∙ sym (ℱ.coh[ refl ] _))) x₀ x₁ λ i j → unattach (∂ i) (p (~ i) j))
+```
+-->
+
+```agda
     open displayed-pathp-data
     input : displayed-pathp-data
     input .obp  = p1
@@ -289,6 +323,8 @@ I won't comment on it. You can't make me.</summary>
           k (i = i0) → F.F-∘ f g (~ k)
           k (i = i1) → f C.∘ g
           k (k = i0) → unglue f C.∘ unglue g
+
+    input .hom[]p i {a} {b} {x} {y} {f} {g} p f' = hom[]-coh i a b x y f g f' p
 ```
 
 </details>

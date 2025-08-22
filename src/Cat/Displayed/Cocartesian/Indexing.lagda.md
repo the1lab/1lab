@@ -57,10 +57,10 @@ cobase-change f .F₁ vert = rebase f vert
 <!--
 ```agda
 cobase-change f .F-id =
-  sym $ ι!.uniquev _ $ to-pathp $
+  sym $ ι!.uniquev _ $ to-pathp[] $
     idl[] ∙ (sym $ cancel _ _ (idr' _))
 cobase-change f .F-∘ f' g' =
-  sym $ ι!.uniquev _ $ to-pathp $
+  sym $ ι!.uniquev _ $ to-pathp[] $
     smashl _ _
     ∙∙ revive₁ (pullr[] _ (ι!.commutesv _))
     ∙∙ smashr _ _

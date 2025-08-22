@@ -14,15 +14,17 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Displayed.Instances.Identity
-  {o ℓ} (B : Precategory o ℓ)
-  where
+module Cat.Displayed.Instances.Identity {o ℓ} (B : Precategory o ℓ) where
+```
 
+<!--
+```agda
+open Trivially-graded
 open Precategory B
-open Displayed
 open Functor
 open ∫Hom
 ```
+-->
 
 ## The identity bifibration
 
@@ -34,14 +36,11 @@ $B$, called the **identity bifibration**.
 
 ```agda
 IdD : Displayed B lzero lzero
-IdD .Ob[_] _ = ⊤
-IdD .Hom[_] _ _ _ = ⊤
-IdD .Hom[_]-set _ _ _ = hlevel 2
-IdD .id' = tt
-IdD ._∘'_ _ _ = tt
-IdD .idr' _ = refl
-IdD .idl' _ = refl
-IdD .assoc' _ _ _ = refl
+IdD = with-thin-display record where
+  Ob[_]      X = ⊤
+  Hom[_] f X Y = ⊤
+  id'    = _
+  _∘'_   = _
 ```
 
 This fibration is obviously a discrete fibration; in fact, it's about as

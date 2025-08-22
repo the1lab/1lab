@@ -150,18 +150,17 @@ commutes with $\pi_1'$ and $\pi_2'$.
 
 <!--
 ```agda
-    opaque
-      ⟨_,_⟩ₚ
-        : (f' : Hom[ π₁ ∘ f ] a' x') (g' : Hom[ π₂ ∘ f ] a' y')
-        → Hom[ f ] a' p'
-      ⟨ f' , g' ⟩ₚ = hom[ sym (unique refl refl) ] ⟨ f' , g' ⟩'
+    ⟨_,_⟩ₚ
+      : (f' : Hom[ π₁ ∘ f ] a' x') (g' : Hom[ π₂ ∘ f ] a' y')
+      → Hom[ f ] a' p'
+    ⟨ f' , g' ⟩ₚ = hom[ sym (unique refl refl) ] ⟨ f' , g' ⟩'
 
-      abstract
-        π₁∘⟨⟩ₚ : π₁' ∘' ⟨ f' , g' ⟩ₚ ≡ f'
-        π₁∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp π₁∘⟨⟩'
+    abstract
+      π₁∘⟨⟩ₚ : π₁' ∘' ⟨ f' , g' ⟩ₚ ≡ f'
+      π₁∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp[] π₁∘⟨⟩'
 
-        π₂∘⟨⟩ₚ : π₂' ∘' ⟨ f' , g' ⟩ₚ ≡ g'
-        π₂∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp π₂∘⟨⟩'
+      π₂∘⟨⟩ₚ : π₂' ∘' ⟨ f' , g' ⟩ₚ ≡ g'
+      π₂∘⟨⟩ₚ = whisker-r _ ∙ reindex _ _ ∙ from-pathp[] π₂∘⟨⟩'
 ```
 -->
 

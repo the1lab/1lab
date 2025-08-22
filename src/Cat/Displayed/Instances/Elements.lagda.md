@@ -41,18 +41,13 @@ elements, as we obtain the more traditional definition by taking the
 
 ```agda
 ∫ : Displayed B s s
-∫ .Displayed.Ob[_] X = P ʻ X
-∫ .Displayed.Hom[_] f P[X] P[Y] = P.₁ f P[Y] ≡ P[X]
-∫ .Displayed.Hom[_]-set _ _ _ = hlevel 2
-∫ .Displayed.id' = happly P.F-id _
-∫ .Displayed._∘'_ {x = x} {y} {z} {f} {g} p q = pf where abstract
-  pf : P.₁ (f ∘ g) z ≡ x
-  pf =
+∫ = with-thin-display record where
+  Ob[_]            X = P ʻ X
+  Hom[_] f P[X] P[Y] = P.₁ f P[Y] ≡ P[X]
+  id' = happly P.F-id _
+  _∘'_ {x = x} {y} {z} {f} {g} p q =
     P.₁ (f ∘ g) z   ≡⟨ happly (P.F-∘ g f) z ⟩
     P.₁ g (P.₁ f z) ≡⟨ ap (P.₁ g) p ⟩
     P.₁ g y         ≡⟨ q ⟩
     x               ∎
-∫ .Displayed.idr'   _     = prop!
-∫ .Displayed.idl'   _     = prop!
-∫ .Displayed.assoc' _ _ _ = prop!
 ```

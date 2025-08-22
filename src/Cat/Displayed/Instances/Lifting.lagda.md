@@ -308,12 +308,25 @@ module _
   Liftings .Displayed.Ob[_] = Lifting E
   Liftings .Displayed.Hom[_] α F' G' = F' =[ α ]=>l G'
   Liftings .Displayed.Hom[_]-set _ _ _ = hlevel 2
-  Liftings .Displayed.id' = idntl
+  Liftings .Displayed.id'  = idntl
   Liftings .Displayed._∘'_ = _∘ntl_
   Liftings .Displayed.idr' _ = Nat-lift-pathp (λ _ → idr' _)
   Liftings .Displayed.idl' _ = Nat-lift-pathp (λ _ → idl' _)
   Liftings .Displayed.assoc' _ _ _ = Nat-lift-pathp (λ _ → assoc' _ _ _)
 ```
+
+<!--
+```agda
+  Liftings .Displayed.hom[_] p f .η' x = hom[ p ηₚ x ] (f .η' x)
+  Liftings .Displayed.hom[_] p f .is-natural' i j g = to-pathp[] $
+    smashl _ _
+    ∙ ap hom[] (from-pathp[]⁻ (f .is-natural'  i j g))
+    ∙ hom[]-∙ _ _
+    ∙ reindex _ _
+    ∙ sym (whisker-r _)
+  Liftings .Displayed.coh[_] p f = Nat-lift-pathp λ _ → coh[ p ηₚ _ ] (f .η' _)
+```
+-->
 
 If a natural transformation of liftings is pointwise cartesian, then
 it is cartesian.
@@ -384,9 +397,9 @@ reindexing $G'$ pointwise.
       symP $ π*.uniquep _
         (sym (F .F-∘ f g)) (α .is-natural _ _ _ ) (G'* .F₁' f ∘' G'* .F₁' g) $
           π* _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (π*.commutes _ _) ⟩
-          hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
+          hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
           (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (π*.commutes _ _) ⟩
-          G' .F₁' f ∘' hom[] (G' .F₁' g ∘' π* _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
+          G' .F₁' f ∘' hom[] (G' .F₁' g ∘' π* _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
           G' .F₁' f ∘' (G' .F₁' g ∘' π* _ _)        ≡[]⟨ pulll[] _ (symP (G' .F-∘' f g)) ⟩
           G' .F₁' (f J.∘ g) ∘' π* _ _               ∎
 ```

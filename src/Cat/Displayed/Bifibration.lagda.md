@@ -221,10 +221,10 @@ equivalence.
       equiv-natural g h k =
         π*.uniquep₂ _ _ _ _ _
           (Fib.pulllf (π*.commutesp id-comm _)
-           ∙[] pushl[] _ (pushl[] _ (to-pathp⁻ (smashr _ _))))
+           ∙[] pushl[] _ (pushl[] _ (to-pathp[]⁻ (smashr _ _))))
           (Fib.pulllf (π*.commutesp id-comm _)
            ∙[] extendr[] _ (Fib.pulllf (Fib.pulllf (π*.commutesp id-comm _)))
-           ∙[] extendr[] _ (pullr[] _ (to-pathp (L-unit .is-natural _ _ h)))
+           ∙[] extendr[] _ (pullr[] _ (to-pathp[] (L-unit .is-natural _ _ h)))
            ∙[] pullr[] _ (Fib.pulllf (extendr[] _ (π*.commutesp id-comm _))))
 ```
 </details>

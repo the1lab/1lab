@@ -86,14 +86,11 @@ $F$-algebra homomorphism.
 
 ```agda
   F-Algebras : Displayed C ℓ ℓ
-  F-Algebras .Ob[_] a = Hom (F.₀ a) a
-  F-Algebras .Hom[_] f α β = f ∘ α ≡ β ∘ F.₁ f
-  F-Algebras .Hom[_]-set _ _ _ = hlevel 2
-  F-Algebras .id' = idl _ ∙ intror F.F-id
-  F-Algebras ._∘'_ p q = pullr q ∙ pulll p ∙ pullr (sym (F.F-∘ _ _))
-  F-Algebras .idr' _ = prop!
-  F-Algebras .idl' _ = prop!
-  F-Algebras .assoc' _ _ _ = prop!
+  F-Algebras = with-thin-display record where
+    Ob[_]      a = Hom (F.₀ a) a
+    Hom[_] f α β = f ∘ α ≡ β ∘ F.₁ f
+    id'          = idl _ ∙ intror F.F-id
+    _∘'_ p q     = pullr q ∙ pulll p ∙ pullr (sym (F.F-∘ _ _))
 ```
 
 We can take the [[total category]] of this displayed category to recover

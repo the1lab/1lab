@@ -81,14 +81,12 @@ laws are trivial since $H$ is valued in propositions.
 
 ```agda
   Thin-structure-over : Displayed (Sets ℓ) o' ℓ'
-  Thin-structure-over .Ob[_] x = S ∣ x ∣
-  Thin-structure-over .Hom[_] f x y = ∣ spec .is-hom f x y ∣
-  Thin-structure-over .Hom[_]-set f a b = hlevel 2
-  Thin-structure-over .id' = spec .id-is-hom
-  Thin-structure-over ._∘'_ f g = spec .∘-is-hom _ _ f g
-  Thin-structure-over .idr' f' = prop!
-  Thin-structure-over .idl' f' = prop!
-  Thin-structure-over .assoc' f' g' h' = prop!
+  Thin-structure-over = with-thin-display record where
+    Ob[_]      x = S ∣ x ∣
+    Hom[_] f x y = ∣ spec .is-hom f x y ∣
+
+    id'      = spec .id-is-hom
+    _∘'_ f g = spec .∘-is-hom _ _ f g
 
   Structured-objects : Precategory _ _
   Structured-objects = ∫ Thin-structure-over

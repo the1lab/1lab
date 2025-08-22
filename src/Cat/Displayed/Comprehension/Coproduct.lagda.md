@@ -159,7 +159,7 @@ hidden code on the sidebar.]
       ⟨⟩-cocartesian.commutesp x a _ _
 
     ∐[]-id {x = x} {a = a} =
-      sym $ ⟨⟩-cocartesian.unique _ _ _ $ from-pathp⁻ $ D.cast[] $
+      sym $ ⟨⟩-cocartesian.unique _ _ _ $ D.from-pathp[]⁻ $ D.cast[] $
       D.id' D.∘' ⟨ x , a ⟩ D.≡[]⟨ D.idl' _ ⟩
       ⟨ x , a ⟩            D.≡[]⟨ symP (D.idr' _ ) ⟩
       ⟨ x , a ⟩ D.∘' D.id' ∎
@@ -168,7 +168,7 @@ hidden code on the sidebar.]
       symP $ ⟨⟩-cocartesian.uniquep x a _ _ _ _ $
       (∐[ f ] D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩          D.≡[]⟨ D.pullr[] _ (∐[]-natural g) ⟩
       ∐[ f ] D.∘' ⟨ x , b ⟩ D.∘' g                 D.≡[]⟨ D.extendl[] _ (∐[]-natural f) ⟩
-      ⟨ x , c ⟩ D.∘' f D.∘' g                      D.≡[]⟨ to-pathp (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
+      ⟨ x , c ⟩ D.∘' f D.∘' g                      D.≡[]⟨ D.to-pathp[] (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
       ⟨ x , c ⟩ D.∘' (f D↓.∘ g) ∎
 ```
 -->
@@ -208,7 +208,7 @@ we just constructed is natural, given below.
       ⟨⟩-cocartesian.uniquep x a _ _ _ (∐-elim f D.∘' ∐[ g ]) $
         ((∐-elim f) D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩ D.≡[]⟨ D.pullr[] _ (∐[]-natural g) ⟩
         ∐-elim f D.∘' ⟨ x , b ⟩ D.∘' g          D.≡[]⟨ D.extendl[] id-comm-sym (⟨⟩-cocartesian.commutesp x b _ _) ⟩
-        D.π* πᶜ c D.∘' f D.∘' g                 D.≡[]⟨ to-pathp (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
+        D.π* πᶜ c D.∘' f D.∘' g                 D.≡[]⟨ D.to-pathp[] (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
         D.π* πᶜ c D.∘' D.hom[] (f D.∘' g)       ∎
 ```
 
@@ -282,7 +282,7 @@ hidden from the page for brevity.
       D.π*.uniquep _ _ _ (∐-transpose f D.∘' g) $
         D.π* πᶜ c D.∘' ∐-transpose f D.∘' g D.≡[]⟨ D.pulll[] id-comm (D.π*.commutesp _ _) ⟩
         (f D.∘' ⟨ x , b ⟩) D.∘' g           D.≡[]⟨ D.extendr[] _ (symP (∐[]-natural g)) ⟩
-        (f D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
+        (f D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ D.to-pathp[] (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
         (f D↓.∘ ∐[ g ]) D.∘' ⟨ x , a ⟩      ∎
 
     ∐-transpose-naturalr
@@ -293,7 +293,7 @@ hidden from the page for brevity.
       D.π*.uniquep _ _ _ (π*.F₁ x f D.∘' ∐-transpose g) $
         D.π* πᶜ c D.∘' π*.₁ x f D.∘' ∐-transpose g     D.≡[]⟨ D.pulll[] _ (D.π*.commutesp id-comm _) ⟩
         (f D.∘' D.π* πᶜ b) D.∘' ∐-transpose g          D.≡[]⟨ D.extendr[] id-comm (D.π*.commutesp _ _) ⟩
-        (f D.∘' g) D.∘' ⟨ x , a ⟩                      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
+        (f D.∘' g) D.∘' ⟨ x , a ⟩                      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ D.to-pathp[] (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
         D.hom[ idl id ] (f D.∘' g) D.∘' ⟨ x , a ⟩      ∎
 ```
 -->

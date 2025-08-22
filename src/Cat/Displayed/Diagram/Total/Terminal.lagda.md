@@ -47,7 +47,7 @@ record is-terminal-over {top} (term : is-terminal B top) (top' : E ʻ top) : Typ
       !ₚ-unique : ∀ {y} {m : B.Hom y top} {y' : E ʻ y} (h : E.Hom[ m ] y' top') → !ₚ ≡ h
       !ₚ-unique {m = m} {y'} = J
         (λ m p → (h : E.Hom[ m ] y' top') → E.hom[ p ] !' ≡ h)
-        (λ h → from-pathp (!-unique' h))
+        (λ h → E.from-pathp[] (!-unique' h))
         (!-unique m)
 
   abstract

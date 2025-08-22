@@ -88,6 +88,8 @@ Simple .Displayed.idl' {f = u} f =
 Simple .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
+Simple .Displayed.hom[_] p f = f
+Simple .Displayed.coh[_] p f = refl
 ```
 
 # Cartesian morphisms

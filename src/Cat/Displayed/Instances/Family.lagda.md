@@ -46,7 +46,8 @@ the objects over $S$ are precisely the families $S \to \rm{Ob}_\cC$.
 
 ```agda
 Family : ∀ {ℓ} → Displayed (Sets ℓ) _ _
-Family .Ob[_] S = ∣ S ∣ → Ob
+Family = with-trivial-grading record where
+  Ob[_] S = ∣ S ∣ → Ob
 ```
 
 The set of maps over a function $f : A \to B$ (in $\Sets$) is the set of
@@ -54,20 +55,18 @@ families of morphisms $F(x) \to G(fx)$. Here we are abusing that, for
 functors between discrete categories, naturality is automatic.
 
 ```agda
-Family .Hom[_] {A} {B} f F G =
-  ∀ x → Hom (F x) (G (f x))
-Family .Hom[_]-set f x y = hlevel 2
+  Hom[_] {A} {B} f F G = ∀ x → Hom (F x) (G (f x))
 ```
 
 The identity and composition operations are as for natural
 transformations, but without the requirement for naturality.
 
 ```agda
-Family .id' x = id
-Family ._∘'_ {f = f} {g = g} f' g' x = f' (g x) ∘ g' x
-Family .idr' _ = funext λ x → idr _
-Family .idl' _ = funext λ x → idl _
-Family .assoc' _ _ _ = funext λ _ → assoc _ _ _
+  id' x = id
+  _∘'_ {f = f} {g = g} f' g' x = f' (g x) ∘ g' x
+  idr'   _     = funext λ x → idr _
+  idl'   _     = funext λ x → idl _
+  assoc' _ _ _ = funext λ _ → assoc _ _ _
 ```
 
 The family fibration is a [[Cartesian fibration]], essentially by solving an
