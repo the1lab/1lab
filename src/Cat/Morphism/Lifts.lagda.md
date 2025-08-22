@@ -57,10 +57,9 @@ that $w \circ f = u$ and $g \circ w = v$.
   Lifting {a} {b} {x} {y} f g u v = Σ[ w ∈ Hom b x ] w ∘ f ≡ u × g ∘ w ≡ v
 ```
 
-:::{.definition #lifting-property}
-Let $L, R$ be two collections of morphisms of $\cC$. We say
-that $L$ *left lifts against* $R$ and $R$ *right lifts against* $L$
-if for every commutative square
+:::{.definition #lifts-against}
+Let $f, g$ be two morphisms of $\cC$. We say that $f$ *left lifts against* $g$
+and $g$ *right lifts against* $f$ if for every commutative square
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -74,12 +73,50 @@ if for every commutative square
 \end{tikzcd}\]
 ~~~
 
-with $f \in L$ and $g \in R4, there [[merely]] exists a lifting $w$.
+there [[merely]] exists a lifting $w$.
+
+We can also talk about objects with left or right lifting properties.
+An object $P : \cC$ left lefts against a morphism $f$ if for every
+cospan $P \xto{u} X \xfrom{f} Y$, there merely exists a map $w : \cC(P, X)$
+with $f \circ w = u$.
+
+~~~{.quiver}
+\begin{tikzcd}
+  && X \\
+  \\
+  P && Y
+  \arrow["f", from=1-3, to=3-3]
+  \arrow["{\exists w}", dashed, from=3-1, to=1-3]
+  \arrow["u"', from=3-1, to=3-3]
+\end{tikzcd}
+~~~
+
+Similarly, an object $A$ right lifts against a morphism $f$ if for
+every span $Y \xfrom{f} X \xto{u} A$, there merely exists a map $w : \cC(Y, A)$
+with $w \circ f = u$.
+
+\begin{tikzcd}
+  X && A \\
+  \\
+  Y
+  \arrow["u", from=1-1, to=1-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["{\exists w}", dashed, from=3-1, to=1-3]
+\end{tikzcd}
+
+Finally, we say that a class of morphisms $L \subseteq \mathrm{Arr}(C)$
+lifts against another class of morphisms $R \subseteq \mathrm{Arr}(C)$
+when every $l \in L$ lifts against every $r \in R$. Note that we
+can also consider liftings of objects/morphisms against classes of
+morphisms, but we will leave the reader to fill in the definitions.
 :::
 
-We can specialize this general definition in quite a few ways, so we will
-make use of instance arguments to avoid a quadratic blowup of definitions.
+:::{.note}
+In the formalisation, we will write `Lifts` to denote all of the
+aforementioned lifting properties.
+:::
 
+<!--
 ```agda
   record Lifts-against
     {ℓl ℓr}
@@ -87,62 +124,56 @@ make use of instance arguments to avoid a quadratic blowup of definitions.
     (ℓp : Level)
     : Type (ℓl ⊔ ℓr ⊔ (lsuc ℓp)) where
     field
-      lifting-prop : L → R → Type ℓp
+      lifts-prop : L → R → Type ℓp
+      orthogonal-prop : L → R → Type ℓp
 
   open Lifts-against
 
   Lifts
     : ∀ {ℓl ℓr ℓp} {L : Type ℓl} {R : Type ℓr}
     → L → R → ⦃ _ :  Lifts-against L R ℓp ⦄ → Type _
-  Lifts l r ⦃ Lifts ⦄ = Lifts .lifting-prop l r
-```
+  Lifts l r ⦃ Lifts ⦄ = Lifts .lifts-prop l r
 
-:::{.definition #lifts-against}
-We say $f$ *lifts against* $g$ if there is a map assigning lifts to
-every commutative squares with opposing $f$ and $g$ faces, as above.
-This is a special case of a lifting property, where $L$ and $R$ are taken
-to be singleton sets containing $f$ and $g$, resp.
-:::
+  Orthogonal
+    : ∀ {ℓl ℓr ℓp} {L : Type ℓl} {R : Type ℓr}
+    → L → R → ⦃ _ :  Lifts-against L R ℓp ⦄ → Type _
+  Orthogonal l r ⦃ Lifts ⦄ = Lifts .orthogonal-prop l r
 
-```agda
   instance
     Lifts-against-hom-hom : ∀ {a b x y} → Lifts-against (Hom a b) (Hom x y) ℓ
-    Lifts-against-hom-hom .lifting-prop f g = ∀ u v → v ∘ f ≡ g ∘ u → ∥ Lifting f g u v ∥
-```
+    Lifts-against-hom-hom .lifts-prop f g = ∀ u v → v ∘ f ≡ g ∘ u → ∥ Lifting f g u v ∥
+    Lifts-against-hom-hom .orthogonal-prop f g = ∀ u v → v ∘ f ≡ g ∘ u → is-contr (Lifting f g u v)
 
-We can also consider lifting against objects.
-
-```agda
     Lifts-against-ob-hom : ∀ {x y} → Lifts-against Ob (Hom x y) ℓ
-    Lifts-against-ob-hom {x} {y} .lifting-prop a f = ∀ (u : Hom a y) → ∥ Σ[ h ∈ Hom a x ] f ∘ h ≡ u ∥
+    Lifts-against-ob-hom {x} {y} .lifts-prop a f = ∀ (u : Hom a y) → ∥ Σ[ h ∈ Hom a x ] f ∘ h ≡ u ∥
+    Lifts-against-ob-hom {x} {y} .orthogonal-prop a f = ∀ (u : Hom a y) → is-contr (Σ[ h ∈ Hom a x ] f ∘ h ≡ u)
 
     Lifts-against-hom-ob : ∀ {a b} → Lifts-against (Hom a b) Ob ℓ
-    Lifts-against-hom-ob {a} {b} .lifting-prop f x = ∀ (u : Hom a x) → ∥ Σ[ h ∈ Hom b x ] h ∘ f ≡ u ∥
-```
+    Lifts-against-hom-ob {a} {b} .lifts-prop f x = ∀ (u : Hom a x) → ∥ Σ[ h ∈ Hom b x ] h ∘ f ≡ u ∥
+    Lifts-against-hom-ob {a} {b} .orthogonal-prop f x = ∀ (u : Hom a x) → is-contr (Σ[ h ∈ Hom b x ] h ∘ f ≡ u)
 
-Finally, we can define general lifting properties against sets of morphisms
-via instance resolution.
-
-```agda
+    -- We need an INCOHERENT here to avoid competing instances for
+    -- 'Lifts L R' when 'L, R : Arrows C'. We prefer to use the left instance first, as that
+    -- will lay out our arguments left-to-right.
     Lifts-against-arrows-left
       : ∀ {ℓr ℓp κ} {R : Type ℓr}
       → ⦃ _ : ∀ {a b} → Lifts-against (Hom a b) R ℓp ⦄
       → Lifts-against (Arrows C κ) R (o ⊔ ℓ ⊔ ℓp ⊔ κ)
-    Lifts-against-arrows-left .lifting-prop L r = ∀ {a b} → (f : Hom a b) → f ∈ L → Lifts f r
+    Lifts-against-arrows-left .lifts-prop L r = ∀ {a b} → (f : Hom a b) → f ∈ L → Lifts f r
+    Lifts-against-arrows-left .orthogonal-prop L r = ∀ {a b} → (f : Hom a b) → f ∈ L → Orthogonal f r
 
     Lifts-against-arrows-right
       : ∀ {ℓl ℓp κ} {L : Type ℓl}
       → ⦃ _ : ∀ {x y} → Lifts-against L (Hom x y) ℓp ⦄
       → Lifts-against L (Arrows C κ) (o ⊔ ℓ ⊔ ℓp ⊔ κ)
-    Lifts-against-arrows-right .lifting-prop l R = ∀ {x y} → (f : Hom x y) → f ∈ R → Lifts l f
+    Lifts-against-arrows-right .lifts-prop l R = ∀ {x y} → (f : Hom x y) → f ∈ R → Lifts l f
+    Lifts-against-arrows-right .orthogonal-prop l R = ∀ {x y} → (f : Hom x y) → f ∈ R → Orthogonal l f
     {-# INCOHERENT Lifts-against-arrows-right #-}
-```
 
-<!--
-```agda
-open Impl hiding (Lifts; Lifting) public
-private open module Reimpl {o ℓ} (C : Precategory o ℓ) = Impl {C = C} using (Lifts; Lifting) public
+open Impl hiding (Lifts; Orthogonal; Lifting) public
+private open module Reimpl {o ℓ} (C : Precategory o ℓ) = Impl {C = C} using (Lifts; Orthogonal; Lifting) public
 {-# DISPLAY Impl.Lifts {C = C} L R = Lifts C L R #-}
+{-# DISPLAY Impl.Orthogonal {C = C} L R = Orthogonal C L R #-}
 {-# DISPLAY Impl.Lifting {C = C} f g h k = Lifting C f g h k #-}
 
 module _ {o ℓ} (C : Precategory o ℓ) where
@@ -152,7 +183,6 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     variable
       a b c d x y : ⌞ C ⌟
       f g h u v : Hom a b
-
 ```
 -->
 
