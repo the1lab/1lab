@@ -14,7 +14,6 @@ open import Order.Cat
 import Cat.Reasoning as Cat
 
 import Order.Reasoning as Poset
-
 ```
 -->
 
