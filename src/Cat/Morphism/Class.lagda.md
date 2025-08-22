@@ -7,10 +7,7 @@ description: |
 open import 1Lab.Reflection
 open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_)
 
-open import Cat.Morphism.Instances
 open import Cat.Base
-
-import Cat.Morphism
 ```
 -->
 ```agda
@@ -60,7 +57,7 @@ instance
 {-# DISPLAY Arrows.arrows S f = f ∈ S #-}
 
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Cat.Morphism C
+  open Precategory C
 
   instance
     Membership-Arrows : ∀ {κ} {x y} → Membership (Hom x y) (Arrows C κ) κ
@@ -99,21 +96,6 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-We also take the time define classes of morphisms for monos, epis, and isos.
-
-```agda
-  Monos : Arrows C (o ⊔ ℓ)
-  Monos .arrows = is-monic
-  Monos .is-tr = hlevel 1
-
-  Epis : Arrows C (o ⊔ ℓ)
-  Epis .arrows = is-epic
-  Epis .is-tr = hlevel 1
-
-  Isos : Arrows C ℓ
-  Isos .arrows = is-invertible
-  Isos .is-tr = hlevel 1
-```
 
 We can take intersections of morphism classes.
 
