@@ -71,7 +71,7 @@ module _
   strong-comprehension-coproducts : Type _
   strong-comprehension-coproducts =
     ∀ {Γ Δ} (x : E.Ob[ Γ ]) (a : D.Ob[ Γ Q.⨾ x ]) (b : D.Ob[ Δ ])
-    → m⊥m B (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) (P.πᶜ {x = b})
+    → Orthogonal B (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) (P.πᶜ {x = b})
 ```
 
 <!--
@@ -106,7 +106,7 @@ module _
   to-strong-comprehension-coproducts
     : make-strong-comprehension-coproducts
     → strong-comprehension-coproducts
-  to-strong-comprehension-coproducts mk x a b {u = u} {v = v} p =
+  to-strong-comprehension-coproducts mk x a b u v p =
     contr (∐-strong-elim _ _ p , ∐-strong-β p , ∐-strong-sub p) λ w →
        Σ-prop-path! $
        sym (∐-strong-η p (w .fst) (w .snd .fst) (w .snd .snd))
@@ -161,7 +161,7 @@ which are extremely rare.
       → σ ∘ (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) ≡ P.πᶜ ∘ ν
       → Hom (Γ P.⨾ ∐ x a) (Δ P.⨾ b)
     ∐-strong-elim {x = x} {a = a} {b = b} σ ν p =
-      strong x a b p .centre .fst
+      strong x a b _ _ p .centre .fst
 ```
 
 The upper-left triangle of the diagram gives us our $\beta$ law;
@@ -176,7 +176,7 @@ gives us the original substitution.
       → {σ : Hom (Γ P.⨾ ∐ x a) Δ} {ν : Hom (Γ Q.⨾ x P.⨾ a) (Δ P.⨾ b)}
       → (p : σ ∘ (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) ≡ P.πᶜ ∘ ν)
       → ∐-strong-elim σ ν p ∘ (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) ≡ ν
-    ∐-strong-β p = strong _ _ _ p .centre .snd .fst
+    ∐-strong-β p = strong _ _ _ _ _ p .centre .snd .fst
 ```
 
 The lower-right triangle describes how substitution interacts with
@@ -189,7 +189,7 @@ we recover the substitution from $\Gamma, \coprod X A \to \Delta$.
       → {σ : Hom (Γ P.⨾ ∐ x a) Δ} {ν : Hom (Γ Q.⨾ x P.⨾ a) (Δ P.⨾ b)}
       → (p : σ ∘ (Q.πᶜ P.⨾ˢ ⟨ x , a ⟩) ≡ P.πᶜ ∘ ν)
       → P.πᶜ ∘ ∐-strong-elim σ ν p ≡ σ
-    ∐-strong-sub p = strong _ _ _ p .centre .snd .snd
+    ∐-strong-sub p = strong _ _ _ _ _ p .centre .snd .snd
 ```
 
 Finally, uniqueness gives us an $\eta$; any other substitution that
@@ -206,7 +206,7 @@ eliminator.
       → P.πᶜ ∘ other ≡ σ
       → other ≡ ∐-strong-elim σ ν p
     ∐-strong-η p other β sub =
-      ap fst (sym $ strong _ _ _ p .paths (other , β , sub))
+      ap fst (sym $ strong _ _ _ _ _ p .paths (other , β , sub))
 ```
 
 Now, for some useful lemmas. If we eliminate by simply packaging up
