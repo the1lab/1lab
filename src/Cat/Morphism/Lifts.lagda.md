@@ -2,6 +2,7 @@
 description: |
   Lifting properties.
 ---
+
 <!--
 ```agda
 open import Cat.Instances.Shape.Interval
@@ -11,6 +12,7 @@ open import Cat.Prelude
 import Cat.Reasoning
 ```
 -->
+
 ```agda
 module Cat.Morphism.Lifts where
 ```
@@ -27,7 +29,6 @@ private module Impl {o ℓ} {C : Precategory o ℓ} where
       f g h u v : Hom a b
 ```
 -->
-
 
 :::{.definition #lifting}
 Let $f, g, u, v$ be a square of morphisms fitting into a commutative

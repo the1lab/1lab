@@ -2,6 +2,7 @@
 description: |
   Factorisations of morphisms.
 ---
+
 <!--
 ```agda
 open import Cat.Morphism.Class
@@ -10,6 +11,7 @@ open import Cat.Prelude
 import Cat.Reasoning
 ```
 -->
+
 ```agda
 module Cat.Morphism.Factorisation where
 ```
@@ -58,7 +60,6 @@ module _
   open Factorisation
 ```
 -->
-
 
 ## Properties of factorisations
 
