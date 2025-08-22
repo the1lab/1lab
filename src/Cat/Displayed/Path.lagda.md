@@ -73,7 +73,7 @@ interesting components:
 
 The types get increasingly unhinged as we go: The identification between
 displayed object spaces lies over the identification of objects of the
-underlying category; The identification between displayed Hom spaces
+underlying category; the identification between displayed Hom spaces
 lies over a path in the base category _and_ the path of displayed object
 spaces we just defined.
 

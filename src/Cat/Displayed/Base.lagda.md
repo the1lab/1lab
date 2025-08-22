@@ -102,13 +102,41 @@ done over the equalities in the base.
       → f' ∘' (g' ∘' h') ≡[ assoc f g h ] ((f' ∘' g') ∘' h')
 ```
 
-Finally, we record the fact that displayed categories are *locally
-graded* over the base category: They are equipped with a coherent
-substitution function that moves morphisms-over along paths.
+Finally, we can equip displayed categories with a distinguished
+transport operation for moving displayed morphisms between equal bases.
+While in general there may be many such, we can pair the "homwise
+transport" `hom[_]`{.Agda} operation with a coherence datum
+`coh[_]`{.Agda}, and this *pair* inhabits a contractible type (the
+centre of contraction being the native `subst`{.Agda} operation paired
+with its filler). Therefore, these fields do not affect the "homotopy
+type" of `Displayed`{.Agda}.
+
+Their purpose is strictly as an aid in mechanisation: often (e.g. in the
+[[fundamental fibration]] $\underline{\cB}$), the type $x \to_f y$
+consists of some "relevant" data together with some "irrelevant"
+[[propositions]], and, importantly, *only the propositions mention the
+base morphism $f$*. This means that a "bespoke" `hom[_]`{.Agda}
+implementation can then choose to leave the data fields definitionally
+unchanged, whereas the native `subst`{.Agda} would surround them with
+reflexive transports.
+
+Counterintuitively, this extra field actually *increases* reusability,
+despite nominally increasing the amount of data that goes into a
+displayed category: If another construction needs to transport morphisms
+in $\underline{\cB}$ to work, e.g. the [[pullback fibration]] for
+[sconing] or [[Artin gluing]], or [[fibre categories]] of
+[[subobjects]], dealing with the leftover `subst`{.Agda}s that arise in
+(e.g.) composition of morphisms can be quite annoying, and while
+cleaning them up can be automated, using the "bespoke" transport avoids
+introducing them in the first place.
+
+[sconing]: Cat.Displayed.Instances.Scone.html
 
 ```agda
   field
-    hom[_] : ∀ {a b x y} {f g : Hom a b} (p : f ≡ g) (f' : Hom[ f ] x y) → Hom[ g ] x y
+    hom[_]
+      : ∀ {a b x y} {f g : Hom a b} (p : f ≡ g) (f' : Hom[ f ] x y)
+      → Hom[ g ] x y
     coh[_]
       : ∀ {a b x y} {f g : Hom a b} (p : f ≡ g) (f' : Hom[ f ] x y)
       → f' ≡[ p ] hom[ p ] f'
@@ -178,18 +206,6 @@ record Trivially-graded {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type
 
 {-# INLINE Displayed.constructor #-}
 
-with-trivial-grading
-  : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Trivially-graded B o' ℓ'
-  → Displayed B o' ℓ'
-{-# INLINE with-trivial-grading #-}
-with-trivial-grading triv = record
-  { Trivially-graded triv
-  ; Hom[_]-set = λ f x y → hlevel 2
-  ; hom[_]     = subst (λ e → Hom[ e ] _ _)
-  ; coh[_]     = λ p → transport-filler _
-  }
-  where open Trivially-graded triv using (Hom[_])
-
 record Thinly-displayed {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type (o ⊔ ℓ ⊔ lsuc o' ⊔ lsuc ℓ') where
   open Precategory B
   field
@@ -203,6 +219,18 @@ record Thinly-displayed {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type
     id'  : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
     _∘'_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
          → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
+
+with-trivial-grading
+  : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Trivially-graded B o' ℓ'
+  → Displayed B o' ℓ'
+{-# INLINE with-trivial-grading #-}
+with-trivial-grading triv = record
+  { Trivially-graded triv
+  ; Hom[_]-set = λ f x y → hlevel 2
+  ; hom[_]     = subst (λ e → Hom[ e ] _ _)
+  ; coh[_]     = λ p → transport-filler _
+  }
+  where open Trivially-graded triv using (Hom[_])
 
 with-thin-display
   : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Thinly-displayed B o' ℓ'
