@@ -190,9 +190,9 @@ ConstDispFam : Vertical-functor E Disp-family
 ConstDispFam .Vertical-functor.F₀' {x = x} x' = fam-over x id x'
 ConstDispFam .Vertical-functor.F₁' {f = f} f' = fam-over-hom f id-comm f'
 ConstDispFam .Vertical-functor.F-id' =
-  Slice-pathp refl ,ₚ sym (coh[ refl ] id')
+  Slice-pathp refl ,ₚ coh[ refl ] _
 ConstDispFam .Vertical-functor.F-∘' =
-  Slice-pathp refl ,ₚ sym (coh[ refl ] _)
+  Slice-pathp refl ,ₚ coh[ refl ] _
 ```
 
 This functor is in fact fibred, though the proof is somewhat involved!
