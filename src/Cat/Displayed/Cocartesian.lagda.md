@@ -107,13 +107,13 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
   universal' : ∀ {u u'} {m : Hom b u} {k : Hom a u}
              → (p : m ∘ f ≡ k) (h' : Hom[ k ] a' u')
              → Hom[ m ] b' u'
-  universal' {u' = u'} p h' = universal _ (coe1→0 (λ i → Hom[ p i ] a' u') h')
+  universal' {u' = u'} p h' = universal _ (hom[ sym p ] h')
 
   commutesp : ∀ {u u'} {m : Hom b u} {k : Hom a u}
             → (p : m ∘ f ≡ k) (h' : Hom[ k ] a' u')
             → universal' p h' ∘' f' ≡[ p ] h'
   commutesp {u' = u'} p h' =
-    to-pathp⁻ (commutes _ (coe1→0 (λ i → Hom[ p i ] a' u') h'))
+    to-pathp[]⁻ (commutes _ _)
 
   universalp : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
              → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
@@ -128,7 +128,7 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
           → (m' : Hom[ m₁ ] b' u')
           → m' ∘' f' ≡[ p ] h' → m' ≡[ q ] universal' r h'
   uniquep p q r {h' = h'} m' s  =
-    to-pathp⁻ (unique m' (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h'))
+    to-pathp[]⁻ (unique m' (from-pathp[]⁻ s) ∙ from-pathp[]⁻ (universalp p q r h'))
 
   uniquep₂ : ∀ {u u'} {m₁ m₂ : Hom b u} {k : Hom a u}
           → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
@@ -138,10 +138,10 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
           → m₁' ∘' f' ≡[ p ] h'
           → m₂' ∘' f' ≡[ r ] h'
           → m₁' ≡[ q ] m₂'
-  uniquep₂ p q r {h' = h'} m₁' m₂' α β = to-pathp⁻ $
-       unique m₁' (from-pathp⁻ α)
-    ∙∙ from-pathp⁻ (universalp p q r _)
-    ∙∙ ap hom[] (sym (unique m₂' (from-pathp⁻ β)))
+  uniquep₂ p q r {h' = h'} m₁' m₂' α β = to-pathp[]⁻ $
+       unique m₁' (from-pathp[]⁻ α)
+    ∙∙ from-pathp[]⁻ (universalp p q r _)
+    ∙∙ ap hom[] (sym (unique m₂' (from-pathp[]⁻ β)))
 
   universalv : ∀ {b''} (f'' : Hom[ f ] a' b'') → Hom[ id ] b' b''
   universalv f'' = universal' (idl _) f''

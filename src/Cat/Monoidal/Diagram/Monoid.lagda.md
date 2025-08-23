@@ -197,9 +197,9 @@ laws, a great simplification.
 
 ```agda
   Mon[_] : Displayed C ℓ ℓ
-  Mon[_] .Ob[_]  = Monoid-on M
-  Mon[_] .Hom[_] = is-monoid-hom
-  Mon[_] .Hom[_]-set f x y = hlevel 2
+  Mon[_] = with-thin-display record where
+    Ob[_]  = Monoid-on M
+    Hom[_] = is-monoid-hom
 ```
 
 The most complicated step of putting together the displayed category of
@@ -208,19 +208,17 @@ composition. However, even in the point-free setting of an arbitrary
 category $\cC$, the reasoning isn't _that_ painful:
 
 ```agda
-  Mon[_] .id' .pres-η = C.idl _
-  Mon[_] .id' .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
+    id' = record where
+      pres-η = C.idl _
+      pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
 
-  Mon[_] ._∘'_ fh gh .pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
-  Mon[_] ._∘'_ {x = x} {y} {z} {f} {g} fh gh .pres-μ =
-    (f C.∘ g) C.∘ x .Monoid-on.μ                ≡⟨ C.pullr (gh .pres-μ) ⟩
-    f C.∘ y .Monoid-on.μ C.∘ (g C.⊗₁ g)         ≡⟨ C.extendl (fh .pres-μ) ⟩
-    Monoid-on.μ z C.∘ (f C.⊗₁ f) C.∘ (g C.⊗₁ g) ≡˘⟨ C.refl⟩∘⟨ C.-⊗- .F-∘ _ _ ⟩
-    Monoid-on.μ z C.∘ (f C.∘ g C.⊗₁ f C.∘ g)    ∎
-
-  Mon[_] .idr' f = prop!
-  Mon[_] .idl' f = prop!
-  Mon[_] .assoc' f g h = prop!
+    _∘'_ {x = x} {y} {z} {f} {g} fh gh = record where
+      pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
+      pres-μ =
+        (f C.∘ g) C.∘ x .Monoid-on.μ                ≡⟨ C.pullr (gh .pres-μ) ⟩
+        f C.∘ y .Monoid-on.μ C.∘ (g C.⊗₁ g)         ≡⟨ C.extendl (fh .pres-μ) ⟩
+        Monoid-on.μ z C.∘ (f C.⊗₁ f) C.∘ (g C.⊗₁ g) ≡˘⟨ C.refl⟩∘⟨ C.-⊗- .F-∘ _ _ ⟩
+        Monoid-on.μ z C.∘ (f C.∘ g C.⊗₁ f C.∘ g)    ∎
 ```
 
 <!--

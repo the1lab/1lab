@@ -133,16 +133,12 @@ $W$-coalgebra homomorphism.
 
 ```agda
     Coalgebras-over : Displayed C (o ⊔ ℓ) ℓ
-    Coalgebras-over .Ob[_]            = Coalgebra-on
-    Coalgebras-over .Hom[_]           = is-coalgebra-hom
-    Coalgebras-over .Hom[_]-set f α β = hlevel 2
+    Coalgebras-over = with-thin-display record where
+      Ob[_]    = Coalgebra-on
+      Hom[_]   = is-coalgebra-hom
 
-    Coalgebras-over .id'      = eliml W-id ∙ intror refl
-    Coalgebras-over ._∘'_ p q = pushl (W-∘ _ _) ∙∙ ap (W₁ _ ∘_) q ∙∙ extendl p
-
-    Coalgebras-over .idr' f'         = prop!
-    Coalgebras-over .idl' f'         = prop!
-    Coalgebras-over .assoc' f' g' h' = prop!
+      id'      = eliml W-id ∙ intror refl
+      _∘'_ p q = pushl (W-∘ _ _) ∙∙ ap (W₁ _ ∘_) q ∙∙ extendl p
 ```
 
 The [[total category]] of this displayed category is referred to as the

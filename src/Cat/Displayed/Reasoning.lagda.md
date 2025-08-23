@@ -46,8 +46,27 @@ shorthand syntax for that here. You can think of this as being an
 abbreviation for `subst`{.Agda} because... that's what it is.
 
 ```agda
-hom[_] : ∀ {a b x y} {f g : B.Hom a b} → f ≡ g → E.Hom[ f ] x y → E.Hom[ g ] x y
-hom[ p ] f' = subst (λ h → E.Hom[ h ] _ _) p f'
+abstract
+  hom[]-is-subst
+    : ∀ {a b x y} {f g : B.Hom a b} (p : f ≡ g) (f' : E.Hom[ f ] x y)
+    → hom[ p ] f' ≡ subst (λ e → Hom[ e ] x y) p f'
+  hom[]-is-subst {x = x} {y} p f' i = comp (λ j → Hom[ p j ] x y) (∂ i) λ where
+    j (j = i0) → f'
+    j (i = i0) → coh[ p ] f' j
+    j (i = i1) → coe0→i (λ i → Hom[ p i ] x y) j f'
+
+module _ {a b x y} {f g : B.Hom a b} {p : f ≡ g} {f' : E.Hom[ f ] x y} {g' : E.Hom[ g ] x y} where abstract
+  from-pathp[] : f' ≡[ p ] g' → hom[ p ] f' ≡ g'
+  from-pathp[] p' = hom[]-is-subst p f' ∙ from-pathp p'
+
+  to-pathp[] : hom[ p ] f' ≡ g' → f' ≡[ p ] g'
+  to-pathp[] p = to-pathp (sym (hom[]-is-subst _ _) ∙ p)
+
+  from-pathp[]⁻ : f' ≡[ p ] g' → f' ≡ hom[ sym p ] g'
+  from-pathp[]⁻ p' = from-pathp⁻ p' ∙ sym (hom[]-is-subst _ _)
+
+  to-pathp[]⁻ : f' ≡ hom[ sym p ] g' → f' ≡[ p ] g'
+  to-pathp[]⁻ p = to-pathp⁻ (p ∙ hom[]-is-subst _ _)
 
 hom[_]⁻ : ∀ {a b x y} {f g : B.Hom a b} → g ≡ f → E.Hom[ f ] x y → E.Hom[ g ] x y
 hom[ p ]⁻ f' = hom[ sym p ] f'
@@ -83,7 +102,10 @@ hom[]-∙
   : ∀ {a b x y} {f g h : B.Hom a b} (p : f ≡ g) (q : g ≡ h)
   → {f' : E.Hom[ f ] x y}
   → hom[ q ] (hom[ p ] f') ≡ hom[ p ∙ q ] f'
-hom[]-∙ p q = sym (subst-∙ (λ h → E.Hom[ h ] _ _) _ _ _)
+hom[]-∙ p q =
+     ap₂ hom[_] refl (hom[]-is-subst p _) ∙ hom[]-is-subst _ _
+  ∙∙ sym (subst-∙ (λ h → E.Hom[ h ] _ _) _ _ _)
+  ∙∙ sym (hom[]-is-subst _ _)
 
 duplicate
   : ∀ {a b x y} {f f' g : B.Hom a b} (p : f ≡ g) (q : f' ≡ g) (r : f ≡ f')
@@ -112,9 +134,9 @@ whisker-r
   → f' E.∘' hom[ p ] g' ≡ hom[ ap (f B.∘_) p ] (f' E.∘' g')
 whisker-r {f = f} {a' = a'} {_} {c'} {f'} {g'} p i =
   comp (λ j → E.Hom[ f B.∘ p (i ∨ j) ] a' c') (∂ i) λ where
-    j (i = i0) → f' E.∘' transport-filler (λ i → E.Hom[ p i ] _ _) g' j
+    j (i = i0) → f' E.∘' coh[ p ] g' j
     j (i = i1) → hom[ ap (f B.∘_) p ] (f' E.∘' g')
-    j (j = i0) → transport-filler (λ i → E.Hom[ f B.∘ p i ] _ _) (f' E.∘' g') i
+    j (j = i0) → coh[ (λ i → f B.∘ p i) ] (f' E.∘' g') i
 
 whisker-l
   : ∀ {a b c} {f f₁ : B.Hom b c} {g : B.Hom a b} {a' b' c'}
@@ -123,9 +145,9 @@ whisker-l
   → hom[ p ] f' E.∘' g' ≡ hom[ ap (B._∘ g) p ] (f' E.∘' g')
 whisker-l {g = g} {a'} {_} {c'} {f' = f'} {g' = g'} p i =
   comp (λ j → E.Hom[ p (i ∨ j) B.∘ g ] a' c') (∂ i) λ where
-    j (i = i0) → transport-filler (λ i → E.Hom[ p i ] _ _) f' j E.∘' g'
+    j (i = i0) → coh[ p ] f' j E.∘' g'
     j (i = i1) → hom[ ap (B._∘ g) p ] (f' E.∘' g')
-    j (j = i0) → transport-filler (λ i → E.Hom[ p i B.∘ g ] _ _) (f' E.∘' g') i
+    j (j = i0) → coh[ (λ i → p i B.∘ g) ] (f' E.∘' g') i
 ```
 
 <!--
@@ -184,9 +206,9 @@ yank
   → {f' : E.Hom[ f ] c' d'} {g' : E.Hom[ g ] b' c'} {h' : E.Hom[ h ] a' b'}
   → (p : g B.∘ h ≡ i) (q : f B.∘ g ≡ j) (r : f B.∘ i ≡ j B.∘ h)
   → (f' E.∘' hom[ p ](g' E.∘' h')) E.≡[ r ] hom[ q ] (f' E.∘' g') E.∘' h'
-yank {f' = f'} {g' = g'} {h' = h'} p q r = to-pathp $
+yank {f' = f'} {g' = g'} {h' = h'} p q r = to-pathp[] $
   hom[ r ] (f' E.∘' hom[ p ] (g' E.∘' h'))                                             ≡⟨ smashr p r ⟩
-  hom[ ap (B._∘_ _) p ∙ r ] (f' E.∘' g' E.∘' h')                                       ≡⟨ ap hom[ _ ] (sym (from-pathp λ i → E.assoc' f' g' h' (~ i))) ⟩
+  hom[ ap (B._∘_ _) p ∙ r ] (f' E.∘' g' E.∘' h')                                       ≡⟨ ap hom[ _ ] (sym (from-pathp[] λ i → E.assoc' f' g' h' (~ i))) ⟩
   hom[ ap (B._∘_ _) p ∙ r  ] (hom[ sym (B.assoc _ _ _) ] ((f' E.∘' g') E.∘' h'))       ≡⟨ hom[]-∙ _ _ ⟩
   hom[ sym (B.assoc _ _ _) ∙ (ap (B .Precategory._∘_ _) p ∙ r)] ((f' E.∘' g') E.∘' h') ≡⟨ reindex _ _ ⟩
   hom[ (ap (B._∘ _) q) ] ((f' E.∘' g') E.∘' h')                                        ≡˘⟨ whisker-l q ⟩
@@ -197,14 +219,14 @@ cancel
     {f' : E.Hom[ f ] a' b'} {g' : E.Hom[ g ] a' b'}
   → PathP (λ i → E.Hom[ q i ] a' b') f' g'
   → hom[ p ] f' ≡ g'
-cancel p q r = reindex p q ∙ from-pathp r
+cancel p q r = reindex p q ∙ from-pathp[] r
 
 kill₁
   : ∀ {a b} {a' b'} {f g h : B.Hom a b} {h₁' : E.Hom[ f ] a' b'} {h₂' : E.Hom[ g ] a' b'}
   → (p : f ≡ g) (q : g ≡ h)
   → PathP (λ i → E.Hom[ p i ] a' b') h₁' h₂'
   → hom[ p ∙ q ] h₁' ≡ hom[ q ] h₂'
-kill₁ p q r = sym (hom[]-∙ _ _) ∙ ap hom[ q ] (from-pathp r)
+kill₁ p q r = sym (hom[]-∙ _ _) ∙ ap hom[ q ] (from-pathp[] r)
 
 
 revive₁
@@ -244,7 +266,7 @@ liberate
   : ∀ {a b x y} {f : B.Hom a b} {f' : E.Hom[ f ] x y}
   → (p : f ≡ f)
   → hom[ p ] f' ≡ f'
-liberate p = reindex p refl ∙ transport-refl _
+liberate p = reindex p refl ∙ from-pathp[] refl
 
 hom[]⟩⟨_
   : ∀ {a b} {f f' : B.Hom a b} {a' b'} {p : f ≡ f'}
@@ -308,7 +330,7 @@ pulll-indexr
 pulll-indexr p q = whisker-r _ ∙
   sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ∙∙ sym (hom[]-∙ _ _)
     ∙∙ ap hom[] ( ap hom[] (ap (E._∘' _) (sym q))
-                ∙ from-pathp (symP (E.assoc' _ _ _))))
+                ∙ from-pathp[] (symP (E.assoc' _ _ _))))
 ```
 
 Using these tools, we can define displayed versions of the usual category
@@ -332,37 +354,37 @@ wrap
   : ∀ {f g : Hom x y} {f' : Hom[ f ] x' y'}
   → (p : f ≡ g)
   → f' ≡[ p ] hom[ p ] f'
-wrap p = to-pathp refl
+wrap p = to-pathp[] refl
 
 wrapl
   : ∀ {f h : Hom y z} {g : Hom x y} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → (p : f ≡ h)
   → f' ∘' g' ≡[ ap (_∘ g) p ] hom[ p ] f' ∘' g'
-wrapl p = to-pathp (unwhisker-l (ap (_∘ _) p) p)
+wrapl p = to-pathp[] (unwhisker-l (ap (_∘ _) p) p)
 
 unwrap
   : ∀ {f g : Hom x y} {f' : Hom[ f ] x' y'}
   → (p : f ≡ g)
   → hom[ p ] f' ≡[ sym p ] f'
-unwrap p = to-pathp⁻ refl
+unwrap p = to-pathp[]⁻ refl
 
 wrapr
   : ∀ {f : Hom y z} {g h : Hom x y} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → (p : g ≡ h)
   → f' ∘' g' ≡[ ap (f ∘_) p ] f' ∘' hom[ p ] g'
-wrapr p = to-pathp (unwhisker-r (ap (_ ∘_) p) p)
+wrapr p = to-pathp[] (unwhisker-r (ap (_ ∘_) p) p)
 
 unwrapl
   : ∀ {f h : Hom y z} {g : Hom x y} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → (p : f ≡ h)
   → hom[ p ] f' ∘' g' ≡[ ap (_∘ g) (sym p) ] f' ∘' g'
-unwrapl p = to-pathp⁻ (whisker-l p)
+unwrapl p = to-pathp[]⁻ (whisker-l p)
 
 unwrapr
   : ∀ {f : Hom y z} {g h : Hom x y} {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'}
   → (p : g ≡ h)
   → f' ∘' hom[ p ]  g' ≡[ ap (f ∘_) (sym p) ] f' ∘' g'
-unwrapr p = to-pathp⁻ (whisker-r p)
+unwrapr p = to-pathp[]⁻ (whisker-r p)
 ```
 -->
 
@@ -377,10 +399,10 @@ combinators.
 ```agda
 module _ {f' : Hom[ f ] x' y'} {g' : Hom[ g ] x' y'} (p : f ≡ g) where abstract
   shiftl : f' ≡[ p ] g' → hom[ p ] f' ≡ g'
-  shiftl q i = from-pathp (λ j → q (i ∨ j)) i
+  shiftl q i = from-pathp[] (λ j → q (i ∨ j)) i
 
   shiftr : f' ≡[ p ] g' → f' ≡ hom[ p ]⁻ g'
-  shiftr q i = from-pathp (λ j → q (i ∧ ~ j)) (~ i)
+  shiftr q i = from-pathp[] (λ j → q (i ∧ ~ j)) (~ i)
 ```
 
 ## Path actions
@@ -427,13 +449,13 @@ different equations! These combinators do just that.
 ```agda
 module _ {f' : Hom[ f ] x' y'} where abstract
   idl[] : {p : id ∘ f ≡ f} → hom[ p ] (id' ∘' f') ≡ f'
-  idl[] {p = p} = reindex p (idl _) ∙ from-pathp (idl' f')
+  idl[] {p = p} = reindex p (idl _) ∙ from-pathp[] (idl' f')
 
   idr[] : {p : f ∘ id ≡ f} → hom[ p ] (f' ∘' id') ≡ f'
-  idr[] {p = p} = reindex p (idr _) ∙ from-pathp (idr' f')
+  idr[] {p = p} = reindex p (idr _) ∙ from-pathp[] (idr' f')
 
   id-comm[] : {p : id ∘ f ≡ f ∘ id} → hom[ p ] (id' ∘' f') ≡ f' ∘' id'
-  id-comm[] {p = p} = duplicate _ _ _ ∙ ap hom[] (from-pathp (idl' _)) ∙ from-pathp (symP (idr' _))
+  id-comm[] {p = p} = duplicate _ _ _ ∙ ap hom[] (from-pathp[] (idl' _)) ∙ from-pathp[] (symP (idr' _))
 
 assoc[]
   : ∀ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] w' x'}
@@ -457,13 +479,13 @@ These are the displayed counterparts to the
 module _ {a' : Hom[ a ] x' x'}
          (p : a ≡ id) (p' : a' ≡[ p ] id') where abstract
   eliml' : ∀ {f' : Hom[ f ] y' x'} → {q : a ∘ f ≡ f} → a' ∘' f' ≡[ q ] f'
-  eliml' {f = f} {f' = f'} {q = q} = to-pathp $
+  eliml' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] (a' ∘' f')      ≡⟨ apl' p' ⟩
     hom[ idl f ] (id' ∘' f') ≡⟨ idl[] ⟩
     f' ∎
 
   elimr' : ∀ {f' : Hom[ f ] x' y'} → {q : f ∘ a ≡ f} → f' ∘' a' ≡[ q ] f'
-  elimr' {f = f} {f' = f'} {q = q} = to-pathp $
+  elimr' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] (f' ∘' a')      ≡⟨ apr' p' ⟩
     hom[ idr f ] (f' ∘' id') ≡⟨ idr[] ⟩
     f' ∎
@@ -499,7 +521,7 @@ module _ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] x' z'}
   pulll'
     : ∀ {f' : Hom[ f ] w' x'} {q : a ∘ (b ∘ f) ≡ c ∘ f}
     → a' ∘' (b' ∘' f') ≡[ q ] c' ∘' f'
-  pulll' {f = f} {f' = f'} {q = q} = to-pathp $
+  pulll' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] (a' ∘' b' ∘' f')                       ≡⟨ assoc[] ⟩
     hom[ sym (assoc a b f) ∙ q ] ((a' ∘' b') ∘' f') ≡⟨ apl' p' ⟩
     hom[ refl ] (c' ∘' f')                          ≡⟨ liberate _ ⟩
@@ -513,7 +535,7 @@ module _ {a' : Hom[ a ] y' z'} {b' : Hom[ b ] x' y'} {c' : Hom[ c ] x' z'}
   pullr'
     : ∀ {f' : Hom[ f ] z' w'} {q : (f ∘ a) ∘ b ≡ f ∘ c}
     → (f' ∘' a') ∘' b' ≡[ q ] f' ∘' c'
-  pullr' {f = f} {f' = f'} {q = q} = to-pathp $
+  pullr' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] ((f' ∘' a') ∘' b')             ≡˘⟨ assoc[] ⟩
     hom[ assoc f a b ∙ q ] (f' ∘' a' ∘' b') ≡⟨ apr' p' ⟩
     hom[ refl ] (f' ∘' c')                  ≡⟨ liberate _ ⟩
@@ -556,7 +578,7 @@ module _ {f' : Hom[ f ] y' z'} {h' : Hom[ h ] x' y'}
   extendl'
     : ∀ {b' : Hom[ b ] w' x'} {q : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)}
     → f' ∘' (h' ∘' b') ≡[ q ] g' ∘' (i' ∘' b')
-  extendl' {b = b} {b' = b'} {q = q} = to-pathp $
+  extendl' {b = b} {b' = b'} {q = q} = to-pathp[] $
     hom[ q ] (f' ∘' h' ∘' b')                       ≡⟨ assoc[] ⟩
     hom[ sym (assoc f h b) ∙ q ] ((f' ∘' h') ∘' b') ≡⟨ apl' p' ⟩
     hom[ sym (assoc g i b) ] ((g' ∘' i') ∘' b')     ≡⟨ shiftl _ (λ j → (assoc' g' i' b') (~ j)) ⟩
@@ -565,7 +587,7 @@ module _ {f' : Hom[ f ] y' z'} {h' : Hom[ h ] x' y'}
   extendr'
     : ∀ {a' : Hom[ a ] z' w'} {q : (a ∘ f) ∘ h ≡ (a ∘ g) ∘ i}
     → (a' ∘' f') ∘' h' ≡[ q ] (a' ∘' g') ∘' i'
-  extendr' {a = a} {a' = a'} {q = q} = to-pathp $
+  extendr' {a = a} {a' = a'} {q = q} = to-pathp[] $
     hom[ q ] ((a' ∘' f') ∘' h')             ≡˘⟨ assoc[] ⟩
     hom[ assoc a f h ∙ q ] (a' ∘' f' ∘' h') ≡⟨ apr' p' ⟩
     hom[ assoc a g i ] (a' ∘'(g' ∘' i'))    ≡⟨ shiftl _ (assoc' a' g' i') ⟩
@@ -575,7 +597,7 @@ module _ {f' : Hom[ f ] y' z'} {h' : Hom[ h ] x' y'}
     : ∀ {a' : Hom[ a ] z' u'} {b' : Hom[ b ] w' x'}
     → {q : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b}
     → a' ∘' f' ∘' h' ∘' b' ≡[ q ] a' ∘' g' ∘' i' ∘' b'
-  extend-inner' {a = a} {b = b} {a' = a'} {b' = b'} {q = q} = to-pathp $
+  extend-inner' {a = a} {b = b} {a' = a'} {b' = b'} {q = q} = to-pathp[] $
     hom[ q ] (a' ∘' f' ∘' h' ∘' b')                                   ≡⟨ apr' (assoc' f' h' b') ⟩
     hom[ ap (a ∘_) (sym (assoc f h b)) ∙ q ] (a' ∘' (f' ∘' h') ∘' b') ≡⟨ apr' (λ j → p' j ∘' b') ⟩
     hom[ ap (a ∘_) (sym (assoc g i b)) ] (a' ∘' (g' ∘' i') ∘' b')     ≡⟨ shiftl _ (λ j → a' ∘' assoc' g' i' b' (~ j)) ⟩
@@ -605,7 +627,7 @@ module _ {a' : Hom[ a ] y' x'} {b' : Hom[ b ] x' y'}
   cancell'
     : ∀ {f' : Hom[ f ] z' x'} {q : a ∘ b ∘ f ≡ f}
     → a' ∘' b' ∘' f' ≡[ q ] f'
-  cancell' {f = f} {f' = f'} {q = q} = to-pathp $
+  cancell' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] (a' ∘' b' ∘' f')                       ≡⟨ assoc[] ⟩
     hom[ sym (assoc a b f) ∙ q ] ((a' ∘' b') ∘' f') ≡⟨ shiftl _ (eliml' p p') ⟩
     f'                                              ∎
@@ -618,7 +640,7 @@ module _ {a' : Hom[ a ] y' x'} {b' : Hom[ b ] x' y'}
   cancelr'
     : ∀ {f' : Hom[ f ] x' z'} {q : (f ∘ a) ∘ b ≡ f}
     → (f' ∘' a') ∘' b' ≡[ q ] f'
-  cancelr' {f = f} {f' = f'} {q = q} = to-pathp $
+  cancelr' {f = f} {f' = f'} {q = q} = to-pathp[] $
     hom[ q ] ((f' ∘' a') ∘' b')             ≡˘⟨ assoc[] ⟩
     hom[ assoc f a b ∙ q ] (f' ∘' a' ∘' b') ≡⟨ shiftl _ (elimr' p p') ⟩
     f' ∎

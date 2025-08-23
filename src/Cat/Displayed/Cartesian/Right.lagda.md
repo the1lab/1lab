@@ -105,7 +105,7 @@ the fact that $i^{*}$ is invertible.
     i*⁻¹ = i*-inv.inv'
 
     factors : f' ∘' i*⁻¹ ≡[ idr f ] π* f y'
-    factors = to-pathp⁻ $
+    factors = to-pathp[]⁻ $
       f' ∘' i*⁻¹                    ≡⟨ shiftr _ (pushl' _ (symP $ π*.commutesp (idr f) f') {q = ap (f ∘_) (sym (idl _))}) ⟩
       hom[] (π* f y' ∘' i* ∘' i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr' _ i*-inv.invl') ⟩
       hom[] (π* f y')               ∎

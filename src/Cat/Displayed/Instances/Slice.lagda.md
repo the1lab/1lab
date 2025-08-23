@@ -158,6 +158,11 @@ displayed over $\cB$.
   Slices .idl' {f = f} f' = Slice-pathp (idl (f' .map))
   Slices .assoc' {f = f} {g = g} {h = h} f' g' h' = Slice-pathp $
     assoc (f' .map) (g' .map) (h' .map)
+  Slices .hom[_] p f' = record
+    { map = f' .map
+    ; com = f' .com ∙ ap₂ _∘_ p refl
+    }
+  Slices .coh[_] p f' = Slice-pathp refl
 ```
 
 It's only slightly more annoying to show that a vertical map in the
@@ -172,7 +177,7 @@ the fibre $\underline{\cB}^*(x)$ and the slice $\cB/x$.
   Fibre→slice .F₁ f ./-Hom.map = f .map
   Fibre→slice .F₁ f ./-Hom.com = f .com ∙ eliml refl
   Fibre→slice .F-id    = ext refl
-  Fibre→slice .F-∘ f g = ext (transport-refl _)
+  Fibre→slice .F-∘ f g = ext refl
 
   Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
   Fibre→slice-is-ff = is-iso→is-equiv λ where

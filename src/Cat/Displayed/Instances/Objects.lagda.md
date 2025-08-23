@@ -6,6 +6,7 @@ open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -19,11 +20,11 @@ module Cat.Displayed.Instances.Objects
 
 <!--
 ```agda
+open Cat.Displayed.Reasoning E
 open Cartesian-morphism
 open is-fibred-functor
 open Vertical-functor
 open Cat.Reasoning B
-open Displayed E
 ```
 -->
 
@@ -47,6 +48,14 @@ Objects .Displayed._∘'_ = _∘cart_ E
 Objects .Displayed.idr' _       = Cartesian-morphism-pathp E (idr' _)
 Objects .Displayed.idl' _       = Cartesian-morphism-pathp E (idl' _)
 Objects .Displayed.assoc' _ _ _ = Cartesian-morphism-pathp E (assoc' _ _ _)
+Objects .Displayed.hom[_] p f .hom' = hom[ p ] (f .hom')
+Objects .Displayed.hom[_] p f .cartesian = record
+  { universal = λ m g → f.universal m (hom[ ap₂ _∘_ (sym p) refl ] g)
+  ; commutes  = λ m h' → whisker-l _ ∙ ap hom[] (f.commutes m _) ∙ hom[]-∙ _ _ ∙ liberate _
+  ; unique    = λ m h' → f.unique m (sym (ap hom[] (sym h') ∙ smashl _ _ ∙ liberate _))
+  }
+  where module f = is-cartesian (f .cartesian)
+Objects .Displayed.coh[_] p f = Cartesian-morphism-pathp E (coh[ p ] (f .hom'))
 ```
 
 We have an evident forgetful [fibred] functor from the object fibration

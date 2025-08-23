@@ -3,6 +3,7 @@
 open import Cat.Displayed.Diagram.Total.Exponential
 open import Cat.Displayed.Diagram.Total.Terminal
 open import Cat.Displayed.Diagram.Total.Product
+open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Instances.Product
@@ -79,33 +80,8 @@ $\thecat{Gl}(F)$ will be [[Cartesian fibrations]].
 
 ```agda
 Gl : Displayed D (o ⊔ ℓ) ℓ
-Gl .Ob[_]  cod     = /-Obj {C = C} (F.₀ cod)
-Gl .Hom[_] f xm yn = Slice-hom C (F.₁ f) xm yn
-
-Gl .id'        .map = C.id
-Gl ._∘'_ f' g' .map = f' .map C.∘ g' .map
+Gl = Change-of-base F (Slices C)
 ```
-
-<details>
-<summary>The verification that this *is* a displayed category is
-routine.</summary>
-
-```agda
-Gl .Hom[_]-set f x y = hlevel 2
-
-Gl .id' .com = C.elimr refl ∙ C.introl F.F-id
-Gl ._∘'_ {x = x} {y} {z} {f} {g} f' g' .com =
-  z .map C.∘ f' .map C.∘ g' .map ≡⟨ C.pulll (f' .com) ⟩
-  (F.₁ f C.∘ y .map) C.∘ g' .map ≡⟨ C.pullr (g' .com) ⟩
-  F.₁ f C.∘ F.₁ g C.∘ x .map     ≡⟨ F.pulll refl ⟩
-  F.₁ (f D.∘ g) C.∘ x .map       ∎
-
-Gl .idr'   f     = Slice-pathp (C.idr (f .map))
-Gl .idl'   f     = Slice-pathp (C.idl (f .map))
-Gl .assoc' f g h = Slice-pathp (C.assoc (f .map) (g .map) (h .map))
-```
-
-</details>
 
 <!--
 ```agda
