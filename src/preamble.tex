@@ -51,10 +51,13 @@
 \newcommand{\ica}[1]{\mathbb{#1}}    % Names of internal categories
 
 \newcommand{\Arr}[1]{%% The arrow category of a category.
-  \rm{Arr}(#1)
+  \operatorname{\thecat{Arr}}(#1)
 }
 \newcommand{\FAlg}[1]{%% The category of F-algebras
-  \rm{Alg}(#1)
+  \operatorname{\thecat{Alg}}(#1)
+}
+\newcommand{\Ff}[1]{%% The category of functorial factorisations
+  \operatorname{\thecat{Ff}}(#1)
 }
 
 % \liesover arrow is only allowed in KaTeX:

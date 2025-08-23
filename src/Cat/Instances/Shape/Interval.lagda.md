@@ -92,7 +92,7 @@ function.
 0≤1-products A B .has-is-product .unique _ _ = prop!
 ```
 
-# The space of arrows
+# The space of arrows {defines="arrow-category"}
 
 The total space of the $\hom$ family of a precategory is referred to as
 its "space of arrows". A point in this space is a "free-standing arrow":
