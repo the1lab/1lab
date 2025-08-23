@@ -168,6 +168,7 @@ bolting together our results from the previous section.
   Extension-system→Monad E = _ , monad where
     module E = Extension-system E
     open Monad-on
+    open is-monad
 
     monad : Monad-on E.M
     monad .unit .η x = E.unit
@@ -179,15 +180,15 @@ bolting together our results from the previous section.
 The monad laws follow from another short series of computations.
 
 ```agda
-    monad .μ-unitr =
+    monad .has-is-monad .μ-unitr =
       E.bind id ∘ E.bind (E.unit ∘ E.unit) ≡⟨ E.bind-∘ _ _ ⟩
       E.bind (E.bind id ∘ E.unit ∘ E.unit) ≡⟨ ap E.bind (cancell (E.bind-unit-∘ id)) ⟩
       E.bind E.unit                        ≡⟨ E.bind-unit-id ⟩
       id                                   ∎
-    monad .μ-unitl =
+    monad .has-is-monad .μ-unitl =
       E.bind id ∘ E.unit ≡⟨ E.bind-unit-∘ id ⟩
       id                 ∎
-    monad .μ-assoc =
+    monad .has-is-monad .μ-assoc =
       E.bind id ∘ E.bind (E.unit ∘ E.bind id) ≡⟨ E.bind-∘ _ _ ⟩
       E.bind (E.bind id ∘ E.unit ∘ E.bind id) ≡⟨ ap E.bind (cancell (E.bind-unit-∘ id) ∙ sym (idr _)) ⟩
       E.bind (E.bind id ∘ id)                 ≡˘⟨ E.bind-∘ _ _ ⟩

@@ -8,6 +8,7 @@ open import Cat.Diagram.Monad
 open import Cat.Prelude
 
 open Monad-on
+open is-monad
 open Functor
 open _=>_
 ```
@@ -61,13 +62,13 @@ left identity law is exactly the `zag`{.Agda ident="adj.zag"}
 identity.
 
 ```agda
-Adjunction→Monad .μ-unitl {x} = adj.zag
+Adjunction→Monad .has-is-monad .μ-unitl {x} = adj.zag
 ```
 
 The others are slightly more involved.
 
 ```agda
-Adjunction→Monad .μ-unitr {x} = path where abstract
+Adjunction→Monad .has-is-monad .μ-unitr {x} = path where abstract
   path : R.₁ (adj.ε (L.F₀ x)) C.∘ R.₁ (L.₁ (adj.η x)) ≡ C.id
   path =
     R.₁ (adj.ε _) C.∘ R.₁ (L.₁ (adj.η _)) ≡⟨ sym (R.F-∘ _ _) ⟩
@@ -75,7 +76,7 @@ Adjunction→Monad .μ-unitr {x} = path where abstract
     R.₁ D.id                              ≡⟨ R.F-id ⟩
     C.id                                  ∎
 
-Adjunction→Monad .μ-assoc {x} = path where abstract
+Adjunction→Monad .has-is-monad .μ-assoc {x} = path where abstract
   path : R.₁ (adj.ε _) C.∘ R.₁ (L.₁ (R.₁ (adj.ε (L.F₀ x))))
        ≡ R.₁ (adj.ε _) C.∘ R.₁ (adj.ε (L .F₀ (R.F₀ (L.F₀ x))))
   path =
