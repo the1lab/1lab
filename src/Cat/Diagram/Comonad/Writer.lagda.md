@@ -12,6 +12,8 @@ open import Cat.Prelude
 import Cat.Reasoning as Cat
 
 open Comonad-on
+open is-comonad
+open is-monad
 open Monad-on
 open Functor
 open _=>_
@@ -76,11 +78,11 @@ them in this `<details>`{.html} block for the curious reader.</summary>
   Writer-comonad .comult .is-natural x y f = unique₂
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ idl _)
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
-  Writer-comonad .δ-unitl = unique₂
+  Writer-comonad .has-is-comonad .δ-unitl = unique₂
     (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ cancelr π₂∘⟨⟩)
     (idr _) (idr _)
-  Writer-comonad .δ-unitr = π₂∘⟨⟩
-  Writer-comonad .δ-assoc = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ refl (pullr π₂∘⟨⟩ ∙ id-comm) ∙ sym (⟨⟩∘ _)
+  Writer-comonad .has-is-comonad .δ-unitr = π₂∘⟨⟩
+  Writer-comonad .has-is-comonad .δ-assoc = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ refl (pullr π₂∘⟨⟩ ∙ id-comm) ∙ sym (⟨⟩∘ _)
 ```
 
 </details>
@@ -129,7 +131,7 @@ products.
       (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩ ∙ sym (pullr (sym (!-unique _))))
       (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idr f)
     mk .mult .is-natural x y f = products! products
-    mk .μ-unitr =
+    mk .has-is-monad .μ-unitr =
       let
         lemma =
           m.μ ∘ ⟨ π₁ , m.η ∘ ! ∘ π₂ ⟩               ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ idl π₁) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ ap₂ _∘_ refl (!-unique _))) ⟩
@@ -137,7 +139,7 @@ products.
           π₁ ∘ ⟨ π₁ , ! ⟩                           ≡⟨ π₁∘⟨⟩ ⟩
           π₁                                        ∎
       in ⟨⟩-unique₂ (products! products ∙ lemma) (products! products) (idr π₁) (idr π₂)
-    mk .μ-unitl =
+    mk .has-is-monad .μ-unitl =
       let
         lemma =
           m.μ ∘ ⟨ m.η ∘ ! , π₁ ⟩                    ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ idl π₁)) ⟩
@@ -145,7 +147,7 @@ products.
           π₂ ∘ ⟨ ! , π₁ ⟩                           ≡⟨ π₂∘⟨⟩ ⟩
           π₁                                        ∎
       in ⟨⟩-unique₂ (products! products ∙ lemma) (products! products) (idr π₁) (idr π₂)
-    mk .μ-assoc {x} =
+    mk .has-is-monad .μ-assoc {x} =
       let
         lemma =
           π₁ ∘ ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ π₁ , ⟨ m.μ ∘ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₂ ⟩

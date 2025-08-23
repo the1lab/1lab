@@ -8,6 +8,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open Comonad-on
+open is-comonad
 open Functor
 open _=>_
 ```
@@ -62,13 +63,13 @@ right identity law is exactly the `zig`{.Agda ident="adj.zag"}
 identity.
 
 ```agda
-Adjunction→Comonad .δ-unitr {x} = adj.zig
+Adjunction→Comonad .has-is-comonad .δ-unitr {x} = adj.zig
 ```
 
 The others are slightly more involved.
 
 ```agda
-Adjunction→Comonad .δ-unitl {x} = path where abstract
+Adjunction→Comonad .has-is-comonad .δ-unitl {x} = path where abstract
   path : L.₁ (R.₁ (adj.ε x)) D.∘ L.₁ (adj.η (R.F₀ x)) ≡ D.id
   path =
     L.₁ (R.₁ (adj.ε _)) D.∘ L.₁ (adj.η _) ≡⟨ sym (L.F-∘ _ _) ⟩
@@ -76,7 +77,7 @@ Adjunction→Comonad .δ-unitl {x} = path where abstract
     L.₁ C.id                              ≡⟨ L.F-id ⟩
     D.id                                  ∎
 
-Adjunction→Comonad .δ-assoc {x} = path where abstract
+Adjunction→Comonad .has-is-comonad .δ-assoc {x} = path where abstract
   path : L.₁ (R.₁ (L.₁ (adj.η (R.F₀ x)))) D.∘ L.₁ (adj.η _)
        ≡ L.₁ (adj.η (R .F₀ (L.F₀ (R.F₀ x)))) D.∘ L.₁ (adj.η _)
   path =

@@ -45,16 +45,11 @@ M$.
 More generally, we define what it means to equip a *fixed* functor $M$
 with the structure of a monad. The notion of "monad on a category" is
 obtained by pairing the functor $M$ with the monad structure $\eta,
-\mu$.
-
-[monoid]: Algebra.Monoid.html
+\mu$.  More generally, we can fix the functor *and* the maps, and define
+the laws that make that entire triple into a monad.
 
 ```agda
-  record Monad-on (M : Functor C C) : Type (o ⊔ h) where
-    no-eta-equality
-    field
-      unit : Id => M
-      mult : M F∘ M => M
+  record is-monad {M : Functor C C} (unit : Id => M) (mult : M F∘ M => M) : Type (o ⊔ h) where
 ```
 
 <!--
@@ -68,14 +63,23 @@ obtained by pairing the functor $M$ with the monad structure $\eta,
 ```
 -->
 
-Furthermore, these natural transformations must satisfy identity and
-associativity laws exactly analogous to those of a monoid.
-
 ```agda
     field
       μ-unitr : ∀ {x} → μ x C.∘ M₁ (η x) ≡ C.id
       μ-unitl : ∀ {x} → μ x C.∘ η (M₀ x) ≡ C.id
       μ-assoc : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
+```
+
+[monoid]: Algebra.Monoid.html
+
+```agda
+  record Monad-on (M : Functor C C) : Type (o ⊔ h) where
+    no-eta-equality
+    field
+      unit         : Id => M
+      mult         : M F∘ M => M
+      has-is-monad : is-monad unit mult
+    open is-monad has-is-monad public
 ```
 
 # Algebras over a monad {defines="monad-algebra algebra-over-a-monad algebras-over-a-monad"}
@@ -120,6 +124,8 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
     → PathP (λ i → C.Hom (F · p i) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
     → PathP (λ i → Algebra-on M (p i)) A B
   Algebra-on-pathp over mults = injectiveP (λ _ → eqv) (mults ,ₚ prop!)
+
+unquoteDecl H-Level-is-monad = declare-record-hlevel 1 H-Level-is-monad (quote is-monad)
 
 instance
   Extensional-Algebra-on
