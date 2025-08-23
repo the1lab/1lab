@@ -5,8 +5,8 @@ open import Cat.Morphism.Factorisation.Algebraic
 open import Cat.Instances.Shape.Interval
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Functor.Naturality
-open import Cat.Instances.Product
 open import Cat.Displayed.Section
+open import Cat.Instances.Product
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Monad
 open import Cat.Monoidal.Base
