@@ -47,14 +47,11 @@ module _
 
 ```agda
   Comma : Displayed (A ×ᶜ B) ℓc ℓc
-  Comma .Ob[_] (a , b) = C.Hom (F.₀ a) (G.₀ b)
-  Comma .Hom[_] (u , v) f g = G.₁ v C.∘ f ≡ g C.∘ F.₁ u
-  Comma .Hom[_]-set _ _ _ = hlevel 2
-  Comma .id' = C.eliml G.F-id ∙ C.intror F.F-id
-  Comma ._∘'_ α β = G.popr β ∙ sym (F.shufflel (sym α))
-  Comma .idr' _ = prop!
-  Comma .idl' _ = prop!
-  Comma .assoc' _ _ _ = prop!
+  Comma = with-thin-display record where
+    Ob[_]  (a , b)     = C.Hom (F.₀ a) (G.₀ b)
+    Hom[_] (u , v) f g = G.₁ v C.∘ f ≡ g C.∘ F.₁ u
+    id'      = C.eliml G.F-id ∙ C.intror F.F-id
+    _∘'_ α β = G.popr β ∙ sym (F.shufflel (sym α))
 ```
 
 ## Comma categories are discrete two-sided fibrations

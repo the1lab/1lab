@@ -90,27 +90,27 @@ id-epic g h p = sym (idr _) ∙∙ p ∙∙ idr _
 Both monos and epis are closed under composition.
 
 ```agda
-monic-∘
+∘-is-monic
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-monic f
   → is-monic g
   → is-monic (f ∘ g)
-monic-∘ fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
+∘-is-monic fm gm a b α = gm _ _ (fm _ _ (assoc _ _ _ ∙∙ α ∙∙ sym (assoc _ _ _)))
 
-epic-∘
+∘-is-epic
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-epic f
   → is-epic g
   → is-epic (f ∘ g)
-epic-∘ fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
+∘-is-epic fe ge a b α = fe _ _ (ge _ _ (sym (assoc _ _ _) ∙∙ α ∙∙ (assoc _ _ _)))
 
 _∘Mono_ : ∀ {a b c} → b ↪ c → a ↪ b → a ↪ c
 (f ∘Mono g) .mor = f .mor ∘ g .mor
-(f ∘Mono g) .monic = monic-∘ (f .monic) (g .monic)
+(f ∘Mono g) .monic = ∘-is-monic (f .monic) (g .monic)
 
 _∘Epi_ : ∀ {a b c} → b ↠ c → a ↠ b → a ↠ c
 (f ∘Epi g) .mor = f .mor ∘ g .mor
-(f ∘Epi g) .epic = epic-∘ (f .epic) (g .epic)
+(f ∘Epi g) .epic = ∘-is-epic (f .epic) (g .epic)
 ```
 
 If $f \circ g$ is monic, then $g$ must also be monic.
@@ -623,9 +623,30 @@ make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id →
 {-# INLINE make-iso #-}
 make-iso f g p q = record { to = f ; from = g ; inverses = record { invl = p ; invr = q }}
 
+make-iso!
+  : ∀ {ℓr ℓs} (f : Hom a b) (g : Hom b a)
+  → ⦃ r : Extensional (Hom a a) ℓr ⦄ ⦃ s : Extensional (Hom b b) ℓs ⦄
+  → Pathᵉ s (f ∘ g) id
+  → Pathᵉ r (g ∘ f) id
+  → a ≅ b
+{-# INLINE make-iso! #-}
+make-iso! f g p q = record { to = f ; from = g ; inverses = record { invl = ext p ; invr = ext q }}
+
 inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
 inverses→invertible x .is-invertible.inv = _
 inverses→invertible x .is-invertible.inverses = x
+
+involution→invertible
+  : (f : Hom a a)
+  → f ∘ f ≡ id
+  → is-invertible f
+involution→invertible f inv = make-invertible f inv inv
+
+involution→iso
+  : (f : Hom a a)
+  → f ∘ f ≡ id
+  → a ≅ a
+involution→iso f inv = make-iso f f inv inv
 
 _≅⟨_⟩_ : ∀ (x : Ob) {y z} → x ≅ y → y ≅ z → x ≅ z
 x ≅⟨ p ⟩ q = q ∘Iso p

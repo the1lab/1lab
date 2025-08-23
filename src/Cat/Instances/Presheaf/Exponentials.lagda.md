@@ -45,7 +45,7 @@ category $\cC$, and suppose that the exponential object $B^A$ exists.
 
 ```agda
 module _ (A B : Functor (C ^op) (Sets ℓ))
-         (exp : Exponential Cat[ C ^op , Sets ℓ ] PSh-products PSh-terminal A B)
+         (exp : Exponential Cat[ C ^op , Sets ℓ ] PSh-cartesian A B)
   where
   open Exponential exp
 ```
@@ -59,7 +59,7 @@ this essentially fixes the value of $B^A(c)$.
 ```agda
   _ : ∀ x → ⌞ B^A .F₀ x ⌟ ≃ ((よ₀ C x ⊗₀ A) => B)
   _ = λ x →
-    ⌞ B^A .F₀ x ⌟       ≃⟨ yo {C = C} B^A , yo-is-equiv _ ⟩
+    ⌞ B^A .F₀ x ⌟       ≃⟨ yo B^A , yo-is-equiv _ ⟩
     (よ₀ C x => B^A)    ≃˘⟨ ƛ , lambda-is-equiv ⟩
     (よ₀ C x ⊗₀ A) => B ≃∎
 ```
@@ -97,7 +97,7 @@ functorial in $B$, which is essentially symbol shuffling; and to show
 that this functor is right adjoint to the "product with $A$" functor.
 
 ```agda
-PSh-closed : Cartesian-closed (PSh ℓ C) PSh-products PSh-terminal
+PSh-closed : Cartesian-closed (PSh ℓ C) PSh-cartesian
 PSh-closed = cc where
   cat = PSh ℓ C
 
@@ -107,9 +107,9 @@ PSh-closed = cc where
     func .F₁ f .η i g .η j (h , x) = f .η _ (g .η _ (h , x))
     func .F₁ f .η i g .is-natural x y h = funext λ x →
       ap (f .η _) (happly (g .is-natural _ _ _) _) ∙ happly (f .is-natural _ _ _) _
-    func .F₁ nt .is-natural x y f = trivial!
-    func .F-id = trivial!
-    func .F-∘ f g = trivial!
+    func .F₁ nt .is-natural x y f = ext λ _ _ _ _ → refl
+    func .F-id    = ext λ _ _ _ _ _ → refl
+    func .F-∘ f g = ext λ _ _ _ _ _ → refl
 
     adj : Bifunctor.Left ×-functor A ⊣ func
     adj .unit .η x .η i a =
@@ -120,10 +120,10 @@ PSh-closed = cc where
     adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
     adj .counit .η _ .is-natural x y f = funext λ h →
       ap (h .fst .η _) (Σ-pathp C.id-comm refl) ∙ happly (h .fst .is-natural _ _ _) _
-    adj .counit .is-natural x y f = trivial!
+    adj .counit .is-natural x y f = ext λ _ _ _ → refl
     adj .zig {A} = ext λ x _ _ → happly (F-id A) _ ,ₚ refl
     adj .zag {A} = ext λ _ x i f g j → x .η i (C.idr f j , g)
 
-  cc : Cartesian-closed (PSh ℓ C) PSh-products PSh-terminal
-  cc = product-adjoint→cartesian-closed (PSh ℓ C) _ _ func adj
+  cc : Cartesian-closed (PSh ℓ C) PSh-cartesian
+  cc = product-adjoint→cartesian-closed (PSh ℓ C) _ func adj
 ```

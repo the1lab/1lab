@@ -143,7 +143,7 @@ monoid identity definitionally; We must prove that it preserves
 concatenation, identity and composition by induction on the list.
 
 ```agda
-Free-monoid .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
+Free-monoid .F₁ f = ∫hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
 Free-monoid .F-id = ext map-id
 Free-monoid .F-∘ f g = ext map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
@@ -206,9 +206,9 @@ fold-pure {X = X} (x ∷ xs) = ap (x ∷_) (fold-pure {X = X} xs)
 Free-monoid⊣Forget : ∀ {ℓ} → Free-monoid {ℓ} ⊣ Mon↪Sets
 Free-monoid⊣Forget .unit .η _ x = x ∷ []
 Free-monoid⊣Forget .unit .is-natural x y f = refl
-Free-monoid⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
+Free-monoid⊣Forget .counit .η M = ∫hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
 Free-monoid⊣Forget .counit .is-natural x y th =
-  ext $ fold-natural (th .hom) (th .preserves)
+  ext $ fold-natural (th .fst) (th .snd)
 Free-monoid⊣Forget .zig {A = A} =
   ext $ fold-pure {X = A}
 Free-monoid⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
@@ -246,14 +246,13 @@ properties of monoids:
 
 ```agda
     from : Algebra-hom _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
-    from alg .hom = alg .hom
-    from alg .preserves .pres-id = happly (alg .preserves) []
-    from alg .preserves .pres-⋆ a b =
-      f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idr) ⟩
-      f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .preserves i (a ∷ b ∷ [])) ⟩
-      f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idr ⟩
-      f a y.⋆ f b                  ∎
-      where f = alg .hom
+    from f .fst = f .fst
+    from f .snd .pres-id = happly (f .snd) []
+    from f .snd .pres-⋆ a b =
+      f · (a x.⋆ b)                    ≡˘⟨ ap· f (ap (a x.⋆_) x.idr) ⟩
+      f · (a x.⋆ (b x.⋆ x.identity))   ≡⟨ (λ i → f .snd i (a ∷ b ∷ [])) ⟩
+      f · a y.⋆ (f · b y.⋆ y.identity) ≡⟨ ap (f · a y.⋆_) y.idr ⟩
+      f · a y.⋆ f · b                  ∎
 ```
 
 The proofs that this is a quasi-inverse is immediate, since both "being
@@ -262,10 +261,10 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = trivial!
+    from∘to x = ext λ _ → refl
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = trivial!
+    to∘from x = ext λ _ → refl
 ```
 
 Showing that the functor is essentially surjective is significantly more
@@ -296,19 +295,19 @@ these data assembles into a monoid:
         { has-is-magma = record { has-is-set = A .is-tr }
         ; associative  = λ {x} {y} {z} →
           alg .ν (⌜ x ⌝ ∷ alg .ν (y ∷ z ∷ []) ∷ [])               ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])     ≡⟨ happly (alg .ν-mult) _ ⟩
-          alg .ν (x ∷ y ∷ z ∷ [])                                 ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])     ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (x ∷ y ∷ z ∷ [])                                 ≡⟨ happly (alg .ν-mult) _ ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ ⌜ alg .ν (z ∷ []) ⌝ ∷ []) ≡⟨ ap! (happly (alg .ν-unit) z) ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                   ∎
         }
       has-is-m .idl {x} =
         alg .ν (alg .ν [] ∷ ⌜ x ⌝ ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-        alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡˘⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
       has-is-m .idr {x} =
         alg .ν (⌜ x ⌝ ∷ alg .ν [] ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
-        alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡˘⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
 ```
@@ -322,7 +321,7 @@ can show by induction on the list:
     recover []       = refl
     recover (x ∷ xs) =
       alg .ν (x ∷ fold _ xs ∷ [])               ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
-      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ []) ≡⟨ happly (alg .ν-mult) _ ⟩
+      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ []) ≡˘⟨ happly (alg .ν-mult) _ ⟩
       alg .ν (x ∷ xs ++ [])                     ≡⟨ ap (alg .ν) (++-idr _) ⟩
       alg .ν (x ∷ xs)                           ∎
 ```
@@ -335,14 +334,14 @@ recovered monoid has the same underlying type as the List-algebra!
 
 ```agda
     into : Algebra-hom _ (comparison.₀ monoid) (A , alg)
-    into .hom = λ x → x
-    into .preserves = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
+    into .fst = λ x → x
+    into .snd = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
 
     from : Algebra-hom _ (A , alg) (comparison.₀ monoid)
-    from .hom = λ x → x
-    from .preserves =
+    from .fst = λ x → x
+    from .snd =
       funext (λ x → sym (recover x) ∙ ap (fold _) (sym (map-id x)))
 
     the-iso : comparison.₀ monoid R.≅ (A , alg)
-    the-iso = R.make-iso into from trivial! trivial!
+    the-iso = R.make-iso into from (ext λ _ → refl) (ext λ _ → refl)
 ```

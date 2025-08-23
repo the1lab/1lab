@@ -9,6 +9,7 @@ open import Algebra.Group.Concrete
 open import Algebra.Group.Ab
 
 open import Cat.Functor.Equivalence
+open import Cat.Univalent
 open import Cat.Morphism
 
 open import Data.Set.Truncation
@@ -72,18 +73,19 @@ abelian≃abelian = prop-over-ext Concrete≃Abstract
   (λ {G} → is-concrete-abelian-is-prop G)
   (λ {G} → Group-on-is-abelian-is-prop (G .snd))
   (λ G G-ab → G-ab)
-  (λ G G-ab → ∙-comm _ G-ab)
+  (λ G G-ab → Deloop-ab.∙-comm _ G-ab)
 ```
 
 For example, the circle is abelian, being the delooping of $\mathbb{Z}$.
 
 ```agda
 S¹-concrete-abelian : is-concrete-abelian S¹-concrete
-S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ π₁S¹≡ℤ)
+S¹-concrete-abelian = Equiv.from (abelian≃abelian S¹-concrete ℤ
+  (Univalent.iso→path (Structured-objects-is-category _) π₁S¹≅ℤ))
   (Abelian→Group-on-abelian (ℤ-ab .snd))
 ```
 
-## First abelian group cohomology
+## First abelian group cohomology {defines="first-abelian-group-cohomology"}
 
 When $H$ is a concrete abelian group, something interesting happens: for any
 other concrete group $G$, the set of pointed maps $\B{G} \to^\bullet \B{H}$ (i.e.
@@ -93,7 +95,7 @@ group homomorphisms from $G$ to $H$) turns out to be equivalent to the
 This is a special case of a theorem that relates this set truncation with the set
 of orbits of the action of the *inner automorphism group* of $H$ on the set of group
 homomorphisms $\B{G} \to^\bullet \B{H}$. We do not prove this here, but see
-[@Symmetry, theorem 5.12.2]. In the special case that $H$ is abelian, its inner
+[@Symmetry, theorem 8.10.2]. In the special case that $H$ is abelian, its inner
 automorphism group is trivial, and we can avoid quotienting.
 
 In even fancier language, it is also a computation of the first *cohomology group*

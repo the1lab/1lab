@@ -46,8 +46,8 @@ the monomorphisms $a \mono b$ rather than arbitrary maps $a \to b$.
 record Subobject (y : Ob) : Type (o ⊔ ℓ) where
   no-eta-equality
   field
-    {domain} : Ob
-    map   : Hom domain y
+    {dom} : Ob
+    map   : Hom dom y
     monic : is-monic map
 
 open Subobject public
@@ -65,8 +65,8 @@ determining the full `Subobject`{.Agda}s involved.
 record ≤-over {x y} (f : Hom x y) (a : Subobject x) (b : Subobject y) : Type ℓ where
   no-eta-equality
   field
-    map : Hom (a .domain) (b .domain)
-    sq : f ∘ Subobject.map a ≡ Subobject.map b ∘ map
+    map : Hom (a .dom) (b .dom)
+    com : f ∘ Subobject.map a ≡ Subobject.map b ∘ map
 
 open ≤-over public
 ```
@@ -84,11 +84,11 @@ $y'g = fx' = y'h$, then, since $y'$ is a mono, $g = h$.
   → p ≡ q
 ≤-over-is-prop {f = f} {a} {b} p q = path where
   maps : p .map ≡ q .map
-  maps = b .monic (p .map) (q .map) (sym (p .sq) ∙ q .sq)
+  maps = b .monic (p .map) (q .map) (sym (p .com) ∙ q .com)
 
   path : p ≡ q
   path i .map = maps i
-  path i .sq = is-prop→pathp (λ i → Hom-set _ _ (f ∘ a .map) (b .map ∘ maps i)) (p .sq) (q .sq) i
+  path i .com = is-prop→pathp (λ i → Hom-set _ _ (f ∘ a .map) (b .map ∘ maps i)) (p .com) (q .com) i
 
 instance
   H-Level-≤-over
@@ -109,10 +109,10 @@ Subobjects .Hom[_]  = ≤-over
 Subobjects .Hom[_]-set f a b = hlevel 2
 
 Subobjects .id' .map = id
-Subobjects .id' .sq  = id-comm-sym
+Subobjects .id' .com = id-comm-sym
 
 Subobjects ._∘'_ α β .map = α .map ∘ β .map
-Subobjects ._∘'_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
+Subobjects ._∘'_ α β .com = pullr (β .com) ∙ extendl (α .com)
 ```
 
 <!--
@@ -120,6 +120,9 @@ Subobjects ._∘'_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
 Subobjects .idr' _       = prop!
 Subobjects .idl' _       = prop!
 Subobjects .assoc' _ _ _ = prop!
+Subobjects .hom[_] p f .map = f .map
+Subobjects .hom[_] p f .com = ap₂ _∘_ (sym p) refl ∙ f .com
+Subobjects .coh[_] p f = prop!
 
 open Weak-cocartesian-lift
 open is-weak-cocartesian
@@ -173,7 +176,7 @@ module with-pullbacks (pb : has-pullbacks B) where
   pullback-subobject
     : ∀ {X Y} (h : Hom X Y) (g : Subobject Y)
     → Subobject X
-  pullback-subobject h g .domain = pb h (g .map) .apex
+  pullback-subobject h g .dom = pb h (g .map) .apex
   pullback-subobject h g .map = pb h (g .map) .p₁
   pullback-subobject h g .monic = is-monic→pullback-is-monic
     (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
@@ -186,12 +189,12 @@ module with-pullbacks (pb : has-pullbacks B) where
 
     l .x' = pullback-subobject f y'
     l .lifting .map = pb f (y' .map) .p₂
-    l .lifting .sq  = pb f (y' .map) .square
+    l .lifting .com = pb f (y' .map) .square
 
     -- The dashed red arrow:
     l .cartesian .universal {u' = u'} m h' = λ where
-      .map → pb f (y' .map) .universal (pushr refl ∙ h' .sq)
-      .sq  → sym (pb f (y' .map) .p₁∘universal)
+      .map → pb f (y' .map) .universal (pushr refl ∙ h' .com)
+      .com → sym (pb f (y' .map) .p₁∘universal)
     l .cartesian .commutes _ _ = prop!
     l .cartesian .unique _ _   = prop!
 ```
@@ -255,15 +258,15 @@ property of $\im fx'$.
 
 ```agda
   l : Weak-cocartesian-lift Subobjects f x'
-  l .y' .domain = im.Im
-  l .y' .map    = im.Im→codomain
-  l .y' .monic  = im.Im→codomain-is-M
+  l .y' .dom   = im.Im
+  l .y' .map   = im.Im→codomain
+  l .y' .monic = im.Im→codomain-is-M
 
   l .lifting .map = im.corestrict
-  l .lifting .sq  = sym im.image-factors
+  l .lifting .com = sym im.image-factors
 
-  l .weak-cocartesian .universal {x' = y'} h .map = im.universal _ (y' .monic) (h .map) (sym (h .sq))
-  l .weak-cocartesian .universal h .sq = idl _ ∙ sym im.universal-factors
+  l .weak-cocartesian .universal {x' = y'} h .map = im.universal _ (y' .monic) (h .map) (sym (h .com))
+  l .weak-cocartesian .universal h .com = idl _ ∙ sym im.universal-factors
 
   l .weak-cocartesian .commutes g' = prop!
   l .weak-cocartesian .unique _ _  = prop!
@@ -285,26 +288,11 @@ Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
 ## Subobjects over a base
 
 We define the category $\Sub(y)$ of subobjects _of $y$_ as a fibre of
-the subobject fibration. However, we use a purpose-built transport
-function to cut down on the number of coherences required to work with
-$\Sub(y)$ at use-sites.
-
-<!--
-```agda
-private
-  re : ∀ {x} {a b : Subobject x} → ≤-over (id ∘ id) a b → ≤-over id a b
-  re x .map = x .map
-  re x .sq  = ap₂ _∘_ (introl refl) refl ∙ x .sq
-
-  abstract
-    coh : ∀ {x} {a b : Subobject x} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
-    coh f = prop!
-```
--->
+the subobject fibration.
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-unquoteDef Sub = define-copattern Sub (λ y → Fibre' Subobjects y re coh)
+Sub y = record { Precategory (Fibre Subobjects y) }
 
 module Sub {y} = Cr (Sub y)
 ```
@@ -314,18 +302,18 @@ module Sub {y} = Cr (Sub y)
 _≤ₘ_ : ∀ {y} (a b : Subobject y) → Type _
 _≤ₘ_ = ≤-over id
 
-≤ₘ→mono : ∀ {y} {a b : Subobject y} → a ≤ₘ b → a .domain ↪ b .domain
+≤ₘ→mono : ∀ {y} {a b : Subobject y} → a ≤ₘ b → a .dom ↪ b .dom
 ≤ₘ→mono x .mor = x .map
 ≤ₘ→mono {a = a} x .monic g h α = a .monic g h $
-  a .map ∘ g      ≡⟨ ap (_∘ g) (introl refl ∙ x .sq) ∙ pullr refl ⟩
+  a .map ∘ g      ≡⟨ ap (_∘ g) (introl refl ∙ x .com) ∙ pullr refl ⟩
   _ ∘ x .map ∘ g  ≡⟨ ap₂ _∘_ refl α ⟩
-  _ ∘ x .map ∘ h  ≡⟨ pulll (sym (x .sq) ∙ idl _) ⟩
+  _ ∘ x .map ∘ h  ≡⟨ pulll (sym (x .com) ∙ idl _) ⟩
   a .map ∘ h      ∎
 
 cutₛ : ∀ {x y} {f : Hom x y} → is-monic f → Subobject y
-cutₛ x .domain = _
-cutₛ x .map    = _
-cutₛ x .monic  = x
+cutₛ x .dom   = _
+cutₛ x .map   = _
+cutₛ x .monic = x
 
 Sub-antisym
   : ∀ {y} {a b : Subobject y}
@@ -336,10 +324,10 @@ Sub-antisym f g = Sub.make-iso f g prop! prop!
 
 Sub-path
   : ∀ {y} {a b : Subobject y}
-  → (p : a .domain ≡ b .domain)
+  → (p : a .dom ≡ b .dom)
   → PathP (λ i → Hom (p i) y) (a .map) (b .map)
   → a ≡ b
-Sub-path p q i .domain = p i
+Sub-path p q i .dom = p i
 Sub-path p q i .map = q i
 Sub-path {a = a} {b = b} p q i .monic {c} =
   is-prop→pathp (λ i → Π-is-hlevel³ 1 λ (g h : Hom c (p i)) (_ : q i ∘ g ≡ q i ∘ h) → Hom-set _ _ g h)
@@ -362,22 +350,22 @@ Sub-products {y} pb a b = prod where
   it = pb (a .map) (b .map)
 
   prod : Product (Sub y) a b
-  prod .Product.apex .domain = it .apex
+  prod .Product.apex .dom = it .apex
   prod .Product.apex .map = a .map ∘ it .p₁
-  prod .Product.apex .monic = monic-∘
+  prod .Product.apex .monic = ∘-is-monic
     (a .monic)
     (is-monic→pullback-is-monic (b .monic) (rotate-pullback (it .has-is-pb)))
 
   prod .Product.π₁ .map = it .p₁
-  prod .Product.π₁ .sq  = idl _
+  prod .Product.π₁ .com = idl _
 
   prod .Product.π₂ .map = it .p₂
-  prod .Product.π₂ .sq  = idl _ ∙ it .square
+  prod .Product.π₂ .com = idl _ ∙ it .square
 
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .map =
-    it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
-  prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
-    idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
+    it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .com) ∙ q≤b .com)
+  prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .com =
+    idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .com) ∙ idl _)
   prod .Product.has-is-product .is-product.π₁∘⟨⟩ = prop!
   prod .Product.has-is-product .is-product.π₂∘⟨⟩ = prop!
   prod .Product.has-is-product .is-product.unique _ _ = prop!
@@ -396,9 +384,9 @@ Sub-is-category : ∀ {y} → is-category B → is-category (Sub y)
 Sub-is-category b-cat .to-path {a} {b} x =
   Sub-path
     (b-cat .to-path i)
-    (Univalent.Hom-pathp-refll-iso b-cat (sym (x .Sub.from .sq) ∙ idl _))
+    (Univalent.Hom-pathp-refll-iso b-cat (sym (x .Sub.from .com) ∙ idl _))
   where
-    i : a .domain ≅ b .domain
+    i : a .dom ≅ b .dom
     i = make-iso (x .Sub.to .map) (x .Sub.from .map) (ap map (Sub.invl x)) (ap map (Sub.invr x))
 Sub-is-category b-cat .to-path-over p =
   Sub.≅-pathp refl _ prop!

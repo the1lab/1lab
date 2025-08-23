@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.display.top:100 #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Pullback.Along
 open import Cat.Displayed.Cartesian
@@ -38,7 +37,7 @@ open Sub
   using ()
   public
 
-≅ₘ→iso : m ≅ₘ n → m .domain ≅ n .domain
+≅ₘ→iso : m ≅ₘ n → m .dom ≅ n .dom
 ≅ₘ→iso p .to = p .Sub.to .map
 ≅ₘ→iso p .from = p .Sub.from .map
 ≅ₘ→iso p .inverses = record
@@ -69,13 +68,13 @@ open with-pullbacks pb renaming (pullback-subobject to infixr 35 _^*_) public
 ^*-assoc .inverses = record { invl = prop! ; invr = prop! }
 
 ⊤ₘ : Subobject X
-⊤ₘ .domain = _
-⊤ₘ .map    = id
-⊤ₘ .monic  = id-monic
+⊤ₘ .dom   = _
+⊤ₘ .map   = id
+⊤ₘ .monic = id-monic
 
 opaque
   !ₘ : m ≤ₘ ⊤ₘ
-  !ₘ {m = m} = record { map = m .map ; sq = refl }
+  !ₘ {m = m} = record { map = m .map ; com = refl }
 
 module _ {X} where
   open Binary-products (Sub X) (Sub-products pb) public renaming
@@ -101,33 +100,33 @@ opaque
   ^*-∩ₘ : f ^* (m ∩ₘ n) ≅ₘ f ^* m ∩ₘ f ^* n
   ^*-∩ₘ {f = f} {m = m} {n = n} = Sub-antisym
     (∩ₘ-univ
-      (^*-univ record { sq = pb _ _ .square ∙ pullr refl })
-      (^*-univ record { sq = pb _ _ .square ∙ pullr refl ∙ extendl (pb _ _ .square) }))
+      (^*-univ record { com = pb _ _ .square ∙ pullr refl })
+      (^*-univ record { com = pb _ _ .square ∙ pullr refl ∙ extendl (pb _ _ .square) }))
     record
       { map = pb _ _ .universal
         {p₁' = pb _ _ .p₁ ∘ pb _ _ .p₁}
         {p₂' = pb _ _ .universal {p₁' = pb _ _ .p₂ ∘ pb _ _ .p₁} {p₂' = pb _ _ .p₂ ∘ pb _ _ .p₂}
           (pulll (sym (pb _ _ .square)) ∙ pullr (pb _ _ .square) ∙ extendl (pb _ _ .square))}
         (sym (pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))))
-      ; sq  = sym (pb _ _ .p₁∘universal ∙ introl refl)
+      ; com = sym (pb _ _ .p₁∘universal ∙ introl refl)
       }
 
   ^*-⊤ₘ : f ^* ⊤ₘ ≅ₘ ⊤ₘ
   ^*-⊤ₘ {f = f} = Sub-antisym !ₘ record
     { map = pb _ _ .universal {p₁' = id} {p₂' = f} id-comm
-    ; sq  = sym (pb _ _ .p₁∘universal ∙ introl refl)
+    ; com = sym (pb _ _ .p₁∘universal ∙ introl refl)
     }
 
 opaque
   is-pullback-along→iso : is-pullback-along C (m .map) h (n .map) → m ≅ₘ h ^* n
   is-pullback-along→iso pba = Sub-antisym
-    record { map = pb _ _ .universal (pba .square) ; sq = sym (pb _ _ .p₁∘universal ∙ introl refl) }
-    record { map = pba .universal (pb _ _ .square) ; sq = sym (pba .p₁∘universal ∙ introl refl) }
+    record { map = pb _ _ .universal (pba .square) ; com = sym (pb _ _ .p₁∘universal ∙ introl refl) }
+    record { map = pba .universal (pb _ _ .square) ; com = sym (pba .p₁∘universal ∙ introl refl) }
 
   iso→is-pullback-along : m ≅ₘ h ^* n → is-pullback-along C (m .map) h (n .map)
   iso→is-pullback-along _ .top = _
   iso→is-pullback-along {h = h} {n = n} m .has-is-pb = subst-is-pullback
-    (sym (m .Sub.to .sq) ∙ idl _) refl refl refl
+    (sym (m .Sub.to .com) ∙ idl _) refl refl refl
     (is-pullback-iso
       record
         { to       = m .Sub.from .map

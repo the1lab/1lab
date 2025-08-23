@@ -95,7 +95,7 @@ univalence, equivalent to the natural numbers:
 naïve-fin-is-nat : (Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X) ≃ Nat
 naïve-fin-is-nat =
   Σ[ X ∈ Type ] Σ[ n ∈ Nat ] Fin n ≃ X ≃⟨ Σ-swap₂ ⟩
-  Σ[ n ∈ Nat ] Σ[ X ∈ Type ] Fin n ≃ X ≃⟨ Σ-contract (λ x → Equiv-is-contr (Fin x)) ⟩
+  Σ[ n ∈ Nat ] Σ[ X ∈ Type ] Fin n ≃ X ≃⟨ Σ-contr-snd (λ x → Equiv-is-contr (Fin x)) ⟩
   Nat                                  ≃∎
 ```
 
@@ -175,10 +175,10 @@ In particular, any listed type is [[discrete]].
 
 ```agda
 Listing→Discrete : Listing A → Discrete A
-Listing→Discrete {A = A} li = go auto where
+Listing→Discrete {A = A} li .decide x y = go auto where
   module ix = Equiv (listing→equiv-fin li)
 
-  go : ∀ {x y} → Dec (ix.to x ≡ ix.to y) → Dec (x ≡ y)
+  go : Dec (ix.to x ≡ ix.to y) → Dec (x ≡ y)
   go (yes p) = yes (ix.injective p)
   go (no ¬p) = no λ p → ¬p (ap ix.to p)
 ```
@@ -307,7 +307,7 @@ complicated.</summary>
   Listing-PathP : ∀ {A : I → Type ℓ} ⦃ _ : Listing (A i1) ⦄ {x y} → Listing (PathP A x y)
   Listing-PathP {A = A} ⦃ li ⦄ {x} {y} = Listing-prop ⦃ auto ⦄ ⦃ auto ⦄ where instance
     d : ∀ {x y} → Dec (PathP A x y)
-    d {x} {y} with Listing→Discrete li {coe A i0 i1 x} {y}
+    d {x} {y} with Listing→Discrete li .decide (coe A i0 i1 x) y
     ... | yes a = yes (to-pathp {A = A} a)
     ... | no ¬a = no λ a → ¬a (from-pathp a)
 
@@ -467,7 +467,7 @@ instance
 
     eqv =
       Pi la.univ P                       ≃⟨ Iso→Equiv (to-pi' P , iso (from-pi' P) (from-to-pi' P) (to-from-pi' P)) ⟩
-      ((x : A) (a : x ∈ₗ la.univ) → P x) ≃⟨ Π-cod≃ (λ x → Π-contr-eqv (la.has-member x)) ⟩
+      ((x : A) (a : x ∈ₗ la.univ) → P x) ≃⟨ Π-ap-cod (λ x → Π-contr-eqv (la.has-member x)) ⟩
       ((x : A) → P x)                    ≃∎
 
     li : Listing (∀ x → P x)
@@ -678,7 +678,7 @@ instance
 
 instance
   Discrete-listing-Π : ⦃ _ : Listing A ⦄ ⦃ _ : ∀ {x} → Discrete (P x) ⦄ → Discrete ((x : A) → P x)
-  Discrete-listing-Π {A = A} ⦃ xa ⦄ ⦃ dp ⦄ {f} {g} with Listing→exhaustible (λ i → ¬ f i ≡ g i)
+  Discrete-listing-Π {A = A} ⦃ xa ⦄ ⦃ dp ⦄ .decide f g with Listing→exhaustible (λ i → ¬ f i ≡ g i)
   ... | inl (x , p) = no λ f=g → p (happly f=g x)
   ... | inr ¬p = yes (ext λ x → dec→dne (¬p x))
 ```

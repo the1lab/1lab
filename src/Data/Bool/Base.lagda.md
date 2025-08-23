@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Closure
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -50,10 +51,10 @@ or true y = true
 ```agda
 instance
   Discrete-Bool : Discrete Bool
-  Discrete-Bool {false} {false} = yes refl
-  Discrete-Bool {false} {true}  = no false≠true
-  Discrete-Bool {true}  {false} = no true≠false
-  Discrete-Bool {true}  {true}  = yes refl
+  Discrete-Bool .decide false false = yes refl
+  Discrete-Bool .decide false true  = no false≠true
+  Discrete-Bool .decide true  false = no true≠false
+  Discrete-Bool .decide true  true  = yes refl
 ```
 
 <!--
@@ -127,3 +128,23 @@ Bool-elim A at af true = at
 Bool-elim A at af false = af
 ```
 -->
+
+## The "not" equivalence
+
+The construction of `not`{.Agda} as an equivalence factors through
+showing that `not` is an isomorphism. In particular, `not`{.Agda} is its
+own inverse, so we need a proof that it's involutive, as is proven in
+`not-involutive`{.Agda}.  With this, we can get a proof that it's an
+equivalence:
+
+```agda
+not-involutive : (x : Bool) → not (not x) ≡ x
+not-involutive false i = false
+not-involutive true  i = true
+
+not-is-equiv : is-equiv not
+not-is-equiv = is-involutive→is-equiv not-involutive
+
+not≃ : Bool ≃ Bool
+not≃ = not , not-is-equiv
+```

@@ -18,9 +18,9 @@ module Cat.Displayed.Morphism
 
 <!--
 ```agda
-open Displayed ℰ
-open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
+open Cat.Reasoning ℬ
+
 private variable
   ℓi : Level
   Ix : Type ℓi
@@ -117,11 +117,11 @@ Weak monomorphisms are closed under composition, and every displayed
 monomorphism is weakly monic.
 
 ```agda
-weak-monic-∘
+∘-is-weak-monic
   : is-weak-monic f'
   → is-weak-monic g'
   → is-weak-monic (f' ∘' g')
-weak-monic-∘ {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p p' =
+∘-is-weak-monic {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p p' =
   g'-weak-monic h' k' p $
   f'-weak-monic (g' ∘' h') (g' ∘' k') (ap₂ _∘_ refl p) $
   cast[] $
@@ -190,13 +190,13 @@ Jointly weak monic families are closed under precomposition
 with weak monos.
 
 ```agda
-jointly-weak-monic-∘
+∘-is-jointly-weak-monic
   : {fᵢ : (ix : Ix) → Hom a (bᵢ ix)}
   → {fᵢ' : (ix : Ix) → Hom[ fᵢ ix ] a' (bᵢ' ix)}
   → is-jointly-weak-monic fᵢ'
   → is-weak-monic g'
   → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
-jointly-weak-monic-∘ {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p p' =
+∘-is-jointly-weak-monic {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p p' =
   g'-joint-mono h' h'' p $
   fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') (ap₂ _∘_ refl p) λ ix →
   cast[] $
@@ -515,12 +515,10 @@ invertible[]→iso[]
   → {i : is-invertible f}
   → is-invertible[ i ] f'
   → a' ≅[ invertible→iso f i ] b'
-invertible[]→iso[] {f' = f'} i =
-  make-iso[ _ ]
-    f'
-    (is-invertible[_].inv' i)
-    (is-invertible[_].invl' i)
-    (is-invertible[_].invr' i)
+invertible[]→iso[] {f' = f'} i = make-iso[ _ ] f'
+  (is-invertible[_].inv' i)
+  (is-invertible[_].invl' i)
+  (is-invertible[_].invr' i)
 
 iso[]→invertible[]
   : ∀ {a b a' b'}

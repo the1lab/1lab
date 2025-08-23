@@ -24,7 +24,7 @@ $$,
 and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
 
-[image]: 1Lab.HIT.Truncation.html#maps-into-sets
+[image]: 1Lab.Truncation.html#maps-into-sets
 
 In general, we can consider images of arbitrary functions $f : A \to B$,
 where $A$ is a $\ell_1$-small type, and $B$ is a $\ell_2$-small type;
@@ -176,9 +176,9 @@ specification of the inductive type!
 
 ```agda
 module Replacement
-    {ℓₐ ℓₜ ℓᵢ} {A : Type ℓₐ} {T : Type ℓₜ}
-    {_∼_ : T → T → Type ℓᵢ} {rr : ∀ x → x ∼ x}
+    {ℓₜ ℓᵢ} {T : Type ℓₜ} {_∼_ : T → T → Type ℓᵢ} {rr : ∀ x → x ∼ x}
     (locally-small : is-identity-system _∼_ rr)
+    {ℓₐ} {A : Type ℓₐ}
     (f : A → T)
   where
 

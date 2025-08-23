@@ -34,12 +34,14 @@ case" is when there are _no_ elements $y < x$ --- for example, taking
 $<$ to be the usual $<$ on the natural numbers, there are no numbers $y
 < 0$, so $0$ is accessible.
 
+::: {.definition #well-founded}
 A relation is **well-founded** if every $x : A$ is accessible.
 
 ```agda
   Wf : Type _
   Wf = ∀ x → Acc x
 ```
+:::
 
 Being well-founded implies that we support induction, and conversely,
 any relation supporting induction is well-founded, by taking the motive

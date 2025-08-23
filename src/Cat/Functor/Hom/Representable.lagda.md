@@ -269,7 +269,7 @@ corepresentation-unique
 
 ```agda
 corepresentation-unique X Y =
-  is-ff→essentially-injective {F = Functor.op (よcov C)}
+  is-ff→essentially-injective {F = record { Functor (Functor.op (よcov C)) }}
     (よcov-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
@@ -452,7 +452,7 @@ a pair of maps $a \to x$ and $b \to x$.
 よ-reverses-colimits
   : ∀ {o' κ'}
   → (c : C.Ob)
-  → is-cocontinuous o' κ' (Functor.op (よ₀ C c))
+  → is-cocontinuous o' κ' (opFʳ (よ₀ C c))
 よ-reverses-colimits c {Diagram = Dia} {K} {eta} colim =
   to-is-colimitp mc (funext λ _ → refl) where
   open make-is-colimit
@@ -473,10 +473,17 @@ a pair of maps $a \to x$ and $b \to x$.
 representable-reverses-colimits
   : ∀ {o' κ'} {F}
   → Representation F
-  → is-cocontinuous o' κ' (Functor.op F)
+  → is-cocontinuous o' κ' (opFʳ F)
 representable-reverses-colimits F-rep colim =
-  natural-iso→preserves-colimits
-    ((F-rep .represents ni^op) ni⁻¹)
-    (よ-reverses-colimits (F-rep .rep))
-    colim
+  let
+    module im = Isoⁿ (F-rep .represents)
+    im' = to-natural-iso record where
+      eta = im.to .η
+      inv = im.from .η
+      eta∘inv x = ap (λ e → e .η x) im.invr
+      inv∘eta x = ap (λ e → e .η x) im.invl
+      natural x y f = im.to .is-natural _ _ _
+  in natural-iso→preserves-colimits
+    im'
+    (よ-reverses-colimits (F-rep .rep)) colim
 ```

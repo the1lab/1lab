@@ -158,7 +158,7 @@ binary coequalisers, it is finitely cocomplete.
 
 ## With pushouts
 
-A coproduct is a pushout under a span whose vertex is the initial object.
+A coproduct is a pushout under a span whose apex is the initial object.
 
 ```agda
   initial-pushout→coproduct

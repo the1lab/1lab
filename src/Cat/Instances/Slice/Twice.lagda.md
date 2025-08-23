@@ -49,28 +49,28 @@ of the functors here, in components.
 
 ```agda
 Slice-twice : (f : Hom a b) → Functor (Slice C a) (Slice (Slice C b) (cut f))
-Slice-twice f .F₀ g .domain .domain = g .domain
-Slice-twice f .F₀ g .domain .map    = f ∘ g .map
+Slice-twice f .F₀ g .dom .dom = g .dom
+Slice-twice f .F₀ g .dom .map = f ∘ g .map
 
-Slice-twice f .F₀ g .map .map      = g .map
-Slice-twice f .F₀ g .map .commutes = refl
+Slice-twice f .F₀ g .map .map = g .map
+Slice-twice f .F₀ g .map .com = refl
 
-Slice-twice f .F₁ h .map .map      = h .map
-Slice-twice f .F₁ h .map .commutes = pullr (h .commutes)
-Slice-twice f .F₁ h .commutes      = ext (h .commutes)
+Slice-twice f .F₁ h .map .map = h .map
+Slice-twice f .F₁ h .map .com = pullr (h .com)
+Slice-twice f .F₁ h .com      = ext (h .com)
 
-Slice-twice f .F-id    = trivial!
-Slice-twice f .F-∘ g h = trivial!
+Slice-twice f .F-id    = ext refl
+Slice-twice f .F-∘ g h = ext refl
 
 Twice-slice : (f : Hom a b) → Functor (Slice (Slice C b) (cut f)) (Slice C a)
-Twice-slice _ .F₀ x .domain = x .domain .domain
-Twice-slice _ .F₀ x .map    = x .map .map
+Twice-slice _ .F₀ x .dom = x .dom .dom
+Twice-slice _ .F₀ x .map = x .map .map
 
-Twice-slice _ .F₁ h .map      = h .map .map
-Twice-slice _ .F₁ h .commutes = ap map (h .commutes)
+Twice-slice _ .F₁ h .map = h .map .map
+Twice-slice _ .F₁ h .com = ap map (h .com)
 
-Twice-slice _ .F-id = trivial!
-Twice-slice _ .F-∘ _ _ = trivial!
+Twice-slice _ .F-id    = ext refl
+Twice-slice _ .F-∘ _ _ = ext refl
 ```
 
 We will also need the fact that these inverses are also adjoints.
@@ -79,13 +79,14 @@ We will also need the fact that these inverses are also adjoints.
 Twice⊣Slice : (f : Hom a b) → Twice-slice f ⊣ Slice-twice f
 Twice⊣Slice f = adj where
   adj : Twice-slice f ⊣ Slice-twice f
-  adj .unit .η x .map .map      = id
-  adj .unit .η x .map .commutes = idr _ ∙ x .map .commutes
-  adj .unit .η x .commutes      = ext (idr _)
+  adj .unit .η x .map .map = id
+  adj .unit .η x .map .com = idr _ ∙ x .map .com
+  adj .unit .η x .com      = ext (idr _)
+
   adj .unit .is-natural x y f   = ext id-comm-sym
 
   adj .counit .η x .map         = id
-  adj .counit .η x .commutes    = idr _
+  adj .counit .η x .com         = idr _
   adj .counit .is-natural x y f = ext id-comm-sym
 
   adj .zig = ext (idr _)

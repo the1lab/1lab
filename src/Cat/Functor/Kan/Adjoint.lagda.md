@@ -95,7 +95,7 @@ module _ {F : Functor C D} {G : Functor D C} (F⊣G : F ⊣ G) where
       (is-co-lan'→is-ran G H
         (adjoint→is-lan (opposite-adjunction F⊣G) (Functor.op H)))
     where
-      fixF : Functor.op (Functor.op H F∘ Functor.op F) ≡ H F∘ F
+      fixF : unopF (Functor.op H F∘ Functor.op F) ≡ H F∘ F
       fixF = Functor-path (λ _ → refl) (λ _ → refl)
       fixNT : PathP (λ i → fixF i F∘ G => H) _ _
       fixNT = Nat-pathp (λ i → fixF i F∘ G) refl (λ _ → refl)

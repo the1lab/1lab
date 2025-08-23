@@ -32,7 +32,7 @@ open _=>_
 ```
 -->
 
-# The Day convolution product
+# The Day convolution product {defines="Day-convolution"}
 
 The **Day convolution** $F \otimes^D G$ [[monoidal structure|monoidal
 category]] on $\psh(\cC)$ is the [[free cocompletion]] of a small
@@ -211,18 +211,23 @@ module Day (X Y : ⌞ PSh ℓ C ⌟) where
 -->
 
 ```agda
-  opaque
-    Day-coend : (c : Ob) → Coend (Day-diagram c)
-    Day-coend c = Set-coend (Day-diagram c)
+  Day-coend : (c : Ob) → Coend (Day-diagram c)
+  Day-coend c = Set-coend (Day-diagram c)
 ```
 
 <!--
 ```agda
   private module Day c = Coend (Day-coend c)
-  open Day using (nadir) public
 
-  opaque
-    unfolding Day-coend
+  record Day₀ (i : Ob) : Type ℓ where
+    no-eta-equality ; pattern
+    constructor lift
+    field
+      lower : Day.nadir ʻ i
+
+  instance
+    H-Level-Day₀ : ∀ {i n} → H-Level (Day₀ i) (2 + n)
+    H-Level-Day₀ = basic-instance 2 $ retract→is-hlevel 2 lift Day₀.lower (λ { (lift x) → refl }) (hlevel 2)
 ```
 -->
 
@@ -233,19 +238,19 @@ convolution. First, we note that we can write the elements of the coend
 b)$, $x : X(a)$, and $y : Y(b)$.
 
 ```agda
-    day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → Day.nadir ʻ i
-    day h x y = inc ((_ , _) , h , x , y)
+  day : {i a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → Day₀ i
+  day h x y = lift (inc ((_ , _) , h , x , y))
 ```
 
 <!--
 ```agda
-    day-ap
-      : {i a b : Ob} {h h' : Hom i (a ⊗ b)} {x x' : X ʻ a} {y y' : Y ʻ b}
-      → h ≡ h' → x ≡ x' → y ≡ y' → day h x y ≡ day h' x' y'
-    day-ap {a = a} {b} p q r i = inc ((a , b) , p i , q i , r i)
+  day-ap
+    : {i a b : Ob} {h h' : Hom i (a ⊗ b)} {x x' : X ʻ a} {y y' : Y ʻ b}
+    → h ≡ h' → x ≡ x' → y ≡ y' → day h x y ≡ day h' x' y'
+  day-ap {a = a} {b} p q r i = lift (inc ((a , b) , p i , q i , r i))
 
-    day-apₘ : ∀ {i a b} {h h' : Hom i (a ⊗ b)} {x y} → h ≡ h' → day h x y ≡ day h' x y
-    day-apₘ p = day-ap p refl refl
+  day-apₘ : ∀ {i a b} {h h' : Hom i (a ⊗ b)} {x y} → h ≡ h' → day h x y ≡ day h' x y
+  day-apₘ p = day-ap p refl refl
 ```
 -->
 
@@ -256,15 +261,15 @@ Yg(y)}$ equal to $\day{h', Xf'(x), Yg'(y)}$ whenever $(f \otimes g)
 \circ h = (f' \otimes g') \circ h'$.
 
 ```agda
-    day-glue
-      : {i a b a' b' : Ob} {f : Hom a' a} {g : Hom b' b} {h : Hom i (a' ⊗ b')} {x : X ʻ a} {y : Y ʻ b}
-      → {fgh : Hom i (a ⊗ b)} (p : fgh ≡ (f ⊗₁ g) ∘ h)
-      → day fgh x y ≡ day h (X .F₁ f x) (Y .F₁ g y)
-    day-glue {i} {a} {b} {a'} {b'} {f} {g} {h} {x} {y} {fgh} p =
-      day fgh x y                                  ≡⟨ day-ap p (sym (X .F-id) ·ₚ x) (sym (Y .F-id) ·ₚ y) ⟩
-      day ((f ⊗₁ g) ∘ h) (X .F₁ id x) (Y .F₁ id y) ≡⟨ Coeq.glue {f = dimapl (Day-diagram i)} {g = dimapr (Day-diagram i)} ((a , b) , (a' , b') , (f , g) , h , x , y) ⟩
-      day ((id ⊗₁ id) ∘ h) (X .F₁ f x) (Y .F₁ g y) ≡⟨ day-apₘ (eliml ⊗.F-id) ⟩
-      day h (X .F₁ f x) (Y .F₁ g y)                ∎
+  day-glue
+    : {i a b a' b' : Ob} {f : Hom a' a} {g : Hom b' b} {h : Hom i (a' ⊗ b')} {x : X ʻ a} {y : Y ʻ b}
+    → {fgh : Hom i (a ⊗ b)} (p : fgh ≡ (f ⊗₁ g) ∘ h)
+    → day fgh x y ≡ day h (X .F₁ f x) (Y .F₁ g y)
+  day-glue {i} {a} {b} {a'} {b'} {f} {g} {h} {x} {y} {fgh} p =
+    day fgh x y                                  ≡⟨ day-ap p (sym (X .F-id) ·ₚ x) (sym (Y .F-id) ·ₚ y) ⟩
+    day ((f ⊗₁ g) ∘ h) (X .F₁ id x) (Y .F₁ id y) ≡⟨ ap {B = λ _ → Day₀ _} lift (Coeq.glue {f = dimapl (Day-diagram i)} {g = dimapr (Day-diagram i)} ((a , b) , (a' , b') , (f , g) , h , x , y)) ⟩
+    day ((id ⊗₁ id) ∘ h) (X .F₁ f x) (Y .F₁ g y) ≡⟨ day-apₘ (eliml ⊗.F-id) ⟩
+    day h (X .F₁ f x) (Y .F₁ g y)                ∎
 ```
 
 Finally, we will use the formalism of [[cowedges]] to define functions
@@ -273,66 +278,29 @@ function $f : (F \otimes^D G)(i) \to W$ whenever we can define
 $f(\day{h,x,y})$, in a way compatible with the relation above.
 
 ```agda
-    factor : ∀ {i} (W : Cowedge (Day-diagram i)) → Day.nadir ʻ i → ⌞ W .nadir ⌟
-    factor W = Day.factor _ W
+  factor : ∀ {i} (W : Cowedge (Day-diagram i)) → Day₀ i → ⌞ W .nadir ⌟
+  factor W (lift x) = Day.factor _ W x
 ```
 
 <!--
 ```agda
-    factor-day
-      : ∀ {i a b} {W : Cowedge (Day-diagram i)} {h : Hom i (a ⊗ b)} {x : X ʻ a} {y : Y ʻ b}
-      → factor W (day h x y) ≡ W .ψ (a , b) (h , x , y)
-    factor-day = refl
-
-  {-# REWRITE factor-day #-}
-
-  -- To have better type inference we define the Day-coend and its
-  -- associated projections as opaque symbols. Agda will treat them as
-  -- injective so e.g. an equation between `Day.nadir F G i = Day.nadir
-  -- ? ? ?` will actually solve those three metas.
-  --
-  -- But, of course, opaque symbols don't compute, and we'd really
-  -- really like to have `factor W (day h x y) = W .ψ h x y`. One
-  -- approach would be to lift everything that needs this definitional
-  -- equality into an opaque block, but that would massively bloat the
-  -- file with mandatory type signatures.
-  --
-  -- Rewrite rules to the rescue: `factor-day` allows us to "export" the
-  -- computation rule for `factor W (day ...)` without exposing the
-  -- computational behaviour of any other of the symbols here.
-
-  private
-    extensional-work
-      : ∀ {i ℓ' ℓr} {C : Type ℓ'} ⦃ _ : H-Level C 2 ⦄
-      → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
-      → Extensional (⌞ Day.nadir i ⌟ → C) (ℓ ⊔ ℓr)
-    extensional-work {i} {C = C} ⦃ sf ⦄ = done where
-      T : Type _
-      T = {a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C
-
-      unday : (⌞ Day.nadir i ⌟ → C) → T
-      unday f h x y = f (day h x y)
-
-      opaque
-        unfolding Day-coend day
-
-        -- Note: Extensional-day-map and Extensional-coeq-map well and
-        -- truly overlap whenever Day.nadir is unfoldable (which it is
-        -- in the definition of to-p). So we can't let to-p see
-        -- Extensional-day-map as an instance.
-
-        to-p : ∀ {f g} → Path T (unday f) (unday g) → f ≡ g
-        to-p p = ext λ a b h x y i → p i {a} {b} h x y
-
-      done : Extensional (⌞ Day.nadir i ⌟ → C) _
-      done = injection→extensional (hlevel 2) to-p auto
-
   instance
     Extensional-day-map
       : ∀ {i ℓ' ℓr} {C : Type ℓ'} ⦃ _ : H-Level C 2 ⦄
       → ⦃ sf : ∀ {a b} → Extensional ((h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C) ℓr ⦄
-      → Extensional (⌞ Day.nadir i ⌟ → C) (ℓ ⊔ ℓr)
-    Extensional-day-map = extensional-work
+      → Extensional (Day₀ i → C) (ℓ ⊔ ℓr)
+    Extensional-day-map {i} {C = C} ⦃ sf = sf ⦄ = injection→extensional (hlevel 2) to-p auto where
+      T : Type _
+      T = {a b : Ob} (h : Hom i (a ⊗ b)) (x : X ʻ a) (y : Y ʻ b) → C
+
+      unday : (Day₀ i → C) → T
+      unday f h x y = f (day h x y)
+
+      fixup : {f g : Day₀ i → C} → Path (⌞ Day.nadir i ⌟ → C) (λ x → f (lift x)) (λ x → g (lift x)) → f ≡ g
+      fixup p i (lift x) = p i x
+
+      to-p : ∀ {f g} → Path T (unday f) (unday g) → f ≡ g
+      to-p p = fixup $ ext λ a b h x y i → p i {a} {b} h x y
 
   day-swap
     : ∀ {i a b a' b'} {f : Hom a' a} {g : Hom b' b} {h : Hom i (a' ⊗ b')}
@@ -352,7 +320,7 @@ this extends to the quotient.
 
 ```agda
   Day-cowedge : ∀ {x} {y} → Hom y x → Cowedge (Day-diagram x)
-  Day-cowedge {y = y} h .nadir = Day.nadir y
+  Day-cowedge {y = y} h .nadir = el! (Day₀ y)
   Day-cowedge h .ψ (a , b) (f , x , y) = day (f ∘ h) x y
   Day-cowedge h .extranatural {a , b} {a' , b'} (f , g) = funext λ (i , x , y) →
     day (((f ⊗₁ g) ∘ i) ∘ h) (X .F₁ id x) (Y .F₁ id y) ≡⟨ day-ap refl (X .F-id ·ₚ x) (Y .F-id ·ₚ y) ⟩
@@ -361,7 +329,7 @@ this extends to the quotient.
     day (((id ⊗₁ id) ∘ i) ∘ h) (X .F₁ f x) (Y .F₁ g y) ∎
 
   _⊗ᴰ_ : ⌞ PSh ℓ C ⌟
-  _⊗ᴰ_ .F₀ c = Day.nadir c
+  _⊗ᴰ_ .F₀ c = el! (Day₀ c)
   _⊗ᴰ_ .F₁ {x} {y} h v = factor (Day-cowedge h) v
   _⊗ᴰ_ .F-id    = ext λ h x y → day-apₘ (idr h)
   _⊗ᴰ_ .F-∘ f g = ext λ h x y → day-apₘ (assoc h g f)
@@ -373,11 +341,11 @@ this extends to the quotient.
 
 module _ {X Y} where
   open Day X Y
-    using    (day ; day-ap ; day-apₘ ; day-swap ; Extensional-day-map ; day-glue)
+    using    (day ; day-ap ; day-apₘ ; day-swap ; Extensional-day-map ; H-Level-Day₀ ; day-glue)
     renaming (factor to Day-rec)
     public
 
-open Day using (_⊗ᴰ_ ; Day-diagram)
+open Day using (_⊗ᴰ_ ; Day-diagram ; Day₀)
 ```
 -->
 
@@ -399,7 +367,7 @@ Day-bifunctor-cowedge
 Day-bifunctor-cowedge {X} {Y} {X'} {Y'} {i} F G = go where
   module D = Day X' Y'
   go : Cowedge (Day-diagram X Y i)
-  go .nadir           = D.nadir i
+  go .nadir           = el! (D.Day₀ i)
   go .ψ c (h , x , y) = D.day h (F .η _ x) (G .η _ y)
   go .extranatural (f , g) = ext λ h x y →
     D.day ((f ⊗₁ g) ∘ h)   (F .η _ (X .F₁ id x))   (G .η _ (Y .F₁ id y))   ≡⟨ D.day-ap refl (F .is-natural _ _ id ·ₚ _) (G .is-natural _ _ id ·ₚ _) ⟩
@@ -409,13 +377,13 @@ Day-bifunctor-cowedge {X} {Y} {X'} {Y'} {i} F G = go where
 
 Day-map : ∀ {X X' Y Y'} (F : X => X') (G : Y => Y') → X ⊗ᴰ Y => X' ⊗ᴰ Y'
 Day-map F G .η i = Day-rec (Day-bifunctor-cowedge F G)
-Day-map F G .is-natural x y f = trivial!
+Day-map F G .is-natural x y f = ext λ _ _ _ → refl
 
 Day-bifunctor : Functor (PSh ℓ C ×ᶜ PSh ℓ C) (PSh ℓ C)
 Day-bifunctor .F₀ (X , Y) = X ⊗ᴰ Y
 Day-bifunctor .F₁ (F , G) = Day-map F G
-Day-bifunctor .F-id    = trivial!
-Day-bifunctor .F-∘ f g = trivial!
+Day-bifunctor .F-id    = ext λ _ _ _ _ → refl
+Day-bifunctor .F-∘ f g = ext λ _ _ _ _ → refl
 ```
 
 </details>
@@ -518,7 +486,7 @@ module _ (Y : ⌞ PSh ℓ C ⌟) where
 
 module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
   assoc-to₀ : ∀ i {a b} (h : Hom i (a ⊗ b)) (z : Z ʻ b) → Cowedge (Day-diagram X Y a)
-  assoc-to₀ i h z .nadir = Day.nadir X (Y ⊗ᴰ Z) i
+  assoc-to₀ i h z .nadir = el! (Day₀ X (Y ⊗ᴰ Z) i)
   assoc-to₀ i h z .ψ (a' , b') (h' , x , y) = day (α→ _ _ _ ∘ (h' ⊗₁ id) ∘ h) x (day id y z)
   assoc-to₀ i h z .extranatural (f , g) = ext λ h' x y →
     day (α→ _ _ _ ∘ ((f ⊗₁ g) ∘ h' ⊗₁ id) ∘ h) (X .F₁ id x) (day id (Y .F₁ id y) z)  ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (⊗.pushl (ap₂ _,_ refl (introl refl)))) (X .F-id ·ₚ x) (day-ap refl (Y .F-id ·ₚ y) refl) ⟩
@@ -528,7 +496,7 @@ module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
     day (α→ _ _ _ ∘ ((id ⊗₁ id) ∘ h' ⊗₁ id) ∘ h) (X .F₁ f x) (day id (Y .F₁ g y) z)  ∎
 
   assoc-to-cowedge : ∀ i → Cowedge (Day-diagram (X ⊗ᴰ Y) Z i)
-  assoc-to-cowedge i .nadir = Day.nadir X (Y ⊗ᴰ Z) i
+  assoc-to-cowedge i .nadir = el! (Day₀ X (Y ⊗ᴰ Z) i)
   assoc-to-cowedge i .ψ (a , b) (h , x , y) = Day-rec (assoc-to₀ i h y) x
   assoc-to-cowedge i .extranatural (f , g) = ext λ h h' x y z →
     day (α→ _ _ _ ∘ (h' ∘ id ⊗₁ id) ∘ (f ⊗₁ g) ∘ h) x (day id y (Z .F₁ id z))   ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (⊗.extendl (ap₂ _,_ (ap (_∘ f) (idr h') ∙ introl ⊗.F-id) id-comm-sym))) refl (day-ap refl refl (Z .F-id ·ₚ z)) ⟩
@@ -538,7 +506,7 @@ module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
     day (α→ _ _ _ ∘ (h' ∘ f ⊗₁ id) ∘ (id ⊗₁ id) ∘ h) x (day id y (Z .F₁ g z))   ∎
 
   assoc-from₀ : ∀ i {a b} (h : Hom i (a ⊗ b)) (x : X ʻ a) → Cowedge (Day-diagram Y Z b)
-  assoc-from₀ i h x .nadir = Day.nadir (X ⊗ᴰ Y) Z i
+  assoc-from₀ i h x .nadir = el! (Day₀ (X ⊗ᴰ Y) Z i)
   assoc-from₀ i h x .ψ (a' , b') (h' , y , z) = day (α← _ _ _ ∘ (id ⊗₁ h') ∘ h) (day id x y) z
   assoc-from₀ i h x .extranatural (f , g) = ext λ h' y z →
     day (α← _ _ _ ∘ (id ⊗₁ ((f ⊗₁ g) ∘ h')) ∘ h) (day id x (Y .F₁ id y)) (Z .F₁ id z) ≡⟨ day-ap (extendl (pushr (ap₂ _⊗₁_ (introl refl) refl ∙ ⊗.F-∘ _ _) ∙∙ pullr refl ∙∙ extendl (associator .Isoⁿ.from .is-natural _ _ _))) (day-ap refl refl (Y .F-id ·ₚ y)) (Z .F-id ·ₚ z) ⟩
@@ -547,7 +515,7 @@ module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
     day (α← _ _ _ ∘ (id ⊗₁ ((id ⊗₁ id) ∘ h')) ∘ h) (day id x (Y .F₁ f y)) (Z .F₁ g z) ∎
 
   assoc-from-cowedge : ∀ i → Cowedge (Day-diagram X (Y ⊗ᴰ Z) i)
-  assoc-from-cowedge i .nadir = Day.nadir (X ⊗ᴰ Y) Z i
+  assoc-from-cowedge i .nadir = el! (Day₀ (X ⊗ᴰ Y) Z i)
   assoc-from-cowedge i .ψ (a , b) (h , x , y) = Day-rec (assoc-from₀ i h x) y
   assoc-from-cowedge i .extranatural (f , g) = ext λ h x h' y z →
     day (α← _ _ _ ∘ (id ⊗₁ h' ∘ id) ∘ (f ⊗₁ g) ∘ h) (day id (X .F₁ id x) y) z   ≡⟨ day-ap (ap (α← _ _ _ ∘_) (⊗.extendl (ap₂ _,_ id-comm-sym (ap (_∘ g) (idr h') ∙ introl ⊗.F-id)))) (day-ap refl (X .F-id ·ₚ _) refl) refl ⟩
@@ -621,21 +589,21 @@ Day-monoidal .M.unitor-l = to-natural-iso mk-λ where
   mk-λ .inv x = Day-idl x .Isoⁿ.to
   mk-λ .eta∘inv x = Day-idl x .Isoⁿ.invr
   mk-λ .inv∘eta x = Day-idl x .Isoⁿ.invl
-  mk-λ .natural x y f = trivial!
+  mk-λ .natural x y f = ext λ _ _ → refl
 Day-monoidal .M.unitor-r = to-natural-iso mk-ρ where
   mk-ρ : make-natural-iso _ _
   mk-ρ .eta x = Day-idr x .Isoⁿ.from
   mk-ρ .inv x = Day-idr x .Isoⁿ.to
   mk-ρ .eta∘inv x = Day-idr x .Isoⁿ.invr
   mk-ρ .inv∘eta x = Day-idr x .Isoⁿ.invl
-  mk-ρ .natural x y f = trivial!
+  mk-ρ .natural x y f = ext λ _ _ → refl
 Day-monoidal .M.associator = to-natural-iso mk-α where
   mk-α : make-natural-iso _ _
   mk-α .eta (x , y , z) = Day-assoc x y z .Isoⁿ.to
   mk-α .inv (x , y , z) = Day-assoc x y z .Isoⁿ.from
   mk-α .eta∘inv (x , y , z) = Day-assoc x y z .Isoⁿ.invl
   mk-α .inv∘eta (x , y , z) = Day-assoc x y z .Isoⁿ.invr
-  mk-α .natural x y f = trivial!
+  mk-α .natural x y f = ext λ _ _ _ _ _ _ → refl
 Day-monoidal .M.triangle {A} {B} = day-triangle
 Day-monoidal .M.pentagon {A} {B} {C} {D} = day-pentagon
 ```

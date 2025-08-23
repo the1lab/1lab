@@ -80,8 +80,8 @@ the family $\psi$.
     no-eta-equality
     constructor cocone-hom
     field
-      hom      : C.Hom (x .coapex) (y .coapex)
-      commutes : ∀ o → hom C.∘ x .ψ o ≡ y .ψ o
+      map : C.Hom (x .coapex) (y .coapex)
+      com : ∀ o → map C.∘ x .ψ o ≡ y .ψ o
 ```
 
 <!--
@@ -90,11 +90,11 @@ the family $\psi$.
 
   open Cocone-hom
 
-  Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .hom ≡ g .hom → f ≡ g
-  Cocone-hom-path p i .hom = p i
-  Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .commutes o j =
+  Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .map ≡ g .map → f ≡ g
+  Cocone-hom-path p i .map = p i
+  Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .com o j =
     is-set→squarep (λ i j → C.Hom-set _ _)
-      (λ j → p j C.∘ x .ψ o) (f .commutes o) (g .commutes o) refl i j
+      (λ j → p j C.∘ x .ψ o) (f .com o) (g .com o) refl i j
 ```
 -->
 
@@ -107,10 +107,10 @@ category, it's immediate that they form a category.
     open Precategory
 
     compose : ∀ {x y z} → Cocone-hom y z → Cocone-hom x y → Cocone-hom x z
-    compose K L .hom = K .hom C.∘ L .hom
-    compose {x = x} {y = y} {z = z} K L .commutes o =
-      (K .hom C.∘ L .hom) C.∘ x .ψ o ≡⟨ C.pullr (L .commutes o) ⟩
-      K .hom C.∘ y .ψ o              ≡⟨ K .commutes o ⟩
+    compose K L .map = K .map C.∘ L .map
+    compose {x = x} {y = y} {z = z} K L .com o =
+      (K .map C.∘ L .map) C.∘ x .ψ o ≡⟨ C.pullr (L .com o) ⟩
+      K .map C.∘ y .ψ o              ≡⟨ K .com o ⟩
       z .ψ o                         ∎
 ```
 
@@ -121,9 +121,9 @@ category, it's immediate that they form a category.
     cat .Hom = Cocone-hom
     cat .id = cocone-hom C.id (λ _ → C.idl _)
     cat ._∘_ = compose
-    cat .idr f = Cocone-hom-path (C.idr (f .hom))
-    cat .idl f = Cocone-hom-path (C.idl (f .hom))
-    cat .assoc f g h = Cocone-hom-path (C.assoc (f .hom) (g .hom) (h .hom))
+    cat .idr f = Cocone-hom-path (C.idr (f .map))
+    cat .idl f = Cocone-hom-path (C.idl (f .map))
+    cat .assoc f g h = Cocone-hom-path (C.assoc (f .map) (g .map) (h .map))
     cat .Hom-set x y = Iso→is-hlevel! 2 eqv
 ```
 -->
@@ -162,10 +162,10 @@ category we have just constructed.
     colim : make-is-colimit F (Cocone.coapex K)
     colim .ψ = K .ψ
     colim .commutes = K .commutes
-    colim .universal eta p = init (cocone _ eta p) .centre .hom
-    colim .factors eta p = init (cocone _ eta p) .centre .commutes _
+    colim .universal eta p = init (cocone _ eta p) .centre .map
+    colim .factors eta p = init (cocone _ eta p) .centre .com _
     colim .unique eta p other q =
-      ap hom (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
+      ap map (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
 ```
 
 To finish concretising the correspondence, note that this process is
@@ -189,9 +189,9 @@ invertible: From a colimit, we can extract an initial cocone.
     open Cocone-hom
 
     init : is-contr (Cocone-hom (cocone x L.ψ L.commutes) K)
-    init .centre .hom = L.universal K.ψ K.commutes
-    init .centre .commutes _ = L.factors K.ψ K.commutes
+    init .centre .map   = L.universal K.ψ K.commutes
+    init .centre .com _ = L.factors K.ψ K.commutes
     init .paths f =
-      Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
+      Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
 ```
 </details>

@@ -38,7 +38,7 @@ Hom-spaces of $\mathcal{C}$.
 
 In a neutral presentation of [[displayed category]] theory, the collection
 of objects over $S$ would be given by the space of functors
-$[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
+$[\rm{Disc}(S),C]$, regarding $S$ as a [[discrete category]]. This is
 essentially an $S$-indexed family of objects of $C$, hence the name
 "family fibration". To reduce the noise, however, in HoTT we can (ab)use
 the fact that all precategories have a _space of objects_, and say that
@@ -46,7 +46,8 @@ the objects over $S$ are precisely the families $S \to \rm{Ob}_\cC$.
 
 ```agda
 Family : ∀ {ℓ} → Displayed (Sets ℓ) _ _
-Family .Ob[_] S = ∣ S ∣ → Ob
+Family = with-trivial-grading record where
+  Ob[_] S = ∣ S ∣ → Ob
 ```
 
 The set of maps over a function $f : A \to B$ (in $\Sets$) is the set of
@@ -54,20 +55,18 @@ families of morphisms $F(x) \to G(fx)$. Here we are abusing that, for
 functors between discrete categories, naturality is automatic.
 
 ```agda
-Family .Hom[_] {A} {B} f F G =
-  ∀ x → Hom (F x) (G (f x))
-Family .Hom[_]-set f x y = hlevel 2
+  Hom[_] {A} {B} f F G = ∀ x → Hom (F x) (G (f x))
 ```
 
 The identity and composition operations are as for natural
 transformations, but without the requirement for naturality.
 
 ```agda
-Family .id' x = id
-Family ._∘'_ {f = f} {g = g} f' g' x = f' (g x) ∘ g' x
-Family .idr' _ = funext λ x → idr _
-Family .idl' _ = funext λ x → idl _
-Family .assoc' _ _ _ = funext λ _ → assoc _ _ _
+  id' x = id
+  _∘'_ {f = f} {g = g} f' g' x = f' (g x) ∘ g' x
+  idr'   _     = funext λ x → idr _
+  idl'   _     = funext λ x → idl _
+  assoc' _ _ _ = funext λ _ → assoc _ _ _
 ```
 
 The family fibration is a [[Cartesian fibration]], essentially by solving an
@@ -161,13 +160,13 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors .F₁ {X} {Y} f .is-natural x y =
     J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)
       (ap (f x ∘_) (lift-f X .F-id) ∙∙ id-comm ∙∙ ap (_∘ f x) (sym (lift-f Y .F-id)))
-  Families→functors .F-id = trivial!
+  Families→functors .F-id = ext λ _ → refl
   Families→functors .F-∘ f g =
-    ap (Families→functors .F₁) (transport-refl _) ∙ trivial!
+    ap (Families→functors .F₁) (transport-refl _) ∙ ext (λ i → refl)
 
   Families→functors-is-ff : is-fully-faithful Families→functors
   Families→functors-is-ff = is-iso→is-equiv
-    (iso η (λ x → trivial!) λ x → refl)
+    (iso η (λ x → ext λ i → refl) λ x → refl)
 
   open is-precat-iso
   Families→functors-is-iso : is-precat-iso Families→functors

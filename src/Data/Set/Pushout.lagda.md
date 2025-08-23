@@ -86,9 +86,9 @@ prove that, in the square
 \end{tikzcd}\]
 ~~~
 
-the constructor $\rm{incl} : B \to A \sqcup_C B$ is an embedding.^[In
+the constructor $\rm{incr} : B \to A \sqcup_C B$ is an embedding.^[In
 this situation, the map $\rm{incr}$ is often referred to as the **cobase
-change** of $f$ along $g$.]. As usual when working with higher inductive
+change** of $f$ along $g$.] As usual when working with higher inductive
 types, we'll employ encode-decode, characterising the path spaces based
 at some $b : B$ by means of a family $F$ over $A \sqcup_C B$. We know
 already we want $F(\rm{incr}\, b')$ to be $b = b'$, since this is
@@ -237,8 +237,8 @@ pullback of $\rm{incl}$ along $\rm{incr}$ by general
 
 module _ ⦃ aset : H-Level A 2 ⦄ (f : C → A) (g : C → B) (g-emb : is-embedding g) where
   g-inj→incl-inj : is-embedding {A = A} {B = Pushout f g} incl
-  g-inj→incl-inj = ∙-is-embedding
-    (f-inj→incr-inj g f g-emb)
+  g-inj→incl-inj = ∘-is-embedding
     (is-equiv→is-embedding swap-pushout-is-equiv)
+    (f-inj→incr-inj g f g-emb)
 ```
 -->

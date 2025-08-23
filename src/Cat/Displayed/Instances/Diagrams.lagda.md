@@ -17,17 +17,18 @@ import Cat.Displayed.Reasoning
 
 ```agda
 module Cat.Displayed.Instances.Diagrams
-  {o ℓ o' ℓ'}
-  {B : Precategory o ℓ}
-  (E : Displayed B o' ℓ')
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')
   where
+```
 
-open Precategory B
-open Displayed E
+<!--
+```agda
 open Cat.Displayed.Reasoning E
+open Precategory B
 open Functor
 open _=>_
 ```
+-->
 
 # The diagram fibration
 
@@ -112,10 +113,8 @@ of shape $\cJ$, which takes an $x'$ to the constant diagram.
   ConstFibD : Vertical-functor E (Diagrams J)
   ConstFibD .Vertical-functor.F₀' = ConstL
   ConstFibD .Vertical-functor.F₁' = const-ntl
-  ConstFibD .Vertical-functor.F-id' =
-    Nat-lift-pathp (λ x → sym (transport-refl _))
-  ConstFibD .Vertical-functor.F-∘' =
-    Nat-lift-pathp (λ x → sym (transport-refl _))
+  ConstFibD .Vertical-functor.F-id' = Nat-lift-pathp λ x → coh[ refl ] _
+  ConstFibD .Vertical-functor.F-∘'  = Nat-lift-pathp λ x → coh[ refl ] _
 ```
 
 Next, we note that liftings of the constant functor correspond with
@@ -134,13 +133,13 @@ diagrams in fibre categories.
   ConstL→Diagram F' .F₁ = F' .F₁'
   ConstL→Diagram F' .F-id = cast[] (F' .F-id')
   ConstL→Diagram F' .F-∘ f g =
-    from-pathp⁻ $ cast[] {q = sym (idl _)} (F' .F-∘' f g)
+    from-pathp[]⁻ $ cast[] {q = sym (idl _)} (F' .F-∘' f g)
 
   Diagram→ConstL F .F₀' = F .F₀
   Diagram→ConstL F .F₁' = F .F₁
   Diagram→ConstL F .F-id' = cast[] (F .F-id)
   Diagram→ConstL F .F-∘' f g =
-    cast[] {p = sym (idl _)} $ to-pathp⁻ (F .F-∘ f g)
+    cast[] {p = sym (idl _)} $ to-pathp[]⁻ (F .F-∘ f g)
 ```
 -->
 
@@ -169,8 +168,8 @@ functor.
   Diagram-nat→ConstL-natl α .η' = α .η
   Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural' x y f =
     cast[] $
-      to-pathp (α .is-natural x y f)
-      ∙[] symP (transport-filler (λ i → Hom[ idl id i ] _ _) (G .F₁ f ∘' α .η x))
+      to-pathp[] (α .is-natural x y f)
+      ∙[] symP (coh[ idl id ] (G .F₁ f ∘' α .η x))
 ```
 -->
 
@@ -181,10 +180,10 @@ functor categories $[\cJ, \cE_x]$.
 
 ```agda
   Fibrewise-diagram : ∀ {x} → Functor Cat[ J , Fibre E x ] (Fibre (Diagrams J) x)
-  Fibrewise-diagram .F₀ = Diagram→ConstL
-  Fibrewise-diagram .F₁ = Diagram-nat→ConstL-natl
-  Fibrewise-diagram .F-id = Nat-lift-pathp λ _ → sym Regularity.reduce!
-  Fibrewise-diagram .F-∘ _ _ = Nat-lift-pathp λ _ → sym Regularity.reduce!
+  Fibrewise-diagram .F₀      = Diagram→ConstL
+  Fibrewise-diagram .F₁      = Diagram-nat→ConstL-natl
+  Fibrewise-diagram .F-id    = Nat-lift-pathp λ _ → coh[ refl ] _
+  Fibrewise-diagram .F-∘ _ _ = Nat-lift-pathp λ _ → sym (hom[]-∙ _ _ ∙ reindex _ _)
 ```
 
 Again, this isomorphism is *almost* definitional.
@@ -194,7 +193,7 @@ Again, this isomorphism is *almost* definitional.
   Fibrewise-diagram-is-iso .is-precat-iso.has-is-ff = is-iso→is-equiv $ iso
     (ConstL-natl→Diagram-nat)
     (λ α' → Nat-lift-pathp (λ _ → refl))
-    (λ α → trivial!)
+    (λ α → ext (λ i → refl))
   Fibrewise-diagram-is-iso .is-precat-iso.has-is-iso = is-iso→is-equiv $ iso
     ConstL→Diagram
     (λ F' → Lifting-pathp E refl (λ _ → refl) (λ _ → refl))

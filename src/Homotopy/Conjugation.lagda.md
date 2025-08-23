@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 ```
 -->
@@ -53,27 +54,29 @@ opaque
 <!--
 ```agda
 opaque
+  unfolding conj
 ```
 -->
 
 ```agda
   conj-refl : (l : x ≡ x) → conj refl l ≡ l
-  conj-refl l = conj-defn _ _ ∙∙ ∙-idl _ ∙∙ ∙-idr _
+  conj-refl l = ∙-idr l
 
   conj-∙ : (p : x ≡ y) (q : y ≡ z) (r : x ≡ x)
-            → conj q (conj p r) ≡ conj (p ∙ q) r
-  conj-∙ p q r = transport
-    (λ i → conj-defn' q (conj-defn' p r (~ i)) (~ i) ≡ conj-defn' (p ∙ q) r (~ i))
-    (sym (subst-∙ (λ x → x ≡ x) p q r))
+         → conj q (conj p r) ≡ conj (p ∙ q) r
+  conj-∙ p q r = ∙∙-stack
 ```
 
 ```agda
   conj-of-refl : (p : y ≡ x) → conj p refl ≡ refl
-  conj-of-refl p = conj-defn _ _ ∙∙ ap (sym p ∙_) (∙-idl p) ∙∙ ∙-invl p
+  conj-of-refl p i j = hcomp (i ∨ ∂ j) λ where
+    k (k = i0) → p k
+    k (i = i1) → p k
+    k (j = i0) → p k
+    k (j = i1) → p k
 
   conj-of-∙ : (p : y ≡ x) (q r : y ≡ y) → conj p (q ∙ r) ≡ conj p q ∙ conj p r
-  conj-of-∙ = J (λ x p → ∀ q r → conj p (q ∙ r) ≡ conj p q ∙ conj p r) λ q r →
-    conj-refl (q ∙ r) ∙ ap₂ _∙_ (sym (conj-refl q)) (sym (conj-refl r))
+  conj-of-∙ p q r = sym ∙∙-chain
 ```
 
 ```agda
@@ -98,10 +101,10 @@ opaque
 
 ```agda
 opaque
-  pathp→conj
+  square→conj
     : {p : y ≡ x} {q₁ : y ≡ y} {q₂ : x ≡ x}
-    → PathP (λ i → p i ≡ p i) q₁ q₂ → conj p q₁ ≡ q₂
-  pathp→conj p = conj-defn' _ _ ∙ from-pathp p
+    → Square p q₁ q₂ p → conj p q₁ ≡ q₂
+  square→conj p = conj-defn' _ _ ∙ from-pathp p
 ```
 
 ```agda
@@ -120,8 +123,24 @@ conj-is-iso p .linv q = conj⁻conj
 <!--
 ```agda
 opaque
-  conj-is-equiv : (p : y ≡ x) → is-equiv (conj p)
-  conj-is-equiv p = is-iso→is-equiv (conj-is-iso p)
+  unfolding conj conj-refl conj-of-refl
+
+  conj-refl-square
+    : ∀ {ℓ} {A : Type ℓ} {a₀ : A}
+    → Square (conj-refl refl) (conj-of-refl refl) (λ i j → a₀) refl
+  conj-refl-square {a₀ = a₀} i j k = hcomp (∂ k ∨ i ∨ j) λ where
+    l (l = i0) → a₀
+    l (k = i0) → a₀
+    l (k = i1) → a₀
+    l (i = i1) → a₀
+    l (j = i1) → a₀
+```
+-->
+
+<!--
+```agda
+conj-is-equiv : (p : y ≡ x) → is-equiv (conj p)
+conj-is-equiv p = is-iso→is-equiv (conj-is-iso p)
 
 module conj {ℓ} {A : Type ℓ} {x y : A} (p : y ≡ x) = Equiv (conj p , conj-is-equiv p)
 ```

@@ -52,14 +52,21 @@ recover ⦃ no ¬x ⦄ x = absurd (¬x x)
 dec→dne : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → ¬ ¬ A → A
 dec→dne ⦃ yes x ⦄ _   = x
 dec→dne ⦃ no ¬x ⦄ ¬¬x = absurd (¬¬x ¬x)
+
+contrapose : ∀ {ℓ ℓ'} {Q : Type ℓ} {P : Type ℓ'} ⦃ _ : Dec Q ⦄ → (¬ Q → ¬ P) → P → Q
+contrapose {P = _} ⦃ yes q ⦄ f p = q
+contrapose {P = _} ⦃ no ¬q ⦄ f p = absurd (f ¬q p)
 ```
 -->
 
 A type is _discrete_ if it has decidable equality.
 
 ```agda
-Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
-Discrete A = {x y : A} → Dec (x ≡ y)
+record Discrete {ℓ} (A : Type ℓ) : Type ℓ where
+  constructor lift
+  field
+    decide : (x y : A) → Dec (x ≡ y)
+open Discrete public
 ```
 
 <!--
@@ -67,6 +74,15 @@ Discrete A = {x y : A} → Dec (x ≡ y)
 private variable
   ℓ ℓ' : Level
   A B : Type ℓ
+
+instance
+  Discrete→Dec : ⦃ _ : Discrete A ⦄ {x y : A} → Dec (x ≡ y)
+  Discrete→Dec ⦃ d ⦄ {x} {y} = d .decide x y
+
+  Discrete-Lift : ⦃ _ : Discrete A ⦄ → Discrete (Lift ℓ A)
+  Discrete-Lift ⦃ d ⦄ .decide x y with d .decide (x .lower) (y .lower)
+  ... | yes p = yes (ap lift p)
+  ... | no ¬p = no λ p → ¬p (ap lower p)
 ```
 -->
 
@@ -89,8 +105,8 @@ Discrete-inj
   : (f : A → B)
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Discrete B → Discrete A
-Discrete-inj f inj eq? {x} {y} =
-  invmap inj (ap f) (eq? {f x} {f y})
+Discrete-inj f inj eq? .decide x y =
+  invmap inj (ap f) (eq? .decide (f x) (f y))
 ```
 
 ## Programming with decisions
@@ -111,6 +127,12 @@ x ≡? y = holds? (x ≡ y)
 
 infix 3 _≡?_
 ```
+
+<!--
+```agda
+{-# DISPLAY decide _ x y = x ≡? y #-}
+```
+-->
 
 And the following operators, which combine instance search with case
 analysis:
@@ -231,5 +253,11 @@ from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
 Dec→Bool : ∀ {A : Type ℓ} → Dec A → Bool
 Dec→Bool (yes x) = true
 Dec→Bool (no ¬x) = false
+
+Dec-Σ : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : P → Type ℓ'} → ((x y : P) → x ≡ y) → Dec P → (∀ x → Dec (Q x)) → Dec (Σ P Q)
+Dec-Σ {Q = Q} pprop (yes p) d with d p
+... | yes q = yes (p , q)
+... | no ¬q = no λ (p' , q) → ¬q (subst Q (pprop p' p) q)
+Dec-Σ pprop (no ¬p) _ = no λ (p , _) → ¬p p
 ```
 -->

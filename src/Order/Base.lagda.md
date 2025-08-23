@@ -212,7 +212,7 @@ instance
   Funlike-Monotone = record { _·_ = hom }
 
   Membership-Monotone : ⦃ _ : Underlying ⌞ Q ⌟ ⦄ → Membership ⌞ P ⌟ (Monotone P Q) _
-  Membership-Monotone = record { _∈_ = λ x S → ⌞ S · x ⌟ }
+  Membership-Monotone = record { _∈_ = λ x S → ⌞ S · x ⌟ }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
@@ -259,9 +259,9 @@ Posets o ℓ .Precategory.Hom-set _ _ = hlevel 2
 Posets o ℓ .Precategory.id  = idₘ
 Posets o ℓ .Precategory._∘_ = _∘ₘ_
 
-Posets o ℓ .Precategory.idr f       = trivial!
-Posets o ℓ .Precategory.idl f       = trivial!
-Posets o ℓ .Precategory.assoc f g h = trivial!
+Posets o ℓ .Precategory.idr f       = ext λ _ → refl
+Posets o ℓ .Precategory.idl f       = ext λ _ → refl
+Posets o ℓ .Precategory.assoc f g h = ext λ _ → refl
 ```
 
 <!--

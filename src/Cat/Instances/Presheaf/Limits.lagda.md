@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Subterminal
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
@@ -9,6 +10,7 @@ open import Cat.Diagram.Terminal
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as PSh
@@ -41,7 +43,9 @@ the value of e.g. $(A \times B)(c)$ being the set $A(c) \times B(c)$.
 Therefore, the constructions below are mostly rote.
 
 First, the [[terminal]] presheaf is constantly the unit set, and all the
-laws (functoriality, naturality, universality) are trivial:
+laws (functoriality, naturality, universality) are trivial. More
+generally, a presheaf is [[terminal]] if it is valued in [[contractible]]
+types, and [[subterminal]] if it is valued in [[propositions]].
 
 ```agda
 ⊤PSh : ⌞ PSh κ C ⌟
@@ -50,12 +54,22 @@ laws (functoriality, naturality, universality) are trivial:
 ⊤PSh .F-id = refl
 ⊤PSh .F-∘ _ _ = refl
 
+contr→is-terminal-PSh
+  : ∀ (T : ⌞ PSh κ C ⌟)
+  → ⦃ ∀ {c n} → H-Level ⌞ T .F₀ c ⌟ n ⦄
+  → is-terminal (PSh κ C) T
+contr→is-terminal-PSh T _ .centre .η _ _ = hlevel!
+contr→is-terminal-PSh T _ .centre .is-natural _ _ _ = prop!
+contr→is-terminal-PSh T _ .paths _ = ext λ _ _ → prop!
+
+prop→is-subterminal-PSh
+  : ∀ (T : ⌞ PSh κ C ⌟)
+  → ⦃ ∀ {c} → H-Level ⌞ T .F₀ c ⌟ 1 ⦄
+  → is-subterminal (PSh κ C) T
+prop→is-subterminal-PSh T _ _ _ = ext λ _ _ → prop!
+
 PSh-terminal : Terminal (PSh κ C)
-PSh-terminal = record { has⊤ = uniq } where
-  uniq : is-terminal (PSh κ C) ⊤PSh
-  uniq x .centre .η _ _ = lift tt
-  uniq x .centre .is-natural _ _ _ = refl
-  uniq x .paths f = trivial!
+PSh-terminal = record { has⊤ = contr→is-terminal-PSh ⊤PSh }
 ```
 
 The product presheaf is as described in the introduction, now with all
@@ -82,8 +96,8 @@ PSh-products A B = prod where
   prod .has-is-product .⟨_,_⟩ f g =
     NT (λ i x → f .η i x , g .η i x) λ x y h i a →
       f .is-natural x y h i a , g .is-natural x y h i a
-  prod .has-is-product .π₁∘⟨⟩ = trivial!
-  prod .has-is-product .π₂∘⟨⟩ = trivial!
+  prod .has-is-product .π₁∘⟨⟩ = ext λ _ _ → refl
+  prod .has-is-product .π₂∘⟨⟩ = ext λ _ _ → refl
   prod .has-is-product .unique p q = ext λ i x → unext p i x ,ₚ unext q i x
 ```
 
@@ -137,20 +151,25 @@ componentwise.
   pb .has-is-pb .universal path .η idx arg = _ , _ , unext path _ _
   pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f = funext λ x →
     pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
-  pb .has-is-pb .p₁∘universal = trivial!
-  pb .has-is-pb .p₂∘universal = trivial!
+  pb .has-is-pb .p₁∘universal = ext λ _ _ → refl
+  pb .has-is-pb .p₂∘universal = ext λ _ _ → refl
   pb .has-is-pb .unique p q = ext λ _ _ →
     pb-path (unext p _ _) (unext q _ _)
 ```
 
 <!--
 ```agda
+open Cartesian-category using (products ; terminal)
 open Finitely-complete
 PSh-finite-limits : Finitely-complete (PSh κ C)
 PSh-finite-limits = record
   { Finitely-complete (with-pullbacks (PSh κ C) PSh-terminal PSh-pullbacks) hiding (products)
   ; products = PSh-products
   }
+
+PSh-cartesian : Cartesian-category (PSh κ C)
+PSh-cartesian .products = PSh-products
+PSh-cartesian .terminal = PSh-terminal
 ```
 -->
 
@@ -184,8 +203,8 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
 
   clo c .F₁ f .η i (a , g) = f a , g
   clo c .F₁ f .is-natural x y g = refl
-  clo c .F-id = trivial!
-  clo c .F-∘ f g = trivial!
+  clo c .F-id    = ext λ _ _ _ → refl
+  clo c .F-∘ f g = ext λ _ _ _ → refl
 
   clo⊣ev : (c : ⌞ C ⌟) → clo {ℓ} c ⊣ ev c
   clo⊣ev c = hom-iso→adjoints (λ f x → f .η _ (x , id)) (is-iso→is-equiv iiso) λ g h x → refl where
@@ -204,11 +223,12 @@ above and from the observation that being a monomorphism is a limit
 property.
 
 ```agda
-is-monic→is-embedding-at
-  : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
-  → Cat.is-monic (PSh ℓ C) m
-  → ∀ {i} → is-embedding (m .η i)
-is-monic→is-embedding-at {Y = Y} {m} mono {i} =
-  monic→is-embedding (hlevel 2) λ {C} g h →
-    right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
+abstract
+  is-monic→is-embedding-at
+    : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
+    → Cat.is-monic (PSh ℓ C) m
+    → ∀ {i} → is-embedding (m .η i)
+  is-monic→is-embedding-at {Y = Y} {m} mono {i} =
+    monic→is-embedding (hlevel 2) λ {C} g h →
+      right-adjoint→is-monic _ (clo⊣ev i) mono {C} g h
 ```

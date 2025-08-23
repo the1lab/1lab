@@ -73,11 +73,11 @@ Hence, if $C$ is additionally a category, it has a propositional space of
 terminal objects:
 
 ```agda
-  ⊤-contractible : is-category C → is-prop Terminal
-  ⊤-contractible ccat x1 x2 i .top =
+  ⊤-is-prop : is-category C → is-prop Terminal
+  ⊤-is-prop ccat x1 x2 i .top =
     ccat .to-path (⊤-unique x1 x2) i
 
-  ⊤-contractible ccat x1 x2 i .has⊤ ob =
+  ⊤-is-prop ccat x1 x2 i .has⊤ ob =
     is-prop→pathp
       (λ i → is-contr-is-prop {A = Hom _
         (ccat .to-path (⊤-unique x1 x2) i)})
@@ -108,7 +108,7 @@ to the unique functor $\cC \to \top$ if and only if $x$ is terminal.
   module _ (x : Ob) (adj : !F ⊣ !Const {C = C} x) where
     inclusion-is-right-adjoint→is-terminal : is-terminal x
     inclusion-is-right-adjoint→is-terminal y = Equiv→is-hlevel 0
-      (Σ-contract (λ _ → hlevel 0) e⁻¹)
+      (Σ-contr-snd (λ _ → hlevel 0) e⁻¹)
       (R-adjunct-is-equiv adj .is-eqv _)
 ```
 

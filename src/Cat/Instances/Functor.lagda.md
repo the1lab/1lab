@@ -103,18 +103,18 @@ module
     F∘-iso-l : {F F' : Functor D E} {G : Functor C D}
              → F DE.≅ F' → (F F∘ G) CE.≅ (F' F∘ G)
     F∘-iso-l {F} {F'} {G} isom =
-      CE.make-iso (isom.to ◂ G) (isom.from ◂ G)
-        (ext λ x → isom.invl ·ₚ _)
-        (ext λ x → isom.invr ·ₚ _)
+      CE.make-iso! (isom.to ◂ G) (isom.from ◂ G)
+        (λ x → isom.invl ·ₚ _)
+        (λ x → isom.invr ·ₚ _)
       where
         module isom = DE._≅_ isom
 
     F∘-iso-r : {F : Functor D E} {G G' : Functor C D}
              → G CD.≅ G' → (F F∘ G) CE.≅ (F F∘ G')
     F∘-iso-r {F} {G} {G'} isom =
-      CE.make-iso (F ▸ isom.to) (F ▸ isom.from)
-        (ext λ x → F.annihilate (isom.invl ηₚ _))
-        (ext λ x → F.annihilate (isom.invr ηₚ _))
+      CE.make-iso! (F ▸ isom.to) (F ▸ isom.from)
+        (λ x → F.annihilate (isom.invl ηₚ _))
+        (λ x → F.annihilate (isom.invr ηₚ _))
       where
         module isom = CD._≅_ isom
         module F = Cat.Functor.Reasoning F

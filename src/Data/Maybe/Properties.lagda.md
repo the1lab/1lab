@@ -249,7 +249,7 @@ Maybe-injective e = Iso→Equiv (a→b , iso b→a (lemma e) il) where
       p' = subst
         (λ e' → is-right-inverse (maybe-injective e') (maybe-injective (Equiv.inverse e)))
         {Equiv.inverse (Equiv.inverse e)} {e}
-        trivial! p
+        (ext (λ _ → refl)) p
 ```
 
 <!--

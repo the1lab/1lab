@@ -36,7 +36,6 @@ private module B = Cr B
 open Cat.Displayed.Univalence E
 open Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
-open Displayed E
 open _≅[_]_
 ```
 -->
@@ -119,24 +118,27 @@ proofs. Therefore, they're hidden away down here.</summary>
     J₂ (λ x₂ y₂ p q → transport (λ i → Hom[ f ] (p i) (q i)) f'
                ≡[ α ] path→vertical-iso q .to' ∘' f' ∘' path→vertical-iso p .from')
       (to-pathp⁻ (sym
-        (ap hom[] (from-pathp⁻ (eliml' refl (transport-refl _) {q = B.idl _})
-                ∙∙ ap hom[] (from-pathp⁻ (elimr' refl (transport-refl _) {q = B.idr f}))
-                ∙∙ hom[]-∙ _ _)
-        ∙∙ hom[]-∙ _ _
-        ∙∙ reindex _ _)))
+        (ap (subst (λ e → Hom[ e ] _ _) _)
+          (  from-pathp⁻ (eliml' refl (transport-refl _) {q = B.idl _})
+          ∙∙ ap (subst (λ e → Hom[ e ] _ _) _) (from-pathp⁻ (elimr' refl (transport-refl _) {q = B.idr f}))
+          ∙∙ sym (subst-∙ (λ e → Hom[ e ] _ _) _ _ _))
+        ∙∙ sym (subst-∙ (λ e → Hom[ e ] _ _) _ _ _)
+        ∙∙ ap (λ p → subst (λ e → Hom[ e ] _ _) p f') prop!)))
       p q
 
   Hom[]-pathp-refll-iso e-cat α p f' g' β = to-pathp $
        from-pathp⁻ (Hom[]-transport (sym (B.idl _ ∙ α)) (vertical-iso→path e-cat p) refl f')
-    ∙∙ ap hom[] (
+    ∙∙ ap (subst (λ e → Hom[ e ] _ _) _) (
         ap₂ (λ a b → a ∘' f' ∘' b) (transport-refl _)
           (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from'))
         ∙ from-pathp⁻ (idl' (f' ∘' p .from')))
-    ∙∙ (hom[]-∙ _ _ ∙∙ reindex _ _ ∙∙ from-pathp β)
+    ∙∙ ( sym (subst-∙ (λ e → Hom[ e ] _ _) _ _ _)
+      ∙∙ ap (λ α → subst (λ e → Hom[ e ] _ _) α (f' ∘' p .from')) prop!
+      ∙∙ from-pathp β)
 
   Hom[]-pathp-iso e-cat α p q f' g' β = to-pathp $
        from-pathp⁻ (Hom[]-transport (sym α) (vertical-iso→path e-cat p) (vertical-iso→path e-cat q) f')
-    ∙∙ ap hom[] (ap₂ (λ a b → a ∘' f' ∘' b)
+    ∙∙ ap (subst (λ e → Hom[ e ] _ _) _) (ap₂ (λ a b → a ∘' f' ∘' b)
         (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over q i .to'))
         (from-pathp (λ i → ≅↓-identity-system e-cat .to-path-over p i .from')))
     ∙∙ from-pathp β

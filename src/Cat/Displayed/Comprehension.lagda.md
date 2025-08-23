@@ -25,14 +25,13 @@ module Cat.Displayed.Comprehension
 
 <!--
 ```agda
-open Cat.Reasoning B
 open Cat.Displayed.Reasoning E
-open Displayed E
+open Cat.Reasoning B
+open Slice-hom
 open Functor
 open _=>_
-open Total-hom
+open ∫Hom
 open /-Obj
-open Slice-hom
 ```
 -->
 
@@ -47,7 +46,7 @@ Before giving a definition, it is worth pondering what context extension
 *does*. Consider some context $\Gamma$, and type
 $\Gamma \vdash A\; \mathrm{type}$; context extension yields a new context
 $\Gamma.A$ extended with a fresh variable of type $A$,
-along with a substitution $\pi : \Gamma.A \to A$ that forgets this fresh
+along with a substitution $\pi : \Gamma.A \to \Gamma$ that forgets this fresh
 variable.
 
 We also have a notion of substitution extension: Given any substitution
@@ -134,7 +133,7 @@ module Comprehension
   open Cartesian-fibration E E-fib
 
   _⨾_ : ∀ Γ → Ob[ Γ ] → Ob
-  Γ ⨾ x = F₀' x .domain
+  Γ ⨾ x = F₀' x .dom
 
   infixl 5 _⨾_
 
@@ -170,12 +169,12 @@ with projections.
 
 ```agda
   _⨾ˢ_ : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → Hom[ σ ] x y → Hom (Γ ⨾ x) (Δ ⨾ y)
-  σ ⨾ˢ f = F₁' f .to
+  σ ⨾ˢ f = F₁' f .map
 
   infixl 8 _⨾ˢ_
 
   sub-proj : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y) → πᶜ ∘ (σ ⨾ˢ f) ≡ σ ∘ πᶜ
-  sub-proj f = sym $ F₁' f .commute
+  sub-proj f = F₁' f .com
 ```
 
 Crucially, when $f$ is cartesian, then the above square is a pullback.
@@ -215,7 +214,7 @@ obtain the identity morphism.
 
 ```agda
   sub-id : ∀ {Γ x} → id {Γ} ⨾ˢ id' {Γ} {x} ≡ id
-  sub-id = ap to F-id'
+  sub-id = ap map F-id'
 
   sub-id' : ∀ {Γ x} → (id ⨾ˢ' id') ≡[ sub-id {Γ} {x} ] id'
   sub-id' = symP $ π*.uniquep _ (symP sub-id) (sub-proj id') id' $
@@ -230,7 +229,7 @@ same as composing the two extensions.
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
     → (σ ∘ δ) ⨾ˢ (f ∘' g) ≡ (σ ⨾ˢ f) ∘ (δ ⨾ˢ g)
-  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘'
+  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap map F-∘'
 
   sub-∘'
     : ∀ {Γ Δ Ψ x y z}
@@ -370,10 +369,10 @@ $(\Gamma, A)$ to $\Gamma.A$
 
 ```agda
   Extend : Functor (∫ E) B
-  Extend .F₀ (Γ , x) = Γ ⨾ x
-  Extend .F₁ (total-hom σ f) = σ ⨾ˢ f
-  Extend .F-id = ap to F-id'
-  Extend .F-∘ f g = ap to F-∘'
+  Extend .F₀ (Γ , x)    = Γ ⨾ x
+  Extend .F₁ (∫hom σ f) = σ ⨾ˢ f
+  Extend .F-id    = ap map F-id'
+  Extend .F-∘ f g = ap map F-∘'
 ```
 
 There is also a natural transformation from this functor into the
@@ -383,7 +382,7 @@ of is a projection $\Gamma.A \to \Gamma$.
 ```agda
   proj : Extend => πᶠ E
   proj .η (Γ , x) = πᶜ
-  proj .is-natural (Γ , x) (Δ , y) (total-hom σ f) =
+  proj .is-natural (Γ , x) (Δ , y) (∫hom σ f) =
     sub-proj f
 ```
 
@@ -422,13 +421,13 @@ record Comprehension-comonad : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
 
   field
     counit-cartesian
-      : ∀ {Γ x} → is-cartesian E (counit.ε (Γ , x) .hom) (counit.ε (Γ , x) .preserves)
+      : ∀ {Γ x} → is-cartesian E (counit.ε (Γ , x) .fst) (counit.ε (Γ , x) .snd)
     cartesian-pullback
       : (∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
       → is-cartesian E σ f
       → is-pullback (∫ E)
-          (counit.ε (Γ , x)) (total-hom σ f)
-          (W₁ (total-hom σ f)) (counit.ε (Δ , y)))
+          (counit.ε (Γ , x)) (∫hom σ f)
+          (W₁ (∫hom σ f)) (counit.ε (Δ , y)))
 ```
 
 As promised, comprehension structures on $\cE$ yield comprehension
@@ -452,10 +451,10 @@ of $X$.
 ```agda
   comprehend : Functor (∫ E) (∫ E)
   comprehend .F₀ (Γ , x) = Γ ⨾ x , weaken x x
-  comprehend .F₁ (total-hom σ f) = total-hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
-  comprehend .F-id = total-hom-path E sub-id sub-id'
-  comprehend .F-∘ (total-hom σ f) (total-hom δ g) =
-    total-hom-path E sub-∘ sub-∘'
+  comprehend .F₁ (∫hom σ f) = ∫hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
+  comprehend .F-id = ∫Hom-path E sub-id sub-id'
+  comprehend .F-∘ (∫hom σ f) (∫hom δ g) =
+    ∫Hom-path E sub-∘ sub-∘'
 ```
 
 The counit is given by the projection substitution, and comultiplication
@@ -464,19 +463,19 @@ is given by duplication.
 ```agda
   comonad : Comonad-on comprehend
   comonad .counit .η (Γ , x) =
-    total-hom πᶜ πᶜ'
-  comonad .counit .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E (sub-proj f) (sub-proj' f)
+    ∫hom πᶜ πᶜ'
+  comonad .counit .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
+    ∫Hom-path E (sub-proj f) (sub-proj' f)
   comonad .comult .η (Γ , x) =
-    total-hom δᶜ δᶜ'
-  comonad .comult .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E dup-extend dup-extend'
+    ∫hom δᶜ δᶜ'
+  comonad .comult .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
+    ∫Hom-path E dup-extend dup-extend'
   comonad .δ-unitl =
-    total-hom-path E extend-proj-dup extend-proj-dup'
+    ∫Hom-path E extend-proj-dup extend-proj-dup'
   comonad .δ-unitr =
-    total-hom-path E proj-dup proj-dup'
+    ∫Hom-path E proj-dup proj-dup'
   comonad .δ-assoc =
-    total-hom-path E extend-dup² extend-dup²'
+    ∫Hom-path E extend-dup² extend-dup²'
 ```
 
 To see that this comonad is a comprehension comonad, note that the
@@ -521,12 +520,12 @@ Comonad→comprehension fib comp-comonad = comprehension where
   open is-pullback
 
   vert : Vertical-functor E (Slices B)
-  vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .hom)
-  vert .F₁' {f = σ} f =
-    slice-hom (W₁ (total-hom σ f) .hom)
-      (sym (ap hom (counit.is-natural _ _ _)))
-  vert .F-id' = Slice-path B (ap hom W-id)
-  vert .F-∘' = Slice-path B (ap hom (W-∘ _ _))
+  vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .fst)
+  vert .F₁' {f = σ} f = record where
+    map = W₁ (∫hom σ f) .fst
+    com = ap fst (counit.is-natural _ _ _)
+  vert .F-id' = Slice-path (ap fst W-id)
+  vert .F-∘'  = Slice-path (ap fst (W-∘ _ _))
 ```
 
 To see that this functor is fibred, recall that pullbacks in the

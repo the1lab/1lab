@@ -1,6 +1,5 @@
 open import 1Lab.Reflection.Signature
 open import 1Lab.Function.Embedding
-open import 1Lab.Reflection.Record
 open import 1Lab.Reflection.Subst
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Universe
@@ -12,10 +11,10 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Bool.Base
 open import Data.List.Base
 open import Data.Nat.Base
 open import Data.Id.Base
-open import Data.Bool
 
 open import Meta.Foldable
 
@@ -191,7 +190,7 @@ instance
   h-level-is-prop ⦃ s≤s _ ⦄ = hlevel-instance (is-prop→is-hlevel-suc is-prop-is-prop)
 
   H-Level-Singleton : ∀ {ℓ} {A : Type ℓ} {a : A} {n : Nat} → H-Level (Singleton a) n
-  H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n (contr _ Singleton-is-contr))
+  H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n Singleton-is-contr)
 
   {-# INCOHERENT H-Level-projection #-}
   {-# OVERLAPPING h-level-is-prop #-}
@@ -291,7 +290,7 @@ prop-over-ext! e = prop-over-ext e (hlevel 1) (hlevel 1)
 prop!
   : ∀ {ℓ} {A : I → Type ℓ} ⦃ aip : ∀ {i} → H-Level (A i) 1 ⦄ {x y}
   → PathP (λ i → A i) x y
-prop! {A = A} {x} {y} = is-prop→pathp (λ _ → hlevel 1) x y
+prop! = hlevel!
 
 injective→is-embedding!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ⦃ bset : H-Level B 2 ⦄ {f : A → B}
@@ -301,48 +300,3 @@ injective→is-embedding! {f = f} inj = injective→is-embedding (hlevel 2) f in
 
 Iso→is-hlevel! : (n : Nat) → Iso B A → ⦃ _ : H-Level A n ⦄ → is-hlevel B n
 Iso→is-hlevel! n i = Iso→is-hlevel n i (hlevel n)
-
-{-
-Metaprogram for defining instances of H-Level (R x) n, where R x is a
-record type whose components can all immediately be seen to have h-level
-n.
-
-That is, this works for things like Cat.Morphism._↪_, since the H-Level
-automation already works for showing that its representation as a Σ-type
-has hlevel 2, but it does not work for Algebra.Group.is-group, since
-that requires specific knowledge about is-group to work.
-
-Can be used either for unquoteDecl or unquoteDef. In the latter case, it
-is possible to give the generated instance a more specific context which
-might help to automatically derive instances for more types.
--}
-
-private
-  record-hlevel-instance
-    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (n : Nat) ⦃ _ : H-Level A n ⦄
-    → Iso B A
-    → ∀ {k} ⦃ p : n ≤ k ⦄
-    → H-Level B k
-  record-hlevel-instance n im ⦃ p ⦄ = hlevel-instance $
-    Iso→is-hlevel _ im (is-hlevel-le _ _ p (hlevel _))
-
-declare-record-hlevel : (n : Nat) → Name → Name → TC ⊤
-declare-record-hlevel lvl inst rec = do
-  (rec-tele , _) ← pi-view <$> get-type rec
-
-  eqv ← helper-function-name rec "isom"
-  declare-record-iso eqv rec
-
-  let
-    args    = reverse $ map-up (λ n (_ , arg i _) → arg i (var₀ n)) 2 (reverse rec-tele)
-
-    head-ty = it H-Level ##ₙ def rec args ##ₙ var₀ 1
-
-    inst-ty = unpi-view (map (λ (nm , arg _ ty) → nm , argH ty) rec-tele) $
-      pi (argH (it Nat)) $ abs "n" $
-      pi (argI (it _≤_ ##ₙ lit (nat lvl) ##ₙ var₀ 0)) $ abs "le" $
-      head-ty
-
-  declare (argI inst) inst-ty
-  define-function inst
-    [ clause [] [] (it record-hlevel-instance ##ₙ lit (nat lvl) ##ₙ def₀ eqv) ]

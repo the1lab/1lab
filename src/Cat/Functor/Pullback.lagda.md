@@ -17,7 +17,7 @@ open import Cat.Prelude
 import Cat.Reasoning
 
 open Coalgebra-on
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -71,8 +71,8 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
   Base-change : Functor (Slice C X) (Slice C Y)
   Base-change .F₀ x = ob where
     ob : /-Obj Y
-    ob .domain = pullbacks (x .map) f .apex
-    ob .map    = pullbacks (x .map) f .p₂
+    ob .dom = pullbacks (x .map) f .apex
+    ob .map = pullbacks (x .map) f .p₂
 ```
 
 On morphisms, we use the universal property of the pullback to obtain a
@@ -97,8 +97,8 @@ diagram below is a cone over $K' \to X \ot Y$.
     module xpb = Pullback (pullbacks (x .map) f)
     dh' : /-Hom _ _
     dh' .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
-      (pulll (dh .commutes) ∙ xpb.square)
-    dh' .commutes = ypb.p₂∘universal
+      (pulll (dh .com) ∙ xpb.square)
+    dh' .com = ypb.p₂∘universal
 ```
 
 <details>
@@ -137,10 +137,10 @@ must change.
 ```agda
 module _ {X Y : Ob} (f : Hom Y X) where
   Σf : Functor (Slice C Y) (Slice C X)
-  Σf .F₀ o = cut (f ∘ o .map)
-  Σf .F₁ dh = record { map = dh .map ; commutes = pullr (dh .commutes) }
-  Σf .F-id = trivial!
-  Σf .F-∘ f g = trivial!
+  Σf .F₀ o  = cut (f ∘ o .map)
+  Σf .F₁ dh = record { map = dh .map ; com = pullr (dh .com) }
+  Σf .F-id    = ext refl
+  Σf .F-∘ f g = ext refl
 
   open _⊣_
 ```
@@ -157,22 +157,22 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   func = Σf f
   Σ-ff : ∀ {x y} → is-equiv (func .F₁ {x} {y})
-  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → trivial!) λ x → trivial!) where
+  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → ext refl) (λ x → ext refl)) where
     ∘inv : /-Hom _ _ → /-Hom _ _
     ∘inv o .map = o .map
-    ∘inv o .commutes = invertible→monic isom _ _ (assoc _ _ _ ∙ o .commutes)
+    ∘inv o .com = invertible→monic isom _ _ (assoc _ _ _ ∙ o .com)
 
   Σ-seso : is-split-eso func
   Σ-seso y = cut (isom.inv ∘ y .map)
-           , Sl.make-iso into from' (ext (eliml refl)) (ext (eliml refl))
+           , Sl.make-iso! into from' (eliml refl) (eliml refl)
     where
     into : /-Hom _ _
     into .map = id
-    into .commutes = id-comm ∙ sym (pulll isom.invl)
+    into .com = id-comm ∙ sym (pulll isom.invl)
 
     from' : /-Hom _ _
     from' .map = id
-    from' .commutes = elimr refl ∙ cancell isom.invl
+    from' .com = elimr refl ∙ cancell isom.invl
 ```
 -->
 
@@ -193,14 +193,14 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     module pb = Pullback (pullbacks (f ∘ obj .map) f)
     dh : /-Hom _ _
     dh .map = pb.universal {p₁' = id} {p₂' = obj .map} (idr _)
-    dh .commutes = pb.p₂∘universal
+    dh .com = pb.p₂∘universal
   Σf⊣f* .unit .is-natural x y g =
     ext (pb.unique₂
       {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ cat! C ⟩ f ∘ y .map ∘ g .map ∎}
       (pulll pb.p₁∘universal)
       (pulll pb.p₂∘universal)
       (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ id-comm)
-      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal ∙ sym (g .commutes)))
+      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal ∙ sym (g .com)))
     where
       module pb = Pullback (pullbacks (f ∘ y .map) f)
       module pb' = Pullback (pullbacks (f ∘ x .map) f)
@@ -209,7 +209,7 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     module pb = Pullback (pullbacks (obj .map) f)
     dh : /-Hom _ _
     dh .map = pb.p₁
-    dh .commutes = pb.square
+    dh .com = pb.square
   Σf⊣f* .counit .is-natural x y g = ext pb.p₁∘universal
     where module pb = Pullback (pullbacks (y .map) f)
 
@@ -257,25 +257,25 @@ object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
           module pb = Pullback (pullbacks (A .map) f)
 
           path : f ∘ pb.p₂ ∘ c .ρ .map ≡ A .map
-          path = assoc _ _ _ ∙ unext (c .ρ .commutes)
+          path = assoc _ _ _ ∙ unext (c .ρ .com)
 
           module pb≡ i = Pullback (pullbacks (path i) f)
       eso .linv p = /-Obj-path refl pb.p₂∘universal
         where module pb = Pullback (pullbacks (f ∘ p .map) f)
 
       ff : ∀ {x y} → is-iso (Comparison-CoEM Σf⊣f* .F₁ {x} {y})
-      ff .from g .map = g .hom .map
-      ff {x} {y} .from g .commutes =
-        y .map ∘ g .hom .map                       ≡˘⟨ pulll pby.p₂∘universal ⟩
-        pby.p₂ ∘ pby.universal _ ∘ g .hom .map     ≡˘⟨ refl⟩∘⟨ unext (g .preserves) ⟩
+      ff .from g .map = g .fst .map
+      ff {x} {y} .from g .com =
+        y .map ∘ g .fst .map                       ≡˘⟨ pulll pby.p₂∘universal ⟩
+        pby.p₂ ∘ pby.universal _ ∘ g .fst .map     ≡˘⟨ refl⟩∘⟨ unext (g .snd) ⟩
         pby.p₂ ∘ pby.universal _ ∘ pbx.universal _ ≡⟨ pulll pby.p₂∘universal ⟩
         pbx.p₂ ∘ pbx.universal _                   ≡⟨ pbx.p₂∘universal ⟩
         x .map                                     ∎
         where
           module pbx = Pullback (pullbacks (f ∘ x .map) f)
           module pby = Pullback (pullbacks (f ∘ y .map) f)
-      ff .rinv _ = trivial!
-      ff .linv _ = trivial!
+      ff .rinv _ = ext refl
+      ff .linv _ = ext refl
 ```
 
 ## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}

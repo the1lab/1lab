@@ -140,6 +140,12 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
 open is-contr public
 ```
 
+<!--
+```agda
+{-# INLINE contr #-}
+```
+-->
+
 We can now write down the definition of `is-hlevel`{.Agda}, as a
 function of the type *and* the specific level. Note that, even though
 that being a proposition is equivalent to having contractible identity
@@ -210,6 +216,18 @@ _ = λ t → record
   ; paths  = λ (s , p) → J' (λ s t p → (t , refl) ≡ (s , p)) (λ t → refl) p
   }
 ```
+
+<!--
+```agda
+Singleton-is-contr : {x : A} → is-contr (Singleton x)
+Singleton-is-contr {x = x} .centre = x , refl
+Singleton-is-contr {x = x} .paths (y , p) i = p i , λ j → p (i ∧ j)
+
+Singleton'-is-contr : {x : A} → is-contr (Σ[ y ∈ A ] y ≡ x)
+Singleton'-is-contr {x = x} .centre = x , refl
+Singleton'-is-contr {x = x} .paths (y , p) i = p (~ i) , λ j → p (~ i ∨ j)
+```
+-->
 
 This provides an example of a type that is not literally *defined* to be
 of a certain h-level, but there are also geometric examples. One is the
@@ -501,6 +519,14 @@ is-prop∙→is-contr prop x .centre = x
 is-prop∙→is-contr prop x .paths y = prop x y
 ```
 
+<!--
+```agda
+is-hlevel-join : ∀ {ℓ} {A : Type ℓ} (n : Nat) → (A → is-hlevel A (suc n)) → is-hlevel A (suc n)
+is-hlevel-join zero p x y = p x x y
+is-hlevel-join (suc n) p x y = p x x y
+```
+-->
+
 ### Propositionality of truncatedness
 
 With upwards closure out of the way, we can show that being a
@@ -588,6 +614,22 @@ is-prop→pathp
   → ∀ b0 b1 → PathP (λ i → B i) b0 b1
 is-prop→pathp {B = B} hB b0 b1 = to-pathp (hB _ _ _)
 ```
+
+<!--
+```agda
+is-prop-i0→pathp
+  : ∀ {B : I → Type ℓ} → is-prop (B i0)
+  → ∀ b0 b1 → PathP (λ i → B i) b0 b1
+is-prop-i0→pathp {B = B} hB b0 b1 =
+  is-prop→pathp (λ i → coe0→i (λ i → is-prop (B i)) i hB) b0 b1
+
+is-prop-i1→pathp
+  : ∀ {B : I → Type ℓ} → is-prop (B i1)
+  → ∀ b0 b1 → PathP (λ i → B i) b0 b1
+is-prop-i1→pathp {B = B} hB b0 b1 =
+  is-prop→pathp (λ i → coe1→i (λ i → is-prop (B i)) i hB) b0 b1
+```
+-->
 
 The base case is usefully phrased as the helper lemma
 `is-prop→pathp`{.Agda} above: if we have a *line of types* $B(i)$ over
@@ -688,6 +730,13 @@ SinglP-is-contr A a .paths (x , p) i = _ , λ j → fill A (∂ i) j λ where
 SinglP-is-prop : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → is-prop (SingletonP A a)
 SinglP-is-prop = is-contr→is-prop (SinglP-is-contr _ _)
 
+Single-is-contr : ∀ {x : A} → is-contr (Singleton x)
+Single-is-contr {x = x} .centre = x , refl
+Single-is-contr {x = x} .paths (y , p) i = p i , λ j → p (i ∧ j)
+
+Single-is-contr' : ∀ {x : A} → is-contr (Σ[ y ∈ A ] y ≡ x)
+Single-is-contr' {x = x} .centre = x , refl
+Single-is-contr' {x = x} .paths (y , p) i = p (~ i) , λ j → p (~ i ∨ j)
 
 is-prop→squarep
   : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))

@@ -1,15 +1,24 @@
 <!--
 ```agda
+{-# OPTIONS --hidden-argument-puns #-}
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
 open import Homotopy.Space.Suspension
 ```
 -->
 
-
 ```agda
 module Homotopy.Pushout where
 ```
+
+<!--
+```agda
+private variable
+  ℓ ℓ' ℓ'' : Level
+  A B C X : Type ℓ
+```
+-->
 
 # Pushouts {defines="pushout"}
 
@@ -27,15 +36,19 @@ Given the following span:
 
 The **pushout** of this span is defined as the higher inductive type
 presented by:
+
 ```agda
-data Pushout {ℓ} (C : Type ℓ)
-                 (A : Type ℓ) (f : C → A)
-                 (B : Type ℓ) (g : C → B)
-                 : Type ℓ where
-  inl : A → Pushout C A f B g
-  inr : B → Pushout C A f B g
-  commutes : ∀ c → inl (f c) ≡ inr (g c)
+data Pushout (C : Type ℓ) (f : C → A) (g : C → B) : Type (level-of A ⊔ level-of B ⊔ ℓ) where
+  inl  : A → Pushout C f g
+  inr  : B → Pushout C f g
+  glue : ∀ c → inl (f c) ≡ inr (g c)
 ```
+
+<!--
+```agda
+unquoteDecl Pushout-elim = make-elim Pushout-elim (quote Pushout)
+```
+-->
 
 These combine to give the following:
 
@@ -54,8 +67,8 @@ These combine to give the following:
 
 ## Suspensions as pushouts
 
-The [[suspension]] of a type $A$ can be expressed as the  `Pushout`{.Agda}
-of the span $\top \ot A \to \top$:
+The [[suspension]] of a type $A$ can be expressed as the
+`Pushout`{.Agda} of the span $\top \ot A \to \top$:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -70,66 +83,59 @@ of the span $\top \ot A \to \top$:
 \end{tikzcd}\]
 ~~~
 
-<!--
-```agda
-const : {A B : Type} → A → B → A
-const t _ = t
-```
--->
+There is only one element of `⊤`{.Agda}, and hence only one choice for
+the function projecting into `⊤`{.Agda} - `const tt`{.Agda}.
 
-There is only one element of `⊤`{.Agda}, and hence only one choice
-for the function projecting into `⊤`{.Agda} - `const tt`{.Agda}.
-
-If one considers the structure we're creating, it becomes very
-obvious that this is equivalent to suspension - because both of our
-non-path constructors have input `⊤`{.Agda}, they're indistinguishable
-from members of the pushout; therefore, we take the
-`inl`{.Agda} and `inr`{.Agda} to `N`{.Agda} and
-`S`{.Agda} respectively.
-Likewise, we take `commutes`{.Agda} to
-`merid`{.Agda}.
+If one considers the structure we're creating, it becomes very obvious
+that this is equivalent to suspension - because both of our non-path
+constructors have input `⊤`{.Agda}, they're indistinguishable from
+members of the pushout; therefore, we take the `inl`{.Agda} and
+`inr`{.Agda} to `N`{.Agda} and `S`{.Agda} respectively. Likewise, we
+take `glue`{.Agda} to `merid`{.Agda}.
 
 ```agda
-Susp≡Pushout-⊤←A→⊤ : ∀ {A} → Susp A ≡ Pushout A ⊤ (const tt) ⊤ (const tt)
+Susp→Pushout-⊤←A→⊤ : Susp A → Pushout A (λ _ → tt) (λ _ → tt)
+Susp→Pushout-⊤←A→⊤ north       = inl tt
+Susp→Pushout-⊤←A→⊤ south       = inr tt
+Susp→Pushout-⊤←A→⊤ (merid x i) = glue x i
 
-Susp→Pushout-⊤←A→⊤ : ∀ {A} → Susp A → Pushout A ⊤ (const tt) ⊤ (const tt)
-Susp→Pushout-⊤←A→⊤ N = inl tt
-Susp→Pushout-⊤←A→⊤ S = inr tt
-Susp→Pushout-⊤←A→⊤ (merid x i) = commutes x i
-
-Pushout-⊤←A→⊤-to-Susp : ∀ {A} → Pushout A ⊤ (const tt) ⊤ (const tt) → Susp A
-Pushout-⊤←A→⊤-to-Susp (inl x) = N
-Pushout-⊤←A→⊤-to-Susp (inr x) = S
-Pushout-⊤←A→⊤-to-Susp (commutes c i) = merid c i
+Pushout-⊤←A→⊤-to-Susp : Pushout A (λ _ → tt) (λ _ → tt) → Susp A
+Pushout-⊤←A→⊤-to-Susp (inl tt)   = north
+Pushout-⊤←A→⊤-to-Susp (inr tt)   = south
+Pushout-⊤←A→⊤-to-Susp (glue c i) = merid c i
 ```
 
 So we then have:
 
 ```agda
-Susp≡Pushout-⊤←A→⊤ = ua (Susp→Pushout-⊤←A→⊤ , is-iso→is-equiv iso-pf) where
+Susp≃pushout : Susp A ≃ Pushout A (λ _ → tt) (λ _ → tt)
+Susp≃pushout = (Susp→Pushout-⊤←A→⊤ , is-iso→is-equiv iso-pf) where
 ```
 
-<details><summary> We then verify that our two functions above are in fact
-an equivalence. This is entirely `refl`{.Agda}, due to the noted
-similarities in structure.</summary>
+<details><summary> We then verify that our two functions above are in
+fact inverse equivalences. This is entirely `refl`{.Agda}, due to the
+noted similarities in structure.</summary>
+
 ```agda
   open is-iso
 
   iso-pf : is-iso Susp→Pushout-⊤←A→⊤
   iso-pf .from = Pushout-⊤←A→⊤-to-Susp
-  iso-pf .rinv (inl x) = refl
-  iso-pf .rinv (inr x) = refl
-  iso-pf .rinv (commutes c i) = refl
-  iso-pf .linv N = refl
-  iso-pf .linv S = refl
+  iso-pf .rinv (inl x)    = refl
+  iso-pf .rinv (inr x)    = refl
+  iso-pf .rinv (glue c i) = refl
+
+  iso-pf .linv north       = refl
+  iso-pf .linv south       = refl
   iso-pf .linv (merid x i) = refl
 ```
+
 </details>
 
 ## The universal property of pushouts
 
-To formulate the universal property of a pushout, we first introduce **cocones**.
-A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
+To formulate the universal property of a pushout, we first introduce
+**cocones**.  A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -139,8 +145,8 @@ A `Cocone`{.Agda}, given a type `D`{.Agda} and a span:
 \end{tikzcd}\]
 ~~~
 
-consists of functions $i : A \to D$, $j : B \to D$, and a homotopy
-$h : (c : C) \to i (f c) \is j (g c)$, forming:
+consists of functions $i : A \to D$, $j : B \to D$, and a homotopy $h :
+(c : C) \to i (f c) \is j (g c)$, forming:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -156,50 +162,48 @@ $h : (c : C) \to i (f c) \is j (g c)$, forming:
 ~~~
 
 
-One can then note the similarities between this definition,
-and our previous `Pushout`{.Agda} definition. We denote the type of
+One can then note the similarities between this definition, and our
+previous `Pushout`{.Agda} definition. We define the type of
 `Cocone`{.Agda}s as:
 
 ```agda
 Cocone : {C A B : Type} → (f : C → A) → (g : C → B) → (D : Type) → Type
 Cocone {C} {A} {B} f g D =
   Σ[ i ∈ (A → D) ]
-    Σ[ j ∈ (B → D) ]
-      ((c : C) → i (f c) ≡ j (g c))
+  Σ[ j ∈ (B → D) ]
+  ((c : C) → i (f c) ≡ j (g c))
 ```
 
-We can then show that the canonical `Cocone`{.Agda} consisting of a `Pushout`{.Agda}
-is the universal `Cocone`{.Agda}.
+We can then show that the canonical `Cocone`{.Agda} consisting of a
+`Pushout`{.Agda} is the universal `Cocone`{.Agda}.
 
 ```agda
-Pushout-is-universal-cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) ≡ (Cocone f g E)
-Pushout-is-universal-cocone = ua ( Pushout→Cocone , is-iso→is-equiv iso-pc ) where
+Pushout-is-universal-cocone
+  : ∀ {f : C → A} {g : C → B} → (Pushout C f g → X) ≃ Cocone f g X
+Pushout-is-universal-cocone {C} {X} {f} {g} = to , is-iso→is-equiv iso-pc where
 ```
 
 <details><summary> Once again we show that the above is an equivalence;
-this proof is essentially a transcription of Lemma 6.8.2 in the [HoTT](HoTT.html) book,
-and again mostly reduces to `refl`{.Agda}.
+this proof is essentially a transcription of Lemma 6.8.2 in the
+[HoTT](HoTT.html) book, and again mostly reduces to `refl`{.Agda}.
 </summary>
+
 ```agda
   open is-iso
 
-  Pushout→Cocone : ∀ {A B C E f g} → (Pushout C A f B g → E) → Cocone f g E
-  Cocone→Pushout : ∀ {A B C E f g} → Cocone f g E → (Pushout C A f B g → E)
-  iso-pc : is-iso Pushout→Cocone
+  to : (Pushout C f g → X) → Cocone f g X
+  to t = t ∘ inl , t ∘ inr , ap t ∘ glue
 
-  Pushout→Cocone t = (λ x → t (inl x)) ,
-                     (λ x → t (inr x)) ,
-                     (λ c i → ap t (commutes c) i)
+  iso-pc : is-iso to
+  iso-pc .from (l , r , g) (inl x)    = l x
+  iso-pc .from (l , r , g) (inr x)    = r x
+  iso-pc .from (l , r , g) (glue c i) = g c i
 
-  Cocone→Pushout t (inl x) = fst t x
-  Cocone→Pushout t (inr x) = fst (snd t) x
-  Cocone→Pushout t (commutes c i) = snd (snd t) c i
-
-  iso-pc .from = Cocone→Pushout
   iso-pc .rinv _ = refl
-  iso-pc .linv _ = funext (λ { (inl y) → refl;
-                                (inr y) → refl;
-                                (commutes c i) → refl
-                           })
+  iso-pc .linv _ = funext λ where
+    (inl y) → refl
+    (inr y) → refl
+    (glue c i) → refl
 ```
+
 </details>

@@ -84,10 +84,10 @@ neg-inj p = ap lit-var p
 
 instance
   Discrete-Literal : Discrete (Literal Γ)
-  Discrete-Literal {x = lit x} {lit y} = invmap (ap lit) lit-inj (x ≡? y)
-  Discrete-Literal {x = lit x} {neg y} = no lit≠neg
-  Discrete-Literal {x = neg x} {lit y} = no (lit≠neg ∘ sym)
-  Discrete-Literal {x = neg x} {neg y} = invmap (ap neg) neg-inj (x ≡? y)
+  Discrete-Literal .decide (lit x) (lit y) = invmap (ap lit) lit-inj (x ≡? y)
+  Discrete-Literal .decide (lit x) (neg y) = no lit≠neg
+  Discrete-Literal .decide (neg x) (lit y) = no (lit≠neg ∘ sym)
+  Discrete-Literal .decide (neg x) (neg y) = invmap (ap neg) neg-inj (x ≡? y)
 
 avoid-lit : (i : Fin (suc Γ)) (x : Literal (suc Γ)) → ¬ i ≡ lit-var x → Literal Γ
 avoid-lit i (lit x) p = lit (avoid i x p)

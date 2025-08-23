@@ -53,7 +53,9 @@ Instead, we would like the `subst`{.Agda} operation on `Fin`{.Agda} to
 definitionally commute with the constructors, and (if possible) to
 definitionally preserve the underlying numeric value. Defining
 `Fin`{.Agda} as an indexed type with an irrelevant proof field achieves
-exactly this:
+exactly this. Moreover, if we're substituting over a loop, even at a
+neutral number, transport at `Fin`{.Agda} is definitionally the identity
+function.
 
 ```agda
 private
@@ -64,6 +66,9 @@ private
     }
 
   _ : ∀ {m n} {p : m ≡ n} {x : Fin m} → subst Fin p x ≡ cast p x
+  _ = refl
+
+  _ : ∀ {m} {p : m ≡ m} {x : Fin m} → subst Fin p x ≡ x
   _ = refl
 ```
 
@@ -196,7 +201,7 @@ also has decidable equality.
 ```agda
 instance
   Discrete-Fin : ∀ {n} → Discrete (Fin n)
-  Discrete-Fin {x = x} {y} with x .lower ≡? y .lower
+  Discrete-Fin .decide x y with x .lower ≡? y .lower
   ... | yes p = yes (fin-ap p)
   ... | no ¬p = no λ p → ¬p (ap lower p)
 ```
@@ -260,6 +265,9 @@ Fin-cases p0 ps n with fin-view n
 
 fin-cons  : ∀ {ℓ} {n} {P : Fin (suc n) → Type ℓ} → P 0 → (∀ x → P (fsuc x)) → ∀ x → P x
 fin-cons = Fin-cases
+
+fin-nil : ∀ {ℓ} {P : Fin 0 → Type ℓ} → ∀ x → P x
+fin-nil x = absurd (Fin-absurd x)
 ```
 -->
 
@@ -336,7 +344,7 @@ _[_≔_]
   : ∀ {ℓ} {A : Type ℓ} {n}
   → (Fin n → A) → Fin (suc n) → A
   → Fin (suc n) → A
-_[_≔_] {n = n} p i a j with fin-view i | fin-view j
+_[_≔_] {n = n} ρ i a j with fin-view i | fin-view j
 _[_≔_] {n = n} ρ fzero a fzero             | zero  | zero  = a
 _[_≔_] {n = n} ρ fzero a .(fsuc j)         | zero  | suc j = ρ j
 _[_≔_] {n = suc n} ρ .(fsuc i) a .fzero    | suc i | zero  = ρ fzero

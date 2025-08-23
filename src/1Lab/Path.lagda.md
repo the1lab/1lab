@@ -354,7 +354,7 @@ In a context with two interval variables, we can move in two dimensions
 *one* dimension, we must either *discard* one of $i$ or $j$, or find a
 way to *combine* them. Discarding is the easier option. Depending on
 what dimension we ignore, we get one of two squares, both of which have
-two $p$ faces *across* from eachother. Note that the square
+two $p$ faces *across* from each other. Note that the square
 `drop-i`{.Agda} is just the reflexivity path `refl`{.Agda}.
 
 ```agda
@@ -497,7 +497,7 @@ with faces $p$, $q$, $r$, and $s$, as in the diagram below.
 Intuitively, we may read this square as saying that the *composites* $q
 \cdot r$ and $p \cdot s$ are identified.[^comm-to-square] In the 1Lab,
 we define the type `Square`{.Agda} so that the arguments are given in
-the order $p$-$q$-$s$-$r$, i.e. top-left-right-bottom. This choice is
+the order $p$-$q$-$s$-$r$, i.e. left-top-bottom-right. This choice is
 basically arbitrary, but it matters when reading out the (graphical)
 boundary from the type of a term.
 
@@ -520,9 +520,7 @@ Square p q s r = PathP (λ i → p i ≡ r i) q s
 
 To start building some intuition, we can rewrite the dimension-raising
 operations we named above so that their types are given in terms of
-`Square`{.Agda}. We also ask Agda to check that a square with top/bottom
-faces `refl`{.Agda}, but left/right faces $p$, is the same thing as a
-path between paths.
+`Square`{.Agda}.
 
 <!--
 ```agda
@@ -544,6 +542,8 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
   ∨-conn i j = p (i ∨ j)
 ```
 
+We also ask Agda to check that a square with left/right
+faces `refl`{.Agda} is the same thing as a path between paths.
 
 <!--
 ```agda
@@ -558,6 +558,12 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p q : Path A a b} where private
 
 <!--
 ```agda
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+  → Type ℓ
+Triangle p q r = Square refl p q r
+
 SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
   {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
@@ -754,7 +760,7 @@ preserves identity and composition of *functions*, too.
   ap-id = refl
 ```
 
-## Transport
+## Transport {defines="transport"}
 
 We've established that every function preserves paths, but this is not
 *quite* enough for a notion of sameness. The key principle that
@@ -1038,7 +1044,7 @@ has to be free: if it weren't, our path might get snagged on something!
 This identification comes up very often when working in homotopy type
 theory, so it has its own name: **contractibility of singletons**. A
 type of singletons is something like $\Sigma_{y : A} (x \is y)$: the
-type of elements of $A$ which are identical to $y$. Read
+type of elements of $A$ which are identical to $x$. Read
 set-theoretically, it makes sense that this would only have one
 inhabitant!
 
@@ -1052,9 +1058,10 @@ $(x, \refl) \is (y, p)$, we have to produce an identification $x \is y$
 (we can use $p$), and, over this, an identification of $\refl$ and $p$.
 
 ```agda
-Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
-                   → Path (Singleton x) (x , refl) y
-Singleton-is-contr {x = x} (y , p) =
+Singleton-contract
+  : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
+  → Path (Singleton x) (x , refl) y
+Singleton-contract {x = x} (y , p) =
 ```
 
 Writing out the dependency explicitly, we see that the second component
@@ -1078,7 +1085,7 @@ p)$, then transport our assumption over that.
 J {x = x} P prefl {y} p =
   let
     pull : (x , refl) ≡ (y , p)
-    pull = Singleton-is-contr (y , p)
+    pull = Singleton-contract (y , p)
   in subst₂ P (ap fst pull) (ap snd pull) prefl
 ```
 
@@ -1272,7 +1279,7 @@ private
   refl-extends i = inS (refl {x = true} i)
 ```
 
-Slightly more preicsely, the constructor `inS` expresses that _any_
+Slightly more precisely, the constructor `inS` expresses that _any_
 totally-defined cube $u$ can be seen as a partial cube, which simply
 agrees with $u$ for any choice of formula $\phi$. To introduce elements
 of *specific* extensions, we use the fact that partial elements are
@@ -1421,11 +1428,18 @@ $(n+1)$-dimensional problem.
 hfill : ∀ {ℓ} {A : Type ℓ} (φ : I) → I
       → ((i : I) → Partial (φ ∨ ~ i) A)
       → A
-hfill φ i u = hcomp (φ ∨ ~ i) λ where
-  j (φ = i1) → u (i ∧ j) 1=1
-  j (i = i0) → u i0 1=1
-  j (j = i0) → u i0 1=1
+hfill φ i u = hcomp (φ ∨ ~ i) sys module hfill where
+  sys : ∀ j → Partial (φ ∨ ~ i ∨ ~ j) _
+  sys j (φ = i1) = u (i ∧ j) 1=1
+  sys j (i = i0) = u i0 1=1
+  sys j (j = i0) = u i0 1=1
 ```
+
+<!--
+```agda
+{-# DISPLAY hcomp {ℓ} {A} _ (hfill.sys φ i u) = hfill {ℓ} {A} φ i u #-}
+```
+-->
 
 :::{.note}
 While every inhabitant of `Type`{.Agda} has a composition operation, not
@@ -1529,7 +1543,7 @@ p ∙ q = refl ∙∙ p ∙∙ q
 
 ∙-filler
   : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-  → (p : x ≡ y) (q : y ≡ z) → Square refl p (p ∙ q) q
+  → (p : x ≡ y) (q : y ≡ z) → Triangle p (p ∙ q) q
 ∙-filler {x = x} {y} {z} p q = ∙∙-filler refl p q
 
 infixr 30 _∙_
@@ -1554,6 +1568,29 @@ _∙P_ {B = B} {x' = x'} {p = p} {q = q} p' q' i =
     j (i = i0) → x'
     j (i = i1) → q' j
     j (j = i0) → p' i
+```
+
+We also define versions of `_∙P_`{.Agda} specialised to composing with
+a non-dependent path on one side, abstracting the common pattern of
+a two-dimensional `hcomp`{.Agda} with one side constant.
+
+```agda
+_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
+    → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
+(p ◁ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p (~ j)
+  j (i = i1) → q i1
+  j (j = i0) → q i
+
+_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
+    → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+(p ▷ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p i0
+  j (i = i1) → q j
+  j (j = i0) → p i
+
+infixr 31 _◁_
+infixl 32 _▷_
 ```
 
 <!--
@@ -1801,7 +1838,7 @@ its filler), it is contractible:
 ∙-unique
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} {p : x ≡ y} {q : y ≡ z}
   → (r : x ≡ z)
-  → Square refl p r q
+  → Triangle p r q
   → r ≡ p ∙ q
 ∙-unique {p = p} {q} r square i =
   ∙∙-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
@@ -1878,6 +1915,26 @@ ap-∙ : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
       → ap f (p ∙ q) ≡ ap f p ∙ ap f q
 ap-∙ f p q = ap-∙∙ f refl p q
 ```
+
+<!--
+```agda
+ap₂-∙∙
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → (f : A → B → C)
+  → {a b c d : A} (α : a ≡ b) (β : b ≡ c) (γ : c ≡ d)
+  → {w x y z : B} (ξ : w ≡ x) (ψ : x ≡ y) (ω : y ≡ z)
+  → ap₂ f (α ∙∙ β ∙∙ γ) (ξ ∙∙ ψ ∙∙ ω) ≡ ap₂ f α ξ ∙∙ ap₂ f β ψ ∙∙ ap₂ f γ ω
+ap₂-∙∙ f α β γ ξ ψ ω = ∙∙-unique' λ i j → f (∙∙-filler α β γ i j) (∙∙-filler ξ ψ ω i j)
+
+ap₂-∙
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → (f : A → B → C)
+  → {a b c : A} (α : a ≡ b) (β : b ≡ c)
+  → {w x y : B} (ξ : w ≡ x) (ψ : x ≡ y)
+  → ap₂ f (α ∙ β) (ξ ∙ ψ) ≡ ap₂ f α ξ ∙ ap₂ f β ψ
+ap₂-∙ f α β ξ ψ = ap₂-∙∙ f refl α β refl ξ ψ
+```
+-->
 
 ## Dependent paths, continued
 
@@ -2013,6 +2070,18 @@ hcomp-unique φ u h2 i =
     k (k = i0) → u i0 1=1
     k (i = i1) → outS (h2 k)
     k (φ = i1) → u k 1=1
+
+hlid-unique : ∀ {ℓ} {A : Type ℓ} φ
+               (u : ∀ i → Partial (φ ∨ ~ i) A)
+             → (h1 h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → u i0 1=1
+                                         ; (φ = i1) → u i 1=1 }) ])
+             → outS (h1 i1) ≡ outS (h2 i1)
+hlid-unique φ u h1 h2 i =
+  hcomp (φ ∨ ∂ i) λ where
+    k (k = i0) → u i0 1=1
+    k (i = i0) → outS (h1 k)
+    k (i = i1) → outS (h2 k)
+    k (φ = i1) → u k 1=1
 ```
 -->
 
@@ -2135,13 +2204,10 @@ Try pressing it!
 # Basics of groupoid structure
 
 A large part of the study of HoTT is the _characterisation of path
-spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
-theorem] says that for types with decidable equality, it's boring. For
-[the circle], we can prove its loop space is the integers --- we have
-`Path S¹ base base ≡ Int`.
-
-[Hedberg's theorem]: 1Lab.Path.IdentitySystem.html
-[the circle]: Homotopy.Space.Circle.html
+spaces_. Given a type `A`, what does `Path A x y` look like? [[Hedberg's
+theorem]] says that for types with decidable equality, it's boring. For
+the [[circle]], we can prove its [[loop space]] is the [[integers]]---
+$\Omega S^1 \cong \bZ$.
 
 Most of these characterisations need machinery that is not in this
 module to be properly stated. Even then, we can begin to outline a few
@@ -2319,23 +2385,6 @@ subst-path-both p adj = transport-path p adj adj
 
 <!--
 ```agda
-_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
-  → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
-(p ◁ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → q i1
-  j (j = i0) → q i
-
-_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
-  → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
-(p ▷ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p i0
-  j (i = i1) → q j
-  j (j = i0) → p i
-
-infixr 31 _◁_
-infixl 32 _▷_
-
 Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}
           → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}

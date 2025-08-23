@@ -14,6 +14,7 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -124,20 +125,16 @@ Subset-proj-embedding {B = B} Bprop x = Equiv→is-hlevel 1 (Fibre-equiv B x) (B
 
 <!--
 ```agda
-∙-is-embedding
-  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
-  → {f : A → B} {g : B → C}
-  → is-embedding f → is-embedding g → is-embedding (g ∘ f)
-∙-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c =
-  Equiv→is-hlevel 1
-    (fibre-∘-≃ c)
-    (Σ-is-hlevel 1 (g-emb c) (λ g-fib → f-emb (g-fib .fst)))
+∘-is-embedding : ∘-closed is-embedding
+∘-is-embedding {A = A} {B = B} {f = f} {g = g} f-emb g-emb c = Equiv→is-hlevel 1
+  (fibre-∘-≃ c)
+  (Σ-is-hlevel 1 (f-emb c) (λ f-fib → g-emb (f-fib .fst)))
 
 _∙emb_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
   → A ↪ B → B ↪ C → A ↪ C
 (f ∙emb g) .fst = g .fst ∘ f .fst
-(f ∙emb g) .snd = ∙-is-embedding (f .snd) (g .snd)
+(f ∙emb g) .snd = ∘-is-embedding (g .snd) (f .snd)
 
 infixr 30 _∙emb_
 
@@ -212,8 +209,24 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       (ap-square fst (is-prop→is-set (emb (f x)) _ _ (emb (f x) (x , refl) (x , refl)) refl))
 
   equiv→cancellable : is-equiv f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
-  equiv→cancellable eqv = embedding→cancellable (is-equiv→is-embedding eqv)
+  equiv→cancellable eqv {x} {y} =
+    is-iso→is-equiv λ where
+      .is-iso.from p → sym (f.η _) ∙∙ ap f.from p ∙∙ f.η _
+      .is-iso.rinv α →
+          ap-∙∙ f _ _ _
+        ∙ ap₂ (λ a b → _∙∙_∙∙_ {z = f y} a (ap f (ap f.from α)) b) (ap sym (f.zig _)) (f.zig y)
+        ∙ double-composite _ _ _ ∙ ap₂ _∙_ refl (sym (homotopy-natural f.ε α))
+        ∙ ∙-cancell _ _
+      .is-iso.linv α → double-composite _ _ _
+        ∙ ap₂ _∙_ refl (sym (homotopy-natural f.η α))
+        ∙ ∙-cancell _ _
+    where module f = Equiv (_ , eqv)
 ```
+
+Note that, while `equiv→cancellable`{.Agda} immediately follows by
+composing `is-equiv→is-embedding`{.Agda} and `embedding→cancellable`{.Agda},
+the inverse map we get from that isn't so good, so we define it explicitly
+instead.
 
 <!--
 ```agda
@@ -222,6 +235,9 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
     → is-embedding f
   cancellable→embedding' i p = embedding-lemma λ x → contr (x , refl) λ where
     (x , q) → Σ-pathp (i (sym q)) (commutes→square (ap (_∙ q) (p _) ∙∙ ∙-invl _ ∙∙ sym (∙-idr _)))
+
+  embedding-lemma' : (∀ x y → Path (fibre f (f x)) (x , refl) y) → is-embedding f
+  embedding-lemma' cffx = embedding-lemma λ x → contr (x , refl) (cffx x)
 
   abstract
     embedding→is-hlevel
@@ -235,5 +251,55 @@ ap-equiv
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B) {x y : A}
   → (x ≡ y) ≃ (e .fst x ≡ e .fst y)
 ap-equiv e = _ , equiv→cancellable (e .snd)
+
+embedding→cancellableP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (f : ∀ i → A i → B i) → (∀ i → is-embedding (f i))
+  → ∀ {x y} → is-equiv {A = PathP A x y} (apd f)
+embedding→cancellableP f emb {x} {y} = is-iso→is-equiv record where
+  from p i = is-prop→pathp (λ i → emb i (p i)) (x , refl) (y , refl) i .fst
+  rinv p j i = is-prop→pathp (λ i → emb i (p i)) (x , refl) (y , refl) i .snd j
+  linv p j i = is-prop→squarep (λ _ i → emb i (apd f p i)) refl
+    (is-prop→pathp (λ i → emb i (apd f p i)) (x , refl) (y , refl))
+    (p ,ₚ λ i → refl)
+    refl j i .fst
+
+-- Same as above, this follows from the previous lemmas but we get a
+-- better inverse this way.
+equiv→cancellableP
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (f : ∀ i → A i → B i) → (∀ i → is-equiv (f i))
+  → ∀ {x y} → is-equiv {A = PathP A x y} (apd f)
+equiv→cancellableP f f-eqv {x} {y} = is-iso→is-equiv record where
+  module f i = Equiv (_ , f-eqv i)
+
+  sides : ∀ p i j → Partial (∂ i ∨ ~ j) _
+  sides p i = λ where
+    j (j = i0) → f.from i (p i)
+    j (i = i0) → f.η i0 x j
+    j (i = i1) → f.η i1 y j
+
+  from p i = hcomp (∂ i) (sides p i)
+  linv p j i = hcomp-unique (∂ i) (sides (apd f.to p) i)
+    (λ j → inS (f.η i (p i) j)) j
+  rinv p j i = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → f.to i (f.from i (p i))
+    k (i = i0) → f.zig i0 x j k
+    k (i = i1) → f.zig i1 y j k
+    k (j = i0) → f.to i (hfill (∂ i) k (sides p i))
+    k (j = i1) → f.ε i (p i) k
+
+apd-equiv
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'}
+  → (e : ∀ i → A i ≃ B i)
+  → ∀ {x y} → PathP A x y ≃ PathP B (e i0 .fst x) (e i1 .fst y)
+apd-equiv e = apd (λ i → e i .fst) , equiv→cancellableP _ (λ i → e i .snd)
+
+Lift-is-embedding : ∀ {ℓ} ℓ' → is-embedding {A = Type ℓ} (Lift ℓ')
+Lift-is-embedding ℓ' = cancellable→embedding λ {x} {y} →
+  Lift ℓ' x ≡ Lift ℓ' y ≃⟨ _ , univalence ⟩
+  Lift ℓ' x ≃ Lift ℓ' y ≃⟨ ≃-ap Lift-≃ Lift-≃ ⟩
+  x ≃ y                 ≃⟨ _ , univalence⁻¹ ⟩
+  x ≡ y                 ≃∎
 ```
 -->

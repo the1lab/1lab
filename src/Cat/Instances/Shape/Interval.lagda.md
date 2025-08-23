@@ -5,7 +5,8 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Data.Bool
+open import Data.Bool.Order
+open import Data.Bool.Base
 
 open import Order.Base
 open import Order.Cat
@@ -42,58 +43,20 @@ ordering on them, with $\bot \le \top$.
 open Precategory
 
 Bool-poset : Poset lzero lzero
-Bool-poset = po where
-  R : Bool → Bool → Type
-  R false false = ⊤
-  R false true  = ⊤
-  R true  false = ⊥
-  R true  true  = ⊤
+Bool-poset .Poset.Ob        = Bool
+Bool-poset .Poset._≤_       = _≤_
+Bool-poset .Poset.≤-thin    = hlevel 1
+Bool-poset .Poset.≤-refl    = ≤-refl
+Bool-poset .Poset.≤-trans   = ≤-trans
+Bool-poset .Poset.≤-antisym = ≤-antisym
 ```
 
 :::{.note}
-We define the relation by recursion, rather than by induction,
-to avoid the issues with computational behaviour with indexed inductive
-types in Cubical Agda. The interval category is the category underlying
-the poset of booleans:
+We define the relation by recursion, rather than by induction, to avoid
+the issues with computational behaviour with indexed inductive types in
+Cubical Agda. The interval category is the category underlying the poset
+of booleans:
 :::
-
-<!--
-```agda
-  Rrefl : ∀ {x} → R x x
-  Rrefl {false} = tt
-  Rrefl {true} = tt
-
-  Rtrans : ∀ {x y z} → R x y → R y z → R x z
-  Rtrans {false} {false} {false} tt tt = tt
-  Rtrans {false} {false} {true}  tt tt = tt
-  Rtrans {false} {true}  {false} tt ()
-  Rtrans {false} {true}  {true}  tt tt = tt
-  Rtrans {true}  {false} {false} () tt
-  Rtrans {true}  {false} {true}  () tt
-  Rtrans {true}  {true}  {false} tt ()
-  Rtrans {true}  {true}  {true}  tt tt = tt
-
-  Rantisym : ∀ {x y} → R x y → R y x → x ≡ y
-  Rantisym {false} {false} tt tt = refl
-  Rantisym {false} {true}  tt ()
-  Rantisym {true}  {false} () tt
-  Rantisym {true}  {true}  tt tt = refl
-
-  Rprop : ∀ {x y} (p q : R x y) → p ≡ q
-  Rprop {false} {false} tt tt = refl
-  Rprop {false} {true}  tt tt = refl
-  Rprop {true}  {false} () ()
-  Rprop {true}  {true}  tt tt = refl
-
-  po : Poset _ _
-  po .Poset.Ob = Bool
-  po .Poset._≤_ = R
-  po .Poset.≤-thin = Rprop
-  po .Poset.≤-refl = Rrefl
-  po .Poset.≤-trans = Rtrans
-  po .Poset.≤-antisym = Rantisym
-```
--->
 
 ```agda
 0≤1 : Precategory lzero lzero
@@ -111,52 +74,20 @@ function.
 0≤1-top : Terminal 0≤1
 0≤1-top .top = true
 
-0≤1-top .has⊤ false .centre = tt
-0≤1-top .has⊤ false .paths tt = refl
+0≤1-top .has⊤ false .centre = _
+0≤1-top .has⊤ false .paths _ = refl
 
-0≤1-top .has⊤ true  .centre = tt
-0≤1-top .has⊤ true  .paths tt = refl
+0≤1-top .has⊤ true  .centre = _
+0≤1-top .has⊤ true  .paths _ = refl
 
 0≤1-products : ∀ A B → Product 0≤1 A B
 0≤1-products A B .apex = and A B
-```
-
-<details>
-<summary>
-A ridiculous amount of trivial pattern matching is needed to establish
-that this cone is universal, but fortunately, we can appeal to thinness
-to establish commutativity and uniqueness.
-</summary>
-
-```agda
-0≤1-products false false .π₁ = tt
-0≤1-products false true  .π₁ = tt
-0≤1-products true  false .π₁ = tt
-0≤1-products true  true  .π₁ = tt
-
-0≤1-products false false .π₂ = tt
-0≤1-products false true  .π₂ = tt
-0≤1-products true  false .π₂ = tt
-0≤1-products true  true  .π₂ = tt
-
-0≤1-products A B .has-is-product .⟨_,_⟩ = meet _ _ _ where
-  meet : ∀ A B Q (p : Hom 0≤1 Q A) (q : Hom 0≤1 Q B) → Hom 0≤1 Q (and A B)
-  meet false false false tt tt = tt
-  meet false false true  () ()
-  meet false true  false tt tt = tt
-  meet false true  true  () tt
-  meet true  false false tt tt = tt
-  meet true  false true  tt ()
-  meet true  true  false tt tt = tt
-  meet true  true  true  tt tt = tt
-```
-
-</details>
-
-```agda
-0≤1-products A B .has-is-product .π₁∘⟨⟩ = Poset.≤-thin Bool-poset _ _
-0≤1-products A B .has-is-product .π₂∘⟨⟩ = Poset.≤-thin Bool-poset _ _
-0≤1-products A B .has-is-product .unique _ _ = Poset.≤-thin Bool-poset _ _
+0≤1-products A B .π₁   = and-≤l A B
+0≤1-products A B .π₂   = and-≤r A B
+0≤1-products A B .has-is-product .⟨_,_⟩ = and-univ _ A B
+0≤1-products A B .has-is-product .π₁∘⟨⟩ = prop!
+0≤1-products A B .has-is-product .π₂∘⟨⟩ = prop!
+0≤1-products A B .has-is-product .unique _ _ = prop!
 ```
 
 # The space of arrows
@@ -166,8 +97,8 @@ its "space of arrows". A point in this space is a "free-standing arrow":
 it comes equipped with its own domain and codomain. We note that, since
 a precategory has no upper bound on the h-level of its space of objects,
 its space of arrows also need not be particularly truncated. However,
-for a thin category it is a set, and for a [[univalent category]] it is a
-groupoid.
+for a [[univalent category]] it is a groupoid, and for a [[poset|posets
+as categories]] it is a set.
 
 An equivalent description of the space of arrows is as the collection of
 functors $[ \intcat, \cC ]$: a functor out of $\intcat$ corresponds
@@ -217,24 +148,19 @@ module _ {C : Precategory o ℓ} where
     fun : Functor _ _
     fun .F₀ false = A
     fun .F₀ true = B
-    fun .F₁ {false} {false} tt = C.id
-    fun .F₁ {false} {true}  tt = f
-    fun .F₁ {true}  {false} ()
-    fun .F₁ {true}  {true}  tt = C.id
+    fun .F₁ {false} {false} _ = C.id
+    fun .F₁ {false} {true}  _ = f
+    fun .F₁ {true}  {true}  _ = C.id
 ```
 
 <!--
 ```agda
     fun .F-id {false} = refl
     fun .F-id {true} = refl
-    fun .F-∘ {false} {false} {false} tt tt = sym (C.idl _)
-    fun .F-∘ {false} {false} {true}  tt tt = sym (C.idr _)
-    fun .F-∘ {false} {true}  {false} () g
-    fun .F-∘ {false} {true}  {true}  tt tt = sym (C.idl _)
-    fun .F-∘ {true}  {false} {false} tt ()
-    fun .F-∘ {true}  {false} {true}  tt ()
-    fun .F-∘ {true}  {true}  {false} () g
-    fun .F-∘ {true}  {true}  {true}  tt tt = sym (C.idr _)
+    fun .F-∘ {false} {false} {false} _ _ = sym (C.idl _)
+    fun .F-∘ {false} {false} {true}  _ _ = sym (C.idr _)
+    fun .F-∘ {false} {true}  {true}  _ _ = sym (C.idl _)
+    fun .F-∘ {true}  {true}  {true}  _ _ = sym (C.idr _)
 ```
 -->
 
@@ -245,7 +171,7 @@ inferred by Agda.
 
 ```agda
   functor→arrow : Functor 0≤1 C → Arrows C
-  functor→arrow F = _ , _ , F .F₁ {false} {true} tt
+  functor→arrow F = _ , _ , F .F₁ {false} {true} _
 ```
 
 That this function is an equivalence is also straightforward: The only
@@ -260,10 +186,9 @@ it must preserve identity arrows. The converse direction (going functor
     rinv F =
       Functor-path
         (λ { true → refl ; false → refl })
-        (λ { {false} {false} tt → sym (F-id F)
-           ; {false} {true}  tt → refl
-           ; {true}  {false} ()
-           ; {true}  {true}  tt → sym (F-id F) })
+        (λ { {false} {false} _ → sym (F-id F)
+           ; {false} {true}  _ → refl
+           ; {true}  {true}  _ → sym (F-id F) })
 
     linv : is-left-inverse functor→arrow arrow→functor
     linv x = refl

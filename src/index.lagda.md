@@ -302,6 +302,7 @@ open import 1Lab.Extensionality
   -- to the data that matters.
 
 open import 1Lab.Reflection.Induction
+open import 1Lab.Reflection.Induction.Examples
   -- While Agda natively supports inductive types and pattern matching,
   -- it's often useful to have explicit elimination principles. This
   -- tactic automatically writes them.
@@ -350,14 +351,17 @@ open import Cat.Bi.Diagram.Monad.Spans
 
 ### Cartesian closed categories
 
-To a type theorist, a [[Cartesian closed]] category is exactly a
-simply-typed lambda calculus. To cement this connection, we have an
-implementation of normalisation-by-evaluation for STLC, whose
-correctness is established relative to its semantics in an arbitrary
-CCC:
+[[Cartesian closed categories]] support an interpretation of the
+[[simply-typed $\lambda$-calculus]]. We define the [[free Cartesian
+closed category]] on a $\lambda$-signature, show how it relates to
+the syntax of the simply-typed $\lambda$-calculus, and prove
+normalisation by evaluation, obtaining decidable equality of morphisms
+in the free CCC.
 
 ```agda
-open import Cat.CartesianClosed.Lambda
+open import Cat.Diagram.Exponential
+open import Cat.CartesianClosed.Free
+open import Cat.CartesianClosed.Free.Lambda
 ```
 
 ### Regular categories
@@ -396,9 +400,9 @@ open import Cat.Monoidal.Base
 
 Monoidal categories turn out to involve quite a lot of data ---
 constructing them in a proof assistant is onerous. In addition to the
-first formalisation of the Day convolution in a type-theoretic proof
-assistant, we also have a proof that every category with finite
-[[products]] is monoidal.
+first formalisation of the [[Day convolution]] in a type-theoretic proof
+assistant, we also have a proof that every [[Cartesian category]] is
+monoidal.
 
 ```agda
 open import Cat.Monoidal.Instances.Day

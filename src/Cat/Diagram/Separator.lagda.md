@@ -592,7 +592,7 @@ by $S_i$ into $[\cC, \Sets]$
 
 ```agda
   jointly-ff→dense-separating-family
-    : is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family {C = C} sᵢ))
+    : is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family sᵢ))
     → is-dense-separating-family sᵢ
   jointly-ff→dense-separating-family joint-ff .universal eta p =
     equiv→inverse joint-ff λ where
@@ -605,7 +605,7 @@ by $S_i$ into $[\cC, \Sets]$
 
   dense-separating-family→jointly-ff
     : is-dense-separating-family sᵢ
-    → is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family {C = C} sᵢ))
+    → is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family sᵢ))
   dense-separating-family→jointly-ff dense =
     is-iso→is-equiv $ iso
       (λ α → dense .universal (α .η) (λ f g → α .is-natural _ _ g $ₚ f))
@@ -626,12 +626,12 @@ module _
   {sᵢ : Idx → Ob}
   where
   open ↓Obj using (map)
-  open ↓Hom using (sq)
+  open ↓Hom using (com)
 ```
 -->
 
 ```agda
-  Approx : ∀ x → Functor (Forget-family {C = C} sᵢ ↘ x) C
+  Approx : ∀ x → Functor (Forget-family sᵢ ↘ x) C
   Approx x = Forget-family sᵢ F∘ Dom _ _
 
   is-dense-separating-family→coyoneda
@@ -649,7 +649,7 @@ that takes an object in slice $\cC(S_i, X)$ to itself.
 
     colim : make-is-colimit (Approx x) x
     colim .ψ x = x .map
-    colim .commutes f = f .sq ∙ idl _
+    colim .commutes f = f .com ∙ idl _
 ```
 
 Moreover, this cocone is universal: given another cocone $\epsilon$ over $Y$,
@@ -663,8 +663,8 @@ separating families.
         (λ f g → sym (p (↓hom (sym (idl _)))))
     colim .factors {j} eps p =
       dense.universal _ _ ∘ colim .ψ j ≡⟨ dense.commute ⟩
-      eps (↓obj (j .map))             ≡⟨ ap eps (↓Obj-path _ _ refl refl refl) ⟩
-      eps j                           ∎
+      eps (↓obj (j .map))              ≡⟨ ap eps (↓Obj-path _ _ refl refl refl) ⟩
+      eps j                            ∎
     colim .unique eta p other q = dense.unique other (λ i fᵢ → q (↓obj fᵢ))
 ```
 
@@ -680,12 +680,9 @@ previous proof in reverse, so we do not comment on it too deeply.
     open is-dense-separating-family
 
     dense : is-dense-separating-family sᵢ
-    dense .universal eta p =
-      colim.universal
-        (λ f → eta _ (f .map))
-        (λ γ → sym (p _ _) ∙ ap (eta _) (γ .sq ∙ idl _))
-    dense .commute {eᵢ = eᵢ} =
-      colim.factors {j = ↓obj eᵢ} _ _
-    dense .unique h p =
-      colim.unique _ _ _ λ j → p _ (j .map)
+    dense .universal eta p = colim.universal
+      (λ f → eta _ (f .map))
+      (λ γ → sym (p _ _) ∙ ap (eta _) (γ .com ∙ idl _))
+    dense .commute {eᵢ = eᵢ} = colim.factors {j = ↓obj eᵢ} _ _
+    dense .unique h p        = colim.unique _ _ _ λ j → p _ (j .map)
 ```

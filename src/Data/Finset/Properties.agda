@@ -17,7 +17,9 @@ private variable
   ℓ ℓ' ℓ'' : Level
   A B C : Type ℓ
 
-∈ᶠˢ-map : (f : A → B) {x : B} (xs : Finset A) → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs
+∈ᶠˢ-map
+  : {A : Type ℓ} {B : Type ℓ'} (f : A → B) {x : B}
+  → (xs : Finset A) → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs
 ∈ᶠˢ-map f {x} xs w = Finset-elim-prop (λ xs → x ∈ mapᶠˢ f xs → ∃[ (y , _) ∈ fibreᵢ f x ] y ∈ xs)
   (λ w → absurd (¬mem-[] w))
   (λ y ind → ∈ᶠˢ-split (λ { p → inc ((y , symᵢ p) , hereₛ) }) λ w → case ind w of λ x p h → inc ((x , p) , thereₛ h))
@@ -135,7 +137,7 @@ abstract
 
 instance
   Discrete-Finset : ⦃ _ : Discrete A ⦄ → Discrete (Finset A)
-  Discrete-Finset {x = xs} {ys} = case holds? (All (_∈ᶠˢ ys) xs × All (_∈ᶠˢ xs) ys) of λ where
+  Discrete-Finset .decide xs ys = case holds? (All (_∈ᶠˢ ys) xs × All (_∈ᶠˢ xs) ys) of λ where
     (yes (s1 , s2)) → yes $ finset-ext (λ a → from-all _ s1) (λ a → from-all _ s2)
     (no ¬sub)       → no λ p → ¬sub (to-all xs (λ a → subst (a ∈_) p) , to-all ys (λ a → subst (a ∈_) (sym p)))
 

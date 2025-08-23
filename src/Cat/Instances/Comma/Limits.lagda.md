@@ -1,11 +1,18 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Reflection
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
+open import Cat.Functor.Kan.Base
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cat
+
+open lifts-limit
 ```
 -->
 
@@ -63,9 +70,9 @@ definition.
 
 ```agda
     apex : ⌞ d ↙ F ⌟
-    apex .x = tt
-    apex .y = limf.apex
-    apex .map = flimf.universal (λ j → G.₀ j .map) λ f → sym (G.₁ f .sq) ∙ D.elimr refl
+    apex .dom = tt
+    apex .cod = limf.apex
+    apex .map = flimf.universal (λ j → G.₀ j .map) λ f → sym (G.₁ f .com) ∙ D.elimr refl
 ```
 
 Similarly short calculations show that we can define maps in $d \swarrow
@@ -73,15 +80,36 @@ F$ into $L$ componentwise, and these satisfy the universal property.
 
 ```agda
     lim' : make-is-limit G apex
-    lim' .ψ j .α = tt
-    lim' .ψ j .β = limf.ψ j
-    lim' .ψ j .sq = sym (flimf.factors _ _ ∙ D.intror refl)
+    lim' .ψ j .top = tt
+    lim' .ψ j .bot = limf.ψ j
+    lim' .ψ j .com = sym (flimf.factors _ _ ∙ D.intror refl)
     lim' .commutes f = ext (sym (limf.eps .is-natural _ _ _) ∙ C.elimr limf.Ext.F-id)
-    lim' .universal eta p .α = tt
-    lim' .universal eta p .β = limf.universal (λ j → eta j .β) λ f → ap β (p f)
-    lim' .universal eta p .sq = D.elimr refl ∙ sym (flimf.unique _ _ _ λ j → F.pulll (limf.factors _ _) ∙ sym (eta j .sq) ∙ D.elimr refl)
+    lim' .universal eta p .top = tt
+    lim' .universal eta p .bot = limf.universal (λ j → eta j .bot) λ f → ap bot (p f)
+    lim' .universal eta p .com = D.elimr refl ∙ sym (flimf.unique _ _ _ λ j → F.pulll (limf.factors _ _) ∙ sym (eta j .com) ∙ D.elimr refl)
     lim' .factors eta p = ext (limf.factors _ _)
-    lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap β (q j))
+    lim' .unique eta p other q = ext (limf.unique _ _ _ λ j → ap bot (q j))
+```
+
+To summarise, the functor $\operatorname{cod} : d \swarrow F \to \cC$
+[[lifts limits]].
+
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {d}
+    (F : Functor C D) {lo lℓ} (F-cont : is-continuous lo lℓ F)
+    {J : Precategory lo lℓ}
+    where
+  private
+    module C = Cat C
+```
+-->
+
+```agda
+  Cod-lifts-limits : lifts-limits-of J (Cod (!Const d) F)
+  Cod-lifts-limits lim .lifted = Cod-lift-limit F F-cont lim
+  Cod-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
 ```
 
 As an easy corollary, we get: if $\cC$ is small-complete and $F$
@@ -102,5 +130,6 @@ module
 
 ```agda
   comma-is-complete : ∀ {d} → is-complete ℓ ℓ (d ↙ F)
-  comma-is-complete G = Cod-lift-limit F F-cont (c-compl (Cod _ F F∘ G))
+  comma-is-complete = lifts-limits→complete (Cod _ F)
+    (Cod-lifts-limits F F-cont) c-compl
 ```

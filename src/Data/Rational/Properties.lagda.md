@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Algebra.Ring.Commutative
+open import Algebra.Ring.Solver
 open import Algebra.Monoid
 
 open import Data.Rational.Reflection
@@ -14,7 +15,7 @@ import Algebra.Ring.Reasoning as Kit
 
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
-import Data.Int.Base as ℤ
+import Data.Int.Base as ℤ renaming (_+ℤ_ to _+_ ; _-ℤ_ to _-_ ; _*ℤ_ to _*_)
 ```
 -->
 
@@ -26,6 +27,8 @@ module Data.Rational.Properties where
 
 <!--
 ```agda
+open Explicit ℤ-comm
+
 private module ℚr = Kit (ℚ-ring .fst , record { CRing-on (ℚ-ring .snd) })
 open ℚr renaming (*-negater to *ℚ-negater ; *-negatel to *ℚ-negatel) using () public
 
@@ -49,7 +52,7 @@ abstract
 ## Nonzero rationals
 
 ```agda
-  /ℚ-def : {x y : ℚ} ⦃ p : Nonzero y ⦄ → (x /ℚ y) ≡ x *ℚ invℚ y
+  /ℚ-def : {x y : Ratio} ⦃ p : Nonzero y ⦄ → (x /ℚ y) ≡ x *ℚ invℚ y
   /ℚ-def {inc x} {inc y} = refl
 
   *ℚ-nonzero : ∀ {x y} → Nonzero x → Nonzero y → Nonzero (x *ℚ y)
@@ -77,7 +80,7 @@ abstract
       (ℤ.possuc d) ⦃ ℤ.pos .d ⦄ (ℤ.negsuc x) ⦃ inc α ⦄ → to-nonzero-frac ℤ.negsuc≠pos
 
   instance
-    Nonzero-*ℚ : ∀ {x y : ℚ} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x *ℚ y)
+    Nonzero-*ℚ : ∀ {x y : Ratio} ⦃ p : Nonzero x ⦄ ⦃ q : Nonzero y ⦄ → Nonzero (x *ℚ y)
     Nonzero-*ℚ ⦃ p ⦄ ⦃ q ⦄ = *ℚ-nonzero p q
 
     Nonzero-invℚ : ∀ {x} ⦃ p : Nonzero x ⦄ → Nonzero (invℚ x)
@@ -173,6 +176,17 @@ abstract
       ∙ /ℚ-scaler ∙ ap (λ e → e /ℚ d) (*ℚ-associative _ _ d) ∙ /ℚ-factorr)
 ```
 
+## Operations with same denominator
+
+```agda
+abstract
+  +ℚ-common-denom : ∀ d x y ⦃ _ : ℤ.Positive d ⦄ → (x / d) +ℚ (y / d) ≡ (x ℤ.+ y) / d
+  +ℚ-common-denom d x y = ext (solve 3 (λ x y d → ((x :* d) :+ (y :* d)) :* d ≔ (x :+ y) :* (d :* d)) x y d refl)
+
+  -ℚ-common-denom : ∀ d x y ⦃ _ : ℤ.Positive d ⦄ → (x / d) -ℚ (y / d) ≡ (x ℤ.- y) / d
+  -ℚ-common-denom d x y = ext (solve 3 (λ x y d → ((x :* d) :+ ((:- y) :* d)) :* d ≔ (x :+ (:- y)) :* (d :* d)) x y d refl)
+```
+
 ## Positivity
 
 ```agda
@@ -189,8 +203,8 @@ abstract
       d@(ℤ.possuc d') ⦃ ℤ.pos .d' ⦄ (ℤ.possuc x) px → inc (ℤ.pos d')
 
     by-elim-ℚ +ℚ-nonneg-positive λ where
-      d (ℤ.posz) b (inc x) (inc y) → inc (subst ℤ.Positive (sym (ℤ.+ℤ-zerol (b ℤ.*ℤ d))) (ℤ.*ℤ-positive y auto))
-      d (ℤ.possuc a) b (inc x) (inc y) → inc (ℤ.+ℤ-positive {ℤ.possuc a ℤ.*ℤ d} {b ℤ.*ℤ d} (ℤ.*ℤ-positive (ℤ.pos a) auto) (ℤ.*ℤ-positive y auto))
+      d (ℤ.posz) b (inc x) (inc y) → inc (subst ℤ.Positive (sym (ℤ.+ℤ-zerol (b ℤ.* d))) (ℤ.*ℤ-positive y auto))
+      d (ℤ.possuc a) b (inc x) (inc y) → inc (ℤ.+ℤ-positive {ℤ.possuc a ℤ.* d} {b ℤ.* d} (ℤ.*ℤ-positive (ℤ.pos a) auto) (ℤ.*ℤ-positive y auto))
 
   /ℚ-positive : ∀ {x y} (p : Positive x) (q : Positive y) → Positive ((x /ℚ y) ⦃ inc (positive→nonzero q) ⦄)
   /ℚ-positive {y = y} p q = subst Positive

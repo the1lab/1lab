@@ -124,11 +124,11 @@ fitting into a square with $f$ and $g$.
     fp .make-group.invl = f-invl
     fp .make-group.idl = f-idl
 
-  inlᴳ .hom = inl
-  inlᴳ .preserves .pres-⋆ = inl-hom
+  inlᴳ .fst = inl
+  inlᴳ .snd .pres-⋆ = inl-hom
 
-  inrᴳ .hom = inr
-  inrᴳ .preserves .pres-⋆ = inr-hom
+  inrᴳ .fst = inr
+  inrᴳ .snd .pres-⋆ = inr-hom
 
   glueᴳ = ext glue
 ```
@@ -139,7 +139,7 @@ The universal property of the pushout is easy to verify.
 ```agda
   Groups-pushout : is-pushout (Groups ℓ) f inlᴳ g inrᴳ
   Groups-pushout .square = glueᴳ
-  Groups-pushout .universal {Q} {p} {q} comm .hom = go where
+  Groups-pushout .universal {Q} {p} {q} comm .fst = go where
     module Q = Group-on (Q .snd)
     go : Amalgamated → ⌞ Q ⌟
     go (x ◆ y) = go x Q.⋆ go y
@@ -149,20 +149,20 @@ The universal property of the pushout is easy to verify.
     go (f-invl x i) = Q.inversel {go x} i
     go (f-idl x i) = Q.idl {go x} i
     go (inl a) = p · a
-    go (inl-hom a a' i) = p .preserves .pres-⋆ a a' i
+    go (inl-hom a a' i) = p .snd .pres-⋆ a a' i
     go (inr b) = q · b
-    go (inr-hom b b' i) = q .preserves .pres-⋆ b b' i
+    go (inr-hom b b' i) = q .snd .pres-⋆ b b' i
     go (glue c i) = unext comm c i
     go (squash x y α β i j) =
       Q.has-is-set (go x) (go y) (λ i → go (α i)) (λ i → go (β i)) i j
-  Groups-pushout .universal comm .preserves .pres-⋆ _ _ = refl
-  Groups-pushout .universal∘i₁ = trivial!
-  Groups-pushout .universal∘i₂ = trivial!
+  Groups-pushout .universal comm .snd .pres-⋆ _ _ = refl
+  Groups-pushout .universal∘i₁ = ext λ _ → refl
+  Groups-pushout .universal∘i₂ = ext λ _ → refl
   Groups-pushout .unique {Q = Q} {colim' = u} comm₁ comm₂ = ext $
     Amalgamated-elim-prop (λ _ → hlevel 1)
-      (λ x p y q → u .preserves .pres-⋆ x y ∙ ap₂ Q._⋆_ p q)
-      (λ x p → pres-inv (u .preserves) ∙ ap Q._⁻¹ p)
-      (pres-id (u .preserves))
+      (λ x p y q → u .snd .pres-⋆ x y ∙ ap₂ Q._⋆_ p q)
+      (λ x p → pres-inv (u .snd) ∙ ap Q._⁻¹ p)
+      (pres-id (u .snd))
       (unext comm₁) (unext comm₂)
     where module Q = Group-on (Q .snd)
 

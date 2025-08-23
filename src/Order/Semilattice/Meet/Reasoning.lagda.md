@@ -8,7 +8,7 @@ open import Cat.Prelude
 open import Order.Semilattice.Meet
 open import Order.Base
 
-import Cat.Reasoning
+import Algebra.Monoid.Reasoning
 
 import Order.Reasoning
 
@@ -56,5 +56,5 @@ Therefore, every meet semilattice is a monoid.
 ∩-monoid .Monoid-on._⋆_ = _∩_
 ∩-monoid .Monoid-on.has-is-monoid = ∩-is-monoid
 
-module ∩ = Cat.Reasoning (B ∩-monoid) hiding (Ob)
+module ∩ = Algebra.Monoid.Reasoning (⌞ P ⌟ , ∩-monoid)
 ```

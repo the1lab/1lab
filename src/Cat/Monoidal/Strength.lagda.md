@@ -297,8 +297,8 @@ module _ {o ℓ} {C : Precategory o ℓ}
       ; left-strength-λ← = right-strength-ρ←
       ; left-strength-α→ = right-strength-α←
       } where open Right-strength r
-    is .snd .rinv _ = Right-strength-path _ _ trivial!
-    is .snd .linv _ = Left-strength-path _ _ trivial!
+    is .snd .rinv _ = Right-strength-path _ _ $ ext λ _ → refl
+    is .snd .linv _ = Left-strength-path  _ _ $ ext λ _ → refl
 ```
 
 ## Sets-endofunctors are strong {defines="sets-endofunctors-are-strong"}

@@ -25,19 +25,21 @@ private
 
 open Functor
 open Displayed
-open Total-hom
+open ∫Hom
 ```
 
 # The chaotic bifibration
 
+::: {.definition #chaotic-bifibration}
 Let $\cB$ and $\cJ$ be precategories. We define the
 **chaotic bifibration** of $\cJ$ over $\cB$ to be the [[displayed
 category]] where we trivially fibre $\cJ$ over $\cB$, disregarding the
 structure of $\cB$ entirely.
+:::
 
 ```agda
 Chaotic : Displayed B o' ℓ'
-Chaotic. Ob[_] _ = J.Ob
+Chaotic .Ob[_]  _ = J.Ob
 Chaotic .Hom[_] _ = J.Hom
 Chaotic .Hom[_]-set _ = J.Hom-set
 Chaotic .id' = J.id
@@ -45,6 +47,8 @@ Chaotic ._∘'_ = J._∘_
 Chaotic .idr' = J.idr
 Chaotic .idl' = J.idl
 Chaotic .assoc' = J.assoc
+Chaotic .hom[_] p f = f
+Chaotic .coh[_] p f = refl
 ```
 
 Note that the only [[cartesian morphisms]] in the chaotic bifibration are
@@ -159,7 +163,7 @@ ChaoticFib : ∀ x → Functor J (Fibre Chaotic x)
 ChaoticFib x .F₀ j = j
 ChaoticFib x .F₁ f = f
 ChaoticFib x .F-id = refl
-ChaoticFib x .F-∘ _ _ = sym (transport-refl _)
+ChaoticFib x .F-∘ _ _ = refl
 
 ChaoticFib-is-iso : ∀ x → is-precat-iso (ChaoticFib x)
 ChaoticFib-is-iso x .is-precat-iso.has-is-ff = id-equiv
@@ -172,17 +176,17 @@ The [[total category]] of the chaotic bifibration is isomorphic to the
 product of $\cB$ and $\cJ$.
 
 ```agda
-ChaoticTotal : Functor (B ×ᶜ J) (∫ Chaotic)
-ChaoticTotal .F₀ bj = bj
-ChaoticTotal .F₁ (f , g) = total-hom f g
-ChaoticTotal .F-id = total-hom-path Chaotic refl refl
-ChaoticTotal .F-∘ f g = total-hom-path Chaotic refl refl
+Chaotic-total : Functor (B ×ᶜ J) (∫ Chaotic)
+Chaotic-total .F₀ bj = bj
+Chaotic-total .F₁ (f , g) = ∫hom f g
+Chaotic-total .F-id = ∫Hom-path Chaotic refl refl
+Chaotic-total .F-∘ f g = ∫Hom-path Chaotic refl refl
 
-ChaoticTotal-is-iso : is-precat-iso ChaoticTotal
-ChaoticTotal-is-iso .is-precat-iso.has-is-ff =
+Chaotic-total-is-iso : is-precat-iso Chaotic-total
+Chaotic-total-is-iso .is-precat-iso.has-is-ff =
   is-iso→is-equiv
-    (iso (λ f → f .hom , f .preserves)
-    (λ _ → total-hom-path Chaotic refl refl)
+    (iso (λ f → f .fst , f .snd)
+    (λ _ → ∫Hom-path Chaotic refl refl)
     (λ _ → refl))
-ChaoticTotal-is-iso .is-precat-iso.has-is-iso = id-equiv
+Chaotic-total-is-iso .is-precat-iso.has-is-iso = id-equiv
 ```

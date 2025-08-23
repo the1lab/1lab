@@ -149,7 +149,7 @@ equiv-path→identity-system
   → is-identity-system R r
 equiv-path→identity-system eqv = contr→identity-system $
   Equiv→is-hlevel 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
-    (contr _ Singleton-is-contr)
+    Singleton-is-contr
 ```
 
 Conversely, any identity system $(R, r)$ implies an equivalence
@@ -442,6 +442,17 @@ set-identity-system rprop rpath .to-path-over p =
   is-prop→pathp (λ i → rprop _ _) _ p
 ```
 
+<!--
+```agda
+set-identity-system→hlevel
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') (r : ∀ x → R x x)
+  → (∀ x y → is-prop (R x y))
+  → (∀ x y → R x y → x ≡ y)
+  → is-set A
+set-identity-system→hlevel R r p i = identity-system→hlevel 1 (set-identity-system {R = R} {r = r} p λ {x} {y} → i x y) p
+```
+-->
+
 If $A$ is a type with ¬¬-stable equality, then by the theorem above, the
 pointwise double negation of its identity types is an identity system:
 and so, if a type has decidable (thus ¬¬-stable) equality, it is a set.
@@ -457,7 +468,8 @@ This is known as **Hedberg's theorem**.
 
 opaque
   Discrete→is-set : ∀ {ℓ} {A : Type ℓ} → Discrete A → is-set A
-  Discrete→is-set {A = A} dec = identity-system→hlevel 1
-    (¬¬-stable-identity-system (dec→dne ⦃ dec ⦄))
+  Discrete→is-set {A = A} dec =
+    let instance _ = dec in identity-system→hlevel 1
+    (¬¬-stable-identity-system dec→dne)
     λ x y f g → funext λ h → absurd (g h)
 ```

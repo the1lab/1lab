@@ -39,7 +39,7 @@ by `negation`{.Agda}.
 
 ```agda
 Dih : ∀ {ℓ} → Abelian-group ℓ → Group ℓ
-Dih G = Semidirect-product (LiftGroup _ (ℤ/ 2)) (Abelian→Group G) $
+Dih G = Semidirect-product (Lift-group _ (ℤ/ 2)) (Abelian→Group G) $
   ℤ/-out 2 (F-map-iso Ab↪Grp (negation G)) (ext λ _ → inv-inv)
   where open Abelian-group-on (G .snd)
 ```

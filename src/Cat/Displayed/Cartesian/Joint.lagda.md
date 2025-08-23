@@ -15,8 +15,7 @@ import Cat.Reasoning
 -->
 ```agda
 module Cat.Displayed.Cartesian.Joint
-  {o ℓ o' ℓ'}
-  {B : Precategory o ℓ} (E : Displayed B o' ℓ')
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')
   where
 ```
 
@@ -26,7 +25,6 @@ open Cat.Displayed.Cartesian E
 open Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
 open Cat.Reasoning B
-open Displayed E
 ```
 -->
 
@@ -111,7 +109,7 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
     → (hᵢ : ∀ ix → Hom[ wᵢ ix ] x' (bᵢ' ix))
     → ∀ ix → fᵢ ix ∘' universal' p hᵢ ≡[ p ix ] hᵢ ix
   commutesp p hᵢ ix =
-    to-pathp⁻ (commutes _ (λ ix → hom[ p ix ]⁻ (hᵢ ix)) ix)
+    to-pathp[]⁻ (commutes _ (λ ix → hom[ p ix ]⁻ (hᵢ ix)) ix)
 
   universalp
     : ∀ {x x'}
@@ -131,7 +129,7 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
     → (∀ ix → fᵢ ix ∘' other ≡[ p ix ] hᵢ ix)
     → other ≡[ q ] universal' r hᵢ
   uniquep p q r {hᵢ} other s =
-    to-pathp⁻ (unique other (λ ix → from-pathp⁻ (s ix)) ∙ from-pathp⁻ (universalp p q r hᵢ))
+    to-pathp[]⁻ (unique other (λ ix → from-pathp[]⁻ (s ix)) ∙ from-pathp[]⁻ (universalp p q r hᵢ))
 
   uniquep₂
     : ∀ {x x'}

@@ -64,7 +64,7 @@ module _
   where
   open Cat.Reasoning C
   open Functor F
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -115,7 +115,7 @@ module _
   (f : Monotone P P)
   where
   open Poset P
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -151,7 +151,7 @@ the proofs that $f x \leq x$.
     soln (x , lt) = x , (□-out! lt)
 
     is-soln-set : is-weak-initial-fam (FAlg (monotone→functor f)) soln
-    is-soln-set (x , lt) = inc ((x , inc lt) , total-hom ≤-refl prop!)
+    is-soln-set (x , lt) = inc ((x , inc lt) , ∫hom ≤-refl prop!)
 ```
 
 Moreover, $P$ has all [[greatest lower bounds]], so it is `complete as a
@@ -174,12 +174,10 @@ initial algebra gives the least fixpoint of $f$!
     open Initial initial
 
     least-fixpoint : Least-fixpoint P f
-    least-fixpoint .fixpoint =
-      bot .fst
-    least-fixpoint .has-least-fixpoint .fixed =
-      ≤-antisym
-        (bot .snd)
-        (¡ {x = f .hom (bot .fst) , f .pres-≤ (bot .snd)} .hom)
+    least-fixpoint .fixpoint = bot .fst
+    least-fixpoint .has-least-fixpoint .fixed = ≤-antisym
+      (bot .snd)
+      (¡ {x = f .hom (bot .fst) , f .pres-≤ (bot .snd)} .fst)
     least-fixpoint .has-least-fixpoint .least x fx=x =
-      ¡ {x = x , ≤-refl' fx=x} .hom
+      ¡ {x = x , ≤-refl' fx=x} .fst
 ```

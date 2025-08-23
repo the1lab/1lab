@@ -274,7 +274,7 @@ _ = Cat⟨_,_⟩
 ```agda
 _ = is-monic
 _ = id-monic
-_ = monic-∘
+_ = ∘-is-monic
 _ = monic-cancell
 _ = has-section
 _ = has-retract
@@ -288,7 +288,7 @@ _ = monic→is-embedding
 * Definition 1.7.1: `is-monic`{.Agda}
 * Proposition 1.7.2:
   * 1. `id-monic`{.Agda}
-  * 2. `monic-∘`{.Agda}
+  * 2. `∘-is-monic`{.Agda}
   * 3. `monic-cancell`{.Agda}
 * Definition 1.7.3:
   * 1. `has-section`{.Agda}
@@ -304,7 +304,7 @@ _ = monic→is-embedding
 ```agda
 _ = is-epic
 _ = id-epic
-_ = epic-∘
+_ = ∘-is-epic
 _ = epic-cancelr
 _ = has-section→epic
 _ = faithful→reflects-epi
@@ -316,7 +316,7 @@ _ = epi→surjective
 * Definition 1.8.1: `is-epic`{.Agda}
 * Proposition 1.8.2:
   * 1. `id-epic`{.Agda}
-  * 2. `epic-∘`{.Agda}
+  * 2. `∘-is-epic`{.Agda}
   * 3. `epic-cancelr`{.Agda}
 * Proposition 1.8.3: `has-section→epic`{.Agda}
 * Proposition 1.8.4: `faithful→reflects-epi`{.Agda}
@@ -738,7 +738,7 @@ _ = is-lan
 _ = is-ran
 _ = cocomplete→lan
 _ = ff→pointwise-lan-ext
-_ = left-adjoint→left-extension
+_ = left-adjoint→preserves-lan
 _ = is-initial-cocone→is-colimit
 _ = is-colimit→is-initial-cocone
 _ = is-colimit→is-initial-cocone
@@ -750,7 +750,7 @@ _ = adjoint→is-absolute-lan
 * Definition 3.7.1: `is-lan`{.Agda}
 * Theorem 3.7.2: `cocomplete→lan`{.Agda}
 * Proposition 3.7.3: `ff→pointwise-lan-ext`{.Agda}
-* Proposition 3.7.4: `left-adjoint→left-extension`{.Agda}
+* Proposition 3.7.4: `left-adjoint→preserves-lan`{.Agda}
 * Proposition 3.7.5:
   * (⇒) `is-initial-cocone→is-colimit`{.Agda}
   * (⇐) `is-colimit→is-initial-cocone`{.Agda}

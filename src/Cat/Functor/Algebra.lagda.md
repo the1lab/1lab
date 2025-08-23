@@ -9,6 +9,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Monad.Relative
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
@@ -41,7 +42,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (F : Functor C C) where
   private module F = Cat.Functor.Reasoning F
   open Cat.Reasoning C
   open Displayed
-  open Total-hom
+  open ∫Hom
 ```
 -->
 
@@ -85,14 +86,11 @@ $F$-algebra homomorphism.
 
 ```agda
   F-Algebras : Displayed C ℓ ℓ
-  F-Algebras .Ob[_] a = Hom (F.₀ a) a
-  F-Algebras .Hom[_] f α β = f ∘ α ≡ β ∘ F.₁ f
-  F-Algebras .Hom[_]-set _ _ _ = hlevel 2
-  F-Algebras .id' = idl _ ∙ intror F.F-id
-  F-Algebras ._∘'_ p q = pullr q ∙ pulll p ∙ pullr (sym (F.F-∘ _ _))
-  F-Algebras .idr' _ = prop!
-  F-Algebras .idl' _ = prop!
-  F-Algebras .assoc' _ _ _ = prop!
+  F-Algebras = with-thin-display record where
+    Ob[_]      a = Hom (F.₀ a) a
+    Hom[_] f α β = f ∘ α ≡ β ∘ F.₁ f
+    id'          = idl _ ∙ intror F.F-id
+    _∘'_ p q     = pullr q ∙ pulll p ∙ pullr (sym (F.F-∘ _ _))
 ```
 
 We can take the [[total category]] of this displayed category to recover
@@ -132,12 +130,12 @@ inverses.
   algebra-section→inverses
     : ∀ {a} (α : Hom (F.₀ a) a)
     → (f : FAlg.Hom (a , α) (F.₀ a , F.₁ α))
-    → f .hom section-of α
-    → Inverses α (f .hom)
+    → f .fst section-of α
+    → Inverses α (f .fst)
   algebra-section→inverses α f section =
     make-inverses section $
-      f .hom ∘ α           ≡⟨ f .preserves ⟩
-      F.₁ α ∘ F.₁ (f .hom) ≡⟨ F.annihilate section ⟩
+      f .fst ∘ α           ≡⟨ f .snd ⟩
+      F.₁ α ∘ F.₁ (f .fst) ≡⟨ F.annihilate section ⟩
       id                   ∎
 ```
 
@@ -158,12 +156,12 @@ also be an inverse, so $\alpha$ is invertible.
       unroll = initial (F.₀ a , F.₁ α) .centre
 
       roll : FAlg.Hom (F.₀ a , F.₁ α) (a , α)
-      roll .hom = α
-      roll .preserves = refl
+      roll .fst = α
+      roll .snd = refl
 
-      roll-unroll : α ∘ unroll .hom ≡ id
+      roll-unroll : α ∘ unroll .fst ≡ id
       roll-unroll =
-        ap hom $
+        ap fst $
         is-contr→is-prop (initial (a , α)) (roll FAlg.∘ unroll) FAlg.id
 ```
 
@@ -342,10 +340,10 @@ is an initial $F$-algebra.
       ∐Fⁿ[⊥]-initial : Initial FAlg
       ∐Fⁿ[⊥]-initial .Initial.bot .fst = ∐Fⁿ[⊥]
       ∐Fⁿ[⊥]-initial .Initial.bot .snd = roll
-      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .hom = fold α
-      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .preserves = fold-roll α
+      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .fst = fold α
+      ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .centre .snd = fold-roll α
       ∐Fⁿ[⊥]-initial .Initial.has⊥ (a , α) .paths f =
-        total-hom-path F-Algebras (fold-unique (f .hom) (f .preserves)) prop!
+        ∫Hom-path F-Algebras (fold-unique (f .fst) (f .snd)) prop!
 ```
 
 ## Free algebras and free monads
@@ -409,10 +407,10 @@ homomorphism $F^{*}(f)$, as in the following diagram:
 
 ```agda
       map* : ∀ {a b} → Hom a b → Hom (F* a) (F* b)
-      map* f = Free.₁ f .hom
+      map* f = Free.₁ f .fst
 
       map*-roll : ∀ {a b} (f : Hom a b) → map* f ∘ roll a ≡ roll b ∘ F.₁ (map* f)
-      map*-roll f = Free.₁ f .preserves
+      map*-roll f = Free.₁ f .snd
 ```
 
 The counit of our adjunction lets us extend any $F$-algebra $\alpha : \cC(F(A),A)$
@@ -422,10 +420,10 @@ eliminate out of each layer.
 
 ```agda
       fold : ∀ {a} → Hom (F.₀ a) a → Hom (F* a) a
-      fold {a} α = counit.ε (a , α) .hom
+      fold {a} α = counit.ε (a , α) .fst
 
       fold-roll : ∀ {a} (α : Hom (F.₀ a) a) → fold α ∘ roll a ≡ α ∘ F.₁ (fold α)
-      fold-roll {a} α = counit.ε (a , α) .preserves
+      fold-roll {a} α = counit.ε (a , α) .snd
 ```
 
 Extending $\mathrm{roll}$ gives us the multiplication of the monad.
@@ -442,10 +440,10 @@ purely based off of how they behave on points.
       fold-ext
         : ∀ {a b}
         → (f g : FAlg.Hom (Free.₀ a) b)
-        → (f .hom ∘ unit.η _ ≡ g .hom ∘ unit.η _)
-        → f .hom ≡ g .hom
+        → (f .fst ∘ unit.η _ ≡ g .fst ∘ unit.η _)
+        → f .fst ≡ g .fst
       fold-ext f g p =
-        ap hom $ Equiv.injective (_ , L-adjunct-is-equiv Free⊣π) {x = f} {y = g} $
+        ap fst $ Equiv.injective (_ , L-adjunct-is-equiv Free⊣π) {x = f} {y = g} $
         p
 ```
 
@@ -457,7 +455,7 @@ the algebraically free monad via extension along $\mathrm{fold}$.
     lift-alg {a = a} α .ν = fold α
     lift-alg {a = a} α .ν-unit = zag
     lift-alg {a = a} α .ν-mult =
-      ap hom $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
+      ap fst $ sym $ counit.is-natural (Free.₀ a) (a , α) (counit.ε (a , α))
 ```
 
 Likewise, we can extract an $F$-algebra out of a monad algebra by
@@ -495,12 +493,12 @@ clear, but proving it involves quite a bit of algebra.
     alg*
       : ∀ {a} → (α : Algebra-on Alg-free-monad a)
       → FAlg.Hom (F* a , roll a) (a , (α .ν ∘ roll a ∘ F.₁ (unit.η a)))
-    alg* {a = a} α .hom = α .ν
-    alg* {a = a} α .preserves =
+    alg* {a = a} α .fst = α .ν
+    alg* {a = a} α .snd =
       α .ν ∘ roll a                                            ≡⟨ intror (F.annihilate zag) ⟩
       (α .ν ∘ roll a) ∘ (F.₁ (mult a) ∘ F.₁ (unit.η _))        ≡⟨ pull-inner (sym $ fold-roll (roll a)) ⟩
-      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (sym $ α .ν-mult) ⟩
-      α .ν ∘ Free.₁ (α .ν) .hom ∘ roll (F* a) ∘ F.₁ (unit.η _) ≡⟨ extend-inner (map*-roll (α .ν)) ⟩
+      α .ν ∘ (mult a ∘ roll (F* a)) ∘ F.₁ (unit.η _)           ≡⟨ dispersel (α .ν-mult) ⟩
+      α .ν ∘ Free.₁ (α .ν) .fst ∘ roll (F* a) ∘ F.₁ (unit.η _) ≡⟨ extend-inner (map*-roll (α .ν)) ⟩
       α .ν ∘ roll a ∘ F.₁ (map* (α .ν)) ∘ F.₁ (unit.η _)       ≡⟨ centralizer (F.weave (sym (unit.is-natural _ _ _))) ⟩
       α .ν ∘ (roll a ∘ F.₁ (unit.η _)) ∘ F.₁ (α .ν)            ≡⟨ assoc _ _ _ ⟩
       (α .ν ∘ roll a ∘ F.₁ (unit.η _)) ∘ F.₁ (α .ν)            ∎
@@ -518,15 +516,15 @@ between $F$-algebras and algebras over the algebraically free monad on $F$.
       where
         equivl
           : ∀ {a} (α : Algebra-on Alg-free-monad a)
-          → counit.ε (a , lower-alg α) .hom ≡ α .ν
+          → counit.ε (a , lower-alg α) .fst ≡ α .ν
         equivl α =
           fold-ext (counit.ε _) (alg* α) $ zag ∙ sym (α .ν-unit)
 
         equivr
           : ∀ {a} (α : Hom (F.₀ a) a)
-          → counit.ε (a , α) .hom ∘ roll a ∘ F.₁ (unit.η _) ≡ α
+          → counit.ε (a , α) .fst ∘ roll a ∘ F.₁ (unit.η _) ≡ α
         equivr {a} α =
-          pulll (counit.ε (a , α) .preserves) ∙ F.cancelr zag
+          pulll (counit.ε (a , α) .snd) ∙ F.cancelr zag
 ```
 
 Likewise, we have an equivalence between $F$-algebra morphisms and monad
@@ -539,23 +537,23 @@ algebra morphisms.
       : ∀ {a b} {α β}
       → FAlg.Hom (a , α) (b , β)
       → Free-EM.Hom (a , lift-alg α) (b , lift-alg β)
-    lift-alg-hom f .hom = f .hom
-    lift-alg-hom f .preserves =
-      (sym $ ap hom $ counit.is-natural _ _ f)
+    lift-alg-hom f .fst = f .fst
+    lift-alg-hom f .snd =
+      (sym $ ap fst $ counit.is-natural _ _ f)
 
     lower-alg-hom
       : ∀ {a b} {α β}
       → Free-EM.Hom (a , lift-alg α) (b , lift-alg β)
       → FAlg.Hom (a , α) (b , β)
-    lower-alg-hom f .hom = f .hom
-    lower-alg-hom {a} {b} {α} {β} f .preserves =
-      f .hom ∘ α                                                      ≡⟨ ap₂ _∘_ refl (insertr (F.annihilate zag)) ⟩
-      f .hom ∘ (α ∘ F.₁ (ε (a , α) .hom)) ∘ F.₁ (η a)                 ≡⟨ push-inner (sym (fold-roll α)) ⟩
-      ⌜ f .hom ∘ ε (a , α) .hom ⌝ ∘ (roll a ∘ F.₁ (η a))              ≡⟨ ap! (f .preserves) ⟩
-      (ε (b , β) .hom ∘ Free.F₁ (f .hom) .hom) ∘ (roll a ∘ F.₁ (η a)) ≡⟨ pull-inner (map*-roll (f .hom)) ⟩
-      ε (b , β) .hom ∘ (roll b ∘ F.₁ (map* (f .hom))) ∘ F.₁ (η a)     ≡⟨ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _))) ⟩
-      β ∘ F.₁ (ε (b , β) .hom) ∘ F.₁ (η b) ∘ F.₁ (f .hom)             ≡⟨ ap₂ _∘_ refl (cancell (F.annihilate zag)) ⟩
-      β ∘ (F.₁ (f .hom))                                              ∎
+    lower-alg-hom f .fst = f .fst
+    lower-alg-hom {a} {b} {α} {β} f .snd =
+      f .fst ∘ α                                                      ≡⟨ ap₂ _∘_ refl (insertr (F.annihilate zag)) ⟩
+      f .fst ∘ (α ∘ F.₁ (ε (a , α) .fst)) ∘ F.₁ (η a)                 ≡⟨ push-inner (sym (fold-roll α)) ⟩
+      ⌜ f .fst ∘ ε (a , α) .fst ⌝ ∘ (roll a ∘ F.₁ (η a))              ≡⟨ ap! (f .snd) ⟩
+      (ε (b , β) .fst ∘ Free.F₁ (f .fst) .fst) ∘ (roll a ∘ F.₁ (η a)) ≡⟨ pull-inner (map*-roll (f .fst)) ⟩
+      ε (b , β) .fst ∘ (roll b ∘ F.₁ (map* (f .fst))) ∘ F.₁ (η a)     ≡⟨ disperse (fold-roll β) (F.weave (sym (unit.is-natural _ _ _))) ⟩
+      β ∘ F.₁ (ε (b , β) .fst) ∘ F.₁ (η b) ∘ F.₁ (f .fst)             ≡⟨ ap₂ _∘_ refl (cancell (F.annihilate zag)) ⟩
+      β ∘ (F.₁ (f .fst))                                              ∎
 ```
 
 Therefore, we have an [[isomorphism of precategories]] between the category
@@ -574,8 +572,8 @@ giving us the appropriate universal property for an algebraically free monad.
     FAlg≅Free-EM : is-precat-iso FAlg→Free-EM
     FAlg≅Free-EM .is-precat-iso.has-is-ff =
       is-iso→is-equiv $ iso lower-alg-hom
-        (λ _ → trivial!)
-        (λ _ → total-hom-path F-Algebras refl prop!)
+        (λ _ → ext refl)
+        (λ _ → ∫Hom-path F-Algebras refl prop!)
     FAlg≅Free-EM .is-precat-iso.has-is-iso =
       Σ-ap-snd f-algebra≃free-monad-algebra .snd
 ```
@@ -626,12 +624,45 @@ if $F$ lacks any free algebras.
   Free-relative-extension .unit {α} =
     Free-alg.unit α
   Free-relative-extension .bind {α} {β} f =
-    Free-alg.fold α {Free-alg.free β} f .hom
+    Free-alg.fold α {Free-alg.free β} f .fst
   Free-relative-extension .bind-unit-id {α} =
-    ap hom $ Free-alg.fold-unit α
+    ap fst $ Free-alg.fold-unit α
   Free-relative-extension .bind-unit-∘ {α} {β} f =
     Free-alg.commute α
-  Free-relative-extension .bind-∘ {α} {β} {γ} f g = ap hom $
+  Free-relative-extension .bind-∘ {α} {β} {γ} f g = ap fst $
     Free-alg.fold β f FAlg.∘ Free-alg.fold α g   ≡˘⟨ Free-alg.fold-natural α (Free-alg.fold β f) g ⟩
-    Free-alg.fold α (Free-alg.fold β f .hom ∘ g) ∎
+    Free-alg.fold α (Free-alg.fold β f .fst ∘ g) ∎
 ```
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} where
+  private
+    module C = Cat.Reasoning C
+    module F = Cat.Functor.Reasoning F
+
+  open ∫Hom
+
+  instance
+    Extensional-F-Algebra-Hom
+      : ∀ {ℓr} {(a , A) : FAlg.Ob F} {(b , B) : FAlg.Ob F}
+      → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
+      → Extensional (FAlg.Hom F (a , A) (b , B)) ℓr
+    Extensional-F-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
+      (λ p → ∫Hom-path (F-Algebras F) p prop!) sa
+
+  Forget-algebra-is-conservative : is-conservative (πᶠ (F-Algebras F))
+  Forget-algebra-is-conservative {A , α} {B , β} {f} f-inv =
+    FAlg.make-invertible F f-alg-inv (ext invl) (ext invr)
+    where
+      open C.is-invertible f-inv
+
+      f-alg-inv : FAlg.Hom F (B , β) (A , α)
+      f-alg-inv .fst = inv
+      f-alg-inv .snd =
+        inv C.∘ β                              ≡⟨ (C.refl⟩∘⟨ C.intror (F.annihilate invl)) ⟩
+        inv C.∘ β C.∘ F.₁ (f .fst) C.∘ F.₁ inv ≡⟨ (C.refl⟩∘⟨ C.extendl (sym (f .snd))) ⟩
+        inv C.∘ f .fst C.∘ α C.∘ F.₁ inv       ≡⟨ C.cancell invr ⟩
+        α C.∘ F.₁ inv                          ∎
+```
+-->

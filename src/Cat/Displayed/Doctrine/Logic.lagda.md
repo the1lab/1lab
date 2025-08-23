@@ -8,7 +8,6 @@ open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 open import Cat.Prelude hiding (_ʻ_)
 
-import Cat.Displayed.Reasoning as Disp
 import Cat.Reasoning as Cat
 
 import Order.Reasoning
@@ -29,7 +28,6 @@ module Cat.Displayed.Doctrine.Logic
 open Regular-hyperdoctrine P
 open Finitely-complete fc hiding (_⊗₀_)
 open Binary-products B products
-open Displayed ℙ
 open Cat B
 
 private module P {x} = Order.Reasoning (≤-Poset {x})

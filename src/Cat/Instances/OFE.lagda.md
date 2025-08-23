@@ -29,7 +29,7 @@ The axioms of an OFE are essentially that
 - The maximal distance between two points is $1$, i.e., $x
 \within{n} y$ is the total relation;
 
-- Points that are within some distance $d$ of eachother are also within
+- Points that are within some distance $d$ of each other are also within
 $d'$, for any $d' \le d$;
 
 - Arbitrarily close points are the same.

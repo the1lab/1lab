@@ -34,7 +34,6 @@ private
   module E = Displayed E
 
 open Functor F
-open Displayed
 open Dr E
 ```
 -->
@@ -63,21 +62,28 @@ category reasoning combinators][dr] are here to help.
 [dr]: Cat.Displayed.Reasoning.html
 
 ```agda
-Change-of-base .idr' {f = f} f' = to-pathp $
+Change-of-base .idr' {f = f} f' = to-pathp[] $
   hom[] (hom[ F-∘ _ _ ]⁻ (f' E.∘' hom[ F-id ]⁻ _)) ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
   hom[] (hom[] (f' E.∘' E.id'))                    ≡⟨ Ds.disp! E ⟩
   f'                                               ∎
 
-Change-of-base .idl' f' = to-pathp $
+Change-of-base .idl' f' = to-pathp[] $
   hom[] (hom[ F-∘ _ _ ]⁻ (hom[ F-id ]⁻ _ E.∘' f')) ≡⟨ hom[]⟩⟨ smashl _ _ ⟩
   hom[] (hom[] (E.id' E.∘' f'))                    ≡⟨ Ds.disp! E ⟩
   f'                                               ∎
 
-Change-of-base .assoc' f' g' h' = to-pathp $
+Change-of-base .assoc' f' g' h' = to-pathp[] $
   hom[ ap F₁ _ ] (hom[ F-∘ _ _ ]⁻ (f' E.∘' hom[ F-∘ _ _ ]⁻ (g' E.∘' h')))   ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
   hom[] (hom[] (f' E.∘' g' E.∘' h'))                                        ≡⟨ Ds.disp! E ⟩
   hom[ sym (F-∘ _ _) ] (hom[ sym (F-∘ _ _) ] (f' E.∘' g') E.∘' h')          ∎
 ```
+
+<!--
+```agda
+Change-of-base .hom[_] p f' = hom[ ap F₁ p ] f'
+Change-of-base .coh[_] p f' = coh[ ap F₁ p ] f'
+```
+-->
 
 ## As a fibration
 
@@ -90,22 +96,21 @@ just have to perform the lifting of $F f$.
 
 ```agda
 Change-of-base-fibration : Cartesian-fibration E → Cartesian-fibration Change-of-base
-Change-of-base-fibration fib f FY' = f-cart-lift
-  where
-    open Cartesian-fibration E fib
+Change-of-base-fibration fib f FY' = f-cart-lift where
+  open Cartesian-fibration E fib
 
-    f-cart-lift : Cartesian-lift Change-of-base f FY'
-    f-cart-lift .Cartesian-lift.x' = F₁ f ^* FY'
-    f-cart-lift .Cartesian-lift.lifting = π* (F₁ f) FY'
-    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.universal m h' =
-      π*.universal (F₁ m) (hom[ F-∘ f m ] h')
-    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.commutes m h' =
-      hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' π*.universal (F₁ m) (hom[ F-∘ f m ] h')) ≡⟨ ap hom[ F-∘ f m ]⁻ (π*.commutes _ _) ⟩
-      hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h')                                          ≡⟨ Ds.disp! E ⟩
-      h'                                                                           ∎
-    f-cart-lift .Cartesian-lift.cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
-      π*.unique m' $
-        π* (F₁ f) FY' E.∘' m'                                    ≡⟨ Ds.disp! E ⟩
-        hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' m')) ≡⟨ ap hom[ F-∘ f m ] p ⟩
-        hom[ F-∘ f m ] h'                                        ∎
+  f-cart-lift : Cartesian-lift Change-of-base f FY'
+  f-cart-lift .Cartesian-lift.x' = F₁ f ^* FY'
+  f-cart-lift .Cartesian-lift.lifting = π* (F₁ f) FY'
+  f-cart-lift .Cartesian-lift.cartesian .is-cartesian.universal m h' =
+    π*.universal (F₁ m) (hom[ F-∘ f m ] h')
+  f-cart-lift .Cartesian-lift.cartesian .is-cartesian.commutes m h' =
+    hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' π*.universal (F₁ m) (hom[ F-∘ f m ] h')) ≡⟨ ap hom[ F-∘ f m ]⁻ (π*.commutes _ _) ⟩
+    hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h')                                          ≡⟨ Ds.disp! E ⟩
+    h'                                                                           ∎
+  f-cart-lift .Cartesian-lift.cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
+    π*.unique m' $
+      π* (F₁ f) FY' E.∘' m'                                    ≡⟨ Ds.disp! E ⟩
+      hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (π* (F₁ f) FY' E.∘' m')) ≡⟨ ap hom[ F-∘ f m ] p ⟩
+      hom[ F-∘ f m ] h'                                        ∎
 ```

@@ -36,15 +36,15 @@ the underlying lattice.
 
 ```agda
 meets : Meet-semilattice o ℓ
-meets = P , has-meet-slat
+meets = P , record { is-frame frm }
 
 joins : Join-semilattice o ℓ
-joins = P , has-join-slat
+joins = P , record { is-frame frm }
 
 lattice : Lattice o ℓ
-lattice = P , has-lattice
+lattice = P , record { is-frame frm }
 
-open Order.Lattice.Reasoning has-lattice using
+open Order.Lattice.Reasoning record { is-frame frm } using
   ( ∩-idl; ∩-idr; module ∩
   ; ∪-idl; ∪-idr; module ∪
   ; ∩-absorbl; ∩-absorbr; ∪-absorbl; ∪-absorbr
@@ -108,5 +108,5 @@ opaque
     ⋃-distribl _ _
     ∙ ap ⋃ (funext (λ { (lift true) → refl ; (lift false) → refl }))
 
-open Distributive.from-∩ has-lattice ∩-distribl public
+open Distributive.from-∩ record { is-frame frm } ∩-distribl public
 ```

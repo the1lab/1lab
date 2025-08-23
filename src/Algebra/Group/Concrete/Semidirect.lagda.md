@@ -82,8 +82,8 @@ involve a `sym` to align them up.
 
 ```agda
   π₁-φ : Action (Groups ℓ) (π₁B G) (π₁B H)
-  π₁-φ .hom p = path→iso (ap (π₁B ⊙ φ) p)
-  π₁-φ .preserves .pres-⋆ p q =
+  π₁-φ .fst p = path→iso (ap (π₁B ⊙ φ) p)
+  π₁-φ .snd .pres-⋆ p q =
     path→iso (ap (π₁B ⊙ φ) (p ∙ q))                          ≡⟨ ap path→iso (ap-∙ (π₁B ⊙ φ) p q) ⟩
     path→iso (ap (π₁B ⊙ φ) p ∙ ap (π₁B ⊙ φ) q)               ≡⟨ path→iso-∙ (Groups ℓ) _ _ ⟩
     path→iso (ap (π₁B ⊙ φ) p) ∙Iso path→iso (ap (π₁B ⊙ φ) q) ∎
@@ -95,7 +95,7 @@ involve a `sym` to align them up.
 ```
 
 ::: source
-The following proof is adapted from Symmetry [-@Symmetry, §4.14].
+The following proof is adapted from Symmetry [-@Symmetry, §7.2].
 :::
 
 The first step is to construct an equivalence between the underlying
@@ -203,7 +203,7 @@ between abstract and concrete groups.
 ```agda
   Semidirect-concrete-abstract : π₁B Semidirect-concrete ≡ π₁BG⋉π₁BH
   Semidirect-concrete-abstract = ∫-Path
-    (total-hom (Σ-align (pt ⊙ φ) .fst)
+    (∫hom (Σ-align (pt ⊙ φ) .fst)
       (record { pres-⋆ = Σ-align-∙ (pt ⊙ φ) }))
     (Σ-align (pt ⊙ φ) .snd)
 ```

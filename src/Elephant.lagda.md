@@ -9,6 +9,7 @@ open import Cat.Functor.Adjoint.Reflective
 open import Cat.Site.Instances.Canonical
 open import Cat.CartesianClosed.Locally
 open import Cat.Functor.Monadic.Crude
+open import Cat.Instances.Sheaf.Omega
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Congruence
@@ -46,7 +47,7 @@ find possible contributions!]
 
 <!--
 ```agda
-_ = FG-iso→is-reflective
+_ = LR-iso→is-reflective
 _ = crude-monadicity
 _ = ∫
 _ = Karoubi-is-completion
@@ -147,7 +148,8 @@ See [[topos of sheaves]].
 _ = Sheafification-is-reflective
 _ = Sh[]-is-complete
 _ = Sh[]-is-cocomplete
-_ = Sh[]-cc
+_ = Sh[]-closed
+_ = Sh[]-omega
 ```
 -->
 
@@ -155,4 +157,5 @@ _ = Sh[]-cc
   * *Reflectivity*: `Sheafification-is-reflective`{.Agda}
   * *Completeness*: `Sh[]-is-complete`{.Agda}
   * *Cocompleteness*: `Sh[]-is-cocomplete`{.Agda}
-  * *Cartesian closure*: `Sh[]-cc`{.Agda}
+  * *Cartesian closure*: `Sh[]-closed`{.Agda}
+  * *Subobject classifier*: `Sh[]-omega`{.Agda}

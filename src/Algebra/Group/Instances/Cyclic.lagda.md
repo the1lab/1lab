@@ -62,7 +62,7 @@ module _ {ℓ} (G : Group ℓ) (open Group-on (G .snd)) where
   inverse-generates g gen x = gen x <&> λ (n , p) → negℤ n , (
     x                     ≡⟨ p ⟩
     pow G g n             ≡˘⟨ inv-inv ⟩
-    pow G g n ⁻¹ ⁻¹       ≡˘⟨ ap _⁻¹ (pres-inv (pow-hom G g .preserves) {lift n}) ⟩
+    pow G g n ⁻¹ ⁻¹       ≡˘⟨ ap _⁻¹ (pres-inv (pow-hom G g .snd) {lift n}) ⟩
     pow G g (negℤ n) ⁻¹   ≡˘⟨ pow-inverse G g (negℤ n) ⟩
     pow G (g ⁻¹) (negℤ n) ∎)
 ```
@@ -149,10 +149,10 @@ module _
   (wraps : x^ pos n ≡ unit)
   where
 
-  ℤ/-out : Groups.Hom (LiftGroup ℓ (ℤ/ n)) G
-  ℤ/-out .hom (lift i) = Coeq-rec (apply x^- ⊙ lift) (λ (a , b , n∣a-b) → zero-diff $
+  ℤ/-out : Groups.Hom (Lift-group ℓ (ℤ/ n)) G
+  ℤ/-out .fst (lift i) = Coeq-rec (apply x^- ⊙ lift) (λ (a , b , n∣a-b) → zero-diff $
     let k , k*n≡a-b = ∣ℤ→fibre n∣a-b in
-    x^ a — x^ b          ≡˘⟨ pres-diff (x^- .preserves) {lift a} {lift b} ⟩
+    x^ a — x^ b          ≡˘⟨ pres-diff (x^- .snd) {lift a} {lift b} ⟩
     x^ (a -ℤ b)          ≡˘⟨ ap x^_ k*n≡a-b ⟩
     x^ (k *ℤ pos n)      ≡⟨ ap x^_ (*ℤ-commutative k (pos n)) ⟩
     x^ (pos n *ℤ k)      ≡⟨ pow-* G x (pos n) k ⟩
@@ -160,8 +160,8 @@ module _
     pow G unit k         ≡⟨ pow-unit G k ⟩
     unit                 ∎)
     i
-  ℤ/-out .preserves .pres-⋆ = elim! λ x y →
-    x^- .preserves .pres-⋆ (lift x) (lift y)
+  ℤ/-out .snd .pres-⋆ = elim! λ x y →
+    x^- .snd .pres-⋆ (lift x) (lift y)
 ```
 
 We can check that $\ZZ/0\ZZ \is \ZZ$:
@@ -169,7 +169,7 @@ We can check that $\ZZ/0\ZZ \is \ZZ$:
 ```agda
 ℤ-ab/0≡ℤ-ab : ℤ-ab/ 0 ≡ ℤ-ab
 ℤ-ab/0≡ℤ-ab = ∫-Path
-  (total-hom
+  (∫hom
     (Coeq-rec (λ z → z) (λ (_ , _ , p) → ℤ.zero-diff p))
     (record { pres-⋆ = elim! λ _ _ → refl }))
   (is-iso→is-equiv (iso inc (λ _ → refl) (elim! λ _ → refl)))

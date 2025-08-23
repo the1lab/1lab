@@ -63,10 +63,8 @@ maps $x' \to_f y'$.
 module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   private
     module B = Cat.Reasoning B
-    module E = Displayed E
-    open Cat.Displayed.Reasoning E
+    open module E = Cat.Displayed.Reasoning E
     open Cat.Displayed.Morphism E
-    open Displayed E
 ```
 -->
 
@@ -333,7 +331,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
     open is-discrete-cartesian-fibration disc
 ```
 
-For each object in $X : \cB$, we take the set of objects $E$ that
+For each object $X : \cB$, we take the set of objects $E$ that
 lie over $X$. The functorial action of `f : Hom X Y` is then constructed
 by taking the domain of the lift of `f`. Functoriality follows by
 uniqueness of the lifts.
@@ -362,10 +360,8 @@ from the contractibilty of singletons.
     module P = Functor P
 
     discrete : is-discrete-cartesian-fibration (∫ B P)
-    discrete .is-discrete-cartesian-fibration.fibre-set X =
-      P.₀ X .is-tr
-    discrete .is-discrete-cartesian-fibration.cart-lift f P[Y] =
-      contr (P.₁ f P[Y] , refl) Singleton-is-contr
+    discrete .is-discrete-cartesian-fibration.fibre-set X = hlevel 2
+    discrete .is-discrete-cartesian-fibration.cart-lift f P[Y] = hlevel 0
 ```
 
 We conclude by proving that the two maps defined above are, in fact,

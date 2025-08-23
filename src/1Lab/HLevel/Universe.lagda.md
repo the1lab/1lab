@@ -91,6 +91,16 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
     λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
 ```
 
+<!--
+```agda
+≃-is-hlevelˡ : (n : Nat) → is-hlevel A (suc n) → is-hlevel (A ≃ B) (suc n)
+≃-is-hlevelˡ n ahl = is-hlevel-join n λ e → ≃-is-hlevel (suc n) ahl (Equiv→is-hlevel (suc n) (Equiv.inverse e) ahl)
+
+≃-is-hlevelʳ : (n : Nat) → is-hlevel B (suc n) → is-hlevel (A ≃ B) (suc n)
+≃-is-hlevelʳ n bhl = is-hlevel-join n λ e → ≃-is-hlevel (suc n) (Equiv→is-hlevel (suc n) e bhl) bhl
+```
+-->
+
 ## h-Levels of paths
 
 Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.
@@ -171,11 +181,12 @@ upper bound on the h-level of $X \simeq Y$ when $Y$ is an $n$-type, we
 know that $n$-Type is a $(n+1)$-type:
 
 ```agda
-n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
-n-Type-is-hlevel zero x y = n-ua
-  ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))
-n-Type-is-hlevel (suc n) x y =
-  Equiv→is-hlevel (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
+abstract
+  n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
+  n-Type-is-hlevel zero x y = n-ua
+    ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))
+  n-Type-is-hlevel (suc n) x y =
+    Equiv→is-hlevel (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
 ```
 
 For 1-categorical mathematics, the important h-levels are the
@@ -210,5 +221,19 @@ n-Type-square sq i j .∣_∣ = sq i j
 n-Type-square {p = p} {q} {s} {r} sq i j .is-tr =
   is-prop→squarep (λ i j → is-hlevel-is-prop {A = sq i j} _)
     (ap is-tr p) (ap is-tr q) (ap is-tr s) (ap is-tr r) i j
+
+n-ua-square
+  : ∀ {ℓ} {n}
+  → {w x y z : n-Type ℓ n}
+  → {p : ∣ x ∣ ≃ ∣ w ∣} {q : ∣ x ∣ ≃ ∣ y ∣} {s : ∣ w ∣ ≃ ∣ z ∣} {r : ∣ y ∣ ≃ ∣ z ∣}
+  → Path (∣ x ∣ → ∣ z ∣) (λ a → s .fst (p .fst a)) (λ a → r .fst (q .fst a))
+  → Square (n-ua {X = x} {w} p) (n-ua {X = x} {y} q) (n-ua {X = w} {z} s) (n-ua r)
+n-ua-square x = n-Type-square (ua-square x)
+
+n-ua-triangle
+  : ∀ {ℓ n} {A B C : n-Type ℓ n} {e : ∣ A ∣ ≃ ∣ B ∣} {f : ∣ A ∣ ≃ ∣ C ∣} {g : ∣ B ∣ ≃ ∣ C ∣}
+  → Path (∣ A ∣ → ∣ C ∣) (f .fst) (λ x → g .fst (e .fst x))
+  → Triangle (n-ua {X = A} {B} e) (n-ua {Y = C} f) (n-ua g)
+n-ua-triangle α = n-Type-square (ua-triangle α)
 ```
 -->

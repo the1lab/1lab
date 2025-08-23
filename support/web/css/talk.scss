@@ -119,7 +119,7 @@ div.diagram-container {
   width: 100%;
   overflow-x: auto;
 
-  margin-block: 1em;
+  margin-block: var(--parskip);
 
   img.diagram {
     margin: auto;

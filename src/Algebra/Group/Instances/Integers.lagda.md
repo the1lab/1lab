@@ -66,11 +66,24 @@ module _ {ℓ} (G : Group ℓ) where
 
 ```agda
   module pow (x : ⌞ G ⌟) where
+    pow-pos : Nat → ⌞ G ⌟
+    pow-pos zero    = x
+    pow-pos (suc n) = pow-pos n ⋆ x
+
+    pow-neg : Nat → ⌞ G ⌟
+    pow-neg zero    = x ⁻¹
+    pow-neg (suc n) = pow-neg n ⋆ (x ⁻¹)
+
     pow : Int → ⌞ G ⌟
-    pow = ℤ.map-out unit ((_⋆ x) , ⋆-equivr x)
+    pow posz       = unit
+    pow (possuc x) = pow-pos x
+    pow (negsuc x) = pow-neg x
 
     pow-sucr : ∀ a → pow (sucℤ a) ≡ pow a ⋆ x
-    pow-sucr = ℤ.map-out-rotate _ _
+    pow-sucr posz             = sym idl
+    pow-sucr (possuc x)       = refl
+    pow-sucr (negsuc zero)    = sym inversel
+    pow-sucr (negsuc (suc x)) = sym (cancelr inversel)
 
     pow-+ : ∀ a b → pow (a +ℤ b) ≡ pow a ⋆ pow b
     pow-+ a = ℤ.induction
@@ -89,24 +102,31 @@ zeroth universe, so to have an $\ell$-sized group of integers, we
 must lift it.
 
 ```agda
-    pow-hom : Groups.Hom (LiftGroup ℓ ℤ) G
-    pow-hom .hom (lift i) = pow i
-    pow-hom .preserves .pres-⋆ (lift a) (lift b) = pow-+ a b
+    pow-hom : Groups.Hom (Lift-group ℓ ℤ) G
+    pow-hom .fst (lift i) = pow i
+    pow-hom .snd .pres-⋆ (lift a) (lift b) = pow-+ a b
 ```
 
 This is the unique group homomorphism $\ZZ \to G$ that sends $1$ to $x$.
 
 ```agda
-    pow-unique : (g : Groups.Hom (LiftGroup ℓ ℤ) G) → g · 1 ≡ x → g ≡ pow-hom
-    pow-unique g g1≡x = ext $ ℤ.map-out-unique (λ i → g · lift i)
-      (pres-id (g .preserves))
-      λ y →
+    pow-unique : (g : Groups.Hom (Lift-group ℓ ℤ) G) → g · 1 ≡ x → g ≡ pow-hom
+    pow-unique g g1≡x = ext λ x → p x ∙ sym (q x) where
+      pow' = ℤ.map-out unit ((_⋆ x) , ⋆-equivr x)
+      p : ∀ x → g · lift x ≡ pow' x
+      p = ℤ.map-out-unique (λ i → g · lift i) (pres-id (g .snd)) λ y →
         g · lift ⌜ sucℤ y ⌝ ≡⟨ ap! (sym (+ℤ-oner y)) ⟩
-        g · lift (y +ℤ 1)   ≡⟨ g .preserves .pres-⋆ (lift y) 1 ⟩
+        g · lift (y +ℤ 1)   ≡⟨ g .snd .pres-⋆ (lift y) 1 ⟩
         g · lift y ⋆ g · 1  ≡⟨ ap (g · lift y ⋆_) g1≡x ⟩
         g · lift y ⋆ x      ∎
 
+      q : ∀ x → pow x ≡ pow' x
+      q = ℤ.map-out-unique pow refl pow-sucr
+
   open pow public
+
+  pow-unique₂ : (g h : Groups.Hom (Lift-group ℓ ℤ) G) → g · 1 ≡ h · 1 → g ≡ h
+  pow-unique₂ g h p = pow-unique (g · 1) g refl ∙ sym (pow-unique (g · 1) h (sym p))
 ```
 
 <details>
@@ -136,7 +156,7 @@ of [[endomorphism rings]] to non-abelian groups.]
 
   pow-0 x = refl
 
-  pow-1 x = idl
+  pow-1 x = refl
 
   pow-* x a = ℤ.induction (ap (pow x) (*ℤ-zeror a)) λ b →
     pow x (a *ℤ b)           ≡ pow (pow x a) b           ≃⟨ _ , equiv→cancellable (⋆-equivr _) ⟩
@@ -161,13 +181,43 @@ one generator.
 
 ```agda
 ℤ-free : Free-object Grp↪Sets (el! ⊤)
-ℤ-free .Free-object.free = LiftGroup lzero ℤ
+ℤ-free .Free-object.free = Lift-group lzero ℤ
 ℤ-free .Free-object.unit _ = 1
 ℤ-free .Free-object.fold {G} x = pow-hom G (x _)
 ℤ-free .Free-object.commute {G} {x} = ext λ _ → pow-1 G (x _)
 ℤ-free .Free-object.unique {G} {x} g comm =
   pow-unique G (x _) g (unext comm _)
 ```
+
+<!--
+```agda
+instance
+  Extensional-ℤ-Hom
+    : ∀ {ℓ ℓr} {G : Group ℓ} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
+    → Extensional (Groups.Hom (Lift-group ℓ ℤ) G) ℓr
+  Extensional-ℤ-Hom ⦃ e ⦄ = injection→extensional! {f = λ h → h · 1} (pow-unique₂ _ _ _) e
+
+  Extensional-Ab-ℤ-Hom
+    : ∀ {ℓ ℓr} {G : ⌞ Ab ℓ ⌟} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
+    → Extensional (Ab.Hom (Lift-ab ℓ ℤ-ab) G) ℓr
+  Extensional-Ab-ℤ-Hom {ℓ = ℓ} {G = G} ⦃ ef ⦄ = injection→extensional! {f = λ h → h · 1} inj ef where
+    inj : {x y : Ab.Hom (Lift-ab ℓ ℤ-ab) G} → x · 1 ≡ y · 1 → x ≡ y
+    inj {x} {y} p = Structured-hom-path _ (ap fst (pow-unique₂ G' x' y' p)) where
+      G' : Group ℓ
+      G' .fst = G .fst
+      G' .snd = Abelian→Group-on (G .snd)
+
+      x' y' : Groups.Hom (Lift-group ℓ ℤ) G'
+      x' .fst = apply x
+      x' .snd = record { pres-⋆ = x .snd .is-group-hom.pres-⋆ }
+
+      y' .fst = apply y
+      y' .snd = record { pres-⋆ = y .snd .is-group-hom.pres-⋆ }
+
+  {-# OVERLAPPING Extensional-ℤ-Hom Extensional-Ab-ℤ-Hom #-}
+
+```
+-->
 
 ::: note
 While the notation $x^n$ for `pow`{.Agda} makes sense in

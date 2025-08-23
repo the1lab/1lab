@@ -45,7 +45,7 @@ Note that the space of isomorphisms between any 2 objects is contractible.
 0≅1-iso-contr : ∀ X Y → is-contr (Isomorphism 0≅1 X Y)
 0≅1-iso-contr _ _ .centre =
   0≅1.make-iso tt tt (hlevel 1 _ _) (hlevel 1 _ _)
-0≅1-iso-contr _ _ .paths p = trivial!
+0≅1-iso-contr _ _ .paths p = ext refl
 ```
 
 The isomorphism category is strict, as its objects form a set.
@@ -146,5 +146,5 @@ path spaces!
          ; {false} {false} tt → sym (F .F-id) })
 
     linv : is-left-inverse functor→iso iso→functor
-    linv F = Σ-pathp refl $ Σ-pathp refl $ trivial!
+    linv F = refl ,ₚ refl ,ₚ ext refl
 ```

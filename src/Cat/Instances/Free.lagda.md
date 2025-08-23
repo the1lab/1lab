@@ -21,7 +21,7 @@ module Cat.Instances.Free where
 Given a [[graph]] $G$, we construct a [[strict category]] $\rm{Path}(G)$ in
 the following manner:
 
-- The objects of $\rm{Path}(G)$ are the vertices of $G$
+- The objects of $\rm{Path}(G)$ are the nodes of $G$
 - The morphisms in $\rm{Path}(G)$ are given by _finite paths_ in $G$.
 Finite paths are defined by the following indexed-inductive type
 
@@ -33,7 +33,7 @@ module _ {o ℓ} (G : Graph o ℓ) where
 -->
 
 ```agda
-  data Path-in : G.Vertex → G.Vertex → Type (o ⊔ ℓ) where
+  data Path-in : ⌞ G ⌟ → ⌞ G ⌟ → Type (o ⊔ ℓ) where
     nil  : ∀ {a} → Path-in a a
     cons : ∀ {a b c} → G.Edge a b → Path-in b c → Path-in a c
 ```
@@ -64,7 +64,7 @@ it.
 
 The first thing we'll need is a predicate expressing that a path $xs : x
 \to y$ really encodes the empty path, and we have an identity of
-vertices $x \equiv y$. We can do this by recursion: If $xs$ is nil, then
+nodes $x \equiv y$. We can do this by recursion: If $xs$ is nil, then
 we can take this to be the unit type, otherwise it's the bottom type.
 
 ```agda
@@ -77,7 +77,7 @@ We'd like to define a relation $\rm{Code}(xs, ys)$, standing for an
 identification of paths $xs \equiv ys$. But observe what happens in the
 case where we've built up a path $a \to c$ by adding an edge: We know
 that the edges start at $a$, and the inner paths end at $c$, but the
-inner vertex may vary!
+inner node may vary!
 
 We'll need to package an identification $p : b \equiv b'$ in the
 relation for $\rm{cons}$, and so, we'll have to encode for a path $xs
@@ -87,7 +87,7 @@ $\rm{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
 
 ```agda
   path-codep
-    : ∀ (a : I → G.Vertex) {c}
+    : ∀ (a : I → G.Node) {c}
     → Path-in (a i0) c
     → Path-in (a i1) c
     → Type (o ⊔ ℓ)
@@ -106,7 +106,7 @@ course, a `cons`{.Agda} and a `nil`{.Agda} can never be equal.
 
 The recursive case constructs an identification of `cons`{.Agda} cells
 as a triple consisting of an identification between their intermediate
-vertices, and over that data, an identification between the added edges,
+nodes, and over that data, an identification between the added edges,
 and a code for an identification between the tails.
 
 ```agda
@@ -121,12 +121,12 @@ identification. The most involved case is actually when the lists are
 empty, in which case we must show that `is-nil(xs)`{.Agda
 ident=is-nil}^[for $xs : a \to b$ an arbitrary path] implies that $xs
 \equiv \rm{nil}$, but it must be over an arbitrary identification
-$p$^[which we know is a loop $a = a$]. Fortunately, vertices in a graph
+$p$^[which we know is a loop $a = a$]. Fortunately, nodes in a graph
 $G$ live in a set, so $p$ is reflexivity.
 
 ```agda
   path-encode
-    : ∀ (a : I → G.Vertex) {c} xs ys
+    : ∀ (a : I → G.Node) {c} xs ys
     → path-codep a xs ys
     → PathP (λ i → Path-in (a i) c) xs ys
   path-encode a (cons x xs) (cons y ys) (p , q , r) i =
@@ -136,7 +136,7 @@ $G$ live in a set, so $p$ is reflexivity.
           → is-nil q → PathP (λ i → Path-in (p (~ i)) b) nil q
     lemma {a = a} p nil (lift lower) = to-pathp $
       is-set→subst-refl (λ e → Path-in e a)
-        G.Vertex-is-set
+        G.Node-set
         (sym p) nil
     lemma _ (cons x p) ()
 ```
@@ -149,17 +149,17 @@ inductive.
 
 ```agda
   path-codep-is-prop
-    : ∀ (a : I → G.Vertex) {b}
+    : ∀ (a : I → G.Node) {b}
     → (p : Path-in (a i0) b) (q : Path-in (a i1) b) → is-prop (path-codep a p q)
   path-codep-is-prop a nil xs x y = is-nil-is-prop xs x y where
     is-nil-is-prop : ∀ {a b} (xs : Path-in a b) → is-prop (is-nil xs)
     is-nil-is-prop nil x y = refl
   path-codep-is-prop a (cons h t) (cons h' t') (p , q , r) (p' , q' , r') =
-    Σ-pathp (G.Vertex-is-set _ _ p p') $
+    Σ-pathp (G.Node-set _ _ p p') $
     Σ-pathp
-      (is-prop→pathp (λ i → PathP-is-hlevel' 1 G.Edge-is-set _ _) q q')
+      (is-prop→pathp (λ i → PathP-is-hlevel' 1 G.Edge-set _ _) q q')
       (is-prop→pathp
-        (λ i → path-codep-is-prop (λ j → G.Vertex-is-set _ _ p p' i j) t t')
+        (λ i → path-codep-is-prop (λ j → G.Node-set _ _ p p' i j) t t')
         r r')
 ```
 
@@ -167,7 +167,7 @@ And finally, by proving that there is a code for the reflexivity path,
 we can show that we have an [[identity system]] in the type of paths from
 $a$ to $b$ given by their codes. Since these codes are propositions, and
 identity systems give a characterisation of a type's identity types, we
-conclude that paths between a pair of vertices live in a set!
+conclude that paths between a pair of nodes live in a set!
 
 ```agda
   path-codep-refl : ∀ {a b} (p : Path-in a b) → path-codep (λ i → a) p p
@@ -245,7 +245,7 @@ module _ {o ℓ} (G : Graph o ℓ) where
 ```agda
   open Precategory
   Path-category : Precategory o (o ⊔ ℓ)
-  Path-category .Ob = G.Vertex
+  Path-category .Ob = G.Node
   Path-category .Hom = Path-in G
   Path-category .Hom-set _ _ = path-is-set G
   Path-category .id = nil
@@ -323,7 +323,7 @@ module _ (C : Σ (Precategory o ℓ) is-strict) where
 
   path-fold
     : (f : Graph-hom G ∣C∣)
-    → ∀ {x y} → Path-in G x y → C.Hom (f .vertex x) (f .vertex y)
+    → ∀ {x y} → Path-in G x y → C.Hom (f .node x) (f .node y)
   path-fold f nil = C.id
   path-fold f (cons e p) = path-fold f p C.∘ f .edge e
 ```
@@ -343,7 +343,7 @@ some easy induction.
   PathF
     : Graph-hom G ∣C∣
     → Functor (Path-category G) (C .fst)
-  PathF f .F₀ = f .vertex
+  PathF f .F₀ = f .node
   PathF f .F₁ = path-fold f
   PathF f .F-id = refl
   PathF f .F-∘ p q = path-fold-++ q p
@@ -353,7 +353,7 @@ some easy induction.
 ```agda
   path-fold-unique
     : ∀ {f : Graph-hom G ∣C∣}
-    → (h : ∀ {x y} → Path-in G x y → C.Hom (f .vertex x) (f .vertex y))
+    → (h : ∀ {x y} → Path-in G x y → C.Hom (f .node x) (f .node y))
     → (∀ {x} → h (nil {a = x}) ≡ C.id)
     → (∀ {x y z} (e : G .Edge x y) (p : Path-in G y z) → h (cons e p) ≡ (h p C.∘ f .edge e))
     → ∀ {x y} (p : Path-in G x y) → h p ≡ path-fold f p
@@ -427,7 +427,7 @@ follow directly from our hypotheses.
 ```agda
 Free-category : ∀ (G : Graph ℓ ℓ) → Free-object Strict-cats↪Graphs G
 Free-category G .Free-object.free = Path-category G , hlevel 2
-Free-category G .Free-object.unit .vertex v = v
+Free-category G .Free-object.unit .node v = v
 Free-category G .Free-object.unit .edge e = cons e nil
 Free-category G .Free-object.fold {C} = PathF C
 Free-category G .Free-object.commute {Y = C} {f = f} =
@@ -435,7 +435,7 @@ Free-category G .Free-object.commute {Y = C} {f = f} =
   where open Precategory (C .fst)
 Free-category G .Free-object.unique {Y = C} {f} F p =
   Path-category-functor-path
-    (λ x i → p i .vertex x)
+    (λ x i → p i .node x)
     (λ e → to-pathp (from-pathp (λ i → p i .edge e) ∙ sym (idl _)))
   where open Precategory (C .fst)
 ```

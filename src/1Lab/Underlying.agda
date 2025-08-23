@@ -1,6 +1,6 @@
 open import 1Lab.HLevel.Universe
-open import 1Lab.HIT.Truncation hiding (∃-syntax)
 open import 1Lab.HLevel.Closure
+open import 1Lab.Truncation hiding (∃-syntax)
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -68,7 +68,7 @@ from-is-true
   : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Underlying A ⦄ {P Q : A} ⦃ _ : H-Level ⌞ Q ⌟ 0 ⦄
   → P ≡ Q
   → ⌞ P ⌟
-from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
+from-is-true prf = subst ⌞_⌟ (sym prf) hlevel!
 
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
@@ -104,6 +104,8 @@ _·ₚ_
   → ⦃ _ : Funlike F A B ⦄
   → {f g : F} → f ≡ g → (x : A) → f · x ≡ g · x
 f ·ₚ x = ap₂ _·_ f refl
+
+infixl 999 _·ₚ_
 
 instance
   Funlike-Π : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → Funlike ((x : A) → B x) A B

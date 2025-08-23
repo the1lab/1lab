@@ -137,8 +137,8 @@ module _ (p : Functor C C') where
   precompose : Functor Cat[ C' , D ] Cat[ C , D ]
   precompose .F₀ G    = G F∘ p
   precompose .F₁ θ    = θ ◂ p
-  precompose .F-id    = trivial!
-  precompose .F-∘ f g = trivial!
+  precompose .F-id    = ext λ _ → refl
+  precompose .F-∘ f g = ext λ _ → refl
 
   postcompose : Functor Cat[ D , C ] Cat[ D , C' ]
   postcompose .F₀ G    = p F∘ G
@@ -180,21 +180,21 @@ module _ {F G : Functor C D} where
   open Cat.Functor.Reasoning
 
   _◂ni_ : F ≅ⁿ G → (H : Functor B C) → (F F∘ H) ≅ⁿ (G F∘ H)
-  (α ◂ni H) = make-iso _ (α .to ◂ H) (α .from ◂ H)
-    (ext λ _ → α .invl ηₚ _)
-    (ext λ _ → α .invr ηₚ _)
+  (α ◂ni H) = make-iso! _ (α .to ◂ H) (α .from ◂ H)
+    (λ _ → α .invl ηₚ _)
+    (λ _ → α .invr ηₚ _)
 
   _▸ni_ : (H : Functor D E) → F ≅ⁿ G → (H F∘ F) ≅ⁿ (H F∘ G)
-  (H ▸ni α) = make-iso _ (H ▸ α .to) (H ▸ α .from)
-    (ext λ _ → annihilate H (α .invl ηₚ _))
-    (ext λ _ → annihilate H (α .invr ηₚ _))
+  (H ▸ni α) = make-iso! _ (H ▸ α .to) (H ▸ α .from)
+    (λ _ → annihilate H (α .invl ηₚ _))
+    (λ _ → annihilate H (α .invr ηₚ _))
 ```
 -->
 
 <!--
 ```agda
 ◂-distribl : (α ∘nt β) ◂ H ≡ (α ◂ H) ∘nt (β ◂ H)
-◂-distribl = trivial!
+◂-distribl = ext λ _ → refl
 
 ▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
 ▸-distribr {F = F} = ext λ _ → F .F-∘ _ _

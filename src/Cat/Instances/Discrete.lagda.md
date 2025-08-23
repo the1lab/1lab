@@ -31,9 +31,9 @@ open _=>_
 
 # Discrete categories {defines="discrete-category"}
 
-Given a groupoid $A$, we can build the category $\rm{Disc}(A)$ with
-space of objects $A$ and a single morphism $x \to y$ whenever $x \equiv
-y$.
+Given a [[groupoid]] $A$, we can see $A$ as a [[category]] with
+space of objects $A$ and path types $x \equiv y$ as $\hom$-sets $x \to
+y$. When $A$ is a [[set]], we call this the **discrete category** on $A$.
 
 ```agda
 Disc : (A : Type ℓ) → is-groupoid A → Precategory ℓ ℓ
@@ -52,7 +52,8 @@ Disc' A = Disc ∣ A ∣ h where abstract
   h = is-hlevel-suc 2 (A .is-tr)
 ```
 
-Clearly this is a [[univalent|univalent category]] [[groupoid|pregroupoid]]:
+By construction, this is a [[univalent|univalent category]]
+[[groupoid|pregroupoid]]:
 
 ```agda
 Disc-is-category : ∀ {A : Type ℓ} {A-grpd} → is-category (Disc A A-grpd)
@@ -94,12 +95,12 @@ Codisc' x .assoc _ _ _ = refl
 
 ## Diagrams in Disc(X)
 
-If $X$ is a `discrete type`{.Agda ident=Discrete}, then it is in
-particular in `Set`{.Agda}, and we can make diagrams of shape
+If $X$ is a [[discrete]] type, then it is in
+particular a [[set]], and we can make diagrams of shape
 $\rm{Disc}(X)$ in some category $\cC$, using the decidable
-equality on $X$. We note that the decidable equality is _redundant_
-information: The construction `Disc'`{.Agda} above extends into a [[left
-adjoint]] to the `Ob`{.Agda} functor.
+equality on $X$ to improve computation. We note that the decidable
+equality is _superfluous_ information: the construction `Disc'`{.Agda}
+above extends into a [[left adjoint]] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram

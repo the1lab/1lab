@@ -71,16 +71,16 @@ module _ {P : Functor (C ^op) (Sets κ)} where
   slice-ob→presheaf sl .F₀ (elem x s) = el! (fibre (sl .map .η x) s)
 
   slice-ob→presheaf sl .F₁ eh (i , p) =
-      sl .domain .F₁ (eh .hom) i
+      sl .dom .F₁ (eh .hom) i
     , happly (sl .map .is-natural _ _ _) _ ∙∙ ap (P.₁ _) p ∙∙ eh .commute
 ```
 
 <!--
 ```agda
   slice-ob→presheaf sl .F-id =
-    funext λ x → Σ-prop-path! (happly (sl .domain .F-id) _)
+    funext λ x → Σ-prop-path! (happly (sl .dom .F-id) _)
   slice-ob→presheaf sl .F-∘ f g =
-    funext λ x → Σ-prop-path! (happly (sl .domain .F-∘ _ _) _)
+    funext λ x → Σ-prop-path! (happly (sl .dom .F-∘ _ _) _)
 
   private abstract
     lemma
@@ -104,16 +104,16 @@ projection `fst`{.Agda}:
   presheaf→slice-ob : Functor (∫ C P ^op) (Sets κ) → Ob (Slice Cat[ C ^op , Sets κ ] P)
   presheaf→slice-ob y = obj where
     obj : /-Obj {C = Cat[ _ , _ ]} P
-    obj .domain .F₀ c .∣_∣   = Σ[ sect ∈ P ʻ c ] y ʻ elem c sect
-    obj .domain .F₀ c .is-tr = hlevel 2
-    obj .domain .F₁ f (x , p) = P.₁ f x , y .F₁ (elem-hom f refl) p
+    obj .dom .F₀ c .∣_∣   = Σ[ sect ∈ P ʻ c ] y ʻ elem c sect
+    obj .dom .F₀ c .is-tr = hlevel 2
+    obj .dom .F₁ f (x , p) = P.₁ f x , y .F₁ (elem-hom f refl) p
     obj .map .η x = fst
 ```
 
 <!--
 ```agda
-    obj .domain .F-id {ob} = funext λ { (x , p) → Σ-path (happly (P.F-id) x) (lemma y _ ∙ happly (y .F-id) _) }
-    obj .domain .F-∘ f g = funext λ { (x , p) →
+    obj .dom .F-id {ob} = funext λ { (x , p) → Σ-path (happly (P.F-id) x) (lemma y _ ∙ happly (y .F-id) _) }
+    obj .dom .F-∘ f g = funext λ { (x , p) →
       Σ-path (happly (P.F-∘ f g) x)
         ( lemma y _
         ∙∙ ap (λ e → y .F₁ (elem-hom (g C.∘ f) e) p) (P.₀ _ .is-tr _ _ _ _)
@@ -131,7 +131,7 @@ without comment.
     func : Functor (Slice Cat[ C ^op , Sets κ ] P) Cat[ (∫ C P) ^op , Sets κ ]
     func .F₀ = slice-ob→presheaf
     func .F₁ {x} {y} h .η i arg =
-      h .map .η (i .ob) (arg .fst) , h .commutes ηₚ _ $ₚ arg .fst ∙ arg .snd
+      h .map .η (i .ob) (arg .fst) , h .com ηₚ _ $ₚ arg .fst ∙ arg .snd
     func .F₁ {x} {y} h .is-natural _ _ _ = funext λ i →
       Σ-prop-path! (happly (h .map .is-natural _ _ _) _)
 
@@ -149,7 +149,7 @@ without comment.
       ∙ ap fst (happly (nt .is-natural _ _
           (elem-hom f (happly (sym (x .map .is-natural _ _ _)) _))) _)
 
-    inv nt .commutes = ext λ z w →
+    inv nt .com = ext λ z w →
       nt .η (elem _ (x .map .η _ _)) (w , refl) .snd
 
     rinv : is-right-inverse inv (F₁ slice→total)
@@ -158,7 +158,7 @@ without comment.
         nt .η (elem (o .ob) (p i)) (z , λ j → p (i ∧ j)) .fst
 
     linv : is-left-inverse inv (F₁ slice→total)
-    linv sh = trivial!
+    linv sh = ext λ _ _ → refl
 
   open is-precat-iso
   slice→total-is-iso : is-precat-iso slice→total

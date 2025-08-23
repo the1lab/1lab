@@ -74,9 +74,9 @@ cases are split between time zero and positive time.
 ▶ (A , O) = from-ofe-on (Later O)
 
 to-later : ∀ {ℓ ℓ'} (A : OFE ℓ ℓ') → OFEs.Hom A (▶ A)
-to-later A .hom x = x
-to-later A .preserves .pres-≈ {n = zero} α  = lift tt
-to-later A .preserves .pres-≈ {n = suc n} α = A .snd .OFE-on.step n _ _ α
+to-later A .fst x = x
+to-later A .snd .pres-≈ {n = zero} α  = lift tt
+to-later A .snd .pres-≈ {n = suc n} α = A .snd .OFE-on.step n _ _ α
 ```
 
 <!--

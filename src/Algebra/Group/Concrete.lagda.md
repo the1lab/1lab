@@ -17,6 +17,7 @@ open import Homotopy.Space.Delooping
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Conjugation
+open import Homotopy.Loopspace
 
 open is-group-hom
 open Precategory
@@ -204,38 +205,25 @@ module _ (G : ConcreteGroup ℓ) where
     public
 ```
 
-We define a [[functor]] from concrete groups to abstract groups.
-The object mapping is given by taking the `fundamental group`{.Agda ident=π₁B}.
-Given a pointed map $f : \B{G} \to^\bullet \B{H}$, we can `ap`{.Agda}ply it to a loop
-on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
-is pointed to get a loop on $\point{H}$ by [[conjugation]].
+We define a [[functor]] from concrete groups to abstract groups.  The
+object mapping is given by taking the `fundamental group`{.Agda
+ident=π₁B}. Since the type underlying a concrete group is a groupoid,
+this is precisely the [[loop space]] construction, which we already know
+is functorial--- and takes pointed maps to group homomorphisms.
 
 ```agda
 π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)
 π₁F .F₀ = π₁B
-π₁F .F₁ (f , ptf) .hom x = conj ptf (ap f x)
+π₁F .F₁ f .fst x       = Ω¹-map f · x
+π₁F .F₁ f .snd .pres-⋆ = Ω¹-map-∙ f
+π₁F .F-id    = ext λ x → Ω¹-map-id ·ₚ x
+π₁F .F-∘ f g = ext λ x → sym (Ω¹-map-∘ f g) ·ₚ x
 ```
 
-By some simple path yoga, this preserves multiplication, and the construction is
-functorial:
-
-```agda
-π₁F .F₁ (f , ptf) .preserves .pres-⋆ x y =
-  conj ptf ⌜ ap f (x ∙ y) ⌝             ≡⟨ ap! (ap-∙ f _ _) ⟩
-  conj ptf (ap f x ∙ ap f y)            ≡⟨ conj-of-∙ _ _ _ ⟩
-  conj ptf (ap f x) ∙ conj ptf (ap f y) ∎
-
-π₁F .F-id = ext conj-refl
-π₁F .F-∘ (f , ptf) (g , ptg) = ext λ x →
-  conj (ap f ptg ∙ ptf) (ap (f ⊙ g) x)        ≡˘⟨ conj-∙ _ _ _ ⟩
-  conj ptf ⌜ conj (ap f ptg) (ap (f ⊙ g) x) ⌝ ≡˘⟨ ap¡ (ap-conj f _ _) ⟩
-  conj ptf (ap f (conj ptg (ap g x)))         ∎
-```
-
-We start by showing that `π₁F`{.Agda} is [[split essentially surjective]]. This is the
-easy part: to build a concrete group out of an abstract group, we simply take its
-`Deloop`{.Agda}ing, and use the fact that the fundamental group of the delooping
-recovers the original group.
+We start by showing that `π₁F`{.Agda} is [[split essentially
+surjective]]. This is the easy part: to build a concrete group out of an
+abstract group, we simply take its `Deloop`{.Agda}ing, and use the fact
+that the fundamental group of the delooping recovers the original group.
 
 <!--
 ```agda
@@ -246,7 +234,7 @@ _ = Deloop
 ```agda
 π₁F-is-split-eso : is-split-eso (π₁F {ℓ})
 π₁F-is-split-eso G .fst = Concrete G
-π₁F-is-split-eso G .snd = path→iso (π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G))
+π₁F-is-split-eso G .snd = G≅π₁B _ Groups.Iso⁻¹ Groups.∘Iso π₁B≡π₀₊₁ (Concrete G)
 ```
 
 We now tackle the hard part: to prove that `π₁F`{.Agda} is [[fully faithful]].
@@ -264,7 +252,7 @@ groupoid, and thus that it comes with the elimination principle `B-elim-contr`{.
 This suggests that we need to define a type family $C : \B{G} \to \ty$ such that
 $C(\point{G})$ is contractible, conclude that $\forall x. C(x)$ holds
 and extract a map $\B{G} \to^\bullet \B{H}$ from that.
-The following construction is adapted from [@Symmetry, §4.10]:
+The following construction is adapted from [@Symmetry, §6.5]:
 
 ```agda
   record C (x : ⌞ G ⌟) : Type ℓ where
@@ -286,8 +274,8 @@ $\point{G}$ to loops on $\point{H}$.
 ```agda
   C-contr : is-contr (C (pt G))
   C-contr .centre .C.y = pt H
-  C-contr .centre .C.p = f .hom
-  C-contr .centre .C.f-p = f .preserves .pres-⋆
+  C-contr .centre .C.p = f .fst
+  C-contr .centre .C.f-p = f .snd .pres-⋆
 ```
 
 As it turns out, such a structure is entirely determined by the pair
@@ -298,10 +286,10 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     pt≡y : pt H ≡ y
     pt≡y = p refl
 
-    f≡p : ∀ ω → Square refl (f · ω) (p ω) (p refl)
+    f≡p : ∀ ω → Triangle (f · ω) (p ω) (p refl)
     f≡p ω = ∙-filler (f · ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
-    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
+    □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f · ω ∙ f≡p α i) (f .snd .pres-⋆) f-p
     □≡□ = is-prop→pathp (λ i → hlevel 1) _ _
 ```
 
@@ -345,8 +333,11 @@ right inverse to $\Pi_1$:
     p (ω ∙ refl)           ≡⟨ f-p ω refl ⟩
     f · ω ∙ p refl         ∎
 
-  rinv : π₁F .F₁ {G} {H} g ≡ f
-  rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
+  opaque
+    unfolding Ω¹-map
+
+    rinv : π₁F .F₁ {G} {H} g ≡ f
+    rinv = ext λ ω → square→conj (symP (f≡apg ω))
 ```
 
 We are most of the way there. In order to get a proper equivalence, we must check that
@@ -368,34 +359,37 @@ module Deloop-Hom-π₁F {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
 This is a [[property]], and $\point{G}$ has it:
 
 ```agda
-  C'-contr : is-contr (C' (pt G))
-  C'-contr .centre .fst = f .snd ∙ sym (g .snd)
-  C'-contr .centre .snd α = commutes→square $
-    f .snd ∙ p ⌜ α ⌝                                ≡˘⟨ ap¡ (∙-idr _) ⟩
-    f .snd ∙ ⌜ p (α ∙ refl) ⌝                       ≡⟨ ap! (f-p α refl) ⟩
-    f .snd ∙ conj (f .snd) (ap (f .fst) α) ∙ p refl ≡˘⟨ ∙-extendl (∙-swapl (sym (conj-defn _ _))) ⟩
-    ap (f .fst) α ∙ f .snd ∙ p refl                 ∎
-  C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
-    sym (∙-unique _ (transpose (eq-paths refl)))
+  opaque
+    unfolding Ω¹-map
+
+    C'-contr : is-contr (C' (pt G))
+    C'-contr .centre .fst = f .snd ∙ sym (g .snd)
+    C'-contr .centre .snd α = commutes→square $
+      f .snd ∙ p ⌜ α ⌝                                ≡˘⟨ ap¡ (∙-idr _) ⟩
+      f .snd ∙ ⌜ p (α ∙ refl) ⌝                       ≡⟨ ap! (f-p α refl) ⟩
+      f .snd ∙ conj (f .snd) (ap (f .fst) α) ∙ p refl ≡˘⟨ ∙-extendl (∙-swapl (sym (conj-defn _ _))) ⟩
+      ap (f .fst) α ∙ f .snd ∙ p refl                 ∎
+    C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
+      sym (∙-unique _ (transpose (eq-paths refl)))
 ```
 
 Using the elimination principle again, we get enough information about `g` to conclude
 that it is equal to `f`, so that we have a left inverse.
 
 ```agda
-  c' : ∀ x → C' x
-  c' = B-elim-contr G C'-contr
+    c' : ∀ x → C' x
+    c' = B-elim-contr G C'-contr
 
-  g≡f : ∀ x → g .fst x ≡ f .fst x
-  g≡f x = sym (c' x .fst)
+    g≡f : ∀ x → g .fst x ≡ f .fst x
+    g≡f x = sym (c' x .fst)
 ```
 
 The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C'-contr}, but we
 need to bend the path into a `Square`{.Agda}:
 
 ```agda
-  β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
-  β = ap (sym ⊙ fst) (sym (C'-contr .paths (c' (pt G))))
+    β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
+    β = ap (sym ⊙ fst) (sym (C'-contr .paths (c' (pt G))))
 
   ptg≡ptf : Square (g≡f (pt G)) (g .snd) (f .snd) refl
   ptg≡ptf i j = hcomp (∂ i ∨ ∂ j) λ where

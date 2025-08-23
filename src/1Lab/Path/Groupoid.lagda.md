@@ -188,12 +188,15 @@ square expresses the equation we're looking for. Thankfully, we only
 have to do this once!
 
 ```agda
-  ∙-invr : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
-  ∙-invr {x = x} p i j = hcomp (∂ j ∨ i) λ where
-    k (k = i0) → p (j ∧ ~ i)
-    k (i = i1) → x
+  ∙-invr-filler : ∀ {x y : A} (p : x ≡ y) → I → I → I → A
+  ∙-invr-filler {x = x} p i j k = hfill (∂ j ∨ i) k λ where
+    k (k = i0) → p j
+    k (i = i1) → p (~ k ∧ j)
     k (j = i0) → x
-    k (j = i1) → p (~ k ∧ ~ i)
+    k (j = i1) → p (~ k)
+
+  ∙-invr : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
+  ∙-invr p i j = ∙-invr-filler p i j i1
 ```
 
 For the other direction, we use the fact that `p` is definitionally
@@ -245,6 +248,12 @@ more than a handful of intermediate steps:
       k (i = i1) → s (~ k ∨ j)
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
+
+  commutes→triangle : {p : x ≡ y} {q : x ≡ z} {r : y ≡ z} → q ≡ p ∙ r → Triangle p q r
+  commutes→triangle α = commutes→square (∙-idl _ ∙ α)
+
+  triangle→commutes : {p : x ≡ y} {q : x ≡ z} {r : y ≡ z} → Triangle p q r → q ≡ p ∙ r
+  triangle→commutes α = ∙-unique _ α
 
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}

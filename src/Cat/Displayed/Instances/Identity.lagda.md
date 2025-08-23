@@ -14,32 +14,33 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Displayed.Instances.Identity
-  {o ℓ} (B : Precategory o ℓ)
-  where
-
-open Precategory B
-open Displayed
-open Functor
-open Total-hom
+module Cat.Displayed.Instances.Identity {o ℓ} (B : Precategory o ℓ) where
 ```
+
+<!--
+```agda
+open Trivially-graded
+open Precategory B
+open Functor
+open ∫Hom
+```
+-->
 
 ## The identity bifibration
 
+:::{.definition #identity-bifibration}
 Let $\cB$ be a precategory. We can define a [[displayed category]]
 $\mathrm{Id}(\cB)$ over $B$ whose [[total category]] is isomorphic to
 $B$, called the **identity bifibration**.
+:::
 
 ```agda
 IdD : Displayed B lzero lzero
-IdD .Ob[_] _ = ⊤
-IdD .Hom[_] _ _ _ = ⊤
-IdD .Hom[_]-set _ _ _ = hlevel 2
-IdD .id' = tt
-IdD ._∘'_ _ _ = tt
-IdD .idr' _ = refl
-IdD .idl' _ = refl
-IdD .assoc' _ _ _ = refl
+IdD = with-thin-display record where
+  Ob[_]      X = ⊤
+  Hom[_] f X Y = ⊤
+  id'    = _
+  _∘'_   = _
 ```
 
 This fibration is obviously a discrete fibration; in fact, it's about as
@@ -120,13 +121,13 @@ itself.
 ```agda
 IdDTotal : Functor B (∫ IdD)
 IdDTotal .F₀ x = x , tt
-IdDTotal .F₁ f = total-hom f (tt)
-IdDTotal .F-id = total-hom-path _ refl refl
-IdDTotal .F-∘ _ _ = total-hom-path _ refl refl
+IdDTotal .F₁ f = ∫hom f (tt)
+IdDTotal .F-id = ∫Hom-path _ refl refl
+IdDTotal .F-∘ _ _ = ∫Hom-path _ refl refl
 
 IdDTotal-is-iso : is-precat-iso IdDTotal
 IdDTotal-is-iso .is-precat-iso.has-is-ff =
-  is-iso→is-equiv (iso hom (λ _ → total-hom-path _ refl refl) (λ _ → refl))
+  is-iso→is-equiv (iso fst (λ _ → ∫Hom-path _ refl refl) (λ _ → refl))
 IdDTotal-is-iso .is-precat-iso.has-is-iso =
   is-iso→is-equiv (iso fst (λ _ → refl) (λ _ → refl))
 ```

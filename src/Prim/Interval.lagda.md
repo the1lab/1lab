@@ -107,3 +107,13 @@ Note that the type of `primPOr` is incomplete: it looks like the
 eliminator for a coproduct, but `i ∨ j` behaves more like a pushout. We
 can represent the accurate type with [extension
 types](Prim.Extension.html).
+
+<!--
+```agda
+Partial-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {φ : I}
+  → (A → B)
+  → Partial φ A → Partial φ B
+Partial-map f p o = f (p o)
+```
+-->

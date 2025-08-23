@@ -6,9 +6,9 @@ open import 1Lab.Type
 
 open import Data.Product.NAry
 open import Data.Maybe.Base
+open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Fin.Base
-open import Data.Bool
 
 open import Meta.Traversable
 open import Meta.Foldable
@@ -168,11 +168,25 @@ product : List Nat → Nat
 product [] = 1
 product (x ∷ xs) = x * product xs
 
-reverse : List A → List A
-reverse = go [] where
+module reverse where
   go : List A → List A → List A
   go acc [] = acc
   go acc (x ∷ xs) = go (x ∷ acc) xs
+
+  go-β : (acc xs prx : List A) → go (prx ++ acc) xs ≡ go prx xs ++ acc
+  go-β acc []       prx = refl
+  go-β acc (x ∷ xs) prx = go-β acc xs (x ∷ prx)
+
+reverse : List A → List A
+reverse = reverse.go []
+
+reverse' : List A → List A
+reverse' []       = []
+reverse' (x ∷ xs) = reverse' xs ++ (x ∷ [])
+
+reverse-β : (xs : List A) → reverse xs ≡ reverse' xs
+reverse-β [] = refl
+reverse-β (x ∷ xs) = reverse.go-β (x ∷ []) xs [] ∙ ap₂ _++_ (reverse-β xs) refl
 
 _∷r_ : List A → A → List A
 xs ∷r x = xs ++ (x ∷ [])
@@ -286,14 +300,16 @@ any-of f (x ∷ xs) = or (f x) (any-of f xs)
 
 instance
   Discrete-List : ∀ ⦃ d : Discrete A ⦄ → Discrete (List A)
-  Discrete-List {x = []}     {y = []}     = yes refl
-  Discrete-List {x = []}     {y = x ∷ y}  = no λ p → ∷≠[] (sym p)
-  Discrete-List {x = x ∷ xs} {y = []}     = no ∷≠[]
-  Discrete-List {x = x ∷ xs} {y = y ∷ ys} = case x ≡? y of λ where
-    (yes x=y) → case Discrete-List {x = xs} {ys} of λ where
-      (yes xs=ys) → yes (ap₂ _∷_ x=y xs=ys)
-      (no  xs≠ys) → no λ p → xs≠ys (∷-tail-inj p)
-    (no x≠y)      → no λ p → x≠y (∷-head-inj p)
+  Discrete-List .decide = go where
+    go : ∀ x y → Dec (x ≡ y)
+    go []     []         = yes refl
+    go []     (x ∷ y)    = no λ p → ∷≠[] (sym p)
+    go (x ∷ xs) []       = no ∷≠[]
+    go (x ∷ xs) (y ∷ ys) = case x ≡? y of λ where
+      (yes x=y) → case go xs ys of λ where
+        (yes xs=ys) → yes (ap₂ _∷_ x=y xs=ys)
+        (no  xs≠ys) → no λ p → xs≠ys (∷-tail-inj p)
+      (no x≠y)      → no λ p → x≠y (∷-head-inj p)
 
 traverse-up
   : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}

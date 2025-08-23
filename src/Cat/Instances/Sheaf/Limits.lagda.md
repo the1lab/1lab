@@ -28,10 +28,10 @@ independently of whether we are talking about sheaves *on a site* or
 functors that satisfy the sheaf condition for individual sieves.
 
 This is a simultaneous specialisation and generalisation of the proof
-that [[monadic functors create limits|limits in categories of
-algebras]]. It's a specialisation in the sense that the same strategy
-there works here; but it's a generalisation in the sense that sheaves
-*for an individual sieve* are not the algebras for any monad.
+that [[monadic functors create limits]]. It's a specialisation in the
+sense that the same strategy there works here; but it's a generalisation
+in the sense that sheaves *for an individual sieve* are not the algebras
+for any monad.
 
 Regardless, if we are talking about the [[topos of sheaves]], we can
 obtain an abstract proof of its completeness through monadicity, without

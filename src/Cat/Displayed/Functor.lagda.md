@@ -63,12 +63,8 @@ module
     module F = FR F
     module A = CR A
     module B = CR B
-    module ℰ where
-      open Displayed ℰ public
-      open DR ℰ public
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℰ = DR ℰ
+    module ℱ = DR ℱ
 ```
 -->
 
@@ -186,7 +182,7 @@ module
     H-Level-is-fibred-functor {n = n} =
       hlevel-instance (Iso→is-hlevel (suc n) eqv (hlevel (suc n)))
       where
-        private unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
+        unquoteDecl eqv = declare-record-iso eqv (quote is-fibred-functor)
         open ℱ -- Needed for the is-cartesian H-Level instances.
 ```
 -->
@@ -211,11 +207,9 @@ module
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
-    module ℋ where
-      open Displayed ℋ public
-      open DR ℋ public
     module F = Functor F
     module G = Functor G
+    module ℋ = DR ℋ
 
     open DR ℋ
     open Displayed-functor
@@ -377,12 +371,8 @@ module
   where
   private
     module B = Precategory B
-    module ℰ where
-      open Displayed ℰ public
-      open DR ℰ public
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℰ = DR ℰ
+    module ℱ = DR ℱ
 
     module ℰ↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
     module ℱ↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
@@ -495,9 +485,7 @@ module _
   private
     open CR B
     module ℰ = Displayed ℰ
-    module ℱ where
-      open Displayed ℱ public
-      open DR ℱ public
+    module ℱ = DR ℱ
     module ℱ↓ {x} = CR (Fibre ℱ x)
 
     open Displayed-functor
@@ -521,7 +509,7 @@ module _
         : ∀ {x} (x' y' : ℰ.Ob[ x ]) (f' : ℰ.Hom[ id ] x' y')
         → η' y' ℱ↓.∘ F' .F₁' f' ≡ G' .F₁' f' ℱ↓.∘ η' x'
       is-natural↓ x y f =
-        ap ℱ.hom[] (from-pathp⁻ (is-natural' x y f))
+        ap ℱ.hom[] (ℱ.from-pathp[]⁻ (is-natural' x y f))
         ∙ sym (ℱ.duplicate _ _ _)
 
   private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>_)
@@ -541,18 +529,18 @@ module _
 
   idnt↓ : ∀ {F} → F =>↓ F
   idnt↓ .η' x' = ℱ.id'
-  idnt↓ .is-natural' x' y' f' = to-pathp (DR.id-comm[] ℱ)
+  idnt↓ .is-natural' x' y' f' = ℱ.to-pathp[] (DR.id-comm[] ℱ)
 
   _∘nt↓_ : ∀ {F G H} → G =>↓ H → F =>↓ G → F =>↓ H
   (f ∘nt↓ g) .η' x' = f .η' _ ℱ↓.∘ g .η' x'
   _∘nt↓_ {F = F} {G = G} {H = H} f g .is-natural' {f = b} x' y' f' =
-    let open DR ℱ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r) in to-pathp (
+    let open DR ℱ in to-pathp[] (
         ap hom[] (whisker-l (idl id))
     ∙∙ sym (duplicate (ap (_∘ b) (idl id) ∙ id-comm-sym) _ _)
-    ∙∙ ap hom[] (from-pathp⁻ (pullr' id-comm-sym (g .is-natural' _ _ _)
+    ∙∙ ap hom[] (from-pathp[]⁻ (pullr' id-comm-sym (g .is-natural' _ _ _)
           {q = ap (_∘ b) (idl id) ∙ id-comm-sym ∙ introl refl}))
     ∙∙ sym (duplicate (eliml refl) _ _)
-    ∙∙ ap hom[] (from-pathp⁻ (extendl' id-comm-sym (f .is-natural' x' y' f') {q = extendl id-comm-sym}))
+    ∙∙ ap hom[] (from-pathp[]⁻ (extendl' id-comm-sym (f .is-natural' x' y' f') {q = extendl id-comm-sym}))
     ∙∙ sym (duplicate (ap (b ∘_) (idl id)) (eliml refl) _)
     ∙∙ unwhisker-r _ _)
 
@@ -572,17 +560,15 @@ module _
 
   _◆↓_ : (F ∘V H) =>↓ (G ∘V K)
   _◆↓_ .η' x' = G .F₁' (β .η' _) E.∘ α .η' _
-  _◆↓_ .is-natural' x' y' f' = to-pathp (
+  _◆↓_ .is-natural' x' y' f' = to-pathp[] (
       ap hom[] (whisker-l (idl id))
       ∙∙ sym (duplicate (ap (_∘ _) (idl id) ∙ id-comm-sym) _ _)
-      ∙∙ ap hom[] (from-pathp⁻ (pullr' _ (α .is-natural' _ _ _) {q = pullr id-comm-sym}))
+      ∙∙ ap hom[] (from-pathp[]⁻ (pullr' _ (α .is-natural' _ _ _) {q = pullr id-comm-sym}))
       ∙∙ sym (duplicate (eliml refl) _ _)
-      ∙∙ ap hom[] (from-pathp⁻
+      ∙∙ ap hom[] (from-pathp[]⁻
         (extendl' _ (symP (G .F-∘') ∙[] (apd (λ i → G .F₁') (β .is-natural' _ _ _) ∙[] G .F-∘'))
           {q = extendl id-comm-sym}))
       ∙∙ sym (duplicate (ap (_ ∘_) (idl id)) _ _) ∙∙ unwhisker-r _ _)
-    where
-      open DR ℰ using (hom[] ; whisker-l ; duplicate ; pullr' ; extendl' ; unwhisker-r)
-      open Displayed ℰ using (_∙[]_)
+    where open DR ℰ
 ```
 -->

@@ -130,19 +130,19 @@ of $G$ on the object $F(\bull)$!
 
 ```agda
     Functor→action : (F : Functor BG C) → Action G (F .F₀ tt)
-    Functor→action F .hom it = C.make-iso
+    Functor→action F .fst it = C.make-iso
         (F .F₁ it) (F .F₁ (it ⁻¹))
         (F.annihilate inversel) (F.annihilate inverser)
       where
         open Group-on (G .snd)
         module F = Functor-kit F
-    Functor→action F .preserves .is-group-hom.pres-⋆ x y = ext (F .F-∘ _ _)
+    Functor→action F .snd .is-group-hom.pres-⋆ x y = ext (F .F-∘ _ _)
 
     Action→functor : {X : C.Ob} (A : Action G X) → Functor BG C
     Action→functor {X = X} A .F₀ _ = X
     Action→functor A .F₁ e = (A · e) .C.to
-    Action→functor A .F-id = ap C.to (is-group-hom.pres-id (A .preserves))
-    Action→functor A .F-∘ f g = ap C.to (is-group-hom.pres-⋆ (A .preserves) _ _)
+    Action→functor A .F-id = ap C.to (is-group-hom.pres-id (A .snd))
+    Action→functor A .F-∘ f g = ap C.to (is-group-hom.pres-⋆ (A .snd) _ _)
 ```
 
 After constructing these functions in either direction, it's easy enough
@@ -161,7 +161,7 @@ applying the right helpers for pushing paths inwards, we're left with
       .is-iso.from (x , act) → Action→functor act
       .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
       .is-iso.rinv x → Σ-pathp refl $
-        total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
+        ∫Hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
           (is-prop→pathp (λ i → is-group-hom-is-prop) _ _)
 ```
 
@@ -196,8 +196,8 @@ module _ {ℓ} (G : Group ℓ) where
 
 ```agda
   principal-action : Action (Sets ℓ) G (G .fst)
-  principal-action .hom x = equiv→iso ((G._⋆ x) , G.⋆-equivr x)
-  principal-action .preserves .pres-⋆ x y = ext λ z → G.associative
+  principal-action .fst x = equiv→iso ((G._⋆ x) , G.⋆-equivr x)
+  principal-action .snd .pres-⋆ x y = ext λ z → G.associative
 ```
 
 $G$ also acts on itself *as a group* by **conjugation**. An automorphism
@@ -206,8 +206,8 @@ of $G$ that arises from conjugation with an element of $G$ is called an
 
 ```agda
   conjugation-action : Action (Groups ℓ) G G
-  conjugation-action .hom x = total-iso
-    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∘-is-equiv (G.⋆-equivr x) (G.⋆-equivl (x G.⁻¹)))
+  conjugation-action .fst x = total-iso
+    ((λ y → x G.⁻¹ G.⋆ y G.⋆ x) , ∘-is-equiv (G.⋆-equivl (x G.⁻¹)) (G.⋆-equivr x))
     (record { pres-⋆ = λ y z → group! G })
-  conjugation-action .preserves .pres-⋆ x y = ext λ z → group! G
+  conjugation-action .snd .pres-⋆ x y = ext λ z → group! G
 ```

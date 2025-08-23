@@ -77,7 +77,7 @@ is-n-connected-map f n = ∀ x → is-n-connected (fibre f x) n
 ```
 :::
 
-## Pointed connected types
+## Pointed connected types {defines="pointed-connected-type"}
 
 In the case of [[pointed types]], there is an equivalent definition of
 being connected that is sometimes easier to work with: a pointed type is
@@ -246,7 +246,7 @@ $\|\Sigma_{a : A} B(a)\|_n \simeq \|\Sigma_{a : A} \|B(a)\|_n\|_n
   : ∀ n → is-n-connected A n → (∀ a → is-n-connected (P a) n) → is-n-connected (Σ A P) n
 Σ-is-n-connected 0 = _
 Σ-is-n-connected (suc n) a-conn b-conn = n-connected.from n $ Equiv→is-hlevel 0
-  (n-Tr-Σ ∙e n-Tr-≃ (Σ-contract λ _ → n-connected.to n (b-conn _)))
+  (n-Tr-Σ ∙e n-Tr-ap (Σ-contr-snd λ _ → n-connected.to n (b-conn _)))
   (n-connected.to n a-conn)
 ```
 
@@ -457,8 +457,8 @@ we have the following chain of equivalences suffices.
 
 ```agda
   rem₁ =
-    ((b : B) → P b)                             ≃⟨ Π-cod≃ (λ x → Π-contr-eqv {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
-    ((b : B) → n-Tr (fibre f b) (suc n) → P b)  ≃⟨ Π-cod≃ (λ x → n-Tr-univ n (phl _)) ⟩
+    ((b : B) → P b)                             ≃⟨ Π-ap-cod (λ x → Π-contr-eqv {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
+    ((b : B) → n-Tr (fibre f b) (suc n) → P b)  ≃⟨ Π-ap-cod (λ x → n-Tr-univ n (phl _)) ⟩
     ((b : B) → fibre f b → P b)                 ≃⟨ shuffle ⟩
     ((a : A) → P (f a))                         ≃∎
 ```
@@ -598,5 +598,20 @@ relative-n-type-const-plus {A = A} {B = B} P f n (suc k) f-conn P-hl it = done w
     retract→is-hlevel k (from _ _) (to _ _) (linv _ _) $
       relative-n-type-const-plus (Q x y) f n k f-conn
         (λ x → Path-is-hlevel' (k + n) (P-hl x) _ _) _
+
+is-n-connected-map→is-equiv-tr
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) n
+  → is-n-connected-map f (suc n)
+  → is-equiv {A = n-Tr A (suc n)} {B = n-Tr B (suc n)} (n-Tr-map f)
+{-# INLINE is-n-connected-map→is-equiv-tr #-}
+is-n-connected-map→is-equiv-tr {A = A} {B = B} f n p = is-iso→is-equiv λ where
+  .is-iso.from → elim! (λ x → case is-n-connected-Tr n (p x) of λ x → n-Tr-map fst (x .centre))
+  .is-iso.rinv → elim! λ x →
+    case is-n-connected-Tr n (p x) .centre
+      return (λ c → n-Tr-map f (n-Tr-map fst c) ≡ inc x)
+      of     (λ x p → ap inc p)
+  .is-iso.linv → elim! λ x →
+    let c = is-n-connected-Tr n (p (f x))
+     in ap (n-Tr-map fst) (c .paths (inc (x , refl)))
 ```
 -->

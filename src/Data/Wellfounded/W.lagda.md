@@ -223,7 +223,7 @@ hand.
     invl (sup l f) = refl
 ```
 
-## Initial algebras are inductive types
+## Initial algebras are inductive types {defines="induction-from-initiality"}
 
 We will now show the other direction of the correspondence: given an
 initial $W$-algebra, we *recover* the type $W_A B$ *and its induction
@@ -450,11 +450,10 @@ has decidable equality. It suffices to show that
 
 
 ```agda
-  instance
-    Discrete-W
-      : ⦃ _ : Discrete A ⦄
-      → ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
-      → Discrete (W A B)
+  mutual instance
+    Discrete-W'
+      : ⦃ _ : Discrete A ⦄ ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → {x y : W A B} → Dec (x ≡ y)
 ```
 
 Let `w` and `v` be a pair of elements of `W A B`. The obvious
@@ -463,7 +462,7 @@ Note that we use the [[inductive identity type|inductive-identity]] here:
 the reason for this will become evident shortly.
 
 ```agda
-    Discrete-W {x = w@(sup x f)} {y = v@(sup y g)} with x ≡ᵢ? y
+    Discrete-W' {x = w@(sup x f)} {y = v@(sup y g)} with x ≡ᵢ? y
 ```
 
 If the two labels are distinct, then `w` and `v` must be distinct.
@@ -526,6 +525,16 @@ w bx ≡ subtree v bx` and the resulting contradiction.
       apd (λ i → subtree (w=v i)) $
       is-set→cast-pathp B (Discrete→is-set auto) (λ i → bx)
 ```
+
+<!--
+```agda
+    Discrete-W
+      : ⦃ _ : Discrete A ⦄ ⦃ _ : ∀ {x : A} → Listing (B x) ⦄
+      → Discrete (W A B)
+    Discrete-W = lift λ x y → Discrete-W' {x} {y}
+    {-# OVERLAPPING Discrete-W' #-}
+```
+-->
 
 ## Path spaces of W-types
 
@@ -597,7 +606,7 @@ the equivalence between paths and codes in a single shot.
     Σ[ p ∈ (x ≡ y) ] PathP (λ i → B (p i) → W A B) f g
       ≃˘⟨ Σ-ap-snd (λ p → funext-dep≃) ⟩
     Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → f bw ≡ g bv)
-      ≃⟨ Σ-ap-snd (λ p → Π-impl-cod≃ λ bw → Π-impl-cod≃ λ bv → Π-cod≃ (λ q → Path≃Code (f bw) (g bv))) ⟩
+      ≃⟨ Σ-ap-snd (λ p → Π'-ap-cod λ bw → Π'-ap-cod λ bv → Π-ap-cod (λ q → Path≃Code (f bw) (g bv))) ⟩
     Σ[ p ∈ (x ≡ y) ] (∀ {bw bv} → PathP (λ i → B (p i)) bw bv → Code (f bw) (g bv))
       ≃⟨⟩
     Code (sup x f) (sup y g)
@@ -674,7 +683,7 @@ x` is empty for every `x : A`, then the W-type `W A B` is equivalent to
     → W A B ≃ A
   W-no-branch-≃ ¬B =
     W A B                    ≃⟨ W-fixpoint ⟩
-    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contract (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
+    Σ[ x ∈ A ] (B x → W A B) ≃⟨ Σ-contr-snd (λ x → Π-dom-empty-is-contr (¬B x)) ⟩
     A                        ≃∎
 ```
 

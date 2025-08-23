@@ -47,9 +47,9 @@ $\im f$ whenever $f : x \to y$.
 
 ```agda
 Im : ∀ {x y} (f : Hom x y) → Subobject y
-Im f .domain = _
-Im f .map    = factor f .forget
-Im f .monic  = □-out! (factor f .forget∈M)
+Im f .dom   = _
+Im f .map   = factor f .forget
+Im f .monic = □-out! (factor f .forget∈M)
 ```
 
 We may then use this to rephrase the universal property of $\im f$ as
@@ -58,7 +58,7 @@ the initial subobject through which $f$ factors.
 ```agda
 Im-universal
   : ∀ {x y} (f : Hom x y)
-  → (m : Subobject y) {e : Hom x (m .domain)}
+  → (m : Subobject y) {e : Hom x (m .dom)}
   → f ≡ m .map ∘ e
   → Im f ≤ₘ m
 Im-universal f m {e = e} p = r where
@@ -67,7 +67,7 @@ Im-universal f m {e = e} p = r where
 
   r : _ ≤ₘ _
   r .map = the-lift .centre .fst
-  r .sq  = idl _ ∙ sym (the-lift .centre .snd .snd)
+  r .com = idl _ ∙ sym (the-lift .centre .snd .snd)
 ```
 
 An important fact that will be used in calculating associativity for
@@ -95,7 +95,7 @@ image-pre-cover {a = a} {b} {c} f g g-covers = Sub-antisym imf≤imfg imfg≤imf
     (≤ₘ→mono imfg≤imf)
     {factor (f ∘ g) .mediate}
     {factor f .mediate}
-    (□-out! (factor f .forget∈M) _ _ (sym (pulll (sym (imfg≤imf .sq) ∙ idl _) ∙ sym (factor (f ∘ g) .factors) ∙ pushl (factor f .factors)))) .centre
+    (□-out! (factor f .forget∈M) _ _ (sym (pulll (sym (imfg≤imf .com) ∙ idl _) ∙ sym (factor (f ∘ g) .factors) ∙ pushl (factor f .factors)))) .centre
 
   inverse : is-invertible (imfg≤imf .map)
   inverse = is-strong-epi→is-extremal-epi C (□-out! (factor f .mediate∈E))
@@ -103,7 +103,7 @@ image-pre-cover {a = a} {b} {c} f g g-covers = Sub-antisym imf≤imfg imfg≤imf
 
   imf≤imfg : Im f ≤ₘ Im (f ∘ g)
   imf≤imfg .map = inverse .is-invertible.inv
-  imf≤imfg .sq = invertible→epic inverse _ _ $
-    pullr (sym (imfg≤imf .sq) ∙ idl _)
+  imf≤imfg .com = invertible→epic inverse _ _ $
+    pullr (sym (imfg≤imf .com) ∙ idl _)
     ∙ sym (cancelr (inverse .is-invertible.invr) ∙ introl refl)
 ```

@@ -19,7 +19,7 @@ module Algebra.Group.Ab.Hom where
 <!--
 ```agda
 open is-group-hom
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -57,23 +57,23 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
 -->
 
 ```agda
-  make-ab-on-hom .mul f g .hom x = f · x B.* g · x
-  make-ab-on-hom .mul f g .preserves .pres-⋆ x y =
-    f · (x A.* y) B.* g · (x A.* y)          ≡⟨ ap₂ B._*_ (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y) ⟩
+  make-ab-on-hom .mul f g .fst x = f · x B.* g · x
+  make-ab-on-hom .mul f g .snd .pres-⋆ x y =
+    f · (x A.* y) B.* g · (x A.* y)          ≡⟨ ap₂ B._*_ (f .snd .pres-⋆ x y) (g .snd .pres-⋆ x y) ⟩
     (f · x B.* f · y) B.* (g · x B.* g · y)  ≡⟨ B.pullr (B.pulll refl)  ⟩
     f · x B.* (f · y B.* g · x) B.* g · y    ≡⟨ (λ i → f · x B.* B.commutes {x = f · y} {y = g · x} i B.* (g · y)) ⟩
     f · x B.* (g · x B.* f · y) B.* g · y    ≡⟨ B.pushr (B.pushl refl) ⟩
     (f · x B.* g · x) B.* (f · y B.* g · y)  ∎
 
-  make-ab-on-hom .inv f .hom x = B._⁻¹ (f · x)
-  make-ab-on-hom .inv f .preserves .pres-⋆ x y =
-    f · (x A.* y) B.⁻¹            ≡⟨ ap B._⁻¹ (f .preserves .pres-⋆ x y) ⟩
+  make-ab-on-hom .inv f .fst x = B._⁻¹ (f · x)
+  make-ab-on-hom .inv f .snd .pres-⋆ x y =
+    f · (x A.* y) B.⁻¹            ≡⟨ ap B._⁻¹ (f .snd .pres-⋆ x y) ⟩
     (f · x B.* f · y) B.⁻¹        ≡⟨ B.inv-comm ⟩
     (f · y B.⁻¹) B.* (f · x B.⁻¹) ≡⟨ B.commutes ⟩
     (f · x B.⁻¹) B.* (f · y B.⁻¹) ∎
 
-  make-ab-on-hom .1g .hom x = B.1g
-  make-ab-on-hom .1g .preserves .pres-⋆ x y = B.introl refl
+  make-ab-on-hom .1g .fst x = B.1g
+  make-ab-on-hom .1g .snd .pres-⋆ x y = B.introl refl
 ```
 
 <!--
@@ -98,9 +98,9 @@ $\Ab\op \times \Ab \to \Ab$.
 ```agda
 Ab-hom-functor : ∀ {ℓ} → Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-hom-functor .F₀ (A , B) = Ab[ A , B ]
-Ab-hom-functor .F₁ (f , g) .hom h = g Ab.∘ h Ab.∘ f
-Ab-hom-functor .F₁ (f , g) .preserves .pres-⋆ x y = ext λ z →
-  g .preserves .pres-⋆ _ _
-Ab-hom-functor .F-id    = trivial!
-Ab-hom-functor .F-∘ f g = trivial!
+Ab-hom-functor .F₁ (f , g) .fst h = g Ab.∘ h Ab.∘ f
+Ab-hom-functor .F₁ (f , g) .snd .pres-⋆ x y = ext λ z →
+  g .snd .pres-⋆ _ _
+Ab-hom-functor .F-id    = ext λ _ _ → refl
+Ab-hom-functor .F-∘ f g = ext λ _ _ → refl
 ```

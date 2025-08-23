@@ -18,7 +18,6 @@ module NbE {o' ℓ' o'' ℓ''}
            (E : Displayed B o'' ℓ'')
            where
 
-  open Displayed E
   module B = Precategory B
   open Dr E
   open Cat.Solver.NbE
@@ -84,7 +83,7 @@ module NbE {o' ℓ' o'' ℓ''}
   ⟦ vsubst path homs ⟧ = hom[ path ] (stack→map homs)
 
   vid-sound : ⟦ vid {a' = a'} ⟧ ≡ id'
-  vid-sound = transport-refl _
+  vid-sound = from-pathp[] refl
 
   vcomp'-sound
     : (f' : Hom[ f ] b' c') (v : Value[ g ] a' b')
@@ -94,7 +93,7 @@ module NbE {o' ℓ' o'' ℓ''}
   vhom-sound
     : (p : f ≡ g) (v : Value[ f ] a' b')
     → ⟦ vhom[ p ] v ⟧ ≡[ sym p ] ⟦ v ⟧
-  vhom-sound p v = to-pathp⁻ (sym (hom[]-∙ _ _))
+  vhom-sound p v = to-pathp[]⁻ (sym (hom[]-∙ _ _))
 
   nf' : ∀ {f : Expr B a b} → Expr[ f ] a' b' → Hom[ nf B f ] a' b'
   nf' f = ⟦ eval' f vid ⟧
@@ -113,7 +112,7 @@ module NbE {o' ℓ' o'' ℓ''}
     eval'-sound-k (`hom[_]_ {f = f} {g = g} p e') v = cast[] $
       ⟦ vhom[ adjust-k {f = f} {g = g} p ] (eval' e' v) ⟧ ≡[]⟨ vhom-sound (adjust-k {f = f} {g = g} p) (eval' e' v) ⟩
       ⟦ eval' e' v ⟧                                      ≡[]⟨ eval'-sound-k e' v ⟩
-      unexpr[ f ] e' ∘' ⟦ v ⟧                             ≡[]⟨ to-pathp (sym (whisker-l p)) ⟩
+      unexpr[ f ] e' ∘' ⟦ v ⟧                             ≡[]⟨ to-pathp[] (sym (whisker-l p)) ⟩
       hom[ p ] (unexpr[ f ] e') ∘' ⟦ v ⟧                  ∎
 
     eval'-sound
@@ -160,7 +159,7 @@ module Reflection where
 
   -- This p has type 'f ≡ g', but we need 'embed (build-expr f) ≡ embed (build-expr g)'
   pattern “hom[]” f g p f'  =
-    def (quote Dr.hom[_]) (displayed-fn-args (ob[] ob[] (f h∷ g h∷ p v∷ f' v∷ [])))
+    def (quote Displayed.hom[_]) (displayed-field-args (ob[] ob[] (f h∷ g h∷ p v∷ f' v∷ [])))
 
   mk-displayed-fn : Term → List (Arg Term) → List (Arg Term)
   mk-displayed-fn disp args = unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ disp v∷ args
@@ -226,15 +225,13 @@ macro
 
 private module Test {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   open Precategory B
-  open Displayed E
   open Dr E
 
   private variable
-    x y z : Ob
+    x y z    : Ob
     x' y' z' : Ob[ x ]
-    f g h : Hom x y
+    f g h    : Hom x y
     f' g' h' : Hom[ f ] x' y'
-
 
   test : ∀ (f' : Hom[ f ] y' z')
        → f' ≡ hom[ idl f ] (id' ∘' f')

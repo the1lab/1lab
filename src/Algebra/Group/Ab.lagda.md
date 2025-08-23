@@ -196,22 +196,32 @@ Grp→Ab→Grp G c = Σ-pathp refl go where
 
 open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-is-abelian-group ; to-abelian-group-on ; to-ab) public
 
+Lift-ab : ∀ ℓ' → ⌞ Ab ℓ ⌟ → ⌞ Ab (ℓ ⊔ ℓ') ⌟
+Lift-ab ℓ' G .fst = el! (Lift ℓ' ⌞ G ⌟)
+Lift-ab ℓ' G .snd = to-abelian-group-on record where
+  module G = Abelian-group-on (G .snd)
+  ab-is-set = hlevel 2
+  mul (lift x) (lift y) = lift (x G.* y)
+  inv (lift x) = lift (G._⁻¹ x)
+  1g = lift G.1g
+  idl x       = ap lift G.idl
+  assoc x y z = ap lift G.associative
+  invl x      = ap lift G.inversel
+  comm x y    = ap lift G.commutes
+
 open Functor
 
 Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
-Ab↪Grp .F₀ = Abelian→Group
-Ab↪Grp .F₁ f .hom = f .hom
-Ab↪Grp .F₁ f .preserves = f .preserves
-Ab↪Grp .F-id = trivial!
-Ab↪Grp .F-∘ f g = trivial!
+Ab↪Grp .F₀      = Abelian→Group
+Ab↪Grp .F₁ f    = record { ∫Hom f }
+Ab↪Grp .F-id    = ext λ _ → refl
+Ab↪Grp .F-∘ f g = ext λ _ → refl
 
 Ab↪Grp-is-ff : ∀ {ℓ} → is-fully-faithful (Ab↪Grp {ℓ})
 Ab↪Grp-is-ff {x = A} {B} = is-iso→is-equiv $ iso
-  promote (λ _ → trivial!) (λ _ → trivial!)
-  where
-    promote : Groups.Hom (Abelian→Group A) (Abelian→Group B) → Ab.Hom A B
-    promote f .hom = f .hom
-    promote f .preserves = f .preserves
+  (λ f → record { ∫Hom f })
+  (λ _ → ext λ _ → refl)
+  (λ _ → ext λ _ → refl)
 
 Ab↪Sets : ∀ {ℓ} → Functor (Ab ℓ) (Sets ℓ)
 Ab↪Sets = Grp↪Sets F∘ Ab↪Grp

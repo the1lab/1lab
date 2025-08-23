@@ -43,21 +43,24 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 open import Cat.Gaunt
 
+open import Data.Set.Material.HIT
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
-open import Data.Set.Material
 open import Data.Fin.Finite using (Listing→choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Space.Suspension.Freudenthal
 open import Homotopy.Space.Suspension.Properties
+open import Homotopy.Space.Sphere.Properties
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Sphere
 open import Homotopy.Space.Torus
 open import Homotopy.Truncation
+open import Homotopy.Loopspace
 open import Homotopy.Pushout
 open import Homotopy.Wedge
 open import Homotopy.Base
@@ -96,7 +99,7 @@ _ = ∙-idr
 _ = ∙-invl
 _ = ∙-invr
 _ = ∙-assoc
-_ = Ωⁿ⁺²-is-abelian-group
+_ = Ωⁿ⁺²-is-abelian
 _ = Type∙
 _ = Ωⁿ
 ```
@@ -109,7 +112,7 @@ _ = Ωⁿ
   ii. `∙-invl`{.Agda}, `∙-invr`{.Agda}
   iii. _Definitional in cubical type theory_
   iv. `∙-assoc`{.Agda}
-* Theorem 2.1.6: `Ωⁿ⁺²-is-abelian-group`{.Agda}
+* Theorem 2.1.6: `Ωⁿ⁺²-is-abelian`{.Agda}
 * Definition 2.1.7: `Type∙`{.Agda}
 * Definition 2.1.8: `Ωⁿ`{.Agda}
 
@@ -199,7 +202,7 @@ _ = univalence
 _ = ua
 _ = uaβ
 _ = ua-id-equiv
-_ = ua∙
+_ = ∙-ua
 _ = sym-ua
 ```
 -->
@@ -207,7 +210,7 @@ _ = sym-ua
 * Lemma 2.10.1: `path→equiv`{.Agda}
 * Theorem 2.10.3: `univalence`{.Agda}
   * `ua`{.Agda}, `uaβ`{.Agda}
-  * `ua-id-equiv`{.Agda}, `ua∙`{.Agda}, `sym-ua`{.Agda}
+  * `ua-id-equiv`{.Agda}, `∙-ua`{.Agda}, `sym-ua`{.Agda}
 
 ### 2.11: Identity type
 
@@ -369,17 +372,17 @@ _ = ∥-∥-out
 _ = is-contr
 _ = is-contr-is-prop
 _ = retract→is-contr
-_ = Singleton-is-contr
-_ = Σ-contract
-_ = Σ-contr-eqv
+_ = Singleton-contract
+_ = Σ-contr-snd
+_ = Σ-contr-fst
 ```
 -->
 
 * Definition 3.11.1: `is-contr`{.Agda}
 * Definition 3.11.4: `is-contr-is-prop`{.Agda}
 * Definition 3.11.7: `retract→is-contr`{.Agda}
-* Definition 3.11.8: `Singleton-is-contr`{.Agda}
-* Lemma 3.11.9: `Σ-contract`{.Agda}, `Σ-contr-eqv`{.Agda}
+* Definition 3.11.8: `Singleton-contract`{.Agda}
+* Lemma 3.11.9: `Σ-contr-snd`{.Agda}, `Σ-contr-fst`{.Agda}
 
 ### Exercises
 
@@ -396,7 +399,7 @@ _ = ¬global-choice
 _ = ∥-∥-elim
 _ = LEM≃DNE
 _ = ℕ-well-ordered
-_ = Σ-contr-eqv
+_ = Σ-contr-fst
 _ = is-prop≃equiv∥-∥
 _ = Listing→choice
 ```
@@ -412,7 +415,7 @@ _ = Listing→choice
 * Exercise 3.17: `∥-∥-elim`{.Agda}
 * Exercise 3.18: `LEM≃DNE`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
-* Exercise 3.20: `Σ-contr-eqv`{.Agda}
+* Exercise 3.20: `Σ-contr-fst`{.Agda}
 * Exercise 3.21: `is-prop≃equiv∥-∥`{.Agda}
 * Exercise 3.22: `Finite-choice`{.Agda}
 
@@ -594,14 +597,14 @@ _ = ap-square
 <!--
 ```agda
 _ = Susp
-_ = SuspS⁰≡S¹
+_ = SuspS⁰≃S¹
 _ = Sⁿ⁻¹
 _ = Σ-map∙≃map∙-Ω
 ```
 -->
 
 * The suspension: `Susp`{.Agda}
-* Lemma 6.5.1: `SuspS⁰≡S¹`{.Agda}
+* Lemma 6.5.1: `SuspS⁰≃S¹`{.Agda}
 * Definition 6.5.2: `Sⁿ⁻¹`{.Agda}
 * Lemma 6.5.4: `Σ-map∙≃map∙-Ω`{.Agda}
 
@@ -621,14 +624,14 @@ _ = T²
 _ = Pushout
 _ = Cocone
 _ = Pushout-is-universal-cocone
-_ = Susp≡Pushout-⊤←A→⊤
+_ = Susp≃pushout
 ```
 -->
 
 * The pushout: `Pushout`{.Agda}
 * Definition 6.8.1: `Cocone`{.Agda}
 * Lemma 6.8.2: `Pushout-is-universal-cocone`{.Agda}
-* Observation: `Susp≡Pushout-⊤←A→⊤`{.Agda}
+* Observation: `Susp≃pushout`{.Agda}
 
 ### 6.9: Truncations
 
@@ -776,24 +779,14 @@ fundamental group of the circle.
 
 <!--
 ```agda
-_ = S¹Path.Cover
-_ = S¹Path.encode
-_ = S¹Path.decode
-_ = S¹Path.encode-decode
-_ = S¹Path.encode-loopⁿ
-_ = ΩS¹≃integers
-_ = π₁S¹≡ℤ
+_ = ΩS¹≃Int
+_ = π₁S¹≅ℤ
 _ = πₙ₊₂S¹≡0
 ```
 -->
 
-* Definition 8.1.1: `S¹Path.Cover`{.Agda}
-* Definition 8.1.5: `S¹Path.encode`{.Agda}
-* Definition 8.1.6: `S¹Path.decode`{.Agda}
-* Lemma 8.1.7: `S¹Path.encode-decode`{.Agda}
-* Lemma 8.1.8: `S¹Path.encode-loopⁿ`{.Agda}
-* Corollary 8.1.10: `ΩS¹≃integers`{.Agda}
-* Corollary 8.1.11: `π₁S¹≡ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
+* Corollary 8.1.10: `ΩS¹≃Int`{.Agda}
+* Corollary 8.1.11: `π₁S¹≅ℤ`{.Agda}, `πₙ₊₂S¹≡0`{.Agda}
 
 ### 8.2: Connectedness of suspensions
 
@@ -813,11 +806,21 @@ _ = Sⁿ⁻¹-is-connected
 ```agda
 _ = relative-n-type-const-plus
 _ = Wedge.elim
+_ = suspend-is-n-connected
+_ = freudenthal.code
+_ = freudenthal-equivalence
+_ = Sⁿ-stability
+_ = πₙSⁿ≃Int
 ```
 -->
 
 * Lemma 8.6.1: `relative-n-type-const-plus`{.Agda}
 * Lemma 8.6.2: `Wedge.elim`{.Agda}
+* Theorem 8.6.4: `suspend-is-n-connected`{.Agda}
+* Definition 8.6.5: `freudenthal.code`{.Agda}
+* Corollary 8.6.14: `freudenthal-equivalence`{.Agda}
+* Corollary 8.6.15: `Sⁿ-stability`{.Agda}
+* Theorem 8.6.17: `πₙSⁿ≃Int`{.Agda}
 
 ## Chapter 9: Category theory
 

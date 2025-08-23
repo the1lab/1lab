@@ -24,6 +24,8 @@ open import Data.Sum
 
 import Cat.Reasoning
 
+open creates-colimit
+open lifts-colimit
 open Functor
 open _=>_
 ```
@@ -180,7 +182,7 @@ $\cJ \to \cC/X$ into the [[slice category]] over $X$:
   cocone▹→cocone F .η j = F .F₁ _
   cocone▹→cocone F .is-natural x y f = sym (F .F-∘ _ _) ∙ sym (idl _)
 
-  cocone/→cocone▹ F .F₀ (inl x) = F .F₀ x .domain
+  cocone/→cocone▹ F .F₀ (inl x) = F .F₀ x .dom
   cocone/→cocone▹ {X} F .F₀ (inr _) = X
   cocone/→cocone▹ F .F₁ {inl x} {inl y} (lift f) = F .F₁ f .map
   cocone/→cocone▹ F .F₁ {inl x} {inr _} f = F .F₀ x .map
@@ -188,13 +190,13 @@ $\cJ \to \cC/X$ into the [[slice category]] over $X$:
   cocone/→cocone▹ F .F-id {inl x} = ap map (F .F-id)
   cocone/→cocone▹ F .F-id {inr _} = refl
   cocone/→cocone▹ F .F-∘ {inl x} {inl y} {inl z} f g = ap map (F .F-∘ _ _)
-  cocone/→cocone▹ F .F-∘ {inl x} {inl y} {inr z} f (lift g) = sym (F .F₁ g .commutes)
+  cocone/→cocone▹ F .F-∘ {inl x} {inl y} {inr z} f (lift g) = sym (F .F₁ g .com)
   cocone/→cocone▹ F .F-∘ {inl x} {inr y} {inr z} f g = sym (idl _)
   cocone/→cocone▹ F .F-∘ {inr x} {inr y} {inr z} f g = sym (idl _)
 
-  cocone▹→cocone/ F .F₀ j = cut {domain = F .F₀ (inl j)} (F .F₁ _)
+  cocone▹→cocone/ F .F₀ j = cut {dom = F .F₀ (inl j)} (F .F₁ _)
   cocone▹→cocone/ F .F₁ f .map = F .F₁ (lift f)
-  cocone▹→cocone/ F .F₁ f .commutes = sym (F .F-∘ _ _)
+  cocone▹→cocone/ F .F₁ f .com = sym (F .F-∘ _ _)
   cocone▹→cocone/ F .F-id = ext (F .F-id)
   cocone▹→cocone/ F .F-∘ f g = ext (F .F-∘ _ _)
 ```
@@ -292,7 +294,7 @@ colimits, we get that $F$ is colimiting.
       f*G≅F = iso→isoⁿ
         (λ j → C/.invertible→iso
           (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
-                  ; commutes = eq _ .p₁∘universal })
+                  ; com = eq _ .p₁∘universal })
           (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
             (pb _ _ .Pullback.has-is-pb))))
         λ f → ext (unique₂ (eq _)
@@ -302,7 +304,7 @@ colimits, we get that $F$ is colimiting.
           (pulll (eq _ .p₁∘universal) ∙ pb _ _ .Pullback.p₂∘universal)
           (pulll (eq _ .p₂∘universal) ∙ pb _ _ .Pullback.p₁∘universal))
 
-      f*G-colim : preserves-lan (Base-change pb f) G-colim
+      f*G-colim : preserves-is-lan (Base-change pb f) G-colim
       f*G-colim = u f _ G-colim
 
       F-colim : is-colimit▹ (cocone▹→cocone/ F)
@@ -310,7 +312,7 @@ colimits, we get that $F$ is colimiting.
         f*G≅F
         (!const-isoⁿ (C/.invertible→iso
           (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
-                  ; commutes = eq _ .p₁∘universal })
+                  ; com = eq _ .p₁∘universal })
           (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
             (pb _ _ .Pullback.has-is-pb)))))
         (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
@@ -343,8 +345,8 @@ repackaging data between "obviously isomorphic" functors.
         eq {inl x} {inl y} (lift g) = pasting-outer→left-is-pullback
           (rotate-pullback (pb _ _ .Pullback.has-is-pb))
           (subst₂ (λ x y → is-pullback C x f (pb _ _ .Pullback.p₁) y)
-            (sym ((Base-change pb f F∘ cocone→cocone▹ eta) .F₁ g .commutes))
-            (sym (cocone→cocone▹ eta .F₁ g .commutes))
+            (sym ((Base-change pb f F∘ cocone→cocone▹ eta) .F₁ g .com))
+            (sym (cocone→cocone▹ eta .F₁ g .com))
             (rotate-pullback (pb _ _ .Pullback.has-is-pb)))
           (α .is-natural (inl x) (inl y) (lift g))
         eq {inl x} {inr _} g = rotate-pullback (pb _ _ .Pullback.has-is-pb)
@@ -373,13 +375,13 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
         → is-colimit▹ (cocone▹→cocone/ F) ≃ is-colimit▹ (F F∘ ▹-in)
       colim/≃colim F =
         prop-ext!
-          (Forget/-preserves-colimits _ (J-colims _))
-          (Forget/-reflects-colimits _)
+          (lifts→preserves-colimit (Forget/-lifts-colimits (J-colims _)))
+          (Forget/-creates-colimits .reflects)
         ∙e trivial-colimit-equiv!
 
       step2≃3 : step2 ≃ step3
-      step2≃3 = Π-cod≃ λ F → Π-cod≃ λ G → Π-cod≃ λ α → Π-cod≃ λ eq →
-        function≃ (colim/≃colim G) (colim/≃colim F)
+      step2≃3 = Π-ap-cod λ F → Π-ap-cod λ G → Π-ap-cod λ α → Π-ap-cod λ eq →
+        →-ap (colim/≃colim G) (colim/≃colim F)
 ```
 
 Finally, we show that this is equivalent to $\cC$ having universal colimits.
@@ -388,7 +390,7 @@ retracts onto $\cJ^\triangleright$.
 
 ```agda
     step3→4 : step3 → has-universal-colimits J C
-    step3→4 u F G α eq = Equiv.to (function≃ (▹-retract G) (▹-retract F))
+    step3→4 u F G α eq = Equiv.to (→-ap (▹-retract G) (▹-retract F))
       (u _ _ (α ◂ ▹-join) (◂-equifibred ▹-join α eq))
       where
         ▹-retract

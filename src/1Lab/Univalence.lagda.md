@@ -142,25 +142,6 @@ attach
   → A [ φ ↦ (λ o → e o .fst (p o)) ]
   → primGlue A T e
 attach φ p x = prim^glue {φ = φ} p (outS x)
-
--- Display of primGlue
--- -------------------
---
--- We can't in general recover a pretty Glue application from an
--- internal 'primGlue', since display forms can't do higher order
--- matching.
---
--- But we can instead use a *named* system in the definition
--- of important 'Glue's, and then match on this definition when trying
--- to unapply 'primGlue'.
---
--- Since 'primGlue' is private, the only way to glue things is using the
--- nice interface, so 'Glue's display nicely.
-
-{-# DISPLAY primGlue A (glue-sys.tys _ Te) (glue-sys.eqvs _ Te) = Glue A Te #-}
-
-{-# DISPLAY prim^unglue {l} {l'} {A} {φ} {t} {e} x = unattach {l} {l'} {A} φ {t} {e} x #-}
-{-# DISPLAY prim^glue {_} {_} {_} {φ} {_} {_} x y = attach φ x y #-}
 ```
 -->
 
@@ -268,9 +249,6 @@ ua {A = A} {B} eqv i = primGlue B tys eqvs module ua-sys where
   eqvs : PartialP (∂ i) (λ .o → tys o ≃ B)
   eqvs (i = i0) = eqv
   eqvs (i = i1) = id≃
-
--- see "Display of primGlue" above
-{-# DISPLAY primGlue _ (ua-sys.tys e i) (ua-sys.eqvs _ _) = ua e i #-}
 ```
 -->
 
@@ -355,6 +333,33 @@ i` (varying over an interval variable `i`), then we have an element of
 ua-unglue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : ua e i) → B
 ua-unglue e i x = unattach (∂ i) x
 ```
+
+<!--
+```agda
+-- Display of primGlue and ua
+-- --------------------------
+--
+-- We can't in general recover a pretty Glue application from an
+-- internal 'primGlue', since display forms can't do higher order
+-- matching.
+--
+-- But we can instead use a *named* system in the definition
+-- of important 'Glue's, and then match on this definition when trying
+-- to unapply 'primGlue'.
+--
+-- Since 'primGlue' is private, the only way to glue things is using the
+-- nice interface, so 'Glue's display nicely.
+
+-- recover the primitives
+{-# DISPLAY primGlue A (glue-sys.tys _ Te) (glue-sys.eqvs _ Te) = Glue A Te #-}
+{-# DISPLAY prim^unglue {l} {l'} {A} {φ} {t} {e} x = unattach {l} {l'} {A} φ {t} {e} x #-}
+{-# DISPLAY prim^glue {_} {_} {_} {φ} {_} {_} x y = attach φ x y #-}
+
+-- recover ua specifically
+{-# DISPLAY primGlue _ (ua-sys.tys e i) (ua-sys.eqvs _ _) = ua e i #-}
+{-# DISPLAY unattach {_} {_} _ {ua-sys.tys {ℓ} {A} {B} f i} {ua-sys.eqvs _ _} x = ua-unglue {ℓ} {A} {B} f i x #-}
+```
+-->
 
 We can factor the interval variable out, to get a type in terms of
 `PathP`{.Agda}, leading to an explanation of `ua-unglue` without
@@ -763,8 +768,35 @@ ua-unglue-is-equiv
 ua-unglue-is-equiv f =
   is-prop→pathp (λ j → is-equiv-is-prop (ua-unglue f j)) (f .snd) id-equiv
 
-ua∙ : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
-ua∙ {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
+ua-square
+  : ∀ {ℓ} {W X Y Z : Type ℓ} {f : W ≃ X} {g : W ≃ Y} {g' : X ≃ Z} {f' : Y ≃ Z}
+  → Path (W → Z) (λ x → g' .fst (f .fst x)) (λ x → f' .fst (g .fst x))
+  → Square (ua f) (ua g) (ua g') (ua f')
+ua-square {W = W} {X} {Y} {Z} {f} {g} {g'} {f'} p j k =
+  Glue Z λ where
+    (j = i0) → ua g  k , _ ,
+      is-prop→pathp (λ j → is-equiv-is-prop {A = ua g  j} λ x → f' .fst (unattach (∂ j) x)) (∘-is-equiv (f' .snd) (g .snd)) (f' .snd) k
+    (j = i1) → ua g' k , _ ,
+      is-prop→pathp (λ i → is-equiv-is-prop {A = ua g' i} λ x → unattach (∂ i) x) (g' .snd) id-equiv k
+    (k = i0) → ua f  j , _ ,
+      is-prop→pathp (λ i → is-equiv-is-prop {A = ua f  i} λ x → p'' i x) (∘-is-equiv (f' .snd) (g .snd)) (g' .snd) j
+    (k = i1) → ua f' j , _ ,
+      is-prop→pathp (λ i → is-equiv-is-prop {A = ua f' i} λ x → unattach (∂ i) x) (f' .snd) id-equiv j
+  where
+    p'' : PathP (λ i → ua f i → Z) (λ z → f' .fst (g .fst z)) (g' .fst)
+    p'' j x = hcomp (∂ j) λ where
+      k (k = i0) → g' .fst (unattach (∂ j) x)
+      k (j = i0) → p k x
+      k (j = i1) → g' .fst x
+
+ua-triangle
+  : ∀ {ℓ} {A B C : Type ℓ} {e : A ≃ B} {f : A ≃ C} {g : B ≃ C}
+  → Path (A → C) (f .fst) (λ x → g .fst (e .fst x))
+  → Triangle (ua e) (ua f) (ua g)
+ua-triangle α = transpose (sym ua-id-equiv ◁ transpose (ua-square α))
+
+∙-ua : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
+∙-ua {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
   (i = i0) → ua f j , (λ x → g .fst (ua-unglue f j x)) ,
     is-prop→pathp (λ j → is-equiv-is-prop (λ x → g .fst (ua-unglue f j x)))
       ((f ∙e g) .snd) (g .snd) j
@@ -808,16 +840,30 @@ ua→'
   → PathP (λ i → {x : ua e i} → B i x) f₀ f₁
 ua→' {B = B} {f₀} {f₁} h i {x} = ua→ {B = B} {f₀ = λ x → f₀ {x}} {f₁ = λ x → f₁ {x}} h i x
 
-transport-∙ : ∀ {ℓ} {A B C : Type ℓ}
-            → (p : A ≡ B) (q : B ≡ C) (u : A)
-            → transport (p ∙ q) u ≡ transport q (transport p u)
-transport-∙ p q x i =
-  transport (∙-filler' p q (~ i)) (transport-filler-ext p i x)
-
-subst-∙ : ∀ {ℓ ℓ'} {A : Type ℓ} → (B : A → Type ℓ')
-        → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
-        → subst B (p ∙ q) u ≡ subst B q (subst B p u)
+subst-∙
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (B : A → Type ℓ')
+  → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
+  → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =
   transport (ap B (∙-filler' p q (~ i))) (transport-filler-ext (ap B p) i Bx)
+
+transport-∙
+  : ∀ {ℓ} {A B C : Type ℓ}
+  → (p : A ≡ B) (q : B ≡ C) (u : A)
+  → transport (p ∙ q) u ≡ transport q (transport p u)
+transport-∙ = subst-∙ id
+
+-- This is less dependent than it could be (in particular B could be A →
+-- Type) but it is much simpler to use. (_∙P_ has terrible inference in
+-- the B argument and we do not have fillers etc for it.)
+subst₂-∙
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} → (C : A → B → Type ℓ'')
+  → {a b c : A} (p : a ≡ b) (q : b ≡ c)
+  → {x y z : B} (α : x ≡ y) (β : y ≡ z)
+  → (u : C a x)
+  → subst₂ C (p ∙ q) (α ∙ β) u ≡ subst₂ C q β (subst₂ C p α u)
+subst₂-∙ B p q α β Bx i =
+  transport (ap₂ B (∙-filler' p q (~ i)) (∙-filler' α β (~ i)))
+    (transport-filler-ext (ap₂ B p α) i Bx)
 ```
 -->

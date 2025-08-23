@@ -43,18 +43,13 @@ is-equaliser→is-limit {e} F {equ} is-eq =
     ml : make-is-limit F e
     ml .ψ true = forkl F ∘ equ
     ml .ψ false = equ
-    ml .commutes {true} {true} tt = eliml (F .F-id)
-    ml .commutes {false} {true} true = sym is-eq.equal
-    ml .commutes {false} {true} false = refl
-    ml .commutes {false} {false} tt = eliml (F .F-id)
-    ml .universal eps p =
-      is-eq.universal (p {false} {true} false ∙ sym (p {false} {true} true))
-    ml .factors {true} eps p =
-      pullr is-eq.factors ∙ p {false} {true} false
-    ml .factors {false} eps p =
-      is-eq.factors
-    ml .unique eps p other q =
-      is-eq.unique (q false)
+    ml .commutes idh = eliml (F .F-id)
+    ml .commutes inr = sym is-eq.equal
+    ml .commutes inl = refl
+    ml .universal eps p = is-eq.universal (p inl ∙ sym (p inr))
+    ml .factors {true}  eps p = pullr is-eq.factors ∙ p inl
+    ml .factors {false} eps p = is-eq.factors
+    ml .unique eps p other q  = is-eq.unique (q false)
 
 is-limit→is-equaliser
   : ∀ (F : Functor ·⇉· C) {K : Functor ⊤Cat C}
@@ -75,24 +70,20 @@ is-limit→is-equaliser F {K} {eps} lim = eq where
     → forkl F ∘ e' ≡ forkr F ∘ e'
     → ∀ i j → (h : ·⇉· .Precategory.Hom i j)
     → F .F₁ {i} {j} h ∘ parallel e' i ≡ parallel e' j
-  parallel-commutes p true true tt = eliml (F .F-id)
-  parallel-commutes p false true true = sym p
-  parallel-commutes p false true false = refl
-  parallel-commutes p false false tt = eliml (F .F-id)
+  parallel-commutes p _ _ idh  = eliml (F .F-id)
+  parallel-commutes p _ _ inl = refl
+  parallel-commutes p _ _ inr = sym p
 
   eq : is-equaliser C (forkl F) (forkr F) (eps .η false)
-  eq .equal =
-    sym (eps .is-natural false true false) ∙ eps .is-natural false true true
+  eq .equal = sym (eps .is-natural _ _ inl) ∙ eps .is-natural _ _ inr
   eq .universal {e' = e'} p =
     lim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   eq .factors = lim.factors {j = false} _ _
-  eq .unique {p = p} {other = other} q =
-    lim.unique _ _ _ λ where
-      true →
-        ap (_∘ other) (intror (K .F-id) ∙ eps .is-natural false true true)
+  eq .unique {p = p} {other = other} q = lim.unique _ _ _ λ where
+    true → ap (_∘ other) (intror (K .F-id) ∙ eps .is-natural _ _ inr)
         ∙∙ pullr q
         ∙∙ sym p
-      false → q
+    false → q
 
 Equaliser→Limit : ∀ {F : Functor ·⇉· C} → Equaliser C (forkl F) (forkr F) → Limit F
 Equaliser→Limit {F = F} eq = to-limit (is-equaliser→is-limit F (has-is-eq eq))

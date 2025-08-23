@@ -13,12 +13,11 @@ open import Cat.Diagram.Product.Solver
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Instances.Sets
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
+open import Cat.Cartesian
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -40,19 +39,16 @@ open import Cat.Monoidal.Diagram.Monoid
 
 module _
   {o ℓ} {C : Precategory o ℓ}
-  (prod : has-products C)
-  (term : Terminal C)
+  (cartesian : Cartesian-category C)
   where
 
-  open Cat.Reasoning C
-  open Binary-products C prod
-  open Terminal term
+  open Cartesian-category cartesian
   open Monoid-ob
   open internal-monoid-hom
   open Monoid-hom
   open Functor
   open _=>_
-  open Total-hom
+  open ∫Hom
   open Representation
 ```
 -->
@@ -82,11 +78,11 @@ $$.
 ```agda
   private
     C-Monoid : Ob → Type ℓ
-    C-Monoid m = Monoid-ob (Cartesian-monoidal prod term) m
+    C-Monoid m = Monoid-ob (Cartesian-monoidal cartesian) m
 
     C-Monoid-hom : ∀ {m n} → Hom m n → C-Monoid m → C-Monoid n → Type ℓ
     C-Monoid-hom f m-mon n-mon =
-      internal-monoid-hom (Cartesian-monoidal prod term) f m-mon n-mon
+      internal-monoid-hom (Cartesian-monoidal cartesian) f m-mon n-mon
 ```
 -->
 
@@ -107,17 +103,17 @@ diagram "relativize" to each $\hom$-set.</summary>
 
 ```agda
     hom-mon .⋆-assoc f g h =
-      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! products ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
-      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! prod ⟩
+      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! products ⟩
       mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
     hom-mon .⋆-idl f =
-      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! products ⟩
       mon .μ ∘ (mon .η ⊗₁ id) ∘ ⟨ ! , f ⟩ ≡⟨ pulll (mon .μ-unitl) ⟩
       π₂ ∘ ⟨ ! , f ⟩                      ≡⟨ π₂∘⟨⟩ ⟩
       f                                   ∎
     hom-mon .⋆-idr f =
-      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! prod ⟩
+      mon .μ ∘ ⟨ f , mon .η ∘ ! ⟩         ≡⟨ products! products ⟩
       mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
       π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
       f                                   ∎
@@ -161,8 +157,8 @@ is to show functoriality, which follows immediately:
   Mon→PshMon {m} mon .F₀ x .fst = el! (Hom x m)
   Mon→PshMon {m} mon .F₀ x .snd = Mon→Hom-mon x mon
 
-  Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
-  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
+  Mon→PshMon {m} mon .F₁ f .fst = _∘ f
+  Mon→PshMon {m} mon .F₁ f .snd = precompose-hom-mon-hom {mon = mon} f
 
   Mon→PshMon {m} mon .F-id    = ext idr
   Mon→PshMon {m} mon .F-∘ f g = ext λ h → assoc h g f
@@ -174,17 +170,14 @@ into an object, it's representable!
 ```agda
   Mon→PshMon-rep
     : ∀ {m} → (mon : C-Monoid m)
-    → Representation {C = C} (Mon↪Sets F∘ Mon→PshMon mon)
+    → Representation (Mon↪Sets F∘ Mon→PshMon mon)
   Mon→PshMon-rep {m = m} mon .rep = m
-  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
-    open make-natural-iso
-
-    ni : make-natural-iso (Mon↪Sets F∘ Mon→PshMon mon) (Hom-into C m)
-    ni .eta _ f   = f
-    ni .inv _ f   = f
-    ni .eta∘inv _ = refl
-    ni .inv∘eta _ = refl
-    ni .natural _ _ _ = refl
+  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso record where
+    eta     _ f = f
+    inv     _ f = f
+    eta∘inv _ = refl
+    inv∘eta _ = refl
+    natural _ _ _ = refl
 ```
 
 Now, suppose we have a pair of monoid objects, $M$ and $N$, together
@@ -211,7 +204,7 @@ homomorphism.... which it is!
     n-mon .η ∘ !     ∎
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-⋆ g h =
     f ∘ m-mon .μ ∘ ⟨ g , h ⟩       ≡⟨ extendl (hom .pres-μ) ⟩
-    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! prod ⟩
+    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! products ⟩
     n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩   ∎
 ```
 
@@ -233,13 +226,13 @@ externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
 ```agda
   private
     Mon[C] : Precategory (o ⊔ ℓ) (ℓ ⊔ ℓ)
-    Mon[C] = ∫ Mon[ Cartesian-monoidal prod term ]
+    Mon[C] = ∫ Mon[ Cartesian-monoidal cartesian ]
 
   PShMon : ∀ κ → Precategory (o ⊔ ℓ ⊔ lsuc κ) (o ⊔ ℓ ⊔ κ)
   PShMon κ = Cat[ C ^op , Monoids κ ]
 
   RepPShMon : Precategory (o ⊔ lsuc ℓ) (o ⊔ ℓ)
-  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Mon↪Sets F∘ P))
+  RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation (Mon↪Sets F∘ P))
 ```
 -->
 
@@ -260,13 +253,13 @@ homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
   Mon→RepPShMon .F₀ (m , mon) .fst = Mon→PshMon mon
   Mon→RepPShMon .F₀ (m , mon) .snd = Mon→PshMon-rep mon
 
-  Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
-  Mon→RepPShMon .F₁ f .η x .preserves =
-    internal-mon-hom→hom-mon-hom (f .preserves)
-  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F₁ f .η x .fst = f .fst ∘_
+  Mon→RepPShMon .F₁ f .η x .snd =
+    internal-mon-hom→hom-mon-hom (f .snd)
+  Mon→RepPShMon .F₁ f .is-natural x y g = ext λ h → assoc (f .fst) h g
 
   Mon→RepPShMon .F-id = ext λ x f → idl f
-  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .hom) (g .hom) h)
+  Mon→RepPShMon .F-∘ f g = ext λ x h → sym (assoc (f .fst) (g .fst) h)
 ```
 
 This functor is a simultaneous restriction and corestriction of the
@@ -282,30 +275,30 @@ functor is also [[fully faithful]].
     → (α : Mon→PshMon m-mon => Mon→PshMon n-mon)
     → C-Monoid-hom (α .η m · id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
-    (α .η m · id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    (α .η m · id) ∘ (m-mon .η) ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩
     α .η top · (id ∘ m-mon .η) ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
-    α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
+    α .η top · (m-mon .η ∘ !)  ≡⟨ α .η _ .snd .pres-id ⟩
     n-mon .η ∘ !               ≡⟨ elimr (!-unique _) ⟩
     n-mon .η                   ∎
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-μ =
-    α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η m · id ∘ (m-mon .μ)                               ≡˘⟨ α .is-natural _ _ _ ·ₚ _ ⟩
     α .η (m ⊗₀ m) · (id ∘ m-mon .μ)                        ≡⟨ ap (α .η _ ·_) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
-    α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
+    α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .snd .pres-⋆ _ _ ⟩
     n-mon .μ ∘ ⟨ α .η _ · π₁ , α .η _ · π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ ·_) (idl _)) (ap (α .η _ ·_) (idl _))) ⟩
-    n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
+    n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap fst (α .is-natural _ _ _) $ₚ _) (ap fst (α .is-natural _ _ _) $ₚ _)) ⟩
     n-mon .μ ∘ (α .η m · id ⊗₁ α .η m · id)                ∎
 
   open is-iso
 
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
-    .from α .hom       → α .η _ · id
-    .from α .preserves → Nat→internal-mon-hom α
+    .from α .fst → α .η _ · id
+    .from α .snd → Nat→internal-mon-hom α
     .rinv α → ext λ _ f →
-      α .η _ · id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+      α .η _ · id ∘ f   ≡˘⟨ ap fst (α .is-natural _ _ _) $ₚ _ ⟩
       α .η _ · (id ∘ f) ≡⟨ ap (α .η _ ·_) (idl f) ⟩
       α .η _ · f        ∎
-    .linv h → total-hom-path _ (idr _) prop!
+    .linv h → ∫Hom-path _ (idr _) prop!
 ```
 
 # Internalizing presheaves of monoids
@@ -381,7 +374,7 @@ object $M : \cC$.
 ```agda
   RepPshMon→Mon
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
-    → (P-rep : Representation {C = C} (Mon↪Sets F∘ P))
+    → (P-rep : Representation (Mon↪Sets F∘ P))
     → C-Monoid (P-rep .rep)
   RepPshMon→Mon P P-rep = Hom-mon→Mon (λ x → to-monoid-on (hom-mon x)) η*-nat μ*-nat
     module RepPshMon→Mon where
@@ -472,7 +465,7 @@ substitution.
       → η* x ∘ f ≡ η* w
     η*-nat {w} {x} f =
       (η* x) ∘ f                  ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
-      gen (P .F₁ f .hom identity) ≡⟨ ap gen (P .F₁ f .preserves .pres-id) ⟩
+      gen (P .F₁ f .fst identity) ≡⟨ ap gen (P .F₁ f .snd .pres-id) ⟩
       η* w ∎
 
     μ*-nat
@@ -480,9 +473,9 @@ substitution.
       → μ* f g ∘ h ≡ μ* (f ∘ h) (g ∘ h)
     μ*-nat f g h =
       μ* f g ∘ h                                            ≡˘⟨ repr.to .is-natural _ _ _ $ₚ _ ⟩
-      gen (P .F₁ h .hom ((elt f) ⋆ (elt g)))                ≡⟨ ap gen (P .F₁ h .preserves .pres-⋆ _ _) ⟩
-      gen ((P .F₁ h .hom (elt f)) ⋆ (P .F₁ h .hom (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (repr.from .is-natural _ _ _ $ₚ _) (repr.from .is-natural _ _ _ $ₚ _)) ⟩
-      μ* (f ∘ h) (g ∘ h) ∎
+      gen (P .F₁ h .fst ((elt f) ⋆ (elt g)))                ≡⟨ ap gen (P .F₁ h .snd .pres-⋆ _ _) ⟩
+      gen ((P .F₁ h .fst (elt f)) ⋆ (P .F₁ h .fst (elt g))) ≡˘⟨ ap gen (ap₂ _⋆_ (repr.from .is-natural _ _ _ $ₚ _) (repr.from .is-natural _ _ _ $ₚ _)) ⟩
+      μ* (f ∘ h) (g ∘ h)                                    ∎
 ```
 
 We now have a construction mapping representable presheaves to monoid
@@ -506,21 +499,21 @@ expand this `<details>` element.</summary>
 
 ```agda
     ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon P pm)) P
-    ni .eta x .hom = repr.from .η x
-    ni .inv x .hom = repr.to .η x
+    ni .eta x .fst = repr.from .η x
+    ni .inv x .fst = repr.to .η x
 
-    ni .eta x .preserves .pres-id =
+    ni .eta x .snd .pres-id =
       elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
       elt (η* x)                 ≡⟨ unext repr.invr _ _ ⟩
       identity                   ∎
-    ni .eta x .preserves .pres-⋆ f g =
+    ni .eta x .snd .pres-⋆ f g =
       elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
       elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
       elt (μ* f g)                               ≡⟨ unext repr.invr _ _ ⟩
       (elt f ⋆ elt g)                            ∎
 
-    ni .inv x .preserves .pres-id = sym (η*-nat _)
-    ni .inv x .preserves .pres-⋆ f g =
+    ni .inv x .snd .pres-id = sym (η*-nat _)
+    ni .inv x .snd .pres-⋆ f g =
       gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (unext repr.invr _ _) (unext repr.invr _ _)) ⟩
       μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩

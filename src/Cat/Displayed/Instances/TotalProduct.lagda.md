@@ -16,6 +16,10 @@ open import Cat.Base
 
 ```agda
 module Cat.Displayed.Instances.TotalProduct
+```
+
+<!--
+```agda
   {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
   (C : Precategory o₁ ℓ₁)
   (D : Precategory o₂ ℓ₂)
@@ -23,6 +27,8 @@ module Cat.Displayed.Instances.TotalProduct
   private module EC = Displayed EC
   private module ED = Displayed ED
 ```
+-->
+
 # The total product of displayed categories
 
 If $\cE\to \cB$ and $q :\cD \to \cC$ are
@@ -33,8 +39,10 @@ which is again a displayed category.
 ```agda
   _×ᵀᴰ_ : Displayed (C ×ᶜ D) (o₃ ⊔ o₄) (ℓ₃ ⊔ ℓ₄)
 ```
+
 If displayed categories are regarded as functors, then the product of
 displayed categories can be regarded as the usual product of functors.
+
 ```agda
   _×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
    EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
@@ -47,16 +55,16 @@ displayed categories can be regarded as the usual product of functors.
 We establish that the hom sets of the product fibration are actually
 sets.
 
-If $x, y : \operatorname{Ob}[C \times D]$
-(so $x = (x_C, x_D), y = (y_C, y_D)$) and
-$f : x \to y$ (so $f$ is $(f_C, f_D)$)
-then for any two morphisms $f_1,f_2$ lying over $f$,
-and any $p, q : f_1 = f_2$, $p=q$.
+If $x, y : \operatorname{Ob}[C \times D]$ (so $x = (x_C, x_D), y = (y_C,
+y_D)$) and $f : x \to y$ (so $f$ is $(f_C, f_D)$) then for any two
+morphisms $f_1,f_2$ lying over $f$, and any $p, q : f_1 = f_2$, $p=q$.
 
 ```agda
   _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ```
+
 Composition is pairwise.
+
 ```agda
   _×ᵀᴰ_ .Displayed._∘'_ (f₁ , f₂) (g₁ , g₂) =
     EC._∘'_ f₁ g₁ , ED._∘'_ f₂ g₂
@@ -70,4 +78,9 @@ they hold for the components of the ordered pairs.
   _×ᵀᴰ_ .Displayed.idl' (f₁ , f₂) = EC.idl' f₁ ,ₚ ED.idl' f₂
   _×ᵀᴰ_ .Displayed.assoc' (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) =
     EC.assoc' f₁ g₁ h₁ ,ₚ ED.assoc' f₂ g₂ h₂
+```
+
+```agda
+  _×ᵀᴰ_ .Displayed.hom[_] p f = EC.hom[ ap fst p ] (f .fst) ,  ED.hom[ ap snd p ] (f .snd)
+  _×ᵀᴰ_ .Displayed.coh[_] p f = EC.coh[ ap fst p ] (f .fst) ,ₚ ED.coh[ ap snd p ] (f .snd)
 ```

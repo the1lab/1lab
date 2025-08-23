@@ -3,9 +3,9 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel.Closure
 open import 1Lab.Reflection
+open import 1Lab.Truncation
 open import 1Lab.Type.Sigma
 open import 1Lab.Type.Pi
 open import 1Lab.HLevel
@@ -98,6 +98,8 @@ record Extensional (A : Type ℓ) ℓ-rel : Type (ℓ ⊔ lsuc ℓ-rel) where
     Pathᵉ : A → A → Type ℓ-rel
     reflᵉ : ∀ x → Pathᵉ x x
     idsᵉ : is-identity-system Pathᵉ reflᵉ
+
+{-# INLINE Extensional.constructor #-}
 
 open Extensional using (Pathᵉ ; reflᵉ ; idsᵉ) public
 
@@ -227,19 +229,17 @@ private
         ]
 
 {-
-trivial! serves to replace proofs like
+trivial! can sometimes replace proofs like 'ext λ ... → refl'. It is,
+however, a bit of a performance vampire: it works by reifying both the
+extensionality instance 'r' and one of the endpoints (the left, 'x'),
+then asking Agda to check that (r .Pathᵉ x x) is definitionally (r
+.Pathᵉ x x).
 
-  Nat-path λ x → funext λ y → Nat-path λ z → Homomorphism-path λ a → refl
-
-since this is
-
-  ext λ x y z a → refl
-
-and that argument is precisely reflexivity for the computed identity
-system which 'ext' is using. By the way, this example is totally made
-up.
+This final step tends to be pretty cheap, but if 'r' or 'x' are large,
+trivial! will spend a long time blocking on, reifying, and then
+re-checking them. For this reason, please prefer to directly use 'ext',
+which does not involve any reflection metaprogramming.
 -}
-
 opaque
   trivial!
     : ∀ {ℓ ℓr} {A : Type ℓ} {x y : A}
@@ -285,25 +285,35 @@ Pathᵉ-is-hlevel n sa hl =
 -- Constructors for Extensional instances in terms of embeddings. The
 -- extra coherence is required to make sure that we still have an
 -- identity system by the end.
+--
 -- If the type you're reducing to is a set, use injection→extensional! instead.
+
+-- These helpers are all marked INLINE so that the resulting instances
+-- have small normal forms; this is generally not a problem because
+-- unfolding (e.g.) the proof that the function given to
+-- injection→extensional is worse than normalising a big spine of
+-- neutral instances, but if it turns out that an instance has a
+-- significantly shorter normal form when treated as a record vs. an
+-- opaque thing, *that instance* can be marked INLINE instead.
 
 embedding→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → (f : A ↪ B)
   → Extensional B ℓr
   → Extensional A ℓr
-embedding→extensional f ext .Pathᵉ x y = Pathᵉ ext (f .fst x) (f .fst y)
-embedding→extensional f ext .reflᵉ x = reflᵉ ext (f .fst x)
-embedding→extensional f ext .idsᵉ =
-  pullback-identity-system (ext .idsᵉ) f
+{-# INLINE embedding→extensional #-}
+embedding→extensional f ext = record where
+  Pathᵉ x y = ext .Pathᵉ (f .fst x) (f .fst y)
+  reflᵉ x   = ext .reflᵉ (f .fst x)
+  idsᵉ      = pullback-identity-system (ext .idsᵉ) f
 
 iso→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → Iso A B
   → Extensional B ℓr
   → Extensional A ℓr
-iso→extensional f ext =
-  embedding→extensional (Iso→Embedding f) ext
+{-# INLINE iso→extensional #-}
+iso→extensional f ext = embedding→extensional (Iso→Embedding f) ext
 
 injection→extensional
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
@@ -312,11 +322,13 @@ injection→extensional
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
-injection→extensional b-set {f} inj ext .Pathᵉ x y = ext .Pathᵉ (f x) (f y)
-injection→extensional b-set {f} inj ext .reflᵉ x = ext .reflᵉ (f x)
-injection→extensional b-set {f} inj ext .idsᵉ .to-path x = inj (ext .idsᵉ .to-path x)
-injection→extensional b-set {f} inj ext .idsᵉ .to-path-over p =
-  is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 ext b-set) _ _
+{-# INLINE injection→extensional #-}
+injection→extensional b-set {f} inj ext = record where
+  Pathᵉ x y = ext .Pathᵉ (f x) (f y)
+  reflᵉ x   = ext .reflᵉ (f x)
+  idsᵉ = record where
+    to-path x = inj (ext .idsᵉ .to-path x)
+    to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 ext b-set) _ _
 
 injection→extensional!
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
@@ -325,6 +337,7 @@ injection→extensional!
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
+{-# INLINE injection→extensional! #-}
 injection→extensional! = injection→extensional (hlevel 2)
 
 Σ-prop-extensional
@@ -332,6 +345,7 @@ injection→extensional! = injection→extensional (hlevel 2)
   → (∀ x → is-prop (B x))
   → Extensional A ℓr
   → Extensional (Σ A B) ℓr
+{-# INLINE Σ-prop-extensional #-}
 Σ-prop-extensional bprop = embedding→extensional (fst , Subset-proj-embedding bprop)
 
 instance

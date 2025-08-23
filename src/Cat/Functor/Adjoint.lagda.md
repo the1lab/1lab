@@ -49,7 +49,7 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
-:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint"}
+:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint unit counit"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
@@ -354,7 +354,7 @@ auxiliary notion: **free objects**.
 
 <!--
 ```agda
-module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
@@ -366,7 +366,7 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U :
 A **free object** on $X : \cC$, relative to $U : \cD \to \cC$, consists
 of an object $F(X) : \cD$ and an arrow $\eta : X \to UF(X)$, such that
 every $f : X \to UY$, $f$ factors uniquely through $\eta$. Expanding
-this to an *operations-and"properties" presentation, we could say that:
+this to an *operations-and-properties* presentation, we could say that:
 
 * There is a map `fold`{.Agda} from $\cD(X, UY)$ to $\cC(FX, Y)$, and
 * for every $f$, we have $U(\operatorname{fold} f)\eta = f$, and
@@ -516,7 +516,7 @@ equivalence, but it would not be very useful, either.
     .I.bot → ↓obj (fo .unit)
     .I.has⊥ x .centre  → ↓hom (D.idr _ ∙ sym (fo .commute))
     .I.has⊥ x .paths p → ↓Hom-path _ _ refl $ sym $
-      fo .unique _ (sym (p .sq) ∙ D.idr _)
+      fo .unique _ (sym (p .com) ∙ D.idr _)
 ```
 
 ### Free objects and adjoints
@@ -630,7 +630,7 @@ A similar result holds for a system of free objects.
   free-objects→left-adjoint→free-objects
     : ∀ (free-objects : ∀ x → Free-object U x)
     → left-adjoint→free-objects (free-objects→left-adjoint free-objects) ≡ free-objects
-  free-objects→left-adjoint→free-objects free-objects = trivial!
+  free-objects→left-adjoint→free-objects free-objects = ext (λ x → refl)
 ```
 
 This yields an equivalence between systems of free objects and left adjoints.
@@ -685,10 +685,10 @@ $A$ is an initial object in $\cC$.
 
 ```agda
   module _ (initial : Initial D) where
-    open Initial initial
+    open Initial initial renaming (bot to init)
 
     free-on-initial→initial
-      : (F[⊥] : Free-object U bot)
+      : (F[⊥] : Free-object U init)
       → is-initial C (F[⊥] .free)
     free-on-initial→initial F[⊥] x .centre = F[⊥] .fold ¡
     free-on-initial→initial F[⊥] x .paths f =
@@ -701,7 +701,7 @@ is a free object for $\bot_{\cC}$.
 ```agda
     is-initial→free-on-initial
       : (c-initial : Initial C)
-      → Free-object U bot
+      → Free-object U init
     is-initial→free-on-initial c-init = record
       { free    = Initial.bot c-init
       ; unit    = ¡
@@ -845,9 +845,9 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   universal-map→free-object : ∀ {R X} → Universal-morphism R X → Free-object R X
   universal-map→free-object x .free = _
   universal-map→free-object x .unit = x .bot .map
-  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .β
-  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .sq) ∙ C.idr _
-  universal-map→free-object x .unique g p = ap β (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+  universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .bot
+  universal-map→free-object x .commute = sym (x .has⊥ _ .centre .com) ∙ C.idr _
+  universal-map→free-object x .unique g p = ap bot (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
 
   universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
   universal-maps→functor u = free-objects→functor (λ X → universal-map→free-object (u X))

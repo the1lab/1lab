@@ -1,15 +1,17 @@
 <!--
 ```agda
+open import Cat.Functor.Conservative
 open import Cat.Diagram.Comonad
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 
-open Total-hom
 open Functor
+open ∫Hom
 open _=>_
 open _⊣_
 ```
@@ -56,7 +58,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {W : Functor C C} (cm : Comonad-on W) w
     field
       ρ        : Hom A (W₀ A)
       ρ-counit : W.ε A ∘ ρ ≡ id
-      ρ-comult : W₁ ρ ∘ ρ ≡ δ A ∘ ρ
+      ρ-comult : δ A ∘ ρ ≡ W₁ ρ ∘ ρ
 ```
 
 This definition is rather abstract, but has a nice intuition in terms of
@@ -131,16 +133,12 @@ $W$-coalgebra homomorphism.
 
 ```agda
     Coalgebras-over : Displayed C (o ⊔ ℓ) ℓ
-    Coalgebras-over .Ob[_]            = Coalgebra-on
-    Coalgebras-over .Hom[_]           = is-coalgebra-hom
-    Coalgebras-over .Hom[_]-set f α β = hlevel 2
+    Coalgebras-over = with-thin-display record where
+      Ob[_]    = Coalgebra-on
+      Hom[_]   = is-coalgebra-hom
 
-    Coalgebras-over .id'      = eliml W-id ∙ intror refl
-    Coalgebras-over ._∘'_ p q = pushl (W-∘ _ _) ∙∙ ap (W₁ _ ∘_) q ∙∙ extendl p
-
-    Coalgebras-over .idr' f'         = prop!
-    Coalgebras-over .idl' f'         = prop!
-    Coalgebras-over .assoc' f' g' h' = prop!
+      id'      = eliml W-id ∙ intror refl
+      _∘'_ p q = pushl (W-∘ _ _) ∙∙ ap (W₁ _ ∘_) q ∙∙ extendl p
 ```
 
 The [[total category]] of this displayed category is referred to as the
@@ -165,9 +163,12 @@ The [[total category]] of this displayed category is referred to as the
   module Coalgebras = Cat.Reasoning Coalgebras
 
 module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} where
+  open Coalgebra-on
   private
     module C = Cat.Reasoning C
     module W = Comonad-on W
+    module F = Cat.Functor.Reasoning F
+    module CoEM = Cat.Reasoning (Coalgebras W)
     unquoteDecl eqv = declare-record-iso eqv (quote Coalgebra-on)
 
   Coalgebra-on-pathp
@@ -188,7 +189,21 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {W : Comonad-on F} wh
     Extensional-coalgebra-hom
       : ∀ {ℓr} {x y} ⦃ _ : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
       → Extensional (Coalgebras.Hom W x y) ℓr
-    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → total-hom-path (Coalgebras-over W) p prop!) e
+    Extensional-coalgebra-hom ⦃ e ⦄ = injection→extensional! (λ p → ∫Hom-path (Coalgebras-over W) p prop!) e
+
+  Forget-CoEM-is-conservative : is-conservative (πᶠ (Coalgebras-over W))
+  Forget-CoEM-is-conservative {A , α} {B , β} {f} f-inv =
+    CoEM.make-invertible f-coalg-inv (ext invl) (ext invr)
+    where
+      open C.is-invertible f-inv
+
+      f-coalg-inv : Coalgebra-hom W (B , β) (A , α)
+      f-coalg-inv .fst = inv
+      f-coalg-inv .snd =
+        W.W₁ inv C.∘ β .ρ                           ≡⟨ (C.refl⟩∘⟨ C.intror invl) ⟩
+        W.W₁ inv C.∘ β .ρ C.∘ f .fst C.∘ inv        ≡⟨ (C.refl⟩∘⟨ C.extendl (sym (f .snd))) ⟩
+        W.W₁ inv C.∘ W.W₁ (f .fst) C.∘ α .ρ C.∘ inv ≡⟨ C.cancell (F.annihilate invr) ⟩
+        α .ρ C.∘ inv                                ∎
 
 Comonad : ∀ {o ℓ} (C : Precategory o ℓ) → Type _
 Comonad C = Σ[ F ∈ Functor C C ] (Comonad-on F)
@@ -214,13 +229,13 @@ gives us **cofree coalgebras**.
   Cofree-coalgebra A .fst = W₀ A
   Cofree-coalgebra A .snd .ρ = δ _
   Cofree-coalgebra A .snd .ρ-counit = δ-unitr
-  Cofree-coalgebra A .snd .ρ-comult = δ-assoc
+  Cofree-coalgebra A .snd .ρ-comult = sym δ-assoc
 
   Cofree : Functor C (Coalgebras W)
   Cofree .F₀ = Cofree-coalgebra
 
-  Cofree .F₁ h .hom       = W₁ h
-  Cofree .F₁ h .preserves = sym (comult.is-natural _ _ h)
+  Cofree .F₁ h .fst = W₁ h
+  Cofree .F₁ h .snd = sym (comult.is-natural _ _ h)
 
   Cofree .F-id    = ext W-id
   Cofree .F-∘ f g = ext (W-∘ _ _)
@@ -231,9 +246,9 @@ the forgetful functor, we get a right adjoint!
 
 ```agda
   Forget⊣Cofree : πᶠ (Coalgebras-over W) ⊣ Cofree
-  Forget⊣Cofree .unit .η (x , α) .hom       = α .ρ
-  Forget⊣Cofree .unit .η (x , α) .preserves = α .ρ-comult
-  Forget⊣Cofree .unit .is-natural x y f = ext (sym (f .preserves))
+  Forget⊣Cofree .unit .η (x , α) .fst = α .ρ
+  Forget⊣Cofree .unit .η (x , α) .snd = sym (α .ρ-comult)
+  Forget⊣Cofree .unit .is-natural x y f = ext (sym (f .snd))
 
   Forget⊣Cofree .counit .η x              = W.ε x
   Forget⊣Cofree .counit .is-natural x y f = W.counit.is-natural _ _ _

@@ -152,15 +152,15 @@ paper, following the ring laws.
 
   open is-ring-hom
 
-  z-natdiff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
-  z-natdiff x zero = R.intror R.inv-unit
-  z-natdiff zero (suc y) = R.introl refl
-  z-natdiff (suc x) (suc y) = z-natdiff x y ∙ e-tr x y
+  z-nat-diff : ∀ x y → ℤ↪R (x ℕ- y) ≡ e x R.- e y
+  z-nat-diff x zero = R.intror R.inv-unit
+  z-nat-diff zero (suc y) = R.introl refl
+  z-nat-diff (suc x) (suc y) = z-nat-diff x y ∙ e-tr x y
 
   z-add : ∀ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y
   z-add (pos x) (pos y) = e-add x y
-  z-add (pos x) (negsuc y) = z-natdiff x (suc y)
-  z-add (negsuc x) (pos y) = z-natdiff y (suc x) ∙ R.+-commutes
+  z-add (pos x) (negsuc y) = z-nat-diff x (suc y)
+  z-add (negsuc x) (pos y) = z-nat-diff y (suc x) ∙ R.+-commutes
   z-add (negsuc x) (negsuc y) =
     R.- (e 1 R.+ e (suc x Nat.+ y))         ≡⟨ ap R.-_ (ap₂ R._+_ refl (e-add (suc x) y) ∙ R.extendl R.+-commutes) ⟩
     R.- (e (suc x) R.+ (e 1 R.+ e y))       ≡⟨ R.a.inv-comm ⟩
@@ -194,10 +194,10 @@ paper, following the ring laws.
     ℤ↪R (negsuc x) R.* ℤ↪R (negsuc y)   ∎
 
   z→r : Rings.Hom Liftℤ R
-  z→r .hom (lift x) = ℤ↪R x
-  z→r .preserves .pres-id = refl
-  z→r .preserves .pres-+ (lift x) (lift y) = z-add x y
-  z→r .preserves .pres-* (lift x) (lift y) = z-mul x y
+  z→r .fst (lift x) = ℤ↪R x
+  z→r .snd .pres-id = refl
+  z→r .snd .pres-+ (lift x) (lift y) = z-add x y
+  z→r .snd .pres-* (lift x) (lift y) = z-mul x y
 ```
 
 The last thing we must show is that this is the _unique_ ring
@@ -218,7 +218,7 @@ evaluates to on $n$. So we're done!
 
 ```agda
   module _ (f : Rings.Hom Liftℤ R) where
-    private module f = is-ring-hom (f .preserves)
+    private module f = is-ring-hom (f .snd)
 
     f-pos : ∀ x → e x ≡ f · lift (pos x)
     f-pos zero = sym f.pres-0

@@ -21,8 +21,8 @@ let
       collection-latex
       xcolor
       preview
-      pgf tikz-cd braids
-      mathpazo
+      pgf tikz-cd braids pgfplots
+      stmaryrd mathpazo
       varwidth xkeyval standalone;
   };
 
@@ -48,7 +48,7 @@ let
     shakefile our-ghc
 
     # For building the text and maths:
-    gitMinimal nodePackages.sass
+    gitMinimal nodePackages.sass nodejs
 
     # For building diagrams:
     poppler_utils our-texlive
@@ -76,7 +76,7 @@ in
 
     LANG = "C.UTF-8";
     buildPhase = ''
-      1lab-shake all -j
+      1lab-shake all -j --git-only
     '';
 
     installPhase = ''

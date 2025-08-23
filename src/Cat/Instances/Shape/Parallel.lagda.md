@@ -6,7 +6,10 @@ open import Cat.Functor.Constant
 open import Cat.Prelude
 open import Cat.Finite
 
+open import Data.List.Membership
+open import Data.Bool.Order
 open import Data.Fin.Finite
+open import Data.List.Base
 open import Data.Bool
 
 import Cat.Reasoning
@@ -20,7 +23,6 @@ module Cat.Instances.Shape.Parallel where
 ```agda
 open is-precat-iso
 open Functor
-open is-iso
 ```
 -->
 
@@ -33,49 +35,83 @@ parallel arrows between them. It is the shape of [[equaliser]] and
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
 ```agda
-
-·⇉· : Precategory lzero lzero
-·⇉· = precat where
-  open Precategory
-  precat : Precategory _ _
-  precat .Ob = Bool
-
-  precat .Hom false false = ⊤
-  precat .Hom false true  = Bool
-  precat .Hom true  false = ⊥
-  precat .Hom true  true  = ⊤
+data _·⇉·ʰ_ : Bool → Bool → Type where
+  idh     : ∀ {x} → x ·⇉·ʰ x
+  inl inr : false ·⇉·ʰ true
 ```
 
 <!--
 ```agda
-  precat .Hom-set false false = hlevel 2
-  precat .Hom-set false true  = hlevel 2
-  precat .Hom-set true  true  = hlevel 2
+instance
+  H-Level-·⇉·ʰ : ∀ {x y n} → H-Level (x ·⇉·ʰ y) (2 + n)
+  H-Level-·⇉·ʰ = basic-instance 2 $ retract→is-hlevel 2 to from inv (hlevel 2) where
+    to : ∀ {x y} → Bool × (x ≤ y) → x ·⇉·ʰ y
+    to {true}  {true}  _ = idh
+    to {false} {false} _ = idh
+    to {false} {true} (false , _) = inl
+    to {false} {true} (true  , _) = inr
 
-  precat .id {false} = tt
-  precat .id {true} = tt
-  _∘_ precat {false} {false} {false} _ _ = tt
-  _∘_ precat {false} {false} {true}  p _ = p
-  _∘_ precat {false} {true}  {true}  _ q = q
-  _∘_ precat {true}  {true}  {true}  _ _ = tt
-  precat .idr {false} {false} f = refl
-  precat .idr {false} {true}  f = refl
-  precat .idr {true}  {true}  f = refl
-  precat .idl {false} {false} f = refl
-  precat .idl {false} {true}  f = refl
-  precat .idl {true}  {true}  f = refl
-  precat .assoc {false} {false} {false} {false} f g h = refl
-  precat .assoc {false} {false} {false} {true}  f g h = refl
-  precat .assoc {false} {false} {true}  {true}  f g h = refl
-  precat .assoc {false} {true}  {true}  {true}  f g h = refl
-  precat .assoc {true}  {true}  {true}  {true}  f g h = refl
+    from : ∀ {x y} → x ·⇉·ʰ y → Bool × (x ≤ y)
+    from idh = true  , ≤-refl
+    from inl = false , _
+    from inr = true  , _
+
+    inv : ∀ {x y} (p : x ·⇉·ʰ y) → to (from p) ≡ p
+    inv {true}  idh = refl
+    inv {false} idh = refl
+    inv inl = refl
+    inv inr = refl
+
+open is-iso
+module _ where
+  open Precategory
+```
+-->
+
+```agda
+  ·⇉· : Precategory lzero lzero
+  ·⇉· .Ob          = Bool
+  ·⇉· .Hom         = _·⇉·ʰ_
+  ·⇉· .Hom-set _ _ = hlevel 2
+  ·⇉· .id          = idh
+  ·⇉· ._∘_ idh h   = h
+  ·⇉· ._∘_ inl idh = inl
+  ·⇉· ._∘_ inr idh = inr
+  ·⇉· .idr idh = refl
+  ·⇉· .idr inl = refl
+  ·⇉· .idr inr = refl
+  ·⇉· .idl f = refl
+  ·⇉· .assoc idh g   h   = refl
+  ·⇉· .assoc inl idh idh = refl
+  ·⇉· .assoc inr idh idh = refl
+```
+
+<!--
+```agda
+instance
+  Listing-·⇉·ʰ : ∀ {x y} → Listing (x ·⇉·ʰ y)
+  Listing-·⇉·ʰ = record { univ = all ; has-member = find } where
+    all : ∀ {x y} → List (x ·⇉·ʰ y)
+    all {true}  {true}  = idh ∷ []
+    all {true}  {false} = []
+    all {false} {true}  = inl ∷ inr ∷ []
+    all {false} {false} = idh ∷ []
+
+    find : ∀ {x y} (h : x ·⇉·ʰ y) → is-contr (h ∈ₗ all)
+    find {false} idh = contr (here reflᵢ) λ { (here reflᵢ) → refl }
+    find {true}  idh = contr (here reflᵢ) λ { (here reflᵢ) → refl }
+    find inl = contr (here reflᵢ) λ where
+      (here reflᵢ) → refl
+      (there (here ()))
+      (there (there ()))
+    find inr = contr (there (here reflᵢ)) λ where
+      (there (here reflᵢ)) → refl
+
+  Finite-·⇉·ʰ : ∀ {x y} → Finite (x ·⇉·ʰ y)
+  Finite-·⇉·ʰ = inc auto
 
 ·⇉·-finite : is-finite-precategory ·⇉·
-·⇉·-finite = finite-cat-hom λ where
-  true  true  → auto
-  true  false → auto
-  false true  → auto
-  false false → auto
+·⇉·-finite = finite-cat-hom λ a b → auto
 ```
 -->
 
@@ -89,22 +125,37 @@ involution `not`{.Agda}.
 ·⇇·≡·⇉· = Precategory-path F F-is-iso where
   F : Functor ·⇇· ·⇉·
   F .F₀ x = not x
-  F .F₁ {true} {true} tt = tt
-  F .F₁ {true} {false} f = f
-  F .F₁ {false} {false} tt = tt
-  F .F-id {true} = refl
-  F .F-id {false} = refl
-  F .F-∘ {true} {true} {true} f g = refl
-  F .F-∘ {true} {true} {false} f g = refl
-  F .F-∘ {true} {false} {false} f g = refl
-  F .F-∘ {false} {false} {false} f g = refl
+  F .F₁ idh = idh
+  F .F₁ inl = inl
+  F .F₁ inr = inr
+  F .F-id = refl
+  F .F-∘ idh idh = refl
+  F .F-∘ inl idh = refl
+  F .F-∘ inr idh = refl
+  F .F-∘ idh inl = refl
+  F .F-∘ idh inr = refl
+
+  un : ∀ {x y} → not x ·⇉·ʰ not y → y ·⇉·ʰ x
+  un {true}  {true}  idh = idh
+  un {false} {false} idh = idh
+  un {true}  {false} inl = inl
+  un {true}  {false} inr = inr
+
+  ri : ∀ {x y} (h : not x ·⇉·ʰ not y) → F .F₁ (un h) ≡ h
+  ri {true}  {true}  idh = refl
+  ri {true}  {false} inl = refl
+  ri {true}  {false} inr = refl
+  ri {false} {false} idh = refl
 
   F-is-iso : is-precat-iso F
   F-is-iso .has-is-iso = not-is-equiv
-  F-is-iso .has-is-ff {true} {true} = id-equiv
-  F-is-iso .has-is-ff {true} {false} = id-equiv
-  F-is-iso .has-is-ff {false} {false} = id-equiv
-  F-is-iso .has-is-ff {false} {true} .is-eqv ()
+  F-is-iso .has-is-ff = is-iso→is-equiv λ where
+    .from → un
+    .rinv → ri
+    .linv (idh {true})  → refl
+    .linv (idh {false}) → refl
+    .linv inl → refl
+    .linv inr → refl
 ```
 
 <!--
@@ -125,26 +176,21 @@ walking parallel arrow category to $\cC$.
 
 ```agda
   Fork : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
-  Fork f g = funct where
-    funct : Functor _ _
-    funct .F₀ false = _
-    funct .F₀ true = _
-    funct .F₁ {false} {false} _ = id
-    funct .F₁ {false} {true}  false = f
-    funct .F₁ {false} {true}  true = g
-    funct .F₁ {true} {true}   _ = id
-    funct .F-id {false} = refl
-    funct .F-id {true} = refl
-    funct .F-∘ {false} {false} {false} f g   = sym (idr _)
-    funct .F-∘ {false} {false} {true}  f g   = sym (idr _)
-    funct .F-∘ {false} {true}  {true}  tt _  = sym (idl _)
-    funct .F-∘ {true}  {true}  {true}  tt tt = sym (idl _)
+  Fork f g .F₀ false = _
+  Fork f g .F₀ true  = _
+  Fork f g .F₁ idh   = id
+  Fork f g .F₁ inl   = f
+  Fork f g .F₁ inr   = g
+  Fork f g .F-id = refl
+  Fork f g .F-∘ idh h = introl refl
+  Fork f g .F-∘ inl idh = intror refl
+  Fork f g .F-∘ inr idh = intror refl
 ```
 
-A natural transformation between two diagrams
-$A\ \overset{f}{\underset{g}{\tto}}\ B$ and
-$C\ \overset{f'}{\underset{g'}{\tto}}\ D$ is given by a pair of
-commutative squares
+A natural transformation between two diagrams $A\
+\overset{f}{\underset{g}{\tto}}\ B$ and $C\
+\overset{f'}{\underset{g'}{\tto}}\ D$ is given by a pair of commutative
+squares
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -164,18 +210,17 @@ commutative squares
 ```agda
   Fork-nt : ∀ {A B C D} {f g : Hom A B} {f' g' : Hom C D} {u : Hom A C} {v : Hom B D}  →
             (α : v ∘ f ≡ f' ∘ u) (β : v ∘ g ≡ g' ∘ u) → (Fork f g) => (Fork f' g')
-  Fork-nt {u = u} _ _ ._=>_.η false = u
-  Fork-nt {v = v} _ _ ._=>_.η true = v
-  Fork-nt _ _ .is-natural true true _ = id-comm
-  Fork-nt _ _ .is-natural false false _ = id-comm
-  Fork-nt _ β .is-natural false true true = β
-  Fork-nt α _ .is-natural false true false = α
+  Fork-nt {u = u} _ _ .η false = u
+  Fork-nt {v = v} _ _ .η true  = v
+  Fork-nt _ _ .is-natural _ _ idh = id-comm
+  Fork-nt α _ .is-natural _ _ inl = α
+  Fork-nt _ β .is-natural _ _ inr = β
 
   forkl : (F : Functor ·⇉· C) → Hom (F .F₀ false) (F .F₀ true)
-  forkl F = F .F₁ {false} {true} false
+  forkl F = F .F₁ inl
 
   forkr : (F : Functor ·⇉· C) → Hom (F .F₀ false) (F .F₀ true)
-  forkr F = F .F₁ {false} {true} true
+  forkr F = F .F₁ inr
 
   Fork→Cone
     : ∀ {e} (F : Functor ·⇉· C) {equ : Hom e (F .F₀ false)}
@@ -183,12 +228,11 @@ commutative squares
     → Const e => F
   Fork→Cone {e = e} F {equ = equ} equal = nt where
     nt : Const e => F
-    nt .η true = forkl F ∘ equ
+    nt .η true  = forkl F ∘ equ
     nt .η false = equ
-    nt .is-natural true true tt = idr _ ∙ introl (F .F-id)
-    nt .is-natural false true true = idr _ ∙ equal
-    nt .is-natural false true false = idr _
-    nt .is-natural false false tt = idr _ ∙ introl (F .F-id)
+    nt .is-natural _ _ idh = idr _ ∙ introl (F .F-id)
+    nt .is-natural _ _ inl = idr _
+    nt .is-natural _ _ inr = idr _ ∙ equal
 
   Cofork→Cocone
     : ∀ {e} (F : Functor ·⇉· C) {coequ : Hom (F .F₀ true) e}
@@ -196,10 +240,9 @@ commutative squares
     → F => Const e
   Cofork→Cocone {e = e} F {coequ} coequal = nt where
     nt : F => Const e
-    nt .η true = coequ
+    nt .η true  = coequ
     nt .η false = coequ ∘ forkl F
-    nt .is-natural true true tt = elimr (F .F-id) ∙ sym (idl _)
-    nt .is-natural false true true = sym coequal ∙ sym (idl _)
-    nt .is-natural false true false = sym (idl _)
-    nt .is-natural false false tt = elimr (F .F-id) ∙ sym (idl _)
+    nt .is-natural _ _ idh = elimr (F .F-id) ∙ sym (idl _)
+    nt .is-natural _ _ inl = sym (idl _)
+    nt .is-natural _ _ inr = sym coequal ∙ sym (idl _)
 ```

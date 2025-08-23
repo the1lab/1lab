@@ -26,7 +26,6 @@ module Cat.Displayed.Instances.Opposite
 <!--
 ```agda
 open Cartesian-fibration E cart
-open Displayed E
 open Ix E cart
 open Cat B
 open _=>_
@@ -34,7 +33,7 @@ open _=>_
 private
   module rebase {x} {y} {f : Hom x y} = Fr (base-change f)
   module D = Displayed
-  module E = Disp E
+  open module E = Disp E
   module F = Fib E
   open F renaming (_∘_ to infixr 25 _∘v_) using ()
 
@@ -180,13 +179,13 @@ private abstract
   π-adjust
     : ∀ {a b} {f f' : Hom a b} {x : Ob[ b ]} (p : f ≡ f')
     → π* f x ∘' adjust p ≡[ refl ∙ idr f ∙ p ] π* f' x
-  π-adjust p = π*.commutes _ _ ∙[] to-pathp⁻ refl
+  π-adjust p = π*.commutes _ _ ∙[] to-pathp[]⁻ refl
 
   adjust-refl
     : ∀ {a b} {f : Hom a b} {x : Ob[ b ]}
     → adjust {x = x} (λ i → f) ≡ id'
   adjust-refl = π*.uniquep₂ (idr _) refl (idr _) (adjust refl) id'
-    (to-pathp (ap E.hom[] (π*.commutes _ _) ∙∙ E.hom[]-∙ _ _ ∙∙ E.liberate _))
+    (to-pathp[] (ap E.hom[] (π*.commutes _ _) ∙∙ E.hom[]-∙ _ _ ∙∙ E.liberate _))
     (idr' _)
 ```
 -->
@@ -206,7 +205,7 @@ leads to a correspondingly trivial adjustment.
     J (λ f' p → transport (λ i → Hom[ id ] (p i ^* x) y) h ≡ E.hom[ idl id ] (h ∘' adjust p))
       ( transport-refl _
       ∙ sym (ap E.hom[] (ap₂ _∘'_ refl adjust-refl)
-      ∙ ap E.hom[] (from-pathp⁻ (idr' h)) ∙ E.hom[]-∙ _ _ ∙ E.liberate _))
+      ∙ ap E.hom[] (from-pathp[]⁻ (idr' h)) ∙ E.hom[]-∙ _ _ ∙ E.liberate _))
 ```
 
 To finish, we'll need to connect the `adjust`{.Agda}ment induced by the
@@ -306,6 +305,13 @@ _^op' .D.assoc' {x = x} {y} {z} {f} {g} {h} f' g' h' = to-pathp $
   h' ∘v h [ g' ∘v g [ f' ] ] ∘v h [ γ→ ] ∘v γ→                                    ≡⟨ ap (h' ∘v_) (rebase.pulll (F.pullr refl)) ⟩
   h' ∘v h [ g' ∘v g [ f' ] ∘v γ→ ] ∘v γ→                                          ∎
 ```
+
+<!--
+```agda
+_^op' .D.hom[_] p f' = hom[ idl id ] (f' ∘' adjust p)
+_^op' .D.coh[_] p f' = to-pathp (transp-lift _)
+```
+-->
 
 Having defined the fibration, we can prove the comparison theorem
 mentioned in the introductory paragraph, showing that passing from $\cE$

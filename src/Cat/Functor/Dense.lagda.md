@@ -8,7 +8,9 @@ open import Cat.Functor.Constant
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning.FullyFaithful as Ffr
 import Cat.Functor.Reasoning as Fr
+import Cat.Reasoning as Cat
 ```
 -->
 
@@ -45,16 +47,16 @@ module
   open _=>_
 
   private
-    module C = Precategory C
-    module D = Precategory D
+    module C = Cat C
+    module D = Cat D
     module F = Fr F
 ```
 -->
 
 ```agda
   dense-cocone : ∀ d → F F∘ Dom F (!Const d) => Const d
-  dense-cocone d .η x = x .map
-  dense-cocone d .is-natural _ _ f = f .sq
+  dense-cocone d .η          x     = x .map
+  dense-cocone d .is-natural _ _ f = f .com
 
   is-dense : Type _
   is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) d (dense-cocone d)
@@ -62,9 +64,7 @@ module
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
 $d : \cD$. The importance of density is that, for a dense functor $F$,
-the induced [nerve] functor is fully faithful.
-
-[nerve]: Cat.Functor.Kan.Nerve.html
+the induced [[nerve]] functor is fully faithful.
 
 ```agda
   is-dense→nerve-is-ff : is-dense → is-fully-faithful (Nerve F)
@@ -75,7 +75,7 @@ the induced [nerve] functor is fully faithful.
     inv nt =
       is-dense.universal _
         (λ j → nt .η _ (j .map))
-        λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .sq ∙ D.idl _)
+        λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .com ∙ D.idl _)
 
     invr : ∀ {x y} (f : Nerve F .F₀ x => Nerve F .F₀ y) → Nerve F .F₁ (inv f) ≡ f
     invr f = ext λ x i → is-dense.factors _ {j = ↓obj i} _ _
@@ -97,3 +97,23 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     ff→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
       ext λ x g → h g
 ```
+
+<!--
+```agda
+  nerve-is-ff→is-dense
+    : is-fully-faithful (Nerve F)
+    → is-dense
+  nerve-is-ff→is-dense n-ff d = to-is-colimitp mk refl where
+    open make-is-colimit
+    module nrv = Ffr (Nerve F) n-ff
+
+    mk : make-is-colimit (F F∘ Dom F (!Const d)) d
+    mk .ψ j       = j .map
+    mk .commutes f = f .com ∙ D.eliml refl
+    mk .universal {x = x} eta p = nrv.from λ where
+      .η          i h   → eta (↓obj h)
+      .is-natural x y f → ext λ h → sym (p (↓hom (D.introl refl)))
+    mk .factors eta p = unext (nrv.ε _) _ _ ∙ ap eta (↓Obj-path _ _ refl refl refl)
+    mk .unique eta p other x = nrv.injective₂ (ext (λ i h → x (↓obj h))) (nrv.ε _)
+```
+-->

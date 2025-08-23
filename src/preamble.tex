@@ -6,6 +6,8 @@
 \renewcommand{\rm}[1]{\mathrm{#1}}
 \newcommand{\bb}[1]{\mathbb{#1}}
 \renewcommand{\bf}[1]{\mathbf{#1}}
+\renewcommand{\tt}[1]{\mathtt{#1}}
+\renewcommand{\sf}[1]{\mathsf{#1}}
 
 % Define \cA..\cZ
 \definealphabet{c}{\mathcal}{A}{Z}
@@ -69,6 +71,7 @@
 \newcommand{\set}{\rm{Set}}
 \newcommand{\prop}{\rm{Prop}}
 \newcommand{\psh}{\rm{PSh}}
+\DeclareMathOperator{\El}{El}
 
 \DeclareMathOperator{\Sh}{Sh}
 
@@ -86,10 +89,12 @@
 \knowncat{Rel}
 \knowncat{Par}
 \knowncat{Pos}
+\knowncat{Syn}
 \knownbicat{Cat}
 \knownbicat{Topos}
 \knownbicat{Grpd}
 
+\newcommand{\Gl}{\operatorname{\thecat{Gl}}}
 \newcommand{\strcat}{\Cat_\rm{strict}}
 \newcommand{\intcat}{\{0 \le 1\}}
 \newcommand{\twocat}{\mathbf{2}}
@@ -162,6 +167,7 @@
 \DeclareMathOperator{\reify}{reify}
 \DeclareMathOperator{\reflect}{reflect}
 
+\DeclareMathOperator{\Loop}{\Omega}
 \DeclareMathOperator{\Susp}{\Sigma}
 \DeclareMathOperator{\merid}{merid}
 
@@ -186,3 +192,5 @@
 \newcommand{\abs}[1]{\lvert x \rvert}
 \DeclareMathOperator{\sgn}{sgn}
 \newcommand{\ndiv}{\mathbin{/}}
+
+\newcommand{\join}{\ast}

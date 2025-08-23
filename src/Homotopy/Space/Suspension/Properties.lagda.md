@@ -22,26 +22,29 @@ module Homotopy.Space.Suspension.Properties where
 
 ## Connectedness {defines="connectedness-of-suspensions"}
 
-This section contains the aforementioned proof that suspension increases
-the [[connectedness]] of a space.
+The suspension operation increases the
+[[connectedness]] of spaces: if $A$ is $n$-connected, then $\Susp A$ is
+$(1+n)$-connected. Unfolding this a bit further, if $A$ is a type whose
+homotopy groups below $n$ are trivial, then $\Susp A$ will have trivial
+homotopy groups below $1 + n$.
 
 ```agda
 Susp-is-connected
   : ∀ {ℓ} {A : Type ℓ} n
   → is-n-connected A n → is-n-connected (Susp A) (suc n)
-Susp-is-connected 0 a-conn = inc N
+Susp-is-connected 0 a-conn = inc north
 Susp-is-connected 1 a-conn = ∥-∥-out! do
   pt ← a-conn
   pure $ is-connected∙→is-connected λ where
-    N           → inc refl
-    S           → inc (sym (merid pt))
-    (merid x i) → is-prop→pathp (λ i → ∥_∥.squash {A = merid x i ≡ N})
+    north       → inc refl
+    south       → inc (sym (merid pt))
+    (merid x i) → is-prop→pathp (λ i → ∥_∥.squash {A = merid x i ≡ north})
       (inc refl) (inc (sym (merid pt))) i
 Susp-is-connected {A = A} (suc (suc n)) a-conn =
   n-Tr-elim
     (λ _ → is-n-connected (Susp A) (3 + n))
     (λ _ → is-prop→is-hlevel-suc {n = suc n} (hlevel 1))
-    (λ x → contr (inc N) (n-Tr-elim _ (λ _ → is-hlevel-suc (2 + n) (n-Tr-is-hlevel (2 + n) _ _))
+    (λ x → contr (inc north) (n-Tr-elim _ (λ _ → is-hlevel-suc (2 + n) (n-Tr-is-hlevel (2 + n) _ _))
       (Susp-elim _ refl (ap n-Tr.inc (merid x)) λ pt →
         commutes→square (ap (refl ∙_) (rem₂ .snd _ ∙ sym (rem₂ .snd _))))))
     (conn' .centre)
@@ -51,10 +54,10 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
 
     rem₁ : is-equiv λ b a → b
     rem₁ = is-n-connected→n-type-const
-      {B = n-Tr.inc {n = 3 + n} N ≡ inc S} {A = A}
+      {B = n-Tr.inc {n = 3 + n} north ≡ inc south} {A = A}
       (suc n) (hlevel (2 + n)) a-conn
 
-    rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
+    rem₂ : Σ (inc north ≡ inc south) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
     rem₂ = _ , λ x → sym (rem₁ .is-eqv _ .centre .snd) $ₚ x
 ```
 
@@ -87,13 +90,13 @@ First, the suspension of a contractible type is contractible.
 Susp-is-contr
   : ∀ {ℓ} {A : Type ℓ}
   → is-contr A → is-contr (Susp A)
-Susp-is-contr c .centre = N
-Susp-is-contr c .paths N = refl
-Susp-is-contr c .paths S = merid (c .centre)
+Susp-is-contr c .centre = north
+Susp-is-contr c .paths north = refl
+Susp-is-contr c .paths south = merid (c .centre)
 Susp-is-contr c .paths (merid a i) j = hcomp (∂ i ∨ ∂ j) λ where
   k (k = i0) → merid (c .centre) (i ∧ j)
-  k (i = i0) → N
-  k (j = i0) → N
+  k (i = i0) → north
+  k (j = i0) → north
   k (i = i1) → merid (c .centre) j
   k (j = i1) → merid (c .paths a k) i
 ```
@@ -119,8 +122,8 @@ assuming $A$ holds, a square over the meridians with the given corners.
 ```agda
   Susp-prop-elim²
     : ∀ {ℓ} {B : Susp A → Susp A → Type ℓ}
-    → (bnn : B N N) (bns : B N S)
-    → (bsn : B S N) (bss : B S S)
+    → (bnn : B north north) (bns : B north south)
+    → (bsn : B south north) (bss : B south south)
     → ((a : A) → (i j : I) → B (merid a i) (merid a j)
         [ _ ↦ (λ { (i = i0) (j = i0) → bnn
                  ; (i = i0) (j = i1) → bns
@@ -227,6 +230,6 @@ This concludes the proof that $\Sigma A$ is a set with $(N \equiv S) \simeq A$.
     Susp-prop-is-set : is-set (Susp A)
     Susp-prop-is-set = identity-system→hlevel 1 Code-ids Code-is-prop
 
-  Susp-prop-path : Path (Susp A) N S ≃ A
+  Susp-prop-path : Path (Susp A) north south ≃ A
   Susp-prop-path = identity-system-gives-path Code-ids e⁻¹
 ```

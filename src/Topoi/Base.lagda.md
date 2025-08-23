@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Equivalence.Properties
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Algebras.Limits
@@ -189,16 +189,16 @@ Let's make this more concrete by considering an example: Take $\cC =
 call them $V$ and $E$ --- and two arrows $s, t : V \to E$. A presheaf
 $F$ on this category is given by a set $F_0(V)$, a set $F_0(E)$, and two
 functions $F_1(s), F_1(t) : F_0(E) \to F_0(V)$. We call $F_0(V)$ the
-vertex set, and $F_0(E)$ the edge set. Indeed, a presheaf on this
+node set, and $F_0(E)$ the edge set. Indeed, a presheaf on this
 category is a _directed multigraph_, and maps between presheaves
 _preserve adjacency_.
 
 Our statement about "gluing primitive shapes" now becomes the rather
-pedestrian statement "graphs are made up of vertices and edges". For
+pedestrian statement "graphs are made up of nodes and edges". For
 instance, the graph $\bull \to \bull \to \bull$ can be considered as a
 disjoint union of two edges, which is then glued together in a way such
 that the target of the first is the source of the second. The maps $s, t
-: V \to E$ exhibit the two ways that a vertex can be considered "part
+: V \to E$ exhibit the two ways that a node can be considered "part
 of" an edge.
 
 ## As "logically nice" categories
@@ -276,8 +276,8 @@ value $X$.
 
   incl .F₁ f = NT (λ _ → f) (λ _ _ _ → refl)
 
-  incl .F-id    = trivial!
-  incl .F-∘ f g = trivial!
+  incl .F-id    = ext λ _ _ → refl
+  incl .F-∘ f g = ext λ _ _ → refl
 
   sets : Topos κ (Sets κ)
   sets .site = Lift-cat κ κ ⊤Cat
@@ -296,7 +296,7 @@ sufficient (and necessary) to conclude fully-faithfulness.
     open is-iso
     isic : is-iso (incl .F₁ {x} {y})
     isic .from nt = nt .η _
-    isic .rinv nt = trivial!
+    isic .rinv nt = ext λ _ _ → refl
     isic .linv f  = refl
 ```
 
@@ -358,13 +358,13 @@ components and constructing identity natural transformations.
 ```agda
   sets .L⊣ι .unit .η _ .η _ f            = f
   sets .L⊣ι .unit .η F .is-natural _ _ _ = F .F-id
-  sets .L⊣ι .unit .is-natural _ _ _      = trivial!
+  sets .L⊣ι .unit .is-natural _ _ _      = ext λ _ _ → refl
 
   sets .L⊣ι .counit .η _ x            = x
   sets .L⊣ι .counit .is-natural _ _ _ = refl
 
   sets .L⊣ι .zig = refl
-  sets .L⊣ι .zag = trivial!
+  sets .L⊣ι .zag = ext λ _ _ → refl
 ```
 
 More canonical examples are given by any presheaf category, where both
@@ -569,7 +569,7 @@ functor.
   Slice-topos : Topos ℓ (Slice C X)
   Slice-topos .site = ∫ T.site (T.ι.F₀ X)
   Slice-topos .ι = slice→total F∘ Sliced (T.ι) X
-  Slice-topos .has-ff = ∘-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
+  Slice-topos .has-ff = ∘-is-equiv slice→total-is-ff (Sliced-ff {F = T.ι} (T.has-ff))
   Slice-topos .L = (Σf (T .L⊣ι.counit.ε _) F∘ Sliced (T.L) (T.ι.F₀ X)) F∘ total→slice
 
   Slice-topos .L-lex =
@@ -698,7 +698,7 @@ record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o' ℓ') : Type (lvl
 Geometric-embeddings-compose : Geom[ F ↪ G ] → Geom[ E ↪ F ] → Geom[ E ↪ G ]
 Geometric-embeddings-compose f g =
   record { morphism = f .morphism G∘ g .morphism
-         ; has-ff = ∘-is-equiv (g .has-ff) (f .has-ff) }
+         ; has-ff = ∘-is-equiv (f .has-ff) (g .has-ff) }
   where open Geom[_↪_]
 
 Topos→geometric-embedding : (T : Topos κ E) → Geom[ E ↪ PSh κ (T .Topos.site) ]

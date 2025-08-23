@@ -88,8 +88,9 @@ module _ where private
 ```agda
 _ = _≡_
 Id≃path : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ᵢ y) ≃ (x ≡ y)
-Id≃path {ℓ} {A} {x} {y} =
-  identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y}
+Id≃path .fst p = Id-identity-system .to-path p
+Id≃path {ℓ} {A} {x} {y} .snd =
+  identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y} .snd
 
 module Id≃path {ℓ} {A : Type ℓ} = Ids (Id-identity-system {A = A})
 
@@ -120,7 +121,7 @@ Discreteᵢ : ∀ {ℓ} → Type ℓ → Type ℓ
 Discreteᵢ A = (x y : A) → Dec (x ≡ᵢ y)
 
 Discreteᵢ→discrete : ∀ {ℓ} {A : Type ℓ} → Discreteᵢ A → Discrete A
-Discreteᵢ→discrete d {x} {y} with d x y
+Discreteᵢ→discrete d .decide x y with d x y
 ... | yes reflᵢ = yes refl
 ... | no ¬x=y   = no λ p → ¬x=y (Id≃path.from p)
 
@@ -141,22 +142,36 @@ opaque
   _≡ᵢ?_ : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Discrete A ⦄ (x y : A) → Dec (x ≡ᵢ y)
   x ≡ᵢ? y = discrete-id (x ≡? y)
 
-  ≡ᵢ?-default : ∀ {ℓ} {A : Type ℓ} {x y : A} {d : Discrete A} → (_≡ᵢ?_ ⦃ d ⦄ x y) ≡ discrete-id d
+  ≡ᵢ?-default : ∀ {ℓ} {A : Type ℓ} {x y : A} {d : Discrete A} → (_≡ᵢ?_ ⦃ d ⦄ x y) ≡ discrete-id (d .decide x y)
   ≡ᵢ?-default = refl
 
   ≡ᵢ?-yes : ∀ {ℓ} {A : Type ℓ} {x : A} {d : Discrete A} → (_≡ᵢ?_ ⦃ d ⦄ x x) ≡ yes reflᵢ
-  ≡ᵢ?-yes {d = d} = case d return (λ d → discrete-id d ≡ yes reflᵢ) of λ where
+  ≡ᵢ?-yes {d = d} = case d .decide _ _ return (λ d → discrete-id d ≡ yes reflᵢ) of λ where
     (yes a) → ap yes (is-set→is-setᵢ (Discrete→is-set d) _ _ _ _)
     (no ¬a) → absurd (¬a refl)
 
 {-# REWRITE ≡ᵢ?-default ≡ᵢ?-yes #-}
+
+abstract
+  ≡?-yes' : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x y : A} (p : x ≡ y) → d .decide x y ≡ᵢ yes p
+  ≡?-yes' {x = x} {y} p with x ≡? y
+  ... | no x≠x  = absurd (x≠x p)
+  ... | yes x=y = Id≃path.from (ap yes (Discrete→is-set auto _ _ x=y p))
+
+  ≡?-yes : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ (x : A) → d .decide x x ≡ᵢ yes refl
+  ≡?-yes x = ≡?-yes' λ _ → x
+
+  ≡?-no : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x y : A} (p : x ≠ y) → d .decide x y ≡ᵢ no p
+  ≡?-no {x = x} {y} x≠y with x ≡? y
+  ... | yes x=y = absurd (x≠y x=y)
+  ... | no x≠y' = Id≃path.from (ap no (hlevel 1 _ _))
 
 Discrete-inj'
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
   → (∀ {x y} → f x ≡ᵢ f y → x ≡ᵢ y)
   → ⦃ _ : Discrete B ⦄
   → Discrete A
-Discrete-inj' f inj {x} {y} =
+Discrete-inj' f inj .decide x y =
   invmap (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
 
 instance
@@ -165,7 +180,7 @@ instance
     → ⦃ _ : Discrete A ⦄
     → ⦃ _ : ∀ {x} → Discrete (B x) ⦄
     → Discrete (Σ A B)
-  Discrete-Σ {B = B} {x = a , b} {a' , b'} = case a ≡ᵢ? a' of λ where
+  Discrete-Σ {B = B} .decide (a , b) (a' , b') = case a ≡ᵢ? a' of λ where
     (yes reflᵢ) → case b ≡? b' of λ where
       (yes q) → yes (ap₂ _,_ refl q)
       (no ¬q) → no λ p → ¬q (Σ-inj-set (Discrete→is-set auto) p)
@@ -205,6 +220,8 @@ symᵢ reflᵢ = reflᵢ
 
 _∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
 reflᵢ ∙ᵢ q = q
+
+infixr 30 _∙ᵢ_
 
 apdᵢ
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y : A} (f : (x : A) → B x)

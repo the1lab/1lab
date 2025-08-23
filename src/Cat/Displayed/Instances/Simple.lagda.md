@@ -88,6 +88,8 @@ Simple .Displayed.idl' {f = u} f =
 Simple .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
+Simple .Displayed.hom[_] p f = f
+Simple .Displayed.coh[_] p f = refl
 ```
 
 # Cartesian morphisms
@@ -301,14 +303,14 @@ Simple→Slices = func where
   open Slice-hom
 
   func : Vertical-functor _ _
-  func .F₀' {x} x' = cut {domain = x ⊗₀ x'} π₁
-  func .F₁' {f = f} f' = slice-hom ⟨ f ∘ π₁ , f' ⟩ (sym π₁∘⟨⟩)
-  func .F-id' =
-    Slice-path B $
+  func .F₀' {x} x' = cut {dom = x ⊗₀ x'} π₁
+  func .F₁' {f = f} f' = record where
+    map = ⟨ f ∘ π₁ , f' ⟩
+    com = π₁∘⟨⟩
+  func .F-id' = Slice-path $
     ⟨ id ∘ π₁ , π₂ ⟩ ≡⟨ ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η ⟩
     id               ∎
-  func .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} =
-    Slice-path B $
+  func .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} = Slice-path $
     ⟨ (f ∘ g) ∘ π₁ , f' ∘ ⟨ g ∘ π₁ , g' ⟩ ⟩ ≡⟨ products! has-prods ⟩
     ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨ g ∘ π₁ , g' ⟩       ∎
 ```

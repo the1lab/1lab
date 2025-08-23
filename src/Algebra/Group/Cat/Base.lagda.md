@@ -75,8 +75,8 @@ to-group {A = A} mg = el A (mg .make-group.group-is-set) , (to-group-on mg)
 
 <!--
 ```agda
-LiftGroup : ∀ {ℓ} ℓ' → Group ℓ → Group (ℓ ⊔ ℓ')
-LiftGroup {ℓ} ℓ' G = G' where
+Lift-group : ∀ {ℓ} ℓ' → Group ℓ → Group (ℓ ⊔ ℓ')
+Lift-group {ℓ} ℓ' G = G' where
   module G = Group-on (G .snd)
   open is-group
   open is-monoid
@@ -95,9 +95,9 @@ LiftGroup {ℓ} ℓ' G = G' where
   G' .snd .has-is-group .inversel = ap lift G.inversel
   G' .snd .has-is-group .inverser = ap lift G.inverser
 
-G→LiftG : ∀ {ℓ} (G : Group ℓ) → Groups.Hom G (LiftGroup lzero G)
-G→LiftG G .hom = lift
-G→LiftG G .preserves .pres-⋆ _ _ = refl
+G→LiftG : ∀ {ℓ} (G : Group ℓ) → Groups.Hom G (Lift-group lzero G)
+G→LiftG G .fst = lift
+G→LiftG G .snd .pres-⋆ _ _ = refl
 ```
 -->
 

@@ -111,13 +111,13 @@ open Indexed-product
 Fin-vec-is-product
   : ∀ {n} → Indexed-product (R-Mod R _) {Idx = Fin n} λ _ → representable-module R
 Fin-vec-is-product {n} .ΠF = Fin-vec-module n
-Fin-vec-is-product .π i .hom k = k i
-Fin-vec-is-product .π i .preserves .linear r m n = refl
+Fin-vec-is-product .π i .fst k = k i
+Fin-vec-is-product .π i .snd .linear r m n = refl
 Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
   assemble : R-Mod.Hom Y (Fin-vec-module n)
-  assemble .hom yob ix = f ix · yob
-  assemble .preserves .linear r m n = funext λ i → f i .preserves .linear _ _ _
-Fin-vec-is-product .has-is-ip .commute = trivial!
+  assemble .fst yob ix = f ix · yob
+  assemble .snd .linear r m n = funext λ i → f i .snd .linear _ _ _
+Fin-vec-is-product .has-is-ip .commute = ext λ _ → refl
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  ext λ i ix → ap hom (ps ix) $ₚ i
+  ext λ i ix → ps ix ·ₚ i
 ```

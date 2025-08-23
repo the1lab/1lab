@@ -45,6 +45,16 @@ private module X where primitive
 open X renaming (primSubOut to outS) public
 ```
 
+<!--
+```agda
+Sub-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {φ : I} {u : Partial φ A}
+  → (f : A → B)
+  → A [ φ ↦ u ] → B [ φ ↦ Partial-map f u ]
+Sub-map f a = inS (f (outS a))
+```
+-->
+
 Using extension types, we can represent the accurate type of
 `primPOr`{.Agda}, where the two partial elements `u` and `v` must agree
 on the intersection `i ∧ j`.

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Reflection
 open import Cat.Instances.Coalgebras
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
@@ -16,6 +17,9 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+
+open creates-limit
+open lifts-limit
 ```
 -->
 
@@ -29,7 +33,7 @@ module Cat.Instances.Coalgebras.Limits
 ```agda
 open Cat.Reasoning C
 
-open Total-hom
+open ∫Hom
 open _=>_
 
 open Coalgebra-on
@@ -46,13 +50,13 @@ This module concerns itself with the more general construction of
 focused) construction of [[finite limits of coalgebras]]. Namely, if
 $(W, \eps, \delta)$ is a [[comonad]] on $\cC$ which, as a functor,
 preserves $\cI$-shaped limits, then the forgetful functor $U : \cC_W \to
-\cC$ preserves _and_ reflects those same limits.
+\cC$ *[[creates|created limit]]* those same limits.
 
 <!--
 ```agda
 module
   _ {oi ℓi} {I : Precategory oi ℓi}
-    (pres : ∀ (G : Functor I C) {X η} (l : is-ran !F G X η) → preserves-ran F l)
+    (pres : ∀ (G : Functor I C) → preserves-limit F G)
   where
 ```
 -->
@@ -120,33 +124,33 @@ commutativity condition we remarked was sufficient above; we're done!
 ```agda
       opaque
         ν : Hom (x .fst) (K.₀ tt .fst)
-        ν = counit.ε _ ∘ l'.universal (λ j → F.₀ j .snd .ρ ∘ eta j .hom) λ {x} {y} f →
-          W₁ (F.₁ f .hom) ∘ F.₀ x .snd .ρ ∘ eta x .hom ≡⟨ pulll (F.₁ f .preserves) ⟩
-          (F.₀ y .snd .ρ ∘ F.₁ f .hom) ∘ eta x .hom    ≡⟨ pullr (ap hom (nat _)) ⟩
-          F.₀ y .snd .ρ ∘ eta y .hom                   ∎
+        ν = counit.ε _ ∘ l'.universal (λ j → F.₀ j .snd .ρ ∘ eta j .fst) λ {x} {y} f →
+          W₁ (F.₁ f .fst) ∘ F.₀ x .snd .ρ ∘ eta x .fst ≡⟨ pulll (F.₁ f .snd) ⟩
+          (F.₀ y .snd .ρ ∘ F.₁ f .fst) ∘ eta x .fst    ≡⟨ pullr (ap fst (nat _)) ⟩
+          F.₀ y .snd .ρ ∘ eta y .fst                   ∎
 
-        ν-β : ∀ {j} → phi .η j .hom ∘ ν ≡ eta j .hom
+        ν-β : ∀ {j} → phi .η j .fst ∘ ν ≡ eta j .fst
         ν-β {j} =
-          phi .η j .hom ∘ ν                         ≡⟨ pulll (sym (counit.is-natural _ _ _)) ⟩
+          phi .η j .fst ∘ ν                         ≡⟨ pulll (sym (counit.is-natural _ _ _)) ⟩
           (counit.ε _ ∘ l'.ψ j) ∘ l'.universal _ _  ≡⟨ pullr (l'.factors _ _) ⟩
-          counit.ε _ ∘ F.₀ j .snd .ρ ∘ eta j .hom   ≡⟨ cancell (F.₀ _ .snd .ρ-counit) ⟩
-          eta j .hom                                ∎
+          counit.ε _ ∘ F.₀ j .snd .ρ ∘ eta j .fst   ≡⟨ cancell (F.₀ _ .snd .ρ-counit) ⟩
+          eta j .fst                                ∎
 ```
 
 <!--
 ```agda
     mk : make-is-limit F (K.₀ tt)
-    mk .ψ j .hom       = l.ψ j
-    mk .ψ j .preserves = phi .η j .preserves
+    mk .ψ j .fst = l.ψ j
+    mk .ψ j .snd = phi .η j .snd
     mk .commutes f = ext (l.commutes f)
-    mk .universal eta nat .hom = ν eta nat
-    mk .universal eta nat .preserves = l'.unique₂ _
-      (λ f → pulll (F.₁ f .preserves) ∙ pullr (ap hom (nat _)))
-      (λ j → W.pulll (ν-β eta nat) ∙ eta j .preserves)
-      (λ j → pulll (phi .η j .preserves) ∙ pullr (ν-β eta nat))
+    mk .universal eta nat .fst = ν eta nat
+    mk .universal eta nat .snd = l'.unique₂ _
+      (λ f → pulll (F.₁ f .snd) ∙ pullr (ap fst (nat _)))
+      (λ j → W.pulll (ν-β eta nat) ∙ eta j .snd)
+      (λ j → pulll (phi .η j .snd) ∙ pullr (ν-β eta nat))
     mk .factors eta nat = ext (ν-β eta nat)
     mk .unique eta nat other comm = ext (l.unique₂ _
-      (λ f → ap hom (nat f)) (λ j → ap hom (comm j)) (λ j → ν-β eta nat))
+      (λ f → ap fst (nat f)) (λ j → ap fst (comm j)) (λ j → ν-β eta nat))
 
     abstract
       fixup : ∀ {j} → mk .ψ j ≡ phi .η j
@@ -187,8 +191,8 @@ by having $W(\psi_j) \circ \nu = F(j) \circ \psi_j$ for every $j$.
     opaque
       ν : Hom L.apex (W₀ L.apex)
       ν = L'.universal (λ j → F.₀ j .snd .ρ ∘ L.ψ j) λ {x} {y} h →
-        W₁ (F.₁ h .hom) ∘ F.₀ x .snd .ρ ∘ L.ψ x ≡⟨ pulll (F.₁ h .preserves) ⟩
-        (F.₀ y .snd .ρ ∘ F.₁ h .hom) ∘ L.ψ x    ≡⟨ pullr (sym (L.eps .is-natural _ _ _) ∙ elimr L.Ext.F-id) ⟩
+        W₁ (F.₁ h .fst) ∘ F.₀ x .snd .ρ ∘ L.ψ x ≡⟨ pulll (F.₁ h .snd) ⟩
+        (F.₀ y .snd .ρ ∘ F.₁ h .fst) ∘ L.ψ x    ≡⟨ pullr (sym (L.eps .is-natural _ _ _) ∙ elimr L.Ext.F-id) ⟩
         F.₀ y .snd .ρ ∘ L.ψ y                   ∎
 
       ν-β : ∀ {j} → W₁ (L.ψ j) ∘ ν ≡ F.₀ j .snd .ρ ∘ L.ψ j
@@ -222,13 +226,13 @@ To show that $\eps \nu = \id$, it will suffice to show that $\psi_j \eps
 <!--
 ```agda
     coalg .ρ-comult = L''.unique₂ _
-      (λ f → W.extendl (F.₁ f .preserves) ∙ ap₂ _∘_ refl
-        ( pulll (F.₁ f .preserves)
+      (λ f → W.extendl (F.₁ f .snd) ∙ ap₂ _∘_ refl
+        ( pulll (F.₁ f .snd)
         ∙ pullr (sym (L.eps .is-natural _ _ f) ∙ elimr L.Ext.F-id)))
-      (λ j → W.extendl ν-β ∙ ap₂ _∘_ refl ν-β)
       (λ j → pulll (sym (comult.is-natural _ _ _))
           ∙∙ pullr ν-β
-          ∙∙ extendl (sym (F.₀ j .snd .ρ-comult)))
+          ∙∙ extendl (F.₀ j .snd .ρ-comult))
+      (λ j → W.extendl ν-β ∙ ap₂ _∘_ refl ν-β)
 
   open Ran
   open is-ran
@@ -249,8 +253,8 @@ this condition is precisely $W(\psi_j) \circ \nu = Fj \circ \psi_j$,
 i.e., the defining property of $\nu$!
 
 ```agda
-  Coalgebra-limit F lim .eps .η x .hom       = lim .eps .η x
-  Coalgebra-limit F lim .eps .η x .preserves = Coalgebra-on-limit.ν-β F lim
+  Coalgebra-limit F lim .eps .η x .fst = lim .eps .η x
+  Coalgebra-limit F lim .eps .η x .snd = Coalgebra-on-limit.ν-β F lim
   Coalgebra-limit F lim .eps .is-natural x y f = ext $
     ap₂ _∘_ refl (sym (lim .Ext .Functor.F-id)) ∙ lim .eps .is-natural x y f
 ```
@@ -274,3 +278,16 @@ i.e., the defining property of $\nu$!
       .natural x y f → eliml refl ∙ intror (lim .Ext .Functor.F-id)
 ```
 -->
+
+Putting our results together, we obtain that the forgetful functor
+$U : \cC_W \to \cC$ creates limits of shape $\cI$, as promised.
+
+```agda
+  πᶠ-lifts-limits : lifts-limits-of I (πᶠ (Coalgebras-over W))
+  πᶠ-lifts-limits lim .lifted = Coalgebra-limit _ lim
+  πᶠ-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
+
+  πᶠ-creates-limits : creates-limits-of I (πᶠ (Coalgebras-over W))
+  πᶠ-creates-limits .has-lifts-limit = πᶠ-lifts-limits
+  πᶠ-creates-limits .reflects = is-limit-coalgebra _
+```

@@ -270,10 +270,13 @@ zero+indexed-coproduct-projective→projective {ι = ι} z coprod ∐P-pro i =
 
 ## Enough projectives
 
+:::{.definition #enough-projectives}
 A category $\cC$ is said to have **enough projectives** if for
-object $X : \cC$ there is some $P \epi X$ with $P$ projective.
+every object $X : \cC$ there is some $P \epi X$ with $P$ projective.
 We will refer to these projectives as **projective presentations**
 of $X$.
+:::
+
 
 Note that there are two variations on this condition: one where
 there *merely* exists a projective presentation for every $X$, and
@@ -285,5 +288,5 @@ record Projectives : Type (o ⊔ ℓ) where
   field
     Pro : Ob → Ob
     present : ∀ {X} → Pro X ↠ X
-    projective : ∀ {X} → is-projective (Pro X)
+    pro-projective : ∀ {X} → is-projective (Pro X)
 ```

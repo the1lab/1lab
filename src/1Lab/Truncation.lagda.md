@@ -12,6 +12,7 @@ open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
 open import 1Lab.Type.Sigma
 open import 1Lab.Inductive
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -22,7 +23,7 @@ open import Data.Dec.Base
 -->
 
 ```agda
-module 1Lab.HIT.Truncation where
+module 1Lab.Truncation where
 ```
 
 # Propositional truncation {defines="propositional-truncation"}
@@ -152,6 +153,13 @@ truncation extends to a functor:
         → (A → B) → ∥ A ∥ → ∥ B ∥
 ∥-∥-map f (inc x)        = inc (f x)
 ∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
+```
+
+This means that propositional truncation preserves equivalences.
+
+```agda
+∥-∥-ap : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → ∥ A ∥ ≃ ∥ B ∥
+∥-∥-ap f = prop-ext! (∥-∥-map (Equiv.to f)) (∥-∥-map (Equiv.from f))
 ```
 
 <!--

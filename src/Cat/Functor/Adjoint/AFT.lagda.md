@@ -82,8 +82,8 @@ factoring condition corresponding to weak initiality.
 ```agda
   module _ {X} (S :  Solution-set X) where
     solution-set→family : S .index → ⌞ X ↙ F ⌟
-    solution-set→family i .x = tt
-    solution-set→family i .y = S .dom i
+    solution-set→family i .dom = tt
+    solution-set→family i .cod = S .dom i
     solution-set→family i .map = S .map i
 
     solution-set→family-is-weak-initial

@@ -166,6 +166,17 @@ Equiv→is-hlevel : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
 Equiv→is-hlevel n f = equiv→is-hlevel n _ (Equiv.inverse f .snd)
 ```
 
+<!--
+```agda
+is-hlevel-ap : ∀ n → A ≃ B → is-hlevel A n ≃ is-hlevel B n
+is-hlevel-ap n f = prop-ext
+  (is-hlevel-is-prop n)
+  (is-hlevel-is-prop n)
+  (Equiv→is-hlevel n (f e⁻¹))
+  (Equiv→is-hlevel n f)
+```
+-->
+
 ## Functions into n-types
 
 We can now prove that the $n$-types are closed under all type formers
@@ -335,6 +346,14 @@ recover $n$ from the expected type of the application.
 ```agda
 hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
 hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
+```
+
+We also provide a helper for finding a value of any contractible type,
+such as the $n$-fold iterated path type of a type of h-level $n$.
+
+```agda
+hlevel! : ∀ {ℓ} {T : Type ℓ} → ⦃ H-Level T 0 ⦄ → T
+hlevel! ⦃ c ⦄ = c .H-Level.has-hlevel .centre
 ```
 
 <!--

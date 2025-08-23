@@ -16,6 +16,12 @@ in
     # somehow depends on mime-types
     labHaskellPackages = super.haskell.packages.ghc946.override (old: {
       overrides = self: super: {
+        infinite-list = super.callHackageDirect {
+          pkg    = "infinite-list";
+          ver    = "0.1.2";
+          sha256 = "sha256-OUNCBVKCHFPjtJK/Lm4PG6ldKvqSySA0TwnaY9estzo=";
+        } {};
+
         Agda = noJunk (super.callCabal2nixWithOptions "Agda" (thunkSource ./dep/Agda) "-f optimise-heavily -f debug" {});
       };
     });

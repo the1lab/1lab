@@ -117,6 +117,6 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
         (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ∙∙
         glue (X , Y , f , α .η (X , Y) Fxy) ∙∙
         (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
-  Coends .F-id = trivial!
-  Coends .F-∘ f g = trivial!
+  Coends .F-id    = ext λ _ _ → refl
+  Coends .F-∘ f g = ext λ _ _ → refl
 ```

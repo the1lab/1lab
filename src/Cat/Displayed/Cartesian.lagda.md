@@ -13,9 +13,8 @@ import Cat.Reasoning
 module Cat.Displayed.Cartesian
   {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
 
-open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Morphism E
+open Cat.Reasoning B
 open DR E
 ```
 
@@ -114,15 +113,13 @@ composite, rather than displayed directly over a composite.
   universal' : ∀ {u u'} {m : Hom u a} {k : Hom u b}
              → (p : f ∘ m ≡ k) (h' : Hom[ k ] u' b')
              → Hom[ m ] u' a'
-  universal' {u' = u'} p h' =
-    universal _ (coe1→0 (λ i → Hom[ p i ] u' b') h')
+  universal' {u' = u'} p h' = universal _ (hom[ sym p ] h')
 
   abstract
     commutesp : ∀ {u u'} {m : Hom u a} {k : Hom u b}
               → (p : f ∘ m ≡ k) (h' : Hom[ k ] u' b')
               → f' ∘' universal' p h' ≡[ p ] h'
-    commutesp {u' = u'} p h' =
-      to-pathp⁻ $ commutes _ (coe1→0 (λ i → Hom[ p i ] u' b') h')
+    commutesp {u' = u'} p h' = to-pathp[]⁻ $ commutes _ _
 
     universalp : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
             → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
@@ -137,7 +134,7 @@ composite, rather than displayed directly over a composite.
             → (m' : Hom[ m₁ ] u' a')
             → f' ∘' m' ≡[ p ] h' → m' ≡[ q ] universal' r h'
     uniquep p q r {h' = h'} m' s =
-      to-pathp⁻ (unique m' (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h'))
+      to-pathp[]⁻ (unique m' (from-pathp[]⁻ s) ∙ from-pathp[]⁻ (universalp p q r h'))
 
     uniquep₂
       : ∀ {u u'} {m₁ m₂ : Hom u a} {k : Hom u b}
@@ -146,10 +143,10 @@ composite, rather than displayed directly over a composite.
       → f' ∘' m₁' ≡[ p ] h'
       → f' ∘' m₂' ≡[ r ] h'
       → m₁' ≡[ q ] m₂'
-    uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp⁻ $
-         unique m₁' (from-pathp⁻ α)
-      ∙∙ from-pathp⁻ (universalp p q r _)
-      ∙∙ ap (coe1→0 (λ i → Hom[ q i ] u' a')) (sym (unique m₂' (from-pathp⁻ β)))
+    uniquep₂ {u' = u'} p q r m₁' m₂' α β = to-pathp[]⁻ $
+         unique m₁' (from-pathp[]⁻ α)
+      ∙∙ from-pathp[]⁻ (universalp p q r _)
+      ∙∙ ap hom[] (sym (unique m₂' (from-pathp[]⁻ β)))
 ```
 
 Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
@@ -201,20 +198,14 @@ is-cartesian-is-prop {f' = f'} cart cart' = worker where
   open is-cartesian
 
   worker : cart ≡ cart'
-  worker i .universal m h' =
-    cart' .unique (cart .universal m h') (cart .commutes _ _) i
-  worker i .commutes m h' =
-    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-      (ap (f' ∘'_) (cart' .unique _ _))
-      (cart .commutes m h')
-      (cart' .commutes m h')
-      refl i
-  worker i .unique m' p =
-    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
-      refl
-      (cart .unique m' p)
-      (cart' .unique m' p)
-      (cart' .unique _ _) i
+  worker i .universal m h' = cart' .unique
+    (cart .universal m h')
+    (cart .commutes _ _) i
+  worker i .commutes m h' = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+    (ap (f' ∘'_) (cart' .unique _ _)) (cart .commutes m h')
+    (cart' .commutes m h') refl i
+  worker i .unique m' p = is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+    refl (cart .unique m' p) (cart' .unique m' p) (cart' .unique _ _) i
 ```
 </details>
 
@@ -236,15 +227,12 @@ subst-is-cartesian {g = g} {f' = f'} {g' = g'} p p' f-cart = g-cart where
   open is-cartesian
 
   g-cart : is-cartesian g g'
-  g-cart .universal m h' =
-    f'.universal' (ap (_∘ m) p) h'
-  g-cart .commutes m h' =
-    cast[] $
-      g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
-      f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
-      h' ∎
-  g-cart .unique m' q =
-    f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
+  g-cart .universal m h' = f'.universal' (ap (_∘ m) p) h'
+  g-cart .commutes m h' = cast[] $
+    g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
+    f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
+    h' ∎
+  g-cart .unique m' q = f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
 ```
 -->
 
@@ -331,9 +319,9 @@ Furthermore, the identity morphism is cartesian.
 cartesian-id : ∀ {x x'} → is-cartesian id (id' {x} {x'})
 cartesian-id .is-cartesian.universal m h' = hom[ idl m ] h'
 cartesian-id .is-cartesian.commutes m h' =
-  from-pathp⁻ (idl' _) ∙ hom[]-∙ _ _ ∙ liberate _
+  from-pathp[]⁻ (idl' _) ∙ hom[]-∙ _ _ ∙ liberate _
 cartesian-id .is-cartesian.unique m' p =
-  from-pathp⁻ (symP $ idl' _) ∙ weave _ _ _ p
+  from-pathp[]⁻ (symP $ idl' _) ∙ weave _ _ _ p
 
 idcart : ∀ {x} {x' : Ob[ x ]} → Cartesian-morphism id x' x'
 idcart .Cartesian-morphism.hom' = id'
@@ -465,8 +453,7 @@ cartesian-domain-unique
   → is-cartesian f f''
   → x' ≅↓ x''
 cartesian-domain-unique {f' = f'} {f'' = f''} f'-cart f''-cart =
-  make-iso[ id-iso ] to* from* invl* invr*
-  where
+  make-iso[ id-iso ] to* from* invl* invr* where
     module f' = is-cartesian f'-cart
     module f'' = is-cartesian f''-cart
 
@@ -516,7 +503,7 @@ cartesian-vertical-retraction-stable {f' = f'} {f''} {ϕ} f-cart ϕ-sect factor 
     f' ∘' universal m h'               ≡[]⟨ commutes m h' ⟩
     h'                                 ∎
   f''-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    from-pathp⁻ $ post-section' ϕ-sect $
+    from-pathp[]⁻ $ post-section' ϕ-sect $
     uniquep₂ _ (idl m) refl (ϕ.section' ∘' m') (universal m h')
       unique-lemma
       (commutes m h')

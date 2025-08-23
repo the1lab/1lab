@@ -72,11 +72,11 @@ module _
 ```agda
   is-pointwise-lan : ∀ {eta : G => E F∘ F} → is-lan F G E eta → Type _
   is-pointwise-lan lan =
-    ∀ (x : D.Ob) → preserves-lan (Functor.op (Hom-into D x)) lan
+    ∀ (x : D.Ob) → preserves-is-lan (opFʳ (Hom-into D x)) lan
 
   is-pointwise-ran : ∀ {eps : E F∘ F => G} → is-ran F G E eps → Type _
   is-pointwise-ran ran =
-    ∀ (x : D.Ob) → preserves-ran (Hom-from D x) ran
+    ∀ (x : D.Ob) → preserves-is-ran (Hom-from D x) ran
 ```
 
 Absolute Kan extensions are trivially pointwise, since they are
@@ -209,7 +209,7 @@ constraints are satisfied.
       F' .F₀ c' = ↓colim.coapex c'
       F' .F₁ f = ↓colim.universal _
         (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
-        (λ f → ↓colim.commutes _ (↓hom {β = f .β} (C'.pullr (f .sq)
+        (λ f → ↓colim.commutes _ (↓hom {bot = f .bot} (C'.pullr (f .com)
             ∙∙ C'.elim-inner refl
             ∙∙ sym (C'.idl _))))
 ```
@@ -257,12 +257,12 @@ adjustment to $\alpha$:
 ```agda
       has-lan : is-lan F G F' eta
       has-lan .σ {M = M} α .η c' = ↓colim.universal c'
-        (λ j → M .F₁ (j .map) D.∘ α .η (j .x))
+        (λ j → M .F₁ (j .map) D.∘ α .η (j .dom))
         (λ f → D.pullr (α .is-natural _ _ _)
-            ∙ pulll M ((f .sq) ∙ C'.idl _))
+            ∙ pulll M ((f .com) ∙ C'.idl _))
       has-lan .σ {M = M} α .is-natural x y f = ↓colim.unique₂ _ _
         (λ f → D.pullr (α .is-natural _ _ _)
-             ∙ pulll M (C'.pullr (f .sq) ∙ C'.elim-inner refl))
+             ∙ pulll M (C'.pullr (f .com) ∙ C'.elim-inner refl))
         (λ j → D.pullr (↓colim.factors _ _ _)
              ∙ ↓colim.factors _ _ _)
         (λ j → D.pullr (↓colim.factors _ _ _)
@@ -282,8 +282,8 @@ properties of colimits.
         σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
         (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
         (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
-        M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
-        M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
+        M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .dom)) ⟩
+        M .F₁ (j .map) D.∘ α .η (j .dom)                          ∎
 ```
 
 All that remains is to bundle up the data!
@@ -341,7 +341,7 @@ end up being off by a bunch of natural isomorphisms.
     → (colimits : is-cocomplete ℓ ℓ D)
     → (H : Functor D E)
     → is-cocontinuous ℓ ℓ H
-    → preserves-lan H (Lan.has-lan (cocomplete→lan F G colimits))
+    → preserves-is-lan H (Lan.has-lan (cocomplete→lan F G colimits))
   preserves-colimits→preserves-pointwise-lan {E = E} colimits H cocont =
     natural-isos→is-lan idni idni HF'-cohere fixup $
       comma-colimits→lan.has-lan F (H F∘ G) H-↓colim
@@ -412,7 +412,7 @@ words, the extension we constructed is pointwise.
     → is-pointwise-lan (Lan.has-lan (cocomplete→lan F G colim))
   cocomplete→pointwise-lan colim d =
     preserves-colimits→preserves-pointwise-lan
-      colim (Functor.op (Hom-into D d))
+      colim (opFʳ (Hom-into D d))
       (よ-reverses-colimits d)
 ```
 
@@ -459,7 +459,7 @@ We begin by constructing a cocone for every object $c' : \cC'$.
   ↓cocone c' .η j = L .F₁ (j .map) D.∘ eta .η _
   ↓cocone c' .is-natural _ _ f =
     D.pullr (eta .is-natural _ _ _ )
-    ∙ pulll L (f .sq ∙ C'.idl _)
+    ∙ pulll L (f .com ∙ C'.idl _)
     ∙ sym (D.idl _)
 ```
 
@@ -487,7 +487,7 @@ representability nonsense to get there.
       represent-↓cocone
         : ∀ (d : D.Ob)
         → F F∘ Dom p (!Const c') => Const d
-        → Functor.op (よ₀ D d) F∘ F => Functor.op (よ₀ C' c') F∘ p
+        → opFʳ (よ₀ D d) F∘ F => opFʳ (よ₀ C' c') F∘ p
       represent-↓cocone d α .η c f = α .η (↓obj f)
       represent-↓cocone d α .is-natural _ _ f = funext λ g →
         α .is-natural (↓obj (g C'.∘ p .F₁ f)) (↓obj g) (↓hom (sym (C'.idl _)))
@@ -496,7 +496,7 @@ representability nonsense to get there.
       pointwise-↓cocone
         : ∀ (d : D.Ob)
         → (α : F F∘ Dom p (!Const c') => Const d)
-        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+        → opFʳ (Hom-into D d) F∘ L => opFʳ (Hom-into C' c')
       pointwise-↓cocone d α = pointwise.σ d (represent-↓cocone d α)
 ```
 
@@ -508,7 +508,7 @@ the usual Yoneda-like argument.
       inv .η d α =
         pointwise-↓cocone d α .η c' C'.id
       inv .is-natural x y f = funext λ α →
-        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
+        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (opNʳ (よ₁ D f) ◂ L)}
           (ext λ c g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
 ```
 
@@ -523,13 +523,13 @@ _pointwise_, and remember that we're working with a Kan extension.
       invl = ext λ d α p↓c' →
         pointwise-↓cocone d α .η _ C'.id D.∘ L .Functor.F₁ (p↓c' .map) D.∘ eta .η _ ≡⟨ D.pulll (pointwise.σ d (represent-↓cocone d α) .is-natural _ _ _ $ₚ _) ⟩
         pointwise-↓cocone d α .η _ ⌜ C'.id C'.∘ p↓c' .map ⌝ D.∘ eta .η _            ≡⟨ ap! (C'.idl _) ⟩
-        pointwise-↓cocone d α .η _ (p↓c' .map) D.∘ eta .η (x p↓c')                  ≡⟨ pointwise.σ-comm d ηₚ _ $ₚ p↓c' .map ⟩
+        pointwise-↓cocone d α .η _ (p↓c' .map) D.∘ eta .η (p↓c' .dom)               ≡⟨ pointwise.σ-comm d ηₚ _ $ₚ p↓c' .map ⟩
         α .η (↓obj (p↓c' .map))                                                     ≡⟨ ap (α .η) (↓Obj-path _ _ refl refl refl) ⟩
         α .η p↓c'                                                                   ∎
 
       vaguely-yoneda
         : ∀ {d : D.Ob} (α : D.Hom (L .F₀ c') d)
-        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+        → opFʳ (Hom-into D d) F∘ L => opFʳ (Hom-into C' c')
       vaguely-yoneda α .η c'' f = α D.∘ L .F₁ f
       vaguely-yoneda α .is-natural x y f =
         funext λ g → D.pullr (sym (L .F-∘ _ _))
@@ -576,13 +576,13 @@ construct the requisite cocone.
 
       path
         : {c : C.Ob} {x y : ↓Obj p (!Const (p .F₀ c))} (f : ↓Hom p (!Const (p .F₀ c)) x y)
-        → p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α) ≡ p .F₁ (equiv→inverse p-ff (x .map))
+        → p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .top) ≡ p .F₁ (equiv→inverse p-ff (x .map))
       path {c} {x} {y} f =
-        p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α)          ≡⟨ p .F-∘ _ _ ⟩
-        p .F₁ (equiv→inverse p-ff (y .map)) C'.∘ p .F₁ (f .α) ≡⟨ equiv→counit p-ff _ C'.⟩∘⟨refl ⟩
-        y .map C'.∘ p .F₁ (f .α)                              ≡⟨ f .sq ⟩
-        C'.id C'.∘ x .map                                     ≡⟨ C'.idl _ ⟩
-        x .map                                                ≡˘⟨ equiv→counit p-ff _ ⟩
+        p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .top)          ≡⟨ p .F-∘ _ _ ⟩
+        p .F₁ (equiv→inverse p-ff (y .map)) C'.∘ p .F₁ (f .top) ≡⟨ equiv→counit p-ff _ C'.⟩∘⟨refl ⟩
+        y .map C'.∘ p .F₁ (f .top)                              ≡⟨ f .com ⟩
+        C'.id C'.∘ x .map                                       ≡⟨ C'.idl _ ⟩
+        x .map                                                  ≡˘⟨ equiv→counit p-ff _ ⟩
         p .F₁ (equiv→inverse p-ff (x .map)) ∎
 
       inv : ∀ c → D.Hom (L .F₀ (p .F₀ c)) (F .F₀ c)
@@ -625,7 +625,7 @@ module _
       (λ f → collapse G $ ff→faithful {F = F} ff $
            F .F-∘ _ _
         ∙∙ ap₂ C'._∘_ (ff.ε _) refl
-        ∙∙ f .sq
+        ∙∙ f .com
         ∙∙ C'.idl _
         ∙∙ sym (ff.ε _))
     ni .eta∘inv x = ↓colim.unique₂ _ _

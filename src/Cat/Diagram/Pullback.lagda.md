@@ -165,6 +165,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     done .p₁∘universal = ap₂ _∘_ (sym p) refl ∙ α.p₁∘universal
     done .p₂∘universal = ap₂ _∘_ (sym r) refl ∙ α.p₂∘universal
     done .unique β γ = α.unique (ap₂ _∘_ p refl ∙ β) (ap₂ _∘_ r refl ∙ γ)
+
+unquoteDecl Pullback-path = declare-record-path Pullback-path (quote Pullback)
 ```
 -->
 

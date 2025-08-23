@@ -122,6 +122,10 @@ fairly nasty. Associativity is especially bad.
         (f [ v ∘ w ] ∘i g') .ihom          ≡⟨ ∘i-ihom refl (assoc _ _ _) (assoc _ _ _) (assoc _ _ _) (transport-refl _) ⟩
         ((f [ v ]) [ w ] ∘i g [ w ]) .ihom ≡˘⟨ ap ihom (∘i-nat (f [ v ]) g w) ⟩
         (f [ v ] ∘i g) .ihom ∘ w           ∎
+  disp .hom[_] p f' .ihom    = f' .ihom
+  disp .hom[_] p f' .has-src = f' .has-src
+  disp .hom[_] p f' .has-tgt = f' .has-tgt ∙ ap₂ _∘_ refl p
+  disp .coh[_] p f' = Internal-hom-pathp _ _ refl
 ```
 </details>
 

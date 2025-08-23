@@ -50,8 +50,8 @@ Ab-is-additive : is-additive (Ab ℓ)
 Ab-is-additive .has-ab = Ab-ab-category
 Ab-is-additive .has-terminal .top = from-commutative-group (Zero-group {ℓ}) (λ x y → refl)
 Ab-is-additive .has-terminal .has⊤ x =
-  contr (total-hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
-    λ x → trivial!
+  contr (∫hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
+    λ x → ext λ _ → refl
 
 Ab-is-additive .has-prods A B .apex = A ⊕ B
 Ab-is-additive .has-prods A B .π₁ = _

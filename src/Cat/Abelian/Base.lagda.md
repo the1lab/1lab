@@ -21,7 +21,7 @@ import Algebra.Group.Ab.Hom as Ab
 
 import Cat.Reasoning as Cat
 
-open Total-hom
+open ∫Hom
 ```
 -->
 
@@ -79,12 +79,10 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
       → (f ∘ g) + (f ∘ h) ≡ f ∘ (g + h)
 
   ∘map : ∀ {A B C} → Ab.Hom (Hom-grp B C ⊗ Hom-grp A B) (Hom-grp A C)
-  ∘map {A} {B} {C} =
-    from-bilinear-map (Hom-grp B C) (Hom-grp A B) (Hom-grp A C)
-      (record { map     = _∘_
-              ; pres-*l = λ x y z → sym (∘-linear-l x y z)
-              ; pres-*r = λ x y z → sym (∘-linear-r x y z)
-              })
+  ∘map {A} {B} {C} = from-bilinear-map record where
+    map           = _∘_
+    pres-*l x y z = sym (∘-linear-l x y z)
+    pres-*r x y z = sym (∘-linear-r x y z)
 ```
 
 <details>
@@ -177,9 +175,9 @@ module _ where
   open Ab-category
   Ab-ab-category : ∀ {ℓ} → Ab-category (Ab ℓ)
   Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
-  Ab-ab-category .∘-linear-l f g h = trivial!
+  Ab-ab-category .∘-linear-l f g h = ext λ _ → refl
   Ab-ab-category .∘-linear-r f g h = ext λ _ →
-    sym (f .preserves .is-group-hom.pres-⋆ _ _)
+    sym (f .snd .is-group-hom.pres-⋆ _ _)
 ```
 
 ## Additive categories {defines="additive-category"}
@@ -482,7 +480,7 @@ where the isomorphism is our canonical map from before.
 ```agda
       f→kercoker : m.Hom (cut f) (cut (Ker.kernel (Coker.coeq f)))
       f→kercoker ./-Hom.map = decompose f .fst ∘ Coker.coeq (Ker.kernel f)
-      f→kercoker ./-Hom.commutes = sym (decompose f .snd)
+      f→kercoker ./-Hom.com = sym (decompose f .snd)
 ```
 
 Conversely, map $\ker (\coker f) \to A$ is the composite
@@ -514,7 +512,7 @@ This is indeed a map in the slice using that both isomorphisms and
 coequalisers are epic to make progress.
 
 ```agda
-      kercoker→f ./-Hom.commutes = path where
+      kercoker→f ./-Hom.com = path where
         lemma =
           is-coequaliser→is-epic (Coker.coeq _) (Coker.has-is-coeq _) _ _ $
                pullr (Coker.factors _)

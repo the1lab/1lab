@@ -29,17 +29,17 @@ open is-pullback
 module Cat.Instances.Presheaf.Omega {ℓ} (C : Precategory ℓ ℓ) where
 ```
 
-# The subobject classifier presheaf
+# The subobject classifier presheaf {defines="subobject-classifier-presheaf"}
 
 The purpose of this module is to prove that the category $\psh(\cC)$
 over a small precategory $\cC$ has a [[subobject classifier]]: the
 object $\Omega$ is the presheaf of [[sieves]] and the generic subobject
-$top$ sends each $U : \cC$ to the maximal sieve on $U$.
+$\top$ sends each $U : \cC$ to the maximal sieve on $U$.
 
 <!--
 ```agda
 open Lim ℓ C
-open Sub {C = PSh ℓ C} PSh-pullbacks
+open Sub PSh-pullbacks
 open Functor
 open Cat C
 open _=>_
@@ -47,7 +47,7 @@ open _=>_
 -->
 
 ```agda
-tru : Terminal.top PSh-terminal => Sieves {C = C}
+tru : ⊤PSh => Sieves
 tru .η x _            = maximal'
 tru .is-natural x y f = ext λ a {V} f → Ω-ua _ _
 ```
@@ -66,15 +66,15 @@ and naturality, while the proof of naturality for the overall
 construction is just functoriality of $P$.
 
 ```agda
-psh-name : {A : ⌞ PSh ℓ C ⌟} → Subobject A → A => Sieves {C = C}
+psh-name : {A : ⌞ PSh ℓ C ⌟} → Subobject A → A => Sieves
 psh-name {A} P .η x e .arrows {y} h = elΩ (fibre (P .map .η y) (A ⟪ h ⟫ e))
 psh-name {A} P .η x e .closed {f = f} = elim! λ x p g →
   let
     q =
-      P .map .η _ (P .domain ⟪ g ⟫ x) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
-      A ⟪ g ⟫ (P .map .η _ x)         ≡⟨ ap₂ (A .F₁) refl p ⟩
-      A ⟪ g ⟫ (A ⟪ f ⟫ e)             ≡⟨ PSh.collapse A refl ⟩
-      A ⟪ f ∘ g ⟫ e                   ∎
+      P .map .η _ (P .dom ⟪ g ⟫ x) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
+      A ⟪ g ⟫ (P .map .η _ x)      ≡⟨ ap₂ (A .F₁) refl p ⟩
+      A ⟪ g ⟫ (A ⟪ f ⟫ e)          ≡⟨ PSh.collapse A refl ⟩
+      A ⟪ f ∘ g ⟫ e                ∎
   in inc (_ , q)
 psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
   (□-map λ (e , p) → e , p ∙ PSh.collapse P refl)
@@ -84,11 +84,11 @@ psh-name {P} so .is-natural x y f = ext λ x {V} f → Ω-ua
 <!--
 ```agda
 PSh-omega : Subobject-classifier (PSh ℓ C)
-PSh-omega .Subobject-classifier.Ω = Sieves {C = C}
+PSh-omega .Subobject-classifier.Ω = Sieves
 
-PSh-omega .Subobject-classifier.true .Sub.domain      = _
+PSh-omega .Subobject-classifier.true .Sub.dom         = _
 PSh-omega .Subobject-classifier.true .Sub.map         = tru
-PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = trivial!
+PSh-omega .Subobject-classifier.true .Sub.monic _ _ _ = ext λ _ _ → refl
 
 PSh-omega .generic .name = psh-name
 ```
@@ -121,6 +121,7 @@ map $P' \to P$ which appears dotted in the diagram.
 
 ```agda
 PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
+  emb : ∀ {x} → is-embedding (P .map .η x)
   emb = is-monic→is-embedding-at (P .monic)
 
   square→pt
@@ -132,7 +133,7 @@ PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
       prf : maximal' ≡ psh-name P .η _ (p₁' .η _ b)
       prf = sym (p ηₚ _ $ₚ b)
 
-      memb : Σ[ e ∈ P .domain ʻ a ] P .map .η _ e ≡ (A ⟪ id ⟫ p₁' .η a b)
+      memb : Σ[ e ∈ P .dom ʻ a ] P .map .η _ e ≡ (A ⟪ id ⟫ p₁' .η a b)
       memb = □-out (emb _) (subst (id ∈_) prf tt)
     in memb .fst , memb .snd ∙ PSh.F-id A
 ```
@@ -154,7 +155,7 @@ means that, by construction, it satisfies the universal property of a
 pullback.</summary>
 
 ```agda
-  pb : is-pullback (PSh ℓ C) _ _ (NT (λ _ _ → _) (λ x y f → refl)) _
+  pb : is-pullback (PSh ℓ C) (P .map) (psh-name P) (NT (λ _ _ → _) (λ x y f → refl)) tru
   pb .square = ext λ i x {V} f → to-is-true (inc (_ , P .map .is-natural _ _ _ $ₚ _))
 
   pb .universal path .η i e = square→pt path e .fst
@@ -162,14 +163,14 @@ pullback.</summary>
     let
       (pt , q) = square→pt p a
       r =
-        P .map .η y (P .domain ⟪ f ⟫ pt) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
-        A ⟪ f ⟫ P .map .η x pt           ≡⟨ ap₂ (A .F₁) refl q ⟩
-        A ⟪ f ⟫ (p₁' .η x a)             ≡˘⟨ p₁' .is-natural _ _ _ $ₚ _ ⟩
-        p₁' .η y (P' ⟪ f ⟫ a)            ∎
+        P .map .η y (P .dom ⟪ f ⟫ pt) ≡⟨ P .map .is-natural _ _ _ $ₚ _ ⟩
+        A ⟪ f ⟫ P .map .η x pt        ≡⟨ ap₂ (A .F₁) refl q ⟩
+        A ⟪ f ⟫ (p₁' .η x a)          ≡˘⟨ p₁' .is-natural _ _ _ $ₚ _ ⟩
+        p₁' .η y (P' ⟪ f ⟫ a)         ∎
     in emb _ (square→pt p _) (_ , r)
 
   pb .p₁∘universal {p = p} = ext λ a b → square→pt p b .snd
-  pb .p₂∘universal = trivial!
+  pb .p₂∘universal = ext λ _ _ → refl
   pb .unique {p = p} q r = ext λ a b → ap fst $
     emb _ (_ , q ηₚ a $ₚ b) (square→pt p _)
 ```
@@ -247,7 +248,7 @@ fibres of $P \mono A$ over $A(f)(x)$.
           nm .η i x .arrows (g ∘ h)     ≡⟨ to-is-true (nm .η i x .closed hg h) ⟩
           ⊤Ω                            ∎
 
-        members→names : to-presheaf (nm .η i x) => P .domain
+        members→names : to-presheaf (nm .η i x) => P .dom
         members→names = pb .universal includes
 
         it = members→names .η U (f , wit)

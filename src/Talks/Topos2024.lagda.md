@@ -15,7 +15,6 @@ Amélia Liao
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude hiding (funext ; sym ; subst ; Extensional ; ext ; uncurry ; id ; _∘_ ; _==_ ; _*_ ; _+_)
 
-open import Algebra.Group.Concrete.Abelian
 open import Algebra.Group.Ab.Tensor
 open import Algebra.Group.Cat.Base hiding (Displayed)
 open import Algebra.Group.Ab

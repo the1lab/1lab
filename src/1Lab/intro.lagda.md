@@ -1084,7 +1084,7 @@ former, $\sum$! Indeed, the short discussion there also made some
 mention of the introduction rule, but let's reiterate with more clarity
 here.
 
-If we have some index type $A : \ty_\ell$, and a family of types $B \to
+If we have some index type $A : \ty_\ell$, and a family of types $B : A \to
 \ty_{\ell'}$, then we can form the **dependent sum type** $\sum_{(x
 : A)} B$. When the index is clear from context, we let ourselves omit
 the variable, and write $\sum B$. Since $\sum B$ is a type, it lives in

@@ -169,7 +169,7 @@ Coeq-univ {C = C} {f = f} {g = g} =
     cr' (f , f-coeqs) = Coeq-rec f (happly f-coeqs)
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
-    islinv f = trivial!
+    islinv f = ext λ _ → refl
 ```
 
 </div>
@@ -289,6 +289,12 @@ quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R
     → Path (A / R) (inc x) (inc y)
 quot r = glue (_ , _ , r)
 ```
+
+<!--
+```agda
+{-# DISPLAY Coeq (/-left {_} {A} {_} {R}) /-right = A / R #-}
+```
+-->
 
 Using `Coeq-elim`{.Agda}, we can recover the elimination principle for
 quotients:
@@ -461,8 +467,7 @@ Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong rdec {x} {y} =
-  elim! {P = λ x → ∀ y → Dec (x ≡ y)} go _ _ where
+Discrete-quotient cong rdec .decide = elim! go where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)

@@ -7,11 +7,11 @@ open import 1Lab.Type
   hiding (Σ-syntax ; case_of_ ; case_return_of_)
   public
 
-open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
+open import 1Lab.Path public
 
-open import 1Lab.Path.IdentitySystem public
 open import 1Lab.Path.IdentitySystem.Interface public
+open import 1Lab.Path.IdentitySystem public
 
 open import Meta.Brackets public
 open import Meta.Append public
@@ -34,21 +34,17 @@ open import 1Lab.Function.Surjection public
 
 open import 1Lab.Univalence public
 
-open import 1Lab.Univalence.SIP
-  renaming (_≃[_]_ to _≃[_]s_)
-  public
-
-open import 1Lab.Type.Pi public
-open import 1Lab.Type.Sigma public
 open import 1Lab.Type.Pointed public
+open import 1Lab.Type.Sigma public
+open import 1Lab.Type.Pi public
 
-open import 1Lab.HIT.Truncation
+open import 1Lab.Truncation
   hiding (∃-syntax)
   public
 
 open import 1Lab.Reflection.Marker public
 open import 1Lab.Reflection.Record
-  using (declare-record-iso)
+  using (declare-record-iso; declare-record-path; declare-record-hlevel)
   public
 open import 1Lab.Reflection.HLevel public
 open import 1Lab.Reflection.Regularity public

@@ -3,6 +3,7 @@
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Coproduct
 open import Cat.Instances.Functor
+open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 open import Data.Sum
@@ -32,6 +33,19 @@ private module PSh = Cat (PSh κ C)
 -->
 
 ```agda
+⊥PSh : ⌞ PSh κ C ⌟
+⊥PSh .F₀ x = el! (Lift κ ⊥)
+⊥PSh .F₁ _ ()
+⊥PSh .F-id = ext λ ()
+⊥PSh .F-∘ _ _ = ext λ ()
+
+PSh-initial : Initial (PSh κ C)
+PSh-initial = record { has⊥ = uniq } where
+  uniq : is-initial (PSh κ C) ⊥PSh
+  uniq x .centre .η _ ()
+  uniq x .centre .is-natural _ _ _ = ext λ ()
+  uniq x .paths f = ext λ _ ()
+
 _⊎PSh_ : (A B : PSh.Ob) → PSh.Ob
 (A ⊎PSh B) .F₀ i = el! (∣ A .F₀ i ∣ ⊎ ∣ B .F₀ i ∣)
 (A ⊎PSh B) .F₁ h (inl x) = inl (A .F₁ h x)
@@ -67,16 +81,12 @@ PSh-coproducts A B = coprod where
   coprod .has-is-coproduct .is-coproduct.[_,_] f g .is-natural x y h = funext λ where
     (inl x) → f .is-natural _ _ _ $ₚ _
     (inr x) → g .is-natural _ _ _ $ₚ _
-  coprod .has-is-coproduct .[]∘ι₁ = trivial!
-  coprod .has-is-coproduct .[]∘ι₂ = trivial!
+  coprod .has-is-coproduct .[]∘ι₁ = ext λ _ _ → refl
+  coprod .has-is-coproduct .[]∘ι₂ = ext λ _ _ → refl
   coprod .has-is-coproduct .unique p q = ext λ where
     a (inl x) → unext p a x
     a (inr x) → unext q a x
-```
 
-The simplest colimit to construct are the [[coequalisers]].
-
-```agda
 PSh-coequaliser
   : ∀ {X Y} (f g : PSh.Hom X Y)
   → Coequaliser (PSh κ C) f g
@@ -105,6 +115,6 @@ PSh-coequaliser {X = X} {Y = Y} f g = coequ where
     Coeq-rec (e' .η x) (p ηₚ x $ₚ_)
   coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = ext λ x →
     e' .is-natural _ _ _ $ₚ _
-  coequ .has-is-coeq .factors = trivial!
+  coequ .has-is-coeq .factors = ext λ _ _ → refl
   coequ .has-is-coeq .unique {F = F} p = reext! p
 ```

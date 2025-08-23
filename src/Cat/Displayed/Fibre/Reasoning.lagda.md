@@ -19,9 +19,8 @@ module Cat.Displayed.Fibre.Reasoning
 <!--
 ```agda
 private
-  module B = Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
+  module B = Cat.Reasoning B
   module Fib {x} = Cat.Reasoning (Fibre E x)
 
 open Fib public
@@ -45,9 +44,8 @@ private variable
   p : f ≡ g
 
 opaque
-  to-fibre
-    : f' ∘' g' ≡[ B.idl _ ] f' Fib.∘ g'
-  to-fibre = to-pathp refl
+  to-fibre : f' ∘' g' ≡[ B.idl _ ] f' Fib.∘ g'
+  to-fibre = to-pathp[] refl
 
   over-fibre
     : f' ∘' g' ≡[ p ] h' ∘' i'
@@ -58,13 +56,13 @@ opaque
   pullrf
     : g' ∘' h' ≡[ p ] i'
     → (f' Fib.∘ g') ∘' h' ≡[ p ∙ sym (B.idl _) ] f' ∘' i'
-  pullrf p' = cast[] $ to-pathp⁻ (whisker-l (B.idl _)) ∙[] pullr[] _ p'
+  pullrf p' = cast[] $ to-pathp[]⁻ (whisker-l (B.idl _)) ∙[] pullr[] _ p'
 
 opaque
   pulllf
     : f' ∘' g' ≡[ p ] i'
     → f' ∘' (g' Fib.∘ h') ≡[ p ∙ sym (B.idr _) ] i' ∘' h'
-  pulllf p' = cast[] $ to-pathp⁻ (whisker-r (B.idl _)) ∙[] pulll[] _ p'
+  pulllf p' = cast[] $ to-pathp[]⁻ (whisker-r (B.idl _)) ∙[] pulll[] _ p'
 
 opaque
   pushrf
@@ -73,7 +71,7 @@ opaque
     → f' ∘' i' ≡[ B.idl _ ∙ p ] (f' Fib.∘ g') ∘' h'
   pushrf {h = h} p' =
     cast[] $ pushr[] _ p'
-    ∙[] to-pathp (unwhisker-l (ap (B._∘ h) (B.idl _)) (B.idl _))
+    ∙[] to-pathp[] (unwhisker-l (ap (B._∘ h) (B.idl _)) (B.idl _))
 
 opaque
   pushlf
@@ -82,7 +80,7 @@ opaque
     → i' ∘' h' ≡[ B.idr _ ∙ p ] f' ∘' (g' Fib.∘ h')
   pushlf {f = f} p' =
     cast[] $ pushl[] _ p'
-    ∙[] to-pathp (unwhisker-r (ap (f B.∘_) (B.idl _)) (B.idl _))
+    ∙[] to-pathp[] (unwhisker-r (ap (f B.∘_) (B.idl _)) (B.idl _))
 
 opaque
   extendrf
@@ -90,9 +88,9 @@ opaque
     → g' ∘' i' ≡[ p ] h' ∘' k'
     → (f' Fib.∘ g') ∘' i' ≡[ p ] (f' Fib.∘ h') ∘' k'
   extendrf {k = k} p' = cast[] $
-    to-pathp⁻ (whisker-l (B.idl _))
+    to-pathp[]⁻ (whisker-l (B.idl _))
     ∙[] extendr[] _ p'
-    ∙[] to-pathp (unwhisker-l (ap (B._∘ k) (B.idl _)) (B.idl _))
+    ∙[] to-pathp[] (unwhisker-l (ap (B._∘ k) (B.idl _)) (B.idl _))
 
 opaque
   extendlf
@@ -100,21 +98,21 @@ opaque
     → f' ∘' h' ≡[ p ] g' ∘' k'
     → f' ∘' (h' Fib.∘ i') ≡[ p ] g' ∘' (k' Fib.∘ i')
   extendlf {g = g} p' = cast[] $
-    to-pathp⁻ (whisker-r (B.idl _))
+    to-pathp[]⁻ (whisker-r (B.idl _))
     ∙[] extendl[] _ p'
-    ∙[] to-pathp (unwhisker-r (ap (g B.∘_) (B.idl _)) (B.idl _))
+    ∙[] to-pathp[] (unwhisker-r (ap (g B.∘_) (B.idl _)) (B.idl _))
 
 opaque
   cancellf
     : {p : f B.∘ B.id ≡ B.id}
     → f' ∘' g' ≡[ p ] id'
     → f' ∘' (g' Fib.∘ h') ≡[ p ] h'
-  cancellf p' = cast[] $ to-pathp⁻ (whisker-r (B.idl _)) ∙[] cancell[] _ p'
+  cancellf p' = cast[] $ to-pathp[]⁻ (whisker-r (B.idl _)) ∙[] cancell[] _ p'
 
 opaque
   cancelrf
     : {p : B.id B.∘ h ≡ B.id}
     → g' ∘' h' ≡[ p ] id'
     → (f' Fib.∘ g') ∘' h' ≡[ p ] f'
-  cancelrf p' = cast[] $ to-pathp⁻ (whisker-l (B.idl _)) ∙[] cancelr[] _ p'
+  cancelrf p' = cast[] $ to-pathp[]⁻ (whisker-l (B.idl _)) ∙[] cancelr[] _ p'
 ```

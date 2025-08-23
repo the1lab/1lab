@@ -122,7 +122,7 @@ Surjections-split =
   ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-set A → is-set B
   → (f : A → B)
   → is-surjective f
-  → ∥ (∀ b → fibre f b) ∥
+  → is-split-surjective f
 ```
 
 We show that these two statements are logically equivalent^[they are also
@@ -135,7 +135,7 @@ AC→Surjections-split ac Aset Bset f =
 
 Surjections-split→AC : Surjections-split → Axiom-of-choice
 Surjections-split→AC ss {P = P} Bset Pset h = ∥-∥-map
-  (Equiv.to (Π-cod≃ (Fibre-equiv P)))
+  (Equiv.to (Π-ap-cod (Fibre-equiv P)))
   (ss (Σ-is-hlevel 2 Bset Pset) Bset fst λ b →
     ∥-∥-map (Equiv.from (Fibre-equiv P b)) (h b))
 ```
@@ -161,12 +161,12 @@ prove that $\Sigma P$ is also discrete. Since the path type $N \equiv S$ in $\Si
 is equivalent to $P$, this concludes the proof.
 
 ```agda
-  Discrete-ΣP : Discrete (Susp ∣ P ∣)
-  Discrete-ΣP = ∥-∥-rec (Dec-is-hlevel 1 (Susp-prop-is-set (hlevel 1) _ _))
-    (λ f → Discrete-inj (fst ∘ f) (right-inverse→injective 2→Σ (snd ∘ f))
-                        Discrete-Bool)
-    section
+  instance
+    Discrete-ΣP : Discrete (Susp ∣ P ∣)
+    Discrete-ΣP = case section of λ f → Discrete-inj (fst ∘ f)
+      (right-inverse→injective 2→Σ (snd ∘ f))
+      Discrete-Bool
 
   AC→LEM : Dec ∣ P ∣
-  AC→LEM = Susp-prop-path (hlevel 1) <≃> Discrete-ΣP
+  AC→LEM = Susp-prop-path (hlevel 1) <≃> auto
 ```

@@ -25,8 +25,8 @@ private
   module B = Cat.Reasoning B
   module ∫E = Cat.Reasoning (∫ E)
 open Cat.Displayed.Morphism E
-open Displayed E
-open Total-hom
+open Cat.Displayed.Reasoning E
+open ∫Hom
 ```
 -->
 
@@ -63,10 +63,10 @@ module _ (base-c : is-category B) (disp-c : is-category-displayed) where
     piece-together
       : ∀ {x y} (p : x B.≅ y) {A : Ob[ x ]} {B : Ob[ y ]} (f : A ≅[ p ] B)
       → (x , A) ∫E.≅ (y , B)
-    piece-together p f =
-      ∫E.make-iso (total-hom (p .B.to) (f .to')) (total-hom (p .B.from) (f .from'))
-        (total-hom-path E (p .B.invl) (f .invl'))
-        (total-hom-path E (p .B.invr) (f .invr'))
+    piece-together p f = ∫E.make-iso
+      (∫hom (p .B.to) (f .to')) (∫hom (p .B.from) (f .from'))
+      (∫Hom-path E (p .B.invl) (f .invl'))
+      (∫Hom-path E (p .B.invr) (f .invr'))
 ```
 
 We first tackle the case where $f : A \cong B$ is vertical, i.e. $A$ and
@@ -82,7 +82,7 @@ looks like the identity (vertical) isomorphism.
           ((x , B) , piece-together B.id-iso f)
     contract-vertical-iso {x} {A} B f =
       Σ-pathp (λ i → x , pair i .fst)
-        (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to'))
+        (∫E.≅-pathp refl _ (∫Hom-pathp E _ _ refl λ i → pair i .snd .to'))
       where
         pair = disp-c B.id-iso A
           (A , id-iso↓)
@@ -150,10 +150,10 @@ is-category-fibrewise' b wit = is-category-fibrewise b wit' where
       (λ (x , i) → x , make-iso[ B.id-iso ]
         (i .F.to)
         (i .F.from)
-        (to-pathp (i .F.invl))
-        (to-pathp (i .F.invr)))
+        (to-pathp[] (i .F.invl))
+        (to-pathp[] (i .F.invr)))
       (λ (x , i) → x , F.make-iso (i .to') (i .from')
-        (from-pathp (i .invl')) (from-pathp (i .invr')))
+        (from-pathp[] (i .invl')) (from-pathp[] (i .invr')))
       (λ (x , i) → Σ-pathp refl (≅[]-path refl))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)

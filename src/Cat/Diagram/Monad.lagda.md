@@ -16,8 +16,8 @@ import Cat.Reasoning
 
 open _=>_ using (is-natural)
 open Displayed
-open Total-hom
 open Functor
+open ∫Hom
 ```
 -->
 
@@ -78,7 +78,7 @@ associativity laws exactly analogous to those of a monoid.
       μ-assoc : ∀ {x} → μ x C.∘ M₁ (μ x) ≡ μ x C.∘ μ (M₀ x)
 ```
 
-# Algebras over a monad {defines="monad-algebra algebra-over-a-monad"}
+# Algebras over a monad {defines="monad-algebra algebra-over-a-monad algebras-over-a-monad"}
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
 algebraic theory. For instance, the [[free monoid]] monad describes the
@@ -107,7 +107,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 
 ```agda
       ν-unit : ν C.∘ η ob ≡ C.id
-      ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ μ ob
+      ν-mult : ν C.∘ μ ob ≡ ν C.∘ M₁ ν
 ```
 
 <!--
@@ -181,38 +181,24 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (M : Monad-on F) wher
 
 ```agda
   Monad-algebras : Displayed C (o ⊔ ℓ) ℓ
-  Monad-algebras .Ob[_] = Algebra-on M
-  Monad-algebras .Hom[_] f α β = f C.∘ α .ν ≡ β .ν C.∘ M₁ f
-  Monad-algebras .Hom[_]-set _ _ _ = hlevel 2
+  Monad-algebras = with-thin-display record where
+    Ob[_]        = Algebra-on M
+    Hom[_] f α β = f C.∘ α .ν ≡ β .ν C.∘ M₁ f
 ```
 
 Defining the identity and composition maps is mostly an exercise in
 categorical yoga:
 
 ```agda
-  Monad-algebras .id' {X} {α} =
-    C.id C.∘ α .ν    ≡⟨ C.idl _ ∙ C.intror M-id ⟩
-    α .ν C.∘ M₁ C.id ∎
-  Monad-algebras ._∘'_ {_} {_} {_} {α} {β} {γ} {f = f} {g = g} p q =
-    (f C.∘ g) C.∘ α .ν       ≡⟨ C.pullr q ⟩
-    f C.∘ β .ν C.∘ M₁ g      ≡⟨ C.pulll p ⟩
-    (γ .ν C.∘ M₁ f) C.∘ M₁ g ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
-    γ .ν C.∘ M₁ (f C.∘ g)    ∎
+    id' {X} {α} =
+      C.id C.∘ α .ν    ≡⟨ C.idl _ ∙ C.intror M-id ⟩
+      α .ν C.∘ M₁ C.id ∎
+    _∘'_ {_} {_} {_} {α} {β} {γ} {f = f} {g = g} p q =
+      (f C.∘ g) C.∘ α .ν       ≡⟨ C.pullr q ⟩
+      f C.∘ β .ν C.∘ M₁ g      ≡⟨ C.pulll p ⟩
+      (γ .ν C.∘ M₁ f) C.∘ M₁ g ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
+      γ .ν C.∘ M₁ (f C.∘ g)    ∎
 ```
-
-<details>
-<summary>
-The equations all hold trivially, as the type of displayed morphisms
-over $f$ is a proposition.
-</summary>
-
-```agda
-  Monad-algebras .idr' _ = prop!
-  Monad-algebras .idl' _ = prop!
-  Monad-algebras .assoc' _ _ _ = prop!
-```
-
-</details>
 
 The [[total category]] of this displayed category is referred
 to as the **Eilenberg-Moore** category of $M$.
@@ -248,13 +234,14 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} {M : Monad-on F} wher
       → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
       → Extensional (Algebra-hom M (a , A) (b , B)) ℓr
     Extensional-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
-      (λ p → total-hom-path (Monad-algebras M) p prop!) sa
+      (λ p → ∫Hom-path (Monad-algebras M) p prop!) sa
 ```
 -->
 
 By projecting the underlying object of the algebras, and the underlying
 morphisms of the homomorphisms between them, we can define a functor
-from `Eilenberg-Moore`{.Agda} back to the underlying category:
+from `Eilenberg-Moore`{.Agda} back to the underlying category.
+In prose, we denote this functor as $U : \cC^M \to \cC$.
 
 ```agda
   Forget-EM : Functor (Eilenberg-Moore M) C
@@ -280,11 +267,11 @@ routine algebra.
       open C.is-invertible f-inv
 
       f-alg-inv : Algebra-hom M (Y , β) (X , α)
-      f-alg-inv .hom = inv
-      f-alg-inv .preserves =
+      f-alg-inv .fst = inv
+      f-alg-inv .snd =
         inv C.∘ β .ν                                 ≡⟨ ap₂ C._∘_ refl (C.intror (MR.annihilate invl)) ⟩
-        inv C.∘ β .ν C.∘ M₁ (f .hom) C.∘ M.M₁ inv    ≡⟨ ap₂ C._∘_ refl (C.extendl (sym (f .preserves))) ⟩
-        inv C.∘ f .hom C.∘ α .ν C.∘ M.M₁ inv         ≡⟨ C.cancell invr ⟩
+        inv C.∘ β .ν C.∘ M₁ (f .fst) C.∘ M.M₁ inv    ≡⟨ ap₂ C._∘_ refl (C.extendl (sym (f .snd))) ⟩
+        inv C.∘ f .fst C.∘ α .ν C.∘ M.M₁ inv         ≡⟨ C.cancell invr ⟩
         α .ν C.∘ M₁ inv                              ∎
 ```
 
@@ -340,7 +327,7 @@ become those of the $M$-action.
   Free-EM : Functor C (Eilenberg-Moore M)
   Free-EM .F₀ A .fst = M₀ A
   Free-EM .F₀ A .snd .ν = μ A
-  Free-EM .F₀ A .snd .ν-mult = μ-assoc
+  Free-EM .F₀ A .snd .ν-mult = sym μ-assoc
   Free-EM .F₀ A .snd .ν-unit = μ-unitl
 ```
 
@@ -363,8 +350,8 @@ algebraic action:
 ~~~
 
 ```agda
-  Free-EM .F₁ f .hom = M₁ f
-  Free-EM .F₁ f .preserves = sym $ mult.is-natural _ _ _
+  Free-EM .F₁ f .fst = M₁ f
+  Free-EM .F₁ f .snd = sym $ mult.is-natural _ _ _
   Free-EM .F-id = ext M-id
   Free-EM .F-∘ f g = ext (M-∘ f g)
 ```
@@ -383,8 +370,8 @@ $\cC^M$.
   Free-EM⊣Forget-EM .unit =
     NT M.η M.unit.is-natural
   Free-EM⊣Forget-EM .counit =
-    NT (λ x → total-hom (x .snd .ν) (sym (x .snd .ν-mult)))
-      (λ x y f → ext (sym (f .preserves)))
+    NT (λ x → ∫hom (x .snd .ν) (x .snd .ν-mult))
+      (λ x y f → ext (sym (f .snd)))
   Free-EM⊣Forget-EM .zig = ext μ-unitr
   Free-EM⊣Forget-EM .zag {x} = x .snd .ν-unit
 ```
@@ -456,9 +443,9 @@ Eilenberg-Moore category can be restricted to the Kleisli category.
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit ._=>_.η = η
   Free-Kleisli⊣Forget-Kleisli ._⊣_.unit .is-natural = unit.is-natural
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit ._=>_.η ((X , α) , free) =
-    total-hom (α .ν) (sym (α .ν-mult))
+    ∫hom (α .ν) (α .ν-mult)
   Free-Kleisli⊣Forget-Kleisli ._⊣_.counit .is-natural _ _ f =
-    ext (sym (f .preserves))
+    ext (sym (f .snd))
   Free-Kleisli⊣Forget-Kleisli ._⊣_.zig = ext μ-unitr
   Free-Kleisli⊣Forget-Kleisli ._⊣_.zag {(X , α) , free} =
     α . ν-unit

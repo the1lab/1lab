@@ -52,5 +52,8 @@ instance
 
   Map-Irr : Map (eff Irr)
   Map-Irr = record { map = λ where f (forget x) → forget (f x) }
+
+  Idiom-Irr : Idiom (eff Irr)
+  Idiom-Irr = record { pure = λ x → forget x ; _<*>_ = λ where (forget f) (forget x) → forget (f x) }
 ```
 -->

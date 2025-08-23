@@ -2,7 +2,7 @@
 
 
 # Canonical location for work-in-progress stuff
-src/wip/
+wip/
 
 # Developer configuration
 /Makefile
