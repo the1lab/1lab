@@ -77,8 +77,8 @@ there [[merely]] exists a lifting $w$.
 
 We can also talk about objects with left or right lifting properties.
 An object $P : \cC$ left lefts against a morphism $f$ if for every
-cospan $P \xto{u} X \xfrom{f} Y$, there merely exists a map $w : \cC(P, X)$
-with $f \circ w = u$.
+cospan $P \xto{u} X \xot{f} Y$, there merely exists a map $w : \cC(P,
+X)$ with $f \circ w = u$.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -91,8 +91,8 @@ with $f \circ w = u$.
 \end{tikzcd}
 ~~~
 
-Similarly, an object $A$ right lifts against a morphism $f$ if for
-every span $Y \xfrom{f} X \xto{u} A$, there merely exists a map $w : \cC(Y, A)$
+Similarly, an object $A$ right lifts against a morphism $f$ if for every
+span $Y \xot{f} X \xto{u} A$, there merely exists a map $w : \cC(Y, A)$
 with $w \circ f = u$.
 
 \begin{tikzcd}
