@@ -97,23 +97,21 @@ counit laws for $\delta$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]
-  X \\
+  \& X \\
   \\
-  {F(f)} \&\& {F(\lambda^2_f)} \\
+  Y \& {F(f)} \& {F(\lambda^2_f)} \\
   \\
-  {G(\rho_f)} \&\&\&\& {G(\rho_{\lambda^2_f})} \\
-  \\
-  Y
-  \arrow["{\lambda_f}", from=1-1, to=3-1]
-  \arrow["{\lambda_{\lambda^2_f}}", from=1-1, to=3-3]
-  \arrow["f"', curve={height=48pt}, dotted, from=1-1, to=7-1]
-  \arrow["{l_1}"', dashed, from=3-1, to=3-3]
-  \arrow["{\lambda_{\rho_f}}", from=3-1, to=5-1]
-  \arrow["{\rho_{\lambda^2_f}}"{description}, dotted, from=3-3, to=5-1]
-  \arrow["{\lambda_{\rho_{\lambda^2_f}}}"{description}, from=3-3, to=5-5]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{l_2}"{description}, curve={height=18pt}, dashed, from=5-1, to=5-5]
-  \arrow["{\rho_{\lambda_f}}", dotted, from=5-1, to=7-1]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\rho_{\rho_{\lambda^2_f}}}"{description}, curve={height=18pt}, from=5-5, to=5-1]
+  \& {G(\rho_f)} \&\& {G(\rho_{\lambda^2_f})}
+  \arrow["f"', dotted, from=1-2, to=3-1]
+  \arrow["{\lambda_f}", from=1-2, to=3-2]
+  \arrow["{\lambda_{\lambda^2_f}}", from=1-2, to=3-3]
+  \arrow["{l_1}", dashed, from=3-2, to=3-3]
+  \arrow["{\lambda_{\rho_f}}"', from=3-2, to=5-2]
+  \arrow["{\rho_{\lambda^2_f}}"', dotted, from=3-3, to=5-2]
+  \arrow["{\lambda_{\rho_{\lambda^2_f}}}", from=3-3, to=5-4]
+  \arrow["{\rho_{\lambda_f}}", dotted, from=5-2, to=3-1]
+  \arrow["{l_2}"', dashed, from=5-2, to=5-4]
+  \arrow["{\rho_{\rho_{\lambda^2_f}}}"', curve={height=24pt}, from=5-4, to=5-2]
 \end{tikzcd}\]
 ~~~
 
