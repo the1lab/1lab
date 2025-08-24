@@ -38,6 +38,7 @@ Unsurprisingly, these are dual to the equations of a monad.
 
 <!--
 ```agda
+    no-eta-equality
     open Functor W renaming (F₀ to W₀ ; F₁ to W₁ ; F-id to W-id ; F-∘ to W-∘) public
 
     module counit = _=>_ counit renaming (η to ε)
