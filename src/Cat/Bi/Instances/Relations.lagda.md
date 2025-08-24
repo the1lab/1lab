@@ -335,7 +335,6 @@ rectangle is a pullback, too.
   rem₀ = pasting-left→outer-is-pullback
     (st.inter .has-is-pb)
     (rotate-pullback (X .has-is-pb))
-    (pulll (st.inter .square) ∙ extendr (sym (X .square)))
 ```
 
 Now, by definition, we have $\xi_1\alpha = u_1x_1$, and $s_1v_1$ is also
@@ -423,8 +422,7 @@ want to look at the formalisation.
         (sym (r[st].inter .p₂∘universal))
         (sym (pullr (sym (factor st.it .factors)) ∙ π₂∘⟨⟩)))
       (pasting-left→outer-is-pullback
-        (rotate-pullback (rs.inter .has-is-pb)) (X .has-is-pb)
-        (extendl (sym (rs.inter .square)) ∙ pushr (X .square)))
+        (rotate-pullback (rs.inter .has-is-pb)) (X .has-is-pb))
 
     β-is-pb : is-pullback C β ζ₁ x₁ q
     β-is-pb = pasting-outer→left-is-pullback
