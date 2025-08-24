@@ -37,8 +37,8 @@ Suppose that $x$ is a free object with respect to $\Delta_\cCJ$ and $F$,
 then $x$ is a colimit of $F$.
 
 ```agda
-Δfree→colim : Free-object ConstD F → Colimit F
-Δfree→colim {F} free-ob = to-colimit $ to-is-colimit $ record where
+const-free→colim : Free-object ConstD F → Colimit F
+const-free→colim {F} free-ob = to-colimit $ to-is-colimit $ record where
   open module free = Free-object free-ob
   ψ = unit .η
   commutes {j} {k} f = unit .is-natural _ _ f ∙ idl _
@@ -46,8 +46,8 @@ then $x$ is a colimit of $F$.
   factors {j} eta p = commute {f = NT eta λ x y f → p f ∙ sym (idl _)} ηₚ j
   unique eta p other commutes = unique other $ ext commutes
 
-colim→Δfree : Colimit F → Free-object ConstD F
-colim→Δfree {F} colim = record where
+colim→const-free : Colimit F → Free-object ConstD F
+colim→const-free {F} colim = record where
   open module colim = Colimit colim using (coapex; cocone)
   open make-is-colimit (unmake-colimit colim.has-colimit)
   free = coapex
@@ -56,14 +56,14 @@ colim→Δfree {F} colim = record where
   commute {x} {nt} = ext λ j → factors (nt .η) λ _ → nt .is-natural _ _ _ ∙ idl _
   unique {x} {nt} g p = unique (nt .η) (λ _ → nt .is-natural _ _ _ ∙ idl _) g λ j → p ηₚ  j
 
-Δcofree→lim : Cofree-object ConstD F → Limit F
-lim→Δcofree : Limit F → Cofree-object ConstD F
+const-cofree→lim : Cofree-object ConstD F → Limit F
+lim→const-cofree : Limit F → Cofree-object ConstD F
 ```
 
 <!--
 ```agda
 -- this is better worked out explicitly
-Δcofree→lim {F} cofree-ob = to-limit $ to-is-limit $ record where
+const-cofree→lim {F} cofree-ob = to-limit $ to-is-limit $ record where
   open module cofree = Cofree-object cofree-ob
   ψ = counit .η
   commutes {j} {k} f = (sym $ counit .is-natural _ _ f) ∙ idr _
@@ -71,7 +71,7 @@ lim→Δcofree : Limit F → Cofree-object ConstD F
   factors {j} eta p = commute {f = NT eta λ j k f → idr _ ∙ sym (p f) } ηₚ j
   unique eta p other commutes = unique other $ ext commutes
 
-lim→Δcofree {F} lim = record where
+lim→const-cofree {F} lim = record where
   open Limit lim using (apex; cone)
   open make-is-limit (unmake-limit (Limit.has-limit lim))
   cofree = apex
@@ -88,20 +88,20 @@ Any functor which is a right (resp: left) colimit to $\Delta_J$ computes
 as (co)limits.
 
 ```agda
-Δadj→has-colimits-of-shape : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J}) → ∀ (F : Functor J C) → Colimit F
-Δadj→has-colimits-of-shape has-adj = Δfree→colim ⊙ left-adjoint→free-objects has-adj
+const-adj→has-colimits-of-shape : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J}) → ∀ (F : Functor J C) → Colimit F
+const-adj→has-colimits-of-shape has-adj = const-free→colim ⊙ left-adjoint→free-objects has-adj
 
-Δadj→has-limits-of-shape : ∀ {J : Precategory o' ℓ'} {Lim} → (ConstD {C = C} {J = J} ⊣ Lim) → ∀ (F : Functor J C) → Limit F
-Δadj→has-limits-of-shape has-adj = Δcofree→lim ⊙ right-adjoint→cofree-objects has-adj
+const-adj→has-limits-of-shape : ∀ {J : Precategory o' ℓ'} {Lim} → (ConstD {C = C} {J = J} ⊣ Lim) → ∀ (F : Functor J C) → Limit F
+const-adj→has-limits-of-shape has-adj = const-cofree→lim ⊙ right-adjoint→cofree-objects has-adj
 ```
 
 Thus, any category which has adjoints to its generalized diagonal
 functor $\Delta_J$ for any $J$ is (co)complete.
 
 ```agda
-has-Δadjs→is-cocomplete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Colim ∈ Functor _ C ] Colim ⊣ ConstD {C = C} {J = J}) → is-cocomplete o' ℓ' C
-has-Δadjs→is-cocomplete adjs = Δadj→has-colimits-of-shape (adjs .snd)
+has-const-adjs→is-cocomplete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Colim ∈ Functor _ C ] Colim ⊣ ConstD {C = C} {J = J}) → is-cocomplete o' ℓ' C
+has-const-adjs→is-cocomplete adjs = const-adj→has-colimits-of-shape (adjs .snd)
 
-has-Δadjs→is-complete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Lim ∈ Functor _ C ] ConstD {C = C} {J = J} ⊣ Lim) → is-complete o' ℓ' C
-has-Δadjs→is-complete adjs = Δadj→has-limits-of-shape (adjs .snd)
+has-const-adjs→is-complete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Lim ∈ Functor _ C ] ConstD {C = C} {J = J} ⊣ Lim) → is-complete o' ℓ' C
+has-const-adjs→is-complete adjs = const-adj→has-limits-of-shape (adjs .snd)
 ```

@@ -54,7 +54,7 @@ $$
 ```agda
   power-hom-iso
     : ∀ {X A}
-    → よ₀ C (X ⋔ A) ≅ⁿ (unopF $ opFʳ (よ₀ (Sets ℓ ^op) X)) F∘ よ₀ C A
+    → Hom-into C (X ⋔ A) ≅ⁿ (unopF $ opFʳ (Hom-into (Sets ℓ ^op) X)) F∘ Hom-into C A
   power-hom-iso {X} {A} = iso→isoⁿ
     (λ _ → equiv→iso (hom-iso (prods X (λ _ → A))))
     (λ _ → ext λ _ _ → sym $ assoc _ _ _)
