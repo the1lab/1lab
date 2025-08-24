@@ -103,9 +103,9 @@ The first thing we show is that strong epimorphisms are closed under
 composition. It will suffice to show that the composite $fg$ of a pair
 of strong epimorphisms is epic, and that it [[lifts against]] every
 monomorphism. But this is just a pasting of existing results: we already
-know that being epic is `closed under composition`{.Agda ident=∘-is-epic},
-and that so is `lifting against a given map`{.Agda
-ident=∘l-lifts-against} --- in this case, an arbitrary monomorphism $m$.
+know that being epic is `closed under composition`{.Agda
+ident=∘-is-epic}, and that so is `lifting against a given map`{.Agda
+ident=∘l-lifts-class} --- in this case, an arbitrary monomorphism $m$.
 
 ```agda
 strong-epi-∘
