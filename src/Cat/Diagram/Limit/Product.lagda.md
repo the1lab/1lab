@@ -196,6 +196,7 @@ sets, and so the `Disc`{.Agda} construction does not apply to it.
 
 As indexed products are limits, they are preserved by continuous
 functors.
+
 <!--
 ```agda
 module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'}
@@ -207,6 +208,7 @@ module _ {o h ℓ o' h'} {C : Precategory o h} {D : Precategory o' h'}
     module D = Precategory D
 ```
 -->
+
 ```agda
   is-continuous→pres-indexed-product : ∀ {x} {π : ∀ i → C.Hom x (d i)} →
     is-indexed-product C d π → is-indexed-product D (λ i → F.₀ (d i)) (λ i → F.₁ (π i))

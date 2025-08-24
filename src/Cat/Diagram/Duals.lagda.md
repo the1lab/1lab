@@ -166,9 +166,9 @@ $C\op$. We prove these correspondences here:
   Initial→Coterminal init .top = init .bot
   Initial→Coterminal init .has⊤ = is-initial→is-coterminal (init .has⊥)
 
-  CoInitial→terminal : Initial (C ^op) → Terminal C
-  CoInitial→terminal init .top = init .bot
-  CoInitial→terminal init .has⊤ = is-coinitial→is-terminal (init .has⊥)
+  Coinitial→terminal : Initial (C ^op) → Terminal C
+  Coinitial→terminal init .top = init .bot
+  Coinitial→terminal init .has⊤ = is-coinitial→is-terminal (init .has⊥)
 ```
 
 ## Pullback/pushout

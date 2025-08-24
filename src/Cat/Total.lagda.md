@@ -53,7 +53,8 @@ private
 # Total precategories {defines="total-precategory"}
 
 A precategory is **total** if its yoneda embedding has a left adjoint.
-We call this adjoint $\sa$, a reading for 左.
+We call this adjoint <ruby>さ<rp>(</rp><rt>sa</rt><rp>)</rp></ruby>,
+a reading for 左, which means "left".
 
 ```agda
 record is-total : Type (o ⊔ lsuc ℓ) where
@@ -62,6 +63,15 @@ record is-total : Type (o ⊔ lsuc ℓ) where
     has-よ-adj : さ ⊣ よ
   open module さ = Cat.Functor.Reasoning さ using () renaming (F₀ to さ₀; F₁ to さ₁) public
 ```
+
+## Motivation
+
+Total categories represent a particularly nice site in which to do
+logic, as they are a reflective subcategory of their category of
+presheaves. In particular, total categories are cocomplete with many
+useful limits. However, a category being total is a slightly weaker
+requirement than a category being a topos, as all topoi are both total
+and cototal.
 
 ## Free objects relative to よ
 
@@ -131,7 +141,7 @@ computed in $\psh(\cC)$.
 
 ```agda
   cocomplete : is-cocomplete ℓ ℓ C
-  cocomplete F = natural-iso→colimit さ∘よ∘F≅ⁿF $ left-adjoint-colimit has-よ-adj $ Psh-cocomplete ℓ C (よ F∘ F)
+  cocomplete F = natural-iso→colimit さ∘よ∘F≅ⁿF $ left-adjoint-colimit has-よ-adj $ PSh-cocomplete ℓ C (よ F∘ F)
 ```
 
 ## Terminal object
