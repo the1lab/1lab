@@ -119,9 +119,7 @@ pullback of $l$ along $n \circ m$.
   paste-is-pullback-along p q r .has-is-pb =
     subst-is-pullback refl r refl refl (rotate-pullback (pasting-left→outer-is-pullback
       (rotate-pullback (p .has-is-pb))
-      (rotate-pullback (q .has-is-pb))
-      ( extendl (sym (p .is-pullback-along.square))
-      ∙ pushr (sym (q .is-pullback-along.square)))))
+      (rotate-pullback (q .has-is-pb))))
 ```
 
 Similarly, if some $l_2$ is the pullback of $r_2$ along some $t_1$,
@@ -166,8 +164,7 @@ pullbacks, so we will skip over the details.
   extend-is-pullback-along pb₁ pb₂ l-comm r-comm .top = pb₂ .top
   extend-is-pullback-along pb₁ pb₂ l-comm r-comm .has-is-pb =
     subst-is-pullback l-comm refl refl r-comm $
-    pasting-left→outer-is-pullback pb₁ (has-is-pb pb₂) $
-    pulll (pb₁ .square) ∙ extendr (pb₂ .is-pullback-along.square)
+    pasting-left→outer-is-pullback pb₁ (has-is-pb pb₂)
 ```
 </details>
 
