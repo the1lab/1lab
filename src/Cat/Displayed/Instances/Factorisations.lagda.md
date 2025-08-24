@@ -341,6 +341,13 @@ $X \xto{f} Y$ the square
   R .F-∘ f g = ext (expand refl     ,ₚ refl)
 ```
 
+<!--
+```agda
+  open Functor L renaming (F₁ to L₁) using () public
+  open Functor R renaming (F₁ to R₁) using () public
+```
+-->
+
 These endofunctors are naturally *(co)pointed*, meaning that the left
 (resp. right) functor admits a natural transformation *to* (resp.
 *from*) the identity on $\Arr{\cC}$. These transformations send a
