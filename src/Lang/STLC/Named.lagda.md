@@ -319,9 +319,10 @@ to keep reduction deterministic -- this will be elaborated on in
 a moment.
 
 ```agda
-  β-λ : ∀ {n body x} →
-        is-value x →
-        ((`λ n body) `$ x) ↦ (body [ n := x ])
+  β-λ : ∀ {n body x body[n:=x]}
+        → is-value x
+        → body[n:=x] ≡ (body [ n := x ])
+        → ((`λ n body) `$ x) ↦ (body[n:=x])
 ```
 
 Likewise, reducing projections on a pair is called β-reduction for
@@ -387,7 +388,7 @@ private module Example-2 where
   pair = `⟨ `tt , `tt ⟩
 
   id-app-step : (our-id `$ pair) ↦ pair
-  id-app-step = β-λ v-⟨,⟩
+  id-app-step = β-λ v-⟨,⟩ refl
 ```
 
 <!-- [TODO: Wren, 13/06/2025]  Refl Trans closure of _↦_ -->
@@ -575,7 +576,8 @@ preservation
   → [] ⊢ x₁ ⦂ typ
   → [] ⊢ x₂ ⦂ typ
 
-preservation (β-λ p) (`⇒-elim (`⇒-intro ⊢f) ⊢x) = subst-pres ⊢x ⊢f
+preservation (β-λ p eq) (`⇒-elim (`⇒-intro ⊢f) ⊢x) =
+  subst (λ k → _ ⊢ k ⦂ _) (sym eq) (subst-pres ⊢x ⊢f)
 preservation β-π₁ (`×-elim₁ (`×-intro ⊢a ⊢b)) = ⊢a
 preservation β-π₂ (`×-elim₂ (`×-intro ⊢a ⊢b)) = ⊢b
 preservation (ξ-π₁ step) (`×-elim₁ ⊢a) = `×-elim₁ (preservation step ⊢a)
@@ -605,7 +607,7 @@ progress (`⇒-elim ⊢f ⊢x) with progress ⊢f
 ... |   going next-x = going (ξ-$ᵣ vf next-x)
 ... |   done vx with ⊢f
 ... |     `var-intro n n∈ = absurd (nothing≠just n∈)
-... |     `⇒-intro f = going (β-λ vx)
+... |     `⇒-intro f = going (β-λ vx refl)
 
 progress (`×-intro {a = a} {b = b} ⊢a ⊢b) = done v-⟨,⟩
 progress (`×-elim₁ {a = a} ⊢x) with progress ⊢x
@@ -653,13 +655,13 @@ deterministic
   → x ↦ x₂
   → x₁ ≡ x₂
 
-deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
-deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬reduce vx b)
+deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx₁ eq) (β-λ vx₂ eq₂) = eq ∙ sym eq₂
+deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx eq) (ξ-$ᵣ x b) = absurd (value-¬reduce vx b)
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ₗ →x₂) =
   ap₂ _`$_ (deterministic ⊢f →x₁ →x₂) refl
 
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬reduce vx →x₁)
-deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬reduce vx₂ →x₁)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂ eq) = absurd (value-¬reduce vx₂ →x₁)
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬reduce vx →x₂)
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ _ →x₁) (ξ-$ᵣ _ →x₂) =
   ap₂ _`$_ refl (deterministic ⊢x →x₁ →x₂)

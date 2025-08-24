@@ -315,9 +315,10 @@ Then we have reduction rules, as before.
 ```agda
 infix 10 _↦_
 data _↦_ : ∀ {n} → Expr n → Expr n → Type where
-     β-λ : ∀ {n} {f : Expr (suc n)} {x : Expr n} →
-           is-value x →
-          (`λ f) `$ x ↦ f [ x ]
+     β-λ : ∀ {n} {f : Expr (suc n)} {x : Expr n} {f[x]}
+           → is-value x
+           → f[x] ≡ f [ x ]
+           → (`λ f) `$ x ↦ f[x]
      β-π₁ : ∀ {n} {a b : Expr n} →
           `π₁ `⟨ a , b ⟩ ↦ a
      β-π₂ : ∀ {n} {a b : Expr n} →
@@ -355,8 +356,8 @@ red~ : ∀ {n} (Γ : Ctx n) (x y : Expr n) {ty} →
          Γ ⊢ y ⦂ ty
 red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ₗ r) = `⇒-elim (red~ Γ f _ p r) p₁
 red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ᵣ x₁ r) = `⇒-elim p (red~ Γ x _ p₁ r)
-red~ Γ ((`λ f) `$ x) y (`⇒-elim (`⇒-intro p) p₁) (β-λ k) =
-     single-subst-correct Γ f x p p₁
+red~ Γ ((`λ f) `$ x) y (`⇒-elim (`⇒-intro p) p₁) (β-λ k eq) =
+     subst (λ k → _ ⊢ k ⦂ _) (sym eq) (single-subst-correct Γ f x p p₁)
 red~ Γ (`π₁ x) y (`×-elim₁ p) (ξ-π₁ r) = `×-elim₁ (red~ Γ x _ p r)
 red~ Γ (`π₂ x) y (`×-elim₂ p) (ξ-π₂ r) = `×-elim₂ (red~ Γ x _ p r)
 red~ Γ (`π₁ x) y (`×-elim₁ (`×-intro p p₁)) β-π₁ = p
@@ -379,7 +380,7 @@ progress (`⇒-elim f x) with progress f
 ... | done f₁ with progress x
 ... | going x₁ = going (ξ-$ᵣ f₁ x₁)
 ... | done x₁ with f₁
-... | v-λ = going (β-λ x₁)
+... | v-λ = going (β-λ x₁ refl)
 progress (`×-intro x x₁) = done v-⟨,⟩
 progress (`×-elim₁ x) with progress x
 ... | going x₁ = going (ξ-π₁ x₁)
@@ -400,11 +401,11 @@ det : ∀ {n} {Γ : Ctx n} {x y z : Expr n} {ty}
       → z ≡ y
 det (`var-intro x) () r
 det (`⇒-intro ⊢x) () r
-det (`⇒-elim ⊢x ⊢x₁) (β-λ x) (β-λ x₁) = refl
-det (`⇒-elim ⊢x ⊢x₁) (β-λ x) (ξ-$ᵣ x₁ r) = absurd (value-¬reduce x r)
+det (`⇒-elim ⊢x ⊢x₁) (β-λ x eq₁) (β-λ x₁ eq₂) = eq₂ ∙ sym eq₁
+det (`⇒-elim ⊢x ⊢x₁) (β-λ x eq) (ξ-$ᵣ x₁ r) = absurd (value-¬reduce x r)
 det (`⇒-elim ⊢x ⊢x₁) (ξ-$ₗ l) (ξ-$ₗ r) = ap₂ _`$_ (det ⊢x l r) refl
 det (`⇒-elim ⊢x ⊢x₁) (ξ-$ₗ l) (ξ-$ᵣ x r) = absurd (value-¬reduce x l)
-det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x l) (β-λ x₁) = absurd (value-¬reduce x₁ l)
+det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x l) (β-λ x₁ eq) = absurd (value-¬reduce x₁ l)
 det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x l) (ξ-$ₗ r) = absurd (value-¬reduce x r)
 det (`⇒-elim ⊢x ⊢x₁) (ξ-$ᵣ x l) (ξ-$ᵣ x₁ r) = ap₂ _`$_ refl (det ⊢x₁ l r)
 det (`×-intro ⊢x ⊢x₁) () r
