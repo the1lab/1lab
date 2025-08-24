@@ -168,7 +168,7 @@ separating-family-identity-system separate =
   set-identity-system (λ _ _ → hlevel 1) separate
 ```
 
-## Separators and copowers
+## Separators and copowers {defines="separators-and-copowers"}
 
 Recall that if $\cC$ is [[copowered]], then we can construct an
 approximation of any object $X : \cC$ by taking the copower $\cC(A,X) \otimes A$

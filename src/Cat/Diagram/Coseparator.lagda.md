@@ -62,6 +62,9 @@ is-coseparating-family s =
 
 ## Coseparators and powers
 
+Equivalently to approximating objects with [[separators and copowers]], we
+may approximate them with coseparators and powers.
+
 ```agda
 module _
   (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣)

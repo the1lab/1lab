@@ -31,7 +31,7 @@ objects are limits]].
 
 ```agda
 Id-colimit→Terminal : Colimit (Id {C = C}) → Terminal C
-Id-colimit→Terminal L = CoInitial→terminal $ Id-limit→Initial $ natural-iso→limit (path→iso Id^op≡Id) $ Colimit→Co-limit L
+Id-colimit→Terminal L = Coinitial→terminal $ Id-limit→Initial $ natural-iso→limit (path→iso Id^op≡Id) $ Colimit→Co-limit L
 
 Terminal→Id-colimit : Terminal C → Colimit (Id {C = C})
 Terminal→Id-colimit terminal = Co-limit→Colimit $ natural-iso→limit (path→iso (sym Id^op≡Id)) $ Initial→Id-limit $ Terminal→Coinitial terminal

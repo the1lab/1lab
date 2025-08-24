@@ -221,6 +221,6 @@ Disc-natural-iso : ∀ {X : Set ℓ}
   → F ≅ⁿ G
 Disc-natural-iso isos .to = Disc-natural λ x → isos x .to
 Disc-natural-iso isos .from = Disc-natural λ x → isos x .from
-Disc-natural-iso isos .inverses = to-inversesⁿ (λ x → isos x .inverses .invl ) (λ x → isos x .inverses .invr)
+Disc-natural-iso isos .inverses = to-inversesⁿ (λ x → isos x .inverses .invl) (λ x → isos x .inverses .invr)
 ```
 -->

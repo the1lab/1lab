@@ -83,9 +83,9 @@ nat-unassoc-to   : f ⇒ (g ⊗ h) ⊗ i → f ⇒ g ⊗ h ⊗ i
 nat-unassoc-from : (f ⊗ g) ⊗ h ⇒ i → f ⊗ g ⊗ h ⇒ i
 nat-idl-to       : f ⇒ Id ⊗ g → f ⇒ g
 nat-idl-from     : Id ⊗ f ⇒ g → f ⇒ g
-nat-unidl-to   : f ⇒ g → f ⇒ Id ⊗ g
+nat-unidl-to     : f ⇒ g → f ⇒ Id ⊗ g
 nat-unidl-from   : f ⇒ g → Id ⊗ f ⇒ g
-nat-unidr-to   : f ⇒ g → f ⇒ g ⊗ Id
+nat-unidr-to     : f ⇒ g → f ⇒ g ⊗ Id
 nat-unidr-from   : f ⇒ g → f ⊗ Id ⇒ g
 op-compose-into  : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
 

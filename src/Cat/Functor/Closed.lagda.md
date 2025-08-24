@@ -95,3 +95,23 @@ functoriality constraints.
       F.₁ f .η _ E.∘ (F.₀ _ .F₁ g E.∘ F.₁ f' .η _) E.∘ F.₀ _ .F₁ g'     ≡⟨ cat! E ⟩
       ((F.₁ f .η _ E.∘ F.₀ _ .F₁ g) E.∘ (F.₁ f' .η _ E.∘ F.₀ _ .F₁ g')) ∎
 ```
+
+```agda
+open _=>_
+evF : Functor (Cat[ C , D ] ×ᶜ C) D
+evF {C = C} {D = D} = eval'd where
+  import Cat.Reasoning C as C
+  import Cat.Reasoning D as D
+  eval'd : Functor (Cat[ C , D ] ×ᶜ C) D
+  eval'd .F₀ (F , x) = F .F₀ x
+  eval'd .F₁ {F , x} {G , y} (nt , f) = G .F₁ f D.∘ nt .η x
+  eval'd .F-id {F , _} = D.eliml $ F .F-id
+  eval'd .F-∘ {F , x} {G , y} {H , z} (nt₁ , f) (nt₂ , g) =
+    H .F₁ (f C.∘ g) D.∘ nt₁ .η x D.∘ nt₂ .η x       ≡⟨ H .F-∘ _ _ D.⟩∘⟨refl ⟩
+    (H .F₁ f D.∘ H .F₁ g) D.∘ nt₁ .η x D.∘ nt₂ .η x ≡˘⟨ D.pull-inner (nt₁ .is-natural _ _ _) ∙ D.push-inner refl ⟩
+    (H .F₁ f D.∘ nt₁ .η y) D.∘ G .F₁ g D.∘ nt₂ .η x ∎
+
+eval-at : ⌞ C ⌟ → Functor Cat[ C , D ] D
+eval-at {C = C} {D = D} = evF.Left where
+  import Cat.Functor.Bifunctor (evF {C = C} {D = D}) as evF
+```

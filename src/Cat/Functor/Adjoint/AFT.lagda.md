@@ -131,6 +131,14 @@ the sea has risen above it:
 
 # The "Kan" adjoint functor theorem
 
+The above adjoint functor theorem, which is sometimes called the Freyd
+adjoint functor theorem (for example, by @[Maclane:cwm, §5.6]), and
+sidesteps the issues of size by use of a small solution set.
+
+We may also state an adjoint functor theorem using existence of limits
+from the comma category of $F$, which all must exist if $F$ has a left
+adjoint.
+
 ```agda
 module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ} (F : Functor C D) (F-cont : is-continuous (o ⊔ ℓ) ℓ F) where
   formal-aft : (a-pres-comma-limits : ∀ {x} (Q : Functor (x ↙ F) C) → Limit Q) → Σ[ G ∈ Functor D C ] G ⊣ F

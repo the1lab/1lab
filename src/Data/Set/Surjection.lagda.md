@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Instances.Presheaf.Colimits
 open import Cat.Diagram.Pushout.Properties
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Diagram.Coequaliser
@@ -12,7 +11,6 @@ open import Cat.Prelude
 
 open import Homotopy.Connectedness
 
-import Cat.Functor.Reasoning.Presheaf
 import Cat.Reasoning as Cr
 ```
 -->
@@ -246,72 +244,4 @@ epi→surjective
   → is-surjective f
 epi→surjective {ℓ} c d f epi x =
   connected-cofibre→surjective f (epi→connected-cofibre c d f (λ {x} → epi {x})) x
-```
-
-# Corollary: epimorphisms in presheaf categories
-
-```agda
-module _ {o ℓ κ} {C : Precategory o ℓ} where
-  private
-    module C = Cr C
-    module PShc = Cr (PSh κ C)
-  open _=>_
-  open Functor
-  open is-regular-epi
-  -- https://stacks.math.columbia.edu/tag/00v5
-  psh-epi-is-pointwise-epi : ∀ {F G : ⌞ PSh κ C ⌟} {ε : F => G} → PShc.is-epic ε → ∀ {i} → Cr.is-epic (Sets κ) {a = F .F₀ i} {b = G .F₀ i} (ε .η i)
-  psh-epi-is-pointwise-epi {F = F} {G} {ε} m-epic {i} {c}= foo'' {c = c} where
-    H = PSh-pushouts _ _ ε ε .coapex
-    ι₁ : G => H
-    ι₁ = PSh-pushouts _ _ ε ε  .i₁
-    ι₂ : G => H
-    ι₂ = PSh-pushouts _ _ ε ε  .i₂
-    p' : ι₁ ≡ ι₂
-    p' = m-epic ι₁ ι₂ $ PSh-pushouts _ _ ε ε .square
-    foo'' : Cr.is-epic (Sets κ) {a = F .F₀ i} {b = G .F₀ i} (ε .η i)
-    foo'' {c} = injections-eq→is-epic (Sets-pushouts {A = G .F₀ i} {B = G .F₀ i} {C = F .F₀ i} (ε .η i) (ε .η i) .has-is-po) (p' ηₚ i) {c = c}
-
-  psh-epi-is-pointwise-regular-epi : ∀ {X Y : ⌞ PSh κ C ⌟} {m : X => Y} → PShc.is-epic m → ∀ {i} → is-regular-epi (Sets κ) {X .F₀ i} {Y .F₀ i} (m .η i)
-  psh-epi-is-pointwise-regular-epi {X} {Y} m {i} = surjective→regular-epi _ _ _ $ epi→surjective (X .F₀ i) (Y .F₀ i) _ $ λ { {c} → psh-epi-is-pointwise-epi m {c = c} }
-
-  module _ {F G : ⌞ PSh κ C ⌟} {ε : F => G} (ε-epic : PShc.is-epic ε) where
-    private
-      module F = Functor F
-      module G = Functor G
-      pr : (i : ⌞ C ⌟) → is-regular-epi (Sets κ) {F.₀ i} {G.₀ i} (ε .η i)
-      pr _ = psh-epi-is-pointwise-regular-epi ε-epic
-      module ε = _=>_ ε
-      module pr (i : ⌞ C ⌟) = is-regular-epi (pr i)
-      pb-path : ∀ {i} {x y : Σ[ x ∈ F.₀ i ] Σ[ y ∈ F.₀ i ] ε.η i x ≡ ε.η i y}
-        → x .fst ≡ y .fst
-        → x .snd .fst ≡ y .snd .fst
-        → x ≡ y
-      pb-path p q i .fst = p i
-      pb-path p q i .snd .fst = q i
-      pb-path {idx} {x} {y} p q i .snd .snd j =
-        is-set→squarep (λ _ _ → G.₀ idx .is-tr)
-          (ap (ε .η idx) p) (x .snd .snd) (y .snd .snd) (ap (ε .η idx) q)
-          i j
-
-    psh-epi-is-regular : is-regular-epi (PSh κ C) ε
-    psh-epi-is-regular .r .F₀ c = pr.r c
-    psh-epi-is-regular .r .F₁ {x} {y} f e@(s , r , p) = F ⟪ f ⟫ s , (F ⟪ f ⟫ r) , path where abstract
-      path : ε.η y (F.F₁ f s) ≡ ε.η y (F.F₁ f r)
-      path = ε.is-natural x y f · s ∙ ap (G.F₁ f) p ∙ sym (ε.is-natural x y f · r)
-    psh-epi-is-regular .r .F-id {c} = ext λ s r p → pb-path (F.F-id · s) (F.F-id · r)
-    psh-epi-is-regular .r .F-∘ f g = ext λ s r p → pb-path (F.F-∘ _ _ · s) (F.F-∘ _ _ · r)
-    psh-epi-is-regular .arr₁ .η x (s , _ , _) = s
-    psh-epi-is-regular .arr₁ .is-natural _ _ _ = ext λ _ _ _ → refl
-    psh-epi-is-regular .arr₂ .η x (_ , r , _) = r
-    psh-epi-is-regular .arr₂ .is-natural _ _ _ = ext λ _ _ _ → refl
-    psh-epi-is-regular .has-is-coeq .coequal = ext λ x s r p → p
-    psh-epi-is-regular .has-is-coeq .universal {Q} p .η x = pr.universal x {Q .F₀ x} (p ηₚ x)
-    psh-epi-is-regular .has-is-coeq .universal {Q} {e'} p .is-natural x y f =  pr.is-regular-epi→is-epic x {c = Q .F₀ y} _ _ $  ext λ s →
-      pr.universal y {Q .F₀ y} (p ηₚ y) (G ⟪ f ⟫ ε.η x s)   ≡˘⟨ ap (pr.universal y {Q .F₀ y} (p ηₚ y)) (ε.is-natural x y f · s) ⟩
-      pr.universal y {Q .F₀ y} (p ηₚ y) (ε.η y (F ⟪ f ⟫ s)) ≡⟨ pr.factors y {Q .F₀ y} {e' .η y} {p ηₚ y} · (F ⟪ f ⟫ s) ⟩
-      e' .η y (F ⟪ f ⟫ s)                                   ≡⟨ e' .is-natural x y f · s ⟩
-      Q ⟪ f ⟫ e' .η x s                                     ≡˘⟨ ap (Q ⟪ f ⟫_) (pr.factors x {Q .F₀ x} {e' .η x} {p ηₚ x} · s) ⟩
-      Q ⟪ f ⟫ pr.universal x {Q .F₀ x} (p ηₚ x) (ε.η x s)   ∎
-    psh-epi-is-regular .has-is-coeq .factors {Q} {e'} {p} = Nat-path λ x → pr.factors x {Q .F₀ x} {e' = e' .η x} {p = p ηₚ x}
-    psh-epi-is-regular .has-is-coeq .unique {Q} {e'} {p} {colim} q = Nat-path λ x → pr.unique x {Q .F₀ x} {e' .η x} {p ηₚ x} {colim .η x} (q ηₚ x)
 ```

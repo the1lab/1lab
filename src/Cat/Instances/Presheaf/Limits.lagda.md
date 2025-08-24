@@ -237,7 +237,7 @@ abstract
 ```
 <!--
 ```agda
-Psh-complete : is-complete κ κ (PSh κ C)
-Psh-complete = Functor-cat-is-complete $ Sets-is-complete {ι = κ} {κ} {κ}
+PSh-complete : is-complete κ κ (PSh κ C)
+PSh-complete = Functor-cat-is-complete $ Sets-is-complete {ι = κ} {κ} {κ}
 ```
 -->
