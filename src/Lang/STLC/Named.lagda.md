@@ -19,7 +19,7 @@ module Lang.STLC.Named where
 
 # The simply-typed lambda calculus
 
-The simple-typed lamdba calclus (STLC) is an example of one of the smallest
+The simply-typed lambda calclus (STLC) is an example of one of the smallest
 "useful" typed programming languages. While very simple, and lacking
 features that would make it useful for real programming, its small
 size makes it very appealing for the demonstration of programming
@@ -58,13 +58,7 @@ pattern _∷c_ Γ x = x ∷ Γ
 ```
 -->
 
-```agda
-append : List Nat → List Nat → List Nat
-append [] y = y
-append (xs ∷c x) y = (append xs y) ∷c x
-```
-
-We also note some minor lemmas around lookuping:
+We also note some minor lemmas around lookup:
 
 ```agda
 lookup-immediate : ∀ {Γ} {n : String} {t : Ty} → lookup n (Γ ∷c (n , t)) ≡ just t
@@ -77,10 +71,7 @@ lookup-duplicate
 <details>
 
 ```agda
-lookup-immediate {Γ} {n} {t} = absurd awful
-  where postulate awful : ⊥
--- TODO Wren 24-08-25: figure out the Dec instance on Strings
-
+lookup-immediate {Γ} {n} {t} = refl
 lookup-duplicate {Γ} {n} {k} {t₁} {t₂} {ρ} eq with k ≡? n
 ... | yes k≡n = eq
 ... | no ¬k≡n with k ≡? n
@@ -117,49 +108,47 @@ data Expr : Type where
 </summary>
 
 ```agda
-`-inj x = ap h x
-  where
-    h : Expr → String
-    h (` x) = x
-    h _ = ""
-`λ-inj x = ap h x , ap g x
-  where
-    h : Expr → String
-    h (`λ x _) = x
-    h _ = ""
+`-inj x = ap h x where
+  h : Expr → String
+  h (` x) = x
+  h _ = ""
 
-    g : Expr → Expr
-    g (`λ _ b) = b
-    g _ = `tt
+`λ-inj x = ap h x , ap g x where
+  h : Expr → String
+  h (`λ x _) = x
+  h _ = ""
 
-`$-inj x = ap h x , ap g x
-  where
-    h : Expr → Expr
-    h (a `$ _) = a
-    h _ = `tt
+  g : Expr → Expr
+  g (`λ _ b) = b
+  g _ = `tt
 
-    g : Expr → Expr
-    g (_ `$ b) = b
-    g _ = `tt
-`⟨⟩-inj x = ap h x , ap g x
-  where
-    h : Expr → Expr
-    h (`⟨ a , _ ⟩) = a
-    h _ = `tt
+`$-inj x = ap h x , ap g x where
+  h : Expr → Expr
+  h (a `$ _) = a
+  h _ = `tt
 
-    g : Expr → Expr
-    g (`⟨ _ , b ⟩) = b
-    g _ = `tt
-`π₁-inj x = ap h x
-  where
-    h : Expr → Expr
-    h (`π₁ x) = x
-    h _ = `tt
-`π₂-inj x = ap h x
-  where
-    h : Expr → Expr
-    h (`π₂ x) = x
-    h _ = `tt
+  g : Expr → Expr
+  g (_ `$ b) = b
+  g _ = `tt
+
+`⟨⟩-inj x = ap h x , ap g x where
+  h : Expr → Expr
+  h (`⟨ a , _ ⟩) = a
+  h _ = `tt
+
+  g : Expr → Expr
+  g (`⟨ _ , b ⟩) = b
+  g _ = `tt
+
+`π₁-inj x = ap h x where
+  h : Expr → Expr
+  h (`π₁ x) = x
+  h _ = `tt
+
+`π₂-inj x = ap h x where
+  h : Expr → Expr
+  h (`π₂ x) = x
+  h _ = `tt
 ```
 
 </details>
@@ -288,7 +277,7 @@ infix 2 _[_:=_]
 _[_:=_] : Expr → String → Expr → Expr
 ```
 
-If a variable x is equal to the variable we are substituing for, n,
+If a variable x is equal to the variable we are substituting for, n,
 we return the new expression. Else, the variable unchanged.
 
 ```agda
@@ -306,7 +295,7 @@ the terms are not alpha distinct!
 ... | no _ = `λ x (f [ n := e ])
 ```
 
-In all other cases, we simply "move" the substition into all
+In all other cases, we simply "move" the substitution into all
 subexpressions. (Or, do nothing.)
 
 ```agda
@@ -317,7 +306,8 @@ f `$ x [ n := e ] = (f [ n := e ]) `$ (x [ n := e ])
 `tt [ n := e ] = `tt
 ```
 
-Now, we define our step relation proper.
+Now, we define our step relation proper. Each of these step relations
+is properly referred to as a "reduction rule".
 
 ```agda
 data _↦_ : Expr → Expr → Type where
@@ -366,7 +356,7 @@ the left hand side.
        (f₁ `$ x) ↦ (f₂ `$ x)
 ```
 
-We also include a rule for stepping on the right hand side, requiring
+We also include a rule for reduction on the right hand side, requiring
 the left to be a value first. This, combined with the value requirement
 of the `β-λ`{.Agda} rule, keep our evaluation **deterministic**, forcing
 that evaluation should take place from left to right. We will prove
@@ -379,7 +369,7 @@ this later.
        (f `$ x₁) ↦ (f `$ x₂)
 ```
 
-These are all of our step rules! The STLC is indeed very simple.
+These are all of our reduction rules! The STLC is indeed very simple.
 We can now show that, say, an identity function applied to something
 reduces properly:
 
@@ -396,22 +386,19 @@ private module Example-2 where
   pair : Expr
   pair = `⟨ `tt , `tt ⟩
 
-  id-app : Expr
-  id-app = our-id `$ pair
-
-  id-app-step : id-app ↦ pair
+  id-app-step : (our-id `$ pair) ↦ pair
   id-app-step = β-λ v-⟨,⟩
 ```
 
-<!-- [TODO: Wren, 13/06/2025]  Refl Trans closure of Step -->
+<!-- [TODO: Wren, 13/06/2025]  Refl Trans closure of _↦_ -->
 
 ## The big two properties
 
 The two "big" properties about the STLC we wish to prove are called
 **progress** and **preservation**. Progress states that any
 given term is either done (a value), or can take another step.
-Preservation states that if a well typed expression $x$ steps to another $x'$,
-they have the same type (i.e., stepping preserves type.)
+Preservation states that if a well typed expression $x$ reduces to another $x'$,
+they have the same type (i.e., reduction preserves types.)
 
 The first step in proving these is showing that a "proper" substitution
 preserves types. If a term $tm$ has type $\tau$ when extended
@@ -477,7 +464,6 @@ variable-swap
   → ¬ n ≡ k
   → Γ ∷c (n , t₁) ∷c (k , t₂) ⊢ bd ⦂ typ
   → Γ ∷c (k , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ
-
 ```
 
 <details>
@@ -643,16 +629,21 @@ We do this with the help of a lemma that states values do not step to
 anything.
 
 ```agda
-value-¬step : ∀ {x y} → is-value x → ¬ (x ↦ y)
+value-¬reduce : ∀ {x y} → is-value x → ¬ (x ↦ y)
 ```
 
 <details>
 ```agda
-value-¬step v-λ ()
-value-¬step v-⟨,⟩ ()
-value-¬step v-⊤ ()
+value-¬reduce v-λ ()
+value-¬reduce v-⟨,⟩ ()
+value-¬reduce v-⊤ ()
 ```
 </details>
+
+Finally we can show that reduction in a closed context is deterministic.
+While it is possible to show that reduction in any context is deterministic,
+this named STLC is not very pleasant to work with, and so this will be
+shown in the next part.
 
 ```agda
 deterministic
@@ -663,13 +654,13 @@ deterministic
   → x₁ ≡ x₂
 
 deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx₁) (β-λ vx₂) = refl
-deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬step vx b)
+deterministic (`⇒-elim ⊢f ⊢x) (β-λ vx) (ξ-$ᵣ x b) = absurd (value-¬reduce vx b)
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ₗ →x₂) =
   ap₂ _`$_ (deterministic ⊢f →x₁ →x₂) refl
 
-deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬step vx →x₁)
-deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬step vx₂ →x₁)
-deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬step vx →x₂)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ₗ →x₁) (ξ-$ᵣ vx →x₂) = absurd (value-¬reduce vx →x₁)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx₁ →x₁) (β-λ vx₂) = absurd (value-¬reduce vx₂ →x₁)
+deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ vx →x₁) (ξ-$ₗ →x₂) = absurd (value-¬reduce vx →x₂)
 deterministic (`⇒-elim ⊢f ⊢x) (ξ-$ᵣ _ →x₁) (ξ-$ᵣ _ →x₂) =
   ap₂ _`$_ refl (deterministic ⊢x →x₁ →x₂)
 
