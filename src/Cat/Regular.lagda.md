@@ -365,7 +365,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
           gh ∘ l              ∎
 ```
 
--- Having shown that $g$ is monic, and knowing that $f$ --- a strong (thus
+Having shown that $g$ is monic, and knowing that $f$ --- a strong (thus
 extremal) epimorphism --- factors through it, we conclude that $g$ is an
 isomorphism. It remains to `compute`{.Agda} that $hg\inv f = c$, which
 we do below.
