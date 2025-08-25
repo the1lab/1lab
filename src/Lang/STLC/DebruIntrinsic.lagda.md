@@ -117,13 +117,17 @@ Substitution time! Using very similar ideas to the
 simultaneous substitution in the previous.
 
 ```agda
-var-ext : ∀ {Γ Δ} → (∀ {A}   → Γ ∋ A      → Δ ∋ A)
-                →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ∋ A
+var-ext
+    : ∀ {Γ Δ}
+    → (∀ {A}   → Γ ∋ A      → Δ ∋ A)
+    →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ∋ A
 var-ext f Z = Z
 var-ext f (S x) = S f x
 
-rename : ∀ {Γ Δ} → (∀ {A} → Γ ∋ A → Δ ∋ A)
-                  →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
+rename
+    : ∀ {Γ Δ}
+    → (∀ {A} → Γ ∋ A → Δ ∋ A)
+    →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
 rename f (` x) = ` (f x)
 rename f (`λ x) = `λ (rename (var-ext f) x)
 rename f (g `$ y) = rename f g `$ rename f y
@@ -132,13 +136,17 @@ rename f (`π₁ x) = `π₁ (rename f x)
 rename f (`π₂ x) = `π₂ (rename f x)
 rename f `tt = `tt
 
-extnd : ∀ {Γ Δ} → (∀ {A}   → Γ ∋ A      → Δ ⊢ A)
-                 →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ⊢ A
+extnd
+    : ∀ {Γ Δ}
+    → (∀ {A}   → Γ ∋ A      → Δ ⊢ A)
+    →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ⊢ A
 extnd f Z = ` Z
 extnd f (S x) = rename S_ (f x)
 
-simsub : ∀ {Γ Δ} → (∀ {A} → Γ ∋ A → Δ ⊢ A)
-                  →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
+simsub
+    : ∀ {Γ Δ}
+    → (∀ {A} → Γ ∋ A → Δ ⊢ A)
+    →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
 simsub f (` x) = f x
 simsub f (`λ x) = `λ (simsub (extnd f) x)
 simsub f (a `$ b) = (simsub f a) `$ (simsub f b)
@@ -151,10 +159,10 @@ simsub f `tt = `tt
 Single substitution, for use in the reduction rules.
 
 ```agda
-_[_] : ∀ {Γ A B} →
-       Γ ,, B ⊢ A →
-       Γ ⊢ B →
-       Γ ⊢ A
+_[_] : ∀ {Γ A B}
+    → Γ ,, B ⊢ A
+    → Γ ⊢ B
+    → Γ ⊢ A
 _[_] {Γ} {A} {B} x y = simsub {Γ ,, B} {Γ} f x
   where
     f : ∀ {A} → Γ ,, B ∋ A → Γ ⊢ A
@@ -244,19 +252,19 @@ progress {A} `tt = done v-⊤
 Reduction in any context is deterministic.
 
 ```agda
-det : ∀ {Γ A} {x y z : Γ ⊢ A} →
-        x ↦ y →
-        x ↦ z →
-        y ≡ z
-det (β-λ x eq₁) (β-λ x₁ eq₂) = eq₁ ∙ sym eq₂
-det (β-λ x eq) (ξ-$ᵣ x₁ ~z) = absurd (value-¬reduce x ~z)
-det β-π₁ β-π₁ = refl
-det β-π₂ β-π₂ = refl
-det (ξ-π₁ ~y) (ξ-π₁ ~z) = ap `π₁ (det ~y ~z)
-det (ξ-π₂ ~y) (ξ-π₂ ~z) = ap `π₂ (det ~y ~z)
-det (ξ-$ₗ ~y) (ξ-$ₗ ~z) = ap₂ _`$_ (det ~y ~z) refl
-det (ξ-$ₗ ~y) (ξ-$ᵣ x ~z) = absurd (value-¬reduce x ~y)
-det (ξ-$ᵣ x ~y) (β-λ x₁ eq) = absurd (value-¬reduce x₁ ~y)
-det (ξ-$ᵣ x ~y) (ξ-$ₗ ~z) = absurd (value-¬reduce x ~z)
-det (ξ-$ᵣ x ~y) (ξ-$ᵣ x₁ ~z) = ap₂ _`$_ refl (det ~y ~z)
+deterministic : ∀ {Γ A} {x y z : Γ ⊢ A}
+    → x ↦ y
+    → x ↦ z
+    → y ≡ z
+deterministic (β-λ x eq₁) (β-λ x₁ eq₂) = eq₁ ∙ sym eq₂
+deterministic (β-λ x eq) (ξ-$ᵣ x₁ ~z) = absurd (value-¬reduce x ~z)
+deterministic β-π₁ β-π₁ = refl
+deterministic β-π₂ β-π₂ = refl
+deterministic (ξ-π₁ ~y) (ξ-π₁ ~z) = ap `π₁ (deterministic ~y ~z)
+deterministic (ξ-π₂ ~y) (ξ-π₂ ~z) = ap `π₂ (deterministic ~y ~z)
+deterministic (ξ-$ₗ ~y) (ξ-$ₗ ~z) = ap₂ _`$_ (deterministic ~y ~z) refl
+deterministic (ξ-$ₗ ~y) (ξ-$ᵣ x ~z) = absurd (value-¬reduce x ~y)
+deterministic (ξ-$ᵣ x ~y) (β-λ x₁ eq) = absurd (value-¬reduce x₁ ~y)
+deterministic (ξ-$ᵣ x ~y) (ξ-$ₗ ~z) = absurd (value-¬reduce x ~z)
+deterministic (ξ-$ᵣ x ~y) (ξ-$ᵣ x₁ ~z) = ap₂ _`$_ refl (deterministic ~y ~z)
 ```

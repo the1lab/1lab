@@ -61,7 +61,9 @@ pattern _∷c_ Γ x = x ∷ Γ
 We also note some minor lemmas around lookup:
 
 ```agda
-lookup-immediate : ∀ {Γ} {n : String} {t : Ty} → lookup n (Γ ∷c (n , t)) ≡ just t
+lookup-immediate
+  : ∀ {Γ} {n : String} {t : Ty}
+  → lookup n (Γ ∷c (n , t)) ≡ just t
 lookup-duplicate
   : ∀ {Γ} {n : String} {k} {t₁ t₂ : Ty} {ρ}
   → lookup k (Γ ∷c (n , t₁)) ≡ just ρ
@@ -98,9 +100,9 @@ data Expr : Type where
 <details><summary>Some injectivity lemmas, for convenience.
 
 ```agda
-`-inj : ∀ {a b} → ` a ≡ ` b → a ≡ b
-`λ-inj : ∀ {x y a b} → `λ x a ≡ `λ y b → (x ≡ y) × (a ≡ b)
-`$-inj : ∀ {f g x y} → f `$ x ≡ g `$ y → (f ≡ g) × (x ≡ y)
+`-inj   : ∀ {a b} → ` a ≡ ` b → a ≡ b
+`λ-inj  : ∀ {x y a b} → `λ x a ≡ `λ y b → (x ≡ y) × (a ≡ b)
+`$-inj  : ∀ {f g x y} → f `$ x ≡ g `$ y → (f ≡ g) × (x ≡ y)
 `⟨⟩-inj : ∀ {x y a b} → `⟨ x , y ⟩ ≡ `⟨ a , b ⟩ → (x ≡ a) × (y ≡ b)
 `π₁-inj : ∀ {a b} → `π₁ a ≡ `π₁ b → a ≡ b
 `π₂-inj : ∀ {a b} → `π₂ a ≡ `π₂ b → a ≡ b
@@ -171,10 +173,9 @@ We say that a variable $n$ has a type $\tau$ in context $\Gamma$
 if `lookup Γ n ≡ just τ`{.Agda}.
 
 ```agda
-  `var-intro
-    : ∀ {Γ τ} (n : String)
-    → lookup n Γ ≡ just τ
-    → Γ ⊢ ` n ⦂ τ
+  `var-intro : ∀ {Γ τ} (n : String)
+             → lookup n Γ ≡ just τ
+             → Γ ⊢ ` n ⦂ τ
 ```
 
 For lambda abstraction, if an expression $\text{body}$ extended with a variable $v$
@@ -183,41 +184,42 @@ $\tau \to \rho$. We call this constructor `\`⇒-intro`{.Agda} as it "introduces
 the arrow type.
 
 ```agda
-  `⇒-intro : ∀ {Γ n body τ ρ} →
-        Γ ∷c (n , τ) ⊢ body ⦂ ρ →
-        Γ ⊢ `λ n body ⦂ τ `⇒ ρ
+  `⇒-intro : ∀ {Γ n body τ ρ}
+           → Γ ∷c (n , τ) ⊢ body ⦂ ρ
+           → Γ ⊢ `λ n body ⦂ τ `⇒ ρ
 ```
 
 If an expression $f$ has type $\tau \to \rho$, and
-an expression $x$ has type $\tau$, then the application $f\, x$ (written here as $\$ f x$) has type $\rho$.
+an expression $x$ has type $\tau$, then the application $f\, x$
+has type $\rho$.
 
 We name it `\`⇒-elim`{.Agda} as it "eliminates" the arrow type.
 
 ```agda
-  `⇒-elim : ∀ {Γ f x τ ρ} →
-        Γ ⊢ f ⦂ τ `⇒ ρ →
-        Γ ⊢ x ⦂ τ →
-        Γ ⊢ f `$ x ⦂ ρ
+  `⇒-elim : ∀ {Γ f x τ ρ}
+          → Γ ⊢ f ⦂ τ `⇒ ρ
+          → Γ ⊢ x ⦂ τ
+          → Γ ⊢ f `$ x ⦂ ρ
 ```
 
 The rest of the formers follow these patterns:
 
 ```agda
-  `×-intro : ∀ {Γ a b τ ρ} →
-          Γ ⊢ a ⦂ τ →
-          Γ ⊢ b ⦂ ρ →
-          Γ ⊢ `⟨ a , b ⟩ ⦂ τ `× ρ
+  `×-intro : ∀ {Γ a b τ ρ}
+           → Γ ⊢ a ⦂ τ
+           → Γ ⊢ b ⦂ ρ
+           → Γ ⊢ `⟨ a , b ⟩ ⦂ τ `× ρ
 
-  `×-elim₁ :  ∀ {Γ a τ ρ} →
-          Γ ⊢ a ⦂ τ `× ρ →
-          Γ ⊢ `π₁ a ⦂ τ
+  `×-elim₁ : ∀ {Γ a τ ρ}
+           → Γ ⊢ a ⦂ τ `× ρ
+           → Γ ⊢ `π₁ a ⦂ τ
 
-  `×-elim₂ :  ∀ {Γ a τ ρ} →
-          Γ ⊢ a ⦂ τ `× ρ →
-          Γ ⊢ `π₂ a ⦂ ρ
+  `×-elim₂ : ∀ {Γ a τ ρ}
+           → Γ ⊢ a ⦂ τ `× ρ
+           → Γ ⊢ `π₂ a ⦂ ρ
 
-  `tt-intro :   ∀ {Γ} →
-          Γ ⊢ `tt ⦂ `⊤
+  `tt-intro : ∀ {Γ}
+            → Γ ⊢ `tt ⦂ `⊤
 ```
 
 This completes our typing relation. We can now show that some given
@@ -320,41 +322,39 @@ a moment.
 
 ```agda
   β-λ : ∀ {n body x body[n:=x]}
-        → is-value x
-        → body[n:=x] ≡ (body [ n := x ])
-        → ((`λ n body) `$ x) ↦ (body[n:=x])
+      → is-value x
+      → body[n:=x] ≡ (body [ n := x ])
+      → ((`λ n body) `$ x) ↦ (body[n:=x])
 ```
 
 Likewise, reducing projections on a pair is called β-reduction for
 pairs.
 
 ```agda
-  β-π₁ : ∀ {a b} →
-       (`π₁ `⟨ a , b ⟩) ↦ a
-  β-π₂ : ∀ {a b} →
-       (`π₂ `⟨ a , b ⟩) ↦ b
+  β-π₁ : ∀ {a b} → (`π₁ `⟨ a , b ⟩) ↦ a
+  β-π₂ : ∀ {a b} → (`π₂ `⟨ a , b ⟩) ↦ b
 ```
 
 We also have two reductions that can step "inside" projections, which
 we will call ξ rules.
 
 ```agda
-  ξ-π₁ : ∀ {a₁ a₂} →
-       a₁ ↦ a₂ →
-       (`π₁ a₁) ↦ (`π₁ a₂)
+  ξ-π₁ : ∀ {a₁ a₂}
+       → a₁ ↦ a₂
+       → (`π₁ a₁) ↦ (`π₁ a₂)
 
-  ξ-π₂ : ∀ {a₁ a₂} →
-       a₁ ↦ a₂ →
-       (`π₂ a₁) ↦ (`π₂ a₂)
+  ξ-π₂ : ∀ {a₁ a₂}
+       → a₁ ↦ a₂
+       → (`π₂ a₁) ↦ (`π₂ a₂)
 ```
 
 Likewise, we have one that can step inside an application, on
 the left hand side.
 
 ```agda
-  ξ-$ₗ : ∀ {f₁ f₂ x} →
-       f₁ ↦ f₂ →
-       (f₁ `$ x) ↦ (f₂ `$ x)
+  ξ-$ₗ : ∀ {f₁ f₂ x}
+       → f₁ ↦ f₂
+       → (f₁ `$ x) ↦ (f₂ `$ x)
 ```
 
 We also include a rule for reduction on the right hand side, requiring
@@ -364,10 +364,10 @@ that evaluation should take place from left to right. We will prove
 this later.
 
 ```agda
-  ξ-$ᵣ : ∀ {f x₁ x₂} →
-       is-value f →
-       x₁ ↦ x₂ →
-       (f `$ x₁) ↦ (f `$ x₂)
+  ξ-$ᵣ : ∀ {f x₁ x₂}
+       → is-value f
+       → x₁ ↦ x₂
+       → (f `$ x₁) ↦ (f `$ x₂)
 ```
 
 These are all of our reduction rules! The STLC is indeed very simple.
