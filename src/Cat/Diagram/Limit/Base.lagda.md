@@ -716,10 +716,10 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   limit-as-equaliser-of-product
     : ∀ {oj ℓj} {J : Precategory oj ℓj}
     → has-products-indexed-by C ⌞ J ⌟
-    → has-products-indexed-by C (Arrows J)
+    → has-products-indexed-by C (Arrow J)
     → has-equalisers C
     → (F : Functor J C) → Limit F
-  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Arrows-prod has-eq F =
+  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Arrow-prod has-eq F =
     to-limit (to-is-limit lim) where
 ```
 
@@ -753,15 +753,15 @@ and the second morphism to be the projection of the domain postcomposed with $f$
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Arrows}(\mathcal J)} F(b)}
+	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Arrow}(\mathcal J)} F(b)}
 	\arrow["{\pi_b}", shift left, from=1-1, to=1-2]
 	\arrow["{F(f) \circ \pi_a}"', shift right, from=1-1, to=1-2]
 \end{tikzcd}\]
 ~~~
 
 ```agda
-    Cod : Indexed-product C {Idx = Arrows J} λ (a , b , f) → F₀ b
-    Cod = has-Arrows-prod _
+    Cod : Indexed-product C {Idx = Arrow J} λ (a , b , f) → F₀ b
+    Cod = has-Arrow-prod _
 
     s t : C.Hom (Obs .ΠF) (Cod .ΠF)
     s = Cod .tuple λ (a , b , f) → F₁ f C.∘ Obs .π a

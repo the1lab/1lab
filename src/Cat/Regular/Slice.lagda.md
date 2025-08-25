@@ -3,13 +3,13 @@
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
-open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Slice
 open import Cat.Prelude
 open import Cat.Regular
 
-import Cat.Reasoning as Cr
+import Cat.Morphism.Strong.Epi
+import Cat.Reasoning
 ```
 -->
 
@@ -39,8 +39,11 @@ well-behaved under passing to arbitrary contexts.
 private
   module r = is-regular reg
   C/y = Slice C y
-  module C/y = Cr C/y
-open Cr C
+  module C/y where
+    open Cat.Reasoning C/y public
+    open Cat.Morphism.Strong.Epi C/y public
+open Cat.Morphism.Strong.Epi C
+open Cat.Reasoning C
 open Factorisation
 open is-regular
 open Functor
@@ -95,9 +98,9 @@ invertible in $\cC$.
 ```agda
   preserve-cover
     : ∀ {a b} (h : C/y.Hom a b)
-    → is-strong-epi C/y h
-    → is-strong-epi C (h .map)
-  preserve-cover {b = B} h cover = is-extremal-epi→is-strong-epi C r.has-is-lex λ m g p →
+    → C/y.is-strong-epi h
+    → is-strong-epi (h .map)
+  preserve-cover {b = B} h cover = is-extremal-epi→is-strong-epi r.has-is-lex λ m g p →
     let
       mono : cut (B .map ∘ m .mor) C/y.↪ B
       mono = record
@@ -113,7 +116,7 @@ invertible in $\cC$.
       (inv .C/y.is-invertible.inv .map)
       (ap map (inv .C/y.is-invertible.invl))
       (ap map (inv .C/y.is-invertible.invr))
-    where extreme = is-strong-epi→is-extremal-epi C/y cover
+    where extreme = C/y.is-strong-epi→is-extremal-epi cover
 ```
 
 In the converse direction, suppose $a \to b$ is a map over $y$ which is
@@ -126,9 +129,9 @@ calculate that the inverse to $m$ is still a map over $y$.
 ```agda
   reflect-cover
     : ∀ {a b} (h : C/y.Hom a b)
-    → is-strong-epi C (h .map)
-    → is-strong-epi C/y h
-  reflect-cover h cover = is-extremal-epi→is-strong-epi C/y C/y-lex λ m g p →
+    → is-strong-epi (h .map)
+    → C/y.is-strong-epi h
+  reflect-cover h cover = C/y.is-extremal-epi→is-strong-epi C/y-lex λ m g p →
     let inv = extn (pres-mono m) (g .map) (ap map p)
     in C/y.make-invertible
       (record
@@ -138,7 +141,7 @@ calculate that the inverse to $m$ is still a map over $y$.
         })
       (ext (inv .is-invertible.invl))
       (ext (inv .is-invertible.invr))
-    where extn = is-strong-epi→is-extremal-epi C cover
+    where extn = is-strong-epi→is-extremal-epi cover
 ```
 
 Since the projection functor preserves and reflects strong epimorphisms,
@@ -154,15 +157,13 @@ slice-is-regular .factor {a} {b} f = fact' where
   fact = r.factor (f .map)
   module f = Factorisation fact
 
-  fact' : Factorisation C/y (StrongEpi C/y) (Mono C/y) f
-  fact' .mediating = cut (b .map ∘ f.forget)
-  fact' .mediate = record { com = pullr (sym f.factors) ∙ f .com }
-  fact' .forget .map = f.forget
-  fact' .forget .com = refl
-  fact' .mediate∈E = do
-    c ← f.mediate∈E
-    pure (reflect-cover (fact' .mediate) c)
-  fact' .forget∈M = inc λ g h p → ext $ □-out! f.forget∈M (g .map) (h .map) (ap map p)
+  fact' : Factorisation C/y C/y.StrongEpis C/y.Monos f
+  fact' .mid = cut (b .map ∘ f.right)
+  fact' .left = record { com = pullr (sym f.factors) ∙ f .com }
+  fact' .right .map = f.right
+  fact' .right .com = refl
+  fact' .left∈L = reflect-cover (fact' .left) f.left∈L
+  fact' .right∈R g h p = ext $ f.right∈R (g .map) (h .map) (ap map p)
   fact' .factors = ext f.factors
 
 slice-is-regular .stable {B = B} f g {p1} {p2} cover is-pb =

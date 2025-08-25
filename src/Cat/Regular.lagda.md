@@ -4,12 +4,14 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
-open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
+open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
-import Cat.Reasoning as Cr
+import Cat.Morphism.Strong.Epi
+import Cat.Reasoning
 ```
 -->
 
@@ -43,24 +45,19 @@ every strong epimorphism is regular.
 open Functor
 
 module _ {o ℓ} (𝒞 : Precategory o ℓ) where
-  private module C = Cr 𝒞
-
-  StrongEpi : ∀ {a b} → C.Hom a b → Ω
-  StrongEpi x = elΩ (is-strong-epi 𝒞 x)
-
-  Mono : ∀ {a b} → C.Hom a b → Ω
-  Mono x = elΩ (C.is-monic x)
+  private module C where
+    open Cat.Morphism.Strong.Epi 𝒞 public
+    open Cat.Reasoning 𝒞 public
 ```
 -->
 
 ```agda
   record is-regular : Type (o ⊔ ℓ) where
     field
-      factor : ∀ {a b} (f : C.Hom a b) → Factorisation 𝒞 StrongEpi Mono f
-      stable : is-pullback-stable 𝒞 (is-strong-epi 𝒞)
+      factor : ∀ {a b} (f : C.Hom a b) → Factorisation 𝒞 C.StrongEpis C.Monos f
+      stable : is-pullback-stable 𝒞 C.is-strong-epi
       has-is-lex : Finitely-complete 𝒞
 
-    module factor {a b} (f : C.Hom a b) = Factorisation (factor f)
     module lex = Finitely-complete has-is-lex
 ```
 
@@ -71,14 +68,16 @@ provided factorisations: Letting $f : A \to B$ be a map and $A \epi X
 latter two names have a placeholder for the morphism we are factoring.
 
 ```agda
-    im[_] : ∀ {a b} (f : C.Hom a b) → C.Ob
-    im[ f ] = factor f .Factorisation.mediating
-
-    im[_]↪b : ∀ {a b} (f : C.Hom a b) → im[ f ] C.↪ b
-    im[ f ]↪b = record { monic = □-out! (factor f .Factorisation.forget∈M) }
-
-    a↠im[_] : ∀ {a b} (f : C.Hom a b) → C.Hom a im[ f ]
-    a↠im[ f ] = factor f .Factorisation.mediate
+    module factor {a b} (f : C.Hom a b) =
+      Factorisation (factor f) renaming
+        ( mid to im[_]
+        ; left to a↠im[_]
+        ; right to im[_]↪b
+        ; left∈L to a↠im[_]-strong-epic
+        ; right∈R to im[_]↪b-monic
+        ; factors to im[_]-factors
+        )
+    open factor public
 ```
 
 <!--
@@ -91,17 +90,10 @@ latter two names have a placeholder for the morphism we are factoring.
       : ∀ {a b} (f : C.Hom a b)
       → C.is-monic f
       → C.is-invertible r.a↠im[ f ]
-    mono→im-iso f x = res where
-      open Factorisation
-      rem₁ : f ≡ r.im[ f ]↪b .C.mor C.∘ r.a↠im[ f ]
-      rem₁ = r.factor f .factors
-
-      p = □-out! (r.factor f .mediate∈E) .snd (record { monic = x })
-        (sym (r.factor f .factors) ∙ sym (C.idr _))
-      res = C.make-invertible (p .centre .fst)
-        (□-out! (r.factor f .mediate∈E) .fst _ _
-          (C.pullr (p .centre .snd .fst) ∙ C.id-comm))
-        (p .centre .snd .fst)
+    mono→im-iso {a} {b} f f-monic =
+      C.strong-epi+mono→invertible
+        r.a↠im[ f ]-strong-epic
+        (factor-monic→left-monic (r.factor f) f-monic)
 ```
 -->
 
@@ -186,7 +178,7 @@ of its kernel pair.
 
 ```agda
   -- Johnstone, A.1.3.4
-  module _ (r : is-regular) {A B} (f : C.Hom A B) (is-s : is-strong-epi 𝒞 f) where
+  module _ (r : is-regular) {A B} (f : C.Hom A B) (is-s : C.is-strong-epi f) where
     private
       module r = is-regular r
       module kp = Pullback (r.lex.pullbacks f f)
@@ -220,10 +212,10 @@ $$.
 
 
 ```agda
-      dgh : Factorisation 𝒞 StrongEpi Mono ⟨ f , c ⟩
+      dgh : Factorisation 𝒞 C.StrongEpis C.Monos ⟨ f , c ⟩
       dgh = r.factor ⟨ f , c ⟩
       module dgh = Factorisation dgh
-        renaming (mediating to D ; forget to gh ; mediate to d)
+        renaming (mid to D ; right to gh ; left to d)
       open dgh using (D ; d ; gh)
 
       g : C.Hom D B
@@ -263,7 +255,7 @@ obtaining
 
 ```agda
       g-monic : C.is-monic g
-      g-monic {e} k l w' = □-out! dgh.forget∈M _ _ rem₈ where
+      g-monic {e} k l w' = dgh.right∈R _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
         module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
           renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
@@ -316,8 +308,8 @@ skip it.
 ```agda
         open is-pullback
 
-        rem₂ : is-strong-epi 𝒞 (×-functor .F₁ (d , id))
-        rem₂ = r.stable d π₁ {p2 = π₁} (□-out! dgh.mediate∈E) λ where
+        rem₂ : C.is-strong-epi (×-functor .F₁ (d , id))
+        rem₂ = r.stable d π₁ {p2 = π₁} dgh.left∈L λ where
           .square → π₁∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
           .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
@@ -327,8 +319,8 @@ skip it.
           .unique {p = p} {lim'} q r → ⟨⟩-unique r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
 
-        rem₃ : is-strong-epi 𝒞 (×-functor .F₁ (id , d))
-        rem₃ = r.stable d π₂ {p2 = π₂} (□-out! dgh.mediate∈E) λ where
+        rem₃ : C.is-strong-epi (×-functor .F₁ (id , d))
+        rem₃ = r.stable d π₂ {p2 = π₂} dgh.left∈L λ where
           .square → π₂∘⟨⟩
           .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
           .p₁∘universal {p = p} → ⟨⟩∘ _
@@ -351,10 +343,10 @@ $(g,h)k = (g,h)l$ (`rem₈`{.Agda}), but $(g,h)$ is a monomorphism by
 construction, so $k = l$ --- so $g$ is _also_ monic.
 
 ```agda
-        rem₅ : is-strong-epi 𝒞 d×d
-        rem₅ = subst-is-strong-epi 𝒞 rem₄ (strong-epi-∘ 𝒞 _ _ rem₃ rem₂)
+        rem₅ : C.is-strong-epi d×d
+        rem₅ = C.subst-is-strong-epi rem₄ (C.strong-epi-∘ _ _ rem₃ rem₂)
 
-        rem₆ : is-strong-epi 𝒞 p
+        rem₆ : C.is-strong-epi p
         rem₆ = r.stable _ _ rem₅ pb.has-is-pb
 
         rem₇ : h ∘ k ≡ h ∘ l
@@ -382,12 +374,11 @@ we do below.
 ```agda
       g-iso : is-invertible g
       g-iso = make-invertible (p .centre .fst) (p .centre .snd .snd)
-        (□-out! dgh.mediate∈E .fst _ _
+        (dgh.left∈L .fst _ _
           ( pullr (pullr (sym dgh.factors) ∙ π₁∘⟨⟩)
           ∙ p .centre .snd .fst ∙ introl refl))
         module g-ortho where
-          p = is-s .snd (record { monic = g-monic })
-            (idl _ ∙ sym (pullr (sym dgh.factors) ∙ π₁∘⟨⟩))
+          p = is-s .snd g g-monic _ _ (idl _ ∙ sym (pullr (sym dgh.factors) ∙ π₁∘⟨⟩))
       module g = _≅_ (invertible→iso _ g-iso)
 ```
 -->

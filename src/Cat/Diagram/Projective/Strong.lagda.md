@@ -7,6 +7,8 @@ description: |
 open import Cat.Diagram.Coproduct.Copower
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Functor.Morphism
+open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Zero
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -61,10 +63,7 @@ a $s : P \to X$ such that $e \circ s = p$, as in the following diagram:
 
 ```agda
 is-strong-projective : (P : Ob) → Type _
-is-strong-projective P =
-  ∀ {X Y} (p : Hom P Y) (e : Hom X Y)
-  → is-strong-epi e
-  → ∃[ s ∈ Hom P X ] (e ∘ s ≡ p)
+is-strong-projective P = Lifts C P StrongEpis
 ```
 
 ::: warning
@@ -78,8 +77,8 @@ projective→strong-projective
   : ∀ {P}
   → is-projective P
   → is-strong-projective P
-projective→strong-projective pro p e e-strong =
-  pro p (record { mor = e ; epic = e-strong .fst })
+projective→strong-projective pro e e-strong p =
+  pro e (e-strong .fst) p
 ```
 
 ## A functorial definition
@@ -105,7 +104,7 @@ strong-projective→preserves-strong-epis
 ones for projective objects, so we omit the details.
 </summary>
 ```agda
-preserves-strong-epis→strong-projective {P = P} hom-epi {X = X} {Y = Y} p e e-strong =
+preserves-strong-epis→strong-projective {P = P} hom-epi {X} {Y} e e-strong p =
   epi→surjective (el! (Hom P X)) (el! (Hom P Y))
     (e ∘_)
     (λ {c} → hom-epi e-strong .fst {c = c})
@@ -113,7 +112,7 @@ preserves-strong-epis→strong-projective {P = P} hom-epi {X = X} {Y = Y} p e e-
 
 strong-projective→preserves-strong-epis {P = P} pro {X} {Y} {f = f} f-strong =
     surjective→strong-epi (el! (Hom P X)) (el! (Hom P Y)) (f ∘_) $ λ p →
-    pro p f f-strong
+    pro f f-strong p
 ```
 </details>
 
@@ -144,15 +143,15 @@ retract→strong-projective
 ones for projective objects.
 </summary>
 ```agda
-indexed-coproduct-strong-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e e-strong = do
+indexed-coproduct-strong-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X} {Y} e e-strong p = do
   s ← Idx-pro
         (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
-        (λ i → P-pro i (p ∘ ι i) e e-strong)
+        (λ i → P-pro i e e-strong (p ∘ ι i))
   pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
   where open is-indexed-coproduct coprod
 
-retract→strong-projective P-pro s r p e e-strong = do
-  (t , t-factor) ← P-pro (p ∘ r .retract) e e-strong
+retract→strong-projective P-pro s r e e-strong p = do
+  (t , t-factor) ← P-pro e e-strong (p ∘ r .retract)
   pure (t ∘ s , pulll t-factor ∙ cancelr (r .is-retract))
 ```
 </details>

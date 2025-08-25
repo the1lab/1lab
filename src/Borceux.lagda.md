@@ -10,6 +10,7 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free hiding (_◆_)
 open import Algebra.Group.Ab
 
+open import Cat.Morphism.Factorisation.Orthogonal
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Functor.Adjoint.Epireflective
 open import Cat.Functor.Adjoint.Representable
@@ -89,6 +90,7 @@ open import Cat.Instances.Slice
 open import Cat.Functor.Closed
 open import Cat.Instances.Free
 open import Cat.Instances.Sets
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Monad
 open import Cat.Functor.Final
 open import Cat.Functor.Joint
@@ -954,9 +956,7 @@ _ = Localisation
 
 <!--
 ```agda
-_ = m⊥m
-_ = m⊥o
-_ = o⊥m
+_ = Orthogonal
 _ = object-orthogonal-!-orthogonal
 _ = in-subcategory→orthogonal-to-inverted
 _ = orthogonal-to-ηs→in-subcategory
@@ -966,8 +966,8 @@ _ = in-subcategory→orthogonal-to-ηs
 
 * Definition 5.4.1: `m⊥m`{.Agda}
 * Definition 5.4.2:
-  1. `m⊥o`{.Agda}
-  2. `o⊥m`{.Agda}
+  1. `Orthogonal`{.Agda}
+  2. `Orthogonal`{.Agda}
 * Proposition 5.4.3: `object-orthogonal-!-orthogonal`{.Agda}
 * Proposition 5.4.4:
   * 1.
@@ -978,7 +978,7 @@ _ = in-subcategory→orthogonal-to-ηs
 
 <!--
 ```agda
-_ = is-factorisation-system
+_ = is-ofs
 _ = factorisation-essentially-unique
 _ = E-is-⊥M
 _ = in-intersection≃is-iso
@@ -1116,5 +1116,3 @@ _ = const-nato
 * Exercise 8.4.6:
   * (⇒) `dependent-product→lcc`{.Agda}
   * (⇐) `lcc→dependent-product`{.Agda}
-
-[[marked graph homomorphism]]
