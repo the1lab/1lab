@@ -33,6 +33,9 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc (x + (y + z)) ≡⟨ ap suc (+-associative x y z) ⟩
   suc ((x + y) + z) ∎
 
++-zerol : (x : Nat) → 0 + x ≡ x
++-zerol x = refl
+
 +-zeror : (x : Nat) → x + 0 ≡ x
 +-zeror zero = refl
 +-zeror (suc x) =
@@ -50,9 +53,12 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc (y + x) ≡⟨ sym (+-sucr y x) ⟩
   y + suc x   ∎
 
-+-inj : ∀ k x y → k + x ≡ k + y → x ≡ y
-+-inj zero x y p = p
-+-inj (suc k) x y p = +-inj k x y (suc-inj p)
++-injl : ∀ k x y → k + x ≡ k + y → x ≡ y
++-injl zero x y p = p
++-injl (suc k) x y p = +-injl k x y (suc-inj p)
+
++-injr : ∀ k x y → x + k ≡ y + k → x ≡ y
++-injr k x y p = +-injl k x y (+-commutative k x ∙ p ∙ +-commutative y k)
 ```
 
 ## Multiplication
@@ -115,7 +121,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj k zero zero p = refl
 *-suc-inj k zero (suc y) p = absurd (zero≠suc p)
 *-suc-inj k (suc x) zero p = absurd (suc≠zero p)
-*-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
+*-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-injl _ _ _ p))
 
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
 *-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ∙∙ p ∙∙ *-commutative (suc k) y)

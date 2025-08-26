@@ -205,7 +205,7 @@ instance
   H-Level-DivMod {a} {b@(suc b')} =
     prop-instance λ where
       (divmod q r α β) (divmod q' r' α' β') → case ≤-split r r' of λ where
-        (inr (inr r=r')) → divmod-ap (*-injr b q q' (+-inj r (q * b) (q' * b) (+-commutative r (q * b) ∙ sym (recover α) ∙ recover α' ∙ +-commutative (q' * b) r' ∙ ap (_+ q' * b) (sym r=r')))) r=r'
+        (inr (inr r=r')) → divmod-ap (*-injr b q q' (+-injl r (q * b) (q' * b) (+-commutative r (q * b) ∙ sym (recover α) ∙ recover α' ∙ +-commutative (q' * b) r' ∙ ap (_+ q' * b) (sym r=r')))) r=r'
         (inr (inl r'<r)) → absurd (lemma' q q' b r r' r'<r (recover β) (recover (sym α ∙ α')))
         (inl r<r')       → absurd (lemma' q' q b r' r r<r' (recover β') (recover (sym α' ∙ α)))
     where
