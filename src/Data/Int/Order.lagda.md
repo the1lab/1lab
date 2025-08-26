@@ -247,11 +247,11 @@ abstract
 
   *ℤ-cancel-≤r : ∀ {x y z} ⦃ _ : Positive x ⦄ → (y *ℤ x) ≤ (z *ℤ x) → y ≤ z
   *ℤ-cancel-≤r {possuc x} {y = pos y} {pos z} ⦃ pos _ ⦄ p = pos≤pos
-    (Nat.*-cancel-≤r (suc x) (unapos≤apos p))
+    (Nat.*-reflects-≤r (suc x) (unapos≤apos p))
   *ℤ-cancel-≤r {possuc x} {y = pos y} {negsuc z} ⦃ pos _ ⦄ p = absurd (¬pos≤neg (≤-trans (≤-refl' (sym (assign-pos (y * suc x)))) p))
   *ℤ-cancel-≤r {possuc x} {y = negsuc y} {pos z} ⦃ pos _ ⦄ p = neg≤pos
   *ℤ-cancel-≤r {possuc x} {y = negsuc y} {negsuc z} ⦃ pos _ ⦄ p = neg≤neg
-    (Nat.*-cancel-≤r (suc x) (Nat.+-reflects-≤l (z * suc x) (y * suc x) x (unneg≤neg p)))
+    (Nat.*-reflects-≤r (suc x) (Nat.+-reflects-≤l (z * suc x) (y * suc x) x (unneg≤neg p)))
 
   *ℤ-cancel-≤l : ∀ {x y z} ⦃ _ : Positive x ⦄ → (x *ℤ y) ≤ (x *ℤ z) → y ≤ z
   *ℤ-cancel-≤l {x} {y} {z} p = *ℤ-cancel-≤r {x} {y} {z} (≤-trans (≤-refl' (*ℤ-commutative y x)) (≤-trans p (≤-refl' (*ℤ-commutative x z))))

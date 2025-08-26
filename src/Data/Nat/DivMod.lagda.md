@@ -221,31 +221,25 @@ instance
 
       lemma' : ∀ q q' b r r' → r' < r → r < b → q * b + r ≡ q' * b + r' → ⊥
       lemma' q q' b r r' r'<r r<b β =
-        let
-          γ : r' + (r - r') ≡ r
-          γ = monus-inversel _ _ (<-weaken r'<r)
+        <-≤-asym q<q' q'≤q
+        where
+          r-r'<b : r - r' < b
+          r-r'<b = ≤-trans (s≤s (monus-≤ r r')) r<b
 
-          p : (q * b + (r - r')) + r' ≡ q' * b + r'
-          p = sym (+-associative (q * b) (r - r') r') ∙ ap (q * b +_) (+-commutative (r - r') r' ∙ γ) ∙ β
+          q<q' : q < q'
+          q<q' =
+            *-reflects-<r b ⦃ ≤-trans (s≤s 0≤x) r<b ⦄ $
+            +-balance-<l (q' * b) r' (q * b) r (sym β) (r'<r)
 
-          p' : q * b + (r - r') ≡ q' * b
-          p' = +-inj r' _ _ (+-commutative r' _ ∙ p ∙ +-commutative _ r')
-
-          p'' : b * (q' - q) + r' ≡ r
-          p'' =
-            ap (_+ r') (monus-distribl b q' q ∙ ap₂ _-_ (*-commutative b q' ∙ sym p') (*-commutative b q) ∙ monus-inverser (r - r') (q * b))
-            ∙ +-commutative (r - r') r' ∙ γ
-
-          d0 : r - r' < b
-          d0 = ≤-trans (s≤s (monus-≤ r r')) r<b
-
-          d1 : r - r' ≡ b * (q' - q)
-          d1 = sym (monus-swapr (b * (q' - q)) r' r p'')
-
-          d2 : q' - q ≡ 0
-          d2 = lemma _ _ (q' - q) d0 d1
-        in <-not-equal r'<r (sym (ap (_+ r') (*-zeror b)) ∙ ap (λ e → b * e + r') (sym d2) ∙ p'')
-
+          q'≤q : q' ≤ q
+          q'≤q =
+            monus-zero→≤ q' q $
+            lemma (r - r') b (q' - q) r-r'<b $
+            sym $ monus-swapr (b * (q' - q)) 0 (r - r') $
+              b * (q' - q) + 0 ≡⟨ +-zeror _ ∙ *-commutative b (q' - q) ⟩
+              (q' - q) * b     ≡⟨ monus-distribr q' q b ⟩
+              q' * b - q * b   ≡˘⟨ monus-swapl (q * b) (r - r') (q' * b) (monus-exchanger (q * b) r (q' * b) r' β (<-weaken r'<r)) ⟩
+              r - r'           ∎
 ```
 -->
 

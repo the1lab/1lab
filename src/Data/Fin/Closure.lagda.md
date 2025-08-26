@@ -120,13 +120,13 @@ Finite-coproduct {m} {n} = Iso→Equiv (to , iso from ir il) where
       q = monus-≤ i m
 
       .r : i - m Nat.< n
-      r = +-reflects-≤l (suc (i - m)) n m (≤-trans (≤-refl' (+-sucr m (i - m))) (≤-trans (≤-refl' (ap suc (monus-inversel i m p'))) b))
+      r = +-reflects-≤l (suc (i - m)) n m (≤-trans (≤-refl' (+-sucr m (i - m))) (≤-trans (≤-refl' (ap Nat.suc (monus-+l-inverse m i p'))) b))
     in inr (fin (i - m) ⦃ forget r ⦄)
 
   ir : is-right-inverse from to
   ir (fin i ⦃ forget b ⦄) with holds? (i Nat.< m)
   ... | yes p = fin-ap refl
-  ... | no ¬p = fin-ap (monus-inversel i m (≤-peel (<-from-not-≤ _ _ ¬p)))
+  ... | no ¬p = fin-ap (monus-+l-inverse m i (≤-peel (<-from-not-≤ _ _ ¬p)))
 
   il : is-left-inverse from to
   il (inl (fin i ⦃ forget b ⦄)) with holds? (i Nat.< m)
@@ -134,7 +134,7 @@ Finite-coproduct {m} {n} = Iso→Equiv (to , iso from ir il) where
   ... | no ¬p = absurd (¬p b)
   il (inr (fin i ⦃ forget b ⦄)) with holds? ((m + i) Nat.< m)
   ... | yes p = absurd (¬sucx≤x m (+-reflects-≤l (suc m) m i (≤-trans (≤-refl' (+-sucr i m ∙ ap suc (+-commutative i m))) (≤-trans p (+-≤r i m)))))
-  ... | no ¬p = ap inr (fin-ap (monus-inverser i m))
+  ... | no ¬p = ap inr (fin-ap (+l-monus-inverse i m))
 ```
 -->
 
@@ -204,7 +204,7 @@ Finite-multiply {m@(suc m')} {n@(suc n')} = Iso→Equiv (to , iso from ir il) wh
   from (fin i ⦃ forget b ⦄) with divmod q r quot rem ← divide-pos i n =
     let
       .b' : q Nat.≤ m
-      b' = *-cancel-≤r n {q} {m} $
+      b' = *-reflects-≤r n {q} {m} $
         ≤-trans (difference→≤ r (sym quot)) (≤-sucr (≤-peel b))
 
       .ne : q ≠ m
