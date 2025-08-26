@@ -92,7 +92,7 @@ function.
 0≤1-products A B .has-is-product .unique _ _ = prop!
 ```
 
-# The space of arrows
+# The space of arrows {defines="arrow-category"}
 
 The total space of the $\hom$ family of a precategory is referred to as
 its "space of arrows". A point in this space is a "free-standing arrow":
@@ -234,7 +234,9 @@ module _ {o ℓ} {C : Precategory o ℓ} {a b x y : ⌞ C ⌟} {f : C .Hom a b} 
     → Extensional (Homᵃ C f g) ℓr
   Extensional-Homᵃ ⦃ sab ⦄ =
     injection→extensional!
-      (λ p → Iso.injective eqv (Σ-pathp (ap fst p) (Σ-pathp (ap snd p) prop!)))
+      (λ { p i .top → p i .fst
+         ; p i .bot → p i .snd
+         ; {x} {y} p i .com → is-prop→pathp (λ i → C .Hom-set _ _ (C ._∘_ g (p i .fst)) (C ._∘_ (p i .snd) f)) (x .com) (y .com) i })
       sab
 ```
 -->

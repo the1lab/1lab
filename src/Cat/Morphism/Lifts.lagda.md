@@ -57,6 +57,13 @@ that $w \circ f = u$ and $g \circ w = v$.
   Lifting {a} {b} {x} {y} f g u v = Σ[ w ∈ Hom b x ] w ∘ f ≡ u × g ∘ w ≡ v
 ```
 
+<!--
+```agda
+  Square-lift : {f : Hom a b} {g : Hom x y} → Homᵃ C f g → Type _
+  Square-lift {f = f} {g} sq = Lifting f g (sq .top) (sq .bot)
+```
+-->
+
 :::{.definition #lifts-against}
 Let $f, g$ be two morphisms of $\cC$. We say that $f$ *left lifts against* $g$
 and $g$ *right lifts against* $f$ if for every commutative square
