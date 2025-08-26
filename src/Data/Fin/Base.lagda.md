@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Function.Embedding
 open import 1Lab.HLevel.Closure
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -190,6 +191,20 @@ We can also relax the upper bounds if `m ≤ n`.
 ```agda
 inject : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
 inject p (fin n ⦃ b ⦄) = fin n ⦃ (λ e → Nat.≤-trans e p) <$> b ⦄
+```
+
+## As a subset of the natural numbers
+
+We can also view `Fin` as a subset of the natural numbers.
+
+```agda
+lower-inj : ∀ {n : Nat} {x y : Fin n} → x .lower ≡ y .lower → x ≡ y
+lower-inj {n} {fin x ⦃ x<n ⦄} {fin y ⦃ _ ⦄} p i =
+  fin (p i) ⦃ coe0→i (λ i → p i Nat.< n) i <$> x<n ⦄
+
+Fin↪Nat : ∀ {n} → Fin n ↪ Nat
+Fin↪Nat .fst = lower
+Fin↪Nat .snd = injective→is-embedding (hlevel 2) lower lower-inj
 ```
 
 ## Discreteness
