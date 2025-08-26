@@ -422,10 +422,10 @@ Finally, we can calculate that these fractions are similar.
     ∣-*-cancelr {g} {g'} {1} ⦃ nonzero→positive rem₂ ⦄ (∣-trans (gcd[x,y] .snd .is-gcd.greatest p1 p2) (subst (g ∣_) (sym (+-zeror g)) ∣-refl))
     where
       p1 : g' * g ∣ abs x
-      p1 = fibre→∣ (p , sym (*-associative p g' g) ∙ ap (_* g) α ∙ x/g*g=x)
+      p1 = fibre→∣ (p , *-associative p g' g ∙ ap (_* g) α ∙ x/g*g=x)
 
       p2 : g' * g ∣ abs y
-      p2 = fibre→∣ (q , sym (*-associative q g' g) ∙ ap (_* g) β ∙ y/g*g=y)
+      p2 = fibre→∣ (q , *-associative q g' g ∙ ap (_* g) β ∙ y/g*g=y)
 
 ```
 -->
@@ -486,7 +486,7 @@ Therefore, our numerators have the same absolute value.
 ```agda
   num' : xs/gcd * gcdℤ x y ≡ abs x
   num' = *-injr (abs s) (xs/gcd * m.g) (abs x) $
-    xs/gcd * gcdℤ x y * abs s       ≡⟨ *-associative xs/gcd m.g (abs s) ⟩
+    xs/gcd * gcdℤ x y * abs s       ≡˘⟨ *-associative xs/gcd m.g (abs s) ⟩
     xs/gcd * (gcdℤ x y * abs s)     ≡˘⟨ ap (xs/gcd *_) p1 ⟩
     xs/gcd * gcdℤ (x *ℤ s) (y *ℤ s) ≡⟨ n.x/g*g=x ⟩
     abs (x *ℤ s)                    ≡⟨ abs-*ℤ x s ⟩
@@ -513,7 +513,7 @@ fraction, we're done.
 
 ```agda
   denom' : ys/gcd * gcdℤ x y ≡ abs y
-  denom' = *-injr (abs s) (ys/gcd * m.g) (abs y) (*-associative ys/gcd m.g (abs s) ∙ sym (ap (ys/gcd *_) p1) ∙ n.y/g*g=y ∙ abs-*ℤ y s)
+  denom' = *-injr (abs s) (ys/gcd * m.g) (abs y) (sym (*-associative ys/gcd m.g (abs s)) ∙ sym (ap (ys/gcd *_) p1) ∙ n.y/g*g=y ∙ abs-*ℤ y s)
 
   denom : ys/gcd ≡ y/gcd
   denom = *-injr (gcdℤ x y) ys/gcd y/gcd (denom' ∙ sym m.y/g*g=y)

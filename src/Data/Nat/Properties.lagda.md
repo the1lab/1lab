@@ -104,12 +104,12 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * z + y * z ≡⟨ ap₂ _+_ (*-commutative x z) (*-commutative y z) ⟩
   z * x + z * y ∎
 
-*-associative : (x y z : Nat) → (x * y) * z ≡ x * (y * z)
+*-associative : (x y z : Nat) → x * (y * z) ≡ (x * y) * z
 *-associative zero y z = refl
 *-associative (suc x) y z =
-  (y + x * y) * z     ≡⟨ *-distrib-+r y (x * y) z ⟩
-  y * z + (x * y) * z ≡⟨ ap₂ _+_ refl (*-associative x y z) ⟩
-  y * z + x * (y * z) ∎
+  y * z + x * (y * z) ≡⟨ ap₂ _+_ refl (*-associative x y z) ⟩
+  y * z + x * y * z   ≡˘⟨ *-distrib-+r y (x * y) z ⟩
+  (y + x * y) * z     ∎
 
 *-suc-inj : ∀ k x y → x * suc k ≡ y * suc k → x ≡ y
 *-suc-inj k zero zero p = refl
@@ -169,18 +169,18 @@ numbers]. Since they're mostly simple inductive arguments written in
 ^-+-hom-*r x zero z = sym (+-zeror (x ^ z))
 ^-+-hom-*r x (suc y) z =
   x * x ^ (y + z)     ≡⟨ ap (x *_) (^-+-hom-*r x y z) ⟩
-  x * (x ^ y * x ^ z) ≡⟨ sym (*-associative x (x ^ y) (x ^ z)) ⟩
+  x * (x ^ y * x ^ z) ≡⟨ (*-associative x (x ^ y) (x ^ z)) ⟩
   x * x ^ y * x ^ z ∎
 
 ^-distrib-*r : (x y z : Nat) → (x * y) ^ z ≡ x ^ z * y ^ z
 ^-distrib-*r x y zero = refl
 ^-distrib-*r x y (suc z) =
   x * y * (x * y) ^ z     ≡⟨ ap (λ a → x * y * a) (^-distrib-*r x y z) ⟩
-  x * y * (x ^ z * y ^ z) ≡⟨ sym (*-associative (x * y) (x ^ z) (y ^ z)) ⟩
-  x * y * x ^ z * y ^ z   ≡⟨ ap (_* y ^ z) (*-associative x y (x ^ z)) ⟩
+  x * y * (x ^ z * y ^ z) ≡⟨ *-associative (x * y) (x ^ z) (y ^ z) ⟩
+  x * y * x ^ z * y ^ z   ≡˘⟨ ap (_* y ^ z) (*-associative x y (x ^ z)) ⟩
   x * (y * x ^ z) * y ^ z ≡⟨ ap (λ a → x * a * y ^ z) (*-commutative y (x ^ z)) ⟩
-  x * (x ^ z * y) * y ^ z ≡⟨ ap (_* y ^ z) (sym (*-associative x (x ^ z) y)) ⟩
-  x * x ^ z * y * y ^ z   ≡⟨ *-associative (x * x ^ z) y (y ^ z) ⟩
+  x * (x ^ z * y) * y ^ z ≡⟨ ap (_* y ^ z) (*-associative x (x ^ z) y) ⟩
+  x * x ^ z * y * y ^ z   ≡˘⟨ *-associative (x * x ^ z) y (y ^ z) ⟩
   x * x ^ z * (y * y ^ z) ∎
 
 ^-*-adjunct : (x y z : Nat) → (x ^ y) ^ z ≡ x ^ (y * z)
@@ -190,7 +190,7 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * x ^ y * (x * x ^ y) ^ z       ≡⟨ ap (λ a → x * x ^ y * a) (^-distrib-*r x (x ^ y) z) ⟩
   x * x ^ y * (x ^ z * (x ^ y) ^ z) ≡⟨ ap (λ a → x * x ^ y * (x ^ z * a)) (^-*-adjunct x y z) ⟩
   x * x ^ y * (x ^ z * x ^ (y * z)) ≡⟨ ap (λ a → x * x ^ y * a) (sym (^-+-hom-*r x z (y * z))) ⟩
-  x * x ^ y * (x ^ (z + (y * z)))   ≡⟨ *-associative x (x ^ y) (x ^ (z + y * z)) ⟩
+  x * x ^ y * (x ^ (z + (y * z)))   ≡˘⟨ *-associative x (x ^ y) (x ^ (z + y * z)) ⟩
   x * (x ^ y * (x ^ (z + (y * z)))) ≡⟨ ap (x *_) (sym (^-+-hom-*r x y (z + y * z))) ⟩
   x * x ^ (y + (z + y * z))         ≡⟨ ap (λ a → x * x ^ a) (+-associative y z (y * z)) ⟩
   x * x ^ (y + z + y * z)           ≡⟨ ap (λ a → x * x ^ (a + y * z)) (+-commutative y z) ⟩
