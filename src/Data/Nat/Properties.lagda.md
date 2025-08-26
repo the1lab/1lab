@@ -205,6 +205,127 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * x ^ (z + y * suc z) ∎
 ```
 
+## Monus
+
+```agda
+monus-zero : ∀ a → 0 - a ≡ 0
+monus-zero zero = refl
+monus-zero (suc a) = refl
+
+monus-≤-zero : ∀ m n → .(m ≤ n) → m - n ≡ 0
+monus-≤-zero zero zero m≤n = refl
+monus-≤-zero zero (suc n) m≤n = refl
+monus-≤-zero (suc m) (suc n) m≤n = monus-≤-zero m n (≤-peel m≤n)
+
+monus-≤-suc : ∀ m n → .(m ≤ n) → suc n - m ≡ suc (n - m)
+monus-≤-suc zero n m≤n = refl
+monus-≤-suc (suc m) (suc n) m≤n = monus-≤-suc m n (≤-peel m≤n)
+
+monus-cancell : ∀ k m n → (k + m) - (k + n) ≡ m - n
+monus-cancell zero    = λ _ _ → refl
+monus-cancell (suc k) = monus-cancell k
+
+monus-cancelr : ∀ m n k → (m + k) - (n + k) ≡ m - n
+monus-cancelr m n k = (λ i → +-commutative m k i - +-commutative n k i) ∙ monus-cancell k m n
+
+monus-swapl : ∀ x y z → x + y ≡ z → y ≡ z - x
+monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) ∙ ap (_- x) p
+
+monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
+monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
+
+monus-+r-inverse : ∀ x y → .(y ≤ x) → (x - y) + y ≡ x
+monus-+r-inverse x zero y≤x = +-zeror x
+monus-+r-inverse (suc x) (suc y) y≤x =
+  (x - y) + suc y   ≡⟨ +-sucr (x - y) y ⟩
+  suc ((x - y) + y) ≡⟨ ap suc (monus-+r-inverse x y (≤-peel y≤x)) ⟩
+  suc x             ∎
+
+monus-+l-inverse : ∀ x y → .(x ≤ y) → x + (y - x) ≡ y
+monus-+l-inverse x y x≤y =
+  x + (y - x) ≡⟨ +-commutative x (y - x) ⟩
+  (y - x) + x ≡⟨ monus-+r-inverse y x x≤y ⟩
+  y ∎
+
++l-monus-inverse : ∀ x y → (y + x) - y ≡ x
++l-monus-inverse x y =
+  sym $ monus-swapl y x (y + x) refl
+
++r-monus-inverse : ∀ x y → (x + y) - y ≡ x
++r-monus-inverse x y =
+  (x + y) - y   ≡⟨ ap (_- y) (+-commutative x y) ⟩
+  (y + x) - y ≡⟨ +l-monus-inverse x y ⟩
+  x ∎
+
+monus-distribr : ∀ m n k → (m - n) * k ≡ m * k - n * k
+monus-distribr m       zero    k = refl
+monus-distribr zero    (suc n) k = sym (monus-zero (k + n * k))
+monus-distribr (suc m) (suc n) k =
+  monus-distribr m n k ∙ sym (monus-cancell k (m * k) (n * k))
+
+monus-distribl : ∀ k m n → k * (m - n) ≡ k * m - k * n
+monus-distribl k m n = *-commutative k (m - n) ∙ monus-distribr m n k ∙ ap₂ _-_ (*-commutative m k) (*-commutative n k)
+
+monus-addl : ∀ m n k → m - (n + k) ≡ m - n - k
+monus-addl zero zero k = refl
+monus-addl zero (suc n) k = sym (monus-zero k)
+monus-addl (suc m) zero k = refl
+monus-addl (suc m) (suc n) k = monus-addl m n k
+
+monus-pres-+l : ∀ m n k → .(k ≤ n) → (m + n) - k ≡ m + (n - k)
+monus-pres-+l zero n k k≤n = refl
+monus-pres-+l (suc m) n zero k≤n = refl
+monus-pres-+l (suc m) (suc n) (suc k) k≤n =
+  (m + suc n) - k ≡⟨ ap (_- k) (+-sucr m n) ⟩
+  (suc m + n) - k ≡⟨ monus-pres-+l (suc m) n k (≤-peel k≤n) ⟩
+  suc m + (n - k) ∎
+
+monus-pres-+r : ∀ (m n k : Nat) → .(k ≤ m) → (m + n) - k ≡ (m - k) + n
+monus-pres-+r zero n zero k≤m = refl
+monus-pres-+r (suc m) n zero k≤m = refl
+monus-pres-+r (suc m) n (suc k) k≤m = monus-pres-+r m n k (≤-peel k≤m)
+
+monus-exchanger : ∀ w x y z → w + x ≡ y + z → z ≤ x → w + (x - z) ≡ y
+monus-exchanger w x y z p z≤x =
+  +-injr z (w + (x - z)) y $
+    w + (x - z) + z ≡˘⟨ +-associative w (x - z) z ⟩
+    w + (x - z + z) ≡⟨ ap (w +_) (monus-+r-inverse x z z≤x) ⟩
+    w + x           ≡⟨ p ⟩
+    y + z           ∎
+
+monus-commute : ∀ m n k → m - n - k ≡ m - k - n
+monus-commute m n k =
+  m - n - k   ≡˘⟨ monus-addl m n k ⟩
+  m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
+  m - (k + n) ≡⟨ monus-addl m k n ⟩
+  m - k - n   ∎
+
+monus-cancel-outer : ∀ x y z → x ≤ y → y ≤ z → (y - x) + (z - y) ≡ z - x
+monus-cancel-outer zero y z x≤y y≤z = monus-+l-inverse y (z - zero) y≤z
+monus-cancel-outer (suc x) (suc y) (suc z) x≤y y≤z = monus-cancel-outer x y z (≤-peel x≤y) (≤-peel y≤z)
+
+monus-self-suc : ∀ x → (suc x) - x ≡ 1
+monus-self-suc x =
+  suc x - x   ≡⟨ ap (_- x) (+-sucr 0 x) ⟩
+  (1 + x) - x ≡⟨ +r-monus-inverse 1 x ⟩
+  1           ∎
+
+monus-comm-same : ∀ x y → x - y ≡ y - x → x ≡ y
+monus-comm-same zero zero p = p
+monus-comm-same zero (suc y) p = p
+monus-comm-same (suc x) zero p = p
+monus-comm-same (suc x) (suc y) p = ap suc (monus-comm-same x y p)
+
+monus-<-nonzero : ∀ {x y} → x < y → (y - x) ≠ 0
+monus-<-nonzero {x = x} {y = y} x<y y-x=0 =
+  <-irrefl x=y x<y
+  where
+    x-y=0 : x - y ≡ 0
+    x-y=0 = monus-≤-zero x y (<-weaken x<y)
+
+    x=y : x ≡ y
+    x=y = monus-comm-same x y (x-y=0 ∙ sym y-x=0)
+```
 
 ### Compatibility
 
@@ -268,10 +389,19 @@ monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
 +-reflects-≤l x y (suc z) (s≤s prf) = +-reflects-≤l x y z prf
 
 +-reflects-≤r : (x y z : Nat) → (x + z) ≤ (y + z) → x ≤ y
-+-reflects-≤r x y z prf =
++-reflects-≤r x y z le =
   +-reflects-≤l x y z
-    (subst (_≤ (z + y)) (+-commutative x z)
-    (subst ((x + z) ≤_) (+-commutative y z) prf))
+    (subst₂ _≤_ (+-commutative x z) (+-commutative y z) le)
+
++-reflects-<l : ∀ (x y z : Nat) → (z + x) < (z + y) → x < y
++-reflects-<l x y z lt with ≤-strengthen (+-reflects-≤l x y z (<-weaken lt))
+... | inl x=y = absurd (<-irrefl (ap (z +_) x=y) lt)
+... | inr x<y = x<y
+
++-reflects-<r : ∀ (x y z : Nat) → (x + z) < (y + z) → x < y
++-reflects-<r x y z lt with ≤-strengthen (+-reflects-≤r x y z (<-weaken lt))
+... | inl x=y = absurd (<-irrefl (ap (_+ z) x=y) lt)
+... | inr x<y = x<y
 
 difference→≤ : ∀ {x z} y → x + y ≡ z → x ≤ z
 difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙ p) ≤-refl
@@ -279,64 +409,52 @@ difference→≤ {zero}  {z}     (suc y) p = 0≤x
 difference→≤ {suc x} {zero}  (suc y) p = absurd (suc≠zero p)
 difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
 
+monus-zero→≤ : ∀ (x y : Nat) → x - y ≡ 0 → x ≤ y
+monus-zero→≤ zero y x-y=0 = 0≤x
+monus-zero→≤ (suc x) zero x-y=0 = absurd (suc≠zero x-y=0)
+monus-zero→≤ (suc x) (suc y) x-y=0 = s≤s (monus-zero→≤ x y x-y=0)
+
++-balance-≤l : ∀ x y x' y' → x + y ≡ x' + y' → y ≤ y' → x' ≤ x
++-balance-≤l x y x' y' p y≤y' =
+  difference→≤ (y' - y) $
+    x' + (y' - y) ≡˘⟨ monus-pres-+l x' y' y y≤y' ⟩
+    (x' + y') - y ≡˘⟨ ap (_- y) p ⟩
+    (x + y) - y   ≡⟨ +r-monus-inverse x y ⟩
+    x ∎
+
++-balance-≤r : ∀ x y x' y' → x + y ≡ x' + y' → x ≤ x' → y' ≤ y
++-balance-≤r x y x' y' p = +-balance-≤l y x y' x' (+-commutative y x ∙ p ∙ +-commutative x' y')
+
++-balance-<l : ∀ x y x' y' → x + y ≡ x' + y' → y < y' → x' < x
++-balance-<l x y x' y' p y<y' with ≤-strengthen (+-balance-≤l x y x' y' p (<-weaken y<y'))
+... | inl x=x' = absurd (<-irrefl (+-injl x' y y' (ap (_+ y) x=x' ∙ p)) y<y')
+... | inr x<x' = x<x'
+
++-balance-<r : ∀ x y x' y' → x + y ≡ x' + y' → x < x' → y' < y
++-balance-<r x y x' y' p x<x' = +-balance-<l y x y' x' (+-commutative y x ∙ p ∙ +-commutative x' y') x<x'
+
 nonzero→positive : ∀ {x} → x ≠ 0 → 0 < x
 nonzero→positive {zero} p = absurd (p refl)
 nonzero→positive {suc x} p = s≤s 0≤x
 
-*-cancel-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
-*-cancel-≤r (suc x) {zero} {z} p = 0≤x
-*-cancel-≤r (suc x) {suc y} {suc z} (s≤s p) = s≤s
-  (*-cancel-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x p))
-```
+*-reflects-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
+*-reflects-≤r (suc x) {zero} {z} p = 0≤x
+*-reflects-≤r (suc x) {suc y} {suc z} (s≤s p) = s≤s
+  (*-reflects-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x p))
 
-## Monus
+*-reflects-≤l : ∀ x {y z} .⦃ _ : Positive x ⦄ → (x * y) ≤ (x * z) → y ≤ z
+*-reflects-≤l x {y} {z} le =
+  *-reflects-≤r x (subst₂ _≤_ (*-commutative x y) (*-commutative x z) le)
 
-```agda
-monus-zero : ∀ a → 0 - a ≡ 0
-monus-zero zero = refl
-monus-zero (suc a) = refl
+*-reflects-<r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) < (z * x) → y < z
+*-reflects-<r x {y} {z} lt with ≤-strengthen (*-reflects-≤r x {y} {z} (<-weaken lt))
+... | inl y=z = absurd (<-irrefl (ap (_* x) y=z) lt)
+... | inr y<z = y<z
 
-monus-cancell : ∀ k m n → (k + m) - (k + n) ≡ m - n
-monus-cancell zero    = λ _ _ → refl
-monus-cancell (suc k) = monus-cancell k
-
-monus-inversel : ∀ n m → m ≤ n → m + (n - m) ≡ n
-monus-inversel n m 0≤x = refl
-monus-inversel (suc n) (suc m) (s≤s p) = ap suc (monus-inversel n m p)
-
-monus-distribr : ∀ m n k → (m - n) * k ≡ m * k - n * k
-monus-distribr m       zero    k = refl
-monus-distribr zero    (suc n) k = sym (monus-zero (k + n * k))
-monus-distribr (suc m) (suc n) k =
-  monus-distribr m n k ∙ sym (monus-cancell k (m * k) (n * k))
-
-monus-distribl : ∀ k m n → k * (m - n) ≡ k * m - k * n
-monus-distribl k m n = *-commutative k (m - n) ∙ monus-distribr m n k ∙ ap₂ _-_ (*-commutative m k) (*-commutative n k)
-
-monus-cancelr : ∀ m n k → (m + k) - (n + k) ≡ m - n
-monus-cancelr m n k = (λ i → +-commutative m k i - +-commutative n k i) ∙ monus-cancell k m n
-
-monus-addl : ∀ m n k → m - (n + k) ≡ m - n - k
-monus-addl zero zero k = refl
-monus-addl zero (suc n) k = sym (monus-zero k)
-monus-addl (suc m) zero k = refl
-monus-addl (suc m) (suc n) k = monus-addl m n k
-
-monus-commute : ∀ m n k → m - n - k ≡ m - k - n
-monus-commute m n k =
-  m - n - k   ≡˘⟨ monus-addl m n k ⟩
-  m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
-  m - (k + n) ≡⟨ monus-addl m k n ⟩
-  m - k - n   ∎
-
-monus-swapl : ∀ x y z → x + y ≡ z → y ≡ z - x
-monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) ∙ ap (_- x) p
-
-monus-inverser : ∀ n m → (m + n) - m ≡ n
-monus-inverser n m = sym (monus-swapl m n (m + n) refl)
-
-monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
-monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
+*-reflects-<l : ∀ x {y z} .⦃ _ : Positive x ⦄ → (x * y) < (x * z) → y < z
+*-reflects-<l x {y} {z} lt with ≤-strengthen (*-reflects-≤l x {y} {z} (<-weaken lt))
+... | inl y=z = absurd (<-irrefl (ap (x *_) y=z) lt)
+... | inr y<z = y<z
 ```
 
 ## Maximum
