@@ -209,7 +209,7 @@ record Factorisation (n : Nat) : Type where
       let
         it = work x xs p
         (div , p) = ∣→fibre it
-      in fibre→∣ (y * div , *-associative y div x ∙ ap (y *_) p)
+      in fibre→∣ (y * div , sym (*-associative y div x) ∙ ap (y *_) p)
 
   find-prime-factor : ∀ {x} → is-prime x → x ∣ n → x ∈ₗ primes
   find-prime-factor {num} x d =
