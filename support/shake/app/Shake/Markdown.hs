@@ -15,8 +15,8 @@ import Control.Monad
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
-import qualified Data.Map.Lazy as Map
 import qualified Data.Sequence as Seq
+import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import qualified Data.Set as Set
@@ -58,8 +58,6 @@ import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 
-import HTML.Emit
-
 import Definitions
 
 import System.IO.Unsafe
@@ -80,6 +78,7 @@ buildMarkdown digest modname input output = do
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
+
   let
     permalink = gitCommit </> modulePath
 
@@ -102,8 +101,6 @@ buildMarkdown digest modname input output = do
     let pandoc = addPageTitle (Pandoc (patchMeta meta) markdown)
     either (fail . show) pure =<< runIO do
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
-
-  liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> modname
 
   let
     refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
@@ -133,6 +130,8 @@ buildMarkdown digest modname input output = do
   -- Rendering the search data has to be done *here*, after running the
   -- maths through KaTeX but before adding the emoji to headers.
   let search = query (getHeaders (Text.pack modname)) markdown
+  traced "writing" do
+    encodeFile ("_build/search" </> modname <.> "json") search
 
   baseUrl <- getBaseUrl
 
@@ -141,21 +140,17 @@ buildMarkdown digest modname input output = do
       MarkdownState references defs = fold mss
       markdown                      = Pandoc meta bs
 
-  text <- liftIO $ either (fail . show) pure =<<
+  text <- quietly $ traced "initial render" $ either (fail . show) pure =<<
     runIO (renderMarkdown authors references modname baseUrl digest markdown)
 
   let tags = foldEquations False (parseTags text)
   tags <- renderHighlights tags
-  traverse_ (checkMarkup input) tags
 
   traced "writing" do
     Dir.createDirectoryIfMissing False "_build/html/fragments"
     Dir.createDirectoryIfMissing False "_build/search"
 
     Text.writeFile output $ renderHTML5 tags
-
-  traced "search" do
-    encodeFile ("_build/search" </> modname <.> "json") search
 
   for_ (Map.toList defs) \(key, bs) -> traced "writing fragment" do
     text <- either (fail . show) pure =<<
@@ -445,3 +440,8 @@ pageTemplateName, talkTemplateName, bibliographyName :: FilePath
 pageTemplateName = "support/web/template.html"
 talkTemplateName = "support/web/template.reveal.html"
 bibliographyName = "src/bibliography.bibtex"
+
+-- | Write a HTML file, correctly handling the closing of some tags.
+renderHTML5 :: [Tag Text] -> Text
+renderHTML5 = renderTagsOptions renderOptions{ optMinimize = min } where
+  min = flip elem ["br", "meta", "link", "img", "hr"]

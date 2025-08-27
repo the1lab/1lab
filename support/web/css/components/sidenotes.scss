@@ -1,5 +1,6 @@
-@use "../mixins" as *;
-@use "../vars"   as *;
+@use "../mixins.scss" as *;
+@use "../vars.scss"   as *;
+@use "../theme.scss"  as *;
 
 span.sidenote-baseline-mark {
   width: 0px;

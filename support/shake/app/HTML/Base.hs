@@ -9,9 +9,6 @@ module HTML.Base
   , HtmlHighlight(..)
   , srcFileOfInterface
   , defaultPageGen
-  , MonadLogHtml(logHtml)
-  , LogHtmlT
-  , runLogHtmlWith
   , modToFile, highlightedFileExt
   , Identifier(..)
   ) where
@@ -26,17 +23,18 @@ import Control.Monad
 import qualified Data.HashMap.Strict as Hm
 import qualified Data.Text.Lazy as T
 import qualified Data.HashSet as Hs
-import qualified Data.IntMap as IntMap
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List as List
 import qualified Data.Text as Ts
 import Data.HashMap.Strict (HashMap)
+import Data.IntMap.Strict (IntMap)
 import Data.List.Split (splitWhen)
 import Data.Text.Lazy (Text)
 import Data.Function ( on )
 import Data.Foldable (toList, concatMap)
 import Data.HashSet (HashSet)
+import Data.Binary
 import Data.Maybe
-import Data.Aeson
 
 import GHC.Generics (Generic)
 
@@ -106,21 +104,17 @@ highlightedFileExt hh ft
 
 data HtmlOptions = HtmlOptions
   { htmlOptDir        :: FilePath
+  , htmlOptBaseUrl    :: FilePath
   , htmlOptHighlight  :: HtmlHighlight
-  , htmlOptJsUrl      :: Maybe FilePath
-  , htmlOptCssUrl     :: FilePath
   , htmlOptGenTypes   :: Bool
-  , htmlOptDumpIdents :: Maybe FilePath
   } deriving (Eq, Show, Generic, NFData)
 
-defaultHtmlOptions :: HtmlOptions
-defaultHtmlOptions = HtmlOptions
-  { htmlOptDir       = "_build/html0"
-  , htmlOptHighlight = HighlightAuto
-  , htmlOptJsUrl     = Just "code-only.js"
-  , htmlOptCssUrl    = "/css/default.css"
-  , htmlOptGenTypes  = True
-  , htmlOptDumpIdents = Just "_build/all-types.json"
+defaultHtmlOptions :: FilePath -> HtmlOptions
+defaultHtmlOptions baseurl = HtmlOptions
+  { htmlOptDir        = "_build/html0"
+  , htmlOptBaseUrl    = baseurl
+  , htmlOptHighlight  = HighlightAuto
+  , htmlOptGenTypes   = True
   }
 
 -- | Internal type bundling the information related to a module source file
@@ -138,91 +132,50 @@ data HtmlInputSourceFile = HtmlInputSourceFile
 
 -- | Bundle up the highlighting info for a source file
 
-srcFileOfInterface :: TopLevelModuleName -> TCM.Interface -> HtmlInputSourceFile
-srcFileOfInterface m i = HtmlInputSourceFile m (TCM.iFileType i) (TCM.iSource i) (TCM.iHighlighting i)
-
--- | Logging during HTML generation
-
-type HtmlLogMessage = String
-type HtmlLogAction m = HtmlLogMessage -> m ()
-
-class MonadLogHtml m where
-  logHtml :: HtmlLogAction m
-
-type LogHtmlT m = ReaderT (HtmlLogAction m) m
-
-instance Monad m => MonadLogHtml (LogHtmlT m) where
-  logHtml message = do
-    doLog <- ask
-    lift $ doLog message
-
-runLogHtmlWith :: Monad m => HtmlLogAction m -> LogHtmlT m a -> m a
-runLogHtmlWith = flip runReaderT
+srcFileOfInterface :: TCM.Interface -> HtmlInputSourceFile
+srcFileOfInterface i = HtmlInputSourceFile
+  (TCM.iTopLevelModuleName i)
+  (TCM.iFileType i)
+  (TCM.iSource i)
+  (TCM.iHighlighting i)
 
 renderSourceFile
-  :: HashMap Ts.Text Identifier
+  :: IntMap Identifier
   -> HtmlOptions
   -> HtmlInputSourceFile
-  -> (Text, [Ts.Text])
-renderSourceFile types opts (HtmlInputSourceFile moduleName fileType sourceCode hinfo) =
+  -> Text
+renderSourceFile locals opts (HtmlInputSourceFile moduleName fileType sourceCode hinfo) =
   let
     htmlHighlight = htmlOptHighlight opts
 
     tokens = tokenStream sourceCode hinfo
     onlyCode = highlightOnlyCode htmlHighlight fileType
 
-    used :: Int -> [TokenInfo] -> (HashMap Ts.Text (Int, Identifier), [Ts.Text])
-    used !n ((_, _, a):ts)
-      | Just ds <- definitionSite a
-      , Just id <- Hm.lookup (Ts.pack (definitionSiteToAnchor ds)) types
-      , (map, list) <- used (n + 1) ts
-      = (Hm.insert (idAnchor id) (n, id) map, idTooltip id:list)
-      | otherwise = used n ts
-    used _ [] = mempty
-
-    (order, usedts) = used 0 tokens
-    pageContents = code order onlyCode fileType moduleName tokens
-  in
-    rnf order `seq`
-      ( page opts onlyCode moduleName pageContents
-      , usedts
-      )
+    pageContents = code locals onlyCode fileType moduleName tokens
+  in page opts onlyCode moduleName pageContents
 
 defaultPageGen
-  :: (MonadIO m, MonadLogHtml m)
-  => HashMap Ts.Text Identifier
-  -> HtmlOptions
+  :: MonadIO m
+  => HtmlOptions
+  -> HtmlModule
   -> HtmlInputSourceFile
   -> m ()
-defaultPageGen types opts srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
+defaultPageGen opts types srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
   let
-    ext          = highlightedFileExt (htmlOptHighlight opts) ft
-    target       = htmlOptDir opts </> modToFile moduleName ext
-    typeTarget   = htmlOptDir opts </> modToFile moduleName "json"
-    ourTypes     = htmlOptDir opts </> modToFile moduleName "used"
-    (html, used) = renderSourceFile types opts srcFile
+    ext        = highlightedFileExt (htmlOptHighlight opts) ft
+    target     = htmlOptDir opts </> modToFile moduleName ext
+    typeTarget = htmlOptDir opts </> modToFile moduleName "bin"
+    html       = renderSourceFile (htmlModIdentifiers types) opts srcFile
 
-  logHtml $ render $ "Generating HTML for" <+> pretty moduleName
-  writeRenderedHtml html target
   liftIO do
+    UTF8.writeTextToFile target html
     encodeFile typeTarget types
-    encodeFile ourTypes used
-
--- | Generates a highlighted, hyperlinked version of the given module.
-
-writeRenderedHtml
-  :: MonadIO m
-  => Text       -- ^ Rendered page
-  -> FilePath   -- ^ Output path.
-  -> m ()
-writeRenderedHtml html target = liftIO $ UTF8.writeTextToFile target html
-
 
 -- | Constructs the web page, including headers.
 
 page
   :: HtmlOptions
-  -> Bool                  -- ^ Whether to reserve literate
+  -> Bool                -- ^ Whether to reserve literate
   -> TopLevelModuleName  -- ^ Module to be highlighted.
   -> Html
   -> Text
@@ -231,20 +184,20 @@ page opts htmlHighlight modName pageContent =
                then pageContent
                else Html5.docTypeHtml $ hdr <> rest
   where
+    base = htmlOptBaseUrl opts
 
     hdr = Html5.head $ mconcat
       [ Html5.meta !! [ Attr.charset "utf-8" ]
       , Html5.title (toHtml . render $ pretty modName)
-      , Html5.link !! [ Attr.rel "stylesheet"
-                      , Attr.href $ stringValue (htmlOptCssUrl opts)
-                      ]
-      , case htmlOptJsUrl opts of
-          Nothing -> mempty
-          Just script ->
-            Html5.script mempty !!
-            [ Attr.type_ "text/javascript"
-            , Attr.src $ stringValue script
-            ]
+      , Html5.link !!
+        [ Attr.rel "stylesheet"
+        , Attr.href $ stringValue $ base </> "css/default.css"
+        ]
+      , Html5.script $ "Object.assign(window, { baseUrl: \"" <> toHtml base <> "\"})"
+      , Html5.script mempty !!
+          [ Attr.type_ "text/javascript"
+          , Attr.src $ stringValue $ base </> "code-only.js"
+          ]
       ]
 
     rest = Html5.body $ (Html5.pre ! Attr.class_ "Agda") pageContent
@@ -276,13 +229,13 @@ tokenStream contents info =
 -- | Constructs the HTML displaying the code.
 
 code
-  :: HashMap Ts.Text (Int, Identifier)
+  :: IntMap Identifier
   -> Bool     -- ^ Whether to generate non-code contents as-is
   -> FileType -- ^ Source file type
   -> TopLevelModuleName
   -> [TokenInfo]
   -> Html
-code types _onlyCode _fileType mod = mconcat . map mkMd . splitByMarkup
+code locals _onlyCode _fileType mod = mconcat . map mkMd . splitByMarkup
   where
   trd (_, _, a) = a
 
@@ -293,7 +246,7 @@ code types _onlyCode _fileType mod = mconcat . map mkMd . splitByMarkup
   mkHtml (pos, s, mi) =
     -- Andreas, 2017-06-16, issue #2605:
     -- Do not create anchors for whitespace.
-    applyUnless (mi == mempty) (aspectsToHtml (Just mod) types (Just pos) mi) $ toHtml s
+    applyUnless (mi == mempty) (aspectsToHtml locals (Just mod) (Just pos) mi) $ toHtml s
 
   backgroundOrAgdaToHtml :: TokenInfo -> Html
   backgroundOrAgdaToHtml token@(_, s, mi) = case aspect mi of

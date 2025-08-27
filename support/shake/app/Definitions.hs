@@ -108,9 +108,11 @@ newtype Glossary = Glossary { getEntries :: Map Mangled Definition }
 
 data GlossaryQ       = GlossaryQ deriving (Eq, Show, Generic, NFData, Binary, Hashable)
 newtype ModuleGlossaryQ = ModuleGlossaryQ FilePath
-  deriving newtype (Eq, Show, NFData, Binary, Hashable)
+  deriving (Show)
+  deriving newtype (Eq, NFData, Binary, Hashable)
 newtype LinkTargetQ     = LinkTargetQ Text
-  deriving newtype (Eq, Show, NFData, Binary, Hashable)
+  deriving (Show)
+  deriving newtype (Eq, NFData, Binary, Hashable)
 
 type instance RuleResult GlossaryQ       = Glossary
 type instance RuleResult ModuleGlossaryQ = Glossary

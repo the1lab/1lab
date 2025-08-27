@@ -1,5 +1,6 @@
 @use "../mixins.scss" as *;
-@use "../vars.scss" as *;
+@use "../vars.scss"   as *;
+@use "../theme.scss"  as *;
 
 aside#toc {
   display: none;

@@ -8,20 +8,24 @@ import System.FilePath
 import Control.Monad.Except
 import Control.Monad
 
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List.NonEmpty as List1
-import qualified Data.HashMap.Strict as Hm
 import qualified Agda.Utils.BiMap as BiMap
-import qualified Data.Map as Map
+import qualified Data.Binary as Binary
+import qualified Data.Aeson as Aeson
 import qualified Data.Text as T
-import Data.Aeson (eitherDecodeFileStrict', encodeFile)
-import Data.Maybe (fromMaybe)
+import qualified Data.Map as Map
+import qualified Data.Set as Set
+
 import Data.Foldable
+import Data.Functor
+import Data.Maybe (fromMaybe)
 import Data.IORef
 
 import Development.Shake.Classes
 import Development.Shake
 
-import Shake.Options (getSkipTypes, getWatching)
+import Shake.Options (getSkipTypes, getWatching, getBaseUrl)
 
 import Agda.Compiler.Backend hiding (getEnv)
 import Agda.Interaction.FindFile (SourceFile(..))
@@ -46,7 +50,10 @@ import Agda.Utils.Hash (Hash)
 import Agda.Utils.Lens ((^.))
 
 import HTML.Backend
+import HTML.Render
 import HTML.Base
+
+import Shake.Modules
 
 ------------------------------------------------------------------------
 -- Oracles
@@ -104,32 +111,52 @@ agdaRules = do
     let hash = iFullHash . getInterface state $ toTopLevel state m
     pure (CompileA state hash)
 
-  -- Create a cache for the per-module type information.
-  getTypes <- newCache \modName -> do
-    let path = "_build/html0" </> modName <.> ".json"
-    need [path]
-
-    result :: Either String (Hm.HashMap T.Text Identifier) <-
-      quietly . traced "read types" $ eitherDecodeFileStrict' path
-    either fail pure result
-
-  -- In order to write the JSON, we first compile the required module (which
-  -- gives us the TC environment) and then emit the HTML/Markdown and type JSON.
-  "_build/html0/*.json" %> \file -> do
+  "_build/html0/*.bin" %> \file -> do
     let modName = T.pack . dropExtension $ takeFileName file
     compileResult <- askOracle (ModuleCompileQ modName)
-    emitAgda compileResult getTypes modName
+    emitAgda compileResult modName
 
   -- Add a couple of forwarding rules for emitting the actual HTML/MD
-  "_build/html0/*.html" %> \file -> need [file -<.> "json"]
-  "_build/html0/*.used" %> \file -> need [file -<.> "json"]
-  "_build/html0/*.md"   %> \file -> need [file -<.> "json"]
+  "_build/html0/*.html" %> \file -> need [file -<.> "bin"]
+  "_build/html0/*.md"   %> \file -> need [file -<.> "bin"]
 
-  -- We generate the all-types JSON from the all-pages types JSON - it's just a
-  -- schema change.
+  let
+    decodeModule mn = do
+      let it = "_build/html0/" </> mn <.> "bin"
+      need [it]
+      quietly $ traced "decoding" do
+        inp :: Either a HtmlModule <- Binary.decodeFileOrFail it
+        out <- either (fail . show) pure inp
+        rnf out `seq` pure out
+
+  "_build/html/types/*.json" %> \out -> do
+    let mn = dropExtension (takeFileName out)
+    mod <- decodeModule mn
+    quietly $ traced "encoding json" do
+      Aeson.encodeFile ("_build/html/types/" </> mn <.> "json") $ Map.fromDistinctAscList
+        [ (k, idTooltip id) | (k, id) <- IntMap.toAscList (htmlModIdentifiers mod) ]
+
+  -- Generating the all-types JSON requires chasing the import tree
+  -- reported in the all-pages 'HtmlModule'.
   "_build/all-types.json" %> \file -> do
-    types <- getTypes "all-pages"
-    liftIO $ encodeFile file $ map (\t -> t{idTooltip = ""}) (Hm.elems types)
+    mods <- getOurModules
+    need [ "_build/html0" </> mod <.> "bin" | mod <- Map.keys mods ]
+
+    mod <- decodeModule "all-pages"
+
+    let
+      visit !seen !out (other:mods) | other `Set.member` seen = visit seen out mods
+      visit !seen !out (other:mods) = do
+        HtmlModule{htmlModIdentifiers = ids, htmlModImports = imps} <- decodeModule other
+        let elts = IntMap.elems ids <&> \t -> t{ idTooltip = "" }
+        visit
+          (Set.insert other seen)
+          (foldr Set.insert out elts)
+          (mods ++ imps)
+      visit !seen !out [] = pure out
+
+    idents <- Set.toList <$> visit mempty mempty (htmlModImports mod)
+    traced "encoding json" $ Aeson.encodeFile file idents
 
 -- | Compile the top-level Agda file.
 compileAgda :: IORef (Maybe TCState) -> Action CompileA
@@ -189,27 +216,23 @@ compileAgda stateVar = do
 
 
 -- | Emit an Agda file as HTML or Markdown.
-emitAgda
-  :: CompileA
-  -> (String -> Action (Hm.HashMap T.Text Identifier))
-  -> T.Text -> Action ()
-emitAgda (CompileA tcState _) getTypes modName = do
+emitAgda :: CompileA -> T.Text -> Action ()
+emitAgda (CompileA tcState _) modName = do
   basepn <- filePath <$> liftIO (absolute "src/")
+
+  baseUrl   <- getBaseUrl
+  skipTypes <- getSkipTypes
 
   let
     tlModName = toTopLevel tcState modName
     iface = getInterface tcState tlModName
+    opts = (defaultHtmlOptions baseUrl) { htmlOptGenTypes = not skipTypes }
 
-  types <- parallel . map (getTypes . render . pretty . fst) $ iImportedModules iface
-
-  skipTypes <- getSkipTypes
-  ((), _) <- quietly . traced "agda html"
+  ((), _) <- traced "generating html"
     . runTCM initEnv tcState
     . withScope_ (iInsideScope iface)
     . locallyTC eActiveBackendName (const $ Just "HTML") $ do
-      compileOneModule basepn defaultHtmlOptions { htmlOptGenTypes = not skipTypes }
-        (mconcat types)
-        iface
+      compileOneModule basepn opts iface
 
   pure ()
 

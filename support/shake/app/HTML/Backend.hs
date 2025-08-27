@@ -5,8 +5,7 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE TypeFamilies #-}
 module HTML.Backend
-  ( htmlBackend
-  , compileOneModule
+  ( compileOneModule
   , defaultHtmlOptions
   ) where
 
@@ -19,13 +18,14 @@ import Control.Monad.Reader
 import Control.Monad
 
 import qualified Data.HashMap.Strict as Hm
-import qualified Data.Map.Strict as Map
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as Text
 import qualified Data.Set as Set
 
 import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
+import Data.IntMap.Strict (IntMap)
 import Data.Map.Strict (Map)
 import Data.Foldable
 import Data.HashSet (HashSet)
@@ -88,175 +88,41 @@ import Agda.Syntax.Internal.Names (namesIn')
 import Agda.Interaction.Response (Response_boot(Resp_RunningInfo))
 import Agda.Interaction.Options.Lenses (LensVerbosity(setVerbosity))
 
-data HtmlCompileEnv = HtmlCompileEnv
-  { htmlCompileEnvOpts     :: HtmlOptions
-  , htmlCompileTypes       :: IORef (HashMap Text Identifier)
-    -- ^ Hashmap from anchor→identifier for finding types while emitting
-    -- HTML, and for search after
-  }
-
-data HtmlModuleEnv = HtmlModuleEnv
-  { htmlModEnvCompileEnv :: HtmlCompileEnv
-  , htmlModEnvName       :: TopLevelModuleName
-  }
-
-newtype HtmlModule = HtmlModule { getHtmlModule :: HashMap Text Identifier }
-
-htmlBackend :: FilePath -> HtmlOptions -> Backend
-htmlBackend = (Backend .) . htmlBackend'
-
-htmlBackend'
-  :: FilePath
-  -> HtmlOptions
-  -> Backend'
-      (FilePath, HtmlOptions)
-      HtmlCompileEnv
-      HtmlModuleEnv
-      HtmlModule
-      (Maybe (Text, Identifier))
-htmlBackend' basepn opts = Backend'
-  { backendName = "HTML"
-  , backendVersion = Nothing
-  , options = (basepn, opts)
-  , commandLineFlags = []
-  , isEnabled = const True
-  , preCompile = preCompileHtml
-  , preModule = preModuleHtml
-  , compileDef = compileDefHtml
-  , postModule = postModuleHtml
-  , postCompile = postCompileHtml
-  , scopeCheckingSuffices = False
-  , mayEraseType = const $ return False
-  , backendInteractTop = Nothing
-  , backendInteractHole = Nothing
-  }
-
-runLogHtmlWithMonadDebug :: MonadDebug m => LogHtmlT m a -> m a
-runLogHtmlWithMonadDebug = runLogHtmlWith $ reportS "html" 1
-
-preCompileHtml
-  :: (MonadIO m, MonadDebug m)
-  => (FilePath, HtmlOptions)
-  -> m HtmlCompileEnv
-preCompileHtml (_pn, opts) = do
-  types <- liftIO (newIORef mempty)
-  runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts types
-
-preModuleHtml
-  :: (MonadIO m, ReadTCState m)
-  => HtmlCompileEnv
-  -> IsMain
-  -> TopLevelModuleName
-  -> Maybe FilePath
-  -> m (Recompile HtmlModuleEnv HtmlModule)
-preModuleHtml cenv _isMain topl _ifacePath
-  | htmlOptGenTypes (htmlCompileEnvOpts cenv) = do
-    liftIO . putStrLn $ "Entering module " <> render (pretty topl)
-    pure $ Recompile (HtmlModuleEnv cenv topl)
--- When types are being skipped we can safely only re-render modules
--- whose interface file have changed:
-preModuleHtml cenv _ modName mifile =
-  do
-    ft <- iFileType <$> curIF
+genModTypes :: HtmlOptions -> [Definition] -> IntMap Identifier -> TCM (IntMap Identifier)
+genModTypes opts (def:defs) !acc
+  | not (htmlOptGenTypes opts) = genModTypes opts defs acc
+  | Just (pos, mn) <- definitionAnchor def = do
+    (tooltip, ty) <- typeToText def
     let
-      ext = highlightedFileExt (htmlOptHighlight (htmlCompileEnvOpts cenv)) ft
-      path = htmlOptDir (htmlCompileEnvOpts cenv) </> modToFile modName ext
-
-    liftIO $ do
-      uptd <- uptodate path
-      if uptd
-        then do
-          putStrLn $ "HTML for module " <> render (pretty modName) <> " is up-to-date"
-          pure $ Skip (HtmlModule mempty)
-        else pure $ Recompile (HtmlModuleEnv cenv modName)
-
-  where
-    uptodate of_ = case mifile of
-      Nothing -> pure False
-      Just ifile -> isNewerThan of_ ifile
-
-compileDefHtml
-  :: HtmlCompileEnv
-  -> HtmlModuleEnv
-  -> IsMain
-  -> Definition
-  -> TCM (Maybe (Text, Identifier))
-compileDefHtml env _ _ _
-  | not (htmlOptGenTypes (htmlCompileEnvOpts env)) = pure Nothing
-compileDefHtml env _menv _isMain def = withCurrentModule (qnameModule (defName def)) $
-  case definitionAnchor env def of
-    Just mn -> do
-      (tooltip, ty) <- typeToText def
-      let
-        ident = Identifier
-          { idAnchor  = mn
-          , idIdent   = Text.pack (render (pretty (qnameName (defName def))))
-          , idType    = ty
-          , idTooltip = tooltip
-          }
-      pure (Just (mn, ident))
-    Nothing -> do
-      pure Nothing
-
-postModuleHtml
-  :: (MonadIO m, MonadDebug m, ReadTCState m)
-  => HtmlCompileEnv
-  -> HtmlModuleEnv
-  -> IsMain
-  -> TopLevelModuleName
-  -> [Maybe (Text, Identifier)]
-  -> m HtmlModule
-postModuleHtml env menv _isMain _modName _defs = do
-  let
-    ins Nothing = id
-    ins (Just (a, b)) = Hm.insert a b
-
-  types <- liftIO $ atomicModifyIORef' (htmlCompileTypes env) $
-    \mp -> let mp' = foldr ins mp _defs in (mp', mp')
-
-  let
-    generatePage =
-        defaultPageGen types
-      . htmlCompileEnvOpts
-      . htmlModEnvCompileEnv
-      $ menv
-
-  htmlSrc <- srcFileOfInterface (htmlModEnvName menv) <$> curIF
-  runLogHtmlWithMonadDebug $ generatePage htmlSrc
-  pure $ HtmlModule $ foldr ins mempty _defs
-
-postCompileHtml
-  :: MonadIO m
-  => HtmlCompileEnv
-  -> IsMain
-  -> Map TopLevelModuleName HtmlModule
-  -> m ()
-postCompileHtml cenv _isMain _modulesByName = liftIO $ do
-  case htmlOptDumpIdents (htmlCompileEnvOpts cenv) of
-    Just fp -> encodeFile fp (Map.elems _modulesByName >>= Hm.elems . getHtmlModule)
-    Nothing -> pure ()
+      ident = Identifier
+        { idAnchor  = mn
+        , idIdent   = Text.pack (render (pretty (qnameName (defName def))))
+        , idType    = ty
+        , idTooltip = tooltip
+        }
+    rnf tooltip `seq` rnf ty `seq` genModTypes opts defs (IntMap.insert pos ident acc)
+  | otherwise = genModTypes opts defs acc
+genModTypes opts [] !acc = pure acc
 
 -- | Compile a single module, given an existing set of types.
 compileOneModule
-  :: FilePath -> HtmlOptions
-  -> HashMap Text Identifier -- ^ Existing map of identifiers to their types.
+  :: FilePath
+  -> HtmlOptions
   -> Interface -- ^ The interface to compile.
   -> TCM ()
-compileOneModule _pn opts types iface = do
-  types <- liftIO (newIORef types)
-  let cEnv = HtmlCompileEnv opts types
-      mEnv = HtmlModuleEnv cEnv (iTopLevelModuleName iface)
-
+compileOneModule _pn opts iface = do
   setInterface iface
 
   defs <- map snd . sortDefs <$> curDefs
-  res  <- mapM (compDef cEnv mEnv <=< instantiateFull) defs
-  _ <- postModuleHtml cEnv mEnv NotMain (iTopLevelModuleName iface) res
-  pure ()
+  types <- genModTypes opts defs mempty
 
-  where
-    compDef env menv def = setCurrentRange (defName def) $
-      compileDefHtml env menv NotMain def
+  let
+    ins Nothing       = id
+    ins (Just (a, b)) = IntMap.insert a b
+
+    mod = HtmlModule types (map (render . pretty . fst) (iImportedModules iface))
+
+  defaultPageGen opts mod $ srcFileOfInterface iface
 
 getClass :: QName -> TCM (Set QName)
 getClass q = isRecord q >>= \case
@@ -304,7 +170,7 @@ typeToText d = do
       { Asp.aspect         = Just aspect
       , Asp.otherAspects   = mempty
       , Asp.note           = ""
-      , Asp.definitionSite = toDefinitionSite topm (nameBindingSite (qnameName (defName d)))
+      , Asp.definitionSite = Nothing
       , Asp.tokenBased     = Asp.TokenBased
       }
 
@@ -328,19 +194,6 @@ toDefinitionSite topm r = do
     , Asp.defSiteAnchor = Nothing
     }
 
-killQual :: Con.Expr -> Con.Expr
-killQual = Con.mapExpr wrap where
-  work :: Con.QName -> Con.QName
-  work (Con.Qual _ x) = work x
-  work x = x
-
-  wrap :: Con.Expr -> Con.Expr
-  wrap (Con.Ident v)                 = Con.Ident (work v)
-  wrap (Con.KnownIdent v w)          = Con.KnownIdent v (work w)
-  wrap (Con.KnownOpApp v a b c d)    = Con.KnownOpApp v a (work b) c d
-  wrap (Con.OpApp v qual names args) = Con.OpApp v (work qual) names args
-  wrap x = x
-
 removeImpls :: A.Expr -> A.Expr
 removeImpls (A.Pi _ (x :| xs) e) =
   let
@@ -363,9 +216,13 @@ mergeTBinds (A.TBind r i as Underscore{}) (A.TBind _ _ as' Underscore{}:bs) =
   mergeTBinds (A.TBind r i (as <> as') underscore) bs
 mergeTBinds x xs = x :| xs
 
-definitionAnchor :: HtmlCompileEnv -> Definition -> Maybe Text
-definitionAnchor _ def | defCopy def = Nothing
-definitionAnchor _ def = f =<< go where
+definitionAnchor :: Definition -> Maybe (Int, Text)
+definitionAnchor def
+  | defCopy def                        = Nothing
+  | isExtendedLambdaName (defName def) = Nothing
+  | isAbsurdLambdaName (defName def)   = Nothing
+  | isWithFunction (theDef def)        = Nothing
+definitionAnchor def = f =<< go where
   go :: Maybe FilePath
   go = do
     let name = defName def
@@ -374,5 +231,7 @@ definitionAnchor _ def = f =<< go where
       Nothing -> Nothing
   f modn =
     case rStart (nameBindingSite (qnameName (defName def))) of
-      Just pn -> pure $ Text.pack (modn <> "#" <> show (posPos pn))
+      Just pn ->
+        let out = Text.pack (modn <> "#" <> show (posPos pn))
+         in rnf out `seq` pure (fromIntegral (posPos pn), out)
       Nothing -> Nothing
