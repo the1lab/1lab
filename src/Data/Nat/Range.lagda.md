@@ -38,7 +38,7 @@ to iterate over when performing other constructions. For example, the
 factorial function
 
 $$
-n! = \product_{i=1}^n x
+n! = \prod_{i=1}^n x
 $$
 
 can be expressed as taking the product of all numbers in the range
