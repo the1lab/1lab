@@ -1,4 +1,4 @@
-@import "../mixins.scss";
+@use "../mixins.scss" as *;
 
 $modal-width: 820px;
 

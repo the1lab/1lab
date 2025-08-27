@@ -129,7 +129,7 @@ createKatexWorkerQueue
   -> IO (Chan KatexWorker)
 createKatexWorkerQueue numWorkers = do
   workers <- newChan
-  for_ [0..numWorkers] $ \i -> do
+  for_ [0..numWorkers - 1] $ \i -> do
     worker <- spawnKatexWorker
     writeChan workers worker
   pure workers

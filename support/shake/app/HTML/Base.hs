@@ -249,7 +249,7 @@ page opts htmlHighlight modName pageContent =
 
     rest = Html5.body $ (Html5.pre ! Attr.class_ "Agda") pageContent
 
--- | Position, Contents, Infomation
+-- | Position, Contents, Information
 
 type TokenInfo =
   ( Int

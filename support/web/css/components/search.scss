@@ -1,3 +1,6 @@
+@use "../mixins.scss" as *;
+@use "../colors.scss" as *;
+
 #search-wrapper .modal-contents {
   align-items: stretch;
   text-align: left;

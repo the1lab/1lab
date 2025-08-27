@@ -1,11 +1,11 @@
-@import "vars.scss";
-@import "mixins.scss";
-@import "theme.scss";
+@use "vars.scss"   as *;
+@use "mixins.scss" as *;
+@use "theme.scss"  as *;
 
-@import "code.scss";
+@use "code.scss";
 
-@import "components/search.scss";
-@import "components/modal.scss";
+@use "components/search.scss";
+@use "components/modal.scss";
 
 body, .reveal-viewport {
   font-family: var(--serif), var(--sans-serif);

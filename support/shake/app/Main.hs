@@ -5,9 +5,11 @@ import Control.Concurrent.STM
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Exception
+import Control.DeepSeq
 import Control.Monad
 
 import qualified Data.Map.Strict as Map
+import qualified Data.Text as Text
 import qualified Data.Set as Set
 import Data.Aeson hiding (Options, defaultOptions)
 import Data.Bifunctor
@@ -27,11 +29,12 @@ import System.Time.Extra
 import System.Process
 import System.Exit
 
-import Shake.Options
+import Shake.Markdown.Reader
 import Shake.AgdaCompile
 import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
+import Shake.Options
 import Shake.Modules
 import Shake.Diagram
 import Shake.Digest
@@ -43,6 +46,9 @@ import Definitions
 import Timer
 import Shake.Recent (recentAdditions)
 
+import Text.DocTemplates (ToContext(toVal), Context(..))
+
+
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
 
@@ -50,13 +56,28 @@ import Shake.Recent (recentAdditions)
 -}
 rules :: Rules ()
 rules = do
+  moduleRules
+
+  reader <- markdownReader
+  glossaryRules reader
+  diagramRules reader
+
   agdaRules
   digestRules
   gitRules
   katexRules
-  moduleRules
   linksRules
-  glossaryRules
+
+  digest <- newCache \() -> do
+    cssDigest     <- Text.pack <$> getFileDigest "_build/html/css/default.css"
+    startJsDigest <- Text.pack <$> getFileDigest "_build/html/start.js"
+    mainJsDigest  <- Text.pack <$> getFileDigest "_build/html/main.js"
+    rnf (cssDigest, startJsDigest, mainJsDigest) `seq` pure . Context . Map.fromList $
+      [ ("css",       toVal cssDigest)
+      , ("start-js",  toVal startJsDigest)
+      , ("main-js",   toVal mainJsDigest)
+      ]
+
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -98,7 +119,7 @@ rules = do
         _ -> if skipAgda then "agda" else "html"
 
     case modKind of
-      Just WithText -> buildMarkdown modName (input <.> inext) out
+      Just WithText -> buildMarkdown (digest ()) modName (input <.> inext) out
       _ -> copyFile' (input <.> inext) out -- Wrong, but eh!
 
     unless skipAgda $ need ["_build/html/types" </> modName <.> "json"]
@@ -119,25 +140,10 @@ rules = do
     searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
     traced "Writing search data" $ encodeFile out (concat searchData)
 
-  -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
-  "_build/html/**/*.light.svg" %> \out -> do
-    let
-      inp = "_build/diagrams"
-        </> takeFileName (takeDirectory out)
-        </> takeBaseName out -<.> "tex"
-    buildDiagram (getPreambleFor False) inp out False
-
-  "_build/html/**/*.dark.svg" %> \out -> do
-    let
-      inp = "_build/diagrams"
-        </> takeFileName (takeDirectory out)
-        </> takeBaseName out -<.> "tex"
-    buildDiagram (getPreambleFor True) inp out True
-
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
     getDirectoryFiles "support/web/css" ["**/*.scss"] >>= \files -> need ["support/web/css" </> f | f <- files]
-    command_ [] "sass" [inp, out]
+    command_ [NoProcessGroup] "sass" [inp, out]
 
   "_build/html/favicon.ico" %> \out -> do
     need ["support/favicon.ico"]
@@ -232,7 +238,9 @@ main = do
 
   (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
     case _optWatching ourOpts of
-      Nothing  -> buildOnce db wanted
+      Nothing  -> do
+        shakeOneShotDatabase db
+        buildOnce db wanted
       Just cmd -> buildMany db wanted cmd
   shakeRunAfter shakeOptions' after
 

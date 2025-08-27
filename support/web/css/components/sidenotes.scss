@@ -1,4 +1,5 @@
-@import "../vars.scss";
+@use "../mixins" as *;
+@use "../vars"   as *;
 
 span.sidenote-baseline-mark {
   width: 0px;
@@ -52,16 +53,16 @@ div.sidenote {
 }
 
 section.footnotes {
-  @include widescreen { display: none; }
   display: block;
+  @include widescreen { display: none; }
 }
 
 aside#sidenote-container {
-  @include widescreen { display: block; }
   display:  none;
 
   position: relative;
 
   grid-column: gutter;
   margin-left: $sidenote-separation;
+  @include widescreen { display: block; }
 }

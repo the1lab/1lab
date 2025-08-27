@@ -7,7 +7,6 @@
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
-  , moduleName
   , defaultHtmlOptions
   ) where
 
@@ -377,7 +376,3 @@ definitionAnchor _ def = f =<< go where
     case rStart (nameBindingSite (qnameName (defName def))) of
       Just pn -> pure $ Text.pack (modn <> "#" <> show (posPos pn))
       Nothing -> Nothing
-
--- | Determine the name of a module from a file like @1Lab/HIT/Torus@.
-moduleName :: FilePath -> String
-moduleName = intercalate "." . splitDirectories
