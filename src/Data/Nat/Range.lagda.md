@@ -13,8 +13,8 @@ open import Data.List.NonEmpty
 open import Data.List.Base
 open import Data.Nat.Order
 open import Data.Dec.Base
-open import Data.Nat.Base
 open import Data.Fin.Base hiding (_≤_; _<_)
+open import Data.Nat.Base
 open import Data.Sum.Base
 ```
 -->
