@@ -268,9 +268,8 @@ range-index-of
 range-index-of = count-up-index-of
 ```
 
-This means that $i \in range x y$ is a [[proposition]],
-as any two possible indices of $i$ must both be equal
-to $i - x$.
+This means that $i \in [x,y)$ is a [[proposition]], as any two possible
+indices of $i$ must both be equal to $i - x$.
 
 ```agda
 range-∈-is-prop
