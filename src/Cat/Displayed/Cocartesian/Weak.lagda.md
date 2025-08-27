@@ -184,15 +184,15 @@ weak-cocartesian→precompose-equiv cocart =
 fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.universal v =
   equiv→inverse eqv v
 fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.commutes v =
-  to-pathp $ equiv→counit eqv v
+  to-pathp[] $ equiv→counit eqv v
 fibre-precompose-equiv→weak-cocartesian f' eqv .is-weak-cocartesian.unique v p =
-  sym (equiv→unit eqv v) ∙ ap (equiv→inverse eqv) (from-pathp p)
+  sym (equiv→unit eqv v) ∙ ap (equiv→inverse eqv) (from-pathp[] p)
 
 weak-cocartesian→fibre-precompose-equiv wcocart =
   is-iso→is-equiv $
     iso universal
-      (λ v → from-pathp (commutes v))
-      (λ v → sym (unique v (to-pathp refl)))
+      (λ v → from-pathp[] (commutes v))
+      (λ v → sym (unique v (to-pathp[] refl)))
   where open is-weak-cocartesian wcocart
 ```
 </details>
@@ -325,7 +325,7 @@ commute.
 ```agda
     cocart .is-cocartesian.commutes m h' =
       hom[] (π* m _ ∘' h**) ∘' f'   ≡˘⟨ yank _ _ _ ⟩
-      π* m _ ∘' hom[] (h** ∘' f')   ≡⟨ ap (π* m _ ∘'_) (from-pathp (weak.commutes _)) ⟩
+      π* m _ ∘' hom[] (h** ∘' f')   ≡⟨ ap (π* m _ ∘'_) (from-pathp[] (weak.commutes _)) ⟩
       π* m _ ∘' π*.universal f h'                 ≡⟨ π*.commutes f h' ⟩
       h' ∎
       where open Morphisms m h'
@@ -412,8 +412,8 @@ $m^{*}$ is cartesian, thus finishing the proof.
 
 ```agda
     cocart .is-cocartesian.unique {u' = u'} {m = m} {h' = h'} m' p =
-      m'                     ≡⟨ from-pathp⁻ (symP (π*.commutesp (idr _) m')) ⟩
-      hom[] (π* m u' ∘' id*) ≡⟨ hom[]⟩⟨ ap (π* m u' ∘'_) (weak.unique _ (to-pathp $ π*.unique _ path )) ⟩
+      m'                     ≡⟨ from-pathp[]⁻ (symP (π*.commutesp (idr _) m')) ⟩
+      hom[] (π* m u' ∘' id*) ≡⟨ hom[]⟩⟨ ap (π* m u' ∘'_) (weak.unique _ (to-pathp[] $ π*.unique _ path )) ⟩
       hom[] (π* m u' ∘' h**) ∎
       where
         open Morphisms m h'
@@ -675,7 +675,7 @@ unique, though this is rather tedious to show.
   f-cobase-change .Functor.F-id =
     sym $ unique _ _ $ cast[] $
       id' ∘' ι! _         ≡[]⟨ idl' _ ⟩
-      ι! _                ≡[]⟨ from-pathp⁻ (symP (idr' _)) ⟩
+      ι! _                ≡[]⟨ from-pathp[]⁻ (symP (idr' _)) ⟩
       hom[] (ι! _ ∘' id') ∎
   f-cobase-change .Functor.F-∘ f' g' =
     sym $ unique  _ _ $ cast[] $
@@ -786,18 +786,27 @@ assigning adjuncts is an equivalence!
 ```agda
     f-lift .weak-cocartesian =
       precompose-equiv→weak-cocartesian ι! $ λ {y'} →
-      equiv-cancell (fibration→universal-is-equiv ℰ fib f) $
-      subst is-equiv (funext (coh y')) (L-adjunct-is-equiv f^!⊣f^*)
-      where abstract
-        coh
-           : ∀ y' (h' : Hom[ id ] (f^!.₀ x') y')
-           → hom[ idl _ ] (π*.universal' id-comm (h' ∘' π* f _) ∘' η x')
-           ≡ π*.universalv (hom[ idl _ ] (h' ∘' ι!))
-        coh y' h' =
-          from-pathp $ π*.uniquep _ (idl _) (idr _) _ $
-            π* f y' ∘' π*.universal' _ (h' ∘' π* f (f^!.₀ x')) ∘' η x' ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
-            (h' ∘' π* f (f^!.₀ x')) ∘' η x'                            ≡[]⟨ (pullr[] (idr _) (wrap (idr _)) ∙[] wrap (idl _)) ⟩
-            hom[ idl f ] (h' ∘' ι!)                                    ∎
+      equiv-cancell (fibration→universal-is-equiv ℰ fib f) (eqv' y')
+
+      where module _ y' where
+        module eqv = Equiv (_ , L-adjunct-is-equiv f^!⊣f^* )
+
+        abstract
+          coh
+            : ∀ (h' : Hom[ id ] (f^!.₀ x') y')
+            → hom[ idl _ ] (π*.universal' id-comm (h' ∘' π* f _) ∘' η x')
+            ≡ π*.universalv (hom[ idl _ ] (h' ∘' ι!))
+          coh h' =
+            from-pathp[] $ π*.uniquep _ (idl _) (idr _) _ $
+              π* f y' ∘' π*.universal' _ (h' ∘' π* f (f^!.₀ x')) ∘' η x' ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
+              (h' ∘' π* f (f^!.₀ x')) ∘' η x'                            ≡[]⟨ (pullr[] (idr _) (wrap (idr _)) ∙[] wrap (idl _)) ⟩
+              hom[ idl f ] (h' ∘' ι!)                                    ∎
+
+        eqv' : is-equiv λ h' → π*.universalv (hom[ idl _ ] (h' ∘' ι!))
+        eqv' = is-iso→is-equiv record where
+          from f = eqv.from f
+          linv x = ap eqv.from (sym (coh _)) ∙ eqv.η _
+          rinv x = sym (coh _) ∙ eqv.ε _
 ```
 
 The converse follows from some more equivalence yoga. First, recall that
@@ -942,11 +951,10 @@ spare the reader the details.
         (f^!.annihilate
           (π*.uniquep₂ _ _ _ _ _
             (Fib.pulllf (π*.commutesp id-comm _)
-            ∙[] (pullr[] _ (unwrapr _ ∙[] π*.commutesv _)
-            ∙[] π*.commutesp (idl _) _))
-          (idr' _)))
+            ∙[] pullr[] _ (π*.commutesv _)
+            ∙[] π*.commutesp (idl f) _)
+            (idr' _)))
       ∙ Fib.extendl (counit.is-natural (id ^* y') y' (π* id y'))
-      ∙ expandr _ _
       ∙ reindex _ _
 
     left-adjoint→unit-cartesian-universal =
@@ -987,7 +995,7 @@ module _ (wopfib : Weak-cocartesian-fibration) where
   weak-opfibration→universal-is-equiv {x' = x'} u =
     is-iso→is-equiv $
     iso (λ u' → hom[ idl u ] (u' ∘' ι! u x'))
-        (λ u' → sym $ ι!.unique u' (to-pathp refl))
+        (λ u' → sym $ ι!.unique u' (to-pathp[] refl))
         (λ u' → cancel _ _ (ι!.commutes u'))
 
   weak-opfibration→vertical-equiv
@@ -1011,11 +1019,11 @@ Furthermore, this equivalence is natural.
     mi .eta x u' = ι!.universal u'
     mi .inv x v' = hom[ idl u ] (v' ∘' ι! u x')
     mi .eta∘inv _ = funext λ v' →
-      sym $ ι!.unique _ (to-pathp refl)
+      sym $ ι!.unique _ (to-pathp[] refl)
     mi .inv∘eta _ = funext λ u' →
-      from-pathp $ ι!.commutes _
+      from-pathp[] $ ι!.commutes _
     mi .natural _ _ v' = funext λ u' →
-      ι!.unique _ $ to-pathp $
+      ι!.unique _ $ to-pathp[] $
         smashl _ _
       ∙ weave _ (ap (_∘ u) (idl id)) _ (pullr' _ (ι!.commutes _))
 ```
@@ -1047,7 +1055,7 @@ module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ]) where
   vertical-equiv→weak-opfibration to to-eqv natural =
     weak-op-fibration→weak-opfibration $
     vertical-equiv→weak-fibration (ℰ ^total-op) _*₀_ to to-eqv λ f' g' →
-      to-pathp (reindex _ _ ∙ from-pathp (natural g' f'))
+      to-pathp[] (reindex _ _ ∙ from-pathp[] (natural g' f'))
 ```
 
 <!--
@@ -1065,7 +1073,7 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ x) (Fibre ℰ y)) whe
       (λ u → U u .F₀)
       (λ u' → Isoⁿ.to (hom-iso _) .η _ u')
       (natural-iso-to-is-equiv (hom-iso _) _)
-      λ f' g' → to-pathp⁻ $
+      λ f' g' → to-pathp[]⁻ $
         happly (Isoⁿ.to (hom-iso _) .is-natural _ _ f') g'
 ```
 -->
@@ -1094,11 +1102,11 @@ module _ (opfib : Cocartesian-fibration) where
     mi .eta x u' = ι!.universalv u'
     mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ ι!.uniquev _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp[] refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (ι!.commutesv _)
+      from-pathp[] (ι!.commutesv _)
     mi .natural _ _ v' = funext λ u' →
-      ι!.unique _ $ to-pathp $
+      ι!.unique _ $ to-pathp[] $
         smashl _ _
         ∙∙ revive₁ (pullr[] _ (ι!.commutesv _))
         ∙∙ smashr _ _
@@ -1123,9 +1131,9 @@ module _ (opfib : Cocartesian-fibration) where
     mi .eta x u' = ι!.universalv u'
     mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
     mi .eta∘inv x = funext λ v' →
-      sym $ ι!.uniquev _ (to-pathp refl)
+      sym $ ι!.uniquev _ (to-pathp[] refl)
     mi .inv∘eta x = funext λ u' →
-      from-pathp (ι!.commutesv _)
+      from-pathp[] (ι!.commutesv _)
     mi .natural _ _ (v₁' , v₂') = funext λ u' →
       Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
       ∙∙ sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))

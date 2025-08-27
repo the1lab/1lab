@@ -181,38 +181,24 @@ module _ {o ℓ} {C : Precategory o ℓ} {F : Functor C C} (M : Monad-on F) wher
 
 ```agda
   Monad-algebras : Displayed C (o ⊔ ℓ) ℓ
-  Monad-algebras .Ob[_] = Algebra-on M
-  Monad-algebras .Hom[_] f α β = f C.∘ α .ν ≡ β .ν C.∘ M₁ f
-  Monad-algebras .Hom[_]-set _ _ _ = hlevel 2
+  Monad-algebras = with-thin-display record where
+    Ob[_]        = Algebra-on M
+    Hom[_] f α β = f C.∘ α .ν ≡ β .ν C.∘ M₁ f
 ```
 
 Defining the identity and composition maps is mostly an exercise in
 categorical yoga:
 
 ```agda
-  Monad-algebras .id' {X} {α} =
-    C.id C.∘ α .ν    ≡⟨ C.idl _ ∙ C.intror M-id ⟩
-    α .ν C.∘ M₁ C.id ∎
-  Monad-algebras ._∘'_ {_} {_} {_} {α} {β} {γ} {f = f} {g = g} p q =
-    (f C.∘ g) C.∘ α .ν       ≡⟨ C.pullr q ⟩
-    f C.∘ β .ν C.∘ M₁ g      ≡⟨ C.pulll p ⟩
-    (γ .ν C.∘ M₁ f) C.∘ M₁ g ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
-    γ .ν C.∘ M₁ (f C.∘ g)    ∎
+    id' {X} {α} =
+      C.id C.∘ α .ν    ≡⟨ C.idl _ ∙ C.intror M-id ⟩
+      α .ν C.∘ M₁ C.id ∎
+    _∘'_ {_} {_} {_} {α} {β} {γ} {f = f} {g = g} p q =
+      (f C.∘ g) C.∘ α .ν       ≡⟨ C.pullr q ⟩
+      f C.∘ β .ν C.∘ M₁ g      ≡⟨ C.pulll p ⟩
+      (γ .ν C.∘ M₁ f) C.∘ M₁ g ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
+      γ .ν C.∘ M₁ (f C.∘ g)    ∎
 ```
-
-<details>
-<summary>
-The equations all hold trivially, as the type of displayed morphisms
-over $f$ is a proposition.
-</summary>
-
-```agda
-  Monad-algebras .idr' _ = prop!
-  Monad-algebras .idl' _ = prop!
-  Monad-algebras .assoc' _ _ _ = prop!
-```
-
-</details>
 
 The [[total category]] of this displayed category is referred
 to as the **Eilenberg-Moore** category of $M$.

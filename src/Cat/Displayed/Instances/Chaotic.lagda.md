@@ -39,7 +39,7 @@ structure of $\cB$ entirely.
 
 ```agda
 Chaotic : Displayed B o' ℓ'
-Chaotic .Ob[_] _ = J.Ob
+Chaotic .Ob[_]  _ = J.Ob
 Chaotic .Hom[_] _ = J.Hom
 Chaotic .Hom[_]-set _ = J.Hom-set
 Chaotic .id' = J.id
@@ -47,6 +47,8 @@ Chaotic ._∘'_ = J._∘_
 Chaotic .idr' = J.idr
 Chaotic .idl' = J.idl
 Chaotic .assoc' = J.assoc
+Chaotic .hom[_] p f = f
+Chaotic .coh[_] p f = refl
 ```
 
 Note that the only [[cartesian morphisms]] in the chaotic bifibration are
@@ -161,7 +163,7 @@ ChaoticFib : ∀ x → Functor J (Fibre Chaotic x)
 ChaoticFib x .F₀ j = j
 ChaoticFib x .F₁ f = f
 ChaoticFib x .F-id = refl
-ChaoticFib x .F-∘ _ _ = sym (transport-refl _)
+ChaoticFib x .F-∘ _ _ = refl
 
 ChaoticFib-is-iso : ∀ x → is-precat-iso (ChaoticFib x)
 ChaoticFib-is-iso x .is-precat-iso.has-is-ff = id-equiv

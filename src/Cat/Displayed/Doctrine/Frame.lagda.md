@@ -65,21 +65,13 @@ the equivalence $(x \le_f y) \equiv (x \le_{\id} f^*y)$ of maps into a
 
 ```agda
   disp : Displayed (Sets κ) (o ⊔ κ) (ℓ ⊔ κ)
-  disp .Ob[_] S          = ⌞ S ⌟ → ⌞ F ⌟
-  disp .Hom[_]     f g h = ∀ x → g x F.≤ h (f x)
-  disp .Hom[_]-set f g h = hlevel 2
+  disp = with-thin-display record where
+    Ob[_]          S = ⌞ S ⌟ → ⌞ F ⌟
+    Hom[_]     f g h = ∀ x → g x F.≤ h (f x)
 
-  disp .id'      x = F.≤-refl
-  disp ._∘'_ p q x = F.≤-trans (q x) (p _)
+    id'      x = F.≤-refl
+    _∘'_ p q x = F.≤-trans (q x) (p _)
 ```
-
-<!--
-```agda
-  disp .idr' f'         = prop!
-  disp .idl' f'         = prop!
-  disp .assoc' f' g' h' = prop!
-```
--->
 
 Since our ordering at each fibre is the pointwise ordering, it follows
 that our limits are also pointwise limits: the meet $f \cap g$ is the

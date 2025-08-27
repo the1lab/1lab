@@ -40,6 +40,8 @@ module _ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ')
   _^total-op .Displayed.idr' f' = idl' f'
   _^total-op .Displayed.idl' f' = idr' f'
   _^total-op .Displayed.assoc' f' g' h' = symP $ assoc' h' g' f'
+  _^total-op .Displayed.hom[_] p f' = hom[ p ] f'
+  _^total-op .Displayed.coh[_] p f' = coh[ p ] f'
 ```
 
 ## The total opposites and total categories

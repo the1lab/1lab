@@ -99,7 +99,7 @@ of heart. </summary>
       (idr' _)
       (Fib.cancellf (π*.commutesv _))
     mi .natural x y f =
-      sym $ from-pathp $ cast[] $
+      sym $ from-pathp[] $ cast[] $
         π*.commutesp id-comm _
         ∙[] Fib.to-fibre
 ```
@@ -454,8 +454,8 @@ base-change-square-ni {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
   ni : make-natural-iso _ _
   ni .eta = base-change-square p
   ni .inv = base-change-square (sym p)
-  ni .eta∘inv x = from-pathp $ base-change-square-inv p x
-  ni .inv∘eta x = from-pathp $ base-change-square-inv (sym p) x
+  ni .eta∘inv x = from-pathp[] $ base-change-square-inv p x
+  ni .inv∘eta x = from-pathp[] $ base-change-square-inv (sym p) x
   ni .natural x y f = sym $ Fib.over-fibre (base-change-square-natural p f)
 ```
 -->

@@ -67,7 +67,9 @@ morphisms $f_1,f_2$ lying over $f$, and any $p, q : f_1 = f_2$, $p=q$.
 ```agda
   _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ```
+
 Composition is pairwise.
+
 ```agda
   _×ᵀᴰ_ .Displayed._∘'_ (f₁ , f₂) (g₁ , g₂) =
     EC._∘'_ f₁ g₁ , ED._∘'_ f₂ g₂
@@ -81,6 +83,9 @@ they hold for the components of the ordered pairs.
   _×ᵀᴰ_ .Displayed.idl' (f₁ , f₂) = EC.idl' f₁ ,ₚ ED.idl' f₂
   _×ᵀᴰ_ .Displayed.assoc' (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) =
     EC.assoc' f₁ g₁ h₁ ,ₚ ED.assoc' f₂ g₂ h₂
+
+  _×ᵀᴰ_ .Displayed.hom[_] p f = EC.hom[ ap fst p ] (f .fst) ,  ED.hom[ ap snd p ] (f .snd)
+  _×ᵀᴰ_ .Displayed.coh[_] p f = EC.coh[ ap fst p ] (f .fst) ,ₚ ED.coh[ ap snd p ] (f .snd)
 ```
 
 <!--

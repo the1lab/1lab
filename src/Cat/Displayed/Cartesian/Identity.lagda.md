@@ -90,7 +90,7 @@ module _ {a b a₁' a₂' b'} (f : B.Hom a b) {f₁' : Hom[ f ] a₁' b'}
 ```agda
   cartesian-map-uniquep
     : (p : f B.∘ B.id ≡ f) → f₁' ∘' cartesian-domain-unique E c₁ c₂ .from' ≡[ p ] f₂'
-  cartesian-map-uniquep p = to-pathp⁻ $
+  cartesian-map-uniquep p = to-pathp[]⁻ $
     c1.commutes B.id _ ∙ reindex (sym (B.idr f)) (sym p)
 ```
 

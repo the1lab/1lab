@@ -120,6 +120,9 @@ Subobjects ._∘'_ α β .com = pullr (β .com) ∙ extendl (α .com)
 Subobjects .idr' _       = prop!
 Subobjects .idl' _       = prop!
 Subobjects .assoc' _ _ _ = prop!
+Subobjects .hom[_] p f .map = f .map
+Subobjects .hom[_] p f .com = ap₂ _∘_ (sym p) refl ∙ f .com
+Subobjects .coh[_] p f = prop!
 
 open Weak-cocartesian-lift
 open is-weak-cocartesian
@@ -285,26 +288,11 @@ Subobject-opfibration images pb = fibration+weak-opfibration→opfibration _
 ## Subobjects over a base
 
 We define the category $\Sub(y)$ of subobjects _of $y$_ as a fibre of
-the subobject fibration. However, we use a purpose-built transport
-function to cut down on the number of coherences required to work with
-$\Sub(y)$ at use-sites.
-
-<!--
-```agda
-private
-  re : ∀ {x} {a b : Subobject x} → ≤-over (id ∘ id) a b → ≤-over id a b
-  re x .map = x .map
-  re x .com  = ap₂ _∘_ (introl refl) refl ∙ x .com
-
-  abstract
-    coh : ∀ {x} {a b : Subobject x} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
-    coh f = prop!
-```
--->
+the subobject fibration.
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = record { Precategory (Fibre' Subobjects y re coh) }
+Sub y = record { Precategory (Fibre Subobjects y) }
 
 module Sub {y} = Cr (Sub y)
 ```

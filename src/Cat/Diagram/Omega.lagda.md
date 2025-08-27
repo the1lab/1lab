@@ -300,6 +300,12 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
   named-name : ∀ {A} {m : Subobject A} → m ≅ₘ named (name m)
   named-name = is-pullback-along→iso (classifies _)
 
+  name-named : ∀ {A} {f : Hom A Ω'} → name (named f) ≡ f
+  name-named {f = f} = sym $ so .unique record
+    { top = pb f (Subobjs.map true) .p₂
+    ; has-is-pb = has-is-pb (pb f (true .map))
+    }
+
   name-injective : ∀ {A} {m n : Subobject A} → name m ≡ name n → m ≅ₘ n
   name-injective {m = m} {n} p =
     m              Sub.≅⟨ named-name ⟩
@@ -313,6 +319,19 @@ module props {o ℓ} {C : Precategory o ℓ} (pb : has-pullbacks C) (so : Subobj
     ; has-is-pb = subst-is-pullback (sym (im .Sub.from .com) ∙ eliml refl) refl refl refl
         (is-pullback-iso (≅ₘ→iso im) (classifies m .has-is-pb))
     }
+
+  named-injective : ∀ {A} {f g : Hom A Ω'} → named f ≅ₘ named g → f ≡ g
+  named-injective {f = f} {g = g} p =
+    f              ≡˘⟨ name-named ⟩
+    name (named f) ≡⟨ name-ap p ⟩
+    name (named g) ≡⟨ name-named ⟩
+    g ∎
+
+  Ω-unique₂
+    : ∀ {A} {f g : Hom A Ω'}
+    → is-pullback-along C (named g .map) f (true .map)
+    → f ≡ g
+  Ω-unique₂ {f = f} {g = g} pb = so .unique pb ∙ name-named
 
   is-total : ∀ {A} (f : Hom A Ω') → Type _
   is-total f = is-invertible (pb f (true .map) .p₁)

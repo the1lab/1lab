@@ -149,14 +149,11 @@ Putting these together, we have the category of monads.
 
 ```agda
 Monads' : (C : Precategory o h) → Displayed Cat[ C , C ] _ _
-Monads' C .Ob[_] = Monad-on
-Monads' C .Hom[_] = is-monad-hom
-Monads' C .Hom[_]-set _ _ _ = hlevel 2
-Monads' C .id' = id-is-monad-hom
-Monads' C ._∘'_ = ∘-is-monad-hom
-Monads' C .idr' _ = prop!
-Monads' C .idl' _ = prop!
-Monads' C .assoc' _ _ _ = prop!
+Monads' C = with-thin-display record where
+  Ob[_]  = Monad-on
+  Hom[_] = is-monad-hom
+  id'    = id-is-monad-hom
+  _∘'_   = ∘-is-monad-hom
 ```
 
 <!--

@@ -72,6 +72,8 @@ Simple-ct ct .Displayed.idl' {f = u} f =
 Simple-ct ct .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
+Simple-ct ct .Displayed.hom[_] p f = f
+Simple-ct ct .Displayed.coh[_] p f = refl
 ```
 
 # Cartesian maps

@@ -174,7 +174,7 @@ Recall that if $\cC$ is [[copowered]], then we can construct an
 approximation of any object $X : \cC$ by taking the copower $\cC(A,X) \otimes A$
 for some $A : \cC$. Intuitively, this approximation works by adding a copy
 of $A$ for every generalized element $\cC(A,X)$. In the category of sets,
-$\Sets(\top, X) \otimes X$ is the coproduct of $X$-many copies of $\top$,
+$\Sets(\top, X) \otimes \top$ is the coproduct of $X$-many copies of $\top$,
 which is isomorphic to $X$.
 
 Generalizing from $\Sets$, we can attempt to approximate any object

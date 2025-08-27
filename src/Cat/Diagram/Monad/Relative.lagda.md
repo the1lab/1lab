@@ -355,6 +355,7 @@ module _
 
 ```agda
   Relative-Eilenberg-Moore : Displayed C (oj ⊔ ℓc) (oj ⊔ ℓc)
+  Relative-Eilenberg-Moore = with-thin-display record where
 ```
 
 Objects over $x : \cC$ are given by relative extension algebras over $x$,
@@ -363,33 +364,22 @@ relative extension algebra morphisms when, for every $g : \cC(F(a), x)$,
 we have $f \circ \alpha(g) = \beta(f \circ g)$.
 
 ```agda
-  Relative-Eilenberg-Moore .Ob[_] = Relative-algebra-on E
-  Relative-Eilenberg-Moore .Hom[_] {x} {y} f α β =
-    ∀ {a} (g : C.Hom (F.₀ a) x) → f C.∘ α .ν g ≡ β .ν (f C.∘ g)
+    Ob[_]                = Relative-algebra-on E
+    Hom[_] {x} {y} f α β =
+      ∀ {a} (g : C.Hom (F.₀ a) x) → f C.∘ α .ν g ≡ β .ν (f C.∘ g)
 ```
 
 It is straightforward to show that relative extension algebra morphisms
 are closed under identities and composites.
 
 ```agda
-  Relative-Eilenberg-Moore .id' {x = α} g =
-    C.id C.∘ α .ν g   ≡⟨ C.idl _ ⟩
-    α .ν g            ≡˘⟨ ap (α .ν) (C.idl _) ⟩
-    α .ν (C.id C.∘ g) ∎
-  Relative-Eilenberg-Moore ._∘'_ {x = α} {y = β} {z = γ} {f = f} {g = g} p q h =
-    (f C.∘ g) C.∘ α .ν h   ≡⟨ C.pullr (q h) ⟩
-    f C.∘ β .ν (g C.∘ h)   ≡⟨ p (g C.∘ h) ⟩
-    γ .ν (f C.∘ g C.∘ h)   ≡⟨ ap (γ .ν) (C.assoc _ _ _) ⟩
-    γ .ν ((f C.∘ g) C.∘ h) ∎
+    id' {x = α} g =
+      C.id C.∘ α .ν g   ≡⟨ C.idl _ ⟩
+      α .ν g            ≡˘⟨ ap (α .ν) (C.idl _) ⟩
+      α .ν (C.id C.∘ g) ∎
+    _∘'_ {x = α} {y = β} {z = γ} {f = f} {g = g} p q h =
+      (f C.∘ g) C.∘ α .ν h   ≡⟨ C.pullr (q h) ⟩
+      f C.∘ β .ν (g C.∘ h)   ≡⟨ p (g C.∘ h) ⟩
+      γ .ν (f C.∘ g C.∘ h)   ≡⟨ ap (γ .ν) (C.assoc _ _ _) ⟩
+      γ .ν ((f C.∘ g) C.∘ h) ∎
 ```
-
-<details>
-<summary>All of the equations are trivial.
-</summary>
-```agda
-  Relative-Eilenberg-Moore .Hom[_]-set _ _ _ = hlevel 2
-  Relative-Eilenberg-Moore .idr' _ = prop!
-  Relative-Eilenberg-Moore .idl' _ = prop!
-  Relative-Eilenberg-Moore .assoc' _ _ _ = prop!
-```
-</details>

@@ -102,12 +102,12 @@ as in the nondisplayed case.
   private
     assoc : Associator-for Vf ∘V-functor
     assoc {D = D} = to-natural-iso ni where
-      module D = Displayed D
+      module D = Disp D
       module D' {x} = Cat (Fibre D x) using (_∘_ ; idl ; idr ; elimr ; pushl ; introl)
 
       ni : make-natural-iso {D = Vf _ _} _ _
-      ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] D }
-      ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] D }
+      ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.id-comm-sym[] }
+      ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.id-comm-sym[] }
       ni .eta∘inv _ = ext λ _ → D'.idl _
       ni .inv∘eta _ = ext λ _ → D'.idl _
       ni .natural x y f = ext λ _ → D'.idr _ ∙∙ D'.pushl (F-∘↓ (y .fst)) ∙∙ D'.introl refl
@@ -125,20 +125,20 @@ the structural isomorphisms being identities.
   Disp[] .id = Id'
   Disp[] .compose = ∘V-functor
   Disp[] .unitor-l {B = B} = to-natural-iso ni where
-    module B = Displayed B
+    module B = Disp B
     ni : make-natural-iso {D = Vf _ _} _ _
-    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] B }
-    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] B }
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.id-comm-sym[] }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.id-comm-sym[] }
     ni .eta∘inv _ = ext λ _ → Cat.idl (Fibre B _) _
     ni .inv∘eta _ = ext λ _ → Cat.idl (Fibre B _) _
     ni .natural x y f = ext λ _ → Cat.elimr (Fibre B _) refl ∙ Cat.id-comm (Fibre B _)
   Disp[] .unitor-r {B = B} = to-natural-iso ni where
-    module B = Displayed B
+    module B = Disp B
     module B' {x} = Cat (Fibre B x) using (_∘_ ; idl ; elimr)
 
     ni : make-natural-iso {D = Vf _ _} _ _
-    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] B }
-    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → Disp.id-comm-sym[] B }
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.id-comm-sym[] }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.id-comm-sym[] }
     ni .eta∘inv _ = ext λ _ → B'.idl _
     ni .inv∘eta _ = ext λ _ → B'.idl _
     ni .natural x y f = ext λ _ → B'.elimr refl ∙ ap₂ B'._∘_ (y .F-id') refl
