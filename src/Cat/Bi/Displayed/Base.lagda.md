@@ -184,8 +184,8 @@ The unitors and associator are displayed isomorphims over the unitors and associ
 
 ```agda 
   field
-    unitor-l' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → _≅[_]_ Disp[ Hom[ A' , B' ] , Hom[ A' , B' ] ] Id' unitor-l (Right' compose' ↦id')
-    unitor-r' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → _≅[_]_ Disp[ Hom[ A' , B' ] , Hom[ A' , B' ] ] Id' unitor-r (Left'  compose' ↦id')
+    unitor-l' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → Id' {ℰ = Hom[ A' , B' ]} ≅[ unitor-l ]ⁿ (Right' compose' ↦id')
+    unitor-r' : ∀ {A B} {A' : Ob[ A ]} {B' : Ob[ B ]} → Id' {ℰ = Hom[ A' , B' ]} ≅[ unitor-r ]ⁿ (Left'  compose' ↦id')
 
     associator' : ∀ {A B C D} {A' : Ob[ A ]} {B' : Ob[ B ]} {C' : Ob[ C ]} {D' : Ob[ D ]}
                 → _≅[_]_ Disp[ Hom[ C' , D' ] ×ᵀᴰ (Hom[ B' , C' ] ×ᵀᴰ Hom[ A' , B' ]) , Hom[ A' , D' ] ] 
@@ -202,58 +202,58 @@ The associated displayed cell combinators proceed in the same way.
 
 ```agda
   λ←' : ∀ {A B A' B'} {f : A ↦ B} (f' : A' [ f ]↦ B') → (↦id' ⊗' f') [ λ← f ]⇒ f'
-  λ←' = unitor-l' ._≅[_]_.from' .η' 
+  λ←' = unitor-l'.from' .η' 
 
   λ→' : ∀ {A B A' B'} {f : A ↦ B}
        → (f' : A' [ f ]↦ B')
        → f' [ λ→ f ]⇒ (↦id' ⊗' f')
-  λ→' = unitor-l' ._≅[_]_.to' .η'
+  λ→' = unitor-l'.to' .η'
 
   ρ←' : ∀ {A B A' B'} {f : A ↦ B}
        → (f' : A' [ f ]↦ B')
        → (f' ⊗' ↦id') [ ρ← f ]⇒ f'
-  ρ←' = unitor-r' ._≅[_]_.from' .η'
+  ρ←' = unitor-r'.from' .η'
 
   ρ→' : ∀ {A B A' B'} {f : A ↦ B}
        → (f' : A' [ f ]↦ B')
        → f' [ ρ→ f ]⇒ (f' ⊗' ↦id')
-  ρ→' = unitor-r' ._≅[_]_.to' .η'
+  ρ→' = unitor-r'.to' .η'
 
   ρ←nat' : ∀ {A B A' B'} {f₁ f₂ : A ↦ B} {β : f₁ ⇒ f₂}
          → {f₁' : A' [ f₁ ]↦ B'} {f₂' : A' [ f₂ ]↦ B'}
          → (β' : f₁' [ β ]⇒ f₂')
          → (ρ←' _ ∘' (β' ◀' ↦id')) Hom[].≡[ ρ←nat β ] (β' ∘' ρ←' _)
-  ρ←nat' β' = unitor-r' .from' .is-natural' _ _ β'
+  ρ←nat' β' = unitor-r'.from' .is-natural' _ _ β'
 
   λ←nat' : ∀ {A B A' B'} {f₁ f₂ : A ↦ B} {β : f₁ ⇒ f₂}
          → {f₁' : A' [ f₁ ]↦ B'} {f₂' : A' [ f₂ ]↦ B'}
          → (β' : f₁' [ β ]⇒ f₂')
          → (λ←' _ ∘' (↦id' ▶' β')) Hom[].≡[ λ←nat β ] (β' ∘' λ←' _)
-  λ←nat' β' = unitor-l' .from' .is-natural' _ _ β'
+  λ←nat' β' = unitor-l'.from' .is-natural' _ _ β'
 
   ρ→nat' : ∀ {A B A' B'} {f₁ f₂ : A ↦ B} {β : f₁ ⇒ f₂}
          → {f₁' : A' [ f₁ ]↦ B'} {f₂' : A' [ f₂ ]↦ B'}
          → (β' : f₁' [ β ]⇒ f₂')
          → (ρ→' _ ∘' β') Hom[].≡[ ρ→nat β ] ((β' ◀' ↦id') ∘' ρ→' _)
-  ρ→nat' β' = unitor-r' .to' .is-natural' _ _ β'
+  ρ→nat' β' = unitor-r'.to' .is-natural' _ _ β'
 
   λ→nat' : ∀ {A B A' B'} {f₁ f₂ : A ↦ B} {β : f₁ ⇒ f₂}
          → {f₁' : A' [ f₁ ]↦ B'} {f₂' : A' [ f₂ ]↦ B'}
          → (β' : f₁' [ β ]⇒ f₂')
          → (λ→' _ ∘' β') Hom[].≡[ λ→nat β ] ((↦id' ▶' β') ∘' λ→' _)
-  λ→nat' β' = unitor-l' .to' .is-natural' _ _ β'
+  λ→nat' β' = unitor-l'.to' .is-natural' _ _ β'
 
   α→' : ∀ {A B C D A' B' C' D'}
        {f : C ↦ D} {g : B ↦ C} {h : A ↦ B}
        → (f' : C' [ f ]↦ D') (g' : B' [ g ]↦ C') (h' : A' [ h ]↦ B')
        → ((f' ⊗' g') ⊗' h') [ α→ f g h ]⇒ (f' ⊗' (g' ⊗' h'))
-  α→' f' g' h' = associator' ._≅[_]_.to' .η' (f' , g' , h')
+  α→' f' g' h' = associator'.to' .η' (f' , g' , h')
 
   α←' : ∀ {A B C D A' B' C' D'}
        {f : C ↦ D} {g : B ↦ C} {h : A ↦ B}
        → (f' : C' [ f ]↦ D') (g' : B' [ g ]↦ C') (h' : A' [ h ]↦ B')
        → (f' ⊗' (g' ⊗' h')) [ α← f g h ]⇒ ((f' ⊗' g') ⊗' h')
-  α←' f' g' h' = associator' ._≅[_]_.from' .η' (f' , g' , h')
+  α←' f' g' h' = associator'.from' .η' (f' , g' , h')
 
   α←nat' : ∀ {A B C D A' B' C' D'}
          {f₁ f₂ : C ↦ D} {g₁ g₂ : B ↦ C} {h₁ h₂ : A ↦ B}
@@ -265,7 +265,7 @@ The associated displayed cell combinators proceed in the same way.
          → (α←' _ _ _ ∘' (β' ◆' (γ' ◆' δ'))) Hom[].≡[ α←nat β γ δ ]
               (((β' ◆' γ') ◆' δ') ∘' α←' _ _ _)
   α←nat' β' γ' δ' =
-    associator' .from' .is-natural' (_ , _ , _) (_ , _ , _) (β' , γ' , δ')
+    associator'.from' .is-natural' (_ , _ , _) (_ , _ , _) (β' , γ' , δ')
 
   α→nat' : ∀ {A B C D A' B' C' D'}
          {f₁ f₂ : C ↦ D} {g₁ g₂ : B ↦ C} {h₁ h₂ : A ↦ B}
@@ -277,7 +277,7 @@ The associated displayed cell combinators proceed in the same way.
          → (α→' _ _ _ ∘' ((β' ◆' γ') ◆' δ')) Hom[].≡[ α→nat β γ δ ]
               ((β' ◆' (γ' ◆' δ')) ∘' α→' _ _ _)
   α→nat' β' γ' δ' =
-    associator' .to' .is-natural' (_ , _ , _) (_ , _ , _) (β' , γ' , δ')
+    associator'.to' .is-natural' (_ , _ , _) (_ , _ , _) (β' , γ' , δ')
 ```
 
 As do the triangle and pentagon identities.
