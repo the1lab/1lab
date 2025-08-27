@@ -123,7 +123,7 @@ member≃lookup .snd = is-iso→is-equiv λ where
 -->
 
 Explicitly, if $A$ is an [[$3+n$-type|n-type]], then the type of membership
-proofs for lists of $A$s are an [[$2+n$|type]].
+proofs for lists of $A$s are an [[$2+n$-type|n-type]].
 
 ```agda
 ∈ₗ-is-hlevel
