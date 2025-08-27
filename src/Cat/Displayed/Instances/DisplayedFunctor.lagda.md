@@ -53,6 +53,9 @@ module _
   Disp[_,_] .Displayed.idr' _ = Nat'-path λ x' → E.idr' _
   Disp[_,_] .Displayed.idl' _ = Nat'-path λ x' → E.idl' _
   Disp[_,_] .Displayed.assoc' _ _ _ = Nat'-path λ x' → E.assoc' _ _ _
+  Disp[_,_] .Displayed.hom[_] {x = F} {y = G} p α' = NT' (λ {x} x' → E.hom[ p ηₚ x ] (α' .η' x')) 
+    λ {x} {y} x' y' f' → E.cast[] $ E.unwrapl _ E.∙[] α' .is-natural' x' y' f' E.∙[] E.wrapr _
+  Disp[_,_] .Displayed.coh[_] p f = Nat'-path (λ {x} x' → E.coh[ p ηₚ x ] (f .η' x'))
 ```
 
 <!--
