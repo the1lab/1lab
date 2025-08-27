@@ -125,20 +125,14 @@ rules = do
     unless skipAgda $ need ["_build/html/types" </> modName <.> "json"]
 
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
-  "_build/html/types/*.json" %> \out -> do
-    let
-      mn = takeFileName out
-      it = "_build/html0/" </> mn -<.> "used"
-    need [it]
-    copyFile' it $ "_build/html/types/" </> mn
 
   "_build/html/static/search.json" %> \out -> do
     skipAgda <- getSkipAgda
     modules <- filter ((==) WithText . snd) . Map.toList <$> getOurModules
     let searchFiles = (if skipAgda then [] else ["_build/all-types.json"])
                     ++ map (\(x, _) -> "_build/search" </> x <.> "json") modules
-    searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
-    traced "Writing search data" $ encodeFile out (concat searchData)
+    searchData :: [[SearchTerm]] <- parallel $ map readJSONFile searchFiles
+    traced "encoding json" $ encodeFile out (concat searchData)
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
@@ -180,8 +174,10 @@ rules = do
       (f, _) <- Map.toList modules
       [ "_build/html" </> f <.> "html" ] <>
         [ "_build/html/types" </> f <.> "json" | not skipAgda ]
+
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
+
     need $
       static ++ agda ++
         [ "_build/html/favicon.ico"
@@ -208,6 +204,9 @@ rules = do
     nodeCommand [] "tsc" ["--noEmit", "-p", "tsconfig.json"]
 
   phony "recent" do liftIO . print =<< recentAdditions
+
+  phony "warm-up" do
+    need ["discover-diagrams", "glossary"]
 
   -- Profit!
 

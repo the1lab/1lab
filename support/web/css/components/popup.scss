@@ -1,5 +1,6 @@
 @use "../mixins.scss" as *;
 @use "../vars.scss"   as *;
+@use "../theme.scss"  as *;
 
 div.hover-popup, div.hover-popup.sourceCode {
   position: absolute;

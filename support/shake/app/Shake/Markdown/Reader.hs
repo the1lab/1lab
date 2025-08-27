@@ -48,10 +48,9 @@ readLabMarkdown fp = liftIO cont where
   cont = {-# SCC "readLabMarkdown" #-} do
     contents <- mangleMarkdown <$> readFile fp
     evaluate $ rnf contents
-    doc <- either (fail . show) compact =<< runIO do
+    either (fail . show) pure =<< runIO do
       doc <- readMarkdown labReaderOptions [(fp, contents)]
       pure $ walk unParaMath $ walk postParseInlines doc
-    pure $! getCompact doc
 {-# NOINLINE readLabMarkdown #-}
 
 -- | Patch a sequence of inline elements. `patchInline' should be preferred
@@ -81,15 +80,20 @@ postParseInlines (Math ty mtext:s@(Str txt):xs)
       mtext' = Text.stripEnd mtext <> glue
     in postParseInlines (Math ty mtext':xs)
 
--- Parse the contents of wikilinks as markdown. While Pandoc doesn't
--- read the title part of a wikilink, it will always consist of a single
--- Str span. We call the Pandoc parser in a pure context to read the
--- title part as an actual list of inlines.
-postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
+-- Parse the contents of wikilinks as markdown. Pandoc doesn't parse
+-- inlines inside wikilinks, but it does do space splitting. We call the
+-- Pandoc parser in a pure context to read the title part as an *actual*
+-- list of inlines.
+postParseInlines (Link attr content (url, "wikilink"):xs) =
   link' `seq` link':postParseInlines xs where
 
-  try  = either (const Nothing) Just . runPure
-  fail = error $
+  contents = flip query content \case
+    Text.Pandoc.Str x -> x
+    Text.Pandoc.Space -> " "
+    inl               -> error $ "Unexpected inline in wikilink contents: " ++ show inl
+
+  try      = either (const Nothing) Just . runPure
+  fail     = error $
     "Failed to parse contents of wikilink as Markdown:" <> Text.unpack contents
 
   link' = fromMaybe fail do
@@ -217,4 +221,6 @@ mangleMarkdown = Text.pack . toplevel (# 1#, 1# #) where
 markdownReader :: Rules (FilePath -> Action Pandoc)
 markdownReader = newCache \fp -> do
   need [fp]
-  traced "pandoc" $ readLabMarkdown fp
+  traced "pandoc" $ do
+    md <- compact =<< readLabMarkdown fp
+    pure $! getCompact md

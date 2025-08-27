@@ -1,5 +1,6 @@
 @use "../mixins.scss" as *;
 @use "../colors.scss" as *;
+@use "../theme.scss"  as *;
 
 #search-wrapper .modal-contents {
   align-items: stretch;

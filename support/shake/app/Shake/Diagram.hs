@@ -2,11 +2,14 @@
 
 module Shake.Diagram (diagramRules, diagramHeight) where
 
+import Control.DeepSeq
 import Control.Monad
 
+import qualified Data.Map.Strict as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.ByteString.Lazy (ByteString)
+import Data.Map.Strict (Map)
 import Data.Text (Text)
 
 import Text.Pandoc.Definition
@@ -16,7 +19,8 @@ import Text.Pandoc.Walk
 import Development.Shake.FilePath
 import Development.Shake
 
-import Shake.Modules (markdownSource)
+import Shake.Markdown.Reader
+import Shake.Modules (ModName, markdownSource)
 import Shake.Digest
 import Shake.KaTeX (getPreambleFor)
 
@@ -84,7 +88,7 @@ templatePath :: FilePath
 templatePath = "support/diagram.tex"
 
 diagramRules :: (FilePath -> Action Pandoc) -> Rules ()
-diagramRules reader = do
+diagramRules read = do
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/**/*.light.svg" %> \out -> do
     let
@@ -102,6 +106,17 @@ diagramRules reader = do
     need [inp]
     buildDiagram (getPreambleFor True) inp out True
 
+  modDiagrams :: ModName -> Action (Map String Text) <- newCache \mod -> do
+    md <- markdownSource mod
+    need [ md ]
+    doc <- read md
+    let
+      diagrams = flip query doc \case
+        (CodeBlock (_, classes, _) contents) | "quiver" `elem` classes ->
+          Map.singleton (shortDigest contents) contents
+        _ -> mempty
+    diagrams `deepseq` pure diagrams
+
   -- Extract the diagram with the given digest from the module source
   -- file; even if the module uses many diagrams, only one will be written.
   --
@@ -114,13 +129,7 @@ diagramRules reader = do
       mod  = takeFileName (takeDirectory out)
       want = dropExtensions (takeFileName out)
 
-    md <- markdownSource mod
-    need [ md ]
-
     liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> mod
 
-    reader md >>= query \case
-      (CodeBlock (_, classes, _) contents) | "quiver" `elem` classes -> do
-        when (shortDigest contents == want) . liftIO $
-          Text.writeFile ("_build/diagrams" </> mod </> want <.> "tex") contents
-      _ -> mempty
+    contents <- (Map.! want) <$> modDiagrams mod
+    liftIO $ Text.writeFile ("_build/diagrams" </> mod </> want <.> "tex") contents

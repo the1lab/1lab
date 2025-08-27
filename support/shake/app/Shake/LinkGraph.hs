@@ -74,7 +74,7 @@ linksRules = do
                 && target `Set.notMember` ignoreLinks)
              then Just [source, target]
              else Nothing
-    liftIO $ encodeFile out links
+    quietly . traced "encoding json" $ encodeFile out links
 
 -- | Extract internal links to 1Lab modules, with anchors. Ignore numeric
 -- links because they're always correct and make the graph too crowded.

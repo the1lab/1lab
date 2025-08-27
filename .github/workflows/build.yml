@@ -51,15 +51,48 @@ jobs:
           key: shake-5-${{ env.shake_version }}-${{ github.run_id }}
           restore-keys: shake-5-${{ env.shake_version }}-
 
-      - name: Build 🛠️
+      - name: Typecheck 👩‍🏫
         run: |
-          echo "$mailmap" > .mailmap
           nix-shell --arg interactive false --run "$build_command"
+        # Run Agda as a separate stage so it doesn't have to be subject to
+        # the absolutely spartan GC tuning parameters we run the build in
+        # CI with
         env:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
-            1lab-shake -j all
+            1lab-shake _build/all-pages.agda
+            agda _build/all-pages.agda +RTS -A128M -s -RTS
+
+      - name: Build 🛠️
+        run: |
+          echo "$mailmap" > .mailmap
+          nix-shell --arg interactive false --run "$build_command"
+
+        # Shake is a bit of a pig, what with our abuses of caches, and
+        # the default 2× heap overhead GHC uses means that a clean build
+        # (with existing interface files) ends up using about ~10 GiB of
+        # memory. This is probably not entirely unrelated to our CI jobs
+        # being randomly cancelled.
+        #
+        # We can beat it back down into shape by telling GHC to use a
+        # much lower heap overhead (1.25×) and a smaller allocation area
+        # size. On my machine using -A128M gives
+        #
+        #   3,202,995,288 bytes maximum residency
+        #       10202 MiB total memory in use
+        #   Productivity 85.4% of total user, 92.8% of total elapsed
+        #
+        # but the flags below give
+        #
+        #   3,686,172,648 bytes maximum residency (64 sample(s))
+        #        5778 MiB total memory in use
+        #   Productivity  68.8% of total user, 64.2% of total elapsed
+        env:
+          NIX_BUILD_SHELL: bash
+          build_command: |
+            set -eu
+            1lab-shake -j all +RTS -F1.25 -A8M
             eval "$installPhase"
 
       - name: Upload site ⬆️
