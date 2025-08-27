@@ -38,14 +38,12 @@ import Development.Shake
 
 import GHC.Generics (Generic)
 
-import HTML.Backend (moduleName)
+import Shake.Modules (moduleName)
 
 import Text.Pandoc.Walk
 import Text.Pandoc
 
 import Text.Show.Pretty
-
-import {-# SOURCE #-} Shake.Markdown (readLabMarkdown)
 
 newtype Mangled = Mangled { getMangled :: Text }
   deriving (Show, Eq, Ord, Generic)
@@ -64,10 +62,10 @@ mangleLink = doit where
   wordChar '[' = True
   wordChar c = isAsciiLower c || isDigit c
 
-parseDefinitions :: MonadIO m => FilePath -> FilePath -> m Glossary
-parseDefinitions anchor input = liftIO do
-  Pandoc _meta markdown <- readLabMarkdown input
-  pure $ appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
+parseDefinitions :: MonadIO m => (FilePath -> m Pandoc) -> FilePath -> FilePath -> m Glossary
+parseDefinitions read anchor input = do
+  Pandoc _meta markdown <- read input
+  pure $! appEndo (query (definitionBlock input anchor) markdown) (Glossary mempty)
 
 data Definition = Definition
   { definitionModule :: FilePath
@@ -136,12 +134,12 @@ addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False ke
 definitionTarget :: Definition -> Text
 definitionTarget def = Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
 
-glossaryRules :: Rules ()
-glossaryRules = do
+glossaryRules :: (FilePath -> Action Pandoc) -> Rules ()
+glossaryRules reader = do
   _ <- addOracleCache \(ModuleGlossaryQ fp) -> do
     need [fp]
     let modn = moduleName (dropExtensions (dropDirectory1 fp)) <.> "html"
-    traced "parsing definitions" (parseDefinitions modn fp)
+    parseDefinitions reader modn fp
 
   _ <- addOracle \GlossaryQ -> do
     md   <- fmap ("src" </>) <$> getDirectoryFiles "src" ["**/*.lagda.md"]
@@ -152,7 +150,7 @@ glossaryRules = do
       alldefs :: [(Mangled, Definition)]
       alldefs = outs >>= (Map.toList . getEntries)
 
-    pure $ foldr (uncurry addDefinition) (Glossary mempty) alldefs
+    pure $! foldr (uncurry addDefinition) (Glossary mempty) alldefs
 
   _ <- addOracle \(LinkTargetQ target) -> do
     glo <- getEntries <$> askOracle GlossaryQ

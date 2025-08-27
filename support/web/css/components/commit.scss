@@ -1,3 +1,5 @@
+@use "../vars.scss" as *;
+
 div#recent-additions {
   margin-block: var(--parskip);
 

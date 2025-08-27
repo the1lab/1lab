@@ -1,5 +1,7 @@
+@use "../mixins.scss" as *;
+@use "../vars.scss" as *;
+
 aside#toc {
-  @include widescreen { display: flex; }
   display: none;
 
   grid-column: sidebar;
@@ -81,4 +83,6 @@ aside#toc {
       text-decoration: underline;
     }
   }
+
+  @include widescreen { display: flex; }
 }

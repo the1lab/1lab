@@ -22,7 +22,7 @@ import Development.Shake
 -- | Set `--git-dir` explicitly to turn off repository discovery and work
 -- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
 gitCommand :: CmdResult r => [String] -> Action r
-gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+gitCommand args = command [NoProcessGroup] "git" (["--git-dir", ".git"] ++ args)
 
 newtype GitFiles = GitFiles ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
