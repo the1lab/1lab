@@ -26,15 +26,15 @@ arguments, so passing around functions like `∀ {x y} → Hom x y → Ω`
 as first-class objects can often lead to unsolved metavariable errors.
 
 To work around this, we define a class of morphisms in a category $\cC$
-as a single-field record type. This avoids the implicit instantiating
-issue from before, at the cost of a bit of code bloat.
+as a record type. This avoids the implicit instantiation issue from before,
+at the cost of a bit of code bloat.
 
 ```agda
 record Arrows {o ℓ} (C : Precategory o ℓ) (κ : Level) : Type (o ⊔ ℓ ⊔ lsuc κ) where
   no-eta-equality
   field
     arrows : ∀ {x y} → Precategory.Hom C x y → Type κ
-    is-tr : ∀  {x y} {f : Precategory.Hom C x y} → is-prop (arrows f)
+    is-tr  : ∀ {x y} {f : Precategory.Hom C x y} → is-prop (arrows f)
 
 open Arrows public
 ```

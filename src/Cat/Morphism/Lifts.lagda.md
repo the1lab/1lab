@@ -39,10 +39,10 @@ square like so:
   A && X \\
   \\
   B && {Y\text{.}}
-  \arrow["f", from=1-1, to=1-3]
-  \arrow["g", from=3-1, to=3-3]
-  \arrow["u"', from=1-1, to=3-1]
-  \arrow["v", from=1-3, to=3-3]
+  \arrow["u", from=1-1, to=1-3]
+  \arrow["v", from=3-1, to=3-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["g", from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -66,17 +66,17 @@ and $g$ *right lifts against* $f$ if for every commutative square
   A && X \\
   \\
   B && {Y\text{.}}
-  \arrow["f", from=1-1, to=1-3]
-  \arrow["g", from=3-1, to=3-3]
-  \arrow["u"', from=1-1, to=3-1]
-  \arrow["v", from=1-3, to=3-3]
+  \arrow["u", from=1-1, to=1-3]
+  \arrow["v", from=3-1, to=3-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["g", from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
 there [[merely]] exists a lifting $w$.
 
 We can also talk about objects with left or right lifting properties.
-An object $P : \cC$ left lefts against a morphism $f$ if for every
+An object $P : \cC$ left lifts against a morphism $f$ if for every
 cospan $P \xto{u} X \xot{f} Y$, there merely exists a map $w : \cC(P,
 X)$ with $f \circ w = u$.
 
@@ -343,15 +343,15 @@ $l$ and $k$ are both lifts of the outer square
 
 ~~~{.quiver}
 \begin{tikzcd}
-  a && b \\
+  A && X \\
   \\
-  c && d.
-  \arrow["f", from=1-1, to=1-3]
-  \arrow["u"', from=1-1, to=3-1]
-  \arrow["l"', shift right, from=1-3, to=3-1]
-  \arrow["k", shift left, from=1-3, to=3-1]
-  \arrow["v", from=1-3, to=3-3]
-  \arrow["g"', from=3-1, to=3-3]
+  B && Y
+  \arrow["u", from=1-1, to=1-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["g", from=1-3, to=3-3]
+  \arrow["k"', shift right=2, from=3-1, to=1-3]
+  \arrow["l", shift left=2, from=3-1, to=1-3]
+  \arrow["v"', from=3-1, to=3-3]
 \end{tikzcd}
 ~~~
 
