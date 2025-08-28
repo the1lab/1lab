@@ -788,7 +788,7 @@ _ = Karoubi-is-completion
 ```agda
 _ = is-regular-epi
 _ = is-strong-epi
-_ = strong-epi-∘
+_ = ∘-is-strong-epic
 _ = strong-epi-cancelr
 _ = strong-epi+mono→invertible
 _ = is-regular-epi→is-strong-epi
@@ -801,7 +801,7 @@ _ = is-extremal-epi→is-strong-epi
 * Definition 4.3.1: `is-regular-epi`{.Agda}
 * Definition 4.3.5: `is-strong-epi`{.Agda}
 * Proposition 4.3.6:
-  * 1. `strong-epi-∘`{.Agda}
+  * 1. `∘-is-strong-epic`{.Agda}
   * 2. `strong-epi-cancelr`{.Agda}
   * 3. `strong-epi-mono→invertible`{.Agda}
   * 4. `is-regular-epi→is-strong-epi`{.Agda}

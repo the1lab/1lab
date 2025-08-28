@@ -108,12 +108,12 @@ ident=∘-is-epic}, and that so is `lifting against a given map`{.Agda
 ident=∘l-lifts-class} --- in this case, an arbitrary monomorphism $m$.
 
 ```agda
-strong-epi-∘
-  : ∀ {a b c} (f : Hom b c) (g : Hom a b)
+∘-is-strong-epic
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-strong-epi f
   → is-strong-epi g
   → is-strong-epi (f ∘ g)
-strong-epi-∘ f g (f-epi , f-str) (g-epi , g-str) =
+∘-is-strong-epic (f-epi , f-str) (g-epi , g-str) =
   lifts→is-strong-epi (∘-is-epic f-epi g-epi) $
   ∘l-lifts-class C Monos
     (orthogonal→lifts-right-class C Monos f-str)
