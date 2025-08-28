@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Morphism.Factorisation.Orthogonal
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
@@ -96,6 +97,20 @@ latter two names have a placeholder for the morphism we are factoring.
         (factor-monic→left-monic (r.factor f) f-monic)
 ```
 -->
+
+We can extend our factorisations to an [[orthogonal factorisation system]]
+on $\cC$, as the classes of strong epis and monos are closed under composites
+and invertible maps, and strong epis are [[left orthogonal]] to monomorphisms by definition.
+
+```agda
+    strong-epi-mono-is-ofs : is-ofs 𝒞 C.StrongEpis C.Monos
+    strong-epi-mono-is-ofs .is-ofs.factor = r.factor
+    strong-epi-mono-is-ofs .is-ofs.is-iso→in-L f = invertible→strong-epi
+    strong-epi-mono-is-ofs .is-ofs.L-is-stable f g = ∘-is-strong-epic
+    strong-epi-mono-is-ofs .is-ofs.is-iso→in-R f = invertible→monic
+    strong-epi-mono-is-ofs .is-ofs.R-is-stable f g = ∘-is-monic
+    strong-epi-mono-is-ofs .is-ofs.L⊥R = StrongEpis⊥Monos
+```
 
 ## Motivation
 

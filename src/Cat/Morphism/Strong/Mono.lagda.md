@@ -53,6 +53,9 @@ is-strong-mono f = is-monic f × Orthogonal C Epis f
 StrongMonos : Arrows C (o ⊔ ℓ)
 StrongMonos .arrows = is-strong-mono
 StrongMonos .is-tr = hlevel 1
+
+Epis⊥StrongMonos : Orthogonal C Epis StrongMonos
+Epis⊥StrongMonos f f-epi g (g-mono , Epis⊥g) = Epis⊥g f f-epi
 ```
 -->
 
