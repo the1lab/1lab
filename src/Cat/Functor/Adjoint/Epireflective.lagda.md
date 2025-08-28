@@ -140,19 +140,16 @@ is reflective!
 
 ```agda
   epireflective+strong-mono→unit-invertible epireflective {x} {a} {f} f-strong-mono =
-    C.strong-mono+epi→invertible
-      unit-strong-mono
-      unit-epic
-    where
+    C.strong-mono+epi→invertible unit-strong-mono unit-epic where
       open is-epireflective epireflective
 
       unit-strong-mono : C.is-strong-mono (η x)
-      unit-strong-mono =
-        C.strong-mono-cancell (R.₁ (L.₁ f)) (η x) $
-        C.subst-is-strong-mono (unit.is-natural _ _ _) $
-        C.strong-mono-∘ (η (R.₀ a)) f
-          (C.invertible→strong-mono (is-reflective→unit-right-is-iso L⊣R reflective))
-          f-strong-mono
+      unit-strong-mono = C.strong-mono-cancell (R.₁ (L.₁ f)) (η x)
+        $ C.subst-is-strong-mono (unit.is-natural _ _ _)
+        $ C.strong-mono-∘ (η (R.₀ a)) f
+            (C.invertible→strong-mono
+              (is-reflective→unit-right-is-iso L⊣R reflective))
+            f-strong-mono
 ```
 
 We also can prove a partial converse. $L \dashv R$ is epireflective if:
@@ -196,15 +193,14 @@ diagram:
 
 ```agda
   factor+strong-mono-unit-invertible→epireflective reflective unit-inv factor {x} =
-    unit-epic
-    where
+    unit-epic where
       open Factorisation (factor (η x)) renaming
-          ( mediating to im
-          ; forget to m
-          ; mediate to e
-          ; forget∈M to m-strong-mono
-          ; mediate∈E to e-epi
-          )
+        ( mediating to im
+        ; forget to m
+        ; mediate to e
+        ; forget∈M to m-strong-mono
+        ; mediate∈E to e-epi
+        )
 ```
 
 What follows is a massive diagram chase. First, note that $\eta_{I}$ must
@@ -212,8 +208,7 @@ be invertible, as $m : \cC(I, R(L(X)))$ is a strong mono.
 
 ```agda
       unit-im-invertible : C.is-invertible (η im)
-      unit-im-invertible =
-        unit-inv (□-out! m-strong-mono)
+      unit-im-invertible = unit-inv (□-out! m-strong-mono)
 ```
 
 Next, observe that $R(L(m)) \circ R(L(e))$ must also be invertible:
@@ -221,12 +216,10 @@ their composite is $R(L(\eta_{X}))$, which is always invertible if
 $L \dashv R$ is reflective.
 
 ```agda
-      RL[m]∘RL[e]-invertible
-        : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
-      RL[m]∘RL[e]-invertible =
-        C.subst-is-invertible (R.expand (L.expand factors)) $
-        R.F-map-invertible $
-        is-reflective→left-unit-is-iso L⊣R reflective
+      RL[m]∘RL[e]-invertible : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
+      RL[m]∘RL[e]-invertible = C.subst-is-invertible (R.expand (L.expand factors))
+        $ R.F-map-invertible
+        $ is-reflective→left-unit-is-iso L⊣R reflective
 ```
 
 This in turn means that $L(R(e))$ must be a strong mono, as
@@ -234,10 +227,9 @@ we can cancel strong monos.
 
 ```agda
       RL[e]-strong-mono : C.is-strong-mono (R.₁ (L.₁ e))
-      RL[e]-strong-mono =
-        C.strong-mono-cancell (R.₁ (L.₁ m)) (R.₁ (L.₁ e)) $
-        C.invertible→strong-mono $
-        RL[m]∘RL[e]-invertible
+      RL[e]-strong-mono = C.strong-mono-cancell (R.₁ (L.₁ m)) (R.₁ (L.₁ e))
+        $ C.invertible→strong-mono
+        $ RL[m]∘RL[e]-invertible
 ```
 
 Moreover, $R(L(e))$ is also epic. This follows from a somewhat convoluted chase:
@@ -247,12 +239,8 @@ right-cancellation of epis to deduce that $R(L(e))$ must be epic.
 
 ```agda
       RL[e]-epic : C.is-epic (R.₁ (L.₁ e))
-      RL[e]-epic =
-        C.epic-cancelr $
-        C.subst-is-epic (unit.is-natural _ _ _) $
-        C.∘-is-epic
-          (C.invertible→epic unit-im-invertible)
-          (□-out! e-epi)
+      RL[e]-epic = C.epic-cancelr $ C.subst-is-epic (unit.is-natural _ _ _)
+        $ C.∘-is-epic (C.invertible→epic unit-im-invertible) (□-out! e-epi)
 ```
 
 We can put the previous two observations together to show that
@@ -261,15 +249,11 @@ invertible by 2-out-of-3.
 
 ```agda
       RL[e]-invertible : C.is-invertible (R.₁ (L.₁ e))
-      RL[e]-invertible =
-        C.strong-mono+epi→invertible
-          RL[e]-strong-mono
-          RL[e]-epic
+      RL[e]-invertible = C.strong-mono+epi→invertible RL[e]-strong-mono RL[e]-epic
 
       RL[m]-invertible : C.is-invertible (R.₁ (L.₁ m))
-      RL[m]-invertible =
-        C.invertible-cancell RL[e]-invertible $
-        RL[m]∘RL[e]-invertible
+      RL[m]-invertible = C.invertible-cancell RL[e]-invertible
+        $ RL[m]∘RL[e]-invertible
 ```
 
 We're on to the home stretch now! Our final penultimate step is to
@@ -280,11 +264,10 @@ itself be invertible, so $m$ is invertible via 2-out-of-3.
 
 ```agda
       m-invertible : C.is-invertible m
-      m-invertible =
-        C.invertible-cancelr
-          (is-reflective→unit-right-is-iso L⊣R reflective)
-          (C.subst-is-invertible (sym (unit.is-natural _ _ _)) $
-             C.invertible-∘ RL[m]-invertible unit-im-invertible)
+      m-invertible = C.invertible-cancelr
+        (is-reflective→unit-right-is-iso L⊣R reflective)
+        (C.subst-is-invertible (sym (unit.is-natural _ _ _))
+          $ C.invertible-∘ RL[m]-invertible unit-im-invertible)
 ```
 
 The prior step means that $\eta_{X}$ factors into a pair of epis,
@@ -292,11 +275,8 @@ so it must also be an epi.
 
 ```agda
       unit-epic : C.is-epic (η x)
-      unit-epic =
-        C.subst-is-epic (sym factors) $
-        C.∘-is-epic
-          (C.invertible→epic m-invertible)
-          (□-out! e-epi)
+      unit-epic = C.subst-is-epic (sym factors)
+        $ C.∘-is-epic (C.invertible→epic m-invertible) (□-out! e-epi)
 ```
 
 ## Strong epireflective subcategories and monos
@@ -327,79 +307,59 @@ diagram chase; we will spare the innocent reader the details.
 </summary>
 ```agda
   strong-epireflective+mono→unit-invertible strong-epirefl {x} {a} {f} f-mono =
-    C.strong-epi+mono→invertible
-      unit-strong-epi
-      unit-mono
-    where
+    C.strong-epi+mono→invertible unit-strong-epi unit-mono where
       open is-strong-epireflective strong-epirefl
 
       unit-mono : C.is-monic (η x)
-      unit-mono =
-        C.monic-cancell $
-        C.subst-is-monic (unit.is-natural _ _ _) $
-        C.∘-is-monic
-          (C.invertible→monic (is-reflective→unit-right-is-iso L⊣R reflective))
-          f-mono
+      unit-mono = C.monic-cancell $ C.subst-is-monic (unit.is-natural _ _ _)
+        $ C.∘-is-monic
+            (C.invertible→monic (is-reflective→unit-right-is-iso L⊣R reflective))
+            f-mono
 
   factor+mono-unit-invertible→strong-epireflective reflective unit-inv factor {x} =
-    unit-strong-epi
-    where
+    unit-strong-epi where
       open Factorisation (factor (η x)) renaming
-          ( mediating to im
-          ; forget to m
-          ; mediate to e
-          ; forget∈M to m-mono
-          ; mediate∈E to e-strong-epi
-          )
+        ( mediating to im
+        ; forget to m
+        ; mediate to e
+        ; forget∈M to m-mono
+        ; mediate∈E to e-strong-epi
+        )
 
       unit-im-invertible : C.is-invertible (η im)
-      unit-im-invertible =
-        unit-inv (□-out! m-mono)
+      unit-im-invertible = unit-inv (□-out! m-mono)
 
       RL[m]∘RL[e]-invertible
         : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
-      RL[m]∘RL[e]-invertible =
-        C.subst-is-invertible (R.expand (L.expand factors)) $
-        R.F-map-invertible $
-        is-reflective→left-unit-is-iso L⊣R reflective
+      RL[m]∘RL[e]-invertible = C.subst-is-invertible (R.expand (L.expand factors))
+        $ R.F-map-invertible $ is-reflective→left-unit-is-iso L⊣R reflective
 
       RL[e]-mono : C.is-monic (R.₁ (L.₁ e))
-      RL[e]-mono =
-        C.monic-cancell $
-        C.invertible→monic $
-        RL[m]∘RL[e]-invertible
+      RL[e]-mono = C.monic-cancell $ C.invertible→monic $ RL[m]∘RL[e]-invertible
 
       RL[e]-strong-epi : C.is-strong-epi (R.₁ (L.₁ e))
-      RL[e]-strong-epi =
-        C.strong-epi-cancelr _ _ $
-        C.subst-is-strong-epi (unit.is-natural _ _ _) $
-        C.strong-epi-∘ _ _
-          (C.invertible→strong-epi unit-im-invertible)
-          (□-out! e-strong-epi)
+      RL[e]-strong-epi = C.strong-epi-cancelr _ _
+        $ C.subst-is-strong-epi (unit.is-natural _ _ _)
+        $ C.strong-epi-∘ _ _
+            (C.invertible→strong-epi unit-im-invertible)
+            (□-out! e-strong-epi)
 
       RL[e]-invertible : C.is-invertible (R.₁ (L.₁ e))
-      RL[e]-invertible =
-        C.strong-epi+mono→invertible
-          RL[e]-strong-epi
-          RL[e]-mono
+      RL[e]-invertible = C.strong-epi+mono→invertible RL[e]-strong-epi RL[e]-mono
 
       RL[m]-invertible : C.is-invertible (R.₁ (L.₁ m))
-      RL[m]-invertible =
-        C.invertible-cancell RL[e]-invertible $
+      RL[m]-invertible = C.invertible-cancell RL[e]-invertible
         RL[m]∘RL[e]-invertible
 
       m-invertible : C.is-invertible m
-      m-invertible =
-        C.invertible-cancelr
-          (is-reflective→unit-right-is-iso L⊣R reflective)
-          (C.subst-is-invertible (sym (unit.is-natural _ _ _)) $
-             C.invertible-∘ RL[m]-invertible unit-im-invertible)
+      m-invertible = C.invertible-cancelr
+        (is-reflective→unit-right-is-iso L⊣R reflective)
+        (C.subst-is-invertible (sym (unit.is-natural _ _ _))
+          $ C.invertible-∘ RL[m]-invertible unit-im-invertible)
 
       unit-strong-epi : C.is-strong-epi (η x)
-      unit-strong-epi =
-        C.subst-is-strong-epi (sym factors) $
-        C.strong-epi-∘ _ _
-          (C.invertible→strong-epi m-invertible)
-          (□-out! e-strong-epi)
+      unit-strong-epi = C.subst-is-strong-epi (sym factors) $ C.strong-epi-∘ _ _
+        (C.invertible→strong-epi m-invertible)
+        (□-out! e-strong-epi)
 ```
 </details>
