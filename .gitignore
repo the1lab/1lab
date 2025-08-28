@@ -1,8 +1,10 @@
 .DS_Store
 
-
 # Canonical location for work-in-progress stuff
 wip/
+
+# I send people so many of these
+/*.patch
 
 # Developer configuration
 /Makefile
@@ -28,6 +30,13 @@ hie.yaml
 *.hi-boot
 *.o-boot
 /rubtmp*
+
+## Build system performance stuff
+*.eventlog*
+*.prof
+*.hp
+# Shake profiling reports
+/*.html
 
 # LaTeX stuff that occasionally gets generated
 *.log

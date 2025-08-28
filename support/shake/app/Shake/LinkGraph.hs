@@ -50,8 +50,8 @@ linksRules = do
     sa <- getSkipAgda
     agdaIdents :: [Identifier] <-
       if sa
-        then readJSONFile "_build/all-types.json"
-        else pure []
+        then pure []
+        else readJSONFile "_build/all-types.json"
 
     let agdaAnchors = Set.fromList [ Text.concat [filename, "#", ident]
                                    | Identifier ident anchor _type _tooltip <- agdaIdents
