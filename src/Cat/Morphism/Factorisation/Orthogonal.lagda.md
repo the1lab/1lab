@@ -16,96 +16,85 @@ module Cat.Morphism.Factorisation.Orthogonal where
 
 # Orthogonal factorisation systems {defines="orthogonal-factorisation-system"}
 
-Suppose you have some category $\cC$ and you, inspired by the wisdom
-of King Solomon, want to chop every morphism in half. An **orthogonal factorisation
-system** $(E, M)$ on $\cC$ will provide a tool for doing so, in a
-particularly coherent way. Here, $E$ and $M$ are predicates on the space
-of morphisms of $C$. First, we package the data of an $(E,
-M)$-factorisation of a morphism $f : a \to b$.
-
 <!--
 ```agda
 module _
-  {o ℓ ℓe ℓm}
+  {o ℓ ℓl ℓr}
   (C : Precategory o ℓ)
-  (E : Arrows C ℓe)
-  (M : Arrows C ℓm) where
+  (L : Arrows C ℓl)
+  (R : Arrows C ℓr) where
   private module C = Cat.Reasoning C
+  open Factorisation
 ```
 -->
 
-Though the archetype for an orthogonal factorisation system is the (epi,
-mono)-factorisation system on the category of sets^[Or, more generally,
-in every topos.], in the general setting there is no relation between
-epis/monos and the classes $E$ and $M$. Generically, we call the $E$-morphism
-in the factorisation `mediate`{.Agda}, and the $M$-morphism `forget`{.Agda}.
+Suppose you have some category $\cC$ and you, inspired by the wisdom
+of King Solomon, want to chop every morphism in half. An **orthogonal factorisation
+system** $(L, R)$ on $\cC$ will provide a tool for doing so, in a
+particularly coherent way. Here, $L$ and $R$ are predicates on the space
+of morphisms of $C$. First, we package the data of an [[$(L, R)$-factorisation|factorisation]]
+of a morphism $f : a \to b$.
 
 ```agda
-  open Factorisation
-    renaming
-      ( mid to mediating
-      ; left to mediate
-      ; right to forget
-      ; left∈L to mediate∈E
-      ; right∈R to forget∈M
-      )
+  record is-ofs : Type (o ⊔ ℓ ⊔ ℓl ⊔ ℓr) where
+    field
+      factor : ∀ {a b} (f : C.Hom a b) → Factorisation C L R f
 ```
 
 In addition to mandating that every map $f : a \to b$ factors as a map
-$f : a \xto{e} r(f) \xto{m}$ where $e \in E$ and $m \in M$, the classes
+$f : a \xto{l} r(f) \xto{r} b$ where $l \in L$ and $r \in R$, the classes
 must satisfy the following properties:
 
-- Every isomorphism is in both $E$ and in $M$.^[We'll see, in a bit, that
-the converse is true, too.]
+- Every isomorphism is in both $L$ and in $R$^[We'll see, in a bit, that
+the converse is true, too.].
 
-- Both classes are stable under composition: if $f \in E$ and $g \in E$,
-then $(g \circ f) \in E$ and the same for $M$
-
-```agda
-  record is-ofs : Type (o ⊔ ℓ ⊔ ℓe ⊔ ℓm) where
-    field
-      factor : ∀ {a b} (f : C.Hom a b) → Factorisation C E M f
-
-      is-iso→in-E : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ E
-      E-is-stable
-        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ E → g ∈ E
-        → (g C.∘ f) ∈ E
-
-      is-iso→in-M : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ M
-      M-is-stable
-        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ M → g ∈ M
-        → (g C.∘ f) ∈ M
-```
-
-Most importantly, the class $E$ is exactly the class of morphisms
-left-orthogonal to $M$: A map satisfies $f \in E$ if, and only if, for
-every $g \in M$, we have $f \ortho g$. Conversely, a map has $g \in M$
-if, and only if, we have $f \ortho g$ for every $f \in E$.
+- Both classes are stable under composition: if $f \in L$ and $g \in L$,
+then $(g \circ f) \in L$, and likewise for $R$.
 
 ```agda
-      E⊥M : Orthogonal C E M
+      is-iso→in-L : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ L
+      L-is-stable
+        : ∀ {a b c} (f : C.Hom b c) (g : C.Hom a b) → f ∈ L → g ∈ L
+        → (f C.∘ g) ∈ L
+
+      is-iso→in-R : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ R
+      R-is-stable
+        : ∀ {a b c} (f : C.Hom b c) (g : C.Hom a b) → f ∈ R → g ∈ R
+        → (f C.∘ g) ∈ R
 ```
+
+Most importantly, the class $L$ is [[orthogonal|orthogonality]] to $R$, i.e:
+for every $l \in L$ and $r \in R$, we have $l \ortho r$[^ortho].
+
+[^ortho]: As we shall shortly see, $L$ is actually *exactly* the class of
+morphisms that is left orthogonal to $R$ and vice-versa for $R$.
+
+```agda
+      L⊥R : Orthogonal C L R
+```
+
+The canonical example of an orthogonal factorisation system is the
+([[surjective|surjection-between-sets]], [[injective|embedding]])
+factorisation system on the [[category of sets]], which uniquely factors
+a function $f : A \to B$ through the image of $f$[^regular].
+
+[^regular]: This factorisation system is a special case of the
+([[strong epimorphism]], [[monomorphism]]) orthogonal factorisation
+system on a [[regular category]].
 
 <!--
 ```agda
 module _
-  {o ℓ ℓe ℓm}
+  {o ℓ ℓl ℓr}
   (C : Precategory o ℓ)
-  (E : Arrows C ℓe)
-  (M : Arrows C ℓm)
-  (fs : is-ofs C E M)
+  (L : Arrows C ℓl)
+  (R : Arrows C ℓr)
+  (fs : is-ofs C L R)
   where
 
   private module C = Cat.Reasoning C
   open is-ofs fs
   open Factorisation
-    renaming
-      ( mid to mediating
-      ; left to mediate
-      ; right to forget
-      ; left∈L to mediate∈E
-      ; right∈R to forget∈M
-      )
 ```
 -->
 
@@ -113,31 +102,31 @@ The first thing we observe is that factorisations for a morphism are
 unique. Working in precategorical generality, we weaken this to
 essential uniqueness: Given two factorisations of $f$ we exhibit an
 isomorphism between their replacements $r(f)$, $r'(f)$ which commutes
-with both the `mediate`{.Agda} morphism and the `forget`{.Agda}
+with both the `left`{.Agda} morphism and the `right`{.Agda}
 morphism. We reproduce the proof from [@Borceux:vol1, §5.5].
 
 ```agda
   factorisation-essentially-unique
-    : ∀ {a b} (f : C.Hom a b) (fa1 fa2 : Factorisation C E M f)
-    → Σ[ f ∈ fa1 .mediating C.≅ fa2 .mediating ]
-        ( (f .C.to C.∘ fa1 .mediate ≡ fa2 .mediate)
-        × (fa1 .forget C.∘ f .C.from ≡ fa2 .forget))
+    : ∀ {a b} (f : C.Hom a b) (fa1 fa2 : Factorisation C L R f)
+    → Σ[ f ∈ fa1 .mid C.≅ fa2 .mid ]
+        ( (f .C.to C.∘ fa1 .left ≡ fa2 .left)
+        × (fa1 .right C.∘ f .C.from ≡ fa2 .right))
   factorisation-essentially-unique f fa1 fa2 =
     C.make-iso (upq .fst) (vp'q' .fst) vu=id uv=id , upq .snd .fst , vp'q' .snd .snd
     where
 ```
 
 Suppose that $f = m \circ e$ and $f = m' \circ e'$ are both
-$(E,M)$-factorisations of $f$. We use the fact that $e \ortho m'$ and
+$(L,R)$-factorisations of $f$. We use the fact that $e \ortho m'$ and
 $e' \ortho m$ to get maps $u, v$ satisfying $um = m'$, $m'u = m$, $ve =
 e'$, and $e'v = e$.
 
 ```agda
       upq =
-        E⊥M _ (fa1 .mediate∈E) _ (fa2 .forget∈M) _ _
+        L⊥R _ (fa1 .left∈L) _ (fa2 .right∈R) _ _
           (sym (fa1 .factors) ∙ fa2 .factors) .centre
 
-      vp'q' = E⊥M _ (fa2 .mediate∈E) _ (fa1 .forget∈M) _ _
+      vp'q' = L⊥R _ (fa2 .left∈L) _ (fa1 .right∈R) _ _
         (sym (fa2 .factors) ∙ fa1 .factors) .centre
 ```
 
@@ -164,7 +153,7 @@ and since both $vu$ and the identity are in that diagonal, $uv =
 ```agda
       vu=id : upq .fst C.∘ vp'q' .fst ≡ C.id
       vu=id = ap fst $ is-contr→is-prop
-        (E⊥M _ (fa2 .mediate∈E) _ (fa2 .forget∈M) _ _ refl)
+        (L⊥R _ (fa2 .left∈L) _ (fa2 .right∈R) _ _ refl)
         ( upq .fst C.∘ vp'q' .fst
         , C.pullr (vp'q' .snd .fst) ∙ upq .snd .fst
         , C.pulll (upq .snd .snd) ∙ vp'q' .snd .snd
@@ -180,7 +169,7 @@ morphism are a proposition.
 ```agda
       uv=id : vp'q' .fst C.∘ upq .fst ≡ C.id
       uv=id = ap fst $ is-contr→is-prop
-        (E⊥M _ (fa1 .mediate∈E) _ (fa1 .forget∈M) _ _ refl)
+        (L⊥R _ (fa1 .left∈L) _ (fa1 .right∈R) _ _ refl)
         ( vp'q' .fst C.∘ upq .fst
         , C.pullr (upq .snd .fst) ∙ vp'q' .snd .fst
         , C.pulll (vp'q' .snd .snd) ∙ upq .snd .snd
@@ -190,7 +179,7 @@ morphism are a proposition.
 
 ```agda
   factorisation-unique
-    : ∀ {a b} (f : C.Hom a b) → is-category C → is-prop (Factorisation C E M f)
+    : ∀ {a b} (f : C.Hom a b) → is-category C → is-prop (Factorisation C L R f)
   factorisation-unique f c-cat x y = go where
     isop1p2 = factorisation-essentially-unique f x y
 
@@ -198,61 +187,61 @@ morphism are a proposition.
     q = Univalent.Hom-pathp-refll-iso c-cat {p = isop1p2 .fst} (isop1p2 .snd .snd)
 
     go : x ≡ y
-    go i .mediating = c-cat .to-path (isop1p2 .fst) i
-    go i .mediate = p i
-    go i .forget = q i
+    go i .mid = c-cat .to-path (isop1p2 .fst) i
+    go i .left = p i
+    go i .right = q i
 ```
 
 <!--
 ```agda
-    go i .mediate∈E = is-prop→pathp (λ i → is-tr (E · (p i))) (x .mediate∈E) (y .mediate∈E) i
-    go i .forget∈M = is-prop→pathp (λ i → is-tr (M · (q i))) (x .forget∈M) (y .forget∈M) i
+    go i .left∈L = is-prop→pathp (λ i → is-tr (L · (p i))) (x .left∈L) (y .left∈L) i
+    go i .right∈R = is-prop→pathp (λ i → is-tr (R · (q i))) (x .right∈R) (y .right∈R) i
     go i .factors =
       is-prop→pathp (λ i → C.Hom-set _ _ f (q i C.∘ p i)) (x .factors) (y .factors) i
 ```
 -->
 
-As a passing observation, note that the intersection $E \cap M$ is
+As a passing observation, note that the intersection $L \cap R$ is
 precisely the class of isomorphisms of $f$. Every isomorphism is in both
 classes, by the definition, and if a morphism is in both classes, it is
 orthogonal to itself, hence an isomorphism.
 
 ```agda
   in-intersection→is-iso
-    : ∀ {a b} (f : C.Hom a b) → f ∈ E → f ∈ M → C.is-invertible f
-  in-intersection→is-iso f f∈E f∈M = self-orthogonal→invertible C f $ E⊥M f f∈E f f∈M
+    : ∀ {a b} (f : C.Hom a b) → f ∈ L → f ∈ R → C.is-invertible f
+  in-intersection→is-iso f f∈L f∈R = self-orthogonal→invertible C f $ L⊥R f f∈L f f∈R
 
   in-intersection≃is-iso
-    : ∀ {a b} (f : C.Hom a b) → C.is-invertible f ≃ ((f ∈ E) × (f ∈ M))
+    : ∀ {a b} (f : C.Hom a b) → C.is-invertible f ≃ (f ∈ L × f ∈ R)
   in-intersection≃is-iso f = prop-ext!
-    (λ fi → is-iso→in-E f fi , is-iso→in-M f fi)
+    (λ fi → is-iso→in-L f fi , is-iso→in-R f fi)
     λ { (a , b) → in-intersection→is-iso f a b }
 ```
 
-The final observation is that the class $E$ is precisely $^\bot M$, the
-class of morphisms left-orthogonal to those in $M$. One direction is by
+The final observation is that the class $L$ is precisely $^\bot R$, the
+class of morphisms left-orthogonal to those in $R$. One direction is by
 definition, and the other is rather technical. Let's focus on the
 technical one.
 
 ```agda
-  E-is-⊥M
+  L-is-⊥R
     : ∀ {a b} (f : C.Hom a b)
-    → (f ∈ E) ≃ (∀ {c d} (m : C.Hom c d) → m ∈ M → Orthogonal C f m)
-  E-is-⊥M f =
-    prop-ext! (λ m f∈E m∈M → to f∈E m m∈M) from
+    → (f ∈ L) ≃ (∀ {c d} (m : C.Hom c d) → m ∈ R → Orthogonal C f m)
+  L-is-⊥R f =
+    prop-ext! (λ m f∈L m∈R → to f∈L m m∈R) from
     where
-      to : ∀ {c d} (m : C.Hom c d) → f ∈ E → m ∈ M → Orthogonal C f m
-      to m f∈E m∈M u v square = E⊥M f f∈E m m∈M u v square
+      to : ∀ {c d} (m : C.Hom c d) → f ∈ L → m ∈ R → Orthogonal C f m
+      to m f∈L m∈R u v square = L⊥R f f∈L m m∈R u v square
 
-      from : (∀ {c d} (m : C.Hom c d) → m ∈ M → Orthogonal C f m) → f ∈ E
-      from ortho = subst (_∈ E) (sym (fa .factors)) $ E-is-stable _ _ (fa .mediate∈E) m∈E
+      from : (∀ {c d} (m : C.Hom c d) → m ∈ R → Orthogonal C f m) → f ∈ L
+      from ortho = subst (_∈ L) (sym (fa .factors)) $ L-is-stable _ _ m∈L (fa .left∈L)
         where
 ```
 
-Suppose that $f$ is left-orthogonal to every $m \in M$, and write out
-the $(E,M)$-factorisation $f = m \circ e$. By a syntactic limitation in
+Suppose that $f$ is left-orthogonal to every $m \in R$, and write out
+the $(L,R)$-factorisation $f = m \circ e$. By a syntactic limitation in
 Agda, we start with the conclusion: We'll show that $m$ is in $E$, and
-since $E$ is closed under composition, so is $f$.  Since $f$ is
+since $L$ is closed under composition, so is $f$.  Since $f$ is
 orthogonal to $m$, we can fit it into a lifting diagram
 
 ~~~{.quiver}
@@ -273,7 +262,7 @@ satisfies $gf=e$ and $mg = \id$.
 
 ```agda
         fa = factor f
-        gpq = ortho (fa .forget) (fa .forget∈M) (fa .mediate) C.id (C.idl _ ∙ (fa .factors))
+        gpq = ortho (fa .right) (fa .right∈R) (fa .left) C.id (C.idl _ ∙ (fa .factors))
 ```
 
 We'll show $gm = \id$ by fitting it into a lifting diagram. But
@@ -295,18 +284,18 @@ needed.
 ~~~
 
 ```agda
-        gm=id : gpq .centre .fst C.∘ (fa .forget) ≡ C.id
+        gm=id : gpq .centre .fst C.∘ (fa .right) ≡ C.id
         gm=id = ap fst $ is-contr→is-prop
-          (E⊥M _ (fa .mediate∈E) _ (fa .forget∈M) _ _ refl)
+          (L⊥R _ (fa .left∈L) _ (fa .right∈R) _ _ refl)
           ( _ , C.pullr (sym (fa .factors)) ∙ gpq .centre .snd .fst
           , C.cancell (gpq .centre .snd .snd)) (C.id , C.idl _ , C.idr _)
 ```
 
 Think back to the conclusion we wanted to reach: $m$ is in $E$, so since
-$f = m \circ e$ and $E$ is stable, so is $f$!
+$f = m \circ e$ and $L$ is stable, so is $f$!
 
 ```agda
-        m∈E : fa .forget ∈ E
-        m∈E = is-iso→in-E (fa .forget) $
+        m∈L : fa .right ∈ L
+        m∈L = is-iso→in-L (fa .right) $
           C.make-invertible (gpq .centre .fst) (gpq .centre .snd .snd) gm=id
 ```

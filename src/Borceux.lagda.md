@@ -980,7 +980,7 @@ _ = in-subcategory→orthogonal-to-ηs
 ```agda
 _ = is-ofs
 _ = factorisation-essentially-unique
-_ = E-is-⊥M
+_ = L-is-⊥R
 _ = in-intersection≃is-iso
 ```
 -->
