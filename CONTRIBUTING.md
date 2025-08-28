@@ -542,8 +542,9 @@ instances, however.
 The [`H-Level`] class **should** be used, wherever possible, for
 deriving hlevels. As explained there, "leaf" instances should be
 declared in terms of a lower bound, not an exact level. Local
-assumptions, e.g. that some map is an embedding, overlap with one of the
-existing instances are generally not made into overlapping instances.
+assumptions, e.g. that some map is an embedding, generally overlap with
+existing instances, and should not be made into local overlapping
+instances.
 
 ```agda
 -- This will not work:
@@ -697,7 +698,7 @@ Widget = Widgets.Ob
 ```
 
 This applies beyond finitary algebraic theories on the category of sets:
-monads and comonads are defined in a similar way, with
+for example, monads and comonads are defined in a similar way, with
 `is-monad`/`Monad-on`/`Monad` records.
 
 #### Universal objects
@@ -708,10 +709,13 @@ up in layers similar to those of algebraic structures, though we
 generally stop at the "structure" layer, since (e.g.) "some product of
 unspecified objects in a fixed category" is not a very useful type.
 
-The property record **should** be a proposition. Good category theory
-ensures that this is always the case if you split the structure on the
-correct field. Generally, the property includes the universal map, but
-is parametrised over an entire *diagram* we're showing is universal.
+The property record **should** be a proposition, with no extra
+assumptions (strictness/univalence) imposed on the category; if the
+category is univalent, then the resulting structure **should** be a
+proposition, too. Good category theory ensures that this is always the
+case if you place the structure/property split on the correct field.
+Generally, the property includes the universal map, but is parametrised
+over an entire *diagram* we're showing is universal.
 
 ```agda
 record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ ℓ) where
