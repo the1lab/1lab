@@ -71,14 +71,14 @@ algebra $\alpha : M(A) \to A$ describes how to *evaluate* syntax trees
 that contain variables of type $A$. In other words, a monad $M$
 describes some class of inert computations that requires an environment
 to be evaluated, and a monad algebra describes the objects of $\cC$ that
-can function as environments[^1].
+can function as environments.[^1]
 
 [^1]: This becomes even more clear when we consider [[relative extension algebras]].
 
 Dually, a [[comonad]] $W$ can be interpreted as an inert environment
 that is waiting for a computation to perform, with the counit $\eps :
 W(A) \to A$ discarding the environment, and the comultiplication map
-$\delta : W(A) \to W(W(A))$ reifying the environment as a value[^2].
+$\delta : W(A) \to W(W(A))$ reifying the environment as a value.[^2]
 Similarly, a comonad coalgebra $\rho : A \to W(A)$ describes the objects
 of $\cC$ that can function as computations. More explicitly, the map
 $\rho : A \to W(A)$ can be thought of as a way of taking an $A$ and

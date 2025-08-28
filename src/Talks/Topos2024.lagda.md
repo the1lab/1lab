@@ -424,7 +424,7 @@ Univalence says $(A \is B)$ is equivalent to $(A \simeq B)$:
   + E.g. *exactly* two inhabitants $\ua(\id)$, $\ua(\operatorname{not})$ in $\{0, 1\} \is \{0, 1\}$
 
 Funny *looking* consequences: e.g. $\bZ \simeq \bN$, and "$\bZ$ is a
-group", so transport lets us conclude "$\bN$ is a group."
+group", so transport lets us conclude "$\bN$ is a group".
 
 Implications for library design?
 

@@ -792,7 +792,7 @@ read as saying something like "the set of booleans is equal to itself in
 two ways". As mentioned before, we reserve the terminology "$a$ and $b$
 are equal" for when there is *at most one* $a \is b$; instead, the
 situation with `Bool`{.Agda} should be read as "there are two
-*identifications* of `Bool`{.Agda} with itself."
+*identifications* of `Bool`{.Agda} with itself".
 
 By composing our new `transport`{.Agda} with the `ap`{.Agda} from the
 last section, we can derive the promised indiscernibility of identicals,

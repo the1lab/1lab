@@ -209,7 +209,7 @@ We define a [[functor]] from concrete groups to abstract groups.  The
 object mapping is given by taking the `fundamental group`{.Agda
 ident=π₁B}. Since the type underlying a concrete group is a groupoid,
 this is precisely the [[loop space]] construction, which we already know
-is functorial--- and takes pointed maps to group homomorphisms.
+is functorial --- and takes pointed maps to group homomorphisms.
 
 ```agda
 π₁F : Functor (ConcreteGroups ℓ) (Groups ℓ)

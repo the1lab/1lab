@@ -14,7 +14,7 @@ In many of our developments (primarily, but not limited to, those in
 logic), we have a notion of a type $T$ being a *syntactic presentation*
 for some other, *semantic*, type $S$. In keeping with convention, we
 want to overload the notation $\sem{e}$ to mean "the semantic value of
-$e$." This can be achieved with a simple notation class:
+$e$". This can be achieved with a simple notation class:
 
 ```agda
 record ⟦⟧-notation {ℓ} (A : Type ℓ) : Typeω where

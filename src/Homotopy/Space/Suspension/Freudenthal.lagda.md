@@ -22,7 +22,7 @@ module Homotopy.Space.Suspension.Freudenthal where
 
 # Freudenthal suspension theorem {defines="freudenthal-suspension-theorem"}
 
-Recall that, if $A$ is a [[pointed type]][^point], the unit of the
+Recall that, if $A$ is a [[pointed type]],[^point] the unit of the
 [[suspension–loop space adjunction]] is a map $\sigma : A \to \Loop
 \Susp A$, denoted `suspend`{.Agda} in code. If we're considering $A$
 based at some other point $x : A$, we will write $\sigma_x$ instead.

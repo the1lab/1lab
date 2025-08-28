@@ -237,7 +237,7 @@ definitionally "exposing" that $\Loop^{k + n}(A)$ is a $k$-fold
 iterated path type as soon as $k$ is a literal number, but it does
 significantly complicate showing that the lifting $\Loop^{1 + n}(f)$
 agrees with $\Loop^n(\Loop f)$--- they don't even live in the same
-type--- and this identification turns out to be a key component in
+type --- and this identification turns out to be a key component in
 Whitehead's lemma.
 
 We can, however, recursively identify $\Loop^{1+n}(A)$ with

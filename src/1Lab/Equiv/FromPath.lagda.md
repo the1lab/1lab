@@ -32,8 +32,8 @@ private
   bad-transport-is-equiv = transp (λ i → is-equiv (coe0→i P i)) i0 id-equiv
 ```
 
-While `is-equiv`{.Agda} is a proposition--- and thus the particular
-proof does not matter propositionally--- Agda is still a programming
+While `is-equiv`{.Agda} is a proposition --- and thus the particular
+proof does not matter propositionally --- Agda is still a programming
 language, the data of an equivalence includes the inverse function, and
 the inverse we obtain from this construction is *not* simply transport
 along the inverse of $P$: it has an extra reflexive transport along

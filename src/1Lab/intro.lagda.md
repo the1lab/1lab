@@ -145,7 +145,7 @@ ordered pair $(a, b)$.
   \bb{R}$, hence we know that the rules of function types can be
   used with $f$. However, when introducing a more complex object, we're
   forced to break into informality and conventional shorthand: "Let G be
-  a group". In HoTT, we can directly write $G : \rm{Group}$[^allgroups],
+  a group". In HoTT, we can directly write $G : \rm{Group}$,[^allgroups]
   which tells us that the rules for the type of groups apply to $G$.
 
 [^allgroups]: As usual, we do not have a type of _all_ groups. Instead,
@@ -326,7 +326,7 @@ elimination rule "meets" an introduction rule, we must describe how they
 interact.
 
 In the case of $\lambda$-abstraction meeting function application, this
-interaction is called _$\beta$-reduction_[^betaredex], and it tells us
+interaction is called _$\beta$-reduction_,[^betaredex] and it tells us
 how to compute a function application. This is the usual rule for
 applying functions defined by rules: The value of $(\lambda x.\ e) e'$
 is $e$, but with $e'$ replacing $x$ whenever $x$ appears in $e$. Using
@@ -498,7 +498,7 @@ that any two $(i, q)$ and $(i',q') \in \pi_1^*(y)$ must be equal.
 The point of the entire preceding discussion is that the notions of
 "injections into $B$" and "maps $B \to \Omega$" are equivalent, and,
 more importantly, _this is enough to characterise the object
-$\Omega$_[^subobjclass].
+$\Omega$._[^subobjclass]
 
 Let me break up this paragraph and re-emphasise, since it'll be the key
 idea later: A **type of propositions** is precisely **a classifier for

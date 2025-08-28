@@ -31,7 +31,7 @@ private
 Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the
 general yoga of [bifunctors] we think of as combining a contravariant
 action $F(-,x) : \cC\op \to \cD$ and a covariant action $F(x,-) :
-\cC \to \cD$ of $\cC$ on $\cD$[^action]. As a concrete
+\cC \to \cD$ of $\cC$ on $\cD$.[^action] As a concrete
 example, we could take $\cC = \bf{B}R$, the 1-object [$\Ab$-category]
 associated to a [ring] $R$ --- then the functors $F(-,x)$ and $F(x,-)$
 would be left- and right- $R$-modules, respectively. In fact, let us

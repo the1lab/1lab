@@ -32,9 +32,9 @@ do not *definitionally* end up back with $x$.
 
 This turns into a compound annoyance when we're dealing with partial
 operators, like those of a [[partial combinatory algebra]], since we
-want to ergonomically build complex expressions--- which entails
-'lifting' a partial operator $A \to A \to \zap A$ to a binary operation
-on $\zap A$ using the monadic structure of $\zap(-)$--- but the
+want to ergonomically build complex expressions --- which entails
+"lifting" a partial operator $A \to A \to \zap A$ to a binary operation
+on $\zap A$ using the monadic structure of $\zap(-)$ --- but the
 properties that control these operators only apply when the domains are
 actually defined. We would thus have to insert tons of mediating
 identifications between a (defined) partial element and the inclusion of

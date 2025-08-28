@@ -88,7 +88,7 @@ the evaluation morphism, and so on), then define a sound normalisation
 function for these. Note that since this is a *meta*program, our syntax
 for morphisms does not need to actually respect the laws of a CCC (i.e.
 it does not need to be a higher inductive type). It's just a big
-*indexed* inductive type with constructors for all the 'primitive'
+*indexed* inductive type with constructors for all the "primitive"
 morphism formers for a [[terminal object]], [[products]], and
 [[exponential objects]], with an additional constructor for *morphisms
 from the base category*.

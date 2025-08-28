@@ -79,10 +79,10 @@ adjoints]] to its reindexing functors.  To show this, it will suffice to
 construct natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
 $\cE_{x}(-,u^{*}(-))$. However, we have already shown that
 $\cE_{y}(u_{*}(-),-)$ and $\cE_{x}(-,u^{*}(-))$ are both naturally
-isomorphic to $\cE_{u}(-,-)$[^proof], so all we need to do is compose these
+isomorphic to $\cE_{u}(-,-)$,[^proof] so all we need to do is compose these
 natural isomorphisms!
 
-[^proof]: see `opfibration→hom-iso`{.Agda} and `fibration→hom-iso`{.Agda}.
+[^proof]: See `opfibration→hom-iso`{.Agda} and `fibration→hom-iso`{.Agda}.
 
 ```agda
 module _ (bifib : is-bifibration) where

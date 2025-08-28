@@ -34,7 +34,7 @@ open S cart cc
 
 We show that, in a [[Cartesian closed]] category $\cC$, for any object
 $S$, the functor $[-,S] : \cC\op \to \cC$ is [[adjoint]] to itself on
-the right--- meaning that its left adjoint is its opposite functor.
+the right --- meaning that its left adjoint is its opposite functor.
 
 ```agda
 [-,_] : Ob → Functor (C ^op) C

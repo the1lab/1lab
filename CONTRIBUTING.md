@@ -34,7 +34,7 @@ everyones' cycles on style quibbles.
 ## General guidelines
 
 British spelling **must** be used throughout: homotopy fib**re**,
-fib**red** category, colo**u**red operad, etc--- both in prose and in
+fib**red** category, colo**u**red operad, etc --- both in prose and in
 Agda.
 
 Headers **should** be written in sentence case, *not* title case, except
@@ -47,7 +47,7 @@ that you configure your editor to display a vertical ruler on both the
 
 Asterisks **must** be used instead of underlines for both emphasis and
 strong emphasis. [ATX-style] (`### foo`) headers **must** be used
-instead of [setext-style] (`=====`) headers. Headers **must** not have a
+instead of [setext-style] (`=====`) headers. Headers **must not** have a
 closing run of `#`s.
 
 [setext-style]: https://spec.commonmark.org/0.31.2/#setext-headings
@@ -56,12 +56,34 @@ closing run of `#`s.
 Footnotes should be written with the understanding that, on the primary
 (desktop) layout, they will be turned into sidenotes. The content of a
 footnote **must** be a complete paragraph, capitalised and punctuated as
-such.
+such. A footnote marker **must** be attached *after* any punctuation
+*attached* to the same word --- including periods, commas, and quotation
+marks; but not dashes. Having footnote markers adjacent to closing
+parentheses should be avoided.
 
 Footnotes **may** include arbitrary block-level elements, including
 display-level maths and commutative diagrams. The content of a footnote
-**must be indented by 4 spaces** if it is to contain multiple blocks.
+**must be indented by 4 spaces**, if it is to contain multiple blocks.
 Follow the indentation-over-alignment rule.
+
+Both enclosing and coordinating dashes **must** be written as
+em-dashes with spaces on either side, and they **must** be written in
+ASCII in the source code: `A --- b`. We make no use of en-dashes.
+
+Double quotation marks **must** always be used. Clause-final punctuation
+**should not** be placed inside quotation marks:
+
+```markdown
+<!-- Always -->
+However, we can give an intuitive explanation: "A type is a thing that things can be".
+
+<!-- Never -->
+However, we can give an intuitive explanation: "A type is a thing that things can be."
+```
+
+The abbreviations "i.e." and "e.g." **may** be freely used, but they
+**must** be punctuated as indicated. If they appear before a comma,
+include both the period and the comma (i.e., like this.)
 
 ## Commit guidelines
 
@@ -142,7 +164,6 @@ general structure:
   is *between* paragraphs) and an inline-level element (if it *belongs
   to* a paragraph). This is reflected in the source code by whether the
   maths is separated with blank lines.
-
 
 - HTML `<details>` tags **should** be used both for the purposes of
   eliding uninteresting formalisation and **may** be used for including
@@ -467,16 +488,35 @@ similar definitions.
 
 </details>
 
-Record types that carry identities **should** be `no-eta-equality`. In
-general, `no-eta-equality` records should be preferred over
-`eta-equality`, as this gives us better control over which telescopes
-the conversion checker will look into. Record constructors **may** be
-named, especially `eta-equality` record constructors; but, in general,
-`record` literals (and `record where` syntax) **should** be preferred.
-
 Modules in the `Cat` and `Order` namespaces **should** use `Cat.Prelude`
 over `1Lab.Prelude`. Modules in the `1Lab` namespace **should not**
 import `1Lab.Prelude`.
+
+Generalizable variables **must not** be exported. Their use is
+encouraged to clean up long telescopes. Keep in mind that instance
+search does not work in contexts where there are indeterminate types. In
+these situations (e.g., theorems about list membership), binders
+**should** be explicitly annotated.
+
+Local instances of record and "reasoning" modules **may** *only* be
+exported from record declarations *if* they are instantiated with one of
+the fields. Keep in mind that this will increase the time spent checking
+the record, proportional to how many definitions are in the instantiated
+module. In general, large `record` declarations **should** export only
+instances of other `record` modules, and not "reasoning" modules.
+
+Instantiated module aliases **must not** be exported from parametrised
+anonymous modules.
+
+Top-level modules **may** be parametrised. There are reasons to avoid
+this: if you open the module *without* parameters, any instances defined
+therein will be unusable. This is frequently a problem when defining
+constructions on categories, where the new type of morphisms should be
+visibly parametrised by the category it is defined over, but there are
+cases where we need to mention this type applied to distinct categories,
+and we need an [`H-Level`] instance at both instantiations. In cases
+like this, generalizable variables and/or anonymous parametrised modules
+**should** be used instead.
 
 ### Notation classes
 
@@ -553,6 +593,13 @@ instances for type families defined by recursion, see
 [`hlevel-proj-is-iterative-embedding`]: https://1lab.dev/Data.Set.Material.html#hlevel-proj-is-iterative-embedding
 
 ### Record types
+
+Record types that carry identities **should** be `no-eta-equality`. In
+general, `no-eta-equality` should be preferred over `eta-equality`, as
+this gives us better control over which telescopes the conversion
+checker will look into. Record constructors **may** be named, especially
+`eta-equality` record constructors; but, in general, `record` literals
+(and `record where` syntax) **should** be preferred.
 
 Constructors of `no-eta-equality` records **may** be marked `INLINE`.
 Agda will turn `INLINE` record constructors into coclauses when they

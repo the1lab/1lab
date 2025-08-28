@@ -89,7 +89,7 @@ infinitary disjunctions are [[colimits]]; The infinite distributive law
 corresponds to the statement that the [[pullback functors]] preserve
 [[colimits]], which follows from the pullback functors having [[right
 adjoints]] (i.e. the category is [locally cartesian closed]). Up to a
-couple of small omissions[^1], a category satisfying these assumptions
+couple of small omissions,[^1] a category satisfying these assumptions
 is exactly a **[Grothendieck topos]**, and every topos classifies a
 particular theory, in the sense that, letting $G$ and $\cE$ be topoi, a
 geometric morphism $G \to \cE$ is equivalent to an $\cE$-model in $G$.

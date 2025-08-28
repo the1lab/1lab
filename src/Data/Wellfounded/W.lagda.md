@@ -473,7 +473,7 @@ If the two labels are distinct, then `w` and `v` must be distinct.
 
 On the other hand, suppose the two labels `x` and `y` are equal. Our next move
 is to exhaustively check that all the subtrees are equal, which is possible
-as all branching factors are finite[^1].
+as all branching factors are finite.[^1]
 
 [^1]: This call to `holds? (∀ bx → f bx ≡ g bx)` involves a few
 layers of instance resolution. Agda starts by using the `Listing→Π-dec`

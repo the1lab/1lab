@@ -203,7 +203,7 @@ to the ones defined by quotient, which we have already characterised as
 satisfying the universal property, above. These are the _inductive
 integers_: defined as a particular binary coproduct of natural numbers.
 To avoid the problem of having "two zeroes", one of the summands is
-tagged "negative successor," rather than "successor", so that `negsuc 0`
+tagged "negative successor", rather than "successor", so that `negsuc 0`
 indicates the number $-1$.
 
 We have already proven that the inductive integers have a successor
