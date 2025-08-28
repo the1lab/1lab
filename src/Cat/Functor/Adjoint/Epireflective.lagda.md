@@ -138,7 +138,7 @@ is reflective!
       unit-strong-mono =
         C.strong-mono-cancell (R.₁ (L.₁ f)) (η x) $
         C.subst-is-strong-mono (unit.is-natural _ _ _) $
-        C.strong-mono-∘ (η (R.₀ a)) f
+        C.∘-is-strong-monic
           (C.invertible→strong-mono (is-reflective→unit-right-is-iso L⊣R reflective))
           f-strong-mono
 ```
@@ -361,7 +361,7 @@ diagram chase; we will spare the innocent reader the details.
       RL[e]-strong-epi =
         C.strong-epi-cancelr _ _ $
         C.subst-is-strong-epi (unit.is-natural _ _ _) $
-        C.strong-epi-∘ _ _
+        C.∘-is-strong-epic
           (C.invertible→strong-epi unit-im-invertible)
           e-strong-epi
 
@@ -386,7 +386,7 @@ diagram chase; we will spare the innocent reader the details.
       unit-strong-epi : C.is-strong-epi (η x)
       unit-strong-epi =
         C.subst-is-strong-epi (sym factors) $
-        C.strong-epi-∘ _ _
+        C.∘-is-strong-epic
           (C.invertible→strong-epi m-invertible)
           e-strong-epi
 ```

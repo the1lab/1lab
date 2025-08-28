@@ -115,12 +115,12 @@ for exposition.
 [strong epis compose]: Cat.Morphism.Strong.Epi.html#properties
 
 ```agda
-strong-mono-∘
-  : ∀ {a b c} (f : Hom b c) (g : Hom a b)
+∘-is-strong-monic
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
   → is-strong-mono f
   → is-strong-mono g
   → is-strong-mono (f ∘ g)
-strong-mono-∘ f g (f-mono , f-str) (g-mono , g-str) =
+∘-is-strong-monic (f-mono , f-str) (g-mono , g-str) =
   lifts→is-strong-mono (∘-is-monic f-mono g-mono) $
     ∘r-lifts-class C Epis
       (orthogonal→lifts-left-class C Epis f-str)

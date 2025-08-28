@@ -344,7 +344,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
 
 ```agda
         rem₅ : C.is-strong-epi d×d
-        rem₅ = C.subst-is-strong-epi rem₄ (C.strong-epi-∘ _ _ rem₃ rem₂)
+        rem₅ = C.subst-is-strong-epi rem₄ (C.∘-is-strong-epic rem₃ rem₂)
 
         rem₆ : C.is-strong-epi p
         rem₆ = r.stable _ _ rem₅ pb.has-is-pb
