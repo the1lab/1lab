@@ -38,9 +38,9 @@ $$
 $$,
 and is always defined when applied to a single argument --- that is, it
 lets us compute 'functions of at least one argument' by arbitrary
-recursion, such that *the recursive function itself* is always
-defined--- though of course *applying* the recursive function might
-still lead to something undefined.
+recursion, such that *the recursive function itself* is always defined
+--- though of course *applying* the recursive function might still lead
+to something undefined.
 
 We introduce an intermediate combinator `` `X ``{.Agda}, and define
 `` `Z ``{.Agda} as the self-application of `` `X ``{.Agda}.

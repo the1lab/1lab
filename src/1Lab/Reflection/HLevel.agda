@@ -74,19 +74,39 @@ tactic arguments to decompose (Y x .it) into an application of (.it) +
 the argument (Y x).
 -}
 
--- | How to decompose an application of a record selector into something
--- which might have an h-level.
+-- | An "H-Level instance" for neutrals headed by the given name.
+--
+-- Generally used for record fields, but can in theory be used for
+-- anything which gets quoted into a 'def'.
+
 record hlevel-projection (proj : Name) : Type where
   field
     has-level : Name
     -- ^ The name of the h-level lemma. It must be sufficient to apply
-    -- this name to the argument (see get-argument below); arg specs are
-    -- not supported.
-    get-level : Term → TC Term
-    -- ^ Given an application of proj, what h-level does this
-    -- type have? Necessary for computing lifts.
+    -- this to the "relevant" argument, see 'get-argument' below. In
+    -- practice, this means that has-level lemmas take a single, visible
+    -- argument.
+
     get-argument : List (Arg Term) → TC Term
-    -- ^ Extract the argument out from under the application.
+    -- ^ Given /the arguments/ to a neutral application of 'proj',
+    -- return the "relevant" argument.
+    --
+    -- If the argument list is of invalid shape, which should be
+    -- impossible, you can simply @typeError []@ to abort.
+    --
+    -- If 'proj' is a record field, this will generally be the record
+    -- *value*, but in general it may be any single datum computed from
+    -- the argument list which is sufficient for lemma pointed to by
+    -- 'has-level' to do its work.
+
+    get-level : Term → TC Term
+    -- ^ Given /the inferred type/ of the "relevant" argument, return a
+    -- term representing the hlevel of that particular instance.
+    --
+    -- In most cases, this will be a constant function returning a pure
+    -- literal natural number; the extra generality is needed in e.g.
+    -- 'hlevel-proj-n-type' below.
+
 
 {-
 Using projections

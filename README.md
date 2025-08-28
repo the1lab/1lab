@@ -91,7 +91,7 @@ You can then use cabal-install to build and run our specific version of
 Agda and our Shakefile:
 
 ```bash
-$ cabal install Agda
+$ cabal install Agda -foptimise-heavily
 # This will take quite a while!
 
 $ cabal v2-run shake -- -j --skip-agda

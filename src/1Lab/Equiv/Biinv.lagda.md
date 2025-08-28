@@ -41,7 +41,7 @@ $\isequiv(f)$ to be "coherent" is:
 > - Being an equivalence implies being an isomorphism ($\isequiv(f)
 \to \isiso(f)$); Taken together with the first point we may
 summarise: "Being an equivalence and being an isomorphism are logically
-equivalent."
+equivalent".
 >
 > - Most importantly, being an equivalence _must_ be a proposition.
 

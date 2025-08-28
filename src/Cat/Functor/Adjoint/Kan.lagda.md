@@ -19,7 +19,7 @@ module Cat.Functor.Adjoint.Kan where
 # Adjoints preserve Kan extensions {defines="adjoints-preserve-kan-extensions"}
 
 Let $L \adj R$ be a pair of [[adjoint functors]]. It's well-known that
-right adjoints preserve limits[^rapl], and dually that left adjoints
+right adjoints preserve limits,[^rapl] and dually that left adjoints
 preserve colimits, but it turns out that this theorem can be made a bit
 more general: If $G$ is a [[left|left Kan extension]] (resp.
 [[right|right Kan extension]]) extension of $F$ along $p$, then $LG$ is

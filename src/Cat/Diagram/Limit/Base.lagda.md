@@ -999,7 +999,7 @@ encounters the following [alternative definition]:
 
 > "$F$ creates limits of $\rm{Dia}$ if it preserves and reflects limits
 > of $\rm{Dia}$, and furthermore if $F \circ \rm{Dia}$ has a
-> limit then $\rm{Dia}$ has a limit."
+> limit then $\rm{Dia}$ has a limit".
 
 While this may seem equivalent at first glance, there is a subtle
 difference: this definition says that $F$ unconditionally preserves

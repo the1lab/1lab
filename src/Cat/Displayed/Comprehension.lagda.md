@@ -104,7 +104,7 @@ pullback square.
 
 [fibred]: Cat.Displayed.Functor.html
 
-We call such a [[fibred functor]] a **comprehension structure** on $\cE$[^1].
+We call such a [[fibred functor]] a **comprehension structure** on $\cE$.[^1]
 
 [^1]: Other sources call such fibrations **comprehension categories**,
 but this is a bit of a misnomer, as they are structures on fibrations!

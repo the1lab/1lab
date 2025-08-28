@@ -75,7 +75,7 @@ case $\mu(-,a_0)$ is the identity.
 -->
 
 Using either unit law (we choose $\lambda$), we can show that $\mu$
-extends to a secondary 'composition' operation on the [[loop space]]
+extends to a secondary "composition" operation on the [[loop space]]
 $\Loop A$. This operation is also unital on both the left and the
 right, with the side we *didn't* choose having a slightly more
 complicated argument that involves the coherence $\lambda_{a_0} =
@@ -95,7 +95,7 @@ complicated argument that involves the coherence $\lambda_{a_0} =
     p                            ∎
 ```
 
-Moreover, this new operation satisfies an 'interchange' law, in that it
+Moreover, this new operation satisfies an "interchange" law, in that it
 preserves path composition in both variables. By an incoherent version
 of the [[Eckmann-Hilton argument]], this means that composition of loops
 in $\Loop A$ is commutative. This implies that the only connected
@@ -218,8 +218,8 @@ to showing the identity function is an equivalence.
 We can specialise the discussion above to the [[circle]], in which case
 we already have many of the components we need. Note that
 `always-loop`{.Agda} gives us, for every point $y : S^1$, a loop at $y$;
-but loops are nothing but maps from $S^1$, so we get a 'multiplication'
-on the circle. We also define the 'inverse' map on $S^1$.^[
+but loops are nothing but maps from $S^1$, so we get a "multiplication"
+on the circle. We also define the "inverse" map on $S^1$.^[
 If one thinks of the circle as the set of unit
 complex numbers with base point $1$, it is useful to think of
 `mulS¹`{.Agda} as complex multiplication and of `invS¹`{.Agda} as

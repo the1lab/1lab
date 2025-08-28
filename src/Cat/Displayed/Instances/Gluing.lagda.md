@@ -116,7 +116,7 @@ commutes.
 We will now show that $\Gl(F)$ is a family of Cartesian categories
 *over* $\cD$. In particular, it has a [[total terminal object]] as soon
 as $F$ preserves the terminal object, and [[total products]] as soon as
-$F$ preserves products. The structure is "componentwise," in that the
+$F$ preserves products. The structure is "componentwise", in that the
 domain of (e.g.) the total terminal object is the terminal object in
 $\cC$, while the morphisms are induced by $F$'s comparison maps.
 

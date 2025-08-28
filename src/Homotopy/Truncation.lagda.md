@@ -34,7 +34,7 @@ private variable
 Inspired by the [equivalence] between loop spaces and maps out of
 spheres, although _not_ using it directly, we can characterise
 [[h-levels]] in terms of maps of spheres, too. The idea is that, since a
-map $f : S^n \to A$ is equivalently _some_ loop in $A$[^someloop], we
+map $f : S^n \to A$ is equivalently _some_ loop in $A$,[^someloop] we
 can characterise the _trivial_ loops as the constant functions $S^n \to
 A$. Correspondingly, if every function $S^n \to A$ is trivial, this
 means that all $n$-loops in $A$ are trivial, so that $A$ is

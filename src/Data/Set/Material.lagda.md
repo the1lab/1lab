@@ -236,7 +236,7 @@ instance
 ```
 -->
 
-We can define a 'constructor' for `V`{.Agda} which takes the supremum of
+We can define a "constructor" for `V`{.Agda} which takes the supremum of
 an embedding into `V`{.Agda}. We could then go on to show that
 `supⱽ`{.Agda} actually *does* generate `V`{.Agda}, i.e. exhibit an
 induction principle saying that covering `supⱽ`{.Agda} suffices to cover
@@ -280,7 +280,7 @@ open mkV public
 
 We will, however, define a principle of "$\in$-induction", saying that,
 if you can show $P(a)$ under the assumption that $P(x)$ for every $x \in
-a$, then $P$ holds of arbitrary sets--- in order words, that the $\in$
+a$, then $P$ holds of arbitrary sets --- in order words, that the $\in$
 relation is [[well-founded]]. As usual, this implies that the membership
 relation is irreflexive.
 
@@ -324,7 +324,7 @@ lookup S .snd = injective→is-embedding! (!-inj S)
 The "type-of-members" projection from $V$ allows us to think of it as a
 *universe* of [[h-sets|set]], though one which, unlike the built-in
 universes of Agda, requires us to explicitly *decode* an element of the
-universe into a type[^tarski]. To make this interpretation explicit, we
+universe into a type.[^tarski] To make this interpretation explicit, we
 will sometimes refer to the type-of-members projection by `El`{.Agda},
 which is the traditional name for the decoding family of a Tarski
 universe.
@@ -435,7 +435,7 @@ material set: if you fed it the same set twice, it would end up
 constructing "$\{x, x\}$", and we can not show that the `member`{.Agda}
 function for this pathological example is an injection. However, we
 *can* write a function that packs two *distinct* values into a material
-set--- forming $\{x, y\}$ under the assumption that $x \ne y$.
+set --- forming $\{x, y\}$ under the assumption that $x \ne y$.
 
 ```agda
 twoⱽ : (x y : V ℓ) → x ≠ y → V ℓ

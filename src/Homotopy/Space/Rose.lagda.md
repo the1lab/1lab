@@ -161,7 +161,7 @@ the diagram
 ```
 
 To show that these functions are inverses at the base point, we do some
-more case analysis--- in one direction, this "case analysis" is path
+more case analysis --- in one direction, this "case analysis" is path
 induction, which immediately shows that decoding is inverse to encoding;
 in the other, we show that transport along `Cover`{.Agda} takes
 composition of paths to the corresponding operations on the group

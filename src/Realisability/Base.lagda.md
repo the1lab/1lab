@@ -88,8 +88,8 @@ private
 
 We can now investigate the basic rules of this realisability logic,
 which work regardless of what the chosen PCA $\bA$ is. First, we have
-that entailment is reflexive (the 'axiom' rule) and transitive (the
-'cut' rule). These are witnessed by the identity *program* and, if
+that entailment is reflexive (the "axiom" rule) and transitive (the
+"cut" rule). These are witnessed by the identity *program* and, if
 $\tt{f}$ witnesses $Q \vdash R$ and $\tt{g}$ witnesses $P \vdash Q$,
 then the composition
 $$

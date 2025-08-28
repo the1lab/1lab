@@ -101,7 +101,7 @@ asm-ev {X = X} {Y = Y} = to-assembly-hom record where
 
 The currying of an assembly map is slightly more involved to formalise,
 since we have multiple realisability relations to contend with. However,
-conceptually, it suffices to consider the 'outermost' level, i.e.
+conceptually, it suffices to consider the "outermost" level, i.e.
 realisability in $[Y,Z]$.
 
 ```agda

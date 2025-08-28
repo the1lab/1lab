@@ -336,12 +336,13 @@ functors is a categorification of the fact that monotone maps compose.
 <!--
 ```agda
   module F∘ where
-    module C = Precategory C
-    module D = Precategory D
-    module E = Precategory E
+    private
+      module C = Precategory C
+      module D = Precategory D
+      module E = Precategory E
 
-    module F = Functor F
-    module G = Functor G
+      module F = Functor F
+      module G = Functor G
 ```
 -->
 
@@ -360,16 +361,16 @@ the witnesses that $F$ and $G$ are functorial.
     abstract
       F-id : {x : C.Ob} → F₁ (C.id {x}) ≡ E.id {F₀ x}
       F-id {x} =
-          F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
-          F.F₁ D.id        ≡⟨ F.F-id ⟩
-          E.id             ∎
+        F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
+        F.F₁ D.id        ≡⟨ F.F-id ⟩
+        E.id             ∎
 
       F-∘ : {x y z : C.Ob} (f : C.Hom y z) (g : C.Hom x y)
           → F₁ (f C.∘ g) ≡ (F₁ f E.∘ F₁ g)
       F-∘ f g =
-          F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
-          F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
-          F₁ f E.∘ F₁ g             ∎
+        F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
+        F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
+        F₁ f E.∘ F₁ g             ∎
 
     comps : Functor _ _
     comps .Functor.F₀ = F₀

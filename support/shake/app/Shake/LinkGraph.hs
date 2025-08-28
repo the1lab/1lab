@@ -43,9 +43,16 @@ linksRules = do
   anchors <- newCache \() -> do
     allModules <- getAllModules
     let moduleAnchors = Set.fromList [ Text.pack (mod <.> "html") | mod <- Map.keys allModules ]
+
     searchData :: [SearchTerm] <- readJSONFile "_build/html/static/search.json"
     let searchAnchors = Set.fromList (map idAnchor searchData)
-    agdaIdents :: [Identifier] <- readJSONFile "_build/all-types.json"
+
+    sa <- getSkipAgda
+    agdaIdents :: [Identifier] <-
+      if sa
+        then pure []
+        else readJSONFile "_build/all-types.json"
+
     let agdaAnchors = Set.fromList [ Text.concat [filename, "#", ident]
                                    | Identifier ident anchor _type _tooltip <- agdaIdents
                                    , let (filename, _) = Text.break (== '#') anchor ]

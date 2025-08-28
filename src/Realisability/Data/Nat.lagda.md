@@ -134,7 +134,7 @@ $$
 
 First we define a worker function which is parametrised over both the
 'recursive reference' and all the arguments of the recursor (the zero
-and successor 'cases' and the number itself). We can then apply `` `Z
+and successor "cases" and the number itself). We can then apply `` `Z
 ``{.Agda} to everything to 'tie the knot'.
 
 Note that, to ensure everything is properly defined, our `` `worker

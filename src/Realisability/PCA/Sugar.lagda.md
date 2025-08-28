@@ -97,7 +97,7 @@ abstraction with the length of the context.
 ```
 
 Finally, we introduce another recursive predicate to be filled in by
-instance search indicating whether a term always denotes--- these are
+instance search indicating whether a term always denotes --- these are
 the inclusions of elements from $\bA$ and top-level abstractions.
 
 ```agda

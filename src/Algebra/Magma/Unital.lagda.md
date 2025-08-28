@@ -29,7 +29,7 @@ identity element should be part of the record `is-unital-magma` instead
 of its type signature.
 
 However, since magma homomorphisms do not automatically preserve the
-identity element[^1], it is part of the type signature for
+identity element,[^1] it is part of the type signature for
 `is-unital-magma`{.Agda}, being considered _structure_ that a magma may be
 equipped with.
 

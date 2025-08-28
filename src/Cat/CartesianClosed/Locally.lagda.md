@@ -68,7 +68,7 @@ module _ {o ℓ} (C : Precategory o ℓ) (fp : Finitely-complete C) where
 ```
 -->
 
-The idea of exponentials in a slice is pretty complicated[^sets], so
+The idea of exponentials in a slice is pretty complicated,[^sets] so
 fortunately, there is an alternative characterisation of local cartesian
 closure, which is informed by $\cC$'s _internal type theory_.
 
@@ -119,7 +119,7 @@ $$
 
 </div>
 
-which, by abstracting away the substitution of the argument[^app],
+which, by abstracting away the substitution of the argument,[^app]
 expresses that there is an isomorphism between derivations $\Gamma
 \vdash f : \Pi_{(x : A)} B(x)$ and $\Gamma, x : A \vdash f(x) : B(x)$.
 If we squint, this says precisely that $\Pi$ is a [[right adjoint]] to

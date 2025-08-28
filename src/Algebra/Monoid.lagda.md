@@ -27,7 +27,7 @@ identity exists, then it is unique; In this sense, "being a monoid"
 could be considered an "axiom" that semigroups may satisfy.
 
 However, since semigroup homomorphisms do not automatically preserve the
-identity element[^1], it is part of the type signature for
+identity element,[^1] it is part of the type signature for
 `is-monoid`{.Agda}, being considered _structure_ that a semigroup may be
 equipped with.
 

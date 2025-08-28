@@ -121,15 +121,15 @@ background, ethnicity, gender identity, or gender expression. **HoTT is
 for everyone, and we are committed to fostering a kind, welcoming
 environment**.
 
-Even though the 1Lab is maintained primarily by [the authors][authors],
-it is first and foremost a community project. The actual formalisation
-work takes place on [GitHub], but ongoing discussion happens on
-[Discord]. We welcome all contributions, though we would kindly ask that
-anyone submitting a substantial change discuss it on Discord first.
+The 1Lab is a community project. You can contribute code on [GitHub] and
+connect with us on [Discord] or in the `#1lab` channel on [Libera
+Chat](https://libera.chat/). We welcome all contributions, but we kindly
+ask that more substantial contributions have their design hashed out in
+one of the chatrooms first.
 
 [GitHub]: https://github.com/the1lab/1lab
 [Discord]: https://discord.gg/eQDNM26uKP
-[authors]: Authors.html
+[Libera Chat]: https//libera.chat
 
 We accept contributions in all areas of mathematics, not just the ones
 which already feature, or the ones listed above. Our lack of results in

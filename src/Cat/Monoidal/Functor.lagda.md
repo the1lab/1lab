@@ -98,7 +98,7 @@ Lax-monoidal-functor : Type (oc ⊔ ℓc ⊔ od ⊔ ℓd)
 Lax-monoidal-functor = Σ (Functor C D) Lax-monoidal-functor-on
 ```
 
-A **monoidal functor**, or **strong monoidal functor**[^strong], is
+A **monoidal functor**, or **strong monoidal functor**,[^strong] is
 then simply a lax monoidal functor whose structure morphisms are
 [[invertible]].
 

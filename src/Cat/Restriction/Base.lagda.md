@@ -15,7 +15,7 @@ Unfortunately, partial functions are somewhat tedious to work with,
 as they aren't really functions; they're relations! Furthermore,
 we are often interested in *computable* partial functions; this means that
 we can not identify partial functions $A \rightharpoonup B$ with total functions
-$A \to \rm{Maybe}(B)$[^1]. This leaves us with a few possible approaches.
+$A \to \rm{Maybe}(B)$.[^1] This leaves us with a few possible approaches.
 The most first approach that may come to mind is to encode partial functions
 $A \rightharpoonup B$ as total functions from a subobject $X \mono A$.
 Alternatively, we could find some construction that classifies

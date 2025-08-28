@@ -34,7 +34,7 @@ products and functions.
 :::
 
 <details>
-<summary>We'll need an 'observational' equality on types, both to show
+<summary>We'll need an "observational" equality on types, both to show
 that the types of a given $\lambda$-signature are a [[set]], and later
 to show this also of further constructions on syntax.</summary>
 

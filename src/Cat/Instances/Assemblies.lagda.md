@@ -85,7 +85,7 @@ Therefore, when making natural-language statements about
 $\thecat{Asm}(\bA)$, we generally assume that $\bA$ is nontrivial. A
 statement like "the category $\thecat{Asm}(\bA)$ is not
 [[univalent|univalent category]]" should be read as saying "univalence
-of $\thecat{Asm}(\bA)$ implies $\bA$ is trivial."
+of $\thecat{Asm}(\bA)$ implies $\bA$ is trivial".
 :::
 
 ```agda
@@ -113,7 +113,7 @@ see [[booleans in a pca]] for the details of the construction. This is
 not the only possible choice: we could, for example, say that the value
 `true`{.Agda} is implemented by the *program* $\tt{false}$ (and
 vice-versa). This results in a genuinely different assembly *over
-`Bool`{.Agda}*[^bool], though with the same denotational data.
+`Bool`{.Agda}*,[^bool] though with the same denotational data.
 
 [^bool]:
     The assembly `𝟚`{.Agda} and its "flipped" variant obtained by
@@ -162,7 +162,7 @@ subst⊩ X {x} hx p = subst (_∈ X .realisers x) (sym p) hx
 ```
 -->
 
-To understand the difference--- and similarity--- between the ordinary
+To understand the difference --- and similarity --- between the ordinary
 assembly of booleans and the swapped booleans, we define a morphism of
 assemblies $(X, \Vdash_X) \to (Y, \Vdash_Y)$ to be a function $f : X \to
 Y$ satisfying the [[*property*|propositional truncation]] that there

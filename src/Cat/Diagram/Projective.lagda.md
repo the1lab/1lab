@@ -97,7 +97,7 @@ all-projective→epis-split pro e = do
 
 This suggests that projective objects are quite hard to come by
 in constructive foundations! For the most part, this is true:
-constructively, the category of sets has very few projectives[^1], and
+constructively, the category of sets has very few projectives,[^1] and
 many categories inherit their epimorphisms from $\Sets$. However,
 it is still possible to have projectives if epis in $\cC$ are extremely
 structured, or there are very few maps out of some $P$.

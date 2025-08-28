@@ -60,7 +60,7 @@ So far, we have said nothing new: this is simply functoriality. The
 interesting question is going *the other way*: if we have the local
 information $s_i : A(U_i)$, can we glue them together to get the global
 information $s : A(U)$? We can't *always*: this might be a failure of
-the functor[^failure], or of the $s_i$. While it might be a bit
+the functor,[^failure] or of the $s_i$. While it might be a bit
 disheartening that there are notions of "information" which can not be
 put together locally, these failures tell us that we have a fruitful
 concept at hand.

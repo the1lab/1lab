@@ -40,7 +40,7 @@ theory, by passing to the co[presheaf] categories $\cC \to \Sets$.
 We wish to relativize this to an arbitrary base category $\cC$, not just
 $\thecat{Sets}$. Specifically, if $\bC$ is a category internal to $\cC$,
 we want to define "functor from $\bC \to \cC$" --- which we call an
-**outer functor**[^1]. We will employ the fibration/family
+**outer functor**.[^1] We will employ the fibration/family
 correspondence: a family of sets $B \to \Sets$ is the same as a function
 $E \to B$ --- and we know how to relativise functions!
 
@@ -209,7 +209,7 @@ of maps into a limit.
 </details>
 
 The _contravariant_ internal $\hom$ functor is defined by duality, which
-carries "pullback along $\src$" to "pullback along $\tgt$.".
+carries "pullback along $\src$" to "pullback along $\tgt$".
 This outer functor plays the role of the Yoneda embedding.
 
 ```agda

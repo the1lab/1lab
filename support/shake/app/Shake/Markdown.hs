@@ -22,12 +22,13 @@ import qualified Data.Text as Text
 import qualified Data.Set as Set
 
 import Data.Digest.Pure.SHA
+import Data.List (intersperse)
 import Data.Foldable
 import Data.Monoid (Ap(..))
 import Data.Aeson (encodeFile)
 import Data.Maybe
 import Data.Text (Text)
-import Data.Char
+import Data.Char hiding (Space)
 
 import qualified System.Directory as Dir
 
@@ -315,14 +316,20 @@ renderMarkdown authors references modname baseUrl digest markdown@(Pandoc (Meta 
   template <- traverse get templateName
 
   let
+    pack = Span mempty . pure . Str
+
+    authors' :: [Inline]
     authors' = case authors of
-      [] -> "Nobody"
-      [x] -> x
-      _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
+      []  -> [Str "Nobody"]
+      [x] -> [Str x]
+      _   -> intersperse Space (map (pack . (<> ",")) (init authors))
+        <> [Space, Str "and", Space, pack (last authors <> ".")]
+
+    authors'' = either (error . show) id . runPure . writeHtml5String def $ Pandoc mempty [Plain authors']
 
     context = Context $ Map.fromList
       [ ("is-index",     toVal (modname == "index"))
-      , ("authors",      toVal authors')
+      , ("authors",      toVal authors'')
       , ("reference",    toVal references)
       , ("base-url",     toVal (Text.pack baseUrl))
       , ("digest",       toVal digest)

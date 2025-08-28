@@ -81,10 +81,10 @@ language, programs are a type of value. However, there are still
 situations where it is important to be clear *which* of these two roles
 a given $x : \bA$ is serving.
 
-Applying a program to a given value may not result in a value---
+Applying a program to a given value may not result in a value ---
 execution could diverge, for example. We think of an arbitrary
 application like $\tt{f}~ \tt{x}$ as a **computation**, which may or may
-not produce a value--- if it does produce a value, then it comes from
+not produce a value --- if it does produce a value, then it comes from
 exactly one value in $\bA$.
 
 :::{.definition #values-in-a-pca alias="programs-in-a-pca"}
@@ -179,7 +179,7 @@ $$ \tt{K} = \langle x \rangle \langle y \rangle x $$.
 
 We prefer taking the abstraction elimination procedure as a primitive
 since it works better with Agda's type inference, in particular when
-working against an arbitrary PCA--- but a [[combinatorially complete]]
+working against an arbitrary PCA --- but a [[combinatorially complete]]
 partial applicative structure is a PCA in our sense.
 :::
 
