@@ -17,7 +17,7 @@ module Cat.Morphism.Factorisation.Orthogonal where
 # Orthogonal factorisation systems {defines="orthogonal-factorisation-system"}
 
 Suppose you have some category $\cC$ and you, inspired by the wisdom
-of King Solomon, want to chop every morphism in half. A **factorisation
+of King Solomon, want to chop every morphism in half. An **orthogonal factorisation
 system** $(E, M)$ on $\cC$ will provide a tool for doing so, in a
 particularly coherent way. Here, $E$ and $M$ are predicates on the space
 of morphisms of $C$. First, we package the data of an $(E,
@@ -34,13 +34,11 @@ module _
 ```
 -->
 
-Note that while the archetype for a factorisation system is the (epi,
+Though the archetype for an orthogonal factorisation system is the (epi,
 mono)-factorisation system on the category of sets^[Or, more generally,
-in every topos.], so that it's very hard _not_ to refer to these things
-as images, it is _not_ the case, in general, nothing is required about
-the interaction of epis and monos with the classes $E$ and $M$.
-Generically, we call the $E$-morphism in the factorisation
-`mediate`{.Agda}, and the $M$-morphism `forget`{.Agda}.
+in every topos.], in the general setting there is no relation between
+epis/monos and the classes $E$ and $M$. Generically, we call the $E$-morphism
+in the factorisation `mediate`{.Agda}, and the $M$-morphism `forget`{.Agda}.
 
 ```agda
   open Factorisation
