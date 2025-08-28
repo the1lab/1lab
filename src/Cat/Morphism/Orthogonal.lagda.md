@@ -19,11 +19,12 @@ module Cat.Morphism.Orthogonal where
 
 # Orthogonal maps {defines="left-orthogonal right-orthogonal orthogonality"}
 
-A pair of maps $f : a \to b$ and $g : c \ to d$ are called
+A pair of maps $f : a \to b$ and $g : c \to d$ are called
 **orthogonal**, written $f \ortho g$^[Though hang tight for a note on
 formalised notation], if for every $u, v$ fitting into a commutative
 diagram like
 
+~~~{.quiver}
 \[\begin{tikzcd}
   a && b \\
   \\
@@ -119,8 +120,8 @@ itself, then it is an isomorphism:
       gpq = f⊥f id id (idl _ ∙ intror refl) .centre
 ```
 
-If $f$ is an epi or $g$ is a mono, then the mere existence of a
-_any_ lift is enough to establish that $f \bot g$.
+If $f$ is an epi or $g$ is a mono, then the mere existence of
+_any_ lift is enough to establish that $f \ortho g$.
 
 ```agda
   left-epic-lift→orthogonal
@@ -167,7 +168,7 @@ other morphism.
     invertible-right-lifts C g g-inv
 ```
 
-Phrased another way, the class of isomorphisms are left and right orthogonal
+Phrased another way, the class of isomorphisms is left and right orthogonal
 to every other class.
 
 ```agda
