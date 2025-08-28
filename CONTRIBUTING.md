@@ -313,7 +313,8 @@ column 136!)
 [dual of the modular law]: https://github.com/the1lab/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
 
 In laid-out syntax, **two spaces of indentation should be used**,
-instead of alignment, whenever possible. There are some situations
+instead of alignment, whenever possible. We refer to moving to the next
+multiple-of-two indentation as "a step". There are some situations
 where Agda's grammar *mandates* deeper indentation, particularly when
 layout stacking and `module` declarations are involved. Specific rules
 for laying out function bodies and declaration signatures are made
@@ -367,17 +368,24 @@ like this, generalizable variables and/or anonymous parametrised modules
 
 ### Formatting function definitions
 
+These rules apply to the right-hand sides of clauses (top-level, `let`
+and `where` function definitions); to the bodies of trailing `λ`
+expressions; and to the clauses in a `λ where` expression (extended
+lambda).
+
 In most situations, the RHS of a clause **should**, to the extent
 possible, be on the same line as the LHS; see [formatting equational
 reasoning](#formatting-equational-reasoning) for the primary exception.
 The conflicts this may cause with the indentation-over-alignment rule
 are to be resolved as follows:
 
-* If the RHS is a `let` expression, break *before* `let`.
+* If the RHS is a `let` expression, break *before* `let`; but see the
+  [exception for short `let`s](#exceptional-formatting-for-lets) below.
 * If the RHS is a `record` expression, break *after* `record`.
-* If the RHS is a `λ where` or `record where` expression, then if there
-  is a where clause, break *before* `λ`/`record`; otherwise, break
-  *after* `where`.
+* If the RHS is a `λ where` or `record where` expression, break *before*
+  `λ`/`record` if the clause being defined has a `where` declaration
+  (this is required by Agda's syntax); and break *after* `where`
+  otherwise.
 
 ```agda
 -- Never (bindings backwards relative to `let` keyword):
@@ -404,12 +412,11 @@ f x =
 If the RHS is an application, the LHS line **should** include the head
 function, and as many arguments as possible, respecting the rules above
 if there is a trailing block argument. Arguments placed on continuing
-lines **must** be indented two spaces farther than the function
-definition. If the head function can't be placed on the LHS line because
-of the length limit, the entire body **should** be moved to a continuing
-line, which itself **must** be indented two spaces. In this situation,
-the subsequent arguments **should** be indented *four* spaces relative
-to the function definition.
+lines **must** be indented a step relative to the clause. If the head
+function can't be placed on the LHS line because of the length limit,
+the entire body **should** be moved to a continuing line, which itself
+**must** be indented a step. In this situation, the subsequent arguments
+**should** be indented *two* steps (relative to the clause).
 
 ```agda
 -- If possible, prefer:
@@ -430,8 +437,8 @@ RL[e]-invertible =
 ```
 
 When broken over multiple lines, binary operators (including the `$`
-application operators) **should** always be on the *starts* of
-continuing lines.
+application operators) **should** always be on the *start* ("leading")
+of continuing lines, rather than on the end of the line above ("trailing").
 
 ```agda
 -- Always:
@@ -474,11 +481,47 @@ unit-strong-mono = C.strong-mono-cancell (R.₁ (L.₁ f)) (η x)
     f-strong-mono
 ```
 
+If the entire body is operator applications, you **may** indent the
+*first* line enough to bring all the operands into alignment (which,
+depending on the length of the operator, may not be an integer number of
+indentation steps), while keeping the subsequent lines aligned a single
+step ahead of the clause.
+
+```agda
+-- Okay (discretionary extra indentation for first line of body):
+stability-var {Γ = Γ , σ} {τ = τ} (pop x) =
+    (⟦ ⟦ x ⟧ⁿ ⟧₁ .map .is-natural Γ (Γ , σ) (drop stop) $ₚ idsec Γ)
+  ∙ ap (⟦ τ ⟧₀ .dom .F₁ (drop stop)) (stability-var x)
+  ∙ sym (Nfa.reflectₙ (normalisation τ))
+
+-- Also okay (normal rule for continuing arguments applies)
+stability-var {Γ = Γ , σ} {τ = τ} (pop x) =
+  (⟦ ⟦ x ⟧ⁿ ⟧₁ .map .is-natural Γ (Γ , σ) (drop stop) $ₚ idsec Γ)
+    ∙ ap (⟦ τ ⟧₀ .dom .F₁ (drop stop)) (stability-var x)
+    ∙ sym (Nfa.reflectₙ (normalisation τ))
+```
+
+#### Exceptional formatting for `let`s
+
+If a function body is a `let` expression with a single binding, and
+short enough for the *entire* `let` construct to fit in a single line,
+you **may** write it as a "header" for the body of the function. In this
+case, the `let` should appear in its own line, indented a step relative
+to the clause. The body **should not** be indented a step relative to
+the `let` keyword: it should start aligned with the `let`.
+
+```agda
+-- Okay:
+foo =
+  let bar = 123 in
+  bar
+```
+
 #### Formatting equational reasoning
 
 Exceptionally, a proof by equational reasoning **should** always start
-on a new line, indented two spaces relative to the function definition.
-Two styles are allowed depending on the length of the expressions being
+on a new line, indented a step relative to the function definition.  Two
+styles are allowed depending on the length of the expressions being
 equated.
 
 * You **should** have the equations to the right of the expressions, with
@@ -493,7 +536,7 @@ equated.
 
 * Alternatively, if the expressions being compared are themselves very
   long, you **may** have the equations on lines *between* the expressions,
-  in which case they should be indented an additional two spaces.
+  in which case they should be indented an additional step.
 
     ```agda
       proof =
@@ -582,6 +625,16 @@ foo = {! some very long code !}
 foo = {! some very long code !}
   module foo where
   bar : ...
+```
+
+The line break after the `where` keyword **may** be skipped if the
+resulting layout respects the line length limit.
+
+```agda
+-- Both okay:
+foo = {! pretty short code !} where bar = 123
+foo = {! some extremely long code that that works out to just about 85 characters !}
+  where bar = 123
 ```
 
 Helper functions that may need to be used in client code, but have very
@@ -693,9 +746,9 @@ Triangle : ∀ {ℓ} {A : Type ℓ} {x y z : A}
 
 If you have a long chain of named binders, you **may** either break
 these onto multiple lines with arrows (which should be aligned to the
-colon as above), or without. If you choose to break them without lines,
-the binders **must** be indented another two spaces, which brings them
-into alignment with the binders on the preceding line:
+colon as above), or without. If you choose to break them without arrows,
+the binders **must** be indented another step, which brings them into
+alignment with the binders on the preceding line:
 
 ```agda
 -- Okay:
