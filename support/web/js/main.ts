@@ -1,4 +1,3 @@
-import "./depgraph";
 import "./equations";
 import "./highlight-hover";
 import "./search";

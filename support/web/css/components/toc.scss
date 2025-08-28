@@ -38,6 +38,8 @@ aside#toc {
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
+
+    padding-inline-end: 0.5em;
   }
 
   a[href]#logo.hover-highlight {
@@ -82,6 +84,16 @@ aside#toc {
 
     a:hover {
       text-decoration: underline;
+    }
+  }
+
+  .author-list {
+    white-space: initial;
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: center;
+    > span {
+      text-wrap: nowrap;
     }
   }
 

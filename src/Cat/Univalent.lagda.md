@@ -25,19 +25,21 @@ isomorphic objects are identified. This is a generalisation of the
 in the same way: asking for a canonically defined map to be an
 equivalence.
 
-We define a precategory to be univalent when it can be equipped when its
-family of isomorphisms is an [[identity system]].
+We define a category to be **univalent** when its family of isomorphisms
+is an [[identity system]]. As usual, this natively cubical phrasing
+gives us slightly better definitional control over both the paths and
+the coherences that go into making a category univalent, but by a
+standard argument about identity systems, this is equivalent to the
+"book" notion.
 
 ```agda
 is-category : ∀ {o h} (C : Precategory o h) → Type (o ⊔ h)
 is-category C = is-identity-system (Isomorphism C) (λ a → id-iso C)
 ```
 
-This notion of univalent category corresponds to the usual notion ---
-which is having the canonical map from paths to isomorphisms be an
-equivalence --- by the following argument: Since the types `(Σ[ B ∈ _ ]
-C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `path→iso`{.Agda}
-on total spaces is an equivalence; Hence `path→iso` is an equivalence.
+<details>
+<summary>We set aside some helpers specifically for working with the
+assumption that a category is univalent.</summary>
 
 ```agda
 path→iso
@@ -60,6 +62,7 @@ module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
     using ( iso→path ; J-iso ; iso→path-id ; iso→path→iso ; path→iso→path )
     public
 ```
+</details>
 
 Furthermore, since the h-level of the relation behind an identity system
 determines the h-level of the type it applies to, we have that the space

@@ -25,7 +25,7 @@ import Data.IORef
 import Development.Shake.Classes
 import Development.Shake
 
-import Shake.Options (getSkipTypes, getWatching, getBaseUrl)
+import Shake.Options (getSkipTypes, getWatching, getBaseUrl, getSkipAgda)
 
 import Agda.Compiler.Backend hiding (getEnv)
 import Agda.Interaction.FindFile (SourceFile(..))
@@ -100,7 +100,10 @@ agdaRules :: Rules ()
 agdaRules = do
   -- Add an oracle to compile Agda
   ref <- liftIO $ newIORef Nothing
-  _ <- addOracleHash \(MainCompileQ ()) -> compileAgda ref
+  _ <- addOracleHash \(MainCompileQ ()) -> do
+    sa <- getSkipAgda
+    when sa $ error $ "--skip-agda build depended on MainCompileQ"
+    compileAgda ref
 
   -- Add a 'projection' oracle which compiles Agda and then uses the per-module
   -- hash instead. This ensures we only rebuild HTML/types when the module

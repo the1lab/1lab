@@ -1,27 +1,157 @@
 Contributing
 ------------
 
-Thanks for taking the time to contribute!
+The 1Lab accepts contributions primarily through pull requests on
+GitHub.
 
-This file holds the conventions we use around the codebase, but they're
-guidelines, and not strict rules: If you're unsure of something, hop on
-[the Discord](https://discord.gg/Zp2e8hYsuX) and ask there, or open [a
-discussion thread](https://github.com/the1lab/1lab/discussions)
-if that's more your style.
+* Familiarise yourself with the guidelines below.
+
+* If you're opening a larger pull request, it's a good idea to make
+  yourself available for IM discussion on [Discord] or on IRC (`#1lab`
+  on [Libera Chat]).
+
+  It's generally a good idea for your PR to consist of a series of
+  individually-reviewable commits. If these adhere to the [commit
+  guidelines](#commit-guidelines), your PR will be merged rebase. It
+  will otherwise be merged squash.
+  If you have a bunch of disconnected commits, you can try an
+  interactive rebase to arrive at a more logical structure.
+
+* If you're not using Nix, make sure you're using the [correct
+  Agda commit] to build your code: we're generally on a bleeding-edge
+  version, and testing new language features "in the wild".
+
+[correct Agda commit]: https://github.com/the1lab/1lab/blob/main/support/nix/dep/Agda/github.json#L6
+[Discord]: https://discord.gg/Zp2e8hYsuX
+[Libera Chat]: https://libera.chat
+
+We welcome all contributions, but please understand that the 1Lab has a
+very small team of part-time maintainers. It might take a while for your
+PR to be reviewed. Adhering to the guidelines below will help the review
+process focus on the things that actually matter instead of wasting
+everyones' cycles on style quibbles.
 
 ## General guidelines
 
-British spelling **must** be used throughout: Homotopy fib**re**,
-fib**red** category, colo**u**red operad, etc --- both in prose and in
+British spelling **must** be used throughout: homotopy fib**re**,
+fib**red** category, colo**u**red operad, etc--- both in prose and in
 Agda.
 
 Headers **should** be written in sentence case, *not* title case, except
-when the concept they introduce is itself commonly written in title case
-(e.g. "Structure Identity Principle").
+when the concept they introduce is itself most commonly written in title
+case (e.g. "Structure Identity Principle").
 
-Prose **should** be kept to a width of 72 characters.
+Prose **should** be kept to a width of 72 characters. It is recommended
+that you configure your editor to display a vertical ruler on both the
+72nd and 85th columns, for wrapping prose and code respectively.
 
-The first time a concept is introduced, it **should** appear in bold.
+Asterisks **must** be used instead of underlines for both emphasis and
+strong emphasis. [ATX-style] (`### foo`) headers **must** be used
+instead of [setext-style] (`=====`) headers. Headers **must** not have a
+closing run of `#`s.
+
+[setext-style]: https://spec.commonmark.org/0.31.2/#setext-headings
+[ATX-style]:    https://spec.commonmark.org/0.31.2/#atx-headings
+
+Footnotes should be written with the understanding that, on the primary
+(desktop) layout, they will be turned into sidenotes. The content of a
+footnote **must** be a complete paragraph, capitalised and punctuated as
+such.
+
+Footnotes **may** include arbitrary block-level elements, including
+display-level maths and commutative diagrams. The content of a footnote
+**must be indented by 4 spaces** if it is to contain multiple blocks.
+Follow the indentation-over-alignment rule.
+
+## Commit guidelines
+
+The first line of a commit **should** have the form `<type>: <short description>`.
+Please try to keep the subject line to less than 50 characters (the
+`gitcommit` filetype in `vim` will highlight characters past this in
+red). The following `<type>`s are commonly used:
+
+* `defn`: Generically used for new maths with accompanying prose.
+
+  The short description should just be what you added, as a noun phrase.
+
+* `chore`: Repository maintenance and mathematically uninteresting refactors.
+
+  The short description should be present tense and imperative mood
+  ("move loop spaces to their own file", not "moved loop spaces to their
+  own file" or "moves loop spaces to their own file").
+
+* `web`: Changes to the website infrastructure, including the build system.
+
+  The short description should be in the imperative mood, as above.
+
+* `fixup`: Generally squashed away.
+
+The commit body **may** include further elaboration on what is being
+done, if necessary; simple changes can get away with no commit body at
+all, but in that case please mention them in the pull request. The
+commit body **should** be line-wrapped at 72 characters.
+
+The build system understands `Co-Authored-By` lines, and will consider
+anyone mentioned there as an author when generating the page's sidebar
+credits.
+
+## The structure of a page
+
+Every literate Agda file on the 1Lab **must** follow the following
+general structure:
+
+- All import statements **must** appear at the top of the module, within
+  an HTML comment.
+
+  Imports **must** grouped by the first component of the module name,
+  with the groups sorted alphabetically, with modules _within_ the
+  groups sorted by length, longest-first. These rules apply separately
+  for `open import`, `import` and `open` statements, which
+  **must** appear in this order.
+
+  The tool `support/sort-imports.hs` **should** be used to update code
+  to comply to these rules. It can be run as a standalone executable if
+  `stack` is available, or with Nix using the following command:
+
+  ```sh
+  nix run --experimental-features nix-command -f . sort-imports
+  ```
+
+  The modules to format are given as command-line arguments. If none are
+  given, the default is to format everything.
+
+- The top-level module name, together with any parameters, **must**
+  appear before any prose (incl. the initial header), and **must not**
+  be commented.
+
+  If the top-level module has a long telescope, *it* **may** be
+  commented out, but the keyword `module` and the module name **must**
+  still appear on the page.
+
+  Opening and defining private local modules **may** appear before the
+  initial header, but **must** appear in an HTML comment if so.
+
+- A level-1 heading **must** be present, with a readable page name. If
+  no title is provided, this will be used as the title for the page.
+
+- Pandoc block-level elements (*including* comments) **must** always
+  have a blank line between them, even if Pandoc would naturally insert a
+  paragraph break there.
+
+  Keep in mind that display maths can act as both a block-level (if it
+  is *between* paragraphs) and an inline-level element (if it *belongs
+  to* a paragraph). This is reflected in the source code by whether the
+  maths is separated with blank lines.
+
+
+- HTML `<details>` tags **should** be used both for the purposes of
+  eliding uninteresting formalisation and **may** be used for including
+  digressions/alternative perspectives/extra details in the prose.
+
+  Sidenotes **should** be preferred for elaborating on parts of a
+  sentence without interrupting the block-level flow of an article.
+
+### Callouts
 
 If some text needs to call the reader's attention, it **should** use one
 of the "highlight" classes, which have names corresponding to each of the
@@ -44,7 +174,7 @@ attribute rather than a class:
 
     </details>
 
-## Links
+### Wikilinks
 
 For internal links, wikilinks **should** be used. A wikilink is written
 `[[title]]`, or `[[title|anchor]]`. The concrete anchor to which a
@@ -61,7 +191,24 @@ Link targets, called definitions, can be introduced in two ways:
   ```
   ::: {.definition #anchor-1 alias="anchor-2"}
   [the definition]
+  :::
   ```
+
+The contents of a definition `<div>` are saved as a "fragment", and will
+be displayed to the user when they hover any link which points to that
+definition; write them with this in mind. The definiens **must** appear,
+in bold, within the definition block.
+
+If a term has a definition, it **should** be linked to the first time it
+appears under each level-2 header. It **must** be linked the first time
+it appears inside a definition `<div>`; the frontend supports recursive
+popups.
+
+Definitions **may** point to a commented-out `<div>`, so that (they by
+default) they don't interrupt the flow of the page. These commented-out
+div definitions **should** be preferred over header definitions. They
+**should** be written in traditional mathematical
+"definition-theorem-proof" style.
 
 Wikilink targets are case insensitive, and get "mangled" for whitespace:
 the anchor `least-upper-bound` can be referred to as `[[least upper
@@ -69,7 +216,7 @@ bound]]`, or `[[lub|least upper bound]]` if different textual content is
 required, or `[[lub|least-upper-bound]]`. White space **should** be used
 instead of dashes at use sites.
 
-## Linking identifiers
+### Linking to Agda names
 
 An Agda identifier that _has been referred to_ in the current module can
 be referred to in prose using `` `name`{.Agda} `` (an inline code block
@@ -97,7 +244,7 @@ Mixfix operators **must** use their "full name" to be picked up: ``
 `_∘_`{.Agda} `` is the proper way to refer to the composition operator,
 even if it only ever appears infix in the code.
 
-## Commutative diagrams
+### Commutative diagrams
 
 Our build process supports converting arbitrary bits of LaTeX to SVGs to
 be referred to from pages. [These LaTeX packages] are supported, but the
@@ -128,46 +275,12 @@ separately since it requires a shim to work on KaTeX.
 
 [the preamble]: https://github.com/the1lab/1lab/blob/main/src/preamble.tex
 
-## The structure of a page
+If commutative diagrams on the page should be rendered as part of a
+paragraph, i.e. they logically belong to the sentence, you can add the
+classes `attach-above`, `attach-below` and/or `attach-around` to remove
+margin above, below, or in both block directions.
 
-Every literate Agda file on the 1Lab **must** follow the following
-general structure:
-
-- All import statements **must** appear at the top of the module, within
-  an HTML comment.
-
-  Imports **must** grouped by the first component of the module name,
-  with the groups sorted alphabetically, with modules _within_ the
-  groups sorted by length, longest-first. These rules apply separately
-  for `open import`, `import` and `open` statements, which
-  **must** appear in this order.
-
-  The tool `support/sort-imports.hs` **should** be used to update code
-  to comply to these rules. It can be run as a standalone executable if `stack` is
-  available, or with Nix using the following command:
-
-  ```sh
-  nix run --experimental-features nix-command -f . sort-imports
-  ```
-
-  The modules to format are given as command-line arguments.
-
-- The top-level module name, together with any parameters, **must**
-  appear before any prose (incl. the initial header), and **must not**
-  be commented.
-
-- Opening and defining private local modules **may** appear before the
-  initial header, but **must** appear in an HTML comment if so.
-
-- A level-1 heading **must** be present, with a readable page name. If
-  no title is provided, this will be used as the title for the page.
-
-A perfect example of these guidelines is [`Order.Semilattice.Free`],
-since it has four different import blocks.
-
-[`Order.Semilattice.Free`]: https://github.com/the1lab/1lab/blob/main/src/Order/Semilattice/Free.lagda.md
-
-## Agda code style
+## The structure of a module
 
 Agda code **should** be kept to less than 85 columns (this is informed
 by how much code can fit on a 1920x1080 screen without a scroll bar). In
@@ -177,22 +290,195 @@ the line length limit, since those spans can be removed by the user.
 
 [dual of the modular law]: https://github.com/the1lab/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
 
-Types **should** be defined directly in `Type _`, if possible, then
-later shown to be of a particular truncation level. This rule **may** be
-ignored when defining a type out of a truncated HIT.
-
-When mapping from a higher inductive type, any proposition-valued
-coherences **should** be defined in an `abstract` block:
+When the line length limit would be respected, `where` clauses
+**should** go on the same line as the clause, as demonstrated above. If
+the `where` keyword ends up on another line, the `where`-declarations
+**should** be indented one step further, unless the `where` module is
+named:
 
 ```agda
-    fold : (f : G → G' .fst) → is-group-hom Grp G' f → G^ab → G' .fst
-    fold f gh = Coeq-rec G'.has-is-set f l1
-      where abstract
-        l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
-        l1 (x , y , z) = ...
+-- Always:
+foo = {! some very long code !}
+  where
+    bar : ...
+
+-- Never:
+foo = {! some very long code !}
+  where
+  bar : ...
+
+-- These are both okay:
+foo = {! some very long code !}
+  module foo where
+    bar : ...
+
+foo = {! some very long code !}
+  module foo where
+  bar : ...
 ```
 
-### Things to know
+Helper functions that may need to be used in client code, but have very
+long telescopes/no sensible top-level name, **may** be placed in a named
+`where` module:
+
+```agda
+ua→ {e = e} {B} {f₀ = f₀} {f₁} h =
+  (λ i a → comp (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) (sys i a))
+  module ua→ where
+
+  -- ...
+
+  filler : ∀ i j (a : ua e i) → B (i ∨ ~ j) (x' i (~ j) a)
+  filler i j a = fill (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) j (sys i a)
+```
+
+> [!WARNING]
+> Anything inside a named `where` module has the same visibility as the
+> function it belongs to. Be careful not to accidentally export, e.g.,
+> local copies of helper modules from a named `where` module!
+
+In laid-out syntax, **two spaces of indentation should be used**,
+instead of alignment, whenever possible, even when this increases the
+number of vertical lines.
+
+```agda
+-- Prefer:
+foo =
+  let
+    x = 1
+  in x
+
+-- Over:
+foo =
+  let x = 1
+   in x
+
+foo = let x = 1
+       in x
+```
+
+Long type signatures **should** start on a line break, and have arrows
+aligned with the colon:
+
+```agda
+-- Always:
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+  → Type ℓ
+
+-- Never:
+Triangle : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+         → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+         → Type ℓ
+```
+
+If you have a long chain of named binders, you **may** either break
+across lines with arrows which should be aligned to the colon as above,
+or without. If you choose to break them without lines, the binders
+**must** be further indented two spaces, which brings them into
+alignment with the binders above:
+
+```agda
+-- Okay:
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z)
+    (r : y ≡ z)
+  → Type ℓ
+
+-- Never:
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z)
+  (r : y ≡ z)
+  → Type ℓ
+```
+
+If possible within the bounds of comprehensibility, record fields and
+constructor names **should** be chosen to encourage vertical alignment
+at use-sites. *Example*: we generally shorten `commutes` to `com` to
+match the length of `map` when defining e.g. maps in slice categories,
+but we would *not* shorten `monic` to `mon`.
+
+Pattern- and copattern-matching definitions **should** have their
+corresponding arguments, *and* the `=` sign of each clause, aligned, if
+this would stay within the line length limit. Alignment between `=`
+signs **should not** happen between clauses that are not on adjacent
+lines.
+
+```agda
+-- Prefer:
+max zero    zero    = zero
+max zero    (suc n) = suc n
+max (suc n) zero    = suc n
+max (suc n) (suc k) = suc k
+
+-- Over:
+max zero zero = zero
+max zero (suc n) = suc n
+max (suc n) zero = suc n
+max (suc n) (suc k) = suc k
+
+-- Never:
+foo (very-long a) (even-longer b) =
+  let
+    ...
+  in ...
+foo short short                   = ?
+```
+
+Use a generous amount of whitespace both between and inside your
+definitions. Definitions, including `let` bindings, **must** be
+separated by at least one blank line *of code*, or by prose. A
+declaration and a definition for the same function **should not**
+have a line break, but may have a prose break.
+
+<details>
+<summary> <b>Rule of thumb:</b> When giving a copattern definition with
+many fields, try to sink all the "proof" fields towards the bottom, and
+include a blank line between the "data" and the "proofs". </summary>
+
+```agda
+-- Prefer:
+ni .eta x .η _ = B.id
+ni .inv x .η _ = B.id
+
+ni .eta x .is-natural _ _ _ = B.id-comm-sym
+ni .inv x .is-natural _ _ _ = B.id-comm-sym
+ni .eta∘inv x     = ext λ _ → B.idl _
+ni .inv∘eta x     = ext λ _ → B.idl _
+ni .natural x y f = ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+
+-- Over:
+ni .eta x .η _              = B.id
+ni .eta x .is-natural _ _ _ = B.id-comm-sym
+ni .inv x .η _              = B.id
+ni .inv x .is-natural _ _ _ = B.id-comm-sym
+ni .eta∘inv x               = ext λ _ → B.idl _
+ni .inv∘eta x               = ext λ _ → B.idl _
+ni .natural x y f           = ext λ _ →
+  B.idr _ ∙ ap (B._∘ _) (y .F-id)
+```
+
+In a case like the above, consider either putting the "proof" fields in
+a `<details>` tag (the first time) or even a comment if there are many
+similar definitions.
+
+</details>
+
+Record types that carry identities **should** be `no-eta-equality`. In
+general, `no-eta-equality` records should be preferred over
+`eta-equality`, as this gives us better control over which telescopes
+the conversion checker will look into. Record constructors **may** be
+named, especially `eta-equality` record constructors; but, in general,
+`record` literals (and `record where` syntax) **should** be preferred.
+
+Modules in the `Cat` and `Order` namespaces **should** use `Cat.Prelude`
+over `1Lab.Prelude`. Modules in the `1Lab` namespace **should not**
+import `1Lab.Prelude`.
+
+### Notation classes
 
 There is a dedicated operator for projecting the "underlying type" of
 anything for which this concept makes sense: `⌞ T ⌟`; see
@@ -204,6 +490,195 @@ instances are available for things like:
 - A type like `Σ U ...` (projects the underlying type of the first component)
 - Concrete groups (projects the delooping)
 - ... probably others ...
+
+Other "notation classes" include `Idiom`, `Bind`, `Membership` and
+`Funlike`. Ordinary definitions **must not** quantify over instances of
+these classes: they have no laws, and should not appear in any theorem
+statements. They **may** be quantified over to define "lifting"
+instances, however.
+
+### H-Level automation
+
+The [`H-Level`] class **should** be used, wherever possible, for
+deriving hlevels. As explained there, "leaf" instances should be
+declared in terms of a lower bound, not an exact level. Local
+assumptions, e.g. that some map is an embedding, overlap with one of the
+existing instances are generally not made into overlapping instances.
+
+```agda
+-- This will not work:
+instance H-Level-Nat : H-Level Nat 2
+```
+
+[`H-Level`]: https://1lab.dev/1Lab.HLevel.Closure.html#automation
+
+You can use [`prop!`] to summon a `PathP` in any propositional type, and
+[`hlevel!`] to summon the canonical element of a contractible type.
+
+[`prop!`]: https://1lab.dev/1Lab.Reflection.HLevel.html#prop!
+[`hlevel!`]: https://1lab.dev/1Lab.HLevel.Closure.html#hlevel!
+
+Definitions which take [`is-hlevel`] arguments often have a version
+which take [`H-Level`] instances, having the same name, but suffixed
+with a `!`: [`el!`], [`n-Tr-elim!`], [`injection→extensional!`]. Use
+sites **should** prefer the instance-argument version. You **should**
+provide these versions for any definitions you make. If the `is-hlevel`
+arguments are for level two and above, you **may** write *only* the
+version taking an instance argument.
+
+[`is-hlevel`]: https://1lab.dev/1Lab.HLevel.html#is-hlevel
+[`el!`]: https://1lab.dev/1Lab.Reflection.HLevel.html#el!
+[`n-Tr-elim!`]: https://1lab.dev/Homotopy.Truncation.html#n-Tr-elim!
+[`injection→extensional!`]: https://1lab.dev/1Lab.Extensionality.html#injection→extensional!
+
+Instances of `H-Level` **must not** appear as instance *fields* in a
+record type. This will simply not work. Instead, you can define an
+[`hlevel-projection`] instance as a stand-in for an instance of
+`H-Level` for *any* neutral which quotes to a `def` headed by its index.
+
+An instance of `hlevel-projection` for some name `func` requires an
+hlevel lemma that takes a single visible argument. The `get-argument`
+function must recover this relevant argument from *the argument list* of
+a neutral application of `func`. The `has-level` field should produce a
+`Term` representing the hlevel *for a recovered argument*. Generally,
+`has-level` will be a constant function returning `lit (nat K)`.
+
+[`hlevel-projection`]: https://1lab.dev/1Lab.Reflection.HLevel.html#hlevel-projection
+
+Generally, `hlevel-projection` instances are used for record fields.
+They can be used instead of overlapping instances to write `H-Level`
+instances for type families defined by recursion, see
+[`hlevel-proj-is-iterative-embedding`].
+
+[`hlevel-proj-is-iterative-embedding`]: https://1lab.dev/Data.Set.Material.html#hlevel-proj-is-iterative-embedding
+
+### Record types
+
+Constructors of `no-eta-equality` records **may** be marked `INLINE`.
+Agda will turn `INLINE` record constructors into coclauses when they
+appear, *even if by inlining*, on the immediate RHS of a definition.
+This allows giving definitions with short normal forms without repeating
+a long list of copatterns. You can refer to the anonymous constructor of
+a record as the `constructor` "field in the record module":
+
+```agda
+record Prebicategory o ℓ where
+  no-eta-equality
+  field
+    Ob  : Type o
+    Hom : Ob → Ob → Precategory ℓ ℓ'
+  ...
+{-# INLINE Prebicategory.constructor #-}
+```
+
+Constructor inlining does not happen on the right-hand sides of `INLINE`
+functions. For this to happen, *the function **must** be marked `INLINE`
+between its declaration and definition*, after its type signature but
+before any of its clauses. This allows convenient definitions of
+"copattern-matching macros", see e.g. [`with-trivial-grading`] and
+[`with-thin-display`] in `Cat.Displayed.Base`.
+
+[`with-trivial-grading`]: https://1lab.dev/Cat.Displayed.Base.html#with-trivial-grading
+[`with-thin-display`]: https://1lab.dev/Cat.Displayed.Base.html#with-thin-display
+
+When defining a type family by recursion, it is often convenient to make
+it definitionally injective by wrapping it in a single-field `record`
+type; see the [orderings on rationals]. The constructor and field
+**should** be named `lift` and `lower`. These records **may** be
+`eta-equality`. If they're not propositions, they **should** have an
+`Extensional` instance projecting the underlying field.
+
+[orderings on rationals]: https://1lab.dev/Data.Rational.Order.html#_%E2%89%A4_
+
+If a type is a `record` or `data`type, it **should** have an `H-Level`
+instance. Instances for `record` types can often be defined
+automatically by [`declare-record-hlevel`], exported from both preludes.
+Record types **should** also generally have [`Extensional`] instances.
+At time of writing, there is no automation for writing these, but
+[`declare-record-iso`] produces an isomorphism that you can use to lift
+`Extensional` instances.
+
+[`declare-record-hlevel`]: https://1Lab.dev/1Lab.Reflection.Record.html#declare-record-hlevel
+[`declare-record-iso`]: https://1Lab.dev/1Lab.Reflection.Record.html#declare-record-iso
+[`Extensional`]: https://1lab.dev/1Lab.Extensionality.html#Extensional
+
+### Algebraic structures
+
+We define algebraic structures in layers, roughly corresponding to
+*stuff*, *structure*, and *property*. The later layers should be
+*parametrised over* the earlier layers: the properties are parametrised
+over the structure and the structure is parametrised over the stuff.
+Generically, this looks like:
+
+```agda
+record is-widget {A : Type} (op : A → A → A) : Type
+record Widget-on (A : Type) where
+  field
+    op            : A → A → A
+    has-is-widget : is-widget op
+  open is-widget has-is-widget public
+```
+
+The type of properties **must** have an accompanying `H-Level` instance
+expressing that it is a proposition. Otherwise, property is to be
+understood in the sense of "fully faithful" rather than "pseudomonic":
+property-like structure, which places additional preservation demands on
+the morphisms, should be part of the structure.
+
+The type packaging together stuff, structure and property is usually
+*defined* as the type of objects of a category of widgets. We tend to
+define these categories as displayed over `Sets`, using
+[Cat.Displayed.Univalence.Thin](https://1Lab.dev/Cat.Displayed.Univalence.Thin.html).
+This requires you to set up a proposition expressing what it means for a
+function of sets to preserve Widget-structure:
+
+```agda
+record is-widget-hom {A B : Type} (f : A → B) (x : Widget-on A) (y : Widget-on B) where
+  private
+    module x = Widget-on x
+    module y = Widget-on y
+
+  field
+    pres-op : ∀ {a b} → f (x.op a b) ≡ y.op (f a) (f b)
+
+Widget-structure : Thin-structure _ Widget-on
+Widget-structure .is-hom f x y = el! (is-widget-hom f x y)
+[...]
+
+module Widgets = Cat.Reasoning Widgets
+Widget = Widgets.Ob
+```
+
+This applies beyond finitary algebraic theories on the category of sets:
+monads and comonads are defined in a similar way, with
+`is-monad`/`Monad-on`/`Monad` records.
+
+#### Universal objects
+
+We define concrete cases universal objects in components, following a
+"representability determines functoriality" philosophy. The result ends
+up in layers similar to those of algebraic structures, though we
+generally stop at the "structure" layer, since (e.g.) "some product of
+unspecified objects in a fixed category" is not a very useful type.
+
+The property record **should** be a proposition. Good category theory
+ensures that this is always the case if you split the structure on the
+correct field. Generally, the property includes the universal map, but
+is parametrised over an entire *diagram* we're showing is universal.
+
+```agda
+record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ ℓ) where
+record Product (A B : Ob) : Type (o ⊔ ℓ) where
+  field
+    apex : Ob
+    π₁ : Hom apex A
+    π₂ : Hom apex B
+    has-is-product : is-product π₁ π₂
+```
+
+If `is-product` were defined only over the objects, it would not be a
+proposition. Preservation of universal objects is usually stated as
+saying that *pasting* with a functor preserves the property.
 
 ### Naming convention
 
@@ -228,7 +703,7 @@ definition, and **must not** be included if it is universally
 quantified: `is-equiv→is-embedding`, not `f-is-equiv→f-is-embedding`.
 
 Definitions **should** have their names informed by what they prove, but
-this process does not need to be entirely mechanic (don't turn the
+this process does not need to be entirely mechanical (don't turn the
 entire function's type into a name!). If a theorem has an accepted
 common name, that **can** be used instead of deriving a name based on
 its type.
@@ -246,8 +721,8 @@ When naming a duality lemma, the "concrete dual" (e.g. `Coproduct`)
 opposite category) **should** have `co` appear as a separate prefix:
 hence `is-coproduct→is-co-product`.
 
-The types `PathP` and `SquareP` are the only exceptions to the
-kebab-case rule.
+The displayed version of a `Thing` **may** be called `ThingP`, following
+`Pathp` and `SquareP`.
 
 ### Literate vs code files
 
