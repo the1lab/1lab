@@ -73,6 +73,9 @@ abstract
 StrongEpis : Arrows C (o ⊔ ℓ)
 StrongEpis .arrows = is-strong-epi
 StrongEpis .is-tr = hlevel 1
+
+StrongEpis⊥Monos : Orthogonal C StrongEpis Monos
+StrongEpis⊥Monos f (f-epi , f⊥Monos) = f⊥Monos
 ```
 -->
 
