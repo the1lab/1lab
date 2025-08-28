@@ -1,11 +1,7 @@
-// Copyright 2002-2010, Simon Marlow.  All rights reserved.
-// https://github.com/haskell/haddock/blob/ghc-8.8/LICENSE
-// Slightly modified by Tesla Ice Zhang
-
 import { Hover } from './lib/hover';
 
 let links: Array<HTMLAnchorElement> = [];
-const paths: { module: string, baseURL: string, source: string } = window as any;
+const paths: { module: string, baseUrl: string, source: string } = window as any;
 
 const page = window.location.pathname.slice(1).replace(".html", "");
 
@@ -22,7 +18,7 @@ const types: Map<string, Promise<string[]>> = new Map();
 async function fetchTypes(mod: string): Promise<string[]> {
   if (types.get(mod)) return types.get(mod)!;
 
-  const prommy = fetch(`${paths.baseURL}/types/${mod}.json`, { method: 'get' }).then(async (r) => {
+  const prommy = fetch(`${paths.baseUrl}/types/${mod}.json`, { method: 'get' }).then(async (r) => {
     if (!r.ok) throw `Failed to load type-on-hover information for module ${paths.module}`;
     return await r.json() as string[];
   });
@@ -39,14 +35,18 @@ async function fetchTypes(mod: string): Promise<string[]> {
  * @returns The instantiated hover, or undefined if this element has no associated popup.
  */
 function getHover(a: HTMLAnchorElement): Hover | undefined {
-  let target;
   if (Hover.get(a)) return Hover.get(a);
 
-  if (!Number.isNaN(target = Number.parseInt(a.getAttribute("data-identifier") ?? ""))) {
-    let tgt = target;
-    const mod = a.getAttribute("data-module") ?? paths.module;
+  const href = a.getAttribute("href")?.split('/').slice(-1)[0];
+  if (!href) return;
 
-    const get = fetchTypes(mod).then((tys) => {
+  let target: number | string | null = null;
+  const [mod, tgts] = a.getAttribute("data-type") ? href.split('#') : [];
+
+  if (!Number.isNaN(target = Number.parseInt(tgts))) {
+    let tgt = target;
+
+    const get = fetchTypes(mod.slice(0, -5)).then((tys) => {
       const element = document.createElement("div");
       element.innerHTML = tys[tgt]!;
       element.classList.add("hover-popup", "sourceCode");
@@ -57,7 +57,7 @@ function getHover(a: HTMLAnchorElement): Hover | undefined {
     return new Hover(a, get, true);
   } else if ((target = a.getAttribute("data-target")) != null) {
     const tgt = target;
-    const get = fetch(`${paths.baseURL}/fragments/${tgt}.html`, { method: 'get' }).then(async (p) => {
+    const get = fetch(`${paths.baseUrl}/fragments/${tgt}.html`, { method: 'get' }).then(async (p) => {
       if (!p.ok) throw `Failed to load fragment ${tgt}`;
 
       const element = document.createElement("div");

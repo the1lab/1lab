@@ -17,11 +17,14 @@ import Control.DeepSeq
 import Control.Monad
 
 import qualified Data.HashMap.Strict as Hm
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Text.Lazy as Tl
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
+import Data.IntMap.Strict (IntMap)
 import Data.Foldable
 import Data.Hashable
+import Data.Binary
 import Data.Aeson
 import Data.Maybe
 import Data.Text (Text)
@@ -42,7 +45,7 @@ import Text.Blaze.Html5 as Html hiding (map)
 renderToHtml :: Doc -> Text
 renderToHtml = finish . renderTree' Html.text toblaze . renderToTree where
   toblaze a t = Html.span do
-    aspectsToHtml Nothing mempty Nothing a t
+    aspectsToHtml mempty Nothing Nothing a t
     unless (null (note a)) do
       Html.span (string (note a)) !! [Attr.class_ "Note"]
 
@@ -56,10 +59,16 @@ data Identifier = Identifier
   , idType    :: Text
   , idTooltip :: Text
   }
-  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON, NFData)
+  deriving (Eq, Show, Ord, Generic, Binary, FromJSON, ToJSON, NFData)
 
 instance Hashable Identifier where
   hashWithSalt s = hashWithSalt s . idAnchor
+
+data HtmlModule = HtmlModule
+  { htmlModIdentifiers :: IntMap Identifier
+  , htmlModImports     :: [String]
+  }
+  deriving (Show, Generic, NFData, Binary)
 
 -- | Attach multiple Attributes
 (!!) :: Html -> [Attribute] -> Html
@@ -73,8 +82,9 @@ modToFile m ext = Network.URI.Encode.encode $ render (pretty m) <.> ext
 -- We put a fail safe numeric anchor (file position) for internal references
 -- (issue #2756), as well as a heuristic name anchor for external references
 -- (issue #2604).
-aspectsToHtml :: Maybe TopLevelModuleName -> HashMap Text.Text (Int, Identifier) -> Maybe Int -> Aspects -> Html -> Html
-aspectsToHtml ourmod types pos mi =
+aspectsToHtml
+  :: IntMap Identifier -> Maybe TopLevelModuleName -> Maybe Int -> Aspects -> Html -> Html
+aspectsToHtml locals ourmod pos mi =
   applyWhen hereAnchor (anchorage nameAttributes mempty <>) . anchorage posAttributes
   where
   -- Warp an anchor (<A> tag) with the given attributes around some HTML.
@@ -129,15 +139,10 @@ aspectsToHtml ourmod types pos mi =
 
   link :: DefinitionSite -> [Html.Attribute]
   link ds@(DefinitionSite m defPos _here _aName) =
-    let
-      anchor :: String
-      anchor = definitionSiteToAnchor ds
+    (Attr.href $ stringValue $ definitionSiteToAnchor ds):do
+      guard $ Just m /= ourmod || defPos `IntMap.member` locals
+      pure $ Html.dataAttribute "type" $ stringValue "true"
 
-      ident_ :: Maybe Int
-      ident_ = fst <$> Hm.lookup (Text.pack anchor) types
-    in [ Attr.href $ stringValue $ anchor ]
-    ++ maybeToList (Html.dataAttribute "module" . stringValue . show . pretty <$> ourmod)
-    ++ maybeToList (Html.dataAttribute "identifier" . stringValue . show <$> ident_)
 
 definitionSiteToAnchor :: DefinitionSite -> String
 definitionSiteToAnchor (DefinitionSite m defPos _ _) =

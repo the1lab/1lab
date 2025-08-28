@@ -1,7 +1,8 @@
 // Styling for source code, both Agda-specific and generic
 
-@import "vars.scss";
-@import "mixins.scss";
+@use "vars.scss"   as *;
+@use "mixins.scss" as *;
+@use "theme.scss"  as *;
 
 @font-face {
   font-family: 'Julia Mono';
@@ -17,8 +18,6 @@ code, pre, .sourceCode { @include monospaced; }
 code, pre { max-width: 100%; }
 
 div.sourceCode {
-  @include material(theme(--code-bg));
-
   overflow-x: auto;
 
   > pre {
@@ -45,6 +44,8 @@ div.sourceCode {
       overflow-y: clip;
     }
   }
+
+  @include material(theme(--code-bg));
 }
 
 pre.Agda, div.sourceCode > pre {

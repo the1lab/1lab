@@ -1,16 +1,30 @@
-{-# LANGUAGE TemplateHaskellQuotes, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskellQuotes, OverloadedStrings, ScopedTypeVariables, LambdaCase, BlockArguments #-}
 
-module Shake.Diagram (buildDiagram, diagramHeight) where
+module Shake.Diagram (diagramRules, diagramHeight) where
 
+import Control.DeepSeq
+import Control.Monad
+
+import qualified Data.Map.Strict as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.ByteString.Lazy (ByteString)
+import Data.Map.Strict (Map)
 import Data.Text (Text)
 
+import Text.Pandoc.Definition
 import Text.HTML.TagSoup
+import Text.Pandoc.Walk
 
 import Development.Shake.FilePath
 import Development.Shake
+
+import Shake.Markdown.Reader
+import Shake.Modules (ModName, markdownSource)
+import Shake.Digest
+import Shake.KaTeX (getPreambleFor)
+
+import qualified System.Directory as Dir
 
 -- | Render a LaTeX diagram to SVG. This renders the diagram using the
 -- @support/diagram.tex@ template, and then uses pdflatex and pdftocairo
@@ -42,8 +56,8 @@ buildDiagram preamble input output isdark = do
 
   -- TODO: Do we want to parse the errors here/in the log file? Might be
   -- nice to spit out warnings/errors, but also a lot of work.
-  Stdout (_ :: ByteString) <- command [] "pdflatex" ["-output-directory", takeDirectory input, "-synctex=1", "-interaction=nonstopmode", texPath]
-  command_ [] "pdftocairo" ["-svg", texPath -<.> "pdf", output]
+  command_ [NoProcessGroup, WithStderr False, EchoStdout False, EchoStderr False] "pdflatex" ["-output-directory", takeDirectory input, "-synctex=1", "-interaction=nonstopmode", texPath]
+  command_ [NoProcessGroup, WithStderr False, EchoStdout False, EchoStderr False] "pdftocairo" ["-svg", texPath -<.> "pdf", output]
 
 -- | Compute the scaled height of a diagram (given in SVG), to use as a
 -- @style@ tag.
@@ -51,7 +65,7 @@ diagramHeight :: FilePath -> Action Double
 diagramHeight fp = do
   contents <- readFile' fp
   let
-    height (TagOpen "svg" attrs:xs) | Just h <- lookup "height" attrs = h
+    height (TagOpen "svg" attrs:xs) | Just h <- lookup "height" attrs = take (length h - 2) h
     height (_:t) = height t
     height [] = error $ "Diagram SVG has no height: " <> fp
 
@@ -72,3 +86,50 @@ maybeDarken True = Text.unlines . map mkdark . Text.lines where
 
 templatePath :: FilePath
 templatePath = "support/diagram.tex"
+
+diagramRules :: (FilePath -> Action Pandoc) -> Rules ()
+diagramRules read = do
+  -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
+  "_build/html/**/*.light.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
+    need [inp]
+    buildDiagram (getPreambleFor False) inp out False
+
+  "_build/html/**/*.dark.svg" %> \out -> do
+    let
+      inp = "_build/diagrams"
+        </> takeFileName (takeDirectory out)
+        </> takeBaseName out -<.> "tex"
+    need [inp]
+    buildDiagram (getPreambleFor True) inp out True
+
+  modDiagrams :: ModName -> Action (Map String Text) <- newCache \mod -> do
+    md <- markdownSource mod
+    need [ md ]
+    doc <- read md
+    let
+      diagrams = flip query doc \case
+        (CodeBlock (_, classes, _) contents) | "quiver" `elem` classes ->
+          Map.singleton (shortDigest contents) contents
+        _ -> mempty
+    diagrams `deepseq` pure diagrams
+
+  -- Extract the diagram with the given digest from the module source
+  -- file; even if the module uses many diagrams, only one will be written.
+  --
+  -- It's faster to traverse the markdown many times looking for each of
+  -- the needed diagrams than it is to lock the folder associated with
+  -- the module (since we process blocks in parallel when rendering a
+  -- file).
+  "_build/diagrams/*/*.tex" %> \out -> do
+    let
+      mod  = takeFileName (takeDirectory out)
+      want = dropExtensions (takeFileName out)
+
+    liftIO $ Dir.createDirectoryIfMissing True $ "_build/diagrams" </> mod
+
+    contents <- (Map.! want) <$> modDiagrams mod
+    liftIO $ Text.writeFile ("_build/diagrams" </> mod </> want <.> "tex") contents

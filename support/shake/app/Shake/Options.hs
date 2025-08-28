@@ -32,7 +32,7 @@ data Options = Options
     -- ^ Launch in watch mode. Prevents some build tasks running.
   , _optBaseUrl   :: String
     -- ^ Base URL for absolute paths
-  , _optGitOnly   :: Bool
+  , _optGitOnly   :: !Bool
     -- ^ Whether to only build files tracked by git.
   }
   deriving (Eq, Show, Typeable, Generic)

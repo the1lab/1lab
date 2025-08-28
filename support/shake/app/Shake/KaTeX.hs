@@ -47,6 +47,8 @@ import System.IO
 import Shake.Utils
 import Macros
 
+import GHC.Compact
+
 newtype LatexEquation = LatexEquation (Bool, Text)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
 
@@ -129,7 +131,7 @@ createKatexWorkerQueue
   -> IO (Chan KatexWorker)
 createKatexWorkerQueue numWorkers = do
   workers <- newChan
-  for_ [0..numWorkers] $ \i -> do
+  for_ [0..numWorkers - 1] $ \i -> do
     worker <- spawnKatexWorker
     writeChan workers worker
   pure workers
@@ -189,6 +191,7 @@ katexRules :: Rules ()
 katexRules = versioned 3 do
   numThreads <- shakeThreads <$> getShakeOptionsRules
   katexPool <- liftIO $ createKatexWorkerQueue numThreads
+
   _ <- addOracle \(ParsedPreamble _) -> do
     need ["src/preamble.tex"]
     t <- liftIO $ T.readFile "src/preamble.tex"
@@ -204,7 +207,7 @@ katexRules = versioned 3 do
   _ <- versioned 3 $ addOracleCache \latex -> do
     pre <- askOracle (ParsedPreamble ())
     result <-
-      traced "katex" $ withKatexWorker katexPool \katexWorker -> do
+      quietly . traced "katex" $ withKatexWorker katexPool \katexWorker -> do
       submitKatexJob katexWorker pre latex
       awaitKatexResult katexWorker
     case result of

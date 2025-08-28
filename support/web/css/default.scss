@@ -1,18 +1,18 @@
-@import "vars.scss";
-@import "mixins.scss";
-@import "theme.scss";
+@use "theme.scss" as *;
+@use "vars.scss" as *;
+@use "mixins.scss";
 
-@import "components/sidenotes.scss";
-@import "components/comments.scss";
-@import "components/controls.scss";
-@import "components/profile.scss";
-@import "components/commit.scss";
-@import "components/search.scss";
-@import "components/modal.scss";
-@import "components/popup.scss";
-@import "components/toc.scss";
+@use "components/sidenotes.scss";
+@use "components/comments.scss";
+@use "components/controls.scss";
+@use "components/profile.scss";
+@use "components/commit.scss";
+@use "components/search.scss";
+@use "components/modal.scss";
+@use "components/popup.scss";
+@use "components/toc.scss";
 
-@import "code.scss";
+@use "code.scss";
 
 html {
   height: 100%;
@@ -36,7 +36,7 @@ body {
   width: 100%;
 
   &.text-page {
-    @include centered-contents;
+    @include mixins.centered-contents;
     margin: 0;
   }
 
@@ -61,21 +61,21 @@ main {
   flex: 1 0 auto;
 
   padding-inline: 0.75em;
-  @include widescreen { padding: 0; }
-
   box-sizing: border-box;
+
+  @include mixins.widescreen { padding: 0; }
 }
 
-@include highlight(warning,     theme(--warning-bg),     theme(--warning-icon));
-@include highlight(note,        theme(--note-bg),        theme(--note-icon));
-@include highlight(terminology, theme(--terminology-bg), theme(--terminology-icon));
-@include highlight(source,      theme(--source-bg),      theme(--source-icon));
+@include mixins.highlight(warning,     theme(--warning-bg),     theme(--warning-icon));
+@include mixins.highlight(note,        theme(--note-bg),        theme(--note-icon));
+@include mixins.highlight(terminology, theme(--terminology-bg), theme(--terminology-icon));
+@include mixins.highlight(source,      theme(--source-bg),      theme(--source-icon));
 
 figure {
   overflow-x: auto;
   overflow-y: clip;
 
-  @include centered-contents;
+  @include mixins.centered-contents;
 
   figcaption {
     margin-top: 0.3em;
@@ -206,14 +206,14 @@ p > code, summary > code {
 }
 
 blockquote, details.blockquote {
-  @include material(theme(--blockquote-bg));
-
   margin-left: 0;
   margin-right: 0;
 
   h2 {
     margin-top: 0;
   }
+
+  @include mixins.material(theme(--blockquote-bg));
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -236,8 +236,6 @@ table {
 }
 
 details {
-  @include left-bordered(theme(--note-bg));
-
   > summary {
     list-style-type: none;
 
@@ -268,6 +266,8 @@ details {
 
   > :nth-child(2) { margin-block-start: 0; }
   > :last-child   { margin-block-end:   0; }
+
+  @include mixins.left-bordered(theme(--note-bg));
 }
 
 .smallcaps {
@@ -447,7 +447,7 @@ kbd {
 }
 
 
-@include widescreen {
+@include mixins.widescreen {
   .narrow-only {
     display: none !important;
   }

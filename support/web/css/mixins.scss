@@ -1,8 +1,20 @@
 @use "sass:selector";
+@use "vars.scss" as *;
 
 @mixin left-bordered($bg) {
-  border-inline-start:  $left-border-width solid $bg;
-  padding-inline-start: $left-border-distance;
+  & {
+    border-inline-start:  $left-border-width solid $bg;
+    padding-inline-start: $left-border-distance;
+  }
+
+  @at-root div.hover-popup & {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+
+    &:before {
+      display: none;
+    }
+  }
 
   @include widescreen {
     position: relative;
@@ -21,25 +33,16 @@
       left: calc(-1 * #{$left-border-distance} - #{$left-border-width});
     }
   }
-
-  @at-root div.hover-popup & {
-    border-inline-start: 0;
-    padding-inline-start: 0;
-
-    &:before {
-      display: none;
-    }
-  }
 }
 
 @mixin material($bg) {
-  @include left-bordered($bg);
   box-sizing: border-box;
+  margin-block: var(--parskip);
 
   >:nth-child(1)      { margin-block-start: 0; }
   >:nth-last-child(1) { margin-block-end: 0; }
 
-  margin-block: var(--parskip);
+  @include left-bordered($bg);
 }
 
 @mixin highlight($name, $bg, $icon) {
@@ -56,10 +59,10 @@
   }
 
   div.#{$name}, details.#{$name} {
-    @include material($bg);
     > :nth-child(2) {
       margin-block-start: 0.25em;
     }
+    @include material($bg);
   }
 }
 

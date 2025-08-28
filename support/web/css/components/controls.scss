@@ -1,4 +1,8 @@
-@import "../vars.scss";
+@use "../vars.scss"   as *;
+@use "../colors.scss" as *;
+@use "../theme.scss"  as *;
+
+@use "sass:color";
 
 $dropdown-popup-width: 280px;
 $button-size:          32px;
@@ -99,7 +103,7 @@ button.theme-button {
 
   &.theme-button-light, &.theme-button-system {
     background-color: $light-text-bg;
-    border-color:     darken($light-text-bg, 10%);
+    border-color:     color.adjust($light-text-bg, $lightness: -10%);
     color:            $light-text-fg;
   }
 
