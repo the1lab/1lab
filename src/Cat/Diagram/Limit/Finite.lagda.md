@@ -103,7 +103,7 @@ products).
   Finitely-complete→is-finitely-complete cat Flim finite =
     limit-as-equaliser-of-product
       (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Ob))
-      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Arrows))
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Arrow))
       (Flim .equalisers)
 
   is-finitely-complete→Finitely-complete
