@@ -16,7 +16,7 @@ import Cat.Reasoning as Cr
 module Cat.Bi.Base where
 ```
 
-# Prebicategories {defines=bicategory}
+# Prebicategories {defines="bicategory prebicategory"}
 
 <!--
 ```agda
