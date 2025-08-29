@@ -108,7 +108,7 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
 ```
 
-This characterisation has quiet a few useful corollaries.
+This characterisation has quite a few useful corollaries.
 To start, paths between $x \cons xs$ and $y \cons ys$ are
 equivalent to pairs of paths.
 
@@ -123,7 +123,7 @@ equivalent to pairs of paths.
 ```
 
 This in turn means that the type $\Sigma (y : A)\; (ys : \List{A})\; (x \cons xs = y \cons ys)$
-is [[contractible]] for ever $x : A$, $xs : \List{A}$, as we can re-arrange
+is [[contractible]] for every $x : A$, $xs : \List{A}$, as we can re-arrange
 it into a pair of singletons.
 
 ```agda
