@@ -33,7 +33,7 @@ module _
 :::{.definition #factorisation}
 Let $L, R \subseteq C$ be two classes of morphisms of $\cC$.
 An $(L,R)$ **factorisation** of a morphism $f : \cC(X,Y)$ consists
-of an object $Im : \cC$ and a pair of morphisms $l : \cC(X,M), r : \cC(M,Y)$
+of an object $m(f) : \cC$ and a pair of morphisms $l : \cC(X,M), r : \cC(M,Y)$
 such that $l \in L$, $r \in R$, and $f = r \circ l$.
 :::
 
