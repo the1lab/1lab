@@ -107,9 +107,9 @@ commute-inner w x y z =
 
 commute-last : ∀ x y z → (x * y) * z ≡ (x * z) * y
 commute-last x y z =
-  x * y * z   ≡⟨ *-associative x y z ⟩
+  x * y * z   ≡˘⟨ *-associative x y z ⟩
   x * (y * z) ≡⟨ ap (x *_) (*-commutative y z) ⟩
-  x * (z * y) ≡˘⟨ *-associative x z y ⟩
+  x * (z * y) ≡⟨ *-associative x z y ⟩
   x * z * y ∎
 ```
 -->
@@ -354,7 +354,7 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ' r q x₀ env) ⟩
   (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * ⟦q⟧) * x₀ + ⟦r⟧ * ⟦s⟧        ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦s⟧) (*-distrib-+r (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (⟦r⟧ * ⟦q⟧) x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡˘⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
-  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
+  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡˘⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * (⟦q⟧ * x₀) + ⟦r⟧ * ⟦s⟧) ≡˘⟨ ap (λ ϕ → ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ϕ) (*-distrib-+l (⟦q⟧ * x₀) ⟦s⟧ ⟦r⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (commute-last ⟦p⟧ (⟦q⟧ * x₀ + ⟦s⟧) x₀) ⟩
   ⟦p⟧ * x₀ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡˘⟨ *-distrib-+r (⟦p⟧ * x₀) ⟦r⟧ (⟦q⟧ * x₀ + ⟦s⟧) ⟩
@@ -376,7 +376,7 @@ are nowhere near as bad.
 sound-*ₚ' p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
 sound-*ₚ' r (p *X+ q) x₀ env =
   ⟦ r *ₚ' p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ' r p x₀ env) (sound-*ₚ r q env) ⟩
-  ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
+  ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡˘⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
   ⟦r⟧ * (⟦p⟧ * x₀) + ⟦r⟧ * ⟦q⟧                   ≡˘⟨ *-distrib-+l  (⟦p⟧ * x₀) ⟦q⟧ ⟦r⟧ ⟩
   ⟦r⟧ * (⟦p⟧ * x₀ + ⟦q⟧)                         ∎
   where
