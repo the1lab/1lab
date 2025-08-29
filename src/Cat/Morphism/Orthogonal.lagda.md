@@ -29,11 +29,11 @@ diagram like
   a && b \\
   \\
   c && {d\text{,}}
-  \arrow["f", from=1-1, to=1-3]
-  \arrow["g", from=3-1, to=3-3]
-  \arrow["u"', from=1-1, to=3-1]
-  \arrow["v", from=1-3, to=3-3]
-	\arrow[dashed, from=1-3, to=3-1]
+  \arrow["u", from=1-1, to=1-3]
+  \arrow["v", from=3-1, to=3-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["g", from=1-3, to=3-3]
+  \arrow[dashed, from=1-3, to=3-1]
 \end{tikzcd}\]
 ~~~
 

@@ -42,7 +42,7 @@ of a morphism $f : a \to b$.
 ```
 
 In addition to mandating that every map $f : a \to b$ factors as a map
-$f : a \xto{l} r(f) \xto{r} b$ where $l \in L$ and $r \in R$, the classes
+$f : a \xto{l} m(f) \xto{r} b$ where $l \in L$ and $r \in R$, the classes
 must satisfy the following properties:
 
 - Every isomorphism is in both $L$ and in $R$^[We'll see, in a bit, that
@@ -64,7 +64,7 @@ then $(g \circ f) \in L$, and likewise for $R$.
 ```
 
 Most importantly, the class $L$ is [[orthogonal|orthogonality]] to $R$, i.e:
-for every $l \in L$ and $r \in R$, we have $l \ortho r$[^ortho].
+for every $l \in L$ and $r \in R$, we have $l \ortho r$.[^ortho]
 
 [^ortho]: As we shall shortly see, $L$ is actually *exactly* the class of
 morphisms that is left orthogonal to $R$ and vice-versa for $R$.
@@ -76,7 +76,7 @@ morphisms that is left orthogonal to $R$ and vice-versa for $R$.
 The canonical example of an orthogonal factorisation system is the
 ([[surjective|surjection-between-sets]], [[injective|embedding]])
 factorisation system on the [[category of sets]], which uniquely factors
-a function $f : A \to B$ through the image of $f$[^regular].
+a function $f : A \to B$ through the image of $f$.[^regular]
 
 [^regular]: This factorisation system is a special case of the
 ([[strong epimorphism]], [[monomorphism]]) orthogonal factorisation
@@ -101,7 +101,7 @@ module _
 The first thing we observe is that factorisations for a morphism are
 unique. Working in precategorical generality, we weaken this to
 essential uniqueness: Given two factorisations of $f$ we exhibit an
-isomorphism between their replacements $r(f)$, $r'(f)$ which commutes
+isomorphism between their replacements $m(f)$, $m'(f)$ which commutes
 with both the `left`{.Agda} morphism and the `right`{.Agda}
 morphism. We reproduce the proof from [@Borceux:vol1, §5.5].
 
@@ -116,10 +116,10 @@ morphism. We reproduce the proof from [@Borceux:vol1, §5.5].
     where
 ```
 
-Suppose that $f = m \circ e$ and $f = m' \circ e'$ are both
-$(L,R)$-factorisations of $f$. We use the fact that $e \ortho m'$ and
-$e' \ortho m$ to get maps $u, v$ satisfying $um = m'$, $m'u = m$, $ve =
-e'$, and $e'v = e$.
+Suppose that $f = r \circ l$ and $f = r' \circ l'$ are both
+$(L,R)$-factorisations of $f$. We use the fact that $l \ortho r'$ and
+$l' \ortho r$ to get maps $u, v$ satisfying $ur = r'$, $r'u = r$, $vl =
+l'$, and $l'v = l$.
 
 ```agda
       upq =
@@ -130,24 +130,24 @@ e'$, and $e'v = e$.
         (sym (fa2 .factors) ∙ fa1 .factors) .centre
 ```
 
-To show that $u$ and $v$ are inverses, fit first $e$ and $m$ into a
-lifting diagram like the one below. Since $e \ortho m$, we have that the
-space of diagonals $r(f) \to r(f)$ is contractible, hence a proposition,
+To show that $u$ and $v$ are inverses, fit first $l$ and $r$ into a
+lifting diagram like the one below. Since $l \ortho r$, we have that the
+space of diagonals $m(f) \to m(f)$ is contractible, hence a proposition,
 and since both $vu$ and the identity are in that diagonal, $uv =
 \id$.
 
 ~~~{.quiver}
-\[\begin{tikzcd}
-  a && {r(f)} \\
+\begin{tikzcd}
+  a && {m(f)} \\
   \\
-  {r(f)} && b
-  \arrow["e", from=1-1, to=1-3]
-  \arrow["m"', from=3-1, to=3-3]
-  \arrow["e"', from=1-1, to=3-1]
-  \arrow["m", from=1-3, to=3-3]
-	\arrow["{\mathrm{id}}"', shift right=1, from=1-3, to=3-1]
-	\arrow["vu", shift left=1, from=1-3, to=3-1]
-\end{tikzcd}\]
+  {m(f)} && b
+  \arrow["l", from=1-1, to=1-3]
+  \arrow["l"', from=1-1, to=3-1]
+  \arrow["r", from=1-3, to=3-3]
+  \arrow["\id", shift left=2, from=3-1, to=1-3]
+  \arrow["vu"', shift right=2, from=3-1, to=1-3]
+  \arrow["r"', from=3-1, to=3-3]
+\end{tikzcd}
 ~~~
 
 ```agda
@@ -160,7 +160,7 @@ and since both $vu$ and the identity are in that diagonal, $uv =
         ) (C.id , C.idl _ , C.idr _)
 ```
 
-A dual argument works by making a lifting square with $e'$ and $m'$ as
+A dual argument works by making a lifting square with $l'$ and $r'$ as
 its faces. We omit it for brevity.  By the characterisation of path
 spaces in categories, this implies that factorisations of a fixed
 morphism are a proposition.
@@ -238,22 +238,22 @@ technical one.
         where
 ```
 
-Suppose that $f$ is left-orthogonal to every $m \in R$, and write out
-the $(L,R)$-factorisation $f = m \circ e$. By a syntactic limitation in
-Agda, we start with the conclusion: We'll show that $m$ is in $E$, and
+Suppose that $f$ is left-orthogonal to every $r \in R$, and write out
+the $(L,R)$-factorisation $f = r \circ l$. By a syntactic limitation in
+Agda, we start with the conclusion: We'll show that $r$ is in $L$, and
 since $L$ is closed under composition, so is $f$.  Since $f$ is
-orthogonal to $m$, we can fit it into a lifting diagram
+orthogonal to $r$, we can fit it into a lifting diagram
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  A && B \\
+  a && {m(f)} \\
   \\
-  {r(f)} && {B\text{,}}
-  \arrow["f", from=1-1, to=1-3]
-  \arrow["g", dashed, from=1-3, to=3-1]
-  \arrow["e"', from=1-1, to=3-1]
-  \arrow[from=1-3, to=3-3]
-  \arrow["m", from=3-1, to=3-3]
+  b && b
+  \arrow["l", from=1-1, to=1-3]
+  \arrow["f"', from=1-1, to=3-1]
+  \arrow["r", from=1-3, to=3-3]
+  \arrow["g", dashed, from=3-1, to=1-3]
+  \arrow["\id"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -265,22 +265,22 @@ satisfies $gf=e$ and $mg = \id$.
         gpq = ortho (fa .right) (fa .right∈R) (fa .left) C.id (C.idl _ ∙ (fa .factors))
 ```
 
-We'll show $gm = \id$ by fitting it into a lifting diagram. But
-since $e \ortho m$, the factorisation is unique, and $gm = \id$, as
+We'll show $gr = \id$ by fitting it into a lifting diagram. But
+since $l \ortho r$, the factorisation is unique, and $gr = \id$, as
 needed.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  A && {r(f)} \\
+  a && {m(f)} \\
   \\
-  {r(f)} && B
-  \arrow["e", from=1-1, to=1-3]
-  \arrow["m", from=1-3, to=3-3]
-  \arrow["m"', from=3-1, to=3-3]
-  \arrow["e"', from=1-1, to=3-1]
-  \arrow["gm"', shift right=1, from=1-3, to=3-1]
-  \arrow["id", shift left=1, from=1-3, to=3-1]
-\end{tikzcd}\]
+  {m(f)} && b
+  \arrow["l", from=1-1, to=1-3]
+  \arrow["l"', from=1-1, to=3-1]
+  \arrow["r", from=1-3, to=3-3]
+  \arrow["gr", shift left=2, from=3-1, to=1-3]
+  \arrow["\id"', shift right=2, from=3-1, to=1-3]
+  \arrow["r"', from=3-1, to=3-3]
+\end{tikzcd} \]
 ~~~
 
 ```agda
@@ -291,8 +291,8 @@ needed.
           , C.cancell (gpq .centre .snd .snd)) (C.id , C.idl _ , C.idr _)
 ```
 
-Think back to the conclusion we wanted to reach: $m$ is in $E$, so since
-$f = m \circ e$ and $L$ is stable, so is $f$!
+Think back to the conclusion we wanted to reach: $r$ is in $L$, so since
+$f = r \circ l$ and $R$ is stable, so is $f$!
 
 ```agda
         m∈L : fa .right ∈ L
