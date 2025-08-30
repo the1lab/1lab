@@ -9,6 +9,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Morphism.Class
 open import Cat.Morphism.Lifts
+open import Cat.Diagram.Image
 open import Cat.Prelude
 
 import Cat.Morphism.Strong.Epi
@@ -83,18 +84,17 @@ latter two names have a placeholder for the morphism we are factoring.
 
 <!--
 ```agda
-  module _ (r : is-regular) where
-    private module r = is-regular r
-    open C
+    Image[_] : ∀ {x y} (f : C.Hom x y) → Image 𝒞 f
+    Image[ f ] = C.strong-epi-mono→image f (factor f)
 
     mono→im-iso
       : ∀ {a b} (f : C.Hom a b)
       → C.is-monic f
-      → C.is-invertible r.a↠im[ f ]
+      → C.is-invertible a↠im[ f ]
     mono→im-iso {a} {b} f f-monic =
       C.strong-epi+mono→invertible
-        r.a↠im[ f ]-strong-epic
-        (factor-monic→left-monic (r.factor f) f-monic)
+        a↠im[ f ]-strong-epic
+        (factor-monic→left-monic (factor f) f-monic)
 ```
 -->
 
@@ -104,12 +104,12 @@ and invertible maps, and strong epis are [[left orthogonal]] to monomorphisms by
 
 ```agda
     strong-epi-mono-is-ofs : is-ofs 𝒞 C.StrongEpis C.Monos
-    strong-epi-mono-is-ofs .is-ofs.factor = r.factor
-    strong-epi-mono-is-ofs .is-ofs.is-iso→in-L f = invertible→strong-epi
-    strong-epi-mono-is-ofs .is-ofs.L-is-stable f g = ∘-is-strong-epic
-    strong-epi-mono-is-ofs .is-ofs.is-iso→in-R f = invertible→monic
-    strong-epi-mono-is-ofs .is-ofs.R-is-stable f g = ∘-is-monic
-    strong-epi-mono-is-ofs .is-ofs.L⊥R = StrongEpis⊥Monos
+    strong-epi-mono-is-ofs .is-ofs.factor = factor
+    strong-epi-mono-is-ofs .is-ofs.is-iso→in-L f = C.invertible→strong-epi
+    strong-epi-mono-is-ofs .is-ofs.L-is-stable f g = C.∘-is-strong-epic
+    strong-epi-mono-is-ofs .is-ofs.is-iso→in-R f = C.invertible→monic
+    strong-epi-mono-is-ofs .is-ofs.R-is-stable f g = C.∘-is-monic
+    strong-epi-mono-is-ofs .is-ofs.L⊥R = C.StrongEpis⊥Monos
 ```
 
 ## Motivation
@@ -118,7 +118,9 @@ Regular categories are interesting in the study of categorical logic
 since they have exactly the structure required for their [subobject
 fibrations] to interpret existential quantifiers, _and_ for these to
 commute with substitution which, in this case, is interpreted as
-pullback.
+pullback. We explore this in more detail in the construction of the
+[[regular hyperdoctrine of subobjects]], but we sketch the main ideas
+here.
 
 [subobject fibrations]: Cat.Displayed.Instances.Subobjects.html
 
@@ -128,7 +130,7 @@ $\cC/b \adj \cC/a$: the right adjoint models the substitution (base
 change) along $f$, and the [[left adjoint]] models the _dependent sum_ over
 $f$. Between subobject categories, though, pullbacks are not enough
 structure: this can be seen type-theoretically by noting that, even if
-$P : A \to \Omega$ is a family of propositions, the sum $\Sigma_(x : A)
+$P : A \to \Omega$ is a family of propositions, the sum $\Sigma_{x : A}
 P(x)$ will generally not be.
 
 [an adjunction]: Cat.Functor.Pullback.html
@@ -146,7 +148,8 @@ $$
 $$,
 
 holds as long as $f$, $g$, $h$ and $k$ fit into a pullback square,
-expressing that existential quantification commutes with substitution.
+expressing that existential quantification commutes with substitution;
+this is the *Beck-Chevalley condition*.
 
 Another reason to be interested in regular categories is their
 well-behaved calculus of [relations]: any category with pullbacks has an

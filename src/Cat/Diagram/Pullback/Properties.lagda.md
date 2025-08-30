@@ -283,14 +283,14 @@ A similar result holds for isomorphisms.
   rotate-pullback pb .p₂∘universal = pb .p₁∘universal
   rotate-pullback pb .unique p q = pb .unique q p
 
-  pullback-unique
+  invertible≃pullback
     : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
         {p1' : Hom p' x} {p2' : Hom p' y}
     → (pb : is-pullback C p1 f p2 g)
     → (sq : f ∘ p1' ≡ g ∘ p2')
     → is-invertible (pb .universal sq)
     ≃ is-pullback C p1' f p2' g
-  pullback-unique {f = f} {g} {p1} {p2} {p1'} {p2'} pb sq
+  invertible≃pullback {f = f} {g} {p1} {p2} {p1'} {p2'} pb sq
     = prop-ext! inv→pb pb→inv
     where
     module _ (inv : is-invertible (pb .universal sq)) where
@@ -314,14 +314,35 @@ A similar result holds for isomorphisms.
         (pulll (pb' .p₂∘universal) ∙ pb .p₂∘universal)
         (idr _) (idr _))
 
+  pullback-unique
+    : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+        {p1' : Hom p' x} {p2' : Hom p' y}
+    → (pb : is-pullback C p1 f p2 g)
+    → (pb' : is-pullback C p1' f p2' g)
+    → is-invertible (pb .universal (pb' .square))
+  pullback-unique pb pb' =
+    Equiv.from (invertible≃pullback pb (pb' .square)) pb'
+
   is-pullback-iso
     : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
     → (i : p ≅ p')
     → is-pullback C p1 f p2 g
     → is-pullback C (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
   is-pullback-iso i pb = Equiv.to
-    (pullback-unique pb (extendl (pb .square)))
+    (invertible≃pullback pb (extendl (pb .square)))
     (subst is-invertible (pb .unique refl refl) (iso→invertible (i Iso⁻¹)))
+
+  is-pullback-iso'
+    : ∀ {p p' x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+        {p1' : Hom p' x} {p2' : Hom p' y}
+    → (i : p' ≅ p)
+    → (pb : is-pullback C p1 f p2 g)
+    → p1 ∘ i .to ≡ p1'
+    → p2 ∘ i .to ≡ p2'
+    → is-pullback C p1' f p2' g
+  is-pullback-iso' i pb com₁ com₂ = subst-is-pullback
+    com₁ refl com₂ refl
+    (is-pullback-iso (i Iso⁻¹) pb)
 
   Pullback-unique
     : ∀ {x y z} {f : Hom x z} {g : Hom y z}
@@ -334,7 +355,7 @@ A similar result holds for isomorphisms.
       (Univalent.Hom-pathp-refll-iso c-cat (x .p₂∘universal))
     where
       open Pullback
-      apices = c-cat .to-path (invertible→iso _ (Equiv.from (pullback-unique (y .has-is-pb) (x .square)) (x .has-is-pb)))
+      apices = c-cat .to-path (invertible→iso _ (Equiv.from (invertible≃pullback (y .has-is-pb) (x .square)) (x .has-is-pb)))
 
   canonically-stable
     : ∀ {ℓ'} (P : ∀ {a b} → Hom a b → Type ℓ')

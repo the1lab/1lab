@@ -1,9 +1,11 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
+open import Cat.Functor.Properties
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
 open import Cat.Morphism.Duality
@@ -24,7 +26,7 @@ module Cat.Functor.Conservative where
 ```agda
 private variable
   o h o₁ h₁ : Level
-  C D J : Precategory o h
+  C D E J : Precategory o h
 open Precategory
 open Functor
 open lifts-limit
@@ -47,6 +49,29 @@ is-conservative : Functor C D → Type _
 is-conservative {C = C} {D = D} F =
   ∀ {A B} {f : C .Hom A B}
   → is-invertible D (F .F₁ f) → is-invertible C f
+```
+
+Conservative functors are closed under composition.
+
+```agda
+F∘-is-conservative
+  : (F : Functor D E) (G : Functor C D)
+  → is-conservative F
+  → is-conservative G
+  → is-conservative (F F∘ G)
+F∘-is-conservative F G F-cons G-cons inv = G-cons (F-cons inv)
+```
+
+[[Fully faithful]] functors are conservative, which implies that
+[[equivalences|equivalence of categories]] are conservative.
+
+```agda
+equiv→conservative
+  : (F : Functor C D)
+  → is-equivalence F
+  → is-conservative F
+equiv→conservative F eqv =
+  is-ff→is-conservative {F = F} (is-equivalence→is-ff F eqv) _
 ```
 
 ## Conservative functors reflect (co)limits that they preserve

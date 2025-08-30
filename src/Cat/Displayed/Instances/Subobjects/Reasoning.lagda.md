@@ -25,32 +25,21 @@ open Subobj C public
 open Pullback
 open Cat C
 
+Subobject-fibration = with-pullbacks.Subobject-fibration pb
+
 private
-  module Ix = Cat.Displayed.Cartesian.Indexing Subobjects (with-pullbacks.Subobject-fibration pb)
+  module Ix = Cat.Displayed.Cartesian.Indexing Subobjects Subobject-fibration
   variable
     X Y Z : Ob
     f g h : Hom X Y
     l m n : Subobject X
-
-open Sub
-  renaming (_≅_ to _≅ₘ_)
-  using ()
-  public
-
-≅ₘ→iso : m ≅ₘ n → m .dom ≅ n .dom
-≅ₘ→iso p .to = p .Sub.to .map
-≅ₘ→iso p .from = p .Sub.from .map
-≅ₘ→iso p .inverses = record
-  { invl = ap ≤-over.map (p .Sub.invl)
-  ; invr = ap ≤-over.map (p .Sub.invr)
-  }
 ```
 -->
 
 # Subobjects in a cartesian category
 
 ```agda
-open with-pullbacks pb renaming (pullback-subobject to infixr 35 _^*_) public
+open Cartesian-fibration Subobjects Subobject-fibration public
 ```
 
 ```agda
@@ -67,18 +56,10 @@ open with-pullbacks pb renaming (pullback-subobject to infixr 35 _^*_) public
 ^*-assoc .from     = Ix.^*-comp-to
 ^*-assoc .inverses = record { invl = prop! ; invr = prop! }
 
-⊤ₘ : Subobject X
-⊤ₘ .dom   = _
-⊤ₘ .map   = id
-⊤ₘ .monic = id-monic
-
-opaque
-  !ₘ : m ≤ₘ ⊤ₘ
-  !ₘ {m = m} = record { map = m .map ; com = refl }
-
 module _ {X} where
   open Binary-products (Sub X) (Sub-products pb) public renaming
     ( _⊗₀_  to infixr 30 _∩ₘ_
+    ; _⊗₁_  to infixr 30 _∩ₘ₁_
     ; π₁    to ∩ₘ≤l
     ; π₂    to ∩ₘ≤r
     ; ⟨_,_⟩ to ∩ₘ-univ
@@ -91,7 +72,7 @@ opaque
   ∩ₘ-idr : m ∩ₘ ⊤ₘ ≅ₘ m
   ∩ₘ-idr = Sub-antisym ∩ₘ≤l (∩ₘ-univ Sub.id !ₘ)
 
-  ∩ₘ-assoc : l ∩ₘ m ∩ₘ n ≅ₘ (l ∩ₘ m) ∩ₘ n
+  ∩ₘ-assoc : l ∩ₘ (m ∩ₘ n) ≅ₘ (l ∩ₘ m) ∩ₘ n
   ∩ₘ-assoc = Sub-antisym
     (∩ₘ-univ (∩ₘ-univ ∩ₘ≤l (∩ₘ≤l Sub.∘ ∩ₘ≤r)) (∩ₘ≤r Sub.∘ ∩ₘ≤r))
     (∩ₘ-univ (∩ₘ≤l Sub.∘ ∩ₘ≤l) (∩ₘ-univ (∩ₘ≤r Sub.∘ ∩ₘ≤l) ∩ₘ≤r))
@@ -112,10 +93,7 @@ opaque
       }
 
   ^*-⊤ₘ : f ^* ⊤ₘ ≅ₘ ⊤ₘ
-  ^*-⊤ₘ {f = f} = Sub-antisym !ₘ record
-    { map = pb _ _ .universal {p₁' = id} {p₂' = f} id-comm
-    ; com = sym (pb _ _ .p₁∘universal ∙ introl refl)
-    }
+  ^*-⊤ₘ {f = f} = Sub-antisym !ₘ (^*-univ (record { map = f ; com = id-comm }))
 
 opaque
   is-pullback-along→iso : is-pullback-along C (m .map) h (n .map) → m ≅ₘ h ^* n
