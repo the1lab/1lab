@@ -387,6 +387,14 @@ open import Cat.Allegory.Instances.Mat
   -- The allegory of matrices with values in a frame
 ```
 
+Regular categories also have a well-behaved notion of *image
+factorisation*, allowing their fibrations of subobjects to interpret
+existential quantifiers.
+
+```agda
+open import Cat.Regular.Image -- Images in regular categories
+```
+
 ### Monoidal categories
 
 A [[monoidal category]] is the higher-dimensional counterpart of a

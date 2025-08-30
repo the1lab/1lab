@@ -187,6 +187,37 @@ module
 ```
 -->
 
+Just like with [[isomorphisms]] and [[limits]], it makes sense to
+consider the converse property: displayed functors that **reflect
+cartesian morphisms**. An example is given by fully faithful displayed
+functors.
+
+```agda
+  record reflects-cartesian-maps (F' : Displayed-functor F ℰ ℱ) : Type lvl where
+    no-eta-equality
+    open Displayed-functor F'
+    field
+      reflects
+        : ∀ {a b a' b'} {f : A.Hom a b} {f' : ℰ.Hom[ f ] a' b'}
+        → ℱ.is-cartesian (F.₁ f) (F₁' f')
+        → ℰ.is-cartesian f f'
+```
+
+<!--
+```agda
+  instance
+    H-Level-reflects-cartesian-maps
+      : ∀ {F' : Displayed-functor F ℰ ℱ}
+      → {n : Nat}
+      → H-Level (reflects-cartesian-maps F') (suc n)
+    H-Level-reflects-cartesian-maps {n = n} =
+      hlevel-instance (Iso→is-hlevel (suc n) eqv (hlevel (suc n)))
+      where
+        unquoteDecl eqv = declare-record-iso eqv (quote reflects-cartesian-maps)
+        open ℱ -- Needed for the is-cartesian H-Level instances.
+```
+-->
+
 One can also define the composition of displayed functors,
 which lies over the composition of the underlying functors.
 
@@ -385,6 +416,12 @@ module
         : ∀ {x} {a b c : ℰ.Ob[ x ]} {f : ℰ.Hom[ B.id ] b c} {g : ℰ.Hom[ B.id ] a b}
         → F₁' (f ℰ↓.∘ g) ≡ F₁' f ℱ↓.∘ F₁' g
       F-∘↓ = ℱ.cast[] (apd (λ i → F₁') (ℰ.unwrap _) ℱ.∙[] F-∘' ℱ.∙[] ℱ.wrap _)
+
+    Fibre-map : ∀ x → Functor (Fibre ℰ x) (Fibre ℱ x)
+    Fibre-map x .Functor.F₀ = F₀'
+    Fibre-map x .Functor.F₁ = F₁'
+    Fibre-map x .Functor.F-id = F-id'
+    Fibre-map x .Functor.F-∘ f g = F-∘↓
 
   open Vertical-functor
 

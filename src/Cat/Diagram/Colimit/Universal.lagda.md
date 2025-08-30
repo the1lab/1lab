@@ -295,8 +295,8 @@ colimits, we get that $F$ is colimiting.
         (λ j → C/.invertible→iso
           (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
                   ; com = eq _ .p₁∘universal })
-          (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
-            (pb _ _ .Pullback.has-is-pb))))
+          (Forget/-is-conservative (pullback-unique
+            (rotate-pullback (eq _)) (pb _ _ .Pullback.has-is-pb))))
         λ f → ext (unique₂ (eq _)
           {p = sym (pb _ _ .Pullback.square) ∙ pushl (G .F-∘ _ _)}
           (pulll (sym (F .F-∘ _ _)) ∙ eq _ .p₁∘universal)
@@ -313,8 +313,8 @@ colimits, we get that $F$ is colimiting.
         (!const-isoⁿ (C/.invertible→iso
           (record { map = eq _ .universal (sym (pb _ _ .Pullback.square))
                   ; com = eq _ .p₁∘universal })
-          (Forget/-is-conservative (Equiv.from (pullback-unique (rotate-pullback (eq _)) _)
-            (pb _ _ .Pullback.has-is-pb)))))
+          (Forget/-is-conservative (pullback-unique
+            (rotate-pullback (eq _)) (pb _ _ .Pullback.has-is-pb)))))
         (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
           {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
           (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)

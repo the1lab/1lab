@@ -4,7 +4,9 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Displayed.Instances.Subobjects
 open import Cat.Instances.Elements.Covariant
+open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Site.Instances.Canonical
 open import Cat.CartesianClosed.Locally
@@ -12,10 +14,12 @@ open import Cat.Functor.Monadic.Crude
 open import Cat.Instances.Sheaf.Omega
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
+open import Cat.Morphism.Strong.Epi
 open import Cat.Diagram.Congruence
 open import Cat.Instances.Karoubi
 open import Cat.Instances.Sheaves
 open import Cat.Functor.Algebra
+open import Cat.Regular.Image
 open import Cat.Site.Closure
 open import Cat.Site.Base
 open import Cat.Regular
@@ -80,11 +84,20 @@ _ = with-pullbacks
 
 <!--
 ```agda
+_ = Subobject-weak-opfibration
+_ = weak-cocartesian-lift→left-adjoint
+_ = is-extremal-epi→is-strong-epi
+_ = Sub-regular
 _ = is-strong-epi→is-regular-epi
 _ = is-congruence
 ```
 -->
 
+* Lemma 1.3.1:
+  * (i ⇔ ii) essentially by definition, since images are defined in terms of universal morphisms
+  * (i ⇒ iii) `Subobject-weak-opfibration`{.Agda}, `weak-cocartesian-lift→left-adjoint`{.Agda}
+* Lemma 1.3.2: `is-extremal-epi→is-strong-epi`{.Agda}
+* Lemma 1.3.3: Frobenius reciprocity for `Sub-regular`{.Agda}
 * Proposition 1.3.4: `is-strong-epi→is-regular-epi`{.Agda}
 * Definition 1.3.6: `is-congruence`{.Agda}
 
