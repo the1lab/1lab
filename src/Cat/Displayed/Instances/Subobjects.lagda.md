@@ -4,13 +4,19 @@ open import 1Lab.Reflection.Copattern
 
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
+open import Cat.Displayed.Instances.Slice
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Univalence
+open import Cat.Functor.Conservative
 open import Cat.Displayed.Cartesian
+open import Cat.Functor.Properties
+open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Displayed.Fibre
+open import Cat.Instances.Slice
 open import Cat.Displayed.Base
 open import Cat.Diagram.Image
 open import Cat.Prelude
@@ -124,11 +130,58 @@ Subobjects .hom[_] p f .map = f .map
 Subobjects .hom[_] p f .com = ap₂ _∘_ (sym p) refl ∙ f .com
 Subobjects .coh[_] p f = prop!
 
+open reflects-cartesian-maps
 open Weak-cocartesian-lift
 open is-weak-cocartesian
+open Displayed-functor
+open is-fibred-functor
 open Cartesian-lift
 open is-cartesian
 open Pullback
+```
+-->
+
+The displayed category of subobjects comes with a forgetful [[vertical
+functor]] to the [[fundamental fibration]] of $\cB$.
+
+```agda
+Forget-subobjects : Vertical-functor Subobjects (Slices B)
+Forget-subobjects .F₀' m = cut (m .map)
+Forget-subobjects .F₁' f = record { map = f .map ; com = sym (f .com) }
+Forget-subobjects .F-id' = Slice-path refl
+Forget-subobjects .F-∘' = Slice-path refl
+```
+
+This functor is fully faithful, hence it reflects cartesian morphisms:
+a pullback square in $\cB$ determines a cartesian morphism in the
+subobject fibration.
+In fact, the uniqueness part follows automatically from the uniqueness
+of maps in the subobject fibration!
+
+```agda
+Forget-sub-full
+  : ∀ {a b} {a' : Subobject a} {b' : Subobject b} {f : Hom a b}
+  → Slice-hom B f (Forget-subobjects .F₀' a') (Forget-subobjects .F₀' b')
+  → ≤-over f a' b'
+Forget-sub-full f' = record { map = f' .map ; com = sym (f' .com) }
+
+Forget-sub-reflects-cartesian : reflects-cartesian-maps Forget-subobjects
+Forget-sub-reflects-cartesian .reflects cart = record
+  { universal = λ m m' → Forget-sub-full
+      (cart .universal m (Forget-subobjects .F₁' m'))
+  ; commutes = λ _ _ → prop!
+  ; unique = λ _ _ → prop!
+  }
+```
+
+<!--
+```agda
+pullback→cartesian-sub
+  : ∀ {x y x' y'} {f : Hom x y} {f' : ≤-over f x' y'}
+  → is-pullback B (x' .map) f (f' .map) (y' .map)
+  → is-cartesian Subobjects f f'
+pullback→cartesian-sub pb = Forget-sub-reflects-cartesian .reflects
+  (pullback→cartesian B pb)
 ```
 -->
 
@@ -162,8 +215,7 @@ remind ourselves of the universal property:
 On the first stage, we are given the data in black: we can complete an
 open span $y' \mono y \xot{f} x$ to a Cartesian square (in blue) by
 pulling $y'$ back along $f$; this base change remains a monomorphism.
-Now given the data in red, we verify that the dashed arrow exists, which
-is enough for its uniqueness.
+Since a pullback square is cartesian, we are done.
 
 <!--
 ```agda
@@ -178,8 +230,10 @@ module with-pullbacks (pb : has-pullbacks B) where
     → Subobject X
   pullback-subobject h g .dom = pb h (g .map) .apex
   pullback-subobject h g .map = pb h (g .map) .p₁
-  pullback-subobject h g .monic = is-monic→pullback-is-monic
-    (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
+  pullback-subobject h g .monic = mon where abstract
+    mon : is-monic (pb h (g .map) .p₁)
+    mon = is-monic→pullback-is-monic
+      (g .monic) (rotate-pullback (pb h (g .map) .has-is-pb))
 
   Subobject-fibration : Cartesian-fibration Subobjects
   Subobject-fibration f y' = l where
@@ -191,12 +245,8 @@ module with-pullbacks (pb : has-pullbacks B) where
     l .lifting .map = pb f (y' .map) .p₂
     l .lifting .com = pb f (y' .map) .square
 
-    -- The dashed red arrow:
-    l .cartesian .universal {u' = u'} m h' = λ where
-      .map → pb f (y' .map) .universal (pushr refl ∙ h' .com)
-      .com → sym (pb f (y' .map) .p₁∘universal)
-    l .cartesian .commutes _ _ = prop!
-    l .cartesian .unique _ _   = prop!
+    l .cartesian = Forget-sub-reflects-cartesian .reflects
+      (pullback→cartesian B (pb _ _ .has-is-pb))
 ```
 
 ## As a (weak) cocartesian fibration
@@ -216,7 +266,7 @@ Subobject-weak-opfibration ims f x' = l where
 
 To understand this result, we remind ourselves of the universal property
 of an image factorisation for $f : a \to b$: It is the initial subobject
-through with $f$ factors. That is to say, if $m : \Sub(b)$ is another
+through which $f$ factors. That is to say, if $m : \Sub(b)$ is another
 subobject, and $f = me$ for some map $e : a \to m$, then $m \le \im f$.
 Summarised diagrammatically, the universal property of an image
 factorisation looks like a kite:
@@ -247,7 +297,8 @@ co-cartesian lift:
   \arrow["f"', from=3-1, to=3-3]
   \arrow[hook, from=1-3, to=3-3]
   \arrow[hook, from=1-5, to=3-3]
-  \arrow[dashed, from=1-1, to=1-3]
+  \arrow[from=1-1, to=1-3]
+  \arrow["{\exists!}"', dashed, from=1-3, to=1-5]
   \arrow["h", curve={height=-18pt}, from=1-1, to=1-5]
 \end{tikzcd}\]
 ~~~
@@ -292,15 +343,26 @@ the subobject fibration.
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = record { Precategory (Fibre Subobjects y) }
+Sub y = Fibre Subobjects y
 
 module Sub {y} = Cr (Sub y)
 ```
 
 <!--
 ```agda
+private variable
+  y : Ob
+  m n : Subobject y
+
 _≤ₘ_ : ∀ {y} (a b : Subobject y) → Type _
 _≤ₘ_ = ≤-over id
+
+open Sub
+  renaming (_≅_ to infix 7 _≅ₘ_)
+  using ()
+  public
+
+infix 7 _≤ₘ_
 
 ≤ₘ→monic : ∀ {y} {a b : Subobject y} → (f : a ≤ₘ b) → is-monic (f .map)
 ≤ₘ→monic {a = a} f g h α = a .monic g h $
@@ -318,12 +380,68 @@ cutₛ x .dom   = _
 cutₛ x .map   = _
 cutₛ x .monic = x
 
-Sub-antisym
-  : ∀ {y} {a b : Subobject y}
-  → a ≤ₘ b
-  → b ≤ₘ a
-  → a Sub.≅ b
+Sub-antisym : m ≤ₘ n → n ≤ₘ m → m ≅ₘ n
 Sub-antisym f g = Sub.make-iso f g prop! prop!
+```
+-->
+
+There is an evident fully faithful functor from $\Sub(y) to \cB/y$ that
+forgets the property of being monic.
+
+```agda
+Sub→Slice : ∀ y → Functor (Sub y) (Slice B y)
+Sub→Slice y .Functor.F₀ m = cut (m .map)
+Sub→Slice y .Functor.F₁ f = record { map = f .map ; com = sym (f .com) ∙ idl _ }
+Sub→Slice y .Functor.F-id = ext refl
+Sub→Slice y .Functor.F-∘ _ _ = ext refl
+
+Sub→Slice-is-ff
+  : ∀ y → is-fully-faithful (Sub→Slice y)
+Sub→Slice-is-ff y = is-iso→is-equiv λ where
+  .is-iso.from m → record { map = m ./-Hom.map ; com = idl _ ∙ sym (m ./-Hom.com) }
+  .is-iso.rinv m → ext refl
+  .is-iso.linv m → prop!
+```
+
+Composing this with the forgetful functor $\cB/y \to \cB$, we obtain a
+projection $\Sub(y) \to \cB$. As both forgetful functors are
+[[conservative]], so is the projection, which concretely means that
+we can construct isomorphisms in $\Sub(y)$ from isomorphisms in $\cB$.
+
+```agda
+Sub-cod : ∀ y → Functor (Sub y) B
+Sub-cod y = Forget/ F∘ Sub→Slice y
+
+Sub→Slice-conservative
+  : ∀ y → is-conservative (Sub→Slice y)
+Sub→Slice-conservative y = is-ff→is-conservative
+  {F = Sub→Slice y} (Sub→Slice-is-ff y) _
+
+Sub-cod-conservative
+  : ∀ y → is-conservative (Sub-cod y)
+Sub-cod-conservative y = F∘-is-conservative Forget/ (Sub→Slice y)
+  Forget/-is-conservative
+  (Sub→Slice-conservative y)
+
+invertible→≅ₘ
+  : (f : m ≤ₘ n)
+  → is-invertible (f .map)
+  → m ≅ₘ n
+invertible→≅ₘ f inv = Sub.invertible→iso f (Sub-cod-conservative _ inv)
+```
+
+<!--
+```agda
+iso→≅ₘ
+  : (is : m .dom ≅ n .dom)
+  → m .map ≡ n .map ∘ is .to
+  → m ≅ₘ n
+iso→≅ₘ is com = invertible→≅ₘ
+  (record { map = is .to ; com = idl _ ∙ com })
+  (iso→invertible is)
+
+≅ₘ→iso : m ≅ₘ n → m .dom ≅ n .dom
+≅ₘ→iso p = F-map-iso (Sub-cod _) p
 
 Sub-path
   : ∀ {y} {a b : Subobject y}
@@ -340,9 +458,34 @@ Sub-path {a = a} {b = b} p q i .monic {c} =
 
 ## Fibrewise cartesian structure
 
+Finite products in $\Sub(y)$ are [[created|created limit]] by the
+projection to $\cB/y$; in other words, they are computed just like
+[[finite products in $\cB/y$|finite limits in slices]]. We spell them
+out explicitly.
+
+The greatest element ([[terminal object]]) $\top$ in $\Sub(y)$ is given
+by the identity monomorphism $y \mono y$.
+
+```agda
+⊤ₘ : ∀ {y} → Subobject y
+⊤ₘ .dom   = _
+⊤ₘ .map   = id
+⊤ₘ .monic = id-monic
+
+opaque
+  !ₘ : ∀ {y} {m : Subobject y} → m ≤ₘ ⊤ₘ
+  !ₘ {m = m} = record { map = m .map ; com = refl }
+
+Sub-terminal : ∀ {y} → Terminal (Sub y)
+Sub-terminal .Terminal.top = ⊤ₘ
+Sub-terminal .Terminal.has⊤ m = contr !ₘ λ _ → prop!
+```
+
 Since products in slice categories are given by pullbacks, and pullbacks
 preserve monomorphisms, if $\cB$ has pullbacks, then $\Sub(y)$ has
-products, regardless of what $y$ is.
+products, regardless of what $y$ is. Given two subobjects $\alpha, \beta
+: \Sub(y)$, we write their product as $\alpha \cap \beta$ and think of
+it as their *intersection*.
 
 ```agda
 Sub-products

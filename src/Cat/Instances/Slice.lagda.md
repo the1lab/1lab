@@ -248,7 +248,7 @@ the triangle commute, so that $f$ is invertible in $\cC/c$.
       f⁻¹ .com = C.rswizzle (sym (f .com)) i.invl
 ```
 
-## Finite limits
+## Finite limits {defines="finite-limits-in-slices"}
 
 We discuss the construction of _finite_ limits in the slice of $\cC/c$.
 First, every slice category has a [[terminal object]], given by the

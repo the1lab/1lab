@@ -185,7 +185,7 @@ into a subobject.]
   → (φ : c ↬ d)
   → (ψ : b ↬ c)
   → (χ : a ↬ b)
-  → (∘-rel φ (∘-rel ψ χ)) Sub.≅ (∘-rel (∘-rel φ ψ) χ)
+  → (∘-rel φ (∘-rel ψ χ)) ≅ₘ (∘-rel (∘-rel φ ψ) χ)
 ∘-rel-assoc {a} {b} {c} {d} r s t = done where
   module rs = ∘-rel r s
   module st = ∘-rel s t
@@ -390,13 +390,13 @@ which we can calculate is exactly $\langle t_1u_1x_1 , r_2v_2x_2
 
 ```agda
   [rs]t≅i : Im ⟨ t₁ ∘ [rs]t.inter .p₁ , (π₂ ∘ i) ∘ [rs]t.inter .p₂ ⟩
-      Sub.≅ Im ⟨ t₁ ∘ u₁ ∘ x₁ , r₂ ∘ v₂ ∘ x₂ ⟩
-  [rs]t≅i = subst (λ e → Im [rs]t.it Sub.≅ Im e)
+      ≅ₘ Im ⟨ t₁ ∘ u₁ ∘ x₁ , r₂ ∘ v₂ ∘ x₂ ⟩
+  [rs]t≅i = subst (λ e → Im [rs]t.it ≅ₘ Im e)
     (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩
       (pullr ([rs]t.inter .p₁∘universal))
       ( pullr ([rs]t.inter .p₂∘universal)
       ∙ extendl (pullr (sym (factor _ .factors)) ∙ π₂∘⟨⟩)))
-    (image-pre-cover [rs]t.it _ α-cover)
+    (image-pre-cover [rs]t.it _ α-cover Sub.Iso⁻¹)
 ```
 
 Now do that whole thing over again. I'm not joking: start by forming the
@@ -433,13 +433,13 @@ want to look at the formalisation.
   β-cover : is-strong-epi C β
   β-cover = stable _ _ (factor st.it .left∈L) β-is-pb
 
-  r[st]≅i : Im r[st].it Sub.≅ Im j
-  r[st]≅i = subst (λ e → Im r[st].it Sub.≅ Im e)
+  r[st]≅i : Im r[st].it ≅ₘ Im j
+  r[st]≅i = subst (λ e → Im r[st].it ≅ₘ Im e)
     (⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ (pullr (r[st].inter .p₁∘universal) ∙ extendl (pullr (sym (factor _ .factors)) ∙ π₁∘⟨⟩))
                        (pullr (r[st].inter .p₂∘universal)))
-    (image-pre-cover r[st].it _ β-cover)
+    (image-pre-cover r[st].it _ β-cover Sub.Iso⁻¹)
 
-  done : Im r[st].it Sub.≅ Im [rs]t.it
+  done : Im r[st].it ≅ₘ Im [rs]t.it
   done = [rs]t≅i Sub.Iso⁻¹ Sub.∘Iso r[st]≅i
 ```
 -->
@@ -454,8 +454,8 @@ construct these three maps:
   : ∀ {b c d} {r r' : c ↬ d} {s s' : b ↬ c}
   → r ≤ₘ r' → s ≤ₘ s' → ∘-rel r s ≤ₘ ∘-rel r' s'
 
-∘-rel-idr : ∀ {a b} (f : a ↬ b) → ∘-rel f id-rel Sub.≅ f
-∘-rel-idl : ∀ {a b} (f : a ↬ b) → ∘-rel id-rel f Sub.≅ f
+∘-rel-idr : ∀ {a b} (f : a ↬ b) → ∘-rel f id-rel ≅ₘ f
+∘-rel-idl : ∀ {a b} (f : a ↬ b) → ∘-rel id-rel f ≅ₘ f
 ```
 
 Witnessing, respectively, that relational composition respects inclusion
