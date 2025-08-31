@@ -640,7 +640,10 @@ cartesian→postcompose-equiv cart =
 We call an object $y'$ over $y$ together with a Cartesian arrow $f' : x'
 \to y'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
 property as they are, are unique when they exist, so that "having
-Cartesian lifts" is a _property_, not a structure.
+Cartesian lifts" is a _property_, not a structure. We make this precise
+in [a separate module].
+
+[a separate module]: Cat.Displayed.Cartesian.Identity.html
 
 ```agda
 record
@@ -654,6 +657,13 @@ record
   open is-cartesian cartesian public
 ```
 
+<!--
+```agda
+unquoteDecl Cartesian-lift-path =
+  declare-record-path Cartesian-lift-path (quote Cartesian-lift)
+```
+-->
+
 We note that the classical literature often differentiates between
 _fibrations_ --- those displayed categories for which _there exist_
 Cartesian lifts for every right corner --- and _cloven fibrations_,
@@ -665,6 +675,9 @@ there is exactly _one_ choice to be made, that is, no choice at all.
 Thus, we do not dwell on the distinction.
 
 :::{.definition #fibred-category alias="cartesian-fibration fibration"}
+A **Cartesian fibration** is a displayed category having [[Cartesian
+lifts]] for every right corner.
+
 ```agda
 Cartesian-fibration : Type _
 Cartesian-fibration = ∀ {x y} (f : Hom x y) (y' : Ob[ y ]) → Cartesian-lift f y'
@@ -675,7 +688,6 @@ module Cartesian-fibration (fib : Cartesian-fibration) where
 
 <!--
 ```agda
-
   module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
     open Cartesian-lift (fib f y')
       using ()
@@ -704,9 +716,6 @@ uses the universal property that yields a vertical morphism.
   rebase f vert =
     π*.universal' id-comm (vert ∘' π* f _)
 ```
-
-A Cartesian fibration is a displayed category having Cartesian lifts for
-every right corner.
 
 ## Why?
 
