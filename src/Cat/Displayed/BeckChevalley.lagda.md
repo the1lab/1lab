@@ -26,7 +26,7 @@ import Cat.Reasoning
 module Cat.Displayed.BeckChevalley where
 ```
 
-# Beck-Chevalley conditions
+# Beck-Chevalley conditions {defines="Beck-Chevalley-condition"}
 
 Let $\cE \liesover \cB$ be a [[cartesian fibration]], which we shall
 view as a setting for some sort of logic or type theory. In particular,

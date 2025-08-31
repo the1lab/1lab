@@ -1,6 +1,9 @@
 <!--
 ```agda
+open import Cat.Diagram.Pullback.Properties
+open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cartesian.Weak
+open import Cat.Displayed.BeckChevalley
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
@@ -300,7 +303,7 @@ to $\underline{\cB}$ regarded as a Cartesian fibration as the
 
 ```agda
   Codomain-fibration
-    : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
+    : has-pullbacks B
     → Cartesian-fibration Slices
   Codomain-fibration pullbacks f y' = lift-f where
     module pb = Pullback (pullbacks f (y' .map))
@@ -352,20 +355,134 @@ functors]] between slice categories.
 ## As an opfibration
 
 The canonical self-indexing is *always* an opfibration, where
-opreindexing is given by postcomposition. If we think about slices as
-families, then opreindexing along $X \to Y$ extends a family over $X$
-to a family over $Y$ by adding in empty fibres for all elements of $Y$
-that do not lie in the image of $f$.
+opreindexing is given by postcomposition. Thinking of a fibration as a
+setting for interpreting type theory, this gives an interpretation for
+$\Sigma$-types in the codomain fibration of any category.
+
+In fact, we can characterise the cocartesian maps between slices as
+exactly those squares whose underlying top map is invertible.
+
+```agda
+  top-invertible→cocartesian
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-invertible (f' .map)
+    → is-cocartesian Slices f f'
+  top-invertible→cocartesian {x' = x'} {y' = y'} {f = f} {f'} inv = cocart where
+    module inv = is-invertible inv
+
+    cocart : is-cocartesian Slices f f'
+    cocart .universal m h' .map = h' .map ∘ inv.inv
+    cocart .universal {u' = u'} m h' .com =
+      u' .map ∘ h' .map ∘ inv.inv     ≡⟨ extendl (h' .com) ⟩
+      (m ∘ f) ∘ x' .map ∘ inv.inv     ≡⟨ pullr (extendl (sym (f' .com))) ⟩
+      m ∘ y' .map ∘ f' .map ∘ inv.inv ≡⟨ (refl⟩∘⟨ elimr inv.invl) ⟩
+      m ∘ y' .map                     ∎
+    cocart .commutes m h' = Slice-path (cancelr inv.invr)
+    cocart .unique m' p   = Slice-path (sym (rswizzle (sym (ap map p)) inv.invl))
+```
+
+Given a map $f : X \to Y$ and an object $X' : \cB/X$, the cocartesian
+lifting $f_! X' : \cB/Y$ is then witnessed by the following square:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {X'} & {X'} \\
+  X & Y
+  \arrow[equals, from=1-1, to=1-2]
+  \arrow["x"', from=1-1, to=2-1]
+  \arrow["{f \circ x}", from=1-2, to=2-2]
+  \arrow["f"', from=2-1, to=2-2]
+\end{tikzcd}\]
+~~~
 
 ```agda
   Codomain-opfibration : Cocartesian-fibration Slices
   Codomain-opfibration f x' = lift-f where
     lift-f : Cocartesian-lift Slices f x'
     lift-f .y'      = cut (f ∘ x' .map)
-    lift-f .lifting = record{ com = idr _ }
-    lift-f .cocartesian .universal m h' = record where
-      map = h' .map
-      com = h' .com ∙ pullr refl
-    lift-f .cocartesian .commutes m h' = Slice-pathp (idr _)
-    lift-f .cocartesian .unique m' p   = Slice-pathp (sym (idr _) ∙ ap map p)
+    lift-f .lifting = record{ map = id ; com = idr _ }
+    lift-f .cocartesian = top-invertible→cocartesian id-invertible
+```
+
+We can now prove the converse implication by uniqueness of cocartesian
+lifts.
+
+```agda
+  cocartesian→top-invertible
+    : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom B f x' y'}
+    → is-cocartesian Slices f f'
+    → is-invertible (f' .map)
+  cocartesian→top-invertible {x' = x'} {y'} {f = f} {f'} cocart = f'-inv where
+    module cocart = is-cocartesian cocart
+    open is-invertible
+    open Inverses
+
+    the-lift : Slice-hom B f x' (cut (f ∘ x' .map))
+    the-lift = Codomain-opfibration f x' .lifting
+
+    univ : Slice-hom B id y' (cut (f ∘ x' .map))
+    univ = cocart.universalv {b'' = cut (f ∘ x' .map)} the-lift
+
+    f'-inv : is-invertible (f' .map)
+    f'-inv .inv = univ .map
+    f'-inv .inverses .invl = ap map $ cocart.uniquev₂ {x' = y'} {g' = f'}
+      (record { map = _ ; com = pulll (f' .com) ∙ univ .com })
+      (Slices .id')
+      (Slice-pathp (cancelr (f'-inv .inverses .invr)))
+      (Slice-pathp (idl _))
+    f'-inv .inverses .invr = apd (λ _ → map) (cocart.commutesv the-lift)
+```
+
+## The Beck-Chevalley condition
+
+The canonical self-indexing satisfies the [[Beck-Chevalley condition]]
+at every pullback square in the base category. The situation is
+summarised by the following commuting cube:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {A'} &&& {C'} \\
+  & {B'} &&& {D'} \\
+  A &&& C \\
+  & B &&& D
+  \arrow["{k'}", from=1-1, to=1-4]
+  \arrow["{g'}"', from=1-1, to=2-2]
+  \arrow[from=1-1, to=3-1]
+  \arrow["{h'}", from=1-4, to=2-5]
+  \arrow[from=1-4, to=3-4]
+  \arrow["{f'}"', from=2-2, to=2-5]
+  \arrow[from=2-2, to=4-2]
+  \arrow[from=2-5, to=4-5]
+  \arrow["k", from=3-1, to=3-4]
+  \arrow["g"'{pos=0.2}, from=3-1, to=4-2]
+  \arrow["h", from=3-4, to=4-5]
+  \arrow["f"', from=4-2, to=4-5]
+\end{tikzcd}\]
+~~~
+
+Using our characterisations of cartesian and cocartesian morphisms
+above, we know that the left and right faces are pullback squares and
+that $f'$ is invertible, and we want to show that $k'$ is invertible.
+By assumption, the bottom face is also a pullback square, so by the
+[[pasting law for pullbacks]] we conclude that the top face is a
+pullback square as well; but invertible morphisms are stable under
+pullback, so we are done.
+
+```agda
+  Slices-beck-chevalley
+    : ∀ {a b c d} {f : Hom a b} {g : Hom c a} {h : Hom d b} {k : Hom c d}
+    → (pb : is-pullback B g f k h)
+    → left-beck-chevalley Slices _ _ _ _ (pb .is-pullback.square)
+  Slices-beck-chevalley pb {f' = f'} {g'} {h'} {k'} sq' f'-cocart g'-cart h'-cart =
+    top-invertible→cocartesian
+    $ is-invertible→pullback-is-invertible {g = h' .map} {p1 = g' .map}
+        (cocartesian→top-invertible f'-cocart)
+    $ rotate-pullback
+    $ pasting-outer→left-is-pullback
+        (cartesian→pullback h'-cart)
+        (subst-is-pullback (sym (k' .com)) refl refl (sym (f' .com))
+          (pasting-left→outer-is-pullback
+            (rotate-pullback pb)
+            (cartesian→pullback g'-cart)))
+        (sym (apd (λ _ → map) sq'))
 ```
