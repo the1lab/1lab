@@ -48,17 +48,17 @@ pre-existing classes $M$ and $E$ for $m$ and $e$ to belong to.
   record Splitting {X Y : ⌞ C ⌟} (f : Hom X Y) : Type (o ⊔ ℓ) where
     no-eta-equality
     field
-      {mid} : ⌞ C ⌟
-      map   : Hom X mid
-      out   : Hom mid Y
-      com   : f ≡ out ∘ map
+      {mid}   : ⌞ C ⌟
+      left    : Hom X mid
+      right   : Hom mid Y
+      factors : f ≡ right ∘ left
 ```
 
 <!--
 ```agda
   {-# INLINE Splitting.constructor #-}
 
-  open Splitting public
+  open Splitting
 ```
 -->
 
@@ -104,8 +104,8 @@ both the top and bottom rectangles commute.
 ```agda
     field
       map : Hom (s .mid) (t .mid)
-      sq₀ : t.map ∘ sq .top ≡ map     ∘ s.map
-      sq₁ : t.out ∘ map     ≡ sq .bot ∘ s.out
+      sq₀ : t.left ∘ sq .top ≡ map     ∘ s.left
+      sq₁ : t.right ∘ map    ≡ sq .bot ∘ s.right
 ```
 
 In the literature on factorisation systems, the [[total category]] of
@@ -130,6 +130,7 @@ unquoteDecl H-Level-Interpolant = declare-record-hlevel 2 H-Level-Interpolant (q
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
+  open Splitting
 
   Interpolant-pathp
     : ∀ {X X' Y Y'} {f : Hom X Y} {g : Hom X' Y'} {sq sq' : Homᵃ C f g} {p : sq ≡ sq'} {s : Splitting C f} {t : Splitting C g}
@@ -137,8 +138,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     → f .map ≡ g .map
     → PathP (λ i → Interpolant C (p i) s t) f g
   Interpolant-pathp p i .map = p i
-  Interpolant-pathp {p = q} {s} {t} {f} {g} p i .sq₀ = is-prop→pathp (λ i → Hom-set _ _ (t .map ∘ q i .top) (p i ∘ s .map)) (f .sq₀) (g .sq₀) i
-  Interpolant-pathp {p = q} {s} {t} {f} {g} p i .sq₁ = is-prop→pathp (λ i → Hom-set _ _ (t .out ∘ p i) (q i .bot ∘ s .out)) (f .sq₁) (g .sq₁) i
+  Interpolant-pathp {p = q} {s} {t} {f} {g} p i .sq₀ = is-prop→pathp (λ i → Hom-set _ _ (t .left ∘ q i .top) (p i ∘ s .left)) (f .sq₀) (g .sq₀) i
+  Interpolant-pathp {p = q} {s} {t} {f} {g} p i .sq₁ = is-prop→pathp (λ i → Hom-set _ _ (t .right ∘ p i) (q i .bot ∘ s .right)) (f .sq₁) (g .sq₁) i
 
   instance
     Extensional-Interpolant
@@ -214,7 +215,7 @@ module Factorisation {o ℓ} {C : Precategory o ℓ} (fac : Factorisation C) whe
 
   module _ {X Y : ⌞ C ⌟} (f : Hom X Y) where
     open Splitting (Section.S₀ fac (X , Y , f))
-      renaming (mid to Mid ; map to λ→ ; out to ρ→ ; com to factors)
+      renaming (mid to Mid ; left to λ→ ; right to ρ→)
       public
 
   module _ {u v w x : ⌞ C ⌟} {f : Hom u v} {g : Hom w x} (sq : Homᵃ C f g) where
