@@ -44,16 +44,14 @@ and an embedding $\im(f) \mono b$.
 
 ```agda
 Sets-regular .factor {a} {b} f = λ where
-  .mediating → el! (image f)
-  .mediate x → (f x) , inc (x , refl)
-  .forget    → fst
-
-  .mediate∈E → inc (is-regular-epi→is-strong-epi (Sets _) {a} {el! (image f)} _
+  .mid → el! (image f)
+  .left x → (f x) , inc (x , refl)
+  .right → fst
+  .left∈L → is-regular-epi→is-strong-epi (Sets _) {a} {el! (image f)} _
     (surjective→regular-epi _ _ _ λ {
-      (x , y) → ∥-∥-rec squash (λ { (pre , p) → inc (pre , Σ-prop-path! p) }) y }))
-
-  .forget∈M  → inc (embedding→monic (Subset-proj-embedding (λ _ → squash)))
-  .factors   → refl
+      (x , y) → ∥-∥-rec squash (λ { (pre , p) → inc (pre , Σ-prop-path! p) }) y })
+  .right∈R → embedding→monic (Subset-proj-embedding (λ _ → squash))
+  .factors → refl
 ```
 
 It additionally suffices to verify this only for our choice of pullbacks

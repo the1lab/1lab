@@ -201,10 +201,10 @@ into a subobject.]
   open Relation t renaming (src to t₁ ; tgt to t₂) hiding (rel)
 
   i : ∀ {x y} {f : Hom x y} → Hom im[ f ] y
-  i = factor _ .forget
+  i = factor _ .right
 
   q : ∀ {x y} {f : Hom x y} → Hom x im[ f ]
-  q = factor _ .mediate
+  q = factor _ .left
 
   ξ₁ = [rs]t.inter .p₁
   ξ₂ = [rs]t.inter .p₂
@@ -374,7 +374,7 @@ Since $q$ is a strong epi, $\alpha$ is, too.
     α-is-pb = pasting-outer→left-is-pullback ([rs]t.inter .has-is-pb) rem₁ ([rs]t.inter .p₂∘universal)
 
   α-cover : is-strong-epi C α
-  α-cover = stable _ _ (□-out! (factor rs.it .mediate∈E)) α-is-pb
+  α-cover = stable _ _ (factor rs.it .left∈L) α-is-pb
 ```
 
 The purpose of all this calculation is the following: Postcomposing with
@@ -433,7 +433,7 @@ want to look at the formalisation.
       (r[st].inter .p₁∘universal)
 
   β-cover : is-strong-epi C β
-  β-cover = stable _ _ (□-out! (factor st.it .mediate∈E)) β-is-pb
+  β-cover = stable _ _ (factor st.it .left∈L) β-is-pb
 
   r[st]≅i : Im r[st].it Sub.≅ Im j
   r[st]≅i = subst (λ e → Im r[st].it Sub.≅ Im e)
@@ -474,7 +474,7 @@ but keep in mind that they are not commented.
 ```agda
 ∘-rel-monotone {r = r} {r'} {s} {s'} α β =
   Im-universal (∘-rel.it r s) _
-    {e = factor _ .mediate ∘ ∘-rel.inter r' s' .universal
+    {e = factor _ .left ∘ ∘-rel.inter r' s' .universal
       {p₁' = β .map ∘ ∘-rel.inter _ _ .p₁}
       {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
       ( pullr (pulll (sym (β .com) ∙ idl _))
@@ -497,7 +497,7 @@ but keep in mind that they are not commented.
     (assoc _ _ _)
 
   f≤fid : f ≤ₘ ∘-rel f id-rel
-  f≤fid .map = factor _ .mediate ∘
+  f≤fid .map = factor _ .left ∘
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
   f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
@@ -511,7 +511,7 @@ but keep in mind that they are not commented.
     (assoc _ _ _ ∙ ∘-rel.inter id-rel f .square ∙ eliml π₁∘⟨⟩ ∙ introl π₂∘⟨⟩)
 
   f≤idf : f ≤ₘ ∘-rel id-rel f
-  f≤idf .map = factor _ .mediate ∘
+  f≤idf .map = factor _ .left ∘
     ∘-rel.inter id-rel f .universal {p₁' = id} {p₂' = Relation.tgt f}
       (idr _ ∙ sym (eliml π₁∘⟨⟩))
   f≤idf .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique

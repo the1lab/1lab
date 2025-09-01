@@ -8,6 +8,8 @@ open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Coproduct
 open import Cat.Functor.Morphism
 open import Cat.Diagram.Initial
+open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Zero
 open import Cat.Functor.Hom
 open import Cat.Groupoid
@@ -58,9 +60,7 @@ relative to epimorphisms in $\cC$.
 
 ```agda
 is-projective : (P : Ob) → Type _
-is-projective P =
-  ∀ {X Y} (p : Hom P Y) (e : X ↠ Y)
-  → ∃[ s ∈ Hom P X ] (e .mor ∘ s ≡ p)
+is-projective P = Lifts C P Epis
 ```
 
 If we take the perspective of generalized elements, then a projective
@@ -75,10 +75,10 @@ $s : Y \to X$, and note that $s \circ p$ factorizes $p$ through $e$.
 
 ```agda
 epis-split→all-projective
-  : (∀ {X Y} → (e : X ↠ Y) → ∥ has-section (e .mor) ∥)
+  : (∀ {X Y} (e : Hom X Y) → is-epic e → ∥ has-section e ∥)
   → ∀ {P} → is-projective P
-epis-split→all-projective epi-split p e = do
-  s ← epi-split e
+epis-split→all-projective epi-split e e-epic p = do
+  s ← epi-split e e-epic
   pure (s .section ∘ p , cancell (s .is-section))
   where open has-section
 ```
@@ -89,9 +89,9 @@ to get our desired section $s : Y \to X$.
 ```agda
 all-projective→epis-split
   : (∀ {P} → is-projective P)
-  → ∀ {X Y} → (e : X ↠ Y) → ∥ has-section (e .mor) ∥
-all-projective→epis-split pro e = do
-  (s , p) ← pro id e
+  → ∀ {X Y} (e : Hom X Y) → is-epic e → ∥ has-section e ∥
+all-projective→epis-split pro e e-epic = do
+  (s , p) ← pro e e-epic id
   pure (make-section s p)
 ```
 
@@ -118,8 +118,8 @@ pregroupoid→all-projective
   : is-pregroupoid C
   → ∀ {P} → is-projective P
 pregroupoid→all-projective pregroupoid =
-  epis-split→all-projective λ e →
-    pure (invertible→to-has-section (pregroupoid (e .mor)))
+  epis-split→all-projective λ e e-epic →
+    pure (invertible→to-has-section (pregroupoid e))
 ```
 
 Likewise, if $\cC$ has an [[initial object]] $\bot : \cC$, then
@@ -130,7 +130,7 @@ module _ (initial : Initial C) where
   open Initial initial
 
   initial-projective : is-projective bot
-  initial-projective p e = pure (¡ , ¡-unique₂ (e .mor ∘ ¡) p)
+  initial-projective e e-epic p = pure (¡ , ¡-unique₂ (e ∘ ¡) p)
 ```
 
 ## A functorial definition
@@ -149,10 +149,10 @@ preserves-epis→projective
   : ∀ {P}
   → preserves-epis (Hom-from C P)
   → is-projective P
-preserves-epis→projective {P = P} hom-epi {X = X} {Y = Y} p e =
+preserves-epis→projective {P = P} hom-epi {X} {Y} e e-epic p =
   epi→surjective (el! (Hom P X)) (el! (Hom P Y))
-    (e .mor ∘_)
-    (λ {c} → hom-epi (e .epic) {c = c})
+    (e ∘_)
+    (λ {c} → hom-epi e-epic {c = c})
     p
 ```
 
@@ -175,7 +175,7 @@ projective→preserves-epis pro {f = f} f-epi g h p =
         g (f ∘ s) ≡⟨ p $ₚ s ⟩
         h (f ∘ s) ≡⟨ ap h s-section ⟩
         h k       ∎)
-      (pro k (record { epic = f-epi }))
+      (pro f f-epi k)
 ```
 
 ## Closure of projectives
@@ -192,9 +192,9 @@ coproduct-projective
   → is-projective Q
   → is-coproduct C ι₁ ι₂
   → is-projective P+Q
-coproduct-projective {ι₁ = ι₁} {ι₂ = ι₂} P-pro Q-pro coprod p e = do
-  (s₁ , s₁-factor) ← P-pro (p ∘ ι₁) e
-  (s₂ , s₂-factor) ← Q-pro (p ∘ ι₂) e
+coproduct-projective {ι₁ = ι₁} {ι₂ = ι₂} P-pro Q-pro coprod e e-epic p = do
+  (s₁ , s₁-factor) ← P-pro e e-epic (p ∘ ι₁)
+  (s₂ , s₂-factor) ← Q-pro e e-epic (p ∘ ι₂)
   pure $
     [ s₁ , s₂ ] ,
     unique₂
@@ -214,10 +214,10 @@ indexed-coproduct-projective
   → (∀ i → is-projective (P i))
   → is-indexed-coproduct C P ι
   → is-projective ∐P
-indexed-coproduct-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X = X} {Y = Y} p e = do
+indexed-coproduct-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X} {Y} e e-epic p = do
   s ← Idx-pro
-        (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e .mor ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
-        (λ i → P-pro i (p ∘ ι i) e)
+        (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
+        (λ i → P-pro i e e-epic (p ∘ ι i))
   pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
   where open is-indexed-coproduct coprod
 ```
@@ -239,8 +239,8 @@ retract→projective
   → (s : Hom R P)
   → has-retract s
   → is-projective R
-retract→projective P-pro s r p e = do
-  (t , t-factor) ← P-pro (p ∘ r .retract) e
+retract→projective P-pro s r e e-epic p = do
+  (t , t-factor) ← P-pro e e-epic (p ∘ r .retract)
   pure (t ∘ s , pulll t-factor ∙ cancelr (r .is-retract))
 ```
 

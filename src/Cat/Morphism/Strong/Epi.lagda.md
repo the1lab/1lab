@@ -11,6 +11,8 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Morphism.Class
+open import Cat.Morphism.Lifts
 open import Cat.Diagram.Image
 open import Cat.Prelude
 
@@ -50,17 +52,15 @@ actually suffices to have _any_ lift: they are automatically unique.
 
 ```agda
 is-strong-epi : ∀ {a b} → Hom a b → Type _
-is-strong-epi f = is-epic f × ∀ {c d} (m : c ↪ d) → m⊥m C f (m .mor)
+is-strong-epi f = is-epic f × Orthogonal C f Monos
 
 lifts→is-strong-epi
   : ∀ {a b} {f : Hom a b}
   → is-epic f
-  → ( ∀ {c d} (m : c ↪ d) {u} {v} → v ∘ f ≡ m .mor ∘ u
-    → Lifting C f (m .mor) u v)
+  → Lifts C f Monos
   → is-strong-epi f
-lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
-  contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path!
-    (mm .monic _ _ (sym (q ∙ sym (lift-it mm sq .snd .snd)))) }
+lifts→is-strong-epi epic lifts =
+  epic , left-epic-lift→orthogonal-class C Monos epic lifts
 ```
 
 <!--
@@ -69,6 +69,13 @@ abstract
   is-strong-epi-is-prop
     : ∀ {a b} (f : Hom a b) → is-prop (is-strong-epi f)
   is-strong-epi-is-prop f = hlevel 1
+
+StrongEpis : Arrows C (o ⊔ ℓ)
+StrongEpis .arrows = is-strong-epi
+StrongEpis .is-tr = hlevel 1
+
+StrongEpis⊥Monos : Orthogonal C StrongEpis Monos
+StrongEpis⊥Monos f (f-epi , f⊥Monos) = f⊥Monos
 ```
 -->
 
@@ -99,20 +106,19 @@ The first thing we show is that strong epimorphisms are closed under
 composition. It will suffice to show that the composite $fg$ of a pair
 of strong epimorphisms is epic, and that it [[lifts against]] every
 monomorphism. But this is just a pasting of existing results: we already
-know that being epic is `closed under composition`{.Agda ident=∘-is-epic},
-and that so is `lifting against a given map`{.Agda
-ident=∘l-lifts-against} --- in this case, an arbitrary monomorphism $m$.
+know that being epic is `closed under composition`{.Agda
+ident=∘-is-epic}, and that so is `lifting against a given map`{.Agda
+ident=∘l-lifts-class} --- in this case, an arbitrary monomorphism $m$.
 
 ```agda
-strong-epi-∘
-  : ∀ {a b c} (f : Hom b c) (g : Hom a b)
-  → is-strong-epi f
-  → is-strong-epi g
-  → is-strong-epi (f ∘ g)
-strong-epi-∘ f g (f-epi , f-str) (g-epi , g-str) =
-  lifts→is-strong-epi (∘-is-epic f-epi g-epi) λ e → ∘l-lifts-against C
-    (orthogonal→lifts-against C (f-str e))
-    (orthogonal→lifts-against C (g-str e))
+∘-is-strong-epic
+  : ∀ {a b c} {f : Hom b c} {g : Hom a b}
+  → is-strong-epi f → is-strong-epi g → is-strong-epi (f ∘ g)
+∘-is-strong-epic (f-epi , f-str) (g-epi , g-str) =
+    lifts→is-strong-epi (∘-is-epic f-epi g-epi)
+  $ ∘l-lifts-class C Monos
+      (orthogonal→lifts-right-class C Monos f-str)
+      (orthogonal→lifts-right-class C Monos g-str)
 ```
 
 Additionally, there is a partial converse to this result: If the
@@ -141,18 +147,15 @@ get a lift $t$.
 ```agda
 strong-epi-cancelr
   : ∀ {a b c} (f : Hom b c) (g : Hom a b)
-  → is-strong-epi (f ∘ g)
-  → is-strong-epi f
-strong-epi-cancelr f g (fg-epi , fg-str) =
-  lifts→is-strong-epi f-epi f-str
-  where
-    f-epi : is-epic f
-    f-epi = epic-cancelr fg-epi
+  → is-strong-epi (f ∘ g) → is-strong-epi f
+strong-epi-cancelr f g (fg-epi , fg-str) = lifts→is-strong-epi f-epi f-str where
+  f-epi : is-epic f
+  f-epi = epic-cancelr fg-epi
 
-    f-str : ∀ {c d} (m : c ↪ d) {u} {v} → v ∘ f ≡ m .mor ∘ u → _
-    f-str m {u} {v} vf=mu =
-      let (w , wfg=ug , mw=v) = fg-str m (extendl vf=mu) .centre
-      in w , m .monic (w ∘ f) u (pulll mw=v ∙ vf=mu) , mw=v
+  f-str : Lifts C f Monos
+  f-str m m-monic u v vf=mu =
+    let (w , wfg=ug , mw=v) = fg-str m m-monic (u ∘ g) v (extendl vf=mu) .centre in
+    pure (w , m-monic (w ∘ f) u (pulll mw=v ∙ vf=mu) , mw=v)
 ```
 
 As an immediate consequence of the definition, a monic strong epi is an
@@ -162,9 +165,10 @@ self-orthogonal maps are isos.
 
 ```agda
 strong-epi+mono→invertible
-  : ∀ {a b} {f : Hom a b} → is-strong-epi f → is-monic f → is-invertible f
-strong-epi+mono→invertible (_ , strong) mono  =
-  self-orthogonal→invertible C _ (strong (record { monic = mono }))
+  : ∀ {a b} {f : Hom a b}
+  → is-strong-epi f → is-monic f → is-invertible f
+strong-epi+mono→invertible (_ , strong) mono =
+  self-orthogonal→invertible C _ (strong _ mono)
 ```
 
 # Regular epis are strong
@@ -220,21 +224,20 @@ is-regular-epi→is-strong-epi
   → is-regular-epi C f
   → is-strong-epi f
 is-regular-epi→is-strong-epi {a} {b} f regular =
-  lifts→is-strong-epi
-    r.is-regular-epi→is-epic
-    (λ m x → map m x , r.factors , lemma m x)
-    where
+  lifts→is-strong-epi r.is-regular-epi→is-epic λ m m-monic u v vf=mu →
+    pure (map m-monic vf=mu , r.factors , lemma m-monic vf=mu)
+  where
     module r = is-regular-epi regular renaming (arr₁ to s ; arr₂ to t)
-    module _ {c} {d} (z : c ↪ d) {u} {v} (vf=zu : v ∘ f ≡ z .mor ∘ u) where
-      module z = _↪_ z
+    module _ {c} {d} {m : Hom c d} {u} {v} (m-monic : is-monic m) (vf=mu : v ∘ f ≡ m ∘ u) where
       map : Hom b c
-      map = r.universal {e' = u} $ z.monic _ _ $
-        z .mor ∘ u ∘ r.s ≡⟨ extendl (sym vf=zu) ⟩
-        v ∘ f ∘ r.s      ≡⟨ refl⟩∘⟨ r.coequal ⟩
-        v ∘ f ∘ r.t      ≡˘⟨ extendl (sym vf=zu) ⟩
-        z .mor ∘ u ∘ r.t ∎
+      map = r.universal {e' = u} $ m-monic _ _ $
+        m ∘ u ∘ r.s ≡⟨ extendl (sym vf=mu) ⟩
+        v ∘ f ∘ r.s ≡⟨ refl⟩∘⟨ r.coequal ⟩
+        v ∘ f ∘ r.t ≡˘⟨ extendl (sym vf=mu) ⟩
+        m ∘ u ∘ r.t ∎
+
       lemma = r.is-regular-epi→is-epic _ _ $
-        sym (vf=zu ∙ pushr (sym r.factors))
+        sym (vf=mu ∙ pushr (sym r.factors))
 ```
 
 # Images
@@ -291,10 +294,8 @@ in the relevant comma categories.
     module o = ↓Obj other
 
     the-lifting =
-      str-epi
-        (record { monic = o.cod .snd })
-        {u = o.map .map}
-        {v = im→b} (sym (o.map .com ∙ sym fact))
+      str-epi _ (o.cod .snd) (o.map .map) im→b
+        (sym (o.map .com ∙ sym fact))
 
     dh : ↓Hom (!Const (cut f)) _ obj other
     dh .top      = tt
@@ -353,10 +354,9 @@ equaliser $Eq(u,v)$ and arrange them like
 equaliser-lifts→is-strong-epi
   : ∀ {a b} {f : Hom a b}
   → (∀ {a b} (f g : Hom a b) → Equaliser C f g)
-  → ( ∀ {c d} (m : c ↪ d) {u} {v} → v ∘ f ≡ m .mor ∘ u
-    → Σ[ w ∈ Hom b c ] ((w ∘ f ≡ u) × (m .mor ∘ w ≡ v)))
+  → Lifts C f Monos
   → is-strong-epi f
-equaliser-lifts→is-strong-epi {f = f} eqs ls = lifts→is-strong-epi epi ls where
+equaliser-lifts→is-strong-epi {f = f} eqs lifts = lifts→is-strong-epi epi lifts where
 ```
 
 By the universal property of $Eq(u,v)$, since there's $uf = vf$, there's
@@ -367,14 +367,13 @@ $ew = \mathrm{id}$ --- so that $e$, being a retract, is an epimorphism.
 
 ```agda
   epi : is-epic f
-  epi u v uf=vf =
+  epi u v uf=vf = ∥-∥-out! do
     let
       module ker = Equaliser (eqs u v)
       k = ker.universal uf=vf
-      (w , p , q) = ls
-        (record { monic = is-equaliser→is-monic _ ker.has-is-eq })
-        {u = k} {v = id}
-        (idl _ ∙ sym ker.factors)
+    (w , p , q) ← lifts ker.equ (is-equaliser→is-monic _ ker.has-is-eq) k id
+      (idl _ ∙ sym ker.factors)
+    let
       e-epi : is-epic ker.equ
       e-epi = retract-is-epi q
 ```
@@ -384,7 +383,7 @@ $v$ --- so that we have $ue = ve$, and since we've _just_ shown that $e$
 is epic, this means we have $u = v$ --- exactly what we wanted!
 
 ```agda
-    in e-epi u v ker.equal
+    pure (e-epi u v ker.equal)
 ```
 
 ## Extremal epimorphisms {defines="extremal-epi extremal-epimorphism"}
@@ -408,7 +407,7 @@ is-extremal-epi→is-strong-epi
   → is-extremal-epi e
   → is-strong-epi e
 is-extremal-epi→is-strong-epi {a} {b} {e} lex extremal =
-  equaliser-lifts→is-strong-epi lex.equalisers λ w → Mk.the-lift w where
+  equaliser-lifts→is-strong-epi lex.equalisers Mk.the-lift where
     module lex = Finitely-complete lex
 ```
 
@@ -439,15 +438,19 @@ map $u : A \times_D B \mono B$ is a monomorphism since it results from
 pulling back a monomorphism.
 
 ```agda
-    module Mk {c d : Ob} (m : c ↪ d) {u : Hom a c} {v : Hom b d}
-              (wit : v ∘ e ≡ m .mor ∘ u) where
-      module P = Pullback (lex.pullbacks v (m .mor)) renaming (p₁ to q ; p₂ to p)
+    module Mk
+      {c d : Ob}
+      (m : Hom c d) (m-monic : is-monic m)
+      (u : Hom a c) (v : Hom b d)
+      (wit : v ∘ e ≡ m ∘ u)
+      where
+      module P = Pullback (lex.pullbacks v m) renaming (p₁ to q ; p₂ to p)
       r : Hom a P.apex
       r = P.universal {p₁' = e} {p₂' = u} wit
 
       abstract
         q-mono : is-monic P.q
-        q-mono = is-monic→pullback-is-monic (m .monic) (rotate-pullback P.has-is-pb)
+        q-mono = is-monic→pullback-is-monic (m-monic) (rotate-pullback P.has-is-pb)
 ```
 
 We thus have a factorisation $e = qr$ of $e$ through a monomorphism $q$,
@@ -461,17 +464,20 @@ appropriately:
 
       q⁻¹ = q-iso .is-invertible.inv
 
-      the-lift : Σ (Hom b c) λ w → (w ∘ e ≡ u) × (m .mor ∘ w ≡ v)
-      the-lift .fst = P.p ∘ q⁻¹
-      the-lift .snd .fst = m .monic _ _ $
-        m .mor ∘ (P.p ∘ q⁻¹) ∘ e ≡⟨ extendl (pulll (sym P.square)) ⟩
-        (v ∘ P.q) ∘ q⁻¹ ∘ e      ≡⟨ cancel-inner (q-iso .is-invertible.invl) ⟩
-        v ∘ e                    ≡⟨ wit ⟩
-        m .mor ∘ u               ∎
-      the-lift .snd .snd = invertible→epic q-iso _ _ $
-        (m .mor ∘ (P.p ∘ q⁻¹)) ∘ P.q ≡⟨ pullr (cancelr (q-iso .is-invertible.invr)) ⟩
-        m .mor ∘ P.p                 ≡˘⟨ P.square ⟩
-        v ∘ P.q                      ∎
+      the-lifting : Lifting C e m u v
+      the-lifting .fst = P.p ∘ q⁻¹
+      the-lifting .snd .fst = m-monic _ _ $
+        m ∘ (P.p ∘ q⁻¹) ∘ e ≡⟨ extendl (pulll (sym P.square)) ⟩
+        (v ∘ P.q) ∘ q⁻¹ ∘ e ≡⟨ cancel-inner (q-iso .is-invertible.invl) ⟩
+        v ∘ e               ≡⟨ wit ⟩
+        m ∘ u               ∎
+      the-lifting .snd .snd = invertible→epic q-iso _ _ $
+        (m ∘ (P.p ∘ q⁻¹)) ∘ P.q ≡⟨ pullr (cancelr (q-iso .is-invertible.invr)) ⟩
+        m ∘ P.p                 ≡˘⟨ P.square ⟩
+        v ∘ P.q                 ∎
+
+      the-lift : ∥ Lifting C e m u v ∥
+      the-lift = pure the-lifting
 ```
 
 <!--
@@ -479,12 +485,11 @@ appropriately:
 is-strong-epi→is-extremal-epi
   : ∀ {a b} {e : Hom a b}
   → is-strong-epi e
-  → ∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor)
+  → is-extremal-epi e
 is-strong-epi→is-extremal-epi (s , ortho) m g p =
   make-invertible (inv' .centre .fst) (inv' .centre .snd .snd)
     (m .monic _ _ (pulll (inv' .centre .snd .snd) ∙ id-comm-sym))
-  where
-  inv' = ortho m (idl _ ∙ p)
+  where inv' = ortho (m .mor) (m .monic) g id (idl _ ∙ p)
 ```
 -->
 
@@ -495,8 +500,7 @@ invertible→strong-epi
   → is-invertible f
   → is-strong-epi f
 invertible→strong-epi f-inv =
-  invertible→epic f-inv , λ m →
-  invertible→left-orthogonal C (m .mor) f-inv
+  invertible→epic f-inv , invertible→left-orthogonal-class C Monos f-inv
 
 subst-is-strong-epi
   : ∀ {a b} {f g : Hom a b}
@@ -504,8 +508,10 @@ subst-is-strong-epi
   → is-strong-epi f
   → is-strong-epi g
 subst-is-strong-epi f=g f-strong-epi =
-  lifts→is-strong-epi (subst-is-epic f=g (f-strong-epi .fst)) λ m vg=mu →
-    let (h , hf=u , mh=v) = f-strong-epi .snd m (ap₂ _∘_ refl f=g ∙ vg=mu) .centre
-    in h , ap (h ∘_) (sym f=g) ∙ hf=u , mh=v
+  lifts→is-strong-epi (subst-is-epic f=g (f-strong-epi .fst)) λ m m-monic u v vg=mu →
+    let
+      (h , hf=u , mh=v) = f-strong-epi .snd m m-monic u v
+        (ap₂ _∘_ refl f=g ∙ vg=mu) .centre
+    in pure (h , ap (h ∘_) (sym f=g) ∙ hf=u , mh=v)
 ```
 -->

@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_)
 
+open import Cat.Morphism.Class
 open import Cat.Solver
 open import Cat.Base
 ```
@@ -50,6 +51,14 @@ open _↪_ public
 
 <!--
 ```agda
+Monos : Arrows C (o ⊔ h)
+Monos .arrows = is-monic
+Monos .is-tr = hlevel 1
+```
+-->
+
+<!--
+```agda
 Factors : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Type _
 Factors f g = Σ[ h ∈ Hom _ _ ] (f ≡ g ∘ h)
 ```
@@ -76,6 +85,14 @@ record _↠_ (a b : Ob) : Type (o ⊔ h) where
 
 open _↠_ public
 ```
+
+<!--
+```agda
+Epis : Arrows C (o ⊔ h)
+Epis .arrows = is-epic
+Epis .is-tr = hlevel 1
+```
+-->
 
 The identity morphism is monic and epic.
 
@@ -531,6 +548,14 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   p i .is-invertible.inverses =
     is-prop→pathp (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
 ```
+
+<!--
+```agda
+Isos : Arrows C h
+Isos .arrows = is-invertible
+Isos .is-tr = is-invertible-is-prop
+```
+-->
 
 We note that the identity morphism is always iso, and that isos compose:
 
