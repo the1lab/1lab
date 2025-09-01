@@ -341,29 +341,14 @@ data _↦_ : ∀ {n} → Expr n → Expr n → Type where
        → is-value x
        → f[x] ≡ f [ x ]
        → (`λ f) `$ x ↦ f[x]
-     β-π₁
-       : ∀ {n} {a b : Expr n}
-       → `π₁ `⟨ a , b ⟩ ↦ a
-     β-π₂
-       : ∀ {n} {a b : Expr n}
-       → `π₂ `⟨ a , b ⟩ ↦ b
-     ξ-π₁
-       : ∀ {n} {a b : Expr n}
-       → a ↦ b
-       → `π₁ a ↦ `π₁ b
-     ξ-π₂
-       : ∀ {n} {a b : Expr n}
-       → a ↦ b
-       → `π₂ a ↦ `π₂ b
-     ξ-$ₗ
-       : ∀ {n} {f g x : Expr n}
-       → f ↦ g
-       → f `$ x ↦ g `$ x
-     ξ-$ᵣ
-       : ∀ {n} {f x y : Expr n}
-       → is-value f
-       → x ↦ y
-       → f `$ x ↦ f `$ y
+     β-π₁ : ∀ {n} {a b : Expr n} → `π₁ `⟨ a , b ⟩ ↦ a
+     β-π₂ : ∀ {n} {a b : Expr n} → `π₂ `⟨ a , b ⟩ ↦ b
+
+     ξ-π₁ : ∀ {n} {a b : Expr n} → a ↦ b → `π₁ a  ↦ `π₁ b
+     ξ-π₂ : ∀ {n} {a b : Expr n} → a ↦ b → `π₂ a  ↦ `π₂ b
+     
+     ξ-$ₗ : ∀ {n} {f g x : Expr n} → f ↦ g →              f `$ x ↦ g `$ x
+     ξ-$ᵣ : ∀ {n} {f x y : Expr n} → is-value f → x ↦ y → f `$ x ↦ f `$ y
 ```
 
 Values don't reduce.
