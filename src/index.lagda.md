@@ -575,8 +575,8 @@ find which of the topics above are currently seeing activity!
 ::: {#recent-additions}
 :::
 
-<!-- Mastodon author links: !-->
 <div style="display: none;">
+<!-- Mastodon author links: -->
 <a rel="me" href="https://types.pl/@amy"></a>
 <a rel="me" href="https://types.pl/@totbwf"></a>
 </div>
