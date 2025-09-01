@@ -19,9 +19,12 @@ module Lang.STLC.DebruExtrinsic where
 
 # The simply typed lambda calculus, fancier
 
-We're doing the STLC again! This time, however, we are going to use
+We're doing the STLC again! See the first part [here]. The first time, we used string names for
+variables. This time, however, we are going to use
 a different implementation strategy that makes most of the proofs
-significantly easier, and fixes that pesky substitution issue we had!
+significantly easier, and fixes that pesky substitution issue we had.
+
+[here]: Lang.STLC.Named.html
 
 First we define types in the same method.
 
@@ -100,26 +103,32 @@ infix 3 _⊢_⦂_
 
 ```agda
 data _⊢_⦂_ : ∀ {n} → Ctx n → Expr n → Ty → Type where
-  `var-intro : ∀ {n} {Γ : Ctx n} {k ty}
-             →  lookup Γ k ≡ ty
-             → Γ ⊢ ` k ⦂ ty
-  `⇒-intro : ∀ {n} {Γ : Ctx n} {bd ret ty}
-           → (ty ∷ Γ) ⊢ bd ⦂ ret
-           → Γ ⊢ `λ bd ⦂ ty `⇒ ret
-  `⇒-elim : ∀ {n} {Γ : Ctx n} {f x ty ret}
-          → Γ ⊢ f ⦂ ty `⇒ ret
-          → Γ ⊢ x ⦂ ty
-          → Γ ⊢ f `$ x ⦂ ret
-  `×-intro : ∀ {n} {Γ : Ctx n} {a b at bt}
-           → Γ ⊢ a ⦂ at
-           → Γ ⊢ b ⦂ bt
-           → Γ ⊢ `⟨ a , b ⟩ ⦂ at `× bt
-  `×-elim₁ : ∀ {n} {Γ : Ctx n} {p at bt}
-           → Γ ⊢ p ⦂ at `× bt
-           → Γ ⊢ `π₁ p ⦂ at
-  `×-elim₂ : ∀ {n} {Γ : Ctx n} {p at bt}
-           → Γ ⊢ p ⦂ at `× bt
-           → Γ ⊢ `π₂ p ⦂ bt
+  `var-intro
+      : ∀ {n} {Γ : Ctx n} {k ty}
+      →  lookup Γ k ≡ ty
+      → Γ ⊢ ` k ⦂ ty
+  `⇒-intro
+      : ∀ {n} {Γ : Ctx n} {bd ret ty}
+      → (ty ∷ Γ) ⊢ bd ⦂ ret
+      → Γ ⊢ `λ bd ⦂ ty `⇒ ret
+  `⇒-elim
+      : ∀ {n} {Γ : Ctx n} {f x ty ret}
+      → Γ ⊢ f ⦂ ty `⇒ ret
+      → Γ ⊢ x ⦂ ty
+      → Γ ⊢ f `$ x ⦂ ret
+  `×-intro
+      : ∀ {n} {Γ : Ctx n} {a b at bt}
+      → Γ ⊢ a ⦂ at
+      → Γ ⊢ b ⦂ bt
+      → Γ ⊢ `⟨ a , b ⟩ ⦂ at `× bt
+  `×-elim₁
+      : ∀ {n} {Γ : Ctx n} {p at bt}
+      → Γ ⊢ p ⦂ at `× bt
+      → Γ ⊢ `π₁ p ⦂ at
+  `×-elim₂
+      : ∀ {n} {Γ : Ctx n} {p at bt}
+      → Γ ⊢ p ⦂ at `× bt
+      → Γ ⊢ `π₂ p ⦂ bt
   `tt-intro : ∀ {n} {Γ : Ctx n} → Γ ⊢ `tt ⦂ `⊤
 ```
 
@@ -127,7 +136,7 @@ The examples from before:
 
 <!--
 ```agda
-module Example-1 where
+module _ where private
 ```
 -->
 
@@ -189,15 +198,15 @@ We can show that under a particular set of conditions,
 renaming a term keeps its type the same.
 
 ```agda
-rename~
+rename-pres-tp
     : ∀ {n k} (Γ : Ctx n) (Δ : Ctx k)
     → (ren : Fin n → Fin k)
     → (ren~ : ∀ (f : Fin n) → lookup Γ f ≡ lookup Δ (ren f))
     → ∀ x {ty}
     → Γ ⊢ x ⦂ ty
     → Δ ⊢ rename ren x ⦂ ty
-rename~ Γ Δ ren ren~ (` x) (`var-intro p) = `var-intro (sym (ren~ x) ∙ p)
-rename~ {n} {k} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro delta where
+rename-pres-tp Γ Δ ren ren~ (` x) (`var-intro p) = `var-intro (sym (ren~ x) ∙ p)
+rename-pres-tp {n} {k} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro delta where
   extend : (f : Fin (suc n))
            → lookup (ty ∷ Γ) f ≡ lookup (ty ∷ Δ) (fin-ext ren f)
   extend f with fin-view f
@@ -205,15 +214,15 @@ rename~ {n} {k} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro del
   ... | suc i = ren~ i
 
   delta : ty ∷ Δ ⊢ rename (fin-ext ren) x ⦂ _
-  delta = rename~ (ty ∷ Γ) (ty ∷ Δ) (fin-ext ren) extend x p
+  delta = rename-pres-tp (ty ∷ Γ) (ty ∷ Δ) (fin-ext ren) extend x p
 
-rename~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) =
-  `⇒-elim (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
-rename~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ {ty} (`×-intro p p₁) =
-  `×-intro (rename~ Γ Δ ren ren~ x p) (rename~ Γ Δ ren ren~ x₁ p₁)
-rename~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (rename~ Γ Δ ren ren~ x p)
-rename~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (rename~ Γ Δ ren ren~ x p)
-rename~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
+rename-pres-tp Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) =
+  `⇒-elim (rename-pres-tp Γ Δ ren ren~ x p) (rename-pres-tp Γ Δ ren ren~ x₁ p₁)
+rename-pres-tp Γ Δ ren ren~ `⟨ x , x₁ ⟩ {ty} (`×-intro p p₁) =
+  `×-intro (rename-pres-tp Γ Δ ren ren~ x p) (rename-pres-tp Γ Δ ren ren~ x₁ p₁)
+rename-pres-tp Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (rename-pres-tp Γ Δ ren ren~ x p)
+rename-pres-tp Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (rename-pres-tp Γ Δ ren ren~ x p)
+rename-pres-tp Γ Δ ren ren~ `tt `tt-intro = `tt-intro
 
 ```
 
@@ -225,10 +234,10 @@ remains the same.
 incr : ∀ {n} → Expr n → Expr (suc n)
 incr x = rename fsuc x
 
-incr~ : ∀ {n} (Γ : Ctx n) x {t n}
+incr-pres-tp : ∀ {n} (Γ : Ctx n) x {t n}
       → Γ ⊢ x ⦂ t
       → n ∷ Γ ⊢ incr x ⦂ t
-incr~ Γ x {t} {n} p = rename~ Γ (n ∷ Γ) fsuc (λ f → refl) x p
+incr-pres-tp Γ x {t} {n} p = rename-pres-tp Γ (n ∷ Γ) fsuc (λ f → refl) x p
 ```
 
 Now we can consider not just renaming, but substitutions, which
@@ -238,10 +247,10 @@ similar to our `fin-ext`{.Agda} from renaming. It leaves the new bottom-most
 variable unchanged, so that variables under a binder are not modified.
 
 ```agda
-extnd : ∀ {n k}
+extend : ∀ {n k}
       → (Fin n → Expr k)
       → Fin (suc n) → Expr (suc k)
-extnd f x with fin-view x
+extend f x with fin-view x
 ... | zero = ` fzero
 ... | suc i = incr (f i)
 ```
@@ -254,7 +263,7 @@ simsub
     → (Fin n → Expr k)
     → Expr n → Expr k
 simsub f (` x) = f x
-simsub {n} {k} f (`λ x) = `λ (simsub (extnd f) x)
+simsub {n} {k} f (`λ x) = `λ (simsub (extend f) x)
 simsub f (a `$ b) = (simsub f a) `$ (simsub f b)
 simsub f `⟨ a , b ⟩ = `⟨ (simsub f a) , (simsub f b) ⟩
 simsub f (`π₁ x) = `π₁ (simsub f x)
@@ -268,31 +277,31 @@ is true for substitution, assuming every new term has the same type
 as the variable it is replacing.
 
 ```agda
-simsub~
+simsub-pres-tp
     : ∀ {n k} (Γ : Ctx n) (Δ : Ctx k)
     → (ren : ∀ (f : Fin n) → Expr k)
     → (ren~ : ∀ (f : Fin n) {t} → lookup Γ f ≡ t → Δ ⊢ (ren f) ⦂ t)
     → ∀ (x : Expr n) {ty}
     → Γ ⊢ x ⦂ ty
     → Δ ⊢ simsub ren x ⦂ ty
-simsub~ Γ Δ ren ren~ (` x) (`var-intro x₁) = ren~ x x₁
-simsub~ {n} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro delta where
-  extend : (f : Fin (suc n)) {t : Ty}
-           → lookup (ty ∷ Γ) f ≡ t → ty ∷ Δ ⊢ extnd ren f ⦂ t
-  extend f x with fin-view f
+simsub-pres-tp Γ Δ ren ren~ (` x) (`var-intro x₁) = ren~ x x₁
+simsub-pres-tp {n} Γ Δ ren ren~ (`λ x) (`⇒-intro {ty = ty} p) = `⇒-intro delta where
+  extnd : (f : Fin (suc n)) {t : Ty}
+           → lookup (ty ∷ Γ) f ≡ t → ty ∷ Δ ⊢ extend ren f ⦂ t
+  extnd f x with fin-view f
   ... | zero = `var-intro x
-  ... | suc i = incr~ Δ (ren i) (ren~ i x)
+  ... | suc i = incr-pres-tp Δ (ren i) (ren~ i x)
 
-  delta : _ ∷ Δ ⊢ simsub (extnd ren) x ⦂ _
-  delta = simsub~ (ty ∷ Γ) (_ ∷ Δ) (extnd ren) extend x p
+  delta : _ ∷ Δ ⊢ simsub (extend ren) x ⦂ _
+  delta = simsub-pres-tp (ty ∷ Γ) (_ ∷ Δ) (extend ren) extnd x p
 
-simsub~ Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) =
-  `⇒-elim (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
-simsub~ Γ Δ ren ren~ `⟨ x , x₁ ⟩ (`×-intro p p₁) =
-  `×-intro (simsub~ Γ Δ ren ren~ x p) (simsub~ Γ Δ ren ren~ x₁ p₁)
-simsub~ Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (simsub~ Γ Δ ren ren~ x p)
-simsub~ Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (simsub~ Γ Δ ren ren~ x p)
-simsub~ Γ Δ ren ren~ `tt `tt-intro = `tt-intro
+simsub-pres-tp Γ Δ ren ren~ (x `$ x₁) (`⇒-elim p p₁) =
+  `⇒-elim (simsub-pres-tp Γ Δ ren ren~ x p) (simsub-pres-tp Γ Δ ren ren~ x₁ p₁)
+simsub-pres-tp Γ Δ ren ren~ `⟨ x , x₁ ⟩ (`×-intro p p₁) =
+  `×-intro (simsub-pres-tp Γ Δ ren ren~ x p) (simsub-pres-tp Γ Δ ren ren~ x₁ p₁)
+simsub-pres-tp Γ Δ ren ren~ (`π₁ x) (`×-elim₁ p) = `×-elim₁ (simsub-pres-tp Γ Δ ren ren~ x p)
+simsub-pres-tp Γ Δ ren ren~ (`π₂ x) (`×-elim₂ p) = `×-elim₂ (simsub-pres-tp Γ Δ ren ren~ x p)
+simsub-pres-tp Γ Δ ren ren~ `tt `tt-intro = `tt-intro
 ```
 
 Then it's simple enough to define "regular" substitution.
@@ -313,11 +322,11 @@ single-subst-correct
     → Γ ⊢ x ⦂ t₁
     → Γ ⊢ f [ x ] ⦂ t₂
 single-subst-correct {n} Γ f x {t₁} fp xp =
-                         simsub~ (t₁ ∷ Γ) Γ (subst-down x) extend f fp
+                         simsub-pres-tp (t₁ ∷ Γ) Γ (subst-down x) extnd f fp
   where
-    extend : (f₁ : Fin (suc n)) {t : Ty} →
+    extnd : (f₁ : Fin (suc n)) {t : Ty} →
             lookup (t₁ ∷ Γ) f₁ ≡ t → Γ ⊢ subst-down x f₁ ⦂ t
-    extend f₁ x with fin-view f₁
+    extnd f₁ x with fin-view f₁
     ... | zero = subst (λ k → _ ⊢ _ ⦂ k) x xp
     ... | suc i = `var-intro x
 ```
@@ -327,27 +336,34 @@ Then we have reduction rules, as before.
 ```agda
 infix 10 _↦_
 data _↦_ : ∀ {n} → Expr n → Expr n → Type where
-     β-λ : ∀ {n} {f : Expr (suc n)} {x : Expr n} {f[x]}
-           → is-value x
-           → f[x] ≡ f [ x ]
-           → (`λ f) `$ x ↦ f[x]
-     β-π₁ : ∀ {n} {a b : Expr n} →
-          `π₁ `⟨ a , b ⟩ ↦ a
-     β-π₂ : ∀ {n} {a b : Expr n} →
-          `π₂ `⟨ a , b ⟩ ↦ b
-     ξ-π₁ : ∀ {n} {a b : Expr n} →
-           a ↦ b →
-           `π₁ a ↦ `π₁ b
-     ξ-π₂ : ∀ {n} {a b : Expr n} →
-           a ↦ b →
-           `π₂ a ↦ `π₂ b
-     ξ-$ₗ : ∀ {n} {f g x : Expr n} →
-           f ↦ g →
-           f `$ x ↦ g `$ x
-     ξ-$ᵣ : ∀ {n} {f x y : Expr n} →
-           is-value f →
-           x ↦ y →
-           f `$ x ↦ f `$ y
+     β-λ
+       : ∀ {n} {f : Expr (suc n)} {x : Expr n} {f[x]}
+       → is-value x
+       → f[x] ≡ f [ x ]
+       → (`λ f) `$ x ↦ f[x]
+     β-π₁
+       : ∀ {n} {a b : Expr n}
+       → `π₁ `⟨ a , b ⟩ ↦ a
+     β-π₂
+       : ∀ {n} {a b : Expr n}
+       → `π₂ `⟨ a , b ⟩ ↦ b
+     ξ-π₁
+       : ∀ {n} {a b : Expr n}
+       → a ↦ b
+       → `π₁ a ↦ `π₁ b
+     ξ-π₂
+       : ∀ {n} {a b : Expr n}
+       → a ↦ b
+       → `π₂ a ↦ `π₂ b
+     ξ-$ₗ
+       : ∀ {n} {f g x : Expr n}
+       → f ↦ g
+       → f `$ x ↦ g `$ x
+     ξ-$ᵣ
+       : ∀ {n} {f x y : Expr n}
+       → is-value f
+       → x ↦ y
+       → f `$ x ↦ f `$ y
 ```
 
 Values don't reduce.
@@ -362,21 +378,21 @@ value-¬reduce v-⊤ ()
 Reduction preserves types (preservation).
 
 ```agda
-red~ : ∀ {n} (Γ : Ctx n) (x y : Expr n) {ty}
+↦-pres-tp : ∀ {n} (Γ : Ctx n) (x y : Expr n) {ty}
      → Γ ⊢ x ⦂ ty
      → x ↦ y
      → Γ ⊢ y ⦂ ty
-red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ₗ r) = `⇒-elim (red~ Γ f _ p r) p₁
-red~ Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ᵣ x₁ r) = `⇒-elim p (red~ Γ x _ p₁ r)
-red~ Γ ((`λ f) `$ x) y (`⇒-elim (`⇒-intro p) p₁) (β-λ k eq) =
+↦-pres-tp Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ₗ r) = `⇒-elim (↦-pres-tp Γ f _ p r) p₁
+↦-pres-tp Γ (f `$ x) y (`⇒-elim p p₁) (ξ-$ᵣ x₁ r) = `⇒-elim p (↦-pres-tp Γ x _ p₁ r)
+↦-pres-tp Γ ((`λ f) `$ x) y (`⇒-elim (`⇒-intro p) p₁) (β-λ k eq) =
      subst (λ k → _ ⊢ k ⦂ _) (sym eq) (single-subst-correct Γ f x p p₁)
-red~ Γ (`π₁ x) y (`×-elim₁ p) (ξ-π₁ r) = `×-elim₁ (red~ Γ x _ p r)
-red~ Γ (`π₂ x) y (`×-elim₂ p) (ξ-π₂ r) = `×-elim₂ (red~ Γ x _ p r)
-red~ Γ (`π₁ x) y (`×-elim₁ (`×-intro p p₁)) β-π₁ = p
-red~ Γ (`π₂ x) y (`×-elim₂ (`×-intro p p₁)) β-π₂ = p₁
+↦-pres-tp Γ (`π₁ x) y (`×-elim₁ p) (ξ-π₁ r) = `×-elim₁ (↦-pres-tp Γ x _ p r)
+↦-pres-tp Γ (`π₂ x) y (`×-elim₂ p) (ξ-π₂ r) = `×-elim₂ (↦-pres-tp Γ x _ p r)
+↦-pres-tp Γ (`π₁ x) y (`×-elim₁ (`×-intro p p₁)) β-π₁ = p
+↦-pres-tp Γ (`π₂ x) y (`×-elim₂ (`×-intro p p₁)) β-π₂ = p₁
 ```
 
-Progress.
+Then, we show progress similarly to before.
 
 ```agda
 data Progress {n : Nat} (x : Expr n) : Type where

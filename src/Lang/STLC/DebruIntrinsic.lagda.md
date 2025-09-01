@@ -18,10 +18,12 @@ module Lang.STLC.DebruIntrinsic where
 
 # The simply typed lambda calculus, fancier-er
 
-You may have noticed that last time, the typing
+You may have noticed that [last time], the typing
 derivations looks suspiciously similar to the terms themselves.
 What if we could just make the terms the typing derivations at the
 same time?
+
+[last time]: Lang.STLC.DebruExtrinsic.html
 
 ```agda
 infixr 30 _`⇒_
@@ -67,31 +69,34 @@ data _⊢_ : Con → Ty → Type where
 If a context contains a type, it can bind it to a variable.
 
 ```agda
-  ` : ∀ {Γ A}
-      →  Γ ∋ A
-      →  Γ ⊢ A
+  ` : ∀ {Γ A} →  Γ ∋ A →  Γ ⊢ A
 ```
 
 The others follow roughly as they did in the extrinsic de bruijn presentation.
 
 ```agda
-  `λ : ∀ {Γ A B}
-     → Γ ,, A ⊢ B
-     → Γ ⊢ A `⇒ B
-  _`$_ : ∀ {Γ A B}
-       → Γ ⊢ A `⇒ B
-       → Γ ⊢ A
-       → Γ ⊢ B
-  `⟨_,_⟩ : ∀ {Γ A B}
-         → Γ ⊢ A
-         → Γ ⊢ B
-         → Γ ⊢ A `× B
-  `π₁ : ∀ {Γ A B}
-      → Γ ⊢ A `× B
-      → Γ ⊢ A
-  `π₂ : ∀ {Γ A B}
-      → Γ ⊢ A `× B
-      → Γ ⊢ B
+  `λ
+    : ∀ {Γ A B}
+    → Γ ,, A ⊢ B
+    → Γ ⊢ A `⇒ B
+  _`$_
+    : ∀ {Γ A B}
+    → Γ ⊢ A `⇒ B
+    → Γ ⊢ A
+    → Γ ⊢ B
+  `⟨_,_⟩
+    : ∀ {Γ A B}
+    → Γ ⊢ A
+    → Γ ⊢ B
+    → Γ ⊢ A `× B
+  `π₁
+    : ∀ {Γ A B}
+    → Γ ⊢ A `× B
+    → Γ ⊢ A
+  `π₂
+    : ∀ {Γ A B}
+    → Γ ⊢ A `× B
+    → Γ ⊢ B
   `tt : ∀ {Γ} → Γ ⊢ `⊤
 ```
 
@@ -100,7 +105,7 @@ Let's try some terms:
 
 <!--
 ```agda
-module Example-1 where
+module _ where private
 ```
 -->
 
@@ -117,38 +122,38 @@ Substitution time! Using very similar ideas to the
 simultaneous substitution in the previous.
 
 ```agda
-var-ext
+var-extend
     : ∀ {Γ Δ}
     → (∀ {A}   → Γ ∋ A      → Δ ∋ A)
     →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ∋ A
-var-ext f Z = Z
-var-ext f (S x) = S f x
+var-extend f Z = Z
+var-extend f (S x) = S f x
 
 rename
     : ∀ {Γ Δ}
     → (∀ {A} → Γ ∋ A → Δ ∋ A)
     →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
 rename f (` x) = ` (f x)
-rename f (`λ x) = `λ (rename (var-ext f) x)
+rename f (`λ x) = `λ (rename (var-extend f) x)
 rename f (g `$ y) = rename f g `$ rename f y
 rename f `⟨ a , b ⟩ = `⟨ (rename f a) , (rename f b) ⟩
 rename f (`π₁ x) = `π₁ (rename f x)
 rename f (`π₂ x) = `π₂ (rename f x)
 rename f `tt = `tt
 
-extnd
+extend
     : ∀ {Γ Δ}
     → (∀ {A}   → Γ ∋ A      → Δ ⊢ A)
     →  ∀ {A B} → Γ ,, B ∋ A → Δ ,, B ⊢ A
-extnd f Z = ` Z
-extnd f (S x) = rename S_ (f x)
+extend f Z = ` Z
+extend f (S x) = rename S_ (f x)
 
 simsub
     : ∀ {Γ Δ}
     → (∀ {A} → Γ ∋ A → Δ ⊢ A)
     →  ∀ {A} → Γ ⊢ A → Δ ⊢ A
 simsub f (` x) = f x
-simsub f (`λ x) = `λ (simsub (extnd f) x)
+simsub f (`λ x) = `λ (simsub (extend f) x)
 simsub f (a `$ b) = (simsub f a) `$ (simsub f b)
 simsub f `⟨ a , b ⟩ = `⟨ (simsub f a) , (simsub f b) ⟩
 simsub f (`π₁ x) = `π₁ (simsub f x)
@@ -172,6 +177,8 @@ _[_] {Γ} {A} {B} x y = simsub {Γ ,, B} {Γ} f x
 
 That was pretty easy, aye? And we don't need to prove any additional
 theorems, because they're built into the definition of substitution!
+As we can only construct well-typed terms, the result of substitution
+must inherently be well typed.
 
 Now we do values and reduction rules, as before.
 
@@ -212,7 +219,7 @@ data _↦_ : ∀ {Γ A} → Γ ⊢ A → Γ ⊢ A → Type where
            → f `$ x ↦ f `$ y
 ```
 
-Preservation is free! We can only construct well-typed terms,
+Preservation is free! Once again, we can only construct well-typed terms,
 so our reduction rules must inherently preserve types.
 
 Values don't reduce.

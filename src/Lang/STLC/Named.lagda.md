@@ -31,7 +31,7 @@ We will start with the most "naive" approach, and build off it to
 more advanced approaches.
 
 First, the types of the STLC: the Unit type, products, and functions.
-We will use `Ty`{.Agda} to denote these, although `Tp` is also commonly used.
+We will use `Ty`{.Agda} to denote these, although `Tp`{.Agda} is also commonly used.
 
 ```agda
 data Ty : Type where
@@ -39,6 +39,13 @@ data Ty : Type where
   _`×_ : Ty → Ty → Ty
   _`⇒_ : Ty → Ty → Ty
 ```
+
+<!--
+```agda
+private module _ where
+  Tp = Ty
+```
+-->
 
 We model contexts as (snoc) lists of pairs, alongside a partial
 index function. We use `∷c`{.Agda} as the "reversed" list constructor
@@ -70,7 +77,8 @@ lookup-duplicate
   → lookup k ((Γ ∷c (n , t₂)) ∷c (n , t₁)) ≡ just ρ
 ```
 
-<details>
+<details><summary>The proofs of these are mostly uninteresting
+case analysis.</summary>
 
 ```agda
 lookup-immediate {Γ} {n} {t} = refl
@@ -81,7 +89,6 @@ lookup-duplicate {Γ} {n} {k} {t₁} {t₂} {ρ} eq with k ≡? n
 ... | no ¬k≡n = eq
 ```
 </details>
-
 
 Then, expressions: we have variables, functions and application,
 pairs and projections, and the unit.
@@ -152,7 +159,6 @@ data Expr : Type where
   h (`π₂ x) = x
   h _ = `tt
 ```
-
 </details>
 
 We must then define a relation to assign types to expressions, which
@@ -173,53 +179,57 @@ We say that a variable $n$ has a type $\tau$ in context $\Gamma$
 if `lookup Γ n ≡ just τ`{.Agda}.
 
 ```agda
-  `var-intro : ∀ {Γ τ} (n : String)
-             → lookup n Γ ≡ just τ
-             → Γ ⊢ ` n ⦂ τ
+  `var-intro
+    : ∀ {Γ τ} (n : String)
+    → lookup n Γ ≡ just τ
+    → Γ ⊢ ` n ⦂ τ
 ```
 
 For lambda abstraction, if an expression $\text{body}$ extended with a variable $v$
 of type $\tau$ has type $\rho$, we say that $λ\, v.\,\text{body}$ has type
-$\tau \to \rho$. We call this constructor `\`⇒-intro`{.Agda} as it "introduces"
-the arrow type.
+$\tau \to \rho$. We call this constructor `` `⇒-intro ``{.Agda} as it "introduces"
+an element of the arrow type.
 
 ```agda
-  `⇒-intro : ∀ {Γ n body τ ρ}
-           → Γ ∷c (n , τ) ⊢ body ⦂ ρ
-           → Γ ⊢ `λ n body ⦂ τ `⇒ ρ
+  `⇒-intro
+    : ∀ {Γ n body τ ρ}
+    → Γ ∷c (n , τ) ⊢ body ⦂ ρ
+    → Γ ⊢ `λ n body ⦂ τ `⇒ ρ
 ```
 
 If an expression $f$ has type $\tau \to \rho$, and
 an expression $x$ has type $\tau$, then the application $f\, x$
-has type $\rho$.
-
-We name it `\`⇒-elim`{.Agda} as it "eliminates" the arrow type.
+has type $\rho$. Following our previous convention, we name this constructor
+`` `⇒-elim ``{.Agda} as it "eliminates" an element of the arrow type.
 
 ```agda
-  `⇒-elim : ∀ {Γ f x τ ρ}
-          → Γ ⊢ f ⦂ τ `⇒ ρ
-          → Γ ⊢ x ⦂ τ
-          → Γ ⊢ f `$ x ⦂ ρ
+  `⇒-elim
+    : ∀ {Γ f x τ ρ}
+    → Γ ⊢ f ⦂ τ `⇒ ρ
+    → Γ ⊢ x ⦂ τ
+    → Γ ⊢ f `$ x ⦂ ρ
 ```
 
-The rest of the formers follow these patterns:
+The rest of the inference rules follow this pattern.
 
 ```agda
-  `×-intro : ∀ {Γ a b τ ρ}
-           → Γ ⊢ a ⦂ τ
-           → Γ ⊢ b ⦂ ρ
-           → Γ ⊢ `⟨ a , b ⟩ ⦂ τ `× ρ
+  `×-intro
+    : ∀ {Γ a b τ ρ}
+    → Γ ⊢ a ⦂ τ
+    → Γ ⊢ b ⦂ ρ
+    → Γ ⊢ `⟨ a , b ⟩ ⦂ τ `× ρ
 
-  `×-elim₁ : ∀ {Γ a τ ρ}
-           → Γ ⊢ a ⦂ τ `× ρ
-           → Γ ⊢ `π₁ a ⦂ τ
+  `×-elim₁
+    : ∀ {Γ a τ ρ}
+    → Γ ⊢ a ⦂ τ `× ρ
+    → Γ ⊢ `π₁ a ⦂ τ
 
-  `×-elim₂ : ∀ {Γ a τ ρ}
-           → Γ ⊢ a ⦂ τ `× ρ
-           → Γ ⊢ `π₂ a ⦂ ρ
+  `×-elim₂
+    : ∀ {Γ a τ ρ}
+    → Γ ⊢ a ⦂ τ `× ρ
+    → Γ ⊢ `π₂ a ⦂ ρ
 
-  `tt-intro : ∀ {Γ}
-            → Γ ⊢ `tt ⦂ `⊤
+  `tt-intro : ∀ {Γ} → Γ ⊢ `tt ⦂ `⊤
 ```
 
 This completes our typing relation. We can now show that some given
@@ -227,7 +237,7 @@ program has some given type, for example:
 
 <!--
 ```agda
-private module Example-1 where
+module _ where private
 ```
 -->
 
@@ -240,8 +250,10 @@ private module Example-1 where
 ```
 
 The astute amongst you may note that the typing derivation looks
-suspiciously similar to the term itself - this will be explored later
-in the series.
+suspiciously similar to the term itself - this will be explored [later in
+the series].
+
+[later in the series]: Lang.STLC.DebruIntrinsic.html
 
 Now we will take a slight detour, and define what it means for
 an expression to be a **value**. This will come in useful in a second!
@@ -258,10 +270,16 @@ data is-value : Expr → Type where
 
 Our next goal is to now define a "step" relation,
 which dictates that a term $x$ may, through a reduction, step to
-another expression $x'$ that represents one "step" of evaluation.
+another expression $x'$ that represents one "step" of evaluation. This is how we will
+define the evaluation of our expressions.
 
-This is how we will
-define the evaluation of our expressions. Before we can define
+<!--
+```agda
+module CapturingSubst where
+```
+-->
+
+Before we can define
 stepping, we need to define substitution, so that we may turn an
 expression like $(\lambda x. f\,x) y$ into $f\,y$. We notate the
 substitution of a variable $n$ for an expression $e$ in another
@@ -271,103 +289,140 @@ a problem called variable capture.
 
 <!--
 ```agda
-infix 2 _[_:=_]
+  infix 2 _[_:=_]
 ```
 -->
 
 ```agda
-_[_:=_] : Expr → String → Expr → Expr
+  _[_:=_] : Expr → String → Expr → Expr
 ```
 
 If a variable x is equal to the variable we are substituting for, n,
 we return the new expression. Else, the variable unchanged.
 
 ```agda
-` x [ n := e ] with x ≡? n
-... | yes _ = e
-... | no _ = ` x
+  ` x [ n := e ] with x ≡? n
+  ... | yes _ = e
+  ... | no _ = ` x
 ```
 
-This substitution is not capture avoiding. This causes issues if
-the terms are not alpha distinct!
+This substitution is not capture avoiding.
+<details><summary>This causes issues if
+the terms are not alpha distinct. Alpha-distinctness is a property of a
+term (or set of terms) where every name is unique.
+Without this property, we run into the following.</summary>
+
+In short, the issue is as follows: Consider the term
+$(\lambda x. \lambda f. f x) y$. Performing the obvious reduction, we
+obtain $\lambda f. f y$, as expected.
+
+If we rename $f$ to $y$, (which should theoretically change nothing about
+the program), we would instead get $(\lambda x. \lambda y. y x) y$, which
+would then reduce to $(\lambda y. y y)$. The meaning of this term has
+changed! Instead of $y$ referring to some outside variable, it now
+refers to our inner binding.
+
+The solution to this is renaming every lambda-bound name to ensure that
+all of them are distinct from names in the argument. Proving facts
+about a substitution that correctly performs this, however, is _very_
+painful. In the next parts, we will explore techniques that resolve this
+by definition.
+</details>
 
 ```agda
-`λ x f [ n := e ] with x ≡? n
-... | yes _ = `λ x f
-... | no _ = `λ x (f [ n := e ])
+  `λ x f [ n := e ] with x ≡? n
+  ... | yes _ = `λ x f
+  ... | no _ = `λ x (f [ n := e ])
 ```
 
 In all other cases, we simply "move" the substitution into all
 subexpressions. (Or, do nothing.)
 
 ```agda
-f `$ x [ n := e ] = (f [ n := e ]) `$ (x [ n := e ])
-`⟨ a , b ⟩ [ n := e ] = `⟨ a [ n := e ] , b [ n := e ] ⟩
-`π₁ a [ n := e ] = `π₁ (a [ n := e ])
-`π₂ a [ n := e ] = `π₂ (a [ n := e ])
-`tt [ n := e ] = `tt
+  f `$ x [ n := e ] = (f [ n := e ]) `$ (x [ n := e ])
+  `⟨ a , b ⟩ [ n := e ] = `⟨ a [ n := e ] , b [ n := e ] ⟩
+  `π₁ a [ n := e ] = `π₁ (a [ n := e ])
+  `π₂ a [ n := e ] = `π₂ (a [ n := e ])
+  `tt [ n := e ] = `tt
 ```
 
+<!--
+```agda
+open CapturingSubst
+
+module CBV where
+```
+ -->
+
+
 Now, we define our step relation proper. Each of these step relations
-is properly referred to as a "reduction rule".
+is properly referred to as a "reduction rule". The style of reduction
+we choose to formalize is call "Call-By-Value", or CBV. In essence,
+what this implies is that every function argument must be fully
+evaluated before we can substitute it inside a function. This is in
+contrast to "Call-By-Name", or CBN, which only evaluates an argument
+once actually used within the body. Both of these strategies have their
+own pros and cons, but the most obvious pro of CBV is that it is always
+obvious and predictable where an argument will be evaluated. It is also
+simpler than CBN.
 
 ```agda
-data _↦_ : Expr → Expr → Type where
+  data _↦_ : Expr → Expr → Type where
 ```
 
 The act of turning an application $(λ\,y. y)\,x$ into $x$ is called
-β-reduction for lambda terms. We require $x$ to be a value in order
-to keep reduction deterministic -- this will be elaborated on in
-a moment.
+β-reduction for lambda terms. We require $x$ to be a value as mentioned above
+--- this has the benefit of keeping reduction **deterministic**, which
+will be elaborated on below.
 
 ```agda
-  β-λ : ∀ {n body x body[n:=x]}
-      → is-value x
-      → body[n:=x] ≡ (body [ n := x ])
-      → ((`λ n body) `$ x) ↦ (body[n:=x])
+    β-λ : ∀ {n body x body[n:=x]}
+        → is-value x
+        → body[n:=x] ≡ (body [ n := x ])
+        → ((`λ n body) `$ x) ↦ (body[n:=x])
 ```
 
 Likewise, reducing projections on a pair is called β-reduction for
 pairs.
 
 ```agda
-  β-π₁ : ∀ {a b} → (`π₁ `⟨ a , b ⟩) ↦ a
-  β-π₂ : ∀ {a b} → (`π₂ `⟨ a , b ⟩) ↦ b
+    β-π₁ : ∀ {a b} → (`π₁ `⟨ a , b ⟩) ↦ a
+    β-π₂ : ∀ {a b} → (`π₂ `⟨ a , b ⟩) ↦ b
 ```
 
 We also have two reductions that can step "inside" projections, which
 we will call ξ rules.
 
 ```agda
-  ξ-π₁ : ∀ {a₁ a₂}
-       → a₁ ↦ a₂
-       → (`π₁ a₁) ↦ (`π₁ a₂)
+    ξ-π₁ : ∀ {a₁ a₂}
+         → a₁ ↦ a₂
+         → (`π₁ a₁) ↦ (`π₁ a₂)
 
-  ξ-π₂ : ∀ {a₁ a₂}
-       → a₁ ↦ a₂
-       → (`π₂ a₁) ↦ (`π₂ a₂)
+    ξ-π₂ : ∀ {a₁ a₂}
+         → a₁ ↦ a₂
+         → (`π₂ a₁) ↦ (`π₂ a₂)
 ```
 
 Likewise, we have one that can step inside an application, on
 the left hand side.
 
 ```agda
-  ξ-$ₗ : ∀ {f₁ f₂ x}
-       → f₁ ↦ f₂
-       → (f₁ `$ x) ↦ (f₂ `$ x)
+    ξ-$ₗ : ∀ {f₁ f₂ x}
+         → f₁ ↦ f₂
+         → (f₁ `$ x) ↦ (f₂ `$ x)
 ```
 
-We also include a rule for reduction on the right hand side, requiring
+We include a rule for reduction on the right hand side, requiring
 the left to be a value first. This, combined with the value requirement
-of the `β-λ`{.Agda} rule, keep our evaluation **deterministic**, forcing
+of the `β-λ`{.Agda} rule, keep our evaluation deterministic, forcing
 that evaluation should take place from left to right. We will prove
 this later.
 
 ```agda
-  ξ-$ᵣ : ∀ {f x₁ x₂}
-       → is-value f
-       → x₁ ↦ x₂
-       → (f `$ x₁) ↦ (f `$ x₂)
+    ξ-$ᵣ : ∀ {f x₁ x₂}
+         → is-value f
+         → x₁ ↦ x₂
+         → (f `$ x₁) ↦ (f `$ x₂)
 ```
 
 These are all of our reduction rules! The STLC is indeed very simple.
@@ -376,7 +431,9 @@ reduces properly:
 
 <!--
 ```agda
-private module Example-2 where
+open CBV
+
+module _ where private
 ```
 -->
 
@@ -467,9 +524,25 @@ variable-swap
   → Γ ∷c (k , t₂) ∷c (n , t₁) ⊢ bd ⦂ typ
 ```
 
-<details>
+<details><summary>
+Both proofs are mostly uninteresting.
+`duplicates-are-ok`{.Agda} is some case-bashing, and
+`variable-swap`{.Agda} is proven via a special case of renaming.
+</summary>
 
 ```agda
+duplicates-are-ok {Γ} {n} {t₁} {t₂} {bd} {typ} Γ⊢ =
+  rename f bd typ Γ⊢
+  where
+    f : (k : String) (ty : Ty) →
+         lookup k (Γ ∷c (n , t₂) ∷c (n , t₁)) ≡ just ty →
+         lookup k (Γ ∷c (n , t₁)) ≡ just ty
+    f k ty x with k ≡? n
+    ... | yes k≡n = x
+    ... | no ¬k≡n with k ≡? n
+    ... | yes k≡n = absurd (¬k≡n k≡n)
+    ... | no ¬k≡n = x
+
 variable-swap {Γ} {n} {k} {t₁} {t₂} {x} {typ} ¬n≡k Γ⊢ = rename f x typ Γ⊢
   where
     f : (z : String) (ty : Ty) →
@@ -488,18 +561,6 @@ variable-swap {Γ} {n} {k} {t₁} {t₂} {x} {typ} ¬n≡k Γ⊢ = rename f x ty
     ... | no ¬z≡k with z ≡? n
     ... | yes z≡n = x
     ... | no ¬z≡n = absurd (¬z≡n z≡n)
-
-duplicates-are-ok {Γ} {n} {t₁} {t₂} {bd} {typ} Γ⊢ =
-  rename f bd typ Γ⊢
-  where
-    f : (k : String) (ty : Ty) →
-         lookup k (Γ ∷c (n , t₂) ∷c (n , t₁)) ≡ just ty →
-         lookup k (Γ ∷c (n , t₁)) ≡ just ty
-    f k ty x with k ≡? n
-    ... | yes k≡n = x
-    ... | no ¬k≡n with k ≡? n
-    ... | yes k≡n = absurd (¬k≡n k≡n)
-    ... | no ¬k≡n = x
 ```
 </details>
 
@@ -630,11 +691,14 @@ then $x_{1} ≡ x_{2}$.
 We do this with the help of a lemma that states values do not step to
 anything.
 
+<details><summary>
+
 ```agda
 value-¬reduce : ∀ {x y} → is-value x → ¬ (x ↦ y)
 ```
 
-<details>
+</summary>
+
 ```agda
 value-¬reduce v-λ ()
 value-¬reduce v-⟨,⟩ ()
@@ -673,7 +737,6 @@ deterministic (`×-elim₂ ⊢x) (ξ-π₂ →x₁) (ξ-π₂ →x₂) = ap `π�
 ```
 
 It is also possible to prove that the evaluation of the simply typed lambda calculus
-always terminates. (In other words, for any well-typed term $x$, there exist some $v$
-such that there is a chain $x \mapsto x₁ \mapsto \cdots \mapsto v$, and $\text{is-value} v$).
-However, this named representation is enough of a pain to work with as-is, so this
-will be proven later.
+always terminates. (In other words, for any well-typed term $x$, there exists some $v$
+such that there is a chain $x \mapsto x\_1 \mapsto \cdots \mapsto v$, and $\text{is-value}\, v$).
+This is a non-trival undertaking however, and is currently TODO in the 1Lab.
