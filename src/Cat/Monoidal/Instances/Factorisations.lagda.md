@@ -51,9 +51,9 @@ The unit factorisation sends each $X \xto{f} Y$ to $X \xto{\id} X \xto{f} Y$.
 ```agda
 Ff-unit : Factorisation C
 Ff-unit .S₀ (_ , _ , f) = record
-  { map = id
-  ; out = f
-  ; com = intror refl
+  { left    = id
+  ; right   = f
+  ; factors = intror refl
   }
 Ff-unit .S₁ f = record
   { sq₀ = id-comm-sym
@@ -107,10 +107,10 @@ module _ (F G : Factorisation C) where
 
   _⊗ᶠᶠ_ : Factorisation C
   _⊗ᶠᶠ_ .S₀ (_ , _ , f) = record where
-    mid = G.Mid (F.ρ→ f)
-    map = G.λ→ (F.ρ→ f) ∘ F.λ→ f
-    out = G.ρ→ (F.ρ→ f)
-    com = sym (pulll (sym (G.factors _)) ∙ sym (F.factors _))
+    mid     = G.Mid (F.ρ→ f)
+    left    = G.λ→ (F.ρ→ f) ∘ F.λ→ f
+    right   = G.ρ→ (F.ρ→ f)
+    factors = sym (pulll (sym (G.factors _)) ∙ sym (F.factors _))
 
   _⊗ᶠᶠ_ .S₁ sq = record where
     open Interpolant (G .S₁ record { com = S₁ F sq .sq₁ })
@@ -152,10 +152,11 @@ Ff-tensor-functor .F₁ {X , Y} {X' , Y'} (f , g) .com α β h = Interpolant-pat
 Ff-tensor-functor .F-id {_ , Y} = ext λ x y h → elimr refl ∙ annihilate Y (ext refl)
 
 Ff-tensor-functor .F-∘ {X , X'} {Y , Y'} {Z , Z'} f g = ext λ x y h →
-    pulll (sym (f .snd .comᶠᶠ _)) ∙∙ pullr (sym (g .snd .comᶠᶠ _)) ∙∙ sym
-    (ap₂ _∘_ (sym (f .snd .comᶠᶠ _)) (sym (g .snd .comᶠᶠ _))
-  ∙∙ pullr (extendl (sym (g .snd .comᶠᶠ _)))
-  ∙∙ ap₂ _∘_ refl (ap₂ _∘_ refl (collapse X' (ext (refl ,ₚ idl id)))))
+     pulll (sym (f .snd .comᶠᶠ _))
+  ∙∙ pullr (sym (g .snd .comᶠᶠ _))
+  ∙∙ sym (ap₂ _∘_ (sym (f .snd .comᶠᶠ _)) (sym (g .snd .comᶠᶠ _))
+    ∙∙ pullr (extendl (sym (g .snd .comᶠᶠ _)))
+    ∙∙ ap₂ _∘_ refl (ap₂ _∘_ refl (collapse X' (ext (refl ,ₚ idl id)))))
 ```
 
 </details>
@@ -305,8 +306,7 @@ $\eta$ is an easy corollary of initiality for the unit factorisation.
     monoid→unit .is-natural x y f = ext (m.η .comᶠᶠ _ ,ₚ id-comm-sym)
 
     monoid-unit-agrees = ext λ (x , y , f) →
-        intror refl
-      ∙ sym (m.η .sq₀ᶠᶠ f) ,ₚ refl
+      intror refl ∙ sym (m.η .sq₀ᶠᶠ f) ,ₚ refl
 ```
 
 </details>
@@ -343,7 +343,6 @@ multiplication are fixed, this does not matter.
   monoid-on→rwfs-on .R-μ     = monoid→mult
   monoid-on→rwfs-on .R-monad = done where abstract
     done : is-monad F.R-η monoid→mult
-    done = subst
-      (λ e → is-monad e monoid→mult) monoid-unit-agrees
+    done = subst (λ e → is-monad e monoid→mult) monoid-unit-agrees
       monoid-mult-is-monad
 ```
