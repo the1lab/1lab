@@ -113,14 +113,12 @@ ident=∘l-lifts-class} --- in this case, an arbitrary monomorphism $m$.
 ```agda
 ∘-is-strong-epic
   : ∀ {a b c} {f : Hom b c} {g : Hom a b}
-  → is-strong-epi f
-  → is-strong-epi g
-  → is-strong-epi (f ∘ g)
+  → is-strong-epi f → is-strong-epi g → is-strong-epi (f ∘ g)
 ∘-is-strong-epic (f-epi , f-str) (g-epi , g-str) =
-  lifts→is-strong-epi (∘-is-epic f-epi g-epi) $
-  ∘l-lifts-class C Monos
-    (orthogonal→lifts-right-class C Monos f-str)
-    (orthogonal→lifts-right-class C Monos g-str)
+    lifts→is-strong-epi (∘-is-epic f-epi g-epi)
+  $ ∘l-lifts-class C Monos
+      (orthogonal→lifts-right-class C Monos f-str)
+      (orthogonal→lifts-right-class C Monos g-str)
 ```
 
 Additionally, there is a partial converse to this result: If the
@@ -149,18 +147,15 @@ get a lift $t$.
 ```agda
 strong-epi-cancelr
   : ∀ {a b c} (f : Hom b c) (g : Hom a b)
-  → is-strong-epi (f ∘ g)
-  → is-strong-epi f
-strong-epi-cancelr f g (fg-epi , fg-str) =
-  lifts→is-strong-epi f-epi f-str
-  where
-    f-epi : is-epic f
-    f-epi = epic-cancelr fg-epi
+  → is-strong-epi (f ∘ g) → is-strong-epi f
+strong-epi-cancelr f g (fg-epi , fg-str) = lifts→is-strong-epi f-epi f-str where
+  f-epi : is-epic f
+  f-epi = epic-cancelr fg-epi
 
-    f-str : Lifts C f Monos
-    f-str m m-monic u v vf=mu =
-      let (w , wfg=ug , mw=v) = fg-str m m-monic (u ∘ g) v (extendl vf=mu) .centre
-      in pure (w , m-monic (w ∘ f) u (pulll mw=v ∙ vf=mu) , mw=v)
+  f-str : Lifts C f Monos
+  f-str m m-monic u v vf=mu =
+    let (w , wfg=ug , mw=v) = fg-str m m-monic (u ∘ g) v (extendl vf=mu) .centre in
+    pure (w , m-monic (w ∘ f) u (pulll mw=v ∙ vf=mu) , mw=v)
 ```
 
 As an immediate consequence of the definition, a monic strong epi is an
@@ -170,8 +165,9 @@ self-orthogonal maps are isos.
 
 ```agda
 strong-epi+mono→invertible
-  : ∀ {a b} {f : Hom a b} → is-strong-epi f → is-monic f → is-invertible f
-strong-epi+mono→invertible (_ , strong) mono  =
+  : ∀ {a b} {f : Hom a b}
+  → is-strong-epi f → is-monic f → is-invertible f
+strong-epi+mono→invertible (_ , strong) mono =
   self-orthogonal→invertible C _ (strong _ mono)
 ```
 
@@ -228,10 +224,9 @@ is-regular-epi→is-strong-epi
   → is-regular-epi C f
   → is-strong-epi f
 is-regular-epi→is-strong-epi {a} {b} f regular =
-  lifts→is-strong-epi
-    r.is-regular-epi→is-epic λ m m-monic u v vf=mu →
-      pure (map m-monic vf=mu , r.factors , lemma m-monic vf=mu)
-    where
+  lifts→is-strong-epi r.is-regular-epi→is-epic λ m m-monic u v vf=mu →
+    pure (map m-monic vf=mu , r.factors , lemma m-monic vf=mu)
+  where
     module r = is-regular-epi regular renaming (arr₁ to s ; arr₂ to t)
     module _ {c} {d} {m : Hom c d} {u} {v} (m-monic : is-monic m) (vf=mu : v ∘ f ≡ m ∘ u) where
       map : Hom b c
@@ -373,13 +368,14 @@ $ew = \mathrm{id}$ --- so that $e$, being a retract, is an epimorphism.
 ```agda
   epi : is-epic f
   epi u v uf=vf = ∥-∥-out! do
-    let module ker = Equaliser (eqs u v)
-    let k = ker.universal uf=vf
-    (w , p , q) ←
-      lifts ker.equ (is-equaliser→is-monic _ ker.has-is-eq) k id
-        (idl _ ∙ sym ker.factors)
-    let e-epi : is-epic ker.equ
-        e-epi = retract-is-epi q
+    let
+      module ker = Equaliser (eqs u v)
+      k = ker.universal uf=vf
+    (w , p , q) ← lifts ker.equ (is-equaliser→is-monic _ ker.has-is-eq) k id
+      (idl _ ∙ sym ker.factors)
+    let
+      e-epi : is-epic ker.equ
+      e-epi = retract-is-epi q
 ```
 
 Now, $e : Eq(u,v) \to B$ is the universal map which equalises $u$ and
@@ -493,8 +489,7 @@ is-strong-epi→is-extremal-epi
 is-strong-epi→is-extremal-epi (s , ortho) m g p =
   make-invertible (inv' .centre .fst) (inv' .centre .snd .snd)
     (m .monic _ _ (pulll (inv' .centre .snd .snd) ∙ id-comm-sym))
-  where
-  inv' = ortho (m .mor) (m .monic) g id (idl _ ∙ p)
+  where inv' = ortho (m .mor) (m .monic) g id (idl _ ∙ p)
 ```
 -->
 
@@ -514,7 +509,9 @@ subst-is-strong-epi
   → is-strong-epi g
 subst-is-strong-epi f=g f-strong-epi =
   lifts→is-strong-epi (subst-is-epic f=g (f-strong-epi .fst)) λ m m-monic u v vg=mu →
-    let (h , hf=u , mh=v) = f-strong-epi .snd m m-monic u v (ap₂ _∘_ refl f=g ∙ vg=mu) .centre
+    let
+      (h , hf=u , mh=v) = f-strong-epi .snd m m-monic u v
+        (ap₂ _∘_ refl f=g ∙ vg=mu) .centre
     in pure (h , ap (h ∘_) (sym f=g) ∙ hf=u , mh=v)
 ```
 -->

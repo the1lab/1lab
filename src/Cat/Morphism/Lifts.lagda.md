@@ -171,10 +171,7 @@ aforementioned lifting properties.
     {-# INCOHERENT Lifts-against-arrows-right #-}
 
 open Impl hiding (Lifts; Orthogonal; Lifting) public
-private open module Reimpl {o ℓ} (C : Precategory o ℓ) = Impl {C = C} using (Lifts; Orthogonal; Lifting) public
-{-# DISPLAY Impl.Lifts {C = C} L R = Lifts C L R #-}
-{-# DISPLAY Impl.Orthogonal {C = C} L R = Orthogonal C L R #-}
-{-# DISPLAY Impl.Lifting {C = C} f g h k = Lifting C f g h k #-}
+module _ {o ℓ} (C : Precategory o ℓ) where open Impl {C = C} using (Lifts ; Orthogonal ; Lifting) public
 
 module _ {o ℓ} (C : Precategory o ℓ) where
   open Cat.Reasoning C
@@ -229,8 +226,7 @@ some short calculations show that both triangles commute.
 ```agda
   invertible-left-lifts f f-inv u v vf=gu =
     pure (u ∘ f.inv , cancelr f.invr , pulll (sym vf=gu) ∙ cancelr f.invl)
-    where
-      module f = is-invertible f-inv
+    where module f = is-invertible f-inv
 ```
 
 <details>
@@ -240,8 +236,7 @@ some short calculations show that both triangles commute.
 ```agda
   invertible-right-lifts g g-inv u v vf=gu =
     pure (g.inv ∘ v , pullr vf=gu ∙ cancell g.invr , cancell g.invl)
-    where
-      module g = is-invertible g-inv
+    where module g = is-invertible g-inv
 ```
 </details>
 
@@ -371,8 +366,8 @@ type of lifts of such a square is a proposition.
 ```agda
   left-epic→lift-is-prop
     : is-epic f → v ∘ f ≡ g ∘ u → is-prop (Lifting C f g u v)
-  left-epic→lift-is-prop f-epi vf=gu (l , lf=u , _) (k , kf=u , _) =
-    Σ-prop-path! (f-epi l k (lf=u ∙ sym kf=u))
+  left-epic→lift-is-prop f-epi vf=gu (l , lf=u , _) (k , kf=u , _) = Σ-prop-path! $
+    f-epi l k (lf=u ∙ sym kf=u)
 ```
 
 Dually, if $g$ is a [[monomorphism]], then we the type of lifts is also

@@ -187,14 +187,14 @@ morphism are a proposition.
     q = Univalent.Hom-pathp-refll-iso c-cat {p = isop1p2 .fst} (isop1p2 .snd .snd)
 
     go : x ≡ y
-    go i .mid = c-cat .to-path (isop1p2 .fst) i
-    go i .left = p i
+    go i .mid   = c-cat .to-path (isop1p2 .fst) i
+    go i .left  = p i
     go i .right = q i
 ```
 
 <!--
 ```agda
-    go i .left∈L = is-prop→pathp (λ i → is-tr (L · (p i))) (x .left∈L) (y .left∈L) i
+    go i .left∈L  = is-prop→pathp (λ i → is-tr (L · (p i))) (x .left∈L) (y .left∈L) i
     go i .right∈R = is-prop→pathp (λ i → is-tr (R · (q i))) (x .right∈R) (y .right∈R) i
     go i .factors =
       is-prop→pathp (λ i → C.Hom-set _ _ f (q i C.∘ p i)) (x .factors) (y .factors) i
@@ -227,15 +227,13 @@ technical one.
   L-is-⊥R
     : ∀ {a b} (f : C.Hom a b)
     → (f ∈ L) ≃ (∀ {c d} (m : C.Hom c d) → m ∈ R → Orthogonal C f m)
-  L-is-⊥R f =
-    prop-ext! (λ m f∈L m∈R → to f∈L m m∈R) from
-    where
-      to : ∀ {c d} (m : C.Hom c d) → f ∈ L → m ∈ R → Orthogonal C f m
-      to m f∈L m∈R u v square = L⊥R f f∈L m m∈R u v square
+  L-is-⊥R f = prop-ext! (λ m f∈L m∈R → to f∈L m m∈R) from where
+    to : ∀ {c d} (m : C.Hom c d) → f ∈ L → m ∈ R → Orthogonal C f m
+    to m f∈L m∈R u v square = L⊥R f f∈L m m∈R u v square
 
-      from : (∀ {c d} (m : C.Hom c d) → m ∈ R → Orthogonal C f m) → f ∈ L
-      from ortho = subst (_∈ L) (sym (fa .factors)) $ L-is-stable _ _ m∈L (fa .left∈L)
-        where
+    from : (∀ {c d} (m : C.Hom c d) → m ∈ R → Orthogonal C f m) → f ∈ L
+    from ortho = subst (_∈ L) (sym (fa .factors)) $ L-is-stable _ _ m∈L (fa .left∈L)
+      where
 ```
 
 Suppose that $f$ is left-orthogonal to every $r \in R$, and write out
@@ -261,8 +259,8 @@ and make note of the diagonal filler $g : B \to r(f)$, and that it
 satisfies $gf=e$ and $mg = \id$.
 
 ```agda
-        fa = factor f
-        gpq = ortho (fa .right) (fa .right∈R) (fa .left) C.id (C.idl _ ∙ (fa .factors))
+      fa = factor f
+      gpq = ortho (fa .right) (fa .right∈R) (fa .left) C.id (C.idl _ ∙ (fa .factors))
 ```
 
 We'll show $gr = \id$ by fitting it into a lifting diagram. But
@@ -284,18 +282,18 @@ needed.
 ~~~
 
 ```agda
-        gm=id : gpq .centre .fst C.∘ (fa .right) ≡ C.id
-        gm=id = ap fst $ is-contr→is-prop
-          (L⊥R _ (fa .left∈L) _ (fa .right∈R) _ _ refl)
-          ( _ , C.pullr (sym (fa .factors)) ∙ gpq .centre .snd .fst
-          , C.cancell (gpq .centre .snd .snd)) (C.id , C.idl _ , C.idr _)
+      gm=id : gpq .centre .fst C.∘ (fa .right) ≡ C.id
+      gm=id = ap fst $ is-contr→is-prop
+        (L⊥R _ (fa .left∈L) _ (fa .right∈R) _ _ refl)
+        ( _ , C.pullr (sym (fa .factors)) ∙ gpq .centre .snd .fst
+        , C.cancell (gpq .centre .snd .snd)) (C.id , C.idl _ , C.idr _)
 ```
 
 Think back to the conclusion we wanted to reach: $r$ is in $L$, so since
 $f = r \circ l$ and $R$ is stable, so is $f$!
 
 ```agda
-        m∈L : fa .right ∈ L
-        m∈L = is-iso→in-L (fa .right) $
-          C.make-invertible (gpq .centre .fst) (gpq .centre .snd .snd) gm=id
+      m∈L : fa .right ∈ L
+      m∈L = is-iso→in-L (fa .right) $
+        C.make-invertible (gpq .centre .fst) (gpq .centre .snd .snd) gm=id
 ```

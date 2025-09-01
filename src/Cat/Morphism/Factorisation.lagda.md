@@ -72,8 +72,8 @@ monic.
     → (f-fac : Factorisation C L R f)
     → C.is-monic f
     → C.is-monic (f-fac .left)
-  factor-monic→left-monic {f = f} f-fac f-monic =
-    C.monic-cancell $ C.subst-is-monic (f-fac .factors) f-monic
+  factor-monic→left-monic {f = f} f-fac f-monic = C.monic-cancell $
+    C.subst-is-monic (f-fac .factors) f-monic
 ```
 
 If $f$ is [[epic]] and factors as $f = r \circ l$, then $r$ must also be
@@ -85,6 +85,6 @@ epic.
     → (f-fac : Factorisation C L R f)
     → C.is-epic f
     → C.is-epic (f-fac .right)
-  factor-epic→right-epic {f = f} f-fac f-epic =
-    C.epic-cancelr $ C.subst-is-epic (f-fac .factors) f-epic
+  factor-epic→right-epic {f = f} f-fac f-epic = C.epic-cancelr $
+    C.subst-is-epic (f-fac .factors) f-epic
 ```

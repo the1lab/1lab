@@ -72,18 +72,23 @@ $!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
 The proof is mostly a calculation, so we present it without a lot of comment.
 
 ```agda
-  object-orthogonal-!-orthogonal {X = X} T f =
-    prop-ext! fwd bwd
-    where
-      module T = Terminal T
+  object-orthogonal-!-orthogonal {X = X} T f = prop-ext! fwd bwd where
+    module T = Terminal T
 
-      fwd : Orthogonal C f X → Orthogonal C f (! T)
-      fwd f⊥X u v sq .centre = f⊥X u .centre .fst , f⊥X u .centre .snd , T.!-unique₂ _ _
-      fwd f⊥X u v sq .paths m = Σ-prop-path! (ap fst (f⊥X u .paths (m .fst , m .snd .fst)))
+    fwd : Orthogonal C f X → Orthogonal C f T.!
+    fwd f⊥X u v sq .centre =
+        f⊥X u .centre .fst
+      , f⊥X u .centre .snd
+      , T.!-unique₂ _ _
+    fwd f⊥X u v sq .paths m = Σ-prop-path! $
+      ap fst (f⊥X u .paths (m .fst , m .snd .fst))
 
-      bwd : Orthogonal C f (! T) → Orthogonal C f X
-      bwd f⊥! u .centre =  f⊥! u T.! (T.!-unique₂ _ _) .centre .fst , f⊥! u T.! (T.!-unique₂ _ _) .centre .snd .fst
-      bwd f⊥! u .paths (w , eq) = Σ-prop-path! (ap fst (f⊥! _ _ _ .paths (w , eq , (T.!-unique₂ _ _))))
+    bwd : Orthogonal C f (! T) → Orthogonal C f X
+    bwd f⊥! u .centre =
+        f⊥! u T.! (T.!-unique₂ _ _) .centre .fst
+      , f⊥! u T.! (T.!-unique₂ _ _) .centre .snd .fst
+    bwd f⊥! u .paths (w , eq) = Σ-prop-path! $
+      ap fst (f⊥! _ _ _ .paths (w , eq , (T.!-unique₂ _ _)))
 ```
 
 As a passing observation we note that if $f \ortho X$ and $X \cong Y$,
@@ -91,7 +96,9 @@ then $f \ortho Y$. Of course, this is immediate in categories, but it
 holds in the generality of precategories.
 
 ```agda
-  obj-orthogonal-iso : ∀ {a b} {X Y} (f : Hom a b) → X ≅ Y → Orthogonal C f X → Orthogonal C f Y
+  obj-orthogonal-iso
+    : ∀ {a b} {X Y} (f : Hom a b)
+    → X ≅ Y → Orthogonal C f X → Orthogonal C f Y
 ```
 
 <!--
@@ -113,11 +120,11 @@ A slightly more interesting lemma is that, if $f$ is orthogonal to
 itself, then it is an isomorphism:
 
 ```agda
-  self-orthogonal→invertible : ∀ {a b} (f : Hom a b) → Orthogonal C f f → is-invertible f
+  self-orthogonal→invertible
+    : ∀ {a b} (f : Hom a b) → Orthogonal C f f → is-invertible f
   self-orthogonal→invertible f f⊥f =
-    make-invertible (gpq .fst) (gpq .snd .snd) (gpq .snd .fst)
-    where
-      gpq = f⊥f id id (idl _ ∙ intror refl) .centre
+    let (f , p , q) = f⊥f id id (idl _ ∙ intror refl) .centre in
+    make-invertible f q p
 ```
 
 If $f$ is an epi or $g$ is a mono, then the mere existence of
@@ -127,14 +134,16 @@ _any_ lift is enough to establish that $f \ortho g$.
   left-epic-lift→orthogonal
     : (g : Hom c d)
     → is-epic f → Lifts C f g → Orthogonal C f g
-  left-epic-lift→orthogonal g f-epi lifts u v vf=gu =
-    is-prop∥∥→is-contr (left-epic→lift-is-prop C f-epi vf=gu) (lifts u v vf=gu)
+  left-epic-lift→orthogonal g f-epi lifts u v vf=gu = is-prop∥∥→is-contr
+    (left-epic→lift-is-prop C f-epi vf=gu)
+    (lifts u v vf=gu)
 
   right-monic-lift→orthogonal
     : (f : Hom a b)
     → is-monic g → Lifts C f g → Orthogonal C f g
-  right-monic-lift→orthogonal f g-mono lifts u v vf=gu =
-    is-prop∥∥→is-contr (right-monic→lift-is-prop C g-mono vf=gu) (lifts u v vf=gu)
+  right-monic-lift→orthogonal f g-mono lifts u v vf=gu = is-prop∥∥→is-contr
+    (right-monic→lift-is-prop C g-mono vf=gu)
+    (lifts u v vf=gu)
 ```
 
 <!--
@@ -142,8 +151,8 @@ _any_ lift is enough to establish that $f \ortho g$.
   left-epic-lift→orthogonal-class
     : ∀ {κ} (R : Arrows C κ)
     → is-epic f → Lifts C f R → Orthogonal C f R
-  left-epic-lift→orthogonal-class R f-epic lifts r r∈R =
-    left-epic-lift→orthogonal r f-epic (lifts r r∈R)
+  left-epic-lift→orthogonal-class R f-epic lifts r r∈R = left-epic-lift→orthogonal
+    r f-epic (lifts r r∈R)
 
   right-monic-lift→orthogonal-class
     : ∀ {κ} (L : Arrows C κ)
@@ -159,13 +168,13 @@ other morphism.
 ```agda
   invertible→left-orthogonal : (g : Hom c d) → Orthogonal C Isos g
   invertible→left-orthogonal g f f-inv =
-    left-epic-lift→orthogonal g (invertible→epic f-inv) $
-    invertible-left-lifts C f f-inv
+      left-epic-lift→orthogonal g (invertible→epic f-inv)
+    $ invertible-left-lifts C f f-inv
 
   invertible→right-orthogonal : (f : Hom a b) → Orthogonal C f Isos
   invertible→right-orthogonal f g g-inv =
-    right-monic-lift→orthogonal f (invertible→monic g-inv) $
-    invertible-right-lifts C g g-inv
+      right-monic-lift→orthogonal f (invertible→monic g-inv)
+    $ invertible-right-lifts C g g-inv
 ```
 
 Phrased another way, the class of isomorphisms is left and right orthogonal
@@ -244,8 +253,7 @@ the object. Given a map $a : a \to \iota X$,
   in-subcategory→orthogonal-to-inverted
     : ∀ {X} {a b} {f : C.Hom a b} → D.is-invertible (r.₁ f) → Orthogonal C f (ι.₀ X)
   in-subcategory→orthogonal-to-inverted {X} {A} {B} {f} rf-inv a→x =
-    contr (fact , factors) λ { (g , factors') →
-      Σ-prop-path! (h≡k factors factors') }
+    contr (fact , factors) λ { (g , factors') → Σ-prop-path! (h≡k factors factors') }
     where
       module rf = D.is-invertible rf-inv
       module η⁻¹ {a} = C.is-invertible (is-reflective→unit-right-is-iso r⊣ι ι-ff {a})
@@ -325,13 +333,13 @@ the subcategory:
   orthogonal-to-ηs→in-subcategory
     : ∀ {X} → (∀ B → Orthogonal C (unit.η B) X) → C.is-invertible (unit.η X)
   orthogonal-to-ηs→in-subcategory {X} ortho =
-    C.make-invertible x lemma (ortho X C.id .centre .snd)
-    where
+    C.make-invertible x lemma (ortho X C.id .centre .snd) where
       x = ortho X C.id .centre .fst
-      lemma = unit.η _ C.∘ x             ≡⟨ unit.is-natural _ _ _ ⟩
-              ιr.₁ x C.∘ unit.η (ιr.₀ X) ≡⟨ C.refl⟩∘⟨ η-comonad-commute r⊣ι ι-ff ⟩
-              ιr.₁ x C.∘ ιr.₁ (unit.η X) ≡⟨ ιr.annihilate (ortho X C.id .centre .snd) ⟩
-              C.id                       ∎
+      lemma =
+        unit.η _ C.∘ x             ≡⟨ unit.is-natural _ _ _ ⟩
+        ιr.₁ x C.∘ unit.η (ιr.₀ X) ≡⟨ C.refl⟩∘⟨ η-comonad-commute r⊣ι ι-ff ⟩
+        ιr.₁ x C.∘ ιr.₁ (unit.η X) ≡⟨ ιr.annihilate (ortho X C.id .centre .snd) ⟩
+        C.id                       ∎
 ```
 
 And the converse to *that* is a specialisation of the first thing we
@@ -344,6 +352,8 @@ which $\eta$ is an isomorphism.
   in-subcategory→orthogonal-to-ηs
     : ∀ {X B} → C.is-invertible (unit.η X) → Orthogonal C (unit.η B) X
   in-subcategory→orthogonal-to-ηs inv =
-    obj-orthogonal-iso C (unit.η _) (C.invertible→iso _ (C.is-invertible-inverse inv)) $
-    in-subcategory→orthogonal-to-inverted (is-reflective→left-unit-is-iso r⊣ι ι-ff)
+      obj-orthogonal-iso C (unit.η _)
+        (C.invertible→iso _ (C.is-invertible-inverse inv))
+    $ in-subcategory→orthogonal-to-inverted
+        (is-reflective→left-unit-is-iso r⊣ι ι-ff)
 ```
