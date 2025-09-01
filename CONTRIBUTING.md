@@ -442,19 +442,28 @@ of continuing lines, rather than on the end of the line above ("trailing").
 
 ```agda
 -- Always:
-RL[m]∘RL[e]-invertible
-  : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
+RL[m]∘RL[e]-invertible : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
 RL[m]∘RL[e]-invertible = C.subst-is-invertible (R.expand (L.expand factors))
   $ R.F-map-invertible
   $ is-reflective→left-unit-is-iso L⊣R reflective
 
 -- Never (trailing operators):
-RL[m]∘RL[e]-invertible
-  : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
+RL[m]∘RL[e]-invertible : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
 RL[m]∘RL[e]-invertible =
   C.subst-is-invertible (R.expand (L.expand factors)) $
   R.F-map-invertible $
   is-reflective→left-unit-is-iso L⊣R reflective
+```
+
+On the first line, the `_$_` application operator **may** be set
+trailing:
+
+```agda
+-- Permissible:
+∘∙-assoc (f , f') (g , g') (h , h') = funext∙ (λ _ → refl) $
+  ap (f ∘ g) h' ∙ ap f g' ∙ f'   ≡⟨ ∙-assoc _ _ _ ⟩
+  (ap (f ∘ g) h' ∙ ap f g') ∙ f' ≡˘⟨ ap-∙ f _ _ ⟩∙⟨refl ⟩
+  ap f (ap g h' ∙ g') ∙ f'       ∎
 ```
 
 If a continuing line *itself* has continuing arguments, *these* should
