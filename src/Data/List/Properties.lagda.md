@@ -24,7 +24,7 @@ open import Meta.Idiom
 module Data.List.Properties where
 ```
 
-# header
+# Properties of lists
 
 <!--
 ```agda
