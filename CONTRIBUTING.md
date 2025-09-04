@@ -304,72 +304,30 @@ margin above, below, or in both block directions.
 ## The structure of a module
 
 Agda code **should** be kept to less than 85 columns (this is informed
-by how much code can fit on a 1920x1080 screen without a scroll bar). In
-an equational reasoning block, anything between `⟨_⟩` does not count for
-the line length limit, since those spans can be removed by the user.
-(example: the [dual of the modular law] reaches column 136!)
+by how much code can fit on a 1920x1080 screen without overflow in the
+inline direction). In an equational reasoning block, anything between
+`⟨_⟩` does not count for the line length limit, since those spans can be
+removed by the user. (e.g., the [dual of the modular law] reaches
+column 136!)
 
 [dual of the modular law]: https://github.com/the1lab/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
 
-When the line length limit would be respected, `where` clauses
-**should** go on the same line as the clause, as demonstrated above. If
-the `where` keyword ends up on another line, the `where`-declarations
-**should** be indented one step further, unless the `where` module is
-named:
+In laid-out syntax, **two spaces of indentation should be used**,
+instead of alignment, whenever possible. We refer to moving to the next
+multiple-of-two indentation as "a step". There are some situations
+where Agda's grammar *mandates* deeper indentation, particularly when
+layout stacking and `module` declarations are involved. Specific rules
+for laying out function bodies and declaration signatures are made
+explicit below.
 
 ```agda
 -- Always:
-foo = {! some very long code !}
-  where
-    bar : ...
-
--- Never:
-foo = {! some very long code !}
-  where
-  bar : ...
-
--- These are both okay:
-foo = {! some very long code !}
-  module foo where
-    bar : ...
-
-foo = {! some very long code !}
-  module foo where
-  bar : ...
-```
-
-Helper functions that may need to be used in client code, but have very
-long telescopes/no sensible top-level name, **may** be placed in a named
-`where` module:
-
-```agda
-ua→ {e = e} {B} {f₀ = f₀} {f₁} h =
-  (λ i a → comp (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) (sys i a))
-  module ua→ where
-
-  -- ...
-
-  filler : ∀ i j (a : ua e i) → B (i ∨ ~ j) (x' i (~ j) a)
-  filler i j a = fill (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) j (sys i a)
-```
-
-> [!WARNING]
-> Anything inside a named `where` module has the same visibility as the
-> function it belongs to. Be careful not to accidentally export, e.g.,
-> local copies of helper modules from a named `where` module!
-
-In laid-out syntax, **two spaces of indentation should be used**,
-instead of alignment, whenever possible, even when this increases the
-number of vertical lines.
-
-```agda
--- Prefer:
 foo =
   let
     x = 1
   in x
 
--- Over:
+-- Never (code aligned rather than indented):
 foo =
   let x = 1
    in x
@@ -377,116 +335,6 @@ foo =
 foo = let x = 1
        in x
 ```
-
-Long type signatures **should** start on a line break, and have arrows
-aligned with the colon:
-
-```agda
--- Always:
-Triangle
-  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
-  → Type ℓ
-
--- Never:
-Triangle : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-         → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
-         → Type ℓ
-```
-
-If you have a long chain of named binders, you **may** either break
-across lines with arrows which should be aligned to the colon as above,
-or without. If you choose to break them without lines, the binders
-**must** be further indented two spaces, which brings them into
-alignment with the binders above:
-
-```agda
--- Okay:
-Triangle
-  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-  → (p : x ≡ y) (q : x ≡ z)
-    (r : y ≡ z)
-  → Type ℓ
-
--- Never:
-Triangle
-  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-  → (p : x ≡ y) (q : x ≡ z)
-  (r : y ≡ z)
-  → Type ℓ
-```
-
-If possible within the bounds of comprehensibility, record fields and
-constructor names **should** be chosen to encourage vertical alignment
-at use-sites. *Example*: we generally shorten `commutes` to `com` to
-match the length of `map` when defining e.g. maps in slice categories,
-but we would *not* shorten `monic` to `mon`.
-
-Pattern- and copattern-matching definitions **should** have their
-corresponding arguments, *and* the `=` sign of each clause, aligned, if
-this would stay within the line length limit. Alignment between `=`
-signs **should not** happen between clauses that are not on adjacent
-lines.
-
-```agda
--- Prefer:
-max zero    zero    = zero
-max zero    (suc n) = suc n
-max (suc n) zero    = suc n
-max (suc n) (suc k) = suc k
-
--- Over:
-max zero zero = zero
-max zero (suc n) = suc n
-max (suc n) zero = suc n
-max (suc n) (suc k) = suc k
-
--- Never:
-foo (very-long a) (even-longer b) =
-  let
-    ...
-  in ...
-foo short short                   = ?
-```
-
-Use a generous amount of whitespace both between and inside your
-definitions. Definitions, including `let` bindings, **must** be
-separated by at least one blank line *of code*, or by prose. A
-declaration and a definition for the same function **should not**
-have a line break, but may have a prose break.
-
-<details>
-<summary> <b>Rule of thumb:</b> When giving a copattern definition with
-many fields, try to sink all the "proof" fields towards the bottom, and
-include a blank line between the "data" and the "proofs". </summary>
-
-```agda
--- Prefer:
-ni .eta x .η _ = B.id
-ni .inv x .η _ = B.id
-
-ni .eta x .is-natural _ _ _ = B.id-comm-sym
-ni .inv x .is-natural _ _ _ = B.id-comm-sym
-ni .eta∘inv x     = ext λ _ → B.idl _
-ni .inv∘eta x     = ext λ _ → B.idl _
-ni .natural x y f = ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
-
--- Over:
-ni .eta x .η _              = B.id
-ni .eta x .is-natural _ _ _ = B.id-comm-sym
-ni .inv x .η _              = B.id
-ni .inv x .is-natural _ _ _ = B.id-comm-sym
-ni .eta∘inv x               = ext λ _ → B.idl _
-ni .inv∘eta x               = ext λ _ → B.idl _
-ni .natural x y f           = ext λ _ →
-  B.idr _ ∙ ap (B._∘ _) (y .F-id)
-```
-
-In a case like the above, consider either putting the "proof" fields in
-a `<details>` tag (the first time) or even a comment if there are many
-similar definitions.
-
-</details>
 
 Modules in the `Cat` and `Order` namespaces **should** use `Cat.Prelude`
 over `1Lab.Prelude`. Modules in the `1Lab` namespace **should not**
@@ -517,6 +365,456 @@ cases where we need to mention this type applied to distinct categories,
 and we need an [`H-Level`] instance at both instantiations. In cases
 like this, generalizable variables and/or anonymous parametrised modules
 **should** be used instead.
+
+### Formatting function definitions
+
+These rules apply to the right-hand sides of clauses (top-level, `let`
+and `where` function definitions); to the bodies of trailing `λ`
+expressions; and to the clauses in a `λ where` expression (extended
+lambda).
+
+In most situations, the RHS of a clause **should**, to the extent
+possible, be on the same line as the LHS; see [formatting equational
+reasoning](#formatting-equational-reasoning) for the primary exception.
+The conflicts this may cause with the indentation-over-alignment rule
+are to be resolved as follows:
+
+* If the RHS is a `let` expression, break *before* `let`; but see the
+  [exception for short `let`s](#exceptional-formatting-for-lets) below.
+* If the RHS is a `record` expression, break *after* `record`.
+* If the RHS is a `λ where` or `record where` expression, break *before*
+  `λ`/`record` if the clause being defined has a `where` declaration
+  (this is required by Agda's syntax); and break *after* `where`
+  otherwise.
+
+```agda
+-- Never (bindings backwards relative to `let` keyword):
+f x = let
+  y = 1
+  in y
+
+-- Okay:
+f x = record where
+  ...
+
+f x = record
+  { a = _
+  ; b = _
+  }
+
+f x =
+  record where
+    ...
+  where
+    ...
+```
+
+If the RHS is an application, the LHS line **should** include the head
+function, and as many arguments as possible, respecting the rules above
+if there is a trailing block argument. Arguments placed on continuing
+lines **must** be indented a step relative to the clause. If the head
+function can't be placed on the LHS line because of the length limit,
+the entire body **should** be moved to a continuing line, which itself
+**must** be indented a step. In this situation, the subsequent arguments
+**should** be indented *two* steps (relative to the clause).
+
+```agda
+-- If possible, prefer:
+RL[e]-invertible : C.is-invertible (R.₁ (L.₁ e))
+RL[e]-invertible = C.strong-mono+epi→invertible
+  RL[e]-strong-mono
+  RL[e]-epic
+
+-- Over:
+RL[e]-invertible : C.is-invertible (R.₁ (L.₁ e))
+RL[e]-invertible =
+  C.strong-mono+epi→invertible
+    RL[e]-strong-mono
+    RL[e]-epic
+
+-- But this is allowable if C.strong-mono+epi→invertible wouldn't fit on
+-- the line above due to the line length limit.
+```
+
+When broken over multiple lines, binary operators (including the `$`
+application operators) **should** always be on the *start* ("leading")
+of continuing lines, rather than on the end of the line above ("trailing").
+
+```agda
+-- Always:
+RL[m]∘RL[e]-invertible : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
+RL[m]∘RL[e]-invertible = C.subst-is-invertible (R.expand (L.expand factors))
+  $ R.F-map-invertible
+  $ is-reflective→left-unit-is-iso L⊣R reflective
+
+-- Never (trailing operators):
+RL[m]∘RL[e]-invertible : C.is-invertible (R.₁ (L.₁ m) C.∘ R.₁ (L.₁ e))
+RL[m]∘RL[e]-invertible =
+  C.subst-is-invertible (R.expand (L.expand factors)) $
+  R.F-map-invertible $
+  is-reflective→left-unit-is-iso L⊣R reflective
+```
+
+On the first line, the `_$_` application operator **may** be set
+trailing:
+
+```agda
+-- Permissible:
+∘∙-assoc (f , f') (g , g') (h , h') = funext∙ (λ _ → refl) $
+  ap (f ∘ g) h' ∙ ap f g' ∙ f'   ≡⟨ ∙-assoc _ _ _ ⟩
+  (ap (f ∘ g) h' ∙ ap f g') ∙ f' ≡˘⟨ ap-∙ f _ _ ⟩∙⟨refl ⟩
+  ap f (ap g h' ∙ g') ∙ f'       ∎
+```
+
+If a continuing line *itself* has continuing arguments, *these* should
+be indented *farther* than the function itself, and always aligned to a
+multiple of two spaces.
+
+```agda
+-- Prefer:
+unit-strong-mono : C.is-strong-mono (η x)
+unit-strong-mono = C.strong-mono-cancell (R.₁ (L.₁ f)) (η x)
+  $ C.subst-is-strong-mono (unit.is-natural _ _ _)
+  $ C.strong-mono-∘ (η (R.₀ a)) f
+      (C.invertible→strong-mono
+        (is-reflective→unit-right-is-iso L⊣R reflective))
+      f-strong-mono
+
+-- Over:
+unit-strong-mono : C.is-strong-mono (η x)
+unit-strong-mono = C.strong-mono-cancell (R.₁ (L.₁ f)) (η x)
+  $ C.subst-is-strong-mono (unit.is-natural _ _ _)
+  $ C.strong-mono-∘ (η (R.₀ a)) f
+    (C.invertible→strong-mono
+      (is-reflective→unit-right-is-iso L⊣R reflective))
+    f-strong-mono
+```
+
+If the entire body is operator applications, you **may** indent the
+*first* line enough to bring all the operands into alignment (which,
+depending on the length of the operator, may not be an integer number of
+indentation steps), while keeping the subsequent lines aligned a single
+step ahead of the clause.
+
+```agda
+-- Okay (discretionary extra indentation for first line of body):
+stability-var {Γ = Γ , σ} {τ = τ} (pop x) =
+    (⟦ ⟦ x ⟧ⁿ ⟧₁ .map .is-natural Γ (Γ , σ) (drop stop) $ₚ idsec Γ)
+  ∙ ap (⟦ τ ⟧₀ .dom .F₁ (drop stop)) (stability-var x)
+  ∙ sym (Nfa.reflectₙ (normalisation τ))
+
+-- Also okay (normal rule for continuing arguments applies)
+stability-var {Γ = Γ , σ} {τ = τ} (pop x) =
+  (⟦ ⟦ x ⟧ⁿ ⟧₁ .map .is-natural Γ (Γ , σ) (drop stop) $ₚ idsec Γ)
+    ∙ ap (⟦ τ ⟧₀ .dom .F₁ (drop stop)) (stability-var x)
+    ∙ sym (Nfa.reflectₙ (normalisation τ))
+```
+
+#### Exceptional formatting for `let`s
+
+If a function body is a `let` expression with a single binding, and
+short enough for the *entire* `let` construct to fit in a single line,
+you **may** write it as a "header" for the body of the function. In this
+case, the `let` should appear in its own line, indented a step relative
+to the clause. The body **should not** be indented a step relative to
+the `let` keyword: it should start aligned with the `let`.
+
+```agda
+-- Okay:
+foo =
+  let bar = 123 in
+  bar
+```
+
+#### Formatting equational reasoning
+
+Exceptionally, a proof by equational reasoning **should** always start
+on a new line, indented a step relative to the function definition.  Two
+styles are allowed depending on the length of the expressions being
+equated.
+
+* You **should** have the equations to the right of the expressions, with
+  all the `≡⟨`s aligned. The `⟩`s need not be aligned.
+
+    ```agda
+    proof =
+      some expression ≡⟨ a proof ⟩
+      some other term ≡⟨ other proof ⟩
+      the final term  ∎
+    ```
+
+* Alternatively, if the expressions being compared are themselves very
+  long, you **may** have the equations on lines *between* the expressions,
+  in which case they should be indented an additional step.
+
+    ```agda
+      proof =
+        some expression
+          ≡⟨ a proof ⟩
+        some other term
+          ≡⟨ other proof ⟩
+        the final term
+          ∎
+    ```
+
+This applies to any analogous form of transitive reasoning combinator
+(e.g. equivalence reasoning, preorder reasoning, pointed function
+reasoning). As usual, code within the `⟨_⟩` does not contribute to the
+line length limit.
+
+#### Formatting `where` clauses
+
+If the RHS of a clause is a single line, regardless of whether it is on
+the same line as the LHS, a `where` clause **should** be attached on
+this line, and the `where` declarations **should** be indented another
+step.
+
+```agda
+-- Always:
+foo = {! some short code !} where
+  bar = ...
+
+-- Never (early break for where clause):
+foo = {! some short code !}
+  where
+    bar = ...
+
+-- Never (early break for where clause with unindented declarations):
+foo = {! some short code !}
+  where
+  bar = ...
+
+```
+
+If the RHS is too long for the `where` clause to fit on the same line,
+it **should** appear in a continuing line; it **must** be on a
+continuing line if the RHS itself has continuing lines. As usual, this
+mandates a step of indentation for the `where` keyword. In this case,
+the `where` declarations **should** be indented *two* steps, four
+spaces, relative to the function declaration.
+
+```agda
+-- Always:
+foo = {! some extremely long code that that works out to just about 85 characters !}
+  where
+    bar = ...
+
+foo =
+  {! some very long code !}
+  $ {! with continuation lines !}
+  where
+    bar : ...
+
+-- Never (line length limit violation):
+foo = {! some extremely long code that that works out to just about 85 characters !} where
+  bar = ...
+
+-- Never (no indentation before where decls in anonymous where module):
+foo = {! some extremely long code that that works out to just about 85 characters !}
+  where
+  bar = ...
+
+-- Never (additional indentation relative to continuing lines):
+foo =
+  {! some very long code !}
+  $ {! with continuation lines !}
+    where
+      bar : ...
+```
+
+The extra step of indentation for the `where`-declarations **may** be
+skipped if the `where` module is named.
+
+```agda
+-- These are both okay:
+foo = {! some very long code !}
+  module foo where
+    bar : ...
+
+foo = {! some very long code !}
+  module foo where
+  bar : ...
+```
+
+The line break after the `where` keyword **may** be skipped if the
+resulting layout respects the line length limit.
+
+```agda
+-- Both okay:
+foo = {! pretty short code !} where bar = 123
+foo = {! some extremely long code that that works out to just about 85 characters !}
+  where bar = 123
+```
+
+Helper functions that may need to be used in client code, but have very
+long telescopes/no sensible top-level name, **may** be placed in a named
+`where` module:
+
+```agda
+ua→ {e = e} {B} {f₀ = f₀} {f₁} h =
+  (λ i a → comp (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) (sys i a))
+  module ua→ where
+
+  -- ...
+
+  filler : ∀ i j (a : ua e i) → B (i ∨ ~ j) (x' i (~ j) a)
+  filler i j a = fill (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) j (sys i a)
+```
+
+> [!WARNING]
+> Anything inside a named `where` module has the same visibility as the
+> function it belongs to. Be careful not to accidentally export, e.g.,
+> local copies of helper modules from a named `where` module!
+
+The clauses of pattern- and copattern-matching definitions **should**
+maintain vertical alignment between corresponding arguments, and between
+their `=` signs, wherever this wouldn't conflict with the line length
+limit. This **may** be skipped if the patterns on distinct lines have
+too great a length difference. If a clause is multiple lines, subsequent
+clauses **should not** have their arguments aligned.
+
+```agda
+-- Prefer:
+max zero    zero    = zero
+max zero    (suc n) = suc n
+max (suc n) zero    = suc n
+max (suc n) (suc k) = suc k
+
+-- Over:
+max zero zero = zero
+max zero (suc n) = suc n
+max (suc n) zero = suc n
+max (suc n) (suc k) = suc k
+
+-- Never (aligned '='s are visually disconnected by body of first clause):
+foo (very-long a) (even-longer b) =
+  let
+    ...
+  in ...
+foo short short                   = ?
+```
+
+Definitions, including `let` bindings, **must** be separated by at least
+one blank line *in the same code block*, or by prose. A declaration and
+a definition for the same function **should not** have a line break, but
+may have a prose break.
+
+When giving a copattern-matching definition with many fields, you
+**should** try to sink all the "proof" fields towards the bottom, and
+**may** include a blank line between the "data" and the "proofs".
+
+```agda
+-- Prefer:
+ni .eta x .η _ = B.id
+ni .inv x .η _ = B.id
+
+ni .eta x .is-natural _ _ _ = B.id-comm-sym
+ni .inv x .is-natural _ _ _ = B.id-comm-sym
+ni .eta∘inv x     = ext λ _ → B.idl _
+ni .inv∘eta x     = ext λ _ → B.idl _
+ni .natural x y f = ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+
+-- Over:
+ni .eta x .η _              = B.id
+ni .eta x .is-natural _ _ _ = B.id-comm-sym
+ni .inv x .η _              = B.id
+ni .inv x .is-natural _ _ _ = B.id-comm-sym
+ni .eta∘inv x               = ext λ _ → B.idl _
+ni .inv∘eta x               = ext λ _ → B.idl _
+ni .natural x y f           = ext λ _ →
+  B.idr _ ∙ ap (B._∘ _) (y .F-id)
+```
+
+In a case like the above, where all the "proof" fields are
+uninteresting, consider putting them in a `<details>` block, or in a
+Markdown comment.
+
+### Formatting type signatures
+
+Unlike a function body, if a type signature needs to be broken over
+multiple lines, it **must** *start* on the next line, and on the next
+indentation step. Arrows in continuing lines **must** be aligned with
+the colon on the first line.
+
+```agda
+-- Always:
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+  → Type ℓ
+
+-- Never (indentation over alignment):
+Triangle : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+         → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+         → Type ℓ
+
+Triangle : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z) (r : y ≡ z)
+  → Type ℓ
+```
+
+If you have a long chain of named binders, you **may** either break
+these onto multiple lines with arrows (which should be aligned to the
+colon as above), or without. If you choose to break them without arrows,
+the binders **must** be indented another step, which brings them into
+alignment with the binders on the preceding line:
+
+```agda
+-- Okay:
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z)
+    (r : y ≡ z)
+  → Type ℓ
+
+-- Never (binder backwards relative to others in its group):
+Triangle
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+  → (p : x ≡ y) (q : x ≡ z)
+  (r : y ≡ z)
+  → Type ℓ
+```
+
+If possible within the bounds of comprehensibility, record fields and
+inductive constructor names **should** be chosen to encourage vertical
+alignment at use-sites. *Example*: we generally shorten `commutes` to
+`com` to match the length of `map` when defining e.g. maps in slice
+categories, but we would *not* shorten `monic` to `mon`.
+
+In a sequence of adjacent inductive constructors/record fields with
+single-line type signatures, these signatures **should** be vertically
+aligned, by inserting whitespace *before* the colon. This **may** be
+skipped if the fields have long types and a big difference in name
+length.
+
+In a sequence of adjacent inductive constructors/record fields with
+single-line type signatures, their return types **may** be aligned at
+your discretion; you **may** also align the types of "analogous"
+arguments. When foregoing alignment, the signatures **should** be
+ordered to avoid "jumps" between line lengths.
+
+```agda
+-- Okay (return types aligned):
+data Nf where
+  lam  : Nf (Γ , τ) σ       → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ    → Nf Γ (τ `× σ)
+  unit :                      Nf Γ `⊤
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
+
+-- Okay (no alignment, but line lengths are monotonic)
+data Nf where
+  unit : Nf Γ `⊤
+  lam  : Nf (Γ , τ) σ → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ → Nf Γ (τ `× σ)
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
+
+-- Suboptimal (strange jump in line lengths):
+data Nf where
+  lam  : Nf (Γ , τ) σ → Nf Γ (τ `⇒ σ)
+  pair : Nf Γ τ → Nf Γ σ → Nf Γ (τ `× σ)
+  unit : Nf Γ `⊤
+  ne   : ∀ {x} → Ne Γ (` x) → Nf Γ (` x)
+```
 
 ### Notation classes
 
