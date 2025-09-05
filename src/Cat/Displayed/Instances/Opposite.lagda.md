@@ -90,7 +90,7 @@ opposites of those of $\cE$. Note that this is still a category over
 $\cB$, unlike in the case of the [[total opposite]], which results in a
 category over $\cB\op$ --- which, generally, will not be a fibration.
 The construction of the fibred opposite proceeds using $\cE$'s
-[[base change]] functors. A morphism $h : y \to\op_f x$, lying over a map
+[[base change]] functors. A morphism $h : x \to\op_f y$, lying over a map
 $f : a \to b$, is defined to be a map $f^*y \to_{\id} x$, as indicated
 (in red) in the diagram below.
 

@@ -214,10 +214,10 @@ quantification and substitution. While in general the order matters, the
 **Beck-Chevalley condition** says that we can conclude
 
 $$
-\exists_h (a[k]) = (\exists_g a)[f]
+\exists_h (\alpha[k]) = (\exists_g \alpha)[f]
 $$
 
-provided that the square
+given $\alpha : \bP(b)$ and provided that the square
 
 ~~~{.quiver}
 \[\begin{tikzcd}[ampersand replacement=\&]

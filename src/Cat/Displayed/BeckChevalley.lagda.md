@@ -26,7 +26,7 @@ import Cat.Reasoning
 module Cat.Displayed.BeckChevalley where
 ```
 
-# Beck-Chevalley conditions
+# Beck-Chevalley conditions {defines="Beck-Chevalley-condition"}
 
 Let $\cE \liesover \cB$ be a [[cartesian fibration]], which we shall
 view as a setting for some sort of logic or type theory. In particular,
@@ -34,7 +34,7 @@ we shall view the corresponding [[base change]] functors $f^{*} :
 \cE_{Y} \to \cE_{X}$ as an operation of substitution on
 predicates/types, and assume that $\cB$ has [[finite products]]. This
 setup leads to a tidy definition of existential quantifiers as left
-adjoints $\exists_{Y} : \cE_{X \times Y} \to \cE{X}$ to the base changes
+adjoints $\exists_{Y} : \cE_{X \times Y} \to \cE_{X}$ to the base changes
 along projections $\pi : X \times Y \to X$:
 
 - The introduction rule is given by the unit

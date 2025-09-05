@@ -80,14 +80,10 @@ to give a terminal object and binary products.
       equalisers : has-equalisers C
       pullbacks  : has-pullbacks C
 
-    Eq : ∀ {A B} (f g : Hom A B) → Ob
-    Eq f g = equalisers f g .Equaliser.apex
-
-    Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
-    Pb f g = pullbacks f g .Pullback.apex
-
     module Products = Binary-products C products
     open Products using (_⊗₀_) public
+    open Equalisers C equalisers public
+    open Pullbacks C pullbacks public
 
   open Finitely-complete
 ```

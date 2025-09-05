@@ -4,6 +4,7 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.FullSubcategory
+open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
 open import Cat.Diagram.Equaliser
@@ -264,12 +265,11 @@ factorisation of $f$ on our hands!
 
 ```agda
 strong-epi-mono→image
-  : ∀ {a b im} (f : Hom a b)
-  → (a→im : Hom a im) → is-strong-epi a→im
-  → (im→b : Hom im b) → is-monic im→b
-  → im→b ∘ a→im ≡ f
+  : ∀ {a b} (f : Hom a b)
+  → Factorisation C StrongEpis Monos f
   → Image C f
-strong-epi-mono→image f a→im (_ , str-epi) im→b mono fact = go where
+strong-epi-mono→image f fac = go where
+  open Factorisation fac renaming (left∈L to str-epi; right∈R to mono)
   open Initial
   open /-Obj
   open /-Hom
@@ -278,8 +278,8 @@ strong-epi-mono→image f a→im (_ , str-epi) im→b mono fact = go where
 
   obj : ↓Obj (!Const (cut f)) (Forget-full-subcat {P = is-monic ⊙ map})
   obj .dom = tt
-  obj .cod = cut im→b , mono
-  obj .map = record { map = a→im ; com = fact }
+  obj .cod = cut right , mono
+  obj .map = record { map = left ; com = sym factors }
 ```
 
 Actually, for an image factorisation, we don't need that $a \epi \im(f)$
@@ -294,8 +294,8 @@ in the relevant comma categories.
     module o = ↓Obj other
 
     the-lifting =
-      str-epi _ (o.cod .snd) (o.map .map) im→b
-        (sym (o.map .com ∙ sym fact))
+      str-epi .snd _ (o.cod .snd) (o.map .map) right
+        (sym (o.map .com ∙ factors))
 
     dh : ↓Hom (!Const (cut f)) _ obj other
     dh .top      = tt
