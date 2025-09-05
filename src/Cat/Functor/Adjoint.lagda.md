@@ -8,6 +8,7 @@ description: |
 <!--
 ```agda
 open import Cat.Functor.Naturality
+open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
@@ -27,7 +28,7 @@ module Cat.Functor.Adjoint where
 <!--
 ```agda
 private variable
-  o h : Level
+  o h o' ℓ' : Level
   C D E : Precategory o h
 
 open Functor hiding (op)
@@ -723,6 +724,23 @@ $R\op \dashv L\op$ between `opposite functors`{.Agda ident=op}:
 
 <!--
 ```agda
+module _ {L : Functor (C ^op) (D ^op)} {R : Functor (D ^op) (C ^op)} (adj : R ⊣ L) where
+  private
+    module L = Functor L
+    module R = Functor R
+    module adj = _⊣_ adj
+
+  open _⊣_
+  open _=>_
+
+  unop-adjunction : unopF L ⊣ unopF R
+  unop-adjunction .unit .η _ = adj.ε _
+  unop-adjunction .unit .is-natural x y f = sym (adj.counit.is-natural _ _ _)
+  unop-adjunction .counit .η _ = adj.η _
+  unop-adjunction .counit .is-natural x y f = sym (adj.unit.is-natural _ _ _)
+  unop-adjunction .zig = adj.zag
+  unop-adjunction .zag = adj.zig
+
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
     module L = Functor L

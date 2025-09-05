@@ -1,8 +1,12 @@
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
+open import Cat.Diagram.Pushout.Properties
+open import Cat.Instances.Sets.Cocomplete
 open import Cat.Diagram.Coequaliser
 open import Cat.Morphism.Strong.Epi
+open import Cat.Instances.Functor
+open import Cat.Diagram.Pushout
 open import Cat.Prelude
 
 open import Homotopy.Connectedness
@@ -20,6 +24,7 @@ module Data.Set.Surjection where
 open is-coequaliser
 open is-regular-epi
 open Coequaliser
+open Pushout
 ```
 -->
 
@@ -62,7 +67,7 @@ elimination principle for $\| f^*x \| \to F$, since $F$ is a set.
 surjective→regular-epi c d f surj .has-is-coeq = coeqs where
   go : ∀ {F} (e' : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
   go e' p x =
-    ∥-∥-rec-set (hlevel 2) (λ x → e' (x .fst))
+    ∥-∥-rec-set! (λ x → e' (x .fst))
       (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
 ```
 
