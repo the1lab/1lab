@@ -38,6 +38,7 @@ arguments.
 
 ```agda
   record Section : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+    no-eta-equality
     field
       S₀ : (x : ⌞ B ⌟) → E ʻ x
       S₁ : {x y : ⌞ B ⌟} (f : B.Hom x y) → E.Hom[ f ] (S₀ x) (S₀ y)
