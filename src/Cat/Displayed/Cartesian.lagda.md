@@ -691,7 +691,7 @@ module Cartesian-fibration (fib : Cartesian-fibration) where
   module _ {x y} (f : Hom x y) (y' : Ob[ y ]) where
     open Cartesian-lift (fib f y')
       using ()
-      renaming (x' to _^*_; lifting to π*)
+      renaming (x' to infixr 40 _^*_; lifting to π*)
       public
 
   module π* {x y} {f : Hom x y} {y' : Ob[ y ]} where

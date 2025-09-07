@@ -528,11 +528,11 @@ Comonad→comprehension fib comp-comonad = comprehension where
   vert .F-∘'  = Slice-path (ap fst (W-∘ _ _))
 ```
 
-To see that this functor is fibred, recall that pullbacks in the
-codomain fibration are given by pullbacks. Furthermore, if we
+To see that this functor is fibred, recall that cartesian maps in the
+codomain fibration are given by pullback squares. Furthermore, if we
 have a pullback square in the total category of $\cE$ where two
 opposing sides are cartesian, then we have a corresponding pullback
-square in $\cB$. As the comonad is a comprehension comonad, counit is
+square in $\cB$. As the comonad is a comprehension comonad, the counit is
 cartesian, which finishes off the proof.
 
 ```agda

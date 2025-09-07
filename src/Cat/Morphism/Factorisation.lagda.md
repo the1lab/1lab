@@ -39,6 +39,7 @@ such that $l \in L$, $r \in R$, and $f = r \circ l$.
 
 ```agda
   record Factorisation {a b} (f : C.Hom a b) : Type (o ⊔ ℓ ⊔ ℓl ⊔ ℓr) where
+    constructor factorisation
     field
       mid     : C.Ob
       left    : C.Hom a mid
