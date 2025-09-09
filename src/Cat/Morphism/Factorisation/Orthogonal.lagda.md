@@ -74,7 +74,7 @@ morphisms that is left orthogonal to $R$ and vice-versa for $R$.
 ```
 
 The canonical example of an orthogonal factorisation system is the
-([[surjective|surjection-between-sets]], [[injective|embedding]])
+([[surjective|surjections-between-sets]], [[injective|embedding]])
 factorisation system on the [[category of sets]], which uniquely factors
 a function $f : A \to B$ through the image of $f$.[^regular]
 

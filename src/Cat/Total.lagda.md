@@ -52,7 +52,7 @@ private
 
 # Total precategories {defines="total-precategory"}
 
-A precategory is **total** if its yoneda embedding has a left adjoint.
+A precategory is **total** if its [[Yoneda embedding]] has a [[left adjoint]].
 We call this adjoint <ruby>さ<rp>(</rp><rt>sa</rt><rp>)</rp></ruby>,
 a reading for 左, which means "left".
 
@@ -67,7 +67,7 @@ record is-total : Type (o ⊔ lsuc ℓ) where
 ## Motivation
 
 Total categories represent a particularly nice site in which to do
-logic, as they are a reflective subcategory of their category of
+logic, as they are a [[reflective subcategory]] of their category of
 presheaves. In particular, total categories are cocomplete with many
 useful limits. However, a category being total is a slightly weaker
 requirement than a category being a topos, as all topoi are both total
@@ -131,7 +131,7 @@ we have proved, this is a colimit.
 
 ```agda
   さ₀-is-colimit : (F : ⌞ PSh ℓ C ⌟) → is-colimit (πₚ C F) (さ₀ F) _
-  さ₀-is-colimit F = free-is-colimit F  $ left-adjoint→free-objects has-よ-adj F
+  さ₀-is-colimit F = free-is-colimit F $ left-adjoint→free-objects has-よ-adj F
 ```
 
 ## Cocompleteness
@@ -141,7 +141,9 @@ computed in $\psh(\cC)$.
 
 ```agda
   cocomplete : is-cocomplete ℓ ℓ C
-  cocomplete F = natural-iso→colimit さ∘よ∘F≅ⁿF $ left-adjoint-colimit has-よ-adj $ PSh-cocomplete ℓ C (よ F∘ F)
+  cocomplete F = natural-iso→colimit さ∘よ∘F≅ⁿF
+    $ left-adjoint-colimit has-よ-adj
+    $ PSh-cocomplete ℓ C (よ F∘ F)
 ```
 
 ## Terminal object
@@ -158,13 +160,17 @@ the identity---i.e., a terminal object.
 
   private
     ★-is-colimit-id : is-colimit (Id {C = C}) ★ _
-    ★-is-colimit-id = extend-is-colimit _ (right-adjoint-is-final (elements-terminal-is-equivalence.F⁻¹⊣F {s = ℓ})) _ col'
-      where
-      open is-equivalence
-      col : is-colimit (πₚ C $ ⊤PSh _ _) ★ _
-      col = さ₀-is-colimit _
-      col' : is-colimit (Id F∘ πₚ C (⊤PSh _ _)) ★ _
-      col' = natural-iso-ext→is-lan (left-adjoint-is-cocontinuous (Id-is-equivalence .F⊣F⁻¹) col) (!const-isoⁿ id-iso)
+    ★-is-colimit-id = extend-is-colimit _
+      (right-adjoint-is-final (elements-terminal-is-equivalence.F⁻¹⊣F {s = ℓ})) _
+      col' where
+        open is-equivalence
+        col : is-colimit (πₚ C $ ⊤PSh _ _) ★ _
+        col = さ₀-is-colimit _
+
+        col' : is-colimit (Id F∘ πₚ C (⊤PSh _ _)) ★ _
+        col' = natural-iso-ext→is-lan
+          (left-adjoint-is-cocontinuous (Id-is-equivalence .F⊣F⁻¹) col)
+          (!const-isoⁿ id-iso)
 
   total-terminal : Terminal C
   total-terminal = Id-colimit→Terminal $ to-colimit ★-is-colimit-id
@@ -173,15 +179,11 @@ the identity---i.e., a terminal object.
 
 ## Copowers
 
-As `C` is cocomplete, it has all set-indexed coproducts
+As `C` is cocomplete, it has all set-indexed coproducts and is thus copowered.
 ```agda
   open Cat.Diagram.Colimit.Coproduct C
   has-set-indexed-coproducts : (S : Set ℓ) → has-coproducts-indexed-by C ∣ S ∣
   has-set-indexed-coproducts S F = Colimit→IC F (cocomplete $ Disc-adjunct F)
-```
-
-and is thus copowered.
-```agda
   open Copowers has-set-indexed-coproducts public
   open Consts total-terminal has-set-indexed-coproducts public
 ```

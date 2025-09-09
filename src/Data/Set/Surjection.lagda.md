@@ -28,7 +28,7 @@ open Pushout
 ```
 -->
 
-# Surjections between sets {defines="surjection-between-sets"}
+# Surjections between sets {defines="surjections-between-sets"}
 
 Here we prove that surjective maps are exactly the [regular epimorphisms]
 in the category of sets: Really, we prove that surjections are regular
