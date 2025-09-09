@@ -20,7 +20,6 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-
 ## Epimorphisms
 
 $f : A \to B$ is an epimorphism iff. the square below is a pushout

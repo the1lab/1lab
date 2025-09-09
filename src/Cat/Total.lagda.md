@@ -61,7 +61,8 @@ record is-total : Type (o ⊔ lsuc ℓ) where
   field
     {さ} : Functor Cat[ C ^op , Sets ℓ ] C
     has-よ-adj : さ ⊣ よ
-  open module さ = Cat.Functor.Reasoning さ using () renaming (F₀ to さ₀; F₁ to さ₁) public
+  open module さ = Cat.Functor.Reasoning さ using () renaming
+    (F₀ to さ₀; F₁ to さ₁) public
 ```
 
 ## Motivation
@@ -105,7 +106,8 @@ $F$.
 
 ```agda
   free-is-colimit : is-colimit (πₚ C F) free _
-  free-is-colimit = free-object→is-colimit よ よ-is-fully-faithful (to-colimit F-is-colimit) c
+  free-is-colimit =
+    free-object→is-colimit よ よ-is-fully-faithful (to-colimit F-is-colimit) c
 ```
 
 <!--

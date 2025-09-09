@@ -21,7 +21,8 @@ import Cat.Morphism as Morb
 -->
 
 ```agda
-module Cat.Functor.Adjoint.Cofree {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
+module Cat.Functor.Adjoint.Cofree
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
 ```
 
 # Cofree objects {defines="cofree-objects"}
@@ -64,18 +65,24 @@ module _ {F : Functor C D} where
 -->
 ```agda
   co-free→cofree : ∀ {X} → Free-object F.op X → Cofree-object F X
-  co-free→cofree free = record { Free-object free renaming (free to cofree; fold to unfold; unit to counit) }
+  co-free→cofree free = record
+    { Free-object free renaming (free to cofree; fold to unfold; unit to counit) }
 
   cofree→co-free : ∀ {X} → Cofree-object F X → Free-object F.op X
-  cofree→co-free cofree = record { Cofree-object cofree renaming (cofree to free; unfold to fold; counit to unit) }
+  cofree→co-free cofree = record
+    { Cofree-object cofree renaming
+      (cofree to free; unfold to fold; counit to unit) }
 
   right-adjoint→cofree-objects : {U : Functor D C} → F ⊣ U → ∀ X → Cofree-object F X
-  right-adjoint→cofree-objects F⊣U = co-free→cofree ⊙ left-adjoint→free-objects (opposite-adjunction F⊣U)
+  right-adjoint→cofree-objects F⊣U =
+    co-free→cofree ⊙ left-adjoint→free-objects (opposite-adjunction F⊣U)
 
-  cofree-objects→right-adjoint : (∀ X → Cofree-object F X) → (Σ[ U ∈ Functor D C ] F ⊣ U)
+  cofree-objects→right-adjoint
+    : (∀ X → Cofree-object F X) → (Σ[ U ∈ Functor D C ] F ⊣ U)
   cofree-objects→right-adjoint cofree-objs = _ , adjoint-natural-isol ni adj where
     ni : unopF F.op ≅ⁿ F
     ni = trivial-isoⁿ!
+
     adj : unopF F.op ⊣ _
     adj = unop-adjunction (free-objects≃left-adjoint .fst (cofree→co-free ⊙ cofree-objs) .snd)
 ```

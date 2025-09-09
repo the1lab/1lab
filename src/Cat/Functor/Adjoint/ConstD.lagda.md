@@ -41,8 +41,9 @@ const-free→colim : Free-object ConstD F → Colimit F
 const-free→colim {F} free-ob = to-colimit $ to-is-colimit $ record where
   open module free = Free-object free-ob
   ψ = unit .η
-  commutes {j} {k} f = unit .is-natural _ _ f ∙ idl _
   universal {x} eta commutes = fold {x} (NT eta λ j k f → commutes f ∙ sym (idl _))
+
+  commutes {j} {k} f = unit .is-natural _ _ f ∙ idl _
   factors {j} eta p = commute {f = NT eta λ x y f → p f ∙ sym (idl _)} ηₚ j
   unique eta p other commutes = unique other $ ext commutes
 
@@ -53,8 +54,10 @@ colim→const-free {F} colim = record where
   free = coapex
   unit = cocone
   fold eta = universal (eta .η) λ f → eta .is-natural _ _ f ∙ idl _
+
   commute {x} {nt} = ext λ j → factors (nt .η) λ _ → nt .is-natural _ _ _ ∙ idl _
-  unique {x} {nt} g p = unique (nt .η) (λ _ → nt .is-natural _ _ _ ∙ idl _) g λ j → p ηₚ  j
+  unique {x} {nt} g p = unique (nt .η) (λ _ → nt .is-natural _ _ _ ∙ idl _) g
+    λ j → p ηₚ  j
 
 const-cofree→lim : Cofree-object ConstD F → Limit F
 lim→const-cofree : Limit F → Cofree-object ConstD F
@@ -66,8 +69,9 @@ lim→const-cofree : Limit F → Cofree-object ConstD F
 const-cofree→lim {F} cofree-ob = to-limit $ to-is-limit $ record where
   open module cofree = Cofree-object cofree-ob
   ψ = counit .η
-  commutes {j} {k} f = (sym $ counit .is-natural _ _ f) ∙ idr _
   universal {x} eta commutes = unfold {x} $ NT eta λ j k f → idr _ ∙ sym (commutes f)
+
+  commutes {j} {k} f = (sym $ counit .is-natural _ _ f) ∙ idr _
   factors {j} eta p = commute {f = NT eta λ j k f → idr _ ∙ sym (p f) } ηₚ j
   unique eta p other commutes = unique other $ ext commutes
 
@@ -77,8 +81,11 @@ lim→const-cofree {F} lim = record where
   cofree = apex
   counit = cone
   unfold eta = universal (eta .η) λ f → sym (eta .is-natural _ _ f) ∙ idr _
-  commute {x} {nt} = ext λ j → factors (nt .η) λ _ → sym (nt .is-natural _ _ _) ∙ idr _
-  unique {x} {nt} g p = unique (nt .η) (λ _ → sym (nt .is-natural _ _ _) ∙ idr _) g λ j → p ηₚ  j
+
+  commute {x} {nt} = ext λ j → factors (nt .η) λ _ → sym (nt .is-natural _ _ _)
+    ∙ idr _
+  unique {x} {nt} g p = unique (nt .η) (λ _ → sym (nt .is-natural _ _ _) ∙ idr _) g
+    λ j → p ηₚ  j
 ```
 -->
 
@@ -88,11 +95,17 @@ Any functor which is a right (resp: left) colimit to $\Delta_J$ computes
 as (co)limits.
 
 ```agda
-const-adj→has-colimits-of-shape : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J}) → ∀ (F : Functor J C) → Colimit F
-const-adj→has-colimits-of-shape has-adj = const-free→colim ⊙ left-adjoint→free-objects has-adj
+const-adj→has-colimits-of-shape
+  : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J})
+  → (F : Functor J C) → Colimit F
+const-adj→has-colimits-of-shape has-adj =
+  const-free→colim ⊙ left-adjoint→free-objects has-adj
 
-const-adj→has-limits-of-shape : ∀ {J : Precategory o' ℓ'} {Lim} → (ConstD {C = C} {J = J} ⊣ Lim) → ∀ (F : Functor J C) → Limit F
-const-adj→has-limits-of-shape has-adj = const-cofree→lim ⊙ right-adjoint→cofree-objects has-adj
+const-adj→has-limits-of-shape
+  : ∀ {J : Precategory o' ℓ'} {Lim} → (ConstD {C = C} {J = J} ⊣ Lim)
+  → (F : Functor J C) → Limit F
+const-adj→has-limits-of-shape has-adj =
+  const-cofree→lim ⊙ right-adjoint→cofree-objects has-adj
 ```
 
 Thus, any category which has adjoints to its generalized diagonal

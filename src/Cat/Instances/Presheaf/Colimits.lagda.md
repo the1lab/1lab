@@ -138,7 +138,8 @@ PSh-coequaliser {X = X} {Y = Y} f g = coequ where
   coequ .has-is-coeq .unique {F = F} p = reext! p
 
 PSh-finitely-cocomplete : Finitely-cocomplete (PSh κ C)
-PSh-finitely-cocomplete = with-coequalisers (PSh κ C) PSh-initial PSh-coproducts PSh-coequaliser
+PSh-finitely-cocomplete =
+  with-coequalisers (PSh κ C) PSh-initial PSh-coproducts PSh-coequaliser
 
 PSh-pushouts : ∀ {F G H} (α : F => G) (β : F => H) → Pushout (PSh κ C) α β
 PSh-pushouts = PSh-finitely-cocomplete .Finitely-cocomplete.pushouts
@@ -160,7 +161,7 @@ We may take advantage of the fact that colimits are computed pointwise
 in $\psh(\cC)$ to prove that the same is true of presheaves.
 
 ::: source
-Our presentation using pullbacks roughly follows that of the [stacks]
+Our presentation using pushouts roughly follows that of the [stacks]
 project.
 
 [stacks]: https://stacks.math.columbia.edu/tag/00v5
