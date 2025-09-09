@@ -50,16 +50,18 @@ coapex relative to $F$ then it is a colimit of $G$.
 
 ```agda
 free-object→make-is-colimit : make-is-colimit diagram free
-free-object→make-is-colimit .ψ j = F.from (unit D.∘ colim.ψ j)
-free-object→make-is-colimit .commutes {x} {y} f = F.ipushr (colim.commutes f)
-free-object→make-is-colimit .universal {x} eta p = fold $ colim.universal (F.₁ ⊙ eta) (F.collapse ⊙ p)
-free-object→make-is-colimit .factors {j} eta p =
-  fold (colim.universal _ _) C.∘ F.from (unit D.∘ colim.ψ j) ≡⟨ F.pouncer (D.pulll ob.commute) ⟩
-  F.from (colim.universal _ _ D.∘ colim.ψ j)                 ≡⟨ F.fromn't (colim.factors (F.₁ ⊙ eta) (F.collapse ⊙ p)) ⟩
-  eta j                                                      ∎
-free-object→make-is-colimit .unique {y} eta p other p' = ob.unique {y} other $
-  colim.unique (F.₁ ⊙ eta) (F.collapse ⊙ p) (F.₁ other D.∘ unit)
-    λ j → sym (D.assoc _ _ _) ∙ F.unwhackr (p' j)
+free-object→make-is-colimit = record where
+  ψ j = F.from (unit D.∘ colim.ψ j)
+  universal {x} eta p = fold $ colim.universal (F.₁ ⊙ eta) (F.collapse ⊙ p)
+
+  commutes {x} {y} f = F.ipushr (colim.commutes f)
+  factors {j} eta p =
+    fold (colim.universal _ _) C.∘ F.from (unit D.∘ colim.ψ j) ≡⟨ F.pouncer (D.pulll ob.commute) ⟩
+    F.from (colim.universal _ _ D.∘ colim.ψ j)                 ≡⟨ F.fromn't (colim.factors (F.₁ ⊙ eta) (F.collapse ⊙ p)) ⟩
+    eta j                                                      ∎
+  unique {y} eta p other p' = ob.unique {y} other $
+    colim.unique (F.₁ ⊙ eta) (F.collapse ⊙ p) (F.₁ other D.∘ unit)
+      λ j → sym (D.assoc _ _ _) ∙ F.unwhackr (p' j)
 
 free-object→is-colimit : is-colimit diagram free _
 free-object→is-colimit = to-is-colimit free-object→make-is-colimit

@@ -97,11 +97,17 @@ $C\op$. We prove these correspondences here:
 ## Indexed Co/products
 
 ```agda
-  is-indexed-co-product→is-indexed-coproduct : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-product (C ^op) F ι → is-indexed-coproduct C F ι
-  is-indexed-co-product→is-indexed-coproduct prod = record { is-indexed-product prod renaming (tuple to match) }
+  is-indexed-co-product→is-indexed-coproduct
+    : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-product (C ^op) F ι
+    → is-indexed-coproduct C F ι
+  is-indexed-co-product→is-indexed-coproduct prod =
+    record { is-indexed-product prod renaming (tuple to match) }
 
-  is-indexed-coproduct→is-indexed-co-product : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-coproduct C F ι → is-indexed-product (C ^op) F ι
-  is-indexed-coproduct→is-indexed-co-product coprod = record { is-indexed-coproduct coprod renaming (match to tuple) }
+  is-indexed-coproduct→is-indexed-co-product
+    : ∀ {F : Idx → C.Ob} {ι : ∀ i → C.Hom (F i) S} → is-indexed-coproduct C F ι
+    → is-indexed-product (C ^op) F ι
+  is-indexed-coproduct→is-indexed-co-product coprod =
+    record { is-indexed-coproduct coprod renaming (match to tuple) }
 ```
 
 ## Co/equalisers
@@ -286,7 +292,8 @@ We could work around this, but it's easier to just do the proofs by hand.
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   co-is-complete→is-cocomplete : is-complete o' ℓ' (C ^op) → is-cocomplete o' ℓ' C
-  co-is-complete→is-cocomplete co-complete F = Co-limit→Colimit $ co-complete $ Functor.op F
+  co-is-complete→is-cocomplete co-complete F = Co-limit→Colimit $
+    co-complete $ Functor.op F
 
   is-cocomplete→co-is-complete : is-cocomplete o' ℓ' (C ^op) → is-complete o' ℓ' C
   is-cocomplete→co-is-complete cocomplete F = to-limit (to-is-limit ml) where

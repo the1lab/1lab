@@ -159,10 +159,12 @@ module _
     adjoint-pathp r s i ._⊣_.unit = r i
     adjoint-pathp r s i ._⊣_.counit = s i
     adjoint-pathp r s i ._⊣_.zig {A} =
-      is-prop→pathp (λ i → D.Hom-set _ _ (s i .η (p i .F₀ A) D.∘ p i .F₁ (r i .η A)) D.id)
+      is-prop→pathp
+        (λ i → D.Hom-set _ _ (s i .η (p i .F₀ A) D.∘ p i .F₁ (r i .η A)) D.id)
         adj.zig adj'.zig i
     adjoint-pathp r s i ._⊣_.zag {A} =
-      is-prop→pathp (λ i → C.Hom-set _ _ (q i .F₁ (s i .η A) C.∘ r i .η (q i .F₀ A)) C.id)
+      is-prop→pathp
+        (λ i → C.Hom-set _ _ (q i .F₁ (s i .η A) C.∘ r i .η (q i .F₀ A)) C.id)
         adj.zag adj'.zag i
 ```
 -->
@@ -355,7 +357,8 @@ auxiliary notion: **free objects**.
 
 <!--
 ```agda
-module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} (U : Functor C D) where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+    (U : Functor C D) where
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
@@ -465,7 +468,9 @@ so we will omit the details.</summary>
 <!--
 ```agda
   Free-object-path {X = X} {x} {y} p q = r where
-    folds : ∀ {Y} (f : D.Hom X (U.₀ Y)) → PathP (λ i → C.Hom (p i) Y) (x .fold f) (y .fold f)
+    folds
+      : ∀ {Y} (f : D.Hom X (U.₀ Y))
+      → PathP (λ i → C.Hom (p i) Y) (x .fold f) (y .fold f)
     folds {Y} f = to-pathp $
       let
         it : U.₁ (x .fold f) D.∘ x .unit
@@ -480,7 +485,8 @@ so we will omit the details.</summary>
     r i .commute {f = f} = is-prop→pathp
       (λ i → D.Hom-set _ _ (U.₁ (folds f i) D.∘ q i) f) (x .commute) (y .commute) i
     r i .unique {Y = Y} {f} = is-prop→pathp
-      (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1 λ g _ → C.Hom-set _ _ g (folds f i))
+      (λ i → Π-is-hlevel² {A = C.Hom (p i) Y} {B = λ g → U.₁ g D.∘ q i ≡ f} 1
+        λ g _ → C.Hom-set _ _ g (folds f i))
       (x .unique) (y .unique) i
 
   instance
@@ -489,7 +495,8 @@ so we will omit the details.</summary>
       : ∀ {X ℓr}
       → ⦃ sa : Extensional (Σ[ A ∈ C.Ob ] (D.Hom X (U.₀ A))) ℓr ⦄
       → Extensional (Free-object U X) ℓr
-    Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y = sa .Pathᵉ (_ , x .unit) (_ , y .unit)
+    Extensional-Free-object ⦃ sa = sa ⦄ .Pathᵉ x y =
+      sa .Pathᵉ (_ , x .unit) (_ , y .unit)
     Extensional-Free-object ⦃ sa = sa ⦄ .reflᵉ x = sa .reflᵉ (_ , x .unit)
     Extensional-Free-object ⦃ sa = sa ⦄ .idsᵉ .to-path h =
       let p = sa .idsᵉ .to-path h
@@ -630,7 +637,8 @@ A similar result holds for a system of free objects.
 ```agda
   free-objects→left-adjoint→free-objects
     : ∀ (free-objects : ∀ x → Free-object U x)
-    → left-adjoint→free-objects (free-objects→left-adjoint free-objects) ≡ free-objects
+    → left-adjoint→free-objects (free-objects→left-adjoint free-objects)
+      ≡ free-objects
   free-objects→left-adjoint→free-objects free-objects = ext (λ x → refl)
 ```
 
@@ -724,7 +732,8 @@ $R\op \dashv L\op$ between `opposite functors`{.Agda ident=op}:
 
 <!--
 ```agda
-module _ {L : Functor (C ^op) (D ^op)} {R : Functor (D ^op) (C ^op)} (adj : R ⊣ L) where
+module _ {L : Functor (C ^op) (D ^op)} {R : Functor (D ^op) (C ^op)}
+    (adj : R ⊣ L) where
   private
     module L = Functor L
     module R = Functor R
@@ -772,17 +781,21 @@ between [postcomposition and precomposition functors], respectively:
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
   postcomposite-adjunction .unit .η F = cohere! (adj.unit ◂ F)
-  postcomposite-adjunction .unit .is-natural F G α = ext λ _ → adj.unit.is-natural _ _ _
+  postcomposite-adjunction .unit .is-natural F G α = ext λ _ →
+    adj.unit.is-natural _ _ _
   postcomposite-adjunction .counit .η F = cohere! (adj.counit ◂ F)
-  postcomposite-adjunction .counit .is-natural F G α = ext λ _ → adj.counit.is-natural _ _ _
+  postcomposite-adjunction .counit .is-natural F G α = ext λ _ →
+    adj.counit.is-natural _ _ _
   postcomposite-adjunction .zig = ext λ _ → adj.zig
   postcomposite-adjunction .zag = ext λ _ → adj.zag
 
   precomposite-adjunction : precompose R {D = E} ⊣ precompose L
   precomposite-adjunction .unit .η F = cohere! (F ▸ adj.unit)
-  precomposite-adjunction .unit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .unit .is-natural F G α = ext λ _ →
+    sym (α .is-natural _ _ _)
   precomposite-adjunction .counit .η F = cohere! (F ▸ adj.counit)
-  precomposite-adjunction .counit .is-natural F G α = ext λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .counit .is-natural F G α = ext λ _ →
+    sym (α .is-natural _ _ _)
   precomposite-adjunction .zig {F} = ext λ _ → Func.annihilate F adj.zag
   precomposite-adjunction .zag {F} = ext λ _ → Func.annihilate F adj.zig
 ```
@@ -865,10 +878,12 @@ module _ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'} where
   universal-map→free-object x .unit = x .bot .map
   universal-map→free-object x .fold f = x .has⊥ (↓obj f) .centre .bot
   universal-map→free-object x .commute = sym (x .has⊥ _ .centre .com) ∙ C.idr _
-  universal-map→free-object x .unique g p = ap bot (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
+  universal-map→free-object x .unique g p = ap bot
+    (sym (x .has⊥ _ .paths (↓hom (sym (p ∙ sym (C.idr _))))))
 
   universal-maps→functor : ∀ {R} → (∀ X → Universal-morphism R X) → Functor C D
-  universal-maps→functor u = free-objects→functor (λ X → universal-map→free-object (u X))
+  universal-maps→functor u = free-objects→functor
+    (λ X → universal-map→free-object (u X))
 
   universal-maps→left-adjoint
     : ∀ {R} (h : ∀ X → Universal-morphism R X)

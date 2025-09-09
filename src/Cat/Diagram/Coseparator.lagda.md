@@ -66,19 +66,19 @@ Equivalently to approximating objects with [[separators and copowers]], we
 may approximate them with coseparators and powers.
 
 ```agda
-module _
-  (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣)
-  where
+module _ (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣) where
   open Powers powers
 
-  coseparator→mono : ∀ {s x} → is-coseparator s → is-monic (⋔!.tuple (Hom x s) s λ f → f)
+  coseparator→mono
+    : ∀ {s x} → is-coseparator s → is-monic (⋔!.tuple (Hom x s) s λ f → f)
   coseparator→mono {s} {x} cosep f g p =  cosep λ m →
     m ∘ f                                   ≡⟨ pushl (sym $ ⋔!.commute _ _) ⟩
     ⋔!.π _ _ m ∘ (⋔!.tuple _ _ λ f → f) ∘ f ≡⟨ refl⟩∘⟨ p ⟩
     ⋔!.π _ _ m ∘ (⋔!.tuple _ _ λ f → f) ∘ g ≡⟨ pulll $ ⋔!.commute _ _ ⟩
     m ∘ g                                   ∎
 
-  mono→coseparator : ∀ {s} → (∀ {x} → is-monic (⋔!.tuple (Hom x s) s λ f → f)) → is-coseparator s
+  mono→coseparator
+    : ∀ {s} → (∀ {x} → is-monic (⋔!.tuple (Hom x s) s λ f → f)) → is-coseparator s
   mono→coseparator monic {f = f} {g = g} p = monic f g $ ⋔!.unique₂ _ _ λ m →
       assoc _ _ _ ∙ p _ ∙ sym (assoc _ _ _)
 
@@ -96,7 +96,8 @@ module _
     : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
     → is-coseparating-family sᵢ
     → ∀ {x} → x ↪ ∏!.ΠF (Σ[ i ∈ ∣ Idx ∣ ] Hom x (sᵢ i)) (sᵢ ⊙ fst)
-  coseparating-family→make-mono Idx sᵢ cosep = make-mono _ $ coseparating-family→mono Idx sᵢ cosep
+  coseparating-family→make-mono Idx sᵢ cosep = make-mono _ $
+    coseparating-family→mono Idx sᵢ cosep
 
   mono→coseparating-family
     : ∀ (Idx : Set ℓ)

@@ -72,7 +72,8 @@ $h = F(t)m_i$.
 
       dom    : index → ⌞ C ⌟
       map    : ∀ i → D.Hom Y (F.₀ (dom i))
-      factor : ∀ {X'} (h : D.Hom Y (F.₀ X')) → ∃[ i ∈ index ] (Σ[ t ∈ C.Hom (dom i) X' ] (h ≡ F.₁ t D.∘ map i))
+      factor : ∀ {X'} (h : D.Hom Y (F.₀ X')) →
+        ∃[ i ∈ index ] Σ[ t ∈ C.Hom (dom i) X' ] (h ≡ F.₁ t D.∘ map i)
 ```
 
 <!--
@@ -142,8 +143,13 @@ from the comma category of $F$, which all must exist if $F$ has a left
 adjoint.
 
 ```agda
-module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ} (F : Functor C D) (F-cont : is-continuous (o ⊔ ℓ) ℓ F) where
-  formal-aft : (a-pres-comma-limits : ∀ {x} (Q : Functor (x ↙ F) C) → Limit Q) → Σ[ G ∈ Functor D C ] G ⊣ F
+module _
+    {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
+    (F : Functor C D) (F-cont : is-continuous (o ⊔ ℓ) ℓ F) where
+  formal-aft
+    : (a-pres-comma-limits : ∀ {x} (Q : Functor (x ↙ F) C) → Limit Q)
+    → Σ[ G ∈ Functor D C ] G ⊣ F
   formal-aft a-pres .fst = _
-  formal-aft a-pres .snd = universal-maps→left-adjoint λ x → Id-limit→Initial $ Cod-lift-limit F F-cont $ a-pres _
+  formal-aft a-pres .snd = universal-maps→left-adjoint λ x →
+    Id-limit→Initial $ Cod-lift-limit F F-cont $ a-pres _
 ```
