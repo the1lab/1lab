@@ -50,6 +50,9 @@ module iso {a} {b} =
 -->
 
 ```agda
+fromn't : w ≡ F₁ f → from w ≡ f
+fromn't p = ap from p ∙ η _
+
 from-id : w ≡ D.id → from w ≡ C.id
 from-id p = injective₂ (ε _ ∙ p) F-id
 
@@ -77,4 +80,22 @@ whackl p = sym (ε-twist (D.idr _ ∙ sym p)) ∙ C.elimr (from-id refl)
 
 whackr : F₁ f D.∘ x ≡ F₁ g → f C.∘ from x ≡ g
 whackr p = ε-twist (p ∙ sym (D.idl _)) ∙ C.eliml (from-id refl)
+
+pouncer : F₁ f D.∘ x ≡ z → f C.∘ from x ≡ from z
+pouncer p = ε-twist (p ∙ intror refl) ∙ C.idr _
+
+η-expand : f C.∘ g ≡ h → from (F₁ f D.∘ F₁ g) ≡ h
+η-expand p = from-∘ ∙∙ ap₂ C._∘_ (η _) (η _) ∙∙ p
+
+η-twist : from x C.∘ f ≡ g C.∘ from y → x D.∘ F₁ f ≡ F₁ g D.∘ y
+η-twist {x = x} {f = f} {g = g} {y = y} p =
+ x D.∘ F₁ f                  ≡˘⟨ ε-expand refl      ⟩
+ F₁ (from x C.∘ from (F₁ f)) ≡⟨  ⟨ C.refl⟩∘⟨ η _ ⟩  ⟩
+ F₁ (from x C.∘ f)           ≡⟨  ⟨ p             ⟩  ⟩
+ F₁ (g C.∘ from y)           ≡˘⟨ ⟨ η _ C.⟩∘⟨refl ⟩  ⟩
+ F₁ (from (F₁ g) C.∘ from y) ≡⟨  ε-expand refl      ⟩
+ F₁ g D.∘ y                  ∎
+
+unwhackr : f C.∘ from w ≡ g → F₁ f D.∘ w ≡ F₁ g
+unwhackr {f = f} {w = w} p = sym (η-twist $ C.idr _ ∙∙ η _ ∙∙ sym p) ∙ elimr refl
 ```
