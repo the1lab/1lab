@@ -36,7 +36,7 @@ private
 ```
 -->
 
-# Subcategories of Total categories
+# Subcategories of total categories
 
 Any [[reflective subcategory]] of a [[total category]] is total.
 

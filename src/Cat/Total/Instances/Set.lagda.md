@@ -24,7 +24,7 @@ private
 ```
 -->
 
-# Total cocompletion of sets
+# Total cocompleteness of sets
 
 If we are to show that the category of sets is total, we must give a
 colimit over the category of elements of every presheaf.

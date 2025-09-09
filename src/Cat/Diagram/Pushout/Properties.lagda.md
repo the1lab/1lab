@@ -95,14 +95,16 @@ If $\iota_1=\iota_2$, then the identity is a pushout.
 ~~~
 
 ```agda
-  module _ {x y} {f : Hom x y} {p} {i₁ : Hom y p} {i₂ : Hom y p} (po : is-pushout C f i₁ f i₂) (eq : i₁ ≡ i₂) where
+  module _ {x y} {f : Hom x y} {p} {i₁ : Hom y p} {i₂ : Hom y p}
+      (po : is-pushout C f i₁ f i₂) (eq : i₁ ≡ i₂) where
     private
       module po = is-pushout po
     injections-eq→id-is-pushout : is-pushout C f id f id
     injections-eq→id-is-pushout .square = refl
     injections-eq→id-is-pushout .universal p  = po .universal p ∘ i₁
     injections-eq→id-is-pushout .universal∘i₁ = idr _ ∙ po .universal∘i₁
-    injections-eq→id-is-pushout .universal∘i₂ = idr _ ∙ ap (_ ∘_) eq ∙ po .universal∘i₂
+    injections-eq→id-is-pushout .universal∘i₂ = idr _ ∙ ap (_ ∘_) eq
+      ∙ po .universal∘i₂
     injections-eq→id-is-pushout .unique {a} {f'} {g'} {p = sq} {c} p₁ p₂  =
       c                    ≡⟨ insertr i⁻¹∘i₁≡id ⟩
       (c ∘ i⁻¹) ∘ i₁       ≡⟨ po .unique {colim' = c ∘ i⁻¹} (pullr i⁻¹∘i₁≡id ∙ p₁) (pullr i⁻¹∘i₂≡id ∙ p₂) ⟩∘⟨refl ⟩
