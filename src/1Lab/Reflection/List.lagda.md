@@ -23,10 +23,13 @@ module 1Lab.Reflection.List where
 The following patterns are useful.
 
 ```agda
+pattern `List `A = def (quote List) (unknown h∷ `A v∷ [])
+
 pattern _`∷_ `x `xs = con (quote List._∷_) (unknown h∷ unknown h∷ `x v∷ `xs v∷ [])
 pattern `[] = con (quote List.[]) (unknown h∷ unknown h∷ [])
 
-pattern `List `A = def (quote List) (`A v∷ [])
+pattern _`∷?_ `x `xs = con (quote List._∷_) (`x v∷ `xs v∷ [])
+pattern `[]? = con (quote List.[]) []
 ```
 
 We can quote lists of terms to get a quoted list, and we can
@@ -50,10 +53,13 @@ unquoteList `xs =
 We also provide patterns for list membership.
 
 ```agda
-pattern `here `p = con (quote _∈ₗ_.here) (`p v∷ [])
-pattern `there `mem = con (quote _∈ₗ_.there) (`mem v∷ [])
+pattern _`∈ₗ_ `x `xs = def (quote _∈ₗ_) (unknown h∷ unknown h∷ `x v∷ `xs v∷ [])
 
-pattern _`∈ₗ_ `x `xs = def (quote _∈ₗ_) (`x v∷ `xs v∷ [])
+pattern `here `p = con (quote _∈ₗ_.here) (unknown h∷ unknown h∷ unknown h∷ unknown h∷ `p v∷ [])
+pattern `there `mem = con (quote _∈ₗ_.there) (unknown h∷ unknown h∷ unknown h∷ unknown h∷ `mem v∷ [])
+
+pattern `here? `p = con (quote _∈ₗ_.here) (`p v∷ [])
+pattern `there? `mem = con (quote _∈ₗ_.there) (`mem v∷ [])
 ```
 
 ## Proof automation for unique membership
@@ -77,7 +83,7 @@ private
     unifies? `x `y >>= λ where
       true → pure (`mem , `found , `not-found , spine)
       false →
-        find-member-with `x `xs spine (`there `mem) (`there `found) (`there `not-found)
+        find-member-with `x `xs spine (`there `mem) (`there? `found) (`there? `not-found)
 ```
 
 Our second helper also iterates through the list, but instead constructs
@@ -92,7 +98,7 @@ private
   refute-member-with `x `xs [] `not-found clauses = clauses
   refute-member-with `x `xs (`y ∷ spine) `not-found clauses =
     let `not-found-clause = absurd-clause (("_" , argN (`x `∈ₗ `xs)) ∷ []) (`not-found v∷ [])
-    in refute-member-with `x `xs spine (`there `not-found) (`not-found-clause ∷ clauses)
+    in refute-member-with `x `xs spine (`there? `not-found) (`not-found-clause ∷ clauses)
 
 ```
 
@@ -112,11 +118,11 @@ the results into a `contr`{.Agda}.
     (`mem , `found , `not-found , rest) ←
           find-member-with `x `xs spine
             (`here (con (quote reflᵢ) []))
-            (`here (con (quote reflᵢ) []))
-            (`here (absurd 0))
+            (`here? (con (quote reflᵢ) []))
+            (`here? (absurd 0))
     let clauses =
           refute-member-with `x `xs rest
-            (`there `not-found)
+            (`there? `not-found)
             (clause [] (`found v∷ []) (def (quote refl) []) ∷ [])
     unify hole (con (quote contr) (`mem v∷ pat-lam clauses [] v∷ []))
 
@@ -144,8 +150,8 @@ private
     (`mem , _ , _ , _) ←
           find-member-with `x `xs spine
             (`here (con (quote reflᵢ) []))
-            (`here (con (quote reflᵢ) []))
-            (`here (absurd 0))
+            (`here? (con (quote reflᵢ) []))
+            (`here? (absurd 0))
     unify hole `mem
 
   not-member-worker
@@ -156,7 +162,7 @@ private
   not-member-worker x xs hole = do
     `x ← quoteTC x
     `xs ← traverse quoteTC xs
-    let clauses = refute-member-with `x (quoteList `xs) `xs (`here (absurd 0)) []
+    let clauses = refute-member-with `x (quoteList `xs) `xs (`here? (absurd 0)) []
     unify hole (pat-lam clauses [])
 
 member!
