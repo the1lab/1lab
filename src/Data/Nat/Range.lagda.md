@@ -276,7 +276,7 @@ range-∈-is-prop
   : ∀ (x y i : Nat)
   → is-prop (i ∈ range x y)
 range-∈-is-prop x y i i∈xy i∈xy' =
-  Equiv.injective member≃lookup $ Σ-prop-path! $ lower-inj $
+  Equiv.injective member≃lookup $ Σ-prop-path! $ fin-ap $
     index-of i∈xy  ≡⟨ range-index-of i∈xy ⟩
     i - x          ≡˘⟨ range-index-of i∈xy' ⟩
     index-of i∈xy' ∎

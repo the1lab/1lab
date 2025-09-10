@@ -198,13 +198,9 @@ inject p (fin n ⦃ b ⦄) = fin n ⦃ (λ e → Nat.≤-trans e p) <$> b ⦄
 We can also view `Fin` as a subset of the natural numbers.
 
 ```agda
-lower-inj : ∀ {n : Nat} {x y : Fin n} → x .lower ≡ y .lower → x ≡ y
-lower-inj {n} {fin x ⦃ x<n ⦄} {fin y ⦃ _ ⦄} p i =
-  fin (p i) ⦃ coe0→i (λ i → p i Nat.< n) i <$> x<n ⦄
-
 Fin↪Nat : ∀ {n} → Fin n ↪ Nat
 Fin↪Nat .fst = lower
-Fin↪Nat .snd = injective→is-embedding (hlevel 2) lower lower-inj
+Fin↪Nat .snd = injective→is-embedding (hlevel 2) lower fin-ap
 ```
 
 ## Discreteness
