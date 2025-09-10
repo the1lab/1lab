@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Reflection.List
 open import 1Lab.Path.Cartesian
 open import 1Lab.Prelude
 
@@ -230,18 +231,8 @@ instance
 
   Listing-Bool : Listing Bool
   Listing-Bool .Listing.univ = true ∷ false ∷ []
-  Listing-Bool .Listing.has-member true = record
-    { centre = here reflᵢ
-    ; paths = λ where
-      (here p)         → ap here prop!
-      (there (here ()))
-    }
-  Listing-Bool .Listing.has-member false = record
-    { centre = there (here reflᵢ)
-    ; paths = λ where
-      (here ())
-      (there (here p)) → ap there (ap here prop!)
-    }
+  Listing-Bool .Listing.has-member true = unique-member!
+  Listing-Bool .Listing.has-member false = unique-member!
 ```
 
 With a bit more effort, we can also list all the elements of $[n]$, by

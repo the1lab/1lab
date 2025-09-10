@@ -63,8 +63,9 @@ record Arg {a} (A : Type a) : Type a where
 
 pattern _v∷_ t xs = arg (arginfo visible (modality relevant quantity-ω)) t ∷ xs
 pattern _h∷_ t xs = arg (arginfo hidden (modality relevant quantity-ω)) t ∷ xs
+pattern _i∷_ t xs = arg (arginfo instance' (modality relevant quantity-ω)) t ∷ xs
 pattern _hm∷_ t xs = arg (arginfo hidden (modality relevant _)) t ∷ xs
-infixr 20 _v∷_ _h∷_ _hm∷_
+infixr 20 _v∷_ _h∷_ _i∷_ _hm∷_
 
 argH0 argI argH argN : ∀ {ℓ} {A : Type ℓ} → A → Arg A
 argH  = arg (arginfo hidden (modality relevant quantity-ω))
