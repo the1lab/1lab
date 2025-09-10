@@ -91,7 +91,7 @@ antisymmetry will take a bit of working up to:
 ∣-trans {zero} {suc y} p q = absurd (suc≠zero p)
 ∣-trans {suc x} {zero} p q = 0 , sym q
 ∣-trans {suc x} {suc y} {z} (k , p) (k' , q) = k' * k , (
-  k' * k * suc x   ≡⟨ *-associative k' k (suc x) ⟩
+  k' * k * suc x   ≡˘⟨ *-associative k' k (suc x) ⟩
   k' * (k * suc x) ≡⟨ ap (k' *_) p ⟩
   k' * suc y       ≡⟨ q ⟩
   z                ∎)
@@ -149,10 +149,10 @@ expect a number to divide its multiples. Fortunately, this is the case:
 ∣-*r {y = y} = fibre→∣ (y , refl)
 
 |-*l-pres : ∀ {n a b} → n ∣ b → n ∣ a * b
-|-*l-pres {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (a * q , *-associative a q n ∙ ap (a *_) α)
+|-*l-pres {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (a * q , sym (*-associative a q n) ∙ ap (a *_) α)
 
 ∣-*-cancelr : ∀ {n a b} .⦃ _ : Positive n ⦄ → a * n ∣ b * n → a ∣ b
-∣-*-cancelr {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (q , *-injr n (q * a) b (*-associative q a n ∙ α))
+∣-*-cancelr {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (q , *-injr n (q * a) b (sym (*-associative q a n) ∙ α))
 ```
 
 If two numbers are multiples of $k$, then so is their sum.

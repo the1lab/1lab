@@ -35,11 +35,14 @@ naturals automatically.
 
 <!--
 ```agda
-≤-refl' : ∀ {x y} → x ≡ y → x ≤ y
+≤-refl' : ∀ {x y} → .(x ≡ y) → x ≤ y
 ≤-refl' {zero} {zero} p = 0≤x
 ≤-refl' {zero} {suc y} p = absurd (zero≠suc p)
 ≤-refl' {suc x} {zero} p = absurd (suc≠zero p)
 ≤-refl' {suc x} {suc y} p = s≤s (≤-refl' (suc-inj p))
+
+≤-reflᵢ : ∀ {x y} → .(x ≡ᵢ y) → x ≤ y
+≤-reflᵢ p = ≤-refl' (Id-identity-system .to-path p)
 ```
 -->
 
@@ -96,10 +99,10 @@ instance
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 
-≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
-≤-strengthen {zero} {zero} 0≤x = inl refl
-≤-strengthen {zero} {suc y} 0≤x = inr (s≤s 0≤x)
-≤-strengthen {suc x} {suc y} (s≤s p) with ≤-strengthen p
+≤-strengthen : ∀ {x y} → .(x ≤ y) → (x ≡ y) ⊎ (x < y)
+≤-strengthen {zero} {zero} x≤y = inl refl
+≤-strengthen {zero} {suc y} x≤y = inr (s≤s 0≤x)
+≤-strengthen {suc x} {suc y} x≤y with ≤-strengthen (≤-peel x≤y)
 ... | inl eq = inl (ap suc eq)
 ... | inr le = inr (s≤s le)
 
