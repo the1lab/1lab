@@ -294,7 +294,7 @@ module _ (cat : is-category C) where
   Sub-regular .subst-aye f = Sub-is-category cat .to-path ^*-⊤ₘ
 ```
 
-It remains to check the Beck-Chevalley condition and Frobenius
+It remains to check the [[Beck-Chevalley condition]] and Frobenius
 reciprocity. The Beck-Chevalley condition follows directly from
 stability of images: we compute
 
