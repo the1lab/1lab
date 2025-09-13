@@ -129,8 +129,16 @@ good manners of being stable under [[pullback]]. This follows from the
 property that [[strong epimorphisms]] are stable under pullback, which
 is part of the definition of a regular category.
 
-To see this, first let a commutative square as in the following diagram
-be given.
+We will make this precise by showing that there is a vertical [[fibred
+functor]] from the [[fundamental fibration]] of $\cC$ to its
+[[subobject fibration]], which we can think of as modelling a
+"propositional truncation" type former; since cartesian morphisms in
+both fibrations are pullback squares, this is equivalent to the
+usual formulation of pullback-stability, namely $f^*(\im(g)) =
+\im(f^*g)$.
+
+First, let a commutative square as in the following diagram be given: a
+map $k : h \to_f g$ in the fundamental fibration.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -143,21 +151,12 @@ be given.
 \end{tikzcd}\]
 ~~~
 
-By the universal property of $\im(h)$, we have that $\im(h) \leq
-f^*(\im(g))$ as subobjects of $a$.
-
-```agda
-Im-comparison
-  : ∀ {a b c d} {f : Hom a b} {g : Hom d b} {h : Hom c a} {k : Hom c d}
-  → f ∘ h ≡ g ∘ k
-  → Im h ≤ₘ f ^* Im g
-Im-comparison {f = f} {g} {h} {k} sq =
-  Im-universal h _ {pb.universal _ _ (sq ∙ pushl im[ g ]-factors)}
-    (sym (pb.p₁∘universal _ _))
-```
-
-This extends to a displayed comparison $\im(h) \leq_f \im(g)$ by
-composing with the pullback projection.
+After replacing $h$ and $g$ with their image factorisations and pulling
+$\im(g)$ back along $f$, we arrive at the following situation, where
+the map $c \to f^*(\im(g))$ is given by the universal property of
+the pullback, and the dashed comparison map by the universal
+property of the image of $h$. The composite middle row gives us a map
+$\im(h) \leq_f \im(g)$ in the subobject fibration.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -166,6 +165,7 @@ composing with the pullback projection.
   & a & b
   \arrow["k", from=1-2, to=1-3]
   \arrow[two heads, from=1-2, to=2-1]
+  \arrow[from=1-2, to=2-2]
   \arrow[two heads, from=1-3, to=2-3]
   \arrow[dashed, from=2-1, to=2-2]
   \arrow[hook', from=2-1, to=3-2]
@@ -178,6 +178,14 @@ composing with the pullback projection.
 ~~~
 
 ```agda
+Im-comparison
+  : ∀ {a b c d} {f : Hom a b} {g : Hom d b} {h : Hom c a} {k : Hom c d}
+  → f ∘ h ≡ g ∘ k
+  → Im h ≤ₘ f ^* Im g
+Im-comparison {f = f} {g} {h} {k} sq =
+  Im-universal h _ {pb.universal _ _ (sq ∙ pushl im[ g ]-factors)}
+    (sym (pb.p₁∘universal _ _))
+
 Im-map
   : ∀ {a b c d} {f : Hom a b} {g : Hom d b} {h : Hom c a} {k : Hom c d}
   → f ∘ h ≡ g ∘ k
@@ -190,9 +198,7 @@ Im-map {f = f} {g} {h} sq .com =
   im[ g ]↪b ∘ pb.p₂ _ _ ∘ Im-comparison sq .map ∎
 ```
 
-We thus obtain a [[displayed functor]] from the [[fundamental fibration]]
-of $\cC$ to its [[subobject fibration]], which we can think of as
-modelling propositional truncation.
+This data turns `Im`{.Agda} into a [[vertical functor]].
 
 ```agda
 Images : Vertical-functor (Slices C) Subobjects
@@ -216,37 +222,13 @@ image-stable {a} {b} {c} {d} {f} {g} {h} {k} pb = done where
 ```
 
 To that end, assume that the outer square in the above diagram is a
-pullback square. We complete the diagram with the map
-$c \to f^*(\im(g))$ obtained by the universal property of the pullback,
-which we observe to be the pullback of the map $d \to \im(g)$ by the
-[[pasting law for pullbacks]]. By the assumed stability property, this
-implies that this map is a strong epimorphism.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  & c & d \\
-  {\im(h)} & {f^*(\im(g))} & {\im(g)} \\
-  & a & b
-  \arrow["k", from=1-2, to=1-3]
-  \arrow[two heads, from=1-2, to=2-1]
-  \arrow[two heads, from=1-2, to=2-2]
-  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-2, to=2-3]
-  \arrow[two heads, from=1-3, to=2-3]
-  \arrow[dashed, from=2-1, to=2-2]
-  \arrow[hook', from=2-1, to=3-2]
-  \arrow[from=2-2, to=2-3]
-  \arrow[hook', from=2-2, to=3-2]
-  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=3-3]
-  \arrow[hook', from=2-3, to=3-3]
-  \arrow["f"', from=3-2, to=3-3]
-\end{tikzcd}\]
-~~~
+pullback square. By the [[pasting law for pullbacks]], the top square
+is also a pullback square. By the assumed stability property of strong
+epimorphisms, this implies that the vertical map $c \to f^*(\im(g))$ is
+a strong epimorphism.
 
 ```agda
-  down : Hom c (pb.apex f im[ g ]↪b)
-  down = pb.universal _ _ (pb .is-pullback.square ∙ pushl im[ g ]-factors)
-
-  down-is-cover : is-strong-epi C down
+  down-is-cover : is-strong-epi C _
   down-is-cover = stable _ (pb.p₂ _ _) a↠im[ g ]-strong-epic
     (pasting-outer→left-is-pullback (pb.has-is-pb _ _)
       (subst-is-pullback (sym (pb.p₁∘universal _ _)) refl refl im[ g ]-factors pb)
@@ -260,7 +242,7 @@ pullback of $\im(g)$ along $f$.
 
 ```agda
   unique : Sub.is-invertible _
-  unique = image-unique h (f ^* Im g) down down-is-cover
+  unique = image-unique h (f ^* Im g) _ down-is-cover
     (sym (pb.p₁∘universal _ _))
 
   done = is-pullback-iso'
