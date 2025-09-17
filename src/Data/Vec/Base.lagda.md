@@ -4,7 +4,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
-open import Data.List.Base hiding (lookup ; tabulate ; _++_)
 open import Data.Fin.Base
 open import Data.Nat.Base
 ```
@@ -42,10 +41,16 @@ private variable
   A B C : Type ℓ
   n k : Nat
 
+head : Vec A (suc n) → A
+head (x ∷ xs) = x
+
+tail : Vec A (suc n) → Vec A n
+tail (x ∷ xs) = xs
+
 lookup : Vec A n → Fin n → A
-lookup (x ∷ xs) n with fin-view n
-... | zero  = x
-... | suc i = lookup xs i
+lookup xs n with fin-view n
+... | zero  = head xs
+... | suc i = lookup (tail xs) i
 ```
 
 <!--
@@ -61,19 +66,6 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
           head ∷ cast-tail len (suc-inj 1+n=len)
        })
     xs y p
-
--- Will always compute:
-lookup-safe : Vec A n → Fin n → A
-lookup-safe {A = A} xs n =
-  Fin-elim (λ {n} _ → Vec A n → A)
-    (λ {k} xs → Vec-elim (λ {k'} _ → suc k ≡ k' → A)
-      (λ p → absurd (suc≠zero p))
-      (λ x _ _ _ → x) xs refl)
-    (λ {i} j cont vec →
-      Vec-elim (λ {k'} xs → suc i ≡ k' → A)
-        (λ p → absurd (suc≠zero p))
-        (λ {n} head tail _ si=sn → cont (Vec-cast (suc-inj (sym si=sn)) tail)) vec refl)
-    n xs
 ```
 -->
 
