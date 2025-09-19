@@ -11,6 +11,9 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Meta.Idiom
+open import Meta.Bind
 ```
 -->
 
@@ -37,10 +40,11 @@ We begin by defining the induction principle. The (family of) type(s) we
 map into must be a set, as required by the `squash`{.Agda} constructor.
 
 ```agda
-∥-∥₀-elim : ∀ {ℓ ℓ'} {A : Type ℓ} {B : ∥ A ∥₀ → Type ℓ'}
-          → (∀ x → is-set (B x))
-          → (∀ x → B (inc x))
-          → ∀ x → B x
+∥-∥₀-elim
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : ∥ A ∥₀ → Type ℓ'}
+  → (∀ x → is-set (B x))
+  → (∀ x → B (inc x))
+  → ∀ x → B x
 ∥-∥₀-elim Bset binc (inc x) = binc x
 ∥-∥₀-elim Bset binc (squash x y p q i j) =
   is-set→squarep (λ i j → Bset (squash x y p q i j))
@@ -146,6 +150,23 @@ module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
 instance
   H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
   H-Level-∥-∥₀ {n = n} = basic-instance 2 squash
+
+  Map-∥∥₀ : Map (eff ∥_∥₀)
+  Map-∥∥₀ .Map.map = ∥-∥₀-map
+
+  Idiom-∥∥₀ : Idiom (eff ∥_∥₀)
+  Idiom-∥∥₀ .Idiom.pure = inc
+  Idiom-∥∥₀ .Idiom._<*>_ {A = A} {B = B} = go where
+    go : ∥ (A → B) ∥₀ → ∥ A ∥₀ → ∥ B ∥₀
+    go (inc f) (inc x) = inc (f x)
+    go (inc f) (squash x y p q i j) = squash (go (inc f) x) (go (inc f) y) (λ i → go (inc f) (p i)) (λ i → go (inc f) (q i)) i j
+    go (squash f g p q i j) y = squash (go f y) (go g y) (λ i → go (p i) y) (λ i → go (q i) y) i j
+
+  Bind-∥∥₀ : Bind (eff ∥_∥₀)
+  Bind-∥∥₀ .Bind._>>=_ {A = A} {B = B} = go where
+    go : ∥ A ∥₀ → (A → ∥ B ∥₀) → ∥ B ∥₀
+    go (inc x) f = f x
+    go (squash x y p q i j) f = squash (go x f) (go y f) (λ i → go (p i) f) (λ i → go (q i) f) i j
 
 is-contr→∥-∥₀-is-contr : ∀ {ℓ} {A : Type ℓ} → is-contr A → is-contr ∥ A ∥₀
 is-contr→∥-∥₀-is-contr h = Equiv→is-hlevel 0 ((_ , ∥-∥₀-idempotent (is-contr→is-set h)) e⁻¹) h

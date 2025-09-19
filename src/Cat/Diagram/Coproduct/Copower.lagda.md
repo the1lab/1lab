@@ -119,8 +119,7 @@ uniqueness properties of colimiting maps.
 cocomplete→copowering
   : ∀ {o ℓ} {C : Precategory o ℓ}
   → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
-cocomplete→copowering colim = Copowers.Copowering λ S F →
-  Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) F (colim _)
+cocomplete→copowering colim = Copowers.Copowering λ S F → Colimit→IC _ F (colim _)
 ```
 -->
 

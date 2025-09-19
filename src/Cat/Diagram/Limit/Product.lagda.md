@@ -8,9 +8,9 @@ description: |
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
+open import Cat.Instances.Discrete.Pre
 open import Cat.Instances.Shape.Two
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Discrete
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Product
@@ -112,72 +112,61 @@ Limit→Product lim .has-is-product =
 
 ## Indexed products as limits
 
-In the particular case where $I$ is a groupoid, e.g. because it arises
-as the space of objects of a [[univalent category]], an [[indexed product]] for
-$F : I \to \cC$ is the same thing as a limit over $F$, considered as
-a functor $\rm{Disc}{I} \to \cC$. We can not lift this restriction: If
-$I$ is not a groupoid, then its path spaces $x = y$ are not necessarily
-sets, and so the `Disc`{.Agda} construction does not apply to it.
+We can also compute the *indexed* product of a *family* $F : I \to \cC$
+of objects as a limit, replacing the function $F$ with a diagram indexed
+by the [[fundamental pregroupoid]] of $I$.
 
 ```agda
-module _ {ℓ} {I : Type ℓ} (i-is-grpd : is-groupoid I) (F : I → Ob) where
+module _ {ℓ} {I : Type ℓ} (F : I → Ob) where
   open _=>_
 
-  Proj→Cone : ∀ {x} → (∀ i → Hom x (F i))
-            → Const x => Disc-adjunct {C = C} {iss = i-is-grpd} F
+  Proj→Cone : ∀ {x} → (∀ i → Hom x (F i)) → Const x => Π₁-adjunct C F
   Proj→Cone π .η i = π i
-  Proj→Cone π .is-natural i j p =
+  Proj→Cone π .is-natural i j = elim! $
     J (λ j p →  π j ∘ id ≡ subst (Hom (F i) ⊙ F) p id ∘ π i)
       (idr _ ∙ introl (transport-refl id))
-      p
 
   is-indexed-product→is-limit
     : ∀ {x} {π : ∀ i → Hom x (F i)}
     → is-indexed-product C F π
-    → is-limit (Disc-adjunct F) x (Proj→Cone π)
-  is-indexed-product→is-limit {x = x} {π} ip =
-    to-is-limitp ml refl
-    where
-      module ip = is-indexed-product ip
-      open make-is-limit
+    → is-limit (Π₁-adjunct C F) x (Proj→Cone π)
+  is-indexed-product→is-limit {x = x} {π} ip = to-is-limitp ml refl where
+    module ip = is-indexed-product ip
+    open make-is-limit
 
-      ml : make-is-limit (Disc-adjunct F) x
-      ml .ψ j = π j
-      ml .commutes {i} {j} p =
-        J (λ j p → subst (Hom (F i) ⊙ F) p id ∘ π i ≡ π j)
-          (eliml (transport-refl _))
-          p
-      ml .universal eps p = ip.tuple eps
-      ml .factors eps p = ip.commute
-      ml .unique eps p other q = ip.unique eps q
+    ml : make-is-limit (Π₁-adjunct C F) x
+    ml .ψ j = π j
+    ml .commutes {i} {j} = elim! $
+      J (λ j p → subst (Hom (F i) ⊙ F) p id ∘ π i ≡ π j)
+        (eliml (transport-refl _))
+    ml .universal eps p = ip.tuple eps
+    ml .factors eps p = ip.commute
+    ml .unique eps p other q = ip.unique eps q
 
   is-limit→is-indexed-product
     : ∀ {K : Functor ⊤Cat C}
-    → {eps : K F∘ !F => Disc-adjunct {iss = i-is-grpd} F}
-    → is-ran !F (Disc-adjunct F) K eps
+    → {eps : K F∘ !F => Π₁-adjunct C F}
+    → is-ran !F (Π₁-adjunct C F) K eps
     → is-indexed-product C F (eps .η)
   is-limit→is-indexed-product {K = K} {eps} lim = ip where
     module lim = is-limit lim
     open is-indexed-product
 
     ip : is-indexed-product C F (eps .η)
-    ip .tuple k =
-      lim.universal k
-        (J (λ j p → subst (Hom (F _) ⊙ F) p id ∘ k _ ≡ k j)
-           (eliml (transport-refl _)))
-    ip .commute =
-      lim.factors _ _
-    ip .unique k comm =
-      lim.unique _ _ _ comm
+    ip .tuple k = lim.universal k comm where abstract
+      comm : {x y : I} (h : ∥ x ≡ y ∥₀) → Π₁-adjunct₁ C F h ∘ k x ≡ k y
+      comm {x} = elim! $ J
+        (λ y p → path→iso (ap F p) .to ∘ k x ≡ k y) (eliml (transport-refl _))
+    ip .commute       = lim.factors _ _
+    ip .unique k comm = lim.unique _ _ _ comm
 
-  IP→Limit : Indexed-product C F → Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-  IP→Limit ip =
-    to-limit (is-indexed-product→is-limit has-is-ip)
+  IP→Limit : Indexed-product C F → Limit (Π₁-adjunct C F)
+  IP→Limit ip = to-limit (is-indexed-product→is-limit has-is-ip)
     where open Indexed-product ip
 
-  Limit→IP : Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F) → Indexed-product C F
+  Limit→IP : Limit (Π₁-adjunct C F) → Indexed-product C F
   Limit→IP lim .Indexed-product.ΠF = _
-  Limit→IP lim .Indexed-product.π = _
-  Limit→IP lim .Indexed-product.has-is-ip =
-    is-limit→is-indexed-product (Limit.has-limit lim)
+  Limit→IP lim .Indexed-product.π  = _
+  Limit→IP lim .Indexed-product.has-is-ip = is-limit→is-indexed-product $
+    Limit.has-limit lim
 ```
