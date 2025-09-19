@@ -8,9 +8,9 @@ description: |
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Discrete.Pre
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Shape.Two
-open import Cat.Instances.Discrete
 open import Cat.Diagram.Coproduct
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
@@ -110,71 +110,60 @@ Colimit→Coproduct colim .has-is-coproduct =
 
 ## Indexed coproducts as colimits
 
-Similarly to the product case, when $I$ is a groupoid, indexed
-coproducts correspond to colimits of discrete diagrams of shape $I$.
+Similarly to the product case, coproducts indexed by a type $I$
+correspond to colimits of shape the [[fundamental pregroupoid]] of $I$.
 
 ```agda
-module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → Ob) where
+module _ {I : Type ℓ'} (F : I → Ob) where
   open _=>_
 
-  Inj→Cocone : ∀ {x} → (∀ i → Hom (F i) x)
-             → Disc-adjunct {C = C} {iss = i-is-grpd} F => Const x
+  Inj→Cocone : ∀ {x} → (∀ i → Hom (F i) x) → Π₁-adjunct C F => Const x
   Inj→Cocone inj .η i = inj i
-  Inj→Cocone inj .is-natural i j p =
+  Inj→Cocone inj .is-natural i j = elim! $
     J (λ j p → inj j ∘ subst (Hom (F i) ⊙ F) p id ≡ id ∘ inj i)
-      (elimr (transport-refl id) ∙ sym (idl _)) p
+      (elimr (transport-refl id) ∙ sym (idl _))
 
   is-indexed-coproduct→is-colimit
     : ∀ {x} {inj : ∀ i → Hom (F i) x}
     → is-indexed-coproduct C F inj
-    → is-colimit (Disc-adjunct F) x (Inj→Cocone inj)
-  is-indexed-coproduct→is-colimit {x = x} {inj} ic =
-    to-is-colimitp mc refl
-    where
-      module ic = is-indexed-coproduct ic
-      open make-is-colimit
+    → is-colimit (Π₁-adjunct C F) x (Inj→Cocone inj)
+  is-indexed-coproduct→is-colimit {x = x} {inj} ic = to-is-colimitp mc refl where
+    module ic = is-indexed-coproduct ic
+    open make-is-colimit
 
-      mc : make-is-colimit (Disc-adjunct F) x
-      mc .ψ i = inj i
-      mc .commutes {i} {j} p =
-        J (λ j p → inj j ∘ subst (Hom (F i) ⊙ F) p id ≡ inj i)
-          (elimr (transport-refl id))
-          p
-      mc .universal eta p = ic.match eta
-      mc .factors eta p = ic.commute
-      mc .unique eta p other q = ic.unique eta q
+    mc : make-is-colimit (Π₁-adjunct C F) x
+    mc .ψ i = inj i
+    mc .commutes {i} {j} = elim! $
+      J (λ j p → inj j ∘ subst (Hom (F i) ⊙ F) p id ≡ inj i)
+        (elimr (transport-refl id))
+    mc .universal eta p         = ic.match eta
+    mc .factors   eta p         = ic.commute
+    mc .unique    eta p other q = ic.unique eta q
 
   is-colimit→is-indexed-coprduct
     : ∀ {K : Functor ⊤Cat C}
-    → {eta : Disc-adjunct {iss = i-is-grpd} F => K F∘ !F}
-    → is-lan !F (Disc-adjunct F) K eta
+    → {eta : Π₁-adjunct C F => K F∘ !F}
+    → is-lan !F (Π₁-adjunct C F) K eta
     → is-indexed-coproduct C F (eta .η)
   is-colimit→is-indexed-coprduct {K = K} {eta} colim = ic where
     module colim = is-colimit colim
     open is-indexed-coproduct hiding (eta)
 
     ic : is-indexed-coproduct C F (eta .η)
-    ic .match k =
-      colim.universal k
-        (J (λ j p → k j ∘ subst (Hom (F _) ⊙ F) p id ≡ k _)
-           (elimr (transport-refl _)))
-    ic .commute =
-      colim.factors _ _
-    ic .unique k comm =
-      colim.unique _ _ _ comm
+    ic .match k = colim.universal k comm where abstract
+      comm : {x y : I} (h : ∥ x ≡ y ∥₀) → k y ∘ Π₁-adjunct₁ C F h ≡ k x
+      comm = elim! $ J
+        (λ y p → k y ∘ path→iso (ap F p) .to ≡ k _) (elimr (transport-refl _))
+    ic .commute       = colim.factors _ _
+    ic .unique k comm = colim.unique _ _ _ comm
 
-  IC→Colimit
-    : Indexed-coproduct C F
-    → Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-  IC→Colimit ic =
-    to-colimit (is-indexed-coproduct→is-colimit has-is-ic)
+  IC→Colimit : Indexed-coproduct C F → Colimit (Π₁-adjunct C F)
+  IC→Colimit ic = to-colimit (is-indexed-coproduct→is-colimit has-is-ic)
     where open Indexed-coproduct ic
 
-  Colimit→IC
-    : Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-    → Indexed-coproduct C F
+  Colimit→IC : Colimit (Π₁-adjunct C F) → Indexed-coproduct C F
   Colimit→IC colim .Indexed-coproduct.ΣF = _
-  Colimit→IC colim .Indexed-coproduct.ι = _
-  Colimit→IC colim .Indexed-coproduct.has-is-ic =
-    is-colimit→is-indexed-coprduct (Colimit.has-colimit colim)
+  Colimit→IC colim .Indexed-coproduct.ι  = _
+  Colimit→IC colim .Indexed-coproduct.has-is-ic = is-colimit→is-indexed-coprduct $
+    Colimit.has-colimit colim
 ```

@@ -7,6 +7,7 @@ open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Initial
+open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
@@ -128,36 +129,36 @@ since $j$ equalises $f$ and $g$ by construction, we have $f = g$!
 ```
 
 Putting this together, we can show that, if a [[complete category]] has
-a small weakly initial family indexed by a [[set]], then it has an
-initial object.
+a small weakly initial family, then it has an initial object.
 
 ```agda
   is-complete-weak-initial→initial
-    : ∀ {κ} {I : Type κ} (F : I → ⌞ C ⌟) ⦃ _ : ∀ {n} → H-Level I (2 + n) ⦄
+    : ∀ {κ} {I : Type κ} (F : I → ⌞ C ⌟)
     → is-complete κ (ℓ ⊔ κ) C
     → is-weak-initial-fam F
     → Initial C
-  is-complete-weak-initial→initial {κ = κ} F compl wif = record { has⊥ = equal-is-initial } where
+  is-complete-weak-initial→initial {κ = κ} {I} F compl wif =
+    record { has⊥ = equal-is-initial } where
 ```
 
 <details>
 <summary>The proof is by pasting together the results above.</summary>
 
 ```agda
-    open Indexed-product
+      open Indexed-product
 
-    prod : Indexed-product C F
-    prod = Limit→IP C (hlevel 3) F (is-complete-lower κ ℓ κ κ compl _)
+      prod : Indexed-product C F
+      prod = Limit→IP C F (is-complete-lower κ ℓ κ κ compl _)
 
-    prod-is-wi : is-weak-initial (prod .ΠF)
-    prod-is-wi = is-wif→is-weak-initial F wif (prod .has-is-ip)
+      prod-is-wi : is-weak-initial (prod .ΠF)
+      prod-is-wi = is-wif→is-weak-initial F wif (prod .has-is-ip)
 
-    equal : Joint-equaliser C {I = Hom (prod .ΠF) (prod .ΠF)} λ h → h
-    equal = Limit→Joint-equaliser C _ id (is-complete-lower κ κ lzero ℓ compl _)
-    open Joint-equaliser equal using (has-is-je)
+      equal : Joint-equaliser C {I = Hom (prod .ΠF) (prod .ΠF)} λ h → h
+      equal = Limit→Joint-equaliser C _ id (is-complete-lower κ κ lzero ℓ compl _)
+      open Joint-equaliser equal using (has-is-je)
 
-    equal-is-initial = is-weak-initial→equaliser _ prod-is-wi has-is-je λ f g →
-      Limit→Equaliser C (is-complete-lower κ (ℓ ⊔ κ) lzero lzero compl _)
+      equal-is-initial = is-weak-initial→equaliser _ prod-is-wi has-is-je λ f g →
+        Limit→Equaliser C (is-complete-lower κ (ℓ ⊔ κ) lzero lzero compl _)
 ```
 
 </details>

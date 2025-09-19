@@ -51,7 +51,7 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ} (F : Functo
 ```
 -->
 
-A solution set (for $F$ with respect to $Y : \cD$) is a [[set]] $I$,
+A solution set (for $F$ with respect to $Y : \cD$) is a type $I$,
 together with an $I$-indexed family of objects $X_i$ and morphisms $m_i
 : Y \to F(X_i)$, which commute in the sense that, for every $X'$ and $h
 : Y \to X'$, there exists a $j : I$ and $t : X_i \to X'$ which satisfy
@@ -60,12 +60,13 @@ $h = F(t)m_i$.
 ```agda
   record Solution-set (Y : ⌞ D ⌟) : Type (o ⊔ lsuc ℓ) where
     field
-      {index}    : Type ℓ
-      has-is-set : is-set index
+      {index} : Type ℓ
 
-      dom    : index → ⌞ C ⌟
-      map    : ∀ i → D.Hom Y (F.₀ (dom i))
-      factor : ∀ {X'} (h : D.Hom Y (F.₀ X')) → ∃[ i ∈ index ] (Σ[ t ∈ C.Hom (dom i) X' ] (h ≡ F.₁ t D.∘ map i))
+      dom : index → ⌞ C ⌟
+      map : ∀ i → D.Hom Y (F.₀ (dom i))
+      factor
+        : ∀ {X'} (h : D.Hom Y (F.₀ X'))
+        → ∃[ i ∈ index ] (Σ[ t ∈ C.Hom (dom i) X' ] h ≡ F.₁ t D.∘ map i)
 ```
 
 <!--
@@ -112,14 +113,11 @@ the sea has risen above it:
     → (∀ y → Solution-set y)
     → Σ[ G ∈ Functor D C ] G ⊣ F
   solution-set→left-adjoint c-compl F-cont ss =
-    _ , universal-maps→left-adjoint init where module _ x where
-    instance
-      H-Level-ix : ∀ {n} → H-Level (ss x .index) (2 + n)
-      H-Level-ix = basic-instance 2 (ss x .has-is-set)
-
-    init : Initial (x ↙ F)
-    init = is-complete-weak-initial→initial (x ↙ F)
-      (solution-set→family (ss x))
-      (comma-is-complete F c-compl F-cont)
-      (solution-set→family-is-weak-initial (ss x))
+    let
+      init : ∀ x → Initial (x ↙ F)
+      init x = is-complete-weak-initial→initial (x ↙ F)
+        (solution-set→family (ss x))
+        (comma-is-complete F c-compl F-cont)
+        (solution-set→family-is-weak-initial (ss x))
+    in _ , universal-maps→left-adjoint init
 ```

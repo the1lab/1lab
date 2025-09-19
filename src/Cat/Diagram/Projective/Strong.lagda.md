@@ -106,12 +106,10 @@ ones for projective objects, so we omit the details.
 ```agda
 preserves-strong-epis→strong-projective {P = P} hom-epi {X} {Y} e e-strong p =
   epi→surjective (el! (Hom P X)) (el! (Hom P Y))
-    (e ∘_)
-    (λ {c} → hom-epi e-strong .fst {c = c})
-    p
+    (e ∘_) (λ {c} → hom-epi e-strong .fst {c = c}) p
 
 strong-projective→preserves-strong-epis {P = P} pro {X} {Y} {f = f} f-strong =
-    surjective→strong-epi (el! (Hom P X)) (el! (Hom P Y)) (f ∘_) $ λ p →
+  surjective→strong-epi (el! (Hom P X)) (el! (Hom P Y)) (f ∘_) $ λ p →
     pro f f-strong p
 ```
 </details>
@@ -142,11 +140,12 @@ retract→strong-projective
 <summary>These proofs are more or less identical to the corresponding
 ones for projective objects.
 </summary>
+
 ```agda
 indexed-coproduct-strong-projective {P = P} {ι = ι} Idx-pro P-pro coprod {X} {Y} e e-strong p = do
   s ← Idx-pro
-        (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
-        (λ i → P-pro i e e-strong (p ∘ ι i))
+    (λ i → Σ[ sᵢ ∈ Hom (P i) X ] (e ∘ sᵢ ≡ p ∘ ι i)) (λ i → hlevel 2)
+    (λ i → P-pro i e e-strong (p ∘ ι i))
   pure (match (λ i → s i .fst) , unique₂ (λ i → pullr commute ∙ s i .snd))
   where open is-indexed-coproduct coprod
 
@@ -154,6 +153,7 @@ retract→strong-projective P-pro s r e e-strong p = do
   (t , t-factor) ← P-pro e e-strong (p ∘ r .retract)
   pure (t ∘ s , pulll t-factor ∙ cancelr (r .is-retract))
 ```
+
 </details>
 
 Moreover, if $\cC$ has a [[zero object]] and a strong projective
@@ -174,11 +174,13 @@ zero+indexed-coproduct-strong-projective→strong-projective
 <summary>Following the general theme, the proof is identical
 to the non-strong case.
 </summary>
+
 ```agda
 zero+indexed-coproduct-strong-projective→strong-projective {ι = ι} z coprod ∐P-pro i =
   retract→strong-projective ∐P-pro (ι i) $
   zero→ι-has-retract C coprod z i
 ```
+
 </details>
 
 ## Enough strong projectives
@@ -235,15 +237,11 @@ so the corresponding coproduct is a strong projective.
     open Strong-projectives
 
     strong-projectives : Strong-projectives
-    strong-projectives .Pro X =
-      ∐! (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst)
+    strong-projectives .Pro X = ∐! (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst)
     strong-projectives .present {X = X} =
       ∐!.match (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst) snd
-    strong-projectives .present-strong-epi =
-      strong-sep
-    strong-projectives .projective {X = X} =
-      indexed-coproduct-strong-projective
-        (Idx-pro X)
-        (Pᵢ-pro ⊙ fst)
-        (∐!.has-is-ic (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst))
+    strong-projectives .present-strong-epi = strong-sep
+    strong-projectives .projective {X = X} = indexed-coproduct-strong-projective
+      (Idx-pro X) (Pᵢ-pro ⊙ fst)
+      (∐!.has-is-ic (Σ[ i ∈ ∣ Idx ∣ ] (Hom (Pᵢ i) X)) (Pᵢ ⊙ fst))
 ```
