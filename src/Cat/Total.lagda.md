@@ -11,13 +11,13 @@ open import Cat.Diagram.Colimit.Terminal
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Adjoint.Colimit
 open import Cat.Instances.Sets.Complete
+open import Cat.Instances.Discrete.Pre
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Kan.Adjoint
 open import Cat.Functor.Hom.Yoneda
 open import Cat.Functor.Kan.Unique
-open import Cat.Instances.Discrete
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
@@ -52,9 +52,10 @@ private
 
 # Total precategories {defines="total-precategory"}
 
-A precategory is **total** if its [[Yoneda embedding]] has a [[left adjoint]].
-We call this adjoint <ruby>さ<rp>(</rp><rt>sa</rt><rp>)</rp></ruby>,
-a reading for 左, which means "left".
+A precategory is **total** if its [[Yoneda embedding]] has a [[left
+adjoint]].  We call this adjoint
+<ruby>さ<rp>(</rp><rt>sa</rt><rp>)</rp></ruby>, a reading for 左, which
+means "left".
 
 ```agda
 record is-total : Type (o ⊔ lsuc ℓ) where
@@ -78,8 +79,8 @@ and cototal.
 
 Before we investigate the properties of a total category, it's worth
 considering the action of such a functor on objects, if it exists. Given
-some presheaf $F\in\psh(\cC)$, an object could be $\sa(F)$ if it is [[free|free object]]
-with respect to $\yo$.
+some presheaf $F\in\psh(\cC)$, an object could be $\sa(F)$ if it is
+[[free|free object]] with respect to $\yo$.
 
 <!--
 ```agda
@@ -162,9 +163,11 @@ the identity---i.e., a terminal object.
 
   private
     ★-is-colimit-id : is-colimit (Id {C = C}) ★ _
-    ★-is-colimit-id = extend-is-colimit _
-      (right-adjoint-is-final (elements-terminal-is-equivalence.F⁻¹⊣F {s = ℓ})) _
-      col' where
+    ★-is-colimit-id =
+      extend-is-colimit _
+        (right-adjoint-is-final (elements-terminal-is-equivalence.F⁻¹⊣F {s = ℓ})) _
+        col'
+      where
         open is-equivalence
         col : is-colimit (πₚ C $ ⊤PSh _ _) ★ _
         col = さ₀-is-colimit _
@@ -184,8 +187,10 @@ the identity---i.e., a terminal object.
 As `C` is cocomplete, it has all set-indexed coproducts and is thus copowered.
 ```agda
   open Cat.Diagram.Colimit.Coproduct C
+
   has-set-indexed-coproducts : (S : Set ℓ) → has-coproducts-indexed-by C ∣ S ∣
-  has-set-indexed-coproducts S F = Colimit→IC F (cocomplete $ Disc-adjunct F)
+  has-set-indexed-coproducts S F = Colimit→IC F (cocomplete $ Π₁-adjunct C F)
+
   open Copowers has-set-indexed-coproducts public
   open Consts total-terminal has-set-indexed-coproducts public
 ```
