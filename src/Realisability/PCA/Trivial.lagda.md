@@ -50,8 +50,7 @@ the constant term containing the unit value.
     (app f x) ρ → tt
 
   abs-β : {n : Nat} (t : Term ⊤ (suc n)) (ρ : Vec (↯⁺ ⊤) n) (a : ↯⁺ ⊤) → _
-  abs-β t ρ a = part-ext
-    (λ _ → rem (⊤inst t (const a)) ρ) (λ _ → tt) λ _ _ → refl
+  abs-β t ρ a = part-ext (λ _ → rem (⊤inst t (const a)) ρ) (λ _ → tt) λ _ _ → refl
 ```
 
 <!--

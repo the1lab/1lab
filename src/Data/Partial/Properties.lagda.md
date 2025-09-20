@@ -63,14 +63,12 @@ the bottom element:
   part-map-⊑ {f = f} p .refines d = ap f (p .refines d)
 
   part-map-id : ∀ (x : ↯ A) → part-map (λ a → a) x ≡ x
-  part-map-id x = part-ext id id λ _ _ →
-    ↯-indep x
+  part-map-id x = part-ext id id λ _ _ → ↯-indep x
 
   part-map-∘
     : ∀ (f : B → C) (g : A → B)
     → ∀ (x : ↯ A) → part-map (f ∘ g) x ≡ part-map f (part-map g x)
-  part-map-∘ f g x = part-ext id id λ _ _ →
-    ap (f ∘ g) (↯-indep x)
+  part-map-∘ f g x = part-ext id id λ _ _ → ap (f ∘ g) (↯-indep x)
 
   part-map-never : ∀ {f : A → B} {x} → part-map f never ⊑ x
   part-map-never .implies ()
@@ -159,22 +157,21 @@ ugly.
 </summary>
 
 ```agda
-extends↯ f e x =
-  part-ext to from agree
-  where
-    to : ⌞ extend↯ f e (e · x) ⌟ → ⌞ f x ⌟
-    to = rec! λ x' p fx'↓ →
-      subst (λ x → ∣ f x .def ∣)
-        (has-prop-fibres→injective (e .fst) (e .snd) p)
-        fx'↓
+extends↯ f e x = part-ext to from agree where
+  to : ⌞ extend↯ f e (e · x) ⌟ → ⌞ f x ⌟
+  to = rec! λ x' p fx'↓ →
+    subst (λ x → ∣ f x .def ∣)
+      (has-prop-fibres→injective (e .fst) (e .snd) p)
+      fx'↓
 
-    from : ⌞ f x ⌟ → ⌞ extend↯ f e (e · x) ⌟
-    from fx↓ = pure ((x , refl) , fx↓)
+  from : ⌞ f x ⌟ → ⌞ extend↯ f e (e · x) ⌟
+  from fx↓ = pure ((x , refl) , fx↓)
 
-    agree : (fex↓ : ⌞ extend↯ f e (e · x) ⌟) (fx↓ : ⌞ f x ⌟) → extend↯ f e (e · x) .elt fex↓ ≡ f x .elt fx↓
-    agree =
-      □-out-elim (Σ-is-hlevel 1 (e .snd (e · x)) (λ _ → hlevel 1)) λ where
-        ((x' , ex'=ex) , fx'↓) fx↓ →
-          ap₂ (λ x fx↓ → f x .elt fx↓) (has-prop-fibres→injective (e .fst) (e .snd) ex'=ex) prop!
+  agree : (fex↓ : ⌞ extend↯ f e (e · x) ⌟) (fx↓ : ⌞ f x ⌟) → extend↯ f e (e · x) .elt fex↓ ≡ f x .elt fx↓
+  agree =
+    □-out-elim (Σ-is-hlevel 1 (e .snd (e · x)) (λ _ → hlevel 1)) λ where
+      ((x' , ex'=ex) , fx'↓) fx↓ →
+        ap₂ (λ x fx↓ → f x .elt fx↓) (has-prop-fibres→injective (e .fst) (e .snd) ex'=ex) prop!
 ```
+
 </details>
