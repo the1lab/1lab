@@ -4,9 +4,10 @@ open import 1Lab.Prelude
 
 open import Data.List.Properties
 open import Data.Id.Properties
+open import Data.List.NonEmpty
 open import Data.List.Base
 open import Data.Dec.Base
-open import Data.Fin.Base
+open import Data.Fin.Base hiding (_≤_)
 open import Data.Nat.Base
 open import Data.Sum.Base
 open import Data.Id.Base
@@ -121,6 +122,40 @@ member≃lookup .snd = is-iso→is-equiv λ where
 ```
 -->
 
+Explicitly, if $A$ is an [[$3+n$-type|n-type]], then the type of membership
+proofs for lists of $A$s are an [[$2+n$-type|n-type]].
+
+```agda
+∈ₗ-is-hlevel
+  : ∀ {A : Type ℓ} {x : A} {xs : List A}
+  → (n : Nat)
+  → is-hlevel A (3 + n)
+  → is-hlevel (x ∈ xs) (2 + n)
+∈ₗ-is-hlevel {x = x} {xs = xs} n ahl =
+  Equiv→is-hlevel (2 + n) (member≃lookup ∙e Σ-ap-snd (λ i → Id≃path)) $
+  Σ-is-hlevel (2 + n) (hlevel (2 + n)) λ i → ahl (xs ! i) x
+```
+
+<!--
+```agda
+instance
+  H-Level-∈ₗ
+    : ∀ {A : Type ℓ} {x : A} {xs : List A} {n : Nat}
+    → ⦃ _ : 2 ≤ n ⦄
+    → ⦃ _ : H-Level A (suc n) ⦄
+    → H-Level (x ∈ₗ xs) n
+  H-Level-∈ₗ {n = suc (suc n)} ⦃ s≤s (s≤s _) ⦄ ⦃ ahl ⦄ = hlevel-instance (∈ₗ-is-hlevel n (ahl .H-Level.has-hlevel))
+```
+-->
+
+<!--
+```agda
+index-of : ∀ {x : A} {xs : List A} → x ∈ₗ xs → Nat
+index-of x∈xs = lower (member→lookup x∈xs .fst)
+{-# NOINLINE index-of #-}
+```
+-->
+
 Despite the potential complexity of $a \in_l as$, we do note that if $A$
 is a [[set]], then all that matters is the index; If $A$ is moreover
 [[discrete]], then $a \in_l as$ is [[decidable]].
@@ -203,6 +238,35 @@ member→member-nub {xs = x ∷ xs} (there α) with elem? x (nub xs)
 ```
 
 </details>
+
+## Properties
+
+A list $xs$ is nonempty if and only if there [[merely]] exists
+some $x \in xs$.
+
+```agda
+has-member→nonempty
+  : ∀ {x : A} {xs : List A}
+  → x ∈ xs
+  → is-nonempty xs
+has-member→nonempty {xs = x ∷ xs} x∈xs = nonempty
+
+nonempty→has-member
+  : ∀ {xs : List A}
+  → is-nonempty xs
+  → Σ[ x ∈ A ] (x ∈ xs)
+nonempty→has-member {xs = x ∷ xs} ne = x , here reflᵢ
+
+nonempty≃has-member
+  : ∀ (xs : List A)
+  → is-nonempty xs ≃ (∃[ x ∈ A ] (x ∈ xs))
+nonempty≃has-member xs =
+  prop-ext!
+    (λ ne → inc (nonempty→has-member ne))
+    (rec! (λ x x∈xs → has-member→nonempty x∈xs))
+```
+
+<!-- [TODO: Reed M, 26/08/2025] Prose for these. -->
 
 <!--
 ```agda
