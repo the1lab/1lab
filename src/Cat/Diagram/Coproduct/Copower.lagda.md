@@ -94,8 +94,8 @@ uniqueness properties of colimiting maps.
     coprods X (λ _ → A) .match λ i → coprods Y (λ _ → B) .ι (idx i) ∘ obj
   Copowering .F-id {X , A} = sym $
     coprods X (λ _ → A) .unique _ λ i → sym id-comm
-  Copowering .F-∘ {X , A} f g = sym $
-    coprods X (λ _ → A) .unique _ λ i → pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
+  Copowering .F-∘ {X , A} f g = sym $ coprods X (λ _ → A) .unique _ λ i →
+    pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
 ```
 
 ```agda

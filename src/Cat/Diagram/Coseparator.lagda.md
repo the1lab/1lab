@@ -49,7 +49,6 @@ faithful→coseparator faithful p = faithful (ext p)
 
 # Coseparating families {defines="coseparating-family"}
 
-
 Likewise, a coseparating family is dual to a [[separating family]].
 
 ```agda
@@ -71,7 +70,7 @@ module _ (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣) where
 
   coseparator→mono
     : ∀ {s x} → is-coseparator s → is-monic (⋔!.tuple (Hom x s) s λ f → f)
-  coseparator→mono {s} {x} cosep f g p =  cosep λ m →
+  coseparator→mono {s} {x} cosep f g p = cosep λ m →
     m ∘ f                                   ≡⟨ pushl (sym $ ⋔!.commute _ _) ⟩
     ⋔!.π _ _ m ∘ (⋔!.tuple _ _ λ f → f) ∘ f ≡⟨ refl⟩∘⟨ p ⟩
     ⋔!.π _ _ m ∘ (⋔!.tuple _ _ λ f → f) ∘ g ≡⟨ pulll $ ⋔!.commute _ _ ⟩
@@ -80,17 +79,17 @@ module _ (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣) where
   mono→coseparator
     : ∀ {s} → (∀ {x} → is-monic (⋔!.tuple (Hom x s) s λ f → f)) → is-coseparator s
   mono→coseparator monic {f = f} {g = g} p = monic f g $ ⋔!.unique₂ _ _ λ m →
-      assoc _ _ _ ∙ p _ ∙ sym (assoc _ _ _)
+    assoc _ _ _ ∙ p _ ∙ sym (assoc _ _ _)
 
   coseparating-family→mono
     : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
     → is-coseparating-family sᵢ
     → ∀ {x} → is-monic (∏!.tuple (Σ[ i ∈ ∣ Idx ∣ ] Hom x (sᵢ i)) (sᵢ ⊙ fst) snd )
   coseparating-family→mono Idx sᵢ cosep f g p = cosep λ {i} mᵢ →
-      mᵢ ∘ f                                     ≡⟨ pushl (sym $ ∏!.commute _ _) ⟩
-      ∏!.π _ _ (i , mᵢ) ∘ (∏!.tuple _ _ snd) ∘ f ≡⟨ refl⟩∘⟨ p ⟩
-      ∏!.π _ _ (i , mᵢ) ∘ (∏!.tuple _ _ snd) ∘ g ≡⟨ pulll $ ∏!.commute _ _ ⟩
-      mᵢ ∘ g                                     ∎
+    mᵢ ∘ f                                     ≡⟨ pushl (sym $ ∏!.commute _ _) ⟩
+    ∏!.π _ _ (i , mᵢ) ∘ (∏!.tuple _ _ snd) ∘ f ≡⟨ refl⟩∘⟨ p ⟩
+    ∏!.π _ _ (i , mᵢ) ∘ (∏!.tuple _ _ snd) ∘ g ≡⟨ pulll $ ∏!.commute _ _ ⟩
+    mᵢ ∘ g                                     ∎
 
   coseparating-family→make-mono
     : ∀ (Idx : Set ℓ) (sᵢ : ∣ Idx ∣ → Ob)
@@ -104,7 +103,6 @@ module _ (powers : (I : Set ℓ) → has-products-indexed-by C ∣ I ∣) where
     → (sᵢ : ∣ Idx ∣ → Ob)
     → (∀ {x} → is-monic (∏!.tuple (Σ[ i ∈ ∣ Idx ∣ ] Hom x (sᵢ i)) (sᵢ ⊙ fst) snd))
     → is-coseparating-family sᵢ
-  mono→coseparating-family Idx sᵢ monic {f = f} {g = g} p =
-    monic f g $ ∏!.unique₂ _ _ λ (i , mᵢ) →
-      assoc _ _ _ ∙ p _ ∙ sym (assoc _ _ _)
+  mono→coseparating-family Idx sᵢ monic {f = f} {g = g} p = monic f g $
+    ∏!.unique₂ _ _ λ (i , mᵢ) → assoc _ _ _ ∙ p _ ∙ sym (assoc _ _ _)
 ```
