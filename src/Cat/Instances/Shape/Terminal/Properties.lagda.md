@@ -11,19 +11,36 @@ open import Cat.Prelude
 ```agda
 module Cat.Instances.Shape.Terminal.Properties where
 ```
+<!--
+```agda
+open is-precat-iso
+open is-iso
+```
+-->
 
 # Properties
 
-We note that the [[terminal category]] is a unit to the categorical product.
+We note that the [[terminal category]] is a unit to the categorical
+product.
 
 ```agda
-⊤Cat-unit : ∀ {o h} {C : Precategory o h} → ⊤Cat ×ᶜ C ≡ C
-⊤Cat-unit = sym $ Precategory-path Cat⟨ !F , Id ⟩ Cat⟨!F,Id⟩-is-iso where
-  open is-precat-iso
-  open is-iso
-  Cat⟨!F,Id⟩-is-iso : is-precat-iso Cat⟨ !F , Id ⟩
-  Cat⟨!F,Id⟩-is-iso .has-is-ff  .is-eqv (tt , f) .centre = f , refl
-  Cat⟨!F,Id⟩-is-iso .has-is-iso .is-eqv (tt , a) .centre = a , refl
-  Cat⟨!F,Id⟩-is-iso .has-is-ff  .is-eqv (tt , f) .paths (g , p) i = p (~ i) .snd , λ j → p (~ i ∨ j)
-  Cat⟨!F,Id⟩-is-iso .has-is-iso .is-eqv (tt , a) .paths (b , p) i = p (~ i) .snd , λ j → p (~ i ∨ j)
+⊤Cat-unit
+  : ∀ {o h} {C : Precategory o h}
+  → is-precat-iso {C = ⊤Cat ×ᶜ C} Cat⟨ !F , Id ⟩
+⊤Cat-unit .has-is-ff  .is-eqv (tt , f) .centre = f , refl
+⊤Cat-unit .has-is-iso .is-eqv (tt , a) .centre = a , refl
+⊤Cat-unit .has-is-ff  .is-eqv (tt , f) .paths (g , p) i =
+  p (~ i) .snd , λ j → p (~ i ∨ j)
+⊤Cat-unit .has-is-iso .is-eqv (tt , a) .paths (b , p) i =
+  p (~ i) .snd , λ j → p (~ i ∨ j)
+```
+
+It is likewise isomorphic to its opposite.
+
+```agda
+⊤Cat-idemp : is-precat-iso {C = ⊤Cat ^op} {D = ⊤Cat} !F
+⊤Cat-idemp  .has-is-ff  .is-eqv _ .centre = _ , refl
+⊤Cat-idemp  .has-is-iso .is-eqv _ .centre = _ , refl
+⊤Cat-idemp  .has-is-ff  .is-eqv _ .paths (_ , _) = refl
+⊤Cat-idemp  .has-is-iso .is-eqv _ .paths (_ , _) = refl
 ```

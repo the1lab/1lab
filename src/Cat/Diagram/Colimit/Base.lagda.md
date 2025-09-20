@@ -537,7 +537,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
   Colimit-is-prop cat = Lan-is-prop cat
 ```
 
-# Cocompleteness {defines="cocomplete-category"}
+# Cocompleteness {defines="cocomplete cocomplete-category"}
 
 A category is **cocomplete** if it admits colimits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits

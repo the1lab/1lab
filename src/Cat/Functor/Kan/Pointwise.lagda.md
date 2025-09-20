@@ -144,8 +144,8 @@ $\Lan_F(G)$ exists _and_ is pointwise.
 <!--
 ```agda
 module _
-  {o o' ℓ ℓ'}
-  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
+  {o o' o'' ℓ ℓ'}
+  {C : Precategory o'' ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   (F : Functor C C') (G : Functor C D)
   where
 
@@ -299,7 +299,7 @@ And, if $\cD$ is $\kappa$-cocomplete, then it certainly has the required
 colimits: we can "un-weaken" our result.
 
 ```agda
-  cocomplete→lan : is-cocomplete ℓ ℓ D → Lan F G
+  cocomplete→lan : is-cocomplete (o'' ⊔ ℓ) ℓ D → Lan F G
   cocomplete→lan colimits = comma-colimits→lan (λ c' → colimits (↓Dia c'))
 ```
 
