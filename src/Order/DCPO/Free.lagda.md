@@ -255,8 +255,8 @@ Free-Pointed-dcpo .F₁ {x = A} f = to-strict-scott-bottom
   (part-map f) (part-map-⊑)
   (λ _ _ → part-map-lub {A = A} f)
   (λ _ → part-map-never)
-Free-Pointed-dcpo .F-id = ext (part-map-id $_)
-Free-Pointed-dcpo .F-∘ f g = ext (part-map-∘ f g $_)
+Free-Pointed-dcpo .F-id    = ext λ x → unext $ part-map-id x
+Free-Pointed-dcpo .F-∘ f g = ext λ x → unext $ part-map-∘ f g x
 ```
 
 <!--
@@ -346,7 +346,7 @@ We can tie this all together to obtain the desired adjunction.
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo
   : ∀ {ℓ} → Free-Pointed-dcpo {ℓ} ⊣ Pointed-DCPOs↪Sets
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .η A x = always x
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = ext λ _ →
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = funext λ _ →
   sym (always-natural f)
 
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D = to-strict-scott-bottom
@@ -357,15 +357,15 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D = to-strict-scott-bottom
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f = ext λ x →
   sym $ Strict-scott.pres-⋃-prop f _ _ _
 
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} = ext λ x → part-ext
-  (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies)
-  (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)
-  (λ p q →
-    sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p)
-    ∙ ↯-indep x)
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
+  ext! λ where
+    x .def a → A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies a
+    x .inv a → A?.⋃-prop-le _ _ (lift a) .implies tt
+    x .elt p → sym $
+      A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p
   where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
 
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} = ext λ x →
-  sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
+  ext λ x → sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
   where module B = Pointed-dcpo B
 ```
