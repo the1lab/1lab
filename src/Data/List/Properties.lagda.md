@@ -105,7 +105,6 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
   is-set→List-is-set : is-set A → is-set (List A)
   is-set→List-is-set = List-is-hlevel zero
-
 ```
 
 This characterisation has quite a few useful corollaries.
@@ -119,7 +118,7 @@ equivalent to pairs of paths.
 ∷-path≃ {x = x} {y = y} {xs = xs} {ys = ys} =
   x ∷ xs ≡ y ∷ ys             ≃⟨ ListPath.Code≃Path ⟩
   x ≡ y × ListPath.Code xs ys ≃˘⟨ Σ-ap-snd (λ _ → ListPath.Code≃Path) ⟩
-  x ≡ y × xs ≡ ys ≃∎
+  x ≡ y × xs ≡ ys             ≃∎
 ```
 
 This in turn means that the type $\Sigma (y : A)\; (ys : \List{A})\; (x \cons xs = y \cons ys)$

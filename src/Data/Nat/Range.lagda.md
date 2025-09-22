@@ -47,9 +47,9 @@ $[1, n]$.
 We will focus our attention on half-open ranges of numbers $[x, y)$.
 Ranges of this form have a couple of nice properties:
 
-- If $xs$ is a list, then $[0, \mathrm{length}\; xs)$ gives us all valid indices into $xs$.
+- If $w$ is a list, then $[0, \mathrm{length}\; w)$ gives us all valid indices into $w$.
   If we used a closed range, then we'd have to subtract 1 from the length of
-  $xs$ to get the same list.
+  $w$ to get the same list.
 - If we have two half-open ranges $[x, y)$ and $[y,z)$ with $x \leq y \leq z$,
   then we can directly concatenate them to get the range $[x, z)$.
 - All the ranges $[x,y]$, $(x,y)$, and $(x,y]$ can be expressed as a
@@ -105,7 +105,7 @@ range-<-∷ {x} {suc y} x<y =
 
 ## Properties of half-open ranges
 
-The length of $[x,y)$ is $y - x$.
+The length of $[x,y)$ is $y$ monus $x$.
 
 ```agda
 length-count-up : ∀ (x n : Nat) → length (count-up x n) ≡ n
