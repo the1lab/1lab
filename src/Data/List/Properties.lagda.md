@@ -3,6 +3,7 @@
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Closure
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -16,6 +17,7 @@ open import Data.Sum.Base
 open import Data.Id.Base
 open import Data.Bool
 
+open import Meta.Foldable
 open import Meta.Idiom
 ```
 -->
@@ -29,7 +31,7 @@ module Data.List.Properties where
 <!--
 ```agda
 private variable
-  ℓ : Level
+  ℓ ℓ' : Level
   A B : Type ℓ
 ```
 -->
@@ -103,6 +105,39 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
   is-set→List-is-set : is-set A → is-set (List A)
   is-set→List-is-set = List-is-hlevel zero
+```
+
+This characterisation has quite a few useful corollaries.
+To start, paths between $x \cons xs$ and $y \cons ys$ are
+equivalent to pairs of paths.
+
+```agda
+∷-path≃
+  : ∀ {x y : A} {xs ys : List A}
+  → (x ∷ xs ≡ y ∷ ys) ≃ (x ≡ y × xs ≡ ys)
+∷-path≃ {x = x} {y = y} {xs = xs} {ys = ys} =
+  x ∷ xs ≡ y ∷ ys             ≃⟨ ListPath.Code≃Path ⟩
+  x ≡ y × ListPath.Code xs ys ≃˘⟨ Σ-ap-snd (λ _ → ListPath.Code≃Path) ⟩
+  x ≡ y × xs ≡ ys             ≃∎
+```
+
+This in turn means that the type $\Sigma (y : A)\; (ys : \List{A})\; (x \cons xs = y \cons ys)$
+is [[contractible]] for every $x : A$, $xs : \List{A}$, as we can re-arrange
+it into a pair of singletons.
+
+```agda
+∷-singleton-is-contr
+  : ∀ (x : A) (xs : List A)
+  → is-contr (Σ[ y ∈ A ] Σ[ ys ∈ List A ] x ∷ xs ≡ y ∷ ys)
+∷-singleton-is-contr {A = A} x xs =
+  Equiv→is-hlevel 0 eqv (×-is-hlevel 0 Singleton-is-contr Singleton-is-contr)
+  where
+    eqv : (Σ[ y ∈ A ] Σ[ ys ∈ List A ] x ∷ xs ≡ y ∷ ys) ≃ ((Σ[ y ∈ A ] x ≡ y) × (Σ[ ys ∈ List A ] xs ≡ ys))
+    eqv =
+      Σ[ y ∈ A ] Σ[ ys ∈ List A ] x ∷ xs ≡ y ∷ ys     ≃⟨ Σ-ap-snd (λ y → Σ-ap-snd λ ys → ∷-path≃) ⟩
+      Σ[ y ∈ A ] Σ[ ys ∈ List A ] x ≡ y × xs ≡ ys     ≃⟨ Σ-ap-snd (λ y → Σ-swap₂) ⟩
+      Σ[ y ∈ A ] x ≡ y × (Σ[ ys ∈ List A ] xs ≡ ys)   ≃⟨ Σ-assoc ⟩
+      (Σ[ y ∈ A ] x ≡ y) × (Σ[ ys ∈ List A ] xs ≡ ys) ≃∎
 ```
 
 <!--
@@ -261,3 +296,15 @@ length-tabulate {n = zero}  f = refl
 length-tabulate {n = suc n} f = ap suc (length-tabulate (f ∘ fsuc))
 ```
 -->
+
+# Folds
+
+```agda
+foldr-++
+  : ∀ {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B → B) (b : B)
+  → (xs ys : List A)
+  → foldr f b (xs ++ ys) ≡ foldr f (foldr f b ys) xs
+foldr-++ f b [] ys = refl
+foldr-++ f b (x ∷ xs) ys = ap (f x) (foldr-++ f b xs ys)
+```

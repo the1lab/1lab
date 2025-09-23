@@ -99,7 +99,11 @@ List-elim P p[] p∷ (x ∷ xs) = p∷ x xs (List-elim P p[] p∷ xs)
 ```agda
 instance
   Foldable-List : Foldable (eff List)
-  Foldable-List .foldr f x = List-elim _ x (λ x _ → f x)
+  Foldable-List .foldr {a = A} {b = B} f b = go module foldr where
+    go : List A → B
+    go [] = b
+    go (x ∷ xs) = f x (go xs)
+
 
   Traversable-List : Traversable (eff List)
   Traversable-List = record { traverse = go } where
@@ -109,6 +113,9 @@ instance
       → (a → M.₀ b) → List a → M.₀ (List b)
     go f []       = pure []
     go f (x ∷ xs) = ⦇ f x ∷ go f xs ⦈
+
+{-# DISPLAY foldr.go f b xs = foldr f b xs #-}
+
 
 foldl : (B → A → B) → B → List A → B
 foldl f x []       = x
@@ -124,10 +131,12 @@ List B`.
 ```agda
 instance
   Map-List : Map (eff List)
-  Map-List = record { map = go } where
+  Map-List = record { map = go } module map where
     go : (A → B) → List A → List B
     go f []       = []
     go f (x ∷ xs) = f x ∷ go f xs
+
+{-# DISPLAY map.go f xs = map f xs #-}
 ```
 
 ## Monoidal structure
@@ -297,6 +306,9 @@ any-of f (x ∷ xs) = or (f x) (any-of f xs)
   distinguish : List A → Type
   distinguish []     = ⊥
   distinguish (_ ∷ _) = ⊤
+
+[]≠∷ : ∀ {x : A} {xs} → ¬ [] ≡ (x ∷ xs)
+[]≠∷ {A = A} p = ∷≠[] (sym p)
 
 instance
   Discrete-List : ∀ ⦃ d : Discrete A ⦄ → Discrete (List A)

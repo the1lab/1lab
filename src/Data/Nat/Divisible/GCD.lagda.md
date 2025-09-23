@@ -126,7 +126,7 @@ and `lem₂`{.Agda}, will allow us to compute the inductive step for GCD.
       r =
         (dm.q * c₁ + c₂) * d   ≡⟨ *-distrib-+r (dm.q * c₁) _ _ ⟩
         dm.q * c₁ * d + ⌜ c₂ * d ⌝ ≡⟨ ap! q ⟩
-        ⌜ dm.q * c₁ * d ⌝ + dm.r   ≡⟨ ap! (*-associative dm.q c₁ d) ⟩
+        ⌜ dm.q * c₁ * d ⌝ + dm.r   ≡⟨ ap! (sym (*-associative dm.q c₁ d)) ⟩
         dm.q * ⌜ c₁ * d ⌝ + dm.r   ≡⟨ ap! p ⟩
         dm.q * suc n + dm.r        ≡˘⟨ is-divmod m (suc n) ⟩
         m                          ∎
@@ -135,7 +135,7 @@ and `lem₂`{.Agda}, will allow us to compute the inductive step for GCD.
     lem₂ {d = d} {n} {m} (c₁ , p) (c₂ , q) = c₂ - dm.q * c₁ , r where
       module dm = DivMod (divide-pos m (suc n)) renaming (quot to q ; rem to r)
       r = (c₂ - dm.q * c₁) * d                   ≡⟨ monus-distribr c₂ (dm.q * c₁) d ⟩
-          c₂ * d - ⌜ dm.q * c₁ * d ⌝             ≡⟨ ap! (*-associative dm.q c₁ d ∙ ap (dm.q *_) p) ⟩
+          c₂ * d - ⌜ dm.q * c₁ * d ⌝             ≡⟨ ap! (sym (*-associative dm.q c₁ d) ∙ ap (dm.q *_) p) ⟩
           ⌜ c₂ * d ⌝ - dm.q * suc n              ≡⟨ ap! (q ∙ is-divmod m (suc n)) ⟩
           ⌜ dm.q * suc n + dm.r ⌝ - dm.q * suc n ≡⟨ ap! (+-commutative (dm.q * suc n) dm.r) ⟩
           (dm.r + dm.q * suc n) - dm.q * suc n   ≡⟨ monus-cancelr dm.r 0 (dm.q * suc n) ⟩
@@ -196,10 +196,10 @@ is-gcd-graphs-gcd {m = m} {n} {d} = prop-ext!
 <!--
 ```agda
 is-gcd-factor : ∀ x y n k .⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
-is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (*-associative q n k ∙ α))
-is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (*-associative q n k ∙ α))
+is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (sym (*-associative q n k) ∙ α))
+is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (sym (*-associative q n k) ∙ α))
 is-gcd-factor x y n k p .greatest {g'} α β with (q , α) ← ∣→fibre α | (r , β) ← ∣→fibre β =
-  ∣-*-cancelr {n = k} (p .greatest (fibre→∣ (q , sym (*-associative q g' k) ∙ ap (_* k) α)) (fibre→∣ (r , sym (*-associative r g' k) ∙ ap (_* k) β)))
+  ∣-*-cancelr {n = k} (p .greatest (fibre→∣ (q , *-associative q g' k ∙ ap (_* k) α)) (fibre→∣ (r , *-associative r g' k ∙ ap (_* k) β)))
 
 gcd-factor : ∀ x y k → gcd (x * k) (y * k) ≡ gcd x y * k
 gcd-factor x y zero = ap₂ gcd (*-zeror x) (*-zeror y) ∙ sym (*-zeror (gcd x y))
@@ -235,7 +235,7 @@ gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gc
       d' = subst (n ∣_) (ap (_* b) (recover α) ∙ *-distrib-+r (q * has .fst) r b) d
 
       d'' : n ∣ r * b
-      d'' = ∣-+-cancel {n} {q * has .fst * b} {r * b} (subst (n ∣_) (sym (*-associative q (has .fst) b)) (|-*l-pres {a = q} (has .snd .fst .snd))) d'
+      d'' = ∣-+-cancel {n} {q * has .fst * b} {r * b} (subst (n ∣_) (*-associative q (has .fst) b) (|-*l-pres {a = q} (has .snd .fst .snd))) d'
     in case r ≡? 0 of λ where
       (yes p) → fibre→∣ (q , sym (recover α ∙ ap (q * has .fst +_) p ∙ +-zeror (q * has .fst)))
       (no ¬p) → absurd (<-irrefl
