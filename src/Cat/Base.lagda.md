@@ -401,6 +401,16 @@ Id .Functor.F-id    = refl
 Id .Functor.F-∘ f g = refl
 ```
 
+<!--
+```agda
+Id^op≡Id : ∀ {o ℓ} {C : Precategory o ℓ} → Functor.op (Id {C = C}) ≡ Id
+Id^op≡Id  i .Functor.F₀ z = z
+Id^op≡Id  i .Functor.F₁ f = f
+Id^op≡Id  i .Functor.F-id = refl
+Id^op≡Id  i .Functor.F-∘ f g = refl
+```
+-->
+
 # Natural transformations {defines="natural-transformation"}
 
 Another common theme in category theory is that roughly _every_ concept

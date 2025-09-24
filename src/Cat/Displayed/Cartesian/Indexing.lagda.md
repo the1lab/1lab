@@ -194,7 +194,7 @@ along equal morphisms.
 base-changes : ∀ {a b}
   → Functor (Locally-discrete (B ^op) .Prebicategory.Hom a b)
             Cat[ Fibre E a , Fibre E b ]
-base-changes = Disc-adjunct base-change
+base-changes = Disc'-adjunct base-change
 
 base-change-coherence
   : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ g)

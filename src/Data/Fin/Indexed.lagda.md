@@ -53,7 +53,7 @@ to the _decidable_ subsets or quotients --- or we may weaken the
 definition of finite, asking only that the type have a cardinality
 bounded above by some natural number.
 
-If we weaken the equivalence $[n] \simeq X$ to a [[surjection|surjection
+If we weaken the equivalence $[n] \simeq X$ to a [[surjection|surjections
 between sets]] $[n] \epi X$, we recover closure under quotients. These
 are the **finitely-indexed types**, also known as $K$-finite types,
 after the mathematician Kuratowski.
