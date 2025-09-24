@@ -190,6 +190,8 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ {H = Hom} compose)
         (compose-assocʳ {H = Hom} compose)
 
+  module unitor-l {a} {b} = Cr._≅_ _ (unitor-l {a} {b})
+  module unitor-r {a} {b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
