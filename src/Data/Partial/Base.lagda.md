@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Path.Cartesian
 open import 1Lab.Prelude
 
 open import Data.Maybe.Base
@@ -92,6 +93,66 @@ part-ext
 part-ext to from p = Part-pathp refl
   (Ω-ua to from) (funext-dep λ _ → p _ _)
 ```
+
+<!--
+```agda
+module _ {ℓ ℓr} {A : Type ℓ} ⦃ e : Extensional A ℓr ⦄ where
+  record Part-ext (a b : ↯ A) : Type ℓr where
+    no-eta-equality
+    field
+      def : ⌞ a ⌟ → ⌞ b ⌟
+      inv : ⌞ b ⌟ → ⌞ a ⌟
+      elt : ∀ xd → e .Pathᵉ (a .elt xd) (b .elt (def xd))
+
+  open Part-ext public
+
+  private
+    rfl : ∀ {a} → Part-ext a a
+    rfl .def x = x
+    rfl .inv x = x
+    rfl .elt x = e .reflᵉ _
+
+  instance
+    Extensional-↯ : Extensional (↯ A) ℓr
+    Extensional-↯ .Pathᵉ = Part-ext
+    Extensional-↯ .reflᵉ x = rfl
+    Extensional-↯ .idsᵉ = done where
+      to : ∀ {a b} → Part-ext a b → a ≡ b
+      to {a} {b} p = Part-pathp refl defs λ i x → hcomp (∂ i) (sys i x) module to where
+        eqv : is-equiv (p .inv)
+        eqv = is-iso→is-equiv λ where
+          .is-iso.from   → p .def
+          .is-iso.rinv x → prop!
+          .is-iso.linv x → prop!
+
+        open Equiv (_ , eqv) renaming (η to eta ; ε to eps) using (zag) public
+
+        defs : a .def ≡ b .def
+        defs i .∣_∣ = Glue ⌞ a ⌟ λ where
+          (i = i0) → ⌞ a ⌟ , _ , id-equiv
+          (i = i1) → ⌞ b ⌟ , _ , eqv
+        defs i .is-tr = is-prop→pathp (λ i → is-prop-is-prop {A = ∣ defs i ∣})
+          (a .def .is-tr) (b .def .is-tr) i
+
+        sys : (i : I) (x : ⌞ defs i ⌟) (j : I) → Partial (∂ i ∨ ~ j) A
+        sys i x j (i = i0) = a .elt x
+        sys i x j (i = i1) = b .elt (eta x j)
+        sys i x j (j = i0) = e .idsᵉ .to-path (p .elt (unglue x)) i
+
+      done : is-identity-system Part-ext _
+      done .to-path = to
+      done .to-path-over {a} {b} p = sq where abstract
+        open to p
+
+        sq : PathP (λ i → Part-ext a (to p i)) rfl p
+        sq i .def x = attach (∂ i) (λ { (i = i0) → _ ; (i = i1) → p .def x }) (inS (eps x (~ i)))
+        sq i .inv x = unglue x
+        sq i .elt xd = comp (λ j → e .Pathᵉ (a .elt (eps xd (~ i ∨ j))) (hfill (∂ i) j (sys i (sq i .def xd)))) (∂ i) λ where
+          j (j = i0) → e .idsᵉ .to-path-over (p .elt (eps xd (~ i))) i
+          j (i = i0) → e .reflᵉ (a .elt xd)
+          j (i = i1) → transp (λ i → e .Pathᵉ (a .elt (eps xd j)) (b .elt (zag xd i j))) (∂ j) (p .elt (eps xd j))
+```
+-->
 
 To close the initial definitions, if we have a partial element $x : \zap
 A$ and a total $y : A$, then we write $x \downarrow y$ for the relation
