@@ -20,6 +20,7 @@ private variable
   o ℓ : Level
   A B : Precategory o ℓ
 open Monad-on
+open is-monad
 open _=>_
 ```
 -->
@@ -123,7 +124,7 @@ construct auxiliary natural transformations representing each pair of
 maps we want to compute with.</summary>
 
 ```agda
-  Codensity .μ-unitr {x = x} = path ηₚ x where
+  Codensity .has-is-monad .μ-unitr {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
     nat₁ .η x = σ mult-nt .η x B.∘ Ext.₁ (σ unit-nt .η x)
     nat₁ .is-natural x y f = Ext.extendr (σ unit-nt .is-natural x y f)
@@ -137,7 +138,7 @@ maps we want to compute with.</summary>
           ∙ Ext.cancelr (σ-comm ηₚ x)))
         (ext λ _ → B.intror refl)
 
-  Codensity .μ-unitl {x = x} = path ηₚ x where
+  Codensity .has-is-monad .μ-unitl {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
     nat₁ .η x = σ mult-nt .η x B.∘ σ unit-nt .η (Ext.₀ x)
     nat₁ .is-natural x y f = B.extendr (σ unit-nt .is-natural _ _ _)
@@ -152,7 +153,7 @@ maps we want to compute with.</summary>
           ∙∙ B.cancell (σ-comm ηₚ x))
         (ext λ _ → B.intror refl)
 
-  Codensity .μ-assoc {x = x} = path ηₚ x where
+  Codensity .has-is-monad .μ-assoc {x = x} = path ηₚ x where
     mult' : (Ext F∘ Ext F∘ Ext) F∘ F => F
     mult' .η x = eps .η x B.∘ Ext.₁ (mult-nt .η x)
     mult' .is-natural x y f = Ext.extendr (mult-nt .is-natural _ _ _)

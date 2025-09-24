@@ -105,6 +105,7 @@ compatibility paths have to be adjusted slightly. Check it out below:
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Monad-on
+  open Cat.is-monad
   open Monad
   private module C = Cr C
 
@@ -115,13 +116,13 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' : Cat.Monad-on M.M
     monad' .unit = M.η
     monad' .mult = M.μ
-    monad' .μ-unitr {x} =
+    monad' .has-is-monad .μ-unitr {x} =
         ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
       ∙ M.μ-unitr ηₚ x
-    monad' .μ-unitl {x} =
+    monad' .has-is-monad .μ-unitl {x} =
         ap (M.μ ._=>_.η x C.∘_) (C.introl (M.M .Functor.F-id))
       ∙ M.μ-unitl ηₚ x
-    monad' .μ-assoc {x} =
+    monad' .has-is-monad .μ-assoc {x} =
         ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
      ∙∙ M.μ-assoc ηₚ x
      ∙∙ ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
