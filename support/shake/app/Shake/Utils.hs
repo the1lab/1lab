@@ -29,25 +29,13 @@ nodeCommand opts = command (opts ++ [AddPath [] ["node_modules/.bin"]])
 #endif
 
 -- | Construct a @CreateProcess@ for a node script.
--- See 'nodeCommand' for more information on the resolution
--- of node-related paths.
 nodeProc
   :: FilePath
   -- ^ Path to the node script.
   -> [String]
   -- ^ Arguments to pass to the node script.
   -> CreateProcess
-nodeProc path opts =
-  let nodeLibPath =
-#ifdef NODE_LIB_PATH
-        NODE_LIB_PATH
-#else
-        "node_modules/"
-#endif
-  in
-  (Process.proc "node" (path:opts))
-  { Process.env = Just [("NODE_PATH", nodeLibPath)]
-  }
+nodeProc path opts = Process.proc "node" (path:opts)
 
 -- | Read and decode JSON from a file, tracking it as a dependency.
 readJSONFile :: FromJSON b => FilePath -> Action b
