@@ -201,8 +201,8 @@ instance Hashable WikiLink where
   hashWithSalt s = hashWithSalt s . wikiLinkDest
 
 isWikiLink :: Inline -> Maybe WikiLink
-isWikiLink (Link attr contents (url, title))
-  | "wikilink" == title = pure $ WikiLink url contents attr
+isWikiLink (Link attr@(_id, cls, _attrs) contents (url, title))
+  | "wikilink" `elem` cls = pure $ WikiLink url contents attr
 isWikiLink _ = Nothing
 
 getWikiLinkUrl :: Text -> Action (Text, Text)

@@ -51,7 +51,7 @@ let
     gitMinimal nodePackages.sass nodejs
 
     # For building diagrams:
-    poppler_utils our-texlive
+    poppler-utils our-texlive
   ] ++ (if interactive then [
     sort-imports
   ] else [
