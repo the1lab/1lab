@@ -73,7 +73,7 @@ sets-projective→surjections-split
 ```
 
 <details>
-<summary>This is essentially a specialization of the of the proof that
+<summary>This is essentially a specialization of the proof that
 the axiom of choice is equivalent to every surjection splitting, so we
 will not dwell on the details.
 </summary>
