@@ -71,7 +71,7 @@ equiv→conservative
   → is-equivalence F
   → is-conservative F
 equiv→conservative F eqv =
-  is-ff→is-conservative {F = F} (is-equivalence→is-ff F eqv) _
+  is-ff→is-conservative F (is-equivalence→is-ff F eqv) _
 ```
 
 ## Conservative functors reflect (co)limits that they preserve
