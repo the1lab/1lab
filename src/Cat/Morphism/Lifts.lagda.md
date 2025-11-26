@@ -6,9 +6,12 @@ description: |
 <!--
 ```agda
 open import Cat.Instances.Shape.Interval
+open import Cat.Functor.Properties
 open import Cat.Morphism.Class
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning.FullyFaithful
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -378,4 +381,59 @@ a proposition.
     : is-monic g → v ∘ f ≡ g ∘ u → is-prop (Lifting C f g u v)
   right-monic→lift-is-prop g-mono vf=gu (l , _ , gl=v) (k , _ , gk=v) =
     Σ-prop-path! (g-mono l k (gl=v ∙ sym gk=v))
+```
+
+## Mapping liftings
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  (F : Functor C D)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Cat.Functor.Reasoning F
+```
+-->
+
+```agda
+  F-map-lifting
+    : ∀ {A B X Y} {f : C.Hom A B} {g : C.Hom X Y} {u : C.Hom A X} {v : C.Hom B Y}
+    → Lifting C f g u v
+    → Lifting D (F.₁ f) (F.₁ g) (F.₁ u) (F.₁ v)
+  F-map-lifting {f = f} (w , w∘f=u , g∘w=v) =
+    F.₁ w , F.collapse w∘f=u , F.collapse g∘w=v
+```
+
+
+## Reflecting liftings
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  (ι : Functor C D)
+  (ι-ff : is-fully-faithful ι)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module ι = Cat.Functor.Reasoning.FullyFaithful ι ι-ff
+```
+-->
+
+If $\iota : \cC \to \cD$ is a [[fully faithful functor]], then
+we can reflect liftings along $\iota$.
+
+```agda
+  ff→reflect-lifting
+    : ∀ {A B X Y} {f : C.Hom A B} {g : C.Hom X Y} {u : C.Hom A X} {v : C.Hom B Y}
+    → Lifting D (ι.₁ f) (ι.₁ g) (ι.₁ u) (ι.₁ v)
+    → Lifting C f g u v
+  ff→reflect-lifting {f = f} (w , w∘ι[f]=ι[u] , ι[g]∘w=ι[v]) =
+    ι.from w ,
+    ι.whackl w∘ι[f]=ι[u] ,
+    ι.whackr ι[g]∘w=ι[v]
 ```
