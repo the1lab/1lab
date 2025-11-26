@@ -220,7 +220,7 @@ adjoint.
 
   Forget-Kleisli-maps-is-conservative : is-conservative Forget-Kleisli-maps
   Forget-Kleisli-maps-is-conservative f-inv =
-    is-ff→is-conservative {F = Kleisli-maps→Kleisli M} (Kleisli-maps→Kleisli-is-ff M) _ $
+    is-ff→is-conservative (Kleisli-maps→Kleisli M) (Kleisli-maps→Kleisli-is-ff M) _ $
     super-inv→sub-inv _ $
     Forget-EM-is-conservative f-inv
 

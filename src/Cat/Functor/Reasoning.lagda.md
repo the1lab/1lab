@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Equiv
 open import 1Lab.Path
 
 open import Cat.Functor.Base using (module F-iso)
@@ -65,6 +66,17 @@ module _ (a≡id : a ≡ 𝒞.id) where
 
   intror : f ≡ f 𝒟.∘ F₁ a
   intror = 𝒟.intror elim
+
+module _ {X : 𝒞.Ob} {f : 𝒟.Hom (F₀ X) (F₀ X)} where
+
+  id-equivr : (f ≡ F₁ 𝒞.id) ≃ (f ≡ 𝒟.id)
+  id-equivr = ∙-post-equiv F-id
+
+  id-equivl : (F₁ 𝒞.id ≡ f) ≃ (𝒟.id ≡ f)
+  id-equivl = ∙-pre-equiv (sym F-id)
+
+  module id-equivr = Equiv id-equivr
+  module id-equivl = Equiv id-equivl
 ```
 
 ## Reassociations
@@ -133,6 +145,12 @@ popl p = 𝒟.pushr (F-∘ _ _) ∙ ap₂ 𝒟._∘_ p refl
 
 popr : F₁ b 𝒟.∘ f ≡ g → F₁ (a 𝒞.∘ b) 𝒟.∘ f ≡ F₁ a 𝒟.∘ g
 popr p = 𝒟.pushl (F-∘ _ _) ∙ ap₂ 𝒟._∘_ refl p
+
+pokel : g ≡ f 𝒟.∘ F₁ a → g 𝒟.∘ F₁ b ≡ f 𝒟.∘ F₁ (a 𝒞.∘ b)
+pokel p = ap₂ 𝒟._∘_ p refl ∙ 𝒟.pullr (sym (F-∘ _ _))
+
+poker : g ≡ F₁ b 𝒟.∘ f → F₁ a 𝒟.∘ g ≡ F₁ (a 𝒞.∘ b) 𝒟.∘ f
+poker p = ap₂ 𝒟._∘_ refl p ∙ 𝒟.pulll (sym (F-∘ _ _))
 
 shufflel : f 𝒟.∘ F₁ a ≡ g 𝒟.∘ h → f 𝒟.∘ F₁ (a 𝒞.∘ b) ≡ g 𝒟.∘ h 𝒟.∘ F₁ b
 shufflel p = popl p ∙ sym (𝒟.assoc _ _ _)
