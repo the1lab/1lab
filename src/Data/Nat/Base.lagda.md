@@ -252,6 +252,10 @@ infix 7 _<_ _≤_
 
 <!--
 ```agda
+_>_ : Nat → Nat → Type
+x > y = y < x
+infix 7 _>_
+
 ≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
 ≤-sucr 0≤x = 0≤x
 ≤-sucr (s≤s p) = s≤s (≤-sucr p)
