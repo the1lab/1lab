@@ -7,11 +7,15 @@ description: |
 ```agda
 open import Cat.Morphism.Factorisation.Orthogonal
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.WideSubcategory
+open import Cat.Functor.Conservative
+open import Cat.Direct.Generalized
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Morphism.Class
 open import Cat.Prelude
 
+open import Data.Wellfounded.Properties
 open import Data.Nat.Order
 open import Data.Nat.Base
 
@@ -64,7 +68,10 @@ subject to the following conditions:
       ; is-iso→in-R to is-iso→pos
       ; L-is-stable to neg-∘
       ; R-is-stable to pos-∘
+      ; L-subcat to Neg-subcat
+      ; R-subcat to Pos-subcat
       )
+      public
 ```
 
 - If $f : \cA(x, y)$ is invertible, then $\mathrm{dim}(x) = \mathrm{dim}(y)$.
@@ -173,6 +180,59 @@ We can also upgrade the stabilizer condition to an equivalence.
     open is-generalized-reedy has-generalized-reedy public
 ```
 -->
+
+## Reedy structures and direct categories
+
+```agda
+module _
+  {oc ℓc oa ℓa ℓ⁻ ℓ⁺}
+  {C : Precategory oc ℓc} {A : Precategory oa ℓa}
+  {Neg : Arrows A ℓ⁻} {Pos : Arrows A ℓ⁺} {dim : Precategory.Ob A → Nat}
+  (A-reedy : is-generalized-reedy A Neg Pos dim)
+  where
+  private
+    module A where
+      open Cat.Reasoning A public
+      open is-generalized-reedy A-reedy public
+    open is-generalized-direct
+```
+
+If $(\cA, \cA^{-}, \cA^{+}, \mathrm{dim})$ is a generalized Reedy structure,
+then the wide subcategory spanned by $\cA^{+}$ is a [[generalized direct category]].
+
+```agda
+  generalized-reedy→pos-direct
+    : is-generalized-direct (Wide A.Pos-subcat)
+```
+
+First, note that the inclusion functor $\iota : \cA^{+} \to \cA$ is
+[[pseudomonic]] and thus [[conservative]], as $\cA^{+}$ contains
+all isos. This means that if some $f : \cA^{+}(x, y)$ is non-invertible
+in $\cA^{+}$, then it must also be non-invertible in $\cA$.
+
+In particular, this means that $\mathrm{dim} : \cA_{0} \to \NN$ is
+strictly monotone with respect to the relation
+
+$$
+x \prec y := \exists(f : \cA^{+}(x, y)).\ \text{\(f\) is not invertible}
+$$
+
+as non-invertible maps in $\cA^{+}$ increase dimension. This lets us
+pull back well-foundedness of $\mathrm{dim}(x) < \mathrm{dim}(y)$ to
+$x \prec y$, which completes the proof.
+
+```agda
+  generalized-reedy→pos-direct .≺-wf =
+    reflect-wf <-wf dim $ rec! λ f ¬f-inv → A.dim-pos
+      (f .witness)
+      (¬f-inv ⊙ Forget-conservative)
+     where
+       Forget-conservative : is-conservative Forget-wide-subcat
+       Forget-conservative = pseudomonic→conservative
+         (is-pseudomonic-Forget-wide-subcat (A.is-iso→pos _))
+         _
+```
+
 
 
 ## Reflecting generalized Reedy structures
