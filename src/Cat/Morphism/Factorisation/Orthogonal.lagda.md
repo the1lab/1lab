@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.WideSubcategory
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Orthogonal
 open import Cat.Functor.Adjoint
@@ -85,6 +86,22 @@ a function $f : A \to B$ through the image of $f$.[^regular]
 [^regular]: This factorisation system is a special case of the
 ([[strong epimorphism]], [[monomorphism]]) orthogonal factorisation
 system on a [[regular category]].
+
+<!--
+```agda
+    L-subcat : Wide-subcat C ℓl
+    L-subcat .Wide-subcat.P f = f ∈ L
+    L-subcat .Wide-subcat.P-prop f = hlevel 1
+    L-subcat .Wide-subcat.P-id = is-iso→in-L C.id C.id-invertible
+    L-subcat .Wide-subcat.P-∘ = L-is-stable _ _
+
+    R-subcat : Wide-subcat C ℓr
+    R-subcat .Wide-subcat.P f = f ∈ R
+    R-subcat .Wide-subcat.P-prop f = hlevel 1
+    R-subcat .Wide-subcat.P-id = is-iso→in-R C.id C.id-invertible
+    R-subcat .Wide-subcat.P-∘ = R-is-stable _ _
+```
+-->
 
 <!--
 ```agda
