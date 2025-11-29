@@ -8,10 +8,12 @@ open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
 
+open import Order.Semilattice.Join
 open import Order.Diagram.Bottom
 open import Order.Diagram.Join
 open import Order.Diagram.Meet
 open import Order.Diagram.Top
+open import Order.Directed
 open import Order.Total
 open import Order.Base
 ```
@@ -56,18 +58,28 @@ We've also defined procedures for computing the [[meets]] and [[joins]]
 of pairs of natural numbers:
 
 ```agda
+Nat-min-is-meet : ∀ x y → is-meet Nat-poset x y (min x y)
+Nat-min-is-meet x y .meet≤l = min-≤l x y
+Nat-min-is-meet x y .meet≤r = min-≤r x y
+Nat-min-is-meet x y .greatest = min-univ x y
+
+Nat-max-is-join : ∀ x y → is-join Nat-poset x y (max x y)
+Nat-max-is-join x y .l≤join = max-≤l x y
+Nat-max-is-join x y .r≤join = max-≤r x y
+Nat-max-is-join x y .least  = max-univ x y
+```
+
+<!--
+```agda
 Nat-meets : ∀ x y → Meet Nat-poset x y
-Nat-meets x y .glb                = min x y
-Nat-meets x y .has-meet .meet≤l   = min-≤l x y
-Nat-meets x y .has-meet .meet≤r   = min-≤r x y
-Nat-meets x y .has-meet .greatest = min-univ x y
+Nat-meets x y .glb = min x y
+Nat-meets x y .has-meet = Nat-min-is-meet x y
 
 Nat-joins : ∀ x y → Join Nat-poset x y
-Nat-joins x y .lub              = max x y
-Nat-joins x y .has-join .l≤join = max-≤l x y
-Nat-joins x y .has-join .r≤join = max-≤r x y
-Nat-joins x y .has-join .least  = max-univ x y
+Nat-joins x y .lub = max x y
+Nat-joins x y .has-join = Nat-max-is-join x y
 ```
+-->
 
 It's straightforward to show that this order is _bounded below_, since
 we have $0 \le x$ for any $x$.
@@ -77,6 +89,22 @@ Nat-bottom : Bottom Nat-poset
 Nat-bottom .bot          = 0
 Nat-bottom .has-bottom x = 0≤x
 ```
+
+This means that the ordering forms a [[join semilattice]].
+
+```agda
+Nat-is-join-semilattice : is-join-semilattice Nat-poset
+Nat-is-join-semilattice .is-join-semilattice._∪_ = max
+Nat-is-join-semilattice .is-join-semilattice.∪-joins = Nat-max-is-join
+Nat-is-join-semilattice .is-join-semilattice.has-bottom = Nat-bottom
+```
+
+<!--
+```agda
+Nat-is-upwards-directed : is-upwards-directed Nat-poset
+Nat-is-upwards-directed = is-join-slat→is-upwards-directed Nat-is-join-semilattice
+```
+-->
 
 However, it's _not_ bounded above:
 
