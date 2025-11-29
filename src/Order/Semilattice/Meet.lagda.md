@@ -144,6 +144,7 @@ record
 
 open is-meet-slat-hom
 
+{-# INLINE is-meet-slat-hom.constructor #-}
 unquoteDecl H-Level-is-meet-slat-hom = declare-record-hlevel 1 H-Level-is-meet-slat-hom (quote is-meet-slat-hom)
 ```
 -->
