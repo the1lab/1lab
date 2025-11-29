@@ -321,10 +321,10 @@ $f = r \circ l$ and $R$ is stable, so is $f$!
 
 ## Reflecting orthogonal factorisations systems
 
-Let $\cD$ be a category equipped with an $(L, R)$ orthogonal factorisation system,
+Let $\cD$ be a category equipped with an orthogonal factorisation system $(L, R)$,
 and $\iota : \cC \to \cD$ be a [[reflective subcategory]] of $\cD$ with reflector
-$r \dashv \iota$. If $L \subseteq (\iota \circ r)^{*}(L)$ and $R \subseteq (\iota \circ r)^{*}(R)$,
-then $(\iota^{*}{L}, \iota^{*}(R)$ forms an orthogonal factorisation system on $\cC$.
+$r \dashv \iota$. If $L \subseteq (\iota \circ r)^{*}L$ and $R \subseteq (\iota \circ r)^{*}R$,
+then $(\iota^{*}L, \iota^{*}R)$ forms an orthogonal factorisation system on $\cC$.
 
 <!--
 ```agda
@@ -438,7 +438,7 @@ functors reflect orthogonality.
 
 The final step is the most difficult. Let $f : \cC(a, b)$ be a morphism in $\cC$:
 we somehow need to factor it into a $u : \cC(a, x)$ and $v : \cC(x, b)$
-$\iota(u) \in L$ and $\iota(v) \in R$.
+with $\iota(u) \in L$ and $\iota(v) \in R$.
 
 We start by factoring $\iota(f)$ into a $u : \cD(\iota(a), x)$ and $v : \cD(x, \iota(b))$.
 We can take an adjoint transpose of $u$ to find a map $\cC(r(x), b)$, but this same trick

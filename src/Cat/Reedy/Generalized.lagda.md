@@ -91,7 +91,6 @@ subject to the following conditions:
 [^1]: In the presence of [[excluded middle]], the previous three axioms
   imply that every map $f : \cA(x, y)$ with $f \in \cA^{-} \cap \cA^{+}$
   must be invertible, as otherwise we'd have $\mathrm{dim}(x) < \mathrm{dim}(y) < \mathrm{dim}(x)$.
-
   However, in constructive foundations the best we can do is show that $f$ is
   not non-invertible, which is why we explicitly require this as an axiom.
 
@@ -119,7 +118,7 @@ subject to the following conditions:
 ```
 
 The purpose of this final axiom is to ensure that isomorphisms in $\cA$ view
-morphisms in $\cA^{-1}$ as [[epimorphisms]].
+morphisms in $\cA^{-}$ as [[epimorphisms]].
 
 ```agda
     iso-neg-epic
@@ -283,8 +282,8 @@ module _
 ```
 -->
 
-Our first goal is to show that $(\iota^{*}(\cA^{-}), \iota^{*}(\cA^{+})$
-forms an orthogonal factorisations system on $\cC$. This follows from
+Our first goal is to show that $(\iota^{*}\cA^{-}, \iota^{*}\cA^{+})$
+forms an orthogonal factorisation system on $\cC$. This follows from
 some general results about reflecting OFSs onto reflective subcategories.
 
 ```agda

@@ -112,9 +112,9 @@ module _ {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd} w
 ```
 -->
 
-We $F : \cC \to \cD$ is a functor and $S \subseteq \cD$ is a class of morphisms,
-then we can form a class of morphisms of $F^{*}(S) \subseteq \cC$ spanned by all
-morphisms of $f : \cC(x, y)$ such that $F(f) \in S$.
+When $F : \cC \to \cD$ is a functor and $S \subseteq \cD$ is a class of morphisms,
+then we can form a class of morphisms $F^{*}(S) \subseteq \cC$ spanned by all
+morphisms of the form $f : \cC(x, y)$ such that $F(f) \in S$.
 
 ```agda
   F-restrict-arrows : ∀ {κ} → Functor C D → Arrows D κ → Arrows C κ
