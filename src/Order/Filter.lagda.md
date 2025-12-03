@@ -56,6 +56,12 @@ record Filter {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
     F : Upper-set P
     has-is-filter : is-filter F
 
+  open Monotone F
+    renaming
+    ( pres-≤ to F-≤
+    )
+    public
+
 open Filter
 ```
 
@@ -197,4 +203,82 @@ Moreover, every filter on a meet semilattice arises this way.
     ; lower-bound = λ (x , x∈F) (y , y∈F) →
       inc ((x ∩ y , F-meet-hom .∩-≤ x y (x∈F , y∈F)) , ∩≤l , ∩≤r)
     }
+```
+
+## Filter bases
+
+<!--
+```agda
+module _ {o ℓ} {P : Poset o ℓ} where
+  open Poset P
+```
+-->
+
+:::{.definition #filter-base}
+An $I$-indexed family $x_i : I \to P$ is a **filter base** of a filter
+$$F \subseteq P$$ if:
+
+- $x_i \in F$ for every $i : I$, and
+- if $y \in F$ then there [[merely]] exists some $i : I$ such that $x_i \leq y$.
+:::
+
+
+```agda
+  record is-filter-base {κ : Level} {Ix : Type κ} (F : Filter P) (xᵢ : Ix → ⌞ P ⌟) : Type (o ⊔ ℓ ⊔ κ) where
+    no-eta-equality
+    private
+      module F = Filter F
+    field
+      base∈F : ∀ (i : Ix) → xᵢ i ∈ F
+      up-closed : ∀ (y : ⌞ P ⌟) → y ∈ F → ∃[ i ∈ Ix ] (xᵢ i ≤ y)
+```
+
+More succinctly, $x_i$ is a filter base of $F$ if $F$ is the upwards closure of $x_i$.
+
+```agda
+    F-is-up-closure : ∀ y → y ∈ F ≃ (∃[ i ∈ Ix ] (xᵢ i ≤ y))
+    F-is-up-closure y = prop-ext! (up-closed y) (rec! λ i xᵢ≤y → F.F-≤ xᵢ≤y (base∈F i))
+```
+
+<!--
+```agda
+  {-# INLINE is-filter-base.constructor #-}
+  unquoteDecl H-Level-is-filter-base =
+    declare-record-hlevel 1 H-Level-is-filter-base (quote is-filter-base)
+```
+-->
+
+```agda
+  is-up-closure→is-filter-base
+    : ∀ {κ} {Ix : Type κ} {F : Filter P}
+    → (xᵢ : Ix → ⌞ P ⌟)
+    → (∀ y → y ∈ F ≃ (∃[ i ∈ Ix ] (xᵢ i ≤ y)))
+    → is-filter-base F xᵢ
+  {-# INLINE is-up-closure→is-filter-base #-}
+  is-up-closure→is-filter-base xᵢ F-is-up = record
+    { base∈F = λ i → F-is-up.from (xᵢ i) (pure (i , ≤-refl))
+    ; up-closed = λ y y∈F → F-is-up.to y y∈F
+    }
+    where
+      module F-is-up y = Equiv (F-is-up y)
+```
+
+<!--
+```agda
+  is-up-closure≃is-filter-base
+    : ∀ {κ} {Ix : Type κ} {F : Filter P}
+    → (xᵢ : Ix → ⌞ P ⌟)
+    → (∀ y → y ∈ F ≃ (∃[ i ∈ Ix ] (xᵢ i ≤ y))) ≃ is-filter-base F xᵢ
+  is-up-closure≃is-filter-base xᵢ = prop-ext!
+      (is-up-closure→is-filter-base xᵢ)
+      is-filter-base.F-is-up-closure
+```
+-->
+
+Every principal filter $\uparrow x$ has a filter base consisting of only of element $x$.
+
+```agda
+  ↑ᶠ-filter-base : ∀ (x : ⌞ P ⌟) → is-filter-base {Ix = ⊤} (↑ᶠ x) (λ _ → x)
+  ↑ᶠ-filter-base x .is-filter-base.base∈F _ = inc ≤-refl
+  ↑ᶠ-filter-base x .is-filter-base.up-closed = elim! λ y x≤y → inc (tt , x≤y)
 ```
