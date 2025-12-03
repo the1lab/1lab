@@ -22,7 +22,7 @@ module Order.Directed where
 
 # Directed sets
 
-:::{.definition #upwards-directed-set}
+:::{.definition #upwards-directed-set alias="upwards-directed"}
 A [[poset]] $P$ is **upwards directed** if it is [[merely]] inhabited
 and every pair of elements $x, y : P$ merely has a (not necessarily least)
 upper bound.
@@ -94,7 +94,7 @@ is-join-slat→is-upwards-directed {L = L} L-slat = record
     open is-join-semilattice L-slat
 ```
 
-:::{.definition #downwards-directed-set}
+:::{.definition #downwards-directed-set alias="downwards-directed"}
 Dually, a [[poset]] $P$ is **downwards directed** if it is [[merely]] inhabited
 and every pair of elements $x, y : P$ merely has a (not necessarily least)
 lower bound.
