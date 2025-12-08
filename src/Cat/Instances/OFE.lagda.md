@@ -27,7 +27,7 @@ y$ means that $x$ and $y$ are "within distance $2^{-n}$ of each other".
 The axioms of an OFE are essentially that
 
 - The maximal distance between two points is $1$, i.e., $x
-\within{n} y$ is the total relation;
+\within{0} y$ is the total relation;
 
 - Points that are within some distance $d$ of each other are also within
 $d'$, for any $d' \le d$;
@@ -38,7 +38,7 @@ $d'$, for any $d' \le d$;
 We remark that the term OFE generally stands for ordered family of
 _equivalences_, rather than _equivalence relations_; However, this
 terminology is mathematically incorrect: there is no meaningful sense in
-which an OFE is a family $I \to (A \equiv B)$.
+which an OFE is a family $I \to (A \simeq B)$.
 
 To preserve the connection with the literature, we shall maintain the
 acronym "OFE"; Keep in mind that we do it with disapproval.
@@ -293,8 +293,8 @@ Lists X-set .has-is-ofe .step n x y p = steps x y n p where
     ap₂ _∷_ (ap (head x) p) (steps xs ys n (ap tail p))
 ```
 
-Since the rest of this proof is a simple case bash[^5 cases are
-reflexivity, 2 assume an impossibility], we've hidden it on the website.
+Since the rest of this proof is a simple case bash,^[5 cases are
+reflexivity, 2 assume an impossibility.] we've hidden it on the website.
 You can choose to display comments on the side bar, or check out this
 module on GitHub.
 
