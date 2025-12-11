@@ -111,7 +111,7 @@ record is-downwards-directed {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
 ```
 
 If $P$ is downward directed, then every finite subset $S \subseteq P$
-have a (not necessarily greatest) lower bound.
+has a (not necessarily greatest) lower bound.
 
 ```agda
   fin-lower-bound
