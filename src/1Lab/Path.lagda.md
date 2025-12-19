@@ -603,6 +603,22 @@ to inverting either axis, or swapping them.
   transpose α i j = α j i
 ```
 
+<!--
+```agda
+transposeP
+  : ∀ {ℓ} {A : I → I → Type ℓ}
+    {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
+    {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
+    {p : PathP (λ i → A i i0) a₀₀ a₁₀}
+    {q : PathP (λ j → A i0 j) a₀₀ a₀₁}
+    {s : PathP (λ j → A i1 j) a₁₀ a₁₁}
+    {r : PathP (λ i → A i i1) a₀₁ a₁₁}
+  → SquareP A p q s r
+  → SquareP (λ i j → A j i) q p r s
+transposeP α i j = α j i
+```
+-->
+
 ### Summary of interval algebra
 
 We'll conclude this section with a complete listing of the rules that
@@ -1504,10 +1520,7 @@ expresses an equation between paths, we can read the type of
 ∙∙-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
           → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
           → Square (sym p) q (p ∙∙ q ∙∙ r) r
-∙∙-filler p q r i j = hfill (∂ j) i λ where
-  k (j = i0) → p (~ k)
-  k (j = i1) → r k
-  k (k = i0) → q j
+∙∙-filler p q r i j = hfill (∂ j) i (∙∙-sys.sys p q r j)
 ```
 
 We can define the ordinary, single composition by taking `p = refl`, as
@@ -1570,24 +1583,26 @@ _∙P_ {B = B} {x' = x'} {p = p} {q = q} p' q' i =
     j (j = i0) → p' i
 ```
 
-We also define versions of `_∙P_`{.Agda} specialised to composing with
-a non-dependent path on one side, abstracting the common pattern of
-a two-dimensional `hcomp`{.Agda} with one side constant.
+We also define a sort of "whiskering" operation for composing a dependent
+path (in the middle) with two non-dependent paths on the sides.
 
 ```agda
+_◁◁_▷▷_
+  : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ a₁' : A i1}
+  → a₀ ≡ a₀' → PathP A a₀' a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+(p ◁◁ q ▷▷ r) i = hcomp (∂ i) sys module _◁◁_▷▷_ where
+  sys : ∀ j → Partial (∂ i ∨ ~ j) _
+  sys j (i = i0) = p (~ j)
+  sys j (i = i1) = r j
+  sys j (j = i0) = q i
+
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
     → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
-(p ◁ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → q i1
-  j (j = i0) → q i
+p ◁ q = p ◁◁ q ▷▷ refl
 
 _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
     → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
-(p ▷ q) i = hcomp (∂ i) λ where
-  j (i = i0) → p i0
-  j (i = i1) → q j
-  j (j = i0) → p i
+p ▷ q = refl ◁◁ p ▷▷ q
 
 infixr 31 _◁_
 infixl 32 _▷_
@@ -1595,6 +1610,14 @@ infixl 32 _▷_
 
 <!--
 ```agda
+{-# DISPLAY hcomp _ (_◁◁_▷▷_.sys {ℓ} {A} {_} {_} {_} {_} p q r i) = _◁◁_▷▷_ {ℓ} {A} p q r i #-}
+
+◁◁-▷▷-filler
+  : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ a₁' : A i1}
+  → (p : a₀ ≡ a₀') (q : PathP A a₀' a₁) (r : a₁ ≡ a₁')
+  → SquareP (λ i j → A j) (sym p) q (p ◁◁ q ▷▷ r) r
+◁◁-▷▷-filler p q r j i = hfill (∂ i) j (_◁◁_▷▷_.sys p q r i)
+
 ∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
           → (p : x ≡ y) (q : y ≡ z)
           → Square (sym p) q (p ∙ q) refl

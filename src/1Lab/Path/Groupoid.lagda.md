@@ -175,6 +175,16 @@ for the composition operation.
   ∙-idl p = sym (∙-filler' refl p)
 ```
 
+<!--
+```agda
+  ▷-idr : ∀ {B : I → Type ℓ} {x y} (p : PathP B x y) → p ▷ refl ≡ p
+  ▷-idr p = sym (◁◁-▷▷-filler refl p refl)
+
+  ◁-idl : ∀ {B : I → Type ℓ} {x y} (p : PathP B x y) → refl ◁ p ≡ p
+  ◁-idl p = sym (◁◁-▷▷-filler refl p refl)
+```
+-->
+
 For associativity, we use both:
 
 ```agda
