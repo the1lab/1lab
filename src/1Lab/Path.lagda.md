@@ -188,9 +188,9 @@ typing rules, if that helps.
 
 $$
 \frac{
-  \Gamma, i : \bI \vdash e : A \quad
-  \Gamma \vdash e(\iZ) = a : A(\iZ) \quad
-  \Gamma \vdash e(\iO) = b : A(\iO) \quad
+  \Gamma, i : \bI \vdash e : A(i) \quad
+  \Gamma \vdash e[\iZ / i] = a : A(\iZ) \quad
+  \Gamma \vdash e[\iO / i] = b : A(\iO) \quad
 }{
   \Gamma \vdash (\lam{i}{e}) : \PathP{A}{a}{b}
 }
@@ -871,7 +871,7 @@ of the path. When $i = \iZ$, we have exactly `transport refl x`; but
 when $i = \iO$, the entire `transp`{.Agda} computes away, and we're left
 with just $x$. In fact, the proof of `transport-refl`{.Agda} generalises
 to a natural operation computing a dependent path: we call it the
-*filler* of the transport, since it *fills* a line $\PathP{p}{x}{\transport{p}{x}}$.
+*filler* of the transport, since it *fills* a line $\PathP{p}{x}{(\transport{p}{x})}$.
 
 ```agda
 transport-filler
