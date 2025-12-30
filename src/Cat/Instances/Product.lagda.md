@@ -135,26 +135,6 @@ _nt×_ α β .is-natural (c , d) (c' , d') (f , g) = Σ-pathp
 ```
 -->
 
-## Opposites
-
-As one might expect, taking products of categories commutes with taking
-[[opposites|opposite category]].
-
-```agda
-[C×C]^op≡[C^op×C^op] : ∀ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} → (C ×ᶜ D)^op ≡ C ^op ×ᶜ D ^op
-[C×C]^op≡[C^op×C^op] {C = C} {D} i = precat i where
-  open Precategory
-  precat : (C ×ᶜ D)^op ≡ C ^op ×ᶜ D ^op
-  precat i .Ob = C .Ob × D .Ob
-  precat i .Hom (a , a') (b , b') = Hom C b a × Hom D b' a'
-  precat i .Hom-set (a , a') (b , b') = hlevel 2
-  precat i .id = C .id , D .id
-  precat i ._∘_ (f , f') (g , g') = (C ∘ g) f , (D ∘ g') f'
-  precat i .idr (f , f') j = C .idl f j , D .idl f' j
-  precat i .idl (f , f') j = C .idr f j , D .idr f' j
-  precat i .assoc (f , f') (g , g') (h , h') j = sym (C .assoc h g f) j , sym (D .assoc h' g' f') j
-```
-
 ## Univalence
 
 Isomorphisms in functor categories admit a short description, too: They
