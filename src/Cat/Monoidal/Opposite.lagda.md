@@ -59,9 +59,6 @@ _^mop .unitor-r = to-natural-iso record where
   natural x y f = Isoⁿ.from C.unitor-r .is-natural y x f
 
 _^mop .associator = to-natural-iso record where
-  iso : (x y z : C.Ob) → (x C.⊗ y) C.⊗ z C.≅ x C.⊗ (y C.⊗ z)
-  iso x y z = (isoⁿ→iso C.associator) (x , y , z)
-
   eta (x , y , z) = C.α← x y z
   inv (x , y , z) = C.α→ x y z
   eta∘inv (x , y , z) = C.invl C.α≅
