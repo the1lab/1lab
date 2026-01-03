@@ -681,7 +681,7 @@ all functions: if we have $f : A \to B$, and $x = y : A$, then also
 $f(x) = f(y)$. In our homotopical setting, we must generalise this to
 talking about *paths* $p : x \is y$, and we must also name the resulting
 $f(x) \is f(y)$. In cubical type theory, our homotopical intuition for
-paths provides the both the interpretation *and* implementation of this
+paths provides both the interpretation *and* implementation of this
 principle: it is the *composition* of a path $p : x \is y$ with a
 *continuous* function $f : A \to B$.
 
