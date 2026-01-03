@@ -39,7 +39,7 @@ equality we construct an [[isomorphism of precategories]].
 
 ×^op-is-iso : is-precat-iso ×^op→
 ×^op-is-iso = iso has-is-ff has-is-iso where 
-  has-is-ff : Cat.Functor.Properties.is-fully-faithful ×^op→
+  has-is-ff : is-fully-faithful ×^op→
   has-is-ff = id-equiv
 
   has-is-iso : is-equiv (F₀ ×^op→)
