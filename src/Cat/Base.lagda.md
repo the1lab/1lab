@@ -176,20 +176,10 @@ opposite precategory $C\op$. What we have to show is - by the type of
 \circ_{op} h$. This computes into $(h \circ g) \circ f = h \circ (g
 \circ f)$ - which is exactly what `sym (assoc C h g f)` shows!
 
-```agda
-C^op^op≡C : ∀ {o ℓ} {C : Precategory o ℓ} → C ^op ^op ≡ C
-C^op^op≡C {C = C} i = precat i where
-  open Precategory
-  precat : C ^op ^op ≡ C
-  precat i .Ob = C .Ob
-  precat i .Hom = C .Hom
-  precat i .Hom-set = C .Hom-set
-  precat i .id = C .id
-  precat i ._∘_ = C ._∘_
-  precat i .idr = C .idr
-  precat i .idl = C .idl
-  precat i .assoc = C .assoc
-```
+For `_^op`{.Agda} to form a good basis for duality, it is important that
+the operation be _involutive_. This, and other aspects of duality of
+categories, is shown under [[duality of precategories]].
+
 
 ## The precategory of Sets {defines="category-of-sets"}
 

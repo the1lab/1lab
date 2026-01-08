@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Functor.Equivalence
 open import Cat.Functor.Equivalence.Path
+open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
