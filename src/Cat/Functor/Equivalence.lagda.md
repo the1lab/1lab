@@ -27,7 +27,7 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences {defines="equivalence-of-categories equivalences-of-categories adjoint-equivalence"}
+# Equivalences {defines="equivalence-of-categories equivalences-of-categories adjoint-equivalence equivalence-of-precategories"}
 
 An adjunction $F \vdash G$ is an **adjoint equivalence**, or an
 **equivalence of (pre)categories**, if the unit and counit natural
