@@ -1,9 +1,8 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Properties
+open import Cat.Functor.Equivalence.Path
 open import Cat.Instances.Product
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -11,7 +10,7 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Instances.Product.Duality {o₁ h₁ o₂ h₂ : Level} 
+module Cat.Instances.Product.Duality {o₁ h₁ o₂ h₂ : Level}
   {C : Precategory o₁ h₁} {D : Precategory o₁ h₁}
   where
 ```
@@ -27,26 +26,28 @@ open _=>_
 # Duality of product categories {defines="opposite-product-category"}
 
 As one might expect, taking the [[opposite category]] of a [[product category]]
-agrees with the product of opposite categories. Rather than showing 
+agrees with the product of opposite categories. Rather than showing
 equality we construct an [[isomorphism of precategories]].
 
 ```agda
 ×^op→ : Functor ((C ×ᶜ D)^op) (C ^op ×ᶜ D ^op)
 ×^op→ .F₀ x = x
-×^op→ .F₁ f = f 
+×^op→ .F₁ f = f
 ×^op→ .F-id = refl
 ×^op→ .F-∘ f g = refl
 
 ×^op-is-iso : is-precat-iso ×^op→
-×^op-is-iso = iso has-is-ff has-is-iso where 
-  has-is-ff : is-fully-faithful ×^op→
-  has-is-ff = id-equiv
-
-  has-is-iso : is-equiv (F₀ ×^op→)
-  has-is-iso = id-equiv
+×^op-is-iso = iso id-equiv id-equiv
 ```
 
-This means, in particular, that it is an adjoint equivalence:
+This induces a [[path between precategories]]
+
+```agda
+×^op-path : (C ×ᶜ D)^op ≡ C ^op ×ᶜ D ^op
+×^op-path = Precategory-path ×^op→ ×^op-is-iso
+```
+
+and an [[equivalence of precategories]]
 
 ```agda
 ×^op-is-equiv : is-equivalence ×^op→

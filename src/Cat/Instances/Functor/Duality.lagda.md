@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Equivalence.Path
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
@@ -57,7 +58,14 @@ op-functor-is-iso = isom where
     (λ x → Functor-path (λ x → refl) (λ x → refl))
 ```
 
-This means, in particular, that it is an adjoint equivalence:
+This induces a [[path between precategories]]
+
+```agda
+op-functor-path : Cat[ C , D ] ^op ≡ Cat[ C ^op , D ^op ]
+op-functor-path = Precategory-path op-functor→ op-functor-is-iso
+```
+
+and an [[equivalence of precategories]]
 
 ```agda
 op-functor-is-equiv : is-equivalence (op-functor→ {C = C} {D = D})
@@ -74,9 +82,9 @@ op-functor←→ {C = C} {D = D} = Functor-path (λ _ → Functor-path (λ _ →
     in Regularity.precise! ((D.id D.∘ f .η x) D.∘ D.id ≡⟨ cat! D ⟩ f .η x ∎)
 ```
 
-As an equivalence of _endofunctor categories_ $[\cC,\cC]\op \cong [\cC\op,\cC\op]$
-this maps the identity functor `Id`.{.Agda} on $\cC$ to the 
-correspponding one on $\cC\op$.
+As an equivalence of _endofunctor categories_ $[\cC,\cC]\op \cong
+[\cC\op,\cC\op]$ this maps the identity functor `Id`.{.Agda} on $\cC$ to
+the corresponding one on $\cC\op$.
 
 ```agda
 op[Id]≡Id : Functor.op (Id {C = C}) ≡ Id
