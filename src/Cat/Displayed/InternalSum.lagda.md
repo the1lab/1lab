@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Displayed.Instances.DisplayedFamilies
+open import Cat.Displayed.Functor.Adjoint
 open import Cat.Displayed.Instances.Slice
-open import Cat.Displayed.Adjoint
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
