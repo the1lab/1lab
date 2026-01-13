@@ -1,11 +1,15 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
 open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
+
+open Displayed-functor
+open Functor
 ```
 -->
 
@@ -33,14 +37,10 @@ module _
 
 ```agda
   ∫ᶠ : Functor (∫ ℰ) (∫ ℱ)
-  ∫ᶠ = record where
-    open Functor F
-    open Displayed-functor F'
-
-    F₀ (x , x') = F₀ x , F₀' x'
-    F₁ (∫hom f f') = ∫hom (F₁ f) (F₁' f')
-    F-id = ∫Hom-path ℱ F-id F-id'
-    F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ (F-∘ f g) F-∘'
+  ∫ᶠ .F₀ (x , x') = ₀ F x , ₀' F' x'
+  ∫ᶠ .F₁ (∫hom f f') = ∫hom (₁ F f) (₁' F' f')
+  ∫ᶠ .F-id = ∫Hom-path ℱ (F .F-id) (F' .F-id')
+  ∫ᶠ .F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ (F .F-∘ f g) (F' .F-∘')
 ```
 
 The total functor respects the projection `πᶠ`{.Agda} to the base
@@ -78,12 +78,24 @@ module _
   {oa ℓa oe ℓe}
   {A : Precategory oa ℓa} {ℰ : Displayed A oe ℓe}
   where
+  private
+    module A = Precategory A
+    module ℰ = Displayed ℰ
+    module ∫ℰ = Precategory (∫ ℰ)
 ```
 -->
 
 ```agda
-  ∫ᶠId'≡Id : ∫ᶠ (Id' {ℰ = ℰ}) ≡ Id
-  ∫ᶠId'≡Id = Functor-path (λ x → refl) λ f → refl
+  ∫ᶠId'≅Id : ∫ᶠ (Id' {ℰ = ℰ}) ≅ⁿ Id
+  ∫ᶠId'≅Id = to-natural-iso record where
+    eta x = ∫ℰ.id
+    inv x = ∫ℰ.id
+    eta∘inv x = ∫ℰ.idl ∫ℰ.id
+    inv∘eta x = ∫ℰ.idl ∫ℰ.id
+    natural x y f =
+      f ∫ℰ.∘ ∫ℰ.id  ≡⟨ ∫ℰ.idr f ⟩
+      f             ≡˘⟨ ∫ℰ.idl f ⟩
+      ∫ℰ.id ∫ℰ.∘ f  ∎
 ```
 
 Similarly, the composite of two total functors is the total of the
@@ -98,12 +110,29 @@ module _
   {F : Functor B C} {G : Functor A B}
   {F' : Displayed-functor F ℱ 𝒢} {G' : Displayed-functor G ℰ ℱ}
   where
+  private module A = Precategory A
+  private module ℰ = Displayed ℰ
+  private module ∫ℰ = Precategory (∫ ℰ)
+  private module B = Precategory B
+  private module ℱ = Displayed ℱ
+  private module ∫ℱ = Precategory (∫ ℱ)
+  private module C = Precategory A
+  private module 𝒢 = Displayed 𝒢
+  private module ∫𝒢 = Precategory (∫ 𝒢)
 ```
 -->
 
 ```agda
-  ∫ᶠ∘ : ∫ᶠ (F' F∘' G') ≡ ∫ᶠ F' F∘ ∫ᶠ G'
-  ∫ᶠ∘ = Functor-path (λ x → refl) λ f → refl
+  ∫ᶠ∘ : ∫ᶠ (F' F∘' G') ≅ⁿ ∫ᶠ F' F∘ ∫ᶠ G'
+  ∫ᶠ∘ = to-natural-iso record where
+    eta x = ∫𝒢.id
+    inv x = ∫𝒢.id
+    eta∘inv x = ∫𝒢.idl ∫𝒢.id
+    inv∘eta x = ∫𝒢.idl ∫𝒢.id
+    natural x y f =
+      ₁ (∫ᶠ F' F∘ ∫ᶠ G') f ∫𝒢.∘ ∫𝒢.id ≡⟨ ∫𝒢.idr (₁ (∫ᶠ F' F∘ ∫ᶠ G') f) ⟩
+      ₁ (∫ᶠ (F' F∘' G')) f            ≡˘⟨ ∫𝒢.idl (₁ (∫ᶠ F' F∘ ∫ᶠ G') f) ⟩
+      ∫𝒢.id ∫𝒢.∘ ₁ (∫ᶠ (F' F∘' G')) f ∎
 ```
 
 ## Total natural transformations {defines="total-natural-transformation"}
