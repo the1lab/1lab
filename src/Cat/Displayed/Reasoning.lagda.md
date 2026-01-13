@@ -476,6 +476,19 @@ These are the displayed counterparts to the
 [identity morphism combinators]: Cat.Reasoning.html#identity-morphisms
 
 ```agda
+abstract
+  idr2' : ∀ {x' y' z'} (f' : Hom[ f ] y' z') (g' : Hom[ g ] x' y')
+    → f' ∘' g' ∘' id' ≡[ idr2 f g ] f' ∘' g'
+  idr2' f' g' = cast[] $ apd (λ i → f' ∘'_) (idr' g')
+
+  idl2' : ∀ {x' y' z'} (f' : Hom[ f ] y' z') (g' : Hom[ g ] x' y')
+    → (id' ∘' f') ∘' g' ≡[ idl2 f g ] f' ∘' g'
+  idl2' f' g' = cast[] $ apd (λ i →  _∘' g') (idl' f')
+
+  idlr' : ∀ {y' z'} (f' : Hom[ f ] y' z')
+    → id' ∘' f' ∘' id' ≡[ idlr f ] f'
+  idlr' f' = cast[] $ idr2' id' f' ∙[] idl' f'
+
 module _ {a' : Hom[ a ] x' x'}
          (p : a ≡ id) (p' : a' ≡[ p ] id') where abstract
   eliml' : ∀ {f' : Hom[ f ] y' x'} → {q : a ∘ f ≡ f} → a' ∘' f' ≡[ q ] f'

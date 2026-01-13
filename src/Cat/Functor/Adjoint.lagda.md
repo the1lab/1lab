@@ -50,7 +50,7 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
-:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint unit counit"}
+:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor adjoint unit counit adjoint-functors"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
