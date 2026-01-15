@@ -200,21 +200,6 @@ substᵢ-filler-set
   → ∀ x → x ≡ substᵢ P p x
 substᵢ-filler-set P is-set-A p x = subst (λ q → x ≡ substᵢ P q x) (is-set→is-setᵢ is-set-A _ _ reflᵢ p) refl
 
-record Recallᵢ
-  {a b} {A : Type a} {B : A → Type b}
-  (f : (x : A) → B x) (x : A) (y : B x)
-  : Type (a ⊔ b)
-  where
-    constructor ⟪_⟫ᵢ
-    field
-      eq : f x ≡ᵢ y
-
-recallᵢ
-  : ∀ {a b} {A : Type a} {B : A → Type b}
-  → (f : (x : A) → B x) (x : A)
-  → Recallᵢ f x (f x)
-recallᵢ f x = ⟪ reflᵢ ⟫ᵢ
-
 symᵢ : ∀ {a} {A : Type a} {x y : A} → x ≡ᵢ y → y ≡ᵢ x
 symᵢ reflᵢ = reflᵢ
 
