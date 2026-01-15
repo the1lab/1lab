@@ -233,7 +233,7 @@ emitAgda (CompileA tcState _) modName = do
 
   ((), _) <- traced "generating html"
     . runTCM initEnv tcState
-    . withScope_ (iInsideScope iface)
+    . evalWithScope (iInsideScope iface)
     . locallyTC eActiveBackendName (const $ Just "HTML") $ do
       compileOneModule basepn opts iface
 
