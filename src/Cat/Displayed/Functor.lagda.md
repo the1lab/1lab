@@ -513,6 +513,33 @@ module
       → Extensional (F' =[ α ]=> G') ℓr
     Extensional-displayed-natural-transformation {α = α} {F' = F'} {G' = G'} ⦃ e ⦄ =
       injection→extensional! {f = _=[_]=>_.η' {α = α}} (λ p → Iso.injective make-=[]=>-iso (Σ-prop-path! p)) e
+
+  open _=[_]=>_
+
+  Nat'-pathp : {F₁ F₂ G₁ G₂ : Functor A B} 
+             → {F₁' : Displayed-functor F₁ ℰ ℱ} 
+             → {G₁' : Displayed-functor G₁ ℰ ℱ}
+             → {F₂' : Displayed-functor F₂ ℰ ℱ}
+             → {G₂' : Displayed-functor G₂ ℰ ℱ}
+             → {α : F₁ => G₁} {β : F₂ => G₂}
+             → {α' : F₁' =[ α ]=> G₁'} {β' : F₂' =[ β ]=> G₂'}
+             → (p : F₁ ≡ F₂) (q : G₁ ≡ G₂) 
+             → (r : PathP (λ i → p i => q i) α β)
+             → (p' : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F₁' F₂')
+             → (q' : PathP (λ i → Displayed-functor (q i) ℰ ℱ) G₁' G₂')
+             → (∀ {x} (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Hom[ (r i .η x) ] (p' i .F₀' x') (q' i .F₀' x')) (α' .η' x') (β' .η' x'))
+             → PathP (λ i → (p' i) =[ r i ]=> (q' i)) α' β'
+  Nat'-pathp p q r p' q' w i .η' x' = w x' i
+  Nat'-pathp {α' = α'} {β' = β'} p q r p' q' w i .is-natural' {x = x} {y} {f} x' y' f' j = 
+    is-set→squarep {A = λ i j → ℱ.Hom[ r i .is-natural x y f j ] (F₀' (p' i) x') (F₀' (q' i) y')} (λ _ _ → hlevel 2)
+      (λ i → w y' i ℱ.∘' F₁' (p' i) f') (λ j → is-natural' α' x' y' f' j) (λ j → is-natural' β' x' y' f' j) (λ i → F₁' (q' i) f' ℱ.∘' w x' i) i j
+
+  Nat'-path : {F G : Functor A B} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+           → {α β : F => G} {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'} 
+           → {p : α ≡ β}
+           → (∀ {x} (x' : ℰ.Ob[ x ]) → α' .η' x' ℱ.≡[ p ηₚ x ] β' .η' x')
+           → PathP (λ i → F' =[ p i ]=> G') α' β'
+  Nat'-path = Nat'-pathp refl refl _ refl refl
 ```
 -->
 
