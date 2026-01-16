@@ -498,6 +498,24 @@ module
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
 
+<!--
+```agda
+  private unquoteDecl make-=[]=>-iso = declare-record-iso make-=[]=>-iso (quote _=[_]=>_)
+
+  instance
+    H-Level-=[]=> : ∀ {F G α} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ} {n} → H-Level (F' =[ α ]=> G') (2 + n)
+    H-Level-=[]=> = basic-instance 2 (Iso→is-hlevel 2 make-=[]=>-iso (hlevel 2))
+
+  instance
+    Extensional-displayed-natural-transformation
+      : ∀ {ℓr F G} {α : F => G} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+      → ⦃ e : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (₀' F' x') (₀' G' x')) ℓr ⦄
+      → Extensional (F' =[ α ]=> G') ℓr
+    Extensional-displayed-natural-transformation {α = α} {F' = F'} {G' = G'} ⦃ e ⦄ =
+      injection→extensional! {f = _=[_]=>_.η' {α = α}} (λ p → Iso.injective make-=[]=>-iso (Σ-prop-path! p)) e
+```
+-->
+
 ::: {.definition #vertical-natural-transformation}
 Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
 transformation between $F$ and $G$ is called a **vertical natural
@@ -542,19 +560,6 @@ module _
       is-natural↓ x y f =
         ap ℱ.hom[] (ℱ.from-pathp[]⁻ (is-natural' x y f))
         ∙ sym (ℱ.duplicate _ _ _)
-
-  private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>_)
-
-  instance
-    Extensional-=>↓
-      : ∀ {ℓr F' G'}
-      → ⦃ _ : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F' .F₀' x') (G' .F₀' x')) ℓr ⦄
-      → Extensional (F' =>↓ G') ℓr
-    Extensional-=>↓ {F' = F'} {G' = G'}  ⦃ e ⦄  = injection→extensional! {f = _=>↓_.η'}
-      (λ p → Iso.injective eqv (Σ-prop-path! p)) e
-
-    H-Level-=>↓ : ∀ {F' G'} {n} → H-Level (F' =>↓ G') (2 + n)
-    H-Level-=>↓ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
 
   open _=>↓_
 
