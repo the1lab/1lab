@@ -83,7 +83,6 @@ smart constructor for equality"; therefore, we only expose a few entry
 points:
 
 - ext:      turn extensional equality into equality
-- ext!:     same as above, with workaround for agda/agda#8112
 - unext:    the opposite
 - reext!:   a macro which abbreviates "ext (unext p)"
 - trivial!: a macro which abbreviates "ext (_ .reflᵉ _)"
@@ -187,17 +186,6 @@ ext
   : ∀ {ℓ ℓr} {A : Type ℓ} {x y : A} ⦃ r : Extensional A ℓr ⦄
   → Pathᵉ r x y → x ≡ y
 ext ⦃ r ⦄ p = r .idsᵉ .to-path p
-
--- (Slower!!) version of the 'ext' entry point which waits until the
--- extensional equality relation has been solved.
---
--- Performance note: we wait on the instance and not the applied
--- relation 'r .Pathᵉ x y' to minimise the quoting time.
-ext!
-  : ∀ {ℓ ℓr} {A : Type ℓ} ⦃ r : Extensional A ℓr ⦄
-  → {@(tactic locked-by r) l : Lock}
-  → {x y : A} → Locked l (r .Pathᵉ x y) → x ≡ y
-ext! ⦃ r ⦄ {l = lock} p = r .idsᵉ .to-path p
 
 {-
 Using the extensionality tactic we can define a "more general refl",

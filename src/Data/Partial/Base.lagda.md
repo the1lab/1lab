@@ -128,11 +128,7 @@ module _ {ℓ ℓr} {A : Type ℓ} ⦃ e : Extensional A ℓr ⦄ where
         open Equiv (_ , eqv) renaming (η to eta ; ε to eps) using (zag) public
 
         defs : a .def ≡ b .def
-        defs i .∣_∣ = Glue ⌞ a ⌟ λ where
-          (i = i0) → ⌞ a ⌟ , _ , id-equiv
-          (i = i1) → ⌞ b ⌟ , _ , eqv
-        defs i .is-tr = is-prop→pathp (λ i → is-prop-is-prop {A = ∣ defs i ∣})
-          (a .def .is-tr) (b .def .is-tr) i
+        defs = sym (Ω-ua {A = b .def} {B = a .def} (p .inv) (p .def))
 
         sys : (i : I) (x : ⌞ defs i ⌟) (j : I) → Partial (∂ i ∨ ~ j) A
         sys i x j (i = i0) = a .elt x

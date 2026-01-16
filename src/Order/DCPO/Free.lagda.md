@@ -49,8 +49,7 @@ Furthermore, $f$ is directed, so it is merely inhabited.
 ```agda
 Disc-is-dcpo : ∀ {ℓ} {A : Set ℓ} → is-dcpo (Disc A)
 Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
-  const-inhabited-fam→lub disc-fam-const (dir .elt)
-  where
+  const-inhabited-fam→lub disc-fam-const (dir .elt) where
     disc-fam-const : ∀ i j → f i ≡ f j
     disc-fam-const i j = case dir .semidirected i j of λ k p q → p ∙ sym q
 
@@ -63,11 +62,9 @@ This extends to a functor from $\Sets$ to the category of DCPOs.
 ```agda
 Free-DCPO : ∀ {ℓ} → Functor (Sets ℓ) (DCPOs ℓ ℓ)
 Free-DCPO .F₀ = Disc-dcpo
-Free-DCPO .F₁ f =
-  to-scott-directed f λ s dir x x-lub →
-  const-inhabited-fam→is-lub
-    (λ ix → ap f (disc-is-lub→const x-lub ix))
-    (dir .elt)
+Free-DCPO .F₁ f = to-scott-directed f λ s dir x x-lub → const-inhabited-fam→is-lub
+  (λ ix → ap f (disc-is-lub→const x-lub ix))
+  (dir .elt)
 Free-DCPO .F-id    = ext λ _ → refl
 Free-DCPO .F-∘ _ _ = ext λ _ → refl
 ```
@@ -358,12 +355,11 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f = ext λ x →
   sym $ Strict-scott.pres-⋃-prop f _ _ _
 
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
-  ext! λ where
+  let module A? = Pointed-dcpo (Parts-pointed-dcpo A) in ext λ where
     x .def a → A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies a
     x .inv a → A?.⋃-prop-le _ _ (lift a) .implies tt
     x .elt p → sym $
       A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p
-  where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
 
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
   ext λ x → sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
