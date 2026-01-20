@@ -82,7 +82,7 @@ constructor handle addition and multiplication by $X_0$, it _also_
 handles weakening.
 
 ```agda
-  _*X+_ : ∀ {n} → (p : Poly A (suc n)) → (q : Poly A n) → Poly A (suc n)
+  _*X+_ : ∀ {n} (p : Poly A (suc n)) (q : Poly A n) → Poly A (suc n)
 ```
 
 <!--
@@ -578,21 +578,17 @@ expression of type `Nat`. This is _very_ useful when we are debugging.
 
 ```agda
 repr-macro : Nat → Term → TC ⊤
-repr-macro n hole =
-  withNormalisation false $
-  withReduceDefs (false , don't-reduce) $ do
+repr-macro n hole = withNormalisation false $
+  withReduceDefs (false , don't-reduce) do
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
   repr ← normalise $ def (quote ↓_) (size h∷ e v∷ [])
-  typeError $ strErr "The expression\n  " ∷
-                termErr tm ∷
-              strErr "\nIs represented by the expression\n  " ∷
-                termErr e ∷
-              strErr "\nAnd the polynomial\n  " ∷
-                termErr repr ∷
-              strErr "\nThe environment is\n  " ∷
-                termErr env ∷ []
+  typeError
+    $ strErr "The expression\n  "                     ∷ termErr tm
+    ∷ strErr "\nIs represented by the expression\n  " ∷ termErr e
+    ∷ strErr "\nAnd the polynomial\n  "               ∷ termErr repr
+    ∷ strErr "\nThe environment is\n  "               ∷ termErr env ∷ []
 macro
   repr! : Nat → Term → TC ⊤
   repr! n = repr-macro n
@@ -605,9 +601,8 @@ which is bound to `C-c RET` by default.
 
 ```agda
 expand-macro : Nat → Term → TC ⊤
-expand-macro n hole =
-  withNormalisation false $
-  withReduceDefs (false , don't-reduce) $ do
+expand-macro n hole = withNormalisation false $
+  withReduceDefs (false , don't-reduce) do
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
@@ -624,26 +619,25 @@ to automatically solve equations involving natural numbers.
 
 ```agda
 solve-macro : Term → TC ⊤
-solve-macro hole =
-  withNormalisation false $
-  withReduceDefs (false , don't-reduce) $ do
-  goal ← infer-type hole >>= reduce
+solve-macro hole = withNormalisation false $ withReduceDefs (false , don't-reduce) do
+  goal ← infer-type hole >>= reduce >>= wait-for-type
 
-  just (lhs , rhs) ← get-boundary goal
-    where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                termErr goal ∷ []
+  just (lhs , rhs) ← get-boundary goal where
+    nothing → typeError $ strErr "Can't determine boundary: " ∷ termErr goal ∷ []
+
   elhs , vs ← build-expr empty-vars lhs
   erhs , vs ← build-expr vs rhs
   size , env ← environment vs
   (noConstraints $ unify hole (“solve” elhs erhs env)) <|> do
     nf-lhs ← normalise (“expand” elhs env)
     nf-rhs ← normalise (“expand” erhs env)
-    typeError (strErr "Could not solve the following goal:\n  " ∷
-                 termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
-               strErr "\nComputed normal forms:\n  LHS: " ∷
-                 termErr nf-lhs ∷
-               strErr "\n  RHS: " ∷
-                 termErr nf-rhs ∷ [])
+    typeError
+      $ strErr "Could not solve the following goal:\n  "
+      ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
+      ∷ strErr "\nComputed normal forms:\n  LHS: "
+      ∷ termErr nf-lhs
+      ∷ strErr "\n  RHS: " ∷ termErr nf-rhs
+      ∷ []
 
 macro
   nat! : Term → TC ⊤
@@ -657,8 +651,8 @@ work for a moment.
 
 ```agda
 private
-  wow-good-job : ∀ x y z
-               → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y
+  wow-good-job
+    : ∀ x y z → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y
   wow-good-job x y z = nat!
 ```
 
@@ -668,11 +662,9 @@ these proofs are already quite difficult to begin with. For the brave,
 here is what a sparse representation might look like.
 
 ```agda
-private
-  data SparsePoly {a} (A : Type a) : Nat → Type a where
-    const-sparse : ∀ {n} → A → SparsePoly A n
-    shift        : ∀ {n} → (j : Nat) → SparsePoly A n
-                   → SparsePoly A (j + n)
-    _*X^_+_      : ∀ {n} → SparsePoly A (suc n) → Nat → SparsePoly A n
-                   → SparsePoly A (suc n)
+private data SparsePoly {a} (A : Type a) : Nat → Type a where
+  const-sparse : ∀ {n} → A → SparsePoly A n
+  shift        : ∀ {n} → (j : Nat) → SparsePoly A n → SparsePoly A (j + n)
+  _*X^_+_
+    : ∀ {n} → SparsePoly A (suc n) → Nat → SparsePoly A n → SparsePoly A (suc n)
 ```
