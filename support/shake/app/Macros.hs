@@ -13,7 +13,6 @@ module Macros
   )
   where
 
-import Control.Monad.Writer.Strict
 import Control.Applicative
 import Control.DeepSeq
 import Control.Monad

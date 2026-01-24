@@ -1,12 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Shake.Highlights (renderHighlights) where
 
-import Control.Monad.Trans
-
-import qualified Data.Map.Strict as Map
 import qualified Data.Text as Text
-import Data.Traversable
-import Data.Map.Strict (Map)
 import Data.Text (Text)
 import Data.Maybe
 import Data.Char
@@ -16,10 +11,6 @@ import Text.HTML.TagSoup
 
 import Development.Shake.FilePath
 import Development.Shake
-
-import Definitions
-
-import Debug.Trace
 
 -- | Expands away @<div class="warning">@ and @<details warning>@. Any
 -- icon under @support/web/highlights@ is supported; the @definition@
@@ -61,7 +52,7 @@ renderHighlights stream = do
       children <- traverse go children
       pure $ TagBranch "div" (("class", "highlighted " <> clz):attr) $ icon:children
 
-    go t@(TagBranch "details" attr children)
+    go (TagBranch "details" attr children)
       | Just (sattr, schild, rest) <- summary children
       , [icn] <- mapMaybe isHighlight attr
       = do
@@ -75,7 +66,7 @@ renderHighlights stream = do
     go (TagLeaf t) = pure (TagLeaf t)
 
     summary :: [TagTree Text] -> Maybe ([(Text, Text)], [TagTree Text], [TagTree Text])
-    summary (t@(TagBranch "summary" attr children):ts) = Just (attr, children, ts)
+    summary (TagBranch "summary" attr children:ts) = Just (attr, children, ts)
     summary (_:ts) = summary ts
     summary []     = Nothing
 

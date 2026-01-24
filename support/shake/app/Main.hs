@@ -3,7 +3,6 @@ module Main (main) where
 
 import Control.Concurrent.STM
 import Control.Monad.IO.Class
-import Control.Monad.Writer
 import Control.Exception
 import Control.DeepSeq
 import Control.Monad

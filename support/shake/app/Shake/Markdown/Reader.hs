@@ -1,5 +1,6 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, LambdaCase #-}
 {-# LANGUAGE DerivingStrategies, UnboxedTuples, MagicHash #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
 module Shake.Markdown.Reader (markdownReader, readLabMarkdown) where
 
 import Control.Monad.IO.Class
@@ -7,14 +8,7 @@ import Control.Exception
 import Control.DeepSeq
 import Control.Monad
 
-import qualified Data.Text.Lazy.Builder as Builder
-import qualified Data.Text.Lazy as Lazy
-import qualified Data.Sequence as Seq
-import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
-import Data.Text.Lazy.Builder (Builder)
-import Data.Sequence (Seq)
-import Data.Foldable
 import Data.Maybe
 import Data.Char
 import Data.Text (Text)
@@ -72,7 +66,7 @@ postParseInlines :: [Inline] -> [Inline]
 -- However, note that the glue between the original mathematics and the
 -- attached text is treated as an opening delimiter. This is to have
 -- correct spacing in case the maths ends with an operatorname, e.g. id.
-postParseInlines (Math ty mtext:s@(Str txt):xs)
+postParseInlines (Math ty mtext:Str txt:xs)
   | not (Text.isPrefixOf " " txt)
   =
     let

@@ -15,30 +15,19 @@ module HTML.Base
 
 import Prelude hiding ((!!), concatMap)
 
-import Control.Monad.Trans.Reader ( ReaderT(runReaderT), ask )
-import Control.Monad.Trans ( MonadIO(..), lift )
+import Control.Monad.Trans ( MonadIO(..) )
 import Control.DeepSeq
-import Control.Monad
 
-import qualified Data.HashMap.Strict as Hm
 import qualified Data.Text.Lazy as T
-import qualified Data.HashSet as Hs
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List as List
-import qualified Data.Text as Ts
-import Data.HashMap.Strict (HashMap)
 import Data.IntMap.Strict (IntMap)
 import Data.List.Split (splitWhen)
 import Data.Text.Lazy (Text)
-import Data.Function ( on )
-import Data.Foldable (toList, concatMap)
-import Data.HashSet (HashSet)
 import Data.Binary
 import Data.Maybe
 
 import GHC.Generics (Generic)
-
-import qualified Network.URI.Encode
 
 import System.FilePath
 
@@ -48,8 +37,6 @@ import Text.Blaze.Html5
     , stringValue
     , Html
     , (!)
-    , Attribute
-    , textValue
     )
 import qualified Text.Blaze.Html5 as Html5
 import qualified Text.Blaze.Html5.Attributes as Attr

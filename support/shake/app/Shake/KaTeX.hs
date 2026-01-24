@@ -16,19 +16,16 @@ module Shake.KaTeX
   , getPreambleFor
   ) where
 
-import Control.Applicative
 import Control.Monad
 
-import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text.Encoding.Error as T
 import qualified Data.Text.Lazy.Encoding as LT
-import qualified Data.Map.Strict as Map
 import qualified Data.Text.Lazy as LT
 import qualified Data.Aeson as Aeson
 import qualified Data.Text.IO as T
 import qualified Data.Text as T
-import Data.Aeson (FromJSON(..), (.:), (.=))
+import Data.Aeson ((.=))
 import Data.Text (Text)
 import Data.Generics
 import Data.Foldable
@@ -46,8 +43,6 @@ import System.IO
 
 import Shake.Utils
 import Macros
-
-import GHC.Compact
 
 newtype LatexEquation = LatexEquation (Bool, Text)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -131,7 +126,7 @@ createKatexWorkerQueue
   -> IO (Chan KatexWorker)
 createKatexWorkerQueue numWorkers = do
   workers <- newChan
-  for_ [0..numWorkers - 1] $ \i -> do
+  for_ [0..numWorkers - 1] $ \_ -> do
     worker <- spawnKatexWorker
     writeChan workers worker
   pure workers

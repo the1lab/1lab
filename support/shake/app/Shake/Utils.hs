@@ -9,7 +9,6 @@ import Data.Aeson
 
 import System.Process (CreateProcess)
 import System.Process qualified as Process
-import System.IO
 
 import Development.Shake
 

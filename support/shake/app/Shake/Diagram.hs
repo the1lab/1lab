@@ -3,12 +3,10 @@
 module Shake.Diagram (diagramRules, diagramHeight) where
 
 import Control.DeepSeq
-import Control.Monad
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
-import Data.ByteString.Lazy (ByteString)
 import Data.Map.Strict (Map)
 import Data.Text (Text)
 
@@ -19,7 +17,6 @@ import Text.Pandoc.Walk
 import Development.Shake.FilePath
 import Development.Shake
 
-import Shake.Markdown.Reader
 import Shake.Modules (ModName, markdownSource)
 import Shake.Digest
 import Shake.KaTeX (getPreambleFor)
@@ -65,7 +62,7 @@ diagramHeight :: FilePath -> Action Double
 diagramHeight fp = do
   contents <- readFile' fp
   let
-    height (TagOpen "svg" attrs:xs) | Just h <- lookup "height" attrs = take (length h - 2) h
+    height (TagOpen "svg" attrs:_) | Just h <- lookup "height" attrs = take (length h - 2) h
     height (_:t) = height t
     height [] = error $ "Diagram SVG has no height: " <> fp
 
