@@ -5,6 +5,7 @@
          --package shake
 -}
 {-# LANGUAGE OverloadedStrings, BlockArguments #-}
+{-# OPTIONS_GHC -Wno-x-partial #-}
 module Main where
 
 import Control.Exception

@@ -57,7 +57,7 @@ common common
   ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude -Wno-x-partial -Wno-incomplete-uni-patterns
   default-extensions: BlockArguments, LambdaCase
 
-executable shake
+executable 1lab-shake
   import:           common
   -- putting hs-source-dirs in common confuses hie-bios
   hs-source-dirs:   app
@@ -74,4 +74,4 @@ executable shake
     shake,
     stm,
     tagsoup,
-  ghc-options: -j -threaded -with-rtsopts -A128M -rtsopts
+  ghc-options: -j -threaded -with-rtsopts "-A128M -N -I0" -rtsopts

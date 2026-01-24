@@ -1,6 +1,9 @@
 packages: support/shake/1lab-shake.cabal
 
-source-repository-package
-  type: git
-  location: https://github.com/agda/agda.git
-  tag: 632954bf442192276ca9c84ca95991d1ffc7a410
+-- To build outside of the Nix shell, uncomment the following stanza
+-- and replace `master` with the `rev` field from `support/nix/dep/Agda/github.json`.
+
+-- source-repository-package
+--   type: git
+--   location: https://github.com/agda/agda.git
+--   tag: master
