@@ -1,19 +1,16 @@
 { # Is this a nix-shell invocation?
+  # NOTE: We do not rely on the IN_NIX_SHELL environment variable as it
+  # also affects nix-build invocations inside of nix shells.
   inNixShell ? false
   # Do we want the full Agda package for interactive use? Set to false in CI
-, interactive ? true
+, interactive ? inNixShell
 , system ? builtins.currentSystem
 }:
 let
   pkgs = import ./support/nix/nixpkgs.nix { inherit system; };
   inherit (pkgs) lib;
 
-  our-ghc = pkgs.labHaskellPackages.ghcWithPackages (ps: with ps; ([
-    shake directory tagsoup
-    text containers uri-encode
-    process aeson Agda pandoc SHA
-    fsnotify
-  ] ++ (if interactive then [ haskell-language-server ] else [])));
+  shakefile = pkgs.callPackage ./support/nix/build-shake.nix { };
 
   our-texlive = pkgs.texlive.combine {
     inherit (pkgs.texlive)
@@ -24,12 +21,6 @@ let
       pgf tikz-cd braids pgfplots
       stmaryrd mathpazo
       varwidth xkeyval standalone;
-  };
-
-  shakefile = pkgs.callPackage ./support/nix/build-shake.nix {
-    inherit our-ghc;
-    name = "1lab-shake";
-    main = "Main.hs";
   };
 
   sort-imports = let
@@ -43,20 +34,42 @@ let
     libraries = lib.attrVals deps pkgs.labHaskellPackages;
   } script;
 
-  deps = with pkgs; [
-    # For driving the compilation:
-    shakefile our-ghc
+  nodeModules = pkgs.importNpmLock.buildNodeModules {
+    npmRoot = ./.;
+    inherit (pkgs) nodejs;
 
+    derivationArgs = let
+      forbiddenRefs = [
+        pkgs.python3
+      ];
+    in {
+      nativeBuildInputs = [ pkgs.removeReferencesTo ];
+      postInstall = ''
+        find "$out" -exec remove-references-to ${lib.concatMapStringsSep " " (x: "-t ${lib.escapeShellArg x}") forbiddenRefs} '{}' +
+      '';
+      disallowedRequisites = forbiddenRefs;
+    };
+  };
+
+  setupNodePath = pkgs.makeSetupHook {
+    name = "setup-node-path";
+  } (pkgs.writeScript "setup-node-path.sh" ''
+    addToSearchPath NODE_PATH ${nodeModules}/node_modules
+  '');
+
+  # Dependencies for building the 1Lab itself, excluding the shakefile.
+  # These are also included in the shell for the shakefile itself so
+  # that `cabal run 1lab-shake` works as expected.
+  deps = with pkgs; [
     # For building the text and maths:
-    gitMinimal nodePackages.sass nodejs
+    gitMinimal dart-sass nodejs setupNodePath
 
     # For building diagrams:
     poppler-utils our-texlive
-  ] ++ (if interactive then [
+  ] ++ lib.optionals interactive [
+    (lib.getBin labHaskellPackages.Agda)
     sort-imports
-  ] else [
-    labHaskellPackages.pandoc.data
-  ]);
+  ];
 in
   pkgs.stdenv.mkDerivation rec {
     name = "1lab";
@@ -68,7 +81,9 @@ in
         ".github"
       ] ./.;
 
-    nativeBuildInputs = deps;
+    nativeBuildInputs = deps ++ [
+      shakefile
+    ];
 
     shellHook = ''
       export out=_build/site
@@ -92,8 +107,16 @@ in
     '';
 
     passthru = {
-      inherit deps shakefile sort-imports;
+      inherit deps sort-imports nodeModules;
       texlive = our-texlive;
-      ghc = our-ghc;
+
+      shakefile = if !inNixShell then shakefile else
+        # A shell for working on the shakefile.
+        (shakefile.envFunc { withHoogle = false; }).overrideAttrs (old: {
+          nativeBuildInputs = old.nativeBuildInputs ++ deps ++ [
+            pkgs.cabal-install
+            pkgs.labHaskellPackages.haskell-language-server
+          ];
+        });
     };
   }

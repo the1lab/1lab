@@ -6,26 +6,21 @@ module Shake.Utils
   ) where
 
 import Data.Aeson
+import Data.List.Split
+import Data.Maybe
 
 import System.Process (CreateProcess)
 import System.Process qualified as Process
 
 import Development.Shake
+import Development.Shake.FilePath
 
--- | Invoke a Node command. On Nix builds (more generally, if the
--- @NODE_BIN_PATH@ preprocessor macro is set while compiling), this will
--- look for the command in a statically-known path. Otherwise, it'll try
--- from @node_modules/.bin@ or your @PATH@.
+-- | Invoke a Node command.
 nodeCommand :: CmdResult r => [CmdOption] -> String -> [String] -> Action r
-#ifdef NODE_BIN_PATH
-
-nodeCommand opts path = command opts ( NODE_BIN_PATH ++ "/" ++ path )
-
-#else
-
-nodeCommand opts = command (opts ++ [AddPath [] ["node_modules/.bin"]])
-
-#endif
+nodeCommand opts path args = do
+  nodePath <- getEnv "NODE_PATH"
+  let paths = map (</> ".bin") (fromMaybe [] (splitOn ":" <$> nodePath) ++ ["node_modules"])
+  command (opts ++ [AddPath paths []]) path args
 
 -- | Construct a @CreateProcess@ for a node script.
 nodeProc
