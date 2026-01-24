@@ -17,10 +17,10 @@ hie.yaml
 
 # Build output
 /html
-/_build
+/_build*
 /result*
 /node_modules
-/dist-newstyle
+/dist-*
 /stack.yaml.lock
 /.stack-work
 .shake
@@ -30,6 +30,7 @@ hie.yaml
 *.hi-boot
 *.o-boot
 /rubtmp*
+.sass-cache
 
 ## Build system performance stuff
 *.eventlog*
