@@ -12,28 +12,15 @@ module HTML.Backend
 import HTML.Base
 
 import Prelude hiding ((!!), concatMap)
-import Control.Monad.Identity
-import Control.Monad.Except
-import Control.Monad.Reader
-import Control.Monad
 
-import qualified Data.HashMap.Strict as Hm
 import qualified Data.IntMap.Strict as IntMap
-import qualified Data.HashSet as HashSet
 import qualified Data.Text as Text
 import qualified Data.Set as Set
 
-import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.IntMap.Strict (IntMap)
-import Data.Map.Strict (Map)
 import Data.Foldable
-import Data.HashSet (HashSet)
-import Data.Aeson
-import Data.Maybe
-import Data.IORef
 import Data.Text (Text)
-import Data.List
 import Data.Set (Set)
 
 import Agda.Compiler.Backend hiding (topLevelModuleName)
@@ -41,52 +28,26 @@ import Agda.Compiler.Common
 
 import Control.DeepSeq
 
-import qualified Agda.Syntax.Concrete.Generic as Con
 import qualified Agda.Syntax.Internal.Generic as I
 import qualified Agda.Syntax.Abstract.Views as A
 import qualified Agda.Syntax.Common.Aspect as Asp
-import qualified Agda.Syntax.Scope.Base as Scope
-import qualified Agda.Syntax.Concrete as Con
 import qualified Agda.Syntax.Internal as I
 import qualified Agda.Syntax.Abstract as A
-import qualified Agda.Syntax.Concrete as C
 
 import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
-import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_, abstractToConcreteCtx)
-import Agda.Syntax.TopLevelModuleName
-import Agda.Syntax.Abstract.Pretty (prettyA, prettyATop)
-import Agda.Syntax.Abstract.Views
+import Agda.Syntax.Abstract.Pretty (prettyATop)
 import Agda.Syntax.Common.Pretty
-import Agda.Syntax.Scope.Monad (modifyCurrentScope, getCurrentModule, freshConcreteName)
 import Agda.Syntax.Abstract hiding (Type)
 import Agda.Syntax.Position
-import Agda.Syntax.Internal (Type, domName)
-import Agda.Syntax.Fixity (Precedence(TopCtx))
 import Agda.Syntax.Common
 import Agda.Syntax.Info
 
 import qualified Agda.TypeChecking.Monad.Base as I
 import qualified Agda.TypeChecking.Pretty as P
-import Agda.TypeChecking.Substitute
-import Agda.TypeChecking.Telescope
 import Agda.TypeChecking.Records (isRecord)
-import Agda.TypeChecking.Reduce (instantiateFull, reduceDefCopyTCM, normalise)
-import Agda.TypeChecking.Level (reallyUnLevelView)
-
-import qualified Agda.Utils.Maybe.Strict as S
-import Agda.Utils.FileName
-import Agda.Utils.Lens
-import Agda.Utils.Size
-
-import System.FilePath hiding (normalise)
-
-import Text.Show.Pretty (ppShow)
+import Agda.TypeChecking.Reduce (normalise)
 
 import HTML.Render
-import Debug.Trace (traceShow)
-import Agda.Syntax.Internal.Names (namesIn')
-import Agda.Interaction.Response (Response_boot(Resp_RunningInfo))
-import Agda.Interaction.Options.Lenses (LensVerbosity(setVerbosity))
 
 genModTypes :: HtmlOptions -> [Definition] -> IntMap Identifier -> TCM (IntMap Identifier)
 genModTypes opts (def:defs) !acc
@@ -102,7 +63,7 @@ genModTypes opts (def:defs) !acc
         }
     rnf tooltip `seq` rnf ty `seq` genModTypes opts defs (IntMap.insert pos ident acc)
   | otherwise = genModTypes opts defs acc
-genModTypes opts [] !acc = pure acc
+genModTypes _opts [] !acc = pure acc
 
 -- | Compile a single module, given an existing set of types.
 compileOneModule
@@ -117,9 +78,6 @@ compileOneModule _pn opts iface = do
   types <- genModTypes opts defs mempty
 
   let
-    ins Nothing       = id
-    ins (Just (a, b)) = IntMap.insert a b
-
     mod = HtmlModule types (map (render . pretty . fst) (iImportedModules iface))
 
   defaultPageGen opts mod $ srcFileOfInterface iface
@@ -141,11 +99,8 @@ usedInstances = I.foldTerm \case
 typeToText :: Definition -> TCM (Text, Text)
 typeToText d = do
   ui <- usedInstances (I.unEl (defType d))
-  fv <- getDefFreeVars (defName d)
 
   ty <- locallyReduceDefs (OnlyReduceDefs ui) $ normalise (defType d)
-
-  topm <- topLevelModuleName (qnameModule (defName d))
 
   let
     n k = Asp.Name (Just k) False
@@ -176,23 +131,12 @@ typeToText d = do
 
   expr <- removeImpls <$> reify ty
 
-  here <- currentTopLevelModule
   tooltip <- fmap renderToHtml $ P.vcat
     [ annotate a <$> P.pretty (qnameName (defName d))
     , P.nest 2 (P.colon P.<+> prettyATop expr)
     ]
   plain <- Text.pack . render <$> prettyATop expr
   pure (tooltip, plain)
-
-toDefinitionSite :: TopLevelModuleName -> Range -> Maybe Asp.DefinitionSite
-toDefinitionSite topm r = do
-  p <- fmap (fromIntegral . posPos) . rStart $ r
-  pure $ Asp.DefinitionSite
-    { Asp.defSiteModule = topm
-    , Asp.defSitePos    = fromIntegral p
-    , Asp.defSiteHere   = True
-    , Asp.defSiteAnchor = Nothing
-    }
 
 removeImpls :: A.Expr -> A.Expr
 removeImpls (A.Pi _ (x :| xs) e) =
@@ -201,6 +145,7 @@ removeImpls (A.Pi _ (x :| xs) e) =
     fixup q@(TBind rng inf as _)
       | Hidden <- getHiding q = TBind rng inf as underscore
       | otherwise = q
+    fixup q = q
   in makePi (map (A.mapExpr removeImpls) $ map fixup (x:xs)) (removeImpls e)
 removeImpls (A.Fun span arg ret) =
   A.Fun span (removeImpls <$> arg) (removeImpls ret)

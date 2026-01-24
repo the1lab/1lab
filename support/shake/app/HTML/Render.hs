@@ -3,8 +3,6 @@ module HTML.Render where
 
 import Prelude hiding ((!!))
 
-import Agda.Interaction.Highlighting.Common
-
 import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
 import Agda.Syntax.Common.Aspect
 import Agda.Syntax.Common.Pretty
@@ -16,11 +14,8 @@ import Agda.Utils.DocTree
 import Control.DeepSeq
 import Control.Monad
 
-import qualified Data.HashMap.Strict as Hm
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Text.Lazy as Tl
-import qualified Data.Text as Text
-import Data.HashMap.Strict (HashMap)
 import Data.IntMap.Strict (IntMap)
 import Data.Foldable
 import Data.Hashable
@@ -34,9 +29,6 @@ import GHC.Generics
 import qualified Network.URI.Encode
 
 import System.FilePath
-
-import qualified Text.PrettyPrint.Annotated.HughesPJ as Ppr
-import qualified Text.PrettyPrint.Annotated as Ppr
 
 import qualified Text.Blaze.Html5.Attributes as Attr
 import Text.Blaze.Html.Renderer.Text ( renderHtml )

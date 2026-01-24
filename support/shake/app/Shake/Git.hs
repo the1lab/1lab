@@ -10,7 +10,6 @@ module Shake.Git
 
 import qualified Data.Text.Encoding as Text
 import qualified Data.Text as Text
-import qualified Data.Set as Set
 import Data.Char (isSpace, isDigit)
 import Data.Text (Text)
 import Data.List (sort)

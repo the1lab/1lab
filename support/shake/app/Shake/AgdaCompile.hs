@@ -28,8 +28,6 @@ import Development.Shake
 import Shake.Options (getSkipTypes, getWatching, getBaseUrl, getSkipAgda)
 
 import Agda.Compiler.Backend hiding (getEnv)
-import Agda.Interaction.FindFile (SourceFile(..))
-import Agda.TypeChecking.Monad.Base (srcFromPath)
 import Agda.TypeChecking.Pretty.Warning
 import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports hiding (getInterface)
@@ -38,13 +36,10 @@ import Agda.Syntax.Common (Cubical(CFull))
 import Agda.Syntax.Common.Pretty
 import Agda.Syntax.TopLevelModuleName
   ( TopLevelModuleName'(..)
-  , TopLevelModuleName
   , RawTopLevelModuleName(..)
   , hashRawTopLevelModuleName
   )
 import Agda.Syntax.Position (noRange)
-import qualified Agda.Utils.Maybe.Strict as S
-import qualified Agda.Utils.Trie as Trie
 import Agda.Utils.FileName
 import Agda.Utils.Hash (Hash)
 import Agda.Utils.Lens ((^.))
@@ -156,7 +151,7 @@ agdaRules = do
           (Set.insert other seen)
           (foldr Set.insert out elts)
           (mods ++ imps)
-      visit !seen !out [] = pure out
+      visit !_seen !out [] = pure out
 
     idents <- Set.toList <$> visit mempty mempty (htmlModImports mod)
     traced "encoding json" $ Aeson.encodeFile file idents

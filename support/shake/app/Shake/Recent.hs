@@ -9,12 +9,9 @@ import qualified Data.Text as Text
 import Data.Maybe
 import Data.List (sortOn)
 import Data.Text (Text)
-import Data.Ord (Down(Down))
 
 import Development.Shake.FilePath
 import Development.Shake
-
-import HTML.Backend
 
 import Shake.Modules (getOurModules, moduleName)
 import Shake.Git (gitCommand)
@@ -90,6 +87,7 @@ blazeCommit baseUrl (Commit author subject hash date changes) = do
     change f = H.span ! A.class_ "Agda" $
       H.a ! A.href (link f) ! A.class_ "Module" $ H.preEscapedText (split f)
 
+    sep [] = ""
     sep [x] = x
     sep [x, y] = x <> " and " <> y
     sep [x, y, z] = x <> ", " <> sep [y <> ",", z]

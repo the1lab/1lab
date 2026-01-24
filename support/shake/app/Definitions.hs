@@ -43,8 +43,6 @@ import Shake.Modules (moduleName)
 import Text.Pandoc.Walk
 import Text.Pandoc
 
-import Text.Show.Pretty
-
 newtype Mangled = Mangled { getMangled :: Text }
   deriving (Show, Eq, Ord, Generic)
   deriving anyclass (Binary, NFData, Hashable)
@@ -201,7 +199,7 @@ instance Hashable WikiLink where
   hashWithSalt s = hashWithSalt s . wikiLinkDest
 
 isWikiLink :: Inline -> Maybe WikiLink
-isWikiLink (Link attr@(_id, cls, _attrs) contents (url, title))
+isWikiLink (Link attr@(_id, cls, _attrs) contents (url, _title))
   | "wikilink" `elem` cls = pure $ WikiLink url contents attr
 isWikiLink _ = Nothing
 

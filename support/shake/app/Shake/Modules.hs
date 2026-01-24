@@ -88,7 +88,7 @@ getAllModules = do
 markdownSource :: ModName -> Action FilePath
 markdownSource mod = fmap (Map.lookup mod . unModulesA) (askOracle ModulesQ) >>= \case
   Just (fp, WithText) -> pure fp
-  Just (fp, CodeOnly) -> error $ "Not a markdown module: " <> mod
+  Just (_fp, CodeOnly) -> error $ "Not a markdown module: " <> mod
   Nothing -> error $ "Not a module: " <> mod
 
 -- | Determine the name of a module from a file like @1Lab/HIT/Torus@.

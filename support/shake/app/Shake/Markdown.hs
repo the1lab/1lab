@@ -11,24 +11,19 @@ import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Monad.State
 import Control.Applicative
-import Control.Monad
 
-import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Text.Encoding as Text
 import qualified Data.Sequence as Seq
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import qualified Data.Set as Set
 
-import Data.Digest.Pure.SHA
 import Data.List (intersperse)
 import Data.Foldable
 import Data.Monoid (Ap(..))
 import Data.Aeson (encodeFile)
 import Data.Maybe
 import Data.Text (Text)
-import Data.Char hiding (Space)
 
 import qualified System.Directory as Dir
 
@@ -38,8 +33,6 @@ import Development.Shake
 import qualified Citeproc as Cite
 import Text.DocTemplates
 import Text.HTML.TagSoup
-import Text.HTML.TagSoup.Match
-import Text.HTML.TagSoup.Tree
 
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
@@ -60,9 +53,6 @@ import Shake.KaTeX
 import Shake.Git
 
 import Definitions
-
-import System.IO.Unsafe
-import Text.Show.Pretty (ppShow)
 
 buildMarkdown
   :: Action (Context Text)
@@ -111,7 +101,7 @@ buildMarkdown digest modname input output = do
       _ -> mempty
 
     diagrams = flip query markdown \case
-      CodeBlock (id, classes, attrs) contents | "quiver" `elem` classes ->
+      CodeBlock (_id, classes, _attrs) contents | "quiver" `elem` classes ->
         let digest = shortDigest contents in
         [ "_build/html/" </> modname </> digest <.> "light.svg"
         , "_build/html/" </> modname </> digest <.> "dark.svg"
@@ -183,10 +173,6 @@ addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
     Just m  -> Map.insert "pagetitle" m meta
     Nothing -> meta
 
-isAgdaBlock :: TagTree Text -> Bool
-isAgdaBlock (TagBranch _ attrs _) = anyAttrLit ("class", "Agda") attrs
-isAgdaBlock _ = False
-
 -- | Rewrite a single inline element.
 patchInline
   :: Map.Map Text (Cite.Reference Inlines)
@@ -216,7 +202,7 @@ patchInline _ h = pure h
 data MarkdownState = MarkdownState
   { mdReferences  :: [Val Text]
     -- ^ List of references extracted from Pandoc's "reference" div.
-  , mdDefinitions :: Map.Map Mangled [Block]
+  , _mdDefinitions :: Map.Map Mangled [Block]
     -- ^ List of definition blocks
   }
 
@@ -282,7 +268,7 @@ patchBlock _ _ (Div ("refs", _, _) body) = do
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 
-patchBlock _ _ b@(Div (id, clz, kv) bs) | "definition" `elem` clz, not (Text.null id) = do
+patchBlock _ _ b@(Div (id, clz, _kv) bs) | "definition" `elem` clz, not (Text.null id) = do
   let
     isfn (Note _) = True
     isfn _ = False
@@ -389,7 +375,7 @@ foldEquations _ [] = []
 -- | Get all headers in the document, building a list of definitions for our
 -- search index.
 getHeaders :: Text -> Pandoc -> [SearchTerm]
-getHeaders module' markdown@(Pandoc (Meta meta) _) =
+getHeaders module' markdown =
   (:) main . flip evalState [] . getAp . query (Ap . go) $ markdown
   where
   main = SearchTerm
@@ -422,7 +408,7 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
         , idType   = Nothing
         , idDefines = Text.words <$> lookup "defines" keys
         } <$> go xs
-  go (Div (hId, _, keys) blocks:xs) | hId /= "" = do
+  go (Div (hId, _, keys) _:xs) | hId /= "" = do
     path <- get
 
     (:) SearchTerm
