@@ -2,8 +2,6 @@
   # NOTE: We do not rely on the IN_NIX_SHELL environment variable as it
   # also affects nix-build invocations inside of nix shells.
   inNixShell ? false
-  # Do we want the full Agda package for interactive use? Set to false in CI
-, interactive ? inNixShell
 , system ? builtins.currentSystem
 }:
 let
@@ -66,7 +64,7 @@ let
 
     # For building diagrams:
     poppler-utils our-texlive
-  ] ++ lib.optionals interactive [
+  ] ++ lib.optionals inNixShell [
     (lib.getBin labHaskellPackages.Agda)
     sort-imports
   ];
