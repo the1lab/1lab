@@ -53,7 +53,7 @@ jobs:
 
       - name: Typecheck 👩‍🏫
         run: |
-          nix-shell --arg interactive false --run "$build_command"
+          nix-shell --run "$build_command"
         # Run Agda as a separate stage so it doesn't have to be subject to
         # the absolutely spartan GC tuning parameters we run the build in
         # CI with
@@ -67,7 +67,7 @@ jobs:
       - name: Build 🛠️
         run: |
           echo "$mailmap" > .mailmap
-          nix-shell --arg interactive false --run "$build_command"
+          nix-shell --run "$build_command"
 
         # Shake is a bit of a pig, what with our abuses of caches, and
         # the default 2× heap overhead GHC uses means that a clean build
