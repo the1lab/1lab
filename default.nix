@@ -1,8 +1,4 @@
-{ # Is this a nix-shell invocation?
-  # NOTE: We do not rely on the IN_NIX_SHELL environment variable as it
-  # also affects nix-build invocations inside of nix shells.
-  inNixShell ? false
-, system ? builtins.currentSystem
+{ system ? builtins.currentSystem
 }:
 let
   pkgs = import ./support/nix/nixpkgs.nix { inherit system; };
@@ -64,20 +60,16 @@ let
 
     # For building diagrams:
     poppler-utils our-texlive
-  ] ++ lib.optionals inNixShell [
-    (lib.getBin labHaskellPackages.Agda)
-    sort-imports
   ];
 in
   pkgs.stdenv.mkDerivation rec {
     name = "1lab";
 
-    src = if inNixShell then null else
-      with pkgs.nix-gitignore; gitignoreFilterSourcePure (_: _: true) [
-        # Keep .git around for extracting page authors
-        (compileRecursiveGitignore ./.)
-        ".github"
-      ] ./.;
+    src = with pkgs.nix-gitignore; gitignoreFilterSourcePure (_: _: true) [
+      # Keep .git around for extracting page authors
+      (compileRecursiveGitignore ./.)
+      ".github"
+    ] ./.;
 
     nativeBuildInputs = deps ++ [
       shakefile
@@ -105,16 +97,7 @@ in
     '';
 
     passthru = {
-      inherit deps sort-imports nodeModules;
+      inherit pkgs shakefile deps sort-imports nodeModules;
       texlive = our-texlive;
-
-      shakefile = if !inNixShell then shakefile else
-        # A shell for working on the shakefile.
-        (shakefile.envFunc { withHoogle = false; }).overrideAttrs (old: {
-          nativeBuildInputs = old.nativeBuildInputs ++ deps ++ [
-            pkgs.cabal-install
-            pkgs.labHaskellPackages.haskell-language-server
-          ];
-        });
     };
   }
