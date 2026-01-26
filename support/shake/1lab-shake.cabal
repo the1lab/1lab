@@ -68,7 +68,7 @@ executable 1lab-shake
     extra,
     fsnotify >= 0.4 && < 0.5,
     network-uri,
-    pandoc,
+    pandoc ^>= 3.7,
     pandoc-types,
     process,
     shake,
