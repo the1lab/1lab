@@ -1,4 +1,5 @@
 { pkgs
+, lib
 , nix-gitignore
 , our-ghc
 , makeWrapper
@@ -9,25 +10,27 @@
 , gmp
 , name
 , main
+, importNpmLock
 }:
 let
-  nodeEnv = import ./node/node-env.nix {
-    inherit (pkgs) stdenv lib python2 runCommand writeTextFile writeShellScript nodejs;
-    inherit pkgs;
-    libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
-  };
+  nodeModules = importNpmLock.buildNodeModules {
+    npmRoot = ../..;
+    inherit (pkgs) nodejs;
 
-  # To cut down on the image size we maim all references to Python and bash here.
-  nodeDependencies = (import ./node/node-dependencies.nix {
-    inherit (pkgs) fetchurl nix-gitignore stdenv lib fetchgit;
-    inherit nodeEnv;
-  }).nodeDependencies.overrideDerivation (old: {
-    installPhase = ''
-    ${old.installPhase}
-    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.python3}
-    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.bash}
-    '';
-  });
+    # To cut down on the image size we maim some references here.
+    derivationArgs = let
+      forbiddenRefs = [
+        pkgs.python3
+        pkgs.bashNonInteractive
+      ];
+    in {
+      nativeBuildInputs = [ removeReferencesTo ];
+      postInstall = ''
+        find "$out" -exec remove-references-to ${lib.concatMapStringsSep " " (x: "-t ${lib.escapeShellArg x}") forbiddenRefs} '{}' +
+      '';
+      disallowedReferences = forbiddenRefs;
+    };
+  };
 in
 stdenv.mkDerivation {
   inherit name;
@@ -36,7 +39,8 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ lua5_3 gmp ];
 
   buildPhase = ''
-  ghc -o ${main} app/${main} -threaded -with-rtsopts "-A128M -N -I0" -rtsopts -iapp -O2 -split-sections -DNODE_LIB_PATH="\"${nodeDependencies}/lib/node_modules\"" -DNODE_BIN_PATH="\"${nodeDependencies}/bin\""
+  ghc -o ${main} app/${main} -threaded -with-rtsopts "-A128M -N -I0" -rtsopts -iapp -O2 -split-sections \
+    -DNODE_BIN_PATH="\"${nodeModules}/node_modules/.bin\"" # see Utils.hs
   '';
 
   installPhase = ''
@@ -52,8 +56,7 @@ stdenv.mkDerivation {
   remove-references-to -t ${labHaskellPackages.js-dgtable}   ${main}
   cp ${main} $out/bin/${name}
   wrapProgram $out/bin/${name} \
-    --prefix PATH : ${nodeDependencies}/bin \
-    --prefix NODE_PATH : ${nodeDependencies}/lib/node_modules
+    --prefix NODE_PATH : ${nodeModules}/node_modules
   '';
 
   disallowedReferences = with labHaskellPackages; [

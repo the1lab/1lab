@@ -18,7 +18,7 @@ open Precategory
 ```
 -->
 
-# The simplex category
+# The simplex category {defines="simplex-category"}
 
 The simplex category, $\Delta$, is generally introduced as the category
 of non-empty finite ordinals and order-preserving maps. We will, for

@@ -135,7 +135,6 @@ _nt×_ α β .is-natural (c , d) (c' , d') (f , g) = Σ-pathp
 ```
 -->
 
-
 ## Univalence
 
 Isomorphisms in functor categories admit a short description, too: They

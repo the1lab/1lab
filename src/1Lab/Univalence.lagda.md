@@ -834,6 +834,26 @@ ua→ {e = e} {B} {f₀ = f₀} {f₁} h = (λ i a → comp (λ j → B (i ∨ ~
   filler : ∀ i j (a : ua e i) → B (i ∨ ~ j) (x' i (~ j) a)
   filler i j a = fill (λ j → B (i ∨ ~ j) (x' i (~ j) a)) (∂ i) j (sys i a)
 
+-- In the case where B is non-dependent, `ua→ f` applied to `path→ua-pathp e p`
+-- computes to a `comp` with `f x` on the left side and `ap f₁ p` on the bottom,
+-- which we can rearrange into `f x ▷ ap f₁ p`.
+ua→-β
+  : ∀ (e : A₀ ≃ A₁) {B : (i : I) → Type ℓ'} {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
+  → (f : ∀ a → PathP (λ i → B i) (f₀ a) (f₁ (e .fst a)))
+  → ∀ {x y} (p : e .fst x ≡ y)
+  → apd (λ i → ua→ {e = e} {B = λ i _ → B i} f i) (path→ua-pathp e p)
+  ≡ f x ▷ ap f₁ p
+ua→-β e {B} {f₀} {f₁} f {x} {y} p j i = hcomp-unique (∂ i) sys filler (~ j) where
+  sys : ∀ j → Partial (∂ i ∨ ~ j) _
+  sys = _◁◁_▷▷_.sys refl (f x) (ap f₁ p) i
+
+  filler : ∀ j → B i [ _ ↦ sys j ]
+  filler j = inS $ₛ comp (λ k → B (i ∨ ~ k)) (∂ i ∨ ~ j) λ where
+    k (k = i0) → f₁ (p (i ∧ j))
+    k (j = i0) → f x (i ∨ ~ k)
+    k (i = i0) → f x (~ k)
+    k (i = i1) → f₁ (p j)
+
 ua→'
   : ∀ {e : A₀ ≃ A₁} {B : (i : I) → ua e i → Type ℓ'} {f₀ : {a : A₀} → B i0 a} {f₁ : {a : A₁} → B i1 a}
   → (∀ a → PathP (λ i → B i (ua-inc e a i)) (f₀ {a}) (f₁ {e .fst a}))
@@ -865,5 +885,12 @@ subst₂-∙
 subst₂-∙ B p q α β Bx i =
   transport (ap₂ B (∙-filler' p q (~ i)) (∙-filler' α β (~ i)))
     (transport-filler-ext (ap₂ B p α) i Bx)
+
+transport-injective
+  : ∀ {ℓ} {A B : Type ℓ} {p q : A ≡ B}
+  → (∀ {a} → transport p a ≡ transport q a)
+  → p ≡ q
+transport-injective {p = p} {q} α = Equiv.injective (_ , univalence)
+  (Σ-prop-path (λ _ → is-equiv-is-prop _) (funext λ _ → α))
 ```
 -->

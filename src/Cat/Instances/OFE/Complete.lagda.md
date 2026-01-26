@@ -69,7 +69,7 @@ prefix of $l$.
 The previous paragraph contains an unfolding of the definition of a
 sequence having a limit, or, more specifically, it contains a definition
 of what it means for a point to be the limit of a sequence: $a$ is the
-limit of $f$ if, for all $n$, $a \within{n} f(a)$.
+limit of $f$ if, for all $n$, $a \within{n} f(n)$.
 
 ```agda
   is-limit : (x : Nat → A) → A → Type _
@@ -78,7 +78,7 @@ limit of $f$ if, for all $n$, $a \within{n} f(a)$.
 
 It follows at once that _the_ limit of a sequence is uniquely
 determined: if $a$ and $b$ both claim to be limits of $f$, we have, for
-arbitrary $n$, $a \within{n} f(a) \within{n} b$, meaning $a = b$.
+arbitrary $n$, $a \within{n} f(n) \within{n} b$, meaning $a = b$.
 
 ```agda
   limit-is-unique

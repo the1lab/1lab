@@ -84,7 +84,8 @@ postParseInlines (Math ty mtext:s@(Str txt):xs)
 -- inlines inside wikilinks, but it does do space splitting. We call the
 -- Pandoc parser in a pure context to read the title part as an *actual*
 -- list of inlines.
-postParseInlines (Link attr content (url, "wikilink"):xs) =
+postParseInlines (Link attr@(_id, cls, _attrs) content (url, title):xs)
+  | "wikilink" `elem` cls =
   link' `seq` link':postParseInlines xs where
 
   contents = flip query content \case
@@ -119,7 +120,7 @@ postParseInlines (Link attr content (url, "wikilink"):xs) =
     -- stripping formatting is the right thing, otherwise e.g. [[*path
     -- induction*]] would fail since the target "*path-induction*"
     -- doesn't exist.
-    pure (Link attr is (target, "wikilink"))
+    pure (Link attr is (target, title))
 
 postParseInlines (x:xs) = x:postParseInlines xs
 postParseInlines [] = []

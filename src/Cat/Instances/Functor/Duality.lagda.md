@@ -73,3 +73,12 @@ op-functor←→ {C = C} {D = D} = Functor-path (λ _ → Functor-path (λ _ →
       module D = Cat.Reasoning D
     in Regularity.precise! ((D.id D.∘ f .η x) D.∘ D.id ≡⟨ cat! D ⟩ f .η x ∎)
 ```
+
+As an equivalence of _endofunctor categories_ $[\cC,\cC]\op \cong [\cC\op,\cC\op]$
+this maps the identity functor `Id`.{.Agda} on $\cC$ to the 
+correspponding one on $\cC\op$.
+
+```agda
+op[Id]≡Id : Functor.op (Id {C = C}) ≡ Id
+op[Id]≡Id {C = C} = Functor-path (λ _ → refl) (λ _ → refl)
+```

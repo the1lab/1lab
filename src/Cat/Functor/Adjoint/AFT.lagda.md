@@ -132,7 +132,7 @@ the sea has risen above it:
 # The "Kan" adjoint functor theorem
 
 The above adjoint functor theorem, which is sometimes called the Freyd
-adjoint functor theorem (for example, by @[Maclane:cwm, §5.6]), and
+adjoint functor theorem (for example, by [@Maclane:cwm, §5.6]), and
 sidesteps the issues of size by use of a small solution set.
 
 We may also state an adjoint functor theorem using existence of limits

@@ -65,7 +65,7 @@ judgemental equality][sr].
 [sr]: https://github.com/agda/agda/issues/6016
 
 ```agda
-{-# BUILTIN ISONE IsOne #-}  -- IsOne : I → Setω
+{-# BUILTIN ISONE IsOne #-}  -- IsOne : I → SSet
 
 postulate
   1=1 : IsOne i1

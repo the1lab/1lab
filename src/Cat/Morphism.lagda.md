@@ -714,12 +714,45 @@ private
   ≅-pathp-internal p q {f} {g} r s i .inverses =
     is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j})
       (f .inverses) (g .inverses) i
+```
+-->
 
+The following lemma is useful when we have a commutative diagram of
+morphisms which are all known to be isomorphisms, which we want to “flip
+around” by way of inversion. For example, given all the morphisms in
+
+~~~{.quiver .attach-around}
+\begin{tikzcd}
+	x && \bullet && \bullet && b \\
+	y &&& \bullet &&& d
+	\arrow["\alpha", from=1-1, to=1-3]
+	\arrow[equals, from=1-1, to=2-1]
+	\arrow["\beta", from=1-3, to=1-5]
+	\arrow["\gamma", from=1-5, to=1-7]
+	\arrow[equals, from=1-7, to=2-7]
+	\arrow["\phi"', from=2-1, to=2-4]
+	\arrow["\psi"', from=2-4, to=2-7]
+\end{tikzcd}
+~~~
+
+are isomorphisms, we can use `inverse-unique`{.Agda} to get an equality
+$\alpha^{-1} \circ \beta^{-1} \circ \gamma^{-1} = \phi^{-1} \circ \psi^{-1}$.
+This is used, for example, in [[opposite monoidal category]] to invert 
+the triangle and pentagon identities.
+
+```agda
 abstract
   inverse-unique
     : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) (f : x ≅ b) (g : y ≅ d)
     → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
+```
+
+<details>
+<summary>The proof is an unenlightening `PathP`{.Agda} juggle and is 
+therefore omitted.
+</summary>
+```agda
   inverse-unique =
     J' (λ a c p → ∀ {b d} (q : b ≡ d) (f : a ≅ b) (g : c ≅ d)
       → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
@@ -732,7 +765,11 @@ abstract
               f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
               (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym p) ∙ f .invr) ∙ idl _ ⟩
               g .from                     ∎
+```
+</details>
 
+<!--
+```agda
 ≅-pathp
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
