@@ -27,8 +27,8 @@ module _ {o ℓ} {P : Poset o ℓ} where
 
 :::{.definition #covariant-poset-of-elements}
 The **covariant poset of elements** of an [[upper set]] $F : P \to \Omega$, denoted
-$\int F$, is the poset whose elements are the a $x : P$ such that $F(x)$ holds, where the order
-is given the ordering of $P$.
+$\int F$, is the poset whose elements are the $x : P$ such that $F(x)$ holds, where the order
+is given by the ordering of $P$.
 :::
 
 

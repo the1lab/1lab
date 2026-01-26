@@ -100,8 +100,7 @@ Finally, for every $k \leq l$, $f(l) \in A \cap B$, as $i \leq k \leq l$ and $j 
 
 ```agda
   Eventuality f .has-is-filter =
-    is-meet-slat-hom→is-filter Subsets-is-meet-slat
-    $ record
+    is-meet-slat-hom→is-filter Subsets-is-meet-slat record
       { top-≤ = λ _ →
         case f.dom-inhab of λ where
           i → inc (i , λ _ _ → tt)

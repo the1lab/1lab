@@ -216,7 +216,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
 
 :::{.definition #filter-base}
 An $I$-indexed family $x_i : I \to P$ is a **filter base** of a filter
-$$F \subseteq P$$ if:
+$F \subseteq P$ if:
 
 - $x_i \in F$ for every $i : I$, and
 - if $y \in F$ then there [[merely]] exists some $i : I$ such that $x_i \leq y$.
@@ -275,7 +275,7 @@ More succinctly, $x_i$ is a filter base of $F$ if $F$ is the upwards closure of 
 ```
 -->
 
-Every principal filter $\uparrow x$ has a filter base consisting of only of element $x$.
+Every principal filter $\uparrow x$ has a filter base that consists only of $x$.
 
 ```agda
   ↑ᶠ-filter-base : ∀ (x : ⌞ P ⌟) → is-filter-base {Ix = ⊤} (↑ᶠ x) (λ _ → x)
