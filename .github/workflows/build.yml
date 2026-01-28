@@ -62,7 +62,7 @@ jobs:
           build_command: |
             set -eu
             1lab-shake _build/all-pages.agda
-            agda _build/all-pages.agda +RTS -A128M -s -RTS
+            agda _build/all-pages.agda -j4 +RTS -A32M -s -RTS
 
       - name: Build 🛠️
         run: |
