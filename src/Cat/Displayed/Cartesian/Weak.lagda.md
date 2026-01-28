@@ -382,8 +382,8 @@ maps.
       universal-path = to-pathp[] $
         hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m') ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
         hom[] (π* f y' ∘' (π* m (f ^* y') ∘' π*.universal m')) ≡⟨ hom[]⟩⟨ ap (π* f y' ∘'_) (from-pathp[]⁻ (π*.commutes m')) ⟩
-        hom[] (π* f y' ∘' hom[] m')                ≡⟨ smashr _ _ ∙ liberate _ ⟩
-        π* f y' ∘' m'                              ≡⟨ p ⟩
+        hom[] (π* f y' ∘' hom[] m')                            ≡⟨ smashr _ _ ∙ liberate _ ⟩
+        π* f y' ∘' m'                                          ≡⟨ p ⟩
         h' ∎
 
       path : m' ≡ hom[ idr m ] (π* m (f ^* y') ∘' f*∘m*.universal m h' h')
