@@ -252,21 +252,17 @@ $g'$ are cartesian to construct the relevant paths.
 
     pb : is-pullback B _ _ _ _
     pb .square = ap fst (total-pb .square)
-    pb .universal {P} {p₁''} {p₂''} sq =
-      total-pb .universal
-        {p₁' = ∫hom p₁'' (π* p₁'' _)}
-        {p₂' = ∫hom p₂'' (g'.universal' (sym sq) (f' ∘' π* p₁'' _))}
-        (∫Hom-path sq (symP (g'.commutesp (sym sq) _))) .fst
-    pb .p₁∘universal =
-      ap fst $ total-pb .p₁∘universal
-    pb .p₂∘universal =
-      ap fst $ total-pb .p₂∘universal
-    pb .unique {p = p} q r =
-      ap fst $ total-pb .unique
-        (∫Hom-path q (p₁'.commutesp q _))
-        (∫Hom-path r (g'.uniquep _ _ (sym $ p) _
-          (pulll[] _ (symP $ ap snd (total-pb .square))
-          ∙[] pullr[] _ (p₁'.commutesp q _))))
+    pb .universal {P} {p₁''} {p₂''} sq = total-pb .universal
+      {p₁' = ∫hom p₁'' (π* p₁'' _)}
+      {p₂' = ∫hom p₂'' (g'.universal' (sym sq) (f' ∘' π* p₁'' _))}
+      (∫Hom-path sq (symP (g'.commutesp (sym sq) _))) .fst
+    pb .p₁∘universal = ap fst $ total-pb .p₁∘universal
+    pb .p₂∘universal = ap fst $ total-pb .p₂∘universal
+    pb .unique {p = p} q r = ap fst $ total-pb .unique
+      (∫Hom-path q (p₁'.commutesp q _))
+      (∫Hom-path r (g'.uniquep _ _ (sym $ p) _
+        (pulll[] _ (symP $ ap snd (total-pb .square))
+        ∙[] pullr[] _ (p₁'.commutesp q _))))
 ```
 
 <!--

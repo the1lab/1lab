@@ -54,8 +54,8 @@ record Generic-object {t} (t' : Ob[ t ]) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') wher
   field
     classify  : ∀ {x} → (x' : Ob[ x ]) → Hom x t
     classify' : ∀ {x} → (x' : Ob[ x ]) → Hom[ classify x' ] x' t'
-    classify-cartesian : ∀ {x} (x' : Ob[ x ])
-                       → is-cartesian E (classify x') (classify' x')
+    classify-cartesian
+      : ∀ {x} (x' : Ob[ x ]) → is-cartesian E (classify x') (classify' x')
 
   module classify-cartesian {x} (x' : Ob[ x ]) = is-cartesian (classify-cartesian x')
 ```

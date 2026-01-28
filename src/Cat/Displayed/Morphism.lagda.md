@@ -123,12 +123,11 @@ monomorphism is weakly monic.
   → is-weak-monic (f' ∘' g')
 ∘-is-weak-monic {f' = f'} {g' = g'} f'-weak-monic g'-weak-monic h' k' p p' =
   g'-weak-monic h' k' p $
-  f'-weak-monic (g' ∘' h') (g' ∘' k') (ap₂ _∘_ refl p) $
-  cast[] $
+  f'-weak-monic (g' ∘' h') (g' ∘' k') (ap₂ _∘_ refl p) $ begin[]
     f' ∘' g' ∘' h'   ≡[]⟨ assoc' f' g' h' ⟩
     (f' ∘' g') ∘' h' ≡[]⟨ p' ⟩
     (f' ∘' g') ∘' k' ≡[]˘⟨ assoc' f' g' k' ⟩
-    f' ∘' g' ∘' k'   ∎
+    f' ∘' g' ∘' k'   ∎[]
 
 is-monic[]→is-weak-monic
   : {f-monic : is-monic f}
@@ -198,12 +197,11 @@ with weak monos.
   → is-jointly-weak-monic (λ ix → fᵢ' ix ∘' g')
 ∘-is-jointly-weak-monic {g' = g'} {fᵢ' = fᵢ'} fᵢ'-joint-mono g'-joint-mono h' h'' p p' =
   g'-joint-mono h' h'' p $
-  fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') (ap₂ _∘_ refl p) λ ix →
-  cast[] $
+  fᵢ'-joint-mono (g' ∘' h') (g' ∘' h'') (ap₂ _∘_ refl p) λ ix → begin[]
     fᵢ' ix ∘' g' ∘' h'    ≡[]⟨ assoc' (fᵢ' ix) g' h' ⟩
     (fᵢ' ix ∘' g') ∘' h'  ≡[]⟨ p' ix ⟩
     (fᵢ' ix ∘' g') ∘' h'' ≡[]˘⟨ assoc' (fᵢ' ix) g' h'' ⟩
-    fᵢ' ix ∘' g' ∘' h''   ∎
+    fᵢ' ix ∘' g' ∘' h''   ∎[]
 ```
 
 Similarly, if $f_{i}' \circ g'$ is a jointly weak monic family, then

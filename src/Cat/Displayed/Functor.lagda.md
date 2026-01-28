@@ -253,21 +253,18 @@ module
 
 ```agda
   _F∘'_
-    : Displayed-functor F ℱ ℋ
-    → Displayed-functor G ℰ ℱ
+    : Displayed-functor F ℱ ℋ → Displayed-functor G ℰ ℱ
     → Displayed-functor (F F∘ G) ℰ ℋ
   (F' F∘' G') .F₀' x = F' .F₀' (G' .F₀' x)
   (F' F∘' G') .F₁' f = F' .F₁' (G' .F₁' f)
-  (F' F∘' G') .F-id' =
-    ℋ.cast[] $
-      F' .F₁' (G' .F₁' ℰ.id') ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-id') ⟩
-      F' .F₁' ℱ.id'            ℋ.≡[]⟨ F' .F-id' ⟩
-      ℋ.id'                   ∎
-  (F' F∘' G') .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} =
-    ℋ.cast[] $
-      F' .F₁' (G' .F₁' (f' ℰ.∘' g'))                   ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-∘') ⟩
-      F₁' F' (G' .F₁' f' ℱ.∘' G' .F₁' g')              ℋ.≡[]⟨ F' .F-∘' ⟩
-      (F' .F₁' (G' .F₁' f') ℋ.∘' F' .F₁' (G' .F₁' g')) ∎
+  (F' F∘' G') .F-id' = begin[]
+    F' .F₁' (G' .F₁' ℰ.id') ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-id') ⟩
+    F' .F₁' ℱ.id'           ℋ.≡[]⟨ F' .F-id' ⟩
+    ℋ.id'                   ∎[]
+  (F' F∘' G') .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} = begin[]
+    F' .F₁' (G' .F₁' (f' ℰ.∘' g'))                   ℋ.≡[]⟨ apd (λ i → F' .F₁') (G' .F-∘') ⟩
+    F₁' F' (G' .F₁' f' ℱ.∘' G' .F₁' g')              ℋ.≡[]⟨ F' .F-∘' ⟩
+    F' .F₁' (G' .F₁' f') ℋ.∘' F' .F₁' (G' .F₁' g')   ∎[]
 ```
 
 The composite of two fibred functors is a fibred functor.
@@ -414,10 +411,7 @@ result is indexed.
   F∘'-∘V-pathp
     : ∀ {F' : Vertical-functor ℱ ℋ} {G' : Vertical-functor ℰ ℱ}
     → PathP (λ i → Displayed-functor (F∘-id2 i) ℰ ℋ) (F' F∘' G') (F' ∘V G')
-  F∘'-∘V-pathp =
-    Displayed-functor-pathp (λ i → F∘-id2 i)
-      (λ x' → refl)
-      (λ f' → refl)
+  F∘'-∘V-pathp = Displayed-functor-pathp (λ i → F∘-id2 i) (λ x' → refl) (λ f' → refl)
 ```
 
 As such, the composite of vertical fibred functors is also fibred.
@@ -426,8 +420,8 @@ As such, the composite of vertical fibred functors is also fibred.
   ∘V-fibred
     : ∀ {F' : Vertical-functor ℱ ℋ} {G' : Vertical-functor ℰ ℱ}
     → is-fibred-functor F' → is-fibred-functor G' → is-fibred-functor (F' ∘V G')
-  ∘V-fibred F'-fib G'-fib .F-cartesian cart =
-    F'-fib .F-cartesian (G'-fib .F-cartesian cart)
+  ∘V-fibred F'-fib G'-fib .F-cartesian cart = F'-fib .F-cartesian $
+    G'-fib .F-cartesian cart
 ```
 
 <!--
@@ -466,8 +460,8 @@ module
   Vertical-functor-path
     : {F G : Vertical-functor ℰ ℱ}
     → (p0 : ∀ {x} → (x' : ℰ.Ob[ x ]) → F .F₀' x' ≡ G .F₀' x')
-    → (p1 : ∀ {x y x' y'} {f : B.Hom x y} → (f' : ℰ.Hom[ f ] x' y')
-            → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
+    → (p1 : ∀ {x y x' y'} {f : B.Hom x y} (f' : ℰ.Hom[ f ] x' y')
+          → PathP (λ i → ℱ.Hom[ f ] (p0 x' i) (p0 y' i)) (F .F₁' f') (G .F₁' f'))
     → F ≡ G
   Vertical-functor-path = Displayed-functor-pathp refl
 ```

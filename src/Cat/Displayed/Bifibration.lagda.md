@@ -218,13 +218,15 @@ equivalence.
 ```agda
       equiv-natural
         : hom-iso-natural {L = L} {R = base-change f} (λ v → f*.₁ v Fib.∘ L-unit .η _)
-      equiv-natural g h k =
-        π*.uniquep₂ _ _ _ _ _
-          (Fib.pulllf (π*.commutesp id-comm _)
-           ∙[] pushl[] _ (pushl[] _ (to-pathp[]⁻ (smashr _ _))))
-          (Fib.pulllf (π*.commutesp id-comm _)
-           ∙[] extendr[] _ (Fib.pulllf (Fib.pulllf (π*.commutesp id-comm _)))
-           ∙[] extendr[] _ (pullr[] _ (to-pathp[] (L-unit .is-natural _ _ h)))
-           ∙[] pullr[] _ (Fib.pulllf (extendr[] _ (π*.commutesp id-comm _))))
+      equiv-natural g h k = π*.uniquep₂ _ _ _ _ _
+        (   Fib.pulllf (π*.commutesp id-comm _)
+        ∙[] pushl[] _ (pushl[] _ (to-pathp[]⁻ (smashr _ _))))
+        (begin
+          _ ≡[]⟨ Fib.pulllf (π*.commutesp id-comm _) ⟩
+          _ ≡[]⟨ extendr[] _ (Fib.pulllf (Fib.pulllf (π*.commutesp id-comm _))) ⟩
+          _ ≡[]⟨ extendr[] _ (pullr[] _ (to-pathp[] (L-unit .is-natural _ _ h))) ⟩
+          _ ≡[]⟨ pullr[] _ (Fib.pulllf (extendr[] _ (π*.commutesp id-comm _))) ⟩
+          _ ∎[])
 ```
+
 </details>
