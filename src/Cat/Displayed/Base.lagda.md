@@ -172,7 +172,7 @@ Since Agda often struggles to infer the arguments to the generic
 displayed composition operator `_∙P_`{.Agda} in the setting of displayed
 categories, we provide variants which specify that the dependency is
 only on paths in the base category. One variant (`∙[-]-syntax`{.Agda})
-takes path over which the left argument is displayed explicitly, and the
+takes the path over which the left argument is displayed explicitly, and the
 other `_∙[]_`{.Agda} does this implicitly.
 
 ```agda
