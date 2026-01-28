@@ -103,17 +103,17 @@ module NbE {o' ℓ' o'' ℓ''}
       : {e : Expr B a b} (e' : Expr[ e ] b' c') (v : Value[ f ] a' b')
       → ⟦ eval' e' v ⟧ ≡[ eval-sound-k B e f ] unexpr[ e ] e' ∘' ⟦ v ⟧
     eval'-sound-k `id v = symP (idl' ⟦ v ⟧)
-    eval'-sound-k {e = f `∘ g} (f' `∘ g') v =
+    eval'-sound-k {e = f `∘ g} (f' `∘ g') v = begin
       ⟦ eval' f' (eval' g' v) ⟧                 ≡[]⟨ eval'-sound-k f' _ ⟩
       unexpr[ f ] f' ∘' ⟦ eval' g' v ⟧          ≡[]⟨ (λ i → unexpr[ f ] f' ∘' eval'-sound-k g' v i) ⟩
       unexpr[ f ] f' ∘' unexpr[ g ] g' ∘' ⟦ v ⟧ ≡[]⟨ assoc' _ _ _ ⟩
-      unexpr[ f `∘ g ] (f' `∘ g') ∘' ⟦ v ⟧      ∎
+      unexpr[ f `∘ g ] (f' `∘ g') ∘' ⟦ v ⟧      ∎[]
     eval'-sound-k (x ↑) v = vhom-sound _ (vcomp' x v) ▷ vcomp'-sound x v
-    eval'-sound-k (`hom[_]_ {f = f} {g = g} p e') v = cast[] $
+    eval'-sound-k (`hom[_]_ {f = f} {g = g} p e') v = begin[]
       ⟦ vhom[ adjust-k {f = f} {g = g} p ] (eval' e' v) ⟧ ≡[]⟨ vhom-sound (adjust-k {f = f} {g = g} p) (eval' e' v) ⟩
       ⟦ eval' e' v ⟧                                      ≡[]⟨ eval'-sound-k e' v ⟩
       unexpr[ f ] e' ∘' ⟦ v ⟧                             ≡[]⟨ to-pathp[] (sym (whisker-l p)) ⟩
-      hom[ p ] (unexpr[ f ] e') ∘' ⟦ v ⟧                  ∎
+      hom[ p ] (unexpr[ f ] e') ∘' ⟦ v ⟧                  ∎[]
 
     eval'-sound
       : (e : Expr B a b) (e' : Expr[ e ] a' b')
@@ -122,16 +122,17 @@ module NbE {o' ℓ' o'' ℓ''}
       ∙[] ap (unexpr[ e ] e' ∘'_) vid-sound ◁ idr' _
 
   abstract
-    solve' : ∀ {f g : Expr B a b} (f' : Expr[ f ] a' b') (g' : Expr[ g ] a' b')
-               {q : embed B f ≡ embed B g}
+    solve'
+      : ∀ {f g : Expr B a b} (f' : Expr[ f ] a' b') (g' : Expr[ g ] a' b')
+          {q : embed B f ≡ embed B g}
              → (p : nf B f ≡ nf B g)
              → nf' f' ≡[ p ] nf' g'
              → unexpr[ f ] f' ≡[ q ] unexpr[ g ] g'
-    solve' {f = f} {g = g} f' g' p p' = cast[] $
+    solve' {f = f} {g = g} f' g' p p' = begin[]
       unexpr[ f ] f' ≡[]˘⟨ eval'-sound f f' ⟩
       nf' f'         ≡[]⟨ p' ⟩
       nf' g'         ≡[]⟨ eval'-sound g g' ⟩
-      unexpr[ g ] g' ∎
+      unexpr[ g ] g' ∎[]
 
 module Reflection where
   module Cat = Cat.Solver.Reflection
@@ -233,6 +234,5 @@ private module Test {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' 
     f g h    : Hom x y
     f' g' h' : Hom[ f ] x' y'
 
-  test : ∀ (f' : Hom[ f ] y' z')
-       → f' ≡ hom[ idl f ] (id' ∘' f')
+  test : ∀ (f' : Hom[ f ] y' z') → f' ≡ hom[ idl f ] (id' ∘' f')
   test {f = f} f' = disp! E

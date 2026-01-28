@@ -55,8 +55,9 @@ _structures_ over morphisms.
 
 ```agda
     Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ'
-    Hom[_]-set : ∀ {a b} (f : Hom a b) (x : Ob[ a ]) (y : Ob[ b ])
-               → is-set (Hom[ f ] x y)
+    Hom[_]-set
+      : ∀ {a b} (f : Hom a b) (x : Ob[ a ]) (y : Ob[ b ])
+      → is-set (Hom[ f ] x y)
 ```
 
 We also have identity and composition of displayed morphisms, but this
@@ -68,8 +69,9 @@ indeed a homomorphism.
 
 ```agda
     id' : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
-    _∘'_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
-         → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
+    _∘'_
+      : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
+      → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
 ```
 
 Now, for the difficult part of displayed category theory: equalities.
@@ -83,7 +85,8 @@ notation for doing so.
 ```agda
   infixr 40 _∘'_
 
-  _≡[_]_ : ∀ {a b x y} {f g : Hom a b} → Hom[ f ] x y → f ≡ g → Hom[ g ] x y → Type ℓ'
+  _≡[_]_
+    : ∀ {a b x y} {f g : Hom a b} → Hom[ f ] x y → f ≡ g → Hom[ g ] x y → Type ℓ'
   _≡[_]_ {a} {b} {x} {y} f' p g' = PathP (λ i → Hom[ p i ] x y) f' g'
 
   infix 30 _≡[_]_
@@ -142,40 +145,137 @@ introducing them in the first place.
       → f' ≡[ p ] hom[ p ] f'
 ```
 
+## Developer documentation
+
+::: warning
+This section serves to document constructs derived from the definition
+of displayed categories that aid in the formalisation, and not
+necessarily interesting mathematical concepts.
+:::
+
 <!--
 ```agda
-  _∙[]_ : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
-        → {f' : Hom[ f ] x y} {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-        → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
-  _∙[]_ {x = x} {y = y} p' q' = _∙P_ {B = λ f → Hom[ f ] x y} p' q'
+  private variable
+    a b : Ob
+    a' b' x y : Ob[ a ]
 
-  ∙[-]-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
-        → {f' : Hom[ f ] x y} {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-        → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
-  ∙[-]-syntax {x = x} {y = y} p p' q' = _∙P_ {B = λ f → Hom[ f ] x y} p' q'
+    e f g h : Hom a b
+    e' f' g' h' : Hom[ f ] a' b'
+    p q r s : f ≡ g
+    p' q' r' s' : f' ≡[ p ] g'
+```
+-->
 
-  ≡[]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
-               → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-               → g' ≡[ q ] h' → f' ≡[ p ] g' → f' ≡[ p ∙ q ] h'
-  ≡[]⟨⟩-syntax f' q' p' = p' ∙[] q'
+### Operators for composing paths-over
 
-  ≡[-]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
-               → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-               → g' ≡[ q ] h' → f' ≡[ p ] g' → f' ≡[ p ∙ q ] h'
-  ≡[-]⟨⟩-syntax f' p q' p' = p' ∙[] q'
+Since Agda often struggles to infer the arguments to the generic
+displayed composition operator `_∙P_`{.Agda} in the setting of displayed
+categories, we provide variants which specify that the dependency is
+only on paths in the base category. One variant (`∙[-]-syntax`{.Agda})
+takes path over which the left argument is displayed explicitly, and the
+other `_∙[]_`{.Agda} does this implicitly.
 
-  _≡[]˘⟨_⟩_ : ∀ {a b x y} {f g h : Hom a b} {p : g ≡ f} {q : g ≡ h}
-            → (f' : Hom[ f ] x y) {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
-            → g' ≡[ p ] f' → g' ≡[ q ] h' → f' ≡[ sym p ∙ q ] h'
-  f' ≡[]˘⟨ p' ⟩ q' = symP p' ∙[] q'
+```agda
+  ∙[-]-syntax
+    : (p : f ≡ g) {q : g ≡ h}
+    → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
+  ∙[-]-syntax p p' q' = _∙P_ {B = λ f → Hom[ f ] _ _} p' q'
 
   syntax ∙[-]-syntax p p' q' = p' ∙[ p ] q'
-  syntax ≡[]⟨⟩-syntax f' q' p' = f' ≡[]⟨ p' ⟩ q'
-  syntax ≡[-]⟨⟩-syntax p f' q' p' = f' ≡[ p ]⟨ p' ⟩ q'
+```
+
+```agda
+  _∙[]_ : {p : f ≡ g} {q : g ≡ h} → f' ≡[ p ] g' → g' ≡[ q ] h' → f' ≡[ p ∙ q ] h'
+  _∙[]_ p' q' = p' ∙[ _ ] q'
 
   infixr 30 _∙[]_ ∙[-]-syntax
-  infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
+```
 
+### Equational reasoning in displayed categories
+
+Iterated composition of dependent paths incurs a quadratic overhead when
+compared to composition of ordinary paths, since the elaborated form of
+each composition operator must store the paths over which both sides are
+displayed:
+
+<!--
+```agda
+  -- Generalisation really doesn't like generalising over the bases here
+  module
+    _ {a b} {d e f g h : Hom a b} {p : d ≡ e} {q : e ≡ f} {r : f ≡ g} {s : g ≡ h}
+    where
+```
+-->
+
+```agda
+    _ : p' ∙[] q' ∙[] r' ∙[] s' ≡
+      _∙[]_      {p = p} {q = q ∙ r ∙ s} p'
+        (_∙[]_   {p = q} {q = r ∙ s}     q'
+          (_∙[]_ {p = r} {q = s}         r'
+            s'))
+    _ = refl
+```
+
+Predictably, this is quite bad for performance: any part of the Agda
+implementation which needs to traverse terms will spend $O(n^2)$ time
+going through this redundant information, which could in principle be
+recovered from the types of the arguments.
+
+Surprisingly, we can alleviate this by working instead with paths in the
+*total space* of $x' \to_{-} y'$, as a family over $x \to y$. We
+introduce an auxiliary type `_∫≡_`{.Agda}, from which we can project a
+path in $x' \to_{-} y'$, either over the constructed path between the
+base maps, or (because $\hom$-sets are [[sets]]) over an arbitrary path
+in the base.
+
+```agda
+  _∫≡_ : Hom[ f ] x y → Hom[ g ] x y → Type _
+  f' ∫≡ g' = Path (Σ (Hom _ _) λ f → Hom[ f ] _ _) (_ , f') (_ , g')
+
+  begin_ : (p : f' ∫≡ g') → f' ≡[ ap fst p ] g'
+  begin_ = ap snd
+
+  begin[]_ : f' ∫≡ g' → f' ≡[ p ] g'
+  begin[]_ {f' = f'} {g' = g'} p = subst (f' ≡[_] g') prop! (ap snd p)
+
+  infix 1 begin_ begin[]_
+```
+
+We can then provide combinators for composing a path in the total space
+with an ordinary dependent path, with variants for explicitly specifying
+the base path and for inverting the path to be composed.
+
+```agda
+  ≡[-]⟨⟩-syntax
+    : (f' : Hom[ f ] x y) (p : f ≡ g) → g' ∫≡ h' → f' ≡[ p ] g' → f' ∫≡ h'
+  ≡[-]⟨⟩-syntax f' p q' p' = ap₂ _,_ (p ∙ ap fst q') (p' ∙[] ap snd q')
+
+  syntax ≡[-]⟨⟩-syntax f' p q' p' = f' ≡[ p ]⟨ p' ⟩ q'
+
+  ≡[]⟨⟩-syntax : (f' : Hom[ f ] x y) → g' ∫≡ h' → f' ≡[ p ] g' → f' ∫≡ h'
+  ≡[]⟨⟩-syntax {p = p} f' q' p' = f' ≡[ _ ]⟨ p' ⟩ q'
+
+  ≡[]˘⟨⟩-syntax : (f' : Hom[ f ] x y) → g' ∫≡ h' → g' ≡[ p ] f' → f' ∫≡ h'
+  ≡[]˘⟨⟩-syntax f' q' p' = f' ≡[]⟨ symP p' ⟩ q'
+
+  syntax ≡[]⟨⟩-syntax f' q' p' = f' ≡[]⟨ p' ⟩ q'
+  syntax ≡[]˘⟨⟩-syntax f' q' p' = f' ≡[]˘⟨ p' ⟩ q'
+
+  infixr 2 ≡[-]⟨⟩-syntax ≡[]⟨⟩-syntax ≡[]˘⟨⟩-syntax
+```
+
+Finally, for the final step, we must provide a slight variation on the
+reflexivity operator which pairs the given displayed map with its base.
+
+```agda
+  _∎[] : (f' : Hom[ f ] x y) → f' ∫≡ f'
+  _∎[] _ = refl
+
+  infix 3 _∎[]
+```
+
+<!--
+```agda
 record Trivially-graded {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type (o ⊔ ℓ ⊔ lsuc o' ⊔ lsuc ℓ') where
   open Precategory B
   field

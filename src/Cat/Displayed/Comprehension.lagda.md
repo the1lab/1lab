@@ -328,34 +328,29 @@ We can also characterize how duplication interacts with extension.
   dup-extend
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
     → δᶜ ∘ (σ ⨾ˢ f) ≡ (σ ⨾ˢ f ⨾ˢ (σ ⨾ˢ' f)) ∘ δᶜ
-  dup-extend {σ = σ} {f = f} =
-    sub-pullback.unique₂ π*.cartesian
-      {p = refl}
-      (cancell proj-dup )
-      (cancell extend-proj-dup)
-      (pulll (sub-proj _)
-       ∙ cancelr proj-dup)
-      (pulll (sym sub-∘ ∙ ap₂ _⨾ˢ_ (sub-proj _) (sub-proj' _) ∙ sub-∘)
-       ∙ cancelr extend-proj-dup)
+  dup-extend {σ = σ} {f = f} = sub-pullback.unique₂ π*.cartesian {p = refl}
+    (cancell proj-dup)
+    (cancell extend-proj-dup)
+    (pulll (sub-proj _)
+      ∙ cancelr proj-dup)
+    (pulll (sym sub-∘ ∙ ap₂ _⨾ˢ_ (sub-proj _) (sub-proj' _) ∙ sub-∘)
+      ∙ cancelr extend-proj-dup)
 
   dup-extend'
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
     → δᶜ' ∘' (σ ⨾ˢ' f) ≡[ dup-extend ] (σ ⨾ˢ f ⨾ˢ' (σ ⨾ˢ' f)) ∘' δᶜ'
-  dup-extend' {σ = σ} {f = f} =
-    π*.uniquep₂ _ _ _ _ _
-      (cancell[] _ proj-dup')
-      (pulll[] _ (sub-proj' (σ ⨾ˢ' f)) ∙[] cancelr[] _ proj-dup')
+  dup-extend' {σ = σ} {f = f} = π*.uniquep₂ _ _ _ _ _
+    (cancell[] _ proj-dup')
+    (pulll[] _ (sub-proj' (σ ⨾ˢ' f)) ∙[] cancelr[] _ proj-dup')
 ```
 
 ```agda
   extend-dup² : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ δᶜ') ∘ δᶜ ≡ δᶜ ∘ δᶜ
-  extend-dup² =
-    sub-pullback.unique₂ π*.cartesian
-      {p = refl}
-      (pulll (sub-proj _) ∙ cancelr proj-dup)
-      (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup' ∙ sub-id))
-      (cancell proj-dup)
-      (cancell extend-proj-dup)
+  extend-dup² = sub-pullback.unique₂ π*.cartesian {p = refl}
+    (pulll (sub-proj _) ∙ cancelr proj-dup)
+    (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup' ∙ sub-id))
+    (cancell proj-dup)
+    (cancell extend-proj-dup)
 
   extend-dup²' : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ' δᶜ') ∘' δᶜ' ≡[ extend-dup² ] δᶜ' ∘' δᶜ'
   extend-dup²' = π*.uniquep₂ _ _ _ _ _
@@ -382,8 +377,7 @@ of is a projection $\Gamma.A \to \Gamma$.
 ```agda
   proj : Extend => πᶠ E
   proj .η (Γ , x) = πᶜ
-  proj .is-natural (Γ , x) (Δ , y) (∫hom σ f) =
-    sub-proj f
+  proj .is-natural (Γ , x) (Δ , y) (∫hom σ f) = sub-proj f
 ```
 
 ## Comprehension structures as comonads {defines="comprehension-comonad"}
@@ -453,8 +447,7 @@ of $X$.
   comprehend .F₀ (Γ , x) = Γ ⨾ x , weaken x x
   comprehend .F₁ (∫hom σ f) = ∫hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
   comprehend .F-id = ∫Hom-path E sub-id sub-id'
-  comprehend .F-∘ (∫hom σ f) (∫hom δ g) =
-    ∫Hom-path E sub-∘ sub-∘'
+  comprehend .F-∘ (∫hom σ f) (∫hom δ g) = ∫Hom-path E sub-∘ sub-∘'
 ```
 
 The counit is given by the projection substitution, and comultiplication
@@ -462,20 +455,13 @@ is given by duplication.
 
 ```agda
   comonad : Comonad-on comprehend
-  comonad .counit .η (Γ , x) =
-    ∫hom πᶜ πᶜ'
-  comonad .counit .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
-    ∫Hom-path E (sub-proj f) (sub-proj' f)
-  comonad .comult .η (Γ , x) =
-    ∫hom δᶜ δᶜ'
-  comonad .comult .is-natural (Γ , x) (Δ , g) (∫hom σ f) =
-    ∫Hom-path E dup-extend dup-extend'
-  comonad .δ-unitl =
-    ∫Hom-path E extend-proj-dup extend-proj-dup'
-  comonad .δ-unitr =
-    ∫Hom-path E proj-dup proj-dup'
-  comonad .δ-assoc =
-    ∫Hom-path E extend-dup² extend-dup²'
+  comonad .counit .η (Γ , x) = ∫hom πᶜ πᶜ'
+  comonad .comult .η (Γ , x) = ∫hom δᶜ δᶜ'
+  comonad .counit .is-natural (Γ , x) (Δ , g) (∫hom σ f) = ∫Hom-path E _ (sub-proj' f)
+  comonad .comult .is-natural (Γ , x) (Δ , g) (∫hom σ f) = ∫Hom-path E _ dup-extend'
+  comonad .δ-unitl = ∫Hom-path E _ extend-proj-dup'
+  comonad .δ-unitr = ∫Hom-path E _ proj-dup'
+  comonad .δ-assoc = ∫Hom-path E _ extend-dup²'
 ```
 
 To see that this comonad is a comprehension comonad, note that the
@@ -500,9 +486,7 @@ We also show that comprehension comonads yield comprehension structures.
 
 ```agda
 Comonad→comprehension
-  : Cartesian-fibration E
-  → Comprehension-comonad
-  → Comprehension-structure
+  : Cartesian-fibration E → Comprehension-comonad → Comprehension-structure
 ```
 
 We begin by constructing a [vertical functor] $\cE \to B^{\to}$ that maps
@@ -537,8 +521,7 @@ cartesian, which finishes off the proof.
 
 ```agda
   fibred : is-fibred-functor vert
-  fibred .F-cartesian {f = σ} {f' = f'} cart =
-    pullback→cartesian B $
+  fibred .F-cartesian {f = σ} {f' = f'} cart = pullback→cartesian B $
     cartesian+total-pullback→pullback E fib
       counit-cartesian counit-cartesian
       (cartesian-pullback cart)

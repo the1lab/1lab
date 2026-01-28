@@ -165,10 +165,9 @@ module _
   open Functor
   open _=>_
 
-  private
-    variable
-      a b c d : Ob
-      f g h k : Hom a b
+  private variable
+    a b c d : Ob
+    f g h k : Hom a b
 ```
 -->
 
@@ -263,12 +262,10 @@ applying various universal properties.
       k^!h^*-comparison b' = k.universalv (g.^* b') (h^*-interp b')
 
       comparison-square : ∀ {b'} → h^*k^!-comparison b' ≡ k^!h^*-comparison b'
-      comparison-square {b'} =
-        h.uniquep₂ (f.^! b') _ _ (idr _) _ _
-          (h.commutesv _ _)
-          (k.uniquep (g.^* b') _ (idr _) _ _
-            (pullr[] _ (k.commutesv (g.^* b') _)
-             ∙[] h.commutesp _ (sym p) (f.ι b' ∘' g.π b')))
+      comparison-square {b'} = h.uniquep₂ (f.^! b') _ _ (idr _) _ _
+        (h.commutesv _ _) (k.uniquep (g.^* b') _ (idr _) _ _
+          (pullr[] _ (k.commutesv (g.^* b') _)
+            ∙[] h.commutesp _ (sym p) (f.ι b' ∘' g.π b')))
 ```
 
 The immortal pentagon diagram above *almost* lets us "interpolate" $B'$
@@ -310,15 +307,12 @@ Beck-Chevalley to deduce that it is cocartesian.
 
 ```agda
     left-beck-chevalley→comparison-invertible left-bc {b'} =
-      make-invertible↓ comparison⁻¹ left-beck-invl left-beck-invr
-      where
+      make-invertible↓ comparison⁻¹ left-beck-invl left-beck-invr where
         h^*-interp-cocartesian : is-cocartesian E k (h^*-interp b')
-        h^*-interp-cocartesian =
-          left-bc
-            (symP (h.commutesp (f.^! b') (sym p) (f.ι b' ∘' g.π b')))
-            (f.cocartesian b')
-            (g.cartesian b')
-            (h.cartesian (f.^! b'))
+        h^*-interp-cocartesian = left-bc (symP (h.commutesp (f.^! b') (sym p) _))
+          (f.cocartesian b')
+          (g.cartesian b')
+          (h.cartesian (f.^! b'))
 
         module h^*-interp = is-cocartesian h^*-interp-cocartesian
 ```
@@ -357,13 +351,13 @@ commutes by a short diagram chase.
 
 ```agda
         left-beck-invl : h^*k^!-comparison b' ∘' comparison⁻¹ ≡[ idl id ] id'
-        left-beck-invl =
-          symP $ h.uniquep₂ _ _ _ (elimr (idl id)) _ _ (idr' _) $
-          symP $ h^*-interp.uniquep₂ _ _ _ _ _ (h.commutesp _ (sym p) (f.ι b' ∘' g.π b')) $
-            (h.π (f.^! b') ∘' h^*k^!-comparison b' ∘' comparison⁻¹) ∘' h^*-interp b' ≡[]⟨ pullr[] _ (pullr[] _ (h^*-interp.commutesv _)) ⟩
-            h.π (f.^! b') ∘' h^*k^!-comparison b' ∘' k.ι (g.^* b')                   ≡[]⟨ pulll[] _ (h.commutesv (f.^! b') _) ⟩
-            k^!-interp b' ∘' k.ι (g.^* b')                                           ≡[]⟨ k.commutesp _ (sym p) (f.ι b' ∘' g.π b') ⟩
-            f.ι b' ∘' g.π b'                                                         ∎
+        left-beck-invl = symP $ h.uniquep₂ _ _ _ (elimr (idl id)) _ _ (idr' _)
+          $ symP $ h^*-interp.uniquep₂ _ _ _ _ _ (h.commutesp _ (sym p) (f.ι b' ∘' g.π b'))
+          $ begin
+          (h.π (f.^! b') ∘' h^*k^!-comparison b' ∘' comparison⁻¹) ∘' h^*-interp b' ≡[]⟨ pullr[] _ (pullr[] _ (h^*-interp.commutesv _)) ⟩
+          h.π (f.^! b') ∘' h^*k^!-comparison b' ∘' k.ι (g.^* b')                   ≡[]⟨ pulll[] _ (h.commutesv (f.^! b') _) ⟩
+          k^!-interp b' ∘' k.ι (g.^* b')                                           ≡[]⟨ k.commutesp _ (sym p) (f.ι b' ∘' g.π b') ⟩
+          f.ι b' ∘' g.π b'                                                         ∎[]
 ```
 
 The right inverse is a bit trickier. We start by appealing to the
@@ -396,12 +390,11 @@ $(\iota \circ \pi)^{*}$ as a cocartesian map.
 
 ```agda
         left-beck-invr : comparison⁻¹ ∘' h^*k^!-comparison b' ≡[ idl id ] id'
-        left-beck-invr =
-          symP $ k.uniquep₂ _ _ _ _ _ _ (idl' _) $
+        left-beck-invr = symP $ k.uniquep₂ _ _ _ _ _ _ (idl' _) $ begin
           (comparison⁻¹ ∘' h^*k^!-comparison b') ∘' k.ι (g.^* b')  ≡[]⟨ (refl⟩∘'⟨ comparison-square) ⟩∘'⟨refl ⟩
           (comparison⁻¹ ∘' k^!h^*-comparison b') ∘' k.ι (g.^* b')  ≡[]⟨ pullr[] _ (k.commutesv (g.^* b') _) ⟩
           comparison⁻¹ ∘' h^*-interp b'                            ≡[]⟨ h^*-interp.commutesv _ ⟩
-          k.ι (g.^* b')                                            ∎
+          k.ι (g.^* b')                                            ∎[]
 ```
 
 We shall now show the converse of our previous statement: if the
@@ -450,31 +443,31 @@ which lets us transfer the Beck-Chevalley property.
         δ = cocartesian-codomain-unique E (f.cocartesian b') f'-cocart
 
         h^*δ : h.^* (f.^! b') ≅↓ h.^* d'
-        h^*δ =
-          make-vertical-iso
-            (h.universal' d' id-comm (δ .to' ∘' h.π (f.^! b')))
-            (h.universal' (f.^! b') id-comm (δ .from' ∘' h.π d'))
+        h^*δ = make-vertical-iso
+          (h.universal' d' id-comm (δ .to' ∘' h.π (f.^! b')))
+          (h.universal' (f.^! b') id-comm (δ .from' ∘' h.π d'))
           (h.uniquep₂ _ _ _ _ _ _
-            (pulll[] _ (h.commutesp _ id-comm _)
-             ∙[] pullr[] _ (h.commutesp _ id-comm _)
-             ∙[] cancell[] _ (δ .invl'))
+            (   pulll[] _ (h.commutesp _ id-comm _)
+            ∙[] pullr[] _ (h.commutesp _ id-comm _)
+            ∙[] cancell[] _ (δ .invl'))
             (idr' _))
           (h.uniquep₂ _ _ _ _ _ _
-            (pulll[] _ (h.commutesp _ id-comm _)
-             ∙[] pullr[] _ (h.commutesp _ id-comm _)
-             ∙[] cancell[] _ (δ .invr'))
+            (   pulll[] _ (h.commutesp _ id-comm _)
+            ∙[] pullr[] _ (h.commutesp _ id-comm _)
+            ∙[] cancell[] _ (δ .invr'))
             (idr' _))
 
         abstract
           square : γ .to' ∘' h^*δ .to' ∘' h^*-interp b' ∘' α .to' ≡[ cancell (idl _) ∙ idr _ ] k'
-          square =
-            h'.uniquep₂ _ _ _ _ _
-              (pulll[] _ (h'.commutesp (idr _) _)
-               ∙[] pulll[] _ (h.commutesp _ id-comm _)
-               ∙[] pullr[] _ (pulll[] _ (h.commutesp _ (sym p) _))
-               ∙[] pulll[] _ (pulll[] _ (f.commutesp _ (idl _) _))
-               ∙[] pullr[] _ (g.commutesp _ (idr _) _))
-              (symP q)
+          square = h'.uniquep₂ _ _ _ _ _
+            (begin
+              _ ≡[]⟨ pulll[] _ (h'.commutesp (idr _) _) ⟩
+              _ ≡[]⟨ pulll[] _ (h.commutesp _ id-comm _) ⟩
+              _ ≡[]⟨ pullr[] _ (pulll[] _ (h.commutesp _ (sym p) _)) ⟩
+              _ ≡[]⟨ pulll[] _ (pulll[] _ (f.commutesp _ (idl _) _)) ⟩
+              _ ≡[]⟨ pullr[] _ (g.commutesp _ (idr _) _) ⟩
+              _ ∎[])
+            (symP q)
 ```
 </details>
 
@@ -513,12 +506,11 @@ Finally, since $((\iota \circ\ \pi)_{!})^{*}$ is monic, we have $\alpha
         abstract
           comparison-inv-interp : ∀ b' → comparison.inv' b' ∘' h^*-interp b' ≡[ idl k ] k.ι (g.^* b')
           comparison-inv-interp b' =
-            cast[] $
-            invertible[]→monic[] (comparison-inv b') _ _ _ $
+            cast[] $ invertible[]→monic[] (comparison-inv b') _ _ _ $ begin
             h^*k^!-comparison b' ∘' comparison.inv' b' ∘' h^*-interp b' ≡[]⟨ cancell[] _ (comparison.invl' b') ⟩
             h^*-interp b'                                               ≡[]˘⟨ k.commutesv (g.^* b') (h^*-interp b') ⟩
             k^!h^*-comparison b' ∘' k.ι (g.^* b')                       ≡[]˘⟨ comparison-square ⟩∘'⟨refl ⟩
-            h^*k^!-comparison b' ∘' k.ι (g.^* b')                       ∎
+            h^*k^!-comparison b' ∘' k.ι (g.^* b')                       ∎[]
 ```
 
 Now that we have our arsenal of lemmas, we shall tackle our original
@@ -600,16 +592,16 @@ tedious than one would hope, so we omit the details.
 </summary>
 
 ```agda
-          mate-comparison {b'} =
-            π*.uniquev (comparison b') $
-            k.uniquep _ _ _ _ _ $
-            extendr[] _ (Fib.extendrf (Fib.pullrf (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _)))
-            ∙[] extendr[] _ (Fib.pullrf (pulll[] _ (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _)))
-            ∙[] extendr[] _ (extendl[] _ (pulll[] _ (left-adjoint→counit-commutesv E E-fib Lᵏ⊣k^*)))
-            ∙[] pullr[] _ (pulll[] _ (π*.commutesv _))
-            ∙[] pulll[] _ (π*.commutesp (sym p) _)
-            ∙[] pullr[] _ (π*.commutesp id-comm _)
-            ∙[] pulll[] _ (wrap (idr f))
+          mate-comparison {b'} = π*.uniquev (comparison b') $ k.uniquep _ _ _ _ _ $
+            begin
+              _ ≡[]⟨ extendr[] _ (Fib.extendrf (Fib.pullrf (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
+              _ ≡[]⟨ extendr[] _ (Fib.pullrf (pulll[] _ (left-adjoint→cocartesian-lift-natural E E-fib Lᵏ⊣k^* _))) ⟩
+              _ ≡[]⟨ extendr[] _ (extendl[] _ (pulll[] _ (left-adjoint→counit-commutesv E E-fib Lᵏ⊣k^*))) ⟩
+              _ ≡[]⟨ pullr[] _ (pulll[] _ (π*.commutesv _)) ⟩
+              _ ≡[]⟨ pulll[] _ (π*.commutesp (sym p) _) ⟩
+              _ ≡[]⟨ pullr[] _ (π*.commutesp id-comm _) ⟩
+              _ ≡[]⟨ pulll[] _ (wrap (idr f)) ⟩
+              _ ∎[]
 ```
 </details>
 

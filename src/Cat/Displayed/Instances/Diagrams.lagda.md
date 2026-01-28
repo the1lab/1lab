@@ -100,10 +100,9 @@ transformations between them.
 
   const-ntl
     : ∀ {x y x' y'} {f : Hom x y} → Hom[ f ] x' y'
-    → (ConstL x') =[ constⁿ f ]=>l (ConstL y')
+    → ConstL x' =[ constⁿ f ]=>l ConstL y'
   const-ntl f' .η' _ = f'
-  const-ntl f' .is-natural' _ _ _ =
-    cast[] (idr' _ ∙[] (symP (idl' _)))
+  const-ntl f' .is-natural' _ _ _ = cast[] (idr' _ ∙[] (symP (idl' _)))
 ```
 
 We also have a vertical functor from $\cE$ to the fibration of diagrams
@@ -121,10 +120,8 @@ Next, we note that liftings of the constant functor correspond with
 diagrams in fibre categories.
 
 ```agda
-  ConstL→Diagram
-    : ∀ {x} → Lifting {J = J} E (Const x) → Functor J (Fibre E x)
-  Diagram→ConstL
-    : ∀ {x} → Functor J (Fibre E x) → Lifting {J = J} E (Const x)
+  ConstL→Diagram : ∀ {x} → Lifting {J = J} E (Const x) → Functor J (Fibre E x)
+  Diagram→ConstL : ∀ {x} → Functor J (Fibre E x) → Lifting {J = J} E (Const x)
 ```
 
 <!--
@@ -132,14 +129,12 @@ diagrams in fibre categories.
   ConstL→Diagram F' .F₀ = F' .F₀'
   ConstL→Diagram F' .F₁ = F' .F₁'
   ConstL→Diagram F' .F-id = cast[] (F' .F-id')
-  ConstL→Diagram F' .F-∘ f g =
-    from-pathp[]⁻ $ cast[] {q = sym (idl _)} (F' .F-∘' f g)
+  ConstL→Diagram F' .F-∘ f g = from-pathp[]⁻ $ cast[] (F' .F-∘' f g)
 
   Diagram→ConstL F .F₀' = F .F₀
   Diagram→ConstL F .F₁' = F .F₁
   Diagram→ConstL F .F-id' = cast[] (F .F-id)
-  Diagram→ConstL F .F-∘' f g =
-    cast[] {p = sym (idl _)} $ to-pathp[]⁻ (F .F-∘ f g)
+  Diagram→ConstL F .F-∘' f g = cast[] $ to-pathp[]⁻ (F .F-∘ f g)
 ```
 -->
 
@@ -166,10 +161,9 @@ functor.
     ap hom[] (cast[] $ α' .is-natural' x y f)
 
   Diagram-nat→ConstL-natl α .η' = α .η
-  Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural' x y f =
-    cast[] $
-      to-pathp[] (α .is-natural x y f)
-      ∙[] symP (coh[ idl id ] (G .F₁ f ∘' α .η x))
+  Diagram-nat→ConstL-natl {F = F} {G = G} α .is-natural' x y f = cast[] $
+    to-pathp[] (α .is-natural x y f)
+    ∙[] symP (coh[ idl id ] (G .F₁ f ∘' α .η x))
 ```
 -->
 

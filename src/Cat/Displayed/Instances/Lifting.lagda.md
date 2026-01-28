@@ -272,10 +272,10 @@ composition.
     → {α : G => H} {β : F => G}
     → G' =[ α ]=>l H' → F' =[ β ]=>l G' → F' =[ α ∘nt β ]=>l H'
   _∘ntl_ α' β' .η' j = α' .η' j ∘' β' .η' j
-  _∘ntl_  {F' = F'} {G'} {H'} α' β' .is-natural' i j f' =
+  _∘ntl_  {F' = F'} {G'} {H'} α' β' .is-natural' i j f' = begin
     (α' .η' j ∘' β' .η' j) ∘' F' .F₁' f' ≡[]⟨ pullr[] _ (β' .is-natural' i j f') ⟩
     α' .η' j ∘' G' .F₁' f' ∘' β' .η' i   ≡[]⟨ extendl[] _ (α' .is-natural' i j f') ⟩
-    H' .F₁' f' ∘' α' .η' i ∘' β' .η' i   ∎
+    H' .F₁' f' ∘' α' .η' i ∘' β' .η' i   ∎[]
 ```
 
 ## The fibration of liftings
@@ -386,22 +386,19 @@ reindexing $G'$ pointwise.
 </summary>
 
 ```agda
-    G'* .F-id' =
-      symP $ π*.uniquep _ (sym (F .F-id)) (α .is-natural _ _ _) id' $
-        π* _ _ ∘' id'          ≡[]⟨ idr' _ ⟩
-        π* _ _                 ≡[]⟨ symP (idl' _) ⟩
-        id' ∘' π* _ _          ≡[]⟨ (λ i → G' .F-id' (~ i) ∘' π* (α .η _) (G' .F₀' _)) ⟩
-        G' .F₁' J.id ∘' π* _ _ ∎
+    G'* .F-id' = symP $ π*.uniquep _ _ _ _ $ begin
+      π* _ _ ∘' id'          ≡[]⟨ idr' _ ⟩
+      π* _ _                 ≡[]⟨ symP (idl' _) ⟩
+      id' ∘' π* _ _          ≡[]⟨ (λ i → G' .F-id' (~ i) ∘' π* (α .η _) (G' .F₀' _)) ⟩
+      G' .F₁' J.id ∘' π* _ _ ∎[]
 
-    G'* .F-∘' f g =
-      symP $ π*.uniquep _
-        (sym (F .F-∘ f g)) (α .is-natural _ _ _ ) (G'* .F₁' f ∘' G'* .F₁' g) $
-          π* _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (π*.commutes _ _) ⟩
-          hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
-          (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (π*.commutes _ _) ⟩
-          G' .F₁' f ∘' hom[] (G' .F₁' g ∘' π* _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
-          G' .F₁' f ∘' (G' .F₁' g ∘' π* _ _)        ≡[]⟨ pulll[] _ (symP (G' .F-∘' f g)) ⟩
-          G' .F₁' (f J.∘ g) ∘' π* _ _               ∎
+    G'* .F-∘' f g = symP $ π*.uniquep _ _ _ _ $ begin
+      π* _ _ ∘' G'* .F₁' f ∘' G'* .F₁' g        ≡[]⟨ pulll[] _ (π*.commutes _ _) ⟩
+      hom[] (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g ≡[ ap (_∘ F.F₁ g) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-l (sym (α .is-natural _ _ _))) ⟩
+      (G' .F₁' f ∘' π* _ _) ∘' G'* .F₁' g       ≡[]⟨ pullr[] _ (π*.commutes _ _) ⟩
+      G' .F₁' f ∘' hom[] (G' .F₁' g ∘' π* _ _)  ≡[ ap (G.F₁ f ∘_) (α .is-natural _ _ _) ]⟨ to-pathp[]⁻ (whisker-r (sym (α .is-natural _ _ _))) ⟩
+      G' .F₁' f ∘' (G' .F₁' g ∘' π* _ _)        ≡[]⟨ pulll[] _ (symP (G' .F-∘' f g)) ⟩
+      G' .F₁' (f J.∘ g) ∘' π* _ _               ∎[]
 ```
 
 </details>
@@ -418,8 +415,8 @@ implies that our natural transformation is cartesian.
     α-lift : Cartesian-lift Liftings α G'
     α-lift .Cartesian-lift.x' = G'*
     α-lift .Cartesian-lift.lifting = α'*
-    α-lift .Cartesian-lift.cartesian =
-      pointwise-cartesian→Liftings-cartesian λ x → π*.cartesian
+    α-lift .Cartesian-lift.cartesian = pointwise-cartesian→Liftings-cartesian λ x →
+      π*.cartesian
 ```
 
 ## Total category

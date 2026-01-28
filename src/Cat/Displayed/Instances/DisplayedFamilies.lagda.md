@@ -242,18 +242,19 @@ We can use this lemma to construct a universal map in $\cE$.
 Commutivity and uniqueness follow from the fact that $f'$ is cartesian.
 
 ```agda
-  cart .commutes {x} {P} m h' =
-    Σ-pathp (Slice-pathp (coh m h')) $ cast[] $
-      hom[] (f' ∘' map-tot' (cart .universal m h')) ≡[]⟨ ap hom[] (f'.commutes _ _) ⟩
-      hom[] (hom[] (map-tot' h'))                   ≡[ coh m h' ]⟨ to-pathp[]⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
-      map-tot' h' ∎
+  cart .commutes {x} {P} m h' = Σ-pathp (Slice-pathp (coh m h')) $ begin[]
+    hom[] (f' ∘' map-tot' (cart .universal m h'))
+      ≡[]⟨ ap hom[] (f'.commutes _ _) ⟩
+    hom[] (hom[] (map-tot' h'))
+      ≡[ coh m h' ]⟨ to-pathp[]⁻ (hom[]-∙ _ _ ∙ reindex _ _) ⟩
+    map-tot' h'
+      ∎[]
   cart .unique {x} {P} {m = m} {h' = h'} m' p =
     Σ-path (Slice-pathp (sym (fam-square m' ∙ idl _))) $
     let
-      p =
-        f'.unique _ $ from-pathp[]⁻ $ cast[] {q = coh m h'} $
+      p = f'.unique _ $ from-pathp[]⁻ $ begin[]
         f' ∘' hom[] (map-tot' m') ≡[]⟨ to-pathp[] (smashr _ (ap (f ∘_) (fam-square m' ∙ idl _)) ∙ reindex _ _) ⟩
         hom[] (f' ∘' map-tot' m') ≡[]⟨ ap map-tot' p ⟩
-        map-tot' h'               ∎
+        map-tot' h'               ∎[]
     in sym (hom[]-is-subst _ _) ∙ p
 ```

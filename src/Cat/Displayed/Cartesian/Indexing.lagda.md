@@ -95,13 +95,10 @@ of heart. </summary>
     mi .eta x = π* id x
     mi .inv x = π*.universalv id'
     mi .eta∘inv x = cancel _ _ (π*.commutesv _)
-    mi .inv∘eta x = sym $ π*.uniquep₂ _ _ _ _ _
-      (idr' _)
-      (Fib.cancellf (π*.commutesv _))
-    mi .natural x y f =
-      sym $ from-pathp[] $ cast[] $
-        π*.commutesp id-comm _
-        ∙[] Fib.to-fibre
+    mi .inv∘eta x = sym $ π*.uniquep₂ _ _ _ _ _ (idr' _) $
+      Fib.cancellf (π*.commutesv _)
+    mi .natural x y f = sym $ from-pathp[] $ cast[] $
+      π*.commutesp id-comm _ ∙[] Fib.to-fibre
 ```
 </details>
 
@@ -147,15 +144,15 @@ base along a composite.
   : ∀ {a b c} {f : Hom b c} {g : Hom a b} {x y : Ob[ c ]} (f' : Hom[ id ] x y)
   → rebase g (rebase f f') Fib.∘ ^*-comp-to ≡ ^*-comp-to Fib.∘ rebase (f ∘ g) f'
 ^*-comp-to-natural {f = f} {g = g} f' =
-  ap hom[] $ cartesian→weak-monic E (π*.cartesian) _ _ _ $ cast[] $
-    pulll[] _ (π*.commutesp id-comm _)
-    ∙[] pullr[] _ (π*.commutesv _)
-    ∙[] π*.uniquep₂ _ id-comm-sym _ _ _
-      (pulll[] _ (π*.commutesp id-comm _)
-        ∙[] pullr[] _ (π*.commutes _ _))
-      (pulll[] _ (π*.commutes _ _)
-        ∙[] π*.commutesp id-comm _)
-    ∙[] pushl[] _ (symP (π*.commutesv _))
+  ap hom[] $ cartesian→weak-monic E (π*.cartesian) _ _ _ $ begin[]
+    _ ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
+    _ ≡[]⟨ pullr[] _ (π*.commutesv _) ⟩
+    _ ≡[]⟨
+      π*.uniquep₂ _ id-comm-sym _ _ _
+        (pulll[] _ (π*.commutesp id-comm _) ∙[] pullr[] _ (π*.commutes _ _))
+        (pulll[] _ (π*.commutes _ _) ∙[] π*.commutesp id-comm _) ⟩
+    _ ≡[]⟨ pushl[] _ (symP (π*.commutesv _)) ⟩
+    _ ∎[]
 ```
 -->
 
@@ -191,18 +188,20 @@ We also prove a lemma that will be useful later, relating base changes
 along equal morphisms.
 
 ```agda
-base-changes : ∀ {a b}
-  → Functor (Locally-discrete (B ^op) .Prebicategory.Hom a b)
-            Cat[ Fibre E a , Fibre E b ]
+base-changes
+  : ∀ {a b}
+  → Functor
+      (Locally-discrete (B ^op) .Prebicategory.Hom a b)
+      Cat[ Fibre E a , Fibre E b ]
 base-changes = Disc'-adjunct base-change
 
 base-change-coherence
   : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ g)
   → π* g b' ∘' base-changes .F₁ p .η b'
-  ≡[ idr _ ∙ sym p ] π* f b'
+  ≡[ idr _ ∙ sym p ]
+    π* f b'
 base-change-coherence {b' = b'} {f} = J
-  (λ g p → π* g b' ∘' base-changes .F₁ p .η b'
-         ≡[ idr _ ∙ sym p ] π* f b')
+  (λ g p → π* g b' ∘' base-changes .F₁ p .η b' ≡[ idr _ ∙ sym p ] π* f b')
   (elimr' refl Regularity.reduce!)
 ```
 
@@ -219,12 +218,10 @@ private
 Fibres : Pseudofunctor (Locally-discrete (B ^op)) (Cat o' ℓ')
 Fibres .lax .P₀ = Fibre E
 Fibres .lax .P₁ = base-changes
-Fibres .lax .compositor = Disc-natural₂
-  λ (f , g) → base-change-comp g f .Mor.from
+Fibres .lax .compositor = Disc-natural₂ λ (f , g) → base-change-comp g f .Mor.from
 Fibres .lax .unitor = base-change-id .Mor.from
 Fibres .unitor-inv = FC.iso→invertible (base-change-id FC.Iso⁻¹)
-Fibres .compositor-inv f g =
-  FC.iso→invertible (base-change-comp g f FC.Iso⁻¹)
+Fibres .compositor-inv f g = FC.iso→invertible (base-change-comp g f FC.Iso⁻¹)
 ```
 
 It remains to verify that this data is *coherent*, which is so tedious
@@ -432,15 +429,14 @@ opaque
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
     → (p : γ ∘ σ ≡ τ ∘ δ)
     → ∀ x' → base-change-square p x' ∘' base-change-square (sym p) x' ≡[ idl _ ] id'
-  base-change-square-inv {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
-    π*.uniquep₂ _ _ _ _ _
-      (pulll[] _ (π*.commutesv _)
-       ∙[] π*.uniquep₂ _ (idr _) refl _ _
-         (pulll[] _ (π*.commutesp (sym p) _)
-          ∙[] pullr[] _ (π*.commutesv _)
-          ∙[] π*.commutesp p _)
-         refl)
-      (idr' _)
+  base-change-square-inv {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' = π*.uniquep₂ _ _ _ _ _
+    (pulll[] _ (π*.commutesv _)
+      ∙[] π*.uniquep₂ _ (idr _) refl _ _
+        (pulll[] _ (π*.commutesp (sym p) _)
+        ∙[] pullr[] _ (π*.commutesv _)
+        ∙[] π*.commutesp p _)
+        refl)
+    (idr' _)
 
 base-change-square-ni
   : ∀ {Γ Δ Θ Ψ : Ob}

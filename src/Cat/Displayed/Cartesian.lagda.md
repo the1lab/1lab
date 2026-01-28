@@ -181,6 +181,12 @@ every cartesian map is [weakly cartesian].
     uniquep₂ (idr f) refl (idr f) h' h'' p q
 ```
 
+<!--
+```agda
+{-# INLINE is-cartesian.constructor #-}
+```
+-->
+
 As the name suggests, being cartesian is a property of a morphism.
 
 ```agda
@@ -228,10 +234,10 @@ subst-is-cartesian {g = g} {f' = f'} {g' = g'} p p' f-cart = g-cart where
 
   g-cart : is-cartesian g g'
   g-cart .universal m h' = f'.universal' (ap (_∘ m) p) h'
-  g-cart .commutes m h' = cast[] $
+  g-cart .commutes m h' = begin[]
     g' ∘' f'.universal' _ h' ≡[]⟨ symP p' ⟩∘'⟨refl ⟩
     f' ∘' f'.universal' _ h' ≡[]⟨ f'.commutesp (ap (_∘ m) p) h' ⟩
-    h' ∎
+    h'                       ∎[]
   g-cart .unique m' q = f'.uniquep _ _ _ m' ((p' ⟩∘'⟨refl) ∙[] q)
 ```
 -->
@@ -290,16 +296,15 @@ cartesian-∘ {f = f} {g = g} {f' = f'} {g' = g'} f-cart g-cart = fg-cart where
   fg-cart : is-cartesian (f ∘ g) (f' ∘' g')
   fg-cart .is-cartesian.universal m h' =
     g'.universal m (f'.universal' (assoc f g m) h')
-  fg-cart .is-cartesian.commutes m h' =
-    cast[] $
-      (f' ∘' g') ∘' g'.universal m (f'.universal' _ h') ≡[]⟨ pullr[] _ (g'.commutes _ _) ⟩
-      f' ∘' f'.universal' _ h'                          ≡[]⟨ f'.commutesp (assoc f g m) h' ⟩
-      h'                                                ∎
+  fg-cart .is-cartesian.commutes m h' = begin[]
+    (f' ∘' g') ∘' g'.universal m (f'.universal' _ h') ≡[]⟨ pullr[] _ (g'.commutes _ _) ⟩
+    f' ∘' f'.universal' _ h'                          ≡[]⟨ f'.commutesp (assoc f g m) h' ⟩
+    h'                                                ∎[]
   fg-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    g'.unique m' $ f'.uniquep _ _ _ (g' ∘' m') $
+    g'.unique m' $ f'.uniquep (assoc _ _ _) _ _ (g' ∘' m') $ begin[]
       f' ∘' g' ∘' m'   ≡[]⟨ assoc' f' g' m' ⟩
       (f' ∘' g') ∘' m' ≡[]⟨ p ⟩
-      h'               ∎
+      h'               ∎[]
 
 _∘cart_
   : ∀ {x y z x' y' z'} {f : Hom y z} {g : Hom x y}
@@ -338,24 +343,20 @@ invertible→cartesian
   → (f-inv : is-invertible f)
   → is-invertible[ f-inv ] f'
   → is-cartesian f f'
-invertible→cartesian
- {f = f} {f' = f'} f-inv f'-inv = f-cart where
+invertible→cartesian {f = f} {f' = f'} f-inv f'-inv = f-cart where
   module f = is-invertible f-inv
   module f' = is-invertible[_] f'-inv
 
   f-cart : is-cartesian f f'
-  f-cart .is-cartesian.universal m h' =
-    hom[ cancell f.invr ] (f'.inv' ∘' h')
-  f-cart .is-cartesian.commutes m h' =
-    cast[] $
-      f' ∘' hom[] (f'.inv' ∘' h') ≡[]⟨ unwrapr _ ⟩
-      f' ∘' f'.inv' ∘' h'         ≡[]⟨ cancell[] _ f'.invl' ⟩
-      h' ∎
-  f-cart .is-cartesian.unique {h' = h'} m' p =
-    cast[] $
-      m'                    ≡[]⟨ introl[] f.invr f'.invr' ∙[] pullr[] _ p ⟩
-      f'.inv' ∘' h'         ≡[]⟨ wrap (cancell f.invr) ⟩
-      hom[] (f'.inv' ∘' h') ∎
+  f-cart .is-cartesian.universal m h' = hom[ cancell f.invr ] (f'.inv' ∘' h')
+  f-cart .is-cartesian.commutes m h' = begin[]
+    f' ∘' hom[] (f'.inv' ∘' h') ≡[]⟨ unwrapr _ ⟩
+    f' ∘' f'.inv' ∘' h'         ≡[]⟨ cancell[] _ f'.invl' ⟩
+    h'                          ∎[]
+  f-cart .is-cartesian.unique {h' = h'} m' p = begin[]
+    m'                    ≡[]⟨ introl[] f.invr f'.invr' ∙[] pullr[] _ p ⟩
+    f'.inv' ∘' h'         ≡[]⟨ wrap (cancell f.invr) ⟩
+    hom[] (f'.inv' ∘' h') ∎[]
 ```
 
 <!--
@@ -364,8 +365,9 @@ iso→cartesian
   : ∀ {x y x' y'} {f : x ≅ y}
   → (f' : x' ≅[ f ] y')
   → is-cartesian (f .to) (f' .to')
-iso→cartesian {f = f} f' =
-  invertible→cartesian (iso→invertible f) (iso[]→invertible[] f')
+iso→cartesian {f = f} f' = invertible→cartesian
+  (iso→invertible f)
+  (iso[]→invertible[] f')
 ```
 -->
 
@@ -381,8 +383,7 @@ cartesian→weak-monic
   → is-weak-monic f'
 cartesian→weak-monic {f = f} {f' = f'} f-cart g' g'' p p' =
   uniquep₂ (ap (f ∘_) p) p refl g' g'' p' refl
-  where
-    open is-cartesian f-cart
+  where open is-cartesian f-cart
 ```
 
 We can use this fact to show that 2 cartesian lifts over the same
@@ -461,58 +462,51 @@ cartesian-domain-unique {f' = f'} {f'' = f''} f'-cart f''-cart =
     from* = f'.universalv f''
 
     invl* : to* ∘' from* ≡[ idl id ] id'
-    invl* =
-      cartesian→weak-monic f''-cart (to* ∘' from*) id' (idl id) $
-      cast[] $
-        f'' ∘' to* ∘' from* ≡[]⟨ pulll[] _ (f''.commutesv f') ⟩
-        f' ∘' from*         ≡[]⟨ f'.commutesv f'' ⟩
-        f''                 ≡[]˘⟨ idr' f'' ⟩
-        f'' ∘' id'          ∎
+    invl* = cartesian→weak-monic f''-cart (to* ∘' from*) id' (idl id) $ begin[]
+      f'' ∘' to* ∘' from* ≡[]⟨ pulll[] _ (f''.commutesv f') ⟩
+      f' ∘' from*         ≡[]⟨ f'.commutesv f'' ⟩
+      f''                 ≡[]˘⟨ idr' f'' ⟩
+      f'' ∘' id'          ∎[]
 
     invr* : from* ∘' to* ≡[ idl id ] id'
-    invr* =
-      cartesian→weak-monic f'-cart (from* ∘' to*) id' (idl id) $
-      cast[] $
-        f' ∘' from* ∘' to* ≡[]⟨ pulll[] _ (f'.commutesv f'') ⟩
-        f'' ∘' to*         ≡[]⟨ f''.commutesv f' ⟩
-        f'                 ≡[]˘⟨ idr' f' ⟩
-        f' ∘' id'          ∎
+    invr* = cartesian→weak-monic f'-cart (from* ∘' to*) id' (idl id) $ begin[]
+      f' ∘' from* ∘' to* ≡[]⟨ pulll[] _ (f'.commutesv f'') ⟩
+      f'' ∘' to*         ≡[]⟨ f''.commutesv f' ⟩
+      f'                 ≡[]˘⟨ idr' f' ⟩
+      f' ∘' id'          ∎[]
 ```
 
 Cartesian morphisms are also stable under vertical retractions.
 
 ```agda
-cartesian-vertical-retraction-stable
-  : ∀ {x y} {f : Hom x y}
-  → ∀ {x' x'' y'} {f' : Hom[ f ] x' y'} {f'' : Hom[ f ] x'' y'} {ϕ : Hom[ id ] x' x''}
-  → is-cartesian f f'
-  → has-section↓ ϕ
-  → f'' ∘' ϕ ≡[ idr _ ] f'
-  → is-cartesian f f''
-cartesian-vertical-retraction-stable {f' = f'} {f''} {ϕ} f-cart ϕ-sect factor = f''-cart where
-  open is-cartesian f-cart
-  module ϕ = has-section[_] ϕ-sect
+module
+  _ {x y} {f : Hom x y} {x' x'' y'}
+    {f' : Hom[ f ] x' y'} {f'' : Hom[ f ] x'' y'} {φ : Hom[ id ] x' x''}
+    (f-cart : is-cartesian f f') (φ-sect : has-section↓ φ)
+    (factor : f'' ∘' φ ≡[ idr _ ] f')
+  where
 
-  f''-cart : is-cartesian _ f''
-  f''-cart .is-cartesian.universal m h' =
-    hom[ idl m ] (ϕ ∘' universal m h')
-  f''-cart .is-cartesian.commutes m h' =
-    cast[] $
-    f'' ∘' hom[] (ϕ ∘' universal m h') ≡[]⟨ unwrapr _ ⟩
-    f'' ∘' ϕ ∘' universal m h'         ≡[]⟨ pulll[] _ factor ⟩
-    f' ∘' universal m h'               ≡[]⟨ commutes m h' ⟩
-    h'                                 ∎
-  f''-cart .is-cartesian.unique {m = m} {h' = h'} m' p =
-    from-pathp[]⁻ $ post-section' ϕ-sect $
-    uniquep₂ _ (idl m) refl (ϕ.section' ∘' m') (universal m h')
-      unique-lemma
-      (commutes m h')
-    where
-      unique-lemma : f' ∘' ϕ.section' ∘' m' ≡[ _ ] h'
-      unique-lemma =
-        f' ∘' ϕ.section' ∘' m' ≡[]⟨ pulll[] _ (symP (pre-section[] ϕ-sect factor)) ⟩
-        f'' ∘' m'              ≡[]⟨ p ⟩
-        h'                     ∎
+  private
+    module f = is-cartesian f-cart
+    module φ = has-section[_] φ-sect
+
+  cartesian-vertical-retraction-stable : is-cartesian f f''
+  cartesian-vertical-retraction-stable = record where
+    universal m h' = hom[ idl m ] (φ ∘' f.universal m h')
+    commutes m h' = begin[]
+      f'' ∘' hom[] (φ ∘' f.universal m h') ≡[]⟨ unwrapr _ ⟩
+      f'' ∘' φ ∘' f.universal m h'         ≡[]⟨ pulll[] _ factor ⟩
+      f' ∘' f.universal m h'               ≡[]⟨ f.commutes m h' ⟩
+      h'                                   ∎[]
+    unique {m = m} {h' = h'} m' p =
+      let
+        lemma : f' ∘' φ.section' ∘' m' ≡[ _ ] h'
+        lemma = begin
+          f' ∘' φ.section' ∘' m' ≡[]⟨ pulll[] _ (symP (pre-section[] φ-sect factor)) ⟩
+          f'' ∘' m'              ≡[]⟨ p ⟩
+          h'                     ∎[]
+      in from-pathp[]⁻ $ post-section' φ-sect $
+        f.uniquep₂ _ (idl m) refl _ _ lemma (f.commutes m h')
 ```
 
 If $f' \circ g'$ is cartesian and $f'$ is a [[weak monomorphism]],
@@ -532,14 +526,12 @@ cartesian-weak-monic-cancell {f = f} {g = g} {f' = f'} {g' = g'} f-weak-mono fg-
   g-cart : is-cartesian g g'
   g-cart .universal m h' =
     fg.universal' (sym (assoc f g m)) (f' ∘' h')
-  g-cart .commutes m h' =
-    f-weak-mono (g' ∘' fg.universal' _ (f' ∘' h')) h' refl $
-    cast[] $
-      f' ∘' g' ∘' fg.universal' _ (f' ∘' h')   ≡[]⟨ assoc' _ _ _ ⟩
-      (f' ∘' g') ∘' fg.universal' _ (f' ∘' h') ≡[]⟨ fg.commutesp (sym (assoc f g m)) (f' ∘' h') ⟩
-      f' ∘' h'                                 ∎
+  g-cart .commutes m h' = f-weak-mono _ h' refl $ begin[]
+    f' ∘' g' ∘' fg.universal' _ (f' ∘' h')   ≡[]⟨ assoc' _ _ _ ⟩
+    (f' ∘' g') ∘' fg.universal' _ (f' ∘' h') ≡[]⟨ fg.commutesp (sym (assoc f g m)) (f' ∘' h') ⟩
+    f' ∘' h'                                 ∎[]
   g-cart .unique {m = m} m' p =
-    fg.uniquep (sym (assoc f g m)) refl (sym (assoc f g m)) m' (pullr' refl p)
+    fg.uniquep (sym (assoc f g m)) refl _ m' (pullr' refl p)
 ```
 
 As a corollary, we get the following useful pasting lemma, which
@@ -571,9 +563,8 @@ cart-paste {x' = x'} {y' = y'} {f = f} {g = g} f' fg' = g' where
   module fg' = is-cartesian (fg' .cartesian)
 
   g' : Cartesian-morphism g x' y'
-  g' .hom' = f'.universal g (fg' .hom')
-  g' .cartesian =
-    cartesian-cancell (f' .cartesian) $
+  g' .hom'      = f'.universal g (fg' .hom')
+  g' .cartesian = cartesian-cancell (f' .cartesian) $
     subst-is-cartesian refl (sym (f'.commutes g (fg' .hom'))) (fg' .cartesian)
 ```
 
@@ -600,10 +591,7 @@ vertical+cartesian→invertible {x' = x'} {x'' = x''} {f' = f'} f-cart =
     path = cancell' (idl _) (commutesp (idl _) id')
 
     f'-invr : f⁻¹' ∘' f' ≡[ idl _ ] id'
-    f'-invr =
-      uniquep₂ _ _ _ (f⁻¹' ∘' f') id'
-        (cancell[] _ f'-invl)
-        (idr' f')
+    f'-invr = uniquep₂ _ _ _ (f⁻¹' ∘' f') id' (cancell[] _ f'-invl) (idr' f')
 ```
 
 Furthermore, $f' : x' \to_{f} y'$ is cartesian if and only if the
@@ -615,23 +603,20 @@ postcompose-equiv→cartesian
   → (f' : Hom[ f ] x' y')
   → (∀ {w w'} {g : Hom w x} → is-equiv {A = Hom[ g ] w' x'} (f' ∘'_))
   → is-cartesian f f'
-postcompose-equiv→cartesian f' eqv .is-cartesian.universal m h' =
-  equiv→inverse eqv h'
-postcompose-equiv→cartesian f' eqv .is-cartesian.commutes m h' =
-  equiv→counit eqv h'
-postcompose-equiv→cartesian f' eqv .is-cartesian.unique m' p =
-  sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) p
+postcompose-equiv→cartesian f' eqv = record where
+  universal m h' = equiv→inverse eqv h'
+  commutes  m h' = equiv→counit eqv h'
+  unique m' p = sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) p
 
 cartesian→postcompose-equiv
   : ∀ {x y z x' y' z'} {f : Hom y z} {g : Hom x y} {f' : Hom[ f ] y' z'}
   → is-cartesian f f'
   → is-equiv {A = Hom[ g ] x' y'} (f' ∘'_)
-cartesian→postcompose-equiv cart =
-  is-iso→is-equiv $
-    iso (universal _)
-        (commutes _)
-        (λ g' → sym (unique g' refl))
-  where open is-cartesian cart
+cartesian→postcompose-equiv cart = is-iso→is-equiv record where
+  open is-cartesian cart
+  from g = universal _ g
+  rinv g = commutes _ g
+  linv g = sym (unique g refl)
 ```
 
 
@@ -710,11 +695,9 @@ uses the universal property that yields a vertical morphism.
 [base change functors]: Cat.Displayed.Cartesian.Indexing.html
 
 ```agda
-  rebase : ∀ {x y y' y''} → (f : Hom x y)
-           → Hom[ id ] y' y''
-           → Hom[ id ] (f ^* y') (f ^* y'')
-  rebase f vert =
-    π*.universal' id-comm (vert ∘' π* f _)
+  rebase
+    : ∀ {x y y' y''} → (f : Hom x y) → Hom[ id ] y' y'' → Hom[ id ] (f ^* y') (f ^* y'')
+  rebase f vert = π*.universal' id-comm (vert ∘' π* f _)
 ```
 
 ## Why?
