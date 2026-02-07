@@ -68,11 +68,13 @@ defined above.
     q {false} {false} p =
       F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
       F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ∎
+      id                ≡˘⟨ transport-refl id ⟩
+      transport refl id ∎
     q {true} {true} p =
       F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
       F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ∎
+      id                ≡˘⟨ transport-refl id ⟩
+      transport refl id ∎
     q {false} {true} p = absurd (true≠false (sym p))
     q {true} {false} p = absurd (true≠false p)
 ```

@@ -108,7 +108,7 @@ private unquoteDecl eqv' = declare-record-iso eqv' (quote is-composite)
 
 abstract instance
   H-Level-is-composite : ∀ {n k} → H-Level (is-composite n) (suc k)
-  H-Level-is-composite = prop-instance λ a@record{p = p ; q = q} b@record{p = p' ; q = q'} →
+  H-Level-is-composite = prop-instance λ a@record{p = p ; q = q ; p-prime = record{}} b@record{p = p' ; q = q'} →
     let
       open is-composite using (factors)
 
@@ -217,7 +217,7 @@ record Factorisation (n : Nat) : Type where
     where
     work : ∀ x xs → is-prime x → (∀ x → x ∈ₗ xs → is-prime x) → x ∣ product xs → x ∈ₗ xs
     work x [] xp ps xd = absurd (prime≠1 xp (∣-1 xd))
-    work x (y ∷ xs) xp ps xd with x ≡ᵢ? y
+    work x (y ∷ xs) xp@record{} ps xd with x ≡ᵢ? y
     ... | yes x=y = here x=y
     ... | no ¬p = there $ work x xs xp (λ x w → ps x (there w))
       (|-*-coprime-cancel x y (product xs)

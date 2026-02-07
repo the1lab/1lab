@@ -134,37 +134,38 @@ is-set→is-setᵢ A-set x y p q = Id≃path.injective (A-set _ _ _ _)
 
 <!--
 ```agda
-discrete-id : ∀ {ℓ} {A : Type ℓ} {x y : A} → Dec (x ≡ y) → Dec (x ≡ᵢ y)
-discrete-id {x = x} {y} (yes p) = yes (subst (x ≡ᵢ_) p reflᵢ)
-discrete-id {x = x} {y} (no ¬p) = no λ { reflᵢ → absurd (¬p refl) }
+discrete-id : ∀ {ℓ} {A : Type ℓ} {x y : A} → Discrete A → Dec (x ≡ y) → Dec (x ≡ᵢ y)
+discrete-id {x = x} {y} _ (yes p) = yes (subst (x ≡ᵢ_) p reflᵢ)
+discrete-id {x = x} {y} _ (no ¬p) = no λ { reflᵢ → absurd (¬p refl) }
 
-opaque
-  _≡ᵢ?_ : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Discrete A ⦄ (x y : A) → Dec (x ≡ᵢ y)
-  x ≡ᵢ? y = discrete-id (x ≡? y)
-
-  ≡ᵢ?-default : ∀ {ℓ} {A : Type ℓ} {x y : A} {d : Discrete A} → (_≡ᵢ?_ ⦃ d ⦄ x y) ≡ discrete-id (d .decide x y)
-  ≡ᵢ?-default = refl
-
-  ≡ᵢ?-yes : ∀ {ℓ} {A : Type ℓ} {x : A} {d : Discrete A} → (_≡ᵢ?_ ⦃ d ⦄ x x) ≡ yes reflᵢ
-  ≡ᵢ?-yes {d = d} = case d .decide _ _ return (λ d → discrete-id d ≡ yes reflᵢ) of λ where
-    (yes a) → ap yes (is-set→is-setᵢ (Discrete→is-set d) _ _ _ _)
-    (no ¬a) → absurd (¬a refl)
-
-{-# REWRITE ≡ᵢ?-default ≡ᵢ?-yes #-}
+_≡ᵢ?_ : ∀ {ℓ} {A : Type ℓ} (x y : A) ⦃ _ : Discrete A ⦄ → Dec (x ≡ᵢ y)
+_≡ᵢ?_ x y ⦃ d ⦄ = discrete-id d (d .decide x y)
 
 abstract
+  decide-yes : ∀ {ℓ} {A : Type ℓ} ⦃ _ : H-Level A 1 ⦄ (d : Dec A) (x : A) → d ≡ᵢ yes x
+  decide-yes (yes a) _ = Id≃path.from (ap yes hlevel!)
+  decide-yes (no ¬a) a = absurd (¬a a)
+
+  decide-no : ∀ {ℓ} {A : Type ℓ} (d : Dec A) (x : ¬ A) → d ≡ᵢ no x
+  decide-no (yes a) ¬a = absurd (¬a a)
+  decide-no (no ¬a) ¬b = Id≃path.from (ap no hlevel!)
+
   ≡?-yes' : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x y : A} (p : x ≡ y) → d .decide x y ≡ᵢ yes p
-  ≡?-yes' {x = x} {y} p with x ≡? y
-  ... | no x≠x  = absurd (x≠x p)
-  ... | yes x=y = Id≃path.from (ap yes (Discrete→is-set auto _ _ x=y p))
+  ≡?-yes' {x = x} {y} p rewrite decide-yes ⦃ prop-instance (Discrete→is-set auto _ _) ⦄ (x ≡? y) p = reflᵢ
 
   ≡?-yes : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ (x : A) → d .decide x x ≡ᵢ yes refl
-  ≡?-yes x = ≡?-yes' λ _ → x
+  ≡?-yes x = ≡?-yes' refl
 
   ≡?-no : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x y : A} (p : x ≠ y) → d .decide x y ≡ᵢ no p
-  ≡?-no {x = x} {y} x≠y with x ≡? y
-  ... | yes x=y = absurd (x≠y x=y)
-  ... | no x≠y' = Id≃path.from (ap no (hlevel 1 _ _))
+  ≡?-no = decide-no _
+
+  discrete-id-yes : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x : A} (p : Dec (x ≡ x)) → discrete-id d p ≡ yes reflᵢ
+  discrete-id-yes {x = x} p
+    rewrite decide-yes ⦃ prop-instance (Discrete→is-set auto x x) ⦄ p refl =
+    ap yes (transport-refl _)
+
+{-# REWRITE discrete-id-yes #-}
+{-# DISPLAY discrete-id {ℓ} {A} {x} {y} d _ = _≡ᵢ?_ {ℓ} {A} x y ⦃ d ⦄ #-}
 
 Discrete-inj'
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
