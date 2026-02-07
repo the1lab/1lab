@@ -182,9 +182,10 @@ record Trivially-graded {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type
     Ob[_]  : Ob → Type o'
     Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ'
 
-    ⦃ H-Level-Hom[_] ⦄
-      : ∀ {a b} {f : Hom a b} {x : Ob[ a ]} {y : Ob[ b ]}
-      → H-Level (Hom[ f ] x y) 2
+    instance
+      ⦃ H-Level-Hom[_] ⦄
+        : ∀ {a b} {f : Hom a b} {x : Ob[ a ]} {y : Ob[ b ]}
+        → H-Level (Hom[ f ] x y) 2
 
     id'  : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
     _∘'_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
@@ -212,9 +213,10 @@ record Thinly-displayed {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type
     Ob[_]  : Ob → Type o'
     Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ'
 
-    ⦃ H-Level-Hom[_] ⦄
-      : ∀ {a b} {f : Hom a b} {x : Ob[ a ]} {y : Ob[ b ]}
-      → H-Level (Hom[ f ] x y) 1
+    instance
+      ⦃ H-Level-Hom[_] ⦄
+        : ∀ {a b} {f : Hom a b} {x : Ob[ a ]} {y : Ob[ b ]}
+        → H-Level (Hom[ f ] x y) 1
 
     id'  : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
     _∘'_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
@@ -230,14 +232,14 @@ with-trivial-grading triv = record
   ; hom[_]     = subst (λ e → Hom[ e ] _ _)
   ; coh[_]     = λ p → transport-filler _
   }
-  where open Trivially-graded triv using (Hom[_])
+  where open Trivially-graded triv using (Hom[_] ; H-Level-Hom[_])
 
 with-thin-display
   : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Thinly-displayed B o' ℓ'
   → Displayed B o' ℓ'
 {-# INLINE with-thin-display #-}
 with-thin-display triv = with-trivial-grading record where
-  open Thinly-displayed triv using (Ob[_] ; Hom[_] ; id' ; _∘'_)
+  open Thinly-displayed triv using (Ob[_] ; Hom[_] ; id' ; _∘'_) renaming (H-Level-Hom[_] to i)
   H-Level-Hom[_] = basic-instance 2 $ is-prop→is-set (hlevel 1)
   idr'   f     = prop!
   idl'   f     = prop!

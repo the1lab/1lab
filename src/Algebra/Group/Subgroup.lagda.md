@@ -62,7 +62,8 @@ group homomorphism.
 
 ```agda
 rep-subgroup→group-on
-  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ G ] x ∈ H)
+  : {G : Group ℓ} (H : ℙ ⌞ G ⌟)
+  → represents-subgroup G H → Group-on (Σ[ x ∈ G ] x ∈ H)
 rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
