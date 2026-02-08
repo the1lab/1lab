@@ -244,8 +244,8 @@ more than a handful of intermediate steps:
   ∙-cancelr
     : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : z ≡ y)
     → ((p ∙ sym q) ∙ q) ≡ p
-  ∙-cancelr {x = x} {y = y} q p = sym $ ∙-unique _ λ i j →
-    ∙-filler q (sym p) (~ i) j
+  ∙-cancelr {x = x} {y = y} p q = sym $ ∙-unique _ λ i j →
+    ∙-filler p (sym q) (~ i) j
 
   commutes→square
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
