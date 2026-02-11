@@ -258,9 +258,9 @@ The following construction is adapted from [@Symmetry, §6.5]:
   record C (x : ⌞ G ⌟) : Type ℓ where
     constructor mk
     field
-      y : ⌞ H ⌟
-      p : pt G ≡ x → pt H ≡ y
-      f-p : (ω : pt G ≡ pt G) (α : pt G ≡ x) → p (ω ∙ α) ≡ f · ω ∙ p α
+      y   : ⌞ H ⌟
+      p   : pt G ≡ x → pt H ≡ y
+      f-p : ∀ ω α → p (ω ∙ α) ≡ f · ω ∙ p α
 ```
 
 Our family sends a point $x : \B{G}$ to a point $y : \B{H}$ with a function $p$ that
@@ -326,7 +326,7 @@ Since $g$ is pointed by $p(\refl)$, this lets us conclude that we have found a
 right inverse to $\Pi_1$:
 
 ```agda
-  f≡apg : (ω : pt G ≡ pt G) → Square (p refl) (f · ω) (ap (g .fst) ω) (p refl)
+  f≡apg : ∀ ω → Square (p refl) (f · ω) (ap (g .fst) ω) (p refl)
   f≡apg ω = commutes→square $
     p refl ∙ ap (g .fst) ω ≡˘⟨ p-g refl ω ⟩
     p (refl ∙ ω)           ≡˘⟨ ap p ∙-id-comm ⟩

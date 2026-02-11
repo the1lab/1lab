@@ -218,13 +218,13 @@ elements-which-are-sections, so they also get a record type.
   open Patch
 
   {-# INLINE Patch.constructor #-}
-  is-section : ∀ {U} {T : Sieve C U} → A ʻ U → Patch T → Type _
+  is-section : ∀ {U T} → A ʻ U → Patch T → Type _
   is-section {T = T} p x = pre.is-section C A.₁ T p (x .part)
 ```
 -->
 
 ```agda
-  record Section {U} {T : Sieve C U} (p : Patch T) : Type (o ⊔ ℓ ⊔ ℓs) where
+  record Section {U T} (p : Patch T) : Type (o ⊔ ℓ ⊔ ℓs) where
     no-eta-equality
     field
       {whole} : A ʻ U
@@ -253,7 +253,7 @@ module _ {o ℓ ℓs} {C : Precategory o ℓ} {A : Functor (C ^op) (Sets ℓs)} 
     Extensional-Patch ⦃ e ⦄ .idsᵉ .to-path-over p = is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 e (hlevel 2)) _ _
 
     Extensional-Section
-      : ∀ {U ℓr} {S : Sieve C U} {p : Patch A S} ⦃ _ : Extensional (A ʻ U) ℓr ⦄
+      : ∀ {U ℓr S} {p : Patch A S} ⦃ _ : Extensional (A ʻ U) ℓr ⦄
       → Extensional (Section A p) ℓr
     Extensional-Section ⦃ e ⦄ .Pathᵉ x y = e .Pathᵉ (x .whole) (y .whole)
     Extensional-Section ⦃ e ⦄ .reflᵉ x = e .reflᵉ (x .whole)
@@ -299,12 +299,12 @@ A(U)$ can be made into a bunch of *local* pieces by restricting
 functorially.
 
 ```agda
-  section→patch : ∀ {U} {T : Sieve C U} → A ʻ U → Patch A T
+  section→patch : ∀ {U T} → A ʻ U → Patch A T
   section→patch x .part  f _ = A ⟪ f ⟫ x
   section→patch x .patch f hf g hgf = A.collapse refl
 
   section→section
-    : ∀ {U} {T : Sieve C U} (u : A ʻ U)
+    : ∀ {U T} (u : A ʻ U)
     → Section A {T = T} (section→patch u)
   section→section u .whole      = u
   section→section u .glues f hf = refl

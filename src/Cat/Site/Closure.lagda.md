@@ -361,7 +361,7 @@ Showing that a $\widehat{J}$-sheaf is also a $J$-sheaf is immediate.
 module sat {o ℓ ℓs ℓc} {C : Precategory o ℓ} {J : Coverage C ℓc} {A : Functor (C ^op) (Sets ℓs)} (shf : is-sheaf J A) where
   private module shf = is-sheaf (is-sheaf-saturation.to shf)
 
-  whole : ∀ {U} {S : Sieve C U} (w : J ∋ S) (p : Patch A S) → A ʻ U
+  whole : ∀ {U S} (w : J ∋ S) (p : Patch A S) → A ʻ U
   whole w = shf.whole (_ , w)
 
   abstract

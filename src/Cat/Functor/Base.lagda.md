@@ -221,13 +221,12 @@ already coherent enough to ensure that these actions agree:
 
 ```agda
   F-map-path
-    : (ccat : is-category C) (dcat : is-category D)
-    → ∀ {x y} (i : x C.≅ y)
+    : ∀ (ccat : is-category C) (dcat : is-category D) {x y} (i : x C.≅ y)
     → ap· F (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso i)
   F-map-path ccat dcat {x} = Univalent.J-iso ccat P pr where
     P : (b : C.Ob) → C.Isomorphism x b → Type _
-    P b im = ap· F (Univalent.iso→path ccat im)
-           ≡ Univalent.iso→path dcat (F-map-iso im)
+    P b im =
+      ap· F (Univalent.iso→path ccat im) ≡ Univalent.iso→path dcat (F-map-iso im)
 
     pr : P x C.id-iso
     pr =

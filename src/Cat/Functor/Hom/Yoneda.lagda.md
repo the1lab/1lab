@@ -99,15 +99,10 @@ $$
 $$.
 
 ```agda
-  yo-natr
-    : ∀ {U V} {x : A ʻ U} {h : Hom V U} {y}
-    → A ⟪ h ⟫ x ≡ y
-    → yo A x ∘nt よ₁ C h ≡ yo A y
+  yo-natr : ∀ {U V x y} {h : Hom V U} → A ⟪ h ⟫ x ≡ y → yo A x ∘nt よ₁ C h ≡ yo A y
   yo-natr p = ext λ i f → A.expand refl ∙ A.ap p
 
-  yo-naturalr
-    : ∀ {U V} {x : A ʻ U} {h : Hom V U}
-    → yo A x ∘nt よ₁ C h ≡ yo A (A ⟪ h ⟫ x)
+  yo-naturalr : ∀ {U V x} {h : Hom V U} → yo A x ∘nt よ₁ C h ≡ yo A (A ⟪ h ⟫ x)
   yo-naturalr = yo-natr refl
 ```
 
@@ -119,20 +114,16 @@ $$,
 as natural transformations $\cC(-,U) \To B$, for any $x : A(U)$.
 
 ```agda
-  yo-natl
-    : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {y : B ʻ U} {h : A => B}
-    → h .η U x ≡ y → h ∘nt yo A x ≡ yo B y
+  yo-natl : ∀ {B U x y h} → h .η U x ≡ y → h ∘nt yo A x ≡ yo B y
   yo-natl {B = B} {h = h} p = ext λ i f → h .is-natural _ _ _ · _ ∙ PSh.ap B p
 
-  yo-naturall
-    : ∀ {B : Functor (C ^op) (Sets ℓ)} {U} {x : A ʻ U} {h : A => B}
-    → h ∘nt yo A x ≡ yo B (h .η U x)
+  yo-naturall : ∀ {B U x h} → h ∘nt yo A x ≡ yo B (h .η U x)
   yo-naturall = yo-natl refl
 ```
 
 <!--
 ```agda
-  unyo-path : ∀ {U : ⌞ C ⌟} {x y : A ʻ U} → yo A x ≡ yo A y → x ≡ y
+  unyo-path : ∀ {U} {x y : A ʻ U} → yo A x ≡ yo A y → x ≡ y
   unyo-path {x = x} {y} p =
     x          ≡⟨ A.intro refl ⟩
     A ⟪ id ⟫ x ≡⟨ unext p _ id ⟩

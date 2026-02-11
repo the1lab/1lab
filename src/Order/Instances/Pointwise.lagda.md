@@ -92,7 +92,7 @@ Poset[_,_] P Q = po module Poset[_,_] where
 
   po : Poset _ _
   po .Poset.Ob      = Monotone P Q
-  po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f · x ≤ g · x
+  po .Poset._≤_ f g = ∀ x → f · x ≤ g · x
 
   po .Poset.≤-thin   = hlevel 1
   po .Poset.≤-refl _ = ≤-refl

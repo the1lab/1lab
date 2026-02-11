@@ -185,7 +185,7 @@ functorial on presheaves; this is the **evaluation functor**.
 
 ```agda
 private
-  ev : ∀ {ℓs} (c : ⌞ C ⌟) → Functor (PSh ℓs C) (Sets ℓs)
+  ev : ∀ {ℓs} c → Functor (PSh ℓs C) (Sets ℓs)
   ev c .F₀ F    = F · c
   ev c .F₁ h i  = h .η _ i
   ev c .F-id    = refl
@@ -197,7 +197,7 @@ limits|rapl]], we conclude that if $L$ is any limit of a diagram $F$,
 then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
 
 ```agda
-  clo : ∀ {ℓs} (c : ⌞ C ⌟) → Functor (Sets ℓs) (PSh (ℓs ⊔ ℓ) C)
+  clo : ∀ {ℓs} c → Functor (Sets ℓs) (PSh (ℓs ⊔ ℓ) C)
   clo c .F₀ A = λ where
     .F₀ d         → el! (⌞ A ⌟ × Hom d c)
     .F₁ g (a , f) → a , f ∘ g
@@ -209,11 +209,11 @@ then we can conclude that $L(c)$ is the limit of the $F(-)(c)$s.
   clo c .F-id    = ext λ _ _ _ → refl
   clo c .F-∘ f g = ext λ _ _ _ → refl
 
-  clo⊣ev : (c : ⌞ C ⌟) → clo {ℓ} c ⊣ ev c
+  clo⊣ev : ∀ c → clo {ℓ} c ⊣ ev c
   clo⊣ev c = hom-iso→adjoints (λ f x → f .η _ (x , id)) (is-iso→is-equiv iiso) λ g h x → refl where
     open is-iso
 
-    iiso : ∀ {x : Set ℓ} {y : ⌞ PSh ℓ C ⌟} → is-iso {A = clo c · x => y} (λ f x → f .η c (x , id))
+    iiso : ∀ {x y} → is-iso {A = clo c · x => y} (λ f x → f .η c (x , id))
     iiso {y = y} .from f .η x (a , g) = y ⟪ g ⟫ (f a)
     iiso {y = y} .from f .is-natural x z g = ext λ a h → PSh.expand y refl
     iiso {y = y} .rinv x = ext λ a → PSh.F-id y
@@ -228,7 +228,7 @@ property.
 ```agda
 abstract
   is-monic→is-embedding-at
-    : ∀ {X Y : ⌞ PSh ℓ C ⌟} {m : X => Y}
+    : ∀ {X Y} {m : X => Y}
     → Cat.is-monic (PSh ℓ C) m
     → ∀ {i} → is-embedding (m .η i)
   is-monic→is-embedding-at {Y = Y} {m} mono {i} =
