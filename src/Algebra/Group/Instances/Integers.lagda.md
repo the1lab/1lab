@@ -193,15 +193,15 @@ one generator.
 ```agda
 instance
   Extensional-ℤ-Hom
-    : ∀ {ℓ ℓr} {G : Group ℓ} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
+    : ∀ {ℓ ℓr G} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
     → Extensional (Groups.Hom (Lift-group ℓ ℤ) G) ℓr
   Extensional-ℤ-Hom ⦃ e ⦄ = injection→extensional! {f = λ h → h · 1} (pow-unique₂ _ _ _) e
 
   Extensional-Ab-ℤ-Hom
-    : ∀ {ℓ ℓr} {G : ⌞ Ab ℓ ⌟} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
+    : ∀ {ℓ ℓr G} ⦃ _ : Extensional ⌞ G ⌟ ℓr ⦄
     → Extensional (Ab.Hom (Lift-ab ℓ ℤ-ab) G) ℓr
   Extensional-Ab-ℤ-Hom {ℓ = ℓ} {G = G} ⦃ ef ⦄ = injection→extensional! {f = λ h → h · 1} inj ef where
-    inj : {x y : Ab.Hom (Lift-ab ℓ ℤ-ab) G} → x · 1 ≡ y · 1 → x ≡ y
+    inj : ∀ {x y} → x · 1 ≡ y · 1 → x ≡ y
     inj {x} {y} p = Structured-hom-path _ (ap fst (pow-unique₂ G' x' y' p)) where
       G' : Group ℓ
       G' .fst = G .fst

@@ -168,7 +168,7 @@ It's also free from the definition of cocompletions that the extended
 map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
-    mkcomm : ∀ x → mkhom · (↓ (A .fst) x) ≡ f · x
+    mkcomm : ∀ x → mkhom · ↓ (A .fst) x ≡ f · x
     mkcomm x =
       (Lan↓-commutes B.⋃-lubs (f .hom) x)
 ```

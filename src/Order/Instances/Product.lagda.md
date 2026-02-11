@@ -73,9 +73,7 @@ module _ {o o' ℓ ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'} where
 
   pairᵖ
     : ∀ {o ℓ} {R : Poset o ℓ}
-    → Monotone R P
-    → Monotone R Q
-    → Monotone R (P ×ᵖ Q)
+    → Monotone R P → Monotone R Q → Monotone R (P ×ᵖ Q)
   pairᵖ f g .hom      x = f · x , g · x
   pairᵖ f g .pres-≤ x≤y = f .pres-≤ x≤y , g .pres-≤ x≤y
 ```

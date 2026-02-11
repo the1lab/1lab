@@ -455,23 +455,19 @@ Free-categories⊣Underlying-graph = free-objects→left-adjoint Free-category
 ```agda
 -- Defined by hand to be more universe polymorphic.
 path-map
-  : ∀ {x y}
-  → (f : Graph-hom G H)
-  → Path-in G x y
-  → Path-in H (f · x) (f · y)
+  : ∀ {x y} (f : Graph-hom G H)
+  → Path-in G x y → Path-in H (f · x) (f · y)
 path-map f nil = nil
 path-map f (cons e p) = cons (f .edge e) (path-map f p)
 
 path-map-id
-  : ∀ {x y}
-  → (p : Path-in G x y)
+  : ∀ {x y} (p : Path-in G x y)
   → path-map Graphs.id p ≡ p
 path-map-id nil = refl
 path-map-id (cons e p) = ap (cons e) (path-map-id p)
 
 path-map-∘
-  : ∀ {x y}
-  → {f : Graph-hom H K} {g : Graph-hom G H}
+  : ∀ {x y} {f : Graph-hom H K} {g : Graph-hom G H}
   → (p : Path-in G x y)
   → path-map (f Graphs.∘ g) p ≡ path-map f (path-map g p)
 path-map-∘ nil = refl

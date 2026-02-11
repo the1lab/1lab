@@ -77,17 +77,16 @@ $n$ when $n \geq 1$, and is the infinite cyclic group when $n = 0$.
 
 ```agda
 infix 30 _·ℤ
-_·ℤ : ∀ (n : Nat) → normal-subgroup ℤ λ i → el (n ∣ℤ i) (∣ℤ-is-prop n i)
+_·ℤ : ∀ n → normal-subgroup ℤ λ i → el (n ∣ℤ i) (∣ℤ-is-prop n i)
 (n ·ℤ) .has-rep .has-unit = ∣ℤ-zero
 (n ·ℤ) .has-rep .has-⋆ = ∣ℤ-+
 (n ·ℤ) .has-rep .has-inv = ∣ℤ-negℤ
-(n ·ℤ) .has-conjugate {x} {y} = subst (n ∣ℤ_) x≡y+x-y
-  where
-    x≡y+x-y : x ≡ y +ℤ (x -ℤ y)
-    x≡y+x-y =
-      x                  ≡⟨ ℤ.insertl {y} (ℤ.inverser {x = y}) ⟩
-      y +ℤ (negℤ y +ℤ x) ≡⟨ ap (y +ℤ_) (+ℤ-commutative (negℤ y) x) ⟩
-      y +ℤ (x -ℤ y)      ∎
+(n ·ℤ) .has-conjugate {x} {y} = subst (n ∣ℤ_) x≡y+x-y where
+  x≡y+x-y : x ≡ y +ℤ (x -ℤ y)
+  x≡y+x-y =
+    x                  ≡⟨ ℤ.insertl {y} (ℤ.inverser {x = y}) ⟩
+    y +ℤ (negℤ y +ℤ x) ≡⟨ ap (y +ℤ_) (+ℤ-commutative (negℤ y) x) ⟩
+    y +ℤ (x -ℤ y)      ∎
 
 infix 25 ℤ/_
 ℤ/_ : Nat → Group lzero

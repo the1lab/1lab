@@ -71,7 +71,7 @@ be [[group homomorphisms]] and to make the pushout square commute...
     inr : ⌞ B ⌟ → Amalgamated
     inr-hom : ∀ b b' → inr (b B.⋆ b') ≡ inr b ◆ inr b'
 
-    glue : (c : ⌞ C ⌟) → inl (f · c) ≡ inr (g · c)
+    glue : ∀ c → inl (f · c) ≡ inr (g · c)
 ```
 
 ...finally, we truncate the resulting type to a set.

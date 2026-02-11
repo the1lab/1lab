@@ -108,8 +108,10 @@ private unquoteDecl eqv' = declare-record-iso eqv' (quote is-composite)
 
 abstract instance
   H-Level-is-composite : ∀ {n k} → H-Level (is-composite n) (suc k)
-  H-Level-is-composite = prop-instance λ a@record{p = p ; q = q ; p-prime = record{}} b@record{p = p' ; q = q'} →
+  H-Level-is-composite = prop-instance λ a@record{p = p ; q = q} b@record{p = p' ; q = q'} →
     let
+      record{ } = a .p-prime
+
       open is-composite using (factors)
 
       ap=bp : p ≡ p'

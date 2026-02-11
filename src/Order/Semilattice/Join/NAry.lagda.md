@@ -148,9 +148,8 @@ module
   pres-⋃ᶠˢ = Finset-elim-prop _ pres-bot (λ x ih → pres-∪ _ _ ∙ ap₂ Qₗ._∪_ refl ih)
 
   pres-fin-lub
-    : ∀ {n} (k : Fin n → ⌞ P ⌟) (x : ⌞ P ⌟)
-    → is-lub P k x
-    → is-lub Q (λ x → f · (k x)) (f · x)
+    : ∀ {n} (k : Fin n → ⌞ P ⌟) x
+    → is-lub P k x → is-lub Q (λ x → f · k x) (f · x)
   pres-fin-lub k x lub = done where
     rem₁ : x ≡ ⋃ᶠ Pl k
     rem₁ = lub-unique lub (Finite-lubs Pl k .has-lub)
@@ -162,12 +161,8 @@ module
     done = subst (is-lub Q (apply f ⊙ k)) (sym rem₂) (Finite-lubs Ql _ .has-lub)
 
   pres-finite-lub
-    : ∀ {ℓᵢ} {I : Type ℓᵢ}
-    → Finite I
-    → (k : I → ⌞ P ⌟)
-    → (x : ⌞ P ⌟)
-    → is-lub P k x
-    → is-lub Q (λ x → f · k x) (f · x)
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} (fin : Finite I) (k : I → ⌞ P ⌟) x
+    → is-lub P k x → is-lub Q (λ x → f · k x) (f · x)
   pres-finite-lub I-finite k x P-lub = ∥-∥-out! do
     li ← I-finite
     let enum = listing→equiv-fin li

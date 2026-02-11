@@ -39,11 +39,13 @@ arguments.
 ```agda
   record Section : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     field
-      S₀ : (x : ⌞ B ⌟) → E ʻ x
-      S₁ : {x y : ⌞ B ⌟} (f : B.Hom x y) → E.Hom[ f ] (S₀ x) (S₀ y)
+      S₀ : ∀ x → E ʻ x
+      S₁ : ∀ {x y} (f : B.Hom x y) → E.Hom[ f ] (S₀ x) (S₀ y)
 
-      S-id : {x : ⌞ B ⌟} → S₁ {x} {x} B.id ≡ E.id'
-      S-∘  : {x y z : ⌞ B ⌟} (f : B.Hom y z) (g : B.Hom x y) → S₁ (f B.∘ g) ≡ S₁ f E.∘' S₁ g
+      S-id : ∀ {x} → S₁ {x} {x} B.id ≡ E.id'
+      S-∘
+        : ∀ {x y z} (f : B.Hom y z) (g : B.Hom x y)
+        → S₁ (f B.∘ g) ≡ S₁ f E.∘' S₁ g
 ```
 
 <details>
@@ -100,8 +102,8 @@ to work with sections instead.
       module Q = Section Q
 
     field
-      map : (x : ⌞ B ⌟) → E.Hom[ B.id ] (P · x) (Q · x)
-      com : (x y : ⌞ B ⌟) (f : B.Hom x y)
+      map : ∀ x → E.Hom[ B.id ] (P · x) (Q · x)
+      com : ∀ x y (f : B.Hom x y)
           → map y E.∘' P.S₁ f E.≡[ B.id-comm-sym ] Q.S₁ f E.∘' map x
 ```
 
@@ -116,7 +118,7 @@ to work with sections instead.
     H-Level-Natₛ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
 
     Extensional-Natₛ
-      : ∀ {P Q ℓr} ⦃ _ : Extensional ((x : ⌞ B ⌟) → E.Hom[ B.id ] (P · x) (Q · x)) ℓr ⦄
+      : ∀ {P Q ℓr} ⦃ _ : Extensional (∀ x → E.Hom[ B.id ] (P · x) (Q · x)) ℓr ⦄
       → Extensional (P =>s Q) ℓr
     Extensional-Natₛ = injection→extensional! (λ p → Iso.injective eqv (p ,ₚ prop!)) auto
 

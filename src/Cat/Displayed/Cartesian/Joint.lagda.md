@@ -753,18 +753,14 @@ postcompose-equiv→jointly-cartesian {a = a} {uᵢ = uᵢ} fᵢ eqv = fᵢ-cart
   open is-jointly-cartesian
 
   fᵢ-cart : is-jointly-cartesian uᵢ fᵢ
-  fᵢ-cart .universal v hᵢ =
-    eqv.from hᵢ
-  fᵢ-cart .commutes v hᵢ ix =
-    eqv.ε hᵢ ·ₚ ix
-  fᵢ-cart .unique {hᵢ = hᵢ} other p =
-    sym (eqv.η other) ∙ ap eqv.from (ext p)
+  fᵢ-cart .universal v hᵢ = eqv.from hᵢ
+  fᵢ-cart .commutes v hᵢ ix = eqv.ε hᵢ ·ₚ ix
+  fᵢ-cart .unique {hᵢ = hᵢ} other p = sym (eqv.η other) ∙ ap eqv.from (ext p)
 
 jointly-cartesian→postcompose-equiv {uᵢ = uᵢ} {fᵢ = fᵢ} fᵢ-cart v x' .is-eqv hᵢ =
   contr (fᵢ.universal v hᵢ , ext (fᵢ.commutes v hᵢ)) λ fib →
     Σ-prop-pathp! (sym (fᵢ.unique (fib .fst) (λ ix → fib .snd ·ₚ ix)))
-  where
-    module fᵢ = is-jointly-cartesian fᵢ-cart
+  where module fᵢ = is-jointly-cartesian fᵢ-cart
 ```
 </details>
 

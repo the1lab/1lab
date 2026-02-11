@@ -126,10 +126,7 @@ record
   pres-top : f · Pₗ.top ≡ Qₗ.top
   pres-top = Q.≤-antisym Qₗ.! top-≤
 
-  pres-meets
-    : ∀ {x y m}
-    → is-meet P x y m
-    → is-meet Q (f · x) (f · y) (f · m)
+  pres-meets : ∀ {x y m} → is-meet P x y m → is-meet Q (f · x) (f · y) (f · m)
   pres-meets meet .is-meet.meet≤l = f .pres-≤ (meet .meet≤l)
   pres-meets meet .is-meet.meet≤r = f .pres-≤ (meet .meet≤r)
   pres-meets {x = x} {y = y} {m = m} meet .is-meet.greatest ub ub≤fx ub≤fy =
@@ -138,10 +135,7 @@ record
     f · (x Pₗ.∩ y)       Q.≤⟨ f .pres-≤ (meet .greatest (x Pₗ.∩ y) Pₗ.∩≤l Pₗ.∩≤r) ⟩
     f · m                Q.≤∎
 
-  pres-tops
-    : ∀ {t}
-    → is-top P t
-    → is-top Q (f · t)
+  pres-tops : ∀ {t} → is-top P t → is-top Q (f · t)
   pres-tops {t = t} t-top x =
     x          Q.≤⟨ Qₗ.! ⟩
     Qₗ.top     Q.≤⟨ top-≤ ⟩
@@ -157,9 +151,7 @@ unquoteDecl H-Level-is-meet-slat-hom = declare-record-hlevel 1 H-Level-is-meet-s
 ## The category of meet-semilattices
 
 ```agda
-id-meet-slat-hom
-  : ∀ (Pₗ : is-meet-semilattice P)
-  → is-meet-slat-hom idₘ Pₗ Pₗ
+id-meet-slat-hom : (Pₗ : is-meet-semilattice P) → is-meet-slat-hom idₘ Pₗ Pₗ
 id-meet-slat-hom {P = P} _ .∩-≤ _ _ = Poset.≤-refl P
 id-meet-slat-hom {P = P} _ .top-≤ = Poset.≤-refl P
 
