@@ -123,7 +123,7 @@ braiding.
 
   β←-α←
     : ∀ {A B C} → (β← ◀ _) ∘ α← (B , A , C) ∘ (_ ▶ β←) ≡ α← (A , B , C) ∘ β← ∘ α← (B , C , A)
-  β←-α← = inverse-unique refl refl
+  β←-α← = inverse-unique₀
     (◀.F-map-iso β≅ ∙Iso α≅ ∙Iso ▶.F-map-iso β≅)
     (α≅ ∙Iso β≅ ∙Iso α≅)
     (sym (assoc _ _ _) ∙∙ braiding-α→ ∙∙ assoc _ _ _)
@@ -171,7 +171,7 @@ record make-symmetric-monoidal : Type (o ⊔ ℓ) where
   β← = Binatural.η (has-braiding .Isoⁿ.from) _ _
 
   β→≡β← : Path (∀ {A B} → Hom (A ⊗ B) (B ⊗ A)) β→ β←
-  β→≡β← = ext λ {_} {_} → inverse-unique refl refl
+  β→≡β← = ext λ {_} {_} → inverse-unique₀
     (make-iso β→ β→ symmetric symmetric)
     (make-iso β→ β← (has-braiding .Isoⁿ.invl ·ₚ _ ·ₚ _) (has-braiding .Isoⁿ.invr ·ₚ _ ·ₚ _))
     refl

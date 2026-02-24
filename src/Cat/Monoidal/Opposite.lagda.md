@@ -73,12 +73,12 @@ by inverting both sides. In the latter case we need to take care to
 reassociate composition.
 
 ```agda
-_^mop .triangle = C.inverse-unique refl refl
+_^mop .triangle = C.inverse-unique₀
   (C.α≅ C.Iso⁻¹ C.∙Iso C.◀.F-map-iso C.ρ≅ C.Iso⁻¹)
   (C.▶.F-map-iso C.λ≅ C.Iso⁻¹)
   C.triangle
 
-_^mop .pentagon = sym (C.assoc _ _ _) ∙ C.inverse-unique refl refl
+_^mop .pentagon = sym (C.assoc _ _ _) ∙ C.inverse-unique₀
   ( C.▶.F-map-iso (C.α≅ C.Iso⁻¹)
     C.∙Iso (C.α≅ C.Iso⁻¹)
     C.∙Iso C.◀.F-map-iso (C.α≅ C.Iso⁻¹))
