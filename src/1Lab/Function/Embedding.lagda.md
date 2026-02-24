@@ -35,7 +35,7 @@ private variable
 ```
 -->
 
-# Embeddings {defines="embedding"}
+# Embeddings {defines="embedding injective"}
 
 One of the most important observations leading to the development of
 categorical set theory is that injective maps _into_ a set $S$
