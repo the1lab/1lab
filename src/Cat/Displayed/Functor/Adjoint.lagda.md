@@ -47,6 +47,14 @@ identities.
 
 <!--
 ```agda
+adj-level' 
+  : ∀ {oa ℓa ob ℓb oe ℓe of ℓf}
+    {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+    (ℰ : Displayed A oe ℓe) (ℱ : Displayed B of ℓf) 
+  → Level
+adj-level' {oa} {ℓa} {ob} {ℓb} {oe} {ℓe} {of} {ℓf} _ _ =
+  oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+
 module _
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
@@ -59,7 +67,7 @@ module _
     open Displayed-functor
 
     lvl : Level
-    lvl = oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+    lvl = adj-level' ℰ ℱ
 
   infix 15 _⊣[_]_
 ```
@@ -114,7 +122,7 @@ module _
     open Vertical-functor
 
     lvl : Level
-    lvl = ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+    lvl = adj-level' ℰ ℱ
 
   infix 15 _⊣↓_
 ```
