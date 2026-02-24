@@ -751,7 +751,7 @@ abstract
 We prove this by `J'`{.Agda}-induction on the simpler case where $x = y$
 and $b = d$ definitionally.
 
-```
+```agda
   inverse-unique₀ : {x b : Ob} (f g : x ≅ b) → f .to ≡ g .to → f .from ≡ g .from
   inverse-unique₀ {x} {b} f g r =
     f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩

@@ -59,7 +59,7 @@ isomorphism in a functor category.
 We define the following combinators for basic groupoid operations on
 natural transformations:
 
-```
+```agda
   idni : ∀ {F} → F ≅ⁿ F
   idni = CD.id-iso
 
@@ -176,7 +176,7 @@ to an invertible natural transformation, resp. natural isomorphism.
 
 We also give the following helper functions:
 
-```
+```agda
   to-inversesⁿ
     : {F G : Functor C D} {α : F => G} {β : G => F}
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
@@ -235,7 +235,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-```
+```agda
   id-nat-commute : ∀ (α β : Id {C = C} => Id) → α ∘nt β ≡ β ∘nt α
   id-nat-commute α β = ext λ x → α .is-natural _ _ _
 ```
