@@ -25,7 +25,19 @@ private
 ```
 -->
 
-# Sigma displayed category
+# Displayed Σ-category
+
+Displayed categories capture the esence of adding structure to some base
+category. But what happens when our base category is itself displayed?
+That is, how should we interpret the situation
+
+$$
+\cF \liesover \cF \liesover \cB?
+$$
+
+In such a situation we may either conceive of $\cF$ or $\cB$ as forming
+the “base category.” Σ-categories allow us move between these two 
+conceptions more easily.
 
 Let $\cE$ be a [[displayed category]] over $\cA$, and $\cF$ be a
 displayed category over the [[total category]] $\int \cE$. The 
