@@ -748,10 +748,20 @@ abstract
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
 ```
 
+We prove this by `J'`{.Agda}-induction on the simpler case where $x = y$
+and $b = d$ definitionally.
+
+```
+  inverse-unique₀ : {x b : Ob} (f g : x ≅ b) → f .to ≡ g .to → f .from ≡ g .from
+  inverse-unique₀ {x} {b} f g r =
+    f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩
+    f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
+    (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym r) ∙ f .invr) ∙ idl _ ⟩
+    g .from                     ∎
+```
+
 <details>
-<summary>The proof is an unenlightening `PathP`{.Agda} juggle and is 
-therefore omitted.
-</summary>
+<summary>Definition of `inverse-unique`{.Agda} by induction.</summary>
 ```agda
   inverse-unique =
     J' (λ a c p → ∀ {b d} (q : b ≡ d) (f : a ≅ b) (g : c ≅ d)
@@ -760,22 +770,23 @@ therefore omitted.
       λ x → J' (λ b d q → (f : x ≅ b) (g : x ≅ d)
                 → PathP (λ i → Hom x (q i)) (f .to) (g .to)
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
-            λ y f g p →
-              f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩
-              f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
-              (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym p) ∙ f .invr) ∙ idl _ ⟩
-              g .from                     ∎
+            λ y → inverse-unique₀
 ```
 </details>
 
-<!--
+This may in turn be used to characterize paths between isomorphisms:
+
 ```agda
 ≅-pathp
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
   → PathP (λ i → p i ≅ q i) f g
 ≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q f g r)
+```
 
+<details>
+<summary>Alternate characterizations to `≅-pathp`{.Agda}.</summary>
+```agda
 ≅-pathp-from
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
   → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
@@ -787,7 +798,11 @@ therefore omitted.
 
 ≅-path-from : {f g : a ≅ b} → f ._≅_.from ≡ g ._≅_.from → f ≡ g
 ≅-path-from = ≅-pathp-from refl refl
+```
+</details>
 
+<!--
+```agda
 ≅-is-contr : (∀ {a b} → is-contr (Hom a b)) → is-contr (a ≅ b)
 ≅-is-contr hom-contr .centre =
   make-iso (hom-contr .centre) (hom-contr .centre)

@@ -120,7 +120,7 @@ braiding.
 ```agda
   β←-α← : ∀ {A B C}
     → (β← ⊗₁ id) ∘ α← B A C ∘ (id ⊗₁ β←) ≡ α← A B C ∘ β← ∘ α← B C A
-  β←-α← = inverse-unique refl refl
+  β←-α← = inverse-unique₀
     (◀.F-map-iso β≅ ∙Iso α≅ ∙Iso ▶.F-map-iso β≅)
     (α≅ ∙Iso β≅ ∙Iso α≅)
     (sym (assoc _ _ _) ∙∙ braiding-α→ ∙∙ assoc _ _ _)
@@ -169,7 +169,7 @@ record make-symmetric-monoidal : Type (o ⊔ ℓ) where
   β← = has-braiding .Isoⁿ.from ._=>_.η _
 
   β→≡β← : Path (∀ {A B} → Hom (A ⊗ B) (B ⊗ A)) β→ β←
-  β→≡β← = ext λ {_} {_} → inverse-unique refl refl
+  β→≡β← = ext λ {_} {_} → inverse-unique₀
     (make-iso β→ β→ symmetric symmetric)
     (isoⁿ→iso has-braiding _)
     refl

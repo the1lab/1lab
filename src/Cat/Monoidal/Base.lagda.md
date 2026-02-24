@@ -175,7 +175,7 @@ children's drawing of a house, so that it fits on the page horizontally.
     : ∀ {A B C D}
     → (A ▶ α→ B C D) ∘ α→ A (B ⊗ C) D ∘ (α→ A B C ◀ D)
     ≡ α→ A B (C ⊗ D) ∘ α→ (A ⊗ B) C D
-  pentagon-α→ = inverse-unique refl refl
+  pentagon-α→ = inverse-unique₀
     (▶.F-map-iso (α≅ Iso⁻¹) ∙Iso α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (α≅ Iso⁻¹))
     (α≅ Iso⁻¹ ∙Iso α≅ Iso⁻¹)
     (sym (assoc _ _ _) ∙ pentagon)
