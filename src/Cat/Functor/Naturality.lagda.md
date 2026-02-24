@@ -53,7 +53,13 @@ isomorphism in a functor category.
   module is-invertibleⁿ {F G : Functor C D} {α : F => G} (inv : is-invertibleⁿ α) =
     CD.is-invertible inv
   module Isoⁿ {F G : Functor C D} (eta : F ≅ⁿ G) = CD._≅_ eta
+```
+-->
 
+We define the following combinators for basic groupoid operations on
+natural transformations:
+
+```
   idni : ∀ {F} → F ≅ⁿ F
   idni = CD.id-iso
 
@@ -74,7 +80,6 @@ isomorphism in a functor category.
            → PathP (λ i → p i CD.≅ q i) f g
   ≅ⁿ-pathp p q r = CD.≅-pathp p q (Nat-pathp p q r)
 ```
--->
 
 A fundamental lemma that will let us work with natural isomorphisms more
 conveniently is the following: if $\alpha : F \To G$ is a natural
@@ -169,8 +174,9 @@ to an invertible natural transformation, resp. natural isomorphism.
   isoⁿ→is-invertible α x = D.iso→invertible (isoⁿ→iso α x)
 ```
 
-<!--
-```agda
+We also give the following helper functions:
+
+```
   to-inversesⁿ
     : {F G : Functor C D} {α : F => G} {β : G => F}
     → (∀ x → α .η x D.∘ β .η x ≡ D.id)
@@ -216,8 +222,9 @@ to an invertible natural transformation, resp. natural isomorphism.
     α .Isoⁿ.to .η _ D.∘ α .Isoⁿ.from .η _ D.∘ G .F₁ g ≡⟨ D.cancell (α .Isoⁿ.invl ηₚ _) ⟩
     G .F₁ g                                           ∎
 ```
--->
 
+Natural endomorphisms of the identity functor commute in the following
+sense:
 
 <!--
 ```agda
@@ -225,8 +232,10 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   private
     module C = Cat.Reasoning C
     open _=>_
+```
+-->
 
+```
   id-nat-commute : ∀ (α β : Id {C = C} => Id) → α ∘nt β ≡ β ∘nt α
   id-nat-commute α β = ext λ x → α .is-natural _ _ _
 ```
--->
