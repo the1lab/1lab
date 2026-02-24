@@ -8,6 +8,7 @@ open import Cat.Prelude
 
 import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Morphism as DM
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning as CR
 ```
@@ -310,6 +311,43 @@ The identity functor is obviously fibred.
   Id'-fibred .F-cartesian f'-cart = f'-cart
 ```
 
+## Action on displayed isomorphisms
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb} {F : Functor A B}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf} (F' : Displayed-functor F ℰ ℱ)
+  where
+  private
+    module A = CR A
+    module ℰ where
+      open DM ℰ public
+      open DR ℰ public
+    module ℱ where
+      open DM ℱ public
+      open DR ℱ public
+  open Displayed-functor F'
+  open DM._≅[_]_
+```
+-->
+
+Just as [[functors preserve isomorphisms]], displayed functors preserve
+[[displayed isomorphisms]], with a completely analogous proof.
+
+```agda
+  F'-map-iso 
+    : ∀ {x y} {f : x A.≅ y} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} 
+    → x' ℰ.≅[ f ] y'
+    → F₀' x' ℱ.≅[ F-map-iso F f ] F₀' y'
+  F'-map-iso f' .to' = F₁' (f' .to')
+  F'-map-iso f' .from' = F₁' (f' .from')
+  F'-map-iso f' .inverses' = record 
+    { invl' = symP F-∘' ℱ.∙[] apd (λ i → F₁') (f' .invl') ℱ.∙[] F-id'
+    ; invr' = symP F-∘' ℱ.∙[] apd (λ i → F₁') (f' .invr') ℱ.∙[] F-id' }
+```
+
 ## Vertical functors {defines="vertical-functor"}
 
 Functors displayed over the identity functor are of particular interest.
@@ -473,11 +511,13 @@ module
   where
   private
     module A = CR A
+    module B = CR B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     module ℰ↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
     module ℱ↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
-
+    
+    open Functor
     open Displayed-functor
     open _=>_
 
@@ -496,6 +536,7 @@ module
     : Type lvl
     where
     no-eta-equality
+    constructor NT'
 
     field
       η' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (F' .F₀' x') (G' .F₀' x')
@@ -503,6 +544,23 @@ module
         : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
+
+<details>
+<summary>We can also define `is-natural-transformation[_]`{.Agda} as a
+proprty of families of morphisms displayed over a family of morphisms
+with the property `is-natural-transformation`{.Agda}</summary>
+```agda
+  is-natural-transformation[_]
+    : {F G : Functor A B} {α : ∀ a → B.Hom (₀ F a) (₀ G a)}
+    → is-natural-transformation F G α
+    → (F' : Displayed-functor F ℰ ℱ) (G' : Displayed-functor G ℰ ℱ)
+    → ( α' : ∀ {x} x' → ℱ.Hom[ α x ] (₀' F' x') (₀' G' x') )
+    → Type _
+  is-natural-transformation[ α-nat ] F' G' α' =
+    ∀ {x} {y} {f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
+    → α' y' ℱ.∘' ₁' F' f' ℱ.≡[ α-nat x y f ] ₁' G' f' ℱ.∘' α' x'
+```
+</details>
 
 <!--
 ```agda
@@ -546,6 +604,14 @@ module
            → (∀ {x} (x' : ℰ.Ob[ x ]) → α' .η' x' ℱ.≡[ p ηₚ x ] β' .η' x')
            → PathP (λ i → F' =[ p i ]=> G') α' β'
   Nat'-path = Nat'-pathp refl refl _ refl refl
+
+  _ηₚ'_ 
+    : ∀ {F G : Functor A B} {α β : F => G} {p : α ≡ β}
+      {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+      {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'}
+    → PathP (λ i → F' =[ p i ]=> G') α' β'
+    → ∀ {a} (a' : ℰ.Ob[ a ]) → α' .η' a' ℱ.≡[ p ηₚ a ] β' .η' a'
+  p' ηₚ' a' = apd (λ i γ' → γ' .η' a') p'
 ```
 -->
 
