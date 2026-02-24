@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Naturality
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Equivalence where
 ```
 
@@ -27,11 +31,11 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences {defines="equivalence-of-categories equivalences-of-categories adjoint-equivalence equivalence-of-precategories"}
+# Equivalences {defines="equivalence-of-categories equivalences-of-categories"}
 
 An adjunction $F \vdash G$ is an **adjoint equivalence**, or an
 **equivalence of (pre)categories**, if the unit and counit natural
-transformations are both [[natural isomorphisms]]. This immediately
+transformations are both [[natural isomorphisms]]. As we see below, this
 implies that our adjoint pair $F \dashv G$ extends to an adjoint triple
 $F \dashv G \dashv F$.
 
@@ -69,9 +73,21 @@ morphisms gives isomorphisms in the respective functor categories:
   counit⁻¹ = Cat.from F∘F⁻¹≅Id
 ```
 
-<!--
+This implies the adjunction
+
 ```agda
   F⁻¹⊣F : F⁻¹ ⊣ F
+```
+
+whence we have
+
+```agda
+  inverse-equivalence : is-equivalence F⁻¹
+```
+
+<details>
+<summary>Construction of `F⁻¹⊣F`{.Agda} and `inverse-equivalence`{.Agda}</summary>
+```agda
   F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
     open _⊣_
@@ -102,13 +118,11 @@ morphisms gives isomorphisms in the respective functor categories:
       zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F · b) ≡ D.id
       zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .invr) ∙ F .F-id
 
-  inverse-is-equivalence : adjunction-is-equivalence F⁻¹⊣F
   inverse-is-equivalence = record
     { unit-iso   = λ x → Cat.is-invertible-inverse D (counit-iso _)
     ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
--->
 
 Overloading terminology, a functor $F : \cC \to \cD$ is an **equivalence
 of categories** when it is part of an adjoint equivalence $F \vdash G$.
@@ -130,6 +144,12 @@ record is-equivalence (F : Functor C D) : Type (adj-level C D) where
     ; has-is-equivalence = inverse-is-equivalence
     }
 ```
+
+We chose, for definiteness, the above definition of equivalence of
+categories, since it provides convenient access to the most useful data:
+The induced natural isomorphisms, the adjunction unit/counit, and the
+triangle identities. It _is_ a lot of data to come up with by hand,
+though, so we provide some alternatives:
 
 We chose, for definiteness, the above definition of equivalence of
 categories, since it provides convenient access to the most useful data:
