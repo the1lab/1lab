@@ -101,7 +101,7 @@ functorial, and that `inc`{.Agda} is a natural transformation:
     map-id : ∀ x → map {U = U} id x ≡ x
     map-∘  : ∀ x → map (g ∘ f) x ≡ map f (map g x)
 
-    inc-natural : (x : A ʻ U) → inc (A ⟪ f ⟫ x) ≡ map f (inc x)
+    inc-natural : ∀ x → inc (A ⟪ f ⟫ x) ≡ map f (inc x)
 ```
 
 To ensure that $A^+$ is a sheaf, we have two constructors: one states
@@ -111,7 +111,7 @@ a section of the given patch.
 
 ```agda
     sep
-      : ∀ {x y : Sheafify₀ U} (c : J ʻ U)
+      : ∀ {x y} (c : J ʻ U)
       → (l : ∀ {V} (f : Hom V U) (hf : f ∈ c) → map f x ≡ map f y)
       → x ≡ y
 
@@ -176,7 +176,7 @@ have a family of [[propositions]] $P$, with sections over `inc`{.Agda}:
   Sheafify-elim-prop
     : ∀ {ℓp} (P : ∀ {U} → Sheafify₀ U → Type ℓp)
     → (pprop : ∀ {U} (x : Sheafify₀ U) → is-prop (P x))
-    → (pinc : ∀ {U : ⌞ C ⌟} (x : A ʻ U) → P (inc x))
+    → (pinc : ∀ {U} (x : A ʻ U) → P (inc x))
 ```
 
 Instead of asking for $P$ over `glue`{.Agda}, we will ask instead that
@@ -187,7 +187,7 @@ restriction $A^+(f)(x)$, as long as $f \in s$.
 
 ```agda
     → (plocal
-        : ∀ {U : ⌞ C ⌟} (c : J ʻ U) (x : Sheafify₀ U)
+        : ∀ {U} (c : J ʻ U) (x : Sheafify₀ U)
         → (∀ {V} (f : Hom V U) (hf : f ∈ c) → P (map f x)) → P x)
     → ∀ {U} (x : Sheafify₀ U) → P x
 ```
@@ -219,7 +219,7 @@ Taking $h = fg$ gives $P(A^+(fg)(x))$, which is equal to our goal by
 functoriality.
 
 ```agda
-    p'map : ∀ {U V : ⌞ C ⌟} (f : Hom U V) (x : Sheafify₀ V) → P' x → P' (map f x)
+    p'map : ∀ {U V} (f : Hom U V) (x : Sheafify₀ V) → P' x → P' (map f x)
     p'map f x p g = subst P (map-∘ _) (p (f ∘ g))
 ```
 
@@ -227,7 +227,7 @@ Similarly, we can show $P'(x)$ for the inclusion of an $x : A(U)$ at
 every restriction, by naturality of `inc`{.Agda}.
 
 ```agda
-    p'inc : ∀ {U : ⌞ C ⌟} (x : A ʻ U) → P' (inc x)
+    p'inc : ∀ {U} (x : A ʻ U) → P' (inc x)
     p'inc x {V} f = subst P (inc-natural x) (pinc (A ⟪ f ⟫ x))
 ```
 
@@ -238,7 +238,7 @@ $P'(p(f))$ for any $f \in s$. We want to show $P(A^+(f)(\operatorname{glue} p))$
 
 ```agda
     p'glue
-      : ∀ {U : ⌞ C ⌟} (c : J ʻ U) (p : pre.Parts C map (J .cover c))
+      : ∀ {U} (c : J ʻ U) (p : pre.Parts C map (J .cover c))
       → (g : pre.is-patch C map (J .cover c) p)
       → (∀ {V} (f : Hom V U) (hf : f ∈ c) → P' (p f hf))
       → P' (glue c p g)
@@ -381,7 +381,7 @@ in $B(U)$ is $J$-local.
 ```agda
   unique
     : (G : Functor (C ^op) (Sets ℓ)) (shf : is-sheaf J G) (eta : A => G) (eps : Sheafify A => G)
-    → (∀ U (x : A ʻ U) → eps .η U (inc x) ≡ eta .η U x)
+    → (∀ U x → eps .η U (inc x) ≡ eta .η U x)
     → univ G shf eta ≡ eps
   unique {A = A} G shf eta eps comm = ext λ i → Sheafify-elim-prop A
     (λ {v} x → univ G shf eta .η v x ≡ eps .η v x)

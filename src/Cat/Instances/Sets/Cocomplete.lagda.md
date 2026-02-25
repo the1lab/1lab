@@ -120,11 +120,10 @@ $F$; The family of maps $\psi$ respects the quotient essentially by
 definition.
 
 ```agda
-  univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
-       → (eta : ∀ j → F ʻ j → ∣ A ∣)
-       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eta y (F.F₁ f Fx) ≡ eta x Fx)
-       → sum / rel
-       → ∣ A ∣
+  univ
+    : ∀ {A : Set (ι ⊔ κ ⊔ o)} (eta : ∀ j → F ʻ j → ∣ A ∣)
+    → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eta y (F.F₁ f Fx) ≡ eta x Fx)
+    → sum / rel → ∣ A ∣
   univ {A} eta p =
     Coeq-rec
       (λ { (x , p) → eta x p })

@@ -581,7 +581,7 @@ instance
   Extensional-natural-transformation
     : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     → {F G : Functor C D}
-    → ⦃ sa : {x : ⌞ C ⌟} → Extensional (D .Hom (F · x) (G · x)) ℓr ⦄
+    → ⦃ sa : ∀ {x} → Extensional (D .Hom (F · x) (G · x)) ℓr ⦄
     → Extensional (F => G) (o ⊔ ℓr)
   Extensional-natural-transformation ⦃ sa ⦄ .Pathᵉ f g = ∀ i → Pathᵉ sa (f .η i) (g .η i)
   Extensional-natural-transformation ⦃ sa ⦄ .reflᵉ x i = reflᵉ sa (x .η i)

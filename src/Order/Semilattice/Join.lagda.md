@@ -120,10 +120,7 @@ record
   pres-bot : f · Pₗ.bot ≡ Qₗ.bot
   pres-bot = Q.≤-antisym bot-≤ Qₗ.¡
 
-  pres-joins
-    : ∀ {x y m}
-    → is-join P x y m
-    → is-join Q (f · x) (f · y) (f · m)
+  pres-joins : ∀ {x y m} → is-join P x y m → is-join Q (f · x) (f · y) (f · m)
   pres-joins join .is-join.l≤join = f .pres-≤ (join .l≤join)
   pres-joins join .is-join.r≤join = f .pres-≤ (join .r≤join)
   pres-joins {x = x} {y = y} {m = m} join .is-join.least lb fx≤lb fy≤lb =
@@ -132,10 +129,7 @@ record
     f · x Qₗ.∪ f · y Q.≤⟨ Qₗ.∪-universal lb fx≤lb fy≤lb ⟩
     lb               Q.≤∎
 
-  pres-bottoms
-    : ∀ {b}
-    → is-bottom P b
-    → is-bottom Q (f · b)
+  pres-bottoms : ∀ {b} → is-bottom P b → is-bottom Q (f · b)
   pres-bottoms {b = b} b-bot x =
     f · b      Q.≤⟨ f .pres-≤ (b-bot Pₗ.bot) ⟩
     f · Pₗ.bot Q.≤⟨ bot-≤ ⟩
@@ -159,9 +153,7 @@ However, this subcategory is *not* full: there are monotone functions
 between semilattices that do not preserve joins.
 
 ```agda
-id-join-slat-hom
-  : (Pₗ : is-join-semilattice P)
-  → is-join-slat-hom idₘ Pₗ Pₗ
+id-join-slat-hom : (Pₗ : is-join-semilattice P) → is-join-slat-hom idₘ Pₗ Pₗ
 
 ∘-join-slat-hom
   : ∀ {Pₗ Qₗ Rₗ} {f : Monotone Q R} {g : Monotone P Q}

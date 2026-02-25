@@ -81,12 +81,12 @@ opaque
   πₙ-def A n = n-Tr-set ∙e n-Tr-Ωⁿ A 1 (suc n) .fst , n-Tr-Ωⁿ A 1 (suc n) .snd
 
   πₙ-def-inc
-    : ∀ {ℓ} (A : Type∙ ℓ) n → (l : ⌞ Ωⁿ (1 + n) A ⌟)
+    : ∀ {ℓ} (A : Type∙ ℓ) n l
     → πₙ-def A n · inc l ≡ Ωⁿ-map (1 + n) inc∙ · l
   πₙ-def-inc A n l = n-Tr-Ωⁿ-inc A 1 (suc n) ·ₚ l
 
   πₙ-def-∙
-    : ∀ {ℓ} (A : Type∙ ℓ) n → (p q : ⌞ Ωⁿ (1 + n) A ⌟)
+    : ∀ {ℓ} (A : Type∙ ℓ) n p q
     → πₙ-def A n · inc (p ∙ q) ≡ πₙ-def A n · inc p ∙ πₙ-def A n · inc q
   πₙ-def-∙ A = n-Tr-Ωⁿ-∙ A 1
 ```

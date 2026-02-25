@@ -245,8 +245,7 @@ below we denote `elem`{.Agda}.
 [category of elements]: Cat.Instances.Elements.html
 
 ```agda
-    elem : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
-         → (arg : P ʻ i) → ↓Obj (よ C) (!Const P)
+    elem : ∀ P i → P ʻ i → ↓Obj (よ C) (!Const P)
     elem P i arg .dom = i
     elem P i arg .cod = tt
     elem P i arg .map .η j h = P .F₁ h arg

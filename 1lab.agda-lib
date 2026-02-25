@@ -12,4 +12,5 @@ flags:
   --guardedness
   --two-level
   -W noUnsupportedIndexedMatch
+  -W noRewriteVariablesBoundInSingleton
   --experimental-lazy-instances

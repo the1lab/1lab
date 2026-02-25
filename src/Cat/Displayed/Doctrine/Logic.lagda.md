@@ -413,7 +413,7 @@ private variable
   Φ Ψ φ ψ θ φ' ψ' : Formula Γ
   t t₁ s s₁ : Tm Γ τ
 
-wk : ∀ {Γ} (φ : Formula Γ) {τ : Ty} → Formula (Γ ʻ τ)
+wk : ∀ {Γ} (φ : Formula Γ) {τ} → Formula (Γ ʻ τ)
 wk φ = sub-prop (drop stop) φ
 ```
 -->
