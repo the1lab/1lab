@@ -54,10 +54,10 @@ implies→≤ : ∀ {x y} → (So x → So y) → x ≤ y
 implies→≤ {true}  {true}  f = _
 implies→≤ {false} {true}  f = _
 implies→≤ {false} {false} f = _
-implies→≤ {true}  {false} f with () ← f oh
+implies→≤ {true}  {false} f with () ← f so-true
 
 ≤→implies : ∀ {x y} → x ≤ y → So x → So y
-≤→implies {true} {true} p q = oh
+≤→implies {true} {true} p q = so-true
 
 so-antisym : ∀ {x y} → (So x → So y) → (So y → So x) → x ≡ y
 so-antisym p q = ≤-antisym (implies→≤ p) (implies→≤ q)

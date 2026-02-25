@@ -118,7 +118,7 @@ abstract
   {-# REWRITE from-prim-eq-refl #-}
 
   to-prim-eq : ∀ {x y} → x ≡ y → So (x == y)
-  to-prim-eq {zero} {zero} p = oh
+  to-prim-eq {zero} {zero} p = so-true
   to-prim-eq {zero} {suc y} p = absurd (zero≠suc p)
   to-prim-eq {suc x} {zero} p = absurd (suc≠zero p)
   to-prim-eq {suc x} {suc y} p = to-prim-eq (suc-inj p)
