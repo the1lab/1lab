@@ -14,8 +14,6 @@ open import Data.Int.Base
 import Algebra.Ring.Reasoning as Kit
 
 import Data.Nat as Nat
-
-import Prim.Data.Nat as Nat
 ```
 -->
 

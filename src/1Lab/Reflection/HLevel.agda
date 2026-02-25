@@ -18,8 +18,6 @@ open import Data.Id.Base
 
 open import Meta.Foldable
 
-open import Prim.Data.Nat
-
 module 1Lab.Reflection.HLevel where
 
 {-
