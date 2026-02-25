@@ -23,10 +23,12 @@ module 1Lab.Equiv.Fibrewise where
 
 # Fibrewise equivalences
 
+:::{.definition #fibrewise-map}
 In HoTT, a type family `P : A → Type` can be seen as a [_fibration_]
 with total space `Σ P`, with the fibration being the projection
 `fst`{.Agda}. Because of this, a function with type `(x : _) → P x → Q
-x` can be referred as a _fibrewise map_.
+x` can be referred as a **fibrewise map**.
+:::
 
 [_fibration_]: https://ncatlab.org/nlab/show/fibration
 
@@ -74,8 +76,12 @@ total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
       p
 ```
 
-From this, we immediately get that a fibrewise transformation is an
-equivalence iff. it induces an equivalence of total spaces by `total`.
+:::{.definition #fibrewise-equivalence}
+A fibrewise map `f : (x : _) → P x → Q` is a **fibrewise equivalence**
+iff. `f x` is an equivalence for all $x$. It follows from the above that
+a fibrewise transformation is a fibrewise equivalence iff. it induces an
+equivalence of total spaces by `total`.
+:::
 
 ```agda
 total→equiv

@@ -38,7 +38,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (M : Monoidal-category C) where
 ```
 -->
 
-# Monoids in a monoidal category
+# Monoids in a monoidal category {defines="monoid-object"}
 
 Let $(\cC, \otimes, 1)$ be a [monoidal category] you want to study.
 It can be, for instance, one of the [endomorphism categories] in a
@@ -186,7 +186,8 @@ laws, a great simplification.
     unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
 
     instance
-      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} → H-Level (is-monoid-hom f mo no) (suc k)
+      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} 
+        → H-Level (is-monoid-hom f mo no) (suc k)
       H-Level-is-monoid-hom = prop-instance $ Iso→is-hlevel! 1 eqv
 
   open Displayed

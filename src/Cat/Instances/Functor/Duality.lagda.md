@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
 open import Cat.Prelude
@@ -57,7 +58,14 @@ op-functor-is-iso = isom where
     (λ x → Functor-path (λ x → refl) (λ x → refl))
 ```
 
-This means, in particular, that it is an adjoint equivalence:
+This induces a [[path between precategories]]
+
+```agda
+op-functor-path : Cat[ C , D ] ^op ≡ Cat[ C ^op , D ^op ]
+op-functor-path = Precategory-path op-functor→ op-functor-is-iso
+```
+
+and an adjoint equivalence
 
 ```agda
 op-functor-is-equiv : is-equivalence (op-functor→ {C = C} {D = D})

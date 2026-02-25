@@ -32,7 +32,7 @@ private variable
 ```
 -->
 
-# Surjections {defines=surjection}
+# Surjections {defines="surjection surjective"}
 
 A function $f : A \to B$ is a **surjection** if, for each $b : B$, we
 have $\| f^*b \|$: that is, all of its [[fibres]] are inhabited. Using

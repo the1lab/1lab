@@ -105,7 +105,8 @@ With all that in place, we can construct the total category!
   ∫ .Precategory.assoc _ _ _ = ∫Hom-path (assoc _ _ _) (assoc' _ _ _)
 ```
 
-<!--
+The total category comes equipped with a projection onto the base category.
+
 ```agda
   πᶠ : Functor ∫ B
   πᶠ .Functor.F₀ = fst
@@ -113,7 +114,6 @@ With all that in place, we can construct the total category!
   πᶠ .Functor.F-id = refl
   πᶠ .Functor.F-∘ f g = refl
 ```
--->
 
 ## Morphisms in the total category
 

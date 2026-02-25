@@ -16,7 +16,7 @@ open import Cat.Base
 module Cat.Displayed.Base where
 ```
 
-# Displayed categories {defines=displayed-category}
+# Displayed categories {defines="displayed-category base-category displayed-precategory"}
 
 The core idea behind displayed categories is that we want to capture the
 idea of being able to place extra structure over some sort of "base"
@@ -24,7 +24,7 @@ category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the
 objects of Set, and extra conditions placed atop the morphisms of Set.
 
-We start by defining a displayed category over a base category $\cB$
+We start by defining a displayed category over a **base category** $\cB$
 which will act as the category we add the extra structure to.
 
 ```agda
@@ -142,7 +142,11 @@ introducing them in the first place.
       → f' ≡[ p ] hom[ p ] f'
 ```
 
-<!--
+## Syntax sugar
+
+We define a displayed counterpart to `≡⟨⟩-syntax` for chains of
+identifications _over_ chains of identifications.
+
 ```agda
   _∙[]_ : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
         → {f' : Hom[ f ] x y} {g' : Hom[ g ] x y} {h' : Hom[ h ] x y}
@@ -175,7 +179,10 @@ introducing them in the first place.
 
   infixr 30 _∙[]_ ∙[-]-syntax
   infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
+```
 
+<!--
+```agda
 record Trivially-graded {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type (o ⊔ ℓ ⊔ lsuc o' ⊔ lsuc ℓ') where
   open Precategory B
   field

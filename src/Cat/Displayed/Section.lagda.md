@@ -133,7 +133,7 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   Sections .Ob          = Section E
   Sections .Hom         = _=>s_
   Sections .Hom-set X Y = hlevel 2
-  Sections .id      = record { map = λ x → id' ; com = λ x y f → to-pathp[] id-comm[] }
+  Sections .id      = record { map = λ x → id' ; com = λ x y f → to-pathp[] id-comm-sym[] }
   Sections ._∘_ {S} {T} {U} f g = record
     { map = λ x     → hom[ B.idl B.id ] (f .map x ∘' g .map x)
     ; com = λ x y h → cast[] $

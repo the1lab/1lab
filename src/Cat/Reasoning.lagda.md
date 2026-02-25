@@ -69,6 +69,9 @@ abstract
   idl2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → (id ∘ f) ∘ g ≡ f ∘ g
   idl2 f g = ap (_∘ g) (idl f)
 
+  idlr : ∀ {b c} (f : Hom b c) → id ∘ f ∘ id ≡ f
+  idlr f = idr2 id f ∙ idl f
+
 module _ (a≡id : a ≡ id) where abstract
   eliml : a ∘ f ≡ f
   eliml {f = f} =

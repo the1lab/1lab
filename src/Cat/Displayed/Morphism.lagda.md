@@ -365,7 +365,7 @@ has-retract↓ : ∀ {x} {x' x'' : Ob[ x ]} (s' : Hom[ id ] x'' x') → Type _
 has-retract↓ s' = has-retract[ id-has-retract ] s'
 ```
 
-## Isos
+## Isos {defines="displayed-isomorphisms"}
 
 Displayed [isomorphisms] must also be defined over isomorphisms in the
 base.
@@ -520,6 +520,14 @@ invertible[]→iso[] {f' = f'} i = make-iso[ _ ] f'
   (is-invertible[_].invl' i)
   (is-invertible[_].invr' i)
 
+is-invertible[]-inverse
+  : ∀ {x y x' y'} {f : Hom x y} {f-inv : is-invertible f}
+    {f' : Hom[ f ] x' y'} (f'-inv : is-invertible[ f-inv ] f')
+  → is-invertible[ is-invertible-inverse f-inv ] (f'-inv .is-invertible[_].inv')
+is-invertible[]-inverse f'-inv = 
+  record { inv' = _ ; inverses' = record { invl' = g'.invr' ; invr' = g'.invl' } }
+  where module g' = Inverses[_] (f'-inv .is-invertible[_].inverses')
+
 iso[]→invertible[]
   : ∀ {a b a' b'}
   → {i : a ≅ b}
@@ -550,15 +558,6 @@ instance
     → ⦃ sa : Extensional (Hom[ f .to ] x' y') ℓr ⦄
     → Extensional (x' ≅[ f ] y') ℓr
   Extensional-≅[] ⦃ sa ⦄ = injection→extensional! ≅[]-path sa
-
-_Iso[]⁻¹
-  : ∀ {a b a' b'} {i : a ≅ b}
-  → a' ≅[ i ] b'
-  → b' ≅[ i Iso⁻¹ ] a'
-(i' Iso[]⁻¹) .to' = i' .from'
-(i' Iso[]⁻¹) .from' = i' .to'
-(i' Iso[]⁻¹) .inverses' .Inverses[_].invl' = i' .invr'
-(i' Iso[]⁻¹) .inverses' .Inverses[_].invr' = i' .invl'
 ```
 -->
 
@@ -568,6 +567,56 @@ iso. In fact, it is a vertical iso!
 ```agda
 id-iso↓ : ∀ {x} {x' : Ob[ x ]} → x' ≅↓ x'
 id-iso↓ = make-iso[ id-iso ] id' id' (idl' id') (idl' id')
+```
+
+We also have that displayed isos compose
+
+```agda
+Inverses-∘'
+  : ∀ {a b c f g f⁻¹ g⁻¹ finv ginv} {a : Ob[ a ]} {b : Ob[ b ]} {c : Ob[ c ]}
+    {f' : Hom[ f ] a b} {f'⁻¹ : Hom[ f⁻¹ ] b a}
+    {g' : Hom[ g ] b c} {g'⁻¹ : Hom[ g⁻¹ ] c b}
+  → Inverses[ finv ] f' f'⁻¹ → Inverses[ ginv ] g' g'⁻¹
+  → Inverses[ Inverses-∘ ginv finv ] (g' ∘' f') (f'⁻¹ ∘' g'⁻¹)
+Inverses-∘' {finv = finv} {ginv} {f' = f'} {f'⁻¹} {g'} {g'⁻¹} finv' ginv' = record
+  { invl' = l' ; invr' = r' } where
+    module gfinv = Inverses (Inverses-∘ ginv finv)
+    module finv' = Inverses[_] finv'
+    module ginv' = Inverses[_] ginv'
+    
+    l' : (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹ ≡[ gfinv.invl ] id'
+    l' = cast[] $
+      (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹    ≡[]⟨ assoc' (g' ∘' f') f'⁻¹ g'⁻¹ ⟩
+      ((g' ∘' f') ∘' f'⁻¹) ∘' g'⁻¹  ≡[]˘⟨ assoc' g' f' f'⁻¹ ⟩∘'⟨refl ⟩
+      (g' ∘' (f' ∘' f'⁻¹)) ∘' g'⁻¹  ≡[]⟨ (refl⟩∘'⟨ finv'.invl') ⟩∘'⟨refl ⟩
+      (g' ∘' id') ∘' g'⁻¹           ≡[]⟨ (idr' g') ⟩∘'⟨refl ⟩
+      g' ∘' g'⁻¹                    ≡[]⟨ ginv'.invl' ⟩
+      id'                           ∎
+    
+    r' : (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f' ≡[ gfinv.invr ] id'
+    r' = cast[] $
+      (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f'    ≡[]⟨ assoc' (f'⁻¹ ∘' g'⁻¹) g' f' ⟩
+      ((f'⁻¹ ∘' g'⁻¹) ∘' g') ∘' f'  ≡[]˘⟨ assoc' f'⁻¹ g'⁻¹ g' ⟩∘'⟨refl ⟩
+      (f'⁻¹ ∘' (g'⁻¹ ∘' g')) ∘' f'  ≡[]⟨ (refl⟩∘'⟨ ginv'.invr') ⟩∘'⟨refl ⟩
+      (f'⁻¹ ∘' id') ∘' f'           ≡[]⟨ (idr' f'⁻¹) ⟩∘'⟨refl ⟩
+      f'⁻¹ ∘' f'                    ≡[]⟨ finv'.invr' ⟩
+      id'                           ∎
+
+_∘Iso'_
+  : ∀ {a b c f g} {a' : Ob[ a ]} {b' : Ob[ b ]} {c' : Ob[ c ]}
+  → b' ≅[ g ] c' → a' ≅[ f ] b' → a' ≅[ g ∘Iso f ] c'
+(g' ∘Iso' f') .to' = g' .to' ∘' f' .to'
+(g' ∘Iso' f') .from' = f' .from' ∘' g' .from'
+(g' ∘Iso' f') .inverses' = Inverses-∘' (f' .inverses') (g' .inverses')
+
+_Iso[]⁻¹
+  : ∀ {a b a' b'} {i : a ≅ b}
+  → a' ≅[ i ] b'
+  → b' ≅[ i Iso⁻¹ ] a'
+(i' Iso[]⁻¹) .to' = i' .from'
+(i' Iso[]⁻¹) .from' = i' .to'
+(i' Iso[]⁻¹) .inverses' .Inverses[_].invl' = i' .invr'
+(i' Iso[]⁻¹) .inverses' .Inverses[_].invr' = i' .invl'
 ```
 
 Isomorphisms are also instances of sections and retracts.
@@ -656,6 +705,22 @@ iso[]→from-has-retract[]
   → has-retract[ iso→from-has-retract f ] (f' .from')
 iso[]→from-has-retract[] f' .retract' = f' .to'
 iso[]→from-has-retract[] f' .is-retract' = f' .invl'
+```
+
+The following is a displayed counterpart to `inverse-uniqu₀`{.Agda}.
+
+```agda
+abstract
+  inverse-unique₀'
+    : ∀ {x b} {f g : x ≅ b} {r : f .to ≡ g .to}
+      {x' : Ob[ x ]} {b' : Ob[ b ]} (f' : x' ≅[ f ] b') (g' : x' ≅[ g ] b')
+      (r' : f' .to' ≡[ r ] g' .to')
+    → f' .from' ≡[ inverse-unique₀ f g r ] g' .from'
+  inverse-unique₀' f' g' r' = cast[] $
+    f' .from'                           ≡[]˘⟨ apd (λ _ → f' .from' ∘'_) (g' .invl') ∙[] idr' _ ⟩
+    f' .from' ∘'  g' .to' ∘' g' .from'   ≡[]⟨ assoc' (f' .from') (g' .to') (g' .from') ⟩
+    (f' .from' ∘' g' .to') ∘' g' .from' ≡[]⟨ (apd (λ _ → _∘' g' .from') (apd (λ _ → f' .from' ∘'_) (symP r') ∙[] f' .invr')) ∙[] idl' _ ⟩
+    g' .from'                           ∎
 ```
 
 <!--
