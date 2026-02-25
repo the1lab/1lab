@@ -42,7 +42,7 @@ private
   ι← = ^*-id-from
   ι→ = ^*-id-to
   _[_] = rebase
-  infix 30 _[_]
+  infix 45 _[_]
 ```
 -->
 
@@ -175,6 +175,9 @@ private
 
 <!--
 ```agda
+  π : ∀ {x y} {f : Hom x y} {y' : Ob[ y ]} → Hom[ f ] (f ^* y') y'
+  π = π* _ _
+
 private abstract
   π-adjust
     : ∀ {a b} {f f' : Hom a b} {x : Ob[ b ]} (p : f ≡ f')
@@ -231,23 +234,28 @@ of the underlying displayed category. They're not informative; it's fine
 to take the three theorems above as given.</summary>
 
 ```agda
-  adjust-idr {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idr f))
-    (   F.pulllf (π*.commutesv (π* _ _ ∘' π* _ _))
-    ∙[] E.pullr[] (idr id) (π*.commutesp (idr id) id')
-    ∙[] idr' (π* _ _))
+  adjust-idr {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idr f)) $ begin
+    π ∘' (γ← ∘v ι←) ≡[]⟨ F.pulllf (π*.commutesv (π ∘' π)) ⟩
+    (π ∘' π) ∘' ι←  ≡[]⟨ E.pullr[] (idr id) (π*.commutesp (idr id) id') ⟩
+    π ∘' id'        ≡[]⟨ idr' π ⟩
+    π               ∎[]
 
-  adjust-idl {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idl f))
-    (   F.pulllf (π*.commutesv (π* _ _ ∘' π* _ _))
-    ∙[] E.pullr[] _ (π*.commutesp id-comm (ι← ∘' π* _ _))
-    ∙[] E.pulll[] _ (π*.commutesp (idr id) id') ∙[] idl' (π* _ _))
+  adjust-idl {f = f} {x} = π*.uniquep₂ _ _ _ _ _ (π-adjust (idl f)) $ begin
+    π ∘' (γ← ∘v f [ ι← ]) ≡[]⟨ F.pulllf (π*.commutesv (π ∘' π)) ⟩
+    (π ∘' π) ∘' f [ ι← ]  ≡[]⟨ E.pullr[] _ (π*.commutesp id-comm (ι← ∘' π)) ⟩
+    π ∘' ι← ∘' π          ≡[]⟨ E.pulll[] _ (π*.commutesp (idr id) id') ⟩
+    id' ∘' π              ≡[]⟨ idl' _ ⟩
+    π                     ∎[]
 
-  adjust-assoc {f = f} {g} {h} = π*.uniquep₂ _ _ _ _ _ (π-adjust (assoc f g h))
-    (F.pulllf (π*.commutesv _) ∙[] E.pullr[] _ (F.pulllf (π*.commutesp (idr (g ∘ h)) _))
-    ∙[] (E.refl⟩∘'⟨ E.pullr[] (id-comm ∙ sym (idr (id ∘ h))) (F.pulllf (π*.commutesp _ _)))
-    ∙[] (E.refl⟩∘'⟨ E.pulll[] _ (E.pulll[] (idr g) (π*.commutesp _ _)))
-    ∙[] E.pulll[] _ (E.pulll[] _ (π*.commutes _ _))
-    ∙[] E.pullr[] (idr h) (π*.commutesp _ _)
-    ∙[] π*.commutes _ _)
+  adjust-assoc {f = f} {g} {h} = π*.uniquep₂ _ _ _ _ _ (π-adjust (assoc f g h)) $ begin
+    π ∘' (γ← ∘v γ← ∘v h [ γ→ ] ∘v γ→)    ≡[]⟨ F.pulllf (π*.commutesv _) ⟩
+    (π ∘' π) ∘' (γ← ∘v h [ γ→ ] ∘v γ→)   ≡[]⟨ pullr[] _ (F.pulllf (π*.commutesp (idr (g ∘ h)) _)) ⟩
+    π ∘' (π ∘' π) ∘' (h [ γ→ ] ∘v γ→ )   ≡[]⟨ refl⟩∘'⟨ pullr[] (id-comm ∙ sym (idr (id ∘ h))) (F.pulllf (π*.commutesp _ _)) ⟩
+    π ∘' π ∘' (γ→ ∘' π) ∘' γ→            ≡[]⟨ refl⟩∘'⟨ pulll[] _ (pulll[] (idr g) (π*.commutesp _ _)) ⟩
+    π ∘' (π*.universal _ (π) ∘' π) ∘' γ→ ≡[]⟨ pulll[] _ (pulll[] _ (π*.commutes _ _)) ⟩
+    (π ∘' π) ∘' γ→                       ≡[]⟨ pullr[] (idr h) (π*.commutesp _ _) ⟩
+    π ∘' π*.universal _ _                ≡[]⟨ π*.commutes _ _ ⟩
+    π                                    ∎[]
 ```
 
 </details>
@@ -266,7 +274,7 @@ _^op' : Displayed B o' ℓ'
 _^op' .D.Ob[_] = Ob[_]
 _^op' .D.Hom[_]     f x y = Hom[ id ] (f ^* y) x
 _^op' .D.Hom[_]-set f x y = Hom[_]-set _ _ _
-_^op' .D.id'  = π* _ _
+_^op' .D.id'  = π
 _^op' .D._∘'_ = _∘,_
 ```
 
@@ -279,9 +287,9 @@ indexed nonsense that otherwise haunts working with fibrations.
 ```agda
 _^op' .D.idl' {x = x} {y} {f = f} f' = to-pathp $
   transport (λ i → Hom[ id ] (idl f i ^* y) x) _  ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-idl ⟩
-  (f' ∘v f [ π* _ _ ] ∘v γ→) ∘v γ← ∘v f [ ι← ]    ≡⟨ F.pullr (F.pullr refl) ⟩
-  f' ∘v f [ π* _ _ ] ∘v γ→ ∘v (γ← ∘v f [ ι← ])    ≡⟨ ap₂ _∘v_ refl (ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
-  f' ∘v f [ π* _ _ ] ∘v f [ ι← ]                  ≡⟨ F.elimr (rebase.annihilate (E.cancel _ _ (π*.commutesv _))) ⟩
+  (f' ∘v f [ π ] ∘v γ→) ∘v γ← ∘v f [ ι← ]         ≡⟨ F.pullr (F.pullr refl) ⟩
+  f' ∘v f [ π ] ∘v γ→ ∘v (γ← ∘v f [ ι← ])         ≡⟨ ap₂ _∘v_ refl (ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
+  f' ∘v f [ π ] ∘v f [ ι← ]                       ≡⟨ F.elimr (rebase.annihilate (E.cancel _ _ (π*.commutesv _))) ⟩
   f'                                              ∎
 ```
 
@@ -290,20 +298,20 @@ further comment.
 
 ```agda
 _^op' .D.idr' {x = x} {y} {f} f' = to-pathp $
-  transport (λ i → Hom[ id ] (idr f i ^* y) x) _  ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-idr ⟩
-  (π* _ _ ∘v id [ f' ] ∘v γ→) ∘v γ← ∘v ι←         ≡⟨ F.pullr (F.pullr (F.cancell (^*-comp .F.invl))) ⟩
-  π* _ _ ∘v id [ f' ] ∘v ι←                       ≡⟨ ap (π* _ _ ∘v_) (sym (base-change-id .Isoⁿ.from .is-natural _ _ _)) ⟩
-  π* _ _ ∘v ι← ∘v f'                              ≡⟨ F.cancell (base-change-id .Isoⁿ.invl ηₚ _) ⟩
-  f'                                              ∎
+  transport (λ i → Hom[ id ] (idr f i ^* y) x) _ ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-idr ⟩
+  (π ∘v id [ f' ] ∘v γ→) ∘v γ← ∘v ι←             ≡⟨ F.pullr (F.pullr (F.cancell (^*-comp .F.invl))) ⟩
+  π ∘v id [ f' ] ∘v ι←                           ≡⟨ ap (π ∘v_) (sym (base-change-id .Isoⁿ.from .is-natural _ _ _)) ⟩
+  π ∘v ι← ∘v f'                                  ≡⟨ F.cancell (base-change-id .Isoⁿ.invl ηₚ _) ⟩
+  f'                                             ∎
 
 _^op' .D.assoc' {x = x} {y} {z} {f} {g} {h} f' g' h' = to-pathp $
-  transport (λ i → Hom[ id ] (assoc f g h i ^* _) _) (f' ∘, (g' ∘, h'))           ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-assoc ⟩
-  ((h' ∘v h [ g' ] ∘v γ→) ∘v (g ∘ h) [ f' ] ∘v γ→) ∘v γ← ∘v γ← ∘v h [ γ→ ] ∘v γ→  ≡⟨ sym (F.assoc _ _ _) ∙ F.pullr (F.pullr (ap (γ→ ∘v_) (F.pullr refl))) ⟩
-  h' ∘v h [ g' ] ∘v γ→ ∘v (g ∘ h) [ f' ] ∘v ⌜ γ→ ∘v γ← ∘v γ← ∘v h [ γ→ ] ∘v γ→ ⌝  ≡⟨ ap (λ e → h' ∘v h [ g' ] ∘v γ→ ∘v (g ∘ h) [ f' ] ∘v e) (F.cancell (^*-comp .F.invl))  ⟩
-  h' ∘v h [ g' ] ∘v ⌜ γ→ ∘v (g ∘ h) [ f' ] ∘v γ← ∘v h [ γ→ ] ∘v γ→ ⌝              ≡⟨ ap (λ e → h' ∘v h [ g' ] ∘v e) (F.extendl (sym (^*-comp-to-natural _))) ⟩
-  h' ∘v h [ g' ] ∘v h [ g [ f' ] ] ∘v γ→ ∘v γ← ∘v h [ γ→ ] ∘v γ→                  ≡⟨ ap₂ _∘v_ refl (F.pulll (sym (rebase.F-∘ _ _)) ∙ ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
-  h' ∘v h [ g' ∘v g [ f' ] ] ∘v h [ γ→ ] ∘v γ→                                    ≡⟨ ap (h' ∘v_) (rebase.pulll (F.pullr refl)) ⟩
-  h' ∘v h [ g' ∘v g [ f' ] ∘v γ→ ] ∘v γ→                                          ∎
+  transport (λ i → Hom[ id ] (assoc f g h i ^* _) _) (f' ∘, (g' ∘, h'))          ≡⟨ transp-lift _ ∙ ap₂ _∘v_ refl adjust-assoc ⟩
+  ((h' ∘v h [ g' ] ∘v γ→) ∘v (g ∘ h) [ f' ] ∘v γ→) ∘v γ← ∘v γ← ∘v h [ γ→ ] ∘v γ→ ≡⟨ sym (F.assoc _ _ _) ∙ F.pullr (F.pullr (ap (γ→ ∘v_) (F.pullr refl))) ⟩
+  h' ∘v h [ g' ] ∘v γ→ ∘v (g ∘ h) [ f' ] ∘v ⌜ γ→ ∘v γ← ∘v γ← ∘v h [ γ→ ] ∘v γ→ ⌝ ≡⟨ ap (λ e → h' ∘v h [ g' ] ∘v γ→ ∘v (g ∘ h) [ f' ] ∘v e) (F.cancell (^*-comp .F.invl))  ⟩
+  h' ∘v h [ g' ] ∘v ⌜ γ→ ∘v (g ∘ h) [ f' ] ∘v γ← ∘v h [ γ→ ] ∘v γ→ ⌝             ≡⟨ ap (λ e → h' ∘v h [ g' ] ∘v e) (F.extendl (sym (^*-comp-to-natural _))) ⟩
+  h' ∘v h [ g' ] ∘v h [ g [ f' ] ] ∘v γ→ ∘v γ← ∘v h [ γ→ ] ∘v γ→                 ≡⟨ ap₂ _∘v_ refl (F.pulll (sym (rebase.F-∘ _ _)) ∙ ap₂ _∘v_ refl (F.cancell (^*-comp .F.invl))) ⟩
+  h' ∘v h [ g' ∘v g [ f' ] ] ∘v h [ γ→ ] ∘v γ→                                   ≡⟨ ap (h' ∘v_) (rebase.pulll (F.pullr refl)) ⟩
+  h' ∘v h [ g' ∘v g [ f' ] ∘v γ→ ] ∘v γ→                                         ∎
 ```
 
 <!--
@@ -319,7 +327,7 @@ to $\cE\op$ inverts *each fibre*.
 
 ```agda
 opposite-map : ∀ {a} {x y : Ob[ a ]} → Fib.Hom E y x ≃ Fib.Hom _^op' x y
-opposite-map .fst f = f ∘v π* _ _
+opposite-map .fst f = f ∘v π
 opposite-map .snd = is-iso→is-equiv $ iso
   (λ f → f ∘v π*.universalv id')
   (λ x → F.cancelr (base-change-id .Isoⁿ.invr ηₚ _))

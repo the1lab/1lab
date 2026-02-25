@@ -229,12 +229,11 @@ $\pi_{u,Y} \circ \alpha_{g} \circ \iota_{v,X}$, so it suffices to
 show that $\alpha_{f} = \alpha_{g}$.
 
 ```agda
-    Hom[]-is-prop {x' = x'} {y' = y'} {u = u} {v = v} f' g' =
-      cast[] $
-        f'                                     ≡[]⟨ factors f' ⟩
-        π* u y' ∘' ⌜ vert-lift f' ⌝ ∘' ι! v x' ≡[]⟨ ap! vert-lift-eq ⟩
-        π* u y' ∘' vert-lift g' ∘' ι! v x'     ≡[]˘⟨ factors g' ⟩
-        g'                                     ∎
+    Hom[]-is-prop {x' = x'} {y' = y'} {u = u} {v = v} f' g' = begin[]
+      f'                                     ≡[]⟨ factors f' ⟩
+      π* u y' ∘' ⌜ vert-lift f' ⌝ ∘' ι! v x' ≡[]⟨ ap! vert-lift-eq ⟩
+      π* u y' ∘' vert-lift g' ∘' ι! v x'     ≡[]˘⟨ factors g' ⟩
+      g'                                     ∎[]
 ```
 
 The type of objects is a set, so it further suffices to prove that
@@ -244,11 +243,10 @@ from uniqueness of lifts.
 ```agda
       where
         vert-lift-eq : vert-lift f' ≡ vert-lift g'
-        vert-lift-eq =
-          Σ-inj-set (fibre-set _ _) $
-          is-contr→is-prop (cart-lift A.id (u ^* y'))
-            (v ^! x' , vert-lift f')
-            (v ^! x' , vert-lift g')
+        vert-lift-eq = Σ-inj-set (fibre-set _ _) $ is-contr→is-prop
+          (cart-lift A.id (u ^* y'))
+          (v ^! x' , vert-lift f')
+          (v ^! x' , vert-lift g')
 ```
 
 An alternative view is that these final conditions ensure that morphisms
@@ -269,11 +267,9 @@ $\cE_{u, v}(X,Y)$ are equivalent to proofs that $u^{*}(Y) = v_{!}(X)$.
       : ∀ {a₁ a₂ b₁ b₂ x' y'}
       → (u : A.Hom a₁ a₂) (v : B.Hom b₁ b₂)
       → is-equiv (discrete-two-sided-hom {x' = x'} {y' = y'} u v)
-    discrete-two-sided-hom-is-equiv u v =
-      is-iso→is-equiv $
-      iso same-lift
-        (λ _ → Hom[]-is-prop _ _)
-        (λ _ → fibre-set _ _ _ _ _ _)
+    discrete-two-sided-hom-is-equiv u v = is-iso→is-equiv $ iso same-lift
+      (λ _ → Hom[]-is-prop _ _)
+      (λ _ → fibre-set _ _ _ _ _ _)
 ```
 
 ## Functoriality
@@ -287,16 +283,14 @@ are vertical over $B$, as lifts are unique.
       → (u : A.Hom a₂ a₃) (v : A.Hom a₁ a₂)
       → (y' : Ob[ a₃ , b ])
       → (u A.∘ v) ^* y' ≡ (v ^* (u ^* y'))
-    ^*-∘ u v y' =
-      ap fst $ cart-lift (u A.∘ v) y' .paths $
-        v ^* (u ^* y') ,
-        hom[ refl ,ₚ B.idl _ ] (π* u y' ∘' π* v (u ^* y'))
+    ^*-∘ u v y' = ap fst $ cart-lift (u A.∘ v) y' .paths
+      $ v ^* (u ^* y')
+      , hom[ refl ,ₚ B.idl _ ] (π* u y' ∘' π* v (u ^* y'))
 
     ^*-id
       : ∀ {a b} {x' : Ob[ a , b ]}
       → A.id ^* x' ≡ x'
-    ^*-id {x' = x'} =
-      ap fst $ cart-lift A.id x' .paths (x' , id')
+    ^*-id {x' = x'} = ap fst $ cart-lift A.id x' .paths (x' , id')
 ```
 
 Dually, the action $(-)_{!}$ is functorial on the fibres of $E$ that
@@ -308,15 +302,13 @@ are vertical over $A$.
       → (u : B.Hom b₂ b₃) (v : B.Hom b₁ b₂)
       → (x' : Ob[ a , b₁ ])
       → (u B.∘ v) ^! x' ≡ (u ^! (v ^! x'))
-    ^!-∘ u v x' =
-      ap fst $ cocart-lift (u B.∘ v) x' .paths $
-        u ^! (v ^! x') , hom[ A.idr _ ,ₚ refl ] (ι! u (v ^! x') ∘' ι! v x')
+    ^!-∘ u v x' = ap fst $ cocart-lift (u B.∘ v) x' .paths $
+      u ^! (v ^! x') , hom[ A.idr _ ,ₚ refl ] (ι! u (v ^! x') ∘' ι! v x')
 
     ^!-id
       : ∀ {a b} {x' : Ob[ a , b ]}
       → B.id ^! x' ≡ x'
-    ^!-id {x' = x'} =
-      ap fst $ cocart-lift B.id x' .paths (x' , id')
+    ^!-id {x' = x'} = ap fst $ cocart-lift B.id x' .paths (x' , id')
 ```
 
 Moreover, we also have an interchange law that lets us relate
@@ -328,8 +320,7 @@ the contravariant and covariant actions on fibres.
       → (u : A.Hom a₁ a₂) (v : B.Hom b₁ b₂)
       → (x' : Ob[ a₂ , b₁ ])
       → (u ^* (v ^! x')) ≡ (v ^! (u ^* x'))
-    ^*-^!-comm u v x' =
-      same-lift (hom[ A.idl u ,ₚ B.idr v ] (ι! v x' ∘' π* u x'))
+    ^*-^!-comm u v x' = same-lift (hom[ A.idl u ,ₚ B.idr v ] (ι! v x' ∘' π* u x'))
 ```
 
 ## Invertible maps
@@ -367,17 +358,16 @@ from some tedious functoriality algebra.
 
 ```agda
       f⁻¹ : is-invertible[ uv⁻¹ ] f
-      f⁻¹ .inv' =
-        discrete-two-sided-hom u⁻¹ v⁻¹ $
-          u⁻¹ ^* x'                    ≡˘⟨ ap (u⁻¹ ^*_) ^!-id ⟩
-          u⁻¹ ^* (⌜ B.id ⌝ ^! x')      ≡⟨ ap! (sym (ap snd $ uv⁻¹.invr)) ⟩
-          u⁻¹ ^* ((v⁻¹ B.∘ v) ^! x')   ≡⟨ ap (u⁻¹ ^*_) (^!-∘ v⁻¹ v x') ⟩
-          u⁻¹ ^* (v⁻¹ ^! ⌜ v ^! x' ⌝)  ≡⟨ ap! (sym (same-lift f)) ⟩
-          u⁻¹ ^* (v⁻¹ ^! (u ^* y'))    ≡˘⟨ ap (u⁻¹ ^*_) (^*-^!-comm u v⁻¹ y') ⟩
-          u⁻¹ ^* (u ^* (v⁻¹ ^! y'))    ≡˘⟨ ^*-∘ u u⁻¹ (v⁻¹ ^! y') ⟩
-          ⌜ u A.∘ u⁻¹ ⌝ ^* (v⁻¹ ^! y') ≡⟨ ap! (ap fst $ uv⁻¹.invl) ⟩
-          A.id ^* (v⁻¹ ^! y')          ≡⟨ ^*-id ⟩
-          v⁻¹ ^! y' ∎
+      f⁻¹ .inv' = discrete-two-sided-hom u⁻¹ v⁻¹ $
+        u⁻¹ ^* x'                    ≡˘⟨ ap (u⁻¹ ^*_) ^!-id ⟩
+        u⁻¹ ^* (⌜ B.id ⌝ ^! x')      ≡⟨ ap! (sym (ap snd $ uv⁻¹.invr)) ⟩
+        u⁻¹ ^* ((v⁻¹ B.∘ v) ^! x')   ≡⟨ ap (u⁻¹ ^*_) (^!-∘ v⁻¹ v x') ⟩
+        u⁻¹ ^* (v⁻¹ ^! ⌜ v ^! x' ⌝)  ≡⟨ ap! (sym (same-lift f)) ⟩
+        u⁻¹ ^* (v⁻¹ ^! (u ^* y'))    ≡˘⟨ ap (u⁻¹ ^*_) (^*-^!-comm u v⁻¹ y') ⟩
+        u⁻¹ ^* (u ^* (v⁻¹ ^! y'))    ≡˘⟨ ^*-∘ u u⁻¹ (v⁻¹ ^! y') ⟩
+        ⌜ u A.∘ u⁻¹ ⌝ ^* (v⁻¹ ^! y') ≡⟨ ap! (ap fst $ uv⁻¹.invl) ⟩
+        A.id ^* (v⁻¹ ^! y')          ≡⟨ ^*-id ⟩
+        v⁻¹ ^! y'                    ∎
       f⁻¹ .inverses' .Inverses[_].invl' =
         is-prop→pathp (λ _ → Hom[]-is-prop) _ _
       f⁻¹ .inverses' .Inverses[_].invr' =

@@ -141,11 +141,10 @@ such that $f_{i} \circ \langle v , h_{i} \rangle = h_{i}$.
     → (∀ ix → fᵢ ix ∘' other₁ ≡[ p ix ] hᵢ ix)
     → (∀ ix → fᵢ ix ∘' other₂ ≡[ r ix ] hᵢ ix)
     → other₁ ≡[ q ] other₂
-  uniquep₂ p q r {hᵢ = hᵢ} other₁ other₂ α β =
-    cast[] $
-      other₁          ≡[]⟨ uniquep p refl p other₁ α ⟩
-      universal' p hᵢ ≡[]⟨ symP (uniquep r (sym q) p other₂ β) ⟩
-      other₂          ∎
+  uniquep₂ p q r {hᵢ = hᵢ} other₁ other₂ α β = begin[]
+    other₁          ≡[]⟨ uniquep p refl p other₁ α ⟩
+    universal' p hᵢ ≡[]⟨ symP (uniquep r (sym q) p other₂ β) ⟩
+    other₂          ∎[]
 ```
 -->
 
@@ -277,11 +276,10 @@ and $h = f \circ \alpha$; thus $f = g$.
 
 
 ```agda
-const-pair-joint-cartesian→thin {b' = b'} {u = u} {f = f} f-cart v x' g h =
-  cast[] $
+const-pair-joint-cartesian→thin {b' = b'} {u = u} {f = f} f-cart v x' g h = begin[]
     g                   ≡[]˘⟨ commutes v gh true ⟩
     f ∘' universal v gh ≡[]⟨ commutes v gh false ⟩
-    h                   ∎
+    h                   ∎[]
   where
     open is-jointly-cartesian f-cart
 
@@ -297,12 +295,11 @@ every hom set $\cE_{u}(X',A')$ is a proposition.
 id-pair-joint-cartesian→thin
   : is-jointly-cartesian {Ix = Bool} (λ _ → id {a}) (λ _ → id' {a} {a'})
   → ∀ {x} (u : Hom x a) → (x' : Ob[ x ]) → is-prop (Hom[ u ] x' a')
-id-pair-joint-cartesian→thin id²-cart u x' f g =
-  cast[] $
-    f       ≡[]⟨ wrap (sym (idl u)) ⟩
-    hom[] f ≡[]⟨ const-pair-joint-cartesian→thin id²-cart u x' (hom[ idl u ]⁻ f) (hom[ idl u ]⁻ g) ⟩
-    hom[] g ≡[]⟨ unwrap (sym (idl u)) ⟩
-    g ∎
+id-pair-joint-cartesian→thin id²-cart u x' f g = begin[]
+  f       ≡[]⟨ wrap (sym (idl u)) ⟩
+  hom[] f ≡[]⟨ const-pair-joint-cartesian→thin id²-cart u x' (hom[ idl u ]⁻ f) (hom[ idl u ]⁻ g) ⟩
+  hom[] g ≡[]⟨ unwrap (sym (idl u)) ⟩
+  g       ∎[]
 ```
 
 ## Closure properties of jointly cartesian families
@@ -350,17 +347,18 @@ jointly-cartesian-∘ {Ix = Ix} {uᵢⱼ = uᵢⱼ} {fᵢⱼ = fᵢⱼ} {vᵢ = 
       gᵢ.universal v λ i →
       fᵢⱼ.universal' i (λ j → assoc (uᵢⱼ i j) (vᵢ i) v) λ j →
       hᵢⱼ (i , j)
-    fᵢⱼ∘gᵢ-cart .commutes w hᵢⱼ (i , j) =
-      cast[] $
-        (fᵢⱼ i j ∘' gᵢ i) ∘' gᵢ.universal _ (λ i → fᵢⱼ.universal' i _ (λ j → hᵢⱼ (i , j))) ≡[]⟨ pullr[] _ (gᵢ.commutes w _ i) ⟩
-        fᵢⱼ i j ∘' fᵢⱼ.universal' i _ (λ j → hᵢⱼ (i , j))                                  ≡[]⟨ fᵢⱼ.commutesp i _ _ j ⟩
-        hᵢⱼ (i , j) ∎
-    fᵢⱼ∘gᵢ-cart .unique {hᵢ = hᵢⱼ} other p =
-      gᵢ.unique other $ λ i →
-      fᵢⱼ.uniquep i _ _ _ (gᵢ i ∘' other) λ j →
+    fᵢⱼ∘gᵢ-cart .commutes w hᵢⱼ (i , j) = begin[]
+      (fᵢⱼ i j ∘' gᵢ i) ∘' gᵢ.universal _ (λ i → fᵢⱼ.universal' i _ λ j → hᵢⱼ (i , j))
+        ≡[]⟨ pullr[] _ (gᵢ.commutes w _ i) ⟩
+      fᵢⱼ i j ∘' fᵢⱼ.universal' i _ (λ j → hᵢⱼ (i , j))
+        ≡[]⟨ fᵢⱼ.commutesp i _ _ j ⟩
+      hᵢⱼ (i , j)
+        ∎[]
+    fᵢⱼ∘gᵢ-cart .unique {hᵢ = hᵢⱼ} other p = gᵢ.unique other $ λ i →
+      fᵢⱼ.uniquep i _ _ _ (gᵢ i ∘' other) λ j → begin
         fᵢⱼ i j ∘' gᵢ i ∘' other   ≡[]⟨ assoc' (fᵢⱼ i j) (gᵢ i) other ⟩
         (fᵢⱼ i j ∘' gᵢ i) ∘' other ≡[]⟨ p (i , j) ⟩
-        hᵢⱼ (i , j)                ∎
+        hᵢⱼ (i , j)                ∎[]
 ```
 
 As a nice corollary, we get that jointly cartesian families compose with
@@ -389,11 +387,10 @@ jointly-cartesian-cartesian-∘ {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ
     fᵢ∘g-cart : is-jointly-cartesian (λ ix → uᵢ ix ∘ v) (λ ix → fᵢ ix ∘' g)
     fᵢ∘g-cart .universal w hᵢ =
       g.universal w $ fᵢ.universal' (λ ix → assoc (uᵢ ix) v w) hᵢ
-    fᵢ∘g-cart .commutes w hᵢ ix =
-      cast[] $
-        (fᵢ ix ∘' g) ∘' universal fᵢ∘g-cart w hᵢ             ≡[]⟨ pullr[] _ (g.commutes w _) ⟩
-        fᵢ ix ∘' fᵢ.universal' (λ ix → assoc (uᵢ ix) v w) hᵢ ≡[]⟨ fᵢ.commutesp _ hᵢ ix ⟩
-        hᵢ ix                                                ∎
+    fᵢ∘g-cart .commutes w hᵢ ix = begin[]
+      (fᵢ ix ∘' g) ∘' universal fᵢ∘g-cart w hᵢ             ≡[]⟨ pullr[] _ (g.commutes w _) ⟩
+      fᵢ ix ∘' fᵢ.universal' (λ ix → assoc (uᵢ ix) v w) hᵢ ≡[]⟨ fᵢ.commutesp _ hᵢ ix ⟩
+      hᵢ ix                                                ∎[]
     fᵢ∘g-cart .unique other pᵢ =
       g.unique other $
       fᵢ.uniquep _ _ _ (g ∘' other) λ ix →
@@ -423,17 +420,14 @@ pointwise-cartesian-jointly-cartesian-∘
   open is-jointly-cartesian
 
   fᵢ∘gᵢ-cart : is-jointly-cartesian (λ ix → uᵢ ix ∘ vᵢ ix) (λ ix → fᵢ ix ∘' gᵢ ix)
-  fᵢ∘gᵢ-cart .universal v hᵢ =
-    gᵢ.universal v λ ix → fᵢ.universal' ix (assoc (uᵢ ix) (vᵢ ix) v) (hᵢ ix)
-  fᵢ∘gᵢ-cart .commutes v hᵢ ix =
-    cast[] $
-      (fᵢ ix ∘' gᵢ ix) ∘' gᵢ.universal v (λ ix → fᵢ.universal' ix _ (hᵢ ix)) ≡[]⟨ pullr[] refl (gᵢ.commutes v _ ix) ⟩
-      fᵢ ix ∘' fᵢ.universal' ix _ (hᵢ ix)                                    ≡[]⟨ fᵢ.commutesp ix (assoc (uᵢ ix) (vᵢ ix) v) (hᵢ ix) ⟩
-      hᵢ ix                                                                  ∎
-  fᵢ∘gᵢ-cart .unique other p =
-    gᵢ.unique other λ ix →
-    fᵢ.uniquep ix _ _ _ (gᵢ ix ∘' other)
-      (assoc' (fᵢ ix) (gᵢ ix) other ∙[] p ix)
+  fᵢ∘gᵢ-cart .universal v hᵢ = gᵢ.universal v λ ix →
+    fᵢ.universal' ix (assoc (uᵢ ix) (vᵢ ix) v) (hᵢ ix)
+  fᵢ∘gᵢ-cart .commutes v hᵢ ix = begin[]
+    (fᵢ ix ∘' gᵢ ix) ∘' gᵢ.universal v (λ ix → fᵢ.universal' ix _ (hᵢ ix)) ≡[]⟨ pullr[] refl (gᵢ.commutes v _ ix) ⟩
+    fᵢ ix ∘' fᵢ.universal' ix _ (hᵢ ix)                                    ≡[]⟨ fᵢ.commutesp ix (assoc (uᵢ ix) (vᵢ ix) v) (hᵢ ix) ⟩
+    hᵢ ix                                                                  ∎[]
+  fᵢ∘gᵢ-cart .unique other p = gᵢ.unique other λ ix → fᵢ.uniquep ix _ _ _
+    (gᵢ ix ∘' other) (assoc' (fᵢ ix) (gᵢ ix) other ∙[] p ix)
 ```
 </details>
 
@@ -472,27 +466,24 @@ jointly-cartesian-vertical-retraction-stable
     fᵢ'-cart : is-jointly-cartesian uᵢ fᵢ'
     fᵢ'-cart .is-jointly-cartesian.universal v hᵢ =
       hom[ idl v ] (ϕ ∘' fᵢ.universal v hᵢ)
-    fᵢ'-cart .is-jointly-cartesian.commutes v hᵢ ix =
-      cast[] $
-        fᵢ' ix ∘' hom[] (ϕ ∘' fᵢ.universal v hᵢ) ≡[]⟨ unwrapr (idl v) ⟩
-        fᵢ' ix ∘' ϕ ∘' fᵢ.universal v hᵢ         ≡[]⟨ pulll[] (idr (uᵢ ix)) (factor ix) ⟩
-        fᵢ ix ∘' fᵢ.universal v hᵢ               ≡[]⟨ fᵢ.commutes v hᵢ ix ⟩
-        hᵢ ix ∎
-    fᵢ'-cart .is-jointly-cartesian.unique {v = v} {hᵢ = hᵢ} other p =
-      cast[] $
+    fᵢ'-cart .is-jointly-cartesian.commutes v hᵢ ix = begin[]
+      fᵢ' ix ∘' hom[] (ϕ ∘' fᵢ.universal v hᵢ) ≡[]⟨ unwrapr (idl v) ⟩
+      fᵢ' ix ∘' ϕ ∘' fᵢ.universal v hᵢ         ≡[]⟨ pulll[] (idr (uᵢ ix)) (factor ix) ⟩
+      fᵢ ix ∘' fᵢ.universal v hᵢ               ≡[]⟨ fᵢ.commutes v hᵢ ix ⟩
+      hᵢ ix                                    ∎[]
+    fᵢ'-cart .is-jointly-cartesian.unique {v = v} {hᵢ = hᵢ} other p = begin[]
+      let
+        unique-lemma : ∀ ix → fᵢ ix ∘' hom[ idl v ] (ϕ.section' ∘' other) ≡ hᵢ ix
+        unique-lemma ix = begin[]
+          fᵢ ix ∘' hom[ idl v ] (ϕ.section' ∘' other) ≡[]⟨ unwrapr (idl v) ⟩
+          fᵢ ix ∘' ϕ.section' ∘' other                ≡[]⟨ pulll[] _ (symP (pre-section[] ϕ-sect (factor ix))) ⟩
+          fᵢ' ix ∘' other                             ≡[]⟨ p ix ⟩
+          hᵢ ix                                       ∎[]
+      in
         other                                 ≡[]⟨ introl[] _ ϕ.is-section' ⟩
         (ϕ ∘' ϕ.section') ∘' other            ≡[]⟨ pullr[] _ (wrap (idl v) ∙[] fᵢ.unique _ unique-lemma) ⟩
         ϕ ∘' fᵢ.universal v hᵢ                ≡[]⟨ wrap (idl v) ⟩
-        hom[ idl v ] (ϕ ∘' fᵢ.universal v hᵢ) ∎
-
-      where
-        unique-lemma : ∀ ix → fᵢ ix ∘' hom[ idl v ] (ϕ.section' ∘' other) ≡ hᵢ ix
-        unique-lemma ix =
-          cast[] $
-            fᵢ ix ∘' hom[ idl v ] (ϕ.section' ∘' other) ≡[]⟨ unwrapr (idl v) ⟩
-            fᵢ ix ∘' ϕ.section' ∘' other                ≡[]⟨ pulll[] _ (symP (pre-section[] ϕ-sect (factor ix))) ⟩
-            fᵢ' ix ∘' other                             ≡[]⟨ p ix ⟩
-            hᵢ ix                                       ∎
+        hom[ idl v ] (ϕ ∘' fᵢ.universal v hᵢ) ∎[]
 ```
 </details>
 
@@ -542,18 +533,14 @@ jointly-cartesian-weak-monic-cancell
     open is-jointly-cartesian
 
     gᵢ-cart : is-jointly-cartesian vᵢ gᵢ
-    gᵢ-cart .universal w hᵢ =
-      fᵢⱼ∘gᵢ.universal' (λ (i , j) → sym (assoc (uᵢⱼ i j) (vᵢ i) w)) λ (i , j) →
-        fᵢⱼ i j ∘' hᵢ i
-    gᵢ-cart .commutes w hᵢ i =
-      fᵢⱼ-weak-mono i _ _ refl $ λ j →
-      cast[] $
-        fᵢⱼ i j ∘' gᵢ i ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i)   ≡[]⟨ assoc' _ _ _ ⟩
-        (fᵢⱼ i j ∘' gᵢ i) ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i) ≡[]⟨ fᵢⱼ∘gᵢ.commutesp _ _ (i , j) ⟩
-        fᵢⱼ i j ∘' hᵢ i                                                        ∎
-    gᵢ-cart .unique other p =
-      fᵢⱼ∘gᵢ.uniquep _ _ _ other λ (i , j) →
-        pullr[] _ (p i)
+    gᵢ-cart .universal w hᵢ = fᵢⱼ∘gᵢ.universal'
+      (λ (i , j) → sym (assoc (uᵢⱼ i j) (vᵢ i) w))
+      (λ (i , j) → fᵢⱼ i j ∘' hᵢ i)
+    gᵢ-cart .commutes w hᵢ i = fᵢⱼ-weak-mono i _ _ refl $ λ j → begin[]
+      fᵢⱼ i j ∘' gᵢ i ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i)   ≡[]⟨ assoc' _ _ _ ⟩
+      (fᵢⱼ i j ∘' gᵢ i) ∘' fᵢⱼ∘gᵢ.universal' _ (λ (i , j) → fᵢⱼ i j ∘' hᵢ i) ≡[]⟨ fᵢⱼ∘gᵢ.commutesp _ _ (i , j) ⟩
+      fᵢⱼ i j ∘' hᵢ i                                                        ∎[]
+    gᵢ-cart .unique other p = fᵢⱼ∘gᵢ.uniquep _ _ _ other λ (i , j) → pullr[] _ (p i)
 ```
 
 As an immediate corollary, we get a left cancellation property
@@ -615,17 +602,14 @@ jointly-cartesian-pointwise-weak-monic-cancell
     open is-jointly-cartesian
 
     gᵢ-cart : is-jointly-cartesian vᵢ gᵢ
-    gᵢ-cart .universal w hᵢ =
-      fᵢ∘gᵢ.universal' (λ ix → sym (assoc (uᵢ ix) (vᵢ ix) w))
-        (λ ix → fᵢ ix ∘' hᵢ ix)
-    gᵢ-cart .commutes w hᵢ ix =
-      fᵢ-weak-monic ix _ _ refl $
-      cast[] $
-        fᵢ ix ∘' gᵢ ix ∘' fᵢ∘gᵢ.universal' _ (λ ix → fᵢ ix ∘' hᵢ ix)   ≡[]⟨ assoc' _ _  _ ⟩
-        (fᵢ ix ∘' gᵢ ix) ∘' fᵢ∘gᵢ.universal' _ (λ ix → fᵢ ix ∘' hᵢ ix) ≡[]⟨ fᵢ∘gᵢ.commutesp _ _ ix ⟩
-        fᵢ ix ∘' hᵢ ix                                                 ∎
-    gᵢ-cart .unique other p =
-      fᵢ∘gᵢ.uniquep _ _ _ other (λ ix → pullr[] _ (p ix))
+    gᵢ-cart .universal w hᵢ = fᵢ∘gᵢ.universal'
+      (λ ix → sym (assoc (uᵢ ix) (vᵢ ix) w))
+      (λ ix → fᵢ ix ∘' hᵢ ix)
+    gᵢ-cart .commutes w hᵢ ix = fᵢ-weak-monic ix _ _ refl $ begin[]
+      fᵢ ix ∘' gᵢ ix ∘' fᵢ∘gᵢ.universal' _ (λ ix → fᵢ ix ∘' hᵢ ix)   ≡[]⟨ assoc' _ _  _ ⟩
+      (fᵢ ix ∘' gᵢ ix) ∘' fᵢ∘gᵢ.universal' _ (λ ix → fᵢ ix ∘' hᵢ ix) ≡[]⟨ fᵢ∘gᵢ.commutesp _ _ ix ⟩
+      fᵢ ix ∘' hᵢ ix                                                 ∎[]
+    gᵢ-cart .unique other p = fᵢ∘gᵢ.uniquep _ _ _ other λ ix → pullr[] _ (p ix)
 
 jointly-cartesian-jointly-weak-monic-cancell
   {uᵢ = uᵢ} {fᵢ = fᵢ} {v = v} {g = g} fᵢ-weak-monic fᵢ∘g-cart
@@ -635,16 +619,14 @@ jointly-cartesian-jointly-weak-monic-cancell
     open is-cartesian
 
     g-cart : is-cartesian v g
-    g-cart .universal w h =
-      fᵢ∘g.universal' (λ ix → sym (assoc (uᵢ ix) v w)) (λ ix → fᵢ ix ∘' h)
-    g-cart .commutes w h =
-      fᵢ-weak-monic _ _ refl λ ix →
-      cast[] $
+    g-cart .universal w h = fᵢ∘g.universal'
+      (λ ix → sym (assoc (uᵢ ix) v w))
+      (λ ix → fᵢ ix ∘' h)
+    g-cart .commutes w h = fᵢ-weak-monic _ _ refl λ ix → begin[]
         fᵢ ix ∘' g ∘' fᵢ∘g.universal' _ (λ ix → fᵢ ix ∘' h)   ≡[]⟨ assoc' _ _ _ ⟩
         (fᵢ ix ∘' g) ∘' fᵢ∘g.universal' _ (λ ix → fᵢ ix ∘' h) ≡[]⟨ fᵢ∘g.commutesp _ _ ix ⟩
-        fᵢ ix ∘' h                                            ∎
-    g-cart .unique other p =
-      fᵢ∘g.uniquep _ _ _ other (λ ix → pullr[] _ p)
+        fᵢ ix ∘' h                                            ∎[]
+    g-cart .unique other p = fᵢ∘g.uniquep _ _ _ other λ ix → pullr[] _ p
 
 jointly-cartesian-pointwise-cartesian-cancell fᵢ-cart fᵢ∘gᵢ-cart =
   jointly-cartesian-pointwise-weak-monic-cancell
@@ -676,7 +658,7 @@ by ignoring every single equality, as all hom sets involved are thin.
 ```agda
 thin→jointly-cartesian-extend
   : ∀ {u : (i : Ix) → Hom a (bᵢ i)} {fᵢ : (i : Ix) → Hom[ uᵢ i ] a' (bᵢ' i)}
-  → (∀ {x} (v : Hom x a) → (x' : Ob[ x ]) → ∀ (i : Ix) → is-prop (Hom[ uᵢ i ∘ v ] x' (bᵢ' i)))
+  → (∀ {x} (v : Hom x a) x' i → is-prop (Hom[ uᵢ i ∘ v ] x' (bᵢ' i)))
   → (e : Ix' → Ix)
   → is-jointly-cartesian (λ i' → uᵢ (e i')) (λ i' → fᵢ (e i'))
   → is-jointly-cartesian (λ i → uᵢ i) (λ i → fᵢ i)
@@ -685,12 +667,12 @@ thin→jointly-cartesian-extend {uᵢ = uᵢ} {fᵢ = fᵢ} uᵢ∘v-thin e fₑ
   open is-jointly-cartesian
 
   fᵢ-cart : is-jointly-cartesian (λ i' → uᵢ i') (λ i' → fᵢ i')
-  fᵢ-cart .universal v hᵢ =
-    fₑᵢ.universal v (λ i' → hᵢ (e i'))
-  fᵢ-cart .commutes {x} {x'} v hᵢ i =
-    uᵢ∘v-thin v x' i (fᵢ i ∘' fₑᵢ.universal v (λ i' → hᵢ (e i'))) (hᵢ i)
-  fᵢ-cart .unique {x} {x'} {v} {hᵢ} other p =
-    fₑᵢ.unique other λ i' → uᵢ∘v-thin v x' (e i') (fᵢ (e i') ∘' other) (hᵢ (e i'))
+  fᵢ-cart .universal v hᵢ = fₑᵢ.universal v λ i' → hᵢ (e i')
+  fᵢ-cart .commutes {x} {x'} v hᵢ i = uᵢ∘v-thin v x' i
+    (fᵢ i ∘' fₑᵢ.universal v (λ i' → hᵢ (e i')))
+    (hᵢ i)
+  fᵢ-cart .unique {x} {x'} {v} {hᵢ} other p = fₑᵢ.unique other λ i' →
+    uᵢ∘v-thin v x' (e i') (fᵢ (e i') ∘' other) (hᵢ (e i'))
 ```
 
 For the reverse direction, suppose we could extend arbitrary families.

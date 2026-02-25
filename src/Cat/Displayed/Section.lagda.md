@@ -39,11 +39,12 @@ arguments.
 ```agda
   record Section : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     field
-      S₀ : (x : ⌞ B ⌟) → E ʻ x
-      S₁ : {x y : ⌞ B ⌟} (f : B.Hom x y) → E.Hom[ f ] (S₀ x) (S₀ y)
+      S₀ : ∀ x → E ʻ x
+      S₁ : ∀ {x y} (f : B.Hom x y) → E.Hom[ f ] (S₀ x) (S₀ y)
 
-      S-id : {x : ⌞ B ⌟} → S₁ {x} {x} B.id ≡ E.id'
-      S-∘  : {x y z : ⌞ B ⌟} (f : B.Hom y z) (g : B.Hom x y) → S₁ (f B.∘ g) ≡ S₁ f E.∘' S₁ g
+      S-id : ∀ {x} → S₁ {x} {x} B.id ≡ E.id'
+      S-∘
+        : ∀ {x y z} (f : B.Hom y z) (g : B.Hom x y) → S₁ (f B.∘ g) ≡ S₁ f E.∘' S₁ g
 ```
 
 <details>
@@ -136,12 +137,12 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   Sections .id      = record { map = λ x → id' ; com = λ x y f → to-pathp[] id-comm[] }
   Sections ._∘_ {S} {T} {U} f g = record
     { map = λ x     → hom[ B.idl B.id ] (f .map x ∘' g .map x)
-    ; com = λ x y h → cast[] $
+    ; com = λ x y h → begin[]
       hom[] (f .map y ∘' g .map y) ∘' S .S₁ h ≡[]⟨ unwrap _ ⟩∘'⟨refl ⟩
-      (f .map y ∘' g .map y) ∘' S .S₁ h       ≡[ B.pullr B.id-comm-sym   ]⟨ pullr'   (λ i → B.id-comm-sym i) (g .com x y h) ⟩
-      f .map y ∘' T .S₁ h ∘' g .map x         ≡[ B.extendl B.id-comm-sym ]⟨ extendl' (λ i → B.id-comm-sym i) (f .com x y h) ⟩
+      (f .map y ∘' g .map y) ∘' S .S₁ h       ≡[]⟨ pullr[]   _ (g .com x y h) ⟩
+      f .map y ∘' T .S₁ h ∘' g .map x         ≡[]⟨ extendl[] _ (f .com x y h) ⟩
       U .S₁ h ∘' f .map x ∘' g .map x         ≡[]⟨ refl⟩∘'⟨ wrap _ ⟩
-      U .S₁ h ∘' hom[] (f .map x ∘' g .map x) ∎
+      U .S₁ h ∘' hom[] (f .map x ∘' g .map x) ∎[]
     }
   Sections .idr f       = ext λ x → idr[]
   Sections .idl f       = ext λ x → idl[]

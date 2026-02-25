@@ -112,9 +112,9 @@ weak-cartesian-domain-unique {f' = f'} {f'' = f''} f'-weak f''-weak =
     invr* = to-pathp[] $
       hom[] (f' ∘' hom[] (from* ∘' to*)) ≡⟨ smashr _ _ ⟩
       hom[] (f' ∘' from* ∘' to*)         ≡⟨ revive₁ {p = ap (_ ∘_) (idl _)} (pulll' (idr _) (f'-weak .commutes f'')) ⟩
-      hom[] (f'' ∘' to*)                  ≡⟨ revive₁ (f''-weak .commutes f') ⟩
+      hom[] (f'' ∘' to*)                 ≡⟨ revive₁ (f''-weak .commutes f') ⟩
       hom[] f'                           ≡⟨ liberate _ ⟩
-      f' ∎
+      f'                                 ∎
 ```
 
 As one would expect, cartesian maps are always weakly cartesian.
@@ -157,10 +157,9 @@ weak-cartesian→cartesian {x = x} {x' = x'} {y' = y'} {f = f} {f' = f'} fib f-w
   f^*≅x' = weak-cartesian-domain-unique (cartesian→weak-cartesian π*.cartesian) f-weak
 
   f-cart : is-cartesian f f'
-  f-cart =
-    cartesian-vertical-retraction-stable π*.cartesian
-      (iso[]→to-has-section[] f^*≅x')
-      (f-weak.commutes (π* f y'))
+  f-cart = cartesian-vertical-retraction-stable π*.cartesian
+    (iso[]→to-has-section[] f^*≅x')
+    (f-weak.commutes (π* f y'))
 ```
 
 $f' : x' \to_{f} y'$ is a weak cartesian morphism if and only if
@@ -172,22 +171,22 @@ postcompose-equiv→weak-cartesian
   → (f' : Hom[ f ] x' y')
   → (∀ {x''} → is-equiv {A = Hom[ id ] x'' x'} (λ h' → hom[ idr _ ] (f' ∘' h')))
   → is-weak-cartesian f f'
-postcompose-equiv→weak-cartesian f' eqv .universal h' =
-  equiv→inverse eqv h'
-postcompose-equiv→weak-cartesian f' eqv .commutes h' =
-  to-pathp[] (equiv→counit eqv h')
-postcompose-equiv→weak-cartesian f' eqv .unique m' p =
-  sym (equiv→unit eqv m') ∙ ap (equiv→inverse eqv) (from-pathp[] p)
+postcompose-equiv→weak-cartesian f' eqv .universal h' = equiv→inverse eqv h'
+postcompose-equiv→weak-cartesian f' eqv .commutes h'  =
+  to-pathp[] $ equiv→counit eqv h'
+postcompose-equiv→weak-cartesian f' eqv .unique {g' = g'} m' p =
+  m'                                   ≡˘⟨ equiv→unit eqv m' ⟩
+  equiv→inverse eqv (hom[] (f' ∘' m')) ≡⟨ ap (equiv→inverse eqv) (from-pathp[] p) ⟩
+  equiv→inverse eqv g'                 ∎
 
 weak-cartesian→postcompose-equiv
   : ∀ {x y x' x'' y'} {f : Hom x y} {f' : Hom[ f ] x' y'}
   → is-weak-cartesian f f'
   → is-equiv {A = Hom[ id ] x'' x'} (λ h' → hom[ idr _ ] (f' ∘' h'))
-weak-cartesian→postcompose-equiv wcart =
-  is-iso→is-equiv $
-    iso (λ h' → wcart .universal h')
-      (λ h' → from-pathp[] (wcart .commutes h'))
-      (λ h' → sym (wcart .unique _ (wrap (idr _))))
+weak-cartesian→postcompose-equiv wcart = is-iso→is-equiv $ iso
+  (λ h' → wcart .universal h')
+  (λ h' → from-pathp[] (wcart .commutes h'))
+  (λ h' → sym (wcart .unique _ (wrap (idr _))))
 ```
 
 ## Weak cartesian lifts {defines=weak-cartesian-fibration}
@@ -244,11 +243,10 @@ unless $\cE$ is a fibration.
 [base change functors]: Cat.Displayed.Cartesian.Indexing.html
 
 ```agda
-  rebase : ∀ {x y y' y''} → (f : Hom x y)
-           → Hom[ id ] y' y''
-           → Hom[ id ] (f ^* y') (f ^* y'')
-  rebase f vert =
-    π*.universal (hom[ idl _ ] (vert ∘' π* f _))
+  rebase
+    : ∀ {x y y' y''} (f : Hom x y)
+    → Hom[ id ] y' y'' → Hom[ id ] (f ^* y') (f ^* y'')
+  rebase f vert = π*.universal (hom[ idl _ ] (vert ∘' π* f _))
 ```
 
 Every fibration is a weak fibration.
@@ -256,18 +254,16 @@ Every fibration is a weak fibration.
 ```agda
 cartesian-lift→weak-cartesian-lift
   : ∀ {x y} {f : Hom x y} {y' : Ob[ y ]}
-  → Cartesian-lift f y'
-  → Weak-cartesian-lift f y'
+  → Cartesian-lift f y' → Weak-cartesian-lift f y'
 
-fibration→weak-fibration
-  : Cartesian-fibration
-  → Weak-cartesian-fibration
+fibration→weak-fibration : Cartesian-fibration → Weak-cartesian-fibration
 ```
 
 <details>
 <summary>The proofs of these facts are just shuffling around data, so we
 omit them.
 </summary>
+
 ```agda
 cartesian-lift→weak-cartesian-lift cart .Weak-cartesian-lift.x' =
   Cartesian-lift.x' cart
@@ -276,9 +272,9 @@ cartesian-lift→weak-cartesian-lift cart .Weak-cartesian-lift.lifting =
 cartesian-lift→weak-cartesian-lift cart .Weak-cartesian-lift.weak-cartesian =
   cartesian→weak-cartesian (Cartesian-lift.cartesian cart)
 
-fibration→weak-fibration fib x y' =
-  cartesian-lift→weak-cartesian-lift (fib x y')
+fibration→weak-fibration fib x y' = cartesian-lift→weak-cartesian-lift (fib x y')
 ```
+
 </details>
 
 
@@ -363,16 +359,14 @@ yoga; the only real mathematical content is that the factorisation of
 $h'$ via $f^{*} \cdot m^{*}$ commutes.
 </summary>
 ```agda
-    f*-cartesian .commutes {u = u} {u' = u'} m h' = path
-      where
-        abstract
-          path : π* f y' ∘' hom[ idr m ] (π* m (f ^* y') ∘' f*∘m*.universal m h' h') ≡ h'
-          path =
-            π* f y' ∘' hom[] (π* m (f ^* y') ∘' f*∘m*.universal m h' h')   ≡⟨ whisker-r _ ⟩
-            hom[] (π* f y' ∘' π* m (f ^* y') ∘' f*∘m*.universal m h' h')   ≡⟨ assoc[] {q = idr _} ⟩
-            hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' f*∘m*.universal m h' h') ≡⟨ hom[]⟩⟨ from-pathp[]⁻ (f*∘m*.commutes m h' h') ⟩
-            hom[] (hom[] h')                                               ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
-            h'                                                             ∎
+    f*-cartesian .commutes {u = u} {u' = u'} m h' = path where abstract
+      path : π* f y' ∘' hom[ idr m ] (π* m (f ^* y') ∘' f*∘m*.universal m h' h') ≡ h'
+      path =
+        π* f y' ∘' hom[] (π* m (f ^* y') ∘' f*∘m*.universal m h' h')   ≡⟨ whisker-r _ ⟩
+        hom[] (π* f y' ∘' π* m (f ^* y') ∘' f*∘m*.universal m h' h')   ≡⟨ assoc[] {q = idr _} ⟩
+        hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' f*∘m*.universal m h' h') ≡⟨ hom[]⟩⟨ from-pathp[]⁻ (f*∘m*.commutes m h' h') ⟩
+        hom[] (hom[] h')                                               ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
+        h'                                                             ∎
 ```
 </details>
 
@@ -381,26 +375,25 @@ $h'$ via $f^{*} \cdot m^{*}$ commutes.
 the fact that both $m^{*}$ and $f^{*} \cdot m^{*}$ are weak cartesian
 maps.
 </summary>
+
 ```agda
-    f*-cartesian .unique {u = u} {u' = u'} {m = m} {h' = h'} m' p = path
-      where
+    f*-cartesian .unique {u = u} {u' = u'} {m = m} {h' = h'} m' p = path where abstract
+      universal-path : (π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m' ≡[ idr (f ∘ m) ] h'
+      universal-path = to-pathp[] $
+        hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m') ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
+        hom[] (π* f y' ∘' (π* m (f ^* y') ∘' π*.universal m')) ≡⟨ hom[]⟩⟨ ap (π* f y' ∘'_) (from-pathp[]⁻ (π*.commutes m')) ⟩
+        hom[] (π* f y' ∘' hom[] m')                            ≡⟨ smashr _ _ ∙ liberate _ ⟩
+        π* f y' ∘' m'                                          ≡⟨ p ⟩
+        h' ∎
 
-        abstract
-          universal-path : (π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m' ≡[ idr (f ∘ m) ] h'
-          universal-path = to-pathp[] $
-            hom[] ((π* f y' ∘' π* m (f ^* y')) ∘' π*.universal m') ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
-            hom[] (π* f y' ∘' (π* m (f ^* y') ∘' π*.universal m')) ≡⟨ hom[]⟩⟨ ap (π* f y' ∘'_) (from-pathp[]⁻ (π*.commutes m')) ⟩
-            hom[] (π* f y' ∘' hom[] m')                ≡⟨ smashr _ _ ∙ liberate _ ⟩
-            π* f y' ∘' m'                              ≡⟨ p ⟩
-            h' ∎
-
-          path : m' ≡ hom[ idr m ] (π* m (f ^* y') ∘' f*∘m*.universal m h' h')
-          path =
-            m'                                                ≡˘⟨ from-pathp[] (π*.commutes m') ⟩
-            hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ reindex _ (idr m) ⟩
-            hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ hom[]⟩⟨ ap (π* m (f ^* y') ∘'_) (f*∘m*.unique m h' _ universal-path) ⟩
-            hom[] (π* m (f ^* y') ∘' f*∘m*.universal m h' h') ∎
+      path : m' ≡ hom[ idr m ] (π* m (f ^* y') ∘' f*∘m*.universal m h' h')
+      path =
+        m'                                                ≡˘⟨ from-pathp[] (π*.commutes m') ⟩
+        hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ reindex _ (idr m) ⟩
+        hom[] (π* m (f ^* y') ∘' π*.universal m')         ≡⟨ hom[]⟩⟨ ap (π* m (f ^* y') ∘'_) (f*∘m*.unique m h' _ universal-path) ⟩
+        hom[] (π* m (f ^* y') ∘' f*∘m*.universal m h' h') ∎
 ```
+
 </details>
 
 Putting this all together, we can finally deduce that $f^{*}$ is

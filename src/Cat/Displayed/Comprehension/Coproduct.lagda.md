@@ -155,21 +155,20 @@ hidden code on the sidebar.]
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]}
       → (f : D.Hom[ id ] a b)
       → ∐[ f ] D.∘' ⟨ x , a ⟩ D.≡[ id-comm-sym ] ⟨ x , b ⟩ D.∘' f
-    ∐[]-natural {x = x} {a} {b} f =
-      ⟨⟩-cocartesian.commutesp x a _ _
+    ∐[]-natural {x = x} {a} {b} f = ⟨⟩-cocartesian.commutesp x a _ _
 
     ∐[]-id {x = x} {a = a} =
-      sym $ ⟨⟩-cocartesian.unique _ _ _ $ D.from-pathp[]⁻ $ D.cast[] $
+      sym $ ⟨⟩-cocartesian.unique _ _ _ $ D.from-pathp[]⁻ $ D.begin[]
       D.id' D.∘' ⟨ x , a ⟩ D.≡[]⟨ D.idl' _ ⟩
       ⟨ x , a ⟩            D.≡[]⟨ symP (D.idr' _ ) ⟩
-      ⟨ x , a ⟩ D.∘' D.id' ∎
+      ⟨ x , a ⟩ D.∘' D.id' D.∎[]
 
     ∐[]-∘ {x = x} {a = a} {b = b} {c = c} f g =
-      symP $ ⟨⟩-cocartesian.uniquep x a _ _ _ _ $
-      (∐[ f ] D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩          D.≡[]⟨ D.pullr[] _ (∐[]-natural g) ⟩
-      ∐[ f ] D.∘' ⟨ x , b ⟩ D.∘' g                 D.≡[]⟨ D.extendl[] _ (∐[]-natural f) ⟩
-      ⟨ x , c ⟩ D.∘' f D.∘' g                      D.≡[]⟨ D.to-pathp[] (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
-      ⟨ x , c ⟩ D.∘' (f D↓.∘ g) ∎
+      symP $ ⟨⟩-cocartesian.uniquep x a _ _ _ _ $ D.begin
+      (∐[ f ] D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩  D.≡[]⟨ D.pullr[] _ (∐[]-natural g) ⟩
+      ∐[ f ] D.∘' ⟨ x , b ⟩ D.∘' g         D.≡[]⟨ D.extendl[] _ (∐[]-natural f) ⟩
+      ⟨ x , c ⟩ D.∘' f D.∘' g              D.≡[]⟨ D.to-pathp[] (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
+      ⟨ x , c ⟩ D.∘' (f D↓.∘ g)            D.∎[]
 ```
 -->
 
@@ -205,11 +204,11 @@ we just constructed is natural, given below.
       → (f : D.Hom[ id ] b (π*.₀ x c)) (g : D.Hom[ id ] a b)
       → ∐-elim f D.∘' ∐[ g ] D.≡[ idl _ ] ∐-elim (f D↓.∘ g)
     ∐-elim-natural {x = x} {a = a} {b = b} {c = c} f g =
-      ⟨⟩-cocartesian.uniquep x a _ _ _ (∐-elim f D.∘' ∐[ g ]) $
+      ⟨⟩-cocartesian.uniquep x a _ _ _ (∐-elim f D.∘' ∐[ g ]) $ D.begin
         ((∐-elim f) D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩ D.≡[]⟨ D.pullr[] _ (∐[]-natural g) ⟩
         ∐-elim f D.∘' ⟨ x , b ⟩ D.∘' g          D.≡[]⟨ D.extendl[] id-comm-sym (⟨⟩-cocartesian.commutesp x b _ _) ⟩
         D.π* πᶜ c D.∘' f D.∘' g                 D.≡[]⟨ D.to-pathp[] (D.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
-        D.π* πᶜ c D.∘' D.hom[] (f D.∘' g)       ∎
+        D.π* πᶜ c D.∘' D.hom[] (f D.∘' g)       D.∎[]
 ```
 
 Conversely, we can make maps $A \to \pi^{*}(B)$ given maps $\coprod_{X}
@@ -279,22 +278,22 @@ hidden from the page for brevity.
       → (f : D.Hom[ id ] (∐ x b) c) (g : D.Hom[ id ] a b)
       → ∐-transpose f D.∘' g D.≡[ idl _ ] ∐-transpose (f D↓.∘ ∐[ g ])
     ∐-transpose-naturall {x = x} {a = a} {b = b} {c = c} f g =
-      D.π*.uniquep _ _ _ (∐-transpose f D.∘' g) $
+      D.π*.uniquep _ _ _ (∐-transpose f D.∘' g) $ D.begin
         D.π* πᶜ c D.∘' ∐-transpose f D.∘' g D.≡[]⟨ D.pulll[] id-comm (D.π*.commutesp _ _) ⟩
         (f D.∘' ⟨ x , b ⟩) D.∘' g           D.≡[]⟨ D.extendr[] _ (symP (∐[]-natural g)) ⟩
         (f D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ D.to-pathp[] (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
-        (f D↓.∘ ∐[ g ]) D.∘' ⟨ x , a ⟩      ∎
+        (f D↓.∘ ∐[ g ]) D.∘' ⟨ x , a ⟩      D.∎[]
 
     ∐-transpose-naturalr
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b c : D.Ob[ Γ ]}
       → (f : D.Hom[ id ] b c) (g : D.Hom[ id ] (∐ x a) b)
       → π*.₁ x f D.∘' ∐-transpose g D.≡[ idl _ ] ∐-transpose (f D↓.∘ g)
     ∐-transpose-naturalr {x = x} {a = a} {b = b} {c = c} f g =
-      D.π*.uniquep _ _ _ (π*.F₁ x f D.∘' ∐-transpose g) $
+      D.π*.uniquep _ _ _ (π*.F₁ x f D.∘' ∐-transpose g) $ D.begin
         D.π* πᶜ c D.∘' π*.₁ x f D.∘' ∐-transpose g     D.≡[]⟨ D.pulll[] _ (D.π*.commutesp id-comm _) ⟩
         (f D.∘' D.π* πᶜ b) D.∘' ∐-transpose g          D.≡[]⟨ D.extendr[] id-comm (D.π*.commutesp _ _) ⟩
         (f D.∘' g) D.∘' ⟨ x , a ⟩                      D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ D.to-pathp[] (D.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
-        D.hom[ idl id ] (f D.∘' g) D.∘' ⟨ x , a ⟩      ∎
+        D.hom[ idl id ] (f D.∘' g) D.∘' ⟨ x , a ⟩      D.∎[]
 ```
 -->
 

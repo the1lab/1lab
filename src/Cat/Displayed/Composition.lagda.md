@@ -33,35 +33,29 @@ and $X'' : \cF$ over $X$ and $X'$. Morphisms are defined similarly,
 as do equations.
 
 ```agda
-_D∘_ : ∀ {o ℓ o' ℓ' o'' ℓ''}
-       → {ℬ : Precategory o ℓ}
-       → (ℰ : Displayed ℬ o' ℓ') → (ℱ : Displayed (∫ ℰ) o'' ℓ'')
-       → Displayed ℬ (o' ⊔ o'') (ℓ' ⊔ ℓ'')
+_D∘_
+  : ∀ {o ℓ o' ℓ' o'' ℓ''} {ℬ : Precategory o ℓ}
+  → (ℰ : Displayed ℬ o' ℓ') (ℱ : Displayed (∫ ℰ) o'' ℓ'')
+  → Displayed ℬ (o' ⊔ o'') (ℓ' ⊔ ℓ'')
 _D∘_ {ℬ = ℬ} ℰ ℱ = disp where
   module ℰ = Displayed ℰ
   module ℱ = Displayed ℱ
+  open Displayed
 
   disp : Displayed ℬ _ _
-  Displayed.Ob[ disp ] X =
-    Σ[ X' ∈ ℰ.Ob[ X ] ] ℱ.Ob[ X , X' ]
-  Displayed.Hom[ disp ] f X Y =
-    Σ[ f' ∈ ℰ.Hom[ f ] (X .fst) (Y .fst) ] ℱ.Hom[ ∫hom f f' ] (X .snd) (Y .snd)
-  Displayed.Hom[ disp ]-set f x y =
-    Σ-is-hlevel 2 (ℰ.Hom[ f ]-set (x .fst) (y .fst)) λ f' →
-    ℱ.Hom[ ∫hom f f' ]-set (x .snd) (y .snd)
-  disp .Displayed.id' =
-    ℰ.id' , ℱ.id'
-  disp .Displayed._∘'_ f' g' =
-    (f' .fst ℰ.∘' g' .fst) , (f' .snd ℱ.∘' g' .snd)
-  disp .Displayed.idr' f' =
-    ℰ.idr' (f' .fst) ,ₚ ℱ.idr' (f' .snd)
-  disp .Displayed.idl' f' =
-    ℰ.idl' (f' .fst) ,ₚ ℱ.idl' (f' .snd)
-  disp .Displayed.assoc' f' g' h' =
-    ℰ.assoc' (f' .fst) (g' .fst) (h' .fst) ,ₚ ℱ.assoc' (f' .snd) (g' .snd) (h' .snd)
-  disp .Displayed.hom[_] p f' = ℰ.hom[ p ] (f' .fst) , ℱ.hom[ ap₂ ∫hom p (ℰ.coh[ p ] (f' .fst)) ] (f' .snd)
-  disp .Displayed.coh[_] p f' = ℰ.coh[ p ] (f' .fst) ,ₚ coh[ (λ i → ∫hom (p i) (ℰ.coh[ p ] (f' .fst) i)) ] (f' .snd)
-    where open DR ℱ
+  disp .Ob[_] X = Σ[ X' ∈ ℰ.Ob[ X ] ] ℱ.Ob[ X , X' ]
+  disp .Hom[_] f (X , X') (Y , Y') =
+    Σ[ f' ∈ ℰ.Hom[ f ] X Y ] ℱ.Hom[ ∫hom f f' ] X' Y'
+  disp .Hom[_]-set f x y = hlevel 2
+  disp .Displayed.id' = ℰ.id' , ℱ.id'
+  disp .Displayed._∘'_ (f , f') (g , g') = f ℰ.∘' g , f' ℱ.∘' g'
+  disp .Displayed.idr' f' = ℰ.idr' _ ,ₚ ℱ.idr' _
+  disp .Displayed.idl' f' = ℰ.idl' _ ,ₚ ℱ.idl' _
+  disp .Displayed.assoc' f' g' h' = ℰ.assoc' _ _ _ ,ₚ ℱ.assoc' _ _ _
+  disp .Displayed.hom[_] p (f , f') =
+    ℰ.hom[ p ] f , ℱ.hom[ ap₂ ∫hom p (ℰ.coh[ p ] f) ] f'
+  disp .Displayed.coh[_] p (f , f') =
+    ℰ.coh[ p ] f ,ₚ ℱ.coh[ (λ i → ∫hom (p i) (ℰ.coh[ p ] f i)) ] f'
 ```
 
 We also obtain a [[displayed functor]] from $\cE \cdot \cF$ to $\cE$
@@ -122,7 +116,6 @@ this is exactly how we construct the liftings.
 ```agda
     ℰ∘ℱ-fib : Cartesian-fibration (ℰ D∘ ℱ)
     ℰ∘ℱ-fib f (y' , y'') = f-lift where
-
       f-lift : Cartesian-lift (ℰ D∘ ℱ) f (y' , y'')
       f-lift .x' = f ℰ.^* y' , ∫hom f (ℰ.π* f y') ℱ.^* y''
       f-lift .lifting = ℰ.π* f y' , ℱ.π* (∫hom f (ℰ.π* f y')) y''
