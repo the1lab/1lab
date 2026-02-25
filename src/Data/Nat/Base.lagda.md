@@ -17,7 +17,7 @@ module Data.Nat.Base where
 
 <!--
 ```agda
-open import Prim.Data.Nat hiding (_<_) public
+open import Prim.Data.Nat renaming (_<_ to _<?_; _≤_ to _≤?_) public
 ```
 -->
 
