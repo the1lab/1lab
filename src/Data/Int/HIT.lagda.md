@@ -279,19 +279,19 @@ from this page. You can unfold it below if you dare:
     -- link between these two splits.
 
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
-    ... | inl x<y | inl (s≤s x<y')             = refl ,ₚ refl ,ₚ ∙-filler _ _
-    ... | inr (inl x>y) | inr (inl (s≤s x>y')) = refl ,ₚ refl ,ₚ ∙-filler _ _
-    ... | inr (inr x≡y) | inr (inr x≡y')       = refl ,ₚ refl ,ₚ ∙-filler _ _
+    ... | inl x<y | inl x<y'             = refl ,ₚ refl ,ₚ ∙-filler _ _
+    ... | inr (inl x>y) | inr (inl x>y') = refl ,ₚ refl ,ₚ ∙-filler _ _
+    ... | inr (inr x≡y) | inr (inr x≡y') = refl ,ₚ refl ,ₚ ∙-filler _ _
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
     -- doesn't care about what humans think is obvious.
-    ... | inl x<y | inr (inl (s≤s x>y))       = absurd (<-asym x<y x>y)
-    ... | inl x<y | inr (inr x≡y)             = absurd (<-not-equal x<y (suc-inj x≡y))
-    ... | inr (inl x>y) | inl (s≤s x<y)       = absurd (<-asym x>y x<y)
-    ... | inr (inr x≡y) | inl (s≤s x<y)       = absurd (<-not-equal x<y x≡y)
-    ... | inr (inl x>y) | inr (inr x≡y)       = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
-    ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (<-irrefl (sym x≡y) x>y)
+    ... | inl x<y | inr (inl x>y)       = absurd (<-asym x<y (≤-peel x>y))
+    ... | inl x<y | inr (inr x≡y)       = absurd (<-not-equal x<y (suc-inj x≡y))
+    ... | inr (inl x>y) | inl x<y       = absurd (<-asym x>y (≤-peel x<y))
+    ... | inr (inr x≡y) | inl x<y       = absurd (<-not-equal (≤-peel x<y) x≡y)
+    ... | inr (inl x>y) | inr (inr x≡y) = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
+    ... | inr (inr x≡y) | inr (inl x>y) = absurd (<-irrefl (sym x≡y) (≤-peel x>y))
 
   go : ∀ n → Canonical n
   go (diff x y) = work x y
