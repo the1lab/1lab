@@ -184,7 +184,7 @@ $x : \ZZ$ to the representative of its congruence class modulo $n$,
 $x \% n$.
 
 ```agda
-Finite-ℤ/n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
+Finite-ℤ/n : ∀ n → ⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
 Finite-ℤ/n n .fst = Coeq-rec (λ i → from-ℕ< (i %ℤ n , x%ℤy<y i n))
   λ (x , y , p) → fin-ap (divides-diff→same-rem n x y p)
 Finite-ℤ/n n .snd = is-iso→is-equiv $ iso

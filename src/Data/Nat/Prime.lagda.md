@@ -129,13 +129,13 @@ prime-not-composite n x@record{ primality = α } y@record{ p = p ; q = q ; facto
     1=p = *-injl n 1 p (*-oner n ∙∙ sym β ∙∙ ap (_* p) p=n)
   in y .p-prime .prime≠1 (sym 1=p)
 
-prime-divisor-lt : ∀ p q n .⦃ _ : Positive n ⦄ → is-prime p → q * p ≡ n → q < n
+prime-divisor-lt : ∀ p q n ⦃ _ : Positive n ⦄ → is-prime p → q * p ≡ n → q < n
 prime-divisor-lt p q n pprime div with ≤-strengthen (m∣n→m≤n {q} {n} (fibre→∣ (p , *-commutative p q ∙ div)))
 ... | inr less = less
 ... | inl same = absurd (pprime .prime≠1 $
   *-injr n p 1 (sym (+-zeror n ∙ sym div ∙ *-commutative q p ∙ ap (p *_) same)))
 
-prime-remainder-positive : ∀ p q n .⦃ _ : Positive n ⦄ → ¬ is-prime n → is-prime p → q * p ≡ n → 1 < q
+prime-remainder-positive : ∀ p q n ⦃ _ : Positive n ⦄ → ¬ is-prime n → is-prime p → q * p ≡ n → 1 < q
 prime-remainder-positive p 0 n@(suc _) _ _ div = absurd (zero≠suc div)
 prime-remainder-positive p 1 n@(suc _) nn pp div = absurd (nn (subst is-prime (sym (+-zeror p) ∙ div) pp))
 prime-remainder-positive p (suc (suc _)) (suc _) _ _ _ = s≤s (s≤s 0≤x)
@@ -234,8 +234,8 @@ factorisation-unique' a b p p∈a =
   in find-prime-factor b (all-∈ (a .is-primes) p∈a) p∣n
 
 factorisation-worker
-  : ∀ n → (∀ k → k < n → .⦃ _ : Positive k ⦄ → Factorisation k)
-  → .⦃ _ : Positive n ⦄ → Factorisation n
+  : ∀ n → (∀ k → k < n → ⦃ _ : Positive k ⦄ → Factorisation k)
+  → ⦃ _ : Positive n ⦄ → Factorisation n
 factorisation-worker 1 ind = factored [] refl []
 factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s≤s 0≤x))
 ... | inl prime     = factored (n ∷ []) (ap (2 +_) (*-oner m)) (prime ∷ [])
@@ -259,7 +259,7 @@ factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s�
 ... | no m≠n  = |-*l-pres {suc m} {suc n} {factorial n} $
   ∣-factorial n {m} (≤-uncap (suc m) n m≠n m≤n)
 
-factorise : (n : Nat) .⦃ _ : Positive n ⦄ → Factorisation n
+factorise : (n : Nat) ⦃ _ : Positive n ⦄ → Factorisation n
 factorise = Wf-induction _<_ <-wf _ factorisation-worker
 
 new-prime : (n : Nat) → Σ[ p ∈ Nat ] n < p × is-prime p

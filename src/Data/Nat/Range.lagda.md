@@ -90,13 +90,13 @@ We can prove that `range`{.Agda} satisfies our recurrence relation
 via some elementary results about monus.
 
 ```agda
-range-≥-empty : ∀ {x y} → .(y ≤ x) → range x y ≡ []
+range-≥-empty : ∀ {x y} → y ≤ x → range x y ≡ []
 range-≥-empty {x} {y} y≤x =
   count-up x (y - x) ≡⟨ ap (count-up x) (monus-≤-zero y x y≤x) ⟩
   count-up x 0        ≡⟨⟩
   []                  ∎
 
-range-<-∷ : .(x < y) → range x y ≡ x ∷ range (suc x) y
+range-<-∷ : x < y → range x y ≡ x ∷ range (suc x) y
 range-<-∷ {x} {suc y} x<y =
   count-up x (suc y - x)        ≡⟨ ap (count-up x) (monus-≤-suc x y (≤-peel x<y)) ⟩
   count-up x (suc (y - x))      ≡⟨⟩
@@ -227,7 +227,7 @@ Conversely, if $x \leq i < y$, then $i \in [x, y)$.
 ```agda
 count-up-∈
   : ∀ {x n i}
-  → .(x ≤ i) → .(i < n + x)
+  → x ≤ i → i < n + x
   → i ∈ count-up x n
 count-up-∈ {x = x} {n = zero} {i = i} x≤i i<n+x =
   absurd (<-irrefl refl (≤-trans i<n+x x≤i))
@@ -237,7 +237,7 @@ count-up-∈ {x = x} {n = suc n} {i = i} x≤i i<n+x with ≤-strengthen x≤i
 
 range-∈
   : ∀ {x y i}
-  → .(x ≤ i) → .(i < y)
+  → x ≤ i → i < y
   → i ∈ range x y
 range-∈ {x = x} {y = y} {i = i} x≤i i<y =
   count-up-∈ x≤i $ᵢ ≤-trans i<y $ ≤-refl' $ᵢ sym $

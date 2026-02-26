@@ -195,7 +195,7 @@ is-gcd-graphs-gcd {m = m} {n} {d} = prop-ext!
 
 <!--
 ```agda
-is-gcd-factor : ∀ x y n k .⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
+is-gcd-factor : ∀ x y n k ⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
 is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (sym (*-associative q n k) ∙ α))
 is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (sym (*-associative q n k) ∙ α))
 is-gcd-factor x y n k p .greatest {g'} α β with (q , α) ← ∣→fibre α | (r , β) ← ∣→fibre β =
@@ -215,7 +215,7 @@ gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gc
 
 ```agda
 |-*-coprime-cancel
-  : ∀ n a b .⦃ _ : Positive n ⦄ .⦃ _ : Positive a ⦄
+  : ∀ n a b ⦃ _ : Positive n ⦄ ⦃ _ : Positive a ⦄
   → n ∣ a * b → is-gcd n a 1 → n ∣ b
 |-*-coprime-cancel n a b div coprime = done where
   E : Nat → Prop lzero
