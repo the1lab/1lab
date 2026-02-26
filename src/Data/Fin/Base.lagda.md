@@ -36,11 +36,6 @@ record Fin (n : Nat) : Type where
     ⦃ bounded ⦄ : lower Nat.< n
 ```
 
-While the type $k \lt n$ is a [[homotopy proposition|proposition]], we
-would like to enforce that constructions on $\operatorname{Fin}(n)$
-*definitionally* do not depend on the given proof. Therefore, we have
-wrapped it in `Irr`{.Agda}.
-
 In dependent type theory, it's common to instead define the finite sets
 as an inductive family indexed over `Nat`{.Agda}. However, in cubical
 type theory, there is a good reason to avoid inductive families: they
