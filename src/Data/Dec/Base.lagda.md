@@ -45,7 +45,7 @@ Dec-rec = Dec-elim _
 
 <!--
 ```agda
-recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → .A → A
+recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → @irr A → A
 recover ⦃ yes x ⦄ _ = x
 recover ⦃ no ¬x ⦄ x = absurd (¬x x)
 
