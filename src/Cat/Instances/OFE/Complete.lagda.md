@@ -223,8 +223,8 @@ which is a chain again by an inductive argument involving contractivity
     approx a (suc n) = f .map (approx a n)
 
     chain : ∀ a → is-chain P (approx a)
-    chain a m zero x                = P.bounded (approx a m) a
-    chain a (suc m) (suc n) (s≤s x) = f .contract n (chain a m n x)
+    chain a m zero x            = P.bounded (approx a m) a
+    chain a (suc m) (suc n) n≤m = f .contract n (chain a m n (≤-peel n≤m))
 ```
 
 I claim that the limit of $s$ is a fixed point of $f$: we can calculate

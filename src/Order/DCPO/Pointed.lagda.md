@@ -161,8 +161,8 @@ $f^n(\bot)$.
     fⁿ (suc n) x = f · (fⁿ n x)
 
     fⁿ-mono : ∀ {i j} → i Nat.≤ j → fⁿ i bot ≤ fⁿ j bot
-    fⁿ-mono Nat.0≤x = ¡
-    fⁿ-mono (Nat.s≤s p) = f.monotone (fⁿ-mono p)
+    fⁿ-mono {0} {j} i≤j = ¡
+    fⁿ-mono {suc i} {suc j} i≤j = f.monotone (fⁿ-mono (Nat.≤-peel i≤j))
 
     fⁿ⊥ : Lift o Nat → Ob
     fⁿ⊥ (lift n) = fⁿ n bot

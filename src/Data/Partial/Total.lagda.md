@@ -73,7 +73,7 @@ instance
 
   abstract
     H-Level-↯⁺ : ∀ {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (↯⁺ A) n
-    H-Level-↯⁺ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+    H-Level-↯⁺ {n = suc (suc n)} = hlevel-instance $
       embedding→is-hlevel (1 + n) (Subset-proj-embedding λ _ → hlevel 1) (hlevel (2 + n))
 
     {-# OVERLAPPING H-Level-↯⁺ #-}

@@ -191,7 +191,7 @@ Finite-ℤ/n n .snd = is-iso→is-equiv $ iso
   (λ (fin i) → inc (pos i))
   (λ i → fin-ap (Fin-%ℤ i))
   (elim! λ i → quot (same-rem→divides-diff n (pos (i %ℤ n)) i
-    (Fin-%ℤ (fin _ ⦃ forget (x%ℤy<y i n) ⦄))))
+    (Fin-%ℤ (fin _ ⦃ x%ℤy<y i n ⦄))))
 ```
 
 Using this and the fact that $([2] \simeq [2]) \simeq [2!] = [2]$,
