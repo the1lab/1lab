@@ -132,17 +132,17 @@ is-hlevel-suc.
 open hlevel-projection
 
 is-hlevel-le : ∀ {ℓ} {A : Type ℓ} n k → n ≤ k → is-hlevel A n → is-hlevel A k
-is-hlevel-le 0 k 0≤x p =
+is-hlevel-le 0 k n≤k p =
   is-contr→is-hlevel k p
-is-hlevel-le 1 1 (s≤s 0≤x) p = p
-is-hlevel-le 1 (suc (suc k)) (s≤s 0≤x) p x y =
+is-hlevel-le 1 1 n≤k p = p
+is-hlevel-le 1 (suc (suc k)) n≤k p x y =
   is-prop→is-hlevel-suc (is-prop→is-set p x y)
-is-hlevel-le (suc (suc n)) (suc (suc k)) (s≤s le) p x y =
-  is-hlevel-le (suc n) (suc k) le (p x y)
+is-hlevel-le (suc (suc n)) (suc (suc k)) n≤k p x y =
+  is-hlevel-le (suc n) (suc k) (≤-peel n≤k) (p x y)
 
 hlevel-proj : ∀ {ℓ} → Type ℓ → Nat → Term → TC ⊤
-hlevel-proj A want goal = do
-  want ← quoteTC want >>= normalise
+hlevel-proj A want goal = withNormalisation false do
+  want ← quoteTC want
 
   def head args ← reduce =<< quoteTC A
     where ty → typeError [ "H-Level: I do not know how to show that\n  " , termErr ty , "\nhas h-level\n  ", termErr want ]
@@ -202,10 +202,10 @@ instance
   H-Level-projection {inst = inst} = hlevel-instance inst
 
   H-Level-n-Type : ∀ {ℓ n k} ⦃ _ : suc n ≤ k ⦄ → H-Level (n-Type ℓ n) k
-  H-Level-n-Type {n = n} {k} = hlevel-instance (is-hlevel-le (suc n) k auto (n-Type-is-hlevel n))
+  H-Level-n-Type {n = n} {k} ⦃ le ⦄ = hlevel-instance (is-hlevel-le (suc n) k le (n-Type-is-hlevel n))
 
   h-level-is-prop : ∀ {ℓ} {A : Type ℓ} {n : Nat} ⦃ _ : 1 ≤ n ⦄ → H-Level (is-prop A) n
-  h-level-is-prop ⦃ s≤s _ ⦄ = hlevel-instance (is-prop→is-hlevel-suc is-prop-is-prop)
+  h-level-is-prop {n = suc n} = hlevel-instance (is-prop→is-hlevel-suc is-prop-is-prop)
 
   H-Level-Singleton : ∀ {ℓ} {A : Type ℓ} {a : A} {n : Nat} → H-Level (Singleton a) n
   H-Level-Singleton {n = n} = hlevel-instance (is-contr→is-hlevel n Singleton-is-contr)
@@ -214,7 +214,7 @@ instance
   {-# OVERLAPPING h-level-is-prop #-}
   {-# OVERLAPPING H-Level-Singleton #-}
 
-open Data.Nat.Base using (0≤x ; s≤s' ; x≤x ; x≤sucy) public
+open Data.Nat.Base using (Leq-zero ; Leq-suc-suc ; Leq-refl ; Leq-sucr) public
 
 private module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
   some-def = ∣ A ∣
