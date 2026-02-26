@@ -227,7 +227,7 @@ unquoteDecl H-Level-Positive = declare-record-hlevel 1 H-Level-Positive (quote P
 instance
   Dec-Positive : ∀ {x} → Dec (Positive x)
   Dec-Positive {x} with (r@(n / d [ p ]) , q) ← splitℚ x | holds? (ℤ.Positive n)
-  ... | yes p = yes (subst Positive q (inc (recover p)))
+  ... | yes p = yes (subst Positive q (inc p))
   ... | no ¬p = no λ x → absurd (case subst Positive (sym q) x of λ (inc p) → ¬p p)
 
   Positive-pos : ∀ {x s p} → Positive (toℚ (possuc x / s [ p ]))

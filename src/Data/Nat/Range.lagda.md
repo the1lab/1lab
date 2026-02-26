@@ -218,7 +218,7 @@ range-upper
   → i < y
 range-upper {x = x} {y = y} {i = i} i∈xy =
   ≤-trans (count-up-upper i∈xy) $ ≤-refl' $ᵢ
-    monus-+r-inverse y x $ᵢ
+    monus-+r-inverse y x $
     <-weaken (nonempty-range→< (has-member→nonempty i∈xy))
 ```
 
@@ -240,7 +240,7 @@ range-∈
   → x ≤ i → i < y
   → i ∈ range x y
 range-∈ {x = x} {y = y} {i = i} x≤i i<y =
-  count-up-∈ x≤i $ᵢ ≤-trans i<y $ ≤-refl' $ᵢ sym $
+  count-up-∈ x≤i $ ≤-trans i<y $ ≤-refl' $ᵢ sym $
     monus-+r-inverse y x (≤-trans x≤i (<-weaken i<y))
 ```
 
