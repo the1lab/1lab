@@ -51,7 +51,7 @@ skip-comm i j le x with fin-view i | fin-view j | le | fin-view x
 ... | zero  | zero  | _      | _       = refl
 ... | zero  | suc _ | _      | _       = refl
 ... | suc i | suc j | le     | zero    = refl
-... | suc i | suc j | s≤s le | (suc x) = ap fsuc (skip-comm i j le x)
+... | suc i | suc j | le     | (suc x) = ap fsuc (skip-comm i j (Nat.≤-peel le) x)
 
 drop-comm : ∀ {n} (i j : Fin n) → i ≤ j
           → ∀ x → squish j (squish (weaken i) x) ≡ squish i (squish (fsuc j) x)
@@ -61,18 +61,18 @@ drop-comm i j le x with fin-view i | fin-view j | le | fin-view x
 ... | zero  | suc j | le     | zero  = refl
 ... | zero  | suc j | le     | suc x = refl
 ... | suc i | suc j | le     | zero  = refl
-... | suc i | suc j | s≤s le | suc x = ap fsuc (drop-comm i j le x)
+... | suc i | suc j | le | suc x = ap fsuc (drop-comm i j (Nat.≤-peel le) x)
 
 squish-skip-comm : ∀ {n} (i : Fin (suc n)) (j : Fin n) → i < fsuc j
                  → ∀ x → squish (fsuc j) (skip (weaken i) x) ≡ skip i (squish j x)
 squish-skip-comm i j le x with fin-view i | fin-view j | le | fin-view x
-... | zero | zero  | s≤s p | zero  = refl
-... | zero | zero  | s≤s p | suc _ = refl
-... | zero | suc _ | s≤s p | zero  = refl
-... | zero | suc _ | s≤s p | suc _ = refl
-... | suc i | (suc j) | (Nat.s≤s p) | zero = refl
-... | suc i | (suc j) | (Nat.s≤s p) | (suc x) =
-  ap fsuc (squish-skip-comm i j p x)
+... | zero | zero     | p | zero  = refl
+... | zero | zero     | p | suc _ = refl
+... | zero | suc _    | p | zero  = refl
+... | zero | suc _    | p | suc _ = refl
+... | suc i | (suc j) | p | zero = refl
+... | suc i | (suc j) | p | (suc x) =
+  ap fsuc (squish-skip-comm i j (Nat.≤-peel p) x)
 
 squish-skip : ∀ {n} (i j : Fin n) → i ≡ j
             → ∀ x → squish j (skip (weaken j) x) ≡ x
@@ -193,7 +193,7 @@ Fin-suc-Π = Iso→Equiv λ where
 
   .snd .is-iso.rinv x → refl
 
-  .snd .is-iso.linv k i fzero               → k (fin zero ⦃ forget auto ⦄)
+  .snd .is-iso.linv k i fzero               → k (fin zero ⦃ auto ⦄)
   .snd .is-iso.linv k i (fin (suc n) ⦃ b ⦄) → k (fin (suc n) ⦃ b ⦄)
 
 Fin-suc-Σ
@@ -262,7 +262,7 @@ _between_ finite sets) [[merely]] split:
 ```agda
 finite-surjection-split
   : ∀ {ℓ} {n} {B : Type ℓ}
-  → (f : B → Fin n) 
+  → (f : B → Fin n)
   → is-surjective f
   → is-split-surjective f
 finite-surjection-split f = finite-choice _
@@ -308,7 +308,7 @@ Fin-omniscience
   → (Σ[ j ∈ Fin n ] P j × ∀ k → P k → j ≤ k) ⊎ (∀ x → ¬ P x)
 Fin-omniscience {zero} P = inr λ ()
 Fin-omniscience {suc n} P with holds? (P 0)
-... | yes here = inl (0 , here , λ _ _ → 0≤x)
+... | yes here = inl (0 , here , λ _ _ → Nat.0≤x)
 ... | no ¬here with Fin-omniscience (P ∘ fsuc)
 ... | inl (ix , pix , least) = inl (fsuc ix , pix , fin-cons (λ here → absurd (¬here here)) λ i pi → Nat.s≤s (least i pi))
 ... | inr nowhere = inr (fin-cons ¬here nowhere)
@@ -429,10 +429,10 @@ insert-delete {suc n} ρ _ a p _ | suc i | suc j = insert-delete (ρ ∘ fsuc) i
 ℕ< n = Σ[ k ∈ Nat ] k Nat.< n
 
 from-ℕ< : ∀ {n} → ℕ< n → Fin n
-from-ℕ< (i , p) = fin i ⦃ forget p ⦄
+from-ℕ< (i , p) = fin i ⦃ p ⦄
 
 to-ℕ< : ∀ {n} → Fin n → ℕ< n
-to-ℕ< (fin i ⦃ forget p ⦄) = i , recover p
+to-ℕ< (fin i ⦃ p ⦄) = i , recover p
 
 fsuc-is-embedding : ∀ {n} → is-embedding (fsuc {n})
 fsuc-is-embedding = injective→is-embedding! fsuc-inj
