@@ -164,7 +164,7 @@ from-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = case L.≈→≈' p o
     (inr xt-ys=0) → ℤ.zero-diff xt-ys=0
 
 to-same-rational : {x y : Fraction} → x .↑ *ℤ y .↓ ≡ y .↑ *ℤ x .↓ → x ≈ y
-to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (recover (sym (*ℤ-associative 1 x t) ∙∙ ap (1 *ℤ_) p ∙∙ *ℤ-associative 1 y s))
+to-same-rational {x / s [ s≠0 ]} {y / t [ t≠0 ]} p = L.inc 1 (pos 0) (sym (*ℤ-associative 1 x t) ∙∙ ap (1 *ℤ_) p ∙∙ *ℤ-associative 1 y s)
 
 Dec-same-rational : (x y : Fraction) → Dec (x ≈ y)
 Dec-same-rational f@(x / s [ _ ]) f'@(y / t [ _ ]) with x *ℤ t ≡? y *ℤ s
@@ -562,7 +562,7 @@ splitℚ (inc x) = record
   -- The use of 'recover' here replaces the calculated proof that
   -- is-split-congruence returns by an invocation of Discrete-ℚ. This
   -- has much shorter normal forms when applied to concrete values.
-  ; snd = recover (ap inc (split.splitting x .snd))
+  ; snd = ap inc (split.splitting x .snd)
   }
 
 abstract
