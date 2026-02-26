@@ -88,7 +88,7 @@ private
 <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
 <-irrefl x=y x<y = <-not-equal x<y x=y
 
-≤-strengthen : ∀ {x y} → .(x ≤ y) → (x ≡ y) ⊎ (x < y)
+≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
 ≤-strengthen {zero} {zero} x≤y = inl refl
 ≤-strengthen {zero} {suc y} x≤y = inr (s≤s 0≤x)
 ≤-strengthen {suc x} {suc y} x≤y with ≤-strengthen (≤-peel x≤y)

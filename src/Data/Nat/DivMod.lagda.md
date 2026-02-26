@@ -40,7 +40,7 @@ record DivMod (a b : Nat) : Type where
     quot : Nat
     rem  : Nat
     .quotient : a ≡ quot * b + rem
-    .smaller  : rem < b
+    smaller  : rem < b
 ```
 
 The easy case is to divide zero by anything, in which case the result is
@@ -57,7 +57,7 @@ module _ where private
 -->
 
 ```agda
-  divide-pos : ∀ a b → .⦃ _ : Positive b ⦄ → DivMod a b
+  divide-pos : ∀ a b → ⦃ _ : Positive b ⦄ → DivMod a b
   divide-pos zero (suc b) = divmod 0 0 refl (s≤s 0≤x)
 ```
 
@@ -126,11 +126,11 @@ is to yield $0$ in both cases.
   a /ₙ zero = zero
   a /ₙ suc b = divide-pos a (suc b) .DivMod.quot
 
-  is-divmod : ∀ x y → .⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
+  is-divmod : ∀ x y → ⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
   is-divmod x (suc y) with divide-pos x (suc y)
   ... | divmod q r α β = recover α
 
-  x%y<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x % y) < y
+  x%y<y : ∀ x y → ⦃ _ : Positive y ⦄ → (x % y) < y
   x%y<y x (suc y) with divide-pos x (suc y)
   ... | divmod q r α β = recover β
 ```
@@ -155,10 +155,10 @@ div-helper k m (suc n) (suc j) = div-helper k       m n j
 
 -- _ = {! mod-helper 0 0 4294967296 2  !}
 
-_/ₙ_ : (d1 d2 : Nat) .⦃ _ : Positive d2 ⦄ → Nat
+_/ₙ_ : (d1 d2 : Nat) ⦃ _ : Positive d2 ⦄ → Nat
 d1 /ₙ suc d2 = div-helper 0 d2 d1 d2
 
-_%_ : (d1 d2 : Nat) .⦃ _ : Positive d2 ⦄ → Nat
+_%_ : (d1 d2 : Nat) ⦃ _ : Positive d2 ⦄ → Nat
 d1 % suc d2 = mod-helper 0 d2 d1 d2
 
 infixl 9 _/ₙ_ _%_
@@ -175,16 +175,16 @@ abstract
     mod-le a (suc d) zero = mod-le zero d (a + 0)
     mod-le a (suc d) (suc n) rewrite Id≃path.from (+-sucr a n) = mod-le (suc a) d n
 
-  is-divmod : ∀ x y → .⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
+  is-divmod : ∀ x y → ⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
   is-divmod x (suc y) = div-mod-lemma 0 0 x y ∙ +-commutative (x % (suc y)) _
 
-  x%y<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x % y) < y
+  x%y<y : ∀ x y → ⦃ _ : Positive y ⦄ → (x % y) < y
   x%y<y x (suc y) = s≤s (mod-le 0 x y)
 
-from-fast-mod : ∀ d1 d2 .⦃ _ : Positive d2 ⦄ → d1 % d2 ≡ 0 → d2 ∣ d1
+from-fast-mod : ∀ d1 d2 ⦃ _ : Positive d2 ⦄ → d1 % d2 ≡ 0 → d2 ∣ d1
 from-fast-mod d1 d2 p = fibre→∣ (d1 /ₙ d2 , sym (is-divmod d1 d2 ∙ ap (d1 /ₙ d2 * d2 +_) p ∙ +-zeror _))
 
-divide-pos : ∀ a b → .⦃ _ : Positive b ⦄ → DivMod a b
+divide-pos : ∀ a b → ⦃ _ : Positive b ⦄ → DivMod a b
 divide-pos a b = record
   { quot = a /ₙ b
   ; rem  = a % b
@@ -196,12 +196,12 @@ private module _ where
   open DivMod
   divmod-ap : ∀ {a b} {x y : DivMod a b} → x .quot ≡ y .quot → x .rem ≡ y .rem → x ≡ y
   divmod-ap {a} {b} {divmod _ _ α β} {divmod _ _ α' β'} p q =
-    ap {A = Σ[ q ∈ Nat ] Σ[ r ∈ Nat ] (Irr (a ≡ q * b + r) × Irr (r < b))} (λ (w , x , forget y , forget z) → divmod w x y z)
-      {x = _ , _ , forget α , forget β} {y = _ , _ , forget α' , forget β'}
+    ap {A = Σ[ q ∈ Nat ] Σ[ r ∈ Nat ] (Irr (a ≡ q * b + r) × r < b)} (λ (w , x , forget y , z) → divmod w x y z)
+      {x = _ , _ , forget α , β} {y = _ , _ , forget α' , β'}
       (p ,ₚ q ,ₚ prop! ,ₚ prop!)
 
 instance
-  H-Level-DivMod : ∀ {a b n} .⦃ _ : Positive b ⦄ → H-Level (DivMod a b) (suc n)
+  H-Level-DivMod : ∀ {a b n} ⦃ _ : Positive b ⦄ → H-Level (DivMod a b) (suc n)
   H-Level-DivMod {a} {b@(suc b')} =
     prop-instance λ where
       (divmod q r α β) (divmod q' r' α' β') → case ≤-split r r' of λ where

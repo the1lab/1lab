@@ -126,10 +126,10 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
 *-suc-inj' k x y p = *-suc-inj k x y (*-commutative x (suc k) ∙∙ p ∙∙ *-commutative (suc k) y)
 
-*-injr : ∀ k x y .⦃ _ : Positive k ⦄ → x * k ≡ y * k → x ≡ y
+*-injr : ∀ k x y ⦃ _ : Positive k ⦄ → x * k ≡ y * k → x ≡ y
 *-injr (suc k) x y p = *-suc-inj k x y p
 
-*-injl : ∀ k x y .⦃ _ : Positive k ⦄ → k * x ≡ k * y → x ≡ y
+*-injl : ∀ k x y ⦃ _ : Positive k ⦄ → k * x ≡ k * y → x ≡ y
 *-injl (suc k) x y p = *-suc-inj' k x y p
 
 *-is-onel : ∀ x n → x * n ≡ 1 → x ≡ 1
@@ -212,12 +212,12 @@ monus-zero : ∀ a → 0 - a ≡ 0
 monus-zero zero = refl
 monus-zero (suc a) = refl
 
-monus-≤-zero : ∀ m n → .(m ≤ n) → m - n ≡ 0
+monus-≤-zero : ∀ m n → m ≤ n → m - n ≡ 0
 monus-≤-zero zero zero m≤n = refl
 monus-≤-zero zero (suc n) m≤n = refl
 monus-≤-zero (suc m) (suc n) m≤n = monus-≤-zero m n (≤-peel m≤n)
 
-monus-≤-suc : ∀ m n → .(m ≤ n) → suc n - m ≡ suc (n - m)
+monus-≤-suc : ∀ m n → m ≤ n → suc n - m ≡ suc (n - m)
 monus-≤-suc zero n m≤n = refl
 monus-≤-suc (suc m) (suc n) m≤n = monus-≤-suc m n (≤-peel m≤n)
 
@@ -234,14 +234,14 @@ monus-swapl x y z p = sym (monus-cancell x y 0) ∙ ap (x + y -_) (+-zeror x) �
 monus-swapr : ∀ x y z → x + y ≡ z → x ≡ z - y
 monus-swapr x y z p = sym (monus-cancelr x 0 y) ∙ ap (_- y) p
 
-monus-+r-inverse : ∀ x y → .(y ≤ x) → (x - y) + y ≡ x
+monus-+r-inverse : ∀ x y → y ≤ x → (x - y) + y ≡ x
 monus-+r-inverse x zero y≤x = +-zeror x
 monus-+r-inverse (suc x) (suc y) y≤x =
   (x - y) + suc y   ≡⟨ +-sucr (x - y) y ⟩
   suc ((x - y) + y) ≡⟨ ap suc (monus-+r-inverse x y (≤-peel y≤x)) ⟩
   suc x             ∎
 
-monus-+l-inverse : ∀ x y → .(x ≤ y) → x + (y - x) ≡ y
+monus-+l-inverse : ∀ x y → x ≤ y → x + (y - x) ≡ y
 monus-+l-inverse x y x≤y =
   x + (y - x) ≡⟨ +-commutative x (y - x) ⟩
   (y - x) + x ≡⟨ monus-+r-inverse y x x≤y ⟩
@@ -272,7 +272,7 @@ monus-addl zero (suc n) k = sym (monus-zero k)
 monus-addl (suc m) zero k = refl
 monus-addl (suc m) (suc n) k = monus-addl m n k
 
-monus-pres-+l : ∀ m n k → .(k ≤ n) → (m + n) - k ≡ m + (n - k)
+monus-pres-+l : ∀ m n k → k ≤ n → (m + n) - k ≡ m + (n - k)
 monus-pres-+l zero n k k≤n = refl
 monus-pres-+l (suc m) n zero k≤n = refl
 monus-pres-+l (suc m) (suc n) (suc k) k≤n =
@@ -280,7 +280,7 @@ monus-pres-+l (suc m) (suc n) (suc k) k≤n =
   (suc m + n) - k ≡⟨ monus-pres-+l (suc m) n k (≤-peel k≤n) ⟩
   suc m + (n - k) ∎
 
-monus-pres-+r : ∀ (m n k : Nat) → .(k ≤ m) → (m + n) - k ≡ (m - k) + n
+monus-pres-+r : ∀ (m n k : Nat) → k ≤ m → (m + n) - k ≡ (m - k) + n
 monus-pres-+r zero n zero k≤m = refl
 monus-pres-+r (suc m) n zero k≤m = refl
 monus-pres-+r (suc m) n (suc k) k≤m = monus-pres-+r m n k (≤-peel k≤m)
@@ -433,21 +433,21 @@ nonzero→positive : ∀ {x} → x ≠ 0 → 0 < x
 nonzero→positive {zero} p = absurd (p refl)
 nonzero→positive {suc x} p = s≤s 0≤x
 
-*-reflects-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
+*-reflects-≤r : ∀ x {y z} ⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
 *-reflects-≤r (suc x) {zero} {z} p = 0≤x
 *-reflects-≤r (suc x) {suc y} {suc z} y*z≤z*x = s≤s
   (*-reflects-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x (≤-peel y*z≤z*x)))
 
-*-reflects-≤l : ∀ x {y z} .⦃ _ : Positive x ⦄ → (x * y) ≤ (x * z) → y ≤ z
+*-reflects-≤l : ∀ x {y z} ⦃ _ : Positive x ⦄ → (x * y) ≤ (x * z) → y ≤ z
 *-reflects-≤l x {y} {z} le =
   *-reflects-≤r x (subst₂ _≤_ (*-commutative x y) (*-commutative x z) le)
 
-*-reflects-<r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) < (z * x) → y < z
+*-reflects-<r : ∀ x {y z} ⦃ _ : Positive x ⦄ → (y * x) < (z * x) → y < z
 *-reflects-<r x {y} {z} lt with ≤-strengthen (*-reflects-≤r x {y} {z} (<-weaken lt))
 ... | inl y=z = absurd (<-irrefl (ap (_* x) y=z) lt)
 ... | inr y<z = y<z
 
-*-reflects-<l : ∀ x {y z} .⦃ _ : Positive x ⦄ → (x * y) < (x * z) → y < z
+*-reflects-<l : ∀ x {y z} ⦃ _ : Positive x ⦄ → (x * y) < (x * z) → y < z
 *-reflects-<l x {y} {z} lt with ≤-strengthen (*-reflects-≤l x {y} {z} (<-weaken lt))
 ... | inl y=z = absurd (<-irrefl (ap (x *_) y=z) lt)
 ... | inr y<z = y<z

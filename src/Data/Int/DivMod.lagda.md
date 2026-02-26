@@ -39,7 +39,7 @@ record DivModℤ (a : Int) (b : Nat) : Type where
     quotℤ : Int
     remℤ  : Nat
     .quotient : a ≡ quotℤ *ℤ pos b +ℤ pos remℤ
-    .smaller  : remℤ < b
+    smaller  : remℤ < b
 
 open DivModℤ
 ```
@@ -49,7 +49,7 @@ We proceed by cases: if $a$ is positive, we can simply compute the
 division $a/b$ as natural numbers.
 
 ```agda
-divide-posℤ : ∀ a b → .⦃ _ : Positive b ⦄ → DivModℤ a b
+divide-posℤ : ∀ a b → ⦃ _ : Positive b ⦄ → DivModℤ a b
 divide-posℤ (pos a) b using divmod q r p s ← divide-pos a b
   = divmodℤ (pos q) r (ap pos p ∙ sym (ap (_+ℤ pos r) (assign-pos _))) s
 ```
@@ -98,17 +98,17 @@ $b - (-a)\%b$ as the remainder.
 </details>
 
 ```agda
-_/ℤ_ : Int → (b : Nat) → .⦃ _ : Positive b ⦄ → Int
+_/ℤ_ : Int → (b : Nat) → ⦃ _ : Positive b ⦄ → Int
 a /ℤ b = divide-posℤ a b .quotℤ
 
-_%ℤ_ : Int → (b : Nat) → .⦃ _ : Positive b ⦄ → Nat
+_%ℤ_ : Int → (b : Nat) → ⦃ _ : Positive b ⦄ → Nat
 a %ℤ b = divide-posℤ a b .remℤ
 
-is-divmodℤ : ∀ x y → .⦃ _ : Positive y ⦄ → x ≡ (x /ℤ y) *ℤ pos y +ℤ pos (x %ℤ y)
+is-divmodℤ : ∀ x y → ⦃ _ : Positive y ⦄ → x ≡ (x /ℤ y) *ℤ pos y +ℤ pos (x %ℤ y)
 is-divmodℤ x (suc y) with divide-posℤ x (suc y)
 ... | divmodℤ q r α β = recover α
 
-x%ℤy<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x %ℤ y) < y
+x%ℤy<y : ∀ x y → ⦃ _ : Positive y ⦄ → (x %ℤ y) < y
 x%ℤy<y x (suc y) with divide-posℤ x (suc y)
 ... | divmodℤ q r α β = recover β
 
@@ -122,7 +122,7 @@ divide $a$ by $b$: that is, the type `DivModℤ a b`{.Agda} is a
 [[proposition]] for all positive `b`{.Agda}.
 
 ```agda
-DivModℤ-unique : ∀ a b → .⦃ _ : Positive b ⦄ → is-prop (DivModℤ a b)
+DivModℤ-unique : ∀ a b → ⦃ _ : Positive b ⦄ → is-prop (DivModℤ a b)
 DivModℤ-unique a b@(suc b') x@(divmodℤ q r p s) y@(divmodℤ q' r' p' s') = go where
 ```
 
@@ -177,7 +177,7 @@ the same remainder modulo $n$...
 
 ```agda
 divides-diff→same-rem
-  : ∀ n x y → .⦃ _ : Positive n ⦄
+  : ∀ n x y → ⦃ _ : Positive n ⦄
   → n ∣ℤ (x -ℤ y) → x %ℤ n ≡ y %ℤ n
 divides-diff→same-rem n x y n∣x-y
   using k , z ← ∣ℤ→fibre n∣x-y
@@ -198,7 +198,7 @@ divides-diff→same-rem n x y n∣x-y
       (q -ℤ k) *ℤ pos n +ℤ pos r                   ∎
 
 same-rem→divides-diff
-  : ∀ n x y → .⦃ _ : Positive n ⦄
+  : ∀ n x y → ⦃ _ : Positive n ⦄
   → x %ℤ n ≡ y %ℤ n → n ∣ℤ (x -ℤ y)
 same-rem→divides-diff n x y p = dividesℤ (x /ℤ n -ℤ y /ℤ n) $
   (x /ℤ n -ℤ y /ℤ n) *ℤ pos n                                            ≡⟨ *ℤ-distribr-minus (pos n) (x /ℤ n) (y /ℤ n) ⟩
@@ -211,7 +211,7 @@ same-rem→divides-diff n x y p = dividesℤ (x /ℤ n -ℤ y /ℤ n) $
 ...and that natural numbers below $n$ are their own remainder modulo $n$.
 
 ```agda
-Fin-%ℤ : ∀ {n} (i : Fin n) → .⦃ _ : Positive n ⦄ → pos (i .lower) %ℤ n ≡ i .lower
+Fin-%ℤ : ∀ {n} (i : Fin n) → ⦃ _ : Positive n ⦄ → pos (i .lower) %ℤ n ≡ i .lower
 Fin-%ℤ {n} (fin i ⦃ p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
   (divide-posℤ (pos i) n) (divmodℤ 0 i refl p))
 ```
@@ -219,14 +219,14 @@ Fin-%ℤ {n} (fin i ⦃ p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
 We also show that $n$ divides $x$ if and only if $x \% n = 0$.
 
 ```agda
-rem-zero→divides : ∀ n x → .⦃ _ : Positive n ⦄ → x %ℤ n ≡ 0 → n ∣ℤ x
+rem-zero→divides : ∀ n x → ⦃ _ : Positive n ⦄ → x %ℤ n ≡ 0 → n ∣ℤ x
 rem-zero→divides n x p = dividesℤ (x /ℤ n) $
   x /ℤ n *ℤ pos n                 ≡˘⟨ +ℤ-zeror _ ⟩
   x /ℤ n *ℤ pos n +ℤ pos ⌜ 0 ⌝    ≡˘⟨ ap¡ p ⟩
   x /ℤ n *ℤ pos n +ℤ pos (x %ℤ n) ≡˘⟨ is-divmodℤ x n ⟩
   x                               ∎
 
-divides→rem-zero : ∀ n x → .⦃ _ : Positive n ⦄ → n ∣ℤ x → x %ℤ n ≡ 0
+divides→rem-zero : ∀ n x → ⦃ _ : Positive n ⦄ → n ∣ℤ x → x %ℤ n ≡ 0
 divides→rem-zero n@(suc _) x ⦃ p ⦄ n∣x = divides-diff→same-rem n x 0 ⦃ p ⦄
   (subst (fibre (_*ℤ pos n)) (sym (+ℤ-zeror x)) (∣ℤ→fibre n∣x))
 ```
