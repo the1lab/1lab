@@ -237,7 +237,7 @@ canonicalise : (n : Int) → Canonical n
 canonicalise = go where
   lemma₁ : ∀ x y → x < y → diff 0 (y - x) ≡ diff x y
   lemma₂ : ∀ x y → y < x → diff (x - y) 0 ≡ diff x y
-  lemma₃ : ∀ x y → x ≡ y → diff 0 0       ≡ diff x y
+  lemma₃ : ∀ x y → @irr x ≡ y → diff 0 0       ≡ diff x y
 
   work : ∀ x y → Canonical (diff x y)
   work x y with ≤-split x y
