@@ -12,6 +12,8 @@ open import Data.Dec.Base
 open import Data.Fin hiding (_<_)
 open import Data.Int hiding (Positive ; _<_ ; <-weaken)
 open import Data.Nat as Nat
+
+open import Data.Irr
 ```
 -->
 
@@ -37,7 +39,7 @@ record DivModℤ (a : Int) (b : Nat) : Type where
   field
     quotℤ : Int
     remℤ  : Nat
-    .quotient : a ≡ quotℤ *ℤ pos b +ℤ pos remℤ
+    quotient : Irr (a ≡ quotℤ *ℤ pos b +ℤ pos remℤ)
     smaller  : remℤ < b
 
 open DivModℤ
@@ -50,7 +52,7 @@ division $a/b$ as natural numbers.
 ```agda
 divide-posℤ : ∀ a b → ⦃ _ : Positive b ⦄ → DivModℤ a b
 divide-posℤ (pos a) b using divmod q r p s ← divide-pos a b
-  = divmodℤ (pos q) r (ap pos p ∙ sym (ap (_+ℤ pos r) (assign-pos _))) s
+  = divmodℤ (pos q) r (forget (ap pos (recover p) ∙ sym (ap (_+ℤ pos r) (assign-pos _)))) s
 ```
 
 If $a$ is negative, we can compute $(-a)/b$ as natural numbers and
@@ -60,7 +62,7 @@ so we simply negate the quotient and set the remainder to $0$.
 ```agda
 divide-posℤ (negsuc a) b@(suc b') with divide-pos (suc a) b
 ... | divmod q zero p s = divmodℤ (assign neg q) 0
-  (ap (assign neg) p ∙ assign-+ (q * b) 0 ∙ ap (_+ℤ 0) (assign-*l q b))
+  (forget (ap (assign neg) (recover p) ∙ assign-+ (q * b) 0 ∙ ap (_+ℤ 0) (assign-*l q b)))
   (s≤s 0≤x)
 ```
 
@@ -72,7 +74,7 @@ $b - (-a)\%b$ as the remainder.
 
 ```agda
 ... | divmod q (suc r) p s = divmodℤ (negsuc q) (b - suc r)
-  (ap (assign neg) p ∙ lemma)
+  (forget (ap (assign neg) (recover p) ∙ lemma))
   (s≤s (monus-≤ b' r))
 ```
 
@@ -91,7 +93,7 @@ $b - (-a)\%b$ as the remainder.
       (pos b' -ℤ pos r) +ℤ assign neg b' +ℤ negsuc (q * b)     ≡˘⟨ +ℤ-assoc (pos b' -ℤ pos r) _ _ ⟩
       (pos b' -ℤ pos r) +ℤ (assign neg b' +ℤ negsuc (q * b))   ≡⟨ ap₂ _+ℤ_ (pos-pos b' r) (ap (_+ℤ negsuc (q * b)) (assign-neg b')) ⟩
       (b' ℕ- r) +ℤ (negℤ (pos b') +ℤ negsuc (q * b))           ≡⟨ ap ((b' ℕ- r) +ℤ_) (negℤ-+ℤ-negsuc b' (q * b)) ⟩
-      (b' ℕ- r) +ℤ negsuc (b' + q * b)                         ≡⟨ ap₂ _+ℤ_ (nat-diff-monus b' r (≤-peel (<-weaken (recover s)))) refl ⟩
+      (b' ℕ- r) +ℤ negsuc (b' + q * b)                         ≡⟨ ap₂ _+ℤ_ (nat-diff-monus b' r (≤-peel (<-weaken s))) refl ⟩
       pos (b' - r) +ℤ negsuc (b' + q * b)                      ∎
 ```
 </details>
@@ -104,12 +106,10 @@ _%ℤ_ : Int → (b : Nat) → ⦃ _ : Positive b ⦄ → Nat
 a %ℤ b = divide-posℤ a b .remℤ
 
 is-divmodℤ : ∀ x y → ⦃ _ : Positive y ⦄ → x ≡ (x /ℤ y) *ℤ pos y +ℤ pos (x %ℤ y)
-is-divmodℤ x (suc y) with divide-posℤ x (suc y)
-... | divmodℤ q r α β = recover α
+is-divmodℤ x (suc y) = recover (divide-posℤ x (suc y) .quotient)
 
 x%ℤy<y : ∀ x y → ⦃ _ : Positive y ⦄ → (x %ℤ y) < y
-x%ℤy<y x (suc y) with divide-posℤ x (suc y)
-... | divmodℤ q r α β = recover β
+x%ℤy<y x (suc y) = divide-posℤ x (suc y) .smaller
 
 infixl 9 _/ℤ_ _%ℤ_
 ```
@@ -141,7 +141,7 @@ hence it must be zero.
 
   same-r : r ≡ r'
   same-r = dec→dne λ r≠r' → Nat.<-≤-asym
-    (s≤s (nat-diff-bounded r' r b' (≤-peel (recover s')) (≤-peel (recover s))))
+    (s≤s (nat-diff-bounded r' r b' (≤-peel s') (≤-peel s)))
     (m∣ℤsn→m≤sn (λ k → r≠r' (sym (nat-diff-positive r' r k))) b∣r'-r)
 ```
 
@@ -152,9 +152,9 @@ have $q = q'$.
 ```agda
   same-q : q ≡ q'
   same-q = *ℤ-injectiver-possuc b' q q' $
-    q *ℤ pos b  ≡⟨ -ℤ-swapl _ _ _ (recover (sym p)) ⟩
+    q *ℤ pos b  ≡⟨ -ℤ-swapl _ _ _ (sym (recover p)) ⟩
     a -ℤ pos r  ≡⟨ ap (λ r → a -ℤ pos r) same-r ⟩
-    a -ℤ pos r' ≡˘⟨ -ℤ-swapl _ _ _ (recover (sym p')) ⟩
+    a -ℤ pos r' ≡˘⟨ -ℤ-swapl _ _ _ (sym (recover p')) ⟩
     q' *ℤ pos b ∎
 ```
 
@@ -165,7 +165,7 @@ The last two fields are propositions, so this shows that the two
   go : x ≡ y
   go i = divmodℤ (same-q i) (same-r i)
     (is-prop→pathp
-      (λ i → hlevel {T = a ≡ same-q i *ℤ pos b +ℤ pos (same-r i)} 1) p p' i)
+      (λ i → hlevel {T = Irr (a ≡ same-q i *ℤ pos b +ℤ pos (same-r i))} 1) p p' i)
     (is-prop→pathp
       (λ i → Nat.≤-is-prop {suc (same-r i)} {b}) s s' i)
 ```
@@ -181,7 +181,7 @@ divides-diff→same-rem
 divides-diff→same-rem n x y n∣x-y
   using k , z ← ∣ℤ→fibre n∣x-y
   using divmodℤ q r p s ← divide-posℤ x n
-  = ap remℤ (DivModℤ-unique _ _ (divmodℤ (q -ℤ k) r p' s) (divide-posℤ y n))
+  = ap remℤ (DivModℤ-unique _ _ (divmodℤ (q -ℤ k) r (forget p') s) (divide-posℤ y n))
   where
     p' : y ≡ (q -ℤ k) *ℤ pos n +ℤ pos r
     p' =
@@ -212,7 +212,7 @@ same-rem→divides-diff n x y p = dividesℤ (x /ℤ n -ℤ y /ℤ n) $
 ```agda
 Fin-%ℤ : ∀ {n} (i : Fin n) → ⦃ _ : Positive n ⦄ → pos (i .lower) %ℤ n ≡ i .lower
 Fin-%ℤ {n} (fin i ⦃ p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
-  (divide-posℤ (pos i) n) (divmodℤ 0 i refl p))
+  (divide-posℤ (pos i) n) (divmodℤ 0 i (forget refl) p))
 ```
 
 We also show that $n$ divides $x$ if and only if $x \% n = 0$.

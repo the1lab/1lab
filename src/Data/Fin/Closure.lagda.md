@@ -11,6 +11,7 @@ open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Nat.Base as Nat
 open import Data.Dec
+open import Data.Irr
 open import Data.Sum
 
 open import Meta.Invariant
@@ -196,7 +197,7 @@ Finite-multiply {m@(suc m')} {n@(suc n')} = Iso→Equiv (to , iso from ir il) wh
     α =
       let
         it : i * n + j Nat.≤ m' * n + n'
-        it = +-preserves-≤ (i * n) (m' * n) j n' (*-preserves-≤r i m' n (≤-peel (recover b))) (≤-peel (recover b'))
+        it = +-preserves-≤ (i * n) (m' * n) j n' (*-preserves-≤r i m' n (≤-peel b)) (≤-peel b')
       in s≤s (≤-trans it  (≤-refl' (+-commutative (m' * n) n')))
 
   from : Fin (m * n) → Fin m × Fin n
@@ -213,7 +214,7 @@ Finite-multiply {m@(suc m')} {n@(suc n')} = Iso→Equiv (to , iso from ir il) wh
           p' = difference→≤ r (sym (subst (λ e → i ≡ e * suc n' + r) p (recover quot)))
         in ¬sucx≤x _ (≤-trans b p')
 
-    in fin q ⦃ (<-from-≤ ne b') ⦄ , fin r ⦃ recover rem ⦄
+    in fin q ⦃ (<-from-≤ ne b') ⦄ , fin r ⦃ rem ⦄
 
   ir : is-right-inverse from to
   ir (fin i ⦃ b ⦄) = fin-ap (sym (is-divmod i n))
@@ -221,7 +222,7 @@ Finite-multiply {m@(suc m')} {n@(suc n')} = Iso→Equiv (to , iso from ir il) wh
   il : is-left-inverse from to
   il (fin i ⦃ b ⦄ , fin j ⦃ b' ⦄) =
     let
-      p : Path (DivMod (i * n + j) n) (divide-pos (i * n + j) n) (divmod i j refl b')
+      p : Path (DivMod (i * n + j) n) (divide-pos (i * n + j) n) (divmod i j (forget refl) b')
       p = prop!
     in fin-ap (ap DivMod.quot p) ,ₚ fin-ap (ap DivMod.rem p)
 ```

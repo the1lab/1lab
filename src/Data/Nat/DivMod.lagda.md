@@ -39,7 +39,7 @@ record DivMod (a b : Nat) : Type where
   field
     quot : Nat
     rem  : Nat
-    .quotient : a ≡ quot * b + rem
+    quotient : Irr (a ≡ quot * b + rem)
     smaller  : rem < b
 ```
 
@@ -58,7 +58,7 @@ module _ where private
 
 ```agda
   divide-pos : ∀ a b → ⦃ _ : Positive b ⦄ → DivMod a b
-  divide-pos zero (suc b) = divmod 0 0 refl (s≤s 0≤x)
+  divide-pos zero (suc b) = divmod 0 0 (forget refl) (s≤s 0≤x)
 ```
 
 It suffices to assume --- since $a$ is smaller than $1+a$ --- that we
@@ -80,8 +80,8 @@ $$
 $$
 
 ```agda
-  divide-pos (suc a) b | divmod q' r' p s | inl r'+1<b =
-    divmod q' (suc r') (ap suc p ∙ sym (+-sucr (q' * b) r')) r'+1<b
+  divide-pos (suc a) b | divmod q' r' (forget p) s | inl r'+1<b =
+    divmod q' (suc r') (forget (ap suc p ∙ sym (+-sucr (q' * b) r'))) r'+1<b
 ```
 
 The other case --- that in which $1 + r' = b$ --- is more interesting.
@@ -91,9 +91,10 @@ in this case, $q = 1 + q'$ and $r = 0$, which works out because ($0 < b$
 and) of some arithmetic. See for yourself:
 
 ```agda
-  divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inr r'+1=b) =
+  divide-pos (suc a) (suc b') | divmod q' r' (forget p) s | inr (inr r'+1=b) =
     divmod (suc q') 0
-      ( suc a                           ≡⟨ ap suc p ⟩
+      (forget $ᵢ
+        suc a                           ≡⟨ ap suc p ⟩
         suc (q' * (suc b') + r')        ≡˘⟨ ap (λ e → suc (q' * e + r')) r'+1=b ⟩
         suc (q' * (suc r') + r')        ≡⟨ nat! ⟩
         suc (r' + q' * (suc r') + zero) ≡⟨ ap (λ e → e + q' * e + 0) r'+1=b ⟩
@@ -108,7 +109,7 @@ definition of division, we have $r' < b$, meaning $(1 + r') \le b$.
 ```agda
   divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inl b<r'+1) =
     absurd (<-not-equal b<r'+1
-      (≤-antisym (≤-sucr (≤-peel b<r'+1)) (recover s)))
+      (≤-antisym (≤-sucr (≤-peel b<r'+1)) s))
 ```
 
 As a finishing touch, we define short operators to produce the result of
@@ -132,7 +133,7 @@ is to yield $0$ in both cases.
 
   x%y<y : ∀ x y → ⦃ _ : Positive y ⦄ → (x % y) < y
   x%y<y x (suc y) with divide-pos x (suc y)
-  ... | divmod q r α β = recover β
+  ... | divmod q r α β = β
 ```
 
 With this, we can decide whether two numbers divide each other by
@@ -188,7 +189,7 @@ divide-pos : ∀ a b → ⦃ _ : Positive b ⦄ → DivMod a b
 divide-pos a b = record
   { quot = a /ₙ b
   ; rem  = a % b
-  ; quotient = is-divmod a b
+  ; quotient = forget (is-divmod a b)
   ; smaller = x%y<y a b
   }
 
@@ -196,8 +197,8 @@ private module _ where
   open DivMod
   divmod-ap : ∀ {a b} {x y : DivMod a b} → x .quot ≡ y .quot → x .rem ≡ y .rem → x ≡ y
   divmod-ap {a} {b} {divmod _ _ α β} {divmod _ _ α' β'} p q =
-    ap {A = Σ[ q ∈ Nat ] Σ[ r ∈ Nat ] (Irr (a ≡ q * b + r) × r < b)} (λ (w , x , forget y , z) → divmod w x y z)
-      {x = _ , _ , forget α , β} {y = _ , _ , forget α' , β'}
+    ap {A = Σ[ q ∈ Nat ] Σ[ r ∈ Nat ] (Irr (a ≡ q * b + r) × r < b)} (λ (w , x , y , z) → divmod w x y z)
+      {x = _ , _ , α , β} {y = _ , _ , α' , β'}
       (p ,ₚ q ,ₚ prop! ,ₚ prop!)
 
 instance
@@ -206,8 +207,8 @@ instance
     prop-instance λ where
       (divmod q r α β) (divmod q' r' α' β') → case ≤-split r r' of λ where
         (inr (inr r=r')) → divmod-ap (*-injr b q q' (+-injl r (q * b) (q' * b) (+-commutative r (q * b) ∙ sym (recover α) ∙ recover α' ∙ +-commutative (q' * b) r' ∙ ap (_+ q' * b) (sym r=r')))) r=r'
-        (inr (inl r'<r)) → absurd (lemma' q q' b r r' r'<r (recover β) (recover (sym α ∙ α')))
-        (inl r<r')       → absurd (lemma' q' q b r' r r<r' (recover β') (recover (sym α' ∙ α)))
+        (inr (inl r'<r)) → absurd (lemma' q q' b r r' r'<r β (sym (recover α) ∙ recover α'))
+        (inl r<r')       → absurd (lemma' q' q b r' r r<r' β' (sym (recover α') ∙ recover α))
     where
       lemma : ∀ x y z → x < y → x ≡ y * z → z ≡ 0
       lemma x y zero p q = refl
@@ -253,5 +254,5 @@ instance
     let
       n∣r : (q' - q) * n ≡ r
       n∣r = monus-distribr q' q n ∙ sym (monus-swapl _ _ _ (sym (p ∙ recover α)))
-    in <-≤-asym (recover β) (m∣sn→m≤sn (q' - q , recover n∣r))
+    in <-≤-asym β (m∣sn→m≤sn (q' - q , n∣r))
 ```
