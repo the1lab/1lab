@@ -214,28 +214,29 @@ the benefit of being a *definitional* [[proposition]].
 
 <!--
 ```agda
-s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
-s≤s (erase x≤y) = erase x≤y
+abstract
+  s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
+  s≤s (erase x≤y) = erase x≤y
 
-0≤x : ∀ {x} → zero ≤ x
-0≤x {x} = erase tt
+  0≤x : ∀ {x} → zero ≤ x
+  0≤x {x} = erase tt
 
-≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
-≤-peel (erase x≤y) = erase x≤y
+  ≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
+  ≤-peel (erase x≤y) = erase x≤y
 
-≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
-≤-sucr {x} {y} (erase x≤y) = erase (worker x y x≤y) where
-  .worker : ∀ x y → is-true (x ≤? y) → is-true (x ≤? suc y)
-  worker zero y x≤y = tt
-  worker (suc x) (suc y) x≤y = worker x y x≤y
+  ≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
+  ≤-sucr {x} {y} (erase x≤y) = erase (worker x y x≤y) where
+    .worker : ∀ x y → is-true (x ≤? y) → is-true (x ≤? suc y)
+    worker zero y x≤y = tt
+    worker (suc x) (suc y) x≤y = worker x y x≤y
 
-<-weaken : ∀ {x y} → suc x ≤ y → x ≤ y
-<-weaken {x} {y} (erase x≤y) = erase (worker x y x≤y) where
-  .worker : ∀ x y → is-true (suc x ≤? y) → is-true (x ≤? y)
-  worker zero y x≤y = tt
-  worker (suc x) (suc y) x≤y = worker x y x≤y
+  <-weaken : ∀ {x y} → suc x ≤ y → x ≤ y
+  <-weaken {x} {y} (erase x≤y) = erase (worker x y x≤y) where
+    .worker : ∀ x y → is-true (suc x ≤? y) → is-true (x ≤? y)
+    worker zero y x≤y = tt
+    worker (suc x) (suc y) x≤y = worker x y x≤y
 
-instance
+abstract instance
   Leq-zero : ∀ {x} → 0 ≤ x
   Leq-zero = 0≤x
 
@@ -243,10 +244,8 @@ instance
   Leq-suc-suc ⦃ x≤y ⦄ = s≤s x≤y
 
   Leq-refl : ∀ {x} → x ≤ x
-  Leq-refl {x} = erase (worker x) where
-    .worker : ∀ x → is-true (x ≤? x)
-    worker zero = tt
-    worker (suc x) = worker x
+  Leq-refl {zero} = 0≤x
+  Leq-refl {suc x} = s≤s Leq-refl
   {-# INCOHERENT Leq-refl #-}
 
   Leq-sucr : ∀ {x y} → ⦃ x ≤ y ⦄ → x ≤ suc y
@@ -259,11 +258,12 @@ instance
 ¬suc≤0 : ∀ {x} → suc x ≤ 0 → ⊥
 ¬suc≤0 ()
 
-≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-≤-trans {x} {y} {z} (erase x≤y) (erase y≤z) = erase (worker x y z x≤y y≤z) where
-  .worker : ∀ x y z → is-true (x ≤? y) → is-true (y ≤? z) → is-true (x ≤? z)
-  worker zero y z x≤y y≤z = tt
-  worker (suc x) (suc y) (suc z) x≤y y≤z = worker x y z x≤y y≤z
+abstract
+  ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+  ≤-trans {x} {y} {z} (erase x≤y) (erase y≤z) = erase (worker x y z x≤y y≤z) where
+    .worker : ∀ x y z → is-true (x ≤? y) → is-true (y ≤? z) → is-true (x ≤? z)
+    worker zero y z x≤y y≤z = tt
+    worker (suc x) (suc y) (suc z) x≤y y≤z = worker x y z x≤y y≤z
 
 factorial : Nat → Nat
 factorial zero = 1
