@@ -5,6 +5,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Sum.Base
+open import Data.Irr
 
 open import Meta.Invariant
 open import Meta.Idiom
@@ -45,9 +46,9 @@ Dec-rec = Dec-elim _
 
 <!--
 ```agda
-recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → @irr A → A
+recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → Irr A → A
 recover ⦃ yes x ⦄ _ = x
-recover ⦃ no ¬x ⦄ x = absurd (¬x x)
+recover ⦃ no ¬x ⦄ (forget x) = absurd (¬x x)
 
 dec→dne : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → ¬ ¬ A → A
 dec→dne ⦃ yes x ⦄ _   = x
