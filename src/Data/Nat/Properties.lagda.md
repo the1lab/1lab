@@ -342,17 +342,13 @@ arithmetic operators:
 +-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (s≤s (+-≤r x y))
 
 monus-≤ : (x y : Nat) → x - y ≤ x
-monus-≤ x zero = x≤x
+monus-≤ x zero = ≤-refl
 monus-≤ zero (suc y) = 0≤x
 monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
 
 +-preserves-≤l : (x y z : Nat) → x ≤ y → (z + x) ≤ (z + y)
-+-preserves-≤l .0 y zero 0≤x = 0≤x
-+-preserves-≤l .0 y (suc z) 0≤x =
-  s≤s (+-preserves-≤l zero y z 0≤x)
-+-preserves-≤l .(suc _) .(suc _) zero (s≤s p) = s≤s p
-+-preserves-≤l .(suc _) .(suc _) (suc z) (s≤s p) =
-  s≤s (+-preserves-≤l (suc _) (suc _) z (s≤s p))
++-preserves-≤l x y zero x≤y = x≤y
++-preserves-≤l x y (suc z) x≤y = s≤s (+-preserves-≤l x y z x≤y)
 
 +-preserves-≤r : (x y z : Nat) → x ≤ y → (x + z) ≤ (y + z)
 +-preserves-≤r x y z prf = subst (λ a → a ≤ (y + z)) (+-commutative z x)
@@ -363,7 +359,7 @@ monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
   (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
 +-preserves-<l : (x y z : Nat) → x < y → (z + x) < (z + y)
-+-preserves-<l x (suc y) z (s≤s p) = ≤-trans (s≤s (+-preserves-≤l x y z p)) (≤-refl' (sym (+-sucr z y)))
++-preserves-<l x (suc y) z x<y = ≤-trans (s≤s (+-preserves-≤l x y z (≤-peel x<y))) (≤-refl' (sym (+-sucr z y)))
 
 +-preserves-<r : (x y z : Nat) → x < y → (x + z) < (y + z)
 +-preserves-<r x y z p = subst₂ _<_ (+-commutative z x) (+-commutative z y) (+-preserves-<l x y z p)
@@ -385,8 +381,8 @@ monus-≤ (suc x) (suc y) = ≤-sucr (monus-≤ x y)
   (*-preserves-≤r x y x' prf) (*-preserves-≤l x' y' y prf')
 
 +-reflects-≤l : (x y z : Nat) → (z + x) ≤ (z + y) → x ≤ y
-+-reflects-≤l x y zero prf = prf
-+-reflects-≤l x y (suc z) (s≤s prf) = +-reflects-≤l x y z prf
++-reflects-≤l x y zero z+x≤z+y = z+x≤z+y
++-reflects-≤l x y (suc z) z+x≤z+y = +-reflects-≤l x y z (≤-peel z+x≤z+y)
 
 +-reflects-≤r : (x y z : Nat) → (x + z) ≤ (y + z) → x ≤ y
 +-reflects-≤r x y z le =
@@ -439,8 +435,8 @@ nonzero→positive {suc x} p = s≤s 0≤x
 
 *-reflects-≤r : ∀ x {y z} .⦃ _ : Positive x ⦄ → (y * x) ≤ (z * x) → y ≤ z
 *-reflects-≤r (suc x) {zero} {z} p = 0≤x
-*-reflects-≤r (suc x) {suc y} {suc z} (s≤s p) = s≤s
-  (*-reflects-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x p))
+*-reflects-≤r (suc x) {suc y} {suc z} y*z≤z*x = s≤s
+  (*-reflects-≤r (suc x) {y} {z} (+-reflects-≤l (y * suc x) (z * suc x) x (≤-peel y*z≤z*x)))
 
 *-reflects-≤l : ∀ x {y z} .⦃ _ : Positive x ⦄ → (x * y) ≤ (x * z) → y ≤ z
 *-reflects-≤l x {y} {z} le =
@@ -483,10 +479,10 @@ max-≤r (suc x) zero = 0≤x
 max-≤r (suc x) (suc y) = s≤s (max-≤r x y)
 
 max-univ : (x y z : Nat) → x ≤ z → y ≤ z → max x y ≤ z
-max-univ zero zero z 0≤x 0≤x = 0≤x
-max-univ zero (suc y) (suc z) 0≤x (s≤s q) = s≤s q
-max-univ (suc x) zero (suc z) (s≤s p) 0≤x = s≤s p
-max-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (max-univ x y z p q)
+max-univ zero zero z x≤z y≤z = 0≤x
+max-univ zero (suc y) (suc z) x≤z y≤z = y≤z
+max-univ (suc x) zero (suc z) x≤z y≤z = x≤z
+max-univ (suc x) (suc y) (suc z) x≤z y≤z = s≤s (max-univ x y z (≤-peel x≤z) (≤-peel y≤z))
 
 max-zerol : (x : Nat) → max 0 x ≡ x
 max-zerol zero = refl
@@ -523,8 +519,8 @@ min-≤r (suc x) zero = 0≤x
 min-≤r (suc x) (suc y) = s≤s (min-≤r x y)
 
 min-univ : (x y z : Nat) → z ≤ x → z ≤ y → z ≤ min x y
-min-univ x y zero 0≤x 0≤x = 0≤x
-min-univ (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (min-univ x y z p q)
+min-univ x y zero z≤x z≤y = 0≤x
+min-univ (suc x) (suc y) (suc z) z≤x z≤y = s≤s (min-univ x y z (≤-peel z≤x) (≤-peel z≤y))
 
 min-zerol : (x : Nat) → min 0 x ≡ 0
 min-zerol zero = refl

@@ -48,12 +48,8 @@ naturals automatically.
 
 ```agda
 ≤-antisym : ∀ {x y : Nat} → x ≤ y → y ≤ x → x ≡ y
-≤-antisym 0≤x     0≤x     = refl
-≤-antisym (s≤s p) (s≤s q) = ap suc (≤-antisym p q)
-
-≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
-≤-is-prop 0≤x     0≤x     = refl
-≤-is-prop (s≤s p) (s≤s q) = ap s≤s (≤-is-prop p q)
+≤-antisym {zero} {zero} x≤y y≤x = refl
+≤-antisym {suc x} {suc y} x≤y y≤x = ap suc (≤-antisym (≤-peel x≤y) (≤-peel y≤x))
 ```
 
 As a minor convenience, we prove that the constructor `s≤s`{.Agda} is an
@@ -74,10 +70,6 @@ private
   to-prim-< : ∀ x y → x < y → ⌞ x Prim.< y ⌟
   to-prim-< zero (suc y) o = so-true
   to-prim-< (suc x) (suc y) o = to-prim-< x y (≤-peel o)
-
-instance
-  H-Level-≤ : ∀ {n x y} → H-Level (x ≤ y) (suc n)
-  H-Level-≤ = prop-instance ≤-is-prop
 ```
 -->
 
@@ -85,19 +77,16 @@ instance
 
 ```agda
 <-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
-<-≤-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-≤-asym p q
+<-≤-asym {suc x} {suc y} x<y y≤x = <-≤-asym (≤-peel x<y) (≤-peel y≤x)
 
 <-asym : ∀ {x y} → x < y → ¬ (y < x)
-<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
+<-asym {suc x} {suc y} x<y y<x = <-≤-asym x<y (<-weaken y<x)
 
 <-not-equal : ∀ {x y} → x < y → x ≠ y
-<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
-<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
+<-not-equal x<y x=y = <-≤-asym x<y (≤-refl' (sym x=y))
 
 <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
-<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
-<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
+<-irrefl x=y x<y = <-not-equal x<y x=y
 
 ≤-strengthen : ∀ {x y} → .(x ≤ y) → (x ≡ y) ⊎ (x < y)
 ≤-strengthen {zero} {zero} x≤y = inl refl
@@ -129,7 +118,7 @@ module _ where private
   ≤-dec (suc x) zero = no λ { () }
   ≤-dec (suc x) (suc y) with ≤-dec x y
   ... | yes x≤y = yes (s≤s x≤y)
-  ... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
+  ... | no ¬x≤y = no (¬x≤y ∘ ≤-peel)
 
 ≤-is-weakly-total : ∀ x y → ¬ (x ≤ y) → y ≤ x
 ≤-is-weakly-total zero    zero    _    = 0≤x
@@ -155,12 +144,12 @@ module _ where private
 ≤-from-not-< (suc x) (suc y) p = s≤s (≤-from-not-< x y (p ∘ s≤s))
 
 <-trans : ∀ x y z → x < y → y < z → x < z
-<-trans x (suc y) (suc z) (s≤s p) (s≤s q) = ≤-trans (s≤s p) (≤-trans q ≤-ascend)
+<-trans x (suc y) (suc z) x<y y<z = ≤-trans x<y (<-weaken y<z)
 
 ≤-uncap : ∀ m n → m ≠ suc n → m ≤ suc n → m ≤ n
-≤-uncap m n p 0≤x = 0≤x
-≤-uncap (suc x) zero p (s≤s 0≤x) = absurd (p refl)
-≤-uncap (suc x) (suc n) p (s≤s q) = s≤s (≤-uncap x n (p ∘ ap suc) q)
+≤-uncap zero n p m≤n+1 = 0≤x
+≤-uncap (suc m) (suc n) p m≤n+1 = s≤s (≤-uncap m n (p ∘ ap suc) (≤-peel m≤n+1))
+≤-uncap (suc zero) zero p m≤n+1 = absurd (p refl)
 ```
 -->
 
@@ -188,7 +177,7 @@ succeeds:
 
 ```agda
 ¬sucx≤x : (x : Nat) → ¬ (suc x ≤ x)
-¬sucx≤x (suc x) (s≤s ord) = ¬sucx≤x x ord
+¬sucx≤x (suc x) 1+x≤x = ¬sucx≤x x (≤-peel 1+x≤x)
 ```
 
 We can do proofs on pairs of natural numbers by splitting into cases of
@@ -222,9 +211,9 @@ that here (it is a more general fact about
 ≤-iff-max : ∀ {x y} → (x ≤ y) ≃ (y ≡ max x y)
 ≤-iff-max = prop-ext! to from where
   to : ∀ {x y} → x ≤ y → y ≡ max x y
-  to {.0} {zero} 0≤x = refl
-  to {.0} {suc y} 0≤x = refl
-  to {x} {y} (s≤s p) = ap suc (to p)
+  to {0} {zero} x≤y = refl
+  to {0} {suc y} x≤y = refl
+  to {suc x} {suc y} x≤y = ap suc (to (≤-peel x≤y))
 
   from : ∀ {x y} → y ≡ max x y → x ≤ y
   from {zero} p = 0≤x
