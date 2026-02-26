@@ -42,20 +42,20 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
     member-pair-inv x (y ∷ ys) a b (there it)   = ap there (member-pair-inv x ys a b it)
 
     rem₀
-      : ∀ {x a} (ys : ∀ a → List (B a)) (b : B a) (p : a ≡ᵢ x) ix .{q} .{q'}
-      → (Id-over B (symᵢ p) (ys x ! fin ix ⦃ forget q ⦄) b) ≃ (ys a ! fin ix ⦃ forget q' ⦄ ≡ᵢ b)
+      : ∀ {x a} (ys : ∀ a → List (B a)) (b : B a) (p : a ≡ᵢ x) ix {q} {q'}
+      → (Id-over B (symᵢ p) (ys x ! fin ix ⦃ q ⦄) b) ≃ (ys a ! fin ix ⦃ q' ⦄ ≡ᵢ b)
     rem₀ {x = x} {a} ys b p ix {q} {q'} = Jᵢ'
-      (λ a x p → ∀ b .q .q' → Id-over B (symᵢ p) (ys x ! fin ix ⦃ forget q ⦄) b ≃ (ys a ! fin ix ⦃ forget q' ⦄ ≡ᵢ b))
+      (λ a x p → ∀ b q q' → Id-over B (symᵢ p) (ys x ! fin ix ⦃ q ⦄) b ≃ (ys a ! fin ix ⦃ q' ⦄ ≡ᵢ b))
       (λ b q q' → id , id-equiv)
       p b q q'
 
     rem₁ : ∀ {x a} (ys : ∀ a → List (B a)) (b : B _) (p : a ≡ᵢ x) → fibre' (ys x) p b → fibreᵢ (ys a !_) b
-    rem₁ {x = x} {a} ys b p (fin ix ⦃ forget q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.to (rem₀ ys b p ix) r where
-      q' = forget (transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p (~ i)))) q)
+    rem₁ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.to (rem₀ ys b p ix) r where
+      q' = transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p (~ i)))) q
 
     rem₂ : ∀ {x a} (ys : ∀ a → List (B a)) (b : B _) (p : a ≡ᵢ x) → fibreᵢ (ys a !_) b → fibre' (ys x) p b
-    rem₂ {x = x} {a} ys b p (fin ix ⦃ forget q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.from (rem₀ ys b p ix) r where
-      q' = forget (transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p i))) q)
+    rem₂ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.from (rem₀ ys b p ix) r where
+      q' = transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p i))) q
 
   sigma-member : ∀ {a b xs ys} → a ∈ₗ xs → b ∈ₗ ys a → (a , b) ∈ₗ sigma xs ys
   sigma-member {a = a} {b = b} {xs = x ∷ xs} {ys = ys} (here {x' = x'} p) q =
@@ -70,10 +70,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
       : ∀ (a : A) b xs ys {x : A} (q : (a , b) ∈ₗ map (x ,_) (ys x))
       → split (x ∷ xs) ys (++-memberₗ q)
     here-sigma a b xs ys {x} p with inspect (pair-member x (ys x) a b p)
-    ... | (p' , fin ix ⦃ forget q ⦄ , r) , prf = here p' , elt , coh where
-      q' = forget (transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p' (~ i)))) q)
-
-      elt = lookup→member (rem₁ ys b p' (fin ix ⦃ forget q ⦄ , r))
+    ... | (p' , fin ix ⦃ q ⦄ , r) , prf = here p' , elt , coh where
+      elt = lookup→member (rem₁ ys b p' (fin ix ⦃ q ⦄ , r))
 
       abstract
         coh : sigma-member {xs = x ∷ xs} (here p') elt ≡ ++-memberₗ p
