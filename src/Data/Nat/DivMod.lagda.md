@@ -211,8 +211,8 @@ instance
     where
       lemma : ∀ x y z → x < y → x ≡ y * z → z ≡ 0
       lemma x y zero p q = refl
-      lemma zero (suc y) (suc z) (s≤s p) q = absurd (zero≠suc q)
-      lemma (suc x) (suc y) (suc z) (s≤s p) q = absurd (¬sucx≤x y (≤-trans r' (≤-trans (≤-refl' (sym q)) p))) where
+      lemma zero (suc y) (suc z) x<y q = absurd (zero≠suc q)
+      lemma (suc x) (suc y) (suc z) x<y q = absurd (¬sucx≤x y (≤-trans r' (≤-trans (≤-refl' (sym q)) (≤-peel x<y)))) where
         r : z + y * suc z ≡ y + (z + y * z)
         r = nat!
 
