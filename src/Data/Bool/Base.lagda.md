@@ -95,20 +95,16 @@ Bool-elim A at af false = af
 -->
 
 ```agda
-is-true : Bool → Type
-is-true true = ⊤
-is-true false = ⊥
-
 record So (b : Bool) : Type where
-  constructor erase
+  constructor oh
   field
-    @irr is-so : is-true b
+    @irr ⦃ is-so ⦄ : if b then ⊤ else ⊥
 ```
 
 <!--
 ```agda
 so-true : So true
-so-true = erase tt
+so-true = oh
 
 ¬so-false : So false → ⊥
 ¬so-false ()
