@@ -193,44 +193,77 @@ infixr 10 _^_
 
 ## Ordering
 
-We define the order relation `_≤_`{.Agda} on the natural numbers as an
-inductive predicate. We could also define the relation by recursion on
-the numbers to be compared, but the inductive version has much better
-properties when it comes to type inference.
+We define the order relation `_≤_`{.Agda} on the natural numbers
+by appealing to the optimized decision procedure `_≤?_`{.Agda}.
 
 ```agda
-data _≤_ : Nat → Nat → Type where
-  instance
-    0≤x : ∀ {x} → 0 ≤ x
-  s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
+record _≤_ (x y : Nat) : Type where
+  constructor erase
+  field
+    @irr is-leq : is-true (x ≤? y)
+```
+
+We could also define the relation by recursion on the numbers to be
+compared or as an inductive predicate. However, our definition has
+the benefit of being a *definitional* [[proposition]].
+
+```agda
+≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
+≤-is-prop p q = refl
 ```
 
 <!--
 ```agda
+s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
+s≤s (erase x≤y) = erase x≤y
+
+0≤x : ∀ {x} → zero ≤ x
+0≤x {x} = erase tt
+
+≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
+≤-peel (erase x≤y) = erase x≤y
+
+≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
+≤-sucr {x} {y} (erase x≤y) = erase (worker x y x≤y) where
+  .worker : ∀ x y → is-true (x ≤? y) → is-true (x ≤? suc y)
+  worker zero y x≤y = tt
+  worker (suc x) (suc y) x≤y = worker x y x≤y
+
+<-weaken : ∀ {x y} → suc x ≤ y → x ≤ y
+<-weaken {x} {y} (erase x≤y) = erase (worker x y x≤y) where
+  .worker : ∀ x y → is-true (suc x ≤? y) → is-true (x ≤? y)
+  worker zero y x≤y = tt
+  worker (suc x) (suc y) x≤y = worker x y x≤y
+
 instance
-  s≤s' : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
-  s≤s' ⦃ x ⦄ = s≤s x
+  Leq-zero : ∀ {x} → 0 ≤ x
+  Leq-zero = 0≤x
 
-  x≤x : ∀ {x} → x ≤ x
-  x≤x {zero}  = 0≤x
-  x≤x {suc x} = s≤s x≤x
+  Leq-suc-suc : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
+  Leq-suc-suc ⦃ x≤y ⦄ = s≤s x≤y
 
-  x≤sucy : ∀ {x y} ⦃ p : x ≤ y ⦄ → x ≤ suc y
-  x≤sucy {.0} {y} ⦃ 0≤x ⦄ = 0≤x
-  x≤sucy {.(suc _)} {.(suc _)} ⦃ s≤s p ⦄ = s≤s (x≤sucy ⦃ p ⦄)
+  Leq-refl : ∀ {x} → x ≤ x
+  Leq-refl {x} = erase (worker x) where
+    .worker : ∀ x → is-true (x ≤? x)
+    worker zero = tt
+    worker (suc x) = worker x
+  {-# INCOHERENT Leq-refl #-}
 
-  {-# INCOHERENT x≤x x≤sucy #-}
+  Leq-sucr : ∀ {x y} → ⦃ x ≤ y ⦄ → x ≤ suc y
+  Leq-sucr ⦃ x≤y ⦄ = ≤-sucr x≤y
+  {-# INCOHERENT Leq-sucr #-}
 
-≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
-≤-peel (s≤s p) = p
+  H-Level-≤ : ∀ {x y n} → H-Level (x ≤ y) (suc n)
+  H-Level-≤ = prop-instance (λ _ _ → refl)
 
 ¬suc≤0 : ∀ {x} → suc x ≤ 0 → ⊥
 ¬suc≤0 ()
 
 ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-≤-trans 0≤x     0≤x     = 0≤x
-≤-trans 0≤x     (s≤s q) = 0≤x
-≤-trans (s≤s p) (s≤s q) = s≤s (≤-trans p q)
+≤-trans {x} {y} {z} (erase x≤y) (erase y≤z) = erase (worker x y z x≤y y≤z) where
+  .worker : ∀ x y z → is-true (x ≤? y) → is-true (y ≤? z) → is-true (x ≤? z)
+  worker zero y z x≤y y≤z = tt
+  worker (suc x) (suc y) (suc z) x≤y y≤z = worker x y z x≤y y≤z
 
 factorial : Nat → Nat
 factorial zero = 1
@@ -249,17 +282,6 @@ _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
 infix 7 _<_ _≤_
 ```
-
-<!--
-```agda
-≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
-≤-sucr 0≤x = 0≤x
-≤-sucr (s≤s p) = s≤s (≤-sucr p)
-
-<-weaken : ∀ {x y} → x < y → x ≤ y
-<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
-```
--->
 
 As an "ordering combinator", we can define the _maximum_ of two natural
 numbers by recursion: The maximum of zero and a successor (on either
