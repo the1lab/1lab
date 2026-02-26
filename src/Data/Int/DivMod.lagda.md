@@ -141,7 +141,7 @@ hence it must be zero.
     r' ℕ- r                   ∎
 
   same-r : r ≡ r'
-  same-r = dec→dne λ r≠r' → <-≤-asym
+  same-r = dec→dne λ r≠r' → Nat.<-≤-asym
     (s≤s (nat-diff-bounded r' r b' (≤-peel (recover s')) (≤-peel (recover s))))
     (m∣ℤsn→m≤sn (λ k → r≠r' (sym (nat-diff-positive r' r k))) b∣r'-r)
 ```
@@ -212,7 +212,7 @@ same-rem→divides-diff n x y p = dividesℤ (x /ℤ n -ℤ y /ℤ n) $
 
 ```agda
 Fin-%ℤ : ∀ {n} (i : Fin n) → .⦃ _ : Positive n ⦄ → pos (i .lower) %ℤ n ≡ i .lower
-Fin-%ℤ {n} (fin i ⦃ forget p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
+Fin-%ℤ {n} (fin i ⦃ p ⦄) = ap remℤ (DivModℤ-unique (pos i) n
   (divide-posℤ (pos i) n) (divmodℤ 0 i refl p))
 ```
 

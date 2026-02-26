@@ -16,9 +16,11 @@ open import Data.Dec
 open import Order.Instances.Int
 open import Order.Reasoning Int-poset using (_=⟨_⟩_ ; _≤⟨_⟩_ ; _=˘⟨_⟩_ ; _≤∎)
 
+
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
 import Data.Int.Base as ℤ
+import Data.Nat as Nat
 ```
 -->
 
@@ -191,7 +193,7 @@ order.
 
     by-elim-ℚ invℚ-nonnegative λ where
       (possuc x) posz ⦃ inc nz ⦄ z → absurd (nz (quotℚ (to-same-rational refl)))
-      (possuc x) (possuc y) z → inc (ℤ.pos≤pos 0≤x)
+      (possuc x) (possuc y) z → inc (ℤ.pos≤pos Nat.0≤x)
 
   /ℚ-nonnegative : ∀ {x y} ⦃ p : Nonzero y ⦄ → 0 ≤ x → 0 ≤ y → 0 ≤ (x /ℚ y)
   /ℚ-nonnegative {inc x} {inc y} a b = *ℚ-nonnegative a (invℚ-nonnegative {inc y} b)

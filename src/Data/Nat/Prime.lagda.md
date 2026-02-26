@@ -123,7 +123,7 @@ abstract instance
 
 prime-not-composite : ∀ n → is-prime n → ¬ is-composite n
 prime-not-composite n x@record{ primality = α } y@record{ p = p ; q = q ; factors = β } with α _ (fibre→∣ (p , *-commutative p q ∙ β))
-... | inl p=1 = case subst (2 ≤_) p=1 (y .q-proper) of λ { (s≤s ()) }
+... | inl p=1 = case subst (2 ≤_) p=1 (y .q-proper) of λ ()
 ... | inr p=n =
   let
     1=p = *-injl n 1 p (*-oner n ∙∙ sym β ∙∙ ap (_* p) p=n)
@@ -157,7 +157,7 @@ distinct-primes→coprime {a@(suc a')} {b@(suc b')} apr bpr a≠b = record
 
 ```agda
 is-prime-or-composite : ∀ n → 1 < n → is-prime n ⊎ is-composite n
-is-prime-or-composite n@(suc (suc m)) (s≤s p)
+is-prime-or-composite n@(suc (suc m)) 1<n
   with Fin-omniscience {n = n} (λ k → 1 < k .lower × k .lower ∣ n)
 ... | inr prime = inl record { prime≠1 = suc≠zero ∘ suc-inj ; primality = no-divisors→prime } where
   no-divisors→prime : ∀ d → d ∣ n → d ≡ 1 ⊎ d ≡ n
