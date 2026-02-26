@@ -7,7 +7,6 @@ open import Data.Maybe.Base
 open import Data.Fin.Base
 open import Data.Nat.Base using (s≤s)
 open import Data.Dec
-open import Data.Irr
 open import Data.Sum
 
 open import Meta.Invariant

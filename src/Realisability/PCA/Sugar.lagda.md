@@ -7,7 +7,6 @@ open import Data.Partial.Base
 open import Data.Fin.Base hiding (_<_ ; _≤_)
 open import Data.Nat.Base
 open import Data.Vec.Base
-open import Data.Irr
 
 open import Realisability.PCA
 ```

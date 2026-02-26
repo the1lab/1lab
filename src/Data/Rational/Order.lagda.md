@@ -16,7 +16,6 @@ open import Data.Dec
 open import Order.Instances.Int
 open import Order.Reasoning Int-poset using (_=⟨_⟩_ ; _≤⟨_⟩_ ; _=˘⟨_⟩_ ; _≤∎)
 
-
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
 import Data.Int.Base as ℤ

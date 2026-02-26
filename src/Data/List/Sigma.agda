@@ -6,7 +6,6 @@ open import Data.List.Base
 open import Data.Fin.Base
 open import Data.Nat.Base as Nat
 open import Data.Sum.Base
-open import Data.Irr
 
 module Data.List.Sigma where
 

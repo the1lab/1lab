@@ -11,7 +11,6 @@ open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Nat.Base as Nat
 open import Data.Dec
-open import Data.Irr
 open import Data.Sum
 
 open import Meta.Invariant
