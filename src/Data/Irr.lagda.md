@@ -30,7 +30,7 @@ irrelevant field.
 record Irr {ℓ} (A : Type ℓ) : Type ℓ where
   constructor forget
   field
-    .lower : A
+    @irr lower : A
 ```
 
 The most important property of this type is that, given any $x, y$ in
