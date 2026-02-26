@@ -198,9 +198,9 @@ by appealing to the optimized decision procedure `_≤?_`{.Agda}.
 
 ```agda
 record _≤_ (x y : Nat) : Type where
-  constructor erase
+  constructor is-leq
   field
-    @irr is-leq : is-true (x ≤? y)
+    so-leq : So (x ≤? y)
 ```
 
 We could also define the relation by recursion on the numbers to be
@@ -216,25 +216,21 @@ the benefit of being a *definitional* [[proposition]].
 ```agda
 abstract
   s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
-  s≤s (erase x≤y) = erase x≤y
+  s≤s (is-leq x≤y) = is-leq x≤y
 
   0≤x : ∀ {x} → zero ≤ x
-  0≤x {x} = erase tt
+  0≤x {x} = is-leq so-true
 
   ≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
-  ≤-peel (erase x≤y) = erase x≤y
+  ≤-peel (is-leq x≤y) = is-leq x≤y
 
   ≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
-  ≤-sucr {x} {y} (erase x≤y) = erase (worker x y x≤y) where
-    .worker : ∀ x y → is-true (x ≤? y) → is-true (x ≤? suc y)
-    worker zero y x≤y = tt
-    worker (suc x) (suc y) x≤y = worker x y x≤y
+  ≤-sucr {zero} {y} x≤y = 0≤x
+  ≤-sucr {suc x} {suc y} x≤y = s≤s (≤-sucr (≤-peel x≤y))
 
   <-weaken : ∀ {x y} → suc x ≤ y → x ≤ y
-  <-weaken {x} {y} (erase x≤y) = erase (worker x y x≤y) where
-    .worker : ∀ x y → is-true (suc x ≤? y) → is-true (x ≤? y)
-    worker zero y x≤y = tt
-    worker (suc x) (suc y) x≤y = worker x y x≤y
+  <-weaken {zero} {y} 1+x≤y = 0≤x
+  <-weaken {suc x} {suc y} 1+x≤y = s≤s (<-weaken (≤-peel 1+x≤y))
 
 abstract instance
   Leq-zero : ∀ {x} → 0 ≤ x
@@ -260,10 +256,8 @@ abstract instance
 
 abstract
   ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-  ≤-trans {x} {y} {z} (erase x≤y) (erase y≤z) = erase (worker x y z x≤y y≤z) where
-    .worker : ∀ x y z → is-true (x ≤? y) → is-true (y ≤? z) → is-true (x ≤? z)
-    worker zero y z x≤y y≤z = tt
-    worker (suc x) (suc y) (suc z) x≤y y≤z = worker x y z x≤y y≤z
+  ≤-trans {zero} {y} {z} x≤y y≤z = 0≤x
+  ≤-trans {suc x} {suc y} {suc z} x≤y y≤z = s≤s (≤-trans (≤-peel x≤y) (≤-peel y≤z))
 
 factorial : Nat → Nat
 factorial zero = 1

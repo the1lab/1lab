@@ -36,30 +36,30 @@ negsuc x ≤? pos y = true
 negsuc x ≤? negsuc y = y Nat.≤? x
 
 record _≤_ (x y : Int) : Type where
-  constructor erase
+  constructor is-leq
   field
-    @irr is-leq : is-true (x ≤? y)
+    so-leq : So (x ≤? y)
 ```
 
 <!--
 ```agda
--- We need all this junk because we wrapped `is-true (x ≤? y)` in a record
--- so that Agda can remember `y` and `y`.
+-- We need all this junk because we wrapped `So (x ≤? y)` in a record
+-- so that Agda can remember `x` and `y`.
 abstract
   neg≤neg : ∀ {x y} → y Nat.≤ x → negsuc x ≤ negsuc y
-  neg≤neg (Nat.erase y≤x) = erase y≤x
+  neg≤neg (Nat.is-leq y≤x) = is-leq y≤x
 
   pos≤pos : ∀ {x y} → x Nat.≤ y → pos x ≤ pos y
-  pos≤pos (Nat.erase x≤y) = erase x≤y
+  pos≤pos (Nat.is-leq x≤y) = is-leq x≤y
 
   neg≤pos : ∀ {x y} → negsuc x ≤ pos y
-  neg≤pos = erase tt
+  neg≤pos = is-leq so-true
 
   unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
-  unpos≤pos (erase x≤y) = Nat.erase x≤y
+  unpos≤pos (is-leq x≤y) = Nat.is-leq x≤y
 
   unneg≤neg : ∀ {x y} → negsuc x ≤ negsuc y → y Nat.≤ x
-  unneg≤neg (erase y≤x) = Nat.erase y≤x
+  unneg≤neg (is-leq y≤x) = Nat.is-leq y≤x
 ```
 -->
 
@@ -125,22 +125,22 @@ unapos≤apos {x} {y} p = unpos≤pos (≤-trans (≤-refl' (sym (assign-pos x))
 <!--
 ```agda
 possuc≤possuc : ∀ {x y} → pos x ≤ pos y → possuc x ≤ possuc y
-possuc≤possuc (erase x≤y) = erase x≤y
+possuc≤possuc (is-leq x≤y) = is-leq x≤y
 
 unpossuc≤possuc : ∀ {x y} → possuc x ≤ possuc y → pos x ≤ pos y
-unpossuc≤possuc (erase x≤y) = erase x≤y
+unpossuc≤possuc (is-leq x≤y) = is-leq x≤y
 
 negpred≤negpred : ∀ {x y} → negsuc x ≤ negsuc y → negsuc (suc x) ≤ negsuc (suc y)
-negpred≤negpred (erase x≤y) = erase x≤y
+negpred≤negpred (is-leq x≤y) = is-leq x≤y
 
 unnegpred≤negpred : ∀ {x y} → negsuc (suc x) ≤ negsuc (suc y) → negsuc x ≤ negsuc y
-unnegpred≤negpred (erase x≤y) = erase x≤y
+unnegpred≤negpred (is-leq x≤y) = is-leq x≤y
 
 posz≤pos : ∀ {x} → posz ≤ pos x
-posz≤pos = erase tt
+posz≤pos = is-leq so-true
 
 neg≤negone : ∀ {x} → negsuc x ≤ negsuc zero
-neg≤negone = erase tt
+neg≤negone = is-leq so-true
 ```
 -->
 
@@ -162,8 +162,8 @@ x$.
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
   Dec-≤ {x} {y} with oh? (x ≤? y)
-  ... | yes (erase x≤y) = yes (erase x≤y)
-  ... | no ¬x≤y = no λ { (erase x≤y) → ¬x≤y (erase x≤y) }
+  ... | yes x≤y = yes (is-leq x≤y)
+  ... | no ¬x≤y = no (¬x≤y ∘ _≤_.so-leq)
 ```
 
 <!--
@@ -321,9 +321,9 @@ negsuc x <? pos y = true
 negsuc x <? negsuc y = y Nat.<? x
 
 record _<_ (x y : Int) : Type where
-  constructor erase
+  constructor is-lt
   field
-    @irr is-lt : is-true (x <? y)
+    so-lt : So (x <? y)
 ```
 
 <!--
@@ -334,27 +334,27 @@ instance
 
 abstract
   pos<pos : ∀ {x y} → x Nat.< y → pos x < pos y
-  pos<pos (Nat.erase x<y) = erase x<y
+  pos<pos (Nat.is-leq x<y) = is-lt x<y
 
   unpos<pos : ∀ {x y} → pos x < pos y → x Nat.< y
-  unpos<pos (erase x<y) = Nat.erase x<y
+  unpos<pos (is-lt x<y) = Nat.is-leq x<y
 
   neg<pos : ∀ {x y} → negsuc x < pos y
-  neg<pos = erase tt
+  neg<pos = is-lt so-true
 
   neg<neg : ∀ {x y} → y Nat.< x → negsuc x < negsuc y
-  neg<neg (Nat.erase y<x) = erase y<x
+  neg<neg (Nat.is-leq y<x) = is-lt y<x
 
   unneg<neg : ∀ {x y} → negsuc x < negsuc y → y Nat.< x
-  unneg<neg (erase x<y) = Nat.erase x<y
+  unneg<neg (is-lt x<y) = Nat.is-leq x<y
 ```
 -->
 
 ```agda
 <-dec : ∀ x y → Dec (x < y)
 <-dec x y with oh? (x <? y)
-... | yes (erase x<y) = yes (erase x<y)
-... | no ¬x<y = no λ { (erase x<y) → ¬x<y (erase x<y) }
+... | yes x<y = yes (is-lt x<y)
+... | no ¬x<y = no (¬x<y ∘ _<_.so-lt)
 
 instance
   Dec-< : ∀ {x y} → Dec (x < y)
