@@ -16,7 +16,6 @@ open import Data.Fin.Product
 open import Data.Int.DivMod
 open import Data.Fin
 open import Data.Int hiding (Positive)
-open import Data.Irr
 open import Data.Nat
 
 open represents-subgroup
