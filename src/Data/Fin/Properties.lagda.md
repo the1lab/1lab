@@ -431,7 +431,7 @@ from-ℕ< : ∀ {n} → ℕ< n → Fin n
 from-ℕ< (i , p) = fin i ⦃ p ⦄
 
 to-ℕ< : ∀ {n} → Fin n → ℕ< n
-to-ℕ< (fin i ⦃ p ⦄) = i , recover p
+to-ℕ< (fin i ⦃ p ⦄) = i , p
 
 fsuc-is-embedding : ∀ {n} → is-embedding (fsuc {n})
 fsuc-is-embedding = injective→is-embedding! fsuc-inj
