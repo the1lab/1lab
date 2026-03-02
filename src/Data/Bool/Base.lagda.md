@@ -103,19 +103,16 @@ record So (b : Bool) : Type where
 
 <!--
 ```agda
-so-true : So true
-so-true = oh
-
 ¬so-false : So false → ⊥
 ¬so-false ()
 
 oh? : ∀ x → Dec (So x)
-oh? true = yes so-true
+oh? true = yes oh
 oh? false = no ¬so-false
 
 not-so : ∀ {x} → ¬ (So x) → So (not x)
-not-so {true} ¬p = absurd (¬p so-true)
-not-so {false} ¬p = so-true
+not-so {true} ¬p = absurd (¬p oh)
+not-so {false} ¬p = oh
 
 instance
   H-Level-So : ∀ {x n} → H-Level (So x) (suc n)
