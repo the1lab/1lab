@@ -3,7 +3,6 @@ include:
   src
   wip
   _build
-  .
 flags:
   --cubical
   --no-load-primitives
