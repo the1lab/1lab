@@ -53,7 +53,7 @@ abstract
   pos≤pos (Nat.is-leq x≤y) = is-leq x≤y
 
   neg≤pos : ∀ {x y} → negsuc x ≤ pos y
-  neg≤pos = is-leq so-true
+  neg≤pos = is-leq oh
 
   unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
   unpos≤pos (is-leq x≤y) = Nat.is-leq x≤y
@@ -137,10 +137,10 @@ unnegpred≤negpred : ∀ {x y} → negsuc (suc x) ≤ negsuc (suc y) → negsuc
 unnegpred≤negpred (is-leq x≤y) = is-leq x≤y
 
 posz≤pos : ∀ {x} → posz ≤ pos x
-posz≤pos = is-leq so-true
+posz≤pos = is-leq oh
 
 neg≤negone : ∀ {x} → negsuc x ≤ negsuc zero
-neg≤negone = is-leq so-true
+neg≤negone = is-leq oh
 ```
 -->
 
@@ -340,7 +340,7 @@ abstract
   unpos<pos (is-lt x<y) = Nat.is-leq x<y
 
   neg<pos : ∀ {x y} → negsuc x < pos y
-  neg<pos = is-lt so-true
+  neg<pos = is-lt oh
 
   neg<neg : ∀ {x y} → y Nat.< x → negsuc x < negsuc y
   neg<neg (Nat.is-leq y<x) = is-lt y<x

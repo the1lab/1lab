@@ -68,7 +68,7 @@ private
   from-prim-< (suc x) (suc y) o = s≤s (from-prim-< x y o)
 
   to-prim-< : ∀ x y → x < y → ⌞ x Prim.< y ⌟
-  to-prim-< zero (suc y) o = so-true
+  to-prim-< zero (suc y) o = oh
   to-prim-< (suc x) (suc y) o = to-prim-< x y (≤-peel o)
 ```
 -->
