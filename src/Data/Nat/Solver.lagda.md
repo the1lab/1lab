@@ -241,7 +241,8 @@ block x = x
 ⟦_⟧ₚ : Poly Nat n → Vec Nat n → Nat
 ⟦ const c ⟧ₚ env        = c
 ⟦ zerop ⟧ₚ   env        = 0
-⟦ p *X+ q ⟧ₚ (x₀ ∷ env) = ⟦ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ q ⟧ₚ env
+⟦ p *X+ q ⟧ₚ v with vec-view v
+... | (x₀ ∷ env) = ⟦ p ⟧ₚ (x₀ ∷v env) * x₀ + ⟦ q ⟧ₚ env
 ```
 
 ### Soundness of the operations
@@ -253,16 +254,18 @@ zero polynomial really represents the function $f(x_0, \cdots, x_n) =
 
 ```agda
 sound-0ₚ : ∀ (env : Vec Nat n) → ⟦ 0ₚ ⟧ₚ env ≡ 0
-sound-0ₚ []        = refl
-sound-0ₚ (x ∷ env) = refl
+sound-0ₚ v with vec-view v
+... | []        = refl
+... | (x ∷ env) = refl
 ```
 
 We do the same for the constant polynomials:
 
 ```agda
 sound-constₚ : ∀ c → (env : Vec Nat n) → ⟦ constₚ c ⟧ₚ env ≡ c
-sound-constₚ c [] = refl
-sound-constₚ c (x ∷ env) = sound-constₚ c env
+sound-constₚ c v with vec-view v
+... | [] = refl
+... | (x ∷ env) = sound-constₚ c env
 ```
 
 At the risk of repeating ourselves, we also show the same for the
@@ -270,13 +273,13 @@ monomial $X_i$.
 
 ```agda
 sound-X[_] : ∀ i → (env : Vec Nat n) → ⟦ X[ i ] ⟧ₚ env ≡ lookup env i
-sound-X[ i ] _ with fin-view i
-sound-X[ .fzero ] (x₀ ∷ env) | zero =
+sound-X[ i ] v with vec-view v | fin-view i
+... | (x₀ ∷ env) | zero =
   ⟦ constₚ 1 ⟧ₚ env * x₀ + ⟦ 0ₚ ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-constₚ 1 env) (sound-0ₚ env) ⟩
   1 * x₀ + 0                           ≡⟨ +-zeror (1 * x₀) ⟩
   1 * x₀                               ≡⟨ *-onel x₀ ⟩
   x₀ ∎
-sound-X[ .(fsuc i) ] (_ ∷ env) | suc i = sound-X[ i ] env
+sound-X[ .(fsuc i) ] v | (_ ∷ env) | suc i = sound-X[ i ] env
 ```
 
 Now, for something more involved: let's show that addition of
@@ -291,17 +294,18 @@ sound-+ₚ (const c1) (const c2) env = refl
 sound-+ₚ zerop q env = refl
 sound-+ₚ (p *X+ r) zerop env =
   sym (+-zeror (⟦ (p *X+ r) +ₚ zerop ⟧ₚ env))
-sound-+ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
-  ⟦p+q⟧ * x₀ + ⟦r+s⟧                ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-+ₚ p q (x₀ ∷ env)) (sound-+ₚ r s env) ⟩
+sound-+ₚ (p *X+ r) (q *X+ s) v with vec-view v
+... | (x₀ ∷ env) =
+  ⟦p+q⟧ * x₀ + ⟦r+s⟧                ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-+ₚ p q (x₀ ∷v env)) (sound-+ₚ r s env) ⟩
   (⟦p⟧ + ⟦q⟧) * x₀ + (⟦r⟧ + ⟦s⟧)    ≡⟨ ap (λ ϕ → ϕ + (⟦r⟧ + ⟦s⟧)) (*-distrib-+r ⟦p⟧ ⟦q⟧ x₀) ⟩
   ⟦p⟧ * x₀ + ⟦q⟧ * x₀ + (⟦r⟧ + ⟦s⟧) ≡⟨ commute-inner (⟦p⟧ * x₀) (⟦q⟧ * x₀) ⟦r⟧ ⟦s⟧ ⟩
   ⟦p⟧ * x₀ + ⟦r⟧ + (⟦q⟧ * x₀ + ⟦s⟧) ∎
   where
-    ⟦p+q⟧ = ⟦ p +ₚ q ⟧ₚ (x₀ ∷ env)
+    ⟦p+q⟧ = ⟦ p +ₚ q ⟧ₚ (x₀ ∷v env)
     ⟦r+s⟧ = ⟦ r +ₚ s ⟧ₚ env
-    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
+    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷v env)
     ⟦r⟧ = ⟦ r ⟧ₚ env
-    ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷ env)
+    ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷v env)
     ⟦s⟧ = ⟦ s ⟧ₚ env
 ```
 
@@ -321,7 +325,7 @@ sound-*ₚ
   → ⟦ p *ₚ q ⟧ₚ env ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ env
 sound-*ₚ'
   : ∀ p q → (x₀ : Nat) → (env : Vec Nat n)
-  → ⟦ p *ₚ' q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
+  → ⟦ p *ₚ' q ⟧ₚ (x₀ ∷v env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷v env)
 ```
 
 The first couple of cases of homogeneous multiplication don't look so
@@ -330,13 +334,14 @@ bad...
 ```agda
 sound-*ₚ (const c1) (const c2) env = refl
 sound-*ₚ zerop q env = refl
-sound-*ₚ (p *X+ r) zerop (x₀ ∷ env) =
-  ⟦ p *ₚ zerop ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ 0ₚ ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ p zerop (x₀ ∷ env)) (sound-0ₚ env) ⟩
+sound-*ₚ (p *X+ r) zerop v with vec-view v
+... | (x₀ ∷ env) =
+  ⟦ p *ₚ zerop ⟧ₚ (x₀ ∷v env) * x₀ + ⟦ 0ₚ ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ p zerop (x₀ ∷v env)) (sound-0ₚ env) ⟩
   ⟦p⟧ * 0 * x₀ + 0                              ≡⟨ ap (λ ϕ → (ϕ * x₀) + 0) (*-zeror ⟦p⟧) ⟩
   0                                             ≡˘⟨ *-zeror (⟦p⟧ * x₀ + ⟦r⟧) ⟩
   (⟦p⟧ * x₀ + ⟦r⟧) * 0 ∎
   where
-    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
+    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷v env)
     ⟦r⟧ = ⟦ r ⟧ₚ env
 ```
 
@@ -347,11 +352,12 @@ There's not too much to be gained from dwelling on this, so let's move
 on.
 
 ```agda
-sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
+sound-*ₚ (p *X+ r) (q *X+ s) v with vec-view v
+... | (x₀ ∷ env) =
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ⟦ 0ₚ +ₚ (r *ₚ s) ⟧ₚ env                ≡⟨ ap (λ ϕ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ϕ) (sound-+ₚ 0ₚ (r *ₚ s) env) ⟩
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦ 0ₚ ⟧ₚ env + ⟦ r *ₚ s ⟧ₚ env)        ≡⟨ ap₂ (λ ϕ ψ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (ϕ + ψ)) (sound-0ₚ env) (sound-*ₚ r s env) ⟩
-  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ' q) (x₀ ∷ env)) ⟩
-  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ' r q x₀ env) ⟩
+  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ' q) (x₀ ∷v env)) ⟩
+  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷v env)) (sound-*ₚ' r q x₀ env) ⟩
   (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * ⟦q⟧) * x₀ + ⟦r⟧ * ⟦s⟧        ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦s⟧) (*-distrib-+r (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (⟦r⟧ * ⟦q⟧) x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡˘⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡˘⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
@@ -360,12 +366,12 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p⟧ * x₀ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡˘⟨ *-distrib-+r (⟦p⟧ * x₀) ⟦r⟧ (⟦q⟧ * x₀ + ⟦s⟧) ⟩
   (⟦p⟧ * x₀ + ⟦r⟧) * (⟦q⟧ * x₀ + ⟦s⟧)                          ∎
   where
-    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ' q) ⟧ₚ (x₀ ∷ env)
-    ⟦p*⟨qx+s⟩⟧ = ⟦ p *ₚ (q *X+ s) ⟧ₚ (x₀ ∷ env)
-    ⟦r*q⟧ = ⟦ r *ₚ' q ⟧ₚ (x₀ ∷ env)
-    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
+    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ' q) ⟧ₚ (x₀ ∷v env)
+    ⟦p*⟨qx+s⟩⟧ = ⟦ p *ₚ (q *X+ s) ⟧ₚ (x₀ ∷v env)
+    ⟦r*q⟧ = ⟦ r *ₚ' q ⟧ₚ (x₀ ∷v env)
+    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷v env)
     ⟦r⟧ = ⟦ r ⟧ₚ env
-    ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷ env)
+    ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷v env)
     ⟦s⟧ = ⟦ s ⟧ₚ env
 ```
 
@@ -375,13 +381,13 @@ are nowhere near as bad.
 ```agda
 sound-*ₚ' p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
 sound-*ₚ' r (p *X+ q) x₀ env =
-  ⟦ r *ₚ' p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ' r p x₀ env) (sound-*ₚ r q env) ⟩
+  ⟦ r *ₚ' p ⟧ₚ (x₀ ∷v env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ' r p x₀ env) (sound-*ₚ r q env) ⟩
   ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡˘⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
   ⟦r⟧ * (⟦p⟧ * x₀) + ⟦r⟧ * ⟦q⟧                   ≡˘⟨ *-distrib-+l  (⟦p⟧ * x₀) ⟦q⟧ ⟦r⟧ ⟩
   ⟦r⟧ * (⟦p⟧ * x₀ + ⟦q⟧)                         ∎
   where
     ⟦r⟧ = ⟦ r ⟧ₚ env
-    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
+    ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷v env)
     ⟦q⟧ = ⟦ q ⟧ₚ env
 ```
 
