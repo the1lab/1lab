@@ -142,7 +142,7 @@ term in an extended environment.
   abstract
     eval-inst
       : (t : Term A (suc n)) (x : ↯⁺ A) (ρ : Vec (↯⁺ A) n)
-      → eval (inst t (const x)) ρ ≡ eval t (x ∷ ρ)
+      → eval (inst t (const x)) ρ ≡ eval t (x ∷v ρ)
     eval-inst (var i) y ρ with fin-view i
     ... | zero  = refl
     ... | suc j = refl
@@ -194,16 +194,20 @@ combinator and of the $\beta$ law.</summary>
   absₙ (suc k) e = absₙ k (abs e)
 
   _%ₙ_ : ∀ {n} → ↯ A → Vec (↯⁺ A) n → ↯ A
-  a %ₙ []       = a
-  a %ₙ (b ∷ bs) = (a %ₙ bs) % b .fst
+  a %ₙ v with vec-view v
+  ... | []       = a
+  ... | (b ∷ bs) = (a %ₙ bs) % b .fst
 
   abstract
     abs-βₙ
       : {k n : Nat} {e : Term A (k + n)}
       → (ρ : Vec (↯⁺ A) n) (as : Vec (↯⁺ A) k)
       → (eval (absₙ k e) ρ %ₙ as) ≡ eval e (as ++ ρ)
-    abs-βₙ ρ [] = refl
-    abs-βₙ {e = e} ρ (x ∷ as) = ap (_% x .fst) (abs-βₙ ρ as) ∙ abs-β _ (as ++ ρ) x ∙ eval-inst e x (as ++ ρ)
+    abs-βₙ {e = e} ρ v with vec-view v
+    ... | [] = refl
+    ... | (x ∷ as) = ap (_% x .fst) (abs-βₙ ρ as)
+      ∙ abs-β _ (as ++ ρ) x
+      ∙ eval-inst e x (as ++ ρ)
 ```
 
 </details>

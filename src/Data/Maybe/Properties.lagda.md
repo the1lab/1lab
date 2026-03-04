@@ -110,7 +110,7 @@ instance
   H-Level-Maybe
     : ∀ {ℓ} {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄
     → H-Level (Maybe A) n
-  H-Level-Maybe {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+  H-Level-Maybe {n = suc (suc n)} = hlevel-instance $
     Maybe-is-hlevel n (hlevel (2 + n))
 ```
 -->

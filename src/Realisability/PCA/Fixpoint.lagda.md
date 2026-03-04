@@ -52,7 +52,7 @@ We introduce an intermediate combinator `` `X ``{.Agda}, and define
 `Z : ↯⁺ 𝔸
 `Z = record
   { fst = `X ⋆ `X
-  ; snd = subst ⌞_⌟ (sym (abs-βₙ [] (`X ∷ []))) (abs↓ _ _)
+  ; snd = subst ⌞_⌟ (sym (abs-βₙ []v (`X ∷v []v))) (abs↓ _ _)
   }
 ```
 
@@ -61,11 +61,11 @@ This lets us prove the desired properties of `` `Z ``{.Agda}.
 ```agda
 abstract
   `Z↓₁ : ⌞ x ⌟ → ⌞ `Z ⋆ x ⌟
-  `Z↓₁ {x} xh = subst ⌞_⌟ (sym (abs-βₙ [] ((x , xh) ∷ `X ∷ []))) (abs↓ _ _)
+  `Z↓₁ {x} xh = subst ⌞_⌟ (sym (abs-βₙ []v ((x , xh) ∷v `X ∷v []v))) (abs↓ _ _)
 
   `Z-β : ⌞ x ⌟ → ⌞ y ⌟ → `Z ⋆ x ⋆ y ≡ x ⋆ (`Z ⋆ x) ⋆ y
   `Z-β {x} {y} xh yh =
-    `X ⋆ `X ⋆ x ⋆ y        ≡⟨ abs-βₙ [] ((y , yh) ∷ (x , xh) ∷ `X ∷ []) ⟩
+    `X ⋆ `X ⋆ x ⋆ y        ≡⟨ abs-βₙ []v ((y , yh) ∷v (x , xh) ∷v `X ∷v []v) ⟩
     x ⋆ (`X ⋆ `X ⋆ x) ⋆ y  ≡⟨⟩
     x ⋆ (`Z ⋆ x) ⋆ y       ∎
 ```

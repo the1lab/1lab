@@ -19,6 +19,7 @@ open import Order.Reasoning Int-poset using (_=⟨_⟩_ ; _≤⟨_⟩_ ; _=˘⟨
 import Data.Int.Properties as ℤ
 import Data.Int.Order as ℤ
 import Data.Int.Base as ℤ
+import Data.Nat as Nat
 ```
 -->
 
@@ -191,7 +192,7 @@ order.
 
     by-elim-ℚ invℚ-nonnegative λ where
       (possuc x) posz ⦃ inc nz ⦄ z → absurd (nz (quotℚ (to-same-rational refl)))
-      (possuc x) (possuc y) z → inc (ℤ.pos≤pos 0≤x)
+      (possuc x) (possuc y) z → inc (ℤ.pos≤pos Nat.0≤x)
 
   /ℚ-nonnegative : ∀ {x y} ⦃ p : Nonzero y ⦄ → 0 ≤ x → 0 ≤ y → 0 ≤ (x /ℚ y)
   /ℚ-nonnegative {inc x} {inc y} a b = *ℚ-nonnegative a (invℚ-nonnegative {inc y} b)
@@ -226,7 +227,7 @@ unquoteDecl H-Level-Positive = declare-record-hlevel 1 H-Level-Positive (quote P
 instance
   Dec-Positive : ∀ {x} → Dec (Positive x)
   Dec-Positive {x} with (r@(n / d [ p ]) , q) ← splitℚ x | holds? (ℤ.Positive n)
-  ... | yes p = yes (subst Positive q (inc (recover p)))
+  ... | yes p = yes (subst Positive q (inc p))
   ... | no ¬p = no λ x → absurd (case subst Positive (sym q) x of λ (inc p) → ¬p p)
 
   Positive-pos : ∀ {x s p} → Positive (toℚ (possuc x / s [ p ]))

@@ -100,7 +100,7 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 
   instance
     H-Level-List : ∀ {n} ⦃ p : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (List A) n
-    H-Level-List {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ ⦃ x ⦄ =
+    H-Level-List {n = suc (suc n)} ⦃ 2≤n ⦄ ⦃ x ⦄ =
       record { has-hlevel = List-is-hlevel n (H-Level.has-hlevel x) }
 
   is-set→List-is-set : is-set A → is-set (List A)
@@ -201,9 +201,9 @@ take-length-more
   : ∀ {ℓ} {A : Type ℓ} (xs : List A) (n : Nat)
   → length xs ≤ n
   → take n xs ≡ xs
-take-length-more [] zero wit = refl
-take-length-more [] (suc n) wit = refl
-take-length-more (x ∷ xs) (suc n) (s≤s wit) = ap (x ∷_) (take-length-more xs n wit)
+take-length-more [] zero xs≤n = refl
+take-length-more [] (suc n) xs≤n = refl
+take-length-more (x ∷ xs) (suc n) xs≤n = ap (x ∷_) (take-length-more xs n (≤-peel xs≤n))
 ```
 -->
 
