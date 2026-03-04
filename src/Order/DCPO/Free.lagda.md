@@ -49,8 +49,7 @@ Furthermore, $f$ is directed, so it is merely inhabited.
 ```agda
 Disc-is-dcpo : ∀ {ℓ} {A : Set ℓ} → is-dcpo (Disc A)
 Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
-  const-inhabited-fam→lub disc-fam-const (dir .elt)
-  where
+  const-inhabited-fam→lub disc-fam-const (dir .elt) where
     disc-fam-const : ∀ i j → f i ≡ f j
     disc-fam-const i j = case dir .semidirected i j of λ k p q → p ∙ sym q
 
@@ -63,11 +62,9 @@ This extends to a functor from $\Sets$ to the category of DCPOs.
 ```agda
 Free-DCPO : ∀ {ℓ} → Functor (Sets ℓ) (DCPOs ℓ ℓ)
 Free-DCPO .F₀ = Disc-dcpo
-Free-DCPO .F₁ f =
-  to-scott-directed f λ s dir x x-lub →
-  const-inhabited-fam→is-lub
-    (λ ix → ap f (disc-is-lub→const x-lub ix))
-    (dir .elt)
+Free-DCPO .F₁ f = to-scott-directed f λ s dir x x-lub → const-inhabited-fam→is-lub
+  (λ ix → ap f (disc-is-lub→const x-lub ix))
+  (dir .elt)
 Free-DCPO .F-id    = ext λ _ → refl
 Free-DCPO .F-∘ _ _ = ext λ _ → refl
 ```
@@ -255,8 +252,8 @@ Free-Pointed-dcpo .F₁ {x = A} f = to-strict-scott-bottom
   (part-map f) (part-map-⊑)
   (λ _ _ → part-map-lub {A = A} f)
   (λ _ → part-map-never)
-Free-Pointed-dcpo .F-id = ext (part-map-id $_)
-Free-Pointed-dcpo .F-∘ f g = ext (part-map-∘ f g $_)
+Free-Pointed-dcpo .F-id    = ext λ x → unext $ part-map-id x
+Free-Pointed-dcpo .F-∘ f g = ext λ x → unext $ part-map-∘ f g x
 ```
 
 <!--
@@ -346,7 +343,7 @@ We can tie this all together to obtain the desired adjunction.
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo
   : ∀ {ℓ} → Free-Pointed-dcpo {ℓ} ⊣ Pointed-DCPOs↪Sets
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .η A x = always x
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = ext λ _ →
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f = funext λ _ →
   sym (always-natural f)
 
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D = to-strict-scott-bottom
@@ -357,15 +354,14 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D = to-strict-scott-bottom
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f = ext λ x →
   sym $ Strict-scott.pres-⋃-prop f _ _ _
 
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} = ext λ x → part-ext
-  (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies)
-  (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)
-  (λ p q →
-    sym (A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p)
-    ∙ ↯-indep x)
-  where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
+  let module A? = Pointed-dcpo (Parts-pointed-dcpo A) in ext λ where
+    x .def a → A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .implies a
+    x .inv a → A?.⋃-prop-le _ _ (lift a) .implies tt
+    x .elt p → sym $
+      A?.⋃-prop-least _ _ x (λ p → always-⊒ (lower p , refl)) .refines p
 
-Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} = ext λ x →
-  sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
+Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
+  ext λ x → sym $ lub-of-const-fam (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
   where module B = Pointed-dcpo B
 ```

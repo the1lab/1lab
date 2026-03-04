@@ -63,14 +63,12 @@ the bottom element:
   part-map-⊑ {f = f} p .refines d = ap f (p .refines d)
 
   part-map-id : ∀ (x : ↯ A) → part-map (λ a → a) x ≡ x
-  part-map-id x = part-ext id id λ _ _ →
-    ↯-indep x
+  part-map-id x = part-ext id id λ _ _ → ↯-indep x
 
   part-map-∘
     : ∀ (f : B → C) (g : A → B)
     → ∀ (x : ↯ A) → part-map (f ∘ g) x ≡ part-map f (part-map g x)
-  part-map-∘ f g x = part-ext id id λ _ _ →
-    ap (f ∘ g) (↯-indep x)
+  part-map-∘ f g x = part-ext id id λ _ _ → ap (f ∘ g) (↯-indep x)
 
   part-map-never : ∀ {f : A → B} {x} → part-map f never ⊑ x
   part-map-never .implies ()
@@ -81,8 +79,7 @@ Finally, we can characterise the adjunction-unit-to-be, `always`{.Agda}.
 
 ```agda
   always-inj : {x y : A} → always x ≡ always y → x ≡ y
-  always-inj {x = x} p =
-    J (λ y p → (d : ⌞ y ⌟) → x ≡ y .elt d) (λ _ → refl) p tt
+  always-inj {x = x} p = J (λ y p → (d : ⌞ y ⌟) → x ≡ y .elt d) (λ _ → refl) p tt
 
   always-⊑ : {x : ↯ A} {y : A} → (∀ d → x .elt d ≡ y) → x ⊑ always y
   always-⊑ p .implies _ = tt
@@ -118,8 +115,6 @@ desc↯ X .def = elΩ (is-contr X)
 desc↯ X .elt □contr = □-out! □contr .centre
 ```
 
-
-
 ## Partial elements are injective types {defines=partial-elements-are-injective}
 
 The type of partial elements $\zap X$ is an [[injective object]] for
@@ -133,9 +128,8 @@ is inhabited by some $x$ such that $f(x)$ is itself defined.
 ```agda
 extend↯ : (X → ↯ A) → (X ↪ Y) → Y → ↯ A
 extend↯ f e y .def = elΩ (Σ[ y* ∈ fibre (e .fst) y ] ⌞ f (y* .fst) ⌟)
-extend↯ f e y .elt =
-  □-out-rec (Σ-is-hlevel 1 (e .snd y) (λ _ → hlevel 1))
-    (λ ((x , _) , fx↓) → f x .elt fx↓)
+extend↯ f e y .elt = □-out-rec (Σ-is-hlevel 1 (e .snd y) (λ _ → hlevel 1)) λ
+  ((x , _) , fx↓) → f x .elt fx↓
 ```
 
 Proving that the extension of $f$ along $e$ with $f$ is a bit of a chore
@@ -147,7 +141,7 @@ agree when both are defined essentially by definition.
 extends↯
   : ⦃ _ : H-Level A 2 ⦄
   → (f : X → ↯ A) (e : X ↪ Y)
-  → ∀ (x : X) → extend↯ f e (e · x) ≡ f x
+  → (x : X) → extend↯ f e (e · x) ≡ f x
 ```
 
 <details>
@@ -159,22 +153,22 @@ ugly.
 </summary>
 
 ```agda
-extends↯ f e x =
-  part-ext to from agree
-  where
-    to : ⌞ extend↯ f e (e · x) ⌟ → ⌞ f x ⌟
-    to = rec! λ x' p fx'↓ →
-      subst (λ x → ∣ f x .def ∣)
-        (has-prop-fibres→injective (e .fst) (e .snd) p)
-        fx'↓
+extends↯ f e x = part-ext to from agree where
+  to : ⌞ extend↯ f e (e · x) ⌟ → ⌞ f x ⌟
+  to = rec! λ x' p fx'↓ → subst (λ x → ∣ f x .def ∣)
+    (has-prop-fibres→injective (e .fst) (e .snd) p)
+    fx'↓
 
-    from : ⌞ f x ⌟ → ⌞ extend↯ f e (e · x) ⌟
-    from fx↓ = pure ((x , refl) , fx↓)
+  from : ⌞ f x ⌟ → ⌞ extend↯ f e (e · x) ⌟
+  from fx↓ = pure ((x , refl) , fx↓)
 
-    agree : (fex↓ : ⌞ extend↯ f e (e · x) ⌟) (fx↓ : ⌞ f x ⌟) → extend↯ f e (e · x) .elt fex↓ ≡ f x .elt fx↓
-    agree =
-      □-out-elim (Σ-is-hlevel 1 (e .snd (e · x)) (λ _ → hlevel 1)) λ where
-        ((x' , ex'=ex) , fx'↓) fx↓ →
-          ap₂ (λ x fx↓ → f x .elt fx↓) (has-prop-fibres→injective (e .fst) (e .snd) ex'=ex) prop!
+  agree
+    : (fex↓ : ⌞ extend↯ f e (e · x) ⌟) (fx↓ : ⌞ f x ⌟)
+    → extend↯ f e (e · x) .elt fex↓ ≡ f x .elt fx↓
+  agree = □-out-elim (Σ-is-hlevel 1 (e .snd (e · x)) (λ _ → hlevel 1)) λ where
+    ((x' , ex'=ex) , fx'↓) fx↓ → ap₂ (λ x fx↓ → f x .elt fx↓)
+      (has-prop-fibres→injective (e .fst) (e .snd) ex'=ex)
+      prop!
 ```
+
 </details>
