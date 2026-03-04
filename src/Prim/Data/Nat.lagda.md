@@ -66,4 +66,7 @@ zero  < suc _ = true
 suc n < suc m = n < m
 
 {-# BUILTIN NATLESS _<_ #-}
+
+_>_ : Nat → Nat → Bool
+x > y = y < x
 ```
