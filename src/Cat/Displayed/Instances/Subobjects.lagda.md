@@ -415,7 +415,7 @@ Sub-cod y = Forget/ F∘ Sub→Slice y
 Sub→Slice-conservative
   : ∀ y → is-conservative (Sub→Slice y)
 Sub→Slice-conservative y = is-ff→is-conservative
-  {F = Sub→Slice y} (Sub→Slice-is-ff y) _
+  (Sub→Slice y) (Sub→Slice-is-ff y) _
 
 Sub-cod-conservative
   : ∀ y → is-conservative (Sub-cod y)

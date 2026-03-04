@@ -1,11 +1,16 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.WideSubcategory
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Orthogonal
+open import Cat.Functor.Adjoint
 open import Cat.Morphism.Class
 open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning.FullyFaithful
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -81,6 +86,22 @@ a function $f : A \to B$ through the image of $f$.[^regular]
 [^regular]: This factorisation system is a special case of the
 ([[strong epimorphism]], [[monomorphism]]) orthogonal factorisation
 system on a [[regular category]].
+
+<!--
+```agda
+    L-subcat : Wide-subcat C ℓl
+    L-subcat .Wide-subcat.P f = f ∈ L
+    L-subcat .Wide-subcat.P-prop f = hlevel 1
+    L-subcat .Wide-subcat.P-id = is-iso→in-L C.id C.id-invertible
+    L-subcat .Wide-subcat.P-∘ = L-is-stable _ _
+
+    R-subcat : Wide-subcat C ℓr
+    R-subcat .Wide-subcat.P f = f ∈ R
+    R-subcat .Wide-subcat.P-prop f = hlevel 1
+    R-subcat .Wide-subcat.P-id = is-iso→in-R C.id C.id-invertible
+    R-subcat .Wide-subcat.P-∘ = R-is-stable _ _
+```
+-->
 
 <!--
 ```agda
@@ -296,4 +317,170 @@ $f = r \circ l$ and $R$ is stable, so is $f$!
       m∈L : fa .right ∈ L
       m∈L = is-iso→in-L (fa .right) $
         C.make-invertible (gpq .centre .fst) (gpq .centre .snd .snd) gm=id
+```
+
+## Reflecting orthogonal factorisations systems
+
+Let $\cD$ be a category equipped with an orthogonal factorisation system $(L, R)$,
+and $\iota : \cC \to \cD$ be a [[reflective subcategory]] of $\cD$ with reflector
+$r \dashv \iota$. If $L \subseteq (\iota \circ r)^{*}L$ and $R \subseteq (\iota \circ r)^{*}R$,
+then $(\iota^{*}L, \iota^{*}R)$ forms an orthogonal factorisation system on $\cC$.
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd ℓld ℓrd}
+  {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  {L : Arrows D ℓld} {R : Arrows D ℓrd}
+  {ι : Functor C D} {r : Functor D C}
+  where
+```
+-->
+
+```agda
+  reflect-ofs
+    : (r⊣ι : r ⊣ ι)
+    → is-reflective r⊣ι
+    → L ⊆ F-restrict-arrows (ι F∘ r) L
+    → R ⊆ F-restrict-arrows (ι F∘ r) R
+    → is-ofs D L R
+    → is-ofs C (F-restrict-arrows ι L) (F-restrict-arrows ι R)
+  reflect-ofs r⊣ι ι-ff ι∘r-in-L ι∘r-in-R D-ofs = C-ofs where
+```
+
+<!--
+```agda
+    module C = Cat.Reasoning C
+    module D where
+      open Cat.Reasoning D public
+      open is-ofs D-ofs public
+
+    module ι = Cat.Functor.Reasoning.FullyFaithful ι ι-ff
+    module r = Cat.Functor.Reasoning r
+    open _⊣_ r⊣ι
+
+    open is-ofs
+    open Factorisation
+```
+-->
+
+First, some preliminaries. Note that $\iota^*(L)$ is closed under composition
+and inverses, as $\iota$ preserves isomorphisms and is functorial.
+
+```agda
+    is-iso→in-ι^*L
+      : ∀ {a b}
+      → (f : C.Hom a b)
+      → C.is-invertible f
+      → ι.₁ f ∈ L
+    is-iso→in-ι^*L f f-inv = D.is-iso→in-L (ι.F₁ f) (ι.F-map-invertible f-inv)
+
+    ι^*L-is-stable
+      : ∀ {a b c}
+      → (f : C.Hom b c) (g : C.Hom a b)
+      → ι.₁ f ∈ L → ι.₁ g ∈ L
+      → ι.₁ (f C.∘ g) ∈ L
+    ι^*L-is-stable f g ι[f]∈L ι[g]∈L =
+      subst (_∈ L) (sym (ι.F-∘ f g)) $
+      D.L-is-stable (ι.F₁ f) (ι.F₁ g) ι[f]∈L ι[g]∈L
+```
+
+A similar argument lets us conclude that $\iota^{*}(R)$ is also
+closed under composition and inverses.
+
+```agda
+    is-iso→in-ι^*R
+      : ∀ {a b}
+      → (f : C.Hom a b)
+      → C.is-invertible f
+      → ι.₁ f ∈ R
+    is-iso→in-ι^*R f f-inv = D.is-iso→in-R (ι.F₁ f) (ι.F-map-invertible f-inv)
+
+    ι^*R-is-stable
+      : ∀ {a b c}
+      → (f : C.Hom b c) (g : C.Hom a b)
+      → ι.₁ f ∈ R → ι.₁ g ∈ R
+      → ι.₁ (f C.∘ g) ∈ R
+    ι^*R-is-stable f g ι[f]∈R ι[g]∈R =
+      subst (_∈ R) (sym (ι.F-∘ f g)) $
+      D.R-is-stable (ι.F₁ f) (ι.F₁ g) ι[f]∈R ι[g]∈R
+```
+
+Next, recall that if $r \dashv \iota$ is reflective, then the counit
+of the adjunction must be invertible.
+
+```agda
+    ε-inv : ∀ (x : C.Ob) → C.is-invertible (ε x)
+    ε-inv x = is-reflective→counit-is-invertible r⊣ι ι-ff
+
+    module ε (x : C.Ob) = C.is-invertible (ε-inv x)
+```
+
+With those preliminaries out of the way, we can get into the meat of the proof.
+We've already proved the requisite closure properties of $\iota^{*}(L)$ and $\iota^{*}(R)$,
+so we can get that out of the way.
+
+```agda
+    C-ofs : is-ofs C (F-restrict-arrows ι L) (F-restrict-arrows ι R)
+    C-ofs .is-iso→in-L = is-iso→in-ι^*L
+    C-ofs .L-is-stable = ι^*L-is-stable
+    C-ofs .is-iso→in-R = is-iso→in-ι^*R
+    C-ofs .R-is-stable = ι^*R-is-stable
+```
+
+Moreover, $\iota^{*}(L)$ and $\iota^{*}(R)$ are orthogonal, as fully faithful
+functors reflect orthogonality.
+
+```agda
+    C-ofs .L⊥R f ι[f]∈L g ι[g]∈R =
+      ff→reflect-orthogonal ι ι-ff (D.L⊥R (ι.₁ f) ι[f]∈L (ι.₁ g) ι[g]∈R)
+```
+
+The final step is the most difficult. Let $f : \cC(a, b)$ be a morphism in $\cC$:
+we somehow need to factor it into a $u : \cC(a, x)$ and $v : \cC(x, b)$
+with $\iota(u) \in L$ and $\iota(v) \in R$.
+
+We start by factoring $\iota(f)$ into a $u : \cD(\iota(a), x)$ and $v : \cD(x, \iota(b))$.
+We can take an adjoint transpose of $u$ to find a map $\cC(r(x), b)$, but this same trick
+does not work for $u$. Luckily the counit $\eps : \cC(r(\iota(x)), x)$ is invertible, so
+we can transpose $u$ to a map in $\cC$ via $r(u) \circ \eps^{-1} : \cC(a, r(x))$.
+
+```agda
+    C-ofs .factor {a} {b} f = f-factor
+      where
+        module ι[f] = Factorisation (D.factor (ι.₁ f))
+
+        f-factor : Factorisation C (F-restrict-arrows ι L) (F-restrict-arrows ι R) f
+        f-factor .mid = r.₀ ι[f].mid
+        f-factor .left = r.₁ ι[f].left C.∘ ε.inv a
+        f-factor .right = ε b C.∘ r.₁ ι[f].right
+```
+
+A bit of quick algebra shows that these two transposes actually factor $f$.
+
+```agda
+        f-factor .factors =
+          f                                                        ≡⟨ C.intror (ε.invl a) ⟩
+          f C.∘ ε _ C.∘ ε.inv a                                    ≡⟨ C.extendl (sym $ counit.is-natural a b f) ⟩
+          ε b C.∘ r.F₁ (ι.₁ f) C.∘ ε.inv a                         ≡⟨ C.push-inner (r.expand ι[f].factors) ⟩
+          (ε b C.∘ r.₁ ι[f].right) C.∘ (r.₁ ι[f].left C.∘ ε.inv a) ∎
+```
+
+Finally, we need to show that $\iota(r(u) \circ \eps^{-1}) \in L$ and
+$\iota(\eps \circ r(v)) \in R$. Both $\iota(L)$ and $\iota(R)$ are
+closed under inverses and composition, so it suffices to show that
+$\iota(r(u)) \in L$ and $\iota(r(v)) \in R$. By assumption, we
+have $L \subseteq (\iota \circ r)^{*}(L)$ and $R \subseteq (\iota \circ r)^{*}(R)$,
+so it suffices to show that $u \in L$ and $v \in R$. This follows from the
+construction of $u$ and $v$ via an $(L,R)$ factorisation, which completes the proof.
+
+```agda
+        f-factor .left∈L =
+          ι^*L-is-stable (r.₁ ι[f].left) (ε.inv a)
+            (ι∘r-in-L ι[f].left ι[f].left∈L)
+            (is-iso→in-ι^*L (ε.inv a) (ε.op a))
+        f-factor .right∈R =
+          ι^*R-is-stable (ε b) (r.₁ ι[f].right)
+            (is-iso→in-ι^*R (ε b) (ε-inv b))
+            (ι∘r-in-R ι[f].right ι[f].right∈R)
 ```

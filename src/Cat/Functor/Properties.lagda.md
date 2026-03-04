@@ -72,6 +72,20 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → is-faithful F → is-faithful G
     → is-faithful (F F∘ G)
   is-faithful-∘ Ff Gf p = Gf (Ff p)
+
+  faithful→embedding
+    : ∀ (F : Functor C D)
+    → is-faithful F
+    → ∀ {x y} → is-embedding (F .F₁ {x = x} {y = y})
+  faithful→embedding F F-faithful = injective→is-embedding! F-faithful
+
+  faithful→cancellable
+    : ∀ (F : Functor C D)
+    → is-faithful F
+    → ∀ {x y} {f g : C.Hom x y}
+    → (f ≡ g) ≃ (F .F₁ f ≡ F .F₁ g)
+  faithful→cancellable F F-faithful =
+    ap (F .F₁) , embedding→cancellable (faithful→embedding F F-faithful)
 ```
 -->
 
@@ -119,10 +133,11 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   import Cat.Morphism D as Dm
 
   is-ff→is-conservative
-    : {F : Functor C D} → is-fully-faithful F
+    : (F : Functor C D)
+    → is-fully-faithful F
     → ∀ {X Y} (f : C.Hom X Y) → Dm.is-invertible (F .F₁ f)
     → Cm.is-invertible f
-  is-ff→is-conservative {F = F} ff f isinv = i where
+  is-ff→is-conservative F ff f isinv = i where
     open Cm.is-invertible
     open Cm.Inverses
 ```
@@ -169,7 +184,7 @@ the domain category to serve as an inverse for $f$:
     D-inv' .Dm.is-invertible.inverses =
       subst (λ e → Dm.Inverses e from) (sym (equiv→counit ff _)) inverses
 
-    open Cm.is-invertible (is-ff→is-conservative {F = F} ff (equiv→inverse ff to) D-inv')
+    open Cm.is-invertible (is-ff→is-conservative F ff (equiv→inverse ff to) D-inv')
 
     im' : _ Cm.≅ _
     im' .to   = equiv→inverse ff to
