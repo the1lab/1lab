@@ -79,14 +79,14 @@ a[href].hover-highlight {
 .Agda {
   .Background    { background-color: theme(--code-bg); }
 
-  .Comment       { color: theme(--code-fg); font-style: italic; }
-  .Markup        { color: theme(--code-fg); }
+  .Comment       { color: theme(--code-comment); font-style: italic; }
+  .Markup        { color: theme(--code-comment); }
   .Keyword       { color: theme(--code-keyword); }
   .String        { color: theme(--code-string); }
   .Number        { color: theme(--code-number); }
   .Symbol        { color: theme(--code-fg); }
-  .PrimitiveType { color: theme(--primary); }
-  .Pragma        { color: theme(--code-fg); }
+  .PrimitiveType { color: theme(--code-identifier); }
+  .Pragma        { color: theme(--code-comment); }
 
 /* NameKinds. */
   .Bound                  { color: theme(--code-fg)          !important; }
@@ -96,12 +96,12 @@ a[href].hover-highlight {
   .Field                  { color: theme(--code-field)       !important; }
   .Module                 { color: theme(--code-module)      !important; }
 
-  .Datatype               { color: theme(--primary) !important; }
-  .Function               { color: theme(--primary) !important; }
-  .Macro                  { color: theme(--primary) !important; }
-  .Postulate              { color: theme(--primary) !important; }
-  .Primitive              { color: theme(--primary) !important; }
-  .Record                 { color: theme(--primary) !important; }
+  .Datatype               { color: theme(--code-identifier) !important; }
+  .Function               { color: theme(--code-identifier) !important; }
+  .Macro                  { color: theme(--code-macro)      !important; }
+  .Postulate              { color: theme(--code-identifier) !important; }
+  .Primitive              { color: theme(--code-identifier) !important; }
+  .Record                 { color: theme(--code-identifier) !important; }
 
 /* OtherAspects. */
   .UnsolvedMeta         { color: theme(--code-fg); background: #806b00   }

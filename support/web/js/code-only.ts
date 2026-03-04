@@ -5,3 +5,8 @@ import "./equations";
 import "./highlight-hover";
 import "./search";
 import "./prompt";
+import { firstLoad } from "./lib/settings";
+
+document.addEventListener("DOMContentLoaded", () => {
+  firstLoad();
+})
