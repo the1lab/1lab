@@ -157,7 +157,7 @@ embedding functor is [[fully faithful]].
 ```
 -->
 
-## The covariant yoneda embedding
+## The covariant yoneda embedding {defines="covariant-yoneda-embedding"}
 
 One common point of confusion is why category theorists prefer
 presheaves over covariant functors into $\Sets$. One key reason is that
