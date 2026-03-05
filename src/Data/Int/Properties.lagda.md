@@ -53,9 +53,9 @@ no further comments.
   predℤ-nat-diff (suc x) (suc y) = predℤ-nat-diff x y
 
   nat-diff-monus : ∀ x y → y ≤ x → x ℕ- y ≡ pos (x - y)
-  nat-diff-monus x y 0≤x                         = refl
-  nat-diff-monus (suc x) (suc zero) (s≤s y≤x)    = refl
-  nat-diff-monus (suc x) (suc (suc y)) (s≤s y≤x) = nat-diff-monus x (suc y) y≤x
+  nat-diff-monus x zero y≤x                = refl
+  nat-diff-monus (suc x) (suc zero) y≤x    = refl
+  nat-diff-monus (suc x) (suc (suc y)) y≤x = nat-diff-monus x (suc y) (≤-peel y≤x)
 
   nat-diff-bounded : ∀ a b c → a ≤ c → b ≤ c → abs (a ℕ- b) ≤ c
   nat-diff-bounded a zero c ac bc          = ac

@@ -195,7 +195,7 @@ is-gcd-graphs-gcd {m = m} {n} {d} = prop-ext!
 
 <!--
 ```agda
-is-gcd-factor : ∀ x y n k .⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
+is-gcd-factor : ∀ x y n k ⦃ _ : Positive k ⦄ → is-gcd (x * k) (y * k) (n * k) → is-gcd x y n
 is-gcd-factor x y n k p .gcd-∣l with (q , α) ← ∣→fibre (p .gcd-∣l) = fibre→∣ (q , *-injr k (q * n) x (sym (*-associative q n k) ∙ α))
 is-gcd-factor x y n k p .gcd-∣r with (q , α) ← ∣→fibre (p .gcd-∣r) = fibre→∣ (q , *-injr k (q * n) y (sym (*-associative q n k) ∙ α))
 is-gcd-factor x y n k p .greatest {g'} α β with (q , α) ← ∣→fibre α | (r , β) ← ∣→fibre β =
@@ -215,14 +215,14 @@ gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gc
 
 ```agda
 |-*-coprime-cancel
-  : ∀ n a b .⦃ _ : Positive n ⦄ .⦃ _ : Positive a ⦄
+  : ∀ n a b ⦃ _ : Positive n ⦄ ⦃ _ : Positive a ⦄
   → n ∣ a * b → is-gcd n a 1 → n ∣ b
 |-*-coprime-cancel n a b div coprime = done where
   E : Nat → Prop lzero
   E x = el! (0 < x × n ∣ x * b)
 
   has : Σ[ x ∈ Nat ] ((x ∈ E) × (∀ y → (0 < y) × (n ∣ y * b) → x ≤ y))
-  has = ℕ-well-ordered {P = E} (λ _ → auto) (inc (a , recover auto , div))
+  has = ℕ-well-ordered {P = E} (λ _ → auto) (inc (a , auto , div))
 
   instance
     _ : Positive (has .fst)
@@ -239,13 +239,13 @@ gcd-factor x y k@(suc _) = sym (k∣gcd .snd) ∙ ap (_* k) (sym (Equiv.to is-gc
     in case r ≡? 0 of λ where
       (yes p) → fibre→∣ (q , sym (recover α ∙ ap (q * has .fst +_) p ∙ +-zeror (q * has .fst)))
       (no ¬p) → absurd (<-irrefl
-        (≤-antisym (≤-trans ≤-ascend (recover β)) (has .snd .snd r (nonzero→positive ¬p , d'')))
-        (recover β))
+        (≤-antisym (≤-trans ≤-ascend β) (has .snd .snd r (nonzero→positive ¬p , d'')))
+        β)
 
   almost : has .fst ≡ 1
   almost = ∣-1 $ coprime .greatest {has .fst}
-    (step n (recover auto , ∣-*l))
-    (step a (recover auto , div))
+    (step n (auto , ∣-*l))
+    (step a (auto , div))
 
   done : n ∣ b
   done = subst (n ∣_) (ap (_* b) almost ∙ *-onel b) (has .snd .fst .snd)

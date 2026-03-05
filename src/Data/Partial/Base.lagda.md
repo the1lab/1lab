@@ -114,7 +114,7 @@ instance
 ```agda
 abstract instance
   H-Level-↯ : ∀ {A : Type ℓ} {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ → H-Level (↯ A) n
-  H-Level-↯ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ =
+  H-Level-↯ {n = suc (suc n)} =
     hlevel-instance $ Iso→is-hlevel! (2 + n) eqv
     where unquoteDecl eqv = declare-record-iso eqv (quote ↯)
 ```
@@ -146,7 +146,7 @@ open _⊑_ public
 
 abstract instance
   H-Level-⊑ : ∀ {A : Type ℓ} {x y : ↯ A} {n} ⦃ _ : 1 ≤ n ⦄ ⦃ _ : H-Level A (suc n) ⦄ → H-Level (x ⊑ y) n
-  H-Level-⊑ {n = suc n} ⦃ s≤s p ⦄ = hlevel-instance $ Iso→is-hlevel! (suc n) eqv
+  H-Level-⊑ {n = suc n} = hlevel-instance $ Iso→is-hlevel! (suc n) eqv
     where unquoteDecl eqv = declare-record-iso eqv (quote _⊑_)
 ```
 -->

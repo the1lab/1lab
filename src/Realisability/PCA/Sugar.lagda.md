@@ -7,7 +7,6 @@ open import Data.Partial.Base
 open import Data.Fin.Base hiding (_<_ ; _≤_)
 open import Data.Nat.Base
 open import Data.Vec.Base
-open import Data.Irr
 
 open import Realisability.PCA
 ```
@@ -90,7 +89,7 @@ abstraction with the length of the context.
 
 ```agda
   from-wf : ∀ {Γ} (t : Termʰ Nat) → wf Γ t → Term ⌞ 𝔸 ⌟ Γ
-  from-wf {Γ} (var x) w       = var (fin (Γ - suc x) ⦃ forget w ⦄)
+  from-wf {Γ} (var x) w       = var (fin (Γ - suc x) ⦃ w ⦄)
   from-wf (const x)   w       = const x
   from-wf (app f x) (wf , wx) = app (from-wf f wf) (from-wf x wx)
   from-wf {Γ} (lam f) w       = abs (from-wf (f Γ) w)

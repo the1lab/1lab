@@ -138,7 +138,7 @@ Thus, so are paths in `A ⊎ B`, which concludes the proof.
 ```agda
 instance
   H-Level-⊎ : ∀ {n} ⦃ _ : 2 ≤ n ⦄ ⦃ _ : H-Level A n ⦄ ⦃ _ : H-Level B n ⦄ → H-Level (A ⊎ B) n
-  H-Level-⊎ {n = suc (suc n)} ⦃ s≤s (s≤s p) ⦄ = hlevel-instance $
+  H-Level-⊎ {n = suc (suc n)} = hlevel-instance $
     ⊎-is-hlevel _
 ```
 -->

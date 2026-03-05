@@ -16,7 +16,6 @@ open import Data.Fin.Product
 open import Data.Int.DivMod
 open import Data.Fin
 open import Data.Int hiding (Positive)
-open import Data.Irr
 open import Data.Nat
 
 open represents-subgroup
@@ -184,14 +183,14 @@ $x : \ZZ$ to the representative of its congruence class modulo $n$,
 $x \% n$.
 
 ```agda
-Finite-ℤ/n : ∀ n → .⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
+Finite-ℤ/n : ∀ n → ⦃ Positive n ⦄ → ⌞ ℤ/ n ⌟ ≃ Fin n
 Finite-ℤ/n n .fst = Coeq-rec (λ i → from-ℕ< (i %ℤ n , x%ℤy<y i n))
   λ (x , y , p) → fin-ap (divides-diff→same-rem n x y p)
 Finite-ℤ/n n .snd = is-iso→is-equiv $ iso
   (λ (fin i) → inc (pos i))
   (λ i → fin-ap (Fin-%ℤ i))
   (elim! λ i → quot (same-rem→divides-diff n (pos (i %ℤ n)) i
-    (Fin-%ℤ (fin _ ⦃ forget (x%ℤy<y i n) ⦄))))
+    (Fin-%ℤ (fin _ ⦃ x%ℤy<y i n ⦄))))
 ```
 
 Using this and the fact that $([2] \simeq [2]) \simeq [2!] = [2]$,

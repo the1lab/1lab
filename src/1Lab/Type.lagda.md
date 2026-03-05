@@ -36,7 +36,7 @@ We re-export the following very important types:
 ```agda
 open import Prim.Data.Sigma public
 open import Prim.Data.Bool public
-open import Prim.Data.Nat hiding (_<_) public
+open import Prim.Data.Nat hiding (_<_; _≤_) public
 ```
 
 Additionally, we define the empty type:
