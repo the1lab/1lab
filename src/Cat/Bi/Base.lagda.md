@@ -407,6 +407,7 @@ When they _are_, we talk about **pseudofunctors** instead.
 record
   Lax-functor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
     : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  no-eta-equality
 
   private
     module B = Prebicategory B
@@ -499,6 +500,7 @@ functors, not additional structure on lax functors.
 record
   Pseudofunctor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
     : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  no-eta-equality
 
   private
     module B = Prebicategory B
@@ -568,6 +570,7 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
 
 ```agda
   record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+    no-eta-equality
     field
       σ : ∀ A → F.₀ A C.↦ G.₀ A
       naturator
@@ -606,6 +609,7 @@ A lax transformation with invertible naturator is called a
 
 ```agda
   record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+    no-eta-equality
     field
       lax : Lax-transfor
 
@@ -658,6 +662,7 @@ module
 
 ```agda
   record Modification : Type (o ⊔ ℓ ⊔ ℓ₁') where
+    no-eta-equality
     field
       Γ : ∀ a → σ.σ a C.⇒ σ'.σ a
 
