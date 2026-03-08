@@ -1,4 +1,5 @@
 { pkgs
+, stdenv
 , lib
 , nix-gitignore
 , removeReferencesTo
@@ -22,6 +23,7 @@ lib.pipe (labHaskellPackages.callCabal2nix "1lab-shake" root {}) [
     postInstall = drv.postInstall or "" + ''
       find "$out/bin" -exec remove-references-to ${lib.concatMapStringsSep " " (x: "-t ${lib.escapeShellArg x}") forbiddenRefs} '{}' +
     '';
-    disallowedRequisites = forbiddenRefs;
+    # On Darwin the references remain through symbolic links in /lib/links/*.dylib
+    disallowedRequisites = lib.optionals (!stdenv.hostPlatform.isDarwin) forbiddenRefs;
   }))
 ]
