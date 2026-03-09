@@ -418,6 +418,29 @@ equiv→zag {f = f} eqv b =
 
 </details>
 
+We also show that the inverse of an equivalence is itself an 
+equivalence:
+
+```agda
+inverse-is-equiv : {f : A → B} (eqv : is-equiv f) → is-equiv (equiv→inverse eqv)
+inverse-is-equiv {f = f} eqv .is-eqv x .centre = record
+  { fst = f x ; snd = equiv→unit eqv x }
+inverse-is-equiv {A = A} {B = B} {f = f} eqv .is-eqv x .paths (y , p) = q where
+  g = equiv→inverse eqv
+  η = equiv→unit eqv
+  ε = equiv→counit eqv
+  zag = equiv→zag eqv
+
+  q : (f x , η x) ≡ (y , p)
+  q i .fst = (ap f (sym p) ∙ ε y) i
+  q i .snd j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → zag y j i
+    k (i = i0) → η (p k) (j ∧ k)
+    k (i = i1) → p (k ∧ j)
+    k (j = i0) → g (∙-filler' (ap f (sym p)) (ε y) k i)
+    k (j = i1) → η (p k) (i ∨ k)
+```
+
 Finally, it'll be convenient for us to package some of the theorems
 above into a proof that every equivalence is an isomorphism:
 
@@ -718,26 +741,10 @@ Iso→Equiv : Iso A B → A ≃ B
 Iso→Equiv (f , is-iso) = record { fst = f ; snd = is-iso→is-equiv is-iso }
 ```
 
-<!--
+Finally, we provide two helper modules packaging useful data associated
+to equivalences and isomorphisms.
+
 ```agda
-inverse-is-equiv : {f : A → B} (eqv : is-equiv f) → is-equiv (equiv→inverse eqv)
-inverse-is-equiv {f = f} eqv .is-eqv x .centre = record
-  { fst = f x ; snd = equiv→unit eqv x }
-inverse-is-equiv {A = A} {B = B} {f = f} eqv .is-eqv x .paths (y , p) = q where
-  g = equiv→inverse eqv
-  η = equiv→unit eqv
-  ε = equiv→counit eqv
-  zag = equiv→zag eqv
-
-  q : (f x , η x) ≡ (y , p)
-  q i .fst = (ap f (sym p) ∙ ε y) i
-  q i .snd j = hcomp (∂ i ∨ ∂ j) λ where
-    k (k = i0) → zag y j i
-    k (i = i0) → η (p k) (j ∧ k)
-    k (i = i1) → p (k ∧ j)
-    k (j = i0) → g (∙-filler' (ap f (sym p)) (ε y) k i)
-    k (j = i1) → η (p k) (i ∨ k)
-
 module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
   to   = f .fst
   from = equiv→inverse (f .snd)
@@ -781,7 +788,10 @@ module Iso {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} ((f , f-iso) : Iso A B) whe
 
   inverse : Iso B A
   inverse = from , inverse-iso
+```
 
+<!--
+```agda
 injectiveP
   : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : I → Type ℓ'} (f : ∀ i → Iso (A i) (B i)) {x y}
   → PathP (λ i → B i) (f i0 .fst x) (f i1 .fst y)
