@@ -583,22 +583,22 @@ Inverses-∘' {finv = finv} {ginv} {f' = f'} {f'⁻¹} {g'} {g'⁻¹} finv' ginv
     module ginv' = Inverses[_] ginv'
     
     l' : (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹ ≡[ gfinv.invl ] id'
-    l' = cast[] $
+    l' = begin[]
       (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹    ≡[]⟨ assoc' (g' ∘' f') f'⁻¹ g'⁻¹ ⟩
       ((g' ∘' f') ∘' f'⁻¹) ∘' g'⁻¹  ≡[]˘⟨ assoc' g' f' f'⁻¹ ⟩∘'⟨refl ⟩
       (g' ∘' (f' ∘' f'⁻¹)) ∘' g'⁻¹  ≡[]⟨ (refl⟩∘'⟨ finv'.invl') ⟩∘'⟨refl ⟩
       (g' ∘' id') ∘' g'⁻¹           ≡[]⟨ (idr' g') ⟩∘'⟨refl ⟩
       g' ∘' g'⁻¹                    ≡[]⟨ ginv'.invl' ⟩
-      id'                           ∎
+      id'                           ∎[]
     
     r' : (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f' ≡[ gfinv.invr ] id'
-    r' = cast[] $
+    r' = begin[]
       (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f'    ≡[]⟨ assoc' (f'⁻¹ ∘' g'⁻¹) g' f' ⟩
       ((f'⁻¹ ∘' g'⁻¹) ∘' g') ∘' f'  ≡[]˘⟨ assoc' f'⁻¹ g'⁻¹ g' ⟩∘'⟨refl ⟩
       (f'⁻¹ ∘' (g'⁻¹ ∘' g')) ∘' f'  ≡[]⟨ (refl⟩∘'⟨ ginv'.invr') ⟩∘'⟨refl ⟩
       (f'⁻¹ ∘' id') ∘' f'           ≡[]⟨ (idr' f'⁻¹) ⟩∘'⟨refl ⟩
       f'⁻¹ ∘' f'                    ≡[]⟨ finv'.invr' ⟩
-      id'                           ∎
+      id'                           ∎[]
 
 _∘Iso'_
   : ∀ {a b c f g} {a' : Ob[ a ]} {b' : Ob[ b ]} {c' : Ob[ c ]}
@@ -714,11 +714,11 @@ abstract
       {x' : Ob[ x ]} {b' : Ob[ b ]} (f' : x' ≅[ f ] b') (g' : x' ≅[ g ] b')
       (r' : f' .to' ≡[ r ] g' .to')
     → f' .from' ≡[ inverse-unique₀ f g r ] g' .from'
-  inverse-unique₀' f' g' r' = cast[] $
+  inverse-unique₀' f' g' r' = begin[]
     f' .from'                           ≡[]˘⟨ apd (λ _ → f' .from' ∘'_) (g' .invl') ∙[] idr' _ ⟩
     f' .from' ∘'  g' .to' ∘' g' .from'   ≡[]⟨ assoc' (f' .from') (g' .to') (g' .from') ⟩
     (f' .from' ∘' g' .to') ∘' g' .from' ≡[]⟨ (apd (λ _ → _∘' g' .from') (apd (λ _ → f' .from' ∘'_) (symP r') ∙[] f' .invr')) ∙[] idl' _ ⟩
-    g' .from'                           ∎
+    g' .from'                           ∎[]
 ```
 
 <!--

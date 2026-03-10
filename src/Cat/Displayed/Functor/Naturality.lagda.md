@@ -15,7 +15,7 @@ open import Cat.Prelude
 module Cat.Displayed.Functor.Naturality where
 ```
 
-# Natural isomorphisms of displayed categories {defines="displayed natural isomorphism"}
+# Natural isomorphisms of displayed categories {defines="displayed-natural-isomorphism"}
 
 This module defines some displayed analogues of our [[natural isomorphism]]
 machinery for ordinary category theory.

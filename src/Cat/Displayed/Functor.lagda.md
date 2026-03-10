@@ -467,7 +467,7 @@ module
 ```
 -->
 
-## Displayed natural transformations {defines="displayed-natural-transformation displayed-natural-isomorphismdisplayed-natural-transformations displayed-natural-isomorphisms"}
+## Displayed natural transformations {defines="displayed-natural-transformation"}
 
 Just like we have defined a displayed functor
 $\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$

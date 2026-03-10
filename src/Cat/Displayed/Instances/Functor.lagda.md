@@ -68,10 +68,11 @@ Composition of displayed natural transformations is defined by
 ```agda
   _∘nt'_ : ∀ {α β} → G' =[ α ]=> H' → F' =[ β ]=> G' → F' =[ α ∘nt β ]=> H'
   (α' ∘nt' β') .η' x' = α' .η' x' ℱ.∘' β' .η' x'
-  _∘nt'_ {G} {G'} {H} {H'} {F} {F'} {α} {β} α' β' .is-natural' {x} {y} {f} x' y' f' = 
-    (α' .η' y' ℱ.∘' β' .η' y') ℱ.∘' F₁' F' f' ℱ.≡[]⟨ ℱ.pullr' (β .is-natural x y f) (is-natural' β' x' y' f') ⟩
-    α' .η' y' ℱ.∘' ₁' G' f' ℱ.∘' β' .η' x'    ℱ.≡[]⟨ ℱ.extendl' (α .is-natural x y f) (is-natural' α' x' y' f') ⟩
-    ₁' H' f' ℱ.∘' α' .η' x' ℱ.∘' β' .η' x'    ∎
+  _∘nt'_ {G' = G'} {H' = H'} {F' = F'} {α = α} {β = β} α' β' 
+    .is-natural' {x} {y} {f} x' y' f' = ℱ.begin[]
+      (α' .η' y' ℱ.∘' β' .η' y') ℱ.∘' F₁' F' f' ℱ.≡[]⟨ ℱ.pullr[] (β .is-natural x y f) (is-natural' β' x' y' f') ⟩
+      α' .η' y' ℱ.∘' ₁' G' f' ℱ.∘' β' .η' x'    ℱ.≡[]⟨ ℱ.extendl[] (α .is-natural x y f) (is-natural' α' x' y' f') ⟩
+      ₁' H' f' ℱ.∘' α' .η' x' ℱ.∘' β' .η' x'    ℱ.∎[]
 ```
 
 We then define the displayed category $[\cE, \cF]$ over $[\cA, \cB]$ so
@@ -116,11 +117,11 @@ module _
 
   DisCat[_,_] .hom[_] {x = F'} {G'} p α' = record 
     { η' = λ {x} x' → ℱ.hom[ p ηₚ x ] (α' .η' x') 
-    ; is-natural' = λ {x} {y} {f} x' y' f' → ℱ.cast[] $
+    ; is-natural' = λ {x} {y} {f} x' y' f' → ℱ.begin[]
       ℱ.hom[ p ηₚ y ] (α' .η' y') ℱ.∘' ₁' F' f' ℱ.≡[]⟨ ℱ.unwrapl (p ηₚ y) ⟩
       α' .η' y' ℱ.∘' ₁' F' f'                   ℱ.≡[]⟨ α' .is-natural' x' y' f' ⟩
       ₁' G' f' ℱ.∘' α' .η' x'                   ℱ.≡[]⟨ ℱ.wrapr (p ηₚ x) ⟩
-      ₁' G' f' ℱ.∘' ℱ.hom[ p ηₚ x ] (α' .η' x') ∎ 
+      ₁' G' f' ℱ.∘' ℱ.hom[ p ηₚ x ] (α' .η' x') ℱ.∎[] 
     }
   DisCat[_,_] .coh[_] p α' = Nat'-path λ {x} x' → ℱ.coh[ p ηₚ x ] (η' α' x')
 ```
