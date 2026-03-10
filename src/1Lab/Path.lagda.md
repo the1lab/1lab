@@ -862,10 +862,10 @@ should be the identity. We can use the $\phi$ argument to prove this!
 ```agda
 transport-refl
   : ∀ {ℓ} {A : Type ℓ} (x : A) → transport refl x ≡ x
-transport-refl {A = A} x i = transp (λ i → A) i x
+transport-refl {A = A} x i = transp (λ _ → A) i x
 ```
 
-In the definition above, $\lam{i}{A}$ is always a constant function, so
+In the definition above, $\lam{\_}{A}$ is always a constant function, so
 the side-condition is satisfied. Therefore, we can compute the endpoints
 of the path. When $i = \iZ$, we have exactly `transport refl x`; but
 when $i = \iO$, the entire `transp`{.Agda} computes away, and we're left

@@ -132,7 +132,7 @@ typeToText d = do
   expr <- removeImpls <$> reify ty
 
   tooltip <- fmap renderToHtml $ P.vcat
-    [ annotate a <$> P.pretty (qnameName (defName d))
+    [ fmap (const a) <$> P.pretty (qnameName (defName d))
     , P.nest 2 (P.colon P.<+> prettyATop expr)
     ]
   plain <- Text.pack . render <$> prettyATop expr

@@ -58,7 +58,7 @@ function getSidenotes(): Sidenote[] {
   return notes;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const parent = document.getElementById("sidenote-container");
   if (!(parent instanceof HTMLElement)) return;
 
@@ -165,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const reflow = () => {
+    console.log('reflow', isNarrow())
     if (!isNarrow()) window.requestAnimationFrame(reposition);
   };
 
@@ -175,19 +176,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // time (with the incorrect font). The alternative is reflowing
   // *before* we know the final font metrics, in which case the
   // sidenotes will have to wiggle slightly to get into position.
-  document.fonts.addEventListener("loadingdone", () => {
-    reflow();
+  await document.fonts.ready;
+  reflow();
 
-    window.addEventListener("resize", reflow);
+  window.addEventListener("resize", reflow);
 
-    // Reflowing the entire sidenote container when a <details> opens is a
-    // *slight* over-approximation (ha), but it does work.
-    document.querySelectorAll("details").forEach(d =>
-      d.addEventListener("toggle", reflow));
+  // Reflowing the entire sidenote container when a <details> opens is a
+  // *slight* over-approximation (ha), but it does work.
+  document.querySelectorAll("details").forEach(d =>
+    d.addEventListener("toggle", reflow));
 
-    // Make sure that our layout-affecting settings cause the sidenotes
-    // to be reflowed.
-    serifFontSetting.onChange(reflow);
-    justifiedSetting.onChange(reflow);
-  });
+  // Make sure that our layout-affecting settings cause the sidenotes
+  // to be reflowed.
+  serifFontSetting.onChange(reflow);
+  justifiedSetting.onChange(reflow);
 });
