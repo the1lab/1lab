@@ -39,7 +39,7 @@ private
 ```
 -->
 
-# Category of monoids
+# Category of monoids {defines="category-of-monoids"}
 
 <!--
 ```agda
@@ -92,6 +92,13 @@ Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh _ i .has-is-monoid =
     (s .has-is-monoid)
     (t .has-is-monoid)
     i
+
+instance
+  Monoid-equational : ∀ {ℓ} → is-equational (Monoid-structure ℓ)
+  Monoid-equational {ℓ = ℓ} .is-equational.invert-id-hom {s = s} {t = t} f' = f'⁻¹ where
+    f'⁻¹ : Monoid-hom t s λ x → x
+    f'⁻¹ .pres-id = sym (f' .pres-id)
+    f'⁻¹ .pres-⋆ x y = sym (f' .pres-⋆ x y)
 
 Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ = Structured-objects (Monoid-structure ℓ)

@@ -82,9 +82,10 @@ Monoid : (ℓ : Level) → Type (lsuc ℓ)
 Monoid ℓ = Σ (Type ℓ) Monoid-on
 ```
 
-There is also a predicate which witnesses when an equivalence between
-monoids is a monoid homomorphism. It has to preserve the identity, and
-commute with the multiplication:
+## Monoid homomorphisms
+
+As mentioned above, a monoid homomorphism has to preserve both
+multiplication _and_ the identity.
 
 ```agda
 record
@@ -99,14 +100,12 @@ record
   field
     pres-id : e A.identity ≡ B.identity
     pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
-
-open Monoid-hom
-
-Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
-Monoid≃ A B (e , _) = Monoid-hom (A .snd) (B .snd) e
 ```
 
-# Relationships to unital magmas
+Monoids of a given universe level and their morphisms are assembled into
+the [[category of monoids]].
+
+## Relationships to unital magmas
 
 ```agda
 open import Algebra.Magma.Unital
@@ -139,7 +138,7 @@ direction, namely, that every unital semigroup is a monoid.
   is-unital-magma→is-semigroup→is-monoid uni sem .idr = uni .idr
 ```
 
-# Inverses
+## Inverses
 
 A useful application of the monoid laws is in showing that _having an
 **inverse**_ is a _property_ of a specific element, not structure on
