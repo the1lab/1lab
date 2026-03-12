@@ -198,9 +198,9 @@ by appealing to the optimized decision procedure `_≤?_`{.Agda}.
 
 ```agda
 record _≤_ (x y : Nat) : Type where
-  constructor is-leq
+  constructor lift
   field
-    so-leq : So (x ≤? y)
+    lower : So (x ≤? y)
 ```
 
 We could also define the relation by recursion on the numbers to be
@@ -216,13 +216,13 @@ the benefit of being a *definitional* [[proposition]].
 ```agda
 abstract
   s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
-  s≤s (is-leq x≤y) = is-leq x≤y
+  s≤s (lift x≤y) = lift x≤y
 
   0≤x : ∀ {x} → zero ≤ x
-  0≤x {x} = is-leq oh
+  0≤x {x} = lift oh
 
   ≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
-  ≤-peel (is-leq x≤y) = is-leq x≤y
+  ≤-peel (lift x≤y) = lift x≤y
 
   ≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
   ≤-sucr {zero} {y} x≤y = 0≤x

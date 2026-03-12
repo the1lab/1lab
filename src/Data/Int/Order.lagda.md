@@ -30,15 +30,15 @@ of the order we use:
 
 ```agda
 _≤?_ : Int → Int → Bool
-pos x ≤? pos y = x Nat.≤? y
-pos x ≤? negsuc y = false
-negsuc x ≤? pos y = true
+pos x    ≤? pos y    = x Nat.≤? y
+pos x    ≤? negsuc y = false
+negsuc x ≤? pos y    = true
 negsuc x ≤? negsuc y = y Nat.≤? x
 
 record _≤_ (x y : Int) : Type where
-  constructor is-leq
+  constructor lift
   field
-    so-leq : So (x ≤? y)
+    lower : So (x ≤? y)
 ```
 
 <!--
@@ -47,19 +47,19 @@ record _≤_ (x y : Int) : Type where
 -- so that Agda can remember `x` and `y`.
 abstract
   neg≤neg : ∀ {x y} → y Nat.≤ x → negsuc x ≤ negsuc y
-  neg≤neg (Nat.is-leq y≤x) = is-leq y≤x
+  neg≤neg (Nat.lift y≤x) = lift y≤x
 
   pos≤pos : ∀ {x y} → x Nat.≤ y → pos x ≤ pos y
-  pos≤pos (Nat.is-leq x≤y) = is-leq x≤y
+  pos≤pos (Nat.lift x≤y) = lift x≤y
 
   neg≤pos : ∀ {x y} → negsuc x ≤ pos y
-  neg≤pos = is-leq oh
+  neg≤pos = lift oh
 
   unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
-  unpos≤pos (is-leq x≤y) = Nat.is-leq x≤y
+  unpos≤pos (lift x≤y) = Nat.lift x≤y
 
   unneg≤neg : ∀ {x y} → negsuc x ≤ negsuc y → y Nat.≤ x
-  unneg≤neg (is-leq y≤x) = Nat.is-leq y≤x
+  unneg≤neg (lift y≤x) = Nat.lift y≤x
 ```
 -->
 
@@ -125,22 +125,22 @@ unapos≤apos {x} {y} p = unpos≤pos (≤-trans (≤-refl' (sym (assign-pos x))
 <!--
 ```agda
 possuc≤possuc : ∀ {x y} → pos x ≤ pos y → possuc x ≤ possuc y
-possuc≤possuc (is-leq x≤y) = is-leq x≤y
+possuc≤possuc (lift x≤y) = lift x≤y
 
 unpossuc≤possuc : ∀ {x y} → possuc x ≤ possuc y → pos x ≤ pos y
-unpossuc≤possuc (is-leq x≤y) = is-leq x≤y
+unpossuc≤possuc (lift x≤y) = lift x≤y
 
 negpred≤negpred : ∀ {x y} → negsuc x ≤ negsuc y → negsuc (suc x) ≤ negsuc (suc y)
-negpred≤negpred (is-leq x≤y) = is-leq x≤y
+negpred≤negpred (lift x≤y) = lift x≤y
 
 unnegpred≤negpred : ∀ {x y} → negsuc (suc x) ≤ negsuc (suc y) → negsuc x ≤ negsuc y
-unnegpred≤negpred (is-leq x≤y) = is-leq x≤y
+unnegpred≤negpred (lift x≤y) = lift x≤y
 
 posz≤pos : ∀ {x} → posz ≤ pos x
-posz≤pos = is-leq oh
+posz≤pos = lift oh
 
 neg≤negone : ∀ {x} → negsuc x ≤ negsuc zero
-neg≤negone = is-leq oh
+neg≤negone = lift oh
 ```
 -->
 
@@ -162,8 +162,8 @@ x$.
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
   Dec-≤ {x} {y} with oh? (x ≤? y)
-  ... | yes x≤y = yes (is-leq x≤y)
-  ... | no ¬x≤y = no (¬x≤y ∘ _≤_.so-leq)
+  ... | yes x≤y = yes (lift x≤y)
+  ... | no ¬x≤y = no (¬x≤y ∘ _≤_.lower)
 ```
 
 <!--
@@ -315,15 +315,15 @@ abstract
 
 ```agda
 _<?_ : Int → Int → Bool
-pos x <? pos y = x Nat.<? y
-pos x <? negsuc y = false
-negsuc x <? pos y = true
+pos x    <? pos y    = x Nat.<? y
+pos x    <? negsuc y = false
+negsuc x <? pos y    = true
 negsuc x <? negsuc y = y Nat.<? x
 
 record _<_ (x y : Int) : Type where
-  constructor is-lt
+  constructor lift
   field
-    so-lt : So (x <? y)
+    lower : So (x <? y)
 ```
 
 <!--
@@ -334,27 +334,27 @@ instance
 
 abstract
   pos<pos : ∀ {x y} → x Nat.< y → pos x < pos y
-  pos<pos (Nat.is-leq x<y) = is-lt x<y
+  pos<pos (Nat.lift x<y) = lift x<y
 
   unpos<pos : ∀ {x y} → pos x < pos y → x Nat.< y
-  unpos<pos (is-lt x<y) = Nat.is-leq x<y
+  unpos<pos (lift x<y) = Nat.lift x<y
 
   neg<pos : ∀ {x y} → negsuc x < pos y
-  neg<pos = is-lt oh
+  neg<pos = lift oh
 
   neg<neg : ∀ {x y} → y Nat.< x → negsuc x < negsuc y
-  neg<neg (Nat.is-leq y<x) = is-lt y<x
+  neg<neg (Nat.lift y<x) = lift y<x
 
   unneg<neg : ∀ {x y} → negsuc x < negsuc y → y Nat.< x
-  unneg<neg (is-lt x<y) = Nat.is-leq x<y
+  unneg<neg (lift x<y) = Nat.lift x<y
 ```
 -->
 
 ```agda
 <-dec : ∀ x y → Dec (x < y)
 <-dec x y with oh? (x <? y)
-... | yes x<y = yes (is-lt x<y)
-... | no ¬x<y = no (¬x<y ∘ _<_.so-lt)
+... | yes x<y = yes (lift x<y)
+... | no ¬x<y = no (¬x<y ∘ _<_.lower)
 
 instance
   Dec-< : ∀ {x y} → Dec (x < y)

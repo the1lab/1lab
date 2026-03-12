@@ -108,9 +108,9 @@ record So (b : Bool) : Type where
 
 oh? : ∀ x → Dec (So x)
 oh? true = yes oh
-oh? false = no ¬so-false
+oh? false = no λ ()
 
-not-so : ∀ {x} → ¬ (So x) → So (not x)
+not-so : ∀ {x} → ¬ So x → So (not x)
 not-so {true} ¬p = absurd (¬p oh)
 not-so {false} ¬p = oh
 
