@@ -194,7 +194,7 @@ infixr 10 _^_
 ## Ordering
 
 We define the order relation `_≤_`{.Agda} on the natural numbers
-by appealing to the optimized decision procedure `_≤?_`{.Agda}.
+by appealing to the decision procedure `_≤?_`{.Agda}.
 
 ```agda
 record _≤_ (x y : Nat) : Type where
@@ -210,6 +210,21 @@ the benefit of being a *definitional* [[proposition]].
 ```agda
 ≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
 ≤-is-prop p q = refl
+```
+
+As a further optimization, `_≤?_`{.Agda} is implemented using the `BUILTIN` decision
+procedure `_<?_`{.Agda}. This makes it possible to typecheck proofs of `_≤_`{.Agda}
+nearly instantly, even when the numbers involved are quite large.
+
+<!--
+```agda
+module _ where private
+```
+-->
+
+```agda
+  _ : 2 ^ 1024 ≤ 2 ^ 2048
+  _ = lift oh
 ```
 
 <!--
