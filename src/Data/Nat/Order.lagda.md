@@ -156,15 +156,9 @@ module _ where private
 <!--
 ```agda
 ≤-dec : (x y : Nat) → Dec (x ≤ y)
-≤-dec x y with x ≡? y
-... | yes x=y = yes (≤-refl' x=y)
-... | no ¬x=y with oh? (x Prim.< y)
-... | yes x<y = yes (<-weaken (from-prim-< x y x<y))
-... | no ¬x<y  = no not-both where
-  not-both : ¬ (x ≤ y)
-  not-both p with ≤-strengthen p
-  ... | inl x=y = ¬x=y x=y
-  ... | inr x<y = ¬x<y (to-prim-< x y x<y)
+≤-dec x y with oh? (x ≤? y)
+... | yes x≤y = yes (lift x≤y)
+... | no ¬x≤y = no (¬x≤y ∘ _≤_.lower)
 
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
