@@ -6,6 +6,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Int.Properties
+open import Data.Bool.Base
 open import Data.Int.Base
 open import Data.Sum.Base
 open import Data.Dec
@@ -28,11 +29,39 @@ smashed end-to-end at the number zero. This is precisely the definition
 of the order we use:
 
 ```agda
-data _≤_ : Int → Int → Type where
-  neg≤neg : ∀ {x y} → y Nat.≤ x → negsuc x ≤ negsuc y
-  pos≤pos : ∀ {x y} → x Nat.≤ y → pos x    ≤ pos y
-  neg≤pos : ∀ {x y}             → negsuc x ≤ pos y
+_≤?_ : Int → Int → Bool
+pos x    ≤? pos y    = x Nat.≤? y
+pos x    ≤? negsuc y = false
+negsuc x ≤? pos y    = true
+negsuc x ≤? negsuc y = y Nat.≤? x
+
+record _≤_ (x y : Int) : Type where
+  constructor lift
+  field
+    lower : So (x ≤? y)
 ```
+
+<!--
+```agda
+-- We need all this junk because we wrapped `So (x ≤? y)` in a record
+-- so that Agda can remember `x` and `y`.
+abstract
+  neg≤neg : ∀ {x y} → y Nat.≤ x → negsuc x ≤ negsuc y
+  neg≤neg (Nat.lift y≤x) = lift y≤x
+
+  pos≤pos : ∀ {x y} → x Nat.≤ y → pos x ≤ pos y
+  pos≤pos (Nat.lift x≤y) = lift x≤y
+
+  neg≤pos : ∀ {x y} → negsuc x ≤ pos y
+  neg≤pos = lift oh
+
+  unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
+  unpos≤pos (lift x≤y) = Nat.lift x≤y
+
+  unneg≤neg : ∀ {x y} → negsuc x ≤ negsuc y → y Nat.≤ x
+  unneg≤neg (lift y≤x) = Nat.lift y≤x
+```
+-->
 
 <!--
 ```agda
@@ -64,9 +93,7 @@ for the ordering on natural numbers.
 ¬pos≤neg ()
 
 ≤-is-prop : ∀ {x y} → is-prop (x ≤ y)
-≤-is-prop (neg≤neg p) (neg≤neg q) = ap neg≤neg (Nat.≤-is-prop p q)
-≤-is-prop (pos≤pos p) (pos≤pos q) = ap pos≤pos (Nat.≤-is-prop p q)
-≤-is-prop neg≤pos neg≤pos = refl
+≤-is-prop _ _ = refl
 
 ≤-refl : ∀ {x} → x ≤ x
 ≤-refl {x = pos x}    = pos≤pos Nat.≤-refl
@@ -79,20 +106,14 @@ for the ordering on natural numbers.
 ≤-refl' {negsuc x} {negsuc y} p = neg≤neg (Nat.≤-refl' (negsuc-injective (sym p)))
 
 ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-≤-trans (neg≤neg p) (neg≤neg q) = neg≤neg (Nat.≤-trans q p)
-≤-trans (neg≤neg p) neg≤pos     = neg≤pos
-≤-trans (pos≤pos p) (pos≤pos q) = pos≤pos (Nat.≤-trans p q)
-≤-trans neg≤pos (pos≤pos x)     = neg≤pos
+≤-trans {pos x} {pos y} {pos z} x≤y y≤z = pos≤pos (Nat.≤-trans (unpos≤pos x≤y) (unpos≤pos y≤z))
+≤-trans {negsuc x} {pos y} {pos z} x≤y y≤z = neg≤pos
+≤-trans {negsuc x} {negsuc y} {pos z} x≤y y≤z = neg≤pos
+≤-trans {negsuc x} {negsuc y} {negsuc z} x≤y y≤z = neg≤neg (Nat.≤-trans (unneg≤neg y≤z) (unneg≤neg x≤y))
 
 ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
-≤-antisym (neg≤neg p) (neg≤neg q) = ap negsuc (Nat.≤-antisym q p)
-≤-antisym (pos≤pos p) (pos≤pos q) = ap pos (Nat.≤-antisym p q)
-
-unpos≤pos : ∀ {x y} → pos x ≤ pos y → x Nat.≤ y
-unpos≤pos (pos≤pos p) = p
-
-unneg≤neg : ∀ {x y} → negsuc x ≤ negsuc y → y Nat.≤ x
-unneg≤neg (neg≤neg p) = p
+≤-antisym {pos x} {pos y} x≤y y≤x = ap pos (Nat.≤-antisym (unpos≤pos x≤y) (unpos≤pos y≤x))
+≤-antisym {negsuc x} {negsuc y} x≤y y≤x = ap negsuc (Nat.≤-antisym (unneg≤neg y≤x) (unneg≤neg x≤y))
 
 apos≤apos : ∀ {x y} → x Nat.≤ y → assign pos x ≤ assign pos y
 apos≤apos {x} {y} p = ≤-trans (≤-refl' (assign-pos x)) (≤-trans (pos≤pos p) (≤-refl' (sym (assign-pos y))))
@@ -100,6 +121,28 @@ apos≤apos {x} {y} p = ≤-trans (≤-refl' (assign-pos x)) (≤-trans (pos≤p
 unapos≤apos : ∀ {x y} → assign pos x ≤ assign pos y → x Nat.≤ y
 unapos≤apos {x} {y} p = unpos≤pos (≤-trans (≤-refl' (sym (assign-pos x))) (≤-trans p (≤-refl' (assign-pos y))))
 ```
+
+<!--
+```agda
+possuc≤possuc : ∀ {x y} → pos x ≤ pos y → possuc x ≤ possuc y
+possuc≤possuc (lift x≤y) = lift x≤y
+
+unpossuc≤possuc : ∀ {x y} → possuc x ≤ possuc y → pos x ≤ pos y
+unpossuc≤possuc (lift x≤y) = lift x≤y
+
+negpred≤negpred : ∀ {x y} → negsuc x ≤ negsuc y → negsuc (suc x) ≤ negsuc (suc y)
+negpred≤negpred (lift x≤y) = lift x≤y
+
+unnegpred≤negpred : ∀ {x y} → negsuc (suc x) ≤ negsuc (suc y) → negsuc x ≤ negsuc y
+unnegpred≤negpred (lift x≤y) = lift x≤y
+
+posz≤pos : ∀ {x} → posz ≤ pos x
+posz≤pos = lift oh
+
+neg≤negone : ∀ {x} → negsuc x ≤ negsuc zero
+neg≤negone = lift oh
+```
+-->
 
 ## Totality
 
@@ -118,14 +161,9 @@ x$.
 
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
-  Dec-≤ {pos x} {pos y} with holds? (x Nat.≤ y)
-  ... | yes p = yes (pos≤pos p)
-  ... | no ¬p = no λ { (pos≤pos p) → ¬p p }
-  Dec-≤ {negsuc x} {negsuc y} with holds? (y Nat.≤ x)
-  ... | yes p = yes (neg≤neg p)
-  ... | no ¬p = no λ { (neg≤neg p) → ¬p p }
-  Dec-≤ {pos x} {negsuc y} = no ¬pos≤neg
-  Dec-≤ {negsuc x} {pos y} = yes neg≤pos
+  Dec-≤ {x} {y} with oh? (x ≤? y)
+  ... | yes x≤y = yes (lift x≤y)
+  ... | no ¬x≤y = no (¬x≤y ∘ _≤_.lower)
 ```
 
 <!--
@@ -160,11 +198,11 @@ abstract
   maxℤ-≤r (negsuc x) (negsuc y) = neg≤neg (Nat.min-≤r x y)
 
   maxℤ-univ : (x y z : Int) → x ≤ z → y ≤ z → maxℤ x y ≤ z
-  maxℤ-univ _ _ _ (pos≤pos x≤z) (pos≤pos y≤z) = pos≤pos (Nat.max-univ _ _ _ x≤z y≤z)
-  maxℤ-univ _ _ _ (pos≤pos x≤z) neg≤pos       = pos≤pos x≤z
-  maxℤ-univ _ _ _ neg≤pos       (pos≤pos y≤z) = pos≤pos y≤z
-  maxℤ-univ _ _ _ neg≤pos       neg≤pos       = neg≤pos
-  maxℤ-univ _ _ _ (neg≤neg x≥z) (neg≤neg y≥z) = neg≤neg (Nat.min-univ _ _ _ x≥z y≥z)
+  maxℤ-univ (pos x) (pos y) (pos z) x≤z y≤z = pos≤pos (Nat.max-univ x y z (unpos≤pos x≤z) (unpos≤pos y≤z))
+  maxℤ-univ (pos x) (negsuc y) z x≤z y≤z = x≤z
+  maxℤ-univ (negsuc x) (pos y) z x≤z y≤z = y≤z
+  maxℤ-univ (negsuc x) (negsuc y) (pos z) x≤z y≤z = neg≤pos
+  maxℤ-univ (negsuc x) (negsuc y) (negsuc z) x≥z y≥z = neg≤neg (Nat.min-univ x y z (unneg≤neg x≥z) (unneg≤neg y≥z))
 
   minℤ-≤l : (x y : Int) → minℤ x y ≤ x
   minℤ-≤l (pos x)    (pos y)    = pos≤pos (Nat.min-≤l x y)
@@ -179,11 +217,11 @@ abstract
   minℤ-≤r (negsuc x) (negsuc y) = neg≤neg (Nat.max-≤r x y)
 
   minℤ-univ : (x y z : Int) → z ≤ x → z ≤ y → z ≤ minℤ x y
-  minℤ-univ _ _ _ (pos≤pos x≥z) (pos≤pos y≥z) = pos≤pos (Nat.min-univ _ _ _ x≥z y≥z)
-  minℤ-univ _ _ _ neg≤pos       neg≤pos       = neg≤pos
-  minℤ-univ _ _ _ neg≤pos       (neg≤neg y≤z) = neg≤neg y≤z
-  minℤ-univ _ _ _ (neg≤neg x≤z) neg≤pos       = neg≤neg x≤z
-  minℤ-univ _ _ _ (neg≤neg x≤z) (neg≤neg y≤z) = neg≤neg (Nat.max-univ _ _ _ x≤z y≤z)
+  minℤ-univ (pos x) (pos y) (pos z) z≤x z≤y = pos≤pos (Nat.min-univ x y z (unpos≤pos z≤x) (unpos≤pos z≤y))
+  minℤ-univ (pos x) (pos y) (negsuc z) z≤x z≤y = neg≤pos
+  minℤ-univ (pos x) (negsuc y) z z≤x z≤y = z≤y
+  minℤ-univ (negsuc x) (pos y) z z≤x z≤y = z≤x
+  minℤ-univ (negsuc x) (negsuc y) (negsuc z) z≥x z≥y = neg≤neg (Nat.max-univ x y z (unneg≤neg z≥x) (unneg≤neg z≥y))
 ```
 
 ## Compatibility with the structure
@@ -195,29 +233,28 @@ and predecessor, we get as a corollary that addition also respects
 the order.
 
 ```agda
-suc-≤ : ∀ x y → x ≤ y → sucℤ x ≤ sucℤ y
-suc-≤ (pos x) (pos y) (pos≤pos p) = pos≤pos (Nat.s≤s p)
-suc-≤ (negsuc zero) (pos y) p = pos≤pos Nat.0≤x
-suc-≤ (negsuc zero) (negsuc zero) p = ≤-refl
-suc-≤ (negsuc zero) (negsuc (suc y)) (neg≤neg ())
-suc-≤ (negsuc (suc x)) (pos y) p = neg≤pos
-suc-≤ (negsuc (suc x)) (negsuc zero) p = neg≤pos
-suc-≤ (negsuc (suc x)) (negsuc (suc y)) (neg≤neg (Nat.s≤s p)) = neg≤neg p
+abstract
+  suc-≤ : ∀ x y → x ≤ y → sucℤ x ≤ sucℤ y
+  suc-≤ (pos x) (pos y) x≤y = possuc≤possuc x≤y
+  suc-≤ (negsuc zero) (pos x) x≤y = posz≤pos
+  suc-≤ (negsuc zero) (negsuc zero) x≤y = ≤-refl
+  suc-≤ (negsuc (suc x)) (pos y) x≤y = neg≤pos
+  suc-≤ (negsuc (suc x)) (negsuc zero) x≤y = neg≤pos
+  suc-≤ (negsuc (suc x)) (negsuc (suc y)) x≤y = unnegpred≤negpred x≤y
 
-pred-≤ : ∀ x y → x ≤ y → predℤ x ≤ predℤ y
-pred-≤ posz posz p = ≤-refl
-pred-≤ posz (possuc y) p = neg≤pos
-pred-≤ (possuc x) posz (pos≤pos ())
-pred-≤ (possuc x) (possuc y) (pos≤pos (Nat.s≤s p)) = pos≤pos p
-pred-≤ (negsuc x) posz p = neg≤neg Nat.0≤x
-pred-≤ (negsuc x) (possuc y) p = neg≤pos
-pred-≤ (negsuc x) (negsuc y) (neg≤neg p) = neg≤neg (Nat.s≤s p)
+  pred-≤ : ∀ x y → x ≤ y → predℤ x ≤ predℤ y
+  pred-≤ posz posz x≤y = ≤-refl
+  pred-≤ posz (possuc y) x≤y = neg≤pos
+  pred-≤ (possuc x) (possuc y) x≤y = pos≤pos (Nat.≤-peel (unpos≤pos x≤y))
+  pred-≤ (negsuc x) posz x≤y = neg≤negone
+  pred-≤ (negsuc x) (possuc y) x≤y = neg≤pos
+  pred-≤ (negsuc x) (negsuc y) x≤y = negpred≤negpred x≤y
 
-rotℤ≤l : ∀ k x y → x ≤ y → rotℤ k x ≤ rotℤ k y
-rotℤ≤l posz             x y p = p
-rotℤ≤l (possuc k)       x y p = suc-≤ _ _ (rotℤ≤l (pos k) x y p)
-rotℤ≤l (negsuc zero)    x y p = pred-≤ _ _ p
-rotℤ≤l (negsuc (suc k)) x y p = pred-≤ _ _ (rotℤ≤l (negsuc k) x y p)
+  rotℤ≤l : ∀ k x y → x ≤ y → rotℤ k x ≤ rotℤ k y
+  rotℤ≤l posz             x y p = p
+  rotℤ≤l (possuc k)       x y p = suc-≤ _ _ (rotℤ≤l (pos k) x y p)
+  rotℤ≤l (negsuc zero)    x y p = pred-≤ _ _ p
+  rotℤ≤l (negsuc (suc k)) x y p = pred-≤ _ _ (rotℤ≤l (negsuc k) x y p)
 
 abstract
   +ℤ-preserves-≤l : ∀ k x y → x ≤ y → (k +ℤ x) ≤ (k +ℤ y)
@@ -231,19 +268,17 @@ abstract
     (+ℤ-preserves-≤l k x y p)
 
   negℤ-anti : ∀ x y → x ≤ y → negℤ y ≤ negℤ x
-  negℤ-anti posz       posz       x≤y                     = x≤y
-  negℤ-anti posz       (possuc y) _                       = neg≤pos
-  negℤ-anti (possuc x) (possuc y) (pos≤pos (Nat.s≤s x≤y)) = neg≤neg x≤y
-  negℤ-anti (negsuc _) posz       _                       = pos≤pos Nat.0≤x
-  negℤ-anti (negsuc _) (possuc y) _                       = neg≤pos
-  negℤ-anti (negsuc x) (negsuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
+  negℤ-anti posz       posz       x≤y = x≤y
+  negℤ-anti posz       (possuc y) _   = neg≤pos
+  negℤ-anti (possuc x) (possuc y) x≤y = neg≤neg (Nat.≤-peel (unpos≤pos x≤y))
+  negℤ-anti (negsuc _) posz       _   = posz≤pos
+  negℤ-anti (negsuc _) (possuc y) _   = neg≤pos
+  negℤ-anti (negsuc x) (negsuc y) x≤y = pos≤pos (Nat.s≤s (unneg≤neg x≤y))
 
   negℤ-anti-full : ∀ x y → negℤ y ≤ negℤ x → x ≤ y
-  negℤ-anti-full posz       (pos y)    _                       = pos≤pos Nat.0≤x
-  negℤ-anti-full posz       (negsuc y) (pos≤pos ())
-  negℤ-anti-full (possuc x) (possuc y) (neg≤neg x≤y)           = pos≤pos (Nat.s≤s x≤y)
-  negℤ-anti-full (negsuc x) (pos y)    _                       = neg≤pos
-  negℤ-anti-full (negsuc x) (negsuc y) (pos≤pos (Nat.s≤s y≤x)) = neg≤neg y≤x
+  negℤ-anti-full x y -x≤-y =
+    subst₂ _≤_ (negℤ-negℤ x) (negℤ-negℤ y)
+    $ negℤ-anti (negℤ y) (negℤ x) -x≤-y
 
   *ℤ-cancel-≤r : ∀ {x y z} ⦃ _ : Positive x ⦄ → (y *ℤ x) ≤ (z *ℤ x) → y ≤ z
   *ℤ-cancel-≤r {possuc x} {y = pos y} {pos z} ⦃ pos _ ⦄ p = pos≤pos
@@ -262,86 +297,97 @@ abstract
   *ℤ-preserves-≤r {negsuc x} {negsuc y} (possuc z) ⦃ pos z ⦄ p = neg≤neg (Nat.+-preserves-≤l (y * suc z) (x * suc z) z (Nat.*-preserves-≤r y x (suc z) (unneg≤neg p)))
 
   *ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → 0 ≤ (x *ℤ y)
-  *ℤ-nonnegative {pos x} {pos y} (pos≤pos p) (pos≤pos q) = ≤-trans (pos≤pos Nat.0≤x) (≤-refl' (sym (assign-pos (x * y))))
+  *ℤ-nonnegative {pos x} {pos y} 0≤x 0≤y = ≤-trans posz≤pos (≤-refl' (sym (assign-pos (x * y))))
 
   positive→nonnegative : ∀ {x} → Positive x → 0 ≤ x
   positive→nonnegative (pos x) = pos≤pos Nat.0≤x
 
   -ℕ-nonnegative : ∀ {x y} → y Nat.≤ x → 0 ≤ (x ℕ- y)
-  -ℕ-nonnegative {x} {y} Nat.0≤x = pos≤pos Nat.0≤x
-  -ℕ-nonnegative {suc x} {suc y} (Nat.s≤s p) = -ℕ-nonnegative p
+  -ℕ-nonnegative {x} {zero} y≤x = posz≤pos
+  -ℕ-nonnegative {suc x} {suc y} y≤x = -ℕ-nonnegative (Nat.≤-peel y≤x)
 
   -ℤ-nonnegative : ∀ {x y} → 0 ≤ x → 0 ≤ y → y ≤ x → 0 ≤ (x -ℤ y)
-  -ℤ-nonnegative {posz} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
-  -ℤ-nonnegative {possuc x} {posz} (pos≤pos p) (pos≤pos q) (pos≤pos r) = pos≤pos Nat.0≤x
-  -ℤ-nonnegative {possuc x} {possuc y} (pos≤pos p) (pos≤pos q) (pos≤pos r) = -ℕ-nonnegative (Nat.≤-peel r)
+  -ℤ-nonnegative {pos x} {posz} 0≤x 0≤y y≤x = posz≤pos
+  -ℤ-nonnegative {pos x} {possuc y} 0≤x 0≤y y≤x = -ℕ-nonnegative (unpos≤pos y≤x)
 ```
 
 # The strict order
 
 ```agda
-data _<_ : Int → Int → Type where
-  pos<pos : ∀ {x y} → x Nat.< y → pos x < pos y
-  neg<pos : ∀ {x y} → negsuc x < pos y
-  neg<neg : ∀ {x y} → y Nat.< x → negsuc x < negsuc y
+_<?_ : Int → Int → Bool
+pos x    <? pos y    = x Nat.<? y
+pos x    <? negsuc y = false
+negsuc x <? pos y    = true
+negsuc x <? negsuc y = y Nat.<? x
 
+record _<_ (x y : Int) : Type where
+  constructor lift
+  field
+    lower : So (x <? y)
+```
+
+<!--
+```agda
 instance
   H-Level-< : ∀ {x y n} → H-Level (x < y) (suc n)
-  H-Level-< = prop-instance λ where
-    (pos<pos x) (pos<pos y) → ap pos<pos (Nat.≤-is-prop x y)
-    neg<pos neg<pos → refl
-    (neg<neg x) (neg<neg y) → ap neg<neg (Nat.≤-is-prop x y)
+  H-Level-< = prop-instance λ _ _ → refl
 
-<-not-equal : ∀ {x y} → x < y → x ≠ y
-<-not-equal (pos<pos p) q = Nat.<-not-equal p (pos-injective q)
-<-not-equal neg<pos q = negsuc≠pos q
-<-not-equal (neg<neg p) q = Nat.<-not-equal p (negsuc-injective (sym q))
+abstract
+  pos<pos : ∀ {x y} → x Nat.< y → pos x < pos y
+  pos<pos (Nat.lift x<y) = lift x<y
 
-<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl p q = <-not-equal q p
+  unpos<pos : ∀ {x y} → pos x < pos y → x Nat.< y
+  unpos<pos (lift x<y) = Nat.lift x<y
 
-<-weaken : ∀ {x y} → x < y → x ≤ y
-<-weaken (pos<pos x) = pos≤pos (Nat.<-weaken x)
-<-weaken neg<pos = neg≤pos
-<-weaken (neg<neg x) = neg≤neg (Nat.<-weaken x)
+  neg<pos : ∀ {x y} → negsuc x < pos y
+  neg<pos = lift oh
 
-<-asym : ∀ {x y} → x < y → ¬ (y < x)
-<-asym (pos<pos x) (pos<pos y) = Nat.<-asym x y
-<-asym (neg<neg x) (neg<neg y) = Nat.<-asym x y
+  neg<neg : ∀ {x y} → y Nat.< x → negsuc x < negsuc y
+  neg<neg (Nat.lift y<x) = lift y<x
 
-≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
-≤-strengthen (neg≤neg x) with Nat.≤-strengthen x
-... | inl x=y = inl (ap negsuc (sym x=y))
-... | inr x<y = inr (neg<neg x<y)
-≤-strengthen (pos≤pos x) with Nat.≤-strengthen x
-... | inl x=y = inl (ap pos x=y)
-... | inr x<y = inr (pos<pos x<y)
-≤-strengthen neg≤pos = inr neg<pos
+  unneg<neg : ∀ {x y} → negsuc x < negsuc y → y Nat.< x
+  unneg<neg (lift x<y) = Nat.lift x<y
+```
+-->
 
-<-from-≤ : ∀ {x y} → x ≤ y → x ≠ y → x < y
-<-from-≤ x≤y x≠y with ≤-strengthen x≤y
-... | inl x=y = absurd (x≠y x=y)
-... | inr p = p
-
+```agda
 <-dec : ∀ x y → Dec (x < y)
-<-dec (pos x) (pos y) with Nat.≤-dec (suc x) y
-... | yes x<y = yes (pos<pos x<y)
-... | no ¬x<y = no λ { (pos<pos x<y) → ¬x<y x<y }
-<-dec (pos x) (negsuc y) = no λ ()
-<-dec (negsuc x) (pos y) = yes neg<pos
-<-dec (negsuc x) (negsuc y) with Nat.≤-dec (suc y) x
-... | yes y<x = yes (neg<neg y<x)
-... | no ¬y<x = no λ { (neg<neg y<x) → ¬y<x y<x }
+<-dec x y with oh? (x <? y)
+... | yes x<y = yes (lift x<y)
+... | no ¬x<y = no (¬x<y ∘ _<_.lower)
 
 instance
   Dec-< : ∀ {x y} → Dec (x < y)
   Dec-< {x} {y} = <-dec x y
 
-≤-from-not-< : ∀ {x y} → ¬ x < y → y ≤ x
-≤-from-not-< {pos x} {pos y} ¬x<y = pos≤pos (Nat.≤-from-not-< x y (λ x<y → ¬x<y (pos<pos x<y)))
-≤-from-not-< {pos x} {negsuc y} ¬x<y = neg≤pos
-≤-from-not-< {negsuc x} {pos y} ¬x<y = absurd (¬x<y neg<pos)
-≤-from-not-< {negsuc x} {negsuc y} ¬x<y = neg≤neg (Nat.≤-from-not-< y x (λ y<x → ¬x<y (neg<neg y<x)))
+abstract
+  <-≤-asym : ∀ {x y} → x < y → ¬ (y ≤ x)
+  <-≤-asym {pos x} {pos y} x<y y≤x = absurd (Nat.<-≤-asym (unpos<pos x<y) (unpos≤pos y≤x))
+  <-≤-asym {negsuc x} {negsuc y} x<y y≤x = absurd (Nat.<-≤-asym (unneg<neg x<y) (unneg≤neg y≤x))
+
+  <-not-equal : ∀ {x y} → x < y → x ≠ y
+  <-not-equal x<y x=y = <-≤-asym x<y (≤-refl' (sym x=y))
+
+  <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
+  <-irrefl p q = <-not-equal q p
+
+  <-weaken : ∀ {x y} → x < y → x ≤ y
+  <-weaken {x} {y} x<y = ≤-is-weakly-total y x (<-≤-asym x<y)
+
+  <-asym : ∀ {x y} → x < y → ¬ (y < x)
+  <-asym x<y y<x = <-≤-asym x<y (<-weaken y<x)
+
+  ≤-from-not-< : ∀ {x y} → ¬ x < y → y ≤ x
+  ≤-from-not-< {pos x} {pos y} ¬x<y = pos≤pos (Nat.≤-from-not-< x y (¬x<y ∘ pos<pos))
+  ≤-from-not-< {pos x} {negsuc y} ¬x<y = neg≤pos
+  ≤-from-not-< {negsuc x} {pos y} ¬x<y = absurd (¬x<y neg<pos)
+  ≤-from-not-< {negsuc x} {negsuc y} ¬x<y = neg≤neg (Nat.≤-from-not-< y x (¬x<y ∘ neg<neg))
+
+  <-from-not-≤ : ∀ {x y} → ¬ (x ≤ y) → y < x
+  <-from-not-≤ = contrapose λ ¬y<x ¬x≤y → ¬x≤y (≤-from-not-< ¬y<x)
+
+  <-from-≤ : ∀ {x y} → x ≤ y → x ≠ y → x < y
+  <-from-≤ x≤y x≠y = <-from-not-≤ λ y≤x → x≠y (≤-antisym x≤y y≤x)
 
 <-linear : ∀ {x y} → ¬ x < y → ¬ y < x → x ≡ y
 <-linear {x} {y} ¬x<y ¬y<x = ≤-antisym (≤-from-not-< ¬y<x) (≤-from-not-< ¬x<y)
@@ -353,23 +399,22 @@ instance
 ... | yes y<x = inr (inr y<x)
 ... | no ¬y<x = inr (inl (<-linear ¬x<y ¬y<x))
 
-<-trans : ∀ {x y z} → x < y → y < z → x < z
-<-trans (pos<pos p) (pos<pos q) = pos<pos (Nat.<-trans _ _ _ p q)
-<-trans neg<pos (pos<pos q) = neg<pos
-<-trans (neg<neg p) neg<pos = neg<pos
-<-trans (neg<neg p) (neg<neg q) = neg<neg (Nat.<-trans _ _ _ q p)
-
-<-≤-trans : ∀ {x y z} → x < y → y ≤ z → x < z
-<-≤-trans p q with ≤-strengthen q
-... | inl y=z = subst₂ _<_ refl y=z p
-... | inr y<z = <-trans p y<z
-
-≤-<-trans : ∀ {x y z} → x ≤ y → y < z → x < z
-≤-<-trans p q with ≤-strengthen p
-... | inl x=y = subst₂ _<_ (sym x=y) refl q
-... | inr x<y = <-trans x<y q
+≤-strengthen : ∀ {x y} → x ≤ y → (x ≡ y) ⊎ (x < y)
+≤-strengthen {x} {y} x≤y with <-split x y
+... | inl x<y = inr x<y
+... | inr (inl x=y) = inl x=y
+... | inr (inr y<x) = absurd (<-≤-asym y<x x≤y)
 
 abstract
+  <-≤-trans : ∀ {x y z} → x < y → y ≤ z → x < z
+  <-≤-trans x<y y≤z = <-from-not-≤ λ z≤x → <-≤-asym x<y (≤-trans y≤z z≤x)
+
+  ≤-<-trans : ∀ {x y z} → x ≤ y → y < z → x < z
+  ≤-<-trans x≤y y<z = <-from-not-≤ λ z≤x → <-≤-asym y<z (≤-trans z≤x x≤y)
+
+  <-trans : ∀ {x y z} → x < y → y < z → x < z
+  <-trans x<y y<z = <-≤-trans x<y (<-weaken y<z)
+
   nat-diff-<-possuc : ∀ k x → (k ℕ- x) < possuc k
   nat-diff-<-possuc zero zero = pos<pos (Nat.s≤s Nat.0≤x)
   nat-diff-<-possuc zero (suc x) = neg<pos
@@ -395,33 +440,33 @@ abstract
   negsuc-≤-nat-diff (suc k) (suc x) = ≤-trans (neg≤neg Nat.≤-ascend) (negsuc-≤-nat-diff k x)
 
   nat-diff-preserves-<r : ∀ k {x y} → y Nat.< x → (k ℕ- x) < (k ℕ- y)
-  nat-diff-preserves-<r zero {suc zero} {zero} (Nat.s≤s Nat.0≤x) = neg<pos
-  nat-diff-preserves-<r zero {suc (suc x)} {zero} (Nat.s≤s p) = neg<pos
-  nat-diff-preserves-<r zero {suc (suc x)} {suc y} (Nat.s≤s p) = neg<neg p
-  nat-diff-preserves-<r (suc k) {suc x} {zero} (Nat.s≤s p) = nat-diff-<-possuc k x
-  nat-diff-preserves-<r (suc k) {suc x} {suc y} (Nat.s≤s p) = nat-diff-preserves-<r k {x} {y} p
+  nat-diff-preserves-<r zero {suc zero} {zero} y<x = neg<pos
+  nat-diff-preserves-<r zero {suc (suc x)} {zero} y<x = neg<pos
+  nat-diff-preserves-<r zero {suc (suc x)} {suc y} y<x = neg<neg (Nat.≤-peel y<x)
+  nat-diff-preserves-<r (suc k) {suc x} {zero} y<x = nat-diff-<-possuc k x
+  nat-diff-preserves-<r (suc k) {suc x} {suc y} y<x = nat-diff-preserves-<r k {x} {y} (Nat.≤-peel y<x)
 
   nat-diff-preserves-<l : ∀ k {x y} → x Nat.< y → (x ℕ- k) < (y ℕ- k)
-  nat-diff-preserves-<l zero {zero} {suc y} (Nat.s≤s p) = pos<pos (Nat.s≤s Nat.0≤x)
-  nat-diff-preserves-<l zero {suc x} {suc y} (Nat.s≤s p) = pos<pos (Nat.s≤s p)
-  nat-diff-preserves-<l (suc k) {zero} {suc y} (Nat.s≤s Nat.0≤x) = negsuc-<-nat-diff k y
-  nat-diff-preserves-<l (suc k) {suc x} {suc y} (Nat.s≤s p) = nat-diff-preserves-<l k {x} {y} p
+  nat-diff-preserves-<l zero {zero} {suc y} x<y = pos<pos (Nat.s≤s Nat.0≤x)
+  nat-diff-preserves-<l zero {suc x} {suc y} x<y = pos<pos x<y
+  nat-diff-preserves-<l (suc k) {zero} {suc y} x<y = negsuc-<-nat-diff k y
+  nat-diff-preserves-<l (suc k) {suc x} {suc y} x<y = nat-diff-preserves-<l k {x} {y} (Nat.≤-peel x<y)
 
   +ℤ-preserves-<r : ∀ x y z → x < y → (x +ℤ z) < (y +ℤ z)
-  +ℤ-preserves-<r x y (pos z) (pos<pos p) = pos<pos (Nat.+-preserves-<r _ _ z p)
+  +ℤ-preserves-<r (pos x) (pos y) (pos z) x<y = pos<pos (Nat.+-preserves-<r _ _ z (unpos<pos x<y))
   +ℤ-preserves-<r (negsuc x) (pos y) (pos z) neg<pos =
     let
       rem₁ : z Nat.≤ y + z
       rem₁ = Nat.≤-trans (Nat.+-≤l z y) (Nat.≤-refl' (Nat.+-commutative z y))
     in <-≤-trans (nat-diff-<-pos z x) (pos≤pos rem₁)
-  +ℤ-preserves-<r x y (pos z) (neg<neg p) = nat-diff-preserves-<r z (Nat.s≤s p)
-  +ℤ-preserves-<r x y (negsuc z) (pos<pos p) = nat-diff-preserves-<l (suc z) p
+  +ℤ-preserves-<r (negsuc x) (negsuc y) (pos z) x<y = nat-diff-preserves-<r z (Nat.s≤s (unneg<neg x<y))
+  +ℤ-preserves-<r (pos x) (pos y) (negsuc z) x<y = nat-diff-preserves-<l (suc z) (unpos<pos x<y)
   +ℤ-preserves-<r (negsuc x) (pos y) (negsuc z) neg<pos =
     let
       rem₁ : suc z Nat.≤ suc (x + z)
       rem₁ = Nat.≤-trans (Nat.+-≤l (suc z) x) (Nat.≤-refl' (ap suc (Nat.+-commutative z x)))
     in <-≤-trans (neg<neg rem₁) (negsuc-≤-nat-diff z y)
-  +ℤ-preserves-<r x y (negsuc z) (neg<neg p) = neg<neg (Nat.s≤s (Nat.+-preserves-<r _ _ z p))
+  +ℤ-preserves-<r (negsuc x) (negsuc y) (negsuc z) x<y = neg<neg (Nat.s≤s (Nat.+-preserves-<r _ _ z (unneg<neg x<y)))
 
   +ℤ-preserves-<l : ∀ x y z → x < y → (z +ℤ x) < (z +ℤ y)
   +ℤ-preserves-<l x y z p = subst₂ _<_ (+ℤ-commutative x z) (+ℤ-commutative y z) (+ℤ-preserves-<r x y z p)
@@ -443,11 +488,11 @@ abstract
     λ xz=yz → <-irrefl (*ℤ-injectiver z x y (positive→nonzero auto) xz=yz) x<y
 
   negℤ-anti-< : ∀ {x y} → x < y → negℤ y < negℤ x
-  negℤ-anti-< {posz} {pos y} (pos<pos (Nat.s≤s p)) = neg<pos
-  negℤ-anti-< {possuc x} {pos y} (pos<pos (Nat.s≤s p)) = neg<neg p
-  negℤ-anti-< {negsuc x} {posz} neg<pos = pos<pos (Nat.s≤s Nat.0≤x)
-  negℤ-anti-< {negsuc x} {possuc y} neg<pos = neg<pos
-  negℤ-anti-< {negsuc x} {negsuc y} (neg<neg p) = pos<pos (Nat.s≤s p)
+  negℤ-anti-< {posz} {possuc y} x<y = neg<pos
+  negℤ-anti-< {possuc x} {possuc y} x<y = neg<neg (Nat.≤-peel (unpos<pos x<y))
+  negℤ-anti-< {negsuc x} {posz} x<y = pos<pos (Nat.s≤s Nat.0≤x)
+  negℤ-anti-< {negsuc x} {possuc y} x<y = neg<pos
+  negℤ-anti-< {negsuc x} {negsuc y} x<y = pos<pos (Nat.s≤s (unneg<neg x<y))
 
   negℤ-anti-full-< : ∀ {x y} → negℤ x < negℤ y → y < x
   negℤ-anti-full-< {x} {y} p = subst₂ _<_ (negℤ-negℤ y) (negℤ-negℤ x) (negℤ-anti-< p)

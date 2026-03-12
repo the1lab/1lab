@@ -18,7 +18,6 @@ open import Data.Nat.Base
 open import Data.List.Pi
 open import Data.Maybe
 open import Data.Dec
-open import Data.Irr
 open import Data.Sum
 ```
 -->

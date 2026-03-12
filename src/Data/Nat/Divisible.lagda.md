@@ -118,10 +118,10 @@ m∣sn→m≤sn {x} {y} p with ∣→fibre p
 ... | zero  , p = absurd (zero≠suc p)
 ... | suc k , p = difference→≤ (k * x) p
 
-m∣n→m≤n : ∀ {m n} .⦃ _ : Positive n ⦄ → m ∣ n → m ≤ n
+m∣n→m≤n : ∀ {m n} ⦃ _ : Positive n ⦄ → m ∣ n → m ≤ n
 m∣n→m≤n {n = suc _} = m∣sn→m≤sn
 
-proper-divisor-< : ∀ {m n} .⦃ _ : Positive n ⦄ → m ≠ n → m ∣ n → m < n
+proper-divisor-< : ∀ {m n} ⦃ _ : Positive n ⦄ → m ≠ n → m ∣ n → m < n
 proper-divisor-< m≠n m∣n with ≤-strengthen (m∣n→m≤n m∣n)
 ... | inl here  = absurd (m≠n here)
 ... | inr there = there
@@ -151,7 +151,7 @@ expect a number to divide its multiples. Fortunately, this is the case:
 |-*l-pres : ∀ {n a b} → n ∣ b → n ∣ a * b
 |-*l-pres {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (a * q , sym (*-associative a q n) ∙ ap (a *_) α)
 
-∣-*-cancelr : ∀ {n a b} .⦃ _ : Positive n ⦄ → a * n ∣ b * n → a ∣ b
+∣-*-cancelr : ∀ {n a b} ⦃ _ : Positive n ⦄ → a * n ∣ b * n → a ∣ b
 ∣-*-cancelr {n} {a} {b} p1 with (q , α) ← ∣→fibre p1 = fibre→∣ (q , *-injr n (q * a) b (sym (*-associative q a n) ∙ α))
 ```
 

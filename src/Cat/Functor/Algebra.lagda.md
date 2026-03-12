@@ -219,8 +219,8 @@ where $\omega$ is the [[poset of natural numbers]], regarded as a category.
     F₀ⁿ[⊥] (suc n) = F.₀ (F₀ⁿ[⊥] n)
 
     F₁ⁿ[⊥] : ∀ {m n} → m ≤ n → Hom (F₀ⁿ[⊥] m) (F₀ⁿ[⊥] n)
-    F₁ⁿ[⊥] 0≤x = ¡
-    F₁ⁿ[⊥] (s≤s p) = F.₁ (F₁ⁿ[⊥] p)
+    F₁ⁿ[⊥] {0} {n} m≤n = ¡
+    F₁ⁿ[⊥] {suc m} {suc n} m≤n = F.₁ (F₁ⁿ[⊥] (≤-peel m≤n))
 
     Fⁿ[⊥] : Functor ω C
 ```
@@ -238,8 +238,8 @@ where $\omega$ is the [[poset of natural numbers]], regarded as a category.
       : ∀ {m n o}
       → (p : n ≤ o) (q : m ≤ n)
       → F₁ⁿ[⊥] (≤-trans q p) ≡ F₁ⁿ[⊥] p ∘ F₁ⁿ[⊥] q
-    Fⁿ[⊥]-∘ p 0≤x = ¡-unique₂ _ _
-    Fⁿ[⊥]-∘ (s≤s p) (s≤s q) = F.expand (Fⁿ[⊥]-∘ p q)
+    Fⁿ[⊥]-∘ {0} {n} {o} n≤o 0≤n = ¡-unique₂ _ _
+    Fⁿ[⊥]-∘ {suc m} {suc n} {suc o} n≤o m≤n = F.expand (Fⁿ[⊥]-∘ (≤-peel n≤o) (≤-peel m≤n))
 
     Fⁿ[⊥] .F₀ = F₀ⁿ[⊥]
     Fⁿ[⊥] .F₁ = F₁ⁿ[⊥]
@@ -261,8 +261,8 @@ in $n$.
       : ∀ {a} {α : Hom (F.₀ a) a} {m n}
       → (m≤n : m ≤ n)
       → Fⁿ[⊥]-fold α n ∘ F₁ⁿ[⊥] m≤n ≡ Fⁿ[⊥]-fold α m
-    Fⁿ[⊥]-fold-nat 0≤x = sym (¡-unique _)
-    Fⁿ[⊥]-fold-nat (s≤s m≤n) = F.pullr (Fⁿ[⊥]-fold-nat m≤n)
+    Fⁿ[⊥]-fold-nat {m = 0} {n = n} m≤n = sym (¡-unique _)
+    Fⁿ[⊥]-fold-nat {m = suc m} {n = suc n} m≤n = F.pullr (Fⁿ[⊥]-fold-nat (≤-peel m≤n))
 ```
 
 Now, suppose that $\cC$ has a colimit $F^{\infty}(\bot)$ of the diagram

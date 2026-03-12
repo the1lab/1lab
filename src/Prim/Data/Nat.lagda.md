@@ -30,7 +30,7 @@ Agda lets us define the following functions on natural numbers, which
 are computed more efficiently when bound as `BUILTIN`s.
 
 ```agda
-infix  4 _==_ _<_
+infix  4 _==_ _<_ _≤_
 infixl 8 _+_ _-_
 infixl 9 _*_
 
@@ -66,4 +66,8 @@ zero  < suc _ = true
 suc n < suc m = n < m
 
 {-# BUILTIN NATLESS _<_ #-}
+
+_≤_ : Nat → Nat → Bool
+x ≤ y = x < suc y
+{-# INLINE _≤_ #-}
 ```

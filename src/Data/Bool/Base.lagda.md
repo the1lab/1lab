@@ -75,41 +75,6 @@ x≠false→x≡true false p = absurd (p refl)
 x≠false→x≡true true p = refl
 ```
 
-```agda
-is-true : Bool → Type
-is-true true  = ⊤
-is-true false = ⊥
-
-record So (b : Bool) : Type where
-  field
-    is-so : is-true b
-
-pattern oh = record { is-so = tt }
-```
-
-<!--
-```agda
-¬so-false : So false → ⊥
-¬so-false ()
-
-oh? : ∀ x → Dec (So x)
-oh? true = yes oh
-oh? false = no λ ()
-
-not-so : ∀ {x} → ¬ So x → So (not x)
-not-so {true} ¬p = absurd (¬p oh)
-not-so {false} p = oh
-
-instance
-  H-Level-So : ∀ {x n} → H-Level (So x) (suc n)
-  H-Level-So {false} = prop-instance λ ()
-  H-Level-So {true} = prop-instance λ where
-    oh oh → refl
-
-  Dec-So : ∀ {x} → Dec (So x)
-  Dec-So = oh? _
-```
--->
 
 <!--
 ```agda
@@ -128,6 +93,36 @@ Bool-elim A at af true = at
 Bool-elim A at af false = af
 ```
 -->
+
+```agda
+record So (b : Bool) : Type where
+  constructor oh
+  field
+    @irr ⦃ is-so ⦄ : if b then ⊤ else ⊥
+```
+
+<!--
+```agda
+¬so-false : So false → ⊥
+¬so-false ()
+
+oh? : ∀ x → Dec (So x)
+oh? true = yes oh
+oh? false = no λ ()
+
+not-so : ∀ {x} → ¬ So x → So (not x)
+not-so {true} ¬p = absurd (¬p oh)
+not-so {false} ¬p = oh
+
+instance
+  H-Level-So : ∀ {x n} → H-Level (So x) (suc n)
+  H-Level-So = prop-instance (λ _ _ → refl)
+
+  Dec-So : ∀ {x} → Dec (So x)
+  Dec-So {x} = oh? x
+```
+-->
+
 
 ## The "not" equivalence
 

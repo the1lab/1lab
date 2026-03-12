@@ -97,20 +97,20 @@ Finite-coproduct {m} {n} = Iso→Equiv (to , iso from ir il) where
   to : Fin m ⊎ Fin n → Fin (m + n)
   to (inl x) = record
     { lower   = x .lower
-    ; bounded = forget (≤-trans (to-ℕ< x .snd) (+-≤l m n))
+    ; bounded = ≤-trans (to-ℕ< x .snd) (+-≤l m n)
     }
-  to (inr (fin i ⦃ forget α ⦄)) =
+  to (inr (fin i ⦃ α ⦄)) =
     let
-      .p : m + i Nat.< m + n
+      p : m + i Nat.< m + n
       p = ≤-trans (≤-refl' (sym (+-sucr m i))) (+-preserves-≤ m m (suc _) n ≤-refl α)
     in record
       { lower   = m + i
-      ; bounded = forget p
+      ; bounded = p
       }
 
   from : Fin (m + n) → Fin m ⊎ Fin n
-  from (fin i ⦃ forget b ⦄) with holds? (i Nat.< m)
-  ... | yes p = inl (fin i ⦃ forget p ⦄)
+  from (fin i ⦃ b ⦄) with holds? (i Nat.< m)
+  ... | yes p = inl (fin i ⦃ p ⦄)
   ... | no ¬p =
     let
       p' : m Nat.≤ i
@@ -119,20 +119,20 @@ Finite-coproduct {m} {n} = Iso→Equiv (to , iso from ir il) where
       q : i - m Nat.≤ i
       q = monus-≤ i m
 
-      .r : i - m Nat.< n
+      r : i - m Nat.< n
       r = +-reflects-≤l (suc (i - m)) n m (≤-trans (≤-refl' (+-sucr m (i - m))) (≤-trans (≤-refl' (ap Nat.suc (monus-+l-inverse m i p'))) b))
-    in inr (fin (i - m) ⦃ forget r ⦄)
+    in inr (fin (i - m) ⦃ r ⦄)
 
   ir : is-right-inverse from to
-  ir (fin i ⦃ forget b ⦄) with holds? (i Nat.< m)
+  ir (fin i ⦃ b ⦄) with holds? (i Nat.< m)
   ... | yes p = fin-ap refl
   ... | no ¬p = fin-ap (monus-+l-inverse m i (≤-peel (<-from-not-≤ _ _ ¬p)))
 
   il : is-left-inverse from to
-  il (inl (fin i ⦃ forget b ⦄)) with holds? (i Nat.< m)
+  il (inl (fin i ⦃ b ⦄)) with holds? (i Nat.< m)
   ... | yes p = refl
   ... | no ¬p = absurd (¬p b)
-  il (inr (fin i ⦃ forget b ⦄)) with holds? ((m + i) Nat.< m)
+  il (inr (fin i ⦃ b ⦄)) with holds? ((m + i) Nat.< m)
   ... | yes p = absurd (¬sucx≤x m (+-reflects-≤l (suc m) m i (≤-trans (≤-refl' (+-sucr i m ∙ ap suc (+-commutative i m))) (≤-trans p (+-≤r i m)))))
   ... | no ¬p = ap inr (fin-ap (+l-monus-inverse i m))
 ```
@@ -192,37 +192,37 @@ Finite-multiply {zero} {n} = fst , record { is-eqv = λ o → absurd (Fin-absurd
 Finite-multiply {suc n} {zero} = ((λ (_ , x) → absurd (Fin-absurd x))) , record { is-eqv = λ o → absurd (Fin-absurd (subst Fin (*-zeror n) o)) }
 Finite-multiply {m@(suc m')} {n@(suc n')} = Iso→Equiv (to , iso from ir il) where
   to : Fin m × Fin n → Fin (m * n)
-  to (fin i ⦃ forget b ⦄ , fin j ⦃ forget b' ⦄) = fin (i * n + j) ⦃ forget α ⦄ where
+  to (fin i ⦃ b ⦄ , fin j ⦃ b' ⦄) = fin (i * n + j) ⦃ α ⦄ where
     α : i * n + j Nat.< m * n
     α =
       let
         it : i * n + j Nat.≤ m' * n + n'
-        it = +-preserves-≤ (i * n) (m' * n) j n' (*-preserves-≤r i m' n (≤-peel (recover b))) (≤-peel (recover b'))
+        it = +-preserves-≤ (i * n) (m' * n) j n' (*-preserves-≤r i m' n (≤-peel b)) (≤-peel b')
       in s≤s (≤-trans it  (≤-refl' (+-commutative (m' * n) n')))
 
   from : Fin (m * n) → Fin m × Fin n
-  from (fin i ⦃ forget b ⦄) with divmod q r quot rem ← divide-pos i n =
+  from (fin i ⦃ b ⦄) with divmod q r quot rem ← divide-pos i n =
     let
-      .b' : q Nat.≤ m
+      b' : q Nat.≤ m
       b' = *-reflects-≤r n {q} {m} $
-        ≤-trans (difference→≤ r (sym quot)) (≤-sucr (≤-peel b))
+        ≤-trans (difference→≤ r (sym (recover quot))) (≤-sucr (≤-peel b))
 
-      .ne : q ≠ m
+      ne : q ≠ m
       ne p =
         let
           p' : m * n Nat.≤ i
-          p' = difference→≤ r (sym (subst (λ e → i ≡ e * suc n' + r) p quot))
+          p' = difference→≤ r (sym (subst (λ e → i ≡ e * suc n' + r) p (recover quot)))
         in ¬sucx≤x _ (≤-trans b p')
 
-    in fin q ⦃ forget (<-from-≤ ne b') ⦄ , fin r ⦃ forget rem ⦄
+    in fin q ⦃ (<-from-≤ ne b') ⦄ , fin r ⦃ rem ⦄
 
   ir : is-right-inverse from to
-  ir (fin i ⦃ forget b ⦄) = fin-ap (sym (is-divmod i n))
+  ir (fin i ⦃ b ⦄) = fin-ap (sym (is-divmod i n))
 
   il : is-left-inverse from to
-  il (fin i ⦃ forget b ⦄ , fin j ⦃ forget b' ⦄) =
+  il (fin i ⦃ b ⦄ , fin j ⦃ b' ⦄) =
     let
-      p : Path (DivMod (i * n + j) n) (divide-pos (i * n + j) n) (divmod i j refl b')
+      p : Path (DivMod (i * n + j) n) (divide-pos (i * n + j) n) (divmod i j (forget refl) b')
       p = prop!
     in fin-ap (ap DivMod.quot p) ,ₚ fin-ap (ap DivMod.rem p)
 ```
@@ -245,7 +245,7 @@ Finite-product {zero} B .snd = is-iso→is-equiv λ where
   .is-iso.linv _ → funext λ ()
 
   .is-iso.rinv fzero                      → refl
-  .is-iso.rinv (fin (suc i) ⦃ forget p ⦄) → absurd (¬suc≤0 (≤-peel p))
+  .is-iso.rinv (fin (suc i) ⦃ p ⦄) → absurd (¬suc≤0 (≤-peel p))
 Finite-product {suc n} B =
   (∀ x → Fin (B x))                          ≃⟨ Fin-suc-Π ⟩
   Fin (B fzero) × (∀ x → Fin (B (fsuc x)))   ≃⟨ Σ-ap-snd (λ _ → Finite-product (B ∘ fsuc)) ⟩

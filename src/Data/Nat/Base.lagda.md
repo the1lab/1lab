@@ -17,7 +17,7 @@ module Data.Nat.Base where
 
 <!--
 ```agda
-open import Prim.Data.Nat hiding (_<_) public
+open import Prim.Data.Nat renaming (_<_ to _<?_; _≤_ to _≤?_) public
 ```
 -->
 
@@ -193,44 +193,86 @@ infixr 10 _^_
 
 ## Ordering
 
-We define the order relation `_≤_`{.Agda} on the natural numbers as an
-inductive predicate. We could also define the relation by recursion on
-the numbers to be compared, but the inductive version has much better
-properties when it comes to type inference.
+We define the order relation `_≤_`{.Agda} on the natural numbers
+by appealing to the decision procedure `_≤?_`{.Agda}.
 
 ```agda
-data _≤_ : Nat → Nat → Type where
-  instance
-    0≤x : ∀ {x} → 0 ≤ x
-  s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
+record _≤_ (x y : Nat) : Type where
+  constructor lift
+  field
+    lower : So (x ≤? y)
+```
+
+We could also define the relation by recursion on the numbers to be
+compared or as an inductive predicate. However, our definition has
+the benefit of being a *definitional* [[proposition]].
+
+```agda
+≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
+≤-is-prop p q = refl
+```
+
+As a further optimization, `_≤?_`{.Agda} is implemented using the `BUILTIN` decision
+procedure `_<?_`{.Agda}. This makes it possible to typecheck proofs of `_≤_`{.Agda}
+nearly instantly, even when the numbers involved are quite large.
+
+<!--
+```agda
+module _ where private
+```
+-->
+
+```agda
+  _ : 2 ^ 1024 ≤ 2 ^ 2048
+  _ = lift oh
 ```
 
 <!--
 ```agda
-instance
-  s≤s' : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
-  s≤s' ⦃ x ⦄ = s≤s x
+abstract
+  s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
+  s≤s (lift x≤y) = lift x≤y
 
-  x≤x : ∀ {x} → x ≤ x
-  x≤x {zero}  = 0≤x
-  x≤x {suc x} = s≤s x≤x
+  0≤x : ∀ {x} → zero ≤ x
+  0≤x {x} = lift oh
 
-  x≤sucy : ∀ {x y} ⦃ p : x ≤ y ⦄ → x ≤ suc y
-  x≤sucy {.0} {y} ⦃ 0≤x ⦄ = 0≤x
-  x≤sucy {.(suc _)} {.(suc _)} ⦃ s≤s p ⦄ = s≤s (x≤sucy ⦃ p ⦄)
+  ≤-peel : ∀ {x y} → suc x ≤ suc y → x ≤ y
+  ≤-peel (lift x≤y) = lift x≤y
 
-  {-# INCOHERENT x≤x x≤sucy #-}
+  ≤-sucr : ∀ {x y} → x ≤ y → x ≤ suc y
+  ≤-sucr {zero} {y} x≤y = 0≤x
+  ≤-sucr {suc x} {suc y} x≤y = s≤s (≤-sucr (≤-peel x≤y))
 
-≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
-≤-peel (s≤s p) = p
+  <-weaken : ∀ {x y} → suc x ≤ y → x ≤ y
+  <-weaken {zero} {y} 1+x≤y = 0≤x
+  <-weaken {suc x} {suc y} 1+x≤y = s≤s (<-weaken (≤-peel 1+x≤y))
+
+abstract instance
+  Leq-zero : ∀ {x} → 0 ≤ x
+  Leq-zero = 0≤x
+
+  Leq-suc-suc : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
+  Leq-suc-suc ⦃ x≤y ⦄ = s≤s x≤y
+
+  Leq-refl : ∀ {x} → x ≤ x
+  Leq-refl {zero} = 0≤x
+  Leq-refl {suc x} = s≤s Leq-refl
+  {-# INCOHERENT Leq-refl #-}
+
+  Leq-sucr : ∀ {x y} → ⦃ x ≤ y ⦄ → x ≤ suc y
+  Leq-sucr ⦃ x≤y ⦄ = ≤-sucr x≤y
+  {-# INCOHERENT Leq-sucr #-}
+
+  H-Level-≤ : ∀ {x y n} → H-Level (x ≤ y) (suc n)
+  H-Level-≤ = prop-instance (λ _ _ → refl)
 
 ¬suc≤0 : ∀ {x} → suc x ≤ 0 → ⊥
 ¬suc≤0 ()
 
-≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-≤-trans 0≤x     0≤x     = 0≤x
-≤-trans 0≤x     (s≤s q) = 0≤x
-≤-trans (s≤s p) (s≤s q) = s≤s (≤-trans p q)
+abstract
+  ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+  ≤-trans {zero} {y} {z} x≤y y≤z = 0≤x
+  ≤-trans {suc x} {suc y} {suc z} x≤y y≤z = s≤s (≤-trans (≤-peel x≤y) (≤-peel y≤z))
 
 factorial : Nat → Nat
 factorial zero = 1
@@ -249,17 +291,6 @@ _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
 infix 7 _<_ _≤_
 ```
-
-<!--
-```agda
-≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
-≤-sucr 0≤x = 0≤x
-≤-sucr (s≤s p) = s≤s (≤-sucr p)
-
-<-weaken : ∀ {x y} → x < y → x ≤ y
-<-weaken {x} {suc y} p = ≤-sucr (≤-peel p)
-```
--->
 
 As an "ordering combinator", we can define the _maximum_ of two natural
 numbers by recursion: The maximum of zero and a successor (on either

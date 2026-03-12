@@ -144,7 +144,7 @@ instance
     → ⦃ _ : 2 ≤ n ⦄
     → ⦃ _ : H-Level A (suc n) ⦄
     → H-Level (x ∈ₗ xs) n
-  H-Level-∈ₗ {n = suc (suc n)} ⦃ s≤s (s≤s _) ⦄ ⦃ ahl ⦄ = hlevel-instance (∈ₗ-is-hlevel n (ahl .H-Level.has-hlevel))
+  H-Level-∈ₗ {n = suc (suc n)} ⦃ 2≤n ⦄ ⦃ ahl ⦄ = hlevel-instance (∈ₗ-is-hlevel n (ahl .H-Level.has-hlevel))
 ```
 -->
 
