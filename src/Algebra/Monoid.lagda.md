@@ -140,7 +140,7 @@ module _ (e : A ≃ B) (mA : Monoid-on A) where
   open make-monoid
   open Monoid-hom
   open Equiv e
-  module mA = Monoid-on mA
+  private module mA = Monoid-on mA
 
   monoid-transport : Monoid-on B
   monoid-transport = to-monoid-on m where
