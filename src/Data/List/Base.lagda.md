@@ -9,6 +9,7 @@ open import Data.Maybe.Base
 open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Fin.Base
+open import Data.Irr
 
 open import Meta.Traversable
 open import Meta.Foldable
@@ -16,6 +17,8 @@ open import Meta.Append
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
+
+import Data.Nat.Base as Nat
 ```
 -->
 
@@ -61,6 +64,9 @@ instance
     go zero xs                = []
     go (suc zero) xs          = xs ∷ []
     go (suc (suc n)) (x , xs) = x ∷ go (suc n) xs
+
+[_]L : ∀ {ℓ} {A : Type ℓ} {n} → Vecₓ A n → List A
+[ p ]L = [ p ]
 
 -- Test:
 _ : Path (List Nat) [ 1 , 2 , 3 ] (1 ∷ 2 ∷ 3 ∷ [])
@@ -335,10 +341,18 @@ lookup x ((k , v) ∷ xs) with x ≡? k
 ... | yes _ = just v
 ... | no  _ = lookup x xs
 
+_!?_ : List A → Nat → Maybe A
+[] !? n = nothing
+(x ∷ xs) !? zero = just x
+(x ∷ xs) !? suc n = xs !? n
+
+!?-just : ∀ (xs : List A) (n : Nat) → (n Nat.< length xs) → is-just (xs !? n)
+!?-just {A = a} (x ∷ xs) zero n<xs = lift oh
+!?-just {A = a} (x ∷ xs) (suc n) n<xs = !?-just xs n (Nat.≤-peel n<xs)
+
 _!_ : (l : List A) → Fin (length l) → A
-(x ∷ xs) ! n with fin-view n
-... | zero  = x
-... | suc i = xs ! i
+xs ! (fin n ⦃ pf ⦄) = from-just! _ $ !?-just xs n pf
+
 
 tabulate : ∀ {n} (f : Fin n → A) → List A
 tabulate {n = zero}  f = []

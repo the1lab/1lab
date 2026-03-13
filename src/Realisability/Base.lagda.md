@@ -102,14 +102,14 @@ id⊢ : [ id ] P ⊢ P
 id⊢ {P = P} = record where
   realiser = val ⟨ x ⟩ x
 
-  tracks ha = subst-∈ (P _) ha (abs-β _ [] (_ , P _ .def ha))
+  tracks ha = subst-∈ (P _) ha (abs-β _ []v (_ , P _ .def ha))
 
 _∘⊢_ : ∀ {f g} → [ g ] Q ⊢ R → [ f ] P ⊢ Q → [ g ∘ f ] P ⊢ R
 _∘⊢_ {R = R} {P = P} α β = record where
   realiser = val ⟨ x ⟩ α `· (β `· x)
 
   tracks {a = a} ha = subst-∈ (R _) (α .tracks (β .tracks ha)) $
-    (val ⟨ x ⟩ α `· (β `· x)) ⋆ a ≡⟨ abs-β _ [] (a , P _ .def ha) ⟩
+    (val ⟨ x ⟩ α `· (β `· x)) ⋆ a ≡⟨ abs-β _ []v (a , P _ .def ha) ⟩
     α ⋆ (β ⋆ a)                   ∎
 ```
 

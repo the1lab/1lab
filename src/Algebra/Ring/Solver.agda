@@ -70,7 +70,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   En : ∀ {n} → Normal n → Vec R n → R
 
   Ep ∅ i = R.0r
-  Ep (p *x+ c) (x ∷ e) = Ep p (x ∷ e) R.* x R.+ En c e
+  Ep (p *x+ c) v with (x ∷ e) ← vec-view v = Ep p (x ∷v e) R.* x R.+ En c e
 
   En (con x) i = embed-coe x
   En (poly x) i = Ep x i
@@ -231,12 +231,14 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   ⟦ x ⟧ₙ ρ = En (normal x) ρ
 
   0n-hom : ∀ {n} (ρ : Vec R n) → En 0n ρ ≡ R.0r
-  0n-hom [] = ℤ↪R.pres-0
-  0n-hom (x ∷ ρ) = refl
+  0n-hom v with vec-view v
+  ... | [] = ℤ↪R.pres-0
+  ... | (x ∷ ρ) = refl
 
   1n-hom : ∀ {n} (ρ : Vec R n) → En 1n ρ ≡ R.1r
-  1n-hom [] = ℤ↪R.pres-id
-  1n-hom (x ∷ ρ) =
+  1n-hom v with vec-view v
+  ... | [] = ℤ↪R.pres-id
+  ... | (x ∷ ρ) =
     (R.0r R.* x) R.+ (En 1n ρ) ≡⟨ R.eliml R.*-zerol ⟩
     En 1n ρ                    ≡⟨ 1n-hom ρ ⟩
     R.1r                       ∎
@@ -244,19 +246,19 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   *x+ₙ-sound
     : ∀ {n} (p : Poly (suc n)) (c : Normal n) ρ
     → Ep (p *x+ₙ c) ρ ≡ Ep (p *x+ c) ρ
-  *x+ₙ-sound ∅ c (e ∷ ρ) with c ==ₙ 0n
-  ... | just x = sym $
-    Ep (∅ *x+ ⌜ c ⌝) (e ∷ ρ)   ≡⟨ ap! x ⟩
-    Ep (∅ *x+ 0n) (e ∷ ρ)      ≡⟨⟩
+  *x+ₙ-sound ∅ c v with vec-view v | c ==ₙ 0n
+  ... | (e ∷ ρ) | just x = sym $
+    Ep (∅ *x+ ⌜ c ⌝) (e ∷v ρ)   ≡⟨ ap! x ⟩
+    Ep (∅ *x+ 0n) (e ∷v ρ)      ≡⟨⟩
     (R.0r R.* e) R.+ En 0n ρ ≡⟨ R.eliml R.*-zerol ⟩
     En 0n ρ                  ≡⟨ 0n-hom ρ ⟩
     R.0r                               ∎
-  ... | nothing = refl
+  ... | (e ∷ ρ) | nothing = refl
   *x+ₙ-sound (p *x+ x) c ρ = refl
 
   ∅*x+ₙ-hom
     : ∀ {n} (c : Normal n) x ρ
-    → Ep (∅ *x+ₙ c) (x ∷ ρ) ≡ En c ρ
+    → Ep (∅ *x+ₙ c) (x ∷v ρ) ≡ En c ρ
   ∅*x+ₙ-hom c x ρ with c ==ₙ 0n
   ... | just x = sym (ap (λ c → En c ρ) x ∙ 0n-hom ρ)
   ... | nothing = R.eliml R.*-zerol
@@ -270,48 +272,48 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
   +ₚ-hom ∅ q ρ = sym R.+-idl
   +ₚ-hom (p *x+ x) ∅ ρ = sym R.+-idr
-  +ₚ-hom (p *x+ c) (q *x+ d) (x ∷ ρ) =
-    Ep ((p +ₚ q) *x+ₙ (c +ₙ d)) (x ∷ ρ)                                 ≡⟨ *x+ₙ-sound (p +ₚ q) (c +ₙ d) (x ∷ ρ) ⟩
-    Ep ((p +ₚ q) *x+ (c +ₙ d)) (x ∷ ρ)                                  ≡⟨⟩
-    ⌜ Ep (p +ₚ q) (x ∷ ρ) ⌝ R.* x R.+ En (c +ₙ d) ρ                     ≡⟨ ap! (+ₚ-hom p q (x ∷ ρ)) ⟩
-    (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x R.+ ⌜ En (c +ₙ d) ρ ⌝         ≡⟨ ap! (+ₙ-hom c d ρ) ⟩
-    ⌜ (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x ⌝ R.+ (En c ρ R.+ En d ρ)   ≡⟨ ap! R.*-distribr  ⟩
-    Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ) R.* x R.+ (En c ρ R.+ En d ρ)   ≡⟨ R.a.pullr (R.pulll R.+-commutes) ⟩
-    Ep p (x ∷ ρ) R.* x R.+ (En c ρ R.+ Ep q (x ∷ ρ) R.* x R.+ En d ρ)   ≡⟨ R.a.extendl (R.a.pulll refl) ⟩
-    Ep p (x ∷ ρ) R.* x R.+ En c ρ R.+ (Ep q (x ∷ ρ) R.* x R.+ En d ρ)   ∎
+  +ₚ-hom (p *x+ c) (q *x+ d) v with (x ∷ ρ) ← vec-view v =
+    Ep ((p +ₚ q) *x+ₙ (c +ₙ d)) (x ∷v ρ)                                ≡⟨ *x+ₙ-sound (p +ₚ q) (c +ₙ d) (x ∷v ρ) ⟩
+    Ep ((p +ₚ q) *x+ (c +ₙ d)) (x ∷v ρ)                                 ≡⟨⟩
+    ⌜ Ep (p +ₚ q) (x ∷v ρ) ⌝ R.* x R.+ En (c +ₙ d) ρ                    ≡⟨ ap! (+ₚ-hom p q (x ∷v ρ)) ⟩
+    (Ep p (x ∷v ρ) R.+ Ep q (x ∷v ρ)) R.* x R.+ ⌜ En (c +ₙ d) ρ ⌝       ≡⟨ ap! (+ₙ-hom c d ρ) ⟩
+    ⌜ (Ep p (x ∷v ρ) R.+ Ep q (x ∷v ρ)) R.* x ⌝ R.+ (En c ρ R.+ En d ρ) ≡⟨ ap! R.*-distribr  ⟩
+    Ep p (x ∷v ρ) R.* x R.+ Ep q (x ∷v ρ) R.* x R.+ (En c ρ R.+ En d ρ) ≡⟨ R.a.pullr (R.pulll R.+-commutes) ⟩
+    Ep p (x ∷v ρ) R.* x R.+ (En c ρ R.+ Ep q (x ∷v ρ) R.* x R.+ En d ρ) ≡⟨ R.a.extendl (R.a.pulll refl) ⟩
+    Ep p (x ∷v ρ) R.* x R.+ En c ρ R.+ (Ep q (x ∷v ρ) R.* x R.+ En d ρ) ∎
   +ₙ-hom (con x)  (con y)  ρ = ℤ↪R.pres-+ (lift x) (lift y)
   +ₙ-hom (poly p) (poly q) ρ = +ₚ-hom p q ρ
 
   *x+-hom
     : ∀ {n} (p q : Poly (suc n)) x ρ
-    → Ep (p *x+ₚ q) (x ∷ ρ)
-    ≡ Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ)
+    → Ep (p *x+ₚ q) (x ∷v ρ)
+    ≡ Ep p (x ∷v ρ) R.* x R.+ Ep q (x ∷v ρ)
   *x+-hom ∅ ∅ x ρ = R.introl R.*-zerol
   *x+-hom (p *x+ c) ∅ x ρ = ap₂ R._+_ refl (0n-hom ρ)
   *x+-hom p (q *x+ d) x ρ =
-    Ep (p *x+ₚ (q *x+ d)) (x ∷ ρ)                          ≡⟨⟩
-    Ep ((p +ₚ q) *x+ₙ d) (x ∷ ρ)                           ≡⟨ *x+ₙ-sound (p +ₚ q) d (x ∷ ρ) ⟩
-    ⌜ Ep (p +ₚ q) (x ∷ ρ) ⌝ R.* x R.+ En d ρ               ≡⟨ ap! (+ₚ-hom p q (x ∷ ρ)) ⟩
-    ⌜ (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x ⌝ R.+ En d ρ   ≡⟨ ap! R.*-distribr ⟩
-    Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ) R.* x R.+ En d ρ   ≡⟨ R.pullr refl ⟩
-    Ep p (x ∷ ρ) R.* x R.+ (Ep q (x ∷ ρ) R.* x R.+ En d ρ) ∎
+    Ep (p *x+ₚ (q *x+ d)) (x ∷v ρ)                           ≡⟨⟩
+    Ep ((p +ₚ q) *x+ₙ d) (x ∷v ρ)                            ≡⟨ *x+ₙ-sound (p +ₚ q) d (x ∷v ρ) ⟩
+    ⌜ Ep (p +ₚ q) (x ∷v ρ) ⌝ R.* x R.+ En d ρ                ≡⟨ ap! (+ₚ-hom p q (x ∷v ρ)) ⟩
+    ⌜ (Ep p (x ∷v ρ) R.+ Ep q (x ∷v ρ)) R.* x ⌝ R.+ En d ρ   ≡⟨ ap! R.*-distribr ⟩
+    Ep p (x ∷v ρ) R.* x R.+ Ep q (x ∷v ρ) R.* x R.+ En d ρ   ≡⟨ R.pullr refl ⟩
+    Ep p (x ∷v ρ) R.* x R.+ (Ep q (x ∷v ρ) R.* x R.+ En d ρ) ∎
 
   *ₙₚ-hom
     : ∀ {n} (c : Normal n) (p : Poly (suc n)) x ρ
-    → Ep (c *ₙₚ p) (x ∷ ρ) ≡ En c ρ R.* Ep p (x ∷ ρ)
+    → Ep (c *ₙₚ p) (x ∷v ρ) ≡ En c ρ R.* Ep p (x ∷v ρ)
   *ₚₙ-hom
     : ∀ {n} (c : Normal n) (p : Poly (suc n)) x ρ
-    → Ep (p *ₚₙ c) (x ∷ ρ) ≡ Ep p (x ∷ ρ) R.* En c ρ
+    → Ep (p *ₚₙ c) (x ∷v ρ) ≡ Ep p (x ∷v ρ) R.* En c ρ
   *ₙ-hom : ∀ {n} (c d : Normal n) ρ → En (c *ₙ d) ρ ≡ En c ρ R.* En d ρ
   *ₚ-hom : ∀ {n} (p q : Poly (suc n)) ρ → Ep (p *ₚ q) ρ ≡ Ep p ρ R.* Ep q ρ
 
   *ₚ-hom ∅ q ρ = sym R.*-zerol
   *ₚ-hom (p *x+ c) ∅ ρ = sym R.*-zeror
-  *ₚ-hom (p *x+ c) (q *x+ d) (x ∷ ρ) =
-      *x+ₙ-sound ((p *ₚ q) *x+ₚ ((p *ₚₙ d) +ₚ (c *ₙₚ q))) _ (x ∷ ρ)
+  *ₚ-hom (p *x+ c) (q *x+ d) v with (x ∷ ρ) ← vec-view v =
+      *x+ₙ-sound ((p *ₚ q) *x+ₚ ((p *ₚₙ d) +ₚ (c *ₙₚ q))) _ (x ∷v ρ)
     ∙ ap₂ R._+_ (ap₂ R._*_ (*x+-hom (p *ₚ q) ((p *ₚₙ d) +ₚ (c *ₙₚ q)) x ρ) refl) refl
-    ∙ ap₂ R._+_ (ap₂ R._*_ (ap₂ R._+_ (ap (R._* x) (*ₚ-hom p q (x ∷ ρ)))
-        (+ₚ-hom (p *ₚₙ d) (c *ₙₚ q) (x ∷ ρ))) refl
+    ∙ ap₂ R._+_ (ap₂ R._*_ (ap₂ R._+_ (ap (R._* x) (*ₚ-hom p q (x ∷v ρ)))
+        (+ₚ-hom (p *ₚₙ d) (c *ₙₚ q) (x ∷v ρ))) refl
         ∙ ap₂ R._*_ (ap₂ R._+_ refl (ap₂ R._+_ (*ₚₙ-hom d p x ρ) (*ₙₚ-hom c q x ρ)))
         refl) refl
     ∙ ap₂ R._+_ refl (*ₙ-hom c d ρ) ∙ lemma _ _ _ _ _
@@ -369,8 +371,8 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   -ₚ-hom : ∀ {n} (p : Poly (suc n)) ρ → Ep (-ₚ p) ρ ≡ R.- Ep p ρ
   -ₙ-hom : ∀ {n} (n : Normal n) ρ → En (-ₙ n) ρ ≡ R.- En n ρ
 
-  -ₚ-hom p (x ∷ ρ) =
-      *ₙₚ-hom (-ₙ 1n) p x ρ
+  -ₚ-hom p v with (x ∷ ρ) ← vec-view v =
+    *ₙₚ-hom (-ₙ 1n) p x ρ
     ∙ ap₂ R._*_ (-ₙ-hom 1n ρ ∙ ap R.-_ (1n-hom ρ)) refl
     ∙ R.*-negatel ∙ ap R.-_ R.*-idl
   -ₙ-hom (con x) ρ = ℤ↪R.pres-neg {x = lift x}
@@ -378,17 +380,18 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
   sound-coe
     : ∀ {n} (c : Int) (ρ : Vec R n) → En (normal-coe c) ρ ≡ embed-coe c
-  sound-coe c [] = refl
-  sound-coe c (x ∷ ρ) = ∅*x+ₙ-hom (normal-coe c) x ρ ∙ sound-coe c ρ
+  sound-coe c v with vec-view v
+  ... | [] = refl
+  ... | (x ∷ ρ) = ∅*x+ₙ-hom (normal-coe c) x ρ ∙ sound-coe c ρ
 
   sound-var : ∀ {n} (j : Fin n) ρ → En (normal-var j) ρ ≡ lookup ρ j
-  sound-var i _ with fin-view i
-  sound-var _ (x ∷ ρ) | zero =
-    Ep (∅ *x+ 1n) (x ∷ ρ) R.* x R.+ En 0n ρ ≡⟨ R.elimr (0n-hom ρ) ⟩
-    ⌜ Ep (∅ *x+ 1n) (x ∷ ρ) ⌝ R.* x         ≡⟨ ap! (R.eliml R.*-zerol ∙ 1n-hom ρ) ⟩
-    R.1r R.* x                              ≡⟨ R.*-idl ⟩
-    x                                       ∎
-  sound-var _ (x ∷ ρ) | suc j = ∅*x+ₙ-hom (normal-var j) x ρ ∙ sound-var j ρ
+  sound-var i v with vec-view v | fin-view i
+  ... | (x ∷ ρ) | zero =
+    Ep (∅ *x+ 1n) (x ∷v ρ) R.* x R.+ En 0n ρ ≡⟨ R.elimr (0n-hom ρ) ⟩
+    ⌜ Ep (∅ *x+ 1n) (x ∷v ρ) ⌝ R.* x         ≡⟨ ap! (R.eliml R.*-zerol ∙ 1n-hom ρ) ⟩
+    R.1r R.* x                               ≡⟨ R.*-idl ⟩
+    x                                        ∎
+  ... | (x ∷ ρ) | suc j = ∅*x+ₙ-hom (normal-var j) x ρ ∙ sound-var j ρ
 
   sound : ∀ {n} (p : Polynomial n) ρ → En (normal p) ρ ≡ ⟦ p ⟧ ρ
   sound (op [+] p q) ρ = +ₙ-hom (normal p) (normal q) ρ ∙ ap₂ R._+_ (sound p ρ) (sound q ρ)
@@ -408,11 +411,11 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   private
     test-distrib : ∀ x y z → x R.* (y R.+ z) ≡ y R.* x R.+ z R.* x
     test-distrib x y z =
-      solve (var 0 :* (var 1 :+ var 2)) ((var 1 :* var 0) :+ (var 2 :* var 0)) (x ∷ y ∷ z ∷ []) refl
+      solve (var 0 :* (var 1 :+ var 2)) ((var 1 :* var 0) :+ (var 2 :* var 0)) ([ x , y , z ]) refl
 
     test-identities : ∀ x → x R.+ (R.0r R.* R.1r) ≡ (R.1r R.+ R.0r) R.* x
     test-identities x =
-      solve (var 0 :+ (con 0 :* con 1)) ((con 1 :+ con 0) :* var 0) (x ∷ []) refl
+      solve (var 0 :+ (con 0 :* con 1)) ((con 1 :+ con 0) :* var 0) [ x ] refl
 
 module Explicit {ℓ} (R : CRing ℓ) where
   private module I = Impl (R .snd)

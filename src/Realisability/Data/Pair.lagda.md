@@ -72,19 +72,19 @@ compute as expected.
 ```agda
 abstract
   `pair↓₂ : ⌞ a ⌟ → ⌞ b ⌟ → ⌞ `pair ⋆ a ⋆ b ⌟
-  `pair↓₂ {a} {b} ah bh = subst ⌞_⌟ (sym (abs-βₙ [] ((b , bh) ∷ (a , ah) ∷ []))) (abs↓ _ _)
+  `pair↓₂ {a} {b} ah bh = subst ⌞_⌟ (sym $ abs-βₙ []v ((b , bh) ∷v (a , ah) ∷v []v)) (abs↓ _ _)
 
   `fst-β : ⌞ a ⌟ → ⌞ b ⌟ → `fst ⋆ (`pair ⋆ a ⋆ b) ≡ a
   `fst-β {a} {b} ah bh =
-    `fst ⋆ (`pair ⋆ a ⋆ b)  ≡⟨ abs-β _ [] (_ , `pair↓₂ ah bh) ⟩
-    `pair ⋆ a ⋆ b ⋆ `true   ≡⟨ abs-βₙ [] (`true ∷ (b , bh) ∷ (a , ah) ∷ []) ⟩
+    `fst ⋆ (`pair ⋆ a ⋆ b)  ≡⟨ abs-β _ []v (_ , `pair↓₂ ah bh) ⟩
+    `pair ⋆ a ⋆ b ⋆ `true   ≡⟨ abs-βₙ []v (`true ∷v (b , bh) ∷v (a , ah) ∷v []v) ⟩
     `true ⋆ a ⋆ b           ≡⟨ `true-β ah bh ⟩
     a                       ∎
 
   `snd-β : ⌞ a ⌟ → ⌞ b ⌟ → `snd ⋆ (`pair ⋆ a ⋆ b) ≡ b
   `snd-β {a} {b} ah bh =
-    `snd ⋆ (`pair ⋆ a ⋆ b)  ≡⟨ abs-β _ [] (_ , `pair↓₂ ah bh) ⟩
-    `pair ⋆ a ⋆ b ⋆ `false  ≡⟨ abs-βₙ [] (`false ∷ (b , bh) ∷ (a , ah) ∷ []) ⟩
+    `snd ⋆ (`pair ⋆ a ⋆ b)  ≡⟨ abs-β _ []v (_ , `pair↓₂ ah bh) ⟩
+    `pair ⋆ a ⋆ b ⋆ `false  ≡⟨ abs-βₙ []v (`false ∷v (b , bh) ∷v (a , ah) ∷v []v) ⟩
     `false ⋆ a ⋆ b          ≡⟨ `false-β ah bh ⟩
     b                       ∎
 ```

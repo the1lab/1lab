@@ -8,7 +8,7 @@ open import Cat.Prelude
 
 open import Data.Partial.Total
 open import Data.Partial.Base
-open import Data.Vec.Base using ([] ; _∷_)
+open import Data.Vec.Base using ([]v ; _∷v_)
 
 open import Realisability.PCA
 
@@ -93,7 +93,7 @@ asm-ev {X = X} {Y = Y} = to-assembly-hom record where
   realiser = val ⟨ u ⟩ `fst `· u `· (`snd `· u)
 
   tracks {a = x} = elim! λ p q α pp p⊩f q⊩a → subst⊩ Y (p⊩f _ _ q⊩a) $
-    (val ⟨ u ⟩ `fst `· u `· (`snd `· u)) ⋆ x           ≡⟨ abs-β _ [] (_ , subst ⌞_⌟ (sym α) (`pair↓₂ pp (X .def q⊩a))) ⟩
+    (val ⟨ u ⟩ `fst `· u `· (`snd `· u)) ⋆ x           ≡⟨ abs-β _ []v (_ , subst ⌞_⌟ (sym α) (`pair↓₂ pp (X .def q⊩a))) ⟩
     `fst ⋆ ⌜ x ⌝ ⋆ (`snd ⋆ ⌜ x ⌝)                      ≡⟨ ap! α ⟩
     `fst ⋆ (`pair ⋆ p ⋆ q) ⋆ (`snd ⋆ (`pair ⋆ p ⋆ q))  ≡⟨ ap₂ _%_ (`fst-β pp (X .def q⊩a)) (`snd-β pp (X .def q⊩a)) ⟩
     p ⋆ q                                              ∎
@@ -120,7 +120,7 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .map x = record where
       realiser = val ⟨ v ⟩ `h `· (`pair `· const (u , X .def u⊩x) `· v)
 
       tracks a⊩x = subst⊩ Z (t (inc (u , _ , refl , u⊩x , a⊩x))) $
-        abs-β _ [] (_ , Y .def a⊩x)
+        abs-β _ []v (_ , Y .def a⊩x)
 ```
 -->
 
@@ -137,9 +137,9 @@ curry-asm {X = X} {Y = Y} {Z = Z} h .tracked = do
     realiser = val ⟨ u ⟩ ⟨ v ⟩ `h `· (`pair `· u `· v)
 
     tracks a⊩x = record where
-      fst = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , X .def a⊩x) ∷ []))) (abs↓ _ _)
+      fst = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , X .def a⊩x) ∷v []v))) (abs↓ _ _)
       snd = inc λ y b b⊩y → subst⊩ Z (t (inc (_ , _ , refl , a⊩x , b⊩y))) $
-        abs-βₙ [] ((b , Y .def b⊩y) ∷ (_ , X .def a⊩x) ∷ [])
+        abs-βₙ []v ((b , Y .def b⊩y) ∷v (_ , X .def a⊩x) ∷v []v)
 ```
 
 <details>

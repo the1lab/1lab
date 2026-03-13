@@ -333,7 +333,7 @@ x$ is that $e$ is defined, and assemblies are defined so that if $e
   extend {X = X} f = to-assembly-hom record where
     map x     = f x
     realiser  = val ⟨ x ⟩ x
-    tracks ha = subst ⌞_⌟ (sym (abs-β _ [] (_ , X .def ha))) (X .def ha)
+    tracks ha = subst ⌞_⌟ (sym (abs-β _ []v (_ , X .def ha))) (X .def ha)
 ```
 
 <details>
