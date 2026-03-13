@@ -73,30 +73,11 @@ coordinates in $\operatorname{Fin}(n)$.
 [vectors]: Data.Vec.Base.html
 
 ```agda
-  End≃𝒯 : End[n] .fst ≃ Vec (Fin n) n 
+  End≃𝒯 : ⌞ End[n] ⌟ ≃ Vec (Fin n) n 
   End≃𝒯 = Equiv.inverse Vec≃Fun
 
-  open Equiv End≃𝒯
-
   𝒯 : Monoid lzero
-  𝒯 = Vec (Fin n) n , to-monoid-on M where
-    open make-monoid
-    M : make-monoid _
-    M .monoid-is-set = hlevel 2
-    M ._⋆_ x y = to (from x ∘ from y)
-    M .1M = to id
-    M .⋆-assoc x y z = 
-      to (from x ∘ ⌜ from (to (from y ∘ from z)) ⌝) ≡⟨ ap! (η (from y ∘ from z)) ⟩ 
-      to (⌜ from x ∘ from y ⌝ ∘ from z)             ≡˘⟨ ap¡ (η (from x ∘ from y)) ⟩
-      to ( from (to (from x ∘ from y)) ∘ from z)    ∎
-    M .⋆-idl x = 
-      to (⌜ from (to id) ⌝ ∘ from x)  ≡⟨ ap! (η id) ⟩ 
-      to (from x)                     ≡⟨ ε x ⟩
-      x                               ∎
-    M .⋆-idr x =
-      to (from x ∘ ⌜ from (to id) ⌝)  ≡⟨ ap! (η id) ⟩
-      to (from x)                     ≡⟨ ε x ⟩
-      x                               ∎
+  𝒯 = Vec (Fin n) n , monoid-transport End≃𝒯 (End[n] .snd)
 ```
 
 Since the monoid structure on $\cT_n$ was constructed directly from the 
@@ -105,13 +86,7 @@ isomorphic monoids:
 
 ```agda
   End≅𝒯 : (el! (End[n] .fst) , End[n] .snd) Monoids.≅ (el! (𝒯 .fst) , 𝒯 .snd)
-  End≅𝒯 = total-iso End≃𝒯 h where 
-    open Monoid-hom
-    h : Monoid-hom (End[n] .snd) (𝒯 .snd) to
-    h .pres-id = refl
-    h .pres-⋆ x y = to (⌜ x ⌝ ∘ y) ≡˘⟨ ap¡ (η x) ⟩ 
-      to (from (to x) ∘ ⌜ y ⌝) ≡˘⟨ ap¡ (η y) ⟩
-      to (from (to x) ∘ from (to y)) ∎
+  End≅𝒯 = total-iso End≃𝒯 (monoid-transport-hom End≃𝒯 (End[n] .snd))
 ```
 
 Using [[list syntax for vectors]], the element $a$ above can be written 
