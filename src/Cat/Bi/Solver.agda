@@ -107,7 +107,15 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     α≅ Iso⁻¹
 
   data Frame : (f g : Expr₁ X Y) → Type (o ⊔ ℓ ⊔ ℓ') where
-    _↑   : {f g : Expr₁ X Y} → ⟦ f ⟧ ⇒ ⟦ g ⟧ → Frame f g
+    _↑  : {f g : Expr₁ X Y} → ⟦ f ⟧ ⇒ ⟦ g ⟧ → Frame f g
+    `λ← : (f : Expr₁ X Y) → Frame (`id `⊗ f) f
+    `λ→ : (f : Expr₁ X Y) → Frame f (`id `⊗ f)
+    `α←
+      : (f : Expr₁ Z W) (g : Expr₁ Y Z) (h : Expr₁ X Y)
+      → Frame (f `⊗ (g `⊗ h)) ((f `⊗ g) `⊗ h)
+    `α→
+      : (f : Expr₁ Z W) (g : Expr₁ Y Z) (h : Expr₁ X Y)
+      → Frame ((f `⊗ g) `⊗ h) (f `⊗ (g `⊗ h))
     _`▷_ : (f : Expr₁ Y Z) {g h : Expr₁ X Y} → Frame g h → Frame (f `⊗ g) (f `⊗ h)
     _`◁_ : {g h : Expr₁ Y Z} → Frame g h → (f : Expr₁ X Y) → Frame (g `⊗ f) (h `⊗ f)
 
@@ -127,15 +135,15 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   `eval₁-sound-to : (g : Expr₁ Y Z) {k : Expr₁ X Y} → Val₂ (eval₁ g k) (g `⊗ k)
   `eval₁-sound-to (x ↑)     = `id
-  `eval₁-sound-to `id       = λ→ _ ↑ ↑
+  `eval₁-sound-to `id       = `λ→ _ ↑
   `eval₁-sound-to (g `⊗ g₁) =
-    α← _ _ _ ↑ ↑ `∘ `eval₁-sound-to g `∘ `whisker g (`eval₁-sound-to g₁)
+    `α← _ _ _ ↑ `∘ `eval₁-sound-to g `∘ `whisker g (`eval₁-sound-to g₁)
 
   `eval₁-sound-from : (g : Expr₁ Y Z) {k : Expr₁ X Y} → Val₂ (g `⊗ k) (eval₁ g k)
   `eval₁-sound-from (x ↑)     = `id
-  `eval₁-sound-from `id       = λ← _ ↑ ↑
+  `eval₁-sound-from `id       = `λ← _ ↑
   `eval₁-sound-from (g `⊗ g₁) =
-    `whisker g (`eval₁-sound-from g₁) `∘ `eval₁-sound-from g `∘ α→ _ _ _ ↑ ↑
+    `whisker g (`eval₁-sound-from g₁) `∘ `eval₁-sound-from g `∘ `α→ _ _ _ ↑
 
   eval₂ : {g h : Expr₁ Y Z} → Expr₂ g h → {k : Expr₁ X Y} → Val₂ (eval₁ g k) (eval₁ h k)
   eval₂ {g = g} {h} (x ↑) {k} = `eval₁-sound-from h `∘ ((x ↑) `◁ k) ↑ `∘ `eval₁-sound-to g
@@ -152,17 +160,20 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   frame-compare
     : {f g h : Expr₁ X Y} → Frame g h → Frame f g
     → Maybe (Σ[ g' ∈ Expr₁ X Y ] Frame g' h × Frame f g')
-  frame-compare (x ↑) y           = nothing
-  frame-compare (f `▷ x) (y ↑)    = nothing
   frame-compare (f `▷ x) (f `▷ y) = case frame-compare x y of λ where
     nothing              → nothing
     (just (_ , x' , y')) → just (_ , f `▷ x' , f `▷ y')
-  frame-compare (f `▷ x) (y `◁ g) = just (_ , y `◁ _ , _ `▷ x)
-  frame-compare (x `◁ f) (y ↑)    = nothing
-  frame-compare (x `◁ f) (g `▷ y) = nothing
   frame-compare (x `◁ f) (y `◁ f) = case frame-compare x y of λ where
     nothing              → nothing
     (just (_ , x' , y')) → just (_ , x' `◁ f , y' `◁ f)
+  frame-compare (f `▷ x)        (y `◁ g)    = just (_ , y `◁ _ , _ `▷ x)
+  frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _) = just (_ , `α→ f g _ , (f `⊗ g) `▷ x)
+  frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _) = just (_ , `α← f g _ , f `▷ (g `▷ x))
+  frame-compare ((x `◁ f) `◁ g) (`α← _ _ _) = just (_ , `α← _ f g , x `◁ (f `⊗ g))
+  frame-compare (x `◁ (f `⊗ g)) (`α→ _ _ _) = just (_ , `α→ _ f g , (x `◁ f) `◁ g)
+  frame-compare (`id `▷ x)      (`λ→ _)     = just (_ , `λ→ _ , x)
+  frame-compare (f `▷ x)        (`λ← _)     = just (_ , `λ← _ , `id `▷ (f `▷ x))
+  frame-compare _ _                         = nothing
 
   val₂-push
     : {f g h i j : Expr₁ X Y} → Frame g h → Val₂ f g
@@ -185,9 +196,13 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   val₂-merge (xs `∘ ys) zs = val₂-merge xs (val₂-merge ys zs)
 
   extract-frame : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧ ⇒ ⟦ g ⟧
-  extract-frame (x ↑)    = x
-  extract-frame (f `▷ x) = ⟦ f ⟧ ▶ extract-frame x
-  extract-frame (x `◁ f) = extract-frame x ◀ ⟦ f ⟧
+  extract-frame (x ↑)       = x
+  extract-frame (f `▷ x)    = ⟦ f ⟧ ▶ extract-frame x
+  extract-frame (x `◁ f)    = extract-frame x ◀ ⟦ f ⟧
+  extract-frame (`λ← f)     = λ← ⟦ f ⟧
+  extract-frame (`λ→ f)     = λ→ ⟦ f ⟧
+  extract-frame (`α← f g h) = α← ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
+  extract-frame (`α→ f g h) = α→ ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
 
   instance
     ⟦⟧-Frame : {f g : Expr₁ X Y} → ⟦⟧-notation (Frame f g)
@@ -457,7 +472,7 @@ macro
   bicat! c = flip unify (def (quote bicat-wrapper) (c v∷ []))
 
 private module _ {o ℓ ℓ'} {C : Prebicategory o ℓ ℓ'} where
-  open Br C
+  open Prebicategory C
   variable
     X Y : Ob
     f g h i : X ↦ Y
@@ -482,3 +497,6 @@ private module _ {o ℓ ℓ'} {C : Prebicategory o ℓ ℓ'} where
 
   test-interchange : (α ∘ β) ◆ (γ ∘ δ) ≡ (α ◆ γ) ∘ (β ◆ δ)
   test-interchange = bicat! C
+
+  test-interchange-whisker : (f ⊗ g) ▶ α ∘ δ ◀ g ≡ δ ◀ h ∘ i ▶ α
+  test-interchange-whisker = bicat! C
