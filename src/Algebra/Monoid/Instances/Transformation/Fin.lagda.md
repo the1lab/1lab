@@ -56,7 +56,7 @@ a =
 0 & 1 & 2 & 3 & 4 \\
 4 & 1 & 4 & 2 & 1
 \end{pmatrix}
-\in \cT_5.
+: \cT_5.
 $$
 
 Here, $a$ is the transformation sending each element in the top row to
