@@ -3,8 +3,6 @@ open import 1Lab.Reflection
 open import Cat.Bi.Base
 open import Cat.Prelude
 
-open import Data.Sum using (_⊎_ ; inl ; inr)
-
 import Cat.Bi.Reasoning as Br
 import Cat.Morphism as Cm
 
@@ -184,42 +182,60 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   eval₂ (`α← f g h)           = `id
   eval₂ (`α→ f g h)           = `id
 
-  frame-compare
-    : {f g h : Expr₁ X Y} → Frame g h → Frame f g
-    → Maybe (Σ[ g' ∈ Expr₁ X Y ] Frame g' h × Frame f g')
-  frame-compare (f `▷ x) (f `▷ y) = case frame-compare x y of λ where
-    nothing              → nothing
-    (just (_ , x' , y')) → just (_ , f `▷ x' , f `▷ y')
-  frame-compare (x `◁ f) (y `◁ f) = case frame-compare x y of λ where
-    nothing              → nothing
-    (just (_ , x' , y')) → just (_ , x' `◁ f , y' `◁ f)
-  frame-compare (f `▷ x)        (y `◁ g)    = just (_ , y `◁ _ , _ `▷ x)
-  frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _) = just (_ , `α→ f g _ , (f `⊗ g) `▷ x)
-  frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _) = just (_ , `α← f g _ , f `▷ (g `▷ x))
-  frame-compare ((x `◁ f) `◁ g) (`α← _ _ _) = just (_ , `α← _ f g , x `◁ (f `⊗ g))
-  frame-compare (x `◁ (f `⊗ g)) (`α→ _ _ _) = just (_ , `α→ _ f g , (x `◁ f) `◁ g)
-  frame-compare (`id `▷ x)      (`λ→ _)     = just (_ , `λ→ _ , x)
-  frame-compare (f `▷ x)        (`λ← _)     = just (_ , `λ← _ , `id `▷ (f `▷ x))
-  frame-compare _ _                         = nothing
+  data FrameCompare : (f g : Expr₁ X Y) → Type (o ⊔ ℓ ⊔ ℓ') where
+    f-swap   : {f g h : Expr₁ X Y} → Frame g h → Frame f g → FrameCompare f h
+    f-reduce : {f h : Expr₁ X Y} → Frame f h → FrameCompare f h
+    f-stop   : {f h : Expr₁ X Y} → FrameCompare f h
+    f-drop   : {f : Expr₁ X Y} → FrameCompare f f
 
-  val₂-push
-    : {f g h : Expr₁ X Y} → Frame g h → Val₂ f g
-    → Val₂ f h ⊎ Σ[ g' ∈ Expr₁ X Y ] Val₂ g' h × Frame f g'
-  val₂-push x `id   = inr (_ , `id , x)
+  frame-compare : {f g h : Expr₁ X Y} → Frame g h → Frame f g → FrameCompare f h
+  frame-compare (f `▷ x) (f `▷ y) = case frame-compare x y of λ where
+    (f-swap x' y') → f-swap (f `▷ x') (f `▷ y')
+    (f-reduce z)   → f-reduce (f `▷ z)
+    f-stop         → f-stop
+    f-drop         → f-drop
+  frame-compare (x `◁ f) (y `◁ f) = case frame-compare x y of λ where
+    (f-swap x' y') → f-swap (x' `◁ f) (y' `◁ f)
+    (f-reduce z)   → f-reduce (z `◁ f)
+    f-stop         → f-stop
+    f-drop         → f-drop
+  frame-compare (f `▷ x)        (y `◁ g)    = f-swap (y `◁ _) (_ `▷ x)
+  frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _) = f-swap (`α→ f g _) ((f `⊗ g) `▷ x)
+  frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _) = f-swap (`α← f g _) (f `▷ (g `▷ x))
+  frame-compare (`id `▷ x)      (`λ→ _)     = f-swap (`λ→ _) x
+  frame-compare (f `▷ x)        (`λ← _)     = f-swap (`λ← _) (`id `▷ (f `▷ x))
+  frame-compare ((x `◁ f) `◁ g) (`α← _ _ _) = f-swap (`α← _ f g) (x `◁ (f `⊗ g))
+  frame-compare (x `◁ (f `⊗ g)) (`α→ _ _ _) = f-swap (`α→ _ f g) ((x `◁ f) `◁ g)
+  frame-compare (`λ→ _)         (`λ← _)     = f-drop
+  frame-compare (`λ← _)         (`λ→ _)     = f-drop
+  frame-compare (`λ← _)         (`α→ _ _ _) = f-reduce (`λ← _ `◁ _)
+  frame-compare (`α← _ _ _)     (`α→ _ _ _) = f-drop
+  frame-compare (`α→ _ _ _)     (`α← _ _ _) = f-drop
+  frame-compare (`α← _ _ _)     (`λ→ _)     = f-reduce (`λ→ _ `◁ _)
+  frame-compare _ _                         = f-stop
+
+  data PushResult (f h : Expr₁ X Y) : Type (o ⊔ ℓ ⊔ ℓ') where
+    p-cont : {g : Expr₁ X Y} → Val₂ g h → Frame f g → PushResult f h
+    p-stop : Val₂ f h → PushResult f h
+
+  val₂-push : {f g h : Expr₁ X Y} → Frame g h → Val₂ f g → PushResult f h
+  val₂-push x `id   = p-cont `id x
   val₂-push x (y ↑) = case frame-compare x y of λ where
-    nothing              → inl (x ↑ `∘ y ↑)
-    (just (_ , x' , y')) → inr (_ , x' ↑ , y')
+    (f-swap x' y') → p-cont (x' ↑) y'
+    (f-reduce z)   → p-cont `id z
+    f-stop         → p-stop (x ↑ `∘ y ↑)
+    f-drop         → p-stop `id
   val₂-push x (ys `∘ zs) = case val₂-push x ys of λ where
-    (inl xys)           → inl (xys `∘ zs)
-    (inr (_ , xys , y)) → case val₂-push y zs of λ where
-      (inl yzs)           → inl (xys `∘ yzs)
-      (inr (_ , yzs , z)) → inr (_ , xys `∘ yzs , z)
+    (p-stop xys)   → p-stop (xys `∘ zs)
+    (p-cont xys y) → case val₂-push y zs of λ where
+      (p-stop yzs)   → p-stop (xys `∘ yzs)
+      (p-cont yzs z) → p-cont (xys `∘ yzs) z
 
   val₂-merge : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
-  val₂-merge `id ys        = ys
-  val₂-merge (x ↑) ys      = case val₂-push x ys of λ where
-    (inl z)             → z
-    (inr (_ , ys' , y)) → ys' `∘ y ↑
+  val₂-merge `id ys   = ys
+  val₂-merge (x ↑) ys = case val₂-push x ys of λ where
+    (p-stop z)     → z
+    (p-cont ys' y) → ys' `∘ y ↑
   val₂-merge (xs `∘ ys) zs = val₂-merge xs (val₂-merge ys zs)
 
   val₂-eval : {f g : Expr₁ X Y} {h : X ↦ Y} → Val₂ f g → h ⇒ ⟦ f ⟧ → h ⇒ ⟦ g ⟧
@@ -330,57 +346,73 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     α→ _ _ _ ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ (⟦ f ⟧ ⊗ ⟦ g ⟧) ▶ _ ∘ α← _ _ _ ∘ _        ≡⟨ cat! (Hom X Z) ⟩
     α→ _ _ _ ◀ ⟦ k ⟧ ∘ eval₁-sound ((f `⊗ g) `⊗ h) k .to                    ∎
 
+  fc-is-cont : {f g : Expr₁ X Y} → FrameCompare f g → Type
+  fc-is-cont (f-swap _ _) = ⊤
+  fc-is-cont (f-reduce _) = ⊤
+  fc-is-cont f-drop       = ⊤
+  fc-is-cont f-stop       = ⊥
+
+  fc-embed
+    : {f g : Expr₁ X Y} (cmp : FrameCompare f g) → fc-is-cont cmp → ⟦ f ⟧ ⇒ ⟦ g ⟧
+  fc-embed (f-swap x y) _ = ⟦ x ⟧ ∘ ⟦ y ⟧
+  fc-embed (f-reduce x) _ = ⟦ x ⟧
+  fc-embed f-drop       _ = Hom.id
+
   frame-compare-sound
-    : {f g g' h : Expr₁ X Y}
-    → (x : Frame g h) (y : Frame f g) {x' : Frame g' h} {y' : Frame f g'}
-    → frame-compare x y ≡ᵢ just (g' , x' , y') → ⟦ x' ⟧ ∘ ⟦ y' ⟧ ≡ ⟦ x ⟧ ∘ ⟦ y ⟧
-  frame-compare-sound (x `◁ f) (y `◁ f) p
-    with just (_ , x' , y') ← frame-compare x y in q | reflᵢ ← p =
-    ◀.weave (frame-compare-sound x y q)
-  frame-compare-sound (f `▷ x) (f `▷ y) p
-    with just (_ , x' , y') ← frame-compare x y in q | reflᵢ ← p =
-    ▶.weave (frame-compare-sound x y q)
-  frame-compare-sound (f `▷ x) (y `◁ g) reflᵢ    = ⊗.weave (id-comm ,ₚ id-comm-sym)
-  frame-compare-sound (f `▷ x) (`α← _ _ _) reflᵢ =
-    ▶-assoc .from .is-natural _ _ _
-  frame-compare-sound (f `▷ (g `▷ x)) (`α→ _ _ _) reflᵢ =
-    ▶-assoc .to .is-natural _ _ _
-  frame-compare-sound ((x `◁ g) `◁ f) (`α← _ _ _) reflᵢ =
-    ◀-assoc .to .is-natural _ _ _
-  frame-compare-sound (x `◁ f) (`α→ _ _ _) reflᵢ =
-    ◀-assoc .from .is-natural _ _ _
-  frame-compare-sound (f `▷ x) (`λ← _) reflᵢ = λ←nat _
-  frame-compare-sound (f `▷ x) (`λ→ _) reflᵢ = λ→nat _
+    : {f g h : Expr₁ X Y} (x : Frame g h) (y : Frame f g)
+    → {p : fc-is-cont (frame-compare x y)}
+    → fc-embed (frame-compare x y) p ≡ ⟦ x ⟧ ∘ ⟦ y ⟧
+  frame-compare-sound (f `▷ x) (f `▷ y)
+    with frame-compare x y | frame-compare-sound x y
+  ... | f-swap _ _ | sound = ▶.weave sound
+  ... | f-reduce _ | sound = ▶.expand sound
+  ... | f-drop     | sound = sym (▶.annihilate (sym sound))
+  frame-compare-sound (x `◁ f) (y `◁ f)
+    with frame-compare x y | frame-compare-sound x y
+  ... | f-swap _ _ | sound = ◀.weave sound
+  ... | f-reduce _ | sound = ◀.expand sound
+  ... | f-drop     | sound = sym (◀.annihilate (sym sound))
+  frame-compare-sound (f `▷ x)        (y `◁ g)    = ⊗.weave (id-comm ,ₚ id-comm-sym)
+  frame-compare-sound (f `▷ (g `▷ x)) (`α→ _ _ _) = ▶-assoc .to .is-natural _ _ _
+  frame-compare-sound ((f `⊗ g) `▷ x) (`α← _ _ _) = ▶-assoc .from .is-natural _ _ _
+  frame-compare-sound (`id `▷ x)      (`λ→ _)     = λ→nat _
+  frame-compare-sound (f `▷ x)        (`λ← _)     = λ←nat _
+  frame-compare-sound (x `◁ (f `⊗ g)) (`α→ _ _ _) = ◀-assoc .from .is-natural _ _ _
+  frame-compare-sound ((x `◁ f) `◁ g) (`α← _ _ _) = ◀-assoc .to .is-natural _ _ _
+  frame-compare-sound (`λ→ _)         (`λ← _)     = sym (λ≅ .invl)
+  frame-compare-sound (`λ← _)         (`λ→ _)     = sym (λ≅ .invr)
+  frame-compare-sound (`λ← _)         (`α→ _ _ _) = sym triangle-λ←
+  frame-compare-sound (`α→ _ _ _)     (`α← _ _ _) = sym (α≅ .invl)
+  frame-compare-sound (`α← _ _ _)     (`α→ _ _ _) = sym (α≅ .invr)
+  frame-compare-sound (`α← _ _ _)     (`λ→ _)     =
+    sym (lswizzle triangle-λ→ (α≅ .invr))
 
-  val₂-push-sound-inl
-    : {f g h : Expr₁ X Y} (x : Frame g h) (ys : Val₂ f g) {zs : Val₂ f h}
-    → val₂-push x ys ≡ᵢ inl zs → ⟦ zs ⟧ ≡ ⟦ x ⟧ ∘ ⟦ ys ⟧
+  pr-embed : {f g : Expr₁ X Y} → PushResult f g → ⟦ f ⟧ ⇒ ⟦ g ⟧
+  pr-embed (p-cont x xs) = ⟦ x ⟧ ∘ ⟦ xs ⟧
+  pr-embed (p-stop x)    = ⟦ x ⟧
 
-  val₂-push-sound-inr
-    : {f g g' h : Expr₁ X Y} (x : Frame g h) (ys : Val₂ f g)
-    → {zs : Val₂ g' h} {y : Frame f g'} → val₂-push x ys ≡ᵢ inr (g' , zs , y)
-    →  ⟦ zs ⟧ ∘ ⟦ y ⟧ ≡ ⟦ x ⟧ ∘ ⟦ ys ⟧
-
-  val₂-push-sound-inl x (y ↑) p with nothing ← frame-compare x y | reflᵢ ← p = refl
-  val₂-push-sound-inl x (ys `∘ ys') p with val₂-push x ys in q
-  ... | inl xys with reflᵢ ← p = pushl (val₂-push-sound-inl x ys q)
-  ... | inr (_ , xys , y) with inl yzs ← val₂-push y ys' in r | reflᵢ ← p =
-    ap (_ ∘_) (val₂-push-sound-inl y ys' r) ∙ extendl (val₂-push-sound-inr x ys q)
-
-  val₂-push-sound-inr x `id reflᵢ = id-comm-sym
-  val₂-push-sound-inr x (y ↑) p with just _ ← frame-compare x y in q | reflᵢ ← p =
-    frame-compare-sound x y q
-  val₂-push-sound-inr x (ys `∘ ys') p with inr (_ , xys , y) ← val₂-push x ys in q
-    with inr (_ , yzs , z) ← val₂-push y ys' in r | reflᵢ ← p =
-    extendr (val₂-push-sound-inr y ys' r) ∙ pushl (val₂-push-sound-inr x ys q)
+  val₂-push-sound
+    : {f g h : Expr₁ X Y} (x : Frame g h) (ys : Val₂ f g)
+    → pr-embed (val₂-push x ys) ≡ ⟦ x ⟧ ∘ ⟦ ys ⟧
+  val₂-push-sound x `id = id-comm-sym
+  val₂-push-sound x (y ↑) with frame-compare x y | frame-compare-sound x y
+  ... | f-swap _ _ | sound = sound
+  ... | f-reduce _ | sound = idl _ ∙ sound
+  ... | f-drop     | sound = sound
+  ... | f-stop     | _     = refl
+  val₂-push-sound x (ys `∘ ys') with val₂-push x ys | val₂-push-sound x ys
+  ... | p-stop _   | sound = pushl sound
+  ... | p-cont _ y | sound with val₂-push y ys' | val₂-push-sound y ys'
+  ... | p-stop _   | sound' = ap (_ ∘_) sound' ∙ extendl sound
+  ... | p-cont _ _ | sound' = extendr sound' ∙ pushl sound
 
   val₂-merge-sound
     : {f g h : Expr₁ X Y} (xs : Val₂ g h) (ys : Val₂ f g)
     → ⟦ val₂-merge xs ys ⟧ ≡ ⟦ xs ⟧ ∘ ⟦ ys ⟧
   val₂-merge-sound `id ys = sym (idl _)
-  val₂-merge-sound (x ↑) ys with val₂-push x ys in p
-  ... | inl _ = val₂-push-sound-inl x ys p
-  ... | inr _ = val₂-push-sound-inr x ys p
+  val₂-merge-sound (x ↑) ys with val₂-push x ys | val₂-push-sound x ys
+  ... | p-stop _   | sound = sound
+  ... | p-cont _ _ | sound = sound
   val₂-merge-sound (xs `∘ xs') ys =
     val₂-merge-sound xs (val₂-merge xs' ys) ∙ pushr (val₂-merge-sound xs' ys)
 
