@@ -3,6 +3,8 @@ open import 1Lab.Reflection
 open import Cat.Bi.Base
 open import Cat.Prelude
 
+open import Data.Sum using (_⊎_ ; inl ; inr)
+
 import Cat.Bi.Reasoning as Br
 import Cat.Morphism as Cm
 
@@ -106,6 +108,9 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     ▶.F-map-iso (eval₁-sound e₁ k) ∙Iso
     α≅ Iso⁻¹
 
+  nf₁-sound : (e : Expr₁ X Y) → nf₁ e ≅ ⟦ e ⟧
+  nf₁-sound e = eval₁-sound e `id ∙Iso ρ≅ Iso⁻¹
+
   data Frame : (f g : Expr₁ X Y) → Type (o ⊔ ℓ ⊔ ℓ') where
     _↑  : {f g : Expr₁ X Y} → ⟦ f ⟧ ⇒ ⟦ g ⟧ → Frame f g
     `λ← : (f : Expr₁ X Y) → Frame (`id `⊗ f) f
@@ -119,10 +124,32 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     _`▷_ : (f : Expr₁ Y Z) {g h : Expr₁ X Y} → Frame g h → Frame (f `⊗ g) (f `⊗ h)
     _`◁_ : {g h : Expr₁ Y Z} → Frame g h → (f : Expr₁ X Y) → Frame (g `⊗ f) (h `⊗ f)
 
+  frame-embed : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧ ⇒ ⟦ g ⟧
+  frame-embed (x ↑)       = x
+  frame-embed (f `▷ x)    = ⟦ f ⟧ ▶ frame-embed x
+  frame-embed (x `◁ f)    = frame-embed x ◀ ⟦ f ⟧
+  frame-embed (`λ← f)     = λ← ⟦ f ⟧
+  frame-embed (`λ→ f)     = λ→ ⟦ f ⟧
+  frame-embed (`α← f g h) = α← ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
+  frame-embed (`α→ f g h) = α→ ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
+
+  instance
+    ⟦⟧-Frame : {f g : Expr₁ X Y} → ⟦⟧-notation (Frame f g)
+    ⟦⟧-Frame = brackets _ frame-embed
+
   data Val₂ : (f g : Expr₁ X Y) → Type (o ⊔ ℓ ⊔ ℓ') where
     `id  : {f : Expr₁ X Y} → Val₂ f f
     _↑   : {f g : Expr₁ X Y} → Frame f g → Val₂ f g
     _`∘_ : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
+
+  val₂-embed : {f g : Expr₁ X Y} → Val₂ f g → ⟦ f ⟧ ⇒ ⟦ g ⟧
+  val₂-embed `id      = Hom.id
+  val₂-embed (x ↑)    = ⟦ x ⟧
+  val₂-embed (x `∘ y) = val₂-embed x Hom.∘ val₂-embed y
+
+  instance
+    ⟦⟧-Val₂ : {f g : Expr₁ X Y} → ⟦⟧-notation (Val₂ f g)
+    ⟦⟧-Val₂ = brackets _ val₂-embed
 
   `whisker
     : (f : Expr₁ Y Z) {h₁ h₂ : Expr₁ X Y} → Val₂ h₁ h₂
@@ -176,155 +203,210 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   frame-compare _ _                         = nothing
 
   val₂-push
-    : {f g h i j : Expr₁ X Y} → Frame g h → Val₂ f g
-    → (Val₂ f h → Val₂ i j)
-    → ({g' : Expr₁ X Y} → Val₂ g' h → Frame f g' → Val₂ i j)
-    → Val₂ i j
-  val₂-push x `id   k-stop k-cont = k-cont `id x
-  val₂-push x (y ↑) k-stop k-cont = case frame-compare x y of λ where
-    nothing              → k-stop (x ↑ `∘ y ↑)
-    (just (_ , x' , y')) → k-cont (x' ↑) y'
-  val₂-push x (ys `∘ zs) k-stop k-cont = val₂-push x ys
-    (λ xys   → k-stop (xys `∘ zs))
-    (λ xys y → val₂-push y zs
-      (λ z     → k-stop (xys `∘ z))
-      (λ yzs z → k-cont (xys `∘ yzs) z))
+    : {f g h : Expr₁ X Y} → Frame g h → Val₂ f g
+    → Val₂ f h ⊎ Σ[ g' ∈ Expr₁ X Y ] Val₂ g' h × Frame f g'
+  val₂-push x `id   = inr (_ , `id , x)
+  val₂-push x (y ↑) = case frame-compare x y of λ where
+    nothing              → inl (x ↑ `∘ y ↑)
+    (just (_ , x' , y')) → inr (_ , x' ↑ , y')
+  val₂-push x (ys `∘ zs) = case val₂-push x ys of λ where
+    (inl xys)           → inl (xys `∘ zs)
+    (inr (_ , xys , y)) → case val₂-push y zs of λ where
+      (inl yzs)           → inl (xys `∘ yzs)
+      (inr (_ , yzs , z)) → inr (_ , xys `∘ yzs , z)
 
   val₂-merge : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
   val₂-merge `id ys        = ys
-  val₂-merge (x ↑) ys      = val₂-push x ys (λ z → z) (λ ys' y → ys' `∘ y ↑)
+  val₂-merge (x ↑) ys      = case val₂-push x ys of λ where
+    (inl z)             → z
+    (inr (_ , ys' , y)) → ys' `∘ y ↑
   val₂-merge (xs `∘ ys) zs = val₂-merge xs (val₂-merge ys zs)
 
-  extract-frame : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧ ⇒ ⟦ g ⟧
-  extract-frame (x ↑)       = x
-  extract-frame (f `▷ x)    = ⟦ f ⟧ ▶ extract-frame x
-  extract-frame (x `◁ f)    = extract-frame x ◀ ⟦ f ⟧
-  extract-frame (`λ← f)     = λ← ⟦ f ⟧
-  extract-frame (`λ→ f)     = λ→ ⟦ f ⟧
-  extract-frame (`α← f g h) = α← ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
-  extract-frame (`α→ f g h) = α→ ⟦ f ⟧ ⟦ g ⟧ ⟦ h ⟧
-
-  instance
-    ⟦⟧-Frame : {f g : Expr₁ X Y} → ⟦⟧-notation (Frame f g)
-    ⟦⟧-Frame = brackets _ extract-frame
-
-  extract₂ : {f g : Expr₁ X Y} {h : X ↦ Y} → Val₂ f g → h ⇒ ⟦ f ⟧ → h ⇒ ⟦ g ⟧
-  extract₂ `id        = λ z → z
-  extract₂ (x ↑)      = ⟦ x ⟧ ∘_
-  extract₂ (xs `∘ ys) = extract₂ xs ⊙ extract₂ ys
+  val₂-eval : {f g : Expr₁ X Y} {h : X ↦ Y} → Val₂ f g → h ⇒ ⟦ f ⟧ → h ⇒ ⟦ g ⟧
+  val₂-eval `id        = λ z → z
+  val₂-eval (x ↑)      = ⟦ x ⟧ ∘_
+  val₂-eval (xs `∘ ys) = val₂-eval xs ⊙ val₂-eval ys
 
   nf₂ : {f g : Expr₁ X Y} → Expr₂ f g → nf₁ f ⇒ nf₁ g
-  nf₂ e = extract₂ (val₂-merge (eval₂ e) `id) Hom.id
+  nf₂ e = val₂-eval (val₂-merge (eval₂ e) `id) Hom.id
 
---   --------------------------------------------------------------------------------
---   -- Soundness
+  --------------------------------------------------------------------------------
+  -- Soundness
 
---   `whisker-sound
---     : (f : Expr₁ Y Z) {h₁ h₂ : X ↦ Y} (α : Nf₂ h₁ h₂)
---     → eval₁-sound f h₂ .to ∘ ⟦ `whisker f α ⟧ ≡ ⟦ f ⟧ ▶ ⟦ α ⟧ ∘ eval₁-sound f h₁ .to
---   `whisker-sound `id xs                    = λ→nat _
---   `whisker-sound {_} {Z} {X} (f₁ `⊗ f₂) xs =
---     eval₁-sound (f₁ `⊗ f₂) _ .to ∘ ⟦ `whisker (f₁ `⊗ f₂) xs ⟧                         ≡⟨ cat! (Hom X Z) ⟩
---     α← _ _ _ ∘ _ ∘ eval₁-sound f₁ (eval₁ f₂ _) .to ∘ ⟦ `whisker f₁ (`whisker f₂ xs) ⟧ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ `whisker-sound f₁ (`whisker f₂ xs) ⟩
---     α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ ⟦ f₁ ⟧ ▶ ⟦ `whisker f₂ xs ⟧ ∘ _        ≡⟨ refl⟩∘⟨ ▶.extendl (`whisker-sound f₂ xs) ⟩
---     α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ (⟦ f₂ ⟧ ▶ ⟦ xs ⟧) ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ _         ≡⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
---     (⟦ f₁ ⟧ ⊗ ⟦ f₂ ⟧) ▶ ⟦ xs ⟧ ∘ α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ _         ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
---     (⟦ f₁ ⟧ ⊗ ⟦ f₂ ⟧) ▶ ⟦ xs ⟧ ∘ (α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to) ∘ _       ∎
---   `whisker-sound (f ↑) xs =
---     idl _ ∙ Fs.NbE.do-fmap-sound _ _ (postaction C f) xs ∙ sym (idr _)
+  `whisker-sound
+    : (f : Expr₁ Y Z) {h₁ h₂ : Expr₁ X Y} (α : Val₂ h₁ h₂)
+    → eval₁-sound f h₂ .to ∘ ⟦ `whisker f α ⟧ ≡ ⟦ f ⟧ ▶ ⟦ α ⟧ ∘ eval₁-sound f h₁ .to
+  `whisker-sound `id xs                    = λ→nat _
+  `whisker-sound {_} {Z} {X} (f₁ `⊗ f₂) xs =
+    eval₁-sound (f₁ `⊗ f₂) _ .to ∘ ⟦ `whisker (f₁ `⊗ f₂) xs ⟧                   ≡⟨ cat! (Hom X Z) ⟩
+    α← _ _ _ ∘ _ ∘ eval₁-sound f₁ _ .to ∘ ⟦ `whisker f₁ (`whisker f₂ xs) ⟧      ≡⟨ refl⟩∘⟨ refl⟩∘⟨ `whisker-sound f₁ (`whisker f₂ xs) ⟩
+    α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ ⟦ f₁ ⟧ ▶ ⟦ `whisker f₂ xs ⟧ ∘ _  ≡⟨ refl⟩∘⟨ ▶.extendl (`whisker-sound f₂ xs) ⟩
+    α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ (⟦ f₂ ⟧ ▶ ⟦ xs ⟧) ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ _   ≡⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
+    (⟦ f₁ ⟧ ⊗ ⟦ f₂ ⟧) ▶ ⟦ xs ⟧ ∘ α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to ∘ _   ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    (⟦ f₁ ⟧ ⊗ ⟦ f₂ ⟧) ▶ ⟦ xs ⟧ ∘ (α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound f₂ _ .to) ∘ _ ∎
+  `whisker-sound (f ↑) `id        = ▶.intro refl ⟩∘⟨refl
+  `whisker-sound (f ↑) (x ↑)      = id-comm-sym
+  `whisker-sound (f ↑) (xs `∘ ys) =
+    Hom.id ∘ ⟦ `whisker (f ↑) xs ⟧ ∘ ⟦ `whisker (f ↑) ys ⟧ ≡⟨ extendl (`whisker-sound (f ↑) xs) ⟩
+    f ▶ ⟦ xs ⟧ ∘ Hom.id ∘ ⟦ `whisker (f ↑) ys ⟧            ≡⟨ refl⟩∘⟨ `whisker-sound (f ↑) ys ⟩
+    f ▶ ⟦ xs ⟧ ∘ f ▶ ⟦ ys ⟧ ∘ Hom.id                       ≡⟨ ▶.pulll refl ⟩
+    f ▶ (⟦ xs ⟧ ∘ ⟦ ys ⟧) ∘ Hom.id                         ∎
 
---   `eval₁-sound-to-sound
---     : (g : Expr₁ Y Z) {f : X ↦ Y}
---     → ⟦ `eval₁-sound-to g ⟧ ≡ eval₁-sound g f .to
---   `eval₁-sound-to-sound (g ↑)         = refl
---   `eval₁-sound-to-sound `id           = refl
---   `eval₁-sound-to-sound (g `⊗ g₁) {f} =
---     _ ∘ ⟦ `eval₁-sound-to g ⟧ ∘ ⟦ `whisker g (`eval₁-sound-to g₁) ⟧ ≡⟨ refl⟩∘⟨ `eval₁-sound-to-sound g ⟩∘⟨refl ⟩
---     _ ∘ eval₁-sound g _ .to ∘ ⟦ `whisker g (`eval₁-sound-to g₁) ⟧   ≡⟨ refl⟩∘⟨ `whisker-sound g (`eval₁-sound-to g₁) ⟩
---     _ ∘ ⟦ g ⟧ ▶ ⟦ `eval₁-sound-to g₁ ⟧ ∘ eval₁-sound g _ .to        ≡⟨ pulll (refl⟩∘⟨ ▶.⟨ `eval₁-sound-to-sound g₁ ⟩) ⟩
---     eval₁-sound (g `⊗ g₁) f .to                                     ∎
+  `eval₁-sound-to-sound
+    : (g : Expr₁ Y Z) {f : Expr₁ X Y}
+    → ⟦ `eval₁-sound-to g ⟧ ≡ eval₁-sound g f .to
+  `eval₁-sound-to-sound (g ↑)         = refl
+  `eval₁-sound-to-sound `id           = refl
+  `eval₁-sound-to-sound (g `⊗ g₁) {f} =
+    _ ∘ ⟦ `eval₁-sound-to g ⟧ ∘ ⟦ `whisker g (`eval₁-sound-to g₁) ⟧ ≡⟨ refl⟩∘⟨ `eval₁-sound-to-sound g ⟩∘⟨refl ⟩
+    _ ∘ eval₁-sound g _ .to ∘ ⟦ `whisker g (`eval₁-sound-to g₁) ⟧   ≡⟨ refl⟩∘⟨ `whisker-sound g (`eval₁-sound-to g₁) ⟩
+    _ ∘ ⟦ g ⟧ ▶ ⟦ `eval₁-sound-to g₁ ⟧ ∘ eval₁-sound g _ .to        ≡⟨ pulll (refl⟩∘⟨ ▶.⟨ `eval₁-sound-to-sound g₁ ⟩) ⟩
+    eval₁-sound (g `⊗ g₁) f .to                                     ∎
 
---   `eval₁-sound-from-sound
---     : (g : Expr₁ Y Z) {f : X ↦ Y}
---     → ⟦ `eval₁-sound-from g ⟧ ≡ eval₁-sound g f .from
---   `eval₁-sound-from-sound (g ↑)         = refl
---   `eval₁-sound-from-sound `id           = refl
---   `eval₁-sound-from-sound (g `⊗ g₁) {f} =
---     ⟦ `whisker g (`eval₁-sound-from g₁) ⟧ ∘ ⟦ `eval₁-sound-from g ⟧ ∘ _ ≡⟨ refl⟩∘⟨ `eval₁-sound-from-sound g ⟩∘⟨refl ⟩
---     ⟦ `whisker g (`eval₁-sound-from g₁) ⟧ ∘ eval₁-sound g _ .from ∘ _   ≡⟨ extendl `whisker-sound' ⟩
---     eval₁-sound g _ .from ∘ ⟦ g ⟧ ▶ ⟦ `eval₁-sound-from g₁ ⟧ ∘ _        ≡⟨ refl⟩∘⟨ ▶.⟨ `eval₁-sound-from-sound g₁ ⟩ ⟩∘⟨refl ⟩
---     eval₁-sound (g `⊗ g₁) f .from                                       ∎
---     where `whisker-sound' = sym $ swizzle
---             (sym $ `whisker-sound g (`eval₁-sound-from g₁))
---             (eval₁-sound g _ .invl) (eval₁-sound g _ .invr)
+  `eval₁-sound-from-sound
+    : (g : Expr₁ Y Z) {f : Expr₁ X Y}
+    → ⟦ `eval₁-sound-from g ⟧ ≡ eval₁-sound g f .from
+  `eval₁-sound-from-sound (g ↑)         = refl
+  `eval₁-sound-from-sound `id           = refl
+  `eval₁-sound-from-sound (g `⊗ g₁) {f} =
+    ⟦ `whisker g (`eval₁-sound-from g₁) ⟧ ∘ ⟦ `eval₁-sound-from g ⟧ ∘ _ ≡⟨ refl⟩∘⟨ `eval₁-sound-from-sound g ⟩∘⟨refl ⟩
+    ⟦ `whisker g (`eval₁-sound-from g₁) ⟧ ∘ eval₁-sound g _ .from ∘ _   ≡⟨ extendl `whisker-sound' ⟩
+    eval₁-sound g _ .from ∘ ⟦ g ⟧ ▶ ⟦ `eval₁-sound-from g₁ ⟧ ∘ _        ≡⟨ refl⟩∘⟨ ▶.⟨ `eval₁-sound-from-sound g₁ ⟩ ⟩∘⟨refl ⟩
+    eval₁-sound (g `⊗ g₁) f .from                                       ∎
+    where `whisker-sound' = sym $ swizzle
+            (sym $ `whisker-sound g (`eval₁-sound-from g₁))
+            (eval₁-sound g _ .invl) (eval₁-sound g _ .invr)
 
---   eval₂-sound
---     : {g h : Expr₁ Y Z} (α : Expr₂ g h) {k : X ↦ Y}
---     → eval₁-sound h k .to ∘ ⟦ eval₂ α ⟧ ≡ ⟦ α ⟧ ◀ k ∘ eval₁-sound g k .to
---   eval₂-sound {g = g} {h} (α ↑) {k} =
---     eval₁-sound h k .to ∘ ⟦ `eval₁-sound-from h ⟧ ∘ α ◀ k ∘ ⟦ `eval₁-sound-to g ⟧ ≡⟨ refl⟩∘⟨ `eval₁-sound-from-sound h ⟩∘⟨refl ⟩
---     eval₁-sound h k .to ∘ eval₁-sound h k .from ∘ α ◀ k ∘ ⟦ `eval₁-sound-to g ⟧   ≡⟨ cancell (eval₁-sound h _ .invl) ⟩
---     α ◀ k ∘ ⟦ `eval₁-sound-to g ⟧                                                 ≡⟨ refl⟩∘⟨ `eval₁-sound-to-sound g ⟩
---     (α ◀ k) ∘ eval₁-sound g k .to                                                 ∎
---   eval₂-sound `id                            = idr _ ∙ ◀.introl refl
---   eval₂-sound (_`∘_ {f = f} {g} {h} α β) {k} =
---     eval₁-sound h k .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ eval₂ β ⟧ ≡⟨ extendl (eval₂-sound α) ⟩
---     ⟦ α ⟧ ◀ k ∘ eval₁-sound g k .to ∘ ⟦ eval₂ β ⟧   ≡⟨ refl⟩∘⟨ eval₂-sound β ⟩
---     ⟦ α ⟧ ◀ k ∘ ⟦ β ⟧ ◀ k ∘ eval₁-sound f k .to     ≡⟨ ◀.pulll refl ⟩
---     (⟦ α ⟧ ∘ ⟦ β ⟧) ◀ k ∘ eval₁-sound f k .to       ∎
---   eval₂-sound {_} {Z} {X} (_`◆_ {f₁ = f₁} {f₂} α {g₁} {g₂} β) {k} =
---     eval₁-sound (f₂ `⊗ g₂) k .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ `whisker f₁ (eval₂ β) ⟧            ≡⟨ cat! (Hom X Z) ⟩
---     _ ∘ _ ∘ eval₁-sound f₂ (eval₁ g₂ k) .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ `whisker f₁ (eval₂ β) ⟧ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (eval₂-sound α) ∙ ap (⟦ α ⟧ ◀ _ ∘_) (`whisker-sound f₁ (eval₂ β)) ⟩
---     _ ∘ ⟦ f₂ ⟧ ▶ eval₁-sound g₂ k .to ∘ ⟦ α ⟧ ◀ eval₁ g₂ k ∘ ⟦ f₁ ⟧ ▶ ⟦ eval₂ β ⟧ ∘ _ ≡⟨ refl⟩∘⟨ ⊗.extendl (id-comm-sym ,ₚ id-comm) ⟩
---     _ ∘ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound g₂ k .to ∘ ⟦ f₁ ⟧ ▶ ⟦ eval₂ β ⟧ ∘ _                  ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.extendl (eval₂-sound β) ⟩
---     α← _ _ _ ∘ ⟦ α ⟧ ◀ (⟦ g₂ ⟧ ⊗ k) ∘ ⟦ f₁ ⟧ ▶ (⟦ β ⟧ ◀ k) ∘ _                        ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ⟩
---     (⟦ α ⟧ ◀ ⟦ g₂ ⟧) ◀ k ∘ α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ (⟦ β ⟧ ◀ k) ∘ _                        ≡⟨ refl⟩∘⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ⟩
---     (⟦ α ⟧ ◀ ⟦ g₂ ⟧) ◀ k ∘ (⟦ f₁ ⟧ ▶ ⟦ β ⟧) ◀ k ∘ α← _ _ _ ∘ _                        ≡⟨ ◀.pulll (⊗.collapse (idr _ ,ₚ idl _)) ⟩
---     (⟦ α ⟧ ◆ ⟦ β ⟧) ◀ k ∘ α← _ _ _ ∘ _                                                ≡⟨ refl ⟩∘⟨ assoc _ _ _ ⟩
---     (⟦ α ⟧ ◆ ⟦ β ⟧) ◀ k ∘ eval₁-sound (f₁ `⊗ g₁) k .to                                ∎
---   eval₂-sound (`λ← f) {k} =
---     eval₁-sound f k .to ∘ Hom.id                          ≡⟨ idr _ ∙ intror (λ≅ .invr) ∙ extendl (sym $ λ←nat _) ⟩
---     λ← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _                ≡⟨ pushl (sym (rswizzle (sym triangle-λ←) (α≅ .invl))) ⟩
---     λ← _ ◀ k ∘ α← _ _ _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _ ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
---     λ← _ ◀ k ∘ eval₁-sound (`id `⊗ f) k .to               ∎
---   eval₂-sound (`λ→ f) {k} =
---     eval₁-sound (`id `⊗ f) k .to ∘ Hom.id   ≡⟨ idr _ ∙ extendr (sym $ λ→nat _) ⟩
---     (α← _ _ _ ∘ λ→ _) ∘ eval₁-sound f k .to ≡⟨ lswizzle triangle-λ→ (α≅ .invr) ⟩∘⟨refl ⟩
---     λ→ _ ◀ k ∘ eval₁-sound f k .to          ∎
---   eval₂-sound (`ρ← f) =
---     idr _ ∙ insertl (pulll (triangle _ _) ∙ ▶.annihilate (λ≅ .invr))
---   eval₂-sound (`ρ→ f) {k} = idr _ ∙ ap (_∘ eval₁-sound f k .to) triangle-inv
---   eval₂-sound {_} {Z} {X} (`α← f g h) {k} =
---     eval₁-sound ((f `⊗ g) `⊗ h) k .to ∘ Hom.id                                       ≡⟨ cat! (Hom X Z) ⟩
---     α← _ _ _ ∘ (⟦ f ⟧ ⊗ ⟦ g ⟧) ▶ eval₁-sound h k .to ∘ α← _ _ _ ∘ _                  ≡⟨ refl⟩∘⟨ extendl (sym $ ▶-assoc .from .is-natural _ _ _) ⟩
---     α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _                  ≡⟨ extendl (sym $ pentagon _ _ _ _) ⟩
---     α← _ _ _ ◀ k ∘ (α← _ _ _ ∘ ⟦ f ⟧ ▶ α← _ _ _) ∘ ⟦ f ⟧ ▶ _ ∘ ⟦ f ⟧ ▶ _ ∘ _         ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
---     _ ∘ _ ∘ ⟦ f ⟧ ▶ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ ⟦ f ⟧ ▶ _ ∘ _ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.pulll refl ∙ ▶.pulll refl ⟩
---     α← _ _ _ ◀ k ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ _ ∘ _                                          ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
---     α← _ _ _ ◀ k ∘ eval₁-sound (f `⊗ g `⊗ h) k .to                                   ∎
---   eval₂-sound {_} {Z} {X} (`α→ f g h) {k} =
---     eval₁-sound (f `⊗ (g `⊗ h)) k .to ∘ Hom.id                                       ≡⟨ cat! (Hom X Z) ⟩
---     α← _ _ _ ∘ ⟦ f ⟧ ▶ ((α← _ _ _ ∘ ⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _) ∘ _            ≡⟨ refl⟩∘⟨ ▶.pushl refl ∙ ▶.pushl refl ⟩
---     α← _ _ _ ∘ ⟦ f ⟧ ▶ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _          ≡⟨ extendl (sym $ lswizzle (sym $ pentagon _ _ _ _) (◀.annihilate (α≅ .invl))) ⟩
---     α→ _ _ _ ◀ k ∘ (α← _ _ _ ∘ α← _ _ _) ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _ ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
---     α→ _ _ _ ◀ k ∘ α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
---     α→ _ _ _ ◀ k ∘ α← _ _ _ ∘ (⟦ f ⟧ ⊗ ⟦ g ⟧) ▶ eval₁-sound h k .to ∘ α← _ _ _ ∘ _   ≡⟨ cat! (Hom X Z) ⟩
---     α→ _ _ _ ◀ k ∘ eval₁-sound ((f `⊗ g) `⊗ h) k .to                                 ∎
+  eval₂-sound
+    : {g h : Expr₁ Y Z} (α : Expr₂ g h) {k : Expr₁ X Y}
+    → eval₁-sound h k .to ∘ ⟦ eval₂ α ⟧ ≡ ⟦ α ⟧ ◀ ⟦ k ⟧ ∘ eval₁-sound g k .to
+  eval₂-sound {g = g} {h} (α ↑) {k} =
+    eval₁-sound h k .to ∘ ⟦ `eval₁-sound-from h ⟧ ∘ α ◀ _ ∘ ⟦ `eval₁-sound-to g ⟧ ≡⟨ refl⟩∘⟨ `eval₁-sound-from-sound h ⟩∘⟨refl ⟩
+    eval₁-sound h k .to ∘ eval₁-sound h k .from ∘ α ◀ _ ∘ ⟦ `eval₁-sound-to g ⟧   ≡⟨ cancell (eval₁-sound h _ .invl) ⟩
+    α ◀ ⟦ k ⟧ ∘ ⟦ `eval₁-sound-to g ⟧                                             ≡⟨ refl⟩∘⟨ `eval₁-sound-to-sound g ⟩
+    (α ◀ ⟦ k ⟧) ∘ eval₁-sound g k .to                                             ∎
+  eval₂-sound `id                            = idr _ ∙ ◀.introl refl
+  eval₂-sound (_`∘_ {f = f} {g} {h} α β) {k} =
+    eval₁-sound h k .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ eval₂ β ⟧     ≡⟨ extendl (eval₂-sound α) ⟩
+    ⟦ α ⟧ ◀ ⟦ k ⟧ ∘ eval₁-sound g k .to ∘ ⟦ eval₂ β ⟧   ≡⟨ refl⟩∘⟨ eval₂-sound β ⟩
+    ⟦ α ⟧ ◀ ⟦ k ⟧ ∘ ⟦ β ⟧ ◀ ⟦ k ⟧ ∘ eval₁-sound f k .to ≡⟨ ◀.pulll refl ⟩
+    (⟦ α ⟧ ∘ ⟦ β ⟧) ◀ ⟦ k ⟧ ∘ eval₁-sound f k .to       ∎
+  eval₂-sound {_} {Z} {X} (_`◆_ {f₁ = f₁} {f₂} α {g₁} {g₂} β) {k} =
+    eval₁-sound (f₂ `⊗ g₂) k .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ `whisker f₁ (eval₂ β) ⟧      ≡⟨ cat! (Hom X Z) ⟩
+    _ ∘ _ ∘ eval₁-sound f₂ _ .to ∘ ⟦ eval₂ α ⟧ ∘ ⟦ `whisker f₁ (eval₂ β) ⟧      ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (eval₂-sound α) ∙ ap (⟦ α ⟧ ◀ _ ∘_) (`whisker-sound f₁ (eval₂ β)) ⟩
+    _ ∘ ⟦ f₂ ⟧ ▶ eval₁-sound g₂ k .to ∘ ⟦ α ⟧ ◀ ⟦ eval₁ g₂ k ⟧ ∘ ⟦ f₁ ⟧ ▶ _ ∘ _ ≡⟨ refl⟩∘⟨ ⊗.extendl (id-comm-sym ,ₚ id-comm) ⟩
+    _ ∘ _ ∘ ⟦ f₁ ⟧ ▶ eval₁-sound g₂ k .to ∘ ⟦ f₁ ⟧ ▶ ⟦ eval₂ β ⟧ ∘ _            ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.extendl (eval₂-sound β) ⟩
+    α← _ _ _ ∘ ⟦ α ⟧ ◀ (⟦ g₂ ⟧ ⊗ ⟦ k ⟧) ∘ ⟦ f₁ ⟧ ▶ (⟦ β ⟧ ◀ ⟦ k ⟧) ∘ _          ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ⟩
+    (⟦ α ⟧ ◀ ⟦ g₂ ⟧) ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ ⟦ f₁ ⟧ ▶ (⟦ β ⟧ ◀ ⟦ k ⟧) ∘ _          ≡⟨ refl⟩∘⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ⟩
+    (⟦ α ⟧ ◀ ⟦ g₂ ⟧) ◀ ⟦ k ⟧ ∘ (⟦ f₁ ⟧ ▶ ⟦ β ⟧) ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ _          ≡⟨ ◀.pulll (⊗.collapse (idr _ ,ₚ idl _)) ⟩
+    (⟦ α ⟧ ◆ ⟦ β ⟧) ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ _                                      ≡⟨ refl ⟩∘⟨ assoc _ _ _ ⟩
+    (⟦ α ⟧ ◆ ⟦ β ⟧) ◀ ⟦ k ⟧ ∘ eval₁-sound (f₁ `⊗ g₁) k .to                      ∎
+  eval₂-sound (`λ← f) {k} =
+    eval₁-sound f k .to ∘ Hom.id                              ≡⟨ idr _ ∙ intror (λ≅ .invr) ∙ extendl (sym $ λ←nat _) ⟩
+    λ← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _                    ≡⟨ pushl (sym (rswizzle (sym triangle-λ←) (α≅ .invl))) ⟩
+    λ← _ ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _ ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    λ← _ ◀ ⟦ k ⟧ ∘ eval₁-sound (`id `⊗ f) k .to               ∎
+  eval₂-sound (`λ→ f) {k} =
+    eval₁-sound (`id `⊗ f) k .to ∘ Hom.id   ≡⟨ idr _ ∙ extendr (sym $ λ→nat _) ⟩
+    (α← _ _ _ ∘ λ→ _) ∘ eval₁-sound f k .to ≡⟨ lswizzle triangle-λ→ (α≅ .invr) ⟩∘⟨refl ⟩
+    λ→ _ ◀ ⟦ k ⟧ ∘ eval₁-sound f k .to      ∎
+  eval₂-sound (`ρ← f) =
+    idr _ ∙ insertl (pulll (triangle _ _) ∙ ▶.annihilate (λ≅ .invr))
+  eval₂-sound (`ρ→ f) {k} = idr _ ∙ ap (_∘ eval₁-sound f k .to) triangle-inv
+  eval₂-sound {_} {Z} {X} (`α← f g h) {k} =
+    eval₁-sound ((f `⊗ g) `⊗ h) k .to ∘ Hom.id                                   ≡⟨ cat! (Hom X Z) ⟩
+    α← _ _ _ ∘ (⟦ f ⟧ ⊗ ⟦ g ⟧) ▶ eval₁-sound h k .to ∘ α← _ _ _ ∘ _              ≡⟨ refl⟩∘⟨ extendl (sym $ ▶-assoc .from .is-natural _ _ _) ⟩
+    α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ _) ∘ _                                ≡⟨ extendl (sym $ pentagon _ _ _ _) ⟩
+    α← _ _ _ ◀ ⟦ k ⟧ ∘ (α← _ _ _ ∘ ⟦ f ⟧ ▶ α← _ _ _) ∘ ⟦ f ⟧ ▶ _ ∘ ⟦ f ⟧ ▶ _ ∘ _ ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    _ ∘ _ ∘ ⟦ f ⟧ ▶ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ _) ∘ ⟦ f ⟧ ▶ _ ∘ _               ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.pulll refl ∙ ▶.pulll refl ⟩
+    α← _ _ _ ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ _ ∘ _                                  ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    α← _ _ _ ◀ ⟦ k ⟧ ∘ eval₁-sound (f `⊗ g `⊗ h) k .to                           ∎
+  eval₂-sound {_} {Z} {X} (`α→ f g h) {k} =
+    eval₁-sound (f `⊗ (g `⊗ h)) k .to ∘ Hom.id                              ≡⟨ cat! (Hom X Z) ⟩
+    α← _ _ _ ∘ ⟦ f ⟧ ▶ ((α← _ _ _ ∘ ⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _) ∘ _   ≡⟨ refl⟩∘⟨ ▶.pushl refl ∙ ▶.pushl refl ⟩
+    α← _ _ _ ∘ ⟦ f ⟧ ▶ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ eval₁-sound h k .to) ∘ _ ≡⟨ extendl (sym $ lswizzle (sym $ pentagon _ _ _ _) (◀.annihilate (α≅ .invl))) ⟩
+    α→ _ _ _ ◀ ⟦ k ⟧ ∘ (α← _ _ _ ∘ α← _ _ _) ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ _) ∘ _      ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    α→ _ _ _ ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧ ▶ (⟦ g ⟧ ▶ _) ∘ _        ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
+    α→ _ _ _ ◀ ⟦ k ⟧ ∘ α← _ _ _ ∘ (⟦ f ⟧ ⊗ ⟦ g ⟧) ▶ _ ∘ α← _ _ _ ∘ _        ≡⟨ cat! (Hom X Z) ⟩
+    α→ _ _ _ ◀ ⟦ k ⟧ ∘ eval₁-sound ((f `⊗ g) `⊗ h) k .to                    ∎
 
---   nf₂-sound
---     : {f g : Expr₁ X Y} (α : Expr₂ f g)
---     → nf₁-sound g .to ∘ nf₂ α ≡ ⟦ α ⟧ ∘ nf₁-sound f .to
---   nf₂-sound {X} {Y} {f} {g} α =
---     nf₁-sound g .to ∘ nf₂ α                      ≡⟨ refl⟩∘⟨ Nf₂.eval-sound (eval₂ α) ⟩
---     nf₁-sound g .to ∘ ⟦ eval₂ α ⟧                ≡⟨ extendr (eval₂-sound α) ∙ sym (assoc _ _ _) ⟩
---     ρ← ⟦ g ⟧ ∘ ⟦ α ⟧ ◀ id ∘ eval₁-sound f id .to ≡⟨ extendl (ρ←nat _) ⟩
---     ⟦ α ⟧ ∘ nf₁-sound f .to                      ∎
+  frame-compare-sound
+    : {f g g' h : Expr₁ X Y}
+    → (x : Frame g h) (y : Frame f g) {x' : Frame g' h} {y' : Frame f g'}
+    → frame-compare x y ≡ᵢ just (g' , x' , y') → ⟦ x' ⟧ ∘ ⟦ y' ⟧ ≡ ⟦ x ⟧ ∘ ⟦ y ⟧
+  frame-compare-sound (x `◁ f) (y `◁ f) p
+    with just (_ , x' , y') ← frame-compare x y in q | reflᵢ ← p =
+    ◀.weave (frame-compare-sound x y q)
+  frame-compare-sound (f `▷ x) (f `▷ y) p
+    with just (_ , x' , y') ← frame-compare x y in q | reflᵢ ← p =
+    ▶.weave (frame-compare-sound x y q)
+  frame-compare-sound (f `▷ x) (y `◁ g) reflᵢ    = ⊗.weave (id-comm ,ₚ id-comm-sym)
+  frame-compare-sound (f `▷ x) (`α← _ _ _) reflᵢ =
+    ▶-assoc .from .is-natural _ _ _
+  frame-compare-sound (f `▷ (g `▷ x)) (`α→ _ _ _) reflᵢ =
+    ▶-assoc .to .is-natural _ _ _
+  frame-compare-sound ((x `◁ g) `◁ f) (`α← _ _ _) reflᵢ =
+    ◀-assoc .to .is-natural _ _ _
+  frame-compare-sound (x `◁ f) (`α→ _ _ _) reflᵢ =
+    ◀-assoc .from .is-natural _ _ _
+  frame-compare-sound (f `▷ x) (`λ← _) reflᵢ = λ←nat _
+  frame-compare-sound (f `▷ x) (`λ→ _) reflᵢ = λ→nat _
 
-  postulate
+  val₂-push-sound-inl
+    : {f g h : Expr₁ X Y} (x : Frame g h) (ys : Val₂ f g) {zs : Val₂ f h}
+    → val₂-push x ys ≡ᵢ inl zs → ⟦ zs ⟧ ≡ ⟦ x ⟧ ∘ ⟦ ys ⟧
+
+  val₂-push-sound-inr
+    : {f g g' h : Expr₁ X Y} (x : Frame g h) (ys : Val₂ f g)
+    → {zs : Val₂ g' h} {y : Frame f g'} → val₂-push x ys ≡ᵢ inr (g' , zs , y)
+    →  ⟦ zs ⟧ ∘ ⟦ y ⟧ ≡ ⟦ x ⟧ ∘ ⟦ ys ⟧
+
+  val₂-push-sound-inl x (y ↑) p with nothing ← frame-compare x y | reflᵢ ← p = refl
+  val₂-push-sound-inl x (ys `∘ ys') p with val₂-push x ys in q
+  ... | inl xys with reflᵢ ← p = pushl (val₂-push-sound-inl x ys q)
+  ... | inr (_ , xys , y) with inl yzs ← val₂-push y ys' in r | reflᵢ ← p =
+    ap (_ ∘_) (val₂-push-sound-inl y ys' r) ∙ extendl (val₂-push-sound-inr x ys q)
+
+  val₂-push-sound-inr x `id reflᵢ = id-comm-sym
+  val₂-push-sound-inr x (y ↑) p with just _ ← frame-compare x y in q | reflᵢ ← p =
+    frame-compare-sound x y q
+  val₂-push-sound-inr x (ys `∘ ys') p with inr (_ , xys , y) ← val₂-push x ys in q
+    with inr (_ , yzs , z) ← val₂-push y ys' in r | reflᵢ ← p =
+    extendr (val₂-push-sound-inr y ys' r) ∙ pushl (val₂-push-sound-inr x ys q)
+
+  val₂-merge-sound
+    : {f g h : Expr₁ X Y} (xs : Val₂ g h) (ys : Val₂ f g)
+    → ⟦ val₂-merge xs ys ⟧ ≡ ⟦ xs ⟧ ∘ ⟦ ys ⟧
+  val₂-merge-sound `id ys = sym (idl _)
+  val₂-merge-sound (x ↑) ys with val₂-push x ys in p
+  ... | inl _ = val₂-push-sound-inl x ys p
+  ... | inr _ = val₂-push-sound-inr x ys p
+  val₂-merge-sound (xs `∘ xs') ys =
+    val₂-merge-sound xs (val₂-merge xs' ys) ∙ pushr (val₂-merge-sound xs' ys)
+
+  val₂-eval-sound
+    : {f g : Expr₁ X Y} {h : X ↦ Y} (xs : Val₂ f g) (k : h ⇒ ⟦ f ⟧)
+    → val₂-eval xs k ≡ ⟦ xs ⟧ ∘ k
+  val₂-eval-sound `id k        = sym (idl _)
+  val₂-eval-sound (x ↑) k      = refl
+  val₂-eval-sound (xs `∘ ys) k =
+    val₂-eval-sound xs (val₂-eval ys k) ∙ pushr (val₂-eval-sound ys k)
+
+  nf₂-sound
+    : {f g : Expr₁ X Y} (α : Expr₂ f g)
+    → nf₁-sound g .to ∘ nf₂ α ≡ ⟦ α ⟧ ∘ nf₁-sound f .to
+  nf₂-sound {f = f} {g} α =
+    nf₁-sound g .to ∘ nf₂ α                        ≡⟨ refl⟩∘⟨ val₂-eval-sound (val₂-merge (eval₂ α) `id) Hom.id ∙ idr _ ⟩
+    nf₁-sound g .to ∘ ⟦ val₂-merge (eval₂ α) `id ⟧ ≡⟨ refl⟩∘⟨ val₂-merge-sound (eval₂ α) `id ∙ idr _ ⟩
+    nf₁-sound g .to ∘ ⟦ eval₂ α ⟧                  ≡⟨ extendr (eval₂-sound α) ∙ sym (assoc _ _ _) ⟩
+    ρ← ⟦ g ⟧ ∘ ⟦ α ⟧ ◀ id ∘ eval₁-sound f `id .to  ≡⟨ extendl (ρ←nat _) ⟩
+    ⟦ α ⟧ ∘ nf₁-sound f .to                        ∎
+
+  abstract
     solve : {f g : Expr₁ X Y} (α β : Expr₂ f g) → nf₂ α ≡ nf₂ β → ⟦ α ⟧ ≡ ⟦ β ⟧
-    -- solve {f = f} {g} α β p =
-    --   iso→epic (nf₁-sound f) _ _ $
-    --   sym (nf₂-sound α) ∙ ap (nf₁-sound g .to ∘_) p ∙ nf₂-sound β
+    solve {f = f} {g} α β p =
+      iso→epic (nf₁-sound f) _ _ $
+      sym (nf₂-sound α) ∙ ap (nf₁-sound g .to ∘_) p ∙ nf₂-sound β
 
 
 module Reflection where
