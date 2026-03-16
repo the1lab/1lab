@@ -466,52 +466,34 @@ module Reflection where
   pattern “F₁” functor x y f =
     def (quote Functor.F₁) (functor-args functor (x h∷ y h∷ f v∷ []))
 
-  pattern “,” x y =
-    con (quote _,_) (_ hm∷ _ hm∷ _ h∷ _ h∷ x v∷ y v∷ [])
+  pattern “,” x y = con (quote _,_) (_ hm∷ _ hm∷ _ h∷ _ h∷ x v∷ y v∷ [])
 
-  pattern “id₁” =
-    def (quote Prebicategory.id) (bicategory-args _ (_ h∷ []))
+  pattern “id₁” = def (quote Prebicategory.id) _
 
-  pattern “compose” =
-    (def (quote Prebicategory.compose) (bicategory-args _ (_ h∷ _ h∷ _ h∷ [])))
+  pattern “compose” = def (quote Prebicategory.compose) _
 
-  pattern “unitor-l” =
-    (def (quote Prebicategory.unitor-l) (bicategory-args _ (_ h∷ _ h∷ [])))
+  pattern “unitor-l” = def (quote Prebicategory.unitor-l) _
 
-  pattern “unitor-r” =
-    (def (quote Prebicategory.unitor-r) (bicategory-args _ (_ h∷ _ h∷ [])))
+  pattern “unitor-r” = def (quote Prebicategory.unitor-r) _
 
-  pattern “associator” =
-    (def (quote Prebicategory.associator) (bicategory-args _ (_ h∷ _ h∷ _ h∷ _ h∷ [])))
+  pattern “associator” = def (quote Prebicategory.associator) _
 
-  pattern “to” f =
-    (def (quote Cm._≅_.to) (iso-args f []))
+  pattern “to” f = def (quote Cm._≅_.to) (iso-args f [])
 
-  pattern “from” f =
-    (def (quote Cm._≅_.from) (iso-args f []))
+  pattern “from” f = def (quote Cm._≅_.from) (iso-args f [])
 
-  pattern “η” f x =
-    (def (quote _=>_.η) (nt-args f (x v∷ [])))
+  pattern “η” f x = def (quote _=>_.η) (nt-args f (x v∷ []))
 
   pattern “⊗” f g = “F₀” “compose” (“,” f g)
 
-  pattern “Hom” =
-    (def (quote Prebicategory.Hom) (bicategory-args _ (_ v∷ _ v∷ [])))
+  pattern “Hom” = def (quote Prebicategory.Hom) _
 
-  pattern “id₂” f =
-    def (quote Precategory.id) (category-args “Hom” (f h∷ []))
+  pattern “id₂” f = def (quote Precategory.id) (category-args “Hom” (f h∷ []))
 
   pattern “∘” f g h α β =
     def (quote Precategory._∘_) (category-args “Hom” (f h∷ g h∷ h h∷ α v∷ β v∷ []))
 
   pattern “◆” f₁ f₂ α g₁ g₂ β = “F₁” “compose” (“,” f₁ g₁) (“,” f₂ g₂) (“,” α β)
-
-  pattern “λ←” f     = “η” (“from” “unitor-l”) f
-  pattern “λ→” f     = “η” (“to” “unitor-l”) f
-  pattern “ρ←” f     = “η” (“from” “unitor-r”) f
-  pattern “ρ→” f     = “η” (“to” “unitor-r”) f
-  pattern “α←” f g h = “η” (“from” “associator”) (“,” f (“,” g h))
-  pattern “α→” f g h = “η” (“to” “associator”) (“,” f (“,” g h))
 
   mk-hom-args : Term → List (Arg Term) → List (Arg Term)
   mk-hom-args cat xs = infer-hidden 3 $ cat h∷ infer-hidden 2 xs
@@ -535,11 +517,19 @@ module Reflection where
     build-unitor : Name → Term → Term
     build-unitor n f = con n (ef v∷ []) where
       ef = build-expr₁ f
-    build-associator : Name → Term → Term → Term → Term
-    build-associator n f g h = con n (ef v∷ eg v∷ eh v∷ []) where
+
+    build-associator : Term → Name → Term → Term
+    build-associator _ n (“,” f (“,” g h)) = con n (ef v∷ eg v∷ eh v∷ []) where
       ef = build-expr₁ f
       eg = build-expr₁ g
       eh = build-expr₁ h
+    build-associator fallback _ _ = fallback
+
+    build-def : Term → Term → Term → Term
+    build-def f g α = con (quote NbE.Expr₂._↑) args where
+      ef = build-expr₁ f
+      eg = build-expr₁ g
+      args = mk-hom-args cat (ef h∷ eg h∷ α v∷ [])
 
     build : Term → Term → Term → Term
     build _ _ (“id₂” f) = con (quote NbE.Expr₂.`id) (mk-hom-args cat (ef h∷ [])) where
@@ -550,16 +540,15 @@ module Reflection where
     build _ _ (“◆” f₁ f₂ α g₁ g₂ β) = con (quote NbE.Expr₂._`◆_) (eα v∷ eβ v∷ []) where
       eα = build-expr₂ cat f₁ f₂ α
       eβ = build-expr₂ cat g₁ g₂ β
-    build _ _ (“λ←” f)     = build-unitor (quote NbE.Expr₂.`λ←) f
-    build _ _ (“λ→” f)     = build-unitor (quote NbE.Expr₂.`λ→) f
-    build _ _ (“ρ←” f)     = build-unitor (quote NbE.Expr₂.`ρ←) f
-    build _ _ (“ρ→” f)     = build-unitor (quote NbE.Expr₂.`ρ→) f
-    build _ _ (“α←” f g h) = build-associator (quote NbE.Expr₂.`α←) f g h
-    build _ _ (“α→” f g h) = build-associator (quote NbE.Expr₂.`α→) f g h
-    build f g α            = con (quote NbE.Expr₂._↑) args where
-      ef = build-expr₁ f
-      eg = build-expr₁ g
-      args = mk-hom-args cat (ef h∷ eg h∷ α v∷ [])
+    build f g α@(“η” nnm na) with nnm
+    ... | “from” “unitor-l”   = build-unitor (quote NbE.Expr₂.`λ←) na
+    ... | “from” “unitor-r”   = build-unitor (quote NbE.Expr₂.`ρ←) na
+    ... | “from” “associator” = build-associator (build-def f g α) (quote NbE.Expr₂.`α←) na
+    ... | “to”   “unitor-l”   = build-unitor (quote NbE.Expr₂.`λ→) na
+    ... | “to”   “unitor-r”   = build-unitor (quote NbE.Expr₂.`ρ→) na
+    ... | “to”   “associator” = build-associator (build-def f g α) (quote NbE.Expr₂.`α→) na
+    ... | _                   = build-def f g α
+    build f g α = build-def f g α
 
   dont-reduce : List Name
   dont-reduce =
