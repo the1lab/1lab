@@ -18,7 +18,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   private variable
     W X Y Z : Ob
 
-  data Expr₁ : Ob → Ob → Typeω where
+  data Expr₁ : Ob → Ob → SSet (o ⊔ ℓ) where
     _↑   : X ↦ Y → Expr₁ X Y
     `id  : Expr₁ X X
     _`⊗_ : Expr₁ Y Z → Expr₁ X Y → Expr₁ X Z
@@ -28,7 +28,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ⟦_⟧₁ `id      = id
   ⟦_⟧₁ (f `⊗ g) = ⟦ f ⟧₁ ⊗ ⟦ g ⟧₁
 
-  data Expr₂ : Expr₁ X Y → Expr₁ X Y → Typeω where
+  data Expr₂ : Expr₁ X Y → Expr₁ X Y → SSet (o ⊔ ℓ ⊔ ℓ') where
     _↑   : {f g : Expr₁ X Y} → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁ → Expr₂ f g
     `id  : {f : Expr₁ X Y} → Expr₂ f f
     _`∘_ : {f g h : Expr₁ X Y} → Expr₂ g h → Expr₂ f g → Expr₂ f h
@@ -93,18 +93,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   nf₁ : Expr₁ X Y → X ↦ Y
   nf₁ e = ⟦ eval₁ e `id ⟧₁
 
-  eval₁-sound : (e : Expr₁ Y Z) (k : Expr₁ X Y) → ⟦ eval₁ e k ⟧₁ ≅ ⟦ e ⟧₁ ⊗ ⟦ k ⟧₁
-  eval₁-sound (x ↑) k     = id-iso
-  eval₁-sound `id k       = λ≅
-  eval₁-sound (e `⊗ e₁) k =
-    eval₁-sound e (eval₁ e₁ k) ∙Iso
-    ▶.F-map-iso (eval₁-sound e₁ k) ∙Iso
-    α≅ Iso⁻¹
-
-  nf₁-sound : (e : Expr₁ X Y) → nf₁ e ≅ ⟦ e ⟧₁
-  nf₁-sound e = eval₁-sound e `id ∙Iso ρ≅ Iso⁻¹
-
-  data Frame : (f g : Expr₁ X Y) → Typeω where
+  data Frame : (f g : Expr₁ X Y) → SSet (o ⊔ ℓ ⊔ ℓ') where
     _↑  : {f g : Expr₁ X Y} → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁ → Frame f g
     `λ← : (f : Expr₁ X Y) → Frame (`id `⊗ f) f
     `λ→ : (f : Expr₁ X Y) → Frame f (`id `⊗ f)
@@ -129,7 +118,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ⟦_⟧f : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
   ⟦_⟧f = frame-embed
 
-  data Val₂ : (f g : Expr₁ X Y) → Typeω where
+  data Val₂ : (f g : Expr₁ X Y) → SSet (o ⊔ ℓ ⊔ ℓ') where
     `id  : {f : Expr₁ X Y} → Val₂ f f
     _↑   : {f g : Expr₁ X Y} → Frame f g → Val₂ f g
     _`∘_ : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
@@ -175,7 +164,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   eval₂ (`α← f g h)           = `id
   eval₂ (`α→ f g h)           = `id
 
-  data FrameCompare : (f g : Expr₁ X Y) → Typeω where
+  data FrameCompare : (f g : Expr₁ X Y) → SSet (o ⊔ ℓ ⊔ ℓ') where
     f-swap   : {f g h : Expr₁ X Y} → Frame g h → Frame f g → FrameCompare f h
     f-reduce : {f h : Expr₁ X Y} → Frame f h → FrameCompare f h
     f-stop   : {f h : Expr₁ X Y} → FrameCompare f h
@@ -207,7 +196,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   frame-compare (`α← _ _ _)     (`λ→ _)     = f-reduce (`λ→ _ `◁ _)
   frame-compare _ _                         = f-stop
 
-  data PushResult (f h : Expr₁ X Y) : Typeω where
+  data PushResult (f h : Expr₁ X Y) : SSet (o ⊔ ℓ ⊔ ℓ') where
     p-cont : {g : Expr₁ X Y} → Val₂ g h → Frame f g → PushResult f h
     p-stop : Val₂ f h → PushResult f h
 
@@ -241,6 +230,17 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   --------------------------------------------------------------------------------
   -- Soundness
+
+  eval₁-sound : (e : Expr₁ Y Z) (k : Expr₁ X Y) → ⟦ eval₁ e k ⟧₁ ≅ ⟦ e ⟧₁ ⊗ ⟦ k ⟧₁
+  eval₁-sound (x ↑) k     = id-iso
+  eval₁-sound `id k       = λ≅
+  eval₁-sound (e `⊗ e₁) k =
+    eval₁-sound e (eval₁ e₁ k) ∙Iso
+    ▶.F-map-iso (eval₁-sound e₁ k) ∙Iso
+    α≅ Iso⁻¹
+
+  nf₁-sound : (e : Expr₁ X Y) → nf₁ e ≅ ⟦ e ⟧₁
+  nf₁-sound e = eval₁-sound e `id ∙Iso ρ≅ Iso⁻¹
 
   `whisker-sound
     : (f : Expr₁ Y Z) {h₁ h₂ : Expr₁ X Y} (α : Val₂ h₁ h₂)
