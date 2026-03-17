@@ -16,16 +16,18 @@ module Data.Vec.Base where
 # Vectors
 
 The type `Vec`{.Agda} is a representation of n-ary tuples with
-coordinates drawn from A. Therefore, it is equivalent to the type
-$\rm{Fin}(n) \to A$, i.e., the functions from the [[standard finite
-set]] with $n$ elements to the type $A$. The halves of this equivalence
-are called `lookup`{.Agda} and `tabulate`{.Agda}.
+coordinates drawn from A.
 
 ```agda
 data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
   []  : Vec A zero
   _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
+```
 
+We begin by establishing an elimination rule for `Vec`{.Agda}, along
+with the `head`{.Agda} and `tail`{.Agda} operations.
+
+```agda
 Vec-elim
   : ∀ {ℓ ℓ'} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ')
   → P []
@@ -33,20 +35,35 @@ Vec-elim
   → ∀ {n} (xs : Vec A n) → P xs
 Vec-elim P p[] p∷ [] = p[]
 Vec-elim P p[] p∷ (x ∷ xs) = p∷ x xs (Vec-elim P p[] p∷ xs)
+```
 
+<!--
+```agda
 infixr 20 _∷_
 
 private variable
   ℓ : Level
   A B C : Type ℓ
   n k : Nat
+```
+-->
 
+```agda
 head : Vec A (suc n) → A
 head (x ∷ xs) = x
 
 tail : Vec A (suc n) → Vec A n
 tail (x ∷ xs) = xs
+```
 
+The type `Vec A n` [is equivalent to] the type $\rm{Fin}(n) \to A$, i.e., 
+the functions from the [[standard finite set]] with $n$ elements to the
+type $A$. The halves of this equivalence are called `lookup`{.Agda} and 
+`tabulate`{.Agda}.
+
+[is equivalent to]: Data.Vec.Properties.html
+
+```agda
 lookup : Vec A n → Fin n → A
 lookup xs n with fin-view n
 ... | zero  = head xs
@@ -73,11 +90,21 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
 tabulate : (Fin n → A) → Vec A n
 tabulate {zero} f  = []
 tabulate {suc n} f = f fzero ∷ tabulate (λ x → f (fsuc x))
+```
 
+For a given length $n$, `Vec`{.Agda} is functorial. Here we show how the
+`map`{.Agda} action on morphisms, that this gives a functor is shown 
+[[elsewhere|functioriality of Vec]].
+
+```agda
 map : (A → B) → Vec A n → Vec B n
 map f [] = []
 map f (x ∷ xs) = f x ∷ map f xs
+```
 
+The following operations are also useful:
+
+```agda
 _++_ : ∀ {n k} → Vec A n → Vec A k → Vec A (n + k)
 [] ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
@@ -89,7 +116,17 @@ zip-with f (x ∷ xs) (y ∷ ys) = f x y ∷ zip-with f xs ys
 replicate : (n : Nat) → A → Vec A n
 replicate zero a = []
 replicate (suc n) a = a ∷ replicate n a
+```
 
+## List syntax {defines="list-syntax-for-vectors"}
+
+A similar type to `Vec`{.Agda} can be defined by _recursion_ as an
+iteraded `non-dependent product`{.Agda}. The resulting type `Vecₓ`{.Agda} 
+has the advantage of supporting usual tuple syntax, but is fiddlier to
+eliminate. This is solved by implementing the `From-product`{.Agda}
+typeclass for `Vec`{.Agda}, which enables list syntax for the latter.
+
+```agda
 instance
   From-prod-Vec : From-product A (Vec A)
   From-prod-Vec .From-product.from-prod = go where

@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Algebra.Semigroup
+open import Algebra.Magma
 ```
 -->
 
@@ -14,7 +15,7 @@ module Algebra.Monoid where
 ```agda
 private variable
   ℓ ℓ₁ : Level
-  A : Type ℓ
+  A B : Type ℓ
 ```
 -->
 
@@ -82,16 +83,46 @@ Monoid : (ℓ : Level) → Type (lsuc ℓ)
 Monoid ℓ = Σ (Type ℓ) Monoid-on
 ```
 
-There is also a predicate which witnesses when an equivalence between
-monoids is a monoid homomorphism. It has to preserve the identity, and
-commute with the multiplication:
+## Constructing monoids
+
+The interface to `Monoid-on`{.Agda} is contains some annoying nesting,
+so we provide an interface that arranges the data in a more user-friendly
+way.
+
+```agda
+record make-monoid {ℓ} (A : Type ℓ) : Type ℓ where
+  field
+    monoid-is-set : is-set A
+    _⋆_ : A → A → A
+    1M : A
+    ⋆-assoc : ∀ x y z → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
+    ⋆-idl : ∀ x → 1M ⋆ x ≡ x
+    ⋆-idr : ∀ x → x ⋆ 1M ≡ x
+
+  to-is-monoid : is-monoid 1M _⋆_
+  to-is-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = monoid-is-set }
+  to-is-monoid .has-is-semigroup .is-semigroup.associative = ⋆-assoc _ _ _
+  to-is-monoid .idl = ⋆-idl _
+  to-is-monoid .idr = ⋆-idr _
+
+  to-monoid-on : Monoid-on A
+  to-monoid-on .Monoid-on.identity = 1M
+  to-monoid-on .Monoid-on._⋆_ = _⋆_
+  to-monoid-on .Monoid-on.has-is-monoid = to-is-monoid
+
+open make-monoid using (to-is-monoid; to-monoid-on) public
+```
+
+## Monoid homomorphisms
+
+As mentioned above, a monoid homomorphism has to preserve both
+multiplication _and_ the identity.
 
 ```agda
 record
-  Monoid-hom {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-             (s : Monoid-on A) (t : Monoid-on B)
+  Monoid-hom (s : Monoid-on A) (t : Monoid-on B)
              (e : A → B)
-           : Type (ℓ ⊔ ℓ') where
+           : Type (level-of A ⊔ level-of B) where
   private
     module A = Monoid-on s
     module B = Monoid-on t
@@ -99,14 +130,52 @@ record
   field
     pres-id : e A.identity ≡ B.identity
     pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
-
-open Monoid-hom
-
-Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
-Monoid≃ A B (e , _) = Monoid-hom (A .snd) (B .snd) e
 ```
 
-# Relationships to unital magmas
+Given an equivalence $e : A \simeq B$, we can transport a monoid
+structure on $A$ to one on $B$ so that $e$ becomes a homomorphism.
+
+```agda
+module _ (e : A ≃ B) (mA : Monoid-on A) where
+  open make-monoid
+  open Monoid-hom
+  open Equiv e
+  private module mA = Monoid-on mA
+
+  monoid-transport : Monoid-on B
+  monoid-transport = to-monoid-on m where
+    m : make-monoid B
+    m .monoid-is-set = Equiv→is-hlevel 2 inverse mA.has-is-set
+    m ._⋆_ x y = to (from x mA.⋆ from y)
+    m .1M = to mA.identity
+    m .⋆-assoc x y z =
+      to (from x mA.⋆ ⌜ from (to (from y mA.⋆ from z)) ⌝) ≡⟨ ap! (η _) ⟩ 
+      to (from x mA.⋆ (from y mA.⋆ from z))               ≡⟨ ap to mA.associative ⟩ 
+      to (⌜ from x mA.⋆ from y ⌝ mA.⋆ from z)             ≡˘⟨ ap¡ (η _) ⟩ 
+      to (from (to (from x mA.⋆ from y)) mA.⋆ from z)     ∎
+    m .⋆-idl x =
+      to (⌜ from (to mA.identity) ⌝ mA.⋆ from x)  ≡⟨ ap! (η _) ⟩
+      to (mA.identity mA.⋆ from x)                ≡⟨ ap to mA.idl ⟩
+      to (from x)                                 ≡⟨ ε _ ⟩
+      x                                           ∎
+    m .⋆-idr x =
+      to (from x mA.⋆ ⌜ from (to mA.identity) ⌝)  ≡⟨ ap! (η _) ⟩
+      to (from x mA.⋆ mA.identity)                ≡⟨ ap to mA.idr ⟩
+      to (from x)                                 ≡⟨ ε _ ⟩
+      x                                           ∎
+
+  monoid-transport-hom : Monoid-hom mA monoid-transport to
+  monoid-transport-hom .pres-id = refl
+  monoid-transport-hom .pres-⋆ x y = 
+    to (⌜ x ⌝ mA.⋆ y)                 ≡˘⟨ ap¡ (η _) ⟩ 
+    to (from (to x) mA.⋆ ⌜ y ⌝)       ≡˘⟨ ap¡ (η _) ⟩
+    to (from (to x) mA.⋆ from (to y)) ∎
+```
+
+Monoids of a given universe level and their morphisms are assembled into
+the [[category of monoids]].
+
+## Relationships to unital magmas
 
 ```agda
 open import Algebra.Magma.Unital
@@ -139,7 +208,7 @@ direction, namely, that every unital semigroup is a monoid.
   is-unital-magma→is-semigroup→is-monoid uni sem .idr = uni .idr
 ```
 
-# Inverses
+## Inverses
 
 A useful application of the monoid laws is in showing that _having an
 **inverse**_ is a _property_ of a specific element, not structure on
@@ -171,32 +240,3 @@ monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
   y             ∎
 ```
 
-# Constructing monoids
-
-The interface to `Monoid-on`{.Agda} is contains some annoying nesting,
-so we provide an interface that arranges the data in a more user-friendly
-way.
-
-```agda
-record make-monoid {ℓ} (A : Type ℓ) : Type ℓ where
-  field
-    monoid-is-set : is-set A
-    _⋆_ : A → A → A
-    1M : A
-    ⋆-assoc : ∀ x y z → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
-    ⋆-idl : ∀ x → 1M ⋆ x ≡ x
-    ⋆-idr : ∀ x → x ⋆ 1M ≡ x
-
-  to-is-monoid : is-monoid 1M _⋆_
-  to-is-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = monoid-is-set }
-  to-is-monoid .has-is-semigroup .is-semigroup.associative = ⋆-assoc _ _ _
-  to-is-monoid .idl = ⋆-idl _
-  to-is-monoid .idr = ⋆-idr _
-
-  to-monoid-on : Monoid-on A
-  to-monoid-on .Monoid-on.identity = 1M
-  to-monoid-on .Monoid-on._⋆_ = _⋆_
-  to-monoid-on .Monoid-on.has-is-monoid = to-is-monoid
-
-open make-monoid using (to-is-monoid; to-monoid-on) public
-```
