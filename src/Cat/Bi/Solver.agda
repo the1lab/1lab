@@ -125,7 +125,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   val₂-embed : {f g : Expr₁ X Y} → Val₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
   val₂-embed `id      = Hom.id
-  val₂-embed (x ↑)    = frame-embed x
+  val₂-embed (x ↑)    = ⟦ x ⟧f
   val₂-embed (x `∘ y) = val₂-embed x Hom.∘ val₂-embed y
 
   ⟦_⟧vv : {f g : Expr₁ X Y} → Val₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
@@ -172,15 +172,15 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   frame-compare : {f g h : Expr₁ X Y} → Frame g h → Frame f g → FrameCompare f h
   frame-compare (f `▷ x) (f `▷ y) with frame-compare x y
-  ... | (f-swap x' y') = f-swap (f `▷ x') (f `▷ y')
-  ... | (f-reduce z)   = f-reduce (f `▷ z)
-  ... | f-stop         = f-stop
-  ... | f-drop         = f-drop
+  ... | f-swap x' y' = f-swap (f `▷ x') (f `▷ y')
+  ... | f-reduce z   = f-reduce (f `▷ z)
+  ... | f-stop       = f-stop
+  ... | f-drop       = f-drop
   frame-compare (x `◁ f) (y `◁ f) with frame-compare x y
-  ... | (f-swap x' y') = f-swap (x' `◁ f) (y' `◁ f)
-  ... | (f-reduce z)   = f-reduce (z `◁ f)
-  ... | f-stop         = f-stop
-  ... | f-drop         = f-drop
+  ... | f-swap x' y' = f-swap (x' `◁ f) (y' `◁ f)
+  ... | f-reduce z   = f-reduce (z `◁ f)
+  ... | f-stop       = f-stop
+  ... | f-drop       = f-drop
   frame-compare (f `▷ x)        (y `◁ g)    = f-swap (y `◁ _) (_ `▷ x)
   frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _) = f-swap (`α→ f g _) ((f `⊗ g) `▷ x)
   frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _) = f-swap (`α← f g _) (f `▷ (g `▷ x))
@@ -201,20 +201,20 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     p-stop : Val₂ f h → PushResult f h
 
   val₂-push : {f g h : Expr₁ X Y} → Frame g h → Val₂ f g → PushResult f h
-  val₂-push x `id   = p-cont `id x
+  val₂-push x `id = p-cont `id x
   val₂-push x (y ↑) with frame-compare x y
   ... | f-swap x' y' = p-cont (x' ↑) y'
   ... | f-reduce z   = p-cont `id z
   ... | f-stop       = p-stop (x ↑ `∘ y ↑)
   ... | f-drop       = p-stop `id
   val₂-push x (ys `∘ zs) with val₂-push x ys
-  ... | p-stop xys   = p-stop (xys `∘ zs)
+  ... | p-stop xys = p-stop (xys `∘ zs)
   ... | p-cont xys y with val₂-push y zs
   ... | p-stop yzs   = p-stop (xys `∘ yzs)
   ... | p-cont yzs z = p-cont (xys `∘ yzs) z
 
   val₂-merge : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
-  val₂-merge `id ys   = ys
+  val₂-merge `id ys = ys
   val₂-merge (x ↑) ys with val₂-push x ys
   ... | p-stop z     = z
   ... | p-cont ys' y = ys' `∘ y ↑
@@ -222,7 +222,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   val₂-eval : {f g : Expr₁ X Y} {h : X ↦ Y} → Val₂ f g → h ⇒ ⟦ f ⟧₁ → h ⇒ ⟦ g ⟧₁
   val₂-eval `id        = λ z → z
-  val₂-eval (x ↑)      = frame-embed x ∘_
+  val₂-eval (x ↑)      = ⟦ x ⟧f ∘_
   val₂-eval (xs `∘ ys) = val₂-eval xs ⊙ val₂-eval ys
 
   nf₂ : {f g : Expr₁ X Y} → Expr₂ f g → nf₁ f ⇒ nf₁ g
@@ -235,18 +235,18 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   eval₁-sound (x ↑) k     = id-iso
   eval₁-sound `id k       = λ≅
   eval₁-sound (e `⊗ e₁) k =
-    eval₁-sound e (eval₁ e₁ k) ∙Iso
-    ▶.F-map-iso (eval₁-sound e₁ k) ∙Iso
-    α≅ Iso⁻¹
+         eval₁-sound e (eval₁ e₁ k)
+    ∙Iso ▶.F-map-iso (eval₁-sound e₁ k)
+    ∙Iso α≅ Iso⁻¹
 
   nf₁-sound : (e : Expr₁ X Y) → nf₁ e ≅ ⟦ e ⟧₁
   nf₁-sound e = eval₁-sound e `id ∙Iso ρ≅ Iso⁻¹
 
   `whisker-sound
     : (f : Expr₁ Y Z) {h₁ h₂ : Expr₁ X Y} (α : Val₂ h₁ h₂)
-    → eval₁-sound f h₂ .to ∘ val₂-embed (`whisker f α)
+    → eval₁-sound f h₂ .to ∘ ⟦ `whisker f α ⟧vv
     ≡ ⟦ f ⟧₁ ▶ ⟦ α ⟧vv ∘ eval₁-sound f h₁ .to
-  `whisker-sound `id xs                    = λ→nat _
+  `whisker-sound `id xs                         = λ→nat _
   `whisker-sound {_} {Z} {X} (f₁ `⊗ f₂) {h₁} xs =
     eval₁-sound (f₁ `⊗ f₂) _ .to ∘ ⟦ `whisker (f₁ `⊗ f₂) xs ⟧vv
       ≡⟨ cat! (Hom X Z) ⟩
@@ -453,8 +453,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
 module Reflection where
 
-  pattern category-args Z xs      = _ hm∷ _ hm∷ Z v∷ xs
-  pattern bicategory-args Z xs    = _ hm∷ _ hm∷ _ hm∷ Z v∷ xs
+  pattern category-args cat xs    = _ hm∷ _ hm∷ cat v∷ xs
   pattern functor-args functor xs =
     _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
   pattern iso-args f xs = _ hm∷ _ hm∷ _ h∷ _ h∷ _ h∷ f v∷ xs
