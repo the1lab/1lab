@@ -190,6 +190,8 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ {H = Hom} compose)
         (compose-assocʳ {H = Hom} compose)
 
+  module unitor-l {a} {b} = Cr._≅_ _ (unitor-l {a} {b})
+  module unitor-r {a} {b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
@@ -198,54 +200,46 @@ unitor as $\rho$, and to the associator as $\alpha$, so we set up those
 abbreviations here too:
 
 ```agda
-  λ← : ∀ {A B} (f : A ↦ B) → id ⊗ f ⇒ f
-  λ← = unitor-l .Cr._≅_.from .η
+  private
+    open module λ← {a b} = _=>_ (unitor-l.from {a} {b}) renaming (η to λ←) using () public
 
-  λ→ : ∀ {A B} (f : A ↦ B) → f ⇒ id ⊗ f
-  λ→ = unitor-l .Cr._≅_.to .η
+    open module λ→ {a b} = _=>_ (unitor-l.to   {a} {b}) renaming (η to λ→) using () public
 
-  ρ← : ∀ {A B} (f : A ↦ B) → f ⊗ id ⇒ f
-  ρ← = unitor-r .Cr._≅_.from .η
+    open module ρ← {a b} = _=>_ (unitor-r.from {a} {b}) renaming (η to ρ←) using () public
 
-  ρ→ : ∀ {A B} (f : A ↦ B) → f ⇒ f ⊗ id
-  ρ→ = unitor-r .Cr._≅_.to .η
+    open module ρ→ {a b} = _=>_ (unitor-r.to   {a} {b}) renaming (η to ρ→) using () public
+
+    open module α→ {a b c d} = _=>_ (associator.to {a} {b} {c} {d})   renaming (η to α→) using () public
+
+    open module α← {a b c d} = _=>_ (associator.from {a} {b} {c} {d}) renaming (η to α←) using () public
 
   ρ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((f ⊗ id) ⇒ f') (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
-  ρ←nat {A} {B} {f} {f'} β = unitor-r .Cr.from .is-natural f f' β
+  ρ←nat {A} {B} {f} {f'} β = unitor-r.from .is-natural f f' β
 
   λ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((id ⊗ f) ⇒ f') (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
-  λ←nat {A} {B} {f} {f'} β = unitor-l .Cr.from .is-natural f f' β
+  λ←nat {A} {B} {f} {f'} β = unitor-l.from .is-natural f f' β
 
   ρ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ f' ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
-  ρ→nat {A} {B} {f} {f'} β = unitor-r .Cr.to .is-natural f f' β
+  ρ→nat {A} {B} {f} {f'} β = unitor-r.to .is-natural f f' β
 
   λ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ id ⊗ f') (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
-  λ→nat {A} {B} {f} {f'} β = unitor-l .Cr.to .is-natural f f' β
-
-  α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
-  α→ f g h = associator.to .η (f , g , h)
-
-  α← : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
-  α← f g h = associator.from .η (f , g , h)
-
+  λ→nat {A} {B} {f} {f'} β = unitor-l.to .is-natural f f' β
+  
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
-          (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
+          (α← _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _)
   α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
     associator.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
   α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path ((f ⊗ g) ⊗ h ⇒ (f' ⊗ g' ⊗ h'))
-           (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
-           ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
+           (α→ _ ∘ ((β ◆ γ) ◆ δ)) ((β ◆ (γ ◆ δ)) ∘ α→ _)
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
     associator.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
@@ -275,12 +269,12 @@ witnesses commutativity of the diagram
   field
     triangle
       : ∀ {A B C} (f : B ↦ C) (g : A ↦ B)
-      → (ρ← f ◀ g) ∘ α← f id g ≡ f ▶ λ← g
+      → (ρ← f ◀ g) ∘ α← (f , id , g) ≡ f ▶ λ← g
 
     pentagon
       : ∀ {A B C D E} (f : D ↦ E) (g : C ↦ D) (h : B ↦ C) (i : A ↦ B)
-      → (α← f g h ◀ i) ∘ α← f (g ⊗ h) i ∘ (f ▶ α← g h i)
-      ≡ α← (f ⊗ g) h i ∘ α← f g (h ⊗ i)
+      → (α← (f , g , h) ◀ i) ∘ α← (f , g ⊗ h , i) ∘ (f ▶ α← (g , h , i))
+      ≡ α← (f ⊗ g , h , i) ∘ α← (f , g , h ⊗ i)
 ```
 
 Our coherence diagrams for bicategorical data are taken from
@@ -476,8 +470,8 @@ squares).
   field
     hexagon
       : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
-      → ₂ (B.α→ f g h) C.∘ γ→ (f B.⊗ g) h C.∘ (γ→ f g C.◀ ₁ h)
-      ≡ γ→ f (g B.⊗ h) C.∘ (₁ f C.▶ γ→ g h) C.∘ C.α→ (₁ f) (₁ g) (₁ h)
+      → ₂ (B.α→ (f , g , h)) C.∘ γ→ (f B.⊗ g) h C.∘ (γ→ f g C.◀ ₁ h)
+      ≡ γ→ f (g B.⊗ h) C.∘ (₁ f C.▶ γ→ g h) C.∘ C.α→ (₁ f , ₁ g , ₁ h)
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
@@ -592,11 +586,11 @@ boil down to commutativity of the nightmarish diagrams in [@basicbicats,
         : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
         → ν→ (f B.⊗ g) C.∘ (G.γ→ f g C.◀ σ a)
         ≡   (σ c C.▶ F.γ→ f g)
-        C.∘ C.α→ (σ c) (F.₁ f) (F.₁ g)
+        C.∘ C.α→ (σ c , F.₁ f , F.₁ g)
         C.∘ (ν→ f C.◀ F.₁ g)
-        C.∘ C.α← (G.₁ f) (σ b) (F.₁ g)
+        C.∘ C.α← (G.₁ f , σ b , F.₁ g)
         C.∘ (G.₁ f C.▶ ν→ g)
-        C.∘ C.α→ (G.₁ f) (G.₁ g) (σ a)
+        C.∘ C.α→ (G.₁ f , G.₁ g , σ a)
 
       ν-unitor
         : ∀ {a}

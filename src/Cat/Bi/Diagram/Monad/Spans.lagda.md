@@ -130,10 +130,10 @@ instruct the curious reader to check the proof on GitHub.
       J' (λ w z q → ∀ (f : C.Hom w x) {y b} (p : y ≡ b) (g : C .Hom y z)
                       (h : C.Hom a b)
                   → (mult Sb.∘ (homs Sb.▶ mult)) .map ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q)
-                  ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← homs homs homs) .map ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q))
+                  ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← (homs , homs , homs)) .map ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q))
          (λ w f → J' (λ y b p → (g : C.Hom y w) (h : C.Hom a b) →
             (mult Sb.∘ (homs Sb.▶ mult)) .map ((w , x , f) , ((y , w , g) , (a , b , h) , p) , refl)
-          ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← homs homs homs) .map ((w , x , f) , ((y , w , g) , (a , b , h) , p) , refl))
+          ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← (homs , homs , homs)) .map ((w , x , f) , ((y , w , g) , (a , b , h) , p) , refl))
           λ y g h → Σ-pathp refl (Σ-pathp refl (C.assoc _ _ _
             ∙ ap₂ C._∘_ (ap₂ C._∘_ (ap (λ p → subst (λ e → C.Hom e x) p f) (hlevel 2 w w _ refl) ∙ transport-refl _)
                                    (ap (λ p → subst (λ e → C.Hom e w) p g) (hlevel 2 y y _ refl) ∙ transport-refl _)

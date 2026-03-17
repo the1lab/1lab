@@ -63,8 +63,8 @@ above into equations that are well-typed in a (weak) bicategory.
       η : B.id B.⇒ (g B.⊗ f)
       ε : (f B.⊗ g) B.⇒ B.id
 
-      zig : B.Hom.id ≡ B.λ← f B.∘ (ε B.◀ f) B.∘ B.α← f g f B.∘ (f B.▶ η) B.∘ B.ρ→ f
-      zag : B.Hom.id ≡ B.ρ← g B.∘ (g B.▶ ε) B.∘ B.α→ g f g B.∘ (η B.◀ g) B.∘ B.λ→ g
+      zig : B.Hom.id ≡ B.λ← f B.∘ (ε B.◀ f) B.∘ B.α← (f , g , f) B.∘ (f B.▶ η) B.∘ B.ρ→ f
+      zag : B.Hom.id ≡ B.ρ← g B.∘ (g B.▶ ε) B.∘ B.α→ (g , f , g) B.∘ (η B.◀ g) B.∘ B.λ→ g
 ```
 
 This means the triangle identities, rather
