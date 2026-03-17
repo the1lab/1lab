@@ -31,7 +31,7 @@ module NbE where
 
   unfexpr : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → FExpr 𝒟 X Y → Cr.Hom 𝒟 X Y
   unfexpr 𝒟 (`F₁ 𝒞 F e) = F .F₁ (unfexpr 𝒞 e)
-  unfexpr 𝒟 (e1 `∘ e2)  = unfexpr 𝒟 e1 ∘ unfexpr 𝒟 e2 where open Cr 𝒟
+  unfexpr 𝒟 (e1 `∘ e2)  = unfexpr 𝒟 e1 ∘ unfexpr 𝒟 e2 where open Precategory 𝒟
   unfexpr 𝒟 `id         = Cr.id 𝒟
   unfexpr 𝒟 (f ↑)       = f
 
@@ -62,12 +62,12 @@ module NbE where
     → (v : CE.Expr 𝒞 A B) → CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v) ≡ F .F₁ (CE.embed 𝒞 v)
   do-fmap-sound 𝒞 𝒟 F `id       = sym (F .F-id)
   do-fmap-sound 𝒞 𝒟 F (v `∘ v₁) =
-    CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v) 𝒟.∘ CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v₁) ≡⟨ do-fmap-sound 𝒞 𝒟 F v 𝒟.⟩∘⟨ do-fmap-sound 𝒞 𝒟 F v₁ ⟩
-    F .F₁ (CE.embed 𝒞 v) 𝒟.∘ F .F₁ (CE.embed 𝒞 v₁)                 ≡˘⟨ F .F-∘ _ _ ⟩
-    F .F₁ (CE.embed 𝒞 v 𝒞.∘ CE.embed 𝒞 v₁)                         ∎
+    CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v) 𝒟.∘ CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v₁) ≡⟨ ap₂ 𝒟._∘_ (do-fmap-sound 𝒞 𝒟 F v) (do-fmap-sound 𝒞 𝒟 F v₁) ⟩
+    F .F₁ (CE.embed 𝒞 v) 𝒟.∘ F .F₁ (CE.embed 𝒞 v₁)                    ≡˘⟨ F .F-∘ _ _ ⟩
+    F .F₁ (CE.embed 𝒞 v 𝒞.∘ CE.embed 𝒞 v₁)                            ∎
     where
-      module 𝒟 = Cr 𝒟
-      module 𝒞 = Cr 𝒞
+      module 𝒟 = Precategory 𝒟
+      module 𝒞 = Precategory 𝒞
   do-fmap-sound 𝒞 𝒟 F (x ↑) = refl
 
   eval-sound
@@ -75,8 +75,8 @@ module NbE where
     → CE.embed 𝒟 (eval 𝒟 e) ≡ unfexpr 𝒟 e
   eval-sound 𝒟 (`F₁ 𝒞 F v) =
     do-fmap-sound 𝒞 𝒟 F (eval 𝒞 v) ∙ ap (F .F₁) (eval-sound 𝒞 v)
-  eval-sound 𝒟 (e `∘ e₁) = ap₂ (_∘_) (eval-sound 𝒟 e) (eval-sound 𝒟 e₁)
-    where open Cr 𝒟
+  eval-sound 𝒟 (e `∘ e₁) = ap₂ _∘_ (eval-sound 𝒟 e) (eval-sound 𝒟 e₁)
+    where open Precategory 𝒟
   eval-sound 𝒟 `id   = refl
   eval-sound 𝒟 (f ↑) = refl
 
@@ -145,9 +145,9 @@ macro
 private
   module Test
     {o h} {𝒞 𝒟 ℰ : Precategory o h} (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ) where
-    module 𝒞 = Cr 𝒞
-    module 𝒟 = Cr 𝒟
-    module ℰ = Cr ℰ
+    module 𝒞 = Precategory 𝒞
+    module 𝒟 = Precategory 𝒟
+    module ℰ = Precategory ℰ
 
     variable
       A B : 𝒞.Ob
