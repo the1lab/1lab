@@ -18,9 +18,6 @@ module NbE where
       o o' h h' : Level
       𝒟 : Precategory o h
 
-  CExpr : (𝒞 : Precategory o h) → ⌞ 𝒞 ⌟ → ⌞ 𝒞 ⌟ → Type (o ⊔ h)
-  CExpr = CE.Expr
-
   data FExpr : (𝒟 : Precategory o h) → ⌞ 𝒟 ⌟ → ⌞ 𝒟 ⌟ → Typeω where
     `F₁
       : (𝒞 : Precategory o h) (F : Functor 𝒞 𝒟) {A B : ⌞ 𝒞 ⌟}
@@ -37,6 +34,9 @@ module NbE where
 
   --------------------------------------------------------------------------------
   -- Evaluation
+
+  CExpr : (𝒞 : Precategory o h) → ⌞ 𝒞 ⌟ → ⌞ 𝒞 ⌟ → Type (o ⊔ h)
+  CExpr = CE.Expr
 
   do-fmap
     : (𝒞 : Precategory o h) (𝒟 : Precategory o' h') (F : Functor 𝒞 𝒟)
@@ -92,16 +92,10 @@ module NbE where
 
 module Reflection where
 
-  pattern category-args xs = _ hm∷ _ hm∷ _ v∷ xs
+  open Cs.Reflection using (“id” ; “∘”)
 
   pattern functor-args cat functor xs =
     _ hm∷ _ hm∷ cat hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
-
-  pattern “id” =
-    def (quote Precategory.id) (category-args (_ h∷ []))
-
-  pattern “∘” f g =
-    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
 
   pattern “F₁” cat functor f =
     def (quote Functor.F₁) (functor-args cat functor (_ h∷ _ h∷ f v∷ []))
