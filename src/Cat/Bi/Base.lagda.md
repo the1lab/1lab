@@ -145,6 +145,8 @@ whence the name **horizontal composition**.
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
+  module ⊗ = compose
+
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
   f ⊗ g = compose · (f , g)
@@ -156,7 +158,7 @@ whence the name **horizontal composition**.
   -- horizontal 2-cell composition
   _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
       → (f₁ ⊗ g₁) ⇒ (f₂ ⊗ g₂)
-  _◆_ β α = compose .Functor.F₁ (β , α)
+  _◆_ β α = compose.F₁ (β , α)
 
   infixr 30 _∘_
   infixr 25 _⊗_
@@ -164,11 +166,11 @@ whence the name **horizontal composition**.
 
   -- whiskering on the right
   _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ⊗ a ⇒ f ⊗ b
-  _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Hom.id , g)
+  _▶_ {A} {B} {C} f g = compose.F₁ (Hom.id , g)
 
   -- whiskering on the left
   _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ⊗ f ⇒ b ⊗ f
-  _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Hom.id)
+  _◀_ {A} {B} {C} g f = compose.F₁ (g , Hom.id)
 ```
 
 We now move onto the invertible 2-cells witnessing that the chosen
