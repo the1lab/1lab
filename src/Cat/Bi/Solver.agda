@@ -67,20 +67,17 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   infix 50 `_
 
-  embed₂ : {f g : Expr₁ X Y} → Expr₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  embed₂ (x ↑)       = x
-  embed₂ `id         = Hom.id
-  embed₂ (α `∘ β)    = embed₂ α ∘ embed₂ β
-  embed₂ (α `◆ β)    = embed₂ α ◆ embed₂ β
-  embed₂ (`λ← f)     = λ← _
-  embed₂ (`λ→ f)     = λ→ _
-  embed₂ (`ρ← f)     = ρ← _
-  embed₂ (`ρ→ f)     = ρ→ _
-  embed₂ (`α← f g h) = α← _ _ _
-  embed₂ (`α→ f g h) = α→ _ _ _
-
   ⟦_⟧₂ : {f g : Expr₁ X Y} → Expr₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  ⟦_⟧₂ = embed₂
+  ⟦ x ↑ ⟧₂       = x
+  ⟦ `id ⟧₂       = Hom.id
+  ⟦ α `∘ β ⟧₂    = ⟦ α ⟧₂ ∘ ⟦ β ⟧₂
+  ⟦ α `◆ β ⟧₂    = ⟦ α ⟧₂ ◆ ⟦ β ⟧₂
+  ⟦ `λ← f ⟧₂     = λ← _
+  ⟦ `λ→ f ⟧₂     = λ→ _
+  ⟦ `ρ← f ⟧₂     = ρ← _
+  ⟦ `ρ→ f ⟧₂     = ρ→ _
+  ⟦ `α← f g h ⟧₂ = α← _ _ _
+  ⟦ `α→ f g h ⟧₂ = α→ _ _ _
 
   --------------------------------------------------------------------------------
   -- Evaluation
@@ -106,30 +103,24 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     _`▷_ : (f : Expr₁ Y Z) {g h : Expr₁ X Y} → Frame g h → Frame (f `⊗ g) (f `⊗ h)
     _`◁_ : {g h : Expr₁ Y Z} → Frame g h → (f : Expr₁ X Y) → Frame (g `⊗ f) (h `⊗ f)
 
-  frame-embed : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  frame-embed (x ↑)       = x
-  frame-embed (f `▷ x)    = ⟦ f ⟧₁ ▶ frame-embed x
-  frame-embed (x `◁ f)    = frame-embed x ◀ ⟦ f ⟧₁
-  frame-embed (`λ← f)     = λ← _
-  frame-embed (`λ→ f)     = λ→ _
-  frame-embed (`α← f g h) = α← _ _ _
-  frame-embed (`α→ f g h) = α→ _ _ _
-
   ⟦_⟧f : {f g : Expr₁ X Y} → Frame f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  ⟦_⟧f = frame-embed
+  ⟦ x ↑ ⟧f       = x
+  ⟦ f `▷ x ⟧f    = ⟦ f ⟧₁ ▶ ⟦ x ⟧f
+  ⟦ x `◁ f ⟧f    = ⟦ x ⟧f ◀ ⟦ f ⟧₁
+  ⟦ `λ← f ⟧f     = λ← _
+  ⟦ `λ→ f ⟧f     = λ→ _
+  ⟦ `α← f g h ⟧f = α← _ _ _
+  ⟦ `α→ f g h ⟧f = α→ _ _ _
 
   data Val₂ : (f g : Expr₁ X Y) → SSet (o ⊔ ℓ ⊔ ℓ') where
     `id  : {f : Expr₁ X Y} → Val₂ f f
     _↑   : {f g : Expr₁ X Y} → Frame f g → Val₂ f g
     _`∘_ : {f g h : Expr₁ X Y} → Val₂ g h → Val₂ f g → Val₂ f h
 
-  val₂-embed : {f g : Expr₁ X Y} → Val₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  val₂-embed `id      = Hom.id
-  val₂-embed (x ↑)    = ⟦ x ⟧f
-  val₂-embed (x `∘ y) = val₂-embed x Hom.∘ val₂-embed y
-
   ⟦_⟧vv : {f g : Expr₁ X Y} → Val₂ f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
-  ⟦_⟧vv = val₂-embed
+  ⟦ `id ⟧vv    = Hom.id
+  ⟦ x ↑ ⟧vv    = ⟦ x ⟧f
+  ⟦ x `∘ y ⟧vv = ⟦ x ⟧vv ∘ ⟦ y ⟧vv
 
   `whisker
     : (f : Expr₁ Y Z) {h₁ h₂ : Expr₁ X Y} → Val₂ h₁ h₂
