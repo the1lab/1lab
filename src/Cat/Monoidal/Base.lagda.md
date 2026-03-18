@@ -239,8 +239,8 @@ Endomorphisms B a = mon where
     open make-natural-iso
     open Cr
     ni : make-natural-iso _ _
-    ni .eta _ = B.α→ _ _ _
-    ni .inv _ = B.α← _ _ _
+    ni .eta _ = B.α→ _
+    ni .inv _ = B.α← _
     ni .eta∘inv _ = Cr.invl _ B.associator ηₚ _
     ni .inv∘eta _ = Cr.invr _ B.associator ηₚ _
     ni .natural x y f = sym $ Cr.to B.associator .is-natural _ _ _

@@ -145,6 +145,8 @@ whence the name **horizontal composition**.
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
+  module ⊗ = compose
+
   -- 1-cell composition
   _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
   f ⊗ g = compose · (f , g)
@@ -156,7 +158,7 @@ whence the name **horizontal composition**.
   -- horizontal 2-cell composition
   _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
       → (f₁ ⊗ g₁) ⇒ (f₂ ⊗ g₂)
-  _◆_ β α = compose .Functor.F₁ (β , α)
+  _◆_ β α = compose.F₁ (β , α)
 
   infixr 30 _∘_
   infixr 25 _⊗_
@@ -164,11 +166,11 @@ whence the name **horizontal composition**.
 
   -- whiskering on the right
   _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ⊗ a ⇒ f ⊗ b
-  _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Hom.id , g)
+  _▶_ {A} {B} {C} f g = compose.F₁ (Hom.id , g)
 
   -- whiskering on the left
   _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ⊗ f ⇒ b ⊗ f
-  _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Hom.id)
+  _◀_ {A} {B} {C} g f = compose.F₁ (g , Hom.id)
 ```
 
 We now move onto the invertible 2-cells witnessing that the chosen
@@ -190,6 +192,8 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ {H = Hom} compose)
         (compose-assocʳ {H = Hom} compose)
 
+  module unitor-l {a} {b} = Cr._≅_ _ (unitor-l {a} {b})
+  module unitor-r {a} {b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
@@ -198,56 +202,48 @@ unitor as $\rho$, and to the associator as $\alpha$, so we set up those
 abbreviations here too:
 
 ```agda
-  λ← : ∀ {A B} (f : A ↦ B) → id ⊗ f ⇒ f
-  λ← = unitor-l .Cr._≅_.from .η
+  private
+    open module λ← {a b} = _=>_ (unitor-l.from {a} {b}) renaming (η to λ←) using () public
 
-  λ→ : ∀ {A B} (f : A ↦ B) → f ⇒ id ⊗ f
-  λ→ = unitor-l .Cr._≅_.to .η
+    open module λ→ {a b} = _=>_ (unitor-l.to   {a} {b}) renaming (η to λ→) using () public
 
-  ρ← : ∀ {A B} (f : A ↦ B) → f ⊗ id ⇒ f
-  ρ← = unitor-r .Cr._≅_.from .η
+    open module ρ← {a b} = _=>_ (unitor-r.from {a} {b}) renaming (η to ρ←) using () public
 
-  ρ→ : ∀ {A B} (f : A ↦ B) → f ⇒ f ⊗ id
-  ρ→ = unitor-r .Cr._≅_.to .η
+    open module ρ→ {a b} = _=>_ (unitor-r.to   {a} {b}) renaming (η to ρ→) using () public
+
+    open module α→ {a b c d} = _=>_ (associator.to {a} {b} {c} {d})   renaming (η to α→) using () public
+
+    open module α← {a b c d} = _=>_ (associator.from {a} {b} {c} {d}) renaming (η to α←) using () public
 
   ρ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((f ⊗ id) ⇒ f') (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
-  ρ←nat {A} {B} {f} {f'} β = unitor-r .Cr.from .is-natural f f' β
+  ρ←nat {A} {B} {f} {f'} β = ρ←.is-natural f f' β
 
   λ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((id ⊗ f) ⇒ f') (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
-  λ←nat {A} {B} {f} {f'} β = unitor-l .Cr.from .is-natural f f' β
+  λ←nat {A} {B} {f} {f'} β = λ←.is-natural f f' β
 
   ρ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ f' ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
-  ρ→nat {A} {B} {f} {f'} β = unitor-r .Cr.to .is-natural f f' β
+  ρ→nat {A} {B} {f} {f'} β = ρ→.is-natural f f' β
 
   λ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ id ⊗ f') (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
-  λ→nat {A} {B} {f} {f'} β = unitor-l .Cr.to .is-natural f f' β
-
-  α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
-  α→ f g h = associator.to .η (f , g , h)
-
-  α← : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
-  α← f g h = associator.from .η (f , g , h)
-
+  λ→nat {A} {B} {f} {f'} β = λ→.is-natural f f' β
+  
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
-          (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
+          (α← _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _)
   α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    α←.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
   α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path ((f ⊗ g) ⊗ h ⇒ (f' ⊗ g' ⊗ h'))
-           (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
-           ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
+           (α→ _ ∘ ((β ◆ γ) ◆ δ)) ((β ◆ (γ ◆ δ)) ∘ α→ _)
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    α→.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -275,12 +271,12 @@ witnesses commutativity of the diagram
   field
     triangle
       : ∀ {A B C} (f : B ↦ C) (g : A ↦ B)
-      → (ρ← f ◀ g) ∘ α← f id g ≡ f ▶ λ← g
+      → (ρ← f ◀ g) ∘ α← (f , id , g) ≡ f ▶ λ← g
 
     pentagon
       : ∀ {A B C D E} (f : D ↦ E) (g : C ↦ D) (h : B ↦ C) (i : A ↦ B)
-      → (α← f g h ◀ i) ∘ α← f (g ⊗ h) i ∘ (f ▶ α← g h i)
-      ≡ α← (f ⊗ g) h i ∘ α← f g (h ⊗ i)
+      → (α← (f , g , h) ◀ i) ∘ α← (f , g ⊗ h , i) ∘ (f ▶ α← (g , h , i))
+      ≡ α← (f ⊗ g , h , i) ∘ α← (f , g , h ⊗ i)
 ```
 
 Our coherence diagrams for bicategorical data are taken from
@@ -294,25 +290,12 @@ $\bf{B}$, $\bf{C}$.
 ```agda
 module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
-  open Functor
 
   postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
-  postaction f .F₀ g = f ⊗ g
-  postaction f .F₁ g = f ▶ g
-  postaction f .F-id = compose.F-id
-  postaction f .F-∘ g h =
-    f ▶ (g ∘ h)                 ≡˘⟨ ap (_◆ g ∘ h) (Hom.idl Hom.id) ⟩
-    (Hom.id ∘ Hom.id) ◆ (g ∘ h) ≡⟨ compose.F-∘ _ _ ⟩
-    (f ▶ g) ∘ (f ▶ h)           ∎
+  postaction = Bi.Right compose
 
   preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
-  preaction f .F₀ g = g ⊗ f
-  preaction f .F₁ g = g ◀ f
-  preaction f .F-id = compose.F-id
-  preaction f .F-∘ g h =
-    (g ∘ h) ◀ f                 ≡˘⟨ ap (g ∘ h ◆_) (Hom.idl Hom.id) ⟩
-    (g ∘ h) ◆ (Hom.id ∘ Hom.id) ≡⟨ compose.F-∘ _ _ ⟩
-    (g ◀ f) ∘ (h ◀ f)           ∎
+  preaction = Bi.Left compose
 ```
 -->
 
@@ -420,6 +403,7 @@ When they _are_, we talk about **pseudofunctors** instead.
 record
   Lax-functor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
     : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  no-eta-equality
 
   private
     module B = Prebicategory B
@@ -444,20 +428,21 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 <!--
 ```agda
-  module P₁ {A} {B} = Functor (P₁ {A} {B})
+  open module P₁ {A} {B} = Functor (P₁ {A} {B}) renaming (F₀ to ₁ ; F₁ to ₂) using () public
 
   ₀ : B.Ob → C.Ob
   ₀ = P₀
 
-  ₁ : ∀ {a b} → a B.↦ b → P₀ a C.↦ P₀ b
-  ₁ = P₁.F₀
+  υ→ : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
+  υ→ = unitor
 
-  ₂ : ∀ {a b} {f g : a B.↦ b} → f B.⇒ g → ₁ f C.⇒ ₁ g
-  ₂ = P₁.F₁
+  private
+    open module γ→ {a} {b} {c} = _=>_ (compositor {a} {b} {c}) renaming (η to γ→) using () public
 
-  γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-     → ₁ f C.⊗ ₁ g C.⇒ ₁ (f B.⊗ g)
-  γ→ f g = compositor .η (f , g)
+  γ→nat
+    : ∀ {A B C} {f f' : B B.↦ C} {g g' : A B.↦ B} (β : f B.⇒ f') (δ : g B.⇒ g')
+    → γ→ (f' , g') C.∘ (₂ β C.◆ ₂ δ) ≡ ₂ (β B.◆ δ) C.∘ γ→ (f , g)
+  γ→nat {A} {B} {C} {f} {f'} {g} {g'} β δ = γ→.is-natural (f , g) (f' , g') (β , δ)
 ```
 -->
 
@@ -488,16 +473,16 @@ squares).
   field
     hexagon
       : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
-      → ₂ (B.α→ f g h) C.∘ γ→ (f B.⊗ g) h C.∘ (γ→ f g C.◀ ₁ h)
-      ≡ γ→ f (g B.⊗ h) C.∘ (₁ f C.▶ γ→ g h) C.∘ C.α→ (₁ f) (₁ g) (₁ h)
+      → ₂ (B.α→ (f , g , h)) C.∘ γ→ (f B.⊗ g , h) C.∘ (γ→ (f , g) C.◀ ₁ h)
+      ≡ γ→ (f , g B.⊗ h) C.∘ (₁ f C.▶ γ→ (g , h)) C.∘ C.α→ (₁ f , ₁ g , ₁ h)
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.ρ← f) C.∘ γ→ f B.id C.∘ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
+      → ₂ (B.ρ← f) C.∘ γ→ (f , B.id) C.∘ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
 
     left-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
+      → ₂ (B.λ← f) C.∘ γ→ (B.id , f) C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
 ## Pseudofunctors {defines="pseudofunctor"}
@@ -512,6 +497,7 @@ functors, not additional structure on lax functors.
 record
   Pseudofunctor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
     : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  no-eta-equality
 
   private
     module B = Prebicategory B
@@ -524,17 +510,31 @@ record
 
   field
     unitor-inv
-      : ∀ {a} → Cr.is-invertible (C.Hom _ _) (unitor {a})
+      : ∀ {a} → Cr.is-invertible (C.Hom _ _) (υ→ {a})
     compositor-inv
-      : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (γ→ f g)
-
-  γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-    → ₁ (f B.⊗ g) C.⇒ ₁ f C.⊗ ₁ g
-  γ← f g = compositor-inv f g .Cr.is-invertible.inv
-
-  υ← : ∀ {a} → ₁ B.id C.⇒ C.id
-  υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
+      : ∀ {a b c} (fg : b B.↦ c × a B.↦ b) → Cr.is-invertible (C.Hom _ _) (γ→ fg)
 ```
+
+<!--
+```agda
+  private
+    open module υ← {a} =
+      Cr.is-invertible (C.Hom _ _) (unitor-inv {a})
+      renaming (inv to υ←) using () public
+
+    open module γ← {a b c} fg =
+      Cr.is-invertible (C.Hom _ _) (compositor-inv {a} {b} {c} fg)
+      renaming (inv to γ←) using () public
+
+  γ←nat
+    : ∀ {A B C} {f f' : B B.↦ C} {g g' : A B.↦ B} (β : f B.⇒ f') (δ : g B.⇒ g')
+    → γ← (f' , g') C.∘ ₂ (β B.◆ δ) ≡ (₂ β C.◆ ₂ δ) C.∘ γ← (f , g)
+  γ←nat {A} {B} {C} {f} {f'} {g} {g'} β δ = inverse-is-natural compositor γ←
+    (λ fg → γ←.inverses fg .invl) (λ fg → γ←.inverses fg .invr)
+    (f , g) (f' , g') (β , δ)
+    where open Cr.Inverses
+```
+-->
 
 # Lax transformations {defines="lax-transformation"}
 
@@ -581,14 +581,20 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
 
 ```agda
   record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+    no-eta-equality
     field
       σ : ∀ A → F.₀ A C.↦ G.₀ A
       naturator
         : ∀ {a b}
         → preaction C (σ b) F∘ G.P₁ => postaction C (σ a) F∘ F.P₁
 
-    ν→ : ∀ {a b} (f : a B.↦ b) → G.₁ f C.⊗ σ a C.⇒ σ b C.⊗ F.₁ f
-    ν→ = naturator .η
+    private
+      open module ν→ {a} {b} = _=>_ (naturator {a} {b}) renaming (η to ν→) using () public
+
+    ν→nat :
+      ∀ {A B} {f g : B B.↦ A} (α : f B.⇒ g)
+      → ν→ g C.∘ G.₂ α C.◀ σ B ≡ σ A C.▶ F.₂ α C.∘ ν→ f
+    ν→nat {A} {B} {f} {g} α = ν→.is-natural f g α
 ```
 
 The naturator $\nu$ is required to be compatible with the compositor and
@@ -600,13 +606,13 @@ boil down to commutativity of the nightmarish diagrams in [@basicbicats,
     field
       ν-compositor
         : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-        → ν→ (f B.⊗ g) C.∘ (G.γ→ f g C.◀ σ a)
-        ≡   (σ c C.▶ F.γ→ f g)
-        C.∘ C.α→ (σ c) (F.₁ f) (F.₁ g)
+        → ν→ (f B.⊗ g) C.∘ (G.γ→ (f , g) C.◀ σ a)
+        ≡   (σ c C.▶ F.γ→ (f , g))
+        C.∘ C.α→ (σ c , F.₁ f , F.₁ g)
         C.∘ (ν→ f C.◀ F.₁ g)
-        C.∘ C.α← (G.₁ f) (σ b) (F.₁ g)
+        C.∘ C.α← (G.₁ f , σ b , F.₁ g)
         C.∘ (G.₁ f C.▶ ν→ g)
-        C.∘ C.α→ (G.₁ f) (G.₁ g) (σ a)
+        C.∘ C.α→ (G.₁ f , G.₁ g , σ a)
 
       ν-unitor
         : ∀ {a}
@@ -619,6 +625,7 @@ A lax transformation with invertible naturator is called a
 
 ```agda
   record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+    no-eta-equality
     field
       lax : Lax-transfor
 
@@ -627,8 +634,17 @@ A lax transformation with invertible naturator is called a
     field
       naturator-inv : ∀ {a b} (f : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (ν→ f)
 
-    ν← : ∀ {a b} (f : a B.↦ b) → σ b C.⊗ F.₁ f C.⇒ G.₁ f C.⊗ σ a
-    ν← f = naturator-inv f .Cr.is-invertible.inv
+    private
+      open module ν← {a b} f =
+        Cr.is-invertible (C.Hom _ _) (naturator-inv {a} {b} f)
+        renaming (inv to ν←) using () public
+
+    ν←nat :
+      ∀ {A B} {f g : B B.↦ A} (α : f B.⇒ g)
+      → ν← g C.∘ σ A C.▶ F.₂ α ≡ G.₂ α C.◀ σ B C.∘ ν← f
+    ν←nat {A} {B} {f} {g} α = inverse-is-natural naturator ν←
+      (λ f → ν←.inverses f .invl) (λ f → ν←.inverses f .invr) f g α
+      where open Cr.Inverses
 ```
 
 We abbreviate the types of lax- and pseudonatural transformations by
@@ -671,6 +687,7 @@ module
 
 ```agda
   record Modification : Type (o ⊔ ℓ ⊔ ℓ₁') where
+    no-eta-equality
     field
       Γ : ∀ a → σ.σ a C.⇒ σ'.σ a
 

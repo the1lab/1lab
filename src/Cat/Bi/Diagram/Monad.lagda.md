@@ -53,7 +53,7 @@ the unit $\eta$ must be appropriately compatible with the left and right
 unitors $\lambda, \rho$.
 
 ```agda
-      μ-assoc : μ B.∘ (M B.▶ μ) ≡ μ B.∘ (μ B.◀ M) B.∘ B.α← M M M
+      μ-assoc : μ B.∘ (M B.▶ μ) ≡ μ B.∘ (μ B.◀ M) B.∘ B.α← (M , M , M)
       μ-unitr : μ B.∘ (M B.▶ η) ≡ B.ρ← M
       μ-unitl : μ B.∘ (η B.◀ M) ≡ B.λ← M
 ```
@@ -177,11 +177,11 @@ $\cB$ on $a$.
     P .compositor .is-natural _ _ _ = Hom.elimr (B.compose .F-id) ∙ sym (Hom.idl _)
     P .unitor = η
     P .hexagon _ _ _ =
-      Hom.id ∘ μ ∘ (μ ◀ M)                ≡⟨ Hom.pulll (Hom.idl _) ⟩
-      μ ∘ (μ ◀ M)                         ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
-      (μ ∘ μ ◀ M) ∘ (α← M M M ∘ α→ M M M) ≡⟨ cat! (Hom a a) ⟩
-      (μ ∘ μ ◀ M ∘ α← M M M) ∘ α→ M M M   ≡˘⟨ Hom.pulll μ-assoc ⟩
-      μ ∘ (M ▶ μ) ∘ (α→ M  M  M)          ∎
+      Hom.id ∘ μ ∘ (μ ◀ M)                            ≡⟨ Hom.pulll (Hom.idl _) ⟩
+      μ ∘ (μ ◀ M)                                     ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
+      (μ ∘ μ ◀ M) ∘ (α← (M , M , M) ∘ α→ (M , M , M)) ≡⟨ cat! (Hom a a) ⟩
+      (μ ∘ μ ◀ M ∘ α← (M , M , M)) ∘ α→ (M , M , M)   ≡˘⟨ Hom.pulll μ-assoc ⟩
+      μ ∘ (M ▶ μ) ∘ α→ (M , M , M)                    ∎
     P .right-unit _ = Hom.id ∘ μ ∘ M ▶ η  ≡⟨ Hom.idl _ ∙ μ-unitr ⟩ ρ← M ∎
     P .left-unit _ = Hom.id ∘ μ ∘ (η ◀ M) ≡⟨ Hom.idl _ ∙ μ-unitl ⟩ λ← M ∎
 
@@ -194,15 +194,15 @@ $\cB$ on $a$.
 
     module monad where
       M = P₁.F₀ _
-      μ = γ→ _ _
+      μ = γ→ _
       η = unitor
       μ-assoc =
-        μ ∘ M ▶ μ                           ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
-        (μ ∘ M ▶ μ) ∘ (α→ M M M ∘ α← M M M) ≡⟨ cat! (Hom a a) ⟩
-        (μ ∘ M ▶ μ ∘ α→ M M M) ∘ α← M M M   ≡˘⟨ hexagon _ _ _ Hom.⟩∘⟨refl ⟩
-        (P₁.F₁ _ ∘ μ ∘ μ ◀ M) ∘ α← M M M    ≡⟨ ( P₁.F-id Hom.⟩∘⟨refl) Hom.⟩∘⟨refl  ⟩
-        (Hom.id ∘ μ ∘ μ ◀ M) ∘ α← M M M     ≡⟨ cat! (Hom a a) ⟩
-        μ ∘ μ ◀ M ∘ α← M M M ∎
+        μ ∘ M ▶ μ                                       ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
+        (μ ∘ M ▶ μ) ∘ (α→ (M , M , M) ∘ α← (M , M , M)) ≡⟨ cat! (Hom a a) ⟩
+        (μ ∘ M ▶ μ ∘ α→ (M , M , M)) ∘ α← (M , M , M)   ≡˘⟨ hexagon _ _ _ Hom.⟩∘⟨refl ⟩
+        (P₁.F₁ _ ∘ μ ∘ μ ◀ M) ∘ α← (M , M , M)          ≡⟨ ( P₁.F-id Hom.⟩∘⟨refl) Hom.⟩∘⟨refl  ⟩
+        (Hom.id ∘ μ ∘ μ ◀ M) ∘ α← (M , M , M)           ≡⟨ cat! (Hom a a) ⟩
+        μ ∘ μ ◀ M ∘ α← (M , M , M)                      ∎
       μ-unitr = Fr.introl P₁ refl ∙ right-unit _
       μ-unitl = Fr.introl P₁ refl ∙ left-unit _
 ```

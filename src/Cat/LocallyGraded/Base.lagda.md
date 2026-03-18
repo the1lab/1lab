@@ -102,7 +102,7 @@ suitably adjusted by an associator or unitor.
         : ∀ {a b c d a' b' c' d'}
         → {u : c B.↦ d} {v : b B.↦ c} {w : a B.↦ b}
         → (f : Hom[ u ] c' d') (g : Hom[ v ] b' c') (h : Hom[ w ] a' b')
-        → (f ∘' (g ∘' h)) [ B.α→ u v w ] ≡ (f ∘' g) ∘' h
+        → (f ∘' (g ∘' h)) [ B.α→ (u , v , w) ] ≡ (f ∘' g) ∘' h
 ```
 
 Finally, we require that the action of 2-cells is functorial, and that
