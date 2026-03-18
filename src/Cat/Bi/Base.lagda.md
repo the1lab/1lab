@@ -433,9 +433,16 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
   ₀ : B.Ob → C.Ob
   ₀ = P₀
 
-  γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-     → ₁ f C.⊗ ₁ g C.⇒ ₁ (f B.⊗ g)
-  γ→ f g = compositor .η (f , g)
+  υ→ : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
+  υ→ = unitor
+
+  private
+    open module γ→ {a} {b} {c} = _=>_ (compositor {a} {b} {c}) renaming (η to γ→) using () public
+
+  γ→nat
+    : ∀ {A B C} {f f' : B B.↦ C} {g g' : A B.↦ B} (β : f B.⇒ f') (δ : g B.⇒ g')
+    → γ→ (f' , g') C.∘ (₂ β C.◆ ₂ δ) ≡ ₂ (β B.◆ δ) C.∘ γ→ (f , g)
+  γ→nat {A} {B} {C} {f} {f'} {g} {g'} β δ = γ→.is-natural (f , g) (f' , g') (β , δ)
 ```
 -->
 
@@ -466,16 +473,16 @@ squares).
   field
     hexagon
       : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
-      → ₂ (B.α→ (f , g , h)) C.∘ γ→ (f B.⊗ g) h C.∘ (γ→ f g C.◀ ₁ h)
-      ≡ γ→ f (g B.⊗ h) C.∘ (₁ f C.▶ γ→ g h) C.∘ C.α→ (₁ f , ₁ g , ₁ h)
+      → ₂ (B.α→ (f , g , h)) C.∘ γ→ (f B.⊗ g , h) C.∘ (γ→ (f , g) C.◀ ₁ h)
+      ≡ γ→ (f , g B.⊗ h) C.∘ (₁ f C.▶ γ→ (g , h)) C.∘ C.α→ (₁ f , ₁ g , ₁ h)
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.ρ← f) C.∘ γ→ f B.id C.∘ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
+      → ₂ (B.ρ← f) C.∘ γ→ (f , B.id) C.∘ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
 
     left-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
+      → ₂ (B.λ← f) C.∘ γ→ (B.id , f) C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
 ## Pseudofunctors {defines="pseudofunctor"}
@@ -503,17 +510,31 @@ record
 
   field
     unitor-inv
-      : ∀ {a} → Cr.is-invertible (C.Hom _ _) (unitor {a})
+      : ∀ {a} → Cr.is-invertible (C.Hom _ _) (υ→ {a})
     compositor-inv
-      : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (γ→ f g)
-
-  γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-    → ₁ (f B.⊗ g) C.⇒ ₁ f C.⊗ ₁ g
-  γ← f g = compositor-inv f g .Cr.is-invertible.inv
-
-  υ← : ∀ {a} → ₁ B.id C.⇒ C.id
-  υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
+      : ∀ {a b c} (fg : b B.↦ c × a B.↦ b) → Cr.is-invertible (C.Hom _ _) (γ→ fg)
 ```
+
+<!--
+```agda
+  private
+    open module υ← {a} =
+      Cr.is-invertible (C.Hom _ _) (unitor-inv {a})
+      renaming (inv to υ←) using () public
+
+    open module γ← {a b c} fg =
+      Cr.is-invertible (C.Hom _ _) (compositor-inv {a} {b} {c} fg)
+      renaming (inv to γ←) using () public
+
+  γ←nat
+    : ∀ {A B C} {f f' : B B.↦ C} {g g' : A B.↦ B} (β : f B.⇒ f') (δ : g B.⇒ g')
+    → γ← (f' , g') C.∘ ₂ (β B.◆ δ) ≡ (₂ β C.◆ ₂ δ) C.∘ γ← (f , g)
+  γ←nat {A} {B} {C} {f} {f'} {g} {g'} β δ = inverse-is-natural compositor γ←
+    (λ fg → γ←.inverses fg .invl) (λ fg → γ←.inverses fg .invr)
+    (f , g) (f' , g') (β , δ)
+    where open Cr.Inverses
+```
+-->
 
 # Lax transformations {defines="lax-transformation"}
 
@@ -567,8 +588,13 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
         : ∀ {a b}
         → preaction C (σ b) F∘ G.P₁ => postaction C (σ a) F∘ F.P₁
 
-    ν→ : ∀ {a b} (f : a B.↦ b) → G.₁ f C.⊗ σ a C.⇒ σ b C.⊗ F.₁ f
-    ν→ = naturator .η
+    private
+      open module ν→ {a} {b} = _=>_ (naturator {a} {b}) renaming (η to ν→) using () public
+
+    ν→nat :
+      ∀ {A B} {f g : B B.↦ A} (α : f B.⇒ g)
+      → ν→ g C.∘ G.₂ α C.◀ σ B ≡ σ A C.▶ F.₂ α C.∘ ν→ f
+    ν→nat {A} {B} {f} {g} α = ν→.is-natural f g α
 ```
 
 The naturator $\nu$ is required to be compatible with the compositor and
@@ -580,8 +606,8 @@ boil down to commutativity of the nightmarish diagrams in [@basicbicats,
     field
       ν-compositor
         : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-        → ν→ (f B.⊗ g) C.∘ (G.γ→ f g C.◀ σ a)
-        ≡   (σ c C.▶ F.γ→ f g)
+        → ν→ (f B.⊗ g) C.∘ (G.γ→ (f , g) C.◀ σ a)
+        ≡   (σ c C.▶ F.γ→ (f , g))
         C.∘ C.α→ (σ c , F.₁ f , F.₁ g)
         C.∘ (ν→ f C.◀ F.₁ g)
         C.∘ C.α← (G.₁ f , σ b , F.₁ g)
@@ -608,8 +634,17 @@ A lax transformation with invertible naturator is called a
     field
       naturator-inv : ∀ {a b} (f : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (ν→ f)
 
-    ν← : ∀ {a b} (f : a B.↦ b) → σ b C.⊗ F.₁ f C.⇒ G.₁ f C.⊗ σ a
-    ν← f = naturator-inv f .Cr.is-invertible.inv
+    private
+      open module ν← {a b} f =
+        Cr.is-invertible (C.Hom _ _) (naturator-inv {a} {b} f)
+        renaming (inv to ν←) using () public
+
+    ν←nat :
+      ∀ {A B} {f g : B B.↦ A} (α : f B.⇒ g)
+      → ν← g C.∘ σ A C.▶ F.₂ α ≡ G.₂ α C.◀ σ B C.∘ ν← f
+    ν←nat {A} {B} {f} {g} α = inverse-is-natural naturator ν←
+      (λ f → ν←.inverses f .invl) (λ f → ν←.inverses f .invr) f g α
+      where open Cr.Inverses
 ```
 
 We abbreviate the types of lax- and pseudonatural transformations by

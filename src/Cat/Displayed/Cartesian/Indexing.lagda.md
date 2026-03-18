@@ -221,7 +221,7 @@ Fibres .lax .P₁ = base-changes
 Fibres .lax .compositor = Disc-natural₂ λ (f , g) → base-change-comp g f .Mor.from
 Fibres .lax .unitor = base-change-id .Mor.from
 Fibres .unitor-inv = FC.iso→invertible (base-change-id FC.Iso⁻¹)
-Fibres .compositor-inv f g = FC.iso→invertible (base-change-comp g f FC.Iso⁻¹)
+Fibres .compositor-inv (f , g) = FC.iso→invertible (base-change-comp g f FC.Iso⁻¹)
 ```
 
 It remains to verify that this data is *coherent*, which is so tedious

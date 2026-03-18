@@ -194,7 +194,7 @@ $\cB$ on $a$.
 
     module monad where
       M = P₁.F₀ _
-      μ = γ→ _ _
+      μ = γ→ _
       η = unitor
       μ-assoc =
         μ ∘ M ▶ μ                                       ≡⟨ (Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invl) ⟩
