@@ -172,20 +172,20 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ... | f-reduce z   = f-reduce (z `◁ f)
   ... | f-stop       = f-stop
   ... | f-drop       = f-drop
-  frame-compare (f `▷ x)        (y `◁ g)    = f-swap (y `◁ _) (_ `▷ x)
-  frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _) = f-swap (`α→ f g _) ((f `⊗ g) `▷ x)
-  frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _) = f-swap (`α← f g _) (f `▷ (g `▷ x))
-  frame-compare (`id `▷ x)      (`λ→ _)     = f-swap (`λ→ _) x
-  frame-compare (f `▷ x)        (`λ← _)     = f-swap (`λ← _) (`id `▷ (f `▷ x))
-  frame-compare ((x `◁ f) `◁ g) (`α← _ _ _) = f-swap (`α← _ f g) (x `◁ (f `⊗ g))
-  frame-compare (x `◁ (f `⊗ g)) (`α→ _ _ _) = f-swap (`α→ _ f g) ((x `◁ f) `◁ g)
-  frame-compare (`λ→ _)         (`λ← _)     = f-drop
-  frame-compare (`λ← _)         (`λ→ _)     = f-drop
-  frame-compare (`λ← _)         (`α→ _ _ _) = f-reduce (`λ← _ `◁ _)
-  frame-compare (`α← _ _ _)     (`α→ _ _ _) = f-drop
-  frame-compare (`α→ _ _ _)     (`α← _ _ _) = f-drop
-  frame-compare (`α← _ _ _)     (`λ→ _)     = f-reduce (`λ→ _ `◁ _)
-  frame-compare _ _                         = f-stop
+  frame-compare (f `▷ x)        (y `◁ g)        = f-swap (y `◁ _) (_ `▷ x)
+  frame-compare (f `▷ (g `▷ x)) (`α→ _ _ _)     = f-swap (`α→ f g _) ((f `⊗ g) `▷ x)
+  frame-compare ((f `⊗ g) `▷ x) (`α← _ _ _)     = f-swap (`α← f g _) (f `▷ (g `▷ x))
+  frame-compare (`id `▷ x)      (`λ→ _)         = f-swap (`λ→ _) x
+  frame-compare (f `▷ x)        (`λ← _)         = f-swap (`λ← _) (`id `▷ (f `▷ x))
+  frame-compare (`α→ _ _ _)     ((x `◁ f) `◁ g) = f-swap (x `◁ (f `⊗ g)) (`α→ _ _ _)
+  frame-compare (`α← _ _ _)     (x `◁ (f `⊗ g)) = f-swap ((x `◁ f) `◁ g) (`α← _ _ _)
+  frame-compare (`α← _ _ _)     (`α→ _ _ _)     = f-drop
+  frame-compare (`α→ _ _ _)     (`α← _ _ _)     = f-drop
+  frame-compare (`α← _ _ _)     (`λ→ _)         = f-reduce (`λ→ _ `◁ _)
+  frame-compare (`λ→ _)         (`λ← _)         = f-drop
+  frame-compare (`λ← _)         (`λ→ _)         = f-drop
+  frame-compare (`λ← _)         (`α→ _ _ _)     = f-reduce (`λ← _ `◁ _)
+  frame-compare _ _                             = f-stop
 
   data PushResult (f h : Expr₁ X Y) : SSet (o ⊔ ℓ ⊔ ℓ') where
     p-cont : {g : Expr₁ X Y} → Val₂ g h → Frame f g → PushResult f h
@@ -374,19 +374,19 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ... | f-swap _ _ | sound = ◀.weave sound
   ... | f-reduce _ | sound = ◀.expand sound
   ... | f-drop     | sound = sym (◀.annihilate (sym sound))
-  fc-sound (f `▷ x)        (y `◁ g)    = ⊗.weave (id-comm ,ₚ id-comm-sym)
-  fc-sound (f `▷ (g `▷ x)) (`α→ _ _ _) = ▶-assoc .to .is-natural _ _ _
-  fc-sound ((f `⊗ g) `▷ x) (`α← _ _ _) = ▶-assoc .from .is-natural _ _ _
-  fc-sound (`id `▷ x)      (`λ→ _)     = λ→nat _
-  fc-sound (f `▷ x)        (`λ← _)     = λ←nat _
-  fc-sound (x `◁ (f `⊗ g)) (`α→ _ _ _) = ◀-assoc .from .is-natural _ _ _
-  fc-sound ((x `◁ f) `◁ g) (`α← _ _ _) = ◀-assoc .to .is-natural _ _ _
-  fc-sound (`λ→ _)         (`λ← _)     = sym (λ≅ .invl)
-  fc-sound (`λ← _)         (`λ→ _)     = sym (λ≅ .invr)
-  fc-sound (`λ← _)         (`α→ _ _ _) = sym triangle-λ←
-  fc-sound (`α→ _ _ _)     (`α← _ _ _) = sym (α≅ .invl)
-  fc-sound (`α← _ _ _)     (`α→ _ _ _) = sym (α≅ .invr)
-  fc-sound (`α← _ _ _)     (`λ→ _)     = sym (lswizzle triangle-λ→ (α≅ .invr))
+  fc-sound (f `▷ x)        (y `◁ g)        = ⊗.weave (id-comm ,ₚ id-comm-sym)
+  fc-sound ((f `⊗ g) `▷ x) (`α← _ _ _)     = ▶-assoc .from .is-natural _ _ _
+  fc-sound (f `▷ (g `▷ x)) (`α→ _ _ _)     = ▶-assoc .to .is-natural _ _ _
+  fc-sound (`id `▷ x)      (`λ→ _)         = λ→nat _
+  fc-sound (f `▷ x)        (`λ← _)         = λ←nat _
+  fc-sound (`α→ _ _ _)     ((x `◁ f) `◁ g) = sym $ ◀-assoc .from .is-natural _ _ _
+  fc-sound (`α← _ _ _)     (x `◁ (f `⊗ g)) = sym $ ◀-assoc .to .is-natural _ _ _
+  fc-sound (`λ→ _)         (`λ← _)         = sym (λ≅ .invl)
+  fc-sound (`λ← _)         (`λ→ _)         = sym (λ≅ .invr)
+  fc-sound (`λ← _)         (`α→ _ _ _)     = sym triangle-λ←
+  fc-sound (`α→ _ _ _)     (`α← _ _ _)     = sym (α≅ .invl)
+  fc-sound (`α← _ _ _)     (`α→ _ _ _)     = sym (α≅ .invr)
+  fc-sound (`α← _ _ _)     (`λ→ _)         = sym (lswizzle triangle-λ→ (α≅ .invr))
 
   pr-embed : {f g : Expr₁ X Y} → PushResult f g → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁
   pr-embed (p-cont x xs) = ⟦ x ⟧vv ∘ ⟦ xs ⟧f
