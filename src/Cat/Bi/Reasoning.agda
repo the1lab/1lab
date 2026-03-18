@@ -7,7 +7,7 @@ import Cat.Reasoning as Cr
 
 module Cat.Bi.Reasoning {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
-open Prebicategory C public hiding (module Hom)
+open Prebicategory C public hiding (module Hom ; module ⊗)
 
 module Hom {a b} = Cr (Hom a b)
 module ⊗ {a b c} = Fr (compose {a} {b} {c})
@@ -42,26 +42,26 @@ private variable
 
 ▶-assoc : ∀ {c} → postaction C {c = c} (f ⊗ g) ≅ⁿ postaction C f F∘ postaction C g
 ▶-assoc {f = f} {g = g} = to-natural-iso record
-  { eta = λ x → α→ f g x
-  ; inv = λ x → α← f g x
+  { eta = λ x → α→ (f , g , x)
+  ; inv = λ x → α← (f , g , x)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
-  ; natural = λ _ _ _ → sym (α→nat _ _ _) ∙ ap ((α→ _ _ _ ∘_) ⊙ (_◆ _)) ⊗.F-id
+  ; natural = λ _ _ _ → sym (α→nat _ _ _) ∙ ap ((α→ _ ∘_) ⊙ (_◆ _)) ⊗.F-id
   }
 
 ◀-assoc : ∀ {c} → preaction C {c = c} (f ⊗ g) ≅ⁿ preaction C g F∘ preaction C f
 ◀-assoc {f = f} {g = g} = to-natural-iso record
-  { eta = λ x → α← x f g
-  ; inv = λ x → α→ x f g
+  { eta = λ x → α← (x , f , g)
+  ; inv = λ x → α→ (x , f , g)
   ; eta∘inv = λ _ → α≅ .invr
   ; inv∘eta = λ _ → α≅ .invl
-  ; natural = λ _ _ _ → sym (α←nat _ _ _) ∙ ap ((α← _ _ _ ∘_) ⊙ (_ ◆_)) ⊗.F-id
+  ; natural = λ _ _ _ → sym (α←nat _ _ _) ∙ ap ((α← _ ∘_) ⊙ (_ ◆_)) ⊗.F-id
   }
 
 ◀-▶-comm : preaction C f F∘ postaction C g ≅ⁿ postaction C g F∘ preaction C f
 ◀-▶-comm {f = f} {g = g} = to-natural-iso record
-  { eta = λ x → α→ g x f
-  ; inv = λ x → α← g x f
+  { eta = λ x → α→ (g , x , f)
+  ; inv = λ x → α← (g , x , f)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
   ; natural = λ _ _ _ → sym (α→nat _ _ _)
@@ -89,23 +89,23 @@ private variable
 -- 	\arrow["{{(A \otimes \rho)\otimes 1}}"', from=4-1, to=4-3]
 -- \end{tikzcd}\]
 
-triangle-inv : α← f id g ∘ f ▶ λ→ g ≡ ρ→ f ◀ g
+triangle-inv : α← (f , id , g) ∘ f ▶ λ→ g ≡ ρ→ f ◀ g
 triangle-inv {f = f} {g = g} = rswizzle
   (sym $ lswizzle (sym $ triangle f g) (◀.F-map-iso ρ≅ .invl))
   (▶.F-map-iso λ≅ .invr)
 
-triangle-α→ : (f ▶ λ← g) ∘ α→ _ _ _ ≡ ρ← f ◀ g
+triangle-α→ : (f ▶ λ← g) ∘ α→ _ ≡ ρ← f ◀ g
 triangle-α→ = rswizzle (sym $ triangle _ _) (α≅ .invr)
 
 pentagon-α→
-  : (f ▶ α→ g h k) ∘ α→ f (g ⊗ h) k ∘ (α→ f g h ◀ k)
-  ≡ α→ f g (h ⊗ k) ∘ α→ (f ⊗ g) h k
+  : f ▶ α→ (g , h , k) ∘ α→ (f , g ⊗ h , k) ∘ α→ (f , g , h) ◀ k
+  ≡ α→ (f , g , h ⊗ k) ∘ α→ (f ⊗ g , h , k)
 pentagon-α→ = inverse-unique refl refl
   (▶.F-map-iso (α≅ Iso⁻¹) ∙Iso α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (α≅ Iso⁻¹))
   (α≅ Iso⁻¹ ∙Iso α≅ Iso⁻¹)
   (sym (assoc _ _ _) ∙ pentagon _ _ _ _)
 
-triangle-ρ← : ρ← (f ⊗ g) ∘ α← f g id ≡ f ▶ ρ← g
+triangle-ρ← : ρ← (f ⊗ g) ∘ α← (f , g , id) ≡ f ▶ ρ← g
 triangle-ρ← = push-eqⁿ (unitor-r ni⁻¹) $
   ◀-distribl ∙ ap to (Iso-prism base sq1 sq2 sq3)
   where
@@ -125,14 +125,14 @@ triangle-ρ← = push-eqⁿ (unitor-r ni⁻¹) $
         ≡ α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (▶.F-map-iso (ρ≅ Iso⁻¹))
     sq3 = ≅-path (α←nat _ _ _)
 
-triangle-ρ→ : ρ→ (f ⊗ g) ≡ α← f g id ∘ f ▶ ρ→ g
+triangle-ρ→ : ρ→ (f ⊗ g) ≡ α← (f , g , id) ∘ f ▶ ρ→ g
 triangle-ρ→ {f = f} {g = g} =
-  ρ→ (f ⊗ g)                                     ≡⟨ intror (sym ▶-distribr ∙ ▶.elim (ρ≅ .invr)) ⟩
-  ρ→ (f ⊗ g) ∘ f ▶ ρ← g ∘ f ▶ ρ→ g               ≡⟨ refl⟩∘⟨ pushl (sym triangle-ρ←) ⟩
-  ρ→ (f ⊗ g) ∘ ρ← (f ⊗ g) ∘ α← f g id ∘ f ▶ ρ→ g ≡⟨ cancell (ρ≅ .invl) ⟩
-  α← f g id ∘ f ▶ ρ→ g                           ∎
+  ρ→ (f ⊗ g)                                           ≡⟨ intror (sym ▶-distribr ∙ ▶.elim (ρ≅ .invr)) ⟩
+  ρ→ (f ⊗ g) ∘ f ▶ ρ← g ∘ f ▶ ρ→ g                     ≡⟨ refl⟩∘⟨ pushl (sym triangle-ρ←) ⟩
+  ρ→ (f ⊗ g) ∘ ρ← (f ⊗ g) ∘ α← (f , g , id) ∘ f ▶ ρ→ g ≡⟨ cancell (ρ≅ .invl) ⟩
+  α← (f , g , id) ∘ f ▶ ρ→ g                           ∎
 
-triangle-λ← : λ← (f ⊗ g) ∘ α→ id f g ≡ λ← f ◀ g
+triangle-λ← : λ← (f ⊗ g) ∘ α→ (id , f , g) ≡ λ← f ◀ g
 triangle-λ← {f = f} {g = g} = push-eqⁿ (unitor-l ni⁻¹) $
   ▶-distribr ∙ ap to (Iso-prism base sq1 sq2 sq3)
   where
@@ -152,19 +152,19 @@ triangle-λ← {f = f} {g = g} = push-eqⁿ (unitor-l ni⁻¹) $
         ≡ α≅ ∙Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
     sq3 = ≅-path (α→nat _ _ _)
 
-triangle-λ→ : λ→ (f ⊗ g) ≡ α→ id f g ∘ λ→ f ◀ g
+triangle-λ→ : λ→ (f ⊗ g) ≡ α→ (id , f , g) ∘ λ→ f ◀ g
 triangle-λ→ {f = f} {g = g} =
-  λ→ (f ⊗ g)                                     ≡⟨ intror (◀.annihilate (λ≅ .invr)) ⟩
-  λ→ (f ⊗ g) ∘ λ← f ◀ g ∘ λ→ f ◀ g               ≡⟨ refl⟩∘⟨ pushl (sym triangle-λ←) ⟩
-  λ→ (f ⊗ g) ∘ λ← (f ⊗ g) ∘ α→ id f g ∘ λ→ f ◀ g ≡⟨ cancell (λ≅ .invl) ⟩
-  α→ id f g ∘ λ→ f ◀ g                           ∎
+  λ→ (f ⊗ g)                                           ≡⟨ intror (◀.annihilate (λ≅ .invr)) ⟩
+  λ→ (f ⊗ g) ∘ λ← f ◀ g ∘ λ→ f ◀ g                     ≡⟨ refl⟩∘⟨ pushl (sym triangle-λ←) ⟩
+  λ→ (f ⊗ g) ∘ λ← (f ⊗ g) ∘ α→ (id , f , g) ∘ λ→ f ◀ g ≡⟨ cancell (λ≅ .invl) ⟩
+  α→ (id , f , g) ∘ λ→ f ◀ g                           ∎
 
 λ←≡ρ← : ∀ {A} → λ← (id {A}) ≡ ρ← id
 λ←≡ρ← = push-eqⁿ (unitor-r ni⁻¹) $
-  (λ← id ◀ id)           ≡˘⟨ triangle-λ← ⟩
-  λ← _ ∘ α→ _ _ _        ≡⟨ (insertl (λ≅ .invl) ∙∙ refl⟩∘⟨ sym (λ←nat _) ∙∙ cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
-  (id ▶ λ← _) ∘ α→ _ _ _ ≡⟨ triangle-α→ ⟩
-  (ρ← id ◀ id)           ∎
+  (λ← id ◀ id)       ≡˘⟨ triangle-λ← ⟩
+  λ← _ ∘ α→ _        ≡⟨ (insertl (λ≅ .invl) ∙∙ refl⟩∘⟨ sym (λ←nat _) ∙∙ cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
+  (id ▶ λ← _) ∘ α→ _ ≡⟨ triangle-α→ ⟩
+  (ρ← id ◀ id)       ∎
 
 λ→≡ρ→ : ∀ {A} → λ→ (id {A}) ≡ ρ→ id
 λ→≡ρ→ =

@@ -76,8 +76,8 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ⟦ `λ→ f ⟧₂     = λ→ _
   ⟦ `ρ← f ⟧₂     = ρ← _
   ⟦ `ρ→ f ⟧₂     = ρ→ _
-  ⟦ `α← f g h ⟧₂ = α← _ _ _
-  ⟦ `α→ f g h ⟧₂ = α→ _ _ _
+  ⟦ `α← f g h ⟧₂ = α← _
+  ⟦ `α→ f g h ⟧₂ = α→ _
 
   --------------------------------------------------------------------------------
   -- Evaluation
@@ -109,8 +109,8 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ⟦ x `◁ f ⟧f    = ⟦ x ⟧f ◀ ⟦ f ⟧₁
   ⟦ `λ← f ⟧f     = λ← _
   ⟦ `λ→ f ⟧f     = λ→ _
-  ⟦ `α← f g h ⟧f = α← _ _ _
-  ⟦ `α→ f g h ⟧f = α→ _ _ _
+  ⟦ `α← f g h ⟧f = α← _
+  ⟦ `α→ f g h ⟧f = α→ _
 
   data Val₂ : (f g : Expr₁ X Y) → SSet (o ⊔ ℓ ⊔ ℓ') where
     `id  : {f : Expr₁ X Y} → Val₂ f f
@@ -241,15 +241,15 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   `whisker-sound {_} {Z} {X} (f₁ `⊗ f₂) {h₁} xs =
     eval₁-sound (f₁ `⊗ f₂) _ .to ∘ ⟦ `whisker (f₁ `⊗ f₂) xs ⟧vv
       ≡⟨ cat! (Hom X Z) ⟩
-    α← _ _ _ ∘ _ ∘ eval₁-sound f₁ _ .to ∘ ⟦ `whisker f₁ (`whisker f₂ xs) ⟧vv
+    α← _ ∘ _ ∘ eval₁-sound f₁ _ .to ∘ ⟦ `whisker f₁ (`whisker f₂ xs) ⟧vv
       ≡⟨ refl⟩∘⟨ refl⟩∘⟨ `whisker-sound f₁ (`whisker f₂ xs) ⟩
-    α← _ _ _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ _ .to ∘ ⟦ f₁ ⟧₁ ▶ ⟦ `whisker f₂ xs ⟧vv ∘ _
+    α← _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ _ .to ∘ ⟦ f₁ ⟧₁ ▶ ⟦ `whisker f₂ xs ⟧vv ∘ _
       ≡⟨ refl⟩∘⟨ ▶.extendl (`whisker-sound f₂ xs) ⟩
-    α← _ _ _ ∘ ⟦ f₁ ⟧₁ ▶ (⟦ f₂ ⟧₁ ▶ ⟦ xs ⟧vv) ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to ∘ _
+    α← _ ∘ ⟦ f₁ ⟧₁ ▶ (⟦ f₂ ⟧₁ ▶ ⟦ xs ⟧vv) ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to ∘ _
       ≡⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
-    (⟦ f₁ ⟧₁ ⊗ ⟦ f₂ ⟧₁) ▶ ⟦ xs ⟧vv ∘ α← _ _ _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to ∘ _
+    (⟦ f₁ ⟧₁ ⊗ ⟦ f₂ ⟧₁) ▶ ⟦ xs ⟧vv ∘ α← _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to ∘ _
       ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
-    (⟦ f₁ ⟧₁ ⊗ ⟦ f₂ ⟧₁) ▶ ⟦ xs ⟧vv ∘ (α← _ _ _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to) ∘ _
+    (⟦ f₁ ⟧₁ ⊗ ⟦ f₂ ⟧₁) ▶ ⟦ xs ⟧vv ∘ (α← _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound f₂ h₁ .to) ∘ _
       ∎
   `whisker-sound (f ↑) `id        = ▶.intro refl ⟩∘⟨refl
   `whisker-sound (f ↑) (x ↑)      = id-comm-sym
@@ -309,46 +309,46 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     _ ∘ _ ∘ eval₁-sound f₂ _ .to ∘ ⟦ eval₂ α ⟧vv ∘ ⟦ `whisker f₁ (eval₂ β) ⟧vv      ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (eval₂-sound α) ∙ ap (⟦ α ⟧₂ ◀ _ ∘_) (`whisker-sound f₁ (eval₂ β)) ⟩
     _ ∘ ⟦ f₂ ⟧₁ ▶ eval₁-sound g₂ k .to ∘ ⟦ α ⟧₂ ◀ ⟦ eval₁ g₂ k ⟧₁ ∘ ⟦ f₁ ⟧₁ ▶ _ ∘ _ ≡⟨ refl⟩∘⟨ ⊗.extendl (id-comm-sym ,ₚ id-comm) ⟩
     _ ∘ _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound g₂ k .to ∘ ⟦ f₁ ⟧₁ ▶ ⟦ eval₂ β ⟧vv ∘ _            ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.extendl (eval₂-sound β) ⟩
-    α← _ _ _ ∘ ⟦ α ⟧₂ ◀ (⟦ g₂ ⟧₁ ⊗ ⟦ k ⟧₁) ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _        ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ⟩
-    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _        ≡⟨ refl⟩∘⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ⟩
-    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ (⟦ f₁ ⟧₁ ▶ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ _        ≡⟨ ◀.pulll (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-    (⟦ α ⟧₂ ◆ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ _                                       ≡⟨ refl ⟩∘⟨ assoc _ _ _ ⟩
+    α← _ ∘ ⟦ α ⟧₂ ◀ (⟦ g₂ ⟧₁ ⊗ ⟦ k ⟧₁) ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _            ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ⟩
+    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _            ≡⟨ refl⟩∘⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ⟩
+    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ (⟦ f₁ ⟧₁ ▶ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ _            ≡⟨ ◀.pulll (⊗.collapse (idr _ ,ₚ idl _)) ⟩
+    (⟦ α ⟧₂ ◆ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ _                                           ≡⟨ refl ⟩∘⟨ assoc _ _ _ ⟩
     (⟦ α ⟧₂ ◆ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ eval₁-sound (f₁ `⊗ g₁) k .to                       ∎
   eval₂-sound (`λ← f) {k} =
-    eval₁-sound f k .to ∘ Hom.id                               ≡⟨ idr _ ∙ intror (λ≅ .invr) ∙ extendl (sym $ λ←nat _) ⟩
-    λ← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _                     ≡⟨ pushl (sym (rswizzle (sym triangle-λ←) (α≅ .invl))) ⟩
-    λ← _ ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _ ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
-    λ← _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound (`id `⊗ f) k .to               ∎
+    eval₁-sound f k .to ∘ Hom.id                           ≡⟨ idr _ ∙ intror (λ≅ .invr) ∙ extendl (sym $ λ←nat _) ⟩
+    λ← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _                 ≡⟨ pushl (sym (rswizzle (sym triangle-λ←) (α≅ .invl))) ⟩
+    λ← _ ◀ ⟦ k ⟧₁ ∘ α← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _ ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    λ← _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound (`id `⊗ f) k .to           ∎
   eval₂-sound (`λ→ f) {k} =
-    eval₁-sound (`id `⊗ f) k .to ∘ Hom.id   ≡⟨ idr _ ∙ extendr (sym $ λ→nat _) ⟩
-    (α← _ _ _ ∘ λ→ _) ∘ eval₁-sound f k .to ≡⟨ lswizzle triangle-λ→ (α≅ .invr) ⟩∘⟨refl ⟩
-    λ→ _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound f k .to     ∎
+    eval₁-sound (`id `⊗ f) k .to ∘ Hom.id ≡⟨ idr _ ∙ extendr (sym $ λ→nat _) ⟩
+    (α← _ ∘ λ→ _) ∘ eval₁-sound f k .to   ≡⟨ lswizzle triangle-λ→ (α≅ .invr) ⟩∘⟨refl ⟩
+    λ→ _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound f k .to   ∎
   eval₂-sound (`ρ← f) =
     idr _ ∙ insertl (pulll (triangle _ _) ∙ ▶.annihilate (λ≅ .invr))
   eval₂-sound (`ρ→ f) {k} = idr _ ∙ ap (_∘ eval₁-sound f k .to) triangle-inv
   eval₂-sound {_} {Z} {X} (`α← f g h) {k} =
     eval₁-sound ((f `⊗ g) `⊗ h) k .to ∘ Hom.id
       ≡⟨ cat! (Hom X Z) ⟩
-    α← _ _ _ ∘ (⟦ f ⟧₁ ⊗ ⟦ g ⟧₁) ▶ eval₁-sound h k .to ∘ α← _ _ _ ∘ _
+    α← _ ∘ (⟦ f ⟧₁ ⊗ ⟦ g ⟧₁) ▶ eval₁-sound h k .to ∘ α← _ ∘ _
       ≡⟨ refl⟩∘⟨ extendl (sym $ ▶-assoc .from .is-natural _ _ _) ⟩
-    α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _
+    α← _ ∘ α← _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _
       ≡⟨ extendl (sym $ pentagon _ _ _ _) ⟩
-    α← _ _ _ ◀ ⟦ k ⟧₁ ∘ (α← _ _ _ ∘ ⟦ f ⟧₁ ▶ α← _ _ _) ∘ ⟦ f ⟧₁ ▶ _ ∘ ⟦ f ⟧₁ ▶ _ ∘ _
+    α← _ ◀ ⟦ k ⟧₁ ∘ (α← _ ∘ ⟦ f ⟧₁ ▶ α← _) ∘ ⟦ f ⟧₁ ▶ _ ∘ ⟦ f ⟧₁ ▶ _ ∘ _
       ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
-    _ ∘ _ ∘ ⟦ f ⟧₁ ▶ α← _ _ _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ ⟦ f ⟧₁ ▶ _ ∘ _
+    _ ∘ _ ∘ ⟦ f ⟧₁ ▶ α← _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ ⟦ f ⟧₁ ▶ _ ∘ _
       ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.pulll refl ∙ ▶.pulll refl ⟩
-    α← _ _ _ ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ ⟦ f ⟧₁ ▶ _ ∘ _
+    α← _ ◀ ⟦ k ⟧₁ ∘ α← _ ∘ ⟦ f ⟧₁ ▶ _ ∘ _
       ≡⟨ refl⟩∘⟨ assoc _ _ _ ⟩
-    α← _ _ _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound (f `⊗ g `⊗ h) k .to
+    α← _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound (f `⊗ g `⊗ h) k .to
       ∎
   eval₂-sound {_} {Z} {X} (`α→ f g h) {k} =
-    eval₁-sound (f `⊗ (g `⊗ h)) k .to ∘ Hom.id                                 ≡⟨ cat! (Hom X Z) ⟩
-    α← _ _ _ ∘ ⟦ f ⟧₁ ▶ ((α← _ _ _ ∘ ⟦ g ⟧₁ ▶ eval₁-sound h k .to) ∘ _) ∘ _    ≡⟨ refl⟩∘⟨ ▶.pushl refl ∙ ▶.pushl refl ⟩
-    α← _ _ _ ∘ ⟦ f ⟧₁ ▶ α← _ _ _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ eval₁-sound h k .to) ∘ _ ≡⟨ extendl (sym $ lswizzle (sym $ pentagon _ _ _ _) (◀.annihilate (α≅ .invl))) ⟩
-    α→ _ _ _ ◀ ⟦ k ⟧₁ ∘ (α← _ _ _ ∘ α← _ _ _) ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _      ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
-    α→ _ _ _ ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ α← _ _ _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _        ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
-    α→ _ _ _ ◀ ⟦ k ⟧₁ ∘ α← _ _ _ ∘ (⟦ f ⟧₁ ⊗ ⟦ g ⟧₁) ▶ _ ∘ α← _ _ _ ∘ _        ≡⟨ cat! (Hom X Z) ⟩
-    α→ _ _ _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound ((f `⊗ g) `⊗ h) k .to                      ∎
+    eval₁-sound (f `⊗ (g `⊗ h)) k .to ∘ Hom.id                         ≡⟨ cat! (Hom X Z) ⟩
+    α← _ ∘ ⟦ f ⟧₁ ▶ ((α← _ ∘ ⟦ g ⟧₁ ▶ eval₁-sound h k .to) ∘ _) ∘ _    ≡⟨ refl⟩∘⟨ ▶.pushl refl ∙ ▶.pushl refl ⟩
+    α← _ ∘ ⟦ f ⟧₁ ▶ α← _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ eval₁-sound h k .to) ∘ _ ≡⟨ extendl (sym $ lswizzle (sym $ pentagon _ _ _ _) (◀.annihilate (α≅ .invl))) ⟩
+    α→ _ ◀ ⟦ k ⟧₁ ∘ (α← _ ∘ α← _) ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _          ≡˘⟨ refl⟩∘⟨ assoc _ _ _ ⟩
+    α→ _ ◀ ⟦ k ⟧₁ ∘ α← _ ∘ α← _ ∘ ⟦ f ⟧₁ ▶ (⟦ g ⟧₁ ▶ _) ∘ _            ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (▶-assoc .from .is-natural _ _ _) ⟩
+    α→ _ ◀ ⟦ k ⟧₁ ∘ α← _ ∘ (⟦ f ⟧₁ ⊗ ⟦ g ⟧₁) ▶ _ ∘ α← _ ∘ _            ≡⟨ cat! (Hom X Z) ⟩
+    α→ _ ◀ ⟦ k ⟧₁ ∘ eval₁-sound ((f `⊗ g) `⊗ h) k .to                  ∎
 
   fc-is-cont : {f g : Expr₁ X Y} → FrameCompare f g → Type
   fc-is-cont (f-swap _ _) = ⊤
@@ -588,14 +588,14 @@ private module _ {o ℓ ℓ'} {C : Prebicategory o ℓ ℓ'} where
   test-distrib-◀ = bicat! C
 
   test-pentagon-α→
-    : (f ▶ α→ g h i) ∘ α→ f (g ⊗ h) i ∘ (α→ f g h ◀ i)
-    ≡ α→ f g (h ⊗ i) ∘ α→ (f ⊗ g) h i
+    : f ▶ α→ (g , h , i) ∘ α→ (f , g ⊗ h , i) ∘ α→ (f , g , h) ◀ i
+    ≡ α→ (f , g , h ⊗ i) ∘ α→ (f ⊗ g , h , i)
   test-pentagon-α→ = bicat! C
 
-  test-triangle-ρ← : ρ← (f ⊗ g) ∘ α← f g id ≡ f ▶ ρ← g
+  test-triangle-ρ← : ρ← (f ⊗ g) ∘ α← (f , g , id) ≡ f ▶ ρ← g
   test-triangle-ρ← = bicat! C
 
-  test-triangle-λ← : λ← (f ⊗ g) ∘ α→ id f g ≡ λ← f ◀ g
+  test-triangle-λ← : λ← (f ⊗ g) ∘ α→ (id , f , g) ≡ λ← f ◀ g
   test-triangle-λ← = bicat! C
 
   test-interchange : (α ∘ β) ◆ (γ ∘ δ) ≡ (α ◆ γ) ∘ (β ◆ δ)
