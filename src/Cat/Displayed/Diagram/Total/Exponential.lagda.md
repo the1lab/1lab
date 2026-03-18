@@ -50,7 +50,7 @@ the corresponding constructions in $\cB$, and this is equivalent to the
 <!--
 ```agda
 module
-  _ {A B B^A : Ob} {ev : Hom (B^A ⊗₀ A) B}
+  _ {A B B^A} {ev : Hom (B^A ⊗₀ A) B}
     (exp : is-exponential _ bcart B^A ev)
     {A' : E ʻ A} {B' : E ʻ B} (B^A' : E ʻ B^A)
   where

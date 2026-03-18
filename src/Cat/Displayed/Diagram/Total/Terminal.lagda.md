@@ -36,8 +36,8 @@ displayed over $!$.
 record is-terminal-over {top} (term : is-terminal B top) (top' : E ʻ top) : Type (o ⊔ o' ⊔ ℓ') where
   open Terminal {C = B} record{ has⊤ = term } hiding (top)
   field
-    !'        : {y : ⌞ B ⌟} {y' : E ʻ y} → E.Hom[ ! ] y' top'
-    !-unique' : {y : ⌞ B ⌟} {y' : E ʻ y} (h : E.Hom[ ! ] y' top') → !' ≡ h
+    !'        : ∀ {y} {y' : E ʻ y} → E.Hom[ ! ] y' top'
+    !-unique' : ∀ {y} {y' : E ʻ y} (h : E.Hom[ ! ] y' top') → !' ≡ h
 
   opaque
     !ₚ : ∀ {y} {m : B.Hom y top} {y' : E ʻ y} → E.Hom[ m ] y' top'

@@ -192,7 +192,7 @@ has-products-over
   → Displayed B o' ℓ'
   → has-products B
   → Type _
-has-products-over {B = B} E prod = ∀ {a b : ⌞ B ⌟} (x : E ʻ a) (y : E ʻ b) → ProductP E (prod a b) x y
+has-products-over {B = B} E prod = ∀ {a b} (x : E ʻ a) (y : E ʻ b) → ProductP E (prod a b) x y
 ```
 -->
 

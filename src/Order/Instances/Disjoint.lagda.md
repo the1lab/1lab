@@ -90,8 +90,7 @@ function for mapping _out_, by cases:
 ```agda
   matchᵖ
     : ∀ {o ℓ} {R : Poset o ℓ}
-    → (∀ i → Monotone (F i) R)
-    → Monotone (Disjoint I F) R
+    → (∀ i → Monotone (F i) R) → Monotone (Disjoint I F) R
   matchᵖ cases .hom    (i , x)       = cases i · x
   matchᵖ cases .pres-≤ (reflᵢ , x≤y) =
     cases _ .pres-≤ (x≤y reflᵢ)
@@ -116,7 +115,9 @@ Posets-has-set-indexed-coproducts I F = mk where
 ## Binary coproducts are a special case of indexed coproducts
 
 ```agda
-⊎≡Disjoint-bool : ∀ {o ℓ} (P Q : Poset o ℓ) → P ⊎ᵖ Q ≡ Disjoint (el! Bool) (if_then P else Q)
+⊎≡Disjoint-bool
+  : ∀ {o ℓ} (P Q : Poset o ℓ)
+  → P ⊎ᵖ Q ≡ Disjoint (el! Bool) (if_then P else Q)
 ⊎≡Disjoint-bool P Q = Poset-path λ where
   .to   → match⊎ᵖ (injᵖ true) (injᵖ false)
   .from → matchᵖ (Bool-elim _ inlᵖ inrᵖ)

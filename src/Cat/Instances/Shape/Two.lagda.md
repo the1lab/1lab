@@ -56,9 +56,7 @@ canonically _equal_, not just naturally isomorphic, to the one we
 defined above.
 
 ```agda
-  canonical-functors
-    : ∀ (F : Functor 2-object-category C)
-    → F ≡ 2-object-diagram (F · true) (F · false)
+  canonical-functors : ∀ F → F ≡ 2-object-diagram (F · true) (F · false)
   canonical-functors F = Functor-path p q where
     p : ∀ x → _
     p false = refl
@@ -68,11 +66,13 @@ defined above.
     q {false} {false} p =
       F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
       F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ∎
+      id                ≡˘⟨ transport-refl id ⟩
+      transport refl id ∎
     q {true} {true} p =
       F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
       F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ∎
+      id                ≡˘⟨ transport-refl id ⟩
+      transport refl id ∎
     q {false} {true} p = absurd (true≠false (sym p))
     q {true} {false} p = absurd (true≠false p)
 ```

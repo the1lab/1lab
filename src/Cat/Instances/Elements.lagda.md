@@ -100,8 +100,8 @@ One interesting fact is that morphisms $f : X \to Y$ in $C$ induce
 morphisms in the category of elements for each $py : P(y)$.
 
 ```agda
-  induce : ∀ {x y} (f : Hom x y) (py : P ʻ y)
-        → Element-hom C P (elem x (P.₁ f py)) (elem y py)
+  induce
+    : ∀ {x y} (f : Hom x y) py → Element-hom C P (elem x (P.₁ f py)) (elem y py)
   induce f _ = elem-hom f refl
 ```
 

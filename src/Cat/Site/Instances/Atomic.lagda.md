@@ -168,7 +168,7 @@ the atomic topology: $A$ is a sheaf if every $y : A(V)$ supported by $f
 ```agda
   is-atomic-sheaf : ∀ {ℓ'} (A : Functor (C ^op) (Sets ℓ')) → Type _
   is-atomic-sheaf A =
-    ∀ {U V : ⌞ C ⌟} (y : A ʻ V) (f : Hom V U)
+    ∀ {U V} (y : A ʻ V) (f : Hom V U)
     → is-support A f y
     → is-contr (Σ[ x ∈ A ʻ U ] (y ≡ A ⟪ f ⟫ x))
 ```

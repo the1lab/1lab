@@ -52,7 +52,10 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   embed-coe : Int → R
   embed-coe x = ℤ↪R-rh .fst (lift x)
 
-  embed-lemma : {h' : Int → R} → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower) → ∀ x → embed-coe x ≡ h' x
+  embed-lemma
+    : {h' : Int → R}
+    → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower)
+    → ∀ x → embed-coe x ≡ h' x
   embed-lemma p x = Int-is-initial R' .paths (∫hom _ p) ·ₚ lift x
 
   data Poly   : Nat → Type ℓ

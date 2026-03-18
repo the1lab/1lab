@@ -133,7 +133,7 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
       (Structured-hom-path spec) sa
 
   Homomorphism-monic
-    : ∀ {x y : So.Ob} (f : So.Hom x y)
+    : ∀ {x y} (f : So.Hom x y)
     → (∀ {x y} (p : f · x ≡ f · y) → x ≡ y)
     → Som.is-monic f
   Homomorphism-monic f wit g h p = ext λ x → wit (ap fst p $ₚ x)

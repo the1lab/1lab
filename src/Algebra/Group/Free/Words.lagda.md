@@ -600,7 +600,7 @@ Finally, we can put this together for an arbitrary reduced word, using
 the lemmas above for each case.
 
 ```agda
-  uniq : ∀ xs (α : Reduced xs) → g · (xs , α) ≡ go xs
+  uniq : ∀ xs α → g · (xs , α) ≡ go xs
   uniq xs nil     = g.pres-id
   uniq xs (one a) =
     g · (a ∷ [] , one a)    ≡⟨ g-cons _ _ (one a) ⟩

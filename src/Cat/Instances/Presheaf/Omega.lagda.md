@@ -126,7 +126,7 @@ PSh-omega .generic .classifies {A} P = record { has-is-pb = pb } where
   square→pt
     : ∀ {P'} {p₁' : P' => A} {p₂' : P' => ⊤PSh}
     → psh-name P ∘nt p₁' ≡ tru ∘nt p₂'
-    → ∀ {a} (b : P' ʻ a) → fibre (P .map .η a) (p₁' .η a b)
+    → ∀ {a} b → fibre (P .map .η a) (p₁' .η a b)
   square→pt {p₁' = p₁'} p {a} b =
     let
       prf : maximal' ≡ psh-name P .η _ (p₁' .η _ b)

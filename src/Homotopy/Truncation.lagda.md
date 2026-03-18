@@ -467,12 +467,12 @@ opaque
   n-Tr-Ω¹-inc A n = homogeneous-funext∙ (λ _ → sym (conj-refl _))
 
   n-Tr-Ω¹-inv-inc
-    : ∀ {ℓ} (A : Type∙ ℓ) n (l : ⌞ Ω¹ A ⌟)
+    : ∀ {ℓ} (A : Type∙ ℓ) n l
     → Equiv.from (n-Tr-Ω¹ A n .fst) (Ω¹-map inc∙ .fst l) ≡ inc l
   n-Tr-Ω¹-inv-inc A n l = sym (Equiv.adjunctl (n-Tr-Ω¹ A n .fst) (n-Tr-Ω¹-inc A n ·ₚ l))
 
   n-Tr-Ω¹-∙
-    : ∀ {ℓ} (A : Type∙ ℓ) n (p q : ⌞ Ω¹ A ⌟)
+    : ∀ {ℓ} (A : Type∙ ℓ) n p q
     → n-Tr-Ω¹ A n · inc (p ∙ q) ≡ (n-Tr-Ω¹ A n · inc p) ∙ (n-Tr-Ω¹ A n · inc q)
   n-Tr-Ω¹-∙ A n p q = ap-∙ inc p q
 ```
@@ -515,25 +515,23 @@ opaque
   -- n-Tr-Ωⁿ respects path composition.
 
   n-Tr-Ωⁿ-∙
-    : ∀ {ℓ} (A : Type∙ ℓ) n k
-    → (p q : ⌞ Ωⁿ (suc k) A ⌟)
+    : ∀ {ℓ} (A : Type∙ ℓ) n k p q
     → n-Tr-Ωⁿ A n (suc k) · inc (p ∙ q)
     ≡ n-Tr-Ωⁿ A n (suc k) · inc p ∙ n-Tr-Ωⁿ A n (suc k) · inc q
-  n-Tr-Ωⁿ-∙ A n k p q = trace .snd
-    where
-      trace
-        :  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc (p ∙ q))
-        ≃∙ (Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst
-           , n-Tr-Ωⁿ A n (suc k) · inc p ∙ n-Tr-Ωⁿ A n (suc k) · inc q)
-      trace =
-        ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc (p ∙ q)
-          ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-∙ _ _ p q ⟩
-        ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , _
-          ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , Ω¹-map-∙ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) _ _ ⟩
-        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , _
-          ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , Ωⁿ-map-∙ k _ _ _ ⟩
-        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (suc k + suc n)) ⌟ , _
-          ≃∙∎
+  n-Tr-Ωⁿ-∙ A n k p q = trace .snd where
+    trace
+      :  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc (p ∙ q))
+      ≃∙ ( Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst
+         , n-Tr-Ωⁿ A n (suc k) · inc p ∙ n-Tr-Ωⁿ A n (suc k) · inc q)
+    trace =
+      ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc (p ∙ q)
+        ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-∙ _ _ p q ⟩
+      ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , _
+        ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , Ω¹-map-∙ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) _ _ ⟩
+      ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , _
+        ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , Ωⁿ-map-∙ k _ _ _ ⟩
+      ⌞ Ωⁿ (1 + k) (n-Tr∙ A (suc k + suc n)) ⌟ , _
+        ≃∙∎
 
   -- n-Tr-Ωⁿ commutes with the obvious inclusions.
 
@@ -541,35 +539,34 @@ opaque
     : ∀ {ℓ} (A : Type∙ ℓ) n k
     → Equiv∙.to∙ (n-Tr-Ωⁿ A n k) ∘∙ inc∙ ≡ Ωⁿ-map k inc∙
   n-Tr-Ωⁿ-inc A n zero = ∘∙-idl inc∙
-  n-Tr-Ωⁿ-inc A n (suc k) = homogeneous-funext∙ λ l → trace l .snd
-    where
-      trace
-        : (l : ⌞ Ωⁿ (suc k) A ⌟)
-        →  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc l)
-        ≃∙ (Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst , Ωⁿ-map (suc k) inc∙ .fst l)
-      trace l =
-        ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc l ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-inc _ n ·ₚ l ⟩
-        ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , l¹    ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , pt1 ⟩
-        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , lᵏ    ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , pt2 ⟩
-        ⌞ Ωⁿ (1 + k) (n-Tr∙ A (1 + k + suc n)) ⌟ , lᵏ    ≃∙∎
-        where
-          l¹ : Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) .fst
-          l¹ = Ω¹-map inc∙ .fst l
+  n-Tr-Ωⁿ-inc A n (suc k) = homogeneous-funext∙ λ l → trace l .snd where
+    trace
+      : (l : ⌞ Ωⁿ (suc k) A ⌟)
+      →  (n-Tr∙ (Ωⁿ (suc k) A) (1 + n) .fst , inc l)
+      ≃∙ (Ωⁿ (suc k) (n-Tr∙ A (suc k + suc n)) .fst , Ωⁿ-map (suc k) inc∙ .fst l)
+    trace l =
+      ⌞ n-Tr∙ (Ω¹ (Ωⁿ k A)) (suc n) ⌟          , inc l ≃∙⟨ n-Tr-Ω¹ _ n .fst , n-Tr-Ω¹-inc _ n ·ₚ l ⟩
+      ⌞ Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) ⌟          , l¹    ≃∙⟨ Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) .fst , pt1 ⟩
+      ⌞ Ωⁿ (1 + k) (n-Tr∙ A (k + (2 + n))) ⌟   , lᵏ    ≃∙⟨ Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ _) .fst , pt2 ⟩
+      ⌞ Ωⁿ (1 + k) (n-Tr∙ A (1 + k + suc n)) ⌟ , lᵏ    ≃∙∎
+      where
+        l¹ : Ω¹ (n-Tr∙ (Ωⁿ k A) (2 + n)) .fst
+        l¹ = Ω¹-map inc∙ .fst l
 
-          lᵏ : ∀ {n} → ⌞ Ωⁿ (suc k) (n-Tr∙ A n) ⌟
-          lᵏ = Ωⁿ-map (1 + k) inc∙ .fst l
+        lᵏ : ∀ {n} → ⌞ Ωⁿ (suc k) (n-Tr∙ A n) ⌟
+        lᵏ = Ωⁿ-map (1 + k) inc∙ .fst l
 
-          pt1 : Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) · l¹ ≡ lᵏ
-          pt1 =
-            Ω¹-map (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) .fst l¹
-              ≡⟨ Ω¹-map-∘ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) inc∙ ·ₚ l ⟩
-            Ω¹-map ⌜ Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k) ∘∙ inc∙ ⌝ .fst l
-              ≡⟨ ap! (n-Tr-Ωⁿ-inc A (suc n) k) ⟩
-            Ω¹-map (Ωⁿ-map k inc∙) .fst l
-              ∎
+        pt1 : Ω¹-ap (n-Tr-Ωⁿ A (suc n) k) · l¹ ≡ lᵏ
+        pt1 =
+          Ω¹-map (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) .fst l¹
+            ≡⟨ Ω¹-map-∘ (Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k)) inc∙ ·ₚ l ⟩
+          Ω¹-map ⌜ Equiv∙.to∙ (n-Tr-Ωⁿ A (suc n) k) ∘∙ inc∙ ⌝ .fst l
+            ≡⟨ ap! (n-Tr-Ωⁿ-inc A (suc n) k) ⟩
+          Ω¹-map (Ωⁿ-map k inc∙) .fst l
+            ∎
 
-          pt2 : Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ (+-sucr k (suc n))) · lᵏ ≡ lᵏ
-          pt2 = (Ωⁿ-map-∘ (1 + k) _ inc∙ ·ₚ l)
-              ∙ ap (λ x → Ωⁿ-map (1 + k) x .fst l) (n-Tr∙-reindex-inc (k + (2 + n)) _ _)
+        pt2 : Ωⁿ-ap (1 + k) (n-Tr∙-reindex _ _ (+-sucr k (suc n))) · lᵏ ≡ lᵏ
+        pt2 = (Ωⁿ-map-∘ (1 + k) _ inc∙ ·ₚ l)
+            ∙ ap (λ x → Ωⁿ-map (1 + k) x .fst l) (n-Tr∙-reindex-inc (k + (2 + n)) _ _)
 ```
 -->
