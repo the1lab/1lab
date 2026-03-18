@@ -217,33 +217,33 @@ abbreviations here too:
 
   ρ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((f ⊗ id) ⇒ f') (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
-  ρ←nat {A} {B} {f} {f'} β = unitor-r.from .is-natural f f' β
+  ρ←nat {A} {B} {f} {f'} β = ρ←.is-natural f f' β
 
   λ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((id ⊗ f) ⇒ f') (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
-  λ←nat {A} {B} {f} {f'} β = unitor-l.from .is-natural f f' β
+  λ←nat {A} {B} {f} {f'} β = λ←.is-natural f f' β
 
   ρ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ f' ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
-  ρ→nat {A} {B} {f} {f'} β = unitor-r.to .is-natural f f' β
+  ρ→nat {A} {B} {f} {f'} β = ρ→.is-natural f f' β
 
   λ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ id ⊗ f') (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
-  λ→nat {A} {B} {f} {f'} β = unitor-l.to .is-natural f f' β
+  λ→nat {A} {B} {f} {f'} β = λ→.is-natural f f' β
   
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
           (α← _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _)
   α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    α←.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
   α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path ((f ⊗ g) ⊗ h ⇒ (f' ⊗ g' ⊗ h'))
            (α→ _ ∘ ((β ◆ γ) ◆ δ)) ((β ◆ (γ ◆ δ)) ∘ α→ _)
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
-    associator.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
+    α→.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -428,16 +428,10 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 <!--
 ```agda
-  module P₁ {A} {B} = Functor (P₁ {A} {B})
+  open module P₁ {A} {B} = Functor (P₁ {A} {B}) renaming (F₀ to ₁ ; F₁ to ₂) using () public
 
   ₀ : B.Ob → C.Ob
   ₀ = P₀
-
-  ₁ : ∀ {a b} → a B.↦ b → P₀ a C.↦ P₀ b
-  ₁ = P₁.F₀
-
-  ₂ : ∀ {a b} {f g : a B.↦ b} → f B.⇒ g → ₁ f C.⇒ ₁ g
-  ₂ = P₁.F₁
 
   γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
      → ₁ f C.⊗ ₁ g C.⇒ ₁ (f B.⊗ g)
