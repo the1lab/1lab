@@ -601,5 +601,8 @@ private module _ {o ℓ ℓ'} {C : Prebicategory o ℓ ℓ'} where
   test-interchange : (α ∘ β) ◆ (γ ∘ δ) ≡ (α ◆ γ) ∘ (β ◆ δ)
   test-interchange = bicat! C
 
-  test-interchange-whisker : (f ⊗ g) ▶ α ∘ δ ◀ g ≡ δ ◀ h ∘ i ▶ α
-  test-interchange-whisker = bicat! C
+  test-interchange-whisker1 : (f ⊗ g) ▶ α ∘ δ ◀ g ≡ δ ◀ h ∘ i ▶ α
+  test-interchange-whisker1 = bicat! C
+
+  test-interchange-whisker2 : α ◀ i ∘ f ▶ β ∘ γ ≡ g ▶ β ∘ α ◀ h ∘ γ
+  test-interchange-whisker2 = bicat! C
