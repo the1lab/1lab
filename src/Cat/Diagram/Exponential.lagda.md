@@ -6,8 +6,8 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Closed
 open import Cat.Instances.Slice
+open import Cat.Functor.Closed
 open import Cat.Cartesian
 open import Cat.Prelude
 

@@ -3,8 +3,8 @@
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Base
 open import Cat.Instances.Product
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bi

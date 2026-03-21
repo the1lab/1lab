@@ -9,13 +9,13 @@ description: |
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
-open import Cat.Instances.Sets
 open import Cat.Functor.Compose
+open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Func
 import Cat.Functor.Bifunctor as Bi
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
 ```
 -->

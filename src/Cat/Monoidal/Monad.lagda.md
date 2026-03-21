@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Monoidal.Strength.Monad
 open import Cat.Functor.Naturality
 open import Cat.Instances.Product

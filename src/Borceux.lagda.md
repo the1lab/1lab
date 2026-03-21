@@ -105,6 +105,8 @@ open import Cat.Strict
 open import Data.Set.Surjection
 
 open import Order.Cat
+
+import Cat.Functor.Bifunctor as Bi
 ```
 -->
 ```agda
@@ -208,7 +210,6 @@ definitions on a 1-1 basis.
 _ = _^op
 _ = よcov
 _ = よ₀
-_ = よ₁
 _ = よ
 ```
 -->
@@ -218,7 +219,7 @@ _ = よ
 * Examples 1.4.3:
   * a. `よcov`{.Agda}
   * b. `よ₀`{.Agda}
-  * c. `よ₁`{.Agda}
+  * c. (as part of `よ`{.Agda})
   * d. `よ`{.Agda}
 
 ### 1.5 Full and faithful functors
@@ -372,7 +373,7 @@ _ = thin-functor
 _ = よ-preserves-mono
 _ = よcov-reverses-epi
 _ = Curry
-_ = Uncurry
+_ = Bi.Uncurry
 _ = has-section+monic→invertible
 ```
 -->
@@ -380,7 +381,7 @@ _ = has-section+monic→invertible
 * Exercise 1.11.1: 🚧 `thin-functor`{.Agda}
 * Exercise 1.11.5: `よ-preserves-mono`{.Agda}
 * Exercise 1.11.6: `よcov-reverses-epi`{.Agda}
-* Exercise 1.11.8: 🚧 `Curry`{.Agda}, `Uncurry`{.Agda}
+* Exercise 1.11.8: 🚧 `Curry`{.Agda}, `Bi.Uncurry`{.Agda}
 * Exercise 1.11.9: `has-section+monic→invertible`{.Agda}
 
 ## 2 Limits

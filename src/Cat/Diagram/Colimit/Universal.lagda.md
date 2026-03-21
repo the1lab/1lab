@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Functor.Naturality.Reflection
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.Adjoint.Continuous

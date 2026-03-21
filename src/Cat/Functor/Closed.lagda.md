@@ -4,8 +4,8 @@ open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Fr
 import Cat.Functor.Bifunctor as Bi
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 
 open Make-bifunctor

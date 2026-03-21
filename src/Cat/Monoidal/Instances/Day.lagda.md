@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Diagram.Coend.Sets
 open import Cat.Functor.Naturality
 open import Cat.Instances.Product

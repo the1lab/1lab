@@ -5,8 +5,8 @@ open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning
 import Cat.Functor.Bifunctor as Bi
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 
 open _=>_

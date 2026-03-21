@@ -263,7 +263,7 @@ i.e., the defining property of $\nu$!
 ```agda
   Coalgebra-limit F lim .has-ran = is-limit-coalgebra F $ natural-isos→is-ran
     idni idni rem₁
-    (Nat-path λ x → idl _ ∙ elimr (elimr refl ∙ lim .Ext .Functor.F-id))
+    (Nat-path λ x → idl _ ∙ elimr (idr _))
     (lim .has-ran)
 
     where

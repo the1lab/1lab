@@ -4,7 +4,6 @@ description: |
 ---
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Functor.Kan.Reflection
 open import Cat.Functor.Conservative
 open import Cat.Diagram.Limit.Base
