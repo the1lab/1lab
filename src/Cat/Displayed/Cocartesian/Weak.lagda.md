@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Displayed.Cartesian.Weak
 open import Cat.Functor.Hom.Displayed
 open import Cat.Displayed.Cartesian
@@ -8,6 +7,7 @@ open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Total.Op
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Displayed.Solver
 open import Cat.Displayed.Fibre
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
@@ -1123,17 +1123,25 @@ module _ (opfib : Cocartesian-fibration) where
     mi : make-natural-iso
           (Hom-over ℰ u)
           (precompose₂ (Hom[-,-] (Fibre ℰ y)) (Functor.op (cobase-change u)) Id)
-    mi = {!   !}
-    -- mi .eta x u' = ι!.universalv u'
-    -- mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
-    -- mi .eta∘inv x = funext λ v' →
-    --   sym $ ι!.uniquev _ (to-pathp[] refl)
-    -- mi .inv∘eta x = funext λ u' →
-    --   from-pathp[] (ι!.commutesv _)
-    -- mi .natural _ _ (v₁' , v₂') = funext λ u' →
-    --   Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
-    --   ∙∙ sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
-    --   ∙∙ ap (into-iso.to .η _) (smashl _ _ ∙ sym assoc[])
+    mi .eta A .η B h = ι!.universalv h
+    mi .eta A .is-natural x y f = ext λ h → sym $ ι!.uniquev _ $ begin[]
+      _ ≡[]⟨ unwrapl _ ⟩
+      _ ≡[]⟨ pullr[] (idl u) (ι!.commutesv _) ⟩
+      _ ≡[]⟨ wrap _ ⟩
+      _ ∎[]
+    mi .inv A .η B h = hom[ idl u ] (h ∘' ι! u _)
+    mi .inv A .is-natural x y f = ext λ h →
+      hom[ idl u ] (hom[ idl id ] (f ∘' h) ∘' ι! u A) ≡⟨ ap hom[] (begin[] _ ≡[]⟨ unwrapl _ ⟩ _ ≡[]⟨ symP (assoc' _ _ _) ⟩ _ ≡[]⟨ wrapr _ ⟩ _ ∎[]) ⟩
+      hom[ idl u ] (f ∘' hom[ idl u ] (h ∘' ι! u A))  ∎
+    mi .eta∘inv x = ext (λ i h → sym (ι!.unique h (sym (from-pathp[] (unwrap _)))))
+    mi .inv∘eta x = ext (λ i x → from-pathp[] (ι!.commutesv _))
+    mi .natural x y f = ext λ u u' → ι!.unique _ $ begin[]
+      _ ≡[]⟨ unwrapl _ ⟩
+      _ ≡[]⟨ pullr[] _ (ι!.commutesv _) ⟩
+      _ ≡[]⟨ unwrapr _ ⟩
+      _ ≡[]⟨ pulll[] _ (ι!.commutesv _) ⟩
+      _ ≡[]⟨ wrap _ ∙[] wrap _ ⟩
+      _ ∎[]
 
   opfibration→universal-is-equiv
     : ∀ {x y x' y'} (u : Hom x y)
