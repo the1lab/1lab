@@ -53,7 +53,7 @@ every $X : \cC$ and $p_x : P(x)$, we have $f \circ \alpha_x(p_x) = f
 $\alpha = \beta$.
 
 ```agda
-  よ-preserves-mono : is-monic f → PSh[C].is-monic (よ₁ C f)
+  よ-preserves-mono : is-monic f → PSh[C].is-monic (よ C .Functor.F₁ f)
   よ-preserves-mono f-mono α β p = ext λ x px →
     f-mono (α .η x px) (β .η x px) (unext p x px)
 ```
@@ -62,10 +62,10 @@ Furthermore, the Yoneda embedding is [[fully faithful]], so it reflects
 both monos and [[epis|epimorphism]].
 
 ```agda
-  よ-reflects-mono : PSh[C].is-monic (よ₁ C f) → is-monic f
+  よ-reflects-mono : PSh[C].is-monic (よ C .Functor.F₁ f) → is-monic f
   よ-reflects-mono = よ.faithful→reflects-mono (よ-is-faithful C)
 
-  よ-reflects-epi : PSh[C].is-epic (よ₁ C f) → is-epic f
+  よ-reflects-epi : PSh[C].is-epic (よ C .Functor.F₁ f) → is-epic f
   よ-reflects-epi = よ.faithful→reflects-epi (よ-is-faithful C)
 ```
 

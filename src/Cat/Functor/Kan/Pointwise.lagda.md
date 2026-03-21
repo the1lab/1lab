@@ -207,11 +207,16 @@ constraints are satisfied.
 ```agda
       F' : Functor C' D
       F' .F₀ c' = ↓colim.coapex c'
-      F' .F₁ f = ↓colim.universal _
-        (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
-        (λ f → ↓colim.commutes _ (↓hom {bot = f .bot} (C'.pullr (f .com)
+      F' .F₁ {x = x} f =
+        ↓colim.universal _
+          (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
+          p
+        where abstract
+          p : ∀ {a b} (g : ↓Hom F (!Const x) a b)
+            → (↓colim.ψ _ (↓obj (f C'.∘ map b)) D.∘ G .F₁ (g .top)) ≡ ↓colim.ψ _ (↓obj (f C'.∘ map a))
+          p f = ↓colim.commutes _ (↓hom {bot = f .bot} (C'.pullr (f .com)
             ∙∙ C'.elim-inner refl
-            ∙∙ sym (C'.idl _))))
+            ∙∙ sym (C'.idl _)))
 ```
 <!--
 ```agda
@@ -392,13 +397,17 @@ up not being very interesting.
       module HF'-cohere = Isoⁿ HF'-cohere
 
       abstract
-        fixup : (HF'-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
-        fixup = ext λ j →
-          (H .F₁ (↓colim.universal _ _ _) E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
-          H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                       ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
-          H .F₁ (↓colim.ψ _ _) E.∘ E.id                                           ≡⟨ E.idr _ ⟩
-          H .F₁ (↓colim.ψ _ (↓obj ⌜ C'.id C'.∘ C'.id ⌝))                          ≡⟨ ap! (C'.idl _) ⟩
-          H .F₁ (↓colim.ψ _ (↓obj (C'.id)))                                       ∎
+        fixup
+          : ((HF'-cohere.to ◂ _) ∘nt (HF' ▸ idnt)) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt
+          ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
+        fixup =
+          ap (λ e → ((HF'-cohere.to ◂ _) ∘nt e) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt) ▸-id ∙
+          ext λ j →
+            (E.id E.∘ _) E.∘ (H-↓colim.ψ _ _ E.∘ E.id)
+              ≡⟨ E.eliml (E.idl _) ⟩
+            H-↓colim.ψ _ _ E.∘ E.id
+              ≡⟨ E.idr _ ∙ E.idr _ ⟩
+            H .F₁ (↓colim.ψ _ (↓obj C'.id)) ∎
 ```
 </details>
 
@@ -508,7 +517,7 @@ the usual Yoneda-like argument.
       inv .η d α =
         pointwise-↓cocone d α .η c' C'.id
       inv .is-natural x y f = funext λ α →
-        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (opNʳ (よ₁ D f) ◂ L)}
+        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (opNʳ (よ D .F₁ f) ◂ L)}
           (ext λ c g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
 ```
 

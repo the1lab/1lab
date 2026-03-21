@@ -99,10 +99,10 @@ $$
 $$.
 
 ```agda
-  yo-natr : ∀ {U V x y} {h : Hom V U} → A ⟪ h ⟫ x ≡ y → yo A x ∘nt よ₁ C h ≡ yo A y
+  yo-natr : ∀ {U V x y} {h : Hom V U} → A ⟪ h ⟫ x ≡ y → yo A x ∘nt よ C .F₁ h ≡ yo A y
   yo-natr p = ext λ i f → A.expand refl ∙ A.ap p
 
-  yo-naturalr : ∀ {U V x} {h : Hom V U} → yo A x ∘nt よ₁ C h ≡ yo A (A ⟪ h ⟫ x)
+  yo-naturalr : ∀ {U V x} {h : Hom V U} → yo A x ∘nt よ C .F₁ h ≡ yo A (A ⟪ h ⟫ x)
   yo-naturalr = yo-natr refl
 ```
 

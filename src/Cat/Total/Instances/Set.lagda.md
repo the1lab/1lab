@@ -49,9 +49,8 @@ P(\tilde{s}))(y)=P(\tilde{s})(x)$ as $P(m):y\mapsto x$.
   has-よ-adj .unit .η P .η X p s = P ⟪ (λ _ → s) ⟫ p
   has-よ-adj .unit .η P .is-natural x y f = ext λ r s → sym $ unext (P .F-∘ _ _) _
   has-よ-adj .unit .is-natural F G nt  = ext λ X s r →
-    G ⟪ (λ _ → r) ⟫ (nt .η X s)                   ≡˘⟨ unext (nt .is-natural  _ _ _) _ ⟩
-    (nt .η ★ (F ⟪ (λ _ → r) ⟫ s))                 ≡˘⟨ unext (G .F-id) _ ⟩
-    G ⟪ (λ x → x) ⟫ (nt .η ★ (F ⟪ (λ _ → r) ⟫ s)) ∎
+    G ⟪ (λ _ → r) ⟫ (nt .η X s)    ≡˘⟨ unext (nt .is-natural  _ _ _) _ ⟩
+    (nt .η ★ (F ⟪ (λ _ → r) ⟫ s))  ∎
   has-よ-adj .counit .η X s = s _
   has-よ-adj .counit .is-natural _ _ _ = refl
   has-よ-adj .zig {F} = F .F-id

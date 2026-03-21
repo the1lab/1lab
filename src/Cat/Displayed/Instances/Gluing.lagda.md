@@ -11,6 +11,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
+open import Cat.Functor.Closed
 open import Cat.Displayed.Base
 open import Cat.Cartesian
 open import Cat.Prelude
@@ -375,7 +376,7 @@ indeed an exponential transpose.
   done .has-is-exponential' .ƛ' m .com = pb.p₁∘universal
   done .has-is-exponential' .commutes' m = Slice-pathp comm1 where abstract
     comm1 : (Cλ.ev C.∘ (pb.p₂ C.⊗₁ C.id)) C.∘ (alpha.alpha m C.⊗₁ C.id) ≡ m .map
-    comm1 = C.pullr (sym (Bifunctor.first∘first C.×-functor))
+    comm1 = C.pullr (sym (Bifunctor.lmap-∘ (Curry C.×-functor) _ _))
           ∙∙ ap (Cλ.ev C.∘_) (ap₂ C._⊗₁_ pb.p₂∘universal refl)
           ∙∙ Cλ.commutes _
 
@@ -395,7 +396,7 @@ indeed an exponential transpose.
     coh₂ : pb.p₂ C.∘ m' .map ≡ Cλ.ƛ (m .map)
     coh₂ = Cλ.unique _ $
       Cλ.ev C.∘ (pb.p₂ C.∘ m' .map) C.⊗₁ C.id
-        ≡⟨ ap₂ C._∘_ refl (Bifunctor.first∘first C.×-functor) ⟩
+        ≡⟨ ap₂ C._∘_ refl (Bifunctor.lmap-∘ (Curry C.×-functor) _ _) ⟩
       Cλ.ev C.∘ pb.p₂ C.⊗₁ C.id C.∘ m' .map C.⊗₁ C.id
         ≡⟨ C.pulll refl ∙ (λ i → q i .map) ⟩
       m .map

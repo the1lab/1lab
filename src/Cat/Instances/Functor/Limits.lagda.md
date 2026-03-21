@@ -10,6 +10,10 @@ open import Cat.Instances.Product
 open import Cat.Functor.Closed
 open import Cat.Diagram.Duals
 open import Cat.Prelude
+
+import Cat.Functor.Bifunctor as Bi
+
+open Bi using (Uncurry)
 ```
 -->
 
@@ -57,10 +61,7 @@ $\cD$-shaped diagrams in $\cC$, which, by assumption, all have
 limits.
 
 ```agda
-    F-uncurried : Functor (D ×ᶜ E) C
-    F-uncurried = Uncurry F
-
-    import Cat.Functor.Bifunctor F-uncurried as F'
+    module F' = Bi F
     module D-lim x = Limit (has-D-lims (F'.Left x))
 ```
 
@@ -70,24 +71,18 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
 
 ```agda
     !-for : ∀ {x y} (f : E.Hom x y) → C.Hom (D-lim.apex x) (D-lim.apex y)
-    !-for {x} {y} f =
-      D-lim.universal y
-        (λ j → F'.Right j .F₁ f C.∘ D-lim.ψ x j)
-        (λ g →
-          C.extendl F'.first∘second
-          ∙ ap₂ C._∘_ refl (D-lim.commutes x g))
+    !-for {x} {y} f = D-lim.universal y (λ j → F'.Right j .F₁ f C.∘ D-lim.ψ x j)
+      (λ g → C.extendl (F'.lrmap _ _) ∙ ap₂ C._∘_ refl (D-lim.commutes x g))
 
     functor-apex : Functor E C
     functor-apex .F₀ x = D-lim.apex x
     functor-apex .F₁ {x} {y} f = !-for f
-    functor-apex .F-id =
-      sym $ D-lim.unique _ _ _ _ λ j →
-        C.idr _ ∙ sym (D-lim.commutes _ _)
-    functor-apex .F-∘ f g =
-      sym $ D-lim.unique _ _ _ _ λ j →
+    functor-apex .F-id = sym $ D-lim.unique _ _ _ _ λ j →
+      C.idr _ ∙ C.introl F'.rmap-id
+    functor-apex .F-∘ f g = sym $ D-lim.unique _ _ _ _ λ j →
         C.pulll (D-lim.factors _ _ _)
-        ∙ C.pullr (D-lim.factors _ _ _)
-        ∙ C.pulll (sym (F'.Right _ .F-∘ _ _))
+      ∙ C.pullr (D-lim.factors _ _ _)
+      ∙ C.pulll (sym (F'.rmap-∘ _ _))
 
   functor-limit : Limit F
   functor-limit = to-limit $ to-is-limit ml where
@@ -95,25 +90,19 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
 
     ml : make-is-limit F functor-apex
     ml .ψ j .η x = D-lim.ψ x j
-    ml .ψ j .is-natural x y f =
-      D-lim.factors _ _ _ ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
-    ml .commutes f = ext λ j →
-      C.pushr (C.introl (F.₀ _ .F-id)) ∙ D-lim.commutes j f
+    ml .ψ j .is-natural x y f = D-lim.factors _ _ _
+    ml .commutes f = ext λ j → D-lim.commutes j f
     ml .universal eps p .η x = D-lim.universal x
       (λ j → eps j .η x)
-      (λ f → ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p f ηₚ x)
+      (λ f → p f ηₚ x)
     ml .universal eps p .is-natural x y f = D-lim.unique₂ y _
-      (λ g → C.pulll (ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p g ηₚ y))
+      (λ g → C.pulll (p g ηₚ y))
       (λ j → C.pulll (D-lim.factors _ _ _))
-      (λ j →
-          C.pulll (D-lim.factors _ _ _)
-        ∙ C.pullr (D-lim.factors _ _ _)
-        ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
-        ∙ sym (eps j .is-natural x y f))
-    ml .factors eps p = ext λ j →
-      D-lim.factors j _ _
-    ml .unique eps p other q = ext λ x →
-      D-lim.unique _ _ _ _ λ j → q j ηₚ x
+      (λ j → C.pulll (D-lim.factors _ _ _)
+          ∙∙ C.pullr (D-lim.factors _ _ _)
+          ∙∙ sym (eps j .is-natural _ _ _))
+    ml .factors eps p = ext λ j → D-lim.factors j _ _
+    ml .unique eps p other q = ext λ x → D-lim.unique _ _ _ _ λ j → q j ηₚ x
 ```
 
 As a corollary, if $\cD$ is an $(o,\ell)$-complete category, then so

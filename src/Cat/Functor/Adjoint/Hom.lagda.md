@@ -10,6 +10,7 @@ open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
+open import Cat.Functor.Compose
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -163,14 +164,20 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     module R = Func R
 
   hom-natural-iso→adjoints
-    : (Bi.Uncurry (Hom[-,-] C) F∘ (Functor.op L F× Id)) ≅ⁿ (Bi.Uncurry (Hom[-,-] D) F∘ (Id F× R))
+    : precompose₂ (Hom[-,-] C) (Functor.op L) Id ≅ⁿ precompose₂ (Hom[-,-] D) Id R
     → L ⊣ R
-  hom-natural-iso→adjoints eta =
-    hom-iso→adjoints (to .η _) (natural-iso-to-is-equiv eta (_ , _)) λ g h x →
-      ap (to .η _) (C.pulll refl) ∙ to .is-natural _ _ _ ·ₚ _ ∙ D.pullr refl
-    where
-      open Isoⁿ eta
-      open _=>_
+  hom-natural-iso→adjoints eta = hom-iso→adjoints (to .η _ .η _) fr nat where
+    open Isoⁿ eta
+    open _=>_
+    fr : ∀ {x y} → is-equiv (to .η x .η y)
+    fr = is-iso→is-equiv record where
+      from = from .η _ .η _
+      linv x = unext invr _ _ _
+      rinv x = unext invl _ _ _
+    nat : hom-iso-natural {L = L} {R = R} (to .η _ .η _)
+    nat g h x = ap (to .η _ .η _) (C.pulll refl)
+      ∙∙ to .is-natural _ _ _ ·ₚ _ ·ₚ _
+      ∙∙ D.pushl (to .η _ .is-natural _ _ _ ·ₚ _)
 
 module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
          {L : Functor D C} {R : Functor C D}

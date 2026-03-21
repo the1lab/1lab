@@ -170,6 +170,9 @@ module _ {F G : Functor C D} where
 ▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
 ▸-distribr {F = F} = ext λ _ → F .F-∘ _ _
 
+▸-id : H ▸ idnt {F = F} ≡ idnt
+▸-id {H = H} = ext λ _ → H .Functor.F-id
+
 module _ where
   open Cr
 

@@ -52,10 +52,7 @@ Hom[-,-] = make-bifunctor record where
 We also can define "partially applied" versions of the hom functor:
 ```agda
 Hom[_,-] : Ob → Functor C (Sets h)
-Hom[ x ,-] .F₀ y = el (Hom x y) (Hom-set x y)
-Hom[ x ,-] .F₁ f g = f ∘ g
-Hom[ x ,-] .F-id = funext (λ f → idl f)
-Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
+Hom[_,-] = Bi.Right Hom[-,-]
 ```
 
 ## The Yoneda embedding

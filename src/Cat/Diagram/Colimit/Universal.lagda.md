@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Functor.Naturality.Reflection
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.Adjoint.Continuous
@@ -18,10 +19,12 @@ open import Cat.Functor.Kan.Base
 open import Cat.Functor.Pullback
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Sum
 
+import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 open creates-colimit
@@ -315,12 +318,13 @@ colimits, we get that $F$ is colimiting.
                   ; com = eq _ .p₁∘universal })
           (Forget/-is-conservative (pullback-unique
             (rotate-pullback (eq _)) (pb _ _ .Pullback.has-is-pb)))))
-        (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
-          {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
-          (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)
-          (pulll (eq _ .p₂∘universal) ∙∙ pulll (pb _ _ .Pullback.p₁∘universal) ∙∙ pullr (pb _ _ .Pullback.p₁∘universal))
-          (sym (F .F-∘ _ _))
-          (α .is-natural _ _ _))
+        ( ap₂ _∘nt_ (Bifunctor.lrmap F∘-functor _ _) refl
+        ∙ ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
+            {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
+            (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)
+            (pulll (eq _ .p₂∘universal) ∙∙ pulll (pb _ _ .Pullback.p₁∘universal) ∙∙ pullr (pb _ _ .Pullback.p₁∘universal))
+            (sym (F .F-∘ _ _))
+            (α .is-natural _ _ _))
         f*G-colim
 ```
 
@@ -331,7 +335,7 @@ repackaging data between "obviously isomorphic" functors.
 
 ```agda
     step2→1 : step2 → has-stable-colimits J C pb
-    step2→1 u f F {K} {eta} = trivial-is-colimit! ⊙ u _ _ α eq ⊙ trivial-is-colimit!
+    step2→1 u f F {K} {eta} = {! trivial-is-colimit! ⊙ u _ _ α eq ⊙ trivial-is-colimit! !}
       where
         α : cocone/→cocone▹ (Base-change pb f F∘ cocone→cocone▹ eta)
          => cocone/→cocone▹ (cocone→cocone▹ eta)
@@ -377,7 +381,7 @@ $\cC/X \to \cC$ both preserves and reflects colimits.
         prop-ext!
           (lifts→preserves-colimit (Forget/-lifts-colimits (J-colims _)))
           (Forget/-creates-colimits .reflects)
-        ∙e trivial-colimit-equiv!
+        ∙e {! trivial-colimit-equiv! !}
 
       step2≃3 : step2 ≃ step3
       step2≃3 = Π-ap-cod λ F → Π-ap-cod λ G → Π-ap-cod λ α → Π-ap-cod λ eq →
@@ -396,7 +400,7 @@ retracts onto $\cJ^\triangleright$.
         ▹-retract
           : (F : Functor (J ▹) C)
           → is-colimit▹ ((F F∘ ▹-join) F∘ ▹-in) ≃ is-colimit▹ F
-        ▹-retract F = trivial-colimit-equiv!
+        ▹-retract F = {! trivial-colimit-equiv! !}
 
     step4→3 : has-universal-colimits J C → step3
     step4→3 u F G α eq = u _ _ (α ◂ ▹-in) (◂-equifibred ▹-in α eq)

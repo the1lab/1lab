@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Displayed.Cartesian.Weak
 open import Cat.Functor.Hom.Displayed
 open import Cat.Displayed.Cartesian
@@ -9,6 +10,7 @@ open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -1108,7 +1110,7 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id)
+    → Hom-over ℰ u ≅ⁿ precompose₂ (Hom[-,-] (Fibre ℰ y)) (Functor.op (cobase-change u)) Id
   opfibration→hom-iso {y = y} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
@@ -1120,17 +1122,18 @@ module _ (opfib : Cocartesian-fibration) where
 
     mi : make-natural-iso
           (Hom-over ℰ u)
-          (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
-    mi .eta x u' = ι!.universalv u'
-    mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
-    mi .eta∘inv x = funext λ v' →
-      sym $ ι!.uniquev _ (to-pathp[] refl)
-    mi .inv∘eta x = funext λ u' →
-      from-pathp[] (ι!.commutesv _)
-    mi .natural _ _ (v₁' , v₂') = funext λ u' →
-      Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
-      ∙∙ sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
-      ∙∙ ap (into-iso.to .η _) (smashl _ _ ∙ sym assoc[])
+          (precompose₂ (Hom[-,-] (Fibre ℰ y)) (Functor.op (cobase-change u)) Id)
+    mi = {!   !}
+    -- mi .eta x u' = ι!.universalv u'
+    -- mi .inv x v' = hom[ idl u ] (v' ∘' ι! u _)
+    -- mi .eta∘inv x = funext λ v' →
+    --   sym $ ι!.uniquev _ (to-pathp[] refl)
+    -- mi .inv∘eta x = funext λ u' →
+    --   from-pathp[] (ι!.commutesv _)
+    -- mi .natural _ _ (v₁' , v₂') = funext λ u' →
+    --   Fibre.pulll (sym (happly (from-iso.to .is-natural _ _ v₂') u'))
+    --   ∙∙ sym (happly (into-iso.to .is-natural _ _ v₁') (hom[ idl _ ] (v₂' ∘' u')))
+    --   ∙∙ ap (into-iso.to .η _) (smashl _ _ ∙ sym assoc[])
 
   opfibration→universal-is-equiv
     : ∀ {x y x' y'} (u : Hom x y)

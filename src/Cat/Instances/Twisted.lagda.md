@@ -3,11 +3,14 @@
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Bifunctor using (Uncurry)
+open import Cat.Functor.Base
 open import Cat.Instances.Product
 open import Cat.Prelude
 
+import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Hom
+
+open Bi using (Uncurry)
 ```
 -->
 
@@ -144,9 +147,9 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   open Functor
   open Twist
 
-  twistᵒᵖ : Functor (C ^op ×ᶜ C) D → Functor (Twisted (C ^op) ^op) D
-  twistᵒᵖ F .F₀ ((a , b) , _) = F .F₀ (a , b)
-  twistᵒᵖ F .F₁ arr  = F .F₁ (arr .before , arr .after)
-  twistᵒᵖ F .F-id    = F .F-id
-  twistᵒᵖ F .F-∘ f g = F .F-∘ _ _
+  twistᵒᵖ : Bifunctor (C ^op) C D → Functor (Twisted (C ^op) ^op) D
+  twistᵒᵖ F .F₀ ((a , b) , _) = F · a · b
+  twistᵒᵖ F .F₁ arr  = Bi._◆_  F (arr .before) (arr .after)
+  twistᵒᵖ F .F-id    = Bi.◆-id F
+  twistᵒᵖ F .F-∘ f g = Bi.◆-∘  F
 ```

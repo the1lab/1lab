@@ -4,6 +4,7 @@ open import Cat.Functor.Adjoint.Monad
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Closed
 open import Cat.Diagram.Monad
 open import Cat.Cartesian
 open import Cat.Prelude
@@ -38,7 +39,7 @@ the right --- meaning that its left adjoint is its opposite functor.
 
 ```agda
 [-,_] : Ob → Functor (C ^op) C
-[-,_] S = Bifunctor.Left ([-,-] C cart cc) S
+[-,_] S = Bifunctor.Left (Curry ([-,-] C cart cc)) S
 ```
 
 The proof boils down to noticing that we have an isomorphism

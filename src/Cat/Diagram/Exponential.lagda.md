@@ -6,6 +6,7 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Closed
 open import Cat.Instances.Slice
 open import Cat.Cartesian
 open import Cat.Prelude
@@ -41,8 +42,9 @@ open Cartesian-category cart
 open Functor
 open _⊣_
 
-private variable
-  A B : Ob
+private
+  variable A B : Ob
+  ×-bi = Curry ×-functor
 ```
 -->
 
@@ -301,12 +303,12 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
   [-,-] .F-∘ (f , g) (f' , g') = sym $ unique _ $
     ev ∘ ⟨ (ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩)) ∘ π₁ , id ∘ π₂ ⟩ ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
     ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
-    (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
+    (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.lrmap ×-bi _ _))) ⟩
     g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
     g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (products _ _) (pulll π₁∘⟨⟩ ∙∙ π₁∘⟨⟩ ∙∙ idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
-  product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
+  product⊣exponential : ∀ {A} → Bifunctor.Left ×-bi A ⊣ Bifunctor.Right (Curry [-,-]) A
   product⊣exponential {A} = hom-iso→adjoints ƛ lambda-is-equiv nat where
     module _ {a b c d} (g : Hom a b) (h : Hom c d) (x : Hom (d ⊗₀ A) a) where
       nat : ƛ (g ∘ x ∘ ⟨ h ∘ π₁ , id ∘ π₂ ⟩) ≡ ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ ƛ x ∘ h
@@ -314,7 +316,7 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
         ev ∘ (ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ ƛ x ∘ h) ⊗₁ id        ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
         ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ⊗₁ id ∘ (ƛ x ∘ h) ⊗₁ id  ≡⟨ pulll (commutes _) ⟩
         (g ∘ ⌜ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩ ⌝) ∘ (ƛ x ∘ h) ⊗₁ id           ≡⟨ ap! (elimr (ap₂ ⟨_,_⟩ (introl refl) refl ∙ ×-functor .F-id)) ⟩
-        (g ∘ ev) ∘ (ƛ x ∘ h) ⊗₁ id                                  ≡⟨ pullr (ap₂ _∘_ refl (Bifunctor.first∘first ×-functor)) ⟩
+        (g ∘ ev) ∘ (ƛ x ∘ h) ⊗₁ id                                  ≡⟨ pullr (ap₂ _∘_ refl (Bifunctor.lmap-∘ ×-bi _ _)) ⟩
         g ∘ ev ∘ ƛ x ⊗₁ id ∘ h ⊗₁ id                                ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
         g ∘ x ∘ h ⊗₁ id                                             ∎
 ```
@@ -330,7 +332,7 @@ about the existence of right adjoints, if any apply.
 ```agda
 product-adjoint→cartesian-closed
   : (-^_ : Ob → Functor C C)
-  → (∀ A → Bifunctor.Left ×-functor A ⊣ -^ A)
+  → (∀ A → Bifunctor.Left ×-bi A ⊣ -^ A)
   → Cartesian-closed
 product-adjoint→cartesian-closed A→ adj = cc where
   open Exponential

@@ -2,17 +2,16 @@
 ```agda
 open import Algebra.Group.Ab
 
-open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Functor.Naturality
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
-open import Cat.Monoidal.Base
 open import Cat.Diagram.Zero
 open import Cat.Cartesian
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 
 open _=>_
@@ -134,8 +133,6 @@ $\cC$ in *commutative monoids*!
 
     cartesian : Cartesian-category C
     cartesian = record { products = λ _ _ → Biprod.product ; terminal = terminal }
-
-    open Monoidal-category (Cartesian-monoidal cartesian) using (associator; module ⊗)
 ```
 -->
 
@@ -311,14 +308,14 @@ following diagram:
 ```agda
     +-assoc : ∀ {x y} {f g h : Hom x y} → f +→ (g +→ h) ≡ (f +→ g) +→ h
     +-assoc {f = f} {g} {h} =
-      ∇ ∘ (f ⊗₁ (∇ ∘ (g ⊗₁ h) ∘ δ)) ∘ δ                           ≡˘⟨ refl⟩∘⟨ ⊗.pulll3 (idl _ ∙ idr _ ,ₚ refl) ⟩
+      ∇ ∘ (f ⊗₁ (∇ ∘ (g ⊗₁ h) ∘ δ)) ∘ δ                           ≡˘⟨ refl⟩∘⟨ Fr.pulll3 ×-functor (idl _ ∙ idr _ ,ₚ refl) ⟩
       ∇ ∘ (id ⊗₁ ∇) ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ             ≡˘⟨ refl⟩∘⟨ ⊕₁≡⊗₁ ⟩∘⟨refl ⟩
       ∇ ∘ (id ⊕₁ ∇) ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ             ≡˘⟨ pushl ∇-assoc ⟩
       (∇ ∘ (∇ ⊕₁ id) ∘ ⊕-assoc) ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ ≡⟨ (refl⟩∘⟨ ⊕₁≡⊗₁ ⟩∘⟨refl) ⟩∘⟨refl ⟩
       (∇ ∘ (∇ ⊗₁ id) ∘ ⊕-assoc) ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ ≡⟨ pullr (pullr (coassoc≡assoc ⟩∘⟨refl)) ⟩
-      ∇ ∘ (∇ ⊗₁ id) ∘ ×-assoc ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (associator .Isoⁿ.from .is-natural _ _ _) ⟩
+      ∇ ∘ (∇ ⊗₁ id) ∘ ×-assoc ∘ (f ⊗₁ (g ⊗₁ h)) ∘ (id ⊗₁ δ) ∘ δ   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl ×-assoc-nat ⟩
       ∇ ∘ (∇ ⊗₁ id) ∘ ((f ⊗₁ g) ⊗₁ h) ∘ ×-assoc ∘ (id ⊗₁ δ) ∘ δ   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ assoc-δ ⟩
-      ∇ ∘ (∇ ⊗₁ id) ∘ ((f ⊗₁ g) ⊗₁ h) ∘ (δ ⊗₁ id) ∘ δ             ≡⟨ refl⟩∘⟨ ⊗.pulll3 (refl ,ₚ idl _ ∙ idr _) ⟩
+      ∇ ∘ (∇ ⊗₁ id) ∘ ((f ⊗₁ g) ⊗₁ h) ∘ (δ ⊗₁ id) ∘ δ             ≡⟨ refl⟩∘⟨ Fr.pulll3 ×-functor (refl ,ₚ idl _ ∙ idr _) ⟩
       ∇ ∘ ((∇ ∘ (f ⊗₁ g) ∘ δ) ⊗₁ h) ∘ δ                           ∎
 ```
 
@@ -376,7 +373,7 @@ which is that the [[zero object]] is a left unit for $\oplus$.
 
     +-idl : ∀ {x y} {f : Hom x y} → zero→ +→ f ≡ f
     +-idl {f = f} =
-      ∇ ∘ (zero→ ⊗₁ f) ∘ δ         ≡⟨ refl⟩∘⟨ ⊗.pushl (refl ,ₚ sym (idl _)) ⟩
+      ∇ ∘ (zero→ ⊗₁ f) ∘ δ         ≡⟨ refl⟩∘⟨ Fr.pushl ×-functor (refl ,ₚ sym (idl _)) ⟩
       ∇ ∘ (¡ ⊗₁ id) ∘ (! ⊗₁ f) ∘ δ ≡˘⟨ refl⟩∘⟨ ⊕₁≡⊗₁ ⟩∘⟨refl ⟩
       ∇ ∘ (¡ ⊕₁ id) ∘ (! ⊗₁ f) ∘ δ ≡⟨ pulll ∇-¡l ⟩
       π₂ ∘ (! ⊗₁ f) ∘ δ            ≡⟨ pulll π₂∘⟨⟩ ⟩
@@ -395,7 +392,7 @@ with respect to our defined addition.
       : ∀ {a b c} {f g : Hom b c} {h : Hom a b}
       → f ∘ h +→ g ∘ h ≡ (f +→ g) ∘ h
     ∘-linear-l {f = f} {g} {h} =
-      ∇ ∘ ((f ∘ h) ⊗₁ (g ∘ h)) ∘ δ ≡⟨ refl⟩∘⟨ ⊗.pushl refl ⟩
+      ∇ ∘ ((f ∘ h) ⊗₁ (g ∘ h)) ∘ δ ≡⟨ refl⟩∘⟨ Fr.pushl ×-functor refl ⟩
       ∇ ∘ (f ⊗₁ g) ∘ (h ⊗₁ h) ∘ δ  ≡˘⟨ pullr (pullr (δ-natural _ _ _)) ⟩
       (∇ ∘ (f ⊗₁ g) ∘ δ) ∘ h       ∎
 
@@ -403,7 +400,7 @@ with respect to our defined addition.
       : ∀ {a b c} {f g : Hom a b} {h : Hom b c}
       → h ∘ f +→ h ∘ g ≡ h ∘ (f +→ g)
     ∘-linear-r {f = f} {g} {h} =
-      ∇ ∘ ((h ∘ f) ⊗₁ (h ∘ g)) ∘ δ ≡⟨ refl⟩∘⟨ ⊗.pushl refl ⟩
+      ∇ ∘ ((h ∘ f) ⊗₁ (h ∘ g)) ∘ δ ≡⟨ refl⟩∘⟨ Fr.pushl ×-functor refl ⟩
       ∇ ∘ (h ⊗₁ h) ∘ (f ⊗₁ g) ∘ δ  ≡˘⟨ refl⟩∘⟨ ⊕₁≡⊗₁ ⟩∘⟨refl ⟩
       ∇ ∘ (h ⊕₁ h) ∘ (f ⊗₁ g) ∘ δ  ≡⟨ extendl (∇-natural _ _ _) ⟩
       h ∘ ∇ ∘ (f ⊗₁ g) ∘ δ         ∎
