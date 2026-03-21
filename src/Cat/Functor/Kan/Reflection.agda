@@ -23,7 +23,7 @@ module _
   cohere-eps! : Term → TC ⊤
   cohere-eps! hole = do
     `D ← quoteTC D
-    `G ← quoteTC G
+    `G' ← quoteTC G'
     unify hole $ def₀ (quote Nat-path)
       ##ₙ vlam "c" (def₀ (quote _∙∙_∙∙_)
         ##ₙ (def₀ (quote idl) ##ₙ raise 1 `D ##ₙ unknown)
@@ -31,7 +31,7 @@ module _
           ##ₙ raise 1 `D
           ##ₙ (def₀ (quote elimr)
             ##ₙ raise 1 `D
-            ##ₙ (def₀ (quote Functor.F-id) ##ₙ raise 1 `G)))
+            ##ₙ (def₀ (quote Functor.F-id) ##ₙ raise 1 `G')))
         ##ₙ def₀ (quote trivial!))
 
   trivial-is-ran!
@@ -64,14 +64,14 @@ module _
   cohere-eta! : Term → TC ⊤
   cohere-eta! hole = do
     `D ← quoteTC D
-    `G' ← quoteTC G'
+    `G ← quoteTC G
     unify hole $ def₀ (quote Nat-path)
       ##ₙ vlam "c" (def₀ (quote _∙∙_∙∙_)
         ##ₙ (def₀ (quote eliml)
           ##ₙ raise 1 `D
           ##ₙ (def₀ (quote elimr)
             ##ₙ raise 1 `D
-            ##ₙ (def₀ (quote Functor.F-id) ##ₙ raise 1 `G')))
+            ##ₙ (def₀ (quote Functor.F-id) ##ₙ raise 1 `G)))
         ##ₙ def₀ (quote trivial!)
         ##ₙ (def₀ (quote idr) ##ₙ raise 1 `D ##ₙ unknown))
 

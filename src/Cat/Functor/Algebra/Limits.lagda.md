@@ -124,7 +124,7 @@ category of $F$-algebras to $C$ [[creates limits]].
 ```agda
   Forget-algebra-lifts-limits : lifts-limits-of J (πᶠ (F-Algebras F))
   Forget-algebra-lifts-limits lim .lifted = Forget-algebra-lifts-limit F _ lim
-  Forget-algebra-lifts-limits lim .preserved = {! trivial-is-limit! (Ran.has-ran lim) !}
+  Forget-algebra-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
 
   Forget-algebra-creates-limits : creates-limits-of J (πᶠ (F-Algebras F))
   Forget-algebra-creates-limits = conservative+lifts→creates-limits
