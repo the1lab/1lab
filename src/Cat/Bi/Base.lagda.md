@@ -92,7 +92,7 @@ record Prebicategory o ℓ ℓ' : Type (lsuc (o ⊔ ℓ ⊔ ℓ')) where
     Ob  : Type o
     Hom : Ob → Ob → Precategory ℓ ℓ'
 
-  module Hom {A} {B} = Precategory (Hom A B)
+  module Hom {A} {B} = Precategory (Hom A B) hiding (Ob ; Hom ; _∘_)
 ```
 
 Zooming out to consider the whole bicategory, we see that each object
@@ -147,7 +147,7 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ Hom compose)
         (compose-assocʳ Hom compose)
 
-  module compose {a b c} = Bi (compose {a} {b} {c})
+  module compose {a b c} = Bi (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
   module unitor-l {a b} = Cr._≅_ _ (unitor-l {a} {b})
   module unitor-r {a b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a b c d} = Cr._≅_ _ (associator {a} {b} {c} {d})
@@ -158,12 +158,13 @@ unitor as $\rho$, and to the associator as $\alpha$, so we set up those
 abbreviations here too:
 
 ```agda
-  open Hom
-    public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
-  open compose
-    public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
 
   private
+    open module Hom₁ {A B} = Precategory (Hom A B)
+      public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
+    open module compose₀ {A B C} = Bi (compose {A} {B} {C})
+      public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
+
     open module ↦ A B = Precategory (Hom A B)
       public using () renaming (Ob to _↦_)
 

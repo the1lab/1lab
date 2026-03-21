@@ -12,7 +12,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
   open Br C
   open Cm._≅_
-  open Hom hiding (Hom ; Ob ; id ; _∘_ ; invr ; invl)
+  open Hom hiding (id ; invr ; invl)
   open _=>_
 
   private variable
@@ -32,9 +32,14 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     _↑   : {f g : Expr₁ X Y} → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁ → Expr₂ f g
     `id  : {f : Expr₁ X Y} → Expr₂ f f
     _`∘_ : {f g h : Expr₁ X Y} → Expr₂ g h → Expr₂ f g → Expr₂ f h
-    _`◆_
-      : {f₁ f₂ : Expr₁ Y Z} (α : Expr₂ f₁ f₂)
-      → {g₁ g₂ : Expr₁ X Y} (β : Expr₂ g₁ g₂) → Expr₂ (f₁ `⊗ g₁) (f₂ `⊗ g₂)
+    -- _`◆_
+    --   : {f₁ f₂ : Expr₁ Y Z} (α : Expr₂ f₁ f₂)
+    --   → {g₁ g₂ : Expr₁ X Y} (β : Expr₂ g₁ g₂) → Expr₂ (f₁ `⊗ g₁) (f₂ `⊗ g₂)
+    _`▶_
+      : (f : Expr₁ Y Z) {g₁ g₂ : Expr₁ X Y} → Expr₂ g₁ g₂ → Expr₂ (f `⊗ g₁) (f `⊗ g₂)
+    _`◀_
+      : {f₁ f₂ : Expr₁ Y Z} → Expr₂ f₁ f₂ → (g : Expr₁ X Y) → Expr₂ (f₁ `⊗ g) (f₂ `⊗ g)
+    -- α `◀ g = α `◆ `id {f = g}
     `λ← : (f : Expr₁ X Y) → Expr₂ (`id `⊗ f) f
     `λ→ : (f : Expr₁ X Y) → Expr₂ f (`id `⊗ f)
     `ρ← : (f : Expr₁ X Y) → Expr₂ (f `⊗ `id) f
@@ -49,15 +54,14 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   infix  50 _↑
   infixr 40 _`∘_
   infixr 30 _`⊗_
-  infix 30 _`◆_
 
-  _`▶_
-    : (f : Expr₁ Y Z) {g₁ g₂ : Expr₁ X Y} → Expr₂ g₁ g₂ → Expr₂ (f `⊗ g₁) (f `⊗ g₂)
-  f `▶ β = `id {f = f} `◆ β
+  -- _`▶_
+  --   : (f : Expr₁ Y Z) {g₁ g₂ : Expr₁ X Y} → Expr₂ g₁ g₂ → Expr₂ (f `⊗ g₁) (f `⊗ g₂)
+  -- f `▶ β = `id {f = f} `◆ β
 
-  _`◀_
-    : {f₁ f₂ : Expr₁ Y Z} → Expr₂ f₁ f₂ → (g : Expr₁ X Y) → Expr₂ (f₁ `⊗ g) (f₂ `⊗ g)
-  α `◀ g = α `◆ `id {f = g}
+  -- _`◀_
+  --   : {f₁ f₂ : Expr₁ Y Z} → Expr₂ f₁ f₂ → (g : Expr₁ X Y) → Expr₂ (f₁ `⊗ g) (f₂ `⊗ g)
+  -- α `◀ g = α `◆ `id {f = g}
 
   infix 40 _`▶_
   infix 40 _`◀_
@@ -71,7 +75,8 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ⟦ x ↑ ⟧₂       = x
   ⟦ `id ⟧₂       = Hom.id
   ⟦ α `∘ β ⟧₂    = ⟦ α ⟧₂ ∘ ⟦ β ⟧₂
-  ⟦ α `◆ β ⟧₂    = ⟦ α ⟧₂ ◆ ⟦ β ⟧₂
+  ⟦ α `◀ β ⟧₂    = ⟦ α ⟧₂ ◀ _
+  ⟦ α `▶ β ⟧₂    = _ ▶ ⟦ β ⟧₂
   ⟦ `λ← f ⟧₂     = λ← _
   ⟦ `λ→ f ⟧₂     = λ→ _
   ⟦ `ρ← f ⟧₂     = ρ← _
@@ -147,7 +152,8 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   eval₂ {g = g} {h} (x ↑) {k} = `eval₁-sound-from h `∘ ((x ↑) `◁ k) ↑ `∘ `eval₁-sound-to g
   eval₂ `id                   = `id
   eval₂ (α `∘ β)              = eval₂ α `∘ eval₂ β
-  eval₂ (_`◆_ {f₁ = f₁} α β)  = eval₂ α `∘ `whisker f₁ (eval₂ β)
+  eval₂ (_`◀_ α β)            = eval₂ α
+  eval₂ (_`▶_ α β)            = `whisker α (eval₂ β)
   eval₂ (`λ← f)               = `id
   eval₂ (`λ→ f)               = `id
   eval₂ (`ρ← f)               = `id
@@ -304,16 +310,24 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     ⟦ α ⟧₂ ◀ ⟦ k ⟧₁ ∘ eval₁-sound g k .to ∘ ⟦ eval₂ β ⟧vv   ≡⟨ refl⟩∘⟨ eval₂-sound β ⟩
     ⟦ α ⟧₂ ◀ ⟦ k ⟧₁ ∘ ⟦ β ⟧₂ ◀ ⟦ k ⟧₁ ∘ eval₁-sound f k .to ≡⟨ ◀.pulll refl ⟩
     (⟦ α ⟧₂ ∘ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ eval₁-sound f k .to        ∎
-  eval₂-sound {_} {Z} {X} (_`◆_ {f₁ = f₁} {f₂} α {g₁} {g₂} β) {k} =
-    eval₁-sound (f₂ `⊗ g₂) k .to ∘ ⟦ eval₂ α ⟧vv ∘ ⟦ `whisker f₁ (eval₂ β) ⟧vv      ≡⟨ cat! (Hom X Z) ⟩
-    _ ∘ _ ∘ eval₁-sound f₂ _ .to ∘ ⟦ eval₂ α ⟧vv ∘ ⟦ `whisker f₁ (eval₂ β) ⟧vv      ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (eval₂-sound α) ∙ ap (⟦ α ⟧₂ ◀ _ ∘_) (`whisker-sound f₁ (eval₂ β)) ⟩
-    _ ∘ ⟦ f₂ ⟧₁ ▶ eval₁-sound g₂ k .to ∘ ⟦ α ⟧₂ ◀ ⟦ eval₁ g₂ k ⟧₁ ∘ ⟦ f₁ ⟧₁ ▶ _ ∘ _ ≡⟨ refl⟩∘⟨ ⊗.extendl (id-comm-sym ,ₚ id-comm) ⟩
-    _ ∘ _ ∘ ⟦ f₁ ⟧₁ ▶ eval₁-sound g₂ k .to ∘ ⟦ f₁ ⟧₁ ▶ ⟦ eval₂ β ⟧vv ∘ _            ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ▶.extendl (eval₂-sound β) ⟩
-    α← _ ∘ ⟦ α ⟧₂ ◀ (⟦ g₂ ⟧₁ ⊗ ⟦ k ⟧₁) ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _            ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ⟩
-    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ ⟦ f₁ ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ _            ≡⟨ refl⟩∘⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ⟩
-    (⟦ α ⟧₂ ◀ ⟦ g₂ ⟧₁) ◀ ⟦ k ⟧₁ ∘ (⟦ f₁ ⟧₁ ▶ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ _            ≡⟨ ◀.pulll (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-    (⟦ α ⟧₂ ◆ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ α← _ ∘ _                                           ≡⟨ refl ⟩∘⟨ assoc _ _ _ ⟩
-    (⟦ α ⟧₂ ◆ ⟦ β ⟧₂) ◀ ⟦ k ⟧₁ ∘ eval₁-sound (f₁ `⊗ g₁) k .to                       ∎
+  eval₂-sound {_} {Z} {X} (_`▶_ f {g₁} {g₂} β) {k} =
+    ((α← _ ∘ (_ ▶ eval₁-sound g₂ k .to)) ∘ eval₁-sound f (eval₁ g₂ k) .to) ∘ ⟦ `whisker f (eval₂ β) ⟧vv
+      ≡⟨ pullr (`whisker-sound f (eval₂ β)) ⟩
+    (α← _ ∘ (_ ▶ eval₁-sound g₂ k .to)) ∘ ⟦ f ⟧₁ ▶ ⟦ eval₂ β ⟧vv ∘ eval₁-sound f (eval₁ g₁ k) .to
+      ≡⟨ pullr (▶.extendl (eval₂-sound β)) ⟩
+    (α← _ ∘ ⟦ f ⟧₁ ▶ (⟦ β ⟧₂ ◀ ⟦ k ⟧₁) ∘ ⟦ f ⟧₁ ▶ eval₁-sound g₁ k .to ∘ eval₁-sound f (eval₁ g₁ k) .to)
+      ≡⟨ extendl (◀-▶-comm .from .is-natural _ _ _) ∙ ap₂ _∘_ refl (assoc _ _ _) ⟩
+    (_ ▶ ⟦ β ⟧₂) ◀ _ ∘ (α← _ ∘ _ ▶ eval₁-sound g₁ k .to) ∘ eval₁-sound f (eval₁ g₁ k) .to
+      ∎
+  eval₂-sound {_} {Z} {X} (_`◀_ {f₁ = f₁} {f₂} α g) {k} =
+    ((α← _ ∘ _ ▶ eval₁-sound g k .to) ∘ eval₁-sound f₂ (eval₁ g k) .to) ∘ ⟦ eval₂ α ⟧vv
+      ≡⟨ pullr (eval₂-sound α) ⟩
+    (α← _ ∘ _ ▶ eval₁-sound g k .to) ∘ ⟦ α ⟧₂ ◀ _ ∘ eval₁-sound f₁ (eval₁ g k) .to
+      ≡⟨ pullr (extendl (compose.rlmap _ _)) ⟩
+    α← _ ∘ ⟦ α ⟧₂ ◀ _ ∘ (_ ▶ eval₁-sound g k .to) ∘ eval₁-sound f₁ (eval₁ g k) .to
+      ≡⟨ extendl (◀-assoc .to .is-natural _ _ _) ∙ ap₂ _∘_ refl (assoc _ _ _) ⟩
+    (⟦ α ⟧₂ ◀ _) ◀ _ ∘ (α← _ ∘ _ ▶ eval₁-sound g k .to) ∘ eval₁-sound f₁ (eval₁ g k) .to
+      ∎
   eval₂-sound (`λ← f) {k} =
     eval₁-sound f k .to ∘ Hom.id                           ≡⟨ idr _ ∙ intror (λ≅ .invr) ∙ extendl (sym $ λ←nat _) ⟩
     λ← _ ∘ id ▶ eval₁-sound f k .to ∘ λ→ _                 ≡⟨ pushl (sym (rswizzle (sym triangle-λ←) (α≅ .invl))) ⟩
@@ -374,7 +388,7 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   ... | f-swap _ _ | sound = ◀.weave sound
   ... | f-reduce _ | sound = ◀.expand sound
   ... | f-drop     | sound = sym (◀.annihilate (sym sound))
-  fc-sound (f `▷ x)        (y `◁ g)        = ⊗.weave (id-comm ,ₚ id-comm-sym)
+  fc-sound (f `▷ x)        (y `◁ g)        = compose.lrmap _ _
   fc-sound ((f `⊗ g) `▷ x) (`α← _ _ _)     = ▶-assoc .from .is-natural _ _ _
   fc-sound (f `▷ (g `▷ x)) (`α→ _ _ _)     = ▶-assoc .to .is-natural _ _ _
   fc-sound (`id `▷ x)      (`λ→ _)         = λ→nat _
@@ -474,7 +488,7 @@ module Reflection where
 
   pattern “η” f x = def (quote _=>_.η) (nt-args f (x v∷ []))
 
-  pattern “⊗” f g = “F₀” “compose” (“,” f g)
+  pattern “⊗” f g = “F₀” (“F₀” “compose” f) g
 
   pattern “Hom” = def (quote Prebicategory.Hom) _
 
@@ -483,7 +497,8 @@ module Reflection where
   pattern “∘” f g h α β =
     def (quote Precategory._∘_) (category-args “Hom” (f h∷ g h∷ h h∷ α v∷ β v∷ []))
 
-  pattern “◆” f₁ f₂ α g₁ g₂ β = “F₁” “compose” (“,” f₁ g₁) (“,” f₂ g₂) (“,” α β)
+  pattern “▶” f g₁ g₂ α = “F₁” (“F₀” “compose” f) g₁ g₂ α
+  pattern “◀” f₁ f₂ α g = “η” (“F₁” “compose” f₁ f₂ α) g
 
   mk-hom-args : Term → List (Arg Term) → List (Arg Term)
   mk-hom-args cat xs = infer-hidden 3 $ cat h∷ infer-hidden 2 xs
@@ -527,9 +542,8 @@ module Reflection where
     build _ _ (“∘” f g h α β) = con (quote NbE.Expr₂._`∘_) (eα v∷ eβ v∷ []) where
       eα = build-expr₂ cat g h α
       eβ = build-expr₂ cat f g β
-    build _ _ (“◆” f₁ f₂ α g₁ g₂ β) = con (quote NbE.Expr₂._`◆_) (eα v∷ eβ v∷ []) where
-      eα = build-expr₂ cat f₁ f₂ α
-      eβ = build-expr₂ cat g₁ g₂ β
+    build _ _ (“▶” f g₁ g₂ α) = con (quote NbE.Expr₂._`▶_) (build-expr₁ f v∷ build-expr₂ cat g₁ g₂ α v∷ [])
+    build _ _ (“◀” g₁ g₂ α f) = con (quote NbE.Expr₂._`◀_) (build-expr₂ cat g₁ g₂ α v∷ build-expr₁ f v∷ [])
     build f g α@(“η” nnm na) with nnm
     ... | “from” “unitor-l”   = build-unitor (quote NbE.Expr₂.`λ←) na
     ... | “from” “unitor-r”   = build-unitor (quote NbE.Expr₂.`ρ←) na
@@ -606,3 +620,9 @@ private module _ {o ℓ ℓ'} {C : Prebicategory o ℓ ℓ'} where
 
   test-interchange-whisker2 : α ◀ i ∘ f ▶ β ∘ γ ≡ g ▶ β ∘ α ◀ h ∘ γ
   test-interchange-whisker2 = bicat! C
+
+  test-exchange : (α ◆ β) ≡ (α ◀ f) ∘ (g ▶ β)
+  test-exchange = bicat! C
+
+  test-exchange2 : (α ◆ β) ≡ (g ▶ β) ∘ (α ◀ f)
+  test-exchange2 = bicat! C
