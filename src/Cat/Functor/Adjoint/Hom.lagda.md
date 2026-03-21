@@ -14,6 +14,7 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
+import Cat.Functor.Bifunctor as Bi
 import Cat.Reasoning as Cat
 ```
 -->
@@ -162,11 +163,11 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     module R = Func R
 
   hom-natural-iso→adjoints
-    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
+    : (Bi.Uncurry (Hom[-,-] C) F∘ (Functor.op L F× Id)) ≅ⁿ (Bi.Uncurry (Hom[-,-] D) F∘ (Id F× R))
     → L ⊣ R
   hom-natural-iso→adjoints eta =
     hom-iso→adjoints (to .η _) (natural-iso-to-is-equiv eta (_ , _)) λ g h x →
-      happly (to .is-natural _ _ (h , g)) x
+      ap (to .η _) (C.pulll refl) ∙ to .is-natural _ _ _ ·ₚ _ ∙ D.pullr refl
     where
       open Isoⁿ eta
       open _=>_
@@ -195,8 +196,10 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     λ f → funext λ g → sym (L-adjunct-naturall adj _ _)
 
   adjunct-hom-iso
-    : Hom[-,-] C F∘ (Functor.op L F× Id) ≅ⁿ Hom[-,-] D F∘ (Id F× R)
-  adjunct-hom-iso = iso→isoⁿ (λ _ → equiv→iso hom-equiv)
-    λ (f , h) → funext λ g → sym (L-adjunct-natural₂ adj _ _ _)
+    : Bi.Uncurry (Hom[-,-] C) F∘ (Functor.op L F× Id) ≅ⁿ Bi.Uncurry (Hom[-,-] D) F∘ (Id F× R)
+  adjunct-hom-iso = iso→isoⁿ (λ _ → equiv→iso hom-equiv) λ (f , h) → ext λ h →
+    D.pullr refl
+      ∙ sym (L-adjunct-natural₂ adj _ _ _)
+      ∙ ap₂ D._∘_ (ap R.₁ (C.pulll refl)) refl
 ```
 -->

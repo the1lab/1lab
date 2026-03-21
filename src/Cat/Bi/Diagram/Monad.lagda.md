@@ -115,16 +115,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' : Cat.Monad-on M.M
     monad' .unit = M.η
     monad' .mult = M.μ
-    monad' .μ-unitr {x} =
-        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
-      ∙ M.μ-unitr ηₚ x
-    monad' .μ-unitl {x} =
-        ap (M.μ ._=>_.η x C.∘_) (C.introl (M.M .Functor.F-id))
-      ∙ M.μ-unitl ηₚ x
-    monad' .μ-assoc {x} =
-        ap (M.μ ._=>_.η x C.∘_) (C.intror refl)
-     ∙∙ M.μ-assoc ηₚ x
-     ∙∙ ap (M.μ ._=>_.η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
+    monad' .μ-unitr {x} = M.μ-unitr ηₚ _
+    monad' .μ-unitl {x} = M.μ-unitl ηₚ _
+    monad' .μ-assoc {x} = M.μ-assoc ηₚ _ ∙ ap₂ C._∘_ refl (C.elimr refl)
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
   Monad→bicat-monad (M , monad) = monad' where
@@ -134,16 +127,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad' .Monad.M = M
     monad' .μ = M.mult
     monad' .η = M.unit
-    monad' .μ-assoc = ext λ _ →
-        ap (M.μ _ C.∘_) (C.elimr refl)
-     ∙∙ M.μ-assoc
-     ∙∙ ap (M.μ _ C.∘_) (C.introl (M.M-id) ∙ C.intror refl)
-    monad' .μ-unitr = ext λ _ →
-        ap (M.μ _ C.∘_) (C.elimr refl)
-      ∙ M.μ-unitr
-    monad' .μ-unitl = ext λ _ →
-        ap (M.μ _ C.∘_) (C.eliml M.M-id)
-      ∙ M.μ-unitl
+    monad' .μ-assoc = ext λ _ → ap₂ C._∘_ refl (C.intror refl) ∙ C.extendl M.μ-assoc
+    monad' .μ-unitr = ext λ _ → M.μ-unitr
+    monad' .μ-unitl = ext λ _ → M.μ-unitl
 ```
 
 <!--
@@ -174,14 +160,14 @@ $\cB$ on $a$.
     P .P₀ _ = a
     P .P₁ = !Const M
     P .compositor ._=>_.η _ = μ
-    P .compositor .is-natural _ _ _ = Hom.elimr (B.compose .F-id) ∙ sym (Hom.idl _)
+    P .compositor .is-natural _ _ _ = Hom.elimr compose.◆-id ∙ sym (Hom.idl _)
     P .unitor = η
     P .hexagon _ _ _ =
-      Hom.id ∘ μ ∘ (μ ◀ M)                            ≡⟨ Hom.pulll (Hom.idl _) ⟩
-      μ ∘ (μ ◀ M)                                     ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
-      (μ ∘ μ ◀ M) ∘ (α← (M , M , M) ∘ α→ (M , M , M)) ≡⟨ cat! (Hom a a) ⟩
-      (μ ∘ μ ◀ M ∘ α← (M , M , M)) ∘ α→ (M , M , M)   ≡˘⟨ Hom.pulll μ-assoc ⟩
-      μ ∘ (M ▶ μ) ∘ α→ (M , M , M)                    ∎
+      Hom.id ∘ μ ∘ (μ ◀ M)        ≡⟨ Hom.pulll (Hom.idl _) ⟩
+      μ ∘ (μ ◀ M)                 ≡⟨ Hom.intror $ ap (λ nt → nt ._=>_.η (M , M , M)) associator.invr ⟩
+      (μ ∘ μ ◀ M) ∘ (α← _ ∘ α→ _) ≡⟨ cat! (Hom a a) ⟩
+      (μ ∘ μ ◀ M ∘ α← _) ∘ α→ _   ≡˘⟨ Hom.pulll μ-assoc ⟩
+      μ ∘ (M ▶ μ) ∘ α→ _          ∎
     P .right-unit _ = Hom.id ∘ μ ∘ M ▶ η  ≡⟨ Hom.idl _ ∙ μ-unitr ⟩ ρ← M ∎
     P .left-unit _ = Hom.id ∘ μ ∘ (η ◀ M) ≡⟨ Hom.idl _ ∙ μ-unitl ⟩ λ← M ∎
 

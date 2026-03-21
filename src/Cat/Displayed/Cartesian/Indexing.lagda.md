@@ -265,10 +265,11 @@ is by definition of the unitor.
 ```agda
 Fibres .lax .left-unit f = ext λ a' →
   π*.uniquep₂ _ refl refl _ _
-    (Fib.pulllf (base-change-coherence (idr f))
-    ∙[] Fib.pulllf (π*.commutesv _)
-    ∙[] (refl⟩∘'⟨ Fib.eliml (base-change id .F-id))
-    ∙[] pullr[] _ (π*.commutesv id'))
+    (begin
+      _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+      _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
+      _ ≡[]⟨ pullr[] _ (π*.commutesv id') ⟩
+      _ ∎[])
     refl
 ```
 
@@ -306,13 +307,15 @@ of the unitor, and the top square is by definition of `rebase`{.Agda}
 
 ```agda
 Fibres .lax .right-unit f = ext λ a' →
-  π*.uniquep₂ _ refl _ _ _
-    (Fib.pulllf (base-change-coherence (idl f))
-    ∙[] Fib.pulllf (π*.commutesv _)
-    ∙[] (refl⟩∘'⟨ Fib.idr _)
-    ∙[] extendr[] id-comm (π*.commutesp _ _)
-    ∙[] (π*.commutesv id' ⟩∘'⟨refl))
-    (idr' _ ∙[] symP (idl' _))
+  π*.uniquep₂ _ refl refl _ _
+    (begin
+      _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+      _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
+      _ ≡[]⟨ extendr[] id-comm (π*.commutesp _ _) ⟩
+      _ ≡[]⟨ eliml[] _ (π*.commutesv _) ⟩
+      _ ≡[]⟨ symP (idr' _) ⟩
+      _ ∎[])
+    refl
 ```
 
 Last but definitely not least, the `hexagon`{.Agda} witnessing the
@@ -363,16 +366,19 @@ lifts, by the commutativity of the following diagram.
 ~~~
 
 ```agda
-Fibres .lax .hexagon f g h = ext λ a' →
-  π*.uniquep₂ _ refl _ _ _
-    (Fib.pulllf (base-change-coherence (assoc h g f))
-    ∙[] Fib.pulllf (π*.commutesv _)
-    ∙[] (refl⟩∘'⟨ Fib.eliml (base-change (g ∘ f) .F-id))
-    ∙[] extendr[] _ (π*.commutesv _))
-    (Fib.pulllf (π*.commutesv _)
-    ∙[] (refl⟩∘'⟨ Fib.idr _) ∙[] (refl⟩∘'⟨ Fib.idr _)
-    ∙[] extendr[] id-comm (π*.commutesp _ _)
-    ∙[] (π*.commutesv _ ⟩∘'⟨refl))
+Fibres .lax .hexagon f g h = ext λ a' → π*.uniquep₂ _ refl _ _ _
+  (begin
+    _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+    _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
+    _ ≡[]⟨ extendr[] _ (π*.commutesv _) ⟩
+    _ ∎[]
+    )
+  (begin
+    _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
+    _ ≡[]⟨ refl⟩∘'⟨ Fib.idr _ ⟩
+    _ ≡[]⟨ extendr[] id-comm (π*.commutesp _ _) ⟩
+    _ ≡[]⟨ π*.commutesv _ ⟩∘'⟨refl ⟩
+    _ ∎[])
 ```
 </details>
 

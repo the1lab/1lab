@@ -13,6 +13,7 @@ open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Monoidal.Base
+open import Cat.Functor.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
@@ -336,6 +337,7 @@ module _ {ℓ} {A B C : Abelian-group ℓ} where instance
 
 <!--
 ```agda
+open Make-bifunctor
 open Functor
 ```
 -->
@@ -350,17 +352,28 @@ existing definitions, other than the construction of the functorial
 action of $\otimes$.
 
 ```agda
-Ab-tensor-functor : Functor (Ab ℓ ×ᶜ Ab ℓ) (Ab ℓ)
-Ab-tensor-functor .F₀ (A , B) = A ⊗ B
-Ab-tensor-functor .F₁ (f , g) = from-bilinear-map bilin where
-  bilin : Bilinear _ _ _
-  bilin .Bilinear.map x y       = f · x , g · y
-  bilin .Bilinear.pres-*l x y z = ap (_, g · z) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
-  bilin .Bilinear.pres-*r x y z = ap (f · x ,_) (g .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
-Ab-tensor-functor .F-id    = ext λ _ _ → refl
-Ab-tensor-functor .F-∘ f g = ext λ _ _ → refl
+Ab-tensor-functor : Bifunctor (Ab ℓ) (Ab ℓ) (Ab ℓ)
+Ab-tensor-functor = make-bifunctor λ where
+  .F₀ A B → A ⊗ B
+  .lmap f → from-bilinear-map record
+    { map     = λ x y → f · x , y
+    ; pres-*l = λ x y z → ap (_, z) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
+    ; pres-*r = λ x y z → t-pres-*r
+    }
+  .rmap f → from-bilinear-map record
+    { map     = λ x y → x , f · y
+    ; pres-*l = λ x y z → t-pres-*l
+    ; pres-*r = λ x y z → ap (x ,_) (f .snd .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
+    }
+  .lmap-id → ext λ _ _ → refl
+  .rmap-id → ext λ _ _ → refl
+  .lmap-∘ f g → ext λ _ _ → refl
+  .rmap-∘ f g → ext λ _ _ → refl
+  .lrmap  f g → ext λ _ _ → refl
 
-Tensor⊣Hom : (A : Abelian-group ℓ) → Bifunctor.Left Ab-tensor-functor A ⊣ Bifunctor.Right Ab-hom-functor A
+Tensor⊣Hom
+  : (A : Abelian-group ℓ)
+  → Bifunctor.Left Ab-tensor-functor A ⊣ Bifunctor.Right Ab-hom-functor A
 Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
   to : ∀ {x y} → Ab.Hom (x ⊗ A) y → Ab.Hom x Ab[ A , y ]
   to f = curry-bilinear (to-bilinear-map f)

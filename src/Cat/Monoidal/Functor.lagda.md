@@ -4,6 +4,7 @@ open import Cat.Functor.Naturality
 open import Cat.Monoidal.Diagonals
 open import Cat.Instances.Product
 open import Cat.Monoidal.Braided
+open import Cat.Functor.Compose
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
@@ -61,26 +62,26 @@ record Lax-monoidal-functor-on (F : Functor C D) : Type (oc ⊔ ℓc ⊔ od ⊔ 
 
   field
     ε : Hom D.Unit (F.₀ C.Unit)
-    F-mult : D.-⊗- F∘ (F F× F) => F F∘ C.-⊗-
+    F-mult : precompose₂ D.-⊗- F F => postcompose₂ F C.-⊗-
 
   module φ = _=>_ F-mult
 
   φ : ∀ {A B} → Hom (F.₀ A D.⊗ F.₀ B) (F.₀ (A C.⊗ B))
-  φ = φ.η _
+  φ = φ.η _ ._=>_.η _
 
   field
     F-α→ : ∀ {A B C}
-      → F.₁ (C.α→ A B C) ∘ φ ∘ (φ D.⊗₁ id) ≡ φ ∘ (id D.⊗₁ φ) ∘ D.α→ _ _ _
-    F-λ← : ∀ {A} → F.₁ (C.λ← {A}) ∘ φ ∘ (ε D.⊗₁ id) ≡ D.λ←
-    F-ρ← : ∀ {A} → F.₁ (C.ρ← {A}) ∘ φ ∘ (id D.⊗₁ ε) ≡ D.ρ←
+      → F.₁ (C.α→ (A , B , C)) ∘ φ ∘ (φ D.◀ _) ≡ φ ∘ (_ D.▶ φ) ∘ D.α→ _
+    F-λ← : ∀ {A} → F.₁ (C.λ← A) ∘ φ ∘ (ε D.◀ _) ≡ D.λ← _
+    F-ρ← : ∀ {A} → F.₁ (C.ρ← A) ∘ φ ∘ (_ D.▶ ε) ≡ D.ρ← _
 ```
 
 <!--
 ```agda
   F-α← : ∀ {A B C}
-    → F.₁ (C.α← A B C) ∘ φ ∘ (id D.⊗₁ φ) ≡ φ ∘ (φ D.⊗₁ id) ∘ D.α← _ _ _
+    → F.₁ (C.α← (A , B , C)) ∘ φ ∘ (_ D.▶ φ) ≡ φ ∘ (φ D.◀ _) ∘ D.α← _
   F-α← = swizzle (sym (F-α→ ∙ assoc _ _ _)) (D.α≅ .invl) (F.F-map-iso C.α≅ .invr)
-    ∙ sym (assoc _ _ _)
+       ∙ sym (assoc _ _ _)
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Lax-monoidal-functor-on)
 Lax-monoidal-functor-on-path
@@ -150,10 +151,9 @@ module _
 
 ```agda
   is-braided-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-braided-functor (F , lax) = ∀ {A B} → φ ∘ Dᵇ.β→ ≡ F.₁ Cᵇ.β→ ∘ φ {A} {B}
-    where
-      module F = Functor F
-      open Lax-monoidal-functor-on lax
+  is-braided-functor (F , lax) = ∀ {A B} → φ ∘ Dᵇ.β→ ≡ F.₁ Cᵇ.β→ ∘ φ {A} {B} where
+    module F = Functor F
+    open Lax-monoidal-functor-on lax
 ```
 
 A **symmetric monoidal functor** between [[symmetric monoidal categories]]
@@ -206,7 +206,7 @@ module _
 
 ```agda
   is-diagonal-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-diagonal-functor (F , lax) = ∀ {A} → φ ∘ Dᵈ.δ ≡ F.₁ (Cᵈ.δ {A})
+  is-diagonal-functor (F , lax) = ∀ {A} → φ ∘ Dᵈ.δ _ ≡ F.₁ (Cᵈ.δ A)
     where
       module F = Functor F
       open Lax-monoidal-functor-on lax

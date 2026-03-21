@@ -3,6 +3,7 @@
 open import Cat.Instances.Elements.Covariant
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Bifunctor using (Uncurry)
 open import Cat.Instances.Product
 open import Cat.Prelude
 
@@ -105,22 +106,22 @@ Note that the twisted arrow category is equivalently the
 [[covariant category of elements]] of the [[Hom functor]]:
 
 ```agda
-  Twisted≡∫Hom : Twisted ≡ ∫ Hom[-,-]
+  Twisted≡∫Hom : Twisted ≡ ∫ (Uncurry Hom[-,-])
   Twisted≡∫Hom = Precategory-path F F-precat-iso where
     open Element
     open Element-hom
     open is-precat-iso
 
-    F : Functor Twisted (∫ Hom[-,-])
+    F : Functor Twisted (∫ (Uncurry Hom[-,-]))
     F .F₀ a    = elem (a .fst) (a .snd)
-    F .F₁ f    = elem-hom (f .before , f .after) (f .commutes)
+    F .F₁ f    = elem-hom (f .before , f .after) (sym (assoc _ _ _) ∙ f .commutes)
     F .F-id    = ext refl
     F .F-∘ f g = ext refl
 
     F-precat-iso : is-precat-iso F
     F-precat-iso .has-is-ff = injective-surjective→is-equiv!
       (λ p → Twist-path (ap (fst ⊙ hom) p) (ap (snd ⊙ hom) p))
-      λ f → inc (twist (f .hom .fst) (f .hom .snd) (f .commute) , ext refl)
+      λ f → inc (twist (f .hom .fst) (f .hom .snd) (assoc _ _ _ ∙ f .commute) , ext refl)
     F-precat-iso .has-is-iso = is-iso→is-equiv (iso
       (λ e → e .ob , e .section)
       (λ e → refl) λ e → refl)

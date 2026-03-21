@@ -296,6 +296,8 @@ C\op \to D\op$.
 
 <!--
 ```agda
+{-# INLINE Functor.constructor #-}
+
 module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   open Functor
 

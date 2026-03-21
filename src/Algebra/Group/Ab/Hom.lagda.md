@@ -6,6 +6,7 @@ open import Algebra.Group
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
+open import Cat.Functor.Base
 open import Cat.Prelude
 ```
 -->
@@ -83,7 +84,7 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
   make-ab-on-hom .invl x      = ext λ x → B.inversel
   make-ab-on-hom .comm x y    = ext λ x → B.commutes
 
-open Functor
+open Make-bifunctor
 
 Ab[_,_] : ∀ {ℓ} → Abelian-group ℓ → Ab.Ob → Ab.Ob
 ∣ Ab[ A , B ] .fst ∣ = _
@@ -96,11 +97,16 @@ It's only a little more work to show that this extends to a functor
 $\Ab\op \times \Ab \to \Ab$.
 
 ```agda
-Ab-hom-functor : ∀ {ℓ} → Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
-Ab-hom-functor .F₀ (A , B) = Ab[ A , B ]
-Ab-hom-functor .F₁ (f , g) .fst h = g Ab.∘ h Ab.∘ f
-Ab-hom-functor .F₁ (f , g) .snd .pres-⋆ x y = ext λ z →
-  g .snd .pres-⋆ _ _
-Ab-hom-functor .F-id    = ext λ _ _ → refl
-Ab-hom-functor .F-∘ f g = ext λ _ _ → refl
+Ab-hom-functor : ∀ {ℓ} → Bifunctor (Ab ℓ ^op) (Ab ℓ) (Ab ℓ)
+Ab-hom-functor = make-bifunctor λ where
+  .F₀ A B → Ab[ A , B ]
+  .lmap f .fst → Ab._∘ f
+  .lmap f .snd .pres-⋆ x y → ext λ z → refl
+  .rmap f .fst → f Ab.∘_
+  .rmap f .snd .pres-⋆ x y → ext λ z → f .snd .pres-⋆ _ _
+  .lmap-id → ext λ _  _ → refl
+  .rmap-id → ext λ _ _ → refl
+  .lmap-∘ f g → ext λ _ _ → refl
+  .rmap-∘ f g → ext λ _ _ → refl
+  .lrmap  f g → ext λ _ _ → refl
 ```

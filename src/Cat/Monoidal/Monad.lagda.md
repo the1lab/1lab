@@ -189,14 +189,14 @@ monoidal monad on $\cC$.
   monoidal-monad^rev m = record
     { monad-monoidal = record
       { ε = ε
-      ; F-mult = NT (λ _ → φ) λ _ _ _ → M-mult ._=>_.is-natural _ _ _
+      ; F-mult = NT (λ _ → NT (λ _ → φ) λ _ _ _ → φ.is-natural _ _ _ ηₚ _) λ _ _ _ → ext λ _ → φ.η _ ._=>_.is-natural _ _ _
       ; F-α→ = M-α←
       ; F-λ← = M-ρ←
       ; F-ρ← = M-λ←
       }
     ; unit-ε = unit-ε
-    ; unit-φ = unit-φ
-    ; mult-φ = mult-φ
+    ; unit-φ = ap₂ _∘_ refl (-⊗-.rlmap _ _) ∙ unit-φ
+    ; mult-φ = ap₂ _∘_ refl (-⊗-.rlmap _ _) ∙ mult-φ
     } where open Monoidal-monad-on m
 ```
 
@@ -257,7 +257,7 @@ by composing the unit of the monad with the monoidal multiplication:
     open Left-monad-strength
 
     l : Left-monad-strength Cᵐ monad
-    l .functor-strength .left-strength = M-mult ∘nt (-⊗- ▸ (unit nt× idnt))
+    l .functor-strength .left-strength = {! M-mult ∘nt (-⊗- ▸ (unit nt× idnt)) !}
 ```
 
 <details>
@@ -267,28 +267,28 @@ reader; they are entirely monotonous.
 </summary>
 
 ```agda
-    l .functor-strength .left-strength-λ← =
-      M₁ λ← ∘ φ ∘ (η _ ⊗₁ id) ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ap (_⊗₁ id) unit-ε ⟩
-      M₁ λ← ∘ φ ∘ (ε ⊗₁ id)   ≡⟨ M-λ← ⟩
-      λ←                      ∎
-    l .functor-strength .left-strength-α→ =
-      M₁ (α→ _ _ _) ∘ φ ∘ (η _ ⊗₁ id)                          ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ◀.collapse unit-φ ⟩
-      M₁ (α→ _ _ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ η _) ⊗₁ id)     ≡⟨ extendl3 M-α→ ⟩
-      φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ η _) ⊗₁ id)          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
-      φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (η _ ⊗₁ id)) ∘ α→ _ _ _          ≡⟨ refl⟩∘⟨ ⊗.pulll (idl _ ,ₚ refl) ⟩
-      φ ∘ (η _ ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _                ≡⟨ pushr (⊗.pushl (sym (idr _) ,ₚ sym (idl _))) ⟩
-      (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _ ∎
-    l .left-strength-η =
-      (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ η _) ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-      φ ∘ (η _ ⊗₁ η _)                ≡⟨ unit-φ ⟩
-      η _                             ∎
-    l .left-strength-μ =
-      (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ μ _)                      ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-      φ ∘ (η _ ⊗₁ μ _)                                     ≡˘⟨ refl⟩∘⟨ ⊗.collapse3 (cancell μ-unitr ,ₚ elimr (eliml M-id)) ⟩
-      φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pulll mult-φ ⟩
-      (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pullr (pullr (extendl (φ.is-natural _ _ _))) ⟩
-      μ _ ∘ M₁ φ ∘ M₁ (η _ ⊗₁ id) ∘ φ ∘ (η _ ⊗₁ id)        ≡⟨ refl⟩∘⟨ M.pulll refl ⟩
-      μ _ ∘ M₁ (φ ∘ (η _ ⊗₁ id)) ∘ φ ∘ (η _ ⊗₁ id)         ∎
+    l .functor-strength .left-strength-λ← = {!   !}
+      -- M₁ (λ← _) ∘ φ ∘ (η _ ⊗₁ id) ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ap (_⊗₁ id) unit-ε ⟩
+      -- M₁ (λ← _) ∘ φ ∘ (ε ⊗₁ id)   ≡⟨ M-λ← ⟩
+      -- λ← _                      ∎
+    l .functor-strength .left-strength-α→ = {!   !}
+      -- M₁ (α→ _) ∘ φ ∘ (η _ ⊗₁ id)                          ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ◀.collapse unit-φ ⟩
+      -- M₁ (α→ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ η _) ⊗₁ id)     ≡⟨ extendl3 M-α→ ⟩
+      -- φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ η _) ⊗₁ id)          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
+      -- φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (η _ ⊗₁ id)) ∘ α→ _ _ _          ≡⟨ refl⟩∘⟨ ⊗.pulll (idl _ ,ₚ refl) ⟩
+      -- φ ∘ (η _ ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _                ≡⟨ pushr (⊗.pushl (sym (idr _) ,ₚ sym (idl _))) ⟩
+      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _ ∎
+    l .left-strength-η = {!   !}
+      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ η _) ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
+      -- φ ∘ (η _ ⊗₁ η _)                ≡⟨ unit-φ ⟩
+      -- η _                             ∎
+    l .left-strength-μ = {!   !}
+      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ μ _)                      ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
+      -- φ ∘ (η _ ⊗₁ μ _)                                     ≡˘⟨ refl⟩∘⟨ ⊗.collapse3 (cancell μ-unitr ,ₚ elimr (eliml M-id)) ⟩
+      -- φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pulll mult-φ ⟩
+      -- (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pullr (pullr (extendl (φ.is-natural _ _ _))) ⟩
+      -- μ _ ∘ M₁ φ ∘ M₁ (η _ ⊗₁ id) ∘ φ ∘ (η _ ⊗₁ id)        ≡⟨ refl⟩∘⟨ M.pulll refl ⟩
+      -- μ _ ∘ M₁ (φ ∘ (η _ ⊗₁ id)) ∘ φ ∘ (η _ ⊗₁ id)         ∎
 ```
 </details>
 
@@ -360,12 +360,12 @@ associator.
 ~~~
 
 ```agda
-      s .strength-α→ =
-        M₁ (α→ _ _ _) ∘ (φ ∘ (id ⊗₁ η _)) ∘ ((φ ∘ (η _ ⊗₁ id)) ⊗₁ id) ≡⟨ refl⟩∘⟨ pullr (⊗.weave (idl _ ,ₚ id-comm)) ⟩
-        M₁ (α→ _ _ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ id) ⊗₁ η _)          ≡⟨ extendl3 M-α→ ⟩
-        φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ id) ⊗₁ η _)               ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
-        φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (id ⊗₁ η _)) ∘ α→ _ _ _               ≡⟨ pushr (extendl (⊗.weave (id-comm-sym ,ₚ sym (idl _)))) ⟩
-        (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (id ⊗₁ η _))) ∘ α→ _ _ _      ∎
+      s .strength-α→ = {!   !}
+        -- M₁ (α→ _ _ _) ∘ (φ ∘ (id ⊗₁ η _)) ∘ ((φ ∘ (η _ ⊗₁ id)) ⊗₁ id) ≡⟨ refl⟩∘⟨ pullr (⊗.weave (idl _ ,ₚ id-comm)) ⟩
+        -- M₁ (α→ _ _ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ id) ⊗₁ η _)          ≡⟨ extendl3 M-α→ ⟩
+        -- φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ id) ⊗₁ η _)               ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
+        -- φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (id ⊗₁ η _)) ∘ α→ _ _ _               ≡⟨ pushr (extendl (⊗.weave (id-comm-sym ,ₚ sym (idl _)))) ⟩
+        -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (id ⊗₁ η _))) ∘ α→ _ _ _      ∎
 ```
 </details>
 
@@ -401,20 +401,20 @@ of the following diagram; the other direction is completely symmetric.
 ```agda
       opaque
         left≡φ : left-φ s ≡ M-mult
-        left≡φ = ext λ (A , B) →
-          μ _ ∘ M₁ (φ ∘ (η _ ⊗₁ id)) ∘ φ ∘ (id ⊗₁ η _)       ≡⟨ refl⟩∘⟨ M.popr (extendl (sym (φ.is-natural _ _ _))) ⟩
-          μ _ ∘ M₁ φ ∘ φ ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (id ⊗₁ η _) ≡⟨ pushr (pushr (refl⟩∘⟨ ⊗.collapse (elimr refl ,ₚ M.eliml refl))) ⟩
-          (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ η _)               ≡˘⟨ pulll mult-φ ⟩
-          φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ η _)               ≡⟨ elimr (⊗.annihilate (μ-unitr ,ₚ μ-unitl)) ⟩
-          φ                                                  ∎
+        left≡φ = ext λ A B → {!   !}
+          -- μ _ ∘ M₁ (φ ∘ (η _ ⊗₁ id)) ∘ φ ∘ (id ⊗₁ η _)       ≡⟨ refl⟩∘⟨ M.popr (extendl (sym (φ.is-natural _ _ _ ηₚ _))) ⟩
+          -- μ _ ∘ M₁ φ ∘ φ ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (id ⊗₁ η _) ≡⟨ pushr (pushr (refl⟩∘⟨ ⊗.collapse (elimr refl ,ₚ M.eliml refl))) ⟩
+          -- (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ η _)               ≡˘⟨ pulll mult-φ ⟩
+          -- φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ η _)               ≡⟨ elimr (⊗.annihilate (μ-unitr ,ₚ μ-unitl)) ⟩
+          -- φ                                                  ∎
 
         right≡φ : right-φ s ≡ M-mult
-        right≡φ = ext λ (A , B) →
-          μ _ ∘ M₁ (φ ∘ (id ⊗₁ η _)) ∘ φ ∘ (η _ ⊗₁ id)       ≡⟨ refl⟩∘⟨ M.popr (extendl (sym (φ.is-natural _ _ _))) ⟩
-          μ _ ∘ M₁ φ ∘ φ ∘ (M₁ id ⊗₁ M₁ (η _)) ∘ (η _ ⊗₁ id) ≡⟨ pushr (pushr (refl⟩∘⟨ ⊗.collapse (M.eliml refl ,ₚ elimr refl))) ⟩
-          (μ _ ∘ M₁ φ ∘ φ) ∘ (η _ ⊗₁ M₁ (η _))               ≡˘⟨ pulll mult-φ ⟩
-          φ ∘ (μ _ ⊗₁ μ _) ∘ (η _ ⊗₁ M₁ (η _))               ≡⟨ elimr (⊗.annihilate (μ-unitl ,ₚ μ-unitr)) ⟩
-          φ                                                  ∎
+        right≡φ = ext λ A B → {!   !}
+          -- μ _ ∘ M₁ (φ ∘ (id ⊗₁ η _)) ∘ φ ∘ (η _ ⊗₁ id)       ≡⟨ refl⟩∘⟨ M.popr (extendl (sym (φ.is-natural _ _ _))) ⟩
+          -- μ _ ∘ M₁ φ ∘ φ ∘ (M₁ id ⊗₁ M₁ (η _)) ∘ (η _ ⊗₁ id) ≡⟨ pushr (pushr (refl⟩∘⟨ ⊗.collapse (M.eliml refl ,ₚ elimr refl))) ⟩
+          -- (μ _ ∘ M₁ φ ∘ φ) ∘ (η _ ⊗₁ M₁ (η _))               ≡˘⟨ pulll mult-φ ⟩
+          -- φ ∘ (μ _ ⊗₁ μ _) ∘ (η _ ⊗₁ M₁ (η _))               ≡⟨ elimr (⊗.annihilate (μ-unitl ,ₚ μ-unitr)) ⟩
+          -- φ                                                  ∎
 
         s-comm : is-commutative-strength s
         s-comm = right≡φ ∙ sym left≡φ
@@ -469,13 +469,13 @@ The `unit-φ`{.Agda} coherence is not very interesting.
 ~~~
 
 ```agda
-      m .unit-φ =
-        (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ η _)            ≡⟨ pullr (pullr (refl⟩∘⟨ ⊗.expand (intror refl ,ₚ introl refl))) ⟩
-        μ _ ∘ M₁ σ ∘ τ ∘ (η _ ⊗₁ id) ∘ (id ⊗₁ η _) ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pulll right-strength-η ⟩
-        μ _ ∘ M₁ σ ∘ η _ ∘ (id ⊗₁ η _)             ≡˘⟨ refl⟩∘⟨ extendl (unit.is-natural _ _ _) ⟩
-        μ _ ∘ η _ ∘ σ ∘ (id ⊗₁ η _)                ≡⟨ cancell μ-unitl ⟩
-        σ ∘ (id ⊗₁ η _)                            ≡⟨ left-strength-η ⟩
-        η _                                        ∎
+      m .unit-φ = {!   !}
+        -- (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ η _)            ≡⟨ pullr (pullr (refl⟩∘⟨ ⊗.expand (intror refl ,ₚ introl refl))) ⟩
+        -- μ _ ∘ M₁ σ ∘ τ ∘ (η _ ⊗₁ id) ∘ (id ⊗₁ η _) ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pulll right-strength-η ⟩
+        -- μ _ ∘ M₁ σ ∘ η _ ∘ (id ⊗₁ η _)             ≡˘⟨ refl⟩∘⟨ extendl (unit.is-natural _ _ _) ⟩
+        -- μ _ ∘ η _ ∘ σ ∘ (id ⊗₁ η _)                ≡⟨ cancell μ-unitl ⟩
+        -- σ ∘ (id ⊗₁ η _)                            ≡⟨ left-strength-η ⟩
+        -- η _                                        ∎
 ```
 </details>
 
@@ -531,22 +531,22 @@ in a way that is allowed by the associativity law because they are
 followed by $\mu$.
 
 ```agda
-      m .mult-φ =
-        (μ _ ∘ M₁ σ ∘ τ) ∘ (μ _ ⊗₁ μ _)                        ≡⟨ refl⟩∘⟨ ⊗.expand (M.introl refl ,ₚ intror refl) ⟩
-        (μ _ ∘ M₁ σ ∘ τ) ∘ (M₁ id ⊗₁ μ _) ∘ (μ _ ⊗₁ id)        ≡⟨ pullr (pullr (extendl (τ.is-natural _ _ _))) ⟩
-        μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ μ _) ∘ τ ∘ (μ _ ⊗₁ id)          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ right-strength-μ ⟩
-        μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ μ _) ∘ μ _ ∘ M₁ τ ∘ τ           ≡⟨ refl⟩∘⟨ M.pulll (left-strength-μ ∙ assoc _ _ _) ⟩
-        μ _ ∘ M₁ ((μ _ ∘ M₁ σ) ∘ σ) ∘ μ _ ∘ M₁ τ ∘ τ           ≡⟨ refl⟩∘⟨ extendl (M.popr (sym (mult.is-natural _ _ _))) ⟩
-        μ _ ∘ M₁ (μ _ ∘ M₁ σ) ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ   ≡⟨ extendl (M.popl μ-assoc) ⟩
-        (μ _ ∘ μ _) ∘ M₁ (M₁ σ) ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ ≡⟨ pullr (extendl (mult.is-natural _ _ _)) ⟩
-        μ _ ∘ M₁ σ ∘ μ _ ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ        ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (extendl μ-assoc) ⟩
-        μ _ ∘ M₁ σ ∘ μ _ ∘ (M₁ (μ _) ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ sym (assoc _ _ _) ∙ M.extendl3 (sym (s-comm ηₚ _)) ⟩
-        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ τ) ∘ M₁ σ ∘ τ     ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl μ-assoc ⟩
-        μ _ ∘ M₁ σ ∘ μ _ ∘ μ _ ∘ M₁ (M₁ τ) ∘ M₁ σ ∘ τ          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
-        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ               ≡˘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
-        μ _ ∘ μ _ ∘ M₁ (M₁ σ) ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ          ≡˘⟨ extendl μ-assoc ⟩
-        μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ     ≡⟨ refl⟩∘⟨ M.pulll3 refl ⟩
-        μ _ ∘ M₁ (μ _ ∘ M₁ σ ∘ τ) ∘ μ _ ∘ M₁ σ ∘ τ             ∎
+      m .mult-φ = {!   !}
+        -- (μ _ ∘ M₁ σ ∘ τ) ∘ (μ _ ⊗₁ μ _)                        ≡⟨ refl⟩∘⟨ ⊗.expand (M.introl refl ,ₚ intror refl) ⟩
+        -- (μ _ ∘ M₁ σ ∘ τ) ∘ (M₁ id ⊗₁ μ _) ∘ (μ _ ⊗₁ id)        ≡⟨ pullr (pullr (extendl (τ.is-natural _ _ _))) ⟩
+        -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ μ _) ∘ τ ∘ (μ _ ⊗₁ id)          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ right-strength-μ ⟩
+        -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ μ _) ∘ μ _ ∘ M₁ τ ∘ τ           ≡⟨ refl⟩∘⟨ M.pulll (left-strength-μ ∙ assoc _ _ _) ⟩
+        -- μ _ ∘ M₁ ((μ _ ∘ M₁ σ) ∘ σ) ∘ μ _ ∘ M₁ τ ∘ τ           ≡⟨ refl⟩∘⟨ extendl (M.popr (sym (mult.is-natural _ _ _))) ⟩
+        -- μ _ ∘ M₁ (μ _ ∘ M₁ σ) ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ   ≡⟨ extendl (M.popl μ-assoc) ⟩
+        -- (μ _ ∘ μ _) ∘ M₁ (M₁ σ) ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ ≡⟨ pullr (extendl (mult.is-natural _ _ _)) ⟩
+        -- μ _ ∘ M₁ σ ∘ μ _ ∘ (μ _ ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ        ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (extendl μ-assoc) ⟩
+        -- μ _ ∘ M₁ σ ∘ μ _ ∘ (M₁ (μ _) ∘ M₁ (M₁ σ)) ∘ M₁ τ ∘ τ   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ sym (assoc _ _ _) ∙ M.extendl3 (sym (s-comm ηₚ _)) ⟩
+        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ τ) ∘ M₁ σ ∘ τ     ≡⟨ refl⟩∘⟨ refl⟩∘⟨ extendl μ-assoc ⟩
+        -- μ _ ∘ M₁ σ ∘ μ _ ∘ μ _ ∘ M₁ (M₁ τ) ∘ M₁ σ ∘ τ          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
+        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ               ≡˘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
+        -- μ _ ∘ μ _ ∘ M₁ (M₁ σ) ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ          ≡˘⟨ extendl μ-assoc ⟩
+        -- μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ τ ∘ μ _ ∘ M₁ σ ∘ τ     ≡⟨ refl⟩∘⟨ M.pulll3 refl ⟩
+        -- μ _ ∘ M₁ (μ _ ∘ M₁ σ ∘ τ) ∘ μ _ ∘ M₁ σ ∘ τ             ∎
 ```
 
 ### Wrapping up
@@ -569,18 +569,18 @@ both verifications are straightforward.
       where
         open Monad-strength s
         l : left-strength ≡ is .fst (is .snd .from (s , s-comm)) .fst .Monad-strength.left-strength
-        l = ext λ (A , B) →
-          σ                              ≡⟨ insertl μ-unitl ⟩
-          μ _ ∘ η _ ∘ σ                  ≡⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
-          μ _ ∘ M₁ σ ∘ η _               ≡˘⟨ pullr (pullr right-strength-η) ⟩
-          (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ id) ∎
+        l = ext λ A B → {!   !}
+          -- σ                              ≡⟨ insertl μ-unitl ⟩
+          -- μ _ ∘ η _ ∘ σ                  ≡⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
+          -- μ _ ∘ M₁ σ ∘ η _               ≡˘⟨ pullr (pullr right-strength-η) ⟩
+          -- (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ id) ∎
         r : right-strength ≡ is .fst (is .snd .from (s , s-comm)) .fst .Monad-strength.right-strength
-        r = ext λ (A , B) →
-          τ                                     ≡⟨ insertl μ-unitr ⟩
-          μ _ ∘ M₁ (η _) ∘ τ                    ≡˘⟨ refl⟩∘⟨ M.pulll left-strength-η ⟩
-          μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ η _) ∘ τ       ≡˘⟨ pullr (pullr (τ.is-natural _ _ _)) ⟩
-          (μ _ ∘ M₁ σ ∘ τ) ∘ (⌜ M₁ id ⌝ ⊗₁ η _) ≡⟨ ap! M-id ⟩
-          (μ _ ∘ M₁ σ ∘ τ) ∘ (id ⊗₁ η _)        ∎
+        r = ext λ A B → {!   !}
+          -- τ                                     ≡⟨ insertl μ-unitr ⟩
+          -- μ _ ∘ M₁ (η _) ∘ τ                    ≡˘⟨ refl⟩∘⟨ M.pulll left-strength-η ⟩
+          -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ η _) ∘ τ       ≡˘⟨ pullr (pullr (τ.is-natural _ _ _)) ⟩
+          -- (μ _ ∘ M₁ σ ∘ τ) ∘ (⌜ M₁ id ⌝ ⊗₁ η _) ≡⟨ ap! M-id ⟩
+          -- (μ _ ∘ M₁ σ ∘ τ) ∘ (id ⊗₁ η _)        ∎
 ```
 
 For the other round-trip, we've *already* proved above that we get the
@@ -643,10 +643,10 @@ left and right strengths are related by the braiding.
       symmetric-monoidal→symmetric-strength
         : is-symmetric-monoidal-monad m
         → is-symmetric-monad-strength Cᵇ (monoidal≃commutative.to m .fst)
-      symmetric-monoidal→symmetric-strength sy =
-        (φ ∘ (id ⊗₁ η _)) ∘ β→  ≡⟨ pullr (sym (β→.is-natural _ _ _)) ⟩
-        φ ∘ β→ ∘ (η _ ⊗₁ id)    ≡⟨ extendl sy ⟩
-        M₁ β→ ∘ φ ∘ (η _ ⊗₁ id) ∎
+      symmetric-monoidal→symmetric-strength sy = {!   !}
+        -- (φ ∘ (id ⊗₁ η _)) ∘ β→  ≡⟨ pullr (sym (β→.is-natural _ _ _)) ⟩
+        -- φ ∘ β→ ∘ (η _ ⊗₁ id)    ≡⟨ extendl sy ⟩
+        -- M₁ β→ ∘ φ ∘ (η _ ⊗₁ id) ∎
 ```
 
 Now, given a symmetric commutative strength, we can use the commutativity
@@ -684,12 +684,12 @@ as follows to conclude that the induced monoidal functor is symmetric:
       symmetric-strength→symmetric-monoidal
         : is-symmetric-monad-strength Cᵇ s
         → is-symmetric-monoidal-monad (monoidal≃commutative.from (s , s-comm))
-      symmetric-strength→symmetric-monoidal sy =
-        (μ _ ∘ M₁ σ ∘ τ) ∘ β→       ≡⟨ pullr (pullr sy) ⟩
-        μ _ ∘ M₁ σ ∘ M₁ β→ ∘ σ      ≡˘⟨ refl⟩∘⟨ M.extendl (swizzle sy has-is-symmetric (M.annihilate has-is-symmetric)) ⟩
-        μ _ ∘ M₁ (M₁ β→) ∘ M₁ τ ∘ σ ≡⟨ extendl (mult.is-natural _ _ _) ⟩
-        M₁ β→ ∘ μ _ ∘ M₁ τ ∘ σ      ≡⟨ refl⟩∘⟨ s-comm ηₚ _ ⟩
-        M₁ β→ ∘ μ _ ∘ M₁ σ ∘ τ      ∎
+      symmetric-strength→symmetric-monoidal sy = {!   !}
+        -- (μ _ ∘ M₁ σ ∘ τ) ∘ β→       ≡⟨ pullr (pullr sy) ⟩
+        -- μ _ ∘ M₁ σ ∘ M₁ β→ ∘ σ      ≡˘⟨ refl⟩∘⟨ M.extendl (swizzle sy has-is-symmetric (M.annihilate has-is-symmetric)) ⟩
+        -- μ _ ∘ M₁ (M₁ β→) ∘ M₁ τ ∘ σ ≡⟨ extendl (mult.is-natural _ _ _) ⟩
+        -- M₁ β→ ∘ μ _ ∘ M₁ τ ∘ σ      ≡⟨ refl⟩∘⟨ s-comm ηₚ _ ⟩
+        -- M₁ β→ ∘ μ _ ∘ M₁ σ ∘ τ      ∎
 ```
 
 Packaging all of this together, we conclude with the desired equivalence

@@ -18,6 +18,7 @@ open import Cat.Functor.Equivalence.Path
 open import Cat.Univalent.Rezk.Universal
 open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Unique
+open import Cat.Functor.Bifunctor using (Uncurry)
 open import Cat.Regular.Instances.Sets
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom

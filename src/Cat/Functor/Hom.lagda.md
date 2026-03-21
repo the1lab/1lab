@@ -6,6 +6,7 @@ open import Cat.Functor.Closed
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Bifunctor as Bi
 import Cat.Reasoning
 ```
 -->
@@ -33,13 +34,19 @@ private variable
 -->
 
 ```agda
-Hom[-,-] : Functor ((C ^op) ×ᶜ C) (Sets h)
-Hom[-,-] .F₀ (a , b) = el (Hom a b) (Hom-set a b)
-Hom[-,-] .F₁ (f , h) g = h ∘ g ∘ f
-Hom[-,-] .F-id = funext λ x → ap (_ ∘_) (idr _) ∙ idl _
-Hom[-,-] .F-∘ (f , h) (f' , h') = funext λ where
-  g → (h ∘ h') ∘ g ∘ f' ∘ f ≡⟨ cat! C ⟩
-      h ∘ (h' ∘ g ∘ f') ∘ f ∎
+Hom[-,-] : Bifunctor (C ^op) C (Sets h)
+Hom[-,-] = make-bifunctor record where
+  F₀ X Y = el! (Hom X Y)
+
+  lmap     f = _∘ f
+  lmap-∘ f g = ext λ h → assoc _ _ _
+  lmap-id    = ext λ h → idr _
+
+  rmap     f = f ∘_
+  rmap-∘ f g = ext λ h → sym (assoc _ _ _)
+  rmap-id    = ext λ h → idl _
+
+  lrmap  f g = ext λ h → sym (assoc _ _ _)
 ```
 
 We also can define "partially applied" versions of the hom functor:
@@ -52,12 +59,6 @@ Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
 ```
 
 ## The Yoneda embedding
-
-Abstractly and nonsensically, one could say that the Yoneda embedding
-`よ`{.Agda} is the [exponential transpose] of `flipping`{.Agda
-ident=Flip} the `Hom[-,-]`{.Agda} [bifunctor]. However, this
-construction generates _awful_ terms, so in the interest of
-computational efficiency we build up the functor explicitly.
 
 [exponential transpose]: Cat.Functor.Closed.html
 [bifunctor]: Cat.Functor.Bifunctor.html
@@ -74,11 +75,8 @@ morphisms into that object.
 :::
 
 ```agda
-module _ where private
-  よ : Functor C (Cat[ C ^op , Sets h ])
-  よ = Curry Flip where
-    open import
-      Cat.Functor.Bifunctor {C = C ^op} {D = C} {E = Sets h} Hom[-,-]
+よ : Bifunctor C (C ^op) (Sets h)
+よ = Bi.Flip Hom[-,-]
 ```
 
 We can describe the object part of this functor as taking an object $c$
@@ -86,12 +84,7 @@ to the functor $\hom(-,c)$ of map into $c$, with the transformation
 $\hom(x,y) \to \hom(x,z)$ given by precomposition.
 
 ```agda
-よ₀ : Ob → Functor (C ^op) (Sets h)
-よ₀ c .F₀ x    = el (Hom x c) (Hom-set _ _)
-よ₀ c .F₁ f    = _∘ f
-よ₀ c .F-id    = funext idr
-よ₀ c .F-∘ f g = funext λ h → assoc _ _ _
-
+open Functor よ renaming (F₀ to よ₀) public
 ```
 
 We also define a synonym for よ₀ to better line up with the covariant
@@ -111,29 +104,6 @@ Hom-into : Ob → Functor (C ^op) (Sets h)
 Hom-into = よ₀
 ```
 -->
-
-
-The morphism part takes a map $f$ to the transformation given by
-postcomposition; This is natural because we must show $f \circ x \circ g
-= (f \circ x) \circ g$, which is given by associativity in $C$.
-
-```agda
-よ₁ : Hom a b → よ₀ a => よ₀ b
-よ₁ f .η _ g            = f ∘ g
-よ₁ f .is-natural x y g = funext λ x → assoc f x g
-```
-
-The other category laws from $\cC$ ensure that this assignment of
-natural transformations is indeed functorial:
-
-```agda
-よ : Functor C Cat[ C ^op , Sets h ]
-よ .F₀      = よ₀
-よ .F₁      = よ₁
-よ .F-id    = ext λ _ g → idl g
-よ .F-∘ f g = ext λ _ h → sym (assoc f g h)
-```
-
 
 The morphism mapping `よ₁`{.Agda} has an inverse, given by evaluating the
 natural transformation with the identity map; Hence, the Yoneda

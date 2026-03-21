@@ -24,6 +24,7 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.FullyFaithful as FF
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 
 open Functor
@@ -141,7 +142,7 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
     lim : is-ran !F (F F∘ G) (F F∘ !Const o) (nat-assoc-from (F ▸ unwhisker eps'))
     lim = natural-isos→is-ran idni idni
       (!const-isoⁿ is)
-      (ext λ j → D.idl _ ∙∙ (D.refl⟩∘⟨ D.eliml (Lim .Ext .F-id)) ∙∙ sym (F.ε _))
+      (ext λ j → D.idl _ ∙∙ ap₂ D._∘_ refl (F.elimr refl) ∙∙ sym (F.ε _))
       (Lim .has-ran)
 
   ff→reflects-Colimit
@@ -156,7 +157,7 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
     colim : is-lan !F (F F∘ G) (F F∘ !Const o) (nat-assoc-to (F ▸ unwhisker eta'))
     colim = natural-isos→is-lan idni idni
       (!const-isoⁿ is)
-      (ext λ j → (F.eliml refl D.⟩∘⟨ D.idr _) ∙ sym (F.ε _))
+      (ext λ j → D.pullr (Func.eliml (Colim .Ext) refl ∙ D.elimr refl) ∙ sym (F.ε _))
       (Colim .has-lan)
 ```
 

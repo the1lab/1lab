@@ -17,6 +17,7 @@ module Cat.Bi.Instances.Discrete {o ℓ} (C : Precategory o ℓ) where
 <!--
 ```agda
 private module C = Cat.Reasoning C
+open Make-bifunctor
 open Prebicategory
 open Functor
 ```
@@ -34,10 +35,15 @@ Locally-discrete : Prebicategory o ℓ ℓ
 Locally-discrete .Ob = C.Ob
 Locally-discrete .Hom x y = Disc' (el (C.Hom x y) (C.Hom-set x y))
 Locally-discrete .id = C.id
-Locally-discrete .compose .F₀ (f , g) = f C.∘ g
-Locally-discrete .compose .F₁ (p , q) = ap₂ C._∘_ p q
-Locally-discrete .compose .F-id = refl
-Locally-discrete .compose .F-∘ f g = C.Hom-set _ _ _ _ _ _
+Locally-discrete .compose = make-bifunctor λ where
+  .F₀ A B → A C.∘ B
+  .lmap → ap (C._∘ _)
+  .rmap → ap (_ C.∘_)
+  .lmap-id    → refl
+  .rmap-id    → refl
+  .lmap-∘ f g → prop!
+  .rmap-∘ f g → prop!
+  .lrmap  f g → prop!
 Locally-discrete .unitor-l = to-natural-iso ni where
   ni : make-natural-iso _ _
   ni .make-natural-iso.eta x = sym (C.idl x)

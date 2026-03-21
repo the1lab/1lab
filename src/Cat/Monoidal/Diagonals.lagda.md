@@ -36,15 +36,13 @@ We call the resulting structure a **monoidal category with diagonals**.
 ```agda
 record Diagonals : Type (o ⊔ ℓ) where
   field
-    diagonals : Id => -⊗- F∘ Cat⟨ Id , Id ⟩
+    diagonals : Id => -⊗-.Uncurry F∘ Cat⟨ Id , Id ⟩
 
   module δ = _=>_ diagonals
-
-  δ : ∀ {A} → Hom A (A ⊗ A)
-  δ = δ.η _
+  open δ renaming (η to δ) using () public
 
   field
-    diagonal-λ→ : δ {Unit} ≡ λ→ {Unit}
+    diagonal-λ→ : δ _ ≡ λ→ Unit
 ```
 
 The prototypical examples of monoidal categories with diagonals are
