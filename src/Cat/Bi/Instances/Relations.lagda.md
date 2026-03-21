@@ -518,6 +518,7 @@ but keep in mind that they are not commented.
 
 open Prebicategory hiding (Ob ; Hom)
 open make-natural-iso
+open Make-bifunctor
 open Functor
 ```
 -->
@@ -530,12 +531,16 @@ naturality _and_ their identities (triangle/pentagon) since $\Sub(-
 
 ```agda
 private
-  ∘-rel-fun : ∀ {a b c} → Functor (Sub (b ⊗₀ c) ×ᶜ Sub (a ⊗₀ b)) (Sub (a ⊗₀ c))
-  ∘-rel-fun .F₀ (a , b) = ∘-rel a b
-  ∘-rel-fun .F₁ (f , g) = ∘-rel-monotone  f g
-
-  ∘-rel-fun .F-id    = hlevel 1 _ _
-  ∘-rel-fun .F-∘ _ _ = hlevel 1 _ _
+  ∘-rel-fun : ∀ {a b c} → Bifunctor (Sub (b ⊗₀ c)) (Sub (a ⊗₀ b)) (Sub (a ⊗₀ c))
+  ∘-rel-fun = make-bifunctor λ where
+    .F₀         → ∘-rel
+    .lmap     f → ∘-rel-monotone f Sub.id
+    .rmap     f → ∘-rel-monotone Sub.id f
+    .lmap-id    → prop!
+    .rmap-id    → prop!
+    .lmap-∘ f g → prop!
+    .rmap-∘ f g → prop!
+    .lrmap  f g → prop!
 
 Rel[_] : Prebicategory o (o ⊔ ℓ) ℓ
 Rel[_] .Prebicategory.Ob = Ob
@@ -564,15 +569,14 @@ Rel[_] .unitor-r = to-natural-iso mk where
   mk .inv∘eta x = Sub.invl (∘-rel-idr x)
   mk .natural x y f = hlevel 1 _ _
 Rel[_] .associator {a} {b} {c} {d} = to-natural-iso mk where
-  mk : make-natural-iso (compose-assocˡ ∘-rel-fun) (compose-assocʳ ∘-rel-fun {A = a} {b} {c} {d})
+  mk : make-natural-iso
+    (compose-assocˡ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun)
+    (compose-assocʳ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun {A = a} {b} {c} {d})
   mk .eta (x , y , z) = ∘-rel-assoc x y z .Sub.from
   mk .inv (x , y , z) = ∘-rel-assoc x y z .Sub.to
   mk .eta∘inv (x , y , z) = Sub.invr (∘-rel-assoc x y z)
   mk .inv∘eta (x , y , z) = Sub.invl (∘-rel-assoc x y z)
-  mk .natural (x , y , z) (α , β , γ) f =
-    ≤-over-is-prop
-      (compose-assocʳ {H = λ x y → Sub (x ⊗₀ y)} ∘-rel-fun .F₁ f Sub.∘ ∘-rel-assoc x y z .Sub.from)
-      (∘-rel-assoc α β γ .Sub.from Sub.∘ compose-assocˡ {H = λ x y → Sub (x ⊗₀ y)} ∘-rel-fun .F₁ f)
+  mk .natural (x , y , z) (α , β , γ) f = prop!
 Rel[_] .triangle f g = hlevel 1 _ _
 Rel[_] .pentagon f g h i = hlevel 1 _ _
 ```
