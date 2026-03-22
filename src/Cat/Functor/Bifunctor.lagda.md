@@ -208,7 +208,7 @@ In the other direction, we must write out the functor $\cC \to \cE$
 associated to $F$ on the `Left`{.Agda}, given an object $x : \cD$, in
 components.
 
-```
+```agda
   Left : D.Ob → Functor C E
   Left X .Functor.F₀ A = F₀ A X
   Left X .Functor.F₁ f = f ◀ X
