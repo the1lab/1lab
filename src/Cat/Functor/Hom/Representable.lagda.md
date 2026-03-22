@@ -86,8 +86,9 @@ morphisms in the same way must be isomorphic.
 [Yoneda lemma]: Cat.Functor.Hom.html
 
 ```agda
-representation-unique : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
-                      → X .rep C.≅ Y .rep
+representation-unique
+  : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
+  → X .rep C.≅ Y .rep
 representation-unique X Y =
   is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY where
     よX≅よY : よ₀ C (X .rep) C^.≅ よ₀ C (Y .rep)
@@ -269,8 +270,8 @@ corepresentation-unique
 
 ```agda
 corepresentation-unique X Y =
-  is-ff→essentially-injective {F = record { Functor (Functor.op (よcov C)) }}
-    (よcov-is-fully-faithful C)
+  is-ff→essentially-injective {F = record { Functor (Functor.op (Hom[-,-] C)) }}
+    (Hom[-,-]-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
     ni : Hom-from C (Y .corep) ≅ⁿ Hom-from C (X .corep)

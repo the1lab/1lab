@@ -11,6 +11,8 @@ open import Cat.Prelude
 
 import Cat.Functor.Morphism
 import Cat.Reasoning
+
+open Functor
 ```
 -->
 
@@ -31,7 +33,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     module PSh[C] = Cat.Reasoning Cat[ C ^op , Sets ℓ ]
     module CoPSh[C] = Cat.Reasoning Cat[ C , Sets ℓ ]
     module よ = Cat.Functor.Morphism (よ C)
-    module よcov = Cat.Functor.Morphism (よcov C)
+    module Hom[-,-] = Cat.Functor.Morphism (Hom[-,-] C)
 
   private
     variable
@@ -73,13 +75,13 @@ Likewise, the covariant Yoneda embedding takes epis to monos, reflects
 monos to epis, and vice versa.
 
 ```agda
-  よcov-reverses-epi : is-epic f → CoPSh[C].is-monic (よcov₁ C f)
-  よcov-reverses-epi {f = f} f-epic α β p = ext λ x px →
+  Hom[-,-]-reverses-epi : is-epic f → CoPSh[C].is-monic (Hom[-,-] C .F₁ f)
+  Hom[-,-]-reverses-epi {f = f} f-epic α β p = ext λ x px →
     f-epic (α .η x px) (β .η x px) (unext p x px)
 
-  よcov-reflects-mono-to-epi : CoPSh[C].is-monic (よcov₁ C f) → is-epic f
-  よcov-reflects-mono-to-epi = よcov.faithful→reflects-mono (よcov-is-faithful C)
+  Hom[-,-]-reflects-mono-to-epi : CoPSh[C].is-monic (Hom[-,-] C .F₁ f) → is-epic f
+  Hom[-,-]-reflects-mono-to-epi = Hom[-,-].faithful→reflects-mono (Hom[-,-]-is-faithful C)
 
-  よcov-reflects-epi-to-mono : CoPSh[C].is-epic (よcov₁ C f) → is-monic f
-  よcov-reflects-epi-to-mono = よcov.faithful→reflects-epi (よcov-is-faithful C)
+  Hom[-,-]-reflects-epi-to-mono : CoPSh[C].is-epic (Hom[-,-] C .F₁ f) → is-monic f
+  Hom[-,-]-reflects-epi-to-mono = Hom[-,-].faithful→reflects-epi (Hom[-,-]-is-faithful C)
 ```

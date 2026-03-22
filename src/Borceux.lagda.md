@@ -147,7 +147,7 @@ _ = Disc
 _ = B
 _ = Slice
 _ = Ab↪Sets
-_ = Hom[_,-]
+_ = Hom-from
 _ = Const
 ```
 -->
@@ -178,7 +178,6 @@ _ = _=>_
 _ = Cat[_,_]
 _ = _◆_
 _ = ◆-interchange
-_ = よcov₁
 _ = yo-is-equiv
 _ = yo-naturalr
 _ = yo-naturall
@@ -195,7 +194,7 @@ _ = constⁿ
 * Proposition 1.3.4: `_◆_`{.Agda}
 * Proposition 1.3.5: `◆-interchange`{.Agda}
 * Examples 1.3.6:
-  * c. `よcov₁`{.Agda}
+  * c. (as part of `[-,-]`{.Agda})
   * d. `constⁿ`{.Agda}
 
 ### 1.4 Contravariant functors
@@ -207,7 +206,7 @@ definitions on a 1-1 basis.
 <!--
 ```agda
 _ = _^op
-_ = よcov
+_ = Hom[-,-]
 _ = よ₀
 _ = よ
 ```
@@ -216,7 +215,7 @@ _ = よ
 * Definition 1.4.1: `_^op`{.Agda}
 * Definition 1.4.2: `_^op`{.Agda}
 * Examples 1.4.3:
-  * a. `よcov`{.Agda}
+  * a. `Hom[-,-]`{.Agda}
   * b. `よ₀`{.Agda}
   * c. (as part of `よ`{.Agda})
   * d. `よ`{.Agda}
@@ -230,7 +229,7 @@ _ = is-full
 _ = is-fully-faithful
 _ = is-precat-iso
 _ = よ-is-fully-faithful
-_ = よcov-is-fully-faithful
+_ = Hom[-,-]-is-fully-faithful
 _ = Subcat
 _ = Restrict
 ```
@@ -243,7 +242,7 @@ _ = Restrict
   * 4. `is-precat-iso`{.Agda}
 * Proposition 1.5.2:
   * 1. `よ-is-fully-faithful`{.Agda}
-  * 2. `よcov-is-fully-faithful`{.Agda}
+  * 2. `Hom[-,-]-is-fully-faithful`{.Agda}
 * Definition 1.5.3: `Subcat`{.Agda}
 * Definition 1.5.4: `Restrict`{.Agda}
 
@@ -370,7 +369,7 @@ _ = Hom[-,-]
 ```agda
 _ = thin-functor
 _ = よ-preserves-mono
-_ = よcov-reverses-epi
+_ = Hom[-,-]-reverses-epi
 _ = Curry
 _ = Uncurry
 _ = has-section+monic→invertible
@@ -379,7 +378,7 @@ _ = has-section+monic→invertible
 
 * Exercise 1.11.1: 🚧 `thin-functor`{.Agda}
 * Exercise 1.11.5: `よ-preserves-mono`{.Agda}
-* Exercise 1.11.6: `よcov-reverses-epi`{.Agda}
+* Exercise 1.11.6: `Hom[-,-]-reverses-epi`{.Agda}
 * Exercise 1.11.8: 🚧 `Curry`{.Agda}, `Uncurry`{.Agda}
 * Exercise 1.11.9: `has-section+monic→invertible`{.Agda}
 

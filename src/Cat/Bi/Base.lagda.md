@@ -126,7 +126,29 @@ pasting diagrams like
 \end{tikzcd}\]
 ~~~
 
-whence the name **horizontal composition**.
+whence the name **horizontal composition**. This is the common diagonal
+of the naturality square for the left action of `compose`{.Agda},
+considered as a [[bifunctor]].
+
+<details>
+<summary>As discussed there, we define the abbreviations for the
+notation native to a bicategory natively through the module
+system.</summary>
+
+```agda
+  module compose {a b c} = Bifunctor (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
+  private
+    open module ↦ A B = Precategory (Hom A B)
+      public using () renaming (Ob to _↦_)
+
+    open module Hom₁ {A B} = Precategory (Hom A B)
+      public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
+
+    open module compose₀ {A B C} = Bifunctor (compose {A} {B} {C})
+      public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
+```
+
+</details>
 
 We now move onto the invertible 2-cells witnessing that the chosen
 identity map is a left- and right- unit element for the composition
@@ -147,27 +169,19 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ Hom compose)
         (compose-assocʳ Hom compose)
 
-  module compose {a b c} = Bifunctor (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
   module unitor-l {a b} = Cr._≅_ _ (unitor-l {a} {b})
   module unitor-r {a b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a b c d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
-It's traditional to refer to the left unitor as $\lambda$, to the right
-unitor as $\rho$, and to the associator as $\alpha$, so we set up those
-abbreviations here too:
+<details>
+<summary>It's traditional to refer to the left unitor as $\lambda$, to
+the right unitor as $\rho$, and to the associator as $\alpha$, so we set
+up those abbreviations here too:
+</summary>
 
 ```agda
-
   private
-    open module Hom₁ {A B} = Precategory (Hom A B)
-      public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
-    open module compose₀ {A B C} = Bifunctor (compose {A} {B} {C})
-      public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
-
-    open module ↦ A B = Precategory (Hom A B)
-      public using () renaming (Ob to _↦_)
-
     open module λ← {a b} = _=>_ (unitor-l.from {a} {b})
       public using () renaming (η to λ←)
     open module λ→ {a b} = _=>_ (unitor-l.to   {a} {b})
@@ -214,6 +228,8 @@ abbreviations here too:
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
     α→.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
+
+</details>
 
 The final data we need are coherences relating the left and right
 unitors (the **triangle identity**, nothing to do with adjunctions), and

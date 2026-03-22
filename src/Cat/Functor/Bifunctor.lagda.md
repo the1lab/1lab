@@ -269,22 +269,25 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {E : Precategory o₂
     where module mm = Make-bifunctor mm
 
 module _ (F : Bifunctor C D E) where
-  open Bifunctor F
+  private open module F = Bifunctor F
+  open Functor
+
+  -- Defining Flip in components instead of using make-bifunctor avoids
+  -- introducing a new "Flip.Right" which is distinct from Left.
+  --
+  -- This is basically the only avoidable case of generativity.
 ```
 -->
 
 ```agda
   Flip : Bifunctor D C E
-  Flip = make-bifunctor record
-    { F₀      = flip F₀
-    ; lmap    = rmap
-    ; rmap    = lmap
-    ; lmap-id = rmap-id
-    ; rmap-id = lmap-id
-    ; lmap-∘  = rmap-∘
-    ; rmap-∘  = lmap-∘
-    ; lrmap   = λ f g → sym (lrmap g f)
-    }
+  Flip .F₀ = Left
+
+  Flip .F₁ f .η A              = A ▶ f
+  Flip .F₁ f .is-natural x y g = rlmap _ _
+
+  Flip .F-id    = ext λ _ → rmap-id
+  Flip .F-∘ f g = ext λ _ → rmap-∘ _ _
 ```
 
 Finally, we can `Uncurry`{.Agda} $F$ into a functor $\cC \times \cD \to
@@ -292,10 +295,10 @@ Finally, we can `Uncurry`{.Agda} $F$ into a functor $\cC \times \cD \to
 
 ```agda
   Uncurry : Functor (C ×ᶜ D) E
-  Uncurry .Functor.F₀      = uncurry F₀
-  Uncurry .Functor.F₁      = uncurry _◆_
-  Uncurry .Functor.F-id    = ◆-id
-  Uncurry .Functor.F-∘ _ _ = ◆-∘
+  Uncurry .F₀      = uncurry F.F₀
+  Uncurry .F₁      = uncurry _◆_
+  Uncurry .F-id    = ◆-id
+  Uncurry .F-∘ _ _ = ◆-∘
 ```
 
 <!--
