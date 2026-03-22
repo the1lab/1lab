@@ -117,4 +117,4 @@ jobs:
     steps:
       - name: Deploy 🚀
         id: deployment
-        uses: actions/deploy-pages@v7
+        uses: actions/deploy-pages@v4
