@@ -148,35 +148,20 @@ module
 
     open _=>_
 
-    {-
-    This is a pretty evil hack to support using natural-◀ and friends
-    with postfix syntax.
-
-    Elaboration for postfix dot remembers (and depends on) whether a
-    copy is of a proper projection, so by shoving them into an arbitrary
-    record (which doesn't even have to be exported) before putting them
-    in the helper module, we can pretend that they're fields.
-    -}
-
-    record bifunctor-nat (eta : F => G) : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂ ⊔ h₃) where
-      field
-        natural-◀ : ∀ {f : C.Hom a b} {x} → eta · _ · _ E.∘ (f F.◀ x) ≡ (f G.◀ x) E.∘ eta · _ · _
-        natural-▶ : ∀ {a} {f : D.Hom x y} → eta · _ · _ E.∘ (a F.▶ f) ≡ (a G.▶ f) E.∘ eta · _ · _
-        natural-◆
-          : ∀ {f : C.Hom a b} {g : D.Hom x y}
-          → eta · _ · _ E.∘ (f F.◆ g) ≡ (f G.◆ g) E.∘ eta · _ · _
-
-    bifunctor-nat-impl : ∀ x → bifunctor-nat x
-    bifunctor-nat-impl eta = record
-      { natural-◀ = eta .is-natural _ _ _ ηₚ _
-      ; natural-▶ = eta .η _ .is-natural _ _ _
-      ; natural-◆ = E.pulll (eta .is-natural _ _ _ ηₚ _) ∙ E.extendr (eta .η _ .is-natural _ _ _)
-      }
-
   module Binatural (eta : F => G) where
-    open bifunctor-nat (bifunctor-nat-impl eta) public
+
+    natural-◀ : ∀ {f : C.Hom a b} {x} → eta · _ · _ E.∘ (f F.◀ x) ≡ (f G.◀ x) E.∘ eta · _ · _
+    natural-◀ = eta .is-natural _ _ _ ηₚ _
+
+    natural-▶ : ∀ {a} {f : D.Hom x y} → eta · _ · _ E.∘ (a F.▶ f) ≡ (a G.▶ f) E.∘ eta · _ · _
+    natural-▶ = eta .η _ .is-natural _ _ _
+
+    natural-◆
+      : ∀ {f : C.Hom a b} {g : D.Hom x y}
+      → eta · _ · _ E.∘ (f F.◆ g) ≡ (f G.◆ g) E.∘ eta · _ · _
+    natural-◆ = E.pulll (eta .is-natural _ _ _ ηₚ _) ∙ E.extendr (eta .η _ .is-natural _ _ _)
+
     private
-      module eta₀ = _=>_ eta
       open module eta₁ a = _=>_ (eta .η a) public
 
   open Binatural using (natural-◀ ; natural-▶ ; natural-◆) public
