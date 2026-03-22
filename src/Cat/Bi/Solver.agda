@@ -32,14 +32,10 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
     _↑   : {f g : Expr₁ X Y} → ⟦ f ⟧₁ ⇒ ⟦ g ⟧₁ → Expr₂ f g
     `id  : {f : Expr₁ X Y} → Expr₂ f f
     _`∘_ : {f g h : Expr₁ X Y} → Expr₂ g h → Expr₂ f g → Expr₂ f h
-    -- _`◆_
-    --   : {f₁ f₂ : Expr₁ Y Z} (α : Expr₂ f₁ f₂)
-    --   → {g₁ g₂ : Expr₁ X Y} (β : Expr₂ g₁ g₂) → Expr₂ (f₁ `⊗ g₁) (f₂ `⊗ g₂)
     _`▶_
       : (f : Expr₁ Y Z) {g₁ g₂ : Expr₁ X Y} → Expr₂ g₁ g₂ → Expr₂ (f `⊗ g₁) (f `⊗ g₂)
     _`◀_
       : {f₁ f₂ : Expr₁ Y Z} → Expr₂ f₁ f₂ → (g : Expr₁ X Y) → Expr₂ (f₁ `⊗ g) (f₂ `⊗ g)
-    -- α `◀ g = α `◆ `id {f = g}
     `λ← : (f : Expr₁ X Y) → Expr₂ (`id `⊗ f) f
     `λ→ : (f : Expr₁ X Y) → Expr₂ f (`id `⊗ f)
     `ρ← : (f : Expr₁ X Y) → Expr₂ (f `⊗ `id) f
@@ -54,14 +50,6 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
   infix  50 _↑
   infixr 40 _`∘_
   infixr 30 _`⊗_
-
-  -- _`▶_
-  --   : (f : Expr₁ Y Z) {g₁ g₂ : Expr₁ X Y} → Expr₂ g₁ g₂ → Expr₂ (f `⊗ g₁) (f `⊗ g₂)
-  -- f `▶ β = `id {f = f} `◆ β
-
-  -- _`◀_
-  --   : {f₁ f₂ : Expr₁ Y Z} → Expr₂ f₁ f₂ → (g : Expr₁ X Y) → Expr₂ (f₁ `⊗ g) (f₂ `⊗ g)
-  -- α `◀ g = α `◆ `id {f = g}
 
   infix 40 _`▶_
   infix 40 _`◀_
