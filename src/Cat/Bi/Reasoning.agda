@@ -34,6 +34,10 @@ private variable
 α≅ : (f ⊗ g) ⊗ h ≅ f ⊗ (g ⊗ h)
 α≅ = isoⁿ→iso associator _
 
+module ρ≅ {x y} {f : x ↦ y} = _≅_ (ρ≅ {f = f})
+module λ≅ {x y} {f : x ↦ y} = _≅_ (λ≅ {f = f})
+module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ {f = f} {g = g} {h = h})
+
 ▶-distribr : h ▶ (α ∘ β) ≡ h ▶ α ∘ h ▶ β
 ▶-distribr = ▶.F-∘ _ _
 
@@ -75,6 +79,10 @@ private variable
     ∙∙ sym (α→nat _ _ _)
     ∙∙ ap₂ _∘_ refl (▶.elimr refl ∙ ap (_◀ f) (◀.eliml refl))
   }
+
+module ▶-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (▶-assoc  {f = f} {g = g} {c = x})
+module ◀-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (◀-assoc  {f = f} {g = g} {c = x})
+module ◀-▶-comm {a b c} {f : b ↦ c} {g : a ↦ b}    = Isoⁿ (◀-▶-comm {f = f} {g = g})
 
 -- Proofs of triangle-α→, pentagon-α→, triangle-λ←, and λ←≡ρ← are taken from those in
 -- Cat.Monoidal.Base.  The proof of triangle-λ← involves a prism diagram which is
