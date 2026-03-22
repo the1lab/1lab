@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Diagram.Coend.Sets
 open import Cat.Functor.Naturality
 open import Cat.Instances.Product
@@ -271,6 +270,22 @@ Yg(y)}$ equal to $\day{h', Xf'(x), Yg'(y)}$ whenever $(f \otimes g)
     day h (X .F₁ f x) (Y .F₁ g y) ∎
 ```
 
+<!--
+```agda
+  day-glueₗ
+    : {i a b a' : Ob} {f : Hom a' a} {h : Hom i (a' ⊗ b)} {x : X ʻ a} {y : Y ʻ b}
+    → {fh : Hom i (a ⊗ b)} (p : fh ≡ (f ◀ _) ∘ h)
+    → day fh x y ≡ day h (X .F₁ f x) y
+  day-glueₗ p = day-glue (p ∙ ap (_∘ _) (▶.intror refl)) ∙ day-ap refl refl (Y .F-id ·ₚ _)
+
+  day-glueᵣ
+    : {i a b b' : Ob} {g : Hom b' b} {h : Hom i (a ⊗ b')} {x : X ʻ a} {y : Y ʻ b}
+    → {fh : Hom i (a ⊗ b)} (p : fh ≡ (_ ▶ g) ∘ h)
+    → day fh x y ≡ day h x (Y .F₁ g y)
+  day-glueᵣ p = day-glue (p ∙ ap (_∘ _) (◀.introl refl)) ∙ day-ap refl (X .F-id ·ₚ _) refl
+```
+-->
+
 Finally, we will use the formalism of [[cowedges]] to define functions
 out of $(F \otimes^D G)(i)$. Essentially, this says that we can define a
 function $f : (F \otimes^D G)(i) \to W$ whenever we can define
@@ -337,7 +352,7 @@ this extends to the quotient.
 
 module _ {X Y} where
   open Day X Y
-    using    (day ; day-ap ; day-apₘ ; day-swap ; Extensional-day-map ; H-Level-Day₀ ; day-glue)
+    using    (day ; day-ap ; day-apₘ ; day-swap ; Extensional-day-map ; H-Level-Day₀ ; day-glue ; day-glueₗ ; day-glueᵣ)
     renaming (factor to Day-rec)
     public
 
@@ -493,47 +508,48 @@ module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
   assoc-to₀ i h z .nadir = el! (Day₀ X (Y ⊗ᴰ Z) i)
   assoc-to₀ i h z .ψ (a' , b') (h' , x , y) = day (α→ _ ∘ (h' ◀ _) ∘ h) x (day id y z)
   assoc-to₀ i h z .extranatural (f , g) = ext λ h' x y →
-    day (α→ _ ∘ (((f ◀ _) ∘ (_ ▶ g)) ∘ h' ◀ _) ∘ h) x (day id y z)
-      ≡⟨ {!  !} ⟩
-    day (α→ _ ∘ (h' ◀ _) ∘ h) (X .F₁ f x) (day id (Y .F₁ g y) z)
-      ∎
-  -- day (α→ _ ∘ ((f ⊗₁ g) ∘ h' ◀ _) ∘ h) (X .F₁ id x) (day id (Y .F₁ id y) z)  ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (⊗.pushl (ap₂ _,_ refl (introl refl)))) (X .F-id ·ₚ x) (day-ap refl (Y .F-id ·ₚ y) refl) ⟩
-  -- day (α→ _ ∘ ((f ⊗₁ g) ◀ id) ∘ (h' ⊗₁ id) ∘ h) x (day id y z)               ≡⟨ day-apₘ (extendl (associator .Isoⁿ.to .is-natural _ _ _)) ⟩
-  -- day ((f ⊗₁ (g ⊗₁ id)) ∘ α→ _ _ _ ∘ (h' ⊗₁ id) ∘ h) x (day id y z)          ≡⟨ day-glue refl ⟩
-  -- day (α→ _ ∘ (h' ⊗₁ id) ∘ h) (X .F₁ f x) (day (id ∘ (g ⊗₁ id)) y z)         ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (ap (_∘ h) (ap₂ _⊗₁_ (introl ⊗.F-id) refl))) refl (day-apₘ id-comm-sym ∙∙ day-glue refl ∙∙ day-ap refl refl (Z .F-id ·ₚ z)) ⟩
-  -- day (α→ _ ∘ ((id ⊗₁ id) ∘ h' ⊗₁ id) ∘ h) (X .F₁ f x) (day id (Y .F₁ g y) z)  ∎
+    day (α→ _ ∘ ((f ⊗₁ g) ∘ h' ◀ _) ∘ h) x (day id y z)                  ≡⟨ day-glueₗ (extendl (ap₂ _∘_ refl (◀.expand refl) ∙ extendl (ap₂ _∘_ refl (-⊗-.lmap-◆ _) ∙ associator .Isoⁿ.to .is-natural _ _ _)) ∙ pullr (ap₂ _∘_ (ap (_ ▶_) (▶.elimr refl)) refl)) ⟩
+    day ((_ ▶ (g ◀ _)) ∘ (α→ _ ∘ (h' ◀ _)) ∘ h) (X .F₁ f x) (day id y z) ≡⟨ day-glueᵣ refl ⟩
+    day ((α→ _ ∘ (h' ◀ _)) ∘ h) (X .F₁ f x) (day (id ∘ (g ◀ _)) y z)     ≡⟨ day-ap (pullr refl) refl (day-glueₗ id-comm-sym) ⟩
+    day (α→ _ ∘ (h' ◀ _) ∘ h) (X .F₁ f x) (day id (Y .F₁ g y) z)         ∎
 
   assoc-to-cowedge : ∀ i → Cowedge (Day-diagram (X ⊗ᴰ Y) Z i)
   assoc-to-cowedge i .nadir = el! (Day₀ X (Y ⊗ᴰ Z) i)
   assoc-to-cowedge i .ψ (a , b) (h , x , y) = Day-rec (assoc-to₀ i h y) x
   assoc-to-cowedge i .extranatural (f , g) = ext λ h h' x y z →
-    {!   !}
-    -- day (α→ _ _ _ ∘ (h' ∘ id ⊗₁ id) ∘ (f ⊗₁ g) ∘ h) x (day id y (Z .F₁ id z))   ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (⊗.extendl (ap₂ _,_ (ap (_∘ f) (idr h') ∙ introl ⊗.F-id) id-comm-sym))) refl (day-ap refl refl (Z .F-id ·ₚ z)) ⟩
-    -- day (α→ _ _ _ ∘ ((id ⊗₁ id) ⊗₁ g) ∘ (h' ∘ f ⊗₁ id) ∘ h) x (day id y z)      ≡⟨ day-apₘ (extendl (associator .Isoⁿ.to .is-natural _ _ _)) ⟩
-    -- day ((id ⊗₁ (id ⊗₁ g)) ∘ α→ _ _ _ ∘ (h' ∘ f ⊗₁ id) ∘ h) x (day id y z)      ≡⟨ day-glue refl ⟩
-    -- day (α→ _ _ _ ∘ (h' ∘ f ⊗₁ id) ∘ h) (X .F₁ id x) (day (id ∘ (id ⊗₁ g)) y z) ≡⟨ day-ap (ap (α→ _ _ _ ∘_) (ap₂ _∘_ refl (introl ⊗.F-id))) (X .F-id ·ₚ x) (day-glue id-comm-sym ∙ day-ap refl (Y .F-id ·ₚ y) refl) ⟩
-    -- day (α→ _ _ _ ∘ (h' ∘ f ⊗₁ id) ∘ (id ⊗₁ id) ∘ h) x (day id y (Z .F₁ g z))   ∎
+    let
+      p =
+        (_ ▶ (_ ▶ g)) ∘ α→ _ ∘ (h' ∘ f ◀ _) ∘ h                         ≡⟨ extendl (ap₂ _∘_ (ap (_ ▶_) (-⊗-.rmap-◆ _) ∙ -⊗-.rmap-◆ _) refl ∙ sym (associator .Isoⁿ.to .is-natural _ _ _)) ⟩
+        α→ _ ∘ (((id ◀ _) ∘ (_ ▶ id) ◀ _) ∘ (_ ▶ g)) ∘ (h' ∘ f ◀ _) ∘ h ≡⟨ ap₂ _∘_ refl (extendl (pullr (-⊗-.rlmap _ _ ∙ ◀.pushl refl) ∙ ◀.eliml -⊗-.◆-id)) ⟩
+        α→ _ ∘ (h' ◀ _) ∘ ((f ◀ _) ∘ (_ ▶ g)) ∘ h                       ∎
+    in
+      day (α→ _ ∘ (h' ◀ _) ∘ (f ⊗₁ g) ∘ h) x (day id y z)      ≡⟨ day-glueᵣ (sym p) ⟩
+      day (α→ _ ∘ (h' ∘ f ◀ _) ∘ h) x (day (id ∘ (_ ▶ g)) y z) ≡⟨ day-ap refl refl (day-glueᵣ id-comm-sym) ⟩
+      day (α→ _ ∘ (h' ∘ f ◀ _) ∘ h) x (day id y (Z .F₁ g z))   ∎
 
   assoc-from₀ : ∀ i {a b} (h : Hom i (a ⊗ b)) (x : X ʻ a) → Cowedge (Day-diagram Y Z b)
   assoc-from₀ i h x .nadir = el! (Day₀ (X ⊗ᴰ Y) Z i)
   assoc-from₀ i h x .ψ (a' , b') (h' , y , z) = day (α← _ ∘ (_ ▶ h') ∘ h) (day id x y) z
   assoc-from₀ i h x .extranatural (f , g) = ext λ h' y z →
-    {!   !}
-    -- day (α← _ _ _ ∘ (id ⊗₁ ((f ⊗₁ g) ∘ h')) ∘ h) (day id x (Y .F₁ id y)) (Z .F₁ id z) ≡⟨ day-ap (extendl (pushr (ap₂ _⊗₁_ (introl refl) refl ∙ ⊗.F-∘ _ _) ∙∙ pullr refl ∙∙ extendl (associator .Isoⁿ.from .is-natural _ _ _))) (day-ap refl refl (Y .F-id ·ₚ y)) (Z .F-id ·ₚ z) ⟩
-    -- day (((id ⊗₁ f) ⊗₁ g) ∘ (α← _ _ _ ∘ (id ⊗₁ h')) ∘ h) (day id x y) z               ≡⟨ day-glue refl ⟩
-    -- day ((α← _ _ _ ∘ (id ⊗₁ h')) ∘ h) (day (id ∘ (id ⊗₁ f)) x y) (Z .F₁ g z)          ≡⟨ day-ap (pullr (ap (_∘ h) (ap₂ _⊗₁_ refl (introl ⊗.F-id)))) (day-glue id-comm-sym ∙ day-ap refl (X .F-id ·ₚ x) refl) refl ⟩
-    -- day (α← _ _ _ ∘ (id ⊗₁ ((id ⊗₁ id) ∘ h')) ∘ h) (day id x (Y .F₁ f y)) (Z .F₁ g z) ∎
+    day (α← _ ∘ (_ ▶ (f ⊗₁ g) ∘ h') ∘ h) (day id x y) z                         ≡⟨ day-apₘ (pulll (ap₂ _∘_ refl (▶.expand (ap₂ _∘_ refl refl) ∙ ap₂ _∘_ (-⊗-.rmap-◆ _) refl) ∙ extendl (associator .Isoⁿ.from .is-natural _ _ _))) ⟩
+    day ((((id ⊗₁ f) ⊗₁ g) ∘ α← _ ∘ (_ ▶ h')) ∘ h) (day id x y) z               ≡⟨ day-glue (pullr refl) ⟩
+    day ((α← _ ∘ (_ ▶ h')) ∘ h) (day (id ∘ (id ◀ _) ∘ (_ ▶ f)) x y) (Z .F₁ g z) ≡⟨ day-ap (pullr refl) (day-glueᵣ (cancell (◀.elimr refl) ∙ intror refl)) refl ⟩
+    day (α← _ ∘ (_ ▶ h') ∘ h) (day id x (Y .F₁ f y)) (Z .F₁ g z)                ∎
 
   assoc-from-cowedge : ∀ i → Cowedge (Day-diagram X (Y ⊗ᴰ Z) i)
   assoc-from-cowedge i .nadir = el! (Day₀ (X ⊗ᴰ Y) Z i)
   assoc-from-cowedge i .ψ (a , b) (h , x , y) = Day-rec (assoc-from₀ i h x) y
   assoc-from-cowedge i .extranatural (f , g) = ext λ h x h' y z →
-    {!   !}
-    -- day (α← _ _ _ ∘ (id ⊗₁ h' ∘ id) ∘ (f ⊗₁ g) ∘ h) (day id (X .F₁ id x) y) z   ≡⟨ day-ap (ap (α← _ _ _ ∘_) (⊗.extendl (ap₂ _,_ id-comm-sym (ap (_∘ g) (idr h') ∙ introl ⊗.F-id)))) (day-ap refl (X .F-id ·ₚ _) refl) refl ⟩
-    -- day (α← _ _ _ ∘ (f ⊗₁ (id ⊗₁ id)) ∘ (id ⊗₁ h' ∘ g) ∘ h) (day id x y) z      ≡⟨ day-apₘ (extendl (associator .Isoⁿ.from .is-natural _ _ _)) ⟩
-    -- day (((f ⊗₁ id) ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ h' ∘ g) ∘ h) (day id x y) z      ≡⟨ day-glue refl ⟩
-    -- day (α← _ _ _ ∘ (id ⊗₁ h' ∘ g) ∘ h) (day (id ∘ (f ⊗₁ id)) x y) (Z .F₁ id z) ≡⟨ day-ap (ap (α← _ _ _ ∘_) (ap₂ _∘_ refl (introl ⊗.F-id))) (day-glue id-comm-sym ∙ day-ap refl refl (Y .F-id ·ₚ y)) (Z .F-id ·ₚ z) ⟩
-    -- day (α← _ _ _ ∘ (id ⊗₁ h' ∘ g) ∘ (id ⊗₁ id) ∘ h) (day id (X .F₁ f x) y) z   ∎
+    let
+      p =
+        α← _ ∘ (_ ▶ h') ∘ ((f ◀ _) ∘ (_ ▶ g)) ∘ h                         ≡⟨ ap₂ _∘_ refl (pulll (pulll (-⊗-.rlmap _ _)) ∙ ap₂ _∘_ (▶.pullr refl) refl) ⟩
+        α← _ ∘ ((f ◀ _) ∘ (_ ▶ h' ∘ g)) ∘ h                               ≡⟨ pulll (extendl (ap₂ _∘_ refl (▶.intror -⊗-.◆-id) ∙ associator .Isoⁿ.from .is-natural _ _ _)) ⟩
+        ((((f ◀ _) ∘ (_ ▶ id) ◀ _) ∘ (_ ▶ id)) ∘ α← _ ∘ (_ ▶ h' ∘ g)) ∘ h ≡⟨ ap₂ _∘_ (extendl (ap₂ _∘_ (▶.elimr refl ∙ ap ◀.₁ (▶.elimr refl)) refl)) refl ∙ pullr (pullr refl) ⟩
+        ((f ◀ _) ◀ _) ∘ α← _ ∘ (_ ▶ h' ∘ g) ∘ h                           ∎
+    in
+      day (α← _ ∘ (_ ▶ h') ∘ (f ⊗₁ g) ∘ h) (day id x y) z      ≡⟨ day-glueₗ p ⟩
+      day (α← _ ∘ (_ ▶ h' ∘ g) ∘ h) (day (id ∘ (f ◀ _)) x y) z ≡⟨ day-ap refl (day-glueₗ id-comm-sym) refl ⟩
+      day (α← _ ∘ (_ ▶ h' ∘ g) ∘ h) (day id (X .F₁ f x) y) z   ∎
 
   Day-assoc : (X ⊗ᴰ Y) ⊗ᴰ Z ≅ⁿ X ⊗ᴰ (Y ⊗ᴰ Z)
   Day-assoc = to-natural-iso mk-assoc where
@@ -541,36 +557,34 @@ module _ (X Y Z : ⌞ PSh ℓ C ⌟) where
     mk-assoc .eta x = Day-rec (assoc-to-cowedge x)
     mk-assoc .inv x = Day-rec (assoc-from-cowedge x)
     mk-assoc .eta∘inv x = ext λ h x h' y z →
-      {!   !}
-      -- day (α→ _ _ _ ∘ (id ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h) x (day id y z) ≡⟨ day-apₘ (pulll (elimr ⊗.F-id) ∙ cancell (associator .Isoⁿ.invl ηₚ _)) ⟩
-      -- day ((id ⊗₁ h') ∘ h) x (day id y z)                                    ≡⟨ day-glue refl ⟩
-      -- day h (X .F₁ id x) (day (id ∘ h') y z)                                 ≡⟨ day-ap refl (X .F-id ·ₚ x) (day-apₘ (idl h')) ⟩
-      -- day h x (day h' y z)                                                   ∎
+      day (α→ _ ∘ (id ◀ _) ∘ α← _ ∘ (_ ▶ h') ∘ h) x (day id y z) ≡⟨ day-apₘ (pulll (◀.elimr refl) ∙ cancell (associator .Isoⁿ.invl ηₚ _)) ⟩
+      day ((_ ▶ h') ∘ h) x (day id y z)                          ≡⟨ day-glueᵣ refl ⟩
+      day h x (day (id ∘ h') y z)                                ≡⟨ day-ap refl refl (day-apₘ (idl h')) ⟩
+      day h x (day h' y z)                                       ∎
     mk-assoc .inv∘eta x = ext λ h h' x y z →
-      {!   !}
-      -- day (α← _ _ _ ∘ (id ⊗₁ id) ∘ α→ _ _ _ ∘ (h' ⊗₁ id) ∘ h) (day id x y) z ≡⟨ day-apₘ (pulll (elimr ⊗.F-id) ∙ cancell (associator .Isoⁿ.invr ηₚ _)) ⟩
-      -- day ((h' ⊗₁ id) ∘ h) (day id x y) z                                    ≡⟨ day-glue refl ⟩
-      -- day h (day (id ∘ h') x y) (Z .F₁ id z)                                 ≡⟨ day-ap refl (day-apₘ (idl h')) (Z .F-id ·ₚ z) ⟩
-      -- day h (day h' x y) z                                                   ∎
+      day (α← _ ∘ (_ ▶ id) ∘ α→ _ ∘ (h' ◀ _) ∘ h) (day id x y) z ≡⟨ day-apₘ (pulll3 (ap₂ _∘_ refl (▶.eliml refl) ∙ associator .Isoⁿ.invr ηₚ _) ∙ eliml refl) ⟩
+      day ((h' ◀ _) ∘ h) (day id x y) z                          ≡⟨ day-glueₗ refl ⟩
+      day h ⌜ day (id ∘ h') x y ⌝ z                              ≡⟨ day-ap refl (day-apₘ (idl h')) refl ⟩
+      day h (day h' x y) z                                       ∎
     mk-assoc .natural x y f = ext λ h h' x y z →
-      {!   !}
-      -- day ((α→ _ _ _ ∘ (h' ⊗₁ id) ∘ h) ∘ f) x (day id y z) ≡⟨ day-ap (pullr (pullr refl)) refl refl ⟩
-      -- day (α→ _ _ _ ∘ (h' ⊗₁ id) ∘ h ∘ f) x (day id y z)   ∎
+      day ((α→ _ ∘ (h' ◀ _) ∘ h) ∘ f) x (day id y z) ≡⟨ day-ap (pullr (pullr refl)) refl refl ⟩
+      day (α→ _ ∘ (h' ◀ _) ∘ h ∘ f) x (day id y z)   ∎
 
 private module M = Monoidal-category
 
 abstract
   day-triangle : ∀ {A B : ⌞ PSh ℓ C ⌟} → Day-map (Day-idr A .Isoⁿ.to) idnt ∘nt Day-assoc A (よ₀ C Unit) B .Isoⁿ.from ≡ Day-map idnt (Day-idl B .Isoⁿ.to)
-  day-triangle {A} {B} = ext λ i h x h' y z → {!   !}
-    -- day (α← _ _ _ ∘ (id ⊗₁ h') ∘ h) (A .F₁ (ρ← ∘ (id ⊗₁ y) ∘ id) x) z         ≡⟨ day-ap refl (ap₂ (A .F₁) (ap (ρ← ∘_) (idr _)) refl) (sym (B .F-id ·ₚ z)) ⟩
-    -- day (α← _ _ _ ∘ (id ⊗₁ h') ∘ h) (A .F₁ (ρ← ∘ (id ⊗₁ y)) x) (B .F₁ id z)   ≡⟨ sym (day-glue refl) ⟩
-    -- day ((ρ← ∘ (id ⊗₁ y) ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h) x z              ≡⟨ day-apₘ (⊗.pushl (ap₂ _,_ refl (introl refl))) ⟩
-    -- day ((ρ← ⊗₁ id) ∘ ((id ⊗₁ y) ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h) x z      ≡⟨ day-apₘ (ap₂ _∘_ refl (extendl (sym (associator .Isoⁿ.from .is-natural _ _ _)))) ⟩
-    -- day ((ρ← ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ (y ⊗₁ id)) ∘ (id ⊗₁ h') ∘ h) x z      ≡⟨ day-apₘ (pulll triangle) ⟩
-    -- day ((id ⊗₁ λ←) ∘ (id ⊗₁ (y ⊗₁ id)) ∘ (id ⊗₁ h') ∘ h) x z                 ≡⟨ day-apₘ (pulll (sym (⊗.F-∘ _ _)) ∙ pulll (sym (⊗.F-∘ _ _)) ∙ ap (_∘ h) (ap₂ _⊗₁_ (eliml (eliml refl)) (pullr refl))) ⟩
-    -- day ((id ⊗₁ (λ← ∘ (y ⊗₁ id) ∘ h')) ∘ h) x z                               ≡⟨ day-glue refl ⟩
-    -- day h (A .F₁ id x) (B .F₁ (λ← ∘ (y ⊗₁ id) ∘ h') z)                        ≡⟨ day-ap refl (A .F-id ·ₚ x) refl ⟩
-    -- day h x (B .F₁ (λ← ∘ (y ⊗₁ id) ∘ h') z)                                   ∎
+  day-triangle {A} {B} = ext λ i h x h' y z →
+    let
+      p =
+        (ρ← _ ∘ (_ ▶ y) ∘ id ◀ _) ∘ α← (_ , _ , _) ∘ (_ ▶ h') ∘ h                ≡⟨ extendl (◀.popr (ap₂ _∘_ (ap (_◀ _) (idr _ ∙ -⊗-.rmap-◆ _) ∙ -⊗-.lmap-◆ _) refl ∙ sym (associator .Isoⁿ.from .is-natural _ _ _))) ⟩
+        (ρ← _ ◀ _) ∘ (α← _ ∘ (id ◀ _) ∘ (_ ▶ (y ◀ _) ∘ (_ ▶ id))) ∘ (_ ▶ h') ∘ h ≡⟨ extendl (pulll triangle) ⟩
+        (_ ▶ λ← _) ∘ ((id ◀ _) ∘ (_ ▶ (y ◀ _) ∘ (_ ▶ id))) ∘ (_ ▶ h') ∘ h        ≡⟨ pulll3 (ap₂ _∘_ refl (pullr refl ∙ eliml -⊗-.lmap-id ∙ ▶.collapse refl) ∙ ▶.collapse (ap₂ _∘_ refl (pullr (▶.eliml refl)))) ⟩
+        (_ ▶ λ← _ ∘ (y ◀ _) ∘ h') ∘ h                                            ∎
+    in
+      day (α← _ ∘ (_ ▶ h') ∘ h) (A .F₁ (ρ← _ ∘ (_ ▶ y) ∘ id) x) z ≡⟨ sym (day-glueₗ (sym p)) ⟩
+      day ((_ ▶ λ← _ ∘ (y ◀ _) ∘ h') ∘ h) x z                     ≡⟨ day-glueᵣ refl ⟩
+      day h x (B .F₁ (λ← _ ∘ (y ◀ _) ∘ h') z)                     ∎
 
   day-pentagon
     : ∀ {A B C D : ⌞ PSh ℓ C ⌟}
@@ -580,20 +594,21 @@ abstract
     ≡ Day-assoc (A ⊗ᴰ B) C D .Isoⁿ.from
       ∘nt Day-assoc A B (C ⊗ᴰ D) .Isoⁿ.from
   day-pentagon {D = D} = ext λ i h a h' b h'' c d →
-    {!   !}
-    -- let
-    --   it =
-    --     (α← _ _ _ ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ α← _ _ _ ∘ (id ⊗₁ h'') ∘ h') ∘ h         ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ refl (⊗.pushl (ap₂ _,_ (intror refl) refl))) ⟩
-    --     (α← _ _ _ ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ α← _ _ _) ∘ (id ⊗₁ (id ⊗₁ h'') ∘ h') ∘ h ≡⟨ pulll refl ∙ extendl (pullr refl ∙ pentagon) ⟩
-    --     α← _ _ _ ∘ α← _ _ _ ∘ (id ⊗₁ (id ⊗₁ h'') ∘ h') ∘ h                            ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ refl (⊗.pushl (ap₂ _,_ (intror refl) refl))) ⟩
-    --     α← _ _ _ ∘ α← _ _ _ ∘ (id ⊗₁ (id ⊗₁ h'')) ∘ (id ⊗₁ h') ∘ h                    ≡⟨ ap₂ _∘_ refl (extendl (associator .Isoⁿ.from .is-natural _ _ _)) ⟩
-    --     α← _ _ _ ∘ ((id ⊗₁ id) ⊗₁ h'') ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h                    ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ (ap (_⊗₁ h'') ⊗.F-id) refl) ⟩
-    --     (α← _ _ _ ∘ (id ⊗₁ h'') ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h)                          ∎
-    -- in
-    --   day (α← _ _ _ ∘ (id ⊗₁ (α← _ _ _) ∘ (id ⊗₁ h'') ∘ h') ∘ h) (day (α← _ _ _ ∘ (id ⊗₁ id) ∘ id) (day id a b) c) d  ≡⟨ day-ap refl (day-ap (elimr (eliml ⊗.F-id) ∙ introl refl) refl refl) (sym (D .F-id ·ₚ d)) ⟩
-    --   day (α← _ _ _ ∘ (id ⊗₁ (α← _ _ _) ∘ (id ⊗₁ h'') ∘ h') ∘ h) (day (id ∘ α← _ _ _) (day id a b) c) (D .F₁ id d)    ≡⟨ sym (day-glue refl) ⟩
-    --   day ((α← _ _ _ ⊗₁ id) ∘ α← _ _ _ ∘ (id ⊗₁ (α← _ _ _) ∘ (id ⊗₁ h'') ∘ h') ∘ h) (day id (day id a b) c) d         ≡⟨ day-apₘ it ⟩
-    --   day (α← _ _ _ ∘ (id ⊗₁ h'') ∘ α← _ _ _ ∘ (id ⊗₁ h') ∘ h) (day id (day id a b) c) d                              ∎
+    let
+      it =
+        ((α← _ ◀ _) ∘ α← _ ∘ (_ ▶ α← _ ∘ (_ ▶ h'') ∘ h') ∘ h)                  ≡⟨ pulll3 (ap₂ _∘_ refl (▶.pushr refl) ∙ extendl pentagon) ⟩
+        (α← _ ∘ α← _ ∘ (_ ▶ (_ ▶ h'') ∘ h')) ∘ h                               ≡⟨ extendr (ap₂ _∘_ (ap₂ _∘_ refl (▶.expand refl) ∙ extendl (ap₂ _∘_ refl (ap (_ ▶_) (-⊗-.rmap-◆ _) ∙ -⊗-.rmap-◆ _) ∙ associator .Isoⁿ.from .is-natural _ _ _)) refl) ⟩
+        (α← _ ∘ (((id ◀ _) ∘ (_ ▶ id) ◀ _) ∘ (_ ▶ h'')) ∘ α← _ ∘ (_ ▶ h')) ∘ h ≡⟨ pullr (pullr (pullr refl) ∙ extendl (ap₂ _∘_ (◀.eliml (◀.eliml refl ∙ ▶.elim refl)) refl)) ⟩
+        (α← _ ∘ (_ ▶ h'') ∘ α← _ ∘ (_ ▶ h') ∘ h)                               ∎
+    in
+      day (α← _ ∘ (_ ▶ α← _ ∘ (_ ▶ h'') ∘ h') ∘ h) (day (α← _ ∘ (_ ▶ id) ∘ id) (day id a b) c) d
+        ≡⟨ day-ap refl (day-apₘ (elimr (▶.eliml refl) ∙ introl refl)) refl ⟩
+      day (α← _ ∘ (_ ▶ α← _ ∘ (_ ▶ h'') ∘ h') ∘ h) (day (id ∘ α← _) (day id a b) c) d
+        ≡⟨ sym (day-glueₗ refl) ⟩
+      day ((α← _ ◀ _) ∘ α← (_ , _ ⊗ _ , _) ∘ (_ ▶ α← (_ , _ , _) ∘ (_ ▶ h'') ∘ h') ∘ h) (day id (day id a b) c) d
+        ≡⟨ day-apₘ it ⟩
+      day (α← _ ∘ (_ ▶ h'') ∘ α← _ ∘ (_ ▶ h') ∘ h) (day id (day id a b) c) d
+        ∎
 
 Day-monoidal : Monoidal-category (PSh ℓ C)
 Day-monoidal .M.-⊗-      = Day-bifunctor
