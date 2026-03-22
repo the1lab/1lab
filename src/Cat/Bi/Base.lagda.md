@@ -387,7 +387,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 ```agda
     compositor
       : ∀ {A B C}
-      → C.compose.Uncurry F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ B.compose.Uncurry
+      → Uncurry C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ Uncurry B.compose
 
     unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```

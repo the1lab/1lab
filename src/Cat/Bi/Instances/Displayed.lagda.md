@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Discrete
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Morphism
 open import Cat.Bi.Base

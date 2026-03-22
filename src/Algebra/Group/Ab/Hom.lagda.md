@@ -4,9 +4,9 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
-open import Cat.Functor.Base
 open import Cat.Prelude
 ```
 -->

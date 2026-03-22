@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Monoidal.Base
 open import Cat.Prelude
@@ -36,7 +37,7 @@ We call the resulting structure a **monoidal category with diagonals**.
 ```agda
 record Diagonals : Type (o ⊔ ℓ) where
   field
-    diagonals : Id => -⊗-.Uncurry F∘ Cat⟨ Id , Id ⟩
+    diagonals : Id => Uncurry -⊗- F∘ Cat⟨ Id , Id ⟩
 
   module δ = _=>_ diagonals
   open δ renaming (η to δ) using () public

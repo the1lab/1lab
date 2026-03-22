@@ -83,69 +83,6 @@ Cat[ C , D ] .Pc.idl f       = ext λ x → D .Pc.idl _
 Cat[ C , D ] .Pc.assoc f g h = ext λ x → D .Pc.assoc _ _ _
 ```
 
-## Bifunctors
-
-Having defined the functor category $\Cat(D, E)$
-
-```agda
-Bifunctor : Precategory o ℓ → Precategory o₁ ℓ₁ → Precategory o₂ ℓ₂ → Type _
-Bifunctor C D E = Functor C Cat[ D , E ]
-```
-
-<!--
-```agda
-{-# DISPLAY Functor {o} {ℓ} {_} {_} C (Cat[_,_] {o₁} {ℓ₁} {o₂} {ℓ₂} D E) = Bifunctor {o} {ℓ} {o₁} {ℓ₁} {o₂} {ℓ₂} C D E #-}
-module _ {C : Precategory o ℓ} {D : Precategory o₁ ℓ₁} {E : Precategory o₂ ℓ₂} where
-  private
-    module C = Precategory C
-    module D = Precategory D
-    module E = Precategory E
-
-  record Make-bifunctor : Type (o ⊔ o₁ ⊔ o₂ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ₂) where
-```
--->
-
-```agda
-    field
-      F₀   : ⌞ C ⌟ → ⌞ D ⌟ → ⌞ E ⌟
-      lmap : ∀ {a b x} → C.Hom a b → E.Hom (F₀ a x) (F₀ b x)
-      rmap : ∀ {x y a} → D.Hom x y → E.Hom (F₀ a x) (F₀ a y)
-
-      lmap-id : ∀ {a x} → lmap {a} {x = x} C.id ≡ E.id
-      rmap-id : ∀ {x a} → rmap {x} {a = a} D.id ≡ E.id
-
-      lmap-∘
-        : ∀ {a b c x} (f : C.Hom b c) (g : C.Hom a b)
-        → lmap {x = x} (f C.∘ g) ≡ lmap f E.∘ lmap g
-
-      rmap-∘
-        : ∀ {x y z a} (f : D.Hom y z) (g : D.Hom x y)
-        → rmap {a = a} (f D.∘ g) ≡ rmap f E.∘ rmap g
-
-      lrmap
-        : ∀ {a b x y} (f : C.Hom a b) (g : D.Hom x y)
-        → lmap f E.∘ rmap g ≡ rmap g E.∘ lmap f
-
-  make-bifunctor : Make-bifunctor → Bifunctor C D E
-  {-# INLINE make-bifunctor #-}
-  make-bifunctor mm =
-    record
-      { F₀   = λ x → record
-        { F₀   = mm.F₀ x
-        ; F₁   = mm.rmap
-        ; F-id = mm.rmap-id
-        ; F-∘  = mm.rmap-∘
-        }
-      ; F₁   = λ x → record
-        { η          = λ _     → mm.lmap x
-        ; is-natural = λ x y z → mm.lrmap _ _
-        }
-      ; F-id = ext λ _ → mm.lmap-id
-      ; F-∘  = λ f g → ext λ _ → mm.lmap-∘ _ _
-      }
-    where module mm = Make-bifunctor mm
-```
-
 ## Paths between functors
 
 We'll also need the following foundational tool, characterising paths

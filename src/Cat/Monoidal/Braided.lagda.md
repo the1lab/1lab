@@ -35,7 +35,7 @@ a *braiding*: a [[natural isomorphism]] $\beta : A \otimes B \cong B
 ```agda
 record Braided-monoidal : Type (o ⊔ ℓ) where
   field
-    braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-)
+    braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-)
 ```
 
 <!--
@@ -143,7 +143,7 @@ A symmetric monoidal category simply bundles up a braided monoidal
 category with the property that its braiding is symmetric.
 
 ```agda
-is-symmetric-braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-) → Type (o ⊔ ℓ)
+is-symmetric-braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-) → Type (o ⊔ ℓ)
 is-symmetric-braiding braiding = ∀ {A B} → β→ ∘ β→ {A} {B} ≡ id
   where
     β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
@@ -169,7 +169,7 @@ follows by uniqueness of inverses.
 ```agda
 record make-symmetric-monoidal : Type (o ⊔ ℓ) where
   field
-    has-braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-)
+    has-braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-)
     symmetric : is-symmetric-braiding has-braiding
 ```
 

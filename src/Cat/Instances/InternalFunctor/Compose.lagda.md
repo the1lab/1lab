@@ -1,7 +1,7 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Instances.InternalFunctor

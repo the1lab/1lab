@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Coend.Sets
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Diagram.Coend
 open import Cat.Monoidal.Base
