@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Algebra.Monoid using (is-monoid)
 
 open import Cat.Monoidal.Instances.Cartesian
@@ -357,18 +356,18 @@ The unit laws are witnessed by the commutativity of this diagram:
 ~~~
 
 ```agda
-  Mon₁[_] .F₀' m .μ-unitl = {!   !}
-    -- (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ⊗₁ id)          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (refl ,ₚ F.introl refl)) ⟩
-    -- F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ⊗₁ F₁ C.id) ∘ (ε ⊗₁ id) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
-    -- F₁ (m .μ) ∘ F₁ (m .η C.⊗₁ C.id) ∘ φ ∘ (ε ⊗₁ id)    ≡⟨ F.pulll (m .μ-unitl) ⟩
-    -- F₁ (C.λ← _) ∘ φ ∘ (ε ⊗₁ id)                        ≡⟨ F-λ← ⟩
-    -- λ← _                                               ∎
-  Mon₁[_] .F₀' m .μ-unitr = {!   !}
-    -- (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .η) ∘ ε))          ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (F.introl refl ,ₚ refl)) ⟩
-    -- F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .η)) ∘ (id ⊗₁ ε) ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _) ⟩
-    -- F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .η) ∘ φ ∘ (id ⊗₁ ε)    ≡⟨ F.pulll (m .μ-unitr) ⟩
-    -- F₁ C.ρ← ∘ φ ∘ (id ⊗₁ ε)                            ≡⟨ F-ρ← ⟩
-    -- ρ←                                                 ∎
+  Mon₁[_] .F₀' m .μ-unitl =
+    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ◀ _)    ≡⟨ pullr (refl⟩∘⟨ ◀.expand refl) ⟩
+    F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ◀ _) ∘ (ε ◀ _)  ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _ ·ₚ _) ⟩
+    F₁ (m .μ) ∘ F₁ (m .η C.◀ _) ∘ φ ∘ (ε ◀ _)  ≡⟨ F.pulll (m .μ-unitl) ⟩
+    F₁ (C.λ← _) ∘ φ ∘ (ε ◀ _)                  ≡⟨ F-λ← ⟩
+    λ← _                                       ∎
+  Mon₁[_] .F₀' m .μ-unitr =
+    (F₁ (m .μ) ∘ φ) ∘ (_ ▶ (F₁ (m .η) ∘ ε))   ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
+    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .η)) ∘ (_ ▶ ε) ≡⟨ refl⟩∘⟨ extendl (φ.η _ ._=>_.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ F₁ (_ C.▶ m .η) ∘ φ ∘ (_ ▶ ε) ≡⟨ F.pulll (m .μ-unitr) ⟩
+    F₁ (C.ρ← _) ∘ φ ∘ (_ ▶ ε)                 ≡⟨ F-ρ← ⟩
+    ρ← _                                      ∎
 ```
 
 ... and the associativity by this one.
@@ -398,14 +397,14 @@ The unit laws are witnessed by the commutativity of this diagram:
 ~~~
 
 ```agda
-  Mon₁[_] .F₀' m .μ-assoc = {!   !}
-    -- (F₁ (m .μ) ∘ φ) ∘ (id ⊗₁ (F₁ (m .μ) ∘ φ))                       ≡⟨ pullr (refl⟩∘⟨ ⊗.expand (F.introl refl ,ₚ refl)) ⟩
-    -- F₁ (m .μ) ∘ φ ∘ (F₁ C.id ⊗₁ F₁ (m .μ)) ∘ (id ⊗₁ φ)              ≡⟨ (refl⟩∘⟨ extendl (φ.is-natural _ _ _)) ⟩
-    -- F₁ (m .μ) ∘ F₁ (C.id C.⊗₁ m .μ) ∘ φ ∘ (id ⊗₁ φ)                 ≡⟨ F.pulll (m .μ-assoc) ⟩
-    -- F₁ (m .μ C.∘ (m .μ C.⊗₁ C.id) C.∘ C.α← _ _ _) ∘ φ ∘ (id ⊗₁ φ)   ≡⟨ F.popr (F.popr F-α←) ⟩
-    -- F₁ (m .μ) ∘ F₁ (m .μ C.⊗₁ C.id) ∘ φ ∘ (φ ⊗₁ id) ∘ α← _ _ _      ≡˘⟨ pullr (extendl (φ.is-natural _ _ _)) ⟩
-    -- (F₁ (m .μ) ∘ φ) ∘ (F₁ (m .μ) ⊗₁ F₁ C.id) ∘ (φ ⊗₁ id) ∘ α← _ _ _ ≡⟨ refl⟩∘⟨ ⊗.pulll (refl ,ₚ F.eliml refl) ⟩
-    -- (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ⊗₁ id) ∘ α← _ _ _            ∎
+  Mon₁[_] .F₀' m .μ-assoc =
+    (F₁ (m .μ) ∘ φ) ∘ (_ ▶ F₁ (m .μ) ∘ φ)                ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
+    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .μ)) ∘ (_ ▶ φ)            ≡⟨ extend-inner (φ.η _ ._=>_.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ F₁ (_ C.▶ μ m) ∘ φ ∘ (_ ▶ φ)             ≡⟨ F.pulll (m .μ-assoc) ⟩
+    F₁ (μ m C.∘ (μ m C.◀ _) C.∘ C.α← _) ∘ φ ∘ (_ ▶ φ)    ≡⟨ F.popr (F.popr F-α←) ⟩
+    (F.F₁ (μ m) ∘ F.F₁ (μ m C.◀ _) ∘ φ ∘ (φ ◀ _) ∘ α← _) ≡˘⟨ pullr (extendl (φ.is-natural _ _ _ ·ₚ _)) ⟩
+    (F.F₁ (μ m) ∘ φ) ∘ (F₁ (μ m) ◀ _) ∘ (φ ◀ _) ∘ α← _   ≡⟨ refl⟩∘⟨ ◀.pulll refl ⟩
+    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ◀ _) ∘ α← _       ∎
 ```
 
 Functoriality for $\rm{Mon}_1(-)$ means that, given a monoid homomorphism
@@ -414,7 +413,9 @@ between the induced monoids on $FM$ and $FN$.
 
 ```agda
   Mon₁[_] .F₁' h .pres-η = F.pulll (h .pres-η)
-  Mon₁[_] .F₁' h .pres-μ = F.extendl (h .pres-μ) ∙ pushr {! (sym (φ.η _ ._=>_.is-natural _ _ _)) !}
+  Mon₁[_] .F₁' h .pres-μ = F.extendl (h .pres-μ) ∙ pushr
+    ( F.popr (sym (φ.η _ ._=>_.is-natural _ _ _))
+    ∙ extendl (sym (φ.is-natural _ _ _ ηₚ _)))
   Mon₁[_] .F-id' = prop!
   Mon₁[_] .F-∘' = prop!
 ```
