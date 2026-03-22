@@ -1,10 +1,14 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Functor.Coherence
 open import Cat.Diagram.Pullback
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Cartesian.Indexing as Idx
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
@@ -105,7 +109,12 @@ With all that in place, we can construct the total category!
   ∫ .Precategory.assoc _ _ _ = ∫Hom-path (assoc _ _ _) (assoc' _ _ _)
 ```
 
-<!--
+## Relation to base and fibre categories
+
+The total category of $\cE$ comes equipped with a canonical functor
+relating it to the base category: the projection functor which extracts
+the first component of objects and morphisms.
+
 ```agda
   πᶠ : Functor ∫ B
   πᶠ .Functor.F₀ = fst
@@ -113,12 +122,52 @@ With all that in place, we can construct the total category!
   πᶠ .Functor.F-id = refl
   πᶠ .Functor.F-∘ f g = refl
 ```
+
+Furthermore, the [[fibre categories]] $\cE^*(x)$ can be canonically
+included into the total category, by pairing objects over $x$ with $x$
+itself and pairing vertical morphisms with the identity.
+
+```agda
+  ιᶠ : (b : Ob) → Functor (Fibre E b) ∫
+  ιᶠ b .Functor.F₀ x    = b , x
+  ιᶠ b .Functor.F₁ f    = ∫hom id f
+  ιᶠ b .Functor.F-id    = refl
+  ιᶠ b .Functor.F-∘ f g = ∫Hom-path (sym (idl id)) (symP (coh[ idl id ] _))
+```
+
+<!--
+```agda
+  module _ (fib : Cartesian-fibration E) where
+    open Cartesian-fibration E fib
+    open Idx E fib
+
+    ιᶠ-base-change : ∀ {a b} (f : Hom a b) → ιᶠ a F∘ base-change f => ιᶠ b
+    ιᶠ-base-change f = nt where
+      nt : _ => _
+      nt ._=>_.η x              = ∫hom f (π* f x)
+      nt ._=>_.is-natural x y g = ∫Hom-path id-comm $ begin[]
+        π* f y ∘' π*.universal id (hom[] (g ∘' π* f x)) ≡[]⟨ π*.commutes id _ ⟩
+        hom[] (g ∘' π* f x)                             ≡[]⟨ unwrap (sym (id-comm)) ⟩
+        g ∘' π* f x                                     ∎[]
+
+    ιᶠ-base-change-comp
+      : ∀ {a b c} (f : Hom b c) (g : Hom a b)
+      → ιᶠ-base-change (f ∘ g)
+      ≡ ιᶠ-base-change f
+      ∘nt nat-unassoc-from (ιᶠ-base-change g ◂ base-change f)
+      ∘nt (ιᶠ a ▸ base-change-comp f g .CR._≅_.to)
+    ιᶠ-base-change-comp f g = ext λ _ → ∫Hom-path (ap (f ∘_) (sym (idr _))) $ begin[]
+      π* (f ∘ g) _                                                                ≡[]˘⟨ π*.commutes g _ ⟩
+      π* f _ ∘' π*.universal g (π* (f ∘ g) _)                                     ≡[]⟨ wrapr _ ⟩
+      π* f _ ∘' hom[] (π*.universal g (π* (f ∘ g) _))                             ≡[]˘⟨ refl⟩∘'⟨ π*.commutes id _ ⟩
+      π* f _ ∘' π* g _ ∘' π*.universal id (hom[] (π*.universal g (π* (f ∘ g) _))) ∎[]
+```
 -->
 
 ## Morphisms in the total category
 
-Isomorphisms in the total category of $E$ consist of pairs of
-isomorphisms in $B$ and $E$.
+Isomorphisms in the total category of $\cE$ consist of pairs of
+isomorphisms in $\cB$ and $\cE$.
 
 ```agda
   private module ∫E = CR ∫
