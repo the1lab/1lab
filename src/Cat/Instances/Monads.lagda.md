@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Compose
@@ -8,7 +9,6 @@ open import Cat.Diagram.Monad
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 open Precategory

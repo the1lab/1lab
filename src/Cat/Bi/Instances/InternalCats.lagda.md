@@ -56,7 +56,7 @@ the identity internal natural isomorphism as-is.
 
 ```agda
   ƛ : ∀ {A B : Internal-cat}
-    → Id ≅ⁿ Right (Fi∘-functor A B B) Idi
+    → Id ≅ⁿ Bifunctor.Right (Fi∘-functor A B B) Idi
   ƛ {B = B} = to-natural-iso ni where
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _
@@ -75,7 +75,7 @@ the identity internal natural isomorphism as-is.
     ni .make-natural-iso.natural F G α = Internal-nat-path λ x → id-commi
 
   ρ : ∀ {A B : Internal-cat}
-    → Id ≅ⁿ Left (Fi∘-functor A A B) Idi
+    → Id ≅ⁿ Bifunctor.Left (Fi∘-functor A A B) Idi
   ρ {B = B} = to-natural-iso ni where
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _

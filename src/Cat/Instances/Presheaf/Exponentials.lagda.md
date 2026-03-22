@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Hom.Yoneda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
@@ -12,7 +13,6 @@ open import Cat.Prelude
 open import Data.Sum
 
 import Cat.Instances.Presheaf.Limits as Lim
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cat
 ```
 -->

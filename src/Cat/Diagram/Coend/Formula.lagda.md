@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Instances.Twisted
 open import Cat.Functor.Constant
@@ -9,7 +10,6 @@ open import Cat.Diagram.Coend
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as Cat
 ```
@@ -58,7 +58,6 @@ module _ (F : Bifunctor (C ^op) C D) where
     module F = Bifunctor F
     open _=>_
     open Twist
-    open Bifunctor
 
   cocone→cowedge : ∀ {x} → twistᵒᵖ F => Const x → Cowedge F
   cocone→cowedge eta .nadir = _

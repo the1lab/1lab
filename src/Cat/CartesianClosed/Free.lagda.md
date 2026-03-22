@@ -8,6 +8,7 @@ open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Displayed.Section
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Kan.Nerve
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -29,7 +30,6 @@ import Cat.Instances.Presheaf.Exponentials as Pe
 import Cat.Displayed.Instances.Gluing
 import Cat.Instances.Presheaf.Limits as Pl
 import Cat.Displayed.Reasoning
-import Cat.Functor.Bifunctor as Bifunctor
 
 open Slice-hom
 open Functor

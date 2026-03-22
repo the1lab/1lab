@@ -6,6 +6,7 @@ open import Cat.Displayed.Diagram.Total.Product
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -16,7 +17,6 @@ open import Cat.Functor.Closed
 open import Cat.Cartesian
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 

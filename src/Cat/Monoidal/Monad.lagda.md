@@ -190,7 +190,7 @@ monoidal monad on $\cC$.
   monoidal-monad^rev m = record
     { monad-monoidal = record
       { ε = ε
-      ; F-mult = NT (λ _ → NT (λ _ → φ) λ _ _ _ → φ.is-natural _ _ _ ηₚ _) λ _ _ _ → ext λ _ → φ.η _ ._=>_.is-natural _ _ _
+      ; F-mult = NT (λ _ → NT (λ _ → φ) λ _ _ _ → φ.natural-◀) λ _ _ _ → ext λ _ → φ.natural-▶
       ; F-α→ = M-α←
       ; F-λ← = M-ρ←
       ; F-ρ← = M-λ←

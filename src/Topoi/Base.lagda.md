@@ -19,6 +19,7 @@ open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Properties
 open import Cat.Instances.Elements
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Pullback
@@ -30,7 +31,6 @@ open import Cat.Functor.Slice
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 ```
 -->

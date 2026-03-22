@@ -5,15 +5,12 @@ open import Cat.Instances.Functor.Duality
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Closed
 open import Cat.Diagram.Duals
 open import Cat.Prelude
-
-import Cat.Functor.Bifunctor as Bi
-
-open Bi using (Uncurry)
 ```
 -->
 
@@ -61,7 +58,7 @@ $\cD$-shaped diagrams in $\cC$, which, by assumption, all have
 limits.
 
 ```agda
-    module F' = Bi F
+    module F' = Bifunctor F
     module D-lim x = Limit (has-D-lims (F'.Left x))
 ```
 

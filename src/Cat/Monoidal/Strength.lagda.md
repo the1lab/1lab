@@ -5,6 +5,7 @@ open import 1Lab.Reflection.Record
 
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Monoidal.Braided
 open import Cat.Monoidal.Reverse
@@ -54,10 +55,10 @@ interacting nicely with the left unitor and associator.
     field
       left-strength : precompose₂ -⊗- Id F => postcompose₂ F -⊗-
 
-    module σ = _=>_ left-strength
+    module σ = Binatural left-strength
 
     σ : ∀ {A B} → Hom (A ⊗ F₀ B) (F₀ (A ⊗ B))
-    σ = σ.η _ .η _
+    σ = σ.η _ _
 
     field
       left-strength-λ← : ∀ {A} → F₁ (λ← A) ∘ σ ≡ λ← _
@@ -79,10 +80,10 @@ interacting nicely with the *right* unitor and associator.
     field
       right-strength : precompose₂ -⊗- F Id => postcompose₂ F -⊗-
 
-    module τ = _=>_ right-strength
+    module τ = Binatural right-strength
 
     τ : ∀ {A B} → Hom (F₀ A ⊗ B) (F₀ (A ⊗ B))
-    τ = τ.η _ .η _
+    τ = τ.η _ _
 
     field
       right-strength-ρ← : ∀ {A} → F₁ (ρ← A) ∘ τ ≡ ρ← _
@@ -210,12 +211,12 @@ is extremely tedious, so we leave the details to the curious reader.
       r .right-strength .η _ .η _ = F₁ β→ ∘ σ ∘ β←
       r .right-strength .η _ .is-natural x y f =
         (F₁ β→ ∘ σ ∘ β←) ∘ (_ ▶ f)    ≡⟨ pullr (pullr (β←▶ _)) ⟩
-        F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ (refl⟩∘⟨ extendl (σ.is-natural _ _ _ ηₚ _)) ⟩
+        F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ refl⟩∘⟨ extendl σ.natural-◀ ⟩
         F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl (β→◀ _) ⟩
         F₁ (_ ▶ f) ∘ F.₁ β→ ∘ σ ∘ β←  ∎
       r .right-strength .is-natural _ _ f = ext λ _ →
         (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ f ◀ _) ≡⟨ pullr (pullr (β←◀ _)) ⟩
-        F₁ β→ ∘ σ ∘ (_ ▶ F₁ f) ∘ β←   ≡⟨ extend-inner (σ.η _ .is-natural _ _ _) ⟩
+        F₁ β→ ∘ σ ∘ (_ ▶ F₁ f) ∘ β←   ≡⟨ extend-inner σ.natural-▶ ⟩
         F₁ β→ ∘ F₁ (_ ▶ f) ∘ σ ∘ β←   ≡⟨ F.extendl (β→▶ _) ⟩
         F₁ (f ◀ _) ∘ F₁ β→ ∘ σ ∘ β←   ∎
       r .right-strength-ρ← =
@@ -297,13 +298,13 @@ module _ {o ℓ} {C : Precategory o ℓ}
   strength^rev = Iso→Equiv is where
     is : Iso (Left-strength (M ^rev) F) (Right-strength M F)
     is .fst l = record
-      { right-strength    = NT (λ _ → NT (λ _ → σ) (λ _ _ _ → σ.is-natural _ _ _ ηₚ _)) λ _ _ _ → ext λ _ → σ.η _ .is-natural _ _ _
+      { right-strength    = NT (λ _ → NT (λ _ → σ) (λ _ _ _ → σ.natural-◀)) λ _ _ _ → ext λ _ → σ.natural-▶
       ; right-strength-ρ← = left-strength-λ←
       ; right-strength-α← = left-strength-α→ ∙ ap₂ _∘_ refl (sym (pullr (M.▶.eliml refl)))
       }
       where open Left-strength l
     is .snd .from r = record
-      { left-strength    = NT (λ _ → NT (λ _ → τ) λ _ _ _ → τ.is-natural _ _ _ ηₚ _) λ _ _ _ → ext λ _ → τ.η _ .is-natural _ _ _
+      { left-strength    = NT (λ _ → NT (λ _ → τ) λ _ _ _ → τ.natural-◀) λ _ _ _ → ext λ _ → τ.natural-▶
       ; left-strength-λ← = right-strength-ρ←
       ; left-strength-α→ = right-strength-α← ∙ ap₂ _∘_ refl (ap₂ _∘_ (M.▶.elimr refl) refl)
       }

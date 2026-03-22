@@ -6,6 +6,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
@@ -14,7 +15,6 @@ open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
 ```
@@ -203,7 +203,7 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     λ f → funext λ g → sym (L-adjunct-naturall adj _ _)
 
   adjunct-hom-iso
-    : Bi.Uncurry (Hom[-,-] C) F∘ (Functor.op L F× Id) ≅ⁿ Bi.Uncurry (Hom[-,-] D) F∘ (Id F× R)
+    : Uncurry (Hom[-,-] C) F∘ (Functor.op L F× Id) ≅ⁿ Uncurry (Hom[-,-] D) F∘ (Id F× R)
   adjunct-hom-iso = iso→isoⁿ (λ _ → equiv→iso hom-equiv) λ (f , h) → ext λ h →
     D.pullr refl
       ∙ sym (L-adjunct-natural₂ adj _ _ _)

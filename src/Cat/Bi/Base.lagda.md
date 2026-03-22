@@ -1,13 +1,13 @@
 <!--
 ```agda
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Compose renaming (_◆_ to _◇_)
 open import Cat.Functor.Closed
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 ```
@@ -24,7 +24,7 @@ module Cat.Bi.Base where
 open _=>_
 
 module _ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ') (C : ∀ {A B C} → Bifunctor (H B C) (H A B) (H A C)) where
-  private module C {a b c} = Bi (C {a} {b} {c})
+  private module C {a b c} = Bifunctor (C {a} {b} {c})
   open Functor
 
   compose-assocˡ : ∀ {A B C D} → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
@@ -138,8 +138,8 @@ naturally isomorphic to the identity functor.
 
 ```agda
   field
-    unitor-l : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bi.Right compose id)
-    unitor-r : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bi.Left compose id)
+    unitor-l : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Right compose id)
+    unitor-r : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Left compose id)
 
     associator
       : ∀ {A B C D}
@@ -147,7 +147,7 @@ naturally isomorphic to the identity functor.
         (compose-assocˡ Hom compose)
         (compose-assocʳ Hom compose)
 
-  module compose {a b c} = Bi (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
+  module compose {a b c} = Bifunctor (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
   module unitor-l {a b} = Cr._≅_ _ (unitor-l {a} {b})
   module unitor-r {a b} = Cr._≅_ _ (unitor-r {a} {b})
   module associator {a b c d} = Cr._≅_ _ (associator {a} {b} {c} {d})
@@ -162,7 +162,7 @@ abbreviations here too:
   private
     open module Hom₁ {A B} = Precategory (Hom A B)
       public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
-    open module compose₀ {A B C} = Bi (compose {A} {B} {C})
+    open module compose₀ {A B C} = Bifunctor (compose {A} {B} {C})
       public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
 
     open module ↦ A B = Precategory (Hom A B)
@@ -261,10 +261,10 @@ module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
 
   postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
-  postaction = Bi.Right compose
+  postaction = Bifunctor.Right compose
 
   preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
-  preaction = Bi.Left compose
+  preaction = Bifunctor.Left compose
 ```
 -->
 

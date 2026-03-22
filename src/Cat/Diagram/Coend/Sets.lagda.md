@@ -1,13 +1,12 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Coend
 open import Cat.Prelude
 
 open import Data.Set.Coequaliser
-
-import Cat.Functor.Bifunctor as Bi
 ```
 -->
 
@@ -53,7 +52,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (F : Bifunctor (C ^op) C (Sets (o ⊔ �
   open Precategory C
   open Cowedge
   open Coend
-  open Bi F
+  open Bifunctor F
 ```
 
 We start by defining the two maps we will coequalise along. Quite a

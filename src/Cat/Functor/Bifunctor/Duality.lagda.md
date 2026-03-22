@@ -1,10 +1,9 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
-
-import Cat.Functor.Bifunctor as Bi
 ```
 -->
 
@@ -24,7 +23,7 @@ private
   module C = Precategory C
   module D = Precategory D
   module E = Precategory E
-  module F = Bi F
+  module F = Bifunctor F
 open Make-bifunctor
 ```
 -->
@@ -51,9 +50,9 @@ bop = make-bifunctor λ where
 This is compatible with fixing objects in the following sense:
 
 ```agda
-bop-Left : ∀ {d : D.Ob} → Functor.op (F.Left d) ≡ (Bi.Left bop) d
+bop-Left : ∀ {d : D.Ob} → Functor.op (F.Left d) ≡ Bifunctor.Left bop d
 bop-Left = Functor-path (λ x → refl) (λ f → refl)
 
-bop-Right : ∀ {c : C.Ob} → Functor.op (F.Right c) ≡ (Bi.Right bop) c
+bop-Right : ∀ {c : C.Ob} → Functor.op (F.Right c) ≡ Bifunctor.Right bop c
 bop-Right = Functor-path (λ x → refl) (λ f → refl)
 ```

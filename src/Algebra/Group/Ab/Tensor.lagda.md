@@ -9,6 +9,7 @@ open import Algebra.Group
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
@@ -18,8 +19,6 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 open import Data.Int.Base
-
-import Cat.Functor.Bifunctor as Bifunctor
 ```
 -->
 

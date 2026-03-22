@@ -464,8 +464,7 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
 ~~~
 
 ```agda
-    is-natural : (x y : _) (f : C.Hom x y)
-               → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
+    is-natural : ∀ x y (f : C.Hom x y) → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
 ```
 
 Natural transformations also dualise. The opposite of $\eta : F

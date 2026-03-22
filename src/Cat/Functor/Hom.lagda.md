@@ -1,12 +1,12 @@
 <!--
 ```agda
 open import Cat.Functor.Properties
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Closed
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Reasoning
 ```
 -->
@@ -52,7 +52,7 @@ Hom[-,-] = make-bifunctor record where
 We also can define "partially applied" versions of the hom functor:
 ```agda
 Hom[_,-] : Ob → Functor C (Sets h)
-Hom[_,-] = Bi.Right Hom[-,-]
+Hom[_,-] = Bifunctor.Right Hom[-,-]
 ```
 
 ## The Yoneda embedding
@@ -73,7 +73,7 @@ morphisms into that object.
 
 ```agda
 よ : Bifunctor C (C ^op) (Sets h)
-よ = Bi.Flip Hom[-,-]
+よ = Flip Hom[-,-]
 ```
 
 We can describe the object part of this functor as taking an object $c$

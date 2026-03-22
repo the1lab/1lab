@@ -1,10 +1,10 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 
@@ -84,5 +84,5 @@ evF {C = C} {D = D} = make-bifunctor record where
   lrmap f g = f .is-natural _ _ _
 
 eval-at : ⌞ C ⌟ → Functor Cat[ C , D ] D
-eval-at {C = C} {D = D} = Bi.Left evF
+eval-at {C = C} {D = D} = Bifunctor.Left evF
 ```

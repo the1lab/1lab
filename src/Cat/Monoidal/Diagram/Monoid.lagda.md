@@ -358,13 +358,13 @@ The unit laws are witnessed by the commutativity of this diagram:
 ```agda
   Mon₁[_] .F₀' m .μ-unitl =
     (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ◀ _)    ≡⟨ pullr (refl⟩∘⟨ ◀.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ◀ _) ∘ (ε ◀ _)  ≡⟨ refl⟩∘⟨ extendl (φ.is-natural _ _ _ ·ₚ _) ⟩
+    F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ◀ _) ∘ (ε ◀ _)  ≡⟨ refl⟩∘⟨ extendl φ.natural-◀ ⟩
     F₁ (m .μ) ∘ F₁ (m .η C.◀ _) ∘ φ ∘ (ε ◀ _)  ≡⟨ F.pulll (m .μ-unitl) ⟩
     F₁ (C.λ← _) ∘ φ ∘ (ε ◀ _)                  ≡⟨ F-λ← ⟩
     λ← _                                       ∎
   Mon₁[_] .F₀' m .μ-unitr =
     (F₁ (m .μ) ∘ φ) ∘ (_ ▶ (F₁ (m .η) ∘ ε))   ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .η)) ∘ (_ ▶ ε) ≡⟨ refl⟩∘⟨ extendl (φ.η _ ._=>_.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .η)) ∘ (_ ▶ ε) ≡⟨ refl⟩∘⟨ extendl φ.natural-▶ ⟩
     F₁ (m .μ) ∘ F₁ (_ C.▶ m .η) ∘ φ ∘ (_ ▶ ε) ≡⟨ F.pulll (m .μ-unitr) ⟩
     F₁ (C.ρ← _) ∘ φ ∘ (_ ▶ ε)                 ≡⟨ F-ρ← ⟩
     ρ← _                                      ∎
@@ -399,10 +399,10 @@ The unit laws are witnessed by the commutativity of this diagram:
 ```agda
   Mon₁[_] .F₀' m .μ-assoc =
     (F₁ (m .μ) ∘ φ) ∘ (_ ▶ F₁ (m .μ) ∘ φ)                ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .μ)) ∘ (_ ▶ φ)            ≡⟨ extend-inner (φ.η _ ._=>_.is-natural _ _ _) ⟩
+    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .μ)) ∘ (_ ▶ φ)            ≡⟨ extend-inner φ.natural-▶ ⟩
     F₁ (m .μ) ∘ F₁ (_ C.▶ μ m) ∘ φ ∘ (_ ▶ φ)             ≡⟨ F.pulll (m .μ-assoc) ⟩
     F₁ (μ m C.∘ (μ m C.◀ _) C.∘ C.α← _) ∘ φ ∘ (_ ▶ φ)    ≡⟨ F.popr (F.popr F-α←) ⟩
-    (F.F₁ (μ m) ∘ F.F₁ (μ m C.◀ _) ∘ φ ∘ (φ ◀ _) ∘ α← _) ≡˘⟨ pullr (extendl (φ.is-natural _ _ _ ·ₚ _)) ⟩
+    (F.F₁ (μ m) ∘ F.F₁ (μ m C.◀ _) ∘ φ ∘ (φ ◀ _) ∘ α← _) ≡˘⟨ pullr (extendl φ.natural-◀) ⟩
     (F.F₁ (μ m) ∘ φ) ∘ (F₁ (μ m) ◀ _) ∘ (φ ◀ _) ∘ α← _   ≡⟨ refl⟩∘⟨ ◀.pulll refl ⟩
     (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ◀ _) ∘ α← _       ∎
 ```
@@ -414,8 +414,7 @@ between the induced monoids on $FM$ and $FN$.
 ```agda
   Mon₁[_] .F₁' h .pres-η = F.pulll (h .pres-η)
   Mon₁[_] .F₁' h .pres-μ = F.extendl (h .pres-μ) ∙ pushr
-    ( F.popr (sym (φ.η _ ._=>_.is-natural _ _ _))
-    ∙ extendl (sym (φ.is-natural _ _ _ ηₚ _)))
+    (F.popr (sym φ.natural-▶) ∙ extendl (sym φ.natural-◀))
   Mon₁[_] .F-id' = prop!
   Mon₁[_] .F-∘' = prop!
 ```

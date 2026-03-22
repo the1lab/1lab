@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Solver
 open import Cat.Displayed.Fibre
@@ -8,7 +9,6 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Functor.Bifunctor as Bi
 
 open Make-bifunctor
 open Functor
@@ -62,8 +62,8 @@ We can also define partially applied versions of this functor.
 
 ```agda
 Hom-over-from : ∀ {x y} → Hom x y → Ob[ x ] → Functor (Fibre ℰ y) (Sets ℓ')
-Hom-over-from u x' = Bi.Right (Hom-over u) x'
+Hom-over-from u x' = Bifunctor.Right (Hom-over u) x'
 
 Hom-over-into : ∀ {x y} → Hom x y → Ob[ y ] → Functor (Fibre ℰ x ^op) (Sets ℓ')
-Hom-over-into u y' = Bi.Left (Hom-over u) y'
+Hom-over-into u y' = Bifunctor.Left (Hom-over u) y'
 ```

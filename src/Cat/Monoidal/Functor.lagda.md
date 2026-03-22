@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Functor.Naturality
 open import Cat.Monoidal.Diagonals
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Monoidal.Braided
 open import Cat.Functor.Compose
@@ -64,10 +65,10 @@ record Lax-monoidal-functor-on (F : Functor C D) : Type (oc ⊔ ℓc ⊔ od ⊔ 
     ε : Hom D.Unit (F.₀ C.Unit)
     F-mult : precompose₂ D.-⊗- F F => postcompose₂ F C.-⊗-
 
-  module φ = _=>_ F-mult
+  module φ = Binatural F-mult
 
   φ : ∀ {A B} → Hom (F.₀ A D.⊗ F.₀ B) (F.₀ (A C.⊗ B))
-  φ = φ.η _ ._=>_.η _
+  φ = φ.η _ _
 
   field
     F-α→ : ∀ {A B C}

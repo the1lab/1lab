@@ -12,6 +12,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Join
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
@@ -23,7 +24,6 @@ open import Cat.Prelude
 
 open import Data.Sum
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 open creates-colimit

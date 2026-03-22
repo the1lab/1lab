@@ -2,11 +2,10 @@
 ```agda
 open import Cat.CartesianClosed.Free.Signature using (module types)
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Closed
 open import Cat.Cartesian
 open import Cat.Prelude
-
-import Cat.Functor.Bifunctor as Bifunctor
 ```
 -->
 

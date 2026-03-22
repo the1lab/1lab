@@ -7,6 +7,7 @@ description: |
 open import Cat.Functor.Conservative
 open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -36,16 +37,6 @@ For the rest of this section we will fix a family of functors
 $F_i : \cC \to \cD$.
 
 ```agda
-Swap : Functor K Cat[ C , D ] → Functor C Cat[ K , D ]
-Swap F .F₀ c .F₀ k = F .F₀ k .F₀ c
-Swap F .F₀ c .F₁ f = F .F₁ f .η c
-Swap F .F₀ c .F-id = F .F-id ηₚ c
-Swap F .F₀ c .F-∘ f g = F .F-∘ f g ηₚ c
-Swap F .F₁ f .η k = F .F₀ k .F₁ f
-Swap F .F₁ f .is-natural x y g = sym (F .F₁ g .is-natural _ _ f)
-Swap F .F-id = ext λ k → F .F₀ k .F-id
-Swap F .F-∘ f g = ext λ k → F .F₀ k .F-∘ f g
-
 module _
   {oc ℓc od ℓd}
   {C : Precategory oc ℓc}
@@ -79,14 +70,14 @@ precisely when $\hat{F} : \cC \to [\cI, \cD]$ is faithful.
 ```agda
   swap-faithful→jointly-faithful
     : (F : Functor K Cat[ C , D ])
-    → is-faithful (Swap F)
+    → is-faithful (Flip F)
     → is-jointly-faithful (F .F₀)
   swap-faithful→jointly-faithful F faithful p = faithful (ext p)
 
   jointly-faithful→swap-faithful
     : (F : Functor K Cat[ C , D ])
     → is-jointly-faithful (F .F₀)
-    → is-faithful (Swap F)
+    → is-faithful (Flip F)
   jointly-faithful→swap-faithful F joint p = joint (λ i → p ηₚ i)
 ```
 
@@ -109,15 +100,15 @@ $F : \cI \to [ \cC, \cD ]$.
 ```agda
   swap-conservative→jointly-conservative
     : (F : Functor K Cat[ C , D ])
-    → is-conservative (Swap F)
+    → is-conservative (Flip F)
     → is-jointly-conservative (F .F₀)
   swap-conservative→jointly-conservative F reflect-iso isos =
-    reflect-iso (invertible→invertibleⁿ (Swap F .F₁ _) isos)
+    reflect-iso (invertible→invertibleⁿ (Flip F .F₁ _) isos)
 
   jointly-conservative→swap-conservative
     : (F : Functor K Cat[ C , D ])
     → is-jointly-conservative (F .F₀)
-    → is-conservative (Swap F)
+    → is-conservative (Flip F)
   jointly-conservative→swap-conservative F reflect-iso isos =
     reflect-iso (λ i → is-invertibleⁿ→is-invertible isos i)
 ```
@@ -153,7 +144,7 @@ module _
 
 ```agda
   is-jointly-full : Functor K Cat[ C , D ] → Type _
-  is-jointly-full F = is-full (Swap F)
+  is-jointly-full F = is-full (Flip F)
 
   jointly-full-fibre
     : ∀ {x y}
@@ -178,7 +169,7 @@ $\hat{F}(x) \to \hat{F}(y)$ and morphisms $\cC(x,y)$.
 
 ```agda
   is-jointly-fully-faithful : Functor K Cat[ C , D ] → Type _
-  is-jointly-fully-faithful F = is-fully-faithful (Swap F)
+  is-jointly-fully-faithful F = is-fully-faithful (Flip F)
 ```
 
 If a diagram of functors is jointly fully and jointly faithful, then it is jointly
@@ -195,8 +186,8 @@ fully faithful.
     ∥-∥-elim (λ _ → img-is-prop) (Σ-map₂ (λ p → ext p)) $
     jointly-full-fibre F full (λ i → α .η i) (λ f → α .is-natural _ _ f)
     where
-      img-is-prop : is-prop (Σ[ f ∈ C.Hom x y ] (Swap F .F₁ f ≡ α))
+      img-is-prop : is-prop (Σ[ f ∈ C.Hom x y ] (Flip F .F₁ f ≡ α))
       img-is-prop (f , p) (g , q) =
-        Σ-prop-path (λ f → Nat-is-set (Swap F .F₁ f) α)
+        Σ-prop-path (λ f → Nat-is-set (Flip F .F₁ f) α)
           (faithful (λ i → p ηₚ i ∙ sym (q ηₚ i)))
 ```

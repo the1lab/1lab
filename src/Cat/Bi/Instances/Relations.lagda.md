@@ -1,9 +1,9 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Strong.Epi
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
@@ -13,7 +13,6 @@ open import Cat.Prelude
 open import Cat.Regular
 
 import Cat.Displayed.Instances.Subobjects as Sub
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Regular.Image as Img
 import Cat.Reasoning as Cr
 ```
@@ -473,8 +472,8 @@ but keep in mind that they are not commented.
 ∘-rel-monotone {r = r} {r'} {s} {s'} α β =
   Im-universal (∘-rel.it r s) _
     {e = factor _ .left ∘ ∘-rel.inter r' s' .universal
-      {p₁' = β .map ∘ ∘-rel.inter _ _ .p₁}
-      {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
+      {p₁' = β .map ∘ ∘-rel.inter r s .p₁}
+      {p₂' = α .map ∘ ∘-rel.inter r s .p₂}
       ( pullr (pulll (sym (β .com) ∙ idl _))
       ∙ sym (pullr (pulll (sym (α .com) ∙ idl _))
       ∙ (assoc _ _ _ ∙∙ sym (∘-rel.inter r s .square) ∙∙ sym (assoc _ _ _))))}
@@ -499,8 +498,8 @@ but keep in mind that they are not commented.
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
   f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
-    (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter _ _ .p₁∘universal))
-    (sym (pullr (∘-rel.inter _ _ .p₂∘universal) ∙ idr _))))
+    (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter f id-rel .p₁∘universal))
+    (sym (pullr (∘-rel.inter f id-rel .p₂∘universal) ∙ idr _))))
 
 ∘-rel-idl f = Sub-antisym idf≤f f≤idf where
   idf≤f : ∘-rel id-rel f ≤ₘ f
@@ -534,8 +533,8 @@ private
   ∘-rel-fun : ∀ {a b c} → Bifunctor (Sub (b ⊗₀ c)) (Sub (a ⊗₀ b)) (Sub (a ⊗₀ c))
   ∘-rel-fun = make-bifunctor λ where
     .F₀         → ∘-rel
-    .lmap     f → ∘-rel-monotone f Sub.id
-    .rmap     f → ∘-rel-monotone Sub.id f
+    .lmap {x = x} f → ∘-rel-monotone {s = x} f Sub.id
+    .rmap {a = a} f → ∘-rel-monotone {r = a} Sub.id f
     .lmap-id    → prop!
     .rmap-id    → prop!
     .lmap-∘ f g → prop!

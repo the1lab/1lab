@@ -4,6 +4,7 @@ open import Cat.Functor.Adjoint.Compose
 open import Cat.Instances.Slice.Twice
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Pullback
@@ -13,7 +14,6 @@ open import Cat.Instances.Slice
 open import Cat.Functor.Closed
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 ```
 -->

@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 import Cat.Morphism
@@ -101,7 +101,7 @@ F∘-functor {C = C} = make-bifunctor record where
 ```agda
 _◆_ : ∀ {F G : Functor D E} {H K : Functor C D}
     → F => G → H => K → F F∘ H => G F∘ K
-_◆_ = Bi._◆_ F∘-functor
+_◆_ = Bifunctor._◆_ F∘-functor
 ```
 
 Before setting up the pre/post-composition functors, we define their
@@ -120,10 +120,10 @@ $p \circ -$ is easy:
 ```agda
 module _ (p : Functor C C') where
   precompose : Functor Cat[ C' , D ] Cat[ C , D ]
-  precompose = Bi.Left F∘-functor p
+  precompose = Bifunctor.Left F∘-functor p
 
   postcompose : Functor Cat[ D , C ] Cat[ D , C' ]
-  postcompose = Bi.Right F∘-functor p
+  postcompose = Bifunctor.Right F∘-functor p
 ```
 
 We also remark that horizontal composition obeys a very handy interchange
@@ -136,7 +136,7 @@ law.
   → (γ : H => L) (δ : K => M)
   → (γ ◆ δ) ∘nt (α ◆ β) ≡ (γ ∘nt α) ◆ (δ ∘nt β)
 ◆-interchange {B = B} {C = C} {A = A} {H = H} {L = L} α β γ δ =
-  sym (Bi.◆-∘ F∘-functor)
+  sym (Bifunctor.◆-∘ F∘-functor)
 ```
 
 
@@ -193,7 +193,7 @@ module _ (B : Bifunctor C D E) (F : Functor C' C) (G : Functor D' D) where
   private
     module F = Functor F
     module G = Functor G
-    module B = Bi B
+    module B = Bifunctor B
 
   precompose₂ : Bifunctor C' D' E
   precompose₂ = make-bifunctor λ where
@@ -210,7 +210,7 @@ module _ (F : Functor E E') (B : Bifunctor C D E) where
   open Make-bifunctor
   private
     module F = Functor F
-    module B = Bi B
+    module B = Bifunctor B
 
   postcompose₂ : Bifunctor C D E'
   postcompose₂ = make-bifunctor λ where

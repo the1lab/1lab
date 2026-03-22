@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -11,7 +12,6 @@ open import Cat.Functor.Closed
 open import Cat.Cartesian
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 ```
 -->

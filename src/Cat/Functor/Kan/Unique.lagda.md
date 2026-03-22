@@ -2,13 +2,13 @@
 ```agda
 open import Cat.Functor.Naturality
 open import Cat.Functor.Univalence
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
@@ -304,7 +304,7 @@ module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  private module ◆ = Cat.Functor.Reasoning (Bi.Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
+  private module ◆ = Cat.Functor.Reasoning (Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
 
   natural-isos→lan-equiv
     : (p-iso : p ≅ⁿ p')
@@ -567,7 +567,7 @@ module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  private module ◆ = Cat.Functor.Reasoning (Bi.Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
+  private module ◆ = Cat.Functor.Reasoning (Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
 
   natural-isos→ran-equiv
     : (p-iso : p ≅ⁿ p')

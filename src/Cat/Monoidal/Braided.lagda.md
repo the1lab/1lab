@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning
 import Cat.Reasoning
 
@@ -35,7 +35,7 @@ a *braiding*: a [[natural isomorphism]] $\beta : A \otimes B \cong B
 ```agda
 record Braided-monoidal : Type (o ⊔ ℓ) where
   field
-    braiding : -⊗-.Uncurry ≅ⁿ Bi.Uncurry (Bi.Flip -⊗-)
+    braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-)
 ```
 
 <!--
@@ -143,7 +143,7 @@ A symmetric monoidal category simply bundles up a braided monoidal
 category with the property that its braiding is symmetric.
 
 ```agda
-is-symmetric-braiding : -⊗-.Uncurry ≅ⁿ Bi.Uncurry (Bi.Flip -⊗-) → Type (o ⊔ ℓ)
+is-symmetric-braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-) → Type (o ⊔ ℓ)
 is-symmetric-braiding braiding = ∀ {A B} → β→ ∘ β→ {A} {B} ≡ id
   where
     β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
@@ -169,7 +169,7 @@ follows by uniqueness of inverses.
 ```agda
 record make-symmetric-monoidal : Type (o ⊔ ℓ) where
   field
-    has-braiding : -⊗-.Uncurry ≅ⁿ Bi.Uncurry (Bi.Flip -⊗-)
+    has-braiding : -⊗-.Uncurry ≅ⁿ Uncurry (Flip -⊗-)
     symmetric : is-symmetric-braiding has-braiding
 ```
 
