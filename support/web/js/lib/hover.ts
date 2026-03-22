@@ -38,7 +38,7 @@ export class Hover {
    *    Whether this popup should fade in/out, and also whether it
    *    should be shared.
    */
-  constructor(private anchor: HTMLElement, private element: Promise<HTMLDivElement>, private ephemeral: boolean) {
+  constructor(private anchor: HTMLElement, private element: Promise<HTMLDivElement | undefined>, private ephemeral: boolean) {
     currentHovers.set(anchor, this);
 
     // We figure out parents by id because we don't yet have the element
@@ -51,6 +51,8 @@ export class Hover {
     if (parent && hovers.get(parent.id)) this.parent = hovers.get(parent.id);
 
     element.then((e) => {
+      if (!e) return;
+
       e.classList.add('popup-hidden');
       e.id = myself;
 
@@ -71,7 +73,7 @@ export class Hover {
    */
   private async place() {
     const el = await this.element;
-    if (this.cursors <= 0 || this.shown) return;
+    if (this.cursors <= 0 || this.shown || !el) return;
 
     el.classList.remove('popup-hidden');
 
@@ -80,7 +82,7 @@ export class Hover {
 
     if (selfRect.bottom + hoverRect.height + 48 > window.innerHeight) {
       // Tooltip placed above anchor
-      el.style.top = `calc(${window.scrollY + selfRect.top - hoverRect.height}px - 1.3rem)`;
+      el.style.top = `calc(${window.scrollY + selfRect.top - hoverRect.height}px)`;
       this.fadeDirection = 'down';
     } else {
       // Tooltip placed below anchor
@@ -134,6 +136,7 @@ export class Hover {
    */
   private async displace() {
     const el = await this.element;
+    if (!el) return;
 
     // Set ourselves to a hiding state immediately, so that if the user
     // goes back onto the link while we're closing we can just
@@ -158,6 +161,8 @@ export class Hover {
 
   private async destroy() {
     const el = await this.element;
+    if (!el) return;
+
     el.remove();
 
     currentHovers.delete(this.anchor);
