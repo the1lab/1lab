@@ -4,6 +4,7 @@ open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cat
 
 open _=>_
@@ -215,6 +216,13 @@ components.
   Left X .Functor.F-id = lmap-id
   Left X .Functor.F-∘  = lmap-∘
 ```
+
+<!--
+```agda
+  module ▶ {A} = Fr (Right A) hiding (F₀ ; F₁)
+  module ◀ {A} = Fr (Left A)  hiding (F₀ ; F₁)
+```
+-->
 
 By swapping the positions of `lmap`{.Agda} and `rmap`{.Agda}, we can
 turn a bifunctor of $\cC$ and $\cD$ to $\cE$ into a bifunctor of $\cD$

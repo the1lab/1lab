@@ -18,12 +18,9 @@ open Monoidal Cᵐ public
 open Cat.Bi.Reasoning (Deloop Cᵐ)
   using
     ( ▶-assoc ; ◀-assoc ; ◀-▶-comm
-    ; module λ≅ ; module ρ≅ ; module α≅
-    ; λ←nat
-    ; λ→nat
-    ; ρ←nat
-    ; ρ→nat
-    ; α←nat
-    ; α→nat
+    ; module λ≅ ; λ←nat ; λ→nat
+    ; module ρ≅ ; ρ←nat ; ρ→nat
+    ; module α≅ ; α←nat ; α→nat
+    ; α→◀
     )
   public

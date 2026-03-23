@@ -22,8 +22,7 @@ open _=>_
 private variable
   X Y Z : Ob
   f g h k : X ↦ Y
-  α : g ⇒ h
-  β : f ⇒ g
+  α β γ : f ⇒ g
 
 ρ≅ : f ≅ f ⊗ id
 ρ≅ = isoⁿ→iso unitor-r _
@@ -79,6 +78,9 @@ module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ 
     ∙∙ sym (α→nat _ _ _)
     ∙∙ ap₂ _∘_ refl (▶.elimr refl ∙ ap (_◀ f) (◀.eliml refl))
   }
+
+α→◀ : α→ _ ∘ ((α ◆ β) ◀ f) ≡ (α ◆ β ◀ _) ∘ α→ _
+α→◀ = cdr (compose.lmap-◆ _) ∙ α→nat _ _ _ ∙ cdar ▶.⟨ ▶.elimr refl ⟩
 
 module ▶-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (▶-assoc  {f = f} {g = g} {c = x})
 module ◀-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (◀-assoc  {f = f} {g = g} {c = x})

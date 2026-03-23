@@ -13,6 +13,7 @@ open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Monoidal.Reasoning
 import Cat.Functor.Reasoning
 import Cat.Monoidal.Functor
 import Cat.Reasoning
@@ -30,9 +31,9 @@ module Cat.Monoidal.Monad where
 module _ {o ℓ}
   {C : Precategory o ℓ} (Cᵐ : Monoidal-category C)
   where
-  open Cat.Reasoning C
   open Cat.Monoidal.Functor Cᵐ Cᵐ
   open Monoidal-category Cᵐ
+  open Cat.Reasoning C
 ```
 -->
 
@@ -171,9 +172,8 @@ module _ {o ℓ}
   {C : Precategory o ℓ} {Cᵐ : Monoidal-category C} {M : Functor C C}
   {monad : Monad-on M}
   where
-  open Cat.Reasoning C
   open Cat.Monoidal.Functor Cᵐ Cᵐ
-  open Monoidal-category Cᵐ
+  open Cat.Monoidal.Reasoning Cᵐ
   open Monad-on monad
   private
     module M = Cat.Functor.Reasoning M
@@ -258,7 +258,7 @@ by composing the unit of the monad with the monoidal multiplication:
     open Left-monad-strength
 
     l : Left-monad-strength Cᵐ monad
-    l .functor-strength .left-strength = {! M-mult ∘nt (-⊗- ▸ (unit nt× idnt)) !}
+    l .functor-strength .left-strength = M-mult ∘nt whisker-precomposeˡ unit
 ```
 
 <details>
@@ -268,28 +268,29 @@ reader; they are entirely monotonous.
 </summary>
 
 ```agda
-    l .functor-strength .left-strength-λ← = {!   !}
-      -- M₁ (λ← _) ∘ φ ∘ (η _ ⊗₁ id) ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ap (_⊗₁ id) unit-ε ⟩
-      -- M₁ (λ← _) ∘ φ ∘ (ε ⊗₁ id)   ≡⟨ M-λ← ⟩
-      -- λ← _                      ∎
-    l .functor-strength .left-strength-α→ = {!   !}
-      -- M₁ (α→ _) ∘ φ ∘ (η _ ⊗₁ id)                          ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ ◀.collapse unit-φ ⟩
-      -- M₁ (α→ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ η _) ⊗₁ id)     ≡⟨ extendl3 M-α→ ⟩
-      -- φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ η _) ⊗₁ id)          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
-      -- φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (η _ ⊗₁ id)) ∘ α→ _ _ _          ≡⟨ refl⟩∘⟨ ⊗.pulll (idl _ ,ₚ refl) ⟩
-      -- φ ∘ (η _ ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _                ≡⟨ pushr (⊗.pushl (sym (idr _) ,ₚ sym (idl _))) ⟩
-      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (η _ ⊗₁ id))) ∘ α→ _ _ _ ∎
-    l .left-strength-η = {!   !}
-      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ η _) ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-      -- φ ∘ (η _ ⊗₁ η _)                ≡⟨ unit-φ ⟩
-      -- η _                             ∎
-    l .left-strength-μ = {!   !}
-      -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ μ _)                      ≡⟨ pullr (⊗.collapse (idr _ ,ₚ idl _)) ⟩
-      -- φ ∘ (η _ ⊗₁ μ _)                                     ≡˘⟨ refl⟩∘⟨ ⊗.collapse3 (cancell μ-unitr ,ₚ elimr (eliml M-id)) ⟩
-      -- φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pulll mult-φ ⟩
-      -- (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pullr (pullr (extendl (φ.is-natural _ _ _))) ⟩
-      -- μ _ ∘ M₁ φ ∘ M₁ (η _ ⊗₁ id) ∘ φ ∘ (η _ ⊗₁ id)        ≡⟨ refl⟩∘⟨ M.pulll refl ⟩
-      -- μ _ ∘ M₁ (φ ∘ (η _ ⊗₁ id)) ∘ φ ∘ (η _ ⊗₁ id)         ∎
+    l .functor-strength .left-strength-λ← =
+      M₁ (λ← _) ∘ φ ∘ (⌜ η _ ⌝ ◀ _) ≡˘⟨ ap¡ unit-ε ⟩
+      M₁ (λ← _) ∘ φ ∘ (ε ◀ _)       ≡⟨ M-λ← ⟩
+      λ← _                          ∎
+    l .functor-strength .left-strength-α→ =
+      M₁ (α→ _) ∘ φ ∘ ⌜ η _ ◀ _ ⌝                    ≡˘⟨ ap¡ (◀.collapse unit-φ) ⟩
+      M₁ (α→ _) ∘ φ ∘ (φ ◀ _) ∘ ((η _ ⊗₁ η _) ◀ _)   ≡⟨ extendl3 M-α→ ⟩
+      φ ∘ (_ ▶ φ) ∘ ⌜ α→ _ ∘ ((η _ ⊗₁ η _) ◀ _) ⌝    ≡⟨ ap! α→◀ ⟩
+      φ ∘ (_ ▶ φ) ∘ (η _ ⊗₁ η _ ◀ _) ∘ α→ _          ≡⟨ extend-inner (pulll (-⊗-.rlmap _ _) ∙ ▶.pullr refl) ⟩
+      φ ∘ (η _ ◀ _) ∘ (_ ▶ φ ∘ (η _ ◀ _)) ∘ α→ _     ≡⟨ pulll refl ⟩
+      (φ ∘ (η _ ◀ _)) ∘ (_ ▶ φ ∘ (η _ ◀ _)) ∘ α→ _   ∎
+    l .left-strength-η =
+      (φ ∘ (η _ ◀ _)) ∘ (id ⊗₁ η _) ≡⟨ pullr (◀.pulll (idr _)) ⟩
+      φ ∘ (η _ ⊗₁ η _)              ≡⟨ unit-φ ⟩
+      η _                           ∎
+    l .left-strength-μ =
+      (φ ∘ (η _ ◀ _)) ∘ (id ⊗₁ μ _)                        ≡⟨ pullr (◀.pulll (idr _)) ⟩
+      φ ∘ (η _ ⊗₁ μ _)                                     ≡˘⟨ cdr (⊗.collapse3 (cancell μ-unitr ,ₚ elimr (eliml M-id))) ⟩
+      φ ∘ (μ _ ⊗₁ μ _) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pulll mult-φ ⟩
+      (μ _ ∘ M₁ φ ∘ φ) ∘ (M₁ (η _) ⊗₁ M₁ id) ∘ (η _ ⊗₁ id) ≡⟨ pullr (pullr (extendl φ.natural-◆)) ⟩
+      μ _ ∘ M₁ φ ∘ (M₁ (η _ ◀ _) ∘ M₁ _) ∘ φ ∘ (η _ ⊗₁ id) ≡⟨ cdr (pulll (M.collapse3 (cdr (▶.elimr refl)))) ⟩
+      μ _ ∘ M₁ (φ ∘ (η _ ◀ _)) ∘ φ ∘ (η _ ⊗₁ id)           ≡⟨ cddr (cdr (▶.elimr refl)) ⟩
+      μ _ ∘ M₁ (φ ∘ (η _ ◀ _)) ∘ φ ∘ (η _ ◀ _)             ∎
 ```
 </details>
 
@@ -299,9 +300,8 @@ module _ {o ℓ}
   {C : Precategory o ℓ} (Cᵐ : Monoidal-category C) {M : Functor C C}
   (monad : Monad-on M)
   where
-  open Cat.Reasoning C
   open Cat.Monoidal.Functor Cᵐ Cᵐ
-  open Monoidal-category Cᵐ
+  open Cat.Monoidal.Reasoning Cᵐ
   open Monad-on monad
   private
     module M = Cat.Functor.Reasoning M
@@ -361,12 +361,12 @@ associator.
 ~~~
 
 ```agda
-      s .strength-α→ = {!   !}
-        -- M₁ (α→ _ _ _) ∘ (φ ∘ (id ⊗₁ η _)) ∘ ((φ ∘ (η _ ⊗₁ id)) ⊗₁ id) ≡⟨ refl⟩∘⟨ pullr (⊗.weave (idl _ ,ₚ id-comm)) ⟩
-        -- M₁ (α→ _ _ _) ∘ φ ∘ (φ ⊗₁ id) ∘ ((η _ ⊗₁ id) ⊗₁ η _)          ≡⟨ extendl3 M-α→ ⟩
-        -- φ ∘ (id ⊗₁ φ) ∘ α→ _ _ _ ∘ ((η _ ⊗₁ id) ⊗₁ η _)               ≡⟨ refl⟩∘⟨ refl⟩∘⟨ associator .Isoⁿ.to ._=>_.is-natural _ _ _ ⟩
-        -- φ ∘ (id ⊗₁ φ) ∘ (η _ ⊗₁ (id ⊗₁ η _)) ∘ α→ _ _ _               ≡⟨ pushr (extendl (⊗.weave (id-comm-sym ,ₚ sym (idl _)))) ⟩
-        -- (φ ∘ (η _ ⊗₁ id)) ∘ (id ⊗₁ (φ ∘ (id ⊗₁ η _))) ∘ α→ _ _ _      ∎
+      s .strength-α→ =
+        M₁ (α→ _) ∘ (φ ∘ (_ ▶ η _)) ∘ (φ ∘ (η _ ◀ _) ◀ _) ≡⟨ cdr (pullr (-⊗-.rlmap _ _ ∙ ◀.pushl refl)) ⟩
+        M₁ (α→ _) ∘ φ ∘ (φ ◀ _) ∘ (((η _ ◀ _) ⊗₁ η _))    ≡⟨ extendl3 M-α→ ⟩
+        φ ∘ (_ ▶ φ) ∘ α→ _ ∘ ((η _ ◀ _) ⊗₁ η _)           ≡⟨ cddr (cdr ⊗.⟨ -⊗-.lmap-◆ _ ,ₚ refl ⟩ ∙ α→nat _ _ _) ⟩
+        φ ∘ (_ ▶ φ) ∘ ((η _ ⊗₁ (id ⊗₁ η _))) ∘ α→ _       ≡⟨ pushr (pulll (extendl (-⊗-.rlmap _ _) ∙ cdr (▶.collapse (cdr (◀.eliml refl)))) ∙ pushl refl) ⟩
+        (φ ∘ (η _ ◀ _)) ∘ (_ ▶ φ ∘ (_ ▶ η _)) ∘ α→ _      ∎
 ```
 </details>
 
@@ -644,10 +644,10 @@ left and right strengths are related by the braiding.
       symmetric-monoidal→symmetric-strength
         : is-symmetric-monoidal-monad m
         → is-symmetric-monad-strength Cᵇ (monoidal≃commutative.to m .fst)
-      symmetric-monoidal→symmetric-strength sy = {!   !}
-        -- (φ ∘ (id ⊗₁ η _)) ∘ β→  ≡⟨ pullr (sym (β→.is-natural _ _ _)) ⟩
-        -- φ ∘ β→ ∘ (η _ ⊗₁ id)    ≡⟨ extendl sy ⟩
-        -- M₁ β→ ∘ φ ∘ (η _ ⊗₁ id) ∎
+      symmetric-monoidal→symmetric-strength sy =
+        (φ ∘ (_ ▶ η _)) ∘ β→  ≡⟨ pullr (sym (cdr (▶.intror refl) ∙∙ β→.is-natural _ _ _ ∙∙ pullr (◀.eliml refl))) ⟩
+        φ ∘ β→ ∘ (η _ ◀ _)    ≡⟨ extendl sy ⟩
+        M₁ β→ ∘ φ ∘ (η _ ◀ _) ∎
 ```
 
 Now, given a symmetric commutative strength, we can use the commutativity

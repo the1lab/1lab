@@ -224,7 +224,7 @@ is extremely tedious, so we leave the details to the curious reader.
         F₁ (λ← _) ∘ σ ∘ β←         ≡⟨ pulll left-strength-λ← ⟩
         λ← _ ∘ β←                  ≡⟨ λ←-β← ⟩
         ρ← _                       ∎
-      r .right-strength-α← = {!   !}
+      r .right-strength-α← = {! !}
         -- F₁ (α← _) ∘ F₁ β→ ∘ σ ∘ β←                                       ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pushl3 (sym (lswizzle ? (F.annihilate (◀.annihilate (β≅ .invl))))) ⟩
         -- F₁ (α← _) ∘ F₁ β→ ∘ F₁ (β→ ◀ _) ∘ σ ∘ (β← ⊗₁ ⌜ F₁ id ⌝) ∘ β←   ≡⟨ ap! F-id ⟩
         -- F₁ (α← _) ∘ F₁ β→ ∘ F₁ (β→ ◀ _) ∘ σ ∘ (β← ◀ _) ∘ β←          ≡⟨ F.extendl3 (sym β→-id⊗β→-α→) ⟩
