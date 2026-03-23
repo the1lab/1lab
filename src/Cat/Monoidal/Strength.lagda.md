@@ -210,14 +210,14 @@ is extremely tedious, so we leave the details to the curious reader.
       r : Right-strength
       r .right-strength .η _ .η _ = F₁ β→ ∘ σ ∘ β←
       r .right-strength .η _ .is-natural x y f =
-        (F₁ β→ ∘ σ ∘ β←) ∘ (_ ▶ f)    ≡⟨ pullr (pullr (β←▶ _)) ⟩
+        (F₁ β→ ∘ σ ∘ β←) ∘ (_ ▶ f)    ≡⟨ pullr (pullr β←▶) ⟩
         F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ refl⟩∘⟨ extendl σ.natural-◀ ⟩
-        F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl (β→◀ _) ⟩
+        F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl β→◀ ⟩
         F₁ (_ ▶ f) ∘ F.₁ β→ ∘ σ ∘ β←  ∎
       r .right-strength .is-natural _ _ f = ext λ _ →
-        (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ f ◀ _) ≡⟨ pullr (pullr (β←◀ _)) ⟩
+        (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ f ◀ _) ≡⟨ pullr (pullr β←◀) ⟩
         F₁ β→ ∘ σ ∘ (_ ▶ F₁ f) ∘ β←   ≡⟨ extend-inner σ.natural-▶ ⟩
-        F₁ β→ ∘ F₁ (_ ▶ f) ∘ σ ∘ β←   ≡⟨ F.extendl (β→▶ _) ⟩
+        F₁ β→ ∘ F₁ (_ ▶ f) ∘ σ ∘ β←   ≡⟨ F.extendl β→▶ ⟩
         F₁ (f ◀ _) ∘ F₁ β→ ∘ σ ∘ β←   ∎
       r .right-strength-ρ← =
         F₁ (ρ← _) ∘ F₁ β→ ∘ σ ∘ β← ≡⟨ F.pulll ρ←-β→ ⟩

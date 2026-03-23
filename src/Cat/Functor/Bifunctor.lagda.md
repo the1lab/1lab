@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
@@ -19,9 +20,11 @@ module Cat.Functor.Bifunctor where
 
 <!--
 ```agda
-private variable
-  o h o₁ h₁ o₂ h₂ o₃ h₃ : Level
-  C D E : Precategory o₁ h₁
+private
+  variable
+    o h o₁ h₁ o₂ h₂ o₃ h₃ : Level
+    C D E : Precategory o₁ h₁
+  module Cat[,] {o h o₁ h₁} {C : Precategory o h} {D : Precategory o₁ h₁} = Cat Cat[ C , D ]
 ```
 -->
 
@@ -326,27 +329,44 @@ module
     variable
       a b c d : ⌞ C ⌟
       w x y z : ⌞ D ⌟
-    module F = Bifunctor F using (_◀_ ; _▶_ ; _◆_)
-    module G = Bifunctor G using (_◀_ ; _▶_ ; _◆_)
+    module F = Bifunctor F
+    module G = Bifunctor G
 
     open _=>_
 
   module Binatural (eta : F => G) where
+    abstract
+      natural-◀ : ∀ {f : C.Hom a b} {x} → eta · _ · _ E.∘ (f F.◀ x) ≡ (f G.◀ x) E.∘ eta · _ · _
+      natural-◀ = eta .is-natural _ _ _ ηₚ _
 
-    natural-◀ : ∀ {f : C.Hom a b} {x} → eta · _ · _ E.∘ (f F.◀ x) ≡ (f G.◀ x) E.∘ eta · _ · _
-    natural-◀ = eta .is-natural _ _ _ ηₚ _
+      natural-▶ : ∀ {a} {f : D.Hom x y} → eta · _ · _ E.∘ (a F.▶ f) ≡ (a G.▶ f) E.∘ eta · _ · _
+      natural-▶ = eta .η _ .is-natural _ _ _
 
-    natural-▶ : ∀ {a} {f : D.Hom x y} → eta · _ · _ E.∘ (a F.▶ f) ≡ (a G.▶ f) E.∘ eta · _ · _
-    natural-▶ = eta .η _ .is-natural _ _ _
-
-    natural-◆
-      : ∀ {f : C.Hom a b} {g : D.Hom x y}
-      → eta · _ · _ E.∘ (f F.◆ g) ≡ (f G.◆ g) E.∘ eta · _ · _
-    natural-◆ = E.pulll (eta .is-natural _ _ _ ηₚ _) ∙ E.extendr (eta .η _ .is-natural _ _ _)
+      natural-◆
+        : ∀ {f : C.Hom a b} {g : D.Hom x y}
+        → eta · _ · _ E.∘ (f F.◆ g) ≡ (f G.◆ g) E.∘ eta · _ · _
+      natural-◆ = E.pulll natural-◀ ∙ E.extendr natural-▶
 
     private
       open module eta₁ a = _=>_ (eta .η a) public
 
+    right : ∀ {x} → F.Right x => G.Right x
+    right = eta .η _
+
+    left : ∀ {x} → F.Left x => G.Left x
+    left .η              x = eta .η _ .η _
+    left .is-natural x y f = natural-◀
+
   open Binatural using (natural-◀ ; natural-▶ ; natural-◆) public
+
+  biiso→isoⁿ
+    : (i : ∀ x y → F · x · y E.≅ G · x · y)
+    → (∀ {x y z} (f : C.Hom x y) → (f G.◀ z) E.∘ i x z .E.to ≡ i y z .E.to E.∘ (f F.◀ z))
+    → (∀ {x y z} (f : D.Hom x y) → (z G.▶ f) E.∘ i z x .E.to ≡ i z y .E.to E.∘ (z F.▶ f))
+    → F Cat[,].≅ G
+  {-# INLINE biiso→isoⁿ #-}
+  biiso→isoⁿ i n1 n2 = iso→isoⁿ
+    (λ x → iso→isoⁿ (i x) λ {x y} f → n2 f)
+    λ {x y} f → ext (λ z → n1 f)
 ```
 -->

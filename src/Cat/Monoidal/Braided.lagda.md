@@ -35,22 +35,19 @@ a *braiding*: a [[natural isomorphism]] $\beta : A \otimes B \cong B
 ```agda
 record Braided-monoidal : Type (o ⊔ ℓ) where
   field
-    braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-)
+    braiding : -⊗- ≅ⁿ Flip -⊗-
 ```
 
 <!--
 ```agda
-  module β→ = _=>_ (braiding .Isoⁿ.to)
-  module β← = _=>_ (braiding .Isoⁿ.from)
+  module β→ = Binatural (braiding .Isoⁿ.to)
+  module β← = Binatural (braiding .Isoⁿ.from)
 
   β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
-  β→ = braiding .Isoⁿ.to ._=>_.η _
+  β→ = β→.η _ _
 
   β← : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
-  β← = braiding .Isoⁿ.from ._=>_.η _
-
-  β≅ : ∀ {A B} → A ⊗ B ≅ B ⊗ A
-  β≅ = isoⁿ→iso braiding _
+  β← = β←.η _ _
 ```
 -->
 
@@ -118,17 +115,11 @@ braiding.
 
 <!--
 ```agda
-  β→▶ : ∀ {X A B} (α : Hom A B) → β→ ∘ (X ▶ α) ≡ (α ◀ X) ∘ β→
-  β→▶ α = ap (β→ ∘_) (-⊗-.rmap-◆ _) ∙∙ β→.is-natural _ _ _ ∙∙ ap₂ _∘_ (▶.eliml refl) refl
+  β≅ : ∀ {A B} → A ⊗ B ≅ B ⊗ A
+  β≅ = make-iso β→ β← (braiding .Isoⁿ.invl ηₚ _ ηₚ _) (braiding .Isoⁿ.invr ηₚ _ ηₚ _)
 
-  β→◀ : ∀ {X A B} (α : Hom A B) → β→ ∘ (α ◀ X) ≡ (X ▶ α) ∘ β→
-  β→◀ α = ap (β→ ∘_) (-⊗-.lmap-◆ _) ∙∙ β→.is-natural _ _ _ ∙∙ pullr (◀.eliml refl)
-
-  β←▶ : ∀ {X A B} (α : Hom A B) → β← ∘ (X ▶ α) ≡ (α ◀ X) ∘ β←
-  β←▶ α = ap (β← ∘_) (◀.intror refl) ∙ β←.is-natural _ _ _ ∙ pullr (▶.eliml refl)
-
-  β←◀ : ∀ {X A B} (α : Hom A B) → β← ∘ (α ◀ X) ≡ (X ▶ α) ∘ β←
-  β←◀ α = ap (β← ∘_) (▶.introl refl) ∙ β←.is-natural _ _ _ ∙ ap₂ _∘_ (◀.eliml refl) refl
+  open β→ renaming (natural-▶ to β→▶ ; natural-◀ to β→◀ ; natural-◆ to β→◆) using () public
+  open β← renaming (natural-▶ to β←◀ ; natural-◀ to β←▶ ; natural-◆ to β←◆) using () public
 
   β←-α←
     : ∀ {A B C} → (β← ◀ _) ∘ α← (B , A , C) ∘ (_ ▶ β←) ≡ α← (A , B , C) ∘ β← ∘ α← (B , C , A)
@@ -143,11 +134,10 @@ A symmetric monoidal category simply bundles up a braided monoidal
 category with the property that its braiding is symmetric.
 
 ```agda
-is-symmetric-braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-) → Type (o ⊔ ℓ)
-is-symmetric-braiding braiding = ∀ {A B} → β→ ∘ β→ {A} {B} ≡ id
-  where
-    β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
-    β→ = braiding .Isoⁿ.to ._=>_.η _
+is-symmetric-braiding : -⊗- ≅ⁿ Flip -⊗- → Type (o ⊔ ℓ)
+is-symmetric-braiding braiding = ∀ {A B} → β→ ∘ β→ {A} {B} ≡ id where
+  β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
+  β→ = Binatural.η (braiding .Isoⁿ.to) _ _
 
 record Symmetric-monoidal : Type (o ⊔ ℓ) where
   field
@@ -169,21 +159,21 @@ follows by uniqueness of inverses.
 ```agda
 record make-symmetric-monoidal : Type (o ⊔ ℓ) where
   field
-    has-braiding : Uncurry -⊗- ≅ⁿ Uncurry (Flip -⊗-)
+    has-braiding : -⊗- ≅ⁿ Flip -⊗-
     symmetric : is-symmetric-braiding has-braiding
 ```
 
 <!--
 ```agda
   β→ : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
-  β→ = has-braiding .Isoⁿ.to ._=>_.η _
+  β→ = Binatural.η (has-braiding .Isoⁿ.to) _ _
   β← : ∀ {A B} → Hom (A ⊗ B) (B ⊗ A)
-  β← = has-braiding .Isoⁿ.from ._=>_.η _
+  β← = Binatural.η (has-braiding .Isoⁿ.from) _ _
 
   β→≡β← : Path (∀ {A B} → Hom (A ⊗ B) (B ⊗ A)) β→ β←
   β→≡β← = ext λ {_} {_} → inverse-unique refl refl
     (make-iso β→ β→ symmetric symmetric)
-    (isoⁿ→iso has-braiding _)
+    (make-iso β→ β← (has-braiding .Isoⁿ.invl ·ₚ _ ·ₚ _) (has-braiding .Isoⁿ.invr ·ₚ _ ·ₚ _))
     refl
 
   open Braided-monoidal hiding (β→)
@@ -282,7 +272,7 @@ That is, morally, $(\id \otimes \beta) \circ (\beta \otimes \id) \circ
   yang-baxter =
     (_ ▶ β→) ∘ α→ _ ∘ (β→ ◀ _) ∘ α← _ ∘ (_ ▶ β→) ∘ α→ _   ≡⟨ pushr (pushr refl) ⟩
     ((_ ▶ β→) ∘ α→ _ ∘ (β→ ◀ _)) ∘ α← _ ∘ (_ ▶ β→) ∘ α→ _ ≡⟨ extendl (rswizzle (braiding-α→ ∙ assoc _ _ _) (α≅ .invl)) ⟩
-    α→ _ ∘ β→ ∘ (_ ▶ β→) ∘ α→ _                           ≡⟨ refl⟩∘⟨ extendl (β→▶ _) ⟩
+    α→ _ ∘ β→ ∘ (_ ▶ β→) ∘ α→ _                           ≡⟨ refl⟩∘⟨ extendl β→▶ ⟩
     α→ _ ∘ (β→ ◀ _) ∘ β→ ∘ α→ _                           ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ lswizzle braiding-α→ (α≅ .invr) ⟩
     α→ _ ∘ (β→ ◀ _) ∘ α← _ ∘ (_ ▶ β→) ∘ α→ _ ∘ (β→ ◀ _)   ∎
 ```
@@ -299,7 +289,7 @@ We also derive more equations relating the braiding with the associator.
 
   β→-id⊗β→-α→ : ∀ {A B C} → β→ ∘ (_ ▶ β→) ∘ α→ (A , B , C) ≡ α← _ ∘ β→ ∘ (β→ ◀ _)
   β→-id⊗β→-α→ =
-    β→ ∘ (_ ▶ β→) ∘ α→ _   ≡⟨ pulll (ap (β→ ∘_) (-⊗-.rmap-◆ _) ∙ β→.is-natural _ _ _ ∙ ap₂ _∘_ (eliml -⊗-.rmap-id) refl) ⟩
+    β→ ∘ (_ ▶ β→) ∘ α→ _   ≡⟨ pulll β→▶ ⟩
     ((β→ ◀ _) ∘ β→) ∘ α→ _
       ≡⟨ swizzle (sym β←-β←⊗id-α← ∙ assoc _ _ _)
         (pullr (cancell (β≅ .invr)) ∙ ◀.annihilate (β≅ .invr))
@@ -326,7 +316,7 @@ the agda-categories library: see there for an explanation and diagram.
     β← ∘ β→ ∘ (λ← _ ∘ α→ _) ∘ (β→ ◀ _)       ≡⟨ refl⟩∘⟨ extendl (pulll (sym (unitor-l .Isoⁿ.from .is-natural _ _ _))) ⟩
     β← ∘ (λ← _ ∘ (_ ▶ β→)) ∘ α→ _ ∘ (β→ ◀ _) ≡⟨ refl⟩∘⟨ pullr braiding-α→ ⟩
     β← ∘ λ← _ ∘ α→ _ ∘ β→ ∘ α→ _             ≡⟨ refl⟩∘⟨ pulll triangle-λ← ⟩
-    β← ∘ (λ← _ ◀ _) ∘ β→ ∘ α→ _              ≡⟨ refl⟩∘⟨ extendl (sym (β→▶ _)) ⟩
+    β← ∘ (λ← _ ◀ _) ∘ β→ ∘ α→ _              ≡⟨ refl⟩∘⟨ extendl (sym β→▶) ⟩
     β← ∘ β→ ∘ (_ ▶ λ← _) ∘ α→ _              ≡⟨ refl⟩∘⟨ refl⟩∘⟨ triangle-α→ ⟩
     β← ∘ β→ ∘ (ρ← _ ◀ _)                     ≡⟨ cancell (β≅ .invr) ⟩
     ρ← _ ◀ _                                 ∎
@@ -338,7 +328,7 @@ the agda-categories library: see there for an explanation and diagram.
     β→ ∘ β← ∘ (λ← _ ∘ α→ _) ∘ (β← ◀ _)       ≡⟨ refl⟩∘⟨ extendl (pulll (sym (unitor-l .Isoⁿ.from .is-natural _ _ _))) ⟩
     β→ ∘ (λ← _ ∘ (_ ▶ β←)) ∘ α→ _ ∘ (β← ◀ _) ≡⟨ refl⟩∘⟨ pullr unbraiding-α→ ⟩
     β→ ∘ λ← _ ∘ α→ _ ∘ β← ∘ α→ _             ≡⟨ refl⟩∘⟨ pulll triangle-λ← ⟩
-    β→ ∘ (λ← _ ◀ _) ∘ β← ∘ α→ _              ≡⟨ refl⟩∘⟨ extendl (sym (β←▶ _)) ⟩
+    β→ ∘ (λ← _ ◀ _) ∘ β← ∘ α→ _              ≡⟨ refl⟩∘⟨ extendl (sym β←▶) ⟩
     β→ ∘ β← ∘ (_ ▶ λ← _) ∘ α→ _              ≡⟨ refl⟩∘⟨ refl⟩∘⟨ triangle-α→ ⟩
     β→ ∘ β← ∘ (ρ← _ ◀ _)                     ≡⟨ cancell (β≅ .invl) ⟩
     ρ← _ ◀ _                                 ∎

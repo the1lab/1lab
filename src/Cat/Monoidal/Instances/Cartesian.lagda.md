@@ -3,6 +3,7 @@
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Product.Solver
 open import Cat.Monoidal.Diagonals
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Monoidal.Braided
 open import Cat.Functor.Closed
@@ -97,8 +98,10 @@ categories]].
   Cartesian-symmetric = to-symmetric-monoidal mk where
     open make-symmetric-monoidal
     mk : make-symmetric-monoidal Cartesian-monoidal
-    mk .has-braiding = iso→isoⁿ
-      (λ _ → invertible→iso swap swap-is-iso) λ (f , g) → products! products
+    mk .has-braiding = biiso→isoⁿ
+      (λ x y → invertible→iso swap swap-is-iso)
+      (λ f → products! products)
+      (λ f → products! products)
     mk .symmetric = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ∙ ⟨⟩-η
     mk .has-braiding-α→ = products! products
 ```
