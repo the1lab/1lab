@@ -645,7 +645,7 @@ left and right strengths are related by the braiding.
         : is-symmetric-monoidal-monad m
         → is-symmetric-monad-strength Cᵇ (monoidal≃commutative.to m .fst)
       symmetric-monoidal→symmetric-strength sy =
-        (φ ∘ (_ ▶ η _)) ∘ β→  ≡⟨ pullr (sym (cdr (▶.intror refl) ∙∙ β→.is-natural _ _ _ ∙∙ pullr (◀.eliml refl))) ⟩
+        (φ ∘ (_ ▶ η _)) ∘ β→  ≡⟨ pullr (sym β→◀) ⟩
         φ ∘ β→ ∘ (η _ ◀ _)    ≡⟨ extendl sy ⟩
         M₁ β→ ∘ φ ∘ (η _ ◀ _) ∎
 ```
