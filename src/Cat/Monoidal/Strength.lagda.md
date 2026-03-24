@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import 1Lab.Reflection.Record
 
 open import Cat.Monoidal.Instances.Cartesian
@@ -88,16 +87,16 @@ interacting nicely with the *right* unitor and associator.
     field
       right-strength-ρ← : ∀ {A} → F₁ (ρ← A) ∘ τ ≡ ρ← _
       right-strength-α← : ∀ {A B C}
-        → F₁ (α← (A , B , C)) ∘ τ ≡ τ ∘ (τ ⊗₁ id) ∘ α← (F₀ A , B , C)
+        → F₁ (α← (A , B , C)) ∘ τ ≡ τ ∘ (τ ◀ C) ∘ α← (F₀ A , B , C)
 ```
 
 <!--
 ```agda
-    right-strength-α→ : ∀ {A B C} → τ ∘ α→ (F₀ A , B , C) ≡ F₁ (α→ _) ∘ τ ∘ (τ ⊗₁ id)
+    right-strength-α→ : ∀ {A B C} → τ ∘ α→ (F₀ A , B , C) ≡ F₁ (α→ _) ∘ τ ∘ (τ ◀ C)
     right-strength-α→ = sym $ swizzle
-      (sym (right-strength-α← ∙ assoc _ _ _))
-      (α≅ .invr)
-      (F.F-map-iso α≅ .invl)
+        (sym (right-strength-α← ∙ assoc _ _ _))
+        (α≅ .invr)
+        (F.F-map-iso α≅ .invl)
 ```
 -->
 
@@ -207,61 +206,66 @@ is extremely tedious, so we leave the details to the curious reader.
     left≃right .fst l = r where
       open Left-strength l
       open Right-strength
+      open Make-binatural
       r : Right-strength
-      r .right-strength .η _ .η _ = F₁ β→ ∘ σ ∘ β←
-      r .right-strength .η _ .is-natural x y f =
-        (F₁ β→ ∘ σ ∘ β←) ∘ (_ ▶ f)    ≡⟨ pullr (pullr β←▶) ⟩
-        F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ refl⟩∘⟨ extendl σ.natural-◀ ⟩
-        F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl β→◀ ⟩
-        F₁ (_ ▶ f) ∘ F.₁ β→ ∘ σ ∘ β←  ∎
-      r .right-strength .is-natural _ _ f = ext λ _ →
-        (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ f ◀ _) ≡⟨ pullr (pullr β←◀) ⟩
-        F₁ β→ ∘ σ ∘ (_ ▶ F₁ f) ∘ β←   ≡⟨ extend-inner σ.natural-▶ ⟩
-        F₁ β→ ∘ F₁ (_ ▶ f) ∘ σ ∘ β←   ≡⟨ F.extendl β→▶ ⟩
-        F₁ (f ◀ _) ∘ F₁ β→ ∘ σ ∘ β←   ∎
+      r .right-strength = make-binatural λ where
+        .η _ _ → F₁ β→ ∘ σ ∘ β←
+        .is-natural-◀ f _ →
+          (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ f ◀ _) ≡⟨ pullr (pullr β←◀) ⟩
+          F₁ β→ ∘ σ ∘ (_ ▶ F₁ f) ∘ β←   ≡⟨ extend-inner σ.natural-▶ ⟩
+          F₁ β→ ∘ F₁ (_ ▶ f) ∘ σ ∘ β←   ≡⟨ F.extendl β→▶ ⟩
+          F₁ (f ◀ _) ∘ F₁ β→ ∘ σ ∘ β←   ∎
+        .is-natural-▶ _ f →
+          (F₁ β→ ∘ σ ∘ β←) ∘ (_ ▶ f)    ≡⟨ pullr (pullr β←▶) ⟩
+          F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ cdr (extendl σ.natural-◀) ⟩
+          F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl β→◀ ⟩
+          F₁ (_ ▶ f) ∘ F.₁ β→ ∘ σ ∘ β←  ∎
+      -- .η _ .η _ = F₁ β→ ∘ σ ∘ β←
+      -- r .right-strength .η _ .is-natural x y f =
+      -- r .right-strength .is-natural _ _ f = ext λ _ →
       r .right-strength-ρ← =
         F₁ (ρ← _) ∘ F₁ β→ ∘ σ ∘ β← ≡⟨ F.pulll ρ←-β→ ⟩
         F₁ (λ← _) ∘ σ ∘ β←         ≡⟨ pulll left-strength-λ← ⟩
         λ← _ ∘ β←                  ≡⟨ λ←-β← ⟩
         ρ← _                       ∎
-      r .right-strength-α← = {! !}
-        -- F₁ (α← _) ∘ F₁ β→ ∘ σ ∘ β←                                       ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pushl3 (sym (lswizzle ? (F.annihilate (◀.annihilate (β≅ .invl))))) ⟩
-        -- F₁ (α← _) ∘ F₁ β→ ∘ F₁ (β→ ◀ _) ∘ σ ∘ (β← ⊗₁ ⌜ F₁ id ⌝) ∘ β←   ≡⟨ ap! F-id ⟩
-        -- F₁ (α← _) ∘ F₁ β→ ∘ F₁ (β→ ◀ _) ∘ σ ∘ (β← ◀ _) ∘ β←          ≡⟨ F.extendl3 (sym β→-id⊗β→-α→) ⟩
-        -- F₁ β→ ∘ F₁ (_ ▶ β→) ∘ F₁ (α→ _) ∘ σ ∘ (β← ◀ _) ∘ β←          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pulll left-strength-α→ ⟩
-        -- F₁ β→ ∘ F₁ (_ ▶ β→) ∘ (σ ∘ (_ ▶ σ) ∘ α→ _) ∘ (β← ◀ _) ∘ β← ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pullr (pullr refl) ⟩
-        -- F₁ β→ ∘ F₁ (_ ▶ β→) ∘ σ ∘ (_ ▶ σ) ∘ α→ _ ∘ (β← ◀ _) ∘ β←   ≡⟨ refl⟩∘⟨ pushr (pushr (refl⟩∘⟨ sym β←-β←⊗id-α←)) ⟩
-        -- F₁ β→ ∘ (F₁ (_ ▶ β→) ∘ σ ∘ (_ ▶ σ)) ∘ β← ∘ (β← ◀ _) ∘ α← _ ≡˘⟨ refl⟩∘⟨ pulll (▶.shufflel ?) ⟩
-        -- F₁ β→ ∘ σ ∘ (_ ▶ (F₁ β→ ∘ σ)) ∘ β← ∘ (β← ◀ _) ∘ α← _         ≡⟨ pushr (pushr (extendl (sym ?))) ⟩
-        -- (F₁ β→ ∘ σ ∘ β←) ∘ ((F₁ β→ ∘ σ) ◀ _) ∘ (β← ◀ _) ∘ α← _       ≡⟨ refl⟩∘⟨ ◀.pulll (sym (assoc _ _ _)) ⟩
-        -- (F₁ β→ ∘ σ ∘ β←) ∘ ((F₁ β→ ∘ σ ∘ β←) ◀ _) ∘ α← _               ∎
+      r .right-strength-α← =
+        F₁ (α← _) ∘ F₁ β→ ∘ σ ∘ β←                                 ≡⟨ cddr (pushl3 (sym (lswizzle σ.natural-◀ (F.annihilate (◀.annihilate (β≅ .invl)))))) ⟩
+        F₁ (α← _) ∘ F₁ β→ ∘ F₁ (β→ ◀ _) ∘ σ ∘ (β← ◀ _) ∘ β←        ≡⟨ F.extendl3 (sym β→-id⊗β→-α→) ⟩
+        F₁ β→ ∘ F₁ (_ ▶ β→) ∘ F₁ (α→ _) ∘ σ ∘ (β← ◀ _) ∘ β←        ≡⟨ cddr (extendl left-strength-α→ ∙ cdr (pullr refl)) ⟩
+        F₁ β→ ∘ F₁ (_ ▶ β→) ∘ σ ∘ (_ ▶ σ) ∘ α→ _ ∘ (β← ◀ _) ∘ β←   ≡⟨ cddr (cddr (sym β←-β←⊗id-α←)) ⟩
+        F₁ β→ ∘ F₁ (_ ▶ β→) ∘ σ ∘ (_ ▶ σ) ∘ β← ∘ (β← ◀ _) ∘ α← _   ≡⟨ cdr (extendl (sym σ.natural-▶) ∙ cdr (▶.pulll refl)) ⟩
+        F₁ β→ ∘ σ ∘ (_ ▶ F.₁ β→ ∘ σ) ∘ β← ∘ (β← ◀ _) ∘ α← _        ≡⟨ pushr (pushr (extendl (sym β←◀) ∙ cdr (◀.pulll (pullr refl)))) ⟩
+        (F₁ β→ ∘ σ ∘ β←) ∘ (F₁ β→ ∘ σ ∘ β← ◀ _) ∘ α← _             ∎
     left≃right .snd .from r = l where
       open Right-strength r
       open Left-strength
+      open Make-binatural
       l : Left-strength
-      l .left-strength .η _ .η _ = F₁ β← ∘ τ ∘ β→
-      l .left-strength .η _ .is-natural = {!   !} --
-      l .left-strength .is-natural _ _ f = ext λ _ → {!   !}
-        -- (F₁ β← ∘ τ ∘ β→) ∘ (f ⊗₁ F₁ g) ≡⟨ pullr (pullr (β→.is-natural _ _ _)) ⟩
-        -- F₁ β← ∘ τ ∘ (F₁ g ⊗₁ f) ∘ β→   ≡⟨ refl⟩∘⟨ extendl (τ.is-natural _ _ _) ⟩
-        -- F₁ β← ∘ F₁ (g ⊗₁ f) ∘ τ ∘ β→   ≡⟨ F.extendl (β←.is-natural _ _ _) ⟩
-        -- F₁ (f ⊗₁ g) ∘ F₁ β← ∘ τ ∘ β→   ∎
-      l .left-strength-λ← = {!   !}
-        -- F₁ λ← ∘ F₁ β← ∘ τ ∘ β→ ≡⟨ F.pulll λ←-β← ⟩
-        -- F₁ ρ← ∘ τ ∘ β→         ≡⟨ pulll right-strength-ρ← ⟩
-        -- ρ← ∘ β→                ≡⟨ ρ←-β→ ⟩
-        -- λ←                     ∎
-      l .left-strength-α→ = {!   !}
-        -- F₁ (α→ _) ∘ F₁ β← ∘ τ ∘ β→                                       ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pushl3 (sym (lswizzle (τ.is-natural _ _ _) (F.annihilate (▶.annihilate (β≅ .invr))))) ⟩
-        -- F₁ (α→ _) ∘ F₁ β← ∘ F₁ (_ ▶ β←) ∘ τ ∘ (⌜ F₁ id ⌝ ⊗₁ β→) ∘ β→   ≡⟨ ap! F-id ⟩
-        -- F₁ (α→ _) ∘ F₁ β← ∘ F₁ (_ ▶ β←) ∘ τ ∘ (_ ▶ β→) ∘ β→          ≡⟨ F.extendl3 ((refl⟩∘⟨ β←.is-natural _ _ _) ∙ sym β←-β←⊗id-α←) ⟩
-        -- F₁ β← ∘ F₁ (β← ⊗₁ id) ∘ F₁ (α← _) ∘ τ ∘ (_ ▶ β→) ∘ β→          ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pulll right-strength-α← ⟩
-        -- F₁ β← ∘ F₁ (β← ⊗₁ id) ∘ (τ ∘ (τ ⊗₁ id) ∘ α← _) ∘ (_ ▶ β→) ∘ β→ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pullr (pullr refl) ⟩
-        -- F₁ β← ∘ F₁ (β← ⊗₁ id) ∘ τ ∘ (τ ⊗₁ id) ∘ α← _ ∘ (_ ▶ β→) ∘ β→   ≡⟨ refl⟩∘⟨ pushr (pushr (refl⟩∘⟨ ((refl⟩∘⟨ sym (β→.is-natural _ _ _)) ∙ sym β→-id⊗β→-α→))) ⟩
-        -- F₁ β← ∘ (F₁ (β← ⊗₁ id) ∘ τ ∘ (τ ⊗₁ id)) ∘ β→ ∘ (_ ▶ β→) ∘ α→ _ ≡˘⟨ refl⟩∘⟨ pulll (◀.shufflel (τ.is-natural _ _ _)) ⟩
-        -- F₁ β← ∘ τ ∘ ((F₁ β← ∘ τ) ⊗₁ id) ∘ β→ ∘ (_ ▶ β→) ∘ α→ _         ≡⟨ pushr (pushr (extendl (sym (β→.is-natural _ _ _)))) ⟩
-        -- (F₁ β← ∘ τ ∘ β→) ∘ (_ ▶ (F₁ β← ∘ τ)) ∘ (_ ▶ β→) ∘ α→ _       ≡⟨ refl⟩∘⟨ ▶.pulll (sym (assoc _ _ _)) ⟩
-        -- (F₁ β← ∘ τ ∘ β→) ∘ (_ ▶ (F₁ β← ∘ τ ∘ β→)) ∘ α→ _               ∎
+      l .left-strength = make-binatural λ where
+         .η _ _ → F₁ β← ∘ τ ∘ β→
+         .is-natural-◀ f _ →
+           (F₁ β← ∘ τ ∘ β→) ∘ (f ◀ _)  ≡⟨ pullr (pullr β→◀) ⟩
+           F₁ β← ∘ τ ∘ (_ ▶ f) ∘ β→    ≡⟨ cdr (extendl τ.natural-▶) ⟩
+           F₁ β← ∘ F₁ (_ ▶ f) ∘ τ ∘ β→ ≡⟨ F.extendl β←▶ ⟩
+           F₁ (f ◀ _) ∘ F₁ β← ∘ τ ∘ β→ ∎
+         .is-natural-▶ _ f →
+           (F₁ β← ∘ τ ∘ β→) ∘ (_ ▶ F₁ f) ≡⟨ pullr (pullr β→▶) ⟩
+           F₁ β← ∘ τ ∘ (F₁ f ◀ _) ∘ β→   ≡⟨ cdr (extendl τ.natural-◀) ⟩
+           F₁ β← ∘ F₁ (f ◀ _) ∘ τ ∘ β→   ≡⟨ F.extendl β←◀ ⟩
+           F₁ (_ ▶ f) ∘ F₁ β← ∘ τ ∘ β→   ∎
+      l .left-strength-λ← =
+        F₁ (λ← _) ∘ F₁ β← ∘ τ ∘ β→ ≡⟨ F.pulll λ←-β← ⟩
+        F₁ (ρ← _) ∘ τ ∘ β→         ≡⟨ pulll right-strength-ρ← ⟩
+        ρ← _ ∘ β→                  ≡⟨ ρ←-β→ ⟩
+        λ← _                       ∎
+      l .left-strength-α→ =
+        F₁ (α→ _) ∘ F₁ β← ∘ τ ∘ β→                               ≡⟨ cddr (pushl3 (sym (lswizzle τ.natural-▶ (F.annihilate (▶.annihilate (β≅ .invr)))))) ⟩
+        F₁ (α→ _) ∘ F₁ β← ∘ F₁ (_ ▶ β←) ∘ τ ∘ (_ ▶ β→) ∘ β→      ≡⟨ F.extendl3 (cdr β←▶ ∙ sym β←-β←⊗id-α←) ⟩
+        F₁ β← ∘ F₁ (β← ◀ _) ∘ F₁ (α← _) ∘ τ ∘ (_ ▶ β→) ∘ β→      ≡⟨ cddr (extendl right-strength-α← ∙ cdr (pullr refl)) ⟩
+        F₁ β← ∘ F₁ (β← ◀ _) ∘ τ ∘ (τ ◀ _) ∘ α← _ ∘ (_ ▶ β→) ∘ β→ ≡⟨ cddr (cddr (cdr (sym β→◀) ∙ sym β→-id⊗β→-α→)) ⟩
+        F₁ β← ∘ F₁ (β← ◀ _) ∘ τ ∘ (τ ◀ _) ∘ β→ ∘ (_ ▶ β→) ∘ α→ _ ≡⟨ cdr (extendl (sym τ.natural-◀) ∙ cdr (◀.pulll refl)) ⟩
+        F₁ β← ∘ τ ∘ ((F₁ β← ∘ τ) ◀ _) ∘ β→ ∘ (_ ▶ β→) ∘ α→ _     ≡⟨ pushr (pushr (extendl (sym β→▶) ∙ cdr (▶.pulll (pullr refl)))) ⟩
+        ((F₁ β← ∘ τ ∘ β→) ∘ (_ ▶ (F₁ β← ∘ τ ∘ β→)) ∘ α→ _)       ∎
     left≃right .snd .rinv r = Right-strength-path $ ext λ A B →
       F₁ β→ ∘ (F₁ β← ∘ τ ∘ β→) ∘ β← ≡⟨ extendl (F.cancell (β≅ .invl)) ⟩
       τ ∘ β→ ∘ β←                   ≡⟨ elimr (β≅ .invl) ⟩
@@ -300,13 +304,13 @@ module _ {o ℓ} {C : Precategory o ℓ}
     is .fst l = record
       { right-strength    = NT (λ _ → NT (λ _ → σ) (λ _ _ _ → σ.natural-◀)) λ _ _ _ → ext λ _ → σ.natural-▶
       ; right-strength-ρ← = left-strength-λ←
-      ; right-strength-α← = left-strength-α→ ∙ ap₂ _∘_ refl (sym (pullr (M.▶.eliml refl)))
+      ; right-strength-α← = left-strength-α→
       }
       where open Left-strength l
     is .snd .from r = record
       { left-strength    = NT (λ _ → NT (λ _ → τ) λ _ _ _ → τ.natural-◀) λ _ _ _ → ext λ _ → τ.natural-▶
       ; left-strength-λ← = right-strength-ρ←
-      ; left-strength-α→ = right-strength-α← ∙ ap₂ _∘_ refl (ap₂ _∘_ (M.▶.elimr refl) refl)
+      ; left-strength-α→ = right-strength-α←
       }
       where open Right-strength r
     is .snd .rinv _ = Right-strength-path _ _ $ ext λ _ _ → refl
