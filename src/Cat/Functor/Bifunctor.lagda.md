@@ -368,5 +368,27 @@ module
   biiso→isoⁿ i n1 n2 = iso→isoⁿ
     (λ x → iso→isoⁿ (i x) λ {x y} f → n2 f)
     λ {x y} f → ext (λ z → n1 f)
+
+  record Make-binatural : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂ ⊔ h₃) where
+    field
+      η : (c : C.Ob) → (d : D.Ob) → E.Hom (F.F₀ c d) (G.F₀ c d)
+      is-natural-◀
+        : ∀ {c1 c2 : C.Ob} (f : C.Hom c1 c2) (d : D.Ob)
+        → η c2 d E.∘ (f F.◀ d) ≡ (f G.◀ d) E.∘ η c1 d
+      is-natural-▶
+        : ∀ (c : C.Ob) {d1 d2 : D.Ob} (f : D.Hom d1 d2)
+        → η c d2 E.∘ (c F.▶ f) ≡ (c G.▶ f) E.∘ η c d1
+
+  make-binatural : Make-binatural → F => G
+  {-# INLINE make-binatural #-}
+  make-binatural mk =
+    record
+    { η = λ x → record
+      { η = λ y → mk.η x y
+      ; is-natural = λ y z f → mk.is-natural-▶ x f
+      }
+    ; is-natural = λ x y f → ext λ z → mk.is-natural-◀ f z
+    }
+    where module mk = Make-binatural mk
 ```
 -->
