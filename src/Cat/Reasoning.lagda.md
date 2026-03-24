@@ -31,7 +31,7 @@ Most of these helpers were taken from `agda-categories`.
 private variable
   u v w x y z : Ob
   a a' a'' b b' b'' c c' c'' d d' d'' e : Hom x y
-  f f' g g' h h' i i' : Hom x y
+  f f' g g' h h' i i' k k' : Hom x y
 ```
 -->
 
@@ -534,5 +534,13 @@ caar p = car (car p)
 cadr p = cdr (car p)
 cdar p = car (cdr p)
 cddr p = cdr (cdr p)
+
+cdddr : i ≡ i' → f ∘ (g ∘ (h ∘ i)) ≡ f ∘ (g ∘ (h ∘ i'))
+
+cdddr p = cddr (cdr p)
+
+cddddr : k ≡ k' → f ∘ (g ∘ (h ∘ (i ∘ k))) ≡ f ∘ (g ∘ (h ∘ (i ∘ k')))
+
+cddddr p = cdddr (cdr p)
 ```
 -->

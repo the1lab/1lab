@@ -210,7 +210,7 @@ sequencing the effects from left to right or from right to left:
         .η x y → μ (x ⊗ y) ∘ M.₁ σ ∘ τ
         .is-natural-◀ f x →
           extendr (pullr τ.natural-◀)
-          ∙ extendr (extendl (M.weave σ.natural-◀))
+          ∙ extendr (M.extendl σ.natural-◀)
           ∙ pushl (mult.is-natural _ _ _)
         .is-natural-▶ x f →
           extendr (pullr τ.natural-▶)
@@ -220,8 +220,14 @@ sequencing the effects from left to right or from right to left:
 
     right-φ = make-binatural λ where
         .η x y → μ (x ⊗ y) ∘ M.₁ τ ∘ σ
-        .is-natural-◀ → {!!}
-        .is-natural-▶ → {!!}
+        .is-natural-◀ f x →
+          extendr (pullr σ.natural-◀)
+          ∙ extendr (M.extendl τ.natural-◀)
+          ∙ pushl (mult.is-natural _ _ _)
+        .is-natural-▶ x f →
+          extendr (pullr σ.natural-▶)
+          ∙ extendr (M.extendl τ.natural-▶)
+          ∙ pushl (mult.is-natural _ _ _)
       where open Make-binatural
 ```
 
@@ -304,44 +310,42 @@ commutative diagram.
 ~~~
 
 ```agda
-    strength→monoidal .F-α→ = {!   !}
-      -- M₁ (α→ _ _ _) ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ ((μ _ ∘ M₁ σ ∘ τ) ⊗₁ id)                                    ≡⟨ pulll (extendl (sym (mult.is-natural _ _ _))) ⟩
-      -- (μ _ ∘ M₁ (M₁ (α→ _ _ _)) ∘ M₁ σ ∘ τ) ∘ ((μ _ ∘ M₁ σ ∘ τ) ⊗₁ id)                               ≡⟨ pullr (pullr (pullr refl)) ⟩
-      -- μ _ ∘ M₁ (M₁ (α→ _ _ _)) ∘ M₁ σ ∘ τ ∘ ((μ _ ∘ M₁ σ ∘ τ) ⊗₁ id)                                 ≡⟨ refl⟩∘⟨ M.pulll left-strength-α→ ⟩
-      -- μ _ ∘ M₁ (σ ∘ (id ⊗₁ σ) ∘ α→ _ _ _) ∘ τ ∘ ((μ _ ∘ M₁ σ ∘ τ) ⊗₁ id)                             ≡⟨ refl⟩∘⟨ refl⟩∘⟨ ◀.popl right-strength-μ ⟩
-      -- μ _ ∘ M₁ (σ ∘ (id ⊗₁ σ) ∘ α→ _ _ _) ∘ (μ _ ∘ M₁ τ ∘ τ) ∘ ((M₁ σ ∘ τ) ⊗₁ id)                    ≡⟨ refl⟩∘⟨ refl⟩∘⟨ pullr (pullr (◀.popl (τ.is-natural _ _ _))) ⟩
-      -- μ _ ∘ M₁ (σ ∘ (id ⊗₁ σ) ∘ α→ _ _ _) ∘ μ _ ∘ M₁ τ ∘ (M₁ (σ ⊗₁ id) ∘ τ) ∘ (τ ⊗₁ id)              ≡⟨ refl⟩∘⟨ M.popr (M.popr (pulll (sym (mult.is-natural _ _ _)))) ⟩
-      -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ σ) ∘ (μ _ ∘ M₁ (M₁ (α→ _ _ _))) ∘ M₁ τ ∘ (M₁ (σ ⊗₁ id) ∘ τ) ∘ (τ ⊗₁ id) ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ pullr (refl⟩∘⟨ refl⟩∘⟨ pullr refl) ⟩
-      -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ σ) ∘ μ _ ∘ M₁ (M₁ (α→ _ _ _)) ∘ M₁ τ ∘ M₁ (σ ⊗₁ id) ∘ τ ∘ (τ ⊗₁ id)     ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.pulll3 strength-α→ ⟩
-      -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ σ) ∘ μ _ ∘ M₁ (σ ∘ (id ⊗₁ τ) ∘ α→ _ _ _) ∘ τ ∘ (τ ⊗₁ id)                ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.popr (M.popr (sym right-strength-α→)) ⟩
-      -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ σ) ∘ μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ τ) ∘ τ ∘ α→ _ _ _                           ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (τ.is-natural _ _ _) ⟩
-      -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ σ) ∘ μ _ ∘ M₁ σ ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                           ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
-      -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (M₁ (id ⊗₁ σ)) ∘ M₁ σ ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                      ≡˘⟨ refl⟩∘⟨ extendl (mult.is-natural _ _ _) ⟩
-      -- μ _ ∘ μ _ ∘ M₁ (M₁ σ) ∘ M₁ (M₁ (id ⊗₁ σ)) ∘ M₁ σ ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                 ≡˘⟨ extendl μ-assoc ⟩
-      -- μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ (M₁ (id ⊗₁ σ)) ∘ M₁ σ ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _            ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.extendl (σ.is-natural _ _ _) ⟩
-      -- μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ σ ∘ M₁ (id ⊗₁ M₁ σ) ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _              ≡⟨ refl⟩∘⟨ M.pulll3 (sym left-strength-μ) ⟩
-      -- μ _ ∘ M₁ (σ ∘ (id ⊗₁ μ _)) ∘ M₁ (id ⊗₁ M₁ σ) ∘ τ ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                     ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ extendl (τ.is-natural _ _ _) ⟩
-      -- μ _ ∘ M₁ (σ ∘ (id ⊗₁ μ _)) ∘ τ ∘ (M₁ id ⊗₁ M₁ σ) ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                     ≡⟨ refl⟩∘⟨ M.popr (extendl (sym (τ.is-natural _ _ _))) ⟩
-      -- μ _ ∘ M₁ σ ∘ τ ∘ (M₁ id ⊗₁ μ _) ∘ (M₁ id ⊗₁ M₁ σ) ∘ (M₁ id ⊗₁ τ) ∘ α→ _ _ _                    ≡⟨ pushr (pushr (refl⟩∘⟨ ⊗.pulll3 ((refl⟩∘⟨ M.annihilate (idl _)) ∙ M.eliml refl ,ₚ refl))) ⟩
-      -- (μ _ ∘ M₁ σ ∘ τ) ∘ (id ⊗₁ (μ _ ∘ M₁ σ ∘ τ)) ∘ α→ _ _ _                                         ∎
+    strength→monoidal .F-α→ =
+      M.₁ (α→ _) ∘ (μ _ ∘ M.₁ σ  ∘ τ) ∘ (μ _ ∘ M.₁ σ ∘ τ ◀ _)                                ≡⟨ cdr (pullr (pullr refl)) ⟩
+      M.₁ (α→ _) ∘ μ _ ∘ M.₁ σ ∘ τ ∘ (μ _ ∘ M.₁ σ ∘ τ ◀ _)                                   ≡⟨ extendl (sym $ mult.is-natural _ _ _) ⟩
+      μ _ ∘ M.₁ (M.₁ (α→ _)) ∘ M.₁ σ ∘ τ ∘ (μ _ ∘ M.₁ σ ∘ τ ◀ _)                             ≡⟨ cdr (M.pulll left-strength-α→) ⟩
+      μ _ ∘ M.₁ (σ ∘ (_ ▶ σ) ∘ α→ _) ∘ τ ∘ (μ _ ∘ M.₁ σ ∘ τ ◀ _)                             ≡⟨ cddr (◀.popl right-strength-μ ∙ pullr (pullr refl)) ⟩
+      μ _ ∘ M.₁ (σ ∘ (_ ▶ σ) ∘ α→ _) ∘ μ _ ∘ M.₁ τ ∘ τ ∘ (M.₁ σ ∘ τ ◀ _)                     ≡⟨ cddddr (◀.popl τ.natural-◀ ∙ pullr refl) ⟩
+      μ _ ∘ M.₁ (σ ∘ (_ ▶ σ) ∘ α→ _) ∘ μ _ ∘ M.₁ τ ∘ M.₁ (σ ◀ _) ∘ τ ∘ (τ ◀ _)               ≡⟨ cdr (M.popr (M.popr (extendl (sym (mult.is-natural _ _ _))))) ⟩
+      μ _ ∘ M.₁ σ ∘ M.₁ (_ ▶ σ) ∘ μ _ ∘ M.₁ (M.₁ (α→ _)) ∘ M.₁ τ ∘ M.₁ (σ ◀ _) ∘ τ ∘ (τ ◀ _) ≡⟨ cddddr (M.pulll3 strength-α→) ⟩
+      μ _ ∘ M.₁ σ ∘ M.₁ (_ ▶ σ) ∘ μ _ ∘ M.₁ (σ ∘ (_ ▶ τ) ∘ α→ _) ∘ τ ∘ (τ ◀ _)               ≡⟨ cddddr (M.popr (M.popr (sym right-strength-α→))) ⟩
+      μ _ ∘ M₁ σ ∘ M₁ (_ ▶ σ) ∘ μ _ ∘ M₁ σ ∘ M₁ (_ ▶ τ) ∘ τ ∘ α→ _                           ≡⟨ cddddr (cdr (extendl (sym τ.natural-▶))) ⟩
+      μ _ ∘ M₁ σ ∘ M₁ (_ ▶ σ) ∘ μ _ ∘ M₁ σ ∘ τ ∘ (_ ▶ τ) ∘ α→ _                              ≡⟨ cddr (extendl (sym (mult.is-natural _ _ _))) ⟩
+      μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (M₁ (_ ▶ σ)) ∘ M₁ σ ∘ τ ∘ (_ ▶ τ) ∘ α→ _                         ≡⟨ cdr (extendl (sym (mult.is-natural _ _ _))) ⟩
+      μ _ ∘ μ _ ∘ M₁ (M₁ σ) ∘ M₁ (M₁ (_ ▶ σ)) ∘ M₁ σ ∘ τ ∘ (_ ▶ τ) ∘ α→ _                    ≡⟨ extendl (sym μ-assoc) ⟩
+      μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ (M₁ (_ ▶ σ)) ∘ M₁ σ ∘ τ ∘ (_ ▶ τ) ∘ α→ _               ≡⟨ cdddr (M.extendl (sym (σ.natural-▶))) ⟩
+      μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ σ) ∘ M₁ σ ∘ M₁ (_ ▶ M₁ σ) ∘ τ ∘ (_ ▶ τ) ∘ α→ _                 ≡⟨ cdr (M.pulll3 (sym left-strength-μ)) ⟩
+      μ _ ∘ M₁ (σ ∘ (_ ▶ μ _)) ∘ M₁ (_ ▶ M₁ σ) ∘ τ ∘ (_ ▶ τ) ∘ α→ _                          ≡⟨ cddr (extendl (sym τ.natural-▶)) ⟩
+      μ _ ∘ M₁ (σ ∘ (_ ▶ μ _)) ∘ τ ∘ (_ ▶ M₁ σ) ∘ (_ ▶ τ) ∘ α→ _                             ≡⟨ cdr (M.popr (extendl (sym τ.natural-▶))) ⟩
+      μ _ ∘ M₁ σ ∘ τ ∘ (_ ▶ μ _) ∘ (_ ▶ M₁ σ) ∘ (_ ▶ τ) ∘ α→ _                               ≡⟨ pushr (pushr (cdr (▶.pulll3 refl))) ⟩
+      (μ _ ∘ M₁ σ ∘ τ) ∘ (_ ▶ (μ _ ∘ M₁ σ ∘ τ)) ∘ α→ _                                       ∎
 ```
 
 The unitor coherences are relatively easy to prove.
 
 ```agda
-    strength→monoidal .F-λ← = {!   !}
-      -- M₁ λ← ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ⊗₁ id) ≡⟨ refl⟩∘⟨ pullr (pullr right-strength-η) ⟩
-      -- M₁ λ← ∘ μ _ ∘ M₁ σ ∘ η _               ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
-      -- M₁ λ← ∘ μ _ ∘ η _ ∘ σ                  ≡⟨ refl⟩∘⟨ cancell μ-unitl ⟩
-      -- M₁ λ← ∘ σ                              ≡⟨ left-strength-λ← ⟩
-      -- λ←                                     ∎
-    strength→monoidal .F-ρ← = {!   !}
-      -- M₁ ρ← ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ (⌜ id ⌝ ⊗₁ η _) ≡˘⟨ ap¡ M-id ⟩
-      -- M₁ ρ← ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ (M₁ id ⊗₁ η _)  ≡⟨ refl⟩∘⟨ pullr (pullr (τ.is-natural _ _ _)) ⟩
-      -- M₁ ρ← ∘ μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ η _) ∘ τ    ≡⟨ refl⟩∘⟨ refl⟩∘⟨ M.pulll left-strength-η ⟩
-      -- M₁ ρ← ∘ μ _ ∘ M₁ (η _) ∘ τ                 ≡⟨ refl⟩∘⟨ cancell μ-unitr ⟩
-      -- M₁ ρ← ∘ τ                                  ≡⟨ right-strength-ρ← ⟩
-      -- ρ←                                         ∎
+    strength→monoidal .F-λ← =
+      M₁ (λ← _) ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ (η _ ◀ _) ≡⟨ cdr (pullr (pullr right-strength-η)) ⟩
+      M₁ (λ← _) ∘ μ _ ∘ M₁ σ ∘ η _             ≡˘⟨ cddr (unit.is-natural _ _ _) ⟩
+      M₁ (λ← _) ∘ μ _ ∘ η _ ∘ σ                ≡⟨ cdr (cancell μ-unitl) ⟩
+      M₁ (λ← _) ∘ σ                            ≡⟨ left-strength-λ← ⟩
+      λ← _                                     ∎
+    strength→monoidal .F-ρ← =
+      M₁ (ρ← _) ∘ (μ _ ∘ M₁ σ ∘ τ) ∘ (_ ▶ η _)  ≡⟨ cdr (pullr (pullr τ.natural-▶)) ⟩
+      M₁ (ρ← _) ∘ μ _ ∘ M₁ σ ∘ M₁ (_ ▶ η _) ∘ τ ≡⟨ cddr (M.pulll left-strength-η) ⟩
+      M₁ (ρ← _) ∘ μ _ ∘ M₁ (η _) ∘ τ            ≡⟨ cdr (cancell μ-unitr) ⟩
+      M₁ (ρ← _) ∘ τ                             ≡⟨ right-strength-ρ← ⟩
+      ρ← _                                      ∎
 ```
 </details>
 
@@ -373,13 +377,13 @@ category]] the tensor product.
     is : Iso _ _
     is .fst l = record
       { functor-strength = strength^rev Cᵐ M .fst functor-strength
-      ; right-strength-η = {! left-strength-η !}
-      ; right-strength-μ = {! left-strength-μ !}
+      ; right-strength-η = left-strength-η
+      ; right-strength-μ = left-strength-μ
       } where open Left-monad-strength l
     is .snd .from r = record
       { functor-strength = Equiv.from (strength^rev Cᵐ M) functor-strength
-      ; left-strength-η = {! right-strength-η !}
-      ; left-strength-μ = {! right-strength-μ !}
+      ; left-strength-η = right-strength-η
+      ; left-strength-μ = right-strength-μ
       } where open Right-monad-strength r
     is .snd .rinv _ = Right-monad-strength-path Cᵐ monad
       (Equiv.ε (strength^rev Cᵐ M) _)
