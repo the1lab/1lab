@@ -2,6 +2,7 @@
 ```agda
 {-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Monoidal.Instances.Cartesian
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Coherence
 open import Cat.Instances.Product
 open import Cat.Monoidal.Strength
@@ -49,8 +50,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (Cᵐ : Monoidal-category C) {M : Funct
     open Left-strength functor-strength public
 
     field
-      left-strength-η : ∀ {A B} → σ ∘ (id ⊗₁ η B) ≡ η (A ⊗ B)
-      left-strength-μ : ∀ {A B} → σ ∘ (id ⊗₁ μ B) ≡ μ (A ⊗ B) ∘ M₁ σ ∘ σ
+      left-strength-η : ∀ {A B} → σ ∘ (A ▶ η B) ≡ η (A ⊗ B)
+      left-strength-μ : ∀ {A B} → σ ∘ (A ▶ μ B) ≡ μ (A ⊗ B) ∘ M₁ σ ∘ σ
 
   record Right-monad-strength : Type (o ⊔ ℓ) where
     field
@@ -59,8 +60,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (Cᵐ : Monoidal-category C) {M : Funct
     open Right-strength functor-strength public
 
     field
-      right-strength-η : ∀ {A B} → τ ∘ (η A ⊗₁ id) ≡ η (A ⊗ B)
-      right-strength-μ : ∀ {A B} → τ ∘ (μ A ⊗₁ id) ≡ μ (A ⊗ B) ∘ M₁ τ ∘ τ
+      right-strength-η : ∀ {A B} → τ ∘ (η A ◀ B) ≡ η (A ⊗ B)
+      right-strength-μ : ∀ {A B} → τ ∘ (μ A ◀ B) ≡ μ (A ⊗ B) ∘ M₁ τ ∘ τ
 
   record Monad-strength : Type (o ⊔ ℓ) where
     field
@@ -205,17 +206,23 @@ sequencing the effects from left to right or from right to left:
 ```agda
     left-φ right-φ : precompose₂ -⊗- M M => postcompose₂ M -⊗-
 
-    left-φ = {!   !} -- (mult ◂ -⊗-) ∘nt nat-assoc-to (M ▸ left-strength) ∘nt right-strength'
-      -- where
-      --   unquoteDecl right-strength' =
-      --     cohere-into right-strength' (precompose₂ -⊗- M M => postcompose₂ M (precompose₂ ))
-      --       (right-strength ◂ (Id F× M))
+    left-φ = make-binatural λ where
+        .η x y → μ (x ⊗ y) ∘ M.₁ σ ∘ τ
+        .is-natural-◀ f x →
+          extendr (pullr τ.natural-◀)
+          ∙ extendr (extendl (M.weave σ.natural-◀))
+          ∙ pushl (mult.is-natural _ _ _)
+        .is-natural-▶ x f →
+          extendr (pullr τ.natural-▶)
+          ∙ extendr (extendl (M.weave σ.natural-▶))
+          ∙ pushl (mult.is-natural _ _ _)
+       where open Make-binatural
 
-    right-φ = {!   !} -- (mult ◂ -⊗-) ∘nt nat-assoc-to (M ▸ right-strength) ∘nt left-strength'
-      -- where
-      --   unquoteDecl left-strength' =
-      --     cohere-into left-strength' (-⊗- F∘ (M F× M) => M F∘ -⊗- F∘ (M F× Id))
-      --       (left-strength ◂ (M F× Id))
+    right-φ = make-binatural λ where
+        .η x y → μ (x ⊗ y) ∘ M.₁ τ ∘ σ
+        .is-natural-◀ → {!!}
+        .is-natural-▶ → {!!}
+      where open Make-binatural
 ```
 
 ::: {.definition #commutative-monad alias="commutative-strength"}
