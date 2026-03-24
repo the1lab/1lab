@@ -413,7 +413,7 @@ This proof _really_ isn't commented. I'm sorry.
         m' = H.iso.from (h' B.Iso⁻¹ B.∘Iso h₀')
 
         α : k a₀ h₀ .from ≡ F.₁ (m .from) C.∘ k a h .from
-        α = C.inverse-unique _ _ (k a₀ h₀) (k a h C.∘Iso F-map-iso F m) $
+        α = C.inverse-unique₀ (k a₀ h₀) (k a h C.∘Iso F-map-iso F m) $
           sym (kcomm _ _ _ (H.ε-lswizzle (h .invl)))
 
         γ : H.₁ (m' .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)

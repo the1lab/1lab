@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Naturality
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Equivalence where
 ```
 
@@ -30,10 +34,10 @@ open _=>_ hiding (op)
 # Equivalences {defines="equivalence-of-categories equivalences-of-categories"}
 
 A functor $F : \cC \to \cD$ is an **equivalence of categories**
-when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and
-counit natural transformations being [natural isomorphisms]. This
-immediately implies that our adjoint pair $F \dashv G$ extends to an
-adjoint triple $F \dashv G \dashv F$.
+when it has a [[right adjoint]] $F^{-1} : \cD \to \cD$, 
+with the unit and counit natural transformations being [natural isomorphisms]. 
+As we see below, this implies that our adjoint pair $F \dashv G$ extends 
+to an adjoint triple $F \dashv F^{-1} \dashv F$.
 
 [natural isomorphisms]: Cat.Functor.Naturality.html
 
@@ -71,9 +75,21 @@ morphisms gives isomorphisms in the respective functor categories:
   counit⁻¹ = Cat.from F∘F⁻¹≅Id
 ```
 
-<!--
+This implies the adjunction
+
 ```agda
   F⁻¹⊣F : F⁻¹ ⊣ F
+```
+
+whence we have
+
+```agda
+  inverse-equivalence : is-equivalence F⁻¹
+```
+
+<details>
+<summary>Construction of `F⁻¹⊣F`{.Agda} and `inverse-equivalence`{.Agda}</summary>
+```agda
   F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
     open _⊣_
@@ -104,14 +120,13 @@ morphisms gives isomorphisms in the respective functor categories:
       zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F · b) ≡ D.id
       zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .invr) ∙ F .F-id
 
-  inverse-equivalence : is-equivalence F⁻¹
   inverse-equivalence = record
     { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
     ; unit-iso   = λ x → Cat.is-invertible-inverse D (counit-iso _)
     ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
--->
+</details>
 
 We chose, for definiteness, the above definition of equivalence of
 categories, since it provides convenient access to the most useful data:

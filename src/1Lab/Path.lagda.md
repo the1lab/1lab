@@ -1279,12 +1279,15 @@ partial element.
 ~~~
 
 Diagramatically, we'll depict extensions by drawing the relevant partial
-element in red, and the total element in black. In Agda, we write
+element in red, and the total element in black.[^dark] In Agda, we write
 extension types using the type former `_[_↦_]`{.Agda}, which is written
 mixfix as `A [ φ ↦ p ]`. We can formalise the red-black extensibility
 diagram above by defining the partial element `left-true`{.Agda}, and
 giving `refl`{.Agda} to `inS`{.Agda}, the constructor for
 `_[_↦_]`{.Agda}.
+
+[^dark]:
+    Or white, if you are using dark mode.
 
 ```agda
 private

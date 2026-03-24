@@ -16,7 +16,7 @@ open import Cat.Base
 module Cat.Displayed.Base where
 ```
 
-# Displayed categories {defines=displayed-category}
+# Displayed categories {defines="displayed-category base-category displayed-precategory"}
 
 The core idea behind displayed categories is that we want to capture the
 idea of being able to place extra structure over some sort of "base"
@@ -24,7 +24,7 @@ category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the
 objects of Set, and extra conditions placed atop the morphisms of Set.
 
-We start by defining a displayed category over a base category $\cB$
+We start by defining a displayed category over a **base category** $\cB$
 which will act as the category we add the extra structure to.
 
 ```agda

@@ -1,9 +1,8 @@
 <!--
 ```agda
+open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Properties
 open import Cat.Instances.Product
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -38,15 +37,17 @@ equality we construct an [[isomorphism of precategories]].
 ×^op→ .F-∘ f g = refl
 
 ×^op-is-iso : is-precat-iso ×^op→
-×^op-is-iso = iso has-is-ff has-is-iso where 
-  has-is-ff : Cat.Functor.Properties.is-fully-faithful ×^op→
-  has-is-ff = id-equiv
-
-  has-is-iso : is-equiv (F₀ ×^op→)
-  has-is-iso = id-equiv
+×^op-is-iso = iso id-equiv id-equiv
 ```
 
-This means, in particular, that it is an adjoint equivalence:
+This induces a [[path between precategories]]
+
+```agda
+×^op-path : (C ×ᶜ D)^op ≡ C ^op ×ᶜ D ^op
+×^op-path = Precategory-path ×^op→ ×^op-is-iso
+```
+
+and an adjoint equivalence
 
 ```agda
 ×^op-is-equiv : is-equivalence ×^op→

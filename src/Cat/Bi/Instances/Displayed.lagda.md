@@ -106,8 +106,8 @@ as in the nondisplayed case.
       module D' {x} = Cat (Fibre D x) using (_∘_ ; idl ; idr ; elimr ; pushl ; introl)
 
       ni : make-natural-iso {D = Vf _ _} _ _
-      ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm[] }
-      ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm[] }
+      ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm-sym[] }
+      ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm-sym[] }
       ni .eta∘inv _ = ext λ _ → D'.idl _
       ni .inv∘eta _ = ext λ _ → D'.idl _
       ni .natural x y f = ext λ _ → D'.idr _ ∙∙ D'.pushl (F-∘↓ (y .fst)) ∙∙ D'.introl refl
@@ -127,8 +127,8 @@ the structural isomorphisms being identities.
   Disp[] .unitor-l {B = B} = to-natural-iso ni where
     module B = Disp B
     ni : make-natural-iso {D = Vf _ _} _ _
-    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm[] }
-    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm[] }
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm-sym[] }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm-sym[] }
     ni .eta∘inv _ = ext λ _ → Cat.idl (Fibre B _) _
     ni .inv∘eta _ = ext λ _ → Cat.idl (Fibre B _) _
     ni .natural x y f = ext λ _ → Cat.elimr (Fibre B _) refl ∙ Cat.id-comm (Fibre B _)
@@ -137,8 +137,8 @@ the structural isomorphisms being identities.
     module B' {x} = Cat (Fibre B x) using (_∘_ ; idl ; elimr)
 
     ni : make-natural-iso {D = Vf _ _} _ _
-    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm[] }
-    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm[] }
+    ni .eta _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm-sym[] }
+    ni .inv _ = record { η' = λ x' → B.id' ; is-natural' = λ x y f → B.to-pathp[] B.id-comm-sym[] }
     ni .eta∘inv _ = ext λ _ → B'.idl _
     ni .inv∘eta _ = ext λ _ → B'.idl _
     ni .natural x y f = ext λ _ → B'.elimr refl ∙ ap₂ B'._∘_ (y .F-id') refl

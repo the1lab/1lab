@@ -181,20 +181,10 @@ opposite precategory $C\op$. What we have to show is - by the type of
 \circ_{op} h$. This computes into $(h \circ g) \circ f = h \circ (g
 \circ f)$ - which is exactly what `sym (assoc C h g f)` shows!
 
-```agda
-C^op^op≡C : ∀ {o ℓ} {C : Precategory o ℓ} → C ^op ^op ≡ C
-C^op^op≡C {C = C} i = precat i where
-  open Precategory
-  precat : C ^op ^op ≡ C
-  precat i .Ob = C .Ob
-  precat i .Hom = C .Hom
-  precat i .Hom-set = C .Hom-set
-  precat i .id = C .id
-  precat i ._∘_ = C ._∘_
-  precat i .idr = C .idr
-  precat i .idl = C .idl
-  precat i .assoc = C .assoc
-```
+For `_^op`{.Agda} to form a good basis for duality, it is important that
+the operation be _involutive_. This, and other aspects of duality of
+categories, is shown under [[duality of precategories]].
+
 
 ## The precategory of Sets {defines="category-of-sets"}
 
@@ -477,10 +467,10 @@ Natural transformations also dualise. The opposite of $\eta : F
     }
 ```
 
-<!--
+<details>
+<summary>We can also define `is-natural-transformation`{.Agda} as a 
+property of families of morphisms.</summary>
 ```agda
-{-# INLINE NT #-}
-
 is-natural-transformation
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → (F G : Functor C D)
@@ -490,6 +480,12 @@ is-natural-transformation {C = C} {D = D} F G η =
   ∀ x y (f : C .Precategory.Hom x y) → η y D.∘ F .F₁ f ≡ G .F₁ f D.∘ η x
   where module D = Precategory D
         open Functor
+```
+</details>
+
+<!--
+```agda
+{-# INLINE NT #-}
 
 infixr 30 _F∘_
 infix 20 _=>_

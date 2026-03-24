@@ -177,7 +177,7 @@ Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g =
 ```
 -->
 
-## Action on isomorphisms
+## Action on isomorphisms {defines="functors-preserve-isomorphisms"}
 
 <!--
 ```agda
@@ -198,11 +198,9 @@ preserve isomorphisms, and, more generally, preserve invertibility.
   F-map-iso : ∀ {x y} → x C.≅ y → F · x D.≅ F · y
   F-map-iso x .to       = F .F₁ (x .to)
   F-map-iso x .from     = F .F₁ (x .from)
-  F-map-iso x .inverses =
-    record { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
-           ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id
-           }
-    where module x = C._≅_ x
+  F-map-iso x .inverses = record 
+    { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
+    ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id }
 
   F-map-invertible : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F .F₁ f)
   F-map-invertible inv =

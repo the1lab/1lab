@@ -11,7 +11,7 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Displayed.Adjoint where
+module Cat.Displayed.Functor.Adjoint where
 ```
 
 # Displayed adjunctions
@@ -20,14 +20,16 @@ Following the general theme of defining displayed structure over
 1-categorical structure, we can define a notion of displayed
 [[adjoint functors]].
 
+:::{.definition #displayed-adjunction alias="displayed-left-adjoint displayed-right-adjoint"}
 Let $\cE, \cF$ be [[categories displayed over|displayed category]] $\cA,
-\cB$, resp.  Furthermore, let $L : \cA \to \cB$ and $R : \cB \to \cB$ be
+\cB$, resp.  Furthermore, let $L : \cA \to \cB$ and $R : \cB \to \cA$ be
 a pair of adjoint functors. We say 2 [[displayed functors]] $L', R'$ over
 $L$ and $R$ resp. are **displayed adjoint functors** if we have
 displayed natural transformations $\eta' : \mathrm{Id} \to R' \circ L'$
 and $\eps' : L' \circ R' \to \mathrm{Id}$ displayed over the unit
 and counit of the adjunction in the base that satisfy the usual triangle
 identities.
+:::
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -45,6 +47,14 @@ identities.
 
 <!--
 ```agda
+adj-level' 
+  : ∀ {oa ℓa ob ℓb oe ℓe of ℓf}
+    {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+    (ℰ : Displayed A oe ℓe) (ℱ : Displayed B of ℓf) 
+  → Level
+adj-level' {oa} {ℓa} {ob} {ℓb} {oe} {ℓe} {of} {ℓf} _ _ =
+  oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+
 module _
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
@@ -57,7 +67,7 @@ module _
     open Displayed-functor
 
     lvl : Level
-    lvl = oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+    lvl = adj-level' ℰ ℱ
 
   infix 15 _⊣[_]_
 ```
@@ -112,7 +122,7 @@ module _
     open Vertical-functor
 
     lvl : Level
-    lvl = ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
+    lvl = adj-level' ℰ ℱ
 
   infix 15 _⊣↓_
 ```

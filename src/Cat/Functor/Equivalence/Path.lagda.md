@@ -16,7 +16,7 @@ open Functor
 module Cat.Functor.Equivalence.Path where
 ```
 
-# Paths between categories
+# Paths between categories {defines="path-between-precategories"}
 
 We know that, _in_ a [[univalent category]], paths between objects are
 the same thing as isomorphisms. A natural question to follow up is: what

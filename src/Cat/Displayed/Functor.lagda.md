@@ -8,6 +8,7 @@ open import Cat.Prelude
 
 import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Morphism as DM
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning as CR
 ```
@@ -307,6 +308,43 @@ The identity functor is obviously fibred.
   Id'-fibred .F-cartesian f'-cart = f'-cart
 ```
 
+## Action on displayed isomorphisms
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb} {F : Functor A B}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf} (F' : Displayed-functor F ℰ ℱ)
+  where
+  private
+    module A = CR A
+    module ℰ where
+      open DM ℰ public
+      open DR ℰ public
+    module ℱ where
+      open DM ℱ public
+      open DR ℱ public
+  open Displayed-functor F'
+  open DM._≅[_]_
+```
+-->
+
+Just as [[functors preserve isomorphisms]], displayed functors preserve
+[[displayed isomorphisms]], with a completely analogous proof.
+
+```agda
+  F'-map-iso 
+    : ∀ {x y} {f : x A.≅ y} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} 
+    → x' ℰ.≅[ f ] y'
+    → F₀' x' ℱ.≅[ F-map-iso F f ] F₀' y'
+  F'-map-iso f' .to' = F₁' (f' .to')
+  F'-map-iso f' .from' = F₁' (f' .from')
+  F'-map-iso f' .inverses' = record 
+    { invl' = symP F-∘' ℱ.∙[] apd (λ i → F₁') (f' .invl') ℱ.∙[] F-id'
+    ; invr' = symP F-∘' ℱ.∙[] apd (λ i → F₁') (f' .invr') ℱ.∙[] F-id' }
+```
+
 ## Vertical functors {defines="vertical-functor"}
 
 Functors displayed over the identity functor are of particular interest.
@@ -429,7 +467,7 @@ module
 ```
 -->
 
-## Displayed natural transformations
+## Displayed natural transformations {defines="displayed-natural-transformation"}
 
 Just like we have defined a displayed functor
 $\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$
@@ -467,11 +505,13 @@ module
   where
   private
     module A = CR A
+    module B = CR B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
     module ℰ↓ {x} = Precategory (Fibre ℰ x) using (_∘_)
     module ℱ↓ {x} = Precategory (Fibre ℱ x) using (_∘_)
-
+    
+    open Functor
     open Displayed-functor
     open _=>_
 
@@ -490,6 +530,7 @@ module
     : Type lvl
     where
     no-eta-equality
+    constructor NT'
 
     field
       η' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (F' .F₀' x') (G' .F₀' x')
@@ -497,6 +538,76 @@ module
         : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
 ```
+
+<details>
+<summary>We can also define `is-natural-transformation[_]`{.Agda} as a
+proprty of families of morphisms displayed over a family of morphisms
+with the property `is-natural-transformation`{.Agda}</summary>
+```agda
+  is-natural-transformation[_]
+    : {F G : Functor A B} {α : ∀ a → B.Hom (₀ F a) (₀ G a)}
+    → is-natural-transformation F G α
+    → (F' : Displayed-functor F ℰ ℱ) (G' : Displayed-functor G ℰ ℱ)
+    → ( α' : ∀ {x} x' → ℱ.Hom[ α x ] (₀' F' x') (₀' G' x') )
+    → Type _
+  is-natural-transformation[ α-nat ] F' G' α' =
+    ∀ {x} {y} {f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
+    → α' y' ℱ.∘' ₁' F' f' ℱ.≡[ α-nat x y f ] ₁' G' f' ℱ.∘' α' x'
+```
+</details>
+
+<!--
+```agda
+  private unquoteDecl make-Nat'-iso = declare-record-iso make-Nat'-iso (quote _=[_]=>_)
+
+  instance
+    H-Level-Nat' : ∀ {F G α} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ} {n} → H-Level (F' =[ α ]=> G') (2 + n)
+    H-Level-Nat' = basic-instance 2 (Iso→is-hlevel 2 make-Nat'-iso (hlevel 2))
+
+  instance
+    Extensional-displayed-natural-transformation
+      : ∀ {ℓr F G} {α : F => G} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+      → ⦃ e : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (₀' F' x') (₀' G' x')) ℓr ⦄
+      → Extensional (F' =[ α ]=> G') ℓr
+    Extensional-displayed-natural-transformation {α = α} {F' = F'} {G' = G'} ⦃ e ⦄ = 
+      injection→extensional! {f = _=[_]=>_.η' {α = α}} (λ p → Iso.injective make-Nat'-iso (Σ-prop-path! p)) e
+
+  open _=[_]=>_
+
+  Nat'-pathp : {F₁ F₂ G₁ G₂ : Functor A B} 
+             → {F₁' : Displayed-functor F₁ ℰ ℱ} 
+             → {G₁' : Displayed-functor G₁ ℰ ℱ}
+             → {F₂' : Displayed-functor F₂ ℰ ℱ}
+             → {G₂' : Displayed-functor G₂ ℰ ℱ}
+             → {α : F₁ => G₁} {β : F₂ => G₂}
+             → {α' : F₁' =[ α ]=> G₁'} {β' : F₂' =[ β ]=> G₂'}
+             → (p : F₁ ≡ F₂) (q : G₁ ≡ G₂) 
+             → (r : PathP (λ i → p i => q i) α β)
+             → (p' : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F₁' F₂')
+             → (q' : PathP (λ i → Displayed-functor (q i) ℰ ℱ) G₁' G₂')
+             → (∀ {x} (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Hom[ (r i .η x) ] (p' i .F₀' x') (q' i .F₀' x')) (α' .η' x') (β' .η' x'))
+             → PathP (λ i → (p' i) =[ r i ]=> (q' i)) α' β'
+  Nat'-pathp p q r p' q' w i .η' x' = w x' i
+  Nat'-pathp {α' = α'} {β' = β'} p q r p' q' w i .is-natural' {x = x} {y} {f} x' y' f' j = 
+    is-set→squarep {A = λ i j → ℱ.Hom[ r i .is-natural x y f j ] (F₀' (p' i) x') (F₀' (q' i) y')} (λ _ _ → hlevel 2)
+      (λ i → w y' i ℱ.∘' F₁' (p' i) f') (λ j → is-natural' α' x' y' f' j) (λ j → is-natural' β' x' y' f' j) (λ i → F₁' (q' i) f' ℱ.∘' w x' i) i j
+
+  Nat'-path : {F G : Functor A B} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+           → {α β : F => G} {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'} 
+           → {p : α ≡ β}
+           → (∀ {x} (x' : ℰ.Ob[ x ]) → α' .η' x' ℱ.≡[ p ηₚ x ] β' .η' x')
+           → PathP (λ i → F' =[ p i ]=> G') α' β'
+  Nat'-path = Nat'-pathp refl refl _ refl refl
+
+  _ηₚ'_ 
+    : ∀ {F G : Functor A B} {α β : F => G} {p : α ≡ β}
+      {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+      {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'}
+    → PathP (λ i → F' =[ p i ]=> G') α' β'
+    → ∀ {a} (a' : ℰ.Ob[ a ]) → α' .η' a' ℱ.≡[ p ηₚ a ] β' .η' a'
+  p' ηₚ' a' = apd (λ i γ' → γ' .η' a') p'
+```
+-->
 
 ::: {.definition #vertical-natural-transformation}
 Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural
@@ -543,24 +654,11 @@ module _
         ap ℱ.hom[] (ℱ.from-pathp[]⁻ (is-natural' x y f))
         ∙ sym (ℱ.duplicate _ _ _)
 
-  private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>_)
-
-  instance
-    Extensional-=>↓
-      : ∀ {ℓr F' G'}
-      → ⦃ _ : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F' .F₀' x') (G' .F₀' x')) ℓr ⦄
-      → Extensional (F' =>↓ G') ℓr
-    Extensional-=>↓ {F' = F'} {G' = G'}  ⦃ e ⦄  = injection→extensional! {f = _=>↓_.η'}
-      (λ p → Iso.injective eqv (Σ-prop-path! p)) e
-
-    H-Level-=>↓ : ∀ {F' G'} {n} → H-Level (F' =>↓ G') (2 + n)
-    H-Level-=>↓ = basic-instance 2 (Iso→is-hlevel 2 eqv (hlevel 2))
-
   open _=>↓_
 
   idnt↓ : ∀ {F} → F =>↓ F
   idnt↓ .η' x' = ℱ.id'
-  idnt↓ .is-natural' x' y' f' = ℱ.to-pathp[] (DR.id-comm[] ℱ)
+  idnt↓ .is-natural' x' y' f' = ℱ.to-pathp[] (DR.id-comm-sym[] ℱ)
 
   _∘nt↓_ : ∀ {F G H} → G =>↓ H → F =>↓ G → F =>↓ H
   (f ∘nt↓ g) .η' x' = f .η' _ ℱ↓.∘ g .η' x'
