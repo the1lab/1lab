@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Monoidal.Strength.Monad
 open import Cat.Functor.Naturality
@@ -201,17 +200,16 @@ see there for a diagram.
 ```agda
   opaque
     idempotent→commutative : is-commutative-strength s
-    idempotent→commutative = ext λ A B → {!   !}
-      -- μ _ ∘ M₁ τ ∘ σ                                              ≡⟨ insertl μ-unitl ⟩
-      -- μ _ ∘ η _ ∘ μ _ ∘ M₁ τ ∘ σ                                  ≡⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
-      -- μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ η _                             ≡˘⟨ refl⟩∘⟨ refl⟩∘⟨ right-strength-η ⟩
-      -- μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ τ ∘ (⌜ η _ ⌝ ⊗₁ id)             ≡⟨ ap! (idempotent→η≡Mη idem _) ⟩
-      -- μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ τ ∘ (M₁ (η _) ⊗₁ id)            ≡⟨ refl⟩∘⟨ refl⟩∘⟨ {! τ.is-natural _ _ _ !} ⟩
-      -- μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ M₁ (η _ ⊗₁ ⌜ id ⌝) ∘ τ          ≡˘⟨ ap¡ M-id ⟩
-      -- μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ M₁ (η _ ⊗₁ M₁ id) ∘ τ           ≡⟨ refl⟩∘⟨ M.popr (M.popr (extendl (M.weave {! (σ.is-natural _ _ _ ηₚ _) !}))) ⟩
-      -- μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ τ) ∘ M₁ (M₁ (η _ ⊗₁ id)) ∘ M₁ σ ∘ τ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ M.pulll (M.collapse right-strength-η) ⟩
-      -- μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ (η _)) ∘ M₁ σ ∘ τ                   ≡⟨ refl⟩∘⟨ M.cancell μ-unitr ⟩
-      -- μ _ ∘ M₁ σ ∘ τ                                              ∎
+    idempotent→commutative = ext λ A B →
+      μ _ ∘ M₁ τ ∘ σ                                              ≡⟨ insertl μ-unitl ⟩
+      μ _ ∘ η _ ∘ μ _ ∘ M₁ τ ∘ σ                                  ≡⟨ cdr (unit.is-natural _ _ _) ⟩
+      μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ η _                             ≡˘⟨ cddr right-strength-η ⟩
+      μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ τ ∘ (⌜ η _ ⌝ ◀ _)               ≡⟨ ap! (idempotent→η≡Mη idem _) ⟩
+      μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ τ ∘ (M₁ (η _) ◀ _)              ≡⟨ cddr τ.natural-◀  ⟩
+      μ _ ∘ M₁ (μ _ ∘ M₁ τ ∘ σ) ∘ M₁ (η _ ◀ _) ∘ τ                ≡⟨ cdr (M.popr (M.popr (extendl (M.weave σ.natural-◀)))) ⟩
+      μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ τ) ∘ M₁ (M₁ (η _ ◀ _)) ∘ M₁ σ ∘ τ   ≡⟨ cddr (M.pulll (M.collapse right-strength-η)) ⟩
+      μ _ ∘ M₁ (μ _) ∘ M₁ (M₁ (η _)) ∘ M₁ σ ∘ τ                   ≡⟨ cdr (M.cancell μ-unitr) ⟩
+      μ _ ∘ M₁ σ ∘ τ                                              ∎
 ```
 
 If furthermore we are in a [[monoidal category with diagonals]],
@@ -257,16 +255,16 @@ The proof is by chasing the following slightly wonky diagram.
     opaque
       idempotent-monad→diagonal
         : is-diagonal-functor _ _ Cᵈ Cᵈ (M , strength→monoidal s)
-      idempotent-monad→diagonal = {!   !}
-        -- (μ _ ∘ M₁ σ ∘ τ) ∘ δ                                             ≡⟨ pullr (pullr (insertl μ-unitl)) ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ η _ ∘ τ ∘ δ                                   ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ unit.is-natural _ _ _ ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (τ ∘ δ) ∘ η _                              ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ idempotent→η≡Mη idem _ ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (τ ∘ δ) ∘ M₁ (η _)                         ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.pushl refl ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ δ ∘ M₁ (η _)                        ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.weave (δ.is-natural _ _ _) ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ (η _ ⊗₁ η _) ∘ M₁ δ                 ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.pushl (⊗.expand (sym (idr _) ,ₚ sym (idl _))) ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ (η _ ⊗₁ id) ∘ M₁ (id ⊗₁ η _) ∘ M₁ δ ≡⟨ refl⟩∘⟨ refl⟩∘⟨ refl⟩∘⟨ M.pulll right-strength-η ⟩
-        -- μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (η _) ∘ M₁ (id ⊗₁ η _) ∘ M₁ δ              ≡⟨ refl⟩∘⟨ refl⟩∘⟨ cancell μ-unitr ⟩
-        -- μ _ ∘ M₁ σ ∘ M₁ (id ⊗₁ η _) ∘ M₁ δ                               ≡⟨ refl⟩∘⟨ M.pulll left-strength-η ⟩
-        -- μ _ ∘ M₁ (η _) ∘ M₁ δ                                            ≡⟨ cancell μ-unitr ⟩
-        -- M₁ δ                                                             ∎
+      idempotent-monad→diagonal =
+        (μ _ ∘ M₁ σ ∘ τ) ∘ δ _                                           ≡⟨ pullr (pullr (insertl μ-unitl)) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ η _ ∘ τ ∘ δ _                                 ≡⟨ cdddr (unit.is-natural _ _ _) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (τ ∘ δ _) ∘ η _                            ≡⟨ cddddr (idempotent→η≡Mη idem _) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (τ ∘ δ _) ∘ M₁ (η _)                       ≡⟨ cdddr (M.pushl refl) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ (δ _) ∘ M₁ (η _)                    ≡⟨ cddddr (M.weave (δ.is-natural _ _ _)) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ (η _ ⊗₁ η _) ∘ M₁ (δ _)             ≡⟨ cddddr (M.pushl refl) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ τ ∘ M₁ (η _ ◀ _) ∘ M₁ (_ ▶ η _) ∘ M₁ (δ _) ≡⟨ cdddr (M.pulll right-strength-η) ⟩
+        μ _ ∘ M₁ σ ∘ μ _ ∘ M₁ (η _) ∘ M₁ (_ ▶ η _) ∘ M₁ (δ _)            ≡⟨ cddr (cancell μ-unitr) ⟩
+        μ _ ∘ M₁ σ ∘ M₁ (_ ▶ η _) ∘ M₁ (δ _)                             ≡⟨ cdr (M.pulll left-strength-η) ⟩
+        μ _ ∘ M₁ (η _) ∘ M₁ (δ _)                                        ≡⟨ cancell μ-unitr ⟩
+        M₁ (δ _)                                                         ∎
 ```
