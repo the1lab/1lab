@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Functor.Bifunctor
 open import Cat.Functor.Coherence
