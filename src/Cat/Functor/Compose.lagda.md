@@ -189,6 +189,7 @@ module _ where
     .make-natural-iso.natural _ _ _ → E .idr _ ∙ sym (E .idl _)
 
 open Make-bifunctor
+open Make-binatural
 
 module _ (B : Bifunctor C D E) (F : Functor C' C) (G : Functor D' D) where
   private
@@ -230,6 +231,13 @@ module _ {B : Bifunctor C D E} {F : Functor C' C} {G : Functor D' D} where
   whisker-precomposeˡ e1 .η x .is-natural y z f = B.lrmap _ _
   whisker-precomposeˡ e1 .is-natural x y z = ext λ z → ◀.weave (e1 .is-natural _ _ _)
 
+  whisker-precomposeʳ
+    : {G' : Functor D' D} (e2 : G => G')
+    → precompose₂ B F G => precompose₂ B F G'
+  whisker-precomposeʳ e2 .η x .η y = F.₀ x ▶ e2 .η y
+  whisker-precomposeʳ e2 .η x .is-natural y z f = ▶.weave (e2 .is-natural y z f)
+  whisker-precomposeʳ e2 .is-natural x y f = ext λ z → B.rlmap (e2 .η z) (F.F₁ f)
+
 module _ (F : Functor E E') (B : Bifunctor C D E) where
   private
     module F = Functor F
@@ -245,5 +253,20 @@ module _ (F : Functor E E') (B : Bifunctor C D E) where
     .lmap-∘ f g → ap F.₁ (B.lmap-∘ _ _) ∙ F.F-∘ _ _
     .rmap-∘ f g → ap F.₁ (B.rmap-∘ _ _) ∙ F.F-∘ _ _
     .lrmap  f g → Fr.weave F (B.lrmap f g)
+
+module _ {B : Bifunctor C D E} {F F' : Functor E E'} where
+  private
+    open module B = Bifunctor B
+    module F = Functor F
+    module F' = Functor F'
+    module E = Cr E
+
+  whisker-postcompose₂
+    : (e : F => F')
+    → postcompose₂ F B => postcompose₂ F' B
+  whisker-postcompose₂ e = make-binatural λ where
+    .η x y → e .η (B.F₀ x y)
+    .is-natural-◀ f x → e .is-natural _ _ (f ◀ x)
+    .is-natural-▶ x f → e .is-natural _ _ (x ▶ f)
 ```
 -->
