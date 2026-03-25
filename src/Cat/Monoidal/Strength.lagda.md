@@ -220,9 +220,6 @@ is extremely tedious, so we leave the details to the curious reader.
           F₁ β→ ∘ σ ∘ (f ◀ _) ∘ β←      ≡⟨ cdr (extendl σ.natural-◀) ⟩
           F₁ β→ ∘ (F₁ (f ◀ _) ∘ σ ∘ β←) ≡⟨ F.extendl β→◀ ⟩
           F₁ (_ ▶ f) ∘ F.₁ β→ ∘ σ ∘ β←  ∎
-      -- .η _ .η _ = F₁ β→ ∘ σ ∘ β←
-      -- r .right-strength .η _ .is-natural x y f =
-      -- r .right-strength .is-natural _ _ f = ext λ _ →
       r .right-strength-ρ← =
         F₁ (ρ← _) ∘ F₁ β→ ∘ σ ∘ β← ≡⟨ F.pulll ρ←-β→ ⟩
         F₁ (λ← _) ∘ σ ∘ β←         ≡⟨ pulll left-strength-λ← ⟩
