@@ -120,6 +120,12 @@ _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
   func .F-id = G .F-id ,ₚ H .F-id
   func .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
 
+_nt,_
+  : {F G : Functor B C} {H K : Functor B D}
+  → F => G → H => K → Cat⟨ F , H ⟩ => Cat⟨ G , K ⟩
+_nt,_ α β .η c              = α .η c , β .η c
+_nt,_ α β .is-natural _ _ f = α .is-natural _ _ f ,ₚ β .is-natural _ _ f
+
 _nt×_
   : {F G : Functor B D} {H K : Functor C E}
   → F => G → H => K → (F F× H) => (G F× K)
