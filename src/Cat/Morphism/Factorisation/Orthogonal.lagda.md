@@ -369,15 +369,13 @@ and inverses, as $\iota$ preserves isomorphisms and is functorial.
 
 ```agda
     is-iso→in-ι^*L
-      : ∀ {a b}
-      → (f : C.Hom a b)
+      : ∀ {a b} (f : C.Hom a b)
       → C.is-invertible f
       → ι.₁ f ∈ L
     is-iso→in-ι^*L f f-inv = D.is-iso→in-L (ι.F₁ f) (ι.F-map-invertible f-inv)
 
     ι^*L-is-stable
-      : ∀ {a b c}
-      → (f : C.Hom b c) (g : C.Hom a b)
+      : ∀ {a b c} (f : C.Hom b c) (g : C.Hom a b)
       → ι.₁ f ∈ L → ι.₁ g ∈ L
       → ι.₁ (f C.∘ g) ∈ L
     ι^*L-is-stable f g ι[f]∈L ι[g]∈L =
@@ -390,15 +388,13 @@ closed under composition and inverses.
 
 ```agda
     is-iso→in-ι^*R
-      : ∀ {a b}
-      → (f : C.Hom a b)
+      : ∀ {a b} (f : C.Hom a b)
       → C.is-invertible f
       → ι.₁ f ∈ R
     is-iso→in-ι^*R f f-inv = D.is-iso→in-R (ι.F₁ f) (ι.F-map-invertible f-inv)
 
     ι^*R-is-stable
-      : ∀ {a b c}
-      → (f : C.Hom b c) (g : C.Hom a b)
+      : ∀ {a b c} (f : C.Hom b c) (g : C.Hom a b)
       → ι.₁ f ∈ R → ι.₁ g ∈ R
       → ι.₁ (f C.∘ g) ∈ R
     ι^*R-is-stable f g ι[f]∈R ι[g]∈R =
@@ -432,8 +428,8 @@ Moreover, $\iota^{*}(L)$ and $\iota^{*}(R)$ are orthogonal, as fully faithful
 functors reflect orthogonality.
 
 ```agda
-    C-ofs .L⊥R f ι[f]∈L g ι[g]∈R =
-      ff→reflect-orthogonal ι ι-ff (D.L⊥R (ι.₁ f) ι[f]∈L (ι.₁ g) ι[g]∈R)
+    C-ofs .L⊥R f ι[f]∈L g ι[g]∈R = ff→reflect-orthogonal ι ι-ff $
+      D.L⊥R (ι.₁ f) ι[f]∈L (ι.₁ g) ι[g]∈R
 ```
 
 The final step is the most difficult. Let $f : \cC(a, b)$ be a morphism in $\cC$:
@@ -446,24 +442,23 @@ does not work for $u$. Luckily the counit $\eps : \cC(r(\iota(x)), x)$ is invert
 we can transpose $u$ to a map in $\cC$ via $r(u) \circ \eps^{-1} : \cC(a, r(x))$.
 
 ```agda
-    C-ofs .factor {a} {b} f = f-factor
-      where
-        module ι[f] = Factorisation (D.factor (ι.₁ f))
+    C-ofs .factor {a} {b} f = f-factor where
+      module ι[f] = Factorisation (D.factor (ι.₁ f))
 
-        f-factor : Factorisation C (F-restrict-arrows ι L) (F-restrict-arrows ι R) f
-        f-factor .mid = r.₀ ι[f].mid
-        f-factor .left = r.₁ ι[f].left C.∘ ε.inv a
-        f-factor .right = ε b C.∘ r.₁ ι[f].right
+      f-factor : Factorisation C (F-restrict-arrows ι L) (F-restrict-arrows ι R) f
+      f-factor .mid = r.₀ ι[f].mid
+      f-factor .left = r.₁ ι[f].left C.∘ ε.inv a
+      f-factor .right = ε b C.∘ r.₁ ι[f].right
 ```
 
 A bit of quick algebra shows that these two transposes actually factor $f$.
 
 ```agda
-        f-factor .factors =
-          f                                                        ≡⟨ C.intror (ε.invl a) ⟩
-          f C.∘ ε _ C.∘ ε.inv a                                    ≡⟨ C.extendl (sym $ counit.is-natural a b f) ⟩
-          ε b C.∘ r.F₁ (ι.₁ f) C.∘ ε.inv a                         ≡⟨ C.push-inner (r.expand ι[f].factors) ⟩
-          (ε b C.∘ r.₁ ι[f].right) C.∘ (r.₁ ι[f].left C.∘ ε.inv a) ∎
+      f-factor .factors =
+        f                                                        ≡⟨ C.intror (ε.invl a) ⟩
+        f C.∘ ε _ C.∘ ε.inv a                                    ≡⟨ C.extendl (sym $ counit.is-natural a b f) ⟩
+        ε b C.∘ r.F₁ (ι.₁ f) C.∘ ε.inv a                         ≡⟨ C.push-inner (r.expand ι[f].factors) ⟩
+        (ε b C.∘ r.₁ ι[f].right) C.∘ (r.₁ ι[f].left C.∘ ε.inv a) ∎
 ```
 
 Finally, we need to show that $\iota(r(u) \circ \eps^{-1}) \in L$ and
@@ -475,12 +470,10 @@ so it suffices to show that $u \in L$ and $v \in R$. This follows from the
 construction of $u$ and $v$ via an $(L,R)$ factorisation, which completes the proof.
 
 ```agda
-        f-factor .left∈L =
-          ι^*L-is-stable (r.₁ ι[f].left) (ε.inv a)
-            (ι∘r-in-L ι[f].left ι[f].left∈L)
-            (is-iso→in-ι^*L (ε.inv a) (ε.op a))
-        f-factor .right∈R =
-          ι^*R-is-stable (ε b) (r.₁ ι[f].right)
-            (is-iso→in-ι^*R (ε b) (ε-inv b))
-            (ι∘r-in-R ι[f].right ι[f].right∈R)
+      f-factor .left∈L = ι^*L-is-stable (r.₁ ι[f].left) (ε.inv a)
+        (ι∘r-in-L ι[f].left ι[f].left∈L)
+        (is-iso→in-ι^*L (ε.inv a) (ε.op a))
+      f-factor .right∈R = ι^*R-is-stable (ε b) (r.₁ ι[f].right)
+        (is-iso→in-ι^*R (ε b) (ε-inv b))
+        (ι∘r-in-R ι[f].right ι[f].right∈R)
 ```

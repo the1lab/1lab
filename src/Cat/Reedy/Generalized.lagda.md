@@ -97,10 +97,7 @@ subject to the following conditions:
 ```agda
     field
       neg+pos→invertible
-        : ∀ {x y} {f : A.Hom x y}
-        → f ∈ Neg
-        → f ∈ Pos
-        → A.is-invertible f
+        : ∀ {x y} {f : A.Hom x y} → f ∈ Neg → f ∈ Pos → A.is-invertible f
 ```
 
 - Finally, we require that for every $f : y \iso y$ and $p : \cA^{-}(x, y)$,
@@ -112,8 +109,7 @@ subject to the following conditions:
       neg-trivial-stabilizer
         : ∀ {x y} {f : A.Hom y y} {p : A.Hom x y}
         → A.is-invertible f
-        → p ∈ Neg
-        → f A.∘ p ≡ p
+        → p ∈ Neg → f A.∘ p ≡ p
         → f ≡ A.id
 ```
 
@@ -123,10 +119,8 @@ morphisms in $\cA^{-}$ as [[epimorphisms]].
 ```agda
     iso-neg-epic
       : ∀ {x y z} {f₁ f₂ : A.Hom y z} {p : A.Hom x y}
-      → A.is-invertible f₁
-      → A.is-invertible f₂
-      → p ∈ Neg
-      → f₁ A.∘ p ≡ f₂ A.∘ p
+      → A.is-invertible f₁ → A.is-invertible f₂
+      → p ∈ Neg → f₁ A.∘ p ≡ f₂ A.∘ p
       → f₁ ≡ f₂
 ```
 
@@ -150,8 +144,7 @@ follows from our assumption that $f_{1} \circ p = f_{2} \circ p$.
         f₂⁻¹-inv = A.is-invertible-inverse f₂-inv
 
         f₂⁻¹∘f₁∘p=id : f₂.inv A.∘ f₁ ≡ A.id
-        f₂⁻¹∘f₁∘p=id =
-          neg-trivial-stabilizer (A.invertible-∘ f₂⁻¹-inv f₁-inv) p∈A⁻
+        f₂⁻¹∘f₁∘p=id = neg-trivial-stabilizer (A.invertible-∘ f₂⁻¹-inv f₁-inv) p∈A⁻
           $ A.reassocl.from
           $ A.pre-invl.from f₂-inv f₁∘p=f₂∘p
 ```
@@ -231,8 +224,6 @@ $x \prec y$, which completes the proof.
          (is-pseudomonic-Forget-wide-subcat (A.is-iso→pos _))
          _
 ```
-
-
 
 ## Reflecting generalized Reedy structures
 
@@ -320,12 +311,8 @@ is invertible and $f \circ p = p$.
 ```agda
     C-reedy .neg-trivial-stabilizer {f = f} {p = p} f-inv ι[p]∈A⁻ f∘p=p =
       flip Equiv.from (f-inv , f∘p=p) $
-        f ≡ C.id
-          ≃⟨ ι.to-id ⟩
-        ι.₁ f ≡ A.id
-          ≃˘⟨ A.neg-trivial-stabilizer-equiv ι[p]∈A⁻ ⟩
-        A.is-invertible (ι.₁ f) × ι.₁ f A.∘ ι.F₁ p ≡ ι.F₁ p
-          ≃⟨ Σ-ap (ι.invertible-equiv e⁻¹) (λ _ → ι.triangle-equivl) ⟩
-        C.is-invertible f × f C.∘ p ≡ p
-          ≃∎
+        f ≡ C.id                                            ≃⟨ ι.to-id ⟩
+        ι.₁ f ≡ A.id                                        ≃˘⟨ A.neg-trivial-stabilizer-equiv ι[p]∈A⁻ ⟩
+        A.is-invertible (ι.₁ f) × ι.₁ f A.∘ ι.F₁ p ≡ ι.F₁ p ≃⟨ Σ-ap (ι.invertible-equiv e⁻¹) (λ _ → ι.triangle-equivl) ⟩
+        C.is-invertible f × f C.∘ p ≡ p                     ≃∎
 ```

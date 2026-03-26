@@ -28,7 +28,7 @@ $$
 x \prec y := \exists(f : \cD(x, y)).\ \text{$f$ is not invertible}
 $$
 
-is a [[well-founded]] relation.
+is [[well-founded]].
 :::
 
 <!--
