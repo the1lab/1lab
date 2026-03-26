@@ -26,20 +26,28 @@ module Order.Filter.Instances.Eventuality where
 
 When working with sequences $\NN \to X$, it is common to find predicates
 that are true on almost every element of the sequence, but fail on a finite
-number of counterexamples. Mathematicians typically call such predicates or
-"almost always" or "eventually true" in the sequence.
+number of counterexamples. Mathematicians typically call such predicates
+"eventually always true" in the sequence.
+
+::: warning
+The terminology for eventually always predicates is a bit inconsistent.
+Topologists and analysts refer to such predicates as "eventually true predicates",
+whereas logicians typically adopt the "eventually always" naming convention.
+We prefer to use the more fine-grained terminology to avoid confusion.
+:::
 
 As a concrete example, recall that a sequence $x_n : \NN \to \RR$ converges
 to some $x : \RR$ if, for every $0 < \eps$, there exists some $n_0 : \NN$ such that
 for every further $n \geq n_0$, we have $| x - x_n | < \eps$. Ignoring constructivity concerns
 for the moment, we can re-phrase this definition in the language of
-eventually true predicates by observing that a sequence converges if and only
+eventually always true predicates by observing that a sequence converges if and only
 if there are a finite number of $x_i$ where $| x - x_i | \geq \eps$.
 In other words, a sequence converges if and only if the predicate
-$(\lambda x_i.\ | x - x_i | < \eps) : \NN \to \Omega$ is eventually true in the sequence $x_n$.
+$(\lambda x_i.\ | x - x_i | < \eps) : \NN \to \Omega$ is eventually always
+true in the sequence $x_n$.
 
 Intuitively, for a fixed sequence $x_n : \NN \to X$ in a type $X$, we ought to
-think about the subsets $A \subseteq X$ where $x \in A$ is eventually true in $x_n$
+think about the subsets $A \subseteq X$ where $x \in A$ is eventually always true in $x_n$
 as somehow being "large" subsets of $X$. We can make this intuition precise by showing
 that this collection of subsets forms a [[filter]] on the power set of $X$.
 
@@ -93,11 +101,11 @@ module _ {od ℓd ℓx} {D : Poset od ℓd} {X : Type ℓx} (D-directed : is-upw
 With these pieces in place, we can now define the **eventuality filter** of a net.
 
 :::{.definition #eventuality-filter}
-The **eventuality filter** of a net $f : D \to X$ is the filter $\lozenge \square f \subseteq \mathcal{P}(X)$
+The **eventuality filter** of a net $f : D \to X$ is the filter $\eventually \always f \subseteq \mathcal{P}(X)$
 defined as:
 
 $$
-A \in \lozenge \square f := \exists (i : D).\ \forall (j : D).\ i \leq j \to f(j) \in A
+A \in \eventually \always f := \exists (i : D).\ \forall (j : D).\ i \leq j \to f(j) \in A
 $$
 
 In more intuitive terms, $A$ is in the eventuality filter of $f$ if it eventually always
@@ -111,12 +119,12 @@ lies within the image of $f$.
 ```
 
 The posets of subsets is a meet semilattice, so it suffices to show that
-$\lozenge \square f : \mathcal{P}(X) \to \Omega$ is a meet semilattice homomorphism.
+$\eventually \always f : \mathcal{P}(X) \to \Omega$ is a meet semilattice homomorphism.
 
-First, note that $X \in \lozenge \square f$ if and only if $D$ is inhabited, as
+First, note that $X \in \eventually \always f$ if and only if $D$ is inhabited, as
 the image of $f$ always lies within $f$, and $D$ is inhabited by definition.
 
-Next, suppose that $A, B \in \lozenge \square f$. By definition, this means
+Next, suppose that $A, B \in \eventually \always f$. By definition, this means
 that there exists some $i$ and $j$ such that for all $i \leq i', j \leq j'$,
 $f(i') \in A$ and $f(j') \in B$, resp.
 
