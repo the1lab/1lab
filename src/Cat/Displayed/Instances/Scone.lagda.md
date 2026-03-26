@@ -87,7 +87,7 @@ $\Sets$ along the global sections functor.
 
 ```agda
 Scones : Displayed B (lsuc ℓ) ℓ
-Scones = Change-of-base Hom[ top ,-] (Slices (Sets ℓ))
+Scones = Change-of-base (Hom-from top) (Slices (Sets ℓ))
 ```
 
 We can unfold the abstract definition to see that we obtain the same

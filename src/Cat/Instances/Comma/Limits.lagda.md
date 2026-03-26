@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality.Reflection
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Reflection
 open import Cat.Diagram.Limit.Base
@@ -109,7 +110,11 @@ module
 ```agda
   Cod-lifts-limits : lifts-limits-of J (Cod (!Const d) F)
   Cod-lifts-limits lim .lifted = Cod-lift-limit F F-cont lim
-  Cod-lifts-limits lim .preserved = trivial-is-limit! (Ran.has-ran lim)
+  Cod-lifts-limits lim .preserved = natural-isos→is-ran
+    trivial-isoⁿ!
+    trivial-isoⁿ!
+    trivial-isoⁿ!
+    (ext λ i → C.idl _ ∙ C.elimr (C.idr _)) (Ran.has-ran lim)
 ```
 
 As an easy corollary, we get: if $\cC$ is small-complete and $F$

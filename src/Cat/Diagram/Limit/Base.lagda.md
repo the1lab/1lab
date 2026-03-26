@@ -900,17 +900,12 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     : F ≅ⁿ F'
     → preserves-limit F Dia
     → preserves-limit F' Dia
-  natural-iso→preserves-limits α F-preserves {G = K} {eps} lim =
-    natural-isos→is-ran
-      idni (α ◂ni Dia) (α ◂ni K)
-        (ext λ j →
-          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
-          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
-          (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
-          F' .F₁ (eps .η j)                                                         ∎)
-        (F-preserves lim)
-    where
-      module α = Isoⁿ α
+  natural-iso→preserves-limits α F-preserves {G = K} {eps} lim = natural-isos→is-ran
+    idni (α ◂ni Dia) (α ◂ni K)
+      (ext λ j →
+        D.pulll (α.to .is-natural _ _ _) ∙ D.cancel-inner (α.invl ηₚ _) ∙ D.elimr (elim F' (elim K refl)))
+      (F-preserves lim)
+    where module α = Isoⁿ α
 ```
 -->
 
@@ -1082,7 +1077,7 @@ module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} {E : Precategor
       → {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
       → is-ran !F (G F∘ F F∘ Diagram) (G F∘ F F∘ K) (nat-assoc-from (G ▸ nat-assoc-from (F ▸ eps)))
       ≃ is-ran !F ((G F∘ F) F∘ Diagram) ((G F∘ F) F∘ K) (nat-assoc-from ((G F∘ F) ▸ eps))
-    fixup = trivial-ran-equiv!
+    fixup {K = K} = trivial-ran-equiv!
 ```
 -->
 

@@ -1,9 +1,9 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Strong.Epi
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
@@ -13,7 +13,6 @@ open import Cat.Prelude
 open import Cat.Regular
 
 import Cat.Displayed.Instances.Subobjects as Sub
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Regular.Image as Img
 import Cat.Reasoning as Cr
 ```
@@ -473,8 +472,8 @@ but keep in mind that they are not commented.
 ∘-rel-monotone {r = r} {r'} {s} {s'} α β =
   Im-universal (∘-rel.it r s) _
     {e = factor _ .left ∘ ∘-rel.inter r' s' .universal
-      {p₁' = β .map ∘ ∘-rel.inter _ _ .p₁}
-      {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
+      {p₁' = β .map ∘ ∘-rel.inter r s .p₁}
+      {p₂' = α .map ∘ ∘-rel.inter r s .p₂}
       ( pullr (pulll (sym (β .com) ∙ idl _))
       ∙ sym (pullr (pulll (sym (α .com) ∙ idl _))
       ∙ (assoc _ _ _ ∙∙ sym (∘-rel.inter r s .square) ∙∙ sym (assoc _ _ _))))}
@@ -499,8 +498,8 @@ but keep in mind that they are not commented.
     ∘-rel.inter f id-rel .universal {p₁' = Relation.src f} {p₂' = id}
       (eliml π₂∘⟨⟩ ∙ intror refl)
   f≤fid .com = idl _ ∙ sym (pulll (sym (factor _ .factors)) ∙ ⟨⟩∘ _ ∙ sym (⟨⟩-unique
-    (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter _ _ .p₁∘universal))
-    (sym (pullr (∘-rel.inter _ _ .p₂∘universal) ∙ idr _))))
+    (sym (ap₂ _∘_ (eliml π₁∘⟨⟩) refl ∙ ∘-rel.inter f id-rel .p₁∘universal))
+    (sym (pullr (∘-rel.inter f id-rel .p₂∘universal) ∙ idr _))))
 
 ∘-rel-idl f = Sub-antisym idf≤f f≤idf where
   idf≤f : ∘-rel id-rel f ≤ₘ f
@@ -518,6 +517,7 @@ but keep in mind that they are not commented.
 
 open Prebicategory hiding (Ob ; Hom)
 open make-natural-iso
+open Make-bifunctor
 open Functor
 ```
 -->
@@ -530,12 +530,16 @@ naturality _and_ their identities (triangle/pentagon) since $\Sub(-
 
 ```agda
 private
-  ∘-rel-fun : ∀ {a b c} → Functor (Sub (b ⊗₀ c) ×ᶜ Sub (a ⊗₀ b)) (Sub (a ⊗₀ c))
-  ∘-rel-fun .F₀ (a , b) = ∘-rel a b
-  ∘-rel-fun .F₁ (f , g) = ∘-rel-monotone  f g
-
-  ∘-rel-fun .F-id    = hlevel 1 _ _
-  ∘-rel-fun .F-∘ _ _ = hlevel 1 _ _
+  ∘-rel-fun : ∀ {a b c} → Bifunctor (Sub (b ⊗₀ c)) (Sub (a ⊗₀ b)) (Sub (a ⊗₀ c))
+  ∘-rel-fun = make-bifunctor λ where
+    .F₀         → ∘-rel
+    .lmap {x = x} f → ∘-rel-monotone {s = x} f Sub.id
+    .rmap {a = a} f → ∘-rel-monotone {r = a} Sub.id f
+    .lmap-id    → prop!
+    .rmap-id    → prop!
+    .lmap-∘ f g → prop!
+    .rmap-∘ f g → prop!
+    .lrmap  f g → prop!
 
 Rel[_] : Prebicategory o (o ⊔ ℓ) ℓ
 Rel[_] .Prebicategory.Ob = Ob
@@ -564,15 +568,14 @@ Rel[_] .unitor-r = to-natural-iso mk where
   mk .inv∘eta x = Sub.invl (∘-rel-idr x)
   mk .natural x y f = hlevel 1 _ _
 Rel[_] .associator {a} {b} {c} {d} = to-natural-iso mk where
-  mk : make-natural-iso (compose-assocˡ ∘-rel-fun) (compose-assocʳ ∘-rel-fun {A = a} {b} {c} {d})
+  mk : make-natural-iso
+    (compose-assocˡ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun)
+    (compose-assocʳ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun {A = a} {b} {c} {d})
   mk .eta (x , y , z) = ∘-rel-assoc x y z .Sub.from
   mk .inv (x , y , z) = ∘-rel-assoc x y z .Sub.to
   mk .eta∘inv (x , y , z) = Sub.invr (∘-rel-assoc x y z)
   mk .inv∘eta (x , y , z) = Sub.invl (∘-rel-assoc x y z)
-  mk .natural (x , y , z) (α , β , γ) f =
-    ≤-over-is-prop
-      (compose-assocʳ {H = λ x y → Sub (x ⊗₀ y)} ∘-rel-fun .F₁ f Sub.∘ ∘-rel-assoc x y z .Sub.from)
-      (∘-rel-assoc α β γ .Sub.from Sub.∘ compose-assocˡ {H = λ x y → Sub (x ⊗₀ y)} ∘-rel-fun .F₁ f)
+  mk .natural (x , y , z) (α , β , γ) f = prop!
 Rel[_] .triangle f g = hlevel 1 _ _
 Rel[_] .pentagon f g h i = hlevel 1 _ _
 ```

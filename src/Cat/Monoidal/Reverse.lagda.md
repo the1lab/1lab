@@ -51,7 +51,16 @@ _^rev .unitor-r = iso→isoⁿ (isoⁿ→iso C.unitor-l)
   λ f → sym (C.unitor-l .Isoⁿ.to .is-natural _ _ f)
 _^rev .associator = iso→isoⁿ
   (λ (a , b , c) → isoⁿ→iso (C.associator ni⁻¹) (c , b , a))
-  λ (f , g , h) → sym (C.associator .Isoⁿ.from .is-natural _ _ (h , g , f))
+  λ (f , g , h) →
+    let
+      p : (_ C.▶ f) ∘ ((_ C.▶ g) ∘ (h C.◀ _) C.◀ _) ≡ (((h C.◀ _) ∘ (_ C.▶ g)) C.◀ _) ∘ (_ C.▶ f)
+      p = ap₂ _∘_ refl (ap (C._◀ _) (sym (C.-⊗-.lrmap _ _))) ∙ sym (C.-⊗-.lrmap _ _)
+
+      q : (h C.◀ _) ∘ (_ C.▶ (g C.◀ _) ∘ (_ C.▶ f)) ≡ (_ C.▶ (_ C.▶ f) ∘ (g C.◀ _)) ∘ (h C.◀ _)
+      q = ap₂ _∘_ refl (ap (_ C.▶_) (C.-⊗-.lrmap _ _)) ∙ C.-⊗-.lrmap _ _
+    in ap₂ _∘_ p refl
+    ∙∙ sym (C.associator .Isoⁿ.from .is-natural _ _ (h , g , f))
+    ∙∙ ap₂ _∘_ refl q
 _^rev .triangle = C.triangle-α→
 _^rev .pentagon = C.pentagon-α→
 ```

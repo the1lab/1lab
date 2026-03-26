@@ -4,6 +4,7 @@ open import Cat.Functor.Hom.Displayed
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
+open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -672,7 +673,7 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{\id}(-,u^{*}(-))$.
 ```agda
   fibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u)
+    → Hom-over ℰ u ≅ⁿ precompose₂ (Hom[-,-] (Fibre ℰ x)) Id (base-change u)
   fibration→hom-iso {x = x} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
@@ -680,15 +681,27 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{\id}(-,u^{*}(-))$.
     module into-iso {y'} = Isoⁿ (fibration→hom-iso-into {y' = y'} u)
     module from-iso {x'} = Isoⁿ (fibration→hom-iso-from {x' = x'} u)
 
-    mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
-    mi .eta x u' = π*.universalv u'
-    mi .inv x v' = hom[ idr u ] (π* u _ ∘' v')
-    mi .eta∘inv x = funext λ v' →
-      sym $ π*.uniquev _ (to-pathp[] refl)
-    mi .inv∘eta x = funext λ u' →
-      from-pathp[] (π*.commutesv _)
-    mi .natural _ _ (v₁' , v₂') = funext λ u' →
-      sym (apr' (happly (into-iso.to .is-natural _ _ v₁') u'))
-      ∙∙ sym (happly (from-iso.to .is-natural _ _ v₂') (hom[ idr _ ] (u' ∘' v₁')))
-      ∙∙ ap (into-iso.to .η _) (smashr _ _ ∙ reindex _ _ )
+    mi : make-natural-iso (Hom-over ℰ u) (precompose₂ (Hom[-,-] (Fibre ℰ x)) Id (base-change u))
+    mi .eta A .η B h = π*.universalv h
+    mi .eta A .is-natural x y f = ext λ x → π*.uniquep₂ _ _ _ _ _
+      (begin
+        _ ≡[]⟨ π*.commutesp (idr u) _ ⟩
+        _ ≡[]⟨ unwrap _ ⟩
+        _ ∎[])
+      (begin
+        _ ≡[]⟨ refl⟩∘'⟨ unwrap _ ⟩
+        _ ≡[]⟨ pulll[] _ (π*.commutesp id-comm _) ⟩
+        _ ≡[]⟨ pullr[] _ (π*.commutesp (idr u) _) ⟩
+        _ ∎[])
+    mi .inv A .η B h = hom[ idr u ] (π* u _ ∘' h)
+    mi .inv A .is-natural x y f = ext λ x → begin[]
+      _ ≡[]⟨ unwrap _ ⟩
+      _ ≡[]⟨ refl⟩∘'⟨ unwrap _ ⟩
+      _ ≡[]⟨ extendl[] _ (π*.commutesp id-comm _) ⟩
+      _ ≡[]⟨ wrapr _ ⟩
+      _ ≡[]⟨ wrap _ ⟩
+      _ ∎[]
+    mi .eta∘inv x = ext λ a u → sym (π*.uniquev _ (to-pathp[] refl))
+    mi .inv∘eta x = ext λ a u → from-pathp[] (π*.commutesv _)
+    mi .natural x y f = ext λ v₂' u' → from-pathp[] (π*.uniquep₂ _ _ _ _ _ (pulll[] _ (π*.commutes _ _)) (π*.commutesp (idr u) _ ∙[] unwrap _ ∙[] wrapl _))
 ```

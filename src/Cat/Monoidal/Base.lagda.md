@@ -1,11 +1,11 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Bi.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 ```
@@ -48,20 +48,14 @@ respectively.
 
 ```agda
   field
-    -⊗-  : Functor (C ×ᶜ C) C
+    -⊗-  : Bifunctor C C C
     Unit : Ob
 ```
 
 <!--
 ```agda
-  private module -⊗- = Bifunctor -⊗-
-  _⊗_ : Ob → Ob → Ob
-  A ⊗ B = -⊗- .Functor.F₀ (A , B)
-
-  _⊗₁_ : ∀ {w x y z} → Hom w x → Hom y z → Hom (w ⊗ y) (x ⊗ z)
-  f ⊗₁ g = -⊗- .Functor.F₁ (f , g)
-
-  infixr 25 _⊗_
+  module -⊗- = Bifunctor -⊗- hiding (_◀_ ; _▶_ ; F₀)
+  open Bifunctor -⊗- public using (_◀_ ; _▶_) renaming (F₀ to infixr 25 _⊗_ ; _◆_ to infix 25 _⊗₁_)
 ```
 -->
 
@@ -86,50 +80,38 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
     unitor-r : Cr._≅_ Cat[ C , C ] Id (-⊗-.Left Unit)
 
     associator : Cr._≅_ Cat[ C ×ᶜ C ×ᶜ C , C ]
-      (compose-assocˡ {O = ⊤} {H = λ _ _ → C} -⊗-)
-      (compose-assocʳ {O = ⊤} {H = λ _ _ → C} -⊗-)
+      (compose-assocˡ {O = ⊤} (λ _ _ → C) -⊗-)
+      (compose-assocʳ {O = ⊤} (λ _ _ → C) -⊗-)
 ```
 
 <!--
 ```agda
+  module unitor-l = Cr._≅_ _ unitor-l
+  module unitor-r = Cr._≅_ _ unitor-r
+  module associator = Cr._≅_ _ associator
+
+  private
+    open module λ← = _=>_ unitor-l.from public using () renaming (η to λ←)
+    open module λ→ = _=>_ unitor-l.to   public using () renaming (η to λ→)
+
+    open module ρ← = _=>_ unitor-r.from public using () renaming (η to ρ←)
+    open module ρ→ = _=>_ unitor-r.to   public using () renaming (η to ρ→)
+
+    open module α→ = _=>_ associator.to   public using () renaming (η to α→)
+    open module α← = _=>_ associator.from public using () renaming (η to α←)
+
   λ≅ : ∀ {X} → X ≅ Unit ⊗ X
   λ≅ = isoⁿ→iso unitor-l _
-
-  λ← : ∀ {X} → Hom (Unit ⊗ X) X
-  λ← = unitor-l .Cr._≅_.from .η _
-
-  λ→ : ∀ {X} → Hom X (Unit ⊗ X)
-  λ→ = unitor-l .Cr._≅_.to .η _
 
   ρ≅ : ∀ {X} → X ≅ X ⊗ Unit
   ρ≅ = isoⁿ→iso unitor-r _
 
-  ρ← : ∀ {X} → Hom (X ⊗ Unit) X
-  ρ← = unitor-r .Cr._≅_.from .η _
-
-  ρ→ : ∀ {X} → Hom X (X ⊗ Unit)
-  ρ→ = unitor-r .Cr._≅_.to .η _
-
   α≅ : ∀ {A B C} → (A ⊗ B) ⊗ C ≅ A ⊗ (B ⊗ C)
   α≅ = isoⁿ→iso associator _
 
-  α→ : ∀ A B C → Hom ((A ⊗ B) ⊗ C) (A ⊗ (B ⊗ C))
-  α→ _ _ _ = associator .Cr._≅_.to .η _
-
-  α← : ∀ A B C → Hom (A ⊗ (B ⊗ C)) ((A ⊗ B) ⊗ C)
-  α← _ _ _ = associator .Cr._≅_.from .η _
-
-  module ⊗ = Fr -⊗-
-  module ▶ {A} = Fr (-⊗-.Right A)
-  module ◀ {A} = Fr (-⊗-.Left A)
-
-  -- whiskering on the right
-  _▶_ : ∀ A {B C} (g : Hom B C) → Hom (A ⊗ B) (A ⊗ C)
-  _▶_ A f = id ⊗₁ f
-
-  -- whiskering on the left
-  _◀_ : ∀ {A B} (g : Hom A B) C → Hom (A ⊗ C) (B ⊗ C)
-  _◀_ f A = f ⊗₁ id
+  module ⊗ = Fr (Uncurry -⊗-)
+  module ▶ {A} = Fr (-⊗-.Right A) hiding (F₀ ; F₁)
+  module ◀ {A} = Fr (-⊗-.Left A)  hiding (F₀ ; F₁)
 ```
 -->
 
@@ -158,23 +140,23 @@ children's drawing of a house, so that it fits on the page horizontally.
 
 ```agda
   field
-    triangle : ∀ {A B} → (ρ← ◀ B) ∘ α← A Unit B ≡ A ▶ λ←
+    triangle : ∀ {A B} → (ρ← _ ◀ B) ∘ α← (A , Unit , B) ≡ A ▶ λ← _
 
     pentagon
       : ∀ {A B C D}
-      → (α← A B C ◀ D) ∘ α← A (B ⊗ C) D ∘ (A ▶ α← B C D)
-      ≡ α← (A ⊗ B) C D ∘ α← A B (C ⊗ D)
+      → (α← (A , B , C) ◀ D) ∘ α← (A , B ⊗ C , D) ∘ (A ▶ α← (B , C , D))
+      ≡ α← (A ⊗ B , C , D) ∘ α← (A , B , C ⊗ D)
 ```
 
 <!--
 ```agda
-  triangle-α→ : ∀ {A B} → (A ▶ λ←) ∘ α→ _ _ _ ≡ ρ← ◀ B
+  triangle-α→ : ∀ {A B} → (A ▶ λ← _) ∘ α→ _ ≡ ρ← _ ◀ B
   triangle-α→ = rswizzle (sym triangle) (α≅ .invr)
 
   pentagon-α→
     : ∀ {A B C D}
-    → (A ▶ α→ B C D) ∘ α→ A (B ⊗ C) D ∘ (α→ A B C ◀ D)
-    ≡ α→ A B (C ⊗ D) ∘ α→ (A ⊗ B) C D
+    → (A ▶ α→ (B , C , D)) ∘ α→ (A , B ⊗ C , D) ∘ (α→ (A , B , C) ◀ D)
+    ≡ α→ (A , B , C ⊗ D) ∘ α→ (A ⊗ B , C , D)
   pentagon-α→ = inverse-unique refl refl
     (▶.F-map-iso (α≅ Iso⁻¹) ∙Iso α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (α≅ Iso⁻¹))
     (α≅ Iso⁻¹ ∙Iso α≅ Iso⁻¹)
@@ -297,9 +279,9 @@ We obtain the commutativity of the bottom triangle, which yields the
 desired equation since $1 \otimes -$ is an equivalence.
 
 ```agda
-  triangle-λ← : ∀ {A B} → λ← ∘ α→ Unit A B ≡ λ← ⊗₁ id
+  triangle-λ← : ∀ {A B} → λ← _ ∘ α→ (Unit , A , B) ≡ λ← _ ◀ _
   triangle-λ← {A} {B} = push-eqⁿ (unitor-l ni⁻¹) $
-    ▶.F-∘ _ _ ∙ ap to (Iso-prism base sq1 sq2 sq3)
+    ▶.F-∘ _ _ ∙ ap to (Iso-prism base sq1 sq2 sq3) ∙ ap ▶.₁ (▶.elimr refl)
     where
       base : ◀.F-map-iso (α≅ Iso⁻¹) ∙Iso ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹))
            ≡ ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹))
@@ -312,23 +294,28 @@ desired equation since $1 \otimes -$ is an equivalence.
       sq2 : ◀.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∙Iso α≅
           ≡ (α≅ ∙Iso α≅) ∙Iso ▶.F-map-iso (λ≅ Iso⁻¹)
       sq2 = ≅-path $
-        α→ _ _ _ ∘ ((ρ← ⊗₁ id) ⊗₁ id)    ≡⟨ associator .Isoⁿ.to .is-natural _ _ _ ⟩
-        (ρ← ⊗₁ ⌜ id ⊗₁ id ⌝) ∘ α→ _ _ _  ≡⟨ ap! ⊗.F-id ⟩
-        (ρ← ⊗₁ id) ∘ α→ _ _ _            ≡˘⟨ pulll triangle-α→ ⟩
-        (id ⊗₁ λ←) ∘ α→ _ _ _ ∘ α→ _ _ _ ∎
+        α→ _ ∘ ((ρ← _ ◀ _) ◀ _)        ≡⟨ ap₂ _∘_ refl (ap (_◀ _) (-⊗-.lmap-◆ _) ∙ -⊗-.lmap-◆ _) ⟩
+        α→ _ ∘ ((ρ← _ ⊗₁ id) ⊗₁ id)    ≡⟨ associator .Isoⁿ.to .is-natural _ _ _ ⟩
+        (ρ← _ ⊗₁ ⌜ id ⊗₁ id ⌝) ∘ α→ _  ≡⟨ ap! -⊗-.◆-id ⟩
+        (ρ← _ ⊗₁ id) ∘ α→ _            ≡˘⟨ ap₂ _∘_ (-⊗-.lmap-◆ _) refl ⟩
+        (ρ← _ ◀ _) ∘ α→ _              ≡˘⟨ pulll triangle-α→ ⟩
+        (_ ▶ λ← _) ∘ α→ _ ∘ α→ _       ∎
 
       sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∙Iso α≅
-          ≡ α≅ ∙Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
-      sq3 = ≅-path (associator .Isoⁿ.to .is-natural _ _ _)
+          ≡ α≅ ∙Iso ▶.F-map-iso (▶.F-map-iso id-iso ∙Iso ◀.F-map-iso (λ≅ Iso⁻¹))
+      sq3 = ≅-path $
+          ap₂ _∘_ refl (ap (_◀ _) (-⊗-.rmap-◆ _) ∙ -⊗-.lmap-◆ _)
+        ∙ associator .Isoⁿ.to .is-natural _ _ _
+        ∙ ap₂ _∘_ (eliml ◀.F-id) refl
 ```
 
 As a consequence, we get that the two unitors $1 \otimes 1 \to 1$ agree:
 
 ```agda
-  λ≡ρ : λ← {Unit} ≡ ρ← {Unit}
+  λ≡ρ : λ← Unit ≡ ρ← Unit
   λ≡ρ = push-eqⁿ (unitor-r ni⁻¹) $
-    (λ← ⊗₁ id)            ≡˘⟨ triangle-λ← ⟩
-    λ← ∘ α→ _ _ _         ≡⟨ (insertl (λ≅ .invl) ∙∙ refl⟩∘⟨ sym (unitor-l .Isoⁿ.from .is-natural _ _ _) ∙∙ cancell (λ≅ .invl)) ⟩∘⟨refl ⟩
-    (id ⊗₁ λ←) ∘ α→ _ _ _ ≡⟨ triangle-α→ ⟩
-    (ρ← ⊗₁ id)            ∎
+    λ← _ ◀ _          ≡˘⟨ triangle-λ← ⟩
+    λ← _ ∘ α→ _       ≡⟨ ap₂ _∘_ (insertl (λ≅ .invl) ∙∙ ap₂ _∘_ refl (sym (unitor-l .Isoⁿ.from .is-natural _ _ _)) ∙∙ cancell (λ≅ .invl)) refl ⟩
+    (_ ▶ λ← _) ∘ α→ _ ≡⟨ triangle-α→ ⟩
+    (ρ← _ ◀ _)        ∎
 ```

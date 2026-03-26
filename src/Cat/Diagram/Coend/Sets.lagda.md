@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Coend
@@ -47,11 +48,11 @@ directly with `glue`{.Agda}. With that motivation out of the way, let's
 continue with the construction!
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} (F : Functor (C ^op ×ᶜ C) (Sets (o ⊔ ℓ))) where
+module _ {o ℓ} {C : Precategory o ℓ} (F : Bifunctor (C ^op) C (Sets (o ⊔ ℓ))) where
   open Precategory C
-  open Functor F
-  open Coend
   open Cowedge
+  open Coend
+  open Bifunctor F
 ```
 
 We start by defining the two maps we will coequalise along. Quite a
@@ -59,13 +60,13 @@ bit of bundling is required to make things well typed, but this is
 exactly the same pair of maps in the diagram above.
 
 ```agda
-  dimapl : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
-         → Σ[ X ∈ C ] F ʻ (X , X)
-  dimapl (X , Y , f , Fxy) = X , F₁ (id , f) Fxy
+  dimapl : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] ⌞ F · X · Y ⌟
+         → Σ[ X ∈ C ] ⌞ F · X · X ⌟
+  dimapl (X , Y , f , Fxy) = X , rmap f Fxy
 
-  dimapr : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] F ʻ (X , Y)
-         → Σ[ X ∈ C ] F ʻ (X , X)
-  dimapr (X , Y , f , Fxy) = Y , F₁ (f , id) Fxy
+  dimapr : Σ[ X ∈ C ] Σ[ Y ∈ C ] Σ[ f ∈ Hom Y X ] ⌞ F · X · Y ⌟
+         → Σ[ X ∈ C ] ⌞ F · X · X ⌟
+  dimapr (X , Y , f , Fxy) = Y , lmap f Fxy
 ```
 
 Constructing the universal `Cowedge`{.Agda} is easy now that we've
@@ -109,14 +110,14 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
   open Functor
   open _=>_
 
-  Coends : Functor Cat[ 𝒞 ^op ×ᶜ 𝒞 , Sets (o ⊔ ℓ) ] (Sets (o ⊔ ℓ))
+  Coends : Functor (Cat[ 𝒞 ^op , Cat[ 𝒞 , Sets (o ⊔ ℓ) ] ]) (Sets (o ⊔ ℓ))
   Coends .F₀ F = el! (Coeq (dimapl F) (dimapr F))
   Coends .F₁ α =
-    Coeq-rec (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
+    Coeq-rec (λ ∫F → inc (∫F .fst , α .η _ .η _ (∫F .snd))) λ where
       (X , Y , f , Fxy) →
-        (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ∙∙
-        glue (X , Y , f , α .η (X , Y) Fxy) ∙∙
-        (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
+        (ap (λ ϕ → Coeq.inc (X , ϕ)) $ α .η _ .is-natural _ _ _ ·ₚ _) ∙∙
+        glue (X , Y , f , α .η X .η Y Fxy) ∙∙
+        (sym $ ap (λ ϕ → Coeq.inc (Y , ϕ)) $ α .is-natural _ _ _ ·ₚ _ ·ₚ _)
   Coends .F-id    = ext λ _ _ → refl
   Coends .F-∘ f g = ext λ _ _ → refl
 ```

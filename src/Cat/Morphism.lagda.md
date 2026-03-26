@@ -737,7 +737,7 @@ around” by way of inversion. For example, given all the morphisms in
 
 are isomorphisms, we can use `inverse-unique`{.Agda} to get an equality
 $\alpha^{-1} \circ \beta^{-1} \circ \gamma^{-1} = \phi^{-1} \circ \psi^{-1}$.
-This is used, for example, in [[opposite monoidal category]] to invert 
+This is used, for example, in [[opposite monoidal category]] to invert
 the triangle and pentagon identities.
 
 ```agda
@@ -749,7 +749,7 @@ abstract
 ```
 
 <details>
-<summary>The proof is an unenlightening `PathP`{.Agda} juggle and is 
+<summary>The proof is an unenlightening `PathP`{.Agda} juggle and is
 therefore omitted.
 </summary>
 ```agda

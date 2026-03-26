@@ -592,7 +592,7 @@ by $S_i$ into $[\cC, \Sets]$
 
 ```agda
   jointly-ff→dense-separating-family
-    : is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family sᵢ))
+    : is-jointly-fully-faithful (Hom[-,-] C F∘ Functor.op (Forget-family sᵢ))
     → is-dense-separating-family sᵢ
   jointly-ff→dense-separating-family joint-ff .universal eta p =
     equiv→inverse joint-ff λ where
@@ -605,7 +605,7 @@ by $S_i$ into $[\cC, \Sets]$
 
   dense-separating-family→jointly-ff
     : is-dense-separating-family sᵢ
-    → is-jointly-fully-faithful (よcov C F∘ Functor.op (Forget-family sᵢ))
+    → is-jointly-fully-faithful (Hom[-,-] C F∘ Functor.op (Forget-family sᵢ))
   dense-separating-family→jointly-ff dense =
     is-iso→is-equiv $ iso
       (λ α → dense .universal (α .η) (λ f g → α .is-natural _ _ g $ₚ f))

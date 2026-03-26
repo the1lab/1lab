@@ -47,8 +47,12 @@ function getHover(a: HTMLAnchorElement): Hover | undefined {
     let tgt = target;
 
     const get = fetchTypes(mod.slice(0, -5)).then((tys) => {
+      let ty: string | undefined;
+      if (!((ty = tys[tgt]) !== undefined))
+        return;
+
       const element = document.createElement("div");
-      element.innerHTML = tys[tgt]!;
+      element.innerHTML = ty;
       element.classList.add("hover-popup", "sourceCode");
 
       return element;

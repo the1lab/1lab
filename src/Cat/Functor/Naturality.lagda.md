@@ -152,13 +152,13 @@ to an invertible natural transformation, resp. natural isomorphism.
     → (is : ∀ x → F .F₀ x D.≅ G .F₀ x)
     → (∀ {x y} f → G .F₁ f D.∘ is x .D.to ≡ is y .D.to D.∘ F .F₁ f)
     → F ≅ⁿ G
-  iso→isoⁿ {F} {G} is nat = to-natural-iso mk where
-    mk : make-natural-iso F G
-    mk .eta x = is x .D.to
-    mk .inv x = is x .D.from
-    mk .eta∘inv x = is x .D.invl
-    mk .inv∘eta x = is x .D.invr
-    mk .natural _ _ = nat
+  {-# INLINE iso→isoⁿ #-}
+  iso→isoⁿ {F} {G} is nat = to-natural-iso record where
+    eta x = is x .D.to
+    inv x = is x .D.from
+    eta∘inv x = is x .D.invl
+    inv∘eta x = is x .D.invr
+    natural _ _ = nat
 
   is-invertibleⁿ→isoⁿ : ∀ {F G} {α : F => G} → is-invertibleⁿ α → F ≅ⁿ G
   is-invertibleⁿ→isoⁿ nat-inv = CD.invertible→iso _ nat-inv

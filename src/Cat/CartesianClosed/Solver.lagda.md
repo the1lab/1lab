@@ -2,10 +2,10 @@
 ```agda
 open import Cat.CartesianClosed.Free.Signature using (module types)
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Bifunctor
+open import Cat.Functor.Closed
 open import Cat.Cartesian
 open import Cat.Prelude
-
-import Cat.Functor.Bifunctor as Bifunctor
 ```
 -->
 
@@ -274,7 +274,7 @@ ren-⟦⟧ₙ ρ (lam t) =
   ∙ sym (unique _ (ap₂ _∘_ refl rem₁ ∙ pulll (commutes ⟦ t ⟧ₙ)))
   where
   rem₁ : (⟦ lam t ⟧ₙ ∘ ⟦ ρ ⟧ʳ) ⊗₁ id ≡ (⟦ lam t ⟧ₙ ⊗₁ id) ∘ ⟦ ρ ⟧ʳ ⊗₁ id
-  rem₁ = Bifunctor.first∘first ×-functor
+  rem₁ = Bifunctor.lmap-∘ (Curry ×-functor) _ _
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ ⟨_,_⟩ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x

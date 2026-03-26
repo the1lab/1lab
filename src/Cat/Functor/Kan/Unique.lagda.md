@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Functor.Naturality
 open import Cat.Functor.Univalence
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose
@@ -52,9 +53,11 @@ of $F$ along $p$".
 
 <!--
 ```agda
-private variable
-  o ℓ : Level
-  C C' D E : Precategory o ℓ
+private
+  variable
+    o ℓ : Level
+    C C' D E : Precategory o ℓ
+  module Cat[,] {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} = Cat.Reasoning Cat[ C , D ]
 
 module
   Lan-unique
@@ -293,15 +296,15 @@ which is propositionally equal to the whiskering:
       (natural-iso-ext→is-lan
         (natural-iso-of→is-lan (natural-iso-along→is-lan lan p-iso) F-iso)
         G-iso)
-      (ext λ x → D.extendl (D.pulll (G-iso .to .is-natural _ _ _)) ∙ q ηₚ _)
-    where open Isoⁿ
+      (Cat[,].extendl (Cat[,].pulll refl) ∙ q)
+    where
+      open Isoⁿ
 
 module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  open Cat.Reasoning Cat[ C , D ] using (lswizzle ; rswizzle ; assoc)
-  private module ◆ = Cat.Functor.Reasoning (F∘-functor {B = C'} {C = D} {A = C})
+  private module ◆ = Cat.Functor.Reasoning (Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
 
   natural-isos→lan-equiv
     : (p-iso : p ≅ⁿ p')
@@ -313,7 +316,9 @@ module _
   natural-isos→lan-equiv p-iso F-iso G-iso q = prop-ext!
     (natural-isos→is-lan p-iso F-iso G-iso q)
     (natural-isos→is-lan (p-iso ni⁻¹) (F-iso ni⁻¹) (G-iso ni⁻¹)
-      (lswizzle (rswizzle (sym q ∙ assoc _ _ _) (F-iso .Isoⁿ.invr)) (◆.annihilate (G-iso .Isoⁿ.invr ,ₚ p-iso .Isoⁿ.invr))))
+      (Cat[,].lswizzle
+        (Cat[,].rswizzle (sym q ∙ Cat[,].assoc _ _ _) (F-iso .Isoⁿ.invr))
+        (◆.annihilate (G-iso .Isoⁿ.invr ,ₚ p-iso .Isoⁿ.invr))))
 ```
 -->
 
@@ -326,19 +331,14 @@ preserves-is-lan→preserves-lan
   → ∀ {G} {eta : F => G F∘ p} (lan : is-lan p F G eta)
   → preserves-is-lan H lan
   → preserves-lan p F H
-preserves-is-lan→preserves-lan {E = E} {C' = C'} H lan pres {G'} lan' =
+preserves-is-lan→preserves-lan {E = E} {C' = C'} H {G = G} lan pres {G'} lan' =
   natural-isos→is-lan idni idni
     (F∘-iso-r One.unique)
-    (ext λ c →
-      (H.₁ (G'.₁ C'.id) E.∘ H.₁ _) E.∘ H.₁ _ E.∘ E.id ≡⟨ E.pullr (H.pulll (One.unit ηₚ c)) ⟩
-      H.₁ (G'.₁ C'.id) E.∘ H.₁ _ E.∘ E.id             ≡⟨ H.eliml G'.F-id ∙ E.idr _ ⟩
-      H.₁ _                                           ∎)
+    (ext λ _ → E.pullr (E.eliml (H.elim (G .Functor.F-id)) ∙ E.idr _) ∙ H.collapse (One.unit ηₚ _))
     pres
   where
-    module G' = Functor G' using (F-id ; ₁)
-    module C' = Precategory C' using (id)
-    module E  = Cat.Reasoning E using (id ; _∘_ ; idr ; pullr)
-    module H  = Cat.Functor.Reasoning H using (₁ ; eliml ; pulll)
+    module E   = Cat.Reasoning E using (pullr ; eliml ; idr)
+    module H   = Cat.Functor.Reasoning H using (elim ; collapse)
     module One = Lan-unique lan lan'
 ```
 
@@ -545,7 +545,7 @@ module _
     {G G' : Functor C' D} {eps eps'}
     where
   private
-    module D = Precategory D using (_∘_ ; assoc)
+    module D = Cat.Reasoning D
     open _=>_
 
   natural-isos→is-ran
@@ -561,14 +561,13 @@ module _
         (natural-iso-of→is-ran (natural-iso-along→is-ran ran p-iso)
         F-iso)
       G-iso)
-    (ext λ c → sym (D.assoc _ _ _) ∙∙ ap₂ D._∘_ refl (sym $ D.assoc _ _ _) ∙∙ p ηₚ _)
+    (ext λ c → D.pullr (D.pullr (sym (G-iso .Isoⁿ.from .is-natural _ _ _))) ∙ p ηₚ c)
 
 module _
     {p p' : Functor C C'} {F F' : Functor C D}
     {G G' : Functor C' D} {eps eps'}
     where
-  open Cat.Reasoning Cat[ C , D ] using (lswizzle ; rswizzle ; assoc)
-  private module ◆ = Cat.Functor.Reasoning (F∘-functor {B = C'} {C = D} {A = C}) using (annihilate)
+  private module ◆ = Cat.Functor.Reasoning (Uncurry (F∘-functor {B = C'} {C = D} {A = C}))
 
   natural-isos→ran-equiv
     : (p-iso : p ≅ⁿ p')
@@ -579,27 +578,25 @@ module _
     ≃ is-ran p' F' G' eps'
   natural-isos→ran-equiv p-iso F-iso G-iso q = prop-ext!
     (natural-isos→is-ran p-iso F-iso G-iso q)
-    (natural-isos→is-ran (p-iso ni⁻¹) (F-iso ni⁻¹) (G-iso ni⁻¹)
-      (lswizzle (rswizzle (sym q ∙ assoc _ _ _) (◆.annihilate (G-iso .Isoⁿ.invr ,ₚ p-iso .Isoⁿ.invr))) (F-iso .Isoⁿ.invr)))
+    (natural-isos→is-ran (p-iso ni⁻¹) (F-iso ni⁻¹) (G-iso ni⁻¹) (Cat[,].lswizzle
+      (Cat[,].rswizzle
+        (sym q ∙ Cat[,].assoc _ _ _)
+        (◆.annihilate (G-iso .Isoⁿ.invr ,ₚ p-iso .Isoⁿ.invr)))
+      (F-iso .Isoⁿ.invr)))
 
 preserves-is-ran→preserves-ran
   : ∀ (H : Functor D E) {p : Functor C C'} {F : Functor C D}
   → ∀ {G} {eps : G F∘ p => F} (ran : is-ran p F G eps)
   → preserves-is-ran H ran
   → preserves-ran p F H
-preserves-is-ran→preserves-ran {E = E} {C' = C'} H {G = G} ran pres ran' =
+preserves-is-ran→preserves-ran {E = E} {C' = C'} H ran pres {G'} ran' =
   natural-isos→is-ran idni idni
     (F∘-iso-r One.unique)
-    (ext λ c →
-      E.id E.∘ H.₁ _ E.∘ H.₁ (G.₁ C'.id) E.∘ H.₁ _ ≡⟨ E.idl _ ∙ (E.refl⟩∘⟨ H.eliml G.F-id) ⟩
-      H.₁ _ E.∘ H.₁ _                              ≡⟨ H.collapse (One.counit ηₚ c) ⟩
-      H.₁ _                                        ∎)
+    (ext λ c → E.pulll (E.idl _) ∙ E.pulll (H.collapse (One.counit ηₚ _)) ∙ E.elimr (H.elim (G' .Functor.F-id)))
     pres
   where
-    module G  = Functor G using (F-id ; ₁)
-    module C' = Precategory C'
-    module E  = Cat.Reasoning E using (id ; _∘_ ; idl ; refl⟩∘⟨_)
-    module H  = Cat.Functor.Reasoning H using (collapse ; eliml ; ₁)
+    module E  = Cat.Reasoning E using (pulll ; idl ; elimr)
+    module H  = Cat.Functor.Reasoning H using (collapse ; elim ; ₁)
     module One = Ran-unique ran ran'
 
 Ran-is-prop

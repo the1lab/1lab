@@ -1,14 +1,15 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Instances.Twisted
 open import Cat.Functor.Constant
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Coend
+open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as Cat
 ```
@@ -50,31 +51,33 @@ commutativity/extranaturality conditions need to be massaged a bit.
 Check it out, it's not too long:
 
 ```agda
-module _ (F : Functor (C ^op ×ᶜ C) D) where
+module _ (F : Bifunctor (C ^op) C D) where
   private
     module C = Cat C
     module D = Cat D
-    module F = F-r F
+    module F = Bifunctor F
     open _=>_
     open Twist
-    open Bifunctor
 
   cocone→cowedge : ∀ {x} → twistᵒᵖ F => Const x → Cowedge F
   cocone→cowedge eta .nadir = _
   cocone→cowedge eta .ψ c = eta .η ((c , c) , C.id)
   cocone→cowedge eta .extranatural f =
-    eta .is-natural _ _ (twist _ _ (C.eliml (C.idl _)))
-    ∙ (sym $ eta .is-natural _ _ (twist _ _ (C.cancelr (C.idl _))))
+    ap₂ D._∘_ refl (D.introl F.lmap-id)
+    ∙ eta .is-natural _ _ (twist _ _ (C.eliml (C.idl _)))
+    ∙ sym (eta .is-natural _ _ (twist _ _ (C.cancelr (C.idl _))))
+    ∙ ap₂ D._∘_ refl (D.elimr F.rmap-id)
 
   cowedge→cocone : (W : Cowedge F) → twistᵒᵖ F => Const (W .nadir)
-  cowedge→cocone W .η ((c , c') , f) = W .ψ c D.∘ second F f
+  cowedge→cocone W .η ((c , c') , f) = W .ψ c D.∘ F.rmap f
   cowedge→cocone W .is-natural ((a , b) , f) ((x , y) , g) h =
-    (W .ψ x D.∘ F.F₁ (C.id , g)) D.∘ F.F₁ (_ , _)                           ≡⟨ W .extranatural g D.⟩∘⟨refl ⟩
-    (W .ψ y D.∘ F.F₁ (g , C.id)) D.∘ F.F₁ (h .before , h .after)            ≡⟨ D.pullr (F.weave (C.introl refl ,ₚ refl)) ⟩
-    W .ψ y D.∘ ((F.F₁ (h .before C.∘ g , C.id)) D.∘ F.F₁ (C.id , h .after)) ≡⟨ D.extendl (sym (W .extranatural _)) ⟩
-    (W .ψ a D.∘ (F.F₁ (C.id , h .before C.∘ g) D.∘ F.F₁ (C.id , h .after))) ≡⟨ D.refl⟩∘⟨ sym (Bifunctor.second∘second F) ∙ ap (Bifunctor.second F) (h .commutes) ⟩
-    W .ψ a D.∘ F.F₁ (C.id , f)                                              ≡⟨ sym (D.idl _) ⟩
-    D.id D.∘ W .ψ a D.∘ F.F₁ (C.id , f) ∎
+    (ψ W x D.∘ (x F.▶ g)) D.∘ (before h F.◀ y) D.∘ (a F.▶ after h) ≡⟨ D.pushl (W .extranatural g) ⟩
+    ψ W y D.∘ (g F.◀ y) D.∘ (before h F.◀ y) D.∘ (a F.▶ after h)   ≡⟨ ap₂ D._∘_ refl (D.pulll (sym (F.lmap-∘ _ _)) ∙ F.lrmap _ _) ⟩
+    ψ W y D.∘ (y F.▶ after h) D.∘ (before h C.∘ g F.◀ b)           ≡⟨ D.extendl (W .extranatural _) ⟩
+    ψ W b D.∘ (after h F.◀ b) D.∘ (before h C.∘ g F.◀ b)           ≡⟨ ap₂ D._∘_ refl (sym (F.lmap-∘ _ _) ∙ ap F.lmap (h .commutes)) ⟩
+    ψ W b D.∘ (f F.◀ b)                                            ≡˘⟨ W .extranatural _ ⟩
+    ψ W a D.∘ (a F.▶ f)                                            ≡⟨ D.introl refl ⟩
+    D.id D.∘ ψ W a D.∘ (a F.▶ f)                                   ∎
 ```
 
 We can now extend that correspondence to calculating coends as certain
@@ -90,11 +93,13 @@ colimits: $\cD$ has a coend for $F$ if it has a colimit for $F\pi_t$.
     coend .factor W' = W.universal
       (cowedge→cocone W' .η)
       (λ f → cowedge→cocone W' .is-natural _ _ f ∙ D.idl _)
-    coend .commutes {W = W'} = W.factors _ _ ∙ D.elimr (Bifunctor.second-id F)
+    coend .commutes {W = W'} = W.factors _ _ ∙ D.elimr F.rmap-id
     coend .unique {W = W'} comm = W.unique _ _ _ $ λ j → sym $
       W' .extranatural _
       ∙∙ D.pushl (sym comm)
-      ∙∙ (D.refl⟩∘⟨ (W.commutes (twist _ _ (C.cancelr (C.idl _)))))
+      ∙∙ ap₂ D._∘_ refl (ap₂ D._∘_ refl (D.intror F.rmap-id)
+        ∙ W.commutes (twist _ _ (C.cancelr (C.idl _))))
+
 
   cocomplete→coend : is-cocomplete (o ⊔ ℓ) ℓ D → Coend F
   cocomplete→coend colim = colimit→coend (colim _)

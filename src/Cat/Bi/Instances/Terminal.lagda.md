@@ -3,6 +3,7 @@
 open import 1Lab.Prelude
 
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Closed
 open import Cat.Univalent
 open import Cat.Bi.Base
 
@@ -26,7 +27,7 @@ open Prebicategory
 ⊤Bicat .Ob = ⊤
 ⊤Bicat .Hom _ _ = ⊤Cat
 ⊤Bicat .Prebicategory.id = tt
-⊤Bicat .compose = !F
+⊤Bicat .compose = Curry !F
 ⊤Bicat .unitor-l = path→iso !F-unique₂
 ⊤Bicat .unitor-r = path→iso !F-unique₂
 ⊤Bicat .associator = path→iso !F-unique₂

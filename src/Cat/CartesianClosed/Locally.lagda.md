@@ -4,15 +4,16 @@ open import Cat.Functor.Adjoint.Compose
 open import Cat.Instances.Slice.Twice
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Pullback
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
+open import Cat.Functor.Closed
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 ```
 -->
@@ -179,7 +180,7 @@ isomorphic.
 ```agda
     Slice-product-functor : ∀ {X} → make-natural-iso
       (Σf (X .map) F∘ Base-change pullbacks (X .map))
-      (Bifunctor.Left ×/ X)
+      (Bifunctor.Left (Curry ×/) X)
 
     Slice-product-functor .eta x .map = id
     Slice-product-functor .eta x .com = idr _ ∙ pullbacks _ _ .square

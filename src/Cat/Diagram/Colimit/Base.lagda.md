@@ -749,10 +749,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
   natural-iso→preserves-colimits α F-preserves {G = K} {eta} colim =
     natural-isos→is-lan idni (α ◂ni Dia) (α ◂ni K)
       (ext λ j →
-        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
-        α.to .η _ D.∘ (F .F₁ (eta .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
-        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eta .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
-        F' .F₁ (eta .η j) ∎)
+        D.pullr (eliml F (elim K refl)) ∙ D.extendl (α.to .is-natural _ _ _) ∙ D.elimr (α.invl ηₚ _))
       (F-preserves colim)
     where
       module α = Isoⁿ α
@@ -869,7 +866,7 @@ module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} {E : Precategor
       → {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
       → is-lan !F (G F∘ F F∘ Diagram) (G F∘ F F∘ K) (nat-assoc-to (G ▸ nat-assoc-to (F ▸ eta)))
       ≃ is-lan !F ((G F∘ F) F∘ Diagram) ((G F∘ F) F∘ K) (nat-assoc-to ((G F∘ F) ▸ eta))
-    fixup = trivial-lan-equiv!
+    fixup {K = K} = trivial-lan-equiv!
 ```
 -->
 

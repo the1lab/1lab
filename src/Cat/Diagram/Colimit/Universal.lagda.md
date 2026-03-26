@@ -12,12 +12,14 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Shape.Join
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Pullback
 open import Cat.Functor.Compose
 open import Cat.Instances.Slice
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Sum
@@ -315,12 +317,13 @@ colimits, we get that $F$ is colimiting.
                   ; com = eq _ .p₁∘universal })
           (Forget/-is-conservative (pullback-unique
             (rotate-pullback (eq _)) (pb _ _ .Pullback.has-is-pb)))))
-        (ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
-          {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
-          (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)
-          (pulll (eq _ .p₂∘universal) ∙∙ pulll (pb _ _ .Pullback.p₁∘universal) ∙∙ pullr (pb _ _ .Pullback.p₁∘universal))
-          (sym (F .F-∘ _ _))
-          (α .is-natural _ _ _))
+        ( ap₂ _∘nt_ (Bifunctor.lrmap F∘-functor _ _) refl
+        ∙ ext λ j → (idl _ ⟩∘⟨refl) ∙ unique₂ (eq _)
+            {p = eq _ .square ∙ pushl (G .F-∘ _ _)}
+            (pulll (eq _ .p₁∘universal) ∙∙ pulll (pb _ _ .Pullback.p₂∘universal) ∙∙ pb _ _ .Pullback.p₂∘universal)
+            (pulll (eq _ .p₂∘universal) ∙∙ pulll (pb _ _ .Pullback.p₁∘universal) ∙∙ pullr (pb _ _ .Pullback.p₁∘universal))
+            (sym (F .F-∘ _ _))
+            (α .is-natural _ _ _))
         f*G-colim
 ```
 

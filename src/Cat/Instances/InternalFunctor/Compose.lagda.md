@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Prelude
 
@@ -104,34 +105,19 @@ module _ {o ℓ} {C : Precategory o ℓ} (𝔸 𝔹 ℂ : Internal.Internal-cat 
     module 𝔸 = Cat.Internal.Reasoning 𝔸
     module 𝔹 = Cat.Internal.Reasoning 𝔹
     module ℂ = Cat.Internal.Reasoning ℂ
+  open Make-bifunctor
 ```
 -->
 
 ```agda
-  Fi∘-functor
-    : Functor (Internal-functors 𝔹 ℂ ×ᶜ Internal-functors 𝔸 𝔹) (Internal-functors 𝔸 ℂ)
-  Fi∘-functor .F₀ (F , G) = F Fi∘ G
+  Fi∘-functor : Bifunctor (Internal-functors 𝔹 ℂ) (Internal-functors 𝔸 𝔹) (Internal-functors 𝔸 ℂ)
+  Fi∘-functor = make-bifunctor λ where
+    .F₀     → _Fi∘_
+    .lmap f → f ◂i _
+    .rmap f → _ ▸i f
+    .lmap-id         → Internal-nat-path λ x → refl
+    .rmap-id {a = a} → Internal-nat-path λ x → a .Fi-id
+    .lmap-∘         f g → Internal-nat-path λ x → refl
+    .rmap-∘ {a = a} f g → Internal-nat-path λ x → a .Fi-∘ _ _
+    .lrmap          f g → Internal-nat-path λ x → f .is-naturali _ _ _
 ```
-
-<details>
-<summary>Much like whiskering and horizontal composition, this is
-identical to the result involving [functor composition]. The only
-difference is the addition of extra naturality conditions, which are
-easy to prove.
-</summary>
-
-[functor composition]: Cat.Functor.Compose.html
-
-```agda
-  Fi∘-functor .F₁ {F , G} {H , K} (α , β) = α ◆i β
-  Fi∘-functor .F-id {F , G} = Internal-nat-path λ x →
-    F .Fi₁ (𝔹.idi _) ℂ.∘i ℂ.idi _ ≡⟨ ap (ℂ._∘i ℂ.idi _) (F .Fi-id) ⟩
-    ℂ.idi _ ℂ.∘i ℂ.idi _          ≡⟨ ℂ.idli _ ⟩
-    ℂ.idi _ ∎
-  Fi∘-functor .F-∘ {F , G} {H , J} {K , L} (α , β) (γ , τ) = Internal-nat-path λ x →
-    K .Fi₁ (β .ηi _ 𝔹.∘i τ .ηi _) ℂ.∘i α .ηi _ ℂ.∘i γ .ηi _            ≡⟨ ℂ.pushli (K .Fi-∘ _ _) ⟩
-    K .Fi₁ (β .ηi _) ℂ.∘i K .Fi₁ (τ .ηi _) ℂ.∘i α .ηi _ ℂ.∘i γ .ηi _   ≡⟨ ℂ.extend-inneri (sym (α .is-naturali _ _ _)) ⟩
-    K .Fi₁ (β .ηi _) ℂ.∘i α .ηi _ ℂ.∘i H .Fi₁ (τ .ηi _) ℂ.∘i γ .ηi _   ≡⟨ ℂ.associ _ _ _ ⟩
-    (K .Fi₁ (β .ηi x) ℂ.∘i α .ηi _) ℂ.∘i H .Fi₁ (τ .ηi _) ℂ.∘i γ .ηi _ ∎
-```
-</details>

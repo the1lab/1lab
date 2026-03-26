@@ -31,7 +31,7 @@ Most of these helpers were taken from `agda-categories`.
 private variable
   u v w x y z : Ob
   a a' a'' b b' b'' c c' c'' d d' d'' e : Hom x y
-  f g g' h h' i : Hom x y
+  f f' g g' h h' i i' k k' : Hom x y
 ```
 -->
 
@@ -494,7 +494,6 @@ Iso-prism {a = a} {b} {c} {d} {e} {f} {g} {h} {i} top left right front =
     i .to ∎
 ```
 
-
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
@@ -517,3 +516,31 @@ _⟩∘⟨refl {g = g} p = ap (_∘ g) p
 infix 21 refl⟩∘⟨_
 infix 22 _⟩∘⟨refl
 ```
+
+<!--
+```agda
+car : f ≡ g → f ∘ h ≡ g ∘ h
+car p = ap₂ _∘_ p refl
+
+cdr : f ≡ g → h ∘ f ≡ h ∘ g
+cdr p = ap₂ _∘_ refl p
+
+caar : f ≡ f' → (f ∘ g) ∘ h ≡ (f' ∘ g) ∘ h
+cadr : g ≡ g' → f ∘ (g ∘ h) ≡ f ∘ (g' ∘ h)
+cdar : g ≡ g' → (f ∘ g) ∘ h ≡ (f ∘ g') ∘ h
+cddr : h ≡ h' → f ∘ (g ∘ h) ≡ f ∘ (g ∘ h')
+
+caar p = car (car p)
+cadr p = cdr (car p)
+cdar p = car (cdr p)
+cddr p = cdr (cdr p)
+
+cdddr : i ≡ i' → f ∘ (g ∘ (h ∘ i)) ≡ f ∘ (g ∘ (h ∘ i'))
+
+cdddr p = cddr (cdr p)
+
+cddddr : k ≡ k' → f ∘ (g ∘ (h ∘ (i ∘ k))) ≡ f ∘ (g ∘ (h ∘ (i ∘ k')))
+
+cddddr p = cdddr (cdr p)
+```
+-->

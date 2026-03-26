@@ -2,16 +2,17 @@
 ```agda
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Hom.Yoneda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Closed
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
 open import Data.Sum
 
 import Cat.Instances.Presheaf.Limits as Lim
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cat
 ```
 -->
@@ -111,7 +112,7 @@ PSh-closed = cc where
     func .F-id    = ext λ _ _ _ _ _ → refl
     func .F-∘ f g = ext λ _ _ _ _ _ → refl
 
-    adj : Bifunctor.Left ×-functor A ⊣ func
+    adj : Bifunctor.Left (Curry ×-functor) A ⊣ func
     adj .unit .η x .η i a =
       NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ → funext λ _ →
         Σ-pathp (happly (x .F-∘ _ _) _) refl

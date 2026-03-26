@@ -7,14 +7,14 @@ import Cat.Reasoning as Cr
 
 module Cat.Bi.Reasoning {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
-open Prebicategory C public hiding (module Hom ; module ⊗)
+open Prebicategory C public hiding (module Hom)
 
-module Hom {a b} = Cr (Hom a b)
+module Hom {a b} = Cr (Hom a b) hiding (_∘_ ; Hom ; Ob)
 module ⊗ {a b c} = Fr (compose {a} {b} {c})
 module ▶ {a b c} {f} = Fr (postaction C {a} {b} {c} f)
 module ◀ {a b c} {f} = Fr (preaction C {a} {b} {c} f)
 
-open Hom hiding (Ob ; id ; _∘_ ; to ; from)
+open Hom hiding (id ; to ; from)
 open Cr._≅_
 
 open _=>_
@@ -22,8 +22,7 @@ open _=>_
 private variable
   X Y Z : Ob
   f g h k : X ↦ Y
-  α : g ⇒ h
-  β : f ⇒ g
+  α β γ : f ⇒ g
 
 ρ≅ : f ≅ f ⊗ id
 ρ≅ = isoⁿ→iso unitor-r _
@@ -33,6 +32,10 @@ private variable
 
 α≅ : (f ⊗ g) ⊗ h ≅ f ⊗ (g ⊗ h)
 α≅ = isoⁿ→iso associator _
+
+module ρ≅ {x y} {f : x ↦ y} = _≅_ (ρ≅ {f = f})
+module λ≅ {x y} {f : x ↦ y} = _≅_ (λ≅ {f = f})
+module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ {f = f} {g = g} {h = h})
 
 ▶-distribr : h ▶ (α ∘ β) ≡ h ▶ α ∘ h ▶ β
 ▶-distribr = ▶.F-∘ _ _
@@ -46,7 +49,10 @@ private variable
   ; inv = λ x → α← (f , g , x)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
-  ; natural = λ _ _ _ → sym (α→nat _ _ _) ∙ ap ((α→ _ ∘_) ⊙ (_◆ _)) ⊗.F-id
+  ; natural = λ _ _ _ →
+       ap₂ _∘_ (ap (f ▶_) (compose.rmap-◆ _) ∙ compose.rmap-◆ _) refl
+    ∙∙ sym (α→nat _ _ _)
+    ∙∙ ap₂ _∘_ refl (eliml (◀.elim (◀.eliml refl ∙ ▶.elim refl)))
   }
 
 ◀-assoc : ∀ {c} → preaction C {c = c} (f ⊗ g) ≅ⁿ preaction C g F∘ preaction C f
@@ -55,7 +61,10 @@ private variable
   ; inv = λ x → α→ (x , f , g)
   ; eta∘inv = λ _ → α≅ .invr
   ; inv∘eta = λ _ → α≅ .invl
-  ; natural = λ _ _ _ → sym (α←nat _ _ _) ∙ ap ((α← _ ∘_) ⊙ (_ ◆_)) ⊗.F-id
+  ; natural = λ _ _ _ →
+       ap₂ _∘_ (ap (_◀ g) (compose.lmap-◆ _) ∙ compose.lmap-◆ _) refl
+    ∙∙ sym (α←nat _ _ _)
+    ∙∙ ap₂ _∘_ refl (▶.elimr (◀.eliml refl ∙ ▶.elim refl))
   }
 
 ◀-▶-comm : preaction C f F∘ postaction C g ≅ⁿ postaction C g F∘ preaction C f
@@ -64,8 +73,18 @@ private variable
   ; inv = λ x → α← (g , x , f)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
-  ; natural = λ _ _ _ → sym (α→nat _ _ _)
+  ; natural = λ _ _ _ →
+       ap₂ _∘_ (ap (g ▶_) (compose.lmap-◆ _) ∙ compose.rmap-◆ _) refl
+    ∙∙ sym (α→nat _ _ _)
+    ∙∙ ap₂ _∘_ refl (▶.elimr refl ∙ ap (_◀ f) (◀.eliml refl))
   }
+
+α→◀ : α→ _ ∘ ((α ◆ β) ◀ f) ≡ (α ◆ β ◀ _) ∘ α→ _
+α→◀ = cdr (compose.lmap-◆ _) ∙ α→nat _ _ _ ∙ cdar ▶.⟨ ▶.elimr refl ⟩
+
+module ▶-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (▶-assoc  {f = f} {g = g} {c = x})
+module ◀-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (◀-assoc  {f = f} {g = g} {c = x})
+module ◀-▶-comm {a b c} {f : b ↦ c} {g : a ↦ b}    = Isoⁿ (◀-▶-comm {f = f} {g = g})
 
 -- Proofs of triangle-α→, pentagon-α→, triangle-λ←, and λ←≡ρ← are taken from those in
 -- Cat.Monoidal.Base.  The proof of triangle-λ← involves a prism diagram which is
@@ -123,7 +142,7 @@ triangle-ρ← = push-eqⁿ (unitor-r ni⁻¹) $
 
     sq3 : ▶.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∙Iso α≅ Iso⁻¹
         ≡ α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (▶.F-map-iso (ρ≅ Iso⁻¹))
-    sq3 = ≅-path (α←nat _ _ _)
+    sq3 = ≅-path (ap₂ _∘_ refl (ap (_ ▶_) (compose.lmap-◆ _) ∙ compose.rmap-◆ _) ∙ α←nat _ _ _ ∙ ap₂ _∘_ (▶.elimr refl ∙ ap (_◀ id) (◀.eliml refl)) refl)
 
 triangle-ρ→ : ρ→ (f ⊗ g) ≡ α← (f , g , id) ∘ f ▶ ρ→ g
 triangle-ρ→ {f = f} {g = g} =
@@ -150,7 +169,7 @@ triangle-λ← {f = f} {g = g} = push-eqⁿ (unitor-l ni⁻¹) $
 
     sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∙Iso α≅
         ≡ α≅ ∙Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
-    sq3 = ≅-path (α→nat _ _ _)
+    sq3 = ≅-path (ap₂ _∘_ refl (ap (_◀ _) (compose.rmap-◆ _) ∙ compose.lmap-◆ _) ∙ α→nat _ _ _ ∙ ap₂ _∘_ (◀.eliml refl ∙ ap (id ▶_) (▶.elimr refl)) refl)
 
 triangle-λ→ : λ→ (f ⊗ g) ≡ α→ (id , f , g) ∘ λ→ f ◀ g
 triangle-λ→ {f = f} {g = g} =

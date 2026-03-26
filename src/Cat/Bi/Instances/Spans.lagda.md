@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
@@ -137,41 +138,52 @@ is functorial, and so extends to a composition operation `Span-∘`{.Agda}:
 
 ```agda
 module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
+  open Make-bifunctor
+  open Pullback
   open Functor
 
-  Span-∘ : ∀ {a b c} → Functor (Spans b c ×ᶜ Spans a b) (Spans a c)
-  Span-∘ .F₀ (sp1 , sp2) =
-    span pb.apex (sp2 .left ∘ pb.p₂) (sp1 .right ∘ pb.p₁)
-    where module pb = Pullback (pb (sp1 .left) (sp2 .right))
+  private
+    open module Pb {a b c} {f : Hom a b} {g : Hom c b} = Pullback (pb f g) renaming (p₁∘universal to β₁ ; p₂∘universal to β₂) using ()
 
-  Span-∘ .F₁ {x1 , x2} {y1 , y2} (f , g) = res
-    where
-      module x = Pullback (pb (x1 .left) (x2 .right))
-      module y = Pullback (pb (y1 .left) (y2 .right))
-
-      open Pullback
-      x→y : Hom x.apex y.apex
-      x→y = y.universal {p₁' = f .map ∘ x.p₁} {p₂' = g .map ∘ x.p₂} comm
-        where abstract
-          comm : y1 .left ∘ f .map ∘ x.p₁ ≡ y2 .right ∘ g .map ∘ x.p₂
-          comm = pulll (sym (f .left)) ∙ x.square ∙ pushl (g .right)
+  Span-∘ : ∀ {a b c} → Bifunctor (Spans b c) (Spans a b) (Spans a c)
+  Span-∘ {a} {b} {c} = make-bifunctor mk where
+    mk : Make-bifunctor {C = Spans b c} {Spans a b} {Spans a c}
+    mk .F₀ sp1 sp2 = span pb.apex (sp2 .left ∘ pb.p₂) (sp1 .right ∘ pb.p₁)
+      where module pb = Pullback (pb (sp1 .left) (sp2 .right))
+    mk .lmap {x1} {x2} {a} f = res where
+      module x = Pullback (pb (x1 .left) (a .right))
+      module y = Pullback (pb (x2 .left) (a .right))
 
       res : Span-hom _ _
-      res .map = x→y
-      res .left = sym (pullr y.p₂∘universal ∙ pulll (sym (g .left)))
+      res .map   = y.universal {p₁' = f .map ∘ x.p₁} {x.p₂} p where abstract
+        p : x2 .left ∘ f .map ∘ x.p₁ ≡ a .right ∘ x.p₂
+        p = pulll (sym (f .left)) ∙ x.square
+      res .left  = sym (pullr y.p₂∘universal)
       res .right = sym (pullr y.p₁∘universal ∙ pulll (sym (f .right)))
+    mk .rmap {x1} {x2} {a} f = res where
+      module x = Pullback (pb (a .left) (x1 .right))
+      module y = Pullback (pb (a .left) (x2 .right))
 
-  Span-∘ .F-id {x1 , x2} = Span-hom-path $ sym $ x.unique id-comm id-comm
-    where module x = Pullback (pb (x1 .left) (x2 .right))
-
-  Span-∘ .F-∘ {x1 , x2} {y1 , y2} {z1 , z2} f g =
-    Span-hom-path $ sym $ z.unique
-      (pulll z.p₁∘universal ∙ pullr y.p₁∘universal ∙ assoc _ _ _)
-      (pulll z.p₂∘universal ∙ pullr y.p₂∘universal ∙ assoc _ _ _)
-    where
-      module x = Pullback (pb (x1 .left) (x2 .right))
-      module y = Pullback (pb (y1 .left) (y2 .right))
-      module z = Pullback (pb (z1 .left) (z2 .right))
+      res : Span-hom _ _
+      res .map   = y.universal {p₁' = x.p₁} {p₂' = f .map ∘ x.p₂} p where abstract
+        p : a .left ∘ x.p₁ ≡ x2 .right ∘ f .map ∘ x.p₂
+        p = sym (pulll (sym (f .right)) ∙ sym (x.square))
+      res .left  = sym (pullr y.p₂∘universal ∙ pulll (sym (f .left)))
+      res .right = sym (pullr y.p₁∘universal)
+    mk .lmap-id = Span-hom-path (sym (pb _ _ .unique id-comm (idr _)))
+    mk .rmap-id = Span-hom-path (sym (pb _ _ .unique (idr _) id-comm))
+    mk .lmap-∘ f g = Span-hom-path $ sym $ pb _ _ .unique
+      (pulll β₁ ∙ extendr β₁)
+      (pulll β₂ ∙ β₂)
+    mk .rmap-∘ f g = Span-hom-path $ sym $ pb _ _ .unique
+      (pulll β₁ ∙ β₁)
+      (pulll β₂ ∙ extendr β₂)
+    mk .lrmap f g = Span-hom-path $ unique₂ (pb _ _)
+      {p = pulll (sym (f .left)) ∙∙ pb _ _ .square ∙∙ pushl (g .right)}
+      (pulll (pb _ _.p₁∘universal) ∙ pullr β₁)
+      (pulll (pb _ _.p₂∘universal) ∙ β₂)
+      (pulll β₁ ∙ β₁)
+      (pulll β₂ ∙ pullr β₂)
 ```
 
 What we'll show in the rest of this module is that `Span-∘`{.Agda} lets
@@ -216,17 +228,17 @@ S \To S$. The right unitor is analogous.
 
   private
     _¤_ : ∀ {a b c} (x : Span b c) (y : Span a b) → Span a c
-    f ¤ g = Span-∘ .F₀ (f , g)
+    f ¤ g = Span-∘ · f · g
 
     sλ← : ∀ {A B} (x : Span A B) → Span-hom x (span _ C.id C.id ¤ x)
     sλ← x .map   = pb _ _ .universal id-comm-sym
-    sλ← x .left  = sym $ pullr (pb _ _ .p₂∘universal) ∙ idr _
-    sλ← x .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ idl _
+    sλ← x .left  = sym $ pullr β₂ ∙ idr _
+    sλ← x .right = sym $ pullr β₁ ∙ idl _
 
     sρ← : ∀ {A B} (x : Span A B) → Span-hom x (x ¤ span _ C.id C.id)
     sρ← x .map   = pb _ _ .universal id-comm
-    sρ← x .left  = sym $ pullr (pb _ _ .p₂∘universal) ∙ idl _
-    sρ← x .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ idr _
+    sρ← x .left  = sym $ pullr β₂ ∙ idl _
+    sρ← x .right = sym $ pullr β₁ ∙ idr _
 ```
 
 For the associator, while doing the construction in elementary terms is
@@ -278,10 +290,10 @@ variables and) satisfy the triangle and pentagon identities.
         resp' : f .left C.∘ pb (f .left) (g .right) .p₁
             C.∘ pb ((f ¤ g) .left) (h .right) .p₁
               ≡ (g ¤ h) .right C.∘ shuffle
-        resp' = sym $ pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))
+        resp' = sym $ pullr β₁ ∙ extendl (sym (pb _ _ .square))
 
-    sα← (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal)
-    sα← (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ assoc _ _ _
+    sα← (f , g , h) .left = sym $ pullr β₂ ∙ pullr β₂
+    sα← (f , g , h) .right = sym $ pullr β₁ ∙ assoc _ _ _
 
     sα→ : ∀ {A B C D} ((f , g , h) : Span C D × Span B C × Span A B)
         → Span-hom (f ¤ (g ¤ h)) ((f ¤ g) ¤ h)
@@ -298,13 +310,12 @@ variables and) satisfy the triangle and pentagon identities.
         resp' : (f ¤ g) .left C.∘ shuffle
               ≡ h .right C.∘ pb (g .left) (h .right) .p₂
             C.∘ pb (f .left) ((g ¤ h) .right) .p₂
-        resp' = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square)
+        resp' = pullr β₂ ∙ extendl (pb _ _ .square)
 
-    sα→ (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ assoc _ _ _
-    sα→ (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal)
+    sα→ (f , g , h) .left = sym $ pullr β₂ ∙ assoc _ _ _
+    sα→ (f , g , h) .right = sym $ pullr β₁ ∙ pullr β₁
 
   open make-natural-iso
-  {-# TERMINATING #-}
   Spanᵇ : Prebicategory _ _ _
   Spanᵇ .Ob = C.Ob
   Spanᵇ .Hom = Spans
@@ -317,17 +328,16 @@ variables and) satisfy the triangle and pentagon identities.
     ni .inv x .left = refl
     ni .inv x .right = pb _ _ .square
     ni .eta∘inv x = Span-hom-path (Pullback.unique₂ (pb _ _) {p = idl _ ∙ ap₂ C._∘_ refl (introl refl)}
-      (pulll (pb _ _ .p₁∘universal))
-      (pulll (pb _ _ .p₂∘universal))
+      (pulll β₁)
+      (pulll β₂)
       (id-comm ∙ pb _ _ .square)
       id-comm)
-    ni .inv∘eta x = Span-hom-path (pb _ _ .p₂∘universal)
-    ni .natural x y f = Span-hom-path $
-      Pullback.unique₂ (pb _ _) {p = idl _ ∙ f .right}
-        (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ idl _)
-        (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal) ∙ idr _)
-        (pulll (pb _ _ .p₁∘universal) ∙ sym (f .right))
-        (pulll (pb _ _ .p₂∘universal) ∙ idl _)
+    ni .inv∘eta x = Span-hom-path β₂
+    ni .natural x y f = Span-hom-path $ Pullback.unique₂ (pb _ _) {p = idl _ ∙ f .right}
+      (pulll β₁ ∙ β₁)
+      (pulll β₂ ∙ pullr β₂ ∙ idr _)
+      (pulll β₁ ∙ sym (f .right))
+      (pulll β₂ ∙ idl _)
   Spanᵇ .unitor-r = to-natural-iso ni where
     ni : make-natural-iso (Id {C = Spans _ _}) _
     ni .eta = sρ←
@@ -335,75 +345,64 @@ variables and) satisfy the triangle and pentagon identities.
     ni .inv _ .left = sym (pb _ _ .square)
     ni .inv _ .right = refl
     ni .eta∘inv x = Span-hom-path (Pullback.unique₂ (pb _ _) {p = introl refl}
-      (pulll (pb _ _ .p₁∘universal) ∙ idl _)
-      (pulll (pb _ _ .p₂∘universal))
+      (pulll β₁ ∙ idl _)
+      (pulll β₂)
       (idr _)
       (id-comm ∙ sym (pb _ _ .square)))
-    ni .inv∘eta x = Span-hom-path (pb _ _ .p₁∘universal)
-    ni .natural x y f = Span-hom-path $
-      Pullback.unique₂ (pb _ _) {p = sym (f .left) ∙ introl refl}
-        (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ idr _)
-        (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal) ∙ idl _)
-        (pulll (pb _ _ .p₁∘universal) ∙ idl _)
-        (pulll (pb _ _ .p₂∘universal) ∙ sym (f .left))
+    ni .inv∘eta x = Span-hom-path β₁
+    ni .natural x y f = Span-hom-path $ Pullback.unique₂ (pb _ _) {p = sym (f .left) ∙ introl refl}
+      (pulll β₁ ∙ pullr β₁ ∙ idr _)
+      (pulll β₂ ∙ β₂)
+      (pulll β₁ ∙ idl _)
+      (pulll β₂ ∙ sym (f .left))
   Spanᵇ .associator = to-natural-iso ni where
     ni : make-natural-iso _ _
     ni .eta = sα←
     ni .inv = sα→
     ni .eta∘inv x = Span-hom-path $
       Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
-      (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ pb _ _ .p₁∘universal)
-      (pulll (pb _ _ .p₂∘universal) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
-          (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ pb _ _ .p₂∘universal)
-          (pulll (pb _ _ .p₂∘universal) ∙ pb _ _ .p₂∘universal)
+      (pulll β₁ ∙ pullr β₁ ∙ β₁)
+      (pulll β₂ ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
+          (pulll β₁ ∙ pullr β₁ ∙ β₂)
+          (pulll β₂ ∙ β₂)
           refl refl)
       (idr _)
       (idr _)
     ni .inv∘eta x = Span-hom-path $
       Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
-      (pulll (pb _ _ .p₁∘universal) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
-        (pulll (pb _ _ .p₁∘universal) ∙ pb _ _ .p₁∘universal)
-        (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal) ∙ pb _ _ .p₁∘universal)
+      (pulll β₁ ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
+        (pulll β₁ ∙ β₁)
+        (pulll β₂ ∙ pullr β₂ ∙ β₁)
         refl refl)
-      (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal) ∙ pb _ _ .p₂∘universal)
+      (pulll β₂ ∙ pullr β₂ ∙ β₂)
       (idr _)
       (idr _)
     ni .natural x y f = Span-hom-path $ Pullback.unique₂ (pb _ _)
-      {p₁' = f .fst .map C.∘ pb _ _ .p₁ C.∘ pb _ _ .p₁}
-      {p₂' = pb _ _ .universal
-        {p₁' = f .snd .fst .map C.∘ pb _ _ .p₂ C.∘ pb _ _ .p₁}
-        {p₂' = f .snd .snd .map C.∘ pb _ _ .p₂}
-        (pulll (sym (f .snd .fst .left)) ∙ assoc _ _ _ ∙ pb _ _ .square ∙ pushl (f .snd .snd .right))}
-      {p = sym $ pullr (pb _ _ .p₁∘universal) ∙ pulll (sym (f .snd .fst .right)) ∙ extendl (sym (pb _ _ .square)) ∙ pushl (f .fst .left)}
-      (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal))
-      (pulll (pb _ _ .p₂∘universal) ∙ pb _ _ .unique
-        (pulll (extendl (pb _ _ .p₁∘universal)) ∙ pullr (pullr (pb _ _ .p₂∘universal)) ∙ ap₂ C._∘_ refl (pb _ _ .p₁∘universal))
-        (pulll (extendl (pb _ _ .p₂∘universal)) ∙ pullr (pullr (pb _ _ .p₂∘universal)) ∙ ap₂ C._∘_ refl (pb _ _ .p₂∘universal)))
-      (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ pulll (pb _ _ .p₁∘universal) ∙ sym (assoc _ _ _))
-      (pulll (pb _ _ .p₂∘universal) ∙ pb _ _ .unique
-        (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ extendl (pb _ _ .p₂∘universal))
-        (pulll (pb _ _ .p₂∘universal) ∙ pb _ _ .p₂∘universal))
-  Spanᵇ .triangle f g = Span-hom-path $
-    pb _ _ .unique
-      (pulll (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal) ∙ pb _ _ .p₁∘universal ∙ introl refl)
-      (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal) ∙ eliml refl)
-  Spanᵇ .pentagon f g h i = Span-hom-path $
-    Pullback.unique₂ (pb _ _)
-      {p = pullr (pulll (pb _ _ .p₂∘universal) ∙ pullr (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal)) ∙ ap₂ C._∘_ refl (pulll (pb _ _ .p₁∘universal)))
-         ∙ ap₂ C._∘_ refl (extendl (pb _ _ .p₂∘universal)) ∙ sym (ap₂ C._∘_ refl (idl _ ∙ extendl (pb _ _ .p₂∘universal)) ∙ extendl (sym (pb _ _ .square)))}
-      (pulll (pb _ _ .p₁∘universal) ∙ pullr (pulll (pb _ _ .p₁∘universal)))
-      (pulll (pb _ _ .p₂∘universal) ∙ pullr (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal)))
-      (pulll (pb _ _ .p₁∘universal)
-      ∙ Pullback.unique₂ (pb _ _) {p = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square) ∙ sym (assoc _ _ _)}
-          (pulll (pb _ _ .p₁∘universal) ∙ pb _ _ .p₁∘universal)
-          (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal))
-          (pulll (pb _ _ .p₁∘universal) ∙ pb _ _ .unique
-            (pulll (pb _ _ .p₁∘universal) ∙ pulll (pb _ _ .p₁∘universal) ∙ pb _ _ .p₁∘universal ∙ idl _)
-            (pulll (pb _ _ .p₂∘universal) ∙ pulll (pullr (pb _ _ .p₂∘universal)) ∙ pullr (pullr (pb _ _ .p₂∘universal) ∙ pulll (pb _ _ .p₁∘universal)) ∙ pulll (pb _ _ .p₁∘universal)))
-          (pulll (pb _ _ .p₂∘universal) ∙ pullr (pulll (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal))
-          ∙ ap₂ C._∘_ refl (pulll (pb _ _ .p₁∘universal)) ∙ pulll (pb _ _ .p₂∘universal) ∙ sym (assoc _ _ _)))
-      ( pulll (pb _ _ .p₂∘universal)
-      ∙∙ pullr (pb _ _ .p₂∘universal)
-      ∙∙ sym (idl _ ∙∙ pulll (pb _ _ .p₂∘universal) ∙∙ sym (assoc _ _ _)))
+      {p = sym (pullr (pulll (pulll β₁) ∙∙ pullr3 (pulll β₁) ∙∙ ap₂ C._∘_ refl β₁)
+             ∙∙ pulll (sym (f .snd .fst .right))
+             ∙∙ extendl (sym (pb _ _ .square)) ∙ pushl (f .fst .left))}
+      (pulll (pulll β₁ ∙ pullr β₁) ∙ pullr β₁)
+      (pulll (pulll β₂ ∙ β₂) ∙ pullr β₂)
+      (pulll β₁ ∙ pullr (pulll β₁ ∙ pullr β₁) ∙ pulll (pulll β₁ ∙ pullr β₁) ∙ pullr refl)
+      (pulll β₂ ∙ Pullback.unique₂ (pb _ _)
+        {p = pulll (sym (f .snd .fst .left)) ∙ pulll refl ∙ pb _ _ .square ∙ pushl (f .snd .snd .right)}
+        (pulll β₁ ∙ pullr (pulll β₁ ∙ pullr β₁) ∙ pulll (pulll β₂ ∙ β₂) ∙ pullr refl)
+        (pulll β₂ ∙ pulll β₂ ∙ β₂)
+        (pulll (pulll β₁ ∙ pullr β₁) ∙ pullr β₁)
+        (pulll (pulll β₂ ∙ β₂) ∙ pullr β₂))
+  Spanᵇ .triangle f g = Span-hom-path $ pb _ _ .unique
+    (pulll β₁ ∙ pullr β₁ ∙ β₁)
+    (pulll β₂ ∙ β₂)
+  Spanᵇ .pentagon f g h i = Span-hom-path $ unique₂ (pb _ _)
+    {p = pullr (pulll β₂ ∙ extendr (pulll β₂) ∙ extendr (pullr β₂) ∙ extendl (pullr β₁)) ∙ ap₂ C._∘_ refl (extendl β₂) ∙ extendl (pb _ _ .square)}
+    (pulll β₁ ∙ pullr (pulll β₁))
+    (pulll β₂ ∙ pulll β₂ ∙ pullr β₂ ∙ extendl β₂)
+    (pulll β₁ ∙ unique₂ (pb _ _)
+      {p = pullr β₂ ∙ extendl (pb _ _ .square) ∙ pullr refl}
+      (pulll β₁ ∙ β₁)
+      (pulll β₂ ∙ pullr β₂)
+      (pulll β₁ ∙ pb _ _ .unique (pulll β₁ ∙ pulll β₁ ∙ β₁) (pulll β₂ ∙ pullr (pulll β₂ ∙ pullr β₂) ∙ ap₂ C._∘_ refl (pulll β₁) ∙ pulll β₁))
+      (pulll β₂ ∙ pullr (pulll β₂ ∙ pullr β₂ ∙ pulll β₁) ∙ extendl β₂))
+    (pulll β₂ ∙ pullr β₂)
 ```
 </details>

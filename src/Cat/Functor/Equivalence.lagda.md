@@ -765,18 +765,15 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
   G-eqv : is-equivalence G
   G-eqv .F⁻¹ = F-eqv .F⁻¹
   G-eqv .F⊣F⁻¹ = adjoint-natural-isol α (F-eqv .F⊣F⁻¹)
-  G-eqv .unit-iso x =
-    C.invertible-∘
-      (C.invertible-∘
-        (F-map-invertible (F-eqv .F⁻¹) (isoⁿ→is-invertible α x))
-        C.id-invertible)
-      (F-eqv .unit-iso x)
-  G-eqv .counit-iso x =
-    D.invertible-∘
-      (F-eqv .counit-iso x)
-      (D.invertible-∘
-        (F-map-invertible F C.id-invertible)
-        (isoⁿ→is-invertible α _ D.invertible⁻¹))
+  G-eqv .unit-iso x = C.invertible-∘
+    (C.invertible-∘
+      C.id-invertible
+      (F-map-invertible (F-eqv .F⁻¹) (isoⁿ→is-invertible α x)))
+    (F-eqv .unit-iso x)
+  G-eqv .counit-iso x = D.invertible-∘ (F-eqv .counit-iso x)
+    (D.invertible-∘
+      (isoⁿ→is-invertible α _ D.invertible⁻¹)
+      (F-map-invertible G C.id-invertible))
 ```
 
 Equivalences are invertible.

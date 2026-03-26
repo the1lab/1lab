@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Compose
@@ -50,9 +51,9 @@ module _ {C : Precategory o h} where
     Endo = Cat[ C , C ]
     module Endo = Cat.Reasoning Endo
 
-    Endo-∘-functor : Functor (Endo ×ᶜ Endo) Endo
+    Endo-∘-functor : Bifunctor Endo Endo Endo
     Endo-∘-functor = F∘-functor
-    module Endo-∘ = Functor Endo-∘-functor
+    module Endo-∘ = Bifunctor Endo-∘-functor
 ```
 -->
 
@@ -116,7 +117,7 @@ These contain the identity and are closed under composition, as expected.
   id-is-monad-hom {M = M} .pres-mult =
     let module M = Monad-on M in
     idnt ∘nt M.mult          ≡⟨ Endo.id-comm-sym ⟩
-    M.mult ∘nt idnt          ≡˘⟨ ap (M.mult ∘nt_) Endo-∘.F-id ⟩
+    M.mult ∘nt idnt          ≡˘⟨ ap (M.mult ∘nt_) Endo-∘.◆-id ⟩
     M.mult ∘nt (idnt ◆ idnt) ∎
 
   ∘-is-monad-hom
@@ -141,7 +142,7 @@ These contain the identity and are closed under composition, as expected.
       ν ∘nt (N.mult ∘nt (ξ ◆ ξ))         ≡⟨ Endo.assoc ν N.mult (ξ ◆ ξ) ⟩
       (ν ∘nt N.mult) ∘nt (ξ ◆ ξ)         ≡⟨ ap (_∘nt (ξ ◆ ξ)) ν.pres-mult ⟩
       (O.mult ∘nt (ν ◆ ν)) ∘nt (ξ ◆ ξ)   ≡˘⟨ Endo.assoc O.mult (ν ◆ ν) (ξ ◆ ξ) ⟩
-      O.mult ∘nt ((ν ◆ ν) ∘nt (ξ ◆ ξ))   ≡˘⟨ ap (O.mult ∘nt_) $ Endo-∘.F-∘ (ν , ν) (ξ , ξ) ⟩
+      O.mult ∘nt ((ν ◆ ν) ∘nt (ξ ◆ ξ))   ≡˘⟨ ap (O.mult ∘nt_) Endo-∘.◆-∘ ⟩
       O.mult ∘nt ((ν ∘nt ξ) ◆ (ν ∘nt ξ)) ∎
 ```
 

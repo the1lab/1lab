@@ -1,12 +1,13 @@
 <!--
 ```agda
 open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Functor.Compose renaming (_◆_ to _◇_)
+open import Cat.Functor.Closed
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
 ```
@@ -22,38 +23,29 @@ module Cat.Bi.Base where
 ```agda
 open _=>_
 
-module _ where
+module _ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ') (C : ∀ {A B C} → Bifunctor (H B C) (H A B) (H A C)) where
+  private module C {a b c} = Bifunctor (C {a} {b} {c})
   open Functor
-  compose-assocˡ
-    : ∀ {o ℓ ℓ'} {O : Type o} {H : O → O → Precategory ℓ ℓ'}
-    → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
-    → ∀ {A B C D}
-    → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
-  compose-assocˡ C .F₀ (F , G , H) = C .F₀ (C .F₀ (F , G) , H)
-  compose-assocˡ C .F₁ (f , g , h) = C .F₁ (C .F₁ (f , g) , h)
-  compose-assocˡ C .F-id = ap (C .F₁) (Σ-pathp (C .F-id) refl) ∙ C .F-id
-  compose-assocˡ C .F-∘ f g = ap (C .F₁) (Σ-pathp (C .F-∘ _ _) refl) ∙ C .F-∘ _ _
+
+  compose-assocˡ : ∀ {A B C D} → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
+  compose-assocˡ .F₀ (F , G , H) = C · (C · F · G) · H
+  compose-assocˡ .F₁ (f , g , h) = (f C.◆ g) C.◆ h
+  compose-assocˡ .F-id = ap₂ C._◆_ C.◆-id refl ∙ C.◆-id
+  compose-assocˡ .F-∘ f g = ap₂ C._◆_ C.◆-∘ refl ∙ C.◆-∘
 
   compose-assocʳ
-    : ∀ {o ℓ ℓ'} {O : Type o} {H : O → O → Precategory ℓ ℓ'}
-    → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
-    → ∀ {A B C D}
-    → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
-  compose-assocʳ C .F₀ (F , G , H) = C .F₀ (F , C .F₀ (G , H))
-  compose-assocʳ C .F₁ (f , g , h) = C .F₁ (f , C .F₁ (g , h))
-  compose-assocʳ C .F-id = ap (C .F₁) (Σ-pathp refl (C .F-id)) ∙ C .F-id
-  compose-assocʳ C .F-∘ f g = ap (C .F₁) (Σ-pathp refl (C .F-∘ _ _)) ∙ C .F-∘ _ _
+    : ∀ {A B C D} → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
+  compose-assocʳ .F₀ (F , G , H) = C · F · (C · G · H)
+  compose-assocʳ .F₁ (f , g , h) = f C.◆ (g C.◆ h)
+  compose-assocʳ .F-id = ap₂ C._◆_ refl C.◆-id ∙ C.◆-id
+  compose-assocʳ .F-∘ f g = ap₂ C._◆_ refl C.◆-∘ ∙ C.◆-∘
+
+  Associator-for : Type _
+  Associator-for = ∀ {A B C D} →
+    Cr._≅_ Cat[ H C D ×ᶜ H B C ×ᶜ H A B , H A D ]
+      compose-assocˡ compose-assocʳ
 
 private variable o ℓ ℓ' o₁ ℓ₁ ℓ₁' : Level
-
-Associator-for
-  : ∀ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ')
-  → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
-  → Type _
-Associator-for Hom compose = ∀ {A B C D} →
-  Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
-    (compose-assocˡ {H = Hom} compose)
-    (compose-assocʳ {H = Hom} compose)
 ```
 -->
 
@@ -100,7 +92,7 @@ record Prebicategory o ℓ ℓ' : Type (lsuc (o ⊔ ℓ ⊔ ℓ')) where
     Ob  : Type o
     Hom : Ob → Ob → Precategory ℓ ℓ'
 
-  module Hom {A} {B} = Precategory (Hom A B)
+  module Hom {A} {B} = Precategory (Hom A B) hiding (Ob ; Hom ; _∘_)
 ```
 
 Zooming out to consider the whole bicategory, we see that each object
@@ -113,9 +105,7 @@ sets for maps of precategories, i.e., functors.
 ```agda
   field
     id      : ∀ {A} → ⌞ Hom A A ⌟
-    compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
-
-  module compose {a} {b} {c} = Functor (compose {a} {b} {c})
+    compose : ∀ {A B C} → Bifunctor (Hom B C) (Hom A B) (Hom A C)
 ```
 
 Before moving on to the isomorphisms witnessing identity and
@@ -136,42 +126,29 @@ pasting diagrams like
 \end{tikzcd}\]
 ~~~
 
-whence the name **horizontal composition**.
+whence the name **horizontal composition**. This is the common diagonal
+of the naturality square for the left action of `compose`{.Agda},
+considered as a [[bifunctor]].
+
+<details>
+<summary>As discussed there, we define the abbreviations for the
+notation native to a bicategory natively through the module
+system.</summary>
 
 ```agda
-  _↦_ : Ob → Ob → Type ℓ
-  A ↦ B = ⌞ Hom A B ⌟
+  module compose {a b c} = Bifunctor (compose {a} {b} {c}) hiding (_◀_ ; _▶_ ; F₀)
+  private
+    open module ↦ A B = Precategory (Hom A B)
+      public using () renaming (Ob to _↦_)
 
-  _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
-  _⇒_ {A} {B} f g = Hom.Hom f g
+    open module Hom₁ {A B} = Precategory (Hom A B)
+      public using () renaming (Hom to _⇒_ ; _∘_ to infixr 30 _∘_)
 
-  module ⊗ = compose
-
-  -- 1-cell composition
-  _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ⊗ g = compose · (f , g)
-
-  -- vertical 2-cell composition
-  _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
-  _∘_ {A} {B} = Hom._∘_
-
-  -- horizontal 2-cell composition
-  _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
-      → (f₁ ⊗ g₁) ⇒ (f₂ ⊗ g₂)
-  _◆_ β α = compose.F₁ (β , α)
-
-  infixr 30 _∘_
-  infixr 25 _⊗_
-  infix 35 _◀_ _▶_
-
-  -- whiskering on the right
-  _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ⊗ a ⇒ f ⊗ b
-  _▶_ {A} {B} {C} f g = compose.F₁ (Hom.id , g)
-
-  -- whiskering on the left
-  _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ⊗ f ⇒ b ⊗ f
-  _◀_ {A} {B} {C} g f = compose.F₁ (g , Hom.id)
+    open module compose₀ {A B C} = Bifunctor (compose {A} {B} {C})
+      public using (_◀_ ; _▶_ ; _◆_) renaming (F₀ to infixr 25 _⊗_)
 ```
+
+</details>
 
 We now move onto the invertible 2-cells witnessing that the chosen
 identity map is a left- and right- unit element for the composition
@@ -183,37 +160,43 @@ naturally isomorphic to the identity functor.
 
 ```agda
   field
-    unitor-l : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bi.Right compose id)
-    unitor-r : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bi.Left compose id)
+    unitor-l : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Right compose id)
+    unitor-r : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Left compose id)
 
     associator
       : ∀ {A B C D}
       → Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
-        (compose-assocˡ {H = Hom} compose)
-        (compose-assocʳ {H = Hom} compose)
+        (compose-assocˡ Hom compose)
+        (compose-assocʳ Hom compose)
 
-  module unitor-l {a} {b} = Cr._≅_ _ (unitor-l {a} {b})
-  module unitor-r {a} {b} = Cr._≅_ _ (unitor-r {a} {b})
-  module associator {a} {b} {c} {d} = Cr._≅_ _ (associator {a} {b} {c} {d})
+  module unitor-l {a b} = Cr._≅_ _ (unitor-l {a} {b})
+  module unitor-r {a b} = Cr._≅_ _ (unitor-r {a} {b})
+  module associator {a b c d} = Cr._≅_ _ (associator {a} {b} {c} {d})
 ```
 
-It's traditional to refer to the left unitor as $\lambda$, to the right
-unitor as $\rho$, and to the associator as $\alpha$, so we set up those
-abbreviations here too:
+<details>
+<summary>It's traditional to refer to the left unitor as $\lambda$, to
+the right unitor as $\rho$, and to the associator as $\alpha$, so we set
+up those abbreviations here too:
+</summary>
 
 ```agda
   private
-    open module λ← {a b} = _=>_ (unitor-l.from {a} {b}) renaming (η to λ←) using () public
+    open module λ← {a b} = _=>_ (unitor-l.from {a} {b})
+      public using () renaming (η to λ←)
+    open module λ→ {a b} = _=>_ (unitor-l.to   {a} {b})
+      public using () renaming (η to λ→)
 
-    open module λ→ {a b} = _=>_ (unitor-l.to   {a} {b}) renaming (η to λ→) using () public
+    open module ρ← {a b} = _=>_ (unitor-r.from {a} {b})
+      public using () renaming (η to ρ←)
+    open module ρ→ {a b} = _=>_ (unitor-r.to   {a} {b})
+      public using () renaming (η to ρ→)
 
-    open module ρ← {a b} = _=>_ (unitor-r.from {a} {b}) renaming (η to ρ←) using () public
+    open module α→ {a b c d} = _=>_ (associator.to {a} {b} {c} {d})
+      renaming (η to α→) using () public
 
-    open module ρ→ {a b} = _=>_ (unitor-r.to   {a} {b}) renaming (η to ρ→) using () public
-
-    open module α→ {a b c d} = _=>_ (associator.to {a} {b} {c} {d})   renaming (η to α→) using () public
-
-    open module α← {a b c d} = _=>_ (associator.from {a} {b} {c} {d}) renaming (η to α←) using () public
+    open module α← {a b c d} = _=>_ (associator.from {a} {b} {c} {d})
+      renaming (η to α←) using () public
 
   ρ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path ((f ⊗ id) ⇒ f') (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
@@ -230,7 +213,7 @@ abbreviations here too:
   λ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
         → Path (f ⇒ id ⊗ f') (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
   λ→nat {A} {B} {f} {f'} β = λ→.is-natural f f' β
-  
+
   α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
         → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
         → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
@@ -245,6 +228,8 @@ abbreviations here too:
   α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
     α→.is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
+
+</details>
 
 The final data we need are coherences relating the left and right
 unitors (the **triangle identity**, nothing to do with adjunctions), and
@@ -292,10 +277,10 @@ module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
 
   postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
-  postaction = Bi.Right compose
+  postaction = Bifunctor.Right compose
 
   preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
-  preaction = Bi.Left compose
+  preaction = Bifunctor.Left compose
 ```
 -->
 
@@ -319,15 +304,15 @@ Cat o ℓ = pb where
 <!--
 ```agda
   assoc : Associator-for Cat[_,_] F∘-functor
-  assoc {D = D} = to-natural-iso ni where
-    module D = Cr D using (id ; idl ; id-comm-sym ; idr ; pushl ; introl)
+  assoc {C = C} {D = D} = to-natural-iso ni where
+    module D = Cr D using (id ; idl ; idr ; pushr ; introl ; id-comm-sym)
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.eta∘inv x = ext λ _ → D.idl _
     ni .make-natural-iso.inv∘eta x = ext λ _ → D.idl _
-    ni .make-natural-iso.natural x y f = ext λ _ →
-      D.idr _ ∙∙ D.pushl (y .fst .F-∘ _ _) ∙∙ D.introl refl
+    ni .make-natural-iso.natural (X₀ , X₁ , X₂) _ _ = ext λ _ →
+      D.idr _ ∙∙ D.pushr (X₀ .F-∘ _ _) ∙∙ D.introl refl
 ```
 -->
 
@@ -355,14 +340,13 @@ directly:
 
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where
-    module B = Cr B using (id ; _∘_ ; idl ; idr ; id-comm-sym)
+    module B = Cr B using (id ; _∘_ ; idl ; idr ; id-comm-sym ; id-comm)
     ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
     ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
-    ni .make-natural-iso.natural x y f =
-      ext λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
+    ni .make-natural-iso.natural x y f = ext λ _ → B.id-comm
 
   pb .unitor-l {B = B} = to-natural-iso ni where
     module B = Cr B using (id ; idl ; idr ; id-comm ; id-comm-sym)
@@ -371,15 +355,13 @@ directly:
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.eta∘inv x = ext λ _ → B.idl _
     ni .make-natural-iso.inv∘eta x = ext λ _ → B.idl _
-    ni .make-natural-iso.natural x y f = ext λ _ → B.idr _ ∙ B.id-comm
+    ni .make-natural-iso.natural x y f = ext λ _ → B.id-comm
 
   pb .associator = assoc
 
-  pb .triangle {C = C} f g = ext λ _ → Cr.idr C _
-  pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_
-    (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ∙∙ ap (f .F₁) (g .F-id) ∙∙ f .F-id))
-    (E.elimr (E.eliml (f .F-id)))
-    where module E = Cr E using (_∘_ ; eliml ; elimr)
+  pb .triangle {C = C} f g = ext λ _ → C .Cr.idl _ ∙ sym (f .F-id)
+  pb .pentagon {E = E} f g h i = ext λ _ → ap₂ E._∘_ refl (E.elimr (f .F-id))
+    where module E = Cr E using (_∘_ ; elimr)
 ```
 
 # Lax functors {defines="lax-functor"}
@@ -421,7 +403,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 ```agda
     compositor
       : ∀ {A B C}
-      → C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ B.compose
+      → Uncurry C.compose F∘ (P₁ {B} {C} F× P₁ {A} {B}) => P₁ F∘ Uncurry B.compose
 
     unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```

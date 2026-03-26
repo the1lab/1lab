@@ -203,9 +203,9 @@ homomorphism.... which it is!
     f ∘ m-mon .η ∘ ! ≡⟨ pulll (hom .pres-η) ⟩
     n-mon .η ∘ !     ∎
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-⋆ g h =
-    f ∘ m-mon .μ ∘ ⟨ g , h ⟩       ≡⟨ extendl (hom .pres-μ) ⟩
-    n-mon .μ ∘ f ⊗₁ f ∘ ⟨ g , h ⟩  ≡⟨ products! products ⟩
-    n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩   ∎
+    f ∘ m-mon .μ ∘ ⟨ g , h ⟩                                             ≡⟨ extendl (hom .pres-μ) ⟩
+    n-mon .μ ∘ (⟨ f ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ id ∘ π₁ , f ∘ π₂ ⟩) ∘ ⟨ g , h ⟩ ≡⟨ products! products ⟩
+    n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩                                         ∎
 ```
 
 To recap, these are the facts:
@@ -286,7 +286,10 @@ functor is also [[fully faithful]].
     α .η (m ⊗₀ m) · (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .snd .pres-⋆ _ _ ⟩
     n-mon .μ ∘ ⟨ α .η _ · π₁ , α .η _ · π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ ·_) (idl _)) (ap (α .η _ ·_) (idl _))) ⟩
     n-mon .μ ∘ ⟨ α .η _ · (id ∘ π₁) , α .η _ · (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap fst (α .is-natural _ _ _) $ₚ _) (ap fst (α .is-natural _ _ _) $ₚ _)) ⟩
-    n-mon .μ ∘ (α .η m · id ⊗₁ α .η m · id)                ∎
+    n-mon .μ ∘ (α .η m · id ⊗₁ α .η m · id)
+      ≡⟨ products! products ⟩
+    μ n-mon ∘ ⟨ α .η m .fst id ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ id ∘ π₁ , α .η m .fst id ∘ π₂ ⟩
+      ∎
 
   open is-iso
 

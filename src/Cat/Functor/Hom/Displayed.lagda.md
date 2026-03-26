@@ -1,12 +1,17 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Solver
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
+
+open Make-bifunctor
+open Functor
 ```
 -->
 
@@ -20,7 +25,6 @@ module Cat.Functor.Hom.Displayed
 ```agda
 open Precategory ℬ
 open Cat.Displayed.Reasoning ℰ
-open Functor
 ```
 -->
 
@@ -36,30 +40,30 @@ in the [non-displayed case].
 [non-displayed case]: Cat.Functor.Hom.html
 
 ```agda
-Hom-over : ∀ {x y} → Hom x y → Functor (Fibre ℰ x ^op ×ᶜ Fibre ℰ y) (Sets ℓ')
-Hom-over u .F₀ (a , b) = el (Hom[ u ] a b) (Hom[ u ]-set a b)
-Hom-over u .F₁ (f , h) g = hom[ idl _ ∙ idr _ ] (h ∘' g ∘' f)
-Hom-over u .F-id = funext λ f →
-  apr' {q = idl _} (idr' f) ∙ idl[]
-Hom-over u .F-∘ (f , h) (f' , h') = funext λ g →
-  hom[] (hom[] (h ∘' h') ∘' g ∘' hom[] (f' ∘' f)) ≡⟨ disp! ℰ ⟩
-  hom[] (h ∘' hom[] (h' ∘' g ∘' f') ∘' f) ∎
+Hom-over : ∀ {x y} → Hom x y → Bifunctor (Fibre ℰ x ^op) (Fibre ℰ y) (Sets ℓ')
+Hom-over u = make-bifunctor λ where
+  .F₀ a b  → el! (Hom[ u ] a b)
+  .lmap f g → hom[ idr u ] (g ∘' f)
+  .rmap f g → hom[ idl u ] (f ∘' g)
+  .lmap-id → ext λ h → from-pathp[] (idr' _)
+  .rmap-id → ext λ h → from-pathp[] (idl' _)
+  .lmap-∘ f g → funext λ h →
+    hom[] (h ∘' hom[] (g ∘' f)) ≡⟨ disp! ℰ ⟩
+    hom[] (hom[] (h ∘' g) ∘' f) ∎
+  .rmap-∘ f g → funext λ h →
+    hom[] (hom[] (f ∘' g) ∘' h) ≡⟨ disp! ℰ ⟩
+    hom[] (f ∘' hom[] (g ∘' h)) ∎
+  .lrmap  f g → funext λ h →
+    hom[] (hom[] (g ∘' h) ∘' f) ≡⟨ disp! ℰ ⟩
+    hom[] (g ∘' hom[] (h ∘' f)) ∎
 ```
 
 We can also define partially applied versions of this functor.
 
 ```agda
 Hom-over-from : ∀ {x y} → Hom x y → Ob[ x ] → Functor (Fibre ℰ y) (Sets ℓ')
-Hom-over-from u x' .F₀ y' = el (Hom[ u ] x' y') (Hom[ u ]-set x' y')
-Hom-over-from u x' .F₁ f g = hom[ idl u ] (f ∘' g)
-Hom-over-from u x' .F-id = funext λ f → idl[]
-Hom-over-from u x' .F-∘ f g  = funext λ h →
-  smashl _ _ ∙ sym assoc[] ∙ sym (smashr _ _)
+Hom-over-from u x' = Bifunctor.Right (Hom-over u) x'
 
 Hom-over-into : ∀ {x y} → Hom x y → Ob[ y ] → Functor (Fibre ℰ x ^op) (Sets ℓ')
-Hom-over-into u y' .F₀ x' = el (Hom[ u ] x' y') (Hom[ u ]-set x' y')
-Hom-over-into u y' .F₁ f g = hom[ idr u ] (g ∘' f)
-Hom-over-into u y' .F-id = funext λ f → idr[]
-Hom-over-into u y' .F-∘ f g = funext λ h →
-  smashr _ _ ∙ assoc[] ∙ (sym $ smashl _ _ )
+Hom-over-into u y' = Bifunctor.Left (Hom-over u) y'
 ```

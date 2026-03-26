@@ -276,6 +276,7 @@ module Binary-products
   open Cat.Reasoning C
   private variable
     A B a b c d : Ob
+    f g h : Hom a b
 
   -- Note: here and below we have to open public the aliases in a module
   -- with parameters so Agda picks up the display forms.
@@ -364,6 +365,14 @@ We also define a handful of common morphisms.
     (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩) ∙ pulll (pulll π₂∘⟨⟩) ∙ pullr π₂∘⟨⟩)
     refl
     (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
+
+  ×-assoc-nat : ×-assoc ∘ (f ⊗₁ (g ⊗₁ h)) ≡ ((f ⊗₁ g) ⊗₁ h) ∘ ×-assoc
+  ×-assoc-nat = ⟨⟩-unique₂
+    (pulll π₁∘⟨⟩ ∙ ⟨⟩-unique (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ extendl π₁∘⟨⟩))
+    (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ extendl π₂∘⟨⟩)
+    (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩ ∙ ⟨⟩-unique
+      (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)) (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
 
   by-π₁ : ∀ {f f' : Hom a b} {g g' : Hom a c} → ⟨ f , g ⟩ ≡ ⟨ f' , g' ⟩ → f ≡ f'
   by-π₁ p = sym π₁∘⟨⟩ ∙ ap (π₁ ∘_) p ∙ π₁∘⟨⟩

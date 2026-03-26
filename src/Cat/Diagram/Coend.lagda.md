@@ -1,9 +1,10 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
+open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cat
 ```
 -->
@@ -20,7 +21,7 @@ private
     C D : Precategory o' ℓ'
   coend-level
     : {C : Precategory o ℓ} {D : Precategory o' ℓ'}
-    → Functor (C ^op ×ᶜ C) D
+    → Bifunctor (C ^op) C D
     → Level
   coend-level {o = o} {ℓ} {o'} {ℓ'} _ = o ⊔ o' ⊔ ℓ ⊔ ℓ'
 ```
@@ -83,7 +84,7 @@ unpack the definition here and talk about **cowedges** instead.
 ## Formalisation {defines="cowedge"}
 
 ```agda
-record Cowedge (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
+record Cowedge (F : Bifunctor (C ^op) C D) : Type (coend-level F) where
   no-eta-equality
 ```
 
@@ -103,7 +104,7 @@ together with a family of maps $\psi_c : F(c,c) \to w$.
 ```agda
   field
     nadir : D.Ob
-    ψ     : ∀ c → D.Hom (F.₀ (c , c)) nadir
+    ψ     : ∀ c → D.Hom (F · c · c) nadir
 ```
 
 This family of maps must satisfy a condition called **extranaturality**,
@@ -129,7 +130,7 @@ and contravariant in the other.
 ```agda
     extranatural
       : ∀ {c c'} (f : C.Hom c c')
-      → ψ c' D.∘ F.second f ≡ ψ c D.∘ F.first f
+      → ψ c' D.∘ F.rmap f ≡ ψ c D.∘ F.lmap f
 ```
 
 A coend, then, is a universal cowedge. In particular, we say that
@@ -139,7 +140,7 @@ $(w',\psi)$ under $F$, we can factor $w$ through $w'$ by a unique map $e
 meaning explicitly that $e\psi_a = \psi'_a$.
 
 ```agda
-record Coend (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
+record Coend (F : Bifunctor (C ^op) C D) : Type (coend-level F) where
 ```
 
 <!--

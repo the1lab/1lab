@@ -8,11 +8,13 @@ open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Displayed.Section
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Kan.Nerve
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
@@ -28,7 +30,6 @@ import Cat.Instances.Presheaf.Exponentials as Pe
 import Cat.Displayed.Instances.Gluing
 import Cat.Instances.Presheaf.Limits as Pl
 import Cat.Displayed.Reasoning
-import Cat.Functor.Bifunctor as Bifunctor
 
 open Slice-hom
 open Functor
@@ -1025,7 +1026,7 @@ ren-⟦⟧ₙ ρ (lam t) =
   ∙ sym (Cartesian-closed.unique Free-closed _ (ap₂ _`∘_ refl rem₁ ∙ Syn.pulll `ƛβ ∙ ap₂ _`∘_ refl (ap₂ _`,_ refl `idl)))
   where
   rem₁ : (⟦ lam t ⟧ₙ `∘ ⟦ ρ ⟧ʳ) Syn.⊗₁ `id ≡ (⟦ lam t ⟧ₙ Syn.⊗₁ `id) `∘ ⟦ ρ ⟧ʳ Syn.⊗₁ `id
-  rem₁ = Bifunctor.first∘first Syn.×-functor
+  rem₁ = Bifunctor.lmap-∘ (Curry Syn.×-functor) _ _
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ _`,_ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (Syn.⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x

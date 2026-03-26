@@ -3,8 +3,10 @@
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Product.Solver
 open import Cat.Monoidal.Diagonals
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Monoidal.Braided
+open import Cat.Functor.Closed
 open import Cat.Monoidal.Base
 open import Cat.Cartesian
 open import Cat.Prelude
@@ -41,7 +43,7 @@ module _
 
 ```agda
   Cartesian-monoidal : Monoidal-category C
-  Cartesian-monoidal .-⊗- = ×-functor
+  Cartesian-monoidal .-⊗-  = Curry ×-functor
   Cartesian-monoidal .Unit = top
 ```
 
@@ -96,8 +98,10 @@ categories]].
   Cartesian-symmetric = to-symmetric-monoidal mk where
     open make-symmetric-monoidal
     mk : make-symmetric-monoidal Cartesian-monoidal
-    mk .has-braiding = iso→isoⁿ
-      (λ _ → invertible→iso swap swap-is-iso) swap-natural
+    mk .has-braiding = biiso→isoⁿ
+      (λ x y → invertible→iso swap swap-is-iso)
+      (λ f → products! products)
+      (λ f → products! products)
     mk .symmetric = ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₂∘⟨⟩ π₁∘⟨⟩ ∙ ⟨⟩-η
     mk .has-braiding-α→ = products! products
 ```
@@ -107,7 +111,7 @@ We also have a system of [[diagonal morphisms|monoidal category with diagonals]]
 ```agda
   Cartesian-diagonal : Diagonals Cartesian-monoidal
   Cartesian-diagonal .diagonals ._=>_.η A = δ
-  Cartesian-diagonal .diagonals ._=>_.is-natural = δ-natural
+  Cartesian-diagonal .diagonals ._=>_.is-natural x y f = products! products
   Cartesian-diagonal .diagonal-λ→ = ap ⟨_, id ⟩ (sym (!-unique _))
 ```
 
