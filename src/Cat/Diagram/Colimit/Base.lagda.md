@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Functor.Naturality.Reflection
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Shape.Interval
 open import Cat.Instances.Shape.Terminal
@@ -862,15 +861,12 @@ module _ {C : Precategory o₂ h₂} {D : Precategory o₃ h₃} {E : Precategor
   open creates-colimit
 
   private
-    module E = Cat.Reasoning E
     fixup
       : ∀ {oj ℓj} {J : Precategory oj ℓj} {Diagram : Functor J C}
       → {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
       → is-lan !F (G F∘ F F∘ Diagram) (G F∘ F F∘ K) (nat-assoc-to (G ▸ nat-assoc-to (F ▸ eta)))
       ≃ is-lan !F ((G F∘ F) F∘ Diagram) ((G F∘ F) F∘ K) (nat-assoc-to ((G F∘ F) ▸ eta))
-    fixup {K = K} = natural-isos→lan-equiv trivial-isoⁿ! trivial-isoⁿ! trivial-isoⁿ! $
-      ext λ i → E.eliml (E.elimr (Func.elim G (Func.elim F (Func.elim K refl))))
-              ∙ E.idr _
+    fixup {K = K} = trivial-lan-equiv!
 ```
 -->
 

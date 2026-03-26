@@ -205,29 +205,27 @@ sequencing the effects from left to right or from right to left:
 ```agda
     left-φ right-φ : precompose₂ -⊗- M M => postcompose₂ M -⊗-
 
-    left-φ = make-binatural λ where
-        .η x y → μ (x ⊗ y) ∘ M.₁ σ ∘ τ
-        .is-natural-◀ f x →
+    left-φ = let open Make-binatural in make-binatural λ where
+      .η x y → μ (x ⊗ y) ∘ M.₁ σ ∘ τ
+      .is-natural-◀ f x →
           extendr (pullr τ.natural-◀)
-          ∙ extendr (M.extendl σ.natural-◀)
-          ∙ pushl (mult.is-natural _ _ _)
-        .is-natural-▶ x f →
+        ∙ extendr (M.extendl σ.natural-◀)
+        ∙ pushl (mult.is-natural _ _ _)
+      .is-natural-▶ x f →
           extendr (pullr τ.natural-▶)
-          ∙ extendr (extendl (M.weave σ.natural-▶))
-          ∙ pushl (mult.is-natural _ _ _)
-       where open Make-binatural
+        ∙ extendr (extendl (M.weave σ.natural-▶))
+        ∙ pushl (mult.is-natural _ _ _)
 
-    right-φ = make-binatural λ where
-        .η x y → μ (x ⊗ y) ∘ M.₁ τ ∘ σ
-        .is-natural-◀ f x →
+    right-φ = let open Make-binatural in make-binatural λ where
+      .η x y → μ (x ⊗ y) ∘ M.₁ τ ∘ σ
+      .is-natural-◀ f x →
           extendr (pullr σ.natural-◀)
-          ∙ extendr (M.extendl τ.natural-◀)
-          ∙ pushl (mult.is-natural _ _ _)
-        .is-natural-▶ x f →
+        ∙ extendr (M.extendl τ.natural-◀)
+        ∙ pushl (mult.is-natural _ _ _)
+      .is-natural-▶ x f →
           extendr (pullr σ.natural-▶)
-          ∙ extendr (M.extendl τ.natural-▶)
-          ∙ pushl (mult.is-natural _ _ _)
-      where open Make-binatural
+        ∙ extendr (M.extendl τ.natural-▶)
+        ∙ pushl (mult.is-natural _ _ _)
 ```
 
 ::: {.definition #commutative-monad alias="commutative-strength"}
