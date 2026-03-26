@@ -30,13 +30,13 @@ number of counterexamples. Mathematicians typically call such predicates or
 "almost always" or "eventually true" in the sequence.
 
 As a concrete example, recall that a sequence $x_n : \NN \to \RR$ converges
-to some $x : \RR$ if for every $0 < \eps$, there exists some $n_0 : \NN$ such that
+to some $x : \RR$ if, for every $0 < \eps$, there exists some $n_0 : \NN$ such that
 for every further $n \geq n_0$, we have $| x - x_n | < \eps$. Ignoring constructivity concerns
-for the moment, can re-phrase this definition in the language of
+for the moment, we can re-phrase this definition in the language of
 eventually true predicates by observing that a sequence converges if and only
 if there are a finite number of $x_i$ where $| x - x_i | \geq \eps$.
 In other words, a sequence converges if and only if the predicate
-$\lambda x_i.\ | x - x_i| < \eps : \RR \to \Omega$ is eventually true in the sequence $x_n$.
+$(\lambda x_i.\ | x - x_i | < \eps) : \NN \to \Omega$ is eventually true in the sequence $x_n$.
 
 Intuitively, for a fixed sequence $x_n : \NN \to X$ in a type $X$, we ought to
 think about the subsets $A \subseteq X$ where $x \in A$ is eventually true in $x_n$
@@ -46,17 +46,18 @@ that this collection of subsets forms a [[filter]] on the power set of $X$.
 However, we must first address the constructivity concerns that we previously
 ignored. There are two main problems that we must address:
 
-1. our definition of eventually true involves negation, which is a constructive
-   red flag; and
-2. restricting ourselves to [[natural number]]-indexed sequences will cause
+1. The definition of eventual truth presented above required us to
+  double negate $\exists n_0. \forall n \geq n_0. | x - x_n | < \eps$ to
+  obtain $\lnot (\forall n.\ \eps \geq | x - x_n |)$; and
+
+2. Restricting ourselves to [[natural number]]-indexed sequences will cause
    problems with countable [[choice|axiom-of-choice]] later down the line[^2].
 
-[^2]: There are other topological reasons to generalize beyond sequences, but the
+[^2]: There are other topological reasons to generalize beyond sequences, but
   the topological content of constructive logic means that these problems with sequences
   have the same root cause. Similar situations arise when looking at $\omega$-CPOs and
   [[DCPOs]], so this pattern of "sequences do not suffice" is common enough to make
   it worth avoiding from the get-go.
-
 
 We can resolve this first issue by replacing our definition of "$\phi$ is eventually
 always true in $x_n$" with one that directly copies the structure of
@@ -105,8 +106,8 @@ lies within the image of $f$.
 
 ```agda
   Eventuality : (⌞ D ⌟ → X) → Filter (Subsets X)
-  Eventuality f .F .hom A = elΩ (Σ[ i ∈ ⌞ D ⌟ ] (∀ (j : ⌞ D ⌟) → i D.≤ j → f j ∈ A))
-  Eventuality f .F .pres-≤ A⊆B = rec! λ i □A → inc (i , λ j i≤j → A⊆B (f j) (□A j i≤j))
+  Eventuality f .filter .hom A = elΩ (Σ[ i ∈ D ] (∀ j → i D.≤ j → f j ∈ A))
+  Eventuality f .filter .pres-≤ A⊆B = rec! λ i □A → inc (i , λ j i≤j → A⊆B (f j) (□A j i≤j))
 ```
 
 The posets of subsets is a meet semilattice, so it suffices to show that
@@ -126,7 +127,7 @@ Finally, for every $k \leq l$, $f(l) \in A \cap B$, as $i \leq k \leq l$ and $j 
   Eventuality f .has-is-filter =
     is-meet-slat-hom→is-filter Subsets-is-meet-slat record
       { top-≤ = λ _ →
-        case D.inhab of λ where
+        case D.inhabited of λ where
           i → inc (i , λ _ _ → tt)
       ; ∩-≤ = elim! λ A B i □A j □B →
         case D.upper-bound i j of λ where
@@ -142,7 +143,7 @@ A **tail** of a net $f : D \to X$ at some $i : D$ is set of all $x : X$
 that lie in the image of some $j$ with $i \leq j$[^3].
 :::
 
-[^3]: More abstractly, the tails of a net $f$ are the [[left kan extensions]]
+[^3]: More abstractly, the tails of a net $f$ are the [[left Kan extensions]]
   of the hom functor $i \leq - : D \to \Omega$ along the monotone map $f : D \to \mathrm{Codisc}(X)$.
 
 

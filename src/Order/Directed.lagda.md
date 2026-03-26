@@ -33,7 +33,7 @@ record is-upwards-directed {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
   open Poset P
   field
-    inhab : ∥ Ob ∥
+    inhabited : ∥ Ob ∥
     upper-bound : ∀ x y → ∃[ z ∈ Ob ] (x ≤ z × y ≤ z)
 ```
 
@@ -46,7 +46,7 @@ every [[finite]] subset of $P$.
     → (xᵢ : Fin n → Ob)
     → ∃[ y ∈ Ob ] (∀ ix → xᵢ ix ≤ y)
   fin-upper-bound {zero} xᵢ = do
-    y ← inhab
+    y ← inhabited
     inc (y , (λ ()))
   fin-upper-bound {suc n} xᵢ = do
     (y , xᵢ≤y) ← fin-upper-bound (xᵢ ⊙ fsuc)
@@ -86,7 +86,7 @@ is-join-slat→is-upwards-directed
   → is-upwards-directed L
 {-# INLINE is-join-slat→is-upwards-directed #-}
 is-join-slat→is-upwards-directed {L = L} L-slat = record
-  { inhab = inc bot
+  { inhabited = inc bot
   ; upper-bound = λ x y → inc (x ∪ y , l≤∪ , r≤∪)
   }
   where
@@ -106,7 +106,7 @@ record is-downwards-directed {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
   open Poset P
   field
-    inhab : ∥ Ob ∥
+    inhabited : ∥ Ob ∥
     lower-bound : ∀ x y → ∃[ z ∈ Ob ] (z ≤ x × z ≤ y)
 ```
 
@@ -126,7 +126,7 @@ has a (not necessarily greatest) lower bound.
 
 ```agda
   fin-lower-bound {zero} xᵢ = do
-    y ← inhab
+    y ← inhabited
     inc (y , (λ ()))
   fin-lower-bound {suc n} xᵢ = do
     (y , y≤xᵢ) ← fin-lower-bound (xᵢ ⊙ fsuc)
@@ -167,7 +167,7 @@ is-meet-slat→is-downwards-directed
   → is-downwards-directed L
 {-# INLINE is-meet-slat→is-downwards-directed #-}
 is-meet-slat→is-downwards-directed {L = L} L-slat = record
-  { inhab = inc top
+  { inhabited = inc top
   ; lower-bound = λ x y → inc (x ∩ y , ∩≤l , ∩≤r)
   }
   where

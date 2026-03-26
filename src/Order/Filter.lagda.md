@@ -53,33 +53,30 @@ is-filter F = is-downwards-directed (∫ F)
 record Filter {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
   field
-    F : Upper-set P
-    has-is-filter : is-filter F
+    filter : Upper-set P
+    has-is-filter : is-filter filter
 
-  open Monotone F
-    renaming
-    ( pres-≤ to F-≤
-    )
-    public
+  open Monotone filter renaming (pres-≤ to F-≤) public
 
 open Filter
 ```
 
 <!--
 ```agda
+{-# INLINE Filter.constructor #-}
 module _ {o ℓ} {P : Poset o ℓ} where
   open Poset P
   private module ↑P = Poset (Upper-sets P)
 
   instance
     Membership-Filter : Membership ⌞ P ⌟ (Filter P) lzero
-    Membership-Filter = record { _∈_ = λ x F → x ∈ Filter.F F }
+    Membership-Filter = record { _∈_ = λ x F → x ∈ Filter.filter F }
 
     Underlying-Filter : Underlying (Filter P)
     Underlying-Filter = record { ⌞_⌟ = λ F → ∫ₚ F }
 
     Funlike-Filter : Funlike (Filter P) ⌞ P ⌟ λ _ → Ω
-    Funlike-Filter = record { _·_ = λ F x → Filter.F F · x }
+    Funlike-Filter = record { _·_ = λ F x → Filter.filter F · x }
 ```
 -->
 
@@ -99,12 +96,12 @@ of the set $\left\{ a : P \mid x \leq a \right\}$.
 
 ```agda
   ↑-is-filter : ∀ x → is-filter (↑ P x)
-  ↑-is-filter x .inhab = pure (x , pure ≤-refl)
+  ↑-is-filter x .inhabited = pure (x , pure ≤-refl)
   ↑-is-filter x .lower-bound (a , x≤a) (b , x≤b) = pure ((x , pure ≤-refl) , □-out! x≤a , □-out! x≤b)
 
   ↑ᶠ : ⌞ P ⌟ → Filter P
-  ↑ᶠ x .Filter.F = ↑ P x
-  ↑ᶠ x .Filter.has-is-filter = ↑-is-filter x
+  ↑ᶠ x .filter = ↑ P x
+  ↑ᶠ x .has-is-filter = ↑-is-filter x
 ```
 
 Principal filters classify the elements of $P$ lower bounded by a bona-fide
@@ -138,7 +135,7 @@ Filters are closed under [[binary meets|meet]] and contain [[top elements]] (if 
     → is-top P t
     → t ∈ F
   is-filter→contains-top {F = F} F-filter t-top =
-    case F-filter .inhab of λ where
+    case F-filter .inhabited of λ where
       x x∈F → F .pres-≤ (t-top x) x∈F
 ```
 
@@ -184,10 +181,10 @@ module _ {o ℓ} {L : Poset o ℓ} (L-slat : is-meet-semilattice L) where
     → is-filter F
     → is-meet-slat-hom F L-slat Props-is-meet-slat
   {-# INLINE is-filter→is-meet-slat-hom #-}
-  is-filter→is-meet-slat-hom F-filter .∩-≤ x y (x∈F , y∈F) =
-    is-filter→∩-closed F-filter x∈F y∈F
-  is-filter→is-meet-slat-hom F-filter .top-≤ _ =
-    is-filter→contains-top F-filter (Top.has-top has-top)
+  is-filter→is-meet-slat-hom F-filter = record
+    { ∩-≤ = λ x y (x∈F , y∈F) → is-filter→∩-closed F-filter x∈F y∈F
+    ; top-≤ = λ _ → is-filter→contains-top F-filter (Top.has-top has-top)
+    }
 ```
 
 Moreover, every filter on a meet semilattice arises this way.
@@ -199,7 +196,7 @@ Moreover, every filter on a meet semilattice arises this way.
     → is-filter F
   {-# INLINE is-meet-slat-hom→is-filter #-}
   is-meet-slat-hom→is-filter F-meet-hom = record
-    { inhab = inc (top , F-meet-hom .top-≤ tt)
+    { inhabited = inc (top , F-meet-hom .top-≤ tt)
     ; lower-bound = λ (x , x∈F) (y , y∈F) →
       inc ((x ∩ y , F-meet-hom .∩-≤ x y (x∈F , y∈F)) , ∩≤l , ∩≤r)
     }
@@ -229,8 +226,8 @@ $F \subseteq P$ if:
     private
       module F = Filter F
     field
-      base∈F : ∀ (i : Ix) → xᵢ i ∈ F
-      up-closed : ∀ (y : ⌞ P ⌟) → y ∈ F → ∃[ i ∈ Ix ] (xᵢ i ≤ y)
+      base∈F : ∀ i → xᵢ i ∈ F
+      up-closed : ∀ y → y ∈ F → ∃[ i ∈ Ix ] (xᵢ i ≤ y)
 ```
 
 More succinctly, $x_i$ is a filter base of $F$ if $F$ is the upwards closure of $x_i$.
