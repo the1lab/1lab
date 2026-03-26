@@ -11,7 +11,7 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Instances.Product.Duality {o₁ h₁ o₂ h₂ : Level}
-  {C : Precategory o₁ h₁} {D : Precategory o₁ h₁}
+  {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
   where
 ```
 
