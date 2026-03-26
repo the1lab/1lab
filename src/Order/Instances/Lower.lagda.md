@@ -6,6 +6,7 @@ open import Data.Sum.Base
 
 open import Order.Instances.Pointwise
 open import Order.Instances.Props
+open import Order.Instances.Upper
 open import Order.Diagram.Bottom
 open import Order.Diagram.Join
 open import Order.Diagram.Meet
@@ -138,3 +139,14 @@ operator automatically propositionally truncates.
   Lower-sets-bottom .Bottom.has-bottom _ _ ff = absurd ff
 ```
 -->
+
+## Duality
+
+Lower sets are dual to [[upper sets]].
+
+```agda
+Lower-sets≅op-Upper-sets
+  : ∀ {o ℓ} (P : Poset o ℓ)
+  → Lower-sets P Posets.≅ (Upper-sets (P ^opp))
+Lower-sets≅op-Upper-sets P = Posets.id-iso
+```

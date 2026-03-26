@@ -57,3 +57,7 @@ module _ {o ℓ} (P : Poset o ℓ) where
   よcovₚ .hom = ↑
   よcovₚ .pres-≤ y≤x a x≤a = ⦇ P.≤-trans (pure y≤x) x≤a ⦈
 ```
+
+## Duality
+
+Upper sets are dual to [[lower sets]]; see that page for a proof.
