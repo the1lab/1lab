@@ -23,7 +23,7 @@ import Order.Reasoning as Pr
 module Order.Instances.Lower where
 ```
 
-# Lower sets
+# Lower sets {defines="lower-set"}
 
 Imagine you have a poset $(P, \le)$ which does _not_ have all [joins],
 and you want to freely (co)complete it into a poset $P'$ which _does_,
