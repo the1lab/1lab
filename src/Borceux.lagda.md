@@ -43,7 +43,7 @@ open import Cat.Instances.MarkedGraphs
 open import Cat.Instances.OuterFunctor
 open import Cat.Internal.Functor.Outer
 open import Cat.Morphism.Factorisation
-open import Cat.Bi.Diagram.Adjunction renaming (_⊣_ to _⊣ᵇ_)
+open import Cat.Bi.Diagram.Adjunction
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
@@ -1056,13 +1056,13 @@ _ = is-idempotent-complete
 <!--
 ```agda
 _ = Prebicategory
-_ = _⊣ᵇ_
+_ = Adjointᵇ._⊣_
 _ = Spanᵇ
 ```
 -->
 
 * Definition 7.7.1: `Prebicategory`{.Agda}
-* Definition 7.7.2: `_⊣ᵇ_`{.Agda}
+* Definition 7.7.2: `Adjointᵇ._⊣_`{.Agda}
 * Example 7.7.3: `Spanᵇ`{.Agda}
 
 ### 7.8 Distributors
