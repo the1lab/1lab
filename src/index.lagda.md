@@ -122,13 +122,11 @@ for everyone, and we are committed to fostering a kind, welcoming
 environment**.
 
 The 1Lab is a community project. You can contribute code on [GitHub] and
-connect with us on [Discord] or in the `#1lab` channel on [Libera
-Chat](https://libera.chat/). We welcome all contributions, but we kindly
-ask that more substantial contributions have their design hashed out in
-one of the chatrooms first.
+connect with us in the `#1lab` channel on [Libera Chat]. We welcome all
+contributions, but we kindly ask that more substantial contributions
+have their design hashed out by chatting with us first.
 
 [GitHub]: https://github.com/the1lab/1lab
-[Discord]: https://discord.gg/eQDNM26uKP
 [Libera Chat]: https//libera.chat
 
 We accept contributions in all areas of mathematics, not just the ones
