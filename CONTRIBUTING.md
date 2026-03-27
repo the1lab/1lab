@@ -7,8 +7,8 @@ GitHub.
 * Familiarise yourself with the guidelines below.
 
 * If you're opening a larger pull request, it's a good idea to make
-  yourself available for IM discussion on [Discord] or on IRC (`#1lab`
-  on [Libera Chat]).
+  yourself available for IM discussion on IRC (`#1lab` on [Libera
+  Chat]).
 
   It's generally a good idea for your PR to consist of a series of
   individually-reviewable commits. If these adhere to the [commit
@@ -22,7 +22,6 @@ GitHub.
   version, and testing new language features "in the wild".
 
 [correct Agda commit]: https://github.com/the1lab/1lab/blob/main/support/nix/dep/Agda/github.json#L6
-[Discord]: https://discord.gg/Zp2e8hYsuX
 [Libera Chat]: https://libera.chat
 
 We welcome all contributions, but please understand that the 1Lab has a
