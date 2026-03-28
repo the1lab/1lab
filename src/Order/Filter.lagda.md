@@ -104,7 +104,7 @@ of the set $\left\{ a : P \mid x \leq a \right\}$.
   ↑ᶠ x .has-is-filter = ↑-is-filter x
 ```
 
-Principal filters classify the elements of $P$ lower bounded by a bona-fide
+Principal filters classify the elements of $P$ bounded below by a bona-fide
 element of $P$, but this is not always the case.
 
 ## Filters and meets
@@ -154,7 +154,7 @@ In particular, this means that filters are closed under [[finite]] meets.
     where open is-glb ⋀xᵢ-glb
 ```
 
-This means that filters preserves finite meets when viewed as monotone maps
+This means that filters preserve finite meets when viewed as monotone maps
 into the poset of propositions. In particular, this means a filter
 $F \subseteq L$ on a [[meet semilattice]] $L$ induces a meet semilattice
 homomorphism $F : L \to \Omega$.
