@@ -127,7 +127,7 @@ contributions, but we kindly ask that more substantial contributions
 have their design hashed out by chatting with us first.
 
 [GitHub]: https://github.com/the1lab/1lab
-[Libera Chat]: https//libera.chat
+[Libera Chat]: https://libera.chat
 
 We accept contributions in all areas of mathematics, not just the ones
 which already feature, or the ones listed above. Our lack of results in
