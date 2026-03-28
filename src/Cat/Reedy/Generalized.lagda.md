@@ -39,7 +39,7 @@ module _ {o ℓ} (A : Precategory o ℓ) where
 # Generalized Reedy categories
 
 :::{.definition #generalized-reedy-structure}
-A *generalized Reedy structure* on a [[precategory]] $\cA$ consists of:
+A **generalized Reedy structure** on a [[precategory]] $\cA$ consists of:
 
 - two classes of morphisms $\cA^{-}, \cA^{+} \subseteq \cA$, and
 - a function $\mathrm{dim} : \cA_{0} \to \NN$
