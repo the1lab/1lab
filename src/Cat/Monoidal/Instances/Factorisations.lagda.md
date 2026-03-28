@@ -6,6 +6,7 @@ open import Cat.Instances.Shape.Interval
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Section
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Monad
@@ -34,6 +35,7 @@ module Cat.Monoidal.Instances.Factorisations {o ℓ} (C : Precategory o ℓ) whe
 private Ff = Factorisations C
 open Cat.Reasoning C
 open Factorisation using (adjust ; annihilate ; collapse ; weave)
+open Make-bifunctor
 ```
 -->
 
@@ -65,7 +67,7 @@ Ff-unit .S-∘ f g = ext refl
 
 <details>
 <summary>
-We can easily calculate that the this unit factorisation is [[initial]].
+We can easily calculate that this unit factorisation is [[initial]].
 
 ```agda
 Ff-unit-is-initial : is-initial (Factorisations C) Ff-unit
@@ -128,35 +130,31 @@ module _ (F G : Factorisation C) where
 but unsurprising.</summary>
 
 ```agda
-Ff-tensor-functor : Functor (Ff ×ᶜ Ff) Ff
-Ff-tensor-functor .F₀ (F , F') = F ⊗ᶠᶠ F'
-Ff-tensor-functor .F₁ {X , Y} {X' , Y'} (f , g) .map (_ , _ , h) =
-  let
-    sq = record { com = f .sq₁ᶠᶠ h ∙ introl refl }
-    h' = g .map (_ , _ , Factorisation.ρ→ X h)
-  in record
-    { map = Y' .S₁ sq .map ∘ h' .map
-    ; sq₀ = sym
-      ( pullr (pulll (sym (h' .sq₀)))
-     ∙∙ pulll (pulll (sym (Y' .S₁ sq .sq₀))  ∙ elimr refl)
-     ∙∙ pullr (sym (f .sq₀ᶠᶠ h))
-      ∙ intror refl)
-    ; sq₁ = pulll (Y' .S₁ sq .sq₁)
-          ∙ pullr (h' .sq₁ ∙ eliml refl)
+Ff-tensor-functor : Bifunctor Ff Ff Ff
+Ff-tensor-functor = make-bifunctor mk where
+  mk : Make-bifunctor
+  mk .F₀ F F' = F ⊗ᶠᶠ F'
+  mk .lmap {x = X} f .map (_ , _ , h) =
+    let
+      sq = record { com = f .sq₁ᶠᶠ h ∙ introl refl }
+    in
+      record
+      { map = X .S₁ sq .map
+      ; sq₀ = sym (pulll (sym (X .S₁ sq .sq₀)) ∙ pullr (sym (f .sq₀ᶠᶠ h)) ∙ intror refl)
+      ; sq₁ = X .S₁ sq .sq₁
+      }
+  mk .lmap {x = X} f .com x y g = Interpolant-pathp (weave X (ext (f .comᶠᶠ _ ,ₚ id-comm-sym)))
+  mk .rmap {a = A} g .map (_ , _ , h) = record
+    { map = g .mapᶠᶠ (Factorisation.ρ→ A h)
+    ; sq₀ = elimr refl ∙ sym (pulll (sym (g .sq₀ᶠᶠ _)))
+    ; sq₁ = g .map _ .sq₁
     }
-
-Ff-tensor-functor .F₁ {X , Y} {X' , Y'} (f , g) .com α β h = Interpolant-pathp $
-    pullr (g .comᶠᶠ _)
-  ∙ extendl (weave Y' (ext (f .comᶠᶠ _ ,ₚ id-comm-sym)))
-
-Ff-tensor-functor .F-id {_ , Y} = ext λ x y h → elimr refl ∙ annihilate Y (ext refl)
-
-Ff-tensor-functor .F-∘ {X , X'} {Y , Y'} {Z , Z'} f g = ext λ x y h →
-     pulll (sym (f .snd .comᶠᶠ _))
-  ∙∙ pullr (sym (g .snd .comᶠᶠ _))
-  ∙∙ sym (ap₂ _∘_ (sym (f .snd .comᶠᶠ _)) (sym (g .snd .comᶠᶠ _))
-    ∙∙ pullr (extendl (sym (g .snd .comᶠᶠ _)))
-    ∙∙ ap₂ _∘_ refl (ap₂ _∘_ refl (collapse X' (ext (refl ,ₚ idl id)))))
+  mk .rmap g .com x y f = Interpolant-pathp (g .comᶠᶠ _)
+  mk .lmap-id {x = X}     = ext λ x y h → annihilate X (ext refl)
+  mk .lmap-∘  {x = X} f g = ext λ x y h → sym (collapse X (ext (refl ,ₚ idr id)))
+  mk .rmap-id    = ext λ x y h → refl
+  mk .rmap-∘ f g = ext λ x y h → refl
+  mk .lrmap  f g = ext λ x y h → sym (g .comᶠᶠ _)
 ```
 
 </details>
@@ -171,7 +169,7 @@ around.
 private
   assc : Associator-for {O = ⊤} (λ _ _ → Ff) Ff-tensor-functor
   assc = to-natural-iso mk where
-    mk : make-natural-iso (compose-assocˡ Ff-tensor-functor) _
+    mk : make-natural-iso (compose-assocˡ (λ _ _ → Ff) Ff-tensor-functor) _
     mk .eta X .map x = record
       { map = id
       ; sq₀ = elimr refl ∙∙ pullr refl ∙∙ introl refl
@@ -211,7 +209,7 @@ and proof of the triangle and pentagon identities.
 
 ```agda
 Ff-monoidal .unitor-l   = to-natural-iso mk where
-  mk : make-natural-iso (Id {C = Ff}) (Bi.Right Ff-tensor-functor Ff-unit)
+  mk : make-natural-iso (Id {C = Ff}) (Bifunctor.Right Ff-tensor-functor Ff-unit)
   mk .eta X .map _ = record { sq₀ = cancelr (idl id) ∙ introl refl ; sq₁ = id-comm }
   mk .inv X .map _ = record { sq₀ = introl refl                    ; sq₁ = id-comm }
 
@@ -222,11 +220,10 @@ Ff-monoidal .unitor-l   = to-natural-iso mk where
 
   mk .eta∘inv x     = ext λ x y f → idl id
   mk .inv∘eta x     = ext λ x y f → idl id
-  mk .natural X Y f = ext λ x y g →
-    elimr refl ∙∙ eliml (annihilate Y (ext refl)) ∙∙ introl refl
+  mk .natural X Y f = ext λ x y g → id-comm
 
 Ff-monoidal .unitor-r   = to-natural-iso mk where
-  mk : make-natural-iso (Id {C = Ff}) (Bi.Left Ff-tensor-functor Ff-unit)
+  mk : make-natural-iso (Id {C = Ff}) (Bifunctor.Left Ff-tensor-functor Ff-unit)
   mk .eta X .map _ = record { sq₀ = elimr refl                     ; sq₁ = id-comm }
   mk .inv X .map _ = record { sq₀ = elimr refl ∙ insertl (idl id)  ; sq₁ = id-comm }
 
@@ -237,16 +234,12 @@ Ff-monoidal .unitor-r   = to-natural-iso mk where
 
   mk .eta∘inv x     = ext λ x y f → idl id
   mk .inv∘eta x     = ext λ x y f → idl id
-  mk .natural X Y f = ext λ x y g → cancelr (idl id) ∙ introl refl
+  mk .natural X Y f = ext λ x y g → id-comm
 
 Ff-monoidal .associator = assc
-Ff-monoidal .triangle   = ext λ x y f → pullr (idl id)
+Ff-monoidal .triangle {B = B} = ext λ x y f → elimr refl ∙ annihilate B (ext refl)
 Ff-monoidal .pentagon {B = B} {C = C} {D = D} = ext λ x y f →
-  pullr
-    (  cancell (idl id)
-    ∙∙ elimr refl
-    ∙∙ annihilate D (ext (annihilate C (ext (annihilate B (ext refl) ,ₚ refl)) ,ₚ refl)))
-  ∙ ap (_∘ id) (annihilate D (ext refl))
+  eliml (annihilate D (ext refl))
 ```
 
 </details>
@@ -317,19 +310,17 @@ repackaging of the corresponding monoid laws.
 ```agda
     monoid-mult-is-monad : is-monad monoid→unit monoid→mult
     monoid-mult-is-monad .μ-unitr {X , Y , f} = ext $
-         ap₂ _∘_ refl (F.adjust (ext refl) ∙ intror refl)
-       ∙ apd (λ i x → x .mapᶠᶠ f) m.μ-unitl
+         cdr (F.adjust (ext refl))
+      ∙  apd (λ i x → x .mapᶠᶠ f) m.μ-unitl
       ,ₚ idl id
 
     monoid-mult-is-monad .μ-unitl {X , Y , f} = ext $
-         ap₂ _∘_ refl (introl (F.annihilate (ext refl)))
-       ∙ apd (λ i x → x .mapᶠᶠ f) m.μ-unitr
+         apd (λ i x → x .mapᶠᶠ f) m.μ-unitr
       ,ₚ idl id
 
     monoid-mult-is-monad .μ-assoc {X , Y , f} = ext $
-         ap₂ _∘_ refl (F.adjust (ext (refl ,ₚ refl)) ∙∙ intror refl ∙∙ intror refl)
-      ∙∙ apd (λ i x → x .mapᶠᶠ f) (sym m.μ-assoc)
-      ∙∙ ap₂ _∘_ refl (eliml (F.annihilate (ext refl)))
+         cdr (F.adjust (ext refl) ∙ intror refl)
+      ∙  apd (λ i x → x .mapᶠᶠ f) (sym m.μ-assoc)
       ,ₚ refl
 ```
 
