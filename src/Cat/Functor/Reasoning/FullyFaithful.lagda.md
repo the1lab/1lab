@@ -41,8 +41,17 @@ private variable
 module _ {a} {b} where
   open Equiv (F₁ {a} {b} , ff) public
 
+invertible-equiv
+  : ∀ {a b} {f : C.Hom a b}
+  → C.is-invertible f ≃ D.is-invertible (F₁ f)
+invertible-equiv {f = f} =
+  prop-ext! F-map-invertible (is-ff→is-conservative F ff f)
+
 iso-equiv : ∀ {a b} → (a C.≅ b) ≃ (F₀ a D.≅ F₀ b)
 iso-equiv {a} {b} = (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
+
+module invertible {a} {b} {f : C.Hom a b} =
+  Equiv (invertible-equiv {f = f})
 
 module iso {a} {b} =
   Equiv (F-map-iso {x = a} {b} , is-ff→F-map-iso-is-equiv {F = F} ff)
@@ -53,8 +62,14 @@ module iso {a} {b} =
 fromn't : w ≡ F₁ f → from w ≡ f
 fromn't p = ap from p ∙ η _
 
-from-id : w ≡ D.id → from w ≡ C.id
-from-id p = injective₂ (ε _ ∙ p) F-id
+from-id : (w ≡ D.id) ≃ (from w ≡ C.id)
+from-id = ap-equiv ((F₁ , ff) e⁻¹) ∙e ∙-post-equiv (injective₂ (ε D.id) F-id)
+
+to-id : (f ≡ C.id) ≃ (F₁ f ≡ D.id)
+to-id = ap-equiv (F₁ , ff) ∙e id-equivr
+
+module from-id {α} {w : D.Hom (F₀ α) (F₀ α)} = Equiv (from-id {w = w})
+module to-id {a} {f : C.Hom a a} = Equiv (to-id {f = f})
 
 from-∘ : from (w D.∘ x) ≡ from w C.∘ from x
 from-∘ = injective (ε _ ∙ sym (F-∘ _ _ ∙ ap₂ D._∘_ (ε _) (ε _)))
@@ -76,10 +91,10 @@ inv∘l : x D.∘ F₁ f ≡ y → from x C.∘ f ≡ from y
 inv∘l x = sym (ε-twist (D.eliml F-id ∙ sym x)) ∙ C.idl _
 
 whackl : x D.∘ F₁ f ≡ F₁ g → from x C.∘ f ≡ g
-whackl p = sym (ε-twist (D.idr _ ∙ sym p)) ∙ C.elimr (from-id refl)
+whackl p = sym (ε-twist (D.idr _ ∙ sym p)) ∙ C.elimr (from-id.to refl)
 
 whackr : F₁ f D.∘ x ≡ F₁ g → f C.∘ from x ≡ g
-whackr p = ε-twist (p ∙ sym (D.idl _)) ∙ C.eliml (from-id refl)
+whackr p = ε-twist (p ∙ sym (D.idl _)) ∙ C.eliml (from-id.to refl)
 
 pouncer : F₁ f D.∘ x ≡ z → f C.∘ from x ≡ from z
 pouncer p = ε-twist (p ∙ intror refl) ∙ C.idr _
@@ -98,4 +113,20 @@ pouncer p = ε-twist (p ∙ intror refl) ∙ C.idr _
 
 unwhackr : f C.∘ from w ≡ g → F₁ f D.∘ w ≡ F₁ g
 unwhackr {f = f} {w = w} p = sym (η-twist $ C.idr _ ∙∙ η _ ∙∙ sym p) ∙ elimr refl
+```
+
+## Lifting Shapes
+
+```agda
+module _ {f : C.Hom b c} {g : C.Hom a b} {h : C.Hom a c} where
+
+  triangle-equivl : (F₁ f D.∘ F₁ g ≡ F₁ h) ≃ (f C.∘ g ≡ h)
+  triangle-equivl =
+    F₁ f D.∘ F₁ g ≡ F₁ h
+      ≃˘⟨ ∙-pre-equiv (sym (F-∘ f g)) ⟩
+    F₁ (f C.∘ g) ≡ F₁ h
+      ≃˘⟨ ap-equiv (F₁ , ff) ⟩
+    f C.∘ g ≡ h ≃∎
+
+  module triangle-equivl = Equiv triangle-equivl
 ```
