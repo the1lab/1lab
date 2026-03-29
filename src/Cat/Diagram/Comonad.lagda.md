@@ -28,28 +28,26 @@ A **comonad on a category** $\cC$ is dual to a [[monad]] on $\cC$; instead
 of a unit $\Id \To M$ and multiplication $(M \circ M) \To M$, we have a
 counit $W \To \Id$ and comultiplication $W \To (W \circ W)$. More
 generally, we can define what it means to equip a *fixed* functor $W$
-with the structure of a comonad.
+with the structure of a comonad; even more generally, we can specify
+what it means for a triple $(W, \eps, \delta)$ to be a comonad.
+Unsurprisingly, these are dual to the equations of a monad.
 
 ```agda
-  record Comonad-on (W : Functor C C) : Type (o ⊔ ℓ) where
-    field
-      counit : W => Id
-      comult : W => (W F∘ W)
+  record is-comonad {W : Functor C C} (counit : W => Id) (comult : W => W F∘ W) : Type (o ⊔ ℓ) where
 ```
 
 <!--
 ```agda
+    no-eta-equality
+    open Functor W renaming (F₀ to W₀ ; F₁ to W₁ ; F-id to W-id ; F-∘ to W-∘) public
+
     module counit = _=>_ counit renaming (η to ε)
     module comult = _=>_ comult renaming (η to δ)
 
-    open Functor W renaming (F₀ to W₀ ; F₁ to W₁ ; F-id to W-id ; F-∘ to W-∘) public
     open counit using (ε) public
     open comult using (δ) public
 ```
 -->
-
-We also have equations governing the counit and comultiplication.
-Unsurprisingly, these are dual to the equations of a monad.
 
 ```agda
     field
@@ -57,6 +55,22 @@ Unsurprisingly, these are dual to the equations of a monad.
       δ-unitr : ∀ {x} → ε (W₀ x) ∘ δ x ≡ id
       δ-assoc : ∀ {x} → W₁ (δ x) ∘ δ x ≡ δ (W₀ x) ∘ δ x
 ```
+
+```agda
+  record Comonad-on (W : Functor C C) : Type (o ⊔ ℓ) where
+    field
+      counit         : W => Id
+      comult         : W => (W F∘ W)
+      has-is-comonad : is-comonad counit comult
+```
+
+<!--
+```agda
+    open is-comonad has-is-comonad public
+
+unquoteDecl H-Level-is-comonad = declare-record-hlevel 1 H-Level-is-comonad (quote is-comonad)
+```
+-->
 
 <!--
 ```agda
