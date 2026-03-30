@@ -136,6 +136,17 @@ isomorphisms in $B$ and $E$.
     (∫E._≅_.from f .snd)
     (ap snd $ ∫E._≅_.invl f)
     (ap snd $ ∫E._≅_.invr f)
+
+  total-iso-from-isos
+    : ∀ {x y}
+    → (u : x .fst ≅ y .fst)
+    → x .snd ≅[ u ] y .snd
+    → x ∫E.≅ y
+  total-iso-from-isos u φ = ∫E.make-iso
+    (∫hom (u .to) (DM.to' φ))
+    (∫hom (u .from) (DM.from' φ))
+    (∫Hom-path (u .invl) (DM.invl' φ))
+    (∫Hom-path (u .invr) (DM.invr' φ))
 ```
 
 ## Pullbacks in the total category
