@@ -292,6 +292,14 @@ m < n = suc m ≤ n
 infix 7 _<_ _≤_
 ```
 
+<!--
+```agda
+_>_ : Nat → Nat → Type
+x > y = y < x
+infix 7 _>_
+```
+-->
+
 As an "ordering combinator", we can define the _maximum_ of two natural
 numbers by recursion: The maximum of zero and a successor (on either
 side) is the successor, and the maximum of successors is the successor of

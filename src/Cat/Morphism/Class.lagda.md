@@ -104,3 +104,20 @@ We can take intersections of morphism classes.
   (S ∩ₐ T) .arrows f = f ∈ S × f ∈ T
   (S ∩ₐ T) .is-tr = hlevel 1
 ```
+
+<!--
+```agda
+module _ {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd} where
+  open Functor
+```
+-->
+
+When $F : \cC \to \cD$ is a functor and $S \subseteq \cD$ is a class of morphisms,
+then we can form a class of morphisms $F^{*}(S) \subseteq \cC$ spanned by all
+morphisms of the form $f : \cC(x, y)$ such that $F(f) \in S$.
+
+```agda
+  F-restrict-arrows : ∀ {κ} → Functor C D → Arrows D κ → Arrows C κ
+  F-restrict-arrows F S .arrows f = F .F₁ f ∈ S
+  F-restrict-arrows F S .is-tr = S .is-tr
+```

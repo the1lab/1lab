@@ -8,6 +8,7 @@ open import Cat.Morphism.Class
 open import Cat.Morphism.Lifts
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning.FullyFaithful
 import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
@@ -217,6 +218,54 @@ to every other class.
 ```
 -->
 
+## Fully faithful functors
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  (ι : Functor C D)
+  (ι-ff : is-fully-faithful ι)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module ι = Cat.Functor.Reasoning.FullyFaithful ι ι-ff
+```
+-->
+
+If $\iota : \cC \to \cD$ is a [[fully faithful functor]] and $\iota(f) \ortho \iota(g)$
+in $\cD$, then $f \ortho g$ in $\cC$.
+
+```agda
+  ff→reflect-orthogonal
+    : ∀ {A B X Y} {f : C.Hom A B} {g : C.Hom X Y}
+    → Orthogonal D (ι.₁ f) (ι.₁ g)
+    → Orthogonal C f g
+```
+
+Suppose that $\iota(f) \ortho \iota(g)$, and let $v \circ f = g \circ u$ be a square
+in $\cD$. Functors preserve all commutative diagrams, so we also have a square
+$\iota(v) \circ \iota(f) = \iota(g) \circ \iota(u)$ in $\cD$. This in turn gives us a
+lift $w$ of the square in $\cD$, as $\iota(f) \ortho \iota(g)$. Moreover, $\iota$ is
+fully faithful, so we can reflect this lift back to $\cC$.
+
+```agda
+  ff→reflect-orthogonal {f = f} {g = g} ι[f]⊥ι[g] u v vf=gu .centre =
+    ff→reflect-lifting ι ι-ff (ι[f]⊥ι[g] (ι.₁ u) (ι.₁ v) (ι.weave vf=gu) .centre)
+```
+
+Uniqueness of the lift follows from a similar argument. Let $w'$ be a lift of the square
+$v \circ f = g \circ u$. Functors preserve liftings, so $\iota(w')$ is a lift of
+$\iota(v) \circ \iota(f) = \iota(g) \circ \iota(u)$. However, $\iota(f) \ortho \iota(g)$,
+so $\iota(w') = w$. Finally, $\iota$ is an equivalence on hom sets, so we get $w' = \iota^{-1}(w)$.
+
+```agda
+  ff→reflect-orthogonal {f = f} {g = g} ι[f]⊥ι[g] u v vf=gu .paths w =
+    Σ-prop-path! $ sym $ ι.adjunctl $ sym $ ap fst
+    $ ι[f]⊥ι[g] (ι.₁ u) (ι.₁ v) (ι.weave vf=gu) .paths (F-map-lifting ι w)
+```
+
 ## Regarding reflections
 
 <!--
@@ -229,11 +278,26 @@ module
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
-    module ι = Cat.Functor.Reasoning ι
+    module ι = Cat.Functor.Reasoning.FullyFaithful ι ι-ff
     module r = Cat.Functor.Reasoning r
     module rι = Cat.Functor.Reasoning (r F∘ ι)
     module ιr = Cat.Functor.Reasoning (ι F∘ r)
-  open _⊣_ r⊣ι
+
+    module r⊣ι = _⊣_ r⊣ι
+
+    module counit where
+      open r⊣ι.counit public
+
+      ε-inv : ∀ x → D.is-invertible (ε x)
+      ε-inv x = is-reflective→counit-is-invertible r⊣ι ι-ff {o = x}
+
+      module ε⁻¹ x = D.is-invertible (ε-inv x)
+      open ε⁻¹
+        renaming (inv to ε⁻¹)
+        using (invl; invr)
+        public
+
+    open r⊣ι hiding (module counit)
 ```
 -->
 

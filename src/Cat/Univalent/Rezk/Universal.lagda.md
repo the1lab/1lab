@@ -335,7 +335,7 @@ candidate over it.
       Σ-prop-pathp! $
         funextP λ a → funextP λ h → C.≅-pathp _ _ $
           Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c'}
-            ( C.pullr (F.eliml (H.from-id (h₀ .invr)))
+            ( C.pullr (F.eliml (H.from-id.to (h₀ .invr)))
             ∙ β _ _ _ (H.ε-lswizzle (h₀ .invl)))
       where
         ckα = obj' (a₀ , h₀)
