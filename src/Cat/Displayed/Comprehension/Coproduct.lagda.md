@@ -84,12 +84,14 @@ $\cD$, then $r$ is cocartesian in $\cD$.
 \end{tikzcd}
 ~~~
 
-From a type-theoretic perspective, the first two conditions are rather
-straightforward. The first condition establishes that we have a type
-former $\coprod$ that can quantify over objects of $\cE$. The second
-condition defines an introduction rule of the following form:
+From a type-theoretic perspective, the first condition establishes that
+we have a type former $\coprod$ that can quantify over objects of $\cE$.
+The second condition defines an introduction rule of the form $\Gamma,
+x : X, a : A \vdash \langle x, a \rangle : \coprod (x : X) A$, hence,
+by substitution:
+
 $$
-\frac{\Gamma, x : X \vdash a : A}{\Gamma \vdash \langle x, a \rangle : \coprod (x : X) A}
+\frac{\Gamma \vdash x : X \quad \Gamma \vdash a : A}{\Gamma \vdash \langle x, a \rangle : \coprod (x : X) A}
 $$
 
 The elimination rule comes from each $\langle\rangle$ being cocartesian,
