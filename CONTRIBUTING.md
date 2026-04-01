@@ -1059,7 +1059,7 @@ its type.
 Sometimes, this can result in verbose names. A bit of verbosity is
 preferable to having a theorem whose name is not memorable. Deciding on
 a good name for your lemma can be very hard: don't hesitate to ask on
-Discord for help.
+IRC for help.
 
 Names of record fields whose type is proposition valued **should** start
 with the rather silly prefix `has-is`: `has-is-set` is the most common.
