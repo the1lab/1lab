@@ -669,6 +669,7 @@ monoidal structure on $\psh(\cC)$.
 <!--
 ```agda
 open Lax-monoidal-functor-on
+open Monoidal-functor-on
 open Make-binatural
 ```
 -->
@@ -701,4 +702,19 @@ open Make-binatural
   ρ← _ ∘ (g ⊗₁ h) ∘ f      ≡⟨ extendl (extendl (unitor-r.from .is-natural _ _ _)) ⟩
   g ∘ (ρ← _ ∘ (_ ▶ h)) ∘ f ≡⟨ cdr (pullr refl) ⟩
   g ∘ ρ← _ ∘ (_ ▶ h) ∘ f   ∎
+```
+
+That the components of this structure are invertible follows from
+another short calculation.
+
+```agda
+よ-monoidal : Monoidal-functor-on cmon Day-monoidal (よ C)
+よ-monoidal .lax = よ-lax
+よ-monoidal .ε-inv = Cat.id-invertible (PSh ℓ C)
+よ-monoidal .F-mult-inv = invertible→invertibleⁿ _ λ x →
+  invertible→invertibleⁿ _ λ y → invertible→invertibleⁿ _ λ z →
+    Cat.make-invertible (Sets ℓ)
+      (λ f → day f id id)
+      (ext λ x → ⊗.eliml refl)
+      (ext λ f g h → day-glue refl ∙ day-ap refl (idl _) (idl _))
 ```
