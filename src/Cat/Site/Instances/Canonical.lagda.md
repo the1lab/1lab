@@ -25,7 +25,6 @@ module Cat.Site.Instances.Canonical {o ℓ} (C : Precategory o ℓ) where
 <!--
 ```agda
 open Element-hom
-open Element
 open Cat C
 open _=>_
 ```

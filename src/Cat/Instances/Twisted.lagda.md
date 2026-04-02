@@ -109,12 +109,11 @@ Note that the twisted arrow category is equivalently the
 ```agda
   Twisted≡∫Hom : Twisted ≡ ∫ (Uncurry Hom[-,-])
   Twisted≡∫Hom = Precategory-path F F-precat-iso where
-    open Element
     open Element-hom
     open is-precat-iso
 
     F : Functor Twisted (∫ (Uncurry Hom[-,-]))
-    F .F₀ a    = elem (a .fst) (a .snd)
+    F .F₀ a    = a
     F .F₁ f    = elem-hom (f .before , f .after) (sym (assoc _ _ _) ∙ f .commutes)
     F .F-id    = ext refl
     F .F-∘ f g = ext refl
@@ -123,9 +122,7 @@ Note that the twisted arrow category is equivalently the
     F-precat-iso .has-is-ff = injective-surjective→is-equiv!
       (λ p → Twist-path (ap (fst ⊙ hom) p) (ap (snd ⊙ hom) p))
       λ f → inc (twist (f .hom .fst) (f .hom .snd) (assoc _ _ _ ∙ f .commute) , ext refl)
-    F-precat-iso .has-is-iso = is-iso→is-equiv (iso
-      (λ e → e .ob , e .section)
-      (λ e → refl) λ e → refl)
+    F-precat-iso .has-is-iso = id-equiv
 ```
 
 The twisted arrow category admits a forgetful functor $\rm{Tw}(\cC)

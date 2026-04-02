@@ -36,20 +36,16 @@ contravariant cases, we want the projection $\pi : \int F \to \cC$ to be covaria
 Thus we proceed to dualise the whole construction.
 
 ```agda
-  record Element : Type (o ⊔ s) where
-    constructor elem
-    field
-      ob : Ob
-      section : P ʻ ob
+  Element : Type (o ⊔ s)
+  Element = Σ[ ob ∈ Ob ] P ʻ ob
 
-  open Element
+  pattern elem x s = x , s
 
   record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
     constructor elem-hom
-    no-eta-equality
     field
-      hom     : Hom (x .ob) (y .ob)
-      commute : P.₁ hom (x .section) ≡ y .section
+      hom     : Hom (x .fst) (y .fst)
+      commute : P.₁ hom (x .snd) ≡ y .snd
 
   open Element-hom
 ```
@@ -59,7 +55,7 @@ Thus we proceed to dualise the whole construction.
   Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
   Element-hom-path p i .hom = p i
   Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
-    is-prop→pathp (λ j → P.₀ (y .ob) .is-tr (P.₁ (p j) (x .section)) (y .section))
+    is-prop→pathp (λ j → P.₀ (y .fst) .is-tr (P.₁ (p j) (x .snd)) (y .snd))
       (f .commute)
       (g .commute) i
 
@@ -68,7 +64,7 @@ unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (q
 module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor C (Sets s)} where instance
   Extensional-element-hom
     : ∀ {x y : Element P} {ℓr}
-    → ⦃ ext : Extensional (C .Precategory.Hom (x .Element.ob) (y .Element.ob)) ℓr ⦄
+    → ⦃ ext : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
     → Extensional (Element-hom P x y) ℓr
   Extensional-element-hom ⦃ ext ⦄ = injection→extensional
     (C .Precategory.Hom-set _ _) (Element-hom-path P) ext
@@ -78,7 +74,6 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
 
   open Precategory C
   open Element-hom
-  open Element
   open Functor
 ```
 -->
@@ -88,20 +83,20 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   ∫ .Precategory.Ob = Element P
   ∫ .Precategory.Hom = Element-hom P
   ∫ .Precategory.Hom-set _ _ = hlevel 2
-  ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .section)
+  ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .snd)
   ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm where abstract
-    comm : P.₁ (f .hom ∘ g .hom) (x .section) ≡ z .section
+    comm : P.₁ (f .hom ∘ g .hom) (x .snd) ≡ z .snd
     comm =
-      P.₁ (f .hom ∘ g .hom) (x .section)       ≡⟨ happly (P.F-∘ (f .hom) (g .hom)) (x .section) ⟩
-      P.₁ (f .hom) (P.₁ (g .hom) (x .section)) ≡⟨ ap (P.F₁ (f .hom)) (g .commute)  ⟩
-      P.₁ (f .hom) (y .section)                ≡⟨ f .commute ⟩
-      z .section ∎
+      P.₁ (f .hom ∘ g .hom) (x .snd)       ≡⟨ happly (P.F-∘ (f .hom) (g .hom)) (x .snd) ⟩
+      P.₁ (f .hom) (P.₁ (g .hom) (x .snd)) ≡⟨ ap (P.F₁ (f .hom)) (g .commute)  ⟩
+      P.₁ (f .hom) (y .snd)                ≡⟨ f .commute ⟩
+      z .snd ∎
   ∫ .Precategory.idr f = ext (idr (f .hom))
   ∫ .Precategory.idl f = ext (idl (f .hom))
   ∫ .Precategory.assoc f g h = ext (assoc (f .hom) (g .hom) (h .hom))
 
   πₚ : Functor ∫ C
-  πₚ .F₀ x = x .ob
+  πₚ .F₀ x = x .fst
   πₚ .F₁ f = f .hom
   πₚ .F-id = refl
   πₚ .F-∘ f g = refl
@@ -115,16 +110,13 @@ module _ {o ℓ s} {C : Precategory o ℓ} (P : Functor C (Sets s)) where
   co-∫ : ∫ ≡ Contra.∫ (C ^op) (record { Functor P }) ^op
   co-∫ = Precategory-path F F-is-precat-iso where
     F : Functor ∫ (Contra.∫ (C ^op) (record { Functor P }) ^op)
-    F .F₀ e = Contra.elem (e .ob) (e .section)
+    F .F₀ e = e
     F .F₁ h = Contra.elem-hom (h .hom) (h .commute)
     F .F-id = refl
     F .F-∘ _ _ = ext refl
 
     F-is-precat-iso : is-precat-iso F
-    F-is-precat-iso .is-precat-iso.has-is-iso = is-iso→is-equiv λ where
-      .is-iso.from e → elem (e .Contra.Element.ob) (e .Contra.Element.section)
-      .is-iso.rinv e → refl
-      .is-iso.linv e → refl
+    F-is-precat-iso .is-precat-iso.has-is-iso = id-equiv
     F-is-precat-iso .is-precat-iso.has-is-ff = is-iso→is-equiv λ where
       .is-iso.from h → elem-hom (h .Contra.Element-hom.hom) (h .Contra.Element-hom.commute)
       .is-iso.rinv h → ext refl

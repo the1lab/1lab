@@ -30,7 +30,6 @@ private
   module C = Precategory C
 open Precategory
 open Element-hom
-open Element
 open Functor
 open /-Obj
 open /-Hom
@@ -131,7 +130,7 @@ without comment.
     func : Functor (Slice Cat[ C ^op , Sets κ ] P) Cat[ (∫ C P) ^op , Sets κ ]
     func .F₀ = slice-ob→presheaf
     func .F₁ {x} {y} h .η i arg =
-      h .map .η (i .ob) (arg .fst) , h .com ηₚ _ $ₚ arg .fst ∙ arg .snd
+      h .map .η (i .fst) (arg .fst) , h .com ηₚ _ $ₚ arg .fst ∙ arg .snd
     func .F₁ {x} {y} h .is-natural _ _ _ = funext λ i →
       Σ-prop-path! (happly (h .map .is-natural _ _ _) _)
 
@@ -155,7 +154,7 @@ without comment.
     rinv : is-right-inverse inv (F₁ slice→total)
     rinv nt = ext λ where
       o z p → Σ-prop-path! λ i →
-        nt .η (elem (o .ob) (p i)) (z , λ j → p (i ∧ j)) .fst
+        nt .η (elem (o .fst) (p i)) (z , λ j → p (i ∧ j)) .fst
 
     linv : is-left-inverse inv (F₁ slice→total)
     linv sh = ext λ _ _ → refl
@@ -177,19 +176,19 @@ algebra, so we omit the proof.
 ```agda
     isom .rinv x =
       Functor-path
-        (λ i → n-ua (Fibre-equiv (λ a → x ʻ elem (i .ob) a) (i .section)))
+        (λ i → n-ua (Fibre-equiv (λ a → x ʻ elem (i .fst) a) (i .snd)))
         λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma' _ _ _) }
       where abstract
         lemma'
-          : ∀ {o o'} {sect : P ʻ o .ob}
+          : ∀ {o o'} {sect : P ʻ o .fst}
               (f : Hom (∫ C P ^op) o o')
-              (b : x ʻ elem (o .ob) sect)
-              (p : sect ≡ o .section)
+              (b : x ʻ elem (o .fst) sect)
+              (p : sect ≡ o .snd)
           → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
-          ≡ x .F₁ f (subst (λ e → x ʻ elem (o .ob) e) p b)
+          ≡ x .F₁ f (subst (λ e → x ʻ elem (o .fst) e) p b)
         lemma' {o = o} {o' = o'} f b p =
           J (λ _ p → ∀ f b → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
-                           ≡ x .F₁ f (subst (λ e → x ʻ elem (o .ob) e) p b))
+                           ≡ x .F₁ f (subst (λ e → x ʻ elem (o .fst) e) p b))
             (λ f b → ap₂ (x .F₁) (ext refl) (sym (transport-refl b)))
             p f b
 

@@ -116,7 +116,7 @@ module _ {o'} {D : Precategory o' ℓ}
 
       F-is-precat-iso : is-precat-iso F
       F-is-precat-iso .has-is-iso = is-iso→is-equiv λ where
-        .is-iso.from e → ↓obj (e .Element.section)
+        .is-iso.from e → ↓obj (e .snd)
         .is-iso.rinv e → refl
         .is-iso.linv e → ↓Obj-path _ _ refl refl refl
       F-is-precat-iso .has-is-ff = is-iso→is-equiv λ where

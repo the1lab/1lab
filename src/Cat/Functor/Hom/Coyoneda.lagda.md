@@ -39,7 +39,6 @@ gluing together a bunch of (things isomorphic to) hom functors!
 module _ (P : Functor (C ^op) (Sets h)) where
   private
     module P = Functor P
-  open Element
   open Element-hom
 ```
 
@@ -72,13 +71,13 @@ $px : P(X)$. Then, to construct the injection map, we can just use the
     module ∫ = Precategory (∫ C P)
 
     colim : make-is-colimit (よ F∘ πₚ C P) P
-    colim .ψ x .η y f = P.F₁ f (x .section)
+    colim .ψ x .η y f = P.F₁ f (x .snd)
     colim .ψ x .is-natural y z f =
-      funext (λ g → happly (P.F-∘ f g) (x .section))
+      funext (λ g → happly (P.F-∘ f g) (x .snd))
     colim .commutes {x = x} {y = y} f = ext λ z g →
-      P.F₁ (f .hom ∘ g) (y .section)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .section) ⟩
-      P.F₁ g (P.F₁ (f .hom) (y .section)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
-      P.F₁ g (x .section)                 ∎
+      P.F₁ (f .hom ∘ g) (y .snd)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .snd) ⟩
+      P.F₁ g (P.F₁ (f .hom) (y .snd)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
+      P.F₁ g (x .snd)                 ∎
 ```
 
 Now that we've constructed a cocone, all that remains is to see that
@@ -110,9 +109,9 @@ of $K$. The tricky bit of the proof here is that we need to use
 
 ```agda
     colim .factors {o} eta comm = ext λ x f →
-      eta (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .section)) i .η x id) ⟩
-      eta o .η x (f ∘ id)                        ≡⟨ ap (eta o .η x) (idr f) ⟩
-      eta o .η x f                               ∎
+      eta (elem x (P.F₁ f (o .snd))) .η x id ≡˘⟨ (λ i → comm (induce C P f (o .snd)) i .η x id) ⟩
+      eta o .η x (f ∘ id)                    ≡⟨ ap (eta o .η x) (idr f) ⟩
+      eta o .η x f                           ∎
 ```
 
 Finally, uniqueness: This just follows by the commuting conditions on
@@ -160,9 +159,9 @@ fact that $\id$ is initial the coslice category under $P$.
       Y.₁ h (f .η _ (P.₁ a sect)) ∎
 
     Map→cocone-under .commutes {x} {y} o = ext λ i a → ap (f .η _) $
-      P.₁ (o .hom ∘ a) (y .section)     ≡⟨ happly (P.F-∘ _ _) _ ⟩
-      P.₁ a (P.₁ (o .hom) (y .section)) ≡⟨ ap (P.F₁ _) (o .commute) ⟩
-      P.₁ a (x .section)                ∎
+      P.₁ (o .hom ∘ a) (y .snd)     ≡⟨ happly (P.F-∘ _ _) _ ⟩
+      P.₁ a (P.₁ (o .hom) (y .snd)) ≡⟨ ap (P.F₁ _) (o .commute) ⟩
+      P.₁ a (x .snd)                ∎
 ```
 
 <!--
@@ -173,7 +172,6 @@ module _ {X Y : Functor (C ^op) (Sets h)} where
     module P = Functor X
     module Y = Functor Y
     open Cocone-hom
-    open Element
     open Initial
     open Cocone
 ```
@@ -216,8 +214,8 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
       g' : Cocone-hom (よ F∘ πₚ C X) _ (Map→cocone-under X f)
       g' .map = g
       g' .com o = sym $ ext $ unext $ sep $ NT
-        (λ i a → P.₁ a (o .section))
-        (λ x y h → ext λ a → P.F-∘ _ _ · o .section)
+        (λ i a → P.₁ a (o .snd))
+        (λ x y h → ext λ a → P.F-∘ _ _ · o .snd)
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to
