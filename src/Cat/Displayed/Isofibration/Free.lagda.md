@@ -40,8 +40,8 @@ module _
   where
   private
     module P = Cat.Functor.Reasoning P
-    module B = Cat.Reasoning B
-    module E = Cat.Reasoning E
+    module E = Precategory E
+    open Cat.Reasoning B
 
   open Displayed
   open Functor
@@ -50,7 +50,7 @@ module _
 
 ```agda
   Free-isofibration : Displayed B (ℓb ⊔ oe) (ℓb ⊔ ℓe)
-  Free-isofibration .Ob[_] x = Σ[ u ∈ E ] (P.₀ u B.≅ x)
+  Free-isofibration .Ob[_] x = Σ[ u ∈ E ] (P.₀ u ≅ x)
 ```
 
 ~~~{.quiver .attach-around}
@@ -63,8 +63,8 @@ module _
 ~~~
 
 ```agda
-  Free-isofibration .Hom[_] f (u , φ) (v , ψ) = Σ[ h ∈ E.Hom u v ]
-    B.to ψ B.∘ P.₁ h ≡ f B.∘ B.to φ
+  Free-isofibration .Hom[_] f (u , φ) (v , ψ) =
+    Σ[ h ∈ E.Hom u v ] ψ .to ∘ P.₁ h ≡ f ∘ φ .to
 ```
 
 ~~~{.quiver}
@@ -93,20 +93,20 @@ those in $\cE$.
 
   Free-isofibration .id' = record where
     fst = E.id
-    snd = B.elimr P.F-id ∙ B.introl refl
+    snd = P.elimr refl ∙ introl refl
 
   Free-isofibration ._∘'_ (f , φ) (g , ψ) = record where
     fst = f E.∘ g
-    snd = B.cdr (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
+    snd = P.popl φ ∙ extendr ψ
 
-  Free-isofibration .idr' f' = Σ-prop-pathp! (E.idr _)
-  Free-isofibration .idl' f' = Σ-prop-pathp! (E.idl _)
-  Free-isofibration .assoc' f' g' h' = Σ-prop-pathp! (E.assoc _ _ _)
-  Free-isofibration .hom[_] p f = record
-    { fst = f .fst
-    ; snd = f .snd ∙ B.car p
+  Free-isofibration .hom[_] p (f , α) = record
+    { fst = f
+    ; snd = α ∙ car p
     }
-  Free-isofibration .coh[_] p f = Σ-prop-pathp! refl
+  Free-isofibration .coh[_] _ _   = Σ-prop-pathp! refl
+  Free-isofibration .idr'   _     = Σ-prop-pathp! (E.idr _)
+  Free-isofibration .idl'   _     = Σ-prop-pathp! (E.idl _)
+  Free-isofibration .assoc' _ _ _ = Σ-prop-pathp! (E.assoc _ _ _)
 ```
 
 </details>
