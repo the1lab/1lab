@@ -28,6 +28,7 @@ of elements] of $P$.
 private
   variable κ : Level
   module C = Precategory C
+open is-precat-iso
 open Precategory
 open Element-hom
 open Functor
@@ -111,12 +112,13 @@ projection `fst`{.Agda}:
 
 <!--
 ```agda
-    obj .dom .F-id {ob} = funext λ { (x , p) → Σ-path (happly (P.F-id) x) (lemma y _ ∙ happly (y .F-id) _) }
-    obj .dom .F-∘ f g = funext λ { (x , p) →
+    obj .dom .F-id {ob} = ext λ x p →
+      Σ-path (happly (P.F-id) x) (lemma y _ ∙ happly (y .F-id) _)
+    obj .dom .F-∘ f g = ext λ x p →
       Σ-path (happly (P.F-∘ f g) x)
         ( lemma y _
         ∙∙ ap (λ e → y .F₁ (elem-hom (g C.∘ f) e) p) (P.₀ _ .is-tr _ _ _ _)
-        ∙∙ happly (y .F-∘ (elem-hom f refl) (elem-hom g refl)) _) }
+        ∙∙ happly (y .F-∘ (elem-hom f refl) (elem-hom g refl)) _)
     obj .map .is-natural _ _ _ = refl
 ```
 -->
@@ -159,7 +161,6 @@ without comment.
     linv : is-left-inverse inv (F₁ slice→total)
     linv sh = ext λ _ _ → refl
 
-  open is-precat-iso
   slice→total-is-iso : is-precat-iso slice→total
   slice→total-is-iso .has-is-ff = slice→total-is-ff
   slice→total-is-iso .has-is-iso = is-iso→is-equiv isom where
@@ -169,7 +170,7 @@ without comment.
 ```
 
 Proving that the constructions `presheaf→slice-ob`{.Agda} and
-`slice-ob→presheaf`{.Agda} are inverses is mosly incredibly fiddly path
+`slice-ob→presheaf`{.Agda} are inverses is mostly incredibly fiddly path
 algebra, so we omit the proof.
 
 <!--
@@ -206,3 +207,26 @@ algebra, so we omit the proof.
   total→slice = slice→total-is-equiv .is-equivalence.F⁻¹
 ```
 -->
+
+Building on this, we show a kind of associativity result for $\int$, similar
+to the `associativity of Σ-types`{.Agda ident=Σ-assoc}: given a presheaf
+$P : \psh(\cC)$ and a presheaf $A : \psh(\int_\cC P)$ corresponding to a map
+$A : P.A \to P$ in $\psh(\cC)$ by the argument above, we have an
+isomorphism of precategories $\int_{\int_\cC P} A \cong \int_\cC P.A$.
+
+```agda
+  ∫-assoc : ∀ A → Functor (∫ (∫ C P) A) (∫ C (presheaf→slice-ob A .dom))
+  ∫-assoc A .F₀ = Equiv.from Σ-assoc
+  ∫-assoc A .F₁ e =
+    elem-hom (e .hom .hom) (Σ-path (e .hom .commute) (lemma A (e .hom .commute) ∙ e .commute))
+  ∫-assoc A .F-id = ext refl
+  ∫-assoc A .F-∘ f g = ext refl
+
+  ∫-assoc-is-iso : ∀ A → is-precat-iso (∫-assoc A)
+  ∫-assoc-is-iso A .has-is-iso = inverse-is-equiv (Σ-assoc .snd)
+  ∫-assoc-is-iso A .has-is-ff = is-iso→is-equiv λ where
+    .is-iso.from (elem-hom f p) →
+      elem-hom (elem-hom f (ap fst p)) (sym (lemma A (ap fst p)) ∙ from-pathp (ap snd p))
+    .is-iso.rinv _ → ext refl
+    .is-iso.linv _ → ext refl
+```
