@@ -1,11 +1,19 @@
 <!--
 ```agda
+open import Cat.Displayed.Instances.Lifting
+open import Cat.Displayed.Isofibration.Free
+open import Cat.Displayed.Cartesian
+open import Cat.Functor.Properties
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
 import Cat.Reasoning
+import Cat.Morphism
+
+open Cat.Morphism._≅_
+open is-cartesian
 ```
 -->
 
@@ -15,92 +23,108 @@ module Cat.Displayed.Cartesian.Street where
 
 <!--
 ```agda
-open Displayed
-```
--->
+private variable
+  o ℓ o' ℓ' : Level
+  E B : Precategory o ℓ
 
-# Street fibrations
-
-In classical category theory, a [[fibration|cartesian fibration]] is
-defined to be a certain functor $P : \cE \to \cB$, the idea being that
-$\cE$ is really the [[total category]] of a certain [[displayed
-category]], and $P$ is really the first projection functor $\pi^f$,
-which sends each displayed object to the object it is displayed over.
-But can we go the other way? If we have a functor $P : \cE \to \cB$, can
-we create a category displayed $\cE'$ over $\cB$, such that $\int \cE'
-\cong \cE$?
-
-<!--
-```agda
-module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : Functor E B) where
+module _ (P : Functor E B) where
   private
-    module E = Cat.Reasoning E
     module B = Cat.Reasoning B
+    module E = Cat.Reasoning E
     module P = Functor P
+
+    P[] = Free-isofibration P
+
+    open Lifting (Free-isofibration-lifting P) using ()
+      renaming (F₀' to inc₀ ; F₁' to inc₁)
 ```
 -->
 
-```agda
-  functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
-  functor→displayed .Ob[_] x = Σ[ u ∈ E ] (P.₀ u B.≅ x)
-```
-
-Following [@relativect], we define such a category by defining the space
-of objects over $x$ to be "left corners". Strictly speaking, a left
-corner is given by an object $u$ together with an isomorphism $\phi :
-P(u) \cong x$. But visually, we depict them as
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  u \\
-  {P(u)} & {x\text{,}}
-  \arrow[lies over, from=1-1, to=2-1]
-  \arrow["\phi"', from=2-1, to=2-2]
-\end{tikzcd}\]
-~~~
-
-whence the name "left corner". The maps lying over $f$ consist of those
-maps $u \to_f v$ which commute with the mediating isomorphisms:
+# Street fibrations {defines=street-fibration}
 
 ```agda
-  functor→displayed .Hom[_] f (u , φ) (v , ψ) =
-    Σ[ h ∈ E.Hom u v ] (B.to ψ B.∘ P.₁ h ≡ f B.∘ B.to φ)
+  is-street-cartesian : ∀ {x y} → E.Hom x y → Type _
+  is-street-cartesian {x} {y} f =
+    ∀ {x'} (h : E.Hom x' y) (u : B.Hom (P · x') (P · x))
+    → P.₁ h ≡ P.₁ f B.∘ u
+    → is-contr (Σ[ v ∈ E.Hom x' x ] (f E.∘ v ≡ h) × (P.₁ v ≡ u))
+
+  is-street-fibration : Type _
+  is-street-fibration =
+    ∀ {a b} (f : B.Hom a b) (b' : P[] ʻ b) →
+    Σ[ a' ∈ P[] ʻ a ]
+    Σ[ f' ∈ E.Hom (a' .fst) (b' .fst) ]
+        is-street-cartesian f'
+      × b' .snd .to B.∘ P.₁ f' ≡ f B.∘ a' .snd .to
+
+  is-street-cartesian→is-cartesian
+    : ∀ {x y} (f : E.Hom x y)
+    → is-street-cartesian f
+    → is-cartesian P[] {a' = inc₀ _} {inc₀ _} (P.₁ f) (inc₁ f)
+  is-street-cartesian→is-cartesian f cart = record where
+    universal {u' = u' , ui} m (g , α) =
+      let
+        contr (m , _ , c) _ = cart g (m B.∘ ui .to) $
+          B.introl refl ∙∙ α ∙∙ B.pullr refl
+       in m , B.eliml refl ∙ c
+    commutes {u' = u' , ui} m (g , α) = Σ-prop-path! $ cart _ _ _ .centre .snd .fst
+    unique {u' = u' , ui} {m} (m' , α) β = Σ-prop-path! $ ap fst $
+      cart _ _ _ .paths (m' , ap fst β , B.introl refl ∙ α)
 ```
 
-This fits in a diagram like the one below. Note that the commutativity
-condition is for the lower shape, which is a distorted square.
+<details>
+<summary>The short calculation above shows that a $P$-cartesian map $f :
+\cE(x, y)$ generates a Cartesian map over $P(f)$ *only* when its domain
+and codomain in $P_\bull$ are *lifted* from $x$ and $y$.
 
-~~~{.quiver}
-\[\begin{tikzcd}
-  & u && v \\
-  & {P(u)} && {P(v)} \\
-  x &&&& y
-  \arrow[lies over, from=1-2, to=2-2]
-  \arrow[lies over, from=1-4, to=2-4]
-  \arrow["{P(h)}"', from=2-2, to=2-4]
-  \arrow["h"{description}, from=1-2, to=1-4]
-  \arrow["\phi"', from=3-1, to=2-2]
-  \arrow["\psi"', from=2-4, to=3-5]
-  \arrow["f"', curve={height=12pt}, from=3-1, to=3-5]
-\end{tikzcd}\]
-~~~
-
-The axioms for a displayed category are evident: all that matters are
-the maps in the total category $\cE$, since the rest of the data is
-property (rather than data).
+However, to show that $P_\bull$ is a Cartesian fibration, we will
+require a technical lemma extending this result to the case where $f$ is
+considered as a map $x' \to y'$, with $x' \liesover x$ (resp. $y'
+\liesover y$), given an external witness that $f$ commutes with the maps
+$P(x') \cong x$ (resp. $P(y') \cong y$).
+</summary>
 
 ```agda
-  functor→displayed .Hom[_]-set f a b = hlevel 2
-  functor→displayed .id' = E.id , B.elimr P.F-id ∙ B.introl refl
-  functor→displayed ._∘'_ (f , φ) (g , ψ) = f E.∘ g ,
-    ap₂ B._∘_ refl (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
-  functor→displayed .idr' f' = Σ-prop-pathp! (E.idr _)
-  functor→displayed .idl' f' = Σ-prop-pathp! (E.idl _)
-  functor→displayed .assoc' f' g' h' = Σ-prop-pathp! (E.assoc _ _ _)
-  functor→displayed .hom[_] p f = f .fst , (f .snd ∙ ap₂ B._∘_ p refl)
-  functor→displayed .coh[_] p f = Σ-prop-pathp! refl
+  private
+    adjust-cartesian'
+      : ∀ {x y x' y'} {f : B.Hom x y} {f' : E.Hom (x' .fst) (y' .fst)}
+      → is-cartesian P[] {a' = inc₀ _} {inc₀ _} (P.₁ f') (inc₁ f')
+      → (α : y' .snd .to B.∘ P.₁ f' ≡ f B.∘ x' .snd .to)
+      → is-cartesian P[] {a' = x'} {y'} f (f' , α)
+    adjust-cartesian' {x' = x' , xi} {y' , yi} {f' = f} cart α = mk where
+      module cart = is-cartesian cart
+      mk : is-cartesian P[] {a' = x' , xi} {y' , yi} _ _
+      mk .universal {u' = u'@(_ , ui)} m (g , β) = m' , q where
+        abstract
+          p : B.id B.∘ P.₁ g ≡ (P.₁ f B.∘ xi .from B.∘ m) B.∘ ui .to
+          p = B.eliml refl ∙ B.iso→monic yi _ _
+            (β ∙ sym (B.pulll (B.extendl α) ∙ B.cdar (B.cancell (xi .invl))))
+
+        open Σ (cart.universal {u' = u'} (xi .from B.∘ m) (g , p))
+          renaming (fst to m' ; snd to γ)
+
+        abstract
+          q : xi .to B.∘ P.₁ m' ≡ m B.∘ ui .to
+          q = B.pushr (B.introl refl ∙ γ) ∙ B.car (B.cancell (xi .invl))
+
+      mk .commutes {u' = u'} m (g , β) =
+        Σ-prop-path! $ ap fst $ cart.commutes {u' = u'} _ _
+
+      mk .unique {u' = u' , ui} {m} (m' , β) γ =
+        Σ-prop-path! $ ap fst $ cart.unique (m' , p) (Σ-prop-path! (ap fst γ))
+        where
+          p : B.id B.∘ P.₁ m' ≡ (xi .from B.∘ m) B.∘ ui .to
+          p = B.eliml refl ∙ B.iso→monic xi _ _
+            (β ∙ sym (B.pulll (B.cancell (xi .invl))))
 ```
 
-We call a functor that gives rise to a Cartesian fibration through this
-process a **Street fibration**. It is routine to verify that _our_
-notion of Street fibration corresponds to.. well, Street's.
+</details>
+
+```agda
+  Cartesian-street-fibration : is-street-fibration → Cartesian-fibration P[]
+  Cartesian-street-fibration lifts f y' =
+    let (a' , f' , f'c , α) = lifts f y' in record where
+      x'        = a'
+      lifting   = f' , α
+      cartesian = adjust-cartesian' (is-street-cartesian→is-cartesian f' f'c) α
+```
