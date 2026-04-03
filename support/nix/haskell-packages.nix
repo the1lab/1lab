@@ -13,11 +13,19 @@ let
     enableExecutableProfiling = false;
     enableLibraryProfiling = false;
   };
+
+  agda = hsuper: suf: flags: noJunk (
+    hsuper.callCabal2nixWithOptions "Agda-${suf}" (thunkSource ./dep/Agda) flags {}
+  );
 in
   {
     labHaskellPackages = super.haskell.packages.ghc910.override (old: {
       overrides = hself: hsuper: {
-        Agda = noJunk (hsuper.callCabal2nixWithOptions "Agda" (thunkSource ./dep/Agda) "-f optimise-heavily -f debug" {});
+        Agda = (agda hsuper "debug" "-foptimise-heavily -fdebug").overrideAttrs (old: {
+          passthru = old.passthru // {
+            nodebug = noProfile (agda hsuper "nodebug" "-foptimise-heavily");
+          };
+        });
       };
     });
   }
