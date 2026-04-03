@@ -7,8 +7,8 @@ description: |
 ```agda
 open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Isofibration
-open import Cat.Functor.Properties
 open import Cat.Functor.Naturality
+open import Cat.Functor.Properties
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
