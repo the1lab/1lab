@@ -30,7 +30,7 @@ open Internal-hom
 ```
 -->
 
-# Externalisation of internal categories
+# Externalisation of internal categories {defines="externalisation"}
 
 Every [internal category] $\bC$ in $\cB$ gives rise to a fibration over
 $\cB$, known as the **externalisation** of $\bC$. The core idea is
