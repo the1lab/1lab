@@ -32,7 +32,7 @@ open ∫Hom
 module Cat.Displayed.Isofibration.Free where
 ```
 
-# Displayed categories from functors
+# Displayed categories from functors {defines="free-isofibration"}
 
 ::: source
 The construction presented in this page is adapted from [*Foundations of

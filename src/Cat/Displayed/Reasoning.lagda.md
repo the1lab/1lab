@@ -29,6 +29,7 @@ open E public
 ```
 -->
 
+
 Contrary to the [reasoning combinators for precategories][catr],
 reasoning in a [[displayed category]] is _much_ harder. The core of the
 problem is that the type `Displayed.Hom[_]`{.Agda} of displayed
