@@ -10,8 +10,13 @@ the1lab.overrideAttrs (old: {
   src = null; # Don't copy anything to the store.
 
   nativeBuildInputs = old.nativeBuildInputs or [] ++ [
-    (lib.getBin pkgs.labHaskellPackages.Agda)
-    sort-imports
+    (with pkgs.labHaskellPackages; pkgs.symlinkJoin {
+      name  = "agda-nodebug";
+      paths = [ Agda sort-imports ];
+      postBuild = ''
+        ln -sf ${Agda.nodebug}/bin/agda $out/bin/agda-nodebug
+      '';
+    })
   ];
 
   passthru = old.passthru // {
