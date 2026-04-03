@@ -149,18 +149,39 @@ Bislice X .Pb.unitor-r {A , f} {B , g} = to-natural-iso mk where
   mk : make-natural-iso Id (Bifunctor.Left bislice-compose bislice-id)
   mk .eta (p₀ , θ₀) = record where
     fst = B.ρ→ _
-    snd =
-      g ▶ F.₂ (B.ρ→ _) ∘ θ₀
-        ≡⟨ {!   !} ⟩
-      g ▶ F.γ→ _ ∘ α→ _ ∘ θ₀ ◀ _ ∘ f ▶ F.υ→ ∘ ρ→ f
+
+    rem₁ : Hom.is-invertible (g ▶ F.₂ (B.ρ← _))
+    rem₁ = F-map-invertible (Bifunctor.Right compose _) (F-map-invertible F.P₁ (B.Hom.iso→invertible (B.ρ≅ B.Hom.Iso⁻¹)))
+
+    snd = sym $ Hom.invertible→monic rem₁ _ _ $
+      g ▶ F.₂ (B.ρ← _) ∘ g ▶ F.γ→ _ ∘ α→ _ ∘ θ₀ ◀ _ ∘ f ▶ F.υ→ ∘ ρ→ f
+        ≡⟨ Hom.cdddr (Hom.extendl (compose.lrmap _ _)) ⟩
+      g ▶ F.₂ (B.ρ← _) ∘ g ▶ F.γ→ _ ∘ α→ _ ∘ _ ▶ F.υ→ ∘ θ₀ ◀ id ∘ ρ→ f
+        ≡⟨ Hom.cddr (Hom.extendl (▶-assoc.to .is-natural _ _ _)) ⟩
+      g ▶ F.₂ (B.ρ← _) ∘ g ▶ F.γ→ _ ∘ g ▶ (_ ▶ F.υ→) ∘ α→ _ ∘ θ₀ ◀ id ∘ ρ→ f
+        ≡⟨ ▶.pulll3 (F.right-unit p₀) ⟩
+      g ▶ ρ← _ ∘ α→ _ ∘ θ₀ ◀ id ∘ ρ→ f
+        ≡⟨ Hom.pushl (sym triangle-ρ←) ⟩
+      ρ← _ ∘ α← _ ∘ α→ _ ∘ θ₀ ◀ id ∘ ρ→ f
+        ≡⟨ Hom.cdr (Hom.cancell α≅.invr) ⟩
+      ρ← _ ∘ θ₀ ◀ id ∘ ρ→ f
+        ≡⟨ Hom.cdr (sym (ρ→nat _)) ⟩
+      ρ← _ ∘ ρ→ _ ∘ θ₀
+        ≡⟨ Hom.cancell ρ≅.invr ⟩
+      θ₀
+        ≡⟨ ▶.insertl (Fr.annihilate B.ρ≅.invr) ⟩
+      g ▶ F.₂ (B.ρ← _) ∘ g ▶ F.₂ (B.ρ→ _) ∘ θ₀
         ∎
   mk .inv (p₀ , θ₀) = record where
     fst = B.ρ← _
     snd =
-      g ▶ F.₂ (B.ρ← _) ∘ g ▶ F.γ→ _ ∘ α→ _ ∘ θ₀ ◀ _ ∘ f ▶ F.υ→ ∘ ρ→ f
-        ≡⟨ {!   !} ⟩
-      θ₀
-        ∎
+        Hom.cdddr (Hom.extendl (compose.lrmap _ _))
+      ∙ Hom.cddr (Hom.extendl (▶-assoc.to .is-natural _ _ _))
+      ∙ ▶.pulll3 (F.right-unit _)
+      ∙ Hom.cddr (sym (ρ→nat _))
+      ∙ Hom.pushl (sym triangle-ρ←)
+      ∙ Hom.cdr (Hom.cancell α≅.invr)
+      ∙ Hom.cancell (ρ≅.invr)
   mk .eta∘inv _     = Σ-prop-pathp! B.ρ≅.invl
   mk .inv∘eta _     = Σ-prop-pathp! B.ρ≅.invr
   mk .natural _ _ _ = Σ-prop-pathp! (sym (B.ρ→nat _))
