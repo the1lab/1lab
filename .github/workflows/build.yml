@@ -39,7 +39,11 @@ jobs:
           fi
 
       - name: Build the Shakefile 🧰
+
+        # Actually pre-builds everything that we need for the rest of
+        # CI.
         run: |
+          nix-shell . --run true
           hash=$(nix-build -A shakefile --no-out-link)
           hash=${hash#/nix/store/} hash=${hash%%-*}
           echo "shake_version=$hash" >> "$GITHUB_ENV"
