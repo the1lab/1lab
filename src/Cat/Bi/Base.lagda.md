@@ -273,6 +273,10 @@ $\bf{B}$, $\bf{C}$.
 
 <!--
 ```agda
+instance
+  Underlying-Prebicategory : Underlying (Prebicategory o ℓ ℓ')
+  Underlying-Prebicategory = record { ⌞_⌟ = Prebicategory.Ob }
+
 module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
 

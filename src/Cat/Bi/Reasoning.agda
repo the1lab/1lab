@@ -67,16 +67,19 @@ module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ 
     ∙∙ ap₂ _∘_ refl (▶.elimr (◀.eliml refl ∙ ▶.elim refl))
   }
 
+associator-◀-▶ : α→ (f , g , h) ∘ (f ▶ α) ◀ _ ≡ f ▶ (α ◀ _) ∘ α→ _
+associator-◀-▶ =
+     cdr (◀.⟨ compose.rmap-◆ _ ⟩ ∙ compose.lmap-◆ _)
+  ∙∙ α→nat _ _ _
+  ∙∙ car (sym (▶.⟨ compose.lmap-◆ _ ⟩ ∙ compose.rmap-◆ _))
+
 ◀-▶-comm : preaction C f F∘ postaction C g ≅ⁿ postaction C g F∘ preaction C f
 ◀-▶-comm {f = f} {g = g} = to-natural-iso record
   { eta = λ x → α→ (g , x , f)
   ; inv = λ x → α← (g , x , f)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
-  ; natural = λ _ _ _ →
-       ap₂ _∘_ (ap (g ▶_) (compose.lmap-◆ _) ∙ compose.rmap-◆ _) refl
-    ∙∙ sym (α→nat _ _ _)
-    ∙∙ ap₂ _∘_ refl (▶.elimr refl ∙ ap (_◀ f) (◀.eliml refl))
+  ; natural = λ _ _ _ → sym associator-◀-▶
   }
 
 α→◀ : α→ _ ∘ ((α ◆ β) ◀ f) ≡ (α ◆ β ◀ _) ∘ α→ _
