@@ -42,25 +42,22 @@ to how funct*ion*s $f : A \to B$ [[decompose|object classifier]] their
 domain $A$ as a sum, namely of the [[fibres]] of $f$ over the points of
 $B$.
 
+[^decomposing]: This idea is formalised in the page on [[free isofibrations]].
+
 Indeed, a literal approach to this decomposition would define the type
 of objects of $P_x$ to be exactly the type-theoretic fibre $P^*x$. In
 our setting, this interpretation is problematic for two complementary
-reasons:
+reasons. First, if $\cB$ is an arbitrary precategory, the [[path
+types|path]] of its type of objects should be regarded as a vestigial
+structure left over from the encoding of category theory into type
+theory, and not as an intrinsic property of the category.
 
-[^decomposing]: This idea is formalised in the page on [[free isofibrations]].
-
-1.
-    First, if $\cB$ is an arbitrary precategory, the [[path types|path]]
-    of its type of objects should be regarded as a vestigial structure
-    left over from the encoding of category theory into type theory, and
-    not as an intrinsic property of the category.
-
-    This *could* be fixed by considering only functors into [[univalent
-    categories]], which are precisely those where identity of objects
-    corresponds coherently to isomorphism in the category. However, this
-    would prevent the discussion of categories defined over diagram
-    shapes like the [[walking isomorphism]], which are most convenient to
-    work with when defined in a non-univalent manner.[^walking-iso]
+This *could* be fixed by considering only functors into [[univalent
+categories]], which are precisely those where identity of objects
+corresponds coherently to isomorphism in the category. However, this
+would prevent the discussion of categories defined over diagram
+shapes like the [[walking isomorphism]], which are most convenient to
+work with when defined in a non-univalent manner.[^walking-iso]
 
 [^walking-iso]:
     To wit: the [[Rezk completion]] of the walking isomorphism is the
@@ -73,32 +70,31 @@ reasons:
     If we instead work with the non-univalent construction of $\{ 0
     \cong 1 \}$, the isomorphism is recovered definitionally.
 
-2.
-    Second, and perhaps more importantly, even *if* a definition
-    involving equality of objects were mathematically correct, it would
-    still be extremely inconvenient to work with in intensional type
-    theory. This is because the informal mathematical pratice for which
-    the traditional definitions are adapted enjoys *equality
-    reflection*, which we lack.
+Second, and perhaps more importantly, even *if* a definition
+involving equality of objects were mathematically correct, it would
+still be extremely inconvenient to work with in intensional type
+theory. This is because the informal mathematical pratice for which
+the traditional definitions are adapted enjoys *equality
+reflection*, which we lack.
 
-    To wit, whenever we have at hand some construction $c$ expressed in
-    terms of $x$, and want to use it where Agda instead demands we talk
-    about $P(y)$, while an informal mathematician would use $c$ as-is,
-    we must instead *transport* $c$ over a particular identification
-    $P(y) = x$, thus incurring a dependence on this identification which
-    *subsequent* constructions will have to deal with.
+To be specific, whenever we have at hand some construction $c$ whose
+type mentions $x$, but we want to use it in a context where Agda demands
+we talk about $P(y)$, while an informal mathematician would use $c$
+as-is, we must *transport* $c$ over a particular identification $P(y) =
+x$, thus incurring a dependence on this identification which
+*subsequent* constructions will have to deal with.
 
-    For example, the action of $P$ on morphisms has type-theoretic
-    fibres *only* over maps $\cB(P(x), P(y))$, so that if we have
-    objects $(x', p) : P^*(x)$ and $(y', q) : P^*(y)$, to talk about
-    maps $x' \to y'$ lying over $f : \cB(x, y)$, we must instead
-    consider the fibres of the map
-    $$
-    \cE(x', y') \xto{P} \cB(P(x'), P(y')) \xto{\rm{subst}_2\ \cB(-,-)\ \dots} \cB(x, y)
-    $$,
-    where the elided term in the second map makes explicit reference to
-    the identifications $p : P(x') = x$, resp. $q : P(y') = y$,
-    witnessing that $x'$ lies over $x$.
+For example, the action of $P$ on morphisms has type-theoretic
+fibres *only* over maps $\cB(P(x), P(y))$, so that if we have
+objects $(x', p) : P^*(x)$ and $(y', q) : P^*(y)$, to talk about
+maps $x' \to y'$ lying over $f : \cB(x, y)$, we must instead
+consider the fibres of the map
+$$
+\cE(x', y') \xto{P} \cB(P(x'), P(y')) \xto{\rm{subst}_2\ \cB(-,-)\ \dots} \cB(x, y)
+$$,
+where the elided term in the second map makes explicit reference to
+the identifications $p : P(x') = x$, resp. $q : P(y') = y$,
+witnessing that $x'$ lies over $x$.
 
 The gist of these objections is that, even *if* working with the fibres
 of $P$ were mathematically correct, we would still prefer to avoid this,
