@@ -239,14 +239,6 @@ inviting to particular readers. Please check them out!
   ("spartan") type theory. His lecture notes include an introduction to
   working practically with type theory in its purest form.
 
-* The [*agda-unimath* library] is a project very similar to the 1Lab,
-  though using *axiomatic* homotopy type theory, rather than the cubical
-  type theory which we prefer. It is currently maintained by Egbert
-  Rijke, Fredrik Bakke, and Vojtěch Štěpančík, and contains a
-  formalisation of a wide variety of topics in undergraduate
-  mathematics, and a considerable selection of novel results in the
-  field of univalent combinatorics.
-
 * The [*TypeTopology* library], primarily by Escardó, but featuring
   collaborations, functions primarily as a formalisation of *novel*
   results in constructive mathematics. Its authors describe it as a
@@ -254,7 +246,6 @@ inviting to particular readers. Please check them out!
   record and verify existing knowledge, its authors use Agda primarily
   to assist with discovering new ideas.
 
-[*agda-unimath* library]: https://unimath.github.io/agda-unimath/HOME.html
 [martin]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
 [*TypeTopology* library]: https://www.cs.bham.ac.uk/~mhe/TypeTopology/
 
