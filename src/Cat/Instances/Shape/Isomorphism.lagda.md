@@ -13,7 +13,7 @@ import Cat.Reasoning
 module Cat.Instances.Shape.Isomorphism where
 ```
 
-# The isomorphism category
+# The isomorphism category {defines=walking-isomorphism}
 
 The isomorphism category is the category with two points, along
 with a unique isomorphism between them.
