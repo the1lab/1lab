@@ -101,6 +101,8 @@ morphism]]) lifts of $b'$ along $u$.
 
 <!--
 ```agda
+{-# INLINE Isofibration.constructor #-}
+
 module _ {B : Precategory ob ℓb} (E : Displayed B oe ℓe) (bcat : is-category B) where
   open Cat.Displayed.Morphism E
   open Displayed E
