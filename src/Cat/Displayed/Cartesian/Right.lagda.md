@@ -35,10 +35,11 @@ open is-fibred-functor
 ```
 -->
 
-# Right fibrations
+# Right fibrations {defines=right-fibration}
 
-A [[cartesian fibration]] $\cE$ is said to be a **right fibration** if every
-morphism in $\cE$ is cartesian.
+A [[Cartesian fibration]] $\cE \liesover \cB$ is said to be a **right
+fibration** if every morphism in $\cE$ is [[cartesian|cartesian
+morphism]].
 
 ```agda
 record Right-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
