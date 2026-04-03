@@ -67,20 +67,32 @@ module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ 
     ∙∙ ap₂ _∘_ refl (▶.elimr (◀.eliml refl ∙ ▶.elim refl))
   }
 
+associator-◀-▶ : α→ (f , g , h) ∘ (f ▶ α) ◀ h ≡ f ▶ (α ◀ h) ∘ α→ _
+associator-◀-▶ =
+     cdr (◀.⟨ compose.rmap-◆ _ ⟩ ∙ compose.lmap-◆ _)
+  ∙∙ α→nat _ _ _
+  ∙∙ car (sym (▶.⟨ compose.lmap-◆ _ ⟩ ∙ compose.rmap-◆ _))
+
+associator-▶-◀ : α← (f , g , h) ∘ f ▶ (α ◀ h) ≡ (f ▶ α) ◀ h ∘ α← _
+associator-▶-◀ =
+     cdr (▶.⟨ compose.lmap-◆ _ ⟩ ∙ compose.rmap-◆ _)
+  ∙∙ α←nat _ _ _
+  ∙∙ car (sym (◀.⟨ compose.rmap-◆ _ ⟩ ∙ compose.lmap-◆ _))
+
+associator-◆-◀ : α→ _ ∘ ((α ◆ β) ◀ f) ≡ (α ◆ β ◀ _) ∘ α→ _
+associator-◆-◀ =
+     cdr (compose.lmap-◆ _)
+  ∙∙ α→nat _ _ _
+  ∙∙ cdar ▶.⟨ ▶.elimr refl ⟩
+
 ◀-▶-comm : preaction C f F∘ postaction C g ≅ⁿ postaction C g F∘ preaction C f
 ◀-▶-comm {f = f} {g = g} = to-natural-iso record
   { eta = λ x → α→ (g , x , f)
   ; inv = λ x → α← (g , x , f)
   ; eta∘inv = λ _ → α≅ .invl
   ; inv∘eta = λ _ → α≅ .invr
-  ; natural = λ _ _ _ →
-       ap₂ _∘_ (ap (g ▶_) (compose.lmap-◆ _) ∙ compose.rmap-◆ _) refl
-    ∙∙ sym (α→nat _ _ _)
-    ∙∙ ap₂ _∘_ refl (▶.elimr refl ∙ ap (_◀ f) (◀.eliml refl))
+  ; natural = λ _ _ _ → sym associator-◀-▶
   }
-
-α→◀ : α→ _ ∘ ((α ◆ β) ◀ f) ≡ (α ◆ β ◀ _) ∘ α→ _
-α→◀ = cdr (compose.lmap-◆ _) ∙ α→nat _ _ _ ∙ cdar ▶.⟨ ▶.elimr refl ⟩
 
 module ▶-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (▶-assoc  {f = f} {g = g} {c = x})
 module ◀-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (◀-assoc  {f = f} {g = g} {c = x})
@@ -142,7 +154,7 @@ triangle-ρ← = push-eqⁿ (unitor-r ni⁻¹) $
 
     sq3 : ▶.F-map-iso (◀.F-map-iso (ρ≅ Iso⁻¹)) ∙Iso α≅ Iso⁻¹
         ≡ α≅ Iso⁻¹ ∙Iso ◀.F-map-iso (▶.F-map-iso (ρ≅ Iso⁻¹))
-    sq3 = ≅-path (ap₂ _∘_ refl (ap (_ ▶_) (compose.lmap-◆ _) ∙ compose.rmap-◆ _) ∙ α←nat _ _ _ ∙ ap₂ _∘_ (▶.elimr refl ∙ ap (_◀ id) (◀.eliml refl)) refl)
+    sq3 = ≅-path associator-▶-◀
 
 triangle-ρ→ : ρ→ (f ⊗ g) ≡ α← (f , g , id) ∘ f ▶ ρ→ g
 triangle-ρ→ {f = f} {g = g} =
@@ -169,7 +181,7 @@ triangle-λ← {f = f} {g = g} = push-eqⁿ (unitor-l ni⁻¹) $
 
     sq3 : ◀.F-map-iso (▶.F-map-iso (λ≅ Iso⁻¹)) ∙Iso α≅
         ≡ α≅ ∙Iso ▶.F-map-iso (◀.F-map-iso (λ≅ Iso⁻¹))
-    sq3 = ≅-path (ap₂ _∘_ refl (ap (_◀ _) (compose.rmap-◆ _) ∙ compose.lmap-◆ _) ∙ α→nat _ _ _ ∙ ap₂ _∘_ (◀.eliml refl ∙ ap (id ▶_) (▶.elimr refl)) refl)
+    sq3 = ≅-path associator-◀-▶
 
 triangle-λ→ : λ→ (f ⊗ g) ≡ α→ (id , f , g) ∘ λ→ f ◀ g
 triangle-λ→ {f = f} {g = g} =
