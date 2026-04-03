@@ -27,7 +27,7 @@ open ∫Hom
 module Cat.Displayed.Isofibration.Free where
 ```
 
-# Displayed categories from functors
+# Displayed categories from functors {defines="free-isofibration"}
 
 ::: source
 The construction presented in this page is adapted from [*Foundations of
@@ -92,8 +92,8 @@ arrows in the diagram below, where the "leg" $(x', p)$ on the left
 (resp. $(y', q)$ on the right) is drawn with $p$ towards the screen.
 
 ```agda
-  Free-isofibration .Hom[_] f (u , φ) (v , ψ) =
-    Σ[ g ∈ E.Hom u v ] ψ .to ∘ P.₁ g ≡ f ∘ φ .to
+  Free-isofibration .Hom[_] f (x' , p) (y' , q) =
+    Σ[ g ∈ E.Hom x' y' ] q .to ∘ P.₁ g ≡ f ∘ p .to
 ```
 
 ~~~{.quiver}
@@ -245,7 +245,7 @@ whence it is immediate that the lifting we desire is $(x, \psi \circ \phi)$.
 ## The total category
 
 There is an evident [[lifting]] of $P_\bull$ against $P$, which sends an
-object $x : \cB$ to the pair $(x, \id) : \P_x$.
+object $x : \cB$ to the pair $(x, \id) : P_x$.
 
 ```agda
   Free-isofibration-lifting : Lifting P∙ P
@@ -313,7 +313,7 @@ projection functor $\pi^f$ to $P$.[^recover]
 
 <!--
 ```agda
-  _ = Functor-path (λ _ → refl) (λ _ → refl)
+  _ = sym (Lifting-is-lifting _ _)
 ```
 -->
 
