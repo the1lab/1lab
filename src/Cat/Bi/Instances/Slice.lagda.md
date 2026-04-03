@@ -36,32 +36,32 @@ private
 # Lax slices of bicategories
 
 ```agda
-  Bislice₀ : Ob → Type _
-  Bislice₀ X = Σ[ A ∈ B ] (F.₀ A ↦ X)
+  Lax-slice₀ : Ob → Type _
+  Lax-slice₀ X = Σ[ A ∈ B ] (F.₀ A ↦ X)
 ```
 
 ```agda
-Bislice₁ : ∀ {X} → Bislice₀ X → Bislice₀ X → Precategory (ℓ₁ ⊔ ℓ₂') (ℓ₂ ⊔ ℓ₂')
-Bislice₁ (Y , f) (Z , g) .Pc.Ob      = Σ[ p ∈ Y B.↦ Z ] (f ⇒ g ⊗ F.₁ p)
-Bislice₁ (Y , f) (Z , g) .Pc.Hom (p₀ , θ₀) (p₁ , θ₁) = Σ[ α ∈ p₀ B.⇒ p₁ ] (g ▶ F.₂ α ∘ θ₀ ≡ θ₁)
-Bislice₁ (Y , f) (Z , g) .Pc.Hom-set _ _ = hlevel 2
-Bislice₁ (Y , f) (Z , g) .Pc.id = record
+Lax-slice₁ : ∀ {X} → Lax-slice₀ X → Lax-slice₀ X → Precategory (ℓ₁ ⊔ ℓ₂') (ℓ₂ ⊔ ℓ₂')
+Lax-slice₁ (Y , f) (Z , g) .Pc.Ob      = Σ[ p ∈ Y B.↦ Z ] (f ⇒ g ⊗ F.₁ p)
+Lax-slice₁ (Y , f) (Z , g) .Pc.Hom (p₀ , θ₀) (p₁ , θ₁) = Σ[ α ∈ p₀ B.⇒ p₁ ] (g ▶ F.₂ α ∘ θ₀ ≡ θ₁)
+Lax-slice₁ (Y , f) (Z , g) .Pc.Hom-set _ _ = hlevel 2
+Lax-slice₁ (Y , f) (Z , g) .Pc.id = record
   { fst = B.Hom.id
   ; snd = ▶.eliml F.P₁.F-id
   }
-Bislice₁ (Y , f) (Z , g) .Pc._∘_ (α₀ , p) (α₁ , q) = record
+Lax-slice₁ (Y , f) (Z , g) .Pc._∘_ (α₀ , p) (α₁ , q) = record
   { fst = α₀ B.∘ α₁
   ; snd = ▶.pushl (F.P₁.F-∘ _ _) ∙ Hom.cdr q ∙ p
   }
-Bislice₁ (Y , f) (Z , g) .Pc.idr _ = Σ-prop-path! (B.Hom.idr _)
-Bislice₁ (Y , f) (Z , g) .Pc.idl _ = Σ-prop-path! (B.Hom.idl _)
-Bislice₁ (Y , f) (Z , g) .Pc.assoc _ _ _ = Σ-prop-path! (B.Hom.assoc _ _ _)
+Lax-slice₁ (Y , f) (Z , g) .Pc.idr _ = Σ-prop-path! (B.Hom.idr _)
+Lax-slice₁ (Y , f) (Z , g) .Pc.idl _ = Σ-prop-path! (B.Hom.idl _)
+Lax-slice₁ (Y , f) (Z , g) .Pc.assoc _ _ _ = Σ-prop-path! (B.Hom.assoc _ _ _)
 ```
 
 ```agda
-bislice-compose : ∀ {X} {A B C : Bislice₀ X} → Bifunctor (Bislice₁ B C) (Bislice₁ A B) (Bislice₁ A C)
+bislice-compose : ∀ {X} {A B C : Lax-slice₀ X} → Bifunctor (Lax-slice₁ B C) (Lax-slice₁ A B) (Lax-slice₁ A C)
 bislice-compose {X} {A , f} {B , g} {C , h} = make-bifunctor mk where
-  mk : Make-bifunctor {C = Bislice₁ (B , g) (C , h)} {Bislice₁ (A , f) (B , g)} {Bislice₁ (A , f) (C , h)}
+  mk : Make-bifunctor {C = Lax-slice₁ (B , g) (C , h)} {Lax-slice₁ (A , f) (B , g)} {Lax-slice₁ (A , f) (C , h)}
   mk .F₀ (p₀ , θ₀) (p₁ , θ₁) = record
     { fst = p₀ B.⊗ p₁
     ; snd = _ ▶ F.γ→ _ ∘ α→ _ ∘ θ₀ ◀ _ ∘ θ₁
@@ -97,19 +97,19 @@ bislice-compose {X} {A , f} {B , g} {C , h} = make-bifunctor mk where
   mk .lrmap f g = Σ-prop-path! (B.compose.lrmap _ _)
 
 private
-  bislice-id : ∀ {X A} → ⌞ Bislice₁ {X} A A ⌟
+  bislice-id : ∀ {X A} → ⌞ Lax-slice₁ {X} A A ⌟
   bislice-id = record
     { fst = B.id
     ; snd = _ ▶ F.υ→ ∘ ρ→ _
     }
 
-Bislice : Ob → Prebicategory {!   !} {!   !} {!   !}
-Bislice X .Pb.Ob  = Bislice₀ X
-Bislice X .Pb.Hom = Bislice₁
-Bislice X .Pb.id = bislice-id
-Bislice X .Pb.compose  = bislice-compose
-Bislice X .Pb.unitor-l {A , f} {B , g} = to-natural-iso mk where
-  mk : make-natural-iso Id (Bifunctor.Right bislice-compose (Pb.id (Bislice X)))
+Lax-slice : Ob → Prebicategory (o ⊔ ℓ₁') (ℓ₁ ⊔ ℓ₂') (ℓ₂ ⊔ ℓ₂')
+Lax-slice X .Pb.Ob  = Lax-slice₀ X
+Lax-slice X .Pb.Hom = Lax-slice₁
+Lax-slice X .Pb.id = bislice-id
+Lax-slice X .Pb.compose  = bislice-compose
+Lax-slice X .Pb.unitor-l {A , f} {B , g} = to-natural-iso mk where
+  mk : make-natural-iso Id (Bifunctor.Right bislice-compose (Pb.id (Lax-slice X)))
   mk .eta (p₀ , θ₀) = record where
     fst = B.λ→ _
 
@@ -145,7 +145,7 @@ Bislice X .Pb.unitor-l {A , f} {B , g} = to-natural-iso mk where
   mk .inv∘eta _     = Σ-prop-pathp! B.λ≅.invr
   mk .natural _ _ _ = Σ-prop-pathp! (sym (B.λ→nat _))
 
-Bislice X .Pb.unitor-r {A , f} {B , g} = to-natural-iso mk where
+Lax-slice X .Pb.unitor-r {A , f} {B , g} = to-natural-iso mk where
   mk : make-natural-iso Id (Bifunctor.Left bislice-compose bislice-id)
   mk .eta (p₀ , θ₀) = record where
     fst = B.ρ→ _
@@ -186,8 +186,10 @@ Bislice X .Pb.unitor-r {A , f} {B , g} = to-natural-iso mk where
   mk .inv∘eta _     = Σ-prop-pathp! B.ρ≅.invr
   mk .natural _ _ _ = Σ-prop-pathp! (sym (B.ρ→nat _))
 
-Bislice X .Pb.associator {A , f} {B , g} {C , h} {D , i} = to-natural-iso mk where
-  mk : make-natural-iso (compose-assocˡ Bislice₁ bislice-compose) (compose-assocʳ Bislice₁ bislice-compose)
+Lax-slice X .Pb.associator {A , f} {B , g} {C , h} {D , i} = to-natural-iso mk where
+  mk : make-natural-iso
+    (compose-assocˡ Lax-slice₁ bislice-compose)
+    (compose-assocʳ Lax-slice₁ bislice-compose)
   mk .eta ((p₀ , θ₀) , (p₁ , θ₁) , p₂ , θ₂) = record where
     fst = B.α→ _
     snd =
@@ -205,6 +207,6 @@ Bislice X .Pb.associator {A , f} {B , g} {C , h} {D , i} = to-natural-iso mk whe
   mk .eta∘inv _ = Σ-prop-path! B.α≅.invl
   mk .inv∘eta _ = Σ-prop-path! B.α≅.invr
   mk .natural _ _ _ = Σ-prop-path! (sym (B.α→nat _ _ _))
-Bislice X .Pb.triangle f g = Σ-prop-path! (B.triangle _ _)
-Bislice X .Pb.pentagon f g h i = Σ-prop-path! (B.pentagon _ _ _ _)
+Lax-slice X .Pb.triangle f g = Σ-prop-path! (B.triangle _ _)
+Lax-slice X .Pb.pentagon f g h i = Σ-prop-path! (B.pentagon _ _ _ _)
 ```
