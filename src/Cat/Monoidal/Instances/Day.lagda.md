@@ -4,6 +4,7 @@ open import Cat.Diagram.Coend.Sets
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
+open import Cat.Monoidal.Functor
 open import Cat.Diagram.Coend
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
@@ -477,6 +478,10 @@ associator must be done in steps. However, at the level of points, these
 are all trivial operations, and the vast majority of this module is
 dedicated to (extra)naturality conditions and proofs of isomorphy.
 
+<details>
+<summary>We leave the rest of the construction in this
+`<details>`{.html} block.</summary>
+
 ```agda
 module _ (Y : ⌞ PSh ℓ C ⌟) where
   idl-to-cowedge : ∀ x → Cowedge (Day-diagram (よ₀ C Unit) Y x)
@@ -621,7 +626,14 @@ abstract
         ≡⟨ day-apₘ it ⟩
       day (α← _ ∘ (_ ▶ h'') ∘ α← _ ∘ (_ ▶ h') ∘ h) (day id (day id a b) c) d
         ∎
+```
 
+</details>
+
+A bit of data shuffling assembles this into a proper instance of
+`Monoidal-category`{.Agda}.
+
+```agda
 Day-monoidal : Monoidal-category (PSh ℓ C)
 Day-monoidal .M.-⊗-      = Day-bifunctor
 Day-monoidal .M.Unit     = よ₀ C Unit
@@ -648,4 +660,61 @@ Day-monoidal .M.associator = to-natural-iso mk-α where
   mk-α .natural x y f = ext λ _ _ _ _ _ _ → refl
 Day-monoidal .M.triangle {A} {B} = day-triangle
 Day-monoidal .M.pentagon {A} {B} {C} {D} = day-pentagon
+```
+
+With a bit of extra effort, we can calculate that the [[Yoneda
+embedding]] becomes a [[lax monoidal functor]] into the Day convolution
+monoidal structure on $\psh(\cC)$.
+
+<!--
+```agda
+open Lax-monoidal-functor-on
+open Monoidal-functor-on
+open Make-binatural
+```
+-->
+
+```agda
+よ-lax : Lax-monoidal-functor-on cmon Day-monoidal (よ C)
+よ-lax .ε = idnt
+よ-lax .F-mult =
+  let
+    f-mult-cowedge : ∀ X Y {i} → Cowedge (Day-diagram (よ₀ C X) (よ₀ C Y) i)
+    f-mult-cowedge X Y {i} = record where
+      nadir = el! (Hom i (X ⊗ Y))
+      ψ c (f , g , h) = (g ⊗₁ h) ∘ f
+      extranatural (f , g) = ext λ h i j → pulll (sym -⊗-.◆-∘)
+  in make-binatural λ where
+    .η c d .η   x → Day.factor _ _ (f-mult-cowedge _ _)
+    .η c d .is-natural x y f → ext λ f g h → pulll refl
+    .is-natural-◀ f d → ext λ i f g h → pushl (◀.pushl refl)
+    .is-natural-▶ c f → ext λ i f g h → pushl (▶.pushr refl ∙ pushl (-⊗-.lrmap _ _))
+よ-lax .F-α→ = ext λ i f g h j k →
+  α→ _ ∘ (((h ⊗₁ j) ∘ g) ⊗₁ k) ∘ f            ≡⟨ cdr (pushl (◀.pushl refl ∙ cdr (-⊗-.lrmap _ _) ∙ pulll refl)) ⟩
+  α→ _ ∘ ((h ⊗₁ j) ⊗₁ k) ∘ (g ◀ _) ∘ f        ≡⟨ extendl (associator.to .is-natural _ _ _) ⟩
+  (h ⊗₁ ⌜ (j ⊗₁ k) ⌝) ∘ α→ _ ∘ (g ◀ _) ∘ f    ≡⟨ ap! (intror refl) ⟩
+  (h ⊗₁ ((j ⊗₁ k) ∘ id)) ∘ α→ _ ∘ (g ◀ _) ∘ f ∎
+よ-lax .F-λ← = ext λ i f g h →
+  λ← _ ∘ (g ⊗₁ h) ∘ f      ≡⟨ extendl (cdr (-⊗-.lrmap _ _) ∙ extendl (unitor-l.from .is-natural _ _ _))  ⟩
+  h ∘ (λ← _ ∘ (g ◀ _)) ∘ f ≡⟨ cdr (pullr refl) ⟩
+  h ∘ λ← _ ∘ (g ◀ _) ∘ f   ∎
+よ-lax .F-ρ← = ext λ i f g h →
+  ρ← _ ∘ (g ⊗₁ h) ∘ f      ≡⟨ extendl (extendl (unitor-r.from .is-natural _ _ _)) ⟩
+  g ∘ (ρ← _ ∘ (_ ▶ h)) ∘ f ≡⟨ cdr (pullr refl) ⟩
+  g ∘ ρ← _ ∘ (_ ▶ h) ∘ f   ∎
+```
+
+That the components of this structure are invertible follows from
+another short calculation.
+
+```agda
+よ-monoidal : Monoidal-functor-on cmon Day-monoidal (よ C)
+よ-monoidal .lax = よ-lax
+よ-monoidal .ε-inv = Cat.id-invertible (PSh ℓ C)
+よ-monoidal .F-mult-inv = invertible→invertibleⁿ _ λ x →
+  invertible→invertibleⁿ _ λ y → invertible→invertibleⁿ _ λ z →
+    Cat.make-invertible (Sets ℓ)
+      (λ f → day f id id)
+      (ext λ x → ⊗.eliml refl)
+      (ext λ f g h → day-glue refl ∙ day-ap refl (idl _) (idl _))
 ```
