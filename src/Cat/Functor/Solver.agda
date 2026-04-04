@@ -1,214 +1,153 @@
 open import 1Lab.Reflection
-open import 1Lab.Prelude
 
-open import Cat.Base
+open import Cat.Prelude
 
-open import Data.List
-
-import Cat.Reasoning as Cat
+import Cat.Reasoning as Cr
+import Cat.Solver as Cs
 
 module Cat.Functor.Solver where
 
+open Functor
 
-module NbE {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
+module NbE where
+  open Cs.NbE using (`id ; _↑ ; _`∘_)
+
   private
-    module 𝒞 = Cat 𝒞
-    module 𝒟 = Cat 𝒟
-    open Functor F
-
+    module CE = Cs.NbE
     variable
-      A B C : 𝒞.Ob
-      X Y Z : 𝒟.Ob
+      o o' h h' : Level
+      𝒟 : Precategory o h
 
-  data CExpr : 𝒞.Ob → 𝒞.Ob → Type (o ⊔ h) where
-    _‶∘‶_ : CExpr B C → CExpr A B → CExpr A C
-    ‶id‶  : CExpr A A
-    _↑    : 𝒞.Hom A B → CExpr A B
+  data FExpr : (𝒟 : Precategory o h) → ⌞ 𝒟 ⌟ → ⌞ 𝒟 ⌟ → Typeω where
+    `F₁
+      : (𝒞 : Precategory o h) (F : Functor 𝒞 𝒟) {A B : ⌞ 𝒞 ⌟}
+      → FExpr 𝒞 A B → FExpr 𝒟 (F .F₀ A) (F .F₀ B)
+    _`∘_ : {X Y Z : ⌞ 𝒟 ⌟} → FExpr 𝒟 Y Z → FExpr 𝒟 X Y → FExpr 𝒟 X Z
+    `id  : {X : ⌞ 𝒟 ⌟} → FExpr 𝒟 X X
+    _↑   : {X Y : ⌞ 𝒟 ⌟} → Cr.Hom 𝒟 X Y → FExpr 𝒟 X Y
 
-  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
-    ‶F₁‶  : CExpr A B → DExpr (F₀ A) (F₀ B)
-    _‶∘‶_ : DExpr Y Z → DExpr X Y → DExpr X Z
-    ‶id‶  : DExpr X X
-    _↑    : 𝒟.Hom X Y → DExpr X Y
-
-  uncexpr : CExpr A B → 𝒞.Hom A B
-  uncexpr (e1 ‶∘‶ e2) = uncexpr e1 𝒞.∘ uncexpr e2
-  uncexpr ‶id‶ = 𝒞.id
-  uncexpr (f ↑) = f
-
-  undexpr : DExpr X Y → 𝒟.Hom X Y
-  undexpr (‶F₁‶ e) = F₁ (uncexpr e)
-  undexpr (e1 ‶∘‶ e2) = undexpr e1 𝒟.∘ undexpr e2
-  undexpr ‶id‶ = 𝒟.id
-  undexpr (f ↑) = f
-
-  --------------------------------------------------------------------------------
-  -- Values
-
-  data CValue : 𝒞.Ob → 𝒞.Ob → Type (o ⊔ h) where
-    vid : CValue A A
-    vcomp : 𝒞.Hom B C → CValue A B → CValue A C
-
-  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
-    vhom : 𝒟.Hom X Y → Frame X Y
-    vfmap : 𝒞.Hom A B → Frame (F₀ A) (F₀ B)
-
-  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
-    vid   : DValue X X
-    vcomp : Frame Y Z → DValue X Y → DValue X Z
-
-  uncvalue : CValue A B → 𝒞.Hom A B
-  uncvalue vid = 𝒞.id
-  uncvalue (vcomp f v) = f 𝒞.∘ uncvalue v
-
-  unframe : Frame X Y → 𝒟.Hom X Y
-  unframe (vhom f) = f
-  unframe (vfmap f) = F₁ f
-
-  undvalue : DValue X Y → 𝒟.Hom X Y
-  undvalue vid = 𝒟.id
-  undvalue (vcomp f v) = unframe f 𝒟.∘ undvalue v
+  unfexpr : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → FExpr 𝒟 X Y → Cr.Hom 𝒟 X Y
+  unfexpr 𝒟 (`F₁ 𝒞 F e) = F .F₁ (unfexpr 𝒞 e)
+  unfexpr 𝒟 (e1 `∘ e2)  = unfexpr 𝒟 e1 ∘ unfexpr 𝒟 e2 where open Precategory 𝒟
+  unfexpr 𝒟 `id         = Cr.id 𝒟
+  unfexpr 𝒟 (f ↑)       = f
 
   --------------------------------------------------------------------------------
   -- Evaluation
 
-  do-cvcomp : CValue B C → CValue A B → CValue A C
-  do-cvcomp vid v2 = v2
-  do-cvcomp (vcomp f v1) v2 = vcomp f (do-cvcomp v1 v2)
+  CExpr : (𝒞 : Precategory o h) → ⌞ 𝒞 ⌟ → ⌞ 𝒞 ⌟ → Type (o ⊔ h)
+  CExpr = CE.Expr
 
-  ceval : CExpr A B → CValue A B
-  ceval (e1 ‶∘‶ e2) = do-cvcomp (ceval e1) (ceval e2)
-  ceval ‶id‶ = vid
-  ceval (f ↑) = vcomp f vid
+  do-fmap
+    : (𝒞 : Precategory o h) (𝒟 : Precategory o' h') (F : Functor 𝒞 𝒟)
+    → {A B : ⌞ 𝒞 ⌟} → CExpr 𝒞 A B → CExpr 𝒟 (F .F₀ A) (F .F₀ B)
+  do-fmap 𝒞 𝒟 F `id       = `id
+  do-fmap 𝒞 𝒟 F (e `∘ e₁) = do-fmap 𝒞 𝒟 F e `∘ do-fmap 𝒞 𝒟 F e₁
+  do-fmap 𝒞 𝒟 F (f ↑)     = F .F₁ f ↑
 
-  do-dvcomp : DValue Y Z → DValue X Y → DValue X Z
-  do-dvcomp vid v2 = v2
-  do-dvcomp (vcomp f v1) v2 = vcomp f (do-dvcomp v1 v2)
+  eval : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → FExpr 𝒟 X Y → CExpr 𝒟 X Y
+  eval 𝒟 (`F₁ 𝒞 F e) = do-fmap 𝒞 𝒟 F (eval 𝒞 e)
+  eval 𝒟 (e1 `∘ e2)  = eval 𝒟 e1 `∘ eval 𝒟 e2
+  eval 𝒟 `id         = `id
+  eval 𝒟 (f ↑)       = f ↑
 
-  do-vfmap : CValue A B → DValue (F₀ A) (F₀ B)
-  do-vfmap vid = vid
-  do-vfmap (vcomp f v) = vcomp (vfmap f) (do-vfmap v)
-
-  deval : DExpr X Y → DValue X Y
-  deval (‶F₁‶ e) = do-vfmap (ceval e)
-  deval (e1 ‶∘‶ e2) = do-dvcomp (deval e1) (deval e2)
-  deval ‶id‶ = vid
-  deval (f ↑) = vcomp (vhom f) vid
+  nf : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → FExpr 𝒟 X Y → Cr.Hom 𝒟 X Y
+  nf 𝒟 e = CE.nf 𝒟 (eval 𝒟 e)
 
   --------------------------------------------------------------------------------
   -- Soundness
 
-  do-cvcomp-sound : ∀ (v1 : CValue B C) → (v2 : CValue A B) → uncvalue (do-cvcomp v1 v2) ≡ uncvalue v1 𝒞.∘ uncvalue v2
-  do-cvcomp-sound vid v2 = sym (𝒞.idl (uncvalue v2))
-  do-cvcomp-sound (vcomp f v1) v2 = 𝒞.pushr (do-cvcomp-sound v1 v2)
+  do-fmap-sound
+    : (𝒞 : Precategory o h) (𝒟 : Precategory o' h') (F : Functor 𝒞 𝒟) {A B : ⌞ 𝒞 ⌟}
+    → (v : CE.Expr 𝒞 A B) → CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v) ≡ F .F₁ (CE.embed 𝒞 v)
+  do-fmap-sound 𝒞 𝒟 F `id       = sym (F .F-id)
+  do-fmap-sound 𝒞 𝒟 F (v `∘ v₁) =
+    CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v) 𝒟.∘ CE.embed 𝒟 (do-fmap 𝒞 𝒟 F v₁) ≡⟨ ap₂ 𝒟._∘_ (do-fmap-sound 𝒞 𝒟 F v) (do-fmap-sound 𝒞 𝒟 F v₁) ⟩
+    F .F₁ (CE.embed 𝒞 v) 𝒟.∘ F .F₁ (CE.embed 𝒞 v₁)                    ≡˘⟨ F .F-∘ _ _ ⟩
+    F .F₁ (CE.embed 𝒞 v 𝒞.∘ CE.embed 𝒞 v₁)                            ∎
+    where
+      module 𝒟 = Precategory 𝒟
+      module 𝒞 = Precategory 𝒞
+  do-fmap-sound 𝒞 𝒟 F (x ↑) = refl
 
-  ceval-sound : ∀ (e : CExpr A B) → uncvalue (ceval e) ≡ uncexpr e
-  ceval-sound (e1 ‶∘‶ e2) =
-    uncvalue (do-cvcomp (ceval e1) (ceval e2))    ≡⟨ do-cvcomp-sound (ceval e1) (ceval e2) ⟩
-    (uncvalue (ceval e1) 𝒞.∘ uncvalue (ceval e2)) ≡⟨ ap₂ 𝒞._∘_ (ceval-sound e1) (ceval-sound e2) ⟩
-    uncexpr e1 𝒞.∘ uncexpr e2                     ∎
-  ceval-sound ‶id‶ = refl
-  ceval-sound (f ↑) = 𝒞.idr f
+  eval-sound
+    : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → (e : FExpr 𝒟 X Y)
+    → CE.embed 𝒟 (eval 𝒟 e) ≡ unfexpr 𝒟 e
+  eval-sound 𝒟 (`F₁ 𝒞 F v) =
+    do-fmap-sound 𝒞 𝒟 F (eval 𝒞 v) ∙ ap (F .F₁) (eval-sound 𝒞 v)
+  eval-sound 𝒟 (e `∘ e₁) = ap₂ _∘_ (eval-sound 𝒟 e) (eval-sound 𝒟 e₁)
+    where open Precategory 𝒟
+  eval-sound 𝒟 `id   = refl
+  eval-sound 𝒟 (f ↑) = refl
 
-  do-vfmap-sound : ∀ (v : CValue A B) → undvalue (do-vfmap v) ≡ F₁ (uncvalue v)
-  do-vfmap-sound vid = sym F-id
-  do-vfmap-sound (vcomp f v) =
-    F₁ f 𝒟.∘ undvalue (do-vfmap v) ≡⟨ ap (F₁ f 𝒟.∘_) (do-vfmap-sound v) ⟩
-    F₁ f 𝒟.∘ F₁ (uncvalue v)       ≡˘⟨ F-∘ f (uncvalue v) ⟩
-    F₁ (f 𝒞.∘ uncvalue v)          ∎
-
-  do-dvcomp-sound : ∀ (v1 : DValue Y Z) → (v2 : DValue X Y) → undvalue (do-dvcomp v1 v2) ≡ undvalue v1 𝒟.∘ undvalue v2
-  do-dvcomp-sound vid v2 = sym (𝒟.idl (undvalue v2))
-  do-dvcomp-sound (vcomp f v1) v2 = 𝒟.pushr (do-dvcomp-sound v1 v2)
-
-  deval-sound : ∀ (e : DExpr X Y) → undvalue (deval e) ≡ undexpr e
-  deval-sound (‶F₁‶ e) =
-    undvalue (do-vfmap (ceval e)) ≡⟨ do-vfmap-sound (ceval e) ⟩
-    F₁ (uncvalue (ceval e))       ≡⟨ ap F₁ (ceval-sound e ) ⟩
-    F₁ (uncexpr e)                ∎
-  deval-sound (e1 ‶∘‶ e2) =
-    undvalue (do-dvcomp (deval e1) (deval e2))  ≡⟨ do-dvcomp-sound (deval e1) (deval e2) ⟩
-    undvalue (deval e1) 𝒟.∘ undvalue (deval e2) ≡⟨ ap₂ 𝒟._∘_ (deval-sound e1) (deval-sound e2) ⟩
-    undexpr e1 𝒟.∘ undexpr e2                   ∎
-  deval-sound ‶id‶ = refl
-  deval-sound (f ↑) = 𝒟.idr f
+  nf-sound
+    : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} (e : FExpr 𝒟 X Y) → nf 𝒟 e ≡ unfexpr 𝒟 e
+  nf-sound 𝒟 e = CE.eval-sound 𝒟 (eval 𝒟 e) ∙ eval-sound 𝒟 e
 
   abstract
-    solve : (e1 e2 : DExpr X Y) → undvalue (deval e1) ≡ undvalue (deval e2) → undexpr e1 ≡ undexpr e2
-    solve e1 e2 p  = sym (deval-sound e1) ∙∙ p ∙∙ (deval-sound e2)
+    solve
+      : (𝒟 : Precategory o h) {X Y : ⌞ 𝒟 ⌟} → (e1 e2 : FExpr 𝒟 X Y)
+      → nf 𝒟 e1 ≡ nf 𝒟 e2 → unfexpr 𝒟 e1 ≡ unfexpr 𝒟 e2
+    solve 𝒟 e1 e2 p = sym (nf-sound 𝒟 e1) ∙∙ p ∙∙ (nf-sound 𝒟 e2)
 
 module Reflection where
 
-  pattern category-args xs = _ hm∷ _ hm∷ _ v∷ xs
+  open Cs.Reflection using (“id” ; “∘”)
 
-  pattern functor-args functor xs =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
+  pattern functor-args cat functor xs =
+    _ hm∷ _ hm∷ cat hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
 
-  pattern “id” =
-    def (quote Precategory.id) (category-args (_ h∷ []))
-
-  pattern “∘” f g =
-    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
-
-  pattern “F₁” functor f =
-    def (quote Functor.F₁) (functor-args functor (_ h∷ _ h∷ f v∷ []))
-
-  mk-functor-args : Term → List (Arg Term) → List (Arg Term)
-  mk-functor-args functor args =
-    unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ functor v∷ args
+  pattern “F₁” cat functor f =
+    def (quote Functor.F₁) (functor-args cat functor (_ h∷ _ h∷ f v∷ []))
 
   “solve” : Term → Term → Term → Term
-  “solve” functor lhs rhs =
-    def (quote NbE.solve) (mk-functor-args functor $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
+  “solve” cat lhs rhs =
+    def (quote NbE.solve) (cat v∷ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
 
-  build-cexpr : Term → Term
-  build-cexpr “id” = con (quote NbE.CExpr.‶id‶) []
-  build-cexpr (“∘” f g) = con (quote NbE.CExpr._‶∘‶_) (build-cexpr f v∷ build-cexpr g v∷ [])
-  build-cexpr f = con (quote NbE.CExpr._↑) (f v∷ [])
-
-  build-dexpr : Term → Term → TC Term
-  build-dexpr functor “id” =
-    pure $ con (quote NbE.DExpr.‶id‶) []
-  build-dexpr functor (“∘” f g) = do
-    f ← build-dexpr functor f
-    g ← build-dexpr functor g
-    pure $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
-  build-dexpr functor (“F₁” functor' f) = do
-    unify functor functor'
-    pure $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
-  build-dexpr functor f =
-    pure $ con (quote NbE.DExpr._↑) (f v∷ [])
+  build-fexpr : Term → Term
+  build-fexpr “id”      = con (quote NbE.FExpr.`id) []
+  build-fexpr (“∘” f g) = con (quote NbE.FExpr._`∘_)
+    (build-fexpr f v∷ build-fexpr g v∷ [])
+  build-fexpr (“F₁” cat functor f) = con (quote NbE.FExpr.`F₁)
+    (cat v∷ functor v∷ build-fexpr f v∷ [])
+  build-fexpr f = con (quote NbE.FExpr._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
 
-  solve-macro : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
-  solve-macro functor hole =
-   withNormalisation false $
+module _ {o h} (𝒟 : Precategory o h) {x y : ⌞ 𝒟 ⌟} {h1 h2 : 𝒟 .Precategory.Hom x y} where
+  open Reflection
+  functor-worker : Term → TC ⊤
+  functor-worker hole =
+   withNormalisation true $
    withReduceDefs (false , dont-reduce) $ do
-     functor-tm ← quoteTC functor
-     goal ← infer-type hole >>= reduce
-     just (lhs , rhs) ← get-boundary goal
-       where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                   termErr goal ∷ []
-     elhs ← build-dexpr functor-tm lhs
-     erhs ← build-dexpr functor-tm rhs
-     noConstraints $ unify hole (“solve” functor-tm elhs erhs)
+     `h1 ← wait-for-type =<< quoteTC h1
+     `h2 ← quoteTC h2
+     `𝒟 ← quoteTC 𝒟
+     let
+       elhs = build-fexpr `h1
+       erhs = build-fexpr `h2
+     noConstraints $ unify hole (“solve” `𝒟 elhs erhs)
+
+  functor-wrapper : {@(tactic functor-worker) p : h1 ≡ h2} → h1 ≡ h2
+  functor-wrapper {p = p} = p
 
 macro
-  functor! : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
-  functor! functor = Reflection.solve-macro functor
+  functor! : Term → Term → TC ⊤
+  functor! cat = flip unify (def (quote functor-wrapper) (cat v∷ []))
 
-private module Test {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
-  module 𝒞 = Cat 𝒞
-  module 𝒟 = Cat 𝒟
-  open Functor F
+private
+  module Test
+    {o h} {𝒞 𝒟 ℰ : Precategory o h} (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ) where
+    module 𝒞 = Precategory 𝒞
+    module 𝒟 = Precategory 𝒟
+    module ℰ = Precategory ℰ
 
-  variable
-    A B : 𝒞.Ob
-    X Y : 𝒟.Ob
-    a b c : 𝒞.Hom A B
-    x y z : 𝒟.Hom X Y
+    variable
+      A B : 𝒞.Ob
+      a b : 𝒞.Hom A B
 
-  test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
-  test = functor! F
+    test
+      : G .F₁ (F .F₁ a 𝒟.∘ 𝒟.id) ℰ.∘ G .F₁ (F .F₁ (b 𝒞.∘ 𝒞.id)) ℰ.∘ ℰ.id
+      ≡ G .F₁ (F .F₁ (a 𝒞.∘ b))
+    test = functor! ℰ
