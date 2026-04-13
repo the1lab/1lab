@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Algebra.Ring.Module.Notation
 open import Algebra.Ring.Commutative
 open import Algebra.Group.Notation
@@ -143,6 +142,7 @@ to denote `updateₚ α i x` that fits well in the mathematical prose.
 open Multilinear-map
 open Multilinear-map using (map) public
 open Linear-map using (map)
+{-# INLINE Multilinear-map.constructor #-}
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Multilinear-map)
 
@@ -168,6 +168,24 @@ Multilinear-map-path {N = N} {f = f} {g = g} p = go where
     (f .linearₚ) (g .linearₚ)
     i
 
+module
+  _ {n : Nat} {ℓₘ : Fin n → Level} {ℓₙ} {Ms : (i : Fin n) → Module R (ℓₘ i)} {N : Module R ℓₙ}
+    (map : Arrᶠ (λ i → ⌞ Ms i ⌟) ⌞ N ⌟)
+  where
+
+  private instance
+    _ = module-notation N
+    _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
+    _ = module-notation (Ms _)
+
+  from-linear-at
+    : ( ∀ i (xs : Πᶠ λ j → ⌞ Ms j ⌟) (r : ⌞ R ⌟) (x y : ⌞ Ms i ⌟)
+      → applyᶠ map (updateₚ xs i (r ⋆ x + y))
+      ≡ r ⋆ applyᶠ map (updateₚ xs i x) + applyᶠ map (updateₚ xs i y))
+    → Multilinear-map n Ms N
+  {-# INLINE from-linear-at #-}
+  from-linear-at lin = record { map = map ; linearₚ = tabulateₚ lin }
+
 Multilinear-maps
   : ∀ {n} {ℓₘ : Fin n → Level}
       {Ms : (i : Fin n) → Module R (ℓₘ i)}
@@ -181,9 +199,6 @@ Multilinear-maps {n = n} {Ms = Ms} {N = N} = to-module-on mk where
     _ : ∀ {i : Fin n} → Module-notation R ⌞ Ms i ⌟
     _ = module-notation (Ms _)
 
-  -- Normally there would be no way in hell these helpers would ever
-  -- be useful... except this module needs lossy-unification for
-  -- performance reasonsl so we might as well abuse it for style!
   _⟨_⟩
     : Multilinear-map n Ms N
     → {_ : Πᶠ (λ i → ⌞ Ms i ⌟)} {i : Fin n} → ⌞ Ms i ⌟ → ⌞ N ⌟
@@ -215,15 +230,14 @@ through some nighmarish computations by hand.
 
 ```agda
   add : Multilinear-map n Ms N → Multilinear-map n Ms N → Multilinear-map n Ms N
-  add f g .Multilinear-map.map = zipᶠ _+_ (f .map) (g .map)
+  add f g .Multilinear-map.map = zipᶠ {P = λ i → ⌞ Ms i ⌟} _+_ (f .map) (g .map)
   add f g .Multilinear-map.linearₚ = tabulateₚ λ i xs r x y →
-    zipᶠ _+_ (f .map) (g .map) ⟨ r ⋆ x + y ⟩ᵤ         ≡⟨ apply-zipᶠ _ _ _ _ ⟩
+    zipᶠ _+_ (f .map) (g .map) ⟨ r ⋆ x + y ⟩ᵤ         ≡⟨ apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _ ⟩
     f ⟨ r ⋆ x + y ⟩ + g ⟨ r ⋆ x + y ⟩                 ≡⟨ ap₂ _+_ (linear-at f i xs r x y) (linear-at g i xs r x y) ⟩
     (r ⋆ f ⟨ x ⟩ + f ⟨ y ⟩) + (r ⋆ g ⟨ x ⟩ + g ⟨ y ⟩) ≡⟨ N.ab.extendr (N.ab.extendl N.+-comm) ⟩
     (r ⋆ f ⟨ x ⟩ + r ⋆ g ⟨ x ⟩) + (f ⟨ y ⟩ + g ⟨ y ⟩) ≡⟨ ap₂ _+_ (sym (⋆-distribl r _ _)) refl ⟩
-    r ⋆ (f ⟨ x ⟩ + g ⟨ x ⟩) + (f ⟨ y ⟩ + g ⟨ y ⟩)     ≡⟨ ap₂ N._+_ (ap (r N.⋆_) (sym (apply-zipᶠ _ _ _ _))) (sym (apply-zipᶠ _ _ _ _)) ⟩
-    r ⋆ (zipᶠ _+_ (f .map) (g .map) ⟨ x ⟩ᵤ)
-      + zipᶠ _+_ (f .map) (g .map) ⟨ y ⟩ᵤ             ∎
+    r ⋆ (f ⟨ x ⟩ + g ⟨ x ⟩) + (f ⟨ y ⟩ + g ⟨ y ⟩)     ≡⟨ ap₂ N._+_ (ap (r N.⋆_) (sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _))) (sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _)) ⟩
+    r ⋆ add f g .map ⟨ x ⟩ᵤ + add f g .map ⟨ y ⟩ᵤ     ∎
 ```
 
 The example of addition, above, is representative: The flow of these
@@ -240,20 +254,19 @@ spotlight.</summary>
   invm : Multilinear-map n Ms N → Multilinear-map n Ms N
   invm f .map     = mapᶠ N.-_ (f .map)
   invm f .linearₚ = tabulateₚ λ i xs r x y →
-    apply-mapᶠ _ _ _ ∙∙ ap N.-_ (linear-at f i xs r x y)
-    ∙∙ N.neg-comm
-    ∙∙ N.+-comm
-    ∙∙ sym (ap₂ N._+_ N.⋆-invr refl)
-     ∙ sym (ap₂ N._+_ (ap (r N.⋆_) (apply-mapᶠ _ _ _)) (apply-mapᶠ _ _ _))
+    apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ ∙∙ ap N.-_ (linear-at f i xs r x y)
+    ∙∙ N.neg-comm ∙∙ N.+-comm ∙∙ sym (ap₂ N._+_ N.⋆-invr refl) ∙ sym (ap₂ N._+_
+      (ap (r N.⋆_) (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _))
+      (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _))
 
   scale : ⌞ R ⌟ → Multilinear-map n Ms N → Multilinear-map n Ms N
   scale r f .map = mapᶠ (r N.⋆_) (f .map)
   scale r f .linearₚ = tabulateₚ λ i xs s x y →
-    apply-mapᶠ _ _ _
-    ∙∙ ap (r N.⋆_) (linear-at f i xs s x y)
-    ∙∙ ⋆-distribl _ _ _
-     ∙ ap₂ N._+_ (N.⋆-assoc _ _ _ ∙∙ ap₂ N._⋆_ cr refl ∙∙ sym (N.⋆-assoc _ _ _) ∙ ap (s N.⋆_) (sym (apply-mapᶠ _ _ _)))
-                 (sym (apply-mapᶠ _ _ _))
+    apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ ∙∙ ap (r N.⋆_) (linear-at f i xs s x y)
+    ∙∙ ⋆-distribl _ _ _ ∙ ap₂ N._+_
+      ( N.⋆-assoc _ _ _ ∙∙ ap₂ N._⋆_ cr refl ∙∙ sym (N.⋆-assoc _ _ _) ∙ ap (s N.⋆_)
+        (sym (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _)))
+        (sym (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _))
 
   open make-module hiding (_+_ ; _⋆_)
 
@@ -268,43 +281,52 @@ spotlight.</summary>
   mk .make-module._⋆_ = scale
   mk .0g .map = constᶠ N.0g
   mk .0g .linearₚ = tabulateₚ λ i xs r x y →
-    apply-constᶠ _ (updateₚ xs i (r ⋆ x + y)) ∙ sym (N.ab.elimr (apply-constᶠ _ _)
-    ∙ ap (r N.⋆_) (apply-constᶠ _ _) ∙ N.⋆-idr)
+      apply-constᶠ _ (updateₚ xs i (r ⋆ x + y))
+    ∙ sym (N.ab.elimr (apply-constᶠ {P = λ i → ⌞ Ms i ⌟} _ _)
+    ∙ ap (r N.⋆_) (apply-constᶠ {P = λ i → ⌞ Ms i ⌟} _ _) ∙ N.⋆-idr)
 
   -- Group laws
   mk .+-assoc x y z = Multilinear-map-path $ funextᶠ λ as →
         apply-zipᶠ _ _ _ as
-    ∙∙ ap₂ N._+_ refl (apply-zipᶠ _ _ _ _)
-    ∙∙ N.+-assoc ∙ ap₂ N._+_ (sym (apply-zipᶠ N._+_ _ _ _)) refl
-     ∙ sym (apply-zipᶠ N._+_ _ _ _)
+    ∙∙ ap₂ N._+_ refl (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _)
+    ∙∙ N.+-assoc ∙ ap₂ N._+_ (sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} N._+_ _ _ _)) refl
+     ∙ sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} N._+_ _ _ _)
   mk .+-invl x = Multilinear-map-path $ funextᶠ λ as →
-       apply-zipᶠ _ _ _ _
-    ∙∙ ap₂ N._+_ (apply-mapᶠ _ _ _) refl
+       apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _
+    ∙∙ ap₂ N._+_ (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _) refl
     ∙∙ N.+-invl
-     ∙ sym (apply-constᶠ _ _)
+     ∙ sym (apply-constᶠ {P = λ i → ⌞ Ms i ⌟} _ _)
   mk .+-idl x = Multilinear-map-path $ funextᶠ λ as →
-    apply-zipᶠ _ _ _ _ ∙ N.ab.eliml (apply-constᶠ _ _)
+      apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _
+    ∙ N.ab.eliml (apply-constᶠ {P = λ i → ⌞ Ms i ⌟} _ _)
   mk .+-comm x y = Multilinear-map-path $ funextᶠ λ as →
-    apply-zipᶠ _ _ _ _ ∙ N.+-comm ∙ sym (apply-zipᶠ N._+_ _ _ _)
+       apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _
+    ∙∙ N.+-comm
+    ∙∙ sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} N._+_ _ _ _)
 
   -- Action laws
   mk .⋆-distribl r x y = Multilinear-map-path $ funextᶠ λ as →
-        apply-mapᶠ _ _ _
-    ∙∙ ap (r N.⋆_) (apply-zipᶠ _ _ _ _)
+        apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _
+    ∙∙ ap (r N.⋆_) (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ _)
     ∙∙ N.⋆-distribl _ _ _
-    ∙∙ sym (ap₂ N._+_ (apply-mapᶠ _ _ _) (apply-mapᶠ _ _ _))
-    ∙∙ sym (apply-zipᶠ N._+_ _ _ _)
+    ∙∙ sym (ap₂ N._+_
+      (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _)
+      (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _))
+    ∙∙ sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} N._+_ _ _ _)
   mk .⋆-distribr r x y = Multilinear-map-path $ funextᶠ λ as →
-        apply-mapᶠ _ _ _
+        apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _
     ∙∙ N.⋆-distribr _ _ _
-    ∙∙ sym (ap₂ N._+_ (apply-mapᶠ (r N.⋆_) _ _) (apply-mapᶠ (x N.⋆_) _ _))
-      ∙ sym (apply-zipᶠ N._+_ _ _ _)
+    ∙∙ sym (ap₂ N._+_
+      (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} (r N.⋆_) _ _)
+      (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} (x N.⋆_) _ _))
+      ∙ sym (apply-zipᶠ {P = λ i → ⌞ Ms i ⌟} N._+_ _ _ _)
   mk .⋆-assoc r s x = Multilinear-map-path $ funextᶠ λ as →
-        apply-mapᶠ _ _ _
-    ∙∙ ap (r N.⋆_) (apply-mapᶠ _ _ _)
+        apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _
+    ∙∙ ap (r N.⋆_) (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _)
     ∙∙ N.⋆-assoc _ _ _
-      ∙ sym (apply-mapᶠ _ _ _)
-  mk .⋆-id x = Multilinear-map-path $ funextᶠ λ as → apply-mapᶠ _ _ _ ∙ N.⋆-id _
+      ∙ sym (apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _)
+  mk .⋆-id x = Multilinear-map-path $ funextᶠ λ as →
+    apply-mapᶠ {P = λ i → ⌞ Ms i ⌟} _ _ _ ∙ N.⋆-id _
 ```
 </details>
 
@@ -353,12 +375,12 @@ proofs of linearity.
     → Multilinear-map (suc n) Ms N
   curry-multilinear-map lin = ml where
     ml : Multilinear-map (suc n) _ _
-    ml .map x = lin .map x .map
-    ml .linearₚ = tabulateₚ λ i xs r x y → case fin-view i of λ where
-      zero → ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
-        ∙∙ apply-zipᶠ _ _ _ _
-        ∙∙ ap₂ N._+_ (apply-mapᶠ _ _ _) refl
-      (suc i) → linear-at (lin .map (xs .fst)) i (xs .snd) r x y
+    ml = from-linear-at (λ x → lin .map x .map) λ i xs r x y →
+      case fin-view i of λ where
+        zero → ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
+          ∙∙ apply-zipᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _ _
+          ∙∙ ap₂ N._+_ (apply-mapᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _) refl
+        (suc i) → linear-at (lin .map (xs .fst)) i (xs .snd) r x y
 
   uncurry-multilinear-map
     : Multilinear-map (suc n) Ms N
@@ -369,10 +391,10 @@ proofs of linearity.
     uc .map x .linearₚ = tabulateₚ λ i xs →
       Multilinear-map.linear-at multi (fsuc i) (x , xs)
 
-    uc .lin .linear r s t =
-      Multilinear-map-path $ funextᶠ λ as →
+    uc .lin .linear r s t = Multilinear-map-path $ funextᶠ λ as →
         linear-at multi fzero (Ms.0g fzero , as) _ _ _
-        ∙ sym (apply-zipᶠ _ _ _ _ ∙ ap₂ N._+_ (apply-mapᶠ _ _ _) refl)
+      ∙ sym (apply-zipᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _ _
+            ∙ ap₂ N._+_ (apply-mapᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _) refl)
 ```
 
 To stress how well these constructions compute, note that, on the
@@ -384,7 +406,7 @@ definitionally isomorphisms.
   uncurry-ml-is-equiv = is-iso→is-equiv λ where
     .is-iso.from   → curry-multilinear-map
     .is-iso.rinv x → ext λ x → Multilinear-map-path refl
-    .is-iso.linv x → Multilinear-map-path $ funextᶠ λ as → refl
+    .is-iso.linv x → Multilinear-map-path $ funextᶠ {P = λ i → ⌞ Ms i ⌟} λ as → refl
 
   module
     Uncurry = Equiv (_ , uncurry-ml-is-equiv)

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Instances.Sets.Complete
 open import Cat.Bi.Instances.Spans
 open import Cat.Bi.Diagram.Monad
