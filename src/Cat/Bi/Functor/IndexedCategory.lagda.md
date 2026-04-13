@@ -490,7 +490,7 @@ module IndexedOplax
     module I = Precategory I
     module F = Pseudofunctor F
     module G = Pseudofunctor G
-    module α = Lax-transfor α
+    module α = _=>ₗ_ α
     open module G₀ {x} = Cr (G.₀ x)
 
   open α hiding (ν-compositor ; ν-unitor) public
