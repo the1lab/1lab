@@ -341,32 +341,29 @@ xs)$ has to be truncated.
       (finset-mem x xs) (finset-mem x ys)
       (λ i → finset-mem x (p i)) (λ i → finset-mem x (q i)) i j
 
-opaque
-  _∈ᶠˢ_ : A → Finset A → Type (level-of A)
-  x ∈ᶠˢ xs = ⌞ finset-mem x xs ⌟
+record _∈ᶠˢ_ (x : A) (xs : Finset A) : Type (level-of A) where
+  constructor lift
+  field
+    lower : ⌞ finset-mem x xs ⌟
 
-  hereₛ' : ∀ {x y : A} {xs} → x ≡ᵢ y → x ∈ᶠˢ (y ∷ xs)
-  hereₛ' p = inc (inl p)
+open _∈ᶠˢ_ public
 
-  thereₛ : ∀ {x y : A} {xs} → y ∈ᶠˢ xs → y ∈ᶠˢ (x ∷ xs)
-  thereₛ x = inc (inr x)
+instance unquoteDecl H-Level-∈ᶠˢ = declare-record-hlevel 1 H-Level-∈ᶠˢ (quote _∈ᶠˢ_)
 
-  ¬mem-[] : {x : A} → ¬ (x ∈ᶠˢ [])
-  ¬mem-[] ()
-
-  private
-    ∈ᶠˢ-hlevel : {x : A} {xs : Finset A} → ⊤ → is-prop (x ∈ᶠˢ xs)
-    ∈ᶠˢ-hlevel {x = x} {xs} _ = finset-mem x xs .is-tr
+hereₛ' : ∀ {x y : A} {xs} → x ≡ᵢ y → x ∈ᶠˢ (y ∷ xs)
+hereₛ' p = lift (inc (inl p))
 
 hereₛ : ∀ {x : A} {xs} → x ∈ᶠˢ (x ∷ xs)
 hereₛ = hereₛ' reflᵢ
 
-instance
-  hlevel-proj-∈ᶠˢ : hlevel-projection (quote _∈ᶠˢ_)
-  hlevel-proj-∈ᶠˢ .hlevel-projection.has-level = quote ∈ᶠˢ-hlevel
-  hlevel-proj-∈ᶠˢ .hlevel-projection.get-level x = pure (lit (nat 1))
-  hlevel-proj-∈ᶠˢ .hlevel-projection.get-argument x = pure (con₀ (quote tt))
+thereₛ : ∀ {x y : A} {xs} → y ∈ᶠˢ xs → y ∈ᶠˢ (x ∷ xs)
+thereₛ (lift x) = lift (inc (inr x))
 
+abstract
+  ¬mem-[] : {x : A} → ¬ (x ∈ᶠˢ [])
+  ¬mem-[] ()
+
+instance
   Membership-Finset : Membership A (Finset A) _
   Membership-Finset = record { _∈_ = _∈ᶠˢ_ }
 
@@ -379,33 +376,20 @@ We can then define a *case analysis* principle for membership in a
 finite set, as long as we're showing a proposition.
 
 ```agda
-opaque
-  unfolding _∈ᶠˢ_
-
-  ∈ᶠˢ-split
-    : ∀ {ℓp} {x y : A} {xs} {P : x ∈ᶠˢ (y ∷ xs) → Type ℓp} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
-    → ((p : x ≡ᵢ y) → P (hereₛ' p))
-    → ((w : x ∈ᶠˢ xs) → P (thereₛ w))
-    → (w : x ∈ᶠˢ (y ∷ xs)) → P w
-  ∈ᶠˢ-split ⦃ h ⦄ l r = ∥-∥-elim (λ x → hlevel 1 ⦃ h ⦄) λ where
+∈ᶠˢ-split
+  : ∀ {ℓp} {x y : A} {xs} {P : x ∈ᶠˢ (y ∷ xs) → Type ℓp} ⦃ _ : ∀ {x} → H-Level (P x) 1 ⦄
+  → ((p : x ≡ᵢ y) → P (hereₛ' p))
+  → ((w : x ∈ᶠˢ xs) → P (thereₛ w))
+  → (w : x ∈ᶠˢ (y ∷ xs)) → P w
+∈ᶠˢ-split {P = P} l r (lift x) = ∥-∥-elim {P = λ v → P (lift v)} (λ x → hlevel 1)
+  (λ where
     (inl a) → l a
-    (inr b) → r b
+    (inr b) → r (lift b))
+  x
 ```
 
 <!--
 ```agda
-  ∈ᶠˢ-split-here
-    : ∀ {ℓp} {x y : A} {xs} {P : Type ℓp} ⦃ _ : H-Level P 1 ⦄ {p : x ≡ᵢ y} (f : x ≡ᵢ y → P) (g : x ∈ᶠˢ xs → P)
-    → ∈ᶠˢ-split {xs = xs} f g (hereₛ' p) ≡ f p
-  ∈ᶠˢ-split-here f g = refl
-
-  ∈ᶠˢ-split-there
-    : ∀ {ℓp} {x y : A} {xs} {P : Type ℓp} ⦃ _ : H-Level P 1 ⦄ (f : x ≡ᵢ y → P) (g : x ∈ᶠˢ xs → P) (w : x ∈ᶠˢ xs)
-    → ∈ᶠˢ-split {y = y} {xs = xs} f g (thereₛ w) ≡ g w
-  ∈ᶠˢ-split-there f g w = refl
-
-  {-# REWRITE ∈ᶠˢ-split-here ∈ᶠˢ-split-there #-}
-
 there-cons-if : (d : Dec B) (x y : A) (xs : Finset A) → y ∈ xs → y ∈ cons-if d x xs
 there-cons-if (yes a) x y xs p = thereₛ p
 there-cons-if (no ¬a) x y xs p = p

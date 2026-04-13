@@ -462,23 +462,6 @@ We can then obtain a nice interface for working with `winding`{.Agda}.
 
 <!--
 ```agda
-  -- Want: pathᵇ base ≡ path, definitionally
-  -- Have: pathᵇ base is a projection from some opaque record
-  -- Soln: Evil hack!
-  opaque
-    unfolding winding-is-equiv
-
-    winding-is-equiv-base : winding-is-equiv base ≡ Equiv.inverse (G≃ΩB G) .snd
-    winding-is-equiv-base = prop!
-
-  {-# REWRITE winding-is-equiv-base #-}
-
-  _ : pathᵇ base ≡ path
-  _ = refl -- MUST check!
-
-  pathᵇᵀ : ∀ (x : Deloop G) g h → Triangle (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
-  pathᵇᵀ = Deloop-elim-prop G _ (λ x → hlevel 1) λ g h → pathᵀ g h
-
 Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
 Deloop-is-connected = Deloop-elim-prop _ _ (λ _ → hlevel 1) (inc refl)
 ```

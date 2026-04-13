@@ -240,17 +240,17 @@ covariant construction, performed above.
       src-coh =
         sym (ap (src ∘_) p₁∘universal
         ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom g) .has-src)
-    outf .P-id fₓ =
-      sym $ unique (sym (ap ihom (idri _))) (sym (!-unique _))
-    outf .P-∘ fₓ g h =
-      unique
-        (p₁∘universal
-         ∙ ap ihom (associ _ _ _)
-         ∙ ∘i-ihom refl
-             (sym (ap (src ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-src))
-             (sym (ap (tgt ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-tgt))
-             (sym p₁∘universal) refl)
-        p₂∘universal
+    outf .P-id fₓ = sym $ unique
+      (sym (ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ idri _)))
+      (sym (!-unique _))
+    outf .P-∘ fₓ g h = unique
+      (p₁∘universal
+        ∙ ap ihom (ap₂ _∘i_ refl op-ihom-involutive ∙ associ _ _ _)
+        ∙ ∘i-ihom refl
+            (sym (ap (src ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-src))
+            (sym (ap (tgt ∘_) p₁∘universal ∙ (homi (p₁ ∘ fₓ) ∘i op-ihom h) .has-tgt))
+            (sym p₁∘universal) refl)
+      p₂∘universal
     outf .P₀-nat fₓ σ =
       sym (assoc _ _ _)
       ∙ ap (src ∘_) (sym (assoc _ _ _))

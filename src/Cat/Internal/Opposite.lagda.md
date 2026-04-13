@@ -45,13 +45,11 @@ op-ihom-nat f _ = Internal-hom-path refl
 
 <!--
 ```agda
-private
-  op-ihom-involutive
-    : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
-    → {f : Internal-hom src tgt x y}
-    → op-ihom (op-ihom f) ≡ f
-  op-ihom-involutive = Internal-hom-path refl
-{-# REWRITE op-ihom-involutive #-}
+op-ihom-involutive
+  : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
+  → {f : Internal-hom src tgt x y}
+  → op-ihom (op-ihom f) ≡ f
+op-ihom-involutive = Internal-hom-path refl
 ```
 -->
 
@@ -69,9 +67,17 @@ Internal-cat-on-opi ℂ = icat-opi-on  where
   icat-opi-on : Internal-cat-on _ _
   icat-opi-on .idi x = op-ihom (ℂ.idi x)
   icat-opi-on ._∘i_ f g = op-ihom (op-ihom g ℂ.∘i op-ihom f)
-  icat-opi-on .idli f = ap op-ihom (ℂ.idri _)
-  icat-opi-on .idri f = ap op-ihom (ℂ.idli _)
-  icat-opi-on .associ f g h = ap op-ihom (sym (ℂ.associ _ _ _))
+  icat-opi-on .idli f =
+    op-ihom (op-ihom f ℂ.∘i ⌜ op-ihom (op-ihom (ℂ.idi _)) ⌝) ≡⟨ ap! op-ihom-involutive ⟩
+    op-ihom ⌜ op-ihom f ℂ.∘i ℂ.idi _ ⌝                       ≡⟨ ap! (ℂ.idri (op-ihom f)) ⟩
+    op-ihom (op-ihom f)                                      ≡⟨ op-ihom-involutive ⟩
+    f                                                        ∎
+  icat-opi-on .idri f = ap op-ihom (ap₂ ℂ._∘i_ op-ihom-involutive refl ∙ ℂ.idli _) ∙ op-ihom-involutive
+  icat-opi-on .associ f g h =
+    op-ihom (⌜ op-ihom (op-ihom (op-ihom h ℂ.∘i op-ihom g)) ⌝ ℂ.∘i op-ihom f) ≡⟨ ap! op-ihom-involutive ⟩
+    op-ihom ⌜ (op-ihom h ℂ.∘i op-ihom g) ℂ.∘i op-ihom f ⌝                     ≡⟨ ap! (sym (ℂ.associ _ _ _)) ⟩
+    op-ihom ⌜ op-ihom h ℂ.∘i op-ihom g ℂ.∘i op-ihom f ⌝                       ≡⟨ ap¡ (sym op-ihom-involutive) ⟩
+    op-ihom (op-ihom h ℂ.∘i ⌜ op-ihom (op-ihom (op-ihom g ℂ.∘i op-ihom f)) ⌝) ∎
   icat-opi-on .idi-nat σ =
     op-ihom-nat (ℂ.idi _) σ ∙ ap op-ihom (ℂ.idi-nat σ)
   icat-opi-on .∘i-nat f g σ =
