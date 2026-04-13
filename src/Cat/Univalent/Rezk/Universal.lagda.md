@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification #-}
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
@@ -347,10 +346,11 @@ candidate over it.
 
 <!--
 ```agda
-    summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
-    summon f = ∥-∥-out is-contr-is-prop do
-      f ← f
-      pure $ contr (obj' f) (Obs-is-prop f)
+    opaque
+      summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
+      summon f = ∥-∥-out is-contr-is-prop do
+        f ← f
+        pure $ contr (obj' f) (Obs-is-prop f)
 
     G₀ : B.Ob → C.Ob
     G₀ b = summon {b = b} (H-eso b) .centre .fst
@@ -442,15 +442,14 @@ This proof _really_ isn't commented. I'm sorry.
       Homs-prop' (g₁ , w) = C.iso→epic (k a₀ h₀) _ _
         (sym (δ a₀ h₀ a₀' h₀' l₀ p ∙ w a₀ h₀ a₀' h₀' l₀ p))
 
-    Homs-contr' : ∀ {b b'} (f : B.Hom b b') → ∥ is-contr (Homs f) ∥
-    Homs-contr' {b = b} {b'} f = do
-      (a₀ , h)   ← H-eso b
-      (a₀' , h') ← H-eso b'
-      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path!
-        (sym (Homs-prop' f _ _ _ _ h')))
-
-    Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
-    Homs-contr f = ∥-∥-out! (Homs-contr' f)
+    opaque
+      Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
+      Homs-contr {b = b} {b'} f = ∥-∥-out! do
+        (a₀ , h)   ← H-eso b
+        (a₀' , h') ← H-eso b'
+        pure record where
+          centre   = Homs-pt f a₀ h a₀' h'
+          paths h' = Σ-prop-path! (sym (Homs-prop' f _ _ _ _ h'))
 
     G₁ : ∀ {b b'} → B.Hom b b' → C.Hom (G₀ b) (G₀ b')
     G₁ f = Homs-contr f .centre .fst
