@@ -115,8 +115,6 @@ abstract
   from-prim-eq-refl {zero} = refl
   from-prim-eq-refl {suc x} = ap (ap suc) (from-prim-eq-refl {x})
 
-  {-# REWRITE from-prim-eq-refl #-}
-
   to-prim-eq : ∀ {x y} → x ≡ y → So (x == y)
   to-prim-eq {zero} {zero} p = oh
   to-prim-eq {zero} {suc y} p = absurd (zero≠suc p)

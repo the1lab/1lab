@@ -64,8 +64,6 @@ _≡_ {A = A} = PathP (λ i → A)
 
 <!--
 ```agda
-{-# BUILTIN REWRITE _≡_ #-}
-
 caseⁱ_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (x : A) → ((y : A) → x ≡ y → B) → B
 caseⁱ x of f = f x (λ i → x)
 
