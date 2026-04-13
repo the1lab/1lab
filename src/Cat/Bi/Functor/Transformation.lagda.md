@@ -25,10 +25,10 @@ private
   module CH = C.Hom
 
 open Prebicategory C
-open Pseudonatural
-open Lax-transfor
 open Cr.Inverses
 open Cr._≅_
+open _=>ₗ_
+open _=>ₚ_
 open _=>_
 
 module _ {F : Lax-functor B C} where
@@ -108,8 +108,8 @@ associator between each step.
 <!--
 ```agda
     private
-      module α = Lax-transfor α
-      module β = Lax-transfor β
+      module α = _=>ₗ_ α
+      module β = _=>ₗ_ β
 ```
 -->
 

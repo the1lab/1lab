@@ -562,7 +562,7 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
 \sigma_bF(f)$.
 
 ```agda
-  record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  record _=>ₗ_ : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
     no-eta-equality
     field
       σ : ∀ A → F.₀ A C.↦ G.₀ A
@@ -606,12 +606,12 @@ A lax transformation with invertible naturator is called a
 **pseudonatural transformation**.
 
 ```agda
-  record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
+  record _=>ₚ_ : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
     no-eta-equality
     field
-      lax : Lax-transfor
+      lax : _=>ₗ_
 
-    open Lax-transfor lax public
+    open _=>ₗ_ lax public
 
     field
       naturator-inv : ∀ {a b} (f : a B.↦ b) → Cr.is-invertible (C.Hom _ _) (ν→ f)
@@ -627,14 +627,6 @@ A lax transformation with invertible naturator is called a
     ν←nat {A} {B} {f} {g} α = inverse-is-natural naturator ν←
       (λ f → ν←.inverses f .invl) (λ f → ν←.inverses f .invr) f g α
       where open Cr.Inverses
-```
-
-We abbreviate the types of lax- and pseudonatural transformations by
-`_=>ₗ_`{.Agda} and `_=>ₚ_`{.Agda}, respectively.
-
-```agda
-  _=>ₗ_ = Lax-transfor
-  _=>ₚ_ = Pseudonatural
 ```
 
 # Modifications {defines="modification"}
@@ -664,8 +656,8 @@ module
 
   module _ (σ σ' : F =>ₗ G) where
     private
-      module σ = Lax-transfor σ
-      module σ' = Lax-transfor σ'
+      module σ = _=>ₗ_ σ
+      module σ' = _=>ₗ_ σ'
 ```
 -->
 
@@ -719,7 +711,7 @@ diagrams **in** bicategories, which are (mercifully) limited to 2-cells.
   unquoteDecl H-Level-Modification = declare-record-hlevel 2 H-Level-Modification (quote Modification)
 
   open Modification
-  open Lax-transfor
+  open _=>ₗ_
 
   Mod-pathp : {α α' β β' : F =>ₗ G}
             → (p : α ≡ α') (q : β ≡ β')

@@ -27,8 +27,8 @@ functors]], and that [[modifications]] give a notion of morphisms
 between lax transformations.  We've also done the work to show that [lax
 transformations compose], and [similarly for modifications].
 
-[lax transformations compose]: Cat.Bi.Lax-functor.Lax-transfor.html
-[similarly for modifications]: Cat.Bi.Lax-functor.Modification.html
+[lax transformations compose]: Cat.Bi.Functor.Transformation.html
+[similarly for modifications]: Cat.Bi.Functor.Modification.html
 
 Now we can assemble these observations to state that the lax functors
 between bicategories $\bicat{C}$ and $\bicat{D}$ themselves form a
@@ -120,8 +120,8 @@ Laxₗ B C = pb module Lax where
     module C  = Br C
     module CH = C.Hom
   open Make-bifunctor
-  open Lax-transfor
   open Modification
+  open _=>ₗ_
 ```
 -->
 

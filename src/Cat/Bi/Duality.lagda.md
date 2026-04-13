@@ -330,10 +330,8 @@ transformations**.
 
 ```agda
 module _ {B : Prebicategory o h ℓ} {C : Prebicategory o' h' ℓ'} where
-  Oplax-transfor : Lax-functor (B ^op) (C ^op) → Lax-functor (B ^op) (C ^op) → Type _
-  Oplax-transfor F G = Lax-transfor G F
-
-  _=>ₒ_ = Oplax-transfor
+  _=>ₒ_ : Lax-functor (B ^op) (C ^op) → Lax-functor (B ^op) (C ^op) → Type _
+  F =>ₒ G = G =>ₗ F
 ```
 
 In words, we define an oplax transformation from $F$ to $G$ to be a lax
