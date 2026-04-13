@@ -88,7 +88,7 @@ the triangle equalities of an [adjunction in] $\bicat{C}$.
 
 <!--
 ```agda
-open Pseudonatural
+open _=>ₚ_
 ```
 -->
 

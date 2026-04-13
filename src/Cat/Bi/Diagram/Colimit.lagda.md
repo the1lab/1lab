@@ -37,11 +37,11 @@ module _
 
   open Prebicategory C
   open Pseudofunctor
-  open Pseudonatural
-  open Lax-transfor
   open Modification
   open Cr.Inverses
   open Cr._≅_
+  open _=>ₗ_
+  open _=>ₚ_
   open _=>_
 ```
 -->

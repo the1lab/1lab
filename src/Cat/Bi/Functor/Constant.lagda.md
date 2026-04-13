@@ -40,10 +40,10 @@ private
   module Lf = Lax-functor
 
 open Cr.is-invertible
-open Lax-transfor
 open Modification
 open Cr.Inverses
 open Functor
+open _=>ₗ_
 open _=>_
 ```
 -->

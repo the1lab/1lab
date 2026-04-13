@@ -35,8 +35,8 @@ natural transformations, so we won't dwell too much on the details.
 <!--
 ```agda
 open Prebicategory C
-open Lax-transfor
 open Modification
+open _=>ₗ_
 
 private
   module B  = Prebicategory B
@@ -79,10 +79,10 @@ module _ {F G H : Lax-functor B C} {α α' : G =>ₗ H} {β β' : F =>ₗ G} whe
     module F  = Lax-functor F
     module G  = Lax-functor G
     module H  = Lax-functor H
-    module α  = Lax-transfor α
-    module α' = Lax-transfor α'
-    module β  = Lax-transfor β
-    module β' = Lax-transfor β'
+    module α  = _=>ₗ_ α
+    module α' = _=>ₗ_ α'
+    module β  = _=>ₗ_ β
+    module β' = _=>ₗ_ β'
 ```
 -->
 
