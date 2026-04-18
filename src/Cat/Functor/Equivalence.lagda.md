@@ -270,14 +270,14 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 ```agda
   ff+split-eso→unit .is-natural x y f =
     ff→faithful {F = F} ff (
-      F .F₁ (ff⁻¹ ffy C.∘ f)                                      ≡⟨ F .F-∘ _ _ ⟩
-      ⌜ F .F₁ (ff⁻¹ ffy) ⌝ D.∘ F .F₁ f                            ≡⟨ ap! (ff.ε _) ⟩
-      ffy D.∘ ⌜ F .F₁ f ⌝                                         ≡⟨ ap! (sym (D.idr _) ∙ ap (F .F₁ f D.∘_) (sym (f*x-iso .di.invl))) ⟩
-      ffy D.∘ F .F₁ f D.∘ ftx D.∘ ffx                             ≡⟨ cat! D ⟩
-      (ffy D.∘ F .F₁ f D.∘ ftx) D.∘ ffx                           ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx)) D.∘ F .F₁ (ff⁻¹ ffx) ≡˘⟨ F .F-∘ _ _ ⟩
-      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx) C.∘ ff⁻¹ ffx)         ≡⟨⟩
-      F .F₁ ((G F∘ F) .F₁ f C.∘ x→f*x)                            ∎
+      F .F₁ (ηy C.∘ f)                                    ≡⟨ F .F-∘ _ _ ⟩
+      ⌜ F .F₁ ηy ⌝ D.∘ F .F₁ f                            ≡⟨ ap! (ff.ε _) ⟩
+      ffy D.∘ ⌜ F .F₁ f ⌝                                 ≡⟨ ap! (sym (D.idr _) ∙ ap (F .F₁ f D.∘_) (sym (f*x-iso .di.invl))) ⟩
+      ffy D.∘ F .F₁ f D.∘ ftx D.∘ ffx                     ≡⟨ cat! D ⟩
+      (ffy D.∘ F .F₁ f D.∘ ftx) D.∘ ffx                   ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx)) D.∘ F .F₁ ηx ≡˘⟨ F .F-∘ _ _ ⟩
+      F .F₁ (ff⁻¹ (ffy D.∘ F .F₁ f D.∘ ftx) C.∘ ηx)       ≡⟨⟩
+      F .F₁ ((G F∘ F) .F₁ f C.∘ ηx)                       ∎
     )
     where
       open Σ (eso (F .F₀ x)) renaming (fst to f*x ; snd to f*x-iso)
@@ -288,11 +288,11 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
 
-      x→f*x : C.Hom x f*x
-      x→f*x = ff⁻¹ (f*x-iso .di.from)
+      ηx : C.Hom x f*x
+      ηx = ff⁻¹ (f*x-iso .di.from)
 
-      y→f*y : C.Hom y f*y
-      y→f*y = ff⁻¹ (f*y-iso .di.from)
+      ηy : C.Hom y f*y
+      ηy = ff⁻¹ (f*y-iso .di.from)
 ```
 
 </details>

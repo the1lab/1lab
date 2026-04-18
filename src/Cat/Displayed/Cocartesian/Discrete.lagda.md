@@ -9,7 +9,6 @@ open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
-open import Cat.Displayed.Path
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning

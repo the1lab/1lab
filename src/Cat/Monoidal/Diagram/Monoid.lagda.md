@@ -185,7 +185,7 @@ laws, a great simplification.
     unquoteDecl eqv = declare-record-iso eqv (quote is-monoid-hom)
 
     instance
-      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} 
+      H-Level-is-monoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k}
         → H-Level (is-monoid-hom f mo no) (suc k)
       H-Level-is-monoid-hom = prop-instance $ Iso→is-hlevel! 1 eqv
 
