@@ -302,7 +302,6 @@ _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 We can construct the trivial posets with one and zero (object(s), ordering(s)) respectively
 
 ```agda
-
 𝟙ᵖ : ∀ {o ℓ} → Poset o ℓ
 𝟙ᵖ .Poset.Ob = Lift _ ⊤
 𝟙ᵖ .Poset._≤_ _ _ = Lift _ ⊤
@@ -319,3 +318,38 @@ We can construct the trivial posets with one and zero (object(s), ordering(s)) r
 𝟘ᵖ .Poset.≤-trans ()
 𝟘ᵖ .Poset.≤-antisym ()
 ```
+
+## Decidable partial orders {defines="decidable-partial-order"}
+
+We say that a poset is **decidable** if the ordering relation between
+any pair of elements is [[decidable]]. Note that this does *not* imply
+that the order is [[total|total order]]: for instance, the [[discrete
+partial order]] on two elements is decidable but not total.
+
+```agda
+module _ {o ℓ} (P : Poset o ℓ) where
+  open Poset P
+
+  is-decidable-poset : Type _
+  is-decidable-poset = ∀ {x y} → Dec (x ≤ y)
+```
+
+A decidable poset has decidable equality^[In other words, has a
+[[discrete]] underlying set; this should not be confused with a
+[[discrete partial order]].]: by antisymmetry, we can decide $x = y$ by
+deciding $(x ≤ y) × (y ≤ x)$.
+
+```agda
+  decidable→discrete
+    : ⦃ is-decidable-poset ⦄
+    → Discrete ⌞ P ⌟
+  decidable→discrete .decide x y with holds? (x ≤ y) | holds? (y ≤ x)
+  ... | yes x≤y | yes y≤x = yes (≤-antisym x≤y y≤x)
+  ... | yes x≤y | no ¬y≤x = no λ x=y → ¬y≤x (≤-refl' (sym x=y))
+  ... | no ¬x≤y | _       = no λ x=y → ¬x≤y (≤-refl' x=y)
+```
+
+The converse is not true: given a proposition $P$, the poset with two
+elements $\{a, b\}$ such that $a ≤ b$ iff $P$ holds always has decidable
+equality, but is decidable if and only if $P$ is. However, a discrete
+[[*total* order]] is always decidable (see there).

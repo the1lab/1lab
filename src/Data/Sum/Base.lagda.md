@@ -56,6 +56,14 @@ infix 0 if⁺_then_else_
 if⁺_then_else_ : A ⊎ B → C → C → C
 if⁺ inl _ then y else n = y
 if⁺ inr _ then y else n = n
+
+is-right : A ⊎ B → Bool
+is-right (inl _) = false
+is-right (inr _) = true
+
+is-left : A ⊎ B → Bool
+is-left (inl _) = true
+is-left (inr _) = false
 ```
 -->
 
