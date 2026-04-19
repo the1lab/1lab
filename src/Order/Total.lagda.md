@@ -5,6 +5,9 @@ open import 1Lab.Prelude
 open import Data.Dec
 open import Data.Sum
 
+open import Homotopy.Pushout
+open import Homotopy.Join
+
 open import Order.Diagram.Join
 open import Order.Diagram.Meet
 open import Order.Base
@@ -32,8 +35,19 @@ record is-total-order {o ℓ} (P : Poset o ℓ) : Type (o ⊔ ℓ) where
   open Poset P public
 
   field
-    compare         : ∀ x y → (x ≤ y) ⊎ (y ≤ x)
+    compare : ∀ x y → (x ≤ y) ∗ (y ≤ x)
 ```
+
+<!--
+```agda
+private unquoteDecl is-total-order-eqv = declare-record-iso is-total-order-eqv (quote is-total-order)
+
+instance
+  H-Level-is-total-order : ∀ {o ℓ} {P : Poset o ℓ} {k} → H-Level (is-total-order P) (suc k)
+  H-Level-is-total-order = prop-instance (Iso→is-hlevel 1 is-total-order-eqv
+    (Π-is-hlevel² 1 λ _ _ → join-is-prop (hlevel 1) (hlevel 1)))
+```
+-->
 
 ::: note
 The _ordering_ procedure, `compare`{.Agda}, is orthogonal from having a
@@ -57,9 +71,9 @@ module minmax {o ℓ} {P : Poset o ℓ} (to : is-total-order P) where
 
 ```agda
   min : (x y : ⌞ P ⌟) → ⌞ P ⌟
-  min x y with compare x y
-  ... | inl p = x
-  ... | inr q = y
+  min x y = worker (compare x y) module min where
+    worker = Pushout-elim (λ _ → x) (λ _ → y)
+      (λ (x≤y , y≤x) → ≤-antisym x≤y y≤x)
 ```
 
 The proofs that this is actually the meet of $x$ and $y$ proceed by
@@ -68,19 +82,19 @@ doing the comparison again: this "unblocks" the computation of $\min$.
 ```agda
   abstract
     min-≤l : ∀ x y → min x y ≤ x
-    min-≤l x y with compare x y
-    ... | inl p = ≤-refl
-    ... | inr q = q
+    min-≤l x y = join-elim-prop
+      {P = λ p → min.worker x y p ≤ x} (λ _ → hlevel 1)
+      (λ _ → ≤-refl) (λ q → q) (compare x y)
 
     min-≤r : ∀ x y → min x y ≤ y
-    min-≤r x y with compare x y
-    ... | inl p = p
-    ... | inr q = ≤-refl
+    min-≤r x y = join-elim-prop
+      {P = λ p → min.worker x y p ≤ y} (λ _ → hlevel 1)
+      (λ p → p) (λ _ → ≤-refl) (compare x y)
 
     min-univ : ∀ x y z → z ≤ x → z ≤ y → z ≤ min x y
-    min-univ x y z p q with compare x y
-    ... | inl _ = p
-    ... | inr _ = q
+    min-univ x y z p q = join-elim-prop
+      {P = λ p → z ≤ min.worker x y p} (λ _ → hlevel 1)
+      (λ _ → p) (λ _ → q) (compare x y)
 ```
 
 This is everything we need to prove that we have our hands on a meet.
@@ -97,24 +111,25 @@ further commentary.
 
 ```agda
   max : (x y : ⌞ P ⌟) → ⌞ P ⌟
-  max x y with compare x y
-  ... | inl p = y
-  ... | inr q = x
+  max x y = worker (compare x y) module max where
+    worker = Pushout-elim (λ _ → y) (λ _ → x)
+      (λ (x≤y , y≤x) → ≤-antisym y≤x x≤y)
 
-  max-≤l : ∀ x y → x ≤ max x y
-  max-≤l x y with compare x y
-  ... | inl p = p
-  ... | inr q = ≤-refl
+  abstract
+    max-≤l : ∀ x y → x ≤ max x y
+    max-≤l x y = join-elim-prop
+      {P = λ p → x ≤ max.worker x y p} (λ _ → hlevel 1)
+      (λ p → p) (λ _ → ≤-refl) (compare x y)
 
-  max-≤r : ∀ x y → y ≤ max x y
-  max-≤r x y with compare x y
-  ... | inl p = ≤-refl
-  ... | inr q = q
+    max-≤r : ∀ x y → y ≤ max x y
+    max-≤r x y = join-elim-prop
+      {P = λ p → y ≤ max.worker x y p} (λ _ → hlevel 1)
+      (λ _ → ≤-refl) (λ q → q) (compare x y)
 
-  max-univ : ∀ x y z → x ≤ z → y ≤ z → max x y ≤ z
-  max-univ x y z p q with compare x y
-  ... | inl _ = q
-  ... | inr _ = p
+    max-univ : ∀ x y z → x ≤ z → y ≤ z → max x y ≤ z
+    max-univ x y z p q = join-elim-prop
+      {P = λ p → max.worker x y p ≤ z} (λ _ → hlevel 1)
+      (λ _ → q) (λ _ → p) (compare x y)
 
   max-is-join : ∀ x y → is-join P x y (max x y)
   max-is-join x y .l≤join = max-≤l x y
@@ -180,9 +195,8 @@ which we refer to as **weak totality**.
 <!--
 ```agda
   from-not-≤ : ∀ {x y} → ¬ (x ≤ y) → y ≤ x
-  from-not-≤ {x} {y} ¬x≤y with compare x y
-  ... | inl x≤y = absurd (¬x≤y x≤y)
-  ... | inr y≤x = y≤x
+  from-not-≤ {x} {y} ¬x≤y = join-elim-prop (λ _ → hlevel 1)
+    (λ x≤y → absurd (¬x≤y x≤y)) (λ y≤x → y≤x) (compare x y)
 
 module _ {o ℓ} {P : Poset o ℓ} ⦃ _ : Discrete ⌞ P ⌟ ⦄ ⦃ _ : is-decidable-poset P ⦄ where
   open Poset P
@@ -201,7 +215,7 @@ if it holds, we're done; Otherwise, weak totality lets us conclude that
 $y \le x$ from the computed witness of $x \not\le y$.
 
 ```agda
-    compare : ∀ x y → (x ≤ y) ⊎ (y ≤ x)
+    compare : ∀ x y → (x ≤ y) ∗ (y ≤ x)
     compare x y with holds? (x ≤ y)
     ... | yes x≤y = inl x≤y
     ... | no ¬x≤y = inr (wk ¬x≤y)
