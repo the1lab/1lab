@@ -5,6 +5,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Functor.Adjoint
+open import Cat.Displayed.Thin
 open import Cat.Prelude
 
 open import Data.Int.Universal

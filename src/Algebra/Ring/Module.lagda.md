@@ -5,7 +5,8 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Base
+open import Cat.Displayed.Thin
 open import Cat.Prelude hiding (_+_)
 
 import Cat.Reasoning
@@ -24,8 +25,8 @@ private variable
 
 private module Mod {ℓ} (R : Ring ℓ) where
   private module R = Ring-on (R .snd)
+  open Thin-structure
   open Displayed
-  open ∫Hom
   open Functor
 ```
 -->
@@ -279,20 +280,17 @@ is univalent.
 -->
 
 ```agda
-  R-Mod-structure : ∀ {ℓ} → Thin-structure _ Module-on
-  R-Mod-structure {ℓ} = rms where
-    rms : Thin-structure _ Module-on
-    ∣ rms .is-hom f M N ∣    = is-linear-map {ℓ} {_} {ℓ} f M N
-    rms .is-hom f M N .is-tr = is-linear-map-is-prop
+  R-Mod-structure : ∀ ℓ → Thin-structure _ Module-on
+  R-Mod-structure ℓ .is-hom f M N =
+    el (is-linear-map {ℓ} {_} {ℓ} f M N) is-linear-map-is-prop
 
-    rms .id-is-hom        .linear r s t = refl
-    rms .∘-is-hom f g α β .linear r s t =
-      ap f (β .linear r s t) ∙ α .linear _ _ _
+  R-Mod-structure ℓ .id-is-hom .linear r s t = refl
+  R-Mod-structure ℓ .∘-is-hom f g α β .linear r s t =
+    ap f (β .linear r s t) ∙ α .linear _ _ _
 
-    rms .id-hom-unique {s = s} {t = t} α _ = r where
-      module s = Module-on s
-      module t = Module-on t
-
+  instance
+    R-Mod-univalent : ∀ {ℓ} → is-univalent-structure (R-Mod-structure ℓ)
+    R-Mod-univalent .is-univalent-structure.id-hom-unique {s = s} {t} α _ = r where
       r : s ≡ t
       r i .Module-on._+_ x y = is-linear-map.pres-+ α x y i
       r i .Module-on._⋆_ x y = is-linear-map.pres-⋆ α x y i
@@ -306,10 +304,10 @@ is univalent.
 <!--
 ```agda
   R-Mod : ∀ ℓm → Precategory (lsuc ℓm ⊔ ℓ) (ℓm ⊔ ℓ)
-  R-Mod ℓm = Structured-objects (R-Mod-structure {ℓm})
+  R-Mod ℓm = Structured-objects (R-Mod-structure ℓm)
 
   R-Mod↪Sets : ∀ ℓm → Functor (R-Mod ℓm) (Sets ℓm)
-  R-Mod↪Sets _ = Forget-structure R-Mod-structure
+  R-Mod↪Sets _ = Forget-structure (R-Mod-structure _)
 
   record make-module {ℓm} (M : Type ℓm) : Type (ℓm ⊔ ℓ) where
     field

@@ -7,7 +7,7 @@ open import Algebra.Group.Ab
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Thin
 open import Cat.Base
 
 open import Data.Int.Properties
@@ -15,7 +15,10 @@ open import Data.Int.Base
 
 import Algebra.Monoid.Reasoning as Mon
 
+import Cat.Displayed.Total
 import Cat.Reasoning
+
+open Thin-structure
 ```
 -->
 
@@ -175,14 +178,18 @@ Ring-structure ℓ .id-is-hom .pres-* x y = refl
 Ring-structure ℓ .∘-is-hom f g α β .pres-id = ap f (β .pres-id) ∙ α .pres-id
 Ring-structure ℓ .∘-is-hom f g α β .pres-+ x y = ap f (β .pres-+ x y) ∙ α .pres-+ _ _
 Ring-structure ℓ .∘-is-hom f g α β .pres-* x y = ap f (β .pres-* x y) ∙ α .pres-* _ _
-Ring-structure ℓ .id-hom-unique α β i .Ring-on.1r = α .pres-id i
-Ring-structure ℓ .id-hom-unique α β i .Ring-on._*_ x y = α .pres-* x y i
-Ring-structure ℓ .id-hom-unique α β i .Ring-on._+_ x y = α .pres-+ x y i
-Ring-structure ℓ .id-hom-unique {s = s} {t} α β i .Ring-on.has-is-ring =
-  is-prop→pathp
-    (λ i → hlevel {T = is-ring (α .pres-id i)
-      (λ x y → α .pres-* x y i) (λ x y → α .pres-+ x y i)} 1)
-    (s .Ring-on.has-is-ring) (t .Ring-on.has-is-ring) i
+
+instance
+  Rings-univalent : ∀ {ℓ} → is-univalent-structure (Ring-structure ℓ)
+  Rings-univalent .is-univalent-structure.id-hom-unique {s = s} {t} α β = r where
+    r : s ≡ t
+    r i .Ring-on.1r = α .pres-id i
+    r i .Ring-on._*_ x y = α .pres-* x y i
+    r i .Ring-on._+_ x y = α .pres-+ x y i
+    r i .Ring-on.has-is-ring = is-prop→pathp
+      (λ i → hlevel {T = is-ring (α .pres-id i)
+        (λ x y → α .pres-* x y i) (λ x y → α .pres-+ x y i)} 1)
+      (s .Ring-on.has-is-ring) (t .Ring-on.has-is-ring) i
 
 Rings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Rings _ = Structured-objects (Ring-structure _)
@@ -191,6 +198,14 @@ module Rings {ℓ} = Cat.Reasoning (Rings ℓ)
 Ring : ∀ ℓ → Type (lsuc ℓ)
 Ring ℓ = Rings.Ob
 ```
+
+<!--
+```agda
+open Cat.Displayed.Total.∫Hom public
+open Cat.Displayed.Total public using (∫hom; Funlike-∫Hom)
+open Cat.Displayed.Thin public using (Extensional-Hom)
+```
+-->
 
 ## In components
 

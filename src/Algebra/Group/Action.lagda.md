@@ -7,6 +7,8 @@ open import Algebra.Group
 
 open import Cat.Instances.Delooping
 open import Cat.Instances.Functor
+open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Instances.Sets
 open import Cat.Diagram.Zero
 open import Cat.Prelude

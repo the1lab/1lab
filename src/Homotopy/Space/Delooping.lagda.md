@@ -8,6 +8,7 @@ open import Algebra.Group.Homotopy
 open import Algebra.Group.Ab
 open import Algebra.Group
 
+open import Cat.Displayed.Thin
 open import Cat.Base
 
 open import Data.Set.Truncation

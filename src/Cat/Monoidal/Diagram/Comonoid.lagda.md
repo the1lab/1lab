@@ -2,7 +2,6 @@
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Monoidal.Instances.Cartesian
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Displayed.Functor
 open import Cat.Bi.Diagram.Monad

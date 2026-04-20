@@ -6,7 +6,6 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Product.Indexed
 open import Cat.Prelude
 

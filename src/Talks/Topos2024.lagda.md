@@ -16,11 +16,12 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude hiding (funext ; sym ; subst ; Extensional ; ext ; uncurry ; id ; _∘_ ; _==_ ; _*_ ; _+_)
 
 open import Algebra.Group.Ab.Tensor
-open import Algebra.Group.Cat.Base hiding (Displayed)
+open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
 open import Algebra.Monoid using (Monoid-on)
 open import Algebra.Group
 
+open import Cat.Displayed.Thin
 open import Cat.Base
 
 open import Data.Int.Base
@@ -41,6 +42,8 @@ private variable
   P : A → Type ℓ
   Q : (x : A) → P x → Type ℓ
 
+open Thin-structure
+open is-univalent-structure
 open is-iso
 
 module _ where
@@ -867,8 +870,10 @@ Semigroup-structure .∘-is-hom f g α β .pres-⋆ x y =
 and, finally, the univalence condition:
 
 ```agda
-Semigroup-structure .id-hom-unique p q = Iso.injective eqv $ Σ-prop-path! $
-  ext λ a b → p .pres-⋆ a b
+instance
+  Semigroups-univalent : ∀ {ℓ} → is-univalent-structure (Semigroup-structure {ℓ})
+  Semigroups-univalent .id-hom-unique p q = Iso.injective eqv $ Σ-prop-path! $
+    ext λ a b → p .pres-⋆ a b
 ```
 
 # Conclusion

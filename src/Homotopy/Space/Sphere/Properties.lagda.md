@@ -6,6 +6,7 @@ open import Algebra.Group.Concrete
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Cat.Displayed.Thin
 open import Cat.Functor.Base
 open import Cat.Prelude
 

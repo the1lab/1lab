@@ -6,6 +6,7 @@ open import Algebra.Group.Concrete
 open import Algebra.Group.Action
 open import Algebra.Group
 
+open import Cat.Displayed.Thin
 open import Cat.Univalent
 open import Cat.Prelude
 

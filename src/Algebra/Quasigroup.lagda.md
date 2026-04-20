@@ -8,8 +8,8 @@ open import 1Lab.Type.Sigma
 
 open import Algebra.Magma
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Prelude hiding (_/_)
 
 import Cat.Reasoning
@@ -38,7 +38,8 @@ private variable
   ℓ ℓ' : Level
   A B : Type ℓ
 
-open Cat.Displayed.Univalence.Thin using (Extensional-Hom) public
+open Cat.Displayed.Thin using (Extensional-Hom) public
+open Thin-structure
 ```
 -->
 
@@ -291,8 +292,12 @@ over $\Sets$.
     refl
   Right-quasigroup-structure ℓ .∘-is-hom f g f-hom g-hom .pres-⋆ x y =
     ap f (g-hom .pres-⋆ x y) ∙ f-hom .pres-⋆ (g x) (g y)
-  Right-quasigroup-structure ℓ .id-hom-unique {A} {S} {T} p q =
-    Right-quasigroup-on-pathp (ext (p .pres-⋆))
+
+  instance
+    Right-quasigroups-univalent
+      : ∀ {ℓ} → is-univalent-structure (Right-quasigroup-structure ℓ)
+    Right-quasigroups-univalent .is-univalent-structure.id-hom-unique p q =
+      Right-quasigroup-on-pathp (ext (p .pres-⋆))
 
 ```
 
@@ -583,8 +588,12 @@ module _ where
     refl
   Left-quasigroup-structure ℓ .∘-is-hom f g f-hom g-hom .pres-⋆ x y =
     ap f (g-hom .pres-⋆ x y) ∙ f-hom .pres-⋆ (g x) (g y)
-  Left-quasigroup-structure ℓ .id-hom-unique p q =
-    Left-quasigroup-on-pathp (ext (p .pres-⋆))
+
+  instance
+    Left-quasigroups-univalent
+      : ∀ {ℓ} → is-univalent-structure (Left-quasigroup-structure ℓ)
+    Left-quasigroups-univalent .is-univalent-structure.id-hom-unique p q =
+      Left-quasigroup-on-pathp (ext (p .pres-⋆))
 ```
 
 This observation lets us assemble left quasigroups into a [[category]].
@@ -823,8 +832,12 @@ Quasigroups and quasigroup homomorphisms form a [[thin structure]].
     refl
   Quasigroup-structure ℓ .∘-is-hom f g f-hom g-hom .pres-⋆ x y =
     ap f (g-hom .pres-⋆ x y) ∙ f-hom .pres-⋆ (g x) (g y)
-  Quasigroup-structure ℓ .id-hom-unique p q =
-    Quasigroup-on-pathp (ext (p .pres-⋆))
+
+  instance
+    Quasigroups-univalent
+      : ∀ {ℓ} → is-univalent-structure (Quasigroup-structure ℓ)
+    Quasigroups-univalent .is-univalent-structure.id-hom-unique p q =
+      Quasigroup-on-pathp (ext (p .pres-⋆))
 ```
 </details>
 

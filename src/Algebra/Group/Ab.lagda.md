@@ -4,6 +4,8 @@ open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import Cat.Functor.Properties
+open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Prelude hiding (_*_ ; _+_)
 
 import Cat.Reasoning
@@ -31,6 +33,8 @@ have self-explicative names in mathematics. It's the law.
 private variable
   ℓ : Level
   G : Type ℓ
+
+open Thin-structure
 
 Group-on-is-abelian : Group-on G → Type _
 Group-on-is-abelian G = ∀ x y → Group-on._⋆_ G x y ≡ Group-on._⋆_ G y x
@@ -103,14 +107,18 @@ Abelian-group-structure ℓ .is-hom f G₁ G₂ .is-tr = hlevel 1
 Abelian-group-structure ℓ .id-is-hom .is-group-hom.pres-⋆ x y = refl
 Abelian-group-structure ℓ .∘-is-hom f g α β .is-group-hom.pres-⋆ x y =
   ap f (β .is-group-hom.pres-⋆ x y) ∙ α .is-group-hom.pres-⋆ (g x) (g y)
-Abelian-group-structure ℓ .id-hom-unique {s = s} {t} α _ = p where
-  open Abelian-group-on
 
-  p : s ≡ t
-  p i ._*_ x y = α .is-group-hom.pres-⋆ x y i
-  p i .has-is-ab = is-prop→pathp
-    (λ i → hlevel {T = is-abelian-group (λ x y → p i ._*_ x y)} 1)
-    (s .has-is-ab) (t .has-is-ab) i
+instance
+  Ab-univalent
+    : ∀ {ℓ} → is-univalent-structure (Abelian-group-structure ℓ)
+  Ab-univalent .is-univalent-structure.id-hom-unique {s = s} {t} α _ = p where
+    open Abelian-group-on
+
+    p : s ≡ t
+    p i ._*_ x y = α .is-group-hom.pres-⋆ x y i
+    p i .has-is-ab = is-prop→pathp
+      (λ i → hlevel {T = is-abelian-group (λ x y → p i ._*_ x y)} 1)
+      (s .has-is-ab) (t .has-is-ab) i
 
 Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
@@ -118,8 +126,9 @@ Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
 module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
 
 instance
-  Ab-equational : ∀ {ℓ} → is-equational (Abelian-group-structure ℓ)
-  Ab-equational .is-equational.invert-id-hom = Groups-equational .is-equational.invert-id-hom
+  Ab-equational : ∀ {ℓ} → is-equational-structure (Abelian-group-structure ℓ)
+  Ab-equational .is-equational-structure.invert-id-hom =
+    Groups-equational .is-equational-structure.invert-id-hom
 ```
 
 <!--

@@ -5,11 +5,12 @@ open import Algebra.Monoid using (is-monoid)
 open import Algebra.Group
 open import Algebra.Magma using (is-magma)
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
+open import Cat.Displayed.Total
+open import Cat.Displayed.Thin
 open import Cat.Prelude
 
-import Cat.Reasoning as Cat
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -21,9 +22,12 @@ module Algebra.Group.Cat.Base where
 ```agda
 private variable
   ℓ : Level
-open Cat.Displayed.Univalence.Thin public
+open Thin-structure
 open Functor
-import Cat.Reasoning as CR
+
+open Cat.Displayed.Total public using (∫hom; Funlike-∫Hom)
+open Cat.Displayed.Thin public using (Extensional-Hom)
+open ∫Hom public
 ```
 -->
 
@@ -44,8 +48,10 @@ Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
 Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =
   ap f (β .pres-⋆ x y) ∙ α .pres-⋆ _ _
 
-Group-structure ℓ .id-hom-unique {s = s} {t = t} α β i =
-  record
+instance
+  Groups-univalent : ∀ {ℓ} → is-univalent-structure (Group-structure ℓ)
+  Groups-univalent .is-univalent-structure.id-hom-unique {s = s} {t = t} α β i =
+    record
     { _⋆_          = λ x y → α .pres-⋆ x y i
     ; has-is-group =
       is-prop→pathp (λ i → is-group-is-prop {_*_ = λ x y → α .pres-⋆ x y i})
@@ -58,13 +64,14 @@ Groups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Groups ℓ = Structured-objects (Group-structure ℓ)
 
 Groups-is-category : ∀ {ℓ} → is-category (Groups ℓ)
-Groups-is-category = Structured-objects-is-category (Group-structure _)
+Groups-is-category = Structured-objects-is-category
 
 instance
-  Groups-equational : ∀ {ℓ} → is-equational (Group-structure ℓ)
-  Groups-equational .is-equational.invert-id-hom x .pres-⋆ a b = sym (x .pres-⋆ a b)
+  Groups-equational : ∀ {ℓ} → is-equational-structure (Group-structure ℓ)
+  Groups-equational .is-equational-structure.invert-id-hom x .pres-⋆ a b =
+    sym (x .pres-⋆ a b)
 
-module Groups {ℓ} = Cat (Groups ℓ)
+module Groups {ℓ} = Cr (Groups ℓ)
 
 Group : ∀ ℓ → Type (lsuc ℓ)
 Group _ = Groups.Ob

@@ -4,7 +4,7 @@ open import 1Lab.Function.Embedding
 
 open import Algebra.Ring
 
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Thin
 open import Cat.Prelude hiding (_*_ ; _+_)
 
 open import Data.Int.Properties
@@ -39,7 +39,7 @@ record CRing-on {ℓ} (R : Type ℓ) : Type ℓ where
 
 
 CRing-structure : ∀ ℓ → Thin-structure ℓ CRing-on
-CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure ℓ) where
+CRing-structure ℓ = Full-substructure CRing-on Ring-on emb (Ring-structure ℓ) where
   open CRing-on
   emb : ∀ X → CRing-on X ↪ Ring-on X
   emb X .fst = has-ring-on
@@ -55,6 +55,10 @@ CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure
                   i j
               })
       (commutes→square (∙-cancelr p q ∙ sym (∙-idr p)))
+
+instance
+  CRings-univalent : ∀ {ℓ} → is-univalent-structure (CRing-structure ℓ)
+  CRings-univalent = Full-substructure-univalent Rings-univalent
 
 CRings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 CRings ℓ = Structured-objects (CRing-structure ℓ)

@@ -424,8 +424,8 @@ displayed categories are used quite a lot in the 1Lab in an
 organizational role.
 
 ```agda
-open import Cat.Displayed.Base            -- Displayed categories
-open import Cat.Displayed.Univalence.Thin -- As categories of structured objects
+open import Cat.Displayed.Base -- Displayed categories
+open import Cat.Displayed.Thin -- As categories of structured objects
 ```
 
 However, displayed categories really come into their own to formalise

@@ -8,6 +8,8 @@ open import Algebra.Group.Concrete
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Cat.Displayed.Thin
+
 open import Data.Set.Truncation
 
 open import Homotopy.Space.Suspension

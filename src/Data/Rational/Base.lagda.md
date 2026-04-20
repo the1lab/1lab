@@ -8,7 +8,7 @@ open import Algebra.Ring.Localisation hiding (_/_ ; Fraction)
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
 open import Algebra.Monoid
-open import Algebra.Ring
+open import Algebra.Ring hiding (fst; snd)
 
 open import Data.Set.Coequaliser.Split
 open import Data.Nat.Divisible.GCD
