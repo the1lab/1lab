@@ -193,15 +193,15 @@ base-changes
   → Functor
       (Locally-discrete (B ^op) .Prebicategory.Hom a b)
       Cat[ Fibre E a , Fibre E b ]
-base-changes = Disc'-adjunct base-change
+base-changes = Disc-diagram base-change
 
 base-change-coherence
-  : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ g)
+  : ∀ {a b} {b' : Ob[ b ]} {f g : Hom a b} (p : f ≡ᵢ g)
   → π* g b' ∘' base-changes .F₁ p .η b'
-  ≡[ idr _ ∙ sym p ]
+  ≡[ idr _ ∙ sym (Id≃path.to p) ]
     π* f b'
-base-change-coherence {b' = b'} {f} = J
-  (λ g p → π* g b' ∘' base-changes .F₁ p .η b' ≡[ idr _ ∙ sym p ] π* f b')
+base-change-coherence {b' = b'} {f} = Jᵢ
+  (λ g p → π* g b' ∘' base-changes .F₁ p .η b' ≡[ idr _ ∙ sym (Id≃path.to p) ] π* f b')
   (elimr' refl Regularity.reduce!)
 ```
 
@@ -266,7 +266,7 @@ is by definition of the unitor.
 Fibres .lax .left-unit f = ext λ a' →
   π*.uniquep₂ _ refl refl _ _
     (begin
-      _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+      _ ≡[]⟨ Fib.pulllf (base-change-coherence (Id≃path.from (idr f))) ⟩
       _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
       _ ≡[]⟨ pullr[] _ (π*.commutesv id') ⟩
       _ ∎[])
@@ -309,7 +309,7 @@ of the unitor, and the top square is by definition of `rebase`{.Agda}
 Fibres .lax .right-unit f = ext λ a' →
   π*.uniquep₂ _ refl refl _ _
     (begin
-      _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+      _ ≡[]⟨ Fib.pulllf (base-change-coherence (Id≃path.from (idl f))) ⟩
       _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
       _ ≡[]⟨ extendr[] id-comm (π*.commutesp _ _) ⟩
       _ ≡[]⟨ eliml[] _ (π*.commutesv _) ⟩
@@ -368,7 +368,7 @@ lifts, by the commutativity of the following diagram.
 ```agda
 Fibres .lax .hexagon f g h = ext λ a' → π*.uniquep₂ _ refl _ _ _
   (begin
-    _ ≡[]⟨ Fib.pulllf (base-change-coherence _) ⟩
+    _ ≡[]⟨ Fib.pulllf (base-change-coherence (Id≃path.from (assoc _ _ _))) ⟩
     _ ≡[]⟨ Fib.pulllf (π*.commutesv _) ⟩
     _ ≡[]⟨ extendr[] _ (π*.commutesv _) ⟩
     _ ∎[]

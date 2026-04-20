@@ -62,17 +62,7 @@ defined above.
     p false = refl
     p true  = refl
 
-    q : ∀ {x y} (f : x ≡ y) → _
-    q {false} {false} p =
-      F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
-      F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ≡˘⟨ transport-refl id ⟩
-      transport refl id ∎
-    q {true} {true} p =
-      F .F₁ p           ≡⟨ ap (F .F₁) prop! ⟩
-      F .F₁ refl        ≡⟨ F .F-id ⟩
-      id                ≡˘⟨ transport-refl id ⟩
-      transport refl id ∎
-    q {false} {true} p = absurd (true≠false (sym p))
-    q {true} {false} p = absurd (true≠false p)
+    q : ∀ {x y} (f : x ≡ᵢ y) → _
+    q {true}  reflᵢ = F .F-id
+    q {false} reflᵢ = F .F-id
 ```

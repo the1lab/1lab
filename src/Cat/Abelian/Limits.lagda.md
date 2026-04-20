@@ -167,8 +167,8 @@ $$.
     split-remark = ip.unique ip.π (λ _ → A.idr _) ∙ sym (ip.unique _ πΣδπ) where
       sum-δ-π : ∀ i → ∑ {I} _ (λ j → δ j i A.∘ ip.π j) ≡ ip.π i
       sum-δ-π i = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
-        (A.eliml refl) λ j i≠j →
-          ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (j ≡ᵢ? i)) refl ∙ A.∘-zero-l
+        (A.eliml (ap (δ' i i) (prop! {x = i ≡ᵢ? i} {yes reflᵢ})))
+        λ j i≠j → ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (j ≡ᵢ? i)) refl ∙ A.∘-zero-l
 
       πΣδπ : ∀ i → ip.π i A.∘ split ≡ ip.π i
       πΣδπ i =
@@ -227,7 +227,7 @@ f\pi_i$, then we certainly have $(\sum_i f'_i) \iota_j$ = $f$!
       where
         remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i
           (λ j → (f j A.∘ ip.π j) A.∘ ip.tuple (λ v → δ i v))
-          (A.cancelr ip.commute)
+          (A.cancelr (ip.commute ∙ ap (δ' i i) (prop! {x = i ≡ᵢ? i} {yes reflᵢ})))
           λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (i ≡ᵢ? j))
                   ∙ A.∘-zero-r
 ```

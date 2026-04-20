@@ -79,8 +79,8 @@ functor `Γ`{.Agda} we defined above. Then we define the adjunction
 Disc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
 Disc .F₀ S = Disc' S , S .is-tr
 Disc .F₁ = lift-disc
-Disc .F-id = Functor-path (λ x → refl) λ f → refl
-Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
+Disc .F-id = Functor-path (λ x → refl) λ f → prop!
+Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → prop!
 
 Disc⊣Γ : Disc {ℓ} ⊣ Γ
 Disc⊣Γ = adj where
@@ -121,38 +121,16 @@ morphisms in discrete categories are paths, for a map $x \equiv y$ (in
 identity map suffices.
 
 ```agda
-  adj .counit = NT (λ x → F x) nat where
-    F : (x : ⌞ Strict-cats ℓ ℓ ⌟)
-      → Functor (Disc' (el _ (x .snd))) _
-    F X .F₀ x = x
-    F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
-    F X .F-id = transport-refl _
-    F X .F-∘ = lemma {A = X}
+  adj .counit = record where
+    η x = Disc-diagram λ x → x
+    is-natural x y f = Functor-path (λ x → refl) λ where
+      reflᵢ → sym (f .F-id)
 ```
-
-<!--
-```agda
-    abstract
-      nat : (x y : ⌞ Strict-cats ℓ ℓ ⌟)
-            (f : Strict-cats ℓ ℓ .Precategory.Hom x y)
-          → (F y F∘ (Disc F∘ Γ) .F₁ f) ≡ (f F∘ F x)
-      nat x y f =
-        Functor-path (λ x → refl)
-           (J' (λ x y p → subst (Y.Hom _) (ap (f .F₀) p) Y.id
-                        ≡ f .F₁ (subst (X.Hom _) p X.id))
-               λ _ → transport-refl _
-                  ∙∙ sym (f .F-id)
-                  ∙∙ ap (f .F₁) (sym (transport-refl _)))
-         where
-           module X = Precategory (x .fst)
-           module Y = Precategory (y .fst)
-```
--->
 
 Fortunately the triangle identities are straightforwardly checked.
 
 ```agda
-  adj .zig {x} = Functor-path (λ x i → x) λ f → x .is-tr _ _ _ _
+  adj .zig {x} = Functor-path (λ x i → x) λ f → prop!
   adj .zag = refl
 ```
 
@@ -185,10 +163,10 @@ both directions:
 Γ⊣Codisc : Γ ⊣ Codisc {ℓ}
 Γ⊣Codisc = adj where
   adj : _ ⊣ _
-  adj .unit =
-    NT (λ x → record { F₀ = λ x → x ; F₁ = λ _ → lift tt
-                     ; F-id = refl ; F-∘ = λ _ _ → refl })
-       λ x y f → Functor-path (λ _ → refl) λ _ → refl
+  adj .unit = record where
+    η x = record
+      { F₀ = λ x → x ; F₁ = λ _ → lift tt ; F-id = refl ; F-∘ = λ _ _ → refl }
+    is-natural x y f = Functor-path (λ _ → refl) λ _ → refl
   adj .counit = NT (λ _ x → x) λ x y f i o → f o
   adj .zig = refl
   adj .zag = Functor-path (λ _ → refl) λ _ → refl
@@ -311,8 +289,8 @@ quotient.
 Π₀⊣Disc : Π₀ ⊣ Disc {ℓ}
 Π₀⊣Disc = adj where
   adj : _ ⊣ _
-  adj .unit .η x = Disc-into _ inc quot
-  adj .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → squash _ _ _ _
+  adj .unit .η x = Disc-into _ inc λ m → Id≃path.from (quot m)
+  adj .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → prop!
 ```
 
 The adjunction `counit`{.Agda} is an assignment of functions
@@ -321,7 +299,7 @@ isomorphism: the set of connected components of a discrete category is
 the same set we started with.
 
 ```agda
-  adj .counit .η X = Quot-elim (λ _ → X .is-tr) (λ x → x) λ x y r → r
+  adj .counit .η X = Quot-elim (λ _ → X .is-tr) (λ x → x) λ x y r → Id≃path.to r
   adj .counit .is-natural x y f = ext λ _ → refl
 ```
 
@@ -329,7 +307,7 @@ The triangle identities are again straightforwardly checked.
 
 ```agda
   adj .zig {x} = ext λ _ → refl
-  adj .zag = Functor-path (λ x → refl) λ f → refl
+  adj .zag = Functor-path (λ x → refl) λ f → prop!
 ```
 
 Furthermore, we can prove that the connected components of a product
