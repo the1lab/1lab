@@ -43,27 +43,34 @@ For technical reasons, we prefer to define this category using the
 
 ```agda
 Disc : (A : Type ℓ) → is-groupoid A → Precategory ℓ ℓ
-Disc A A-grpd .Ob          = A
-Disc A A-grpd .Hom         = _≡ᵢ_
-Disc A A-grpd .Hom-set     = ≡ᵢ-is-hlevel' {n = 2} A-grpd
-Disc A A-grpd .id          = reflᵢ
-Disc A A-grpd ._∘_ p q     = q ∙ᵢ p
-Disc A A-grpd .idr _       = refl
-Disc A A-grpd .idl _       = ∙ᵢ-idr _
-Disc A A-grpd .assoc p q r = sym (∙ᵢ-assoc r q p)
-
-Disc' : Set ℓ → Precategory ℓ ℓ
-Disc' A = Disc ∣ A ∣ h module Disc' where abstract
-  h : is-groupoid ∣ A ∣
-  h = is-hlevel-suc 2 (A .is-tr)
+Disc A A-grpd = record where
+  Ob          = A
+  Hom         = _≡ᵢ_
+  Hom-set     = ≡ᵢ-is-hlevel' {n = 2} A-grpd
+  id          = reflᵢ
+  _∘_ p q     = q ∙ᵢ p
+  idr _       = refl
+  idl _       = ∙ᵢ-idr _
+  assoc p q r = sym (∙ᵢ-assoc r q p)
 ```
+
+<!--
+```agda
+Disc! : ∀ {ℓ} {U : Type ℓ} ⦃ _ : Underlying U ⦄ (T : U) ⦃ _ : H-Level ⌞ T ⌟ 3 ⦄ → Precategory _ _
+Disc! A = Disc ⌞ A ⌟ h module Disc! where abstract
+  h : is-groupoid ⌞ A ⌟
+  h = hlevel 3
+
+{-# DISPLAY Disc {ℓ} A (Disc!.h {_} _ ⦃ i ⦄) = Disc! {ℓ} A ⦃ i ⦄ #-}
+```
+-->
 
 By construction, this is a [[univalent|univalent category]]
 [[groupoid|pregroupoid]]:
 
 ```agda
 Disc-is-category : ∀ {A : Type ℓ} {A-grpd} → is-category (Disc A A-grpd)
-Disc-is-category .to-path is              = Id≃path.to (is .to)
+Disc-is-category .to-path is = Id≃path.to (is .to)
 Disc-is-category .to-path-over {a = a} is with is .to in w
 ... | reflᵢ = ≅-pathp _ _ _ (Id≃path.to (symᵢ w))
 
@@ -93,52 +100,40 @@ category induces a functor.
 
 ```agda
 Disc-diagram
-  : {X : Type ℓ} {iss : is-groupoid X}
+  : ∀ {X : Type ℓ} {xh}
   → (X → Ob C)
-  → Functor (Disc X iss) C
-Disc-diagram {C = C} {X = X} f = F where
-  module C = Precategory C
-
-  F : Functor _ _
-  F .F₀       = f
-  F .F₁ reflᵢ = C.id
-  F .F-id     = refl
-  F .F-∘ reflᵢ reflᵢ = sym (C.idl C.id)
+  → Functor (Disc X xh) C
+Disc-diagram {C = C} f .F₀       = f
+Disc-diagram {C = C} f .F₁ reflᵢ = C .id
+Disc-diagram {C = C} f .F-id = refl
+Disc-diagram {C = C} f .F-∘ reflᵢ reflᵢ = sym (C .idl _)
 ```
-
-<!--
-```agda
-Disc-diagram!
-  : ∀ ⦃ iss : H-Level {ℓ} X 3 ⦄
-  → (X → Ob C)
-  → Functor (Disc X (hlevel 3)) C
-Disc-diagram! = Disc-diagram
-```
--->
 
 As a corollary, we can lift any function between underlying types to a
 functor between discrete categories.
 
 ```agda
-lift-disc : {A : Set ℓ} {B : Set ℓ'} → (∣ A ∣ → ∣ B ∣) → Functor (Disc' A) (Disc' B)
+lift-disc
+  : ∀ {A : Type ℓ} {B : Type ℓ'} {ah bh} (f : A → B)
+  → Functor (Disc A ah) (Disc B bh)
 lift-disc {A = A} f = Disc-diagram f
 ```
 
 <!--
 ```agda
 Disc-into
-  : ∀ {ℓ} (X : Set ℓ)
-  → (F : C .Ob → ∣ X ∣)
+  : ∀ {ℓ} {X : Type ℓ} {xh} ⦃ _ : H-Level X 2 ⦄
+  → (F : C .Ob → ⌞ X ⌟)
   → (F₁ : ∀ {x y} → C .Hom x y → F x ≡ᵢ F y)
-  → Functor C (Disc' X)
-Disc-into X F F₁ .F₀      = F
-Disc-into X F F₁ .F₁      = F₁
-Disc-into X F F₁ .F-id    = ≡ᵢ-is-hlevel' {n = 1} (X .is-tr) _ _ _ _
-Disc-into X F F₁ .F-∘ _ _ = ≡ᵢ-is-hlevel' {n = 1} (X .is-tr) _ _ _ _
+  → Functor C (Disc X xh)
+Disc-into F F₁ .F₀      = F
+Disc-into F F₁ .F₁      = F₁
+Disc-into F F₁ .F-id    = hlevel!
+Disc-into F F₁ .F-∘ _ _ = hlevel!
 
 Disc-natural
-  : ∀ {X : Set ℓ}
-  → {F G : Functor (Disc' X) C}
+  : ∀ {X : Type ℓ} {xh}
+  → {F G : Functor (Disc X xh) C}
   → (∀ x → C .Hom (F .F₀ x) (G .F₀ x))
   → F => G
 Disc-natural fam .η = fam
@@ -157,8 +152,10 @@ Disc-natural₂ {C = C} {F = F} {G = G} fam .is-natural x y (reflᵢ , reflᵢ) 
 
 open _≅_
 open Inverses
-Disc-natural-iso : ∀ {X : Set ℓ}
-  → {F G : Functor (Disc' X) C}
+
+Disc-natural-iso
+  : ∀ {X : Type ℓ} {xh}
+  → {F G : Functor (Disc X xh) C}
   → (∀ x → Isomorphism C (F .F₀ x) (G .F₀ x))
   → F ≅ⁿ G
 Disc-natural-iso isos .to       = Disc-natural λ x → isos x .to

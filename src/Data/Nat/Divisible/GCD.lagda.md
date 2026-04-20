@@ -11,6 +11,7 @@ open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
+open import Data.Irr
 ```
 -->
 
@@ -165,10 +166,10 @@ sense of $<$) than the original input.
 ```agda
   euclid-< : ∀ y x → x < y → GCD y x
   euclid-< = Wf-induction _ <-wf _ λ where
-     x rec zero p    → x , is-gcd-0
-     x rec (suc y) p →
+    x rec zero p    → x , is-gcd-0
+    x rec (suc y) p →
       let (d , step) = rec (suc y) p (x % suc y) (x%y<y x (suc y))
-       in d , is-gcd-step step
+        in d , is-gcd-step step
 
 ```
 

@@ -376,7 +376,7 @@ proofs of linearity.
   curry-multilinear-map lin = ml where
     ml : Multilinear-map (suc n) _ _
     ml = from-linear-at (λ x → lin .map x .map) λ i xs r x y →
-      case fin-view i of λ where
+      caseω fin-view i of λ where
         zero → ap (λ e → applyᶠ (e .map) (xs .snd)) (Linear-map.linear lin r x y)
           ∙∙ apply-zipᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _ _
           ∙∙ ap₂ N._+_ (apply-mapᶠ {P = λ i → ⌞ Ms (fsuc i) ⌟} _ _ _) refl

@@ -13,8 +13,8 @@ system. For more details about the use of universes, see
 {-# BUILTIN TYPE     Type  #-}
 {-# BUILTIN SETOMEGA Typeω #-}
 
-{-# BUILTIN PROP      Prop  #-}
-{-# BUILTIN PROPOMEGA Propω #-}
+{-# BUILTIN PROP      SProp  #-}
+{-# BUILTIN PROPOMEGA SPropω #-}
 
 {-# BUILTIN STRICTSET      SSet  #-}
 {-# BUILTIN STRICTSETOMEGA SSetω #-}

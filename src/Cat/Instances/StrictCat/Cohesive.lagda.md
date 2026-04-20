@@ -77,7 +77,7 @@ functor `Γ`{.Agda} we defined above. Then we define the adjunction
 
 ```agda
 Disc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
-Disc .F₀ S = Disc' S , S .is-tr
+Disc .F₀ S = Disc! S , S .is-tr
 Disc .F₁ = lift-disc
 Disc .F-id = Functor-path (λ x → refl) λ f → prop!
 Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → prop!
@@ -289,7 +289,7 @@ quotient.
 Π₀⊣Disc : Π₀ ⊣ Disc {ℓ}
 Π₀⊣Disc = adj where
   adj : _ ⊣ _
-  adj .unit .η x = Disc-into _ inc λ m → Id≃path.from (quot m)
+  adj .unit .η x = Disc-into inc λ m → Id≃path.from (quot m)
   adj .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → prop!
 ```
 

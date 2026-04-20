@@ -274,7 +274,11 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
 
 ```agda
   G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
-  G≃ΩB = Iso→Equiv (decode base , iso (encode base) encode→decode (decode→encode base))
+  G≃ΩB .fst = decode base
+  G≃ΩB .snd = is-iso→is-equiv record where
+    from = encode base
+    rinv = encode→decode
+    linv = decode→encode base
 
   G≅π₁B : G Groups.≅ πₙ₊₁ 0 (Deloop , base)
   G≅π₁B = total-iso (_ , ∘-is-equiv (∥-∥₀-idempotent (squash base base)) (G≃ΩB .snd))
@@ -437,16 +441,15 @@ _that's_ an equivalence! A similar remark allows us to conclude that
 $\rm{winding}_x$ is a group homomorphism $\Loop (\B G, x) \to G$.
 
 ```agda
-  opaque
-    winding-is-equiv : ∀ x → is-equiv (winding {x})
-    winding-is-equiv = Deloop-elim-prop G _ (λ _ → hlevel 1) $
-      Equiv.inverse (G≃ΩB G) .snd
+  winding-is-equiv : ∀ x → is-equiv (winding {x})
+  winding-is-equiv = Deloop-elim-prop G _ (λ _ → hlevel 1) $
+    Equiv.inverse (G≃ΩB G) .snd
 
-    winding-is-group-hom : ∀ x →
-      is-group-hom (π₁Groupoid.on-Ω (Deloop G , x) (hlevel 3))
-        (G .snd) (winding {x})
-    winding-is-group-hom = Deloop-elim-prop G _ (λ x → hlevel 1) λ where
-      .pres-⋆ x y → encode.pres-⋆ G x y
+  winding-is-group-hom : ∀ x →
+    is-group-hom (π₁Groupoid.on-Ω (Deloop G , x) (hlevel 3))
+      (G .snd) (winding {x})
+  winding-is-group-hom = Deloop-elim-prop G _ (λ x → hlevel 1) λ where
+    .pres-⋆ x y → encode.pres-⋆ G x y
 ```
 
 We can then obtain a nice interface for working with `winding`{.Agda}.

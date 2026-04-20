@@ -5,6 +5,7 @@ include:
   _build
 flags:
   --cubical
+  --prop
   --no-load-primitives
   --postfix-projections
   --guardedness
@@ -12,3 +13,4 @@ flags:
   -W noUnsupportedIndexedMatch
   -W noRewriteVariablesBoundInSingleton
   --experimental-lazy-instances
+  --no-experimental-irrelevance

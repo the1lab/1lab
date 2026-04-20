@@ -14,15 +14,15 @@ module Data.Bool.Order where
 
 ```agda
 private
-  R : Bool → Bool → Type
-  R false _     = ⊤
-  R true  true  = ⊤
-  R true  false = ⊥
+  R : Bool → Bool → SProp
+  R false _     = ⊤ˢ
+  R true  true  = ⊤ˢ
+  R true  false = ⊥ˢ
 
 record _≤_ (x y : Bool) : Type where
   constructor lift
   field
-    .lower : R x y
+    lower : R x y
 ```
 
 <!--
@@ -35,8 +35,8 @@ instance
 
 ```agda
 ≤-refl : ∀ {x} → x ≤ x
-≤-refl {true}  = lift tt
-≤-refl {false} = lift tt
+≤-refl {true}  = _
+≤-refl {false} = _
 
 ≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
 ≤-trans {true}  {true}  {true}  p q = _
