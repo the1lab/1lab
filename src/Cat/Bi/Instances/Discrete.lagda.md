@@ -31,20 +31,26 @@ letting the hom-1-categories of $\bf{C}$ be the [[discrete categories]] on
 the Hom-sets of $\cC$.
 
 ```agda
-{-# TERMINATING #-}
+private
+  BHom : C.Ob → C.Ob → Precategory _ _
+  BHom x y = Disc! (C.Hom x y)
+
+  Bcompose : ∀ {x y z} → Bifunctor (BHom y z) (BHom x y) (BHom x z)
+  Bcompose = make-bifunctor λ where
+    .F₀ A B → A C.∘ B
+    .lmap → apᵢ (C._∘ _)
+    .rmap → apᵢ (_ C.∘_)
+    .lmap-id    → refl
+    .rmap-id    → refl
+    .lmap-∘ f g → prop!
+    .rmap-∘ f g → prop!
+    .lrmap  f g → prop!
+
 Locally-discrete : Prebicategory o ℓ ℓ
-Locally-discrete .Ob = C.Ob
-Locally-discrete .Hom x y = Disc' (el (C.Hom x y) (C.Hom-set x y))
-Locally-discrete .id = C.id
-Locally-discrete .compose = make-bifunctor λ where
-  .F₀ A B → A C.∘ B
-  .lmap → apᵢ (C._∘ _)
-  .rmap → apᵢ (_ C.∘_)
-  .lmap-id    → refl
-  .rmap-id    → refl
-  .lmap-∘ f g → prop!
-  .rmap-∘ f g → prop!
-  .lrmap  f g → prop!
+Locally-discrete .Ob  = C.Ob
+Locally-discrete .Hom = BHom
+Locally-discrete .id  = C.id
+Locally-discrete .compose = Bcompose
 Locally-discrete .unitor-l = to-natural-iso ni where
   ni : make-natural-iso _ _
   ni .make-natural-iso.eta x = Id≃path.from $ sym (C.idl x)

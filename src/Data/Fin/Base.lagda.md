@@ -110,7 +110,7 @@ that a type is inductively generated. We therefore expose a type
 of $\operatorname{Fin}(n)$ is `fzero`{.Agda} or `fsuc`{.Agda}.
 
 ```agda
-data Fin-view : {n : Nat} → Fin n → Type where
+data Fin-view : {n : Nat} → Fin n → Typeω where
   zero : ∀ {n}             → Fin-view {suc n} fzero
   suc  : ∀ {n} (i : Fin n) → Fin-view {suc n} (fsuc i)
 ```
@@ -123,7 +123,7 @@ fin-view : ∀ {n} (i : Fin n) → Fin-view i
 fin-view {suc n} fzero               = zero
 fin-view {suc n} (fin (suc i) ⦃ b ⦄) = suc (fin i ⦃ Nat.≤-peel b ⦄)
 
-fin-view {zero}  (fin _ ⦃ i<n ⦄) = absurd (Nat.¬suc≤0 i<n)
+fin-view {zero}  (fin _ ⦃ i<n ⦄) = absurdω (Nat.¬suc≤0 i<n)
 ```
 
 As a first application, we can prove that `Fin 0` is empty:

@@ -746,9 +746,9 @@ unglue-is-equiv
   : ∀ {ℓ ℓ'} {A : Type ℓ} (φ : I)
   → {B : Partial φ (Σ (Type ℓ') (_≃ A))}
   → is-equiv {A = Glue A B} (unattach φ)
-unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr
-  where module _ (ψ : I) (par : Partial ψ (fibre (unattach φ) y)) where
-    fib : .(p : IsOne φ)
+unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr where
+  module _ (ψ : I) (par : Partial ψ (fibre (unattach φ) y)) where
+    fib : (p : IsOne φ)
         → fibre (B p .snd .fst) y
           [ (ψ ∧ φ) ↦ (λ { (ψ = i1) (φ = i1) → par 1=1 }) ]
     fib p = is-contr→extend (B p .snd .snd .is-eqv y) (ψ ∧ φ) _
@@ -758,9 +758,9 @@ unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr
     sys j (φ = i1) = outS (fib 1=1) .snd (~ j)
     sys j (ψ = i1) = par 1=1 .snd (~ j)
 
-    ctr = inS $ₛ attach φ (λ { (φ = i1) → outS (fib 1=1) .fst })
-                  (inS (hcomp (φ ∨ ψ) sys))
-               , (λ i → hfill (φ ∨ ψ) (~ i) sys)
+    ctr = inS $ₛ
+        attach φ (λ { (φ = i1) → outS (fib 1=1) .fst }) (inS (hcomp (φ ∨ ψ) sys))
+      , λ i → hfill (φ ∨ ψ) (~ i) sys
 
 ua-unglue-is-equiv
   : ∀ {ℓ} {A B : Type ℓ} (f : A ≃ B)

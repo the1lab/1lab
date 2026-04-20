@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 
 open import Data.Nat.Solver
 open import Data.Dec
+open import Data.Irr
 open import Data.Nat
 open import Data.Sum
 ```
@@ -235,15 +236,15 @@ Canonical n = Σ[ x ∈ Nat ] Σ[ y ∈ Nat ] (diff x y ≡ n)
 
 canonicalise : (n : Int) → Canonical n
 canonicalise = go where
-  lemma₁ : ∀ x y → x < y → diff 0 (y - x) ≡ diff x y
-  lemma₂ : ∀ x y → y < x → diff (x - y) 0 ≡ diff x y
-  lemma₃ : ∀ x y → @irr x ≡ y → diff 0 0       ≡ diff x y
+  lemma₁ : ∀ x y → x < y       → diff 0 (y - x) ≡ diff x y
+  lemma₂ : ∀ x y → y < x       → diff (x - y) 0 ≡ diff x y
+  lemma₃ : ∀ x y → Irr (x ≡ y) → diff 0 0       ≡ diff x y
 
   work : ∀ x y → Canonical (diff x y)
   work x y with ≤-split x y
   ... | inl p       = 0     , y - x , lemma₁ x y p
   ... | inr (inl p) = x - y , 0     , lemma₂ x y p
-  ... | inr (inr p) = 0     , 0     , lemma₃ x y p
+  ... | inr (inr p) = 0     , 0     , lemma₃ x y (forget p)
 ```
 
 It remains to show that the procedure `work`{.Agda} respects the
@@ -266,9 +267,9 @@ from this page. You can unfold it below if you dare:
   lemma₂ (suc x) (suc y) p = lemma₂ x y (≤-peel p) ∙ Int.quot x y
 
   lemma₃ zero zero p       = refl
-  lemma₃ zero (suc y) p    = absurd (zero≠suc p)
-  lemma₃ (suc x) zero p    = absurd (suc≠zero p)
-  lemma₃ (suc x) (suc y) p = lemma₃ x y (suc-inj p) ∙ Int.quot x y
+  lemma₃ zero (suc y) p    = absurd (zero≠suc (recover p))
+  lemma₃ (suc x) zero p    = absurd (suc≠zero (recover p))
+  lemma₃ (suc x) (suc y) p = lemma₃ x y (suc-inj <$> p) ∙ Int.quot x y
 
   abstract
     work-respects-quot

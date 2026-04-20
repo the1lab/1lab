@@ -22,7 +22,7 @@ useful for expressing binary [[products]] and [[coproducts]] as
 
 ```agda
 2-object-category : Precategory _ _
-2-object-category = Disc' (el! Bool)
+2-object-category = Disc! Bool
 ```
 
 A diagram of shape $\twocat$ in $\cC$ simply consists of two objects of

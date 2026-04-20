@@ -98,7 +98,7 @@ Bool-elim A at af false = af
 record So (b : Bool) : Type where
   constructor oh
   field
-    @irr ⦃ is-so ⦄ : if b then ⊤ else ⊥
+    ⦃ is-so ⦄ : if b then ⊤ˢ else ⊥ˢ
 ```
 
 <!--

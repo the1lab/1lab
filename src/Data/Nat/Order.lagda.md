@@ -35,13 +35,13 @@ naturals automatically.
 
 <!--
 ```agda
-≤-refl' : ∀ {x y} → .(x ≡ y) → x ≤ y
+≤-refl' : ∀ {x y} → x ≡ y → x ≤ y
 ≤-refl' {zero} {zero} p = 0≤x
 ≤-refl' {zero} {suc y} p = absurd (zero≠suc p)
 ≤-refl' {suc x} {zero} p = absurd (suc≠zero p)
 ≤-refl' {suc x} {suc y} p = s≤s (≤-refl' (suc-inj p))
 
-≤-reflᵢ : ∀ {x y} → .(x ≡ᵢ y) → x ≤ y
+≤-reflᵢ : ∀ {x y} → x ≡ᵢ y → x ≤ y
 ≤-reflᵢ p = ≤-refl' (Id-identity-system .to-path p)
 ```
 -->

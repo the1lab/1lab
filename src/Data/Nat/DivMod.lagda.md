@@ -80,8 +80,9 @@ $$
 $$
 
 ```agda
-  divide-pos (suc a) b | divmod q' r' (forget p) s | inl r'+1<b =
-    divmod q' (suc r') (forget (ap suc p ∙ sym (+-sucr (q' * b) r'))) r'+1<b
+  divide-pos (suc a) b | divmod q' r' p s | inl r'+1<b = divmod q' (suc r')
+    (forget (ap suc (recover p) ∙ sym (+-sucr (q' * b) r')))
+    r'+1<b
 ```
 
 The other case --- that in which $1 + r' = b$ --- is more interesting.
@@ -91,10 +92,10 @@ in this case, $q = 1 + q'$ and $r = 0$, which works out because ($0 < b$
 and) of some arithmetic. See for yourself:
 
 ```agda
-  divide-pos (suc a) (suc b') | divmod q' r' (forget p) s | inr (inr r'+1=b) =
+  divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inr r'+1=b) =
     divmod (suc q') 0
       (forget $ᵢ
-        suc a                           ≡⟨ ap suc p ⟩
+        suc a                           ≡⟨ ap suc (recover p) ⟩
         suc (q' * (suc b') + r')        ≡˘⟨ ap (λ e → suc (q' * e + r')) r'+1=b ⟩
         suc (q' * (suc r') + r')        ≡⟨ nat! ⟩
         suc (r' + q' * (suc r') + zero) ≡⟨ ap (λ e → e + q' * e + 0) r'+1=b ⟩
@@ -153,8 +154,6 @@ div-helper k m (suc n) (suc j) = div-helper k       m n j
 
 {-# BUILTIN NATDIVSUCAUX div-helper #-}
 {-# BUILTIN NATMODSUCAUX mod-helper #-}
-
--- _ = {! mod-helper 0 0 4294967296 2  !}
 
 _/ₙ_ : (d1 d2 : Nat) ⦃ _ : Positive d2 ⦄ → Nat
 d1 /ₙ suc d2 = div-helper 0 d2 d1 d2
@@ -221,26 +220,21 @@ instance
         r' = s≤s (≤-trans (+-≤l y (z + y * z)) (≤-refl' (sym r)))
 
       lemma' : ∀ q q' b r r' → r' < r → r < b → q * b + r ≡ q' * b + r' → ⊥
-      lemma' q q' b r r' r'<r r<b β =
-        <-≤-asym q<q' q'≤q
-        where
-          r-r'<b : r - r' < b
-          r-r'<b = ≤-trans (s≤s (monus-≤ r r')) r<b
+      lemma' q q' b r r' r'<r r<b β = <-≤-asym q<q' q'≤q where
+        r-r'<b : r - r' < b
+        r-r'<b = ≤-trans (s≤s (monus-≤ r r')) r<b
 
-          q<q' : q < q'
-          q<q' =
-            *-reflects-<r b ⦃ ≤-trans (s≤s 0≤x) r<b ⦄ $
-            +-balance-<l (q' * b) r' (q * b) r (sym β) (r'<r)
+        q<q' : q < q'
+        q<q' = *-reflects-<r b ⦃ ≤-trans (s≤s 0≤x) r<b ⦄ $
+          +-balance-<l (q' * b) r' (q * b) r (sym β) (r'<r)
 
-          q'≤q : q' ≤ q
-          q'≤q =
-            monus-zero→≤ q' q $
-            lemma (r - r') b (q' - q) r-r'<b $
-            sym $ monus-swapr (b * (q' - q)) 0 (r - r') $
-              b * (q' - q) + 0 ≡⟨ +-zeror _ ∙ *-commutative b (q' - q) ⟩
-              (q' - q) * b     ≡⟨ monus-distribr q' q b ⟩
-              q' * b - q * b   ≡˘⟨ monus-swapl (q * b) (r - r') (q' * b) (monus-exchanger (q * b) r (q' * b) r' β (<-weaken r'<r)) ⟩
-              r - r'           ∎
+        q'≤q : q' ≤ q
+        q'≤q = monus-zero→≤ q' q $ lemma (r - r') b (q' - q) r-r'<b $ sym $
+          monus-swapr (b * (q' - q)) 0 (r - r') $
+            b * (q' - q) + 0 ≡⟨ +-zeror _ ∙ *-commutative b (q' - q) ⟩
+            (q' - q) * b     ≡⟨ monus-distribr q' q b ⟩
+            q' * b - q * b   ≡˘⟨ monus-swapl (q * b) (r - r') (q' * b) (monus-exchanger (q * b) r (q' * b) r' β (<-weaken r'<r)) ⟩
+            r - r'           ∎
 ```
 -->
 
@@ -255,4 +249,5 @@ instance
       n∣r : (q' - q) * n ≡ r
       n∣r = monus-distribr q' q n ∙ sym (monus-swapl _ _ _ (sym (p ∙ recover α)))
     in <-≤-asym β (m∣sn→m≤sn (q' - q , n∣r))
+  {-# INCOHERENT Dec-∣ #-}
 ```

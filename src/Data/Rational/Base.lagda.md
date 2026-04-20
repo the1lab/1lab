@@ -535,10 +535,14 @@ integer fractions.
 ```agda
 reduce-resp : (x y : Fraction) → x ≈ y → reduce-fraction x ≡ reduce-fraction y
 reduce-resp f@(x / s [ s≠0 ]) f'@(y / t [ t≠0 ]) p =
-  reduce-fraction (x / s [ s≠0 ])             ≡⟨ sym (reduce-*r x s t s≠0 t≠0) ⟩
-  reduce-fraction ((x *ℤ t) / (s *ℤ t) [ _ ]) ≡⟨ ap reduce-fraction (Fraction-path {x = _ / _ [ *ℤ-positive s≠0 t≠0 ]} {_ / _ [ *ℤ-positive t≠0 s≠0 ]} (from-same-rational p) (*ℤ-commutative s t)) ⟩
-  reduce-fraction ((y *ℤ s) / (t *ℤ s) [ _ ]) ≡⟨ reduce-*r y t s t≠0 s≠0 ⟩
-  reduce-fraction (y / t [ t≠0 ])             ∎
+  let
+    st≠0 = *ℤ-positive s≠0 t≠0
+    ts≠0 = *ℤ-positive t≠0 s≠0
+  in
+    reduce-fraction (x / s [ s≠0 ])                ≡⟨ sym (reduce-*r x s t s≠0 t≠0) ⟩
+    reduce-fraction ((x *ℤ t) / (s *ℤ t) [ st≠0 ]) ≡⟨ ap reduce-fraction (Fraction-path {x = _ / _ [ st≠0 ]} {y = _ / _ [ ts≠0 ]} (from-same-rational p) (*ℤ-commutative s t)) ⟩
+    reduce-fraction ((y *ℤ s) / (t *ℤ s) [ ts≠0 ]) ≡⟨ reduce-*r y t s t≠0 s≠0 ⟩
+    reduce-fraction (y / t [ t≠0 ])                ∎
 
 integer-frac-splits : is-split-congruence L.Fraction-congruence
 integer-frac-splits = record
@@ -677,7 +681,7 @@ record Nonzero (x : Ratio) : Type where
   -- with the overlap pragmas; and we need those if we're gonna have
   -- e.g. Nonzero (p * q) as an instance.
   field
-    .lower : x ≠ 0
+    lower : x ≠ 0
 
 instance
   H-Level-Nonzero : ∀ {x n} → H-Level (Nonzero x) (suc n)

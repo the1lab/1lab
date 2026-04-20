@@ -624,9 +624,9 @@ tabulate-atom-true
   → ρ x ≡ true
   → tabulate ρ ⊢ atom x
 tabulate-atom-true i _ _ with fin-view i
-tabulate-atom-true {Γ = suc Γ} .fzero ρ x-true | zero with ρ 0
+tabulate-atom-true {Γ = suc Γ} .fzero ρ x-true | zero with ρ 0 in w
 ... | true  = hyp here
-... | false = absurd (true≠false $ sym x-true)
+... | false = absurd (true≠false (sym x-true ∙ Id≃path.to w))
 tabulate-atom-true {Γ = suc Γ} .(fsuc x) ρ x-true | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-true x (ρ ∘ fsuc) x-true))
 
@@ -636,9 +636,9 @@ tabulate-atom-false
   → ρ x ≡ false
   → tabulate ρ ⊢ “¬” atom x
 tabulate-atom-false i _ _ with fin-view i
-tabulate-atom-false {Γ = suc Γ} .fzero ρ x-false | zero with ρ 0
+tabulate-atom-false {Γ = suc Γ} .fzero ρ x-false | zero with ρ 0 in w
 ... | false = hyp here
-... | true  = absurd (true≠false x-false)
+... | true  = absurd (true≠false (sym (Id≃path.to w) ∙ x-false))
 tabulate-atom-false {Γ = suc Γ} .(fsuc x) ρ x-false | suc x =
   rename (drop idrn) (bump-proof (tabulate-atom-false x (ρ ∘ fsuc) x-false))
 ```
