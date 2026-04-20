@@ -93,11 +93,9 @@ simple enough to establish by appropriately shuffling the data.
     pair-commutes
       : ∀ {y} {p1 : Hom y a} {p2 : Hom y b}
       → {i j : Bool}
-      → (p : i ≡ j)
+      → (p : i ≡ᵢ j)
       → D .F₁ p ∘ pair p1 p2 i ≡ pair p1 p2 j
-    pair-commutes {p1 = p1} {p2 = p2} =
-        J (λ _ p → D .F₁ p ∘ pair p1 p2 _ ≡ pair p1 p2 _)
-          (eliml (D .F-id))
+    pair-commutes {p1 = p1} {p2 = p2} reflᵢ = eliml (D .F-id)
 
     prod : is-product C (eps .η true) (eps .η false)
     prod .⟨_,_⟩ f g = lim.universal (pair f g) pair-commutes

@@ -151,15 +151,13 @@ the family fibration is fibrewise univalent whenever $\cC$ is.
 ```agda
 module _ {ℓ} (X : Set ℓ) where
   private
-    lift-f = Disc'-adjunct {C = C} {iss = is-hlevel-suc 2 (X .is-tr)}
+    lift-f = Disc-diagram {C = C} {iss = is-hlevel-suc 2 (X .is-tr)}
     module F = Cat.Reasoning (Fibre Family X)
 
   Families→functors : Functor (Fibre Family X) Cat[ Disc' X , C ]
-  Families→functors .F₀ = Disc'-adjunct
+  Families→functors .F₀ = Disc-diagram
   Families→functors .F₁ f .η = f
-  Families→functors .F₁ {X} {Y} f .is-natural x y =
-    J (λ y p → f y ∘ lift-f X .F₁ p ≡ lift-f Y .F₁ p ∘ f x)
-      (ap (f x ∘_) (lift-f X .F-id) ∙∙ id-comm ∙∙ ap (_∘ f x) (sym (lift-f Y .F-id)))
+  Families→functors .F₁ {X} {Y} f .is-natural x y reflᵢ = id-comm
   Families→functors .F-id = ext λ _ → refl
   Families→functors .F-∘ f g =
     ap (Families→functors .F₁) (transport-refl _) ∙ ext (λ i → refl)
@@ -172,9 +170,8 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors-is-iso : is-precat-iso Families→functors
   Families→functors-is-iso .has-is-ff = Families→functors-is-ff
   Families→functors-is-iso .has-is-iso = is-iso→is-equiv $ iso F₀
-    (λ x → Functor-path (λ _ → refl)
-      (J (λ _ p → lift-f (x .F₀) .F₁ p ≡ x .F₁ p)
-          (lift-f (x .F₀) .F-id ∙ sym (x .F-id))))
+    (λ x → Functor-path (λ _ → refl) λ where
+      reflᵢ → sym (x .F-id))
     (λ x → refl)
 
   Families-are-categories : is-category C → is-category (Fibre Family X)

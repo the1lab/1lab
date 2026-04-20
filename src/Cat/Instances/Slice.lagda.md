@@ -640,10 +640,10 @@ dependent function is automatically a natural transformation.
 
       nt : F => G
       nt .η = eta
-      nt .is-natural _ _ = J (λ _ p → eta _ ⊙ F .F₁ p ≡ G .F₁ p ⊙ eta _) $
-        eta _ ⊙ F .F₁ refl ≡⟨ ap (eta _ ⊙_) (F .F-id) ⟩
-        eta _              ≡˘⟨ ap (_⊙ eta _) (G .F-id) ⟩
-        G .F₁ refl ⊙ eta _ ∎
+      nt .is-natural _ _ reflᵢ =
+        eta _ ⊙ F .F₁ reflᵢ ≡⟨ ap (eta _ ⊙_) (F .F-id) ⟩
+        eta _               ≡˘⟨ ap (_⊙ eta _) (G .F-id) ⟩
+        G .F₁ reflᵢ ⊙ eta _ ∎
 ```
 
 <!--
@@ -665,10 +665,7 @@ _isomorphic_ to $p$ in $\Sets/I$, it's actually _identical_ to $p$!
   Total-space-is-eso : is-split-eso Total-space
   Total-space-is-eso fam = functor , path→iso path where
     functor : Functor _ _
-    functor .F₀ i    = el! (fibre (fam .map) i)
-    functor .F₁ p    = subst (fibre (fam .map)) p
-    functor .F-id    = funext transport-refl
-    functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
+    functor = Disc-diagram (λ i → el! (fibre (fam .map) i))
 
     path : Total-space .F₀ functor ≡ fam
     path = /-Obj-path (n-ua (Total-equiv _  e⁻¹)) (ua→ λ a → sym (a .snd .snd))

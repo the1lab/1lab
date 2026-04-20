@@ -83,11 +83,9 @@ is-colimit→is-coproduct {a} {b} {K} {eta} colim = coprod where
   copair-commutes
     : ∀ {y} {p1 : Hom a y} {p2 : Hom b y}
     → {i j : Bool}
-    → (p : i ≡ j)
+    → (p : i ≡ᵢ j)
     → copair p1 p2 j ∘ D .F₁ p ≡ copair p1 p2 i
-  copair-commutes {p1 = p1} {p2 = p2} =
-      J (λ _ p → copair p1 p2 _ ∘ D .F₁ p ≡ copair p1 p2 _)
-        (elimr (D .F-id))
+  copair-commutes {p1 = p1} {p2 = p2} reflᵢ = elimr (D .F-id)
 
   coprod : is-coproduct C (eta .η true) (eta .η false)
   coprod .[_,_] f g = colim.universal (copair f g) copair-commutes

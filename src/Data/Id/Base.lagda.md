@@ -159,12 +159,6 @@ abstract
   ≡?-no : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x y : A} (p : x ≠ y) → d .decide x y ≡ᵢ no p
   ≡?-no = decide-no _
 
-  discrete-id-yes : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ {x : A} (p : Dec (x ≡ x)) → discrete-id d p ≡ yes reflᵢ
-  discrete-id-yes {x = x} p
-    rewrite decide-yes ⦃ prop-instance (Discrete→is-set auto x x) ⦄ p refl =
-    ap yes (transport-refl _)
-
-{-# REWRITE discrete-id-yes #-}
 {-# DISPLAY discrete-id {ℓ} {A} {x} {y} d _ = _≡ᵢ?_ {ℓ} {A} x y ⦃ d ⦄ #-}
 
 Discrete-inj'

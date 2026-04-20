@@ -304,6 +304,14 @@ complicated.</summary>
     abstract
       s : ∀ {i n} → H-Level (A i) (2 + n)
       s {i} = basic-instance 2 (Listing→is-set (coe (λ i → Listing (A i)) i1 i li))
+
+  Listing-≡ᵢ : ∀ {A : Type ℓ} ⦃ _ : Listing A ⦄ {x y : A} → Listing (x ≡ᵢ y)
+  Listing-≡ᵢ ⦃ l ⦄ {x} {y} = Listing-prop where
+    instance
+      _ = Listing→Discrete l
+      _ = basic-instance 2 (Listing→is-set l)
+      d : ∀ {x y} → Dec (x ≡ᵢ y)
+      d {x} {y} = x ≡ᵢ? y
 ```
 -->
 
@@ -612,6 +620,9 @@ instance
   Finite-PathP
     : ∀ {A : I → Type ℓ} ⦃ s : Finite (A i1) ⦄ {x y}
     → Finite (PathP A x y)
+  Finite-≡ᵢ
+    : ∀ {A : Type ℓ} ⦃ s : Finite A ⦄ {x y : A}
+    → Finite (x ≡ᵢ y)
 
   Finite-∥-∥ : ⦃ _ : Dec A ⦄ → Finite ∥ A ∥
 ```
@@ -650,6 +661,10 @@ instance
   Finite-PathP ⦃ fa ⦄ = do
     a ← fa
     pure (Listing-PathP ⦃ a ⦄)
+
+  Finite-≡ᵢ ⦃ fa ⦄ = do
+    a ← fa
+    pure (Listing-≡ᵢ ⦃ a ⦄)
 
   Finite-Lift ⦃ fa ⦄ = do
     a ← fa

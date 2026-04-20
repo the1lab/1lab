@@ -38,8 +38,8 @@ Locally-discrete .Hom x y = Disc' (el (C.Hom x y) (C.Hom-set x y))
 Locally-discrete .id = C.id
 Locally-discrete .compose = make-bifunctor λ where
   .F₀ A B → A C.∘ B
-  .lmap → ap (C._∘ _)
-  .rmap → ap (_ C.∘_)
+  .lmap → apᵢ (C._∘ _)
+  .rmap → apᵢ (_ C.∘_)
   .lmap-id    → refl
   .rmap-id    → refl
   .lmap-∘ f g → prop!
@@ -47,25 +47,25 @@ Locally-discrete .compose = make-bifunctor λ where
   .lrmap  f g → prop!
 Locally-discrete .unitor-l = to-natural-iso ni where
   ni : make-natural-iso _ _
-  ni .make-natural-iso.eta x = sym (C.idl x)
-  ni .make-natural-iso.inv x = C.idl x
-  ni .make-natural-iso.eta∘inv x = ∙-invr (C.idl x)
-  ni .make-natural-iso.inv∘eta x = ∙-invl (C.idl x)
-  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
+  ni .make-natural-iso.eta x = Id≃path.from $ sym (C.idl x)
+  ni .make-natural-iso.inv x = Id≃path.from $ C.idl x
+  ni .make-natural-iso.eta∘inv x = prop!
+  ni .make-natural-iso.inv∘eta x = prop!
+  ni .make-natural-iso.natural x y f = prop!
 Locally-discrete .unitor-r = to-natural-iso ni where
   ni : make-natural-iso _ _
-  ni .make-natural-iso.eta x = sym (C.idr x)
-  ni .make-natural-iso.inv x = C.idr x
-  ni .make-natural-iso.eta∘inv x = ∙-invr (C.idr x)
-  ni .make-natural-iso.inv∘eta x = ∙-invl (C.idr x)
-  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
+  ni .make-natural-iso.eta x = Id≃path.from $ sym (C.idr x)
+  ni .make-natural-iso.inv x = Id≃path.from $ C.idr x
+  ni .make-natural-iso.eta∘inv x = prop!
+  ni .make-natural-iso.inv∘eta x = prop!
+  ni .make-natural-iso.natural x y f = prop!
 Locally-discrete .associator = to-natural-iso ni where
   ni : make-natural-iso _ _
-  ni .make-natural-iso.eta x = sym (C.assoc _ _ _)
-  ni .make-natural-iso.inv x = C.assoc _ _ _
-  ni .make-natural-iso.eta∘inv x = ∙-invr (C.assoc _ _ _)
-  ni .make-natural-iso.inv∘eta x = ∙-invl (C.assoc _ _ _)
-  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
-Locally-discrete .triangle f g = C.Hom-set _ _ _ _ _ _
-Locally-discrete .pentagon f g h i = C.Hom-set _ _ _ _ _ _
+  ni .make-natural-iso.eta x = Id≃path.from $ sym (C.assoc _ _ _)
+  ni .make-natural-iso.inv x = Id≃path.from $ C.assoc _ _ _
+  ni .make-natural-iso.eta∘inv x = prop!
+  ni .make-natural-iso.inv∘eta x = prop!
+  ni .make-natural-iso.natural x y f = prop!
+Locally-discrete .triangle f g = prop!
+Locally-discrete .pentagon f g h i = prop!
 ```
