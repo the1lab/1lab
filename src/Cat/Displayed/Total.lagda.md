@@ -137,6 +137,16 @@ isomorphisms in $B$ and $E$.
     (∫E._≅_.from f .snd)
     (ap snd $ ∫E._≅_.invl f)
     (ap snd $ ∫E._≅_.invr f)
+
+  iso[]→total-iso
+    : ∀ {x y} {x' : Ob[ x ]} {y' : Ob[ y ]} {x≅y}
+    → x' ≅[ x≅y ] y'
+    → (x , x') ∫E.≅ (y , y')
+  iso[]→total-iso {x≅y = x≅y} x'≅y' = ∫E.make-iso
+    (∫hom (to x≅y) (to' x'≅y'))
+    (∫hom (from x≅y) (from' x'≅y'))
+    (∫Hom-path (invl x≅y) (invl' x'≅y'))
+    (∫Hom-path (invr x≅y) (invr' x'≅y'))
 ```
 
 ## Pullbacks in the total category
