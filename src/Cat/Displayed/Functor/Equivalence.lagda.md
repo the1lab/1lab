@@ -470,11 +470,11 @@ module _
     module F = Functor F
     module F' = Displayed-functor F'
 
-  open is-precat-iso[_] F'-iso
-  eso = is-precat-iso→is-split-eso F-iso
-  F₀≃ : A.Ob ≃ B.Ob
-  F₀≃ = (F.₀ , has-is-iso)
-  module F₀ = Equiv F₀≃
+    open is-precat-iso[_] F'-iso
+    eso = is-precat-iso→is-split-eso F-iso
+    F₀≃ : A.Ob ≃ B.Ob
+    F₀≃ = (F.₀ , has-is-iso)
+    module F₀ = Equiv F₀≃
 ```
 -->
 
