@@ -2,6 +2,7 @@
 ```agda
 open import Algebra.Monoid using (is-monoid)
 
+open import Cat.Displayed.Functor.Equivalence
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Functor
@@ -241,7 +242,7 @@ step to show they induce identical^[thus isomorphic, thus equivalent]
 
 ```agda
 Mon[Sets]≡Mon : ∀ {ℓ} → Mon[ Setsₓ ] ≡ Mon {ℓ}
-Mon[Sets]≡Mon {ℓ} = Displayed-path F (λ a → is-iso→is-equiv (fiso a)) ff where
+Mon[Sets]≡Mon {ℓ} = Displayed-path F (iso[] ff (λ a → is-iso→is-equiv (fiso a))) where
   open Displayed-functor
   open Monoid-on
   open is-monoid-hom

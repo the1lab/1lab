@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Functor.Equivalence
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Displayed.Functor
@@ -182,10 +183,11 @@ components are, by definition, unimportant.
 
 Suppose that we have $\cE \liesover \cB$ and $\cF \liesover
 \cC$, together with a functor $F : \cB \to \cC$ which is an
-[isomorphism of precategories], and a functor $G : \cE \to \cF$
-over $F$. This is the situation in the introduction, but where the line
-$\cB_i$ comes from the [[identity system]] on precategories given by
-isomorphisms of precategories.
+[isomorphism of precategories], and a functor $G : \cE \to \cF$ over $F$
+which is an [[isomorphism of displayed precategories]]. This is the
+situation in the introduction, but where the line $\cB_i$ comes from the
+[[identity system]] on precategories given by isomorphisms of
+precategories.
 
 [isomorphism of precategories]: Cat.Functor.Equivalence.html#isomorphisms
 
@@ -211,11 +213,10 @@ the displayed equivalent of an isomorphism of precategories.
 ```agda
   Displayed-pathp
     : (eqv : is-precat-iso F)
-    → (∀ a → is-equiv {A = ℰ.Ob[ a ]} G.F₀')
-    → ( ∀ {a b} {f} {a' : ℰ.Ob[ a ]} {b' : ℰ.Ob[ b ]}
-      → is-equiv {A = ℰ.Hom[ f ] a' b'} G.F₁')
+      → (eqv' : is-precat-iso[ eqv ] G )
     → PathP (λ i → Displayed (Precategory-path F eqv i) o' ℓ') ℰ ℱ
-  Displayed-pathp eqv obeqv homeqv = displayed-pathp-worker input where
+  Displayed-pathp eqv eqv' = displayed-pathp-worker input where
+    open is-precat-iso[_] eqv' renaming (has-is-iso' to obeqv ; has-is-ff' to homeqv)
     ps = Precategory-path F eqv
 ```
 
@@ -347,14 +348,12 @@ than a `PathP`{.Agda}.
 
 ```agda
   Displayed-path
-    : (F₀-eqv : ∀ a → is-equiv F.₀')
-    → (F₁-eqv : ∀ {a b} {f : B .Hom a b} {a' : ℰ.Ob[ a ]} {b' : ℰ.Ob[ b ]}
-              → is-equiv (F.₁' {f = f} {a' = a'} {b' = b'}))
+    : is-precat-iso[ iso id-equiv id-equiv ] F
     → ℰ ≡ ℱ
-  Displayed-path F₀-eqv F₁-eqv =
+  Displayed-path eqv' =
     transport
       (λ i → PathP
         (λ j → Displayed
           (to-path-refl {a = B} Precategory-identity-system i j) o' ℓ') ℰ ℱ)
-      (Displayed-pathp Id F (iso id-equiv id-equiv) F₀-eqv F₁-eqv)
+      (Displayed-pathp Id F (iso id-equiv id-equiv) eqv')
 ```
