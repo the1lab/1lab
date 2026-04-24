@@ -23,8 +23,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} (_<_ : A → A → Type ℓ') where
 -->
 
 ```agda
-  data Acc (x : A) : Type (ℓ ⊔ ℓ') where
-    acc : (∀ y → y < x → Acc y) → Acc x
+  data Acc : A → Type (ℓ ⊔ ℓ') where
+    acc : ∀ {x} → (∀ y → y < x → Acc y) → Acc x
 ```
 
 That is, an element $x : A$ is accessible if every element $y < x$ under
