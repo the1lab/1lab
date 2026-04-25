@@ -3,6 +3,7 @@
 open import Cat.Diagram.Colimit.Representable
 open import Cat.Functor.Hom.Representable
 open import Cat.Functor.Kan.Representable
+open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
@@ -650,3 +651,60 @@ module _
       ∙ sym (↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (sym (C'.idr _)))))
 ```
 -->
+
+## Pointwise extensions of representables
+
+When our target cocomplete category is $\Sets$, we can consider the
+special case of computing the left Kan extension of a [[corepresentable
+functor]] using the colimit formula we established.
+
+```agda
+module _
+  {o κ}
+  {C : Precategory κ κ} {C' : Precategory o κ}
+  (F : Functor C C') (G : Functor C (Sets κ))
+  (cr : Corepresentation G)
+  where
+```
+
+<!--
+```agda
+    open Corepresentation cr
+    open Precategory C'
+    open Functor
+    open ↓Hom
+    open ↓Obj
+    open _=>_
+    open Lan
+    private
+      module C  = Precategory C
+      module C' = Cat.Reasoning C'
+```
+-->
+
+In this case, the Kan extension reduces to a corepresentable functor as
+well.  In particular, if $G : \cC \to \Sets$ is represented by $c \in
+\cC$, then the Kan extension along $F : \cC \to \cC'$ is represented by
+$F(c)$.
+
+```agda
+    Sets-lan-ext-corep
+      : Corepresentation (cocomplete→lan F G (Sets-is-cocomplete {o = κ}) .Ext)
+    Sets-lan-ext-corep .Corepresentation.corep        = F .F₀ corep
+    Sets-lan-ext-corep .Corepresentation.corepresents = to-natural-iso ni where
+      ni : make-natural-iso _ _
+      ni .make-natural-iso.eta A = Coeq-rec
+        (λ (au , e) → au .map ∘ F .F₁ (corep.to .η _ e))
+        λ ((au , e) , (au' , e') , (h , p)) →
+          au .map ∘ F .F₁ (corep.to .η _ e)                  ≡⟨ C'.pushl (sym (com h ∙ idl _)) ⟩
+          au' .map ∘ F .F₁ (top h) ∘ F .F₁ (corep.to .η _ e) ≡⟨ C'.refl⟩∘⟨ Func.collapse F (sym (corep.to .is-natural _ _ _) $ₚ e ∙ ap (corep.to .η _) p) ⟩
+          au' .map ∘ F .F₁ (corep.to .η _ e')                ∎
+      ni .make-natural-iso.inv A x   = inc (↓obj x , corep.from .η _ C.id)
+      ni .make-natural-iso.eta∘inv A = ext λ _ → Func.elimr F (corep.invl ηₚ _ $ₚ _)
+      ni .make-natural-iso.inv∘eta A = ext λ au e → quot $
+        ↓hom (sym (idl _))
+        , sym (corep.from .is-natural _ _ _ $ₚ C.id)
+        ∙∙ ap (corep.from .η _) (C.idr _)
+        ∙∙ corep.invr ηₚ _ $ₚ e
+      ni .make-natural-iso.natural _ _ _ = ext λ _ _ → C'.assoc _ _ _
+```
