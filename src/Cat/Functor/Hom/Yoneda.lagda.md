@@ -1,13 +1,16 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
+open import Cat.Functor.Bifunctor
+open import Cat.Instances.Sets
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.Presheaf as PSh
 
+open _=>_ hiding (op)
 open Functor
-open _=>_
 ```
 -->
 
@@ -131,3 +134,20 @@ as natural transformations $\cC(-,U) \To B$, for any $x : A(U)$.
     y          ∎
 ```
 -->
+
+Finally, we can package the lemma into the statement that there is a
+natural isomorphism between [[bifunctors]] $\cC\op \times [\cC\op,
+\Sets] \to \Sets$, where on the one hand we have the bifunctor which
+acts on an object $c \in \cC$ and a presheaf $A : \cC\op \to \Sets$ by
+evaluating $A$ at $c$, and on the other hand, the bifunctor which
+computes the set of natural transformations from $\yo(c)$ to $A$.
+
+```agda
+module _ {κ} {C : Precategory κ κ} where
+  open Precategory C
+  yoneda-lemma : Flip Id ≅ⁿ よcov (PSh κ C) F∘ op (よ C)
+  yoneda-lemma = biiso→isoⁿ
+    (λ _ A → equiv→iso (yo A , yo-is-equiv A))
+    (λ _ → funext λ _ → yo-naturalr)
+    (λ _ → funext λ _ → yo-naturall)
+```
