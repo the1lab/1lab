@@ -656,38 +656,33 @@ module _
 
 When our target cocomplete category is $\Sets$, we can consider the
 special case of computing the left Kan extension of a [[corepresentable
-functor]] using the colimit formula we established.
+functor]] using the colimit formula we established. In this case, the
+Kan extension reduces to a corepresentable functor as well.  In
+particular, if $G : \cC \to \Sets$ is represented by $c : \cC$, then
+the Kan extension along $F : \cC \to \cC'$ is represented by $F(c)$.
 
+<!--
 ```agda
 module _
   {o κ}
   {C : Precategory κ κ} {C' : Precategory o κ}
   (F : Functor C C') (G : Functor C (Sets κ))
-  (cr : Corepresentation G)
   where
-```
-
-<!--
-```agda
-    open Corepresentation cr
-    open Precategory C'
-    open Functor
-    open ↓Hom
-    open ↓Obj
-    open _=>_
-    open Lan
-    private
-      module C  = Precategory C
-      module C' = Cat.Reasoning C'
+  open Precategory C'
+  open Functor
+  open ↓Hom
+  open ↓Obj
+  open _=>_
+  open Lan
+  private
+    module C  = Precategory C
+    module C' = Cat.Reasoning C'
 ```
 -->
 
-In this case, the Kan extension reduces to a corepresentable functor as
-well.  In particular, if $G : \cC \to \Sets$ is represented by $c \in
-\cC$, then the Kan extension along $F : \cC \to \cC'$ is represented by
-$F(c)$.
-
 ```agda
+  module _ (cr : Corepresentation G) where
+    open Corepresentation cr
     Sets-lan-ext-corep
       : Corepresentation (cocomplete→lan F G (Sets-is-cocomplete {o = κ}) .Ext)
     Sets-lan-ext-corep .Corepresentation.corep        = F .F₀ corep
