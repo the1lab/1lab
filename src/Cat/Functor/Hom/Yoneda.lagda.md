@@ -142,11 +142,16 @@ acts on an object $c \in \cC$ and a presheaf $A : \cC\op \to \Sets$ by
 evaluating $A$ at $c$, and on the other hand, the bifunctor which
 computes the set of natural transformations from $\yo(c)$ to $A$.
 
+<!--
 ```agda
 module _ {κ} {C : Precategory κ κ} where
   open Precategory C
-  yoneda-lemma : Flip Id ≅ⁿ よcov (PSh κ C) F∘ op (よ C)
-  yoneda-lemma = biiso→isoⁿ
+```
+-->
+
+```agda
+  yoneda : Flip Id ≅ⁿ よcov (PSh κ C) F∘ op (よ C)
+  yoneda = biiso→isoⁿ
     (λ _ A → equiv→iso (yo A , yo-is-equiv A))
     (λ _ → funext λ _ → yo-naturalr)
     (λ _ → funext λ _ → yo-naturall)
