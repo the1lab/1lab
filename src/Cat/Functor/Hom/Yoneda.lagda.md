@@ -138,9 +138,10 @@ as natural transformations $\cC(-,U) \To B$, for any $x : A(U)$.
 Finally, we can package the lemma into the statement that there is a
 natural isomorphism between [[bifunctors]] $\cC\op \times [\cC\op,
 \Sets] \to \Sets$, where on the one hand we have the bifunctor which
-acts on an object $c \in \cC$ and a presheaf $A : \cC\op \to \Sets$ by
-evaluating $A$ at $c$, and on the other hand, the bifunctor which
-computes the set of natural transformations from $\yo(c)$ to $A$.
+acts on an object $U : \cC$ and a presheaf $A : \cC\op \to \Sets$ by
+evaluating $A$ at $U$, and on the other hand, the bifunctor which
+computes the set of natural transformations from $\cC(-,U)$
+to $A$.
 
 <!--
 ```agda
