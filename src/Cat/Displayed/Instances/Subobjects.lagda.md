@@ -359,7 +359,7 @@ _≤ₘ_ = ≤-over id
 
 open Sub
   renaming (_≅_ to infix 7 _≅ₘ_)
-  using ()
+  using (to ; from ; inverses)
   public
 
 infix 7 _≤ₘ_

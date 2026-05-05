@@ -503,9 +503,7 @@ record is-invertible (f : Hom a b) : Type h where
   open Inverses inverses public
 
   op : is-invertible inv
-  op .inv = f
-  op .inverses .Inverses.invl = invr inverses
-  op .inverses .Inverses.invr = invl inverses
+  op = record { inv = f ; inverses = record { invl = invr inverses ; invr = invl inverses }}
 
 record _≅_ (a b : Ob) : Type h where
   field

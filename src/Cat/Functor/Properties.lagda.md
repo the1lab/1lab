@@ -187,10 +187,10 @@ the domain category to serve as an inverse for $f$:
     open Cm.is-invertible (is-ff→is-conservative F ff (equiv→inverse ff to) D-inv')
 
     im' : _ Cm.≅ _
-    im' .to   = equiv→inverse ff to
-    im' .from = inv
-    im' .inverses .Cm.Inverses.invl = invl
-    im' .inverses .Cm.Inverses.invr = invr
+    im' .Cm.to   = equiv→inverse ff to
+    im' .Cm.from = inv
+    im' .Cm.inverses .Cm.Inverses.invl = invl
+    im' .Cm.inverses .Cm.Inverses.invr = invr
 ```
 
 ## Essential fibres {defines="essential-fibre"}

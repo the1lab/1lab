@@ -202,9 +202,9 @@ private module Test where
   module _ (r : Record Nat) where
     open Record r
     via-function : Record Nat
-    via-function .c = suc c
-    via-function .f = suc ∘ f
-    via-function .const = ap suc const
+    via-function .Record.c = suc c
+    via-function .Record.f = suc ∘ f
+    via-function .Record.const = ap suc const
 
   -- Also works when applied to the result of a function.
   unquoteDecl copat-decl-via-function = declare-copattern copat-decl-via-function (via-function via-ctor)
