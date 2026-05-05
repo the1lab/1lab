@@ -79,7 +79,7 @@ postulate
 
 The `IsOne`{.Agda} proposition is used as the domain of the type
 `Partial`{.Agda}, where `Partial φ A` is a refinement of the type
-`.(IsOne φ) → A`, where inhabitants `p, q : Partial φ A` are equal iff
+`(IsOne φ) → A`, where inhabitants `p, q : Partial φ A` are equal iff
 they agree on a decomposition of `φ` into DNF.
 
 ```agda

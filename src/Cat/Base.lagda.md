@@ -288,10 +288,11 @@ C\op \to D\op$.
 
 ```agda
   op : Functor (C ^op) (D ^op)
-  op .F₀      = F₀
-  op .F₁      = F₁
-  op .F-id    = F-id
-  op .F-∘ f g = F-∘ g f
+  op = record where
+    F₀      = F₀
+    F₁      = F₁
+    F-id    = F-id
+    F-∘ f g = F-∘ g f
 ```
 
 <!--

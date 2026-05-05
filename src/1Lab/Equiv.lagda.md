@@ -118,9 +118,7 @@ inverse is again an isomorphism.
 
 ```agda
   inverse : is-iso from
-  inverse .from = f
-  inverse .rinv = linv
-  inverse .linv = rinv
+  inverse = record { from = f ; rinv = linv ; linv = rinv }
 ```
 
 <!--

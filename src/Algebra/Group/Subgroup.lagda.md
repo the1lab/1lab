@@ -25,7 +25,7 @@ module Algebra.Group.Subgroup where
 private variable
   ℓ ℓ' : Level
   G : Group ℓ
-private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ) public
+private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ) hiding (to ; from) public
 ```
 -->
 
