@@ -13,7 +13,7 @@ module Definitions
   )
   where
 
-import Agda.Utils.Impossible
+import Mikan.Utils.Impossible
 
 import Control.Monad.IO.Class
 import Control.DeepSeq

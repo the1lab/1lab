@@ -98,7 +98,7 @@ in
 
     passthru = {
       inherit pkgs shakefile deps sort-imports nodeModules;
-      inherit (pkgs.labHaskellPackages) Agda;
+      inherit (pkgs.labHaskellPackages) Mikan;
       texlive = our-texlive;
     };
   }

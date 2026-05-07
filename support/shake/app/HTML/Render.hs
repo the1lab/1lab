@@ -3,13 +3,13 @@ module HTML.Render where
 
 import Prelude hiding ((!!))
 
-import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
-import Agda.Syntax.Common.Aspect
-import Agda.Syntax.Common.Pretty
+import Mikan.Syntax.TopLevelModuleName (TopLevelModuleName)
+import Mikan.Syntax.Common.Aspect
+import Mikan.Syntax.Common.Pretty
 
-import Agda.Utils.Impossible (__IMPOSSIBLE__)
-import Agda.Utils.Function
-import Agda.Utils.DocTree
+import Mikan.Utils.Impossible (__IMPOSSIBLE__)
+import Mikan.Utils.Function
+import Mikan.Utils.DocTree
 
 import Control.DeepSeq
 import Control.Monad

@@ -23,29 +23,29 @@ import Data.Foldable
 import Data.Text (Text)
 import Data.Set (Set)
 
-import Agda.Compiler.Backend hiding (topLevelModuleName)
-import Agda.Compiler.Common
+import Mikan.Compiler.Backend hiding (topLevelModuleName)
+import Mikan.Compiler.Common
 
 import Control.DeepSeq
 
-import qualified Agda.Syntax.Internal.Generic as I
-import qualified Agda.Syntax.Abstract.Views as A
-import qualified Agda.Syntax.Common.Aspect as Asp
-import qualified Agda.Syntax.Internal as I
-import qualified Agda.Syntax.Abstract as A
+import qualified Mikan.Syntax.Internal.Generic as I
+import qualified Mikan.Syntax.Abstract.Views as A
+import qualified Mikan.Syntax.Common.Aspect as Asp
+import qualified Mikan.Syntax.Internal as I
+import qualified Mikan.Syntax.Abstract as A
 
-import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
-import Agda.Syntax.Abstract.Pretty (prettyATop)
-import Agda.Syntax.Common.Pretty
-import Agda.Syntax.Abstract hiding (Type)
-import Agda.Syntax.Position
-import Agda.Syntax.Common
-import Agda.Syntax.Info
+import Mikan.Syntax.Translation.InternalToAbstract ( Reify(reify) )
+import Mikan.Syntax.Abstract.Pretty (prettyATop)
+import Mikan.Syntax.Common.Pretty
+import Mikan.Syntax.Abstract hiding (Type)
+import Mikan.Syntax.Position
+import Mikan.Syntax.Common
+import Mikan.Syntax.Info
 
-import qualified Agda.TypeChecking.Monad.Base as I
-import qualified Agda.TypeChecking.Pretty as P
-import Agda.TypeChecking.Records (isRecord)
-import Agda.TypeChecking.Reduce (normalise)
+import qualified Mikan.TypeChecking.Monad.Base as I
+import qualified Mikan.TypeChecking.Pretty as P
+import Mikan.TypeChecking.Records (isRecord)
+import Mikan.TypeChecking.Reduce (normalise)
 
 import HTML.Render
 
@@ -91,7 +91,7 @@ usedInstances :: I.TermLike a => a -> TCM (Set QName)
 usedInstances = I.foldTerm \case
   I.Def q _ -> do
     def <- getConstInfo q
-    case Agda.Compiler.Backend.defInstance def of
+    case Mikan.Compiler.Backend.defInstance def of
       Just c  -> Set.insert q <$> getClass (instanceClass c)
       Nothing -> pure mempty
   _ -> pure mempty
