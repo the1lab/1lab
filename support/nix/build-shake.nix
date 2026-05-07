@@ -14,13 +14,13 @@ let
     aeson pandoc SHA pandoc-types HTTP
     js-flot js-jquery js-dgtable
 
-    Agda.nodebug
+    Mikan.nodebug
   ];
 
   root = nix-gitignore.gitignoreSource [] ../shake;
 in
   lib.pipe (labHaskellPackages.callCabal2nix "1lab-shake" root {
-    Agda = labHaskellPackages.Agda.nodebug;
+    Mikan = labHaskellPackages.Mikan.nodebug;
   }) [
     (hlib.addBuildTools [ removeReferencesTo ])
     (hlib.overrideCabal (drv: {

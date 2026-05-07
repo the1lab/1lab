@@ -11,10 +11,10 @@ the1lab.overrideAttrs (old: {
 
   nativeBuildInputs = old.nativeBuildInputs or [] ++ [
     (with pkgs.labHaskellPackages; pkgs.symlinkJoin {
-      name  = "agda-nodebug";
-      paths = [ Agda sort-imports ];
+      name  = "mikan";
+      paths = [ Mikan sort-imports ];
       postBuild = ''
-        ln -sf ${Agda.nodebug}/bin/agda $out/bin/agda-nodebug
+        ln -sf ${Mikan.nodebug}/bin/mikan $out/bin/mikan-nodebug
       '';
     })
   ];

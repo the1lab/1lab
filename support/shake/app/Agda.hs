@@ -1,9 +1,9 @@
 module Agda where
 
-import Agda.Interaction.Options
-import Agda.TypeChecking.Monad
+import Mikan.Interaction.Options
+import Mikan.TypeChecking.Monad
 import Control.Monad.IO.Class
-import Agda.Utils.FileName
+import Mikan.Utils.FileName
 
 import System.FilePath
 

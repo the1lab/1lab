@@ -4,13 +4,8 @@ include:
   wip
   _build
 flags:
-  --cubical
   --prop
   --no-load-primitives
   --postfix-projections
-  --guardedness
-  --two-level
   -W noUnsupportedIndexedMatch
-  -W noRewriteVariablesBoundInSingleton
   --experimental-lazy-instances
-  --no-experimental-irrelevance

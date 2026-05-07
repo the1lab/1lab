@@ -58,7 +58,7 @@ jobs:
       - name: Typecheck 👩‍🏫
         run: |
           nix-shell --run "$build_command"
-        # Run Agda as a separate stage so it doesn't have to be subject to
+        # Run Mikan as a separate stage so it doesn't have to be subject to
         # the absolutely spartan GC tuning parameters we run the build in
         # CI with
         env:
@@ -66,7 +66,7 @@ jobs:
           build_command: |
             set -eu
             1lab-shake _build/all-pages.agda
-            agda-nodebug _build/all-pages.agda -j4 +RTS -s -RTS
+            mikan-nodebug _build/all-pages.agda -j4 +RTS -s -RTS
 
       - name: Build 🛠️
         run: |

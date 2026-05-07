@@ -1,12 +1,12 @@
 packages: support/shake/1lab-shake.cabal
 
 -- To build outside of the Nix shell, uncomment the following stanza
--- and replace `master` with the `rev` field from `support/nix/dep/Agda/github.json`.
+-- and replace `main` with the `rev` field from `support/nix/dep/mikan/github.json`.
 --
 -- If you want to avoid polluting your Git tree, you can move this to
 -- `cabal.project.local`, which is ignored by Git.
 
 -- source-repository-package
 --   type: git
---   location: https://github.com/agda/agda.git
---   tag: master
+--   location: https://codeberg.org/1lab/mikan.git
+--   tag: main

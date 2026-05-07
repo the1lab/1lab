@@ -10,7 +10,7 @@ import Control.Monad
 
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List.NonEmpty as List1
-import qualified Agda.Utils.BiMap as BiMap
+import qualified Mikan.Utils.BiMap as BiMap
 import qualified Data.Binary as Binary
 import qualified Data.Aeson as Aeson
 import qualified Data.Text as T
@@ -27,22 +27,21 @@ import Development.Shake
 
 import Shake.Options (getSkipTypes, getWatching, getBaseUrl, getSkipAgda)
 
-import Agda.Compiler.Backend hiding (getEnv)
-import Agda.TypeChecking.Pretty.Warning
-import Agda.TypeChecking.Errors
-import Agda.Interaction.Imports hiding (getInterface)
-import Agda.Interaction.Options
-import Agda.Syntax.Common (Cubical(CFull))
-import Agda.Syntax.Common.Pretty
-import Agda.Syntax.TopLevelModuleName
+import Mikan.Compiler.Backend hiding (getEnv)
+import Mikan.TypeChecking.Pretty.Warning
+import Mikan.TypeChecking.Errors
+import Mikan.Interaction.Imports hiding (getInterface)
+import Mikan.Interaction.Options
+import Mikan.Syntax.Common.Pretty
+import Mikan.Syntax.TopLevelModuleName
   ( TopLevelModuleName'(..)
   , RawTopLevelModuleName(..)
   , hashRawTopLevelModuleName
   )
-import Agda.Syntax.Position (noRange)
-import Agda.Utils.FileName
-import Agda.Utils.Hash (Hash)
-import Agda.Utils.Lens ((^.))
+import Mikan.Syntax.Position (noRange)
+import Mikan.Utils.FileName
+import Mikan.Utils.Hash (Hash)
+import Mikan.Utils.Lens ((^.))
 
 import HTML.Backend
 import HTML.Render
@@ -195,7 +194,6 @@ compileAgda stateVar = do
       resetState
 
       -- Force Cubical even if we've not got a --cubical header.
-      stPragmaOptions `modifyTCLens` \ o -> o { _optCubical = Just CFull }
       setCommandLineOptions' baseDir defaultOptions
 
       for_ target \source -> do

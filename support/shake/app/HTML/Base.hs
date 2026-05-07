@@ -46,20 +46,20 @@ import Text.Blaze.Html.Renderer.Text ( renderHtml )
 
 -- import Paths_Agda
 
-import Agda.Interaction.Highlighting.Precise hiding (toList)
+import Mikan.Interaction.Highlighting.Precise hiding (toList)
 
-import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
-import Agda.Syntax.Common.Pretty
-import Agda.Syntax.Common
+import Mikan.Syntax.TopLevelModuleName (TopLevelModuleName)
+import Mikan.Syntax.Common.Pretty
+import Mikan.Syntax.Common
 
-import qualified Agda.TypeChecking.Monad as TCM
+import qualified Mikan.TypeChecking.Monad as TCM
   ( Interface(..)
   )
 
-import Agda.Utils.Function
-import qualified Agda.Utils.IO.UTF8 as UTF8
+import Mikan.Utils.Function
+import qualified Mikan.Utils.IO.UTF8 as UTF8
 
-import Agda.Utils.Impossible
+import Mikan.Utils.Impossible
 
 import HTML.Render
 
