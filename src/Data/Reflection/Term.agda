@@ -84,7 +84,7 @@ data Definition : Type where
   function    : (cs : List Clause) → Definition
   data-type   : (pars : Nat) (cs : List Name) → Definition
   record-type : (c : Name) (fs : List (Arg Name)) → Definition
-  data-cons   : (d : Name) (q : Quantity) → Definition
+  data-cons   : (d : Name) → Definition
   axiom       : Definition
   prim-fun    : Definition
 
@@ -361,7 +361,7 @@ pi-view (pi a (abs n b)) with pi-view b
 pi-view t = [] , t
 
 pi-impl-view : Term → Telescope × Term
-pi-impl-view t@(pi (arg (arginfo visible _) _) _) = [] , t
+pi-impl-view t@(pi (arg (arginfo visible) _) _) = [] , t
 pi-impl-view (pi a (abs n b)) with pi-impl-view b
 ... | tele , t = ((n , a) ∷ tele) , t
 pi-impl-view t = [] , t
@@ -371,8 +371,8 @@ unpi-view []            k = k
 unpi-view ((n , a) ∷ t) k = pi a (abs n (unpi-view t k))
 
 tel→lam : Telescope → Term → Term
-tel→lam []                               t = t
-tel→lam ((n , arg (arginfo v _) _) ∷ ts) t = lam v (abs n (tel→lam ts t))
+tel→lam []                             t = t
+tel→lam ((n , arg (arginfo v) _) ∷ ts) t = lam v (abs n (tel→lam ts t))
 
 {-
 Turn a telescope into a list of arguments, with arguments of implicit Π types
@@ -418,15 +418,15 @@ module _ {ℓ} {A : Type ℓ} ⦃ a : Has-neutrals A ⦄ (d : A) ⦃ _ : Has-neu
   _##_ : (arg : Arg A) → A
   _##_ x = Has-neutrals.applyⁿᵉ a d (x ∷ [])
 
--- Apply a neutral to an argument with the default information.
+-- Apply a neutral to a visible argument.
   _##ₙ_ : (arg : A) → A
   _##ₙ_ x = _##_ (argN x)
 
-  -- Apply a neutral to a hidden argument with the default modality.
+  -- Apply a neutral to a hidden argument.
   _##ₕ_ : (arg : A) → A
   _##ₕ_ x = _##_ (argH x)
 
-  -- Apply a neutral to an instance argument with the default modality.
+  -- Apply a neutral to an instance argument.
   _##ᵢ_ : (arg : A) → A
   _##ᵢ_ x = _##_ (argI x)
 

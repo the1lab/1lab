@@ -356,7 +356,7 @@ of a loop with arbitrary base.
     interleaved mutual
       go   : (x : Deloop G) → x ≡ x → ⌞ G ⌟
 
-      coherence : Type _ [ i1 ↦ (λ ._ → (x : ⌞ G ⌟) → PathP (λ i → path {G = G} x i ≡ path x i → ⌞ G ⌟) (encode G base) (encode G base)) ]
+      coherence : Type _ [ i1 ↦ (λ _ → (x : ⌞ G ⌟) → PathP (λ i → path {G = G} x i ≡ path x i → ⌞ G ⌟) (encode G base) (encode G base)) ]
       coh : outS coherence
 ```
 -->

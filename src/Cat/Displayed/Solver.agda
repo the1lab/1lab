@@ -138,10 +138,10 @@ module Reflection where
   module Cat = Cat.Solver.Reflection
 
   pattern displayed-field-args xs =
-    _ hm∷ _ hm∷ -- Base Levels
-    _ hm∷       -- Base Category
-    _ hm∷ _ hm∷ -- Displayed Levels
-    _ v∷ xs     -- Displayed Category
+    _ h∷ _ h∷ -- Base Levels
+    _ h∷      -- Base Category
+    _ h∷ _ h∷ -- Displayed Levels
+    _ v∷ xs   -- Displayed Category
 
   pattern displayed-fn-args xs =
     _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ v∷ xs

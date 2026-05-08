@@ -22,12 +22,6 @@ get-record-type n = get-definition n >>= λ where
   (record-type conm fields) → pure (conm , fields)
   _ → typeError [ "get-record-type: definition " , nameErr n , " is not a record type." ]
 
--- Look up a constructor's quantity in the signature.
-get-con-quantity : Name → TC Quantity
-get-con-quantity n = get-definition n >>= λ where
-  (data-cons _ q) → pure q
-  _ → typeError [ "get-con-erasure: definition " , nameErr n , " is not a constructor." ]
-
 -- Representation of a data/record constructor.
 record Constructor : Type where
   constructor conhead
@@ -37,9 +31,6 @@ record Constructor : Type where
 
     -- Name of the data type:
     con-data      : Name
-
-    -- Quantity of the constructor.
-    con-quantity  : Quantity
 
     -- Argument telescope for the constructor, with the datatype's
     -- parameters removed.
@@ -64,23 +55,22 @@ get-type-constructors n = datatype <|> recordtype where
   datatype = do
     (npars , cons) ← get-data-type n
     for cons λ qn → do
-      q ← get-con-quantity qn
       (args , ty) ← pi-view <$> get-type qn
-      pure (conhead qn n q (drop npars args) ty)
+      pure (conhead qn n (drop npars args) ty)
 
   recordtype = do
     (c  , _)    ← get-record-type n
     (np , _)    ← pi-view <$> get-type n
     (args , ty) ← pi-view <$> get-type c
-    pure ((conhead c n quantity-ω (drop (length np) args) ty) ∷ [])
+    pure (conhead c n (drop (length np) args) ty ∷ [])
 
 -- Look up a constructor in the signature.
 get-constructor : Name → TC Constructor
 get-constructor n = get-definition n >>= λ where
-  (data-cons t q) → do
+  (data-cons t) → do
     (npars , cons) ← get-data-type t
     (args , ty)    ← pi-view <$> get-type n
-    pure (conhead n t q (drop npars args) ty)
+    pure (conhead n t (drop npars args) ty)
   _ → typeError [ "get-constructor: " , nameErr n , " is not a data constructor." ]
 
 -- If a term reduces to an application of a record type, return
@@ -121,7 +111,7 @@ instance
 private
   it-worker : Name → TC Term
   it-worker n = get-definition n <&> λ where
-    (data-cons _ _) →
+    (data-cons _) →
       def₀ (quote Has-constr.from-constr) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
     _ →
       def₀ (quote Has-def.from-def) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
@@ -161,7 +151,7 @@ macro
     tm   ← it-worker n
     args ← get-argument-tele n
     let
-      args = filter (λ { (_ , arg (arginfo visible _) _) → true ; _ → false }) args
+      args = filter (λ { (_ , arg (arginfo visible) _) → true ; _ → false }) args
 
       tm = def (quote applyⁿᵉ) (argN tm ∷ argN (list-term (reverse (map-up (λ i _ → it argN ##ₙ var₀ i) 0 args))) ∷ [])
       tm = foldr (λ _ y → lam visible (abs "_" y)) tm args
@@ -190,8 +180,8 @@ render-name def-nm = do
   d ← is-defined def-nm
   let
     fancy = get-definition def-nm >>= λ where
-      (data-cons _ _) → formatErrorParts [ termErr (con₀ def-nm) ]
-      _               → formatErrorParts [ termErr (def₀ def-nm) ]
+      (data-cons _ ) → formatErrorParts [ termErr (con₀ def-nm) ]
+      _              → formatErrorParts [ termErr (def₀ def-nm) ]
     plain = show def-nm
   if d then fancy else pure plain
 
