@@ -65,7 +65,8 @@ judgemental equality][sr].
 [sr]: https://github.com/agda/agda/issues/6016
 
 ```agda
-{-# BUILTIN ISONE IsOne #-}  -- IsOne : I → SSet
+{-# BUILTIN COFUNIV CofUniv #-} -- universe of cofibrations
+{-# BUILTIN ISONE   IsOne #-}   -- IsOne : I → CofUniv
 
 postulate
   1=1 : IsOne i1

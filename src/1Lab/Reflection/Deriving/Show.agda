@@ -105,14 +105,14 @@ private
 
   -- Create the clause of shows-prec for a constructor.
   show-clause : Constructor → TC Clause
-  show-clause (conhead conm _ _ args _) = do
+  show-clause (conhead conm _ args _) = do
     let
       -- We'll only show the visible arguments to the constructor.
       -- Moreover, since Agda can infer the types in the telescope
       -- better than we can specify them here, we replace everything
       -- with `unknown`.
       tele = map (λ (s , arg i t) → s , arg i unknown) $
-        filter (λ { (_ , arg (arginfo visible _) _) → true
+        filter (λ { (_ , arg (arginfo visible) _) → true
                   ; _ → false
                   })
           args
@@ -198,9 +198,6 @@ instance
 
   unquoteDecl Show-Literal    = derive-show Show-Literal    (quote Literal)
   unquoteDecl Show-Visibility = derive-show Show-Visibility (quote Visibility)
-  unquoteDecl Show-Relevance  = derive-show Show-Relevance  (quote Relevance)
-  unquoteDecl Show-Quantity   = derive-show Show-Quantity   (quote Quantity)
-  unquoteDecl Show-Modality   = derive-show Show-Modality   (quote Modality)
   unquoteDecl Show-ArgInfo    = derive-show Show-ArgInfo    (quote ArgInfo)
   unquoteDecl Show-Abs        = derive-show Show-Abs        (quote Abs)
   unquoteDecl Show-Arg        = derive-show Show-Arg        (quote Arg)

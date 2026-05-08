@@ -154,7 +154,7 @@ make-record-iso-sigma declare? nm `R = do
 
   let fields = field-names→paths fields
 
-  when declare? $ work-on-types do
+  when declare? do
     `R-ty ← normalise =<< get-type `R
     con-ty ← normalise =<< get-type `R-con
     let con-ty = instantiate' `R-ty con-ty
@@ -210,8 +210,7 @@ make-record-path declare? nm `R = do
   let ps' = filter id ps
       n = length ps'
 
-  when declare? $ work-on-types do
-    declare (argN nm) ty
+  when declare? $ declare (argN nm) ty
 
   define-function nm
     [ clause

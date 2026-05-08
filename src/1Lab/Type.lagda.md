@@ -254,11 +254,7 @@ auto ⦃ a ⦄ = a
 {-# INLINE _$_ #-}
 
 infixr 40 _∘_
-infixr -1 _$ᵢ_ _$ₛ_
-
-_$ᵢ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : .A → Type ℓ₂} → (.(x : A) → B x) → (.(x : A) → B x)
-f $ᵢ x = f x
-{-# INLINE _$ᵢ_ #-}
+infixr -1 _$ₛ_
 
 _$ₛ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → SSet ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ₛ x = f x

@@ -94,12 +94,12 @@ and) of some arithmetic. See for yourself:
 ```agda
   divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inr r'+1=b) =
     divmod (suc q') 0
-      (forget $ᵢ
+      (forget (
         suc a                           ≡⟨ ap suc (recover p) ⟩
         suc (q' * (suc b') + r')        ≡˘⟨ ap (λ e → suc (q' * e + r')) r'+1=b ⟩
         suc (q' * (suc r') + r')        ≡⟨ nat! ⟩
         suc (r' + q' * (suc r') + zero) ≡⟨ ap (λ e → e + q' * e + 0) r'+1=b ⟩
-        (suc b') + q' * (suc b') + 0    ∎ )
+        (suc b') + q' * (suc b') + 0    ∎ ))
       (s≤s 0≤x)
 ```
 

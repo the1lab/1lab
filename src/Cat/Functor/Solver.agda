@@ -139,10 +139,10 @@ module NbE {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : 
 
 module Reflection where
 
-  pattern category-args xs = _ hm∷ _ hm∷ _ v∷ xs
+  pattern category-args xs = _ h∷ _ h∷ _ v∷ xs
 
   pattern functor-args functor xs =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
+    _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ functor v∷ xs
 
   pattern “id” =
     def (quote Precategory.id) (category-args (_ h∷ []))

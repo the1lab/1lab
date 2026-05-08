@@ -446,11 +446,11 @@ module NbE {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 
 module Reflection where
 
-  pattern category-args cat xs    = _ hm∷ _ hm∷ cat v∷ xs
+  pattern category-args cat xs    = _ h∷ _ h∷ cat v∷ xs
   pattern functor-args functor xs =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
-  pattern iso-args f xs = _ hm∷ _ hm∷ _ h∷ _ h∷ _ h∷ f v∷ xs
-  pattern nt-args nt xs = _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ h∷ _ h∷ nt v∷ xs
+    _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ functor v∷ xs
+  pattern iso-args f xs = _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ f v∷ xs
+  pattern nt-args nt xs = _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ nt v∷ xs
 
   pattern “F₀” functor x =
     def (quote Functor.F₀) (functor-args functor (x v∷ []))
@@ -458,7 +458,7 @@ module Reflection where
   pattern “F₁” functor x y f =
     def (quote Functor.F₁) (functor-args functor (x h∷ y h∷ f v∷ []))
 
-  pattern “,” x y = con (quote _,_) (_ hm∷ _ hm∷ _ h∷ _ h∷ x v∷ y v∷ [])
+  pattern “,” x y = con (quote _,_) (_ h∷ _ h∷ _ h∷ _ h∷ x v∷ y v∷ [])
 
   pattern “id₁” = def (quote Prebicategory.id) _
 

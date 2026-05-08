@@ -271,25 +271,25 @@ of precategories, as well as objects + morphisms that arise from the product str
 
 The situation here is extremely fiddly when it comes to implicit arguments, as
 we not only need to get the number correct, but also their multiplicity. Record
-projections always mark the records parameters as `hidden`{.Agda} and
-`quantity-0`{.Agda}, so we need to take care to do the same in these patterns.
+projections always mark the records parameters as `hidden`{.Agda}, so we
+need to take care to do the same in these patterns.
 
 ```agda
 module Reflection where
   private
     pattern is-product-field X Y args =
-      _ hm∷ _ hm∷ _ hm∷ -- category args
-      X hm∷ Y hm∷       -- objects of product
-      _ hm∷             -- apex
-      _ hm∷ _ hm∷       -- projections
-      _ v∷              -- is-product record argument
+      _ h∷ _ h∷ _ h∷ -- category args
+      X h∷ Y h∷      -- objects of product
+      _ h∷           -- apex
+      _ h∷ _ h∷      -- projections
+      _ v∷           -- is-product record argument
       args
     pattern product-field X Y args =
-      _ hm∷ _ hm∷ _ hm∷ -- category args
-      X hm∷ Y hm∷       -- objects of product
-      _ v∷              -- product record argument
+      _ h∷ _ h∷ _ h∷ -- category args
+      X h∷ Y h∷      -- objects of product
+      _ v∷           -- product record argument
       args
-    pattern category-field args = _ hm∷ _ hm∷ _ v∷ args
+    pattern category-field args = _ h∷ _ h∷ _ v∷ args
 
     pattern “⊗” X Y =
       def (quote Product.apex) (product-field X Y [])

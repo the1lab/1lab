@@ -189,7 +189,7 @@ module Regularity where
 -- Test cases.
 module
   _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B) (x : A)
-    (a-loop : (i : I) → Type ℓ [ (i ∨ ~ i) ↦ (λ ._ → A) ])
+    (a-loop : (i : I) → Type ℓ [ (i ∨ ~ i) ↦ (λ _ → A) ])
   where private
 
   p : (h : ∀ x → f x ≡ g x)

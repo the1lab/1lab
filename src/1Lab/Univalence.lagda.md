@@ -127,7 +127,7 @@ Glue A {φ} Te = primGlue A tys eqvs module glue-sys where
   tys : Partial φ (Type _)
   tys (φ = i1) = Te 1=1 .fst
 
-  eqvs : PartialP φ (λ .o → tys _ ≃ A)
+  eqvs : PartialP φ (λ o → tys _ ≃ A)
   eqvs (φ = i1) = Te 1=1 .snd
 
 unattach
@@ -246,7 +246,7 @@ ua {A = A} {B} eqv i = primGlue B tys eqvs module ua-sys where
   tys (i = i0) = A
   tys (i = i1) = B
 
-  eqvs : PartialP (∂ i) (λ .o → tys o ≃ B)
+  eqvs : PartialP (∂ i) (λ o → tys o ≃ B)
   eqvs (i = i0) = eqv
   eqvs (i = i1) = id≃
 ```
@@ -816,7 +816,7 @@ sym-ua {A = A} {B = B} e i j = Glue B λ where
   (j = i1) → A , e
 
 ua-inc : ∀ {ℓ} {A₀ A₁ : Type ℓ} (e : A₀ ≃ A₁) (x : A₀) (i : I) → ua e i
-ua-inc e x i = ua-glue e i (λ ._ → x) (inS (e .fst x))
+ua-inc e x i = ua-glue e i (λ _ → x) (inS (e .fst x))
 
 ua→
   : ∀ {e : A₀ ≃ A₁} {B : (i : I) → ua e i → Type ℓ'} {f₀ f₁}
