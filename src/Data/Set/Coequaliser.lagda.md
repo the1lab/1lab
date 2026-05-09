@@ -482,9 +482,7 @@ instance
   hlevel-proj-congr : hlevel-projection (quote Congruence._∼_)
   hlevel-proj-congr .has-level = quote sim-prop
   hlevel-proj-congr .get-level _ = pure (quoteTerm (suc zero))
-  hlevel-proj-congr .get-argument (_ ∷ _ ∷ _ ∷ c v∷ _) = pure c
-  {-# CATCHALL #-}
-  hlevel-proj-congr .get-argument _ = typeError []
+  hlevel-proj-congr .get-argument = first-visible
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Congruence)
 module _ {R R' : Congruence A ℓ} (p : ∀ x y → Congruence._∼_ R x y ≃ Congruence._∼_ R' x y) where

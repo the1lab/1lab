@@ -96,6 +96,9 @@ record hlevel-projection (proj : Name) : Type where
     -- *value*, but in general it may be any single datum computed from
     -- the argument list which is sufficient for lemma pointed to by
     -- 'has-level' to do its work.
+    --
+    -- In the vast majority of cases, this can be 'first-visible'
+    -- (see below).
 
     get-level : Term → TC Term
     -- ^ Given /the inferred type/ of the "relevant" argument, return a
@@ -181,18 +184,22 @@ hlevel-proj A want goal = withNormalisation false do
 
   unify goal soln
 
-open hlevel-projection
+-- | Extract the first visible argument from an argument list. This
+-- is a reasonable implementation of the 'get-argument' field of
+-- 'hlevel-projection' in most cases (e.g. record field projections).
+first-visible : ∀ {ℓ} {A : Type ℓ} → List (Arg A) → TC A
+first-visible (a v∷ as) = pure a
+first-visible (_ ∷ as) = first-visible as
+first-visible [] = typeError []
 
 instance
-  open hlevel-projection
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr
   hlevel-proj-n-type .get-level ty = do
     def (quote n-Type) (ell v∷ lv't v∷ []) ← reduce ty
       where _ → typeError $ "Type of thing isn't n-Type, it is " ∷ termErr ty ∷ []
     normalise lv't
-  hlevel-proj-n-type .get-argument (_ ∷ _ ∷ it v∷ []) = pure it
-  hlevel-proj-n-type .get-argument _ = typeError []
+  hlevel-proj-n-type .get-argument = first-visible
 
 instance
   H-Level-projection

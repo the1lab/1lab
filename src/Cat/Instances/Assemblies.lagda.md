@@ -142,10 +142,7 @@ instance
   hlevel-proj-asm : hlevel-projection (quote Assembly.Ob)
   hlevel-proj-asm .hlevel-projection.has-level = quote Assembly.has-is-set
   hlevel-proj-asm .hlevel-projection.get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-asm .hlevel-projection.get-argument (_ ∷ _ ∷ _ ∷ c v∷ []) = pure c
-  hlevel-proj-asm .hlevel-projection.get-argument (_ ∷ c v∷ []) = pure c
-  {-# CATCHALL #-}
-  hlevel-proj-asm .hlevel-projection.get-argument _ = typeError []
+  hlevel-proj-asm .hlevel-projection.get-argument = first-visible
 
 module _ (X : Assembly 𝔸 ℓ) (a : ↯ ⌞ 𝔸 ⌟) (x : ⌞ X ⌟) where
   open Ω (X .realisers x .mem a) renaming (∣_∣ to [_]_⊩_) public

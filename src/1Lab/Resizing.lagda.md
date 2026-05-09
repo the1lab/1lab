@@ -85,8 +85,7 @@ instance
   Ω-hlevel-proj : hlevel-projection (quote Ω.∣_∣)
   Ω-hlevel-proj .has-level = quote Ω.is-tr
   Ω-hlevel-proj .get-level x = pure (quoteTerm (suc zero))
-  Ω-hlevel-proj .get-argument (arg _ t ∷ _) = pure t
-  Ω-hlevel-proj .get-argument _ = typeError []
+  Ω-hlevel-proj .get-argument = first-visible
 ```
 -->
 
