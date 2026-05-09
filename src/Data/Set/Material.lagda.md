@@ -132,8 +132,7 @@ instance
   hlevel-proj-is-iterative-embedding : hlevel-projection (quote is-iterative-embedding)
   hlevel-proj-is-iterative-embedding .has-level   = quote is-iterative-embedding-is-prop
   hlevel-proj-is-iterative-embedding .get-level _ = pure (lit (nat 1))
-  hlevel-proj-is-iterative-embedding .get-argument (_ h∷ x v∷ []) = pure x
-  hlevel-proj-is-iterative-embedding .get-argument _              = typeError []
+  hlevel-proj-is-iterative-embedding .get-argument = first-visible
 
 is-iterative-embedding-is-prop (sup x f) = hlevel 1
 ```
@@ -374,11 +373,7 @@ instance
   hlevel-projection-v-label : hlevel-projection (quote v-label.impl)
   hlevel-projection-v-label .has-level    = quote El-is-set
   hlevel-projection-v-label .get-level _  = pure (lit (nat 2))
-  hlevel-projection-v-label .get-argument a with a
-  ... | v-label-args x = pure x
-  ... | _              = do
-    `a ← quoteTC a >>= normalise
-    typeError [ termErr `a ]
+  hlevel-projection-v-label .get-argument = first-visible
 
 -- We also need the wrapper for this display form, since we can't write
 -- a display form for v-label (S .tree).

@@ -62,9 +62,7 @@ instance
   Arrows-hlevel-proj : hlevel-projection (quote Arrows.arrows)
   Arrows-hlevel-proj .has-level = quote Arrows.is-tr
   Arrows-hlevel-proj .get-level _ = pure (lit (nat 1))
-  Arrows-hlevel-proj .get-argument (_ ∷ _ ∷ _ ∷ _ ∷ arg _ h ∷ _) = pure h
-  {-# CATCHALL #-}
-  Arrows-hlevel-proj .get-argument _ = typeError []
+  Arrows-hlevel-proj .get-argument = first-visible
 
 {-# DISPLAY Arrows.arrows S f = f ∈ S #-}
 

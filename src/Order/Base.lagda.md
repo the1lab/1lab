@@ -151,14 +151,12 @@ instance
   Poset-ob-hlevel-proj : hlevel-projection (quote Poset.Ob)
   Poset-ob-hlevel-proj .has-level   = quote Poset.Ob-is-set
   Poset-ob-hlevel-proj .get-level _ = pure (lit (nat 2))
-  Poset-ob-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Poset-ob-hlevel-proj .get-argument _                     = typeError []
+  Poset-ob-hlevel-proj .get-argument = first-visible
 
   Poset-≤-hlevel-proj : hlevel-projection (quote Poset._≤_)
   Poset-≤-hlevel-proj .has-level   = quote Poset.≤-thin
   Poset-≤-hlevel-proj .get-level _ = pure (lit (nat 1))
-  Poset-≤-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Poset-≤-hlevel-proj .get-argument _                     = typeError []
+  Poset-≤-hlevel-proj .get-argument = first-visible
 ```
 -->
 

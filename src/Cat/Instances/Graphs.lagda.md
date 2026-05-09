@@ -64,16 +64,12 @@ instance
   hlevel-proj-node : hlevel-projection (quote Graph.Node)
   hlevel-proj-node .has-level = quote Graph.Node-set
   hlevel-proj-node .get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-node .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
-  {-# CATCHALL #-}
-  hlevel-proj-node .get-argument _ = typeError []
+  hlevel-proj-node .get-argument = first-visible
 
   hlevel-proj-edge : hlevel-projection (quote Graph.Edge)
   hlevel-proj-edge .has-level = quote Graph.Edge-set
   hlevel-proj-edge .get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-edge .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
-  {-# CATCHALL #-}
-  hlevel-proj-edge .get-argument _ = typeError []
+  hlevel-proj-edge .get-argument = first-visible
 ```
 -->
 

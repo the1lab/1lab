@@ -874,13 +874,6 @@ record type. This will simply not work. Instead, you can define an
 [`hlevel-projection`] instance as a stand-in for an instance of
 `H-Level` for *any* neutral which quotes to a `def` headed by its index.
 
-An instance of `hlevel-projection` for some name `func` requires an
-hlevel lemma that takes a single visible argument. The `get-argument`
-function must recover this relevant argument from *the argument list* of
-a neutral application of `func`. The `has-level` field should produce a
-`Term` representing the hlevel *for a recovered argument*. Generally,
-`has-level` will be a constant function returning `lit (nat K)`.
-
 [`hlevel-projection`]: https://1lab.dev/1Lab.Reflection.HLevel.html#hlevel-projection
 
 Generally, `hlevel-projection` instances are used for record fields.

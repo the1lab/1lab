@@ -125,8 +125,7 @@ instance
   hlevel-proj-ofe : hlevel-projection (quote OFE-on.within)
   hlevel-proj-ofe .has-level       = quote hlevel-within
   hlevel-proj-ofe .get-level _     = pure (quoteTerm (suc zero))
-  hlevel-proj-ofe .get-argument (_ ∷ _ ∷ _ ∷ o v∷ _) = pure o
-  hlevel-proj-ofe .get-argument _ = typeError []
+  hlevel-proj-ofe .get-argument = first-visible
 
 module
   _ {ℓ ℓ₁ ℓ' ℓ₁'} {X : Type ℓ} {Y : Type ℓ₁} (f : X → Y)

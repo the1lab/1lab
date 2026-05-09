@@ -130,9 +130,7 @@ instance
   hlevel-proj-hom : hlevel-projection (quote Precategory.Hom)
   hlevel-proj-hom .has-level = quote hom-set
   hlevel-proj-hom .get-level _ = pure (quoteTerm (suc (suc zero)))
-  hlevel-proj-hom .get-argument (_ ∷ _ ∷ c v∷ _) = pure c
-  {-# CATCHALL #-}
-  hlevel-proj-hom .get-argument _ = typeError []
+  hlevel-proj-hom .get-argument = first-visible
 ```
 -->
 

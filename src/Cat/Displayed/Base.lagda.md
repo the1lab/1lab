@@ -356,11 +356,7 @@ instance
   Hom[]-hlevel-proj : hlevel-projection (quote Displayed.Hom[_])
   Hom[]-hlevel-proj .has-level   = quote Hom[]-set
   Hom[]-hlevel-proj .get-level _ = pure (lit (nat 2))
-  Hom[]-hlevel-proj .get-argument (_ ∷ _ ∷ _ ∷ _ ∷ _ ∷ arg _ t ∷ _) =
-    pure t
-  {-# CATCHALL #-}
-  Hom[]-hlevel-proj .get-argument _ =
-    typeError []
+  Hom[]-hlevel-proj .get-argument = first-visible
 
   Funlike-Displayed : ∀ {o ℓ o' ℓ'} {B : Precategory o ℓ} → Funlike (Displayed B o' ℓ') ⌞ B ⌟ λ _ → Type o'
   Funlike-Displayed = record { _·_ = Displayed.Ob[_] }
