@@ -37,7 +37,7 @@ $$
 $$
 
 is called a "power", we refer to the coproduct $\coprod_{X} A$ of many
-copies of an object $X$ indexed by a $\kappa$-small set $X$ as the
+copies of an object $A$ indexed by a $\kappa$-small set $X$ as the
 **copower** of $A$ by $X$, and alternatively denote it $X \otimes A$. If
 $\cC$ does indeed admit coproducts indexed by _any_ $\kappa$-small
 set, then the copowering construction extends to a functor $\Sets_\kappa
