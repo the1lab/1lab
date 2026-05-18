@@ -62,7 +62,7 @@ open Subobject public
 To make formalisation smoother, we define our own version of displayed
 morphisms in the subobject fibration, rather than reusing those of the
 fundamental self-indexing. The reason for this is quite technical: the
-type of maps in the self-indexing is only dependent (the domains and)
+type of maps in the self-indexing is only dependent on (the domains and)
 the _morphisms_ being considered, meaning nothing constrains the proofs
 that these are monomorphisms, causing unification to fail at the
 determining the full `Subobject`{.Agda}s involved.
@@ -385,7 +385,7 @@ Sub-antisym f g = Sub.make-iso f g prop! prop!
 ```
 -->
 
-There is an evident fully faithful functor from $\Sub(y) to \cB/y$ that
+There is an evident fully faithful functor from $\Sub(y) \to \cB/y$ that
 forgets the property of being monic.
 
 ```agda
