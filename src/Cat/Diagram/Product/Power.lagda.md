@@ -21,7 +21,7 @@ import Cat.Reasoning
 module Cat.Diagram.Product.Power where
 ```
 
-# Power {defines="power powered well-powered cotensor cotensored"}
+# Power {defines="power powered"}
 
 Powering is the formal dual to [[copowering|copower]].
 
