@@ -163,7 +163,7 @@ mergeTBinds x xs = x :| xs
 
 definitionAnchor :: Definition -> Maybe (Int, Text)
 definitionAnchor def
-  | defCopy def                        = Nothing
+  | Just{} <- defCopy def              = Nothing
   | isExtendedLambdaName (defName def) = Nothing
   | isAbsurdLambdaName (defName def)   = Nothing
   | isWithFunction (theDef def)        = Nothing

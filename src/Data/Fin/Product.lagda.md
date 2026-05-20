@@ -20,7 +20,7 @@ with strictly curried (non-dependent) functions whose domain is a finite
 product. The construction is maximally universe-polymorphic, in that it
 supports sequences whose universe level varies between components, and
 is valued in their finite supremum, giving universes for products more
-precise than `Setω`{.Agda}.
+precise than `Typeω`{.Agda}.
 
 <!--
 ```agda

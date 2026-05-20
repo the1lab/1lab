@@ -50,7 +50,7 @@ abstract-marker = go 0 where
     a ← go k a
     pure (pi (arg i a) (abs x t))
   go k (agda-sort s) with s
-  ... | set t = agda-sort ∘ set <$> go k t
+  ... | type t = agda-sort ∘ type <$> go k t
   ... | lit n = pure (agda-sort (lit n))
   ... | prop t = agda-sort ∘ prop <$> go k t
   ... | propLit n = pure (agda-sort (propLit n))
