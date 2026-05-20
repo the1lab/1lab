@@ -11,6 +11,7 @@ import Control.Monad
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List.NonEmpty as List1
 import qualified Mikan.Utils.BiMap as BiMap
+import qualified Data.Text.Short as ST
 import qualified Data.Binary as Binary
 import qualified Data.Aeson as Aeson
 import qualified Data.Text as T
@@ -41,7 +42,6 @@ import Mikan.Syntax.TopLevelModuleName
 import Mikan.Syntax.Position (noRange)
 import Mikan.Utils.FileName
 import Mikan.Utils.Hash (Hash)
-import Mikan.Utils.Lens ((^.))
 
 import HTML.Backend
 import HTML.Render
@@ -194,14 +194,14 @@ compileAgda stateVar = do
       resetState
 
       -- Force Cubical even if we've not got a --cubical header.
-      setCommandLineOptions' baseDir defaultOptions
+      setCommandLineOptions' (Just baseDir) defaultOptions
 
       for_ target \source -> do
         absPath <- liftIO $ absolute source
         source <- parseSource =<< srcFromPath absPath
         typeCheckMain TypeCheck source
 
-      modifyTCLens stVisitedModules (`Map.union` oldVisited)
+      modifyingTC stVisitedModules (`Map.union` oldVisited)
 
     writeIORef stateVar (Just state)
 
@@ -238,7 +238,7 @@ emitAgda (CompileA tcState _) modName = do
 toTopLevel :: TCState -> T.Text -> TopLevelModuleName
 toTopLevel tcState name =
   let
-    qname = List1.fromList (T.split (== '.') name)
+    qname = List1.fromList (ST.fromText <$> T.split (== '.') name)
     raw = RawTopLevelModuleName noRange qname False
     hash = BiMap.lookup raw (tcState ^. stTopLevelModuleNames)
     hash' = fromMaybe (hashRawTopLevelModuleName raw) hash

@@ -37,7 +37,7 @@ data Term where
   unknown   : Term
 
 data Sort where
-  set     : (t : Term) → Sort
+  type    : (t : Term) → Sort
   lit     : (n : Nat) → Sort
   prop    : (t : Term) → Sort
   propLit : (n : Nat) → Sort
@@ -72,7 +72,7 @@ data Clause where
 {-# BUILTIN AGDATERMLIT         lit       #-}
 {-# BUILTIN AGDATERMUNSUPPORTED unknown   #-}
 
-{-# BUILTIN AGDASORTSET         set     #-}
+{-# BUILTIN AGDASORTTYPE        type    #-}
 {-# BUILTIN AGDASORTLIT         lit     #-}
 {-# BUILTIN AGDASORTPROP        prop    #-}
 {-# BUILTIN AGDASORTPROPLIT     propLit #-}
@@ -241,7 +241,7 @@ instance
     unknown unknown → yes reflᵢ
 
   Discrete-Sort = Discreteᵢ→discrete λ where
-    (set t) (set t₁)         → case t ≡ᵢ? t₁ of λ where
+    (type t) (type t₁)       → case t ≡ᵢ? t₁ of λ where
       (yes reflᵢ) → yes reflᵢ
       (no ¬a) → no λ { reflᵢ → ¬a reflᵢ }
     (lit n) (lit n₁)         → case n ≡ᵢ? n₁ of λ where
@@ -258,32 +258,32 @@ instance
       (no ¬a) → no λ { reflᵢ → ¬a reflᵢ }
     unknown unknown          → yes reflᵢ
 
-    (set t) (lit n) → no (λ ())
-    (set t) (prop t₁) → no (λ ())
-    (set t) (propLit n) → no (λ ())
-    (set t) (inf n) → no (λ ())
-    (set t) unknown → no (λ ())
-    (lit n) (set t) → no (λ ())
+    (type t) (lit n) → no (λ ())
+    (type t) (prop t₁) → no (λ ())
+    (type t) (propLit n) → no (λ ())
+    (type t) (inf n) → no (λ ())
+    (type t) unknown → no (λ ())
+    (lit n) (type t) → no (λ ())
     (lit n) (prop t) → no (λ ())
     (lit n) (propLit n₁) → no (λ ())
     (lit n) (inf n₁) → no (λ ())
     (lit n) unknown → no (λ ())
-    (prop t) (set t₁) → no (λ ())
+    (prop t) (type t₁) → no (λ ())
     (prop t) (lit n) → no (λ ())
     (prop t) (propLit n) → no (λ ())
     (prop t) (inf n) → no (λ ())
     (prop t) unknown → no (λ ())
-    (propLit n) (set t) → no (λ ())
+    (propLit n) (type t) → no (λ ())
     (propLit n) (lit n₁) → no (λ ())
     (propLit n) (prop t) → no (λ ())
     (propLit n) (inf n₁) → no (λ ())
     (propLit n) unknown → no (λ ())
-    (inf n) (set t) → no (λ ())
+    (inf n) (type t) → no (λ ())
     (inf n) (lit n₁) → no (λ ())
     (inf n) (prop t) → no (λ ())
     (inf n) (propLit n₁) → no (λ ())
     (inf n) unknown → no (λ ())
-    unknown (set t) → no (λ ())
+    unknown (type t) → no (λ ())
     unknown (lit n) → no (λ ())
     unknown (prop t) → no (λ ())
     unknown (propLit n) → no (λ ())

@@ -123,7 +123,7 @@ srcFileOfInterface :: TCM.Interface -> HtmlInputSourceFile
 srcFileOfInterface i = HtmlInputSourceFile
   (TCM.iTopLevelModuleName i)
   (TCM.iFileType i)
-  (TCM.iSource i)
+  (T.fromStrict (TCM.iSource i))
   (TCM.iHighlighting i)
 
 renderSourceFile

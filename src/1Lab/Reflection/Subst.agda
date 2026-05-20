@@ -135,7 +135,7 @@ subst-tm ρ (pi (arg ι a) (abs n b)) = pi (arg ι (subst-tm ρ a)) (abs n (subs
 subst-tm ρ (lit l) = (lit l)
 subst-tm ρ unknown = unknown
 subst-tm ρ (agda-sort s) with s
-… | set t     = agda-sort (set (subst-tm ρ t))
+… | type t    = agda-sort (type (subst-tm ρ t))
 … | lit n     = agda-sort (lit n)
 … | prop t    = agda-sort (prop (subst-tm ρ t))
 … | propLit n = agda-sort (propLit n)

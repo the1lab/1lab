@@ -22,5 +22,5 @@ setupTCM options = do
     Nothing -> error "No input files."
     Just x -> liftIO . absolute $ takeDirectory x
 
-  setCommandLineOptions' file options
+  setCommandLineOptions' (Just file) options
   pure (filePath file)

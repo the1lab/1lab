@@ -21,6 +21,7 @@ common common
     SHA,
     split,
     text,
+    text-short,
     transformers,
     unicode-collation,
     unordered-containers,

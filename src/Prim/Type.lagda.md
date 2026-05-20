@@ -10,8 +10,8 @@ system. For more details about the use of universes, see
 [`1Lab.Type`](1Lab.Type.html).
 
 ```agda
-{-# BUILTIN TYPE     Type  #-}
-{-# BUILTIN SETOMEGA Typeω #-}
+{-# BUILTIN TYPE      Type  #-}
+{-# BUILTIN TYPEOMEGA Typeω #-}
 
 {-# BUILTIN PROP      SProp  #-}
 {-# BUILTIN PROPOMEGA SPropω #-}

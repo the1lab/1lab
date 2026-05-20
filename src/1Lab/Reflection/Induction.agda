@@ -258,7 +258,7 @@ make-elim-with opts elim D = withNormalisation true do
     argP = if hide-motive then argH else argN
     motiveTel = ("ℓ" , argH (quoteTerm Level))
               -- P : DTel → Type ℓ
-              ∷ ("P" , argP (unpi-view (PTel DTel) (agda-sort (set (var (length (PTel DTel)) [])))))
+              ∷ ("P" , argP (unpi-view (PTel DTel) (agda-sort (type (var (length (PTel DTel)) [])))))
               ∷ []
     DTel = raise 1 DTel
     -- We want to take is-hlevel as an argument, but we need to work in a context
