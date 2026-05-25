@@ -25,7 +25,6 @@ open import Data.String.Base public
 open import Meta.Traversable public
 open import Data.Float.Base public
 open import Data.Maybe.Base public
-open import Data.Word.Base public
 open import Meta.Idiom public
 open import Meta.Bind public
 open import Meta.Alt public
