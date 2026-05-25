@@ -3,7 +3,6 @@
 open import 1Lab.Type
 
 open import Data.Maybe.Base
-open import Data.Word.Base
 open import Data.Dec.Base
 open import Data.Int.Base
 open import Data.Id.Base
@@ -30,8 +29,6 @@ private module P where primitive
   primFloatIsNegativeZero    : Float → Bool
   primFloatIsSafeInteger     : Float → Bool
   -- Conversions
-  primFloatToWord64          : Float → Maybe Word64
-  primFloatToWord64Injective : ∀ a b → primFloatToWord64 a ≡ᵢ primFloatToWord64 b → a ≡ᵢ b
   primNatToFloat             : Nat → Float
   primIntToFloat             : Int → Float
   primFloatRound             : Float → Maybe Int
@@ -75,7 +72,6 @@ open P public renaming
   ; primFloatIsNegativeZero to is-neg0?
   ; primFloatIsSafeInteger  to is-integer?
 
-  ; primFloatToWord64       to float→word64
   ; primNatToFloat          to nat→float
   ; primIntToFloat          to int→float
   ; primFloatRound          to round
@@ -94,9 +90,12 @@ open P public renaming
   )
   using ()
 
+-- TODO: this needs to be a primitive upstream.
+private postulate primFloatToRatioInjective : ∀ a b → float→ratio a ≡ᵢ float→ratio b → a ≡ᵢ b
+
 instance
   Discrete-Float : Discrete Float
-  Discrete-Float  = Discrete-inj' _ (P.primFloatToWord64Injective _ _)
+  Discrete-Float  = Discrete-inj' _ (primFloatToRatioInjective _ _)
 
   Number-Float : Number Float
   Number-Float .Number.Constraint _ = ⊤

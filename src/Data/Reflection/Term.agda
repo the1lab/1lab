@@ -10,7 +10,6 @@ open import Data.Reflection.Abs
 open import Data.String.Base
 open import Data.Float.Base
 open import Data.List.Base
-open import Data.Word.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Id.Base

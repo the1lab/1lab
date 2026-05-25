@@ -7,7 +7,6 @@ open import Data.String.Base
 open import Data.Float.Base
 open import Data.Char.Base
 open import Data.List.Base
-open import Data.Word.Base
 
 open import Meta.Append
 ```
@@ -62,9 +61,6 @@ private module P where primitive
   primShowFloat      : Float  → String
 
 instance
-  Show-Word64 : Show Word64
-  Show-Word64 = default-show λ x → P.primShowNat (word64→nat x)
-
   Show-Nat : Show Nat
   Show-Nat = default-show P.primShowNat
 
