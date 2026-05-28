@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Diagram.Terminal
 open import Cat.Prelude
 open import Cat.Finite
 
@@ -117,6 +118,12 @@ instance
   cs-c cs-a → auto
   cs-c cs-b → auto
   cs-c cs-c → auto
+
+Terminal-·→·←· : ∀ {a b} → Terminal (·→·←· {a} {b})
+Terminal-·→·←· .Terminal.top = cs-c
+Terminal-·→·←· .Terminal.has⊤ cs-a = hlevel 0
+Terminal-·→·←· .Terminal.has⊤ cs-b = hlevel 0
+Terminal-·→·←· .Terminal.has⊤ cs-c = hlevel 0
 ```
 -->
 
