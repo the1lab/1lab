@@ -1,10 +1,13 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Localisation
+open import Cat.Functor.Conservative
 open import Cat.Instances.Shape.Join
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Instances.Slice
+open import Cat.Connected
 open import Cat.Prelude
 
 open import Data.Sum
@@ -69,7 +72,6 @@ module
     (F : Functor J (Slice C o))
     where
 
-  open Terminal
   open /-Obj
   open /-Hom
 
@@ -158,4 +160,102 @@ is-complete→slice-is-complete
   → is-complete o' ℓ' C
   → is-complete o' ℓ' (Slice C c)
 is-complete→slice-is-complete lims F = limit-above→limit-in-slice F (lims _)
+```
+
+## Connected limits in slices {defines="connected-limits-in-slice-categories"}
+
+We can simplify this story for a particular class of limits: the
+forgetful functor $U : \cC/o \to \cC$ [[creates|created limit]]
+*connected* limits.^[That is, limits of shape a [[connected category]].
+This notably includes [[pullbacks]], but *not* terminal objects or
+binary products, since their shape categories have respectively 0 and 2
+connected components.]
+For instance, a [[pullback]] in $\cC/o$ is computed exactly as a
+pullback in $\cC$ (assuming this pullback exists), ignoring the maps
+into $o$. Contrast this with the fact that [[colimits in slice
+categories]] are *all* created by the forgetful functor.
+
+To get some intuition for the connectedness requirement, we can think
+type-theoretically: an object of $\cC/A$ is, in the internal language of
+$\cC$, a "type in context $A$", $a : A \vdash B(a)$, while the forgetful
+functor can be thought of as forming the $\Sigma$-type $\sum_{a : A} B(a)$.
+Then, given a diagram of types $a : A \vdash B_i(a)$ in $\cC/A$ with
+maps between them over $A$, the limit of the induced diagram of closed
+types consists of a bunch of pairs $(a_i : A, b_i : B_i(a_i))$ obeying
+some relations; but, since the diagram has a connected shape, those
+relations ensure that all the $a_i$s are equal! Thus, it is enough
+to compute the limit *over $A$* and then take the $\Sigma$.
+
+<!--
+```agda
+module
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} {A : ⌞ C ⌟}
+    where
+
+  private
+    module C = Cat.Reasoning C
+    module J = Precategory J
+
+  open lifts-limit
+  open /-Obj
+  open /-Hom
+```
+-->
+
+We start by showing that `Forget/`{.Agda} [[lifts limits]]: given a
+diagram $D$ in $\cC/A$ and its limit $L$ in $\cC$, the key step is to find
+a suitable map $L \to A$ to promote this to a limit in $\cC/A$.
+As hinted above, we can pick any object $j : J$ and set this to the
+composite $L \to D_j \to A$; since $J$ is connected, the choice of
+$j$ doesn't matter, and there is at least one object by assumption.
+
+```agda
+  Forget/-lifts-connected-limits
+    : is-connected-cat J
+    → lifts-limits-of J (Forget/ {C = C} {c = A})
+  Forget/-lifts-connected-limits conn {D} L .lifted = to-limit (to-is-limit L')
+    where
+      module D = Functor D
+      module L = Limit L
+      module conn = is-connected-cat conn
+
+      proj : J.Ob → C.Hom L.apex A
+      proj j = D.₀ j .map C.∘ L.ψ j
+
+      proj' : ∥ J.Ob ∥ → C.Hom L.apex A
+      proj' = connected-∥-∥-rec! conn proj λ {x} {y} f →
+        D.₀ x .map C.∘ L.ψ x                ≡⟨ C.pushl (sym (D.₁ f .com)) ⟩
+        D.₀ y .map C.∘ D.₁ f .map C.∘ L.ψ x ≡⟨ C.cdr (L.commutes f) ⟩
+        D.₀ y .map C.∘ L.ψ y                ∎
+```
+
+The rest is an uneventful computation.
+
+```agda
+      L' : make-is-limit D (cut (proj' conn.point))
+      L' .make-is-limit.ψ j .map = L.ψ j
+      L' .make-is-limit.ψ j .com = ap proj' (squash (inc _) conn.point)
+      L' .make-is-limit.commutes f = ext (L.commutes f)
+      L' .make-is-limit.universal eps comm .map =
+        L.universal (λ j → eps j .map) λ {x} {y} f → unext (comm f)
+      L' .make-is-limit.universal eps comm .com =
+        case conn.point return (λ p → proj' p C.∘ _ ≡ _) of λ j →
+          C.pullr (L.factors _ _) ∙ eps j .com
+      L' .make-is-limit.factors eps comm = ext (L.factors _ _)
+      L' .make-is-limit.unique eps comm other fac =
+        ext (L.unique _ _ _ λ j → unext (fac j))
+
+  Forget/-lifts-connected-limits conn lim .preserved =
+    generalize-limitp (Limit.has-limit lim) refl
+```
+
+Since `Forget/`{.Agda} is [[conservative]], we conclude that it creates
+connected limits.
+
+```agda
+  Forget/-creates-connected-limits
+    : is-connected-cat J
+    → creates-limits-of J (Forget/ {C = C} {c = A})
+  Forget/-creates-connected-limits conn = conservative+lifts→creates-limits
+    Forget/-is-conservative (Forget/-lifts-connected-limits conn)
 ```

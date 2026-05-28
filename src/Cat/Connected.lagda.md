@@ -65,7 +65,7 @@ points *would* be connected by a zigzag, there are no such points.]
 ⊤Cat-is-connected .zigzag _ _ = inc []
 
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Precategory C
+  private module C = Precategory C
 
   initial→connected : Initial C → is-connected-cat C
   initial→connected init = conn where
@@ -133,4 +133,22 @@ a zigzag.
   connected≃π₀-is-contr : is-connected-cat C ≃ is-contr (π₀ ʻ C)
   connected≃π₀-is-contr = prop-ext (hlevel 1) (hlevel 1)
     connected→π₀-is-contr π₀-is-contr→connected
+```
+
+Connected categories enjoy the following recursion principle: to define
+a map $\| \cC \| \to X$, where $\cC$ is a connected category and $X$ is
+a [[set]], it suffices to give a map $r : | \cC | \to X$ from the
+objects of $\cC$ that gives the same result for any two objects
+connected by a morphism.
+
+```agda
+  connected-∥-∥-rec!
+    : is-connected-cat C
+    → ∀ {ℓ'} {X : Type ℓ'} ⦃ _ : H-Level X 2 ⦄
+    → (r : C.Ob → X)
+    → (∀ {x y} (f : C.Hom x y) → r x ≡ r y)
+    → ∥ C.Ob ∥ → X
+  connected-∥-∥-rec! conn r r-const = ∥-∥-rec-set! r λ x y →
+    case conn .zigzag x y of
+      Meander-rec-≡ (el! _) r r-const
 ```
