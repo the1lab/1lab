@@ -174,7 +174,9 @@ As a corollary, we conclude that, for a functor $F : \cC \to \cD$ from a
 proposition.
 
 ```agda
+open adjunction-is-equivalence
 open is-equivalence
+
 is-equivalence-is-prop
   : is-category C
   → (F : Functor C D)
@@ -189,11 +191,11 @@ is-equivalence-is-prop ccat F x y = go where
   go : x ≡ y
   go i .F⁻¹ = invs i
   go i .F⊣F⁻¹ = adjs i
-  go i .unit-iso a =
+  go i .has-is-equivalence .unit-iso a =
     is-prop→pathp (λ i → C.is-invertible-is-prop {f = _⊣_.η (adjs i) a})
       (x .unit-iso a)
       (y .unit-iso a) i
-  go i .counit-iso a =
+  go i .has-is-equivalence .counit-iso a =
     is-prop→pathp (λ i → D.is-invertible-is-prop {f = _⊣_.ε (adjs i) a})
       (x .counit-iso a)
       (y .counit-iso a) i
