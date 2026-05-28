@@ -27,25 +27,19 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences {defines="equivalence-of-categories equivalences-of-categories"}
+# Equivalences {defines="equivalence-of-categories equivalences-of-categories adjoint-equivalence"}
 
-A functor $F : \cC \to \cD$ is an **equivalence of categories**
-when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and
-counit natural transformations being [natural isomorphisms]. This
-immediately implies that our adjoint pair $F \dashv G$ extends to an
-adjoint triple $F \dashv G \dashv F$.
-
-[natural isomorphisms]: Cat.Functor.Naturality.html
+An adjunction $F \vdash G$ is an **adjoint equivalence**, or an
+**equivalence of (pre)categories**, if the unit and counit natural
+transformations are both [[natural isomorphisms]]. This immediately
+implies that our adjoint pair $F \dashv G$ extends to an adjoint triple
+$F \dashv G \dashv F$.
 
 ```agda
-record is-equivalence (F : Functor C D) : Type (adj-level C D) where
-  private
-    [C,C] = Cat[ C , C ]
-    [D,D] = Cat[ D , D ]
-
-  field
-    F⁻¹      : Functor D C
-    F⊣F⁻¹    : F ⊣ F⁻¹
+record adjunction-is-equivalence
+    {F : Functor C D} {F⁻¹ : Functor D C}
+    (F⊣F⁻¹ : F ⊣ F⁻¹)
+  : Type (adj-level C D) where
 
   open _⊣_ F⊣F⁻¹ hiding (η ; ε) public
 
@@ -58,6 +52,10 @@ The first thing we note is that having a natural family of invertible
 morphisms gives isomorphisms in the respective functor categories:
 
 ```agda
+  private
+    [C,C] = Cat[ C , C ]
+    [D,D] = Cat[ D , D ]
+
   F∘F⁻¹≅Id : Cat.Isomorphism [D,D] (F F∘ F⁻¹) Id
   F∘F⁻¹≅Id = Cat.invertible→iso [D,D]
     counit
@@ -104,14 +102,34 @@ morphisms gives isomorphisms in the respective functor categories:
       zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F · b) ≡ D.id
       zag' = ap₂ D._∘_ refl p ∙∙ sym (F .F-∘ _ _) ∙∙ ap (F .F₁) (unit-iso _ .invr) ∙ F .F-id
 
-  inverse-equivalence : is-equivalence F⁻¹
-  inverse-equivalence = record
-    { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
-    ; unit-iso   = λ x → Cat.is-invertible-inverse D (counit-iso _)
+  inverse-is-equivalence : adjunction-is-equivalence F⁻¹⊣F
+  inverse-is-equivalence = record
+    { unit-iso   = λ x → Cat.is-invertible-inverse D (counit-iso _)
     ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
 -->
+
+Overloading terminology, a functor $F : \cC \to \cD$ is an **equivalence
+of categories** when it is part of an adjoint equivalence $F \vdash G$.
+
+```agda
+record is-equivalence (F : Functor C D) : Type (adj-level C D) where
+  field
+    F⁻¹   : Functor D C
+    F⊣F⁻¹ : F ⊣ F⁻¹
+
+    has-is-equivalence : adjunction-is-equivalence F⊣F⁻¹
+
+  open adjunction-is-equivalence has-is-equivalence public
+
+  inverse-equivalence : is-equivalence F⁻¹
+  inverse-equivalence = record
+    { F⁻¹ = F
+    ; F⊣F⁻¹ = F⁻¹⊣F
+    ; has-is-equivalence = inverse-is-equivalence
+    }
+```
 
 We chose, for definiteness, the above definition of equivalence of
 categories, since it provides convenient access to the most useful data:
@@ -341,12 +359,13 @@ Now to show they are componentwise invertible:
 -->
 
 ```agda
+  open adjunction-is-equivalence
   open is-equivalence
 
   ff+split-eso→is-equivalence : is-equivalence F
   ff+split-eso→is-equivalence .F⁻¹ = G
   ff+split-eso→is-equivalence .F⊣F⁻¹ = ff+split-eso→F⊣inverse
-  ff+split-eso→is-equivalence .counit-iso x = record
+  ff+split-eso→is-equivalence .has-is-equivalence .counit-iso x = record
     { inv      = f*x-iso .di.from
     ; inverses = record
       { invl = f*x-iso .di.invl
@@ -359,7 +378,7 @@ Since the unit is defined in terms of fullness, showing it is invertible
 needs an appeal to faithfulness (two, actually):
 
 ```agda
-  ff+split-eso→is-equivalence .unit-iso x = record
+  ff+split-eso→is-equivalence .has-is-equivalence .unit-iso x = record
     { inv      = ff⁻¹ (f*x-iso .di.to)
     ; inverses = record
       { invl = ff→faithful {F = F} ff (
@@ -561,6 +580,7 @@ precategories.
 
 <!--
 ```agda
+open adjunction-is-equivalence
 open is-equivalence
 open Precategory
 open _⊣_
@@ -765,12 +785,12 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
   G-eqv : is-equivalence G
   G-eqv .F⁻¹ = F-eqv .F⁻¹
   G-eqv .F⊣F⁻¹ = adjoint-natural-isol α (F-eqv .F⊣F⁻¹)
-  G-eqv .unit-iso x = C.invertible-∘
+  G-eqv .has-is-equivalence .unit-iso x = C.invertible-∘
     (C.invertible-∘
       C.id-invertible
       (F-map-invertible (F-eqv .F⁻¹) (isoⁿ→is-invertible α x)))
     (F-eqv .unit-iso x)
-  G-eqv .counit-iso x = D.invertible-∘ (F-eqv .counit-iso x)
+  G-eqv .has-is-equivalence .counit-iso x = D.invertible-∘ (F-eqv .counit-iso x)
     (D.invertible-∘
       (isoⁿ→is-invertible α _ D.invertible⁻¹)
       (F-map-invertible G C.id-invertible))
@@ -803,11 +823,11 @@ is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
   FG-eqv : is-equivalence (F F∘ G)
   FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
   FG-eqv .F⊣F⁻¹ = LF⊣GR G-eqv.F⊣F⁻¹ F-eqv.F⊣F⁻¹
-  FG-eqv .unit-iso x =
+  FG-eqv .has-is-equivalence .unit-iso x =
     C.invertible-∘
       (F-map-invertible G-eqv.F⁻¹ (F-eqv.unit-iso (G .F₀ x)))
       (G-eqv.unit-iso x)
-  FG-eqv .counit-iso x =
+  FG-eqv .has-is-equivalence .counit-iso x =
     E.invertible-∘
       (F-eqv.counit-iso x)
       (F-map-invertible F (G-eqv.counit-iso (F-eqv .F⁻¹ .F₀ x)))
@@ -830,9 +850,9 @@ Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .η x = C .id
 Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
 Id-is-equivalence {C = C} .F⊣F⁻¹ .zig = C .idl _
 Id-is-equivalence {C = C} .F⊣F⁻¹ .zag = C .idl _
-Id-is-equivalence {C = C} .unit-iso x =
+Id-is-equivalence {C = C} .has-is-equivalence .unit-iso x =
   Cat.make-invertible C (C .id) (C .idl _) (C .idl _)
-Id-is-equivalence {C = C} .counit-iso x =
+Id-is-equivalence {C = C} .has-is-equivalence .counit-iso x =
   Cat.make-invertible C (C .id) (C .idl _) (C .idl _)
 ```
 
@@ -874,12 +894,14 @@ preserves invertibility.
     : preserves-invertibility → is-equivalence L
   preserves-invertibility→equivalence e .F⁻¹ = R
   preserves-invertibility→equivalence e .F⊣F⁻¹ = L⊣R
-  preserves-invertibility→equivalence e .unit-iso c = C.invertible-cancelr
-    (R.F-map-invertible D.id-invertible)
-    (Equiv.to (e D.id _ refl) D.id-invertible)
-  preserves-invertibility→equivalence e .counit-iso d = D.invertible-cancell
-    (L.F-map-invertible C.id-invertible)
-    (Equiv.from (e _ _ (L-R-adjunct L⊣R _)) C.id-invertible)
+  preserves-invertibility→equivalence e .has-is-equivalence .unit-iso c =
+    C.invertible-cancelr
+      (R.F-map-invertible D.id-invertible)
+      (Equiv.to (e D.id _ refl) D.id-invertible)
+  preserves-invertibility→equivalence e .has-is-equivalence .counit-iso d =
+    D.invertible-cancell
+      (L.F-map-invertible C.id-invertible)
+      (Equiv.from (e _ _ (L-R-adjunct L⊣R _)) C.id-invertible)
 ```
 
 The other direction is just as straightforward, since adjuncts are

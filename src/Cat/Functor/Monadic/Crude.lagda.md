@@ -285,11 +285,12 @@ crude-monadicity
     (U-conservative : is-conservative U)
   → is-monadic F⊣U
 crude-monadicity coeq pres cons = eqv' where
+  open adjunction-is-equivalence
   open is-equivalence
   eqv : is-equivalence (Comparison-EM⁻¹ F⊣U coeq)
-  eqv .F⁻¹          = Comparison-EM F⊣U
-  eqv .F⊣F⁻¹        = Comparison-EM⁻¹⊣Comparison-EM F⊣U coeq
-  eqv .unit-iso _   = prcoeq→unit-is-iso coeq pres
-  eqv .counit-iso _ = conservative-prcoeq→counit-is-iso coeq pres cons
+  eqv .F⁻¹                              = Comparison-EM F⊣U
+  eqv .F⊣F⁻¹                            = Comparison-EM⁻¹⊣Comparison-EM F⊣U coeq
+  eqv .has-is-equivalence .unit-iso _   = prcoeq→unit-is-iso coeq pres
+  eqv .has-is-equivalence .counit-iso _ = conservative-prcoeq→counit-is-iso coeq pres cons
   eqv' = inverse-equivalence eqv
 ```
