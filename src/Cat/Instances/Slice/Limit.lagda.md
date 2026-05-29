@@ -61,9 +61,8 @@ $\bullet \to \bullet \ot \bullet$. This process can be described in a
 way easier to generalise: We "exploded" our diagram $F : \{*,*\} \to
 \cC/c$ to one indexed by a category which contains $\{*,*\}$,
 contains an extra point, and has a unique map between each object of
-$\{*,*\}$ --- the [_join_] of these categories.
-
-[_join_]: Cat.Instances.Shape.Join.html
+$\{*,*\}$ --- we have [[adjoined|adjoined terminal object]] a
+[[terminal object]] to our diagram shape.
 
 <!--
 ```agda
@@ -84,22 +83,12 @@ module
 -->
 
 Generically, if we have a diagram $F : J \to \cC/c$, we can "explode"
-this into a diagram $F' : (J \star \{*\}) \to \cC$, compute the limit
+this into a diagram $F' : cJ^\triangleright \to \cC$, compute the limit
 in $\cC$, then pass back to the slice category.
 
 ```agda
-    F' : Functor (J ⋆ ⊤Cat) C
-    F' .F₀ (inl x) = F.₀ x .dom
-    F' .F₀ (inr x) = o
-    F' .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
-    F' .F₁ {inl x} {inr y} _ = F.₀ x .map
-    F' .F₁ {inr x} {inr y} (lift h) = C.id
-    F' .F-id {inl x} = ap map F.F-id
-    F' .F-id {inr x} = refl
-    F' .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
-    F' .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .com)
-    F' .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
-    F' .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+    F' : Functor (J ▹) C
+    F' = to-slice→from-▹ F
 
   limit-above→limit-in-slice : Limit F' → Limit F
   limit-above→limit-in-slice lims = to-limit (to-is-limit lim) where
