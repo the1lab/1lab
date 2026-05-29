@@ -822,7 +822,7 @@ is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
 
   FG-eqv : is-equivalence (F F∘ G)
   FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
-  FG-eqv .F⊣F⁻¹ = LF⊣GR G-eqv.F⊣F⁻¹ F-eqv.F⊣F⁻¹
+  FG-eqv .F⊣F⁻¹ = G-eqv.F⊣F⁻¹ ∘⊣ F-eqv.F⊣F⁻¹
   FG-eqv .has-is-equivalence .unit-iso x =
     C.invertible-∘
       (F-map-invertible G-eqv.F⁻¹ (F-eqv.unit-iso (G .F₀ x)))

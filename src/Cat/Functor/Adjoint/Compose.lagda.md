@@ -59,31 +59,33 @@ module _
 -->
 
 ```agda
-  LF⊣GR : (L F∘ F) ⊣ (G F∘ R)
-  LF⊣GR .unit .η x          = G.₁ (lr.η _) A.∘ fg.η _
-  LF⊣GR .counit .η x        = lr.ε _ C.∘ L.₁ (fg.ε _)
+  infixr 30 _∘⊣_
 
-  LF⊣GR .unit .is-natural x y f =
+  _∘⊣_ : (L F∘ F) ⊣ (G F∘ R)
+  _∘⊣_ .unit .η x          = G.₁ (lr.η _) A.∘ fg.η _
+  _∘⊣_ .counit .η x        = lr.ε _ C.∘ L.₁ (fg.ε _)
+
+  _∘⊣_ .unit .is-natural x y f =
     (G.₁ (lr.η _) A.∘ fg.η _) A.∘ f                ≡⟨ A.pullr (fg.unit.is-natural _ _ _) ⟩
     G.₁ (lr.η _) A.∘ G.₁ (F.₁ f) A.∘ fg.η _        ≡⟨ A.pulll (sym (G.F-∘ _ _)) ⟩
     G.₁ ⌜ lr.η _ B.∘ F.₁ f ⌝ A.∘ fg.η _            ≡⟨ ap! (lr.unit.is-natural _ _ _) ⟩
     G.₁ (R.₁ (L.₁ (F.₁ f)) B.∘ lr.η _) A.∘ fg.η _  ≡⟨ A.pushl (G.F-∘ _ _) ⟩
     GR.₁ (LF.₁ f) A.∘ G.₁ (lr.η _) A.∘ (fg.η _)    ∎
 
-  LF⊣GR .counit .is-natural x y f =
+  _∘⊣_ .counit .is-natural x y f =
     (lr.ε _ C.∘ L.₁ (fg.ε _)) C.∘ LF.₁ (GR.₁ f) ≡⟨ C.pullr (sym (L.F-∘ _ _)) ⟩
     lr.ε _ C.∘ L.₁ ⌜ fg.ε _ B.∘ F.₁ (GR.₁ f) ⌝  ≡⟨ ap! (fg.counit.is-natural _ _ _) ⟩
     lr.ε _ C.∘ ⌜ L.₁ (R.F₁ f B.∘ fg.ε _) ⌝      ≡⟨ ap! (L.F-∘ _ _) ⟩
     lr.ε _ C.∘ L.₁ (R.F₁ f) C.∘ L.₁ (fg.ε _)    ≡⟨ C.extendl (lr.counit.is-natural _ _ _) ⟩
     f C.∘ lr.ε _ C.∘ L.₁ (fg.ε _)               ∎
 
-  LF⊣GR .zig =
+  _∘⊣_ .zig =
     (lr.ε _ C.∘ L.₁ (fg.ε _)) C.∘ ⌜ LF.₁ (G.₁ (lr.η _) A.∘ fg.η _) ⌝ ≡⟨ C.extendr (ap! (LF.F-∘ _ _) ∙ L.extendl (fg.counit.is-natural _ _ _)) ⟩
     (lr.ε _ C.∘ L.₁ (lr.η _)) C.∘ (L.₁ (fg.ε _) C.∘ LF.₁ (fg.η _))   ≡⟨ C.elimr (L.annihilate fg.zig) ⟩
     lr.ε _ C.∘ L.₁ (lr.η _)                                          ≡⟨ lr.zig ⟩
     C.id                                                             ∎
 
-  LF⊣GR .zag =
+  _∘⊣_ .zag =
     GR.₁ (lr.ε _ C.∘ L.₁ (fg.ε _)) A.∘ G.₁ (lr.η _) A.∘ fg.η _ ≡⟨ A.pulll (G.collapse (B.pushl (R.F-∘ _ _) ∙ ap₂ B._∘_ refl (sym (lr.unit.is-natural _ _ _)))) ⟩
     G.₁ ⌜ R.₁ (lr.ε _) B.∘ lr.η _ B.∘ fg.ε _ ⌝ A.∘ fg.η _      ≡⟨ ap! (B.cancell lr.zag) ⟩
     G.₁ (fg.ε _) A.∘ fg.η _                                    ≡⟨ fg.zag ⟩

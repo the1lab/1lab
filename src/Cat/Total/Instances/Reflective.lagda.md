@@ -62,12 +62,13 @@ composition of our reflector and the left adjoint to yoneda for $A$.
 
 ```agda
   L' : Functor (PSh ℓ C) C
-  L' = L F∘ (さB F∘ precompose L.op)
+  L' = L F∘ さB F∘ precompose L.op
 
   L'⊣ι' : L' ⊣ ι'
-  L'⊣ι' = LF⊣GR
-    (LF⊣GR (precomposite-adjunction (opposite-adjunction adj)) B-total.has-よ-adj)
-    adj
+  L'⊣ι' =
+    (precomposite-adjunction (opposite-adjunction adj)
+    ∘⊣ B-total.has-よ-adj)
+    ∘⊣ adj
 
 reflective-total→is-total : is-total C
 reflective-total→is-total .さ = L'

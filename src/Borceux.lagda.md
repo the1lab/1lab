@@ -663,12 +663,12 @@ _ = Γ⊣Codisc
 
 <!--
 ```agda
-_ = LF⊣GR
+_ = _∘⊣_
 _ = right-adjoint-is-continuous
 ```
 -->
 
-* Proposition 3.2.1: `LF⊣GR`{.Agda}
+* Proposition 3.2.1: `_∘⊣_`{.Agda}
 * Proposition 3.2.2: `right-adjoint-is-continuous`{.Agda}
 
 ### 3.3 The adjoint functor theorem
