@@ -1,12 +1,15 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 open import Data.Sum
 
 open Precategory
 open Functor
+open /-Obj
+open /-Hom
 ```
 -->
 
@@ -14,7 +17,7 @@ open Functor
 module Cat.Instances.Shape.Join where
 ```
 
-# Join of categories
+# Join of categories {defines="join-of-categories"}
 
 The **join** $\cC \star \cD$ of two categories is the category
 obtained by "bridging" the disjoint union $\cC \coprod \cD$ with a
@@ -143,3 +146,42 @@ module _ {o ℓ} {J : Precategory o ℓ} where
   ▹-join .F-∘ {inl (inr x)} {inr y} {inr z} f g = refl
   ▹-join .F-∘ {inr x} {inr y} {inr z} f g = refl
 ```
+
+The join of categories, when viewed as a functor $- \star \cB : \Cat \to
+\cB/\Cat$, has a [[right adjoint]] which takes a pair ($\cD, F : \cB
+\to \cD$) to the [[comma category]] $\cD \downarrow F$. Specialising
+this to $\cB = \top$, this becomes a [[slice category]], thus a functor
+$F : \cC^\triangleright \to \cD$ is the same as a functor $\cC \to
+\cD/F(\ast)$.
+
+```agda
+module _ {o ℓ o' ℓ'} {J : Precategory o ℓ} {C : Precategory o' ℓ'} where
+  from-▹→to-slice
+    : (F : Functor (J ▹) C) → Functor J (Slice C (F .F₀ (inr _)))
+  to-slice→from-▹
+    : ∀ {X} → Functor J (Slice C X) → Functor (J ▹) C
+```
+
+<details>
+<summary>The proof is by data repackaging.</summary>
+
+```agda
+  to-slice→from-▹ F .F₀ (inl x) = F .F₀ x .dom
+  to-slice→from-▹ {X} F .F₀ (inr _) = X
+  to-slice→from-▹ F .F₁ {inl x} {inl y} (lift f) = F .F₁ f .map
+  to-slice→from-▹ F .F₁ {inl x} {inr _} f = F .F₀ x .map
+  to-slice→from-▹ F .F₁ {inr _} {inr _} f = C .id
+  to-slice→from-▹ F .F-id {inl x} = ap map (F .F-id)
+  to-slice→from-▹ F .F-id {inr _} = refl
+  to-slice→from-▹ F .F-∘ {inl x} {inl y} {inl z} f g = ap map (F .F-∘ _ _)
+  to-slice→from-▹ F .F-∘ {inl x} {inl y} {inr z} f (lift g) = sym (F .F₁ g .com)
+  to-slice→from-▹ F .F-∘ {inl x} {inr y} {inr z} f g = sym (C .idl _)
+  to-slice→from-▹ F .F-∘ {inr x} {inr y} {inr z} f g = sym (C .idl _)
+
+  from-▹→to-slice F .F₀ j = cut {dom = F .F₀ (inl j)} (F .F₁ _)
+  from-▹→to-slice F .F₁ f .map = F .F₁ (lift f)
+  from-▹→to-slice F .F₁ f .com = sym (F .F-∘ _ _)
+  from-▹→to-slice F .F-id = ext (F .F-id)
+  from-▹→to-slice F .F-∘ f g = ext (F .F-∘ _ _)
+```
+</details>
