@@ -3,6 +3,7 @@
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -36,7 +37,7 @@ Precategory-path
   : ∀ {o ℓ} {C D : Precategory o ℓ} (F : Functor C D)
   → is-precat-iso F
   → C ≡ D
-Precategory-path {o = o} {ℓ} {C} {D} F p = path where
+Precategory-path {o = o} {ℓ} {C} {D} F p = path module Precategory-path where
   module C = Precategory C
   module D = Precategory D
   open is-precat-iso p renaming (has-is-iso to ob≃ ; has-is-ff to hom≃)
@@ -171,6 +172,57 @@ the other laws are not any more enlightening.
              → circ i w y z f (circ i w x y g h) ≡ circ i w x z (circ i x y z f g) h)
         i
         (λ _ _ _ _ f g h → C.assoc f g h) w x y z f g h
+
+Precategory-path→
+  : ∀ {o ℓ o' ℓ'} {C D : Precategory o ℓ} {E : Precategory o' ℓ'}
+  → (F : Functor C D)
+  → (F-iso : is-precat-iso F)
+  → {G : Functor C E} {H : Functor D E}
+  → G ≡ H F∘ F
+  → PathP (λ i → Functor (Precategory-path F F-iso i) E) G H
+Precategory-path→ {E = E} F F-iso {G} {H} com =
+  Functor-pathp ob (λ {x} {y} → hom {x} {y})
+  where
+    module E = Precategory E
+
+    ob-fill : ∀ p → Square _ _ _ _
+    ob-fill p = ∙-filler (ap F₀ com $ₚ p i0) (ap (H .F₀) λ i → unattach (∂ i) (p i))
+
+    ob : ∀ p → G .F₀ (p i0) ≡ H .F₀ (p i1)
+    ob p = ob-fill p i1
+
+    hom : ∀ {x y} r → PathP (λ i → E.Hom (ob x i) (ob y i)) (G .F₁ (r i0)) (H .F₁ (r i1))
+    hom {x} {y} r i = comp (λ j → E.Hom (ob-fill x j i) (ob-fill y j i)) (∂ i) λ where
+      j (i = i0) → G .F₁ (r i0)
+      j (j = i0) → com i .F₁ (r i0)
+      j (i = i1) → H .F₁ (unattach (∂ j) (r j))
+
+→Precategory-path
+  : ∀ {o ℓ o' ℓ'} {C D : Precategory o ℓ} {E : Precategory o' ℓ'}
+  → (F : Functor C D)
+  → (F-iso : is-precat-iso F)
+  → {G : Functor E C} {H : Functor E D}
+  → H ≡ F F∘ G
+  → PathP (λ i → Functor E (Precategory-path F F-iso i)) G H
+→Precategory-path F F-iso {G} {H} com =
+  Functor-pathp ob (λ {x} {y} → hom {x} {y})
+  where
+    module CD i = Precategory (Precategory-path F F-iso i)
+
+    ob-fill : ∀ p → SquareP (λ j i → CD.Ob i) _ _ _ _
+    ob-fill p = ◁◁-▷▷-filler refl
+      (path→ua-pathp _ (sym (ap F₀ com $ₚ p i0)))
+      (ap (H .F₀) (λ i → p i))
+
+    ob : ∀ p → PathP CD.Ob (G .F₀ (p i0)) (H .F₀ (p i1))
+    ob p = ob-fill p i1
+
+    hom : ∀ {x y} r → PathP (λ i → CD.Hom i (ob x i) (ob y i)) (G .F₁ (r i0)) (H .F₁ (r i1))
+    hom {x} {y} r i = comp (λ j → CD.Hom i (ob-fill x j i) (ob-fill y j i)) (∂ i) λ where
+      j (i = i0) → G .F₁ (r i0)
+      j (j = i0) → Precategory-path.hom-glue F F-iso i (ob-fill x i0 i) (ob-fill y i0 i)
+        (λ { (i = i0) → _ }) (inS (com (~ i) .F₁ (r i0)))
+      j (i = i1) → H .F₁ (r j)
 ```
 -->
 
