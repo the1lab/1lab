@@ -823,6 +823,10 @@ subst P p x = transport (ap P p) x
 
 <!--
 ```agda
+substd : ∀ {ℓ₁ ℓ₂} {A : I → Type ℓ₁} (P : ∀ {i} → A i → Type ℓ₂) {x : A i0} {y : A i1}
+       → PathP (λ i → A i) x y → P x → P y
+substd P p x = transport (λ i → P (p i)) x
+
 subst₂ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : A → Type ℓ₂} (P : (x : A) → B x → Type ℓ₃) {a a' : A} {b : B a} {b' : B a'}
        → (p : a ≡ a') (q : PathP (λ i → B (p i)) b b') → P a b → P a' b'
 subst₂ P p q x = transp (λ i → P (p i) (q i)) i0 x
@@ -1588,7 +1592,7 @@ path (in the middle) with two non-dependent paths on the sides.
 ```agda
 _◁◁_▷▷_
   : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ a₁' : A i1}
-  → a₀ ≡ a₀' → PathP A a₀' a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+  → a₀' ≡ a₀ → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀' a₁'
 (p ◁◁ q ▷▷ r) i = hcomp (∂ i) sys module _◁◁_▷▷_ where
   sys : ∀ j → Partial (∂ i ∨ ~ j) _
   sys j (i = i0) = p (~ j)
@@ -1596,7 +1600,7 @@ _◁◁_▷▷_
   sys j (j = i0) = q i
 
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
-    → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
+    → a₀' ≡ a₀ → PathP A a₀ a₁ → PathP A a₀' a₁
 p ◁ q = p ◁◁ q ▷▷ refl
 
 _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
