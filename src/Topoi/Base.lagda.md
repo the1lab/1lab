@@ -582,8 +582,8 @@ functor.
         (Sliced-lex T.L-lex))
       (right-adjoint→lex (slice→total-is-equiv .is-equivalence.F⊣F⁻¹))
 
-  Slice-topos .L⊣ι = LF⊣GR (is-equivalence.F⁻¹⊣F slice→total-is-equiv)
-                           (Sliced-adjoints T.L⊣ι)
+  Slice-topos .L⊣ι = is-equivalence.F⁻¹⊣F slice→total-is-equiv
+                     ∘⊣ Sliced-adjoints T.L⊣ι
 ```
 
 # Geometric morphisms
@@ -670,7 +670,7 @@ f G∘ g = mk where
   mk : Geom[ _ , _ ]
   Inv[ mk ] = Inv[ g ] F∘ Inv[ f ]
   Dir[ mk ] = Dir[ f ] F∘ Dir[ g ]
-  mk .Inv⊣Dir = LF⊣GR f.Inv⊣Dir g.Inv⊣Dir
+  mk .Inv⊣Dir = f.Inv⊣Dir ∘⊣ g.Inv⊣Dir
 ```
 
 The composition of two left-exact functors is again left-exact, so

@@ -210,7 +210,7 @@ each slice of $\cC$ is Cartesian closed.
     slice-cc A = product-adjoint→cartesian-closed (Slice C A) _
       (λ f → Πf (f .map) F∘ Base-change pullbacks (f .map))
       λ A → adjoint-natural-isol (to-natural-iso Slice-product-functor)
-              (LF⊣GR (adj _) (Σf⊣f* _ _))
+              (adj _ ∘⊣ Σf⊣f* _ _)
 ```
 
 <!--
@@ -266,7 +266,7 @@ equivalence $(\cC/B)/f \cong \cC/A$.
   lcc→pullback⊣dependent-product
     : ∀ {a b} (f : Hom a b) → Base-change pullbacks f ⊣ lcc→dependent-product f
   lcc→pullback⊣dependent-product {b = b} f = adjoint-natural-isol
-    (to-natural-iso rem₂) (LF⊣GR rem₁ (Twice⊣Slice f))
+    (to-natural-iso rem₂) (rem₁ ∘⊣ Twice⊣Slice f)
     where
     rem₁ : constant-family prod/ ⊣ exponentiable→product (Slice C _) _ _ _ _
     rem₁ = exponentiable→constant-family⊣product _ _ _ _ _
