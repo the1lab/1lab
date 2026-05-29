@@ -1,6 +1,7 @@
 <!--
 ```agda
-open import Cat.Functor.Adjoint
+open import Cat.Functor.Equivalence.Path
+open import Cat.Functor.Equivalence
 open import Cat.Instances.Slice
 open import Cat.Prelude
 
@@ -18,8 +19,6 @@ open Cat.Reasoning C
 open Functor
 open /-Obj
 open /-Hom
-open _=>_
-open _⊣_
 private variable
   a b : Ob
 ```
@@ -47,21 +46,10 @@ information, by explicitly writing out $h = fg$ and setting $p = \refl$.
 Its inverse simply discards the redundant information. We construct both
 of the functors here, in components.
 
+We construct the functor $(\cC/B)/f \to \cC/A$ and show that it is
+an isomorphism.
+
 ```agda
-Slice-twice : (f : Hom a b) → Functor (Slice C a) (Slice (Slice C b) (cut f))
-Slice-twice f .F₀ g .dom .dom = g .dom
-Slice-twice f .F₀ g .dom .map = f ∘ g .map
-
-Slice-twice f .F₀ g .map .map = g .map
-Slice-twice f .F₀ g .map .com = refl
-
-Slice-twice f .F₁ h .map .map = h .map
-Slice-twice f .F₁ h .map .com = pullr (h .com)
-Slice-twice f .F₁ h .com      = ext (h .com)
-
-Slice-twice f .F-id    = ext refl
-Slice-twice f .F-∘ g h = ext refl
-
 Twice-slice : (f : Hom a b) → Functor (Slice (Slice C b) (cut f)) (Slice C a)
 Twice-slice _ .F₀ x .dom = x .dom .dom
 Twice-slice _ .F₀ x .map = x .map .map
@@ -71,24 +59,26 @@ Twice-slice _ .F₁ h .com = ap map (h .com)
 
 Twice-slice _ .F-id    = ext refl
 Twice-slice _ .F-∘ _ _ = ext refl
-```
 
-We will also need the fact that these inverses are also adjoints.
+Twice≃Slice : (f : Hom a b) → is-precat-iso (Twice-slice f)
+Twice≃Slice f .is-precat-iso.has-is-iso = is-iso→is-equiv λ where
+  .is-iso.from o .dom .dom → o .dom
+  .is-iso.from o .dom .map → f ∘ o .map
+  .is-iso.from o .map .map → o .map
+  .is-iso.from o .map .com → refl
+  .is-iso.rinv o           → /-Obj-path refl refl
+  .is-iso.linv o           → /-Obj-path (/-Obj-path refl (o .map .com)) (/-Hom-pathp _ _ refl)
+Twice≃Slice f .is-precat-iso.has-is-ff {x} {y} = is-iso→is-equiv λ where
+  .is-iso.from g .map .map → g .map
+  .is-iso.from g .map .com → car (sym (y .map .com)) ∙∙ pullr (g .com) ∙∙ x .map .com
+  .is-iso.from g .com      → ext (g .com)
+  .is-iso.rinv _           → ext refl
+  .is-iso.linv _           → ext refl
 
-```agda
-Twice⊣Slice : (f : Hom a b) → Twice-slice f ⊣ Slice-twice f
-Twice⊣Slice f = adj where
-  adj : Twice-slice f ⊣ Slice-twice f
-  adj .unit .η x .map .map = id
-  adj .unit .η x .map .com = idr _ ∙ x .map .com
-  adj .unit .η x .com      = ext (idr _)
+open module Twice≃Slice {a} {b} (f : Hom a b) =
+  is-equivalence (is-precat-iso→is-equivalence (Twice≃Slice f))
+  renaming (F⁻¹ to Slice-twice; F⊣F⁻¹ to Twice⊣Slice) using () public
 
-  adj .unit .is-natural x y f   = ext id-comm-sym
-
-  adj .counit .η x .map         = id
-  adj .counit .η x .com         = idr _
-  adj .counit .is-natural x y f = ext id-comm-sym
-
-  adj .zig = ext (idr _)
-  adj .zag = ext (idr _)
+Twice≡Slice : (f : Hom a b) → Slice (Slice C b) (cut f) ≡ Slice C a
+Twice≡Slice f = Precategory-path (Twice-slice f) (Twice≃Slice f)
 ```
