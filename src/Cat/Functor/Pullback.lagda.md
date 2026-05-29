@@ -1,16 +1,25 @@
 <!--
 ```agda
 open import Cat.Functor.Adjoint.Comonadic
+open import Cat.Functor.Equivalence.Path
+open import Cat.Instances.Slice.Colimit
+open import Cat.Instances.Slice.Limit
+open import Cat.Instances.Slice.Twice
+open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Coalgebras
 open import Cat.Functor.Equivalence
+open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Functor.Base
+open import Cat.Connected
 open import Cat.Univalent
 open import Cat.Prelude
 
@@ -122,13 +131,9 @@ functorial, but the details are not particularly enlightening.</summary>
 
 ## Properties
 
-The base change functor is a right adjoint. We construct the left
-adjoint directly, then give the unit and counit, and finally prove the
-triangle identities.
-
 :::{.definition #dependent-sum}
-The [[left adjoint]], called _dependent sum_ and written $\sum_f : \cC/Y
-\to \cC/X$, is given
+The base change functor is a right adjoint. The [[left adjoint]],
+called _dependent sum_ and written $\Sigma_f : \cC/Y \to \cC/X$, is given
 on objects by precomposition with $f$, and on morphisms by what is
 essentially the identity function --- only the witness of commutativity
 must change.
@@ -141,8 +146,24 @@ module _ {X Y : Ob} (f : Hom Y X) where
   Σf .F₁ dh = record { map = dh .map ; com = pullr (dh .com) }
   Σf .F-id    = ext refl
   Σf .F-∘ f g = ext refl
+```
 
-  open _⊣_
+By the characterisation of [[iterated slices]], we may identify $\cC/Y$
+with $(\cC/B)/f$; under this identification, the base change functor is
+identical to the "constant families" functor $f^* : \cC/B \to (\cC/B)/f$
+(seeing $f$ as an *object* of $\cC/B$ rather than a morphism of $\cC$,
+and remembering that products with $f$ in $\cC/B$ are *pullbacks* along
+$f$ in $\cC$), while the left adjoint $\Sigma_f$ coincides with the
+forgetful functor $(\cC/B)/f \to \cC/B$.
+
+```agda
+Forget/≡Σf
+  : {X Y : Ob} (f : Hom Y X)
+  → PathP (λ i → Functor (Twice≡Slice {C = C} f i) (Slice C X))
+    Forget/ (Σf f)
+Forget/≡Σf f = Precategory-path→ _ _ $ Functor-path
+  (λ o → /-Obj-path refl (sym (o .map .com)))
+  λ f → /-Hom-pathp _ _ refl
 ```
 
 <!--
@@ -176,18 +197,39 @@ module _ {X Y : Ob} (f : Hom Y X) where
 ```
 -->
 
-The adjunction unit and counit are given by the universal properties of
-pullbacks.
-
-<!-- [TODO: Amy, 2022-03-23]
-Explain this better
--->
-
+<!--
 ```agda
+_ = Forget⊣constant-family
+_ = Forget/-comonadic
+
 module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob} (f : Hom Y X) where
   open _⊣_
   open _=>_
 
+  private
+    prod/ : has-products (Slice C X)
+    prod/ = Slice-products pullbacks
+```
+-->
+
+```agda
+  constant-family≡Base-change
+    : PathP (λ i → Functor (Slice C X) (Twice≡Slice {C = C} f i))
+      (constant-family prod/) (Base-change pullbacks f)
+  constant-family≡Base-change = →Precategory-path _ _ $ Functor-path
+    (λ o → /-Obj-path refl refl)
+    λ g → /-Hom-pathp _ _ (ap (Pullback.universal (pullbacks _ _)) prop!)
+```
+
+Thus, many of the results in this section could in principle be
+derived automatically, but we opt to spell them out explicitly for
+formalisation reasons.
+
+The unit and counit of the adjunction $\Sigma_f \dashv f^*$ are given by
+the universal properties of pullbacks; this is an instance of the
+`Forget⊣constant-family`{.Agda} adjunction.
+
+```agda
   Σf⊣f* : Σf f ⊣ Base-change pullbacks f
   Σf⊣f* .unit .η obj = dh where
     module pb = Pullback (pullbacks (f ∘ obj .map) f)
@@ -225,12 +267,15 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
 ```
 
-This adjunction is [[comonadic]]; this generalises the [[fact|constant
-family]] that the forgetful functor $\cC/Y \to \cC$ is comonadic,
-which we recover by taking $f : Y \to \top$.
+This adjunction is [[comonadic]]. This generalises the
+`fact`{.Agda ident=Forget/-comonadic} that the
+forgetful functor $\cC/Y \to \cC$ is comonadic, which we recover by
+taking $f : Y \to \top$; by the discussion above, it is also a
+*consequence* of the same fact applied to the forgetful functor
+$(\cC/B)/f \to \cC/B$.
 
 The idea is the same, only with more dependent types: thinking of $Y$ as
-a family of types over $X$, the comonad $\sum_f \circ f^* : \cC/X \to
+a family of types over $X$, the comonad $\Sigma_f \circ f^* : \cC/X \to
 \cC/X$ sends a map $A \to X$ to the projection map $A \times_X Y \to X$.
 Therefore, a coalgebra for this comonad consists of a map $\langle g, h
 \rangle : A \to A \times_X Y$ over $X$; but the coalgebra laws force
@@ -276,6 +321,24 @@ object of $(\cC/X)/f$, or [[in other words|iterated slice]] $\cC/Y$.
           module pby = Pullback (pullbacks (f ∘ y .map) f)
       ff .rinv _ = ext refl
       ff .linv _ = ext refl
+```
+
+By transporting the analogous results for `Forget/`{.Agda}, $\Sigma_f$
+[[creates|created limit]] [[connected|connected category]] limits and
+all colimits.
+
+```agda
+module _ {oj ℓj} {J : Precategory oj ℓj} {X Y} {f : Hom X Y} where
+
+  Σf-creates-connected-limits
+    : is-connected-cat J
+    → creates-limits-of J (Σf f)
+  Σf-creates-connected-limits conn = substd (creates-limits-of J)
+    (Forget/≡Σf f) (Forget/-creates-connected-limits conn)
+
+  Σf-creates-colimits : creates-colimits-of J (Σf f)
+  Σf-creates-colimits = substd (creates-colimits-of J)
+    (Forget/≡Σf f) Forget/-creates-colimits
 ```
 
 ## Equifibred natural transformations {defines="equifibred cartesian-natural-transformation"}
