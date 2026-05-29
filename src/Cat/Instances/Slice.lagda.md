@@ -16,6 +16,7 @@ open import Cat.Diagram.Comonad
 open import Cat.Diagram.Product
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
+open import Cat.Instances.Comma
 open import Cat.Functor.Base
 open import Cat.Cartesian
 open import Cat.Prelude
@@ -863,4 +864,43 @@ $\cC/B$.
         x .map                                      ∎
       ff .rinv _ = ext refl
       ff .linv _ = ext refl
+```
+
+## As comma categories
+
+The slice category $\cC/X$ can also be described as the [[comma
+category]] $\cC \swarrow X$, where $\cC$ stands for the identity functor
+$\cC \to \cC$ and $X$ stands for the constant functor $X : \top \to \cC$.
+
+<!--
+```agda
+module _ {o ℓ} (C : Precategory o ℓ) X where
+  open is-precat-iso
+  open ↓Obj
+  open ↓Hom
+```
+-->
+
+```agda
+  Slice→Comma : Functor (Slice C X) (Id {C = C} ↘ X)
+  Slice→Comma .F₀ o .dom = o .dom
+  Slice→Comma .F₀ o .cod = tt
+  Slice→Comma .F₀ o .map = o .map
+  Slice→Comma .F₁ f .top = f .map
+  Slice→Comma .F₁ f .bot = tt
+  Slice→Comma .F₁ f .com = f .com ∙ sym (C .Precategory.idl _)
+  Slice→Comma .F-id      = ext refl
+  Slice→Comma .F-∘ _ _   = ext refl
+
+  Slice≃Comma : is-precat-iso Slice→Comma
+  Slice≃Comma .has-is-iso = is-iso→is-equiv λ where
+    .is-iso.from o .dom → o .dom
+    .is-iso.from o .map → o .map
+    .is-iso.rinv _ → ext refl
+    .is-iso.linv _ → /-Obj-path refl refl
+  Slice≃Comma .has-is-ff = is-iso→is-equiv λ where
+    .is-iso.from f .map → f .top
+    .is-iso.from f .com → f .com ∙ C .Precategory.idl _
+    .is-iso.rinv _ → ext refl
+    .is-iso.linv _ → ext refl
 ```
