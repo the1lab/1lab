@@ -685,7 +685,7 @@ all colimits.
       has-coeq
 ```
 
-# Preservation and reflection of colimits {defines="preserved-colimit preserves-colimits reflected-colimit reflects-colimits"}
+# Preservation and reflection of colimits {defines="preserved-colimit preserves-colimits reflected-colimit reflects-colimits absolute-colimit"}
 
 The definitions here are the same idea as [[preservation of
 limits|preserved limit]], just dualised.
@@ -703,6 +703,19 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 
   reflects-colimit : Type _
   reflects-colimit = reflects-lan !F Diagram F
+```
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C} {K : ⌞ C ⌟} {eta : Diagram => Const K}
+         where
+```
+-->
+
+```agda
+  is-absolute-colimit : is-colimit Diagram K eta → Typeω
+  is-absolute-colimit lim = is-absolute-lan lim
 ```
 
 <!--
