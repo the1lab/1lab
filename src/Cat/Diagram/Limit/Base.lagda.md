@@ -848,7 +848,31 @@ object! Any limit is as good as any other.
   preserves-limit = preserves-ran !F Diagram F
 ```
 
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C} {K : ⌞ C ⌟} {eps : Const K => Diagram}
+         where
+```
+-->
+
+:::{.definition #absolute-limit}
+A limit is said to be **absolute** when it is preserved by all functors.
+:::
+
+```agda
+  is-absolute-limit : is-limit Diagram K eps → Typeω
+  is-absolute-limit lim = is-absolute-ran lim
+```
+
 ## Reflection of limits {defines="reflected-limit reflects-limits"}
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
+```
+-->
 
 Using the terminology from before, we say a functor **reflects limits**
 if it *only* takes *limiting* cones "upstairs" to limiting cones "downstairs":

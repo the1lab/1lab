@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Limit.Isomorph
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
@@ -49,6 +51,20 @@ is-conservative : Functor C D → Type _
 is-conservative {C = C} {D = D} F =
   ∀ {A B} {f : C .Hom A B}
   → is-invertible D (F .F₁ f) → is-invertible C f
+```
+
+Note that this is equivalent to [[reflecting limits|reflected limit]]
+(or colimits) of one-object diagrams, since those are isomorphs.
+By contrast, [[*lifting*|lifted limit]] one-object (co)limits is
+equivalent to being an isofibration.
+
+```agda
+conservative→reflects-isomorphs
+  : (F : Functor C D)
+  → is-conservative F
+  → ∀ A → reflects-limit F (!Const A)
+conservative→reflects-isomorphs {C = C} {D = D} F cons d lim =
+  is-iso→is-limit C (cons (is-limit→is-iso D lim))
 ```
 
 Conservative functors are closed under composition.
