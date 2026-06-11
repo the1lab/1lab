@@ -17,9 +17,8 @@ The interval type, and its associated operations, are also very magical.
 {-# BUILTIN INTERVAL I  #-}            -- I : IUniv
 ```
 
-Note that the interval (as of Agda 2.6.3) is in its own sort, `IUniv`.
-The reason for this is that the interval can serve as the _domain_ of
-fibrant types:
+Note that the interval lives in its own non-fibrant sort,
+`IUniv`{.Agda}.
 
 ```agda
 _ : Type → Type
@@ -55,7 +54,7 @@ open X public
 
 ## The IsOne predicate
 
-To specify the shape of composition problems, Cubical Agda gives us the
+To specify the shape of composition problems, Mikan gives us the
 predicate `IsOne`{.Agda}, which can be thought of as an embedding
 $\bb{I} \mono \Omega$ of the interval object into the subobject
 classifier. Of course, we have that `IsOne i0` is uninhabited (since 0

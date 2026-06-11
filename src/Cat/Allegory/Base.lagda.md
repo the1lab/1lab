@@ -244,10 +244,8 @@ Rel ℓ .modular R S T x y (α , β) = case α of λ where
 ```
 
 <details>
-<summary>The rest of the construction is either automated, or very
-boring applications of propositional extensionality. Most of the proof
-below was not written by me, but rather by Agda's^[rather precarious]
-automatic proof search: that speaks to how contentful it is.</summary>
+<summary>The rest of the construction is pretty much entirely handled by
+our automation.</summary>
 
 ```agda
 Rel ℓ .cat .Hom-set x y = hlevel 2

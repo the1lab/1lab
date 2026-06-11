@@ -130,7 +130,7 @@ reflexive, transitive, and antisymmetric.
 
 instance
   Dec-≤ : ∀ {x y} → Dec (x ≤ y)
-  Dec-≤ {inc x} {inc y} = elim! {P = λ x → ∀ y → Dec (Ratio.inc x ≤ inc y)} go x y where
+  Dec-≤ {inc x} {inc y} = elim! {P = λ x → ∀ y → Dec (inc x ≤ inc y)} go x y where
     go : ∀ x y → Dec (toℚ x ≤ toℚ y)
     go x@record{} y@record{} with holds? ((↑ x *ℤ ↓ y) ℤ.≤ (↑ y *ℤ ↓ x))
     ... | yes p = yes (inc p)
@@ -391,7 +391,7 @@ abstract
       common-denom-< (ℤ.*ℤ-cancel-<l {x = r} (<-common-denom ⦃ _ ⦄ α))
 
 absℚ : Ratio → Ratio
-absℚ (inc x) = Ratio.inc $ ℚ-rec absᶠ absᶠ-resp (inc x) where
+absℚ (inc x) = Ratio.constructor $ ℚ-rec absᶠ absᶠ-resp (inc x) where
   absᶠ : Fraction → _
   absᶠ (x / s [ p ]) = inc (pos (abs x) / s [ p ])
 

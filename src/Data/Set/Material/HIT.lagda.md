@@ -39,7 +39,7 @@ The type `V`{.Agda} resembles a [[W-type]]: the constructor `set`{.Agda}
 corresponds to the "supremum" of a family of sets, where the "branching
 factor" of the family is allowed to be any type in the universe $\ell$.
 Of course, if we could take the supremum of `V`{.Agda}-many sets, we
-could reproduce [Russell's paradox], so Agda rightly forces us to put V
+could reproduce [Russell's paradox], so Mikan rightly forces us to put V
 in $\ell$'s successor universe.
 
 [Russell's paradox]: 1Lab.Counterexamples.Russell.html

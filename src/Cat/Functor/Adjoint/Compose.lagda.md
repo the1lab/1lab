@@ -25,7 +25,7 @@ adjoints, and this is indeed the case.
 We prove this here by explicitly exhibiting the adjunction natural
 transformations and the triangle identities, which is definitely
 suboptimal for readability, but is the most efficient choice in terms of
-the resulting Agda program.
+the resulting program.
 
 ```agda
 module _

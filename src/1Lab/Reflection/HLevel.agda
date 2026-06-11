@@ -32,8 +32,8 @@ bootstrapped in 1Lab.HLevel.Closure with the following extra features:
 
 * Support for computing h-levels of projections.
 
-The second bullet point might seem a bit surprising: Agda has native
-support for marking some projections as instances ("instance fields"),
+The second bullet point might seem a bit surprising: Mikan has native
+support for marking some projections as instances ("superclass fields"),
 so why not use that? The reason is twofold:
 
 1.

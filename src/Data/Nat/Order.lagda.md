@@ -19,13 +19,12 @@ module Data.Nat.Order where
 
 We establish the basic properties of ordering on the natural numbers.
 These are properties of the order itself, and not how it interacts with
-the semiring structure. For that, see
-[`Data.Nat.Properties`](Data.Nat.Properties.html). The first thing we
-establish is that $x \le y$ is a [[partial order]], so it deserves the
-name $\le$: It is reflexive, transitive, antisymmetric, and takes values
-in propositions. In all cases, save for reflexivity, the induction
-happens on the witnesses of ordering, and Agda handles inducting on the
-naturals automatically.
+the semiring structure. For that, see [`Data.Nat.Properties`]. The first
+thing we establish is that $x \le y$ is a [[partial order]], so it
+deserves the name $\le$: It is reflexive, transitive, antisymmetric, and
+takes values in propositions.
+
+[`Data.Nat.Properties`]: Data.Nat.Properties.html
 
 ```agda
 ≤-refl : ∀ {x : Nat} → x ≤ x

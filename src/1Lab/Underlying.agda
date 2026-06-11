@@ -20,9 +20,9 @@ record Underlying {ℓ} (T : Type ℓ) : Typeω where
 open Underlying ⦃ ... ⦄ using (⌞_⌟) public
 open Underlying using (ℓ-underlying)
 
--- Workaround for Agda bug https://github.com/agda/agda/issues/6588 —
--- the principal (instance) argument is reified as visible, so we can
--- drop it using a display form.
+-- Workaround for issue https://github.com/agda/agda/issues/6588 — the
+-- principal (instance) argument is reified as visible, but we can drop
+-- it using a display form.
 {-# DISPLAY Underlying.⌞_⌟ _ x = ⌞ x ⌟ #-}
 
 instance

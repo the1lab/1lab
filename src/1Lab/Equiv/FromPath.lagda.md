@@ -32,12 +32,15 @@ private
   bad-transport-is-equiv = transp (λ i → is-equiv (coe0→i P i)) i0 id-equiv
 ```
 
-While `is-equiv`{.Agda} is a proposition --- and thus the particular
-proof does not matter propositionally --- Agda is still a programming
-language, the data of an equivalence includes the inverse function, and
-the inverse we obtain from this construction is *not* simply transport
-along the inverse of $P$: it has an extra reflexive transport along
-$P(\iO)$, which does not compute away when $P(\iO)$ is neutral.
+Because `is-equiv`{.Agda} is a [[proposition]], the specific
+construction does not matter in any mathematical context. However, in an
+intensional proof assistant, we *do* still need to care about the
+specific construction of the inverse, especially if we intend to perform
+computations with that inverse. We would expect that the inverse of
+transporting along $P$ is simply transporting along the path inverse of
+$P$, but this is *not* the construction we obtain by the abstract
+argument above. Instead, that construction introduces an extraneous
+`transport`{.Agda} along `refl`{.Agda}:
 
 ```agda
   _ : equiv→inverse bad-transport-is-equiv
@@ -45,8 +48,9 @@ $P(\iO)$, which does not compute away when $P(\iO)$ is neutral.
   _ = refl
 ```
 
-We can instead construct the proof that `transp`{.Agda} along $P$ is an
-equivalence directly. We start by naming all the relevant endpoints:
+We can instead construct a direct proof that `transp`{.Agda} along $P$
+is an equivalence, giving us control over the unfolding of the inverse.
+We start by naming all the relevant endpoints:
 
 ```agda
   A B : Type ℓ

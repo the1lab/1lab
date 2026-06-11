@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -31,7 +31,7 @@ private module Monoids = Cr (Monoids lzero)
 # Finite full transformation monoids {defines="finite-full-transformation-monoid"}
 
 The finite full transformation monoid $\cT_n$ represents the endomaps
-of the [[standard finite set]] $\operatorname{Fin}(n)$. 
+of the [[standard finite set]] $\operatorname{Fin}(n)$.
 
 <!--
 ```agda
@@ -45,9 +45,9 @@ module _ (n : Nat) where
   End[n] = (Fin n → Fin n) , End (el! (Fin n))
 ```
 
-However, the definition of the [[full transformation monoid]] `End[n]`{.Agda} 
-on  $\operatorname{Fin}(n)$ has a few disadvantages. Firstly, elements 
-of `End[n]`{.Agda}, being functions, are awkward to write down. On a 
+However, the definition of the [[full transformation monoid]] `End[n]`{.Agda}
+on  $\operatorname{Fin}(n)$ has a few disadvantages. Firstly, elements
+of `End[n]`{.Agda}, being functions, are awkward to write down. On a
 blackboard one often writes an element of $\cT_n$ in the form
 
 $$
@@ -60,28 +60,28 @@ a =
 $$
 
 Here, $a$ is the transformation sending each element in the top row to
-the corresponding element in the bottom row. We would like to achieve 
-something similar in Agda. Secondly, the product of two elements of 
-`End[n]`{.Agda} will typically not compute until it is actually applied 
-to an element of $\operatorname{Fin}(n)$. We would like equal elements 
+the corresponding element in the bottom row. We would like to achieve
+something similar in Mikan. Secondly, the product of two elements of
+`End[n]`{.Agda} will typically not compute until it is actually applied
+to an element of $\operatorname{Fin}(n)$. We would like equal elements
 of $\cT_n$ to be _definitionally_ equal whenever possible.
 
 We can solve both these problems using the equivalence between the
-underlying set of `End[n]`{.Agda} and [vectors] of length $n$ with 
+underlying set of `End[n]`{.Agda} and [vectors] of length $n$ with
 coordinates in $\operatorname{Fin}(n)$.
 
 [vectors]: Data.Vec.Base.html
 
 ```agda
-  End≃𝒯 : ⌞ End[n] ⌟ ≃ Vec (Fin n) n 
+  End≃𝒯 : ⌞ End[n] ⌟ ≃ Vec (Fin n) n
   End≃𝒯 = Equiv.inverse Vec≃Fun
 
   𝒯 : Monoid lzero
   𝒯 = Vec (Fin n) n , monoid-transport End≃𝒯 (End[n] .snd)
 ```
 
-Since the monoid structure on $\cT_n$ was constructed directly from the 
-monoid structure on `End[n]`{.Agda}, it is clear that these give 
+Since the monoid structure on $\cT_n$ was constructed directly from the
+monoid structure on `End[n]`{.Agda}, it is clear that these give
 isomorphic monoids:
 
 ```agda
@@ -89,7 +89,7 @@ isomorphic monoids:
   End≅𝒯 = total-iso End≃𝒯 (monoid-transport-hom End≃𝒯 (End[n] .snd))
 ```
 
-Using [[list syntax for vectors]], the element $a$ above can be written 
+Using [[list syntax for vectors]], the element $a$ above can be written
 as
 
 <!--
@@ -104,7 +104,7 @@ module _ where private
   a = [ 4 , 1 , 4 , 2 , 1 ]
 ```
 
-Moreover, multiplication in $\cT_n$ genuinely computes, so we can write 
+Moreover, multiplication in $\cT_n$ genuinely computes, so we can write
 equations such as
 
 ```agda

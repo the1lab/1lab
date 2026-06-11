@@ -192,7 +192,6 @@ Multiplication, however, is somewhat trickier. The problem is that
 during the course of recursion, we will need to multiply a `Poly A n` by
 a `Poly A (suc n)` --- for which we will need mutual recursion, since
 that multiplication will fall back to the "homogeneous" case eventually.
-We predeclare their types to make Agda happy:
 
 ```agda
 _*ₚ_ : Poly Nat n → Poly Nat n → Poly Nat n

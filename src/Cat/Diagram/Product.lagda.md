@@ -278,8 +278,9 @@ module Binary-products
     A B a b c d : Ob
     f g h : Hom a b
 
-  -- Note: here and below we have to open public the aliases in a module
-  -- with parameters so Agda picks up the display forms.
+  -- Note: here and below we define the aliases by opening so display
+  -- forms are generated for printing the underlying projections as the
+  -- aliases.
   module _ {a b} where
     open Product (all-products a b)
       renaming (unique to ⟨⟩-unique; unique₂ to ⟨⟩-unique₂)

@@ -156,10 +156,10 @@ suffice to compute the former if we want the latter.
 ```
 
 Actually putting this together is a bit indirect, since we are not
-performing structural induction: Agda can't see that the argument $m \%
-n$ is less than $n$. We can, however, turn this into [well-founded
-recursion], which demands only that the recursive call be _less_ (in the
-sense of $<$) than the original input.
+performing structural induction: The termination checker treats the
+argument $m \% n$ as unrelated to $n$. We can, however, turn this into
+[well-founded recursion], which allows us make a recursive call by
+*proving* that a given argument decreases.
 
 [well-founded recursion]: Data.Wellfounded.Base.html
 

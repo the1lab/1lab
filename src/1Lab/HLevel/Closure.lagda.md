@@ -1,9 +1,9 @@
 ---
 description: |
   We establish that h-levels are closed under retractions, and use this
-  to establish many closure properties of h-levels. Then we table
-  these closure properties using Agda's instance resolution mechanism,
-  automating "boring" h-level obligations.
+  to establish many closure properties of h-levels. Then we table these
+  closure properties using the instance resolution mechanism, automating
+  "boring" h-level obligations.
 ---
 <!--
 ```agda
@@ -324,12 +324,11 @@ fibre-is-hlevel n Ah Bh f b = Σ-is-hlevel n Ah λ _ → Path-is-hlevel n Bh
 
 For the common case of proving that a composite type built out of pieces
 with a known h-level has that same h-level, we can apply the helpers
-above very uniformly. So uniformly, in fact, that Agda's instance
+above very uniformly. So uniformly, in fact, that the instance
 resolution mechanism can do it for us. However, since `is-hlevel`{.Agda}
 is a _recursive_ definition which unfolds depending on the level, we
-must introduce a record wrapper around this type which prevents
-recursion. Otherwise we could not expect Agda to find instances in
-scope.
+must introduce a record wrapper around this type so that we have a
+neutral name to attach instances to.
 
 ```agda
 record H-Level {ℓ} (T : Type ℓ) (n : Nat) : Type ℓ where
@@ -340,8 +339,9 @@ record H-Level {ℓ} (T : Type ℓ) (n : Nat) : Type ℓ where
 
 The canonical entry point for the search is `hlevel`{.Agda}, which turns
 an instance argument of `H-Level`{.Agda} to an actual usable witness.
-Note that the parameter $n$ is explicit: We can not expect Agda to
-recover $n$ from the expected type of the application.
+Note that the `n` parameter is explicit: this is because it only appears
+in `hlevel`{.Agda}'s return type, and unification can not recover its
+value from the context in which `hlevel`{.Agda} appears.
 
 ```agda
 hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n

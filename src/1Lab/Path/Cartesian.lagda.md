@@ -11,20 +11,21 @@ module 1Lab.Path.Cartesian where
 
 ## Coercion
 
-In Cubical Agda, the interval is given the structure of a De Morgan
-algebra. This is not the only choice of structure on the interval that
-gives a model of univalent type theory: We could also subject the
-interval to _no_ additional structure other than what comes from the
-structural rules of type theory (introducing variables, ignoring
-variables, swapping variables, etc). This is a different cubical type
-theory, called _Cartesian cubical type theory_.
+Our interval type is equipped with the structure of a De Morgan algebra.
+This is not the only choice of structure on the interval that gives a
+model of univalent type theory: We could also subject the interval to
+_no_ additional structure other than what comes from the structural
+rules of type theory (introducing variables, ignoring variables,
+swapping variables, etc). This is a different cubical type theory,
+called _Cartesian cubical type theory_.
 
 In Cartesian cubical type theory, rather than our `transp`{.Agda}
 operation, the fundamental operation for manipulating paths is
 `coe`{.Agda}, which implements an arbitrary change of interval variables
-$A(i) \to A(j)$. In Cubical Agda, we can implement this by transporting
-along a function of three variables $t, x, y$ which "interpolates"
-between $x$ and $y$ as $t$ increases.
+$A(i) \to A(j)$. Our De Morgan interval lets us implement an
+approximation of the `coe`{.Agda} operation by transporting along a
+function of three variables $t, x, y$ which "interpolates" between $x$
+and $y$ as $t$ increases.
 
 The interpolation function we're using was discovered by Tom Jack, who
 kindly allowed us to use it here on the 1Lab:
@@ -73,8 +74,11 @@ coei→i1 A i a = refl
 coei1→i A i a = refl
 ```
 
-In Cartesian cubical type theory, the following equation is
-definitional. However, in Cubical Agda, it is only propositional:
+This definition of `coe`{.Agda} is an approximation because the
+following equation, saying that staying in the fibre $A(i)$ is
+definitionally the identity, can only be shown propositionally. In
+Cartesian cubical type theories, `coei→i`{.Agda} is instead one of the
+definitional equalities that characterises `coe`{.Agda}.
 
 ```agda
 coei→i : ∀ {ℓ} (A : I → Type ℓ) i x → coe A i i x ≡ x

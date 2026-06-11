@@ -27,15 +27,14 @@ make-copattern declare? def-name tm tp = do
       -- Infer the type of the field with all known arguments instantiated.
       field-tp ← infer-type (def field-name (argN inst-tm ∷ []))
 
-      -- Agda will insert implicits when defining copatterns even
-      -- with 'withExpandLast true', so we need to do implicit instantiation
+      -- Mikan will insert implicits when defining copatterns even with
+      -- 'withExpandLast false', so we need to do implicit instantiation
       -- by hand. There are also cases where it's better to fully
       -- eta-expand than not (e.g. the 'helper' we're expanding has a
       -- field defined by lazy matching, which does not reduce unless
       -- applied, and would cause duplication of the big input term). So
-      -- we fully eta-expand clauses here.
-      -- First, we strip off all leading quantifiers from the field
-      -- type.
+      -- we fully eta-expand clauses here.  First, we strip off all
+      -- leading quantifiers from the field type.
       let
         (field-tele , tp) = pi-view field-tp
         nargs = length field-tele
@@ -120,8 +119,8 @@ are supported, including instance fields and fields with implicit
 arguments.
 
 These macros also allow you to lift functions 'A → some-record-type'
-into copattern definitions. Note that Agda will generate meta for
-implicits before performing quotation, so we need to explicitly
+into copattern definitions. Note that Mikan will insert metas for
+implicit arguments before performing quotation, so we need to explicitly
 bind all implicits using a lambda before quotation!
 -}
 

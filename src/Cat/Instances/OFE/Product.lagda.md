@@ -101,9 +101,8 @@ module
 ## Indexed products
 
 We now turn to a slightly more complicated case: _indexed_ products of
-OFEs: because Agda is, by default, a predicative theory, we run into
-some issues with universe levels when defining the indexed product.
-Let's see them:
+OFEs: because our type theory is *predicative*, we run into some issues
+with universe levels when defining the indexed product.  Let's see them:
 
 Suppose we have an index type $I : \ty$ in the $i$th universe, and
 a family $P_i : \ty$, valued now in the $p$th universe. Moreover,

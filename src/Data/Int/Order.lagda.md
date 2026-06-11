@@ -44,7 +44,7 @@ record _≤_ (x y : Int) : Type where
 <!--
 ```agda
 -- We need all this junk because we wrapped `So (x ≤? y)` in a record
--- so that Agda can remember `x` and `y`.
+-- which is definitionally injective in `x` and `y`.
 abstract
   neg≤neg : ∀ {x y} → y Nat.≤ x → negsuc x ≤ negsuc y
   neg≤neg (Nat.lift y≤x) = lift y≤x

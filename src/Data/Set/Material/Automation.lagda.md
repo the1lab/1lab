@@ -74,9 +74,7 @@ The entry point for computing materialisations is the function
 end up with a $V$-code that definitionally decodes to the type given.
 This is necessary because "*definitionally* decodes to the stated type"
 is not something we can mandate in the definition of the
-`Materialise`{.Agda} record. Nevertheless, we can ask that Agda verify
-this property, both as a demonstration and to avoid breakage in the
-future.
+`Materialise`{.Agda} record.
 
 ```agda
 materialise! : ∀ {ℓ} (A : Type ℓ) ⦃ m : Materialise A ⦄ → V (level-of A)
@@ -195,11 +193,13 @@ instance
 
 Note that we can materialise the identity types of an arbitrary [[set]],
 not just of a materialisable set. More generally, we could materialise
-any [[proposition]], but backtracking in Agda's instance search comes
-with a significant performance penalty.
+any [[proposition]], but the specifics of instance resolution do not
+lend themselves to generic instances which must be ruled out by
+backtracking.
 
 ```agda
-  Materialise-path : ∀ {ℓ} {A : Type ℓ} {x y : A} ⦃ _ : H-Level A 2 ⦄ → Materialise (x ≡ y)
+  Materialise-path
+    : ∀ {ℓ} {A : Type ℓ} {x y : A} ⦃ _ : H-Level A 2 ⦄ → Materialise (x ≡ y)
   Materialise-path {x = x} {y = y} ⦃ m ⦄ = basic $ mkⱽ record where
     Elt   = (x ≡ y)
     idx p = ∅ⱽ
@@ -212,9 +212,12 @@ Using a tactic argument, we can add an incoherent base instance which
 materialises any type which is in the image of `El`{.Agda}. This can not
 be an ordinary instance because `El`{.Agda} is not definitionally
 injective (it does not determine the tree structure of the $V$-code), so
-Agda will not invert it. However, when `El`{.Agda} is neutral, we can
-*choose* to invert it in the obvious way ourselves, at a small
-performance penalty.
+it can not be positively ruled out in favour of another instance.
+
+However, we can *choose* to install a "base instance" that will not be
+selected unless it is the only choice and which runs a small metaprogram
+to invert neutral applications of `El`{.Agda} manually. This comes at a
+small performance penalty.
 
 ```agda
 private
@@ -258,8 +261,10 @@ materialise-record inst rec = do
     [ clause [] [] (it Iso→materialisation ##ₙ def₀ eqv) ]
 ```
 
-As a demo, we can write a type of "$V$-categories", and define the
-$V$-category of $V$-sets.
+As a demo, we can write down types for "$V$-categories" and
+"$V$-functors" between them, and, since these record types are
+themselves made materialisable by the metaprogram above, construct a
+$V$-category of $V$-categories.
 
 ```agda
 private
@@ -278,21 +283,47 @@ private
         : ∀ {w x y z} (f : ⌞ Hom y z ⌟) (g : ⌞ Hom x y ⌟) (h : ⌞ Hom w x ⌟)
         → f ∘ⱽ (g ∘ⱽ h) ≡ (f ∘ⱽ g) ∘ⱽ h
 
-  instance unquoteDecl demo = materialise-record demo (quote VCat)
+  record VFunctor {ℓo ℓh ℓo' ℓh'} (C : VCat ℓo ℓh) (D : VCat ℓo' ℓh') : Type (ℓo ⊔ ℓo' ⊔ ℓh ⊔ ℓh') where
+    private
+      module C = VCat C
+      module D = VCat D
+    field
+      F₀ : ⌞ C.Ob ⌟ → ⌞ D.Ob ⌟
+      F₁ : ∀ {x y} → ⌞ C.Hom x y ⌟ → ⌞ D.Hom (F₀ x) (F₀ y) ⌟
+
+      F-id : ∀ {x h} → h ≡ C.idⱽ {x} → F₁ h ≡ D.idⱽ
+      F-∘
+        : ∀ {x y z h} (f : ⌞ C.Hom y z ⌟) (g : ⌞ C.Hom x y ⌟)
+        → h ≡ f C.∘ⱽ g → F₁ h ≡ F₁ f D.∘ⱽ F₁ g
+
+  instance unquoteDecl demo1 demo2 = do
+    materialise-record demo1 (quote VCat)
+    materialise-record demo2 (quote VFunctor)
 
   _ : Elⱽ (materialise! (VCat lzero lzero)) ≡ VCat lzero lzero
   _ = refl
 
   open VCat
 
-  VSets : VCat (lsuc ℓ) ℓ
-  VSets .Ob      = materialise! (V _)
-  VSets .Hom X Y = materialise! (⌞ X ⌟ → ⌞ Y ⌟)
+  VCats : ∀ {ℓo ℓh} → VCat (lsuc ℓo ⊔ lsuc ℓh) (ℓo ⊔ ℓh)
+  VCats {ℓo} {ℓh} .Ob = materialise! (VCat ℓo ℓh)
+  VCats .Hom C D      = materialise! (VFunctor C D)
+  VCats .idⱽ = record where
+    F₀ x = x
+    F₁ h = h
+    F-id    p = p
+    F-∘ f g p = p
+  VCats ._∘ⱽ_ f g = record where
+    module f = VFunctor f
+    module g = VFunctor g
 
-  VSets .idⱽ   = λ x → x
-  VSets ._∘ⱽ_  = λ f g x → f (g x)
+    F₀ x = f.F₀ (g.F₀ x)
+    F₁ x = f.F₁ (g.F₁ x)
+    F-id    p = f.F-id (g.F-id p)
+    F-∘ f g p = f.F-∘ _ _ (g.F-∘ _ _ p)
 
-  VSets .idl   f     = refl
-  VSets .idr   f     = refl
-  VSets .assoc f g h = refl
+  VCats .idl f = refl
+  VCats .idr f = refl
+  VCats .assoc f g h = refl
+
 ```

@@ -127,7 +127,7 @@ this is the homotopy pushout
 \end{tikzcd}\]
 ~~~
 
-but Cubical Agda makes it very convenient to define a purpose-built HIT
+but Mikan makes it very convenient to define a purpose-built HIT
 in-line. We use the names "tip", "base", and "cone" to evoke the
 construction of a cone in solid geometry: the `tip`{.Agda} is.. the tip,
 the `base`{.Agda} is the circle, and the `cone`{.Agda} is the triangular

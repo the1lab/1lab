@@ -18,8 +18,8 @@ module Data.String.Base where
 
 # Primitive: Characters and strings
 
-We bind the big list of Agda primitives for interacting with characters
-and strings.
+We bind the big list of primitive functions for interacting with
+characters and strings.
 
 ```agda
 postulate String : Type

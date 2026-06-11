@@ -11,8 +11,8 @@ indicating dependencies.
 
 Building the 1Lab is a rather complicated task, which has led to a lot
 of homebrew infrastructure being developed for it. We build against a
-specific build of Agda (see the `rev` field in
-`support/nix/dep/Agda/github.json`), and there are also quite a few
+specific build of Mikan (see the arguments to `fetchgit` in
+`support/nix/haskell-packages.nix`), and there are also quite a few
 external dependencies (e.g. pdftocairo, katex). The recommended way of
 building the 1Lab is using Nix.
 
@@ -23,13 +23,13 @@ a website:
 
 ```bash
 $ nix-build
-$ python -m http.server --directory result
+$ python -m http.server --directory result # e.g.
 ```
 
-Note that using Nix to build the website takes around ~20-30 minutes,
-since it will type-check the entire codebase from scratch every time.
-For interactive development, `nix-shell` will give you a shell with
-everything you need to hack on the 1Lab, including Agda and the
+Note that using Nix to build the website takes around 15 minutes, since
+it will type-check the entire codebase from scratch every time.  For
+interactive development, `nix-shell` will give you a shell with
+everything you need to hack on the 1Lab, including Mikan and the
 pre-built Shakefile as `1lab-shake`:
 
 ```bash
@@ -42,18 +42,18 @@ into place:
 
 ```bash
 $ eval "$installPhase"
-$ python -m http.server --directory _build/site
+$ python -m http.server --directory _build/site # e.g.
 ```
 
 To hack on a file continuously, you can use "watch mode", which will
 attempt to only check and build the changed file.
 
-```
+```bash
 $ 1lab-shake all -w
 ```
 
-Additionally, since the validity of the Agda code is generally upheld by
-`agda-mode`, you can use `--skip-agda` to only build the prose. Note
+Additionally, since the validity of the Mikan code is generally upheld
+by `agda-mode`, you can use `--skip-agda` to only build the prose. Note
 that this will disable checking the integrity of link targets, the
 translation of `` `ref`{.Agda} `` spans, and the code blocks will be
 right ugly.
@@ -87,11 +87,11 @@ environments above. You will need:
 - [Node](https://nodejs.org/en/) + required Node modules. Run `npm ci` to install those.
 
 You can then use cabal-install to build and run our specific version of
-Agda and our Shakefile. Follow the instructions in `cabal.project` to
-pin Agda to the appropriate version, then run:
+Mikan and our Shakefile. Follow the instructions in `cabal.project` to
+pin Mikan to the appropriate version, then run:
 
 ```bash
-$ cabal install Agda -foptimise-heavily
+$ cabal install Mikan -foptimise-heavily
 # This will take quite a while!
 
 $ cabal run 1lab-shake -- -j --skip-agda all

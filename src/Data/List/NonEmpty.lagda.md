@@ -41,7 +41,7 @@ A list $xs : \List{A}$ is **nonempty** if it can be written as $u \cons us$
 for some $u : A$, $us : \List{A}$.
 :::
 
-We can encode this neatly in Agda by using an indexed inductive type,
+We can encode this neatly in Mikan by using an indexed inductive type,
 which makes it more amenable to proof automation.
 
 ```agda

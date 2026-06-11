@@ -276,7 +276,7 @@ from this page. You can unfold it below if you dare:
       : ∀ x y → PathP (λ i → Canonical (Int.quot x y i))
         (work x y) (work (suc x) (suc y))
     -- We split on (x, y) but also (1+x,1+y). This is obviously
-    -- redundant to a human, but to Agda, we must do this: there is no
+    -- redundant to a human, but to Mikan, we must do this: there is no
     -- link between these two splits.
 
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
@@ -285,8 +285,8 @@ from this page. You can unfold it below if you dare:
     ... | inr (inr x≡y) | inr (inr x≡y') = refl ,ₚ refl ,ₚ ∙-filler _ _
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
-    -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
-    -- doesn't care about what humans think is obvious.
+    -- but (1 + x > 1 + y), which is "obviously" impossible.
+    -- But Mikan doesn't care about what humans think is obvious.
     ... | inl x<y | inr (inl x>y)       = absurd (<-asym x<y (≤-peel x>y))
     ... | inl x<y | inr (inr x≡y)       = absurd (<-not-equal x<y (suc-inj x≡y))
     ... | inr (inl x>y) | inl x<y       = absurd (<-asym x>y (≤-peel x<y))

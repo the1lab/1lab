@@ -246,7 +246,7 @@ far $\cD$ is from being the category of $T$-algebras.
 
 The adjunction unit and counit are again very simple, and it's evident
 to a human looking at them that they satisfy the triangle identities
-(and are algebra homomorphisms). Agda is not as easy to convince,
+(and are algebra homomorphisms). Mikan is not as easy to convince,
 though, so we leave the computation folded up for the bravest of
 readers.
 

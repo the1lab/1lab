@@ -151,35 +151,20 @@ numbers are in the module [`Data.Nat.Properties`].
 
 [`Data.Nat.Properties`]: Data.Nat.Properties.html
 
-Agda already comes with definitions for addition and multiplication of
-natural numbers. They are reproduced below, using different names, for
-the sake of completeness:
+Mikan ships with preferred definitions of `_+_`{.Agda} and `_*_`{.Agda}
+which are optimised to direct computation on machine integers when
+applied to literals. These are defined in the built-in module
+[`Prim.Data.Nat`].
 
+<!--
 ```agda
-plus : Nat → Nat → Nat
-plus zero y = y
-plus (suc x) y = suc (plus x y)
-
-times : Nat → Nat → Nat
-times zero y = zero
-times (suc x) y = y + times x y
+_ = _+_
+_ = _*_
 ```
+-->
 
-These match up with the built-in definitions of `_+_`{.Agda} and
-`_*_`{.Agda}:
-
-```agda
-plus≡+ : plus ≡ _+_
-plus≡+ i zero y = y
-plus≡+ i (suc x) y = suc (plus≡+ i x y)
-
-times≡* : times ≡ _*_
-times≡* i zero y = zero
-times≡* i (suc x) y = y + (times≡* i x y)
-```
-
-The exponentiation operator `^`{.Agda} is defined by recursion on the
-exponent.
+There is no built-in exponentiation operator, but we can define
+`_^_`{.Agda} by recursion on the exponent.
 
 ```agda
 _^_ : Nat → Nat → Nat
@@ -201,29 +186,47 @@ record _≤_ (x y : Nat) : Type where
     lower : So (x ≤? y)
 ```
 
-We could also define the relation by recursion on the numbers to be
-compared or as an inductive predicate. However, our definition has
-the benefit of being a *definitional* [[proposition]].
+Our choice of defining `_≤_`{.Agda} as a record wrapping a recursive
+boolean computation is slightly peculiar from a formalisation
+perspective. However, it turns out to be pretty much optimal:
+
+* Like an indexed inductive type, but *unlike* directly computing a type
+  by recursion, a record is definitionally injective in its arguments.
+
+  This means that any function that has `_≤_`{.Agda} arguments can take
+  the numbers as implicit arguments.
+
+* Unlike an indexed inductive type, we can arrange for a record type to
+  be a *definitional* [[proposition]], which means neither us nor the
+  conversion checker need to spend time comparing elements of
+  `_≤_`{.Agda}.
 
 ```agda
 ≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
 ≤-is-prop p q = refl
 ```
 
-As a further optimization, `_≤?_`{.Agda} is implemented using the `BUILTIN` decision
-procedure `_<?_`{.Agda}. This makes it possible to typecheck proofs of `_≤_`{.Agda}
-nearly instantly, even when the numbers involved are quite large.
+* Finally, we could imagine a record type wrapping a strict proposition
+  computed by recursion. We opted against this for two reasons: first,
+  re-using the wrapper type `So`{.Agda} limits the amount of code that
+  needs to deal with the "weird" universe `SProp`{.Agda}.
+
+  Second, a hand-written definition by recursion would have to fully
+  traverse the numbers, in unary, until one of them is `zero`{.Agda}.
+  Wrapping the *built-in* decision procedure `_≤?_`{.Agda} shortcuts
+  evaluation when the numbers are literals, meaning we don't lose any
+  type-checking time inspecting very large numeric literals.
+
+```agda
+_ : 2 ^ 1024 ≤ 2 ^ 2048
+_ = lift oh
+```
 
 <!--
 ```agda
-module _ where private
+_ = SProp
 ```
 -->
-
-```agda
-  _ : 2 ^ 1024 ≤ 2 ^ 2048
-  _ = lift oh
-```
 
 <!--
 ```agda

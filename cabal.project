@@ -1,7 +1,8 @@
 packages: support/shake/1lab-shake.cabal
 
 -- To build outside of the Nix shell, uncomment the following stanza
--- and replace `main` with the `rev` field from `support/nix/dep/mikan/github.json`.
+-- and replace `main` with the `rev` argument to `fetchgit` from
+-- `support/nix/haskell-packages.nix`.
 --
 -- If you want to avoid polluting your Git tree, you can move this to
 -- `cabal.project.local`, which is ignored by Git.

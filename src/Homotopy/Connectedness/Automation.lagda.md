@@ -14,10 +14,10 @@ module Homotopy.Connectedness.Automation where
 
 # Automation
 
-Just like for [h-levels], we can leverage Agda's instance search to make
-proving things about $n$-[[connected]] types easier.
-The only difference is that the offsetting goes the other way, since
-connectedness is *downwards*-closed.
+Just like for [h-levels], we can leverage the instance search mechanism
+to infer trivial closure properties of the class of $n$-[[connected]]
+types. The only substantive difference is that the offsetting goes the
+other way, since connectedness is *downwards*-closed.
 
 [h-levels]: 1Lab.HLevel.Closure.html#automation
 
@@ -58,8 +58,8 @@ is-contr→is-connected c {suc n} .snd _ _ =
   is-contr→is-connected (Path-is-hlevel 0 c)
 
 instance
-  -- Note that this overlaps with other instances, but Agda doesn't mind
-  -- because all instances of Connected A 0 are equal!
+  -- Note that this overlaps with other instances, but the overlap is
+  -- benign because Connected A 0 is definitionally a singleton.
   0-Connected : ∀ {ℓ} {A : Type ℓ} → Connected A 0
   0-Connected = _
 

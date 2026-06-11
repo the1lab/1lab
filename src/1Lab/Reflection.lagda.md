@@ -309,11 +309,7 @@ private module P where
       → TC ⊤
 ```
 
-<details>
-<summary>And now we bind the whole shebang above to the
-`BUILTIN`{.agda}s that Agda knows about.
-</summary>
-
+<!--
 ```agda
   {-# BUILTIN AGDATCM                  TC                         #-}
   {-# BUILTIN AGDATCMRETURN            returnTC                   #-}
@@ -375,7 +371,7 @@ instance
   Alt-TC .Alt.fail  = P.typeError mempty
   Alt-TC .Alt._<|>_ = P.catchTC
 ```
-</details>
+-->
 
 # Reflection helpers
 

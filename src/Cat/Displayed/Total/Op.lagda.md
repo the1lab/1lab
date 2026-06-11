@@ -50,9 +50,7 @@ The reason we refer to this construction as the total opposite is that
 its total is **equal** to the opposite of the [[total category]]!  To
 show this, we first need to prove some lemmas relating the morphisms of
 the total category of the total opposite to those in the opposite of the
-total category. These functions are essentially the identity function,
-but we can't convince Agda that this is the case due to definitional
-equality reasons.
+total category.
 
 ```agda
 total-op→total-hom

@@ -132,11 +132,12 @@ handy, you can apply them _targeting_ arbitrary points. Lovely! But In
 the image case, this still doesn't really work, because we don't want to
 identify _arbitrary_ points. Our requirements are something like this:
 
-1. A tractable description: finitely many constructors, and hopefully
-"no more than a few". This guarantees that we can tell Agda Agda about
-the construction and _actually work with it_, which is also important.
+1. A tractable description: we require finitely many constructors, so
+that we can actually write the construction down, and would prefer *no
+more than a few* constructions so that working with it in formalisation
+is pleasant.
 
-2. Without any green slime, to _hopefully_ avoid the coherent issues.
+2. Without any green slime, to _hopefully_ avoid the coherence issues.
 
 3. So that points from $a$ are identified in $\im f$ exactly how they
 would be identified in $b$ under $f$.
@@ -167,7 +168,7 @@ somehow define them at the same time. That's impossible, right?
 
 ## Higher induction-recursion
 
-It's actually totally possible to, at least in Agda, define higher
+It's actually totally possible to, at least in Mikan, define higher
 inductive types at the same time as we define pattern-matching functions
 on them. And that's exactly what we'll do: specify $\im f$
 higher-inductively _at the same time as_ we define $f' : \im f \mono b$

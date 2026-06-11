@@ -315,7 +315,7 @@ module _ where
       injection→extensional! (λ p → ↓Hom-path F G (ap fst p) (ap snd p)) sab
 
     -- Overlapping instances for ↙ and ↘; these resolve issues where
-    -- Agda cannot determine the source category A for 'Const'. We can
+    -- Mikan cannot determine the source category A for 'Const'. We can
     -- also optimize the instance a bit to avoid a silly obligation that
     -- 'tt ≡ tt'.
     Extensional-↙Hom

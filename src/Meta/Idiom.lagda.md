@@ -12,9 +12,9 @@ module Meta.Idiom where
 
 The `Idiom`{.Agda} class, probably better known as `Applicative` (from
 languages like Haskell and the Agda standard library), captures the
-"effects with parallel composition", where an "effect" is simply a
-mapping from types to types, with an arbitrary adjustment of universe
-levels:
+notion of "effects with parallel composition", where an "effect" is
+simply a mapping from types to types, with an arbitrary adjustment of
+universe levels:
 
 ```agda
 record Effect : Typeω where
@@ -26,8 +26,8 @@ record Effect : Typeω where
 
 The adjustment of universe levels lets us consider, for example, a
 "power set" effect, where the adjustment is given by `lsuc`. In most
-cases, Agda can infer the adjustment, so we can use the `eff`{.Agda}
-constructor.
+cases, the adjustment can be inferred, so it is left as an implicit
+argument to the `eff`{.Agda} constructor.
 
 ```agda
 record Map (M : Effect) : Typeω where

@@ -134,7 +134,7 @@ to denote `updateₚ α i x` that fits well in the mathematical prose.
     ∙∙ (ap₂ _+_ refl (is-group-hom.pres-id (is-group-hom-at i xs)) ∙ +-idr)
 
 -- XXX: Since we're already squishing down a type whose universe level
--- Agda dislikes, one might wonder if we have to use the finitary
+-- Mikan dislikes, one might wonder if we have to use the finitary
 -- products in the type of `pres-+ₚ`. The answer is yes, since
 -- otherwise `linearᶠ` lives in Typeω, which the declare-record-iso
 -- tactic is very unhappy about.

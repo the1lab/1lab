@@ -56,7 +56,7 @@ instance
   H-Level-Fraction {n = n} {k} {R = R} {S} = hlevel-instance
     (retract→is-hlevel {A = R × ∫ₚ S} n
       (λ (x , y , p) → x / y [ p ])
-      (λ (x / y [ p ]) → x , y , p)
+      (λ { (x / y [ p ]) → x , y , p })
       (λ { (x / y [ p ]) i → x / y [ p ] })
         (hlevel n))
 

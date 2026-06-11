@@ -18,11 +18,11 @@ open import Cat.Morphism C public
 # Reasoning combinators for categories
 
 When doing category theory, we often have to perform many "trivial"
-algebraic manipulations like reassociation, insertion of identity morphisms, etc.
-On paper we can omit these steps, but Agda is a bit more picky!
-We could just do these steps in our proofs one after another, but this
-clutters things up. Instead, we provide a series of reasoning combinators
-to make writing (and reading) proofs easier.
+algebraic manipulations like reassociation, insertion of identity
+morphisms, etc.  On paper we can omit these steps, but proof assistants
+are a bit more picky! We could just do these steps in our proofs one
+after another, but this clutters things up. Instead, we provide a series
+of reasoning combinators to make writing (and reading) proofs easier.
 
 Most of these helpers were taken from `agda-categories`.
 

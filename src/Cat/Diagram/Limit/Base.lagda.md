@@ -441,9 +441,9 @@ constant functor functor $\top \to \cC$ with value `apex` to be a Kan
 extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
 packages an _arbitrary_ functor $\top \to \cC$.
 
-Since Agda does not compare functors for $\eta$-equality, we have to
-shuffle our data around manually. Fortunately, this isn't a very long
-computation.
+Since we have defined the type `Functor`{.Agda} without $\eta$-equality,
+we have to shuffle our data around manually. Fortunately, this isn't a
+very long computation.
 
 ```agda
   cone : Const apex => D

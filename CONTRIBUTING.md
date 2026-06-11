@@ -18,10 +18,10 @@ GitHub.
   interactive rebase to arrive at a more logical structure.
 
 * If you're not using Nix, make sure you're using the [correct
-  Agda commit] to build your code: we're generally on a bleeding-edge
+  Mikan commit] to build your code: we're generally on a bleeding-edge
   version, and testing new language features "in the wild".
 
-[correct Agda commit]: https://github.com/the1lab/1lab/blob/main/support/nix/dep/Agda/github.json#L6
+[correct Mikan commit]: https://github.com/the1lab/1lab/blob/main/support/nix/haskell-packages.nix
 [Libera Chat]: https://libera.chat
 
 We welcome all contributions, but please understand that the 1Lab has a
@@ -34,7 +34,7 @@ everyones' cycles on style quibbles.
 
 British spelling **must** be used throughout: homotopy fib**re**,
 fib**red** category, colo**u**red operad, etc --- both in prose and in
-Agda.
+code.
 
 Headers **should** be written in sentence case, *not* title case, except
 when the concept they introduce is itself most commonly written in title
@@ -118,7 +118,7 @@ credits.
 
 ## The structure of a page
 
-Every literate Agda file on the 1Lab **must** follow the following
+Every literate source file on the 1Lab **must** follow the following
 general structure:
 
 - All import statements **must** appear at the top of the module, within
@@ -236,10 +236,10 @@ bound]]`, or `[[lub|least upper bound]]` if different textual content is
 required, or `[[lub|least-upper-bound]]`. White space **should** be used
 instead of dashes at use sites.
 
-### Linking to Agda names
+### Linking to definition names
 
-An Agda identifier that _has been referred to_ in the current module can
-be referred to in prose using `` `name`{.Agda} `` (an inline code block
+An identifier that _has been referred to_ in the current module can be
+referred to in prose using `` `name`{.Agda} `` (an inline code block
 with class `Agda`). The [HoTT book comparison] uses this feature
 extensively.
 
@@ -302,22 +302,22 @@ margin above, below, or in both block directions.
 
 ## The structure of a module
 
-Agda code **should** be kept to less than 85 columns (this is informed
+Source code **should** be kept to less than 85 columns (this is informed
 by how much code can fit on a 1920x1080 screen without overflow in the
 inline direction). In an equational reasoning block, anything between
 `⟨_⟩` does not count for the line length limit, since those spans can be
-removed by the user. (e.g., the [dual of the modular law] reaches
-column 136!)
+removed by the user. (e.g., the [dual of the modular law] reaches column
+136!)
 
 [dual of the modular law]: https://github.com/the1lab/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
 
 In laid-out syntax, **two spaces of indentation should be used**,
 instead of alignment, whenever possible. We refer to moving to the next
-multiple-of-two indentation as "a step". There are some situations
-where Agda's grammar *mandates* deeper indentation, particularly when
-layout stacking and `module` declarations are involved. Specific rules
-for laying out function bodies and declaration signatures are made
-explicit below.
+multiple-of-two indentation as "a step". There are some situations where
+the grammar *mandates* deeper indentation, particularly when layout
+stacking and `module` declarations are involved. Specific rules for
+laying out function bodies and declaration signatures are made explicit
+below.
 
 ```agda
 -- Always:
@@ -383,7 +383,7 @@ are to be resolved as follows:
 * If the RHS is a `record` expression, break *after* `record`.
 * If the RHS is a `λ where` or `record where` expression, break *before*
   `λ`/`record` if the clause being defined has a `where` declaration
-  (this is required by Agda's syntax); and break *after* `where`
+  (this is required by the syntax); and break *after* `where`
   otherwise.
 
 ```agda
@@ -900,7 +900,7 @@ checker will look into. Record constructors **may** be named, especially
 (and `record where` syntax) **should** be preferred.
 
 Constructors of `no-eta-equality` records **may** be marked `INLINE`.
-Agda will turn `INLINE` record constructors into coclauses when they
+These record constructors will be turned into coclauses when they
 appear, *even if by inlining*, on the immediate RHS of a definition.
 This allows giving definitions with short normal forms without repeating
 a long list of copatterns. You can refer to the anonymous constructor of
@@ -1075,7 +1075,7 @@ The displayed version of a `Thing` **may** be called `ThingP`, following
 ### Literate vs code files
 
 All mathematically interesting notions **must** be defined in a literate
-Agda file. Non-literate Agda files **should** only be used to define
+source file. Non-literate source files **should** only be used to define
 code that fits under "unfortunately, proof assistants":
 
 - Metaprogramming. Solvers **may** be defined in a non-literate file,

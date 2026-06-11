@@ -374,8 +374,8 @@ tel→lam []                             t = t
 tel→lam ((n , arg (arginfo v) _) ∷ ts) t = lam v (abs n (tel→lam ts t))
 
 {-
-Turn a telescope into a list of arguments, with arguments of implicit Π types
-recursively η-expanded to avoid Agda inserting implicit arguments.
+Turn a telescope into a list of arguments, with arguments of implicit Π
+types recursively η-expanded to avoid implicit insertion woes.
 Example:
   tel→args (a : {b : {c : C} → B} → A) = (λ {b} → a {λ {c} → b {c}})
 -}

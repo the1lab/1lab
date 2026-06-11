@@ -335,5 +335,5 @@ And that's it! Note that "classic" DPLL also includes a second rule
 known as _pure literal elimination_. The idea here is that if a literal
 only shows up as negated or not negated, then we can delete all
 occurrences of that literal. However, this operation is somewhat
-expensive to perform, and also rather annoying to program in Agda.
+expensive to perform, and also rather annoying to program in Mikan.
 Therefore, it has been omitted from this implementation.

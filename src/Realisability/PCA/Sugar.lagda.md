@@ -112,7 +112,7 @@ expression *and* a term which always denotes, producing a partial or
 total-partial element of $\bA$ respectively. Note the *parametricity* in
 the argument: to prevent us from writing 'exotic' values of
 `Termʰ`{.Agda}, we must work against an arbitrary choice of variable
-type. If Agda had internalised parametricity, this would be enough to
+type. If we had internalised parametricity, this would be enough to
 prove that the arguments to `expr_`{.Agda} and `val_`{.Agda} must be
 well-formed; since we do not have parametricity we instead ask instance
 search to fill in the well-formedness (and definedness) assumptions

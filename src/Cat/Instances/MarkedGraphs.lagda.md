@@ -288,36 +288,27 @@ However, there is a slight subtlety here: the marked pairs of $G$
 may not respect path concatenation, and may not even form an equivalence
 relation!
 
-Luckily, there is an easy (though tedious) solution to this problem:
-we can instead quotient by the reflexive-transitive-congruent closure
-instead, which we encode in Agda via the following higher-inductive type.
+Luckily, there is an easy (though tedious) solution to this problem: we
+can instead quotient by the reflexive-transitive-congruent closure,
+which we encode in Mikan via the following higher-inductive type.
 
 ```agda
   data Marking
     : ∀ {x y} → Path-in G.graph x y → Path-in G.graph x y
     → Type (o ⊔ ℓ)
     where
-    marked
-      : ∀ {x y} {p q : Path-in G.graph x y}
-      → ∣ G.Marked p q ∣
-      → Marking p q
-    reflexive
-      : ∀ {x y} {p : Path-in G.graph x y}
-      → Marking p p
-    symmetric
-      : ∀ {x y} {p q : Path-in G.graph x y}
-      → Marking q p
-      → Marking p q
+    marked    : ∀ {x y} {p q : Path-in G.graph x y} → ∣ G.Marked p q ∣ → Marking p q
+    reflexive : ∀ {x y} {p   : Path-in G.graph x y} → Marking p p
+    symmetric : ∀ {x y} {p q : Path-in G.graph x y} → Marking q p → Marking p q
     transitive
       : ∀ {x y} {p q r : Path-in G.graph x y}
-      → Marking p q → Marking q r
-      → Marking p r
+      → Marking p q → Marking q r → Marking p r
     congruent
       : ∀ {x y z} {p q : Path-in G.graph x y} {r s : Path-in G.graph y z}
       → Marking p q → Marking r s
       → Marking (p ++ r) (q ++ s)
-    trunc : ∀ {x y} {p q : Path-in G.graph x y} → is-prop (Marking p q)
-  ```
+    squash : ∀ {x y} {p q : Path-in G.graph x y} → is-prop (Marking p q)
+```
 
 <!--
 ```agda

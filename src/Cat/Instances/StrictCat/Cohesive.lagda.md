@@ -224,9 +224,9 @@ essentially independent of the coordinate.
 ```
 
 In the opposite direction, the natural transformation is defined by
-evaluating at the point. These natural transformations compose to the
-identity almost definitionally, but Agda does need some convincing,
-using our path helpers, `Functor-path`{.Agda} and `ext`{.Agda}.
+evaluating at the point. We use the helpers `Functor-path`{.Agda} and
+`ext`{.Agda} to focus on the components relevant for equality, which
+cancel almost *definitionally*.
 
 ```agda
     g : GlobalSections => Γ

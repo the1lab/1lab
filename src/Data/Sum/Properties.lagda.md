@@ -50,9 +50,9 @@ module ⊎Path {a b} {A : Type a} {B : Type b} where
 ```
 
 Given a `Code`{.Agda} for a path in `A ⊎ B`, we can turn it into a
-legitimate path by `ap`{.Agda}plying the corresponding constructor.
-Agda automatically lets us ignore the cases where the `Code`{.Agda}
-computes to `the empty type`{.Agda ident=⊥}.
+legitimate path by `ap`{.Agda}plying the corresponding constructor. The
+coverage checker lets us omit any cases where `Code`{.Agda} computes to
+a type which is obviously empty.
 
 ```agda
   decode : {x y : A ⊎ B} → Code x y → x ≡ y
