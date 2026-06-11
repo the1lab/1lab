@@ -93,7 +93,7 @@ $\rm{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
     → Type (o ⊔ ℓ)
 ```
 
-Note that in the case where $xs = \rm{nil}$, Agda refines $b$ to be
+Note that in the case where $xs = \rm{nil}$, Mikan refines $b$ to be
 definitionally $a$, and we can no longer match on the right-hand-side
 path $ys$. That's where the `is-nil`{.Agda} predicate comes in: We say
 that $ys$ is equal to $\rm{nil}$ if `is-nil`{.Agda} $ys$ holds. Of

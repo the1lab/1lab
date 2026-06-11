@@ -17,10 +17,10 @@ module 1Lab.Counterexamples.Russell where
 # Russell's paradox {defines="russell's-paradox"}
 
 This page reproduces [Russell's paradox] from naïve set theory using an
-inductive type of `Type`{.Agda}-indexed trees. By default, Agda places
+inductive type of `Type`{.Agda}-indexed trees. By default, Mikan places
 the type `Type₀` in `Type₁`, meaning the definition of `V`{.Agda} below
-would not be accepted. Since we're defining a data type, Agda allows us
-to attach the `NO_UNIVERSE_CHECK` pragma, which disables this checking
+would not be accepted. Since we're defining a data type, Mikan allows us
+to attach the `NO_UNIVERSE_CHECK` pragma, which disables this check
 *for the definition of `V`*.
 
 [Russell's paradox]: https://en.wikipedia.org/wiki/Russell%27s_paradox

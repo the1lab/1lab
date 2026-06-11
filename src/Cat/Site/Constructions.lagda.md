@@ -47,8 +47,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 In a similar vein, we can generalise from families of *sieves* to
 families of *families*, since every family generates a sieve. We call a
 presentation of a `Coverage`{.Agda} in terms of families-of-families a
-family of `Coverings`{.Agda}, since Agda forces us to differentiate the
-names.
+family of `Coverings`{.Agda}.
 
 ```agda
   record Coverings ℓi ℓc : Type (o ⊔ ℓ ⊔ lsuc (ℓi ⊔ ℓc)) where

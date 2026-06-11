@@ -41,8 +41,8 @@ Extensionality instances
 
 Every type has a default 'Extensional' instance, with the underlying
 identity system being that of paths. Using instance overlap pragmas, we
-can instruct Agda to only select the default instance in case it has
-nothing else to try.
+can arrange for the default instance to only be selected if all the more
+specific choices failed.
 
 All other instances serve as "reduction rules". For example, extensional
 equality for functions will, by default, be pointwise extensional
@@ -210,7 +210,7 @@ private
     -- We already have our r : Extensional A ℓr, and this is a macro, so
     -- we can just check that r .reflᵉ x : R x y. If that's the case
     -- then we can use that as the argument, otherwise we can give a
-    -- slightly better error message than what Agda would yell.
+    -- slightly better error message than what Mikan would yell.
     try : TC ⊤
     try = do
       `r ← wait-for-type =<< quoteTC r
@@ -232,7 +232,7 @@ private
 trivial! can sometimes replace proofs like 'ext λ ... → refl'. It is,
 however, a bit of a performance vampire: it works by reifying both the
 extensionality instance 'r' and one of the endpoints (the left, 'x'),
-then asking Agda to check that (r .Pathᵉ x x) is definitionally (r
+then asking Mikan to check that (r .Pathᵉ x x) is definitionally (r
 .Pathᵉ x x).
 
 This final step tends to be pretty cheap, but if 'r' or 'x' are large,

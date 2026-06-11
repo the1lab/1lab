@@ -323,11 +323,10 @@ lookup S .snd = injective→is-embedding! (!-inj S)
 
 The "type-of-members" projection from $V$ allows us to think of it as a
 *universe* of [[h-sets|set]], though one which, unlike the built-in
-universes of Agda, requires us to explicitly *decode* an element of the
-universe into a type.[^tarski] To make this interpretation explicit, we
-will sometimes refer to the type-of-members projection by `El`{.Agda},
-which is the traditional name for the decoding family of a Tarski
-universe.
+universes, requires us to explicitly *decode* an element of the universe
+into a type.[^tarski] To make this interpretation explicit, we will
+sometimes refer to the type-of-members projection by `El`{.Agda}, which
+is the traditional name for the decoding family of a Tarski universe.
 
 [^tarski]:
     In the type-theoretic literature, these universes are termed "à la
@@ -684,11 +683,10 @@ _ = refl
 
 ## Lifting and a $V$-code for $V$
 
-Agda universes are not cumulative, but we can define a `Lift`{.Agda}ing
-operation which codes for a type $X : \ty_\ell$ in some higher-levelled
-universe, which we generically write as being $\ell \sqcup \ell'$. By
-inserting these `Lift`{.Agda}s at every `sup`{.Agda} of a $V$-set, we
-can also lift $V$-sets.
+The `Lift`{.Agda}ing operation on types codes for a type $X : \ty_\ell$
+in a higher-levelled universe, which we generically write as being $\ell
+\sqcup \ell'$, can be applied at every `sup`{.Agda} of a $V$-set to lift
+its underlying tree to one indexed in a higher universe.
 
 ```agda
 liftⱽ : ∀ ℓ' → V ℓ → V (ℓ ⊔ ℓ')
@@ -698,9 +696,15 @@ liftⱽ {ℓ = ℓ} ℓ' = wrap module liftⱽ where
 ```
 
 <details>
-<summary>Using that `Lift`{.Agda} is an embedding, we can prove by an
-inductive calculation that the recursive lifting `liftⱽ'`{.Agda} is also
-an embedding.</summary>
+<summary>
+We can also inductively extend the proof that `Lift`{.Agda} is an
+embedding into a proof that `liftⱽ'`{.Agda} is an embedding of trees.
+
+Strategic application of this fact at every node shows that lifting
+preserves the property of being an iterative embedding, so
+`liftⱽ`{.Agda} becomes an *embedding* $V_{\ell} \mono V_{\ell \sqcup
+\ell'}$.
+</summary>
 
 ```agda
   module l {x} {y} = Equiv (ap (Lift {ℓ} ℓ') {x} {y} , embedding→cancellable (Lift-is-embedding ℓ'))

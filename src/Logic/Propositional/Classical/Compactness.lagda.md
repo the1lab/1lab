@@ -72,13 +72,10 @@ compactness→wlem : has-compactness → WLEM
 compactness→wlem compact P = ¬P∨¬¬P where
 ```
 
-We fix an arbitrary proposition $P : \Omega$ _of Agda_, our meta-logic,
-and an atom $x$ of our object logic. We will apply compactness to the
-set
-
-$$\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}\text{.}$$
-
-of formulae.
+We fix an arbitrary proposition $P : \Omega$ *in the meta-logic*, and an
+atom $x$ of our object logic. We will apply compactness to the set of
+formulae
+$$\{ x \mid P \} \cup \{ \lnot x \mid \lnot P \}$$.
 
 ```agda
   x : Proposition 1

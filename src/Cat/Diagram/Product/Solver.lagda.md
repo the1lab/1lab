@@ -19,9 +19,8 @@ module Cat.Diagram.Product.Solver where
 
 Much like the [category solver], this module is split into two halves.
 The first implements an algorithm for normalizing expressions in the
-language of a category with binary products. The latter half consists
-of the usual reflection hacks required to transform Agda expressions
-into our internal expression type.
+language of a category with binary products. The latter half implements
+the glue code for turning reflected goals into the syntax of the solver.
 
 [category solver]: Cat.Solver.html
 
@@ -144,7 +143,7 @@ then we will have η-expanded it, so all of our normal forms will be
 /fully/ η-expanded.
 
 As a terminological note, we call this function `reflect` because
-`quote` is a reserved keyword in Agda.
+`quote` is a reserved keyword in Mikan.
 
 ```agda
   reflect : ∀ X Y → Value X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
@@ -337,7 +336,6 @@ quoted terms of type `NbE.‶Ob‶`{.Agda} from quoted terms of type
 `NbE.Expr`{.Agda} and `Precategory.Hom`{.Agda}.
 
 Note that we apply all implicits to constructors in `build-hom-expr`.
-If we don't do this, Agda will get *very* upset.
 
 ```agda
   build-obj-expr : Term → Term
@@ -370,7 +368,7 @@ If we don't do this, Agda will get *very* upset.
 
 Now, for the solver interface. This follows the usual pattern: we create
 a list of names that we will pass to `withReduceDefs`{.Agda}, which will
-prevent Agda from normalizing away the things we want to reflect upon.
+prevent Mikan from normalizing away the things we want to reflect upon.
 
 ```agda
   dont-reduce : List Name
@@ -433,13 +431,15 @@ want to examine the exact quoted representations of objects/homs.
 Now, the simplifier and solver reflection. This just puts together
 all of our bits from before.
 
-There is one subtlety here with regards to `withReconstructed`.
-We are reflecting on the record parameters to `Product`{.Agda} and
-`is-product`{.Agda} to determine the objects involved in things like `⟨_,_⟩`{.Agda},
-which Agda will mark as `unknown` by default. This will cause `build-obj-expr`{.Agda}
-to then fail when we have expressions involving nested `_⊗_`{.Agda}.
-Wrapping everything in `withReconstructed` causes Agda to fill in these arguments
-with their actual values, which then fixes the issue.
+There is one subtlety here with regards to `withReconstructed`. We are
+reflecting on the record parameters to `Product`{.Agda} and
+`is-product`{.Agda} to determine the objects involved in things like
+`⟨_,_⟩`{.Agda}, which are typically dropped from the reified forms of
+projection applications. Not having them available would cause
+`build-obj-expr`{.Agda} to fail when we have expressions involving
+nested `_⊗_`{.Agda}. Wrapping everything in `withReconstructed`{.Agda}
+causes Mikan to fill in these arguments with their actual values, which
+then fixes the issue.
 
 ```agda
   simpl-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤

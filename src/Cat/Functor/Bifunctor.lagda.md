@@ -71,7 +71,7 @@ module Bifunctor (F : Bifunctor C D E) where
 More on the technical reasons.
 </summary>
 
-The mechanism Agda uses for reifying normal forms for display to the
+The mechanism Mikan uses for reifying normal forms for display to the
 user favours definitions that can be written entirely in terms of the
 module system. If we defined bifunctors with a product argument, the
 joint action on morphisms would be disqualified from being written

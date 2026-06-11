@@ -70,8 +70,11 @@ hiding, we wrap it as a distinct type constructor. This lets consumers
 of the type $\bQ$ forget that it's implemented as a localisation.
 
 ```agda
-data Ratio : Type where
-  inc : ⌞ L.S⁻¹R ⌟ → Ratio
+record Ratio : Type where
+  no-eta-equality ; pattern
+  constructor inc
+  field
+    unℚ : ⌞ L.S⁻¹R ⌟
 
 toℚ : Fraction → Ratio
 toℚ x = inc (inc x)
@@ -90,14 +93,9 @@ _*ℚ_ (inc x) (inc y) = inc (x L.*ₗ y)
 ```agda
 -- Note on the definitions of ℚ/the operations above: we want all the
 -- algebraic operations over ℚ to be definitionally injective. This
--- means that every clause has to have a proper match, and return a
--- distinct head symbol.
---
--- The requirement of having a proper match means we can't use a record
--- (even a no-eta pattern record), since Agda doesn't count those as
--- proper. Therefore, we have to use a data type.
-unℚ : Ratio → ⌞ L.S⁻¹R ⌟
-unℚ (inc x) = x
+-- means that every clause has to have a proper match and return a
+-- constructor.
+open Ratio public
 ```
 -->
 
@@ -138,7 +136,7 @@ the converse is true as well:
 ```agda
 abstract
   quotℚ : ∀ {x y} → x ≈ y → toℚ x ≡ toℚ y
-  quotℚ p = ap Ratio.inc (quot p)
+  quotℚ p = ap Ratio.constructor (quot p)
 
   unquotℚ : ∀ {x y} → toℚ x ≡ toℚ y → x ≈ y
   unquotℚ p = ≈.effective (ap unℚ p)
@@ -181,7 +179,7 @@ private
 instance
   Discrete-ℚ : Discrete Ratio
   Discrete-ℚ .decide (inc x) (inc y) with x ≡ℚ? y
-  ... | yes p = yes (ap Ratio.inc p)
+  ... | yes p = yes (ap Ratio.constructor p)
   ... | no ¬p = no (¬p ∘ ap unℚ)
 ```
 -->
@@ -206,7 +204,7 @@ _/_ x y ⦃ p ⦄ = toℚ (x / y [ p ])
 
 infix 11 _/_
 
-{-# DISPLAY Ratio.inc (Coeq.inc (_/_[_] x y _)) = x / y #-}
+{-# DISPLAY Ratio.constructor (Coeq.inc (_/_[_] x y _)) = x / y #-}
 {-# DISPLAY _/_ x (Int.pos 1) = x #-}
 
 _/1 : Int → Ratio
@@ -238,13 +236,13 @@ abstract
   +ℚ-idl (inc x) = ap inc (L.+ₗ-idl x)
 
   +ℚ-idr : ∀ x → x +ℚ 0 ≡ x
-  +ℚ-idr (inc x) = ap Ratio.inc (CRing.+-idr L.S⁻¹R)
+  +ℚ-idr (inc x) = ap Ratio.constructor (CRing.+-idr L.S⁻¹R)
 
   +ℚ-invl : ∀ x → (-ℚ x) +ℚ x ≡ 0
-  +ℚ-invl (inc x) = ap Ratio.inc (CRing.+-invl L.S⁻¹R {x})
+  +ℚ-invl (inc x) = ap Ratio.constructor (CRing.+-invl L.S⁻¹R {x})
 
   +ℚ-invr : ∀ x → x +ℚ (-ℚ x) ≡ 0
-  +ℚ-invr (inc x) = ap Ratio.inc (L.+ₗ-invr x)
+  +ℚ-invr (inc x) = ap Ratio.constructor (L.+ₗ-invr x)
 
   +ℚ-associative : ∀ x y z → x +ℚ (y +ℚ z) ≡ (x +ℚ y) +ℚ z
   +ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.+ₗ-assoc x y z)
@@ -256,7 +254,7 @@ abstract
   *ℚ-idl (inc x) = ap inc (L.*ₗ-idl x)
 
   *ℚ-idr : ∀ x → x *ℚ 1 ≡ x
-  *ℚ-idr (inc x) = ap Ratio.inc (CRing.*-idr L.S⁻¹R)
+  *ℚ-idr (inc x) = ap Ratio.constructor (CRing.*-idr L.S⁻¹R)
 
   *ℚ-associative : ∀ x y z → x *ℚ (y *ℚ z) ≡ (x *ℚ y) *ℚ z
   *ℚ-associative (inc x) (inc y) (inc z) = ap inc (L.*ₗ-assoc x y z)
@@ -265,13 +263,13 @@ abstract
   *ℚ-commutative (inc x) (inc y) = ap inc (L.*ₗ-comm x y)
 
   *ℚ-zerol : ∀ x → 0 *ℚ x ≡ 0
-  *ℚ-zerol (inc x) = ap Ratio.inc (CRing.*-zerol L.S⁻¹R {x})
+  *ℚ-zerol (inc x) = ap Ratio.constructor (CRing.*-zerol L.S⁻¹R {x})
 
   *ℚ-zeror : ∀ x → x *ℚ 0 ≡ 0
-  *ℚ-zeror (inc x) = ap Ratio.inc (CRing.*-zeror L.S⁻¹R {x})
+  *ℚ-zeror (inc x) = ap Ratio.constructor (CRing.*-zeror L.S⁻¹R {x})
 
   *ℚ-distribl : ∀ x y z → x *ℚ (y +ℚ z) ≡ x *ℚ y +ℚ x *ℚ z
-  *ℚ-distribl (inc x) (inc y) (inc z) = ap Ratio.inc (L.*ₗ-distribl x y z)
+  *ℚ-distribl (inc x) (inc y) (inc z) = ap Ratio.constructor (L.*ₗ-distribl x y z)
 
   *ℚ-distribr : ∀ x y z → (y +ℚ z) *ℚ x ≡ y *ℚ x +ℚ z *ℚ x
   *ℚ-distribr x y z = *ℚ-commutative (y +ℚ z) x ∙ *ℚ-distribl x y z ∙ ap₂ _+ℚ_ (*ℚ-commutative x y) (*ℚ-commutative x z)
@@ -561,13 +559,9 @@ reduceℚ : Ratio → Fraction
 reduceℚ (inc x) = split.choose x
 
 splitℚ : (x : Ratio) → fibre toℚ x
-splitℚ (inc x) = record
-  { fst = split.choose x
-  -- The use of 'recover' here replaces the calculated proof that
-  -- is-split-congruence returns by an invocation of Discrete-ℚ. This
-  -- has much shorter normal forms when applied to concrete values.
-  ; snd = ap inc (split.splitting x .snd)
-  }
+splitℚ (inc x) = record where
+  fst = split.choose x
+  snd = ap inc (split.splitting x .snd)
 
 abstract
   reduce-injective : ∀ x y → reduceℚ x ≡ reduceℚ y → x ≡ y
@@ -672,14 +666,6 @@ instance
 
 record Nonzero (x : Ratio) : Type where
   constructor inc
-  -- It's important that Nonzero is a strict proposition, living in
-  -- Type, so that it doesn't matter what instance gets selected when we
-  -- use it in invℚ etc.
-  --
-  -- The alternative is to always use it as an irrelevant instance (or
-  -- to, god forbid, have it in Agda's Prop), but that doesn't play well
-  -- with the overlap pragmas; and we need those if we're gonna have
-  -- e.g. Nonzero (p * q) as an instance.
   field
     lower : x ≠ 0
 

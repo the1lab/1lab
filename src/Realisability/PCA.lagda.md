@@ -178,9 +178,9 @@ defined using the abstraction operator in the typical way, e.g.
 $$ \tt{K} = \langle x \rangle \langle y \rangle x $$.
 
 We prefer taking the abstraction elimination procedure as a primitive
-since it works better with Agda's type inference, in particular when
-working against an arbitrary PCA --- but a [[combinatorially complete]]
-partial applicative structure is a PCA in our sense.
+since it works better with type inference, in particular when working
+against an arbitrary PCA --- but a [[combinatorially complete]] partial
+applicative structure is a PCA in our sense.
 :::
 
 <details>

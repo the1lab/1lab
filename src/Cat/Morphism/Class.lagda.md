@@ -17,17 +17,30 @@ module Cat.Morphism.Class where
 
 # Classes of morphisms
 
-When defining [[factorisation systems|orthogonal-factorisation-system]] and
-lifting properties, we need to consider collections of morphisms in a category
-$\cC$. Such collections can be naively encoded in Agda as a function
-`∀ {x y} → Hom x y → Ω`, but this representation is somewhat suboptimal.
-Agda is quite aggressive about automatically instantiating implicit
-arguments, so passing around functions like `∀ {x y} → Hom x y → Ω`
-as first-class objects can often lead to unsolved metavariable errors.
+When defining [[factorisation systems|orthogonal-factorisation-system]]
+and lifting properties, we need to consider collections of morphisms in
+a category $\cC$. In theory, a class of morphisms is encoded into type
+theory as a simple inhabitant of `∀ {x y} → Hom x y → Ω`. We however
+prefer to have an explicit *record* type classifying these to aid with
+formalisation. The reasons are twofold:
 
-To work around this, we define a class of morphisms in a category $\cC$
-as a record type. This avoids the implicit instantiation issue from before,
-at the cost of a bit of code bloat.
+* Mikan's elaboration algorithm is fairly aggressive with inserting
+  implicit arguments and binders. This can sometimes lead to situations
+  where referring to a class of morphisms leaves metavariables to go
+  unsolved if the specific relevant `Hom`{.Agda} is not definitionally
+  injective in the objects.
+
+* The bare function type only makes reference to the `Hom`{.Agda} field
+  of the precategory $\cC$, and not to the overall object itself. This
+  means that the category to which a class of arrows belongs to can not
+  be inferred from the class of arrows itself, which generally means
+  that it would have to be an additional explicit argument to any
+  function parametrised over a class.
+
+Passing around inhabitants of a record type prevents both of these
+issues: the record makes reference to the entire precategory, so it is
+definitionally injective, and it is not headed by an implicit function
+space, so no implicit insertion takes place.
 
 ```agda
 record Arrows {o ℓ} (C : Precategory o ℓ) (κ : Level) : Type (o ⊔ ℓ ⊔ lsuc κ) where
@@ -52,7 +65,6 @@ instance
   Arrows-hlevel-proj .get-argument (_ ∷ _ ∷ _ ∷ _ ∷ arg _ h ∷ _) = pure h
   {-# CATCHALL #-}
   Arrows-hlevel-proj .get-argument _ = typeError []
-
 
 {-# DISPLAY Arrows.arrows S f = f ∈ S #-}
 

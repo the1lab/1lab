@@ -39,13 +39,13 @@ predicativity is too restrictive: Even if we don't have a single
 universe of propositions that can accommodate all predicates, we would
 still like for universes to be closed under power-sets.
 
-Using some of Agda's more suspicious features, we can achieve this in a
-way which does not break closed computation too much.  Specifically, we
-can use the evil `NO_UNIVERSE_CHECK` pragma: We define the **small type
-of propositions**, `Ω`, to be a record containing a `Type` (together
-with an irrelevant proof that this type is a proposition), but contrary
-to the universe checker, which would like us to put `Ω : Type₁`, we
-instead force `Ω : Type`.
+Using a handful of unsafe features, we can achieve this in a way which
+does not break closed computation too much.  Specifically, we can use
+the evil `NO_UNIVERSE_CHECK` pragma: We define the **small type of
+propositions**, `Ω`, to be a record containing a `Type` (together with
+an irrelevant proof that this type is a proposition), but contrary to
+the universe checker, which would like us to put `Ω : Type₁`, we instead
+force `Ω : Type`.
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}

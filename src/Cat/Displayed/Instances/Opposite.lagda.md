@@ -135,7 +135,7 @@ _∘,_ {g = g} f' g' = g' ∘v g [ f' ] ∘v γ→
 ## The coherence problem
 
 Having done the mathematics behind the fibred opposite, we turn to
-teaching Agda about the construction. Recall that the algebraic laws
+teaching Mikan the construction. Recall that the algebraic laws
 (associativity, unitality) of a displayed category $\cE \liesover \cB$
 are *dependent paths* over the corresponding laws in $\cB$. Ordinarily,
 this dependence is strictly at the level of morphisms depending on

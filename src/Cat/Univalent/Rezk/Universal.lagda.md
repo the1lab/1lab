@@ -157,7 +157,7 @@ establishes that defining
 
 is indeed a possible choice. We present the formalisation below, but do
 not comment on the calculation, leaving it to the curious reader to load
-this file in Agda and poke around the proof.
+this file in Mikan and poke around the proof.
 
 ```agda
       lemma : (a : A.Ob) (f : H.₀ a B.≅ b)
@@ -278,7 +278,7 @@ characterises, up to a compatible space of choices, first the action on
 morphisms of a functor which inverts $- \circ H$, and in terms of this type,
 the action on morphisms. It's mostly the same trick as above, but a
 _lot_ wilder. We do not comment on it too extensively: the curious
-reader, again, can load this file in Agda and play around.
+reader, again, can load this file in Mikan and play around.
 
 <!--
 ```agda

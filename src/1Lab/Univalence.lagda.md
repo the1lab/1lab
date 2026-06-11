@@ -62,8 +62,8 @@ path.
 
 [RedPRL school]: https://redprl.org/
 
-In CCHM [-@CCHM] --- and therefore Cubical Agda --- a different approach
-is taken, which combines proving univalence with defining a fibrancy
+In CCHM [-@CCHM] --- and therefore Mikan --- a different approach is
+taken, which combines proving univalence with defining a fibrancy
 structure for the universe. The core idea is to define a new type
 former, `Glue`{.Agda}, which "glues" a [[partial type|partial cube]],
 along an equivalence, to a total type.
@@ -437,7 +437,7 @@ module _ where private
   id→equiv-refl {A = A} = J-refl (λ x _ → A ≃ x) (_ , id-equiv)
 ```
 
-However, because of efficiency concerns (Agda _is_ a programming
+However, because of efficiency concerns (Mikan _is_ a programming
 language, after all), instead of using `id→equiv`{.Agda} defined using
 J, we use `path→equiv`{.Agda}, which is [defined in an auxiliary
 module](1Lab.Equiv.FromPath.html).
@@ -486,9 +486,8 @@ Path≃Equiv {A = A} {B = B} = path→equiv , iiso where
 ```
 
 We show that `path→equiv` inverts `ua`{.Agda}, which means proving that
-one can recover the original equivalence from the generated path.
-Because of the computational nature of Cubical Agda, all we have to do
-is apply `uaβ`{.Agda}:
+one can recover the original equivalence from the generated path. One
+direction is simply `uaβ`{.Agda} as shown above:
 
 ```agda
   iiso .is-iso.rinv (f , is-eqv) =
@@ -702,9 +701,9 @@ _ = is-prop
 
 :::{.definition #map-classifier}
 Since the type of "maps into B with variable domain and P fibres" has a
-very unwieldy description --- both in words or in Agda syntax --- we
+very unwieldy description --- both in words or in Mikan syntax --- we
 abbreviate it by $\ell /_{[P]} B$. The notation is meant to evoke the
-idea of a slice category: The objects of $C/c$ are objects of the
+idea of a [[slice category]]: The objects of $C/c$ are objects of the
 category $C$ equipped with choices of maps into $c$. Similarly, the
 objects of $\ell/_{[P]}B$ are objects of the universe $\ty\
 \ell$, with a choice of map $f$ into $B$, such that $P$ holds for all

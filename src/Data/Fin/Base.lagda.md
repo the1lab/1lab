@@ -104,10 +104,10 @@ module _ {m n : Nat} (p : m ≡ n) (x : Fin m) where
 
 ## Viewing elements of a finite set
 
-Agda has good support, through the `with`{.Agda} abstraction, to pretend
-that a type is inductively generated. We therefore expose a type
-`Fin-view`{.Agda} which allows us to discriminate on whether an element
-of $\operatorname{Fin}(n)$ is `fzero`{.Agda} or `fsuc`{.Agda}.
+Mikan has good support, through the `with`{.Agda} abstraction, for
+pretending that a type is inductively generated. We therefore expose a
+type `Fin-view`{.Agda} which allows us to discriminate on whether an
+element of $\operatorname{Fin}(n)$ is `fzero`{.Agda} or `fsuc`{.Agda}.
 
 ```agda
 data Fin-view : {n : Nat} → Fin n → Typeω where

@@ -327,9 +327,9 @@ constant functor functor $\{*\} \to \cC$ with value `coapex` to be a Kan
 extension, but `Colimit`{.Agda}, being an instance of `Lan`{.Agda},
 packages an _arbitrary_ functor $\{*\} \to \cC$.
 
-Since Agda does not compare functors for $\eta$-equality, we have to
-shuffle our data around manually. Fortunately, this isn't a very long
-computation.
+Since we have defined the type `Functor`{.Agda} without $\eta$-equality,
+we have to shuffle our data around manually. Fortunately, this isn't a
+very long computation.
 
 ```agda
   cocone : D => Const coapex

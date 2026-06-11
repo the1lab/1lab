@@ -85,7 +85,7 @@ a *retract* of $\operatorname{is-biinv}(f)$", and conclude this about
     P B (f , wit) = is-biinv→is-iso (is-iso→is-biinv wit) ≡ wit
 ```
 
-Showing this at the identity isomorphism is simple, because Agda will
+Showing this at the identity isomorphism is simple, because Mikan will
 automatically chase it around the computation and tell us what we have
 to show: for the precise implementation here, it boils down to showing
 that four copies of the identity path are identical to a single copy:

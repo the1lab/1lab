@@ -4,10 +4,9 @@ module Prim.Type where
 
 # Primitives: Sorts
 
-This module defines bindings for the primitive sorts in Agda. These are
-_very magic_ symbols since they bootstrap everything about the type
-system. For more details about the use of universes, see
-[`1Lab.Type`](1Lab.Type.html).
+This module defines bindings for the primitive sorts. These are _very
+magic_ symbols since they bootstrap everything about the type system.
+For more details about the use of universes, see [`1Lab.Type`](1Lab.Type.html).
 
 ```agda
 {-# BUILTIN TYPE      Type  #-}

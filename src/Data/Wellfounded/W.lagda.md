@@ -475,12 +475,13 @@ On the other hand, suppose the two labels `x` and `y` are equal. Our next move
 is to exhaustively check that all the subtrees are equal, which is possible
 as all branching factors are finite.[^1]
 
-[^1]: This call to `holds? (∀ bx → f bx ≡ g bx)` involves a few
-layers of instance resolution. Agda starts by using the `Listing→Π-dec`
-instance, which transforms the goal to `Dec (f bx ≡ g bx)`. We can
-then recursively use the instance we are currently writing to determine
-if `f bx ≡ g bx`: this passes the termination checker, as `f bx` and `g bx`
-are structurally recursive calls.
+[^1]:
+    This call to `holds? (∀ bx → f bx ≡ g bx)` involves a few layers of
+    instance resolution. Mikan starts by using the `Listing→Π-dec`
+    instance, which transforms the goal to `Dec (f bx ≡ g bx)`. We can
+    then recursively use the instance we are currently writing to
+    determine if `f bx ≡ g bx`: this passes the termination checker, as
+    `f bx` and `g bx` are structurally recursive calls.
 
 However, there is a minor snag here: we want to compare equality of
 `f : B x → W A B` and `g : B y → W A B`, yet their types differ: `f`

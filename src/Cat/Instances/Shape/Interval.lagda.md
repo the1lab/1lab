@@ -53,12 +53,7 @@ Bool-poset .Poset.≤-trans   = ≤-trans
 Bool-poset .Poset.≤-antisym = ≤-antisym
 ```
 
-:::{.note}
-We define the relation by recursion, rather than by induction, to avoid
-the issues with computational behaviour with indexed inductive types in
-Cubical Agda. The interval category is the category underlying the poset
-of booleans:
-:::
+The interval category is the category underlying the poset of booleans:
 
 ```agda
 0≤1 : Precategory lzero lzero
@@ -168,8 +163,8 @@ module _ {C : Precategory o ℓ} where
 
 The other direction, turning a functor into an object of `Arr`{.Agda},
 is mostly immediate: we can extract the non-trivial arrow by seeing what
-the non-trivial arrow $0 \le 1$ maps to, and the domain/codomain can be
-inferred by Agda.
+the non-trivial arrow $0 \le 1$ maps to, and type inference can fill in
+the domain/codomain.
 
 ```agda
   functor→arrow : Functor 0≤1 C → Arrow C

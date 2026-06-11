@@ -228,7 +228,7 @@ module Impl where
         nz2 = split-denom-nz env y wfy
 
 build : Variables Ratio → Term → TC (Term × Variables Ratio)
-build vars (con (quote Ratio.inc)
+build vars (con (quote Ratio.constructor)
   (con (quote Coeq.inc) (_ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ f v∷ []) v∷ [])) =
   pure (con (quote Impl.con) (f v∷ []) , vars)
 

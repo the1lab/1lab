@@ -156,10 +156,7 @@ _^op : ∀ {o₁ h₁} → Precategory o₁ h₁ → Precategory o₁ h₁
 ```
 
 Composition in the opposite precategory $C\op$ is "backwards" with
-respect to $C$: $f \circ_{op} g = g \circ f$. This inversion, applied
-twice, ends up equal to what we started with by the nature of
-computation - An equality that arises like this, automatically from what
-Agda computes, is called _definitional_.
+respect to $C$: $f \circ_{op} g = g \circ f$.
 
 ```agda
 (C ^op) .Precategory.idl x = C .Precategory.idr x
@@ -515,7 +512,7 @@ module _ {o₁ h₁ o₂ h₂}
 
 Since the type of natural transformations is defined as a record, we can
 not _a priori_ reason about its h-level in a convenient way. However,
-using Agda's metaprogramming facilities (both reflection _and_ instance
+using our metaprogramming facilities (both reflection _and_ instance
 search), we can automatically derive an equivalence between the type of
 natural transformations and a certain $\Sigma$ type; This type can then
 be shown to be a set using the standard `hlevel`{.Agda} machinery.

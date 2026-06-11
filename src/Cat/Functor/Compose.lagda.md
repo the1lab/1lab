@@ -30,11 +30,14 @@ interested in:
 
 - The functor composition functor itself, having type $[B, C] \times [A,
 B] \to [A,C]$;
+
 - The _precomposition functor_ associated with any $p : C \to C'$, which
-will be denoted $- \circ p : [C', D] \to [C,D]$ in TeX and `precompose`{.Agda} in Agda;
+  will be denoted $- \circ p : [C', D] \to [C,D]$ in TeX and
+  `precompose`{.Agda} in Mikan;
+
 - The _postcomposition functor_ associated with any $p : C \to C'$,
-which will be denoted $p \circ - : [A,C] \to [A,C']$; In the code, that's
-`postcompose`{.Agda}.
+  which will be denoted $p \circ - : [A,C] \to [A,C']$; In the code, that's
+  `postcompose`{.Agda}.
 
 Note that the precomposition functor $- \circ p$ is necessarily
 "contravariant" when compared with $p$, in that it points in the

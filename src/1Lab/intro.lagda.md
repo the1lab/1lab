@@ -32,24 +32,6 @@ _ : 2 + 2 ≡ 4
 _ = refl
 ```
 
-For some operations, we use the built-in Agda definitions, which do not
-have explanations attached. This is the case for the `+`{.Agda}
-operation above. However, in any case, those definitions are either
-built-ins (in which case only the type matters), or defined as
-functions, in which case the implementation is visible. The most
-important built-ins for Cubical Agda, and those most likely to lead you
-to a built-in Agda page, have their own explanations, linked below:
-
-- The [`1Lab.Path`] page explains the primitives `I`, `i0`, `i1`, `_∧_`,
-`_∨_`, `~`, `PathP`, `Partial`, `_[_↦_]`, and `hcomp`.
-
-[`1Lab.Path`]: 1Lab.Path.html
-
-- The [`1Lab.Univalence`] page explains the primitives `Glue`, `glue`,
-`unglue`.
-
-[`1Lab.Univalence`]: 1Lab.Univalence.html
-
 With that out of the way, the first thing to do is the aforementioned
 refresher on type theory. **If you're already familiar with type theory,
 feel free to skip to [What's next?](#what-next)**. If you're not
@@ -250,7 +232,7 @@ Since definitional equality is a judgement, it's also not subject to the
 internal propositional connectives --- we can not prove, disprove,
 assume or negate it when working inside type theory, for it does not
 make sense to say "if $a$ and $b$ are equal by definition, then [...]".
-Correspondingly, in the Agda formalisation, definitional equality is
+Correspondingly, in the formalisation, definitional equality is
 invisible, since it's represented by the computation rules of the type
 theory.
 
@@ -274,7 +256,8 @@ functions are defined to be relations satisfying a certain property.
 Given a function $f : A \to B$, we can **apply** it to an inhabitant
 $a : A$, resulting in an inhabitant $f\ a$ of the codomain $B$, called
 the **value of $f$ at $a$**. For clarity, we sometimes write $f(a)$ for
-the value of $f$ at $a$, but in Agda, the parentheses are not necessary.
+the value of $f$ at $a$, but the parentheses are not necessary in source
+code.
 
 The most general form for constructing an inhabitant of $A \to B$ is
 called **lambda abstraction**, and it looks like $(\lambda (x : A). e)$,
@@ -282,7 +265,7 @@ though shorthands exist. In this construction, the subexpression $e$
 denotes the _body_ of a function definition, and $x$ is the parameter.
 You can, and should, think of the expression $\lambda x. e$ as being the
 same as the notation $x \mapsto e$ often used for specifying a map.
-Indeed, Agda supports definition of functions using a more traditional,
+Indeed, Mikan supports definition of functions using a more traditional,
 "rule-like" notation, as shorthand for using $\lambda$ abstraction. For
 instance, the following definitions of inhabitants `f` and `g` of
 $\rm{Nat} \to \rm{Nat}$ are definitionally the same:
@@ -359,7 +342,7 @@ functions whose codomain is another function --- where we abbreviate $A
 \to (B \to C)$ by $A \to B \to C$. By the uniqueness rule for function
 types, we have that any inhabitant of this type is going to be of the
 form $\lambda x.\ \lambda y.\ f\ x\ y$, which we abbreviate by $\lambda
-x\ y.\ f\ x\ y$. In Agda, we can write this as `λ x y → ...`, or by
+x\ y.\ f\ x\ y$. In Mikan, we can write this as `λ x y → ...`, or by
 mentioning multiple variables in the left-hand side of a rule, as shown
 below.
 
@@ -663,7 +646,7 @@ the collection of all "large" objects being "huge", etc. On the semantic
 side, a $\io$-topos has a sequence of object classifiers for maps with
 $\kappa$-compact fibres, where $\kappa$ is a regular cardinal;
 Syntactically, this is reflected much more simply as having a _tower_ of
-universes with $\ty_i : \ty_{1+i}$. So, in Agda, we have:
+universes with $\ty_i : \ty_{1+i}$. So, in Mikan, we have:
 
 <!--
 ```agda
@@ -679,7 +662,7 @@ module _ where private
   _ = Type
 ```
 
-In Agda, we do not have automatically that a "small" object can be
+In Mikan, we do not have automatically that a "small" object can be
 considered a "large" object. When this is the case, we say that
 universes are _cumulative_. Instead, we have an explicit
 `Lift`{.Agda}ing construction that lets us treat types as being in
@@ -762,7 +745,7 @@ size issues, save perhaps for an offhand mention of Grothendieck
 universes (or strongly inaccessible cardinals) within the first few
 sections. Working in a proof assistant forces us to be honest about the
 size of our constructions: Correspondingly, we try to be precise in our
-prose as well. As mentioned above, Agda universes are stratified into a
+prose as well. As mentioned above, Mikan universes are stratified into a
 pair of hierarchies $\ty_\kappa$ and $\ty_{\omega+n}$, where we're using
 $\kappa$ to stand for a variable of `Level`{.Agda} type. The
 `Level`{.Agda} is a built-in type which contains a constant representing
@@ -1126,7 +1109,7 @@ $$
 
 A very common application of the dependent sum type is describing types
 equipped with some _structure_. Let's see an example, now turning to
-Agda so that we may see how the dependent sum is notated in the
+Mikan so that we may see how the dependent sum is notated in the
 formalisation.  We define a _pointed magma structure_ on a type to be a
 point of that type, and a binary function on that type. If we let the
 type _vary_, then we get a type family of pointed magma structures:

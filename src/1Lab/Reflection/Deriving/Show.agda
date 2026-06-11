@@ -108,7 +108,7 @@ private
   show-clause (conhead conm _ args _) = do
     let
       -- We'll only show the visible arguments to the constructor.
-      -- Moreover, since Agda can infer the types in the telescope
+      -- Moreover, since the types in the telescope can be inferred
       -- better than we can specify them here, we replace everything
       -- with `unknown`.
       tele = map (λ (s , arg i t) → s , arg i unknown) $

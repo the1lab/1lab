@@ -28,11 +28,11 @@ _ = Precategory
 Rather than *yet another category theory library*, the 1Lab aims to be
 an accessible introduction to structuralist mathematics, formalised in
 the setting of homotopy type theory, using a theorem prover to check and
-structure our work. As a result of using Agda, everything we mention
-*knows its own definition*, whether we are talking about a specific
-principle (like `univalence`{.Agda}), a big idea (like [[monoidal
-categories]]), or a punctual observation (like [[surjections are
-quotient maps]]).
+structure our work. Through the integration with our proof assistant,
+everything we mention *knows its own definition*, whether we are talking
+about a specific principle (like `univalence`{.Agda}), a big idea (like
+[[monoidal categories]]), or a punctual observation (like [[surjections
+are quotient maps]]).
 
 ::: mathpar
 
@@ -140,10 +140,8 @@ supporting theory might be a significant undertaking.
 ## Technology
 
 The 1Lab would not be possible without a myriad other free and
-open-source projects. In addition to our dearest proof assistant
-[Agda](https://github.com/agda/agda) --- no part of which is distributed
---- we would like to mention the following open-source projects for
-their fundamental importance:
+open-source projects. We would like to mention the following open-source
+projects for their fundamental importance:
 
 * **Fonts**: Our monospace typeface is [Julia Mono] ([license][LICENSE.JuliaMono]),
   chosen for its excellent unicode coverage. The textual content can be
@@ -258,10 +256,11 @@ formalised. They serve as great jumping-off points to explore them!
 ## Type theory
 
 The modules under the `1Lab` namespace serve to bootstrap our type
-theory. They provide the definitions of primitive concepts required for
-Agda to function, and a firm conceptual basis which allows us to develop
-higher-level mathematics. The highlights here are the key modules
-leading up to the proof of the [[univalence principle|univalence]]:
+theory. They perform the setup necessary for the proof assistant to
+function, and establish a firm conceptual basis which allows us to
+develop higher-level mathematics. The highlights here are the key
+modules leading up to the proof of the [[univalence
+principle|univalence]]:
 
 ```agda
 open import 1Lab.Type        -- Basics of type universes
@@ -275,10 +274,10 @@ open import 1Lab.Univalence  -- The proof of univalence, and a few equivalents
 
 To support the rest of the formalisation, we engage not only in writing
 mathematics, but also *meta*mathematics. These are *tactics*, which
-teach Agda to handle more and more of what is *trivial*, allowing us to
+let the proof assistant handle more goals mechanically, allowing us to
 focus on what is truly interesting. These pages are primarily
-interesting for those interested in the use of Agda --- therefore, they
-are more code than prose.
+interesting for those interested in Mikan metaprogramming --- therefore,
+they are more code than prose.
 
 ```agda
 open import 1Lab.Reflection.HLevel
@@ -292,7 +291,7 @@ open import 1Lab.Extensionality
 
 open import 1Lab.Reflection.Induction
 open import 1Lab.Reflection.Induction.Examples
-  -- While Agda natively supports inductive types and pattern matching,
+  -- While Mikan natively supports inductive types and pattern matching,
   -- it's often useful to have explicit elimination principles. This
   -- tactic automatically writes them.
 ```

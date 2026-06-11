@@ -49,7 +49,7 @@ module _ where
 
 ## The 1Lab
 
-Open source, combination wiki (à la nLab) + Agda library.
+Open source, combination wiki (à la nLab) + Mikan library.
 
 * Reimplementations of everything we need, e.g.
 
@@ -74,7 +74,7 @@ This talk is a module in the 1Lab!
 * Type classes for automation, but only of *properties*; equipping a
   type with *structure* (e.g. algebraic) is always explicit.
 
-* Playground for new Agda features, e.g. `opaque`{.kw}, `OVERLAPPING`{.kw} instances
+* Playground for new Mikan features, e.g. `opaque`{.kw}, `OVERLAPPING`{.kw} instances
 
 ## This talk
 
@@ -121,7 +121,7 @@ A type `I`{.Agda}, with *endpoints* `i0`{.Agda}, `i1`{.Agda}, which
 An identification $p : x \is_A y$ is an element $i : \bI, p(i) : A$ that
 satisfies $p(i0) = x$ and $p(i1) = y$.
 
-In Agda: path lambdas and path application.
+In Mikan: path lambdas and path application.
 
 ```agda
 _ : {A : Type} (x : A) → x ≡ x
@@ -233,7 +233,7 @@ module _ where private
   what h x y i = h _ _ i
 ```
 
-Agda generates constraints:
+Mikan generates constraints:
 
 <pre class=Agda>
   <span class="UnsolvedMeta">_x</span> h x y (i = <span class="InductiveConstructor">i0</span>) = x
@@ -322,7 +322,7 @@ And an *overlappable* instance for the base case:
 
 ---
 
-We can test that this works by asking Agda to check `ext`{.Agda} at
+We can test that this works by asking Mikan to check `ext`{.Agda} at
 various types:
 
 ```agda

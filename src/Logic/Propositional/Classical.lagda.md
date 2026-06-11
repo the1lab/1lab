@@ -19,11 +19,11 @@ module Logic.Propositional.Classical where
 # Classical propositional logic {defines="classical-propositional-logic"}
 
 Classical propositional logic is a simple classical logic that only
-contains "atomic" propositions and connectives like "and", "or" and "not".
-Notably, it does not contain any quantifiers like "forall" and "exists".
-
-We can define the syntax of classical propositional logic in Agda as
-the following indexed inductive type.
+contains "atomic" propositions and connectives like "and", "or" and
+"not". Notably, it does not contain any quantifiers like "forall" and
+"exists". We can thus define the syntax of classical propositional logic
+as a parametrised inductive type, since every connective is uniform in
+the context.
 
 ```agda
 data Proposition (Γ : Nat) : Type where
@@ -602,7 +602,7 @@ argument involving excluded middle.
 With that sketch out of the way, let's dive into the details!  First, we
 define a function `tabulate` that forms a context from an assignment;
 this is the $\hat{\rho}$ from the proof sketch. Some variable munging is
-required to make Agda happy, but it is more or less what one would
+required to make Mikan happy, but it is more or less what one would
 expect.
 
 ```agda

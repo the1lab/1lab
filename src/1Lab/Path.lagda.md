@@ -52,9 +52,9 @@ $p\inv \cdot p \is \refl$, but only up to paths-between-paths:
 In the homotopy theory of topological spaces, paths in a space $A$ are
 defined to be continuous mappings $f : [0,1] \to A$ from the *interval*
 to our space. The key idea behind cubical type theory, and thus our
-implementation Cubical Agda, is that by axiomatizing the important
-properties of $[0,1]$ as an **interval type** $\bI$, we could similarly
-define *paths* to be functions $\bI \to A$. We don't have to cut down to
+implementation, Mikan, is that by axiomatizing the important properties
+of $[0,1]$ as an **interval type** $\bI$, we could similarly define
+*paths* to be functions $\bI \to A$. We don't have to cut down to
 a type of "continuous" functions; instead, we arrange for the interval
 *type* to be so that all functions from it are continuous.
 
@@ -114,7 +114,7 @@ can be made into a path $f(\iZ) \is f(\iO)$, and the elimination rule
 says that if we have $i : \bI$, and a path $p : a \is b$, we can apply
 $p(i)$ and get out a value of $A$. In formal presentations of cubical
 type theory (e.g.  CCHM [-@CCHM]), paths are introduced and eliminated
-with their own syntax. In Agda, we instead *overload* the lambda
+with their own syntax. In Mikan, we instead *overload* the lambda
 notation, and function application, so that it can be used for both
 functions *and* paths.
 
@@ -125,9 +125,9 @@ for functions.
 
 When we can infer the type $A$ from the points $a, b : A$, we write the
 type of paths as $a \is b$, both in the formalisation and the prose.
-This is traditional in Agda, but slightly breaks with the convention of
-type theory *literature*, which traditionally uses $a \is b$ to mean
-definitional equality.
+This is traditional in Mikan, a convention inherited from Agda, but
+slightly breaks with the convention of type theory *literature*, which
+traditionally uses $a \is b$ to mean definitional equality.
 
 ```agda
 private
@@ -269,7 +269,7 @@ types. And finally, our $p : \PathP{A}{a}{b}$ is path from $a$ to $b$
 
 Even though we introduced `Path`{.Agda} first, the `PathP`{.Agda}
 connective, being more general, is the actual *primitive* provided by
-Agda. The path type $a \is b$, and its longhand $\Path{A}{a}{b}$, are
+Mikan. The path type $a \is b$, and its longhand $\Path{A}{a}{b}$, are
 defined in terms of `PathP`{.Agda}.
 
 ```agda
@@ -283,10 +283,10 @@ Now that we have the notion of paths, we'll spend the rest of this
 module setting up the structure *around* them that makes them useful. A
 good place to start with are the **inverses**: there should be an
 operation mapping paths $p : a \is b$ to paths $p\inv : b \is a$. In
-Cubical Agda, we work in *de Morgan* cubical type theory. This means
-that, in addition to the endpoints $\iZ, \iO$, the interval is equipped
-with a few extra bits of algebraic structure, to make working with paths
-more convenient.
+Mikan, we work in *de Morgan* cubical type theory. This means that, in
+addition to the endpoints $\iZ, \iO$, the interval is equipped with a
+few extra bits of algebraic structure, to make working with paths more
+convenient.
 
 The relevant operation here is the de Morgan **negation**, written
 $\ineg i$ in the prose and `~_`{.Agda} in the formalisation. In addition
@@ -542,8 +542,8 @@ module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where private
   ∨-conn i j = p (i ∨ j)
 ```
 
-We also ask Agda to check that a square with left/right
-faces `refl`{.Agda} is the same thing as a path between paths.
+We also ask Mikan to check that a square with left/right faces
+`refl`{.Agda} is the same thing as a path between paths.
 
 <!--
 ```agda
@@ -787,15 +787,14 @@ only talking about *predicates* $P(-)$, but rather *type families*
 $P(-)$, which have values; and we do not simply have $x = y$, but rather
 a specific *path* $p : a \is b$.
 
-In Cubical Agda, the relevant *primitive* is the function
-`transp`{.Agda}, whose type is a slight generalisation of the
-`transport`{.Agda} operation below. We'll focus on `transport`{.Agda}
-for now. To start with, this is where paths show their difference from
-the notion of equality in set-level type theories: it says that we have
-a function from paths $p : A \is B$ to functions $A \to B$. However,
-it's *not* the case that every $p, q : A \is B$ gives back the *same*
-function $A \to B$. Which function you get depends on (and determines) the
-path you put in!
+The relevant Mikan *primitive* is the function `transp`{.Agda}, whose
+type is a slight generalisation of the `transport`{.Agda} operation
+below. We'll focus on `transport`{.Agda} for now. To start with, this is
+where paths show their difference from the notion of equality in
+set-level type theories: it says that we have a function from paths $p :
+A \is B$ to functions $A \to B$. However, it's *not* the case that every
+$p, q : A \is B$ gives back the *same* function $A \to B$. Which
+function you get depends on (and determines) the path you put in!
 
 ```agda
 transport : ∀ {ℓ} {A B : Type ℓ} → A ≡ B → A → B
@@ -1137,12 +1136,12 @@ to make this rule work in the presence of higher inductive types and
 univalence, so much so that, in the book, univalence and HITs only
 compute up to paths.
 
-In Cubical Agda, we trade off the computation rule `J-refl`{.Agda} for a
-smooth implementation of these higher-dimensional principles. The result
-is, undeniably, a more complicated type theory: we now have to explain
-how to reduce `transp`{.Agda} in arbitrary lines of types. We've made
-some progress, considering things like universes, inductive data types,
-dependent products, and dependent sums. However, we have not yet
+Cubical type theory trades off the computation rule `J-refl`{.Agda} for
+a smooth implementation of these higher-dimensional principles. The
+result is, undeniably, a more complicated type theory: we now have to
+explain how to reduce `transp`{.Agda} in arbitrary lines of types. We've
+made some progress, considering things like universes, inductive data
+types, dependent products, and dependent sums. However, we have not yet
 explained how to compute `transp`{.Agda} in path types, much less in
 `PathP`{.Agda}. To have a functioning type theory, we'll need
 computation rules to handle these; but for that, we first need to
@@ -1174,8 +1173,8 @@ $\phi = \iO$. You can think of a partial element as a function: if you
 have $p : \Partial{\phi}{A}$, and you can come up with some evidence $v$
 that $\phi = \iO$, then $p(v) : A$. Conversely, if you *have* some $x :
 A$, you can pretend it is a partial element by *ignoring* the evidence.
-In Agda, we write `IsOne`{.Agda} for the type of such evidence, and we
-write `1=1`{.Agda} for the proof that $\iO = \iO$.
+Mikan provides the built-in `IsOne`{.Agda} for the type of such
+evidence, and we write `1=1`{.Agda} for the proof that $\iO = \iO$.
 
 The key feature of partial elements is that we can introduce them by
 giving **systems**: If you want to define an $f : \Partial{(\phi \imax
@@ -1279,7 +1278,7 @@ partial element.
 ~~~
 
 Diagramatically, we'll depict extensions by drawing the relevant partial
-element in red, and the total element in black. In Agda, we write
+element in red, and the total element in black. In Mikan, we write
 extension types using the type former `_[_↦_]`{.Agda}, which is written
 mixfix as `A [ φ ↦ p ]`. We can formalise the red-black extensibility
 diagram above by defining the partial element `left-true`{.Agda}, and
@@ -1467,7 +1466,7 @@ interval `I`{.Agda}, the partial elements `Partial`{.Agda}, and the
 extensions `_[_↦_]`.
 :::
 
-Agda also provides a _heterogeneous_ version of composition (which we
+Mikan also provides a _heterogeneous_ version of composition (which we
 sometimes call "CCHM composition"), called `comp`{.Agda}. It too has a
 corresponding filling operation, called `fill`{.Agda}. The idea behind
 CCHM composition is --- by analogy with `hcomp`{.Agda} expressing that
@@ -1693,7 +1692,8 @@ $\rm{tr}~{\phi}~{x}$:
 \end{tikzcd}\]
 ~~~
 
-We can ask Agda to verify this, by writing out the diagram as an `hcomp`{.Agda}:
+We can ask Mikan to verify this, by writing out the diagram as an
+`hcomp`{.Agda}:
 
 ```agda
 _ : {x y z : A} {p : x ≡ y} {q : y ≡ z} →
@@ -1719,7 +1719,7 @@ $$
 C(j) = \PathP{(\lam{i}{A(j,i)})}{x(j)}{y(j)}\text{,}
 $$
 
-we can ask Agda to check that transporting a $p : C(\iZ)$ to something
+we can ask Mikan to check that transporting a $p : C(\iZ)$ to something
 in $C(\iO)$ is done by computing the composition below:
 
 <!--
@@ -2349,8 +2349,8 @@ endpoint correction.
 
 The first step, the lemma below, characterises transport in path spaces
 in terms of the double composite: This is _almost_ definitional, but
-since Cubical Agda implements only composition **for `PathP`**, we need
-to adjust the path by a bunch of transports:
+since Mikan implements only composition **for `PathP`**, we need to
+adjust the path by a bunch of transports:
 
 ```agda
   where

@@ -40,9 +40,9 @@ There is quite a lot of data involved, so we'll present it in stages.
 
 ::: warning
 While the _raison d'être_ of regular hyperdoctrines is the
-interpretation of regular logic, that is far too much stuff for Agda to
-handle if it were placed in this module. **The interpretation of logic
-lives at [[logic in a hyperdoctrine]]**.
+interpretation of regular logic, we prefer to split that into its own
+module for reasons of both modularity and performance. **The
+interpretation of logic lives at [[logic in a hyperdoctrine]]**.
 :::
 
 ```agda

@@ -31,7 +31,7 @@ Traditional introductions to realisability (e.g. de Jong's
 [[partial combinatory algebras]] in terms of *combinators*, elements
 $\tt{K}$ and $\tt{S}$ satisfying the rules $\tt{K}\ a\ b = a$ and
 $\tt{S}\ f\ g\ x = f\ x\ (g\ x)$. Unfortunately, working with this
-notion of pca in Agda is very inconvenient:
+notion of pca in a proof assistant is very inconvenient:
 
 * To start with, we have to explicitly write out the requirements
   that the constants $\tt{K}$ and $\tt{S}$ are defined; and that the
@@ -53,9 +53,9 @@ notion of pca in Agda is very inconvenient:
   will generally fail this.
 
   This could be solved by making `abs`{.Agda} into an `opaque`{.kw}
-  function, but then Agda would be unable to compute how `abs`{.Agda}
-  and `inst`{.Agda} interact, making it hard to apply the computation
-  rule for an abstraction.
+  function, but this would prevent `abs`{.Agda} and `inst`{.Agda} from
+  interacting at all, making it hard to apply the computation rule for
+  abstractions.
 
 Therefore, we prefer to define pcas to have an abstraction elimination
 function. But the $\tt{S}$ and $\tt{K}$ combinators are still important,

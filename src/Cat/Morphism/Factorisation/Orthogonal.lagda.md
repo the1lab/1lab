@@ -258,10 +258,10 @@ technical one.
 ```
 
 Suppose that $f$ is left-orthogonal to every $r \in R$, and write out
-the $(L,R)$-factorisation $f = r \circ l$. By a syntactic limitation in
-Agda, we start with the conclusion: We'll show that $r$ is in $L$, and
-since $L$ is closed under composition, so is $f$.  Since $f$ is
-orthogonal to $r$, we can fit it into a lifting diagram
+the $(L,R)$-factorisation $f = r \circ l$. Mikan's syntax insists that
+we start with the conclusion: we'll show that $r$ is in $L$, and since
+$L$ is closed under composition, so is $f$. Since $f$ is orthogonal to
+$r$, we can fit it into a lifting diagram
 
 ~~~{.quiver}
 \[\begin{tikzcd}

@@ -180,7 +180,7 @@ _ = Σ-pathp≃
 -->
 
 * Theorem 2.7.2: `Σ-pathp≃`{.Agda}
-* Theorem 2.7.3: Agda has definitional η equality for records.
+* Theorem 2.7.3: Records have definitional $\eta$ equality.
 
 ### 2.9: Π-types and function extensionality
 

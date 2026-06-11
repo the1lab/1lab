@@ -46,7 +46,7 @@ module ↓Coyoneda {o ℓ} (P : Poset o ℓ) (Ls : Lower-set P) where
 This result is _much_ easier to establish in the posetal case than it is
 in the case of proper categories, so we do not comment on the
 construction too much. The curious reader is invited to load this file
-in Agda and play with it themselves!
+in Mikan and play with it themselves!
 
 ```agda
   lower-set-is-lub : is-lub (Lower-sets P) diagram Ls

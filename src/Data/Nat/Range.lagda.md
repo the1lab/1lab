@@ -69,11 +69,11 @@ $$
 \end{cases}
 $$
 
-Note that $x$ is increasing and $y$ is constant in this recurrence relation,
-so Agda's termination checker will reject this definition. Instead, the
-termination metric is $y - x$, which decreases by 1 every step.
-We could use [[well-founded]] induction to define $[x,y)$, but luckily
-there is a simpler solution: we can define an auxiliary function
+Note that $x$ is increasing and $y$ is constant in this recurrence
+relation, so the termination checker will reject this definition.
+Instead, the termination metric is $y - x$, which decreases by 1 every
+step. We could use [[well-founded]] induction to define $[x,y)$, but
+luckily there is a simpler solution: we can define an auxiliary function
 `count-up`{.Agda} that computes the range $[x,x+n)$, and then define
 $[x,y)$ as `count-up x (y - x)`.
 

@@ -99,8 +99,8 @@ The open coverage on a frame enjoys the important property of being
 [[subcanonical|subcanonical coverage]], i.e. all of its covering sieves
 are pullback-stable [[colimits]]. This is essentially by definition: in
 the open coverage, a family over $U$ is covering if its union is $U$,
-i.e. if its *colimit* is $U$. Regardless, Agda will still ask that we do
-a bit of shuffling, and this is where our lemma for simplifying
+i.e. if its *colimit* is $U$. Regardless, Mikan will still ask that we
+do a bit of shuffling, and this is where our lemma for simplifying
 pullbacks comes in.
 
 ```agda

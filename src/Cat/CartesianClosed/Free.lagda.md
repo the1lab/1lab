@@ -1655,12 +1655,12 @@ nf≃ = Iso→Equiv (fst ⊙ nfᶜ _ , iso ⟦_⟧ₙ stability (sym ⊙ snd ⊙
 
 Because we went out of our way to get a universal property for the
 syntax which computes nicely, we can play around with the normalisation
-function, as long as all the types are (Agda) normal forms. For example,
-the normal form of the identity function on pairs is the `pair`{.Agda}
-of the `fstₙ`{.Agda} and `sndₙ`{.Agda} projections of the input
-"variable", which are both neutral. We can also test that, e.g., the
-function $f : \sf{a} \to \sf{b} \vdash (\lambda x.\, f\, x) : \sf{a} \to
-\sf{b},$[^extys] as an eta-epansion, has the same normal form as the
+function, as long as all the types are normal forms (in the metatheory).
+For example, the normal form of the identity function on pairs is the
+`pair`{.Agda} of the `fstₙ`{.Agda} and `sndₙ`{.Agda} projections of the
+input "variable", which are both neutral. We can also test that, e.g.,
+the function $f : \sf{a} \to \sf{b} \vdash (\lambda x.\, f\, x) : \sf{a}
+\to \sf{b},$[^extys] as an eta-epansion, has the same normal form as the
 identity map; and that this normal form, as we expect, is "the function
 which applies the second most-recent variable to the most recent".
 
@@ -1668,13 +1668,13 @@ which applies the second most-recent variable to the most recent".
     Note that in both of these examples we have to "fill out" our
     examples with *base* types under the `` `_ ``{.Agda} constructor,
     and not simply assumed simple types, because ending up with a nice
-    normal form requires that Agda compute the normalisation algebras
+    normal form requires that Mikan compute the normalisation algebras
     into one of the concrete cases we defined above.
 
     The normal form of the identity in $\Syn_\Sigma(\alpha \to \beta,
     \alpha \to \beta)$ *is* still a `lam`{.Agda} constructor, but its
     body contains many redundant reify/reflect pairs that will only
-    cancel out when $\alpha$ and $\beta$ are normal forms.
+    cancel out when $\alpha$ and $\beta$ are closed normal forms.
 
 ```agda
 module _ (A B : Node) where
@@ -1727,7 +1727,7 @@ module _ ⦃ _ : Discrete Node ⦄ ⦃ _ : ∀ {x y} → Discrete (Edge x y) ⦄
 ```
 
 Moreover, if we work instead against an assumed _base_ type, so that
-both the domain and codomain have normalisation algebras that Agda can
+both the domain and codomain have normalisation algebras that Mikan can
 fully evaluate, we can e.g. separate the first and second projections on
 product types. This is true even if the base terms are such that this
 base type has a single inhabitant, because we did not (and, in general,

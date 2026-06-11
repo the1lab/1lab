@@ -74,7 +74,7 @@ private
       debugPrint "tactic.regularity" 10 $ "Checking regularity of " ∷ termErr tm ∷ []
       let φ' = def (quote _∨_) (φ v∷ var n [] v∷ [])
       let tm' = def (quote transp) (ℓ h∷ Al v∷ φ' v∷ x v∷ [])
-      -- We simply ask Agda to check that the newly constructed term `transp Al (φ ∨ i) x`
+      -- We simply check that the newly constructed term `transp Al (φ ∨ i) x`
       -- is correct, i.e. that Al is constant on (i = i1).
       -- If it isn't, we backtrack and leave the term unchanged.
       -- Note that if Al itself contains constant transports, we have already processed those,
@@ -118,8 +118,8 @@ private
   to-regularity-path : Regularity-precision → Term → TC Term
   to-regularity-path pre tm = do
     let tm = raise 1 tm
-    -- Since we'll be comparing terms, Agda really wants them to be
-    -- well-scoped. Since we shifted eeeverything up by one, we have to
+    -- Since we'll be comparing terms, Mikan really wants them to be
+    -- well-scoped. Since we shifted everything up by one, we have to
     -- grow the context, too.
     tm ← run-speculative $ extend-context "i" (argN (quoteTerm I)) do
       tm ← go pre 0 tm

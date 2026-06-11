@@ -168,7 +168,7 @@ necessarily interesting mathematical concepts.
 
 ### Operators for composing paths-over
 
-Since Agda often struggles to infer the arguments to the generic
+Since Mikan often struggles to infer the arguments to the generic
 displayed composition operator `_∙P_`{.Agda} in the setting of displayed
 categories, we provide variants which specify that the dependency is
 only on paths in the base category. One variant (`∙[-]-syntax`{.Agda})
@@ -216,10 +216,9 @@ displayed:
     _ = refl
 ```
 
-Predictably, this is quite bad for performance: any part of the Agda
-implementation which needs to traverse terms will spend $O(n^2)$ time
-going through this redundant information, which could in principle be
-recovered from the types of the arguments.
+Predictably, this is quite bad for performance: any part of the proof
+assistant implementation which needs to traverse terms will spend
+$O(n^2)$ time going through this redundant information.
 
 Surprisingly, we can alleviate this by working instead with paths in the
 *total space* of $x' \to_{-} y'$, as a family over $x \to y$. We

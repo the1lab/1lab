@@ -266,9 +266,9 @@ strict-fibres {f = f} g b .snd (a , p) i = (g (p (~ i)) , λ j → f (g (p (~ i 
 ```
 -->
 
-Since Cubical Agda has primitives that refer to equivalences, we have to
-take some time to teach the system about the type we just defined above.
-In addition to teaching it how to project the underlying function of an
+Since Mikan has primitives that refer to equivalences, we have to take
+some time to teach the system about the type we just defined above. In
+addition to teaching it how to project the underlying function of an
 equivalence, we must prove that an equivalence has contractible fibres
 --- but what the system asks of us is that each [[partial fibre|partial
 cube]] be *extensible*: the cubical phrasing of contractibility.
@@ -908,12 +908,12 @@ postcomposition with $p\inv$, so it too is an equivalence.
 
 ### The Lift type
 
-Because Agda's universes are not *cumulative*, we can not freely move a
-type $A : \ty_0$ to conclude that $A : \ty_1$, or to higher universes.
-To work around this, we have a `Lift`{.Agda} type, which, given a small
-type $A : \ty_i$ and some universe $j \gt i$, gives us a _name_ for $A$
-in $\ty_j$. To know that this operation is coherent, we can prove that
-the lifting map
+Because our type theory does not have *cumulative* universes, we can not
+freely treat a type $A : \ty_0$ as being an inhabitant of $A : \ty_1$,
+or any higher universes. To work around this, we have a `Lift`{.Agda}
+type, which, given a small type $A : \ty_i$ and some universe $j \gt i$,
+gives us a _name_ for $A$ in $\ty_j$. To know that this operation is
+coherent, we can prove that the lifting map
 
 $$
 A \to \operatorname{Lift}_j A
