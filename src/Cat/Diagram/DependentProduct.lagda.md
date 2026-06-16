@@ -163,6 +163,6 @@ In particular, if all morphisms are exponentiable, then the category is
 [[locally cartesian closed]].
 
 ```agda
-lccc : (∀ {A B} (f : Hom A B) X → DependentProduct f X) → Locally-cartesian-closed C
-lccc dp = dependent-product→lcc C fc (λ f → Πf f (dp f)) (λ f → f*⊣Πf f (dp f))
+dependent-products→lccc : (∀ {A B} (f : Hom A B) X → DependentProduct f X) → Locally-cartesian-closed C
+dependent-products→lccc dp = dependent-product→lcc C fc (λ f → Πf f (dp f)) (λ f → f*⊣Πf f (dp f))
 ```
