@@ -140,14 +140,56 @@
   year = {2001}
 }
 
-@misc{CCHM,
-  title={Cubical Type Theory: a constructive interpretation of the univalence axiom},
-  author={Cyril Cohen and Thierry Coquand and Simon Huber and Anders Mörtberg},
-  year={2016},
-  eprint={1611.02108},
-  archivePrefix={arXiv},
-  primaryClass={cs.LO}
+@article{CCHM,
+  author       = {Cyril Cohen and Thierry Coquand and Simon Huber and Anders M{\"{o}}rtberg},
+  title        = {Cubical Type Theory: a constructive interpretation of the univalence axiom},
+  journal      = {CoRR},
+  volume       = {abs/1611.02108},
+  year         = {2016},
+  url          = {http://arxiv.org/abs/1611.02108},
+  eprinttype   = {arXiv},
+  eprint       = {1611.02108},
+  timestamp    = {Mon, 13 Aug 2018 16:48:16 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/CohenCHM16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
+
+@article{CHM,
+  author       = {Thierry Coquand and Simon Huber and Anders M{\"{o}}rtberg},
+  title        = {On Higher Inductive Types in Cubical Type Theory},
+  journal      = {CoRR},
+  volume       = {abs/1802.01170},
+  year         = {2018},
+  url          = {http://arxiv.org/abs/1802.01170},
+  eprinttype   = {arXiv},
+  eprint       = {1802.01170},
+  timestamp    = {Mon, 13 Aug 2018 16:47:02 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1802-01170.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{CubicalAgda,
+  author = {Vezzosi, Andrea and M\"{o}rtberg, Anders and Abel, Andreas},
+  title = {Cubical agda: a dependently typed programming language with univalence and higher inductive types},
+  year = {2019},
+  issue_date = {August 2019},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {3},
+  number = {ICFP},
+  url = {https://doi.org/10.1145/3341691},
+  doi = {10.1145/3341691},
+  abstract = {Proof assistants based on dependent type theory provide expressive languages for both programming and proving within the same system. However, all of the major implementations lack powerful extensionality principles for reasoning about equality, such as function and propositional extensionality. These principles are typically added axiomatically which disrupts the constructive properties of these systems. Cubical type theory provides a solution by giving computational meaning to Homotopy Type Theory and Univalent Foundations, in particular to the univalence axiom and higher inductive types. This paper describes an extension of the dependently typed functional programming language Agda with cubical primitives, making it into a full-blown proof assistant with native support for univalence and a general schema of higher inductive types. These new primitives make function and propositional extensionality as well as quotient types directly definable with computational content. Additionally, thanks also to copatterns, bisimilarity is equivalent to equality for coinductive types. This extends Agda with support for a wide range of extensionality principles, without sacrificing type checking and constructivity.},
+  journal = {Proc. ACM Program. Lang.},
+  month = jul,
+  articleno = {87},
+  numpages = {29},
+  keywords = {Univalence, Higher Inductive Types, Dependent Pattern Matching, Cubical Type Theory}
+}
+
+
+
+
 
 @misc{Symmetry,
   title = {Symmetry},
@@ -350,3 +392,13 @@
   pages      = {153–192},
   numpages   = {40}
   }
+
+@misc{Cavallo:reversals,
+  title={Eliminating reversals from cubical type theories},
+  author={Evan Cavallo and Christian Sattler},
+  year={2026},
+  eprint={2605.15080},
+  archivePrefix={arXiv},
+  primaryClass={cs.LO},
+  url={https://arxiv.org/abs/2605.15080},
+}

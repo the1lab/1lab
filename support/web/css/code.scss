@@ -126,9 +126,7 @@ a[href].hover-highlight {
     animation: highlight 2.5s;
   }
 
-  // background-color: $code-bg;
   @include monospaced;
-  font-weight: 400;
 
   font-size: initial;
   body.text-page &, .reveal & {

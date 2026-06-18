@@ -11,6 +11,7 @@ $theme: (
     bg:     (light: $light-text-bg, dark: $dark-text-bg),
     fg:     (light: $light-text-fg, dark: $dark-text-fg),
     fg-alt: (light: $bluegray-800,  dark: $bluegray-200),
+    strong: (light: $light-text-fg, dark: $dark-bold-fg),
   ),
 
   shadow: black,
