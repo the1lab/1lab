@@ -349,7 +349,7 @@ article {
   }
 
   a[href].header-link {
-    color: theme(--text-fg);
+    color: theme(--text-strong);
     cursor: default;
 
     display: flex;
@@ -411,6 +411,10 @@ span.enclosing.liesover {
   background: url('../static/lies-over-light.svg') no-repeat;
   background-size: contain;
   background-position: center center;
+}
+
+strong, h1, h2, h3, h4, h5, h6 {
+  color: var(--text-strong);
 }
 
 

@@ -47,3 +47,11 @@ symPᵢ⁻ reflᵢ reflᵢ = reflᵢ
 
 symᵢ-to : (p : x ≡ᵢ y) → Id≃path.to (symᵢ p) ≡ sym (Id≃path.to p)
 symᵢ-to reflᵢ = refl
+
+substᵢ-filler
+  : {a b : A} (p : a ≡ b) {x : P a}
+  → PathP (λ i → P (p i)) x (substᵢ P (Id≃path.from p) x)
+substᵢ-filler {P = P} p {x = x} =
+  J (λ b p → PathP (λ i → P (p i)) x (substᵢ P (Id≃path.from p) x))
+    (ap (λ e → substᵢ P e x) (sym Id≃path.from-refl))
+    p
