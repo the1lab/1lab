@@ -5,10 +5,10 @@ module index where
 # 1Lab
 
 This website is an experiment in **discoverable formalisation**: an
-extensive library of formalised mathematics, presented as an explorable
-reference resource. Our implementation of a mathematical library, using
-*literate source code*, has allowed us a dual approach to the
-explanation of mathematical concepts: the code and the prose are
+extensive library of formalised mathematics in [[Mikan]], presented as
+an explorable reference resource. Our implementation of a mathematical
+library, using *literate source code*, has allowed us a dual approach to
+the explanation of mathematical concepts: the code and the prose are
 complementary, and everyone is presented with the opportunity to choose
 their own balance between the rigid formalisation and the intuitive
 explanations.
