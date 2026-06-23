@@ -15,7 +15,6 @@ open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-
 import Cat.Displayed.Morphism.Reasoning as Dr
 import Cat.Reasoning as Cr
 ```
@@ -26,17 +25,8 @@ module Cat.Displayed.Functor.Equivalence.Total
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
   {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
-  {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
   where
 ```
-
-## Total equivalence
-
-Suppose $\cE \liesover \cA$ and $\cF \liesover \cB$ are [[displayed
-categories]], $F : \cA \to \cB$ is an [[equivalence of categories]], and
-$F' : \cE \to_{F} \cF$ is a [[displayed functor]]. Then if $F'$ is a
-[[displayed equivalence]] over $F$, the [[total functor]]  $\int F' :
-\int \cA \to \int \cB$ is an equivalence of the [[total categories]].
 
 <!--
 ```agda
@@ -53,50 +43,44 @@ private
   module ∫ℰF = Cr ∫ℰF
   ∫ℱF = Cat[ ∫ ℱ , ∫ ℱ ]
   module ∫ℱF = Cr ∫ℱF
-  module F = Functor F
-  module F' = Displayed-functor F'
-  ∫F' = ∫ᶠ F'
-  module ∫F' = Functor ∫F'
 ```
 -->
 
 # Total equivalence {defines="total-equivalence"}
 
 Suppose $\cE \liesover \cA$ and $\cF \liesover \cB$ are [[displayed
-categories|displayed category]], $F : \cA \to \cB$ is an [[equivalence
-of categories]], and $F' : \cE \to_{F} \cF$ is a [[displayed functor]].
-Then if $F'$ is a [[displayed equivalence]] over $F$, the [[total
-functor]]  $\int F' : \int \cA \to \int \cB$ is an equivalence of the
-[[total categories|total category]].
+categories]], $F : \cA \to \cB$ is a functor, and $F' : \cE \to_F \cF$
+is a displayed functor. If a [[displayed adjunction]] $F' \vdash_{F
+\vdash F^{-1}} F'^{-1}$ is a [[displayed adjoint equivalence]], then its
+[[total adjunction]] is an ordinary [[adjoint equivalence]]:
 
 ```agda
 module _
-  {F-is-equivalence : is-equivalence F}
-  (F'-is-equivalence : is-equivalence[ F-is-equivalence ] F')
+  {F : Functor A B} {F⁻¹ : Functor B A}
+  {F⊣F⁻¹ : F ⊣ F⁻¹} {has-is-equivalence : adjunction-is-equivalence F⊣F⁻¹}
+  {F' : Displayed-functor F ℰ ℱ} {F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ}
+  {F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹}
+  (has-is-equivalence' : adjunction-is-equivalence[ has-is-equivalence ] F'⊣F'⁻¹)
   where
 ```
 
 <!--
 ```agda
-  open is-equivalence[_] F'-is-equivalence
+  open adjunction-is-equivalence[_] has-is-equivalence'
   open _=>_
   open _=[_]=>_
+
+  private
+    ∫F' = ∫ᶠ F'
+    ∫F'⁻¹ = ∫ᶠ F'⁻¹
+    module ∫F' = Functor ∫F'
+    module ∫F'⁻¹ = Functor ∫F'⁻¹
 ```
 -->
 
-For the inverse and adjunction, we can appeal to the [[total functor]]
-and [[total adjunction]] respectively.
-
 ```agda
-  ∫F'⁻¹ = ∫ᶠ F'⁻¹
   ∫F'⊣∫F'⁻¹ = ∫⊣ F'⊣F'⁻¹
 ```
-
-<!--
-```agda
-  module ∫F'⁻¹ = Functor ∫F'⁻¹
-```
--->
 
 Recall that in order to construct the unit and counit of the total
 adjunction `∫⊣`{.Agda}, we had to compose with the natural isomorphisms
@@ -119,15 +103,27 @@ isomorphisms:
 Hence the adjunction `∫F'⊣∫F'⁻¹`{.Agda} is in fact an equivalence:
 
 ```agda
-  ∫-equivalence : is-equivalence ∫F'
-  ∫-equivalence = record
-    { F⁻¹ = ∫F'⁻¹
-    ; F⊣F⁻¹ = ∫F'⊣∫F'⁻¹
-    ; has-is-equivalence = record
-      { unit-iso = λ x → ∫ℰ.iso→invertible (∫η≅ x)
-      ; counit-iso = λ x → ∫ℱ.iso→invertible (∫ε≅ x)
-      }
+  ∫⊣-is-equivalence : adjunction-is-equivalence ∫F'⊣∫F'⁻¹
+  ∫⊣-is-equivalence = record
+    { unit-iso = λ x → ∫ℰ.iso→invertible (∫η≅ x)
+    ; counit-iso = λ x → ∫ℱ.iso→invertible (∫ε≅ x)
     }
+```
+
+Thus if a displayed _functor_ $F$ is an equivalence of displayed
+categories, then its [[total functor]] is an equivalence of ordinary
+(pre)categories:
+
+```agda
+module _
+  {F : Functor A B} {F-is-equiv : is-equivalence F}
+  {F' : Displayed-functor F ℰ ℱ} {F'-is-equiv : is-equivalence[ F-is-equiv ] F'}
+  where
+
+  open is-equivalence[_] F'-is-equiv
+
+  ∫-is-equivalence : is-equivalence (∫ᶠ F')
+  ∫-is-equivalence = record { F⁻¹ = ∫ᶠ F'⁻¹ ; F⊣F⁻¹ = ∫⊣ F'⊣F'⁻¹ ; has-is-equivalence = ∫⊣-is-equivalence has-is-equivalence' }
 ```
 
 ## Total isomorphism {defines="total-isomorphism-of-precategories"}
@@ -139,7 +135,8 @@ precategories.
 
 ```agda
 module _
-  {F-is-precat-iso : is-precat-iso F}
+  {F : Functor A B} {F-is-precat-iso : is-precat-iso F}
+  {F' : Displayed-functor F ℰ ℱ}
   (F'-is-precat-iso : is-precat-iso[ F-is-precat-iso ] F')
   where
 ```
@@ -152,6 +149,11 @@ module _
     renaming (has-is-ff' to ff' ; has-is-iso' to F'-iso)
 
   private
+    ∫F' = ∫ᶠ F'
+    module F = Functor F
+    module F' = Displayed-functor F'
+    module ∫F' = Functor ∫F'
+
     module F₀ = Equiv (F.₀ , F-iso)
     module F₀' {a} = Equiv (F'.₀' {a} , F'-iso a)
 ```
