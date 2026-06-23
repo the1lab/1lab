@@ -26,19 +26,18 @@ open _=[_]=>_
 module Cat.Displayed.Functor.Equivalence where
 ```
 
-# Equivalences of displayed categories {defines="displayed-equivalence"}
+# Equivalences of displayed categories {defines="displayed-equivalence displayed-adjoint-equivalence"}
 
-Recall that we define an [[equivalence of categories]] is defined as a
-special kind  of [[adjoint functor]]. Similarly, if $\cE \liesover \cA$
-and $\cF \liesover \cB$ are [[displayed categories]], and $F : \cA \to \cB$
-is an [[equivalence|equivalence of categories]] of the [[base categories]],
-we say that a [[displayed functor]] $F' : \cE \to \cF$
-over $F$ is a **displayed equivalence** over $F$ when there is a
-[[displayed adjunction]] $F' \dashv_{F \dashv F^{-1}} F'^{-1}$,
-where the the unit and counit are [[displayed natural isomorphisms]].
+Suppose $F : \cA \to \cB$ is a functor and we have an adjunction $F
+\dashv F^{-1}$ which is an [[adjoint equivalence]]. If $\cE \liesover
+\cA$ and $\cF \liesover \cB$ are [[displayed categories]], and $F' : \cE
+\to_F \cF$ is a [[displayed functor]], we say that a [[displayed
+adjunction]] $F' \dashv_{F \dashv F^{-1}} F'^{-1}$ is a **displayed
+adjoint equivalence** or **equivalence of displayed categories** if the
+unit and counit are [[displayed natural isomorphisms]].
 
 ```agda
-record is-equivalence[_]
+record adjunction-is-equivalence[_]
 ```
 
 <!--
@@ -46,15 +45,18 @@ record is-equivalence[_]
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
   {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
-  {F : Functor A B}
+  {F : Functor A B} {F⁻¹ : Functor B A} {F⊣F⁻¹ : F ⊣ F⁻¹}
 ```
 -->
 
 ```agda
-  (F-is-equiv : is-equivalence F) (F' : Displayed-functor F ℰ ℱ)
+  (F⊣F⁻¹-is-equivalence : adjunction-is-equivalence F⊣F⁻¹)
+  {F' : Displayed-functor F ℰ ℱ} {F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ}
+  (F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹)
   : Type (adj-level' ℰ ℱ) where
 
-  open is-equivalence F-is-equiv public
+  open adjunction-is-equivalence F⊣F⁻¹-is-equivalence
+  open _⊣[_]_ F'⊣F'⁻¹
 ```
 
 <!--
@@ -71,20 +73,7 @@ record is-equivalence[_]
     module [ℰ,ℰ] = Dr [ℰ,ℰ]
     module [ℱ,ℱ] = Dr [ℱ,ℱ]
     module F' = Displayed-functor F'
-```
--->
-
-```agda
-  field
-    F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ
-    F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹
-
-  open _⊣[_]_ F'⊣F'⁻¹ public
-```
-
-<!--
-```agda
-  private module F'⁻¹ = Displayed-functor F'⁻¹
+    module F'⁻¹ = Displayed-functor F'⁻¹
 ```
 -->
 
@@ -119,7 +108,7 @@ This implies the displayed adjunction
 whence we have
 
 ```agda
-  inverse-equivalence' : is-equivalence[ inverse-equivalence ] F'⁻¹
+  inverse-is-equivalence' : adjunction-is-equivalence[ inverse-is-equivalence ] F'⁻¹⊣F'
 ```
 
 <details>
@@ -142,13 +131,44 @@ whence we have
         ℱ.∘Iso' F'-map-iso F' (isoⁿ[]→iso[] Id'≅F'⁻¹∘'F' a'))
       ℱ.id-iso↓ zig'
 
-  inverse-equivalence' = record
-    { F'⁻¹ = F'
-    ; F'⊣F'⁻¹ = F'⁻¹⊣F'
-    ; unit'-iso = λ x' → ℱ.is-invertible[]-inverse (counit'-iso x')
+  inverse-is-equivalence' = record
+    { unit'-iso = λ x' → ℱ.is-invertible[]-inverse (counit'-iso x')
     ; counit'-iso = λ x' → ℰ.is-invertible[]-inverse (unit'-iso x') }
 ```
 </details>
+
+Again we overload terminology and call a displayed functor $F' : \cE
+\to_F \cF$ an **equivalence of displayed categories** or **displayed
+equivalence** when it is part of a displayed adjoint equivalence $F'
+\dashv_{F \dashv F^{-1}} F'^{-1}$.
+
+```agda
+record is-equivalence[_]
+```
+
+<!--
+```agda
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
+  {F : Functor A B}
+```
+-->
+
+```agda
+  (F-is-equiv : is-equivalence F) (F' : Displayed-functor F ℰ ℱ)
+  : Type (adj-level' ℰ ℱ) where
+
+  open is-equivalence F-is-equiv public
+```
+
+```agda
+  field
+    F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ
+    F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹
+
+    has-is-equivalence' : adjunction-is-equivalence[ has-is-equivalence ] F'⊣F'⁻¹
+```
 
 As with an ordinary [[equivalence of categories]] there are other ways
 of characterising displayed equivalences which will usually be more
@@ -376,24 +396,20 @@ are all given by straightforward (if tedious) adaptions of those for
 </details>
 
 To summarise, from the data of `ff'`{.Agda}, and `eso'`{.Agda} we are
-able to construct the following
+able to construct a displayed equivalence of categories:
 
 ```agda
   open ff[ff]+split-eso[]→is-equivalence[]
 
-  ff[ff]+split-eso[]→inverse = F'⁻¹
-  ff[ff]+split-eso[]→unit' = F'⊣F'⁻¹.unit'
-  ff[ff]+split-eso[]→counit' = F'⊣F'⁻¹.counit'
-  ff[ff]+split-eso[]→F'⊣inverse' = F'⊣F'⁻¹
-  ff[ff]+split-eso[]→unit'-iso = unit'-iso
-  ff[ff]+split-eso[]→counit'-iso = counit'-iso
-```
-
-and thus a displayed equivalence of categories:
-
-```agda
   ff[ff]+split-eso[]→is-equivalence[] : is-equivalence[ F-is-equiv ] F'
-  ff[ff]+split-eso[]→is-equivalence[] = record { ff[ff]+split-eso[]→is-equivalence[] }
+  ff[ff]+split-eso[]→is-equivalence[] = record
+    { F'⁻¹ = F'⁻¹
+    ; F'⊣F'⁻¹ = F'⊣F'⁻¹
+    ; has-is-equivalence' = record
+      { unit'-iso = unit'-iso
+      ; counit'-iso = counit'-iso
+      }
+    }
 ```
 
 ## Isomorphism {defines="isomorphism-of-displayed-precategories"}
