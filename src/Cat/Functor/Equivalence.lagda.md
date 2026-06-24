@@ -31,7 +31,7 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences {defines="equivalence-of-categories equivalences-of-categories"}
+# Equivalences {defines="equivalence-of-categories equivalences-of-categories equivalence-of-precategories equivalences-of-precategories adjoint-equivalence"}
 
 An adjunction $F \vdash G$ is an **adjoint equivalence**, or an
 **equivalence of (pre)categories**, if the unit and counit natural
@@ -82,7 +82,7 @@ This implies the adjunction
 whence we have
 
 ```agda
-  inverse-equivalence : is-equivalence F⁻¹
+  inverse-is-equivalence : adjunction-is-equivalence F⁻¹⊣F
 ```
 
 <details>
@@ -123,6 +123,7 @@ whence we have
     ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
+</details>
 
 Overloading terminology, a functor $F : \cC \to \cD$ is an **equivalence
 of categories** when it is part of an adjoint equivalence $F \vdash G$.
