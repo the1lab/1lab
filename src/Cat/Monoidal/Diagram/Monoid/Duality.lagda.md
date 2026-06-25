@@ -128,13 +128,10 @@ displayed precategories]].
 open is-precat-iso[_]
 Monᵒᵖ→Comon-is-iso[] : is-precat-iso[ ^op^op-is-iso ] Monᵒᵖ→Comon
 Monᵒᵖ→Comon-is-iso[] .has-is-iso' x = On.Monᵒᵖ≃Comon .snd
-Monᵒᵖ→Comon-is-iso[] .has-is-ff' = biimp-is-equiv
-  (hlevel 1) (hlevel 1)
-  (Monᵒᵖ→Comon.₁')
-  λ fᶜ → record
-    { pres-η = fᶜ .is-comonoid-hom.pres-ε
-    ; pres-μ = fᶜ .is-comonoid-hom.pres-Δ ∙ (C.-⊗-.lrmap _ _ C.⟩∘⟨refl)
-    }
+Monᵒᵖ→Comon-is-iso[] .has-is-ff' = biimp-is-equiv! (Monᵒᵖ→Comon.₁') λ fᶜ → record
+  { pres-η = fᶜ .is-comonoid-hom.pres-ε
+  ; pres-μ = fᶜ .is-comonoid-hom.pres-Δ ∙ (C.-⊗-.lrmap _ _ C.⟩∘⟨refl)
+  }
 ```
 
 Thus we also have a [[total isomorphism of precategories]] between the

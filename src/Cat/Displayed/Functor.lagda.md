@@ -6,8 +6,8 @@ open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Morphism.Reasoning as DR
 import Cat.Displayed.Cartesian
-import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning as CR
@@ -319,12 +319,8 @@ module _
   where
   private
     module A = CR A
-    module ℰ where
-      open DM ℰ public
-      open DR ℰ public
-    module ℱ where
-      open DM ℱ public
-      open DR ℱ public
+    module ℰ = DR ℰ
+    module ℱ = DR ℱ
   open Displayed-functor F'
   open DM._≅[_]_
 ```
@@ -541,8 +537,10 @@ module
 
 <details>
 <summary>We can also define `is-natural-transformation[_]`{.Agda} as a
-proprty of families of morphisms displayed over a family of morphisms
-with the property `is-natural-transformation`{.Agda}</summary>
+property of families of morphisms displayed over a family of morphisms
+with the property `is-natural-transformation`{.Agda}
+</summary>
+
 ```agda
   is-natural-transformation[_]
     : {F G : Functor A B} {α : ∀ a → B.Hom (₀ F a) (₀ G a)}
@@ -554,6 +552,7 @@ with the property `is-natural-transformation`{.Agda}</summary>
     ∀ {x} {y} {f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
     → α' y' ℱ.∘' ₁' F' f' ℱ.≡[ α-nat x y f ] ₁' G' f' ℱ.∘' α' x'
 ```
+
 </details>
 
 <!--
@@ -574,29 +573,31 @@ with the property `is-natural-transformation`{.Agda}</summary>
 
   open _=[_]=>_
 
-  Nat'-pathp : {F₁ F₂ G₁ G₂ : Functor A B}
-             → {F₁' : Displayed-functor F₁ ℰ ℱ}
-             → {G₁' : Displayed-functor G₁ ℰ ℱ}
-             → {F₂' : Displayed-functor F₂ ℰ ℱ}
-             → {G₂' : Displayed-functor G₂ ℰ ℱ}
-             → {α : F₁ => G₁} {β : F₂ => G₂}
-             → {α' : F₁' =[ α ]=> G₁'} {β' : F₂' =[ β ]=> G₂'}
-             → (p : F₁ ≡ F₂) (q : G₁ ≡ G₂)
-             → (r : PathP (λ i → p i => q i) α β)
-             → (p' : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F₁' F₂')
-             → (q' : PathP (λ i → Displayed-functor (q i) ℰ ℱ) G₁' G₂')
-             → (∀ {x} (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Hom[ (r i .η x) ] (p' i .F₀' x') (q' i .F₀' x')) (α' .η' x') (β' .η' x'))
-             → PathP (λ i → (p' i) =[ r i ]=> (q' i)) α' β'
+  Nat'-pathp
+    : ∀ {F₁ F₂ G₁ G₂ : Functor A B}
+    → {F₁' : Displayed-functor F₁ ℰ ℱ}
+    → {G₁' : Displayed-functor G₁ ℰ ℱ}
+    → {F₂' : Displayed-functor F₂ ℰ ℱ}
+    → {G₂' : Displayed-functor G₂ ℰ ℱ}
+    → {α : F₁ => G₁} {β : F₂ => G₂}
+    → {α' : F₁' =[ α ]=> G₁'} {β' : F₂' =[ β ]=> G₂'}
+    → (p : F₁ ≡ F₂) (q : G₁ ≡ G₂)
+    → (r : PathP (λ i → p i => q i) α β)
+    → (p' : PathP (λ i → Displayed-functor (p i) ℰ ℱ) F₁' F₂')
+    → (q' : PathP (λ i → Displayed-functor (q i) ℰ ℱ) G₁' G₂')
+    → (∀ {x} (x' : ℰ.Ob[ x ]) → PathP (λ i → ℱ.Hom[ (r i .η x) ] (p' i .F₀' x') (q' i .F₀' x')) (α' .η' x') (β' .η' x'))
+    → PathP (λ i → (p' i) =[ r i ]=> (q' i)) α' β'
   Nat'-pathp p q r p' q' w i .η' x' = w x' i
   Nat'-pathp {α' = α'} {β' = β'} p q r p' q' w i .is-natural' {x = x} {y} {f} x' y' f' j =
     is-set→squarep {A = λ i j → ℱ.Hom[ r i .is-natural x y f j ] (F₀' (p' i) x') (F₀' (q' i) y')} (λ _ _ → hlevel 2)
       (λ i → w y' i ℱ.∘' F₁' (p' i) f') (λ j → is-natural' α' x' y' f' j) (λ j → is-natural' β' x' y' f' j) (λ i → F₁' (q' i) f' ℱ.∘' w x' i) i j
 
-  Nat'-path : {F G : Functor A B} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
-           → {α β : F => G} {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'}
-           → {p : α ≡ β}
-           → (∀ {x} (x' : ℰ.Ob[ x ]) → α' .η' x' ℱ.≡[ p ηₚ x ] β' .η' x')
-           → PathP (λ i → F' =[ p i ]=> G') α' β'
+  Nat'-path
+    : ∀ {F G : Functor A B} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
+    → {α β : F => G} {α' : F' =[ α ]=> G'} {β' : F' =[ β ]=> G'}
+    → {p : α ≡ β}
+    → (∀ {x} (x' : ℰ.Ob[ x ]) → α' .η' x' ℱ.≡[ p ηₚ x ] β' .η' x')
+    → PathP (λ i → F' =[ p i ]=> G') α' β'
   Nat'-path = Nat'-pathp refl refl _ refl refl
 
   _ηₚ'_

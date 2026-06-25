@@ -416,7 +416,7 @@ equiv→zag {f = f} eqv b =
 
 </details>
 
-We also show that the inverse of an equivalence is itself an 
+We also show that the inverse of an equivalence is itself an
 equivalence:
 
 ```agda

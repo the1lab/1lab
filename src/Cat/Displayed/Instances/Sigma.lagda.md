@@ -32,10 +32,10 @@ category. But what happens when our base category is itself displayed?
 That is, how should we interpret the situation
 
 $$
-\cF \liesover \cE \liesover \cB?
+\cF \liesover \cE \liesover \cA?
 $$
 
-In such a situation we may either conceive of $\cE$ or $\cB$ as forming
+In such a situation we may either conceive of $\cE$ or $\cA$ as forming
 the “base category.” Σ-categories allow us move between these two
 conceptions more easily.
 

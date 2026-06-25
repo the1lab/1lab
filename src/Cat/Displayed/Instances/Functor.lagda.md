@@ -85,17 +85,7 @@ module _
   (ℰ : Displayed A oe ℓe) (ℱ : Displayed B of ℓf)
   where
 
-  private
-    variable
-      F G H : Functor A B
-      F' : Displayed-functor F ℰ ℱ
-      G' : Displayed-functor G ℰ ℱ
-      H' : Displayed-functor H ℰ ℱ
-
-    module A = Cr A
-    module B = Cr B
-    module ℱ = Dr ℱ
-    module ℰ = Dr ℰ
+  private module ℱ = Dr ℱ
 ```
 -->
 
@@ -110,8 +100,8 @@ module _
 
   DisCat[_,_] .idr' α' = Nat'-path λ x' → ℱ.idr' (η' α' x')
   DisCat[_,_] .idl' α' = Nat'-path λ x' → ℱ.idl' (η' α' x')
-  DisCat[_,_] .assoc' α' β' γ' = Nat'-path λ x'
-    → ℱ.assoc' (η' α' x') (η' β' x') (η' γ' x')
+  DisCat[_,_] .assoc' α' β' γ' = Nat'-path λ x' →
+    ℱ.assoc' (η' α' x') (η' β' x') (η' γ' x')
 
   DisCat[_,_] .hom[_] {x = F'} {G'} p α' = record
     { η' = λ {x} x' → ℱ.hom[ p ηₚ x ] (α' .η' x')

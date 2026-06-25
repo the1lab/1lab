@@ -35,7 +35,7 @@ module Cat.Displayed.Functor.Adjoint.Total
 
 Suppose $\cE \liesover \cA$ and $\cF \liesover \cB$ are [[displayed
 categories]], $L \dashv R : \cB \to \cA$ are [[adjoint functors]]. A
-[[displayed adjunction]] $L' \dashv R : \cF \to \cE$ induces an ordinary
+[[displayed adjunction]] $L' \dashv R' : \cF \to \cE$ induces an ordinary
 adjunction of the corresponding [[total functors]] $\int L' \dashv \int
 R' : \int \cF \to \int \cE$.
 
@@ -64,7 +64,7 @@ transformation]] and compose with the natural isomorphisms `∫ᶠ∘`{.Agda}
 and `∫ᶠId'≅Id`{.Agda} to adjust the domain and codomain.
 
 ```agda
-∫⊣ : (∫ᶠ L') ⊣ (∫ᶠ R')
+∫⊣ : ∫ᶠ L' ⊣ ∫ᶠ R'
 ∫⊣ .unit = Iso.to ∫ᶠ∘ ∫ℰF.∘ ∫ⁿ (L'⊣R'.unit') ∫ℰF.∘ Iso.from ∫ᶠId'≅Id
 ∫⊣ .counit = Iso.to ∫ᶠId'≅Id ∫ℱF.∘ ∫ⁿ (L'⊣R'.counit') ∫ℱF.∘ Iso.from ∫ᶠ∘
 ```
@@ -74,7 +74,7 @@ taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and
 `∫ᶠId'≅Id`{.Agda}.
 
 ```agda
-∫⊣ .zig {(x , x')} = ∫Hom-path ℱ
+∫⊣ .zig {x , x'} = ∫Hom-path ℱ
   ( (B.id B.∘ L⊣R.ε (₀ L x) B.∘ B.id) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id) ≡⟨ ap (B._∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)) (B.idlr (L⊣R.ε (₀ L x))) ⟩
     L⊣R .ε (₀ L x) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)                    ≡⟨ ap (λ f → L⊣R.ε (F₀ L x) B.∘ ₁ L f) (A.idlr (L⊣R.η x)) ⟩
     L⊣R .ε (₀ L x) B.∘ ₁ L (L⊣R .η x)                                     ≡⟨ L⊣R.zig ⟩
@@ -85,7 +85,7 @@ taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and
     L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')  ℱ.≡[]⟨ apd (λ i f' → L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' f') (ℰ.idlr' (L'⊣R'.unit'.η' x')) ⟩
     L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (L'⊣R'.unit'.η' x')                        ℱ.≡[]⟨ L'⊣R'.zig' ⟩
     ℱ.id'                                                                             ℱ.∎[]
-∫⊣ .zag {(x , x')} = ∫Hom-path ℰ
+∫⊣ .zag {x , x'} = ∫Hom-path ℰ
   ( ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ A.id A.∘ L⊣R.η (₀ R x) A.∘ A.id   ≡⟨ ap (₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘_) (A.idlr (L⊣R.η (₀ R x))) ⟩
     ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ L⊣R.η (₀ R x)                     ≡⟨ ap (λ f → ₁ R f A.∘ L⊣R.η (F₀ R x)) (B.idlr (L⊣R.ε x)) ⟩
     ₁ R (L⊣R.ε x) A.∘ L⊣R.η (₀ R x)                                       ≡⟨ L⊣R.zag ⟩

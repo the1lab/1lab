@@ -433,7 +433,7 @@ is immediate.
 
 ```agda
     ∫≡dx : ∫ B (discrete→presheaf P p-disc) ≡ P
-    ∫≡dx = Displayed-path pieces $ iso[] (is-iso→is-equiv p) (λ _ → id-equiv) where
+    ∫≡dx = Displayed-path pieces $ iso[] (is-iso→is-equiv p) λ _ → id-equiv where
       p : ∀ {a b} {f : B.Hom a b} {a'} {b'} → is-iso (pieces .F₁' {f = f} {a'} {b'})
       p .from f = ap fst $ cart-lift _ _ .paths (_ , f)
       p .rinv p = from-pathp (ap snd (cart-lift _ _ .paths _))
