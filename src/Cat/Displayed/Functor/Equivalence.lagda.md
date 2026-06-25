@@ -26,15 +26,16 @@ open _=[_]=>_
 module Cat.Displayed.Functor.Equivalence where
 ```
 
-# Equivalences of displayed categories {defines="displayed-equivalence displayed-adjoint-equivalence"}
+# Equivalences of displayed categories {defines="displayed-equivalence displayed-adjoint-equivalence equivalence-of-displayed-categories equivalence-of-displayed-precategories"}
 
-Suppose $F : \cA \to \cB$ is a functor and we have an adjunction $F
-\dashv F^{-1}$ which is an [[adjoint equivalence]]. If $\cE \liesover
-\cA$ and $\cF \liesover \cB$ are [[displayed categories]], and $F' : \cE
-\to_F \cF$ is a [[displayed functor]], we say that a [[displayed
-adjunction]] $F' \dashv_{F \dashv F^{-1}} F'^{-1}$ is a **displayed
-adjoint equivalence** or **equivalence of displayed categories** if the
-unit and counit are [[displayed natural isomorphisms]].
+Suppose $F \dashv F\inv$ are the [[adjoint]] components of an [[adjoint
+equivalence]] $F : \cA \cong \cB$, and let $\cE \liesover \cA$ and $\cF
+\liesover \cB$ be [[categories displayed over|displayed category]] its
+endpoints. If $F' : \cE \to_F \cF$ (resp. $F'\inv : \cF \to_{F\inv}
+\cE$) are [[displayed functors]] in a [[displayed adjunction]] $F'
+\dashv F'\inv$, we say it is a **displayed adjoint equivalence**, or
+simply **equivalence of displayed categories**, if its unit and counit
+maps are [[displayed natural isomorphisms]].
 
 ```agda
 record adjunction-is-equivalence[_]
@@ -79,8 +80,8 @@ record adjunction-is-equivalence[_]
 
 ```agda
   field
-    unit'-iso : ∀ {x} x' →  ℰ.is-invertible[ unit-iso x ] (unit' .η' x')
-    counit'-iso : ∀ {x} x' →  ℱ.is-invertible[ counit-iso x ] (counit' .η' x')
+    unit'-iso   : ∀ {x} x' → ℰ.is-invertible[ unit-iso x ] (unit' .η' x')
+    counit'-iso : ∀ {x} x' → ℱ.is-invertible[ counit-iso x ] (counit' .η' x')
 ```
 
 Again, we see that natural families of invertible morphisms give rise to
@@ -88,12 +89,12 @@ displayed isomorphisms in the [[displayed functor category]]:
 
 ```agda
   F'∘F'⁻¹≅Id' : F' F∘' F'⁻¹ [ℱ,ℱ].≅[ F∘F⁻¹≅Id ] Id'
-  F'∘F'⁻¹≅Id' = [ℱ,ℱ].invertible[]→iso[]
-   (invertible[]→invertibleⁿ[ _ ] counit' counit'-iso)
+  F'∘F'⁻¹≅Id' = [ℱ,ℱ].invertible[]→iso[] $
+   invertible[]→invertibleⁿ[ _ ] counit' counit'-iso
 
   Id'≅F'⁻¹∘'F' : Id' [ℰ,ℰ].≅[ Id≅F⁻¹∘F ] F'⁻¹ F∘' F'
-  Id'≅F'⁻¹∘'F' = [ℰ,ℰ].invertible[]→iso[]
-    (invertible[]→invertibleⁿ[ _ ] unit' unit'-iso)
+  Id'≅F'⁻¹∘'F' = [ℰ,ℰ].invertible[]→iso[] $
+    invertible[]→invertibleⁿ[ _ ] unit' unit'-iso
 
   unit'⁻¹ = [ℰ,ℰ].from' Id'≅F'⁻¹∘'F'
   counit'⁻¹ = [ℱ,ℱ].from' F'∘F'⁻¹≅Id'
@@ -112,7 +113,9 @@ whence we have
 ```
 
 <details>
-<summary>Construction of `F'⁻¹⊣F'`{.Agda} and `inverse-equivalence'`{.Agda}</summary>
+<summary>Construction of `F'⁻¹⊣F'`{.Agda} and `inverse-equivalence'`{.Agda}
+</summary>
+
 ```agda
   F'⁻¹⊣F' ._⊣[_]_.unit' = counit'⁻¹
   F'⁻¹⊣F' ._⊣[_]_.counit' = unit'⁻¹
@@ -120,7 +123,7 @@ whence we have
     z' : unit'⁻¹ .η' (F'⁻¹.₀' b') ℰ.∘' F'⁻¹.₁' (counit'⁻¹ .η' b')
       ℰ.≡[ _⊣_.zig F⁻¹⊣F ] ℰ.id'
     z' = ℰ.cast[] $ ℰ.inverse-unique₀'
-      ((F'-map-iso F'⁻¹ (isoⁿ[]→iso[] F'∘F'⁻¹≅Id' b'))
+      (F'-map-iso F'⁻¹ (isoⁿ[]→iso[] F'∘F'⁻¹≅Id' b')
         ℰ.∘Iso' isoⁿ[]→iso[] Id'≅F'⁻¹∘'F' (F'⁻¹.₀' b'))
       ℰ.id-iso↓ zag'
   F'⁻¹⊣F' ._⊣[_]_.zag' {a} {a'} = z' where
@@ -132,9 +135,11 @@ whence we have
       ℱ.id-iso↓ zig'
 
   inverse-is-equivalence' = record
-    { unit'-iso = λ x' → ℱ.is-invertible[]-inverse (counit'-iso x')
-    ; counit'-iso = λ x' → ℰ.is-invertible[]-inverse (unit'-iso x') }
+    { unit'-iso   = λ x' → ℱ.is-invertible[]-inverse $ counit'-iso x'
+    ; counit'-iso = λ x' → ℰ.is-invertible[]-inverse $ unit'-iso x'
+    }
 ```
+
 </details>
 
 Again we overload terminology and call a displayed functor $F' : \cE
@@ -275,6 +280,7 @@ surjectivity to define `F'⁻¹`{.Agda}:
 are all given by straightforward (if tedious) adaptions of those for
 `ff+split-eso→is-equivalence`{.Agda}, and are given without commentary.
 </summary>
+
 ```agda
     module F'⁻¹ = Displayed-functor F'⁻¹
 
@@ -393,6 +399,7 @@ are all given by straightforward (if tedious) adaptions of those for
       open Σ (eso' x') renaming (fst to f*x' ; snd to f*x'-iso)
       module f*x'-iso = ℱ._≅[_]_ f*x'-iso
 ```
+
 </details>
 
 To summarise, from the data of `ff'`{.Agda}, and `eso'`{.Agda} we are
@@ -403,7 +410,7 @@ able to construct a displayed equivalence of categories:
 
   ff[ff]+split-eso[]→is-equivalence[] : is-equivalence[ F-is-equiv ] F'
   ff[ff]+split-eso[]→is-equivalence[] = record
-    { F'⁻¹ = F'⁻¹
+    { F'⁻¹    = F'⁻¹
     ; F'⊣F'⁻¹ = F'⊣F'⁻¹
     ; has-is-equivalence' = record
       { unit'-iso = unit'-iso
@@ -451,7 +458,7 @@ record is-precat-iso[_]
 
 ```agda
   field
-    has-is-ff' : is-ff[] F'
+    has-is-ff'  : is-ff[] F'
     has-is-iso' : ∀ x → is-equiv {A = ℰ.Ob[ x ]} F'.₀'
 ```
 

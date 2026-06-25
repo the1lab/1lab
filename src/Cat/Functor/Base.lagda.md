@@ -199,7 +199,7 @@ preserve isomorphisms, and, more generally, preserve invertibility.
   F-map-iso : ∀ {x y} → x C.≅ y → F · x D.≅ F · y
   F-map-iso x .to       = F .F₁ (x .to)
   F-map-iso x .from     = F .F₁ (x .from)
-  F-map-iso x .inverses = record 
+  F-map-iso x .inverses = record
     { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
     ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id }
 

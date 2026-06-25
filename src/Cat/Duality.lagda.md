@@ -15,11 +15,11 @@ module Cat.Duality {o ℓ} {C : Precategory o ℓ} where
 
 Here we explore some features of duality in category theory, which is
 intimately related to the [[opposite category]]. An important aspect of
-this is the involutary nature of `_^op`{.Agda}, which we show here as an 
+this is the involutary nature of `_^op`{.Agda}, which we show here as an
 [[isomorphism of precategories]] $(\cC\op)\op \cong \cC$.
 
 ```agda
-^op^op→ : Functor (C ^op ^op) C 
+^op^op→ : Functor (C ^op ^op) C
 ^op^op→ .F₀ x = x
 ^op^op→ .F₁ f = f
 ^op^op→ .F-id = refl

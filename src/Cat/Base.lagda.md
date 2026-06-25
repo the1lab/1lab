@@ -465,8 +465,10 @@ Natural transformations also dualise. The opposite of $\eta : F
 ```
 
 <details>
-<summary>We can also define `is-natural-transformation`{.Agda} as a 
-property of families of morphisms.</summary>
+<summary>We can also define `is-natural-transformation`{.Agda} as a
+property of families of morphisms.
+</summary>
+
 ```agda
 is-natural-transformation
   : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
@@ -478,6 +480,7 @@ is-natural-transformation {C = C} {D = D} F G η =
   where module D = Precategory D
         open Functor
 ```
+
 </details>
 
 <!--

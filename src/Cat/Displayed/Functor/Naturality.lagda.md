@@ -1,8 +1,7 @@
 <!--
 ```agda
+open import Cat.Displayed.Morphism.Reasoning as Dr
 open import Cat.Displayed.Instances.Functor
-open import Cat.Displayed.Reasoning as Dr
-open import Cat.Displayed.Morphism as Dm
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
@@ -30,15 +29,9 @@ module _
   private
     [ℰ,ℱ] = DisCat[ ℰ , ℱ ]
     module B = Cr B
-    module ℰ where
-      open Dr ℰ public
-      open Dm ℰ public
-    module ℱ where
-      open Dr ℱ public
-      open Dm ℱ public
-    module [ℰ,ℱ] where
-      open Dr [ℰ,ℱ] public
-      open Dm [ℰ,ℱ] public
+    module ℰ = Dr ℰ
+    module ℱ = Dr ℱ
+    module [ℰ,ℱ] = Dr [ℰ,ℱ]
 
     variable
       F G H : Functor A B
@@ -128,7 +121,7 @@ following data:
 
     field
       eta' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α.η x ] (₀' F' x') (₀' G' x')
-      inv' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ (α⁻¹.η x) ] (₀' G' x') (₀' F' x')
+      inv' : ∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α⁻¹.η x ] (₀' G' x') (₀' F' x')
       eta'∘'inv' : ∀ {x} (x' : ℰ.Ob[ x ])
         → eta' x' ℱ.∘' inv' x' ℱ.≡[ inversesⁿ→inverses (inverses α) x .invl ] ℱ.id'
       inv'∘'eta' : ∀ {x} (x' : ℰ.Ob[ x ])
@@ -159,8 +152,10 @@ We also give the following helper functions:
   isoⁿ[]→iso[]
     : ∀ {α} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}
     → F' ≅ⁿ[ α ] G'
-    → ∀ {a} (a' : ℰ.Ob[ a ]) → ₀' F' a' ℱ.≅[ (isoⁿ→iso α a) ] ₀' G' a'
-  isoⁿ[]→iso[] α' a' = ℱ.make-iso[ _ ] (α' .to' .η' a') (α' .from' .η' a') (α' .invl' ηₚ' a') (α' .invr' ηₚ' a')
+    → ∀ {a} (a' : ℰ.Ob[ a ]) → ₀' F' a' ℱ.≅[ isoⁿ→iso α a ] ₀' G' a'
+  isoⁿ[]→iso[] α' a' = ℱ.make-iso[ _ ]
+    (α' .to' .η' a') (α' .from' .η' a')
+    (α' .[ℰ,ℱ].invl' ηₚ' a') (α' .[ℰ,ℱ].invr' ηₚ' a')
 
   to-is-invertibleⁿ[_]
     : ∀ {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ}

@@ -105,7 +105,7 @@ Hence the adjunction `∫F'⊣∫F'⁻¹`{.Agda} is in fact an equivalence:
 ```agda
   ∫⊣-is-equivalence : adjunction-is-equivalence ∫F'⊣∫F'⁻¹
   ∫⊣-is-equivalence = record
-    { unit-iso = λ x → ∫ℰ.iso→invertible (∫η≅ x)
+    { unit-iso   = λ x → ∫ℰ.iso→invertible (∫η≅ x)
     ; counit-iso = λ x → ∫ℱ.iso→invertible (∫ε≅ x)
     }
 ```
@@ -123,7 +123,11 @@ module _
   open is-equivalence[_] F'-is-equiv
 
   ∫-is-equivalence : is-equivalence (∫ᶠ F')
-  ∫-is-equivalence = record { F⁻¹ = ∫ᶠ F'⁻¹ ; F⊣F⁻¹ = ∫⊣ F'⊣F'⁻¹ ; has-is-equivalence = ∫⊣-is-equivalence has-is-equivalence' }
+  ∫-is-equivalence = record
+    { F⁻¹   = ∫ᶠ F'⁻¹
+    ; F⊣F⁻¹ = ∫⊣ F'⊣F'⁻¹
+    ; has-is-equivalence = ∫⊣-is-equivalence has-is-equivalence'
+    }
 ```
 
 ## Total isomorphism {defines="total-isomorphism-of-precategories"}

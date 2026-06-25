@@ -759,7 +759,9 @@ and $b = d$ definitionally.
 ```
 
 <details>
-<summary>Definition of `inverse-unique`{.Agda} by induction.</summary>
+<summary>Definition of `inverse-unique`{.Agda} by induction.
+</summary>
+
 ```agda
   inverse-unique =
     J' (λ a c p → ∀ {b d} (q : b ≡ d) (f : a ≅ b) (g : c ≅ d)
@@ -770,6 +772,7 @@ and $b = d$ definitionally.
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
             λ y → inverse-unique₀
 ```
+
 </details>
 
 This may in turn be used to characterize paths between isomorphisms:
@@ -783,7 +786,9 @@ This may in turn be used to characterize paths between isomorphisms:
 ```
 
 <details>
-<summary>Alternate characterizations to `≅-pathp`{.Agda}.</summary>
+<summary>Alternate characterizations to `≅-pathp`{.Agda}.
+</summary>
+
 ```agda
 ≅-pathp-from
   : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
@@ -797,6 +802,7 @@ This may in turn be used to characterize paths between isomorphisms:
 ≅-path-from : {f g : a ≅ b} → f ._≅_.from ≡ g ._≅_.from → f ≡ g
 ≅-path-from = ≅-pathp-from refl refl
 ```
+
 </details>
 
 <!--

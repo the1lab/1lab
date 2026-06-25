@@ -22,9 +22,9 @@ open Precategory B
 
 # Internal sums
 
-As has been noted before, fibrations are an excellent setting for studying
-logical and type-theoretic phenomena. Internal sums are an example of this;
-serving as the categorical analog of Sigma types.
+As has been noted before, fibrations are an excellent setting for
+studying logical and type-theoretic phenomena. Internal sums are an
+example of this; serving as the categorical analog of Sigma types.
 
 To begin our definition, we first need a notion of a family internal to
 a fibration: this is handled by the [fibration of displayed families].

@@ -103,7 +103,7 @@ hom-sets _over_ any morphism is an equivalence.
 ```agda
   is-ff[] : Type _
   is-ff[] = ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-    →  is-equiv {A = ℰ.Hom[ f ] x' y'} (₁' F')
+    → is-equiv {A = ℰ.Hom[ f ] x' y'} (₁' F')
 
   ff[]→faithful[] : is-ff[] → is-faithful[]
   ff[]→faithful[] ff' =

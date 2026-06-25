@@ -86,7 +86,9 @@ whence we have
 ```
 
 <details>
-<summary>Construction of `F⁻¹⊣F`{.Agda} and `inverse-equivalence`{.Agda}</summary>
+<summary>Construction of `F⁻¹⊣F`{.Agda} and `inverse-equivalence`{.Agda}
+</summary>
+
 ```agda
   F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
@@ -123,6 +125,7 @@ whence we have
     ; counit-iso = λ x → Cat.is-invertible-inverse C (unit-iso _)
     }
 ```
+
 </details>
 
 Overloading terminology, a functor $F : \cC \to \cD$ is an **equivalence
