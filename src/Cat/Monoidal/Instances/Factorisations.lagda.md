@@ -34,7 +34,7 @@ module Cat.Monoidal.Instances.Factorisations {o ℓ} (C : Precategory o ℓ) whe
 ```agda
 private Ff = Factorisations C
 open Cat.Reasoning C
-open Factorisation using (adjust ; annihilate ; collapse ; weave)
+open Factorisation using (elim ; collapse ; weave ; adjust)
 open Make-bifunctor
 ```
 -->
@@ -109,7 +109,7 @@ module _ (F G : Factorisation C) where
 
   _⊗ᶠᶠ_ : Factorisation C
   _⊗ᶠᶠ_ .S₀ (_ , _ , f) = record where
-    mid     = G.Mid (F.ρ→ f)
+    mid     = G.Mid₀ (F.ρ→ f)
     left    = G.λ→ (F.ρ→ f) ∘ F.λ→ f
     right   = G.ρ→ (F.ρ→ f)
     factors = sym (pulll (sym (G.factors _)) ∙ sym (F.factors _))
@@ -121,8 +121,8 @@ module _ (F G : Factorisation C) where
 
     sq₀ = sym (pulll (sym α) ∙ extendr (sym (F .S₁ sq .sq₀)))
 
-  _⊗ᶠᶠ_ .S-id    = ext (G.annihilate (ext (F.annihilate refl ,ₚ refl)))
-  _⊗ᶠᶠ_ .S-∘ f g = ext (G.expand     (ext (F.expand refl ,ₚ refl)))
+  _⊗ᶠᶠ_ .S-id    = ext (G.elim   (ext (F.elim refl ,ₚ refl)))
+  _⊗ᶠᶠ_ .S-∘ f g = ext (G.expand (ext (F.expand refl ,ₚ refl)))
 ```
 
 <details>
@@ -150,7 +150,7 @@ Ff-tensor-functor = make-bifunctor mk where
     ; sq₁ = g .map _ .sq₁
     }
   mk .rmap g .com x y f = Interpolant-pathp (g .comᶠᶠ _)
-  mk .lmap-id {x = X}     = ext λ x y h → annihilate X (ext refl)
+  mk .lmap-id {x = X}     = ext λ x y h → elim X (ext refl)
   mk .lmap-∘  {x = X} f g = ext λ x y h → sym (collapse X (ext (refl ,ₚ idr id)))
   mk .rmap-id    = ext λ x y h → refl
   mk .rmap-∘ f g = ext λ x y h → refl
@@ -237,9 +237,9 @@ Ff-monoidal .unitor-r   = to-natural-iso mk where
   mk .natural X Y f = ext λ x y g → id-comm
 
 Ff-monoidal .associator = assc
-Ff-monoidal .triangle {B = B} = ext λ x y f → elimr refl ∙ annihilate B (ext refl)
+Ff-monoidal .triangle {B = B} = ext λ x y f → elimr refl ∙ elim B (ext refl)
 Ff-monoidal .pentagon {B = B} {C = C} {D = D} = ext λ x y f →
-  eliml (annihilate D (ext refl))
+  eliml (elim D (ext refl))
 ```
 
 </details>
