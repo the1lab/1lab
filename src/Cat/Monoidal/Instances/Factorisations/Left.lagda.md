@@ -70,7 +70,7 @@ module _ {F G : Factorisation C} (Fl : Lwfs-on F) (Gl : Lwfs-on G) where
 -->
 
 ```agda
-    λλ : ∀ {x y} (f : Hom x y) → Hom x (G.Mid (ρᶠ f))
+    λλ : ∀ {x y} (f : Hom x y) → Hom x (G.Mid₀ (ρᶠ f))
     λλ f = λᵍ (ρᶠ f) ∘ λᶠ f
 
     λ→λλ : ∀ {x y} (f : Hom x y) → Homᵃ C (λᶠ f) (λλ f)

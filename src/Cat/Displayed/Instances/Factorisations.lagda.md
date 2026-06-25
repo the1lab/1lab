@@ -5,6 +5,7 @@ open import Cat.Displayed.Section
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 ```
 -->
@@ -215,7 +216,7 @@ module Factorisation {o ℓ} {C : Precategory o ℓ} (fac : Factorisation C) whe
 
   module _ {X Y : ⌞ C ⌟} (f : Hom X Y) where
     open Splitting (Section.S₀ fac (X , Y , f))
-      renaming (mid to Mid ; left to λ→ ; right to ρ→)
+      renaming (mid to Mid₀ ; left to λ→ ; right to ρ→)
       public
 
   module _ {u v w x : ⌞ C ⌟} {f : Hom u v} {g : Hom w x} (sq : Homᵃ C f g) where
@@ -228,44 +229,20 @@ module Factorisation {o ℓ} {C : Precategory o ℓ} (fac : Factorisation C) whe
 dependent type, we can not immediately reuse the functor reasoning
 combinators for functorial factorisations.
 
-Adapting them to this case is pretty straightforward, though, so here
-are the ones we'll need.
+However, we can define a functor that assigns each arrow to its midpoint
+and re-use the combinators for *that* functor.
 </summary>
 
 ```agda
-  adjust
-    : ∀ {u v w x} {f : Hom u v} {g : Hom w x} {sq sq' : Homᵃ C f g}
-    → sq ≡ sq'
-    → S₁ sq .map ≡ S₁ sq' .map
-  adjust p = apd (λ i → map) (ap S₁ p)
+  Mid : Functor (Arr C) C
+  Mid = record where
+    F₀ x = Mid₀ (x .snd .snd)
+    F₁ f = S₁ f .map
+    F-id    = apd (λ i → map) S-id
+    F-∘ f g = apd (λ i → map) (S-∘ _ _)
 
-  weave
-    : ∀ {u v w x w' x' y z} {f : Hom u v} {g : Hom w x} {g' : Hom w' x'} {h : Hom y z}
-    → {sq : Homᵃ C g h}  {sq' : Homᵃ C f g}
-    → {tq : Homᵃ C g' h} {tq' : Homᵃ C f g'}
-    → sq Arr.∘ sq' ≡ tq Arr.∘ tq'
-    → S₁ sq .map ∘ S₁ sq' .map
-    ≡ S₁ tq .map ∘ S₁ tq' .map
-  weave p = apd (λ i → map) (sym (S-∘ _ _)) ∙∙ adjust p ∙∙ apd (λ i → map) (S-∘ _ _)
-
-  collapse
-    : ∀ {u v w x y z} {f : Hom u v} {g : Hom w x} {h : Hom y z}
-    → {sq : Homᵃ C g h} {sq' : Homᵃ C f g} {tq : Homᵃ C f h}
-    → sq Arr.∘ sq' ≡ tq
-    → S₁ sq .map ∘ S₁ sq' .map
-    ≡ S₁ tq .map
-  collapse p = apd (λ i → map) (sym (S-∘ _ _)) ∙ adjust p
-
-  expand
-    : ∀ {u v w x y z} {f : Hom u v} {g : Hom w x} {h : Hom y z}
-    → {sq : Homᵃ C g h} {sq' : Homᵃ C f g} {tq : Homᵃ C f h}
-    → tq ≡ sq Arr.∘ sq'
-    → S₁ tq .map
-    ≡ S₁ sq .map ∘ S₁ sq' .map
-  expand p = sym (collapse (sym p))
-
-  annihilate : ∀ {u v} {f : Hom u v} {sq : Homᵃ C f f} → sq ≡ Arr.id → S₁ sq .map ≡ id
-  annihilate p = adjust p ∙ apd (λ i → map) S-id
+  module Mid = Func Mid
+  open Mid using (elim ; expand ; weave ; collapse) renaming (⟨_⟩ to adjust) public
 ```
 
 </details>
@@ -322,24 +299,24 @@ $X \xto{f} Y$ the square
 
 ```agda
   L : Functor (Arr C) (Arr C)
-  L .F₀ (X , Y , f) = X , Mid f , λ→ f
+  L .F₀ (X , Y , f) = X , Mid₀ f , λ→ f
   L .F₁ {X , Z , f} {X' , Z' , f'} sq = record
     { top = sq .top
     ; bot = S₁ sq .map
     ; com = S₁ sq .sq₀
     }
-  L .F-id    = ext (refl ,ₚ annihilate refl)
-  L .F-∘ f g = ext (refl ,ₚ expand refl)
+  L .F-id    = ext (refl ,ₚ Mid.elim refl)
+  L .F-∘ f g = ext (refl ,ₚ Mid.expand refl)
 
   R : Functor (Arr C) (Arr C)
-  R .F₀ (X , Y , f) = Mid f , Y , ρ→ f
+  R .F₀ (X , Y , f) = Mid₀ f , Y , ρ→ f
   R .F₁ {X , Z , f} {X' , Z' , f'} sq = record
     { top = S₁ sq .map
     ; bot = sq .bot
     ; com = S₁ sq .sq₁
     }
-  R .F-id    = ext (annihilate refl ,ₚ refl)
-  R .F-∘ f g = ext (expand refl     ,ₚ refl)
+  R .F-id    = ext (Mid.elim refl   ,ₚ refl)
+  R .F-∘ f g = ext (Mid.expand refl ,ₚ refl)
 ```
 
 <!--
@@ -392,7 +369,7 @@ module
 
     record Hack : Type (o ⊔ ℓ) where
       field
-        mapᶠᶠ : ∀ {x y} (g : Hom x y) → Hom (X.Mid g) (Y.Mid g)
+        mapᶠᶠ : ∀ {x y} (g : Hom x y) → Hom (X.Mid₀ g) (Y.Mid₀ g)
 
         sq₀ᶠᶠ : ∀ {x y} (g : Hom x y) → Y.λ→ g ≡ mapᶠᶠ g ∘ X.λ→ g
         sq₁ᶠᶠ : ∀ {x y} (g : Hom x y) → Y.ρ→ g ∘ mapᶠᶠ g ≡ X.ρ→ g
