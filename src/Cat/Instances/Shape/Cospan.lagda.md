@@ -1,6 +1,8 @@
 <!--
 ```agda
+open import Cat.Instances.Localisation
 open import Cat.Diagram.Terminal
+open import Cat.Connected
 open import Cat.Prelude
 open import Cat.Finite
 
@@ -14,7 +16,6 @@ open import Data.Fin
 ```agda
 module Cat.Instances.Shape.Cospan where
 ```
-
 
 # The "cospan" category
 
@@ -118,6 +119,15 @@ instance
   cs-c cs-a → auto
   cs-c cs-b → auto
   cs-c cs-c → auto
+
+·→·←·-connected : ∀ {a b} → is-connected-cat (·→·←· {a} {b})
+·→·←·-connected = mk-connected-cat cs-c λ where
+  cs-a → zag _ _ []
+  cs-b → zag _ _ []
+  cs-c → []
+
+·←·→·-connected : ∀ {a b} → is-connected-cat (·←·→· {a} {b})
+·←·→·-connected = ^op-connected ·→·←·-connected
 
 Terminal-·→·←· : ∀ {a b} → Terminal (·→·←· {a} {b})
 Terminal-·→·←· .Terminal.top = cs-c
