@@ -123,6 +123,16 @@ We can then use this data to construct a category.
   Wide sub .assoc _ _ _ = ext $ C.assoc _ _ _
 ```
 
+<!--
+```agda
+  Wide-subcat^op : Wide-subcat C ℓ → Wide-subcat (C ^op) ℓ
+  Wide-subcat^op W .P = W .P
+  Wide-subcat^op W .P-prop = W .P-prop
+  Wide-subcat^op W .P-id = W .P-id
+  Wide-subcat^op W .P-∘ f' g' = W .P-∘ g' f'
+```
+-->
+
 ## From split essentially surjective inclusions
 
 There is another way of representing wide subcategories: By giving a

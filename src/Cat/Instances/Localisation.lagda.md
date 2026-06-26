@@ -573,6 +573,12 @@ Free-groupoid-counit
   → is-pregroupoid C
   → Functor (Free-groupoid C) C
 Free-groupoid-counit C-grpd = Localisation-fold _ _ λ f _ → C-grpd f
+
+module _ {oc ℓc} (C : Precategory oc ℓc) where
+  Free-groupoid^op : Functor (Free-groupoid C) (Free-groupoid (C ^op) ^op)
+  Free-groupoid^op = Localisation-univ-groupoid
+    (^op-pregroupoid _ (Free-groupoid-is-groupoid _))
+    (opFʳ (Localise _ _))
 ```
 -->
 

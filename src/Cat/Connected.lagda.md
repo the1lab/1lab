@@ -105,10 +105,19 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     where open Terminal term
 ```
 
-We now show that this definition is equivalent to asking for the set of
-[[connected components]] $\pi_0(\cC)$ to be [[contractible]].  The
-forward implication easily follows from the elimination principle of
-zigzags into sets:
+The [[opposite]] of a connected category is again connected.
+
+```agda
+  ^op-connected : is-connected-cat C → is-connected-cat (C ^op)
+  ^op-connected conn .point = conn .point
+  ^op-connected conn .path x y =
+    Free-groupoid^op C .F₁ <$> conn .path y x
+```
+
+We now show that this definition of connectedness is equivalent to asking
+for the set of [[connected components]] $\pi_0(\cC)$ to be
+[[contractible]]. The forward implication easily follows from the
+elimination principle of zigzags into sets:
 
 ```agda
   connected→π₀-is-contr : is-connected-cat C → is-contr (π₀ ʻ C)
