@@ -1,11 +1,14 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Localisation
 open import Cat.Instances.Slice
+open import Cat.Connected
 open import Cat.Prelude
 
 open import Data.Sum
 
+open is-connected-groupoid
 open Precategory
 open Functor
 open /-Obj
@@ -185,3 +188,22 @@ module _ {o ℓ o' ℓ'} {J : Precategory o ℓ} {C : Precategory o' ℓ'} where
   from-▹→to-slice F .F-∘ f g = ext (F .F-∘ _ _)
 ```
 </details>
+
+## The join of categories preserves connectedness
+
+The join of two [[connected categories]] is again connected.
+
+```agda
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
+  ⋆-connected
+    : is-connected-cat C
+    → is-connected-cat D
+    → is-connected-cat (C ⋆ D)
+  ⋆-connected C-conn D-conn .point = inl <$> C-conn .point
+  ⋆-connected C-conn D-conn .path (inl c) (inl c') =
+    Free-groupoid-map ⋆-inl .F₁ <$> C-conn .path c c'
+  ⋆-connected C-conn D-conn .path (inr d) (inr d') =
+    Free-groupoid-map ⋆-inr .F₁ <$> D-conn .path d d'
+  ⋆-connected C-conn D-conn .path (inl c) (inr d) = inc (zig _ [])
+  ⋆-connected C-conn D-conn .path (inr d) (inl c) = inc (zag _ _ [])
+```
