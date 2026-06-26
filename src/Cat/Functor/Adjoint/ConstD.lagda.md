@@ -1,13 +1,16 @@
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Properties
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Adjoint.Cofree
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Functor.Constant
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Duals
+open import Cat.Connected
 open import Cat.Prelude hiding (J)
 
 import Cat.Functor.Reasoning
@@ -89,20 +92,20 @@ lim→const-cofree {F} lim = record where
 ```
 -->
 
-## The (Co)limit functor
+## The (co)limit functor
 
 Any functor which is a right (resp: left) colimit to $\Delta_J$ computes
 as (co)limits.
 
 ```agda
 const-adj→has-colimits-of-shape
-  : ∀ {J : Precategory o' ℓ'} {Colim} → (Colim ⊣ ConstD {C = C} {J = J})
+  : ∀ {J : Precategory o' ℓ'} {Colim} → Colim ⊣ ConstD {C = C} {J = J}
   → (F : Functor J C) → Colimit F
 const-adj→has-colimits-of-shape has-adj =
   const-free→colim ⊙ left-adjoint→free-objects has-adj
 
 const-adj→has-limits-of-shape
-  : ∀ {J : Precategory o' ℓ'} {Lim} → (ConstD {C = C} {J = J} ⊣ Lim)
+  : ∀ {J : Precategory o' ℓ'} {Lim} → ConstD {C = C} {J = J} ⊣ Lim
   → (F : Functor J C) → Limit F
 const-adj→has-limits-of-shape has-adj =
   const-cofree→lim ⊙ right-adjoint→cofree-objects has-adj
@@ -117,4 +120,50 @@ has-const-adjs→is-cocomplete adjs = const-adj→has-colimits-of-shape (adjs .s
 
 has-const-adjs→is-complete : ∀ {o' ℓ'} → ({J : Precategory o' ℓ'} → Σ[ Lim ∈ Functor _ C ] ConstD {C = C} {J = J} ⊣ Lim) → is-complete o' ℓ' C
 has-const-adjs→is-complete adjs = const-adj→has-limits-of-shape (adjs .snd)
+```
+
+## Connected (co)limits of constant diagrams
+
+If $\cJ$ is a [[connected category]], then the diagonal functor $\cC \to
+\cC^\cJ$ is [[fully faithful]]: all components of a natural
+transformation between constant diagrams of a connected shape are forced
+to be the same by naturality.
+
+```agda
+connected→ConstD-ff
+  : is-connected-cat J
+  → is-fully-faithful (ConstD {C = C} {J = J})
+connected→ConstD-ff {J = J} conn {c} {d} = is-iso→is-equiv record where
+  module conn = is-connected-groupoid conn
+
+  go : (α : Const c => Const d) → ∥ ⌞ J ⌟ ∥ → Hom c d
+  go α = connected-∥-∥-rec! conn (α .η) λ f →
+    sym (idl _) ∙∙ sym (α .is-natural _ _ f) ∙∙ idr _
+
+  from α = go α conn.point
+  rinv α = ext λ j → ap (go α) (squash conn.point (inc j))
+  linv f = case conn.point return (λ j → go (constⁿ f) j ≡ f) of λ j → refl
+```
+
+By the results above, this implies that the (co)limit of a connected
+constant diagram at some object $X$ is just $X$ itself.
+
+```agda
+connected→constant-limit
+  : is-connected-cat J
+  → (X : ⌞ C ⌟)
+  → is-limit {J = J} {C = C} (Const X) X idnt
+connected→constant-limit conn X = generalize-limitp
+  (Limit.has-limit (const-cofree→lim
+    (ff→cofree-object ConstD (connected→ConstD-ff conn) X)))
+  refl
+
+connected→constant-colimit
+  : is-connected-cat J
+  → (X : ⌞ C ⌟)
+  → is-colimit {J = J} {C = C} (Const X) X idnt
+connected→constant-colimit conn X = generalize-colimitp
+  (Colimit.has-colimit (const-free→colim
+    (ff→free-object ConstD (connected→ConstD-ff conn) X)))
+  refl
 ```

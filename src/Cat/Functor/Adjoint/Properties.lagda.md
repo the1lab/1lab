@@ -4,6 +4,7 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Adjoint.Cofree
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Compose
@@ -226,3 +227,45 @@ Dual results hold for full right adjoints and split monos.
       R-adjunct.injective L⊣R (counit.is-natural _ _ _ ∙ D.cancelr r.is-retract)
 ```
 -->
+
+## Full and faithful functors have (co)free objects
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  (F : Functor C D)
+  (ff : is-fully-faithful F)
+  where
+  private
+    module D = Cat.Reasoning D
+    module F = Cat.Functor.Reasoning F
+    module ff {x} {y} = Equiv (_ , ff {x} {y})
+```
+-->
+
+A useful result is that if $F : \cC \to \cD$ is a [[fully faithful]]
+functor, then for any $x : \cC$, $x$ is both a [[free object]] and a
+[[cofree object]] for $F$ over $Fx$.
+
+In particular, if $F$ has an adjoint $G$, this means that we have
+$GFx \iso x$ for all $x$, which is to be expected by the theory of
+[[reflective subcategories]].
+
+```agda
+  ff→free-object : ∀ x → Free-object F (F.₀ x)
+  ff→free-object x .Free-object.free = x
+  ff→free-object x .Free-object.unit = D.id
+  ff→free-object x .Free-object.fold f = ff.from f
+  ff→free-object x .Free-object.commute = D.idr _ ∙ ff.ε _
+  ff→free-object x .Free-object.unique g p = ff.adjunctl (D.intror refl ∙ p)
+
+  ff→cofree-object : ∀ x → Cofree-object F (F.₀ x)
+  ff→cofree-object x .Cofree-object.cofree = x
+  ff→cofree-object x .Cofree-object.counit = D.id
+  ff→cofree-object x .Cofree-object.unfold f = ff.from f
+  ff→cofree-object x .Cofree-object.commute = D.idl _ ∙ ff.ε _
+  ff→cofree-object x .Cofree-object.unique g p = ff.adjunctl (D.introl refl ∙ p)
+```
