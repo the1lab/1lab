@@ -206,7 +206,7 @@ $j$ doesn't matter, and there is at least one object by assumption.
     where
       module D = Functor D
       module L = Limit L
-      module conn = is-connected-cat conn
+      module conn = is-connected-groupoid conn
 
       proj : J.Ob → C.Hom L.apex A
       proj j = D.₀ j .map C.∘ L.ψ j

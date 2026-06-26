@@ -6,7 +6,7 @@ open import Cat.Instances.Localisation
 open import Cat.Connected
 open import Cat.Prelude
 
-open is-connected-cat
+open is-connected-groupoid
 open Precategory
 ```
 -->
@@ -42,6 +42,6 @@ module _ {ℓ} {M : Type ℓ} (mm : Monoid-on M) where
   B .assoc _ _ _ = mm.associative
 
   B-is-connected : is-connected-cat B
-  B-is-connected .point      = inc tt
-  B-is-connected .zigzag _ _ = inc []
+  B-is-connected .point    = inc tt
+  B-is-connected .path _ _ = inc []
 ```
