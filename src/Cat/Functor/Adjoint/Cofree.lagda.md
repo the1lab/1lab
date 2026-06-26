@@ -25,7 +25,7 @@ module Cat.Functor.Adjoint.Cofree
   {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
 ```
 
-# Cofree objects {defines="cofree-objects"}
+# Cofree objects {defines="cofree-object"}
 
 Cofree objects are formally dual to [[free objects]], as opposed to
 [[coffee objects|torus]].
