@@ -134,7 +134,7 @@ instance
 ```
 -->
 
-## Opposites {defines="opposite-category"}
+## Opposites {defines="opposite-category opposite"}
 
 A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
