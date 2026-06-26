@@ -1,8 +1,10 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence.Path
+open import Cat.Instances.Localisation
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Constant
+open import Cat.Connected
 open import Cat.Prelude
 open import Cat.Finite
 
@@ -112,6 +114,11 @@ instance
 
 ·⇉·-finite : is-finite-precategory ·⇉·
 ·⇉·-finite = finite-cat-hom λ a b → auto
+
+·⇉·-connected : is-connected-cat ·⇉·
+·⇉·-connected = mk-connected-cat false λ where
+  false → []
+  true  → zig inl []
 ```
 -->
 
