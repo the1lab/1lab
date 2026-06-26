@@ -409,7 +409,7 @@ localisation back to $\cC$:
   Localisation-fold invs = Localisation-univ Id invs
 ```
 
-## Total localisations {defines="free-groupoid"}
+## Total localisations {defines="free-groupoid total-localisation"}
 
 <!--
 ```agda

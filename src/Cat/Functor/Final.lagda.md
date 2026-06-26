@@ -17,7 +17,7 @@ open import Cat.Prelude
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
 
-open is-connected-cat
+open is-connected-groupoid
 open Precategory
 open Congruence
 open Functor
@@ -95,7 +95,7 @@ $a \rightarrow a_0 \leftarrow b$:
 
 <!--
 ```agda
-  module is-final (fin : is-final) (d : 𝒟.Ob) = is-connected-cat (fin d)
+  module is-final (fin : is-final) (d : 𝒟.Ob) = is-connected-groupoid (fin d)
 
   module
     _ {o'' ℓ''} {ℰ : Precategory o'' ℓ''} {D : Functor 𝒟 ℰ} (final : is-final)
@@ -152,7 +152,7 @@ the following diagram:
         extend-const
           : ∀ d (f g : Ob (d ↙ F))
           → extend d f ≡ extend d g
-        extend-const d f g = case fin.zigzag d f g of
+        extend-const d f g = case fin.path d f g of
           Meander-rec-≡ (el! _) (extend d) (extend-const1 d)
 ```
 
@@ -302,7 +302,7 @@ implies the existence of zigzags, meditate on the following diagram:
 ```agda
   module _ (𝒞-grpd : is-pregroupoid 𝒞) (𝒟-grpd : is-pregroupoid 𝒟) where
     full+eso→final : is-full F → is-eso F → is-final
-    full+eso→final full eso d .zigzag f g = do
+    full+eso→final full eso d .path f g = do
       z , p ← full (g .map 𝒟.∘ 𝒟-grpd (f .map) .inv)
       pure $ zig
         (↓hom {bot = z}
@@ -321,7 +321,7 @@ this zigzag to a single morphism $z : x \to y$ such that $Fz = f$.
 ```agda
     final→full+eso : is-final → is-full F × is-eso F
     final→full+eso fin .fst {x} {y} f = do
-      zs ← fin (F.₀ x) .zigzag (↓obj 𝒟.id) (↓obj f)
+      zs ← fin (F.₀ x) .path (↓obj 𝒟.id) (↓obj f)
       let z = Free-groupoid-counit
             (↓-is-pregroupoid _ _ ⊤Cat-is-pregroupoid 𝒞-grpd)
             .F₁ zs
@@ -400,8 +400,8 @@ zigzag between $x$ and $y$ in $c \swarrow G \circ F$.  Thus we have to
 `refine`{.Agda} our zigzag step by step, using the finality of $F$.
 
 ```agda
-  F∘-is-final c .zigzag f g = do
-    gz ← gf.zigzag c (↓obj (f .map)) (↓obj (g .map))
+  F∘-is-final c .path f g = do
+    gz ← gf.path c (↓obj (f .map)) (↓obj (g .map))
     fz ← refine gz (↓obj 𝒟.id) (↓obj 𝒟.id)
     pure (subst₂ (Meander (c ↙ G F∘ F)) ↙>-id ↙>-id fz)
 ```
@@ -438,7 +438,7 @@ That this is a congruence is easily checked using the finality of $F$.
 
 ```agda
       R .reflᶜ {f} f' g' =
-        Free-groupoid-map (↙-compose f) .F₁ <$> ff.zigzag (f .cod) f' g'
+        Free-groupoid-map (↙-compose f) .F₁ <$> ff.path (f .cod) f' g'
       R ._∙ᶜ_ {f} {g} {h} fg gh f' h' = do
         g' ← ff.point (g .cod)
         ∥-∥-map₂ _++_ (gh g' h') (fg f' g')
@@ -453,7 +453,7 @@ morphism are related, which again involves the connectedness of $x
 ```agda
       refine1 : ∀ {f g} → Hom (c ↙ G) f g → R ._∼_ f g
       refine1 {f} {g} h f' g' = do
-        z ← ff.zigzag (f .cod) f' (↓obj (g' .map 𝒟.∘ h .bot))
+        z ← ff.path (f .cod) f' (↓obj (g' .map 𝒟.∘ h .bot))
         let
           z' : Meander (c ↙ G F∘ F) _ _
           z' = Free-groupoid-map (↙-compose f) .F₁ z

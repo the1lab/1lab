@@ -5,9 +5,11 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Localisation
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
+open import Cat.Groupoid
 open import Cat.Prelude
 
-open Precategory
+import Cat.Morphism
+
 open Congruence
 open Functor
 ```
@@ -19,67 +21,88 @@ module Cat.Connected where
 
 # Connected categories {defines="connected-category"}
 
-A [[precategory]] is **connected** if it has exactly one [[connected
-component]]. Explicitly, this means that it has at least one object, and
-that every two objects can be connected by a finite [[zigzag]] of
-morphisms.
+We can straightforwardly adapt the definition of [[connectedness via
+propositional truncations]] from types ($\infty$-groupoids) to
+$1$-[[pregroupoids]]:
 
 ```agda
-record is-connected-cat {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
+record is-connected-groupoid {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
+  open Precategory C
   field
-    point : ∥ Ob C ∥
-    zigzag : ∀ x y → ∥ Meander C x y ∥
+    point : ∥ Ob ∥
+    path : ∀ x y → ∥ Hom x y ∥
 ```
-
-Notice the similarity with the notion of [[connectedness]] in homotopy
-type theory, particularly its formulation [[in terms of propositional
-truncations|connectedness-via-propositional-truncation]]: this
-definition is essentially saying that the category has a connected
-*homotopy type*. In particular, the propositional truncations are
-important: without them, we could not prove that the
-[[delooping|delooping category]] of the group of [[integers]], seen as a
-[[univalent category]],^[Either via the [[Rezk completion]], or
-directly, as the [[discrete category]] on the groupoid $S^1$.] is
-connected, for the same reason that there is no function of type $(x\,y
-: S^1) \to x \equiv y$ in the [[circle]].
 
 <!--
 ```agda
-open is-connected-cat
+open is-connected-groupoid
 
-private unquoteDecl eqv = declare-record-iso eqv (quote is-connected-cat)
+private unquoteDecl eqv = declare-record-iso eqv (quote is-connected-groupoid)
 
-unquoteDecl hl-is-connected-cat = declare-record-hlevel 1 hl-is-connected-cat (quote is-connected-cat)
+unquoteDecl hl-is-connected-groupoid = declare-record-hlevel 1 hl-is-connected-groupoid (quote is-connected-groupoid)
 ```
 -->
 
-As a simple example, a category is connected if it has an initial or
-terminal object. In particular, the [[terminal category]] is
-connected.^[But the [[initial category]] isn't: even though any of its
-points *would* be connected by a zigzag, there are no such points.]
+Note that this definition can be stated without requiring $\cC$ to be a
+groupoid; however, for general categories, it is too strong: for
+example, we would like the [[walking arrow]] to be connected, but there
+is no morphism from $1$ to $0$.
+
+Instead, we say that a [[precategory]] is **connected** if its [[total
+localisation]] is a connected groupoid; in other words, if it has
+exactly one [[connected component]]. Explicitly, this means that it has
+at least one object, and that every two objects can be connected by a
+finite [[zigzag]] of morphisms.
+
+```agda
+is-connected-cat : ∀ {o ℓ} (C : Precategory o ℓ) → Type (o ⊔ ℓ)
+is-connected-cat C = is-connected-groupoid (Localisation C (Total C))
+```
+
+We define some helpers for proving that a concrete category $\cC$ is
+connected: it suffices to exhibit an object $c : \cC$ such that any
+other object $d$ is connected to $c$ by a zigzag (compare this with
+[[pointed connected types]]!).
+
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} (gpd : is-pregroupoid C) where
+  open Cat.Morphism C
+
+  mk-connected-groupoid
+    : (c : Ob) → (∀ x → Hom c x)
+    → is-connected-groupoid C
+  mk-connected-groupoid c paths .point = inc c
+  mk-connected-groupoid c paths .path x y =
+    inc (paths y ∘ gpd (paths x) .is-invertible.inv)
+
+mk-connected-cat
+  : ∀ {o ℓ} {C : Precategory o ℓ} (open Precategory C)
+  → (c : Ob) → (∀ x → Meander C c x)
+  → is-connected-cat C
+mk-connected-cat {C = C} =
+  mk-connected-groupoid (Free-groupoid-is-groupoid C)
+```
+
+As a simple example, any category with an initial or terminal object is
+connected. In particular, the [[terminal category]] is connected.^[But
+the [[initial category]] isn't: even though any of its points *would* be
+connected by a zigzag, there are no such points.]
 
 ```agda
 ⊤Cat-is-connected : is-connected-cat ⊤Cat
-⊤Cat-is-connected .point      = inc tt
-⊤Cat-is-connected .zigzag _ _ = inc []
+⊤Cat-is-connected = mk-connected-cat _ λ _ → []
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   private module C = Precategory C
 
   initial→connected : Initial C → is-connected-cat C
-  initial→connected init = conn where
-    open Initial init
-    conn : is-connected-cat C
-    conn .point = inc bot
-    conn .zigzag x y = inc (zig ¡ (zag ¡ tt []))
+  initial→connected init = mk-connected-cat bot λ _ → zig ¡ []
+    where open Initial init
 
   terminal→connected : Terminal C → is-connected-cat C
-  terminal→connected term = conn where
-    open Terminal term
-    conn : is-connected-cat C
-    conn .point = inc top
-    conn .zigzag x y = inc (zag ! tt (zig ! []))
+  terminal→connected term = mk-connected-cat top λ _ → zag ! _ []
+    where open Terminal term
 ```
 
 We now show that this definition is equivalent to asking for the set of
@@ -90,7 +113,7 @@ zigzags into sets:
 ```agda
   connected→π₀-is-contr : is-connected-cat C → is-contr (π₀ ʻ C)
   connected→π₀-is-contr conn = case conn .point of λ x → contr (inc x)
-    (elim! λ y → rec! (Meander-rec-≡ (π₀ C) inc quot) (conn .zigzag x y))
+    (elim! λ y → rec! (Meander-rec-≡ (π₀ C) inc quot) (conn .path x y))
 ```
 
 Showing the converse implication is not as straightforward: in order to
@@ -127,7 +150,7 @@ a zigzag.
 
     conn : is-connected-cat C
     conn .point = rec! inc (π₀-contr .centre)
-    conn .zigzag x y = effective R
+    conn .path x y = effective R
       (is-contr→is-prop (Iso→is-hlevel 0 is π₀-contr) (inc x) (inc y))
 
   connected≃π₀-is-contr : is-connected-cat C ≃ is-contr (π₀ ʻ C)
@@ -149,6 +172,6 @@ connected by a morphism.
     → (∀ {x y} (f : C.Hom x y) → r x ≡ r y)
     → ∥ C.Ob ∥ → X
   connected-∥-∥-rec! conn r r-const = ∥-∥-rec-set! r λ x y →
-    case conn .zigzag x y of
+    case conn .path x y of
       Meander-rec-≡ (el! _) r r-const
 ```
