@@ -8,6 +8,14 @@ open import 1Lab.Type
 module Meta.Idiom where
 ```
 
+<!--
+```agda
+private variable
+  ℓ ℓ' : Level
+  A B C : Type ℓ
+```
+-->
+
 # Meta: Idiom
 
 The `Idiom`{.Agda} class, probably better known as `Applicative` (from
@@ -33,14 +41,14 @@ argument to the `eff`{.Agda} constructor.
 record Map (M : Effect) : Typeω where
   private module M = Effect M
   field
-    map : ∀ {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → M.₀ A → M.₀ B
+    map : (A → B) → M.₀ A → M.₀ B
 
 record Idiom (M : Effect) : Typeω where
   private module M = Effect M
   field
     ⦃ Map-idiom ⦄ : Map M
-    pure  : ∀ {ℓ} {A : Type ℓ} → A → M.₀ A
-    _<*>_ : ∀ {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'} → M.₀ (A → B) → M.₀ A → M.₀ B
+    pure  : A → M.₀ A
+    _<*>_ : M.₀ (A → B) → M.₀ A → M.₀ B
 
   infixl 4 _<*>_
 
@@ -49,21 +57,20 @@ open Map   ⦃ ... ⦄ public
 
 infixl 4 _<$>_ _<&>_
 
-_<$>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
-      → (A → B) → M .Effect.₀ A → M .Effect.₀ B
+private variable
+  M N : Effect
+
+_<$>_ : ⦃ _ : Map M ⦄ → (A → B) → M .Effect.₀ A → M .Effect.₀ B
 f <$> x = map f x
 
-_<$_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
-      → B → M .Effect.₀ A → M .Effect.₀ B
+_<$_ : ⦃ _ : Map M ⦄ → B → M .Effect.₀ A → M .Effect.₀ B
 c <$ x = map (λ _ → c) x
 
-_<&>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
-      → M .Effect.₀ A → (A → B) → M .Effect.₀ B
+_<&>_ : ⦃ _ : Map M ⦄ → M .Effect.₀ A → (A → B) → M .Effect.₀ B
 x <&> f = map f x
 
 module _
   {M N : Effect} (let module M = Effect M; module N = Effect N) ⦃ _ : Map M ⦄ ⦃ _ : Map N ⦄
-  {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'}
   where
 
   _<<$>>_ : (A → B) → M.₀ (N.₀ A) → M.₀ (N.₀ B)
@@ -72,13 +79,16 @@ module _
   _<<&>>_ : M.₀ (N.₀ A) → (A → B) → M.₀ (N.₀ B)
   x <<&>> f = f <<$>> x
 
-when : ∀ {M : Effect} (let module M = Effect M) ⦃ app : Idiom M ⦄
-     → Bool → M.₀ ⊤ → M.₀ ⊤
+when : (let module M = Effect M) ⦃ app : Idiom M ⦄ → Bool → M.₀ ⊤ → M.₀ ⊤
 when true  t = t
 when false _ = pure tt
 
-unless : ∀ {M : Effect} (let module M = Effect M) ⦃ app : Idiom M ⦄
-       → Bool → M.₀ ⊤ → M.₀ ⊤
+unless : (let module M = Effect M) ⦃ app : Idiom M ⦄ → Bool → M.₀ ⊤ → M.₀ ⊤
 unless false t = t
 unless true  _ = pure tt
+
+liftA2 : (let module M = Effect M) ⦃ app : Idiom M ⦄
+       → (A → B → C) →  M.₀ A → M.₀ B → M.₀ C
+liftA2 f x = (_<*>_) (map f x)
+
 ```

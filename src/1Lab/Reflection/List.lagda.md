@@ -184,12 +184,11 @@ not-member! {not-mem = not-mem} = not-mem
 
 ```agda
 private
-  member-example : true ∈ [ false , true , false , true , false ]
+  member-example : true ∈ [ false , true , false , true , false ]L
   member-example = member!
-
-  not-member-example : true ∉ [ false , false , false ]
+  not-member-example : true ∉ [ false , false , false ]L
   not-member-example = not-member!
 
-  unique-member-example : is-contr (true ∈ [ false , true , false , false ])
+  unique-member-example : is-contr (true ∈ [ false , true , false , false ]L)
   unique-member-example = unique-member!
 ```

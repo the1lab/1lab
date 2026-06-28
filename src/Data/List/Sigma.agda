@@ -49,11 +49,11 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
       p b q q'
 
     rem₁ : ∀ {x a} (ys : ∀ a → List (B a)) (b : B _) (p : a ≡ᵢ x) → fibre' (ys x) p b → fibreᵢ (ys a !_) b
-    rem₁ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.to (rem₀ ys b p ix) r where
+    rem₁ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.to (rem₀ ys b p ix {q} {q'} ) r where
       q' = transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p (~ i)))) q
 
     rem₂ : ∀ {x a} (ys : ∀ a → List (B a)) (b : B _) (p : a ≡ᵢ x) → fibreᵢ (ys a !_) b → fibre' (ys x) p b
-    rem₂ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.from (rem₀ ys b p ix) r where
+    rem₂ {x = x} {a} ys b p (fin ix ⦃ q ⦄ , r) = fin ix ⦃ q' ⦄ , Equiv.from (rem₀ ys b p ix {q'} {q}) r where
       q' = transport (λ i → suc ix Nat.≤ length (ys (Id≃path.to p i))) q
 
   sigma-member : ∀ {a b xs ys} → a ∈ₗ xs → b ∈ₗ ys a → (a , b) ∈ₗ sigma xs ys
