@@ -41,6 +41,7 @@ open Cr._≅_
 open _=>_ renaming (op to opⁿ)
 
 module _ (C : Prebicategory o h ℓ) where
+  open make-natural-iso
   open Prebicategory C
   private
     module C  = Br C
@@ -77,18 +78,18 @@ $\bicat{C}$, and vice versa.
 ```agda
   _^op .Pb.unitor-l = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta           = ρ→
-    ni .make-natural-iso.inv           = ρ←
-    ni .make-natural-iso.eta∘inv _     = C.ρ≅ .invl
-    ni .make-natural-iso.inv∘eta _     = C.ρ≅ .invr
-    ni .make-natural-iso.natural _ _ _ = sym $ ρ→nat _
+    ni .eta           = ρ→
+    ni .inv           = ρ←
+    ni .eta∘inv _     = C.ρ≅ .invl
+    ni .inv∘eta _     = C.ρ≅ .invr
+    ni .natural _ _ _ = sym $ ρ→nat _
   _^op .Pb.unitor-r = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta           = λ→
-    ni .make-natural-iso.inv           = λ←
-    ni .make-natural-iso.eta∘inv _     = C.λ≅ .invl
-    ni .make-natural-iso.inv∘eta _     = C.λ≅ .invr
-    ni .make-natural-iso.natural _ _ _ = sym $ λ→nat _
+    ni .eta           = λ→
+    ni .inv           = λ←
+    ni .eta∘inv _     = C.λ≅ .invl
+    ni .inv∘eta _     = C.λ≅ .invr
+    ni .natural _ _ _ = sym $ λ→nat _
 ```
 
 Finally, the associator in $\bicat{C}\op$ is given by the inverse of the
@@ -97,10 +98,10 @@ associator of $\bicat{C}$.
 ```agda
   _^op .Pb.associator = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta _         = α← _
-    ni .make-natural-iso.inv _         = α→ _
-    ni .make-natural-iso.eta∘inv _     = C.α≅ .invr
-    ni .make-natural-iso.inv∘eta _     = C.α≅ .invl
+    ni .eta _     = α← _
+    ni .inv _     = α→ _
+    ni .eta∘inv _ = C.α≅ .invr
+    ni .inv∘eta _ = C.α≅ .invl
 ```
 
 <details>
@@ -111,7 +112,7 @@ expects.
 </summary>
 
 ```agda
-    ni .make-natural-iso.natural _ _ _ =
+    ni .natural _ _ _ =
          CH.car (CH.cdr (ap (C._◀ _) (compose.rlmap _ _)) ∙ compose.rlmap _ _)
       ∙∙ sym (α←nat _ _ _)
       ∙∙ CH.cdr (CH.cdr (ap (_ C.▶_) (compose.lrmap _ _)) ∙ compose.lrmap _ _)
@@ -164,24 +165,24 @@ opposite direction, which we achieve by taking their inverses.
 ```agda
   _^co .Pb.unitor-l = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta           = λ←
-    ni .make-natural-iso.inv           = λ→
-    ni .make-natural-iso.eta∘inv _     = C.λ≅ .invl
-    ni .make-natural-iso.inv∘eta _     = C.λ≅ .invr
-    ni .make-natural-iso.natural _ _ _ = λ←nat _
+    ni .eta           = λ←
+    ni .inv           = λ→
+    ni .eta∘inv _     = C.λ≅ .invl
+    ni .inv∘eta _     = C.λ≅ .invr
+    ni .natural _ _ _ = λ←nat _
   _^co .Pb.unitor-r = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta           = ρ←
-    ni .make-natural-iso.inv           = ρ→
-    ni .make-natural-iso.eta∘inv _     = C.ρ≅ .invl
-    ni .make-natural-iso.inv∘eta _     = C.ρ≅ .invr
-    ni .make-natural-iso.natural _ _ _ = ρ←nat _
+    ni .eta           = ρ←
+    ni .inv           = ρ→
+    ni .eta∘inv _     = C.ρ≅ .invl
+    ni .inv∘eta _     = C.ρ≅ .invr
+    ni .natural _ _ _ = ρ←nat _
   _^co .Pb.associator = to-natural-iso ni where
     ni : make-natural-iso _ _
-    ni .make-natural-iso.eta           = α←
-    ni .make-natural-iso.inv           = α→
-    ni .make-natural-iso.eta∘inv _     = C.α≅ .invl
-    ni .make-natural-iso.inv∘eta _     = C.α≅ .invr
+    ni .eta           = α←
+    ni .inv           = α→
+    ni .eta∘inv _     = C.α≅ .invl
+    ni .inv∘eta _     = C.α≅ .invr
 ```
 
 <details>
@@ -191,7 +192,7 @@ whiskerings.
 </summary>
 
 ```agda
-    ni .make-natural-iso.natural _ _ _ =
+    ni .natural _ _ _ =
          CH.cdr (CH.car (ap (_ C.▶_) (compose.rlmap _ _)) ∙ compose.rlmap _ _)
       ∙∙ α←nat _ _ _
       ∙∙ CH.car (CH.car (ap (C._◀ _) (compose.lrmap _ _)) ∙ compose.lrmap _ _)
@@ -224,8 +225,9 @@ module _ {B : Prebicategory o h ℓ} {C : Prebicategory o' h' ℓ'} where
 -->
 
 As with functors, lax functors have duals going between the opposite
-categories.  All we need to do is apply the compositor in with the
-opposite order of arguments and reorder the hexagon diagram accordingly.
+categories.  The compositor of the opposite functor is given by flipping
+the original compositor, and the hexagon diagram can be reordered
+accordingly.
 
 ```agda
     opˡ : Lax-functor (B ^op) (C ^op)
@@ -242,10 +244,11 @@ opposite order of arguments and reorder the hexagon diagram accordingly.
     opˡ .left-unit  = F.right-unit
 ```
 
-On the other hand, there is no good notion of "conjugate dual" from
+On the other hand, there is no good notion of a "conjugate dual" from
 $\bicat{B}\co$ to $\bicat{C}\co$ for a lax functor: we would need to
 invert the directions of the compositor and unitor, but for a lax
-functor, this is not possible.
+functor, this is not possible.  On the other hand, for pseudofunctors we
+get both flavors of duals.
 
 <!--
 ```agda
@@ -254,10 +257,6 @@ functor, this is not possible.
 ```
 -->
 
-For pseudofunctors, the situation is a bit different.  As with lax
-functors, we get a dual between the opposite bicategories, by the same
-construction as above.
-
 ```agda
     opᵖ : Pseudofunctor (B ^op) (C ^op)
     opᵖ .lax                    = opˡ (F .lax)
@@ -265,9 +264,9 @@ construction as above.
     opᵖ .compositor-inv (f , g) = F.compositor-inv (g , f)
 ```
 
-A pseudofunctor $F$ also has a conjugate dual, whose action on objects
-is the same, but whose action on $\hom$-categories is given by the
-opposite of $F$'s morphism mapping.
+The conjugate dual of a pseudofunctor $F$ acts the same as $F$ on
+objects, but its action on $\hom$-categories is given by the opposite of
+$F$'s action.
 
 ```agda
     co : Pseudofunctor (B ^co) (C ^co)

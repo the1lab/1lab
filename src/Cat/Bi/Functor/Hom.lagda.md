@@ -49,8 +49,8 @@ we already have such a bifunctor: the composition bifunctor of
 $\bicat{C}$!
 
 To complete this into a pseudofunctor, we must give a compositor natural
-isomorphism with components $\hom(X,-)_1(f)\hom(X,-)(g) \To
-\hom(X,-)_1(fg)$, and a unitor $\id \To \hom(X,-)_1(\id)$.  With
+isomorphism with components $\hom(X,-)(f)\hom(X,-)(g) \To
+\hom(X,-)(fg)$, and a unitor $\id \To \hom(X,-)(\id)$.  With
 $\hom(X,-)$ acting by composition, we can unfold the definitions to see
 that each component of the compositor should itself be a natural
 transformation, with components $f(gh) \To (fg)h$, and similarly the
