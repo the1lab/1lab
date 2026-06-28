@@ -16,56 +16,210 @@ open import Cat.Base
 module Cat.Displayed.Base where
 ```
 
-# Displayed categories {defines="displayed-category base-category displayed-precategory"}
+# Displayed categories {#displayed-cats-header}
 
-The core idea behind displayed categories is that we want to capture the
-idea of being able to place extra structure over some sort of "base"
-category. For instance, we can think of categories of algebraic objects
-(monoids, groups, rings, etc) as being extra structure placed atop the
-objects of Set, and extra conditions placed atop the morphisms of Set.
+::: note
+This section presents motivation for, and a conceptual introduction to,
+displayed categories. If you are already familiar with the idea, [click
+here](#the-definition) to skip ahead to the formalised definition.
+:::
 
-We start by defining a displayed category over a **base category** $\cB$
-which will act as the category we add the extra structure to.
+Any [[functor]] $P : \cE \to \cB$ can be thought of as decomposing the
+[[precategory]] $\cE$ into a *family* $P_\bull$ of categories indexed by
+the objects $x : \cB$,[^decomposing] where the objects of $P_x$ should
+be those objects of $\cE$ *sent to $x$ by $P$*, in a situation analogous
+to how funct*ion*s $f : A \to B$ [[decompose|object classifier]] their
+domain $A$ as a sum, namely of the [[fibres]] of $f$ over the points of
+$B$.
+
+[^decomposing]: This idea is formalised in the page on [[free isofibrations]].
+
+Indeed, a literal approach to this decomposition would define the type
+of objects of $P_x$ to be exactly the type-theoretic fibre $P^*x$. In
+our setting, this interpretation is problematic for two complementary
+reasons. First, if $\cB$ is an arbitrary precategory, the [[path
+types|path]] of its type of objects should be regarded as a vestigial
+structure left over from the encoding of category theory into type
+theory, and not as an intrinsic property of the category.
+
+This objection is addressed by considering only functors into
+[[univalent categories]], which are precisely those where identity of
+objects corresponds coherently to isomorphism in the category. However,
+even when studying univalent categories, the *non-*univalent
+constructions of diagram shapes like the [[walking isomorphism]] are
+often more convenient to formalise with than their univalent
+versions.[^walking-iso]
+
+[^walking-iso]:
+    To wit: the [[Rezk completion]] of the walking isomorphism is the
+    [[terminal category]].
+
+    While it is still true that the category of functors $[*, \cC]$ is
+    equivalent to the category of isomorphisms in $\cC$, sending an
+    isomorphism $(A, B, f)$ along this equivalence results in $(A, A,
+    \id)$.
+
+    If the equivalence is instead constructed in terms of the
+    *non-*univalent construction of $\{ 0 \cong 1 \}$, passing an
+    isomorphism along in either direction is definitionally the
+    identity.
+
+If we insist on talking about fibres, we might instead work with
+[[Street fibrations]], or, in greater generality, an equivalent
+weakening of the notion of [[isofibration]]. Talking about [[*essential*
+fibres]] *would* be independent of the path types of a presentation of a
+given category, so our first objection is addressed. However, *even
+this* definition has a critical flaw, which is actually common to any
+definition based on fibres: it is extremely inconvenient to work with in
+intensional type theory.
+
+For example, the action of $P$ on morphisms has type-theoretic fibres
+*only* over maps $\cB(P(x), P(y))$, so that if we have objects $(x', p)
+: P^*(x)$ and $(y', q) : P^*(y)$, to talk about maps $x' \to y'$ lying
+over $f : \cB(x, y)$, we must instead consider the fibres of the map
+$$
+\cE(x', y') \xto{P} \cB(P(x'), P(y')) \xto{\rm{subst}_2\ \cB(-,-)\ \dots} \cB(x, y)
+$$,
+where the elided term in the second map makes explicit reference to the
+identifications $p : P(x') = x$, resp. $q : P(y') = y$, witnessing that
+$x'$ lies over $x$ (resp. $y'$ over $y$). Any construction on an object
+$x'$ *lying over $x$* must regard the *manner* through which $P(x')$ and
+$x$ were identified, regardless of whether this is a path or an
+isomorphism.
+
+The gist of these two objections is that, even *if* we work with a
+suitably natural weakening of the fibres of $P$, the result is still
+impractical to formalise with. We would prefer to work with a notion of
+"dependent category" that is as convenient as the native notion of
+dependent *type*. Moving from fibrations to families prioritises the
+decomposition of $\cE$ over $\cB$, by making the notion of *being
+defined over $x : \cB$* primitive.
+
+A **displayed category** $\cE \liesover \cB$ is an equivalent
+representation of the *pair* $(\cE, P)$, with one direction of the
+equivalence being the construction of [[total categories]] and the other
+being that of [[free isofibrations]]. Unlike starting with functors,
+displayed categories bake in the indexing by objects in the base
+category, so that "an object $x'$ over an object $x$" is an atomic
+notion, needing no witness. Both the construction and study of displayed
+categories is often simpler than working with functors:
+
+*
+    Every category[^construction] $\cE$ whose objects are described in
+    natural language as "an object of $\cB$, equipped with such-and-such
+    structure", and whose maps are "such-and-such preserving maps", is
+    naturally a displayed category, where the type of objects over $x :
+    \cB$ is the type of "such-and-such structures" with carrier $x$.
+
+    A [[fibre category]] of $\cE$-qua-displayed-category over $x$ has,
+    as its type of objects, precisely the type of structures with
+    carrier $x$; if we instead considered $(\cE, U)$ as a
+    category-functor pair, the objects of $U^*(x)$ would consist of
+    nested triples $((x', S), \phi)$ where $x' : \cB$, $S$ is a
+    structure with carrier $x'$, and $\phi : x' \cong x$.
+
+    Many properties of the forgetful functor, like being [[faithful]],
+    [[fully faithful]], or [[amnestic]], become simpler when phrased as
+    properties of its generating displayed category. For example, it is
+    faithful when each `Hom[_]`{.Agda} is a [[proposition]], and
+    amnestic when $\cE$ is [[displayed univalent|displayed univalent
+    category]].
+
+[^construction]:
+    Examples include the category of [[groups]], [[monoids]], [[rings]],
+    [[modules]] over a ring, and more generally every *concrete
+    category*; but also examples not over $\Sets$, e.g. [[algebras|monad
+    algebras]] over a [[monad]] on arbitrary $\cC$.
+
+*
+    Naturally, focusing on indexing makes displayed categories a great
+    fit for the study of *indexed categories*, and results in notions
+    that make no reference to identity of objects. Concepts in this
+    direction include [[Cartesian|cartesian fibration]], [[right|right
+    fibration]], [[discrete|discrete fibration]], and
+    [[iso-|isofibration]]fibrations; concrete examples include the
+    [[canonical self-indexing]], the [[family fibration]], and the
+    [[externalisations]] of [[internal categories]].
+
+    Additionally, the notion of [[section of a displayed category]]
+    captures the idea that a category $\cB$ may be [[initial]] among
+    some class of structure categories in terms of an
+    *eliminator*, so that the values of the section
+    *definitionally* lie over the inputs in $\cB$. This rephrasing was
+    instrumental to the formalisation of [[free Cartesian closed
+    categories]].
+
+## The definition
+
+<!--
+```agda
+private
+  variable o ℓ : Level
+  lvl : ∀ {o ℓ} → Precategory o ℓ → Level → Level → Level
+  lvl {o} {ℓ} _ o' ℓ' = o ⊔ ℓ ⊔ lsuc (o' ⊔ ℓ')
+```
+-->
+
+::: {.definition .commented-out #displayed-categories alias="displayed-category base-category displayed-precategory"}
+Fixing a [[category]] $\cB$ to serve as the **base category**, the data
+of a **displayed category (over $\cB$)**, written $\cE \liesover \cB$,
+consists of
+
+* A type $\cE_x$ of **objects over $x$**, for each $x : \cB$;
+* A [[set]] $x' \to_f y'$ of **morphisms (from $x'$ to $y'$) over $f$**
+  for each map $f : \cB(x, y)$, and objects $x' : \cE_x$, $y' : \cE_y$;
+* Identity morphisms `id'`{.Agda}, assigning a $\id : x' \to_{\id} x'$
+  to each $x'$; and
+* A composition operation `_∘'_`{.Agda}, assigning
+  $(g' \circ f') : x' \to_{g \circ f} z'$
+  to each $f' : y' \to_f z'$, $g' : x' \to_g y'$.
+
+These must satisfy [[dependent|path over]] analogues of the identity
+(`idl'`{.Agda}, `idr'`{.Agda}) and associativity (`assoc'`{.Agda}) laws
+for a category, defined over the corresponding laws in $\cB$.
+:::
 
 ```agda
-record Displayed {o ℓ} (B : Precategory o ℓ)
-                 (o' ℓ' : Level) : Type (o ⊔ ℓ ⊔ lsuc o' ⊔ lsuc ℓ') where
-  no-eta-equality
-  open Precategory B
+record Displayed (B : Precategory o ℓ) o' ℓ' : Type (lvl B o' ℓ') where
 ```
 
-For each object of the base category, we associate a type of objects.
-Going back to our original example of algebraic structures over $\Sets$,
-this would be something like `Monoid-on : Set → Type`. This highlights
-an important point for intuition: we should think of the objects of the
-displayed category as _structures_ over the objects of the base.
+<!--
+```agda
+  no-eta-equality
+  open Precategory B
+  infixr 40 _∘'_
+  infix 30 _≡[_]_
+```
+-->
+
+A [[displayed category]] $\cE$ is specified in terms of a family
+`Ob[_]`{.Agda} of objects, indexed by those of $\cB$; we write $\cE_x$
+for the value of the family at $x : \cB$, and if $x' : \cE_x$, we may
+write $x' \liesover x$ if $\cE$ is understood. We then have a family of
+[[sets]] `Hom[_]`{.Agda}, indexed by a map $f : \cB(x, y)$, and objects
+$x' \liesover x$ and $y' \liesover y$; we write $x' \to_f y'$ for its
+values.
 
 ```agda
   field
-    Ob[_] : Ob → Type o'
+    Ob[_]  : ⌞ B ⌟ → Type o'
+    Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ'
 ```
 
-We do a similar thing for morphisms: For each morphism `f : Hom x y`
-in the base category, there is a **set** of morphisms between objects
-in the displayed category. Keeping with our running example, given a
-function `f : X → Y` and monoid structures `M : Monoid-on X`,
-`N : Monoid-on Y`, then `Hom[ f ] M N` is the proposition that "f is a
-monoid homomorphism". Again, we should best think of these as
-_structures_ over morphisms.
-
+<!--
 ```agda
-    Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ'
     Hom[_]-set
       : ∀ {a b} (f : Hom a b) (x : Ob[ a ]) (y : Ob[ b ])
       → is-set (Hom[ f ] x y)
 ```
+-->
 
-We also have identity and composition of displayed morphisms, but this
-is best thought of as witnessing that the identity morphism in the base
-_has_ some structure, and that composition _preserves_ that structure.
-For monoids, this would be a proof that the identity function is a
-monoid homomorphism, and that the composition of homomorphisms is
-indeed a homomorphism.
+A displayed category is also equipped with the algebraic operations of a
+category --- identity and composition --- where each is indexed by its
+corresponding operations in $\cB$. That is to say, the "identity over",
+`id'`{.Agda}, is a map $x' \to_{\id} x'$, and, given composable $f' : y'
+\to_{f} z'$ and $g' : x' \to_{g} y'$, their "composite over",
+`_∘'_`{.Agda}, lives in $x' \to_{f \circ g} z'$.
 
 ```agda
     id' : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
@@ -74,31 +228,30 @@ indeed a homomorphism.
       → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
 ```
 
-Now, for the difficult part of displayed category theory: equalities.
-If we were to naively try to write out the right-identity law, we would
-immediately run into trouble. The problem is that
-`f' ∘' id' : Hom[ f ∘ id ] x y`, but `f' : Hom [ f ] x y`! IE: the laws
-only hold relative to equalities in the base category. Therefore, instead
-of using `_≡_`, we _must_ use `PathP`. Let's provide some helpful
-notation for doing so.
+These operations are required to satisfy the laws analogous to those of
+a category. However, considering (e.g.) the left identity law, we run
+into a problem when stating them as equations: The composite
+$$ (\id \circ f') : x' \to_{\id \circ f} y' $$
+is displayed over a map that is only not definitionally equal, but only
+identical, to $f$. Therefore, the laws of a displayed category $\cE
+\liesover \cB$ must be [[*dependent*|path over]] on the corresponding
+laws in $\cB$. We introduce the notation `_≡[_]_`{.Agda}, which will be
+written $f' \is_{p} g'$ when necessary, to compare maps $f' : x' \to_{f}
+y'$ and $g' : x' \to_{g} y$ over an identification $p : f \is g$.
 
 ```agda
-  infixr 40 _∘'_
-
   _≡[_]_
     : ∀ {a b x y} {f g : Hom a b} → Hom[ f ] x y → f ≡ g → Hom[ g ] x y → Type ℓ'
   _≡[_]_ {a} {b} {x} {y} f' p g' = PathP (λ i → Hom[ p i ] x y) f' g'
-
-  infix 30 _≡[_]_
 ```
 
-Next, we have the laws. These are mostly what one would expect, just
-done over the equalities in the base.
+This makes it straightforward to write down the three laws, though they
+remain quite wordy.
 
 ```agda
   field
-    idr' : ∀ {a b x y} {f : Hom a b} (f' : Hom[ f ] x y) → (f' ∘' id') ≡[ idr f ] f'
-    idl' : ∀ {a b x y} {f : Hom a b} (f' : Hom[ f ] x y) → (id' ∘' f') ≡[ idl f ] f'
+    idr' : ∀ {a b x y} {f : Hom a b} (f' : Hom[ f ] x y) → f' ∘' id' ≡[ idr f ] f'
+    idl' : ∀ {a b x y} {f : Hom a b} (f' : Hom[ f ] x y) → id' ∘' f' ≡[ idl f ] f'
     assoc'
       : ∀ {a b c d w x y z} {f : Hom c d} {g : Hom b c} {h : Hom a b}
       → (f' : Hom[ f ] y z) (g' : Hom[ g ] x y) (h' : Hom[ h ] w x)
@@ -106,13 +259,13 @@ done over the equalities in the base.
 ```
 
 Finally, we can equip displayed categories with a distinguished
-transport operation for moving displayed morphisms between equal bases.
-While in general there may be many such, we can pair the "homwise
+*transport* operation for moving displayed morphisms between equal
+bases. While in general there may be many such, we can pair the "homwise
 transport" `hom[_]`{.Agda} operation with a coherence datum
-`coh[_]`{.Agda}, and this *pair* inhabits a contractible type (the
-centre of contraction being the native `subst`{.Agda} operation paired
-with its filler). Therefore, these fields do not affect the "homotopy
-type" of `Displayed`{.Agda}.
+`coh[_]`{.Agda}, and this *pair* inhabits a contractible type (a centre
+of contraction being the native `subst`{.Agda} operation, paired with
+its filler). Therefore, these fields do not affect the "homotopy type"
+of `Displayed`{.Agda}.
 
 Their purpose is strictly as an aid in mechanisation: often (e.g. in the
 [[fundamental fibration]] $\underline{\cB}$), the type $x \to_f y$
@@ -145,7 +298,7 @@ introducing them in the first place.
       → f' ≡[ p ] hom[ p ] f'
 ```
 
-## Developer documentation
+# Developer documentation
 
 ::: warning
 This section serves to document constructs derived from the definition
@@ -166,7 +319,7 @@ necessarily interesting mathematical concepts.
 ```
 -->
 
-### Operators for composing paths-over
+## Operators for composing paths-over
 
 Since Mikan often struggles to infer the arguments to the generic
 displayed composition operator `_∙P_`{.Agda} in the setting of displayed
@@ -191,12 +344,13 @@ other `_∙[]_`{.Agda} does this implicitly.
   infixr 30 _∙[]_ ∙[-]-syntax
 ```
 
-### Equational reasoning in displayed categories
+## Equational reasoning in displayed categories
 
-Iterated composition of dependent paths incurs a quadratic overhead when
-compared to composition of ordinary paths, since the elaborated form of
-each composition operator must store the paths over which both sides are
-displayed:
+Unlike non-dependent path composition, which elaborates to terms whose
+size is linear in the number of steps, iterated composition of
+*dependent* paths has a quadratic overhead. This comes from the
+composition operator having to be quantified over the paths over which
+its arguments are dependent:
 
 <!--
 ```agda
@@ -218,9 +372,10 @@ displayed:
 
 Predictably, this is quite bad for performance: any part of the proof
 assistant implementation which needs to traverse terms will spend
-$O(n^2)$ time going through this redundant information.
+$O(n^2)$ time going through this information.
 
-Surprisingly, we can alleviate this by working instead with paths in the
+Surprisingly, we can alleviate this without having to alter the proof
+assistant implementation, by working instead with paths in the
 *total space* of $x' \to_{-} y'$, as a family over $x \to y$. We
 introduce an auxiliary type `_∫≡_`{.Agda}, from which we can project a
 path in $x' \to_{-} y'$, either over the constructed path between the
@@ -249,14 +404,13 @@ the base path and for inverting the path to be composed.
     : (f' : Hom[ f ] x y) (p : f ≡ g) → g' ∫≡ h' → f' ≡[ p ] g' → f' ∫≡ h'
   ≡[-]⟨⟩-syntax f' p q' p' = ap₂ _,_ (p ∙ ap fst q') (p' ∙[] ap snd q')
 
-  syntax ≡[-]⟨⟩-syntax f' p q' p' = f' ≡[ p ]⟨ p' ⟩ q'
-
   ≡[]⟨⟩-syntax : (f' : Hom[ f ] x y) → g' ∫≡ h' → f' ≡[ p ] g' → f' ∫≡ h'
   ≡[]⟨⟩-syntax {p = p} f' q' p' = f' ≡[ _ ]⟨ p' ⟩ q'
 
   ≡[]˘⟨⟩-syntax : (f' : Hom[ f ] x y) → g' ∫≡ h' → g' ≡[ p ] f' → f' ∫≡ h'
   ≡[]˘⟨⟩-syntax f' q' p' = f' ≡[]⟨ symP p' ⟩ q'
 
+  syntax ≡[-]⟨⟩-syntax f' p q' p' = f' ≡[ p ]⟨ p' ⟩ q'
   syntax ≡[]⟨⟩-syntax f' q' p' = f' ≡[]⟨ p' ⟩ q'
   syntax ≡[]˘⟨⟩-syntax f' q' p' = f' ≡[]˘⟨ p' ⟩ q'
 
@@ -320,7 +474,19 @@ record Thinly-displayed {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) : Type
     id'  : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
     _∘'_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
          → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
+```
+-->
 
+## Constructing displayed categories
+
+We provide helpers for constructing displayed categories in two common
+cases.
+
+The `with-trivial-grading`{.Agda} helper fills in the grading fields,
+`hom[_]`{.Agda} and `coh[_]`{.Agda}, with their canonical
+implementations in terms of [[transport]].
+
+```agda
 with-trivial-grading
   : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Trivially-graded B o' ℓ'
   → Displayed B o' ℓ'
@@ -332,18 +498,28 @@ with-trivial-grading triv = record
   ; coh[_]     = λ p → transport-filler _
   }
   where open Trivially-graded triv using (Hom[_] ; H-Level-Hom[_])
+```
 
+The `with-thin-display`{.Agda} helper additionally automatically derives
+the displayed category laws from a mechanical proof that the given
+`Hom[_]`{.Agda} family is [[propositional|proposition]].
+
+```agda
 with-thin-display
   : ∀ {o ℓ} {B : Precategory o ℓ} {o' ℓ' : Level} → Thinly-displayed B o' ℓ'
   → Displayed B o' ℓ'
 {-# INLINE with-thin-display #-}
 with-thin-display triv = with-trivial-grading record where
-  open Thinly-displayed triv using (Ob[_] ; Hom[_] ; id' ; _∘'_) renaming (H-Level-Hom[_] to i)
+  open Thinly-displayed triv
+    using (Ob[_] ; Hom[_] ; id' ; _∘'_) renaming (H-Level-Hom[_] to i)
   H-Level-Hom[_] = basic-instance 2 $ is-prop→is-set (hlevel 1)
   idr'   f     = prop!
   idl'   f     = prop!
   assoc' f g h = prop!
+```
 
+<!--
+```agda
 open hlevel-projection
 
 private

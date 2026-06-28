@@ -30,7 +30,7 @@ open Functor
 ```
 -->
 
-# Interval category
+# Interval category {defines=walking-arrow}
 
 The interval category is the category with two points, called (as a form
 of endearment) $0$ and $1$, and a single arrow between them.
