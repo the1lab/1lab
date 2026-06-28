@@ -62,20 +62,20 @@ pattern matching computes as expected.
 ```agda
 abstract
   `inl↓₁ : ⌞ x ⌟ → ⌞ `inl ⋆ x ⌟
-  `inl↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ [] (x , hx))) (`pair↓₂ (`true .snd) hx)
+  `inl↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ []v (x , hx))) (`pair↓₂ (`true .snd) hx)
 
   `inr↓₁ : ⌞ x ⌟ → ⌞ `inr ⋆ x ⌟
-  `inr↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ [] (x , hx))) (`pair↓₂ (`false .snd) hx)
+  `inr↓₁ {x} hx = subst ⌞_⌟ (sym (abs-β _ []v (x , hx))) (`pair↓₂ (`false .snd) hx)
 
   `match↓₂ : ⌞ f ⌟ → ⌞ g ⌟ → ⌞ `match ⋆ f ⋆ g ⌟
-  `match↓₂ {f = f} {g} hf hg = subst ⌞_⌟ (sym (abs-βₙ [] ((g , hg) ∷ (f , hf) ∷ []))) (abs↓ _ _)
+  `match↓₂ {f = f} {g} hf hg = subst ⌞_⌟ (sym (abs-βₙ []v ((g , hg) ∷v (f , hf) ∷v []v))) (abs↓ _ _)
 
   `match-βl
     : ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
     → `match ⋆ f ⋆ g ⋆ (`inl ⋆ x) ≡ f ⋆ x
   `match-βl {x = x} {f} {g} hx hf hg =
-    `match ⋆ f ⋆ g ⋆ (`inl ⋆ x)                                        ≡⟨ abs-βₙ [] ((`inl ⋆ x , `inl↓₁ hx) ∷ (g , hg) ∷ (f , hf) ∷ []) ⟩
-    `fst ⋆ ⌜ `inl ⋆ x ⌝ ⋆ f ⋆ g ⋆ (`snd ⋆ ⌜ `inl ⋆ x ⌝)                ≡⟨ ap! (abs-β _ [] (x , hx)) ⟩
+    `match ⋆ f ⋆ g ⋆ (`inl ⋆ x)                                        ≡⟨ abs-βₙ []v ((`inl ⋆ x , `inl↓₁ hx) ∷v (g , hg) ∷v (f , hf) ∷v []v) ⟩
+    `fst ⋆ ⌜ `inl ⋆ x ⌝ ⋆ f ⋆ g ⋆ (`snd ⋆ ⌜ `inl ⋆ x ⌝)                ≡⟨ ap! (abs-β _ []v (x , hx)) ⟩
     `fst ⋆ (`pair ⋆ `true ⋆ x) ⋆ f ⋆ g ⋆ (`snd ⋆ (`pair ⋆ `true ⋆ x))  ≡⟨ ap₂ (λ e p → e % f % g % p) (`fst-β (`true .snd) hx) (`snd-β (`true .snd) hx) ⟩
     `true ⋆ f ⋆ g ⋆ x                                                  ≡⟨ ap (λ e → e ⋆ x) (`true-β hf hg) ⟩
     f ⋆ x                                                              ∎
@@ -84,8 +84,8 @@ abstract
     : ⌞ x ⌟ → ⌞ f ⌟ → ⌞ g ⌟
     → `match ⋆ f ⋆ g ⋆ (`inr ⋆ x) ≡ g ⋆ x
   `match-βr {x = x} {f} {g} hx hf hg =
-    `match ⋆ f ⋆ g ⋆ (`inr ⋆ x)                                          ≡⟨ abs-βₙ [] ((`inr ⋆ x , `inr↓₁ hx) ∷ (g , hg) ∷ (f , hf) ∷ []) ⟩
-    `fst ⋆ ⌜ `inr ⋆ x ⌝ ⋆ f ⋆ g ⋆ (`snd ⋆ ⌜ `inr ⋆ x ⌝)                  ≡⟨ ap! (abs-β _ [] (x , hx)) ⟩
+    `match ⋆ f ⋆ g ⋆ (`inr ⋆ x)                                          ≡⟨ abs-βₙ []v ((`inr ⋆ x , `inr↓₁ hx) ∷v (g , hg) ∷v (f , hf) ∷v []v) ⟩
+    `fst ⋆ ⌜ `inr ⋆ x ⌝ ⋆ f ⋆ g ⋆ (`snd ⋆ ⌜ `inr ⋆ x ⌝)                  ≡⟨ ap! (abs-β _ []v (x , hx)) ⟩
     `fst ⋆ (`pair ⋆ `false ⋆ x) ⋆ f ⋆ g ⋆ (`snd ⋆ (`pair ⋆ `false ⋆ x))  ≡⟨ ap₂ (λ e p → e % f % g % p) (`fst-β (`false .snd) hx) (`snd-β (`false .snd) hx) ⟩
     `false ⋆ f ⋆ g ⋆ x                                                   ≡⟨ ap (λ e → e ⋆ x) (`false-β hf hg) ⟩
     g ⋆ x                                                                ∎

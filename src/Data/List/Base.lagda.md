@@ -9,6 +9,7 @@ open import Data.Maybe.Base
 open import Data.Bool.Base
 open import Data.Dec.Base
 open import Data.Fin.Base
+open import Data.Irr
 
 open import Meta.Traversable
 open import Meta.Foldable
@@ -16,6 +17,8 @@ open import Meta.Append
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
+
+import Data.Nat.Base as Nat
 ```
 -->
 
@@ -35,7 +38,7 @@ operations on lists. Properties of these operations are in the module
 ```agda
 private variable
   ℓ : Level
-  A B : Type ℓ
+  A B C : Type ℓ
 
 infixr 20 _∷_
 ```
@@ -61,6 +64,9 @@ instance
     go zero xs                = []
     go (suc zero) xs          = xs ∷ []
     go (suc (suc n)) (x , xs) = x ∷ go (suc n) xs
+
+[_]L : ∀ {ℓ} {A : Type ℓ} {n} → Vecₓ A n → List A
+[ p ]L = [ p ]
 
 -- Test:
 _ : Path (List Nat) [ 1 , 2 , 3 ] (1 ∷ 2 ∷ 3 ∷ [])
@@ -246,10 +252,13 @@ intercalate x []           = []
 intercalate x (y ∷ [])     = y ∷ []
 intercalate x (y ∷ z ∷ xs) = y ∷ x ∷ intercalate x (z ∷ xs)
 
-zip : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → List A → List B → List (A × B)
-zip [] _ = []
-zip _ [] = []
-zip (a ∷ as) (b ∷ bs) = (a , b) ∷ zip as bs
+zip-with : (A → B → C) → List A → List B → List C
+zip-with f [] _ = []
+zip-with f (_ ∷ _) [] = []
+zip-with f (a ∷ as) (b ∷ bs) = (f a b) ∷ zip-with f as bs
+
+zip : List A → List B → List (A × B)
+zip =  zip-with _,_
 
 unzip : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → List (A × B) → List A × List B
 unzip [] = [] , []
@@ -335,10 +344,18 @@ lookup x ((k , v) ∷ xs) with x ≡? k
 ... | yes _ = just v
 ... | no  _ = lookup x xs
 
+_!?_ : List A → Nat → Maybe A
+[] !? n = nothing
+(x ∷ xs) !? zero = just x
+(x ∷ xs) !? suc n = xs !? n
+
+!?-just : ∀ (xs : List A) (n : Nat) → n Nat.< length xs → is-just (xs !? n)
+!?-just {A = a} (x ∷ xs) zero n<xs = lift oh
+!?-just {A = a} (x ∷ xs) (suc n) n<xs = !?-just xs n (Nat.≤-peel n<xs)
+
 _!_ : (l : List A) → Fin (length l) → A
-(x ∷ xs) ! n with fin-view n
-... | zero  = x
-... | suc i = xs ! i
+xs ! fin n ⦃ pf ⦄ = from-just! _ $ !?-just xs n pf
+
 
 tabulate : ∀ {n} (f : Fin n → A) → List A
 tabulate {n = zero}  f = []

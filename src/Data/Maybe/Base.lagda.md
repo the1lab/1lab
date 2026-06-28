@@ -4,6 +4,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Bool.Base
 open import Data.Dec.Base
 
 open import Meta.Traversable
@@ -83,19 +84,27 @@ from-just def nothing = def
 
 <!--
 ```agda
-is-just : Maybe A → Type
-is-just (just _) = ⊤
-is-just nothing = ⊥
+is-just? : Maybe A → Bool
+is-just? nothing = false
+is-just? (just _) = true
 
-is-nothing : Maybe A → Type
-is-nothing (just _) = ⊥
-is-nothing nothing = ⊤
+record is-just (m : Maybe A) : Type where
+  constructor lift
+  field
+    lower : So (is-just? m)
 
-nothing≠just : {x : A} → ¬ (nothing ≡ just x)
-nothing≠just p = subst is-nothing p tt
+
+from-just! : ∀ x → is-just x → A
+from-just! (just x) _ = x
 
 just≠nothing : {x : A} → ¬ (just x ≡ nothing)
-just≠nothing p = subst is-just p tt
+just≠nothing p = subst is-just' p tt  where
+  is-just' : Maybe A → Type
+  is-just' (just _) = ⊤
+  is-just' nothing = ⊥
+
+nothing≠just : {x : A} → ¬ (nothing ≡ just x)
+nothing≠just p = just≠nothing (sym p)
 
 just-inj : ∀ {x y : A} → just x ≡ just y → x ≡ y
 just-inj {x = x} = ap (from-just x)
