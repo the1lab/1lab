@@ -61,7 +61,7 @@ conditions should hold up to isomorphism or merely a directed
 transformation. For example, in a 1-category, given two parallel
 morphisms
 
-~~~{.quiver}
+~~~{.quiver .attach-around}
 \[\begin{tikzcd}
 	A & B
 	\arrow["f", shift left, from=1-1, to=1-2]
@@ -109,14 +109,14 @@ pseudofunctor $F$, illustrated in the diagram below.
 	\arrow[""{name=0, anchor=center, inner sep=0}, "{{\phi_i}}", from=2-1, to=1-2]
 	\arrow["{{F(f)}}"', from=2-1, to=2-2]
 	\arrow["{{\phi_j}}"', from=2-2, to=1-2]
-	\arrow[Rightarrow, from=0, to=2-2, shorten <= 0.2em]
+	\arrow["{\small\nu_f}", Rightarrow, from=0, to=2-2, shorten <= 0.2em]
 \end{tikzcd}\]
 ~~~
 
-For each object $i$ in the diagram, $\phi_i : F(i) \to X$ gives a leg of
-the cocone, and for any morphism $f : i \to j$, we have a 2-cell
-isomorphism $\nu_f : \phi_i \cong \phi_j F(f)$ in place of the usual
-commutativity requirement for cocones.
+For each object $i$ in the diagram, the map $\phi_i : F(i) \to X$ gives
+a leg of the cocone, and for any morphism $f : i \to j$, we have an
+invertible 2-cell $\nu_f : \phi_i \cong \phi_j F(f)$ in place of the
+usual commutativity requirement for cocones.
 
 As is often the case in bicategorical definitions, we have the choice of
 whether to consider cocones $F \to \Delta_X$ which commute strongly (so
@@ -125,8 +125,7 @@ that $\nu_f$ is an isomorphism as above), or to take cocones with
 2-cell).  The latter choice yields the notion of a **lax colimit** (or
 oplax, depending on the direction of the 2-cells).  It is known that
 (op-)lax colimits can be expressed as bicolimits by altering the diagram
-category, but in this page, we mainly deal with lax colimits, so we opt
-to define those directly.
+category, but here we give a direct definition.
 
 <!--
 TODO: Also define bicolimits and oplax colimits properly.
@@ -140,12 +139,12 @@ equivalence $\bicat{C}(L,-) \cong [\bicat{I},\bicat{C}]_o(F,\Delta)$,
 where $[\bicat{I},\bicat{C}]_o$ denotes the bicategory of pseudofunctors
 from $\bicat{I}$ to $\bicat{C}$ together with *oplax* transformations
 between them.[^why-oplax] The codomain of this equivalence can be
-translated into Agda as follows.
+translated into Mikan as follows.
 
-[^why-oplax]: The reason that the lax colimit involves oplax
-transformations is that a lax colimit is defined to coincide with a lax
-limit in the opposite bicategory, which ends up reversing the direction
-of cocone 2-cells.
+[^why-oplax]: The reason the definition involves oplax transformations
+is that a lax colimit is defined to coincide with a lax limit in the
+opposite bicategory, which ends up reversing the direction of cocone
+2-cells.
 
 ```agda
   lax-cocones-at : Pseudofunctor C (Cat _ _)
@@ -153,13 +152,10 @@ of cocone 2-cells.
 ```
 
 Now, by a bicategorical Yoneda argument, any pseudonatural equivalence
-of the form discussed is determined by its value at $\id : L \to L$,
+of the form above is determined by its value at $\id : L \to L$,
 which is a cocone $F \To \Delta_L$, namely the universal colimiting
-cocone.
-
-Under the Yoneda correspondence, a cocone at $L$ induces a functor
-$\bicat{C}(L,X) \to [\bicat{I},\bicat{C}]_o(F,\Delta_L)$ by
-precomposition.
+cocone. Conversely, any cocone at $L$ induces a functor $\bicat{C}(L,X)
+\to [\bicat{I},\bicat{C}]_o(F,\Delta_L)$ by precomposition.
 
 ```agda
   module _ (L : Ob) (univ-cocone : opᵖ F .lax =>ₒ ConstP L .lax) where
@@ -184,16 +180,17 @@ mostly boil down to automated bicategory reasoning.
         F∘ Flip (Lax.compose _ _) F∘ Const-pseudoₒ.Const₁
         ≅ⁿ postaction (Cat _ _) (hom→cocone₀ X) F∘ compose
       hom→cocone-nat = to-natural-iso ni where
+        open make-natural-iso
         ni : make-natural-iso _ _
-        ni .make-natural-iso.eta f .η g .Γ a         = α← _
-        ni .make-natural-iso.eta f .η g .is-natural  = bicat! C
-        ni .make-natural-iso.eta f .is-natural g h α = ext λ _ → bicat! C
-        ni .make-natural-iso.inv f .η g .Γ a         = α→ _
-        ni .make-natural-iso.inv f .η g .is-natural  = bicat! C
-        ni .make-natural-iso.inv f .is-natural g h α = ext λ _ → bicat! C
-        ni .make-natural-iso.eta∘inv f               = ext λ _ _ → Br.α≅ C .invr
-        ni .make-natural-iso.inv∘eta f               = ext λ _ _ → Br.α≅ C .invl
-        ni .make-natural-iso.natural g h α           = ext λ _ _ → bicat! C
+        ni .eta f .η g .Γ a         = α← _
+        ni .eta f .η g .is-natural  = bicat! C
+        ni .eta f .is-natural g h α = ext λ _ → bicat! C
+        ni .inv f .η g .Γ a         = α→ _
+        ni .inv f .η g .is-natural  = bicat! C
+        ni .inv f .is-natural g h α = ext λ _ → bicat! C
+        ni .eta∘inv f               = ext λ _ _ → Br.α≅ C .invr
+        ni .inv∘eta f               = ext λ _ _ → Br.α≅ C .invl
+        ni .natural g h α           = ext λ _ _ → bicat! C
 
     hom→cocone : Hom-from-bi C L .lax =>ₚ lax-cocones-at .lax
     hom→cocone .lax .σ                = hom→cocone₀
@@ -202,13 +199,12 @@ mostly boil down to automated bicategory reasoning.
     hom→cocone .lax .ν-unitor         = ext λ _ _ → bicat! C
     hom→cocone .naturator-inv f       =
       Cr.iso→invertible Cat[ _ , _ ] (isoⁿ→iso hom→cocone-nat f)
-
 ```
 
 </details>
 
 In other words, to show that $L$ is the lax colimit of $F$, it suffices
-to provide a candidate cocone with apex $L$, and show that
+to provide a candidate cocone with apex $L$, and show that the induced
 `hom→cocone`{.Agda} is a pseudonatural equivalence, which corresponds to
 showing that the provided cocone is universal.
 

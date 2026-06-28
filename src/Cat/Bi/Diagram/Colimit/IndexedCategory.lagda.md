@@ -36,8 +36,7 @@ An especially important case of lax colimits are those of [[indexed
 categories]], i.e., contravariant pseudofunctors from a [[locally
 discrete bicategory]] into $\Cat$.  For an indexed category $F :
 \ca{I}\op \to \Cat$, the lax colimit of $F$ coincides with the
-[[Grothendieck construction]] $\int F$, which is what we show in this
-module.
+[[Grothendieck construction]] $\int F$, which we show in this module.
 
 <!--
 ```agda
@@ -51,7 +50,7 @@ module.
 
   private
     module I      = Precategory I
-    module F      = IndexedCategory F
+    module F      = Indexed-category F
     module F₀ {x} = Cr (F.₀ x)
     module G      = Cr (∫ F.displayed)
     module Cat    = Br (Cat (o ⊔ o') (h ⊔ h'))
@@ -60,21 +59,13 @@ module.
 ```
 -->
 
+To construct the universal cocone, we use the canonical inclusion
+functors from the fibre categories of $F$ into $\int F$.  The naturality
+2-cells are straightforward to define, and we did so already off-screen.
+
 ```agda
   univ-cocone : opᵖ F .lax =>ₒ ConstP F.∫ .lax
-```
-
-To construct the universal cocone, we use the canonical inclusion
-functors from the fibre categories of $F$ into $\int F$.
-
-```agda
-  univ-cocone .σ a = F.ιᶠ a
-```
-
-The naturality 2-cells are straightforward to define, and we did so
-already off-screen.
-
-```agda
+  univ-cocone .σ a            = F.ιᶠ a
   univ-cocone .naturator .η f = nat-unidl-to (F.ιᶠ-base-change f)
 ```
 
@@ -133,9 +124,9 @@ which factors the other cocone through the universal one.
 
 Assume that we are given a lax cocone $\alpha : F \To \Delta_X$.  This
 is an oplax transformation with functor components $F(i) \to X$ for each
-$i \in \ca{I}$.  Since an object of $\int F$ bundles an $i \in \ca{I}$
-with some $a \in F(i)$, we can use $\alpha_i$ to map $a$ into $X$,
-giving us the object mapping we need.
+$i : \ca{I}$.  Since an object of $\int F$ bundles an $i : \ca{I}$ with
+some $a : F(i)$, we can use $\alpha_i$ to map $a$ into $X$, giving us
+the object mapping we need.
 
 ```agda
       module α = _=>ₗ_ α
@@ -144,7 +135,7 @@ giving us the object mapping we need.
 ```
 
 For the morphism mapping, we are given $f : i \to j$ in $\ca{I}$,
-together with some $\phi : a \to F(f)(b)$ with $a \in F(i)$ and $b \in
+together with some $\phi : a \to F(f)(b)$ with $a : F(i)$ and $b :
 F(j)$, and we must produce a morphism $\alpha_i(a) \to \alpha_j(b)$.
 Taking $\alpha_i(\phi) : \alpha_i(a) \to \alpha_i(F(f)(b))$ gets us
 almost all of the way.  To complete the definition, we need a morphism
@@ -169,7 +160,7 @@ identities of $\alpha$.
         (α.ν→ f .η Fz ∘ α.σ y .F₁ Ff) ∘ α.ν→ g .η Fy ∘ α.σ x .F₁ Fg          ∎
 ```
 
-Furthermore, assignment of cocones to functors itself extends to a
+Furthermore, this assignment of cocones to functors itself extends to a
 functor from the category of oplax transformations from $F$ to
 $\Delta_X$ to the functor category $[\int F, X]$.
 
@@ -180,9 +171,9 @@ $\Delta_X$ to the functor category $[\int F, X]$.
 
 The morphism mapping of this functor acts on modifications $\gamma :
 \alpha \to \beta$ between cones, and produces a natural transformation
-of induced functors.  This means that at each object $(i, a) \in \int
-F$, we must give a component morphism $\alpha_i(a) \to \beta_i(a)$ in
-$X$.  But unwrapping the definitions, we see that these are just the
+of induced functors.  This means that at each object $(i, a) : \int F$,
+we must give a component morphism $\alpha_i(a) \to \beta_i(a)$ in $X$.
+But unwrapping the definitions, we see that these are just the
 components of $\gamma$.
 
 ```agda
