@@ -86,7 +86,7 @@ abstract
   `num-suc x = sym (abs-β _ _ (`num x))
 
   `suc↓₁ : ⌞ x ⌟ → ⌞ `suc ⋆ x ⌟
-  `suc↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , ah) ∷ []))) (`pair↓₂ (`false .snd) ah)
+  `suc↓₁ ah = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , ah) ∷v []v))) (`pair↓₂ (`false .snd) ah)
 
   `iszero-zero : `iszero ⋆ `zero ≡ `true .fst
   `iszero-zero = abs-β _ _ `zero ∙ abs-β _ _ (_ , abs↓ _ _)
@@ -101,7 +101,7 @@ abstract
   `pred-zero =
     `pred ⋆ `zero                             ≡⟨ abs-β _ _ `zero ⟩
     ⌜ `fst ⋆ `zero ⌝ ⋆ `zero ⋆ (`snd ⋆ `zero) ≡⟨ ap (λ e → e ⋆ `zero ⋆ (`snd ⋆ `zero)) (`iszero-zero) ⟩
-    `true ⋆ `zero ⋆ (`snd ⋆ `zero)            ≡⟨ abs-βₙ [] ((_ , subst ⌞_⌟ (sym rem₁) (abs↓ _ _)) ∷ `zero ∷ []) ⟩
+    `true ⋆ `zero ⋆ (`snd ⋆ `zero)            ≡⟨ abs-βₙ []v ((_ , subst ⌞_⌟ (sym rem₁) (abs↓ _ _)) ∷v `zero ∷v []v) ⟩
     `zero .fst                                ∎
     where
       rem₁ : `snd ⋆ `zero ≡ `false .fst
@@ -112,7 +112,7 @@ abstract
     `pred ⋆ (`suc ⋆ x)                                   ≡⟨ abs-β _ _ (_ , `suc↓₁ xh) ⟩
     ⌜ `fst ⋆ (`suc ⋆ x) ⌝ ⋆ `zero ⋆ (`snd ⋆ (`suc ⋆ x))  ≡⟨ ap (λ e → e ⋆ `zero ⋆ (`snd ⋆ (`suc ⋆ x))) (ap (`fst ⋆_) (abs-β _ _ (_ , xh)) ∙ `fst-β (`false .snd) xh) ⟩
     `false ⋆ `zero ⋆ ⌜ `snd ⋆ (`suc ⋆ x) ⌝               ≡⟨ ap (λ e → (`false ⋆ `zero) ⋆ e) (ap (`snd ⋆_) (abs-β _ _ (_ , xh)) ∙ `snd-β (`false .snd) xh) ⟩
-    `false ⋆ `zero ⋆ x                                   ≡⟨ abs-βₙ [] ((_ , xh) ∷ `zero ∷ []) ⟩
+    `false ⋆ `zero ⋆ x                                   ≡⟨ abs-βₙ []v ((_ , xh) ∷v `zero ∷v []v) ⟩
     x                                                    ∎
 
 ```
@@ -163,28 +163,28 @@ that it computes as stated.
 ```agda
 abstract
   `primrec↓₁ : ⌞ z ⌟ → ⌞ `primrec ⋆ z ⌟
-  `primrec↓₁ zh = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , zh) ∷ []))) (abs↓ _ _)
+  `primrec↓₁ zh = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , zh) ∷v []v))) (abs↓ _ _)
 
   `primrec↓₂ : ⌞ z ⌟ → ⌞ f ⌟ → ⌞ `primrec ⋆ z ⋆ f ⌟
-  `primrec↓₂ zh fh = subst ⌞_⌟ (sym (abs-βₙ [] ((_ , fh) ∷ (_ , zh) ∷ []))) (abs↓ _ _)
+  `primrec↓₂ zh fh = subst ⌞_⌟ (sym (abs-βₙ []v ((_ , fh) ∷v (_ , zh) ∷v []v))) (abs↓ _ _)
 
   `primrec-zero : ⌞ z ⌟ → ⌞ f ⌟ → `primrec ⋆ z ⋆ f ⋆ `zero ≡ z
   `primrec-zero {z} {f} zh fh =
-    `primrec ⋆ z ⋆ f ⋆ `zero                                     ≡⟨ abs-βₙ [] (`zero ∷ (_ , fh) ∷ (_ , zh) ∷ []) ⟩
+    `primrec ⋆ z ⋆ f ⋆ `zero                                     ≡⟨ abs-βₙ []v (`zero ∷v (_ , fh) ∷v (_ , zh) ∷v []v) ⟩
     ⌜ `Z ⋆ `worker ⋆ z ⌝ ⋆ f ⋆ `zero ⋆ `zero                     ≡⟨ ap (λ e → e ⋆ f ⋆ `zero ⋆ `zero) (`Z-β (`worker .snd) zh) ⟩
-    ⌜ `worker ⋆ (`Z ⋆ `worker) ⋆ z ⋆ f ⋆ `zero ⌝ ⋆ `zero         ≡⟨ ap (λ e → e ⋆ `zero) (abs-βₙ [] (`zero ∷ (_ , fh) ∷ (_ , zh) ∷ (_ , `Z↓₁ (`worker .snd)) ∷ [])) ⟩
+    ⌜ `worker ⋆ (`Z ⋆ `worker) ⋆ z ⋆ f ⋆ `zero ⌝ ⋆ `zero         ≡⟨ ap (λ e → e ⋆ `zero) (abs-βₙ []v (`zero ∷v (_ , fh) ∷v (_ , zh) ∷v (_ , `Z↓₁ (`worker .snd)) ∷v []v)) ⟩
     ⌜ `iszero ⋆ `zero ⋆ (`true ⋆ z) ⌝ % _ % `zero .fst           ≡⟨ ap₂ _%_ (ap₂ _%_ (ap₂ _%_ `iszero-zero refl) refl ∙ `true-β (`true↓₁ zh) (abs↓ _ _)) refl ⟩
     `true ⋆ z ⋆ `zero .fst                                       ≡⟨ `true-β zh (`zero .snd) ⟩
     z                                                            ∎
 
   `primrec-suc : ⌞ z ⌟ → ⌞ f ⌟ → ⌞ x ⌟ → `primrec ⋆ z ⋆ f ⋆ (`suc ⋆ x) ≡ f ⋆ x ⋆ (`primrec ⋆ z ⋆ f ⋆ x)
   `primrec-suc {z} {f} {x} zh fh xh =
-    `primrec ⋆ z ⋆ f ⋆ (`suc ⋆ x)                                                 ≡⟨ abs-βₙ [] ((_ , `suc↓₁ xh) ∷ (_ , fh) ∷ (_ , zh) ∷ []) ⟩
+    `primrec ⋆ z ⋆ f ⋆ (`suc ⋆ x)                                                 ≡⟨ abs-βₙ []v ((_ , `suc↓₁ xh) ∷v (_ , fh) ∷v (_ , zh) ∷v []v) ⟩
     ⌜ `Z ⋆ `worker ⋆ z ⌝ ⋆ f ⋆ (`suc ⋆ x) ⋆ `zero                                 ≡⟨ ap (λ e → e ⋆ f ⋆ (`suc ⋆ x) ⋆ `zero) (`Z-β (`worker .snd) zh) ⟩
-    `worker ⋆ (`Z ⋆ `worker) ⋆ z ⋆ f ⋆ (`suc ⋆ x) ⋆ `zero                         ≡⟨ ap (λ e → e % `zero .fst) (abs-βₙ [] ((_ , `suc↓₁ xh) ∷ (_ , fh) ∷ (_ , zh) ∷ (_ , `Z↓₁ (`worker .snd)) ∷ [])) ⟩
-    `iszero ⋆ (`suc ⋆ x) ⋆ (`true ⋆ z) % _ % `zero .fst                           ≡⟨ ap₂ _%_ (ap₂ _%_ (ap₂ _%_ (`iszero-suc xh) refl) refl ∙ `false-β (`true↓₁ zh) (abs↓ _ _)) refl ∙ abs-βₙ ((`suc ⋆ x , `suc↓₁ xh) ∷ (f , fh) ∷ (z , zh) ∷ (`Z ⋆ `worker , `Z↓₁ (`worker .snd)) ∷ []) (`zero ∷ []) ⟩
+    `worker ⋆ (`Z ⋆ `worker) ⋆ z ⋆ f ⋆ (`suc ⋆ x) ⋆ `zero                         ≡⟨ ap (λ e → e % `zero .fst) (abs-βₙ []v ((_ , `suc↓₁ xh) ∷v (_ , fh) ∷v (_ , zh) ∷v (_ , `Z↓₁ (`worker .snd)) ∷v []v)) ⟩
+    `iszero ⋆ (`suc ⋆ x) ⋆ (`true ⋆ z) % _ % `zero .fst                           ≡⟨ ap₂ _%_ (ap₂ _%_ (ap₂ _%_ (`iszero-suc xh) refl) refl ∙ `false-β (`true↓₁ zh) (abs↓ _ _)) refl ∙ abs-βₙ ((`suc ⋆ x , `suc↓₁ xh) ∷v (f , fh) ∷v (z , zh) ∷v (`Z ⋆ `worker , `Z↓₁ (`worker .snd)) ∷v []v) (`zero ∷v []v) ⟩
     f % `pred ⋆ (`suc ⋆ x) % `Z ⋆ `worker ⋆ z ⋆ f ⋆ (`pred ⋆ (`suc ⋆ x)) ⋆ `zero  ≡⟨ ap (λ e → f % e % `Z ⋆ `worker ⋆ z ⋆ f ⋆ e ⋆ `zero) (`pred-suc xh) ⟩
-    f ⋆ x ⋆ (`Z ⋆ `worker ⋆ z ⋆ f ⋆ x ⋆ `zero)                                    ≡⟨ ap₂ _%_ refl (sym (abs-βₙ [] ((_ , xh) ∷ (_ , fh) ∷ (_ , zh) ∷ []))) ⟩
+    f ⋆ x ⋆ (`Z ⋆ `worker ⋆ z ⋆ f ⋆ x ⋆ `zero)                                    ≡⟨ ap₂ _%_ refl (sym (abs-βₙ []v ((_ , xh) ∷v (_ , fh) ∷v (_ , zh) ∷v []v))) ⟩
     f ⋆ x ⋆ (`primrec ⋆ z ⋆ f ⋆ x)                                                ∎
 ```
 

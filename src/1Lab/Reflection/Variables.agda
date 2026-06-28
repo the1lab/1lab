@@ -81,7 +81,7 @@ private
   env-rec Mot _▷*_ []* (xs ▷ x) = env-rec (Mot ∘ suc) _▷*_ ([]* ▷* x) xs
 
   reverse : Env A n → Vec A n
-  reverse {A = A} env = env-rec (Vec A) (λ xs x → x ∷ xs) [] env
+  reverse {A = A} env = env-rec (Vec A) (λ xs x → x ∷v xs) []v env
 
 
 
