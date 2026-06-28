@@ -713,11 +713,12 @@ diagrams **in** bicategories, which are (mercifully) limited to 2-cells.
   open Modification
   open _=>ₗ_
 
-  Mod-pathp : {α α' β β' : F =>ₗ G}
-            → (p : α ≡ α') (q : β ≡ β')
-            → {a : Modification α β} {b : Modification α' β'}
-            → (∀ x → PathP _ (a .Γ x) (b .Γ x))
-            → PathP (λ i → Modification (p i) (q i)) a b
+  Mod-pathp
+    : {α α' β β' : F =>ₗ G}
+    → (p : α ≡ α') (q : β ≡ β')
+    → {a : Modification α β} {b : Modification α' β'}
+    → (∀ x → PathP _ (a .Γ x) (b .Γ x))
+    → PathP (λ i → Modification (p i) (q i)) a b
   Mod-pathp p q path i .Γ x                            = path x i
   Mod-pathp p q {a} {b} path i .is-natural {x} {y} {f} =
     is-prop→pathp
@@ -726,10 +727,11 @@ diagrams **in** bicategories, which are (mercifully) limited to 2-cells.
       (a .is-natural)
       (b .is-natural) i
 
-  _Γᵈ_ : {α α' β β' : F =>ₗ G} {p : α ≡ α'} {q : β ≡ β'}
-       → {a : Modification α β} {b : Modification α' β'}
-       → PathP (λ i → Modification (p i) (q i)) a b
-       → ∀ x → PathP _ (a .Γ x) (b .Γ x)
+  _Γᵈ_
+    : {α α' β β' : F =>ₗ G} {p : α ≡ α'} {q : β ≡ β'}
+    → {a : Modification α β} {b : Modification α' β'}
+    → PathP (λ i → Modification (p i) (q i)) a b
+    → ∀ x → PathP _ (a .Γ x) (b .Γ x)
   p Γᵈ x = apd (λ i e → e .Γ x) p
 
   _Γₚ_ : {α β : F =>ₗ G} {a b : Modification α β} → a ≡ b → ∀ x → a .Γ x ≡ b .Γ x

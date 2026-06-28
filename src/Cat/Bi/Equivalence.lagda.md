@@ -36,8 +36,8 @@ In any precategory, [[isomorphism]] acts as an internal proxy for
 "sameness" of objects.[^1]  However, in a bicategory, isomorphism is
 usually too strict a notion, in the sense that requiring that a 1-cell
 $f : A \to B$ has an inverse $f\inv : B \to A$ such that $f f\inv = \id$
-(and $f\inv f = \id$) is too strong, excluding cases where e.g., $f
-f\inv$ essentially acts like the identity despite not being equal to it.
+and $f\inv f = \id$ is too strong, excluding cases where $f f\inv$
+essentially acts like the identity despite not being equal to it.
 Instead, following the bicategorical ethos, we should require that these
 identities hold only up to 2-cell isomorphism.
 
