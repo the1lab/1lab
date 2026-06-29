@@ -141,6 +141,11 @@ defined here and those considered in the definition of colimit.
   Cocone→cocone : (K : Cocone) → F => Const (Cocone.coapex K)
   Cocone→cocone K .η = K .Cocone.ψ
   Cocone→cocone K .is-natural x y f = K .Cocone.commutes f ∙ sym (C.idl _)
+
+  cocone→Cocone : ∀ {coapex} (K : F => Const coapex) → Cocone
+  cocone→Cocone {coapex} K .coapex = coapex
+  cocone→Cocone K .ψ j = K .η j
+  cocone→Cocone K .commutes f = K .is-natural _ _ f ∙ C.idl _
 ```
 
 We can then rephrase the universality from the definition of [[left Kan
@@ -195,3 +200,25 @@ invertible: From a colimit, we can extract an initial cocone.
       Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
 ```
 </details>
+
+<!--
+```agda
+  Initial-cocone→Colimit : Initial Cocones → Colimit F
+  Initial-cocone→Colimit x = to-colimit (is-initial-cocone→is-colimit (x .Initial.has⊥))
+
+  Colimit→Initial-cocone : Colimit F → Initial Cocones
+  Colimit→Initial-cocone x .Initial.bot = _
+  Colimit→Initial-cocone x .Initial.has⊥ = is-colimit→is-initial-cocone (Colimit.has-colimit x)
+
+module _ {J : Precategory o ℓ} {C : Precategory o' ℓ'} {F : Functor J C} where
+  private module C = Cat.Reasoning C
+  open Cocone
+
+  instance
+    Extensional-Cocone-hom
+      : ∀ {ℓr x y}
+      → ⦃ e : Extensional (C.Hom (x .coapex) (y .coapex)) ℓr ⦄
+      → Extensional (Cocone-hom F x y) ℓr
+    Extensional-Cocone-hom ⦃ e ⦄ = injection→extensional! (Cocone-hom-path F) e
+```
+-->
