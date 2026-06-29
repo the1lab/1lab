@@ -97,7 +97,7 @@ equiv→total always-eqv .is-eqv y =
     (always-eqv .is-eqv (y .snd))
 ```
 
-## Equivalences over {defines="equivalence-over"}
+## Displayed equivalences {defines="equivalence-over equivalent-over displayed-equivalence"}
 
 We can generalise the notion of fibrewise equivalence to families
 $P : A \to \ty$, $Q : B \to \ty$ over *different* base types,
