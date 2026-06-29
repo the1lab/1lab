@@ -1,16 +1,24 @@
 ---
-description: We establish that right adjoints preserve limits.
+description: We establish that right (left) adjoints preserve (co)limits.
 ---
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
+open import Cat.Diagram.Coequaliser
 open import Cat.Functor.Adjoint.Kan
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
+open import Cat.Diagram.Initial
+open import Cat.Diagram.Product
+open import Cat.Diagram.Pushout
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -44,12 +52,11 @@ module _
 
 We prove that every functor $R : \cD \to \cC$ admitting a [[left
 adjoint]] $L \dashv R$ preserves every limit which exists in $\cD$. We
-then instantiate this theorem to the "canonical" shapes of limit:
-[[terminal objects]], [[products]], [[pullback]] and [[equalisers]].
+then instantiate this theorem to common shapes of limit:
+[[terminal objects]], [[products]], [[pullbacks]] and [[equalisers]].
 
 This follows directly from the fact that [[adjoints preserve Kan
 extensions]].
-
 
 ```agda
   right-adjoint-is-continuous
@@ -72,17 +79,9 @@ extensions]].
 
 ## Concrete limits
 
-We now show that adjoint functors preserve "concrete limits". We could
+We now show that right adjoint functors preserve "concrete limits". We could
 show this using general abstract nonsense, but we can avoid transports
 if we do it by hand.
-
-<!--
-```agda
-  open import Cat.Diagram.Equaliser
-  open import Cat.Diagram.Pullback
-  open import Cat.Diagram.Product
-```
--->
 
 ```agda
   right-adjoint→is-product
@@ -157,4 +156,83 @@ if we do it by hand.
     right-adjoint→terminal
   right-adjoint→lex .is-lex.pres-pullback {f = f} {g = g} pb =
     right-adjoint→is-pullback pb
+```
+
+## Concrete colimits
+
+Dually, we show that left adjoints preserve "concrete colimits".
+
+```agda
+  left-adjoint→is-coproduct
+    : ∀ {x a b} {p1 : C.Hom a x} {p2 : C.Hom b x}
+    → is-coproduct C p1 p2
+    → is-coproduct D (L.₁ p1) (L.₁ p2)
+  left-adjoint→is-coproduct {x = x} {a} {b} {p1} {p2} c-coprod = d-coprod where
+    open is-coproduct
+
+    d-coprod : is-coproduct D (L.₁ p1) (L.₁ p2)
+    d-coprod .[_,_] f g =
+      R-adjunct L⊣R (c-coprod .[_,_] (L-adjunct L⊣R f) (L-adjunct L⊣R g))
+    d-coprod .[]∘ι₁ =
+      L.pullr (c-coprod .[]∘ι₁) ∙ R-L-adjunct L⊣R _
+    d-coprod .[]∘ι₂ =
+      L.pullr (c-coprod .[]∘ι₂) ∙ R-L-adjunct L⊣R _
+    d-coprod .unique {other = other} p q =
+      sym (R-L-adjunct L⊣R other)
+      ∙ ap (R-adjunct L⊣R)
+           (c-coprod .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+
+  left-adjoint→is-pushout
+    : ∀ {p x y z}
+    → {p1 : C.Hom x p} {f : C.Hom z x} {p2 : C.Hom y p} {g : C.Hom z y}
+    → is-pushout C f p1 g p2
+    → is-pushout D (L.₁ f) (L.₁ p1) (L.₁ g) (L.₁ p2)
+  left-adjoint→is-pushout {p1 = p1} {f} {p2} {g} c-po = d-po where
+    open is-pushout
+
+    d-po : is-pushout D (L.₁ f) (L.₁ p1) (L.₁ g) (L.₁ p2)
+    d-po .square = L.weave (c-po .square)
+    d-po .universal sq =
+      R-adjunct L⊣R (c-po .universal (L-adjunct-square L⊣R sq))
+    d-po .universal∘i₁ =
+      L.pullr (c-po .universal∘i₁) ∙ R-L-adjunct L⊣R _
+    d-po .universal∘i₂ =
+      L.pullr (c-po .universal∘i₂) ∙ R-L-adjunct L⊣R _
+    d-po .unique {_} {p₁'} {p₂'} {sq} {other} p q =
+      sym (R-L-adjunct L⊣R other)
+      ∙ ap (R-adjunct L⊣R)
+           (c-po .unique (L-adjunct-ap L⊣R p) (L-adjunct-ap L⊣R q))
+
+  left-adjoint→is-coequaliser
+    : ∀ {e a b} {f g : C.Hom b a} {coequ : C.Hom a e}
+    → is-coequaliser C f g coequ
+    → is-coequaliser D (L.₁ f) (L.₁ g) (L.₁ coequ)
+  left-adjoint→is-coequaliser {f = f} {g} {coequ} c-coequal = d-coequal where
+    open is-coequaliser
+
+    d-coequal : is-coequaliser D (L.₁ f) (L.₁ g) (L.₁ coequ)
+    d-coequal .coequal = L.weave (c-coequal .coequal)
+    d-coequal .universal sq =
+      R-adjunct L⊣R (c-coequal .universal (L-adjunct-square L⊣R sq))
+    d-coequal .factors =
+      L.pullr (c-coequal .factors) ∙ R-L-adjunct L⊣R _
+    d-coequal .unique p =
+      sym (R-L-adjunct L⊣R _)
+      ∙ ap (R-adjunct L⊣R)
+           (c-coequal .unique (L-adjunct-ap L⊣R p))
+
+  left-adjoint→initial
+    : ∀ {x} → is-initial C x → is-initial D (L.₀ x)
+  left-adjoint→initial init x = contr fin uniq where
+    fin = R-adjunct L⊣R (init (R.₀ x) .centre)
+    uniq : ∀ x → fin ≡ x
+    uniq x = ap fst $ is-contr→is-prop (L-adjunct-is-equiv L⊣R .is-eqv _)
+      (_ , equiv→counit (L-adjunct-is-equiv L⊣R) _)
+      (x , is-contr→is-prop (init _) _ _)
+
+  left-adjoint→rex : is-rex L
+  left-adjoint→rex .is-rex.pres-⊥ =
+    left-adjoint→initial
+  left-adjoint→rex .is-rex.pres-pushout {f = f} {g = g} po =
+    left-adjoint→is-pushout po
 ```
