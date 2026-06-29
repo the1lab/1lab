@@ -569,6 +569,14 @@ _ = conservative-reflects-limits
 
 ### 2.10 Absolute colimits
 
+<!--
+```agda
+_ = is-absolute-colimit
+```
+-->
+
+* Definition 2.10.1: `is-absolute-colimit`{.Agda}
+
 ### 2.11 Final functors
 
 ::: warning
@@ -580,13 +588,15 @@ nLab instead.
 <!--
 ```agda
 _ = is-final
+_ = restrict-is-colimit
 _ = extend-is-colimit
-_ = is-colimit-restrict
+_ = terminal→inclusion-is-final
 ```
 -->
 
-* Definition 2.11.1: `is-final`{.Agda}
-* Proposition 2.11.2: `extend-is-colimit`{.Agda}, `is-colimit-restrict`{.Agda}
+* Definition 2.11.1: `restrict-is-colimit`{.Agda}, `extend-is-colimit`{.Agda}
+* Proposition 2.11.2: By definition of `is-final`{.Agda}
+* Proposition 2.11.4: `terminal→inclusion-is-final`{.Agda}
 
 ### 2.12 Interchange of limits
 

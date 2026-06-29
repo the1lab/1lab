@@ -1,13 +1,19 @@
 <!--
 ```agda
+open import Cat.Functor.Properties.FullyFaithful
+open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Colimit.Cocone
 open import Cat.Instances.Localisation
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Adjoint.Hom
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Constant
+open import Cat.Functor.Kan.Base
+open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Connected
@@ -18,9 +24,13 @@ import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
 
 open is-connected-groupoid
+open is-precat-iso
 open Precategory
+open Cocone-hom
 open Congruence
 open Functor
+open is-iso
+open Cocone
 open _=>_
 open ↓Obj
 open ↓Hom
@@ -34,9 +44,9 @@ module Cat.Functor.Final where
 # Final functors {defines="final-functor"}
 
 A **final functor** expresses an equivalence of diagram schemata for the
-purposes of computing colimits: if $F : \cC \to \cD$ is final,
+purposes of computing [[colimits]]: if $F : \cC \to \cD$ is final,
 then colimits for $D : \cD \to \cE$ are equivalent to colimits
-for $D\circ F : \cC \to \cE$. A terminological warning: in older
+for $D F : \cC \to \cE$. A terminological warning: in older
 literature (e.g. [@Borceux:vol1] and [@AdamekRosicky]), these functors
 are called **cofinal**, but we stick with terminology from the nLab
 here.
@@ -98,6 +108,33 @@ $a \rightarrow a_0 \leftarrow b$:
   module is-final (fin : is-final) (d : 𝒟.Ob) = is-connected-groupoid (fin d)
 
   module
+    _ {o'' ℓ''} {ℰ : Precategory o'' ℓ''} (D : Functor 𝒟 ℰ)
+    where
+```
+-->
+
+The utility of this definition comes, as mentioned, from the ability to
+move cocones back and forth between a diagram $D$ and its restriction
+$D F$ to the domain category $\cC$, in a way that preserves the
+property of being a [[colimit]]. First, for any functor $F$, we can
+restrict cocones under $D$ to cocones under $D F$ by precomposition.
+
+```agda
+    restrict-cocone : ∀ {coapex} → D => Const coapex → D F∘ F => Const coapex
+    restrict-cocone K .η x = K .η (F.₀ x)
+    restrict-cocone K .is-natural x y f = K .is-natural (F.₀ x) (F.₀ y) (F.₁ f)
+
+    Restrict-cocone : Functor (Cocones D) (Cocones (D F∘ F))
+    Restrict-cocone .F₀ K = cocone→Cocone _ (restrict-cocone (Cocone→cocone _ K))
+    Restrict-cocone .F₁ f .map = f .map
+    Restrict-cocone .F₁ f .com c = f .com (F.₀ c)
+    Restrict-cocone .F-id = ext refl
+    Restrict-cocone .F-∘ _ _ = ext refl
+```
+
+<!--
+```agda
+  module
     _ {o'' ℓ''} {ℰ : Precategory o'' ℓ''} {D : Functor 𝒟 ℰ} (final : is-final)
     where
     private
@@ -107,16 +144,18 @@ $a \rightarrow a_0 \leftarrow b$:
 ```
 -->
 
-The utility of this definition comes, as mentioned, from the ability to
-move (colimiting) cocones back and forth between a diagram $D$ and its
-restriction $D_{|F}$ to the domain category $\cC$. If we have a cocone
+The point is now that, if $F$ is final, then the restriction functor
+thus defined is an [[equivalence of categories]] between the categories
+of cocones under $D$ and $D F$.
+
+First, if we have a cocone
 $\kappa : \{DF(d) \to K\}$, then precomposition with the map $D(d_!) :
 D(d) \to DF(d_0)$ (where $d_! : d \to F(d_0)$ comes from the finality of
 $F$) defines a cocone $\{D(d) \to K\}$.
 
 However, since the comma category $d \swarrow F$ is *merely* inhabited,
 we need to make sure that this extension is independent of the choice of
-$d_0$ and $d_!$.  This follows from naturality of the cocone and by
+$d_0$ and $d_!$. This follows from naturality of the cocone and by
 connectedness of $d \swarrow F$, as expressed by the commutativity of
 the following diagram:
 
@@ -134,19 +173,19 @@ the following diagram:
 ~~~
 
 ```agda
-    module _ {coapex} (cone : D F∘ F => Const coapex) where
+    module _ {coapex} (cocone : D F∘ F => Const coapex) where
       extend : ∀ d → Ob (d ↙ F) → ℰ.Hom (D.₀ d) coapex
-      extend d f = cone .η (f .cod) ℰ.∘ D.₁ (f .map)
+      extend d f = cocone .η (f .cod) ℰ.∘ D.₁ (f .map)
 
       opaque
         extend-const1
           : ∀ d {f g : Ob (d ↙ F)} (h : ↓Hom _ _ f g)
           → extend d f ≡ extend d g
         extend-const1 d {f} {g} h =
-          cone .η _ ℰ.∘ D.₁ (f .map)                          ≡˘⟨ cone .is-natural _ _ _ ∙ ℰ.idl _ ℰ.⟩∘⟨refl ⟩
-          (cone .η _ ℰ.∘ D.₁ (F.₁ (h .bot))) ℰ.∘ D.₁ (f .map) ≡⟨ D.pullr refl ⟩
-          cone .η _ ℰ.∘ D.₁ ⌜ F.₁ (h .bot) 𝒟.∘ f .map ⌝       ≡⟨ ap! (sym (h .com) ∙ 𝒟.idr _) ⟩
-          cone .η _ ℰ.∘ D.₁ (g .map)                          ∎
+          cocone .η _ ℰ.∘ D.₁ (f .map)                          ≡˘⟨ cocone .is-natural _ _ _ ∙ ℰ.idl _ ℰ.⟩∘⟨refl ⟩
+          (cocone .η _ ℰ.∘ D.₁ (F.₁ (h .bot))) ℰ.∘ D.₁ (f .map) ≡⟨ D.pullr refl ⟩
+          cocone .η _ ℰ.∘ D.₁ ⌜ F.₁ (h .bot) 𝒟.∘ f .map ⌝       ≡⟨ ap! (sym (h .com) ∙ 𝒟.idr _) ⟩
+          cocone .η _ ℰ.∘ D.₁ (g .map)                          ∎
 
       opaque
         extend-const
@@ -154,126 +193,114 @@ the following diagram:
           → extend d f ≡ extend d g
         extend-const d f g = case fin.path d f g of
           Meander-rec-≡ (el! _) (extend d) (extend-const1 d)
-```
 
-In order to make reasoning easier, we define the extended cocone
-simultaneously with an elimination principle for its components.
+      extend' : ∀ d → ∥ Ob (d ↙ F) ∥ → ℰ.Hom (D.₀ d) coapex
+      extend' d = ∥-∥-rec-set (hlevel 2) (extend d) (extend-const d)
 
-```agda
       extend-cocone : D => Const coapex
-      extend-cocone-elim
-        : ∀ d {ℓ} (P : ℰ.Hom (D.₀ d) coapex → Type ℓ)
-        → (∀ f → is-prop (P f))
-        → (∀ f → P (extend d f))
-        → P (extend-cocone .η d)
-
-      extend-cocone .η d = ∥-∥-rec-set (hlevel 2)
-        (extend d) (extend-const d) (fin.point d)
-
-      extend-cocone .is-natural x y f = extend-cocone-elim x
-        (λ ex → extend-cocone .η y ℰ.∘ D.₁ f ≡ ex)
-        (λ _ → hlevel 1)
-        (λ ex → extend-cocone-elim y
-          (λ ey → ey ℰ.∘ D.₁ f ≡ extend x ex)
-          (λ _ → hlevel 1)
-          λ ey → ℰ.pullr (sym (D.F-∘ _ _))
-               ∙ sym (extend-const x ex (↓obj (ey .map 𝒟.∘ f))))
-        ∙ sym (ℰ.idl _)
+      extend-cocone .η d = extend' d (fin.point d)
+      extend-cocone .is-natural x y f =
+        case fin.point x , fin.point y return
+          (λ (x' , y') → extend' y y' ℰ.∘ D.₁ f ≡ ℰ.id ℰ.∘ extend' x x')
+        of λ x' y' →
+          extend y y' ℰ.∘ D.₁ f           ≡⟨ D.pullr refl ⟩
+          extend x (↓obj (y' .map 𝒟.∘ f)) ≡⟨ extend-const x (↓obj _) x' ⟩
+          extend x x'                     ≡⟨ ℰ.introl refl ⟩
+          ℰ.id ℰ.∘ extend x x'            ∎
 ```
 
-<!--
-```agda
-      extend-cocone-elim d P prop h = ∥-∥-elim
-        {P = λ f → P (∥-∥-rec-set (hlevel 2) (extend d) (extend-const d) f)}
-        (λ _ → prop _) h (fin.point d)
-```
--->
-
-In the other direction, suppose that we have a cocone $\{D(x) \to K\}$
---- inserting $F$ in the appropriate places makes a cocone $\{DF(x) \to
-K\}$.
+A few more computations show that `restrict-cocone`{.Agda} and
+`extend-cocone`{.Agda} are inverses (so that `Restrict-cocone`{.Agda}
+is an equivalence on objects), and that the restriction functor is
+fully faithful, which makes it an isomorphism of categories (and thus
+an equivalence).
 
 ```agda
-    restrict-cocone : ∀ {coapex} → D => Const coapex → D F∘ F => Const coapex
-    restrict-cocone K .η x = K .η (F.₀ x)
-    restrict-cocone K .is-natural x y f = K .is-natural (F.₀ x) (F.₀ y) (F.₁ f)
+    restrict-cocone-is-equiv : ∀ {coapex} → is-equiv (restrict-cocone D {coapex = coapex})
+    restrict-cocone-is-equiv = is-iso→is-equiv λ where
+      .from K → extend-cocone K
+      .rinv K → ext λ c →
+        case fin.point (F.₀ c) return
+          (λ c' → extend' _ (F.₀ c) c' ≡ K .η c)
+        of λ c' →
+          extend-const K (F.₀ c) c' (↓obj 𝒟.id) ∙ D.elimr refl
+      .linv K → ext λ d →
+        case fin.point d return
+          (λ d' → extend' (restrict-cocone D K) d d' ≡ K .η d)
+        of λ d' →
+          K .is-natural _ _ (d' .map) ∙ ℰ.eliml refl
+
+    restrict-cocone≃ : ∀ {coapex} → (D => Const coapex) ≃ (D F∘ F => Const coapex)
+    restrict-cocone≃ = _ , restrict-cocone-is-equiv
+
+    Restrict-cocone-ff : is-fully-faithful (Restrict-cocone D)
+    Restrict-cocone-ff {X} {Y} = is-iso→is-equiv λ where
+      .is-iso.from f .map → f .map
+      .is-iso.from f .com d → case fin.point d of λ d' →
+        f .map ℰ.∘ X .ψ d                                 ≡⟨ ℰ.cdr (sym (X .commutes (d' .map))) ⟩
+        f .map ℰ.∘ X .ψ (F.₀ (d' .cod)) ℰ.∘ D.₁ (d' .map) ≡⟨ ℰ.pulll (f .com (d' .cod)) ⟩
+        Y .ψ (F.₀ (d' .cod)) ℰ.∘ D.₁ (d' .map)            ≡⟨ Y .commutes (d' .map) ⟩
+        Y .ψ d                                            ∎
+      .is-iso.rinv _ → ext refl
+      .is-iso.linv _ → ext refl
+
+    Restrict-cocone-is-precat-iso : is-precat-iso (Restrict-cocone D)
+    Restrict-cocone-is-precat-iso .has-is-ff = Restrict-cocone-ff
+    Restrict-cocone-is-precat-iso .has-is-iso = snd $
+      Cocone≃cocone _ ∙e Σ-ap-snd (λ _ → restrict-cocone≃) ∙e Cocone≃cocone _ e⁻¹
+
+    Restrict-cocone-is-equivalence : is-equivalence (Restrict-cocone D)
+    Restrict-cocone-is-equivalence = is-precat-iso→is-equivalence Restrict-cocone-is-precat-iso
+
+    module Restrict-cocone = is-equivalence Restrict-cocone-is-equivalence
 ```
 
-A computation using connectedness of the comma categories shows that
-these formulae are mutually inverse:
+Since `Restrict-cocone`{.Agda} is an equivalence, it preserves initial
+objects, i.e. colimiting cocones. In other words, if $K$ is a colimit
+of $D$, then its restriction is a colimit of $D F$.
 
 ```agda
-    open is-iso
-    extend-cocone-is-iso : ∀ {coapex} → is-iso (extend-cocone {coapex})
-    extend-cocone-is-iso .from = restrict-cocone
-    extend-cocone-is-iso .rinv K = ext λ o →
-      extend-cocone-elim (restrict-cocone K) o
-        (λ ex → ex ≡ K .η o)
-        (λ _ → hlevel 1)
-        λ _ → K .is-natural _ _ _ ∙ ℰ.idl _
-    extend-cocone-is-iso .linv K = ext λ o →
-      extend-cocone-elim K (F.₀ o)
-        (λ ex → ex ≡ K .η o)
-        (λ _ → hlevel 1)
-        λ f → extend-const K (F.₀ o) f (↓obj 𝒟.id) ∙ D.elimr refl
+    restrict-is-colimit
+      : ∀ {coapex}
+      → (K : D => Const coapex)
+      → is-colimit D coapex K
+      → is-colimit (D F∘ F) coapex (restrict-cocone D K)
+    restrict-is-colimit {coapex} K colim =
+      generalize-colimitp
+        (is-initial-cocone→is-colimit _
+          (left-adjoint→initial (Restrict-cocone.F⊣F⁻¹)
+            (is-colimit→is-initial-cocone _ colim)))
+        refl
 ```
 
-The most important conclusion that we get is the following: If you can
-show that the restricted cocone is a colimit, then the original cocone
-was a colimit, too! We'll do this in two steps: first, show that the
-_extension_ of a colimiting cocone is a colimit. Then, using the fact
-that `restrict-cocone`{.Agda} is an equivalence, we'll be able to fix up
-the polarity mismatch.
+But we can also go the other way: if $K$ is a colimit of $D F$,
+then its extension is a colimit of $D$.
 
 ```agda
     extend-is-colimit
       : ∀ {coapex} (K : D F∘ F => Const coapex)
       → is-colimit (D F∘ F) coapex K
       → is-colimit D coapex (extend-cocone K)
-```
-
-<details>
-<summary>
-The proof of the auxiliary lemma is a direct computation, so we'll leave
-it in this `<details>`{.html} tag for the curious reader only.
-</summary>
-
-```agda
     extend-is-colimit {coapex} K colim =
-      to-is-colimitp mc refl
-      module extend-is-colimit where
-        module colim = is-colimit colim
-        open make-is-colimit
-
-        mc : make-is-colimit D coapex
-        mc .ψ x = extend-cocone K .η x
-        mc .commutes f = extend-cocone K .is-natural _ _ _ ∙ ℰ.idl _
-        mc .universal eta p =
-          colim.universal (λ j → eta (F.₀ j)) λ f → p (F.₁ f)
-        mc .factors {j} eta p =
-          extend-cocone-elim K j
-            (λ ex → mc .universal eta p ℰ.∘ ex ≡ eta j)
-            (λ _ → hlevel 1)
-            λ f → ℰ.pulll (colim.factors _ _) ∙ p (f .map)
-        mc .unique eta p other q =
-          colim.unique _ _ _ λ j →
-            sym (ℰ.refl⟩∘⟨ extend-cocone-is-iso .linv K ηₚ j)
-            ∙ q (F.₀ j)
+      generalize-colimitp
+        (is-initial-cocone→is-colimit _
+          (left-adjoint→initial Restrict-cocone.F⁻¹⊣F
+            (is-colimit→is-initial-cocone _ colim)))
+        λ {d} → case fin.point d return
+          (λ d' → extend' _ d d' ≡ extend' K d d')
+        of λ d' → refl
 ```
 
-</details>
+Finally, we summarise these results as a [[displayed equivalence]]
+between the property of being a colimit for cocones under $D$ and for
+cocones under $D F$.
 
 ```agda
-    is-colimit-restrict
+    final→is-colimit≃
       : ∀ {coapex}
-      → (K : D => Const coapex)
-      → is-colimit (D F∘ F) coapex (restrict-cocone K)
-      → is-colimit D coapex K
-    is-colimit-restrict {coapex} K colim =
-      to-is-colimitp
-        (extend-is-colimit.mc (restrict-cocone K) colim)
-        (extend-cocone-is-iso .rinv K ηₚ _)
-        where open is-iso
+      → is-colimit D coapex ≃[ restrict-cocone≃ ] is-colimit (D F∘ F) coapex
+    final→is-colimit≃ = prop-over-ext!
+      restrict-cocone≃ restrict-is-colimit extend-is-colimit
 ```
 
 ## Examples
@@ -337,12 +364,13 @@ adjoints in terms of [[free objects]]: since the comma categories $c
 \swarrow R$ have initial objects, they are connected.
 
 ```agda
-right-adjoint-is-final
-  : ∀ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
-  → {L : Functor 𝒞 𝒟} {R : Functor 𝒟 𝒞} (L⊣R : L ⊣ R)
-  → is-final R
-right-adjoint-is-final L⊣R c =
-  initial→connected (left-adjoint→universal-maps L⊣R c)
+opaque
+  right-adjoint-is-final
+    : ∀ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
+    → {L : Functor 𝒞 𝒟} {R : Functor 𝒟 𝒞} (L⊣R : L ⊣ R)
+    → is-final R
+  right-adjoint-is-final L⊣R c =
+    initial→connected (left-adjoint→universal-maps L⊣R c)
 ```
 
 In particular, the inclusion of a [[terminal object]] into a category is
