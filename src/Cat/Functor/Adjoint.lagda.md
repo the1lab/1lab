@@ -281,12 +281,27 @@ Furthermore, these equivalences are natural.
 
 <!--
 ```agda
+  L-adjunct-ap
+    : ∀ {a b c}
+    → {f : C.Hom c b} {g : D.Hom (L.₀ b) a} {h : D.Hom (L.₀ c) a}
+    → g D.∘ L.₁ f ≡ h
+    → L-adjunct g C.∘ f ≡ L-adjunct h
+  L-adjunct-ap p = sym (L-adjunct-naturall _ _) ∙ ap L-adjunct p
+
   R-adjunct-ap
     : ∀ {a b c}
     → {f : D.Hom b c} {g : C.Hom a (R.₀ b)} {h : C.Hom a (R.₀ c)}
     → R.₁ f C.∘ g ≡ h
     → f D.∘ R-adjunct g ≡ R-adjunct h
   R-adjunct-ap p = sym (R-adjunct-naturalr _ _) ∙ ap R-adjunct p
+
+  L-adjunct-square
+    : ∀ {a b c d}
+    → {p1 : D.Hom (L.₀ b) a} {f : C.Hom d b} {p2 : D.Hom (L.₀ c) a} {g : C.Hom d c}
+    → p1 D.∘ L.₁ f ≡ p2 D.∘ L.₁ g
+    → L-adjunct p1 C.∘ f ≡ L-adjunct p2 C.∘ g
+  L-adjunct-square sq =
+    sym (L-adjunct-naturall _ _) ∙∙ ap L-adjunct sq ∙∙ L-adjunct-naturall _ _
 
   R-adjunct-square
     : ∀ {a b c d}

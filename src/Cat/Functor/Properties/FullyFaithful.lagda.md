@@ -5,6 +5,7 @@ open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Initial
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Terminal
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Colimit.Base
@@ -163,12 +164,28 @@ we can lift it to a `Limit`{.Agda} of $G$ (and similarly for
 
 <!--
 ```agda
+ff→reflects-terminal
+  : (top : C.Ob)
+  → is-terminal D (F.₀ top)
+  → is-terminal C top
+ff→reflects-terminal top init =
+  is-limit→is-terminal C {eps = ¡nt} (ff→reflects-limit _
+    (generalize-limitp (is-terminal→is-limit _ init) λ { {()} }))
+
 ff→reflects-Terminal
   : (term : Terminal D)
   → ∀ {o} → term .Terminal.top D.≅ F.₀ o
   → Terminal C
 ff→reflects-Terminal term is =
   Limit→Terminal C (ff→reflects-Limit _ (Terminal→Limit D term) is)
+
+ff→reflects-initial
+  : (bot : C.Ob)
+  → is-initial D (F.₀ bot)
+  → is-initial C bot
+ff→reflects-initial bot init =
+  is-colimit→is-initial C {eta = ¡nt} (ff→reflects-colimit _
+    (generalize-colimitp (is-initial→is-colimit _ init) λ { {()} }))
 
 ff→reflects-Initial
   : (init : Initial D)

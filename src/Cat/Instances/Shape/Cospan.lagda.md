@@ -179,18 +179,18 @@ module _ x y {o ℓ} {C : Precategory o ℓ} where
     funct .F₀ cs-c = _
     funct .F₁ {cs-a} {cs-a} _ = id
     funct .F₁ {cs-b} {cs-b} _ = id
-    funct .F₁ {cs-c} {cs-a} _ = g
-    funct .F₁ {cs-c} {cs-b} _ = f
+    funct .F₁ {cs-c} {cs-a} _ = f
+    funct .F₁ {cs-c} {cs-b} _ = g
     funct .F₁ {cs-c} {cs-c} _ = id
     funct .F-id {cs-a} = refl
     funct .F-id {cs-b} = refl
     funct .F-id {cs-c} = refl
     funct .F-∘ {cs-a} {cs-a} {cs-a} _ _ i = idl id (~ i)
     funct .F-∘ {cs-b} {cs-b} {cs-b} _ _ i = idl id (~ i)
-    funct .F-∘ {cs-c} {cs-a} {cs-a} _ _ i = idl g (~ i)
-    funct .F-∘ {cs-c} {cs-b} {cs-b} _ _ i = idl f (~ i)
-    funct .F-∘ {cs-c} {cs-c} {cs-a} _ _ i = idr g (~ i)
-    funct .F-∘ {cs-c} {cs-c} {cs-b} _ _ i = idr f (~ i)
+    funct .F-∘ {cs-c} {cs-a} {cs-a} _ _ i = idl f (~ i)
+    funct .F-∘ {cs-c} {cs-b} {cs-b} _ _ i = idl g (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-a} _ _ i = idr f (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-b} _ _ i = idr g (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idr id (~ i)
 ```
 -->

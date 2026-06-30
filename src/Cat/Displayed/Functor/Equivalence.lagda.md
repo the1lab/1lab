@@ -26,7 +26,7 @@ open _=[_]=>_
 module Cat.Displayed.Functor.Equivalence where
 ```
 
-# Equivalences of displayed categories {defines="displayed-equivalence displayed-adjoint-equivalence equivalence-of-displayed-categories equivalence-of-displayed-precategories"}
+# Equivalences of displayed categories {defines="displayed-adjoint-equivalence equivalence-of-displayed-categories equivalence-of-displayed-precategories"}
 
 Suppose $F \dashv F\inv$ are the [[adjoint]] components of an [[adjoint
 equivalence]] $F : \cA \cong \cB$, and let $\cE \liesover \cA$ and $\cF

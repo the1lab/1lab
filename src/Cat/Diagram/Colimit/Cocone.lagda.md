@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Constant
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
@@ -141,13 +142,23 @@ defined here and those considered in the definition of colimit.
   Cocone→cocone : (K : Cocone) → F => Const (Cocone.coapex K)
   Cocone→cocone K .η = K .Cocone.ψ
   Cocone→cocone K .is-natural x y f = K .Cocone.commutes f ∙ sym (C.idl _)
+
+  cocone→Cocone : ∀ {coapex} (K : F => Const coapex) → Cocone
+  cocone→Cocone {coapex} K .coapex = coapex
+  cocone→Cocone K .ψ j = K .η j
+  cocone→Cocone K .commutes f = K .is-natural _ _ f ∙ C.idl _
+
+  Cocone≃cocone : Cocone ≃ (Σ[ coapex ∈ C.Ob ] F => Const coapex)
+  Cocone≃cocone .fst K = K .coapex , Cocone→cocone K
+  Cocone≃cocone .snd = is-iso→is-equiv λ where
+    .is-iso.from (coapex , K) → cocone→Cocone K
+    .is-iso.rinv (coapex , K) → refl ,ₚ ext λ _ → refl
+    .is-iso.linv K → Cocone-path refl (λ _ → refl)
 ```
 
 We can then rephrase the universality from the definition of [[left Kan
-extension]] by asking that a particular cocone be [initial] in the
+extension]] by asking that a particular cocone be [[initial]] in the
 category we have just constructed.
-
-[initial]: Cat.Diagram.Initial.html
 
 ```agda
   is-initial-cocone→is-colimit
@@ -175,7 +186,7 @@ invertible: From a colimit, we can extract an initial cocone.
   is-colimit→is-initial-cocone
     : ∀ {x} {eta : F => Const x}
     → (L : is-colimit F x eta)
-    → is-initial Cocones (cocone x (is-colimit.ψ L) (is-colimit.commutes L))
+    → is-initial Cocones (cocone→Cocone eta)
 ```
 
 <details>
@@ -183,15 +194,43 @@ invertible: From a colimit, we can extract an initial cocone.
 </summary>
 
 ```agda
-  is-colimit→is-initial-cocone {x  = x} L K = init where
+  is-colimit→is-initial-cocone {x = x} {eta} L K = init where
     module L = is-colimit L
     module K = Cocone K
     open Cocone-hom
 
-    init : is-contr (Cocone-hom (cocone x L.ψ L.commutes) K)
+    init : is-contr (Cocone-hom (cocone→Cocone eta) K)
     init .centre .map   = L.universal K.ψ K.commutes
     init .centre .com _ = L.factors K.ψ K.commutes
     init .paths f =
       Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .map) (f .com)))
 ```
 </details>
+
+<!--
+```agda
+  is-colimit≃is-initial-cocone
+    : is-initial Cocones ≃[ Cocone≃cocone ] uncurry (is-colimit F)
+  is-colimit≃is-initial-cocone = prop-over-ext! Cocone≃cocone
+    (λ _ → is-initial-cocone→is-colimit)
+    (λ _ → is-colimit→is-initial-cocone)
+
+  Initial-cocone→Colimit : Initial Cocones → Colimit F
+  Initial-cocone→Colimit x = to-colimit (is-initial-cocone→is-colimit (x .Initial.has⊥))
+
+  Colimit→Initial-cocone : Colimit F → Initial Cocones
+  Colimit→Initial-cocone x .Initial.bot = _
+  Colimit→Initial-cocone x .Initial.has⊥ = is-colimit→is-initial-cocone (Colimit.has-colimit x)
+
+module _ {J : Precategory o ℓ} {C : Precategory o' ℓ'} {F : Functor J C} where
+  private module C = Cat.Reasoning C
+  open Cocone
+
+  instance
+    Extensional-Cocone-hom
+      : ∀ {ℓr x y}
+      → ⦃ e : Extensional (C.Hom (x .coapex) (y .coapex)) ℓr ⦄
+      → Extensional (Cocone-hom F x y) ℓr
+    Extensional-Cocone-hom ⦃ e ⦄ = injection→extensional! (Cocone-hom-path F) e
+```
+-->
