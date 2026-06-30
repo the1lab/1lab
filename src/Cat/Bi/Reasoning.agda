@@ -10,7 +10,7 @@ module Cat.Bi.Reasoning {o ℓ ℓ'} (C : Prebicategory o ℓ ℓ') where
 open Prebicategory C public hiding (module Hom)
 
 module Hom {a b} = Cr (Hom a b) hiding (_∘_ ; Hom ; Ob)
-module ⊗ {a b c} = Fr (compose {a} {b} {c})
+module ⊗ {a b c} = compose {a} {b} {c}
 module ▶ {a b c} {f} = Fr (postaction C {a} {b} {c} f)
 module ◀ {a b c} {f} = Fr (preaction C {a} {b} {c} f)
 
@@ -84,7 +84,7 @@ module α≅ {w x y z} {f : y ↦ z} {g : x ↦ y} {h : w ↦ x} = _≅_ (α≅ 
 
 module ▶-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (▶-assoc  {f = f} {g = g} {c = x})
 module ◀-assoc {a b c} {f : b ↦ c} {g : a ↦ b} {x} = Isoⁿ (◀-assoc  {f = f} {g = g} {c = x})
-module ◀-▶-comm {a b c} {f : b ↦ c} {g : a ↦ b}    = Isoⁿ (◀-▶-comm {f = f} {g = g})
+module ◀-▶-comm {a b c d} {f : a ↦ b} {g : c ↦ d}  = Isoⁿ (◀-▶-comm {f = f} {g = g})
 
 -- Proofs of triangle-α→, pentagon-α→, triangle-λ←, and λ←≡ρ← are taken from those in
 -- Cat.Monoidal.Base.  The proof of triangle-λ← involves a prism diagram which is
