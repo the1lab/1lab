@@ -654,7 +654,6 @@ transformations. Since we are directly dealing with sets (the sets of
 module
   _ {B : Prebicategory o ℓ ℓ'} {C : Prebicategory o₁ ℓ₁ ℓ₁'}
     {F : Lax-functor B C} {G : Lax-functor B C}
-    (σ σ' : F =>ₗ G)
   where
 
   private
@@ -662,21 +661,24 @@ module
     module C = Prebicategory C
     module F = Lax-functor F
     module G = Lax-functor G
-    module σ = Lax-transfor σ
-    module σ' = Lax-transfor σ'
+
+  module _ (σ σ' : F =>ₗ G) where
+    private
+      module σ = Lax-transfor σ
+      module σ' = Lax-transfor σ'
 ```
 -->
 
 ```agda
-  record Modification : Type (o ⊔ ℓ ⊔ ℓ₁') where
-    no-eta-equality
-    field
-      Γ : ∀ a → σ.σ a C.⇒ σ'.σ a
+    record Modification : Type (o ⊔ ℓ ⊔ ℓ₁') where
+      no-eta-equality
+      field
+        Γ : ∀ a → σ.σ a C.⇒ σ'.σ a
 
-      is-natural
-        : ∀ {a b} {f : a B.↦ b}
-        → σ'.ν→ f C.∘ (G.₁ f C.▶ Γ a)
-        ≡ (Γ b C.◀ F.₁ f) C.∘ σ.ν→ f
+        is-natural
+          : ∀ {a b} {f : a B.↦ b}
+          → σ'.ν→ f C.∘ (G.₁ f C.▶ Γ a)
+          ≡ (Γ b C.◀ F.₁ f) C.∘ σ.ν→ f
 ```
 
 In a diagram, we display a modification as a 3-cell, i.e., a morphism
@@ -711,3 +713,48 @@ diagrams **in** bicategories, which are (mercifully) limited to 2-cells.
 
 \end{tikzpicture}
 ~~~
+
+<!--
+```agda
+  unquoteDecl H-Level-Modification = declare-record-hlevel 2 H-Level-Modification (quote Modification)
+
+  open Modification
+  open Lax-transfor
+
+  Mod-pathp : {α α' β β' : F =>ₗ G}
+            → (p : α ≡ α') (q : β ≡ β')
+            → {a : Modification α β} {b : Modification α' β'}
+            → (∀ x → PathP _ (a .Γ x) (b .Γ x))
+            → PathP (λ i → Modification (p i) (q i)) a b
+  Mod-pathp p q path i .Γ x                            = path x i
+  Mod-pathp p q {a} {b} path i .is-natural {x} {y} {f} =
+    is-prop→pathp
+      (λ i → C.Hom.Hom-set _ _
+        (ν→ (q i) f C.∘ G.₁ f C.▶ path x i) (path y i C.◀ F.₁ f C.∘ ν→ (p i) f))
+      (a .is-natural)
+      (b .is-natural) i
+
+  _Γᵈ_ : {α α' β β' : F =>ₗ G} {p : α ≡ α'} {q : β ≡ β'}
+       → {a : Modification α β} {b : Modification α' β'}
+       → PathP (λ i → Modification (p i) (q i)) a b
+       → ∀ x → PathP _ (a .Γ x) (b .Γ x)
+  p Γᵈ x = apd (λ i e → e .Γ x) p
+
+  _Γₚ_ : {α β : F =>ₗ G} {a b : Modification α β} → a ≡ b → ∀ x → a .Γ x ≡ b .Γ x
+  p Γₚ x = ap (λ e → e .Γ x) p
+
+  infixl 45 _Γₚ_
+
+  instance
+    Extensional-modification
+      : ∀ {ℓr} {α β : F =>ₗ G}
+      → ⦃ sa : {x : B.Ob} → Extensional (α .σ x C.⇒ β .σ x) ℓr ⦄
+      → Extensional (Modification α β) (o ⊔ ℓr)
+    Extensional-modification ⦃ sa ⦄ .Pathᵉ f g = ∀ i → Pathᵉ sa (f .Γ i) (g .Γ i)
+    Extensional-modification ⦃ sa ⦄ .reflᵉ x i = reflᵉ sa (x .Γ i)
+    Extensional-modification ⦃ sa ⦄ .idsᵉ .to-path x = Mod-pathp refl refl λ i →
+      sa .idsᵉ .to-path (x i)
+    Extensional-modification ⦃ sa ⦄ .idsᵉ .to-path-over h =
+      is-prop→pathp (λ i → Π-is-hlevel 1 λ _ → Pathᵉ-is-hlevel 1 sa (hlevel 2)) _ _
+```
+-->
